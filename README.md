@@ -4,7 +4,6 @@ A falling sand simulation game.
 Play at [Sandboxels.R74n.com](https://sandboxels.r74n.com/).
 
 # Controls
-[Sandboxels Controls]
  * Left Click      =  Place Pixels
  * Right Click     =  Erase Pixels
  * Middle Click    =  Pick Element
