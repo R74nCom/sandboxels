@@ -1,0 +1,49 @@
+[Version 0.5.2 - December 22, 2021]
+    + Antimatter
+    + Acid Cloud
+    + Acid Gas
+    + Bees
+    + Rats
+    + Rotten Meat
+    + Plague, spawns from Rats and Rotten Meat, kills some animals
+    + Plastic, Dioxin, Beads
+    + Epsom Salt
+    + Potassium Salt
+    + Mycelium, obtained from hyphae converting dirt
+    ~ Hyphae spreads more naturally
+    + Mushrooms can spread and multiply via hyphae
+    + All molten elements now spawn fire like magma
+    ~ Fixed: NaN fire temperatures
+
+[Version 0.5.1 - December 22, 2021]
+    + Erase tool
+    + Pick tool (Middle click works too)
+    + Press E to select an element by name
+    + Press > to forward by one frame
+    + Changelog and controls link
+    ~ Shift + Heat/Cool is twice as fast as before
+    ~ Fixed: Placing continues after hovering outside of game
+    ~ Fixed: Cursor doesn't follow mouse after hovering outside of game
+    ~ Fixed: Element select button doesn't deselect previous element
+    ~ Fixed: Arrow buttons can set the cursor size to negatives
+    ~ Fixed: Virus spreads fire infinitely
+    ~ Fixed: Shift icon [⬆ ] doesn't show when hovering outside of game
+    ~ Fixed: Console error sometimes when page loads
+
+[Version 0.5 - December 21, 2021]
+    + New name: Sandboxels (Sandbox + Pixels)
+    + Mushrooms
+        + Mushroom Spore grows a mushroom
+        + Mushroom Stalk makes up the stem
+        + Mushroom gill creates the cap
+        + Mushroom Cap
+        + Hyphae grows underneath the mushroom in dirt
+    + Permafrost
+    + Chocolate & Chocolate Syrup
+    + Cheese
+    + Fireflies
+    + Fireballs
+    + Frozen Meat
+    + Frozen Frogs
+    ~ Heat & Cool tools look more natural
+    ~ Gravel can now melt
