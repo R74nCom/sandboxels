@@ -10,8 +10,8 @@ Play at [Sandboxels.R74n.com](https://sandboxels.r74n.com/).
  * Spacebar or P   =  Pause Simulation
  * Shift + Heat    =  Intense Heating
  * Shift + Cool    =  Intense Cooling
- * - or [          =  Decrease Cursor Size
- * + or ]          =  Increase Cursor Size
+ * &hyphen; or [          =  Decrease Cursor Size
+ * &plus; or ]          =  Increase Cursor Size
  * Shift + -       =  Set Cursor Size to 1
  * Shift + +       =  Increase Cursor Size
  * E               =  Element Selection
