@@ -489,6 +489,8 @@
                 "name": "ketchup",
                 "color": "#ff3119",
                 "behavior": behaviors.LIQUID,
+                "tempLow": 0,
+                "stateLow": "frozen_ketchup",
                 "viscosity": 50000,
                 "category":"liquids",
             },
@@ -1547,6 +1549,24 @@
                     "M2|DL:"+eLists.CLEANANIMAL+" AND M1|M2",
                 ],
                 "category": "life",
+            }, // start of ketchupery
+            "ketchup_spout": {
+                "name": "ketchup spout",
+                "color": "#ff6f5e",
+                "behavior": [
+                    "XX|CR:ketchup|XX",
+                    "CR:ketchup|XX|CR:ketchup",
+                    "XX|CR:ketchup|XX",
+                ],
+                "category":"special",
+            },
+            "frozen_ketchup": {
+                "name": "frozen ketchup",
+                "color": "#d44737",
+                "behavior": behaviors.WALL,
+                "category":"solids",
+                "tempHigh": 0,
+                "stateHigh": "ketchup",
             },
 
             
