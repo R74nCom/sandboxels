@@ -399,6 +399,13 @@
                 "burnTime": 300,
                 "burnInto": ["ash","charcoal","fire"],
             },
+            "pollen": {
+                "name": "pollen",
+                "color": "#ffffc0",
+                "behavior": behaviors.POWDER,
+                "category":"life",
+                "hidden": true,
+            },
             "smoke": {
                 "name": "smoke",
                 "color": "#383838",
@@ -597,7 +604,7 @@
                 "color": "#c4b100",
                 "behavior": [
                     "M1|M2|M1",
-                    "CR:honey%0.025 AND M1|XX|CR:honey%0.025 AND M1",
+                    "CR:pollen%0.025 AND M1|XX|CR:pollen%0.025 AND M1",
                     "M1|M2|M1",
                 ],
                 "tempHigh": 47,
