@@ -126,7 +126,10 @@
     </script>
 
     <script>
-        
+        eLists = {
+            "ANIMAL": ["flea","ant","fly","firefly","bee","frog","fish","worm","termite","rat"],
+            "CLEANANIMAL": ["ant","firefly","bee","frog","fish"],
+        }
         behaviors = {
             "POWDER": [
                 "XX|XX|XX",
@@ -218,11 +221,24 @@
                 "M2|XX|M2",
                 "M1|M1|M1",
             ],
+           "POISONED_LIQUID": [
+                "DL:"+eLists.ANIMAL+"|DL:"+eLists.ANIMAL+"|DL:"+eLists.ANIMAL+"",
+                "DL:"+eLists.ANIMAL+" AND M2|XX|DL:"+eLists.ANIMAL+" AND M2",
+                "DL:"+eLists.ANIMAL+" AND M1|DL:"+eLists.ANIMAL+" AND M1|DL:"+eLists.ANIMAL+" AND M1",
+            ],
+            "POISONED_WALL": [
+                "DL:"+eLists.ANIMAL+"|DL:"+eLists.ANIMAL+"|DL:"+eLists.ANIMAL+"",
+                "DL:"+eLists.ANIMAL+"|XX|DL:"+eLists.ANIMAL+"",
+                "DL:"+eLists.ANIMAL+"|DL:"+eLists.ANIMAL+"|DL:"+eLists.ANIMAL+"",
+			],
+             "POISONED_MOLTEN": [
+                "DL:"+eLists.ANIMAL+"|DL:"+eLists.ANIMAL+" AND CR:fire%2.5|DL:"+eLists.ANIMAL+"",
+                "DL:"+eLists.ANIMAL+" AND M2|XX|DL:"+eLists.ANIMAL+" AND M2",
+                "DL:"+eLists.ANIMAL+" AND M1|DL:"+eLists.ANIMAL+" AND M1|DL:"+eLists.ANIMAL+" AND M1",
+            ],
+            
         }
-        eLists = {
-            "ANIMAL": ["flea","ant","fly","firefly","bee","frog","fish","worm","termite","rat"],
-            "CLEANANIMAL": ["ant","firefly","bee","frog","fish"],
-        }
+        
 
         airDensity = 1.225; // kg/m^3
         airTemp = 20; // Celsius
@@ -500,6 +516,7 @@
                 "behavior": behaviors.LIQUID,
                 "viscosity": 10000,
                 "category":"liquids",
+                "tempLow": -42
             },
             "ketchup": {
                 "name": "ketchup",
@@ -507,6 +524,8 @@
                 "behavior": behaviors.LIQUID,
                 "viscosity": 50000,
                 "category":"liquids",
+                "tempLow": -3,
+                "stateLow": "frozen_ketchup",
             },
             "molasses": {
                 "name": "molasses",
@@ -514,6 +533,7 @@
                 "behavior": behaviors.LIQUID,
                 "viscosity": 7500,
                 "category":"liquids",
+                
             },
             "filler": {
                 "name": "filler",
@@ -1576,7 +1596,49 @@
                 "category": "structure",
                 "insulate": true,
             },
-
+            "frozen_ketchup": {
+                "name": "frozen ketchup",
+                "color": "#d44737",
+                "behavior": behaviors.WALL,
+                "tempHigh": -3,
+                "stateHigh": "ketchup",
+                "hidden": true,
+            },
+            "soy_sauce": {
+                "name": "soy sauce",
+                "color": "#745e43",
+                "behavior": behaviors.LIQUID,
+                "tempLow": -28,
+                "stateLow": "frozen_soy_sauce",
+                "viscosity": 2,
+                "category": "liquids",
+            },
+            "frozen_soy_sauce":{
+                "name": "frozen soy sauce",
+                "color": "#654321",
+                "behavior": behaviors.WALL,
+                "tempHigh": -28,
+                "stateHigh": "soy_sauce",
+                "hidden": true,
+            },
+            "uranium":{
+              "name": "uranium",
+              "color": "#39ff14",
+              "behavior": behaviors.POISONED_WALL,
+              "tempHigh": 1132,
+              "stateHigh": "molten_uranium",
+              "category": "solids"
+            },
+            "molten_uranium":{
+              "name": "molten uranium",
+              "color": "#94c93d",
+              "behavior": behaviors.POISONED_MOLTEN,
+              "tempLow": 1132,
+              "stateLow": "uranium",
+              "viscosity": 6,
+              "hidden": true,
+              
+            }
             
             
         }
@@ -1606,6 +1668,20 @@
                     "tempLow": elements[element].tempHigh-100,
                     "stateLow": element,
                     "viscosity": 10000,
+                    "hidden": true,
+                }
+            }
+            if (elements[element].tempLow && !elements[element].stateLow) {
+                var newname = "frozen_"+element;
+                elements[element].stateLow = newname;
+                elements[newname] = {
+                    "name": newname.replaceAll("_"," "),
+                    "color": ["#DBF1FD","#fffafa","#d6ecef"],
+                    "behavior": behaviors.WALL,
+                    "density": elements[element].density*2,
+                    "temp": elements[element].tempLow,
+                    "tempHigh": elements[element].tempLow+100,
+                    "stateHigh": element,
                     "hidden": true,
                 }
             }
