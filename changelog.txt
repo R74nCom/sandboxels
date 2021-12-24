@@ -1,4 +1,13 @@
-[Version 0.5.2 - December 22, 2021]
+[Future Plans]
+    + Density Update
+    + Reactions Update
+    + Electricity & Machines Update
+
+[Version 0.6 - Thermal Conductivity - Dec. 23, 2021]
+    + Thermal Conductivity / Heat Transfer
+    + Bees now drop pollen which turns into flower seeds
+
+[Version 0.5.2 - Dec. 22, 2021]
     + Antimatter
     + Acid Cloud
     + Acid Gas
@@ -15,7 +24,7 @@
     + All molten elements now spawn fire like magma
     ~ Fixed: NaN fire temperatures
 
-[Version 0.5.1 - December 22, 2021]
+[Version 0.5.1 - Dec. 22, 2021]
     + Erase tool
     + Pick tool (Middle click works too)
     + Press E to select an element by name
@@ -30,7 +39,7 @@
     ~ Fixed: Shift icon [⬆ ] doesn't show when hovering outside of game
     ~ Fixed: Console error sometimes when page loads
 
-[Version 0.5 - December 21, 2021]
+[Version 0.5 - Dec. 21, 2021]
     + New name: Sandboxels (Sandbox + Pixels)
     + Mushrooms
         + Mushroom Spore grows a mushroom

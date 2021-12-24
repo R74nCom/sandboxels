@@ -308,6 +308,8 @@
                     "XX|DL:carbon_dioxide%50|XX",
                 ],
                 "category":"life",
+                "tempHigh": 300,
+                "stateHigh": "fire",
                 "burn":65,
                 "burnTime":50,
             },
@@ -1885,6 +1887,7 @@
                                         arg = arg.split(",")[Math.floor(Math.random()*arg.split(",").length)];
                                     }
                                     createPixel(arg,newCoords.x,newCoords.y);
+                                    pixelMap[newCoords.x][newCoords.y].temp = pixel.temp
                                 }
                             }
                             //Leave behind element
@@ -2110,7 +2113,7 @@
                 }
                 else if (pixel.element != "fire" && isEmpty(pixel.x,pixel.y-1) && Math.floor(Math.random()*100)<10) {
                     createPixel("fire",pixel.x,pixel.y-1);
-                    pixelMap[pixel.x][pixel.y-1].temp = pixel.temp+(pixelTicks - (pixel.burnStart || 0));
+                    pixelMap[pixel.x][pixel.y-1].temp = pixel.temp//+(pixelTicks - (pixel.burnStart || 0));
                     if (info.fireColor != undefined) {
                         pixelMap[pixel.x][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x][pixel.y-1],info.fireColor);
                     }
@@ -2118,9 +2121,33 @@
 
             }
 
+            // Change tempearture if needed
             if (info.tempChange != undefined) {
                 pixel.temp += info.tempChange;
                 pixelTempCheck(pixel);
+            }
+
+            // Heat Transfer
+            // Check right and bottom adjacent pixels
+            coordsToCheck = [
+                {x:pixel.x+1,y:pixel.y},
+                {x:pixel.x,y:pixel.y+1},
+            ];
+            for (var i = 0; i < coordsToCheck.length; i++) {
+                var coords = coordsToCheck[i];
+                if (!isEmpty(coords.x,coords.y) && !outOfBounds(coords.x,coords.y)) {
+                    var newPixel = pixelMap[coords.x][coords.y];
+                    // Skip if both temperatures are the same
+                    if (pixel.temp == newPixel.temp) {
+                        continue;
+                    }
+                    // Set both pixel temperatures to their average
+                    var avg = (pixel.temp + newPixel.temp)/2;
+                    pixel.temp = avg;
+                    newPixel.temp = avg;
+                    pixelTempCheck(pixel);
+                    pixelTempCheck(newPixel);
+                }
             }
 
 
