@@ -218,6 +218,8 @@
                 "M2|XX|M2",
                 "M1|M1|M1",
             ],
+           
+            
         }
         eLists = {
             "ANIMAL": ["flea","ant","fly","firefly","bee","frog","fish","worm","termite","rat"],
@@ -507,6 +509,8 @@
                 "behavior": behaviors.LIQUID,
                 "viscosity": 50000,
                 "category":"liquids",
+                "tempLow": -3,
+                "stateLow": "frozen_ketchup",
             },
             "molasses": {
                 "name": "molasses",
@@ -1576,7 +1580,30 @@
                 "category": "structure",
                 "insulate": true,
             },
-
+            "frozen_ketchup": {
+                "name": "frozen ketchup",
+                "color": "#d44737",
+                "behavior": behaviors.WALL,
+                "tempHigh": -3,
+                "stateHigh": "ketchup",
+            },
+            "soy_sauce": {
+                "name": "soy sauce",
+                "color": "#745e43",
+                "behavior": behaviors.LIQUID,
+                "tempLow": -28,
+                "stateLow": "frozen_soy_sauce",
+                "viscosity": 2,
+                "category": "liquids",
+            },
+            "frozen_soy_sauce":{
+                "name": "frozen soy sauce",
+                "color": "#654321",
+                "behavior": behaviors.WALL,
+                "tempHigh": -28,
+                "stateHigh": "soy_sauce",
+            },
+  
             
             
         }
