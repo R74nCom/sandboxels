@@ -333,6 +333,7 @@
                 "behavior": behaviors.WALL,
                 "density": 0,
                 "category": "solids",
+                "insulate": true,
             },
             "fire": {
                 "name": "fire",
@@ -681,21 +682,23 @@
                 "name": "heater",
                 "color": "#881111",
                 "behavior": [
-                    "XX|HT|XX",
-                    "HT|XX|HT",
-                    "XX|HT|XX",
+                    "XX|HT:2|XX",
+                    "HT:2|XX|HT:2",
+                    "XX|HT:2|XX",
                 ],
                 "category":"machines",
+                "insulate":true,
             },
             "cooler": {
                 "name": "cooler",
                 "color": "#111188",
                 "behavior": [
-                    "XX|CO|XX",
-                    "CO|XX|CO",
-                    "XX|CO|XX",
+                    "XX|CO:2|XX",
+                    "CO:2|XX|CO:2",
+                    "XX|CO:2|XX",
                 ],
                 "category":"machines",
+                "insulate":true,
             },
             "superheater": {
                 "name": "superheater",
@@ -706,6 +709,7 @@
                     "XX|HT:10|XX",
                 ],
                 "category":"machines",
+                "insulate":true,
             },
             "freezer": {
                 "name": "freezer",
@@ -716,6 +720,7 @@
                     "XX|CO:10|XX",
                 ],
                 "category":"machines",
+                "insulate":true,
             },
             "smoke_grenade": {
                 "name": "smoke grenade",
@@ -1563,6 +1568,13 @@
                 ],
                 "category": "life",
             },
+            "insulation": {
+                "name": "insulation",
+                "color": "#b8aea5",
+                "behavior": behaviors.WALL,
+                "category": "structure",
+                "insulate": true,
+            },
 
             
             
@@ -1913,22 +1925,26 @@
                             else if (b == "HT") {
                                 if (!isEmpty(newCoords.x,newCoords.y) && !outOfBounds(newCoords.x,newCoords.y)) {
                                     var newPixel = pixelMap[newCoords.x][newCoords.y];
-                                    if (arg != null) {arg = parseFloat(arg)}
-                                    else {arg = 1}
-                                    if (arg == NaN) {arg = 1}
-                                    newPixel.temp += arg;
-                                    pixelTempCheck(newPixel);
+                                    if (!(newPixel.element == pixel.element)) {
+                                        if (arg != null) {arg = parseFloat(arg)}
+                                        else {arg = 1}
+                                        if (arg == NaN) {arg = 1}
+                                        newPixel.temp += arg;
+                                        pixelTempCheck(newPixel);
+                                    }
                                 }
                             }
                             //Cool
                             else if (b == "CO") {
                                 if (!isEmpty(newCoords.x,newCoords.y) && !outOfBounds(newCoords.x,newCoords.y)) {
                                     var newPixel = pixelMap[newCoords.x][newCoords.y];
-                                    if (arg != null) {arg = parseFloat(arg)}
-                                    else {arg = 1}
-                                    if (arg == NaN) {arg = 1}
-                                    newPixel.temp -= arg;
-                                    pixelTempCheck(newPixel);
+                                    if (!(newPixel.element == pixel.element)) {
+                                        if (arg != null) {arg = parseFloat(arg)}
+                                        else {arg = 1}
+                                        if (arg == NaN) {arg = 1}
+                                        newPixel.temp -= arg;
+                                        pixelTempCheck(newPixel);
+                                    }
                                 }
                             }
                             //Change color
@@ -2128,25 +2144,27 @@
             }
 
             // Heat Transfer
-            // Check right and bottom adjacent pixels
-            coordsToCheck = [
-                {x:pixel.x+1,y:pixel.y},
-                {x:pixel.x,y:pixel.y+1},
-            ];
-            for (var i = 0; i < coordsToCheck.length; i++) {
-                var coords = coordsToCheck[i];
-                if (!isEmpty(coords.x,coords.y) && !outOfBounds(coords.x,coords.y)) {
-                    var newPixel = pixelMap[coords.x][coords.y];
-                    // Skip if both temperatures are the same
-                    if (pixel.temp == newPixel.temp) {
-                        continue;
+            if (!(info.insulate == true)) {
+                // Check right and bottom adjacent pixels
+                coordsToCheck = [
+                    {x:pixel.x+1,y:pixel.y},
+                    {x:pixel.x,y:pixel.y+1},
+                ];
+                for (var i = 0; i < coordsToCheck.length; i++) {
+                    var coords = coordsToCheck[i];
+                    if (!isEmpty(coords.x,coords.y) && !outOfBounds(coords.x,coords.y)) {
+                        var newPixel = pixelMap[coords.x][coords.y];
+                        // Skip if both temperatures are the same
+                        if (pixel.temp == newPixel.temp || elements[newPixel.element].insulate == true) {
+                            continue;
+                        }
+                        // Set both pixel temperatures to their average
+                        var avg = (pixel.temp + newPixel.temp)/2;
+                        pixel.temp = avg;
+                        newPixel.temp = avg;
+                        pixelTempCheck(pixel);
+                        pixelTempCheck(newPixel);
                     }
-                    // Set both pixel temperatures to their average
-                    var avg = (pixel.temp + newPixel.temp)/2;
-                    pixel.temp = avg;
-                    newPixel.temp = avg;
-                    pixelTempCheck(pixel);
-                    pixelTempCheck(newPixel);
                 }
             }
 
@@ -2374,8 +2392,8 @@
                             continue;
                         }
                         var pixel = pixelMap[x][y];
-                        if (shiftDown) {pixel.temp += element.temp+(Math.random()*element.temp/5)*20;}
-                        else {pixel.temp += element.temp+(Math.random()*element.temp/5);}
+                        if (shiftDown) {pixel.temp += element.temp+(Math.random()*element.temp*1.5)*20;}
+                        else {pixel.temp += element.temp+(Math.random()*element.temp*1.5);}
                         pixelTempCheck(pixel);
                     }
                 }

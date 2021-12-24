@@ -5,6 +5,8 @@
 
 [Version 0.6 - Thermal Conductivity - Dec. 23, 2021]
     + Thermal Conductivity / Heat Transfer
+    + Insulation
+    + Walls insulate
     + Bees now drop pollen which turns into flower seeds
 
 [Version 0.5.2 - Dec. 22, 2021]
