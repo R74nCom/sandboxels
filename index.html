@@ -221,21 +221,21 @@
                 "M2|XX|M2",
                 "M1|M1|M1",
             ],
-           "POISONED_LIQUID": [
-                "DL:"+eLists.ANIMAL+"|DL:"+eLists.ANIMAL+"|DL:"+eLists.ANIMAL+"",
+           "POISON_LIQUID": [
+                "XX|DL:"+eLists.ANIMAL+"|XX",
                 "DL:"+eLists.ANIMAL+" AND M2|XX|DL:"+eLists.ANIMAL+" AND M2",
-                "DL:"+eLists.ANIMAL+" AND M1|DL:"+eLists.ANIMAL+" AND M1|DL:"+eLists.ANIMAL+" AND M1",
+                "M1|DL:"+eLists.ANIMAL+" AND M1|M1",
             ],
-            "POISONED_WALL": [
-                "DL:"+eLists.ANIMAL+"|DL:"+eLists.ANIMAL+"|DL:"+eLists.ANIMAL+"",
+	    "POISON_POWDER": [
+                "XX|DL:"+eLists.ANIMAL+"|XX",
                 "DL:"+eLists.ANIMAL+"|XX|DL:"+eLists.ANIMAL+"",
-                "DL:"+eLists.ANIMAL+"|DL:"+eLists.ANIMAL+"|DL:"+eLists.ANIMAL+"",
+                "M2|DL:"+eLists.ANIMAL+" AND M1|M2",
 			],
-             "POISONED_MOLTEN": [
-                "DL:"+eLists.ANIMAL+"|DL:"+eLists.ANIMAL+" AND CR:fire%2.5|DL:"+eLists.ANIMAL+"",
+            "POISON_MOLTEN": [
+                "XX|DL:"+eLists.ANIMAL+" AND CR:fire%2.5|XX",
                 "DL:"+eLists.ANIMAL+" AND M2|XX|DL:"+eLists.ANIMAL+" AND M2",
-                "DL:"+eLists.ANIMAL+" AND M1|DL:"+eLists.ANIMAL+" AND M1|DL:"+eLists.ANIMAL+" AND M1",
-            ],
+                "M1|DL:"+eLists.ANIMAL+" AND M1|M1",
+           ],
             
         }
         
@@ -1609,22 +1609,13 @@
                 "color": "#745e43",
                 "behavior": behaviors.LIQUID,
                 "tempLow": -28,
-                "stateLow": "frozen_soy_sauce",
                 "viscosity": 2,
                 "category": "liquids",
-            },
-            "frozen_soy_sauce":{
-                "name": "frozen soy sauce",
-                "color": "#654321",
-                "behavior": behaviors.WALL,
-                "tempHigh": -28,
-                "stateHigh": "soy_sauce",
-                "hidden": true,
             },
             "uranium":{
               "name": "uranium",
               "color": "#39ff14",
-              "behavior": behaviors.POISONED_WALL,
+              "behavior": behaviors.POISON_POWDER,
               "tempHigh": 1132,
               "stateHigh": "molten_uranium",
               "category": "solids"
@@ -1632,7 +1623,7 @@
             "molten_uranium":{
               "name": "molten uranium",
               "color": "#94c93d",
-              "behavior": behaviors.POISONED_MOLTEN,
+              "behavior": behaviors.POISON_MOLTEN,
               "tempLow": 1132,
               "stateLow": "uranium",
               "viscosity": 6,
@@ -1671,20 +1662,7 @@
                     "hidden": true,
                 }
             }
-            if (elements[element].tempLow && !elements[element].stateLow) {
-                var newname = "frozen_"+element;
-                elements[element].stateLow = newname;
-                elements[newname] = {
-                    "name": newname.replaceAll("_"," "),
-                    "color": ["#DBF1FD","#fffafa","#d6ecef"],
-                    "behavior": behaviors.WALL,
-                    "density": elements[element].density*2,
-                    "temp": elements[element].tempLow,
-                    "tempHigh": elements[element].tempLow+100,
-                    "stateHigh": element,
-                    "hidden": true,
-                }
-            }
+            
             if (elements[element].behavior && typeof elements[element].behavior[0] === "string") {
                 var newbehavior = [];
                 for (var i = 0; i < elements[element].behavior.length; i++) {
