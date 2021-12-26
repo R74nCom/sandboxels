@@ -126,10 +126,7 @@
     </script>
 
     <script>
-        eLists = {
-            "ANIMAL": ["flea","ant","fly","firefly","bee","frog","fish","worm","termite","rat"],
-            "CLEANANIMAL": ["ant","firefly","bee","frog","fish"],
-        }
+        
         behaviors = {
             "POWDER": [
                 "XX|XX|XX",
@@ -221,24 +218,11 @@
                 "M2|XX|M2",
                 "M1|M1|M1",
             ],
-           "POISON_LIQUID": [
-                "XX|DL:"+eLists.ANIMAL+"|XX",
-                "DL:"+eLists.ANIMAL+" AND M2|XX|DL:"+eLists.ANIMAL+" AND M2",
-                "M1|DL:"+eLists.ANIMAL+" AND M1|M1",
-            ],
-	    "POISON_POWDER": [
-                "XX|DL:"+eLists.ANIMAL+"|XX",
-                "DL:"+eLists.ANIMAL+"|XX|DL:"+eLists.ANIMAL+"",
-                "M2|DL:"+eLists.ANIMAL+" AND M1|M2",
-			],
-            "POISON_MOLTEN": [
-                "XX|DL:"+eLists.ANIMAL+" AND CR:fire%2.5|XX",
-                "DL:"+eLists.ANIMAL+" AND M2|XX|DL:"+eLists.ANIMAL+" AND M2",
-                "M1|DL:"+eLists.ANIMAL+" AND M1|M1",
-           ],
-            
         }
-        
+        eLists = {
+            "ANIMAL": ["flea","ant","fly","firefly","bee","frog","fish","worm","termite","rat"],
+            "CLEANANIMAL": ["ant","firefly","bee","frog","fish"],
+        }
 
         airDensity = 1.225; // kg/m^3
         airTemp = 20; // Celsius
@@ -516,7 +500,6 @@
                 "behavior": behaviors.LIQUID,
                 "viscosity": 10000,
                 "category":"liquids",
-                "tempLow": -42
             },
             "ketchup": {
                 "name": "ketchup",
@@ -524,8 +507,6 @@
                 "behavior": behaviors.LIQUID,
                 "viscosity": 50000,
                 "category":"liquids",
-                "tempLow": -3,
-                "stateLow": "frozen_ketchup",
             },
             "molasses": {
                 "name": "molasses",
@@ -533,7 +514,6 @@
                 "behavior": behaviors.LIQUID,
                 "viscosity": 7500,
                 "category":"liquids",
-                
             },
             "filler": {
                 "name": "filler",
@@ -1596,40 +1576,7 @@
                 "category": "structure",
                 "insulate": true,
             },
-            "frozen_ketchup": {
-                "name": "frozen ketchup",
-                "color": "#d44737",
-                "behavior": behaviors.WALL,
-                "tempHigh": -3,
-                "stateHigh": "ketchup",
-                "hidden": true,
-            },
-            "soy_sauce": {
-                "name": "soy sauce",
-                "color": "#745e43",
-                "behavior": behaviors.LIQUID,
-                "tempLow": -28,
-                "viscosity": 2,
-                "category": "liquids",
-            },
-            "uranium":{
-              "name": "uranium",
-              "color": "#39ff14",
-              "behavior": behaviors.POISON_POWDER,
-              "tempHigh": 1132,
-              "stateHigh": "molten_uranium",
-              "category": "solids"
-            },
-            "molten_uranium":{
-              "name": "molten uranium",
-              "color": "#94c93d",
-              "behavior": behaviors.POISON_MOLTEN,
-              "tempLow": 1132,
-              "stateLow": "uranium",
-              "viscosity": 6,
-              "hidden": true,
-              
-            }
+
             
             
         }
@@ -1662,7 +1609,6 @@
                     "hidden": true,
                 }
             }
-            
             if (elements[element].behavior && typeof elements[element].behavior[0] === "string") {
                 var newbehavior = [];
                 for (var i = 0; i < elements[element].behavior.length; i++) {
