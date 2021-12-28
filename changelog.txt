@@ -1,7 +1,60 @@
 [Future Plans]
-    + Density Update
-    + Reactions Update
+    + Artists' Update (Painting, Lines, Shapes, etc.)
+    + Explosives Update
     + Electricity & Machines Update
+
+[Version 0.7 - Density & Reactions]
+    + New category-based element selection menu
+    + Pixels are now slightly smaller allowing for more space
+    + Scroll wheel now controls cursor size
+    + Absolute zero temperature (-273.15°C)
+    + Molten elements are now colored differently
+    + Mix tool
+    + **Density**
+        + If density is higher, powders will sink in liquids, liquids in liquids, powders in gases, etc.
+        + Each powder, liquid, and gas has its own density value
+    + **Reactions between elements**
+    + Element info lookup GUI
+        + Right click an element button to open its info
+        + Press the / or I key to open the info screen
+        + Click underlined elements to open their info
+        + Info button
+        + Lookup tool
+    + Mud & Mudstone
+    + Wet Sand & Packed Sand
+    + Zinc, Tin, Nickel, Silver, Gold, Aluminum
+    + Alloys made by mixing molten metals
+        + Brass, Bronze, Sterling, Steel, Rose Gold
+    + Gold Coins
+    + Milk, Yogurt, Udder
+    + Vinegar
+    + Baking Soda
+    + Corn, Corn Seed, Popcorn
+    + Plant Root
+    + Potato, Potato Seed
+    + Yeast, Bread, Toast
+    + Flour, Dough
+    + Salt, Salt Water
+    + Sugar, Caramel, Candy, Sugar Water
+    + Plants convert carbon dioxide to oxygen
+    + Rust
+    + Hydrogen
+    + Nitrogen
+    + Alcohol
+    + Lichen
+    + Ruins can now melt
+    + Permafrost now melts into mud
+    ~ Arrow buttons have been changed to + and -
+    + New icons for holding Alt/Option and Right Shift
+    ~ Fixed: Ghost pixels
+    ~ Fixed: Fire turns to smoke too much
+    ~ Fixed: Plasma goes out of control
+    ~ Fixed: Console error when leaving element select popup blank
+    + Technical: "name" is no longer a required element attribute
+    + Technical: New element attributes used for moving elements for density simulation
+        + "state" (solid, liquid, or gas)
+        + "density" (density of the element in kg/m³)
+        + Automatic molten elements are given 0.9x density
 
 [Version 0.6 - Thermal Conductivity - Dec. 23, 2021]
     + Thermal Conductivity / Heat Transfer
