@@ -432,7 +432,6 @@
                 "reactions": {
                     "dirt": { "elem1": null, "elem2": "mud" },
                     "sand": { "elem1": null, "elem2": "wet_sand", },
-                    "salt": { "elem1": "salt_water", "elem2": null, },
                 },
                 "state": "liquid",
                 "density": 1026,
@@ -449,7 +448,6 @@
                 "reactions": {
                     "dirt": { "elem1": null, "elem2": "mud" },
                     "sand": { "elem1": null, "elem2": "wet_sand", },
-                    "sugar": { "elem1": "sugar_water", "elem2": null, },
                 },
                 "hidden": true,
                 "state": "liquid",
@@ -604,6 +602,9 @@
                     "XX|CH:flower_seed%0.01|XX",
                     "M2|M1|M2",
                 ],
+                "reactions": {
+                    "sugar_water": { "elem1": null, "elem2": "honey" },
+                },
                 "category":"life",
                 "hidden": true,
                 "burn":50,
@@ -2917,7 +2918,7 @@
                         var coords = move2Spots[Math.floor(Math.random()*move2Spots.length)];
                         var nx = coords.x;
                         var ny = coords.y;
-                        moved = tryMove(pixel,nx,ny,leaveBehind1 || leaveBehind);
+                        moved = tryMove(pixel,nx,ny,leaveBehind2 || leaveBehind);
                         if (moved) {
                             break;
                         }
@@ -3536,6 +3537,11 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 
 
 }}}}
+                    // make sure deletes, swaps, creates, and sticks have no duplicate items
+                    deletes = deletes.filter(function(item, pos) {return deletes.indexOf(item) == pos;});
+                    swaps = swaps.filter(function(item, pos) {return swaps.indexOf(item) == pos;});
+                    creates = creates.filter(function(item, pos) {return creates.indexOf(item) == pos;});
+                    sticks = sticks.filter(function(item, pos) {return sticks.indexOf(item) == pos;});
                     if (info.category == "tools") { infoText.innerHTML += "\nTool."}
                     else {
                         if (!moves) { infoText.innerHTML += "\nStationary."; }
@@ -3557,7 +3563,11 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                         infoText.innerHTML += "\nTurns into "+infoLink(info.stateLow || "[???]")+" at "+info.tempLow+"°C.";
                     }
                     if (info.burn != undefined) { infoText.innerHTML += "\nFlammability: "+info.burn+"%."; }
-                    if (info.burnTime != undefined) { infoText.innerHTML += "\nBurns for "+info.burnTime+" seconds."; }
+                    if (info.burnTime != undefined) {
+                        infoText.innerHTML += "\nBurns for "+info.burnTime+" tick";
+                        if (info.burnTime != 1) { infoText.innerHTML += "s"; }
+                        infoText.innerHTML += ".";
+                    }
                     if (info.burnInto) { infoText.innerHTML += "\nBurns into "+infoLink(info.burnInto)+"."; }
                     if (info.fireColor) {
                         if (!(info.fireColor instanceof Array)) {

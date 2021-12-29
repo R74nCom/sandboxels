@@ -3,6 +3,13 @@
     + Explosives Update
     + Electricity & Machines Update
 
+[Verion 0.7.1]
+    + Sugar Water + Pollen = Honey
+    ~ Fixed: Water dissolves salt and sugar way too much
+    ~ Fixed: Plants don't grow anymore
+    ~ Fixed: Info page says seconds instead of ticks
+    ~ Fixed: "1 ticks"
+
 [Version 0.7 - Density & Reactions]
     + New category-based element selection menu
     + Pixels are now slightly smaller allowing for more space
