@@ -775,7 +775,7 @@
                 "behavior": [
                     "M2|XX|M2",
                     "DL:blood|XX|DL:blood",
-                    "M2|M1|M2",
+                    "M2|DL:blood%25 AND M1|M2",
                 ],
                 "tempHigh": 35,
                 "stateHigh": "ash",
@@ -1892,7 +1892,7 @@
             "rat": {
                 "color": "#b8aea5",
                 "behavior": [
-                    "M2%5|CR:plague%1.5 AND M2%1.5|M2%5",
+                    "M2%5|CR:plague%0.5 AND M2%1.5|M2%5",
                     "M2|XX|M2",
                     "M2|M1|M2",
                 ],
@@ -2580,7 +2580,7 @@
                     if (pixel.element != newPixel.element) {
                         if (elements[newPixel.element].density != undefined && info.density != undefined) {
                             // if the pixel's state + ">" + newPixel's state is in validDensitySwaps, and the pixel's density is larger than the newPixel's density, swap the pixels
-                            if (validDensitySwaps.includes(info.state+">"+elements[newPixel.element].state) && info.density > elements[newPixel.element].density) {
+                            if (validDensitySwaps.includes(info.state+">"+elements[newPixel.element].state) && info.density >= elements[newPixel.element].density) {
                                 // chance depending on the difference in density
                                 if (Math.random() < (info.density - elements[newPixel.element].density)/(info.density + elements[newPixel.element].density)) {
                                     swapPixels(pixel,newPixel);
@@ -3557,10 +3557,10 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                     if (info.hidden) { infoText.innerHTML += "\nHidden from toolbar."; }
                     if (info.density != undefined) { infoText.innerHTML += "\nDensity: "+info.density+"kg⁄m<sup>3</sup>."; }
                     if (info.tempHigh != undefined) {
-                        infoText.innerHTML += "\nTurns into "+infoLink(info.stateHigh || "[???]")+" at "+info.tempHigh+"°C.";
+                        infoText.innerHTML += "\nTurns into "+infoLink(info.stateHigh || "[???]")+" above "+info.tempHigh+"°C.";
                     }
                     if (info.tempLow != undefined) {
-                        infoText.innerHTML += "\nTurns into "+infoLink(info.stateLow || "[???]")+" at "+info.tempLow+"°C.";
+                        infoText.innerHTML += "\nTurns into "+infoLink(info.stateLow || "[???]")+" below "+info.tempLow+"°C.";
                     }
                     if (info.burn != undefined) { infoText.innerHTML += "\nFlammability: "+info.burn+"%."; }
                     if (info.burnTime != undefined) {
@@ -3838,7 +3838,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                 <div id="categoryControls"></div>
                 <div id="elementControls"></div>
             </div>
-            <div id="extraInfo"><small><a href="controls.txt" target="_blank">Controls</a> • <a href="changelog.txt" target="_blank">Changelog</a></small></div>
+            <div id="extraInfo"><small><a href="controls.txt" target="_blank">Controls</a> • <a href="changelog.txt" target="_blank">Changelog</a> • <a href="https://docs.google.com/document/d/1R8xljj_J-K5oU-9y4louwplQmM-ZBvUfXmhbgj5LYdk/edit?usp=sharing" target="_blank">Feedback</a></small></div>
         </div>
     </div>
 
