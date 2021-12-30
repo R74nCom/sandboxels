@@ -4,7 +4,22 @@
     + Electricity & Machines Update
     + Mod Manager Update
 
-[Verion 0.7.1]
+[Version 0.7.2 - Cloning]
+    + Cloner
+    + Slow Cloner, Clone Powder, Floating Cloner
+    + Soap, cleans various things
+    ~ Plasma revamped
+    ~ Rain/Snow/Acid Clouds revamped
+    + Basalt
+    + Calcium, Limestone, Quicklime, Slaked Lime
+    + Lattice
+    + Mud can freeze
+    + Slugs and Snails
+    ~ Frogs can now move underwater
+    ~ Light has a temperature of 50°C
+    ~ Swapped Special and Machines category spots
+
+[Version 0.7.1]
     + Sugar Water + Pollen = Honey
     ~ Lowered Rat Plague spawn rates
     ~ Fixed: Water dissolves salt and sugar way too much

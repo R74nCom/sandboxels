@@ -269,7 +269,7 @@
             "UL_UR": [
                 "M1|M1|M1",
                 "M2|XX|M2",
-                "XX|XX|XX",
+                "XX|M2|XX",
             ],
             "GAS": [
                 "M2|M1|M2",
@@ -300,6 +300,11 @@
                 "XX|CL|XX",
                 "CL|XX|CL",
                 "XX|CL|XX",
+            ],
+            "CLONER": [
+                "XX|CF|XX",
+                "CF|XX|CF",
+                "XX|CF|XX",
             ],
             "STURDYPOWDER": [
                 "XX|XX|XX",
@@ -333,7 +338,7 @@
             ],
         }
         eLists = {
-            "ANIMAL": ["flea","ant","fly","firefly","bee","frog","fish","worm","termite","rat"],
+            "ANIMAL": ["flea","ant","fly","firefly","bee","frog","fish","worm","termite","rat","slug","snail"],
             "CLEANANIMAL": ["ant","firefly","bee","frog","fish"],
         }
 
@@ -416,6 +421,7 @@
                     "sand": { "elem1": null, "elem2": "wet_sand", },
                     "salt": { "elem1": "salt_water", "elem2": null, },
                     "sugar": { "elem1": "sugar_water", "elem2": null, },
+                    "quicklime": { "elem1": null, "elem2": "slaked_lime", },
                 },
                 "state": "liquid",
                 "density": 997,
@@ -468,6 +474,8 @@
                 "behavior": behaviors.STURDYPOWDER,
                 "tempHigh": 100,
                 "stateHigh": "mudstone",
+                "tempLow": -50,
+                "stateLow": "permafrost",
                 "category": "land",
                 "state": "solid",
                 "density": 1730,
@@ -532,10 +540,13 @@
             "fire": {
                 "color": ["#ff6b21","#ffa600","#ff4000"],
                 "behavior": behaviors.UL_UR,
+                "reactions": {
+                    "water": { "elem1": "smoke" },
+                },
                 "temp":600,
                 "tempLow":100,
                 "stateLow": "smoke",
-                "tempHigh": 6095,
+                "tempHigh": 7000,
                 "stateHigh": "plasma",
                 "category": "energy",
                 "burning": true,
@@ -635,6 +646,9 @@
             "magma": {
                 "color": ["#ff6f00","#ff8c00","#ff4d00"],
                 "behavior": behaviors.MOLTEN,
+                "reactions": {
+                    "ice": { "elem1": "basalt" },
+                },
                 "temp": 950,
                 "tempLow": 800,
                 "stateLow": "rock",
@@ -655,13 +669,10 @@
             "plasma": {
                 "color": ["#8800ff","#b184d9","#8800ff"],
                 "behavior": behaviors.DGAS,
-                "temp":12750,
-                "tempLow":10000,
+                "temp":7065,
+                "tempLow":5000,
                 "stateLow": "fire",
                 "category": "energy",
-                "burning": true,
-                "burnTime": 3,
-                "burnInto": "fire",
                 "state": "gas",
                 "density": 1,
             },
@@ -730,9 +741,34 @@
                 "state": "liquid",
                 "density": 1600,
             },
+            "cloner": {
+                "color": "#dddd00",
+                "behavior": behaviors.CLONER,
+                "category":"machines",
+                "insulate":true,
+            },
+            "slow_cloner": {
+                "color": "#888800",
+                "behavior": [
+                    "XX|CF%10|XX",
+                    "CF%10|XX|CF%10",
+                    "XX|CF%10|XX",
+                ],
+                "category":"machines",
+                "insulate":true,
+            },
             "filler": {
                 "color": "#ae4cd9",
                 "behavior": behaviors.FILL,
+                "category":"special",
+            },
+            "lattice": {
+                "color": "#ae4cd9",
+                "behavior": [
+                    "CL|XX|CL",
+                    "XX|XX|XX",
+                    "CL|XX|CL",
+                ],
                 "category":"special",
             },
             "gravel": {
@@ -856,6 +892,7 @@
                 "burn":75,
                 "burnTime":30,
                 "state": "solid",
+                "density": 1450,
             },
             "frozen_frog": {
                 "color": "#007349",
@@ -868,6 +905,7 @@
                 "category":"life",
                 "hidden": true,
                 "state": "solid",
+                "density": 1500,
             },
             "fish": {
                 "color": "#ac8650",
@@ -943,17 +981,6 @@
                 "category":"machines",
                 "insulate":true,
             },
-            "smoke_grenade": {
-                "color": "#2b382c",
-                "behavior": [
-                    "XX|CR:smoke|XX",
-                    "XX|XX|XX",
-                    "M2|M1|M2",
-                ],
-                "category":"weapons",
-                "state": "solid",
-                "density": 7300,
-            },
             "torch": {
                 "color": "#d68542",
                 "behavior": [
@@ -981,12 +1008,16 @@
                     "XX|CR:blood,bone,bone%5|XX",
                 ],
                 "category":"life",
+                "tempHigh": 760,
+                "stateHigh": "calcium",
                 "hidden": true,
             },
             "bone": {
                 "color": "#d9d9d9",
                 "behavior": behaviors.SUPPORT,
                 "category":"life",
+                "tempHigh": 760,
+                "stateHigh": "calcium",
                 "state": "solid",
                 "density": 1900,
             },
@@ -1028,28 +1059,39 @@
                 "color": "#636b78",
                 "behavior": [
                     "XX|XX|XX",
-                    "M1%5|XX|M1%5",
-                    "XX|CR:water%1|XX",
+                    "M1%5|CH:water%0.05|M1%5",
+                    "XX|XX|XX",
                 ],
                 "category":"special",
+                "temp": 80,
+                "tempLow": 0,
+                "stateLow": "snow_cloud",
+                "state": "gas",
+                "density": 1,
             },
             "snow_cloud": {
                 "color": "#7e8691",
                 "behavior": [
                     "XX|XX|XX",
-                    "M1%5|XX|M1%5",
-                    "XX|CR:packed_snow%1|XX",
+                    "M1%5|CH:snow%0.05|M1%5",
+                    "XX|XX|XX",
                 ],
                 "category":"special",
+                "temp": -10,
+                "tempHigh": 30,
+                "stateHigh": "rain_cloud",
+                "state": "gas",
+                "density": 2,
             },
             "acid_cloud": {
                 "color": "#637865",
                 "behavior": [
                     "XX|XX|XX",
-                    "M1%5|XX|M1%5",
-                    "XX|CR:acid%1|XX",
+                    "M1%5|CH:acid%0.05|M1%5",
+                    "XX|XX|XX",
                 ],
                 "category":"special",
+                "density": 3,
             },
             "rocket": {
                 "color": "#ff0000",
@@ -1058,7 +1100,6 @@
                     "XX|XX|XX",
                     "XX|CR:fire|XX",
                 ],
-                "category":"weapons",
                 "hidden":true,
                 "state": "solid",
                 "density": 7300,
@@ -1132,6 +1173,7 @@
             "light": {
                 "color": "#ffffa8",
                 "behavior": behaviors.SELFDELETE,
+                "temp": 40,
                 "category":"energy",
             },
             "pointer": {
@@ -1162,7 +1204,7 @@
                 "tempLow": -252.8,
                 "stateLow": "liquid_hydrogen",
                 "state": "gas",
-                "density": 71,
+                "density": 0.08375,
             },
             "oxygen": {
                 "color": "#99c7ff",
@@ -1340,6 +1382,16 @@
                 "tempHigh": 743,
                 "state": "solid",
                 "density": 1730,
+            },
+            "smoke_grenade": {
+                "color": "#2b382c",
+                "behavior": [
+                    "XX|CR:smoke|XX",
+                    "XX|XX|XX",
+                    "M2|M1|M2",
+                ],
+                "state": "solid",
+                "density": 7300,
             },
             "bamboo": {
                 "color": "#336600",
@@ -1644,6 +1696,30 @@
                 "category": "machines",
                 "state": "solid",
                 "density": 21450,
+            },
+            "clone_powder": {
+                "color": "#f0f000",
+                "behavior": [
+                    "XX|CF|XX",
+                    "CF|XX|CF",
+                    "M2|CF AND M1|M2",
+                ],
+                "category":"machines",
+                "insulate":true,
+                "state":"solid",
+                "density":2710,
+            },
+            "floating_cloner": {
+                "color": "#c7c787",
+                "behavior": [
+                    "XX|CF%3 AND M1%10|XX",
+                    "CF%3 AND M1%10|XX|CF%3 AND M1%10",
+                    "XX|CF%3 AND M1%10|XX",
+                ],
+                "category":"machines",
+                "insulate":true,
+                "state":"solid",
+                "density":1355,
             },
             "virus": {
                 "color": "#cc00ff",
@@ -2292,6 +2368,113 @@
                 "state": "solid",
                 "density": 1.5,
             },
+            "basalt": {
+                "color": "#2b2b2b",
+                "behavior": behaviors.STURDYPOWDER,
+                "tempHigh": 1262.5,
+                "stateHigh": "magma",
+                "category": "land",
+                "state": "solid",
+                "density": 3000,
+            },
+            "soap": {
+                "color": "#f2f2f2",
+                "behavior": [
+                    "XX|CR:bubble%0.25|XX",
+                    "M2|XX|M2",
+                    "M2|M1|M2",
+                ],
+                "reactions": {
+                    "rust": { "elem2": "iron" },
+                    "oxidized_copper": { "elem2": "copper" },
+                    "blood": { "elem2": "water" },
+                    "oxygen": { "elem2": "bubble" },
+                    "plague": { "elem2": null },
+                    "virus": { "elem2": null },
+                    "mushroom_spore": { "elem2": null },
+                    "lichen": { "elem2": null },
+                    "rotten_meat": { "elem2": "meat" },
+                    "acid_gas": { "elem2": "hydrogen" },
+                    "carbon_dioxide": { "elem2": "oxygen" },
+                    "acid": { "elem2": "hydrogen" },
+                    "acid_cloud": { "elem2": "rain_cloud" },
+                },
+                "viscosity": 500,
+                "state": "liquid",
+                "category":"liquids",
+                "density": 1055,
+            },
+            "calcium": {
+                "color": ["#515053","#7a787d","#748193","#FEF9FF","#748193","#7a787d","#515053"],
+                "behavior": behaviors.POWDER,
+                "tempHigh": 842,
+                "state": "solid",
+                "density": 1550,
+            },
+            "limestone": {
+                "color": ["#C5B79C","#D9CCB2","#F8F1DB","#FCFAEB"],
+                "behavior": behaviors.STURDYPOWDER,
+                "tempHigh": 825,
+                "stateHigh": "quicklime",
+                "category": "land",
+                "state": "solid",
+                "density": 2100,
+            },
+            "quicklime": {
+                "color": "#E9EBE7",
+                "behavior": behaviors.POWDER,
+                "tempHigh": 4662,
+                "stateHigh": "molten_calcium",
+                "category": "land",
+                "state": "solid",
+                "density": 1025,
+            },
+            "slaked_lime": {
+                "color": "#adb8b5",
+                "behavior": behaviors.STURDYPOWDER,
+                "tempHigh": 580,
+                "stateHigh": "quicklime",
+                "category": "land",
+                "hidden": true,
+                "state": "solid",
+                "density": 2211,
+            },
+            "slug": {
+                "color": ["#997e12","#403314","#997e12","#403314","#997e12","#403314","#997e12","#403314","#997e12","#403314","#997e12","#403314","#124a44"],
+                "behavior": [
+                    "XX|XX|XX",
+                    "M2%0.5|XX|M2%0.5",
+                    "XX|M1|XX",
+                ],
+                "reactions": {
+                    "salt": { "elem1": "slime", "elem2": null },
+                },
+                "tempLow": 5,
+                "stateLow": "slime",
+                "tempHigh": 40,
+                "stateHigh": "slime",
+                "category": "life",
+                "state": "solid",
+                "density": 1450,
+            },
+            "snail": {
+                "color": "#5c3104",
+                "behavior": [
+                    "XX|XX|XX",
+                    "M2%0.5|XX|M2%0.5",
+                    "XX|M1|XX",
+                ],
+                "reactions": {
+                    "salt": { "elem1": "calcium", "elem2": null },
+                },
+                "tempLow": -6.4,
+                "stateLow": "calcium",
+                "tempHigh": 100,
+                "stateHigh": "calcium",
+                "category": "life",
+                "state": "solid",
+                "density": 1500,
+            },
 
 
             
@@ -2704,10 +2887,31 @@
                                     }
                                 }
                             }
+                            // Clone self
                             else if (b == "CL") {
                                 if (isEmpty(newCoords.x,newCoords.y)) {
                                     if (arg == null || pixel.temp >= parseFloat(arg)) {
                                         clonePixel(pixel,newCoords.x,newCoords.y);
+                                    }
+                                }
+                            }
+                            // Clone first touched
+                            else if (b == "CF") {
+                                if (pixel.clone) {
+                                    if (isEmpty(newCoords.x,newCoords.y)) {
+                                        createPixel(pixel.clone,newCoords.x,newCoords.y);
+                                        pixelMap[newCoords.x][newCoords.y].temp = pixel.temp;
+                                    }
+                                }
+                                else {
+                                    if (!isEmpty(newCoords.x,newCoords.y) && !outOfBounds(newCoords.x,newCoords.y)) {
+                                        newPixel = pixelMap[newCoords.x][newCoords.y];
+                                        if (newPixel.element != pixel.element) {
+                                            pixel.clone = newPixel.element;
+                                        }
+                                        else if (newPixel.clone) {
+                                            pixel.clone = newPixel.clone;
+                                        }
                                     }
                                 }
                             }
@@ -3203,7 +3407,7 @@
             }
         }
         function mouseAction(e,mouseX=undefined,mouseY=undefined) {
-            if (showingInfo) {
+            if (showingInfo && currentElement != "lookup") {
                 closeInfo();
             }
             if (mouseType == "left") { mouse1Action(e,mouseX,mouseY); }
@@ -3851,13 +4055,13 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 
 <!-- i like having this but ublock blocks these things anyway -->
 <!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-93720349-6"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-T6E9BCPM32"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
-  gtag('config', 'UA-93720349-6');
+  gtag('config', 'G-T6E9BCPM32');
 </script>
 
 </body>
