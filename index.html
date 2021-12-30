@@ -363,34 +363,34 @@
         // burnInto - element to turn into after burning
         // fireColor - color of the flame given off when burning
         elements = {
-            "heat": {
+            "heat": { //hard-coded
                 "color": "#ff0000",
                 "behavior": behaviors.WALL,
                 "temp": 2,
                 "category": "tools",
             },
-            "cool": {
+            "cool": { //hard-coded
                 "color": "#0000ff",
                 "behavior": behaviors.WALL,
                 "temp": -2,
                 "category": "tools",
             },
-            "erase": {
+            "erase": { //hard-coded
                 "color": "#fdb5ff",
                 "behavior": behaviors.WALL,
                 "category": "tools",
             },
-            "pick": {
+            "pick": { //hard-coded
                 "color": ["#fa9b9b","#fae99b","#9bfab7","#9b9dfa"],
                 "behavior": behaviors.WALL,
                 "category": "tools",
             },
-            "mix": {
+            "mix": { //hard-coded
                 "color": ["#fff4b5","#a6a6a6"],
                 "behavior": behaviors.WALL,
                 "category": "tools",
             },
-            "lookup": {
+            "lookup": { //hard-coded
                 "color": ["#919c9c","#72abab","#919c9c"],
                 "behavior": behaviors.WALL,
                 "category": "tools",
@@ -910,9 +910,9 @@
             "fish": {
                 "color": "#ac8650",
                 "behavior": [
-                    "SW:water,salt_water%6|M2%5|SW:water,salt_water%6",
+                    "SW:water,salt_water,sugar_water%6|M2%5|SW:water,salt_water,sugar_water%6",
                     "DL:algae|XX|DL:algae",
-                    "SW:water,salt_water%8|M1|SW:water,salt_water%8",
+                    "SW:water,salt_water,sugar_water%8|M1|SW:water,salt_water,sugar_water%8",
                 ],
                 "temp": 20,
                 "tempHigh": 32,
@@ -929,8 +929,8 @@
                 "color": "#00870e",
                 "behavior": [
                     "XX|XX|XX",
-                    "SW:water%1|XX|SW:water%1",
-                    "SW:water%10|M1|SW:water%18",
+                    "SW:water,salt_water,sugar_water%1|XX|SW:water,salt_water,sugar_water%1",
+                    "SW:water,salt_water,sugar_water%10|M1|SW:water,salt_water,sugar_water%18",
                 ],
                 "reactions": {
                     "wood": { "elem1":"lichen" }
@@ -2312,7 +2312,7 @@
                 "behavior": behaviors.POWDER,
                 "tempHigh": 801,
                 "state": "solid",
-                "density": 1023.6,
+                "density": 2160,
             },
             "sugar": {
                 "color": "#f2f2f2",
@@ -2320,7 +2320,7 @@
                 "tempHigh": 186,
                 "stateHigh": "caramel",
                 "state": "solid",
-                "density": 880,
+                "density": 1590,
             },
             "caramel": {
                 "color": "#e89a51",
@@ -2779,11 +2779,7 @@
             return false;
         }
         function behaviorCoords(x,y,bx,by) {
-            bx -= 1;
-            by -= 1;
-            x += bx;
-            y += by;
-            return {x:x,y:y};
+            return {x:x+bx-1,y:y+by-1};
         }
         /* Behavior Example (Sand)
         [
@@ -2791,6 +2787,56 @@
             ["XX","XX","XX"],
             ["M2","M1","M2"]
         ]                    */
+        function rotateBehavior(behavior,rotation) {
+            // returns rotated 2D array counter-clockwise depending on rotation 1, 2, or 3
+            var newBehavior = []
+            if (rotation == 1) {
+                // rotate counter-clockwise 90 degrees
+                for (var i = 0; i < behavior.length; i++) {
+                    newBehavior[i] = [];
+                    for (var j = 0; j < behavior[i].length; j++) {
+                        newBehavior[i][j] = behavior[j][behavior.length-1-i];
+                    }}
+            }
+            else if (rotation == 2) {
+                // rotate counter-clockwise 180 degrees
+                for (var i = 0; i < behavior.length; i++) {
+                    newBehavior[i] = [];
+                    for (var j = 0; j < behavior[i].length; j++) {
+                        newBehavior[i][j] = behavior[behavior.length-1-i][behavior[i].length-1-j];
+                    }}
+            }
+            else if (rotation == 3) {
+                // rotate counter-clockwise 270 degrees
+                for (var i = 0; i < behavior.length; i++) {
+                    newBehavior[i] = [];
+                    for (var j = 0; j < behavior[i].length; j++) {
+                        newBehavior[i][j] = behavior[behavior[i].length-1-j][i];}
+                }
+            }
+            else {
+                // no rotation
+                return behavior;
+            }
+            return newBehavior;
+        }
+        function flipBehavior(behavior,axis) {
+            // returns flipped 2D array depending on axis "x" or "y"
+            if (axis === "x") {
+                var newBehavior = [];
+                for (var i = 0; i < behavior.length; i++) {
+                    newBehavior[i] = [];
+                    for (var j = 0; j < behavior[i].length; j++) {
+                        newBehavior[i][j] = behavior[i][behavior[i].length-1-j];
+                    }}
+                return newBehavior;
+            }
+            else if (axis === "y") {
+                return behavior.slice().reverse();
+            }
+            return behavior;
+        }
+            
         /* Behavior Rules
             XX = Ignore
             M1 = Move (First Priority)

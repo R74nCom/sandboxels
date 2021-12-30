@@ -4,6 +4,10 @@
     + Electricity & Machines Update
     + Mod Manager Update
 
+[Version 0.7.3]
+    ~ Salt and sugar are more dense; can sink in water
+    ~ Fixed: Fish and Algae can't move through sugar water
+
 [Version 0.7.2 - Cloning]
     + Cloner
     + Slow Cloner, Clone Powder, Floating Cloner
