@@ -3029,7 +3029,7 @@
                                     if (!(newPixel.element == pixel.element)) {
                                         if (arg != null) {arg = parseFloat(arg)}
                                         else {arg = 1}
-                                        if (arg == NaN) {arg = 1}
+                                        if (isNaN(arg)) {arg = 1}
                                         newPixel.temp += arg;
                                         pixelTempCheck(newPixel);
                                     }
@@ -3042,7 +3042,7 @@
                                     if (!(newPixel.element == pixel.element)) {
                                         if (arg != null) {arg = parseFloat(arg)}
                                         else {arg = 1}
-                                        if (arg == NaN) {arg = 1}
+                                        if (isNaN(arg)) {arg = 1}
                                         newPixel.temp -= arg;
                                         pixelTempCheck(newPixel);
                                     }
