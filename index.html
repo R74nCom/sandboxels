@@ -162,6 +162,11 @@
             margin: 0px 5px 5px 5px;
             font-size: 0.75em;
             height: 2em;
+            width:100%;
+        }
+        /* screen size < 700px */
+        @media screen and (max-width: 700px) {
+            #stats {padding-bottom:2em;}
         }
         #stat-pos, #stat-pixels, #stat-shift, #stat-tps, #stat-ticks {
             float:left;
@@ -352,6 +357,9 @@
         // behavior - behavior of the element *
         // density - density of the element [only used for movable elements] (kg/m^3)
         // state - solid, liquid, or gas [only used for movable elements]
+        // conduct - conductivity of the element (0-1)
+        // behaviorOn - behavior to override when powered
+        // colorOn - color to change to when powered
         // temp - default temperature of the element (Celsius)
         // tempHigh - highest temperature before state change (Celsius)
         // tempLow - lowest temperature before state change (Celsius)
@@ -395,6 +403,11 @@
                 "behavior": behaviors.WALL,
                 "category": "tools",
             },
+            "shock": { //hard-coded
+                "color": "#ffff00",
+                "behavior": behaviors.WALL,
+                "category": "tools",
+            },
             "sand": {
                 "color": "#e6d577",
                 "behavior": behaviors.POWDER,
@@ -425,6 +438,7 @@
                 },
                 "state": "liquid",
                 "density": 997,
+                "conduct": 0.02,
             },
             "salt_water": {
                 "color": "#4d85ff",
@@ -441,6 +455,7 @@
                 },
                 "state": "liquid",
                 "density": 1026,
+                "conduct": 0.1,
             },
             "sugar_water": {
                 "color": "#8eaae6",
@@ -458,6 +473,7 @@
                 "hidden": true,
                 "state": "liquid",
                 "density": 1026,
+                "conduct": 0.05,
             },
             "dirt": {
                 "color": ["#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#b0a39b"],
@@ -669,12 +685,19 @@
             "plasma": {
                 "color": ["#8800ff","#b184d9","#8800ff"],
                 "behavior": behaviors.DGAS,
+                "behaviorOn": [
+                    "M2|M1|M2",
+                    "CL%5 AND M1|DL%5|CL%5 AND M1",
+                    "M2|M1|M2",
+                ],
                 "temp":7065,
                 "tempLow":5000,
                 "stateLow": "fire",
                 "category": "energy",
                 "state": "gas",
                 "density": 1,
+                "charge": 1,
+                "conduct": 1,
             },
             "iron": {
                 "color": "#cbcdcd",
@@ -682,6 +705,7 @@
                 "tempHigh": 1538,
                 "category": "solids",
                 "density": 7860,
+                "conduct": 0.47,
             },
             "rust": {
                 "color": "#bd6d35",
@@ -691,6 +715,7 @@
                 "category": "solids",
                 "state": "solid",
                 "density": 5250,
+                "conduct": 0.37,
             },
             "glass": {
                 "color": "#5e7c80",
@@ -747,6 +772,15 @@
                 "category":"machines",
                 "insulate":true,
             },
+            "ecloner": {
+                "name": "e-cloner",
+                "color": "#dddd00",
+                "behavior": behaviors.WALL,
+                "behaviorOn": behaviors.CLONER,
+                "category":"machines",
+                "insulate":true,
+                "conduct": 1,
+            },
             "slow_cloner": {
                 "color": "#888800",
                 "behavior": [
@@ -756,6 +790,18 @@
                 ],
                 "category":"machines",
                 "insulate":true,
+            },
+            "wire": {
+                "color": "#4d0a03",
+                "behavior": behaviors.WALL,
+                "category": "machines",
+                "insulate": true,
+                "conduct": 1,
+            },
+            "random": { //hard-coded
+                "color": ["#3e5f8a","#a334ec","#ea96f9","#a6ecf6","#70ebc8","#d9286b","#7eed91","#a18b30"],
+                "behavior": behaviors.WALL,
+                "category": "special",
             },
             "filler": {
                 "color": "#ae4cd9",
@@ -819,6 +865,7 @@
                 "burn":95,
                 "burnTime":25,
                 "state": "solid",
+                "conduct": 0.15,
             },
             "ant": {
                 "color": "#4a0903",
@@ -833,6 +880,7 @@
                 "burn":95,
                 "burnTime":25,
                 "state": "solid",
+                "conduct": 0.15,
             },
             "fly": {
                 "color": "#303012",
@@ -847,6 +895,7 @@
                 "burn":95,
                 "burnTime":25,
                 "state": "solid",
+                "conduct": 0.15,
             },
             "firefly": {
                 "color": ["#303012","#303012","#d9d950","#303012","#303012"],
@@ -861,6 +910,7 @@
                 "burn":95,
                 "burnTime":25,
                 "state": "solid",
+                "conduct": 0.15,
             },
             "bee": {
                 "color": "#c4b100",
@@ -875,6 +925,7 @@
                 "burn":95,
                 "burnTime":25,
                 "state": "solid",
+                "conduct": 0.15,
             },
             "frog": {
                 "color": "#607300",
@@ -893,6 +944,7 @@
                 "burnTime":30,
                 "state": "solid",
                 "density": 1450,
+                "conduct": 0.2,
             },
             "frozen_frog": {
                 "color": "#007349",
@@ -924,6 +976,7 @@
                 "burnTime":100,
                 "state": "solid",
                 "density": 1080,
+                "conduct": 0.2,
             },
             "algae": {
                 "color": "#00870e",
@@ -1068,6 +1121,7 @@
                 "stateLow": "snow_cloud",
                 "state": "gas",
                 "density": 1,
+                "conduct": 0.03,
             },
             "snow_cloud": {
                 "color": "#7e8691",
@@ -1103,6 +1157,7 @@
                 "hidden":true,
                 "state": "solid",
                 "density": 7300,
+                "conduct": 0.73,
             },
             "ash": {
                 "color": ["#8c8c8c","#9c9c9c"],
@@ -1128,6 +1183,7 @@
                 "burnInto":"cooked_meat",
                 "state": "solid",
                 "density": 1019.5,
+                "conduct": 0.2,
             },
             "rotten_meat": {
                 "color": ["#9ab865","#b8b165","#b89765"],
@@ -1145,6 +1201,7 @@
                 "burnInto":"plague",
                 "state": "solid",
                 "density": 1005,
+                "conduct": 0.1,
             },
             "cooked_meat": {
                 "color": "#61361c",
@@ -1392,6 +1449,9 @@
                 ],
                 "state": "solid",
                 "density": 7300,
+                "conduct": 0.73,
+                "tempHigh": 1455.5,
+                "stateHigh": "molten_steel",
             },
             "bamboo": {
                 "color": "#336600",
@@ -1596,7 +1656,8 @@
                     "XX|XX|XX",
                     "XX|XX|XX",
                 ],
-                "category": "machines"
+                "category": "machines",
+                "conduct": 0.73,
             },
             "foam": {
                 "color": "#cad2e3",
@@ -1631,6 +1692,7 @@
                 "category": "solids",
                 "tempHigh": 1085,
                 "density": 8960,
+                "conduct": 0.95,
             },
             "oxidized_copper": {
                 "color": "#7f9c21",
@@ -1644,6 +1706,7 @@
                 "tempHigh": 1085,
                 "stateHigh": "molten_copper",
                 "density": 8960,
+                "conduct": 0.85,
             },
             "acid": {
                 "color": ["#b5cf91","#a1ff5e","#288f2a"],
@@ -1745,6 +1808,7 @@
                 "burn":95,
                 "burnTime":25,
                 "state": "solid",
+                "conduct": 0.17,
             },
             "termite": {
                 "color": "#f5a056",
@@ -1759,6 +1823,7 @@
                 "burn":95,
                 "burnTime":25,
                 "state": "solid",
+                "conduct": 0.15,
             },
             "permafrost": {
                 "color": "#4b9e82",
@@ -1980,6 +2045,7 @@
                 "burn":80,
                 "burnTime":150,
                 "state": "solid",
+                "conduct": 0.25,
             },
             "plague": {
                 "color": "#36005c",
@@ -2005,6 +2071,7 @@
                 "tempHigh": 419.53,
                 "category": "solids",
                 "density": 7068,
+                "conduct": 0.53,
             },
             "tin": {
                 "color": "#d3d4d5",
@@ -2012,6 +2079,7 @@
                 "tempHigh": 231.9,
                 "category": "solids",
                 "density": 7260,
+                "conduct": 0.45,
             },
             "nickel": {
                 "color": "#727472",
@@ -2019,6 +2087,7 @@
                 "tempHigh": 1455,
                 "category": "solids",
                 "density": 8900,
+                "conduct": 0.51,
             },
             "silver": {
                 "color": "#aaa9ad",
@@ -2026,6 +2095,7 @@
                 "tempHigh": 961.8,
                 "category": "solids",
                 "density": 10497,
+                "conduct": 0.99,
             },
             "gold": {
                 "color": ["#FFF0B5","#986A1A","#F0BB62"],
@@ -2033,6 +2103,7 @@
                 "tempHigh": 1064,
                 "category": "solids",
                 "density": 19300,
+                "conduct": 0.81,
             },
             "gold_coin": {
                 "color": ["#FFF0B5","#986A1A","#F0BB62"],
@@ -2041,6 +2112,7 @@
                 "stateHigh": "molten_gold",
                 "state": "solid",
                 "density": 19300,
+                "conduct": 0.78,
             },
             "aluminum": {
                 "color": ["#b0afb4","#8c8f98"],
@@ -2048,6 +2120,7 @@
                 "tempHigh": 660.3,
                 "category": "solids",
                 "density": 2710,
+                "conduct": 0.73,
             },
             "lead": {
                 "color": "#6c6c6a",
@@ -2055,6 +2128,7 @@
                 "tempHigh": 327.5,
                 "category": "solids",
                 "density": 11343,
+                "conduct": 0.41,
             },
             "brass": {
                 "color": ["#cb9e5d","#865e39"],
@@ -2062,6 +2136,7 @@
                 "tempHigh": 927,
                 "category": "solids",
                 "density": 8550,
+                "conduct": 0.52,
             },
             "bronze": {
                 "color": "#cd7f32",
@@ -2069,6 +2144,7 @@
                 "tempHigh": 913,
                 "category": "solids",
                 "density": 8150,
+                "conduct": 0.44,
             },
             "sterling": {
                 "color": ["#858478","#eae8e2","#bfbcb7"],
@@ -2076,6 +2152,7 @@
                 "tempHigh": 802,
                 "category": "solids",
                 "density": 10375.25,
+                "conduct": 0.95,
             },
             "steel": {
                 "color": "#71797E",
@@ -2083,6 +2160,7 @@
                 "tempHigh": 1455.5,
                 "category": "solids",
                 "density": 7850,
+                "conduct": 0.42,
             },
             "rose_gold": {
                 "color": ["#B76E79","#a1334d","#f06283"],
@@ -2090,6 +2168,7 @@
                 "tempHigh": 897,
                 "category": "solids",
                 "density": 12900,
+                "conduct": 0.87,
             },
             "solder": {
                 "color": "#a1a19d",
@@ -2097,6 +2176,7 @@
                 "tempHigh": 200,
                 "category": "solids",
                 "density": 8885,
+                "conduct": 0.43,
             },
             "molten_copper": {
                 "reactions": {
@@ -2410,6 +2490,7 @@
                 "tempHigh": 842,
                 "state": "solid",
                 "density": 1550,
+                "conduct": 0.40,
             },
             "limestone": {
                 "color": ["#C5B79C","#D9CCB2","#F8F1DB","#FCFAEB"],
@@ -2456,6 +2537,7 @@
                 "category": "life",
                 "state": "solid",
                 "density": 1450,
+                "conduct": 0.17,
             },
             "snail": {
                 "color": "#5c3104",
@@ -2474,8 +2556,57 @@
                 "category": "life",
                 "state": "solid",
                 "density": 1500,
+                "conduct": 0.16,
             },
-
+            "metal_scrap": {
+                "color": ["#b0afb4","#8c8f98","#cbcdcd","#6c6c6a","#fef9ff"],
+                "behavior": behaviors.POWDER,
+                "tempHigh": 670.3,
+                "density": 2720,
+                "conduct": 0.43,
+            },
+            "neon": {
+                "color": "#bababa",
+                "behavior": behaviors.GAS,
+                "behaviorOn": [
+                    "M2|M1|M2",
+                    "M1|CC:#ff0000|M1",
+                    "M2|M1|M2",
+                ],
+                "tempLow": -248.59,
+                "stateLow": "liquid_neon",
+                "category": "gases",
+                "density": 0.9002,
+                "state": "gas",
+                "conduct": 0.86,
+            },
+            "liquid_neon": {
+                "color": "#d1d1d1",
+                "behavior": behaviors.LIQUID,
+                "behaviorOn": [
+                    "XX|XX|XX",
+                    "M2|CC:#ff0000|M2",
+                    "M1|M1|M1",
+                ],
+                "tempHigh": -248.59,
+                "stateHigh": "neon",
+                "category": "liquids",
+                "hidden": true,
+                "density": 1207,
+                "state": "liquid",
+                "conduct": 0.83,
+            },
+            "battery": {
+                "color": "#9c6c25",
+                "behavior": [
+                    "XX|SH|XX", // shocks (adds charge)
+                    "SH|XX|SH",
+                    "XX|SH|XX",
+                ],
+                "category": "machines",
+                "tempHigh": 1455.5,
+                "stateHigh": "molten_steel",
+            },
 
             
             
@@ -2591,6 +2722,10 @@
                 if (elements[element].density) {
                     newmolten.density = elements[element].density * 0.9;
                 }
+                // If the element has a conductivity, add it to the new molten element * 1.1
+                if (elements[element].conduct) {
+                    newmolten.conduct = elements[element].conduct * 1.1;
+                }
                 // if the new element doesn't exist, add it
                 if (!elements[newname]) {
                     elements[newname] = newmolten;
@@ -2610,6 +2745,13 @@
                     newbehavior.push(elements[element].behavior[i].split("|"));
                 }
                 elements[element].behavior = newbehavior;
+            }
+            if (elements[element].behaviorOn && typeof elements[element].behaviorOn[0] === "string") {
+                var newbehavior = [];
+                for (var i = 0; i < elements[element].behaviorOn.length; i++) {
+                    newbehavior.push(elements[element].behaviorOn[i].split("|"));
+                }
+                elements[element].behaviorOn = newbehavior;
             }
         }
 
@@ -2638,11 +2780,14 @@
                 else {
                     this.burning = false;
                 }
+                if (elementInfo.charge) {
+                    this.charge = elementInfo.charge;
+                }
                 currentID++;
                 pixelMap[x][y] = this;
             }
         }
-        pixelSize = 9;
+        pixelSize = 6;
         
         function outOfBounds(x,y) {
             // Returns true if the pixel is out of bounds
@@ -2660,10 +2805,6 @@
             }
         }
         function movePixel(pixel,x,y,leaveBehind=null) {
-            // if the pixel isn't in currentPixels, return
-            if (!currentPixels.includes(pixel)) {
-                return;
-            }
             // Delete the pixel from the old position
             delete pixelMap[pixel.x][pixel.y];
             if (leaveBehind != null && isEmpty(pixel.x,pixel.y)) { createPixel(leaveBehind,pixel.x,pixel.y); }
@@ -2678,6 +2819,7 @@
             currentPixels.push(new Pixel(x, y, element));
         }
         function deletePixel(x,y,id=null) {
+            pixelMap[x][y].del = true;
             delete pixelMap[x][y];
             if (id != null) {
                 for (var i = 0; i < currentPixels.length; i++) {
@@ -2856,11 +2998,13 @@
             CO = Cool
             CC = Change Color (Hexadecimal)
             ST = Stick
+            SH = Shock with electricity
         */
         function pixelTick(pixel) {
             if (pixel.start == pixelTicks) {return}
             var info = elements[pixel.element];
-            var behavior = info.behavior;
+            if (pixel.charge && info.behaviorOn) { var behavior = info.behaviorOn; }
+            else { var behavior = info.behavior; }
             var x = pixel.x;
             var y = pixel.y;
             var move1Spots = [];
@@ -2872,22 +3016,25 @@
             var leaveBehind2 = null;
             // Parse behavior
             for (var by = 0; by < behavior.length; by++) {
-                for (var bx = 0; bx < behavior[by].length; bx++) {
-                    var b0 = behavior[by][bx].trim();
-                    if (b0 == "XX") {continue}
+                behaviorby = behavior[by];
+                for (var bx = 0; bx < behaviorby.length; bx++) {
+                    var b0 = behaviorby[bx];
+                    if (b0 === "XX") {continue}
                     //if (b.includes(" OR ")) {
                     //    b = b.split(" OR ")[Math.floor(Math.random()*b.split(" OR ").length)];
                     //}
                     // Loop through b0.split(" AND ")
-                    for (var i = 0; i < b0.split(" AND ").length; i++) {
-                        var b = b0.split(" AND ")[i];
-                        var arg = null;
+                    if (b0.includes(" AND ")) { var andsplit = b0.split(" AND "); }
+                    else { var andsplit = [b0]; }
+                    for (var i = 0; i < andsplit.length; i++) {
+                        var b = andsplit[i];
                         if (b.includes(":")) {
-                            arg = b.split(":")[1].split(/[\:\%]/)[0];
+                            var arg = b.split(":")[1].split(/[\:\%]/)[0];
                             if (!b.includes("%")) {
                                 b = b.split(/[\:\%]/)[0];
                             }
                         }
+                        else { var arg = null;}
                         // If b has "%" followed by a number in it, it's a chance to move
                         if (b.includes("%")) {
                             // Split the string at the "%" and use the second half as the chance (float)
@@ -2933,34 +3080,6 @@
                                     }
                                 }
                             }
-                            // Clone self
-                            else if (b == "CL") {
-                                if (isEmpty(newCoords.x,newCoords.y)) {
-                                    if (arg == null || pixel.temp >= parseFloat(arg)) {
-                                        clonePixel(pixel,newCoords.x,newCoords.y);
-                                    }
-                                }
-                            }
-                            // Clone first touched
-                            else if (b == "CF") {
-                                if (pixel.clone) {
-                                    if (isEmpty(newCoords.x,newCoords.y)) {
-                                        createPixel(pixel.clone,newCoords.x,newCoords.y);
-                                        pixelMap[newCoords.x][newCoords.y].temp = pixel.temp;
-                                    }
-                                }
-                                else {
-                                    if (!isEmpty(newCoords.x,newCoords.y) && !outOfBounds(newCoords.x,newCoords.y)) {
-                                        newPixel = pixelMap[newCoords.x][newCoords.y];
-                                        if (newPixel.element != pixel.element) {
-                                            pixel.clone = newPixel.element;
-                                        }
-                                        else if (newPixel.clone) {
-                                            pixel.clone = newPixel.clone;
-                                        }
-                                    }
-                                }
-                            }
                             //Change pixel
                             else if (b == "CH") {
                                 if (!isEmpty(newCoords.x,newCoords.y) && !outOfBounds(newCoords.x,newCoords.y)) {
@@ -2986,6 +3105,16 @@
                                     }
                                 }
                             }
+                            //Swap
+                            else if (b == "SW") {
+                                if (!isEmpty(newCoords.x,newCoords.y) && !outOfBounds(newCoords.x,newCoords.y)) {
+                                    var newPixel = pixelMap[newCoords.x][newCoords.y];
+                                    if (arg != null) { var args = arg.split(","); }
+                                    if (arg == null || args.includes(newPixel.element)) {
+                                        swapSpots.push({x:newCoords.x,y:newCoords.y});
+                                    }
+                                }
+                            }
                             //Replace pixel
                             /*else if (b == "RP") {
                                 replaceSpots.push({x:newCoords.x,y:newCoords.y,arg:arg});
@@ -3003,6 +3132,59 @@
                                     pixelMap[newCoords.x][newCoords.y].temp = pixel.temp
                                 }
                             }
+                            // Clone self
+                            else if (b == "CL") {
+                                if (isEmpty(newCoords.x,newCoords.y)) {
+                                    if (arg == null || pixel.temp >= parseFloat(arg)) {
+                                        clonePixel(pixel,newCoords.x,newCoords.y);
+                                    }
+                                }
+                            }
+                            // Clone first touched
+                            else if (b == "CF") {
+                                if (pixel.clone) {
+                                    if (isEmpty(newCoords.x,newCoords.y)) {
+                                        createPixel(pixel.clone,newCoords.x,newCoords.y);
+                                        pixelMap[newCoords.x][newCoords.y].temp = pixel.temp;
+                                    }
+                                }
+                                else {
+                                    if (!isEmpty(newCoords.x,newCoords.y) && !outOfBounds(newCoords.x,newCoords.y)) {
+                                        newPixel = pixelMap[newCoords.x][newCoords.y];
+                                        if (newPixel.element != pixel.element && newPixel.element != "wire") {
+                                            pixel.clone = newPixel.element;
+                                        }
+                                        else if (newPixel.clone) {
+                                            pixel.clone = newPixel.clone;
+                                        }
+                                    }
+                                }
+                            }
+                            else if (b=="SH") {
+                                if (!isEmpty(newCoords.x,newCoords.y) && !outOfBounds(newCoords.x,newCoords.y)) {
+                                    var newPixel = pixelMap[newCoords.x][newCoords.y];
+                                    var con = elements[newPixel.element].conduct;
+                                    if (con != undefined) {
+                                        if (Math.random() < con) { // If random number is less than conductivity
+                                            if (!newPixel.charge && !newPixel.chargeCD) {
+                                                newPixel.charge = (parseFloat(arg) || 1);
+                                                if (elements[newPixel.element].colorOn) {
+                                                    newPixel.color = pixelColorPick(newPixel);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            //Stick
+                            else if (b=="ST") {
+                                if (!isEmpty(newCoords.x,newCoords.y) && !outOfBounds(newCoords.x,newCoords.y)) {
+                                    var newPixel = pixelMap[newCoords.x][newCoords.y];
+                                    if (newPixel.element != pixel.element && (arg == null || newPixel.element == arg)) {
+                                        var sticking = true
+                                    }
+                                }
+                            }
                             //Leave behind element
                             else if (b == "LB" || b == "L1" || b == "L2") {
                                 if (arg != null && arg.includes(",")) {
@@ -3012,14 +3194,20 @@
                                 else if (b=="L1") {leaveBehind1 = arg;}
                                 else if (b=="L2") {leaveBehind2 = arg;}
                             }
-                            //Swap
-                            else if (b == "SW") {
+                            //Change color
+                            else if (b == "CC") {
                                 if (!isEmpty(newCoords.x,newCoords.y) && !outOfBounds(newCoords.x,newCoords.y)) {
                                     var newPixel = pixelMap[newCoords.x][newCoords.y];
-                                    if (arg != null) { var args = arg.split(","); }
-                                    if (arg == null || args.includes(newPixel.element)) {
-                                        swapSpots.push({x:newCoords.x,y:newCoords.y});
+                                    if (arg == null) {arg = newPixel.colorObject}
+                                    else {
+                                        if (arg.includes(",")) {
+                                            arg = arg.split(",")[Math.floor(Math.random()*arg.split(",").length)];
+                                        }
+                                        if (!arg.startsWith("#")) {
+                                            arg = "#" + arg;
+                                        }
                                     }
+                                    newPixel.color = pixelColorPick(newPixel,arg);
                                 }
                             }
                             //Heat
@@ -3045,31 +3233,6 @@
                                         if (arg == NaN) {arg = 1}
                                         newPixel.temp -= arg;
                                         pixelTempCheck(newPixel);
-                                    }
-                                }
-                            }
-                            //Change color
-                            else if (b == "CC") {
-                                if (!isEmpty(newCoords.x,newCoords.y) && !outOfBounds(newCoords.x,newCoords.y)) {
-                                    var newPixel = pixelMap[newCoords.x][newCoords.y];
-                                    if (arg == null) {arg = newPixel.colorObject}
-                                    else {
-                                        if (arg.includes(",")) {
-                                            arg = arg.split(",")[Math.floor(Math.random()*arg.split(",").length)];
-                                        }
-                                        if (!arg.startsWith("#")) {
-                                            arg = "#" + arg;
-                                        }
-                                    }
-                                    newPixel.color = pixelColorPick(newPixel,arg);
-                                }
-                            }
-                            //Stick
-                            else if (b=="ST") {
-                                if (!isEmpty(newCoords.x,newCoords.y) && !outOfBounds(newCoords.x,newCoords.y)) {
-                                    var newPixel = pixelMap[newCoords.x][newCoords.y];
-                                    if (newPixel.element != pixel.element && (arg == null || newPixel.element == arg)) {
-                                        var sticking = true
                                     }
                                 }
                             }
@@ -3251,7 +3414,7 @@
             // Heat Transfer
             if (!(info.insulate == true)) {
                 // Check right and bottom adjacent pixels
-                coordsToCheck = [
+                var coordsToCheck = [
                     {x:pixel.x+1,y:pixel.y},
                     {x:pixel.x,y:pixel.y+1},
                 ];
@@ -3273,6 +3436,52 @@
                 }
             }
 
+            // Electricity Transfer
+            if (pixel.charge) {
+                // Check each adjacent pixel, if that pixel's charge is false, set it to the same charge
+                var coordsToCheck = [
+                    {x:pixel.x+1,y:pixel.y},
+                    {x:pixel.x-1,y:pixel.y},
+                    {x:pixel.x,y:pixel.y+1},
+                    {x:pixel.x,y:pixel.y-1},
+                ];
+                for (var i = 0; i < coordsToCheck.length; i++) {
+                    var coords = coordsToCheck[i];
+                    if (!isEmpty(coords.x,coords.y) && !outOfBounds(coords.x,coords.y)) {
+                        var newPixel = pixelMap[coords.x][coords.y];
+                        var con = elements[newPixel.element].conduct;
+                        if (con == undefined) {continue}
+                        if (Math.random() < con) { // If random number is less than conductivity
+                            if (!newPixel.charge && !newPixel.chargeCD) {
+                                newPixel.charge = 1;
+                                if (elements[newPixel.element].colorOn) {
+                                    newPixel.color = pixelColorPick(newPixel);
+                                }
+                            }
+                        }
+                        else if (!(elements[newPixel.element].insulate == true)) { // Otherwise heat the pixel (Resistance simulation)
+                            newPixel.temp += pixel.charge/4;
+                            pixelTempCheck(newPixel);
+                        }
+                    }
+                }
+                pixel.charge -= 0.25;
+                if (pixel.charge <= 0) {
+                    if (elements[pixel.element].colorOn) {
+                        pixel.color = pixelColorPick(pixel);
+                    }
+                    delete pixel.charge;
+                    pixel.chargeCD = 4;
+                }
+            }
+            // Lower charge cooldown
+            else if (pixel.chargeCD) {
+                pixel.chargeCD -= 1;
+                if (pixel.chargeCD <= 0) {
+                    delete pixel.chargeCD;
+                }
+            }
+
 
         }
         function pixelColorPick(pixel,customColor=null) {
@@ -3280,6 +3489,9 @@
             var elementInfo = elements[element];
             //if (elementInfo.behavior instanceof Array) {
             
+            if (pixel.charge && elementInfo.colorOn) {
+                customColor = elementInfo.colorOn;
+            }
             if (customColor != null) {
                 if (Array.isArray(customColor)) {
                     customColor = customColor[Math.floor(Math.random() * customColor.length)];
@@ -3365,7 +3577,8 @@
             newCurrentPixels.sort(function() {return 0.5 - Math.random()});
             for (var i = 0; i < newCurrentPixels.length; i++) {
                 pixel = newCurrentPixels[i];
-                if (pixelMap[pixel.x][pixel.y] == undefined || currentPixels.indexOf(pixel) == -1) {continue}
+                //if (pixelMap[pixel.x][pixel.y] == undefined || currentPixels.indexOf(pixel) == -1) {continue}
+                if (pixel.del) {continue}
                 if ((!paused) || forceTick) {pixelTick(pixel);};
             }
             // Draw the current pixels
@@ -3377,6 +3590,10 @@
                     if (pixelMap[pixel.x][pixel.y] == undefined) {continue}
                     ctx.fillStyle = pixel.color;
                     ctx.fillRect(pixel.x*pixelSize, pixel.y*pixelSize, pixelSize, pixelSize);
+                    if (pixel.charge) {
+                        ctx.fillStyle = "rgba(255,255,0,0.5)";
+                        ctx.fillRect(pixel.x*pixelSize, pixel.y*pixelSize, pixelSize, pixelSize);
+                    }
                 }
             }
             if ((!paused) || forceTick) {pixelTicks++};
@@ -3405,7 +3622,7 @@
             ctx.strokeStyle = "white";
             ctx.strokeRect(topLeft[0]*pixelSize,topLeft[1]*pixelSize,(bottomRight[0]-topLeft[0]+1)*pixelSize,(bottomRight[1]-topLeft[1]+1)*pixelSize);
             updateStats();
-            ticks ++;
+            //ticks ++;
         }
     
         currentElement = "sand";
@@ -3424,7 +3641,11 @@
             else if (e.button == 1) {
                 mouseType = "middle";
             }
+            else {
+                mouseType = "left";
+            }
             mouseMove(e);
+            return false;
         }
         function mouseUp(e) {
             mouseIsDown = false;
@@ -3488,11 +3709,11 @@
                 var mouseY = mousePos.y;
             }
             if (currentElement == "lookup") {
-                    if (!isEmpty(mouseX,mouseY) && !outOfBounds(mouseX,mouseY)) {
-                        showInfo(pixelMap[mouseX][mouseY].element);
-                    }
-                    return;
+                if (!isEmpty(mouseX,mouseY) && !outOfBounds(mouseX,mouseY)) {
+                    showInfo(pixelMap[mouseX][mouseY].element);
                 }
+                return;
+            }
             var coords = mouseRange(mouseX,mouseY);
             var element = elements[currentElement];
             var mixList = [];
@@ -3520,6 +3741,18 @@
                             mixList.push(pixel);
                         }
                     }
+                }
+                else if (currentElement == "shock") {
+                    if (!isEmpty(x,y) && !outOfBounds(x,y)) {
+                        var pixel = pixelMap[x][y];
+                        if (elements[pixel.element].conduct && !pixel.chargeCD) {
+                            pixel.charge = 1;
+                        }
+                    }
+                }
+                else if (currentElement == "random" && isEmpty(x, y)) {
+                    // create pixel with random element
+                    currentPixels.push(new Pixel(x, y, Object.keys(elements)[Math.floor(Math.random()*Object.keys(elements).length)]));
                 }
                 else if (placeMode == "replace") {
                     if (outOfBounds(x,y)) {
@@ -3656,27 +3889,31 @@
         // Update stats
         function updateStats() {
             var statsDiv = document.getElementById("stats");
-            statsDiv.innerHTML = "<span id='stat-pos' class='stat'>x"+mousePos.x+",y"+mousePos.y+"</span>";
-            statsDiv.innerHTML += "<span id='stat-pixels' class='stat'>Pxls:" + currentPixels.length+"</span>";
-            statsDiv.innerHTML += "<span id='stat-tps' class='stat'>" + tps+"tps</span>";
-            statsDiv.innerHTML += "<span id='stat-ticks' class='stat'>" + pixelTicks+"</span>";
+            var stats = "<span id='stat-pos' class='stat'>x"+mousePos.x+",y"+mousePos.y+"</span>";
+            stats += "<span id='stat-pixels' class='stat'>Pxls:" + currentPixels.length+"</span>";
+            stats += "<span id='stat-tps' class='stat'>" + tps+"tps</span>";
+            stats += "<span id='stat-ticks' class='stat'>" + pixelTicks+"</span>";
             if (typeof pixelMap == 'undefined') { return; }
             if (pixelMap[mousePos.x] != undefined) {
                 var currentPixel = pixelMap[mousePos.x][mousePos.y];
                 if (currentPixel != undefined) {
-                    statsDiv.innerHTML += "<span id='stat-element' class='stat'>Elem:"+currentPixel.element.toUpperCase()+"</span>";
-                    statsDiv.innerHTML += "<span id='stat-temperature' class='stat'>Temp:"+Math.round(currentPixel.temp)+"°C</span>";
+                    stats += "<span id='stat-element' class='stat'>Elem:"+currentPixel.element.toUpperCase()+"</span>";
+                    stats += "<span id='stat-temperature' class='stat'>Temp:"+Math.round(currentPixel.temp)+"°C</span>";
+                    if (currentPixel.charge) {
+                        stats += "<span id='stat-charge' class='stat'>C"+currentPixel.charge+"</span>";
+                    }
                     if (currentPixel.burning) {
-                        statsDiv.innerHTML += "<span id='stat-burning' class='stat'>Burning</span>";
+                        stats += "<span id='stat-burning' class='stat'>Burning</span>";
                     }
                 }
             }
             if (shiftDown) {
-                if (shiftDown==1) {statsDiv.innerHTML += "<span id='stat-shift' class='stat'>[↑ ]</span>";}
-                else if (shiftDown==2) {statsDiv.innerHTML += "<span id='stat-shift' class='stat'>[A ]</span>";}
-                else if (shiftDown==3) {statsDiv.innerHTML += "<span id='stat-shift' class='stat'>[ ↑]</span>";}
-                else if (shiftDown==4) {statsDiv.innerHTML += "<span id='stat-shift' class='stat'>[ A]</span>";}
+                if (shiftDown==1) {stats += "<span id='stat-shift' class='stat'>[↑ ]</span>";}
+                else if (shiftDown==2) {stats += "<span id='stat-shift' class='stat'>[A ]</span>";}
+                else if (shiftDown==3) {stats += "<span id='stat-shift' class='stat'>[ ↑]</span>";}
+                else if (shiftDown==4) {stats += "<span id='stat-shift' class='stat'>[ A]</span>";}
             }
+            statsDiv.innerHTML = stats;
         }
 
         showingInfo = false;
@@ -3686,7 +3923,7 @@
                 for (var i = 0; i < l.length; i++) {
                     var element = l[i];
                     // add to newtext a span with the element's name and its onclick to showInfo(element)
-                    if (l=="pixels") { newtext += "pixels, "}
+                    if (element=="pixels" || element=="itself") { newtext += element+", "}
                     else { newtext += "<span class='infoLink' onclick='showInfo(\""+element+"\")'>"+element.toUpperCase().replace(/_/g," ")+"</span>, ";}
                 }
                 // remove the last comma and space
@@ -3694,7 +3931,7 @@
                 return newtext
             }
             else {
-                if (l=="pixels" || l=="[???]") {return "pixels"}
+                if (l=="pixels" || l=="[???]" || l=="itself") {return l}
                 else {return "<span class='infoLink' onclick='showInfo(\""+l+"\")'>"+l.toUpperCase().replace(/_/g," ")+"</span>";}
             }
         }
@@ -3759,7 +3996,8 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
         moves = true;
     }
     else if (b == "DL") {
-        if (!arg) { arg = "pixels" }
+        if (i==1 && j==1) { arg = "itself" }
+        else if (!arg) { arg = "pixels" }
         if (deletes.indexOf(arg) == -1) { deletes = deletes.concat(arg.split(",")); }
     }
     else if (b == "SW") {
@@ -3797,6 +4035,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                         if (!moves) { infoText.innerHTML += "\nStationary."; }
                         if (info.category) { infoText.innerHTML += "\nCategory: "+info.category.toUpperCase()+"."; }
                     }
+                    if (info.conduct) { infoText.innerHTML += "\nConducts electricity."; }
                     if (swaps.length > 0) { infoText.innerHTML += "\nMoves through "+infoLink(swaps)+"."; }
                     if (creates.length > 0) { infoText.innerHTML += "\nMakes "+infoLink(creates)+"."; }
                     if (clones) { infoText.innerHTML += "\nClones self." }
@@ -3867,7 +4106,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             window.clearInterval(tickInterval);
             tickInterval = window.setInterval(tick, 1000/newtps);
         }
-        ticks = 0;
+        //ticks = 0;
         pixelTicks = 0;
 
         placeMode = null;
@@ -3897,11 +4136,11 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             }
             //...drawing code...
             gameCanvas.addEventListener("mousedown", mouseClick);
-            gameCanvas.addEventListener("touchstart", mouseClick);
+            gameCanvas.addEventListener("touchstart", mouseClick, { passive: false });
             window.addEventListener("mouseup", mouseUp);
-            window.addEventListener("touchend", mouseUp);
+            window.addEventListener("touchend", mouseUp, { passive: false });
             window.addEventListener("mousemove", mouseMove);
-            gameCanvas.addEventListener("touchmove", mouseMove);
+            gameCanvas.addEventListener("touchmove", mouseMove, { passive: false });
             gameCanvas.addEventListener("wheel", wheelHandle);
             gameCanvas.ontouchstart = function(e) {
                 if (e.touches) e = e.touches[0];

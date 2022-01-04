@@ -4,6 +4,27 @@
     + Electricity & Machines Update
     + Mod Manager Update
 
+[Version 0.8 - Electricity]
+    + Mobile Support (Potentially buggy)
+    + Electricity
+    + Shock tool
+    + Wire (100% conductivity)
+    + Metal Scrap
+    + E-cloner (Clones when powered)
+    + Neon gas
+    + "Random" element
+    + Each conductive element has its own conductivity
+    + Lower conductivity = higher resistance, which heats up faster when charged
+    ~ Plasma now shocks things
+    ~ Electrified plasma now creates more plasma
+    ~ Speed optimizations allowing for more pixels on screen
+    + Smoke Grenades can now melt
+    + Technical: "conduct" attribute, chance of conducting electricity per tick, 0-1
+    + Technical: "behaviorOn" attribute, behavior to override when powered
+    + Technical: "colorOn" attribute, color to change to when powered
+    + Technical: "SH" behavior rule, shocks / adds charge
+    ~ Fixed: Invalid info links
+
 [Version 0.7.3]
     ~ Salt and sugar are more dense; can sink in water
     ~ Fixed: Fish and Algae can't move through sugar water
