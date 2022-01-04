@@ -1,7 +1,7 @@
 [Future Plans]
     + Artists' Update (Painting, Lines, Shapes, etc.)
     + Explosives Update
-    + Electricity & Machines Update
+    + ~~Electricity~~ & Machines Update
     + Mod Manager Update
 
 [Version 0.8 - Electricity]
