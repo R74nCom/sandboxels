@@ -1,7 +1,7 @@
 {
   "name": "Sandboxels",
   "short_name": "Sandboxels",
-  "theme_color": "#e6d577",
+  "theme_color": "#000000",
   "background_color": "#000000",
   "display": "standalone",
   "scope": "/",
