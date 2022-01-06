@@ -1,0 +1,20 @@
+{
+    "name": "Sandboxels",
+    "short_name": "Sandboxels",
+    "icons": [
+        {
+            "src": "icons/android-chrome-192x192.png?v=2",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/android-chrome-384x384.png?v=2",
+            "sizes": "384x384",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#e6d577",
+    "background_color": "#e6d577",
+    "start_url": "https://sandboxels.r74n.com",
+    "display": "standalone"
+}

@@ -4,6 +4,11 @@
     + ~~Electricity~~ & Machines Update
     + Mod Manager Update
 
+[Version 0.8.1]
+    + Progressive web app support
+    + Confirms when you are about to leave the page
+    + Favicons and social cards
+
 [Version 0.8 - Electricity]
     + Mobile Support (Potentially buggy)
     + Electricity
