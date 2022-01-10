@@ -4507,28 +4507,6 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                     return 'Are you sure you want to leave?';
                 }
             };
-            window.addEventListener('beforeinstallprompt', (e) => { // Add to homescreen
-                // Prevent the mini-infobar from appearing on mobile
-                e.preventDefault();
-                // Stash the event so it can be triggered later.
-                deferredPrompt = e;
-                // Add a click listener to installButton to show the mini-infobar
-                document.getElementById('installButton').addEventListener('click', function(){
-                    // Show the prompt
-                    deferredPrompt.prompt();
-                });
-            });
-            if ('serviceWorker' in navigator) { // Register service worker for Chrome PWA
-                window.addEventListener('load', function() {
-                    navigator.serviceWorker.register('/sw.js').then(function(registration) {
-                        // Registration was successful
-                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                        }, function(err) {
-                        // registration failed :(
-                        console.log('ServiceWorker registration failed: ', err);
-                    });
-                });
-            }
             shiftDown = 0;
             // If the user presses [ or -, decrease the mouse size by 2
             document.addEventListener("keydown", function(e) {
@@ -4715,7 +4693,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                 <div id="categoryControls"></div>
                 <div id="elementControls"></div>
             </div>
-            <div id="extraInfo"><small><a href="controls.txt" target="_blank">Controls</a> • <a href="changelog.txt" target="_blank">Changelog</a> • <a href="https://docs.google.com/document/d/1R8xljj_J-K5oU-9y4louwplQmM-ZBvUfXmhbgj5LYdk/edit?usp=sharing" target="_blank">Feedback</a> • <a href="#install" id="installButton">Install</a></small></div>
+            <div id="extraInfo"><small><a href="controls.txt" target="_blank">Controls</a> • <a href="changelog.txt" target="_blank">Changelog</a> • <a href="https://docs.google.com/document/d/1R8xljj_J-K5oU-9y4louwplQmM-ZBvUfXmhbgj5LYdk/edit?usp=sharing" target="_blank">Feedback</a></small></div>
         </div>
     </div>
 
