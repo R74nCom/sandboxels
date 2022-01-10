@@ -1,8 +1,41 @@
 [Future Plans]
     + Artists' Update (Painting, Lines, Shapes, etc.)
     + Explosives Update
-    + ~~Electricity~~ & Machines Update
+    + Machines Update
     + Mod Manager Update
+
+[Version 0.8.2]
+    + Cold Fire
+    + Sulfur
+    + Copper Sulfate
+    + Diamonds
+    + Glitter
+    + Electric element
+    + Rain Clouds sometimes spark
+    + Holding [Shift] while shocking increases the shock
+    + Antimolten, Antifire, Antigas
+    + Dirty Water
+    + Walls are now invincible
+    + Water weathers down rock over time
+    + Water oxidizes iron and copper
+    + Vinegar deoxidizes rust and copper
+    + Blood can now boil
+    + Many new combustion and melting temperatures
+    + Install button to add to homescreen
+    ~ Improved Random tool
+    ~ Reordered liquids tab
+    ~ Pixels are now smaller on small screens to allow for more space
+    ~ Unhid Vine
+    ~ Recolored Meat
+    ~ Optimizations
+    ~ Tweaked shock tool
+    + Technical: "hardness" element attribute, chance of resisting damage (0-1)
+    + Technical: Reactions can now have a chance of occuring (0-1)
+    ~ Technical: Quotes removed from element keys, not necessary for mods
+    ~ Technical: All element attributes are now optional
+    ~ Technical: Updated element property list comment
+    ~ Fixed: Controls link goes to changelog
+    ~ Fixed: Elements like Potassium Salt don't continue burning after melting
 
 [Version 0.8.1]
     + Progressive web app support

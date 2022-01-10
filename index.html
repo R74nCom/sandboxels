@@ -45,7 +45,7 @@
     <meta name="twitter:creator:id" content="1436857621827530753">
 
     <script src="https://R74n.com/load.js"></script>
-    
+
     <style>
         html, body {
             width:  100%;
@@ -285,97 +285,97 @@
     <script>
         
         behaviors = {
-            "POWDER": [
+            POWDER: [
                 "XX|XX|XX",
                 "XX|XX|XX",
                 "M2|M1|M2",
             ],
-            "AGPOWDER": [
+            AGPOWDER: [
                 "M2|M1|M2",
                 "XX|XX|XX",
                 "XX|XX|XX",
             ],
-            "LIQUID": [
+            LIQUID: [
                 "XX|XX|XX",
                 "M2|XX|M2",
                 "M1|M1|M1",
             ],
-            "AGLIQUID": [
+            AGLIQUID: [
                 "M1|M1|M1",
                 "M2|XX|M2",
                 "XX|XX|XX",
             ],
-            "WALL": [
+            WALL: [
                 "XX|XX|XX",
                 "XX|XX|XX",
                 "XX|XX|XX",
             ],
-            "UL_UR": [
+            UL_UR: [
                 "M1|M1|M1",
                 "M2|XX|M2",
                 "XX|M2|XX",
             ],
-            "GAS": [
+            GAS: [
                 "M2|M1|M2",
                 "M1|XX|M1",
                 "M2|M1|M2",
             ],
-            "DGAS": [
+            DGAS: [
                 "M2|M1|M2",
                 "M1|DL%5|M1",
                 "M2|M1|M2",
             ],
-            "SUPPORT": [
+            SUPPORT: [
                 "XX|XX|XX",
                 "SP|XX|SP",
                 "XX|M1|XX",
             ],
-            "SUPPORTPOWDER": [
+            SUPPORTPOWDER: [
                 "XX|XX|XX",
                 "SP|XX|SP",
                 "M2|M1|M2",
             ],
-            "DELETE": [
+            DELETE: [
                 "XX|DL|XX",
                 "DL|XX|DL",
                 "XX|DL|XX",
             ],
-            "FILL": [
+            FILL: [
                 "XX|CL|XX",
                 "CL|XX|CL",
                 "XX|CL|XX",
             ],
-            "CLONER": [
+            CLONER: [
                 "XX|CF|XX",
                 "CF|XX|CF",
                 "XX|CF|XX",
             ],
-            "STURDYPOWDER": [
+            STURDYPOWDER: [
                 "XX|XX|XX",
                 "XX|XX|XX",
                 "XX|M1|XX",
             ],
-            "SELFDELETE": [
+            SELFDELETE: [
                 "XX|XX|XX",
                 "XX|DL|XX",
                 "XX|XX|XX",
             ],
-            "FOAM": [
-                "SW:water%10|SW:water%10|SW:water%10",
+            FOAM: [
+                "XX|XX|XX",
                 "XX|DL%5|XX",
                 "M2%25|M1%25|M2%25",
             ],
-            "BUBBLE": [
-                "SW:water%25|SW:water%25|SW:water%25",
+            BUBBLE: [
+                "XX|XX|XX",
                 "M1%5|DL%0.25|M1%5",
                 "M1%2|M1%1|M1%2",
             ],
-            "STICKY": [
+            STICKY: [
                 "XX|ST|XX",
                 "ST|XX|ST",
                 "XX|ST AND M1|XX",
             ],
-            "MOLTEN": [
+            MOLTEN: [
                 "XX|CR:fire%2.5|XX",
                 "M2|XX|M2",
                 "M1|M1|M1",
@@ -386,16 +386,17 @@
             "CLEANANIMAL": ["ant","firefly","bee","frog","fish"],
         }
 
-        airDensity = 1.225; // kg/m^3
+        //airDensity = 1.225; // kg/m^3
         airTemp = 20; // Celsius
 
         // Element Properties
-        // * = required
-        // name - display name of the element
-        // color - color of the element's pixel *
-        // behavior - behavior of the element *
+        // name - display name of the element [optional]
+        // color - color of the element's pixel
+        // behavior - behavior of the element
+        // category - category in which the element will show up in
         // density - density of the element [only used for movable elements] (kg/m^3)
         // state - solid, liquid, or gas [only used for movable elements]
+        // reactions - instructions for when elements attempt to move onto each other (object)
         // conduct - conductivity of the element (0-1)
         // behaviorOn - behavior to override when powered
         // colorOn - color to change to when powered
@@ -409,63 +410,92 @@
         // burnTime - time to burn (ticks)
         // burnInto - element to turn into after burning
         // fireColor - color of the flame given off when burning
+        // burning - whether the element is burning on creation
+        // charge - charge of the element on creation
+        // hardness - chance of resisting damage (0-1)
         elements = {
             "heat": { //hard-coded
-                "color": "#ff0000",
-                "behavior": behaviors.WALL,
-                "temp": 2,
-                "category": "tools",
+                color: "#ff0000",
+                behavior: [
+                    "HT:2|HT:2|HT:2",
+                    "HT:2|HT:2|HT:2",
+                    "HT:2|HT:2|HT:2",
+                ],
+                temp: 2,
+                category: "tools",
+                insulate:true,
             },
             "cool": { //hard-coded
-                "color": "#0000ff",
-                "behavior": behaviors.WALL,
-                "temp": -2,
-                "category": "tools",
+                color: "#0000ff",
+                behavior: [
+                    "CO:2|CO:2|CO:2",
+                    "CO:2|CO:2|CO:2",
+                    "CO:2|CO:2|CO:2",
+                ],
+                temp: -2,
+                category: "tools",
+                insulate:true,
             },
             "erase": { //hard-coded
-                "color": "#fdb5ff",
-                "behavior": behaviors.WALL,
-                "category": "tools",
+                color: "#fdb5ff",
+                behavior: [
+                    "DL|DL|DL",
+                    "DL|DL|DL",
+                    "DL|DL|DL",
+                ],
+                category: "tools",
             },
             "pick": { //hard-coded
-                "color": ["#fa9b9b","#fae99b","#9bfab7","#9b9dfa"],
-                "behavior": behaviors.WALL,
-                "category": "tools",
+                color: ["#fa9b9b","#fae99b","#9bfab7","#9b9dfa"],
+                behavior: [
+                    "CF|CF|CF",
+                    "CF|DL%5|CF",
+                    "CF|CF|CF",
+                ],
+                category: "tools",
             },
             "mix": { //hard-coded
-                "color": ["#fff4b5","#a6a6a6"],
-                "behavior": behaviors.WALL,
-                "category": "tools",
+                color: ["#fff4b5","#a6a6a6"],
+                behavior: [
+                    "SW|SW|SW",
+                    "SW|DL%5|SW",
+                    "SW|SW|SW",
+                ],
+                category: "tools",
             },
             "lookup": { //hard-coded
-                "color": ["#919c9c","#72abab","#919c9c"],
-                "behavior": behaviors.WALL,
-                "category": "tools",
+                color: ["#919c9c","#72abab","#919c9c"],
+                behavior: behaviors.WALL,
+                category: "tools",
             },
             "shock": { //hard-coded
-                "color": "#ffff00",
-                "behavior": behaviors.WALL,
-                "category": "tools",
+                color: "#ffff00",
+                behavior: [
+                    "SH|SH|SH",
+                    "SH|DL%5|SH",
+                    "SH|SH|SH",
+                ],
+                category: "tools",
             },
             "sand": {
-                "color": "#e6d577",
-                "behavior": behaviors.POWDER,
-                "tempHigh": 1700,
-                "stateHigh": "molten_glass",
-                "category": "land",
-                "state": "solid",
-                "density": 1602,
+                color: "#e6d577",
+                behavior: behaviors.POWDER,
+                tempHigh: 1700,
+                stateHigh: "molten_glass",
+                category: "land",
+                state: "solid",
+                density: 1602,
             },
             "water": {
-                "color": "#2167ff",
-                "behavior": behaviors.LIQUID,
-                "tempHigh": 100,
-                "stateHigh": "steam",
-                "tempLow": 0,
-                "stateLow": "ice",
-                "viscosity": 1,
-                "category": "liquids",
-                "reactions": {
+                color: "#2167ff",
+                behavior: behaviors.LIQUID,
+                tempHigh: 100,
+                stateHigh: "steam",
+                tempLow: 0,
+                stateLow: "ice",
+                viscosity: 1,
+                category: "liquids",
+                reactions: {
                     "dirt": { // React with (water reacts with dirt to make mud)
                         "elem1": null, // First element transforms into; in this case, water deletes itself
                         "elem2": "mud", // Second element transforms into; in this case, dirt turns to mud
@@ -473,1752 +503,1835 @@
                     "sand": { "elem1": null, "elem2": "wet_sand", },
                     "salt": { "elem1": "salt_water", "elem2": null, },
                     "sugar": { "elem1": "sugar_water", "elem2": null, },
+                    "dust": { "elem1": "dirty_water", "elem2": null, },
+                    "ash": { "elem1": "dirty_water", "elem2": null, },
+                    "carbon_dioxide": { "elem1": "dirty_water", "elem2": null, },
+                    "sulfur": { "elem1": "dirty_water", "elem2": null, },
+                    "charcoal": { "elem1": "dirty_water", chance:0.005 },
+                    "rat": { "elem1": "dirty_water", chance:0.005 },
+                    "plague": { "elem1": "dirty_water", "elem2": null, },
+                    "rust": { "elem1": "dirty_water", chance:0.005 },
                     "quicklime": { "elem1": null, "elem2": "slaked_lime", },
+                    "rock": { "elem2": "wet_sand", "chance": 0.00035 },
+                    "ruins": { "elem2": "rock", "chance": 0.00035 },
                 },
-                "state": "liquid",
-                "density": 997,
-                "conduct": 0.02,
+                state: "liquid",
+                density: 997,
+                conduct: 0.02,
             },
             "salt_water": {
-                "color": "#4d85ff",
-                "behavior": behaviors.LIQUID,
-                "tempHigh": 102,
-                "stateHigh": "steam",
-                "tempLow": -2,
-                "stateLow": "ice",
-                "viscosity": 2,
-                "category": "liquids",
-                "reactions": {
+                color: "#4d85ff",
+                behavior: behaviors.LIQUID,
+                tempHigh: 102,
+                stateHigh: "steam",
+                tempLow: -2,
+                stateLow: "ice",
+                viscosity: 2,
+                category: "liquids",
+                reactions: {
                     "dirt": { "elem1": null, "elem2": "mud" },
                     "sand": { "elem1": null, "elem2": "wet_sand", },
+                    "dust": { "elem1": "dirty_water", "elem2": null, },
+                    "ash": { "elem1": "dirty_water", "elem2": null, },
+                    "carbon_dioxide": { "elem1": "dirty_water", "elem2": null, },
+                    "sulfur": { "elem1": "dirty_water", "elem2": null, },
+                    "charcoal": { "elem1": "dirty_water", chance:0.005 },
+                    "rat": { "elem1": "dirty_water", chance:0.005 },
+                    "plague": { "elem1": "dirty_water", "elem2": null, },
+                    "rust": { "elem1": "dirty_water", chance:0.005 },
+                    "quicklime": { "elem1": null, "elem2": "slaked_lime", },
+                    "rock": { "elem2": "wet_sand", "chance": 0.0005 },
                 },
-                "state": "liquid",
-                "density": 1026,
-                "conduct": 0.1,
+                state: "liquid",
+                density: 1026,
+                conduct: 0.1,
             },
             "sugar_water": {
-                "color": "#8eaae6",
-                "behavior": behaviors.LIQUID,
-                "tempHigh": 105,
-                "stateHigh": "steam",
-                "tempLow": -5,
-                "stateLow": "ice",
-                "viscosity": 5,
-                "category": "liquids",
-                "reactions": {
+                color: "#8eaae6",
+                behavior: behaviors.LIQUID,
+                tempHigh: 105,
+                stateHigh: "steam",
+                tempLow: -5,
+                stateLow: "ice",
+                viscosity: 5,
+                category: "liquids",
+                reactions: {
                     "dirt": { "elem1": null, "elem2": "mud" },
                     "sand": { "elem1": null, "elem2": "wet_sand", },
+                    "dust": { "elem1": "dirty_water", "elem2": null, },
+                    "ash": { "elem1": "dirty_water", "elem2": null, },
+                    "carbon_dioxide": { "elem1": "dirty_water", "elem2": null, },
+                    "sulfur": { "elem1": "dirty_water", "elem2": null, },
+                    "charcoal": { "elem1": "dirty_water", chance:0.005 },
+                    "rat": { "elem1": "dirty_water", chance:0.005 },
+                    "plague": { "elem1": "dirty_water", "elem2": null, },
+                    "rust": { "elem1": "dirty_water", chance:0.005 },
+                    "rock": { "elem2": "wet_sand", "chance": 0.0004 },
                 },
-                "hidden": true,
-                "state": "liquid",
-                "density": 1026,
-                "conduct": 0.05,
+                hidden: true,
+                state: "liquid",
+                density: 1026,
+                conduct: 0.05,
+            },
+            "dirty_water": {
+                color: "#0e824e",
+                behavior: behaviors.LIQUID,
+                tempHigh: 105,
+                stateHigh: "steam",
+                tempLow: -5,
+                stateLow: "ice",
+                viscosity: 10,
+                category: "liquids",
+                reactions: {
+                    "dirt": { "elem1": null, "elem2": "mud" },
+                    "sand": { "elem1": null, "elem2": "wet_sand", },
+                    "rock": { "elem2": "wet_sand", "chance": 0.0004 },
+                },
+                hidden: true,
+                state: "liquid",
+                density: 1050,
+                conduct: 0.1,
             },
             "dirt": {
-                "color": ["#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#b0a39b"],
-                "behavior": behaviors.POWDER,
-                "tempHigh":1200,
-                "tempLow": -50,
-                "stateLow": "permafrost",
-                "category":"land",
-                "state": "solid",
-                "density": 1220,
+                color: ["#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#b0a39b"],
+                behavior: behaviors.POWDER,
+                tempHigh:1200,
+                tempLow: -50,
+                stateLow: "permafrost",
+                category:"land",
+                state: "solid",
+                density: 1220,
             },
             "mud": {
-                "color": "#382417",
-                "behavior": behaviors.STURDYPOWDER,
-                "tempHigh": 100,
-                "stateHigh": "mudstone",
-                "tempLow": -50,
-                "stateLow": "permafrost",
-                "category": "land",
-                "state": "solid",
-                "density": 1730,
+                color: "#382417",
+                behavior: behaviors.STURDYPOWDER,
+                tempHigh: 100,
+                stateHigh: "mudstone",
+                tempLow: -50,
+                stateLow: "permafrost",
+                category: "land",
+                state: "solid",
+                density: 1730,
             },
             "mudstone": {
-                "color": "#4a341e",
-                "behavior": behaviors.SUPPORT,
-                "tempHigh":1200,
-                "stateHigh": "molten_dirt",
-                "category": "land",
-                "state": "solid",
-                "density": 1250,
+                color: "#4a341e",
+                behavior: behaviors.SUPPORT,
+                tempHigh:1200,
+                stateHigh: "molten_dirt",
+                category: "land",
+                state: "solid",
+                density: 1250,
             },
             "wet_sand": {
-                "color": "#b5a85e",
-                "behavior": behaviors.STURDYPOWDER,
-                "tempHigh": 100,
-                "stateHigh": "packed_sand",
-                "category": "land",
-                "state": "solid",
-                "density": 1905,
+                color: "#b5a85e",
+                behavior: behaviors.STURDYPOWDER,
+                tempHigh: 100,
+                stateHigh: "packed_sand",
+                category: "land",
+                state: "solid",
+                density: 1905,
             },
             "packed_sand": {
-                "color": "#948b5a",
-                "behavior": behaviors.SUPPORT,
-                "tempHigh":1700,
-                "stateHigh": "molten_glass",
-                "category": "land",
-                "state": "solid",
-                "density": 1682,
+                color: "#948b5a",
+                behavior: behaviors.SUPPORT,
+                tempHigh:1700,
+                stateHigh: "molten_glass",
+                category: "land",
+                state: "solid",
+                density: 1682,
             },
             "plant": {
-                "color": "#00bf00",
-                "behavior": behaviors.WALL,
-                "category":"life",
-                "tempHigh": 300,
-                "stateHigh": "fire",
-                "burn":65,
-                "burnTime":50,
+                color: "#00bf00",
+                behavior: behaviors.WALL,
+                category:"life",
+                tempHigh: 300,
+                stateHigh: "fire",
+                burn:65,
+                burnTime:50,
+                state: "solid",
+                density: 1050,
             },
             "grass": {
-                "color": "#00ff00",
-                "behavior": [
+                color: "#00ff00",
+                behavior: [
                     "XX|XX|XX",
                     "XX|XX|XX",
                     "XX|M1|XX",
                 ],
-                "tempHigh": 400,
-                "stateHigh": "fire",
-                "burn":50,
-                "burnTime":20,
-                "category":"land",
-                "state": "solid",
-                "density": 1400,
+                tempHigh: 400,
+                stateHigh: "fire",
+                burn:50,
+                burnTime:20,
+                category:"land",
+                state: "solid",
+                density: 1400,
             },
             "wall": {
-                "color": "#808080",
-                "behavior": behaviors.WALL,
-                "category": "solids",
-                "insulate": true,
+                color: "#808080",
+                behavior: behaviors.WALL,
+                category: "solids",
+                insulate: true,
+                hardness: 1,
             },
             "fire": {
-                "color": ["#ff6b21","#ffa600","#ff4000"],
-                "behavior": behaviors.UL_UR,
-                "reactions": {
+                color: ["#ff6b21","#ffa600","#ff4000"],
+                behavior: behaviors.UL_UR,
+                reactions: {
                     "water": { "elem1": "smoke" },
                 },
-                "temp":600,
-                "tempLow":100,
-                "stateLow": "smoke",
-                "tempHigh": 7000,
-                "stateHigh": "plasma",
-                "category": "energy",
-                "burning": true,
-                "burnTime": 25,
-                "burnInto": "smoke",
-                "state": "gas",
-                "density": 1180,
+                temp:600,
+                tempLow:100,
+                stateLow: "smoke",
+                tempHigh: 7000,
+                stateHigh: "plasma",
+                category: "energy",
+                burning: true,
+                burnTime: 25,
+                burnInto: "smoke",
+                state: "gas",
+                density: 1180,
             },
             "steam": {
-                "color": "#abd6ff",
-                "behavior": behaviors.GAS,
-                "temp": 100,
-                "tempLow": 95,
-                "stateLow": "water",
-                "category": "gases",
-                "state": "gas",
-                "density": 0.6,
+                color: "#abd6ff",
+                behavior: behaviors.GAS,
+                temp: 100,
+                tempLow: 95,
+                stateLow: "water",
+                category: "gases",
+                state: "gas",
+                density: 0.6,
             },
             "ice": {
-                "color": "#c5e9f0",
-                "behavior": behaviors.WALL,
-                "temp": 0,
-                "tempHigh": 5,
-                "stateHigh": "water",
-                "category": "solids",
-                "state": "solid",
-                "density": 917,
+                color: "#c5e9f0",
+                behavior: behaviors.WALL,
+                temp: 0,
+                tempHigh: 5,
+                stateHigh: "water",
+                category: "solids",
+                state: "solid",
+                density: 917,
             },
             "snow": {
-                "color": "#e1f8fc",
-                "behavior": behaviors.POWDER,
-                "temp": 0,
-                "tempHigh": 5,
-                "stateHigh": "water",
-                "category": "land",
-                "state": "solid",
-                "density": 100,
+                color: "#e1f8fc",
+                behavior: behaviors.POWDER,
+                temp: 0,
+                tempHigh: 5,
+                stateHigh: "water",
+                category: "land",
+                state: "solid",
+                density: 100,
             },
             "packed_snow": {
-                "color": "#bcdde3",
-                "behavior": behaviors.SUPPORTPOWDER,
-                "temp": 0,
-                "tempHigh": 20,
-                "stateHigh": "water",
-                "category": "land",
-                "state": "solid",
-                "density": 400,
+                color: "#bcdde3",
+                behavior: behaviors.SUPPORTPOWDER,
+                temp: 0,
+                tempHigh: 20,
+                stateHigh: "water",
+                category: "land",
+                state: "solid",
+                density: 400,
             },
             "wood": {
-                "color": "#a0522d",
-                "behavior": behaviors.WALL,
-                "tempHigh": 400,
-                "stateHigh": "fire",
-                "category": "solids",
-                "burn": 5,
-                "burnTime": 300,
-                "burnInto": ["ash","charcoal","fire"],
-                "state": "solid",
+                color: "#a0522d",
+                behavior: behaviors.WALL,
+                tempHigh: 400,
+                stateHigh: "fire",
+                category: "solids",
+                burn: 5,
+                burnTime: 300,
+                burnInto: ["ash","charcoal","fire"],
+                state: "solid",
             },
             "pollen": {
-                "color": "#ffffc0",
-                "behavior": [
+                color: "#ffffc0",
+                behavior: [
                     "XX|XX|XX",
                     "XX|CH:flower_seed%0.01|XX",
                     "M2|M1|M2",
                 ],
-                "reactions": {
+                reactions: {
                     "sugar_water": { "elem1": null, "elem2": "honey" },
                 },
-                "category":"life",
-                "hidden": true,
-                "burn":50,
-                "burnTime":20,
-                "state": "solid",
-                "density": 1435,
+                category:"life",
+                hidden: true,
+                tempHigh: 400,
+                stateHigh: "ash",
+                burn:50,
+                burnTime:20,
+                state: "solid",
+                density: 1435,
             },
             "smoke": {
-                "color": "#383838",
-                "behavior": behaviors.DGAS,
-                "temp": 114,
-                "tempHigh": 605,
-                "stateHigh": "fire",
-                "deleteAfter": 100,
-                "category": "gases",
-                "state": "gas",
-                "density": 1180,
+                color: "#383838",
+                behavior: behaviors.DGAS,
+                temp: 114,
+                tempHigh: 605,
+                stateHigh: "fire",
+                category: "gases",
+                state: "gas",
+                density: 1180,
             },
             "rock": {
-                "color": ["#808080","#4f4f4f","#949494"],
-                "behavior": behaviors.POWDER,
-                "tempHigh": 950,
-                "stateHigh": "magma",
-                "category": "land",
-                "state": "solid",
-                "density": 2550,
+                color: ["#808080","#4f4f4f","#949494"],
+                behavior: behaviors.POWDER,
+                tempHigh: 950,
+                stateHigh: "magma",
+                category: "land",
+                state: "solid",
+                density: 2550,
+                hardness: 0.5,
             },
             "magma": {
-                "color": ["#ff6f00","#ff8c00","#ff4d00"],
-                "behavior": behaviors.MOLTEN,
-                "reactions": {
+                color: ["#ff6f00","#ff8c00","#ff4d00"],
+                behavior: behaviors.MOLTEN,
+                reactions: {
                     "ice": { "elem1": "basalt" },
                 },
-                "temp": 950,
-                "tempLow": 800,
-                "stateLow": "rock",
-                "viscosity": 10000,
-                "category": "liquids",
-                "state": "liquid",
-                "density": 2725,
+                temp: 950,
+                tempLow: 800,
+                stateLow: "rock",
+                viscosity: 10000,
+                category: "liquids",
+                state: "liquid",
+                density: 2725,
             },
             "concrete": {
-                "color": "#ababab",
-                "behavior": behaviors.SUPPORT,
-                "tempHigh": 1500,
-                "stateHigh": "magma",
-                "category": "structure",
-                "state": "solid",
-                "density": 2400,
+                color: "#ababab",
+                behavior: behaviors.SUPPORT,
+                tempHigh: 1500,
+                stateHigh: "magma",
+                category: "structure",
+                state: "solid",
+                density: 2400,
+                hardness: 0.5,
             },
             "plasma": {
-                "color": ["#8800ff","#b184d9","#8800ff"],
-                "behavior": behaviors.DGAS,
-                "behaviorOn": [
+                color: ["#8800ff","#b184d9","#8800ff"],
+                behavior: behaviors.DGAS,
+                behaviorOn: [
                     "M2|M1|M2",
-                    "CL%5 AND M1|DL%5|CL%5 AND M1",
+                    "CL%5 AND M1|XX|CL%5 AND M1",
                     "M2|M1|M2",
                 ],
-                "temp":7065,
-                "tempLow":5000,
-                "stateLow": "fire",
-                "category": "energy",
-                "state": "gas",
-                "density": 1,
-                "charge": 1,
-                "conduct": 1,
+                temp:7065,
+                tempLow:5000,
+                stateLow: "fire",
+                category: "energy",
+                state: "gas",
+                density: 1,
+                charge: 0.5,
+                conduct: 1,
+            },
+            "cold_fire": {
+                color: ["#21cbff","#006aff","#00ffff"],
+                behavior: [
+                    "M1|M1|M1",
+                    "M2|CH:smoke%8|M2",
+                    "XX|M2|XX",
+                ],
+                reactions: {
+                    "fire": { "elem1": "smoke", "elem2": "smoke" },
+                    "plasma": { "elem1": "light", "elem2": "light" },
+                },
+                temp:-200,
+                tempHigh:0,
+                stateHigh: "smoke",
+                category: "energy",
+                state: "gas",
+                density: 1180,
             },
             "iron": {
-                "color": "#cbcdcd",
-                "behavior": behaviors.WALL,
-                "tempHigh": 1538,
-                "category": "solids",
-                "density": 7860,
-                "conduct": 0.47,
+                color: "#cbcdcd",
+                behavior: behaviors.WALL,
+                reactions: {
+                    "water": { "elem1":"rust", chance:0.0025 },
+                    "salt_water": { "elem1":"rust", chance:0.005 },
+                    "dirty_water": { "elem1":"rust", chance:0.04 },
+                    "sugar_water": { "elem1":"rust", chance:0.0035 },
+                },
+                tempHigh: 1538,
+                category: "solids",
+                density: 7860,
+                conduct: 0.47,
             },
             "rust": {
-                "color": "#bd6d35",
-                "behavior": behaviors.SUPPORT,
-                "tempHigh": 1538,
-                "stateHigh": "molten_iron",
-                "category": "solids",
-                "state": "solid",
-                "density": 5250,
-                "conduct": 0.37,
+                color: "#bd6d35",
+                behavior: behaviors.SUPPORT,
+                tempHigh: 1538,
+                stateHigh: "molten_iron",
+                category: "solids",
+                state: "solid",
+                density: 5250,
+                conduct: 0.37,
             },
             "glass": {
-                "color": "#5e7c80",
-                "behavior": behaviors.WALL,
-                "tempHigh": 1500,
-                "category": "solids",
-                "state": "solid",
-                "density": 2500,
+                color: "#5e7c80",
+                behavior: behaviors.WALL,
+                tempHigh: 1500,
+                category: "solids",
+                state: "solid",
+                density: 2500,
             },
             "glass_shard": {
-                "color": ["#5e7c80","#6299a1","#596b6e"],
-                "behavior": behaviors.POWDER,
-                "tempHigh": 1500,
-                "stateHigh": "molten_glass",
-                "category": "structure",
-                "state": "solid",
-                "density": 2500,
-            },
-            "blood": {
-                "color": "#ff0000",
-                "behavior": behaviors.LIQUID,
-                "viscosity": 10,
-                "category":"liquids",
-                "state": "liquid",
-                "density": 1060,
-            },
-            "honey": {
-                "color": ["#ffd700","#ffae00"],
-                "behavior": behaviors.LIQUID,
-                "viscosity": 10000,
-                "category":"liquids",
-                "state": "liquid",
-                "density": 1420,
-            },
-            "ketchup": {
-                "color": "#ff3119",
-                "behavior": behaviors.LIQUID,
-                "viscosity": 50000,
-                "category":"liquids",
-                "state": "liquid",
-                "density": 1235,
-            },
-            "molasses": {
-                "color": "#240f00",
-                "behavior": behaviors.LIQUID,
-                "viscosity": 7500,
-                "category":"liquids",
-                "state": "liquid",
-                "density": 1600,
+                color: ["#5e7c80","#6299a1","#596b6e"],
+                behavior: behaviors.POWDER,
+                tempHigh: 1500,
+                stateHigh: "molten_glass",
+                category: "structure",
+                state: "solid",
+                density: 2500,
             },
             "cloner": {
-                "color": "#dddd00",
-                "behavior": behaviors.CLONER,
-                "category":"machines",
-                "insulate":true,
+                color: "#dddd00",
+                behavior: behaviors.CLONER,
+                category:"machines",
+                insulate:true,
             },
             "ecloner": {
-                "name": "e-cloner",
-                "color": "#dddd00",
-                "behavior": behaviors.WALL,
-                "behaviorOn": behaviors.CLONER,
-                "category":"machines",
-                "insulate":true,
-                "conduct": 1,
+                name: "e-cloner",
+                color: "#dddd00",
+                behavior: behaviors.WALL,
+                behaviorOn: behaviors.CLONER,
+                category:"machines",
+                insulate:true,
+                conduct: 1,
             },
             "slow_cloner": {
-                "color": "#888800",
-                "behavior": [
+                color: "#888800",
+                behavior: [
                     "XX|CF%10|XX",
                     "CF%10|XX|CF%10",
                     "XX|CF%10|XX",
                 ],
-                "category":"machines",
-                "insulate":true,
+                category:"machines",
+                insulate:true,
             },
             "wire": {
-                "color": "#4d0a03",
-                "behavior": behaviors.WALL,
-                "category": "machines",
-                "insulate": true,
-                "conduct": 1,
+                color: "#4d0a03",
+                behavior: behaviors.WALL,
+                category: "machines",
+                insulate: true,
+                conduct: 1,
             },
             "random": { //hard-coded
-                "color": ["#3e5f8a","#a334ec","#ea96f9","#a6ecf6","#70ebc8","#d9286b","#7eed91","#a18b30"],
-                "behavior": behaviors.WALL,
-                "category": "special",
+                color: ["#3e5f8a","#a334ec","#ea96f9","#a6ecf6","#70ebc8","#d9286b","#7eed91","#a18b30"],
+                behavior: behaviors.WALL,
+                category: "special",
             },
             "filler": {
-                "color": "#ae4cd9",
-                "behavior": behaviors.FILL,
-                "category":"special",
+                color: "#ae4cd9",
+                behavior: behaviors.FILL,
+                category:"special",
             },
             "lattice": {
-                "color": "#ae4cd9",
-                "behavior": [
+                color: "#ae4cd9",
+                behavior: [
                     "CL|XX|CL",
                     "XX|XX|XX",
                     "CL|XX|CL",
                 ],
-                "category":"special",
+                category:"special",
             },
             "gravel": {
-                "color": "#454b51",
-                "behavior": behaviors.POWDER,
-                "category":"land",
-                "tempHigh": 950,
-                "stateHigh": "magma",
-                "state": "solid",
-                "density": 1680,
+                color: "#454b51",
+                behavior: behaviors.POWDER,
+                category:"land",
+                tempHigh: 950,
+                stateHigh: "magma",
+                state: "solid",
+                density: 1680,
+                hardness: 0.2,
             },
             "slime": {
-                "color": "#81cf63",
-                "behavior": behaviors.LIQUID,
-                "viscosity": 5000,
-                "category":"liquids",
-                "state": "liquid",
-                "density": 1450,
+                color: "#81cf63",
+                behavior: behaviors.LIQUID,
+                viscosity: 5000,
+                category:"liquids",
+                state: "liquid",
+                density: 1450,
             },
             "ruins": {
-                "color": "#5c5c5c",
-                "behavior": [
+                color: "#5c5c5c",
+                behavior: [
                     "XX|SP|XX",
                     "XX|XX|XX",
                     "M2%1|M1|M2%1"
                 ],
-                "tempHigh": 1500,
-                "stateHigh": "magma",
-                "category":"structure",
-                "state": "solid",
-                "density": 2400,
+                tempHigh: 1500,
+                stateHigh: "magma",
+                category:"structure",
+                state: "solid",
+                density: 2400,
+                hardness: 0.33,
             },
             "void": {
-                "color": "#262626",
-                "behavior": behaviors.DELETE,
-                "category":"special",
+                color: "#262626",
+                behavior: behaviors.DELETE,
+                category:"special",
             },
             "flea": {
-                "color": "#9e4732",
-                "behavior": [
+                color: "#9e4732",
+                behavior: [
                     "M2|XX|M2",
-                    "DL:blood|XX|DL:blood",
+                    "DL:blood%50|XX|DL:blood%50",
                     "M2|DL:blood%25 AND M1|M2",
                 ],
-                "tempHigh": 35,
-                "stateHigh": "ash",
-                "category":"life",
-                "burn":95,
-                "burnTime":25,
-                "state": "solid",
-                "conduct": 0.15,
+                tempHigh: 35,
+                stateHigh: "ash",
+                category:"life",
+                burn:95,
+                burnTime:25,
+                state: "solid",
+                conduct: 0.15,
             },
             "ant": {
-                "color": "#4a0903",
-                "behavior": [
+                color: "#4a0903",
+                behavior: [
                     "SW:dirt,sand,gravel%5|XX|SW:dirt,sand,gravel%5",
                     "M2|XX|M2",
                     "SW:dirt,sand,gravel%5|M1|SW:dirt,sand,gravel%5",
                 ],
-                "tempHigh": 53.7,
-                "stateHigh": "ash",
-                "category":"life",
-                "burn":95,
-                "burnTime":25,
-                "state": "solid",
-                "conduct": 0.15,
+                tempHigh: 53.7,
+                stateHigh: "ash",
+                category:"life",
+                burn:95,
+                burnTime:25,
+                state: "solid",
+                conduct: 0.15,
             },
             "fly": {
-                "color": "#303012",
-                "behavior": [
+                color: "#303012",
+                behavior: [
                     "M1|M2|M1",
                     "DL:plant,meat,cooked_meat|XX|DL:plant,meat,cooked_meat",
                     "M1|M2|M1",
                 ],
-                "tempHigh": 47,
-                "stateHigh": "ash",
-                "category":"life",
-                "burn":95,
-                "burnTime":25,
-                "state": "solid",
-                "conduct": 0.15,
+                tempHigh: 47,
+                stateHigh: "ash",
+                category:"life",
+                burn:95,
+                burnTime:25,
+                state: "solid",
+                conduct: 0.15,
             },
             "firefly": {
-                "color": ["#303012","#303012","#d9d950","#303012","#303012"],
-                "behavior": [
+                color: ["#303012","#303012","#d9d950","#303012","#303012"],
+                behavior: [
                     "M1|M2|M1",
                     "XX|CC:303012,303012,303012,303012,d9d950%10|XX",
                     "M1|M2|M1",
                 ],
-                "tempHigh": 47,
-                "stateHigh": "ash",
-                "category":"life",
-                "burn":95,
-                "burnTime":25,
-                "state": "solid",
-                "conduct": 0.15,
+                tempHigh: 47,
+                stateHigh: "ash",
+                category:"life",
+                burn:95,
+                burnTime:25,
+                state: "solid",
+                conduct: 0.15,
             },
             "bee": {
-                "color": "#c4b100",
-                "behavior": [
+                color: "#c4b100",
+                behavior: [
                     "M1|M2|M1",
                     "CR:pollen%0.025 AND M1|XX|CR:pollen%0.025 AND M1",
                     "M1|M2|M1",
                 ],
-                "tempHigh": 47,
-                "stateHigh": "ash",
-                "category":"life",
-                "burn":95,
-                "burnTime":25,
-                "state": "solid",
-                "conduct": 0.15,
+                tempHigh: 47,
+                stateHigh: "ash",
+                category:"life",
+                burn:95,
+                burnTime:25,
+                state: "solid",
+                conduct: 0.15,
             },
             "frog": {
-                "color": "#607300",
-                "behavior": [
+                color: "#607300",
+                behavior: [
                     "M2%3|CR:slime%0.01|M2%3",
                     "DL:fly,firefly|XX|DL:fly,firefly",
                     "XX|M1|XX",
                 ],
-                "temp": 19.1,
-                "tempHigh": 41,
-                "stateHigh": "meat",
-                "tempLow": -18,
-                "stateLow": "frozen_frog",
-                "category":"life",
-                "burn":75,
-                "burnTime":30,
-                "state": "solid",
-                "density": 1450,
-                "conduct": 0.2,
+                temp: 19.1,
+                tempHigh: 41,
+                stateHigh: "meat",
+                tempLow: -18,
+                stateLow: "frozen_frog",
+                category:"life",
+                burn:75,
+                burnTime:30,
+                state: "solid",
+                density: 1450,
+                conduct: 0.2,
             },
             "frozen_frog": {
-                "color": "#007349",
-                "behavior": behaviors.STURDYPOWDER,
-                "temp": -18,
-                "tempHigh": 0,
-                "stateHigh": "frog",
-                "tempLow": -18,
-                "stateLow": "frozen_frog",
-                "category":"life",
-                "hidden": true,
-                "state": "solid",
-                "density": 1500,
+                color: "#007349",
+                behavior: behaviors.STURDYPOWDER,
+                temp: -18,
+                tempHigh: 0,
+                stateHigh: "frog",
+                tempLow: -18,
+                stateLow: "frozen_frog",
+                category:"life",
+                hidden: true,
+                state: "solid",
+                density: 1500,
             },
             "fish": {
-                "color": "#ac8650",
-                "behavior": [
+                color: "#ac8650",
+                behavior: [
                     "SW:water,salt_water,sugar_water%6|M2%5|SW:water,salt_water,sugar_water%6",
                     "DL:algae|XX|DL:algae",
                     "SW:water,salt_water,sugar_water%8|M1|SW:water,salt_water,sugar_water%8",
                 ],
-                "temp": 20,
-                "tempHigh": 32,
-                "stateHigh": "meat",
-                "tempLow": -20,
-                "stateLow": "frozen_meat",
-                "category":"life",
-                "burn":40,
-                "burnTime":100,
-                "state": "solid",
-                "density": 1080,
-                "conduct": 0.2,
+                temp: 20,
+                tempHigh: 32,
+                stateHigh: "meat",
+                tempLow: -20,
+                stateLow: "frozen_meat",
+                category:"life",
+                burn:40,
+                burnTime:100,
+                state: "solid",
+                density: 1080,
+                conduct: 0.2,
             },
             "algae": {
-                "color": "#00870e",
-                "behavior": [
+                color: "#00870e",
+                behavior: [
                     "XX|XX|XX",
                     "SW:water,salt_water,sugar_water%1|XX|SW:water,salt_water,sugar_water%1",
                     "SW:water,salt_water,sugar_water%10|M1|SW:water,salt_water,sugar_water%18",
                 ],
-                "reactions": {
+                reactions: {
                     "wood": { "elem1":"lichen" }
                 },
-                "category":"life",
-                "burn":95,
-                "burnTime":20,
-                "state": "solid",
-                "density": 920,
+                category:"life",
+                tempHigh: 225,
+                stateHigh: "fire",
+                burn:95,
+                burnTime:20,
+                state: "solid",
+                density: 920,
             },
             "heater": {
-                "color": "#881111",
-                "behavior": [
+                color: "#881111",
+                behavior: [
                     "XX|HT:2|XX",
                     "HT:2|XX|HT:2",
                     "XX|HT:2|XX",
                 ],
-                "category":"machines",
-                "insulate":true,
+                category:"machines",
+                insulate:true,
             },
             "cooler": {
-                "color": "#111188",
-                "behavior": [
+                color: "#111188",
+                behavior: [
                     "XX|CO:2|XX",
                     "CO:2|XX|CO:2",
                     "XX|CO:2|XX",
                 ],
-                "category":"machines",
-                "insulate":true,
+                category:"machines",
+                insulate:true,
             },
             "superheater": {
-                "color": "#dd1111",
-                "behavior": [
+                color: "#dd1111",
+                behavior: [
                     "XX|HT:10|XX",
                     "HT:10|XX|HT:10",
                     "XX|HT:10|XX",
                 ],
-                "category":"machines",
-                "insulate":true,
+                category:"machines",
+                insulate:true,
             },
             "freezer": {
-                "color": "#1111dd",
-                "behavior": [
+                color: "#1111dd",
+                behavior: [
                     "XX|CO:10|XX",
                     "CO:10|XX|CO:10",
                     "XX|CO:10|XX",
                 ],
-                "category":"machines",
-                "insulate":true,
+                category:"machines",
+                insulate:true,
             },
             "torch": {
-                "color": "#d68542",
-                "behavior": [
+                color: "#d68542",
+                behavior: [
                     "XX|CR:fire|XX",
                     "XX|XX|XX",
                     "XX|XX|XX",
                 ],
-                "temp":600,
-                "category":"special",
+                temp:600,
+                category:"special",
             },
             "water_spout": {
-                "color": "#606378",
-                "behavior": [
+                color: "#606378",
+                behavior: [
                     "XX|CR:water|XX",
                     "CR:water|XX|CR:water",
                     "XX|CR:water|XX",
                 ],
-                "category":"special",
+                category:"special",
+                tempHigh: 1455.5,
+                stateHigh: "molten_steel",
             },
             "bone_marrow": {
-                "color": "#c97265",
-                "behavior": [
+                color: "#c97265",
+                behavior: [
                     "XX|CR:blood,bone,bone%5|XX",
                     "CR:blood,bone,bone%5|XX|CR:blood,bone,bone%5",
                     "XX|CR:blood,bone,bone%5|XX",
                 ],
-                "category":"life",
-                "tempHigh": 760,
-                "stateHigh": "calcium",
-                "hidden": true,
+                category:"life",
+                tempHigh: 750,
+                stateHigh: "calcium",
+                hidden: true,
             },
             "bone": {
-                "color": "#d9d9d9",
-                "behavior": behaviors.SUPPORT,
-                "category":"life",
-                "tempHigh": 760,
-                "stateHigh": "calcium",
-                "state": "solid",
-                "density": 1900,
+                color: "#d9d9d9",
+                behavior: behaviors.SUPPORT,
+                category:"life",
+                tempHigh: 760,
+                stateHigh: "calcium",
+                state: "solid",
+                density: 1900,
             },
-            "anti_powder": {
-                "color": "#ebd1d8",
-                "behavior": behaviors.AGPOWDER,
-                "category":"special",
-                "state": "solid",
-                "density": 1850,
+            "antipowder": {
+                color: "#ebd1d8",
+                behavior: behaviors.AGPOWDER,
+                category:"special",
+                tempHigh: 1850,
+                stateHigh: "antimolten",
+                state: "solid",
+                density: 1850,
             },
-            "anti_fluid": {
-                "color": "#d1dbeb",
-                "behavior": behaviors.AGLIQUID,
-                "category":"special",
-                "state": "liquid",
-                "density": 1000,
+            "antimolten": {
+                color: ["#ffb5b5","#ffd0b5","#ffd0b5"],
+                behavior: [
+                    "M1|M1|M1",
+                    "M2|XX|M2",
+                    "XX|CR:antifire%2.5|XX",
+                ],
+                temp: 1850,
+                tempLow: 1750,
+                stateLow: "antipowder",
+                viscosity: 10000,
+                hidden: true,
+                state: "liquid",
+                density: 1000,
+            },
+            "antifire": {
+                color: ["#ffc3a6","#ffdfa3","#ffb69e"],
+                behavior: [
+                    "XX|M2|XX",
+                    "M2|XX|M2",
+                    "M1|M1|M1",
+                ],
+                reactions: {
+                    "antiliquid": { "elem1": "antigas" },
+                },
+                temp:600,
+                tempLow:100,
+                stateLow: "antigas",
+                tempHigh: 7000,
+                stateHigh: "plasma",
+                category: "special",
+                burning: true,
+                burnTime: 25,
+                burnInto: "antigas",
+                hidden: true,
+                state: "gas",
+                density: 0.2,
+            },
+            "antifluid": {
+                color: "#d1dbeb",
+                behavior: behaviors.AGLIQUID,
+                category:"special",
+                tempHigh: 100,
+                stateHigh: "antigas",
+                state: "liquid",
+                density: 1000,
+            },
+            "antigas": {
+                color: "#e6fffc",
+                behavior: behaviors.GAS,
+                category:"special",
+                tempLow: 100,
+                stateLow: "antifluid",
+                hidden: true,
+                state: "gas",
+                density: 0.1,
             },
             "vertical": {
-                "color": "#d9d9d9",
-                "behavior": [
+                color: "#d9d9d9",
+                behavior: [
                     "XX|M1|XX",
                     "CR:wall|XX|CR:wall",
                     "XX|XX|XX",
                 ],
-                "category":"special",
-                "hidden":true,
+                category:"special",
+                hidden:true,
             },
             "horizontal": {
-                "color": "#d9d9d9",
-                "behavior": [
+                color: "#d9d9d9",
+                behavior: [
                     "XX|CR:wall|XX",
                     "XX|XX|M1",
                     "XX|CR:wall|XX",
                 ],
-                "category":"special",
-                "hidden":true,
+                category:"special",
+                hidden:true,
             },
             "rain_cloud": {
-                "color": "#636b78",
-                "behavior": [
+                color: "#636b78",
+                behavior: [
                     "XX|XX|XX",
                     "M1%5|CH:water%0.05|M1%5",
-                    "XX|XX|XX",
+                    "CR:electric%0.05|CR:electric%0.05|CR:electric%0.05",
                 ],
-                "category":"special",
-                "temp": 80,
-                "tempLow": 0,
-                "stateLow": "snow_cloud",
-                "state": "gas",
-                "density": 1,
-                "conduct": 0.03,
+                category:"special",
+                temp: 80,
+                tempLow: 0,
+                stateLow: "snow_cloud",
+                state: "gas",
+                density: 1,
+                conduct: 0.03,
             },
             "snow_cloud": {
-                "color": "#7e8691",
-                "behavior": [
+                color: "#7e8691",
+                behavior: [
                     "XX|XX|XX",
                     "M1%5|CH:snow%0.05|M1%5",
                     "XX|XX|XX",
                 ],
-                "category":"special",
-                "temp": -10,
-                "tempHigh": 30,
-                "stateHigh": "rain_cloud",
-                "state": "gas",
-                "density": 2,
+                category:"special",
+                temp: -10,
+                tempHigh: 30,
+                stateHigh: "rain_cloud",
+                state: "gas",
+                density: 2,
+                conduct: 0.01,
             },
             "acid_cloud": {
-                "color": "#637865",
-                "behavior": [
+                color: "#637865",
+                behavior: [
                     "XX|XX|XX",
                     "M1%5|CH:acid%0.05|M1%5",
                     "XX|XX|XX",
                 ],
-                "category":"special",
-                "density": 3,
+                category:"special",
+                density: 3,
             },
             "rocket": {
-                "color": "#ff0000",
-                "behavior": [
+                color: "#ff0000",
+                behavior: [
                     "XX|M1|XX",
                     "XX|XX|XX",
                     "XX|CR:fire|XX",
                 ],
-                "hidden":true,
-                "state": "solid",
-                "density": 7300,
-                "conduct": 0.73,
+                hidden:true,
+                state: "solid",
+                density: 7300,
+                conduct: 0.73,
+                tempHigh: 1455.5,
+                stateHigh: "molten_steel",
             },
             "ash": {
-                "color": ["#8c8c8c","#9c9c9c"],
-                "behavior": behaviors.POWDER,
-                "category":"energy",
-                "state": "solid",
-                "density": 700,
+                color: ["#8c8c8c","#9c9c9c"],
+                behavior: behaviors.POWDER,
+                category:"energy",
+                state: "solid",
+                density: 700,
             },
             "meat": {
-                "color": "#b86565",
-                "behavior": [
+                color: ["#9E4839","#BA6449","#D2856C","#A14940"],
+                behavior: [
                     "XX|XX|XX",
                     "SP|CH:rotten_meat%0.005|SP",
                     "XX|M1|XX",
                 ],
-                "tempHigh": 80,
-                "stateHigh": "cooked_meat",
-                "tempLow": -18,
-                "stateLow": "frozen_meat",
-                "category":"life",
-                "burn":25,
-                "burnTime":200,
-                "burnInto":"cooked_meat",
-                "state": "solid",
-                "density": 1019.5,
-                "conduct": 0.2,
+                tempHigh: 80,
+                stateHigh: "cooked_meat",
+                tempLow: -18,
+                stateLow: "frozen_meat",
+                category:"life",
+                burn:25,
+                burnTime:200,
+                burnInto:"cooked_meat",
+                state: "solid",
+                density: 1019.5,
+                conduct: 0.2,
             },
             "rotten_meat": {
-                "color": ["#9ab865","#b8b165","#b89765"],
-                "behavior": [
+                color: ["#9ab865","#b8b165","#b89765"],
+                behavior: [
                     "XX|CR:plague%0.25|XX",
                     "SP|XX|SP",
                     "XX|M1|XX",
                 ],
-                "tempHigh": 120,
-                "stateHigh": "plague",
-                "category":"life",
-                "hidden": true,
-                "burn":25,
-                "burnTime":200,
-                "burnInto":"plague",
-                "state": "solid",
-                "density": 1005,
-                "conduct": 0.1,
+                tempHigh: 120,
+                stateHigh: "plague",
+                category:"life",
+                hidden: true,
+                burn:25,
+                burnTime:200,
+                burnInto:"plague",
+                state: "solid",
+                density: 1005,
+                conduct: 0.1,
             },
             "cooked_meat": {
-                "color": "#61361c",
-                "behavior": behaviors.STURDYPOWDER,
-                "tempHigh": 120,
-                "stateHigh": "ash",
-                "category":"life",
-                "hidden":true,
-                "burn":25,
-                "burnTime":200,
-                "burnInto": "ash",
-                "state": "solid",
-                "density": 1005,
+                color: ["#AE7D5B","#9B6D54","#7E4D31"],
+                behavior: behaviors.STURDYPOWDER,
+                tempHigh: 150,
+                stateHigh: "ash",
+                category:"life",
+                hidden:true,
+                burn:25,
+                burnTime:200,
+                burnInto: "ash",
+                state: "solid",
+                density: 1005,
             },
             "frozen_meat": {
-                "color": "#65b8aa",
-                "behavior": behaviors.STURDYPOWDER,
-                "temp": -18,
-                "tempHigh": 0,
-                "stateHigh": "meat",
-                "category":"life",
-                "hidden":true,
-                "state": "solid",
-                "density": 1067.5,
+                color: "#65b8aa",
+                behavior: behaviors.STURDYPOWDER,
+                temp: -18,
+                tempHigh: 0,
+                stateHigh: "meat",
+                category:"life",
+                hidden:true,
+                state: "solid",
+                density: 1067.5,
             },
             "light": {
-                "color": "#ffffa8",
-                "behavior": behaviors.SELFDELETE,
-                "temp": 40,
-                "category":"energy",
+                color: "#ffffa8",
+                behavior: behaviors.SELFDELETE,
+                temp: 40,
+                category:"energy",
             },
             "pointer": {
-                "color": "#ff0000",
-                "behavior": behaviors.SELFDELETE,
-                "category":"tools",
-                "hidden":true,
+                color: "#ff0000",
+                behavior: behaviors.SELFDELETE,
+                category:"tools",
+                hidden:true,
             },
             "charcoal": {
-                "color": "#2b2b2b",
-                "behavior": behaviors.POWDER,
-                "burn": 25,
-                "burnTime": 1000,
-                "burnInto": "carbon_dioxide",
-                "category": "energy",
-                "state": "solid",
-                "density": 208,
+                color: "#2b2b2b",
+                behavior: behaviors.POWDER,
+                burn: 25,
+                burnTime: 1000,
+                burnInto: "carbon_dioxide",
+                category: "energy",
+                state: "solid",
+                density: 208,
             },
             "hydrogen": {
-                "color": "#558bcf",
-                "behavior": behaviors.GAS,
-                "reactions": {
+                color: "#558bcf",
+                behavior: behaviors.GAS,
+                reactions: {
                     "oxygen": { "elem1":null, "elem2":"steam" },
                 },
-                "category": "gases",
-                "burn": 100,
-                "burnTime": 2,
-                "tempLow": -252.8,
-                "stateLow": "liquid_hydrogen",
-                "state": "gas",
-                "density": 0.08375,
+                category: "gases",
+                burn: 100,
+                burnTime: 2,
+                tempLow: -252.8,
+                stateLow: "liquid_hydrogen",
+                state: "gas",
+                density: 0.08375,
             },
             "oxygen": {
-                "color": "#99c7ff",
-                "behavior": behaviors.GAS,
-                "reactions": {
-                    "copper": { "elem2":"oxidized_copper" },
-                    "iron": { "elem2":"rust" },
+                color: "#99c7ff",
+                behavior: behaviors.GAS,
+                reactions: {
+                    "copper": { "elem2":"oxidized_copper", chance:0.05 },
+                    "iron": { "elem2":"rust", chance:0.025 },
                 },
-                "category": "gases",
-                "burn": 100,
-                "burnTime": 2,
-                "tempLow": -183.94,
-                "stateLow": "liquid_oxygen",
-                "state": "gas",
-                "density": 1.292,
+                category: "gases",
+                burn: 100,
+                burnTime: 2,
+                tempLow: -183.94,
+                stateLow: "liquid_oxygen",
+                state: "gas",
+                density: 1.292,
             },
             "nitrogen": {
-                "color": "#b8d1d4",
-                "behavior": behaviors.GAS,
-                "reactions": {
+                color: "#b8d1d4",
+                behavior: behaviors.GAS,
+                reactions: {
                     "oxygen": { "elem1":null, "elem2":"anesthesia" },
                 },
-                "category": "gases",
-                "tempLow": -195.8,
-                "stateLow": "liquid_nitrogen",
-                "state": "gas",
-                "density": 1.165,
+                category: "gases",
+                tempLow: -195.8,
+                stateLow: "liquid_nitrogen",
+                state: "gas",
+                density: 1.165,
             },
             "anesthesia": {
-                "color": "#d3e1e3",
-                "behavior": behaviors.LIQUID,
-                "category": "liquids",
-                "hidden": true,
-                "state": "liquid",
-                "density": 1.9781,
-            },
-            "liquid_hydrogen": {
-                "color": "#97afcf",
-                "behavior": behaviors.LIQUID,
-                "reactions": {
-                    "liquid_oxygen": { "elem1":"ice", "elem2":null },
-                    "oxygen": { "elem1":"ice", "elem2":null },
-                },
-                "category": "liquids",
-                "burn": 100,
-                "burnTime": 2,
-                "temp":-252.8,
-                "tempHigh": -252.8,
-                "stateHigh": "hydrogen",
-                "state": "liquid",
-                "density": 71,
-            },
-            "liquid_oxygen": {
-                "color": "#00ad99",
-                "behavior": behaviors.LIQUID,
-                "reactions": {
-                    "hydrogen": { "elem1":"ice", "elem2":null },
-                },
-                "category": "liquids",
-                "burn": 100,
-                "burnTime": 2,
-                "temp":-182.94,
-                "tempHigh": -182.94,
-                "stateHigh": "oxygen",
-                "state": "liquid",
-                "density": 1141,
-            },
-            "liquid_nitrogen": {
-                "color": "#d3e1e3",
-                "behavior": behaviors.LIQUID,
-                "category": "liquids",
-                "temp":-195.8,
-                "tempHigh": -195.8,
-                "stateHigh": "nitrogen",
-                "state": "liquid",
-                "density": 804,
+                color: "#d3e1e3",
+                behavior: behaviors.LIQUID,
+                category: "liquids",
+                hidden: true,
+                state: "liquid",
+                density: 1.9781,
             },
             "carbon_dioxide": {
-                "color": "#2f2f2f",
-                "behavior": behaviors.GAS,
-                "reactions": {
+                color: "#2f2f2f",
+                behavior: behaviors.GAS,
+                reactions: {
                     "plant": { "elem1":"oxygen" },
                     "algae": { "elem1":"oxygen" },
                 },
-                "category": "gases",
-                "tempLow": -78.5,
-                "stateLow": "dry_ice",
-                "state": "gas",
-                "density": 1.977,
+                category: "gases",
+                tempLow: -78.5,
+                stateLow: "dry_ice",
+                state: "gas",
+                density: 1.977,
             },
             "dry_ice": {
-                "color": "#e6e6e6",
-                "behavior": behaviors.WALL,
-                "category": "solids",
-                "temp": -78.5,
-                "tempHigh": -78.5,
-                "stateHigh": "carbon_dioxide",
-                "state": "solid",
-                "density": 1562,
+                color: "#e6e6e6",
+                behavior: behaviors.WALL,
+                category: "solids",
+                temp: -78.5,
+                tempHigh: -78.5,
+                stateHigh: "carbon_dioxide",
+                state: "solid",
+                density: 1562,
             },
             "oil": {
-                "color": "#300000",
-                "behavior": behaviors.LIQUID,
-                "category": "liquids",
-                "tempHigh": 400,
-                "stateHigh": "fire",
-                "burn": 100,
-                "burnTime": 30,
-                "burnInto": ["carbon_dioxide","fire"],
-                "viscosity": 250,
-                "state": "liquid",
-                "density": 825,
+                color: "#300000",
+                behavior: behaviors.LIQUID,
+                category: "liquids",
+                tempHigh: 400,
+                stateHigh: "fire",
+                burn: 100,
+                burnTime: 30,
+                burnInto: ["carbon_dioxide","fire"],
+                viscosity: 250,
+                state: "liquid",
+                density: 825,
             },
             "lamp_oil": {
-                "color": "#1a0803",
-                "behavior": behaviors.LIQUID,
-                "category": "liquids",
-                "tempHigh": 400,
-                "stateHigh": "fire",
-                "burn": 95,
-                "burnTime": 2000,
-                "burnInto": ["carbon_dioxide","fire"],
-                "viscosity": 3,
-                "state": "liquid",
-                "density": 850,
+                color: "#1a0803",
+                behavior: behaviors.LIQUID,
+                category: "liquids",
+                tempHigh: 400,
+                stateHigh: "fire",
+                burn: 95,
+                burnTime: 2000,
+                burnInto: ["carbon_dioxide","fire"],
+                viscosity: 3,
+                state: "liquid",
+                density: 850,
             },
             "propane": {
-                "color": "#cfcfcf",
-                "behavior": behaviors.GAS,
-                "category": "gases",
-                "tempHigh": 400,
-                "stateHigh": "fire",
-                "burn": 100,
-                "burnTime": 5,
-                "fireColor": ["#00ffff","#00ffdd"],
-                "state": "gas",
-                "density": 2.0098,
+                color: "#cfcfcf",
+                behavior: behaviors.GAS,
+                category: "gases",
+                tempHigh: 400,
+                stateHigh: "fire",
+                burn: 100,
+                burnTime: 5,
+                fireColor: ["#00ffff","#00ffdd"],
+                state: "gas",
+                density: 2.0098,
             },
             "methane": {
-                "color": "#9f9f9f",
-                "behavior": behaviors.GAS,
-                "category": "gases",
-                "tempHigh": 400,
-                "stateHigh": "fire",
-                "burn": 85,
-                "burnTime": 5,
-                "fireColor": ["#00ffff","#00ffdd"],
-                "state": "gas",
-                "density": 0.554,
+                color: "#9f9f9f",
+                behavior: behaviors.GAS,
+                category: "gases",
+                tempHigh: 400,
+                stateHigh: "fire",
+                burn: 85,
+                burnTime: 5,
+                fireColor: ["#00ffff","#00ffdd"],
+                state: "gas",
+                density: 0.554,
             },
             "tinder": {
-                "color": ["#917256","#87684F","#735F4A","#5D4C3E","#4B3A2E"],
-                "behavior": behaviors.STURDYPOWDER,
-                "category": "energy",
-                "burn": 50,
-                "burnTime": 100,
-                "state": "solid",
-                "density": 23,
+                color: ["#917256","#87684F","#735F4A","#5D4C3E","#4B3A2E"],
+                behavior: behaviors.STURDYPOWDER,
+                category: "energy",
+                tempHigh: 400,
+                stateHigh: "fire",
+                burn: 50,
+                burnTime: 100,
+                state: "solid",
+                density: 23,
             },
             "static": {
-                "color": ["#ffffff","#888888","#000000"],
-                "behavior": [
+                color: ["#ffffff","#888888","#000000"],
+                behavior: [
                     "XX|XX|XX",
                     "XX|CC:ffffff,9c9c9c,454545|XX",
                     "XX|XX|XX",
                 ],
-                "category": "special",
+                category: "special",
             },
             "borax": {
-                "color": "#ffffff",
-                "behavior": behaviors.POWDER,
-                "burn": 15,
-                "burnTime": 200,
-                "fireColor": ["#34eb67","#5ceb34"],
-                "tempHigh": 743,
-                "state": "solid",
-                "density": 1730,
+                color: "#ffffff",
+                behavior: behaviors.POWDER,
+                burn: 15,
+                burnTime: 200,
+                fireColor: ["#34eb67","#5ceb34"],
+                tempHigh: 743,
+                state: "solid",
+                density: 1730,
             },
             "smoke_grenade": {
-                "color": "#2b382c",
-                "behavior": [
+                color: "#2b382c",
+                behavior: [
                     "XX|CR:smoke|XX",
                     "XX|XX|XX",
                     "M2|M1|M2",
                 ],
-                "state": "solid",
-                "density": 7300,
-                "conduct": 0.73,
-                "tempHigh": 1455.5,
-                "stateHigh": "molten_steel",
+                state: "solid",
+                density: 7300,
+                conduct: 0.73,
+                tempHigh: 1455.5,
+                stateHigh: "molten_steel",
             },
             "bamboo": {
-                "color": "#336600",
-                "behavior": behaviors.WALL,
-                "tempHigh": 400,
-                "stateHigh": "fire",
-                "burn": 10,
-                "burnTime": 200,
-                "category": "life",
-                "state": "solid",
-                "density": 686,
+                color: "#336600",
+                behavior: behaviors.WALL,
+                tempHigh: 400,
+                stateHigh: "fire",
+                burn: 10,
+                burnTime: 200,
+                category: "life",
+                state: "solid",
+                density: 686,
             },
             "bamboo_plant": {
-                "color": "#b4c781",
-                "behavior": [
+                color: "#b4c781",
+                behavior: [
                     "XX|M2%0.25|XX",
                     "XX|L2:bamboo AND CH:bamboo%0.025|XX",
                     "XX|M1|XX",
                 ],
-                "tempHigh": 400,
-                "stateHigh": "fire",
-                "burn": 30,
-                "burnTime": 100,
-                "category": "life",
-                "state": "solid",
-                "density": 686,
+                tempHigh: 400,
+                stateHigh: "fire",
+                burn: 30,
+                burnTime: 100,
+                category: "life",
+                state: "solid",
+                density: 686,
             },
             "clay": {
-                "color": "#d4c59c",
-                "behavior": behaviors.SUPPORT,
-                "tempHigh": 135,
-                "stateHigh": "baked_clay",
-                "category": "land",
-                "state": "solid",
-                "density": 1760,
+                color: "#d4c59c",
+                behavior: behaviors.SUPPORT,
+                tempHigh: 135,
+                stateHigh: "baked_clay",
+                category: "land",
+                state: "solid",
+                density: 1760,
             },
             "baked_clay": {
-                "color": "#b85746",
-                "behavior": behaviors.SUPPORT,
-                "category": "structure",
-                "state": "solid",
-                "density": 2000,
+                color: "#b85746",
+                behavior: behaviors.SUPPORT,
+                category: "structure",
+                state: "solid",
+                density: 2000,
             },
             "brick": {
-                "color": "#cb4141",
-                "behavior": behaviors.WALL,
-                "category": "solids",
-                "tempHigh": 1540,
-                "state": "solid",
-                "density": 1650,
+                color: "#cb4141",
+                behavior: behaviors.WALL,
+                category: "solids",
+                tempHigh: 1540,
+                state: "solid",
+                density: 1650,
+                hardness: 0.33,
             },
-
             "sapling": {
-                "color": "#3e9c3e",
-                "behavior": [
+                color: "#3e9c3e",
+                behavior: [
                     "XX|M2%2|XX",
                     "XX|L2:wood,tree_branch AND CH:wood%0.25|XX",
                     "XX|M1|XX",
                 ],
-                "tempHigh": 400,
-                "stateHigh": "fire",
-                "burn": 65,
-                "burnTime": 15,
-                "category": "life",
-                "state": "solid",
-                "density": 1500,
+                tempHigh: 400,
+                stateHigh: "fire",
+                burn: 65,
+                burnTime: 15,
+                category: "life",
+                state: "solid",
+                density: 1500,
             },
             "grass_seed": {
-                "color": "#00ff00",
-                "behavior": [
+                color: "#00ff00",
+                behavior: [
                     "XX|M2%0.05|XX",
                     "XX|L2:grass|XX",
                     "XX|M1|XX",
                 ],
-                "tempHigh": 400,
-                "stateHigh": "fire",
-                "burn": 50,
-                "burnTime": 20,
-                "category": "life",
-                "state": "solid",
-                "density": 1400,
+                tempHigh: 400,
+                stateHigh: "fire",
+                burn: 50,
+                burnTime: 20,
+                category: "life",
+                state: "solid",
+                density: 1400,
             },
             "wheat_seed": {
-                "color": "#b6c981",
-                "behavior": [
+                color: "#b6c981",
+                behavior: [
                     "CR:wheat%0.05|M2%0.25|CR:wheat%0.05",
                     "XX|L2:wheat AND CH:wheat%0.01|XX",
                     "XX|M1|XX",
                 ],
-                "tempHigh": 400,
-                "stateHigh": "fire",
-                "burn": 50,
-                "burnTime": 20,
-                "category": "life",
-                "state": "solid",
-                "density": 769,
+                tempHigh: 400,
+                stateHigh: "fire",
+                burn: 50,
+                burnTime: 20,
+                category: "life",
+                state: "solid",
+                density: 769,
             },
             "wheat": {
-                "color": "#c9bc81",
-                "behavior": behaviors.WALL,
-                "reactions": {
+                color: "#c9bc81",
+                behavior: behaviors.WALL,
+                reactions: {
                     "rock": { "elem1":"flour", "elem2":"rock" }
                 },
-                "tempHigh": 400,
-                "stateHigh": "fire",
-                "burn":40,
-                "burnTime":25,
-                "category":"life",
-                "hidden":true,
-                "state": "solid",
-                "density": 769,
+                tempHigh: 400,
+                stateHigh: "fire",
+                burn:40,
+                burnTime:25,
+                category:"life",
+                hidden:true,
+                state: "solid",
+                density: 769,
             },
             "straw": {
-                "color": "#c9bc81",
-                "behavior": behaviors.SUPPORT,
-                "tempHigh": 400,
-                "stateHigh": "fire",
-                "burn": 60,
-                "burnTime": 40,
-                "category": "structure",
-                "state": "solid",
-                "density": 67.5,
+                color: "#c9bc81",
+                behavior: behaviors.SUPPORT,
+                tempHigh: 400,
+                stateHigh: "fire",
+                burn: 60,
+                burnTime: 40,
+                category: "structure",
+                state: "solid",
+                density: 67.5,
             },
             "flower_seed": {
-                "color": "#0e990e",
-                "behavior": [
+                color: "#0e990e",
+                behavior: [
                     "XX|M2%1.5|XX",
                     "XX|L2:grass AND CH:pistil%0.3|XX",
                     "XX|M1|XX",
                 ],
-                "tempHigh": 400,
-                "stateHigh": "fire",
-                "burn":50,
-                "burnTime":20,
-                "category":"life",
-                "state": "solid",
-                "density": 1400,
+                tempHigh: 400,
+                stateHigh: "fire",
+                burn:50,
+                burnTime:20,
+                category:"life",
+                state: "solid",
+                density: 1400,
             },
             "pistil": {
-                "color": "#734e39",
-                "behavior": [
+                color: "#734e39",
+                behavior: [
                     "XX|CR:petal%10|XX",
                     "CR:petal%10|XX|CR:petal%10",
                     "XX|M1|XX",
                 ],
-                "tempHigh": 400,
-                "stateHigh": "fire",
-                "burn":50,
-                "burnTime":20,
-                "category":"life",
-                "hidden": true,
-                "state": "solid",
-                "density": 1400,
+                tempHigh: 400,
+                stateHigh: "fire",
+                burn:50,
+                burnTime:20,
+                category:"life",
+                hidden: true,
+                state: "solid",
+                density: 1400,
             },
             "petal": {
-                "color": "#ff0000",
-                "behavior": behaviors.WALL,
-                "tempHigh": 400,
-                "stateHigh": "fire",
-                "burn":50,
-                "burnTime":20,
-                "category":"life",
-                "hidden": true,
-                "state": "solid",
-                "density": 1400,
+                color: "#ff0000",
+                behavior: behaviors.WALL,
+                tempHigh: 400,
+                stateHigh: "fire",
+                burn:50,
+                burnTime:20,
+                category:"life",
+                hidden: true,
+                state: "solid",
+                density: 1400,
             },
             "tree_branch": {
-                "color": "#a0522d",
-                "behavior": [
+                color: "#a0522d",
+                behavior: [
                     "CR:plant,tree_branch%2|CR:plant,plant,plant,tree_branch%2|CR:plant,tree_branch%2",
                     "XX|XX|XX",
                     "XX|XX|XX",
                 ],
-                "tempHigh": 400,
-                "stateHigh": "fire",
-                "category": "solids",
-                "burn": 40,
-                "burnTime": 50,
-                "burnInto": ["ash","charcoal","fire"],
-                "hidden": true,
-                "state": "solid",
-                "density": 1500,
+                tempHigh: 400,
+                stateHigh: "fire",
+                category: "solids",
+                burn: 40,
+                burnTime: 50,
+                burnInto: ["ash","charcoal","fire"],
+                hidden: true,
+                state: "solid",
+                density: 1500,
             },
             "vine": {
-                "color": "#005900",
-                "behavior": [
+                color: "#005900",
+                behavior: [
+                    "XX|SP|XX",
                     "XX|XX|XX",
-                    "XX|XX|XX",
-                    "XX|CL%2.5|XX",
+                    "XX|CL%1 AND M1|XX",
                 ],
-                "tempHigh": 400,
-                "stateHigh": "fire",
-                "burn": 35,
-                "burnTime": 100,
-                "category": "life",
-                "hidden": true,
+                tempHigh: 400,
+                stateHigh: "fire",
+                burn: 35,
+                burnTime: 100,
+                category: "life",
+                state: "solid",
+                density: 1050,
             },
             "burner": {
-                "color": "#d6baa9",
-                "behavior": [
+                color: "#d6baa9",
+                behavior: [
                     "CR:propane|CR:propane|CR:propane",
                     "XX|XX|XX",
                     "XX|XX|XX",
                 ],
-                "category": "machines",
-                "conduct": 0.73,
+                category: "machines",
+                conduct: 0.73,
             },
             "foam": {
-                "color": "#cad2e3",
-                "behavior": behaviors.FOAM,
-                "category": "liquids",
-                "state": "gas",
-                "density": 40,
+                color: "#cad2e3",
+                behavior: behaviors.FOAM,
+                category: "liquids",
+                state: "gas",
+                density: 40,
             },
             "bubble": {
-                "color": "#afc7fa",
-                "behavior": behaviors.BUBBLE,
-                "category": "liquids",
-                "state": "gas",
-                "density": 1.294,
+                color: "#afc7fa",
+                behavior: behaviors.BUBBLE,
+                category: "liquids",
+                state: "gas",
+                density: 1.294,
             },
             "rainbow": {
-                "color": ["#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"],
-                "behavior": [
+                color: ["#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"],
+                behavior: [
                     "XX|XX|XX",
                     "XX|CC:ff0000,ff8800,ffff00,00ff00,00ffff,0000ff,ff00ff|XX",
                     "XX|XX|XX",
                 ],
-                "category": "special",
+                category: "special",
             },
             "copper": {
-                "color": "#e08128",
-                "behavior": [
+                color: "#e08128",
+                behavior: [
                     "XX|XX|XX",
                     "XX|CH:oxidized_copper%0.001|XX",
                     "XX|XX|XX",
                 ],
-                "category": "solids",
-                "tempHigh": 1085,
-                "density": 8960,
-                "conduct": 0.95,
+                reactions: {
+                    "water": { "elem1":"oxidized_copper", chance:0.0025 },
+                    "salt_water": { "elem1":"oxidized_copper", chance:0.005 },
+                    "dirty_water": { "elem1":"oxidized_copper", chance:0.04 },
+                    "sugar_water": { "elem1":"oxidized_copper", chance:0.0035 },
+                },
+                category: "solids",
+                tempHigh: 1085,
+                density: 8960,
+                conduct: 0.95,
             },
             "oxidized_copper": {
-                "color": "#7f9c21",
-                "behavior": [
+                color: "#7f9c21",
+                behavior: [
                     "XX|XX|XX",
                     "XX|XX|XX",
                     "XX|XX|XX",
                 ],
-                "category": "solids",
-                "hidden": true,
-                "tempHigh": 1085,
-                "stateHigh": "molten_copper",
-                "density": 8960,
-                "conduct": 0.85,
+                category: "solids",
+                hidden: true,
+                tempHigh: 1085,
+                stateHigh: "molten_copper",
+                density: 8960,
+                conduct: 0.85,
             },
             "acid": {
-                "color": ["#b5cf91","#a1ff5e","#288f2a"],
-                "behavior": [
+                color: ["#b5cf91","#a1ff5e","#288f2a"],
+                behavior: [
                     "XX|DL%5|XX",
                     "DL%5 AND M2|DL%2|DL%5 AND M2",
                     "DL%5 AND M2|DL%10 AND M1|DL%5 AND M2",
                 ],
-                "category": "liquids",
-                "burn": 30,
-                "burnTime": 1,
-                "state": "liquid",
-                "density": 1049,
+                category: "liquids",
+                tempHigh: 400,
+                stateHigh: "fire",
+                burn: 30,
+                burnTime: 1,
+                state: "liquid",
+                density: 1049,
             },
             "acid_gas": {
-                "color": ["#c0d1a7","#c2ff96","#58a659"],
-                "behavior": [
+                color: ["#c0d1a7","#c2ff96","#58a659"],
+                behavior: [
                     "M1|DL%5 AND M1|M1",
                     "DL%5 AND M1|DL%2|DL%5 AND M1",
                     "DL%5 AND M1|DL%10 AND M1|DL%5 AND M1",
                 ],
-                "category": "gases",
-                "burn": 30,
-                "burnTime": 1,
-                "state": "gas",
-                "density": 1.63,
+                category: "gases",
+                tempHigh: 400,
+                stateHigh: "fire",
+                burn: 30,
+                burnTime: 1,
+                state: "gas",
+                density: 1.63,
             },
             "dust": {
-                "color": "#666666",
-                "behavior": behaviors.POWDER,
-                "burn": 10,
-                "burnTime": 1,
-                "state": "solid",
-                "density": 1490,
+                color: "#666666",
+                behavior: behaviors.POWDER,
+                burn: 10,
+                burnTime: 1,
+                state: "solid",
+                density: 1490,
             },
             "glue": {
-                "color": "#f0f0f0",
-                "behavior": behaviors.STICKY,
-                "category": "liquids",
-                "state": "liquid",
-                "density": 1300,
+                color: "#f0f0f0",
+                behavior: behaviors.STICKY,
+                category: "liquids",
+                state: "liquid",
+                density: 1300,
             },
             "gray_goo": {
-                "color": "#c0c0c0",
-                "behavior": [
+                color: "#c0c0c0",
+                behavior: [
                     "XX|CH:gray_goo|XX",
                     "CH:gray_goo|DL%5|CH:gray_goo",
                     "XX|CH:gray_goo AND M1|XX",
                 ],
-                "category": "machines",
-                "state": "solid",
-                "density": 21450,
+                category: "machines",
+                state: "solid",
+                density: 21450,
             },
             "clone_powder": {
-                "color": "#f0f000",
-                "behavior": [
+                color: "#f0f000",
+                behavior: [
                     "XX|CF|XX",
                     "CF|XX|CF",
                     "M2|CF AND M1|M2",
                 ],
-                "category":"machines",
-                "insulate":true,
-                "state":"solid",
-                "density":2710,
+                category:"machines",
+                insulate:true,
+                state:"solid",
+                density:2710,
             },
             "floating_cloner": {
-                "color": "#c7c787",
-                "behavior": [
+                color: "#c7c787",
+                behavior: [
                     "XX|CF%3 AND M1%10|XX",
                     "CF%3 AND M1%10|XX|CF%3 AND M1%10",
                     "XX|CF%3 AND M1%10|XX",
                 ],
-                "category":"machines",
-                "insulate":true,
-                "state":"solid",
-                "density":1355,
+                category:"machines",
+                insulate:true,
+                state:"solid",
+                density:1355,
             },
             "virus": {
-                "color": "#cc00ff",
-                "behavior": [
+                color: "#cc00ff",
+                behavior: [
                     "XX|CH:virus%25|XX",
                     "CH:virus%25|XX|CH:virus%25",
                     "XX|CH:virus%25 AND M1|XX",
                 ],
-                "category": "special",
-                "state": "solid",
-                "density": 600,
+                category: "special",
+                state: "solid",
+                density: 600,
             },
             "worm": {
-                "color": "#402208",
-                "behavior": [
+                color: "#402208",
+                behavior: [
                     "DL:ash%1 AND SW:dirt,sand,gravel,ash%3|XX|DL:ash%1 AND SW:dirt,sand,gravel,ash%3",
                     "DL:ash%1 AND M2%10|XX|DL:ash%1 AND M2%10",
                     "DL:ash%1 AND SW:dirt,sand,gravel,ash%3|M1|DL:ash%1 AND SW:dirt,sand,gravel,ash%3",
                 ],
-                "tempHigh": 40,
-                "stateHigh": "ash",
-                "category":"life",
-                "burn":95,
-                "burnTime":25,
-                "state": "solid",
-                "conduct": 0.17,
+                tempHigh: 40,
+                stateHigh: "ash",
+                category:"life",
+                burn:95,
+                burnTime:25,
+                state: "solid",
+                conduct: 0.17,
             },
             "termite": {
-                "color": "#f5a056",
-                "behavior": [
+                color: "#f5a056",
+                behavior: [
                     "SW:wood,tree_branch%5|XX|SW:wood,tree_branch%5",
                     "DL:wood%4 AND M2%15|XX|DL:wood%4 AND M2%15",
                     "SW:wood,tree_branch%5|M1|SW:wood,tree_branch%5",
                 ],
-                "tempHigh": 37.78,
-                "stateHigh": "ash",
-                "category":"life",
-                "burn":95,
-                "burnTime":25,
-                "state": "solid",
-                "conduct": 0.15,
+                tempHigh: 37.78,
+                stateHigh: "ash",
+                category:"life",
+                burn:95,
+                burnTime:25,
+                state: "solid",
+                conduct: 0.15,
             },
             "permafrost": {
-                "color": "#4b9e82",
-                "behavior": behaviors.SUPPORT,
-                "temp": -50,
-                "tempHigh": 0,
-                "stateHigh": "mud",
-                "category": "land",
-                "state": "solid",
-                "density": 700,
+                color: "#4b9e82",
+                behavior: behaviors.SUPPORT,
+                temp: -50,
+                tempHigh: 0,
+                stateHigh: "mud",
+                category: "land",
+                state: "solid",
+                density: 700,
             },
             "chocolate": {
-                "color": "#4d2818",
-                "behavior": behaviors.STURDYPOWDER,
-                "tempHigh": 31,
-                "stateHigh": "chocolate_syrup",
-                "state": "solid",
-                "density": 1325,
+                color: "#4d2818",
+                behavior: behaviors.STURDYPOWDER,
+                tempHigh: 31,
+                stateHigh: "chocolate_syrup",
+                state: "solid",
+                density: 1325,
             },
-            "chocolate_syrup": {
-                "color": "#5e2412",
-                "behavior": behaviors.LIQUID,
-                "tempLow": 0,
-                "stateLow": "chocolate",
-                "category": "liquids",
-                "viscosity": 40,
-                "state": "liquid",
-                "density": 1325,
-            },
-            
             "cheese": {
-                "color": "#fcba03",
-                "behavior": behaviors.STURDYPOWDER,
-                "tempHigh": 54,
-                "stateHigh": "melted_cheese",
-                "state": "solid",
-                "density": 1153,
+                color: "#fcba03",
+                behavior: behaviors.STURDYPOWDER,
+                tempHigh: 54,
+                stateHigh: "melted_cheese",
+                state: "solid",
+                density: 1153,
             },
             "melted_cheese": {
-                "color": "#fcdb53",
-                "behavior": behaviors.LIQUID,
-                "tempLow": 0,
-                "stateLow": "cheese",
-                "category": "liquids",
-                "viscosity": 112,
-                "hidden": true,
-                "state": "liquid",
-                "density": 1153,
+                color: "#fcdb53",
+                behavior: behaviors.LIQUID,
+                tempLow: 0,
+                stateLow: "cheese",
+                category: "liquids",
+                viscosity: 112,
+                hidden: true,
+                state: "liquid",
+                density: 1153,
             },
             "fireball": {
-                "color": "#b52c0d",
-                "behavior": [
+                color: "#b52c0d",
+                behavior: [
                     "XX|CR:fire|XX",
                     "XX|XX|XX",
                     "M2|M1|M2",
                 ],
-                "category": "special",
-                "temp":600,
-                "burning": true,
-                "burnInto": "rock",
-                "state": "solid",
-                "density": 1600,
+                category: "special",
+                temp:600,
+                tempHigh: 1900,
+                stateHigh: "magma",
+                burning: true,
+                burnInto: "rock",
+                state: "solid",
+                density: 1600,
             },
 
             "mushroom_spore": {
-                "color": ["#d1d1d1","#d4cfa9","#b4d4ae","#b98aba","#805236"],
-                "behavior": [
+                color: ["#d1d1d1","#d4cfa9","#b4d4ae","#b98aba","#805236"],
+                behavior: [
                     "XX|M2%1.5|XX",
                     "XX|L2:mushroom_stalk AND CH:mushroom_gill%0.3|XX",
                     "XX|M1|XX",
                 ],
-                "reactions": {
+                reactions: {
                     "wood": { "elem1":"lichen" }
                 },
-                "category": "life",
-                "burn": 10,
-                "burnTime": 20,
-                "state": "solid",
-                "density": 123.6,
+                category: "life",
+                tempHigh: 225,
+                stateHigh: "fire",
+                burn: 10,
+                burnTime: 20,
+                state: "solid",
+                density: 123.6,
             },
             "mushroom_stalk": {
-                "color": "#d1d1d1",
-                "behavior": [
+                color: "#d1d1d1",
+                behavior: [
                     "XX|XX|XX",
                     "XX|XX|XX",
                     "XX|CH:dirt>hyphae%1|XX",
                 ],
-                "category": "life",
-                "hidden": true,
-                "burn": 10,
-                "burnTime": 65,
-                "state": "solid",
-                "density": 90.445,
+                category: "life",
+                hidden: true,
+                tempHigh: 225,
+                stateHigh: "fire",
+                burn: 10,
+                burnTime: 65,
+                state: "solid",
+                density: 90.445,
             },
             "mushroom_gill": {
-                "color": "#d4cfa9",
-                "behavior": [
+                color: "#d4cfa9",
+                behavior: [
                     "XX|CR:mushroom_cap%10|XX",
                     "CR:mushroom_gill,mushroom_cap%2|XX|CR:mushroom_gill,mushroom_cap%2",
                     "XX|XX|XX",
                 ],
-                "category": "life",
-                "hidden": true,
-                "burn": 10,
-                "burnTime": 65,
-                "burnInto": "mushroom_spore",
-                "state": "solid",
-                "density": 90.445,
+                category: "life",
+                hidden: true,
+                tempHigh: 225,
+                stateHigh: "fire",
+                burn: 10,
+                burnTime: 65,
+                burnInto: "mushroom_spore",
+                state: "solid",
+                density: 90.445,
             },
             "mushroom_cap": {
-                "color": ["#c74442","#c74442","#c74442","#c74442","#c74442","#c74442","#cfb4b4"],
-                "behavior": behaviors.WALL,
-                "category": "life",
-                "hidden": true,
-                "burn": 10,
-                "burnTime": 65,
-                "burnInto": "mushroom_spore",
-                "state": "solid",
-                "density": 90.445,
+                color: ["#c74442","#c74442","#c74442","#c74442","#c74442","#c74442","#cfb4b4"],
+                behavior: behaviors.WALL,
+                category: "life",
+                hidden: true,
+                tempHigh: 225,
+                stateHigh: "fire",
+                burn: 10,
+                burnTime: 65,
+                burnInto: "mushroom_spore",
+                state: "solid",
+                density: 90.445,
             },
             "hyphae": {
-                "color": "#c79789",
-                "behavior": [
+                color: "#c79789",
+                behavior: [
                     "CH:dirt>hyphae,hyphae,mycelium%0.5|CR:mushroom_spore%0.5|CH:dirt>hyphae,hyphae,mycelium%0.5",
                     "CH:mycelium%0.5|XX|CH:mycelium%0.5",
                     "CH:dirt>hyphae,hyphae,mycelium%0.5|XX|CH:dirt>hyphae,hyphae,mycelium%0.5",
                 ],
-                "category": "life",
-                "hidden": true,
-                "burn": 30,
-                "burnTime": 20,
-                "state": "solid",
-                "density": 462,
+                category: "life",
+                hidden: true,
+                tempHigh: 225,
+                stateHigh: "fire",
+                burn: 30,
+                burnTime: 20,
+                state: "solid",
+                density: 462,
             },
             "mycelium": {
-                "color": "#734d5e",
-                "behavior": behaviors.POWDER,
-                "tempHigh":1200,
-                "stateHigh": "molten_dirt",
-                "tempLow": -50,
-                "stateLow": "permafrost",
-                "burn": 20,
-                "burnTime": 40,
-                "burnInto": "dirt",
-                "category":"land",
-                "hidden": true,
-                "state": "solid",
-                "density": 462,
+                color: "#734d5e",
+                behavior: behaviors.POWDER,
+                tempHigh:225,
+                stateHigh: "dirt",
+                tempLow: -50,
+                stateLow: "permafrost",
+                burn: 20,
+                burnTime: 40,
+                burnInto: "dirt",
+                category:"land",
+                hidden: true,
+                state: "solid",
+                density: 462,
             },
             "antimatter": {
-                "color": "#a89ba8",
-                "behavior": [
+                color: "#a89ba8",
+                behavior: [
                     "M2|CH:light%50 AND M2|M2",
                     "M1|DL%2|M1",
                     "M1|CH:light%50 AND M1|M1",
                 ],
-                "category": "special",
-                "state": "gas",
+                category: "special",
+                state: "gas",
             },
             "plastic": {
-                "color": "#c5dede",
-                "behavior": behaviors.WALL,
-                "tempHigh": 250,
-                "burn": 10,
-                "burnTime": 200,
-                "burnInto": "dioxin",
-                "category": "solids",
-                "state": "solid",
-                "density": 1052,
+                color: "#c5dede",
+                behavior: behaviors.WALL,
+                tempHigh: 250,
+                burn: 10,
+                burnTime: 200,
+                burnInto: "dioxin",
+                category: "solids",
+                state: "solid",
+                density: 1052,
             },
             "dioxin": {
-                "color": "#b8b8b8",
-                "behavior": behaviors.GAS,
-                "category": "gases",
-                "hidden": true,
-                "state": "gas",
-                "density": 1830,
+                color: "#b8b8b8",
+                behavior: behaviors.GAS,
+                category: "gases",
+                hidden: true,
+                state: "gas",
+                density: 1830,
             },
             "bead": {
-                "color": ["#ff5e5e","#ffcc5e","#76ff5e","#5ed4ff","#5e61ff","#cf5eff"],
-                "behavior": behaviors.POWDER,
-                "tempHigh": 185,
-                "stateHigh": "molten_plastic",
-                "state": "solid",
-                "density": 1052,
+                color: ["#ff5e5e","#ffcc5e","#76ff5e","#5ed4ff","#5e61ff","#cf5eff"],
+                behavior: behaviors.POWDER,
+                tempHigh: 185,
+                stateHigh: "molten_plastic",
+                burn: 10,
+                burnTime: 400,
+                burnInto: "dioxin",
+                state: "solid",
+                density: 1052,
             },
             "epsom_salt": {
-                "color": ["#f2f2f2","#e0e0e0"],
-                "behavior": behaviors.POWDER,
-                "burn": 40,
-                "burnTime": 200,
-                "fireColor": ["#ffffff","#fcf0f0"],
-                "tempHigh": 1124,
-                "state": "solid",
-                "density": 1680,
+                color: ["#f2f2f2","#e0e0e0"],
+                behavior: behaviors.POWDER,
+                burn: 40,
+                burnTime: 200,
+                fireColor: ["#ffffff","#fcf0f0"],
+                tempHigh: 1124,
+                state: "solid",
+                density: 1680,
             },
             "potassium_salt": {
-                "color": ["#f2f2f2","#e0e0e0"],
-                "behavior": behaviors.POWDER,
-                "burn": 40,
-                "burnTime": 200,
-                "fireColor": ["#ff00ee","#ff6bf5"],
-                "tempHigh": 292,
-                "state": "solid",
-                "density": 3980,
+                color: ["#f2f2f2","#e0e0e0"],
+                behavior: behaviors.POWDER,
+                burn: 40,
+                burnTime: 200,
+                fireColor: ["#ff00ee","#ff6bf5"],
+                tempHigh: 292,
+                state: "solid",
+                density: 3980,
             },
             "rat": {
-                "color": "#b8aea5",
-                "behavior": [
+                color: "#b8aea5",
+                behavior: [
                     "M2%5|CR:plague%0.5 AND M2%1.5|M2%5",
                     "M2|XX|M2",
                     "M2|M1|M2",
                 ],
-                "category": "life",
-                "tempHigh": 50,
-                "stateHigh": "meat",
-                "tempLow": 15,
-                "stateLow": "frozen_meat",
-                "burn":80,
-                "burnTime":150,
-                "state": "solid",
-                "conduct": 0.25,
+                category: "life",
+                tempHigh: 50,
+                stateHigh: "meat",
+                tempLow: 15,
+                stateLow: "frozen_meat",
+                burn:80,
+                burnTime:150,
+                state: "solid",
+                conduct: 0.25,
             },
             "plague": {
-                "color": "#36005c",
-                "behavior": [
+                color: "#36005c",
+                behavior: [
                     "M2|DL:"+eLists.CLEANANIMAL+" AND M1|M2",
                     "DL:"+eLists.CLEANANIMAL+" AND M1|XX|DL:"+eLists.CLEANANIMAL+" AND M1",
                     "M2|DL:"+eLists.CLEANANIMAL+" AND M1|M2",
                 ],
-                "category": "life",
-                "state": "gas",
-                "density": 600,
+                category: "life",
+                state: "gas",
+                density: 600,
             },
             "insulation": {
-                "color": "#b8aea5",
-                "behavior": behaviors.WALL,
-                "category": "structure",
-                "insulate": true,
-                "state": "solid",
+                color: "#b8aea5",
+                behavior: behaviors.WALL,
+                category: "structure",
+                insulate: true,
+                state: "solid",
             },
             "zinc": {
-                "color": "#9c9da2",
-                "behavior": behaviors.WALL,
-                "tempHigh": 419.53,
-                "category": "solids",
-                "density": 7068,
-                "conduct": 0.53,
+                color: "#9c9da2",
+                behavior: behaviors.WALL,
+                tempHigh: 419.53,
+                category: "solids",
+                density: 7068,
+                conduct: 0.53,
             },
             "tin": {
-                "color": "#d3d4d5",
-                "behavior": behaviors.WALL,
-                "tempHigh": 231.9,
-                "category": "solids",
-                "density": 7260,
-                "conduct": 0.45,
+                color: "#d3d4d5",
+                behavior: behaviors.WALL,
+                tempHigh: 231.9,
+                category: "solids",
+                density: 7260,
+                conduct: 0.45,
             },
             "nickel": {
-                "color": "#727472",
-                "behavior": behaviors.WALL,
-                "tempHigh": 1455,
-                "category": "solids",
-                "density": 8900,
-                "conduct": 0.51,
+                color: "#727472",
+                behavior: behaviors.WALL,
+                tempHigh: 1455,
+                category: "solids",
+                density: 8900,
+                conduct: 0.51,
             },
             "silver": {
-                "color": "#aaa9ad",
-                "behavior": behaviors.WALL,
-                "tempHigh": 961.8,
-                "category": "solids",
-                "density": 10497,
-                "conduct": 0.99,
+                color: "#aaa9ad",
+                behavior: behaviors.WALL,
+                tempHigh: 961.8,
+                category: "solids",
+                density: 10497,
+                conduct: 0.99,
             },
             "gold": {
-                "color": ["#FFF0B5","#986A1A","#F0BB62"],
-                "behavior": behaviors.WALL,
-                "tempHigh": 1064,
-                "category": "solids",
-                "density": 19300,
-                "conduct": 0.81,
+                color: ["#FFF0B5","#986A1A","#F0BB62"],
+                behavior: behaviors.WALL,
+                tempHigh: 1064,
+                category: "solids",
+                density: 19300,
+                conduct: 0.81,
             },
             "gold_coin": {
-                "color": ["#FFF0B5","#986A1A","#F0BB62"],
-                "behavior": behaviors.POWDER,
-                "tempHigh": 1064,
-                "stateHigh": "molten_gold",
-                "state": "solid",
-                "density": 19300,
-                "conduct": 0.78,
+                color: ["#FFF0B5","#986A1A","#F0BB62"],
+                behavior: behaviors.POWDER,
+                tempHigh: 1064,
+                stateHigh: "molten_gold",
+                state: "solid",
+                density: 19300,
+                conduct: 0.78,
             },
             "aluminum": {
-                "color": ["#b0afb4","#8c8f98"],
-                "behavior": behaviors.WALL,
-                "tempHigh": 660.3,
-                "category": "solids",
-                "density": 2710,
-                "conduct": 0.73,
+                color: ["#b0afb4","#8c8f98"],
+                behavior: behaviors.WALL,
+                tempHigh: 660.3,
+                category: "solids",
+                density: 2710,
+                conduct: 0.73,
             },
             "lead": {
-                "color": "#6c6c6a",
-                "behavior": behaviors.WALL,
-                "tempHigh": 327.5,
-                "category": "solids",
-                "density": 11343,
-                "conduct": 0.41,
+                color: "#6c6c6a",
+                behavior: behaviors.WALL,
+                tempHigh: 327.5,
+                category: "solids",
+                density: 11343,
+                conduct: 0.41,
             },
             "brass": {
-                "color": ["#cb9e5d","#865e39"],
-                "behavior": behaviors.WALL,
-                "tempHigh": 927,
-                "category": "solids",
-                "density": 8550,
-                "conduct": 0.52,
+                color: ["#cb9e5d","#865e39"],
+                behavior: behaviors.WALL,
+                tempHigh: 927,
+                category: "solids",
+                density: 8550,
+                conduct: 0.52,
             },
             "bronze": {
-                "color": "#cd7f32",
-                "behavior": behaviors.WALL,
-                "tempHigh": 913,
-                "category": "solids",
-                "density": 8150,
-                "conduct": 0.44,
+                color: "#cd7f32",
+                behavior: behaviors.WALL,
+                tempHigh: 913,
+                category: "solids",
+                density: 8150,
+                conduct: 0.44,
             },
             "sterling": {
-                "color": ["#858478","#eae8e2","#bfbcb7"],
-                "behavior": behaviors.WALL,
-                "tempHigh": 802,
-                "category": "solids",
-                "density": 10375.25,
-                "conduct": 0.95,
+                color: ["#858478","#eae8e2","#bfbcb7"],
+                behavior: behaviors.WALL,
+                tempHigh: 802,
+                category: "solids",
+                density: 10375.25,
+                conduct: 0.95,
             },
             "steel": {
-                "color": "#71797E",
-                "behavior": behaviors.WALL,
-                "tempHigh": 1455.5,
-                "category": "solids",
-                "density": 7850,
-                "conduct": 0.42,
+                color: "#71797E",
+                behavior: behaviors.WALL,
+                tempHigh: 1455.5,
+                category: "solids",
+                density: 7850,
+                conduct: 0.42,
             },
             "rose_gold": {
-                "color": ["#B76E79","#a1334d","#f06283"],
-                "behavior": behaviors.WALL,
-                "tempHigh": 897,
-                "category": "solids",
-                "density": 12900,
-                "conduct": 0.87,
+                color: ["#B76E79","#a1334d","#f06283"],
+                behavior: behaviors.WALL,
+                tempHigh: 897,
+                category: "solids",
+                density: 12900,
+                conduct: 0.87,
             },
             "solder": {
-                "color": "#a1a19d",
-                "behavior": behaviors.WALL,
-                "tempHigh": 200,
-                "category": "solids",
-                "density": 8885,
-                "conduct": 0.43,
+                color: "#a1a19d",
+                behavior: behaviors.WALL,
+                tempHigh: 200,
+                category: "solids",
+                density: 8885,
+                conduct: 0.43,
             },
             "molten_copper": {
-                "reactions": {
+                reactions: {
                     "molten_zinc": { "elem1": null, "elem2": "molten_brass" },
                     "molten_tin": { "elem1": null, "elem2": "molten_bronze" },
                     "molten_silver": { "elem1": null, "elem2": "molten_sterling" },
@@ -2226,287 +2339,294 @@
                 }
             },
             "molten_iron": {
-                "reactions": {
+                reactions: {
                     "charcoal": { "elem1": "molten_steel", "elem2": null },
+                    "diamond": { "elem1": "molten_steel", "elem2": null },
+                    "carbon_dioxide": { "elem1": "molten_steel", "elem2": null },
                 }
             },
             "molten_tin": {
-                "reactions": {
+                reactions: {
                     "molten_lead": { "elem1": null, "elem2": "molten_solder" },
                 }
             },
 
             "milk": {
-                "color": "#fafafa",
-                "behavior": behaviors.LIQUID,
-                "tempHigh": 93,
-                "stateHigh": "yogurt",
-                "viscosity": 1.5,
-                "category": "liquids",
-                "state": "liquid",
-                "density": 1036.86,
+                color: "#fafafa",
+                behavior: behaviors.LIQUID,
+                tempHigh: 93,
+                stateHigh: "yogurt",
+                viscosity: 1.5,
+                category: "liquids",
+                state: "liquid",
+                density: 1036.86,
             },
             "yogurt": {
-                "color": "#f0efe6",
-                "behavior": behaviors.STURDYPOWDER,
-                "state": "liquid",
-                "density": 820.33,
+                color: "#f0efe6",
+                behavior: behaviors.STURDYPOWDER,
+                state: "liquid",
+                density: 820.33,
             },
             "vinegar": {
-                "color": "#ffecb3",
-                "behavior": behaviors.LIQUID,
-                "reactions": {
+                color: "#ffecb3",
+                behavior: behaviors.LIQUID,
+                reactions: {
                     "milk": { "elem1": null, "elem2": "cheese" },
                     "baking_soda": { "elem1": "carbon_dioxide", "elem2": "sodium_acetate" },
+                    "rust": { "elem2":"iron", chance:0.05 },
+                    "oxidized_copper": { "elem2":"copper", chance:0.05 },
                 },
-                "viscosity": 12,
-                "category": "liquids",
-                "state": "liquid",
-                "density": 1006,
+                viscosity: 12,
+                category: "liquids",
+                state: "liquid",
+                density: 1006,
             },
             "baking_soda": {
-                "color": "#ededed",
-                "behavior": behaviors.POWDER,
-                "state": "solid",
-                "density": 1000,
+                color: "#ededed",
+                behavior: behaviors.POWDER,
+                state: "solid",
+                density: 1000,
             },
             "sodium_acetate": {
-                "color": ["#ededed","#dbdbdb"],
-                "behavior": behaviors.POWDER,
-                "hidden": true,
-                "state": "solid",
-                "density": 900,
+                color: ["#ededed","#dbdbdb"],
+                behavior: behaviors.POWDER,
+                hidden: true,
+                state: "solid",
+                density: 900,
             },
             "udder": {
-                "color": "#ecb3f5",
-                "behavior": [
+                color: "#ecb3f5",
+                behavior: [
                     "XX|XX|XX",
                     "XX|XX|XX",
                     "XX|CR:milk%5|XX",
                 ],
-                "category":"life",
+                category:"life",
             },
             "corn": {
-                "color": ["#e0d041","#e6d96a"],
-                "behavior": behaviors.WALL,
-                "category": "life",
-                "burn": 10,
-                "burnTime": 200,
-                "tempHigh": 180,
-                "stateHigh": "popcorn",
-                "state": "solid",
-                "density": 721,
+                color: ["#e0d041","#e6d96a"],
+                behavior: behaviors.WALL,
+                category: "life",
+                burn: 10,
+                burnTime: 200,
+                tempHigh: 180,
+                stateHigh: "popcorn",
+                state: "solid",
+                density: 721,
             },
             "popcorn": {
-                "color": ["#a6a076","#ebe4ab","#ebe4ab","#ebe4ab","#ebe4ab","#ebe4ab","#ebe4ab","#c99947"],
-                "behavior": behaviors.POWDER,
-                "burn": 20,
-                "burnTime": 200,
-                "state": "solid",
-                "density": 360.5,
+                color: ["#a6a076","#ebe4ab","#ebe4ab","#ebe4ab","#ebe4ab","#ebe4ab","#ebe4ab","#c99947"],
+                behavior: behaviors.POWDER,
+                burn: 20,
+                burnTime: 200,
+                state: "solid",
+                density: 360.5,
             },
             "corn_seed": {
-                "color": "#dfff80",
-                "behavior": [
+                color: "#dfff80",
+                behavior: [
                     "XX|M2%0.25|XX",
                     "XX|L2:plant,corn AND CH:corn%0.01|XX",
                     "XX|M1|XX",
                 ],
-                "tempHigh": 400,
-                "stateHigh": "fire",
-                "burn": 50,
-                "burnTime": 20,
-                "category": "life",
-                "state": "solid",
-                "density": 721,
+                tempHigh: 400,
+                stateHigh: "fire",
+                burn: 50,
+                burnTime: 20,
+                category: "life",
+                state: "solid",
+                density: 721,
             },
             "root": {
-                "color": "#735949",
-                "behavior": behaviors.WALL,
-                "tempHigh": 400,
-                "stateHigh": "fire",
-                "burn": 50,
-                "burnTime": 20,
-                "burnInto": "dirt",
-                "category": "life",
-                "state": "solid",
-                "density": 1250,
+                color: "#735949",
+                behavior: behaviors.WALL,
+                tempHigh: 400,
+                stateHigh: "fire",
+                burn: 50,
+                burnTime: 20,
+                burnInto: "dirt",
+                category: "life",
+                state: "solid",
+                density: 1250,
             },
             "potato_seed": {
-                "color": "#d9d457",
-                "behavior": [
+                color: "#d9d457",
+                behavior: [
                     "XX|CH:dirt>root|XX",
                     "CH:dirt>potato%5|CH:potato%1|CH:dirt>potato%5",
                     "XX|SW:dirt%3 AND M1|XX",
                 ],
-                "tempHigh": 400,
-                "stateHigh": "fire",
-                "burn": 50,
-                "burnTime": 20,
-                "category": "life",
-                "state": "solid",
-                "density": 675,
+                tempHigh: 400,
+                stateHigh: "fire",
+                burn: 50,
+                burnTime: 20,
+                category: "life",
+                state: "solid",
+                density: 675,
             },
             "potato": {
-                "color": ["#d99857","#d98757","#a66933"],
-                "behavior": behaviors.STURDYPOWDER,
-                "tempHigh": 400,
-                "stateHigh": "ash",
-                "burn": 50,
-                "burnTime": 20,
-                "burnInto": "ash",
-                "category": "life",
-                "state": "solid",
-                "density": 675,
+                color: ["#d99857","#d98757","#a66933"],
+                behavior: behaviors.STURDYPOWDER,
+                tempHigh: 400,
+                stateHigh: "ash",
+                burn: 50,
+                burnTime: 20,
+                burnInto: "ash",
+                category: "life",
+                state: "solid",
+                density: 675,
             },
             "yeast": {
-                "color": ["#AD9166","#9A7F4E","#D8BB8D"],
-                "behavior": [
+                color: ["#AD9166","#9A7F4E","#D8BB8D"],
+                behavior: [
                     "XX|CL:50%20|XX",
                     "CL:50%20 AND SW:bread%30|XX|CL:50%20 AND SW:bread%30",
                     "XX|M1|XX",
                 ],
-                "reactions": {
+                reactions: {
                     "bread": { "elem1": "bread" },
                     "sugar": { "elem2": "alcohol" },
                     "potato": { "elem2": "alcohol" },
                 },
-                "tempHigh": 100,
-                "stateHigh": "bread",
-                "burn": 50,
-                "burnTime": 20,
-                "burnInto": "ash",
-                "category": "life",
-                "state": "solid",
-                "density": 1180,
+                tempHigh: 100,
+                stateHigh: "bread",
+                burn: 50,
+                burnTime: 20,
+                burnInto: "ash",
+                category: "life",
+                state: "solid",
+                density: 1180,
             },
             "bread": {
-                "color": "#F2CF99",
-                "behavior": behaviors.STURDYPOWDER,
-                "tempHigh": 176,
-                "stateHigh": "toast",
-                "burn": 30,
-                "burnTime": 200,
-                "burnInto": "ash",
-                "state": "solid",
-                "density": 233.96,
+                color: "#F2CF99",
+                behavior: behaviors.STURDYPOWDER,
+                tempHigh: 176,
+                stateHigh: "toast",
+                burn: 30,
+                burnTime: 200,
+                burnInto: "ash",
+                state: "solid",
+                density: 233.96,
             },
             "toast": {
-                "color": "#C08655",
-                "behavior": behaviors.STURDYPOWDER,
-                "tempHigh": 500,
-                "stateHigh": "ash",
-                "burn": 50,
-                "burnTime": 170,
-                "burnInto": "ash",
-                "state": "solid",
-                "density": 233.96,
+                color: "#C08655",
+                behavior: behaviors.STURDYPOWDER,
+                tempHigh: 500,
+                stateHigh: "ash",
+                burn: 50,
+                burnTime: 170,
+                burnInto: "ash",
+                state: "solid",
+                density: 233.96,
             },
             "flour": {
-                "color": "#F0E2B7",
-                "behavior": behaviors.POWDER,
-                "reactions": {
+                color: "#F0E2B7",
+                behavior: behaviors.POWDER,
+                reactions: {
                     "water": { "elem1": "dough", "elem2": null },
                 },
-                "tempHigh": 400,
-                "stateHigh": "fire",
-                "burn":40,
-                "burnTime":25,
-                "state": "solid",
-                "density": 600,
+                tempHigh: 400,
+                stateHigh: "fire",
+                burn:40,
+                burnTime:25,
+                state: "solid",
+                density: 600,
             },
             "dough": {
-                "color": "#EDD8BA",
-                "behavior": behaviors.SUPPORT,
-                "tempHigh": 94,
-                "stateHigh": "bread",
-                "burn":40,
-                "burnTime":25,
-                "burnInto":"ash",
-                "state": "solid",
-                "density": 526.9,
+                color: "#EDD8BA",
+                behavior: behaviors.SUPPORT,
+                tempHigh: 94,
+                stateHigh: "bread",
+                burn:40,
+                burnTime:25,
+                burnInto:"ash",
+                state: "solid",
+                density: 526.9,
             },
             "salt": {
-                "color": ["#f2f2f2","#e0e0e0"],
-                "behavior": behaviors.POWDER,
-                "tempHigh": 801,
-                "state": "solid",
-                "density": 2160,
+                color: ["#f2f2f2","#e0e0e0"],
+                behavior: behaviors.POWDER,
+                tempHigh: 801,
+                state: "solid",
+                density: 2160,
             },
             "sugar": {
-                "color": "#f2f2f2",
-                "behavior": behaviors.POWDER,
-                "tempHigh": 186,
-                "stateHigh": "caramel",
-                "state": "solid",
-                "density": 1590,
+                color: "#f2f2f2",
+                behavior: behaviors.POWDER,
+                tempHigh: 186,
+                stateHigh: "caramel",
+                state: "solid",
+                density: 1590,
             },
             "caramel": {
-                "color": "#e89a51",
-                "behavior": behaviors.LIQUID,
-                "reactions": {
+                color: "#e89a51",
+                behavior: behaviors.LIQUID,
+                reactions: {
                     "fire": { "elem1": "molasses" },
                 },
-                "viscosity": 500,
-                "temp": 40,
-                "tempLow": 24,
-                "stateLow": "candy",
-                "state": "liquid",
-                "density": 850,
+                viscosity: 500,
+                temp: 40,
+                tempLow: 24,
+                stateLow: "candy",
+                state: "liquid",
+                density: 850,
             },
             "candy": {
-                "color": "#e6cab1",
-                "behavior": behaviors.WALL,
-                "tempHigh": 186,
-                "stateHigh": "caramel",
-                "density": 900,
+                color: "#e6cab1",
+                behavior: behaviors.WALL,
+                tempHigh: 186,
+                stateHigh: "caramel",
+                density: 900,
             },
             "alcohol": {
-                "color": "#c9c5b1",
-                "behavior": behaviors.LIQUID,
-                "viscosity": 1,
-                "burn": 100,
-                "burnTime": 3,
-                "fireColor": ["#80ACF0","#96CDFE","#bee6d4"],
-                "category": "liquids",
-                "state": "liquid",
-                "density": 785.1,
+                color: "#c9c5b1",
+                behavior: behaviors.LIQUID,
+                viscosity: 1,
+                burn: 100,
+                burnTime: 3,
+                fireColor: ["#80ACF0","#96CDFE","#bee6d4"],
+                category: "liquids",
+                state: "liquid",
+                density: 785.1,
             },
             "lichen": {
-                "color": ["#b6d6c3","#769482"],
-                "behavior": [
+                color: ["#b6d6c3","#769482"],
+                behavior: [
                     "XX|ST:wood|XX",
                     "ST:wood|XX|ST:wood",
                     "XX|M1|XX",
                 ],
-                "tempHigh": 400,
-                "stateHigh": "fire",
-                "burn": 50,
-                "burnTime": 20,
-                "category": "life",
-                "state": "solid",
-                "density": 1.5,
+                tempHigh: 400,
+                stateHigh: "fire",
+                burn: 50,
+                burnTime: 20,
+                category: "life",
+                state: "solid",
+                density: 1.5,
             },
             "basalt": {
-                "color": "#2b2b2b",
-                "behavior": behaviors.STURDYPOWDER,
-                "tempHigh": 1262.5,
-                "stateHigh": "magma",
-                "category": "land",
-                "state": "solid",
-                "density": 3000,
+                color: "#2b2b2b",
+                behavior: behaviors.STURDYPOWDER,
+                tempHigh: 1262.5,
+                stateHigh: "magma",
+                category: "land",
+                state: "solid",
+                density: 3000,
+                hardness: 0.65,
             },
             "soap": {
-                "color": "#f2f2f2",
-                "behavior": [
+                color: "#f2f2f2",
+                behavior: [
                     "XX|CR:bubble%0.25|XX",
                     "M2|XX|M2",
                     "M2|M1|M2",
                 ],
-                "reactions": {
+                reactions: {
                     "rust": { "elem2": "iron" },
                     "oxidized_copper": { "elem2": "copper" },
                     "blood": { "elem2": "water" },
+                    "dirty_water": { "elem2": "water" },
+                    "salt_water": { "elem2": "water" },
                     "oxygen": { "elem2": "bubble" },
                     "plague": { "elem2": null },
                     "virus": { "elem2": null },
@@ -2518,138 +2638,291 @@
                     "acid": { "elem2": "hydrogen" },
                     "acid_cloud": { "elem2": "rain_cloud" },
                 },
-                "viscosity": 500,
-                "state": "liquid",
-                "category":"liquids",
-                "density": 1055,
+                viscosity: 500,
+                state: "liquid",
+                category:"liquids",
+                density: 1055,
+            },
+            "blood": {
+                color: "#ff0000",
+                behavior: behaviors.LIQUID,
+                viscosity: 10,
+                tempHigh: 124.55,
+                stateHigh: "steam",
+                category:"liquids",
+                state: "liquid",
+                density: 1060,
+            },
+            "honey": {
+                color: ["#ffd700","#ffae00"],
+                behavior: behaviors.LIQUID,
+                viscosity: 10000,
+                tempHigh: 71.11,
+                stateHigh: "caramel",
+                category:"liquids",
+                state: "liquid",
+                density: 1420,
+            },
+            "ketchup": {
+                color: "#ff3119",
+                behavior: behaviors.LIQUID,
+                viscosity: 50000,
+                category:"liquids",
+                state: "liquid",
+                density: 1235,
+            },
+            "molasses": {
+                color: "#240f00",
+                behavior: behaviors.LIQUID,
+                viscosity: 7500,
+                category:"liquids",
+                state: "liquid",
+                density: 1600,
+            },
+            "chocolate_syrup": {
+                color: "#5e2412",
+                behavior: behaviors.LIQUID,
+                tempLow: 0,
+                stateLow: "chocolate",
+                category: "liquids",
+                viscosity: 40,
+                state: "liquid",
+                density: 1325,
+            },
+            "liquid_hydrogen": {
+                color: "#97afcf",
+                behavior: behaviors.LIQUID,
+                reactions: {
+                    "liquid_oxygen": { "elem1":"ice", "elem2":null },
+                    "oxygen": { "elem1":"ice", "elem2":null },
+                },
+                category: "liquids",
+                burn: 100,
+                burnTime: 2,
+                temp:-252.8,
+                tempHigh: -252.8,
+                stateHigh: "hydrogen",
+                state: "liquid",
+                density: 71,
+            },
+            "liquid_oxygen": {
+                color: "#00ad99",
+                behavior: behaviors.LIQUID,
+                reactions: {
+                    "hydrogen": { "elem1":"ice", "elem2":null },
+                },
+                category: "liquids",
+                burn: 100,
+                burnTime: 2,
+                temp:-182.94,
+                tempHigh: -182.94,
+                stateHigh: "oxygen",
+                state: "liquid",
+                density: 1141,
+            },
+            "liquid_nitrogen": {
+                color: "#d3e1e3",
+                behavior: behaviors.LIQUID,
+                category: "liquids",
+                temp:-195.8,
+                tempHigh: -195.8,
+                stateHigh: "nitrogen",
+                state: "liquid",
+                density: 804,
             },
             "calcium": {
-                "color": ["#515053","#7a787d","#748193","#FEF9FF","#748193","#7a787d","#515053"],
-                "behavior": behaviors.POWDER,
-                "tempHigh": 842,
-                "state": "solid",
-                "density": 1550,
-                "conduct": 0.40,
+                color: ["#515053","#7a787d","#748193","#FEF9FF","#748193","#7a787d","#515053"],
+                behavior: behaviors.POWDER,
+                tempHigh: 842,
+                state: "solid",
+                density: 1550,
+                conduct: 0.40,
             },
             "limestone": {
-                "color": ["#C5B79C","#D9CCB2","#F8F1DB","#FCFAEB"],
-                "behavior": behaviors.STURDYPOWDER,
-                "tempHigh": 825,
-                "stateHigh": "quicklime",
-                "category": "land",
-                "state": "solid",
-                "density": 2100,
+                color: ["#C5B79C","#D9CCB2","#F8F1DB","#FCFAEB"],
+                behavior: behaviors.STURDYPOWDER,
+                tempHigh: 825,
+                stateHigh: "quicklime",
+                category: "land",
+                state: "solid",
+                density: 2100,
+                hardness: 0.4,
             },
             "quicklime": {
-                "color": "#E9EBE7",
-                "behavior": behaviors.POWDER,
-                "tempHigh": 4662,
-                "stateHigh": "molten_calcium",
-                "category": "land",
-                "state": "solid",
-                "density": 1025,
+                color: "#E9EBE7",
+                behavior: behaviors.POWDER,
+                tempHigh: 4662,
+                stateHigh: "molten_calcium",
+                category: "land",
+                state: "solid",
+                density: 1025,
+                hardness: 0.33,
             },
             "slaked_lime": {
-                "color": "#adb8b5",
-                "behavior": behaviors.STURDYPOWDER,
-                "tempHigh": 580,
-                "stateHigh": "quicklime",
-                "category": "land",
-                "hidden": true,
-                "state": "solid",
-                "density": 2211,
+                color: "#adb8b5",
+                behavior: behaviors.STURDYPOWDER,
+                tempHigh: 580,
+                stateHigh: "quicklime",
+                category: "land",
+                hidden: true,
+                state: "solid",
+                density: 2211,
+                hardness: 0.2,
             },
             "slug": {
-                "color": ["#997e12","#403314","#997e12","#403314","#997e12","#403314","#997e12","#403314","#997e12","#403314","#997e12","#403314","#124a44"],
-                "behavior": [
+                color: ["#997e12","#403314","#997e12","#403314","#997e12","#403314","#997e12","#403314","#997e12","#403314","#997e12","#403314","#124a44"],
+                behavior: [
                     "XX|XX|XX",
                     "M2%0.5|XX|M2%0.5",
                     "XX|M1|XX",
                 ],
-                "reactions": {
+                reactions: {
                     "salt": { "elem1": "slime", "elem2": null },
                 },
-                "tempLow": 5,
-                "stateLow": "slime",
-                "tempHigh": 40,
-                "stateHigh": "slime",
-                "category": "life",
-                "state": "solid",
-                "density": 1450,
-                "conduct": 0.17,
+                tempLow: 5,
+                stateLow: "slime",
+                tempHigh: 40,
+                stateHigh: "slime",
+                category: "life",
+                state: "solid",
+                density: 1450,
+                conduct: 0.17,
             },
             "snail": {
-                "color": "#5c3104",
-                "behavior": [
+                color: "#5c3104",
+                behavior: [
                     "XX|XX|XX",
                     "M2%0.5|XX|M2%0.5",
                     "XX|M1|XX",
                 ],
-                "reactions": {
+                reactions: {
                     "salt": { "elem1": "calcium", "elem2": null },
                 },
-                "tempLow": -6.4,
-                "stateLow": "calcium",
-                "tempHigh": 100,
-                "stateHigh": "calcium",
-                "category": "life",
-                "state": "solid",
-                "density": 1500,
-                "conduct": 0.16,
+                tempLow: -6.4,
+                stateLow: "calcium",
+                tempHigh: 100,
+                stateHigh: "calcium",
+                category: "life",
+                state: "solid",
+                density: 1500,
+                conduct: 0.16,
             },
             "metal_scrap": {
-                "color": ["#b0afb4","#8c8f98","#cbcdcd","#6c6c6a","#fef9ff"],
-                "behavior": behaviors.POWDER,
-                "tempHigh": 670.3,
-                "density": 2720,
-                "conduct": 0.43,
+                color: ["#b0afb4","#8c8f98","#cbcdcd","#6c6c6a","#fef9ff"],
+                behavior: behaviors.POWDER,
+                tempHigh: 670.3,
+                density: 2720,
+                state: "solid",
+                conduct: 0.43,
             },
             "neon": {
-                "color": "#bababa",
-                "behavior": behaviors.GAS,
-                "behaviorOn": [
+                color: "#bababa",
+                behavior: behaviors.GAS,
+                behaviorOn: [
                     "M2|M1|M2",
                     "M1|CC:#ff0000|M1",
                     "M2|M1|M2",
                 ],
-                "tempLow": -248.59,
-                "stateLow": "liquid_neon",
-                "category": "gases",
-                "density": 0.9002,
-                "state": "gas",
-                "conduct": 0.86,
+                tempLow: -248.59,
+                stateLow: "liquid_neon",
+                category: "gases",
+                density: 0.9002,
+                state: "gas",
+                conduct: 0.86,
             },
             "liquid_neon": {
-                "color": "#d1d1d1",
-                "behavior": behaviors.LIQUID,
-                "behaviorOn": [
+                color: "#d1d1d1",
+                behavior: behaviors.LIQUID,
+                behaviorOn: [
                     "XX|XX|XX",
                     "M2|CC:#ff0000|M2",
                     "M1|M1|M1",
                 ],
-                "tempHigh": -248.59,
-                "stateHigh": "neon",
-                "category": "liquids",
-                "hidden": true,
-                "density": 1207,
-                "state": "liquid",
-                "conduct": 0.83,
+                tempHigh: -248.59,
+                stateHigh: "neon",
+                category: "liquids",
+                hidden: true,
+                density: 1207,
+                state: "liquid",
+                conduct: 0.83,
             },
             "battery": {
-                "color": "#9c6c25",
-                "behavior": [
+                color: "#9c6c25",
+                behavior: [
                     "XX|SH|XX", // shocks (adds charge)
                     "SH|XX|SH",
                     "XX|SH|XX",
                 ],
-                "category": "machines",
-                "tempHigh": 1455.5,
-                "stateHigh": "molten_steel",
+                category: "machines",
+                tempHigh: 1455.5,
+                stateHigh: "molten_steel",
             },
+            "sulfur": {
+                color: ["#E9D74C","#89761B","#DDC56B"],
+                behavior: behaviors.POWDER,
+                tempHigh: 115.21,
+                burn: 25,
+                burnTime: 207,
+                fireColor: ["#8180CC","#7F84E6"],
+                state: "solid",
+                density: 2070,
+            },
+            "molten_sulfur": {
+                reactions: {
+                    "molten_copper": { "elem1": null, "elem2": "molten_copper_sulfate" },
+                },
+                density: 1819,
+                burn: 25,
+                burnTime: 507,
+                fireColor: ["#8180CC","#7F84E6"],
+            },
+            "copper_sulfate": {
+                color: ["#4391FD","#004CFE"],
+                behavior: behaviors.POWDER,
+                tempHigh: 110,
+                burn: 10,
+                burnTime: 1007,
+                fireColor: ["#91D106","#FEFF97","#248E01"],
+                state: "solid",
+                density: 3600,
+                hidden: true,
+            },
+            "diamond": {
+                color: ["#03fcec","#03c6fc","#b3eeff","#8ab0e6"],
+                behavior: behaviors.POWDER,
+                tempHigh: 763,
+                stateHigh: "carbon_dioxide",
+                state: "solid",
+                density: 3515,
+                hardness: 1,
+            },
+            "glitter": {
+                color: ["#ACE4FB","#D9FCFF","#8F6EB2","#FDEAFC","#180E1C","#6B2778"],
+                behavior: behaviors.POWDER,
+                tempHigh: 100,
+                stateHigh: "fire",
+                state: "solid",
+                density: 1450,
+                burn: 50,
+                burnTime: 50,
+                burnInto: "dioxin",
+            },
+            "electric": {
+                color: "#dddd00",
+                behavior: [
+                    "CL%5|CL%5 AND SH|CL%5",
+                    "CL%5 AND SH|SH%5 AND DL%50|CL%5 AND SH",
+                    "M1%15 AND CL%6|M1%50 AND CL%13 AND SH|M1%15 AND CL%6",
+                ],
+                charge: 3,
+                category: "energy",
+                state: "solid",
+                density: 2.1,
+            }
+
 
             
-            
-        }
+        };
 
         // Loop through behaviors and each behavior, if it is a string, split the items and replace the value with the array
         for (var behavior in behaviors) {
@@ -2747,30 +3020,29 @@
                 }
                 var newmolten = {
                     //"name": newname.replaceAll("_"," "),
-                    "color": colorList,
+                    color: colorList,
                     "colorObject": colorObjectList,
-                    "behavior": behaviors.MOLTEN,
-                    "temp": elements[element].tempHigh,
-                    "tempLow": elements[element].tempHigh-100,
-                    "stateLow": element,
-                    "viscosity": elements[element].viscosity || 10000,
-                    "hidden": true,
-                    "state": "liquid",
+                    behavior: behaviors.MOLTEN,
+                    temp: elements[element].tempHigh,
+                    tempLow: elements[element].tempHigh-100,
+                    stateLow: element,
+                    viscosity: elements[element].viscosity || 10000,
+                    hidden: true,
+                    state: "liquid",
                 }
-                // if the element has a density, add it to the new molten element * 0.9
-                if (elements[element].density) {
-                    newmolten.density = elements[element].density * 0.9;
-                }
+                // If the element has a density, add it to the new molten element * 0.9
+                if (elements[element].density) { newmolten.density = elements[element].density * 0.9; }
                 // If the element has a conductivity, add it to the new molten element * 1.1
-                if (elements[element].conduct) {
-                    newmolten.conduct = elements[element].conduct * 1.1;
-                }
-                // if the new element doesn't exist, add it
-                if (!elements[newname]) {
-                    elements[newname] = newmolten;
-                }
+                if (elements[element].conduct) { newmolten.conduct = elements[element].conduct * 1.1; }
+                // Same for burn, burnTime, burnInto, and fireColor
+                if (elements[element].burn) { newmolten.burn = elements[element].burn * 1.1; }
+                if (elements[element].burnTime) { newmolten.burnTime = elements[element].burnTime * 1.1; }
+                if (elements[element].burnInto) { newmolten.burnInto = elements[element].burnInto; }
+                if (elements[element].fireColor) { newmolten.fireColor = elements[element].fireColor; }
+                // If the new element doesn't exist, add it
+                if (!elements[newname]) { elements[newname] = newmolten; }
                 else {
-                    // loop through newmolten's keys and values, copy them to the new element if they are not already defined
+                    // Loop through newmolten's keys and values, copy them to the new element if they are not already defined
                     for (var key in newmolten) {
                         if (elements[newname][key] == undefined) {
                             elements[newname][key] = newmolten[key];
@@ -2793,9 +3065,22 @@
                 elements[element].behaviorOn = newbehavior;
             }
         }
+        
+        // Loop through each element, final checks
+        for (key in elements) {
+            // If the element has no behavior, set it to behaviors.WALL
+            if (!elements[key].behavior) {
+                elements[key].behavior = behaviors.WALL;
+            }
+            // If the element has no color, set it to white
+            if (elements[key].color === undefined) {
+                elements[key].color = "rgb(255,255,255)";
+                elements[key].colorObject = {r:255,g:255,b:255};
+            }
+        }
 
         currentPixels = [];
-        currentID = 0;
+        //currentID = 0;
         // Pixel class, with attributes such as x, y, and element
         class Pixel {
             constructor(x, y, element) {
@@ -2811,7 +3096,8 @@
                     this.temp = elementInfo.temp;
                 }
                 this.start = pixelTicks;
-                this.id = currentID;
+                //this.id = currentID;
+                //currentID++;
                 if (elementInfo.burning) {
                     this.burning = true;
                     this.burnStart = pixelTicks;
@@ -2822,11 +3108,15 @@
                 if (elementInfo.charge) {
                     this.charge = elementInfo.charge;
                 }
-                currentID++;
                 pixelMap[x][y] = this;
             }
         }
-        pixelSize = 6;
+        // If the screen size is under 768px, set pixelSize to 5, otherwise 6
+        if (window.innerWidth < 700) {
+            pixelSize = 5;
+        } else {
+            pixelSize = 6;
+        }
         
         function outOfBounds(x,y) {
             // Returns true if the pixel is out of bounds
@@ -2860,20 +3150,20 @@
         function deletePixel(x,y,id=null) {
             pixelMap[x][y].del = true;
             delete pixelMap[x][y];
-            if (id != null) {
-                for (var i = 0; i < currentPixels.length; i++) {
-                    if (currentPixels[i].id == id) {
-                        currentPixels.splice(i, 1);
-                        return;
-                    }
-                }
-            }
             for (var i = 0; i < currentPixels.length; i++) {
                 if (currentPixels[i].x == x && currentPixels[i].y == y) {
                     currentPixels.splice(i, 1);
                     break;
                 }
             }
+            /*if (id != null) {
+                for (var i = 0; i < currentPixels.length; i++) {
+                    if (currentPixels[i].id == id) {
+                        currentPixels.splice(i, 1);
+                        return;
+                    }
+                }
+            }*/
         }
         function swapPixels(pixel1,pixel2) {
             var tempX = pixel1.x;
@@ -2888,12 +3178,16 @@
 
         function reactPixels(pixel1,pixel2) {
             var elem1 = pixel1.element;
-            if (elements[elem1].reactions[pixel2.element].elem1 !== undefined) {
-                if (elements[elem1].reactions[pixel2.element].elem1 == null) {
+            var r = elements[elem1].reactions[pixel2.element];
+            if (r.chance !== undefined && Math.random() > r.chance) {
+                return false;
+            }
+            if (r.elem1 !== undefined) {
+                if (r.elem1 == null) {
                     deletePixel(pixel1.x,pixel1.y);
                 }
                 else {
-                    pixel1.element = elements[elem1].reactions[pixel2.element].elem1;
+                    pixel1.element = r.elem1;
                     pixel1.color = pixelColorPick(pixel1);
                     pixel1.start = pixelTicks;
                     if (elements[elem1].burning != true) {
@@ -2901,12 +3195,12 @@
                     }
                 }
             }
-            if (elements[elem1].reactions[pixel2.element].elem2 !== undefined) {
-                if (elements[elem1].reactions[pixel2.element].elem2 == null) {
+            if (r.elem2 !== undefined) {
+                if (r.elem2 == null) {
                     deletePixel(pixel2.x,pixel2.y);
                 }
                 else {
-                    pixel2.element = elements[elem1].reactions[pixel2.element].elem2;
+                    pixel2.element = r.elem2;
                     pixel2.color = pixelColorPick(pixel2);
                     pixel2.start = pixelTicks;
                     if (elements[pixel2.element].burning != true) {
@@ -2914,6 +3208,7 @@
                     }
                 }
             }
+            return true;
         }
 
 
@@ -2928,17 +3223,11 @@
                 if (!outOfBounds(nx,ny)) {
                     // Reactions
                     newPixel = pixelMap[nx][ny];
-                    if (info.reactions != undefined) {
-                        if (info.reactions[newPixel.element] != undefined) {
-                            reactPixels(pixel,newPixel);
-                            return true;
-                        }
+                    if (info.reactions != undefined && info.reactions[newPixel.element] != undefined) {
+                        return reactPixels(pixel,newPixel);
                     }
-                    else if (elements[newPixel.element].reactions != undefined) {
-                        if (elements[newPixel.element].reactions[pixel.element] != undefined) {
-                            reactPixels(newPixel,pixel);
-                            return true;
-                        }
+                    else if (elements[newPixel.element].reactions != undefined && elements[newPixel.element].reactions[pixel.element] != undefined) {
+                        return reactPixels(newPixel,pixel);
                     }
                     // Density
                     if (pixel.element != newPixel.element) {
@@ -3105,49 +3394,53 @@
                                 supportSpots.push({x:newCoords.x,y:newCoords.y,arg:arg});
                             }
                             else if (b == "DL") {
-                                if ((!isEmpty(newCoords.x,newCoords.y)) && !outOfBounds(newCoords.x,newCoords.y)) {
+                                if (!isEmpty(newCoords.x,newCoords.y,true)) {
                                     // if the pixel at newCoords is the same element as the pixel, ignore
                                     newPixel = pixelMap[newCoords.x][newCoords.y];
                                     if ((!(newPixel.element == pixel.element)) || (newCoords.x == x && newCoords.y == y)) {
                                         if (arg != null) { var args = arg.split(","); }
                                         if (arg == null || args.includes(newPixel.element)) {
-                                            deletePixel(newCoords.x,newCoords.y);
-                                            if (newCoords.x == x && newCoords.y == y) {
-                                                var deleted = true;
+                                            if (!elements[newPixel.element].hardness || Math.random() > elements[newPixel.element].hardness) {
+                                                deletePixel(newCoords.x,newCoords.y);
+                                                if (newCoords.x == x && newCoords.y == y) {
+                                                    var deleted = true;
+                                                }
+                                                swapSpots = [];
                                             }
-                                            swapSpots = [];
                                         }
                                     }
                                 }
                             }
                             //Change pixel
                             else if (b == "CH") {
-                                if (!isEmpty(newCoords.x,newCoords.y) && !outOfBounds(newCoords.x,newCoords.y)) {
+                                if (!isEmpty(newCoords.x,newCoords.y,true)) {
                                     var newPixel = pixelMap[newCoords.x][newCoords.y];
-                                    if (arg.includes(">")) {
-                                        var argfrom = arg.split(">")[0];
-                                        var argto = arg.split(">")[1];
-                                    }
-                                    else {
-                                        var argfrom = null;
-                                        var argto = arg;
-                                    }
-                                    if (argto.includes(",")) {
-                                        var argto = argto.split(",")[Math.floor(Math.random()*argto.split(",").length)];
-                                    }
-                                    if ((newPixel.element != argto) && (argfrom == null || argfrom == newPixel.element)) {
-                                        newPixel.element = argto;
-                                        newPixel.color = pixelColorPick(newPixel);
-                                        newPixel.start = pixelTicks;
-                                        if (elements[argto].burning != true) {
-                                            newPixel.burning = false;
+                                    if (!elements[newPixel.element].hardness || Math.random() > elements[newPixel.element].hardness) {
+                                        if (arg.includes(">")) {
+                                            var argfrom = arg.split(">")[0];
+                                            var argto = arg.split(">")[1];
+                                        }
+                                        else {
+                                            var argfrom = null;
+                                            var argto = arg;
+                                        }
+                                        if (argto.includes(",")) {
+                                            var argto = argto.split(",")[Math.floor(Math.random()*argto.split(",").length)];
+                                        }
+                                        if ((newPixel.element != argto) && (argfrom == null || argfrom == newPixel.element)) {
+                                            newPixel.element = argto;
+                                            newPixel.color = pixelColorPick(newPixel);
+                                            newPixel.start = pixelTicks;
+                                            if (elements[argto].burning != true) {
+                                                newPixel.burning = false;
+                                            }
                                         }
                                     }
                                 }
                             }
                             //Swap
                             else if (b == "SW") {
-                                if (!isEmpty(newCoords.x,newCoords.y) && !outOfBounds(newCoords.x,newCoords.y)) {
+                                if (!isEmpty(newCoords.x,newCoords.y,true)) {
                                     var newPixel = pixelMap[newCoords.x][newCoords.y];
                                     if (arg != null) { var args = arg.split(","); }
                                     if (arg == null || args.includes(newPixel.element)) {
@@ -3189,7 +3482,7 @@
                                     }
                                 }
                                 else {
-                                    if (!isEmpty(newCoords.x,newCoords.y) && !outOfBounds(newCoords.x,newCoords.y)) {
+                                    if (!isEmpty(newCoords.x,newCoords.y,true)) {
                                         newPixel = pixelMap[newCoords.x][newCoords.y];
                                         if (newPixel.element != pixel.element && newPixel.element != "wire") {
                                             pixel.clone = newPixel.element;
@@ -3201,7 +3494,7 @@
                                 }
                             }
                             else if (b=="SH") {
-                                if (!isEmpty(newCoords.x,newCoords.y) && !outOfBounds(newCoords.x,newCoords.y)) {
+                                if (!isEmpty(newCoords.x,newCoords.y,true)) {
                                     var newPixel = pixelMap[newCoords.x][newCoords.y];
                                     var con = elements[newPixel.element].conduct;
                                     if (con != undefined) {
@@ -3218,7 +3511,7 @@
                             }
                             //Stick
                             else if (b=="ST") {
-                                if (!isEmpty(newCoords.x,newCoords.y) && !outOfBounds(newCoords.x,newCoords.y)) {
+                                if (!isEmpty(newCoords.x,newCoords.y,true)) {
                                     var newPixel = pixelMap[newCoords.x][newCoords.y];
                                     if (newPixel.element != pixel.element && (arg == null || newPixel.element == arg)) {
                                         var sticking = true
@@ -3236,7 +3529,7 @@
                             }
                             //Change color
                             else if (b == "CC") {
-                                if (!isEmpty(newCoords.x,newCoords.y) && !outOfBounds(newCoords.x,newCoords.y)) {
+                                if (!isEmpty(newCoords.x,newCoords.y,true)) {
                                     var newPixel = pixelMap[newCoords.x][newCoords.y];
                                     if (arg == null) {arg = newPixel.colorObject}
                                     else {
@@ -3252,7 +3545,7 @@
                             }
                             //Heat
                             else if (b == "HT") {
-                                if (!isEmpty(newCoords.x,newCoords.y) && !outOfBounds(newCoords.x,newCoords.y)) {
+                                if (!isEmpty(newCoords.x,newCoords.y,true)) {
                                     var newPixel = pixelMap[newCoords.x][newCoords.y];
                                     if (!(newPixel.element == pixel.element)) {
                                         if (arg != null) {arg = parseFloat(arg)}
@@ -3265,7 +3558,7 @@
                             }
                             //Cool
                             else if (b == "CO") {
-                                if (!isEmpty(newCoords.x,newCoords.y) && !outOfBounds(newCoords.x,newCoords.y)) {
+                                if (!isEmpty(newCoords.x,newCoords.y,true)) {
                                     var newPixel = pixelMap[newCoords.x][newCoords.y];
                                     if (!(newPixel.element == pixel.element)) {
                                         if (arg != null) {arg = parseFloat(arg)}
@@ -3291,7 +3584,7 @@
                     var bx = supportSpots[i].x;
                     var by = supportSpots[i].y;
                     var arg = supportSpots[i].arg;
-                    if ((!isEmpty(bx,by)) && !outOfBounds(bx,by)) {
+                    if (!isEmpty(bx,by,true)) {
                         if (pixelMap[bx][by].element == arg || arg == null) {
                             supportCount++;
                         }
@@ -3306,7 +3599,7 @@
                 while (replaceSpots.length > 0) {
                     // coords = random item of replaceSpots
                     var newCoords = replaceSpots[Math.floor(Math.random()*replaceSpots.length)];
-                    if (!isEmpty(newCoords.x,newCoords.y) && !outOfBounds(newCoords.x,newCoords.y)) {
+                    if (!isEmpty(newCoords.x,newCoords.y,true)) {
                         if (newPixel.element == newCoords.arg || newCoords.arg == null) {
                             var newPixel = pixelMap[newCoords.x][newCoords.y];
                             var newCoords = replaceSpots[Math.floor(Math.random()*replaceSpots.length)];
@@ -3383,7 +3676,7 @@
                 }
             }
 
-            if (pixel.burning) {
+            if (pixel.burning) { // Burning
                 pixel.temp += 1;
                 pixelTempCheck(pixel);
                 var burnSpots = [
@@ -3395,7 +3688,7 @@
                 // loop through burnspots
                 for (var i = 0; i < burnSpots.length; i++) {
                     var burnSpot = burnSpots[i];
-                    if (!isEmpty(burnSpot.x,burnSpot.y) && !outOfBounds(burnSpot.x,burnSpot.y)) {
+                    if (!isEmpty(burnSpot.x,burnSpot.y,true)) {
                         var newPixel = pixelMap[burnSpot.x][burnSpot.y];
                         if (elements[newPixel.element].burn && !newPixel.burning) {
                             if (Math.floor(Math.random()*100) < elements[newPixel.element].burn) {
@@ -3452,7 +3745,7 @@
             }*/
 
             // Heat Transfer
-            if (!(info.insulate == true)) {
+            if (info.insulate != true) {
                 // Check right and bottom adjacent pixels
                 var coordsToCheck = [
                     {x:pixel.x+1,y:pixel.y},
@@ -3460,7 +3753,7 @@
                 ];
                 for (var i = 0; i < coordsToCheck.length; i++) {
                     var coords = coordsToCheck[i];
-                    if (!isEmpty(coords.x,coords.y) && !outOfBounds(coords.x,coords.y)) {
+                    if (!isEmpty(coords.x,coords.y,true)) {
                         var newPixel = pixelMap[coords.x][coords.y];
                         // Skip if both temperatures are the same
                         if (pixel.temp == newPixel.temp || elements[newPixel.element].insulate == true) {
@@ -3487,7 +3780,7 @@
                 ];
                 for (var i = 0; i < coordsToCheck.length; i++) {
                     var coords = coordsToCheck[i];
-                    if (!isEmpty(coords.x,coords.y) && !outOfBounds(coords.x,coords.y)) {
+                    if (!isEmpty(coords.x,coords.y,true)) {
                         var newPixel = pixelMap[coords.x][coords.y];
                         var con = elements[newPixel.element].conduct;
                         if (con == undefined) {continue}
@@ -3499,7 +3792,7 @@
                                 }
                             }
                         }
-                        else if (!(elements[newPixel.element].insulate == true)) { // Otherwise heat the pixel (Resistance simulation)
+                        else if (elements[newPixel.element].insulate != true) { // Otherwise heat the pixel (Resistance simulation)
                             newPixel.temp += pixel.charge/4;
                             pixelTempCheck(newPixel);
                         }
@@ -3749,7 +4042,7 @@
                 var mouseY = mousePos.y;
             }
             if (currentElement == "lookup") {
-                if (!isEmpty(mouseX,mouseY) && !outOfBounds(mouseX,mouseY)) {
+                if (!isEmpty(mouseX,mouseY,true)) {
                     showInfo(pixelMap[mouseX][mouseY].element);
                 }
                 return;
@@ -3775,7 +4068,7 @@
                     }
                 }
                 else if (currentElement == "mix") {
-                    if (!isEmpty(x,y) && !outOfBounds(x,y)) {
+                    if (!isEmpty(x,y,true)) {
                         var pixel = pixelMap[x][y];
                         if (pixel.element != "fire") {
                             mixList.push(pixel);
@@ -3783,16 +4076,30 @@
                     }
                 }
                 else if (currentElement == "shock") {
-                    if (!isEmpty(x,y) && !outOfBounds(x,y)) {
-                        var pixel = pixelMap[x][y];
-                        if (elements[pixel.element].conduct && !pixel.chargeCD) {
-                            pixel.charge = 1;
+                    if (!isEmpty(x,y,true)) {
+                        // One loop that repeats 5 times if shiftDown else 1 time
+                        for (var j = 0; j < (shiftDown ? 5 : 1); j++) {
+                            var pixel = pixelMap[x][y];
+                            var con = elements[pixel.element].conduct;
+                            if (con == undefined) {continue}
+                            if (Math.random() < con) { // If random number is less than conductivity
+                                if (!pixel.charge && !pixel.chargeCD) {
+                                    pixel.charge = 1;
+                                    if (elements[pixel.element].colorOn) {
+                                        pixel.color = pixelColorPick(pixel);
+                                    }
+                                }
+                            }
+                            else if (elements[pixel.element].insulate != true) { // Otherwise heat the pixel (Resistance simulation)
+                                pixel.temp += 0.25;
+                                pixelTempCheck(pixel);
+                            }
                         }
                     }
                 }
                 else if (currentElement == "random" && isEmpty(x, y)) {
-                    // create pixel with random element
-                    currentPixels.push(new Pixel(x, y, Object.keys(elements)[Math.floor(Math.random()*Object.keys(elements).length)]));
+                    // create pixel with random element from "randomChoices" array
+                    currentPixels.push(new Pixel(x, y, randomChoices[Math.floor(Math.random() * randomChoices.length)]));
                 }
                 else if (placeMode == "replace") {
                     if (outOfBounds(x,y)) {
@@ -3832,7 +4139,13 @@
                 var mouseX = mousePos.x;
                 var mouseY = mousePos.y;
             }
-            var coords = mouseRange(mouseX,mouseY);
+            // If the current element is "pick" or "lookup", coords = [mouseX,mouseY]
+            if (currentElement == "pick" || currentElement == "lookup") {
+                var coords = [[mouseX,mouseY]];
+            }
+            else {
+                var coords = mouseRange(mouseX,mouseY);
+            }
             // For each x,y in coords
             for (var i = 0; i < coords.length; i++) {
                 var x = coords[i][0];
@@ -3855,7 +4168,6 @@
             }
         }
         function mouseMiddleAction(e, mouseX=undefined, mouseY=undefined) {
-            // Erase pixel at mouse position
             if (mouseX == undefined && mouseY == undefined) {
                 var canvas = document.getElementById("game");
                 var ctx = canvas.getContext("2d");
@@ -3863,7 +4175,7 @@
                 var mouseX = mousePos.x;
                 var mouseY = mousePos.y;
             }
-            if (!isEmpty(mouseX, mouseY) && !outOfBounds(mouseX, mouseY)) {
+            if (!isEmpty(mouseX, mouseY,true)) {
                 selectElement(pixelMap[mouseX][mouseY].element);
                 mouseIsDown = false;
             }
@@ -3901,17 +4213,17 @@
         }
         function doFrame() {
             if (!paused) {
-                paused=true;
+                paused = true;
                 document.getElementById("pauseButton").setAttribute("on","true");
             }
             drawPixels(true);
         }
 
         function selectElement(element) {
-            var e1 = document.getElementById("elementButton-"+currentElement)
+            var e1 = document.getElementById("elementButton-"+currentElement);
             if (e1 != null) { e1.setAttribute("current","false"); }
             currentElement = element;
-            var e2 = document.getElementById("elementButton-"+element)
+            var e2 = document.getElementById("elementButton-"+element);
             if (e2 != null) { e2.setAttribute("current","true"); }
         }
         function clearAll() {
@@ -4174,6 +4486,10 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             for (var i = 0; i < width; i++) {
                 pixelMap[i] = [];
             }
+            // randomChoices = the keys of "elements" with "filler", "lattice", "gray_goo", and any element with the category "tools" removed
+            randomChoices = Object.keys(elements).filter(function(e) {
+                return e != "filler" && e != "lattice" && e != "gray_goo" && elements[e].category != "tools" && e != "random" && e != "virus" && e != "vertical" && e != "horizontal";
+            });
             //...drawing code...
             gameCanvas.addEventListener("mousedown", mouseClick);
             gameCanvas.addEventListener("touchstart", mouseClick, { passive: false });
@@ -4191,6 +4507,17 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                     return 'Are you sure you want to leave?';
                 }
             };
+            window.addEventListener('beforeinstallprompt', (e) => { // Add to homescreen
+                // Prevent the mini-infobar from appearing on mobile
+                e.preventDefault();
+                // Stash the event so it can be triggered later.
+                deferredPrompt = e;
+                // Add a click listener to installButton to show the mini-infobar
+                document.getElementById('installButton').addEventListener('click', function(){
+                    // Show the prompt
+                    deferredPrompt.prompt();
+                });
+            });
             shiftDown = 0;
             // If the user presses [ or -, decrease the mouse size by 2
             document.addEventListener("keydown", function(e) {
@@ -4359,19 +4686,25 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
     <a href="https://R74n.com" class="backbutton" target="_blank">&lt;</a> Sandboxels</h1>
     <div id="gameDiv">
         <canvas id="game" width="800" height="600" oncontextmenu="return false;">
-            Your browser does not support the HTML5 canvas tag.
+            Your browser does not support the HTML5 canvas tag.<br>
+            Please update your browser to the latest version.<br>
+            <a href="https://www.google.com/chrome/">Chrome</a> 4.0+<br>
+            <a href="https://www.mozilla.org/firefox/new/">Firefox</a> 2.0+<br>
+            <a href="http://www.apple.com/safari/">Safari</a> 3.1+<br><br>
+            <a href="http://www.opera.com/">Opera</a> 9.0+<br>
+            <a href="http://www.microsoft.com/windows/internet-explorer/default.aspx">Internet Explorer</a> 9.0+<br>
         </canvas>
         <div id="underDiv">
             <div id="stats"></div>
             <div id="controls">
                 <div id="toolControls">
-                    <button id="pauseButton" title="Pause/play the simulation" class="controlButton" onclick='togglePause();focusGame();' on="false">Pause</button><button id="frameButton" title="Pause and play one frame" class="controlButton" onclick='doFrame();focusGame();' on="false">Step</button><button id="sizeDownButton" title="Decrease the brush size" class="controlButton" onclick="mouseSize -= 2;if (mouseSize < 1) { mouseSize = 1; };focusGame();">-</button><button id="sizeUpButton" title="Increase the brush size" class="controlButton" onclick="mouseSize += 2;if (mouseSize > (height > width ? height : width)) { mouseSize = (height > width ? height : width); };focusGame();">+</button><button id="resetButton" title="Clear the entire scene" class="controlButton" onclick="if (confirm('Are you sure you want to clear the whole scene?')) {clearAll();};focusGame();">Reset</button><button id="replaceButton" title="Override existing pixels when placing" class="controlButton" onclick='if (placeMode == "replace") {placeMode = null;this.setAttribute("on","false");}else {placeMode = "replace";this.setAttribute("on","true");};focusGame();' on="false">Replace</button><button id="elemSelectButton" title="Select an element by ID" class="controlButton" onclick='chooseElementPrompt();focusGame();'>E</button><button id="tpsButton" title="Change the simulation Ticks Per Second (TPS)" class="controlButton" onclick='var newtps = prompt("Enter the new simulation Ticks Per Second (TPS). This is how many updates per second the simulation will run.\n\nThe default is 30.\n\nThe current TPS is " + tps + ".");if (newtps == null || newtps == "" || newtps == "0") {alert("You did not enter a valid TPS. The TPS will be reset.");tps = 30;}else if (newtps > 1000) {alert("You entered a TPS that is too high. The TPS will be set to the maximum, 1000.");tps = 1000;}else {tps = parseInt(newtps);if (isNaN(tps)) {alert("You did not enter a valid TPS. The TPS will be reset.");tps = 30;}}resetInterval(tps);focusGame();'>Tps</button><button id="hideButton" title="Stops updating the scene to allow more resources towards simulation" class="controlButton" onclick='if (hiding) {hiding = false;this.setAttribute("on","false");}else {hiding = true;this.setAttribute("on","true");};focusGame();' on="false">Hide</button><button id="infoButton" title="Brings up the element info screen" class="controlButton" onclick='if (!showingInfo){showInfo(currentElement)}else{closeInfo()};' on="false">Info</button>
+                    <button id="pauseButton" title="Pause/play the simulation" class="controlButton" onclick='togglePause();focusGame();' on="false">Pause</button><button id="frameButton" title="Pause and play one frame" class="controlButton" onclick='doFrame();focusGame();' on="false">Step</button><button id="sizeDownButton" title="Decrease the brush size" class="controlButton" onclick="mouseSize -= 2;if (mouseSize < 1) { mouseSize = 1; };focusGame();">-</button><button id="sizeUpButton" title="Increase the brush size" class="controlButton" onclick="mouseSize += 2;if (mouseSize > (height > width ? height : width)) { mouseSize = (height > width ? height : width); };focusGame();">+</button><button id="resetButton" title="Clear the entire scene" class="controlButton" onclick="if (confirm('Are you sure you want to clear the whole scene?')) {clearAll();};focusGame();">Reset</button><button id="replaceButton" title="Override existing pixels when placing" class="controlButton" onclick='if (placeMode == "replace") {placeMode = null;this.setAttribute("on","false");}else {placeMode = "replace";this.setAttribute("on","true");};focusGame();' on="false">Replace</button><button id="elemSelectButton" title="Select an element by ID" class="controlButton" onclick='chooseElementPrompt();focusGame();'>E</button><button id="tpsButton" title="Change the simulation Ticks Per Second (TPS)" class="controlButton" onclick='var newtps = prompt("Enter the new simulation Ticks Per Second (TPS). This is how many updates per second the simulation will run.\n\nThe default is 30.\n\nThe current TPS is " + tps + ".");console.log(newtps);if (isNaN(newtps) || newtps == "" || newtps == "0") {alert("You did not enter a valid TPS. The TPS will be reset.");tps = 30;}else if (newtps > 1000) {alert("You entered a TPS that is too high. The TPS will be set to the maximum, 1000.");tps = 1000;}else {tps = parseInt(newtps);if (isNaN(tps)) {alert("You did not enter a valid TPS. The TPS will be reset.");tps = 30;}}resetInterval(tps);focusGame();'>Tps</button><button id="hideButton" title="Stops updating the scene to allow more resources towards simulation" class="controlButton" onclick='if (hiding) {hiding = false;this.setAttribute("on","false");}else {hiding = true;this.setAttribute("on","true");};focusGame();' on="false">Hide</button><button id="infoButton" title="Brings up the element info screen" class="controlButton" onclick='if (!showingInfo){showInfo(currentElement)}else{closeInfo()};' on="false">Info</button>
                 </div>
                 <div id="category-tools" category="tools" style="display: block;"></div>
                 <div id="categoryControls"></div>
                 <div id="elementControls"></div>
             </div>
-            <div id="extraInfo"><small><a href="https://sandboxels.R74n.com/changelog.txt" target="_blank">Controls</a> • <a href="https://sandboxels.R74n.com/changelog.txt" target="_blank">Changelog</a> • <a href="https://docs.google.com/document/d/1R8xljj_J-K5oU-9y4louwplQmM-ZBvUfXmhbgj5LYdk/edit?usp=sharing" target="_blank">Feedback</a></small></div>
+            <div id="extraInfo"><small><a href="controls.txt" target="_blank">Controls</a> • <a href="changelog.txt" target="_blank">Changelog</a> • <a href="https://docs.google.com/document/d/1R8xljj_J-K5oU-9y4louwplQmM-ZBvUfXmhbgj5LYdk/edit?usp=sharing" target="_blank">Feedback</a> • <a href="#install" id="installButton">Install</a></small></div>
         </div>
     </div>
 
