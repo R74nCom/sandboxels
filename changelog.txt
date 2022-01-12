@@ -4,6 +4,17 @@
     + Machines Update
     + Mod Manager Update
 
+[Version 0.8.3]
+    + Mud and Wet Sand seaps into the ground
+    + Cloners are now invincible
+    + Fireballs now extinguish in water
+    ~ Moved Clouds to Gases category
+    ~ Moved Gray Goo to Special category
+    ~ Mushrooms stalks now have gravity
+    + Technical: Reaction property "oneway"
+    ~ Fixed: Rocks don't sink in water
+    ~ Fixed: Large decimal values for molten elements
+
 [Version 0.8.2]
     + Cold Fire
     + Sulfur

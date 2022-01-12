@@ -605,6 +605,9 @@
             "mud": {
                 color: "#382417",
                 behavior: behaviors.STURDYPOWDER,
+                reactions: {
+                    "dirt": { "elem1":"dirt", "elem2":"mud", "chance":0.0005, "oneway":true },
+                },
                 tempHigh: 100,
                 stateHigh: "mudstone",
                 tempLow: -50,
@@ -625,6 +628,9 @@
             "wet_sand": {
                 color: "#b5a85e",
                 behavior: behaviors.STURDYPOWDER,
+                reactions: {
+                    "sand": { "elem1":"sand", "elem2":"wet_sand", "chance":0.0005, "oneway":true },
+                },
                 tempHigh: 100,
                 stateHigh: "packed_sand",
                 category: "land",
@@ -886,6 +892,7 @@
                 behavior: behaviors.CLONER,
                 category:"machines",
                 insulate:true,
+                hardness: 1,
             },
             "ecloner": {
                 name: "e-cloner",
@@ -895,6 +902,7 @@
                 category:"machines",
                 insulate:true,
                 conduct: 1,
+                hardness: 1,
             },
             "slow_cloner": {
                 color: "#888800",
@@ -905,6 +913,7 @@
                 ],
                 category:"machines",
                 insulate:true,
+                hardness: 1,
             },
             "wire": {
                 color: "#4d0a03",
@@ -968,6 +977,7 @@
                 color: "#262626",
                 behavior: behaviors.DELETE,
                 category:"special",
+                hardness: 1,
             },
             "flea": {
                 color: "#9e4732",
@@ -1281,55 +1291,17 @@
                 category:"special",
                 hidden:true,
             },
-            "rain_cloud": {
-                color: "#636b78",
-                behavior: [
-                    "XX|XX|XX",
-                    "M1%5|CH:water%0.05|M1%5",
-                    "CR:electric%0.05|CR:electric%0.05|CR:electric%0.05",
-                ],
-                category:"special",
-                temp: 80,
-                tempLow: 0,
-                stateLow: "snow_cloud",
-                state: "gas",
-                density: 1,
-                conduct: 0.03,
-            },
-            "snow_cloud": {
-                color: "#7e8691",
-                behavior: [
-                    "XX|XX|XX",
-                    "M1%5|CH:snow%0.05|M1%5",
-                    "XX|XX|XX",
-                ],
-                category:"special",
-                temp: -10,
-                tempHigh: 30,
-                stateHigh: "rain_cloud",
-                state: "gas",
-                density: 2,
-                conduct: 0.01,
-            },
-            "acid_cloud": {
-                color: "#637865",
-                behavior: [
-                    "XX|XX|XX",
-                    "M1%5|CH:acid%0.05|M1%5",
-                    "XX|XX|XX",
-                ],
-                category:"special",
-                density: 3,
-            },
             "rocket": {
                 color: "#ff0000",
                 behavior: [
                     "XX|M1|XX",
-                    "XX|XX|XX",
-                    "XX|CR:fire|XX",
+                    "XX|DL%1|XX",
+                    "CR:smoke|CR:fire|CR:smoke",
                 ],
+                category: "special",
                 hidden:true,
                 state: "solid",
+                temp:700,
                 density: 7300,
                 conduct: 0.73,
                 tempHigh: 1455.5,
@@ -1904,7 +1876,7 @@
                     "CH:gray_goo|DL%5|CH:gray_goo",
                     "XX|CH:gray_goo AND M1|XX",
                 ],
-                category: "machines",
+                category: "special",
                 state: "solid",
                 density: 21450,
             },
@@ -1919,6 +1891,7 @@
                 insulate:true,
                 state:"solid",
                 density:2710,
+                hardness: 1,
             },
             "floating_cloner": {
                 color: "#c7c787",
@@ -1931,6 +1904,7 @@
                 insulate:true,
                 state:"solid",
                 density:1355,
+                hardness: 1,
             },
             "virus": {
                 color: "#cc00ff",
@@ -2017,6 +1991,9 @@
                     "XX|XX|XX",
                     "M2|M1|M2",
                 ],
+                reactions: {
+                    "water": { "elem1":"rock", "elem2":"steam" }
+                },
                 category: "special",
                 temp:600,
                 tempHigh: 1900,
@@ -2050,7 +2027,7 @@
                 behavior: [
                     "XX|XX|XX",
                     "XX|XX|XX",
-                    "XX|CH:dirt>hyphae%1|XX",
+                    "XX|CH:dirt>hyphae%1 AND M1|XX",
                 ],
                 category: "life",
                 hidden: true,
@@ -2313,6 +2290,7 @@
                 category: "solids",
                 density: 7850,
                 conduct: 0.42,
+                hardness: 0.8,
             },
             "rose_gold": {
                 color: ["#B76E79","#a1334d","#f06283"],
@@ -2846,6 +2824,46 @@
                 state: "liquid",
                 conduct: 0.83,
             },
+            "rain_cloud": {
+                color: "#636b78",
+                behavior: [
+                    "XX|XX|XX",
+                    "M1%5|CH:water%0.05|M1%5",
+                    "CR:electric%0.05|CR:electric%0.05|CR:electric%0.05",
+                ],
+                category:"gases",
+                temp: 80,
+                tempLow: 0,
+                stateLow: "snow_cloud",
+                state: "gas",
+                density: 1,
+                conduct: 0.03,
+            },
+            "snow_cloud": {
+                color: "#7e8691",
+                behavior: [
+                    "XX|XX|XX",
+                    "M1%5|CH:snow%0.05|M1%5",
+                    "XX|XX|XX",
+                ],
+                category:"gases",
+                temp: -10,
+                tempHigh: 30,
+                stateHigh: "rain_cloud",
+                state: "gas",
+                density: 2,
+                conduct: 0.01,
+            },
+            "acid_cloud": {
+                color: "#637865",
+                behavior: [
+                    "XX|XX|XX",
+                    "M1%5|CH:acid%0.05|M1%5",
+                    "XX|XX|XX",
+                ],
+                category:"gases",
+                density: 3,
+            },
             "battery": {
                 color: "#9c6c25",
                 behavior: [
@@ -3031,12 +3049,12 @@
                     state: "liquid",
                 }
                 // If the element has a density, add it to the new molten element * 0.9
-                if (elements[element].density) { newmolten.density = elements[element].density * 0.9; }
+                if (elements[element].density) { newmolten.density = Math.round(elements[element].density * 0.9 * 10) / 10; }
                 // If the element has a conductivity, add it to the new molten element * 1.1
-                if (elements[element].conduct) { newmolten.conduct = elements[element].conduct * 1.1; }
+                if (elements[element].conduct) { newmolten.conductivity = Math.round(elements[element].conduct * 1.1 * 10) / 10; }
                 // Same for burn, burnTime, burnInto, and fireColor
-                if (elements[element].burn) { newmolten.burn = elements[element].burn * 1.1; }
-                if (elements[element].burnTime) { newmolten.burnTime = elements[element].burnTime * 1.1; }
+                if (elements[element].burn) { newmolten.burn = Math.round(elements[element].burn * 1.1 * 10) / 10; }
+                if (elements[element].burnTime) { newmolten.burnTime = Math.round(elements[element].burnTime * 1.1 * 10) / 10; }
                 if (elements[element].burnInto) { newmolten.burnInto = elements[element].burnInto; }
                 if (elements[element].fireColor) { newmolten.fireColor = elements[element].fireColor; }
                 // If the new element doesn't exist, add it
@@ -3224,10 +3242,14 @@
                     // Reactions
                     newPixel = pixelMap[nx][ny];
                     if (info.reactions != undefined && info.reactions[newPixel.element] != undefined) {
-                        return reactPixels(pixel,newPixel);
+                        if (reactPixels(pixel,newPixel)) {
+                            return true;
+                        }
                     }
-                    else if (elements[newPixel.element].reactions != undefined && elements[newPixel.element].reactions[pixel.element] != undefined) {
-                        return reactPixels(newPixel,pixel);
+                    else if (elements[newPixel.element].reactions != undefined && elements[newPixel.element].reactions[pixel.element] != undefined && !elements[newPixel.element].reactions[pixel.element].oneway) {
+                        if (reactPixels(newPixel,pixel)) {
+                            return true;
+                        }
                     }
                     // Density
                     if (pixel.element != newPixel.element) {
