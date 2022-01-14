@@ -5,15 +5,47 @@
     + Mod Manager Update
 
 [Version 0.8.3]
+    + Laser
+    + Snake (Not the animal)
+    + Ball (Hidden experiment)
+    + Cyanide
+    + Ammonia, a fertilizer
+    + Vaccine
+    + Antibody
+    + Infection
+    + Cell
+    + Cancer
+    + Rain Clouds form from steam high up
+    + Pyrocumulus Clouds
+    + Fire Clouds
+    + Fuse
+    + RGB LEDs
     + Mud and Wet Sand seaps into the ground
+    + Algae and Plants can clean water
     + Cloners are now invincible
+    + Animals eat more varieties of things
     + Fireballs now extinguish in water
+    ~ Fireballs now flicker and are colored differently
+    ~ Light is now directional and doesn't delete immediately
+    ~ Frogs, Flies, Fireflies, Bees, Fish, Termites, Rats, Slugs, Snails, and Bubbles now move more realistically
+    ~ Rats now create less Plague
+    ~ Fireflies now realistically color
     ~ Moved Clouds to Gases category
     ~ Moved Gray Goo to Special category
     ~ Mushrooms stalks now have gravity
+    ~ Dirty water looks dirtier
+    ~ Lattice is given a different color than Filler
     + Technical: Reaction property "oneway"
-    ~ Fixed: Rocks don't sink in water
+    + Technical: Support Any (SA) behavior
+    ~ Technical: All animals now use reactions to eat
+    ~ Fixed: Rocks don't sink in liquids
+    ~ Fixed: Supportive elements like concrete don't sink in liquids
     ~ Fixed: Large decimal values for molten elements
+    ~ Fixed: Fish can't swim through dirty water
+    ~ Fixed: Pixels that should be burning created by other pixels aren't burn
+    ~ Fixed: Acid Cloud density not working
+    ~ Fixed: Fire causes Clouds to lower
+    ~ Fixed: Algae tends to move rightwards
 
 [Version 0.8.2]
     + Cold Fire
