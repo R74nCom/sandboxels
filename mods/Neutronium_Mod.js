@@ -37,3 +37,4 @@ elements.Neutronium = {
     state: "gas",
     density: 100000000000000000,
 };
+eLists.CONDIMENT = ["ketchup","melted_cheese","mayo","mayonnaise","fry_sauce","chocolate_syrup","mustard","honey"];
