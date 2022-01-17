@@ -197,11 +197,36 @@ temp: -260,
 tempHigh: -254.43,
 stateHigh: "deuterium"
 };
+elements.liquid_helium = {
+name: "Liquid Helium-4",
+color: "#b2d1b5",
+behavior: behaviors.LIQUID,
+category: "liquids",
+state: "liquid",
+density: 162.4,
+temp: -274,
+tempHigh: -272.2,
+stateHigh: "helium"
+};
+behaviors.PARTICLE = [
+"XX|XX|XX",
+"XX|XX|M1 AND BO",
+"XX|XX|XX",
+];
+elements.neutron = {
+color: "#0abef5",
+behavior: behaviors.PARTICLE,
+rotatable: true,
+reactions: {
+"protium": { "elem1":"deuterium", "elem2":null },
+"deuterium": { "elem1":"tritium", "elem2":null },
+},
+category: "energy",
+temp: 100
+};
 /* Unfinished:
 Tritium
-Neutron
 Liquid Tritium
 Ionized Tritium
 Heavy Water
-Liquid Helium
 */
