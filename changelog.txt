@@ -3,6 +3,9 @@
     + Explosives Update
     + Machines Update
 
+[Version 0.9.1]
+    ~ Mods can now work together (e.g. having reactions with elements from other mods, stateHighs, etc.)
+
 [Version 0.9 - Mod Manager Update]
     + Mod Manager Menu
     + Clay Soil
