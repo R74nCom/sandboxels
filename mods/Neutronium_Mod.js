@@ -46,7 +46,7 @@ behaviors.CONDIMENT_DESTROYER = [
 elements.Condiment_Destroyer = {
     color: "ffff00, ff0000",
     behavior: behaviors.CONDIMENT_DESTROYER
-    category: "testing",
+    category: "liquids",
     state: "liquid",
     density: 1000,
 };
