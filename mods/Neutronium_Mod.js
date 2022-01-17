@@ -73,7 +73,7 @@ elements.Neutronium = {
 };
     elements.Ionized_Hydrogen = {
     name: "Ionized Protium",
-    color: "ff00ff",
+    color: "#ff00ff",
     behavior: behaviors.GAS,
     category: "energy",
     state: "gas",
