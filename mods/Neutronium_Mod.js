@@ -17,6 +17,7 @@ elements.Neutronium = {
     elements.Molten_Neutronium = {
     color: "#ffffaa",
     behavior: behaviors.LIQUID,
+    temp: 6000,
     tempHigh: 5000,
     stateHigh: "Neutronium_Gas",
     tempLow: 1000,
@@ -29,6 +30,7 @@ elements.Neutronium = {
     elements.Neutronium_Gas = {  
     color: "#abcdef",
     behavior: behaviors.GAS,
+    temp: 6000,
     tempLow: 5000,
     stateLow: "molten_neutronium",
     category: "energy",
