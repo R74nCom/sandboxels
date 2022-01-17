@@ -37,3 +37,46 @@ elements.Neutronium = {
     state: "gas",
     density: 0.045,
 };
+    elements.hydrogen = {
+    name: "Protium",
+    color: "#558bcf",
+    behavior: behaviors.GAS,
+    reactions: {
+        "oxygen": { "elem1":null, "elem2":"hydrogen" },
+    },
+    category: "gases",
+    burn: 100,
+    burnTime: 2,
+    tempHigh: 9726.85,
+    stateHigh: "Ionized_Hydrogen",
+    tempLow: -252.8,
+    stateLow: "liquid_hydrogen",
+    state: "gas",
+    density: 0.08375,
+};
+    elements.liquid_hydrogen = {
+    name: "Liquid Protium",
+    color: "#97afcf",
+    behavior: behaviors.LIQUID,
+    reactions: {
+        "liquid_oxygen": { "elem1":"ice", "elem2":null },
+                    "oxygen": { "elem1":"ice", "elem2":null },
+    },
+    category: "liquids",
+    burn: 100,
+    burnTime: 2,
+    temp:-252.8,
+    tempHigh: -252.8,
+    stateHigh: "hydrogen",
+    state: "liquid",
+    density: 71,
+};
+    elements.Ionized_Hydrogen = {
+    name: "Ionized Protium",
+    color: "ff00ff",
+    behavior: behaviors.GAS,
+    category: "energy",
+    state: "gas",
+    density: 0.08375,
+    tempLow: 9726.85,
+    stateLow: "hydrogen"
