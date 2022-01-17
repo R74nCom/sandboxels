@@ -91,7 +91,7 @@ elements.neutronium = {
 };
     elements.fusion_catalyst = {
     name: "Fusion Catalyst",
-    color: "#ff0000, #ffff00",
+    color: ["#ff0000", "#ffff00"],
     behavior: behaviors.POWDER,
     category: "energy",
     state: "solid",
