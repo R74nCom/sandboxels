@@ -76,7 +76,7 @@
                     -ms-user-select: none; /* Internet Explorer/Edge */
                         user-select: none;
         }
-        #infoScreen {
+        #infoScreen, #modManager {
             border: 1px solid #ffffff;
             position: absolute;
             left: 50%;
@@ -87,18 +87,20 @@
             padding: 10px;
             background-color: rgb(31, 31, 31);
             display: none;
-            overflow-x: scroll;
+            overflow-x: hidden;
         }
-        #infoTitle {
+        .menuTitle {
             font-size: 1.5em;
             text-decoration: underline;
         }
-        #infoText {
-            margin-top: 15px;
-            white-space: pre-wrap;
+        .menuText {
+            margin-top: 5px;
             line-height: 1.5em;
         }
-        #infoX {
+        #infoText {
+            white-space: pre-wrap;
+        }
+        .XButton {
             position: absolute;
             right: 0px;
             top: 0px;
@@ -108,10 +110,10 @@
             text-align:center;
             border: 1px solid #ffffff;
         }
-        #infoX:hover {
+        .XButton:hover {
             background-color: rgb(200, 33, 33);
         }
-        #infoSearch {
+        #infoSearch, #modManagerUrl {
             position: absolute;
             bottom: 0px;
             width: 100%;
@@ -122,10 +124,45 @@
             color: white;
             font-size: 1.5em;
             padding: 10px;
+            padding-left: 50px;
             font-family: 'Press Start 2P';
         }
-        #infoSearch:focus {
+        #infoSearch:focus, #modManagerUrl:focus {
             outline: none;
+        }
+        #modManagerAdd {
+            position: absolute;
+            bottom: 0px;
+            right: 0px;
+            height: 50px;
+            width: 50px;
+            transform: translate(-25%, -25%);
+            background-color: rgb(0, 190, 32);
+            color: white;
+            font-size: 2em;
+            padding: 10px;
+            font-family: 'Press Start 2P';
+        }
+        #modManagerList {
+            margin-top: 20px;
+        }
+        #modManagerList li {
+            list-style-type: none;
+            position: relative;
+        }
+        #modManagerList li::before {
+            content: '•';
+            position: absolute;
+            left: -1.5em;
+            font-size: 1em;
+            font-family: 'Press Start 2P';
+        }
+        .removeModX {
+            color: red;
+            cursor: pointer;
+        }
+        .removeModX:hover {
+            color: rgb(255, 107, 107);
         }
         .infoLink {
             color: rgb(116, 140, 221);
@@ -278,8 +315,30 @@
     </style>
 
     <script>
-        //replaceAll polyfill
+        // replaceAll polyfill
         if (!String.prototype.replaceAll) {String.prototype.replaceAll = function(str, newStr){if (Object.prototype.toString.call(str).toLowerCase() === '[object regexp]') {return this.replace(str, newStr);}return this.replace(new RegExp(str, 'g'), newStr);};}
+    </script>
+
+    <script> // Mod Loader
+        // If the localStorage key "enabledMods" exists, load it as an array.
+        // If it doesn't exist, create an empty array.
+        enabledMods = localStorage.getItem("enabledMods") ? JSON.parse(localStorage.getItem("enabledMods")) : [];
+        // Run all scripts in the enabledMods array, if it fails print to console
+        for (var i = 0; i < enabledMods.length; i++) {
+            try {
+                var script = document.createElement('script');
+                var src = enabledMods[i];
+                // allow cross origin requests if it starts with http
+                if (src.startsWith("http")) {
+                    script.setAttribute("crossorigin", "anonymous");
+                }
+                script.src = src;
+                document.head.appendChild(script);
+            } catch (e) {
+                console.log("Error in mod: " + enabledMods[i]);
+                console.log(e);
+            }
+        }
     </script>
 
     <script>
@@ -524,7 +583,7 @@
                 color: "#4d85ff",
                 behavior: behaviors.LIQUID,
                 tempHigh: 102,
-                stateHigh: "steam",
+                stateHigh: ["steam","salt"],
                 tempLow: -2,
                 stateLow: "ice",
                 viscosity: 2,
@@ -551,7 +610,7 @@
                 color: "#8eaae6",
                 behavior: behaviors.LIQUID,
                 tempHigh: 105,
-                stateHigh: "steam",
+                stateHigh: ["steam","sugar"],
                 tempLow: -5,
                 stateLow: "ice",
                 viscosity: 5,
@@ -578,7 +637,7 @@
                 color: ["#0e824e","#07755a","#0c6934"],
                 behavior: behaviors.LIQUID,
                 tempHigh: 105,
-                stateHigh: "steam",
+                stateHigh: ["steam","carbon_dioxide"],
                 tempLow: -5,
                 stateLow: "ice",
                 viscosity: 10,
@@ -596,7 +655,7 @@
                 conduct: 0.1,
             },
             "dirt": {
-                color: ["#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#b0a39b"],
+                color: ["#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#a88c7b"],
                 behavior: behaviors.POWDER,
                 tempHigh:1200,
                 tempLow: -50,
@@ -661,7 +720,7 @@
                 density: 1050,
             },
             "grass": {
-                color: "#00ff00",
+                color: ["#00ff00","#00cf00","#009400"],
                 behavior: [
                     "XX|XX|XX",
                     "XX|XX|XX",
@@ -705,8 +764,10 @@
                 behavior: behaviors.GAS,
                 reactions: {
                     "steam": { "elem1": null, "elem2": "rain_cloud", "chance":0.3, "y":[0,15] },
-                    "rain_cloud": { "elem1": null, "elem2": "rain_cloud", "chance":0.4, "y":[0,15] },
-                    "snow_cloud": { "elem1": null, "elem2": "rain_cloud", "chance":0.4, "y":[0,15] },
+                    "rain_cloud": { "elem1": "rain_cloud", "chance":0.4, "y":[0,15] },
+                    "snow_cloud": { "elem1": "rain_cloud", "chance":0.4, "y":[0,15] },
+                    "pyrocumulus": { "elem1": "rain_cloud", "chance":0.4, "y":[0,15] },
+                    "fire_cloud": { "elem1": "rain_cloud", "elem2": "pyrocumulus", "chance":0.4, "y":[0,15] },
                 },
                 temp: 100,
                 tempLow: 95,
@@ -783,6 +844,7 @@
                     "rain_cloud": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,15] },
                     "snow_cloud": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,15] },
                     "acid_cloud": { "elem1": "pyrocumulus", "chance":0.05, "y":[0,15] },
+                    "fire_cloud": { "elem1": "pyrocumulus", "chance":0.05, "y":[0,15] },
                     "pyrocumulus": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,15] },
                 },
                 temp: 114,
@@ -859,10 +921,10 @@
                 stateHigh: "smoke",
                 category: "energy",
                 state: "gas",
-                density: 1180,
+                density: 0.2,
             },
             "iron": {
-                color: "#cbcdcd",
+                color: ["#cbcdcd","#bdbdbd"],
                 behavior: behaviors.WALL,
                 reactions: {
                     "water": { "elem1":"rust", chance:0.0025 },
@@ -876,7 +938,7 @@
                 conduct: 0.47,
             },
             "rust": {
-                color: "#bd6d35",
+                color: ["#AE551C","#BC6E39","#925F49"],
                 behavior: behaviors.SUPPORT,
                 tempHigh: 1538,
                 stateHigh: "molten_iron",
@@ -886,7 +948,7 @@
                 conduct: 0.37,
             },
             "glass": {
-                color: "#5e7c80",
+                color: ["#5e807d","#679e99"],
                 behavior: behaviors.WALL,
                 tempHigh: 1500,
                 category: "solids",
@@ -894,7 +956,7 @@
                 density: 2500,
             },
             "glass_shard": {
-                color: ["#5e7c80","#6299a1","#596b6e"],
+                color: ["#5e807d","#679e99","#596b6e"],
                 behavior: behaviors.POWDER,
                 tempHigh: 1500,
                 stateHigh: "molten_glass",
@@ -957,7 +1019,7 @@
                 category:"special",
             },
             "gravel": {
-                color: "#454b51",
+                color: ["#E3E0DF","#B1ABA3","#74736D","#524B47"],
                 behavior: behaviors.POWDER,
                 category:"land",
                 tempHigh: 950,
@@ -970,6 +1032,8 @@
                 color: "#81cf63",
                 behavior: behaviors.LIQUID,
                 viscosity: 5000,
+                tempHigh: 120,
+                stateHigh: "steam",
                 category:"liquids",
                 state: "liquid",
                 density: 1450,
@@ -1174,7 +1238,7 @@
                 conduct: 0.2,
             },
             "algae": {
-                color: "#00870e",
+                color: ["#395706","#6F9315","#9DCA19"],
                 behavior: [
                     "XX|XX|XX",
                     "SW:water,salt_water,sugar_water,dirty_water%1|XX|SW:water,salt_water,sugar_water,dirty_water%1",
@@ -1238,6 +1302,9 @@
                     "XX|XX|XX",
                     "XX|XX|XX",
                 ],
+                reactions: {
+                    "water": { "elem1":"wood" },
+                },
                 temp:600,
                 category:"special",
             },
@@ -1545,8 +1612,10 @@
             },
             "anesthesia": {
                 color: "#d3e1e3",
-                behavior: behaviors.LIQUID,
+                behavior: behaviors.GAS,
                 category: "liquids",
+                tempLow: -88.48,
+                stateLow: ["nitrogen","oxygen"],
                 hidden: true,
                 state: "liquid",
                 density: 1.9781,
@@ -1616,10 +1685,10 @@
                 density: 825,
             },
             "lamp_oil": {
-                color: "#1a0803",
+                color: "#b3b38b",
                 behavior: behaviors.LIQUID,
                 category: "liquids",
-                tempHigh: 400,
+                tempHigh: 2100,
                 stateHigh: "fire",
                 burn: 95,
                 burnTime: 2000,
@@ -1696,7 +1765,7 @@
                 stateHigh: "molten_steel",
             },
             "bamboo": {
-                color: "#336600",
+                color: ["#7CC00C","#77A012"],
                 behavior: behaviors.WALL,
                 tempHigh: 400,
                 stateHigh: "fire",
@@ -1707,7 +1776,7 @@
                 density: 686,
             },
             "bamboo_plant": {
-                color: "#b4c781",
+                color: ["#FBC882","#DFAD64"],
                 behavior: [
                     "XX|M2%0.25|XX",
                     "XX|L2:bamboo AND CH:bamboo%0.025|XX",
@@ -1729,6 +1798,22 @@
                 category: "land",
                 state: "solid",
                 density: 1760,
+            },
+            "clay_soil": {
+                color: ["#F49A6F","#AB7160","#B56C52"],
+                behavior: [
+                    "XX|XX|XX",
+                    "XX|XX|XX",
+                    "M2%25|M1|M2%25",
+                ],
+                reactions: {
+                    "water": { "elem1":"clay", "elem2":null },
+                },
+                tempHigh: 140,
+                stateHigh: "baked_clay",
+                category: "land",
+                state: "solid",
+                density: 1600,
             },
             "baked_clay": {
                 color: "#b85746",
@@ -1807,7 +1892,7 @@
                 density: 769,
             },
             "straw": {
-                color: "#c9bc81",
+                color: ["#E9D391","#A3835E","#B79A73"],
                 behavior: behaviors.SUPPORT,
                 tempHigh: 400,
                 stateHigh: "fire",
@@ -1926,7 +2011,7 @@
                 category: "special",
             },
             "copper": {
-                color: "#e08128",
+                color: ["#A95232","#BE4322","#C76035"],
                 behavior: [
                     "XX|XX|XX",
                     "XX|CH:oxidized_copper%0.001|XX",
@@ -1944,7 +2029,7 @@
                 conduct: 0.95,
             },
             "oxidized_copper": {
-                color: "#7f9c21",
+                color: ["#406555","#42564A","#517364"],
                 behavior: [
                     "XX|XX|XX",
                     "XX|XX|XX",
@@ -1979,6 +2064,13 @@
                     "DL%5 AND M1|DL%2|DL%5 AND M1",
                     "DL%5 AND M1|DL%10 AND M1|DL%5 AND M1",
                 ],
+                reactions: {
+                    "acid_gas": { "elem1": null, "elem2": "acid_cloud", "chance":0.3, "y":[0,15] },
+                    "rain_cloud": { "elem1": null, "elem2": "acid_cloud", "chance":0.4, "y":[0,15] },
+                    "snow_cloud": { "elem1": null, "elem2": "acid_cloud", "chance":0.4, "y":[0,15] },
+                    "pyrocumulus": { "elem1": null, "elem2": "acid_cloud", "chance":0.4, "y":[0,15] },
+                    "fire_cloud": { "elem1": null, "elem2": "acid_cloud", "chance":0.4, "y":[0,15] },
+                },
                 category: "gases",
                 tempHigh: 400,
                 stateHigh: "fire",
@@ -1999,7 +2091,7 @@
                 color: "#f0f0f0",
                 behavior: behaviors.STICKY,
                 tempHigh: 475,
-                stateHigh: "cyanide",
+                stateHigh: ["cyanide","dioxin"],
                 category: "liquids",
                 state: "liquid",
                 density: 1300,
@@ -2087,7 +2179,7 @@
                 conduct: 0.15,
             },
             "permafrost": {
-                color: "#4b9e82",
+                color: ["#557d65","#557d79"],
                 behavior: behaviors.SUPPORT,
                 temp: -50,
                 tempHigh: 0,
@@ -2140,7 +2232,7 @@
                 tempLow: -100,
                 stateLow: "rock",
                 burning: true,
-                burnInto: "rock",
+                burnInto: ["rock","rock","steam"],
                 burnTime: 170,
                 burn: 100,
                 state: "solid",
@@ -2335,7 +2427,7 @@
                 density: 3980,
             },
             "rat": {
-                color: "#b8aea5",
+                color: ["#A698A9","#8C7D82","#CCC3CF"],
                 behavior: [
                     "XX|CR:plague%0.05 AND M2%1.5|M2%5",
                     "XX|FX%2|M2 AND BO",
@@ -2370,7 +2462,7 @@
                 },
                 category: "life",
                 tempHigh: 50,
-                stateHigh: "meat",
+                stateHigh: "rotten_meat",
                 tempLow: 15,
                 stateLow: "frozen_meat",
                 burn:80,
@@ -2400,7 +2492,7 @@
                 state: "solid",
             },
             "zinc": {
-                color: "#9c9da2",
+                color: ["#7C7A7B","#9D9D9F","#F8F8F3"],
                 behavior: behaviors.WALL,
                 tempHigh: 419.53,
                 category: "solids",
@@ -2408,7 +2500,7 @@
                 conduct: 0.53,
             },
             "tin": {
-                color: "#d3d4d5",
+                color: ["#9E9D98","#AEADA4"],
                 behavior: behaviors.WALL,
                 tempHigh: 231.9,
                 category: "solids",
@@ -2424,7 +2516,7 @@
                 conduct: 0.51,
             },
             "silver": {
-                color: "#aaa9ad",
+                color: "#CACACA",
                 behavior: behaviors.WALL,
                 tempHigh: 961.8,
                 category: "solids",
@@ -2560,6 +2652,8 @@
                     "oxidized_copper": { "elem2":"copper", chance:0.05 },
                 },
                 viscosity: 12,
+                tempHigh: 100.6,
+                stateHigh: "steam",
                 category: "liquids",
                 state: "liquid",
                 density: 1006,
@@ -2587,7 +2681,7 @@
                 category:"life",
             },
             "corn": {
-                color: ["#e0d041","#e6d96a"],
+                color: ["#F8D223","#D6BA2A","#f7f5ba","#DBD281","#CDB12D"],
                 behavior: behaviors.WALL,
                 category: "life",
                 burn: 10,
@@ -2602,11 +2696,12 @@
                 behavior: behaviors.POWDER,
                 burn: 20,
                 burnTime: 200,
+                burnInto: ["fire","ash"],
                 state: "solid",
                 density: 360.5,
             },
             "corn_seed": {
-                color: "#dfff80",
+                color: ["#F2B813","#F9E3BA"],
                 behavior: [
                     "XX|M2%0.25|XX",
                     "XX|L2:plant,corn AND CH:corn%0.01|XX",
@@ -2621,7 +2716,7 @@
                 density: 721,
             },
             "root": {
-                color: "#735949",
+                color: "#7B6F6B",
                 behavior: behaviors.WALL,
                 reactions: {
                     "rock": { "elem2":"sand", "chance":0.0004 },
@@ -2636,7 +2731,7 @@
                 density: 1250,
             },
             "potato_seed": {
-                color: "#d9d457",
+                color: ["#CDA57F","#AA7437","#BC9563"],
                 behavior: [
                     "XX|CH:dirt>root|XX",
                     "CH:dirt>potato%5|CH:potato%1|CH:dirt>potato%5",
@@ -2744,30 +2839,21 @@
                 state: "solid",
                 density: 1590,
             },
-            "caramel": {
-                color: "#e89a51",
-                behavior: behaviors.LIQUID,
-                reactions: {
-                    "fire": { "elem1": "molasses" },
-                },
-                viscosity: 500,
-                temp: 40,
-                tempLow: 24,
-                stateLow: "candy",
-                state: "liquid",
-                density: 850,
-            },
             "candy": {
                 color: "#e6cab1",
                 behavior: behaviors.WALL,
                 tempHigh: 186,
                 stateHigh: "caramel",
+                category: "solids",
+                state: "solid",
                 density: 900,
             },
             "alcohol": {
                 color: "#c9c5b1",
                 behavior: behaviors.LIQUID,
                 viscosity: 1,
+                tempHigh: 78,
+                stateHigh: ["steam","carbon_dioxide"],
                 burn: 100,
                 burnTime: 3,
                 fireColor: ["#80ACF0","#96CDFE","#bee6d4"],
@@ -2791,7 +2877,7 @@
                 density: 1.5,
             },
             "basalt": {
-                color: "#2b2b2b",
+                color: ["#2e2e2e","#333333","#3d3d3d"],
                 behavior: behaviors.STURDYPOWDER,
                 tempHigh: 1262.5,
                 stateHigh: "magma",
@@ -2825,6 +2911,8 @@
                     "acid": { "elem2": "hydrogen" },
                     "acid_cloud": { "elem2": "rain_cloud" },
                 },
+                tempHigh: 100,
+                stateHigh: "bubble",
                 viscosity: 500,
                 state: "liquid",
                 category:"liquids",
@@ -2848,7 +2936,7 @@
                 },
                 viscosity: 10,
                 tempHigh: 124.55,
-                stateHigh: "steam",
+                stateHigh: ["steam","salt","oxygen"],
                 category:"liquids",
                 state: "liquid",
                 density: 1060,
@@ -2880,7 +2968,7 @@
                 },
                 viscosity: 6.3,
                 tempHigh: 124.55,
-                stateHigh: "steam",
+                stateHigh: ["steam","salt","oxygen"],
                 category:"liquids",
                 hidden: true,
                 state: "liquid",
@@ -2897,14 +2985,14 @@
                 },
                 viscosity: 15,
                 tempHigh: 124.55,
-                stateHigh: "plague",
+                stateHigh: ["plague","plague","plague","salt","oxygen"],
                 category:"liquids",
                 hidden: true,
                 state: "liquid",
                 density: 1060,
             },
             "honey": {
-                color: ["#ffd700","#ffae00"],
+                color: ["#F6CE1A","#E79001","#BB5503"],
                 behavior: behaviors.LIQUID,
                 viscosity: 10000,
                 tempHigh: 71.11,
@@ -2913,24 +3001,44 @@
                 state: "liquid",
                 density: 1420,
             },
-            "ketchup": {
-                color: "#ff3119",
+            "caramel": {
+                color: "#e89a51",
                 behavior: behaviors.LIQUID,
-                viscosity: 50000,
-                category:"liquids",
+                reactions: {
+                    "fire": { "elem1": "molasses" },
+                },
+                viscosity: 500,
+                temp: 40,
+                tempLow: 24,
+                stateLow: "candy",
+                tempHigh: 204.44,
+                stateHigh: "fire",
+                category: "liquids",
                 state: "liquid",
-                density: 1235,
+                density: 850,
             },
             "molasses": {
-                color: "#240f00",
+                color: ["#210c06","#170804"],
                 behavior: behaviors.LIQUID,
                 viscosity: 7500,
+                tempHigh: 1000,
+                stateHigh: ["fire","sugar","steam"],
                 category:"liquids",
                 state: "liquid",
                 density: 1600,
             },
+            "ketchup": {
+                color: "#ff3119",
+                behavior: behaviors.LIQUID,
+                viscosity: 50000,
+                tempHigh: 260,
+                stateHigh: ["vinegar","steam","salt","sugar"],
+                category:"liquids",
+                state: "liquid",
+                density: 1235,
+            },
             "chocolate_syrup": {
-                color: "#5e2412",
+                color: "#3b160b",
                 behavior: behaviors.LIQUID,
                 tempLow: 0,
                 stateLow: "chocolate",
@@ -3160,12 +3268,15 @@
                 density: 3,
             },
             "pyrocumulus": {
-                color: "#424242",
+                color: "#2e2e2e",
                 behavior: [
                     "XX|XX|XX",
                     "M1%5|CH:ash%0.075|M1%5",
                     "XX|XX|XX",
                 ],
+                reactions: {
+                    "fireball": { "elem1":null, "elem2":"fire_cloud", "chance":0.25 },
+                },
                 category:"gases",
                 hidden: true,
                 state: "gas",
@@ -3178,7 +3289,14 @@
                     "M1%5|CH:fireball%0.02|M1%5",
                     "XX|XX|XX",
                 ],
+                reactions: {
+                    "rain_cloud": { "elem1": "pyrocumulus", "elem2": "pyrocumulus" },
+                    "snow_cloud": { "elem1": "pyrocumulus", "elem2": "rain_cloud" },
+                    "acid_cloud": { "elem1": "fire", "elem2": "electric" },
+                },
                 temp: 500,
+                tempLow: 100,
+                stateLow: "pyrocumulus",
                 category:"gases",
                 state: "gas",
                 density: 5,
@@ -3300,7 +3418,7 @@
                     "fish": { "elem2":"meat" },
                     "firefly": { "elem2":null },
                 },
-                tempHigh: 315,
+                tempHigh: 550,
                 stateHigh: "fire",
                 burn: 100,
                 burnTime: 1,
@@ -3348,17 +3466,6 @@
             
         };
 
-        // Loop through behaviors and each behavior, if it is a string, split the items and replace the value with the array
-        for (var behavior in behaviors) {
-            if (typeof behaviors[behavior][0] === "string") {
-                var newbehavior = [];
-                for (var i = 0; i < behaviors[behavior].length; i++) {
-                    newbehavior.push(behaviors[behavior][i].split("|"));
-                }
-                behaviors[behavior] = newbehavior;
-            }
-        }
-
         function hexToRGB(hex) {
             var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
             return result ? {
@@ -3367,153 +3474,7 @@
                 b: parseInt(result[3], 16)
             } : null;
         }
-        // convert every color in the elements object to rgb
-        for (var key in elements) {
-            if (elements.hasOwnProperty(key)) {
-                // if the element has no color, skip it
-                if (elements[key].color === undefined) {
-                    continue;
-                }
-                // if the color is an array, loop over each one
-                if (elements[key].color instanceof Array) {
-                    var rgbs = [];
-                    var rgbos = [];
-                    for (var i = 0; i < elements[key].color.length; i++) {
-                        var c = elements[key].color[i];
-                        if (c.startsWith("#")) {
-                            var rgb = hexToRGB(c);
-                            rgbs.push("rgb("+rgb.r+","+rgb.g+","+rgb.b+")");
-                            rgbos.push(rgb);
-                        }
-                        else {
-                            rgbs.push(c);
-                        }
-                    }
-                    elements[key].color = rgbs;
-                    elements[key].colorObject = rgbos;
-                } else {
-                    // if elements[key].color starts with #
-                    if (elements[key].color.startsWith("#")) {
-                        var rgb = hexToRGB(elements[key].color);
-                        elements[key].color = "rgb("+rgb.r+","+rgb.g+","+rgb.b+")";
-                        elements[key].colorObject = rgb;
-                    }
-                }
-            }
-        }
 
-        // Automatic molten element generation
-        // Loop through each element. If it has a tempHigh, but not a stateHigh, create a new molten element
-        for (element in elements) {
-            if (elements[element].tempHigh && !elements[element].stateHigh) {
-                var newname = "molten_"+element;
-                elements[element].stateHigh = newname;
-                var newcolor = elements[element].colorObject;
-                var colorList = [];
-                var colorObjectList = [];
-                // if newcolor is not an array, put it in an array
-                if (!(newcolor instanceof Array)) {
-                    newcolor = [newcolor];
-                }
-                // for every color in the newcolor array, add a new color with the same value, but with the r and g values increased
-                for (var i = 0; i < newcolor.length; i++) {
-                    var c = newcolor[i];
-                    r = c.r * 2;
-                    g = c.g * 1.25;
-                    b = c.b * 0.5;
-                    if (r > 255) {r = 255;}
-                    if (g > 255) {g = 255;}
-                    colorList.push("rgb("+r+","+g+","+b+")");
-                    colorObjectList.push({r:r,g:g,b:b});
-                    
-                    r = c.r * 2;
-                    g = c.g;
-                    b = c.b * 0.5;
-                    if (r > 255) {r = 255;}
-                    if (g > 255) {g = 255;}
-                    colorList.push("rgb("+r+","+g+","+b+")");
-                    colorObjectList.push({r:r,g:g,b:b});
-                    
-                    r = c.r * 2;
-                    g = c.g * 0.75;
-                    b = 0;
-                    if (r > 255) {r = 255;}
-                    if (g > 255) {g = 255;}
-                    colorList.push("rgb("+r+","+g+","+b+")");
-                    colorObjectList.push({r:r,g:g,b:b});
-                }
-                var newmolten = {
-                    //"name": newname.replaceAll("_"," "),
-                    color: colorList,
-                    "colorObject": colorObjectList,
-                    behavior: behaviors.MOLTEN,
-                    temp: elements[element].tempHigh,
-                    tempLow: elements[element].tempHigh-100,
-                    stateLow: element,
-                    viscosity: elements[element].viscosity || 10000,
-                    hidden: true,
-                    state: "liquid",
-                }
-                // If the element has a density, add it to the new molten element * 0.9
-                if (elements[element].density) { newmolten.density = Math.round(elements[element].density * 0.9 * 10) / 10; }
-                // If the element has a conductivity, add it to the new molten element * 1.1
-                if (elements[element].conduct) { newmolten.conductivity = Math.round(elements[element].conduct * 1.1 * 10) / 10; }
-                // Same for burn, burnTime, burnInto, and fireColor
-                if (elements[element].burn) { newmolten.burn = Math.round(elements[element].burn * 1.1 * 10) / 10; }
-                if (elements[element].burnTime) { newmolten.burnTime = Math.round(elements[element].burnTime * 1.1 * 10) / 10; }
-                if (elements[element].burnInto) { newmolten.burnInto = elements[element].burnInto; }
-                if (elements[element].fireColor) { newmolten.fireColor = elements[element].fireColor; }
-                // If the new element doesn't exist, add it
-                if (!elements[newname]) { elements[newname] = newmolten; }
-                else {
-                    // Loop through newmolten's keys and values, copy them to the new element if they are not already defined
-                    for (var key in newmolten) {
-                        if (elements[newname][key] == undefined) {
-                            elements[newname][key] = newmolten[key];
-                        }
-                    }
-                }
-            }
-            if (elements[element].behavior && typeof elements[element].behavior[0] === "string") {
-                var newbehavior = [];
-                for (var i = 0; i < elements[element].behavior.length; i++) {
-                    newbehavior.push(elements[element].behavior[i].split("|"));
-                }
-                elements[element].behavior = newbehavior;
-            }
-            if (elements[element].behaviorOn && typeof elements[element].behaviorOn[0] === "string") {
-                var newbehavior = [];
-                for (var i = 0; i < elements[element].behaviorOn.length; i++) {
-                    newbehavior.push(elements[element].behaviorOn[i].split("|"));
-                }
-                elements[element].behaviorOn = newbehavior;
-            }
-        }
-        
-        // Loop through each element, final checks
-        for (key in elements) {
-            // If the element has no behavior, set it to behaviors.WALL
-            if (!elements[key].behavior) {
-                elements[key].behavior = behaviors.WALL;
-            }
-            // If the element has no color, set it to white
-            if (elements[key].color === undefined) {
-                elements[key].color = "rgb(255,255,255)";
-                elements[key].colorObject = {r:255,g:255,b:255};
-            }
-            // If the element's behavior[1][1] includes "FX", set it's flippableX to true
-            if (elements[key].behavior[1][1].includes("FX")) {
-                elements[key].flippableX = true;
-            }
-            // If the element's behavior[1][1] includes "FY", set it's flippableY to true
-            if (elements[key].behavior[1][1].includes("FY")) {
-                elements[key].flippableY = true;
-            }
-            // If the element's behavior[1][1] includes "RT", set it's rotatable to "true"
-            if (elements[key].behavior[1][1].includes("RT")) {
-                elements[key].rotatable = true;
-            }
-        }
 
         currentPixels = [];
         //currentID = 0;
@@ -3598,15 +3559,17 @@
         function createPixel(element,x,y) {
             currentPixels.push(new Pixel(x, y, element));
         }
-        function deletePixel(x,y,id=null) {
+        function deletePixel(x,y) {
+            // remove pixelMap[x][y] from currentPixels
+            currentPixels.splice(currentPixels.indexOf(pixelMap[x][y]),1);
             pixelMap[x][y].del = true;
             delete pixelMap[x][y];
-            for (var i = 0; i < currentPixels.length; i++) {
+            /*for (var i = 0; i < currentPixels.length; i++) {
                 if (currentPixels[i].x == x && currentPixels[i].y == y) {
                     currentPixels.splice(i, 1);
                     break;
                 }
-            }
+            }*/
             /*if (id != null) {
                 for (var i = 0; i < currentPixels.length; i++) {
                     if (currentPixels[i].id == id) {
@@ -3647,8 +3610,13 @@
                     pixel1.element = r.elem1;
                     pixel1.color = pixelColorPick(pixel1);
                     pixel1.start = pixelTicks;
-                    if (elements[elem1].burning != true) {
+                    if (elements[r.elem1].burning == true) {
+                        pixel1.burning = true;
+                        pixel1.burnStart = pixelTicks;
+                    }
+                    else if (pixel1.burning && !elements[r.elem1].burn) {
                         pixel1.burning = false;
+                        delete pixel.burnStart;
                     }
                 }
             }
@@ -3660,8 +3628,13 @@
                     pixel2.element = r.elem2;
                     pixel2.color = pixelColorPick(pixel2);
                     pixel2.start = pixelTicks;
-                    if (elements[pixel2.element].burning != true) {
+                    if (elements[r.elem2].burning == true) {
+                        pixel2.burning = true;
+                        pixel2.burnStart = pixelTicks;
+                    }
+                    else if (pixel2.burning && !elements[r.elem2].burn) {
                         pixel2.burning = false;
+                        delete pixel.burnStart;
                     }
                 }
             }
@@ -4420,26 +4393,36 @@
             }
             // If the pixel's temp >= the elementInfo tempHigh, change pixel.element to elementInfo.stateHigh
             if (pixel.temp >= elementInfo.tempHigh) {
-                pixel.element = elementInfo.stateHigh;
+                var result = elementInfo.stateHigh;
+                // If result is an array, choose a random item
+                if (Array.isArray(result)) {
+                    result = result[Math.floor(Math.random() * result.length)];
+                }
+                pixel.element = result;
                 pixel.color = pixelColorPick(pixel);
                 if (pixel.burning) {
                     pixel.burning = false;
                     delete pixel.burnStart;
                 }
-                if (elements[elementInfo.stateHigh].burning == true) {
+                if (elements[result].burning == true) {
                     pixel.burning = true;
                     pixel.burnStart = pixelTicks;
                 }
             }
             // If the pixel's temp <= the elementInfo tempLow, change pixel.element to elementInfo.stateLow
             else if (pixel.temp <= elementInfo.tempLow) {
-                pixel.element = elementInfo.stateLow;
+                var result = elementInfo.stateLow;
+                // If result is an array, choose a random item
+                if (Array.isArray(result)) {
+                    result = result[Math.floor(Math.random() * result.length)];
+                }
+                pixel.element = result;
                 pixel.color = pixelColorPick(pixel);
                 if (pixel.burning) {
                     pixel.burning = false;
                     delete pixel.burnStart;
                 }
-                if (elements[elementInfo.stateLow].burning) {
+                if (elements[result].burning) {
                     pixel.burning = true;
                     pixel.burnStart = pixelTicks;
                 }
@@ -4561,8 +4544,8 @@
             }
         }
         function mouseAction(e,mouseX=undefined,mouseY=undefined) {
-            if (showingInfo && currentElement != "lookup") {
-                closeInfo();
+            if (showingMenu && currentElement != "lookup") {
+                closeMenu();
             }
             if (mouseType == "left") { mouse1Action(e,mouseX,mouseY); }
             else if (mouseType == "right") { mouse2Action(e,mouseX,mouseY); }
@@ -4822,7 +4805,7 @@
             statsDiv.innerHTML = stats;
         }
 
-        showingInfo = false;
+        showingMenu = false;
         function infoLink(l) {
             if (l instanceof Array) {
                 var newtext = "";
@@ -4842,7 +4825,7 @@
             }
         }
         function showInfo(element) { // this is such a mess please don't look at it
-            showingInfo = true;
+            showingMenu = "info";
             var infoScreen = document.getElementById("infoScreen");
             infoScreen.style.display = "block";
             var infoSearch = document.getElementById("infoSearch");
@@ -4996,13 +4979,62 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                 infoSearch.style.backgroundColor = "rgb(66, 66, 66)";
             }
         }
-        function closeInfo() {
-            var infoScreen = document.getElementById("infoScreen");
-            var infoSearch = document.getElementById("infoSearch");
-            infoScreen.style.display = "none";
-            infoSearch.value = "";
-            infoSearch.blur();
-            showingInfo = false;
+        function closeMenu() {
+            if (!showingMenu) { return; }
+            if (showingMenu == "info") {
+                var infoScreen = document.getElementById("infoScreen");
+                var infoSearch = document.getElementById("infoSearch");
+                infoScreen.style.display = "none";
+                infoSearch.value = "";
+                showingMenu = false;
+            }
+            else if (showingMenu == "mods") {
+                var modManager = document.getElementById("modManager");
+                var modManagerUrl = document.getElementById("modManagerUrl");
+                modManager.style.display = "none";
+                modManagerUrl.value = "";
+                showingMenu = false;
+            }
+        }
+        function showModManager() {
+            var modManager = document.getElementById("modManager");
+            var modManagerUrl = document.getElementById("modManagerUrl");
+            modManager.style.display = "block";
+            modManagerUrl.focus();
+            showingMenu = "mods";
+        }
+        function addMod(url) {
+            // remove trailing slashes
+            while (url.charAt(url.length-1) == "/") { url = url.substring(0, url.length-1); }
+            // if the mod is in enabledMods, return
+            for (var i = 0; i < enabledMods.length; i++) {
+                if (enabledMods[i] == url) { return; }
+            }
+            // if the url doesn't start with http, add "mods/" to the beginning
+            if (url.indexOf("http") == -1) { url = "mods/"+url; }
+            // add it to enabledMods and set the localStorage
+            enabledMods.push(url);
+            localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
+            // add to modManagerList
+            var modManagerList = document.getElementById("modManagerList");
+            var modName = url.split("/").pop();
+            modManagerList.innerHTML += "<li><a href='" + url + "' target='_blank'>" + modName + "</a> <span class='removeModX' onclick='removeMod(\"" + url + "\")'>X</span></li>";
+            alert("Added mod. Refresh the page to see changes.");
+        }
+        function removeMod(url) {
+            // remove it from enabledMods and set the localStorage
+            enabledMods.splice(i, 1);
+            localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
+            // remove from modManagerList by href
+            var modManagerList = document.getElementById("modManagerList");
+            var modManagerListLinks = modManagerList.getElementsByTagName("a");
+            for (var i = 0; i < modManagerListLinks.length; i++) {
+                if (modManagerListLinks[i].href.endsWith(url)) {
+                    modManagerListLinks[i].parentNode.remove();
+                    break;
+                }
+            }
+            alert("Removed mod. Refresh the page to see changes.");
         }
 
         // On window load, run tick() 20 times per second
@@ -5017,9 +5049,168 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 
         placeMode = null;
         paused = false;
-        function focusGame() { document.getElementById("game").focus(); if(showingInfo) { closeInfo(); } }
+        function focusGame() { document.getElementById("game").focus(); if(showingMenu) { closeMenu(); } }
         //on window load
         window.onload = function() {
+            // Loop through behaviors and each behavior, if it is a string, split the items and replace the value with the array
+            for (var behavior in behaviors) {
+                if (typeof behaviors[behavior][0] === "string") {
+                    var newbehavior = [];
+                    for (var i = 0; i < behaviors[behavior].length; i++) {
+                        newbehavior.push(behaviors[behavior][i].split("|"));
+                    }
+                    behaviors[behavior] = newbehavior;
+                }
+            }
+
+            // convert every color in the elements object to rgb
+            for (var key in elements) {
+                if (elements.hasOwnProperty(key)) {
+                    // if the element has no color, skip it
+                    if (elements[key].color === undefined) {
+                        continue;
+                    }
+                    // if the color is an array, loop over each one
+                    if (elements[key].color instanceof Array) {
+                        var rgbs = [];
+                        var rgbos = [];
+                        for (var i = 0; i < elements[key].color.length; i++) {
+                            var c = elements[key].color[i];
+                            if (c.startsWith("#")) {
+                                var rgb = hexToRGB(c);
+                                rgbs.push("rgb("+rgb.r+","+rgb.g+","+rgb.b+")");
+                                rgbos.push(rgb);
+                            }
+                            else {
+                                rgbs.push(c);
+                            }
+                        }
+                        elements[key].color = rgbs;
+                        elements[key].colorObject = rgbos;
+                    } else {
+                        // if elements[key].color starts with #
+                        if (elements[key].color.startsWith("#")) {
+                            var rgb = hexToRGB(elements[key].color);
+                            elements[key].color = "rgb("+rgb.r+","+rgb.g+","+rgb.b+")";
+                            elements[key].colorObject = rgb;
+                        }
+                    }
+                }
+            }
+
+            // Automatic molten element generation
+            // Loop through each element. If it has a tempHigh, but not a stateHigh, create a new molten element
+            for (element in elements) {
+                if (elements[element].tempHigh && !elements[element].stateHigh) {
+                    var newname = "molten_"+element;
+                    elements[element].stateHigh = newname;
+                    var newcolor = elements[element].colorObject;
+                    var colorList = [];
+                    var colorObjectList = [];
+                    // if newcolor is not an array, put it in an array
+                    if (!(newcolor instanceof Array)) {
+                        newcolor = [newcolor];
+                    }
+                    // for every color in the newcolor array, add a new color with the same value, but with the r and g values increased
+                    for (var i = 0; i < newcolor.length; i++) {
+                        var c = newcolor[i];
+                        r = c.r * 2;
+                        g = c.g * 1.25;
+                        b = c.b * 0.5;
+                        if (r > 255) {r = 255;}
+                        if (g > 255) {g = 255;}
+                        colorList.push("rgb("+r+","+g+","+b+")");
+                        colorObjectList.push({r:r,g:g,b:b});
+                        
+                        r = c.r * 2;
+                        g = c.g;
+                        b = c.b * 0.5;
+                        if (r > 255) {r = 255;}
+                        if (g > 255) {g = 255;}
+                        colorList.push("rgb("+r+","+g+","+b+")");
+                        colorObjectList.push({r:r,g:g,b:b});
+                        
+                        r = c.r * 2;
+                        g = c.g * 0.75;
+                        b = 0;
+                        if (r > 255) {r = 255;}
+                        if (g > 255) {g = 255;}
+                        colorList.push("rgb("+r+","+g+","+b+")");
+                        colorObjectList.push({r:r,g:g,b:b});
+                    }
+                    var newmolten = {
+                        //"name": newname.replaceAll("_"," "),
+                        color: colorList,
+                        "colorObject": colorObjectList,
+                        behavior: behaviors.MOLTEN,
+                        temp: elements[element].tempHigh,
+                        tempLow: elements[element].tempHigh-100,
+                        stateLow: element,
+                        viscosity: elements[element].viscosity || 10000,
+                        hidden: true,
+                        state: "liquid",
+                    }
+                    // If the element has a density, add it to the new molten element * 0.9
+                    if (elements[element].density) { newmolten.density = Math.round(elements[element].density * 0.9 * 10) / 10; }
+                    // If the element has a conductivity, add it to the new molten element * 1.1
+                    if (elements[element].conduct) { newmolten.conductivity = Math.round(elements[element].conduct * 1.1 * 10) / 10; }
+                    // Same for burn, burnTime, burnInto, and fireColor
+                    if (elements[element].burn) { newmolten.burn = Math.round(elements[element].burn * 1.1 * 10) / 10; }
+                    if (elements[element].burnTime) { newmolten.burnTime = Math.round(elements[element].burnTime * 1.1 * 10) / 10; }
+                    if (elements[element].burnInto) { newmolten.burnInto = elements[element].burnInto; }
+                    if (elements[element].fireColor) { newmolten.fireColor = elements[element].fireColor; }
+                    // If the new element doesn't exist, add it
+                    if (!elements[newname]) { elements[newname] = newmolten; }
+                    else {
+                        // Loop through newmolten's keys and values, copy them to the new element if they are not already defined
+                        for (var key in newmolten) {
+                            if (elements[newname][key] == undefined) {
+                                elements[newname][key] = newmolten[key];
+                            }
+                        }
+                    }
+                }
+                if (elements[element].behavior && typeof elements[element].behavior[0] === "string") {
+                    var newbehavior = [];
+                    for (var i = 0; i < elements[element].behavior.length; i++) {
+                        newbehavior.push(elements[element].behavior[i].split("|"));
+                    }
+                    elements[element].behavior = newbehavior;
+                }
+                if (elements[element].behaviorOn && typeof elements[element].behaviorOn[0] === "string") {
+                    var newbehavior = [];
+                    for (var i = 0; i < elements[element].behaviorOn.length; i++) {
+                        newbehavior.push(elements[element].behaviorOn[i].split("|"));
+                    }
+                    elements[element].behaviorOn = newbehavior;
+                }
+            }
+            
+            // Loop through each element, final checks
+            for (key in elements) {
+                // If the element has no behavior, set it to behaviors.WALL
+                if (!elements[key].behavior) {
+                    elements[key].behavior = behaviors.WALL;
+                }
+                // If the element has no color, set it to white
+                if (elements[key].color === undefined) {
+                    elements[key].color = "rgb(255,255,255)";
+                    elements[key].colorObject = {r:255,g:255,b:255};
+                }
+                // If the element's behavior[1][1] includes "FX", set it's flippableX to true
+                if (elements[key].behavior[1][1].includes("FX")) {
+                    elements[key].flippableX = true;
+                }
+                // If the element's behavior[1][1] includes "FY", set it's flippableY to true
+                if (elements[key].behavior[1][1].includes("FY")) {
+                    elements[key].flippableY = true;
+                }
+                // If the element's behavior[1][1] includes "RT", set it's rotatable to "true"
+                if (elements[key].behavior[1][1].includes("RT")) {
+                    elements[key].rotatable = true;
+                }
+            }
+
             // While the mouse is down, run mouseDown()
             var gameCanvas = document.getElementById("game");
             // Get context
@@ -5061,14 +5252,24 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                     return 'Are you sure you want to leave?';
                 }
             };
+            // If enabledMods has items, add an li to modManagerList for each item with the href to the item, target blank, and the item's name, with "<span class="removeModX" onclick='removeMod('>X</span>" after the link
+            if (enabledMods.length > 0) {
+                modManagerList = document.getElementById("modManagerList");
+                for (var i = 0; i < enabledMods.length; i++) {
+                    var mod = enabledMods[i];
+                    // modName is the last part of the mod's path
+                    var modName = mod.split("/").pop();
+                    modManagerList.innerHTML += "<li><a href='" + mod + "' target='_blank'>" + modName + "</a> <span class='removeModX' onclick='removeMod(\"" + mod + "\")'>X</span></li>";
+                }
+            }
             shiftDown = 0;
             // If the user presses [ or -, decrease the mouse size by 2
             document.addEventListener("keydown", function(e) {
-                if (showingInfo) {
+                if (showingMenu) {
                     // esc or / to close
-                    if (e.keyCode == 27 || e.keyCode == 191) { closeInfo(); }
+                    if (e.keyCode == 27 || e.keyCode == 191) { closeMenu(); }
                     // enter to clear infoSearch
-                    else if (e.keyCode == 13) {
+                    else if (e.keyCode == 13 && showingMenu == "info") {
                         var infoSearch = document.getElementById("infoSearch");
                         infoSearch.value = "";
                         showInfo();
@@ -5241,7 +5442,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             <div id="stats"></div>
             <div id="controls">
                 <div id="toolControls">
-                    <button id="pauseButton" title="Pause/play the simulation" class="controlButton" onclick='togglePause();focusGame();' on="false">Pause</button><button id="frameButton" title="Pause and play one frame" class="controlButton" onclick='doFrame();focusGame();' on="false">Step</button><button id="sizeDownButton" title="Decrease the brush size" class="controlButton" onclick="mouseSize -= 2;if (mouseSize < 1) { mouseSize = 1; };focusGame();">-</button><button id="sizeUpButton" title="Increase the brush size" class="controlButton" onclick="mouseSize += 2;if (mouseSize > (height > width ? height : width)) { mouseSize = (height > width ? height : width); };focusGame();">+</button><button id="resetButton" title="Clear the entire scene" class="controlButton" onclick="if (confirm('Are you sure you want to clear the whole scene?')) {clearAll();};focusGame();">Reset</button><button id="replaceButton" title="Override existing pixels when placing" class="controlButton" onclick='if (placeMode == "replace") {placeMode = null;this.setAttribute("on","false");}else {placeMode = "replace";this.setAttribute("on","true");};focusGame();' on="false">Replace</button><button id="elemSelectButton" title="Select an element by ID" class="controlButton" onclick='chooseElementPrompt();focusGame();'>E</button><button id="tpsButton" title="Change the simulation Ticks Per Second (TPS)" class="controlButton" onclick='var newtps = prompt("Enter the new simulation Ticks Per Second (TPS). This is how many updates per second the simulation will run.\n\nThe default is 30.\n\nThe current TPS is " + tps + ".");console.log(newtps);if (isNaN(newtps) || newtps == "" || newtps == "0") {alert("You did not enter a valid TPS. The TPS will be reset.");tps = 30;}else if (newtps > 1000) {alert("You entered a TPS that is too high. The TPS will be set to the maximum, 1000.");tps = 1000;}else {tps = parseInt(newtps);if (isNaN(tps)) {alert("You did not enter a valid TPS. The TPS will be reset.");tps = 30;}}resetInterval(tps);focusGame();'>Tps</button><button id="hideButton" title="Stops updating the scene to allow more resources towards simulation" class="controlButton" onclick='if (hiding) {hiding = false;this.setAttribute("on","false");}else {hiding = true;this.setAttribute("on","true");};focusGame();' on="false">Hide</button><button id="infoButton" title="Brings up the element info screen" class="controlButton" onclick='if (!showingInfo){showInfo(currentElement)}else{closeInfo()};' on="false">Info</button>
+                    <button id="pauseButton" title="Pause/play the simulation" class="controlButton" onclick='togglePause();focusGame();' on="false">Pause</button><button id="frameButton" title="Pause and play one frame" class="controlButton" onclick='doFrame();focusGame();' on="false">Step</button><button id="sizeDownButton" title="Decrease the brush size" class="controlButton" onclick="mouseSize -= 2;if (mouseSize < 1) { mouseSize = 1; };focusGame();">-</button><button id="sizeUpButton" title="Increase the brush size" class="controlButton" onclick="mouseSize += 2;if (mouseSize > (height > width ? height : width)) { mouseSize = (height > width ? height : width); };focusGame();">+</button><button id="resetButton" title="Clear the entire scene" class="controlButton" onclick="if (confirm('Are you sure you want to clear the whole scene?')) {clearAll();};focusGame();">Reset</button><button id="replaceButton" title="Override existing pixels when placing" class="controlButton" onclick='if (placeMode == "replace") {placeMode = null;this.setAttribute("on","false");}else {placeMode = "replace";this.setAttribute("on","true");};focusGame();' on="false">Replace</button><button id="elemSelectButton" title="Select an element by ID" class="controlButton" onclick='chooseElementPrompt();focusGame();'>E</button><button id="tpsButton" title="Change the simulation Ticks Per Second (TPS)" class="controlButton" onclick='var newtps = prompt("Enter the new simulation Ticks Per Second (TPS). This is how many updates per second the simulation will run.\n\nThe default is 30.\n\nThe current TPS is " + tps + ".");console.log(newtps);if (isNaN(newtps) || newtps == "" || newtps == "0") {alert("You did not enter a valid TPS. The TPS will be reset.");tps = 30;}else if (newtps > 1000) {alert("You entered a TPS that is too high. The TPS will be set to the maximum, 1000.");tps = 1000;}else {tps = parseInt(newtps);if (isNaN(tps)) {alert("You did not enter a valid TPS. The TPS will be reset.");tps = 30;}}resetInterval(tps);focusGame();'>Tps</button><button id="hideButton" title="Stops updating the scene to allow more resources towards simulation" class="controlButton" onclick='if (hiding) {hiding = false;this.setAttribute("on","false");}else {hiding = true;this.setAttribute("on","true");};focusGame();' on="false">Hide</button><button id="infoButton" title="Brings up the element info screen" class="controlButton" onclick='if (showingMenu!="info"){closeMenu();showInfo(currentElement)}else{closeMenu()};' on="false">Info</button><button id="modsButton" title="Brings up the Mod Manager" class="controlButton" onclick='if (showingMenu!="mods"){closeMenu();showModManager()}else{closeMenu()};' on="false">Mods</button>
                 </div>
                 <div id="category-tools" category="tools" style="display: block;"></div>
                 <div id="categoryControls"></div>
@@ -5252,10 +5453,20 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
     </div>
 
     <div id="infoScreen"> <!--Element Info Page-->
-        <button id="infoX" onclick="closeInfo();">-</button>
-        <span id="infoTitle">Title</span>
-        <div id="infoText">Text</div>
+        <button class="XButton" onclick="closeMenu();">-</button>
+        <span class="menuTitle" id="infoTitle">Title</span>
+        <div class="menuText" id="infoText">Text</div>
         <input type="text" id="infoSearch" placeholder="Element..." oninput="showInfo(this.value);"></input>
+    </div>
+
+    <!--Mod Manager Page with the list of current mods and a url input box with a plus button to add it-->
+    <div id="modManager">
+        <button class="XButton" onclick="closeMenu();">-</button>
+        <span class="menuTitle">Enabled Mods</span>
+        <ul class="menuText" id="modManagerList"></ul>
+        <!--If the key is Enter, addMod -->
+        <input type="text" id="modManagerUrl" placeholder=".JS URL..." onkeydown="if (event.keyCode == 13) {addMod(this.value);this.value = '';};this.focus();"></input>
+        <button id="modManagerAdd" onclick="addMod(document.getElementById('modManagerUrl').value); document.getElementById('modManagerUrl').value = '';">+</button>
     </div>
 
 <!-- i like having this but ublock blocks these things anyway -->

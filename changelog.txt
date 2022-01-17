@@ -2,7 +2,21 @@
     + Artists' Update (Painting, Lines, Shapes, etc.)
     + Explosives Update
     + Machines Update
-    + Mod Manager Update
+
+[Version 0.9 - Mod Manager Update]
+    + Mod Manager Menu
+    + Clay Soil
+    + Salt Water, Sugar Water, and Dirty Water evaporate into their components
+    + Blood, Ketchup, Molasses, Slime, Vinegar, and Alcohol evaporate into their components
+    + Reactions between cloud types
+    + Acid Gas can form Acid Clouds
+    + Fire Clouds turn to Pyrocumulus when cooled
+    + Torches can be extinguished with water
+    + Some Fireballs will burn into steam
+    ~ Improved color of Permafrost, Dirt, Grass, Gravel, Basalt, Lamp Oil, Honey, Molasses, Chocolate Syrup, Bamboo, Corn, Corn Seed, Root, Potato Seed, Iron, Rust, Glass, Copper, Zinc, Tin, Silver, and Straw
+    ~ Anaesthesia now a gas
+    + Technical: stateHigh and stateLow can be an array, a random option is chosen
+    ~ Fixed: Fireball rocks continue to burn after being extinguished
 
 [Version 0.8.3]
     + Laser
