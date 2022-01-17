@@ -25,7 +25,7 @@ elements.Neutronium = {
     viscosity: 10,
     category: "energy",
     state: "liquid",
-    density: 100000000000000000,
+    density: 50000000000000000,
 };
     elements.Neutronium_Gas = {  
     color: "#abcdef",
@@ -35,6 +35,6 @@ elements.Neutronium = {
     stateLow: "molten_neutronium",
     category: "energy",
     state: "gas",
-    density: 100000000000000000,
+    density: 0.045,
 };
 eLists.CONDIMENT = ["ketchup","melted_cheese","mayo","mayonnaise","fry_sauce","chocolate_syrup","mustard","honey"];
