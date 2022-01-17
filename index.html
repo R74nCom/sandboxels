@@ -328,10 +328,6 @@
             try {
                 var script = document.createElement('script');
                 var src = enabledMods[i];
-                // allow cross origin requests if it starts with http
-                if (src.startsWith("http")) {
-                    script.setAttribute("crossorigin", "anonymous");
-                }
                 script.src = src;
                 document.head.appendChild(script);
             } catch (e) {
@@ -5267,7 +5263,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             document.addEventListener("keydown", function(e) {
                 if (showingMenu) {
                     // esc or / to close
-                    if (e.keyCode == 27 || e.keyCode == 191) { closeMenu(); }
+                    if (e.keyCode == 27 || (e.keyCode == 191 && showingMenu=="info")) { closeMenu(); }
                     // enter to clear infoSearch
                     else if (e.keyCode == 13 && showingMenu == "info") {
                         var infoSearch = document.getElementById("infoSearch");
