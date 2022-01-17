@@ -38,3 +38,15 @@ elements.Neutronium = {
     density: 0.045,
 };
 eLists.CONDIMENT = ["ketchup","melted_cheese","mayo","mayonnaise","fry_sauce","chocolate_syrup","mustard","honey"];
+behaviors.CONDIMENT_DESTROYER = [
+""DL:"+eLists.CONDIMENT"|"DL:"+eLists.CONDIMENT"|"DL:"+eLists.CONDIMENT"",
+""DL:"+eLists.CONDIMENT" AND M2|XX|"DL:"+eLists.CONDIMENT" AND M2",
+"DL:"+eLists.CONDIMENT" AND M1|"DL:"+eLists.CONDIMENT" AND M1|"DL:"+eLists.CONDIMENT" AND M1",
+];
+elements.Condiment_Destroyer = {
+    color: "ffff00, ff0000",
+    behavior: behaviors.CONDIMENT_DESTROYER
+    category: "testing",
+    state: "liquid",
+    density: 1000,
+};
