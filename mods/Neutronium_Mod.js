@@ -92,14 +92,14 @@ elements.neutronium = {
     elements.fusion_catalyst = {
     name: "Fusion Catalyst",
     color: ["#ff0000", "#ffff00"],
-    behavior: behaviors.POWDER,
+    behavior: behaviors.GAS,
     category: "energy",
     state: "solid",
     density: 1500
 };
     elements.ionized_deuterium = {
     name: "Ionized Deuterium",
-    color: "#aa00ff",
+    color: "#c73097",
     behavior: behaviors.GAS,
     category: "energy",
     state: "gas",
@@ -119,7 +119,9 @@ elements.neutronium = {
     state: "gas",
     density: 0.18,
     tempHigh: 9726.85,
-    stateHigh: "ionized_deuterium"
+    stateHigh: "ionized_deuterium",
+    tempLow: -254.43,
+    stateLow: "liquid_deuterium"
 };
     elements.ionized_tralphium = {
     name: "Ionized Tralphium",
@@ -144,13 +146,62 @@ elements.neutronium = {
     density: 0.165,
     tempHigh: 28726.85,
     stateHigh: "ionized_tralphium",
-    tempLow: -272.2,
+    tempLow: -269,
     stateLow: "liquid_tralphium"
 };
     elements.ionized_helium = {
-    color: "#ff0000",
-    behavior: behaviors.POWDER,
-    category: "land",
-    state: "solid",
-    density: 10,
+    name: "Ionized Helium-4",
+    color: "#aa00ff",
+    behavior: behaviors.GAS,
+    category: "gases",
+    state: "gas",
+    density: 0.177,
+    temp: 30000,
+    tempLow: 28726.85,
+    stateLow: "helium"
 };
+    elements.helium = {
+    name: "Helium-4",
+    color: "#fffacc",
+    behavior: behaviors.GAS,
+    category: "gases",
+    state: "gas",
+    density: 0.178,
+    tempHigh: 28726.85,
+    stateHigh: "ionized_helium",
+    tempLow: -272.2,
+    stateLow: "liquid_helium"
+};
+    elements.liquid_tralphium = {
+    name: "Liquid Tralphium",
+    color: "#c6d669",
+    behavior: behaviors.LIQUID,
+    category: "liquids",
+    state: "liquid",
+    density: 59,
+    temp: -274,
+    tempHigh: 269,
+    stateHigh: "Tralphium"
+};
+elements.liquid_deuterium = {
+name: "Liquid Deuterium",
+color: "#bff2eb",
+behavior: behaviors.LIQUID,
+reactions: {
+"oxygen": { "elem1":"heavy_water", "elem2":null },
+},
+category: "liquids",
+state: "liquid",
+density: 162.4,
+temp: -260,
+tempHigh: -254.43,
+stateHigh: "deuterium"
+};
+/* Unfinished:
+Tritium
+Neutron
+Liquid Tritium
+Ionized Tritium
+Heavy Water
+Liquid Helium
+*/
