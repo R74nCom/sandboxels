@@ -5006,6 +5006,11 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             for (var i = 0; i < enabledMods.length; i++) {
                 if (enabledMods[i] == url) { return; }
             }
+            // if the url doesn't have a slash or a dot, alert
+            if (url.indexOf("/") == -1 && url.indexOf(".") == -1) {
+                alert("Invalid mod URL.");
+                return;
+            }
             // if the url doesn't start with http, add "mods/" to the beginning
             if (url.indexOf("http") == -1) { url = "mods/"+url; }
             // add it to enabledMods and set the localStorage
