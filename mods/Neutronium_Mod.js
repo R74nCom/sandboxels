@@ -209,9 +209,9 @@ tempHigh: -272.2,
 stateHigh: "helium"
 };
 behaviors.PARTICLE = [
-"XX|XX|XX",
-"XX|XX|M1 AND BO",
-"XX|XX|XX",
+"M1 AND BO|M1 AND BO|M1 AND BO",
+"M1 AND BO|XX|M1 AND BO",
+"M1 AND BO|M1 AND BO|M1 AND BO",
 ];
 elements.neutron = {
 color: "#0abef5",
@@ -220,13 +220,73 @@ rotatable: true,
 reactions: {
 "protium": { "elem1":"deuterium", "elem2":null },
 "deuterium": { "elem1":"tritium", "elem2":null },
+"heavy_water": { "elem1":"heavy_water", "elem2":null},
 },
 category: "energy",
-temp: 100
+temp: 100,
+density: 0.045
+};
+elements.heavy_water = {
+color: "#394280",
+behavior: behaviors.LIQUID,
+category: "liquids",
+density: 998,
+state: "liquid"
+};
+behaviors.RADIOACTIVE_GAS = [
+"M2|M1 AND CR:neutron%0.01|M2",
+"M1 AND CR:neutron%0.01|DL%0.01|M1 AND CR:neutron%0.01",
+"M2|M1 AND CR:neutron%0.01|M2", 
+];
+elements.tritium = {
+color: "#7e86bf",
+behavior: behaviors.RADIOACTIVE_GAS,
+category: "gases",
+density: 0.2,
+state: "gas",
+tempHigh: 9726.85,
+stateHigh: "ionized_tritium",
+tempLow: -248.15,
+stateLow: "liquid_tritium"
+};
+elements.ionized_tritium = {
+color: "#cff1fa",
+behavior: behaviors.RADIOACTIVE_GAS,
+category: "energy",
+density: 0.199,
+state: "gas",
+tempLow: 9726.85,
+stateLow: "tritium",
+temp: 11000
+};
+behaviors.RADIOACTIVE_LIQUID = [ 
+"XX|CR:neutron%0.01|XX",
+"CR:neutron%0.01|DL%0.01|CR:neutron%0.01",
+"M1|CR:neutron%0.01|M1",
+];
+elements.liquid_tritium = {
+color: "#87ada7",
+behavior: behaviors.RADIOACTIVE_LIQUID,
+category: "liquids",
+density: 50,
+state: "liquid",
+tempHigh: -248.15,
+stateHigh: "tritium",
+temp: -260
+};
+elements.radioactive_water = {
+color: "#a510b5",
+behavior: behaviors.RADIOACTIVE_LIQUID,
+category: "liquids",
+density: 1000,
+state: "liquid",
 };
 /* Unfinished:
-Tritium
-Liquid Tritium
-Ionized Tritium
-Heavy Water
+Radioactive Water
+Heavy Steam
+Heavy Ice
+Heavy Snow
+Radioactive Steam
+Radioactive Ice
+Radioactive Snow
 */
