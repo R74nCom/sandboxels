@@ -3,7 +3,7 @@
 
 /*
 === CHANGELOG ===
-1.2 Version
+2.0 Version
 + Updated to Mod Manager format
 + Essence and spirits
 + Mix mana with essence to create concoction: incredibly reactive, but tends to make mistakes.
@@ -77,8 +77,8 @@ behaviors.FAIRYKILL = [
 ];
 
 // Changing vanilla elements
-elements.iron.color = behaviors.FAIRYKILL;
-elements.silver.color = behaviors.FAIRYKILL;
+elements.iron.behavior = behaviors.FAIRYKILL;
+elements.silver.behavior = behaviors.FAIRYKILL;
 
 elements.plague.category = "corruption";
 
