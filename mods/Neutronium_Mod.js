@@ -128,7 +128,8 @@ elements.neutronium = {
     color: "#f0f7da",
     behavior: behaviors.GAS,
     reactions: {
-        "fusion_catalyst": { "elem1":"ionized_hydrogen", "elem2":"ionized_helium" }
+        "fusion_catalyst": { "elem1":"ionized_helium", "elem2":"ionized_hydrogen" } /* NOTE:
+Elem1 is the element shown in the properties, while elem2 is the element that is shown in the reactions. */
     },
     category: "energy",
     state: "gas",
@@ -188,7 +189,7 @@ name: "Liquid Deuterium",
 color: "#bff2eb",
 behavior: behaviors.LIQUID,
 reactions: {
-"oxygen": { "elem1":"heavy_water", "elem2":null },
+"oxygen": { "elem1":null, "elem2":"heavy_water" },
 },
 category: "liquids",
 state: "liquid",
@@ -209,18 +210,21 @@ tempHigh: -272.2,
 stateHigh: "helium"
 };
 behaviors.PARTICLE = [
-"M1 AND BO|M1 AND BO|M1 AND BO",
-"M1 AND BO|XX|M1 AND BO",
-"M1 AND BO|M1 AND BO|M1 AND BO",
+"XX|M1 AND BO|XX",
+"XX|XX|M1 AND BO",
+"M1 AND BO|XX|XX",
 ];
 elements.neutron = {
 color: "#0abef5",
 behavior: behaviors.PARTICLE,
 rotatable: true,
 reactions: {
-"protium": { "elem1":"deuterium", "elem2":null },
-"deuterium": { "elem1":"tritium", "elem2":null },
-"heavy_water": { "elem1":"heavy_water", "elem2":null},
+"protium": { "elem1":null, "elem2":"deuterium" },
+"deuterium": { "elem1":null, "elem2":"tritium" },
+"heavy_water": { "elem1":null, "elem2":"heavy_water"},
+"heavy_steam": { "elem1":null, "elem2":"heavy_steam"},
+"heavy_ice": { "elem1":null, "elem2":"heavy_ice"},
+"heavy_snow": { "elem1":null, "elem2":"heavy_snow"},
 },
 category: "energy",
 temp: 100,
@@ -231,7 +235,11 @@ color: "#394280",
 behavior: behaviors.LIQUID,
 category: "liquids",
 density: 998,
-state: "liquid"
+state: "liquid",
+tempHigh: 100,
+stateHigh: "heavy_steam",
+tempLow: 0,
+stateLow: "heavy_ice"
 };
 behaviors.RADIOACTIVE_GAS = [
 "M2|M1 AND CR:neutron%0.01|M2",
@@ -280,13 +288,81 @@ behavior: behaviors.RADIOACTIVE_LIQUID,
 category: "liquids",
 density: 1000,
 state: "liquid",
+tempHigh: 100,
+stateHigh: "radioactive_steam",
+tempLow: 0,
+stateLow: "radioactive_ice"
+};
+elements.radioactive_steam = {
+color: "#df90e8",
+behavior: behaviors.RADIOACTIVE_GAS,
+category: "gases",
+density: 3.6,
+state: "gas",
+temp: 150,
+tempLow: 100,
+stateLow: "radioactive_water"
+};
+behaviors.RADIOACTIVE_SOLID = [
+"XX|CR:neutron%0.01|XX",
+"CR:neutron%0.01|DL%0.01|CR:neutron%0.01",
+"XX|CR:neutron%0.01|XX",
+];
+elements.radioactive_ice = {
+color: "#c2abcc",
+behavior: behaviors.RADIOACTIVE_SOLID,
+category: "solids",
+state: "solid",
+density: 920,
+temp: -20,
+tempHigh: 0,
+stateHigh: "radioactive_water"
+};
+behaviors.RADIOACTIVE_POWDER = [
+"XX|CR:neutron%0.01|XX",
+"CR:neutron%0.01|DL%0.01|CR:neutron%0.01",
+"M2|M1 AND CR:neutron%0.01|M2",
+];
+elements.radioactive_snow = {
+color: "9f7ba6",
+behavior: behaviors.RADIOACTIVE_SOLID,
+category: "land",
+density: 103,
+state: "solid",
+temp: -20,
+tempHigh: 0,
+stateHigh: "radioactive_water"
+};
+elements.heavy_steam = {
+color: "#656fb5",
+behavior: behaviors.GAS,
+category: "liquids",
+density: 1.6,
+state: "liquid",
+temp: 150,
+tempLow: 100,
+stateLow: "heavy_water"
+};
+elements.heavy_ice = {
+color: "#a8b8e3",
+behavior: behaviors.WALL,
+category: "solids",
+density: 918,
+state: "solid",
+temp: -20,
+tempHigh: 0,
+stateHigh: "heavy_water"
+};
+elements.heavy_snow = {
+color: "#8299b0",
+behavior: behaviors.POWDER,
+category: "land",
+density: 101,
+state: "solid",
+temp: -20,
+tempHigh: 0,
+stateHigh: "heavy_water"
 };
 /* Unfinished:
-Radioactive Water
-Heavy Steam
-Heavy Ice
-Heavy Snow
-Radioactive Steam
-Radioactive Ice
-Radioactive Snow
+Nothing!
 */
