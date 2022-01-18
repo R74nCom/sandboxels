@@ -324,7 +324,7 @@ behaviors.RADIOACTIVE_POWDER = [
 "M2|M1 AND CR:neutron%0.01|M2",
 ];
 elements.radioactive_snow = {
-color: "9f7ba6",
+color: "#9f7ba6",
 behavior: behaviors.RADIOACTIVE_SOLID,
 category: "land",
 density: 103,
