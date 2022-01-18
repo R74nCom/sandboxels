@@ -269,8 +269,8 @@ temp: 11000
 };
 behaviors.RADIOACTIVE_LIQUID = [ 
 "XX|CR:neutron%0.01|XX",
-"CR:neutron%0.01|DL%0.01|CR:neutron%0.01",
-"M1|CR:neutron%0.01|M1",
+"CR:neutron%0.01 AND M2|DL%0.01|CR:neutron%0.01 AND M2",
+"M1|CR:neutron%0.01 AND M1|M1",
 ];
 elements.liquid_tritium = {
 color: "#87ada7",
