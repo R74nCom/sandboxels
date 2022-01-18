@@ -5220,10 +5220,10 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                 // If the element has reactions, loop through each one (it is an object), if the value for elem1 or elem2 is not an element, remove that key
                 if (elements[key].reactions) {
                     for (var reaction in elements[key].reactions) {
-                        if (!elements[elements[key].reactions[reaction].elem1]) {
+                        if (!elements[elements[key].reactions[reaction].elem1] && elements[key].reactions[reaction].elem1 != null) {
                             delete elements[key].reactions[reaction].elem1;
                         }
-                        if (!elements[elements[key].reactions[reaction].elem2]) {
+                        if (!elements[elements[key].reactions[reaction].elem2] && elements[key].reactions[reaction].elem2 != null) {
                             delete elements[key].reactions[reaction].elem2;
                         }
                     }
