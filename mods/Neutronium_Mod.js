@@ -325,7 +325,7 @@ behaviors.RADIOACTIVE_POWDER = [
 ];
 elements.radioactive_snow = {
 color: "#9f7ba6",
-behavior: behaviors.RADIOACTIVE_SOLID,
+behavior: behaviors.RADIOACTIVE_POWDER,
 category: "land",
 density: 103,
 state: "solid",
