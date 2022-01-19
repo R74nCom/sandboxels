@@ -598,7 +598,7 @@ elements.berry = {
 burn: 15,
 burnTime: 150,
 burnInto: ["ash", "carbon_dioxide", "juice"],
-color: "bf2477",
+color: "#bf2477",
 behavior: [
 "XX|XX|XX",
 "XX|CH:ripe_berry%0.01|XX",
