@@ -547,8 +547,8 @@ stateHigh: "molten_mithril_mithril_alloy"
 elements.berry_seed = {
 color: ["#941260", "#752043"],
 behavior: [
-"XX|M2%0.1 AND CR:berry_leaf%50|XX",
-"L2:berry_leaf%50 AND M2|XX|L2:berry_leaf%50 AND M2",
+"XX|M2%0.1|XX",
+"L2:berry_leaf%50 AND M2%5|XX|L2:berry_leaf%50 AND M2%5",
 "XX|M1|XX",
 ],
 category: "life",
