@@ -544,6 +544,43 @@ state: "solid",
 tempHigh: 1975,
 stateHigh: "molten_mithril_mithril_alloy"
 };
+behaviors.BUSH_LEAF = [
+"XX|CL%19|XX",
+"CL%20|CH:old_leaf%5|CL%20",
+"XX|CL%19|XX",
+];
+elements.berry_seed = {
+color: ["#941260", "#752043"],
+behavior: [
+"XX|CL%0.01 AND CR:berry_leaf%50|XX",
+"CR:berry_leaf%50|XX|CR:berry_leaf%50",
+"M2|M1|M2",
+],
+category: "life",
+density: 1200,
+state: "solid",
+burn: 10,
+burnTime: 50,
+burnInto: ["ash", "carbon_dioxide", "juice"]
+};
+elements.old_leaf = {
+color: ["#0fbf53", "#118f42"],
+behavior: behaviors.WALL,
+category: "life",
+state: "solid",
+burn: 10,
+burnTime: 50,
+burnInto: ["ash", "carbon_dioxide"]
+};
+elements.berry_leaf = {
+burn: 10,
+burnTime: 50,
+burnInto: ["ash", "carbon_dioxide", "juice"],
+color: ["#0fbf53", "#118f42"],
+behavior: behaviors.BUSH_LEAF,
+category: "life",
+state: "solid"
+};
 /* Unfinished:
 hematite
 molten hematite
