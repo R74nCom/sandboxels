@@ -612,9 +612,9 @@ color: ["#ff8000", "#ff00ff"],
 category: "machines",
 state: "solid",
 behavior: [
-"XX|CL|XX",
-"CL|CH:fire, plasma|CL",
-"M2|CL AND M1|M2",
+"XX|CL%50|XX",
+"CL%50|CH:fire, plasma|CL%50",
+"M2|CL%50 AND M1|M2",
 ],
 temp: 1000
 };
