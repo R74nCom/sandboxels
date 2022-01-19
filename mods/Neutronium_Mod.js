@@ -548,7 +548,7 @@ elements.berry_seed = {
 color: ["#941260", "#752043"],
 behavior: [
 "XX|M2%0.1|XX",
-"L2:berry_leaf%50 AND M2%5|XX|L2:berry_leaf%50 AND M2%5",
+"L2:berry_leaf%50 AND M2%5|CH:berry_leaf%0.1|L2:berry_leaf%50 AND M2%5",
 "XX|M1|XX",
 ],
 category: "life",
@@ -606,6 +606,16 @@ behavior: [
 ],
 category: "life",
 state: "solid"
+};
+elements.flamer = {
+color: ["#ff8000", "#ff00ff"],
+category: "machines",
+state: "solid",
+behavior: [
+"XX|CL%25|XX",
+"CL%25|CH:fire, plasma%5|CL%25",
+"M2|CL%25 AND M1|M2",
+],
 };
 /* Unfinished:
 hematite
