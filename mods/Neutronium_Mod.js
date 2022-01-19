@@ -560,7 +560,11 @@ burnInto: ["ash", "carbon_dioxide", "juice"]
 };
 elements.old_berry_leaf = {
 color: ["#0fbf53", "#118f42"],
-behavior: behaviors.WALL,
+behavior: [
+"XX|CR:berry%0.01|XX",
+"CR:berry%0.01|XX|CR:berry%0.01",
+"XX|CR:berry%0.01|XX",
+],
 category: "life",
 state: "solid",
 burn: 15,
@@ -574,7 +578,7 @@ burnInto: ["ash", "carbon_dioxide", "juice"],
 color: ["#0fbf53", "#118f42"],
 behavior: [
 "XX|CR:berry leaf,old_berry_leaf%1|XX",
-"CR:berry leaf,old_berry_leaf%2|CH:old_berry_leaf%0.1|CR:berry leaf,old_berry_leaf%2",
+"CR:berry leaf,old_berry_leaf%2 AND SA|CH:old_berry_leaf%0.1|CR:berry leaf,old_berry_leaf%2 AND SA",
 "XX|CR:berry leaf,old_berry_leaf%2|XX",
 ],
 category: "life",
@@ -589,6 +593,19 @@ behavior: behaviors.LIQUID,
 category: "life",
 state: "liquid",
 conduct: 0.019
+};
+elements.berry = {
+burn: 15,
+burnTime: 150,
+burnInto: ["ash", "carbon_dioxide", "juice"],
+color: "bf2477",
+behavior: [
+"XX|XX|XX",
+"XX|CH:ripe_berry%0.01|XX",
+"XX|XX|XX",
+],
+category: "life",
+state: "solid"
 };
 /* Unfinished:
 hematite
