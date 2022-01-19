@@ -568,7 +568,7 @@ color: ["#0fbf53", "#118f42"],
 behavior: behaviors.WALL,
 category: "life",
 state: "solid",
-burn: 10,
+burn: 15,
 burnTime: 50,
 burnInto: ["ash", "carbon_dioxide"]
 };
@@ -580,6 +580,16 @@ color: ["#0fbf53", "#118f42"],
 behavior: behaviors.BUSH_LEAF,
 category: "life",
 state: "solid"
+};
+elements.juice = {
+burn: 5,
+burnTime: 100,
+burnInto: ["water", "carbon_dioxide", "smoke"],
+color: "#eb96b5",
+behavior: behaviors.LIQUID,
+category: "life",
+state: "liquid",
+conduct: 0.019
 };
 /* Unfinished:
 hematite
