@@ -612,10 +612,11 @@ color: ["#ff8000", "#ff00ff"],
 category: "machines",
 state: "solid",
 behavior: [
-"XX|CL%25|XX",
-"CL%25|CH:fire, plasma%5|CL%25",
-"M2|CL%25 AND M1|M2",
+"XX|CL|XX",
+"CL|CH:fire, plasma%60|CL",
+"M2|CL AND M1|M2",
 ],
+temp: 1000
 };
 /* Unfinished:
 hematite
