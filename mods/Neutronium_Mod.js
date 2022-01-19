@@ -544,11 +544,6 @@ state: "solid",
 tempHigh: 1975,
 stateHigh: "molten_mithril_mithril_alloy"
 };
-behaviors.BUSH_LEAF = [
-"XX|CL%19|XX",
-"CL%20|CH:old_leaf%5|CL%20",
-"XX|CL%19|XX",
-];
 elements.berry_seed = {
 color: ["#941260", "#752043"],
 behavior: [
@@ -563,7 +558,7 @@ burn: 10,
 burnTime: 50,
 burnInto: ["ash", "carbon_dioxide", "juice"]
 };
-elements.old_leaf = {
+elements.old_berry_leaf = {
 color: ["#0fbf53", "#118f42"],
 behavior: behaviors.WALL,
 category: "life",
@@ -577,7 +572,11 @@ burn: 10,
 burnTime: 50,
 burnInto: ["ash", "carbon_dioxide", "juice"],
 color: ["#0fbf53", "#118f42"],
-behavior: behaviors.BUSH_LEAF,
+behavior: [
+"XX|CR:berry leaf,old_berry_leaf%1|XX",
+"CR:berry leaf,old_berry_leaf%2|CH:old_berry_leaf%0.1|CR:berry leaf,old_berry_leaf%2",
+"XX|CR:berry leaf,old_berry_leaf%2|XX",
+],
 category: "life",
 state: "solid"
 };
