@@ -613,7 +613,7 @@ category: "machines",
 state: "solid",
 behavior: [
 "XX|CL|XX",
-"CL|CH:fire, plasma%60|CL",
+"CL|CH:fire, plasma|CL",
 "M2|CL AND M1|M2",
 ],
 temp: 1000
