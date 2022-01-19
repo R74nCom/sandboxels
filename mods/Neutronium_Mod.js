@@ -363,6 +363,192 @@ temp: -20,
 tempHigh: 0,
 stateHigh: "heavy_water"
 };
+elements.coal = {
+color: "#363023",
+behavior: behaviors.POWDER,
+category: "energy",
+density: 900,
+state: "solid",
+tempHigh: 1000,
+stateHigh: "coal_coke",
+burn: 33,
+burnTime: 1500,
+burnInto: ["ash", "coal_coke", "fire", "carbon_dioxide"]
+};
+elements.coal_coke = {
+color: "#232b36",
+behavior: behaviors.POWDER,
+category: "energy",
+reactions: {
+"limestone": { "elem1":"blast_furnace_fuel", "elem2":null },
+},
+density: 900,
+state: "solid",
+burn: 45,
+burnTime: 2000,
+burnInto: ["ash", "carbon_dioxide", "fire"]
+};
+elements.blast_furnace_fuel = {
+color: "#94947c",
+behavior: behaviors.POWDER,
+category: "energy",
+density: 1450,
+state: "solid",
+burn: 25,
+burnTime: 1500,
+burnInto: ["carbon_dioxide", "fire", "slag"]
+};
+elements.rutile = {
+color: "#522614",
+behavior: behaviors.POWDER,
+category: "land",
+density: 4240,
+state: "solid",
+tempHigh: 1843,
+stateHigh: "molten_rutile",
+};
+elements.slag = {
+color: ["#2e2616", "#453124"],
+behavior: behaviors.POWDER,
+category: "land",
+density: 2000,
+state: "solid",
+};
+elements.molten_rutile = {
+color: "#e3907f",
+behavior: behaviors.LIQUID,
+category: "liquids",
+reactions: {
+"chlorine": { "elem1": "titanium_tetrachloride", "elem2":null },
+},
+density: 4230,
+state: "liquid",
+temp: 2000,
+tempLow: 1843,
+stateLow: "rutile"
+};
+elements.titanium_tetrachloride = {
+color: "#d9d7b2",
+behavior: behaviors.LIQUID,
+category: "liquids",
+density: 1728,
+state: "liquid",
+tempHigh: 136.4,
+stateHigh: "titanium_tetrachloride_gas",
+tempLow: -24,
+stateLow: "titanium_tetrachloride_crystal",
+};
+elements.titanium_tetrachloride_gas = {
+color: "#e8edd5",
+behavior: behaviors.GAS,
+category: "gases",
+density: 500,
+state: "gas",
+temp: 200,
+tempLow: 136.4,
+stateLow: "titanium_tetrachloride"
+};
+elements.titanium_tetrachloride_crystal = {
+color: "#f5fffe",
+behavior: behaviors.WALL,
+category: "solids",
+density: 1728,
+state: "solid",
+temp: -50,
+tempHigh: -24,
+stateHigh: "titanium_tetrachloride"
+};
+elements.chlorine = {
+color: "#89b87b",
+behavior: behaviors.GAS,
+category: "gases",
+density:3.2,
+state: "gas",
+tempLow: -101.5,
+stateLow: "liquid_chlorine"
+};
+elements.liquid_chlorine = {
+color: "#4b9c33",
+behavior: behaviors.LIQUID,
+category: "liquids",
+density: 1.468,
+state: "liquid",
+tempHigh: -101.5,
+stateHigh: "chlorine",
+temp: -150
+};
+elements.mythril = {
+color: "#51bd89",
+behavior: behaviors.WALL,
+category: "solids",
+density: 7750,
+state: "solid",
+tempHigh: 2500,
+stateHigh: "molten_mythril",
+conduct: 0.93
+};
+elements.molten_mythril = {
+color: "#eda724",
+behavior: behaviors.LIQUID,
+category: "liquids",
+reactions: {
+"molten_mithril": { "elem1": "molten_mythril_mithril_alloy", "elem2":null },
+},
+density: 6855,
+state: "liquid",
+tempLow: 2500,
+stateLow: "mythril",
+temp: 3000
+};
+elements.argon = {
+color: "#92dec7",
+colorOn: "#8a27d6",
+behavior: behaviors.GAS,
+category: "gases",
+density: 1.78,
+state: "gas",
+tempLow: -189.4,
+stateLow: "liquid_argon",
+conduct: 0.85
+};
+elements.liquid_argon = {
+color: "#679991",
+colorOn: "#6d3080",
+behavior: behaviors.LIQUID,
+category: "liquids",
+density: 1398.2,
+state: "liquid",
+tempHigh: -189.4,
+temp: -200,
+stateHigh: "argon",
+conduct: 0.9
+};
+elements.molten_mithril_mythril_alloy = {
+name: "Molten Mithril/Mythril Alloy",
+color: "#ebd8a4",
+behavior: behaviors.LIQUID,
+category: "liquids",
+density: 3922.5,
+state: "liquid",
+tempLow: 1975,
+stateLow: "mithril_mythril_alloy"
+},
+elements.mithril_mythril_alloy = {
+conduct: 0.965,
+name: "Mithril/Mythril Alloy",
+color: "#bfd8d9",
+behavior: behaviors.WALL,
+category: "solids",
+density: 4425,
+state: "solid",
+tempHigh: 1975,
+stateHigh: "molten_mithril_mithril_alloy"
+};
 /* Unfinished:
-Nothing!
+hematite
+molten hematite
+magnesium
+molten magnesium
+titanium
+molten titanium
 */
