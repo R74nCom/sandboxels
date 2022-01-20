@@ -3,6 +3,51 @@
     + Explosives Update
     + Machines Update
 
+[Version 1.0 - Full Steam Ahead!]
+    + Radiation
+    + Uranium
+    + Rad Steam
+    + Rad Cloud
+    + Fallout
+    + Reorganized elements
+    + Powders category
+    + Food category
+    + Fullscreen Mode (Press F)
+    + Hold down Shift when using Mix to include Fire
+    + Salt melts Ice and Snow
+    + Dirty Water can be filtered by Charcoal and Gravel
+    + Worms can move through Mycelium, Wet Sand, and Clay Soil
+    + Worms break down some organic matter
+    + Glass now resists Acid
+    ~ Metal Scrap melts into various metals
+    ~ Recolored Aluminum
+    ~ Recolored Grass to have less contrast
+    ~ Recolored Mycelium
+    ~ Mycelium is no longer hidden
+    ~ Lichen now grows
+    ~ Cells and Cancer now have gravity
+    ~ Cancer now grows on its own
+    ~ Vaccines and Antibodies kill Cancer slowly
+    ~ Straw no longer falls
+    ~ Random no longer makes Snake
+    ~ Water Spout renamed to just Spout
+    ~ Hid Lattice
+    ~ Took all vanilla elements out of the Other category
+    ~ Moved Ash and Charcoal into the Powders category
+    + Technical: Reactions can now use arrays for random choices
+    ~ Fixed: Mod Manager removes only the top mod
+    ~ Fixed: Saplings, Mushrooms, Flowers, Bamboo, Wheat, Corn grow in mid-air
+    ~ Fixed: Acid, Acid Gas, and Antimatter delete themselves without touching anything
+    ~ Fixed: Pistils fall and create a lot of petals
+    ~ Fixed: Cloner doesn't inherit the temperature of it's source / don't clone fire properly
+    ~ Fixed: Ammonia fertilizes plants too fast
+    ~ Fixed: Info menu search bar doesn't stick to the bottom
+    ~ Fixed: Some bright background buttons like salt have white text
+    ~ Fixed: Elements can't heat or cool themselves with HT or CO
+    ~ Fixed: TPS resets when you don't enter anything
+    - Removed plus button in the Mod Manager
+    - Removed Structure category
+
 [Version 0.9.1]
     ~ Mods can now work together (e.g. having reactions with elements from other mods, stateHighs, etc.)
 

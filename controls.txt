@@ -13,6 +13,7 @@
     E               =  Element Selection
     / or I          =  Element Info Screen
     >               =  Step
+    F               =  Toggle Fullscreen
 
 (Alt/Option can be used in place of Shift)
 
@@ -27,3 +28,4 @@
     TPS             =  Change how fast the simulation runs
     Hide            =  Run the simulation without updating the display
     Info            =  Brings up the element info screen
+    Mods            =  Opens the Mod Manager

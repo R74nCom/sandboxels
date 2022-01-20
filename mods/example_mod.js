@@ -33,6 +33,13 @@ behaviors.SELFDELETE = [
     "XX|XX|XX",
 ];
 
+// Add reactions to existing elements
+if (!elements.water.reactions) { // Include this block once
+    elements.water.reactions = {} // This creates the property if it doesn't exist
+}
+elements.water.reactions.mayo = { "elem1":null, "elem2":"mayo_water" }
+elements.water.reactions.soap = { "elem1":null, "elem2":"soapy_water" }
+
 // Creating eLists:
 eLists.CONDIMENT = ["ketchup","melted_cheese","mayo"];
 // Adding elements to eLists:
