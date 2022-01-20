@@ -429,7 +429,7 @@ runAfterLoad(function() {
 
 /*
 Changelog
-Mod made primarily by Nubo318. Contributors include deviantEquinox and Lily219.
+Mod made primarily by Nubo318. Contributors include deviantEquinox and Lily129.
 Version 1.3.0
 
 Version 1.3.0 (20th of January 2022)
