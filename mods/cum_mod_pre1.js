@@ -42,7 +42,7 @@ elements.dead_cum = {
 	],
 	density: 997,
 	tempHigh: 100,
-	stateHigh: "boiling_cum",
+	stateHigh: ["steam","burnt_cum"],
 	reactions: {
 		"water": { "elem1": "dead_cum_water", "elem2": "dead_cum_water", "chance":0.7 }, //cum mixing
 		"dirt": { "elem1": null, "elem2": "dead_cummy_mud" }, //cum goes into dirt
@@ -120,21 +120,6 @@ elements.dead_cum_water = {
 	category: "cum",
 	conduct: 0.03,
 	hidden:true
-},
-elements.boiling_cum = {
-	name: "boiling cum",
-	color: "#bfd0e0",
-	behavior: [
-		"CR:steam%15|CH:burnt_cum>boiling_cum%80 AND CR:steam|CR:steam%15",
-		"CR:steam%15 AND M2|DL%50 AND CH:burnt_cum%70|CR:steam%15 AND M2",
-		"M1|M1|M1",
-	],
-	density: 998,
-	tempLow: 85,
-	stateLow: "dead_cum",
-	viscosity: 8,
-	category: "cum",
-	hidden: true,
 },
 elements.burnt_cum = {
 	name: "burnt cum",
