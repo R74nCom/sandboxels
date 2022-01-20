@@ -4,7 +4,7 @@ elements.cum = {
 	behavior: [
 		"ST%50 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15|ST%50 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15|XX AND ST%50 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15",
 		"M2 AND ST%65 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15|XX|M2 AND ST%65 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15",
-		"M1 AND ST%80 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15|M1 AND ST%80 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15|M1 AND ST%80 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15",cu
+		"M1 AND ST%80 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15|M1 AND ST%80 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15|M1 AND ST%80 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15",
 	],
 	density: 997,
 	tempHigh: 35,
