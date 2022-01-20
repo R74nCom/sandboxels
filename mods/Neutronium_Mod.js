@@ -530,6 +530,7 @@ behavior: behaviors.LIQUID,
 category: "liquids",
 density: 3922.5,
 state: "liquid",
+temp: 2000,
 tempLow: 1975,
 stateLow: "mithril_mythril_alloy"
 },
@@ -542,7 +543,7 @@ category: "solids",
 density: 4425,
 state: "solid",
 tempHigh: 1975,
-stateHigh: "molten_mithril_mithril_alloy"
+stateHigh: "molten_mithril_mythril_alloy"
 };
 elements.berry_seed = {
 color: ["#941260", "#752043"],
