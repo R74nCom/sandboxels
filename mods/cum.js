@@ -362,7 +362,8 @@ elements.fish.reactions.cum_water = { "elem1":"fish", "elem2":"water" }
 elements.fish.reactions.dead_cum = { "elem1":"fish", "elem2":"dead_cum_water" }
 elements.fish.reactions.dead_cum_water = { "elem1":"fish", "elem2":"water" }
 
-/*if(enabledMods.includes("mods/fey_and_more.js")) {
+runAfterLoad(function() {
+    if(enabledMods.includes("mods/fey_and_more.js")) {
     eLists.IMPURITY.push("cum");
     eLists.IMPURITY.push("cum_water");
     eLists.IMPURITY.push("cum_ice");
@@ -379,4 +380,15 @@ elements.fish.reactions.dead_cum_water = { "elem1":"fish", "elem2":"water" }
     eLists.IMPURITY.push("cummy_snake");
     eLists.IMPURITY.push("cum_slime");
     eLists.IMPURITY.push("burnt_cum");
-};*/
+	elements.pure_water.behavior = [
+        "DL:"+eLists.IMPURITY+"|DL:"+eLists.IMPURITY+"|DL:"+eLists.IMPURITY+"",
+        "DL:"+eLists.IMPURITY+" AND M2|XX|DL:"+eLists.IMPURITY+" AND M2",
+        "DL:"+eLists.IMPURITY+" AND M1|DL:"+eLists.IMPURITY+" AND M1|DL:"+eLists.IMPURITY+" AND M1",
+	],
+    elements.pure_steam.behavior = [
+        "M2 AND DL:"+eLists.IMPURITY+"|M1 AND DL:"+eLists.IMPURITY+"|M2 AND DL:"+eLists.IMPURITY+"",
+        "M1 AND DL:"+eLists.IMPURITY+"|XX|M1 AND DL:"+eLists.IMPURITY+"",
+        "M2 AND DL:"+eLists.IMPURITY+"|M1 AND DL:"+eLists.IMPURITY+"|M2 AND DL:"+eLists.IMPURITY+"",
+    ]
+};
+});
