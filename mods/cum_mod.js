@@ -313,11 +313,15 @@ elements.cummy_snake = {
 },
 elements.penis = {
 	color: "#9c5e5f",
-	behavior: behaviors.POWDER,
+	behavior: [
+		"XX|CR:cum%6|XX",
+		"CR:cum%6|XX|CR:cum%6",
+		"XX|CR:cum%6|XX",
+	],
 	behaviorOn: [
-		"XX|CR:cum%10|XX",
+		"CR:cum%10|CR:cum%10|CR:cum%10",
 		"CR:cum%10|XX|CR:cum%10",
-		"XX|CR:cum%10|XX",
+		"CR:cum%10|CR:cum%10|CR:cum%10",
 	],
 	rotatable: false,
 	category: "cum",
