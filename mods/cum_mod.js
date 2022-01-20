@@ -72,12 +72,15 @@ elements.cum_water = {
 		"M1 AND SW:water,cum%5|M1 AND CH:water>cum_water%3 AND SW:water,cum%5|M1 AND SW:water,cum%5",
 	],
 	reactions: {
+		"water": { "elem1": "cum_water", "elem2": "cum_water", "chance": 0.35 }, //cum spread
 		"sugar_water": { "elem1": "cum_water", "elem2": "cum_water", "chance":0.7 }, //sperm eat sugar
+		"water": { "elem1": "cum_water", "elem2": "cum_water", "chance":0.7 }, //sperm eat sugar
 		"dirt": { "elem1": "water", "elem2": "cummy_mud" }, //cum goes into dirt
 		"sand": { "elem1": "water", "elem2": "cummy_sand" }, // cum goes into sand
 		"sugar": { "elem1": null, "elem2": "cum_water", "chance":0.7 }, //sperm eat sugar
 		"slime": { "elem1": "water", "elem2": "cum_slime" }, //cum enters slime
 		"salt": { "elem1": null, "elem2": "dead_cum_water" }, //cum dies
+		"salt_water": { "elem1": "salt_water", "elem2": "salt_water" }, //cum dies
 		"acid": { "elem1": "water", "elem2": "cum", "chance": 0.05 }, //less cum is less basic
 		"acid": { "elem1": "water", "elem2": "dead_cum_water", "chance": 0.1 }, //sperm die from acid
 		"alcohol": { "elem1": "alcohol", "elem2": "dead_cum_water", "chance": 0.2 }, //alcohol kills things
@@ -333,17 +336,20 @@ elements.cummy_permafrost = {
 	category: "cum",
 }
 // Add reactions to existing elements
-if (!elements.fly.reactions) { // Include this block once
+if (!elements.fly.reactions) {
     elements.fly.reactions = {}
 }
-if (!elements.frog.reactions) { // Include this block once
+if (!elements.frog.reactions) {
     elements.frog.reactions = {}
 }
-if (!elements.ant.reactions) { // Include this block once
+if (!elements.ant.reactions) {
     elements.ant.reactions = {}
 }
-if (!elements.fish.reactions) { // Include this block once
+if (!elements.fish.reactions) {
     elements.fish.reactions = {}
+}
+if (!elements.water.reactions) {
+    elements.water.reactions = {}
 }
 elements.fly.reactions.cum = { "elem1":"fly", "elem2":null }
 elements.frog.reactions.cum = { "elem1":"cum_water", "elem2":"frog" }
@@ -352,6 +358,7 @@ elements.fish.reactions.cum = { "elem1":"fish", "elem2":"cum_water" }
 elements.fish.reactions.cum_water = { "elem1":"fish", "elem2":"water" }
 elements.fish.reactions.dead_cum = { "elem1":"fish", "elem2":"dead_cum_water" }
 elements.fish.reactions.dead_cum_water = { "elem1":"fish", "elem2":"water" }
+elements.water.reactions.cum_water = { "elem1":"water", "elem2":"cum_water", "chance": 0.34 }
 
 /*if(enabledMods.includes("mods/fey_and_more.js")) {
     eLists.IMPURITY.push("cum");
