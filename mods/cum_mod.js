@@ -72,7 +72,6 @@ elements.cum_water = {
 		"M1 AND SW:water,cum%5|M1 AND CH:water>cum_water%3 AND SW:water,cum%5|M1 AND SW:water,cum%5",
 	],
 	reactions: {
-		"water": { "elem1": "cum_water", "elem2": "cum_water", "chance": 0.32 }, //cum spread
 		"sugar_water": { "elem1": "cum_water", "elem2": "cum_water", "chance":0.7 }, //sperm eat sugar
 		"water": { "elem1": "cum_water", "elem2": "cum_water", "chance":0.7 }, //sperm eat sugar
 		"dirt": { "elem1": "water", "elem2": "cummy_mud" }, //cum goes into dirt
@@ -80,7 +79,7 @@ elements.cum_water = {
 		"sugar": { "elem1": null, "elem2": "cum_water", "chance":0.7 }, //sperm eat sugar
 		"slime": { "elem1": "water", "elem2": "cum_slime" }, //cum enters slime
 		"salt": { "elem1": null, "elem2": "dead_cum_water" }, //cum dies
-		"salt_water": { "elem1": "salt_water", "elem2": "salt_water", "chance": 0.12 }, //cum dies
+		"salt_water": { "elem1": "dead_cum_water", "dead_cum_water": "salt_water", "chance": 0.12 }, //cum dies
 		"acid": { "elem1": "water", "elem2": "cum", "chance": 0.05 }, //less cum is less basic
 		"acid": { "elem1": "water", "elem2": "dead_cum_water", "chance": 0.1 }, //sperm die from acid
 		"alcohol": { "elem1": "alcohol", "elem2": "dead_cum_water", "chance": 0.2 }, //alcohol kills things
