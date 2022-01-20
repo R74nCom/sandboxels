@@ -63,25 +63,6 @@ elements.smoke.reactions = {
     "poisoned_ketchup_cloud": { "elem1": "pyrocumulus", "chance":0.08, "y":[0.15] },
 };
 
-// ketchup fairies
-elements.ketchup_fairy.reactions = {
-    "fire": { "elem1": "fire_fairy"},
-    "magma": { "elem1": "fire_fairy"},
-    "snow": { "elem1": "ice_fairy"},
-    "ice": { "elem1": "ice_fairy"},
-    "petal": { "elem1": "nature_fairy"},
-    "dirt": { "elem1": "earth_fairy"},
-    "mud": { "elem1": "earth_fairy"},
-    "raincloud": { "elem1": "rain_fairy"},
-    "electric": { "elem1": "thunder_fairy"},
-    "little_star": { "elem1": "stellar_fairy"},
-    "moonrock": { "elem1": "lunar_fairy"},
-    "liquid_light": { "elem1": "light_fairy"},
-    "mushroom_cap": { "elem1": "mushroom_fairy"},
-    "magic": { "elem1": "magic_fairy"},
-    "ketchup": { "elem1": "ketchup_fairy"},
-},
-
 // elements
 elements.frozen_ketchup = {
     color: "#d44737",
@@ -413,22 +394,42 @@ elements.ketchup_gold = {
  }
 
  // f&m only elements
- if (enabledMods.includes("mods/fey_and_more.js")) {
-    elements.ketchup_fairy = {
-        color: ["#d4b0b0", "#e8c5c5", "#e89595"],
-        state: "solid",
-        behavior: [
-            "XX|M1|M1",
-            "XX|FX%5|XX",
-            "XX|CR:ketchup%0.1 AND CR:fairy_dust%0.005 AND M1|M1",
-        ],
-        category: "fey",
-    }
-};
+runAfterLoad(function() {
+    if (enabledMods.includes("mods/fey_and_more.js")) {
+        // ketchup fairy reaction
+        elements.fairy.reactions = {
+            "fire": { "elem1": "fire_fairy"},
+            "magma": { "elem1": "fire_fairy"},
+            "snow": { "elem1": "ice_fairy"},
+            "ice": { "elem1": "ice_fairy"},
+            "petal": { "elem1": "nature_fairy"},
+            "dirt": { "elem1": "earth_fairy"},
+            "mud": { "elem1": "earth_fairy"},
+            "raincloud": { "elem1": "rain_fairy"},
+            "electric": { "elem1": "thunder_fairy"},
+            "little_star": { "elem1": "stellar_fairy"},
+            "moonrock": { "elem1": "lunar_fairy"},
+            "liquid_light": { "elem1": "light_fairy"},
+            "mushroom_cap": { "elem1": "mushroom_fairy"},
+            "magic": { "elem1": "magic_fairy"},
+            "ketchup": { "elem1": "ketchup_fairy"},
+        };
+        elements.ketchup_fairy = {
+            color: ["#d4b0b0", "#e8c5c5", "#e89595"],
+            state: "solid",
+            behavior: [
+                "XX|M1|M1",
+                "XX|FX%5|XX",
+                "XX|CR:ketchup%0.1 AND CR:fairy_dust%0.005 AND M1|M1",
+            ],
+            category: "fey",
+        }
+    };
+ });
 
 /*
 Changelog
-Mod made primarily by Nubo318. Contributors include deviantEquinox and Lily219.
+Mod made primarily by Nubo318. Contributors include deviantEquinox and Lily129.
 Version 1.3.0
 
 Version 1.3.0 (20th of January 2022)
