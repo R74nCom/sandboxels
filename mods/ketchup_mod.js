@@ -29,7 +29,58 @@ elements.ketchup.density = 1092;
 elements.ketchup.reactions = {
     "mayonnaise": { "elem1": null, "elem2": "fry_sauce" },
     "plague": { "elem1": "poisoned_ketchup", "elem2": null},
+    "infection": { "elem1": "poisoned_ketchup", "elem2": null},
+    "radiation": { "elem1": "poisoned_ketchup", chance:025},
+    "fallout": { "elem1": "poisoned_ketchup", chance:025},
+    "gloomwind": { "elem1": "poisoned_ketchup", "elem2": null},
     };
+
+// making ketchup dirty
+elements.dirt.reactions = {
+    "ketchup": { "elem1": null, "elem2": "dirty_ketchup", "oneway":true},
+};
+elements.ash.reactions = {
+    "ketchup": { "elem1": null, "elem2": "dirty_ketchup", "oneway":true},
+    "steam": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,15] },
+    "rain_cloud": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,15] },
+    "snow_cloud": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,15] },
+    "acid_cloud": { "elem1": "pyrocumulus", "chance":0.05, "y":[0,15] },
+    "pyrocumulus": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,15] },
+};
+elements.dust.reactions = {
+    "ketchup": { "elem1": null, "elem2": "dirty_ketchup", "oneway":true},
+};
+
+// making it so ketchup clouds can react with smoke to make pyrocumulus
+elements.smoke.reactions = {
+    "steam": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,15] },
+    "rain_cloud": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,15] },
+    "snow_cloud": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,15] },
+    "acid_cloud": { "elem1": "pyrocumulus", "chance":0.05, "y":[0,15] },
+    "fire_cloud": { "elem1": "pyrocumulus", "chance":0.05, "y":[0,15] },
+    "pyrocumulus": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,15] },
+    "ketchup_cloud": { "elem1": "pyrocumulus", "chance":0.08, "y":[0.15] },
+    "poisoned_ketchup_cloud": { "elem1": "pyrocumulus", "chance":0.08, "y":[0.15] },
+};
+
+// ketchup fairies
+elements.ketchup_fairy.reactions = {
+    "fire": { "elem1": "fire_fairy"},
+    "magma": { "elem1": "fire_fairy"},
+    "snow": { "elem1": "ice_fairy"},
+    "ice": { "elem1": "ice_fairy"},
+    "petal": { "elem1": "nature_fairy"},
+    "dirt": { "elem1": "earth_fairy"},
+    "mud": { "elem1": "earth_fairy"},
+    "raincloud": { "elem1": "rain_fairy"},
+    "electric": { "elem1": "thunder_fairy"},
+    "little_star": { "elem1": "stellar_fairy"},
+    "moonrock": { "elem1": "lunar_fairy"},
+    "liquid_light": { "elem1": "light_fairy"},
+    "mushroom_cap": { "elem1": "mushroom_fairy"},
+    "magic": { "elem1": "magic_fairy"},
+    "ketchup": { "elem1": "ketchup_fairy"},
+},
 
 // elements
 elements.frozen_ketchup = {
@@ -43,6 +94,10 @@ elements.frozen_ketchup = {
     density: 917,
     reactions: {
         "plague": { "elem1": "frozen_poisoned_ketchup", "elem2": null},
+        "infection": { "elem1": "frozen_poisoned_ketchup", "elem2": null},
+        "radiation": { "elem1": "frozen_poisoned_ketchup", chance:025},
+        "fallout": { "elem1": "frozen_poisoned_ketchup", chance:025},
+        "gloomwind": { "elem1": "frozen_poisoned_ketchup", "elem2": null},
     },
 };
 elements.poisoned_ketchup = {
@@ -55,7 +110,7 @@ elements.poisoned_ketchup = {
     viscosity: 50000,
     category:"liquids",
     state: "liquid",
-    density: 1235,
+    density: 1140,
 };
 elements.frozen_poisoned_ketchup = {
     color: "#d43754",
@@ -91,6 +146,10 @@ elements.ketchup_cloud = {
     density: 1,
     reactions: {
         "plague": { "elem1": "poisoned_ketchup_cloud", "elem2": null},
+        "infection": { "elem1": "poisoned_ketchup_cloud"},
+        "radiation": { "elem1": "poisoned_ketchup_cloud", chance:025},
+        "fallout": { "elem1": "poisoned_ketchup_cloud", chance:025},
+        "gloomwind": { "elem1": "poisoned_ketchup_cloud", "elem2": null},
     },
     conduct: 0.03,
 };
@@ -120,6 +179,10 @@ elements.ketchup_snow = {
     density: "100",
     reactions: {
         "plague": { "elem1": "poisoned_ketchup_snow", "elem2": null},
+        "infection": { "elem1": "poisoned_ketchup_snow", "elem2": null},
+        "radiation": { "elem1": "poisoned_ketchup_snow", chance:025},
+        "fallout": { "elem1": "poisoned_ketchup_snow", chance:025},
+        "gloomwind": { "elem1": "poisoned_ketchup_snow", "elem2": null},
     },
 };
 elements.ketchup_snow_cloud = {
@@ -137,6 +200,10 @@ elements.ketchup_snow_cloud = {
     density: 2,
     reactions: {
         "plague": { "elem1": "poisoned_ketchup_snow_cloud", "elem2": null},
+        "infection": { "elem1": "poisoned_ketchup_snow_cloud"},
+        "radiation": { "elem1": "poisoned_ketchup_snow_cloud", chance:025},
+        "fallout": { "elem1": "poisoned_ketchup_snow_cloud", chance:025},
+        "gloomwind": { "elem1": "poisoned_ketchup_snow_cloud", "elem2": null},
     },
 };
 elements.poisoned_ketchup_snow = {
@@ -190,6 +257,10 @@ elements.ketchup_gas = {
     reactions: {
         "plague": { "elem1": "poisoned_ketchup_gas", "elem2": null},
         "ketchup_gas": { "elem1": null, "elem2": "ketchup_cloud", "chance":0.3, "y":[0,15] },
+        "infection": { "elem1": "poisoned_ketchup_gas"},
+        "radiation": { "elem1": "poisoned_ketchup_gas", chance:025},
+        "fallout": { "elem1": "poisoned_ketchup_gas", chance:025},
+        "gloomwind": { "elem1": "poisoned_ketchup_gas", "elem2": null},
     },
 };
 elements.poisoned_ketchup_gas = {
@@ -218,21 +289,29 @@ elements.ketchup_powder = {
     density: 1879,
     reactions: {
         "plague": { "elem1": "poisoned_ketchup_powder", "elem2": null},
+        "infection": { "elem1": "poisoned_ketchup_powder", "elem2": null},
+        "radiation": { "elem1": "poisoned_ketchup_powder", chance:025},
+        "fallout": { "elem1": "poisoned_ketchup_powder", chance:025},
+        "gloomwind": { "elem1": "poisoned_ketchup_powder", "elem2": null},
     },
     state: "solid",
+    category: "powders",
 };
 elements.poisoned_ketchup_powder = {
     color: "#e0204a",
     behavior: behaviors.POISONED_POWDER,
     density: 1879,
     state: "solid",
+    category: "powders",
 };
 elements.tomato = {
     color: "#B11E0C",
     behavior: behaviors.STURDYPOWDER,
-    category: "life",
+    category: "food",
     density: 470,
     state: "solid",
+    tempHigh: 400,
+    stateHigh: "ash",
     reactions: {
         "rock": { "elem1": "tomato_sauce", "elem2": "rock" },
     },
@@ -266,9 +345,11 @@ elements.sugary_tomato_sauce = {
 elements.cumin = {
     color: "#8B7778",
     behavior: behaviors.POWDER,
-    category: "life",
+    category: "food",
     density: 405,
     state: "solid",
+    tempHigh: 400,
+    stateHigh: "ash",
     burn: 40,
     burnTime: 40,
     burnInto: "ash",
@@ -303,11 +384,64 @@ elements.antiketchup = {
     state: "liquid",
     density: 1092,
 };
+elements.dirty_ketchup = {
+    color: "#851a0d",
+    behavior: behaviors.LIQUID,
+    viscosity: 50000,
+    category: "liquids",
+    state: "liquid",
+    tempHigh: 100,
+    stateHigh: ["ketchup_gas", "carbon_dioxide"],
+    tempLow: 0,
+    stateLow: "frozen_ketchup",
+    density: 1140,
+    hidden: true,
+};
+elements.ketchup_gold = {
+    color: ["#eb8a8a", "#bf3939", "#ff6161"],
+    behavior: behaviors.WALL,
+    category: "solids",
+    conduct: 0.64,
+    tempHigh: 1025,
+    density: 10598,
+}
+ // alloys
+ elements.molten_ketchup_metal = {
+    reactions: {
+        "molten_gold": { "elem1": null, "elem2": "molten_ketchup_gold" },
+    }
+ }
+
+ // f&m only elements
+ if (enabledMods.includes("mods/fey_and_more.js")) {
+    elements.ketchup_fairy = {
+        color: ["#d4b0b0", "#e8c5c5", "#e89595"],
+        state: "solid",
+        behavior: [
+            "XX|M1|M1",
+            "XX|FX%5|XX",
+            "XX|CR:ketchup%0.1 AND CR:fairy_dust%0.005 AND M1|M1",
+        ],
+        category: "fey",
+    }
+};
 
 /*
 Changelog
 Mod made primarily by Nubo318. Contributors include deviantEquinox and Lily219.
-Version 1.2.1
+Version 1.3.0
+
+Version 1.3.0 (20th of January 2022)
++ Ketchup Gold, an alloy between ketchup metal and gold
++ Dirty Ketchup
++ Ketchup clouds can now react with smoke to form pyrocumulus
++ Infection now poisons ketchup stuff
++ Tomatoes and cumin now turn into ash at high temperatures
++ Radiation can poison ketchup stuff
++ Ketchup Fairies (Needs Fey & More)
++ Gloomwind can poison ketchup stuff (Needs Fey & More)
+~ Changed the density of poisoned ketchup
+~ Moved the ketchup powders to the "Powders" category and tomatoes and cumin to the "Food" category
 
 Version 1.2.1 (16th of January 2022)
 + Ketchup gases can now form ketchup clouds when high up
