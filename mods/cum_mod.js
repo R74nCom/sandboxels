@@ -4,7 +4,7 @@ elements.cum = {
 	behavior: [
 		"ST%50 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15|ST%50 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15|XX AND ST%50 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15",
 		"M2 AND ST%65 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15|XX|M2 AND ST%65 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15",
-		"M1 AND ST%80 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15|M1 AND ST%80 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15|M1 AND ST%80 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15",
+		"M1 AND ST%80 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15|M1 AND ST%80 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15|M1 AND ST%80 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15",cu
 	],
 	density: 997,
 	tempHigh: 35,
@@ -298,7 +298,7 @@ elements.cum_slime = {
 	},
 	density: 1470,
 	tempHigh: 150,
-	stateHigh: "boiling_cum",
+	stateHigh: ["steam","steam","burnt_cum","burnt_cum","slime"],
 	hidden:true
 },
 elements.cummy_snake = {
