@@ -3447,6 +3447,16 @@
                 rotatable: true,
                 category: "special",
             },
+            "loopy": {
+                color: "#eb3474",
+                behavior: [
+                    "XX|M2|M1",
+                    "XX|RT%20|M2",
+                    "CR:smoke|XX|XX",
+                ],
+                rotatable: true,
+                category: "special",
+            },
             "smoke_grenade": {
                 color: "#2b382c",
                 behavior: [
@@ -5474,34 +5484,32 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                 // If the element has reactions, loop through each one (it is an object), if the value for elem1 or elem2 is not an element and is not null, remove that key
                 if (elements[key].reactions) {
                     for (var reaction in elements[key].reactions) {
-                        if (!elements[elements[key].reactions[reaction].elem1] && elements[key].reactions[reaction].elem1 != null) {
-                            delete elements[key].reactions[reaction].elem1;
-                        }
-                        if (!elements[elements[key].reactions[reaction].elem2] && elements[key].reactions[reaction].elem2 != null) {
-                            delete elements[key].reactions[reaction].elem2;
-                            if (!Array.isArray(elements[key].reactions[reaction].elem1)) {
+                        // If elem1 exists
+                        if (elements[key].reactions[reaction].elem1) {
+                            // If elem1 is an array, loop through each element, else check once. Don't delete if it === null
+                            if (Array.isArray(elements[key].reactions[reaction].elem1)) {
+                                for (var i = 0; i < elements[key].reactions[reaction].elem1.length; i++) {
+                                    if (elements[key].reactions[reaction].elem1[i] && !elements[elements[key].reactions[reaction].elem1[i]]) {
+                                        elements[key].reactions[reaction].elem1.splice(i,1);
+                                    }
+                                }
+                            }
+                            else if (elements[key].reactions[reaction].elem1 && !elements[elements[key].reactions[reaction].elem1]) {
                                 delete elements[key].reactions[reaction].elem1;
                             }
-                            else { // Do the same for each element in the array
-                                for (var i = 0; i < elements[key].reactions[reaction].elem1.length; i++) {
-                                    if (!elements[elements[key].reactions[reaction].elem1[i]] && elements[key].reactions[reaction].elem1[i] != null) {
-                                        elements[key].reactions[reaction].elem1.splice(i,1);
-                                        i--;
-                                    }
-                                }
-                            }
                         }
-                        if (!elements[elements[key].reactions[reaction].elem2] && elements[key].reactions[reaction].elem2 != null) {
-                            if (!Array.isArray(elements[key].reactions[reaction].elem2)) {
-                                delete elements[key].reactions[reaction].elem2;
-                            }
-                            else {
+                        // If elem2 exists
+                        if (elements[key].reactions[reaction].elem2) {
+                            // If elem2 is an array, loop through each element, else check once. Don't delete if it === null
+                            if (Array.isArray(elements[key].reactions[reaction].elem2)) {
                                 for (var i = 0; i < elements[key].reactions[reaction].elem2.length; i++) {
-                                    if (!elements[elements[key].reactions[reaction].elem2[i]] && elements[key].reactions[reaction].elem2[i] != null) {
+                                    if (elements[key].reactions[reaction].elem2[i] && !elements[elements[key].reactions[reaction].elem2[i]]) {
                                         elements[key].reactions[reaction].elem2.splice(i,1);
-                                        i--;
                                     }
                                 }
+                            }
+                            else if (elements[key].reactions[reaction].elem2 && !elements[elements[key].reactions[reaction].elem2]) {
+                                delete elements[key].reactions[reaction].elem2;
                             }
                         }
                     }

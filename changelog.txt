@@ -3,6 +3,9 @@
     + Explosives Update
     + Machines Update
 
+[Version 1.1]
+    + Loopy
+
 [Version 1.0.1]
     ~ Slowed down Udder
     + Technical: runAfterLoad() function, pass a function to run after all mods load. See example_mod.js
