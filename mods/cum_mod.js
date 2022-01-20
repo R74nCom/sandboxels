@@ -31,7 +31,6 @@ elements.cum = {
 	stateLow: "cum_ice",
 	viscosity: 20,
 	category:"cum",
-	conduct: 0.04,
 },
 elements.dead_cum = { 
 	name: "dead cum",
@@ -325,7 +324,7 @@ elements.penis = {
 	],
 	rotatable: false,
 	category: "cum",
-	conduct: "0.50",
+	conduct: 1,
 	tempHigh: 60,
 	stateHigh: "rotten_meat",
 },
