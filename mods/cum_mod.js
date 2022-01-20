@@ -87,8 +87,8 @@ elements.cum_water = {
 		"radiation": { "elem1": "soap", "elem2": "dead_cum_water", "chance": 0.2 }, //so does radiation
 	},
 	density: 997,
-	tempHigh: 100,
-	stateHigh: "steam",
+	tempHigh: 35,
+	stateHigh: "dead_cum_water",
 	tempLow: 0,
 	stateLow: "cum_water_ice",
 	viscosity: 8,
