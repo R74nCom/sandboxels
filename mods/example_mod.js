@@ -40,6 +40,12 @@ if (!elements.water.reactions) { // Include this block once
 elements.water.reactions.mayo = { "elem1":null, "elem2":"mayo_water" }
 elements.water.reactions.soap = { "elem1":null, "elem2":"soapy_water" }
 
+// Run after all mods are loaded, for cross-mod compatibility
+runAfterLoad(function() {
+    // Your code here
+    console.log("Hello World!");
+});
+
 // Creating eLists:
 eLists.CONDIMENT = ["ketchup","melted_cheese","mayo"];
 // Adding elements to eLists:

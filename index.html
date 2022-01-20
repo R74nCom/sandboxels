@@ -339,6 +339,11 @@
                 console.log(e);
             }
         }
+        runAfterLoadList = [];
+        // runAfterLoad() takes a function and adds it to the runAfterLoadList.
+        function runAfterLoad(func) {
+            runAfterLoadList.push(func);
+        }
     </script>
 
     <script>
@@ -1514,7 +1519,7 @@
                 behavior: [
                     "XX|XX|XX",
                     "XX|XX|XX",
-                    "XX|CR:milk%5|XX",
+                    "XX|CR:milk%2.5|XX",
                 ],
                 category:"special",
             },
@@ -5303,6 +5308,11 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
         function focusGame() { document.getElementById("game").focus(); if(showingMenu) { closeMenu(); } }
         //on window load
         window.onload = function() {
+            // Loop through runAfterLoadList and run each function
+            for (var i = 0; i < runAfterLoadList.length; i++) {
+                runAfterLoadList[i]();
+            }
+
             // Loop through behaviors and each behavior, if it is a string, split the items and replace the value with the array
             for (var behavior in behaviors) {
                 if (typeof behaviors[behavior][0] === "string") {
