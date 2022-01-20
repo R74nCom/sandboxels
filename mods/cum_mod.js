@@ -67,9 +67,9 @@ elements.cum_water = {
 	name: "cum water",
 	color: "#a7c1db",
 	behavior: [
-		"XX|CH:water>cum_water%3|XX",
-		"M2 AND CH:water>cum_water%3 AND SW:water,cum%5|XX|M2 AND CH:water>cum_water%3 AND SW:water,cum%5",
-		"M1 AND SW:water,cum%5|M1 AND CH:water>cum_water%3 AND SW:water,cum%5|M1 AND SW:water,cum%5",
+		"SW:water,cum,dead_cum_water,dead_cum%5|SW:water,cum,dead_cum_water,dead_cum%5|SW:water,cum,dead_cum_water,dead_cum%5",
+		"M2 AND SW:water,cum,dead_cum_water,dead_cum%5|XX|M2 AND SW:water,cum,dead_cum_water,dead_cum%5",
+		"M1 AND SW:water,cum,dead_cum_water,dead_cum%5|M1 AND SW:water,cum,dead_cum_water,dead_cum%5|M1 AND SW:water,cum,dead_cum_water,dead_cum%5",
 	],
 	reactions: {
 		"sugar_water": { "elem1": "cum_water", "elem2": "cum_water", "chance":0.7 }, //sperm eat sugar
@@ -99,9 +99,9 @@ elements.dead_cum_water = {
 	name: "dead cum water",
 	color: "#b7b7c6",
 	behavior: [
-		"XX|CH:water>dead_cum_water%2|XX",
-		"M2 AND CH:water>cum_water%2 AND SW:water,cum%|XX|M2 AND CH:water>cum_water%2 AND SW:water,cum%4",
-		"M1 AND SW:water,cum%4|M1 AND CH:water>cum_water%3 AND SW:water,cum%4|M1 AND SW:water,cum%4",
+		"SW:water,cum,dead_cum_water,dead_cum%3|SW:water,cum,dead_cum_water,dead_cum%3|SW:water,cum,dead_cum_water,dead_cum%3",
+		"M2 AND SW:water,cum,dead_cum_water,dead_cum%4|XX|M2 AND SW:water,cum,dead_cum_water,dead_cum%4",
+		"M1 AND SW:water,cum,dead_cum_water,dead_cum%5|M1 AND SW:water,cum,dead_cum_water,dead_cum%5|M1 AND SW:water,cum,dead_cum_water,dead_cum%5",
 	],
 	reactions: {
 		"sugar_water": { "elem1": "cum_water", "elem2": "cum_water", "chance":0.7 }, //sperm eat sugar
