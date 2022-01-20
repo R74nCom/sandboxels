@@ -295,7 +295,7 @@ elements.cum_slime = {
 	},
 	density: 1470,
 	tempHigh: 150,
-	stateHigh: "boiling_cum",
+	stateHigh: ["steam","steam","burnt_cum","burnt_cum","slime"],
 	hidden:true
 },
 elements.cummy_snake = {
@@ -336,7 +336,6 @@ elements.cummy_permafrost = {
     eLists.IMPURITY.push("cum");
     eLists.IMPURITY.push("cum_water");
     eLists.IMPURITY.push("cummy_mud");
-    eLists.IMPURITY.push("boiling_cum");
     eLists.IMPURITY.push("cummy_permafrost");
     eLists.IMPURITY.push("cummy_snake");
     eLists.IMPURITY.push("cum_ice");
