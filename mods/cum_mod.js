@@ -31,6 +31,7 @@ elements.cum = {
 	stateLow: "cum_ice",
 	viscosity: 20,
 	category:"cum",
+	conduct:0,
 },
 elements.dead_cum = { 
 	name: "dead cum",
