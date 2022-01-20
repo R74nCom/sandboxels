@@ -1,4 +1,4 @@
-eelements.cum = { 
+elements.cum = { 
 	name: "cum",
 	color: "#e6e1d5",
 	behavior: [
