@@ -25,6 +25,7 @@ elements.cum = {
 		"alcohol": { "elem1": "alcohol", "elem2": "dead_cum", "chance": 0.2 }, //sperm die from alcohol, also I'm not implementing alcohol-water mixing
 		"soap": { "elem1": "soap", "elem2": "dead_cum", "chance": 0.2 }, //sperm die from soap
 		"radiation": { "elem1": "radiation", "elem2": "dead_cum", "chance": 0.2 }, //sperm die from radiation
+		"cum": { "elem1":"cum", "chance":0.01 }, //blood replacement behavior
 	},
 	tempLow: 0,
 	stateLow: "cum_ice",
@@ -295,7 +296,7 @@ elements.cum_slime = {
 	},
 	density: 1470,
 	tempHigh: 150,
-	stateHigh: ["steam","steam","burnt_cum","burnt_cum","slime"],
+	stateHigh: "boiling_cum",
 	hidden:true
 },
 elements.cummy_snake = {
@@ -331,14 +332,42 @@ elements.cummy_permafrost = {
 	stateHigh: "cummy_mud",
 	category: "cum",
 }
+// Add reactions to existing elements
+if (!elements.fly.reactions) { // Include this block once
+    elements.fly.reactions = {}
+}
+if (!elements.frog.reactions) { // Include this block once
+    elements.frog.reactions = {}
+}
+if (!elements.ant.reactions) { // Include this block once
+    elements.ant.reactions = {}
+}
+if (!elements.fish.reactions) { // Include this block once
+    elements.fish.reactions = {}
+}
+elements.fly.reactions.cum = { "elem1":"fly", "elem2":null }
+elements.frog.reactions.cum = { "elem1":"cum_water", "elem2":"frog" }
+elements.ant.reactions.cum = { "elem1":"ant", "elem2":null }
+elements.fish.reactions.cum = { "elem1":"fish", "elem2":"cum_water" }
+elements.fish.reactions.cum_water = { "elem1":"fish", "elem2":"water" }
+elements.fish.reactions.dead_cum = { "elem1":"fish", "elem2":"dead_cum_water" }
+elements.fish.reactions.dead_cum_water = { "elem1":"fish", "elem2":"water" }
 
 /*if(enabledMods.includes("mods/fey_and_more.js")) {
     eLists.IMPURITY.push("cum");
     eLists.IMPURITY.push("cum_water");
-    eLists.IMPURITY.push("cummy_mud");
-    eLists.IMPURITY.push("cummy_permafrost");
-    eLists.IMPURITY.push("cummy_snake");
     eLists.IMPURITY.push("cum_ice");
     eLists.IMPURITY.push("cum_water_ice");
+    eLists.IMPURITY.push("dead_cum");
+    eLists.IMPURITY.push("dead_cum_water");
+    eLists.IMPURITY.push("dead_cum_ice");
+    eLists.IMPURITY.push("dead_cum_water_ice");
+    eLists.IMPURITY.push("cummy_mud");
+    eLists.IMPURITY.push("dead_cummy_mud");
+    eLists.IMPURITY.push("cummy_sand");
+    eLists.IMPURITY.push("dead_cummy_sand");
+    eLists.IMPURITY.push("cummy_permafrost");
+    eLists.IMPURITY.push("cummy_snake");
+    eLists.IMPURITY.push("cum_slime");
     eLists.IMPURITY.push("burnt_cum");
 };*/
