@@ -61,7 +61,7 @@ elements.smoke.reactions = {
     "pyrocumulus": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,15] },
     "ketchup_cloud": { "elem1": "pyrocumulus", "chance":0.08, "y":[0.15] },
     "poisoned_ketchup_cloud": { "elem1": "pyrocumulus", "chance":0.08, "y":[0.15] },
-};
+};        
 
 // elements
 elements.frozen_ketchup = {
@@ -393,9 +393,22 @@ elements.ketchup_gold = {
     }
  }
 
- // f&m only elements
+ // f&m only things
 runAfterLoad(function() {
     if (enabledMods.includes("mods/fey_and_more.js")) {
+        // making ketchup fairies die to iron and silver
+        eLists.FAIRY.push("ketchup_fairy");
+        elements.iron.behavior = [
+            "XX|DL:"+eLists.FAIRY+"|XX",
+            "DL:"+eLists.FAIRY+"|XX|DL:"+eLists.FAIRY+"",
+            "XX|DL:"+eLists.FAIRY+"|XX"
+        ];
+        elements.silver.behavior = [
+            "XX|DL:"+eLists.FAIRY+"|XX",
+            "DL:"+eLists.FAIRY+"|XX|DL:"+eLists.FAIRY+"",
+            "XX|DL:"+eLists.FAIRY+"|XX"
+        ];
+        
         // ketchup fairy reaction
         elements.fairy.reactions = {
             "fire": { "elem1": "fire_fairy"},
@@ -414,6 +427,8 @@ runAfterLoad(function() {
             "magic": { "elem1": "magic_fairy"},
             "ketchup": { "elem1": "ketchup_fairy"},
         };
+
+        // f&m only elements
         elements.ketchup_fairy = {
             color: ["#d4b0b0", "#e8c5c5", "#e89595"],
             state: "solid",
@@ -423,14 +438,17 @@ runAfterLoad(function() {
                 "XX|CR:ketchup%0.1 AND CR:fairy_dust%0.005 AND M1|M1",
             ],
             category: "fey",
-        }
+        };
     };
  });
 
 /*
 Changelog
 Mod made primarily by Nubo318. Contributors include deviantEquinox and Lily129.
-Version 1.3.0
+Version 1.3.1
+
+Version 1.3.1 (20th of January 2022)
+~ Ketchup fairies are now killed by iron and silver
 
 Version 1.3.0 (20th of January 2022)
 + Ketchup Gold, an alloy between ketchup metal and gold
