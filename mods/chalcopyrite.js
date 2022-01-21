@@ -28,7 +28,7 @@ elements.copper_concentrate = {
 	color: ["#343c27","#4f4f4f"],
 	behavior: behaviors.POWDER,
 	reactions: {
-		borax: { "elem1": "fluxed_copper_concentrate", "elem2": "slag", "chance": 0.1 }, //doesn't fix infinite slag; hopefully we get arrays in reacts soon
+		borax: { "elem1": "fluxed_copper_concentrate", "elem2": ["slag",null,null,null,null,null,null,null,null,null] },
 	},
 	tempHigh: 1000,
 	stateHigh: "magma",
@@ -58,7 +58,7 @@ elements.matte_copper = {
 	color: "#96786d",
 	behavior: behaviors.WALL,
 	reactions: {
-		borax: { "elem1": "fluxed_matte_copper", "elem2": "slag", chance: 0.1 }, //see last comment
+		borax: { "elem1": "fluxed_matte_copper", "elem2": ["slag",null,null,null,null,null,null,null,null,null] },
 	},
 	tempHigh: 1050,
 	stateHigh: "molten_matte_copper",
