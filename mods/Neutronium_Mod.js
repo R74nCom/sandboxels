@@ -530,7 +530,6 @@ behavior: behaviors.LIQUID,
 category: "liquids",
 density: 3922.5,
 state: "liquid",
-temp: 2000,
 tempLow: 1975,
 stateLow: "mithril_mythril_alloy"
 },
@@ -619,8 +618,18 @@ behavior: [
 ],
 temp: 1000
 };
+elements.hematite = {
+color: ["#824b1b", "#914a20", "##ad3f1d"],
+category: "land",
+state: "solid",
+behavior: behaviors.POWDER,
+tempHigh: 1538,
+stateHigh: "molten_hematite",
+reactions: {
+"blast_furnace_fuel": { "elem1":"hematite_mixture", "elem2":null },
+},
+};
 /* Unfinished:
-hematite
 molten hematite
 magnesium
 molten magnesium
