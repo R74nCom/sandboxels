@@ -4862,7 +4862,7 @@
                 else if (currentElement == "mix") {
                     if (!isEmpty(x,y,true)) {
                         var pixel = pixelMap[x][y];
-                        if (pixel.element != "fire" & pixel.element != "smoke" || shiftDown) {
+                        if ((pixel.element != "fire" && pixel.element != "smoke") || shiftDown) {
                             mixList.push(pixel);
                         }
                     }
