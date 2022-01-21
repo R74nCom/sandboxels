@@ -136,7 +136,7 @@ elements.hummingbird = {
     burn:50,
     burnTime:25,
     density: 500,
-}
+};
 elements.caterpillar = {
 	color: ["#a7cfaf", "#4ecf6a", "#68cc7e","#a7cfaf"],
 	category: "Fantastic Creatures",
@@ -153,7 +153,7 @@ elements.caterpillar = {
     burn:75,
     burnTime:25,
     density: 1000,
-}
+};
 elements.cocoon = {
 	color: "#f0fff3",
 	category: "Fantastic Creatures",
@@ -167,7 +167,7 @@ elements.cocoon = {
     burn:75,
     burnTime:25,
     density: 1000,
-}
+};
 elements.butterfly = {
 	color: ["#6e6056", "#6e6056", "#423831", "#423831", "#e3cd5f", "#dbaf35", "#35db53", "#49cc61", "#49ccca", "#d18f84"],
 	category: "Fantastic Creatures",
@@ -181,7 +181,7 @@ elements.butterfly = {
     burn:75,
     burnTime:25,
     density: 500,
-}
+};
 elements.silk = {
 	color: ["#ebebeb", "#e6d9d1"],
 	category: "land",
@@ -196,4 +196,4 @@ elements.silk = {
     burnTime:25,
     density: 1000,
 	hidden: true
-}
+};
