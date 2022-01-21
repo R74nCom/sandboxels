@@ -21,7 +21,7 @@ runAfterLoad(function() {
 				if (pixel.charge) { // Yellow glow on charge
 					if (!elements[pixel.element].colorOn) {
 						ctx.fillStyle = "rgba(255,255,0,0.5)";
-						ctx.fillRect(pixel.x*pixelSize, pixel.y*pixelSize, pixelSize, pixelSize);
+						ctx.fillRect(pixel.x*pixelSize+(18*Math.sin((pixel.y)/4.4)), pixel.y*pixelSize+(18*Math.sin((pixel.x)/4.4)), pixelSize, pixelSize);
 					}
 				}
 			}
