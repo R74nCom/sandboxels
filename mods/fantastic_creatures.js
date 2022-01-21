@@ -1,9 +1,8 @@
-// Sandboxels: Fantastic Creatures Mod, v0.1
+// Sandboxels: Fantastic Creatures Mod, v1.0
 // Author: MelecieDiancie
 
 /*
 === CHANGELOG ===
-Version 0.1
 + Readded chickens and eggs from Fey & More v1.1
 + Bats and vampire bats
 + Hummingbirds
@@ -88,6 +87,55 @@ elements.golden_egg = {
     density: 1200,
     hidden: true,
 };
+elements.bat = {
+	color: "#2b2824",
+	category: "Fantastic Creatures",
+	state: "solid",
+	behavior: [
+	"XX|M1%5|XX",
+	"XX|FX%3|M2",
+	"XX|XX|M2%10",
+	],
+	burnInto: "ash",
+    burn:75,
+    burnTime:25,
+    density: 750,
+};
+elements.vampire_bat = {
+	color: "#241919",
+	category: "Fantastic Creatures",
+	state: "solid",
+	behavior: [
+	"XX|M1%5|XX",
+	"XX|FX%3|M2",
+	"XX|XX|M2%10",
+	],
+	reactions: {
+		"blood": { "elem2": null },
+	},
+	burnInto: "ash",
+    burn:75,
+    burnTime:25,
+    density: 750,
+};
+elements.hummingbird = {
+	color: ["#544030", "#8c6c51", "#d1bdab", "#75bd8b"],
+	category: "Fantastic Creatures",
+	state: "solid",
+	behavior: [
+	"XX|XX|M2%10",
+	"XX|FX%50|M2",
+	"XX|CR:pollen%0.01|M2%10",
+	],
+	reactions: {
+		caterpillar: { "elem2": null},
+		worm: { "elem2": null},
+	},
+	burnInto: "ash",
+    burn:50,
+    burnTime:25,
+    density: 500,
+};
 elements.caterpillar = {
 	color: ["#a7cfaf", "#4ecf6a", "#68cc7e","#a7cfaf"],
 	category: "Fantastic Creatures",
@@ -132,4 +180,19 @@ elements.butterfly = {
     burn:75,
     burnTime:25,
     density: 500,
+};
+elements.silk = {
+	color: ["#ebebeb", "#e6d9d1"],
+	category: "land",
+	state: "solid",
+	behavior: [
+	"XX|XX|XX",
+	"XX|XX|XX",
+	"XX|M1|XX",
+	],
+	burnInto: "ash",
+    burn:75,
+    burnTime:25,
+    density: 1000,
+	hidden: true
 };
