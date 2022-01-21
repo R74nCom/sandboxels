@@ -1,8 +1,9 @@
-// Sandboxels: Fantastic Creatures Mod, v1.0
+// Sandboxels: Fantastic Creatures Mod, v0.1
 // Author: MelecieDiancie
 
 /*
 === CHANGELOG ===
+Version 0.1
 + Readded chickens and eggs from Fey & More v1.1
 + Bats and vampire bats
 + Hummingbirds
@@ -86,4 +87,35 @@ elements.golden_egg = {
     burnTime:30,
     density: 1200,
     hidden: true,
+};
+elements.bat = {
+	color: "#2b2824",
+	category: "Fantastic Creatures",
+	state: "solid",
+	behavior: [
+	"XX|M1%5|XX",
+	"XX|FX%3|M2",
+	"XX|XX|M2%10",
+	],
+	burnInto: "ash",
+    burn:75,
+    burnTime:25,
+    density: 750,
+};
+elements.vampire_bat = {
+	color: "#241919",
+	category: "Fantastic Creatures",
+	state: "solid",
+	behavior: [
+	"XX|M1%5|XX",
+	"XX|FX%3|M2",
+	"XX|XX|M2%10",
+	],
+	reactions: {
+		"blood": { "elem2": null, "chance": 50 }
+	}
+	burnInto: "ash",
+    burn:75,
+    burnTime:25,
+    density: 750,
 };
