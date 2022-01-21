@@ -93,6 +93,7 @@ elements.cum_water = {
 	viscosity: 8,
 	category: "cum",
 	conduct: 0.03,
+	hidden: true,
 },
 elements.dead_cum_water = {
 	name: "dead cum water",
@@ -147,7 +148,7 @@ elements.cum_ice = {
 		"acid": { "elem1": "water", "elem2": "dead_cum_ice", "chance": 0.2 }, //sperm die from acid
 		"alcohol": { "elem1": "alcohol", "elem2": "dead_cum_ice", "chance": 0.2 }, //alcohol kills things
 		"soap": { "elem1": "soap", "elem2": "dead_cum_ice", "chance": 0.2 }, //soap also kills things
-		"radiation": { "elem1": "soap", "elem2": "dead_cum_ice", "chance": 0.2 }, //so does radiation
+		"radiation": { "elem1": "soap", "elem2": "dead_cum_ice" }, //so does radiation
 	},
 	density: 917,
 	temp: 0,
@@ -164,21 +165,19 @@ elements.cum_water_ice = {
 		"acid": { "elem1": "water", "elem2": "dead_cum_water_ice", "chance": 0.1 }, //sperm die from acid
 		"alcohol": { "elem1": "alcohol", "elem2": "dead_cum_water_ice", "chance": 0.2 }, //alcohol kills things
 		"soap": { "elem1": "soap", "elem2": "dead_cum_water_ice", "chance": 0.2 }, //soap also kills things
-		"radiation": { "elem1": "soap", "elem2": "dead_cum_water_ice", "chance": 0.2 }, //so does radiation
+		"radiation": { "elem1": "soap", "elem2": "dead_cum_water_ice" }, //so does radiation
 	},
 	density: 917,
 	temp: 0,
 	tempHigh: 5,
 	stateHigh: "cum_water",
 	category: "cum",
+	hidden: true,
 },
 elements.dead_cum_ice = {
 	name: "dead frozen cum",
 	color: "#d5d5ec",
 	behavior: behaviors.WALL,
-	reactions: {
-		"acid": { "elem1": "water", "elem2": "dead_cum_ice", "chance": 0.1 },
-	},
 	density: 917,
 	temp: 0,
 	tempHigh: 5,
@@ -190,9 +189,6 @@ elements.dead_cum_water_ice = {
 	name: "dead cummy ice",
 	color: "#e2e2e7",
 	behavior: behaviors.WALL,
-	reactions: {
-		"acid": { "elem1": "water", "elem2": "dead_cum_water_ice", "chance": 0.05 },
-	},
 	density: 917,
 	temp: 0,
 	tempHigh: 5,
@@ -212,7 +208,8 @@ elements.cummy_mud = {
 		"water": { "elem1": "mud", "elem2": "cum_water", "chance": (3/4) },
 		"water": { "elem2": "mud", "elem2": "cum" },
 		"acid": { "elem1": "water", "elem2": "cummy_mud", "chance": 0.1 },
-		"acid": { "elem1": "water", "elem2": "dead_cummy_mud", "chance": 0.2 },
+		"soap": { "elem1": "water", "elem2": "dead_cummy_mud" },
+		"radiation": { "elem1": "water", "elem2": "dead_cummy_mud" },
 	},
 	tempLow: -50,
 	stateLow: "cummy_permafrost",
@@ -234,7 +231,8 @@ elements.cummy_sand = {
 		"water": { "elem1": "sand", "elem2": "cum_water", "chance": (3/4) },
 		"water": { "elem2": "sand", "elem2": "cum" },
 		"acid": { "elem1": "water", "elem2": "cummy_sand", "chance": 0.1 },
-		"acid": { "elem1": "water", "elem2": "dead_cummy_sand", "chance": 0.2 },
+		"soap": { "elem1": "water", "elem2": "dead_cummy_sand", "chance": 0.2 },
+		"radiation": { "elem1": "water", "elem2": "dead_cummy_sand", "chance": 0.2 },
 	},
 	tempHigh: 35,
 	stateHigh: "dead_cummy_sand",
@@ -256,7 +254,7 @@ elements.dead_cummy_mud = {
 		"acid": { "elem1": "water", "elem2": "dead_cummy_mud", "chance": 0.2 },
 	},
 	tempLow: -50,
-	stateLow: "permafrost",
+	stateLow: "dead_cummy_permafrost",
 	tempHigh: 100,
 	stateHigh: "mudstone",
 	category:"cum",
@@ -337,6 +335,16 @@ elements.cummy_permafrost = {
 	stateHigh: "cummy_mud",
 	category: "cum",
 }
+elements.dead_cummy_permafrost = {
+	name: "dead cummy permafrost",
+	color: "#b4bfbb",
+	behavior: behaviors.SUPPORT,
+	temp: -50,
+	tempHigh: 0,
+	stateHigh: "dead_cummy_mud",
+	category: "cum",
+	hidden: true,
+}
 // Add reactions to existing elements
 if (!elements.fly.reactions) {
     elements.fly.reactions = {}
@@ -364,31 +372,95 @@ elements.cell.reactions.cum = { "elem1":"cum", "chance":0.01 }
 
 runAfterLoad(function() {
     if(enabledMods.includes("mods/fey_and_more.js")) {
-    eLists.IMPURITY.push("cum");
-    eLists.IMPURITY.push("cum_water");
-    eLists.IMPURITY.push("cum_ice");
-    eLists.IMPURITY.push("cum_water_ice");
-    eLists.IMPURITY.push("dead_cum");
-    eLists.IMPURITY.push("dead_cum_water");
-    eLists.IMPURITY.push("dead_cum_ice");
-    eLists.IMPURITY.push("dead_cum_water_ice");
-    eLists.IMPURITY.push("cummy_mud");
-    eLists.IMPURITY.push("dead_cummy_mud");
-    eLists.IMPURITY.push("cummy_sand");
-    eLists.IMPURITY.push("dead_cummy_sand");
-    eLists.IMPURITY.push("cummy_permafrost");
-    eLists.IMPURITY.push("cummy_snake");
-    eLists.IMPURITY.push("cum_slime");
-    eLists.IMPURITY.push("burnt_cum");
-	elements.pure_water.behavior = [
-        "DL:"+eLists.IMPURITY+"|DL:"+eLists.IMPURITY+"|DL:"+eLists.IMPURITY+"",
-        "DL:"+eLists.IMPURITY+" AND M2|XX|DL:"+eLists.IMPURITY+" AND M2",
-        "DL:"+eLists.IMPURITY+" AND M1|DL:"+eLists.IMPURITY+" AND M1|DL:"+eLists.IMPURITY+" AND M1",
-	],
-    elements.pure_steam.behavior = [
-        "M2 AND DL:"+eLists.IMPURITY+"|M1 AND DL:"+eLists.IMPURITY+"|M2 AND DL:"+eLists.IMPURITY+"",
-        "M1 AND DL:"+eLists.IMPURITY+"|XX|M1 AND DL:"+eLists.IMPURITY+"",
-        "M2 AND DL:"+eLists.IMPURITY+"|M1 AND DL:"+eLists.IMPURITY+"|M2 AND DL:"+eLists.IMPURITY+"",
-    ]
-};
+		//cum elements as impurities {
+			eLists.IMPURITY.push("cum");
+			eLists.IMPURITY.push("cum_water");
+			eLists.IMPURITY.push("cum_ice");
+			eLists.IMPURITY.push("cum_water_ice");
+			eLists.IMPURITY.push("dead_cum");
+			eLists.IMPURITY.push("dead_cum_water");
+			eLists.IMPURITY.push("dead_cum_ice");
+			eLists.IMPURITY.push("dead_cum_water_ice");
+			eLists.IMPURITY.push("cummy_mud");
+			eLists.IMPURITY.push("dead_cummy_mud");
+			eLists.IMPURITY.push("cummy_sand");
+			eLists.IMPURITY.push("dead_cummy_sand");
+			eLists.IMPURITY.push("cummy_permafrost");
+			eLists.IMPURITY.push("cummy_snake");
+			eLists.IMPURITY.push("cum_slime");
+			eLists.IMPURITY.push("burnt_cum");
+			eLists.IMPURITY.push("cum_fairy");
+		//}
+		//regenerate behaviors of elements that use eLists.IMPURITY {
+			elements.pure_water.behavior = [
+				"DL:"+eLists.IMPURITY+"|DL:"+eLists.IMPURITY+"|DL:"+eLists.IMPURITY+"",
+				"DL:"+eLists.IMPURITY+" AND M2|XX|DL:"+eLists.IMPURITY+" AND M2",
+				"DL:"+eLists.IMPURITY+" AND M1|DL:"+eLists.IMPURITY+" AND M1|DL:"+eLists.IMPURITY+" AND M1",
+			];
+			elements.pure_steam.behavior = [
+				"M2 AND DL:"+eLists.IMPURITY+"|M1 AND DL:"+eLists.IMPURITY+"|M2 AND DL:"+eLists.IMPURITY+"",
+				"M1 AND DL:"+eLists.IMPURITY+"|XX|M1 AND DL:"+eLists.IMPURITY+"",
+				"M2 AND DL:"+eLists.IMPURITY+"|M1 AND DL:"+eLists.IMPURITY+"|M2 AND DL:"+eLists.IMPURITY+"",
+			];
+		//}
+		//cum fairy {
+			elements.cum_fairy = {
+				color: ["#e3e3cf", "#f4f7de", "#f4f3e3", "#e0e0dd"],
+				state: "solid",
+				behavior: [
+					"XX|M1|M1",
+					"XX|FX%5|XX",
+					"XX|CR:cum%0.1 AND CR:fairy_dust%0.005 AND M1|M1",
+				],
+				category: "fey",
+			};
+		//}
+		//eList rebuilding {
+			eLists.FAIRY.push("cum_fairy");
+			elements.iron.behavior = [
+				"XX|DL:"+eLists.FAIRY+"|XX",
+				"DL:"+eLists.FAIRY+"|XX|DL:"+eLists.FAIRY+"",
+				"XX|DL:"+eLists.FAIRY+"|XX"
+			];
+			elements.silver.behavior = [
+				"XX|DL:"+eLists.FAIRY+"|XX",
+				"DL:"+eLists.FAIRY+"|XX|DL:"+eLists.FAIRY+"",
+				"XX|DL:"+eLists.FAIRY+"|XX"
+			];
+		//}
+		//concoction support (it's all mistakes) {
+			elements.concoction.reactions.cum = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.cum_water = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.cum_ice = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.cummy_ice = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.dead_cum = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.dead_cum_water = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.dead_cum_ice = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.dead_cummy_ice = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.cummy_mud = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.cummy_sand = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.cummy_permafrost = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.dead_cummy_mud = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.dead_cummy_sand = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.dead_cummy_permafrost = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.burnt_cum = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.cum_slime = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.cummy_snake = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.penis = { "elem1": "mistake", "elem2": null }
+		//}
+	};
+
+    if(enabledMods.includes("mods/fey_and_more.js") && enabledMods.includes("mods/randomness.js")) {
+		//additional eList rebuilding for RM steel derivatives
+		elements.tungstensteel.behavior = [
+			"XX|DL:"+eLists.FAIRY+"|XX",
+			"DL:"+eLists.FAIRY+"|XX|DL:"+eLists.FAIRY+"",
+			"XX|DL:"+eLists.FAIRY+"|XX",
+		],
+		elements.molten_tungstensteel.behavior = [
+			"XX|DL:"+eLists.FAIRY+" AND CR:fire%2.5|XX",
+			"DL:"+eLists.FAIRY+" AND M2|XX|DL:"+eLists.FAIRY+" AND M2",
+			"M1|DL:"+eLists.FAIRY+"|M1",
+		]
+	};
 });
