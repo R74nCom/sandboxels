@@ -29,6 +29,7 @@ elements.copper_concentrate = {
 	behavior: behaviors.POWDER,
 	reactions: {
 		borax: { "elem1": "fluxed_copper_concentrate", "elem2": ["slag",null,null,null,null,null,null,null,null,null] },
+		limestone: { "elem1": "fluxed_copper_concentrate", "elem2": ["slag",null,null,null,null,null,null,null,null,null] },
 	},
 	tempHigh: 1000,
 	stateHigh: "magma",
@@ -59,6 +60,7 @@ elements.matte_copper = {
 	behavior: behaviors.WALL,
 	reactions: {
 		borax: { "elem1": "fluxed_matte_copper", "elem2": ["slag",null,null,null,null,null,null,null,null,null] },
+		limestone: { "elem1": "fluxed_matte_copper", "elem2": ["slag",null,null,null,null,null,null,null,null,null] },
 	},
 	tempHigh: 1050,
 	stateHigh: "molten_matte_copper",
