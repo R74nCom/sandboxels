@@ -534,8 +534,9 @@ density: 3922.5,
 state: "liquid",
 tempLow: 1975,
 stateLow: "mithril_mythril_alloy",
-viscosity: 10000
-},
+viscosity: 10000,
+temp: 2350
+};
 elements.mithril_mythril_alloy = {
 conduct: 0.965,
 name: "Mithril/Mythril Alloy",
@@ -633,9 +634,28 @@ reactions: {
 "blast_furnace_fuel": { "elem1":"hematite_mixture", "elem2":null },
 },
 };
+elements.molten_hematite = {
+color: ["#e68f3e", "#e0ae51", "#dbc356"],
+category: "liquids",
+state: "liquid",
+behavior: behaviors.LIQUID,
+tempLow: 1538,
+stateLow: "hematite",
+temp: 2000,
+viscosity: 10000
+};
+elements.crystal = {
+color: ["#a1e6df", "#bae8de"],
+category: "solids",
+state: "solid",
+behavior: behaviors.WALL,
+tempHigh: 1000,
+stateHigh: "liquid_crystal",
+conduct: 0.3
+};
 /* Unfinished:
-molten hematite
 magnesium
+hematite mixture
 molten magnesium
 titanium
 molten titanium
