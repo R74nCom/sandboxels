@@ -25,7 +25,6 @@ elements.cum = {
 		"alcohol": { "elem1": "alcohol", "elem2": "dead_cum", "chance": 0.2 }, //sperm die from alcohol, also I'm not implementing alcohol-water mixing
 		"soap": { "elem1": "soap", "elem2": "dead_cum", "chance": 0.2 }, //sperm die from soap
 		"radiation": { "elem1": "radiation", "elem2": "dead_cum", "chance": 0.2 }, //sperm die from radiation
-		"cum": { "elem1":"cum", "chance":0.01 }, //blood replacement behavior
 	},
 	tempLow: 0,
 	stateLow: "cum_ice",
@@ -361,6 +360,7 @@ elements.fish.reactions.cum = { "elem1":"fish", "elem2":"cum_water" }
 elements.fish.reactions.cum_water = { "elem1":"fish", "elem2":"water" }
 elements.fish.reactions.dead_cum = { "elem1":"fish", "elem2":"dead_cum_water" }
 elements.fish.reactions.dead_cum_water = { "elem1":"fish", "elem2":"water" }
+elements.cell.reactions.cum = { "elem1":"cum", "chance":0.01 }
 
 runAfterLoad(function() {
     if(enabledMods.includes("mods/fey_and_more.js")) {
