@@ -10,7 +10,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 				"XX|CR:fairy%1 AND CR:fairy_dust%0.005 AND M1|M1",
 			],
 			reactions: {
-				"bead": { "elem1": "fairy_fairy_fairy", "elem2": null }
+				"rainbow": { "elem1": "fairy_fairy_fairy", "elem2": null }
 			},
 			state: "solid",
 			category: "fey",
@@ -27,7 +27,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 				"XX|CR:fairy_fairy%1 AND CR:fairy_dust%0.005 AND M1|M1",
 			],
 			reactions: {
-				"static": { "elem1": "fairy_fairy_fairy_fairy", "elem2": null }
+				"glitter": { "elem1": "fairy_fairy_fairy_fairy", "elem2": null }
 			},
 			state: "solid",
 			category: "fey",
@@ -45,7 +45,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 				"XX|CR:fairy_fairy_fairy%1 AND CR:fairy_dust%0.005 AND M1|M1",
 			],
 			reactions: {
-				"rose_gold": { "elem1": "fairy5", "elem2": null }
+				"glitter": { "elem1": "fairy5", "elem2": null }
 			},
 			state: "solid",
 			category: "fey",
@@ -63,7 +63,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 				"XX|CR:fairy_fairy_fairy_fairy%1 AND CR:fairy_dust%0.005 AND M1|M1",
 			],
 			reactions: {
-				"solder": { "elem1": "fairy6", "elem2": null }
+				"glitter": { "elem1": "fairy6", "elem2": null }
 			},
 			state: "solid",
 			category: "fey",
@@ -81,7 +81,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 				"XX|CR:fairy5%1 AND CR:fairy_dust%0.005 AND M1|M1",
 			],
 			reactions: {
-				"aluminum": { "elem1": "fairy7", "elem2": null }
+				"glitter": { "elem1": "fairy7", "elem2": null }
 			},
 			state: "solid",
 			category: "fey",
@@ -99,7 +99,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 				"XX|CR:fairy6%1 AND CR:fairy_dust%0.005 AND M1|M1",
 			],
 			reactions: {
-				"rust": { "elem1": "fairy8", "elem2": null }
+				"glitter": { "elem1": "fairy8", "elem2": null }
 			},
 			state: "solid",
 			category: "fey",
@@ -135,13 +135,14 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 				"XX|CR:fairy8%1 AND CR:fairy_dust%0.005 AND M1|M1",
 			],
 			reactions: {
-				"flour": { "elem1": "fairy10", "elem2": null }
+				"glitter": { "elem1": "fairy10", "elem2": null }
 			},
 			state: "solid",
 			category: "fey",
 			hidden: true
 		}
 	//}
+
 	//fairy fairy fairy fairy fairy fairy fairy fairy fairy fairy {
 		elements.fairy10 = {
 			name: "10-fairy",
@@ -152,7 +153,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 				"XX|CR:fairy9%1 AND CR:fairy_dust%0.005 AND M1|M1",
 			],
 			reactions: {
-				"rust": { "elem1": "fairy11", "elem2": null }
+				"glitter": { "elem1": "fairy11", "elem2": null }
 			},
 			state: "solid",
 			category: "fey",
@@ -188,7 +189,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 				"XX|CR:fairy11%1 AND CR:fairy_dust%0.005 AND M1|M1",
 			],
 			reactions: {
-				"flour": { "elem1": "fairy13", "elem2": null }
+				"glitter": { "elem1": "fairy13", "elem2": null }
 			},
 			state: "solid",
 			category: "fey",
@@ -206,7 +207,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 				"XX|CR:fairy12%1 AND CR:fairy_dust%0.005 AND M1|M1",
 			],
 			reactions: {
-				"rust": { "elem1": "fairy14", "elem2": null }
+				"glitter": { "elem1": "fairy14", "elem2": null }
 			},
 			state: "solid",
 			category: "fey",
@@ -241,9 +242,117 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 				"XX|FX%5|XX",
 				"XX|CR:fairy14%1 AND CR:fairy_dust%0.005 AND M1|M1",
 			],
-			/*reactions: {
-				"flour": { "elem1": "fairy16", "elem2": null }
-			},*/
+			reactions: {
+				"glitter": { "elem1": "fairy16", "elem2": null }
+			},
+			state: "solid",
+			category: "fey",
+			hidden: true
+		}
+	//}
+
+	//16-fairy {
+		elements.fairy16 = {
+			name: "16-fairy",
+			color: ["#33007a","#8e009f","#09009f"],
+			behavior: [
+				"XX|M1|M1",
+				"XX|FX%5|XX",
+				"XX|CR:fairy15%1 AND CR:fairy_dust%0.005 AND M1|M1",
+			],
+			reactions: {
+				"glitter": { "elem1": "fairy17", "elem2": null }
+			},
+			state: "solid",
+			category: "fey",
+			hidden: true
+		}
+	//}
+
+	//17-fairy {
+		elements.fairy17 = {
+			name: "17-fairy",
+			color: ["#33007a","#8e009f","#09009f"],
+			behavior: [
+				"XX|M1|M1",
+				"XX|FX%5|XX",
+				"XX|CR:fairy16%1 AND CR:fairy_dust%0.005 AND M1|M1",
+			],
+			reactions: {
+				"glitter": { "elem1": "fairy18", "elem2": null }
+			},
+			state: "solid",
+			category: "fey",
+			hidden: true
+		}
+	//}
+
+	//18-fairy {
+		elements.fairy18 = {
+			name: "18-fairy",
+			color: ["#33007a","#8e009f","#09009f"],
+			behavior: [
+				"XX|M1|M1",
+				"XX|FX%5|XX",
+				"XX|CR:fairy17%1 AND CR:fairy_dust%0.005 AND M1|M1",
+			],
+			reactions: {
+				"glitter": { "elem1": "fairy19", "elem2": null }
+			},
+			state: "solid",
+			category: "fey",
+			hidden: true
+		}
+	//}
+
+	//19-fairy {
+		elements.fairy19 = {
+			name: "19-fairy",
+			color: ["#33007a","#8e009f","#09009f"],
+			behavior: [
+				"XX|M1|M1",
+				"XX|FX%5|XX",
+				"XX|CR:fairy18%1 AND CR:fairy_dust%0.005 AND M1|M1",
+			],
+			reactions: {
+				"glitter": { "elem1": "fairy20", "elem2": null }
+			},
+			state: "solid",
+			category: "fey",
+			hidden: true
+		}
+	//}
+
+	//20-fairy {
+		elements.fairy20 = {
+			name: "20-fairy",
+			color: ["#33007a","#8e009f","#09009f"],
+			behavior: [
+				"XX|M1|M1",
+				"XX|FX%5|XX",
+				"XX|CR:fairy19%1 AND CR:fairy_dust%0.005 AND M1|M1",
+			],
+			reactions: {
+				"glitter": { "elem1": "fairy21", "elem2": null }
+			},
+			state: "solid",
+			category: "fey",
+			hidden: true
+		}
+	//}
+
+	//21-fairy {
+		elements.fairy21 = {
+			name: "21-fairy",
+			color: ["#33007a","#8e009f","#09009f"],
+			behavior: [
+				"XX|M1|M1",
+				"XX|FX%5|XX",
+				"XX|CR:fairy20%1 AND CR:fairy_dust%0.005 AND M1|M1",
+			],
+			reactions: {
+				"glitter": { "elem1": "fairy22", "elem2": null }
+			},
 			state: "solid",
 			category: "fey",
 		}
@@ -268,6 +377,12 @@ runAfterLoad(function() {
 			eLists.FAIRY.push("fairy13");
 			eLists.FAIRY.push("fairy14");
 			eLists.FAIRY.push("fairy15");
+			eLists.FAIRY.push("fairy16");
+			eLists.FAIRY.push("fairy17");
+			eLists.FAIRY.push("fairy18");
+			eLists.FAIRY.push("fairy19");
+			eLists.FAIRY.push("fairy20");
+			eLists.FAIRY.push("fairy21");
 			elements.iron.behavior = [
 				"XX|DL:"+eLists.FAIRY+"|XX",
 				"DL:"+eLists.FAIRY+"|XX|DL:"+eLists.FAIRY+"",
