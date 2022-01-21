@@ -24,7 +24,7 @@ elements.neutronium = {
     stateHigh: "neutronium_gas",
     tempLow: 1000,
     stateLow: "neutronium",
-    viscosity: 10,
+    viscosity: 10000,
     category: "liquids",
     state: "liquid",
     density: 50000000000000000,
@@ -336,7 +336,7 @@ stateHigh: "radioactive_water"
 elements.heavy_steam = {
 color: "#656fb5",
 behavior: behaviors.GAS,
-category: "liquids",
+category: "gases",
 density: 1.6,
 state: "liquid",
 temp: 150,
@@ -415,11 +415,12 @@ density: 2000,
 state: "solid",
 };
 elements.molten_rutile = {
-color: "#e3907f",
+color: ["#e3907f", "#e68f3e"],
 behavior: behaviors.LIQUID,
 category: "liquids",
 reactions: {
 "chlorine": { "elem1": "titanium_tetrachloride", "elem2":null },
+density: 10000
 },
 density: 4230,
 state: "liquid",
@@ -488,11 +489,12 @@ stateHigh: "molten_mythril",
 conduct: 0.93
 };
 elements.molten_mythril = {
-color: "#eda724",
+color: ["#eda724", "#f0eabd"],
 behavior: behaviors.LIQUID,
 category: "liquids",
 reactions: {
 "molten_mithril": { "elem1": "molten_mythril_mithril_alloy", "elem2":null },
+viscosity: 10000
 },
 density: 6855,
 state: "liquid",
@@ -531,7 +533,8 @@ category: "liquids",
 density: 3922.5,
 state: "liquid",
 tempLow: 1975,
-stateLow: "mithril_mythril_alloy"
+stateLow: "mithril_mythril_alloy",
+viscosity: 10000
 },
 elements.mithril_mythril_alloy = {
 conduct: 0.965,
@@ -592,7 +595,8 @@ color: "#eb96b5",
 behavior: behaviors.LIQUID,
 category: "life",
 state: "liquid",
-conduct: 0.019
+conduct: 0.019,
+viscosity: 100
 };
 elements.berry = {
 burn: 15,
