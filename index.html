@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <title>Sandboxels</title>
-    <meta name="description" content="A falling sand simulation game.">
+    <meta name="description" content="A falling sand simulation game, with heat transfer, electricity, density, fire, and more.">
     <meta name="keywords" content="falling sand, elements, pixel art, simulator, powder">
     <meta name="author" content="R74n">
     <meta name="copyright" content="R74n">
@@ -26,10 +26,10 @@
     <meta property="og:locale" content="en_US">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Sandboxels">
-    <meta property="og:description" content="A falling sand simulation game.">
+    <meta property="og:description" content="A falling sand simulation game, with heat transfer, electricity, density, fire, and more.">
     <meta property="og:url" content="https://sandboxels.r74n.com">
     <meta property="og:site_name" content="Sandboxels">
-    <meta property="og:image" content="icons/wallpaper.png">
+    <meta property="og:image" content="https://sandboxels.r74n.com/icons/wallpaper.png">
     <meta property="og:image:width" content="1980">
     <meta property="og:image:height" content="971">
     <meta property="og:image:type" content="image/png">
@@ -37,10 +37,10 @@
 
     <!--Twitter-->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:description" content="A falling sand simulation game.">
+    <meta name="twitter:description" content="A falling sand simulation game, with heat transfer, electricity, density, fire, and more.">
     <meta name="twitter:title" content="Sandboxels">
     <meta name="twitter:site:id" content="1436857621827530753">
-    <meta name="twitter:image" content="icons/card.png">
+    <meta name="twitter:image" content="https://sandboxels.r74n.com/icons/card.png">
     <meta name="twitter:image:alt" content="A rainforest made in Sandboxels">
     <meta name="twitter:creator:id" content="1436857621827530753">
 
@@ -363,6 +363,11 @@
                 "XX|XX|XX",
                 "M2|XX|M2",
                 "M1|M1|M1",
+            ],
+            SLIDE: [
+                "XX|XX|XX",
+                "XX|XX|M2 AND BO",
+                "XX|M1|M1",
             ],
             AGLIQUID: [
                 "M1|M1|M1",
@@ -5476,6 +5481,29 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                 if (elements[key].behavior[1][1].includes("FY")) {
                     elements[key].flippableY = true;
                 }
+
+                // If the element's behavior stringified includes "BO", loop through the behavior
+                if (elements[key].behavior.toString().includes("BO")) {
+                    for (var i = 0; i < elements[key].behavior.length; i++) {
+                        // Loop through each array in the behavior
+                        for (var j = 0; j < elements[key].behavior[i].length; j++) {
+                            // If the behavior includes "BO", set the behaviorOn to the behavior
+                            if (elements[key].behavior[i][j].includes("BO")) {
+                                if ((i==0 && j==0) || (i==0 && j==2) || (i==2 && j==0) && (i==2 && j==2)) {
+                                    elements[key].flippableX = true;
+                                    elements[key].flippableY = true;
+                                }
+                                else if (i==0 || i==2) {
+                                    elements[key].flippableY = true;
+                                }
+                                else if (j==0 || j==2) {
+                                    elements[key].flippableX = true;
+                                }
+                            }
+                        }
+                    }
+                }
+
                 // If the element's behavior[1][1] includes "RT", set it's rotatable to "true"
                 if (elements[key].behavior[1][1].includes("RT")) {
                     elements[key].rotatable = true;
