@@ -619,7 +619,7 @@ behavior: [
 temp: 1000
 };
 elements.hematite = {
-color: ["#824b1b", "#914a20", "##ad3f1d"],
+color: ["#824b1b", "#914a20", "#ad3f1d"],
 category: "land",
 state: "solid",
 behavior: behaviors.POWDER,
