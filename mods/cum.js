@@ -17,14 +17,13 @@ elements.cum = {
 		"mud": { "elem1": "cum_water", "elem2": "cummy_mud", "chance": (1/3) }, // cum goes into mud
 		"sand": { "elem1": null, "elem2": "cummy_sand" }, // cum goes into sand
 		"wet_sand": { "elem1": "cum_water", "elem2": "cummy_sand", "chance": (1/3) }, // cum goes into wet sand
-		"acid": { "elem1": "water", "elem2": "cum", "chance": 0.1 }, //cum is basic
+		"acid": { "elem1": "water", "elem2": ["cum_water", "dead_cum_water", "dead_cum_water", "dead_cum_water", "dead_cum_water"], "chance": 0.1 }, //cum is basic
 		"slime": { "elem1": "water", "elem2": "cum_slime" }, //cum enters slime
 		"salt": { "elem1": null, "elem2": "dead_cum" }, //salt kills sperm
 		"salt_water": { "elem1": "dead_cum_water", "elem2": null }, //killed and diluted
-		"acid": { "elem1": "water", "elem2": "dead_cum", "chance": 0.2 }, //sperm die from acid, also cum probably has an alkalinity a lot weaker than the acidity of acid, so the amount of cum needed to "neutralize" a small amount of acid wouldn't be diluted much by the small amount of water remaining
-		"alcohol": { "elem1": "alcohol", "elem2": "dead_cum", "chance": 0.2 }, //sperm die from alcohol, also I'm not implementing alcohol-water mixing
-		"soap": { "elem1": "soap", "elem2": "dead_cum", "chance": 0.2 }, //sperm die from soap
-		"radiation": { "elem1": "radiation", "elem2": "dead_cum", "chance": 0.2 }, //sperm die from radiation
+		"alcohol": { "elem1": "alcohol", "elem2": "dead_cum" }, //sperm die from alcohol, also I'm not implementing alcohol-water mixing
+		"soap": { "elem1": "soap", "elem2": "dead_cum" }, //sperm die from soap
+		"radiation": { "elem1": "radiation", "elem2": "dead_cum" }, //sperm die from radiation
 	},
 	tempLow: 0,
 	stateLow: "cum_ice",
@@ -49,7 +48,7 @@ elements.dead_cum = {
 		"mud": { "elem1": "dead_cum_water", "elem2": "dead_cummy_mud", "chance": (1/3) }, // cum goes into mud
 		"sand": { "elem1": null, "elem2": "dead_cummy_sand" }, // cum goes into sand
 		"wet_sand": { "elem1": "dead_cum_water", "elem2": "dead_cummy_sand", "chance": (1/3) }, // cum goes into wet sand
-		"acid": { "elem1": "water", "elem2": "dead_cum", "chance": 0.1 }, //dead cum is still basic
+		"acid": { "elem1": "water", "elem2": "dead_cum" }, //dead cum is still basic
 		"salt_water": { "elem1": "dead_cum_water", "elem2": "dead_cum_water" }, //salty mixing
 		"sugar_water": { "elem1": "sugar_water", "elem2": "sugar_water" }, //salty mixing
 		"salt": { "elem1": null, "elem2": "salt_water" }, //salty mixing
@@ -78,12 +77,11 @@ elements.cum_water = {
 		"sugar": { "elem1": null, "elem2": "cum_water", "chance":0.7 }, //sperm eat sugar
 		"slime": { "elem1": "water", "elem2": "cum_slime" }, //cum enters slime
 		"salt": { "elem1": null, "elem2": "dead_cum_water" }, //cum dies
-		"salt_water": { "elem1": "dead_cum_water", "dead_cum_water": "salt_water", "chance": 0.12 }, //cum dies
-		"acid": { "elem1": "water", "elem2": "cum", "chance": 0.05 }, //less cum is less basic
-		"acid": { "elem1": "water", "elem2": "dead_cum_water", "chance": 0.1 }, //sperm die from acid
-		"alcohol": { "elem1": "alcohol", "elem2": "dead_cum_water", "chance": 0.2 }, //alcohol kills things
-		"soap": { "elem1": "soap", "elem2": "dead_cum_water", "chance": 0.2 }, //soap also kills things
-		"radiation": { "elem1": "soap", "elem2": "dead_cum_water", "chance": 0.2 }, //so does radiation
+		"salt_water": { "elem1": ["dead_cum_water", "salt_water"], "elem2": ["dead_cum_water", "salt_water"] }, //cum dies
+		"acid": { "elem1": ["acid", "water"], "elem2": "water" }, //diluted cum is less effective
+		"soap": { "elem1": "soap", "elem2": "dead_cum_water" },
+		"alcohol": { "elem1": "alcohol", "elem2": "dead_cum_water" },
+		"radiation": { "elem1": "radiation", "elem2": "dead_cum_water" },
 	},
 	density: 997,
 	tempHigh: 35,
@@ -104,15 +102,7 @@ elements.dead_cum_water = {
 		"M1 AND SW:water,cum,dead_cum_water,dead_cum%5|M1 AND SW:water,cum,dead_cum_water,dead_cum%5|M1 AND SW:water,cum,dead_cum_water,dead_cum%5",
 	],
 	reactions: {
-		"sugar_water": { "elem1": "cum_water", "elem2": "cum_water", "chance":0.7 }, //sperm eat sugar
-		"dirt": { "elem1": "water", "elem2": "cummy_mud" }, //cum goes into dirt
-		"sand": { "elem1": "water", "elem2": "cummy_sand" }, // cum goes into sand
-		"sugar": { "elem1": null, "elem2": "cum_water", "chance":0.7 }, //sperm eat sugar
-		"slime": { "elem1": "water", "elem2": "cum_slime" }, //cum enters slime
-		"salt": { "elem1": null, "elem2": "dead_cum_water" }, //cum dies
-		"acid": { "elem1": "water", "elem2": "dead_cum_water", "chance": 0.05 }, //dead and diluted but still basic
-		"alcohol": { "elem1": "alcohol", "elem2": "dead_cum_water", "chance": 0.2 }, //alcohol kills things
-		"soap": { "elem1": "soap", "elem2": "dead_cum_water", "chance": 0.2 }, //soap also kills things
+		"acid": { "elem1": ["acid", "water"], "elem2": "water" }, //diluted cum is less effective
 	},
 	density: 997,
 	tempHigh: 100,
@@ -144,11 +134,10 @@ elements.cum_ice = {
 	color: "#cfe2e6",
 	behavior: behaviors.WALL,
 	reactions: {
-		"acid": { "elem1": "water", "elem2": "cum_ice", "chance": 0.2 }, //frozen bases are still basic
-		"acid": { "elem1": "water", "elem2": "dead_cum_ice", "chance": 0.2 }, //sperm die from acid
-		"alcohol": { "elem1": "alcohol", "elem2": "dead_cum_ice", "chance": 0.2 }, //alcohol kills things
-		"soap": { "elem1": "soap", "elem2": "dead_cum_ice", "chance": 0.2 }, //soap also kills things
-		"radiation": { "elem1": "soap", "elem2": "dead_cum_ice" }, //so does radiation
+		"acid": { "elem1": "water", "elem2": ["cum_water_ice", "dead_cum_water_ice", "dead_cum_water_ice", "dead_cum_water_ice", "dead_cum_water_ice"] }, //frozen bases are still basic
+		"alcohol": { "elem1": "alcohol", "elem2": "dead_cum_ice" }, //alcohol kills things
+		"soap": { "elem1": "soap", "elem2": "dead_cum_ice" }, //soap also kills things
+		"radiation": { "elem1": "radiation", "elem2": "dead_cum_ice" }, //so does radiation
 	},
 	density: 917,
 	temp: 0,
@@ -161,11 +150,10 @@ elements.cum_water_ice = {
 	color: "#cae3e8",
 	behavior: behaviors.WALL,
 	reactions: {
-		"acid": { "elem1": "water", "elem2": "cum_water_ice", "chance": 0.05 }, //frozen bases are still basic
-		"acid": { "elem1": "water", "elem2": "dead_cum_water_ice", "chance": 0.1 }, //sperm die from acid
-		"alcohol": { "elem1": "alcohol", "elem2": "dead_cum_water_ice", "chance": 0.2 }, //alcohol kills things
-		"soap": { "elem1": "soap", "elem2": "dead_cum_water_ice", "chance": 0.2 }, //soap also kills things
-		"radiation": { "elem1": "soap", "elem2": "dead_cum_water_ice" }, //so does radiation
+		"acid": { "elem1": ["water", "acid"], "elem2": "ice" }, //less concentrated frozen bases are less basic then more concentrated frozen bases
+		"alcohol": { "elem1": "alcohol", "elem2": "dead_cum_water_ice" }, //alcohol kills things
+		"soap": { "elem1": "soap", "elem2": "dead_cum_water_ice" }, //soap also kills things
+		"radiation": { "elem1": "radiation", "elem2": "dead_cum_water_ice" }, //so does radiation
 	},
 	density: 917,
 	temp: 0,
@@ -178,6 +166,9 @@ elements.dead_cum_ice = {
 	name: "dead frozen cum",
 	color: "#d5d5ec",
 	behavior: behaviors.WALL,
+	reactions: {
+		"acid": { "elem1": "water", "elem2": "dead_cum_water_ice" },
+	},
 	density: 917,
 	temp: 0,
 	tempHigh: 5,
@@ -189,6 +180,9 @@ elements.dead_cum_water_ice = {
 	name: "dead cummy ice",
 	color: "#e2e2e7",
 	behavior: behaviors.WALL,
+	reactions: {
+		"acid": { "elem1": ["acid", "water"], "elem2": "ice" },
+	},
 	density: 917,
 	temp: 0,
 	tempHigh: 5,
@@ -207,9 +201,10 @@ elements.cummy_mud = {
 	reactions: {
 		"water": { "elem1": "mud", "elem2": "cum_water", "chance": (3/4) },
 		"water": { "elem2": "mud", "elem2": "cum" },
-		"acid": { "elem1": "water", "elem2": "cummy_mud", "chance": 0.1 },
-		"soap": { "elem1": "water", "elem2": "dead_cummy_mud" },
-		"radiation": { "elem1": "water", "elem2": "dead_cummy_mud" },
+		"acid": { "elem1": ["acid", "water"], "elem2": "mud" },
+		"soap": { "elem1": "soap", "elem2": "dead_cummy_mud" },
+		"alcohol": { "elem1": "alcohol", "elem2": "dead_cummy_mud" },
+		"radiation": { "elem1": "radiation", "elem2": "dead_cummy_mud" },
 	},
 	tempLow: -50,
 	stateLow: "cummy_permafrost",
@@ -218,6 +213,7 @@ elements.cummy_mud = {
 	category:"cum",
 	state:"solid",
 	density: 1740,
+	hidden: true,
 }, 
 elements.cummy_sand = {
 	name: "cummy sand",
@@ -230,15 +226,17 @@ elements.cummy_sand = {
 	reactions: {
 		"water": { "elem1": "sand", "elem2": "cum_water", "chance": (3/4) },
 		"water": { "elem2": "sand", "elem2": "cum" },
-		"acid": { "elem1": "water", "elem2": "cummy_sand", "chance": 0.1 },
-		"soap": { "elem1": "water", "elem2": "dead_cummy_sand", "chance": 0.2 },
-		"radiation": { "elem1": "water", "elem2": "dead_cummy_sand", "chance": 0.2 },
+		"acid": { "elem1": ["acid", "water"], "elem2": "wet_sand" },
+		"soap": { "elem1": "soap", "elem2": "dead_cummy_sand" },
+		"alcohol": { "elem1": "alcohol", "elem2": "dead_cummy_sand" },
+		"radiation": { "elem1": "radiation", "elem2": "dead_cummy_sand" },
 	},
 	tempHigh: 35,
 	stateHigh: "dead_cummy_sand",
 	category: "cum",
 	state: "solid",
 	density: 1915,
+	hidden: true,
 },
 elements.dead_cummy_mud = {
 	name: "dead cummy mud",
@@ -251,7 +249,7 @@ elements.dead_cummy_mud = {
 	reactions: {
 		"water": { "elem1": "mud", "elem2": "dead_cum_water", "chance": 0.15 },
 		"water": { "elem2": "mud", "elem2": "dead_cum", "chance": 0.05 },
-		"acid": { "elem1": "water", "elem2": "dead_cummy_mud", "chance": 0.2 },
+		"acid": { "elem1": ["acid", "water"], "elem2": "mud" },
 	},
 	tempLow: -50,
 	stateLow: "dead_cummy_permafrost",
@@ -273,7 +271,7 @@ elements.dead_cummy_sand = {
 	reactions: {
 		"water": { "elem1": "wet_sand", "elem2": "dead_cum_water", "chance": 0.15 },
 		"water": { "elem2": "wet_sand", "elem2": "dead_cum", "chance": 0.05 },
-		"acid": { "elem1": "water", "elem2": "dead_cummy_sand", "chance": 0.2 },
+		"acid": { "elem1": ["acid", "water"], "elem2": "wet_sand" },
 	},
 	tempHigh: 100,
 	stateHigh: "packed_sand",
@@ -291,7 +289,7 @@ elements.cum_slime = {
 	state: "liquid",
 	reactions: {
 		"water": { "elem1": "cum_water", "elem2": "slime", "chance": (1/5) },
-		"acid": { "elem1": "water", "elem2": "cum_slime", "chance": 0.1 },
+		"acid": { "elem1": ["acid", "water"], "elem2": "slime" },
 	},
 	density: 1470,
 	tempHigh: 150,
@@ -330,15 +328,25 @@ elements.cummy_permafrost = {
 	name: "cummy permafrost",
 	color: "#86b5a5",
 	behavior: behaviors.SUPPORT,
+	reactions: {
+		"acid": { "elem1": ["acid", "water"], "elem2": "permafrost" },
+		"soap": { "elem1": "soap", "elem2": "dead_cummy_permafrost" },
+		"alcohol": { "elem1": "alcohol", "elem2": "dead_cummy_permafrost" },
+		"radiation": { "elem1": "radiation", "elem2": "dead_cummy_permafrost" },
+	},
 	temp: -50,
 	tempHigh: 0,
 	stateHigh: "cummy_mud",
 	category: "cum",
+	hidden: true,
 }
 elements.dead_cummy_permafrost = {
 	name: "dead cummy permafrost",
 	color: "#b4bfbb",
 	behavior: behaviors.SUPPORT,
+	reactions: {
+		"acid": { "elem1": ["acid", "water"], "elem2": "permafrost" },
+	},
 	temp: -50,
 	tempHigh: 0,
 	stateHigh: "dead_cummy_mud",
@@ -386,6 +394,7 @@ runAfterLoad(function() {
 			eLists.IMPURITY.push("cummy_sand");
 			eLists.IMPURITY.push("dead_cummy_sand");
 			eLists.IMPURITY.push("cummy_permafrost");
+			eLists.IMPURITY.push("dead_cummy_permafrost");
 			eLists.IMPURITY.push("cummy_snake");
 			eLists.IMPURITY.push("cum_slime");
 			eLists.IMPURITY.push("burnt_cum");
