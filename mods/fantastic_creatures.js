@@ -88,34 +88,48 @@ elements.golden_egg = {
     density: 1200,
     hidden: true,
 };
-elements.bat = {
-	color: "#2b2824",
+elements.caterpillar = {
+	color: ["#a7cfaf", "#4ecf6a", "#68cc7e","#a7cfaf"],
 	category: "Fantastic Creatures",
 	state: "solid",
 	behavior: [
-	"XX|M1%5|XX",
-	"XX|FX%3|M2",
-	"XX|XX|M2%10",
-	],
-	burnInto: "ash",
-    burn:75,
-    burnTime:25,
-    density: 750,
-};
-elements.vampire_bat = {
-	color: "#241919",
-	category: "Fantastic Creatures",
-	state: "solid",
-	behavior: [
-	"XX|M1%5|XX",
-	"XX|FX%3|M2",
-	"XX|XX|M2%10",
+	"XX|XX|XX",
+	"XX|FX%0.1 AND CH:cocoon%0.01|M2%1",
+	"XX|M1|XX",
 	],
 	reactions: {
-		"blood": { "elem2": null, "chance": 50 }
-	}
+		plant: { "elem2": null, "chance": 80},
+	},
 	burnInto: "ash",
     burn:75,
     burnTime:25,
-    density: 750,
+    density: 1000,
+};
+elements.cocoon = {
+	color: "#f0fff3",
+	category: "Fantastic Creatures",
+	state: "solid",
+	behavior: [
+	"XX|ST|XX",
+	"XX|CH:butterfly%0.01|XX",
+	"XX|M1|XX",
+	],
+	burnInto: ["silk", "ash"],
+    burn:75,
+    burnTime:25,
+    density: 1000,
+};
+elements.butterfly = {
+	color: ["#6e6056", "#6e6056", "#423831", "#423831", "#e3cd5f", "#dbaf35", "#35db53", "#49cc61", "#49ccca", "#d18f84"],
+	category: "Fantastic Creatures",
+	state: "solid",
+	behavior: [
+	"XX|XX|M1",
+	"XX|FX%5|M1",
+	"XX|XX|M1",
+	],
+	burnInto: "ash",
+    burn:75,
+    burnTime:25,
+    density: 500,
 };
