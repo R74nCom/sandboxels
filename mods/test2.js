@@ -1,9 +1,9 @@
 //right col
 elements.molten_amogus1 = {
     behavior: [
-        "CH:amogus1>null|CR:amogus2 AND CH:amogus2 AND CH:amogus1>null|CH:amogus1>null",
-        "M2 AND CH:amogus1>null|XX|M2",
-        "M1 AND CH:amogus1>null|M1|M1",
+        "XX|CR:amogus2 AND CH:amogus2|XX",
+        "M2|XX|M2",
+        "M1|M1|M1",
     ],
     category: "special",
     state: "liquid",
@@ -126,9 +126,9 @@ elements.molten_amogus11 = {
 elements.amogus1 = {
     color: "#ff0000",
     behavior: [
-        "CH:amogus1>null|CR:amogus2 AND CH:amogus2 AND CH:amogus1>null|CH:amogus1>null",
-        "CH:amogus1>null|XX|XX",
-        "M2 AND CH:amogus1>null|M1|M2",
+        "XX|CR:amogus2 AND CH:amogus2|XX",
+        "XX|XX|XX",
+        "M2|M1|M2",
     ],
     category: "special",
     state: "solid",
@@ -297,14 +297,14 @@ runAfterLoad(function() {
         //}
         //regenerate behaviors of elements that use eLists.IMPURITY {
             elements.pure_water.behavior = [
-                "DL:"+eLists.IMPURITY+"|DL:"+eLists.IMPURITY+"|DL:"+eLists.IMPURITY+"",
+                "DL:"+eLists.IMPURITY+"XX|DL:"+eLists.IMPURITY+"XX|DL:"+eLists.IMPURITY+"",
                 "DL:"+eLists.IMPURITY+" AND M2|XX|DL:"+eLists.IMPURITY+" AND M2",
                 "DL:"+eLists.IMPURITY+" AND M1|DL:"+eLists.IMPURITY+" AND M1|DL:"+eLists.IMPURITY+" AND M1",
             ];
             elements.pure_steam.behavior = [
-                "M2 AND DL:"+eLists.IMPURITY+"|M1 AND DL:"+eLists.IMPURITY+"|M2 AND DL:"+eLists.IMPURITY+"",
-                "M1 AND DL:"+eLists.IMPURITY+"|XX|M1 AND DL:"+eLists.IMPURITY+"",
-                "M2 AND DL:"+eLists.IMPURITY+"|M1 AND DL:"+eLists.IMPURITY+"|M2 AND DL:"+eLists.IMPURITY+"",
+                "M2 AND DL:"+eLists.IMPURITY+"XX|M1 AND DL:"+eLists.IMPURITY+"XX|M2 AND DL:"+eLists.IMPURITY+"",
+                "M1 AND DL:"+eLists.IMPURITY+"XX|XX|M1 AND DL:"+eLists.IMPURITY+"",
+                "M2 AND DL:"+eLists.IMPURITY+"XX|M1 AND DL:"+eLists.IMPURITY+"XX|M2 AND DL:"+eLists.IMPURITY+"",
             ];
 
         //concoction support (it's all mistakes) {
