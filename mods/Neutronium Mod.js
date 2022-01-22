@@ -663,6 +663,106 @@ behavior: [
 state: "solid",
 category: "structures"
 };
+elements.a_center = {
+color: "#808080",
+behavior: [
+"XX|XX|XX",
+"CR:a2|XX|CR:a2",
+"XX|XX|XX",
+],
+state: "solid",
+category: "structures"
+};
+elements.a2 = {
+color: "#808080",
+behavior: [
+"XX|XX|XX",
+"CR:a3left|XX|CR:a3right",
+"XX|XX|XX",
+],
+state: "solid",
+category: "structures"
+};
+elements.a3left = {
+color: "#808080",
+behavior: [
+"XX|CR:a4left|XX",
+"XX|XX|XX",
+"XX|CR:a5|XX",
+],
+state: "solid",
+category: "structures"
+};
+elements.a3right = {
+color: "#808080",
+behavior: [
+"XX|CR:a4right|XX",
+"XX|XX|XX",
+"XX|CR:a5|XX",
+],
+state: "solid",
+category: "structures"
+};
+elements.a4left = {
+color: "#808080",
+behavior: [
+"XX|CR:a6left|XX",
+"XX|XX|XX",
+"XX|XX|XX",
+],
+state: "solid",
+category: "structures"
+};
+elements.a4right = {
+color: "#808080",
+behavior: [
+"XX|CR:a6right|XX",
+"XX|XX|XX",
+"XX|XX|XX",
+],
+state: "solid",
+category: "structures"
+};
+elements.a5 = {
+color: "#808080",
+behavior: [
+"XX|CR:wall|XX",
+"XX|XX|XX",
+"XX|CR:wall|XX",
+],
+state: "solid",
+category: "structures"
+};
+elements.a6left = {
+color: "#808080",
+behavior: [
+"XX|XX|XX",
+"XX|XX|CR:a7",
+"XX|XX|XX",
+],
+state: "solid",
+category: "structures"
+};
+elements.a6right = {
+color: "#808080",
+behavior: [
+"XX|XX|XX",
+"CR:a7|XX|XX",
+"XX|XX|XX",
+],
+state: "solid",
+category: "structures"
+};
+elements.a7 = {
+color: "#808080",
+behavior: [
+"XX|XX|XX",
+"CR:wall|XX|CR:wall",
+"XX|XX|XX",
+],
+state: "solid",
+category: "structures"
+};
 /* Unfinished:
 magnesium
 hematite mixture
