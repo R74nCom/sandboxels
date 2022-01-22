@@ -784,7 +784,8 @@ behaviorOn: [
 state: "solid",
 category: "machines",
 tempHigh: 2500,
-stateHigh: ["molten_steel", "molten_mythril"]
+stateHigh: ["molten_steel", "molten_mythril"],
+conduct: 1,
 };
 elements.flameshockwave1 = {
 color: "#c9c9c9",
