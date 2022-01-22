@@ -773,6 +773,90 @@ behavior: [
 state: "solid",
 category: "structures"
 };
+elements.electrical_shockwave_generator = {
+color: "#e6a045",
+behavior: [
+"CR:shockwave1|CR:shockwave2|CR:shockwave3",
+"CR:shockwave4|XX|CR:shockwave5",
+"CR:shockwave6|CR:shockwave7|CR:shockwave8",
+],
+state: "solid",
+category: "machines",
+tempHigh: 2500,
+stateHigh: ["molten_steel", "molten_mythril"]
+};
+elements.shockwave1 = {
+color: "#c9c9c9",
+category: "special",
+behavior: [
+"LB:fire AND M1|LB:fire|LB:fire",
+"LB:fire|LB:fire AND DL%3.33|LB:fire",
+"LB:fire|LB:fire|LB:fire",
+],
+};
+elements.shockwave2 = {
+color: "#c9c9c9",
+category: "special",
+behavior: [
+"LB:fire|LB:fire AND M1|LB:fire",
+"LB:fire|LB:fire AND DL%3.33|LB:fire",
+"LB:fire|LB:fire|LB:fire",
+],
+};
+elements.shockwave3 = {
+color: "#c9c9c9",
+category: "special",
+behavior: [
+"LB:fire|LB:fire|LB:fire AND M1",
+"LB:fire|LB:fire AND DL%3.33|LB:fire",
+"LB:fire|LB:fire|LB:fire",
+],
+};
+elements.shockwave4 = {
+color: "#c9c9c9",
+category: "special",
+behavior: [
+"LB:fire|LB:fire|LB:fire",
+"LB:fire AND M1|LB:fire AND DL%3.33|LB:fire",
+"LB:fire|LB:fire|LB:fire",
+],
+};
+elements.shockwave5 = {
+color: "#c9c9c9",
+category: "special",
+behavior: [
+"LB:fire|LB:fire|LB:fire",
+"LB:fire|LB:fire AND DL%3.33|LB:fire AND M1",
+"LB:fire|LB:fire|LB:fire",
+],
+};
+elements.shockwave6 = {
+color: "#c9c9c9",
+category: "special",
+behavior: [
+"LB:fire|LB:fire|LB:fire",
+"LB:fire|LB:fire AND DL%3.33|LB:fire",
+"LB:fire AND M1|LB:fire|LB:fire",
+],
+};
+elements.shockwave7 = {
+color: "#c9c9c9",
+category: "special",
+behavior: [
+"LB:fire|LB:fire|LB:fire",
+"LB:fire|LB:fire AND DL%3.33|LB:fire",
+"LB:fire|LB:fire AND M1|LB:fire",
+],
+};
+elements.shockwave8 = {
+color: "#c9c9c9",
+category: "special",
+behavior: [
+"LB:fire|LB:fire|LB:fire",
+"LB:fire|LB:fire AND DL%3.33|LB:fire",
+"LB:fire|LB:fire|LB:fire AND M1",
+],
+};
 /* Unfinished:
 magnesium
 hematite mixture
