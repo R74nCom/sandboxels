@@ -208,3 +208,53 @@ elements.pJRDtuTA = {
     conduct: 0.33534106397322677,
     density: 18826.565148369646,
 }
+
+runAfterLoad(function() {
+	if(enabledMods.includes("mods/chalcopyrite.js") && enabledMods.includes("mods/extra_element_info.js") && enabledMods.includes("mods/fey_and_more.js") && enabledMods.includes("mods/ketchup_mod.js") && enabledMods.includes("mods/test.js") && enabledMods.includes("mods/randomness.js") && enabledMods.includes("mods/Neutronium Mod.js") && enabledMods.includes("mods/test2.js") && enabledMods.includes("mods/fairy_chain.js") && enabledMods.includes("mods/cum.js") && enabledMods.includes("mods/random_elems.js")) {
+		elements.yckRMplh = {
+			color: "#0807ad",
+			behavior: [
+				"XX|DL:dead_cum_water|CR:firesea",
+				"SH|HT:11|M2",
+				"BO|SH|M2",
+			],
+			reactions: {
+				"fairy98": { "elem1":"molten_uranium", "elem2":"tritium", "chance":0.4602898017566186 },
+				"fluxed_matte_copper": { "elem1":"pure_water", "elem2":"enchanted_ketchup", "chance":0.8272186749812657 },
+				"molten_neutronium": { "elem1":"amogus9", "elem2":"fallout", "chance":0.9302153671106638 },
+				"bone_beast": { "elem1":"celie_leaves", "elem2":"dirt", "chance":0.3741482072147079 },
+				"fairy27": { "elem1":"led_g", "elem2":"smoke", "chance":0.29352648263376613 },
+				"fairy92": { "elem1":"old_celie_leaves", "elem2":"green_dye", "chance":0.5993662901794029 },
+				"flamer": { "elem1":"amogus1", "elem2":"brass", "chance":0.5319076167877976 },
+			},
+			category: "random",
+			tempHigh: 537,
+			density: 9215.024069840034,
+		}
+
+		elements.urhhhqJS = {
+			color: "#31a6bf",
+			behavior: [
+				"M2|CH:anesthesia%7|CH:anesthesia%7",
+				"SH|L1:sugar|CC:#55eda7",
+				"M1|DL:t_center|M2",
+			],
+			category: "random",
+			density: 373.9243313453792,
+		}
+
+		elements.BUDGKClj = {
+			color: "#ba657f",
+			behavior: [
+				"DL:blister_copper|SW:fire_fairy|XX",
+				"SA|CC:#3e65ab|ST",
+				"CC:#3e65ab|SP|CC:#3e65ab",
+			],
+			category: "random",
+			burn: 5,
+			burnTime: 480,
+			tempHigh: 2895,
+			density: 4123.593585708072,
+		}
+	};
+});
