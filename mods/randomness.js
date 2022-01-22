@@ -208,6 +208,144 @@ elements.molten_tungstensteel = {
     ]
 }
 
+elements.rm_water_balloon = {
+	name: "water balloon",
+	color: "#3dc2ff",
+	behavior: [
+        "XX|M2|XX",
+        "XX|C2:wb3|XX",
+        "XX|M1|XX",
+    ],
+    tempHigh: 180,
+	stateHigh: ["steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "plastic"],
+    tempLow: 0,
+	stateLow: ["ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "plastic"],
+	category: "special",
+	state: "solid",
+	density: 997,
+}
+
+elements.wb3 = {
+	name: "wb3",
+	color: "#0856ff",
+	behavior: [
+        "XX|CR:wb2|XX",
+        "CR:wb2|CH:wb2|CR:wb2",
+        "XX|CR:wb2|XX",
+    ],
+    tempHigh: 100,
+	stateHigh: "steam",
+    tempLow: 0,
+	stateLow: "ice",
+	category: "liquid",
+	state: "solid",
+	density: 997,
+	hidden: true,
+}
+
+elements.wb2 = {
+	name: "wb2",
+	color: "#145fff",
+	behavior: [
+        "XX|CR:wb1|XX",
+        "CR:wb1|CH:wb1|CR:wb1",
+        "XX|CR:wb1|XX",
+    ],
+    tempHigh: 100,
+	stateHigh: "steam",
+    tempLow: 0,
+	stateLow: "ice",
+	category: "special",
+	state: "liquid",
+	density: 997,
+	hidden: true,
+}
+
+elements.wb1 = {
+	name: "wb1",
+	color: "#2167ff",
+	behavior: [
+        "XX|CR:water|XX",
+        "CR:water|CH:water|CR:water",
+        "XX|CR:water|XX",
+    ],
+    tempHigh: 100,
+	stateHigh: "steam",
+    tempLow: 0,
+	stateLow: "ice",
+	category: "special",
+	state: "liquid",
+	density: 997,
+	hidden: true,
+}
+
+elements.rm_lava_balloon = {
+	name: "lava balloon",
+	color: "#ffab36",
+	behavior: [
+        "XX|M2|XX",
+        "XX|C2:lb3|XX",
+        "XX|M1|XX",
+    ],
+    temp: 950,
+    tempLow: 800,
+	stateLow: ["rock", "rock", "rock", "rock", "rock", "rock", "rock", "rock", "rock", "rock", "rock", "rock", "rock", "rock", "rock", "rock", "rock", "rock", "plastic"],
+	category: "special",
+	state: "solid",
+	density: 2725,
+}
+
+elements.lb3 = {
+	name: "lb3",
+	color: "#ff8c00",
+	behavior: [
+        "XX|CR:lb2|XX",
+        "CR:lb2|CH:lb2|CR:lb2",
+        "XX|CR:lb2|XX",
+    ],
+    temp: 950,
+    tempLow: 800,
+	stateLow: "rock",
+	category: "liquid",
+	state: "solid",
+	density: 2725,
+	hidden: true,
+}
+
+elements.lb2 = {
+	name: "lb2",
+	color: "#ff6f00",
+	behavior: [
+        "XX|CR:lb1|XX",
+        "CR:lb1|CH:lb1|CR:lb1",
+        "XX|CR:lb1|XX",
+    ],
+    temp: 950,
+    tempLow: 800,
+	stateLow: "rock",
+	category: "special",
+	state: "liquid",
+	density: 2725,
+	hidden: true,
+}
+
+elements.lb1 = {
+	name: "lb1",
+	color: "#ff4d00",
+	behavior: [
+        "XX|CR:magma|XX",
+        "CR:magma|CH:magma|CR:magma",
+        "XX|CR:magma|XX",
+    ],
+    tempLow: 800,
+    tempLow: 800,
+	stateLow: "rock",
+	category: "special",
+	state: "liquid",
+	density: 2725,
+	hidden: true,
+}
+
 runAfterLoad(function() {
 	elements.tungstensteel.behavior = [
         "XX|DL:"+eLists.FAIRY+"|XX",
