@@ -653,6 +653,15 @@ tempHigh: 1000,
 stateHigh: "liquid_crystal",
 conduct: 0.3
 };
+elements.t_center = {
+color: "#808080",
+behavior: [
+"CR:wall|CR:wall|CR:wall",
+"XX|XX|XX",
+"XX|CR:wall|XX",
+],
+state: solid
+};
 /* Unfinished:
 magnesium
 hematite mixture
