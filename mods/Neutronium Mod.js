@@ -777,9 +777,9 @@ elements.electrical_flamewave_generator = {
 color: "#e6a045",
 behavior: behaviors.WALL,
 behaviorOn: [
-"CR:shockwave1|CR:shockwave2|CR:shockwave3",
-"CR:shockwave4|XX|CR:shockwave5",
-"CR:shockwave6|CR:shockwave7|CR:shockwave8",
+"CR:flameshockwave1|CR:flameshockwave2|CR:flameshockwave3",
+"CR:flameshockwave4|XX|CR:flameshockwave5",
+"CR:flameshockwave6|CR:flameshockwave7|CR:flameshockwave8",
 ],
 state: "solid",
 category: "machines",
@@ -857,6 +857,16 @@ behavior: [
 "LB:fire|LB:fire AND DL%3.33|LB:fire",
 "LB:fire|LB:fire|LB:fire AND M1",
 ],
+};
+elements.flamebomb = {
+color: "#615f55",
+category: "machines",
+behavior: [
+"CR:flameshockwave1|CR:flameshockwave2|CR:flameshockwave3",
+"CR:flameshockwave4|DL%10|CR:flameshockwave5",
+"CR:flameshockwave6 AND M2|CR:flameshockwave7 AND M1|CR:flameshockwave8 AND M2",
+],
+state: "solid"
 };
 /* Unfinished:
 magnesium
