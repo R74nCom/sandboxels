@@ -660,7 +660,7 @@ behavior: [
 "XX|XX|XX",
 "XX|CR:wall|XX",
 ],
-state: solid,
+state: "solid",
 category: "structures"
 };
 /* Unfinished:
