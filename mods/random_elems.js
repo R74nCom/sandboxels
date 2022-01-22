@@ -222,7 +222,7 @@ elements.QodfMdFo = {
 }
 
 runAfterLoad(function() {
-	if(enabledMods.includes("mods/chalcopyrite.js") && enabledMods.includes("mods/extra_element_info.js") && enabledMods.includes("mods/fey_and_more.js") && enabledMods.includes("mods/ketchup_mod.js") && enabledMods.includes("mods/test.js") && enabledMods.includes("mods/randomness.js") && enabledMods.includes("mods/Neutronium Mod.js") && enabledMods.includes("mods/test2.js") && enabledMods.includes("mods/fairy_chain.js") && enabledMods.includes("mods/cum.js") && enabledMods.includes("mods/random_elems.js")) {
+	if(enabledMods.includes("mods/chalcopyrite.js") && enabledMods.includes("mods/extra_element_info.js") && enabledMods.includes("mods/fey_and_more.js") && enabledMods.includes("mods/ketchup_mod.js") && enabledMods.includes("mods/test.js") && enabledMods.includes("mods/randomness.js") && enabledMods.includes("mods/Neutronium Mod.js") && enabledMods.includes("mods/test2.js") && enabledMods.includes("mods/fairy_chain.js") && enabledMods.includes("mods/cum.js") && enabledMods.includes("mods/random_elems.js") && enabledMods.includes("mods/sus.js")) {
 		elements.yckRMplh = {
 			color: "#0807ad",
 			behavior: [
@@ -291,6 +291,18 @@ runAfterLoad(function() {
 			],
 			category: "random",
 			density: 6338.489583058846,
+		}
+		elements.ywDgKHcr = {
+			color: "#1bb24d",
+			behavior: [
+				"SW:fly|SW|CR:burning_unnamed_powder",
+				"CO:9|CC:#71a6b1|CH:fairy100>amogus3",
+				"BO|XX|CH:bone%6",
+			],
+			category: "random",
+			conduct: 0.18249512087981343,
+			tempHigh: 2926,
+			density: 5349.2882949054265,
 		}
 	};
 });
