@@ -457,7 +457,7 @@ runAfterLoad(function() {
 				behavior: [
 					"XX|M1|M1",
 					"XX|FX%5|XX",
-					"XX|CR:cum%0.1 AND CR:fairy_dust%0.005 AND M1|M1",
+					"XX|CR:cum%0.5 AND CR:fairy_dust%0.005 AND M1|M1",
 				],
 				category: "fey",
 			};
@@ -496,6 +496,9 @@ runAfterLoad(function() {
 			elements.concoction.reactions.cum_slime = { "elem1": "mistake", "elem2": null },
 			elements.concoction.reactions.cummy_snake = { "elem1": "mistake", "elem2": null },
 			elements.concoction.reactions.penis = { "elem1": "mistake", "elem2": null }
+		//}
+		//cum fairy creation {
+			elements.fairy.reactions.cum = { "elem1": "cum_fairy" }
 		//}
 	};
 
