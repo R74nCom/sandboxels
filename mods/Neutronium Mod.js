@@ -656,9 +656,9 @@ conduct: 0.3
 elements.t_center = {
 color: "#808080",
 behavior: [
-"CR:wall|CR:wall|CR:wall",
+"CR:a7|CR:wall|CR:a7",
 "XX|XX|XX",
-"XX|CR:wall|XX",
+"XX|CR:t2|XX",
 ],
 state: "solid",
 category: "structures"
@@ -759,6 +759,16 @@ behavior: [
 "XX|XX|XX",
 "CR:wall|XX|CR:wall",
 "XX|XX|XX",
+],
+state: "solid",
+category: "structures"
+};
+elements.t2 = {
+color: "#808080",
+behavior: [
+"XX|CR:a5|XX",
+"XX|XX|XX",
+"XX|CR:a5",
 ],
 state: "solid",
 category: "structures"
