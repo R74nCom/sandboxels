@@ -5,7 +5,6 @@
 
 [Version 1.1]
     + Loopy
-    + Smoother liquid movement
 
 [Version 1.0.1]
     ~ Slowed down Udder
