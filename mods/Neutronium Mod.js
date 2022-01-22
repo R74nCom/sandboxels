@@ -773,9 +773,10 @@ behavior: [
 state: "solid",
 category: "structures"
 };
-elements.electrical_shockwave_generator = {
+elements.electrical_flamewave_generator = {
 color: "#e6a045",
-behavior: [
+behavior: behaviors.WALL,
+behaviorOn: [
 "CR:shockwave1|CR:shockwave2|CR:shockwave3",
 "CR:shockwave4|XX|CR:shockwave5",
 "CR:shockwave6|CR:shockwave7|CR:shockwave8",
@@ -785,7 +786,7 @@ category: "machines",
 tempHigh: 2500,
 stateHigh: ["molten_steel", "molten_mythril"]
 };
-elements.shockwave1 = {
+elements.flameshockwave1 = {
 color: "#c9c9c9",
 category: "special",
 behavior: [
@@ -794,7 +795,7 @@ behavior: [
 "LB:fire|LB:fire|LB:fire",
 ],
 };
-elements.shockwave2 = {
+elements.flameshockwave2 = {
 color: "#c9c9c9",
 category: "special",
 behavior: [
@@ -803,7 +804,7 @@ behavior: [
 "LB:fire|LB:fire|LB:fire",
 ],
 };
-elements.shockwave3 = {
+elements.flameshockwave3 = {
 color: "#c9c9c9",
 category: "special",
 behavior: [
@@ -812,7 +813,7 @@ behavior: [
 "LB:fire|LB:fire|LB:fire",
 ],
 };
-elements.shockwave4 = {
+elements.flameshockwave4 = {
 color: "#c9c9c9",
 category: "special",
 behavior: [
@@ -821,7 +822,7 @@ behavior: [
 "LB:fire|LB:fire|LB:fire",
 ],
 };
-elements.shockwave5 = {
+elements.flameshockwave5 = {
 color: "#c9c9c9",
 category: "special",
 behavior: [
@@ -830,7 +831,7 @@ behavior: [
 "LB:fire|LB:fire|LB:fire",
 ],
 };
-elements.shockwave6 = {
+elements.flameshockwave6 = {
 color: "#c9c9c9",
 category: "special",
 behavior: [
@@ -839,7 +840,7 @@ behavior: [
 "LB:fire AND M1|LB:fire|LB:fire",
 ],
 };
-elements.shockwave7 = {
+elements.flameshockwave7 = {
 color: "#c9c9c9",
 category: "special",
 behavior: [
@@ -848,7 +849,7 @@ behavior: [
 "LB:fire|LB:fire AND M1|LB:fire",
 ],
 };
-elements.shockwave8 = {
+elements.flameshockwave8 = {
 color: "#c9c9c9",
 category: "special",
 behavior: [
