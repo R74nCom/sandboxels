@@ -209,6 +209,18 @@ elements.pJRDtuTA = {
     density: 18826.565148369646,
 }
 
+elements.QodfMdFo = {
+    color: "#fe530b",
+    behavior: [
+        "ST|DL:cheese|RT",
+        "DB|FX|HT:11",
+        "CH:molten_sterling>wood|SP|CR:molten_iron",
+    ],
+    category: "random",
+    conduct: 0.3465345689563781,
+    density: 11140.091847406393,
+}
+
 runAfterLoad(function() {
 	if(enabledMods.includes("mods/chalcopyrite.js") && enabledMods.includes("mods/extra_element_info.js") && enabledMods.includes("mods/fey_and_more.js") && enabledMods.includes("mods/ketchup_mod.js") && enabledMods.includes("mods/test.js") && enabledMods.includes("mods/randomness.js") && enabledMods.includes("mods/Neutronium Mod.js") && enabledMods.includes("mods/test2.js") && enabledMods.includes("mods/fairy_chain.js") && enabledMods.includes("mods/cum.js") && enabledMods.includes("mods/random_elems.js")) {
 		elements.yckRMplh = {
@@ -255,6 +267,30 @@ runAfterLoad(function() {
 			burnTime: 480,
 			tempHigh: 2895,
 			density: 4123.593585708072,
+		}
+		
+		elements.yzKluohO = {
+			color: "#3e297d",
+			behavior: [
+				"RT|CH:molten_borax>anesthesia|M2",
+				"M1|DL%11|SW:molten_amogus1",
+				"M2|CC:#0d4b06|SA",
+			],
+			category: "random",
+			burn: 22,
+			burnTime: 172,
+			tempHigh: 2838,
+			density: 16097.788434828502,
+		}
+		elements.PCQAHdkE = {
+			color: "#425618",
+			behavior: [
+				"CR:molten_uranium|CO:4|CH:led_b%10",
+				"DL:magic|HT:11|ST",
+				"SP|SP|SW:cocoon",
+			],
+			category: "random",
+			density: 6338.489583058846,
 		}
 	};
 });
