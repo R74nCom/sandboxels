@@ -414,6 +414,8 @@ elements.fish.reactions.dead_cum = { "elem1":"fish", "elem2":"dead_cum_water" }
 elements.fish.reactions.dead_cum_water = { "elem1":"fish", "elem2":"water" }
 elements.cell.reactions.cum = { "elem1":"cum", "chance":0.01 }
 
+elements.acid.ignore.push("water")
+
 runAfterLoad(function() {
     if(enabledMods.includes("mods/fey_and_more.js")) {
 		//cum elements as impurities {
