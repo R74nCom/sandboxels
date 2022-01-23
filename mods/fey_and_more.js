@@ -1,8 +1,28 @@
-// Sandboxels: Fey & More, v2.0
+// Sandboxels: Fey & More, v2.1
 // Author: MelecieDiancie
 
 /*
 === CHANGELOG ===
+Planned additions:
++ Solid/Liquid Darkness, maybe a way to create bleakstone?
++ Feywood
++ Swampland, Swampy Water, and Will o' the Wisp
+~ Gloomfly now converts Fantastic Creatures items to itself
+
+2.1 Version
++ New fairies: Radiated, Spirit, Corrupt
++ Liquid light through concoction and magic
++ Toxic and unstable mistake variants
++ Celie mix
++ Cloud Cotton, and rain/snow variants
++ Corrupt Rock
++ Peark, Ivory, and Sky growth crystals
+~ Unhid concoction
+~ Slowed down poison- and pure water spreading to others
+~ Bugfix: thunder, light, mushroom, and magic fairies now die to iron and silver
+~ Bugfix: saplings now make birthpool when mixed with concoction
+- Removed everfire dust being created from magic
+
 2.0 Version
 + Updated to Mod Manager format
 + Essence and spirits
@@ -63,7 +83,7 @@
 */
 
 // New lists
-eLists.FAIRY = ["fairy","fairy_egg","fire_fairy","ice_fairy","nature_fairy","earth_fairy","rain_fairy"],
+eLists.FAIRY = ["fairy","fairy_egg","fire_fairy","ice_fairy","nature_fairy","earth_fairy","rain_fairy","thunder_fairy","light_fairy","mushroom_fairy","magic_fairy","radiated_fairy","spirit_fairy","corrupt_fairy"],
 eLists.DYE =["red_dye","green_dye","blue_dye","yellow_dye","cyan_dye","magenta_dye"],
 eLists.IMPURITY = ["flea","fly","bone","blood","worm","termite","rat","plague","virus","bone_marrow","rotten_meat","mushroom_spore","gloomfly","meat_monster","rotten_ravager","bone_beast","poisonwater","corrupt_land","poisoned_ketchup"],
 eLists.WOOD = ["bamboo","bamboo_plant","sapling","wood","tree_branch","celie_seed","celie_wood","celie_branch"]
@@ -108,6 +128,12 @@ elements.fairy = {
 		"liquid_light": { "elem1": "light_fairy",},
 		"mushroom_cap": { "elem1": "mushroom_fairy",},
 		"magic": { "elem1": "magic_fairy",},
+		"radiation": { "elem1": "radiated_fairy",},
+		"uranium": { "elem1": "radiated_fairy",},
+		"essence": { "elem1": "spirit_fairy",},
+		"liquid_essence": { "elem1": "spirit_fairy",},
+		"gloomwind": { "elem1": "corrupt_fairy",},
+		"gloomfly": { "elem1": "corrupt_fairy",},
 	},
 };
 elements.fire_fairy = {
@@ -229,6 +255,36 @@ elements.magic_fairy = {
     ],
     "category": "fey",
 }; 
+elements.radiated_fairy = {
+    "color": ["#40703d","#718f6f","#40703d"],
+	"state": "solid",
+    "behavior": [
+        "XX|M1|M1",
+        "XX|FX%5|XX",
+        "XX|CR:uranium%0.1s AND CR:fairy_dust%0.005 AND M1|M1",
+    ],
+    "category": "fey",
+}; 
+elements.spirit_fairy = {
+    "color": ["#6d7da3","#8b95ad","#6d7da3"],
+	"state": "solid",
+    "behavior": [
+        "XX|CR:spirit%0.5 AND M1|M1",
+        "XX|FX%5|XX",
+        "XX|CR:spirit_tear%0.5 AND CR:fairy_dust%0.005 AND M1|M1",
+    ],
+    "category": "fey",
+}; 
+elements.corrupt_fairy = {
+    "color": ["#635678","#857999","#635678"],
+	"state": "solid",
+    "behavior": [
+        "XX|CR:gloomwind%1 AND M1|M1",
+        "CR:gloomwind%1|FX%5|CR:gloomwind%1",
+        "XX|CR:gloomwind%1 AND CR:fairy_dust%0.005 AND M1|M1",
+    ],
+    "category": "fey",
+}; 
 elements.fairy_dust = {
                 "name": "fairy dust",
                 "color": ["#ba97f0","#fae3ff","#ffffe6"],
@@ -322,10 +378,11 @@ elements.pure_water = {
         "dirt": { "elem1": null, "elem2": "mud", },
         "sand": { "elem1": null, "elem2": "wet_sand", },
         "quicklime": { "elem1": null, "elem2": "slaked_lime", },
-		"water": { "elem1": "pure_water", "elem2": "pure_water", },
-		"salt_water": { "elem1": "pure_water", "elem2": "pure_water", },
-		"sugar_water": { "elem1": "pure_water", "elem2": "pure_water", },
-		"chilly_water": { "elem1": "pure_water", "elem2": "pure_water", },
+		"water": { "elem1": "pure_water", "elem2": "pure_water", "chance": 0.05 },
+		"salt_water": { "elem1": "pure_water", "elem2": "pure_water", "chance": 0.05 },
+		"sugar_water": { "elem1": "pure_water", "elem2": "pure_water", "chance": 0.05 },
+		"chilly_water": { "elem1": "pure_water", "elem2": "pure_water", "chance": 0.05 },
+		"swamp_water": { "elem1": "pure_water", "elem2": "pure_water", "chance": 0.05 },
     },
 };			
 elements.pure_ice = {
@@ -424,14 +481,11 @@ elements.gloomwind = {
         "meat": { "elem1": null, "elem2": "meat_monster", },
         "rotten_meat": { "elem1": null, "elem2": "rotten_ravager", },
         "bone": { "elem1": null, "elem2": "bone_beast", },
-		"water": { "elem1": null, "elem2": "poisonwater", },
-		"water": { "elem1": null, "elem2": "poisonwater", },
-		"salt_water": { "elem1": null, "elem2": "poisonwater", },
-		"sugar_water": { "elem1": null, "elem2": "poisonwater", },
-		"chilly_water": { "elem1": null, "elem2": "poisonwater", },
-		"dirt": { "elem1": null, "elem2": "corrupt_land", },
-		"mud": { "elem1": null, "elem2": "corrupt_land", },
-		"mudstone": { "elem1": null, "elem2": "corrupt_land", },
+		"water": { "elem1": null, "elem2": "poisonwater", "chance": 0.05 },
+		"water": { "elem1": null, "elem2": "poisonwater", "chance": 0.05 },
+		"salt_water": { "elem1": null, "elem2": "poisonwater", "chance": 0.05 },
+		"sugar_water": { "elem1": null, "elem2": "poisonwater", "chance": 0.05 },
+		"chilly_water": { "elem1": null, "elem2": "poisonwater", "chance": 0.05 },
 		"wood": { "elem1": null, "elem2": "withery", },
 		"tree_branch": { "elem1": null, "elem2": "withery", },
 		"sapling": { "elem1": null, "elem2": "withery", },
@@ -456,6 +510,20 @@ elements.gloomwind = {
 		"celie_leaves": { "elem1": null, "elem2": "withery_plant", },
 		"old_celie_leaves": { "elem1": null, "elem2": "withery_plant", },
 		"vine": { "elem1": null, "elem2": "withery_plant", },
+		"dirt": { "elem1": "corrupt_land", "elem2": "corrupt_land", "chance": 0.05},
+		"mud": { "elem1": "corrupt_land", "elem2": "corrupt_land", "chance": 0.05},
+		"mudstone": { "elem1": "corrupt_land", "elem2": "corrupt_land", "chance": 0.05},
+		"sand": { "elem1": "corrupt_land", "elem2": "corrupt_land", "chance": 0.05},
+		"wet_sand": { "elem1": "corrupt_land", "elem2": "corrupt_land", "chance": 0.05},
+		"packed_sand": { "elem1": "corrupt_land", "elem2": "corrupt_land", "chance": 0.05},
+		"clay": { "elem1": "corrupt_land", "elem2": "corrupt_land", "chance": 0.05},
+		"clay_soil": { "elem1": "corrupt_land", "elem2": "corrupt_land", "chance": 0.05},
+		"mycelium": { "elem1": "corrupt_land", "elem2": "corrupt_land", "chance": 0.05},
+		"rock": { "elem1": "corrupt_rock", "elem2": "corrupt_rock", "chance": 0.05},
+		"gravel": { "elem1": "corrupt_rock", "elem2": "corrupt_rock", "chance": 0.05},
+		"limestone": { "elem1": "corrupt_rock", "elem2": "corrupt_rock", "chance": 0.05},
+		"quickline": { "elem1": "corrupt_rock", "elem2": "corrupt_rock", "chance": 0.05},
+		"basalt": { "elem1": "corrupt_rock", "elem2": "corrupt_rock", "chance": 0.05},
 	},
 };
 elements.gloomfly = {
@@ -474,9 +542,13 @@ elements.gloomfly = {
     "burnTime":50,
     "hidden": true,
 	"reactions": {
-        "fly": { "elem1": "gloomfly", "elem2": "gloomfly", },
-		"firefly": { "elem1": "gloomfly", "elem2": "gloomfly", },
-		"bee": { "elem1": "gloomfly", "elem2": "gloomfly", },
+        "fly": { "elem1": "gloomfly", "elem2": "gloomfly", "chance": 0.5 },
+		"firefly": { "elem1": "gloomfly", "elem2": "gloomfly", "chance": 0.5 },
+		"bee": { "elem1": "gloomfly", "elem2": "gloomfly", "chance": 0.5 },
+		"bat": { "elem1": "gloomfly", "elem2": "gloomfly", "chance": 0.5 },
+		"vampire_bat": { "elem1": "gloomfly", "elem2": "gloomfly", "chance": 0.5 },
+		"hummingbird": { "elem1": "gloomfly", "elem2": "gloomfly", "chance": 0.5 },
+		"butterfly": { "elem1": "gloomfly", "elem2": "gloomfly", "chance": 0.5 },
 	},
 };
 elements.meat_monster = {
@@ -764,21 +836,23 @@ elements.magic = {
 	"reactions": {
         "water": { "elem1": null, "elem2": "pure_water", },
         "little_star": { "elem1": "mystic_fire", "elem2": "mystic_fire", },
-        "ash": { "elem1": null, "elem2": "everfire_dust", },
         "cheese": { "elem1": null, "elem2": "moonrock", },
 		"sapling": { "elem1": null, "elem2": "celie_seed", },
 		"old_celie_leaves": { "elem1": null, "elem2": "celie_leaves", },
 		"ketchup": { "elem1": null, "elem2": "enchanted_ketchup", },
 		"tomato_sauce": { "elem1": null, "elem2": "enchanted_ketchup", },
+		"rain_cloud": { "elem1": null, "elem2": "raincloud_cotton", },
+		"snow_cloud": { "elem1": null, "elem2": "snowcloud_cotton", },
+		"cloud": { "elem1": null, "elem2": "cloud_cotton", },
 	},
 };
 elements.mystic_fire = {
     "name": "mystic fire",
     "color": ["#5454ff","#2020d4","#5800c4"],
     "behavior": [
-        "M2|M1 AND CR:mystic_fire%2 AND SF|M2",
-        "M1 AND CR:mystic_fire%0.2 AND SF|XX|M1 AND CR:mystic_fire%0.2 AND SF",
-        "M2|M2 AND SF|M2",
+        "M2|M1 AND CR:mystic_fire%10|M2",
+        "M1 AND CR:mystic_fire%5|EX:15>mystic_fire%0.1|M1 AND CR:mystic_fire%5",
+        "M2|M2|M2",
     ],
     "temp":8500,
     "tempChange":-100,
@@ -856,6 +930,7 @@ elements.celie_seed = {
     "burnInto": ["ash","charcoal","fire"],
 	"density": 1400,
     "category": "life",
+	
 };	  
 elements.celie_branch = {
     "color": "#a3764e",
@@ -936,6 +1011,7 @@ elements.celie_berry = {
     "hidden": true,
 	"reactions": {
 		"yeast": { "elem2": "alcohol" },
+		"water": { "elem1": null, "elem2": "celie_mix" },
     },
 };
 elements.bleakstone = {
@@ -974,10 +1050,11 @@ elements.poisonwater = {
     "viscosity": 0,
     "category": "corruption",
 	"reactions": {
-		"water": { "elem1": "poisonwater", "elem2": "poisonwater", },
-		"salt_water": { "elem1": "poisonwater", "elem2": "poisonwater", },
-		"sugar_water": { "elem1": "poisonwater", "elem2": "poisonwater", },
-		"chilly_water": { "elem1": "poisonwater", "elem2": "poisonwater", },
+		"water": { "elem1": "poisonwater", "elem2": "poisonwater", "chance": 0.05},
+		"salt_water": { "elem1": "poisonwater", "elem2": "poisonwater", "chance": 0.05 },
+		"sugar_water": { "elem1": "poisonwater", "elem2": "poisonwater", "chance": 0.05 },
+		"chilly_water": { "elem1": "poisonwater", "elem2": "poisonwater", "chance": 0.05 },
+		"swamp_water": { "elem1": "poisonwater", "elem2": "poisonwater", "chance": 0.05 },
 	},
 };
 elements.poisoned_ice = {
@@ -1051,8 +1128,7 @@ elements.concoction = {
         "M1|M1|M1",
 	],
 	"density": 1250,
-	"category": "solids",
-	"hidden": true,
+	"category": "energy",
 	"burn": 200,
     "burnTime": 200,
 	"fireColor": ["#968fff", "#af8fff"],
@@ -1075,7 +1151,7 @@ elements.concoction = {
 		"limestone": { "elem1": "mistake", "elem2": null, },
 		"quicklime": { "elem1": "mistake", "elem2": null, },
 		"salt_water": { "elem1": "mistake", "elem2": null, },
-		"sugar_water": { "elem1": "mistake", "elem2": null, },
+		"sugar_water": { "elem1": "sweetsauce", "elem2": null, }, //sweetsauce
 		"dirty_water": { "elem1": "mistake", "elem2": null, },
 		"magma": { "elem1": "mistake", "elem2": null, },
 		"slime": { "elem1": "mistake", "elem2": null, },
@@ -1090,14 +1166,13 @@ elements.concoction = {
 		"blood": { "elem1": "mistake", "elem2": null, },
 		"honey": { "elem1": "mistake", "elem2": null, },
 		"ketchup": { "elem1": "enchanted_ketchup", "elem2": null, }, // enchanted ketchup
-		"molasses": { "elem1": "mistake", "elem2": null, },
+		"molasses": { "elem1": "sweetsauce", "elem2": null, }, //sweetsauce
 		"chocolate_syrup": { "elem1": "mistake", "elem2": null, },
 		"liquid_hydrogen": { "elem1": "mistake", "elem2": null, },
 		"liquid_oxygen": { "elem1": "mistake", "elem2": null, },
 		"liquid_nitrogen": { "elem1": "mistake", "elem2": null, },
-		"liquid_light": { "elem1": "mistake", "elem2": null, },
 		"bamboo_plant": { "elem1": "mistake", "elem2": null, },
-		"sapling": { "elem1": "mistake", "elem2": null, },
+		"potato_seed": { "elem1": "birthpool", "elem2": null, }, // birthpool
 		"grass_seed": { "elem1": "birthpool", "elem2": null, }, // birthpool
 		"wheat_seed": { "elem1": "birthpool", "elem2": null, }, // birthpool
 		"flower_seed": { "elem1": "birthpool", "elem2": null, }, // birthpool
@@ -1124,20 +1199,29 @@ elements.concoction = {
 		"potassium_salt": { "elem1": "mistake", "elem2": null, },
 		"gold_coin": { "elem1": "mistake", "elem2": null, },
 		"yogurt": { "elem1": "mistake", "elem2": null, },
-		"baking_soda": { "elem1": "mistake", "elem2": null, },
+		"baking_soda": { "elem1": "sweetsauce", "elem2": null, }, //sweetsauce
+		"flour": { "elem1": "sweetsauce", "elem2": null, }, //sweetsauce
+		"sugar": { "elem1": "sweetsauce", "elem2": null, }, //sweetsauce
 		"popcorn": { "elem1": "mistake", "elem2": null, },
 		"bread": { "elem1": "mistake", "elem2": null, },
 		"toast": { "elem1": "mistake", "elem2": null, },
 		"flour": { "elem1": "mistake", "elem2": null, },
 		"dough": { "elem1": "mistake", "elem2": null, },
 		"salt": { "elem1": "mistake", "elem2": null, },
-		"sugar": { "elem1": "mistake", "elem2": null, },
 		"caramel": { "elem1": "mistake", "elem2": null, },
 		"candy": { "elem1": "mistake", "elem2": null, },
 		"calcium": { "elem1": "mistake", "elem2": null, },
 		"sulfur": { "elem1": "mistake", "elem2": null, },
 		"diamond": { "elem1": "mistake", "elem2": null, },
 		"glitter": { "elem1": "mistake", "elem2": null, },
+		"radiation": { "elem1": "toxic_mistake", "elem2": null, }, // toxic mistake
+		"uranium": { "elem1": "toxic_mistake", "elem2": null, }, // toxic mistake
+		"fallout": { "elem1": "toxic_mistake", "elem2": null, }, // toxic mistake
+		"mycelium": { "elem1": "mistake", "elem2": null, },
+		"slag": { "elem1": "mistake", "elem2": null, },
+		"neutral_acid": { "elem1": "mistake", "elem2": null, },
+		"liquid_helium": { "elem1": "mistake", "elem2": null, },
+		"sawdust": { "elem1": "mistake", "elem2": null, },
 		"molten_iron": { "elem1": "lektre", "elem2": null, }, //lektre
 		"molten_copper": { "elem1": "lektre", "elem2": null, }, //lektre
 		"molten_silver": { "elem1": "lektre", "elem2": null, }, //lektre
@@ -1145,6 +1229,10 @@ elements.concoction = {
 		"molten_bronze": { "elem1": "lektre", "elem2": null, }, //lektre
 		"molten_steel": { "elem1": "lektre", "elem2": null, }, //lektre
 		"molten_mithril": { "elem1": "lektre", "elem2": null, }, //lektre
+		"electric": { "elem1": "lektre", "elem2": null, }, //lektre
+		"uranium": { "elem1": "toxic_mistake", "elem2": null, }, //toxic mistake
+		"radiation": { "elem1": "toxic_mistake", "elem2": null, }, //toxic mistake
+		"light": { "elem1": "liquid_light", "elem2": null, }, // liquid light
 		
 		// Fey & More
 		"mystic_fire": { "elem1": "firesea", "elem2": null, }, // firesea
@@ -1162,8 +1250,18 @@ elements.concoction = {
 		"dye_cleaner": { "elem1": "mistake", "elem2": null, },
 		"corrupt_land": { "elem1": "mistake", "elem2": null, },
 		"spirit_tear": { "elem2": null, }, // absorbs tears
+		"cloud_cotton": { "elem1": "mistake", "elem2": null, },
+		"raincloud_cotton": { "elem1": "mistake", "elem2": null, },
+		"snowcloud_cotton": { "elem1": "mistake", "elem2": null, },
+		"swampland": { "elem1": "mistake", "elem2": null, },
+		"swamp_water": { "elem1": "mistake", "elem2": null, },
+		"celie_mix": { "elem1": "mistake", "elem2": null, },
+		"celie_berry": { "elem1": "mistake", "elem2": null, },
+		
+		// Fantastic Creatures support
 		"egg": { "elem1": "mistake", "elem2": null, },
 		"golden_egg": { "elem1": "mistake", "elem2": null, },
+		"silk": { "elem1": "mistake", "elem2": null, },
 		
 		// Ketchup Mod support
 		"poisoned_ketchup": { "elem1": "enchanted_ketchup", "elem2": null, }, // enchanted ketchup
@@ -1172,7 +1270,7 @@ elements.concoction = {
 		"mustard": { "elem1": "mistake", "elem2": null, },
 		"fry_sauce": { "elem1": "mistake", "elem2": null, },
 		"ketchup_powder": { "elem1": "mistake", "elem2": null, },
-		"tomato": { "elem1": "mistake", "elem2": null, },
+		"tomato": { "elem1": "enchanted_ketchup", "elem2": null, },
 		"tomato_sauce": { "elem1": "enchanted_ketchup", "elem2": null, }, // enchanted ketchup
 		"sugary_tomato_sauce": { "elem1": "enchanted_ketchup", "elem2": null, }, // enchanted ketchup
 		"cumin": { "elem1": "mistake", "elem2": null, },
@@ -1183,17 +1281,42 @@ elements.concoction = {
 		"liquid_tralphium": { "elem1": "mistake", "elem2": null, },
 		"liquid_deuterium": { "elem1": "mistake", "elem2": null, },
 		"liquid_tritium": { "elem1": "mistake", "elem2": null, },
-		"radioactive_water": { "elem1": "mistake", "elem2": null, },
-		"radioactive_snow": { "elem1": "mistake", "elem2": null, },
+		"radioactive_water": { "elem1": "toxic_mistake", "elem2": null, }, // toxic mistake
+		"radioactive_snow": { "elem1": "toxic_mistake", "elem2": null, }, // toxic mistake
 		"heavy_water": { "elem1": "mistake", "elem2": null, },
 		"heavy_snow": { "elem1": "mistake", "elem2": null, },
+		"coal": { "elem1": "firesea", "elem2": null, }, // firesea
+		"coal_coke": { "elem1": "firesea", "elem2": null, }, // firesea
+		"blast_furnace_fuel": { "elem1": "firesea", "elem2": null, }, // firesea
+		"rutile": { "elem1": "mistake", "elem2": null, },
+		"titanium_tetrachloride": { "elem1": "mistake", "elem2": null, },
+		"liquid_chlorine": { "elem1": "mistake", "elem2": null, },
+		"liquid_argon": { "elem1": "mistake", "elem2": null, },
+		"berry_seed": { "elem1": "birthpool", "elem2": null, }, // birthpool
+		"berry": { "elem1": "mistake", "elem2": null, },
+		"juice": { "elem1": "mistake", "elem2": null, },
+		"flamer": { "elem1": "firesea", "elem2": null, }, // firesea
+		"hematite": { "elem1": "mistake", "elem2": null, },
 					
+		// Chalcopyrite Mod support
+		"chalcopyrite_ore": { "elem1": "mistake", "elem2": null, },
+		"chalcopyrite_dust": { "elem1": "mistake", "elem2": null, },
+		"copper_concentrate": { "elem1": "mistake", "elem2": null, },
+		"fluxed_copper_concentrate": { "elem1": "mistake", "elem2": null, },
+		"tailings": { "elem1": "mistake", "elem2": null, },
+		
+		// Randomness Mod support
+		"unnamed_powder": { "elem1": "mistake", "elem2": null, },
+		
+		// combinations spread to concoction
 		"mana": { "elem1": "concoction", "elem2": "concoction", "chance":0.05},
 		"mistake": { "elem1": "mistake", "elem2": "mistake", "chance":0.05},
 		"birthpool": { "elem1": "birthpool", "elem2": "birthpool", "chance":0.05},
 		"chilly_water": { "elem1": "chilly_water", "elem2": "chilly_water", "chance": 0.05},
 		"lektre": { "elem1": "lektre", "elem2": "lektre", "chance": 0.05},
 		"pure_water": { "elem1": "pure_water", "elem2": "pure_water", "chance": 0.05},
+		"sweetsauce": { "elem1": "sweetsauce", "elem2": "sweetsauce", "chance": 0.05},
+		"liquid_light": { "elem1": "liquid_light", "elem2": "liquid_light", "chance": 0.05},
 		}
 };
 elements.mistake = {
@@ -1300,7 +1423,28 @@ elements.corrupt_land = {
 		"dirt": { "elem1": "corrupt_land", "elem2": "corrupt_land", "chance": 0.05},
 		"mud": { "elem1": "corrupt_land", "elem2": "corrupt_land", "chance": 0.05},
 		"mudstone": { "elem1": "corrupt_land", "elem2": "corrupt_land", "chance": 0.05},
+		"sand": { "elem1": "corrupt_land", "elem2": "corrupt_land", "chance": 0.05},
+		"wet_sand": { "elem1": "corrupt_land", "elem2": "corrupt_land", "chance": 0.05},
+		"packed_sand": { "elem1": "corrupt_land", "elem2": "corrupt_land", "chance": 0.05},
+		"clay": { "elem1": "corrupt_land", "elem2": "corrupt_land", "chance": 0.05},
+		"clay_soil": { "elem1": "corrupt_land", "elem2": "corrupt_land", "chance": 0.05},
+		"mycelium": { "elem1": "corrupt_land", "elem2": "corrupt_land", "chance": 0.05},
+		"swampland": { "elem1": "corrupt_land", "elem2": "corrupt_land", "chance": 0.05},
+		"rock": { "elem1": "corrupt_rock", "elem2": "corrupt_rock", "chance": 0.05},
+		"gravel": { "elem1": "corrupt_rock", "elem2": "corrupt_rock", "chance": 0.05},
+		"limestone": { "elem1": "corrupt_rock", "elem2": "corrupt_rock", "chance": 0.05},
+		"quickline": { "elem1": "corrupt_rock", "elem2": "corrupt_rock", "chance": 0.05},
+		"basalt": { "elem1": "corrupt_rock", "elem2": "corrupt_rock", "chance": 0.05},
 	}
+};
+elements.corrupt_rock = {
+    color: ["#514c78","#514c78","#2a264d","#2a264d","#514c78","#514c78"],
+    behavior: behaviors.POWDER,
+    tempHigh: 1200,
+    category: "corruption",
+    state: "solid",
+    density: 1220,
+	reactions: elements.corrupt_land.reactions
 };
 elements.withery = {
 	color: ["#454a43","#474a43"],
@@ -1347,3 +1491,198 @@ elements.enchanted_ketchup = {
     density: 1235,
 	hidden: true
 };
+elements.celie_mix = {
+	color: ["#d9cb8d","#b8a658","#b89258", "#cfb082"],
+    behavior: behaviors.LIQUID,
+	viscosity: 50,
+	state: "liquid",
+    density: 1150,
+    conduct: 0.02,
+	category: "food",
+	hidden: true,
+};
+elements.toxic_mistake = {
+	color: ["#567855", "#254524"],
+	behavior: [
+		"XX|CR:radiation%1|XX",
+        "M2|XX|M2",
+        "M1|M1|M1",
+	],
+	state: "liquid",
+	burn: 200,
+    burnTime: 100,
+	fireColor: "#a4d6a3",
+	burnInto: ["mana_bubble", "radiation"],
+	hidden: true,
+},
+elements.unstable_mistake = {
+	color: ["#6b5248", "#7d645a"],
+	behavior: [
+		"XX|EX:5 AND EX:6>magic|XX",
+        "M2|XX|M2",
+        "M1|M1|M1",
+	],
+	state: "liquid",
+	burn: 200,
+    burnTime: 100,
+	fireColor: "#a4d6a3",
+	burnInto: ["mana_bubble"],
+	hidden: true,
+},
+elements.cloud_cotton = {
+	color: ["#d1dbf0", "#b3c3e6"],
+	behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "M2%10|M1%25|M2%10",
+	],
+	category: "powders",
+	density: 750,
+	reactions: {
+		"water": { "elem1": "raincloud_cotton", "elem2": null },
+		"snow": { "elem1": "snowcloud_cotton", "elem2": null },
+	}
+	
+},
+elements.raincloud_cotton = {
+	color: ["#8b98b3", "#6d788f"],
+	behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "M2%10|M1%25|M2%10",
+	],
+	category: "powders",
+	density: 750,
+	temp: 60,
+	tempHigh: 70,
+	stateHigh: "rain_cloud",
+},
+elements.snowcloud_cotton = {
+	color: ["#a1acc2", "#8090b0"],
+	behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "M2%10|M1%25|M2%10",
+	],
+	category: "powders",
+	density: 750,
+	temp: 0,
+	tempLow: -10,
+	stateLow: "snow_cloud",
+},
+elements.cloud = {
+    color: "#f0f5ff",
+    behavior: [
+        "XX|XX|XX",
+        "M1%5|XX|M1%5",
+        "XX|XX|XX",
+    ],
+    category:"gases",
+    state: "gas",
+    density: 1,
+    conduct: 0.03,
+	reactions: {
+		"water": { "elem1": "raincloud", "elem2": null },
+		"snow": { "elem1": "snowcloud", "elem2": null },
+	}
+},
+elements.frostbomb = {
+	color: "#72dfed",
+    behavior: [
+        "XX|XX|XX",
+        "XX|EX:15>frostwind|XX",
+        "XX|XX|XX",
+    ],
+	category: "energy"
+}
+elements.pearl_growth_crystal = {
+	color: ["#e1a1f7","#e1a1f7","#d195e6","#f2cbf7"],
+    behavior: [
+        "XX|CR:pearl_growth_crystal%0.4|XX",
+        "CR:pearl_growth_crystal%0.4|CH:pearl_crystal%0.8|CR:pearl_growth_crystal%0.4",
+        "XX|CR:pearl_growth_crystal%0.8|XX",
+    ],
+	category: "land",
+}
+elements.pearl_crystal = {
+	color: ["#d195e6","#d195e6","#d195e6","#d9b6de"],
+    behavior: behaviors.WALL,
+	category: "land",
+	hidden: true,
+}
+elements.ivory_growth_crystal = {
+	color: ["#d6c2ae","#d6c2ae","#d6c2ae","#edddcc"],
+    behavior: [
+        "XX|CR:ivory_growth_crystal%0.4|XX",
+        "CR:ivory_growth_crystal%0.4|CH:ivory_crystal%0.8|CR:ivory_growth_crystal%0.4",
+        "XX|CR:ivory_growth_crystal%0.8|XX",
+    ],
+	category: "land",
+}
+elements.ivory_crystal = {
+	color: ["#bfad9b","#bfad9b","#bfad9b","#d6c8b8"],
+    behavior: behaviors.WALL,
+	category: "land",
+	hidden: true,
+}
+elements.sky_growth_crystal = {
+	color: ["#aec6e6","#aec6e6","#aec6e6","#d1def0"],
+    behavior: [
+        "XX|CR:sky_growth_crystal%0.4|XX",
+        "CR:sky_growth_crystal%0.4|CH:sky_crystal%0.8|CR:sky_growth_crystal%0.4",
+        "XX|CR:sky_growth_crystal%0.8|XX",
+    ],
+	category: "land",
+}
+elements.sky_crystal = {
+	color: ["#95aac7","#95aac7","#95aac7","#b6c2d4"],
+    behavior: behaviors.WALL,
+	category: "land",
+	hidden: true,
+},
+elements.swampland = {
+	color: "#382a1c",
+	behavior: [
+	"XX|XX|XX",
+	"XX|XX|XX",
+	"XX|M1|XX",
+	],
+	category: "land",
+	reactions: {
+		//"light": { "elem2": "will_o_wisp" }
+	},
+},
+elements.swamp_water = {
+	color: "#524b44",
+	behavior: [
+	"XX|XX|XX",
+	"M2|XX|M2",
+	"M1|M1|M1",
+	],
+	category: "liquids",
+	reactions: {
+		//"light": { "elem2": "will_o_wisp" }
+	},
+},
+/*elements.will_o_wisp = { // Element will be added when a related bug is fixed
+	color: ["#f2eeb3","#f2e3b3"],
+	behavior: [
+	"XX|M1|XX",
+	"XX|DL%1|XX",
+	"XX|XX|XX",
+	],
+	rotatable: false,
+	category: "energy",
+	hidden: true,
+},*/
+
+elements.sweetsauce = { // placeholder for future feature i'm still working on
+	color: ["#daedea", "#edeada"],
+	behavior: [
+        "XX|XX|XX",
+        "XX|CH:mistake|XX",
+        "XX|XX|XX",
+    ],
+	hidden: true,
+	extraInfo: "This element is coming soon!"
+}
