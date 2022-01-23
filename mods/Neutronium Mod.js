@@ -873,7 +873,7 @@ elements.explosion5 = {
 color: ["#ffb48f","#ffd991","#ffad91"],
 category: "special",
 state: "solid",
-behavior [
+behavior: [
 "CR:explosion4|CR:explosion4|CR:explosion4"
 "CR:explosion4|DL|CR:explosion4"
 "CR:explosion4|CR:explosion4|CR:explosion4"
@@ -883,7 +883,7 @@ elements.explosion4 = {
 color: ["#ffb48f","#ffd991","#ffad91"],
 category: "special",
 state: "solid",
-behavior [
+behavior: [
 "CR:explosion3|CR:explosion3|CR:explosion3"
 "CR:explosion3|DL|CR:explosion3"
 "CR:explosion3|CR:explosion3|CR:explosion3"
@@ -893,7 +893,7 @@ elements.explosion3 = {
 color: ["#ffb48f","#ffd991","#ffad91"],
 category: "special",
 state: "solid",
-behavior [
+behavior: [
 "CR:explosion|CR:explosion|CR:explosion"
 "CR:explosion2|DL|CR:explosion2"
 "CR:explosion2|CR:explosion2|CR:explosion2"
@@ -903,7 +903,7 @@ elements.explosion2 = {
 color: ["#ffb48f","#ffd991","#ffad91"],
 category: "special",
 state: "solid",
-behavior [
+behavior: [
 "CR:explosion|CR:explosion|CR:explosion"
 "CR:explosion|DL|CR:explosion"
 "CR:explosion|CR:explosion|CR:explosion"
