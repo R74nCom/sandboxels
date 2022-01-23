@@ -138,7 +138,7 @@ elements.plasma_remover = { //why would you need this?
     category: "special",
     temp: 7065,
 },
-/*elements.black_decay = { //random mystcraft mod reference
+elements.black_decay = { //random mystcraft mod reference
     name: "black decay",
     color: "#222222",
     behavior: [
@@ -147,7 +147,7 @@ elements.plasma_remover = { //why would you need this?
         "XX|CH:black_decay%1 AND M1|XX",
     ],
     category: "special",
-},*/
+},
 elements.tungsten = { //GTCE reference
     color: "#848A7D",
     behavior: behaviors.WALL,
@@ -288,11 +288,9 @@ elements.rm_lava_balloon = {
         "XX|M1|XX",
     ],
     temp: 950,
-    tempLow: 800,
-	stateLow: ["rock", "rock", "rock", "rock", "rock", "rock", "rock", "rock", "rock", "rock", "rock", "rock", "rock", "rock", "rock", "rock", "rock", "rock", "plastic"],
-	category: "special",
-	state: "solid",
-	density: 2725,
+    category: "special",
+    state: "solid",
+    density: 2725,
 }
 
 elements.lb3 = {
@@ -357,4 +355,6 @@ runAfterLoad(function() {
         "DL:"+eLists.FAIRY+" AND M2|XX|DL:"+eLists.FAIRY+" AND M2",
         "M1|DL:"+eLists.FAIRY+"|M1",
     ]
+    var toRemove = ["burning_unnamed_gas","burning_unnamed_powder","black_decay"];
+    randomChoices = randomChoices.filter((item) => !toRemove.includes(item));
 });
