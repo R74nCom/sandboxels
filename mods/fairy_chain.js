@@ -1712,7 +1712,7 @@ runAfterLoad(function() {
 	elements.fairy.reactions.rainbow = { "elem1": "fairy_fairy", "elem2": null }
 	};
     var toRemove = ["fairy5","fairy6","fairy7","fairy8","fairy9","fairy10","fairy11","fairy12","fairy13","fairy14","fairy15","fairy16","fairy17","fairy18","fairy19","fairy20","fairy21","fairy22","fairy23","fairy24","fairy25","fairy26","fairy27","fairy28","fairy29","fairy30","fairy31","fairy32","fairy33","fairy34","fairy35","fairy36","fairy37","fairy38","fairy39","fairy40","fairy41","fairy42","fairy43","fairy44","fairy45","fairy46","fairy47","fairy48","fairy49","fairy50","fairy51","fairy52","fairy53","fairy54","fairy55","fairy56","fairy57","fairy58","fairy59","fairy60","fairy61","fairy62","fairy63","fairy64","fairy65","fairy66","fairy67","fairy68","fairy69","fairy70","fairy71","fairy72","fairy73","fairy74","fairy75","fairy76","fairy77","fairy78","fairy79","fairy80","fairy81","fairy82","fairy83","fairy84","fairy85","fairy86","fairy87","fairy88","fairy89","fairy90","fairy91","fairy92","fairy93","fairy94","fairy95","fairy96","fairy97","fairy98","fairy99","fairy100","fairy101"];
-    randomChoices = randomChoices.filter((item) => !toRemove.includes(item));
+    this.randomChoices = this.randomChoices.filter((item) => !toRemove.includes(item));
 
     if(enabledMods.includes("mods/fey_and_more.js") && enabledMods.includes("mods/randomness.js")) {
 		//additional eList rebuilding for RM steel derivatives
