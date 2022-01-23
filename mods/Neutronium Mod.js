@@ -653,6 +653,222 @@ tempHigh: 1000,
 stateHigh: "liquid_crystal",
 conduct: 0.3
 };
+elements.t_center = {
+color: "#808080",
+behavior: [
+"CR:a7|CR:wall|CR:a7",
+"XX|XX|XX",
+"XX|CR:t2|XX",
+],
+state: "solid",
+category: "structures"
+};
+elements.a_center = {
+color: "#808080",
+behavior: [
+"XX|XX|XX",
+"CR:a2|XX|CR:a2",
+"XX|XX|XX",
+],
+state: "solid",
+category: "structures"
+};
+elements.a2 = {
+color: "#808080",
+behavior: [
+"XX|XX|XX",
+"CR:a3left|XX|CR:a3right",
+"XX|XX|XX",
+],
+state: "solid",
+category: "structures"
+};
+elements.a3left = {
+color: "#808080",
+behavior: [
+"XX|CR:a4left|XX",
+"XX|XX|XX",
+"XX|CR:a5|XX",
+],
+state: "solid",
+category: "structures"
+};
+elements.a3right = {
+color: "#808080",
+behavior: [
+"XX|CR:a4right|XX",
+"XX|XX|XX",
+"XX|CR:a5|XX",
+],
+state: "solid",
+category: "structures"
+};
+elements.a4left = {
+color: "#808080",
+behavior: [
+"XX|CR:a6left|XX",
+"XX|XX|XX",
+"XX|XX|XX",
+],
+state: "solid",
+category: "structures"
+};
+elements.a4right = {
+color: "#808080",
+behavior: [
+"XX|CR:a6right|XX",
+"XX|XX|XX",
+"XX|XX|XX",
+],
+state: "solid",
+category: "structures"
+};
+elements.a5 = {
+color: "#808080",
+behavior: [
+"XX|CR:wall|XX",
+"XX|XX|XX",
+"XX|CR:wall|XX",
+],
+state: "solid",
+category: "structures"
+};
+elements.a6left = {
+color: "#808080",
+behavior: [
+"XX|XX|XX",
+"XX|XX|CR:a7",
+"XX|XX|XX",
+],
+state: "solid",
+category: "structures"
+};
+elements.a6right = {
+color: "#808080",
+behavior: [
+"XX|XX|XX",
+"CR:a7|XX|XX",
+"XX|XX|XX",
+],
+state: "solid",
+category: "structures"
+};
+elements.a7 = {
+color: "#808080",
+behavior: [
+"XX|XX|XX",
+"CR:wall|XX|CR:wall",
+"XX|XX|XX",
+],
+state: "solid",
+category: "structures"
+};
+elements.t2 = {
+color: "#808080",
+behavior: [
+"XX|CR:a5|XX",
+"XX|XX|XX",
+"XX|CR:a5",
+],
+state: "solid",
+category: "structures"
+};
+elements.electrical_flamewave_generator = {
+color: "#e6a045",
+behavior: behaviors.WALL,
+behaviorOn: [
+"CR:flameshockwave1|CR:flameshockwave2|CR:flameshockwave3",
+"CR:flameshockwave4|XX|CR:flameshockwave5",
+"CR:flameshockwave6|CR:flameshockwave7|CR:flameshockwave8",
+],
+state: "solid",
+category: "machines",
+tempHigh: 2500,
+stateHigh: ["molten_steel", "molten_mythril"],
+conduct: 1,
+};
+elements.flameshockwave1 = {
+color: "#c9c9c9",
+category: "special",
+behavior: [
+"LB:fire AND M1|LB:fire|LB:fire",
+"LB:fire|LB:fire AND DL%3.33|LB:fire",
+"LB:fire|LB:fire|LB:fire",
+],
+};
+elements.flameshockwave2 = {
+color: "#c9c9c9",
+category: "special",
+behavior: [
+"LB:fire|LB:fire AND M1|LB:fire",
+"LB:fire|LB:fire AND DL%3.33|LB:fire",
+"LB:fire|LB:fire|LB:fire",
+],
+};
+elements.flameshockwave3 = {
+color: "#c9c9c9",
+category: "special",
+behavior: [
+"LB:fire|LB:fire|LB:fire AND M1",
+"LB:fire|LB:fire AND DL%3.33|LB:fire",
+"LB:fire|LB:fire|LB:fire",
+],
+};
+elements.flameshockwave4 = {
+color: "#c9c9c9",
+category: "special",
+behavior: [
+"LB:fire|LB:fire|LB:fire",
+"LB:fire AND M1|LB:fire AND DL%3.33|LB:fire",
+"LB:fire|LB:fire|LB:fire",
+],
+};
+elements.flameshockwave5 = {
+color: "#c9c9c9",
+category: "special",
+behavior: [
+"LB:fire|LB:fire|LB:fire",
+"LB:fire|LB:fire AND DL%3.33|LB:fire AND M1",
+"LB:fire|LB:fire|LB:fire",
+],
+};
+elements.flameshockwave6 = {
+color: "#c9c9c9",
+category: "special",
+behavior: [
+"LB:fire|LB:fire|LB:fire",
+"LB:fire|LB:fire AND DL%3.33|LB:fire",
+"LB:fire AND M1|LB:fire|LB:fire",
+],
+};
+elements.flameshockwave7 = {
+color: "#c9c9c9",
+category: "special",
+behavior: [
+"LB:fire|LB:fire|LB:fire",
+"LB:fire|LB:fire AND DL%3.33|LB:fire",
+"LB:fire|LB:fire AND M1|LB:fire",
+],
+};
+elements.flameshockwave8 = {
+color: "#c9c9c9",
+category: "special",
+behavior: [
+"LB:fire|LB:fire|LB:fire",
+"LB:fire|LB:fire AND DL%3.33|LB:fire",
+"LB:fire|LB:fire|LB:fire AND M1",
+],
+};
+elements.flamebomb = {
+color: "#615f55",
+category: "machines",
+behavior: [
+"CR:flameshockwave1|CR:flameshockwave2|CR:flameshockwave3",
+"CR:flameshockwave4|DL%10|CR:flameshockwave5",
+"CR:flameshockwave6 AND M2|CR:flameshockwave7 AND M1|CR:flameshockwave8 AND M2",
+],
+state: "solid"
+};
 /* Unfinished:
 magnesium
 hematite mixture

@@ -1,6 +1,5 @@
 [Future Plans]
     + Artists' Update (Painting, Lines, Shapes, etc.)
-    + Explosives Update
     + Machines Update
 
 [Version 1.1 - Blast Off]
