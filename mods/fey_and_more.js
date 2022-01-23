@@ -63,7 +63,7 @@
 */
 
 // New lists
-eLists.FAIRY = ["fairy","fairy_egg","fire_fairy","ice_fairy","nature_fairy","earth_fairy","rain_fairy"],
+eLists.FAIRY = ["fairy","fairy_egg","fire_fairy","ice_fairy","nature_fairy","earth_fairy","rain_fairy","thunder_fairy","stellar_fairy","lunar_fairy","light_fairy","mushroom_fairy","magic_fairy"],
 eLists.DYE =["red_dye","green_dye","blue_dye","yellow_dye","cyan_dye","magenta_dye"],
 eLists.IMPURITY = ["flea","fly","bone","blood","worm","termite","rat","plague","virus","bone_marrow","rotten_meat","mushroom_spore","gloomfly","meat_monster","rotten_ravager","bone_beast","poisonwater","corrupt_land","poisoned_ketchup"],
 eLists.WOOD = ["bamboo","bamboo_plant","sapling","wood","tree_branch","celie_seed","celie_wood","celie_branch"]
