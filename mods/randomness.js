@@ -345,6 +345,10 @@ elements.lb1 = {
 }
 
 runAfterLoad(function() {
+    randomChoices.splice(randomChoices.indexOf("burning_unnamed_gas"), 1);
+    randomChoices.splice(randomChoices.indexOf("burning_unnamed_powder"), 1);
+    randomChoices.splice(randomChoices.indexOf("black_decay"), 1);
+
 	elements.tungstensteel.behavior = [
         "XX|DL:"+eLists.FAIRY+"|XX",
         "DL:"+eLists.FAIRY+"|XX|DL:"+eLists.FAIRY+"",
@@ -355,6 +359,4 @@ runAfterLoad(function() {
         "DL:"+eLists.FAIRY+" AND M2|XX|DL:"+eLists.FAIRY+" AND M2",
         "M1|DL:"+eLists.FAIRY+"|M1",
     ]
-    var toRemove = ["burning_unnamed_gas","burning_unnamed_powder","black_decay"];
-    this.randomChoices = this.randomChoices.filter((item) => !toRemove.includes(item));
 });
