@@ -356,5 +356,5 @@ runAfterLoad(function() {
         "M1|DL:"+eLists.FAIRY+"|M1",
     ]
     var toRemove = ["burning_unnamed_gas","burning_unnamed_powder","black_decay"];
-    randomChoices = randomChoices.filter((item) => !toRemove.includes(item));
+    this.randomChoices = this.randomChoices.filter((item) => !toRemove.includes(item));
 });
