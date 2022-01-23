@@ -138,7 +138,7 @@ elements.plasma_remover = { //why would you need this?
     category: "special",
     temp: 7065,
 },
-elements.black_decay = { //random mystcraft mod reference
+/*elements.black_decay = { //random mystcraft mod reference
     name: "black decay",
     color: "#222222",
     behavior: [
@@ -147,7 +147,7 @@ elements.black_decay = { //random mystcraft mod reference
         "XX|CH:black_decay%1 AND M1|XX",
     ],
     category: "special",
-},
+},*/
 elements.tungsten = { //GTCE reference
     color: "#848A7D",
     behavior: behaviors.WALL,
@@ -345,10 +345,6 @@ elements.lb1 = {
 }
 
 runAfterLoad(function() {
-    randomChoices.splice(randomChoices.indexOf("burning_unnamed_gas"), 1);
-    randomChoices.splice(randomChoices.indexOf("burning_unnamed_powder"), 1);
-    randomChoices.splice(randomChoices.indexOf("black_decay"), 1);
-
 	elements.tungstensteel.behavior = [
         "XX|DL:"+eLists.FAIRY+"|XX",
         "DL:"+eLists.FAIRY+"|XX|DL:"+eLists.FAIRY+"",
