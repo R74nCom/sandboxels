@@ -1,10 +1,60 @@
 [Future Plans]
     + Artists' Update (Painting, Lines, Shapes, etc.)
-    + Explosives Update
     + Machines Update
 
-[Version 1.1]
+[Version 1.1 - Blast Off]
+    + Explosions
+    + Weapons Category
+    + Bomb
+    + TNT
+    + C-4
+    + Grenade
+    + Gunpowder
+    + Nuke
+    + Greek Fire
+    + Nitroglycerin
+    + Sticky Bomb
+    + Cold Bomb
+    + Hot Bomb
+    + Electro Bomb
+    + Water Bomb
+    + Antimatter Bomb
+    + Flashbang
+    + Flash (Hidden)
+    + Landmine
+    + Cluster Bomb
+    + Explosion (Element, explodes immediately)
+    + Armageddon (Hidden, lag warning)
+    + Tesla Coil
+    + Light Bulb
+    + Shocker
+    + Tungsten
+    + Helium
+    + Liquid Helium (Hidden)
+    + Nitrogen Ice (Hidden)
+    + Sawdust
+    + Brick Rubble (Hidden)
+    + Slag
     + Loopy
+    + Neutral Acid, from neutralizing Acid with Ash, Limestone, Borax, or Ammonia
+    + Cancer can now take over Frogs, Fish, and Rats
+    + Dioxin can now cause Cancer, kill things, and damage Antibodies
+    + Chocolate Syrup can now evaporate
+    + Wet Sand and Mud seep into each other's dry counterparts
+    + Salt now kills Worms
+    + Mushrooms now compost Ash
+    + Udders can now cook
+    ~ Fireballs now explode on impact
+    ~ Magma now cools into mostly Basalt
+    ~ Molten Plastic is no longer on fire
+    ~ Unhid Dioxin
+    ~ Moved Straw and Ruins to Solids category
+    ~ Moved Tinder to Powders category
+    ~ Moved Smoke Grenade and Fireball to Weapons category
+    ~ Fixed: Direction not reset when changing pixels' elements
+    ~ Fixed: Mod Manager unable to scroll
+    ~ Fixed: Acid and Acid Gas dissolve each other
+    ~ Fixed: Potassium and Epsom Salt didn't kill Slugs and Snails
 
 [Version 1.0.1]
     ~ Slowed down Udder
