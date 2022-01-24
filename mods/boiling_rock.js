@@ -48,11 +48,70 @@ elements.rock_cloud = {
     state: "gas",
 },
 
+elements.vaporized_glass = {
+    color: ["#D6B049","#E8D957","#E8AE57"],
+    behavior: [
+        "M2|M1|M2",
+        "M1|XX|M1",
+        "M2|M1|M2",
+    ],
+    reactions: {
+        "vaporized_glass": { "elem1": null, "elem2": "hot_glass_cloud", "chance":0.3, "y":[0,15] },
+        "hot_glass_cloud": { "elem1": "glass_cloud", "chance":0.4, "y":[0,15] },
+    },
+    density: 2, //very rough approximation based on https://nvlpubs.nist.gov/nistpubs/jres/46/jresv46n3p176_A1b.pdf
+    temp: 2300, //https://www.sciencealert.com/did-this-piece-of-glass-really-break-a-law-of-thermodynamics
+    tempLow: 2200,
+    stateLow: "molten_glass",
+    category: "gases",
+    state: "gas",
+    hidden: true,
+},
+elements.hot_glass_cloud = {
+    color: ["#B69089","#C8B997","#C88E77"],
+    behavior: [
+        "XX|XX|XX",
+        "M1%7|CH:molten_glass%0.05|M1%7",
+        "XX|XX|XX",
+    ],
+    density: 2,
+    temp: 2300,
+    tempLow: 2200,
+    stateLow: "cold_glass_cloud",
+    category: "gases",
+    state: "gas",
+},
+elements.cold_glass_cloud = {
+    color: ["#967089","#A89997","#A86E77"],
+    behavior: [
+        "XX|XX|XX",
+        "M1%7|CH:glass_shard%0.05|M1%7",
+        "XX|XX|XX",
+    ],
+    density: 2,
+    temp: 2000,
+    tempHigh: 2200,
+    stateHigh: "hot_glass_cloud",
+    category: "gases",
+    state: "gas",
+},
+
+elements.molten_glass = {
+    tempHigh: 2200,
+    stateHigh: "vaporized_glass",
+}
+
 runAfterLoad(function() {
     if(enabledMods.includes("mods/fey_and_more.js")) {
+        elements.molten_glass.tempHigh = 2200
+        elements.molten_glass.stateHigh = "vaporized_glass"
+
         //mistake
             elements.concoction.reactions.vaporized_rock = { "elem1": "mistake", "elem2": null }
             elements.concoction.reactions.lava_cloud = { "elem1": "mistake", "elem2": null }
             elements.concoction.reactions.rock_cloud = { "elem1": "mistake", "elem2": null }
+            elements.concoction.reactions.vaporized_glass = { "elem1": "mistake", "elem2": null }
+            //elements.concoction.reactions.glass_cloud = { "elem1": "mistake", "elem2": null }
+            //elements.concoction.reactions.glass_cloud = { "elem1": "mistake", "elem2": null }
     };
 });
