@@ -114,7 +114,6 @@ elements.steam_remover = { //pov: you tried using water to cool something
         "CH:steam>steam_remover|CH:steam>steam_remover|CH:steam>steam_remover",
     ],
     category: "special",
-
 },     
 elements.filler_remover = { //pov: you put a filler for fun but now you want your scene back
     name: "filler remover",
@@ -148,15 +147,6 @@ elements.plasma_remover = { //why would you need this?
     ],
     category: "special",
 },*/
-elements.tungsten = { //GTCE reference
-    color: "#848A7D",
-    behavior: behaviors.WALL,
-    tempHigh: 3422,
-    category: "solids",
-    density: 19250,
-    conduct: 0.55,
-},
-
 elements.tungstensteel = {
     color: "#555589",
     behavior: behaviors.FAIRYKILL,
@@ -165,124 +155,101 @@ elements.tungstensteel = {
     density: 19000,
     conduct: 0.48,
 },
-
 elements.molten_tungsten = {
-    color: "#FFC285",
-    behavior: behaviors.MOLTEN,
     density: 17600,
-    conduct: 0.20,
     temp: 3500,
     tempHigh: 5555,
     stateHigh: "tungsten_gas",
-    category: "liquids",
-    hidden: true,
 },         
-
 elements.tungsten_gas = {
     color: "#FFEEE2",
     behavior: [
         "CR:plasma%0.625 AND M2|M1|CR:plasma%0.625 AND M2",
-		"M1|XX|M1",
-		"CR:plasma%0.625 AND M2|M1|CR:plasma%0.625 AND M2",
-	],
-    density: 17600,
-    conduct: 0.20,
+        "M1|XX|M1",
+        "CR:plasma%0.625 AND M2|M1|CR:plasma%0.625 AND M2",
+    ],
+    density: 15800, //https://link.springer.com/article/10.1007/s11661-019-05262-5
     temp: 5600,
     tempLow: 5555,
     stateLow: "molten_tungsten",
     category: "gases",
     hidden: true,
 },
-
 elements.molten_steel = {
-	reactions: {
-		"molten_tungsten": { "elem1":"molten_tungstensteel", "elem2":"molten_tungstensteel" }
-	}
+    reactions: {
+        "molten_tungsten": { "elem1":"molten_tungstensteel", "elem2":"molten_tungstensteel" }
+    }
 }
-
 elements.molten_tungstensteel = {
-	behavior: [
+    behavior: [
         "XX|DL:"+eLists.FAIRY+" AND CR:fire%2.5|XX",
         "DL:"+eLists.FAIRY+" AND M2|XX|DL:"+eLists.FAIRY+" AND M2",
         "M1|DL:"+eLists.FAIRY+"|M1",
     ]
 }
-
 elements.rm_water_balloon = {
-	name: "water balloon",
-	color: "#3dc2ff",
-	behavior: [
+    name: "water balloon",
+    color: "#3dc2ff",
+    behavior: [
         "XX|M2|XX",
         "XX|C2:wb3|XX",
         "XX|M1|XX",
     ],
     tempHigh: 180,
-	stateHigh: ["steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "plastic"],
+    stateHigh: ["steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "plastic"],
     tempLow: 0,
-	stateLow: ["ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "plastic"],
-	category: "special",
-	state: "solid",
-	density: 997,
+    stateLow: ["ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "plastic"],
+    category: "special",
+    state: "solid",
+    density: 997,
 }
 
 elements.wb3 = {
-	name: "wb3",
-	color: "#0856ff",
-	behavior: [
+    name: "wb3",
+    color: "#0856ff",
+    behavior: [
         "XX|CR:wb2|XX",
         "CR:wb2|CH:wb2|CR:wb2",
         "XX|CR:wb2|XX",
     ],
-    tempHigh: 100,
-	stateHigh: "steam",
-    tempLow: 0,
-	stateLow: "ice",
-	category: "liquid",
-	state: "solid",
-	density: 997,
-	hidden: true,
+    category: "special",
+    state: "liquid",
+    density: 997,
+    hidden: true,
 }
 
 elements.wb2 = {
-	name: "wb2",
-	color: "#145fff",
-	behavior: [
+    name: "wb2",
+    color: "#145fff",
+    behavior: [
         "XX|CR:wb1|XX",
         "CR:wb1|CH:wb1|CR:wb1",
         "XX|CR:wb1|XX",
     ],
-    tempHigh: 100,
-	stateHigh: "steam",
-    tempLow: 0,
-	stateLow: "ice",
-	category: "special",
-	state: "liquid",
-	density: 997,
-	hidden: true,
+    category: "special",
+    state: "liquid",
+    density: 997,
+    hidden: true,
 }
 
 elements.wb1 = {
-	name: "wb1",
-	color: "#2167ff",
-	behavior: [
+    name: "wb1",
+    color: "#2167ff",
+    behavior: [
         "XX|CR:water|XX",
         "CR:water|CH:water|CR:water",
         "XX|CR:water|XX",
     ],
-    tempHigh: 100,
-	stateHigh: "steam",
-    tempLow: 0,
-	stateLow: "ice",
-	category: "special",
-	state: "liquid",
-	density: 997,
-	hidden: true,
+    category: "special",
+    state: "liquid",
+    density: 997,
+    hidden: true,
 }
 
 elements.rm_lava_balloon = {
-	name: "lava balloon",
-	color: "#ffab36",
-	behavior: [
+    name: "lava balloon",
+    color: "#ffab36",
+    behavior: [
         "XX|M2|XX",
         "XX|C2:lb3|XX",
         "XX|M1|XX",
@@ -294,63 +261,56 @@ elements.rm_lava_balloon = {
 }
 
 elements.lb3 = {
-	name: "lb3",
-	color: "#ff8c00",
-	behavior: [
+    name: "lb3",
+    color: "#ff8c00",
+    behavior: [
         "XX|CR:lb2|XX",
         "CR:lb2|CH:lb2|CR:lb2",
         "XX|CR:lb2|XX",
     ],
     temp: 950,
-    tempLow: 800,
-	stateLow: "rock",
-	category: "liquid",
-	state: "solid",
-	density: 2725,
-	hidden: true,
+    category: "special",
+    state: "liquid",
+    density: 2725,
+    hidden: true,
 }
 
 elements.lb2 = {
-	name: "lb2",
-	color: "#ff6f00",
-	behavior: [
+    name: "lb2",
+    color: "#ff6f00",
+    behavior: [
         "XX|CR:lb1|XX",
         "CR:lb1|CH:lb1|CR:lb1",
         "XX|CR:lb1|XX",
     ],
     temp: 950,
-    tempLow: 800,
-	stateLow: "rock",
-	category: "special",
-	state: "liquid",
-	density: 2725,
-	hidden: true,
+    category: "special",
+    state: "liquid",
+    density: 2725,
+    hidden: true,
 }
 
 elements.lb1 = {
-	name: "lb1",
-	color: "#ff4d00",
-	behavior: [
+    name: "lb1",
+    color: "#ff4d00",
+    behavior: [
         "XX|CR:magma|XX",
         "CR:magma|CH:magma|CR:magma",
         "XX|CR:magma|XX",
     ],
-    tempLow: 800,
-    tempLow: 800,
-	stateLow: "rock",
-	category: "special",
-	state: "liquid",
-	density: 2725,
-	hidden: true,
+    category: "special",
+    state: "liquid",
+    density: 2725,
+    hidden: true,
 }
 
 runAfterLoad(function() {
-	elements.tungstensteel.behavior = [
+    elements.tungstensteel.behavior = [
         "XX|DL:"+eLists.FAIRY+"|XX",
         "DL:"+eLists.FAIRY+"|XX|DL:"+eLists.FAIRY+"",
         "XX|DL:"+eLists.FAIRY+"|XX",
     ],
-	elements.molten_tungstensteel.behavior = [
+    elements.molten_tungstensteel.behavior = [
         "XX|DL:"+eLists.FAIRY+" AND CR:fire%2.5|XX",
         "DL:"+eLists.FAIRY+" AND M2|XX|DL:"+eLists.FAIRY+" AND M2",
         "M1|DL:"+eLists.FAIRY+"|M1",
