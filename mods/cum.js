@@ -386,6 +386,18 @@ elements.precum_ice = {
 	category:"cum",
 	hidden: true,
 },
+elements.cum_bomb = {
+	color: "#e3deba",
+	behavior: [
+		"XX|XX|XX",
+		"XX|XX|XX",
+		"M2|M1 AND EX:12>cum_ice,cold_fire,cum,cold_fire,cum_ice,cold_fire,cum,cold_fire,cum_ice,cold_fire,cum,cum,precum|M2",
+	],
+	category: "weapons",
+	state: "solid",
+	density: 1300,
+},
+
 
 elements.precum.conduct = elements.water.conduct;
 
@@ -439,6 +451,7 @@ runAfterLoad(function() {
 			eLists.IMPURITY.push("cum_slime");
 			eLists.IMPURITY.push("burnt_cum");
 			eLists.IMPURITY.push("cum_fairy");
+			eLists.IMPURITY.push("cum_bomb");
 		//}
 		//regenerate behaviors of elements that use eLists.IMPURITY {
 			elements.pure_water.behavior = [
@@ -498,6 +511,7 @@ runAfterLoad(function() {
 			elements.concoction.reactions.cum_slime = { "elem1": "mistake", "elem2": null },
 			elements.concoction.reactions.cummy_snake = { "elem1": "mistake", "elem2": null },
 			elements.concoction.reactions.penis = { "elem1": "mistake", "elem2": null }
+			elements.concoction.reactions.cum_bomb = { "elem1": "mistake", "elem2": null }
 		//}
 		//cum fairy creation {
 			elements.fairy.reactions.cum = { "elem1": "cum_fairy" }
