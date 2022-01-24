@@ -111,7 +111,7 @@ runAfterLoad(function() {
             elements.concoction.reactions.lava_cloud = { "elem1": "mistake", "elem2": null }
             elements.concoction.reactions.rock_cloud = { "elem1": "mistake", "elem2": null }
             elements.concoction.reactions.vaporized_glass = { "elem1": "mistake", "elem2": null }
-            //elements.concoction.reactions.glass_cloud = { "elem1": "mistake", "elem2": null }
-            //elements.concoction.reactions.glass_cloud = { "elem1": "mistake", "elem2": null }
+            elements.concoction.reactions.hot_glass_cloud = { "elem1": "mistake", "elem2": null }
+            elements.concoction.reactions.cold_glass_cloud = { "elem1": "mistake", "elem2": null }
     };
 });
