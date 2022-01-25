@@ -101,7 +101,117 @@ elements.molten_glass = {
     stateHigh: "vaporized_glass",
 }
 
+elements.ash.tempHigh = 1200          //https://www.quora.com/Can-you-melt-ashes
+elements.ash.stateHigh = "molten_ash" //https://www.sciencedirect.com/science/article/pii/S1877705817326772
+
+elements.molten_ash = {
+	color: ["#df6f30","#df8c30","#df4d30"],
+	behavior: behaviors.MOLTEN,
+	temp: 1300,
+	tempLow: 1200,
+	stateLow: "ash",
+	tempHigh: 1700, //https://authors.library.caltech.edu/58447/1/018-Senior.pdf
+	                //https://pubs.acs.org/doi/10.1021/ef049693l
+	stateHigh: "vaporized_ash",
+	viscosity: 10000,
+	category: "liquids",
+	state: "liquid",
+	density: 2725,
+},
+
+elements.vaporized_ash = {
+	color: ["#df9f50","#dfbc50","#df7d50"],
+	behavior: [
+		"M2|M1|M2",
+		"M1|XX|M1",
+		"M2|M1|M2",
+	],
+	temp: 1800,
+	tempLow: 1700,
+	stateLow: "molten_ash",
+	category: "gases",
+	state: "gas",
+	hidden: true,
+	density: 3, //bs
+},
+
+elements.charcoal.tempHigh = 800
+elements.charcoal.stateHigh = "carbon_dioxide"
+
+elements.calcined_soda = { //TODO: decomposition?
+	color: "#ededed",
+	behavior: behaviors.POWDER,
+	reactions: {
+		"water": { "elem1": "washing_soda", "elem2": null } //should be 10x water
+		//"carbon_dioxide": not possible: Na_{2}CO_{3} + CO_{2} + H_{2}O → 2NaHCO_{3}
+	},
+	category: "powders",
+	state: "solid",
+	density: 2540,
+	tempHigh: 851,
+}
+
+if(!elements.molten_calcined_soda) {
+	elements.molten_calcined_soda = {}
+}
+
+elements.molten_calcined_soda.temp = 1700
+elements.molten_calcined_soda.tempHigh = 1600
+elements.molten_calcined_soda.stateHigh = "vaporized_calcined_soda"
+elements.molten_calcined_soda.density = 1920
+
+elements.washing_soda = {
+	color: "#ededed",
+	behavior: behaviors.POWDER,
+	//no reactions because it always requires ******* water
+	category: "powders",
+	state: "solid",
+	density: 1460,
+	tempHigh: 400,
+	stateHigh: ["water","calcined_soda"],
+}
+
+elements.vaporized_calcined_soda = {
+	color: ["#ffbf60","#ffdc60","#ff9d60"],
+	behavior: [
+		"M2|M1|M2",
+		"M1|XX|M1",
+		"M2|M1|M2",
+	],
+	temp: 1700,
+	tempLow: 1600,
+	stateLow: "molten_calcined_soda",
+	category: "gases",
+	state: "gas",
+	hidden: true,
+	density: 1.5, //bs
+},
+
+elements.acid.reactions.baking_soda = { "elem1":"neutral_acid", "elem2":null }
+elements.acid.reactions.calcined_soda = { "elem1":"neutral_acid", "elem2":null }
+elements.acid.reactions.washing_soda = { "elem1":"neutral_acid", "elem2":null }
+
+elements.baking_soda.tempHigh = 150,
+elements.baking_soda.stateHigh = ["water","carbon_dioxide","calcined_soda"]
+
 runAfterLoad(function() {
+if(elements.acid_gas.tempHigh) {
+	delete elements.acid_gas.tempHigh
+}
+if(elements.acid_gas.stateHigh) {
+	delete elements.acid_gas.stateHigh
+}
+elements.acid.stateHigh = "acid_gas"
+elements.acid_gas.tempLow = 400
+elements.acid_gas.stateLow = "acid"
+elements.yogurt.tempHigh = 400
+elements.yogurt.stateHigh = "ash"
+elements.dust.tempHigh = 400
+elements.dust.stateHigh = "fire"
+elements.charcoal.tempHigh = 800
+elements.charcoal.stateHigh = "carbon_dioxide"
+    
+    runAfterLoad(function() {
     if(enabledMods.includes("mods/fey_and_more.js")) {
         elements.molten_glass.tempHigh = 2200
         elements.molten_glass.stateHigh = "vaporized_glass"
