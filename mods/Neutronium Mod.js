@@ -909,6 +909,16 @@ behavior: [
 "CR:explosion|CR:explosion|CR:explosion",
 ],
 };
+elements.explosion5explosion = {
+color: ["#ffb48f","#ffd991","#ffad91"],
+category: "special",
+state: "solid",
+behavior: [
+"EX:10>explosion5|EX:10>explosion5|EX:10>explosion5",
+"EX:10>explosion5|XX|EX:10>explosion5",
+"EX:10>explosion5|EX:10>explosion5|EX:10>explosion5",
+],
+};
 /* Unfinished:
 magnesium
 hematite mixture
