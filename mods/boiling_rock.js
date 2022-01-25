@@ -210,8 +210,6 @@ elements.dust.tempHigh = 400
 elements.dust.stateHigh = "fire"
 elements.charcoal.tempHigh = 800
 elements.charcoal.stateHigh = "carbon_dioxide"
-    
-    runAfterLoad(function() {
     if(enabledMods.includes("mods/fey_and_more.js")) {
         elements.molten_glass.tempHigh = 2200
         elements.molten_glass.stateHigh = "vaporized_glass"
