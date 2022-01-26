@@ -369,6 +369,114 @@ elements.vaporized_estradiol = {
 	stateLow: "molten_estradiol",
 },
 
+elements.superduperheater = {
+	color: "#ff0000",
+	tick: function(pixel) {
+		if (!isEmpty(pixel.x-2,pixel.y-2) && !outOfBounds(pixel.x-2,pixel.y-2)) {
+			pixelMap[pixel.x-2][pixel.y-2].temp += 10
+		}
+
+		if (!isEmpty(pixel.x-2,pixel.y-1) && !outOfBounds(pixel.x-2,pixel.y-1)) {
+			pixelMap[pixel.x-2][pixel.y-1].temp += 10
+		}
+
+		if (!isEmpty(pixel.x-2,pixel.y+0) && !outOfBounds(pixel.x-2,pixel.y+0)) {
+			pixelMap[pixel.x-2][pixel.y+0].temp += 10
+		}
+
+		if (!isEmpty(pixel.x-2,pixel.y+1) && !outOfBounds(pixel.x-2,pixel.y+1)) {
+			pixelMap[pixel.x-2][pixel.y+1].temp += 10
+		}
+
+		if (!isEmpty(pixel.x-2,pixel.y+2) && !outOfBounds(pixel.x-2,pixel.y+2)) {
+			pixelMap[pixel.x-2][pixel.y+2].temp += 10
+		}
+
+		if (!isEmpty(pixel.x-1,pixel.y-2) && !outOfBounds(pixel.x-1,pixel.y-2)) {
+			pixelMap[pixel.x-1][pixel.y-2].temp += 10
+		}
+
+		if (!isEmpty(pixel.x-1,pixel.y-1) && !outOfBounds(pixel.x-1,pixel.y-1)) {
+			pixelMap[pixel.x-1][pixel.y-1].temp += 10
+		}
+
+		if (!isEmpty(pixel.x-1,pixel.y+0) && !outOfBounds(pixel.x-1,pixel.y+0)) {
+			pixelMap[pixel.x-1][pixel.y+0].temp += 10
+		}
+
+		if (!isEmpty(pixel.x-1,pixel.y+1) && !outOfBounds(pixel.x-1,pixel.y+1)) {
+			pixelMap[pixel.x-1][pixel.y+1].temp += 10
+		}
+
+		if (!isEmpty(pixel.x-1,pixel.y+2) && !outOfBounds(pixel.x-1,pixel.y+2)) {
+			pixelMap[pixel.x-1][pixel.y+2].temp += 10
+		}
+
+		if (!isEmpty(pixel.x+0,pixel.y-2) && !outOfBounds(pixel.x+0,pixel.y-2)) {
+			pixelMap[pixel.x+0][pixel.y-2].temp += 10
+		}
+
+		if (!isEmpty(pixel.x+0,pixel.y-1) && !outOfBounds(pixel.x+0,pixel.y-1)) {
+			pixelMap[pixel.x+0][pixel.y-1].temp += 10
+		}
+
+		/*if (!isEmpty(pixel.x+0,pixel.y+0) && !outOfBounds(pixel.x+0,pixel.y+0)) {
+			pixelMap[pixel.x+0][pixel.y+0].temp += 10
+		}*/
+
+		if (!isEmpty(pixel.x+0,pixel.y+1) && !outOfBounds(pixel.x+0,pixel.y+1)) {
+			pixelMap[pixel.x+0][pixel.y+1].temp += 10
+		}
+
+		if (!isEmpty(pixel.x+0,pixel.y+2) && !outOfBounds(pixel.x+0,pixel.y+2)) {
+			pixelMap[pixel.x+0][pixel.y+2].temp += 10
+		}
+
+		if (!isEmpty(pixel.x+1,pixel.y-2) && !outOfBounds(pixel.x+1,pixel.y-2)) {
+			pixelMap[pixel.x+1][pixel.y-2].temp += 10
+		}
+
+		if (!isEmpty(pixel.x+1,pixel.y-1) && !outOfBounds(pixel.x+1,pixel.y-1)) {
+			pixelMap[pixel.x+1][pixel.y-1].temp += 10
+		}
+
+		if (!isEmpty(pixel.x+1,pixel.y+0) && !outOfBounds(pixel.x+1,pixel.y+0)) {
+			pixelMap[pixel.x+1][pixel.y+0].temp += 10
+		}
+
+		if (!isEmpty(pixel.x+1,pixel.y+1) && !outOfBounds(pixel.x+1,pixel.y+1)) {
+			pixelMap[pixel.x+1][pixel.y+1].temp += 10
+		}
+
+		if (!isEmpty(pixel.x+1,pixel.y+2) && !outOfBounds(pixel.x+1,pixel.y+2)) {
+			pixelMap[pixel.x+1][pixel.y+2].temp += 10
+		}
+
+		if (!isEmpty(pixel.x+2,pixel.y-2) && !outOfBounds(pixel.x+2,pixel.y-2)) {
+			pixelMap[pixel.x+2][pixel.y-2].temp += 10
+		}
+
+		if (!isEmpty(pixel.x+2,pixel.y-1) && !outOfBounds(pixel.x+2,pixel.y-1)) {
+			pixelMap[pixel.x+2][pixel.y-1].temp += 10
+		}
+
+		if (!isEmpty(pixel.x+2,pixel.y+0) && !outOfBounds(pixel.x+2,pixel.y+0)) {
+			pixelMap[pixel.x+2][pixel.y+0].temp += 10
+		}
+
+		if (!isEmpty(pixel.x+2,pixel.y+1) && !outOfBounds(pixel.x+2,pixel.y+1)) {
+			pixelMap[pixel.x+2][pixel.y+1].temp += 10
+		}
+
+		if (!isEmpty(pixel.x+2,pixel.y+2) && !outOfBounds(pixel.x+2,pixel.y+2)) {
+			pixelMap[pixel.x+2][pixel.y+2].temp += 10
+		}
+	},
+	category:"machines",
+	insulate:true,
+	state: "solid",
+},
+
 runAfterLoad(function() {
 	elements.tungstensteel.behavior = [
         "XX|DL:"+eLists.FAIRY+"|XX",
