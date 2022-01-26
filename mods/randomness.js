@@ -385,14 +385,16 @@ elements.superduperheater = {
 	state: "solid",
 },
 
-elements.temp222 = {
-	color: "#222222",
+elements.tempinccheck = {
+	color: "#000000",
 	tick: function(pixel) {
 		pixel.color = "rgb(" + pixel.temp % 256 + ",0,0)"
 	},
 	category:"machines",
 	insulate:true,
 	state: "solid",
+	hidden: true,
+	extraInfo: "Debug tool<br>Changes black to red with increasing heat",
 },
 
 runAfterLoad(function() {
