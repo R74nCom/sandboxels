@@ -571,6 +571,56 @@
                 state: "solid",
                 density: 1602,
             },
+            "tick_sand": {
+                color: "#e6d577",
+                tick: function(pixel) {
+                    tryMove(pixel, pixel.x, pixel.y+1);
+                    doHeat(pixel);
+                },
+                tempHigh: 1700,
+                stateHigh: "molten_glass",
+                category: "land",
+                state: "solid",
+                density: 1602,
+                hidden: true,
+            },
+            "tick_wood": {
+                color: "#a0522d",
+                tick: function(pixel) {
+                    doBurning(pixel);
+                    doHeat(pixel);
+                },
+                tempHigh: 400,
+                stateHigh: "fire",
+                category: "solids",
+                burn: 5,
+                burnTime: 300,
+                burnInto: ["ash","charcoal","fire"],
+                state: "solid",
+                hardness: 0.15,
+                breakInto: "sawdust",
+                hidden: true,
+            },
+            "tick_wall": {
+                color: "#808080",
+                hidden: true,
+            },
+            "tick_props": {
+                color: "#ffffff",
+                tick: function(pixel) {
+                    if (tryMove(pixel, pixel.x, pixel.y+1)) {
+                        pixel.moves += 1;
+                    }
+                    pixel.age += 1;
+                    if (pixel.moves > 20) { // This pixel will delete itself if it moves 20 times
+                        deletePixel(pixel.x, pixel.y);
+                    }
+                },
+                properties: { // Default properties to set when the pixel is created:
+                    "moves": 0,
+                    "age": 0,
+                },
+            },
             "water": {
                 color: "#2167ff",
                 behavior: behaviors.LIQUID,
@@ -4171,6 +4221,12 @@
                 else if (elementInfo.rotatable) {
                     this.r = Math.floor(Math.random() * 4);
                 }
+                // If elementInfo.properties, set each key to its value
+                if (elementInfo.properties !== undefined) {
+                    for (var key in elementInfo.properties) {
+                        this[key] = elementInfo.properties[key];
+                    }
+                }
                 pixelMap[x][y] = this;
             }
         }
@@ -4928,7 +4984,30 @@
                 }
             }
 
+
+            // Change tempearture if needed (unused)
+            /*if (info.tempChange != undefined) {
+                pixel.temp += info.tempChange;
+                pixelTempCheck(pixel);
+            }*/
+
+            // Burning
+            doBurning(pixel);
+
+            // Heat Transfer
+            if (info.insulate != true) {
+                doHeat(pixel);
+            }
+
+            // Electricity Transfer
+            doElectricity(pixel);
+
+
+        }
+
+        function doBurning(pixel) {
             if (pixel.burning) { // Burning
+                var info = elements[pixel.element];
                 pixel.temp += 1;
                 pixelTempCheck(pixel);
                 var burnSpots = [
@@ -4989,39 +5068,33 @@
                 }
 
             }
+        }
 
-            // Change tempearture if needed (unused)
-            /*if (info.tempChange != undefined) {
-                pixel.temp += info.tempChange;
-                pixelTempCheck(pixel);
-            }*/
-
-            // Heat Transfer
-            if (info.insulate != true) {
-                // Check right and bottom adjacent pixels
-                var coordsToCheck = [
-                    {x:pixel.x+1,y:pixel.y},
-                    {x:pixel.x,y:pixel.y+1},
-                ];
-                for (var i = 0; i < coordsToCheck.length; i++) {
-                    var coords = coordsToCheck[i];
-                    if (!isEmpty(coords.x,coords.y,true)) {
-                        var newPixel = pixelMap[coords.x][coords.y];
-                        // Skip if both temperatures are the same
-                        if (pixel.temp == newPixel.temp || elements[newPixel.element].insulate == true) {
-                            continue;
-                        }
-                        // Set both pixel temperatures to their average
-                        var avg = (pixel.temp + newPixel.temp)/2;
-                        pixel.temp = avg;
-                        newPixel.temp = avg;
-                        pixelTempCheck(pixel);
-                        pixelTempCheck(newPixel);
+        function doHeat(pixel) {
+            // Check right and bottom adjacent pixels
+            var coordsToCheck = [
+                {x:pixel.x+1,y:pixel.y},
+                {x:pixel.x,y:pixel.y+1},
+            ];
+            for (var i = 0; i < coordsToCheck.length; i++) {
+                var coords = coordsToCheck[i];
+                if (!isEmpty(coords.x,coords.y,true)) {
+                    var newPixel = pixelMap[coords.x][coords.y];
+                    // Skip if both temperatures are the same
+                    if (pixel.temp == newPixel.temp || elements[newPixel.element].insulate == true) {
+                        continue;
                     }
+                    // Set both pixel temperatures to their average
+                    var avg = (pixel.temp + newPixel.temp)/2;
+                    pixel.temp = avg;
+                    newPixel.temp = avg;
+                    pixelTempCheck(pixel);
+                    pixelTempCheck(newPixel);
                 }
             }
+        }
 
-            // Electricity Transfer
+        function doElectricity(pixel) {
             if (pixel.charge) {
                 // Check each adjacent pixel, if that pixel's charge is false, set it to the same charge
                 var coordsToCheck = [
@@ -5066,9 +5139,8 @@
                     delete pixel.chargeCD;
                 }
             }
-
-
         }
+
         function pixelColorPick(pixel,customColor=null) {
             var element = pixel.element;
             var elementInfo = elements[element];
@@ -6152,48 +6224,50 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             // Loop through each element, final checks
             for (key in elements) {
                 // If the element has no behavior, set it to behaviors.WALL
-                if (!elements[key].behavior) {
-                    elements[key].behavior = behaviors.WALL;
+                if (!elements[key].behavior && !elements[key].tick) {
+                    elements[key].tick = function(pixel) {};
                 }
                 // If the element has no color, set it to white
                 if (elements[key].color === undefined) {
                     elements[key].color = "rgb(255,255,255)";
                     elements[key].colorObject = {r:255,g:255,b:255};
                 }
-                // If the element's behavior[1][1] includes "FX", set it's flippableX to true
-                if (elements[key].behavior[1][1].includes("FX")) {
-                    elements[key].flippableX = true;
-                }
-                // If the element's behavior[1][1] includes "FY", set it's flippableY to true
-                if (elements[key].behavior[1][1].includes("FY")) {
-                    elements[key].flippableY = true;
-                }
+                if (elements[key].behavior) {
+                    // If the element's behavior[1][1] includes "FX", set it's flippableX to true
+                    if (elements[key].behavior[1][1].includes("FX")) {
+                        elements[key].flippableX = true;
+                    }
+                    // If the element's behavior[1][1] includes "FY", set it's flippableY to true
+                    if (elements[key].behavior[1][1].includes("FY")) {
+                        elements[key].flippableY = true;
+                    }
 
-                // If the element's behavior stringified includes "BO", loop through the behavior
-                if (elements[key].behavior.toString().includes("BO") && !elements.rotatable) {
-                    for (var i = 0; i < elements[key].behavior.length; i++) {
-                        // Loop through each array in the behavior
-                        for (var j = 0; j < elements[key].behavior[i].length; j++) {
-                            // If the behavior includes "BO", set the behaviorOn to the behavior
-                            if (elements[key].behavior[i][j].includes("BO")) {
-                                if ((i==0 && j==0) || (i==0 && j==2) || (i==2 && j==0) && (i==2 && j==2)) {
-                                    elements[key].flippableX = true;
-                                    elements[key].flippableY = true;
-                                }
-                                else if (i==0 || i==2) {
-                                    elements[key].flippableY = true;
-                                }
-                                else if (j==0 || j==2) {
-                                    elements[key].flippableX = true;
+                    // If the element's behavior stringified includes "BO", loop through the behavior
+                    if (elements[key].behavior.toString().includes("BO") && !elements.rotatable) {
+                        for (var i = 0; i < elements[key].behavior.length; i++) {
+                            // Loop through each array in the behavior
+                            for (var j = 0; j < elements[key].behavior[i].length; j++) {
+                                // If the behavior includes "BO", set the behaviorOn to the behavior
+                                if (elements[key].behavior[i][j].includes("BO")) {
+                                    if ((i==0 && j==0) || (i==0 && j==2) || (i==2 && j==0) && (i==2 && j==2)) {
+                                        elements[key].flippableX = true;
+                                        elements[key].flippableY = true;
+                                    }
+                                    else if (i==0 || i==2) {
+                                        elements[key].flippableY = true;
+                                    }
+                                    else if (j==0 || j==2) {
+                                        elements[key].flippableX = true;
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                // If the element's behavior[1][1] includes "RT", set it's rotatable to "true"
-                if (elements[key].behavior[1][1].includes("RT")) {
-                    elements[key].rotatable = true;
+                    // If the element's behavior[1][1] includes "RT", set it's rotatable to "true"
+                    if (elements[key].behavior[1][1].includes("RT")) {
+                        elements[key].rotatable = true;
+                    }
                 }
 
                 // If the element has reactions, loop through each one (it is an object), if the value for elem1 or elem2 is not an element and is not null, remove that key

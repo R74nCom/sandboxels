@@ -2,6 +2,14 @@
     + Artists' Update (Painting, Lines, Shapes, etc.)
     + Machines Update
 
+[Version 1.1.2] 
+    + Technical: New functions to use in coded elements
+    doBurning(pixel); // Using this function will allow burning simulation
+    doHeat(pixel); // Using this function will allow heat simulation
+    doElectricity(pixel); // Using this function will allow electricity simulation
+    + Technical: New hidden example elements: tick_sand, tick_wood, tick_wall, tick_props
+    + Technical: New "properties" element attribute. See the tick_props element
+
 [Version 1.1.1]
     + Technical: "tick" element attribute, takes a function
     tick: function(pixel) {
