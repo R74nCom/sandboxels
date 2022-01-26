@@ -620,6 +620,7 @@
                     "moves": 0,
                     "age": 0,
                 },
+                hidden: true,
             },
             "water": {
                 color: "#2167ff",
@@ -4165,6 +4166,7 @@
                 category: "machines",
                 conduct: 1,
             },
+
             
         };
 
@@ -4269,7 +4271,7 @@
         function deletePixel(x,y) {
             // remove pixelMap[x][y] from currentPixels
             currentPixels.splice(currentPixels.indexOf(pixelMap[x][y]),1);
-            pixelMap[x][y].del = true;
+            if (pixelMap[x][y]) {pixelMap[x][y].del = true;}
             delete pixelMap[x][y];
             /*for (var i = 0; i < currentPixels.length; i++) {
                 if (currentPixels[i].x == x && currentPixels[i].y == y) {
