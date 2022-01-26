@@ -372,10 +372,26 @@ elements.vaporized_estradiol = {
 elements.superduperheater = {
 	color: "#ff0000",
 	tick: function(pixel) {
-		for (let i = -4; i < 4; i++) {
-			for (let j = -4; j < 4; j++) {
+		for (let i = -4; i < 5; i++) {
+			for (let j = -4; j < 5; j++) {
 				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 					pixelMap[pixel.x+j][pixel.y+i].temp += 15
+				}
+			}
+		}
+	},
+	category:"machines",
+	insulate:true,
+	state: "solid",
+},
+
+elements.superdupercooler = {
+	color: "#0000ff",
+	tick: function(pixel) {
+		for (let i = -4; i < 5; i++) {
+			for (let j = -4; j < 5; j++) {
+				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
+					pixelMap[pixel.x+j][pixel.y+i].temp < -258 ? pixelMap[pixel.x+j][pixel.y+i].temp = -273 : pixelMap[pixel.x+j][pixel.y+i].temp -= 15
 				}
 			}
 		}
