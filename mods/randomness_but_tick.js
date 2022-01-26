@@ -232,7 +232,42 @@ elements.sencc2b = { //same element neighbor count check
 	hidden: true,
 },
 
-
+/*elements.superdupersuperduperheater = {
+	color: "#ff7f00",
+	uwu: 0,
+	tick: function(pixel) {
+		tempInc = 40
+		pixel.uwu = 0
+		range = 13
+		for (let i = -9; i < 10; i++) {
+			for (let j = -8; j < 9; j++) {
+				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
+					if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
+						pixel.uwu += 1
+					}
+				}
+			}
+		}
+		pixel.uwu -= 1
+		if(pixel.uwu == undefined || pixel.uwu == null || isNaN(pixel.uwu)) {
+			pixel.uwu = 0
+		} else {
+			tempInc += (pixel.uwu*15)
+			range += (((pixel.uwu+2)/20).toFixed(0))
+		}
+		for (let i = (-1*range); i < (range + 1); i++) {
+			for (let j = (-1*range); j < (range + 1); j++) {
+				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
+					pixelMap[pixel.x+j][pixel.y+i].temp += tempInc
+				}
+			}
+		}
+	},
+	category:"machines",
+	insulate:true,
+	state: "solid",
+},*/
+	
 	elements.tempinccheck = {
 	color: "#000000",
 	tick: function(pixel) {
