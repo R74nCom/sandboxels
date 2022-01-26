@@ -253,7 +253,7 @@ elements.superheater4 = {
 			pixel.uwu = 0
 		} else {
 			tempInc += (pixel.uwu*15)
-			range += Math.floor(Math.sqrt(pixel.uwu+1))
+			range += Math.floor((Math.sqrt(pixel.uwu+1))**1.2)
 		}
 		for (let i = (-1*range); i < (range + 1); i++) {
 			for (let j = (-1*range); j < (range + 1); j++) {
@@ -289,7 +289,7 @@ elements.supercooler4 = {
 			pixel.uwu = 0
 		} else {
 			tempDec += (pixel.uwu*15)
-			range += Math.floor(Math.sqrt(pixel.uwu+1))
+			range += Math.floor((Math.sqrt(pixel.uwu+1))**1.2)
 		}
 		for (let i = (-1*range); i < (range + 1); i++) {
 			for (let j = (-1*range); j < (range + 1); j++) {
@@ -323,7 +323,7 @@ elements.superwarmer4 = {
 		if(pixel.uwu == undefined || pixel.uwu == null || isNaN(pixel.uwu)) {
 			pixel.uwu = 0
 		} else {
-			range += Math.floor(Math.sqrt(pixel.uwu+1))
+			range += Math.floor((Math.sqrt(pixel.uwu+1))**1.2)
 		}
 		for (let i = (-1*range); i < (range + 1); i++) {
 			for (let j = (-1*range); j < (range + 1); j++) {
@@ -358,5 +358,76 @@ elements.tc = { //temperature checker
 	category:"machines",
 	insulate:true,
 	state: "solid",
-	hidden: true,
+},
+
+elements.discharge = {
+	color: "#7f7f7f",
+	tick: function(pixel) {
+		for (var i = 1; i < width; i++) {
+			for (var j = 1; j < height; j++) {
+				if (!isEmpty(i,j)) {
+					pixelMap[i][j].charge = 0
+				}
+			}
+		}
+		deletePixel(pixel.x, pixel.y)
+	},
+	category:"special",
+	insulate:true,
+	state: "solid",
+	behavior: behaviors.SELFDELETE,
+},
+
+elements.troll_powder = {
+	color: ["#ffffff","#000000"],
+	tick: function(pixel) {
+		ddd = Math.random()
+		eee = Math.random()
+		fff = 1-eee
+		doHeat(pixel);
+		doBurning(pixel);
+		if(ddd < 0.9) {
+			if(!tryMove(pixel, pixel.x, pixel.y+1)) {
+				if(eee < 1/2) { tryMove(pixel, pixel.x-1, pixel.y+1) } else tryMove(pixel, pixel.x+1, pixel.y+1)
+			}
+			if(Math.random() < 0.0017) {
+				if(fff < 1/5) { tryMove(pixel, pixel.x-2, pixel.y-1) }
+				if(fff < 2/5) { tryMove(pixel, pixel.x-1, pixel.y-2) }
+				if(fff < 3/5) { tryMove(pixel, pixel.x, pixel.y-3) }
+				if(fff < 4/5) { tryMove(pixel, pixel.x+1, pixel.y-2) }
+				if(fff < 5/5) { tryMove(pixel, pixel.x+2, pixel.y-1) }
+			}
+			if(Math.random() < 0.0003) { tryMove(pixel, pixel.y, pixel.y); }
+			if(Math.random() < 0.0003) { tryMove(pixel, pixel.x, pixel.x); }		
+			if(((Math.floor(pixel.x/2) % 2 == 0) && (Math.floor(pixel.y/2) % 2 == 0)) || ((Math.floor(pixel.x/2) % 2 == 1) && (Math.floor(pixel.y/2) % 2 == 1))) {
+				pixel.color = "rgb(32,32,32)"
+			} else {
+				pixel.color = "rgb(224,224,224)"
+			}
+		}
+
+		if(ddd >= 0.9) {
+			if(!tryMove(pixel, pixel.x, pixel.y-1)) {
+				if(eee < 1/2) { tryMove(pixel, pixel.x-1, pixel.y-1) } else tryMove(pixel, pixel.x+1, pixel.y-1)
+			}
+			if(Math.random() < 0.0017) {
+				if(fff < 1/5) { tryMove(pixel, pixel.x-2, pixel.y+1) }
+				if(fff < 2/5) { tryMove(pixel, pixel.x-1, pixel.y+2) }
+				if(fff < 3/5) { tryMove(pixel, pixel.x, pixel.y+3) }
+				if(fff < 4/5) { tryMove(pixel, pixel.x+1, pixel.y+2) }
+				if(fff < 5/5) { tryMove(pixel, pixel.x+2, pixel.y+1) }
+			}
+			if(Math.random() < 0.0003) { tryMove(pixel, pixel.y, pixel.y); }
+			if(Math.random() < 0.0003) { tryMove(pixel, pixel.x, pixel.x); }		
+			if(((Math.floor(pixel.x/2) % 2 == 0) && (Math.floor(pixel.y/2) % 2 == 0)) || ((Math.floor(pixel.x/2) % 2 == 1) && (Math.floor(pixel.y/2) % 2 == 1))) {
+				pixel.color = "rgb(32,32,32)"
+			} else {
+				pixel.color = "rgb(224,224,224)"
+			}
+			pixel.temp = pixel.temp + ((Math.floor(Math.random()*3) - 1)*2)
+		}
+	},
+	category: "powders",
+	state: "solid",
+	density: 1602,
 }
