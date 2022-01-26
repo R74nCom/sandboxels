@@ -565,9 +565,6 @@
             "sand": {
                 color: "#e6d577",
                 behavior: behaviors.POWDER,
-                tick: function(pixel) {
-                    tryMove(pixel, pixel.x, pixel.y+1) // try to move down each tick
-                },
                 tempHigh: 1700,
                 stateHigh: "molten_glass",
                 category: "land",
