@@ -372,105 +372,23 @@ elements.vaporized_estradiol = {
 elements.superduperheater = {
 	color: "#ff0000",
 	tick: function(pixel) {
-		if (!isEmpty(pixel.x-2,pixel.y-2) && !outOfBounds(pixel.x-2,pixel.y-2)) {
-			pixelMap[pixel.x-2][pixel.y-2].temp += 10
+		for (let i = -4; i < 4; i++) {
+			for (let j = -4; j < 4; j++) {
+				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
+					pixelMap[pixel.x+j][pixel.y+i].temp += 15
+				}
+			}
 		}
+	},
+	category:"machines",
+	insulate:true,
+	state: "solid",
+},
 
-		if (!isEmpty(pixel.x-2,pixel.y-1) && !outOfBounds(pixel.x-2,pixel.y-1)) {
-			pixelMap[pixel.x-2][pixel.y-1].temp += 10
-		}
-
-		if (!isEmpty(pixel.x-2,pixel.y+0) && !outOfBounds(pixel.x-2,pixel.y+0)) {
-			pixelMap[pixel.x-2][pixel.y+0].temp += 10
-		}
-
-		if (!isEmpty(pixel.x-2,pixel.y+1) && !outOfBounds(pixel.x-2,pixel.y+1)) {
-			pixelMap[pixel.x-2][pixel.y+1].temp += 10
-		}
-
-		if (!isEmpty(pixel.x-2,pixel.y+2) && !outOfBounds(pixel.x-2,pixel.y+2)) {
-			pixelMap[pixel.x-2][pixel.y+2].temp += 10
-		}
-
-		if (!isEmpty(pixel.x-1,pixel.y-2) && !outOfBounds(pixel.x-1,pixel.y-2)) {
-			pixelMap[pixel.x-1][pixel.y-2].temp += 10
-		}
-
-		if (!isEmpty(pixel.x-1,pixel.y-1) && !outOfBounds(pixel.x-1,pixel.y-1)) {
-			pixelMap[pixel.x-1][pixel.y-1].temp += 10
-		}
-
-		if (!isEmpty(pixel.x-1,pixel.y+0) && !outOfBounds(pixel.x-1,pixel.y+0)) {
-			pixelMap[pixel.x-1][pixel.y+0].temp += 10
-		}
-
-		if (!isEmpty(pixel.x-1,pixel.y+1) && !outOfBounds(pixel.x-1,pixel.y+1)) {
-			pixelMap[pixel.x-1][pixel.y+1].temp += 10
-		}
-
-		if (!isEmpty(pixel.x-1,pixel.y+2) && !outOfBounds(pixel.x-1,pixel.y+2)) {
-			pixelMap[pixel.x-1][pixel.y+2].temp += 10
-		}
-
-		if (!isEmpty(pixel.x+0,pixel.y-2) && !outOfBounds(pixel.x+0,pixel.y-2)) {
-			pixelMap[pixel.x+0][pixel.y-2].temp += 10
-		}
-
-		if (!isEmpty(pixel.x+0,pixel.y-1) && !outOfBounds(pixel.x+0,pixel.y-1)) {
-			pixelMap[pixel.x+0][pixel.y-1].temp += 10
-		}
-
-		/*if (!isEmpty(pixel.x+0,pixel.y+0) && !outOfBounds(pixel.x+0,pixel.y+0)) {
-			pixelMap[pixel.x+0][pixel.y+0].temp += 10
-		}*/
-
-		if (!isEmpty(pixel.x+0,pixel.y+1) && !outOfBounds(pixel.x+0,pixel.y+1)) {
-			pixelMap[pixel.x+0][pixel.y+1].temp += 10
-		}
-
-		if (!isEmpty(pixel.x+0,pixel.y+2) && !outOfBounds(pixel.x+0,pixel.y+2)) {
-			pixelMap[pixel.x+0][pixel.y+2].temp += 10
-		}
-
-		if (!isEmpty(pixel.x+1,pixel.y-2) && !outOfBounds(pixel.x+1,pixel.y-2)) {
-			pixelMap[pixel.x+1][pixel.y-2].temp += 10
-		}
-
-		if (!isEmpty(pixel.x+1,pixel.y-1) && !outOfBounds(pixel.x+1,pixel.y-1)) {
-			pixelMap[pixel.x+1][pixel.y-1].temp += 10
-		}
-
-		if (!isEmpty(pixel.x+1,pixel.y+0) && !outOfBounds(pixel.x+1,pixel.y+0)) {
-			pixelMap[pixel.x+1][pixel.y+0].temp += 10
-		}
-
-		if (!isEmpty(pixel.x+1,pixel.y+1) && !outOfBounds(pixel.x+1,pixel.y+1)) {
-			pixelMap[pixel.x+1][pixel.y+1].temp += 10
-		}
-
-		if (!isEmpty(pixel.x+1,pixel.y+2) && !outOfBounds(pixel.x+1,pixel.y+2)) {
-			pixelMap[pixel.x+1][pixel.y+2].temp += 10
-		}
-
-		if (!isEmpty(pixel.x+2,pixel.y-2) && !outOfBounds(pixel.x+2,pixel.y-2)) {
-			pixelMap[pixel.x+2][pixel.y-2].temp += 10
-		}
-
-		if (!isEmpty(pixel.x+2,pixel.y-1) && !outOfBounds(pixel.x+2,pixel.y-1)) {
-			pixelMap[pixel.x+2][pixel.y-1].temp += 10
-		}
-
-		if (!isEmpty(pixel.x+2,pixel.y+0) && !outOfBounds(pixel.x+2,pixel.y+0)) {
-			pixelMap[pixel.x+2][pixel.y+0].temp += 10
-		}
-
-		if (!isEmpty(pixel.x+2,pixel.y+1) && !outOfBounds(pixel.x+2,pixel.y+1)) {
-			pixelMap[pixel.x+2][pixel.y+1].temp += 10
-		}
-
-		if (!isEmpty(pixel.x+2,pixel.y+2) && !outOfBounds(pixel.x+2,pixel.y+2)) {
-			pixelMap[pixel.x+2][pixel.y+2].temp += 10
-		}
+elements.temp222 = {
+	color: "#222222",
+	tick: function(pixel) {
+		pixel.color = "rgb(" + pixel.temp % 256 + ",0,0)"
 	},
 	category:"machines",
 	insulate:true,
