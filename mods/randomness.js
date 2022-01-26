@@ -5,9 +5,9 @@ elements.warp = {
     name: "warp",
     color: "#111111",
     behavior: [
-        "M1%20 AND SW%20|M1%20 AND SW%20|M1%20 AND SW%20",
-        "M1%20 AND SW%20|DL%0.5|M1%20 AND SW%20",
-        "M1%20 AND SW%20|M1%20 AND SW%20|M1%20 AND SW%20",
+        "M1%30 AND SW%30|M1%30 AND SW%30|M1%30 AND SW%30",
+        "M1%30 AND SW%30|DL%1|M1%30 AND SW%30",
+        "M1%30 AND SW%30|M1%30 AND SW%30|M1%30 AND SW%30",
     ],
     category: "special",
     state: "gases",
@@ -306,7 +306,7 @@ elements.lb1 = {
 }
 
 elements.unnamed_substance_bomb = {
-	name: "unnamed_bomb",
+	name: "unnamed bomb",
 	color: "#cdad52",
 	behavior: [
 		"XX|XX|XX",
@@ -316,18 +316,57 @@ elements.unnamed_substance_bomb = {
 	category: "weapons",
 	state: "solid",
 	density: 1300,
-    },
+},
+
+elements.warp_bomb = {
+	name: "warp bomb",
+	color: "#422e4a",
+	behavior: [
+		"XX|XX|XX",
+		"XX|CC:#5b3a69,#382740,#400e61|XX",
+		"M2|M1 AND EX:15>warp|M2",
+	],
+	category: "weapons",
+	state: "solid",
+	density: 1300,
+},
 
 elements.cluster_nuke = {
 	color: "#e3f636",
 	behavior: [
-		"XX|EX:60>plasma,plasma,nuke,radiation,rad_steam,radiation,rad_steam|XX",
-		"XX|XX|XX",
-		"M2|M1 AND EX:60>plasma,plasma,plasma,plasma,radiation,rad_steam,nuke,radiation,rad_steam|M2",
+		"CR:radiation%5|EX:90>plasma,plasma,plasma,nuke,nuke,nuke,radiation,radiation,radiation,rad_steam,rad_steam,radiation,rad_steam AND CR:radiation%5|CR:radiation%5",
+		"CR:radiation%5|XX|CR:radiation%5",
+		"M2 AND CR:radiation%5|M1 AND EX:90>plasma,plasma,plasma,nuke,nuke,nuke,radiation,radiation,radiation,rad_steam,rad_steam,radiation,rad_steam AND CR:radiation%5|M2 AND CR:radiation%5",
 	],
 	category: "weapons",
 	state: "solid",
 	density: 1500,
+},
+
+elements.estradiol = {
+	color: "#eeeeee",
+		behavior: behaviors.POWDER,
+	state: "solid",
+	category: "solids",
+	density: 1200,
+	tempHigh: 173,
+	category: "powders",
+},
+
+elements.molten_estradiol = {
+	tempHigh: 446,
+	stateHigh: "vaporized_estradiol",
+},
+
+elements.vaporized_estradiol = {
+	color: ["#ffbf60","#ffdc60","#ff9d60"],
+	behavior: behaviors.GAS,
+	state: "gas",
+	category: "gases",
+	hidden: true,
+	density: 972,
+	tempLow: 446,
+	stateLow: "molten_estradiol",
 },
 
 runAfterLoad(function() {
