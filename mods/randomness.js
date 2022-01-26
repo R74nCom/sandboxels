@@ -369,114 +369,6 @@ elements.vaporized_estradiol = {
 	stateLow: "molten_estradiol",
 },
 
-elements.superduperheater = {
-	color: "#ff0000",
-	tick: function(pixel) {
-		for (let i = -4; i < 5; i++) {
-			for (let j = -4; j < 5; j++) {
-				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
-					pixelMap[pixel.x+j][pixel.y+i].temp += 15
-				}
-			}
-		}
-	},
-	category:"machines",
-	insulate:true,
-	state: "solid",
-},
-
-elements.superdupercooler = {
-	color: "#0000ff",
-	tick: function(pixel) {
-		for (let i = -4; i < 5; i++) {
-			for (let j = -4; j < 5; j++) {
-				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
-					pixelMap[pixel.x+j][pixel.y+i].temp < -258 ? pixelMap[pixel.x+j][pixel.y+i].temp = -273 : pixelMap[pixel.x+j][pixel.y+i].temp -= 15
-				}
-			}
-		}
-	},
-	category:"machines",
-	insulate:true,
-	state: "solid",
-},
-
-elements.superduperwarmer = {
-	color: "#00ff00",
-	tick: function(pixel) {
-		for (let i = -4; i < 5; i++) {
-			for (let j = -4; j < 5; j++) {
-				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
-					pixelMap[pixel.x+j][pixel.y+i].temp = 20
-				}
-			}
-		}
-	},
-	category:"machines",
-	insulate:true,
-	state: "solid",
-},
-
-elements.supersuperduperheater = {
-	color: "#ff2200",
-	tick: function(pixel) {
-		for (let i = -9; i < 10; i++) {
-			for (let j = -9; j < 10; j++) {
-				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
-					pixelMap[pixel.x+j][pixel.y+i].temp += 25
-				}
-			}
-		}
-	},
-	category:"machines",
-	insulate:true,
-	state: "solid",
-},
-
-elements.supersuperdupercooler = {
-	color: "#0022ff",
-	tick: function(pixel) {
-		for (let i = -9; i < 10; i++) {
-			for (let j = -9; j < 10; j++) {
-				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
-					pixelMap[pixel.x+j][pixel.y+i].temp < -248 ? pixelMap[pixel.x+j][pixel.y+i].temp = -273 : pixelMap[pixel.x+j][pixel.y+i].temp -= 25
-				}
-			}
-		}
-	},
-	category:"machines",
-	insulate:true,
-	state: "solid",
-},
-
-elements.supersuperduperwarmer = {
-	color: "#22ff22",
-	tick: function(pixel) {
-		for (let i = -9; i < 10; i++) {
-			for (let j = -9; j < 10; j++) {
-				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
-					pixelMap[pixel.x+j][pixel.y+i].temp = 20
-				}
-			}
-		}
-	},
-	category:"machines",
-	insulate:true,
-	state: "solid",
-},
-
-elements.tempinccheck = {
-	color: "#000000",
-	tick: function(pixel) {
-		pixel.color = "rgb(" + pixel.temp % 256 + ",0,0)"
-	},
-	category:"machines",
-	insulate:true,
-	state: "solid",
-	hidden: true,
-	extraInfo: "Debug tool<br>Changes black to red with increasing heat",
-},
-
 runAfterLoad(function() {
 	elements.tungstensteel.behavior = [
         "XX|DL:"+eLists.FAIRY+"|XX",
@@ -489,3 +381,4 @@ runAfterLoad(function() {
         "M1|DL:"+eLists.FAIRY+"|M1",
     ]
 });
+//dummy edit?
