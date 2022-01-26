@@ -30,6 +30,7 @@ elements.cum = {
 	viscosity: 20,
 	category:"cum",
 	conduct:0,
+	extraInfo: "A whitish, sticky liquid that contains sperm. <span style=\"font-size: 0;\">It isn't funny.</span>",
 },
 elements.dead_cum = { 
 	name: "dead cum",
@@ -59,7 +60,8 @@ elements.dead_cum = {
 	viscosity: 20,
 	category:"cum",
 	conduct: 0.04,
-	hidden:true
+	hidden:true,
+	extraInfo: "Semen whose sperm have died.",
 },
 elements.cum_water = {
 	name: "cum water",
@@ -92,6 +94,7 @@ elements.cum_water = {
 	category: "cum",
 	conduct: 0.03,
 	hidden: true,
+	extraInfo: "Dilute semen.",
 },
 elements.dead_cum_water = {
 	name: "dead cum water",
@@ -112,7 +115,8 @@ elements.dead_cum_water = {
 	viscosity: 8,
 	category: "cum",
 	conduct: 0.03,
-	hidden:true
+	hidden:true,
+	extraInfo: "Dilute semen whose sperm have died.",
 },
 elements.burnt_cum = {
 	name: "burnt cum",
@@ -128,6 +132,7 @@ elements.burnt_cum = {
 	stateHigh: "ash",
 	hidden: true,
 	category: "cum",
+	extraInfo: "A disgusting residue left from burnt semen.",
 },
 elements.cum_ice = {
 	name: "frozen cum",
@@ -144,6 +149,7 @@ elements.cum_ice = {
 	tempHigh: 5,
 	stateHigh: "cum",
 	category: "cum",
+	extraInfo: "Frozen semen.",
 },
 elements.cum_water_ice = {
 	name: "cummy ice",
@@ -161,6 +167,7 @@ elements.cum_water_ice = {
 	stateHigh: "cum_water",
 	category: "cum",
 	hidden: true,
+	extraInfo: "Dilute, frozen semen.",
 },
 elements.dead_cum_ice = {
 	name: "dead frozen cum",
@@ -174,7 +181,8 @@ elements.dead_cum_ice = {
 	tempHigh: 5,
 	stateHigh: "dead_cum",
 	category: "cum",
-	hidden:true
+	hidden:true,
+	extraInfo: "Frozen semen whose sperm have died.",
 },
 elements.dead_cum_water_ice = {
 	name: "dead cummy ice",
@@ -188,7 +196,8 @@ elements.dead_cum_water_ice = {
 	tempHigh: 5,
 	stateHigh: "cum_water",
 	category: "cum",
-	hidden:true
+	hidden:true,
+	extraInfo: "Dilute, frozen semen whose sperm have died.",
 },
 elements.cummy_mud = {
 	name: "cummy mud",
@@ -214,6 +223,7 @@ elements.cummy_mud = {
 	state:"solid",
 	density: 1740,
 	hidden: true,
+	extraInfo: "Dirt that has absorbed semen.",
 }, 
 elements.cummy_sand = {
 	name: "cummy sand",
@@ -237,6 +247,7 @@ elements.cummy_sand = {
 	state: "solid",
 	density: 1915,
 	hidden: true,
+	extraInfo: "Sand that has absorbed semen.",
 },
 elements.dead_cummy_mud = {
 	name: "dead cummy mud",
@@ -258,7 +269,8 @@ elements.dead_cummy_mud = {
 	category:"cum",
 	state:"solid",
 	density: 1740,
-	hidden:true
+	hidden:true,
+	extraInfo: "Dirt that has absorbed semen. The sperm are dead.",
 }, 
 elements.dead_cummy_sand = {
 	name: "dead cummy sand",
@@ -278,7 +290,8 @@ elements.dead_cummy_sand = {
 	category: "cum",
 	state: "solid",
 	density: 1915,
-	hidden:true
+	hidden:true,
+	extraInfo: "Sand that has absorbed semen. The sperm are dead.",
 },
 elements.cum_slime = {
 	name: "cummy slime",
@@ -294,7 +307,8 @@ elements.cum_slime = {
 	density: 1470,
 	tempHigh: 150,
 	stateHigh: ["steam","steam","burnt_cum","burnt_cum","slime"],
-	hidden:true
+	hidden:true,
+	extraInfo: "Slime that has absorbed semen.",
 },
 elements.cummy_snake = {
 	color: "#bfbfbf",
@@ -305,6 +319,7 @@ elements.cummy_snake = {
 	],
 	rotatable: true,
 	category: "cum",
+	extraInfo: "It moves in a snake-like pattern and leaves a trail of solid semen. It can melt through this semen if it is trapped.",
 },
 elements.penis = {
 	color: "#9c5e5f",
@@ -323,6 +338,7 @@ elements.penis = {
 	conduct: 1,
 	tempHigh: 60,
 	stateHigh: "rotten_meat",
+	extraInfo: "A piece of living tissue from which semen exits.",
 },
 elements.cummy_permafrost = {
 	name: "cummy permafrost",
@@ -339,6 +355,7 @@ elements.cummy_permafrost = {
 	stateHigh: "cummy_mud",
 	category: "cum",
 	hidden: true,
+	extraInfo: "Frozen, semen-infused mud.",
 }
 elements.dead_cummy_permafrost = {
 	name: "dead cummy permafrost",
@@ -352,6 +369,7 @@ elements.dead_cummy_permafrost = {
 	stateHigh: "dead_cummy_mud",
 	category: "cum",
 	hidden: true,
+	extraInfo: "Frozen mud infused with lifeless semen.",
 }
 elements.precum = { 
 	name: "pre-cum",
@@ -371,6 +389,7 @@ elements.precum = {
 	stateLow: "precum_ice",
 	viscosity: 20,
 	category:"cum",
+	extraInfo: "A sticky fluid that neutralizes acid.",
 },
 elements.precum_ice = { 
 	name: "frozen pre-cum",
@@ -385,7 +404,21 @@ elements.precum_ice = {
 	viscosity: 20,
 	category:"cum",
 	hidden: true,
+	extraInfo: "Frozen pre-ejaculate.",
 },
+elements.cum_bomb = {
+	color: "#e3deba",
+	behavior: [
+		"XX|XX|XX",
+		"XX|XX|XX",
+		"M2|M1 AND EX:12>cum_ice,cold_fire,cum,cold_fire,cum_ice,cold_fire,cum,cold_fire,cum_ice,cold_fire,cum,cum,precum|M2",
+	],
+	category: "weapons",
+	state: "solid",
+	density: 1300,
+	extraInfo: "A bomb full of semen.",
+},
+
 
 elements.precum.conduct = elements.water.conduct;
 
@@ -439,6 +472,7 @@ runAfterLoad(function() {
 			eLists.IMPURITY.push("cum_slime");
 			eLists.IMPURITY.push("burnt_cum");
 			eLists.IMPURITY.push("cum_fairy");
+			eLists.IMPURITY.push("cum_bomb");
 		//}
 		//regenerate behaviors of elements that use eLists.IMPURITY {
 			elements.pure_water.behavior = [
@@ -498,6 +532,7 @@ runAfterLoad(function() {
 			elements.concoction.reactions.cum_slime = { "elem1": "mistake", "elem2": null },
 			elements.concoction.reactions.cummy_snake = { "elem1": "mistake", "elem2": null },
 			elements.concoction.reactions.penis = { "elem1": "mistake", "elem2": null }
+			elements.concoction.reactions.cum_bomb = { "elem1": "mistake", "elem2": null }
 		//}
 		//cum fairy creation {
 			elements.fairy.reactions.cum = { "elem1": "cum_fairy" }

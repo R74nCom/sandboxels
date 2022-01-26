@@ -35,7 +35,7 @@ elements.unnamed_gas = {
     tempHigh: 95,
     stateHigh: "burning_unnamed_gas",
     conduct: 0.2,
-}, 
+    }, 
 
 elements.burning_unnamed_gas = {
     color: "#eedd11",
@@ -58,7 +58,7 @@ elements.burning_unnamed_gas = {
     tempHigh: 160487147,
     stateHigh: "plasma",
     hidden: true,
-}, 
+    }, 
 elements.unnamed_powder = {
     color: "#cddd22",
     behavior: [
@@ -80,7 +80,7 @@ elements.unnamed_powder = {
     tempHigh: 95,
     stateHigh: "burning_unnamed_gas",
     conduct: 0.4,
-}, 
+    }, 
 
 elements.burning_unnamed_powder = {
     color: "#ddcd22",
@@ -104,7 +104,7 @@ elements.burning_unnamed_powder = {
     stateHigh: "burning_unnamed_gas",
     conduct: 0.4,
     hidden: true,
-},
+    },
 elements.steam_remover = { //pov: you tried using water to cool something
     name: "steam remover",
     color: "#542900",
@@ -114,7 +114,6 @@ elements.steam_remover = { //pov: you tried using water to cool something
         "CH:steam>steam_remover|CH:steam>steam_remover|CH:steam>steam_remover",
     ],
     category: "special",
-
 },     
 elements.filler_remover = { //pov: you put a filler for fun but now you want your scene back
     name: "filler remover",
@@ -142,21 +141,12 @@ elements.plasma_remover = { //why would you need this?
     name: "black decay",
     color: "#222222",
     behavior: [
-        "XX|CH:black_decay%2 AND DL:black_decay%30|XX", //forcing it to destroy itself through another element
+        "XX|CH:black_decay%2 AND DL:black_decay%30|XX",
         "CH:black_decay%1|DL%0.2|CH:black_decay%1",
         "XX|CH:black_decay%1 AND M1|XX",
     ],
     category: "special",
 },*/
-elements.tungsten = { //GTCE reference
-    color: "#848A7D",
-    behavior: behaviors.WALL,
-    tempHigh: 3422,
-    category: "solids",
-    density: 19250,
-    conduct: 0.55,
-},
-
 elements.tungstensteel = {
     color: "#555589",
     behavior: behaviors.FAIRYKILL,
@@ -165,19 +155,12 @@ elements.tungstensteel = {
     density: 19000,
     conduct: 0.48,
 },
-
 elements.molten_tungsten = {
-    color: "#FFC285",
-    behavior: behaviors.MOLTEN,
     density: 17600,
-    conduct: 0.20,
     temp: 3500,
     tempHigh: 5555,
     stateHigh: "tungsten_gas",
-    category: "liquids",
-    hidden: true,
 },         
-
 elements.tungsten_gas = {
     color: "#FFEEE2",
     behavior: [
@@ -185,21 +168,18 @@ elements.tungsten_gas = {
 		"M1|XX|M1",
 		"CR:plasma%0.625 AND M2|M1|CR:plasma%0.625 AND M2",
 	],
-    density: 17600,
-    conduct: 0.20,
+    density: 15800, //https://link.springer.com/article/10.1007/s11661-019-05262-5
     temp: 5600,
     tempLow: 5555,
     stateLow: "molten_tungsten",
     category: "gases",
     hidden: true,
 },
-
 elements.molten_steel = {
 	reactions: {
 		"molten_tungsten": { "elem1":"molten_tungstensteel", "elem2":"molten_tungstensteel" }
 	}
 }
-
 elements.molten_tungstensteel = {
 	behavior: [
         "XX|DL:"+eLists.FAIRY+" AND CR:fire%2.5|XX",
@@ -207,7 +187,6 @@ elements.molten_tungstensteel = {
         "M1|DL:"+eLists.FAIRY+"|M1",
     ]
 }
-
 elements.rm_water_balloon = {
 	name: "water balloon",
 	color: "#3dc2ff",
@@ -233,10 +212,6 @@ elements.wb3 = {
         "CR:wb2|CH:wb2|CR:wb2",
         "XX|CR:wb2|XX",
     ],
-    tempHigh: 100,
-	stateHigh: "steam",
-    tempLow: 0,
-	stateLow: "ice",
 	category: "liquid",
 	state: "solid",
 	density: 997,
@@ -251,10 +226,6 @@ elements.wb2 = {
         "CR:wb1|CH:wb1|CR:wb1",
         "XX|CR:wb1|XX",
     ],
-    tempHigh: 100,
-	stateHigh: "steam",
-    tempLow: 0,
-	stateLow: "ice",
 	category: "special",
 	state: "liquid",
 	density: 997,
@@ -269,10 +240,6 @@ elements.wb1 = {
         "CR:water|CH:water|CR:water",
         "XX|CR:water|XX",
     ],
-    tempHigh: 100,
-	stateHigh: "steam",
-    tempLow: 0,
-	stateLow: "ice",
 	category: "special",
 	state: "liquid",
 	density: 997,
@@ -301,9 +268,7 @@ elements.lb3 = {
         "CR:lb2|CH:lb2|CR:lb2",
         "XX|CR:lb2|XX",
     ],
-    temp: 950,
-    tempLow: 800,
-	stateLow: "rock",
+    temp: 1000,
 	category: "liquid",
 	state: "solid",
 	density: 2725,
@@ -318,9 +283,7 @@ elements.lb2 = {
         "CR:lb1|CH:lb1|CR:lb1",
         "XX|CR:lb1|XX",
     ],
-    temp: 950,
-    tempLow: 800,
-	stateLow: "rock",
+    temp: 1000,
 	category: "special",
 	state: "liquid",
 	density: 2725,
@@ -335,14 +298,37 @@ elements.lb1 = {
         "CR:magma|CH:magma|CR:magma",
         "XX|CR:magma|XX",
     ],
-    tempLow: 800,
-    tempLow: 800,
-	stateLow: "rock",
+    temp: 1000,
 	category: "special",
 	state: "liquid",
 	density: 2725,
 	hidden: true,
 }
+
+elements.unnamed_substance_bomb = {
+	name: "unnamed_bomb",
+	color: "#cdad52",
+	behavior: [
+		"XX|XX|XX",
+		"XX|XX|XX",
+		"M2|M1 AND EX:10>plasma,burning_unnamed_powder,unnamed_powder,unnamed_powder,unnamed_powder,burning_unnamed_gas,unnamed_gas,unnamed_gas,unnamed_gas|M2",
+	],
+	category: "weapons",
+	state: "solid",
+	density: 1300,
+    },
+
+elements.cluster_nuke = {
+	color: "#e3f636",
+	behavior: [
+		"XX|EX:60>plasma,plasma,nuke,radiation,rad_steam,radiation,rad_steam|XX",
+		"XX|XX|XX",
+		"M2|M1 AND EX:60>plasma,plasma,plasma,plasma,radiation,rad_steam,nuke,radiation,rad_steam|M2",
+	],
+	category: "weapons",
+	state: "solid",
+	density: 1500,
+},
 
 runAfterLoad(function() {
 	elements.tungstensteel.behavior = [
