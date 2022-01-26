@@ -2,6 +2,13 @@
     + Artists' Update (Painting, Lines, Shapes, etc.)
     + Machines Update
 
+[Version 1.1.1]
+    + Technical: "tick" element attribute, takes a function
+    tick: function(pixel) {
+        tryMove(pixel, pixel.x, pixel.y+1) // try to move down each tick
+    }
+    runs every tick on each pixel
+
 [Version 1.1 - Blast Off]
     + Explosions
     + Weapons Category

@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <title>Sandboxels</title>
-    <meta name="description" content="A falling sand simulation game, with heat transfer, electricity, density, fire, and more.">
+    <meta name="description" content="A falling sand simulation game, with heat transfer, electricity, density, fire, explosions, and more.">
     <meta name="keywords" content="falling sand, elements, pixel art, simulator, powder">
     <meta name="author" content="R74n">
     <meta name="copyright" content="R74n">
@@ -26,7 +26,7 @@
     <meta property="og:locale" content="en_US">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Sandboxels">
-    <meta property="og:description" content="A falling sand simulation game, with heat transfer, electricity, density, fire, and more.">
+    <meta property="og:description" content="A falling sand simulation game, with heat transfer, electricity, density, fire, explosions, and more.">
     <meta property="og:url" content="https://sandboxels.r74n.com">
     <meta property="og:site_name" content="Sandboxels">
     <meta property="og:image" content="https://sandboxels.r74n.com/icons/wallpaper.png">
@@ -37,7 +37,7 @@
 
     <!--Twitter-->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:description" content="A falling sand simulation game, with heat transfer, electricity, density, fire, and more.">
+    <meta name="twitter:description" content="A falling sand simulation game, with heat transfer, electricity, density, fire, explosions, and more.">
     <meta name="twitter:title" content="Sandboxels">
     <meta name="twitter:site:id" content="1436857621827530753">
     <meta name="twitter:image" content="https://sandboxels.r74n.com/icons/card.png">
@@ -565,6 +565,9 @@
             "sand": {
                 color: "#e6d577",
                 behavior: behaviors.POWDER,
+                tick: function(pixel) {
+                    tryMove(pixel, pixel.x, pixel.y+1) // try to move down each tick
+                },
                 tempHigh: 1700,
                 stateHigh: "molten_glass",
                 category: "land",
@@ -2310,6 +2313,7 @@
                 category: "liquids",
                 state: "liquid",
                 density: 1020,
+                hidden: true,
             },
             "acid_gas": {
                 color: ["#c0d1a7","#c2ff96","#58a659"],
@@ -4255,7 +4259,6 @@
                 // if r.elem1 is an array, set elem1 to a random element from the array, otherwise set it to r.elem1
                 if (Array.isArray(r.elem1)) {
                     var elem1 = r.elem1[Math.floor(Math.random() * r.elem1.length)];
-                    console.log(elem1);
                 } else { var elem1 = r.elem1; }
                 
                 if (elem1 == null) {
@@ -4344,6 +4347,9 @@
         }
         function behaviorCoords(x,y,bx,by) {
             return {x:x+bx-1,y:y+by-1};
+        }
+        function relativeCoords(x,y,bx,by) {
+            return {x:bx-1,y:by-1};
         }
         /* Behavior Example (Sand)
         [
@@ -4448,7 +4454,7 @@
             %number = Chance of rule happening
         */
         function pixelTick(pixel) {
-            if (pixel.start == pixelTicks) {return}
+            if (pixel.start === pixelTicks) {return}
             var info = elements[pixel.element];
             if (pixel.charge && info.behaviorOn) { var behavior = info.behaviorOn; }
             else { var behavior = info.behavior; }
@@ -4467,7 +4473,7 @@
             var move = true;
             // Parse behavior
             for (var by = 0; by < behavior.length; by++) {
-                behaviorby = behavior[by];
+                var behaviorby = behavior[by];
                 for (var bx = 0; bx < behaviorby.length; bx++) {
                     var b0 = behaviorby[bx];
                     if (b0 === "XX") {continue}
@@ -5182,6 +5188,94 @@
                 }
             }
         }
+        // pixelMap is a 2D array of pixels.
+        // function to get a new 2D array of pixels from a rectangular area
+       function selection(x1,y1,x2,y2) {
+            var selection = [];
+            for (var i = x1; i <= x2; i++) {
+                selection[i] = [];
+                for (var j = y1; j <= y2; j++) {
+                    selection[i][j] = pixelMap[i][j];
+                }
+            }
+            return selection;
+        } 
+        unicodeSkips = {
+            0: 65, // null -> 0
+            58: 65, // : -> A
+            91: 97, // [ -> a
+            123: 192, // { -> À
+            215: 216, // × -> Ø
+            247: 248, // ÷ -> ø
+            688: 880,
+            884: 886,
+            888: 891,
+            894: 895,
+            896: 902,
+            903: 904,
+            907: 908,
+            909: 910,
+            930: 931,
+            1155: 1162,
+            1328: 1329,
+            1367: 1376,
+            1417: 1488,
+            1514: 12448,
+            12544: 13312
+        };
+        // version;codes;pixels;
+        function generateSave(pixelarray=null) {
+            if (pixelarray == null) {
+                pixelarray = pixelMap;
+            }
+            var n = 65;
+            var codes = "";
+            var codelist = {" ":" "};
+            var save = "";
+            // Add char*the number of consecutive pixels with the same element
+            var lastelem = "";
+            var samecount = 0;
+            for (var i = 0; i < pixelarray.length; i++) {
+                for (var j = 0; j < pixelarray[i].length; j++) {
+                    var pixel = pixelarray[i][j];
+                    if (pixel) {
+                        if (codelist[pixel.element] == undefined) {
+                            var char = String.fromCharCode(n);
+                            codelist[pixel.element] = char;
+                            codes += char+"="+pixel.element+",";
+                            n++;
+                        }
+                        if (pixel.element == lastelem) {
+                            samecount++;
+                        }
+                        else {
+                            if (samecount > 0) {
+                                save += codelist[lastelem]+"*"+samecount;
+                            }
+                            samecount = 1;
+                            lastelem = pixel.element;
+                        }
+                    }
+                    else {
+                        // use " " for empty pixels
+                        if (lastelem == " ") {
+                            samecount++;
+                        }
+                        else {
+                            if (samecount > 0) {
+                                save += codelist[lastelem]+"*"+samecount
+                            }
+                            samecount = 1;
+                            lastelem = " ";
+                        }
+                    }
+                }
+                save += "|";
+            }
+            // save = codes(without the last character) + save
+            save = codes.slice(0,-1)+";"+save;
+            return save;
+        }
         function explodeAt(x,y,radius,fire="fire") {
             // if fire contains , split it into an array
             if (fire.includes(",")) {
@@ -5284,7 +5378,12 @@
                 pixel = newCurrentPixels[i];
                 //if (pixelMap[pixel.x][pixel.y] == undefined || currentPixels.indexOf(pixel) == -1) {continue}
                 if (pixel.del) {continue}
-                if ((!paused) || forceTick) {pixelTick(pixel);};
+                if ((!paused) || forceTick) {
+                    if (elements[pixel.element].tick) {
+                        elements[pixel.element].tick(pixel);
+                    }
+                    else { pixelTick(pixel); }
+                };
             }
             // Draw the current pixels
             if (!hiding) {
@@ -5475,7 +5574,7 @@
                     // create pixel with random element from "randomChoices" array
                     currentPixels.push(new Pixel(x, y, randomChoices[Math.floor(Math.random() * randomChoices.length)]));
                 }
-                else if (placeMode == "replace") {
+                else if (mode == "replace") {
                     if (outOfBounds(x,y)) {
                         continue;
                     }
@@ -5901,7 +6000,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
         //ticks = 0;
         pixelTicks = 0;
 
-        placeMode = null;
+        mode = null;
         paused = false;
         function focusGame() { document.getElementById("game").focus(); if(showingMenu) { closeMenu(); } }
         //on window load
@@ -6074,7 +6173,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                 }
 
                 // If the element's behavior stringified includes "BO", loop through the behavior
-                if (elements[key].behavior.toString().includes("BO")) {
+                if (elements[key].behavior.toString().includes("BO") && !elements.rotatable) {
                     for (var i = 0; i < elements[key].behavior.length; i++) {
                         // Loop through each array in the behavior
                         for (var j = 0; j < elements[key].behavior[i].length; j++) {
@@ -6212,13 +6311,13 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             width = Math.round(newWidth/pixelSize)-1;
             height = Math.round(newHeight/pixelSize)-1;
             // Object with width arrays of pixels starting at 0
-            pixelMap = {};
+            pixelMap = [];
             for (var i = 0; i < width; i++) {
                 pixelMap[i] = [];
             }
             // randomChoices = the keys of "elements" with "filler", "lattice", "gray_goo", and any element with the category "tools" removed
             randomChoices = Object.keys(elements).filter(function(e) {
-                return e != "filler" && e != "lattice" && e != "gray_goo" && elements[e].category != "tools" && e != "random" && e != "virus" && e != "vertical" && e != "horizontal" && e != "snake";
+                return e != "filler" && e != "lattice" && e != "gray_goo" && elements[e].category != "tools" && e != "random" && e != "virus" && e != "vertical" && e != "horizontal" && e != "snake" && e != "armageddon";
             });
             //...drawing code...
             gameCanvas.addEventListener("mousedown", mouseClick);
@@ -6320,12 +6419,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                         requestFullScreen(document.body);
                     }
                 }
-                // c = drawCirclePixels()
-                else if (e.keyCode == 67) {
-                    e.preventDefault();
-                    drawCirclePixels(mousePos.x, mousePos.y, Math.round(mouseSize/2));
-                }
-                // x = drawCirclePixels()
+                // x = explodeAt()
                 /*else if (e.keyCode == 88) {
                     e.preventDefault();
                     explodeAt(mousePos.x, mousePos.y, Math.round(mouseSize/2));
@@ -6451,7 +6545,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             <div id="stats"></div>
             <div id="controls">
                 <div id="toolControls">
-                    <button id="pauseButton" title="Pause/play the simulation" class="controlButton" onclick='togglePause();focusGame();' on="false">Pause</button><button id="frameButton" title="Pause and play one frame" class="controlButton" onclick='doFrame();focusGame();' on="false">Step</button><button id="sizeDownButton" title="Decrease the brush size" class="controlButton" onclick="mouseSize -= 2;if (mouseSize < 1) { mouseSize = 1; };focusGame();">-</button><button id="sizeUpButton" title="Increase the brush size" class="controlButton" onclick="mouseSize += 2;if (mouseSize > (height > width ? height : width)) { mouseSize = (height > width ? height : width); };focusGame();">+</button><button id="resetButton" title="Clear the entire scene" class="controlButton" onclick="if (confirm('Are you sure you want to clear the whole scene?')) {clearAll();};focusGame();">Reset</button><button id="replaceButton" title="Override existing pixels when placing" class="controlButton" onclick='if (placeMode == "replace") {placeMode = null;this.setAttribute("on","false");}else {placeMode = "replace";this.setAttribute("on","true");};focusGame();' on="false">Replace</button><button id="elemSelectButton" title="Select an element by ID" class="controlButton" onclick='chooseElementPrompt();focusGame();'>E</button><button id="tpsButton" title="Change the simulation Ticks Per Second (TPS)" class="controlButton" onclick='var newtps = prompt("Enter the new simulation Ticks Per Second (TPS). This is how many updates per second the simulation will run.\n\nThe default is 30.\n\nThe current TPS is " + tps + ".");if (newtps !== null) {if (isNaN(newtps) || newtps == "" || newtps == "0") {alert("You did not enter a valid TPS.");}else if (newtps > 1000) {alert("You entered a TPS that is too high. The TPS will be set to the maximum, 1000.");tps = 1000;}else {tps = parseInt(newtps);if (isNaN(tps)) {alert("You did not enter a valid TPS.");tps = 30;}}resetInterval(tps);}focusGame();'>Tps</button><button id="hideButton" title="Stops updating the scene to allow more resources towards simulation" class="controlButton" onclick='if (hiding) {hiding = false;this.setAttribute("on","false");}else {hiding = true;this.setAttribute("on","true");};focusGame();' on="false">Hide</button><button id="infoButton" title="Brings up the element info screen" class="controlButton" onclick='if (showingMenu!="info"){closeMenu();showInfo(currentElement)}else{closeMenu()};' on="false">Info</button><button id="modsButton" title="Brings up the Mod Manager" class="controlButton" onclick='if (showingMenu!="mods"){closeMenu();showModManager()}else{closeMenu()};' on="false">Mods</button>
+                    <button id="pauseButton" title="Pause/play the simulation" class="controlButton" onclick='togglePause();focusGame();' on="false">Pause</button><button id="frameButton" title="Pause and play one frame" class="controlButton" onclick='doFrame();focusGame();' on="false">Step</button><button id="sizeDownButton" title="Decrease the brush size" class="controlButton" onclick="mouseSize -= 2;if (mouseSize < 1) { mouseSize = 1; };focusGame();">-</button><button id="sizeUpButton" title="Increase the brush size" class="controlButton" onclick="mouseSize += 2;if (mouseSize > (height > width ? height : width)) { mouseSize = (height > width ? height : width); };focusGame();">+</button><button id="resetButton" title="Clear the entire scene" class="controlButton" onclick="if (confirm('Are you sure you want to clear the whole scene?')) {clearAll();};focusGame();">Reset</button><button id="replaceButton" title="Override existing pixels when placing" class="controlButton" onclick='if (mode == "replace") {mode = null;this.setAttribute("on","false");}else {mode = "replace";this.setAttribute("on","true");};focusGame();' on="false">Replace</button><button id="elemSelectButton" title="Select an element by ID" class="controlButton" onclick='chooseElementPrompt();focusGame();'>E</button><button id="tpsButton" title="Change the simulation Ticks Per Second (TPS)" class="controlButton" onclick='var newtps = prompt("Enter the new simulation Ticks Per Second (TPS). This is how many updates per second the simulation will run.\n\nThe default is 30.\n\nThe current TPS is " + tps + ".");if (newtps !== null) {if (isNaN(newtps) || newtps == "" || newtps == "0") {alert("You did not enter a valid TPS.");}else if (newtps > 1000) {alert("You entered a TPS that is too high. The TPS will be set to the maximum, 1000.");tps = 1000;}else {tps = parseInt(newtps);if (isNaN(tps)) {alert("You did not enter a valid TPS.");tps = 30;}}resetInterval(tps);}focusGame();'>Tps</button><button id="hideButton" title="Stops updating the scene to allow more resources towards simulation" class="controlButton" onclick='if (hiding) {hiding = false;this.setAttribute("on","false");}else {hiding = true;this.setAttribute("on","true");};focusGame();' on="false">Hide</button><button id="infoButton" title="Brings up the element info screen" class="controlButton" onclick='if (showingMenu!="info"){closeMenu();showInfo(currentElement)}else{closeMenu()};' on="false">Info</button><button id="modsButton" title="Brings up the Mod Manager" class="controlButton" onclick='if (showingMenu!="mods"){closeMenu();showModManager()}else{closeMenu()};' on="false">Mods</button>
                 </div>
                 <div id="category-tools" category="tools" style="display: block;"></div>
                 <div id="categoryControls"></div>
