@@ -6397,7 +6397,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             for (var i = 0; i < width; i++) {
                 pixelMap[i] = [];
             }
-            // randomChoices = the keys of "elements" with "filler", "lattice", "gray_goo", and any element with the category "tools" removed
+            // randomChoices = the keys of "elements" with any element with the category "tools" or the property excludeRandom set to true removed
             randomChoices = Object.keys(elements).filter(function(e) {
                 return elements[e].excludeRandom != true && elements[e].category != "tools";
             });
