@@ -15,7 +15,7 @@ elements.portal_in = {
 		for (var i = 1; i < width; i++) {
 			for (var j = 1; j < height; j++) {
 				if (!isEmpty(i,j)) {
-					if(pixelMap[i][j].element == "testff") {
+					if(pixelMap[i][j].element == "portal_out") {
 						if(!includesArray(pixel.portalArray,[i,j])) {
 							pixel.portalArray.push([i,j])
 						}
