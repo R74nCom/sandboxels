@@ -1,4 +1,4 @@
-elements.superheater2 = {
+elements.super_heater = {
 	color: "#ff0000",
 	tick: function(pixel) {
 		for (let i = -4; i < 5; i++) {
@@ -10,11 +10,11 @@ elements.superheater2 = {
 		}
 	},
 	category:"machines",
-	insulate:true,
+	insulate: true,
 	state: "solid",
 },
 
-elements.supercooler2 = {
+elements.super_cooler = {
 	color: "#0000ff",
 	tick: function(pixel) {
 		for (let i = -4; i < 5; i++) {
@@ -26,11 +26,11 @@ elements.supercooler2 = {
 		}
 	},
 	category:"machines",
-	insulate:true,
+	insulate: true,
 	state: "solid",
 },
 
-elements.superwarmer2 = {
+elements.super_warmer = {
 	color: "#00ff00",
 	tick: function(pixel) {
 		for (let i = -4; i < 5; i++) {
@@ -42,11 +42,11 @@ elements.superwarmer2 = {
 		}
 	},
 	category:"machines",
-	insulate:true,
+	insulate: true,
 	state: "solid",
 },
 
-elements.superheater3 = {
+elements.super_heater_2 = {
 	color: "#ff2200",
 	tick: function(pixel) {
 		for (let i = -9; i < 10; i++) {
@@ -58,11 +58,12 @@ elements.superheater3 = {
 		}
 	},
 	category:"machines",
-	insulate:true,
+	insulate: true,
 	state: "solid",
+	hidden: true,
 },
 
-elements.supercooler3 = {
+elements.super_cooler_2 = {
 	color: "#0022ff",
 	tick: function(pixel) {
 		for (let i = -9; i < 10; i++) {
@@ -74,11 +75,12 @@ elements.supercooler3 = {
 		}
 	},
 	category:"machines",
-	insulate:true,
+	insulate: true,
 	state: "solid",
+	hidden: true,
 },
 
-elements.superwarmer3 = {
+elements.super_warmer_2 = {
 	color: "#22ff22",
 	tick: function(pixel) {
 		for (let i = -9; i < 10; i++) {
@@ -90,11 +92,12 @@ elements.superwarmer3 = {
 		}
 	},
 	category:"machines",
-	insulate:true,
+	insulate: true,
 	state: "solid",
+	hidden: true,
 },
 
-elements.globalheater = {
+elements.global_heater = {
 	color: "#ff6666",
 	tick: function(pixel) {
 		for (var i = 1; i < width; i++) {
@@ -106,12 +109,12 @@ elements.globalheater = {
 		}
 	},
 	category:"machines",
-	insulate:true,
+	insulate: true,
 	state: "solid",
 	hidden: true,
 },
 
-elements.globalcooler = {
+elements.global_cooler = {
 	color: "#6666ff",
 	tick: function(pixel) {
 		for (var i = 1; i < width; i++) {
@@ -123,12 +126,12 @@ elements.globalcooler = {
 		}
 	},
 	category:"machines",
-	insulate:true,
+	insulate: true,
 	state: "solid",
 	hidden: true,
 },
 
-elements.globalwarmer = {
+elements.global_warmer = {
 	color: "#66ff66",
 	tick: function(pixel) {
 		for (var i = 1; i < width; i++) {
@@ -146,6 +149,7 @@ elements.globalwarmer = {
 },
 
 elements.agw = { //adjustable global warmer
+	name: "Adjustable Global Warmer",
 	color: "#66ff66",
 	tick: function(pixel) {
 		for (var i = 1; i < width; i++) {
@@ -163,7 +167,7 @@ elements.agw = { //adjustable global warmer
 	hidden: true,
 },
 
-elements.superheater4 = {
+elements.super_heater_3 = {
 	color: "#ff7f00",
 	uwu: 0,
 	tick: function(pixel) {
@@ -195,11 +199,11 @@ elements.superheater4 = {
 		}
 	},
 	category:"machines",
-	insulate:true,
+	insulate: true,
 	state: "solid",
 },
 
-elements.supercooler4 = {
+elements.super_cooler_3 = {
 	color: "#007fff",
 	uwu: 0,
 	tick: function(pixel) {
@@ -231,11 +235,11 @@ elements.supercooler4 = {
 		}
 	},
 	category:"machines",
-	insulate:true,
+	insulate: true,
 	state: "solid",
 },
 
-elements.superwarmer4 = {
+elements.super_warmer_3 = {
 	color: "#7fff7f",
 	uwu: 0,
 	tick: function(pixel) {
@@ -265,11 +269,12 @@ elements.superwarmer4 = {
 		}
 	},
 	category:"machines",
-	insulate:true,
+	insulate: true,
 	state: "solid",
 },
 
 elements.tc = { //temperature checker
+	name: "Temperature Checker",
 	color: ["#000000","#000000"],
 	tick: function(pixel) {
 		if(pixel.temp < -255) {
@@ -287,7 +292,6 @@ elements.tc = { //temperature checker
 		}
 	},
 	category:"machines",
-	insulate:true,
+	insulate: true,
 	state: "solid",
-},
-
+}
