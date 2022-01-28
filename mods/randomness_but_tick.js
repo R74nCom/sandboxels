@@ -152,6 +152,7 @@ elements.agw = { //adjustable global warmer
 			for (var j = 1; j < height; j++) {
 				if (!isEmpty(i,j)) {
 					pixelMap[i][j].temp = pixel.temp
+					doHeat(pixelMap[i][j])
 				}
 			}
 		}
