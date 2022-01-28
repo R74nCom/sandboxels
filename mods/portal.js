@@ -33,7 +33,7 @@ elements.portal_in = {
 			randomDestination = pixel.portalArray[Math.floor((Math.random() * pixel.portalArray.length))]
 			if(!isEmpty(pixel.x-1,pixel.y) && !outOfBounds(pixel.x-1,pixel.y)) {
 				if(pixelMap[pixel.x-1][pixel.y].element != pixel.element) {
-					tryMove(pixelMap[pixel.x+1][pixel.y],(randomDestination[0] + 1),(randomDestination[1]))
+					tryMove(pixelMap[pixel.x-1][pixel.y],(randomDestination[0] + 1),(randomDestination[1]))
 				}
 			}
 			if(!isEmpty(pixel.x+1,pixel.y) && !outOfBounds(pixel.x+1,pixel.y)) {
