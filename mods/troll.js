@@ -7,6 +7,9 @@ elements.troll1 = {
 					if(Math.random() < 0.003 && pixelMap[i][j].element != pixel.element) { deletePixel(i,j) }
 				}
 			}
+		if(i == width) {
+			i = 1
+		}
 		}
 	},
 	category: "machines",
@@ -23,6 +26,9 @@ elements.troll2 = {
 					if(Math.random() < 0.005) { pixelMap[i][j].color = "rgb(0,0,0)" }
 				}
 			}
+		if(i == width) {
+			i = 1
+		}
 		}
 	},
 	category: "machines",
@@ -39,6 +45,9 @@ elements.troll3 = {
 					if(Math.random() < 0.05) { swapPixels(pixel,pixelMap[i][j]) }
 				}
 			}
+		if(i == width) {
+			i = 1
+		}
 		}
 	},
 	category: "machines",
