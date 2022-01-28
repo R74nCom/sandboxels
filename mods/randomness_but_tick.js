@@ -145,6 +145,23 @@ elements.globalwarmer = {
 	hidden: true,
 },
 
+elements.agw = { //adjustable global warmer
+	color: "#66ff66",
+	tick: function(pixel) {
+		for (var i = 1; i < width; i++) {
+			for (var j = 1; j < height; j++) {
+				if (!isEmpty(i,j)) {
+					pixelMap[i][j].temp = pixel.temp
+				}
+			}
+		}
+	},
+	category: "machines",
+	insulate: true,
+	state: "solid",
+	hidden: true,
+},
+
 elements.sencc = { //same element neighbor count check
 	color: "#000000",
 	uwu: 0,
