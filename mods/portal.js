@@ -31,17 +31,25 @@ elements.portal_in = {
 		}
 		if(pixel.portalArray.length > 0) {
 			randomDestination = pixel.portalArray[Math.floor((Math.random() * pixel.portalArray.length))]
-			if(!isEmpty(pixel.x-1,pixel.y)) {
-				tryMove(pixelMap[pixel.x-1][pixel.y],(randomDestination[0] - 1),(randomDestination[1]))
+			if(!isEmpty(pixel.x-1,pixel.y) && !outOfBounds(pixel.x-1,pixel.y)) {
+				if(pixelMap[pixel.x-1][pixel.y].element != pixel.element) {
+					tryMove(pixelMap[pixel.x-1][pixel.y],(randomDestination[0] - 1),(randomDestination[1]))
+				}
 			}
-			if(!isEmpty(pixel.x+1,pixel.y)) {
-				tryMove(pixelMap[pixel.x+1][pixel.y],(randomDestination[0] + 1),(randomDestination[1]))
+			if(!isEmpty(pixel.x+1,pixel.y) && !outOfBounds(pixel.x+1,pixel.y)) {
+				if(pixelMap[pixel.x+1][pixel.y].element != pixel.element) {
+					tryMove(pixelMap[pixel.x+1][pixel.y],(randomDestination[0] + 1),(randomDestination[1]))
+				}
 			}
-			if(!isEmpty(pixel.x,pixel.y-1)) {
-				tryMove(pixelMap[pixel.x][pixel.y-1],(randomDestination[0]),(randomDestination[1] - 1))
+			if(!isEmpty(pixel.x,pixel.y-1) && !outOfBounds(pixel.x,pixel.y-1)) {
+				if(pixelMap[pixel.x][pixel.y-1].element != pixel.element) {
+					tryMove(pixelMap[pixel.x][pixel.y-1],(randomDestination[0]),(randomDestination[1] - 1))
+				}
 			}
-			if(!isEmpty(pixel.x,pixel.y+1)) {
-				tryMove(pixelMap[pixel.x][pixel.y+1],(randomDestination[0]),(randomDestination[1] + 1))
+			if(!isEmpty(pixel.x,pixel.y+1) && !outOfBounds(pixel.x,pixel.y+1)) {
+				if(pixelMap[pixel.x][pixel.y+1].element != pixel.element) {
+					tryMove(pixelMap[pixel.x][pixel.y+1],(randomDestination[0]),(randomDestination[1] + 1))
+				}
 			}
 		}
 	},
