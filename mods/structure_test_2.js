@@ -1,5 +1,5 @@
-elements.nst = {
-	name: "Nested Structure Test",
+elements.altroom = {
+	name: "Altered Room",
 	color: "#ffffff",
 	arr: [],
 	tick: function(pixel) {
@@ -51,8 +51,8 @@ elements.nst = {
 	state: "solid",
 },
 
-elements.st = {
-	name: "test6",
+elements.nst = {
+	name: "Nested Structure Test",
 	color: "#ffffff",
 	arr: [],
 	tick: function(pixel) {
