@@ -1083,11 +1083,13 @@
                 color: ["#3e5f8a","#a334ec","#ea96f9","#a6ecf6","#70ebc8","#d9286b","#7eed91","#a18b30"],
                 behavior: behaviors.WALL,
                 category: "special",
+                excludeRandom: true,
             },
             "filler": {
                 color: "#ae4cd9",
                 behavior: behaviors.FILL,
                 category:"special",
+                excludeRandom: true,
             },
             "lattice": {
                 color: "#cb4cd9",
@@ -1098,6 +1100,7 @@
                 ],
                 hidden: true,
                 category:"special",
+                excludeRandom: true,
             },
             "gravel": {
                 color: ["#E3E0DF","#B1ABA3","#74736D","#524B47"],
@@ -1697,6 +1700,7 @@
                 ],
                 category:"special",
                 hidden:true,
+                excludeRandom: true,
             },
             "horizontal": {
                 color: "#d9d9d9",
@@ -1707,6 +1711,7 @@
                 ],
                 category:"special",
                 hidden:true,
+                excludeRandom: true,
             },
             "rocket": {
                 color: "#ff0000",
@@ -2405,6 +2410,7 @@
                 category: "special",
                 state: "solid",
                 density: 21450,
+                excludeRandom: true,
             },
             "clone_powder": {
                 color: "#f0f000",
@@ -2442,6 +2448,7 @@
                 category: "special",
                 state: "solid",
                 density: 600,
+                excludeRandom: true,
             },
             "permafrost": {
                 color: ["#557d65","#557d79"],
@@ -3637,6 +3644,7 @@
                 ],
                 rotatable: true,
                 category: "special",
+                excludeRandom: true,
             },
             "loopy": {
                 color: "#eb3474",
@@ -4126,6 +4134,7 @@
                 state: "solid",
                 density: 1300,
                 hidden: true,
+                excludeRandom: true,
             },
             "tesla_coil": {
                 color: "#725C38",
@@ -6388,9 +6397,9 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             for (var i = 0; i < width; i++) {
                 pixelMap[i] = [];
             }
-            // randomChoices = the keys of "elements" with "filler", "lattice", "gray_goo", and any element with the category "tools" removed
+            // randomChoices = the keys of "elements" with any element with the category "tools" or the property excludeRandom set to true removed
             randomChoices = Object.keys(elements).filter(function(e) {
-                return e != "filler" && e != "lattice" && e != "gray_goo" && elements[e].category != "tools" && e != "random" && e != "virus" && e != "vertical" && e != "horizontal" && e != "snake" && e != "armageddon";
+                return elements[e].excludeRandom != true && elements[e].category != "tools";
             });
             //...drawing code...
             gameCanvas.addEventListener("mousedown", mouseClick);
