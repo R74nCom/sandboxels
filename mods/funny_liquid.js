@@ -51,9 +51,7 @@ elements.dead_cum = {
 		"wet_sand": { "elem1": "dead_cum_water", "elem2": "dead_cummy_sand", "chance": (1/3) }, // cum goes into wet sand
 		"acid": { "elem1": "water", "elem2": "dead_cum_water" }, //dead cum is still basic
 		"salt_water": { "elem1": "dead_cum_water", "elem2": "dead_cum_water" }, //salty mixing
-		"sugar_water": { "elem1": "sugar_water", "elem2": "sugar_water" }, //salty mixing
 		"salt": { "elem1": null, "elem2": "salt_water" }, //salty mixing
-		"sugar": { "elem1": null, "elem2": "sugar_water" }, //salty mixing
 	},
 	tempLow: 0,
 	stateLow: "dead_cum_ice",
@@ -411,7 +409,7 @@ elements.cum_bomb = {
 	behavior: [
 		"XX|XX|XX",
 		"XX|XX|XX",
-		"M2|M1 AND EX:12>cum_ice,cold_fire,cum,cold_fire,cum_ice,cold_fire,cum,cold_fire,cum_ice,cold_fire,cum,cum,precum|M2",
+		"M2|M1 AND EX:12>cum,cum,cum,cum_reviver,cum_reviver,cum_reviver,cold_fire,cold_fire,precum|M2",
 	],
 	category: "weapons",
 	state: "solid",
@@ -419,6 +417,29 @@ elements.cum_bomb = {
 	extraInfo: "A bomb full of semen.",
 },
 
+elements.cum_reviver = {
+	color: "#b2f5b2",
+	behavior: [
+		"SW:cum,cum_ice,dead_cum_ice,precum,precum_ice AND CO:1%10|SW:cum,cum_ice,dead_cum_ice,precum,precum_ice AND CO:1%10|SW:cum,cum_ice,dead_cum_ice,precum,precum_ice AND CO:1%10",
+		"M2%20 AND SW:cum,cum_ice,dead_cum_ice,precum,precum_ice AND CO:1%10|CO:1%10 AND DL%0.5|M2%20 AND SW:cum,cum_ice,dead_cum_ice,precum,precum_ice AND CO:1%10",
+		"M1%20 AND M2 AND SW:cum,cum_ice,dead_cum_ice,precum,precum_ice AND CO:1%10|M1 AND SW:cum,cum_ice,dead_cum_ice,precum,precum_ice AND CO:1%10|M1%20 AND M2 AND SW:cum,cum_ice,dead_cum_ice,precum,precum_ice AND CO:1%10",
+	],
+	reactions: {
+		"dead_cum": { "elem1": null, "elem2": "cum" },
+		"dead_cum_water": { "elem1": null, "elem2": "cum_water" },
+		"dead_cum_ice": { "elem1": null, "elem2": "cum_ice" },
+		"dead_cum_water_ice": { "elem1": null, "elem2": "cum_water_ice" },
+		"dead_cummy_mud": { "elem1": null, "elem2": "cummy_mud" },
+		"dead_cummy_sand": { "elem1": null, "elem2": "cummy_sand" },
+		"dead_cummy_permafrost": { "elem1": null, "elem2": "cummy_permafrost" }
+	},
+	category: "special",
+	tempHigh: 50,
+	stateHigh: ["light","sugar","diamond","glitter","honey","flower_seed","dirt","water"],
+	state: "solid",
+	density: 1210,
+	extraInfo: "A magical substance that revives dead semen.",
+},
 
 elements.precum.conduct = elements.water.conduct;
 
@@ -450,7 +471,9 @@ elements.cell.reactions.cum = { "elem1":"cum", "chance":0.01 }
 elements.acid.ignore.push("water")
 
 runAfterLoad(function() {
+	
     if(enabledMods.includes("mods/fey_and_more.js")) {
+			elements.cum_reviver.stateHigh.push("magic");
 		//cum elements as impurities {
 			eLists.IMPURITY.push("cum");
 			eLists.IMPURITY.push("cum_water");
@@ -473,6 +496,7 @@ runAfterLoad(function() {
 			eLists.IMPURITY.push("burnt_cum");
 			eLists.IMPURITY.push("cum_fairy");
 			eLists.IMPURITY.push("cum_bomb");
+			eLists.IMPURITY.push("cum_reviver");
 		//}
 		//regenerate behaviors of elements that use eLists.IMPURITY {
 			elements.pure_water.behavior = [
