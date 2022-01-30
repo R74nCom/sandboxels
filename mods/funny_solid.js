@@ -3,7 +3,7 @@ elements.shit = {
 	behavior: [
 		"XX|CR:plague%0.1 AND CR:fly%0.01 AND CR:methane%0.0316|XX",
 		"ST%65 AND SP|CH:dried_shit%0.02|ST%65 AND SP",
-		"M2%50|M1 AND SW:water,piss%50|M2%50",
+		"M2%50|M1 AND SW:water%50|M2%50",
 	],
 	reactions: {
 		"fly": { "elem1":"fly", "elem2":[null,null,null,null,null,null,"fly"], "chance":0.02, },
