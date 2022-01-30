@@ -644,6 +644,20 @@ elements.molten_histrelin = {
 	hidden: true,
 	tempLow: 1800,
 	stateLow: "histrelin",
+},
+
+//end of hrt section
+
+elements.anti_bomb = {
+	color: "#525c61",
+	behavior: [
+		"M2|M1 AND EX:10|M2",
+		"XX|XX|XX",
+		"XX|EX:10|XX",
+	],
+	category: "weapons",
+	state: "solid",
+	density: 1300,
 }
 
 runAfterLoad(function() {
