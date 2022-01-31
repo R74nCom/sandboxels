@@ -124,15 +124,15 @@ runAfterLoad(function() {
 	}
 
 	if(enabledMods.includes("mods/funny_liquid_2.js")) {
-			eLists.IMPURITY.push("piss");
-			eLists.IMPURITY.push("piss_water");
-			eLists.IMPURITY.push("piss_ice");
-			eLists.IMPURITY.push("piss_water_ice");
-			eLists.IMPURITY.push("pissed_mud");
-			eLists.IMPURITY.push("pissed_sand");
-			eLists.IMPURITY.push("pissed_permafrost");
-			eLists.IMPURITY.push("piss_fairy");
-			eLists.IMPURITY.push("piss_bomb");
+		elements.vomit.ignore.push("piss");
+		elements.vomit.ignore.push("piss_water");
+		elements.vomit.ignore.push("piss_ice");
+		elements.vomit.ignore.push("piss_water_ice");
+		elements.vomit.ignore.push("pissed_mud");
+		elements.vomit.ignore.push("pissed_sand");
+		elements.vomit.ignore.push("pissed_permafrost");
+		elements.vomit.ignore.push("piss_fairy");
+		elements.vomit.ignore.push("piss_bomb");
 	}
 
 	if(enabledMods.includes("mods/funny_solid.js")) {
@@ -166,4 +166,86 @@ runAfterLoad(function() {
 			elements.vomit.reactions[foodArray[i]] = { elem1: ["vomit","vomit","vomit","vomit","vomit",null,null], elem2: [foodArray[i],null], chance: 0.6 }
 		}
 	}
+
+    if(enabledMods.includes("mods/fey_and_more.js")) {
+		//vomit elements as impurities {
+			eLists.IMPURITY.push("vomit");
+			eLists.IMPURITY.push("frozen_vomit");
+			eLists.IMPURITY.push("vomit_snow");
+		//}
+		//regenerate behaviors of elements that use eLists.IMPURITY {
+			elements.pure_water.behavior = [
+				"DL:"+eLists.IMPURITY+"|DL:"+eLists.IMPURITY+"|DL:"+eLists.IMPURITY+"",
+				"DL:"+eLists.IMPURITY+" AND M2|XX|DL:"+eLists.IMPURITY+" AND M2",
+				"DL:"+eLists.IMPURITY+" AND M1|DL:"+eLists.IMPURITY+" AND M1|DL:"+eLists.IMPURITY+" AND M1",
+			];
+			elements.pure_steam.behavior = [
+				"M2 AND DL:"+eLists.IMPURITY+"|M1 AND DL:"+eLists.IMPURITY+"|M2 AND DL:"+eLists.IMPURITY+"",
+				"M1 AND DL:"+eLists.IMPURITY+"|XX|M1 AND DL:"+eLists.IMPURITY+"",
+				"M2 AND DL:"+eLists.IMPURITY+"|M1 AND DL:"+eLists.IMPURITY+"|M2 AND DL:"+eLists.IMPURITY+"",
+			];
+		//}
+		//vomit fairy {
+			elements.vomit_fairy = {
+				color: ["#b7e64c", "#f2d785", "#e8e88e"],
+				state: "solid",
+				behavior: [
+					"XX|M1|M1",
+					"XX|FX%5|XX",
+					"XX|CR:vomit%0.5 AND CR:fairy_dust%0.005 AND M1|M1",
+				],
+				category: "fey",
+			};
+		//}
+		//eList rebuilding {
+			eLists.FAIRY.push("vomit_fairy");
+			elements.iron.behavior = [
+				"XX|DL:"+eLists.FAIRY+"|XX",
+				"DL:"+eLists.FAIRY+"|XX|DL:"+eLists.FAIRY+"",
+				"XX|DL:"+eLists.FAIRY+"|XX"
+			];
+			elements.silver.behavior = [
+				"XX|DL:"+eLists.FAIRY+"|XX",
+				"DL:"+eLists.FAIRY+"|XX|DL:"+eLists.FAIRY+"",
+				"XX|DL:"+eLists.FAIRY+"|XX"
+			];
+		//} 
+	
+		//concoction support (it's all mistakes) {
+			elements.concoction.reactions.vomit = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.frozen_vomit = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.vomit_snow = { "elem1": "mistake", "elem2": null },
+		//}
+		//vomit fairy creation {
+			elements.fairy.reactions.vomit = { "elem1": "vomit_fairy" }
+			elements.vomit.reactions.fairy = { "elem2": "vomit_fairy" }
+		//}
+		elements.vomit.ignore.push("fairy")
+		elements.vomit.ignore.push("vomit_fairy")
+
+	};
+
+    if(enabledMods.includes("mods/fey_and_more.js") && enabledMods.includes("mods/randomness.js")) {
+		if(elements.tungstensteel && elements.molten_tungstensteel) {
+			elements.tungstensteel.behavior = [
+				"XX|DL:"+eLists.FAIRY+"|XX",
+				"DL:"+eLists.FAIRY+"|XX|DL:"+eLists.FAIRY+"",
+				"XX|DL:"+eLists.FAIRY+"|XX",
+			],
+			elements.molten_tungstensteel.behavior = [
+				"XX|DL:"+eLists.FAIRY+" AND CR:fire%2.5|XX",
+				"DL:"+eLists.FAIRY+" AND M2|XX|DL:"+eLists.FAIRY+" AND M2",
+				"M1|DL:"+eLists.FAIRY+"|M1",
+			]
+		}
+	};
+
 });
+
+if(elements.fairy && elements.vomit && elements.vomit_fairy) {
+	if(elements.fairy.reactions.vomit) {
+		if(elements.fairy.reactions) {
+			elements.fairy.reactions.vomit = { "elem1": "vomit_fairy" }
+		}
+	}
+}
