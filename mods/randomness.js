@@ -135,7 +135,7 @@ elements.filler_remover = { //pov: you put a filler for fun but now you want you
 
 elements.plasma_remover = { //why would you need this?
     name: "plasma remover",
-    color: ["#77ff00","#4e7b26","#77ff00"],
+    color: "#77ff00",
     behavior: [
         "CH:plasma>plasma_remover|CH:plasma>plasma_remover|CH:plasma>plasma_remover",
         "CH:plasma>plasma_remover|DL%40|CH:plasma>plasma_remover",
@@ -738,32 +738,221 @@ elements.bomb_3 = {
     excludeRandom: true,
 }
 
-elements.bomb_4 = {
-    color: "#927c51",
-    behavior: [
-        "XX|EX:30>plasma,plasma,plasma,plasma,smoke,plasma,plasma,fire,smoke,plasma,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,electric,electric,electric,acid,acid,oil,oil,oil,oil,oil,plasma,plasma,plasma,plasma,plasma,smoke,plasma,plasma,fire,smoke,plasma,metal_scrap,metal_scrap,metal_scrap,metal_scrap,electric,electric,electric,electric,electric,flash,flash,flash,acid,acid,oil,oil,oil,oil,oil,plasma,plasma,plasma,bomb_2|XX",
-        "XX|XX|XX",
-        "M2|M1 AND EX:30>plasma,plasma,plasma,plasma,smoke,plasma,plasma,fire,smoke,plasma,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,electric,electric,electric,acid,acid,oil,oil,oil,oil,oil,plasma,plasma,plasma,plasma,plasma,smoke,plasma,plasma,fire,smoke,plasma,metal_scrap,metal_scrap,metal_scrap,metal_scrap,electric,electric,electric,electric,electric,flash,flash,flash,acid,acid,oil,oil,oil,oil,oil,plasma,plasma,plasma,bomb_2|M2",
-    ],
+elements.sebA = {
+	color: "#ffffff",
+	behavior: [
+	    "SH%50|EX:8>electric AND SH%50                              |SH%50",
+	    "SH%50|EX:9>electric%0.5                                    |SH%50",
+	    "M2 AND SH%50|M1 AND SH%50 AND EX:8>electric AND SW:electric|M2 AND SH%50",
+	],
+	category: "weapons",
+	state: "solid",
+	density: 1200,
+	hidden: true,
+	excludeRandom: true,
+	hardness: 0.3,
+},
+
+elements.seb = {
+	color: "#ffffff",
+	behavior: [
+	    "SH%50|EX:8>sebA AND SH%50                              |SH%50",
+	    "SH%50|XX                                               |SH%50",
+	    "M2 AND SH%50|M1 AND SH%50 AND EX:8>sebA AND SW:electric|M2 AND SH%50",
+	],
+	category: "weapons",
+	state: "solid",
+	density: 1800,
+	hidden: true,
+	excludeRandom: true,
+	hardness: 0.3,
+},
+
+this.aaa = ["plasma","plasma","plasma","plasma","plasma","plasma","plasma","plasma","plasma","plasma","plasma","plasma","smoke","plasma","plasma","fire","smoke","fire","smoke","plasma","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","acid","acid","oil","oil","oil","oil","oil","oil","oil","plasma","plasma","plasma","plasma","plasma","smoke","plasma","plasma","fire","smoke","plasma","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","flash","flash","flash","flash","flash","acid_gas","acid_gas","acid_gas","acid","oil","oil","oil","oil","oil","oil","oil","oil","oil","oil","plasma","plasma","plasma","plasma","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","acid","acid","oil","oil","oil","oil","oil","oil","oil","plasma","plasma","plasma","plasma","plasma","smoke","plasma","plasma","fire","smoke","plasma","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","seb","seb","flash","flash","flash","flash","flash","acid_gas","acid_gas","acid_gas","acid","oil","oil","oil","oil","oil","oil","oil","oil","oil","oil","plasma","plasma","plasma","plasma","bomb_2","bomb_2","bomb_2","plague","plague","plague","plague","plague","plague","radiation","radiation","radiation","radiation","radiation","radiation","radiation","radiation","uranium","uranium","uranium","uranium","uranium","uranium","greek_fire","greek_fire","greek_fire","greek_fire","greek_fire","antimatter","antimatter","antimatter","antimatter","antimatter","smoke_grenade","antimatter","smoke_grenade","fireball","flash","acid_gas","acid_gas","acid_gas","burning_unnamed_gas","warp","burning_unnamed_gas","warp","warp","plague","plague","plague","plague","plague","plague","radiation","radiation","radiation","radiation","radiation","radiation","radiation","radiation","uranium","uranium","uranium","uranium","uranium","uranium","greek_fire","greek_fire","greek_fire","greek_fire","greek_fire","hot_bomb","antimatter","antimatter","antimatter","antimatter","antimatter","smoke_grenade","antimatter","flash","acid_gas","acid_gas","acid_gas","burning_unnamed_gas","warp","burning_unnamed_gas","warp","warp"]
+
+elements.amalgamated_bomb = {
+    color: ["#FF0000","#FF0000","#FFFF00","#FFFF00","#00FF00","#00FF00","#0000FF","#0000FF"],
+	tick: function(pixel) {
+		eee = Math.random()
+		doHeat(pixel);
+		fire = aaa
+		smoke = aaa
+		radius = 30
+		x = pixel.x
+		y = pixel.y
+		if(!isEmpty(pixel.x,pixel.y-1) && !outOfBounds(pixel.x,pixel.y-1)) {
+			if(pixelMap[pixel.x][pixel.y-1].element != pixel.element) {
+				steppedOn = true
+			} else steppedOn = false
+		} else {
+			steppedOn = false
+		}
+		if(!isEmpty(pixel.x,pixel.y+1) && !outOfBounds(pixel.x,pixel.y+1)) {
+			if(pixelMap[pixel.x][pixel.y+1].element != pixel.element) {
+				landed = true
+			} else landed = false
+		} else {
+			landed = false
+		}
+		if(outOfBounds(pixel.x,pixel.y+1)) {
+			landed = true
+		}
+		tryMove(pixel, pixel.x, pixel.y+1)
+		if(steppedOn == true || landed == true) {
+			// if fire contains , split it into an array
+			if (fire.includes(",")) {
+				fire = fire.split(",");
+			}
+			// if smoke contains , split it into an array
+			if (smoke.includes(",")) {
+				smoke = smoke.split(",");
+			}
+			var coords = circleCoords(x,y,radius);
+			var power = radius/10;
+			//for (var p = 0; p < Math.round(radius/10+1); p++) {
+			for (var i = 0; i < coords.length; i++) {
+				// damage value is based on distance from x and y
+				var damage = Math.random() + (Math.floor(Math.sqrt(Math.pow(coords[i].x-x,2) + Math.pow(coords[i].y-y,2)))) / radius;
+				// invert
+				damage = 1 - damage;
+				if (damage < 0) { damage = 0; }
+				damage *= power;
+				if (isEmpty(coords[i].x,coords[i].y)) {
+					// create smoke or fire depending on the damage if empty
+					if (damage < 0.02) { } // do nothing
+					else if (damage < 0.2) {
+						// if smoke is an array, choose a random item
+						if (Array.isArray(smoke)) {
+							createPixel(smoke[Math.floor(Math.random() * smoke.length)],coords[i].x,coords[i].y);
+						}
+						else {
+							createPixel(smoke,coords[i].x,coords[i].y);
+						}
+					}
+					else {
+						// if fire is an array, choose a random item
+						if (Array.isArray(fire)) {
+							createPixel(fire[Math.floor(Math.random() * fire.length)],coords[i].x,coords[i].y);
+						}
+						else {
+							createPixel(fire,coords[i].x,coords[i].y);
+						}
+					}
+				}
+				else if (!outOfBounds(coords[i].x,coords[i].y)) {
+					// damage the pixel
+					var pixel = pixelMap[coords[i].x][coords[i].y];
+					var info = elements[pixel.element];
+					if (info.hardness) { // lower damage depending on hardness(0-1)
+						if (info.hardness < 1) {
+							damage = damage * ((1 - info.hardness)*10);
+						}
+						else { damage = 0; }
+					}
+					if (damage > 0.25) {
+						if (info.breakInto) {
+							// if it is an array, choose a random item, else just use the value
+							if (Array.isArray(info.breakInto)) {
+								var result = info.breakInto[Math.floor(Math.random() * info.breakInto.length)];
+							}
+							else {
+								var result = info.breakInto;
+							}
+							// change the pixel to the result
+							pixel.element = result;
+							pixel.color = pixelColorPick(pixel);
+							if (elements[result].burning) {
+								pixel.burning = true;
+								pixel.burnStart = pixelTicks;
+							}
+							else if (pixel.burning && !elements[result].burn) {
+								pixel.burning = false;
+								delete pixel.burnStart;
+							}
+						}
+						else {
+							if (Array.isArray(fire)) {
+								var newfire = fire[Math.floor(Math.random() * fire.length)];
+							}
+							else {
+								var newfire = fire;
+							}
+							pixel.element = newfire;
+							pixel.color = pixelColorPick(pixel);
+							if (elements[newfire].burning) {
+								pixel.burning = true;
+								pixel.burnStart = pixelTicks;
+							}
+							else if (pixel.burning && !elements[newfire].burn) {
+								pixel.burning = false;
+								delete pixel.burnStart;
+							}
+						}
+					}
+					if (damage > 0.75) {
+						if (info.burn) {
+							pixel.burning = true;
+							pixel.burnStart = pixelTicks;
+						}
+					}
+					pixel.temp += damage*radius*power;
+					pixelTempCheck(pixel);
+				}
+			}
+		}
+	},
     category: "weapons",
     state: "solid",
     density: 1800,
     excludeRandom: true,
+    extraInfo: "a little bit of everything <img aria-label=\":eggTF:\" src=\"https://cdn.discordapp.com/emojis/861270810151616545.png\" alt=\":eggTF:\" draggable=\"false\" data-type=\"emoji\" data-id=\"861270810151616545\" style=\"-o-object-fit: contain; object-fit: contain; width: 1.375em; height: 1.375em; vertical-align: bottom; text-indent: -9999px;\" title=\":eggTF:\">&nbsp;",
 }
 
 runAfterLoad(function() {
+  if(enabledMods.includes("mods/fey_and_more.js")) {
     elements.tungstensteel.behavior = [
-        "XX|DL:"+eLists.FAIRY+"|XX",
-        "DL:"+eLists.FAIRY+"|XX|DL:"+eLists.FAIRY+"",
-        "XX|DL:"+eLists.FAIRY+"|XX",
+      "XX|DL:"+eLists.FAIRY+"|XX",
+      "DL:"+eLists.FAIRY+"|XX|DL:"+eLists.FAIRY+"",
+      "XX|DL:"+eLists.FAIRY+"|XX",
     ],
     elements.molten_tungstensteel.behavior = [
-        "XX|DL:"+eLists.FAIRY+" AND CR:fire%2.5|XX",
-        "DL:"+eLists.FAIRY+" AND M2|XX|DL:"+eLists.FAIRY+" AND M2",
-        "M1|DL:"+eLists.FAIRY+"|M1",
+      "XX|DL:"+eLists.FAIRY+" AND CR:fire%2.5|XX",
+      "DL:"+eLists.FAIRY+" AND M2|XX|DL:"+eLists.FAIRY+" AND M2",
+      "M1|DL:"+eLists.FAIRY+"|M1",
     ]
-    elements.vaporized_histrelin = elements.molten_histrelin
-    delete elements.molten_histrelin
-    elements.histrelin.stateHigh = "vaporized_histrelin"
-    elements.vaporized_histrelin.stateLow = "histrelin"
+
+    aaa.push("poisonwater")
+    aaa.push("poisonwater")
+    aaa.push("poisonwater")
+    aaa.push("poisonwater")
+    aaa.push("mystic_fire")
+    aaa.push("mystic_fire")
+    aaa.push("firesea")
+    aaa.push("firesea")
+    aaa.push("firesea")
+    aaa.push("poisonwater")
+    aaa.push("poisonwater")
+    aaa.push("poisonwater")
+    aaa.push("poisonwater")
+    aaa.push("mystic_fire")
+    aaa.push("mystic_fire")
+    aaa.push("firesea")
+    aaa.push("firesea")
+    aaa.push("firesea")
+  }
+  if(enabledMods.includes("mods/Neutronium Mod.js")) {
+    aaa.push("flamer")
+    aaa.push("flamer")
+    aaa.push("flamebomb")
+    aaa.push("flamebomb")
+    aaa.push("flamer")
+    aaa.push("flamer")
+    aaa.push("flamebomb")
+    aaa.push("flamebomb")
+  }
+  elements.vaporized_histrelin = elements.molten_histrelin
+  delete elements.molten_histrelin
+  elements.histrelin.stateHigh = "vaporized_histrelin"
+  elements.vaporized_histrelin.stateLow = "histrelin"
+
 });
