@@ -15,6 +15,7 @@ elements.troll1 = {
 	category: "machines",
 	insulate: true,
 	state: "solid",
+	excludeRandom: true,
 },
 
 elements.troll2 = {
@@ -34,6 +35,7 @@ elements.troll2 = {
 	category: "machines",
 	insulate: true,
 	state: "solid",
+	excludeRandom: true,
 },
 
 elements.troll3 = {
@@ -53,4 +55,5 @@ elements.troll3 = {
 	category: "machines",
 	insulate: true,
 	state: "solid",
+	excludeRandom: true,
 }
