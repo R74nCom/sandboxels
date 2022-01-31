@@ -5941,7 +5941,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                     sticks = sticks.filter(function(item, pos) {return sticks.indexOf(item) == pos;});
                     if (info.category == "tools") { infoText.innerHTML += "\nTool."}
                     else {
-                        if (!moves) { infoText.innerHTML += "\nStationary."; }
+                        if (!moves && info.behavior) { infoText.innerHTML += "\nStationary."; }
                         if (info.category) { infoText.innerHTML += "\nCategory: "+info.category.toUpperCase()+"."; }
                     if (info.conduct) { infoText.innerHTML += "\nConducts electricity."; }
                     if (swaps.length > 0) { infoText.innerHTML += "\nMoves through "+infoLink(swaps)+"."; }
