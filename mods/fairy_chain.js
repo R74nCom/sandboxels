@@ -58,7 +58,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy6", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 	}
 
@@ -73,7 +73,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy7", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -89,7 +89,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy8", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -105,7 +105,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy9", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -121,7 +121,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy10", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -137,7 +137,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy11", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -153,7 +153,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy12", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -169,7 +169,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy13", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -185,7 +185,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy14", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -201,7 +201,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy15", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -217,7 +217,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy16", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -233,7 +233,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy17", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -249,7 +249,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy18", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -265,7 +265,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy19", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -281,7 +281,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy20", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -297,7 +297,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy21", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -313,7 +313,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy22", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -329,7 +329,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy23", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -345,7 +345,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy24", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -361,7 +361,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy25", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -377,7 +377,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy26", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -393,7 +393,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy27", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -409,7 +409,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy28", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -425,7 +425,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy29", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -441,7 +441,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy30", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -457,7 +457,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy31", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -473,7 +473,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy32", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -489,7 +489,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy33", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -505,7 +505,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy34", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -521,7 +521,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy35", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -537,7 +537,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy36", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -553,7 +553,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy37", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -569,7 +569,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy38", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -585,7 +585,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy39", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -601,7 +601,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy40", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -617,7 +617,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy41", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -633,7 +633,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy42", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -649,7 +649,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy43", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -665,7 +665,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy44", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -681,7 +681,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy45", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -697,7 +697,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy46", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -713,7 +713,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy47", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -729,7 +729,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy48", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -745,7 +745,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy49", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -761,7 +761,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy50", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -777,7 +777,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy51", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -793,7 +793,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy52", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -809,7 +809,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy53", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -825,7 +825,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy54", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -841,7 +841,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy55", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -857,7 +857,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy56", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -873,7 +873,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy57", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -889,7 +889,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy58", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -905,7 +905,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy59", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -921,7 +921,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy60", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -937,7 +937,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy61", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -953,7 +953,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy62", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -969,7 +969,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy63", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -985,7 +985,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy64", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1001,7 +1001,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy65", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1017,7 +1017,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy66", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1033,7 +1033,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy67", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1049,7 +1049,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy68", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1065,7 +1065,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy69", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1081,7 +1081,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy70", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1097,7 +1097,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy71", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1113,7 +1113,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy72", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1129,7 +1129,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy73", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1145,7 +1145,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy74", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1161,7 +1161,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy75", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1177,7 +1177,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy76", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1193,7 +1193,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy77", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1209,7 +1209,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy78", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1225,7 +1225,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy79", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1241,7 +1241,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy80", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1257,7 +1257,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy81", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1273,7 +1273,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy82", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1289,7 +1289,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy83", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1305,7 +1305,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy84", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1321,7 +1321,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy85", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1337,7 +1337,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy86", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1353,7 +1353,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy87", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1369,7 +1369,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy88", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1385,7 +1385,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy89", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1401,7 +1401,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy90", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1417,7 +1417,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy91", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1433,7 +1433,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy92", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1449,7 +1449,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy93", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1465,7 +1465,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy94", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1481,7 +1481,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy95", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1497,7 +1497,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy96", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1513,7 +1513,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy97", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1529,7 +1529,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy98", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1545,7 +1545,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy99", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1561,7 +1561,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy100", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1577,7 +1577,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		reactions: {
 			"glitter": { "elem1": "fairy101", "elem2": null }
 		},
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 		hidden: true,
 	}
@@ -1590,7 +1590,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 			"XX|FX%5|XX",
 			"XX|CR:fairy100%1 AND CR:fairy_dust%0.005 AND M1|M1",
 		],
-		state: "solid",
+		state: "solid", excludeRandom:true,
 		category: "fey",
 	}
 }
@@ -1714,16 +1714,17 @@ runAfterLoad(function() {
 	};
 
     if(enabledMods.includes("mods/fey_and_more.js") && enabledMods.includes("mods/randomness.js")) {
-		//additional eList rebuilding for RM steel derivatives
-		elements.tungstensteel.behavior = [
-			"XX|DL:"+eLists.FAIRY+"|XX",
-			"DL:"+eLists.FAIRY+"|XX|DL:"+eLists.FAIRY+"",
-			"XX|DL:"+eLists.FAIRY+"|XX",
-		],
-		elements.molten_tungstensteel.behavior = [
-			"XX|DL:"+eLists.FAIRY+" AND CR:fire%2.5|XX",
-			"DL:"+eLists.FAIRY+" AND M2|XX|DL:"+eLists.FAIRY+" AND M2",
-			"M1|DL:"+eLists.FAIRY+"|M1",
-		]
+		if(elements.tungstensteel && elements.molten_tungstensteel) {
+			elements.tungstensteel.behavior = [
+				"XX|DL:"+eLists.FAIRY+"|XX",
+				"DL:"+eLists.FAIRY+"|XX|DL:"+eLists.FAIRY+"",
+				"XX|DL:"+eLists.FAIRY+"|XX",
+			],
+			elements.molten_tungstensteel.behavior = [
+				"XX|DL:"+eLists.FAIRY+" AND CR:fire%2.5|XX",
+				"DL:"+eLists.FAIRY+" AND M2|XX|DL:"+eLists.FAIRY+" AND M2",
+				"M1|DL:"+eLists.FAIRY+"|M1",
+			]
+		}
 	};
 });
