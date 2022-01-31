@@ -1,678 +1,627 @@
-//lily made some stupid things
-
-//TPT reference
-elements.warp = {
-    name: "warp",
-    color: "#111111",
-    behavior: [
-        "M1%30 AND SW%30|M1%30 AND SW%30|M1%30 AND SW%30",
-        "M1%30 AND SW%30|DL%1|M1%30 AND SW%30",
-        "M1%30 AND SW%30|M1%30 AND SW%30|M1%30 AND SW%30",
-    ],
-    category: "special",
-    state: "gases",
-},
-
-//unrealistically flammable thing
-elements.unnamed_gas = {
-    color: "#ddee11",
-    behavior: [
-        "M1%05 AND SW%2 AND HT:1%1|M1%05 AND SW%2 AND HT:1%1|M1%05 AND SW%2 AND HT:1%1",
-        "M1%10 AND SW%2 AND HT:1%1|HT:1%1.000000000000000000|M1%10 AND SW%2 AND HT:1%1",
-        "M1%15 AND SW%2 AND HT:1%1|M1%15 AND SW%2 AND HT:1%1|M1%15 AND SW%2 AND HT:1%1",
-    ],
-    behaviorOn: [
-        "M1%10 AND SW%4 AND HT:2%2|M1%10 AND SW%4 AND HT:2%2|M1%10 AND SW%4 AND HT:2%2",
-        "M1%20 AND SW%4 AND HT:2%2|HT:2%2 AND CH:plasma%0.01|M1%20 AND SW%4 AND HT:2%2",
-        "M1%30 AND SW%4 AND HT:2%2|M1%30 AND SW%4 AND HT:2%2|M1%30 AND SW%4 AND HT:2%2",
-    ],
-    category: "gases",
-    burn: 3000,
-    burnTime: 5,
-    burnInto: "burning_unnamed_gas",
-    state: "gas",
-    density: 2,
-    tempHigh: 95,
-    stateHigh: "burning_unnamed_gas",
-    conduct: 0.2,
-    }, 
-
-elements.burning_unnamed_gas = {
-    color: "#eedd11",
-    behavior: [
-        "M2 AND HT:3750%70 AND CR:plasma%10|M1 AND HT:3750%70 AND CR:plasma%10.000000000000000000000000000000000000000000|M2 AND HT:3750%70 AND CR:plasma%10",
-        "M1 AND HT:3750%70 AND CR:plasma%10|HT:3750%70.000000 AND CH:plasma%6.71 AND EX:9>plasma,plasma,burning_unnamed_gas%0.25|M1 AND HT:3750%70 AND CR:plasma%10",
-        "M2 AND HT:3750%70 AND CR:plasma%10|M1 AND HT:3750%70 AND CR:plasma%10.000000000000000000000000000000000000000000|M2 AND HT:3750%70 AND CR:plasma%10",
-    ],
-    behaviorOn: [
-        "M2 AND HT:7500%70 AND CR:plasma%15|M1 AND HT:7500%70 AND CR:plasma%15.00000000000000000000000000000000000|M2 AND HT:7500%70 AND CR:plasma%15",
-        "M1 AND HT:7500%70 AND CR:plasma%15|HT:7500%70 AND CH:plasma%5.60 AND EX:11>plasma,plasma,burning_unnamed_gas%0.5|M2 AND HT:7500%70 AND CR:plasma%15",
-        "M2 AND HT:7500%70 AND CR:plasma%15|M1 AND HT:7500%70 AND CR:plasma%15.00000000000000000000000000000000000|M2 AND HT:7500%70 AND CR:plasma%15",
-    ],
-    category: "gases",
-    burn: 2000,
-    burnTime: 950,
-    burnInto: "plasma",
-    state: "gas",
-    density: 1.5,
-    tempHigh: 200001,
-    stateHigh: "plasma",
-    hidden: true,
-    }, 
-elements.unnamed_powder = {
-    color: "#cddd22",
-    behavior: [
-        "HT:2%2 AND CR:unnamed_gas%3|HT:2%2 AND CR:unnamed_gas%3|HT:2%2 AND CR:unnamed_gas%3",
-        "HT:2%2 AND CR:unnamed_gas%1|HT:2%2.00000000000000000000|HT:2%2 AND CR:unnamed_gas%1",
-        "M2 AND HT:2%2.0000000000000|M1 AND HT:2%2.0000000000000|M2 AND HT:2%2.0000000000000",
-    ],
-    behaviorOn: [
-        "HT:4%4 AND CR:unnamed_gas%6|HT:4%4 AND CR:unnamed_gas%6|HT:4%4 AND CR:unnamed_gas%6",
-        "HT:4%4 AND CR:unnamed_gas%2|HT:4%4.00000000000000000000|HT:4%4 AND CR:unnamed_gas%2",
-        "M2 AND HT:4%4.0000000000000|M1 AND HT:4%4.0000000000000|M2 AND HT:4%4.0000000000000",
-    ],
-    category: "powders",
-    burn: 3000,
-    burnTime: 5,
-    burnInto: "burning_unnamed_gas",
-    state: "powders",
-    density: 20,
-    tempHigh: 95,
-    stateHigh: "burning_unnamed_gas",
-    conduct: 0.4,
-    }, 
-
-elements.burning_unnamed_powder = {
-    color: "#ddcd22",
-    behavior: [
-        "HT:89850%70 AND CR:burning_unnamed_gas%7|HT:89850%70 AND CR:burning_unnamed_gas%7.0000000000000000000000000000000000000000000000000000000000000000000000000000|HT:89850%70 AND CR:burning_unnamed_gas%7",
-        "HT:89850%70 AND CR:burning_unnamed_gas%7|HT:89850%70 AND CH:plasma%00000000005.60 AND EX:12>plasma,plasma,plasma,burning_unnamed_gas,burning_unnamed_powder%0.5|HT:89850%70 AND CR:burning_unnamed_gas%7",
-        "M2 AND HT:89850%70 AND CR:burning_unnamed_gas%7|M1 AND HT:89850%70 AND CR:burning_unnamed_gas%7.00000000000000000000000000000000000000000000000000000000000000|M2 AND HT:89850%70 AND CR:burning_unnamed_gas%7",
-    ],
-    behaviorOn: [
-        "HT:179700%70 AND CR:burning_unnamed_gas%9|HT:179700%70 AND CR:burning_unnamed_gas%9.00000000000000000000000000000000000000000000000000000000000000000000000000|HT:179700%70 AND CR:burning_unnamed_gas%9",
-        "HT:179700%70 AND CR:burning_unnamed_gas%9|HT:179700%70 AND CH:plasma%00000000004.79 AND EX:13>plasma,plasma,plasma,burning_unnamed_gas,burning_unnamed_gas,burning_unnamed_powder%1|HT:179700%70 AND CR:burning_unnamed_gas%9",
-        "M2 AND HT:179700%70 AND CR:burning_unnamed_gas%9|M1 AND HT:179700%70 AND CR:burning_unnamed_gas%9.000000000000000000000000000000000000000000000000000000000000|M2 AND HT:179700%70 AND CR:burning_unnamed_gas%9",
-    ],
-    category: "powders",
-    burn: 2000,
-    burnTime: 1150,
-    burnInto: "plasma",
-    state: "powders",
-    density: 15,
-    tempHigh: 200001,
-    stateHigh: "burning_unnamed_gas",
-    conduct: 0.4,
-    hidden: true,
-    },
-elements.steam_remover = { //pov: you tried using water to cool something
-    name: "steam remover",
-    color: "#542900",
-    behavior: [
-        "CH:steam>steam_remover|CH:steam>steam_remover|CH:steam>steam_remover",
-        "CH:steam>steam_remover|DL%40|CH:steam>steam_remover",
-        "CH:steam>steam_remover|CH:steam>steam_remover|CH:steam>steam_remover",
-    ],
-    category: "special",
-},     
-elements.filler_remover = { //pov: you put a filler for fun but now you want your scene back
-    name: "filler remover",
-    color: "#00dd00",
-    behavior: [
-        "CH:filler>filler_remover AND CH:lattice>filler_remover AND CH:virus>filler_remover AND CH:gray_goo>filler_remover|CH:filler>filler_remover AND CH:lattice>filler_remover AND CH:virus>filler_remover AND CH:gray_goo>filler_remover|CH:filler>filler_remover AND CH:lattice>filler_remover AND CH:virus>filler_remover AND CH:gray_goo>filler_remover",
-        "CH:filler>filler_remover AND CH:lattice>filler_remover AND CH:virus>filler_remover AND CH:gray_goo>filler_remover|DL%40|CH:filler>filler_remover AND CH:lattice>filler_remover AND CH:virus>filler_remover AND CH:gray_goo>filler_remover",
-        "CH:filler>filler_remover AND CH:lattice>filler_remover AND CH:virus>filler_remover AND CH:gray_goo>filler_remover|CH:filler>filler_remover AND CH:lattice>filler_remover AND CH:virus>filler_remover AND CH:gray_goo>filler_remover|CH:filler>filler_remover AND CH:lattice>filler_remover AND CH:virus>filler_remover AND CH:gray_goo>filler_remover",
-    ],
-    "category":"special",
-
-},     
-elements.plasma_remover = { //why would you need this?
-    name: "plasma remover",
-    color: ["#77ff00","#4e7b26","#77ff00"],
-    behavior: [
-        "CH:plasma>plasma_remover|CH:plasma>plasma_remover|CH:plasma>plasma_remover",
-        "CH:plasma>plasma_remover|DL%40|CH:plasma>plasma_remover",
-        "CH:plasma>plasma_remover|CH:plasma>plasma_remover|CH:plasma>plasma_remover",
-    ],
-    category: "special",
-    temp: 7065,
-},
-/*elements.black_decay = { //random mystcraft mod reference
-    name: "black decay",
-    color: "#222222",
-    behavior: [
-        "XX|CH:black_decay%2 AND DL:black_decay%30|XX",
-        "CH:black_decay%1|DL%0.2|CH:black_decay%1",
-        "XX|CH:black_decay%1 AND M1|XX",
-    ],
-    category: "special",
-},*/
-elements.tungstensteel = {
-    color: "#555589",
-    behavior: behaviors.FAIRYKILL,
-    tempHigh: 3600,
-    category: "solids",
-    density: 19000,
-    conduct: 0.48,
-},
-elements.molten_tungsten = {
-    density: 17600,
-    temp: 3500,
-    tempHigh: 5555,
-    stateHigh: "tungsten_gas",
-},         
-elements.tungsten_gas = {
-    color: "#FFEEE2",
-    behavior: [
-        "CR:plasma%0.625 AND M2|M1|CR:plasma%0.625 AND M2",
-		"M1|XX|M1",
-		"CR:plasma%0.625 AND M2|M1|CR:plasma%0.625 AND M2",
+elements.cum = { 
+	name: "cum",
+	color: "#e6e1d5",
+	behavior: [
+		"ST%50 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15|ST%50 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15|XX AND ST%50 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15",
+		"M2 AND ST%65 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15|XX|M2 AND ST%65 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15",
+		"M1 AND ST%80 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15|M1 AND ST%80 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15|M1 AND ST%80 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15",
 	],
-    density: 15800, //https://link.springer.com/article/10.1007/s11661-019-05262-5
-    temp: 5600,
-    tempLow: 5555,
-    stateLow: "molten_tungsten",
-    category: "gases",
-    hidden: true,
-},
-elements.molten_steel = {
+	density: 997,
+	tempHigh: 35,
+	stateHigh: "dead_cum",
 	reactions: {
-		"molten_tungsten": { "elem1":"molten_tungstensteel", "elem2":"molten_tungstensteel" }
-	}
-}
-elements.molten_tungstensteel = {
-	behavior: [
-        "XX|DL:"+eLists.FAIRY+" AND CR:fire%2.5|XX",
-        "DL:"+eLists.FAIRY+" AND M2|XX|DL:"+eLists.FAIRY+" AND M2",
-        "M1|DL:"+eLists.FAIRY+"|M1",
-    ]
-}
-elements.rm_water_balloon = {
-	name: "water balloon",
-	color: "#3dc2ff",
-	behavior: [
-        "XX|M2|XX",
-        "XX|C2:wb3|XX",
-        "XX|M1|XX",
-    ],
-    tempHigh: 180,
-	stateHigh: ["steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "plastic"],
-    tempLow: 0,
-	stateLow: ["ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "plastic"],
-	category: "special",
-	state: "solid",
-	density: 997,
-}
-
-elements.wb3 = {
-	name: "wb3",
-	color: "#0856ff",
-	behavior: [
-        "XX|CR:wb2|XX",
-        "CR:wb2|CH:wb2|CR:wb2",
-        "XX|CR:wb2|XX",
-    ],
-	category: "liquid",
-	state: "solid",
-	density: 997,
-	hidden: true,
-}
-
-elements.wb2 = {
-	name: "wb2",
-	color: "#145fff",
-	behavior: [
-        "XX|CR:wb1|XX",
-        "CR:wb1|CH:wb1|CR:wb1",
-        "XX|CR:wb1|XX",
-    ],
-	category: "special",
-	state: "liquid",
-	density: 997,
-	hidden: true,
-}
-
-elements.wb1 = {
-	name: "wb1",
-	color: "#2167ff",
-	behavior: [
-        "XX|CR:water|XX",
-        "CR:water|CH:water|CR:water",
-        "XX|CR:water|XX",
-    ],
-	category: "special",
-	state: "liquid",
-	density: 997,
-	hidden: true,
-}
-
-elements.rm_lava_balloon = {
-	name: "lava balloon",
-	color: "#ffab36",
-	behavior: [
-        "XX|M2|XX",
-        "XX|C2:lb3|XX",
-        "XX|M1|XX",
-    ],
-    temp: 950,
-    category: "special",
-    state: "solid",
-    density: 2725,
-}
-
-elements.lb3 = {
-	name: "lb3",
-	color: "#ff8c00",
-	behavior: [
-        "XX|CR:lb2|XX",
-        "CR:lb2|CH:lb2|CR:lb2",
-        "XX|CR:lb2|XX",
-    ],
-    temp: 1000,
-	category: "liquid",
-	state: "solid",
-	density: 2725,
-	hidden: true,
-}
-
-elements.lb2 = {
-	name: "lb2",
-	color: "#ff6f00",
-	behavior: [
-        "XX|CR:lb1|XX",
-        "CR:lb1|CH:lb1|CR:lb1",
-        "XX|CR:lb1|XX",
-    ],
-    temp: 1000,
-	category: "special",
-	state: "liquid",
-	density: 2725,
-	hidden: true,
-}
-
-elements.lb1 = {
-	name: "lb1",
-	color: "#ff4d00",
-	behavior: [
-        "XX|CR:magma|XX",
-        "CR:magma|CH:magma|CR:magma",
-        "XX|CR:magma|XX",
-    ],
-    temp: 1000,
-	category: "special",
-	state: "liquid",
-	density: 2725,
-	hidden: true,
+		"water": { "elem1": "cum_water", "elem2": "cum_water", "chance":0.7 }, //cum mixing
+		"sugar": { "elem1": null, "elem2": "cum", "chance":0.7 }, //sperm eat sugar
+		"sugar_water": { "elem1": "cum_water", "elem2": "cum_water", "chance":0.7 }, //fed and diluted
+		"dirt": { "elem1": null, "elem2": "cummy_mud" }, //cum goes into dirt
+		"mud": { "elem1": "cum_water", "elem2": "cummy_mud", "chance": (1/3) }, // cum goes into mud
+		"sand": { "elem1": null, "elem2": "cummy_sand" }, // cum goes into sand
+		"wet_sand": { "elem1": "cum_water", "elem2": "cummy_sand", "chance": (1/3) }, // cum goes into wet sand
+		"acid": { "elem1": "water", "elem2": ["cum_water", "dead_cum_water", "dead_cum_water", "dead_cum_water", "dead_cum_water"], "chance": 0.1 }, //cum is basic
+		"slime": { "elem1": "water", "elem2": "cum_slime" }, //cum enters slime
+		"salt": { "elem1": null, "elem2": "dead_cum" }, //salt kills sperm
+		"salt_water": { "elem1": "dead_cum_water", "elem2": null }, //killed and diluted
+		"alcohol": { "elem1": "alcohol", "elem2": "dead_cum" }, //sperm die from alcohol, also I'm not implementing alcohol-water mixing
+		"soap": { "elem1": "soap", "elem2": "dead_cum" }, //sperm die from soap
+		"radiation": { "elem1": "radiation", "elem2": "dead_cum" }, //sperm die from radiation
+	},
+	tempLow: 0,
+	stateLow: "cum_ice",
+	viscosity: 20,
+	category:"cum",
+	conduct:0,
+	extraInfo: "A whitish, sticky liquid that contains sperm. <span style=\"font-size: 0;\">It isn't funny.</span>",
 },
-
-elements.unnamed_substance_bomb = {
-	name: "unnamed bomb",
-	color: "#cdad52",
+elements.dead_cum = { 
+	name: "dead cum",
+	color: "#d0d0d0",
+	behavior: [
+		"ST%50 AND SW:water,dead_cum_water%15|ST%50 AND SW:water,dead_cum_water%15|XX AND ST%50 AND SW:water,dead_cum_water%15",
+		"M2 AND ST%65 AND SW:water,dead_cum_water%15|XX|M2 AND ST%65 AND SW:water,dead_cum_water%15",
+		"M1 AND ST%80 AND SW:water,dead_cum_water%15|M1 AND ST%80 AND SW:water,dead_cum_water%15|M1 AND ST%80 AND SW:water,dead_cum_water%15",
+	],
+	density: 997,
+	tempHigh: 100,
+	stateHigh: ["steam","burnt_cum"],
+	reactions: {
+		"water": { "elem1": "dead_cum_water", "elem2": "dead_cum_water", "chance":0.7 }, //cum mixing
+		"dirt": { "elem1": null, "elem2": "dead_cummy_mud" }, //cum goes into dirt
+		"mud": { "elem1": "dead_cum_water", "elem2": "dead_cummy_mud", "chance": (1/3) }, // cum goes into mud
+		"sand": { "elem1": null, "elem2": "dead_cummy_sand" }, // cum goes into sand
+		"wet_sand": { "elem1": "dead_cum_water", "elem2": "dead_cummy_sand", "chance": (1/3) }, // cum goes into wet sand
+		"acid": { "elem1": "water", "elem2": "dead_cum_water" }, //dead cum is still basic
+		"salt_water": { "elem1": "dead_cum_water", "elem2": "dead_cum_water" }, //salty mixing
+		"salt": { "elem1": null, "elem2": "salt_water" }, //salty mixing
+	},
+	tempLow: 0,
+	stateLow: "dead_cum_ice",
+	viscosity: 20,
+	category:"cum",
+	conduct: 0.04,
+	hidden:true,
+	extraInfo: "Semen whose sperm have died.",
+},
+elements.cum_water = {
+	name: "cum water",
+	color: "#a7c1db",
+	behavior: [
+		"SW:water,cum,dead_cum_water,dead_cum%5|SW:water,cum,dead_cum_water,dead_cum%5|SW:water,cum,dead_cum_water,dead_cum%5",
+		"M2 AND SW:water,cum,dead_cum_water,dead_cum%5|XX|M2 AND SW:water,cum,dead_cum_water,dead_cum%5",
+		"M1 AND SW:water,cum,dead_cum_water,dead_cum%5|M1 AND SW:water,cum,dead_cum_water,dead_cum%5|M1 AND SW:water,cum,dead_cum_water,dead_cum%5",
+	],
+	reactions: {
+		"sugar_water": { "elem1": "cum_water", "elem2": "cum_water", "chance":0.7 }, //sperm eat sugar
+		"water": { "elem1": "cum_water", "elem2": "cum_water", "chance":0.7 }, //sperm eat sugar
+		"dirt": { "elem1": "water", "elem2": "cummy_mud" }, //cum goes into dirt
+		"sand": { "elem1": "water", "elem2": "cummy_sand" }, // cum goes into sand
+		"sugar": { "elem1": null, "elem2": "cum_water", "chance":0.7 }, //sperm eat sugar
+		"slime": { "elem1": "water", "elem2": "cum_slime" }, //cum enters slime
+		"salt": { "elem1": null, "elem2": "dead_cum_water" }, //cum dies
+		"salt_water": { "elem1": ["dead_cum_water", "salt_water"], "elem2": ["dead_cum_water", "salt_water"] }, //cum dies
+		"acid": { "elem1": ["acid", "water"], "elem2": "water" }, //diluted cum is less effective
+		"soap": { "elem1": "soap", "elem2": "dead_cum_water" },
+		"alcohol": { "elem1": "alcohol", "elem2": "dead_cum_water" },
+		"radiation": { "elem1": "radiation", "elem2": "dead_cum_water" },
+	},
+	density: 997,
+	tempHigh: 35,
+	stateHigh: "dead_cum_water",
+	tempLow: 0,
+	stateLow: "cum_water_ice",
+	viscosity: 8,
+	category: "cum",
+	conduct: 0.03,
+	hidden: true,
+	extraInfo: "Dilute semen.",
+},
+elements.dead_cum_water = {
+	name: "dead cum water",
+	color: "#b7b7c6",
+	behavior: [
+		"SW:water,cum,dead_cum_water,dead_cum%3|SW:water,cum,dead_cum_water,dead_cum%3|SW:water,cum,dead_cum_water,dead_cum%3",
+		"M2 AND SW:water,cum,dead_cum_water,dead_cum%4|XX|M2 AND SW:water,cum,dead_cum_water,dead_cum%4",
+		"M1 AND SW:water,cum,dead_cum_water,dead_cum%5|M1 AND SW:water,cum,dead_cum_water,dead_cum%5|M1 AND SW:water,cum,dead_cum_water,dead_cum%5",
+	],
+	reactions: {
+		"acid": { "elem1": ["acid", "water"], "elem2": "water" }, //diluted cum is less effective
+	},
+	density: 997,
+	tempHigh: 100,
+	stateHigh: "steam",
+	tempLow: 0,
+	stateLow: "dead_cum_water_ice",
+	viscosity: 8,
+	category: "cum",
+	conduct: 0.03,
+	hidden:true,
+	extraInfo: "Dilute semen whose sperm have died.",
+},
+elements.burnt_cum = {
+	name: "burnt cum",
+	density: 998,
+	color: "#a6942e",
 	behavior: [
 		"XX|XX|XX",
 		"XX|XX|XX",
-		"M2|M1 AND EX:10>plasma,burning_unnamed_powder,unnamed_powder,unnamed_powder,unnamed_powder,burning_unnamed_gas,unnamed_gas,unnamed_gas,unnamed_gas|M2",
+		"M2 AND SW:steam%35|M1 AND SW:steam%70|M2 AND SW:steam%35",
 	],
-	category: "weapons",
-	state: "solid",
-	density: 1300,
+	category: "solids",
+	tempHigh: 180,
+	stateHigh: "ash",
+	hidden: true,
+	category: "cum",
+	extraInfo: "A disgusting residue left from burnt semen.",
 },
-
-elements.warp_bomb = {
-	name: "warp bomb",
-	color: "#422e4a",
+elements.cum_ice = {
+	name: "frozen cum",
+	color: "#cfe2e6",
+	behavior: behaviors.WALL,
+	reactions: {
+		"acid": { "elem1": "water", "elem2": ["cum_water_ice", "dead_cum_water_ice", "dead_cum_water_ice", "dead_cum_water_ice", "dead_cum_water_ice"] }, //frozen bases are still basic
+		"alcohol": { "elem1": "alcohol", "elem2": "dead_cum_ice" }, //alcohol kills things
+		"soap": { "elem1": "soap", "elem2": "dead_cum_ice" }, //soap also kills things
+		"radiation": { "elem1": "radiation", "elem2": "dead_cum_ice" }, //so does radiation
+	},
+	density: 917,
+	temp: 0,
+	tempHigh: 5,
+	stateHigh: "cum",
+	category: "cum",
+	extraInfo: "Frozen semen.",
+	breakInto: "cum_snow",
+},
+elements.cum_water_ice = {
+	name: "cummy ice",
+	color: "#cae3e8",
+	behavior: behaviors.WALL,
+	reactions: {
+		"acid": { "elem1": ["water", "acid"], "elem2": "ice" }, //less concentrated frozen bases are less basic then more concentrated frozen bases
+		"alcohol": { "elem1": "alcohol", "elem2": "dead_cum_water_ice" }, //alcohol kills things
+		"soap": { "elem1": "soap", "elem2": "dead_cum_water_ice" }, //soap also kills things
+		"radiation": { "elem1": "radiation", "elem2": "dead_cum_water_ice" }, //so does radiation
+	},
+	density: 917,
+	temp: 0,
+	tempHigh: 5,
+	stateHigh: "cum_water",
+	category: "cum",
+	hidden: true,
+	extraInfo: "Dilute, frozen semen.",
+	breakInto: ["snow","cum_snow"],
+},
+elements.dead_cum_ice = {
+	name: "dead frozen cum",
+	color: "#d5d5ec",
+	behavior: behaviors.WALL,
+	reactions: {
+		"acid": { "elem1": "water", "elem2": "dead_cum_water_ice" },
+	},
+	density: 917,
+	temp: 0,
+	tempHigh: 5,
+	stateHigh: "dead_cum",
+	category: "cum",
+	hidden:true,
+	extraInfo: "Frozen semen whose sperm have died.",
+	breakInto: "dead_cum_snow",
+},
+elements.dead_cum_water_ice = {
+	name: "dead cummy ice",
+	color: "#e2e2e7",
+	behavior: behaviors.WALL,
+	reactions: {
+		"acid": { "elem1": ["acid", "water"], "elem2": "ice" },
+	},
+	density: 917,
+	temp: 0,
+	tempHigh: 5,
+	stateHigh: "cum_water",
+	category: "cum",
+	hidden:true,
+	extraInfo: "Dilute, frozen semen whose sperm have died.",
+	breakInto: ["snow","dead_cum_snow"],
+},
+elements.cum_snow = {
+	color: "#eff6fa",
+	behavior: behaviors.POWDER,
+	temp: -5,
+	tempHigh: 0,
+	stateHigh: "cum",
+	category: "cum",
+	hidden: true,
+	state: "solid",
+	density: 100,
+},
+elements.dead_cum_snow = {
+	color: "#c6c6c3",
+	behavior: behaviors.POWDER,
+	temp: -5,
+	tempHigh: 0,
+	stateHigh: "dead_cum",
+	category: "cum",
+	hidden: true,
+	state: "solid",
+	density: 100,
+},
+elements.cummy_mud = {
+	name: "cummy mud",
+	color: "#826f63",
 	behavior: [
-		"XX|XX|XX",
-		"XX|CC:#5b3a69,#382740,#400e61|XX",
-		"M2|M1 AND EX:15>warp|M2",
+		"XX|ST%40|XX",
+		"M2%10 AND ST%50|XX|M2%10 AND  AND ST%50",
+		"M2|M1|M2",
 	],
-	category: "weapons",
-	state: "solid",
-	density: 1300,
-},
-
-elements.cluster_nuke = {
-	color: "#e3f636",
+	reactions: {
+		"water": { "elem1": "mud", "elem2": "cum_water", "chance": (3/4) },
+		"water": { "elem2": "mud", "elem2": "cum" },
+		"acid": { "elem1": ["acid", "water"], "elem2": "mud" },
+		"soap": { "elem1": "soap", "elem2": "dead_cummy_mud" },
+		"alcohol": { "elem1": "alcohol", "elem2": "dead_cummy_mud" },
+		"radiation": { "elem1": "radiation", "elem2": "dead_cummy_mud" },
+	},
+	tempLow: -50,
+	stateLow: "cummy_permafrost",
+	tempHigh: 35,
+	stateHigh: "dead_cummy_mud",
+	category:"cum",
+	state:"solid",
+	density: 1740,
+	hidden: true,
+	extraInfo: "Dirt that has absorbed semen.",
+}, 
+elements.cummy_sand = {
+	name: "cummy sand",
+	color: "#c5c88e",
 	behavior: [
-		"CR:radiation%5|EX:90>plasma,plasma,plasma,nuke,nuke,nuke,radiation,radiation,radiation,rad_steam,rad_steam,radiation,rad_steam AND CR:radiation%5|CR:radiation%5",
-		"CR:radiation%5|XX|CR:radiation%5",
-		"M2 AND CR:radiation%5|M1 AND EX:90>plasma,plasma,plasma,nuke,nuke,nuke,radiation,radiation,radiation,rad_steam,rad_steam,radiation,rad_steam AND CR:radiation%5|M2 AND CR:radiation%5",
+		"XX|ST%40|XX",
+		"M2%10 AND ST%50|XX|M2%10 AND  AND ST%50",
+		"M2|M1|M2",
 	],
-	category: "weapons",
+	reactions: {
+		"water": { "elem1": "sand", "elem2": "cum_water", "chance": (3/4) },
+		"water": { "elem2": "sand", "elem2": "cum" },
+		"acid": { "elem1": ["acid", "water"], "elem2": "wet_sand" },
+		"soap": { "elem1": "soap", "elem2": "dead_cummy_sand" },
+		"alcohol": { "elem1": "alcohol", "elem2": "dead_cummy_sand" },
+		"radiation": { "elem1": "radiation", "elem2": "dead_cummy_sand" },
+	},
+	tempHigh: 35,
+	stateHigh: "dead_cummy_sand",
+	category: "cum",
 	state: "solid",
-	density: 1500,
-},
-
-//hormones
-
-	//estrogens
-
-elements.estradiol = {
-	color: "#f2fcee", //it absorbs shorter wavelength UV than testosterone and I am treating this like absorbing violet for convenience
-					  //https://www.researchgate.net/publication/226065469_Optical_Properties_of_Two_Types_of_Sex_Hormones_of_the_Cyclopentenephenanthrene_Series
-					  //http://depts.washington.edu/cmditr/modules/lum/color.html
-	behavior: behaviors.POWDER,
-	state: "solid",
-	category: "solids",
-	density: 1200,
-	tempHigh: 173,
-	category: "powders",
-},
-
-elements.molten_estradiol = {
-	tempHigh: 446,
-	stateHigh: "vaporized_estradiol",
-},
-
-elements.vaporized_estradiol = {
-	color: ["#ffbf60","#ffdc60","#ff9d60"], //hormone gas wouldn't glow that brightly at these temperatures but just ignore that
-	behavior: behaviors.GAS,
-	state: "gas",
-	category: "gases",
+	density: 1915,
 	hidden: true,
-	density: 972,
-	tempLow: 446,
-	stateLow: "molten_estradiol",
+	extraInfo: "Sand that has absorbed semen.",
 },
-
-	//progestogens
-
-elements.progesterone = {
-	color: "#f7eefc", //slightly different? from testosterone but exaggerated
-					  //https://downloads.hindawi.com/journals/ijps/2017/9603140.pdf
-					  //these hormones all absorb in the uv region anyway so they would all look white to us
-	behavior: behaviors.POWDER,
+elements.dead_cummy_mud = {
+	name: "dead cummy mud",
+	color: "#978773",
+	behavior: [
+		"XX|ST%40|XX",
+		"M2%10 AND ST%50|XX|M2%10 AND  AND ST%50",
+		"M2|M1|M2",
+	],
+	reactions: {
+		"water": { "elem1": "mud", "elem2": "dead_cum_water", "chance": 0.15 },
+		"water": { "elem2": "mud", "elem2": "dead_cum", "chance": 0.05 },
+		"acid": { "elem1": ["acid", "water"], "elem2": "mud" },
+	},
+	tempLow: -50,
+	stateLow: "dead_cummy_permafrost",
+	tempHigh: 100,
+	stateHigh: "mudstone",
+	category:"cum",
+	state:"solid",
+	density: 1740,
+	hidden:true,
+	extraInfo: "Dirt that has absorbed semen. The sperm are dead.",
+}, 
+elements.dead_cummy_sand = {
+	name: "dead cummy sand",
+	color: "#a9a987",
+	behavior: [
+		"XX|ST%40|XX",
+		"M2%10 AND ST%50|XX|M2%10 AND  AND ST%50",
+		"M2|M1|M2",
+	],
+	reactions: {
+		"water": { "elem1": "wet_sand", "elem2": "dead_cum_water", "chance": 0.15 },
+		"water": { "elem2": "wet_sand", "elem2": "dead_cum", "chance": 0.05 },
+		"acid": { "elem1": ["acid", "water"], "elem2": "wet_sand" },
+	},
+	tempHigh: 100,
+	stateHigh: "packed_sand",
+	category: "cum",
 	state: "solid",
-	category: "solids",
-	density: 1100,
-	tempHigh: 121,
-	category: "powders",
+	density: 1915,
+	hidden:true,
+	extraInfo: "Sand that has absorbed semen. The sperm are dead.",
 },
-
-elements.molten_progesterone = {
-	tempHigh: 447,
-	stateHigh: "vaporized_progesterone",
-},
-
-elements.vaporized_progesterone = {
-	color: ["#ffbf60","#ffdc60","#ff9d60"],
-	behavior: behaviors.GAS,
-	state: "gas",
-	category: "gases",
-	hidden: true,
-	density: 891,
-	tempLow: 447,
-	stateLow: "molten_progesterone",
-}
-
-	//androgens
-
-elements.testosterone = {
-	color: "#f7eef7", //it absorbs longer wavelength UV than estradiol and I am treating this like absorbing green for convenience
-	behavior: behaviors.POWDER,
-	state: "solid",
-	category: "solids",
-	density: 1100,
-	tempHigh: 155,
-	category: "powders",
-},
-
-elements.molten_testosterone = {
-	tempHigh: 433,
-	stateHigh: "vaporized_testosterone",
-},
-
-elements.vaporized_testosterone = {
-	color: ["#ffbf60","#ffdc60","#ff9d60"],
-	behavior: behaviors.GAS,
-	state: "gas",
-	category: "gases",
-	hidden: true,
-	density: 891,
-	tempLow: 433,
-	stateLow: "molten_testosterone",
-},
-
-//other
-
-	//anti-androgens
-
-		//CPA
-
-elements.cyproterone_acetate = {
-	color: "#efeef8", //it absorbs far longer uv than the others, which i am rendering as red absorption
-					  //https://www.researchgate.net/figure/UV-spectrum-for-drospirenone-cyproterone-acetate-desogestrel-and-ethinyl-estradiol-at-1_fig1_315746083
-					  //i didn't really expect to find a spectrum for this
-	behavior: behaviors.POWDER,
-	state: "solid",
-	category: "solids",
-	density: 1068,
-	tempHigh: 200,
-	category: "powders",
-},
-
-/*	> Hazardous decomposition products:
-	> Hydrogen chloride (HCl)
-	> Carbon monoxide and carbon dioxide
-	> Hydrogen
-	
-	> https://cdn.caymanchem.com/cdn/msds/16622m.pdf
-	
-	so many interesting effects i can't add
-*/
-elements.molten_cyproterone_acetate = {
-	tempHigh: 569,
-	stateHigh: "vaporized_cyproterone_acetate",
-},
-
-elements.vaporized_cyproterone_acetate = {
-	color: ["#ffbf60","#ffdc60","#ff9d60"],
-	behavior: behaviors.GAS,
-	state: "gas",
-	category: "gases",
-	hidden: true,
-	density: 865,
-	tempLow: 569,
-	stateLow: "molten_cyproterone_acetate",
-},
-
-		//spironolactone
-
-elements.spironolactone = {
-	color: "#f7eef1", //UV absorbance peak wavelength is slightly shorter than that of testosterone
-					  //https://www.researchgate.net/publication/348592381_Quantification_of_Spironolactone_by_first_and_second_order_UV_Derivative_Spectrophotometry_in_bulk_and_tablet_dosage_form/link/6006b3cf299bf14088a649bd/download
-	behavior: behaviors.POWDER,
-	state: "solid",
-	category: "solids",
-	density: 1200,
-	tempHigh: 207,
-	category: "powders",
-},
-
-elements.molten_spironolactone = {
-	tempHigh: 597,
-	stateHigh: "vaporized_spironolactone",
-	/*should have more decomps
-	https://sci-hub.se/https://link.springer.com/article/10.1007/BF01979243
-	> The TG-DTG curves of spironolactone in Fig. 7 demonstrate that the compound is thermally stable up to 200*C, and that its thermal decomposition occurs between 200 and 620*C. Four consecutive steps are observed in the TG-DTG curves. The first step, up to 260*C is ascribed to the elimination of the substituent group, SCOCH_{3} (TG= 19.59%, Calc. = 19.33%). The second step (260-370*C) and the third and fourth steps (370-700*C) involve losses of 42.93% and 37.48%, respectively, but do not permit a suggestion as to which parts of the compound are eliminated in each step. */
-},
-
-elements.vaporized_spironolactone = {
-	color: ["#ffbf60","#ffdc60","#ff9d60"],
-	behavior: behaviors.GAS,
-	state: "gas",
-	category: "gases",
-	hidden: true,
-	density: 972,
-	tempLow: 597,
-	stateLow: "molten_spironolactone",
-},
-
-		//finasteride
-
-elements.finasteride = {
-	color: "#fcfcf1", //UV absorbance peak wavelength is even shorter than that of estradiol
-					  //https://www.researchgate.net/publication/312317200
-	behavior: behaviors.POWDER,
-	state: "solid",
-	category: "solids",
-	density: 1100,
-	tempHigh: 253,
-	category: "powders",
-},
-
-elements.molten_finasteride = {
-	tempHigh: 577,
-	stateHigh: "vaporized_finasteride",
-},
-
-elements.vaporized_finasteride = {
-	color: ["#ffbf60","#ffdc60","#ff9d60"],
-	behavior: behaviors.GAS,
-	state: "gas",
-	category: "gases",
-	hidden: true,
-	density: 891,
-	tempLow: 577,
-	stateLow: "molten_finasteride",
-},
-
-		//dutasteride
-
-elements.dutasteride = {
-	color: "#fbf6ee", //High UV absorbances around the peak wavelengths of both estradiol and testosterone
-					  //https://sphinxsai.com/sphinxsaivol_2no.1/pharmtech_vol_2no.1/PharmTech_Vol_2No.1PDF/PT=18%20(113-117).pdf
-	behavior: behaviors.POWDER,
-	state: "solid",
-	category: "solids",
-	density: 1303, //https://www.chemicalbook.com/ChemicalProductProperty_EN_CB3254628.htm
-	tempHigh: 243,
-	category: "powders",
-},
-
-elements.molten_dutasteride = {
-	tempHigh: 620, //http://www.chemspider.com/Chemical-Structure.5293502.html
-	stateHigh: "vaporized_dutasteride",
-},
-
-elements.vaporized_dutasteride = {
-	color: ["#ffbf60","#ffdc60","#ff9d60"],
-	behavior: behaviors.GAS,
-	state: "gas",
-	category: "gases",
-	hidden: true,
-	density: 1055,
-	tempLow: 620,
-	stateLow: "molten_dutasteride",
-},
-
-		//bicalutamide
-
-elements.bicalutamide = {
-	color: "#f4fcee", //peaks at 200-220 and at 270
-					  //i am probably mapping uv to visible wrong and misreading color.html
-					  //https://www.researchgate.net/publication/257679318
-	behavior: behaviors.POWDER,
-	state: "solid",
-	category: "solids",
-	density: 1520, //https://www.chemicalbook.com/ProductMSDSDetailCB7457827_EN.htm
-	tempHigh: 192,
-	category: "powders",
-},
-
-elements.molten_bicalutamide = {
-	tempHigh: 659,
-	stateHigh: "vaporized_bicalutamide",
-},
-
-elements.vaporized_bicalutamide = {
-	color: ["#ffbf60","#ffdc60","#ff9d60"],
-	behavior: behaviors.GAS,
-	state: "gas",
-	category: "gases",
-	hidden: true,
-	density: 1231,
-	tempLow: 659,
-	stateLow: "molten_bicalutamide",
-},
-
-	//puberty blockers
-
-elements.leuprolide = {
-	color: "#f5eefb", //http://dspace.hmlibrary.ac.in:8080/jspui/bitstream/123456789/1143/11/11_Chapter%203.pdf
-	behavior: behaviors.POWDER,
-	state: "solid",
-	category: "solids",
-	density: 1440, //https://www.chemicalbook.com/ProductMSDSDetailCB7457827_EN.htm
+elements.cum_slime = {
+	name: "cummy slime",
+	color: "#a4cf83",
+	behavior: behaviors.LIQUID,
+	viscosity: 5500,
+	category:"liquids",
+	state: "liquid",
+	reactions: {
+		"water": { "elem1": "cum_water", "elem2": "slime", "chance": (1/5) },
+		"acid": { "elem1": ["acid", "water"], "elem2": "slime" },
+	},
+	density: 1470,
 	tempHigh: 150,
-	category: "powders",
+	stateHigh: ["steam","steam","burnt_cum","burnt_cum","slime"],
+	hidden:true,
+	extraInfo: "Slime that has absorbed semen.",
 },
-
-elements.molten_leuprolide = {
-	tempHigh: 1720, //https://web.archive.org/web/20210512074205/http://www.shreejipharmainternational.com/leuprolide-acetate-1177796.html
-	stateHigh: "vaporized_leuprolide",
-},
-
-elements.vaporized_leuprolide = {
-	color: ["#ffbf60","#ffdc60","#ff9d60"],
-	behavior: behaviors.GAS,
-	state: "gas",
-	category: "gases",
-	hidden: true,
-	density: 1166,
-	tempLow: 1720,
-	stateLow: "molten_leuprolide",
-},
-
-	//histrelin
-
-elements.histrelin = {
-	color: "#f8f5ee", //no spectrum available
-	behavior: behaviors.POWDER,
-	state: "solid",
-	category: "solids",
-	density: 1500, //https://www.chemicalbook.com/ProductMSDSDetailCB7457827_EN.htm
-	tempHigh: 1800, //https://www.chemsrc.com/en/cas/76712-82-8_1042020.html
-	category: "powders",
-},
-
-elements.molten_histrelin = {
-	color: ["#ffbf60","#ffdc60","#ff9d60"],
-	behavior: behaviors.GAS,
-	state: "gas",
-	category: "gases",
-	hidden: true,
-	tempLow: 1800,
-	stateLow: "histrelin",
-},
-
-//end of hrt section
-
-elements.anti_bomb = {
-	color: "#525c61",
+elements.cummy_snake = {
+	color: "#bfbfbf",
 	behavior: [
-		"M2|M1 AND EX:10|M2",
+		"XX|CH:cum_ice>cum%1 AND SW:cum%20|XX",
+		"CH:cum_ice>cum%1 AND SW:cum%20|LB:cum_ice AND RT%5|M1 AND BO:1,2,3 AND CH:cum_ice>cum%1 AND SW:cum%20",
+		"XX|CH:cum_ice>cum%1 AND SW:cum%20|XX",
+	],
+	rotatable: true,
+	category: "cum",
+	extraInfo: "It moves in a snake-like pattern and leaves a trail of solid semen. It can melt through this semen if it is trapped.",
+},
+elements.penis = {
+	color: "#9c5e5f",
+	behavior: [
+		"XX|CR:cum,cum,cum,precum%6|XX",
+		"CR:cum,cum,cum,precum%6|XX|CR:cum,cum,cum,precum%6",
+		"XX|CR:cum,cum,cum,precum%6|XX",
+	],
+	behaviorOn: [
+		"precum_ice%10|CR:cum,cum,cum,cum,precum%10|precum_ice%10",
+		"precum_ice%10|XX|precum_ice%10",
+		"precum_ice%10|precum_ice%10|precum_ice%10",
+	],
+	rotatable: false,
+	category: "cum",
+	conduct: 1,
+	tempHigh: 60,
+	stateHigh: "rotten_meat",
+	extraInfo: "A piece of living tissue from which semen exits.",
+},
+elements.cummy_permafrost = {
+	name: "cummy permafrost",
+	color: "#86b5a5",
+	behavior: behaviors.SUPPORT,
+	reactions: {
+		"acid": { "elem1": ["acid", "water"], "elem2": "permafrost" },
+		"soap": { "elem1": "soap", "elem2": "dead_cummy_permafrost" },
+		"alcohol": { "elem1": "alcohol", "elem2": "dead_cummy_permafrost" },
+		"radiation": { "elem1": "radiation", "elem2": "dead_cummy_permafrost" },
+	},
+	temp: -50,
+	tempHigh: 0,
+	stateHigh: "cummy_mud",
+	category: "cum",
+	hidden: true,
+	extraInfo: "Frozen, semen-infused mud.",
+}
+elements.dead_cummy_permafrost = {
+	name: "dead cummy permafrost",
+	color: "#b4bfbb",
+	behavior: behaviors.SUPPORT,
+	reactions: {
+		"acid": { "elem1": ["acid", "water"], "elem2": "permafrost" },
+	},
+	temp: -50,
+	tempHigh: 0,
+	stateHigh: "dead_cummy_mud",
+	category: "cum",
+	hidden: true,
+	extraInfo: "Frozen mud infused with lifeless semen.",
+}
+elements.precum = { 
+	name: "pre-cum",
+	color: "#d0d0d0",
+	behavior: [
+		"ST%50 AND SW:water,cum%15|ST%50 AND SW:water,cum%15|XX AND ST%50 AND SW:water,cum%15",
+		"M2 AND ST%65 AND SW:water,cum%15|XX|M2 AND ST%65 AND SW:water,cum%15",
+		"M1 AND ST%80 AND SW:water,cum%15|M1 AND ST%80 AND SW:water,cum%15|M1 AND ST%80 AND SW:water,cum%15",
+	],
+	density: 997,
+	tempHigh: 100,
+	stateHigh: "steam",
+	reactions: {
+		"acid": { "elem1": "water", "elem2": ["precum", "precum", "precum", "precum", "precum", "precum", "precum", "water", "water", "water"] }, //precum is still basic
+	},
+	tempLow: 0,
+	stateLow: "precum_ice",
+	viscosity: 20,
+	category:"cum",
+	extraInfo: "A sticky fluid that neutralizes acid.",
+},
+elements.precum_ice = { 
+	name: "frozen pre-cum",
+	color: "#e0e4f0",
+	behavior: behaviors.WALL,
+	density: 917,
+	tempHigh: 0,
+	stateHigh: "precum",
+	reactions: {
+		"acid": { "elem1": "water", "elem2": ["precum_ice", "precum_ice", "precum_ice", "precum_ice", "precum_ice", "precum_ice", "precum_ice", "ice", "ice", "ice"] },
+	},
+	viscosity: 20,
+	temp: -5,
+	category:"cum",
+	hidden: true,
+	extraInfo: "Frozen pre-ejaculate.",
+	breakInto: "precum_snow",
+},
+elements.precum_snow = {
+	color: "#d7e5e9",
+	behavior: behaviors.POWDER,
+	reactions: {
+		"acid": { "elem1": "water", "elem2": ["precum_snow", "precum_snow", "precum_snow", "precum_snow", "precum_snow", "precum_snow", "precum_snow", "water", "water", "water"] }, //precum snow is still basic
+	},
+	temp: -5,
+	tempHigh: 0,
+	stateHigh: "precum",
+	category: "cum",
+	hidden: true,
+	state: "solid",
+	density: 100,
+},
+elements.cum_bomb = {
+	color: "#e3deba",
+	behavior: [
 		"XX|XX|XX",
-		"XX|EX:10|XX",
+		"XX|XX|XX",
+		"M2|M1 AND EX:12>cum,cum,cum,cum_reviver,cum_reviver,cum_reviver,cold_fire,cold_fire,precum|M2",
 	],
 	category: "weapons",
 	state: "solid",
 	density: 1300,
+	extraInfo: "A bomb full of semen.",
+},
+
+elements.cum_reviver = {
+	color: "#b2f5b2",
+	behavior: [
+		"SW:cum,cum_ice,dead_cum_ice,precum,precum_ice AND CO:1%10|SW:cum,cum_ice,dead_cum_ice,precum,precum_ice AND CO:1%10|SW:cum,cum_ice,dead_cum_ice,precum,precum_ice AND CO:1%10",
+		"M2%20 AND SW:cum,cum_ice,dead_cum_ice,precum,precum_ice AND CO:1%10|CO:1%10 AND DL%0.5|M2%20 AND SW:cum,cum_ice,dead_cum_ice,precum,precum_ice AND CO:1%10",
+		"M1%20 AND M2 AND SW:cum,cum_ice,dead_cum_ice,precum,precum_ice AND CO:1%10|M1 AND SW:cum,cum_ice,dead_cum_ice,precum,precum_ice AND CO:1%10|M1%20 AND M2 AND SW:cum,cum_ice,dead_cum_ice,precum,precum_ice AND CO:1%10",
+	],
+	reactions: {
+		"dead_cum": { "elem1": null, "elem2": "cum" },
+		"dead_cum_water": { "elem1": null, "elem2": "cum_water" },
+		"dead_cum_ice": { "elem1": null, "elem2": "cum_ice" },
+		"dead_cum_water_ice": { "elem1": null, "elem2": "cum_water_ice" },
+		"dead_cummy_mud": { "elem1": null, "elem2": "cummy_mud" },
+		"dead_cummy_sand": { "elem1": null, "elem2": "cummy_sand" },
+		"dead_cummy_permafrost": { "elem1": null, "elem2": "cummy_permafrost" }
+	},
+	category: "special",
+	tempHigh: 50,
+	stateHigh: ["light","sugar","diamond","glitter","honey","flower_seed","dirt","water"],
+	state: "solid",
+	density: 1210,
+	extraInfo: "A magical substance that revives dead semen.",
+},
+
+elements.precum.conduct = elements.water.conduct;
+
+// Adding reactions to existing elements
+if (!elements.fly.reactions) {
+    elements.fly.reactions = {}
 }
+if (!elements.frog.reactions) {
+    elements.frog.reactions = {}
+}
+if (!elements.ant.reactions) {
+    elements.ant.reactions = {}
+}
+if (!elements.fish.reactions) {
+    elements.fish.reactions = {}
+}
+if (!elements.water.reactions) {
+    elements.water.reactions = {}
+}
+elements.fly.reactions.cum = { "elem1":"fly", "elem2":null }
+elements.frog.reactions.cum = { "elem1":"cum_water", "elem2":"frog" }
+elements.ant.reactions.cum = { "elem1":"ant", "elem2":null }
+elements.fish.reactions.cum = { "elem1":"fish", "elem2":"cum_water" }
+elements.fish.reactions.cum_water = { "elem1":"fish", "elem2":"water" }
+elements.fish.reactions.dead_cum = { "elem1":"fish", "elem2":"dead_cum_water" }
+elements.fish.reactions.dead_cum_water = { "elem1":"fish", "elem2":"water" }
+elements.cell.reactions.cum = { "elem1":"cum", "chance":0.01 }
+
+elements.acid.ignore.push("water")
 
 runAfterLoad(function() {
-	elements.tungstensteel.behavior = [
-        "XX|DL:"+eLists.FAIRY+"|XX",
-        "DL:"+eLists.FAIRY+"|XX|DL:"+eLists.FAIRY+"",
-        "XX|DL:"+eLists.FAIRY+"|XX",
-    ],
-	elements.molten_tungstensteel.behavior = [
-        "XX|DL:"+eLists.FAIRY+" AND CR:fire%2.5|XX",
-        "DL:"+eLists.FAIRY+" AND M2|XX|DL:"+eLists.FAIRY+" AND M2",
-        "M1|DL:"+eLists.FAIRY+"|M1",
-    ]
-	elements.vaporized_histrelin = elements.molten_histrelin
-	delete elements.molten_histrelin
-	elements.histrelin.stateHigh = "vaporized_histrelin"
-	elements.vaporized_histrelin.stateLow = "histrelin"
+	
+    if(enabledMods.includes("mods/fey_and_more.js")) {
+			elements.cum_reviver.stateHigh.push("magic");
+		//cum elements as impurities {
+			eLists.IMPURITY.push("cum");
+			eLists.IMPURITY.push("cum_water");
+			eLists.IMPURITY.push("cum_ice");
+			eLists.IMPURITY.push("precum");
+			eLists.IMPURITY.push("precum_ice");
+			eLists.IMPURITY.push("cum_water_ice");
+			eLists.IMPURITY.push("dead_cum");
+			eLists.IMPURITY.push("dead_cum_water");
+			eLists.IMPURITY.push("dead_cum_ice");
+			eLists.IMPURITY.push("dead_cum_water_ice");
+			eLists.IMPURITY.push("cummy_mud");
+			eLists.IMPURITY.push("dead_cummy_mud");
+			eLists.IMPURITY.push("cummy_sand");
+			eLists.IMPURITY.push("dead_cummy_sand");
+			eLists.IMPURITY.push("cummy_permafrost");
+			eLists.IMPURITY.push("dead_cummy_permafrost");
+			eLists.IMPURITY.push("cummy_snake");
+			eLists.IMPURITY.push("cum_slime");
+			eLists.IMPURITY.push("burnt_cum");
+			eLists.IMPURITY.push("cum_fairy");
+			eLists.IMPURITY.push("cum_bomb");
+			eLists.IMPURITY.push("cum_reviver");
+			eLists.IMPURITY.push("cum_snow");
+			eLists.IMPURITY.push("dead_cum_snow");
+			eLists.IMPURITY.push("precum_snow");
+		//}
+		//regenerate behaviors of elements that use eLists.IMPURITY {
+			elements.pure_water.behavior = [
+				"DL:"+eLists.IMPURITY+"|DL:"+eLists.IMPURITY+"|DL:"+eLists.IMPURITY+"",
+				"DL:"+eLists.IMPURITY+" AND M2|XX|DL:"+eLists.IMPURITY+" AND M2",
+				"DL:"+eLists.IMPURITY+" AND M1|DL:"+eLists.IMPURITY+" AND M1|DL:"+eLists.IMPURITY+" AND M1",
+			];
+			elements.pure_steam.behavior = [
+				"M2 AND DL:"+eLists.IMPURITY+"|M1 AND DL:"+eLists.IMPURITY+"|M2 AND DL:"+eLists.IMPURITY+"",
+				"M1 AND DL:"+eLists.IMPURITY+"|XX|M1 AND DL:"+eLists.IMPURITY+"",
+				"M2 AND DL:"+eLists.IMPURITY+"|M1 AND DL:"+eLists.IMPURITY+"|M2 AND DL:"+eLists.IMPURITY+"",
+			];
+		//}
+		//cum fairy {
+			elements.cum_fairy = {
+				color: ["#e3e3cf", "#f4f7de", "#f4f3e3", "#e0e0dd"],
+				state: "solid",
+				behavior: [
+					"XX|M1|M1",
+					"XX|FX%5|XX",
+					"XX|CR:cum%0.5 AND CR:fairy_dust%0.005 AND M1|M1",
+				],
+				category: "fey",
+			};
+		//}
+		//eList rebuilding {
+			eLists.FAIRY.push("cum_fairy");
+			elements.iron.behavior = [
+				"XX|DL:"+eLists.FAIRY+"|XX",
+				"DL:"+eLists.FAIRY+"|XX|DL:"+eLists.FAIRY+"",
+				"XX|DL:"+eLists.FAIRY+"|XX"
+			];
+			elements.silver.behavior = [
+				"XX|DL:"+eLists.FAIRY+"|XX",
+				"DL:"+eLists.FAIRY+"|XX|DL:"+eLists.FAIRY+"",
+				"XX|DL:"+eLists.FAIRY+"|XX"
+			];
+		//}
+		//concoction support (it's all mistakes) {
+			elements.concoction.reactions.cum = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.cum_water = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.cum_ice = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.cum_snow = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.precum = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.precum_ice = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.precum_snow = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.cummy_ice = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.dead_cum = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.dead_cum_water = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.dead_cum_ice = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.dead_cum_snow = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.dead_cummy_ice = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.cummy_mud = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.cummy_sand = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.cummy_permafrost = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.dead_cummy_mud = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.dead_cummy_sand = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.dead_cummy_permafrost = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.burnt_cum = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.cum_slime = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.cummy_snake = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.penis = { "elem1": "mistake", "elem2": null }
+			elements.concoction.reactions.cum_bomb = { "elem1": "mistake", "elem2": null }
+		//}
+		//cum fairy creation {
+			elements.fairy.reactions.cum = { "elem1": "cum_fairy" }
+		//}
+	};
+
+    if(enabledMods.includes("mods/fey_and_more.js") && enabledMods.includes("mods/randomness.js")) {
+		//additional eList rebuilding for RM steel derivatives
+		elements.tungstensteel.behavior = [
+			"XX|DL:"+eLists.FAIRY+"|XX",
+			"DL:"+eLists.FAIRY+"|XX|DL:"+eLists.FAIRY+"",
+			"XX|DL:"+eLists.FAIRY+"|XX",
+		],
+		elements.molten_tungstensteel.behavior = [
+			"XX|DL:"+eLists.FAIRY+" AND CR:fire%2.5|XX",
+			"DL:"+eLists.FAIRY+" AND M2|XX|DL:"+eLists.FAIRY+" AND M2",
+			"M1|DL:"+eLists.FAIRY+"|M1",
+		]
+	};
 });
