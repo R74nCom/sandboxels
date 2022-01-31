@@ -15,6 +15,7 @@ elements.piss = {
 		"mud": { "elem1": "piss_water", "elem2": "pissed_mud", "chance": (1/3) }, // piss goes into mud
 		"sand": { "elem1": null, "elem2": "pissed_sand" }, // piss goes into sand
 		"wet_sand": { "elem1": "piss_water", "elem2": "pissed_sand", "chance": (1/3) }, // piss goes into wet sand
+		"snow": { "elem1": null, "elem2": "pissed_snow" }, // piss goes into snow
 	},
 	tempLow: 0,
 	stateLow: "piss_ice",
@@ -36,6 +37,7 @@ elements.piss_water = {
 		"water": { "elem1": "piss_water", "elem2": "piss_water", "chance":0.7 }, //piss mixing
 		"dirt": { "elem1": "water", "elem2": "pissed_mud" }, //piss goes into dirt
 		"sand": { "elem1": "water", "elem2": "pissed_sand" }, // piss goes into sand
+		"snow": { "elem1": null, "elem2": "pissed_snow" }, // piss goes into snow
 	},
 	density: 997,
 	tempHigh: 100,
@@ -57,6 +59,7 @@ elements.piss_ice = {
 	tempHigh: 0,
 	stateHigh: "piss",
 	category: "piss",
+	breakInto: "pissed_snow",
 },
 
 elements.piss_water_ice = {
@@ -69,6 +72,20 @@ elements.piss_water_ice = {
 	stateHigh: "piss_water",
 	category: "piss",
 	hidden: true,
+	breakInto: "pissed_snow",
+},
+
+elements.pissed_snow = {
+	name: "yellow snow",
+	color: "#fdf5a4",
+	behavior: behaviors.POWDER,
+	temp: -5,
+	tempHigh: 0,
+	stateHigh: "piss",
+	category: "piss",
+	hidden: true,
+	state: "solid",
+	density: 100,
 },
 
 elements.pissed_mud = {
