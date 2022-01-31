@@ -148,6 +148,7 @@ elements.cum_ice = {
 	stateHigh: "cum",
 	category: "cum",
 	extraInfo: "Frozen semen.",
+	breakInto: "cum_snow",
 },
 elements.cum_water_ice = {
 	name: "cummy ice",
@@ -166,6 +167,7 @@ elements.cum_water_ice = {
 	category: "cum",
 	hidden: true,
 	extraInfo: "Dilute, frozen semen.",
+	breakInto: ["snow","cum_snow"],
 },
 elements.dead_cum_ice = {
 	name: "dead frozen cum",
@@ -181,6 +183,7 @@ elements.dead_cum_ice = {
 	category: "cum",
 	hidden:true,
 	extraInfo: "Frozen semen whose sperm have died.",
+	breakInto: "dead_cum_snow",
 },
 elements.dead_cum_water_ice = {
 	name: "dead cummy ice",
@@ -196,6 +199,29 @@ elements.dead_cum_water_ice = {
 	category: "cum",
 	hidden:true,
 	extraInfo: "Dilute, frozen semen whose sperm have died.",
+	breakInto: ["snow","dead_cum_snow"],
+},
+elements.cum_snow = {
+	color: "#eff6fa",
+	behavior: behaviors.POWDER,
+	temp: -5,
+	tempHigh: 0,
+	stateHigh: "cum",
+	category: "cum",
+	hidden: true,
+	state: "solid",
+	density: 100,
+},
+elements.dead_cum_snow = {
+	color: "#c6c6c3",
+	behavior: behaviors.POWDER,
+	temp: -5,
+	tempHigh: 0,
+	stateHigh: "dead_cum",
+	category: "cum",
+	hidden: true,
+	state: "solid",
+	density: 100,
 },
 elements.cummy_mud = {
 	name: "cummy mud",
@@ -400,9 +426,25 @@ elements.precum_ice = {
 		"acid": { "elem1": "water", "elem2": ["precum_ice", "precum_ice", "precum_ice", "precum_ice", "precum_ice", "precum_ice", "precum_ice", "ice", "ice", "ice"] },
 	},
 	viscosity: 20,
+	temp: -5,
 	category:"cum",
 	hidden: true,
 	extraInfo: "Frozen pre-ejaculate.",
+	breakInto: "precum_snow",
+},
+elements.precum_snow = {
+	color: "#d7e5e9",
+	behavior: behaviors.POWDER,
+	reactions: {
+		"acid": { "elem1": "water", "elem2": ["precum_snow", "precum_snow", "precum_snow", "precum_snow", "precum_snow", "precum_snow", "precum_snow", "water", "water", "water"] }, //precum snow is still basic
+	},
+	temp: -5,
+	tempHigh: 0,
+	stateHigh: "precum",
+	category: "cum",
+	hidden: true,
+	state: "solid",
+	density: 100,
 },
 elements.cum_bomb = {
 	color: "#e3deba",
@@ -497,6 +539,9 @@ runAfterLoad(function() {
 			eLists.IMPURITY.push("cum_fairy");
 			eLists.IMPURITY.push("cum_bomb");
 			eLists.IMPURITY.push("cum_reviver");
+			eLists.IMPURITY.push("cum_snow");
+			eLists.IMPURITY.push("dead_cum_snow");
+			eLists.IMPURITY.push("precum_snow");
 		//}
 		//regenerate behaviors of elements that use eLists.IMPURITY {
 			elements.pure_water.behavior = [
@@ -539,12 +584,15 @@ runAfterLoad(function() {
 			elements.concoction.reactions.cum = { "elem1": "mistake", "elem2": null },
 			elements.concoction.reactions.cum_water = { "elem1": "mistake", "elem2": null },
 			elements.concoction.reactions.cum_ice = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.cum_snow = { "elem1": "mistake", "elem2": null },
 			elements.concoction.reactions.precum = { "elem1": "mistake", "elem2": null },
 			elements.concoction.reactions.precum_ice = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.precum_snow = { "elem1": "mistake", "elem2": null },
 			elements.concoction.reactions.cummy_ice = { "elem1": "mistake", "elem2": null },
 			elements.concoction.reactions.dead_cum = { "elem1": "mistake", "elem2": null },
 			elements.concoction.reactions.dead_cum_water = { "elem1": "mistake", "elem2": null },
 			elements.concoction.reactions.dead_cum_ice = { "elem1": "mistake", "elem2": null },
+			elements.concoction.reactions.dead_cum_snow = { "elem1": "mistake", "elem2": null },
 			elements.concoction.reactions.dead_cummy_ice = { "elem1": "mistake", "elem2": null },
 			elements.concoction.reactions.cummy_mud = { "elem1": "mistake", "elem2": null },
 			elements.concoction.reactions.cummy_sand = { "elem1": "mistake", "elem2": null },
