@@ -277,6 +277,7 @@ runAfterLoad(function() {
 			elements.concoction.reactions.pissed_sand = { "elem1": "mistake", "elem2": null },
 			elements.concoction.reactions.pissed_permafrost = { "elem1": "mistake", "elem2": null },
 			elements.concoction.reactions.piss_bomb = { "elem1": "mistake", "elem2": null }
+			elements.concoction.reactions.pissed_snow = { "elem1": "mistake", "elem2": null }
 		//}
 		//piss fairy creation {
 			elements.fairy.reactions.piss = { "elem1": "piss_fairy" }
