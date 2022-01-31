@@ -49,6 +49,7 @@ elements.altroom = {
 	category:"structures",
 	insulate: true,
 	state: "solid",
+	excludeRandom: true,
 },
 
 elements.nst = {
@@ -136,4 +137,5 @@ elements.nst = {
 	category:"structures",
 	insulate: true,
 	state: "solid",
+	excludeRandom: true,
 }
