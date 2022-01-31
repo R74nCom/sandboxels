@@ -55,4 +55,5 @@ elements.room = {
 	category:"structures",
 	insulate: true,
 	state: "solid",
+	excludeRandom: true,
 }
