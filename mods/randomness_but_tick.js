@@ -341,4 +341,176 @@ elements.void_first = {
 	},
 	category:"special",
 	hardness: 1,
+},
+
+conveyorIgnoreList = ["conveyor_1","conveyor_2","wall"]
+
+elements.conveyor_1 = {
+	color: "#7f7f7f",
+	tick: function(pixel) {
+		//top right
+		if (!isEmpty(pixel.x,pixel.y-1) && !outOfBounds(pixel.x,pixel.y-1)) {
+			if (pixelMap[pixel.x][pixel.y-1].element == "body") {
+				if(!isEmpty(pixel.x,pixel.y-2) && !outOfBounds(pixel.x,pixel.y-2)) {
+					if (pixelMap[pixel.x][pixel.y-2].element == "head") {
+						if(isEmpty(pixel.x+1,pixel.y-1) && isEmpty(pixel.x+1,pixel.y-2) && !outOfBounds(pixel.x+1,pixel.y-1) && !outOfBounds(pixel.x+1,pixel.y-2)) {
+							tryMove(pixelMap[pixel.x][pixel.y-1],pixel.x+1,pixel.y-1)
+							tryMove(pixelMap[pixel.x][pixel.y-2],pixel.x+1,pixel.y-2)
+						}
+					}
+				} else {
+					if(isEmpty(pixel.x+1,pixel.y-1) && !outOfBounds(pixel.x+1,pixel.y-1)) {
+						tryMove(pixelMap[pixel.x][pixel.y-1],pixel.x+1,pixel.y-1)
+					}
+				}
+			} else if(!conveyorIgnoreList.includes(pixelMap[pixel.x][pixel.y-1].element)) {
+				tryMove(pixelMap[pixel.x][pixel.y-1],pixel.x+1,pixel.y-1)
+			}
+		}
+		//right down
+		if (!isEmpty(pixel.x+1,pixel.y) && !outOfBounds(pixel.x+1,pixel.y)) {
+			if (pixelMap[pixel.x+1][pixel.y].element == "body") {
+				if(!isEmpty(pixel.x+1,pixel.y-1) && !outOfBounds(pixel.x+1,pixel.y-1)) {
+					if (pixelMap[pixel.x+1][pixel.y-1].element == "head") {
+						if(isEmpty(pixel.x+1,pixel.y+1) && !outOfBounds(pixel.x+1,pixel.y+1)) {
+							tryMove(pixelMap[pixel.x+1][pixel.y],pixel.x+1,pixel.y+1)
+							tryMove(pixelMap[pixel.x+1][pixel.y-1],pixel.x+1,pixel.y)
+						}
+					}
+				} else {
+					if(isEmpty(pixel.x+1,pixel.y+1) && !outOfBounds(pixel.x+1,pixel.y+1)) {
+						tryMove(pixelMap[pixel.x+1][pixel.y],pixel.x+1,pixel.y+1)
+					}
+				}
+			} else if(!conveyorIgnoreList.includes(pixelMap[pixel.x+1][pixel.y].element)) {
+				tryMove(pixelMap[pixel.x+1][pixel.y],pixel.x+1,pixel.y+1)
+			}
+		}
+		//bottom left
+		if (!isEmpty(pixel.x,pixel.y+1) && !outOfBounds(pixel.x,pixel.y+1)) {
+			if (pixelMap[pixel.x][pixel.y+1].element == "head") {
+				if(!isEmpty(pixel.x,pixel.y+2) && !outOfBounds(pixel.x,pixel.y+2)) {
+					if (pixelMap[pixel.x][pixel.y+2].element == "body") {
+						if(isEmpty(pixel.x-1,pixel.y+1) && isEmpty(pixel.x-1,pixel.y+2) && !outOfBounds(pixel.x-1,pixel.y+2) && !outOfBounds(pixel.x-1,pixel.y+2)) {
+							tryMove(pixelMap[pixel.x][pixel.y+1],pixel.x-1,pixel.y+1)
+							tryMove(pixelMap[pixel.x][pixel.y+2],pixel.x-1,pixel.y+2)
+						}
+					}
+				} else {
+					if(isEmpty(pixel.x-1,pixel.y+1) && !outOfBounds(pixel.x-1,pixel.y+1)) {
+						tryMove(pixelMap[pixel.x][pixel.y+1],pixel.x-1,pixel.y+1)
+					}
+				}
+			} else if(!conveyorIgnoreList.includes(pixelMap[pixel.x][pixel.y+1].element)) {
+				tryMove(pixelMap[pixel.x][pixel.y+1],pixel.x-1,pixel.y+1)
+			}
+		}
+		//left up
+		if (!isEmpty(pixel.x-1,pixel.y) && !outOfBounds(pixel.x-1,pixel.y)) {
+			if (pixelMap[pixel.x-1][pixel.y].element == "head") {
+				if(!isEmpty(pixel.x-1,pixel.y+1) && !outOfBounds(pixel.x-1,pixel.y+1)) {
+					if (pixelMap[pixel.x-1][pixel.y+1].element == "body") {
+						if(isEmpty(pixel.x-1,pixel.y-1) && !outOfBounds(pixel.x-1,pixel.y-1)) {
+							tryMove(pixelMap[pixel.x-1][pixel.y],pixel.x-1,pixel.y-1)
+							tryMove(pixelMap[pixel.x-1][pixel.y+1],pixel.x-1,pixel.y)
+						}
+					}
+				} else {
+					if(isEmpty(pixel.x-1,pixel.y-1) && !outOfBounds(pixel.x-1,pixel.y-1)) {
+						tryMove(pixelMap[pixel.x-1][pixel.y],pixel.x-1,pixel.y-1)
+					}
+				}
+			} else if(!conveyorIgnoreList.includes(pixelMap[pixel.x-1][pixel.y].element)) {
+				tryMove(pixelMap[pixel.x-1][pixel.y],pixel.x-1,pixel.y-1)
+			}
+		}
+	},
+	category: "machines",
+	insulate: true,
+	state: "solid",
+},
+
+elements.conveyor_2 = {
+	color: "#7f7f7f",
+	tick: function(pixel) {
+		//top left
+		if (!isEmpty(pixel.x,pixel.y-1) && !outOfBounds(pixel.x,pixel.y-1)) {
+			if (pixelMap[pixel.x][pixel.y-1].element == "body") {
+				if(!isEmpty(pixel.x,pixel.y-2) && !outOfBounds(pixel.x,pixel.y-2)) {
+					if (pixelMap[pixel.x][pixel.y-2].element == "head") {
+						if(isEmpty(pixel.x-1,pixel.y-1) && isEmpty(pixel.x-1,pixel.y-2) && !outOfBounds(pixel.x-1,pixel.y-1) && !outOfBounds(pixel.x-1,pixel.y-2)) {
+							tryMove(pixelMap[pixel.x][pixel.y-1],pixel.x-1,pixel.y-1)
+							tryMove(pixelMap[pixel.x][pixel.y-2],pixel.x-1,pixel.y-2)
+						}
+					}
+				} else {
+					if(isEmpty(pixel.x-1,pixel.y-1) && !outOfBounds(pixel.x-1,pixel.y-1)) {
+						tryMove(pixelMap[pixel.x][pixel.y-1],pixel.x-1,pixel.y-1)
+					}
+				}
+			} else if(!conveyorIgnoreList.includes(pixelMap[pixel.x][pixel.y-1].element)) {
+				tryMove(pixelMap[pixel.x][pixel.y-1],pixel.x-1,pixel.y-1)
+			}
+		}
+		//right up
+		if (!isEmpty(pixel.x+1,pixel.y) && !outOfBounds(pixel.x+1,pixel.y)) {
+			if (pixelMap[pixel.x+1][pixel.y].element == "head") {
+				if(!isEmpty(pixel.x+1,pixel.y+1) && !outOfBounds(pixel.x+1,pixel.y+1)) {
+					if (pixelMap[pixel.x+1][pixel.y+1].element == "body") {
+						if(isEmpty(pixel.x+1,pixel.y-1) && !outOfBounds(pixel.x+1,pixel.y-1)) {
+							tryMove(pixelMap[pixel.x+1][pixel.y],pixel.x+1,pixel.y-1)
+							tryMove(pixelMap[pixel.x+1][pixel.y+1],pixel.x+1,pixel.y)
+						}
+					}
+				} else {
+					if(isEmpty(pixel.x+1,pixel.y-1) && !outOfBounds(pixel.x+1,pixel.y-1)) {
+						tryMove(pixelMap[pixel.x+1][pixel.y],pixel.x+1,pixel.y-1)
+					}
+				}
+			} else if(!conveyorIgnoreList.includes(pixelMap[pixel.x+1][pixel.y].element)) {
+				tryMove(pixelMap[pixel.x+1][pixel.y],pixel.x+1,pixel.y-1)
+			}
+		}
+		//bottom right
+		if (!isEmpty(pixel.x,pixel.y+1) && !outOfBounds(pixel.x,pixel.y+1)) {
+			if (pixelMap[pixel.x][pixel.y+1].element == "head") {
+				if(!isEmpty(pixel.x,pixel.y+2) && !outOfBounds(pixel.x,pixel.y+2)) {
+					if (pixelMap[pixel.x][pixel.y+2].element == "body") {
+						if(isEmpty(pixel.x+1,pixel.y+1) && isEmpty(pixel.x+1,pixel.y+2) && !outOfBounds(pixel.x+1,pixel.y+2) && !outOfBounds(pixel.x+1,pixel.y+2)) {
+							tryMove(pixelMap[pixel.x][pixel.y+1],pixel.x+1,pixel.y+1)
+							tryMove(pixelMap[pixel.x][pixel.y+2],pixel.x+1,pixel.y+2)
+						}
+					}
+				} else {
+					if(isEmpty(pixel.x+1,pixel.y+1) && !outOfBounds(pixel.x+1,pixel.y+1)) {
+						tryMove(pixelMap[pixel.x][pixel.y+1],pixel.x+1,pixel.y+1)
+					}
+				}
+			} else if(!conveyorIgnoreList.includes(pixelMap[pixel.x][pixel.y+1].element)) {
+				tryMove(pixelMap[pixel.x][pixel.y+1],pixel.x+1,pixel.y+1)
+			}
+		}
+		//left down
+		if (!isEmpty(pixel.x-1,pixel.y) && !outOfBounds(pixel.x-1,pixel.y)) {
+			if (pixelMap[pixel.x-1][pixel.y].element == "body") {
+				if(!isEmpty(pixel.x-1,pixel.y-1) && !outOfBounds(pixel.x-1,pixel.y-1)) {
+					if (pixelMap[pixel.x-1][pixel.y-1].element == "head") {
+						if(isEmpty(pixel.x-1,pixel.y+1) && !outOfBounds(pixel.x-1,pixel.y+1)) {
+							tryMove(pixelMap[pixel.x-1][pixel.y],pixel.x-1,pixel.y+1)
+							tryMove(pixelMap[pixel.x-1][pixel.y-1],pixel.x-1,pixel.y)
+						}
+					}
+				} else {
+					if(isEmpty(pixel.x-1,pixel.y+1) && !outOfBounds(pixel.x-1,pixel.y+1)) {
+						tryMove(pixelMap[pixel.x-1][pixel.y],pixel.x-1,pixel.y+1)
+					}
+				}
+			} else if(!conveyorIgnoreList.includes(pixelMap[pixel.x-1][pixel.y].element)) {
+				tryMove(pixelMap[pixel.x-1][pixel.y],pixel.x-1,pixel.y+1)
+			}
+		}
+	},
+	category: "machines",
+	insulate: true,
+	state: "solid",
 }
