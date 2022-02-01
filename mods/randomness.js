@@ -374,8 +374,8 @@ elements.cluster_nuke = {
 
 elements.estradiol = {
     color: "#f2fcee", //it absorbs shorter wavelength UV than testosterone and I am treating this like absorbing violet for convenience
-                      //https://www.researchgate.net/publication/226065469_Optical_Properties_of_Two_Types_of_Sex_Hormones_of_the_Cyclopentenephenanthrene_Series
-                      //http://depts.washington.edu/cmditr/modules/lum/color.html
+          //https://www.researchgate.net/publication/226065469_Optical_Properties_of_Two_Types_of_Sex_Hormones_of_the_Cyclopentenephenanthrene_Series
+          //http://depts.washington.edu/cmditr/modules/lum/color.html
     behavior: behaviors.POWDER,
     state: "solid",
     category: "solids",
@@ -404,8 +404,8 @@ elements.vaporized_estradiol = {
 
 elements.progesterone = {
     color: "#f7eefc", //slightly different? from testosterone but exaggerated
-                      //https://downloads.hindawi.com/journals/ijps/2017/9603140.pdf
-                      //these hormones all absorb in the uv region anyway so they would all look white to us
+          //https://downloads.hindawi.com/journals/ijps/2017/9603140.pdf
+          //these hormones all absorb in the uv region anyway so they would all look white to us
     behavior: behaviors.POWDER,
     state: "solid",
     category: "solids",
@@ -466,8 +466,8 @@ elements.vaporized_testosterone = {
 
 elements.cyproterone_acetate = {
     color: "#efeef8", //it absorbs far longer uv than the others, which i am rendering as red absorption
-                      //https://www.researchgate.net/figure/UV-spectrum-for-drospirenone-cyproterone-acetate-desogestrel-and-ethinyl-estradiol-at-1_fig1_315746083
-                      //i didn't really expect to find a spectrum for this
+          //https://www.researchgate.net/figure/UV-spectrum-for-drospirenone-cyproterone-acetate-desogestrel-and-ethinyl-estradiol-at-1_fig1_315746083
+          //i didn't really expect to find a spectrum for this
     behavior: behaviors.POWDER,
     state: "solid",
     category: "solids",
@@ -505,7 +505,7 @@ elements.vaporized_cyproterone_acetate = {
 
 elements.spironolactone = {
     color: "#f7eef1", //UV absorbance peak wavelength is slightly shorter than that of testosterone
-                      //https://www.researchgate.net/publication/348592381_Quantification_of_Spironolactone_by_first_and_second_order_UV_Derivative_Spectrophotometry_in_bulk_and_tablet_dosage_form/link/6006b3cf299bf14088a649bd/download
+          //https://www.researchgate.net/publication/348592381_Quantification_of_Spironolactone_by_first_and_second_order_UV_Derivative_Spectrophotometry_in_bulk_and_tablet_dosage_form/link/6006b3cf299bf14088a649bd/download
     behavior: behaviors.POWDER,
     state: "solid",
     category: "solids",
@@ -537,7 +537,7 @@ elements.vaporized_spironolactone = {
 
 elements.finasteride = {
     color: "#fcfcf1", //UV absorbance peak wavelength is even shorter than that of estradiol
-                      //https://www.researchgate.net/publication/312317200
+          //https://www.researchgate.net/publication/312317200
     behavior: behaviors.POWDER,
     state: "solid",
     category: "solids",
@@ -566,7 +566,7 @@ elements.vaporized_finasteride = {
 
 elements.dutasteride = {
     color: "#fbf6ee", //High UV absorbances around the peak wavelengths of both estradiol and testosterone
-                      //https://sphinxsai.com/sphinxsaivol_2no.1/pharmtech_vol_2no.1/PharmTech_Vol_2No.1PDF/PT=18%20(113-117).pdf
+          //https://sphinxsai.com/sphinxsaivol_2no.1/pharmtech_vol_2no.1/PharmTech_Vol_2No.1PDF/PT=18%20(113-117).pdf
     behavior: behaviors.POWDER,
     state: "solid",
     category: "solids",
@@ -595,8 +595,8 @@ elements.vaporized_dutasteride = {
 
 elements.bicalutamide = {
     color: "#f4fcee", //peaks at 200-220 and at 270
-                      //i am probably mapping uv to visible wrong and misreading color.html
-                      //https://www.researchgate.net/publication/257679318
+          //i am probably mapping uv to visible wrong and misreading color.html
+          //https://www.researchgate.net/publication/257679318
     behavior: behaviors.POWDER,
     state: "solid",
     category: "solids",
@@ -741,8 +741,8 @@ elements.bomb_3 = {
 elements.sebA = {
 	color: "#ffffff",
 	behavior: [
-	    "SH%50|EX:8>electric AND SH%50                              |SH%50",
-	    "SH%50|EX:9>electric%0.5                                    |SH%50",
+	    "SH%50|EX:8>electric AND SH%50      |SH%50",
+	    "SH%50|EX:9>electric%0.5|SH%50",
 	    "M2 AND SH%50|M1 AND SH%50 AND EX:8>electric AND SW:electric|M2 AND SH%50",
 	],
 	category: "weapons",
@@ -756,8 +756,8 @@ elements.sebA = {
 elements.seb = {
 	color: "#ffffff",
 	behavior: [
-	    "SH%50|EX:8>sebA AND SH%50                              |SH%50",
-	    "SH%50|XX                                               |SH%50",
+	    "SH%50|EX:8>sebA AND SH%50      |SH%50",
+	    "SH%50|XX           |SH%50",
 	    "M2 AND SH%50|M1 AND SH%50 AND EX:8>sebA AND SW:electric|M2 AND SH%50",
 	],
 	category: "weapons",
@@ -1294,6 +1294,135 @@ elements.op_hottester_bomb = {
 	temp: 7065,
     density: 1300,
     excludeRandom: true,
+},
+
+elements.liquid_plasma = {
+    color: ["#8800ff","#b184d9","#8800ff"],
+    behavior: [
+    "XX|XX|XX",
+    "M2|DL%2|M2",
+    "M1|M1|M1",
+    ],
+    behaviorOn: [
+        "XX|CL%5|XX",
+        "CL%5 AND M2|XX|CL%5 AND M2",
+        "M1|M1 AND CL%5|M1",
+    ],
+    temp:7065,
+    tempLow:5000,
+    stateLow: "liquid_fire",
+    category: "liquids",
+    state: "liquids",
+    density: 70,
+    charge: 0.5,
+    conduct: 1,
+},
+
+elements.liquid_fire = {
+    color: ["#ff6b21","#ffa600","#ff4000"],
+    behavior: [
+    "XX|M2|XX",
+    "M2|XX|M2",
+    "M1|M1|M1",
+    ],
+    reactions: {
+        "water": { "elem1": "liquid_smoke" },
+    },
+    temp:600,
+    tempLow:100,
+    stateLow: "liquid_smoke",
+    tempHigh: 7000,
+    stateHigh: "liquid_plasma",
+    category: "liquids",
+    burning: true,
+    burnTime: 500,
+    burnInto: "liquid_smoke",
+    state: "liquid",
+    density: 21,
+},
+
+elements.liquid_smoke = {
+    color: "#383838",
+    behavior: [
+    "XX|XX|XX",
+    "M2|DL%2|M2",
+    "M1|M1|M1",
+    ],
+    reactions: {
+        "water": { "elem1": "dirty_water", "elem2": null },
+        "steam": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,15] },
+        "rain_cloud": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,15] },
+        "snow_cloud": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,15] },
+        "acid_cloud": { "elem1": "pyrocumulus", "chance":0.05, "y":[0,15] },
+        "fire_cloud": { "elem1": "pyrocumulus", "chance":0.05, "y":[0,15] },
+        "pyrocumulus": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,15] },
+    },
+    temp: 114,
+    tempHigh: 605,
+    stateHigh: "liquid_fire",
+    category: "liquids",
+    state: "liquids",
+    density: 2180,
+},
+
+elements.netherrack = {
+    color: ["#802b2b","#4f1b1b","#943232"],
+    behavior: behaviors.POWDER,
+    tempHigh: 7550,
+    category: "land",
+    state: "solid",
+    density: 2550,
+    hardness: 0.07,
+    breakInto: ["crushed_netherrack","crushed_netherrack","crushed_netherrack","crushed_netherrack","crushed_netherrack","crushed_netherrack","crushed_netherrack","sulfur"], // and some copper, gold, iron, nickel after processing //sulfur closer to 1/7 in-game
+    burn: 9,
+    burnTime: 9007199254740995,
+    burnInto: "netherrack",
+},
+
+elements.crushed_netherrack = {
+    color: ["#e34b46","#b04235","#73431f","#522510","#7a3326"],
+    behavior: behaviors.POWDER,
+    category:"land",
+    tempHigh: 7550,
+    stateHigh: "molten_netherrack",
+    state: "solid",
+    density: 1680,
+    burn: 20,
+    burnTime: 9007199254740995,
+    hardness: 0.02,
+    hidden: true,
+},
+
+elements.soul_sand = {
+    color: "#755e35",
+    behavior: behaviors.POWDER,
+    tempHigh: 3000,
+    stateHigh: "molten_soul_glass",
+    category: "land",
+    state: "solid",
+    density: 1602,
+},
+
+elements.soul_glass = {
+    color: ["#998060","#a18654"],
+    behavior: behaviors.WALL,
+    tempHigh: 3000,
+    category: "solids",
+    state: "solid",
+    density: 2500,
+    breakInto: "soul_glass_shard",
+    hidden: true,
+},
+
+elements.soul_glass_shard = {
+    color: ["#998060","#a18654","#8f764a"],
+    behavior: behaviors.POWDER,
+    tempHigh: 3000,
+    stateHigh: "molten_soul_glass",
+    category: "powders",
+    state: "solid",
+    density: 2500,
+    hidden: true,
 }
 
 runAfterLoad(function() {
