@@ -40,6 +40,13 @@ elements.body = {
         }
         doHeat(pixel);
         if (pixel.dead) { return }
+
+        // Find the head
+        if (!isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "head") {
+            var head = pixelMap[pixel.x][pixel.y-1];
+        }
+        else { var head = null }
+
         if (isEmpty(pixel.x, pixel.y-1)) {
             // create blood if decapitated 10% chance
             if (Math.random() < 0.1) {
@@ -50,14 +57,14 @@ elements.body = {
                 }
             }
         }
+        else if (head == null) { return }
         else if (Math.random() < 0.1) { // Move 10% chance
             var movesToTry = [
                 [-1,0],
                 [1,0],
                 [-1,-1],
                 [1,-1],
-            ]
-            var head = pixelMap[pixel.x][pixel.y-1];
+            ];
             // While movesToTry is not empty, tryMove(pixel, x, y) with a random move, then remove it. if tryMove returns true, break.
             while (movesToTry.length > 0) {
                 var move = movesToTry.splice(Math.floor(Math.random() * movesToTry.length), 1)[0];
