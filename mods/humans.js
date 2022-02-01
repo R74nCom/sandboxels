@@ -2,7 +2,8 @@ elements.human = {
     color: ["#f5eac6","#d4c594","#a89160","#7a5733","#523018","#361e0e"],
     category: "life",
     properties: {
-        dead: false
+        dead: false,
+        dir: 1,
     },
     tick: function(pixel) {
         if (isEmpty(pixel.x, pixel.y+1)) {
@@ -25,8 +26,22 @@ elements.body = {
     color: ["#049699","#638A61"],
     category: "life",
     hidden: true,
+    density: 1080,
+    state: "solid",
+    conduct: 25,
+    tempHigh: 250,
+    stateHigh: "cooked_meat",
+    tempLow: -30,
+    stateLow: "frozen_meat",
+    burn: 10,
+    burnTime: 250,
+    burnInto: "cooked_meat",
+    reactions: {
+        "cancer": { "elem1":"cancer", "chance":0.005 },
+    },
     properties: {
-        dead: false
+        dead: false,
+        dir: 1,
     },
     tick: function(pixel) {
         if (isEmpty(pixel.x, pixel.y+1)) { // Fall
@@ -39,11 +54,23 @@ elements.body = {
             }
         }
         doHeat(pixel);
-        if (pixel.dead) { return }
+        doBurning(pixel);
+        doElectricity(pixel);
+        if (pixel.dead) {
+            // Turn into rotten_meat if pixelTicks-dead > 500
+            if (pixelTicks-pixel.dead > 200) {
+                pixel.element = "rotten_meat";
+                pixel.color = pixelColorPick(pixel);
+            }
+            return
+        }
 
         // Find the head
         if (!isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "head") {
             var head = pixelMap[pixel.x][pixel.y-1];
+            if (head.dead) { // If head is dead, kill body
+                pixel.dead = head.dead;
+            }
         }
         else { var head = null }
 
@@ -53,17 +80,15 @@ elements.body = {
                 createPixel("blood", pixel.x, pixel.y-1);
                 // set dead to true 15% chance
                 if (Math.random() < 0.15) {
-                    pixel.dead = true;
+                    pixel.dead = pixelTicks;
                 }
             }
         }
         else if (head == null) { return }
         else if (Math.random() < 0.1) { // Move 10% chance
             var movesToTry = [
-                [-1,0],
-                [1,0],
-                [-1,-1],
-                [1,-1],
+                [1*pixel.dir,0],
+                [1*pixel.dir,-1],
             ];
             // While movesToTry is not empty, tryMove(pixel, x, y) with a random move, then remove it. if tryMove returns true, break.
             while (movesToTry.length > 0) {
@@ -75,6 +100,10 @@ elements.body = {
                     }
                 }
             }
+            // 15% chance to change direction
+            if (Math.random() < 0.15) {
+                pixel.dir *= -1;
+            }
         }
 
     },
@@ -84,18 +113,49 @@ elements.head = {
     color: ["#f5eac6","#d4c594","#a89160","#7a6433","#524018"],
     category: "life",
     hidden: true,
+    density: 1080,
+    state: "solid",
+    conduct: 25,
+    tempHigh: 250,
+    stateHigh: "cooked_meat",
+    tempLow: -30,
+    stateLow: "frozen_meat",
+    burn: 10,
+    burnTime: 250,
+    burnInto: "cooked_meat",
     properties: {
         dead: false
     },
     tick: function(pixel) {
+        doHeat(pixel);
+        doBurning(pixel);
+        doElectricity(pixel);
+        if (pixel.dead) {
+            // Turn into rotten_meat if pixelTicks-dead > 500
+            if (pixelTicks-pixel.dead > 200) {
+                pixel.element = "rotten_meat";
+                pixel.color = pixelColorPick(pixel);
+                return
+            }
+        }
+
+        // Find the body
+        if (!isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "body") {
+            var body = pixelMap[pixel.x][pixel.y+1];
+            if (body.dead) { // If body is dead, kill head
+                pixel.dead = body.dead;
+            }
+        }
+        else { var body = null }
+
         if (isEmpty(pixel.x, pixel.y+1)) {
-            movePixel(pixel, pixel.x, pixel.y+1);
+            tryMove(pixel, pixel.x, pixel.y+1);
             // create blood if severed 10% chance
             if (isEmpty(pixel.x, pixel.y+1) && !pixel.dead && Math.random() < 0.1) {
                 createPixel("blood", pixel.x, pixel.y+1);
                 // set dead to true 15% chance
                 if (Math.random() < 0.15) {
-                    pixel.dead = true;
+                    pixel.dead = pixelTicks;
                 }
             }
         }
