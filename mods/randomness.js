@@ -1151,6 +1151,149 @@ elements.colder_bomb = {
     state: "solid",
     density: 1300,
     excludeRandom: true,
+},
+
+elements.op_hottester_bomb = {
+    color: "#cc436e",
+	tick: function(pixel) {
+		eee = Math.random()
+		doHeat(pixel);
+		if(!isEmpty(pixel.x,pixel.y-1) && !outOfBounds(pixel.x,pixel.y-1)) {
+			if(pixelMap[pixel.x][pixel.y-1].element != pixel.element) {
+				steppedOn = true
+			} else steppedOn = false
+		} else {
+			steppedOn = false
+		}
+		if(!isEmpty(pixel.x,pixel.y+1) && !outOfBounds(pixel.x,pixel.y+1)) {
+			if(pixelMap[pixel.x][pixel.y+1].element != pixel.element) {
+				landed = true
+			} else landed = false
+		} else {
+			landed = false
+		}
+		if(outOfBounds(pixel.x,pixel.y+1)) {
+			landed = true
+		}
+		tryMove(pixel, pixel.x, pixel.y+1)
+		if(steppedOn == true || landed == true) {
+			fire = "plasma"
+			smoke = "plasma"
+			radius = 15
+			x = pixel.x
+			y = pixel.y
+			// if fire contains , split it into an array
+			if (fire.includes(",")) {
+				fire = fire.split(",");
+			}
+			// if smoke contains , split it into an array
+			if (smoke.includes(",")) {
+				smoke = smoke.split(",");
+			}
+			var coords = circleCoords(x,y,radius);
+			var power = radius/10;
+			//for (var p = 0; p < Math.round(radius/10+1); p++) {
+			for (var i = 0; i < coords.length; i++) {
+				// damage value is based on distance from x and y
+				var damage = Math.random() + (Math.floor(Math.sqrt(Math.pow(coords[i].x-x,2) + Math.pow(coords[i].y-y,2)))) / radius;
+				// invert
+				damage = 1 - damage;
+				if (damage < 0) { damage = 0; }
+				damage *= power;
+				if (isEmpty(coords[i].x,coords[i].y)) {
+					// create smoke or fire depending on the damage if empty
+					if (damage < 0.02) { } // do nothing
+					else if (damage < 0.2) {
+						// if smoke is an array, choose a random item
+						if (Array.isArray(smoke)) {
+							createPixel(smoke[Math.floor(Math.random() * smoke.length)],coords[i].x,coords[i].y);
+						}
+						else {
+							createPixel(smoke,coords[i].x,coords[i].y);
+						}
+					}
+					else {
+						// if fire is an array, choose a random item
+						if (Array.isArray(fire)) {
+							createPixel(fire[Math.floor(Math.random() * fire.length)],coords[i].x,coords[i].y);
+						}
+						else {
+							createPixel(fire,coords[i].x,coords[i].y);
+						}
+					}
+				}
+				else if (!outOfBounds(coords[i].x,coords[i].y)) {
+					// damage the pixel
+					var pixel = pixelMap[coords[i].x][coords[i].y];
+					var info = elements[pixel.element];
+					if (info.hardness) { // lower damage depending on hardness(0-1)
+						if (info.hardness < 1) {
+							damage = damage * ((1 - info.hardness)*10);
+						}
+						else { damage = 0; }
+					}
+					if (damage <= 0.25) {
+						pixel.temp += Math.floor((damage*radius*power*10)**1.3)
+					}
+					if (damage > 0.25) {
+						if (info.breakInto) {
+							// if it is an array, choose a random item, else just use the value
+							if (Array.isArray(info.breakInto)) {
+								var result = info.breakInto[Math.floor(Math.random() * info.breakInto.length)];
+							}
+							else {
+								var result = info.breakInto;
+							}
+							// change the pixel to the result
+							pixel.element = result;
+							pixel.color = pixelColorPick(pixel);
+							if (elements[result].burning) {
+								pixel.burning = true;
+								pixel.burnStart = pixelTicks;
+							}
+							else if (pixel.burning && !elements[result].burn) {
+								pixel.burning = false;
+								delete pixel.burnStart;
+							}
+						}
+						else {
+							if (Array.isArray(fire)) {
+								var newfire = fire[Math.floor(Math.random() * fire.length)];
+							}
+							else {
+								var newfire = fire;
+							}
+							pixel.element = newfire;
+							pixel.color = pixelColorPick(pixel);
+							if (elements[newfire].burning) {
+								pixel.burning = true;
+								pixel.burnStart = pixelTicks;
+							}
+							else if (pixel.burning && !elements[newfire].burn) {
+								pixel.burning = false;
+								delete pixel.burnStart;
+							}
+						}
+						pixel.temp += Math.floor((damage*radius*power*15)**1.5)
+					}
+					if (damage > 0.75) {
+						if (info.burn) {
+							pixel.burning = true;
+							pixel.burnStart = pixelTicks;
+							pixel.temp += Math.floor((damage*radius*power*20)**1.7)
+						}
+					}
+					pixel.temp += Math.floor((damage*radius*power*5)**1.1);
+					pixelTempCheck(pixel);
+				}
+			}
+		}
+	},
+    category: "weapons",
+    state: "solid",
+	temp: 7065,
+    density: 1300,
+    excludeRandom: true,
 }
 
 runAfterLoad(function() {
