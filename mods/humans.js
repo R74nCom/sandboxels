@@ -4,6 +4,7 @@ elements.human = {
     properties: {
         dead: false,
         dir: 1,
+        panic: 0,
     },
     tick: function(pixel) {
         if (isEmpty(pixel.x, pixel.y+1)) {
@@ -22,11 +23,24 @@ elements.human = {
     },
 };
 
+// If pixelTicks%60 == 0, look left and right from the head 20 pixels.
+//    If something favorable is found, set target to that pixel.
+//    If something unfavorable is found, set target to a few pixels in the opposite direction. Raise panic attribute.
+//    If nothing is found, set target to null.
+//    If target is not null, switch direction towards target.
+// Favorable Things: food category, wood, tree_branch, plant, bamboo, gold_coin, firefly, frog
+// Unfavorable Things: acid, fire, magma, plasma, cold_fire, electric, laser, infection, cancer, rat, bee, blood, weapons category, superheater, freezer, tesla_coil, virus, gray_goo, antimatter, void
+// Panic attribute, 0-1, increases movement rate.
+// On fire raises panic.
+// Trample: grass, petal, pistil
+// Regulate temperature.
+
+
 elements.body = {
     color: ["#049699","#638A61"],
     category: "life",
     hidden: true,
-    density: 1080,
+    density: 1500,
     state: "solid",
     conduct: 25,
     tempHigh: 250,
@@ -42,14 +56,19 @@ elements.body = {
     properties: {
         dead: false,
         dir: 1,
+        panic: 0,
     },
     tick: function(pixel) {
-        if (isEmpty(pixel.x, pixel.y+1)) { // Fall
-            movePixel(pixel, pixel.x, pixel.y+1);
+        if (tryMove(pixel, pixel.x, pixel.y+1)) {
             if (!isEmpty(pixel.x, pixel.y-2, true)) { // Drag head down
                 var headpixel = pixelMap[pixel.x][pixel.y-2];
                 if (headpixel.element == "head") {
-                    movePixel(pixelMap[pixel.x][pixel.y-2], pixel.x, pixel.y-1);
+                    if (isEmpty(pixel.x, pixel.y-1)) {
+                        movePixel(pixelMap[pixel.x][pixel.y-2], pixel.x, pixel.y-1);
+                    }
+                    else {
+                        swapPixels(pixelMap[pixel.x][pixel.y-2], pixelMap[pixel.x][pixel.y-1]);
+                    }
                 }
             }
         }
