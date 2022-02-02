@@ -90,7 +90,7 @@ elements.le_liquid_light = {
 	color: "#ffffa8",
 	behavior: [
 		"XX|XX|XX",
-		"M2|DL%0.1 AND FX%0.5 AND FY%0.5|M2 AND BO",
+		"M2|DL%0.1 AND RT%0.5|M2 AND BO",
 		"M1|M1|M1",
 	],
 	temp: 40,
@@ -101,10 +101,9 @@ elements.liquid_laser = {
 	color: "#ff0000",
 	behavior: [
 		"XX|M2|XX",
-		"M2|DL%0.05|M2 AND BO:1,2,3",
+		"M2|DL%0.05 AND RT%0.5|M2 AND BO:1,2,3",
 		"XX|M1|XX",
 	],
-	rotatable: true,
 	temp: 40,
 	category: "liquids",
 },
