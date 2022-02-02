@@ -513,4 +513,610 @@ elements.conveyor_2 = {
 	category: "machines",
 	insulate: true,
 	state: "solid",
-}
+},
+
+this.aaa = ["plasma","plasma","plasma","plasma","plasma","plasma","plasma","plasma","plasma","plasma","plasma","plasma","smoke","plasma","plasma","fire","smoke","fire","smoke","plasma","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","acid","acid","oil","oil","oil","oil","oil","oil","oil","plasma","plasma","plasma","plasma","plasma","smoke","plasma","plasma","fire","smoke","plasma","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","flash","flash","flash","flash","flash","acid_gas","acid_gas","acid_gas","acid","oil","oil","oil","oil","oil","oil","oil","oil","oil","oil","plasma","plasma","plasma","plasma","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","acid","acid","oil","oil","oil","oil","oil","oil","oil","plasma","plasma","plasma","plasma","plasma","smoke","plasma","plasma","fire","smoke","plasma","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","seb","seb","flash","flash","flash","flash","flash","acid_gas","acid_gas","acid_gas","acid","oil","oil","oil","oil","oil","oil","oil","oil","oil","oil","plasma","plasma","plasma","plasma","plague","plague","plague","plague","plague","plague","radiation","radiation","radiation","radiation","radiation","radiation","radiation","radiation","uranium","uranium","uranium","uranium","uranium","uranium","greek_fire","greek_fire","greek_fire","greek_fire","greek_fire","antimatter","antimatter","antimatter","antimatter","antimatter","smoke_grenade","antimatter","smoke_grenade","fireball","flash","acid_gas","acid_gas","acid_gas","plague","plague","plague","plague","plague","plague","radiation","radiation","radiation","radiation","radiation","radiation","radiation","radiation","uranium","uranium","uranium","uranium","uranium","uranium","greek_fire","greek_fire","greek_fire","greek_fire","greek_fire","antimatter","antimatter","antimatter","antimatter","antimatter","smoke_grenade","antimatter","flash","acid_gas","acid_gas","acid_gas"]
+
+this.bbb = ["smoke","smoke","smoke","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","acid","acid","oil","oil","oil","oil","oil","oil","oil","smoke","smoke","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","flash","flash","flash","flash","flash","acid_gas","acid_gas","acid_gas","acid","oil","oil","oil","oil","oil","oil","oil","oil","oil","oil","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","acid","acid","oil","oil","oil","oil","oil","oil","oil","smoke","smoke","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","seb","flash","flash","flash","flash","flash","acid_gas","acid_gas","acid_gas","acid","oil","oil","oil","oil","oil","oil","oil","oil","oil","oil","plague","plague","plague","plague","plague","plague","radiation","radiation","radiation","radiation","radiation","radiation","radiation","radiation","uranium","uranium","uranium","uranium","uranium","uranium","greek_fire","greek_fire","greek_fire","greek_fire","greek_fire","antimatter","antimatter","antimatter","antimatter","antimatter","smoke_grenade","antimatter","smoke_grenade","flash","acid_gas","acid_gas","acid_gas","plague","plague","plague","plague","plague","plague","radiation","radiation","radiation","radiation","radiation","radiation","radiation","radiation","uranium","uranium","uranium","uranium","uranium","uranium","greek_fire","greek_fire","greek_fire","greek_fire","greek_fire","antimatter","smoke_grenade","flash","acid_gas","acid_gas","acid_gas"]
+
+elements.amalgamated_bomb = {
+    color: ["#FF0000","#FF0000","#FFFF00","#FFFF00","#00FF00","#00FF00","#0000FF","#0000FF"],
+	tick: function(pixel) {
+		eee = Math.random()
+		doHeat(pixel);
+		if(!isEmpty(pixel.x,pixel.y-1) && !outOfBounds(pixel.x,pixel.y-1)) {
+			if(pixelMap[pixel.x][pixel.y-1].element != pixel.element) {
+				steppedOn = true
+			} else steppedOn = false
+		} else {
+			steppedOn = false
+		}
+		if(!isEmpty(pixel.x,pixel.y+1) && !outOfBounds(pixel.x,pixel.y+1)) {
+			if(pixelMap[pixel.x][pixel.y+1].element != pixel.element) {
+				landed = true
+			} else landed = false
+		} else {
+			landed = false
+		}
+		if(outOfBounds(pixel.x,pixel.y+1)) {
+			landed = true
+		}
+		tryMove(pixel, pixel.x, pixel.y+1)
+		if(steppedOn == true || landed == true) {
+		fire = bbb
+		smoke = bbb
+		radius = 45
+		x = pixel.x
+		y = pixel.y
+		//SECONDARY
+			// if fire contains , split it into an array
+			if (fire.includes(",")) {
+				fire = fire.split(",");
+			}
+			// if smoke contains , split it into an array
+			if (smoke.includes(",")) {
+				smoke = smoke.split(",");
+			}
+			var coords = circleCoords(x,y,radius);
+			var power = radius/10;
+			//for (var p = 0; p < Math.round(radius/10+1); p++) {
+			for (var i = 0; i < coords.length; i++) {
+				// damage value is based on distance from x and y
+				var damage = Math.random() + (Math.floor(Math.sqrt(Math.pow(coords[i].x-x,2) + Math.pow(coords[i].y-y,2)))) / radius;
+				// invert
+				damage = 1 - damage;
+				if (damage < 0) { damage = 0; }
+				damage *= power;
+				if (isEmpty(coords[i].x,coords[i].y)) {
+					// create smoke or fire depending on the damage if empty
+					if (damage < 0.02) { } // do nothing
+					else if (damage < 0.2) {
+						// if smoke is an array, choose a random item
+						if (Array.isArray(smoke)) {
+							createPixel(smoke[Math.floor(Math.random() * smoke.length)],coords[i].x,coords[i].y);
+						}
+						else {
+							createPixel(smoke,coords[i].x,coords[i].y);
+						}
+					}
+					else {
+						// if fire is an array, choose a random item
+						if (Array.isArray(fire)) {
+							createPixel(fire[Math.floor(Math.random() * fire.length)],coords[i].x,coords[i].y);
+						}
+						else {
+							createPixel(fire,coords[i].x,coords[i].y);
+						}
+					}
+				}
+				else if (!outOfBounds(coords[i].x,coords[i].y)) {
+					// damage the pixel
+					var pixel = pixelMap[coords[i].x][coords[i].y];
+					var info = elements[pixel.element];
+					if (info.hardness) { // lower damage depending on hardness(0-1)
+						if (info.hardness < 1) {
+							damage = damage * ((1 - info.hardness)*10);
+						}
+						else { damage = 0; }
+					}
+					if (damage > 0.25) {
+						if (info.breakInto) {
+							// if it is an array, choose a random item, else just use the value
+							if (Array.isArray(info.breakInto)) {
+								var result = info.breakInto[Math.floor(Math.random() * info.breakInto.length)];
+							}
+							else {
+								var result = info.breakInto;
+							}
+							// change the pixel to the result
+							pixel.element = result;
+							pixel.color = pixelColorPick(pixel);
+							if (elements[result].burning) {
+								pixel.burning = true;
+								pixel.burnStart = pixelTicks;
+							}
+							else if (pixel.burning && !elements[result].burn) {
+								pixel.burning = false;
+								delete pixel.burnStart;
+							}
+						}
+						else {
+							if (Array.isArray(fire)) {
+								var newfire = fire[Math.floor(Math.random() * fire.length)];
+							}
+							else {
+								var newfire = fire;
+							}
+							pixel.element = newfire;
+							pixel.color = pixelColorPick(pixel);
+							if (elements[newfire].burning) {
+								pixel.burning = true;
+								pixel.burnStart = pixelTicks;
+							}
+							else if (pixel.burning && !elements[newfire].burn) {
+								pixel.burning = false;
+								delete pixel.burnStart;
+							}
+						}
+					}
+					if (damage > 0.75) {
+						if (info.burn) {
+							pixel.burning = true;
+							pixel.burnStart = pixelTicks;
+						}
+					}
+					pixel.temp += damage*radius*power;
+					pixelTempCheck(pixel);
+				}
+			}
+		
+		fire = aaa
+		smoke = aaa
+		radius = 30
+		//PRIMARY
+			// if fire contains , split it into an array
+			if (fire.includes(",")) {
+				fire = fire.split(",");
+			}
+			// if smoke contains , split it into an array
+			if (smoke.includes(",")) {
+				smoke = smoke.split(",");
+			}
+			var coords = circleCoords(x,y,radius);
+			var power = radius/10;
+			//for (var p = 0; p < Math.round(radius/10+1); p++) {
+			for (var i = 0; i < coords.length; i++) {
+				// damage value is based on distance from x and y
+				var damage = Math.random() + (Math.floor(Math.sqrt(Math.pow(coords[i].x-x,2) + Math.pow(coords[i].y-y,2)))) / radius;
+				// invert
+				damage = 1 - damage;
+				if (damage < 0) { damage = 0; }
+				damage *= power;
+				if (isEmpty(coords[i].x,coords[i].y)) {
+					// create smoke or fire depending on the damage if empty
+					if (damage < 0.02) { } // do nothing
+					else if (damage < 0.2) {
+						// if smoke is an array, choose a random item
+						if (Array.isArray(smoke)) {
+							createPixel(smoke[Math.floor(Math.random() * smoke.length)],coords[i].x,coords[i].y);
+						}
+						else {
+							createPixel(smoke,coords[i].x,coords[i].y);
+						}
+					}
+					else {
+						// if fire is an array, choose a random item
+						if (Array.isArray(fire)) {
+							createPixel(fire[Math.floor(Math.random() * fire.length)],coords[i].x,coords[i].y);
+						}
+						else {
+							createPixel(fire,coords[i].x,coords[i].y);
+						}
+					}
+				}
+				else if (!outOfBounds(coords[i].x,coords[i].y)) {
+					// damage the pixel
+					var pixel = pixelMap[coords[i].x][coords[i].y];
+					var info = elements[pixel.element];
+					if (info.hardness) { // lower damage depending on hardness(0-1)
+						if (info.hardness < 1) {
+							damage = damage * ((1 - info.hardness)*10);
+						}
+						else { damage = 0; }
+					}
+					if (damage > 0.25) {
+						if (info.breakInto) {
+							// if it is an array, choose a random item, else just use the value
+							if (Array.isArray(info.breakInto)) {
+								var result = info.breakInto[Math.floor(Math.random() * info.breakInto.length)];
+							}
+							else {
+								var result = info.breakInto;
+							}
+							// change the pixel to the result
+							pixel.element = result;
+							pixel.color = pixelColorPick(pixel);
+							if (elements[result].burning) {
+								pixel.burning = true;
+								pixel.burnStart = pixelTicks;
+							}
+							else if (pixel.burning && !elements[result].burn) {
+								pixel.burning = false;
+								delete pixel.burnStart;
+							}
+						}
+						else {
+							if (Array.isArray(fire)) {
+								var newfire = fire[Math.floor(Math.random() * fire.length)];
+							}
+							else {
+								var newfire = fire;
+							}
+							pixel.element = newfire;
+							pixel.color = pixelColorPick(pixel);
+							if (elements[newfire].burning) {
+								pixel.burning = true;
+								pixel.burnStart = pixelTicks;
+							}
+							else if (pixel.burning && !elements[newfire].burn) {
+								pixel.burning = false;
+								delete pixel.burnStart;
+							}
+						}
+					}
+					if (damage > 0.75) {
+						if (info.burn) {
+							pixel.burning = true;
+							pixel.burnStart = pixelTicks;
+						}
+					}
+					pixel.temp += damage*radius*power;
+					pixelTempCheck(pixel);
+				}
+			}
+		}
+	},
+    category: "weapons",
+    state: "solid",
+    density: 1800,
+    excludeRandom: true,
+    extraInfo: "a little bit of everything <img aria-label=\":eggTF:\" src=\"https://cdn.discordapp.com/emojis/861270810151616545.png\" alt=\":eggTF:\" draggable=\"false\" data-type=\"emoji\" data-id=\"861270810151616545\" style=\"-o-object-fit: contain; object-fit: contain; width: 1.375em; height: 1.375em; vertical-align: bottom; text-indent: -9999px;\" title=\":eggTF:\">&nbsp;",
+},
+
+elements.colder_bomb = {
+    color: "#43648e",
+	tick: function(pixel) {
+		eee = Math.random()
+		doHeat(pixel);
+		if(!isEmpty(pixel.x,pixel.y-1) && !outOfBounds(pixel.x,pixel.y-1)) {
+			if(pixelMap[pixel.x][pixel.y-1].element != pixel.element) {
+				steppedOn = true
+			} else steppedOn = false
+		} else {
+			steppedOn = false
+		}
+		if(!isEmpty(pixel.x,pixel.y+1) && !outOfBounds(pixel.x,pixel.y+1)) {
+			if(pixelMap[pixel.x][pixel.y+1].element != pixel.element) {
+				landed = true
+			} else landed = false
+		} else {
+			landed = false
+		}
+		if(outOfBounds(pixel.x,pixel.y+1)) {
+			landed = true
+		}
+		tryMove(pixel, pixel.x, pixel.y+1)
+		if(steppedOn == true || landed == true) {
+			fire = ["cold_fire","cold_fire","cold_fire","snow","liquid_nitrogen"]
+			smoke = ["cold_fire","snow","liquid_nitrogen"]
+			radius = 15
+			x = pixel.x
+			y = pixel.y
+			// if fire contains , split it into an array
+			if (fire.includes(",")) {
+				fire = fire.split(",");
+			}
+			// if smoke contains , split it into an array
+			if (smoke.includes(",")) {
+				smoke = smoke.split(",");
+			}
+			var coords = circleCoords(x,y,radius);
+			var power = radius/10;
+			//for (var p = 0; p < Math.round(radius/10+1); p++) {
+			for (var i = 0; i < coords.length; i++) {
+				// damage value is based on distance from x and y
+				var damage = Math.random() + (Math.floor(Math.sqrt(Math.pow(coords[i].x-x,2) + Math.pow(coords[i].y-y,2)))) / radius;
+				// invert
+				damage = 1 - damage;
+				if (damage < 0) { damage = 0; }
+				damage *= power;
+				if (isEmpty(coords[i].x,coords[i].y)) {
+					// create smoke or fire depending on the damage if empty
+					if (damage < 0.02) { } // do nothing
+					else if (damage < 0.2) {
+						// if smoke is an array, choose a random item
+						if (Array.isArray(smoke)) {
+							createPixel(smoke[Math.floor(Math.random() * smoke.length)],coords[i].x,coords[i].y);
+						}
+						else {
+							createPixel(smoke,coords[i].x,coords[i].y);
+						}
+					}
+					else {
+						// if fire is an array, choose a random item
+						if (Array.isArray(fire)) {
+							createPixel(fire[Math.floor(Math.random() * fire.length)],coords[i].x,coords[i].y);
+						}
+						else {
+							createPixel(fire,coords[i].x,coords[i].y);
+						}
+					}
+				}
+				else if (!outOfBounds(coords[i].x,coords[i].y)) {
+					// damage the pixel
+					var pixel = pixelMap[coords[i].x][coords[i].y];
+					var info = elements[pixel.element];
+					if (info.hardness) { // lower damage depending on hardness(0-1)
+						if (info.hardness < 1) {
+							damage = damage * ((1 - info.hardness)*10);
+						}
+						else { damage = 0; }
+					}
+					if (damage > 0.25) {
+						if (info.breakInto) {
+							// if it is an array, choose a random item, else just use the value
+							if (Array.isArray(info.breakInto)) {
+								var result = info.breakInto[Math.floor(Math.random() * info.breakInto.length)];
+							}
+							else {
+								var result = info.breakInto;
+							}
+							// change the pixel to the result
+							pixel.element = result;
+							pixel.color = pixelColorPick(pixel);
+							if (elements[result].burning) {
+								pixel.burning = true;
+								pixel.burnStart = pixelTicks;
+							}
+							else if (pixel.burning && !elements[result].burn) {
+								pixel.burning = false;
+								delete pixel.burnStart;
+							}
+						}
+						else {
+							if (Array.isArray(fire)) {
+								var newfire = fire[Math.floor(Math.random() * fire.length)];
+							}
+							else {
+								var newfire = fire;
+							}
+							pixel.element = newfire;
+							pixel.color = pixelColorPick(pixel);
+							if (elements[newfire].burning) {
+								pixel.burning = true;
+								pixel.burnStart = pixelTicks;
+							}
+							else if (pixel.burning && !elements[newfire].burn) {
+								pixel.burning = false;
+								delete pixel.burnStart;
+							}
+						}
+					}
+					if (damage > 0.75) {
+						if (info.burn) {
+							pixel.burning = true;
+							pixel.burnStart = pixelTicks;
+						}
+					}
+					pixel.temp -= damage*radius*power;
+					pixelTempCheck(pixel);
+				}
+			}
+		}
+	},
+    category: "weapons",
+    state: "solid",
+    density: 1300,
+    excludeRandom: true,
+},
+
+elements.op_hottester_bomb = {
+    color: "#cc436e",
+	tick: function(pixel) {
+		eee = Math.random()
+		doHeat(pixel);
+		if(!isEmpty(pixel.x,pixel.y-1) && !outOfBounds(pixel.x,pixel.y-1)) {
+			if(pixelMap[pixel.x][pixel.y-1].element != pixel.element) {
+				steppedOn = true
+			} else steppedOn = false
+		} else {
+			steppedOn = false
+		}
+		if(!isEmpty(pixel.x,pixel.y+1) && !outOfBounds(pixel.x,pixel.y+1)) {
+			if(pixelMap[pixel.x][pixel.y+1].element != pixel.element) {
+				landed = true
+			} else landed = false
+		} else {
+			landed = false
+		}
+		if(outOfBounds(pixel.x,pixel.y+1)) {
+			landed = true
+		}
+		tryMove(pixel, pixel.x, pixel.y+1)
+		if(steppedOn == true || landed == true) {
+			fire = "plasma"
+			smoke = "plasma"
+			radius = 15
+			x = pixel.x
+			y = pixel.y
+			// if fire contains , split it into an array
+			if (fire.includes(",")) {
+				fire = fire.split(",");
+			}
+			// if smoke contains , split it into an array
+			if (smoke.includes(",")) {
+				smoke = smoke.split(",");
+			}
+			var coords = circleCoords(x,y,radius);
+			var power = radius/10;
+			//for (var p = 0; p < Math.round(radius/10+1); p++) {
+			for (var i = 0; i < coords.length; i++) {
+				// damage value is based on distance from x and y
+				var damage = Math.random() + (Math.floor(Math.sqrt(Math.pow(coords[i].x-x,2) + Math.pow(coords[i].y-y,2)))) / radius;
+				// invert
+				damage = 1 - damage;
+				if (damage < 0) { damage = 0; }
+				damage *= power;
+				if (isEmpty(coords[i].x,coords[i].y)) {
+					// create smoke or fire depending on the damage if empty
+					if (damage < 0.02) { } // do nothing
+					else if (damage < 0.2) {
+						// if smoke is an array, choose a random item
+						if (Array.isArray(smoke)) {
+							createPixel(smoke[Math.floor(Math.random() * smoke.length)],coords[i].x,coords[i].y);
+						}
+						else {
+							createPixel(smoke,coords[i].x,coords[i].y);
+						}
+					}
+					else {
+						// if fire is an array, choose a random item
+						if (Array.isArray(fire)) {
+							createPixel(fire[Math.floor(Math.random() * fire.length)],coords[i].x,coords[i].y);
+						}
+						else {
+							createPixel(fire,coords[i].x,coords[i].y);
+						}
+					}
+				}
+				else if (!outOfBounds(coords[i].x,coords[i].y)) {
+					// damage the pixel
+					var pixel = pixelMap[coords[i].x][coords[i].y];
+					var info = elements[pixel.element];
+					if (info.hardness) { // lower damage depending on hardness(0-1)
+						if (info.hardness < 1) {
+							damage = damage * ((1 - info.hardness)*10);
+						}
+						else { damage = 0; }
+					}
+					if (damage <= 0.25) {
+						pixel.temp -= Math.floor((damage*radius*power*10)**1.3)
+					}
+					if (damage > 0.25) {
+						if (info.breakInto) {
+							// if it is an array, choose a random item, else just use the value
+							if (Array.isArray(info.breakInto)) {
+								var result = info.breakInto[Math.floor(Math.random() * info.breakInto.length)];
+							}
+							else {
+								var result = info.breakInto;
+							}
+							// change the pixel to the result
+							pixel.element = result;
+							pixel.color = pixelColorPick(pixel);
+							if (elements[result].burning) {
+								pixel.burning = false;
+							}
+							else if (pixel.burning && !elements[result].burn) {
+								pixel.burning = false;
+							}
+						}
+						else {
+							if (Array.isArray(fire)) {
+								var newfire = fire[Math.floor(Math.random() * fire.length)];
+							}
+							else {
+								var newfire = fire;
+							}
+							pixel.element = newfire;
+							pixel.color = pixelColorPick(pixel);
+							if (elements[newfire].burning) {
+								pixel.burning = false;
+							}
+							else if (pixel.burning && !elements[newfire].burn) {
+								pixel.burning = false;
+							}
+						}
+						pixel.temp -= Math.floor((damage*radius*power*15)**1.5)
+					}
+					if (damage > 0.75) {
+						if (info.burn) {
+							pixel.burning = false;
+							pixel.temp -= Math.floor((damage*radius*power*20)**1.7)
+						}
+					}
+					pixel.temp -= Math.floor((damage*radius*power*5)**1.1);
+					pixelTempCheck(pixel);
+				}
+			}
+		}
+	},
+    category: "weapons",
+    state: "solid",
+    temp: 7065,
+    density: 1300,
+    excludeRandom: true,
+},
+
+runAfterLoad(function() {
+  if(enabledMods.includes("mods/fey_and_more.js")) {
+    aaa.push("poisonwater")
+    aaa.push("poisonwater")
+    aaa.push("poisonwater")
+    aaa.push("poisonwater")
+    aaa.push("mystic_fire")
+    aaa.push("mystic_fire")
+    aaa.push("firesea")
+    aaa.push("firesea")
+    aaa.push("firesea")
+    aaa.push("poisonwater")
+    aaa.push("poisonwater")
+    aaa.push("poisonwater")
+    aaa.push("poisonwater")
+    aaa.push("mystic_fire")
+    aaa.push("mystic_fire")
+    aaa.push("firesea")
+    aaa.push("firesea")
+    aaa.push("firesea")
+    aaa.push("lektre")
+    aaa.push("lektre")
+    aaa.push("lektre")
+    bbb.push("poisonwater")
+    bbb.push("poisonwater")
+    bbb.push("poisonwater")
+    bbb.push("poisonwater")
+    bbb.push("mystic_fire")
+    bbb.push("mystic_fire")
+    bbb.push("firesea")
+    bbb.push("firesea")
+    bbb.push("firesea")
+    bbb.push("poisonwater")
+    bbb.push("poisonwater")
+    bbb.push("poisonwater")
+    bbb.push("poisonwater")
+    bbb.push("mystic_fire")
+    bbb.push("mystic_fire")
+    bbb.push("firesea")
+    bbb.push("firesea")
+    bbb.push("firesea")
+    bbb.push("lektre")
+    bbb.push("lektre")
+    bbb.push("lektre")
+  }
+  if(enabledMods.includes("mods/Neutronium Mod.js")) {
+    aaa.push("flamer")
+    aaa.push("flamebomb")
+    aaa.push("flamer")
+    aaa.push("flamebomb")
+    bbb.push("flamer")
+    bbb.push("flamebomb")
+    bbb.push("flamer")
+    bbb.push("flamebomb")
+  }
+  if(enabledMods.includes("mods/randomness.js")) {
+    aaa.push("burning_unnamed_gas")
+    aaa.push("burning_unnamed_gas")
+    aaa.push("burning_unnamed_gas")
+    aaa.push("burning_unnamed_gas")
+    aaa.push("warp")
+    aaa.push("warp")
+    aaa.push("warp")
+    aaa.push("warp")
+    aaa.push("warp")
+    aaa.push("warp")
+    aaa.push("bomb_2")
+    aaa.push("bomb_2")
+    aaa.push("bomb_2")
+    aaa.push("op_hottester_bomb")
+    bbb.push("unnamed_gas")
+    bbb.push("unnamed_gas")
+    bbb.push("unnamed_gas")
+    bbb.push("unnamed_gas")
+    bbb.push("warp")
+    bbb.push("warp")
+    bbb.push("warp")
+    bbb.push("warp")
+    bbb.push("warp")
+    bbb.push("warp")
+  }
+});
