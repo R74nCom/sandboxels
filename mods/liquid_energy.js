@@ -203,7 +203,7 @@ elements.liquid_explosion = {
 	color: ["#ffb48f","#ffd991","#ffad91"],
 	behavior: [
 		"XX|XX|XX",
-		"M2|EX:10>fire,fire,fire,liquid_explosion,liquid_explosion%0.4|M2",
+		"M2|EX:10>fire,fire,fire,liquid_explosion,liquid_explosion%0.4 AND DL%0.3|M2",
 		"M1|M1|M1",
 	],
 	temp: 300,
@@ -212,3 +212,83 @@ elements.liquid_explosion = {
 	density: 2000,
 	excludeRandom: true,
 }
+
+runAfterLoad(function() {
+	if(enabledMods.includes("mods/fey_and_more.js")) {
+		elements.everfire_liquid = {
+			"name": "everfire liquid",
+			"color": "#06142b",
+			"state": "liquid",
+			"behavior": behaviors.LIQUID,
+			"density": 1290,
+			"burn": 100,
+			"burnTime": 2000,
+			"burnInto": "extinguished_everfire_liquid",
+			"category": "liquids",
+			"fireColor": ["#0041a8","#8ab7ff"],
+		},
+		elements.extinguished_everfire_liquid = {
+			"name": "extinguished everfire liquid",
+			"color": "#242d3b",
+			"state": "liquid",
+			"behavior": behaviors.LIQUID,
+			"density": 1290,
+			"fireColor": ["#0041a8","#8ab7ff"],
+			"category": "liquids",
+			"hidden": true,
+		},
+		elements.liquid_magic = {
+			"name": "liquid magic",
+			"color": ["#a270ff","#f2d9ff"],
+			"state": "liquid",
+			"behavior": [
+				"M2%50|M2%50|M2%50",
+				"M2|DL%0.2|M2",
+				"M1|M1|M1",
+			],
+			"density": 21,
+			"category": "liquids",
+			"reactions": {
+				"water": { "elem1": null, "elem2": "pure_water", },
+				"little_star": { "elem1": "mystic_fire", "elem2": "liquid_mystic_fire", },
+				"cheese": { "elem1": null, "elem2": "moonrock", },
+				"sapling": { "elem1": null, "elem2": "celie_seed", },
+				"old_celie_leaves": { "elem1": null, "elem2": "celie_leaves", },
+				"ketchup": { "elem1": null, "elem2": "enchanted_ketchup", },
+				"tomato_sauce": { "elem1": null, "elem2": "enchanted_ketchup", },
+				"rain_cloud": { "elem1": null, "elem2": "raincloud_cotton", },
+				"snow_cloud": { "elem1": null, "elem2": "snowcloud_cotton", },
+				"cloud": { "elem1": null, "elem2": "cloud_cotton", },
+			},
+		},
+		elements.liquid_mystic_fire = {
+			"name": "liquid mystic fire",
+			"color": ["#5454ff","#2020d4","#5800c4"],
+			"behavior": [
+				"M2%50|M2%50 AND CR:liquid_mystic_fire%10 AND CR:mystic_fire%5|M2%50",
+				"M2 AND CR:liquid_mystic_fire%5|EX:15>liquid_mystic_fire%0.1|M2 AND CR:liquid_mystic_fire%5",
+				"M1|M1|M1",
+			],
+			"temp":8500,
+			"tempChange":-100,
+			"tempLow":8000,
+			"stateLow": "liquid_fire",
+			"category": "liquids",
+			"burning": true,
+		},
+		//concoction and essence are already liquid
+		elements.liquid_frostbomb = {
+			color: "#72dfed",
+			behavior: [
+				"XX|XX|XX",
+				"M2|EX:15>frostwind,frostwind,frostwind,liquid_frostbomb%0.4 AND DL%0.2|M2",
+				"M1|M1|M1",
+			],
+			temp: 300,
+			category: "liquids",
+			state: "liquid",
+			density: 2000,
+			excludeRandom: true,
+		}
+	}
+});
