@@ -374,8 +374,8 @@ elements.cluster_nuke = {
 
 elements.estradiol = {
     color: "#f2fcee", //it absorbs shorter wavelength UV than testosterone and I am treating this like absorbing violet for convenience
-                      //https://www.researchgate.net/publication/226065469_Optical_Properties_of_Two_Types_of_Sex_Hormones_of_the_Cyclopentenephenanthrene_Series
-                      //http://depts.washington.edu/cmditr/modules/lum/color.html
+          //https://www.researchgate.net/publication/226065469_Optical_Properties_of_Two_Types_of_Sex_Hormones_of_the_Cyclopentenephenanthrene_Series
+          //http://depts.washington.edu/cmditr/modules/lum/color.html
     behavior: behaviors.POWDER,
     state: "solid",
     category: "solids",
@@ -404,8 +404,8 @@ elements.vaporized_estradiol = {
 
 elements.progesterone = {
     color: "#f7eefc", //slightly different? from testosterone but exaggerated
-                      //https://downloads.hindawi.com/journals/ijps/2017/9603140.pdf
-                      //these hormones all absorb in the uv region anyway so they would all look white to us
+          //https://downloads.hindawi.com/journals/ijps/2017/9603140.pdf
+          //these hormones all absorb in the uv region anyway so they would all look white to us
     behavior: behaviors.POWDER,
     state: "solid",
     category: "solids",
@@ -466,8 +466,8 @@ elements.vaporized_testosterone = {
 
 elements.cyproterone_acetate = {
     color: "#efeef8", //it absorbs far longer uv than the others, which i am rendering as red absorption
-                      //https://www.researchgate.net/figure/UV-spectrum-for-drospirenone-cyproterone-acetate-desogestrel-and-ethinyl-estradiol-at-1_fig1_315746083
-                      //i didn't really expect to find a spectrum for this
+          //https://www.researchgate.net/figure/UV-spectrum-for-drospirenone-cyproterone-acetate-desogestrel-and-ethinyl-estradiol-at-1_fig1_315746083
+          //i didn't really expect to find a spectrum for this
     behavior: behaviors.POWDER,
     state: "solid",
     category: "solids",
@@ -505,7 +505,7 @@ elements.vaporized_cyproterone_acetate = {
 
 elements.spironolactone = {
     color: "#f7eef1", //UV absorbance peak wavelength is slightly shorter than that of testosterone
-                      //https://www.researchgate.net/publication/348592381_Quantification_of_Spironolactone_by_first_and_second_order_UV_Derivative_Spectrophotometry_in_bulk_and_tablet_dosage_form/link/6006b3cf299bf14088a649bd/download
+          //https://www.researchgate.net/publication/348592381_Quantification_of_Spironolactone_by_first_and_second_order_UV_Derivative_Spectrophotometry_in_bulk_and_tablet_dosage_form/link/6006b3cf299bf14088a649bd/download
     behavior: behaviors.POWDER,
     state: "solid",
     category: "solids",
@@ -537,7 +537,7 @@ elements.vaporized_spironolactone = {
 
 elements.finasteride = {
     color: "#fcfcf1", //UV absorbance peak wavelength is even shorter than that of estradiol
-                      //https://www.researchgate.net/publication/312317200
+          //https://www.researchgate.net/publication/312317200
     behavior: behaviors.POWDER,
     state: "solid",
     category: "solids",
@@ -566,7 +566,7 @@ elements.vaporized_finasteride = {
 
 elements.dutasteride = {
     color: "#fbf6ee", //High UV absorbances around the peak wavelengths of both estradiol and testosterone
-                      //https://sphinxsai.com/sphinxsaivol_2no.1/pharmtech_vol_2no.1/PharmTech_Vol_2No.1PDF/PT=18%20(113-117).pdf
+          //https://sphinxsai.com/sphinxsaivol_2no.1/pharmtech_vol_2no.1/PharmTech_Vol_2No.1PDF/PT=18%20(113-117).pdf
     behavior: behaviors.POWDER,
     state: "solid",
     category: "solids",
@@ -595,8 +595,8 @@ elements.vaporized_dutasteride = {
 
 elements.bicalutamide = {
     color: "#f4fcee", //peaks at 200-220 and at 270
-                      //i am probably mapping uv to visible wrong and misreading color.html
-                      //https://www.researchgate.net/publication/257679318
+          //i am probably mapping uv to visible wrong and misreading color.html
+          //https://www.researchgate.net/publication/257679318
     behavior: behaviors.POWDER,
     state: "solid",
     category: "solids",
@@ -741,8 +741,8 @@ elements.bomb_3 = {
 elements.sebA = {
 	color: "#ffffff",
 	behavior: [
-	    "SH%50|EX:8>electric AND SH%50                              |SH%50",
-	    "SH%50|EX:9>electric%0.5                                    |SH%50",
+	    "SH%50|EX:8>electric AND SH%50      |SH%50",
+	    "SH%50|EX:9>electric%0.5|SH%50",
 	    "M2 AND SH%50|M1 AND SH%50 AND EX:8>electric AND SW:electric|M2 AND SH%50",
 	],
 	category: "weapons",
@@ -756,8 +756,8 @@ elements.sebA = {
 elements.seb = {
 	color: "#ffffff",
 	behavior: [
-	    "SH%50|EX:8>sebA AND SH%50                              |SH%50",
-	    "SH%50|XX                                               |SH%50",
+	    "SH%50|EX:8>sebA AND SH%50      |SH%50",
+	    "SH%50|XX           |SH%50",
 	    "M2 AND SH%50|M1 AND SH%50 AND EX:8>sebA AND SW:electric|M2 AND SH%50",
 	],
 	category: "weapons",
@@ -768,18 +768,15 @@ elements.seb = {
 	hardness: 0.3,
 },
 
-this.aaa = ["plasma","plasma","plasma","plasma","plasma","plasma","plasma","plasma","plasma","plasma","plasma","plasma","smoke","plasma","plasma","fire","smoke","fire","smoke","plasma","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","acid","acid","oil","oil","oil","oil","oil","oil","oil","plasma","plasma","plasma","plasma","plasma","smoke","plasma","plasma","fire","smoke","plasma","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","flash","flash","flash","flash","flash","acid_gas","acid_gas","acid_gas","acid","oil","oil","oil","oil","oil","oil","oil","oil","oil","oil","plasma","plasma","plasma","plasma","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","acid","acid","oil","oil","oil","oil","oil","oil","oil","plasma","plasma","plasma","plasma","plasma","smoke","plasma","plasma","fire","smoke","plasma","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","seb","seb","flash","flash","flash","flash","flash","acid_gas","acid_gas","acid_gas","acid","oil","oil","oil","oil","oil","oil","oil","oil","oil","oil","plasma","plasma","plasma","plasma","bomb_2","bomb_2","bomb_2","plague","plague","plague","plague","plague","plague","radiation","radiation","radiation","radiation","radiation","radiation","radiation","radiation","uranium","uranium","uranium","uranium","uranium","uranium","greek_fire","greek_fire","greek_fire","greek_fire","greek_fire","antimatter","antimatter","antimatter","antimatter","antimatter","smoke_grenade","antimatter","smoke_grenade","fireball","flash","acid_gas","acid_gas","acid_gas","burning_unnamed_gas","warp","burning_unnamed_gas","warp","warp","plague","plague","plague","plague","plague","plague","radiation","radiation","radiation","radiation","radiation","radiation","radiation","radiation","uranium","uranium","uranium","uranium","uranium","uranium","greek_fire","greek_fire","greek_fire","greek_fire","greek_fire","hot_bomb","antimatter","antimatter","antimatter","antimatter","antimatter","smoke_grenade","antimatter","flash","acid_gas","acid_gas","acid_gas","burning_unnamed_gas","warp","burning_unnamed_gas","warp","warp"]
+this.aaa = ["plasma","plasma","plasma","plasma","plasma","plasma","plasma","plasma","plasma","plasma","plasma","plasma","smoke","plasma","plasma","fire","smoke","fire","smoke","plasma","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","acid","acid","oil","oil","oil","oil","oil","oil","oil","plasma","plasma","plasma","plasma","plasma","smoke","plasma","plasma","fire","smoke","plasma","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","flash","flash","flash","flash","flash","acid_gas","acid_gas","acid_gas","acid","oil","oil","oil","oil","oil","oil","oil","oil","oil","oil","plasma","plasma","plasma","plasma","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","acid","acid","oil","oil","oil","oil","oil","oil","oil","plasma","plasma","plasma","plasma","plasma","smoke","plasma","plasma","fire","smoke","plasma","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","seb","seb","flash","flash","flash","flash","flash","acid_gas","acid_gas","acid_gas","acid","oil","oil","oil","oil","oil","oil","oil","oil","oil","oil","plasma","plasma","plasma","plasma","bomb_2","bomb_2","bomb_2","plague","plague","plague","plague","plague","plague","radiation","radiation","radiation","radiation","radiation","radiation","radiation","radiation","uranium","uranium","uranium","uranium","uranium","uranium","greek_fire","greek_fire","greek_fire","greek_fire","greek_fire","antimatter","antimatter","antimatter","antimatter","antimatter","smoke_grenade","antimatter","smoke_grenade","fireball","flash","acid_gas","acid_gas","acid_gas","burning_unnamed_gas","warp","burning_unnamed_gas","warp","warp","plague","plague","plague","plague","plague","plague","radiation","radiation","radiation","radiation","radiation","radiation","radiation","radiation","uranium","uranium","uranium","uranium","uranium","uranium","greek_fire","greek_fire","greek_fire","greek_fire","greek_fire","op_hottester_bomb","antimatter","antimatter","antimatter","antimatter","antimatter","smoke_grenade","antimatter","flash","acid_gas","acid_gas","acid_gas","burning_unnamed_gas","warp","burning_unnamed_gas","warp","warp"]
+
+this.bbb = ["smoke","smoke","smoke","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","acid","acid","oil","oil","oil","oil","oil","oil","oil","smoke","smoke","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","flash","flash","flash","flash","flash","acid_gas","acid_gas","acid_gas","acid","oil","oil","oil","oil","oil","oil","oil","oil","oil","oil","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","acid","acid","oil","oil","oil","oil","oil","oil","oil","smoke","smoke","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","seb","flash","flash","flash","flash","flash","acid_gas","acid_gas","acid_gas","acid","oil","oil","oil","oil","oil","oil","oil","oil","oil","oil","plague","plague","plague","plague","plague","plague","radiation","radiation","radiation","radiation","radiation","radiation","radiation","radiation","uranium","uranium","uranium","uranium","uranium","uranium","greek_fire","greek_fire","greek_fire","greek_fire","greek_fire","antimatter","antimatter","antimatter","antimatter","antimatter","smoke_grenade","antimatter","smoke_grenade","flash","acid_gas","acid_gas","acid_gas","unnamed_gas","warp","unnamed_gas","warp","warp","plague","plague","plague","plague","plague","plague","radiation","radiation","radiation","radiation","radiation","radiation","radiation","radiation","uranium","uranium","uranium","uranium","uranium","uranium","greek_fire","greek_fire","greek_fire","greek_fire","greek_fire","antimatter","smoke_grenade","flash","acid_gas","acid_gas","acid_gas","unnamed_gas","warp","unnamed_gas","warp","warp"]
 
 elements.amalgamated_bomb = {
     color: ["#FF0000","#FF0000","#FFFF00","#FFFF00","#00FF00","#00FF00","#0000FF","#0000FF"],
 	tick: function(pixel) {
 		eee = Math.random()
 		doHeat(pixel);
-		fire = aaa
-		smoke = aaa
-		radius = 30
-		x = pixel.x
-		y = pixel.y
 		if(!isEmpty(pixel.x,pixel.y-1) && !outOfBounds(pixel.x,pixel.y-1)) {
 			if(pixelMap[pixel.x][pixel.y-1].element != pixel.element) {
 				steppedOn = true
@@ -799,6 +796,117 @@ elements.amalgamated_bomb = {
 		}
 		tryMove(pixel, pixel.x, pixel.y+1)
 		if(steppedOn == true || landed == true) {
+		fire = bbb
+		smoke = bbb
+		radius = 45
+		x = pixel.x
+		y = pixel.y
+		//SECONDARY
+			// if fire contains , split it into an array
+			if (fire.includes(",")) {
+				fire = fire.split(",");
+			}
+			// if smoke contains , split it into an array
+			if (smoke.includes(",")) {
+				smoke = smoke.split(",");
+			}
+			var coords = circleCoords(x,y,radius);
+			var power = radius/10;
+			//for (var p = 0; p < Math.round(radius/10+1); p++) {
+			for (var i = 0; i < coords.length; i++) {
+				// damage value is based on distance from x and y
+				var damage = Math.random() + (Math.floor(Math.sqrt(Math.pow(coords[i].x-x,2) + Math.pow(coords[i].y-y,2)))) / radius;
+				// invert
+				damage = 1 - damage;
+				if (damage < 0) { damage = 0; }
+				damage *= power;
+				if (isEmpty(coords[i].x,coords[i].y)) {
+					// create smoke or fire depending on the damage if empty
+					if (damage < 0.02) { } // do nothing
+					else if (damage < 0.2) {
+						// if smoke is an array, choose a random item
+						if (Array.isArray(smoke)) {
+							createPixel(smoke[Math.floor(Math.random() * smoke.length)],coords[i].x,coords[i].y);
+						}
+						else {
+							createPixel(smoke,coords[i].x,coords[i].y);
+						}
+					}
+					else {
+						// if fire is an array, choose a random item
+						if (Array.isArray(fire)) {
+							createPixel(fire[Math.floor(Math.random() * fire.length)],coords[i].x,coords[i].y);
+						}
+						else {
+							createPixel(fire,coords[i].x,coords[i].y);
+						}
+					}
+				}
+				else if (!outOfBounds(coords[i].x,coords[i].y)) {
+					// damage the pixel
+					var pixel = pixelMap[coords[i].x][coords[i].y];
+					var info = elements[pixel.element];
+					if (info.hardness) { // lower damage depending on hardness(0-1)
+						if (info.hardness < 1) {
+							damage = damage * ((1 - info.hardness)*10);
+						}
+						else { damage = 0; }
+					}
+					if (damage > 0.25) {
+						if (info.breakInto) {
+							// if it is an array, choose a random item, else just use the value
+							if (Array.isArray(info.breakInto)) {
+								var result = info.breakInto[Math.floor(Math.random() * info.breakInto.length)];
+							}
+							else {
+								var result = info.breakInto;
+							}
+							// change the pixel to the result
+							pixel.element = result;
+							pixel.color = pixelColorPick(pixel);
+							if (elements[result].burning) {
+								pixel.burning = true;
+								pixel.burnStart = pixelTicks;
+							}
+							else if (pixel.burning && !elements[result].burn) {
+								pixel.burning = false;
+								delete pixel.burnStart;
+							}
+						}
+						else {
+							if (Array.isArray(fire)) {
+								var newfire = fire[Math.floor(Math.random() * fire.length)];
+							}
+							else {
+								var newfire = fire;
+							}
+							pixel.element = newfire;
+							pixel.color = pixelColorPick(pixel);
+							if (elements[newfire].burning) {
+								pixel.burning = true;
+								pixel.burnStart = pixelTicks;
+							}
+							else if (pixel.burning && !elements[newfire].burn) {
+								pixel.burning = false;
+								delete pixel.burnStart;
+							}
+						}
+					}
+					if (damage > 0.75) {
+						if (info.burn) {
+							pixel.burning = true;
+							pixel.burnStart = pixelTicks;
+						}
+					}
+					pixel.temp += damage*radius*power;
+					pixelTempCheck(pixel);
+				}
+			}
+		
+		fire = aaa
+		smoke = aaa
+		radius = 30
+		//PRIMARY
 			// if fire contains , split it into an array
 			if (fire.includes(",")) {
 				fire = fire.split(",");
@@ -906,6 +1014,346 @@ elements.amalgamated_bomb = {
     density: 1800,
     excludeRandom: true,
     extraInfo: "a little bit of everything <img aria-label=\":eggTF:\" src=\"https://cdn.discordapp.com/emojis/861270810151616545.png\" alt=\":eggTF:\" draggable=\"false\" data-type=\"emoji\" data-id=\"861270810151616545\" style=\"-o-object-fit: contain; object-fit: contain; width: 1.375em; height: 1.375em; vertical-align: bottom; text-indent: -9999px;\" title=\":eggTF:\">&nbsp;",
+},
+
+elements.colder_bomb = {
+    color: "#43648e",
+	tick: function(pixel) {
+		eee = Math.random()
+		doHeat(pixel);
+		if(!isEmpty(pixel.x,pixel.y-1) && !outOfBounds(pixel.x,pixel.y-1)) {
+			if(pixelMap[pixel.x][pixel.y-1].element != pixel.element) {
+				steppedOn = true
+			} else steppedOn = false
+		} else {
+			steppedOn = false
+		}
+		if(!isEmpty(pixel.x,pixel.y+1) && !outOfBounds(pixel.x,pixel.y+1)) {
+			if(pixelMap[pixel.x][pixel.y+1].element != pixel.element) {
+				landed = true
+			} else landed = false
+		} else {
+			landed = false
+		}
+		if(outOfBounds(pixel.x,pixel.y+1)) {
+			landed = true
+		}
+		tryMove(pixel, pixel.x, pixel.y+1)
+		if(steppedOn == true || landed == true) {
+			fire = "cold_fire"
+			smoke = "cold_fire"
+			radius = 10
+			x = pixel.x
+			y = pixel.y
+			// if fire contains , split it into an array
+			if (fire.includes(",")) {
+				fire = fire.split(",");
+			}
+			// if smoke contains , split it into an array
+			if (smoke.includes(",")) {
+				smoke = smoke.split(",");
+			}
+			var coords = circleCoords(x,y,radius);
+			var power = radius/10;
+			//for (var p = 0; p < Math.round(radius/10+1); p++) {
+			for (var i = 0; i < coords.length; i++) {
+				// damage value is based on distance from x and y
+				var damage = Math.random() + (Math.floor(Math.sqrt(Math.pow(coords[i].x-x,2) + Math.pow(coords[i].y-y,2)))) / radius;
+				// invert
+				damage = 1 - damage;
+				if (damage < 0) { damage = 0; }
+				damage *= power;
+				if (isEmpty(coords[i].x,coords[i].y)) {
+					// create smoke or fire depending on the damage if empty
+					if (damage < 0.02) { } // do nothing
+					else if (damage < 0.2) {
+						// if smoke is an array, choose a random item
+						if (Array.isArray(smoke)) {
+							createPixel(smoke[Math.floor(Math.random() * smoke.length)],coords[i].x,coords[i].y);
+						}
+						else {
+							createPixel(smoke,coords[i].x,coords[i].y);
+						}
+					}
+					else {
+						// if fire is an array, choose a random item
+						if (Array.isArray(fire)) {
+							createPixel(fire[Math.floor(Math.random() * fire.length)],coords[i].x,coords[i].y);
+						}
+						else {
+							createPixel(fire,coords[i].x,coords[i].y);
+						}
+					}
+				}
+				else if (!outOfBounds(coords[i].x,coords[i].y)) {
+					// damage the pixel
+					var pixel = pixelMap[coords[i].x][coords[i].y];
+					var info = elements[pixel.element];
+					if (info.hardness) { // lower damage depending on hardness(0-1)
+						if (info.hardness < 1) {
+							damage = damage * ((1 - info.hardness)*10);
+						}
+						else { damage = 0; }
+					}
+					if (damage > 0.25) {
+						if (info.breakInto) {
+							// if it is an array, choose a random item, else just use the value
+							if (Array.isArray(info.breakInto)) {
+								var result = info.breakInto[Math.floor(Math.random() * info.breakInto.length)];
+							}
+							else {
+								var result = info.breakInto;
+							}
+							// change the pixel to the result
+							pixel.element = result;
+							pixel.color = pixelColorPick(pixel);
+							if (elements[result].burning) {
+								pixel.burning = true;
+								pixel.burnStart = pixelTicks;
+							}
+							else if (pixel.burning && !elements[result].burn) {
+								pixel.burning = false;
+								delete pixel.burnStart;
+							}
+						}
+						else {
+							if (Array.isArray(fire)) {
+								var newfire = fire[Math.floor(Math.random() * fire.length)];
+							}
+							else {
+								var newfire = fire;
+							}
+							pixel.element = newfire;
+							pixel.color = pixelColorPick(pixel);
+							if (elements[newfire].burning) {
+								pixel.burning = true;
+								pixel.burnStart = pixelTicks;
+							}
+							else if (pixel.burning && !elements[newfire].burn) {
+								pixel.burning = false;
+								delete pixel.burnStart;
+							}
+						}
+					}
+					if (damage > 0.75) {
+						if (info.burn) {
+							pixel.burning = true;
+							pixel.burnStart = pixelTicks;
+						}
+					}
+					pixel.temp -= damage*radius*power;
+					pixelTempCheck(pixel);
+				}
+			}
+		}
+	},
+    category: "weapons",
+    state: "solid",
+    density: 1300,
+    excludeRandom: true,
+},
+
+elements.op_hottester_bomb = {
+    color: "#cc436e",
+	tick: function(pixel) {
+		eee = Math.random()
+		doHeat(pixel);
+		if(!isEmpty(pixel.x,pixel.y-1) && !outOfBounds(pixel.x,pixel.y-1)) {
+			if(pixelMap[pixel.x][pixel.y-1].element != pixel.element) {
+				steppedOn = true
+			} else steppedOn = false
+		} else {
+			steppedOn = false
+		}
+		if(!isEmpty(pixel.x,pixel.y+1) && !outOfBounds(pixel.x,pixel.y+1)) {
+			if(pixelMap[pixel.x][pixel.y+1].element != pixel.element) {
+				landed = true
+			} else landed = false
+		} else {
+			landed = false
+		}
+		if(outOfBounds(pixel.x,pixel.y+1)) {
+			landed = true
+		}
+		tryMove(pixel, pixel.x, pixel.y+1)
+		if(steppedOn == true || landed == true) {
+			fire = "plasma"
+			smoke = "plasma"
+			radius = 15
+			x = pixel.x
+			y = pixel.y
+			// if fire contains , split it into an array
+			if (fire.includes(",")) {
+				fire = fire.split(",");
+			}
+			// if smoke contains , split it into an array
+			if (smoke.includes(",")) {
+				smoke = smoke.split(",");
+			}
+			var coords = circleCoords(x,y,radius);
+			var power = radius/10;
+			//for (var p = 0; p < Math.round(radius/10+1); p++) {
+			for (var i = 0; i < coords.length; i++) {
+				// damage value is based on distance from x and y
+				var damage = Math.random() + (Math.floor(Math.sqrt(Math.pow(coords[i].x-x,2) + Math.pow(coords[i].y-y,2)))) / radius;
+				// invert
+				damage = 1 - damage;
+				if (damage < 0) { damage = 0; }
+				damage *= power;
+				if (isEmpty(coords[i].x,coords[i].y)) {
+					// create smoke or fire depending on the damage if empty
+					if (damage < 0.02) { } // do nothing
+					else if (damage < 0.2) {
+						// if smoke is an array, choose a random item
+						if (Array.isArray(smoke)) {
+							createPixel(smoke[Math.floor(Math.random() * smoke.length)],coords[i].x,coords[i].y);
+						}
+						else {
+							createPixel(smoke,coords[i].x,coords[i].y);
+						}
+					}
+					else {
+						// if fire is an array, choose a random item
+						if (Array.isArray(fire)) {
+							createPixel(fire[Math.floor(Math.random() * fire.length)],coords[i].x,coords[i].y);
+						}
+						else {
+							createPixel(fire,coords[i].x,coords[i].y);
+						}
+					}
+				}
+				else if (!outOfBounds(coords[i].x,coords[i].y)) {
+					// damage the pixel
+					var pixel = pixelMap[coords[i].x][coords[i].y];
+					var info = elements[pixel.element];
+					if (info.hardness) { // lower damage depending on hardness(0-1)
+						if (info.hardness < 1) {
+							damage = damage * ((1 - info.hardness)*10);
+						}
+						else { damage = 0; }
+					}
+					if (damage <= 0.25) {
+						pixel.temp += Math.floor((damage*radius*power*10)**1.3)
+					}
+					if (damage > 0.25) {
+						if (info.breakInto) {
+							// if it is an array, choose a random item, else just use the value
+							if (Array.isArray(info.breakInto)) {
+								var result = info.breakInto[Math.floor(Math.random() * info.breakInto.length)];
+							}
+							else {
+								var result = info.breakInto;
+							}
+							// change the pixel to the result
+							pixel.element = result;
+							pixel.color = pixelColorPick(pixel);
+							if (elements[result].burning) {
+								pixel.burning = true;
+								pixel.burnStart = pixelTicks;
+							}
+							else if (pixel.burning && !elements[result].burn) {
+								pixel.burning = false;
+								delete pixel.burnStart;
+							}
+						}
+						else {
+							if (Array.isArray(fire)) {
+								var newfire = fire[Math.floor(Math.random() * fire.length)];
+							}
+							else {
+								var newfire = fire;
+							}
+							pixel.element = newfire;
+							pixel.color = pixelColorPick(pixel);
+							if (elements[newfire].burning) {
+								pixel.burning = true;
+								pixel.burnStart = pixelTicks;
+							}
+							else if (pixel.burning && !elements[newfire].burn) {
+								pixel.burning = false;
+								delete pixel.burnStart;
+							}
+						}
+						pixel.temp += Math.floor((damage*radius*power*15)**1.5)
+					}
+					if (damage > 0.75) {
+						if (info.burn) {
+							pixel.burning = true;
+							pixel.burnStart = pixelTicks;
+							pixel.temp += Math.floor((damage*radius*power*20)**1.7)
+						}
+					}
+					pixel.temp += Math.floor((damage*radius*power*5)**1.1);
+					pixelTempCheck(pixel);
+				}
+			}
+		}
+	},
+    category: "weapons",
+    state: "solid",
+	temp: 7065,
+    density: 1300,
+    excludeRandom: true,
+},
+
+elements.netherrack = {
+    color: ["#802b2b","#4f1b1b","#943232"],
+    behavior: behaviors.POWDER,
+    tempHigh: 7550,
+    category: "land",
+    state: "solid",
+    density: 2550,
+    hardness: 0.07,
+    breakInto: ["crushed_netherrack","crushed_netherrack","crushed_netherrack","crushed_netherrack","crushed_netherrack","crushed_netherrack","crushed_netherrack","sulfur"], // and some copper, gold, iron, nickel after processing //sulfur closer to 1/7 in-game
+    burn: 9,
+    burnTime: 9007199254740995,
+    burnInto: "netherrack",
+},
+
+elements.crushed_netherrack = {
+    color: ["#e34b46","#b04235","#73431f","#522510","#7a3326"],
+    behavior: behaviors.POWDER,
+    category:"land",
+    tempHigh: 7550,
+    stateHigh: "molten_netherrack",
+    state: "solid",
+    density: 1680,
+    burn: 20,
+    burnTime: 9007199254740995,
+    hardness: 0.02,
+    hidden: true,
+},
+
+elements.soul_sand = {
+    color: "#755e35",
+    behavior: behaviors.POWDER,
+    tempHigh: 3000,
+    stateHigh: "molten_soul_glass",
+    category: "land",
+    state: "solid",
+    density: 1602,
+},
+
+elements.soul_glass = {
+    color: ["#998060","#a18654"],
+    behavior: behaviors.WALL,
+    tempHigh: 3000,
+    category: "solids",
+    state: "solid",
+    density: 2500,
+    breakInto: "soul_glass_shard",
+    hidden: true,
+},
+
+elements.soul_glass_shard = {
+    color: ["#998060","#a18654","#8f764a"],
+    behavior: behaviors.POWDER,
+    tempHigh: 3000,
+    stateHigh: "molten_soul_glass",
+    category: "powders",
+    state: "solid",
+    density: 2500,
+    hidden: true,
 }
 
 runAfterLoad(function() {
@@ -939,16 +1387,40 @@ runAfterLoad(function() {
     aaa.push("firesea")
     aaa.push("firesea")
     aaa.push("firesea")
+    aaa.push("lektre")
+    aaa.push("lektre")
+    aaa.push("lektre")
+    bbb.push("poisonwater")
+    bbb.push("poisonwater")
+    bbb.push("poisonwater")
+    bbb.push("poisonwater")
+    bbb.push("mystic_fire")
+    bbb.push("mystic_fire")
+    bbb.push("firesea")
+    bbb.push("firesea")
+    bbb.push("firesea")
+    bbb.push("poisonwater")
+    bbb.push("poisonwater")
+    bbb.push("poisonwater")
+    bbb.push("poisonwater")
+    bbb.push("mystic_fire")
+    bbb.push("mystic_fire")
+    bbb.push("firesea")
+    bbb.push("firesea")
+    bbb.push("firesea")
+    bbb.push("lektre")
+    bbb.push("lektre")
+    bbb.push("lektre")
   }
   if(enabledMods.includes("mods/Neutronium Mod.js")) {
     aaa.push("flamer")
-    aaa.push("flamer")
-    aaa.push("flamebomb")
     aaa.push("flamebomb")
     aaa.push("flamer")
-    aaa.push("flamer")
     aaa.push("flamebomb")
-    aaa.push("flamebomb")
+    bbb.push("flamer")
+    bbb.push("flamebomb")
+    bbb.push("flamer")
+    bbb.push("flamebomb")
   }
   elements.vaporized_histrelin = elements.molten_histrelin
   delete elements.molten_histrelin

@@ -61,6 +61,7 @@ elements.super_heater_2 = {
 	insulate: true,
 	state: "solid",
 	hidden: true,
+	excludeRandom: true,
 },
 
 elements.super_cooler_2 = {
@@ -78,6 +79,7 @@ elements.super_cooler_2 = {
 	insulate: true,
 	state: "solid",
 	hidden: true,
+	excludeRandom: true,
 },
 
 elements.super_warmer_2 = {
@@ -95,6 +97,7 @@ elements.super_warmer_2 = {
 	insulate: true,
 	state: "solid",
 	hidden: true,
+	excludeRandom: true,
 },
 
 elements.global_heater = {
@@ -112,6 +115,7 @@ elements.global_heater = {
 	insulate: true,
 	state: "solid",
 	hidden: true,
+	excludeRandom: true,
 },
 
 elements.global_cooler = {
@@ -129,6 +133,7 @@ elements.global_cooler = {
 	insulate: true,
 	state: "solid",
 	hidden: true,
+	excludeRandom: true,
 },
 
 elements.global_warmer = {
@@ -146,6 +151,7 @@ elements.global_warmer = {
 	insulate: true,
 	state: "solid",
 	hidden: true,
+	excludeRandom: true,
 },
 
 elements.agw = { //adjustable global warmer
@@ -165,6 +171,7 @@ elements.agw = { //adjustable global warmer
 	insulate: true,
 	state: "solid",
 	hidden: true,
+	excludeRandom: true,
 },
 
 elements.super_heater_3 = {
@@ -201,6 +208,7 @@ elements.super_heater_3 = {
 	category:"machines",
 	insulate: true,
 	state: "solid",
+	excludeRandom: true,
 },
 
 elements.super_cooler_3 = {
@@ -237,6 +245,7 @@ elements.super_cooler_3 = {
 	category:"machines",
 	insulate: true,
 	state: "solid",
+	excludeRandom: true,
 },
 
 elements.super_warmer_3 = {
@@ -271,6 +280,7 @@ elements.super_warmer_3 = {
 	category:"machines",
 	insulate: true,
 	state: "solid",
+	excludeRandom: true,
 },
 
 elements.tc = { //temperature checker
