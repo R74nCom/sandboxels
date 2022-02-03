@@ -1038,18 +1038,24 @@ elements.op_hottester_bomb = {
     excludeRandom: true,
 },
 
-
-elements.rainbow_alt_test = {
-	color: ["#ffaacc","#ffaacc","#aaccff","#aaccff","#ffffbb","#ffffbb"],
+elements.vanishing_wall = {
+	behavior: behaviors.WALL,
+	color: "#8080b0",
+	density: 3333,
 	tick: function(pixel) {
-		var t = pixelTicks*3+pixel.x+pixel.y;
-		var r = Math.floor(255*(1-Math.cos(t*Math.PI/180)));
-		var g = Math.floor(255*(1-Math.cos(t*Math.PI/180+2*Math.PI/3)));
-		var b = Math.floor(255*(1-Math.cos(t*Math.PI/180+4*Math.PI/3)));
-		pixel.color = "rgb("+Math.ceil((r/2)+127)+","+Math.ceil((g/2)+127)+","+Math.ceil((b/2)+127)+")";
-		doHeat(pixel);
+		pixelTick(pixel)
+		if(pixel.charge) {
+			if(!isEmpty(pixel.x,pixel.y)) {
+				deletePixel(pixel.x,pixel.y)
+			}
+		}
 	},
 	category: "special",
+	state: "solid",
+	hardness: 1,
+	insulate: true,
+	conduct: 1,
+	extraInfo: "It disappears when charged.",
 }
 
 runAfterLoad(function() {
