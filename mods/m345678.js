@@ -788,8 +788,8 @@
 elements.m3test = {
 	"color": "#33aa44",
 	"behavior": [
-		"M4|M3|M4",
-		"M2|C6:fire|M2",
+		"XX|M3%10|XX",
+		"M2|XX|M2",
 		"M1|M1|M1"
 	],
 	tick: function(pixel) {
@@ -797,5 +797,20 @@ elements.m3test = {
 	},
 	"density": 1200,
 	"state": "liquid",
+	"category": "special"
+}
+
+elements.m3test2 = {
+	"color": "#aa3344",
+	"behavior": [
+		"M6|M5|M4",
+		"M7|LB:wood|M3",
+		"M8|M1|M2"
+	],
+	tick: function(pixel) {
+		pixelTickMod1(pixel)
+	},
+	"density": 120000,
+	"state": "solid",
 	"category": "special"
 }
