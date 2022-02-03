@@ -11,12 +11,22 @@
             var move1Spots = [];
             var move2Spots = [];
             var move3Spots = [];
+            var move4Spots = [];
+            var move5Spots = [];
+            var move6Spots = [];
+            var move7Spots = [];
+            var move8Spots = [];
             var supportSpots = [];
             var swapSpots = [];
             var leaveBehind = null;
             var leaveBehind1 = null;
             var leaveBehind2 = null;
             var leaveBehind3 = null;
+            var leaveBehind4 = null;
+            var leaveBehind5 = null;
+            var leaveBehind6 = null;
+            var leaveBehind7 = null;
+            var leaveBehind8 = null;
             var move = true;
             // Parse behavior
             for (var by = 0; by < behavior.length; by++) {
@@ -72,6 +82,46 @@
                                     }
                                 }
                                 move3Spots.push(newCoords);
+                            }
+                            else if (b == "M4") {
+                                if (info.viscosity != undefined) {
+                                    if (!((Math.random()*100) < 100 / ((info.viscosity) ** 0.25))) {
+                                        newCoords.x = x;
+                                    }
+                                }
+                                move4Spots.push(newCoords);
+                            }
+                            else if (b == "M5") {
+                                if (info.viscosity != undefined) {
+                                    if (!((Math.random()*100) < 100 / ((info.viscosity) ** 0.25))) {
+                                        newCoords.x = x;
+                                    }
+                                }
+                                move5Spots.push(newCoords);
+                            }
+                            else if (b == "M6") {
+                                if (info.viscosity != undefined) {
+                                    if (!((Math.random()*100) < 100 / ((info.viscosity) ** 0.25))) {
+                                        newCoords.x = x;
+                                    }
+                                }
+                                move6Spots.push(newCoords);
+                            }
+                            else if (b == "M7") {
+                                if (info.viscosity != undefined) {
+                                    if (!((Math.random()*100) < 100 / ((info.viscosity) ** 0.25))) {
+                                        newCoords.x = x;
+                                    }
+                                }
+                                move7Spots.push(newCoords);
+                            }
+                            else if (b == "M8") {
+                                if (info.viscosity != undefined) {
+                                    if (!((Math.random()*100) < 100 / ((info.viscosity) ** 0.25))) {
+                                        newCoords.x = x;
+                                    }
+                                }
+                                move8Spots.push(newCoords);
                             }
                             else if (b == "SP") {
                                 supportSpots.push({x:newCoords.x,y:newCoords.y,arg:arg});
@@ -251,7 +301,7 @@
                                 }
                             }
                             //Leave behind element
-                            else if (b == "LB" || b == "L1" || b == "L2" || b == "L3") {
+                            else if (b == "LB" || b == "L1" || b == "L2" || b == "L3" || b == "L4" || b == "L5" || b == "L6" || b == "L7" || b == "L8") {
                                 if (arg != null && arg.includes(",")) {
                                     arg = arg.split(",")[Math.floor(Math.random()*arg.split(",").length)];
                                 }
@@ -260,6 +310,11 @@
                                     else if (b=="L1") {leaveBehind1 = arg;}
                                     else if (b=="L2") {leaveBehind2 = arg;}
                                     else if (b=="L3") {leaveBehind3 = arg;}
+                                    else if (b=="L4") {leaveBehind4 = arg;}
+                                    else if (b=="L5") {leaveBehind5 = arg;}
+                                    else if (b=="L6") {leaveBehind6 = arg;}
+                                    else if (b=="L7") {leaveBehind7 = arg;}
+                                    else if (b=="L8") {leaveBehind8 = arg;}
                                 }
                             }
                             //Change color
@@ -375,6 +430,41 @@
                                     arg = arg.split(",")[Math.floor(Math.random()*arg.split(",").length)];
                                 }
                                 var C3 = arg;
+                            }
+                            // Change When M4
+                            else if (b == "C4") {
+                                if (arg.includes(",")) {
+                                    arg = arg.split(",")[Math.floor(Math.random()*arg.split(",").length)];
+                                }
+                                var C4 = arg;
+                            }
+                            // Change When M5
+                            else if (b == "C5") {
+                                if (arg.includes(",")) {
+                                    arg = arg.split(",")[Math.floor(Math.random()*arg.split(",").length)];
+                                }
+                                var C5 = arg;
+                            }
+                            // Change When M6
+                            else if (b == "C6") {
+                                if (arg.includes(",")) {
+                                    arg = arg.split(",")[Math.floor(Math.random()*arg.split(",").length)];
+                                }
+                                var C6 = arg;
+                            }
+                            // Change When M7
+                            else if (b == "C7") {
+                                if (arg.includes(",")) {
+                                    arg = arg.split(",")[Math.floor(Math.random()*arg.split(",").length)];
+                                }
+                                var C7 = arg;
+                            }
+                            // Change When M8
+                            else if (b == "C8") {
+                                if (arg.includes(",")) {
+                                    arg = arg.split(",")[Math.floor(Math.random()*arg.split(",").length)];
+                                }
+                                var C8 = arg;
                             }
                             // Explode
                             else if (b == "EX") {
@@ -492,7 +582,7 @@
                         }
                     }
                     //Move Third Priority
-                        if (!moved && move3Spots.length > 0) {
+                    if (!moved && move3Spots.length > 0) {
                         // While move3Spots is not empty
                         while (move3Spots.length > 0) {
                             // coords = random item of move3Spots
@@ -518,6 +608,156 @@
                             else {
                                 // remove coords from move3Spots
                                 move3Spots.splice(move3Spots.indexOf(coords),1);
+                            }
+                        }
+                        //Move Fourth Priority
+                        if (!moved && move4Spots.length > 0) {
+                            // While move4Spots is not empty
+                            while (move4Spots.length > 0) {
+                                // coords = random item of move4Spots
+                                var coords = move4Spots[Math.floor(Math.random()*move4Spots.length)];
+                                var nx = coords.x;
+                                var ny = coords.y;
+                                moved = tryMove(pixel,nx,ny,leaveBehind4 || leaveBehind);
+                                if (moved) {
+                                    if (typeof C4 !== "undefined" && elements[C4]) {
+                                        pixel.element = C4;
+                                        pixel.color = pixelColorPick(pixel);
+                                        pixel.start = pixelTicks;
+                                        if (elements[C4].burning != true) {
+                                            pixel.burning = false;
+                                        }
+                                        else {
+                                            pixel.burning = true;
+                                            pixel.burnStart = pixelTicks;
+                                        }
+                                    }
+                                    break;
+                                }
+                                else {
+                                    // remove coords from move4Spots
+                                    move4Spots.splice(move4Spots.indexOf(coords),1);
+                                }
+                            }
+                            //Move Fifth Priority
+                            if (!moved && move5Spots.length > 0) {
+                                // While move5Spots is not empty
+                                while (move5Spots.length > 0) {
+                                    // coords = random item of move5Spots
+                                    var coords = move5Spots[Math.floor(Math.random()*move5Spots.length)];
+                                    var nx = coords.x;
+                                    var ny = coords.y;
+                                    moved = tryMove(pixel,nx,ny,leaveBehind5 || leaveBehind);
+                                    if (moved) {
+                                        if (typeof C5 !== "undefined" && elements[C5]) {
+                                            pixel.element = C5;
+                                            pixel.color = pixelColorPick(pixel);
+                                            pixel.start = pixelTicks;
+                                            if (elements[C5].burning != true) {
+                                                pixel.burning = false;
+                                            }
+                                            else {
+                                                pixel.burning = true;
+                                                pixel.burnStart = pixelTicks;
+                                            }
+                                        }
+                                        break;
+                                    }
+                                    else {
+                                        // remove coords from move5Spots
+                                        move5Spots.splice(move5Spots.indexOf(coords),1);
+                                    }
+                                }
+                                //Move Sixth Priority
+                                if (!moved && move6Spots.length > 0) {
+                                    // While move6Spots is not empty
+                                    while (move6Spots.length > 0) {
+                                        // coords = random item of move6Spots
+                                        var coords = move6Spots[Math.floor(Math.random()*move6Spots.length)];
+                                        var nx = coords.x;
+                                        var ny = coords.y;
+                                        moved = tryMove(pixel,nx,ny,leaveBehind6 || leaveBehind);
+                                        if (moved) {
+                                            if (typeof C6 !== "undefined" && elements[C6]) {
+                                                pixel.element = C6;
+                                                pixel.color = pixelColorPick(pixel);
+                                                pixel.start = pixelTicks;
+                                                if (elements[C6].burning != true) {
+                                                    pixel.burning = false;
+                                                }
+                                                else {
+                                                    pixel.burning = true;
+                                                    pixel.burnStart = pixelTicks;
+                                                }
+                                            }
+                                            break;
+                                        }
+                                        else {
+                                            // remove coords from move6Spots
+                                            move6Spots.splice(move6Spots.indexOf(coords),1);
+                                        }
+                                    }
+                                    //Move Seventh Priority
+                                    if (!moved && move7Spots.length > 0) {
+                                        // While move7Spots is not empty
+                                        while (move7Spots.length > 0) {
+                                            // coords = random item of move7Spots
+                                            var coords = move7Spots[Math.floor(Math.random()*move7Spots.length)];
+                                            var nx = coords.x;
+                                            var ny = coords.y;
+                                            moved = tryMove(pixel,nx,ny,leaveBehind7 || leaveBehind);
+                                            if (moved) {
+                                                if (typeof C7 !== "undefined" && elements[C7]) {
+                                                    pixel.element = C7;
+                                                    pixel.color = pixelColorPick(pixel);
+                                                    pixel.start = pixelTicks;
+                                                    if (elements[C7].burning != true) {
+                                                        pixel.burning = false;
+                                                    }
+                                                    else {
+                                                        pixel.burning = true;
+                                                        pixel.burnStart = pixelTicks;
+                                                    }
+                                                }
+                                                break;
+                                            }
+                                            else {
+                                                // remove coords from move7Spots
+                                                move7Spots.splice(move7Spots.indexOf(coords),1);
+                                            }
+                                        }
+                                        //Move Eighth Priority
+                                        if (!moved && move8Spots.length > 0) {
+                                            // While move8Spots is not empty
+                                            while (move8Spots.length > 0) {
+                                                // coords = random item of move8Spots
+                                                var coords = move8Spots[Math.floor(Math.random()*move8Spots.length)];
+                                                var nx = coords.x;
+                                                var ny = coords.y;
+                                                moved = tryMove(pixel,nx,ny,leaveBehind8 || leaveBehind);
+                                                if (moved) {
+                                                    if (typeof C8 !== "undefined" && elements[C8]) {
+                                                        pixel.element = C8;
+                                                        pixel.color = pixelColorPick(pixel);
+                                                        pixel.start = pixelTicks;
+                                                        if (elements[C8].burning != true) {
+                                                            pixel.burning = false;
+                                                        }
+                                                        else {
+                                                            pixel.burning = true;
+                                                            pixel.burnStart = pixelTicks;
+                                                        }
+                                                    }
+                                                    break;
+                                                }
+                                                else {
+                                                    // remove coords from move8Spots
+                                                    move8Spots.splice(move8Spots.indexOf(coords),1);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -546,16 +786,16 @@
         }
 
 elements.m3test = {
-	"color": "#00ff00",
+	"color": "#33aa44",
 	"behavior": [
-		"XX|M3|XX",
-		"XX|L3:wood|M2",
-		"XX|M1|XX"
+		"M4|M3|M4",
+		"M2|C6:fire|M2",
+		"M1|M1|M1"
 	],
 	tick: function(pixel) {
 		pixelTickMod1(pixel)
 	},
 	"density": 1200,
-	"state": "solid",
-	"category": "land"
+	"state": "liquid",
+	"category": "special"
 }
