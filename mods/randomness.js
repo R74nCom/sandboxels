@@ -686,56 +686,34 @@ elements.anti_bomb = {
     excludeRandom: true,
 }
 
-elements.anti_bomb_2 = {
-    color: "#625c71",
-    behavior: [
-        "M2|M1 AND EX:15|M2",
-        "XX|XX|XX",
-        "XX|EX:15|XX",
-    ],
-    category: "weapons",
-    state: "solid",
-    density: 1300,
-    excludeRandom: true,
+//For statements by charPointer
+for (var i = 2; i <= 10; i++) {
+	elements[`bomb_${i}`] = {
+		name: `bomb ${i}`,
+		color: "#624c41",
+		behavior: [
+			`XX|EX:${5*(i+1)}>fire|XX`,
+			"XX|XX|XX",
+			`M2|M1 AND EX:${5*(i+1)}>fire|M2`,
+		],
+		state: "solid",
+		excludeRandom:true,
+		category: "weapons",
+	}
 }
 
-elements.anti_bomb_3 = {
-    color: "#825c71",
-    behavior: [
-        "M2|M1 AND EX:20|M2",
-        "XX|XX|XX",
-        "XX|EX:20|XX",
-    ],
-    category: "weapons",
-    state: "solid",
-    density: 1300,
-    excludeRandom: true,
-}
-
-elements.bomb_2 = {
-    color: "#624c41",
-    behavior: [
-        "XX|EX:15|XX",
-        "XX|XX|XX",
-        "M2|M1 AND EX:15|M2",
-    ],
-    category: "weapons",
-    state: "solid",
-    density: 1300,
-    excludeRandom: true,
-},
-
-elements.bomb_3 = {
-    color: "#725c41",
-    behavior: [
-        "XX|EX:20|XX",
-        "XX|XX|XX",
-        "M2|M1 AND EX:20|M2",
-    ],
-    category: "weapons",
-    state: "solid",
-    density: 1300,
-    excludeRandom: true,
+for (var i = 2; i <= 10; i++) {
+	elements[`anti_bomb_${i}`] = {
+		color: "#625c71",
+		behavior: [
+			`M2|M1 AND EX:${5*(i+1)}>fire|M2`,
+			"XX|XX|XX",
+			`XX|EX:${5*(i+1)}>fire|XX`,
+		],
+		state: "solid",
+		excludeRandom:true,
+		category: "weapons",
+	}
 }
 
 elements.sebA = {
