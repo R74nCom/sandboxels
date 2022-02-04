@@ -789,6 +789,9 @@ elements.colder_bomb = {
 		if(steppedOn == true || landed == true) {
 			fire = ["cold_fire","cold_fire","cold_fire","snow","liquid_nitrogen"]
 			smoke = ["cold_fire","snow","liquid_nitrogen"]
+			if(enabledMods.includes("mods/some_tf_liquids.js")) {
+				fire.push("gelid_cryotheum")
+			}
 			radius = 15
 			x = pixel.x
 			y = pixel.y
