@@ -10,7 +10,6 @@ elements.tooth = {
 	tempHigh: 1000, //https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5887641/
 	stateHigh: ["steam","salt","meat","hydroxyapatite"],
 	state: "solid",
-	category: "other",
 	density: 2000, //(bs) inspired by https://ncbi.nlm.nih.gov/pmc/articles/PMC5176275/
 	hardness: 0.5,
 	breakInto: ["meat","hydroxyapatite"],
