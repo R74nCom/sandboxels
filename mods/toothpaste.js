@@ -31,7 +31,6 @@ elements.plaque = {
 	state: "solid",
 	density: 5.4, //https://physics.aps.org/articles/v5/s140#:~:text=They%20then%20use%20tabulated%20values,%2D12%20gram)%20per%20cell. 
 				  //https://en.wikipedia.org/wiki/Calculus_(dental)#:~:text=Cell%20density%20within%20dental%20plaque,estimated%20200%2C000%2C000%20cells%20per%20milligram.
-	breakInto: ["meat","hydroxyapatite"],
 	hidden: true,
 },
 
