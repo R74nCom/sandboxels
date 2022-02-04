@@ -919,6 +919,27 @@ behavior: [
 "EX:10>explosion5|EX:10>explosion5|EX:10>explosion5",
 ],
 };
+elements.carbon = {
+color: "#424242",
+category: "solids",
+state: "solid",
+behavior: behaviors.WALL,
+burn: 5,
+burnTime: 3000,
+burnInto: ["carbon", "carbon_dioxide"],
+stateHigh: "molten_carbon",
+tempHigh: 3550,
+};
+elements.molten_carbon = {
+color: ["#eda92b", "#f0af37", "#f5bb51", "#f5d151", "#fce697", "#fff4cf"],
+category: "liquids",
+state: "liquid",
+behavior: behaviors.LIQUID,
+stateLow: "carbon",
+tempLow: 3550,
+temp: 5000,
+density: 1.2,
+};
 /* Unfinished:
 magnesium
 hematite mixture
