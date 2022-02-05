@@ -300,7 +300,7 @@
             z-index: 1;
             padding-bottom:1px;
             scrollbar-color: rgba(255, 255, 255, 0.25) rgba(255, 255, 255, 0.15);
-            scrollbar-width: none;
+            scrollbar-width: thin;
         }
         #categoryControls button {
             /* Borderless buttons */
@@ -6817,6 +6817,11 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
         function focusGame() { document.getElementById("game").focus(); if(showingMenu) { closeMenu(); } }
         //on window load
         window.onload = function() {
+            // If the browser is Firefox, set #categoryControls padding-bottom:11px;
+            if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+                document.getElementById("categoryControls").style.paddingBottom = "11px";
+            }
+
             // Loop through runAfterLoadList and run each function
             for (var i = 0; i < runAfterLoadList.length; i++) {
                 runAfterLoadList[i]();
