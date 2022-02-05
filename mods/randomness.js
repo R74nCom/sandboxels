@@ -203,130 +203,6 @@ elements.molten_tungstensteel = {
     ]
 }
 
-elements.rm_water_balloon = {
-    name: "water balloon",
-    color: "#3dc2ff",
-    behavior: [
-        "XX|M2|XX",
-        "XX|C2:wb3|XX",
-        "XX|M1|XX",
-    ],
-    tempHigh: 180,
-    stateHigh: ["steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "steam", "plastic"],
-    tempLow: 0,
-    stateLow: ["ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "ice", "plastic"],
-    category: "special",
-    state: "solid",
-    density: 997,
-}
-
-elements.wb3 = {
-    name: "wb3",
-    color: "#0856ff",
-    behavior: [
-        "XX|CR:wb2|XX",
-        "CR:wb2|CH:wb2|CR:wb2",
-        "XX|CR:wb2|XX",
-    ],
-    category: "liquid",
-    state: "solid",
-    density: 997,
-    hidden: true,
-    excludeRandom: true,
-}
-
-elements.wb2 = {
-    name: "wb2",
-    color: "#145fff",
-    behavior: [
-        "XX|CR:wb1|XX",
-        "CR:wb1|CH:wb1|CR:wb1",
-        "XX|CR:wb1|XX",
-    ],
-    category: "special",
-    state: "liquid",
-    density: 997,
-    hidden: true,
-    excludeRandom: true,
-}
-
-elements.wb1 = {
-    name: "wb1",
-    color: "#2167ff",
-    behavior: [
-        "XX|CR:water|XX",
-        "CR:water|CH:water|CR:water",
-        "XX|CR:water|XX",
-    ],
-    category: "special",
-    state: "liquid",
-    density: 997,
-    hidden: true,
-    excludeRandom: true,
-}
-
-elements.rm_lava_balloon = {
-    name: "lava balloon",
-    color: "#ffab36",
-    behavior: [
-        "XX|M2|XX",
-        "XX|C2:lb3|XX",
-        "XX|M1|XX",
-    ],
-    temp: 950,
-    category: "special",
-    state: "solid",
-    density: 2725,
-}
-
-elements.lb3 = {
-    name: "lb3",
-    color: "#ff8c00",
-    behavior: [
-        "XX|CR:lb2|XX",
-        "CR:lb2|CH:lb2|CR:lb2",
-        "XX|CR:lb2|XX",
-    ],
-    temp: 1000,
-    category: "liquid",
-    state: "solid",
-    density: 2725,
-    hidden: true,
-    excludeRandom: true,
-}
-
-elements.lb2 = {
-    name: "lb2",
-    color: "#ff6f00",
-    behavior: [
-        "XX|CR:lb1|XX",
-        "CR:lb1|CH:lb1|CR:lb1",
-        "XX|CR:lb1|XX",
-    ],
-    temp: 1000,
-    category: "special",
-    state: "liquid",
-    density: 2725,
-    hidden: true,
-    excludeRandom: true,
-}
-
-elements.lb1 = {
-    name: "lb1",
-    color: "#ff4d00",
-    behavior: [
-        "XX|CR:magma|XX",
-        "CR:magma|CH:magma|CR:magma",
-        "XX|CR:magma|XX",
-    ],
-    temp: 1000,
-    category: "special",
-    state: "liquid",
-    density: 2725,
-    hidden: true,
-    excludeRandom: true,
-},
-
 elements.unnamed_substance_bomb = {
     name: "unnamed bomb",
     color: "#cdad52",
@@ -686,56 +562,137 @@ elements.anti_bomb = {
     excludeRandom: true,
 }
 
-elements.anti_bomb_2 = {
-    color: "#625c71",
+liquidBalloonDepth = 8
+
+elements.rm_water_balloon = {
+    name: "water balloon",
+    color: "#3dc2ff",
     behavior: [
-        "M2|M1 AND EX:15|M2",
-        "XX|XX|XX",
-        "XX|EX:15|XX",
+        "XX|M2|XX",
+        "XX|C2:wb"+liquidBalloonDepth+"|XX",
+        "XX|M1|XX",
     ],
-    category: "weapons",
+    category: "special",
     state: "solid",
-    density: 1300,
+    density: 997,
+}
+
+//For statement syntax by charPointer
+for (var i = liquidBalloonDepth; i > 1; i--) {
+	elements[`wb${i}`] = {
+		color: "#2167ff",
+		behavior: [
+			`XX|CR:wb${i-1}|XX`,
+			`CR:wb${i-1}|CH:wb${i-1}|CR:wb${i-1}`,
+			`XX|CR:wb${i-1}|XX`,
+		],
+		state: "solid",
+		excludeRandom:true,
+		hidden: true,
+		category: "weapons",
+	}
+}
+
+elements.wb1 = {
+    name: "wb1",
+    color: "#2167ff",
+    behavior: [
+        "XX|CR:water|XX",
+        "CR:water|CH:water|CR:water",
+        "XX|CR:water|XX",
+    ],
+    category: "special",
+    state: "liquid",
+    density: 997,
+    hidden: true,
     excludeRandom: true,
 }
 
-elements.anti_bomb_3 = {
-    color: "#825c71",
+elements.rm_lava_balloon = {
+    name: "lava balloon",
+    color: "#ffab36",
     behavior: [
-        "M2|M1 AND EX:20|M2",
-        "XX|XX|XX",
-        "XX|EX:20|XX",
+        "XX|M2|XX",
+        "XX|C2:lb"+liquidBalloonDepth+"|XX",
+        "XX|M1|XX",
     ],
-    category: "weapons",
+    temp: 950,
+    category: "special",
     state: "solid",
-    density: 1300,
+    density: 2725,
+}
+
+for (var i = liquidBalloonDepth; i > 1; i--) {
+	elements[`lb${i}`] = {
+		color: "#ff8c00",
+		behavior: [
+			`XX|CR:lb${i-1}|XX`,
+			`CR:lb${i-1}|CH:lb${i-1}|CR:lb${i-1}`,
+			`XX|CR:lb${i-1}|XX`,
+		],
+		state: "solid",
+		excludeRandom:true,
+		hidden: true,
+		category: "weapons",
+	}
+}
+
+elements.lb1 = {
+    color: "#ff8c00",
+    behavior: [
+        "XX|CR:magma|XX",
+        "CR:magma|CH:magma|CR:magma",
+        "XX|CR:magma|XX",
+    ],
+    category: "special",
+    state: "liquid",
+    density: 997,
+    hidden: true,
     excludeRandom: true,
 }
 
-elements.bomb_2 = {
-    color: "#624c41",
-    behavior: [
-        "XX|EX:15|XX",
-        "XX|XX|XX",
-        "M2|M1 AND EX:15|M2",
-    ],
-    category: "weapons",
-    state: "solid",
-    density: 1300,
-    excludeRandom: true,
-},
+for (var i = 2; i <= 10; i++) {
+	elements[`bomb_${i}`] = {
+		name: `bomb ${i}`,
+		color: "#624c41",
+		behavior: [
+			`XX|EX:${5*(i+1)}>fire|XX`,
+			"XX|XX|XX",
+			`M2|M1 AND EX:${5*(i+1)}>fire|M2`,
+		],
+		state: "solid",
+		excludeRandom:true,
+		category: "weapons",
+	}
+}
 
-elements.bomb_3 = {
-    color: "#725c41",
-    behavior: [
-        "XX|EX:20|XX",
-        "XX|XX|XX",
-        "M2|M1 AND EX:20|M2",
-    ],
-    category: "weapons",
-    state: "solid",
-    density: 1300,
-    excludeRandom: true,
+for (var i = 2; i <= 10; i++) {
+	elements[`anti_bomb_${i}`] = {
+		color: "#625c71",
+		behavior: [
+			`M2|M1 AND EX:${5*(i+1)}>fire|M2`,
+			"XX|XX|XX",
+			`XX|EX:${5*(i+1)}>fire|XX`,
+		],
+		state: "solid",
+		excludeRandom:true,
+		category: "weapons",
+	}
+}
+
+for (var i = 2; i <= 10; i++) {
+	elements[`bomb_${i}`] = {
+		name: `bomb ${i}`,
+		color: "#624c41",
+		behavior: [
+			`XX|EX:${5*(i+1)}>fire|XX`,
+			"XX|XX|XX",
+			`M2|M1 AND EX:${5*(i+1)}>fire|M2`,
+		],
+		state: "solid",
+		excludeRandom:true,
+		category: "weapons",
+	}
 }
 
 elements.sebA = {

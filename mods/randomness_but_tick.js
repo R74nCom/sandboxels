@@ -789,6 +789,9 @@ elements.colder_bomb = {
 		if(steppedOn == true || landed == true) {
 			fire = ["cold_fire","cold_fire","cold_fire","snow","liquid_nitrogen"]
 			smoke = ["cold_fire","snow","liquid_nitrogen"]
+			if(enabledMods.includes("mods/some_tf_liquids.js")) {
+				fire.push("gelid_cryotheum")
+			}
 			radius = 15
 			x = pixel.x
 			y = pixel.y
@@ -1037,6 +1040,26 @@ elements.op_hottester_bomb = {
     density: 1300,
     excludeRandom: true,
 },
+
+elements.vanishing_wall = {
+	behavior: behaviors.WALL,
+	color: "#8080b0",
+	density: 3333,
+	tick: function(pixel) {
+		pixelTick(pixel)
+		if(pixel.charge) {
+			if(!isEmpty(pixel.x,pixel.y)) {
+				deletePixel(pixel.x,pixel.y)
+			}
+		}
+	},
+	category: "special",
+	state: "solid",
+	hardness: 1,
+	insulate: true,
+	conduct: 1,
+	extraInfo: "It disappears when charged.",
+}
 
 runAfterLoad(function() {
   if(enabledMods.includes("mods/fey_and_more.js")) {
