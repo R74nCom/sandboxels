@@ -2,6 +2,8 @@
 //http://www.gnu.org/licenses/lgpl.html
 //https://www.jamieswhiteshirt.com/minecraft/mods/gases/information/?Licensing
 
+//This works best with the Neutronium Mod because I really don't feel like remaking coal and chlorine.
+
 //Steam exists.
 
 //Coal only exists in the Neutronium Mod.
