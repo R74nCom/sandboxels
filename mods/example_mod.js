@@ -46,6 +46,14 @@ runAfterLoad(function() {
     console.log("Hello World!");
 });
 
+// Run if another mod is active
+if (enabledMods.includes("test.js")) {
+    runAfterLoad(function() {
+        // Your code here
+        console.log("Hello World!");
+    });
+}
+
 // Creating eLists:
 eLists.CONDIMENT = ["ketchup","melted_cheese","mayo"];
 // Adding elements to eLists:

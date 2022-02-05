@@ -1,19 +1,28 @@
 [Sandboxels Controls]
-    Left Click      =  Place Pixels
-    Right Click     =  Erase Pixels
-    Middle Click    =  Pick Element
-    Spacebar or P   =  Pause Simulation
-    Shift + Heat    =  Intense Heating
-    Shift + Cool    =  Intense Cooling
-    Scroll          =  Change Cursor Size
-    - or [          =  Decrease Cursor Size
-    + or ]          =  Increase Cursor Size
-    Shift + -       =  Set Cursor Size to 1
-    Shift + +       =  Increase Cursor Size
-    E               =  Element Selection
-    / or I          =  Element Info Screen
-    >               =  Step
-    F               =  Toggle Fullscreen
+    Left Click        =  Place Pixels
+    Right Click       =  Erase Pixels
+    Middle Click      =  Pick Element
+    Space or P        =  Pause Simulation
+    Shift + Heat      =  Intense Heating
+    Shift + Cool      =  Intense Cooling
+    Shift + Mix       =  Include Fire & Smoke in Mixing
+    Shift + Shock     =  Intense Shock
+    Scroll            =  Change Cursor Size
+    - or [            =  Decrease Cursor Size
+    + or ]            =  Increase Cursor Size
+    Shift + -         =  Set Cursor Size to 1
+    Shift + +         =  Increase Cursor Size
+    Left/Right Arrow  =  Change Category
+    E                 =  Element Selection
+    / or I            =  Element Info Screen
+    \                 =  Settings Menu
+    M                 =  Mod Manager
+    >                 =  Step
+    F or F11          =  Toggle Fullscreen
+    1 or 0            =  Normal View
+    2                 =  Thermal View
+    F1                =  Toggle GUI / HUD
+    F2 or C           =  Capture Screenshot
 
 (Alt/Option can be used in place of Shift)
 
@@ -26,6 +35,6 @@
     Replace         =  Overrides pixels when placing
     E               =  Select any element by name
     TPS             =  Change how fast the simulation runs
-    Hide            =  Run the simulation without updating the display
     Info            =  Brings up the element info screen
     Mods            =  Opens the Mod Manager
+    Settings        =  Opens the Settings Menu

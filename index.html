@@ -57,9 +57,13 @@
             background-color: #000000;
             color: #ffffff;
         }
-        h1 {
+        .pagetitle {
             padding: 10px;
             padding-bottom: 0px;
+            font-size: 0.75em;
+            position: absolute;
+            top: 0;
+            left: 0;
         }
         a {color: rgb(255, 0, 255);text-decoration: none;}
         a:hover {color: rgb(255, 121, 255);}
@@ -75,15 +79,16 @@
                 -moz-user-select: none; /* Old versions of Firefox */
                     -ms-user-select: none; /* Internet Explorer/Edge */
                         user-select: none;
+            margin-top: 15px;
         }
-        #infoParent, #modParent {
+        #infoParent, #modParent, #settingsParent {
             display: none;
         }
-        #infoScreen, #modManager {
+        #infoScreen, #modManager, #settingsMenu {
             border: 1px solid #ffffff;
             position: absolute;
             left: 50%;
-            transform: translate(-50%, 8%);
+            transform: translate(-50%, 28%);
             width: 95%;
             height: 50%;
             max-width: 700px;
@@ -178,7 +183,10 @@
             padding: 0;
             font: inherit;
             cursor: pointer;
-            outline: inherit;
+        }
+        .usingTab button:focus {
+            filter: brightness(75%);
+            outline: none;
         }
         #underBox {
             position: absolute;
@@ -241,9 +249,16 @@
         /* screen size < 700px */
         @media screen and (max-width: 700px) {
             #stats {padding-bottom:2em;}
-            h1 {font-size: 1em;}
+            .pagetitle {
+                font-size: 1em;
+                padding-left: 0.25em;
+            }
         }
-        #stat-pos, #stat-pixels, #stat-shift, #stat-tps, #stat-ticks {
+        /* screen size > 1325px, h1::after {content:" Sandboxels"} */
+        @media screen and (min-width: 1325px) {
+            .pagetitle::after {content:" Sandboxels"}
+        }
+        #stat-pos, #stat-pixels, #stat-shift, #stat-tps, #stat-ticks, #stat-view {
             float:left;
         }
         .categoryName {
@@ -255,16 +270,34 @@
         #extraInfo {
             margin:5px
         }
-        #categoryControls {
-            margin-top: 5px;
-            margin-bottom: 5px;
-            background-color: rgba(255, 255, 255, 0.125);
+        #toolControls, #category-tools {
             white-space: nowrap;
-            overflow-x: scroll;
+            overflow-x: auto;
             overflow-y: hidden;
             width: 100%;
             position: absolute;
-            z-index: 0;
+        }
+        #toolControls {
+            margin-top: -3.5em;
+            z-index: 3;
+        }
+        #category-tools {
+            margin-top: -1.5em;
+            z-index: 2;
+        }
+        .category {
+            padding-top: 3em;
+        }
+        #categoryControls {
+            margin-top: 0.5em;
+            margin-bottom: 5px;
+            background-color: rgba(255, 255, 255, 0.125);
+            white-space: nowrap;
+            overflow-x: auto;
+            overflow-y: hidden;
+            width: 100%;
+            position: absolute;
+            z-index: 1;
             padding-bottom:1px;
         }
         #categoryControls button {
@@ -277,7 +310,7 @@
             padding-bottom: 5px;
             display: inline-block;
             position: relative;
-            z-index:1;
+            z-index:0;
         }
         #categoryControls button:not(:last-child) {
             border-right: 1px solid rgba(255, 255, 255, 0.4);
@@ -314,6 +347,16 @@
         button, input { /*Disable double tap zoom on mobile devices*/
             touch-action: manipulation;
         }
+        select {
+            background-color: black;
+            vertical-align: middle;
+            margin-left: 5px;
+            margin-right: 5px;
+            border: white 0.5px solid;
+            border-radius: 20px;
+            padding: 0.5em;
+            color: white;
+        }
     </style>
 
     <script>
@@ -347,6 +390,26 @@
     </script>
 
     <script>
+        // If settings is in localStorage, load it. If not, create an empty object.
+        settings = localStorage.getItem("settings") ? JSON.parse(localStorage.getItem("settings")) : {};
+        function saveSettings() {
+            localStorage.setItem("settings", JSON.stringify(settings));
+        }
+        window.addEventListener("load", function() {
+            // Loop through all the elements with setting-span class.
+            // If the span's setting attribute is in settings, set the first select or input to the value of the setting.
+            var settingSpans = document.getElementsByClassName("setting-span");
+            for (var i = 0; i < settingSpans.length; i++) {
+                var setting = settingSpans[i].getAttribute("setting");
+                if (setting in settings) {
+                    var settingValue = settings[setting];
+                    var settingElements = settingSpans[i].getElementsByTagName("select") || settingSpans[i].getElementsByTagName("input");
+                    if (settingElements.length > 0) {
+                        settingElements[0].value = settingValue;
+                    }
+                }
+            }
+        });
         
         behaviors = {
             POWDER: [
@@ -571,6 +634,7 @@
                 state: "solid",
                 density: 1602,
             },
+            /* Tick Examples
             "tick_sand": {
                 color: "#e6d577",
                 tick: function(pixel) {
@@ -583,6 +647,7 @@
                 state: "solid",
                 density: 1602,
                 hidden: true,
+                category: "land",
             },
             "tick_wood": {
                 color: "#a0522d",
@@ -600,9 +665,11 @@
                 hardness: 0.15,
                 breakInto: "sawdust",
                 hidden: true,
+                category: "solids",
             },
             "tick_wall": {
                 color: "#808080",
+                category: "solids",
                 hidden: true,
             },
             "tick_props": {
@@ -620,8 +687,10 @@
                     "moves": 0,
                     "age": 0,
                 },
+                category: "powders",
                 hidden: true,
             },
+            */
             "water": {
                 color: "#2167ff",
                 behavior: behaviors.LIQUID,
@@ -764,7 +833,7 @@
                 density: 1730,
             },
             "wet_sand": {
-                color: "#b5a85e",
+                color: ["#a19348","#b5a85e"],
                 behavior: behaviors.STURDYPOWDER,
                 reactions: {
                     "sand": { "elem1":"sand", "elem2":"wet_sand", "chance":0.0005, "oneway":true },
@@ -811,12 +880,42 @@
                 color: "#00bf00",
                 behavior: behaviors.WALL,
                 category:"life",
-                tempHigh: 300,
-                stateHigh: "fire",
+                tempHigh: 100,
+                stateHigh: "dead_plant",
+                tempLow: -1.66,
+                stateLow: "frozen_plant",
                 burn:65,
-                burnTime:50,
+                burnTime:60,
                 state: "solid",
                 density: 1050,
+            },
+            "dead_plant": {
+                color: ["#826521","#826021","#825321","#70360c"],
+                behavior: [
+                    "XX|XX|XX",
+                    "XX|XX|XX",
+                    "M2|M1|M2",
+                ],
+                category:"life",
+                tempHigh: 300,
+                stateHigh: "fire",
+                tempLow: -2,
+                stateLow: "frozen_plant",
+                burn:85,
+                burnTime:45,
+                state: "solid",
+                density: 1050,
+                hidden: true,
+            },
+            "frozen_plant": {
+                color: "#00bf8c",
+                behavior: behaviors.WALL,
+                category:"life",
+                tempHigh: 7,
+                stateHigh: "dead_plant",
+                state: "solid",
+                density: 1050,
+                hidden: true,
             },
             "grass": {
                 color: ["#439809","#258B08","#118511","#127B12","#136D14"],
@@ -825,8 +924,10 @@
                     "XX|XX|XX",
                     "XX|M1|XX",
                 ],
-                tempHigh: 400,
-                stateHigh: "fire",
+                tempHigh: 100,
+                stateHigh: "dead_plant",
+                tempLow: -2,
+                stateLow: "frozen_plant",
                 burn:50,
                 burnTime:20,
                 category:"life",
@@ -897,6 +998,7 @@
                 category: "weapons",
                 state: "solid",
                 density: 1300,
+                excludeRandom: true,
             },
             "steam": {
                 color: "#abd6ff",
@@ -954,7 +1056,7 @@
                 category: "solids",
                 burn: 5,
                 burnTime: 300,
-                burnInto: ["ash","charcoal","fire"],
+                burnInto: ["ember","charcoal","fire"],
                 state: "solid",
                 hardness: 0.15,
                 breakInto: "sawdust",
@@ -1035,6 +1137,67 @@
                 density: 2500,
                 breakInto: "glass_shard",
             },
+            "meat": {
+                color: ["#9E4839","#BA6449","#D2856C","#A14940"],
+                behavior: [
+                    "XX|XX|XX",
+                    "SP|CH:rotten_meat%0.00025|SP",
+                    "XX|M1|XX",
+                ],
+                tempHigh: 80,
+                stateHigh: "cooked_meat",
+                tempLow: -18,
+                stateLow: "frozen_meat",
+                category:"food",
+                burn:25,
+                burnTime:200,
+                burnInto:"cooked_meat",
+                state: "solid",
+                density: 1019.5,
+                conduct: 0.2,
+            },
+            "rotten_meat": {
+                color: ["#9ab865","#b8b165","#b89765"],
+                behavior: [
+                    "XX|CR:plague%0.25|XX",
+                    "SP|XX|SP",
+                    "XX|M1|XX",
+                ],
+                tempHigh: 120,
+                stateHigh: "plague",
+                category:"food",
+                hidden: true,
+                burn:25,
+                burnTime:200,
+                burnInto:"plague",
+                state: "solid",
+                density: 1005,
+                conduct: 0.1,
+            },
+            "cooked_meat": {
+                color: ["#AE7D5B","#9B6D54","#7E4D31"],
+                behavior: behaviors.STURDYPOWDER,
+                tempHigh: 150,
+                stateHigh: "ash",
+                category:"food",
+                hidden:true,
+                burn:25,
+                burnTime:200,
+                burnInto: "ash",
+                state: "solid",
+                density: 1005,
+            },
+            "frozen_meat": {
+                color: "#65b8aa",
+                behavior: behaviors.STURDYPOWDER,
+                temp: -18,
+                tempHigh: 0,
+                stateHigh: "meat",
+                category:"food",
+                hidden:true,
+                state: "solid",
+                density: 1067.5,
+            },
             "chocolate": {
                 color: "#4d2818",
                 behavior: behaviors.STURDYPOWDER,
@@ -1047,6 +1210,7 @@
             "cloner": {
                 color: "#dddd00",
                 behavior: behaviors.CLONER,
+                ignore: ["ecloner","slow_cloner","clone_powder","floating_cloner"],
                 category:"machines",
                 insulate:true,
                 hardness: 1,
@@ -1056,6 +1220,7 @@
                 color: "#dddd00",
                 behavior: behaviors.WALL,
                 behaviorOn: behaviors.CLONER,
+                ignore: ["cloner","slow_cloner","clone_powder","floating_cloner"],
                 category:"machines",
                 insulate:true,
                 conduct: 1,
@@ -1068,6 +1233,7 @@
                     "CF%10|XX|CF%10",
                     "XX|CF%10|XX",
                 ],
+                ignore: ["cloner","ecloner","clone_powder","floating_cloner"],
                 category:"machines",
                 insulate:true,
                 hardness: 1,
@@ -1115,6 +1281,9 @@
             "slime": {
                 color: "#81cf63",
                 behavior: behaviors.LIQUID,
+                reactions: {
+                    "bomb": { "elem2":"sticky_bomb", "elem2":null },
+                },
                 viscosity: 5000,
                 tempHigh: 120,
                 stateHigh: "steam",
@@ -1180,11 +1349,11 @@
                 color: "#36005c",
                 behavior: behaviors.GAS,
                 reactions: {
-                    "frog": { "elem2":"plague" },
-                    "ant": { "elem2":"plague" },
-                    "bee": { "elem2":"plague" },
-                    "fish": { "elem2":"plague" },
-                    "firefly": { "elem2":"plague" },
+                    "frog": { "elem2":"plague", "chance":0.05 },
+                    "ant": { "elem2":"plague", "chance":0.05 },
+                    "bee": { "elem2":"plague", "chance":0.05 },
+                    "fish": { "elem2":"plague", "chance":0.05 },
+                    "firefly": { "elem2":"plague", "chance":0.05 },
                 },
                 category: "life",
                 state: "gas",
@@ -1221,6 +1390,11 @@
                 reactions: {
                     "wood": { "elem2":null, chance:0.04 },
                     "tree_branch": { "elem2":null, chance:0.02 },
+                    "cellulose": { "elem2":null, chance:0.04 },
+                    "paper": { "elem2":null, chance:0.04 },
+                    "bamboo": { "elem2":null, chance:0.03 },
+                    "bamboo_plant": { "elem2":null, chance:0.04 },
+                    "sapling": { "elem2":null, chance:0.025 },
                 },
                 tempHigh: 37.78,
                 stateHigh: "ash",
@@ -1347,6 +1521,182 @@
                 state: "solid",
                 density: 600,
                 conduct: 0.15,
+            },
+            "human": {
+                color: ["#f5eac6","#d4c594","#a89160","#7a5733","#523018","#361e0e"],
+                category: "life",
+                properties: {
+                    dead: false,
+                    dir: 1,
+                    panic: 0,
+                },
+                tick: function(pixel) {
+                    if (isEmpty(pixel.x, pixel.y+1)) {
+                        createPixel("body", pixel.x, pixel.y+1);
+                        pixel.element = "head";
+                    }
+                    else if (isEmpty(pixel.x, pixel.y-1)) {
+                        createPixel("head", pixel.x, pixel.y-1);
+                        pixelMap[pixel.x][pixel.y-1].color = pixel.color;
+                        pixel.element = "body";
+                        pixel.color = pixelColorPick(pixel)
+                    }
+                    else {
+                        deletePixel(pixel.x, pixel.y);
+                    }
+                },
+            },
+            "body": {
+                color: ["#049699","#638A61"],
+                category: "life",
+                hidden: true,
+                density: 1500,
+                state: "solid",
+                conduct: 25,
+                tempHigh: 250,
+                stateHigh: "cooked_meat",
+                tempLow: -30,
+                stateLow: "frozen_meat",
+                burn: 10,
+                burnTime: 250,
+                burnInto: "cooked_meat",
+                breakInto: "blood",
+                reactions: {
+                    "cancer": { "elem1":"cancer", "chance":0.005 },
+                    "radiation": { "elem1":["ash","meat","rotten_meat","cooked_meat"], "chance":0.4 },
+                    "plague": { "elem1":"plague", "chance":0.05 },
+                },
+                properties: {
+                    dead: false,
+                    dir: 1,
+                    panic: 0,
+                },
+                tick: function(pixel) {
+                    if (tryMove(pixel, pixel.x, pixel.y+1)) { // Fall
+                        if (!isEmpty(pixel.x, pixel.y-2, true)) { // Drag head down
+                            var headpixel = pixelMap[pixel.x][pixel.y-2];
+                            if (headpixel.element == "head") {
+                                if (isEmpty(pixel.x, pixel.y-1)) {
+                                    movePixel(pixelMap[pixel.x][pixel.y-2], pixel.x, pixel.y-1);
+                                }
+                                else {
+                                    swapPixels(pixelMap[pixel.x][pixel.y-2], pixelMap[pixel.x][pixel.y-1]);
+                                }
+                            }
+                        }
+                    }
+                    doHeat(pixel);
+                    doBurning(pixel);
+                    doElectricity(pixel);
+                    if (pixel.dead) {
+                        // Turn into rotten_meat if pixelTicks-dead > 500
+                        if (pixelTicks-pixel.dead > 200) {
+                            pixel.element = "rotten_meat";
+                            pixel.color = pixelColorPick(pixel);
+                        }
+                        return
+                    }
+
+                    // Find the head
+                    if (!isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "head") {
+                        var head = pixelMap[pixel.x][pixel.y-1];
+                        if (head.dead) { // If head is dead, kill body
+                            pixel.dead = head.dead;
+                        }
+                    }
+                    else { var head = null }
+
+                    if (isEmpty(pixel.x, pixel.y-1)) {
+                        // create blood if decapitated 10% chance
+                        if (Math.random() < 0.1) {
+                            createPixel("blood", pixel.x, pixel.y-1);
+                            // set dead to true 15% chance
+                            if (Math.random() < 0.15) {
+                                pixel.dead = pixelTicks;
+                            }
+                        }
+                    }
+                    else if (head == null) { return }
+                    else if (Math.random() < 0.1) { // Move 10% chance
+                        var movesToTry = [
+                            [1*pixel.dir,0],
+                            [1*pixel.dir,-1],
+                        ];
+                        // While movesToTry is not empty, tryMove(pixel, x, y) with a random move, then remove it. if tryMove returns true, break.
+                        while (movesToTry.length > 0) {
+                            var move = movesToTry.splice(Math.floor(Math.random() * movesToTry.length), 1)[0];
+                            if (isEmpty(pixel.x+move[0], pixel.y+move[1]-1)) {
+                                if (tryMove(pixel, pixel.x+move[0], pixel.y+move[1])) {
+                                    movePixel(head, head.x+move[0], head.y+move[1]);
+                                    break;
+                                }
+                            }
+                        }
+                        // 15% chance to change direction
+                        if (Math.random() < 0.15) {
+                            pixel.dir *= -1;
+                        }
+                    }
+
+                },
+            },
+            "head": {
+                color: ["#f5eac6","#d4c594","#a89160","#7a6433","#524018"],
+                category: "life",
+                hidden: true,
+                density: 1080,
+                state: "solid",
+                conduct: 25,
+                tempHigh: 250,
+                stateHigh: "cooked_meat",
+                tempLow: -30,
+                stateLow: "frozen_meat",
+                burn: 10,
+                burnTime: 250,
+                burnInto: "cooked_meat",
+                breakInto: "blood",
+                reactions: {
+                    "cancer": { "elem1":"cancer", "chance":0.005 },
+                    "radiation": { "elem1":["ash","meat","rotten_meat","cooked_meat"], "chance":0.4 },
+                    "plague": { "elem1":"plague", "chance":0.05 },
+                },
+                properties: {
+                    dead: false
+                },
+                tick: function(pixel) {
+                    doHeat(pixel);
+                    doBurning(pixel);
+                    doElectricity(pixel);
+                    if (pixel.dead) {
+                        // Turn into rotten_meat if pixelTicks-dead > 500
+                        if (pixelTicks-pixel.dead > 200) {
+                            pixel.element = "rotten_meat";
+                            pixel.color = pixelColorPick(pixel);
+                            return
+                        }
+                    }
+
+                    // Find the body
+                    if (!isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "body") {
+                        var body = pixelMap[pixel.x][pixel.y+1];
+                        if (body.dead) { // If body is dead, kill head
+                            pixel.dead = body.dead;
+                        }
+                    }
+                    else { var body = null }
+
+                    if (isEmpty(pixel.x, pixel.y+1)) {
+                        tryMove(pixel, pixel.x, pixel.y+1);
+                        // create blood if severed 10% chance
+                        if (isEmpty(pixel.x, pixel.y+1) && !pixel.dead && Math.random() < 0.1) {
+                            createPixel("blood", pixel.x, pixel.y+1);
+                            // set dead to true 15% chance
+                            if (Math.random() < 0.15) {
+                                pixel.dead = pixelTicks;
+                            }
+                        }
+                    }
+                }
             },
             "rat": {
                 color: ["#A698A9","#8C7D82","#CCC3CF"],
@@ -1648,6 +1998,7 @@
                 hidden: true,
                 state: "liquid",
                 density: 1000,
+                category: "special",
             },
             "antifire": {
                 color: ["#ffc3a6","#ffdfa3","#ffb69e"],
@@ -1742,67 +2093,6 @@
                 category:"powders",
                 state: "solid",
                 density: 700,
-            },
-            "meat": {
-                color: ["#9E4839","#BA6449","#D2856C","#A14940"],
-                behavior: [
-                    "XX|XX|XX",
-                    "SP|CH:rotten_meat%0.005|SP",
-                    "XX|M1|XX",
-                ],
-                tempHigh: 80,
-                stateHigh: "cooked_meat",
-                tempLow: -18,
-                stateLow: "frozen_meat",
-                category:"life",
-                burn:25,
-                burnTime:200,
-                burnInto:"cooked_meat",
-                state: "solid",
-                density: 1019.5,
-                conduct: 0.2,
-            },
-            "rotten_meat": {
-                color: ["#9ab865","#b8b165","#b89765"],
-                behavior: [
-                    "XX|CR:plague%0.25|XX",
-                    "SP|XX|SP",
-                    "XX|M1|XX",
-                ],
-                tempHigh: 120,
-                stateHigh: "plague",
-                category:"life",
-                hidden: true,
-                burn:25,
-                burnTime:200,
-                burnInto:"plague",
-                state: "solid",
-                density: 1005,
-                conduct: 0.1,
-            },
-            "cooked_meat": {
-                color: ["#AE7D5B","#9B6D54","#7E4D31"],
-                behavior: behaviors.STURDYPOWDER,
-                tempHigh: 150,
-                stateHigh: "ash",
-                category:"life",
-                hidden:true,
-                burn:25,
-                burnTime:200,
-                burnInto: "ash",
-                state: "solid",
-                density: 1005,
-            },
-            "frozen_meat": {
-                color: "#65b8aa",
-                behavior: behaviors.STURDYPOWDER,
-                temp: -18,
-                tempHigh: 0,
-                stateHigh: "meat",
-                category:"life",
-                hidden:true,
-                state: "solid",
-                density: 1067.5,
             },
             "light": {
                 color: "#ffffa8",
@@ -1932,7 +2222,7 @@
             "anesthesia": {
                 color: "#d3e1e3",
                 behavior: behaviors.GAS,
-                category: "liquids",
+                category: "gases",
                 tempLow: -88.48,
                 stateLow: ["nitrogen","oxygen"],
                 hidden: true,
@@ -1983,8 +2273,12 @@
                 density: 1.977,
             },
             "oil": {
-                color: "#300000",
+                color: "#470e00",
                 behavior: behaviors.LIQUID,
+                reactions: {
+                    "dirt": { "elem2":"mud" },
+                    "sand": { "elem2":"wet_sand" },
+                },
                 category: "liquids",
                 tempHigh: 400,
                 stateHigh: "fire",
@@ -2032,6 +2326,17 @@
                 state: "gas",
                 density: 0.554,
             },
+            "rainbow": {
+                color: ["#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"],
+                tick: function(pixel) {
+                    var t = pixelTicks+pixel.x+pixel.y;
+                    var r = Math.floor(127*(1-Math.cos(t*Math.PI/90)));
+                    var g = Math.floor(127*(1-Math.cos(t*Math.PI/90+2*Math.PI/3)));
+                    var b = Math.floor(127*(1-Math.cos(t*Math.PI/90+4*Math.PI/3)));
+                    pixel.color = "rgb("+r+","+g+","+b+")";
+                },
+                category: "special",
+            },
             "static": {
                 color: ["#ffffff","#888888","#000000"],
                 behavior: [
@@ -2040,6 +2345,17 @@
                     "XX|XX|XX",
                 ],
                 category: "special",
+            },
+            "border": {
+                color: "#00ffff",
+                tick: function(pixel) {
+                    var t = pixelTicks/2+pixel.x+pixel.y;
+                    var r = Math.floor(127*Math.sin(t/1.5));
+                    pixel.color = "rgba("+r+","+r*2+","+r*2+","+r/127+")";
+                },
+                category: "special",
+                hardness: 1,
+                insulate: true,
             },
             "clay": {
                 color: "#d4c59c",
@@ -2117,13 +2433,24 @@
                     "XX|L2:wood,tree_branch%80|XX",
                     "XX|M1|XX",
                 ],
-                tempHigh: 400,
-                stateHigh: "fire",
+                tempHigh: 100,
+                stateHigh: "dead_plant",
+                tempLow: -2,
+                stateLow: "frozen_plant",
                 burn: 65,
                 burnTime: 15,
                 category: "life",
                 state: "solid",
                 density: 1500,
+            },
+            "seeds": {
+                color: ["#359100","#74b332","#b9d461","#dede7a"],
+                tick: function(pixel) { 
+                    // Choose randomly grass_seed, wheat_seed, flower_seed, bamboo_plant, mushroom_spore, corn_seed, potato_seed
+                    pixel.element = ["grass_seed","wheat_seed","flower_seed","bamboo_plant","mushroom_spore","corn_seed","potato_seed"][Math.floor(Math.random()*7)];
+                    pixel.color = pixelColorPick(pixel);
+                },
+                category: "life",
             },
             "grass_seed": {
                 color: ["#439809","#258B08","#118511","#127B12","#136D14"],
@@ -2132,8 +2459,10 @@
                     "XX|L2:grass|XX",
                     "XX|M1|XX",
                 ],
-                tempHigh: 400,
-                stateHigh: "fire",
+                tempHigh: 100,
+                stateHigh: "dead_plant",
+                tempLow: -2,
+                stateLow: "frozen_plant",
                 burn: 50,
                 burnTime: 20,
                 category: "life",
@@ -2161,8 +2490,10 @@
                 reactions: {
                     "rock": { "elem1":"flour", "elem2":"rock" }
                 },
-                tempHigh: 400,
-                stateHigh: "fire",
+                tempHigh: 100,
+                stateHigh: "dead_plant",
+                tempLow: -2,
+                stateLow: "frozen_plant",
                 burn:40,
                 burnTime:25,
                 category:"life",
@@ -2192,7 +2523,6 @@
                     "sugar_water": { "elem1": null, "elem2": "honey" },
                 },
                 category:"life",
-                hidden: true,
                 tempHigh: 400,
                 stateHigh: "ash",
                 burn:50,
@@ -2207,8 +2537,10 @@
                     "XX|L2:grass AND C2:pistil%30|XX",
                     "XX|M1|XX",
                 ],
-                tempHigh: 400,
-                stateHigh: "fire",
+                tempHigh: 100,
+                stateHigh: "dead_plant",
+                tempLow: -2,
+                stateLow: "frozen_plant",
                 burn:50,
                 burnTime:20,
                 category:"life",
@@ -2222,8 +2554,10 @@
                     "CR:petal%10|XX|CR:petal%10",
                     "XX|XX|XX",
                 ],
-                tempHigh: 400,
-                stateHigh: "fire",
+                tempHigh: 100,
+                stateHigh: "dead_plant",
+                tempLow: -2,
+                stateLow: "frozen_plant",
                 burn:50,
                 burnTime:20,
                 category:"life",
@@ -2234,8 +2568,10 @@
             "petal": {
                 color: "#ff0000",
                 behavior: behaviors.WALL,
-                tempHigh: 400,
-                stateHigh: "fire",
+                tempHigh: 100,
+                stateHigh: "dead_plant",
+                tempLow: -2,
+                stateLow: "frozen_plant",
                 burn:50,
                 burnTime:20,
                 category:"life",
@@ -2252,10 +2588,12 @@
                 ],
                 tempHigh: 400,
                 stateHigh: "fire",
+                tempLow: -30,
+                stateLow: "wood",
                 category: "solids",
                 burn: 40,
                 burnTime: 50,
-                burnInto: ["ash","charcoal","fire"],
+                burnInto: ["ember","charcoal","fire"],
                 hidden: true,
                 state: "solid",
                 density: 1500,
@@ -2269,8 +2607,10 @@
                     "XX|XX|XX",
                     "XX|CL%1 AND M1|XX",
                 ],
-                tempHigh: 400,
-                stateHigh: "fire",
+                tempHigh: 100,
+                stateHigh: "dead_plant",
+                tempLow: -2,
+                stateLow: "frozen_plant",
                 burn: 35,
                 burnTime: 100,
                 category: "life",
@@ -2280,13 +2620,14 @@
             "bamboo": {
                 color: ["#7CC00C","#77A012"],
                 behavior: behaviors.WALL,
-                tempHigh: 400,
+                tempHigh: 380,
                 stateHigh: "fire",
                 burn: 10,
                 burnTime: 200,
                 category: "life",
                 state: "solid",
                 density: 686,
+                breakInto: "sawdust",
             },
             "bamboo_plant": {
                 color: ["#FBC882","#DFAD64"],
@@ -2295,13 +2636,16 @@
                     "XX|L2:bamboo AND C2:bamboo%10|XX",
                     "XX|M1|XX",
                 ],
-                tempHigh: 400,
-                stateHigh: "fire",
+                tempHigh: 100,
+                stateHigh: "dead_plant",
+                tempLow: -2,
+                stateLow: "bamboo",
                 burn: 30,
                 burnTime: 100,
                 category: "life",
                 state: "solid",
                 density: 686,
+                breakInto: "sawdust",
             },
             "burner": {
                 color: "#d6baa9",
@@ -2327,15 +2671,6 @@
                 state: "gas",
                 density: 1.294,
             },
-            "rainbow": {
-                color: ["#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"],
-                behavior: [
-                    "XX|XX|XX",
-                    "XX|CC:ff0000,ff8800,ffff00,00ff00,00ffff,0000ff,ff00ff|XX",
-                    "XX|XX|XX",
-                ],
-                category: "special",
-            },
             "acid": {
                 color: ["#b5cf91","#a1ff5e","#288f2a"],
                 behavior: [
@@ -2343,7 +2678,7 @@
                     "DB%5 AND M2|XX|DB%5 AND M2",
                     "DB%5 AND M2|DB%10 AND M1|DB%5 AND M2",
                 ],
-                ignore: ["glass","glass_shard","baked_clay","acid_gas","neutral_acid"],
+                ignore: ["glass","glass_shard","baked_clay","acid_gas","neutral_acid","acid_cloud"],
                 reactions: {
                     "ash": { "elem1":"neutral_acid", "elem2":null },
                     "limestone": { "elem1":"neutral_acid", "elem2":null },
@@ -2375,13 +2710,19 @@
                     "DB%5 AND M1|XX|DB%5 AND M1",
                     "DB%5 AND M1|DB%10 AND M1|DB%5 AND M1",
                 ],
-                ignore: ["glass","glass_shard","baked_clay","acid","neutral_acid"],
+                ignore: ["glass","glass_shard","baked_clay","acid","neutral_acid","acid_cloud"],
                 reactions: {
                     "acid_gas": { "elem1": null, "elem2": "acid_cloud", "chance":0.3, "y":[0,15] },
                     "rain_cloud": { "elem1": null, "elem2": "acid_cloud", "chance":0.4, "y":[0,15] },
                     "snow_cloud": { "elem1": null, "elem2": "acid_cloud", "chance":0.4, "y":[0,15] },
                     "pyrocumulus": { "elem1": null, "elem2": "acid_cloud", "chance":0.4, "y":[0,15] },
                     "fire_cloud": { "elem1": null, "elem2": "acid_cloud", "chance":0.4, "y":[0,15] },
+                    "ash": { "elem1":"hydrogen", "elem2":null, "chance":0.05 },
+                    "limestone": { "elem1":"hydrogen", "elem2":null, "chance":0.05 },
+                    "quicklime": { "elem1":"hydrogen", "elem2":null, "chance":0.05 },
+                    "slaked_lime": { "elem1":"hydrogen", "elem2":null, "chance":0.05 },
+                    "borax": { "elem1":"hydrogen", "elem2":null, "chance":0.05 },
+                    "ammonia": { "elem1":"hydrogen", "elem2":null, "chance":0.05 },
                 },
                 category: "gases",
                 tempHigh: 400,
@@ -2404,9 +2745,10 @@
                 color: "#c0c0c0",
                 behavior: [
                     "XX|CH:gray_goo|XX",
-                    "CH:gray_goo|DL%5|CH:gray_goo",
+                    "M2%5 AND CH:gray_goo|DL%5|M2%5 AND CH:gray_goo",
                     "XX|CH:gray_goo AND M1|XX",
                 ],
+                ignore: ["fire","smoke"],
                 category: "special",
                 state: "solid",
                 density: 21450,
@@ -2419,6 +2761,7 @@
                     "CF|XX|CF",
                     "M2|CF AND M1|M2",
                 ],
+                ignore: ["cloner","ecloner","slow_cloner","floating_cloner"],
                 category:"machines",
                 insulate:true,
                 state:"solid",
@@ -2432,6 +2775,7 @@
                     "CF%3 AND M1%10|XX|CF%3 AND M1%10",
                     "XX|CF%3 AND M1%10|XX",
                 ],
+                ignore: ["cloner","ecloner","slow_cloner","clone_powder"],
                 category:"machines",
                 insulate:true,
                 state:"solid",
@@ -2445,6 +2789,7 @@
                     "CH:virus%25|XX|CH:virus%25",
                     "XX|CH:virus%25 AND M1|XX",
                 ],
+                ignore: ["fire","smoke","soap","plague","cancer"],
                 category: "special",
                 state: "solid",
                 density: 600,
@@ -2636,8 +2981,44 @@
                 density: 1052,
             },
             "molten_plastic": {
-                color: "#8e9999",
-                behavior: behaviors.LIQUID
+                color: "#a4b3b3",
+                behavior: behaviors.LIQUID,
+                viscosity: 20,
+            },
+            "paper": {
+                color: "#f0f0f0",
+                behavior: behaviors.STURDYPOWDER,
+                reactions: {
+                    "water": { "elem1":"cellulose", "elem2":null },
+                    "dirty_water": { "elem1":"cellulose", "elem2":null },
+                    "salt_water": { "elem1":"cellulose", "elem2":null },
+                    "sugar_water": { "elem1":"cellulose", "elem2":null },
+                    "blood": { "elem1":"cellulose", "elem2":null },
+                    "foam": { "elem1":"cellulose", "elem2":null },
+                    "bubble": { "elem1":"cellulose", "elem2":null },
+                    "oil": { "elem1":"cellulose", "elem2":null },
+                    "alcohol": { "elem1":"cellulose", "elem2":null },
+                    "vinegar": { "elem1":"cellulose", "elem2":null },
+                },
+                tempHigh: 248,
+                stateHigh: "fire",
+                burn: 70,
+                burnTime: 300,
+                category: "powders",
+                state: "solid",
+                density: 1201,
+            },
+            "cellulose": {
+                color: "#c7d4c9",
+                behavior: behaviors.LIQUID,
+                tempHigh: 124,
+                stateHigh: "steam",
+                burn: 35,
+                burnTime: 300,
+                category: "life",
+                state: "solid",
+                density: 65,
+                viscosity: 2500,
             },
             "fuse": {
                 color: "#825d38",
@@ -2921,6 +3302,7 @@
                 hidden: true,
                 state: "solid",
                 density: 900,
+                category: "powders",
             },
             "yeast": {
                 color: ["#AD9166","#9A7F4E","#D8BB8D"],
@@ -3014,8 +3396,10 @@
                 reactions: {
                     "rock": { "elem2":"sand", "chance":0.0004 },
                 },
-                tempHigh: 400,
-                stateHigh: "fire",
+                tempHigh: 100,
+                stateHigh: "dead_plant",
+                tempLow: -2,
+                stateLow: "frozen_plant",
                 burn: 50,
                 burnTime: 20,
                 burnInto: "dirt",
@@ -3129,6 +3513,10 @@
             "alcohol": {
                 color: "#c9c5b1",
                 behavior: behaviors.LIQUID,
+                reactions: {
+                    "virus": { "elem2":null },
+                    "plague": { "elem2":null },
+                },
                 viscosity: 1,
                 tempHigh: 78,
                 stateHigh: ["steam","carbon_dioxide"],
@@ -3197,6 +3585,8 @@
                     "oxidized_copper": { "elem1":"infection", "chance":0.05 },
                     "rat": { "elem1":"infection", "chance":0.075 },
                     "flea": { "elem1":"infection", "chance":0.03 },
+                    "dirt": { "elem2":"mud" },
+                    "sand": { "elem2":"wet_sand" },
                 },
                 viscosity: 10,
                 tempHigh: 124.55,
@@ -3252,6 +3642,58 @@
                 stateHigh: ["plague","plague","plague","salt","oxygen"],
                 category:"liquids",
                 hidden: true,
+                state: "liquid",
+                density: 1060,
+            },
+            "poison": {
+                color: "#00ff00",
+                behavior: behaviors.LIQUID,
+                reactions: {
+                    "blood": { "elem1":null, "elem2":"infection" },
+                    "water": { "elem1":null, "elem2":"dirty_water" },
+                    "soap": { "elem1":null, "chance":0.02 },
+                    "plant": { "elem1":null, "elem2":"dead_plant" },
+                    "grass": { "elem1":null, "elem2":"dead_plant" },
+                    "algae": { "elem1":null, "elem2":null },
+                    "mushroom_spore": { "elem1":null, "elem2":null },
+                    "lichen": { "elem1":null, "elem2":null },
+                    "rat": { "elem1":null, "elem2":"rotten_meat" },
+                    "frog": { "elem1":null, "elem2":"rotten_meat" },
+                    "fish": { "elem1":null, "elem2":"rotten_meat" },
+                    "head": { "elem1":null, "elem2":"rotten_meat" },
+                    "body": { "elem1":null, "elem2":"rotten_meat" },
+                    "ant": { "elem1":null, "elem2":null },
+                    "worm": { "elem1":null, "elem2":null },
+                    "fly": { "elem1":null, "elem2":null },
+                    "firefly": { "elem1":null, "elem2":null },
+                    "bee": { "elem1":null, "elem2":null },
+                    "slug": { "elem1":null, "elem2":"slime" },
+                    "snail": { "elem1":null, "elem2":"calcium" },
+                    "sapling": { "elem1":null, "elem2":"dead_plant" },
+                    "root": { "elem1":null, "elem2":"dead_plant" },
+                    "flower_seed": { "elem1":null, "elem2":"dead_plant" },
+                    "pistil": { "elem1":null, "elem2":"dead_plant" },
+                    "petal": { "elem1":null, "elem2":"dead_plant" },
+                    "grass_seed": { "elem1":null, "elem2":"dead_plant" },
+                    "meat": { "elem1":null, "elem2":"rotten_meat" },
+                },
+                viscosity: 2,
+                tempHigh: 400,
+                stateHigh: "plague",
+                category:"liquids",
+                state: "liquid",
+                density: 1060,
+            },
+            "antidote": {
+                color: "#c9b836",
+                behavior: behaviors.LIQUID,
+                reactions: {
+                    "poison": { "elem1":null, "elem2":null },
+                },
+                viscosity: 2,
+                tempHigh: 400,
+                stateHigh: "plague",
+                category:"liquids",
                 state: "liquid",
                 density: 1060,
             },
@@ -3312,6 +3754,7 @@
                 viscosity: 40,
                 state: "liquid",
                 density: 1325,
+                hidden: true,
             },
             "liquid_hydrogen": {
                 color: "#97afcf",
@@ -3421,7 +3864,7 @@
                 conduct: 0.43,
             },
             "slag": {
-                color: ["#3d3d3d","#363636","#2e2e2e"],
+                color: ["#4B3A2D","#6A5447","#6B5B53","#675851","#78756E"],
                 behavior: behaviors.POWDER,
                 tempHigh: 1780,
                 category: "powders",
@@ -3452,6 +3895,7 @@
                     "M2|CC:#ff0000|M2",
                     "M1|M1|M1",
                 ],
+                temp: -258.59,
                 tempHigh: -248.59,
                 stateHigh: "neon",
                 category: "liquids",
@@ -3472,7 +3916,7 @@
                 tempLow: 0,
                 stateLow: "snow_cloud",
                 state: "gas",
-                density: 1,
+                density: 0.5,
                 conduct: 0.03,
             },
             "snow_cloud": {
@@ -3487,7 +3931,7 @@
                 tempHigh: 30,
                 stateHigh: "rain_cloud",
                 state: "gas",
-                density: 2,
+                density: 0.55,
                 conduct: 0.01,
             },
             "acid_cloud": {
@@ -3497,9 +3941,19 @@
                     "M1%5|CH:acid%0.05|M1%5",
                     "XX|XX|XX",
                 ],
+                reactions: {
+                    "ash": { "elem1":"rain_cloud", "elem2":null, "chance":0.05 },
+                    "limestone": { "elem1":"rain_cloud", "elem2":null, "chance":0.05 },
+                    "quicklime": { "elem1":"rain_cloud", "elem2":null, "chance":0.05 },
+                    "slaked_lime": { "elem1":"rain_cloud", "elem2":null, "chance":0.05 },
+                    "borax": { "elem1":"rain_cloud", "elem2":null, "chance":0.05 },
+                    "ammonia": { "elem1":"rain_cloud", "elem2":null, "chance":0.05 },
+                },
                 category:"gases",
+                burn: 15,
+                burnTime: 5,
                 state: "gas",
-                density: 3,
+                density: 0.575,
             },
             "pyrocumulus": {
                 color: "#2e2e2e",
@@ -3514,7 +3968,7 @@
                 category:"gases",
                 hidden: true,
                 state: "gas",
-                density: 4,
+                density: 0.58,
             },
             "fire_cloud": {
                 color: ["#332424","#473431","#473931"],
@@ -3533,7 +3987,7 @@
                 stateLow: "pyrocumulus",
                 category:"gases",
                 state: "gas",
-                density: 5,
+                density: 0.59,
             },
             "battery": {
                 color: "#9c6c25",
@@ -3547,6 +4001,7 @@
                 stateHigh: "molten_steel",
             },
             "led_r": {
+                behavior: behaviors.WALL,
                 color: "#660000",
                 colorOn: "#ff0000",
                 category: "machines",
@@ -3555,6 +4010,7 @@
                 conduct: 1,
             },
             "led_g": {
+                behavior: behaviors.WALL,
                 color: "#006600",
                 colorOn: "#00ff00",
                 category: "machines",
@@ -3563,6 +4019,7 @@
                 conduct: 1,
             },
             "led_b": {
+                behavior: behaviors.WALL,
                 color: "#000066",
                 colorOn: "#0000ff",
                 category: "machines",
@@ -3600,6 +4057,7 @@
                 state: "solid",
                 density: 3600,
                 hidden: true,
+                category: "powders",
             },
             "diamond": {
                 color: ["#03fcec","#03c6fc","#b3eeff","#8ab0e6"],
@@ -3701,8 +4159,9 @@
                     "slaked_lime": { "elem1":"rad_steam", "elem2":"limestone", "chance":0.4 },
                     "rain_cloud": { "elem2":"rad_cloud", "chance":0.4 },
                     "snow_cloud": { "elem2":"rad_cloud", "chance":0.4 },
-                    "plant": { "elem2":"straw", "chance":0.4 },
-                    "grass": { "elem2":["straw","grass_seed","wheat_seed"], "chance":0.4 },
+                    "plant": { "elem2":"dead_plant", "chance":0.4 },
+                    "frozen_plant": { "elem2":"dead_plant", "chance":0.4 },
+                    "grass": { "elem2":["dead_plant","straw","grass_seed","wheat_seed"], "chance":0.4 },
                     "algae": { "elem2":["mushroom_spore","lichen","yeast"], "chance":0.4 },
                     "mushroom_spore": { "elem2":["lichen","yeast"], "chance":0.4 },
                     "mushroom_cap": { "elem2":["lichen","plant"], "chance":0.4 },
@@ -3771,7 +4230,7 @@
                 category: "gases",
                 hidden: true,
                 state: "gas",
-                density: 1,
+                density: 0.7,
             },
             "rad_cloud": {
                 color: ["#2d7528","#557528"],
@@ -3783,7 +4242,7 @@
                 category:"gases",
                 hidden: true,
                 state: "gas",
-                density: 3,
+                density: 0.55,
             },
             "fallout": {
                 color: ["#63b85a","#448044","#598044","#7bb85a"],
@@ -3873,6 +4332,7 @@
                 category: "energy",
                 state: "gas",
                 density: 1000,
+                excludeRandom: true,
             },
             "tnt": {
                 color: "#c92a2a",
@@ -3891,6 +4351,7 @@
                 stateHigh: "explosion",
                 state: "solid",
                 density: 1630,
+                excludeRandom: true,
             },
             "c4": {
                 name: "C-4",
@@ -3910,6 +4371,7 @@
                 stateHigh: "explosion",
                 state: "solid",
                 density: 1630,
+                excludeRandom: true,
             },
             "grenade": {
                 color: "#5e5c57",
@@ -3921,6 +4383,24 @@
                 category: "weapons",
                 state: "solid",
                 density: 1300,
+                tempHigh: 1455.5,
+                stateHigh: "molten_steel",
+                excludeRandom: true,
+            },
+            "dynamite": {
+                color: ["#de5050","#c92a2a","#a61919"],
+                behavior: [
+                    "XX|EX:15%1|XX",
+                    "XX|XX|XX",
+                    "M2|M1 AND EX:15%1|M2",
+                ],
+                category: "weapons",
+                state: "solid",
+                density: 1300,
+                tempHigh: 600,
+                stateHigh: "explosion",
+                breakInto: "explosion",
+                excludeRandom: true,
             },
             "gunpowder": {
                 color: ["#929980","#757767","#423D43"],
@@ -3933,6 +4413,63 @@
                 stateHigh: "explosion",
                 state: "solid",
                 density: 1700,
+                excludeRandom: true,
+            },
+            "ember": {
+                color: ["#ffe985","#ffd885","#ffc285"],
+                behavior: [
+                    "XX|M1|M1",
+                    "XX|XX|XX",
+                    "XX|XX|XX",
+                ],
+                flippableX: true,
+                category: "energy",
+                burn: 10,
+                burnTime: 10,
+                burnInto: "ash",
+                burning: true,
+                state: "gas",
+                density: 700,
+                hidden: true,
+            },
+            "firework": {
+                color: "#c44f45",
+                tick: function(pixel) {
+                    if (pixel.burning) {
+                        if (!tryMove(pixel, pixel.x, pixel.y-1)) {
+                            // tryMove again to the top left or top right
+                            tryMove(pixel, pixel.x+(Math.random() < 0.5 ? -1 : 1), pixel.y-1);
+                        }
+                        if (pixelTicks-pixel.burnStart > 50 && Math.random() < 0.1) {
+                            explodeAt(pixel.x, pixel.y, 10, "fw_ember");
+                        }
+                    }
+                    else {
+                        if (!tryMove(pixel, pixel.x, pixel.y+1)) {
+                            // tryMove again to the bottom left or bottom right
+                            tryMove(pixel, pixel.x+(Math.random() < 0.5 ? -1 : 1), pixel.y+1);
+                        }
+                    }
+                },
+                burn: 90,
+                burnTime: 100,
+                density: 2000,
+                category: "weapons",
+            },
+            "fw_ember": {
+                color: ["#ff7a70","#ff9b70","#ffe270","#94ff70","#00ffff","#9b70ff","#ffa8d2"],
+                behavior: [
+                    "XX|XX|XX",
+                    "XX|DL%25|M2",
+                    "XX|M2|M1",
+                ],
+                name: "firework ember",
+                burning: true,
+                burnInto: "ash",
+                rotatable: true,
+                temp: 649,
+                category: "energy",
+                hidden: true,
             },
             "nuke": {
                 color: "#534636",
@@ -3944,10 +4481,29 @@
                 category: "weapons",
                 state: "solid",
                 density: 1500,
+                excludeRandom: true,
+            },
+            "dirty_bomb": {
+                color: "#415336",
+                behavior: [
+                    "XX|EX:40>radiation,radiation,radiation,rad_steam|XX",
+                    "XX|XX|XX",
+                    "M2|M1 AND EX:40>radiation,radiation,radiation,rad_steam|M2",
+                ],
+                category: "weapons",
+                state: "solid",
+                density: 1500,
+                excludeRandom: true,
             },
             "nitroglycerin": {
                 color: "#47c900",
                 behavior: behaviors.LIQUID,
+                behaviorOn: [
+                    "XX|XX|XX",
+                    "XX|EX:10|XX",
+                    "XX|XX|XX",
+                ],
+                conduct: 1,
                 category: "weapons",
                 tempHigh: 600,
                 stateHigh: "fire",
@@ -3957,6 +4513,7 @@
                 viscosity: 36,
                 state: "liquid",
                 density: 1600,
+                excludeRandom: true,
             },
             "greek_fire": {
                 color: ["#4a3923","#594933","#78654a"],
@@ -3973,6 +4530,7 @@
                 viscosity: 2,
                 state: "liquid",
                 density: 498.5,
+                excludeRandom: true,
             },
             "sticky_bomb": {
                 color: "#233096",
@@ -3984,6 +4542,9 @@
                 category: "weapons",
                 state: "solid",
                 density: 1300,
+                tempHigh: 1455.5,
+                stateHigh: ["molten_steel","slime"],
+                excludeRandom: true,
             },
             "cold_bomb": {
                 color: "#43646e",
@@ -3995,6 +4556,9 @@
                 category: "weapons",
                 state: "solid",
                 density: 1300,
+                tempHigh: 1455.5,
+                stateHigh: "molten_steel",
+                excludeRandom: true,
             },
             "hot_bomb": {
                 color: "#6c436e",
@@ -4007,6 +4571,9 @@
                 category: "weapons",
                 state: "solid",
                 density: 1300,
+                tempHigh: 10455.5,
+                stateHigh: "molten_steel",
+                excludeRandom: true,
             },
             "electro_bomb": {
                 color: "#6e6d43",
@@ -4018,6 +4585,9 @@
                 category: "weapons",
                 state: "solid",
                 density: 1300,
+                tempHigh: 1655.5,
+                stateHigh: "molten_steel",
+                excludeRandom: true,
             },
             "water_bomb": {
                 color: "#34599e",
@@ -4029,6 +4599,9 @@
                 category: "weapons",
                 state: "solid",
                 density: 1300,
+                tempHigh: 1455.5,
+                stateHigh: "molten_steel",
+                excludeRandom: true,
             },
             "antimatter_bomb": {
                 color: "#6e4343",
@@ -4040,6 +4613,9 @@
                 category: "weapons",
                 state: "solid",
                 density: 1300,
+                tempHigh: 10455.5,
+                stateHigh: "molten_steel",
+                excludeRandom: true,
             },
             "flashbang": {
                 color: "#65665c",
@@ -4051,6 +4627,9 @@
                 category: "weapons",
                 state: "solid",
                 density: 1300,
+                tempHigh: 1455.5,
+                stateHigh: "molten_steel",
+                excludeRandom: true,
             },
             "flash": {
                 color: "#ffffa8",
@@ -4062,6 +4641,8 @@
                 category: "energy",
                 state: "gas",
                 density: 1,
+                tempLow: -270,
+                stateLow: "light",
                 hidden: true,
             },
             "smoke_grenade": {
@@ -4077,6 +4658,7 @@
                 conduct: 0.73,
                 tempHigh: 1455.5,
                 stateHigh: "molten_steel",
+                excludeRandom: true,
             },
             "fireball": {
                 color: ["#782828","#783b28","#784b28"],
@@ -4100,6 +4682,7 @@
                 burn: 100,
                 state: "solid",
                 density: 1600,
+                excludeRandom: true,
             },
             "landmine": {
                 color: "#856C7D",
@@ -4111,6 +4694,9 @@
                 category: "weapons",
                 state: "solid",
                 density: 1300,
+                tempHigh: 1455.5,
+                stateHigh: "molten_steel",
+                excludeRandom: true,
             },
             "cluster_bomb": {
                 color: "#7d776d",
@@ -4122,6 +4708,9 @@
                 category: "weapons",
                 state: "solid",
                 density: 1300,
+                tempHigh: 1455.5,
+                stateHigh: "molten_steel",
+                excludeRandom: true,
             },
             "armageddon": {
                 color: "#a62900",
@@ -4134,6 +4723,7 @@
                 state: "solid",
                 density: 1300,
                 hidden: true,
+                excludeRandom: true,
                 excludeRandom: true,
             },
             "tesla_coil": {
@@ -4160,7 +4750,7 @@
                 colorOn: "#ebebc3",
                 category: "machines",
                 tempHigh: 1500,
-                stateHigh: "molten_glass",
+                stateHigh: ["molten_glass","molten_glass","molten_copper"],
                 conduct: 1,
             },
             "shocker": {
@@ -4174,6 +4764,54 @@
                 colorOn: "#ffff59",
                 category: "machines",
                 conduct: 1,
+            },
+            "pressure_plate": {
+                color: "#8a8a84",
+                tick: function(pixel) {
+                    if (!isEmpty(pixel.x, pixel.y-1)){
+                        var coordsToShock = [
+                            [pixel.x, pixel.y+1],
+                            [pixel.x+1, pixel.y],
+                            [pixel.x-1, pixel.y],
+                        ]
+                        for (var i = 0; i < coordsToShock.length; i++) {
+                            var x = coordsToShock[i][0];
+                            var y = coordsToShock[i][1];
+                            if (!isEmpty(x,y,true)) {
+                                var pixel = pixelMap[x][y];
+                                if (elements[pixel.element].conduct) {
+                                    pixel.charge = 1;
+                                }
+                            }
+                        }
+                    }
+                    tryMove(pixel, pixel.x, pixel.y+1);
+                },
+                category: "machines",
+            },
+            "primordial_soup": {
+                color: ["#501F24","#6D2E1D"],
+                behavior: [
+                    "XX|CR:foam%2|XX",
+                    "M2|CH:algae,cell,mushroom_spore,lichen,yeast,antibody,cellulose%0.005|M2",
+                    "M1|M1|M1",
+                ],
+                reactions: {
+                    "cancer": { "elem1":"dirty_water" },
+                    "cyanide": { "elem1":"dirty_water" },
+                    "infection": { "elem1":"dirty_water" },
+                    "plague": { "elem1":"dirty_water" },
+                    "ammonia": { "elem1":["algae","cell","mushroom_spore","lichen","yeast","antibody"], "chance":0.05 },
+                    "radiation": { "elem1":["algae","cell","mushroom_spore","lichen","yeast","antibody"], "chance":0.15 },
+                    "light": { "elem1":["algae","cell","mushroom_spore","lichen","yeast","antibody"], "chance":0.5 },
+                    "oxygen": { "elem1":["algae","cell","mushroom_spore","lichen","yeast","antibody"], "chance":0.02 },
+                },
+                category: "life",
+                tempHigh: 100,
+                stateHigh: "steam",
+                conduct: 0.33,
+                state: "liquid",
+                density: 955,
             },
 
             
@@ -4639,6 +5277,9 @@
                             else if (b == "CH") {
                                 if (!isEmpty(newCoords.x,newCoords.y,true)) {
                                     var newPixel = pixelMap[newCoords.x][newCoords.y];
+                                    if (info.ignore && info.ignore.includes(newPixel.element)) {
+                                        continue;
+                                    }
                                     if (!elements[newPixel.element].hardness || Math.random() > elements[newPixel.element].hardness) {
                                         if (arg.includes(">")) {
                                             var argfrom = arg.split(">")[0];
@@ -4723,6 +5364,9 @@
                                 else {
                                     if (!isEmpty(newCoords.x,newCoords.y,true)) {
                                         newPixel = pixelMap[newCoords.x][newCoords.y];
+                                        if (info.ignore && info.ignore.includes(newPixel.element)) {
+                                            continue;
+                                        }
                                         if (newPixel.element != pixel.element && newPixel.element != "wire") {
                                             pixel.clone = newPixel.element;
                                             pixel.temp = newPixel.temp;
@@ -5136,11 +5780,11 @@
                 }
                 pixel.charge -= 0.25;
                 if (pixel.charge <= 0) {
+                    delete pixel.charge;
+                    pixel.chargeCD = 4;
                     if (elements[pixel.element].colorOn) {
                         pixel.color = pixelColorPick(pixel);
                     }
-                    delete pixel.charge;
-                    pixel.chargeCD = 4;
                 }
             }
             // Lower charge cooldown
@@ -5449,7 +6093,6 @@
             }
         }
 
-        hiding = false;
         function drawPixels(forceTick=false) {
             // newCurrentPixels = shuffled currentPixels
             var newCurrentPixels = currentPixels.slice();
@@ -5459,20 +6102,33 @@
                 //if (pixelMap[pixel.x][pixel.y] == undefined || currentPixels.indexOf(pixel) == -1) {continue}
                 if (pixel.del) {continue}
                 if ((!paused) || forceTick) {
-                    if (elements[pixel.element].tick) {
+                    if (elements[pixel.element].tick) { // Run tick function if it exists
                         elements[pixel.element].tick(pixel);
                     }
-                    else { pixelTick(pixel); }
+                    if (elements[pixel.element].behavior) { // Parse behavior if it exists
+                        pixelTick(pixel);
+                    }
                 };
             }
             // Draw the current pixels
-            if (!hiding) {
                 var canvas = document.getElementById("game");
                 var ctx = canvas.getContext("2d");
                 for (var i = 0; i < newCurrentPixels.length; i++) {
                     pixel = newCurrentPixels[i];
                     if (pixelMap[pixel.x][pixel.y] == undefined) {continue}
-                    ctx.fillStyle = pixel.color;
+                    if (view===null) {
+                        ctx.fillStyle = pixel.color;
+                    }
+                    else if (view === "thermal") {
+                        // set the color to pixel.temp, from hottest at 0 hue to coldest 225 hue, with the minimum being -273, max being 6000
+                        var temp = pixel.temp;
+                        if (temp < -273) {temp = -273}
+                        if (temp > 6000) {temp = 6000}
+                        var hue = 225 - (temp/6000)*225;
+                        if (hue < 0) {hue = 0}
+                        if (hue > 225) {hue = 225}
+                        ctx.fillStyle = "hsl("+hue+",100%,50%)";
+                    }
                     ctx.fillRect(pixel.x*pixelSize, pixel.y*pixelSize, pixelSize, pixelSize);
                     if (pixel.charge) { // Yellow glow on charge
                         if (!elements[pixel.element].colorOn) {
@@ -5481,7 +6137,6 @@
                         }
                     }
                 }
-            }
             if ((!paused) || forceTick) {pixelTicks++};
         }
         function tick() {
@@ -5493,7 +6148,11 @@
             var canvas = document.getElementById("game");
             var ctx = canvas.getContext("2d");
             // Clear the canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (!settings["bg"]) {ctx.clearRect(0, 0, canvas.width, canvas.height)}
+            else {
+                ctx.fillStyle = settings["bg"];
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
             drawPixels();
 
             if (currentElement == "pick" || currentElement == "lookup") {
@@ -5663,7 +6322,12 @@
                     if (index > -1) {
                         currentPixels.splice(index, 1);
                     }
-                    currentPixels.push(new Pixel(x, y, currentElement));
+                    if (currentElement == "random") {
+                        currentPixels.push(new Pixel(x, y, randomChoices[Math.floor(Math.random() * randomChoices.length)]));
+                    }
+                    else {
+                        currentPixels.push(new Pixel(x, y, currentElement));
+                    }
                 }
                 else if (isEmpty(x, y)) {
                     currentPixels.push(new Pixel(x, y, currentElement));
@@ -5779,6 +6443,28 @@
             var e2 = document.getElementById("elementButton-"+element);
             if (e2 != null) { e2.setAttribute("current","true"); }
         }
+        function selectCategory(category) {
+            var categoryButton = document.getElementById("categoryButton-"+category);
+            var categoryDiv = document.getElementById("category-"+category);
+            // Show this categoryDiv and hide all others
+            for (var i = 0; i < categoryButton.parentNode.children.length; i++) {
+                var e = categoryDiv.parentNode.children[i];
+                e.style.display = "none";
+                // Set the categoryButton of categoryDiv's category attribute to current=false
+                document.getElementById("categoryButton-"+e.getAttribute("category")).setAttribute("current",false);
+            }
+            categoryDiv.style.display = "block";
+            categoryButton.setAttribute("current", true);
+        }
+        function setView(n) {
+            // 2 for thermal
+            if (n == 2) {
+                view = "thermal";
+            }
+            else { // reset view
+                view = null;
+            }
+        }
         function clearAll() {
             currentPixels = [];
             pixelMap = [];
@@ -5802,8 +6488,8 @@
             if (pixelMap[mousePos.x] != undefined) {
                 var currentPixel = pixelMap[mousePos.x][mousePos.y];
                 if (currentPixel != undefined) {
-                    stats += "<span id='stat-element' class='stat'>Elem:"+currentPixel.element.toUpperCase()+"</span>";
-                    stats += "<span id='stat-temperature' class='stat'>Temp:"+Math.round(currentPixel.temp)+"°C</span>";
+                    stats += "<span id='stat-element' class='stat'>Elem:"+(elements[currentPixel.element].name || currentPixel.element).toUpperCase()+"</span>";
+                    stats += "<span id='stat-temperature' class='stat'>Temp:"+formatTemp(currentPixel.temp)+"</span>";
                     if (currentPixel.charge) {
                         stats += "<span id='stat-charge' class='stat'>C"+currentPixel.charge+"</span>";
                     }
@@ -5818,7 +6504,36 @@
                 else if (shiftDown==3) {stats += "<span id='stat-shift' class='stat'>[ ↑]</span>";}
                 else if (shiftDown==4) {stats += "<span id='stat-shift' class='stat'>[ A]</span>";}
             }
+            // If the view is not null, show the view in all caps
+            if (view != null) {
+                stats += "<span id='stat-view' class='stat'>"+view.toUpperCase()+"</span>";
+            }
             statsDiv.innerHTML = stats;
+        }
+
+        function formatTemp(temp) { // temp is Celcius
+            if (!settings["units"] || settings["units"] === "m") { // Celsius
+                return Math.round(temp)+"°C"
+            }
+            else if (settings["units"] === "i") { // Fahrenheit
+                return Math.round(temp*1.8+32)+"°F"
+            }
+            else if (settings["units"] === "s") { // Kelvin
+                return Math.round(temp+273.15)+"K"
+            }
+        }
+        function formatDensity(density) { // temp is kg/m3
+            // default/metric = kg/m3, imperial = lb/ft3, si = g/cm3
+            if (!settings["units"] || settings["units"] === "m") { // kg/m3
+                return Math.round(density)+" kg⁄m<sup>3</sup>"
+            }
+            else if (settings["units"] === "i") { // lb/ft3
+                return Math.round(density/16.018)+" lb⁄ft<sup>3</sup>"
+            }
+            else if (settings["units"] === "s") { // g/cm3
+                // round to 2 decimal places
+                return Math.round(density/10)/100+" g⁄cm<sup>3</sup>"
+            }
         }
 
         showingMenu = false;
@@ -5829,7 +6544,7 @@
                     var element = l[i];
                     // add to newtext a span with the element's name and its onclick to showInfo(element)
                     if (element=="pixels" || element=="itself") { newtext += element+", "}
-                    else { newtext += "<span class='infoLink' onclick='showInfo(\""+element+"\")'>"+element.toUpperCase().replace(/_/g," ")+"</span>, ";}
+                    else { newtext += "<span class='infoLink' onclick='showInfo(\""+element+"\")'>"+(elements[element].name || element).toUpperCase().replace(/_/g," ")+"</span>, ";}
                 }
                 // remove the last comma and space
                 newtext = newtext.substring(0, newtext.length-2);
@@ -5952,13 +6667,13 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                     if (cools) { infoText.innerHTML += "\nCools pixels." }
                     if (sticks.length > 0) { infoText.innerHTML += "\nSticks to "+infoLink(sticks)+"."; }
                     if (explodes) { infoText.innerHTML += "\nExplodes." }
-                    if (info.hidden) { infoText.innerHTML += "\nHidden from toolbar."; }
-                    if (info.density != undefined) { infoText.innerHTML += "\nDensity: "+info.density+"kg⁄m<sup>3</sup>."; }
+                    if (!settings["unhide"] && info.hidden) { infoText.innerHTML += "\nHidden from toolbar."; }
+                    if (info.density != undefined) { infoText.innerHTML += "\nDensity: "+formatDensity(info.density)+"."; }
                     if (info.tempHigh != undefined) {
-                        infoText.innerHTML += "\nTurns into "+infoLink(info.stateHigh || "[???]")+" above "+info.tempHigh+"°C.";
+                        infoText.innerHTML += "\nTurns into "+infoLink(info.stateHigh || "[???]")+" above "+formatTemp(info.tempHigh)+".";
                     }
                     if (info.tempLow != undefined) {
-                        infoText.innerHTML += "\nTurns into "+infoLink(info.stateLow || "[???]")+" below "+info.tempLow+"°C.";
+                        infoText.innerHTML += "\nTurns into "+infoLink(info.stateLow || "[???]")+" below "+formatTemp(info.tempLow)+".";
                     }
                     if (info.burn != undefined) { infoText.innerHTML += "\nFlammability: "+info.burn+"%."; }
                     if (info.burnTime != undefined) {
@@ -6018,6 +6733,11 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                 modManagerUrl.value = "";
                 showingMenu = false;
             }
+            else if (showingMenu == "settings") {
+                var settingsParent = document.getElementById("settingsParent");
+                settingsParent.style.display = "none";
+                showingMenu = false;
+            }
         }
         function showModManager() {
             var modParent = document.getElementById("modParent");
@@ -6069,6 +6789,15 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             }
             alert("Removed mod. Refresh the page to see changes.");
         }
+        function showSettings() {
+            var settingsParent = document.getElementById("settingsParent");
+            settingsParent.style.display = "block";
+            showingMenu = "settings";
+        }
+        function setSetting(setting,value) {
+            settings[setting] = value;
+            saveSettings();
+        }
 
         // On window load, run tick() 20 times per second
         tps = 30;
@@ -6081,6 +6810,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
         pixelTicks = 0;
 
         mode = null;
+        view = null;
         paused = false;
         function focusGame() { document.getElementById("game").focus(); if(showingMenu) { closeMenu(); } }
         //on window load
@@ -6187,6 +6917,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                         viscosity: elements[element].viscosity || 10000,
                         hidden: true,
                         state: "liquid",
+                        category: "molten",
                     }
                     // If the element has a density, add it to the new molten element * 0.9
                     if (elements[element].density) { newmolten.density = Math.round(elements[element].density * 0.9 * 10) / 10; }
@@ -6214,7 +6945,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                     }
                     elements[newname].reactions.ash = { "elem1":null, "elem2":"molten_slag" };
                     elements[newname].reactions.dust = { "elem1":null, "elem2":"molten_slag" };
-                    elements[newname].reactions.magma = { "elem1":null, "elem2":"molten_slag" };
+                    if (newname != "molten_slag") {elements[newname].reactions.magma = { "elem1":null, "elem2":"molten_slag" }};
                 }
                 if (elements[element].behavior && typeof elements[element].behavior[0] === "string") {
                     var newbehavior = [];
@@ -6254,7 +6985,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                     }
 
                     // If the element's behavior stringified includes "BO", loop through the behavior
-                    if (elements[key].behavior.toString().includes("BO") && !elements.rotatable) {
+                    if (elements[key].behavior.toString().includes("BO") && !elements[key].rotatable) {
                         for (var i = 0; i < elements[key].behavior.length; i++) {
                             // Loop through each array in the behavior
                             for (var j = 0; j < elements[key].behavior[i].length; j++) {
@@ -6431,9 +7162,33 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             shiftDown = 0;
             // If the user presses [ or -, decrease the mouse size by 2
             document.addEventListener("keydown", function(e) {
+                if (e.ctrlKey || e.metaKey) {
+                    return
+                }
+                // else if tab, set document.body.class to "usingTab"
+                else if (e.keyCode == 9) {
+                    document.body.classList.add("usingTab");
+                }
+                // F1 = hide #underDiv, #infoParent, #modParent, #pagetitle if they aren't hidden, otherwise show them
+                if (e.keyCode == 112) {
+                    e.preventDefault();
+                    if (document.getElementById("underDiv").style.display == "none") {
+                        document.getElementById("underDiv").style.display = "block";
+                        document.getElementById("pagetitle").style.display = "block";
+                    } else {
+                        document.getElementById("underDiv").style.display = "none";
+                        if (showingMenu) {
+                            closeMenu()
+                        };
+                        document.getElementById("pagetitle").style.display = "none";
+                    }
+                }
                 if (showingMenu) {
-                    // esc or / to close
-                    if (e.keyCode == 27 || (e.keyCode == 191 && showingMenu=="info")) { closeMenu(); }
+                    // esc or / or tab / or \ (while in settings) to close
+                    if (e.keyCode == 27 || (e.keyCode == 191 && showingMenu=="info") || e.keyCode == 9 || (e.keyCode == 220 && showingMenu=="settings")) {
+                        e.preventDefault();
+                        closeMenu();
+                    }
                     // enter to clear infoSearch
                     else if (e.keyCode == 13 && showingMenu == "info") {
                         var infoSearch = document.getElementById("infoSearch");
@@ -6501,6 +7256,68 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                         requestFullScreen(document.body);
                     }
                 }
+                // 0-9 = setView(the number)
+                else if (e.keyCode >= 48 && e.keyCode <= 57) {
+                    // if not command or control down, set view to the number
+                    e.preventDefault();
+                    setView(e.keyCode-48);
+                }
+                // right arrow = switch the category to the one after the current category
+                else if (e.keyCode == 39) {
+                    e.preventDefault();
+                    // in categoryControls, find the button with the class categoryButton and the attribute current="true"
+                    var currentButton = document.querySelector(".categoryButton[current='true']");
+                    var currentCategory = currentButton.getAttribute("category");
+                    // get the categoryButton that is after the current one in the div
+                    var nextButton = currentButton.nextElementSibling;
+                    // if there is no next button, go to the first one
+                    if (nextButton == null) {
+                        nextButton = document.querySelector(".categoryButton");
+                    }
+                    var nextCategory = nextButton.getAttribute("category");
+                    selectCategory(nextCategory);
+                    // focus on categoryControls
+                    document.getElementById("categoryControls").focus();
+                }
+                // left arrow = switch the category to the one before the current category
+                else if (e.keyCode == 37) {
+                    e.preventDefault();
+                    // in categoryControls, find the button with the class categoryButton and the attribute current="true"
+                    var currentButton = document.querySelector(".categoryButton[current='true']");
+                    var currentCategory = currentButton.getAttribute("category");
+                    // get the categoryButton that is before the current one in the div
+                    var prevButton = currentButton.previousElementSibling;
+                    // if there is no previous button, go to the last one
+                    if (prevButton == null) {
+                        prevButton = document.querySelector(".categoryButton:last-child");
+                    }
+                    var prevCategory = prevButton.getAttribute("category");
+                    selectCategory(prevCategory);
+                }
+                // m = closeMenu() and showModManager()
+                else if (e.keyCode == 77) {
+                    e.preventDefault();
+                    closeMenu();
+                    showModManager();
+                }
+                // \ = closeMenu() and showSettings()
+                else if (e.keyCode == 220) {
+                    e.preventDefault();
+                    closeMenu();
+                    showSettings();
+                }
+                // c or F2 = screenshot
+                else if (e.keyCode == 67 || e.keyCode == 113) {
+                    e.preventDefault();
+                    var link = document.createElement('a');
+                    link.setAttribute('download', 'sandboxels-screenshot.png');
+                    link.setAttribute('href', document.getElementById("game").toDataURL("image/png").replace("image/png", "image/octet-stream"));
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+
+
                 // x = explodeAt()
                 /*else if (e.keyCode == 88) {
                     e.preventDefault();
@@ -6520,7 +7337,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             hiddenCount = 0;
             for (var element in elements) {
                 elementCount++;
-                if (elements[element].hidden) { hiddenCount++; continue; }
+                if (elements[element].hidden && !settings["unhide"]) { hiddenCount++; continue; }
                 var category = elements[element].category;
                 if (category==null) {category="Other"}
                 var categoryDiv = document.getElementById("category-"+category);
@@ -6531,17 +7348,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                     categoryButton.className = "categoryButton";
                     categoryButton.setAttribute("category",category);
                     categoryButton.onclick = function() {
-                        var category = this.getAttribute("category");
-                        var categoryDiv = document.getElementById("category-"+category);
-                        // Show this categoryDiv and hide all others
-                        for (var i = 0; i < this.parentNode.children.length; i++) {
-                            var e = categoryDiv.parentNode.children[i];
-                            e.style.display = "none";
-                            // Set the categoryButton of categoryDiv's category attribute to current=false
-                            document.getElementById("categoryButton-"+e.getAttribute("category")).setAttribute("current",false);
-                        }
-                        categoryDiv.style.display = "block";
-                        this.setAttribute("current", true);
+                        selectCategory(this.getAttribute("category"));
                     }
                     document.getElementById("categoryControls").appendChild(categoryButton);
                     categoryDiv = document.createElement("div");
@@ -6589,6 +7396,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                 // on right click, show the element's info
                 button.oncontextmenu = function(e) {
                     e.preventDefault();
+                    closeMenu();
                     showInfo(this.getAttribute("element"));
                 }
                 categoryDiv.appendChild(button);
@@ -6611,23 +7419,22 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 </head>
 
 <body>
-    <h1 class="pagetitle">
-    <a href="https://R74n.com" class="backbutton" target="_blank">&lt;</a> Sandboxels</h1>
+    <h1 class="pagetitle" id="pagetitle"><a href="https://R74n.com" class="backbutton" target="_blank">&lt;</a></h1>
     <div id="gameDiv">
         <canvas id="game" width="800" height="600" oncontextmenu="return false;">
             Your browser does not support the HTML5 canvas tag.<br>
             Please update your browser to the latest version.<br>
-            <a href="https://www.google.com/chrome/">Chrome</a> 4.0+<br>
-            <a href="https://www.mozilla.org/firefox/new/">Firefox</a> 2.0+<br>
-            <a href="http://www.apple.com/safari/">Safari</a> 3.1+<br><br>
-            <a href="http://www.opera.com/">Opera</a> 9.0+<br>
-            <a href="http://www.microsoft.com/windows/internet-explorer/default.aspx">Internet Explorer</a> 9.0+<br>
+            <a href="https://www.google.com/chrome/" tabindex="-1">Chrome</a> 4.0+<br>
+            <a href="https://www.mozilla.org/firefox/new/" tabindex="-1">Firefox</a> 2.0+<br>
+            <a href="http://www.apple.com/safari/" tabindex="-1">Safari</a> 3.1+<br><br>
+            <a href="http://www.opera.com/" tabindex="-1">Opera</a> 9.0+<br>
+            <a href="http://www.microsoft.com/windows/internet-explorer/default.aspx" tabindex="-1">Internet Explorer</a> 9.0+<br>
         </canvas>
         <div id="underDiv">
             <div id="stats"></div>
             <div id="controls">
                 <div id="toolControls">
-                    <button id="pauseButton" title="Pause/play the simulation" class="controlButton" onclick='togglePause();focusGame();' on="false">Pause</button><button id="frameButton" title="Pause and play one frame" class="controlButton" onclick='doFrame();focusGame();' on="false">Step</button><button id="sizeDownButton" title="Decrease the brush size" class="controlButton" onclick="mouseSize -= 2;if (mouseSize < 1) { mouseSize = 1; };focusGame();">-</button><button id="sizeUpButton" title="Increase the brush size" class="controlButton" onclick="mouseSize += 2;if (mouseSize > (height > width ? height : width)) { mouseSize = (height > width ? height : width); };focusGame();">+</button><button id="resetButton" title="Clear the entire scene" class="controlButton" onclick="if (confirm('Are you sure you want to clear the whole scene?')) {clearAll();};focusGame();">Reset</button><button id="replaceButton" title="Override existing pixels when placing" class="controlButton" onclick='if (mode == "replace") {mode = null;this.setAttribute("on","false");}else {mode = "replace";this.setAttribute("on","true");};focusGame();' on="false">Replace</button><button id="elemSelectButton" title="Select an element by ID" class="controlButton" onclick='chooseElementPrompt();focusGame();'>E</button><button id="tpsButton" title="Change the simulation Ticks Per Second (TPS)" class="controlButton" onclick='var newtps = prompt("Enter the new simulation Ticks Per Second (TPS). This is how many updates per second the simulation will run.\n\nThe default is 30.\n\nThe current TPS is " + tps + ".");if (newtps !== null) {if (isNaN(newtps) || newtps == "" || newtps == "0") {alert("You did not enter a valid TPS.");}else if (newtps > 1000) {alert("You entered a TPS that is too high. The TPS will be set to the maximum, 1000.");tps = 1000;}else {tps = parseInt(newtps);if (isNaN(tps)) {alert("You did not enter a valid TPS.");tps = 30;}}resetInterval(tps);}focusGame();'>Tps</button><button id="hideButton" title="Stops updating the scene to allow more resources towards simulation" class="controlButton" onclick='if (hiding) {hiding = false;this.setAttribute("on","false");}else {hiding = true;this.setAttribute("on","true");};focusGame();' on="false">Hide</button><button id="infoButton" title="Brings up the element info screen" class="controlButton" onclick='if (showingMenu!="info"){closeMenu();showInfo(currentElement)}else{closeMenu()};' on="false">Info</button><button id="modsButton" title="Brings up the Mod Manager" class="controlButton" onclick='if (showingMenu!="mods"){closeMenu();showModManager()}else{closeMenu()};' on="false">Mods</button>
+                    <button id="pauseButton" title="Pause/play the simulation" class="controlButton" onclick='togglePause();focusGame();' on="false">Pause</button><button id="frameButton" title="Pause and play one frame" class="controlButton" onclick='doFrame();focusGame();' on="false">Step</button><button id="sizeDownButton" title="Decrease the brush size" class="controlButton" onclick="mouseSize -= 2;if (mouseSize < 1) { mouseSize = 1; };focusGame();">-</button><button id="sizeUpButton" title="Increase the brush size" class="controlButton" onclick="mouseSize += 2;if (mouseSize > (height > width ? height : width)) { mouseSize = (height > width ? height : width); };focusGame();">+</button><button id="resetButton" title="Clear the entire scene" class="controlButton" onclick="if (confirm('Are you sure you want to clear the whole scene?')) {clearAll();};focusGame();">Reset</button><button id="replaceButton" title="Override existing pixels when placing" class="controlButton" onclick='if (mode == "replace") {mode = null;this.setAttribute("on","false");}else {mode = "replace";this.setAttribute("on","true");};focusGame();' on="false">Replace</button><button id="elemSelectButton" title="Select an element by ID" class="controlButton" onclick='chooseElementPrompt();focusGame();'>E</button><button id="tpsButton" title="Change the simulation Ticks Per Second (TPS)" class="controlButton" onclick='var newtps = prompt("Enter the new simulation Ticks Per Second (TPS). This is how many updates per second the simulation will run.\n\nThe default is 30.\n\nThe current TPS is " + tps + ".");if (newtps !== null) {if (isNaN(newtps) || newtps == "" || newtps == "0") {alert("You did not enter a valid TPS.");}else if (newtps > 1000) {alert("You entered a TPS that is too high. The TPS will be set to the maximum, 1000.");tps = 1000;}else {tps = parseInt(newtps);if (isNaN(tps)) {alert("You did not enter a valid TPS.");tps = 30;}}resetInterval(tps);}focusGame();'>Tps</button><!--<button id="hideButton" title="Stops updating the scene to allow more resources towards simulation" class="controlButton" onclick='if (hiding) {hiding = false;this.setAttribute("on","false");}else {hiding = true;this.setAttribute("on","true");};focusGame();' on="false">Hide</button>--><button id="infoButton" title="Brings up the element info screen" class="controlButton" onclick='if (showingMenu!="info"){closeMenu();showInfo(currentElement)}else{closeMenu()};' on="false">Info</button><button id="modsButton" title="Brings up the Mod Manager" class="controlButton" onclick='if (showingMenu!="mods"){closeMenu();showModManager()}else{closeMenu()};' on="false">Mods</button><button id="settingsButton" title="Brings up the settings screen" class="controlButton" onclick='if (showingMenu!="settings"){closeMenu();showSettings()}else{closeMenu()};' on="false">Settings</button>
                 </div>
                 <div id="category-tools" category="tools" style="display: block;"></div>
                 <div id="categoryControls"></div>
@@ -6657,6 +7464,34 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
         </div>
         <input type="text" id="modManagerUrl" placeholder=".JS URL..." onkeydown="if (event.keyCode == 13) {addMod(this.value);this.value = '';};this.focus();"></input>
         <!-- <button id="modManagerAdd" onclick="addMod(document.getElementById('modManagerUrl').value); document.getElementById('modManagerUrl').value = '';">+</button> -->
+    </div>
+
+    <!--Settings Menu-->
+    <div id="settingsParent">
+        <div id="settingsMenu">
+            <button class="XButton" onclick="closeMenu();">-</button>
+            <span class="menuTitle">Settings</span>
+            <div class="menuText" style="padding-top:1em">
+                <span setting="units" style="display:block;padding-bottom:0.5em" class="setting-span">
+                    Units <select onchange="setSetting('units',this.value);">
+                        <option value="m" selected>Metric</option>
+                        <option value="i">Imperial</option>
+                        <option value="s">SI</option>
+                    </select>
+                </span>
+                <span setting="unhide" style="display:block;padding-bottom:0.5em" class="setting-span">
+                    Hiding <select onchange="setSetting('unhide',parseInt(this.value));this.nextElementSibling.innerText='Refresh.'">
+                        <option value="0" selected>Hide Some Elements</option>
+                        <option value="1">Unhide All Elements</option>
+                    </select>
+                    <a onclick="window.location.reload();" style="font-style:italic;cursor:pointer"></a>
+                </span>
+                <span setting="bg" style="display:block;padding-bottom:0.5em" class="setting-span">
+                    Background <input onchange="setSetting('bg',this.value);" type="color" value="#000000">
+                </span>
+            </div>
+            <br><br><br><br>
+        </div>
     </div>
 
 <!-- i like having this but ublock blocks these things anyway -->

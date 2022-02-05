@@ -1,4 +1,6 @@
-elements.human = {
+// Mod deprecated. Merged with base game.
+
+/*elements.human = {
     color: ["#f5eac6","#d4c594","#a89160","#7a5733","#523018","#361e0e"],
     category: "life",
     properties: {
@@ -52,6 +54,7 @@ elements.body = {
     burnInto: "cooked_meat",
     reactions: {
         "cancer": { "elem1":"cancer", "chance":0.005 },
+        "radiation": { "elem1":["ash","meat","rotten_meat","cooked_meat"], "chance":0.4 },
     },
     properties: {
         dead: false,
@@ -59,7 +62,7 @@ elements.body = {
         panic: 0,
     },
     tick: function(pixel) {
-        if (tryMove(pixel, pixel.x, pixel.y+1)) {
+        if (tryMove(pixel, pixel.x, pixel.y+1)) { // Fall
             if (!isEmpty(pixel.x, pixel.y-2, true)) { // Drag head down
                 var headpixel = pixelMap[pixel.x][pixel.y-2];
                 if (headpixel.element == "head") {
@@ -142,6 +145,10 @@ elements.head = {
     burn: 10,
     burnTime: 250,
     burnInto: "cooked_meat",
+    reactions: {
+        "cancer": { "elem1":"cancer", "chance":0.005 },
+        "radiation": { "elem1":["ash","meat","rotten_meat","cooked_meat"], "chance":0.4 },
+    },
     properties: {
         dead: false
     },
@@ -193,4 +200,4 @@ elements.blood.reactions.dirt = {
 elements.blood.reactions.sand = {
     "elem1": null,
     "elem2": "wet_sand",
-}
+}*/

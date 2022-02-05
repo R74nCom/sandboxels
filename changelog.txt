@@ -2,6 +2,70 @@
     + Artists' Update (Painting, Lines, Shapes, etc.)
     + Machines Update
 
+[Version 1.2]
+    + Human
+    + Firework
+    + Dynamite
+    + Primordial Soup
+    + Seeds - a mixture of various seeds
+    + Paper
+    + Cellulose
+    + Pressure Plate
+    + Border
+    + Poison
+    + Antidote
+    + Dirty Bomb
+    + Dead Plant (Hidden)
+    + Frozen Plant (Hidden)
+    + Ember (Hidden, burned into by wood)
+    + Fw_Ember (Hidden)
+    + View Switcher (Press 1-9)
+        + Thermal View (2)
+    + Settings Menu
+        + Metric, Imperial, and SI units
+        + Unhide All Element
+        + Background Color
+    + C or F2 - Download Screenshot
+    + F1 - Hide/Show GUI and HUD
+    + Left Arrow & Right Arrow change categories
+    + New smooth animation for Rainbow element
+    + Acid Clouds can slowly burn
+    + Acid Gas and Acid Clouds can be neutralized like Acid
+    + Nitroglycerin now explodes when sparked
+    + Bamboo now breaks into Sawdust
+    + Most explosives can now melt
+    + Sand and Dirt can now absorb Blood and Oil
+    + Alcohol can fight against Virus and Plague
+    + 404 Page
+    ~ Explosives are no longer included in Random
+    ~ Unhid pollen
+    ~ Hid Chocolate Syrup
+    ~ Moved Meat to Food category
+    ~ Meat rots a lot slower
+    ~ Animals die from plague slower
+    ~ Less collection of applicable gases below clouds
+    ~ Page title takes up less space
+    ~ Viruses and Gray Goo now ignore Fire and Smoke
+    ~ Viruses no longer consume Soap, Plague, or Cancer
+    ~ Gray Goo now moves sideways while on surface
+    ~ Cloners no longer clone other Cloner types
+    ~ Molten Plastic now flows faster
+    ~ Tweaked Wet Sand color
+    ~ Recolored Slag
+    ~ Made Oil more visible
+    ~ GUI takes up less vertical space
+    - Removed Hide button
+    + Accessibility: Tab can be used to navigate GUI
+    ~ Fixed: Light doesn't bounce properly
+    ~ Fixed: Magma is absorbed by Molten Slag
+    ~ Fixed: Acid deletes Acid Clouds
+    ~ Fixed: Random not working with Replace mode
+    ~ Fixed: Holding Ctrl/Cmd while using a control gets overriden
+    ~ Fixed: LEDs don't lose charge
+    ~ Fixed: Info links show element IDs even if they have names
+    + Technical: Element "ignore" property now works on CH (Change) and CF (Clone First Touched)
+    + Technical: Elements can now have a behavior and tick function at the same time
+
 [Version 1.1.2] 
     + Technical: New functions to use in coded elements
     doBurning(pixel); // Using this function will allow burning simulation
