@@ -420,13 +420,13 @@ behavior: behaviors.LIQUID,
 category: "liquids",
 reactions: {
 "chlorine": { "elem1": "titanium_tetrachloride", "elem2":null },
-density: 10000
 },
 density: 4230,
 state: "liquid",
 temp: 2000,
 tempLow: 1843,
-stateLow: "rutile"
+stateLow: "rutile",
+viscosity: 10000
 };
 elements.titanium_tetrachloride = {
 color: "#d9d7b2",
@@ -939,11 +939,33 @@ stateLow: "carbon",
 tempLow: 3550,
 temp: 5000,
 density: 1.2,
+viscosity: 10000,
+};
+elements.titanium = {
+color: "#e3e5e6",
+category: "solids",
+state: "solid",
+behavior: behaviors.WALL,
+stateHigh: "molten_titanium",
+tempHigh: 1668,
+conduct: 0.5,
+};
+elements.molten_titanium = {
+color: ["#e0921d", "#e89e2e", "#f7b24a", "#fce168", "#fceca2", "#fffcf0"],
+category: "liquids",
+state: "liquid",
+behavior: behaviors.LIQUID,
+stateLow: "titanium",
+tempLow: 1668,
+temp: 2000,
+viscosity: 10000
 };
 /* Unfinished:
 magnesium
 hematite mixture
 molten magnesium
-titanium
-molten titanium
+silicon
+molten silicon
+quartz
+silicon dioxide
 */
