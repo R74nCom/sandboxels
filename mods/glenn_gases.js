@@ -180,7 +180,9 @@ elements.black_damp = {
 		"fire": { elem2: null },
 	},
 	tick: function(pixel) {
-		pixel.color = "rgb(0,0,0)"
+		backgroundColor = hexToRGB(settings.bg);
+		rgbValue = "rgb("+backgroundColor.r+","+backgroundColor.g+","+backgroundColor.b+")";
+		pixel.color = rgbValue;
 	},
 	hardness: 0.6,
 	category: "gases",
