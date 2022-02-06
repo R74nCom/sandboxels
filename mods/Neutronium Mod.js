@@ -1037,6 +1037,14 @@ behavior: [
 "XX|M2%0.15|XX",
 ],
 };
+elements.quartz = {
+color: ["#f2f0e4", "#f7f7f2", "#bdb69f"],
+category: "solids",
+state: "solid",
+behavior: behaviors.WALL,
+tempHigh: 1715,
+stateHigh: "molten_quartz"
+};
 /* Unfinished:
 magnesium
 hematite mixture
