@@ -1032,9 +1032,9 @@ color: "#97baa7",
 category: "solids",
 state: "solid",
 behavior: [
-"XX|M2%0.1|XX",
-"M1%10|XX|M1%10",
-"XX|M2%0.15|XX",
+"XX|M2%0.001|XX",
+"M1%0.1|XX|M1%0.1",
+"XX|M2%0.0015|XX",
 ],
 };
 elements.quartz = {
@@ -1045,12 +1045,20 @@ behavior: behaviors.WALL,
 tempHigh: 1715,
 stateHigh: "molten_quartz"
 };
+elements.molten_quartz = {
+color: ["#e0960b", "#edb92b", "#f7d748", "#ffe675", "#ede2af", "#fffdf2"],
+category: "liquids",
+state: "liquid",
+behavior: behaviors.LIQUID,
+tempLow: 1715,
+stateLow: "quartz",
+temp: 2000,
+};
 /* Unfinished:
 magnesium
 hematite mixture
 molten magnesium
 silicon
 molten silicon
-quartz
 silicon dioxide
 */
