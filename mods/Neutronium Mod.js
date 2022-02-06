@@ -960,6 +960,16 @@ tempLow: 1668,
 temp: 2000,
 viscosity: 10000
 };
+elements.poison = {
+color: "#07f71b",
+category: "liquids",
+state: "liquid",
+behavior: behaviors.LIQUID,
+stateLow: "poison_ice",
+tempLow: -10,
+stateHigh: "poison_gas",
+tempHigh: 115
+};
 /* Unfinished:
 magnesium
 hematite mixture
