@@ -987,7 +987,15 @@ colorOn: "#db5b0b",
 category: "machines",
 state: "solid",
 behavior: behaviors.WALL,
-behaviorOn: behaviors.LASEREMITTER
+behaviorOn: behaviors.LASEREMITTER,
+conduct: 1,
+};
+elements.dead = {
+color: "#a5a683",
+category: "life",
+state: "solid",
+behavior: behaviors.POWDER,
+density: 10,
 };
 /* Unfinished:
 magnesium
