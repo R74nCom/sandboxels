@@ -420,13 +420,13 @@ behavior: behaviors.LIQUID,
 category: "liquids",
 reactions: {
 "chlorine": { "elem1": "titanium_tetrachloride", "elem2":null },
-density: 10000
 },
 density: 4230,
 state: "liquid",
 temp: 2000,
 tempLow: 1843,
-stateLow: "rutile"
+stateLow: "rutile",
+viscosity: 10000
 };
 elements.titanium_tetrachloride = {
 color: "#d9d7b2",
@@ -494,13 +494,13 @@ behavior: behaviors.LIQUID,
 category: "liquids",
 reactions: {
 "molten_mithril": { "elem1": "molten_mythril_mithril_alloy", "elem2":null },
-viscosity: 10000
 },
 density: 6855,
 state: "liquid",
 tempLow: 2500,
 stateLow: "mythril",
-temp: 3000
+temp: 3000,
+viscosity: 10000
 };
 elements.argon = {
 color: "#92dec7",
@@ -939,11 +939,128 @@ stateLow: "carbon",
 tempLow: 3550,
 temp: 5000,
 density: 1.2,
+viscosity: 10000,
+};
+elements.titanium = {
+color: "#e3e5e6",
+category: "solids",
+state: "solid",
+behavior: behaviors.WALL,
+stateHigh: "molten_titanium",
+tempHigh: 1668,
+conduct: 0.5,
+};
+elements.molten_titanium = {
+color: ["#e0921d", "#e89e2e", "#f7b24a", "#fce168", "#fceca2", "#fffcf0"],
+category: "liquids",
+state: "liquid",
+behavior: behaviors.LIQUID,
+stateLow: "titanium",
+tempLow: 1668,
+temp: 2000,
+viscosity: 10000
+};
+elements.toxin = {
+color: "#07f71b",
+category: "liquids",
+state: "liquid",
+behavior: behaviors.LIQUID,
+stateLow: "toxic_ice",
+tempLow: -10,
+stateHigh: "toxic_gas",
+tempHigh: 115,
+reactions: {
+ "water": { "elem1":null, "elem2":"toxic_water" },
+},
+};
+lifeArray = ["plant", "dead_plant", "frozen_plant", "grass", "algae", "cell", "cancer", "flea", "termite", "ant", "worm", "fly", "firefly", "bee", "human", "body", "head", "rat", "frog", "frozen_frog", "fish", "slug", "snail", "bone_marrow", "sapling", "seeds", "grass_seed", "wheat_seed", "wheat", "pollen", "flower_seed", "pistil", "petal", "vine", "bamboo", "bamboo_plant", "mushroom_spore", "mushroom_stalk", "mushroom_gills", "mushroom_cap", "hyphae", "lichen", "cellulose", "corn_seed", "potato_seed", "root", "berry_seed", "old_berry_leaf", "berry_leaf", "berry", "slime", "blood", "antibody", "infection", "meat", "rotten_meat", "frozen_meat", "yeast"]
+if(!elements.toxin.reactions) {
+    elements.toxin.reactions = {}
+}
+for(i = 0; i < lifeArray.length; i++) {
+    elements.toxin.reactions[lifeArray[i]] = { "elem1":null, "elem2":"dead" }
+};
+/* 
+// (Ignore this comment if it's not in another comment anymore) this whole area is a comment only because I don't want the game to try using useless code and (possibly) error out.
+if(!elements.toxic_gas.reactions) {
+    elements.toxic_gas.reactions = {}
+}
+for(i = 0; i < lifeArray.length; i++) {
+    elements.toxic_gas.reactions[lifeArray[i]] = { "elem1":null, "elem2":"dead" }
+};
+if(!elements.toxic_ice.reactions) {
+    elements.toxic_ice.reactions = {}
+}
+for(i = 0; i < lifeArray.length; i++) {
+    elements.toxic_ice.reactions[lifeArray[i]] = { "elem1":null, "elem2":"dead" }
+};
+if(!elements.toxic_water.reactions) {
+    elements.toxic_water.reactions = {}
+}
+for(i = 0; i < lifeArray.length; i++) {
+    elements.toxic_water.reactions[lifeArray[i]] = { "elem1":null, "elem2":"dead" }
+}; */
+elements.laser_emitter = {
+color: "#8a8886",
+category: "machines",
+state: "solid",
+behavior: behaviors.LASEREMITTER
+};
+behaviors.LASEREMITTER = [
+"CR:laser|CR:laser|CR:laser",
+"CR:laser|XX|CR:laser",
+"CR:laser|CR:laser|CR:laser",
+];
+elements.e_laser_emitter = {
+color: "#8a8886",
+colorOn: "#db5b0b",
+category: "machines",
+state: "solid",
+behavior: behaviors.WALL,
+behaviorOn: behaviors.LASEREMITTER,
+conduct: 1,
+};
+elements.dead = {
+color: "#a5a683",
+category: "life",
+state: "solid",
+behavior: behaviors.POWDER,
+density: 10,
+};
+elements.ilitium = {
+color: "#97baa7",
+category: "solids",
+state: "solid",
+behavior: [
+"XX|M2%0.001|XX",
+"M1%0.1|XX|M1%0.1",
+"XX|M2%0.0015|XX",
+],
+};
+elements.quartz = {
+color: ["#f2f0e4", "#f7f7f2", "#bdb69f"],
+category: "solids",
+state: "solid",
+behavior: behaviors.WALL,
+tempHigh: 1715,
+stateHigh: "molten_quartz"
+};
+elements.molten_quartz = {
+color: ["#e0960b", "#edb92b", "#f7d748", "#ffe675", "#ede2af", "#fffdf2"],
+category: "liquids",
+state: "liquid",
+behavior: behaviors.LIQUID,
+tempLow: 1715,
+stateLow: "quartz",
+temp: 2000,
+viscosity: 10000,
+density: 2.65
 };
 /* Unfinished:
 magnesium
 hematite mixture
 molten magnesium
-titanium
-molten titanium
+silicon
+molten silicon
+silicon dioxide
 */

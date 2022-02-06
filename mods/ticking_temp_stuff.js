@@ -427,6 +427,7 @@ elements.tc = { //temperature checker
 
 elements.color_temp_test = {
 	color: "#111111",
+	behavior: behaviors.POWDER,
 	tick: function(pixel) {
 		if(!pixel.oldColor) {
 			pixel.oldColor = pixel.color
@@ -487,5 +488,6 @@ elements.color_temp_test = {
 		doHeat(pixel);
 	},
 	category: "special",
-	temp: -273,
+	state: "solid",
+	temp: 20,
 }

@@ -1059,6 +1059,173 @@ elements.vanishing_wall = {
 	insulate: true,
 	conduct: 1,
 	extraInfo: "It disappears when charged.",
+},
+
+elements.polka_dotted_powder = {
+	color: ["#000000","#000000","#7f7f7f","#ffffff","#ffffff"],
+	behavior: behaviors.POWDER,
+	category: "powders",
+	state: "solid",
+	density: 1400,
+	tick: function(pixel) {
+		if(pixel.y % 6 == 0) {
+			if(pixel.x % 6 == 0) {
+				pixel.color = "rgb(255,255,255)"
+			} else {
+				if(!settings.bg || settings.bg == "#000000") {
+					pixel.color = "rgb(15,15,15)"
+				} else {
+					pixel.color = "rgb(0,0,0)"
+				}
+			} 
+		} else if((pixel.y + 3) % 6 == 0) {
+			if((pixel.x + 3) % 6 == 0) {
+				pixel.color = "rgb(255,255,255)"
+			} else {
+				if(!settings.bg || settings.bg == "#000000") {
+					pixel.color = "rgb(15,15,15)"
+				} else {
+					pixel.color = "rgb(0,0,0)"
+				}
+			} 
+		} else {
+			if(!settings.bg || settings.bg == "#000000") {
+				pixel.color = "rgb(15,15,15)"
+			} else {
+				pixel.color = "rgb(0,0,0)"
+			}
+		}
+	},
+	tempHigh: 800,
+},
+
+elements.molten_polka_dotted_powder = {
+	color: ["#ff7f00","#ff7f00","#ff9f00","#ffbf00","#ffbf00"],
+	density: 1100,
+	tick: function(pixel) {
+		if(pixel.y % 6 == 0) {
+			if(pixel.x % 6 == 0) {
+				pixel.color = "rgb(255,191,0)"
+			} else {
+				if(!settings.bg || settings.bg == "#ff7f00") {
+					pixel.color = "rgb(255,143,16)"
+				} else {
+					pixel.color = "rgb(255,127,16)"
+				}
+			} 
+		} else if((pixel.y + 3) % 6 == 0) {
+			if((pixel.x + 3) % 6 == 0) {
+				pixel.color = "rgb(255,191,0)"
+			} else {
+				if(!settings.bg || settings.bg == "#ff7f00") {
+					pixel.color = "rgb(255,143,16)"
+				} else {
+					pixel.color = "rgb(255,127,16)"
+				}
+			} 
+		} else {
+			if(!settings.bg || settings.bg == "#ff7f00") {
+				pixel.color = "rgb(255,143,16)"
+			} else {
+				pixel.color = "rgb(255,127,16)"
+			}
+		}
+	},
+	temp: 850,
+	tempLow: 800,
+	stateLow: "polka_dotted_powder",
+	tempHigh: 2000,
+	stateHigh: "vaporized_polka_dotted_powder",
+	viscosity: 6,
+	hidden: true,
+},
+
+elements.vaporized_polka_dotted_powder = {
+	color: ["#ffdf7f","#ffdf7f","#ffefbf","#ffffff","#ffffff"],
+	behavior: behaviors.GAS,
+	category: "gases",
+	state: "gas",
+	density: 550,
+	tick: function(pixel) {
+		if(pixel.y % 6 == 0) {
+			if(pixel.x % 6 == 0) {
+				pixel.color = "rgb(255,255,255)"
+			} else {
+				if(!settings.bg || settings.bg == "#ffdf7f") {
+					pixel.color = "rgb(255,233,137)"
+				} else {
+					pixel.color = "rgb(255,223,127)"
+				}
+			} 
+		} else if((pixel.y + 3) % 6 == 0) {
+			if((pixel.x + 3) % 6 == 0) {
+				pixel.color = "rgb(255,255,255)"
+			} else {
+				if(!settings.bg || settings.bg == "#ffdf7f") {
+					pixel.color = "rgb(255,143,16)"
+				} else {
+					pixel.color = "rgb(255,233,137)"
+				}
+			} 
+		} else {
+			if(!settings.bg || settings.bg == "#ffdf7f") {
+				pixel.color = "rgb(255,233,137)"
+			} else {
+				pixel.color = "rgb(255,223,127)"
+			}
+		}
+	},
+	temp: 2200,
+	tempLow: 2000,
+	stateLow: "molten_polka_dotted_powder",
+	tempHigh: 8000,
+	stateHigh: "ionized_polka_dotted_powder",
+	hidden: true,
+},
+
+elements.ionized_polka_dotted_powder = {
+	color: ["#fffff0","#fffff0","#fffff7","#ffffff","#ffffff"],
+	behavior: [
+		"M2 AND CR:plasma%0.3|M1|M2 AND CR:plasma%0.3",
+		"M1|XX|M1",
+		"M2 AND CR:plasma%0.3|M1|M2 AND CR:plasma%0.3",
+	],
+	category: "gases",
+	state: "gas",
+	density: 0.02,
+	tick: function(pixel) {
+		if(pixel.y % 6 == 0) {
+			if(pixel.x % 6 == 0) {
+				pixel.color = "rgb(255,255,255)"
+			} else {
+				if(!settings.bg || settings.bg == "#fffff0") {
+					pixel.color = "rgb(255,255,247)"
+				} else {
+					pixel.color = "rgb(255,255,240)"
+				}
+			} 
+		} else if((pixel.y + 3) % 6 == 0) {
+			if((pixel.x + 3) % 6 == 0) {
+				pixel.color = "rgb(255,255,255)"
+			} else {
+				if(!settings.bg || settings.bg == "#fffff0") {
+					pixel.color = "rgb(255,255,247)"
+				} else {
+					pixel.color = "rgb(255,255,240)"
+				}
+			} 
+		} else {
+			if(!settings.bg || settings.bg == "#fffff0") {
+				pixel.color = "rgb(255,255,247)"
+			} else {
+				pixel.color = "rgb(255,255,240)"
+			}
+		}
+	},
+	temp: 8500,
+	tempLow: 8000,
+	stateLow: "vaporized_polka_dotted_powder",
+	hidden: true,
 }
 
 runAfterLoad(function() {
