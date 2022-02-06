@@ -997,6 +997,16 @@ state: "solid",
 behavior: behaviors.POWDER,
 density: 10,
 };
+elements.ilitium = {
+color: "#97baa7",
+category: "solids",
+state: "solid",
+behavior: [
+"XX|M2%0.1|XX",
+"M1%10|XX|M1%10",
+"XX|M2%0.15|XX",
+],
+};
 /* Unfinished:
 magnesium
 hematite mixture
