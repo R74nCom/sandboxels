@@ -396,6 +396,9 @@ runAfterLoad(function() {
 	for(i = 0; i < lifeArray.length; i++) {
 		elements.void_gas.reactions[lifeArray[i]] = { "elem2": null, "chance": 0.7 }
 	};
+	for(i = 0; i < lifeArray.length; i++) {
+		elements.black_damp.reactions[lifeArray[i]] = { "elem2": null, "chance": 0.7 }
+	};
 	elements.acidic_vapour.ignore = elements.acid.ignore
 	if(enabledMods.includes("mods/Neutronium Mod.js")) {
 		elements.coal.breakInto = "coal_dust"
