@@ -181,8 +181,8 @@ elements.black_damp = {
 	},
 	tick: function(pixel) {
 		backgroundColor = hexToRGB(settings.bg);
-		rgbValue = "rgb("+backgroundColor.r+","+backgroundColor.g+","+backgroundColor.b+")";
-		pixel.color = rgbValue;
+		pixel.rgbValue = "rgb("+backgroundColor.r+","+backgroundColor.g+","+backgroundColor.b+")";
+		pixel.color = pixel.rgbValue;
 	},
 	hardness: 0.6,
 	category: "gases",
