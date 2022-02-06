@@ -970,6 +970,25 @@ tempLow: -10,
 stateHigh: "poison_gas",
 tempHigh: 115
 };
+elements.laser_emitter = {
+color: "#8a8886",
+category: "machines",
+state: "solid",
+behavior: behaviors.LASEREMITTER
+};
+behaviors.LASEREMITTER = [
+"CR:laser|CR:laser|CR:laser",
+"CR:laser|XX|CR:laser",
+"CR:laser|CR:laser|CR:laser",
+];
+elements.e_laser_emitter = {
+color: "#8a8886",
+colorOn: "#db5b0b",
+category: "machines",
+state: "solid",
+behavior: behaviors.WALL,
+behaviorOn: behaviors.LASEREMITTER
+};
 /* Unfinished:
 magnesium
 hematite mixture
