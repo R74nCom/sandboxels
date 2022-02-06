@@ -960,16 +960,46 @@ tempLow: 1668,
 temp: 2000,
 viscosity: 10000
 };
-elements.poison = {
+elements.toxin = {
 color: "#07f71b",
 category: "liquids",
 state: "liquid",
 behavior: behaviors.LIQUID,
-stateLow: "poison_ice",
+stateLow: "toxic_ice",
 tempLow: -10,
-stateHigh: "poison_gas",
-tempHigh: 115
+stateHigh: "toxic_gas",
+tempHigh: 115,
+reactions: {
+ "water": { "elem1":null, "elem2":"toxic_water" },
+},
 };
+lifeArray = ["plant", "dead_plant", "frozen_plant", "grass", "algae", "cell", "cancer", "flea", "termite", "ant", "worm", "fly", "firefly", "bee", "human", "body", "head", "rat", "frog", "frozen_frog", "fish", "slug", "snail", "bone_marrow", "sapling", "seeds", "grass_seed", "wheat_seed", "wheat", "pollen", "flower_seed", "pistil", "petal", "vine", "bamboo", "bamboo_plant", "mushroom_spore", "mushroom_stalk", "mushroom_gills", "mushroom_cap", "hyphae", "lichen", "cellulose", "corn_seed", "potato_seed", "root", "berry_seed", "old_berry_leaf", "berry_leaf", "berry", "slime", "blood", "antibody", "infection", "meat", "rotten_meat", "frozen_meat", "yeast"]
+if(!elements.toxin.reactions) {
+    elements.toxin.reactions = {}
+}
+for(i = 0; i < lifeArray.length; i++) {
+    elements.toxin.reactions[lifeArray[i]] = { "elem1":null, "elem2":"dead" }
+};
+/* 
+// (Ignore this comment if it's not in another comment anymore) this whole area is a comment only because I don't want the game to try using useless code and (possibly) error out.
+if(!elements.toxic_gas.reactions) {
+    elements.toxic_gas.reactions = {}
+}
+for(i = 0; i < lifeArray.length; i++) {
+    elements.toxic_gas.reactions[lifeArray[i]] = { "elem1":null, "elem2":"dead" }
+};
+if(!elements.toxic_ice.reactions) {
+    elements.toxic_ice.reactions = {}
+}
+for(i = 0; i < lifeArray.length; i++) {
+    elements.toxic_ice.reactions[lifeArray[i]] = { "elem1":null, "elem2":"dead" }
+};
+if(!elements.toxic_water.reactions) {
+    elements.toxic_water.reactions = {}
+}
+for(i = 0; i < lifeArray.length; i++) {
+    elements.toxic_water.reactions[lifeArray[i]] = { "elem1":null, "elem2":"dead" }
+}; */
 elements.laser_emitter = {
 color: "#8a8886",
 category: "machines",
