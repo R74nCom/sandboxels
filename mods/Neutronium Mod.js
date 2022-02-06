@@ -494,13 +494,13 @@ behavior: behaviors.LIQUID,
 category: "liquids",
 reactions: {
 "molten_mithril": { "elem1": "molten_mythril_mithril_alloy", "elem2":null },
-viscosity: 10000
 },
 density: 6855,
 state: "liquid",
 tempLow: 2500,
 stateLow: "mythril",
-temp: 3000
+temp: 3000,
+viscosity: 10000
 };
 elements.argon = {
 color: "#92dec7",
@@ -1053,6 +1053,8 @@ behavior: behaviors.LIQUID,
 tempLow: 1715,
 stateLow: "quartz",
 temp: 2000,
+viscosity: 10000,
+density: 2.65
 };
 /* Unfinished:
 magnesium
