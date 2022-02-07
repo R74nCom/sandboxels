@@ -7,8 +7,9 @@ elements.destabilized_redstone = {
 		"M2 AND SH|XX|M2 AND SH",
 		"M1|M1 AND SH|M1",
 	],
-	viscosity: 1.5,
+	viscosity: 1.5**4,
 	category: "liquids",
+	state: "liquid",
 	density:1200,
 },
 
@@ -20,6 +21,7 @@ elements.signalum = {
 	conduct: 1,
 	tempHigh: 550,
 	stateHigh: "molten_signalum",
+	state: "solid",
 },
 
 elements.molten_sterling = {
@@ -37,6 +39,7 @@ elements.molten_signalum = {
 	tempLow: 550,
 	stateLow: "signalum",
 	category: "liquids",
+	state: "liquid",
 	hidden: true,
 },
 
@@ -44,58 +47,21 @@ elements.molten_signalum = {
 
 elements.blazing_pyrotheum = {
 	color: "#ffdd55",
+	behavior: [
+		"HT:10%2|CR:fire%0.5 AND HT:10%2|HT:10%2",
+		"M2 AND CR:fire%0.5 AND HT:10%2|HT:10%2|M2 AND CR:fire%0.5 AND HT:10%2",
+		"M1 AND HT:10%2|M1 AND CR:fire%0.5 AND HT:10%2|M1 AND HT:10%2",
+	],
 	tick: function(pixel) {
-		ddd = Math.random()
-		eee = Math.random()
-		doHeat(pixel);
-		if(ddd < 1/3 && !((Math.random()*100) < 100 / ((pixel.viscosity) ** 0.25))) { //"bottom M1|M1|M1" and viscosity copied from M1 code
-			if(tryMove(pixel, pixel.x-1, pixel.y+1)) { mOne = true } else { mOne = false } //left M1
-		} else if(ddd < 2/3 && !((Math.random()*100) < 100 / ((pixel.viscosity) ** 0.25))) {
-			if(tryMove(pixel, pixel.x, pixel.y+1)) { mOne = true } else { mOne = false }  //middle M1
-		} else if(ddd < 3/3 && !((Math.random()*100) < 100 / ((pixel.viscosity) ** 0.25))) {
-			if(tryMove(pixel, pixel.x+1, pixel.y+1)) { mOne = true } else { mOne = false }  //right M1
-		}
-		if(!mOne) { //"middle M2|XX|M2"
-			if(eee < 1/2  && !((Math.random()*100) < 100 / ((pixel.viscosity) ** 0.25))) {
-				if(tryMove(pixel, pixel.x+1, pixel.y)) { mTwo = true } else { mTwo = false } //left M2
-			} else if(eee < 2/2  && !((Math.random()*100) < 100 / ((pixel.viscosity) ** 0.25))) {
-				if(tryMove(pixel, pixel.x-1, pixel.y)) { mTwo = true } else { mTwo = false } //right M2
-			}
-		}
 		if(pixel.temp >= -273 && pixel.temp <= 3707) { //temperature minimum of 3727
-			pixel.temp += 20
-		} else if(pixel.temp > 3717 && pixel.temp < 3727) {
+			pixel.temp += 50
+		} else if(pixel.temp > 3677 && pixel.temp < 3727) {
 			pixel.temp = 3727
 		}
-		if(Math.random() < 0.025 && isEmpty(pixel.x,pixel.y-1)) { //"XX|CR:fire%2.5|XX","CR:fire%2.5|XX|CR:fire%2.5","XX|CR:fire%2.5|XX"
-			createPixel("fire",pixel.x,pixel.y-1)
-		}
-		if(Math.random() < 0.025 && isEmpty(pixel.x+1,pixel.y)) {
-			createPixel("fire",pixel.x+1,pixel.y)
-		}
-		if(Math.random() < 0.025 && isEmpty(pixel.x-1,pixel.y)) {
-			createPixel("fire",pixel.x-1,pixel.y)
-		}
-		if(Math.random() < 0.025 && isEmpty(pixel.x,pixel.y+1)) {
-			createPixel("fire",pixel.x-1,pixel.y)
-		}
-		for (let i = -1; i < 2; i++) { //HT:10%2 on whole grid
-			for (let j = -1; j < 2; j++) {
-				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
-					if(Math.random() < 0.02) {
-						pixelMap[pixel.x+j][pixel.y+i].temp += 10
-					}
-				}
-			}
-		}
-		if(!isEmpty(pixel.x,pixel.y+1) && !outOfBounds(pixel.x,pixel.y+1)) {
-			if((pixelMap[pixel.x][pixel.y+1]).element == "fire") { //manual swap down with fire since density wouldn't work
-				swapPixels(pixelMap[pixel.x][pixel.y],pixelMap[pixel.x][pixel.y+1])
-			}
-		}
 	},
-	viscosity: 1.2,
+	viscosity: 1.2**4,
 	category: "liquids",
+	state: "liquid",
 	density:1994,
 	insulate:false,
 	temp: 3727,
@@ -103,61 +69,21 @@ elements.blazing_pyrotheum = {
 
 elements.gelid_cryotheum = {
 	color: "#00ddff",
+	behavior: [
+		" AND CR:snow%0.35HT:10%2|HT:10%2| AND CR:snow%0.35HT:10%2",
+		"M2 AND CR:snow%0.35 AND HT:10%2|HT:10%2|M2 AND CR:snow%0.35 AND HT:10%2",
+		"M1 AND HT:10%2|M1 AND CR:snow%0.25 AND HT:10%2|M1 AND HT:10%2",
+	],
 	tick: function(pixel) {
-		ddd = Math.random()
-		eee = Math.random()
-		doHeat(pixel);
-		if(ddd < 1/3 && !((Math.random()*100) < 100 / ((pixel.viscosity) ** 0.25))) { //"bottom M1|M1|M1" and viscosity copied from M1 code
-			if(tryMove(pixel, pixel.x-1, pixel.y+1)) { mOne = true } else { mOne = false } //left M1
-		} else if(ddd < 2/3 && !((Math.random()*100) < 100 / ((pixel.viscosity) ** 0.25))) {
-			if(tryMove(pixel, pixel.x, pixel.y+1)) { mOne = true } else { mOne = false }  //middle M1
-		} else if(ddd < 3/3 && !((Math.random()*100) < 100 / ((pixel.viscosity) ** 0.25))) {
-			if(tryMove(pixel, pixel.x+1, pixel.y+1)) { mOne = true } else { mOne = false }  //right M1
-		}
-		if(!mOne) { //"middle M2|XX|M2"
-			if(eee < 1/2  && !((Math.random()*100) < 100 / ((pixel.viscosity) ** 0.25))) {
-				if(tryMove(pixel, pixel.x+1, pixel.y)) { mTwo = true } else { mTwo = false } //left M2
-			} else if(eee < 2/2  && !((Math.random()*100) < 100 / ((pixel.viscosity) ** 0.25))) {
-				if(tryMove(pixel, pixel.x-1, pixel.y)) { mTwo = true } else { mTwo = false } //right M2
-			}
-		}
-		if(pixel.temp >= -243) { //temperature maximum of -223
-			pixel.temp -= 20
-		} else if(pixel.temp > -223 && pixel.temp < -243) {
+		if(pixel.temp >= -223) { //temperature maximum of -223
+			pixel.temp -= 50
+		} else if(pixel.temp > -223 && pixel.temp < -273) {
 			pixel.temp = -223
 		}
-		if(Math.random() < 0.01 && isEmpty(pixel.x-1,pixel.y-1)) { //"CR:snow%1|XX|CR:snow%0.35","CR:snow%0.35|XX|CR:snow%0.35","XX|CR:snow%0.35|XX"
-			createPixel("snow",pixel.x-1,pixel.y-1)
-		}
-		if(Math.random() < 0.0035 && isEmpty(pixel.x+1,pixel.y-1)) {
-			createPixel("snow",pixel.x+1,pixel.y-1)
-		}
-		if(Math.random() < 0.0035 && isEmpty(pixel.x-1,pixel.y)) { //
-			createPixel("snow",pixel.x-1,pixel.y)
-		}
-		if(Math.random() < 0.0035 && isEmpty(pixel.x+1,pixel.y)) {
-			createPixel("snow",pixel.x+1,pixel.y)
-		}
-		if(Math.random() < 0.0035 && isEmpty(pixel.x,pixel.y+1)) {
-			createPixel("snow",pixel.x+1,pixel.y)
-		}
-		for (let i = -1; i < 2; i++) { //CO:10%2 on whole grid
-			for (let j = -1; j < 2; j++) {
-				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
-					if(Math.random() < 0.02) {
-						pixelMap[pixel.x+j][pixel.y+i].temp -= 10
-					}
-				}
-			}
-		}
-		if(!isEmpty(pixel.x,pixel.y-1) && !outOfBounds(pixel.x,pixel.y-1)) {
-			if((pixelMap[pixel.x][pixel.y-1]).element == "snow") { //manual swap up with snow
-				swapPixels(pixelMap[pixel.x][pixel.y],pixelMap[pixel.x][pixel.y-1])
-			}
-		}
 	},
-	viscosity: 3,
+	viscosity: 3**4,
 	category: "liquids",
+	state: "liquid",
 	density:3988,
 	insulate:false,
 	temp: -223,
@@ -186,8 +112,9 @@ elements.tectonic_petrotheum = {
 		"chalcopyrite_ore": { "elem2": "chalcopyrite_dust" }
 	},
 	temp: 120,
-	viscosity: 1.5,
+	viscosity: 1.5**4,
 	category: "liquids",
+	state: "liquid",
 	density:3988,
 	insulate:false,
 },
@@ -231,9 +158,10 @@ elements.acid.reactions.limestone_gravel = { "elem1":"neutral_acid", "elem2":nul
 elements.zephyrean_aerotheum = {
 	color: ["#FFFCD9","#FEFFFC","#FDFFDB","#FFFFE8","#FBF6D3","#F1EDD0"],
 	behavior: behaviors.AGLIQUID,
-	viscosity: 0.1,
+	viscosity: 0.1**4,
 	category: "liquids",
-	density:-797.6,
+	state: "liquid",
+	density:-800,
 	insulate:false,
 },
 
@@ -244,10 +172,44 @@ elements.energized_glowstone = {
 		"M2 AND CR:light%40|XX|M2 AND CR:light%40",
 		"XX|CR:light%40|XX",
 	],
-	viscosity: 0.1,
+	viscosity: 0.1**4,
 	category: "liquids",
-	density:-797.6,
-	insulate:false,
-}
+	state: "liquid",
+	density:-500,
+	insulate:false, //TODO: > Energized glowstone source blocks will gradually float upwards if there are no blocks above them. If they float at high levels (layers 120 and above by default) they will condense back into solid glowstone. They will also condense at 80% of this height if the fluid has no space to flow.
+},
 
-//no resonant ender (yet?)
+elements.resonant_ender = {
+	color: ["#062c2c", "#062c2c", "#19a8a8", "#0a4646", "#1f8c8e", "#0c5c54", "#0c5c54"],
+	behavior: behaviors.LIQUID,
+	tick: function(pixel) {
+		for (let i = -2; i < 3; i++) {
+			for (let j = -2; j < 3; j++) {
+				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
+					if (lifeArray.includes(pixelMap[pixel.x+j][pixel.y+i].element)) {
+						pixel.eeex = pixel.x + Math.floor(Math.random() * ((2 * 8) + 1)) - 8
+						pixel.eeey = pixel.y + Math.floor(Math.random() * ((2 * 8) + 1)) - 8
+						//if human
+						//handle heads
+						if(pixelMap[pixel.x+j][pixel.y+i].element == "head") {
+							if(isEmpty(pixel.eeex,pixel.eeey) && !outOfBounds(pixel.eeex,pixel.eeey) && isEmpty(pixel.eeex,pixel.eeey+1) && !outOfBounds(pixel.eeex,pixel.eeey+1)) {
+								tryMove(pixelMap[pixel.x+j][pixel.y+i],pixel.eeex,pixel.eeey)
+								tryMove(pixelMap[pixel.x+j][pixel.y+i+1],pixel.eeex,pixel.eeey+1)
+							}
+						} else if(pixelMap[pixel.x+j][pixel.y+i].element == "body") {
+							
+						} else {
+							if(isEmpty(pixel.eeex,pixel.eeey) && !outOfBounds(pixel.eeex,pixel.eeey)) {
+								tryMove(pixelMap[pixel.x+j][pixel.y+i],pixel.eeex,pixel.eeey)
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	category: "liquids",
+	density: 3000,
+	state: "liquid",
+	viscosity: 3**4,
+}
