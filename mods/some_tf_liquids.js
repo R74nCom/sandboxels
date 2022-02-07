@@ -1,3 +1,5 @@
+//signalum doesn't require tick function fuckery
+
 elements.destabilized_redstone = {
 	color: ["#9e0303", "#98061a", "#b80704", "#c4020c", "#f70008", "#9e0303", "#98061a", "#b80704", "#e3020a", "#8c0303", "#8c0303"],
 	behavior: [
@@ -52,8 +54,8 @@ elements.blazing_pyrotheum = {
 	],
 	tick: function(pixel) {
 		if(pixel.temp >= -273 && pixel.temp <= 3707) { //temperature minimum of 3727
-			pixel.temp += 20
-		} else if(pixel.temp > 3717 && pixel.temp < 3727) {
+			pixel.temp += 50
+		} else if(pixel.temp > 3677 && pixel.temp < 3727) {
 			pixel.temp = 3727
 		}
 	},
@@ -73,9 +75,9 @@ elements.gelid_cryotheum = {
 		"M1 AND HT:10%2|M1 AND CR:snow%0.25 AND HT:10%2|M1 AND HT:10%2",
 	],
 	tick: function(pixel) {
-		if(pixel.temp >= -243) { //temperature maximum of -223
-			pixel.temp -= 20
-		} else if(pixel.temp > -223 && pixel.temp < -243) {
+		if(pixel.temp >= -223) { //temperature maximum of -223
+			pixel.temp -= 50
+		} else if(pixel.temp > -223 && pixel.temp < -273) {
 			pixel.temp = -223
 		}
 	},
@@ -174,7 +176,7 @@ elements.energized_glowstone = {
 	category: "liquids",
 	state: "liquid",
 	density:-500,
-	insulate:false,
+	insulate:false, //TODO: > Energized glowstone source blocks will gradually float upwards if there are no blocks above them. If they float at high levels (layers 120 and above by default) they will condense back into solid glowstone. They will also condense at 80% of this height if the fluid has no space to flow.
 },
 
 elements.resonant_ender = {
