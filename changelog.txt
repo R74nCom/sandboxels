@@ -1,14 +1,16 @@
 [Future Plans]
     + Artists' Update (Painting, Lines, Shapes, etc.)
     + Machines Update
+    + World Generation
+    + More plans / feedback at https://docs.google.com/document/u/4/d/1R8xljj_J-K5oU-9y4louwplQmM-ZBvUfXmhbgj5LYdk/edit
 
-[Version 1.3]
+[Version 1.3 BETA]
     + Color Sand
     + Stained Glass
     + Grenades will explode into metal fragments
     ~ Fixed: Pressure Plates...
 
-[Version 1.2]
+[Version 1.2 - Feb. 4, 2022]
     + Human
     + Firework
     + Dynamite
@@ -72,7 +74,7 @@
     + Technical: Element "ignore" property now works on CH (Change) and CF (Clone First Touched)
     + Technical: Elements can now have a behavior and tick function at the same time
 
-[Version 1.1.2] 
+[Version 1.1.2 - Jan. 26, 2022] 
     + Technical: New functions to use in coded elements
     doBurning(pixel); // Using this function will allow burning simulation
     doHeat(pixel); // Using this function will allow heat simulation
@@ -80,14 +82,14 @@
     + Technical: New hidden example elements: tick_sand, tick_wood, tick_wall, tick_props
     + Technical: New "properties" element attribute. See the tick_props element
 
-[Version 1.1.1]
+[Version 1.1.1 - Jan. 25, 2022]
     + Technical: "tick" element attribute, takes a function
     tick: function(pixel) {
         tryMove(pixel, pixel.x, pixel.y+1) // try to move down each tick
     }
     runs every tick on each pixel
 
-[Version 1.1 - Blast Off]
+[Version 1.1 - Blast Off - Jan. 22, 2022]
     + Explosions
     + Weapons Category
     + Bomb
@@ -141,11 +143,11 @@
     ~ Fixed: Acid and Acid Gas dissolve each other
     ~ Fixed: Potassium and Epsom Salt didn't kill Slugs and Snails
 
-[Version 1.0.1]
+[Version 1.0.1 - Jan. 20, 2022]
     ~ Slowed down Udder
     + Technical: runAfterLoad() function, pass a function to run after all mods load. See example_mod.js
 
-[Version 1.0 - Full Steam Ahead!]
+[Version 1.0 - Full Steam Ahead! - Jan. 19, 2022]
     + Radiation
     + Uranium
     + Rad Steam
@@ -190,10 +192,10 @@
     - Removed plus button in the Mod Manager
     - Removed Structure category
 
-[Version 0.9.1]
+[Version 0.9.1 - Jan. 17, 2022]
     ~ Mods can now work together (e.g. having reactions with elements from other mods, stateHighs, etc.)
 
-[Version 0.9 - Mod Manager Update]
+[Version 0.9 - Mod Manager Update - Jan. 16, 2022]
     + Mod Manager Menu
     + Clay Soil
     + Salt Water, Sugar Water, and Dirty Water evaporate into their components
@@ -208,7 +210,7 @@
     + Technical: stateHigh and stateLow can be an array, a random option is chosen
     ~ Fixed: Fireball rocks continue to burn after being extinguished
 
-[Version 0.8.3]
+[Version 0.8.3 - Jan. 14, 2022]
     + Laser
     + Snake (Not the animal)
     + Ball (Hidden experiment)
@@ -251,7 +253,7 @@
     ~ Fixed: Fire causes Clouds to lower
     ~ Fixed: Algae tends to move rightwards
 
-[Version 0.8.2]
+[Version 0.8.2 - Jan. 9, 2022]
     + Cold Fire
     + Sulfur
     + Copper Sulfate
@@ -284,12 +286,12 @@
     ~ Fixed: Controls link goes to changelog
     ~ Fixed: Elements like Potassium Salt don't continue burning after melting
 
-[Version 0.8.1]
+[Version 0.8.1 - Jan. 6, 2022]
     + Progressive web app support
     + Confirms when you are about to leave the page
     + Favicons and social cards
 
-[Version 0.8 - Electricity]
+[Version 0.8 - Electricity - Jan. 3, 2022]
     + Mobile Support (Potentially buggy)
     + Electricity
     + Shock tool
@@ -310,11 +312,11 @@
     + Technical: "SH" behavior rule, shocks / adds charge
     ~ Fixed: Invalid info links
 
-[Version 0.7.3]
+[Version 0.7.3 - Dec. 30, 2021]
     ~ Salt and sugar are more dense; can sink in water
     ~ Fixed: Fish and Algae can't move through sugar water
 
-[Version 0.7.2 - Cloning]
+[Version 0.7.2 - Cloning - Dec. 29, 2021]
     + Cloner
     + Slow Cloner, Clone Powder, Floating Cloner
     + Soap, cleans various things
@@ -329,7 +331,9 @@
     ~ Light has a temperature of 50°C
     ~ Swapped Special and Machines category spots
 
-[Version 0.7.1]
+[Version 0.7.1.2 - Dec. 28, 2021]
+
+[Version 0.7.1 - Dec. 28, 2021]
     + Sugar Water + Pollen = Honey
     ~ Lowered Rat Plague spawn rates
     ~ Fixed: Water dissolves salt and sugar way too much
@@ -339,7 +343,7 @@
     ~ Fixed: Info shows duplicate elements
     ~ Fixed: "1 ticks"
 
-[Version 0.7 - Density & Reactions]
+[Version 0.7 - Density & Reactions - Dec. 28, 2021]
     + New category-based element selection menu
     + Pixels are now slightly smaller allowing for more space
     + Scroll wheel now controls cursor size
