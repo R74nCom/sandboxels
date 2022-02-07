@@ -44,6 +44,35 @@
     <meta name="twitter:image:alt" content="A rainforest made in Sandboxels">
     <meta name="twitter:creator:id" content="1436857621827530753">
 
+    <!-- Schema -->
+    <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": ["VideoGame","MobileApplication","WebApplication"],
+          "gamePlatform":"Web Browser",
+          "image":"https://sandboxels.r74n.com/icons/icon.png",
+          "url": "https://sandboxels.r74n.com",
+          "name":"Sandboxels",
+          "author":"R74n",
+          "creator":"R74n",
+          "description":"Sandboxels is an in-browser falling sand simulation game, with mechanics such as heat simulation, electricity, density, chemical reactions, fire, and over 200 unique elements to play with.",
+          "offers":{
+            "@type":"Offer",
+            "price":"0",
+            "priceCurrency":"USD",
+            "availability":"https://schema.org/InStock"
+          },
+          "genre": "Falling-sand game",
+          "softwareVersion":"1.2",
+          "datePublished":"2021-12-15",
+          "dateCreated":"2021-12-15",
+          "gameTip":"https://sandboxels.r74n.com/controls.txt",
+          "screenshot": "https://sandboxels.r74n.com/icons/wallpaper.png",
+          "softwareRequirements": "HTML5",
+          "archivedAt": "https://web.archive.org/web/20211230010640000/https://sandboxels.r74n.com/",
+          "copyrightYear": 2022
+    }</script>
+
     <script src="https://R74n.com/load.js"></script>
 
     <style>
@@ -2329,6 +2358,42 @@
                 state: "gas",
                 density: 0.554,
             },
+            "color_sand": {
+                color: ["#ff4d4d","#ffac4d","#ffff4d","#4dff4d","#4dffff","#4d4dff","#ff4dff"],
+                behavior: behaviors.POWDER,
+                tick: function(pixel) {
+                    if (pixel.start === pixelTicks) {
+                        pixel.color = "hsl(" + pixel.start + ",100%,65%)";
+                        pixel.colorstart = pixel.start;
+                    }
+                },
+                tempHigh: 1700,
+                stateHigh: "molten_stained_glass",
+                category: "powders",
+                state: "solid",
+                density: 1602,
+            },
+            "stained_glass": {
+                color: ["#ff4d4d","#ffac4d","#ffff4d","#4dff4d","#4dffff","#4d4dff","#ff4dff"],
+                behavior: behaviors.WALL,
+                tick: function(pixel) {
+                    if (pixel.start-1 < pixelTicks) {
+                        pixel.color = "hsl(" + (pixel.colorstart || pixel.start) + ",40%,30%)";
+                    }
+                },
+                tempHigh: 1500,
+                category: "solids",
+                state: "solid",
+                density: 2500,
+                breakInto: "color_sand",
+            },
+            "molten_stained_glass": {
+                tick: function(pixel) {
+                    if (pixel.start-1 < pixelTicks) {
+                        pixel.color = "hsl(" + (pixel.colorstart || pixel.start) + ",40%,60%)";
+                    }
+                }
+            },
             "rainbow": {
                 color: ["#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"],
                 tick: function(pixel) {
@@ -2681,7 +2746,7 @@
                     "DB%5 AND M2|XX|DB%5 AND M2",
                     "DB%5 AND M2|DB%10 AND M1|DB%5 AND M2",
                 ],
-                ignore: ["glass","glass_shard","baked_clay","acid_gas","neutral_acid","acid_cloud"],
+                ignore: ["glass","glass_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud"],
                 reactions: {
                     "ash": { "elem1":"neutral_acid", "elem2":null },
                     "limestone": { "elem1":"neutral_acid", "elem2":null },
@@ -2713,7 +2778,7 @@
                     "DB%5 AND M1|XX|DB%5 AND M1",
                     "DB%5 AND M1|DB%10 AND M1|DB%5 AND M1",
                 ],
-                ignore: ["glass","glass_shard","baked_clay","acid","neutral_acid","acid_cloud"],
+                ignore: ["glass","glass_shard","stained_glass","baked_clay","acid","neutral_acid","acid_cloud"],
                 reactions: {
                     "acid_gas": { "elem1": null, "elem2": "acid_cloud", "chance":0.3, "y":[0,15] },
                     "rain_cloud": { "elem1": null, "elem2": "acid_cloud", "chance":0.4, "y":[0,15] },
@@ -4379,9 +4444,9 @@
             "grenade": {
                 color: "#5e5c57",
                 behavior: [
-                    "XX|EX:6%1|XX",
+                    "XX|EX:6>metal_scrap,fire,fire,fire%1|XX",
                     "XX|XX|XX",
-                    "M2|M1 AND EX:6%1|M2",
+                    "M2|M1 AND EX:6>metal_scrap,fire,fire,fire%1|M2",
                 ],
                 category: "weapons",
                 state: "solid",
@@ -4772,21 +4837,27 @@
                 color: "#8a8a84",
                 tick: function(pixel) {
                     if (!isEmpty(pixel.x, pixel.y-1)){
-                        var coordsToShock = [
-                            [pixel.x, pixel.y+1],
-                            [pixel.x+1, pixel.y],
-                            [pixel.x-1, pixel.y],
-                        ]
-                        for (var i = 0; i < coordsToShock.length; i++) {
-                            var x = coordsToShock[i][0];
-                            var y = coordsToShock[i][1];
-                            if (!isEmpty(x,y,true)) {
-                                var pixel = pixelMap[x][y];
-                                if (elements[pixel.element].conduct) {
-                                    pixel.charge = 1;
+                        if (pixelMap[pixel.x][pixel.y-1].element != "pressure_plate" || pixelMap[pixel.x][pixel.y-1].on) {
+                            pixel.on = true;
+                            var coordsToShock = [
+                                [pixel.x, pixel.y+1],
+                                [pixel.x+1, pixel.y],
+                                [pixel.x-1, pixel.y],
+                            ]
+                            for (var i = 0; i < coordsToShock.length; i++) {
+                                var x = coordsToShock[i][0];
+                                var y = coordsToShock[i][1];
+                                if (!isEmpty(x,y,true)) {
+                                    var newpixel = pixelMap[x][y];
+                                    if (elements[newpixel.element].conduct) {
+                                        newpixel.charge = 1;
+                                    }
                                 }
                             }
                         }
+                    }
+                    else if (pixel.on) {
+                        pixel.on = false;
                     }
                     tryMove(pixel, pixel.x, pixel.y+1);
                 },
@@ -4876,7 +4947,13 @@
                 // If elementInfo.properties, set each key to its value
                 if (elementInfo.properties !== undefined) {
                     for (var key in elementInfo.properties) {
-                        this[key] = elementInfo.properties[key];
+                        // If it is an array or object, make a copy of it
+                        if (typeof elementInfo.properties[key] == "object") {
+                            this[key] = JSON.parse(JSON.stringify(elementInfo.properties[key]));
+                        }
+                        else {
+                            this[key] = elementInfo.properties[key];
+                        }
                     }
                 }
                 pixelMap[x][y] = this;
@@ -5158,10 +5235,11 @@
             EX:radius>fire substitute = Explode on touch
             %number = Chance of rule happening
         */
-        function pixelTick(pixel) {
+        function pixelTick(pixel,custom=null) {
             if (pixel.start === pixelTicks) {return}
             var info = elements[pixel.element];
-            if (pixel.charge && info.behaviorOn) { var behavior = info.behaviorOn; }
+            if (custom) { var behavior = custom; }
+            else if (pixel.charge && info.behaviorOn) { var behavior = info.behaviorOn; }
             else { var behavior = info.behavior; }
             if (pixel.flipX) { behavior = flipBehavior(behavior,"x"); }
             if (pixel.flipY) { behavior = flipBehavior(behavior,"y"); }
@@ -5857,6 +5935,7 @@
                 }
                 pixel.element = result;
                 pixel.color = pixelColorPick(pixel);
+                pixel.start = pixelTicks;
                 if (pixel.burning) {
                     pixel.burning = false;
                     delete pixel.burnStart;
@@ -5875,6 +5954,7 @@
                 }
                 pixel.element = result;
                 pixel.color = pixelColorPick(pixel);
+                pixel.start = pixelTicks;
                 if (pixel.burning) {
                     pixel.burning = false;
                     delete pixel.burnStart;

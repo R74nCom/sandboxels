@@ -2,6 +2,12 @@
     + Artists' Update (Painting, Lines, Shapes, etc.)
     + Machines Update
 
+[Version 1.3]
+    + Color Sand
+    + Stained Glass
+    + Grenades will explode into metal fragments
+    ~ Fixed: Pressure Plates...
+
 [Version 1.2]
     + Human
     + Firework
