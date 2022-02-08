@@ -515,9 +515,9 @@ elements.conveyor_2 = {
 	state: "solid",
 },
 
-this.aaa = ["plasma","plasma","plasma","plasma","plasma","plasma","plasma","plasma","plasma","plasma","plasma","plasma","smoke","plasma","plasma","fire","smoke","fire","smoke","plasma","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","acid","acid","oil","oil","oil","oil","oil","oil","oil","plasma","plasma","plasma","plasma","plasma","smoke","plasma","plasma","fire","smoke","plasma","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","flash","flash","flash","flash","flash","acid_gas","acid_gas","acid_gas","acid","oil","oil","oil","oil","oil","oil","oil","oil","oil","oil","plasma","plasma","plasma","plasma","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","acid","acid","oil","oil","oil","oil","oil","oil","oil","plasma","plasma","plasma","plasma","plasma","smoke","plasma","plasma","fire","smoke","plasma","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","seb","seb","flash","flash","flash","flash","flash","acid_gas","acid_gas","acid_gas","acid","oil","oil","oil","oil","oil","oil","oil","oil","oil","oil","plasma","plasma","plasma","plasma","plague","plague","plague","plague","plague","plague","radiation","radiation","radiation","radiation","radiation","radiation","radiation","radiation","uranium","uranium","uranium","uranium","uranium","uranium","greek_fire","greek_fire","greek_fire","greek_fire","greek_fire","antimatter","antimatter","antimatter","antimatter","antimatter","smoke_grenade","antimatter","smoke_grenade","fireball","flash","acid_gas","acid_gas","acid_gas","plague","plague","plague","plague","plague","plague","radiation","radiation","radiation","radiation","radiation","radiation","radiation","radiation","uranium","uranium","uranium","uranium","uranium","uranium","greek_fire","greek_fire","greek_fire","greek_fire","greek_fire","antimatter","antimatter","antimatter","antimatter","antimatter","smoke_grenade","antimatter","flash","acid_gas","acid_gas","acid_gas"]
+this.aaa = ["plasma","plasma","plasma","plasma","plasma","plasma","plasma","plasma","plasma","plasma","plasma","plasma","smoke","plasma","plasma","fire","smoke","fire","smoke","plasma","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","acid","acid","oil","oil","oil","oil","oil","oil","oil","plasma","plasma","plasma","plasma","plasma","smoke","plasma","plasma","fire","smoke","plasma","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","flash","flash","flash","flash","flash","acid_gas","acid_gas","acid_gas","acid","oil","oil","oil","oil","oil","oil","oil","oil","oil","oil","plasma","plasma","plasma","plasma","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","acid","acid","oil","oil","oil","oil","oil","oil","oil","plasma","plasma","plasma","plasma","plasma","smoke","plasma","plasma","fire","smoke","plasma","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","seb","seb","flash","flash","flash","flash","flash","acid_gas","acid_gas","acid_gas","acid","oil","oil","oil","oil","oil","oil","oil","oil","oil","oil","plasma","plasma","plasma","plasma","plague","plague","plague","plague","plague","plague","radiation","radiation","radiation","radiation","radiation","radiation","radiation","radiation","uranium","uranium","uranium","uranium","uranium","uranium","greek_fire","greek_fire","greek_fire","greek_fire","greek_fire","antimatter","antimatter","antimatter","antimatter","antimatter","smoke_grenade","antimatter","smoke_grenade","fireball","flash","acid_gas","acid_gas","acid_gas","plague","plague","plague","plague","plague","plague","radiation","radiation","radiation","radiation","radiation","radiation","radiation","radiation","uranium","uranium","uranium","uranium","uranium","uranium","greek_fire","greek_fire","greek_fire","greek_fire","greek_fire","antimatter","antimatter","antimatter","antimatter","antimatter","smoke_grenade","antimatter","flash","acid_gas","acid_gas","acid_gas","radiation","radiation","radiation","radiation","plague","acid_gas","acid_gas","acid_gas"]
 
-this.bbb = ["smoke","smoke","smoke","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","acid","acid","oil","oil","oil","oil","oil","oil","oil","smoke","smoke","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","flash","flash","flash","flash","flash","acid_gas","acid_gas","acid_gas","acid","oil","oil","oil","oil","oil","oil","oil","oil","oil","oil","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","acid","acid","oil","oil","oil","oil","oil","oil","oil","smoke","smoke","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","seb","flash","flash","flash","flash","flash","acid_gas","acid_gas","acid_gas","acid","oil","oil","oil","oil","oil","oil","oil","oil","oil","oil","plague","plague","plague","plague","plague","plague","radiation","radiation","radiation","radiation","radiation","radiation","radiation","radiation","uranium","uranium","uranium","uranium","uranium","uranium","greek_fire","greek_fire","greek_fire","greek_fire","greek_fire","antimatter","antimatter","antimatter","antimatter","antimatter","smoke_grenade","antimatter","smoke_grenade","flash","acid_gas","acid_gas","acid_gas","plague","plague","plague","plague","plague","plague","radiation","radiation","radiation","radiation","radiation","radiation","radiation","radiation","uranium","uranium","uranium","uranium","uranium","uranium","greek_fire","greek_fire","greek_fire","greek_fire","greek_fire","antimatter","smoke_grenade","flash","acid_gas","acid_gas","acid_gas"]
+this.bbb = ["smoke","smoke","smoke","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","acid","acid","oil","oil","oil","oil","oil","oil","oil","smoke","smoke","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","flash","flash","flash","flash","flash","acid_gas","acid_gas","acid_gas","acid","oil","oil","oil","oil","oil","oil","oil","oil","oil","oil","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","acid","acid","oil","oil","oil","oil","oil","oil","oil","smoke","smoke","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","metal_scrap","seb","flash","flash","flash","flash","flash","acid_gas","acid_gas","acid_gas","acid","oil","oil","oil","oil","oil","oil","oil","oil","oil","oil","plague","plague","plague","plague","plague","plague","radiation","radiation","radiation","radiation","radiation","radiation","radiation","radiation","uranium","uranium","uranium","uranium","uranium","uranium","greek_fire","greek_fire","greek_fire","greek_fire","greek_fire","antimatter","antimatter","antimatter","antimatter","antimatter","smoke_grenade","antimatter","smoke_grenade","flash","acid_gas","acid_gas","acid_gas","plague","plague","plague","plague","plague","plague","radiation","radiation","radiation","radiation","radiation","radiation","radiation","radiation","uranium","uranium","uranium","uranium","uranium","uranium","greek_fire","greek_fire","greek_fire","greek_fire","greek_fire","antimatter","smoke_grenade","flash","acid_gas","acid_gas","acid_gas","radiation","radiation","radiation","radiation","plague","acid_gas","acid_gas","acid_gas"]
 
 elements.amalgamated_bomb = {
     color: ["#FF0000","#FF0000","#FFFF00","#FFFF00","#00FF00","#00FF00","#0000FF","#0000FF"],
@@ -545,7 +545,7 @@ elements.amalgamated_bomb = {
 		if(steppedOn == true || landed == true) {
 		fire = bbb
 		smoke = bbb
-		radius = 45
+		radius = 70
 		x = pixel.x
 		y = pixel.y
 		//SECONDARY
@@ -652,7 +652,7 @@ elements.amalgamated_bomb = {
 		
 		fire = aaa
 		smoke = aaa
-		radius = 30
+		radius = 35
 		//PRIMARY
 			// if fire contains , split it into an array
 			if (fire.includes(",")) {
@@ -1282,6 +1282,12 @@ runAfterLoad(function() {
     bbb.push("flamebomb")
     bbb.push("flamer")
     bbb.push("flamebomb")
+    bbb.push("toxin")
+    bbb.push("toxin")
+    bbb.push("toxin")
+    bbb.push("chlorine")
+    bbb.push("chlorine")
+    bbb.push("chlorine")
   }
   if(enabledMods.includes("mods/randomness.js")) {
     aaa.push("burning_unnamed_gas")
@@ -1296,7 +1302,6 @@ runAfterLoad(function() {
     aaa.push("warp")
     aaa.push("bomb_2")
     aaa.push("bomb_2")
-    aaa.push("bomb_2")
     aaa.push("op_hottester_bomb")
     bbb.push("unnamed_gas")
     bbb.push("unnamed_gas")
@@ -1308,5 +1313,86 @@ runAfterLoad(function() {
     bbb.push("warp")
     bbb.push("warp")
     bbb.push("warp")
+  }
+  if(enabledMods.includes("mods/glenn_gases.js")) {
+    bbb.push("electric_gas")
+    bbb.push("electric_gas")
+    bbb.push("electric_gas")
+    bbb.push("corrosive_gas")
+    bbb.push("iocalfaeus_gas")
+    bbb.push("iocalfaeus_gas")
+    bbb.push("iocalfaeus_gas")
+    bbb.push("ignited_gas")
+    bbb.push("ignited_gas")
+    bbb.push("ignited_gas")
+    bbb.push("finine")
+    bbb.push("finine")
+    bbb.push("finine")
+    bbb.push("acidic_vapour")
+    bbb.push("acidic_vapour")
+    bbb.push("acidic_vapour")
+    bbb.push("nitrous_gas")
+    bbb.push("nitrous_gas")
+    bbb.push("nitrous_gas")
+    bbb.push("void_gas")
+    bbb.push("void_gas")
+    bbb.push("void_gas")
+    bbb.push("black_damp")
+    bbb.push("black_damp")
+    bbb.push("black_damp")
+    aaa.push("electric_gas")
+    aaa.push("electric_gas")
+    aaa.push("iocalfaeus_gas")
+    aaa.push("iocalfaeus_gas")
+    aaa.push("ignited_gas")
+    aaa.push("ignited_gas")
+    aaa.push("finine")
+    aaa.push("finine")
+    aaa.push("acidic_vapour")
+    aaa.push("acidic_vapour")
+    aaa.push("nitrous_gas")
+    aaa.push("nitrous_gas")
+    aaa.push("void_gas")
+    aaa.push("void_gas")
+    aaa.push("black_damp")
+    aaa.push("black_damp")
+  }
+  if(enabledMods.includes("mods/some_tf_liquids.js")) {
+    bbb.push("blazing_pyrotheum")
+    bbb.push("blazing_pyrotheum")
+    bbb.push("blazing_pyrotheum")
+    bbb.push("blazing_pyrotheum")
+    bbb.push("blazing_pyrotheum")
+    bbb.push("blazing_pyrotheum")
+    bbb.push("tectonic_petrotheum")
+    bbb.push("tectonic_petrotheum")
+    bbb.push("tectonic_petrotheum")
+    bbb.push("resonant_ender")
+    bbb.push("resonant_ender")
+    bbb.push("resonant_ender")
+    aaa.push("blazing_pyrotheum")
+    aaa.push("blazing_pyrotheum")
+    aaa.push("blazing_pyrotheum")
+    aaa.push("blazing_pyrotheum")
+    aaa.push("blazing_pyrotheum")
+    aaa.push("blazing_pyrotheum")
+    aaa.push("tectonic_petrotheum")
+    aaa.push("tectonic_petrotheum")
+    aaa.push("tectonic_petrotheum")
+    aaa.push("resonant_ender")
+    aaa.push("resonant_ender")
+    aaa.push("resonant_ender")
+    aaa.push("blazing_pyrotheum")
+    aaa.push("blazing_pyrotheum")
+    aaa.push("blazing_pyrotheum")
+    aaa.push("blazing_pyrotheum")
+    aaa.push("blazing_pyrotheum")
+    aaa.push("blazing_pyrotheum")
+    aaa.push("tectonic_petrotheum")
+    aaa.push("tectonic_petrotheum")
+    aaa.push("tectonic_petrotheum")
+    aaa.push("resonant_ender")
+    aaa.push("resonant_ender")
+    aaa.push("resonant_ender")
   }
 });
