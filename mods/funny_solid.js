@@ -18,7 +18,7 @@ elements.shit = {
 },
 
 elements.altnull = {
-	color: ["#000000"],
+	color: settings.bg,
 	behavior: behaviors.SELFDELETE,
 	reactions: {
 		"altnull": { "elem1": null, "elem2": null }
@@ -26,10 +26,6 @@ elements.altnull = {
 	tick: function(pixel) {
 		deletePixel(pixel.x,pixel.y)
 	},
-	tempHigh: -273,
-	stateHigh: null,
-	tempLow: 999999999999,
-	stateLow: null,
 	burn: 10000,
 	burnTime: 1,
 	hidden: true,
