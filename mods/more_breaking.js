@@ -98,6 +98,20 @@ if(enabledMods.includes("mods/some_tf_liquids.js")) {
     regularMetalArray.push("signalum")
 }
 
+elements.nitrogen_snow = {
+	color: "#efefef",
+	behavior: behaviors.POWDER,
+	category: "solids",
+	temp: -259.86,
+	tempHigh: -209.86,
+	stateHigh: "liquid_nitrogen",
+	state: "solid",
+	density: 850,
+	hidden: true,
+}
+
+elements.nitrogen_ice.breakInto = "nitrogen_snow"
+
 runAfterLoad(function() {
     for(i = 0; i < regularMetalArray.length; i++) {
         elements[`${regularMetalArray[i]}_scrap`] = {
