@@ -67,7 +67,7 @@ behavior: behaviors.SOUL_SAND,
 category: "minecraft",
 state: "solid",
 tempHigh: 2575,
-stateHigh: "molten_soul_glass",
+stateHigh: "soul_glass",
 density: 1375,
 reactions: {
 "water": { "elem1":"wet_soul_sand", "elem2":null },
@@ -79,14 +79,14 @@ behavior: behaviors.SOUL_SAND,
 category: "minecraft",
 state: "solid",
 tempHigh: 2565,
-stateHigh: "molten_soul_glass",
+stateHigh: "soul_glass",
 density: 1450,
 reactions: {
 "water": { "elem1":"soul_mud", "elem2":null },
 }
 };
-elements.wet_soul_sand = {
-color: ["#5c452e", "#856d56"],
+elements.soul_mud = {
+color: "#6e5437",
 behavior: behaviors.POWDER,
 category: "minecraft",
 state: "solid",
@@ -94,13 +94,29 @@ tempHigh: 1985,
 stateHigh: "soul_adobe",
 density: 1585
 };
+elements.soul_glass = {
+color: "#7a90c2",
+behavior: behaviors.WALL,
+category: "minecraft",
+state: "solid",
+tempHigh: 2585,
+stateHigh: "molten_soul_glass",
+density: 1685
+};
+elements.wet_soul_sand = {
+color: ["#5c452e", "#856d56"],
+behavior: behaviors.POWDER,
+category: "minecraft",
+state: "solid",
+tempHigh: 150,
+stateHigh: "soul_sand",
+density: 1660,
+};
 /* unfinished but near:
 Soul Adobe,
 Molten Soul Glass,
-Soul Glass,
 Nether Quartz,
 Molten Nether Quartz,
-Wet Soul Sand,
 Dripstone,
 Molten Dripstone,
 Molten Glowstone,
