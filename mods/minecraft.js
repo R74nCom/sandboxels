@@ -59,7 +59,7 @@ density: 1250
 behaviors.SOUL_SAND = [
 "SA|SA|SA",
 "XX|XX|XX",
-"SA|SA|SA",
+"SA AND M2|SA AND M1|SA AND M2",
 ];
 elements.soul_sand = {
 color: ["#91704d", "#704e2b", "#523517"],
