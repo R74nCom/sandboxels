@@ -56,3 +56,55 @@ tempHigh: 1275,
 stateHigh: "liquid_redstone",
 density: 1250
 };
+behaviors.SOUL_SAND = [
+"SA|SA|SA",
+"XX|XX|XX",
+"SA|SA|SA",
+];
+elements.soul_sand = {
+color: ["#91704d", "#704e2b", "#523517"],
+behavior: behaviors.SOUL_SAND,
+category: "minecraft",
+state: "solid",
+tempHigh: 2575,
+stateHigh: "molten_soul_glass",
+density: 1375,
+reactions: {
+"water": { "elem1":"wet_soul_sand", "elem2":null },
+}
+};
+elements.soul_soil = {
+color: ["#80664b", "#6e553b", "#5c452e"],
+behavior: behaviors.SOUL_SAND,
+category: "minecraft",
+state: "solid",
+tempHigh: 2565,
+stateHigh: "molten_soul_glass",
+density: 1450,
+reactions: {
+"water": { "elem1":"soul_mud", "elem2":null },
+}
+};
+elements.wet_soul_sand = {
+color: ["#5c452e", "#856d56"],
+behavior: behaviors.POWDER,
+category: "minecraft",
+state: "solid",
+tempHigh: 1985,
+stateHigh: "soul_adobe",
+density: 1585
+};
+/* unfinished but near:
+Soul Adobe,
+Molten Soul Glass,
+Soul Glass,
+Nether Quartz,
+Molten Nether Quartz,
+Wet Soul Sand,
+Dripstone,
+Molten Dripstone,
+Molten Glowstone,
+Liquid Redstone,
+Soul Flame,
+Soul
+*/
