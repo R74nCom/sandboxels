@@ -8,7 +8,10 @@ elements.loose_straw = {
 	category: "powders",
 	state: "solid",
 	density: 47.5,
+	hidden: true,
 },
+
+elements.straw.breakInto = ["ash","loose_straw"]
 
 elements.plastic_scrap = {
 	color: "#c3cccc",
@@ -21,26 +24,12 @@ elements.plastic_scrap = {
 	burnInto: "dioxin",
 	state: "solid",
 	density: 952,
+	hidden: true,
 },
 
-//insulation
+elements.plastic.breakInto = ["plastic_scrap","dioxin"]
 
-elements.iron_scrap = {
-	color: ["#dbdddd","#cdcdcd","#bbbdbd","#adadad","#cbcdcd","#bdbdbd"],
-	behavior: behaviors.POWDER,
-	reactions: {
-		"water": { "elem1":"rust", chance:0.0035 },
-		"salt_water": { "elem1":"rust", chance:0.006 },
-		"dirty_water": { "elem1":"rust", chance:0.045 },
-		"sugar_water": { "elem1":"rust", chance:0.0045 },
-	},
-	tempHigh: 1538,
-	stateHigh: "molten_iron",
-	category: "powders",
-	density: 4860,
-	state: "solid",
-	conduct: 0.43,
-},
+elements.insulation.breakInto = ["plastic_scrap","dioxin","glass_shard"]
 
 elements.copper_scrap = {
 	color: ["#B96242","#CE5332","#D77045","#994222","#AE3312","#B75025","#A95232","#BE4322","#C76035"],
@@ -60,7 +49,9 @@ elements.copper_scrap = {
 	stateHigh: "molten_copper",
 	density: 5960,
 	conduct: 0.90,
+	hidden: true,
 },
+
 elements.oxidized_copper_scrap = {
 	color: ["#507565","#52665A","#618374","#305545","#32463A","#416354","#406555","#42564A","#517364"],
 	behavior: behaviors.POWDER,
@@ -70,57 +61,69 @@ elements.oxidized_copper_scrap = {
 	stateHigh: "molten_copper",
 	density: 5960,
 	conduct: 0.80,
-},
-
-elements.zinc_scrap = {
-	color: ["#8C8A8B","#ADADAF","#FFFFFF","#7C7A7B","#9D9D9F","#F8F8F3","#6C6A6B","#8D8D8F","#E8E8E3"],
-	behavior: behaviors.POWDER,
-	category: "powders",
-	tempHigh: 419.53,
-	stateHigh: "molten_zinc",
-	density: 4068,
-	conduct: 0.43,
-},
-
-elements.tin_scrap = {
-	color: ["#AEADA8","#BEBDB4","#9E9D98","#AEADA4","#8E8D88","#9E9D94"],
-	behavior: behaviors.POWDER,
-	tempHigh: 231.9,
-	stateHigh: "molten_tin",
-	category: "powders",
-	density: 4260,
-	conduct: 0.35,
-},
-
-elements.nickel_scrap = {
-	color: ["#828482","#727472","#626462"],
-	behavior: behaviors.POWDER,
-	tempHigh: 1455,
-	stateHigh: "molten_nickel",
-	category: "powders",
-	density: 5900,
-	conduct: 0.41,
-},
-
-elements.silver_scrap = {
-	color: ["#DADADA","#CACACA","#BABABA"],
-	behavior: behaviors.POWDER,
-	tempHigh: 961.8,
-	stateHigh: "molten_silver",
-	category: "powders",
-	density: 7497,
-	conduct: 0.89,
+	hidden: true,
 }
 
-//gold
-
-elements.straw.breakInto = ["ash","loose_straw"]
-elements.plastic.breakInto = ["plastic_scrap","dioxin"]
-elements.insulation.breakInto = ["plastic_scrap","dioxin","glass_shard"]
-elements.iron.breakInto = "iron_scrap"
 elements.copper.breakInto = ["copper_scrap","copper_scrap","copper_scrap","copper_scrap","copper_scrap","oxidized_copper_scrap"]
-elements.zinc.breakInto = "zinc_scrap"
-elements.tin.breakInto = "tin_scrap"
-elements.nickel.breakInto = "nickel_scrap"
-elements.silver.breakInto = "silver_scrap"
+
 elements.gold.breakInto = "gold_coin"
+
+elements.dry_ice.breakInto = "carbon_dioxide"
+
+regularMetalArray = ["iron", "zinc", "tin", "nickel", "silver", "aluminum", "lead", "tungsten", "brass", "bronze", "sterling", "steel", "rose_gold", "solder"]
+
+if(enabledMods.includes("mods/Neutronium Mod.js")) {
+    regularMetalArray.push("mythril")
+    regularMetalArray.push("mithril_mythril_alloy")
+    regularMetalArray.push("titanium")
+    regularMetalArray.push("ilitium")
+}
+
+if(enabledMods.includes("mods/ketchup_mod.js")) {
+    regularMetalArray.push("ketchup_metal")
+    regularMetalArray.push("ketchup_gold")
+    elements.frozen_ketchup.breakInto = "ketchup_snow"
+    elements.frozen_poisoned_ketchup.breakInto = "poisoned_ketchup_snow"
+}
+
+if(enabledMods.includes("mods/randomness.js")) {
+    regularMetalArray.push("tungstensteel")
+}
+
+if(enabledMods.includes("mods/fey_and_more.js")) {
+    regularMetalArray.push("mithril")
+}
+
+if(enabledMods.includes("mods/some_tf_liquids.js")) {
+    regularMetalArray.push("signalum")
+}
+
+elements.nitrogen_snow = {
+	color: "#efefef",
+	behavior: behaviors.POWDER,
+	category: "solids",
+	temp: -259.86,
+	tempHigh: -209.86,
+	stateHigh: "liquid_nitrogen",
+	state: "solid",
+	density: 850,
+	hidden: true,
+}
+
+elements.nitrogen_ice.breakInto = "nitrogen_snow"
+
+runAfterLoad(function() {
+    for(i = 0; i < regularMetalArray.length; i++) {
+        elements[`${regularMetalArray[i]}_scrap`] = {
+            color: elements[regularMetalArray[i]].color,
+            behavior: behaviors.POWDER,
+            tempHigh: elements[regularMetalArray[i]].tempHigh,
+            stateHigh: regularMetalArray[i],
+            category: "powders",
+            hidden: true,
+            density: elements[regularMetalArray[i]].density * 0.09,
+            conduct: elements[regularMetalArray[i]].conduct * 0.4,
+        };
+        elements[regularMetalArray[i]].breakInto = `${regularMetalArray[i]}_scrap`
+    };
+});

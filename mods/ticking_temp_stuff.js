@@ -489,5 +489,6 @@ elements.color_temp_test = {
 	},
 	category: "special",
 	state: "solid",
+	density: 1500,
 	temp: 20,
 }

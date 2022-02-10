@@ -63,7 +63,7 @@ elements.frozen_vomit = {
 	temp: -5,
 	tempHigh: 0,
 	stateHigh: "vomit",
-	state: "solids",
+	state: "solid",
 	hidden: true,
 	density: 1049,
 	breakInto: "vomit_snow",
