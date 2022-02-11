@@ -5,3 +5,4 @@ elements.sandreplacer = {
         pixel.element = "sand"
     },
     category: "tools",
+};
