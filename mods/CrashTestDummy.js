@@ -2,6 +2,6 @@
 elements.sandreplacer = {
     color: "#ff2f2f",
     tool: function(pixel) {
-        pixel.type = "sand"
+        pixel.element = "sand"
     },
     category: "tools",
