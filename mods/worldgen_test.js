@@ -94,7 +94,7 @@ elements.worldgen_test = {
 }
 
 runAfterLoad(function() {
-  if(enabledMods.includes("mods/randomness.js")) {
+  if(enabledMods.includes("mods/minecraft.js")) {
 
 elements.nether_gen_test = {
 	color: ["#751318","#694a20","#f0771a"],
