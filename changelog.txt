@@ -1,14 +1,55 @@
 [Future Plans]
-    + Artists' Update (Painting, Lines, Shapes, etc.)
+    + Artists' Update (Lines, Shapes, etc.)
     + Machines Update
-    + World Generation
     + More plans / feedback at https://docs.google.com/document/u/4/d/1R8xljj_J-K5oU-9y4louwplQmM-ZBvUfXmhbgj5LYdk/edit
 
-[Version 1.3 BETA]
+[Version 1.3 - Feb. 11, 2022]
+    + World Generation Setting [Beta]
+    + Staining
+        + Some liquids will stain solids, some will clean
+        + Smoke now stains solids (soot)
+        + Staining can be disabled in settings
+    + Paint tool
+        + Hold Shift to color solid
+    + Unpaint tool
     + Color Sand
     + Stained Glass
-    + Grenades will explode into metal fragments
+    + Smog
+    + Hail
+    + Hail Cloud
+    + Seltzer (Carbonated Water, Hidden)
+    + Soda
+    + Bleach
+    + Chlorine
+    + Liquid Chlorine (Hidden)
+    + Thermite
+    + Cement
+    + Dye (Color mixing not added)
+    + Ink
+    + Color Smoke
+    + Sponge
+    + "Art" element, a wall that can be colored
+    + Uncharge tool
+    + Smash tool
+    + Cook tool
+    + Sugar will help Cells and Cancer grow
+    + Alcohol and Poison will kill Cells and Cancer
+    + Soap now removes Oil
+    + Gray Goo can now be electrocuted
+    + Rats now eat cheese
+    + Oxygen and Water makes Foam
+    + Torches can be extinguished with more types of Water
+    + Acid Gas now turns to Acid when cold
+    ~ Tweaked Acid Gas color
+    ~ Grenades now explode into metal fragments
     ~ Fixed: Pressure Plates...
+    + Technical: Custom tools, see example_mod.js
+    + Technical: "stain" element attribute, decimal value -1 to 1, negative values remove stains
+    + Technical: "customColor" element attribute, true/false, allows for picking of a color before placing
+    + Technical: "desc" element attribute, string, allows for custom descriptions in Element Info ("extraInfo" an alias)
+    + Technical: null allowed in stateHigh and stateLow, deletes pixel
+    + Technical: Reaction attributes "tempMin"(number) "tempMax"(number) "charged"(true/false) "charge1"(number) "charge2"(number)
+    + Technical: changePixel(pixel,newElement) function
 
 [Version 1.2 - Feb. 4, 2022]
     + Human

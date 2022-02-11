@@ -33,6 +33,27 @@ behaviors.SELFDELETE = [
     "XX|XX|XX",
 ];
 
+// Raw JavaScript behaviors:
+behaviors.mud.tick = function(pixel) {
+    if (tryMove(pixel, pixel.x, pixel.y+1)) {
+        console.log("Moved!");
+    }
+    else {
+        console.log("Couldn't move!")
+    }
+};
+
+// Create a new tool:
+elements.sand_exploder = {
+    color: "#ff0000",
+    tool: function(pixel) {
+        if (pixel.element == "sand") {
+            pixel.element = "explosion"
+        }
+    },
+    category: "tools",
+};
+
 // Add reactions to existing elements
 if (!elements.water.reactions) { // Include this block once
     elements.water.reactions = {} // This creates the property if it doesn't exist
