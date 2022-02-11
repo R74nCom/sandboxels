@@ -24,6 +24,7 @@ elements.coal_dust = {
 };
 
 //Chlorine only exists in the Neutronium Mod and I don't feel like recreating it, so enable NM for the full experience.
+//It will soon exist in vanilla.
 
 //Natural gas is mostly ammonia, which exists.
 
@@ -95,9 +96,9 @@ elements.void_gas = {
 elements.electric_gas = {
 	color: ["#3693b3", "#246e64"],
 	behavior: [
-		"M2 AND CR:electric%1|M1 AND CR:electric%1|M2 AND CR:electric%1",
-		"M1 AND CR:electric%1|XX                  |M1 AND CR:electric%1",
-		"M2 AND CR:electric%1|M1 AND CR:electric%1|M2 AND CR:electric%1",
+		"M2%2 AND CR:electric%1|M1%2 AND CR:electric%1|M2%2 AND CR:electric%1",
+		"M1%2 AND CR:electric%1|XX                    |M1%2 AND CR:electric%1",
+		"M2%2 AND CR:electric%1|M1%2 AND CR:electric%1|M2%2 AND CR:electric%1",
 	],
 	hardness: 0.6,
 	reactions: {
@@ -114,31 +115,39 @@ corrosiveGasMaxHardness = 0.5
 elements.corrosive_gas = {
 	color: ["#2929e6", "#151cad"],
 	behavior: [
-		"M2|M1|M2",
-		"M1|XX|M1",
-		"M2|M1|M2",
+		"M2%2|M1%2|M2%2",
+		"M1%2|XX  |M1%2",
+		"M2%2|M1%2|M2%2",
 	],
 	hardness: 0.6,
 	tick: function(pixel) {
 		//delete neighbors
 		if(!isEmpty(pixel.x-1,pixel.y) && !outOfBounds(pixel.x-1,pixel.y)) {
 			if(!elements[pixelMap[pixel.x-1][pixel.y].element].hardness || elements[pixelMap[pixel.x-1][pixel.y].element].hardness <= corrosiveGasMaxHardness) {
-				deletePixel(pixel.x-1,pixel.y)
+				if(Math.random() < 0.2) {
+					deletePixel(pixel.x-1,pixel.y)
+				}
 			}
 		}
 		if(!isEmpty(pixel.x+1,pixel.y) && !outOfBounds(pixel.x+1,pixel.y)) {
 			if(!elements[pixelMap[pixel.x+1][pixel.y].element].hardness || elements[pixelMap[pixel.x+1][pixel.y].element].hardness <= corrosiveGasMaxHardness) {
-				deletePixel(pixel.x+1,pixel.y)
+				if(Math.random() < 0.2) {
+					deletePixel(pixel.x+1,pixel.y)
+				}
 			}
 		}
 		if(!isEmpty(pixel.x,pixel.y-1) && !outOfBounds(pixel.x,pixel.y-1)) {
 			if(!elements[pixelMap[pixel.x][pixel.y-1].element].hardness || elements[pixelMap[pixel.x][pixel.y-1].element].hardness <= corrosiveGasMaxHardness) {
-				deletePixel(pixel.x,pixel.y-1)
+				if(Math.random() < 0.2) {
+					deletePixel(pixel.x,pixel.y-1)
+				}
 			}
 		}
 		if(!isEmpty(pixel.x,pixel.y+1) && !outOfBounds(pixel.x,pixel.y+1)) {
 			if(!elements[pixelMap[pixel.x][pixel.y+1].element].hardness || elements[pixelMap[pixel.x][pixel.y+1].element].hardness <= corrosiveGasMaxHardness) {
-				deletePixel(pixel.x,pixel.y+1)
+				if(Math.random() < 0.2) {
+					deletePixel(pixel.x,pixel.y+1)
+				}
 			}
 		}
 	},
@@ -258,9 +267,9 @@ finineRange = 6
 elements.finine = {
 	color: ["#ffffec", "#fafade", "#ebebd5", "#c9c9b7", "#80806f"],
 	behavior: [
-		"M2|M1|M2",
-		"M1|XX|M1",
-		"M2|M1|M2",
+		"M2%2|M1%2|M2%2",
+		"M1%2|XX  |M1%2",
+		"M2%2|M1%2|M2%2",
 	],
 	tick: function(pixel) {
 		for (let i = -2; i < 3; i++) {

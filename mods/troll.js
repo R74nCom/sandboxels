@@ -56,4 +56,23 @@ elements.troll3 = {
 	insulate: true,
 	state: "solid",
 	excludeRandom: true,
+},
+
+elements.troll4 = {
+	color: "#eeeeee",
+	tick: function(pixel) {
+		for (var i = 1; i < width; i++) {
+			for (var j = 1; j < height; j++) {
+				var eeaa = (Math.floor(Math.random()*5))-2
+				if(Math.random() < 0.00007) { explodeAt(i,j,9+eeaa) }
+				if(j == height) { j == 1 }
+			}
+			if(i == height) { i == 1 }
+		}
+	},
+	category: "machines",
+	insulate: true,
+	hardness: 1.0,
+	state: "solid",
+	excludeRandom: true,
 }

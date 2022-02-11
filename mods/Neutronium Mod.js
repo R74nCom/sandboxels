@@ -45,7 +45,7 @@ elements.neutronium = {
     color: "#558bcf",
     behavior: behaviors.GAS,
     reactions: {
-        "oxygen": { "elem1":null, "elem2":"hydrogen" },
+        "oxygen": { "elem1":null, "elem2":"steam" },
     },
     category: "gases",
     burn: 100,
@@ -493,7 +493,7 @@ color: ["#eda724", "#f0eabd"],
 behavior: behaviors.LIQUID,
 category: "liquids",
 reactions: {
-"molten_mithril": { "elem1": "molten_mythril_mithril_alloy", "elem2":null },
+"molten_mithril": { "elem1": "molten_mithril_mythril_alloy", "elem2":null },
 },
 density: 6855,
 state: "liquid",

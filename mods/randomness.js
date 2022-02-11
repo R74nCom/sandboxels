@@ -602,7 +602,6 @@ elements.wb1 = {
         "XX|CR:water|XX",
     ],
     category: "special",
-    state: "liquid",
     density: 997,
     hidden: true,
     excludeRandom: true,
@@ -645,7 +644,6 @@ elements.lb1 = {
         "XX|CR:magma|XX",
     ],
     category: "special",
-    state: "liquid",
     density: 997,
     hidden: true,
     excludeRandom: true,
@@ -723,66 +721,44 @@ elements.seb = {
 	hidden: true,
 	excludeRandom: true,
 	hardness: 0.3,
-},
+}
 
-elements.netherrack = {
-    color: ["#802b2b","#4f1b1b","#943232"],
-    behavior: behaviors.POWDER,
-    tempHigh: 7550,
-    category: "land",
-    state: "solid",
-    density: 2550,
-    hardness: 0.07,
-    breakInto: ["crushed_netherrack","crushed_netherrack","crushed_netherrack","crushed_netherrack","crushed_netherrack","crushed_netherrack","crushed_netherrack","sulfur"], // and some copper, gold, iron, nickel after processing //sulfur closer to 1/7 in-game
-    burn: 9,
-    burnTime: 9007199254740995,
-    burnInto: "netherrack",
-},
+if(!enabledMods.includes("mods/minecraft.js")) {
+    elements.netherrack = {
+        color: ["#802b2b","#4f1b1b","#943232"],
+        behavior: behaviors.POWDER,
+        tempHigh: 7550,
+        category: "land",
+        state: "solid",
+        density: 2550,
+        hardness: 0.07,
+        breakInto: ["crushed_netherrack","crushed_netherrack","crushed_netherrack","crushed_netherrack","crushed_netherrack","crushed_netherrack","crushed_netherrack","sulfur"], // and some copper, gold, iron, nickel after processing //sulfur closer to 1/7 in-game
+        burn: 9,
+        burnTime: 9007199254740995,
+        burnInto: "netherrack",
+    }
+    minecraftModEnabled = false
+} else if(enabledMods.includes("mods/minecraft.js")) {
+    minecraftModEnabled = true
+}
 
-elements.crushed_netherrack = {
-    color: ["#e34b46","#b04235","#73431f","#522510","#7a3326"],
-    behavior: behaviors.POWDER,
-    category:"land",
-    tempHigh: 7550,
-    stateHigh: "molten_netherrack",
-    state: "solid",
-    density: 1680,
-    burn: 20,
-    burnTime: 9007199254740995,
-    hardness: 0.02,
-    hidden: true,
-},
-
-elements.soul_sand = {
-    color: "#755e35",
-    behavior: behaviors.POWDER,
-    tempHigh: 3000,
-    stateHigh: "molten_soul_glass",
-    category: "land",
-    state: "solid",
-    density: 1602,
-},
-
-elements.soul_glass = {
-    color: ["#998060","#a18654"],
-    behavior: behaviors.WALL,
-    tempHigh: 3000,
-    category: "solids",
-    state: "solid",
-    density: 2500,
-    breakInto: "soul_glass_shard",
-    hidden: true,
-},
-
-elements.soul_glass_shard = {
-    color: ["#998060","#a18654","#8f764a"],
-    behavior: behaviors.POWDER,
-    tempHigh: 3000,
-    stateHigh: "molten_soul_glass",
-    category: "powders",
-    state: "solid",
-    density: 2500,
-    hidden: true,
+if(!enabledMods.includes("mods/minecraft.js")) {
+    elements.crushed_netherrack = {
+        color: ["#e34b46","#b04235","#73431f","#522510","#7a3326"],
+        behavior: behaviors.POWDER,
+        category:"land",
+        tempHigh: 7550,
+        stateHigh: "molten_netherrack",
+        state: "solid",
+        density: 1680,
+        burn: 20,
+        burnTime: 9007199254740995,
+        hardness: 0.02,
+        hidden: true,
+    }
+    minecraftModEnabled = false
+} else if(enabledMods.includes("mods/minecraft.js")) {
+    minecraftModEnabled = true
 }
 
 runAfterLoad(function() {
@@ -797,6 +773,26 @@ runAfterLoad(function() {
       "DL:"+eLists.FAIRY+" AND M2|XX|DL:"+eLists.FAIRY+" AND M2",
       "M1|DL:"+eLists.FAIRY+"|M1",
     ]
+  }
+    if(minecraftModEnabled) {
+        elements.netherrack.hardness = 0.07
+        elements.netherrack.breakInto = ["crushed_netherrack","crushed_netherrack","crushed_netherrack","crushed_netherrack","crushed_netherrack","crushed_netherrack","crushed_netherrack","sulfur"] // and some copper, gold, iron, nickel after processing //sulfur closer to 1/7 in-game
+        elements.netherrack.burn = 9
+        elements.netherrack.burnTime = 9007199254740995
+        elements.netherrack.burnInto = "netherrack"
+    elements.crushed_netherrack = {
+        color: ["#e34b46","#b04235","#73431f","#522510","#7a3326"],
+        behavior: behaviors.POWDER,
+        category:"land",
+        tempHigh: 2750,
+        stateHigh: "molten_netherrack",
+        state: "solid",
+        density: 1680,
+        burn: 20,
+        burnTime: 9007199254740995,
+        hardness: 0.02,
+        hidden: true,
+    }
   }
   elements.vaporized_histrelin = elements.molten_histrelin
   delete elements.molten_histrelin
