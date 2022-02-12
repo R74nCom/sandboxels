@@ -120,7 +120,7 @@ elements.liquid_paste = {
 };
 elements.water.reactions.soup = { "elem1":"wet_soup", "elem2":"salt_water" };
 elements.tar.reactions.magma = { "elem1":"smoke", "elem2":"cinder" };
-elements.poop.reactions.water = { "elem1:"dried_poop", "elem2":fly" };
+elements.poop.reactions.water = { "elem1:"dried_poop", "elem2":"fly" };
 elements.tar.reactions.husk = { "elem1":"rot", "elem2":"fly" };
 elements.husk.reactions.molasses = { "elem1":"smoke", "elem2":"remnant" };
 elements.rot.reactions.fire = { "elem1":"smoke", "elem2":"cinder" };
