@@ -77,10 +77,28 @@ elements.troll4 = {
 	excludeRandom: true,
 },
 
+elements.offset_fourth_y = {
+    color: ["#000000", "#ff00ff", "#000000", "#ff00ff", "#000000", "#ff00ff", "#000000", "#ff00ff"],
+    tool: function(pixel) {
+        tryMove(pixel,pixel.x,pixel.y+0.25);
+		pixelTempCheck(pixel)
+    },
+    category: "tools",
+},
+
 elements.offset_half_y = {
     color: ["#000000", "#ff00ff", "#000000", "#ff00ff", "#000000", "#ff00ff", "#000000", "#ff00ff"],
     tool: function(pixel) {
         tryMove(pixel,pixel.x,pixel.y+0.5);
+		pixelTempCheck(pixel)
+    },
+    category: "tools",
+},
+
+elements.offset_three_fourth_y = {
+    color: ["#000000", "#ff00ff", "#000000", "#ff00ff", "#000000", "#ff00ff", "#000000", "#ff00ff"],
+    tool: function(pixel) {
+        tryMove(pixel,pixel.x,pixel.y+0.75);
 		pixelTempCheck(pixel)
     },
     category: "tools",
