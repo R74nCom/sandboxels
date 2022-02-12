@@ -31,11 +31,6 @@ elements.cream = {
     state: "liquid",
     density: 993
 };
-elements.water.reactions.soup = { "elem1":"wet_soup", "elem2":"dirty_water" }
-
-elements.tar.reactions.magma = { "elem1":"smoke", "elem2":"cinder" }
-
-
 elements.poop = {
     color: "#8A4D24",
     behavior: behaviors.LIQUID,
@@ -82,3 +77,5 @@ elements.liquid_paste = {
     state: "liquid",
     density: 230
 };
+elements.water.reactions.soup = { "elem1":"wet_soup", "elem2":"dirty_water" };
+elements.tar.reactions.magma = { "elem1":"smoke", "elem2":"cinder" };
