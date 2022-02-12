@@ -75,4 +75,13 @@ elements.troll4 = {
 	hardness: 1.0,
 	state: "solid",
 	excludeRandom: true,
+},
+
+elements.offset_half_y = {
+    color: ["#000000", "#ff00ff", "#000000", "#ff00ff", "#000000", "#ff00ff", "#000000", "#ff00ff"],
+    tool: function(pixel) {
+        tryMove(pixel,pixel.x,pixel.y+0.5);
+		pixelTempCheck(pixel)
+    },
+    category: "tools",
 }
