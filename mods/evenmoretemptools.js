@@ -10,7 +10,7 @@ elements.warm = {
 elements.ultraheat = {
     color: ["#ff0000", "#ffbf4f", "#ff0000", "#ffbf4f", "#ff0000", "#ffbf4f"],
     tool: function(pixel) {
-        if(shiftDown) { pixel.temp += (250 * (1 + shiftDown)) } else { pixel.temp += 250 }
+        if(shiftDown) { pixel.temp += (350 * (1 + shiftDown)) } else { pixel.temp += 350 }
 		pixelTempCheck(pixel)
     },
     category: "tools",
@@ -18,7 +18,7 @@ elements.ultraheat = {
 elements.ultracool = {
     color: ["#0000ff", "#4fbfff", "#0000ff", "#4fbfff", "#0000ff", "#4fbfff"],
     tool: function(pixel) {
-        if(shiftDown) { pixel.temp -= (250 * (1 + shiftDown)) } else { pixel.temp -= 250 }
+        if(shiftDown) { pixel.temp -= (350 * (1 + shiftDown)) } else { pixel.temp -= 350 }
 		pixelTempCheck(pixel)
     },
     category: "tools",
