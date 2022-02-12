@@ -26,17 +26,30 @@ elements.cream = {
     color: ["#E1D3A2","#E5DBB7"],
     behavior: behaviors.LIQUID,
     category: "food",
-	stateHigh: ["tar"],
+    stateHigh: "gas",
     viscosity: 4640,
     state: "liquid",
     density: 993
 };
 elements.poop = {
     color: "#8A4D24",
-    behavior: behaviors.LIQUID,
-    category: "food",
+	behavior: [
+		"XX|CR:plague%0.1 AND CR:fly%0.01 AND CR:methane%0.0316|XX",
+		"XX|CH:dried_poop%0.02|XX",
+		"M2%50|M1 AND SW:water%50|M2%50",
+	],
+    category: "life",
     viscosity: 1,
+    reactions: {},
     state: "liquid",
+    density: 43
+};
+elements.dried_poop = {
+    color: "#442714",
+    behavior: behaviors.POWDER,
+    category: "powders",
+    viscosity: 1,
+    state: "solid",
     density: 43
 };
 elements.tar = {
@@ -66,9 +79,36 @@ elements.paste = {
     color: "#C4AA98",
     behavior: behaviors.WALL,
     category: "solids",
-	stateHigh: ["liquid_paste"],
+     stateHigh: ["liquid_paste"],
     state: "solid",
     density: 230
+};
+elements.husk = {
+    color: ["#C4AA98", "#9E836B", "#A5876D", "#AE7D64", "#C87B67"],
+    behavior: behaviors.WALL,
+    category: "solids",
+    reactions: {},
+    state: "solid"
+};
+elements.remnant = {
+    color: "#3C382B",
+    behavior: behaviors.POWDER,
+    category: "land",
+    state: "solid",
+    density: 1730
+};
+elements.rot = {
+    color: ["#101217", "#853A2A"],
+	behavior: [
+		"XX|CR:fly%0.054|XX",
+		"XX|XX|XX",
+		"XX|CR:rot%0.054|XX",
+	],
+    category: "liquids",
+    viscosity: 1,
+    state: "liquid",
+    reactions: {},
+    density: 2
 };
 elements.liquid_paste = {
     color: "#D8D4C1",
@@ -78,5 +118,10 @@ elements.liquid_paste = {
     state: "liquid",
     density: 230
 };
-elements.water.reactions.soup = { "elem1":"wet_soup", "elem2":"dirty_water" };
+elements.water.reactions.soup = { "elem1":"wet_soup", "elem2":"salt_water" };
 elements.tar.reactions.magma = { "elem1":"smoke", "elem2":"cinder" };
+elements.poop.reactions.water = { "elem1:"dried_poop", "elem2":fly" };
+elements.tar.reactions.husk = { "elem1":"rot", "elem2":"fly" };
+elements.husk.reactions.molasses = { "elem1":"smoke", "elem2":"remnant" };
+elements.rot.reactions.fire = { "elem1":"smoke", "elem2":"cinder" };
+elements.water.reactions.rot = { "elem1":"blood", "elem2":"slag" };
