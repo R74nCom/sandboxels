@@ -1354,7 +1354,12 @@
                 tool: function(pixel) {
                     if (elements[pixel.element].breakInto) {
                         if (Math.random() < (elements[pixel.element].hardness || 1)) {
-                            changePixel(pixel,elements[pixel.element].breakInto);
+                            var breakInto = elements[pixel.element].breakInto;
+                            // if breakInto is an array, pick one
+                            if (Array.isArray(breakInto)) {
+                                breakInto = breakInto[Math.floor(Math.random() * breakInto.length)];
+                            }
+                            changePixel(pixel,breakInto);
                         }
                     }
                     else if (Math.random() < (elements[pixel.element].hardness || 0.1)) {
