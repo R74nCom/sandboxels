@@ -46,6 +46,7 @@ elements.tar = {
     viscosity: 45000,
     state: "liquid",
     burn: 10,
+    reactions: {},
     burnTime: 200,
     fireColor: "#101217",
     density: 1
