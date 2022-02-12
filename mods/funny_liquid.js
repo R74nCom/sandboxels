@@ -32,6 +32,7 @@ elements.cum = {
 	category:"cum",
 	conduct:0,
 	extraInfo: "A whitish, sticky liquid that contains sperm. <span style=\"font-size: 0;\">It isn't funny.</span>",
+	stain: 0.11,
 },
 elements.dead_cum = { 
 	name: "dead cum",
@@ -62,6 +63,7 @@ elements.dead_cum = {
 	conduct: 0.04,
 	hidden:true,
 	extraInfo: "Semen whose sperm have died.",
+	stain: 0.11,
 },
 elements.cum_water = {
 	name: "cum water",
@@ -96,6 +98,7 @@ elements.cum_water = {
 	state: "liquid",
 	hidden: true,
 	extraInfo: "Dilute semen.",
+	stain: 0.04,
 },
 elements.dead_cum_water = {
 	name: "dead cum water",
@@ -119,6 +122,7 @@ elements.dead_cum_water = {
 	conduct: 0.03,
 	hidden:true,
 	extraInfo: "Dilute semen whose sperm have died.",
+	stain: 0.04,
 },
 elements.burnt_cum = {
 	name: "burnt cum",
@@ -428,6 +432,7 @@ elements.precum = {
 	category:"cum",
 	state: "liquid",
 	extraInfo: "A sticky fluid that neutralizes acid.",
+	stain: 0.03,
 },
 elements.precum_ice = { 
 	name: "frozen pre-cum",
