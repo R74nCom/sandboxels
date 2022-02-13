@@ -51,3 +51,40 @@ elements.extinguisher = {
 	category: "tools",
 	excludeRandom: true,
 };
+
+elements.anti_gravity = {
+	color: [elements.dirt.color[1],elements.dirt.color[1],elements.oxygen.color,elements.oxygen.color],
+	tool: function(pixel) {
+		pixel.r = 2;
+	},
+	category: "tools",
+	excludeRandom: true,
+};
+
+elements.normal_gravity = {
+	color: [elements.oxygen.color,elements.oxygen.color,elements.dirt.color[1],elements.dirt.color[1]],
+	tool: function(pixel) {
+		pixel.r = 0;
+	},
+	category: "tools",
+	excludeRandom: true,
+};
+
+elements.rg1 = {
+	color: [elements.dirt.color[14],elements.dirt.color[14],elements.liquid_oxygen.color,elements.liquid_oxygen.color],
+	tool: function(pixel) {
+		pixel.r = 1;
+	},
+	category: "tools",
+	excludeRandom: true,
+};
+
+elements.rg3 = {
+	color: [elements.liquid_oxygen.color,elements.liquid_oxygen.color,elements.dirt.color[14],elements.dirt.color[14]],
+	tool: function(pixel) {
+		pixel.r = 3;
+	},
+	category: "tools",
+	excludeRandom: true,
+};
+
