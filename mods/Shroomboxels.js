@@ -42,11 +42,11 @@ function drawPixels(forceTick=false) {
 				if (hue > 225) {hue = 225}
 				ctx.fillStyle = "hsl("+hue+",100%,50%)";
 			}
-			ctx.fillRect(pixel.x*pixelSize+(19.8*Math.sin((pixel.y+incrementt	)/4.4)), pixel.y*pixelSize+(21.6*Math.sin((pixel.x+incrementt)/4.4)), pixelSize, pixelSize);
+			ctx.fillRect(pixel.x*pixelSize+(19.8*Math.tan((pixel.y+incrementt	)/4.4)), pixel.y*pixelSize+(21.6*Math.tan((pixel.x+incrementt)/4.4)), pixelSize, pixelSize);
 			if (pixel.charge) { // Yellow glow on charge
 				if (!elements[pixel.element].colorOn) {
 					ctx.fillStyle = "rgba(255,255,0,0.5)";
-					ctx.fillRect(pixel.x*pixelSize+(18*Math.cos((pixel.y+incrementt)/4.4)), pixel.y*pixelSize+(9*Math.cos((pixel.x+incrementt)/4.4)), pixelSize, pixelSize);
+					ctx.fillRect(pixel.x*pixelSize+(18*Math.sec((pixel.y+incrementt)/4.4)), pixel.y*pixelSize+(9*Math.sec((pixel.x+incrementt)/4.4)), pixelSize, pixelSize);
 				}
 			}
 		}
