@@ -1056,6 +1056,38 @@ temp: 2000,
 viscosity: 10000,
 density: 2.65
 };
+elements.liquid_cloner = {
+color: "#ffff00",
+category: "special",
+state: "liquid",
+behavior: [
+"CF|CF|CF",
+"CF AND M2|XX|CF AND M2",
+"CF AND M1|CF AND M1|CF AND M1",
+],
+density: 975,
+};
+elements.fire_cloner = {
+color: "#ff8000",
+category: "special",
+state: "gas",
+behavior: [
+"CF AND HT%1 AND M1|CF AND HT%1|CF AND HT%1 AND M1",
+"CF AND HT%1|HT%1|CF AND HT%1",
+"CF AND HT%1|CF AND HT%1|CF AND HT%1",
+],
+};
+elements.antigravity_powder_cloner = {
+color: "#808000",
+category: "special",
+state: "powder",
+behavior: [
+"CF AND M2|CF AND M1|CF AND M2",
+"CF|XX|CF",
+"CF|CF|CF",
+],
+density: 1050,
+};
 /* Unfinished:
 magnesium
 hematite mixture

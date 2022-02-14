@@ -24,6 +24,7 @@ elements.piss = {
 	state: "liquid",
 	conduct:elements.water.conduct+0.1,
 	extraInfo: "A liquid excreted as waste by many animals.",
+	stain: 0.07,
 },
 
 elements.piss_water = {
@@ -50,6 +51,7 @@ elements.piss_water = {
 	category: "piss",
 	conduct: elements.water.conduct+0.05,
 	hidden: true,
+	stain: 0.05,
 },
 
 elements.piss_ice = {

@@ -19,7 +19,7 @@ elements.signalum = {
 	category: "solids",
 	density: 10500,
 	conduct: 1,
-	tempHigh: 550,
+	tempHigh: 1550,
 	stateHigh: "molten_signalum",
 	state: "solid",
 },
@@ -213,3 +213,9 @@ elements.resonant_ender = {
 	state: "liquid",
 	viscosity: 3**4,
 }
+
+runAfterLoad(function() {
+	lifeArray = Object.keys(elements).filter(function(e) {
+		return elements[e].category == "life";
+	});
+});

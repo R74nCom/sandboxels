@@ -15,23 +15,8 @@ elements.shit = {
 	category: "shit",
 	state: "solid",
 	density: 1060,
+	stain: 0.34,
 },
-
-elements.altnull = {
-	color: settings.bg,
-	behavior: behaviors.SELFDELETE,
-	reactions: {
-		"altnull": { "elem1": null, "elem2": null }
-	},
-	tick: function(pixel) {
-		deletePixel(pixel.x,pixel.y)
-	},
-	burn: 10000,
-	burnTime: 1,
-	hidden: true,
-	category: "special",
-},
-
 
 elements.dried_shit = {
 	color: ["#b58738","#8c7245","#ad915f","#b5a174","#705e34","#bdad88"],
@@ -48,9 +33,9 @@ elements.dried_shit = {
 	density: 265,
 	burn: 120,
 	burnTime: 300,
-	burnInto: ["ash","altnull","altnull"],
+	burnInto: ["ash",null,null],
 	tempHigh: 300, //bs
-	stateHigh: ["ash","altnull","altnull"],
+	stateHigh: ["ash",null,null],
 },
 
 elements.diarrhea = {
@@ -71,6 +56,7 @@ elements.diarrhea = {
 	state: "liquid",
 	density: 1030, //bs
 	viscosity: 3,
+	stain: 0.51,
 },
 
 elements.frozen_shit = {

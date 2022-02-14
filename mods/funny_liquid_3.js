@@ -23,6 +23,7 @@ elements.vomit = {
 	stateLow: "frozen_vomit",
 	state: "liquid",
 	density: 1049,
+	stain: 0.32,
 },
 
 elements.acid_gas.ignore.push("water")
