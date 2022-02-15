@@ -1,3 +1,12 @@
+elements.iron.hardness = 0.74
+//https://www.engineeringtoolbox.com/bhn-brinell-hardness-number-d_1365.html
+//https://en.wikipedia.org/wiki/Hardnesses_of_the_elements_(data_page)
+//"Annealed chissel steel" hardness and then divided by iron hardness (Brinell)
+//sqrt()ed like IACS-derived conductivities and scaled to the 0.8 hardness of steel
+//and because 1 means infinite hardness, the others are derived using
+//1-(0.26/(otherThingBHN/200))
+//it doesn't matter much anyway but I'd like to have some semblance/veneer of accuracy
+
 //Copper exists
 
 elements.ruthenium = {
@@ -7,6 +16,7 @@ elements.ruthenium = {
     category: "solids",
     density: 12450,
     conduct: 0.45,
+    hardness: 0.97593,
 },
 
 elements.molten_ruthenium = {
@@ -20,6 +30,7 @@ elements.rhodium = {
     category: "solids",
     density: 12410,
     conduct: 0.59,
+    hardness: 0.94694,
 },
 
 elements.molten_rhodium = {
@@ -33,6 +44,7 @@ elements.palladium = {
     category: "solids",
     density: 12023,
     conduct: 0.38,
+    hardness: 0.82667,
 },
 
 elements.molten_palladium = {
@@ -48,6 +60,7 @@ elements.rhenium = {
     category: "solids",
     density: 21020,
     conduct: 0.29,
+    hardness: 0.96061,
 },
 
 elements.molten_rhenium = {
@@ -61,6 +74,7 @@ elements.osmium = {
     category: "solids",
     density: 22590,
     conduct: 0.40,
+    hardness: 0.98673,
 },
 
 elements.molten_osmium = {
@@ -74,6 +88,7 @@ elements.iridium = {
     category: "solids",
     density: 22560,
     conduct: 0.54,
+    hardness: 0.96886,
 },
 
 elements.molten_iridium = {
@@ -87,6 +102,7 @@ elements.platinum = {
     category: "solids",
     density: 21450,
     conduct: 0.38,
+    hardness: 0.83226,
 },
 
 elements.molten_platinum = {
@@ -104,7 +120,8 @@ elements.mercury = {
     stateLow: "frozen_mercury",
     category: "liquids",
     density: 13534,
-    conduct: 0.13
+    conduct: 0.13,
+    breakInto: "mercury_gas",
 },
 
 elements.frozen_mercury = {
@@ -117,6 +134,7 @@ elements.frozen_mercury = {
     stateHigh: "mercury",
     category: "solids",
     hidden: true,
+    hardness: 0.2775, //(desperately scaled Mohs hardness)
 },
 
 elements.mercury_gas = { //hg d@bp extrapolated from density change with temperature: 12743
