@@ -1228,10 +1228,6 @@ elements.ionized_polka_dotted_powder = {
 	hidden: true,
 },
 
-function log(b, n) {
-    return Math.log(n) / Math.log(b);
-}
-
 elements.hdet = {
 	name: "heat- dependent explosion text",
 	color: "#33aa44",
@@ -1252,10 +1248,10 @@ elements.hdet = {
 				temp = 20
 				pixel.temp = 20
 			}
-			var r = ((Math.sqrt(log(20,temp))*(temp**0.5))/(6000**0.126284318))/2
+			var r = ((Math.sqrt((Math.log(temp)/Math.log(20)))*(temp**0.5))/(6000**0.126284318))/2
 			explodeAt(pixel.x,pixel.y,Math.floor(r))
 			if(temp > 200) {
-				if(Math.random() < log(56000,temp)**9) {
+				if(Math.random() < (Math.log(temp)/Math.log(56000))**9) {
 					pixel.charge = 1
 					if(pixel.chargeCD) {
 						delete pixel.chargeCD
