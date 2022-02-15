@@ -114,16 +114,18 @@ elements.nitrogen_ice.breakInto = "nitrogen_snow"
 
 runAfterLoad(function() {
     for(i = 0; i < regularMetalArray.length; i++) {
-        elements[`${regularMetalArray[i]}_scrap`] = {
-            color: elements[regularMetalArray[i]].color,
-            behavior: behaviors.POWDER,
-            tempHigh: elements[regularMetalArray[i]].tempHigh,
-            stateHigh: regularMetalArray[i],
-            category: "powders",
-            hidden: true,
-            density: elements[regularMetalArray[i]].density * 0.09,
-            conduct: elements[regularMetalArray[i]].conduct * 0.4,
+        if(elements[regularMetalArray[i]]) {
+            elements[`${regularMetalArray[i]}_scrap`] = {
+                color: elements[regularMetalArray[i]].color,
+                behavior: behaviors.POWDER,
+                tempHigh: elements[regularMetalArray[i]].tempHigh,
+                stateHigh: regularMetalArray[i],
+                category: "powders",
+                hidden: true,
+                density: elements[regularMetalArray[i]].density * 0.09,
+                conduct: elements[regularMetalArray[i]].conduct * 0.4,
+            };
+            elements[regularMetalArray[i]].breakInto = `${regularMetalArray[i]}_scrap`
         };
-        elements[regularMetalArray[i]].breakInto = `${regularMetalArray[i]}_scrap`
     };
 });
