@@ -1226,6 +1226,52 @@ elements.ionized_polka_dotted_powder = {
 	tempLow: 8000,
 	stateLow: "vaporized_polka_dotted_powder",
 	hidden: true,
+},
+
+function log(b, n) {
+    return Math.log(n) / Math.log(b);
+}
+
+elements.hdet = {
+	name: "heat- dependent explosion text",
+	color: "#33aa44",
+	behavior: behaviors.POWDER,
+	tick: function(pixel) {
+		if(pixel.charge > 0) {
+			var temp = pixel.temp
+			if(temp < 0) {
+				temp = 0
+			}
+			if(temp >= 0 && temp < 1) {
+				temp = 1
+			}
+			if(temp > 56000) {
+				temp = 56000
+			}
+			if(isNaN(temp) || isNaN(pixel.temp)) {
+				temp = 20
+				pixel.temp = 20
+			}
+			var r = ((Math.sqrt(log(20,temp))*(temp**0.5))/(6000**0.126284318))/2
+			explodeAt(pixel.x,pixel.y,Math.floor(r))
+			if(temp > 200) {
+				if(Math.random() < log(56000,temp)**9) {
+					pixel.charge = 1
+					if(pixel.chargeCD) {
+						delete pixel.chargeCD
+					}
+				}
+			}
+			if(isNaN(temp) || isNaN(pixel.temp)) {
+				temp = 20
+				pixel.temp = 20
+			}
+		}
+	},
+	density: 1200,
+	conduct: 0.5,
+	state: "solid",
+	category: "special"
 }
 
 runAfterLoad(function() {
