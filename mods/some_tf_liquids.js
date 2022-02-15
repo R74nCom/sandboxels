@@ -1,48 +1,3 @@
-//signalum doesn't require tick function fuckery
-
-elements.destabilized_redstone = {
-	color: ["#9e0303", "#98061a", "#b80704", "#c4020c", "#f70008", "#9e0303", "#98061a", "#b80704", "#e3020a", "#8c0303", "#8c0303"],
-	behavior: [
-		"XX|SH|XX",
-		"M2 AND SH|XX|M2 AND SH",
-		"M1|M1 AND SH|M1",
-	],
-	viscosity: 1.5**4,
-	category: "liquids",
-	state: "liquid",
-	density:1200,
-},
-
-elements.signalum = {
-	color: "#ff9321",
-	behavior: behaviors.WALL,
-	category: "solids",
-	density: 10500,
-	conduct: 1,
-	tempHigh: 1550,
-	stateHigh: "molten_signalum",
-	state: "solid",
-},
-
-elements.molten_sterling = {
-	reactions: { 
-		"destabilized_redstone": { "elem1": null, "elem2": "molten_signalum" },
-	}
-},
-
-elements.molten_signalum = {
-	color: "#f17414",
-	behavior: behaviors.MOLTEN,
-	density: 10500*0.9,
-	conduct: 0.30,
-	temp:600,
-	tempLow: 550,
-	stateLow: "signalum",
-	category: "liquids",
-	state: "liquid",
-	hidden: true,
-},
-
 //pyrotheum
 
 elements.blazing_pyrotheum = {
@@ -100,7 +55,7 @@ elements.tectonic_petrotheum = {
 		"rock": { "elem2": "gravel" },
 		"mudstone": { "elem2": "mud" },     //i took creative liberties with what it breaks :eggTF:
 		"packed_sand": { "elem2": "sand" }, //stone->gravel is explicitly shown and chalcopyrite_ore->
-		"ice": { "elem2": "snow" },         //chalcopyrite_dust is implied, the rest of this section
+		"ice": { "elem2": "snow" },	 //chalcopyrite_dust is implied, the rest of this section
 		"packed_snow": { "elem2": "snow" }, //isn't thermal foundation canon*/
 		"basalt": { "elem2": "basalt_gravel" },
 		"limestone": { "elem2": "limestone_gravel" },
@@ -214,8 +169,96 @@ elements.resonant_ender = {
 	viscosity: 3**4,
 }
 
+if(enabledMods.includes("minecraft.js")) {
+	minecraftModEnabled = true
+} else {
+	minecraftModEnabled = false
+}
+
 runAfterLoad(function() {
 	lifeArray = Object.keys(elements).filter(function(e) {
 		return elements[e].category == "life";
 	});
+	if(minecraftModEnabled == true) {
+		elements.redstone_dust.tempHigh = 2500
+		elements.redstone_dust.stateHigh = "destabilized_redstone"
+		elements.destabilized_redstone = {
+			color: ["#9e0303", "#98061a", "#b80704", "#c4020c", "#f70008", "#9e0303", "#98061a", "#b80704", "#e3020a", "#8c0303", "#8c0303"],
+			behavior: [
+				"XX|SH|XX",
+				"M2 AND SH|XX|M2 AND SH",
+				"M1|M1 AND SH|M1",
+			],
+			viscosity: 1.5**4,
+			category: "liquids",
+			state: "liquid",
+			density:1200,
+		}
+		
+		elements.signalum = {
+			color: "#ff9321",
+			behavior: behaviors.WALL,
+			category: "solids",
+			density: 10500,
+			conduct: 1,
+			tempHigh: 1550,
+			stateHigh: "molten_signalum",
+			state: "solid",
+		}
+		
+if(!elements.molten_sterling) {
+elements.molten_sterling = {
+    "color": ["#FFA53C","#FF843C","#FF6300","#FFFF71","#FFE871","#FFAE00","#FFEB5C","#FFB55C","#FF8D00"],
+    "behavior": behaviors.MOLTEN,
+    "temp": 802,
+    "tempLow": 702,
+    "stateLow": "sterling",
+    "viscosity": 10000,
+    "hidden": true,
+    "state": "liquid",
+    "category": "molten",
+    "density": 9337.7,
+    "conduct": 1,
+    "reactions": {
+        "ash": {
+            "elem1": null,
+            "elem2": "molten_slag"
+        },
+        "dust": {
+            "elem1": null,
+            "elem2": "molten_slag"
+        },
+        "magma": {
+            "elem1": null,
+            "elem2": "molten_slag"
+        }
+    }
+}
+}
+
+		if(!elements.molten_sterling.reactions) {
+			elements.molten_sterling.reactions = {}
+		}
+
+		elements.molten_sterling.reactions.destabilized_redstone = { "elem1": null, "elem2": "molten_signalum" }
+		
+		elements.molten_signalum = {
+			color: "#f17414",
+			behavior: behaviors.MOLTEN,
+			density: 10500*0.9,
+			conduct: 0.30,
+			temp:600,
+			tempLow: 550,
+			stateLow: "signalum",
+			category: "liquids",
+			state: "liquid",
+			hidden: true,
+		}
+
+		if(!elements.energized_glowstone.reactions) {
+			elements.energized_glowstone.reactions = {}
+		}
+
+		elements.energized_glowstone.reactions.gelid_cryotheum = { "elem1":"glowstone_dust" }
+	};
 });
