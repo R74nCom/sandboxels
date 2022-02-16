@@ -66,17 +66,26 @@ elements.oxidized_copper_scrap = {
 
 elements.copper.breakInto = ["copper_scrap","copper_scrap","copper_scrap","copper_scrap","copper_scrap","oxidized_copper_scrap"]
 
-elements.gold.breakInto = "gold_coin"
-
 elements.dry_ice.breakInto = "carbon_dioxide"
 
-regularMetalArray = ["iron", "zinc", "tin", "nickel", "silver", "aluminum", "lead", "tungsten", "brass", "bronze", "sterling", "steel", "rose_gold", "solder"]
+regularMetalArray = ["iron", "zinc", "tin", "nickel", "silver", "aluminum", "lead", "tungsten", "brass", "bronze", "sterling", "steel", "rose_gold", "solder", "gold"]
 
 if(enabledMods.includes("mods/Neutronium Mod.js")) {
     regularMetalArray.push("mythril")
     regularMetalArray.push("mithril_mythril_alloy")
     regularMetalArray.push("titanium")
     regularMetalArray.push("ilitium")
+}
+if(enabledMods.includes("mods/metals.js")) {
+    regularMetalArray.push("ruthenium")
+    regularMetalArray.push("rhodium")
+    regularMetalArray.push("palladium")
+    regularMetalArray.push("rhenium")
+    regularMetalArray.push("osmium")
+    regularMetalArray.push("iridium")
+    regularMetalArray.push("platinum")
+    regularMetalArray.push("frozen_mercury")
+    elements.mercury.breakInto = "mercury_gas"
 }
 
 if(enabledMods.includes("mods/ketchup_mod.js")) {
