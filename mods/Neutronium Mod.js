@@ -1088,6 +1088,14 @@ behavior: [
 ],
 density: 1050,
 };
+elements.platinum = {
+color: ["#cfdfe3", "#cfdfe3", "#f7f7f7", "#cfdfe3"],
+category: "solids",
+state: "solid",
+behavior: behaviors.WALL,
+tempHigh: 1768,
+conduct: 1,
+};
 /* Unfinished:
 magnesium
 hematite mixture
