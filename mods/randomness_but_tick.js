@@ -1268,6 +1268,124 @@ elements.hdet = {
 	conduct: 0.5,
 	state: "solid",
 	category: "special"
+},
+
+function randInt(max) {
+   return Math.floor(Math.random() * (max + 1))
+}
+
+function randIntR(min,max) {
+   return Math.floor(Math.random() * (max - min + 1)) + min
+}
+
+elements.test293 = {
+    color: "#f0e7e0",
+    behavior: [
+        "XX|SA%40 AND ST|XX",
+        "M2%10 AND SA%40 AND ST|XX|M2%10 AND SA%40 AND ST",
+        "M2 AND M1%10|M1 AND SA%40 AND ST|M2 AND M1%10"
+    ],
+    category: "weapons",
+    state: "solid",
+    density: 2222.22,
+    tick: function(pixel) {
+        if(pixel.burning) {
+            if(pixel.burning == true) {
+                if(isEmpty(pixel.x,pixel.y-1)) {
+                    if(Math.random() < 0.04) { createPixel("fire",pixel.x,pixel.y-1) }
+                    if(Math.random() < 0.04) { pixel.temp++ }
+                }
+                if(isEmpty(pixel.x,pixel.y+1)) {
+                    if(Math.random() < 0.04) { createPixel("fire",pixel.x,pixel.y+1) }
+                    if(Math.random() < 0.04) { pixel.temp++ }
+                }
+                if(isEmpty(pixel.x-1,pixel.y)) {
+                    if(Math.random() < 0.04) { createPixel("fire",pixel.x-1,pixel.y) }
+                    if(Math.random() < 0.04) { pixel.temp++ }
+                }
+                if(isEmpty(pixel.x+1,pixel.y)) {
+                    if(Math.random() < 0.04) { createPixel("fire",pixel.x+1,pixel.y) }
+                    if(Math.random() < 0.04) { pixel.temp++ }
+                }
+                if(Math.random() < 0.0001) { explodeAt(pixel.x,pixel.y,randIntR(7,10),("fire,fire,fire,fire,smoke,"+pixel.element+","+pixel.element)) }
+            }
+        }
+        doHeat(pixel);
+    },
+    burn: 300,
+    burnTime: 500,
+},
+
+elements.test293b = {
+    color: "#e0e7f0",
+    behavior: [
+        "XX|SA%40 AND ST|XX",
+        "M2%10 AND SA%40 AND ST|XX|M2%10 AND SA%40 AND ST",
+        "M2 AND M1%10|M1 AND SA%40 AND ST|M2 AND M1%10"
+    ],
+    category: "weapons",
+    state: "solid",
+    density: 2222.22,
+    tick: function(pixel) {
+        for(i = -1; i < 2; i++) {
+         for(j = -1; j < 2; j++) {
+          if(!isEmpty(pixel.x + i, pixel.y + j) && !outOfBounds(pixel.x + i, pixel.y + j)) {
+           if(pixelMap[pixel.x + i][pixel.y + j].element == "cold_fire" && !pixel.burning) {
+             pixel.burning = true
+            pixel.burnStart = pixelTicks
+           }
+          }
+         }
+        }
+        if(pixel.burning) {
+            if(pixel.burning == true) {
+                for(i = -1; i < 2; i++) {
+                    for(j = -1; j < 2; j++) {
+                        if(!isEmpty(pixel.x + i, pixel.y + j) && !outOfBounds(pixel.x + i, pixel.y + j)) {
+                            if(pixelMap[pixel.x + i][pixel.y + j].element == "fire") {
+                                deletePixel(pixel.x + i, pixel.y + j)
+                                createPixel("cold_fire", pixel.x + i,pixel.y + j)
+                            }
+                            pixelMap[pixel.x + i][pixel.y + j].temp -= randIntR(1,2)
+                        }
+                    }
+                }
+                if(isEmpty(pixel.x,pixel.y-1)) {
+                    if(Math.random() < 0.04) { createPixel("cold_fire",pixel.x,pixel.y-1) }
+                    if(Math.random() < 0.04) { pixel.temp-- }
+                }
+                if(isEmpty(pixel.x,pixel.y+1)) {
+                    if(Math.random() < 0.04) { createPixel("cold_fire",pixel.x,pixel.y+1) }
+                    if(Math.random() < 0.04) { pixel.temp-- }
+                }
+                if(isEmpty(pixel.x-1,pixel.y)) {
+                    if(Math.random() < 0.04) { createPixel("cold_fire",pixel.x-1,pixel.y) }
+                    if(Math.random() < 0.04) { pixel.temp-- }
+                }
+                if(isEmpty(pixel.x+1,pixel.y)) {
+                    if(Math.random() < 0.04) { createPixel("cold_fire",pixel.x+1,pixel.y) }
+                    if(Math.random() < 0.04) { pixel.temp-- }
+                }
+                if(Math.random() < 0.0001) {
+                    var amogus = randIntR(8,11)
+                    var amog1 = (Math.ceil(amogus/2))*-1
+                    var amog2 = (Math.ceil(amogus/2))+1
+                    explodeAt(pixel.x,pixel.y,amogus,("cold_fire,cold_fire,cold_fire,cold_fire,cold_fire,"+pixel.element+","+pixel.element))
+                    for(i = amog1; i < amog2; i++) {
+                        for(j = amog1; j < amog2; j++) {
+                            if(!isEmpty(pixel.x + i, pixel.y + j) && !outOfBounds(pixel.x + i, pixel.y + j)) {
+                                pixelMap[pixel.x + i][pixel.y + j].temp -= randIntR(160,240)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        doHeat(pixel);
+    },
+    burn: 300,
+    burnTime: 500,
+    burnInto: "cold_fire",
 }
 
 runAfterLoad(function() {
