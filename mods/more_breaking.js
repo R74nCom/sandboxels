@@ -77,6 +77,8 @@ if(enabledMods.includes("mods/Neutronium Mod.js")) {
     regularMetalArray.push("ilitium")
 }
 if(enabledMods.includes("mods/metals.js")) {
+    regularMetalArray.push("beryllium")
+    regularMetalArray.push("boron")
     regularMetalArray.push("ruthenium")
     regularMetalArray.push("rhodium")
     regularMetalArray.push("palladium")
@@ -85,7 +87,9 @@ if(enabledMods.includes("mods/metals.js")) {
     regularMetalArray.push("iridium")
     regularMetalArray.push("platinum")
     regularMetalArray.push("frozen_mercury")
-    elements.mercury.breakInto = "mercury_gas"
+    if(elements.mercury) {
+        elements.mercury.breakInto = "mercury_gas"
+    }
 }
 
 if(enabledMods.includes("mods/ketchup_mod.js")) {
