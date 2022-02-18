@@ -17,8 +17,8 @@ elements.laetium = {
     density: 6719,
     conduct: 4.7E210,
     behavior: behaviors.WALL,
-	state: "solid",
-	category: "solids",
+    state: "solid",
+    category: "solids",
     tick: function(pixel) {
         neighbors = [[-1,0],[0,-1],[1,0],[0,1]]
         for(i = 0; i < neighbors.length; i++) {
@@ -98,23 +98,23 @@ elements.atisanium = {
     stateLow: "liquid_atisanium",
     density: 1.225,
     behavior: [
-	    "M1|M1|M1",
-	    "M1|XX|M1",
-	    "M1|M1|M1",
-	],
-	state: "gas",
-	category: "gases",
+        "M1|M1|M1",
+        "M1|XX|M1",
+        "M1|M1|M1",
+    ],
+    state: "gas",
+    category: "gases",
     tick: function(pixel) {
         var neighbors = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]]
-		var neighborChoice = randomArrayChoice(neighbors)
-		if(isEmpty(neighborChoice[0],pixel.y+neighborChoice[1],true)) {
-			tryMove(pixel,pixel.x+neighborChoice[0],pixel.y+neighborChoice[1])
-		}
-		if(pixel.chargeCD) {
-			if(pixel.chargeCD > 2) {
-				pixel.chargeCD = 2
-			}
-		}
+        var neighborChoice = randomArrayChoice(neighbors)
+        if(isEmpty(neighborChoice[0],pixel.y+neighborChoice[1],true)) {
+            tryMove(pixel,pixel.x+neighborChoice[0],pixel.y+neighborChoice[1])
+        }
+        if(pixel.chargeCD) {
+            if(pixel.chargeCD > 2) {
+                pixel.chargeCD = 2
+            }
+        }
     },
 }
 
@@ -126,33 +126,33 @@ elements.liquid_atisanium = {
     stateHigh: "atisanium",
     tempLow: -214,
     stateLow: "alpha_atisanium",
-	temp: -100,
+    temp: -100,
     density: 15941,
     behavior: behaviors.LIQUID,
-	state: "liquid",
-	category: "liquids",
+    state: "liquid",
+    category: "liquids",
     tick: function(pixel) {
         var moveSpotsA = [[-1,1],[0,1],[1,1]]
         var moveSpotsB = [[-1,0],[1,0]]
-		var msaChoice = randomArrayChoice(moveSpotsA)
-		var msbChoice = randomArrayChoice(moveSpotsB)
-		if(isEmpty(msaChoice[0],pixel.y+msaChoice[1],true)) {
-			if(!tryMove(pixel,pixel.x+msaChoice[0],pixel.y+msaChoice[1])) {
-				tryMove(pixel,pixel.x+msbChoice[0],pixel.y+msbChoice[1])
-			}
-		}
-		if(pixel.chargeCD) {
-			if(pixel.chargeCD > 2) {
-				pixel.chargeCD = 2
-			}
-		}
-		if(pixel.chargeCD) {
-			if(pixel.chargeCD > 1) {
-				if(Math.random() < 0.2) {
-					pixel.chargeCD = 1
-				}
-			}
-		}
+        var msaChoice = randomArrayChoice(moveSpotsA)
+        var msbChoice = randomArrayChoice(moveSpotsB)
+        if(isEmpty(msaChoice[0],pixel.y+msaChoice[1],true)) {
+            if(!tryMove(pixel,pixel.x+msaChoice[0],pixel.y+msaChoice[1])) {
+                tryMove(pixel,pixel.x+msbChoice[0],pixel.y+msbChoice[1])
+            }
+        }
+        if(pixel.chargeCD) {
+            if(pixel.chargeCD > 2) {
+                pixel.chargeCD = 2
+            }
+        }
+        if(pixel.chargeCD) {
+            if(pixel.chargeCD > 1) {
+                if(Math.random() < 0.2) {
+                    pixel.chargeCD = 1
+                }
+            }
+        }
     },
 }
 
@@ -164,24 +164,24 @@ elements.alpha_atisanium = {
     stateHigh: "liquid_atisanium",
     tempLow: -261,
     stateLow: "beta_atisanium",
-	temp: -240,
+    temp: -240,
     density: 51295,
     behavior: behaviors.WALL,
-	state: "solid",
-	category: "solid",
+    state: "solid",
+    category: "solids",
     tick: function(pixel) {
-		if(pixel.chargeCD) {
-			if(pixel.chargeCD > 2) {
-				pixel.chargeCD = 2
-			}
-		}
-		if(pixel.chargeCD) {
-			if(pixel.chargeCD > 1) {
-				if(Math.random() < 0.4) {
-					pixel.chargeCD = 1
-				}
-			}
-		}
+        if(pixel.chargeCD) {
+            if(pixel.chargeCD > 2) {
+                pixel.chargeCD = 2
+            }
+        }
+        if(pixel.chargeCD) {
+            if(pixel.chargeCD > 1) {
+                if(Math.random() < 0.4) {
+                    pixel.chargeCD = 1
+                }
+            }
+        }
     },
 }
 
@@ -191,17 +191,17 @@ elements.beta_atisanium = {
     colorOn: ["#0f0021", "#120324", "#4b106e", "#a6058e", "#42043a"], //pretend this is UV
     tempHigh: -260,
     stateHigh: "alpha_atisanium",
-	temp: -270,
+    temp: -270,
     density: 111295,
     behavior: behaviors.WALL,
-	state: "solid",
-	category: "solid",
+    state: "solid",
+    category: "solids",
     tick: function(pixel) {
-		if(pixel.chargeCD) {
-			if(pixel.chargeCD > 3) {
-				pixel.chargeCD = 3
-			}
-		}
+        if(pixel.chargeCD) {
+            if(pixel.chargeCD > 3) {
+                pixel.chargeCD = 3
+            }
+        }
     },
 }
 
