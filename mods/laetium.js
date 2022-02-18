@@ -188,7 +188,7 @@ elements.alpha_atisanium = {
 elements.beta_atisanium = {
     color: "#750e35",
     conduct: Infinity, //This is where I would make it a superconductor.
-    colorOn: ["#0f0021", "#120324", "#4b106e", "#a6058e", "#42043a"], //pretend this is UV
+    colorOn: ["#0f0021", "#120324", "#4b106e", "#a6058e", "#42043a"], //pretend this is UV becoming more pronounced
     tempHigh: -260,
     stateHigh: "alpha_atisanium",
     temp: -270,
@@ -203,6 +203,118 @@ elements.beta_atisanium = {
             }
         }
     },
+}
+
+elements.polusium = {
+    color: "#dedc9e",
+    tempHigh: 1213,
+    hardness: 0.921952,
+    density: 4113,
+    conduct: 0.98,
+    behavior: behaviors.WALL,
+    state: "solid",
+    category: "solids",
+    tick: function(pixel) {
+        neighbors = [[-1,0],[0,-1],[1,0],[0,1]]
+        for(i = 0; i < neighbors.length; i++) {
+            if(isEmpty(pixel.x+neighbors[i][0],pixel.y+neighbors[i][1],true)) {
+                if(Math.random() < 0.002) {
+                    changePixel(pixel,"polusium_oxide")
+                }
+            }
+            if(!isEmpty(pixel.x+neighbors[i][0],pixel.y+neighbors[i][1],true)) {
+                if(pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]].element == "salt_water") {
+                    if(Math.random() < 0.006) {
+                        changePixel(pixel,"polusium_oxide")
+                    }
+                }
+            }
+        }
+    },
+}
+
+elements.molten_polusium = {
+    tick: function(pixel) {
+        neighbors = [[-1,0],[0,-1],[1,0],[0,1]]
+        for(i = 0; i < neighbors.length; i++) {
+            if(isEmpty(pixel.x+neighbors[i][0],pixel.y+neighbors[i][1],true)) {
+                if(Math.random() < 0.004) {
+                    changePixel(pixel,"molten_polusium_oxide")
+                }
+            }
+            if(!isEmpty(pixel.x+neighbors[i][0],pixel.y+neighbors[i][1],true)) {
+                if(pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]].element == "salt_water") {
+                    if(Math.random() < 0.024) {
+                        changePixel(pixel,"molten_polusium_oxide")
+                    }
+                }
+            }
+        }
+    },
+    density: 3410,
+    temp: 1300,
+    tempLow: 1212,
+    stateLow: "polusium",
+    tempHigh: 3110,
+    stateHigh: "vaporized_polusium",
+    viscosity: 13,
+}
+
+elements.vaporized_polusium = {
+    color: ["#fdffd1", "#edf2cb", "#fcfac7"],
+    behavior: behaviors.GAS,
+    tick: function(pixel) {
+        neighbors = [[-1,0],[0,-1],[1,0],[0,1]]
+        for(i = 0; i < neighbors.length; i++) {
+            if(isEmpty(pixel.x+neighbors[i][0],pixel.y+neighbors[i][1],true)) {
+                if(Math.random() < 0.015) {
+                    changePixel(pixel,"vaporized_polusium_oxide")
+                }
+            }
+            if(!isEmpty(pixel.x+neighbors[i][0],pixel.y+neighbors[i][1],true)) {
+                if(pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]].element == "salt_water") {
+                    if(Math.random() < 0.06) {
+                        changePixel(pixel,"vaporized_polusium_oxide")
+                    }
+                }
+            }
+        }
+    },
+    density: 21,
+    temp: 3200,
+    tempLow: 3109,
+    stateLow: "molten_polusium",
+    viscosity: 0.2,
+    hidden: true,
+    state: "gas",
+    category: "gases",
+}
+
+elements.polusium_oxide = {
+    color: "#a9b594",
+    tempHigh: 1300,
+    hardness: 0.511952,
+    density: 3717,
+    behavior: behaviors.POWDER,
+    state: "solid",
+    category: "solids",
+    viscosity: 13,
+}
+
+elements.molten_polusium_oxide = {
+    temp: 1350,
+    tempHigh: 1400,
+    stateHigh: "vaporized_polusium_oxide",
+    density: 2917,
+}
+
+elements.vaporized_polusium_oxide = {
+    color: "#faffc7",
+    temp: 1500,
+    tempLow: 1399,
+    stateLow: "molten_polusium_oxide",
+    density: 10,
+    behavior: behaviors.GAS,
 }
 
 runAfterLoad(function() {
