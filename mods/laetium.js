@@ -1,3 +1,15 @@
+function splitRgbColor(color) {
+    var colorTempArray = color.split(",")
+    var r = colorTempArray[0].split(",")[0].substring(4)
+    var g = colorTempArray[1]
+    var b = colorTempArray[2].slice(0,-1)
+    return [r,g,b]
+}
+
+function randomArrayChoice(array) {
+    return array[Math.floor(Math.random() * array.length)]
+}
+
 elements.laetium = {
     color: "#f57f87",
     tempHigh: 2950,
@@ -5,6 +17,8 @@ elements.laetium = {
     density: 6719,
     conduct: 4.7E210,
     behavior: behaviors.WALL,
+	state: "solid",
+	category: "solids",
     tick: function(pixel) {
         neighbors = [[-1,0],[0,-1],[1,0],[0,1]]
         for(i = 0; i < neighbors.length; i++) {
@@ -76,12 +90,119 @@ elements.vaporized_laetium = {
     category: "gases",
 }
 
-function splitRgbColor(color) {
-    var colorTempArray = color.split(",")
-    var r = colorTempArray[0].split(",")[0].substring(4)
-    var g = colorTempArray[1]
-    var b = colorTempArray[2].slice(0,-1)
-    return [r,g,b]
+elements.atisanium = {
+    color: "#8dadb8",
+    conduct: 0.87,
+    colorOn: ["#ff00ff", "#e600e6", "#a300cc", "#ce07e8"],
+    tempLow: -44,
+    stateLow: "liquid_atisanium",
+    density: 1.225,
+    behavior: [
+	    "M1|M1|M1",
+	    "M1|XX|M1",
+	    "M1|M1|M1",
+	],
+	state: "gas",
+	category: "gases",
+    tick: function(pixel) {
+        var neighbors = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]]
+		var neighborChoice = randomArrayChoice(neighbors)
+		if(isEmpty(neighborChoice[0],pixel.y+neighborChoice[1],true)) {
+			tryMove(pixel,pixel.x+neighborChoice[0],pixel.y+neighborChoice[1])
+		}
+		if(pixel.chargeCD) {
+			if(pixel.chargeCD > 2) {
+				pixel.chargeCD = 2
+			}
+		}
+    },
+}
+
+elements.liquid_atisanium = {
+    color: "#3f878a",
+    conduct: 0.96,
+    colorOn: ["#8307eb", "#8c00ff", "#9617ff", "#a02eff"],
+    tempHigh: -45,
+    stateHigh: "atisanium",
+    tempLow: -214,
+    stateLow: "alpha_atisanium",
+	temp: -100,
+    density: 15941,
+    behavior: behaviors.LIQUID,
+	state: "liquid",
+	category: "liquids",
+    tick: function(pixel) {
+        var moveSpotsA = [[-1,1],[0,1],[1,1]]
+        var moveSpotsB = [[-1,0],[1,0]]
+		var msaChoice = randomArrayChoice(moveSpotsA)
+		var msbChoice = randomArrayChoice(moveSpotsB)
+		if(isEmpty(msaChoice[0],pixel.y+msaChoice[1],true)) {
+			if(!tryMove(pixel,pixel.x+msaChoice[0],pixel.y+msaChoice[1])) {
+				tryMove(pixel,pixel.x+msbChoice[0],pixel.y+msbChoice[1])
+			}
+		}
+		if(pixel.chargeCD) {
+			if(pixel.chargeCD > 2) {
+				pixel.chargeCD = 2
+			}
+		}
+		if(pixel.chargeCD) {
+			if(pixel.chargeCD > 1) {
+				if(Math.random() < 0.2) {
+					pixel.chargeCD = 1
+				}
+			}
+		}
+    },
+}
+
+elements.alpha_atisanium = {
+    color: "#00382a",
+    conduct: 0.987,
+    colorOn: ["#3700ff", "#6820f7", "#4b15bf"],
+    tempHigh: -213,
+    stateHigh: "liquid_atisanium",
+    tempLow: -261,
+    stateLow: "beta_atisanium",
+	temp: -240,
+    density: 51295,
+    behavior: behaviors.WALL,
+	state: "solid",
+	category: "solid",
+    tick: function(pixel) {
+		if(pixel.chargeCD) {
+			if(pixel.chargeCD > 2) {
+				pixel.chargeCD = 2
+			}
+		}
+		if(pixel.chargeCD) {
+			if(pixel.chargeCD > 1) {
+				if(Math.random() < 0.4) {
+					pixel.chargeCD = 1
+				}
+			}
+		}
+    },
+}
+
+elements.beta_atisanium = {
+    color: "#750e35",
+    conduct: Infinity, //This is where I would make it a superconductor.
+    colorOn: ["#0f0021", "#120324", "#4b106e", "#a6058e", "#42043a"], //pretend this is UV
+    tempHigh: -260,
+    stateHigh: "alpha_atisanium",
+	temp: -270,
+    density: 111295,
+    behavior: behaviors.WALL,
+	state: "solid",
+	category: "solid",
+    tick: function(pixel) {
+		if(pixel.chargeCD) {
+			if(pixel.chargeCD > 3) {
+				pixel.chargeCD = 3
+			}
+		}
+    },
 }
 
 runAfterLoad(function() {
@@ -90,5 +211,3 @@ runAfterLoad(function() {
     elements.laetium_slag.tempHigh = 2950
     elements.laetium_slag.stateHigh = ["molten_slag","molten_laetium"]
 });
-
-//dummy edit
