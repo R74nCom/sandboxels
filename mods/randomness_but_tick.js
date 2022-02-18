@@ -2,7 +2,7 @@ elements.test337 = {
     color: "#7f7f7f",
     conduct: 1,
     viscosity: 0.000001,
-    colorOn: ["#cf7fff"],
+    colorOn: "#cf7fff",
     density: 2000,
     behavior: behaviors.POWDER,
     state: "solid",
@@ -55,8 +55,8 @@ elements.sencc2 = { //same element neighbor count check
 	uwu: 0,
 	tick: function(pixel) {
 		pixel.uwu = 0
-		for (let i = -2; i < 3; i++) {
-			for (let j = -2; j < 3; j++) {
+		for (let i = -3; i < 4; i++) {
+			for (let j = -3; j < 4; j++) {
 				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 					if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
 						pixel.uwu += 1
@@ -69,6 +69,258 @@ elements.sencc2 = { //same element neighbor count check
 			pixel.color = "rgb(127,127,127)"
 		} else {
 			pixel.color = "rgb(" + (255/24)*pixel.uwu + ",0,0)"
+		}
+	},
+	category: "machines",
+	insulate: true,
+	state: "solid",
+	hidden: true,
+},
+
+elements.sencc3 = { //same element neighbor count check
+	color: "#000000",
+	uwu: 0,
+	tick: function(pixel) {
+		pixel.uwu = 0
+		var squadius = 3
+		for (let i = (-1*squadius); i < (squadius+1); i++) {
+			for (let j = (-1*squadius); j < (squadius+1); j++) {
+				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
+					if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
+						pixel.uwu += 1
+					}
+				}
+			}
+		}
+		pixel.uwu -= 1
+		if(pixel.uwu == undefined || pixel.uwu == null || isNaN(pixel.uwu)) {
+			pixel.color = "rgb(127,127,127)"
+		} else {
+			pixel.color = "rgb(" + (255/((((squadius*2)+1)**2)-1))*pixel.uwu + ",0,0)"
+		}
+	},
+	category: "machines",
+	insulate: true,
+	state: "solid",
+	hidden: true,
+},
+
+elements.sencc4 = { //same element neighbor count check
+	color: "#000000",
+	uwu: 0,
+	tick: function(pixel) {
+		pixel.uwu = 0
+		var squadius = 4
+		for (let i = (-1*squadius); i < (squadius+1); i++) {
+			for (let j = (-1*squadius); j < (squadius+1); j++) {
+				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
+					if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
+						pixel.uwu += 1
+					}
+				}
+			}
+		}
+		pixel.uwu -= 1
+		if(pixel.uwu == undefined || pixel.uwu == null || isNaN(pixel.uwu)) {
+			pixel.color = "rgb(127,127,127)"
+		} else {
+			pixel.color = "rgb(" + (255/((((squadius*2)+1)**2)-1))*pixel.uwu + ",0,0)"
+		}
+	},
+	category: "machines",
+	insulate: true,
+	state: "solid",
+	hidden: true,
+},
+
+elements.sencc5 = { //same element neighbor count check
+	color: "#000000",
+	uwu: 0,
+	tick: function(pixel) {
+		pixel.uwu = 0
+		var squadius = 5
+		for (let i = (-1*squadius); i < (squadius+1); i++) {
+			for (let j = (-1*squadius); j < (squadius+1); j++) {
+				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
+					if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
+						pixel.uwu += 1
+					}
+				}
+			}
+		}
+		pixel.uwu -= 1
+		if(pixel.uwu == undefined || pixel.uwu == null || isNaN(pixel.uwu)) {
+			pixel.color = "rgb(127,127,127)"
+		} else {
+			pixel.color = "rgb(" + (255/((((squadius*2)+1)**2)-1))*pixel.uwu + ",0,0)"
+		}
+	},
+	category: "machines",
+	insulate: true,
+	state: "solid",
+	hidden: true,
+},
+
+elements.sencc6 = { //same element neighbor count check
+	color: "#000000",
+	uwu: 0,
+	tick: function(pixel) {
+		pixel.uwu = 0
+		var squadius = 6
+		for (let i = (-1*squadius); i < (squadius+1); i++) {
+			for (let j = (-1*squadius); j < (squadius+1); j++) {
+				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
+					if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
+						pixel.uwu += 1
+					}
+				}
+			}
+		}
+		pixel.uwu -= 1
+		if(pixel.uwu == undefined || pixel.uwu == null || isNaN(pixel.uwu)) {
+			pixel.color = "rgb(127,127,127)"
+		} else {
+			pixel.color = "rgb(" + (255/((((squadius*2)+1)**2)-1))*pixel.uwu + ",0,0)"
+		}
+	},
+	category: "machines",
+	insulate: true,
+	state: "solid",
+	hidden: true,
+},
+
+elements.sencc7 = { //same element neighbor count check
+	color: "#000000",
+	uwu: 0,
+	tick: function(pixel) {
+		pixel.uwu = 0
+		var squadius = 7
+		for (let i = (-1*squadius); i < (squadius+1); i++) {
+			for (let j = (-1*squadius); j < (squadius+1); j++) {
+				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
+					if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
+						pixel.uwu += 1
+					}
+				}
+			}
+		}
+		pixel.uwu -= 1
+		if(pixel.uwu == undefined || pixel.uwu == null || isNaN(pixel.uwu)) {
+			pixel.color = "rgb(127,127,127)"
+		} else {
+			pixel.color = "rgb(" + (255/((((squadius*2)+1)**2)-1))*pixel.uwu + ",0,0)"
+		}
+	},
+	category: "machines",
+	insulate: true,
+	state: "solid",
+	hidden: true,
+},
+
+elements.sencc8 = { //same element neighbor count check
+	color: "#000000",
+	uwu: 0,
+	tick: function(pixel) {
+		pixel.uwu = 0
+		var squadius = 8
+		for (let i = (-1*squadius); i < (squadius+1); i++) {
+			for (let j = (-1*squadius); j < (squadius+1); j++) {
+				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
+					if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
+						pixel.uwu += 1
+					}
+				}
+			}
+		}
+		pixel.uwu -= 1
+		if(pixel.uwu == undefined || pixel.uwu == null || isNaN(pixel.uwu)) {
+			pixel.color = "rgb(127,127,127)"
+		} else {
+			pixel.color = "rgb(" + (255/((((squadius*2)+1)**2)-1))*pixel.uwu + ",0,0)"
+		}
+	},
+	category: "machines",
+	insulate: true,
+	state: "solid",
+	hidden: true,
+},
+
+elements.sencc9 = { //same element neighbor count check
+	color: "#000000",
+	uwu: 0,
+	tick: function(pixel) {
+		pixel.uwu = 0
+		var squadius = 9
+		for (let i = (-1*squadius); i < (squadius+1); i++) {
+			for (let j = (-1*squadius); j < (squadius+1); j++) {
+				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
+					if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
+						pixel.uwu += 1
+					}
+				}
+			}
+		}
+		pixel.uwu -= 1
+		if(pixel.uwu == undefined || pixel.uwu == null || isNaN(pixel.uwu)) {
+			pixel.color = "rgb(127,127,127)"
+		} else {
+			pixel.color = "rgb(" + (255/((((squadius*2)+1)**2)-1))*pixel.uwu + ",0,0)"
+		}
+	},
+	category: "machines",
+	insulate: true,
+	state: "solid",
+	hidden: true,
+},
+
+elements.sencc10 = { //same element neighbor count check
+	color: "#000000",
+	uwu: 0,
+	tick: function(pixel) {
+		pixel.uwu = 0
+		var squadius = 10
+		for (let i = (-1*squadius); i < (squadius+1); i++) {
+			for (let j = (-1*squadius); j < (squadius+1); j++) {
+				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
+					if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
+						pixel.uwu += 1
+					}
+				}
+			}
+		}
+		pixel.uwu -= 1
+		if(pixel.uwu == undefined || pixel.uwu == null || isNaN(pixel.uwu)) {
+			pixel.color = "rgb(127,127,127)"
+		} else {
+			pixel.color = "rgb(" + (255/((((squadius*2)+1)**2)-1))*pixel.uwu + ",0,0)"
+		}
+	},
+	category: "machines",
+	insulate: true,
+	state: "solid",
+	hidden: true,
+},
+
+elements.sencc11 = { //same element neighbor count check
+	color: "#000000",
+	uwu: 0,
+	tick: function(pixel) {
+		pixel.uwu = 0
+		var squadius = 11
+		for (let i = (-1*squadius); i < (squadius+1); i++) {
+			for (let j = (-1*squadius); j < (squadius+1); j++) {
+				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
+					if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
+						pixel.uwu += 1
+					}
+				}
+			}
+		}
+		pixel.uwu -= 1
+		if(pixel.uwu == undefined || pixel.uwu == null || isNaN(pixel.uwu)) {
+			pixel.color = "rgb(127,127,127)"
+		} else {
+			pixel.color = "rgb(" + (255/((((squadius*2)+1)**2)-1))*pixel.uwu + ",0,0)"
 		}
 	},
 	category: "machines",
