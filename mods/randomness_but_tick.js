@@ -1,3 +1,28 @@
+elements.test337 = {
+    color: "#7f7f7f",
+    conduct: 1,
+    viscosity: 0.000001,
+    colorOn: ["#cf7fff"],
+    density: 2000,
+    behavior: behaviors.POWDER,
+    state: "solid",
+    category: "solids",
+    tick: function(pixel) {
+        for(i = 0; i < 3; i++) {
+            var moveSpotsA = [[0,1]]
+            var moveSpotsB = [[-1,1],[1,1]]
+            var msaChoice = randomArrayChoice(moveSpotsA)
+            var msbChoice = randomArrayChoice(moveSpotsB)
+            if(isEmpty(msaChoice[0],pixel.y+msaChoice[1],true)) {
+                if(!tryMove(pixel,pixel.x+msaChoice[0],pixel.y+msaChoice[1])) {
+                    tryMove(pixel,pixel.x+msbChoice[0],pixel.y+msbChoice[1])
+                }
+            }
+            pixelTick(pixel)
+        }
+    },
+},
+
 elements.sencc = { //same element neighbor count check
 	color: "#000000",
 	uwu: 0,
