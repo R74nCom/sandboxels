@@ -1096,6 +1096,44 @@ behavior: behaviors.WALL,
 tempHigh: 1768,
 conduct: 1,
 };
+elements.uranium233 = {
+name: "Uranium-233",
+color: "#95a395",
+category: "powders",
+state: "solid",
+behavior: behaviors.RADIOACTIVE_POWDER,
+tempHigh: 1132,
+stateHigh: "molten_uranium233",
+density: 19,
+};
+elements.uranium235 = {
+name: "Uranium-235",
+color: "#7a997a",
+category: "powders",
+state: "solid",
+behavior: [
+"XX|XX|XX",
+"XX|DL%0.02|XX",
+"XX|XX|XX",
+],
+tempHigh: 1132.2,
+stateHigh: "molten_uranium235",
+density: 19.1,
+};
+elements.uranium238 = {
+name: "Uranium-238",
+color: "#4a754a",
+category: "powders",
+state: "solid",
+behavior: [
+"XX|XX|XX",
+"XX|DL%0.01 AND CH:uranium235%0.05|XX",
+"M2|M1|M2",
+],
+tempHigh: 1131,
+stateHigh: "molten_uranium238",
+density: 20,
+};
 /* Unfinished:
 magnesium
 hematite mixture
