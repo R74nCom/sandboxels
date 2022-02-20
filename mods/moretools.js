@@ -38,3 +38,31 @@ elements.absolutezero = {
     },
     category: "tools",
 };
+elements.antigrav = {
+    color: ["#696969", "#969696"],
+    tool: function(pixel) {
+        pixel.r = 2
+    },
+    category: "tools",
+};
+elements.normalgrav = {
+    color: ["#969696", "#696969"],
+    tool: function(pixel) {
+        pixel.r = 0
+    },
+    category: "tools",
+};
+elements.leftgrav = {
+    color: ["#696969", "#969696"],
+    tool: function(pixel) {
+        pixel.r = 3
+    },
+    category: "tools",
+};
+elements.rightgrav = {
+    color: ["#969696", "#696969"],
+    tool: function(pixel) {
+        pixel.r = 1
+    },
+    category: "tools",
+};
