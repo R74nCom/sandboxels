@@ -5735,7 +5735,7 @@
             pixelMap[pixel2.x][pixel2.y] = pixel2;
         }
 
-        function changePixel(pixel,element) {
+        function changePixel(pixel,element,changetemp=true) {
             pixel.element = element;
             pixel.color = pixelColorPick(pixel);
             pixel.start = pixelTicks;
@@ -5757,7 +5757,7 @@
             if (pixel.flipY && !elements[element].flippableY) {
                 delete pixel.flipY;
             }
-            if (elements[element].temp != undefined) {
+            if (elements[element].temp != undefined && changetemp) {
                 pixel.temp = elements[element].temp;
                 pixelTempCheck(pixel)
             }
@@ -6688,7 +6688,7 @@
                 }
                 if (result === null) {deletePixel(pixel.x,pixel.y);}
                 else {
-                    changePixel(pixel,result);
+                    changePixel(pixel,result,false);
                     if (elementInfo.fireColor && result==="fire") {
                         pixel.color = pixelColorPick(pixel,elementInfo.fireColor);
                     }
@@ -6703,7 +6703,7 @@
                 }
                 if (result === null) {deletePixel(pixel.x,pixel.y);}
                 else {
-                    changePixel(pixel,result);
+                    changePixel(pixel,result,false);
                 }
             }
         }
