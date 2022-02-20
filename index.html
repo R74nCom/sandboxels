@@ -397,6 +397,14 @@
             right:1em;
             display: none;
         }
+        .categoryButton.notify {
+            background-color: rgba(255, 0, 0, 0.25);
+        }
+        /* .elementButton.notify with a red glow */
+        .elementButton.notify {
+            -webkit-box-shadow: 0px 0px 15px 5px #FF0000; 
+            box-shadow: 0px 0px 15px 5px #FF0000;
+        }
     </style>
 
     <script>
@@ -432,6 +440,9 @@
     <script>
         // If settings is in localStorage, load it. If not, create an empty object.
         settings = localStorage.getItem("settings") ? JSON.parse(localStorage.getItem("settings")) : {};
+        if (!settings["unlocked"]) {
+            settings["unlocked"] = {};
+        }
         function saveSettings() {
             localStorage.setItem("settings", JSON.stringify(settings));
         }
@@ -671,7 +682,9 @@
             "unpaint": {
                 color: ["#ffffff","#000000"],
                 tool: function(pixel) {
-                    pixel.color = pixelColorPick(pixel)
+                    if (!elements[pixel.element].customColor) {
+                        pixel.color = pixelColorPick(pixel)
+                    }
                 },
                 category: "tools",
             },
@@ -682,7 +695,7 @@
                 stateHigh: "molten_glass",
                 category: "land",
                 state: "solid",
-                density: 1602,
+                density: 1602
             },
             /* Tick Examples
             "tick_sand": {
@@ -1137,7 +1150,7 @@
                 color: "#a0522d",
                 behavior: behaviors.WALL,
                 tempHigh: 400,
-                stateHigh: "fire",
+                stateHigh: ["ember","charcoal","fire","fire","fire"],
                 category: "solids",
                 burn: 5,
                 burnTime: 300,
@@ -1172,7 +1185,7 @@
                 reactions: {
                     "ice": { "elem1": "basalt" },
                 },
-                temp: 950,
+                temp: 1200,
                 tempLow: 800,
                 stateLow: ["basalt","basalt","basalt","rock"],
                 viscosity: 10000,
@@ -1658,6 +1671,58 @@
                     "caramel": { "elem2":null, chance:0.5 },
                     "candy": { "elem2":null, chance:0.05 },
                 },
+                tempHigh: 47,
+                stateHigh: "ash",
+                category:"life",
+                burn:95,
+                burnTime:25,
+                state: "solid",
+                density: 600,
+                conduct: 0.15,
+            },
+            "stink_bug": {
+                color: ["#56482D","#52472C","#635443"],
+                properties: {
+                    "phase": 1,
+                },
+                tick: function(pixel) {
+                    // Phases:
+                    // 0 = Standing
+                    // 1 = Landing
+                    // 2 = Flying
+                    var newX = pixel.x;
+                    var newY = pixel.y;
+                    if (pixel.phase === 1) { // Landing
+                        newX += pixel.flipX ? -1 : 1;
+                        newY ++;
+                        if (!tryMove(pixel, newX, newY)) { pixel.phase = 0 } // Stop landing
+                    }
+                    else if (pixel.phase === 2) { // Flying
+                        newX += pixel.flipX ? -1 : 1;
+                        newY += Math.random() < 0.5 ? -1 : 1;
+                        if (Math.random() < 0.01) { pixel.phase = 1 } // Start landing
+                        if (!tryMove(pixel, newX, newY)) {
+                            pixel.flipX = !pixel.flipX;
+                        }
+                    }
+                    else if (pixel.phase === 0) { // Standing
+                        if (Math.random() < 0.05) { newX += pixel.flipX ? -1 : 1; }
+                        newY ++;
+                        if (Math.random() < 0.01) { pixel.phase = 2 } // Start flying
+                        tryMove(pixel, newX, newY);
+                    }
+                    // Random chance to flip
+                    if (Math.random() < 0.05) { pixel.flipX = !pixel.flipX; }
+                    // Random chance to create "stench" behind
+                    if (Math.random() < 0.001) {
+                        if (isEmpty(pixel.x+(pixel.flipX ? 1 : -1), pixel.y)) {
+                            createPixel("stench",pixel.x+(pixel.flipX ? 1 : -1), pixel.y);
+                        }
+                    }
+                    doHeat(pixel);
+                    doElectricity(pixel);
+                },
+                flippableX: true,
                 tempHigh: 47,
                 stateHigh: "ash",
                 category:"life",
@@ -2251,23 +2316,58 @@
                 color: "#ffffa8",
                 behavior: [
                     "XX|XX|XX",
-                    "XX|DL%5|M1 AND BO",
+                    "XX|DL%2|XX",
                     "XX|XX|XX",
                 ],
-                rotatable: true,
+                tick: function(pixel) {
+                    if (pixel.vx===undefined) {
+                        // choose 1, 0, or -1
+                        pixel.vx = Math.random() < 0.5 ? 1 : Math.random() < 0.5 ? 0 : -1;
+                        pixel.vy = Math.random() < 0.5 ? 1 : Math.random() < 0.5 ? 0 : -1;
+                        // if both are 0, make one of them 1 or -1
+                        if (pixel.vx===0 && pixel.vy===0) {
+                            if (Math.random() < 0.5) { pixel.vx = Math.random() < 0.5 ? 1 : -1; }
+                            else { pixel.vy = Math.random() < 0.5 ? 1 : -1; }
+                        }
+                    }
+                    // move and invert direction if hit
+                    if (pixel.vx && !tryMove(pixel, pixel.x+pixel.vx, pixel.y)) { pixel.vx = -pixel.vx; }
+                    if (pixel.vy && !tryMove(pixel, pixel.x, pixel.y+pixel.vy)) { pixel.vy = -pixel.vy; }
+                },
+                reactions: {
+                    "glass": { "color1":["#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"] }
+                },
                 temp: 40,
                 category: "energy",
+                state: "gas",
+                density: 0.00001,
             },
             "laser": {
                 color: "#ff0000",
                 behavior: [
                     "XX|XX|XX",
-                    "XX|DL%0.25|M1 AND BO:1,2,3",
+                    "XX|DL%0.25|XX",
                     "XX|XX|XX",
                 ],
-                rotatable: true,
+                tick: function(pixel) {
+                    if (pixel.vx===undefined) {
+                        // choose 1, 0, or -1
+                        pixel.vx = Math.random() < 0.5 ? 1 : Math.random() < 0.5 ? 0 : -1;
+                        pixel.vy = Math.random() < 0.5 ? 1 : Math.random() < 0.5 ? 0 : -1;
+                        // if both are 0, make one of them 1 or -1
+                        if (pixel.vx===0 && pixel.vy===0) {
+                            if (Math.random() < 0.5) { pixel.vx = Math.random() < 0.5 ? 1 : -1; }
+                            else { pixel.vy = Math.random() < 0.5 ? 1 : -1; }
+                        }
+                    }
+                    // move and invert direction if hit
+                    if (pixel.vx && !tryMove(pixel, pixel.x+pixel.vx, pixel.y)) { pixel.vx = -pixel.vx; }
+                    if (pixel.vy && !tryMove(pixel, pixel.x, pixel.y+pixel.vy)) { pixel.vy = -pixel.vy; }
+                },
                 temp: 40,
                 category: "energy",
+                state: "gas",
+                density: 0.00001,
             },
             "ball": {
                 color: "#e35693",
@@ -2348,7 +2448,7 @@
                             deletePixel(pixel.x,pixel.y);
                             break;
                         }}},
-                temp: -10,
+                temp: -200,
                 tempHigh: 10,
                 stateHigh: "water",
                 category: "powders",
@@ -2419,7 +2519,7 @@
                 tempLow: -88.48,
                 stateLow: ["nitrogen","oxygen"],
                 hidden: true,
-                state: "liquid",
+                state: "gas",
                 density: 1.9781,
             },
             "ammonia": {
@@ -2791,12 +2891,27 @@
                 density: 1400,
             },
             "pistil": {
-                color: "#734e39",
-                behavior: [
-                    "XX|CR:petal%10|XX",
-                    "CR:petal%10|XX|CR:petal%10",
-                    "XX|XX|XX",
-                ],
+                color: ["#734e39","#2F0603","#D2AC3A","#8A978F","#593117"],
+                tick: function(pixel) {
+                    if (!pixel.fColor) {
+                        // make it a hsl random hue, 100% saturation, 50% lightness
+                        pixel.fColor = "hsl(" + Math.floor(Math.random()*360) + ",100%,50%)";
+                    }
+                    var coordsToCheck = [
+                        [pixel.x-1,pixel.y],
+                        [pixel.x+1,pixel.y],
+                        [pixel.x,pixel.y-1],
+                        [pixel.x,pixel.y+1],
+                    ]
+                    // check if each pixel is empty, if it is create a petal with the color fColor
+                    for (var i = 0; i < coordsToCheck.length; i++) {
+                        var coord = coordsToCheck[i];
+                        if (isEmpty(coord[0],coord[1])) {
+                            createPixel("petal",coord[0],coord[1]);
+                            pixelMap[coord[0]][coord[1]].color = pixel.fColor;
+                        }
+                    }
+                },
                 tempHigh: 100,
                 stateHigh: "dead_plant",
                 tempLow: -2,
@@ -2830,18 +2945,18 @@
                     "XX|XX|XX",
                 ],
                 tempHigh: 400,
-                stateHigh: "fire",
+                stateHigh: ["fire","sap"],
                 tempLow: -30,
                 stateLow: "wood",
                 category: "solids",
                 burn: 40,
                 burnTime: 50,
-                burnInto: ["ember","charcoal","fire"],
+                burnInto: ["sap","ember","charcoal"],
                 hidden: true,
                 state: "solid",
                 density: 1500,
                 hardness: 0.15,
-                breakInto: "sawdust",
+                breakInto: ["sap","sawdust"],
             },
             "vine": {
                 color: "#005900",
@@ -2929,6 +3044,7 @@
                     "slaked_lime": { "elem1":"neutral_acid", "elem2":null },
                     "borax": { "elem1":"neutral_acid", "elem2":null },
                     "ammonia": { "elem1":"neutral_acid", "elem2":null },
+                    "bleach": { "elem1":"neutral_acid", "elem2":null },
                 },
                 category: "liquids",
                 tempHigh: 400,
@@ -2967,6 +3083,7 @@
                     "slaked_lime": { "elem1":"hydrogen", "elem2":null, "chance":0.05 },
                     "borax": { "elem1":"hydrogen", "elem2":null, "chance":0.05 },
                     "ammonia": { "elem1":"hydrogen", "elem2":null, "chance":0.05 },
+                    "bleach": { "elem1":"hydrogen", "elem2":null, "chance":0.05 },
                 },
                 category: "gases",
                 tempHigh: 400,
@@ -3012,21 +3129,35 @@
             "gray_goo": {
                 color: "#c0c0c0",
                 behavior: [
-                    "XX|CH:gray_goo|XX",
-                    "M2%5 AND CH:gray_goo|DL%5|M2%5 AND CH:gray_goo",
-                    "XX|CH:gray_goo AND M1|XX",
+                    "XX|CH:gray_goo%25|XX",
+                    "M2%5 AND CH:gray_goo%25|DL%5|M2%5 AND CH:gray_goo%25",
+                    "XX|CH:gray_goo%25 AND M1|XX",
                 ],
                 behaviorOn: [
                     "XX|XX|XX",
                     "XX|DL%5|XX",
                     "M1|M2|M1",
                 ],
-                ignore: ["fire","smoke"],
+                ignore: ["fire","smoke","malware"],
                 category: "special",
                 state: "solid",
                 density: 21450,
                 excludeRandom: true,
                 conduct: 0.25,
+            },
+            "malware": {
+                color: ["#8c4ac7","#a13d6a"],
+                behavior: [
+                    "CL%1|CL%1 AND SH|CL%1",
+                    "CL%1 AND SH|SH%5 AND DL%10|CL%1 AND SH",
+                    "M1%15 AND CL%1|M1%50 AND CL%2 AND SH|M1%15 AND CL%1",
+                ],
+                reactions: {
+                    "gray_goo": { "elem2":"malware" }
+                },
+                category: "special",
+                state: "solid",
+                density: 2.1,
             },
             "clone_powder": {
                 color: "#f0f000",
@@ -3165,7 +3296,7 @@
                 density: 90.445,
             },
             "mushroom_cap": {
-                color: ["#c74442","#c74442","#c74442","#c74442","#c74442","#c74442","#cfb4b4"],
+                color: ["#c74442","#c74442","#c74442","#cfb4b4","#c74442","#c74442","#c74442"],
                 behavior: behaviors.WALL,
                 category: "life",
                 hidden: true,
@@ -3234,9 +3365,9 @@
             "antimatter": {
                 color: "#a89ba8",
                 behavior: [
-                    "M2|DB%50 AND M2 AND EX:5|M2",
+                    "M2|DB%50 AND M2 AND EX:8|M2",
                     "M1|XX|M1",
-                    "M1|DB%50 AND M1 AND EX:5|M1",
+                    "M1|DB%50 AND M1 AND EX:8|M1",
                 ],
                 ignore: ["antimatter_bomb"],
                 category: "special",
@@ -3316,6 +3447,20 @@
                 state: "liquid",
                 density: 900,
                 viscosity: 1.355,
+            },
+            "incense": {
+                color: "#361f19",
+                behavior: behaviors.STURDYPOWDER,
+                tempHigh: 2320,
+                stateHigh: "fragrance",
+                burn: 10,
+                burnTime: 500,
+                burnInto: "fragrance",
+                fireElement: "fragrance",
+                breakInto: "sawdust",
+                category: "powders",
+                state: "solid",
+                density: 686,
             },
             "fuse": {
                 color: "#825d38",
@@ -3579,7 +3724,16 @@
                     "molten_lead": { "elem1": null, "elem2": "molten_solder" },
                 }
             },
-
+            "juice": {
+                color: "#F0BF3D",
+                behavior: behaviors.LIQUID,
+                tempHigh: 160,
+                stateHigh: ["steam","sugar"],
+                category: "liquids",
+                state: "liquid",
+                density: 1054,
+                stain: 0.05,
+            },
             "milk": {
                 color: "#fafafa",
                 behavior: behaviors.LIQUID,
@@ -3597,12 +3751,35 @@
                 state: "liquid",
                 density: 820.33,
             },
+            "grape": {
+                color: ["#b84b65","#a10e69","#a10e95","#8a3eab"],
+                behavior: [
+                    "XX|ST:vine|XX",
+                    "XX|XX|XX",
+                    "M2|M1|M2",
+                ],
+                reactions: {
+                    "radiation": { "elem1":"explosion", "chance":0.1, "color1":"#291824" },
+                    "rock": { "elem1":"juice", "chance":0.1, "color1":"#291824" },
+                    "concrete": { "elem1":"juice", "chance":0.1, "color1":"#291824" },
+                    "basalt": { "elem1":"juice", "chance":0.1, "color1":"#291824" },
+                    "acid": { "elem1":"juice", "color1":"#291824" },
+                    "acid_gas": { "elem1":"juice", "color1":"#291824" },
+                    "sugar_water": { "elem1":null, "elem2":"juice", "color2":"#291824" },
+                },
+                tempHigh: 256,
+                stateHigh: "steam",
+                category: "food",
+                state: "solid",
+                density: 1154,
+                breakInto: "juice",
+            },
             "vinegar": {
                 color: "#ffecb3",
                 behavior: behaviors.LIQUID,
                 reactions: {
                     "milk": { "elem1": null, "elem2": "cheese" },
-                    "baking_soda": { "elem1": "carbon_dioxide", "elem2": "sodium_acetate" },
+                    "baking_soda": { "elem1": "sodium_acetate", "elem2": "carbon_dioxide" },
                     "rust": { "elem2":"iron", chance:0.05 },
                     "oxidized_copper": { "elem2":"copper", chance:0.05 },
                 },
@@ -3640,6 +3817,8 @@
                     "bread": { "elem1": "bread" },
                     "sugar": { "elem2": "alcohol" },
                     "potato": { "elem2": "alcohol" },
+                    "grape": { "elem2": "alcohol" },
+                    "juice": { "elem2": "alcohol" },
                 },
                 tempHigh: 100,
                 stateHigh: "bread",
@@ -3874,7 +4053,7 @@
                 reactions: {
                     "rust": { "elem2": "iron" },
                     "oxidized_copper": { "elem2": "copper" },
-                    "blood": { "elem2": "water" },
+                    "blood": { "elem1":null, "elem2": "water" },
                     "dirty_water": { "elem2": "water" },
                     "salt_water": { "elem2": "water" },
                     "oxygen": { "elem2": "bubble" },
@@ -4012,6 +4191,7 @@
                     "blood": { "elem2":"antibody", "chance":0.01 },
                     "infection": { "elem2":"antibody", "chance":0.1 },
                     "cancer": { "elem2":null, "chance":0.01 },
+                    "poison": { "elem1":"antidote", "elem2":null, "chance":0.01 },
                 },
                 viscosity: 6.3,
                 tempHigh: 124.55,
@@ -4086,8 +4266,8 @@
                     "poison": { "elem1":null, "elem2":null },
                 },
                 viscosity: 2,
-                tempHigh: 400,
-                stateHigh: "plague",
+                tempHigh: 124.55,
+                stateHigh: ["steam","salt","oxygen"],
                 category:"liquids",
                 state: "liquid",
                 density: 1060,
@@ -4102,12 +4282,19 @@
                 state: "liquid",
                 density: 1420,
             },
+            "sap": {
+                color: ["#B66B18","#C84805","#CF6719","#E49B3A"],
+                behavior: behaviors.LIQUID,
+                tempHigh: 412,
+                stateHigh: "sugar",
+                category:"liquids",
+                state: "liquid",
+                viscosity: 15,
+                density: 1400,
+            },
             "caramel": {
                 color: "#e89a51",
                 behavior: behaviors.LIQUID,
-                reactions: {
-                    "fire": { "elem1": "molasses" },
-                },
                 viscosity: 500,
                 temp: 40,
                 tempLow: 24,
@@ -4208,6 +4395,28 @@
                 density: 145,
                 hidden: true,
             },
+            "sodium": {
+                color: ["#484849","#5D5E5F","#6B6968","#747775"],
+                behavior: behaviors.POWDER,
+                tick: function(pixel) {
+                    for (var i = 0; i < adjacentCoords.length; i++) {
+                        var x = pixel.x+adjacentCoords[i][0];
+                        var y = pixel.y+adjacentCoords[i][1];
+                        if (isEmpty(x,y)) {
+                            if (Math.random() < 0.005) { deletePixel(pixel.x,pixel.y) }
+                            break
+                        } } },
+                reactions: {
+                    "chlorine": { "elem1":"salt", "elem2":null },
+                    "vinegar": { "elem1":"sodium_acetate", "elem2":null },
+                    "water": { "elem1":"pop", "chance":0.01 },
+                },
+                tempHigh: 97.794,
+                category: "powders",
+                state: "solid",
+                density: 968,
+                conduct: 0.85,
+            },
             "calcium": {
                 color: ["#515053","#7a787d","#748193","#FEF9FF","#748193","#7a787d","#515053"],
                 behavior: behaviors.POWDER,
@@ -4299,14 +4508,21 @@
                 density: 1.977,
                 customColor: true,
             },
+            "spray_paint": {
+                color: ["#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"],
+                behavior: behaviors.GAS,
+                category: "gases",
+                state: "gas",
+                burn: 100,
+                burnTime: 1,
+                density: 1250,
+                customColor: true,
+                stain: 0.25,
+            },
             "neon": {
                 color: "#bababa",
                 behavior: behaviors.GAS,
-                behaviorOn: [
-                    "M2|M1|M2",
-                    "M1|CC:#ff0000|M1",
-                    "M2|M1|M2",
-                ],
+                colorOn: ["#ff0000","#D01822","#FE5C0C"],
                 tempLow: -248.59,
                 stateLow: "liquid_neon",
                 category: "gases",
@@ -4317,11 +4533,7 @@
             "liquid_neon": {
                 color: "#d1d1d1",
                 behavior: behaviors.LIQUID,
-                behaviorOn: [
-                    "XX|XX|XX",
-                    "M2|CC:#ff0000|M2",
-                    "M1|M1|M1",
-                ],
+                colorOn: ["#ff0000","#D01822","#FE5C0C"],
                 temp: -258.59,
                 tempHigh: -248.59,
                 stateHigh: "neon",
@@ -4346,6 +4558,36 @@
                 state: "gas",
                 conduct: 0.03,
                 stain: 0.0035,
+            },
+            "stench": {
+                color: "#6ab066",
+                behavior: behaviors.GAS,
+                reactions: {
+                    "oxygen": { "elem2":"stench" },
+                    "water": { "elem1":null, "elem2":"dirty_water" },
+
+                },
+                category: "gases",
+                tempHigh: 500,
+                stateHigh: "fire",
+                burn: 100,
+                burnTime: 1,
+                state: "gas",
+                density: 1.293,
+            },
+            "fragrance": {
+                color: "#967bb6",
+                behavior: behaviors.GAS,
+                reactions: {
+                    "stench": { "elem2":null },
+                    "oxygen": { "elem2":"fragrance" },
+                    "dirty_water": { "elem1":null, "elem2":"water" },
+                },
+                tempHigh: 1000,
+                stateHigh: "fire",
+                category: "gases",
+                state: "gas",
+                density: 1.292,
             },
             "rain_cloud": {
                 color: "#636b78",
@@ -4373,7 +4615,7 @@
                 temp: -10,
                 tempHigh: 30,
                 stateHigh: "rain_cloud",
-                tempLow: -40,
+                tempLow: -200,
                 stateLow: "hail_cloud",
                 state: "gas",
                 density: 0.55,
@@ -4387,8 +4629,8 @@
                     "XX|XX|XX",
                 ],
                 category:"gases",
-                temp: -40,
-                tempHigh: -10,
+                temp: -200,
+                tempHigh: -180,
                 stateHigh: "snow_cloud",
                 state: "gas",
                 density: 0.6,
@@ -4408,6 +4650,7 @@
                     "slaked_lime": { "elem1":"rain_cloud", "elem2":null, "chance":0.05 },
                     "borax": { "elem1":"rain_cloud", "elem2":null, "chance":0.05 },
                     "ammonia": { "elem1":"rain_cloud", "elem2":null, "chance":0.05 },
+                    "bleach": { "elem1":"rain_cloud", "elem2":null, "chance":0.05 },
                 },
                 category:"gases",
                 burn: 15,
@@ -4798,6 +5041,19 @@
                 density: 1000,
                 excludeRandom: true,
             },
+            "pop": {
+                color: ["#ffb48f","#ffd991","#ffad91"],
+                behavior: [
+                    "XX|XX|XX",
+                    "XX|EX:3|XX",
+                    "XX|XX|XX",
+                ],
+                category: "energy",
+                state: "gas",
+                density: 1000,
+                excludeRandom: true,
+                hidden: true,
+            },
             "cook": {
                 color: ["#5c3322","#2b1107","#5c3322","#5c3322","#2b1107","#5c3322"],
                 tool: function(pixel) {
@@ -4949,6 +5205,8 @@
                 temp: 649,
                 category: "energy",
                 hidden: true,
+                state: "gas",
+                density: 700,
             },
             "nuke": {
                 color: "#534636",
@@ -5151,8 +5409,6 @@
                 },
                 category: "weapons",
                 temp:600,
-                tempHigh: 1900,
-                stateHigh: "magma",
                 tempLow: -100,
                 stateLow: "rock",
                 burning: true,
@@ -5298,6 +5554,32 @@
                 state: "liquid",
                 density: 955,
             },
+            "sun": {
+                color: "#ffffbd",
+                tick: function(pixel) {
+                    pixel.temp = 5504.85;
+                    pixel.color = pixelColorPick(pixel,"#ffffbd");
+                    var coordsToCheck = [
+                        [pixel.x, pixel.y+1],
+                        [pixel.x+1, pixel.y],
+                        [pixel.x-1, pixel.y],
+                        [pixel.x, pixel.y-1],
+                    ];
+                    for (var i = 0; i < coordsToCheck.length; i++) {
+                        var coord = coordsToCheck[i];
+                        if (isEmpty(coord[0],coord[1])) {
+                            createPixel("light", coord[0], coord[1]);
+                        }
+                    }
+                },
+                reactions: {
+                    "hydrogen": { "elem2":"light" }
+                },
+                temp: 5504.85,
+                category: "special",
+                state: "gas",
+                density: 1408,
+            }
 
             
         };
@@ -5309,6 +5591,21 @@
                 g: parseInt(result[2], 16),
                 b: parseInt(result[3], 16)
             } : null;
+        }
+        function averageRGB(rgblist) {
+            var r = 0;
+            var g = 0;
+            var b = 0;
+            for (var i = 0; i < rgblist.length; i++) {
+                var rgb = rgblist[i];
+                r += parseInt(rgb.r||rgb[0]);
+                g += parseInt(rgb.g||rgb[1]);
+                b += parseInt(rgb.b||rgb[2]);
+            }
+            r = Math.floor(r/rgblist.length);
+            g = Math.floor(g/rgblist.length);
+            b = Math.floor(b/rgblist.length);
+            return "rgb("+r+","+g+","+b+")";
         }
 
         currentPixels = [];
@@ -5405,6 +5702,7 @@
         }
         function createPixel(element,x,y) {
             currentPixels.push(new Pixel(x, y, element));
+            checkUnlock(element);
         }
         function deletePixel(x,y) {
             // remove pixelMap[x][y] from currentPixels
@@ -5463,6 +5761,7 @@
                 pixel.temp = elements[element].temp;
                 pixelTempCheck(pixel)
             }
+            checkUnlock(element);
         }
         function reactPixels(pixel1,pixel2) {
             var r = elements[pixel1.element].reactions[pixel2.element];
@@ -5498,6 +5797,9 @@
                     if (r.charge1) { pixel1.charge = r.charge1; }
                 }
             }
+            if (r.color1) { // if it's a list, use a random color from the list, else use the color1 attribute
+                pixel1.color = pixelColorPick(pixel1, Array.isArray(r.color1) ? r.color1[Math.floor(Math.random() * r.color1.length)] : r.color1);
+            }
             if (r.elem2 !== undefined) {
                 // if r.elem2 is an array, set elem2 to a random element from the array, otherwise set it to r.elem2
                 if (Array.isArray(r.elem2)) {
@@ -5512,11 +5814,27 @@
                     if (r.charge2) { pixel2.charge = r.charge2; }
                 }
             }
-            return true;
+            if (r.color2) { // if it's a list, use a random color from the list, else use the color2 attribute
+                pixel2.color = pixelColorPick(pixel2, Array.isArray(r.color2) ? r.color2[Math.floor(Math.random() * r.color2.length)] : r.color2);
+            }
+            return r.elem1!==undefined || r.elem2!==undefined;
         }
 
 
-        validDensitySwaps = ["solid>liquid","liquid>gas","liquid>liquid","gas>gas","solid>gas"];
+        validDensitySwaps = {
+            "solid": {
+                "liquid": true,
+                "gas": true
+            },
+            "liquid": {
+                "liquid": true,
+                "gas": true
+            },
+            "gas": {
+                "gas": true
+            },
+            undefined: {}
+        }
         function tryMove(pixel,nx,ny,leaveBehind=undefined) {
             var info = elements[pixel.element];
             if (isEmpty(nx,ny)) { // If coords is empty, move to coords
@@ -5541,7 +5859,7 @@
                     if (pixel.element != newPixel.element) {
                         if (elements[newPixel.element].density != undefined && info.density != undefined) {
                             // if the pixel's state + ">" + newPixel's state is in validDensitySwaps, and the pixel's density is larger than the newPixel's density, swap the pixels
-                            if (validDensitySwaps.includes(info.state+">"+elements[newPixel.element].state) && info.density >= elements[newPixel.element].density) {
+                            if (validDensitySwaps[info.state][elements[newPixel.element].state] && info.density >= elements[newPixel.element].density) {
                                 // chance depending on the difference in density
                                 if (Math.random() < (info.density - elements[newPixel.element].density)/(info.density + elements[newPixel.element].density)) {
                                     swapPixels(pixel,newPixel);
@@ -5693,19 +6011,19 @@
                     //    b = b.split(" OR ")[Math.floor(Math.random()*b.split(" OR ").length)];
                     //}
                     // Loop through b0.split(" AND ")
-                    if (b0.includes(" AND ")) { var andsplit = b0.split(" AND "); }
+                    if (b0.indexOf(" AND ") !== -1) { var andsplit = b0.split(" AND "); }
                     else { var andsplit = [b0]; }
                     for (var i = 0; i < andsplit.length; i++) {
                         var b = andsplit[i];
-                        if (b.includes(":")) {
+                        if (b.indexOf(":") !== -1) {
                             var arg = b.split(":")[1].split(/[\:\%]/)[0];
-                            if (!b.includes("%")) {
+                            if (b.indexOf("%") === -1) {
                                 b = b.split(/[\:\%]/)[0];
                             }
                         }
                         else { var arg = null;}
                         // If b has "%" followed by a number in it, it's a chance to move
-                        if (b.includes("%")) {
+                        if (b.indexOf("%") !== -1) {
                             // Split the string at the "%" and use the second half as the chance (float)
                             var chance = parseFloat(b.split("%")[1]);
                             //console.log(b+": "+(Math.random()*100 < chance));
@@ -5714,7 +6032,7 @@
                         else { var chance = 100; }
                         if (chance==100 || Math.random()*100 < chance) {
                             var newCoords = behaviorCoords(x,y,bx,by);
-                            if (b == "M1") {
+                            if (b === "M1") {
                                 if (info.viscosity != undefined) {
                                     if (!((Math.random()*100) < 100 / ((info.viscosity) ** 0.25))) {
                                         newCoords.x = x;
@@ -5722,7 +6040,7 @@
                                 }
                                 move1Spots.push(newCoords);
                             }
-                            else if (b == "M2") {
+                            else if (b === "M2") {
                                 if (info.viscosity != undefined) {
                                     if (!((Math.random()*100) < 100 / ((info.viscosity) ** 0.25))) {
                                         newCoords.x = x;
@@ -5730,25 +6048,25 @@
                                 }
                                 move2Spots.push(newCoords);
                             }
-                            else if (b == "SP") {
+                            else if (b === "SP") {
                                 supportSpots.push({x:newCoords.x,y:newCoords.y,arg:arg});
                             }
-                            else if (b == "SA") {
+                            else if (b === "SA") {
                                 if (!isEmpty(newCoords.x,newCoords.y,true)) {
                                     move = false;
                                 }
                             }
-                            else if (b == "DL") {
+                            else if (b === "DL") {
                                 if (!isEmpty(newCoords.x,newCoords.y,true)) {
                                     // if the pixel at newCoords is the same element as the pixel, ignore
                                     newPixel = pixelMap[newCoords.x][newCoords.y];
                                     // if info.ignore exists and newPixel.element is in it
-                                    if (info.ignore && info.ignore.includes(newPixel.element)) {
+                                    if (info.ignore && info.ignore.indexOf(newPixel.element) !== -1) {
                                         continue;
                                     }
                                     if ((!(newPixel.element == pixel.element)) || (newCoords.x == x && newCoords.y == y)) {
                                         if (arg != null) { var args = arg.split(","); }
-                                        if (arg == null || args.includes(newPixel.element)) {
+                                        if (arg == null || args.indexOf(newPixel.element) !== -1) {
                                             if (!elements[newPixel.element].hardness || Math.random() > elements[newPixel.element].hardness) {
                                                 deletePixel(newCoords.x,newCoords.y);
                                                 if (newCoords.x == x && newCoords.y == y) {
@@ -5760,17 +6078,17 @@
                                     }
                                 }
                             }
-                            else if (b == "DB") { // Delete Both
+                            else if (b === "DB") { // Delete Both
                                 if (!isEmpty(newCoords.x,newCoords.y,true)) {
                                     // if the pixel at newCoords is the same element as the pixel, ignore
                                     newPixel = pixelMap[newCoords.x][newCoords.y];
                                     // if info.ignore exists and newPixel.element is in it
-                                    if (info.ignore && info.ignore.includes(newPixel.element)) {
+                                    if (info.ignore && info.ignore.indexOf(newPixel.element) !== -1) {
                                         continue;
                                     }
                                     if (!(newPixel.element == pixel.element)) {
                                         if (arg != null) { var args = arg.split(","); }
-                                        if (arg == null || args.includes(newPixel.element)) {
+                                        if (arg == null || args.indexOf(newPixel.element) !== -1) {
                                             if (!elements[newPixel.element].hardness || Math.random() > elements[newPixel.element].hardness) {
                                                 deletePixel(newCoords.x,newCoords.y);
                                                 if (pixelMap[pixel.x][pixel.y] != undefined) {
@@ -5784,14 +6102,14 @@
                                 }
                             }
                             //Change pixel
-                            else if (b == "CH") {
+                            else if (b === "CH") {
                                 if (!isEmpty(newCoords.x,newCoords.y,true)) {
                                     var newPixel = pixelMap[newCoords.x][newCoords.y];
-                                    if (info.ignore && info.ignore.includes(newPixel.element)) {
+                                    if (info.ignore && info.ignore.indexOf(newPixel.element) !== -1) {
                                         continue;
                                     }
                                     if (!elements[newPixel.element].hardness || Math.random() > elements[newPixel.element].hardness) {
-                                        if (arg.includes(">")) {
+                                        if (arg.indexOf(">") !== -1) {
                                             var argfrom = arg.split(">")[0];
                                             var argto = arg.split(">")[1];
                                         }
@@ -5799,7 +6117,7 @@
                                             var argfrom = null;
                                             var argto = arg;
                                         }
-                                        if (argto.includes(",")) {
+                                        if (argto.indexOf(",") !== -1) {
                                             var argto = argto.split(",")[Math.floor(Math.random()*argto.split(",").length)];
                                         }
                                         if (elements[argto]) {
@@ -5811,11 +6129,11 @@
                                 }
                             }
                             //Swap
-                            else if (b == "SW") {
+                            else if (b === "SW") {
                                 if (!isEmpty(newCoords.x,newCoords.y,true)) {
                                     var newPixel = pixelMap[newCoords.x][newCoords.y];
                                     if (arg != null) { var args = arg.split(","); }
-                                    if (arg == null || args.includes(newPixel.element)) {
+                                    if (arg == null || args.indexOf(newPixel.element) !== -1) {
                                         if (!elements[newPixel.element].hardness || Math.random() > elements[newPixel.element].hardness) {
                                             swapSpots.push({x:newCoords.x,y:newCoords.y});
                                         }
@@ -5823,22 +6141,25 @@
                                 }
                             }
                             //Create pixel
-                            else if (b == "CR") {
+                            else if (b === "CR") {
                                 if (isEmpty(newCoords.x,newCoords.y)) {
                                     if (arg == null) {
                                         arg = pixel.element;
                                     }
-                                    else if (arg.includes(",")) {
+                                    else if (arg.indexOf(",") !== -1) {
                                         arg = arg.split(",")[Math.floor(Math.random()*arg.split(",").length)];
                                     }
                                     if (elements[arg]) {
                                         createPixel(arg,newCoords.x,newCoords.y);
+                                        if (info.fireColor && arg==="fire") {
+                                            pixelMap[newCoords.x][newCoords.y].color = pixelColorPick(pixelMap[newCoords.x][newCoords.y],info.fireColor);
+                                        }
                                         pixelMap[newCoords.x][newCoords.y].temp = pixel.temp
                                     }
                                 }
                             }
                             // Clone self
-                            else if (b == "CL") {
+                            else if (b === "CL") {
                                 if (isEmpty(newCoords.x,newCoords.y)) {
                                     if (arg == null || pixel.temp >= parseFloat(arg)) {
                                         clonePixel(pixel,newCoords.x,newCoords.y);
@@ -5846,7 +6167,7 @@
                                 }
                             }
                             // Clone first touched
-                            else if (b == "CF") {
+                            else if (b === "CF") {
                                 if (pixel.clone) {
                                     if (isEmpty(newCoords.x,newCoords.y)) {
                                         createPixel(pixel.clone,newCoords.x,newCoords.y);
@@ -5856,7 +6177,7 @@
                                 else {
                                     if (!isEmpty(newCoords.x,newCoords.y,true)) {
                                         newPixel = pixelMap[newCoords.x][newCoords.y];
-                                        if (info.ignore && info.ignore.includes(newPixel.element)) {
+                                        if (info.ignore && info.ignore.indexOf(newPixel.element) !== -1) {
                                             continue;
                                         }
                                         if (newPixel.element != pixel.element && newPixel.element != "wire") {
@@ -5870,7 +6191,7 @@
                                     }
                                 }
                             }
-                            else if (b=="SH") {
+                            else if (b==="SH") {
                                 if (!isEmpty(newCoords.x,newCoords.y,true)) {
                                     var newPixel = pixelMap[newCoords.x][newCoords.y];
                                     var con = elements[newPixel.element].conduct;
@@ -5887,7 +6208,7 @@
                                 }
                             }
                             //Stick
-                            else if (b=="ST") {
+                            else if (b==="ST") {
                                 if (!isEmpty(newCoords.x,newCoords.y,true)) {
                                     var newPixel = pixelMap[newCoords.x][newCoords.y];
                                     if (newPixel.element != pixel.element && (arg == null || newPixel.element == arg)) {
@@ -5896,8 +6217,8 @@
                                 }
                             }
                             //Leave behind element
-                            else if (b == "LB" || b == "L1" || b == "L2") {
-                                if (arg != null && arg.includes(",")) {
+                            else if (b === "LB" || b == "L1" || b == "L2") {
+                                if (arg != null && arg.indexOf(",") !== -1) {
                                     arg = arg.split(",")[Math.floor(Math.random()*arg.split(",").length)];
                                 }
                                 if (elements[arg]) {
@@ -5907,12 +6228,12 @@
                                 }
                             }
                             //Change color
-                            else if (b == "CC") {
+                            else if (b === "CC") {
                                 if (!isEmpty(newCoords.x,newCoords.y,true)) {
                                     var newPixel = pixelMap[newCoords.x][newCoords.y];
                                     if (arg == null) {arg = newPixel.colorObject}
                                     else {
-                                        if (arg.includes(",")) {
+                                        if (arg.indexOf(",") !== -1) {
                                             arg = arg.split(",")[Math.floor(Math.random()*arg.split(",").length)];
                                         }
                                         if (!arg.startsWith("#")) {
@@ -5923,7 +6244,7 @@
                                 }
                             }
                             //Heat
-                            else if (b == "HT") {
+                            else if (b === "HT") {
                                 if (!isEmpty(newCoords.x,newCoords.y,true)) {
                                     var newPixel = pixelMap[newCoords.x][newCoords.y];
                                     // if the element isn't the same or the coords ARE the same
@@ -5937,7 +6258,7 @@
                                 }
                             }
                             //Cool
-                            else if (b == "CO") {
+                            else if (b === "CO") {
                                 if (!isEmpty(newCoords.x,newCoords.y,true)) {
                                     var newPixel = pixelMap[newCoords.x][newCoords.y];
                                     if (!(newPixel.element == pixel.element) || (newCoords.x == pixel.x && newCoords.y == pixel.y)) {
@@ -5951,7 +6272,7 @@
                             }
 
                             // Flip X
-                            else if (b == "FX") {
+                            else if (b === "FX") {
                                 if (!isEmpty(newCoords.x,newCoords.y,true)) {
                                     var newPixel = pixelMap[newCoords.x][newCoords.y];
                                     if (elements[newPixel.element].flippableX) {
@@ -5962,7 +6283,7 @@
                                 }
                             }
                             // Flip Y
-                            else if (b == "FY") {
+                            else if (b === "FY") {
                                 if (!isEmpty(newCoords.x,newCoords.y,true)) {
                                     var newPixel = pixelMap[newCoords.x][newCoords.y];
                                     if (elements[newPixel.element].flippableY) {
@@ -5973,11 +6294,11 @@
                                 }
                             }
                             // Rotate
-                            else if (b == "RT") {
+                            else if (b === "RT") {
                                 if (!isEmpty(newCoords.x,newCoords.y,true)) {
                                     var newPixel = pixelMap[newCoords.x][newCoords.y];
                                     // If arg isn't null, set arg to a random choice from arg.split(",")
-                                    if (arg != null && arg.includes(",")) {
+                                    if (arg != null && arg.indexOf(",") !== -1) {
                                         arg = arg.split(",")[Math.floor(Math.random()*arg.split(",").length)];
                                     }
                                     if (elements[newPixel.element].rotatable) {
@@ -5986,7 +6307,7 @@
                                 }
                             }
                             // Bounce
-                            else if (b == "BO") {
+                            else if (b === "BO") {
                                 if (!isEmpty(newCoords.x,newCoords.y)) {
                                     if (info.flippableX) {
                                         pixel.flipX = !pixel.flipX;
@@ -5996,7 +6317,7 @@
                                     }
                                     if (info.rotatable) {
                                         // If arg isn't null, set arg to a random choice from arg.split(",")
-                                        if (arg != null && arg.includes(",")) {
+                                        if (arg != null && arg.indexOf(",") !== -1) {
                                             arg = arg.split(",")[Math.floor(Math.random()*arg.split(",").length)];
                                         }
                                         if (pixel.r !== undefined) {
@@ -6007,18 +6328,18 @@
                                 }
                             }
                             // Change When M2
-                            else if (b == "C2") {
-                                if (arg.includes(",")) {
+                            else if (b === "C2") {
+                                if (arg.indexOf(",") !== -1) {
                                     arg = arg.split(",")[Math.floor(Math.random()*arg.split(",").length)];
                                 }
                                 var C2 = arg;
                             }
                             // Explode
-                            else if (b == "EX") {
+                            else if (b === "EX") {
                                 if (!isEmpty(newCoords.x,newCoords.y)) {
                                     if (outOfBounds(newCoords.x,newCoords.y) || (newCoords.x == x && newCoords.y == y) || (pixel.element !== pixelMap[newCoords.x][newCoords.y].element && elements[pixelMap[newCoords.x][newCoords.y].element].state !== "gas")) {
                                         // if arg contains ">", var fire = everything after it, arg = everything before it
-                                        if (arg.includes(">")) {
+                                        if (arg.indexOf(">") !== -1) {
                                             var fire = arg.split(">")[1];
                                             arg = arg.split(">")[0];
                                         }
@@ -6053,7 +6374,7 @@
                     var by = supportSpots[i].y;
                     var arg = supportSpots[i].arg;
                     if (!isEmpty(bx,by,true)) {
-                        if ((arg == null && !validDensitySwaps.includes(info.state+">"+elements[pixelMap[bx][by].element].state)) || pixelMap[bx][by].element == arg) {
+                        if ((arg == null && !validDensitySwaps[info.state][elements[pixelMap[bx][by].element].state]) || pixelMap[bx][by].element == arg) {
                             supportCount++;
                         }
                     }
@@ -6190,7 +6511,7 @@
                     }
                 }
                 else if (pixel.element != "fire" && isEmpty(pixel.x,pixel.y-1) && Math.floor(Math.random()*100)<10) {
-                    createPixel("fire",pixel.x,pixel.y-1);
+                    createPixel((info.fireElement || "fire"),pixel.x,pixel.y-1);
                     pixelMap[pixel.x][pixel.y-1].temp = pixel.temp//+(pixelTicks - (pixel.burnStart || 0));
                     if (info.fireColor != undefined) {
                         pixelMap[pixel.x][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x][pixel.y-1],info.fireColor);
@@ -6202,14 +6523,11 @@
 
         function doHeat(pixel) {
             // Check right and bottom adjacent pixels
-            var coordsToCheck = [
-                {x:pixel.x+1,y:pixel.y},
-                {x:pixel.x,y:pixel.y+1},
-            ];
-            for (var i = 0; i < coordsToCheck.length; i++) {
-                var coords = coordsToCheck[i];
-                if (!isEmpty(coords.x,coords.y,true)) {
-                    var newPixel = pixelMap[coords.x][coords.y];
+            for (var i = 0; i < biCoords.length; i++) {
+                var x = pixel.x+biCoords[i][0];
+                var y = pixel.y+biCoords[i][1];
+                if (!isEmpty(x,y,true)) {
+                    var newPixel = pixelMap[x][y];
                     // Skip if both temperatures are the same
                     if (pixel.temp == newPixel.temp || elements[newPixel.element].insulate == true) {
                         continue;
@@ -6227,16 +6545,11 @@
         function doElectricity(pixel) {
             if (pixel.charge) {
                 // Check each adjacent pixel, if that pixel's charge is false, set it to the same charge
-                var coordsToCheck = [
-                    {x:pixel.x+1,y:pixel.y},
-                    {x:pixel.x-1,y:pixel.y},
-                    {x:pixel.x,y:pixel.y+1},
-                    {x:pixel.x,y:pixel.y-1},
-                ];
-                for (var i = 0; i < coordsToCheck.length; i++) {
-                    var coords = coordsToCheck[i];
-                    if (!isEmpty(coords.x,coords.y,true)) {
-                        var newPixel = pixelMap[coords.x][coords.y];
+                for (var i = 0; i < adjacentCoords.length; i++) {
+                    var x = pixel.x+adjacentCoords[i][0];
+                    var y = pixel.y+adjacentCoords[i][1];
+                    if (!isEmpty(x,y,true)) {
+                        var newPixel = pixelMap[x][y];
                         var con = elements[newPixel.element].conduct;
                         if (con == undefined) {continue}
                         if (Math.random() < con) { // If random number is less than conductivity
@@ -6257,9 +6570,6 @@
                 if (pixel.charge <= 0) {
                     delete pixel.charge;
                     pixel.chargeCD = 4;
-                    if (elements[pixel.element].colorOn) {
-                        pixel.color = pixelColorPick(pixel);
-                    }
                 }
             }
             // Lower charge cooldown
@@ -6267,6 +6577,9 @@
                 pixel.chargeCD -= 1;
                 if (pixel.chargeCD <= 0) {
                     delete pixel.chargeCD;
+                    if (elements[pixel.element].colorOn) {
+                        pixel.color = pixelColorPick(pixel);
+                    }
                 }
             }
         }
@@ -6280,17 +6593,15 @@
             else {
                 var newColor = null;
             }
-            
-            var coords = [
-                [pixel.x+1,pixel.y],
-                [pixel.x-1,pixel.y],
-                [pixel.x,pixel.y+1],
-                [pixel.x,pixel.y-1],
-            ]
-            for (var i = 0; i < coords.length; i++) {
-                var coord = coords[i];
-                if (!isEmpty(coord[0],coord[1],true)) {
-                    var newPixel = pixelMap[coord[0]][coord[1]];
+
+            for (var i = 0; i < adjacentCoords.length; i++) {
+                var x = pixel.x+adjacentCoords[i][0];
+                var y = pixel.y+adjacentCoords[i][1];
+                if (!isEmpty(x,y,true)) {
+                    var newPixel = pixelMap[x][y];
+                    if (elements[pixel.element].ignore && elements[pixel.element].ignore.indexOf(newPixel.element) != -1) {
+                        continue;
+                    }
                     if ((newPixel.element != pixel.element || elements[newPixel.element].stainSelf) && (elements[newPixel.element].state == "solid" || !elements[newPixel.element].state || newPixel.element == pixel.element)) {
                         if (Math.random() < Math.abs(stain)) {
                             if (stain < 0) {
@@ -6378,6 +6689,9 @@
                 if (result === null) {deletePixel(pixel.x,pixel.y);}
                 else {
                     changePixel(pixel,result);
+                    if (elementInfo.fireColor && result==="fire") {
+                        pixel.color = pixelColorPick(pixel,elementInfo.fireColor);
+                    }
                 }
             }
             // If the pixel's temp <= the elementInfo tempLow, change pixel.element to elementInfo.stateLow
@@ -6513,7 +6827,7 @@
         }
         function explodeAt(x,y,radius,fire="fire") {
             // if fire contains , split it into an array
-            if (fire.includes(",")) {
+            if (fire.indexOf(",") !== -1) {
                 fire = fire.split(",");
             }
             var coords = circleCoords(x,y,radius);
@@ -6562,7 +6876,8 @@
                                 var result = info.breakInto;
                             }
                             // change the pixel to the result
-                            changePixel(pixel,result)
+                            changePixel(pixel,result);
+                            continue;
                         }
                         else {
                             if (Array.isArray(fire)) {
@@ -6571,7 +6886,8 @@
                             else {
                                 var newfire = fire;
                             }
-                            changePixel(pixel,newfire)
+                            changePixel(pixel,newfire);
+                            continue;
                         }
                     }
                     if (damage > 0.75) {
@@ -6586,50 +6902,108 @@
             }
         }
 
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
         function drawPixels(forceTick=false) {
             // newCurrentPixels = shuffled currentPixels
             var newCurrentPixels = currentPixels.slice();
-            newCurrentPixels.sort(function() {return 0.5 - Math.random()});
+            var pixelsFirst = [];
+            var pixelsLast = [];
+            if (!paused || forceTick) {
+                shuffleArray(newCurrentPixels);
+            }
+            /*{newCurrentPixels.sort(function(p) { // shuffle the pixels but keep elements[p.element].isGas last
+                return 0.5 - Math.random();
+            })} // shuffle the pixels if not paused*/
             for (var i = 0; i < newCurrentPixels.length; i++) {
                 pixel = newCurrentPixels[i];
                 //if (pixelMap[pixel.x][pixel.y] == undefined || currentPixels.indexOf(pixel) == -1) {continue}
                 if (pixel.del) {continue}
-                if ((!paused) || forceTick) {
+                if (!paused || forceTick) {
                     if (elements[pixel.element].tick) { // Run tick function if it exists
                         elements[pixel.element].tick(pixel);
                     }
+                    if (pixel.del) {continue}
                     if (elements[pixel.element].behavior) { // Parse behavior if it exists
                         pixelTick(pixel);
                     }
                 };
+                if (elements[pixel.element].isGas) {
+                    pixelsLast.push(pixel);
+                }
+                else {
+                    pixelsFirst.push(pixel);
+                }
             }
+            adjacentCoords = [
+                [0,1],
+                [0,-1],
+                [1,0],
+                [-1,0]
+            ];
+            biCoords = [
+                [0,1],
+                [1,0]
+            ];
             // Draw the current pixels
-                var canvas = document.getElementById("game");
-                var ctx = canvas.getContext("2d");
-                for (var i = 0; i < newCurrentPixels.length; i++) {
-                    pixel = newCurrentPixels[i];
-                    if (pixelMap[pixel.x][pixel.y] == undefined) {continue}
-                    if (view===null) {
-                        ctx.fillStyle = pixel.color;
-                    }
-                    else if (view === "thermal") {
-                        // set the color to pixel.temp, from hottest at 0 hue to coldest 225 hue, with the minimum being -273, max being 6000
-                        var temp = pixel.temp;
-                        if (temp < -273) {temp = -273}
-                        if (temp > 6000) {temp = 6000}
-                        var hue = 225 - (temp/6000)*225;
-                        if (hue < 0) {hue = 0}
-                        if (hue > 225) {hue = 225}
-                        ctx.fillStyle = "hsl("+hue+",100%,50%)";
-                    }
-                    ctx.fillRect(pixel.x*pixelSize, pixel.y*pixelSize, pixelSize, pixelSize);
-                    if (pixel.charge) { // Yellow glow on charge
-                        if (!elements[pixel.element].colorOn) {
-                            ctx.fillStyle = "rgba(255,255,0,0.5)";
-                            ctx.fillRect(pixel.x*pixelSize, pixel.y*pixelSize, pixelSize, pixelSize);
+            var canvas = document.getElementById("game");
+            var ctx = canvas.getContext("2d");
+            var pixelDrawList = pixelsFirst.concat(pixelsLast);
+            for (var i = 0; i < pixelDrawList.length; i++) {
+                pixel = pixelDrawList[i];
+                if (pixelMap[pixel.x][pixel.y] == undefined) {continue}
+                if (view===null || view===3) {
+                    ctx.fillStyle = pixel.color;
+                }
+                else if (view === 2) { // thermal view
+                    // set the color to pixel.temp, from hottest at 0 hue to coldest 225 hue, with the minimum being -273, max being 6000
+                    var temp = pixel.temp;
+                    if (temp < -273) {temp = -273}
+                    if (temp > 6000) {temp = 6000}
+                    var hue = 225 - (temp/6000)*225;
+                    if (hue < 0) {hue = 0}
+                    if (hue > 225) {hue = 225}
+                    ctx.fillStyle = "hsl("+hue+",100%,50%)";
+                }
+                else if (view === 4) { // smooth view, average of surrounding pixels
+                    var colorlist = [];
+                    // check adjacent coords on the pixelMap, add the color to the list if the pixel is not empty and the color indexOf "rgb" is not -1
+                    for (var j = 0; j < biCoords.length; j++) {
+                        var x = pixel.x + biCoords[j][0];
+                        var y = pixel.y + biCoords[j][1];
+                        if (isEmpty(x,y,true) || elements[pixelMap[x][y].element].state !== elements[pixel.element].state) {continue}
+                        var color = pixelMap[x][y].color;
+                        if (color.indexOf("rgb") !== -1) {
+                            colorlist.push(color.match(/\d+/g));
                         }
                     }
+                    if (colorlist.length === 0) {
+                        ctx.fillStyle = pixel.color;
+                    }
+                    else {
+                        ctx.fillStyle = averageRGB(colorlist);
+                    }
                 }
+                if ((view === null || view === 4) && elements[pixel.element].state === "gas") {
+                    ctx.globalAlpha = 0.5;
+                    ctx.fillRect((pixel.x-1)*pixelSize, (pixel.y)*pixelSize, pixelSize*3, pixelSize);
+                    ctx.fillRect((pixel.x)*pixelSize, (pixel.y-1)*pixelSize, pixelSize, pixelSize*3);
+                    ctx.globalAlpha = 1;
+                }
+                else { // draw the pixel (default)
+                    ctx.fillRect(pixel.x*pixelSize, pixel.y*pixelSize, pixelSize, pixelSize);
+                }
+                if (pixel.charge && view !== 2) { // Yellow glow on charge
+                    if (!elements[pixel.element].colorOn) {
+                        ctx.fillStyle = "rgba(255,255,0,0.5)";
+                        ctx.fillRect(pixel.x*pixelSize, pixel.y*pixelSize, pixelSize, pixelSize);
+                    }
+                }
+            }
             if ((!paused) || forceTick) {pixelTicks++};
         }
         function tick() {
@@ -6762,7 +7136,7 @@
                 var y = coords[i][1];
 
                 // If element name is heat or cool
-                if (currentElement == "heat" || currentElement == "cool") {
+                if (currentElement === "heat" || currentElement === "cool") {
                     if (!isEmpty(x,y,false)) {
                         if (outOfBounds(x,y)) {
                             continue;
@@ -6773,7 +7147,7 @@
                         pixelTempCheck(pixel);
                     }
                 }
-                else if (currentElement == "mix") {
+                else if (currentElement === "mix") {
                     if (!isEmpty(x,y,true)) {
                         var pixel = pixelMap[x][y];
                         if ((pixel.element != "fire" && pixel.element != "smoke") || shiftDown) {
@@ -6781,7 +7155,7 @@
                         }
                     }
                 }
-                else if (currentElement == "shock") {
+                else if (currentElement === "shock") {
                     if (!isEmpty(x,y,true)) {
                         // One loop that repeats 5 times if shiftDown else 1 time
                         for (var j = 0; j < (shiftDown ? 5 : 1); j++) {
@@ -6803,7 +7177,7 @@
                         }
                     }
                 }
-                else if (currentElement == "random" && isEmpty(x, y)) {
+                else if (currentElement === "random" && isEmpty(x, y)) {
                     // create pixel with random element from "randomChoices" array
                     currentPixels.push(new Pixel(x, y, randomChoices[Math.floor(Math.random() * randomChoices.length)]));
                 }
@@ -6814,7 +7188,7 @@
                         elements[currentElement].tool(pixel);
                     }
                 }
-                else if (mode == "replace") {
+                else if (mode === "replace") {
                     if (outOfBounds(x,y)) {
                         continue;
                     }
@@ -6828,6 +7202,9 @@
                     }
                     else {
                         currentPixels.push(new Pixel(x, y, currentElement));
+                    }
+                    if (elements[currentElement].customColor) {
+                        pixelMap[x][y].color = pixelColorPick(currentElement,currentColor);
                     }
                 }
                 else if (isEmpty(x, y)) {
@@ -6898,6 +7275,9 @@
             }
             if (!isEmpty(mouseX, mouseY,true)) {
                 selectElement(pixelMap[mouseX][mouseY].element);
+                if (elements[pixelMap[mouseX][mouseY].element].category && !elements[pixelMap[mouseX][mouseY].element].hidden) {
+                    selectCategory(elements[pixelMap[mouseX][mouseY].element].category);
+                }
                 mouseIsDown = false;
             }
         }
@@ -6946,6 +7326,10 @@
             currentElement = element;
             var e2 = document.getElementById("elementButton-"+element);
             if (e2 != null) { e2.setAttribute("current","true"); }
+            // if e2 has the class "notify", remove it
+            if (e2.classList.contains("notify")) {
+                e2.classList.remove("notify");
+            }
             if (elements[element].customColor) {
                 // show the colorSelector
                 document.getElementById("colorSelector").style.display = "block";
@@ -6957,6 +7341,10 @@
         }
         function selectCategory(category) {
             var categoryButton = document.getElementById("categoryButton-"+category);
+            // if categoryButton has the class "notify", remove it
+            if (categoryButton.classList.contains("notify")) {
+                categoryButton.classList.remove("notify");
+            }
             var categoryDiv = document.getElementById("category-"+category);
             // Show this categoryDiv and hide all others
             for (var i = 0; i < categoryButton.parentNode.children.length; i++) {
@@ -6968,15 +7356,106 @@
             categoryDiv.style.display = "block";
             categoryButton.setAttribute("current", true);
         }
+        viewKey = {
+            2: "thermal",
+            3: "basic",
+            4: "smooth",
+        }
         function setView(n) {
-            // 2 for thermal
-            if (n == 2) {
-                view = "thermal";
+            if (n <= 4 && n > 1) { // range of number keys with valid views
+                view = n;
             }
             else { // reset view
                 view = null;
             }
         }
+
+        function createElementButton(element) {
+            var button = document.createElement("button");
+            // if the element has the attribute "name", use that as the button's text, otherwise use the element with underscores replaced by spaces
+            if (elements[element].name) {
+                button.innerHTML = elements[element].name;
+            }
+            else {
+                button.innerHTML = element.replace(/_/g, " ");
+            }
+            //capitalize first letter of each word
+            button.innerHTML = button.innerHTML.replace(".","   ").replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}).replace("   ",".").replace(/ /g, "");
+            //set attribute of element to the element
+            button.setAttribute("element", element);
+            button.setAttribute("current", "false");
+            button.className = "elementButton";
+            //color of the element
+            // if the element color is an array, make a gradient background color, otherwise, set the background color to the element color
+            if (elements[element].color instanceof Array) {
+                button.style.backgroundImage = "linear-gradient(to bottom right, "+elements[element].color.join(", ")+")";
+                // choose the middlemost item in array
+                var colorObject = elements[element].colorObject[Math.floor(elements[element].colorObject.length/2)];
+                if ((colorObject.r+colorObject.g+colorObject.b)/3 > 200) {
+                    button.className += " bright"
+                }
+            }
+            else {
+                button.style.background = elements[element].color;
+                var colorObject = elements[element].colorObject;
+                if ((colorObject.r+colorObject.g+colorObject.b)/3 > 200) {
+                    button.className += " bright"
+                }
+            }
+            button.id = "elementButton-" + element;
+            button.onclick = function() {
+                selectElement(this.getAttribute("element"));
+            }
+            // on right click, show the element's info
+            button.oncontextmenu = function(e) {
+                e.preventDefault();
+                closeMenu();
+                showInfo(this.getAttribute("element"));
+            }
+            if (!elements[element].category) {
+                elements[element].category = "other";
+            }
+            var categoryDiv = document.getElementById("category-"+elements[element].category);
+            if (categoryDiv === null) {
+                createCategoryDiv(elements[element].category);
+                categoryDiv = document.getElementById("category-"+elements[element].category);
+            }
+            categoryDiv.appendChild(button);
+        }
+        function createCategoryDiv(category) {
+            categoryButton = document.createElement("button");
+            categoryButton.id = "categoryButton-"+category;
+            categoryButton.innerHTML = category.replace(".","   ").replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}).replace("   ",".").replace(/ /g, "");;
+            categoryButton.className = "categoryButton";
+            categoryButton.setAttribute("category",category);
+            categoryButton.onclick = function() {
+                selectCategory(this.getAttribute("category"));
+            }
+            document.getElementById("categoryControls").appendChild(categoryButton);
+            var categoryDiv = document.createElement("div");
+            //categoryDiv.innerHTML = "<span class='categoryName'>"+category+"</span>";
+            categoryDiv.setAttribute("id","category-"+category);
+            categoryDiv.setAttribute("category",category);
+            categoryDiv.setAttribute("class","category");
+            document.getElementById("elementControls").appendChild(categoryDiv);
+        }
+        function checkUnlock(element) {
+            if (elements[element].hidden && !settings.unlocked[element] && elements[element].category !== "molten") {
+                settings.unlocked[element] = true;
+                if (settings.unhide === 2) {
+                    createElementButton(element)
+                    var categoryButton = document.querySelector(".categoryButton[current='true']");
+                    var currentCategory = categoryButton.getAttribute("category");
+                    if (currentCategory !== elements[element].category) {
+                        document.getElementById("categoryButton-"+elements[element].category).classList.add("notify");
+                    }
+                    // add notify to the elementButton of the element
+                    document.getElementById("elementButton-"+element).classList.add("notify");
+                }
+                saveSettings();
+            }
+        }
+
         worldgentypes = {
             // layers: [minimum y from bottom, element, chance per pixel]
             "grass": {
@@ -6986,6 +7465,24 @@
                     [0.05, "rock"],
                     [0, "basalt"],
                 ]
+            },
+            "flower_field": {
+                layers: [
+                    [0.85, "flower_seed", 0.1],
+                    [0.85, "grass"],
+                    [0.50, "dirt"],
+                    [0.05, "rock"],
+                    [0, "basalt"],
+                ]
+            },
+            "wheat_field": {
+                layers: [
+                    [0.95, "wheat_seed"],
+                    [0.50, "mud"],
+                    [0.25, "rock"],
+                    [0, "basalt"],
+                ],
+                baseHeight: 0.35
             },
             "dirt": {
                 layers: [
@@ -7165,7 +7662,7 @@
             }
             // If the view is not null, show the view in all caps
             if (view != null) {
-                stats += "<span id='stat-view' class='stat'>"+view.toUpperCase()+"</span>";
+                stats += "<span id='stat-view' class='stat'>"+viewKey[view].toUpperCase()+"</span>";
             }
             statsDiv.innerHTML = stats;
         }
@@ -7651,21 +8148,21 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                 }
                 if (elements[key].behavior) {
                     // If the element's behavior[1][1] includes "FX", set it's flippableX to true
-                    if (elements[key].behavior[1][1].includes("FX")) {
+                    if (elements[key].behavior[1][1].indexOf("FX") !== -1) {
                         elements[key].flippableX = true;
                     }
                     // If the element's behavior[1][1] includes "FY", set it's flippableY to true
-                    if (elements[key].behavior[1][1].includes("FY")) {
+                    if (elements[key].behavior[1][1].indexOf("FY") !== -1) {
                         elements[key].flippableY = true;
                     }
 
                     // If the element's behavior stringified includes "BO", loop through the behavior
-                    if (elements[key].behavior.toString().includes("BO") && !elements[key].rotatable) {
+                    if (elements[key].behavior.toString().indexOf("BO") !== -1 && !elements[key].rotatable) {
                         for (var i = 0; i < elements[key].behavior.length; i++) {
                             // Loop through each array in the behavior
                             for (var j = 0; j < elements[key].behavior[i].length; j++) {
                                 // If the behavior includes "BO", set the behaviorOn to the behavior
-                                if (elements[key].behavior[i][j].includes("BO")) {
+                                if (elements[key].behavior[i][j].indexOf("BO") !== -1) {
                                     if ((i==0 && j==0) || (i==0 && j==2) || (i==2 && j==0) && (i==2 && j==2)) {
                                         elements[key].flippableX = true;
                                         elements[key].flippableY = true;
@@ -7682,9 +8179,19 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                     }
 
                     // If the element's behavior[1][1] includes "RT", set it's rotatable to "true"
-                    if (elements[key].behavior[1][1].includes("RT")) {
+                    if (elements[key].behavior[1][1].indexOf("RT") !== -1) {
                         elements[key].rotatable = true;
                     }
+
+                }
+
+                // If the element's state is "gas", isGas = true
+                if (elements[key].state === "gas") {
+                    elements[key].isGas = true;
+                }
+                // Else if the state is not "solid" or "liquid", delete it
+                else if (elements[key].state !== "solid" && elements[key].state !== "liquid") {
+                    delete elements[key].state;
                 }
 
                 // If the element has reactions, loop through each one (it is an object), if the value for elem1 or elem2 is not an element and is not null, remove that key
@@ -7777,6 +8284,18 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                         if (!elements[elements[key].burnInto]) {
                             delete elements[key].burnInto;
                         }
+                    }
+                }
+                // same for breakInto
+                if (elements[key].breakInto) {
+                    if (Array.isArray(elements[key].breakInto)) {
+                        for (var i = 0; i < elements[key].breakInto.length; i++) {
+                            if (!elements[elements[key].breakInto[i]]) { delete elements[key].breakInto[i]; }
+                        }
+                        if (elements[key].breakInto.length == 0) { delete elements[key].breakInto; }
+                    }
+                    else {
+                        if (!elements[elements[key].breakInto]) { delete elements[key].breakInto; }
                     }
                 }
 
@@ -8046,69 +8565,15 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             hiddenCount = 0;
             for (var element in elements) {
                 elementCount++;
-                if (elements[element].hidden && !settings["unhide"]) { hiddenCount++; continue; }
+                if (elements[element].hidden && (settings["unhide"] === 0 || ( settings["unhide"]===2 && !settings.unlocked[element] ))) { hiddenCount++; continue; }
                 var category = elements[element].category;
-                if (category==null) {category="Other"}
+                if (category==null) {category="other"}
                 var categoryDiv = document.getElementById("category-"+category);
                 if (categoryDiv == null) {
-                    categoryButton = document.createElement("button");
-                    categoryButton.id = "categoryButton-"+category;
-                    categoryButton.innerHTML = category.replace(".","   ").replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}).replace("   ",".").replace(/ /g, "");;
-                    categoryButton.className = "categoryButton";
-                    categoryButton.setAttribute("category",category);
-                    categoryButton.onclick = function() {
-                        selectCategory(this.getAttribute("category"));
-                    }
-                    document.getElementById("categoryControls").appendChild(categoryButton);
-                    categoryDiv = document.createElement("div");
-                    //categoryDiv.innerHTML = "<span class='categoryName'>"+category+"</span>";
-                    categoryDiv.setAttribute("id","category-"+category);
-                    categoryDiv.setAttribute("category",category);
-                    categoryDiv.setAttribute("class","category");
-                    document.getElementById("elementControls").appendChild(categoryDiv);
+                    createCategoryDiv(category);
+                    categoryDiv = document.getElementById("category-"+category);
                 }
-                var button = document.createElement("button");
-                // if the element has the attribute "name", use that as the button's text, otherwise use the element with underscores replaced by spaces
-                if (elements[element].name) {
-                    button.innerHTML = elements[element].name;
-                }
-                else {
-                    button.innerHTML = element.replace(/_/g, " ");
-                }
-                //capitalize first letter of each word
-                button.innerHTML = button.innerHTML.replace(".","   ").replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}).replace("   ",".").replace(/ /g, "");
-                //set attribute of element to the element
-                button.setAttribute("element", element);
-                button.setAttribute("current", "false");
-                button.className = "elementButton";
-                //color of the element
-                // if the element color is an array, make a gradient background color, otherwise, set the background color to the element color
-                if (elements[element].color instanceof Array) {
-                    button.style.backgroundImage = "linear-gradient(to bottom right, "+elements[element].color.join(", ")+")";
-                    // choose the middlemost item in array
-                    var colorObject = elements[element].colorObject[Math.floor(elements[element].colorObject.length/2)];
-                    if ((colorObject.r+colorObject.g+colorObject.b)/3 > 200) {
-                        button.className += " bright"
-                    }
-                }
-                else {
-                    button.style.background = elements[element].color;
-                    var colorObject = elements[element].colorObject;
-                    if ((colorObject.r+colorObject.g+colorObject.b)/3 > 200) {
-                        button.className += " bright"
-                    }
-                }
-                button.id = "elementButton-" + element;
-                button.onclick = function() {
-                    selectElement(this.getAttribute("element"));
-                }
-                // on right click, show the element's info
-                button.oncontextmenu = function(e) {
-                    e.preventDefault();
-                    closeMenu();
-                    showInfo(this.getAttribute("element"));
-                }
-                categoryDiv.appendChild(button);
+                createElementButton(element);
             }
             // Set the first button in categoryControls div to be the current category
             document.getElementById("categoryControls").children[0].click()
@@ -8199,11 +8664,12 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                     Hiding <select onchange="setSetting('unhide',parseInt(this.value));this.nextElementSibling.innerText='Refresh.'">
                         <option value="0" selected>Hide Some Elements</option>
                         <option value="1">Unhide All Elements</option>
+                        <option value="2">Unlock as Discovered</option>
                     </select>
                     <a onclick="window.location.reload();" style="font-style:italic;cursor:pointer"></a>
                 </span>
                 <span setting="bg" style="display:block;padding-bottom:0.5em" class="setting-span">
-                    Background <input onchange="setSetting('bg',this.value);" type="color" value="#000000">
+                    Background <input onchange="setSetting('bg',this.value);" oninput="setSetting('bg',this.value);" type="color" value="#000000">
                 </span>
                 <span setting="stain" style="display:block;padding-bottom:0.5em" class="setting-span">
                     Staining <select onchange="setSetting('stainoff',parseInt(this.value));">
