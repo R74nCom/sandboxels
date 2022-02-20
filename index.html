@@ -8565,7 +8565,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             hiddenCount = 0;
             for (var element in elements) {
                 elementCount++;
-                if (elements[element].hidden && (settings["unhide"] === 0 || ( settings["unhide"]===2 && !settings.unlocked[element] ))) { hiddenCount++; continue; }
+                if (elements[element].hidden && (!settings["unhide"] || ( settings["unhide"]===2 && !settings.unlocked[element] ))) { hiddenCount++; continue; }
                 var category = elements[element].category;
                 if (category==null) {category="other"}
                 var categoryDiv = document.getElementById("category-"+category);
