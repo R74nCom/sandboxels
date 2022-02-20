@@ -13,6 +13,7 @@ runAfterLoad(function() {
             category: "spouts",
             temp: elements[liquidArray[i]].temp,
             hardness: 1,
+            excludeRandom: true,
         };
     };
 	liquidArray.push("ketchup")
