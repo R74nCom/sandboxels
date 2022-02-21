@@ -106,12 +106,17 @@
 		tempHigh: 180,
 		burn: 20,
 		burnTime: 130,
+		burnInto: "lithium_oxide",
 		fireColor: "#fc0a22",
 	}
 
-	elements.molten_lithium = {
+	elements.molten_lithium = { //this s*** is so f*** reactive when it's molten that there literally isn't enough research in the world to get even close to including a reasonable amount of its reactions because they simply don't say what it does to the 99,999,999,999 things it reacts with so i'm just going to f***ing use HT
 		color: "#b0ab9d",
-		behavior: behaviors.LIQUID,
+		behavior: [
+		"XX|HT:1%1|XX",
+		"M2 AND HT:0.1%1|HT:1%1|M2 AND HT:1%1",
+		"M1|M1 AND HT:1%1|M1"
+		],
 		tick: function(pixel) {
 			tryTarnish(pixel,"lithium_oxide",0.014) //oxidation
 		},
@@ -125,6 +130,7 @@
 			"liquid_ammonia": { "elem1": ["hydrogen",null], "elem2": "lithium_amide" }, //2Li + 2NH_3 → 2LiNH_2 + H_2
 		},
 		burning: true,
+		burnInto: "lithium_oxide",
 		fireColor: "#fc0a22",
 		density: 512,
 	}
