@@ -1,4 +1,4 @@
-//TODO: crimtane, enemies
+//TODO: crimtane, enemies, crimsandstone, ichor
 //Not doing: spawning
 //Might not be possible: thorns (its breaking behavior would need a way for a pixel to detect when a pixel tryMove'd into its position)
 
