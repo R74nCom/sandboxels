@@ -1,6 +1,7 @@
 //TODO: crimtane, enemies, crimsandstone, ichor
 //Not doing: spawning
-//Might not be possible: thorns (its breaking behavior would need a way for a pixel to detect when a pixel tryMove'd into its position)
+//Might not be possible: thorns (its breaking behavior would need a way for a pixel to detect when a pixel tryMove'd into its position), clentamination (would require a way to go through pixels)
+//Might or might not do: other spreading biomes, powders
 
 function includesArray(parentArray, testArray) {
     for (let i = 0; i < parentArray.length; i++) {
