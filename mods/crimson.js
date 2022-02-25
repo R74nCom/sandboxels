@@ -1,7 +1,6 @@
-//TODO: crimtane, enemies, crimsandstone, ichor
+//TODO: enemies, ichor, crimsandstone
 //Not doing: spawning
-//Might not be possible: thorns (its breaking behavior would need a way for a pixel to detect when a pixel tryMove'd into its position), clentamination (would require a way to go through pixels)
-//Might or might not do: other spreading biomes, powders
+//Might not be possible: thorns (its breaking behavior would need a way for a pixel to detect when a pixel tryMove'd into its position), powders and clentamination (those would require a means of moving through pixels without falsely occupied pixels or other glitches)
 
 function includesArray(parentArray, testArray) {
     for (let i = 0; i < parentArray.length; i++) {
@@ -79,11 +78,35 @@ function crimSpread(pixel) { //corrupting (crimsonning?) blocks
 					if(Math.random() < crimRate) {
 						changePixel(pixelMap[pixel.x+i][pixel.y+j],"crimsnow")
 					}
+				} else if(pixelMap[pixel.x+i][pixel.y+j].element == "packed_snow") {
+					if(Math.random() < crimRate) {
+						changePixel(pixelMap[pixel.x+i][pixel.y+j],"crimsnow")
+					}
+				} else if(pixelMap[pixel.x+i][pixel.y+j].element == "wet_sand") {
+					if(Math.random() < crimRate) {
+						changePixel(pixelMap[pixel.x+i][pixel.y+j],"crimsand")
+					}
+				} else if(pixelMap[pixel.x+i][pixel.y+j].element == "mud") {
+					if(Math.random() < crimRate) {
+						changePixel(pixelMap[pixel.x+i][pixel.y+j],"dirt")
+					}
+				} else if(pixelMap[pixel.x+i][pixel.y+j].element == "permafrost") {
+					if(Math.random() < crimRate) {
+						changePixel(pixelMap[pixel.x+i][pixel.y+j],"dirt")
+					}
+				} else if(pixelMap[pixel.x+i][pixel.y+j].element == "vine") {
+					if(Math.random() < crimRate) {
+						changePixel(pixelMap[pixel.x+i][pixel.y+j],"crimson_vine")
+					}
+				} else if(pixelMap[pixel.x+i][pixel.y+j].element == "sapling") {
+					if(Math.random() < crimRate*4) {
+						changePixel(pixelMap[pixel.x+i][pixel.y+j],"shadewood_sapling")
+					}
 				}
 			}
 		}
 	}
-	grassSpread(pixel,["dirt","mud"],"crimson_grass") //fuck evil biomes turning mud into dirt
+	grassSpread(pixel,"dirt","crimson_grass")
 }
 
 elements.crimson_grass = {
@@ -260,4 +283,137 @@ elements.vicious_mushroom = {
 	burnTime: 65,
 	state: "solid",
 	density: 90.445,
+}
+
+elements.crimtane_ore = {
+	color: ["#d83a3b", "#85242c", "#5d5d5d", "#540c14"],
+	behavior: behaviors.POWDER,
+	category: "land",
+	tempHigh: 1552, //using palladium's melting point as an upper bound
+	stateHigh: ["molten_slag","molten_slag","molten_crimtane"], //:sunglasses: can't turn things into slag if you're already slag
+	state: "solid",
+	density: 5854, //arbitrarily chosen, average of ((average of gold and palladium densities) + (crimstone density) + (crimstone density))
+}
+
+elements.crimtane = {
+	color: ["#fc141e", "#C62A2F", "#903f3f", "#752E2E", "#5a1c1c", "#5B3C3C", "#5c5c5c"],
+	behavior: behaviors.SOLID,
+	category: "solids",
+	tempHigh: 1200, //i want a behaviors.WALL form of crimtane... and I'm letting the game autogenerate molten_crimtane because I'm going to use it.
+	//just pretend it got sintered somehow
+	state: "solid",
+	hidden: true,
+	density: 15661,
+}
+
+elements.shadewood_tree_branch = {
+	color: "#677a8f",
+	behavior: [
+		"CR:crimson_leaf,shadewood_tree_branch%2|CR:crimson_leaf,crimson_leaf,crimson_leaf,shadewood_tree_branch%2|CR:crimson_leaf,shadewood_tree_branch%2",
+		"XX|XX|XX",
+		"XX|XX|XX",
+	],
+	tempHigh: 400,
+	stateHigh: ["fire","sap"],
+	tempLow: -30,
+	stateLow: "wood",
+	category: "solids",
+	burn: 40,
+	burnTime: 50,
+	burnInto: ["sap","ember","charcoal"],
+	hidden: true,
+	state: "solid",
+	density: 1500,
+	hardness: 0.15,
+	breakInto: ["sap","sawdust"],
+	hidden: true,
+}
+elements.crimson_vine = {
+	color: "#de3323",
+	behavior: [
+		"XX|SP|XX",
+		"XX|XX|XX",
+		"XX|CL%1 AND M1|XX",
+	],
+    tick: function(pixel) {
+        if(!pixel.ft) {
+            pixel.ft = 0
+        }
+        if(pixel.ft % 3 == 0) { 
+			crimSpread(pixel)
+        }
+        pixel.ft++
+    },
+	tempHigh: 100,
+	stateHigh: "dead_plant",
+	tempLow: -2,
+	stateLow: "frozen_plant",
+	burn: 35,
+	burnTime: 100,
+	category: "life",
+	state: "solid",
+	density: 1050,
+}
+
+elements.shadewood = {
+	color: "#677a8f",
+	behavior: behaviors.WALL,
+	tempHigh: 400,
+	stateHigh: ["ember","charcoal","fire","fire","fire"],
+	category: "solids",
+	burn: 5,
+	burnTime: 300,
+	burnInto: ["ember","charcoal","fire"],
+	state: "solid",
+	hardness: 0.15,
+	breakInto: "shadewood_sawdust",
+	density: 930, //used tigerwood
+}
+
+elements.shadewood_sapling = {
+	color: ["#e64029", "#d43b26"],
+	behavior: [
+		"XX|M2%2|XX",
+		"XX|L2:shadewood,shadewood_tree_branch%80|XX",
+		"XX|M1|XX",
+	],
+	tempHigh: 100,
+	stateHigh: "dead_plant",
+	tempLow: -2,
+	stateLow: "frozen_plant",
+	burn: 65,
+	burnTime: 15,
+	category: "life",
+	state: "solid",
+	density: 1500,
+}
+
+elements.shadewood_sawdust = {
+	color: ["#95abcf","#8190a3"],
+	behavior: behaviors.POWDER,
+	tempHigh: 400,
+	stateHigh: "fire",
+	category: "powders",
+	burn: 25,
+	burnTime: 150,
+	burnInto: ["ash","fire","fire","fire"],
+	state: "solid",
+	density: 493,
+	hidden: true,
+}
+
+elements.crimson_leaf = {
+	color: "#de3323",
+	behavior: behaviors.WALL,
+	category:"life",
+	tempHigh: 100,
+	stateHigh: "dead_plant",
+	tempLow: -1.66,
+	stateLow: "frozen_plant",
+	burn:65,
+	burnTime:60,
+	burnInto: "dead_plant",
+	state: "solid",
+	density: 500,
+	hidden: true,
 }
