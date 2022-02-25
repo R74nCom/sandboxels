@@ -417,3 +417,17 @@ elements.crimson_leaf = {
 	density: 500,
 	hidden: true,
 }
+
+elements.ichor = {
+	color: ["#ffec70", "#ffcb52"],
+	behavior: behaviors.LIQUID,
+	reactions: {
+		"head": { "elem2":"meat" }, //sb has no defense to reduce so i just made it deadly
+		"body": { "elem2":"meat" },
+	},
+	category: "liquids",
+	viscosity: 1,
+	state: "liquid",
+	density: 1010,
+	stain: 0.1,
+}
