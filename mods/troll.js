@@ -102,4 +102,24 @@ elements.offset_three_fourth_y = {
 		pixelTempCheck(pixel)
     },
     category: "tools",
+},
+
+elements.troll5 = {
+	color: "#eeeeee",
+	tick: function() {
+		for (var i = 1; i < width; i++) {
+			for (var j = 1; j < height; j++) {
+				if (!isEmpty(i,j)) {
+					if(!pixelMap[i][j].r) {
+						pixelMap[i][j].r = 0
+					}
+					pixelMap[i][j].r = (pixelMap[i][j].r + 1) % 4
+				}
+			}
+		}
+	},
+	category: "machines",
+	insulate: true,
+	state: "solid",
+	excludeRandom: true,
 }
