@@ -1,6 +1,44 @@
-//TODO: enemies, ichor, crimsandstone
-//Not doing: spawning
-//Might not be possible: thorns (its breaking behavior would need a way for a pixel to detect when a pixel tryMove'd into its position), powders and clentamination (those would require a means of moving through pixels without falsely occupied pixels or other glitches)
+/*
+TODO:
+	Blood Crawler?
+	Tweak Vicious Goldfish heavily
+	Face Monster
+	Crimera
+	Herpling
+	Crimslime
+	Blood Jelly
+	Blood Feeder
+	Blood Mummy
+	Deathweed
+	Some drops
+		Loot items could be implemented as useless powders.
+	Crimsandstone
+	Fishing loot fish (as Fish copies)
+Not doing:
+	Mob spawning
+	Game-like world generation
+	Crafting stations
+	Hardmode-exclusive behavior (WoF would be a nightmare to add)
+	Biome keys
+Might not be possible:
+	Thorny bushes (their breaking behavior would require a way for a pixel to detect when another pixel tryMove'd into its position)
+	Powders and clentamination (those would require a means of moving through pixels without falsely occupied pixels or other glitches)
+	Blood crawlers crawling on background walls
+	Brain of Cthulhu (without the rest of the progression)
+		*(would be pretty pointless)
+		Crimson Hearts are probably possible but would be useless without this
+	Actually usable weapons
+	Game-like fishing system
+	Crates breaking into multiple items
+	Tree shaking behavior
+	Deadland Comes Alive painting
+	Floaty Gross, Crimson Axe, Crimson Pigron (same issue as powders)
+Probably possible but far beyond my skill level:
+	Enemy pathfinding
+	Music boxes
+	Crimera variants
+	Multi-pixel enemies other than Face Monsters (which would copy human code)
+*/
 
 function includesArray(parentArray, testArray) {
     for (let i = 0; i < parentArray.length; i++) {
@@ -98,6 +136,10 @@ function crimSpread(pixel) { //corrupting (crimsonning?) blocks
 					if(Math.random() < crimRate) {
 						changePixel(pixelMap[pixel.x+i][pixel.y+j],"crimson_vine")
 					}
+				} else if(pixelMap[pixel.x+i][pixel.y+j].element == "fish") {
+					if(Math.random() < crimRate) {
+						changePixel(pixelMap[pixel.x+i][pixel.y+j],"vicious_goldfish")
+					}
 				} else if(pixelMap[pixel.x+i][pixel.y+j].element == "sapling") {
 					if(Math.random() < crimRate*4) {
 						changePixel(pixelMap[pixel.x+i][pixel.y+j],"shadewood_sapling")
@@ -108,6 +150,8 @@ function crimSpread(pixel) { //corrupting (crimsonning?) blocks
 	}
 	grassSpread(pixel,"dirt","crimson_grass")
 }
+
+eLists.WHL = "water,salt_water,sugar_water,dirty_water,swamp_water,heavy_water,radioactive_water,crimwater,pure_water,chilly_water,honey,magma"
 
 elements.crimson_grass = {
     color: ["#e82535","#cc471f","#d6153c","#c20e29","#b81a2c"],
@@ -240,7 +284,7 @@ elements.crimwater = { //you shouldn't be able to purify ice by melting it
 	state: "liquid",
 	density: 997,
 	conduct: 0.02,
-	stain: 0.1,
+	stain: 0.02,
 }
 
 elements.crimsnow = { //BIG break from canon but you shouldn't be able to purify ice by grinding it either
@@ -429,5 +473,38 @@ elements.ichor = {
 	viscosity: 1,
 	state: "liquid",
 	density: 1010,
-	stain: 0.1,
+	stain: 0.02,
+}
+
+elements.vicious_goldfish = {
+	color: "#e64230",
+	behavior: [
+		"SW:"+eLists.WHL+",blood%2|M2%5 AND SW:"+eLists.WHL+",blood%1|XX", //this is where M3 would have been useful
+		"SW:"+eLists.WHL+",blood%40|FX%0.01|BO%1", //i have no idea what i'm doing
+		"SW:"+eLists.WHL+",blood%2 AND M2|M1|XX",
+	],
+	reactions: {
+		"algae": { "elem2":null, chance:0.5 },
+		"plant": { "elem2":null, chance:0.125 },
+		"fly": { "elem2":null, chance:0.5 },
+		"firefly": { "elem2":null, chance:0.5 },
+		"worm": { "elem2":null, chance:0.25 },
+		"head": { "elem2":[null,"blood"], chance:0.25 },
+		"body": { "elem2":[null,"blood"], chance:0.25 },
+		"oxygen": { "elem2":"carbon_dioxide", chance:0.5 },
+	},
+	tick: function(pixel) {
+		pixel.color = pixelColorPick(pixel)
+	},
+	temp: 20,
+	tempHigh: 42,
+	stateHigh: "meat",
+	tempLow: -20,
+	stateLow: "frozen_meat",
+	category:"life",
+	burn:40,
+	burnTime:100,
+	state: "solid",
+	density: 1080,
+	conduct: 0.2,
 }
