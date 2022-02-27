@@ -19,12 +19,14 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 	  }
 	  if (i == 101) elements[`${i}-fairy`]["reactions"] = {};
 	  if (i == 2) elements[`${i}-fairy`]["behavior"][2] = `XX|CR:fairy%1 AND CR:fairy_dust%0.005 AND M1|M1`;
-      eLists.FAIRY.push(`${i}-fairy`);
 	}
 }
 
 runAfterLoad(function() {
 	if(enabledMods.includes("mods/fey_and_more.js")) {
+		for (var i = 2; i <= 101; i++) {
+			eLists.FAIRY.push(`${i}-fairy`);
+		}
 		elements.iron.behavior = [
 			"XX|DL:"+eLists.FAIRY+"|XX",
 			"DL:"+eLists.FAIRY+"|XX|DL:"+eLists.FAIRY+"",

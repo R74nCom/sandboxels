@@ -1,3 +1,121 @@
+elements.bacteria = {
+	color: ["#e6d3f2", "#c098d9", "#6e318f", "#6e318f"],
+	behavior: behaviors.WALL,
+	tick: function(pixel) {
+		neighbors = [[-1,0],[0,-1],[1,0],[0,1]]
+		if(pixel.charge) { //when shocked
+			if(!outOfBounds(pixel.x,pixel.y+1) && !isEmpty(pixel.x,pixel.y+1)) { //check if a pixel exists below to store the element of
+				if(!pixel.active && !pixel.target && pixelMap[pixel.x][pixel.y+1].element != pixel.element) { //exclude self and only fire once
+					pixel.target = pixelMap[pixel.x][pixel.y+1].element 
+					pixel.active = true
+				} else if(pixel.active || pixel.target || pixelMap[pixel.x][pixel.y+1].element == pixel.element) {
+					pixel.active = pixel.active
+					pixel.target = pixel.target
+				}
+			}
+		}
+		if(pixel.active) { 
+			if(pixel.target) { //safety
+				for(i = 0; i < neighbors.length; i++) { //iterate through neighbor spots
+					if(!isEmpty(pixel.x+neighbors[i][0],pixel.y+neighbors[i][1],true)) { //check for neighbors
+						if(pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]].element == pixel.target) { //if neighbor element is the target
+							changePixel(pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]],pixel.element) //change neighbors to itself
+							pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]].target = pixel.target //set new bacteria target
+							pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]].active = true //activate new bacteria
+						}
+					}
+				}
+			}
+			if(Math.random() < 0.02) { //decay
+				if(!isEmpty(pixel.x,pixel.y)) { //check if position is empty
+					if(pixelMap[pixel.x][pixel.y].element == pixel.element) { //check if position is still bacteria
+						deletePixel(pixel.x,pixel.y)
+					}
+				}
+			}
+		}
+		/*if(pixel.active && pixel.target) { //debug
+			pixel.color = "rgb(255,0,0)"
+		}*/
+	},
+	category: "special",
+	state: "solid",
+	density: 1,
+	conduct: elements.water.conduct + 0.1,
+},
+
+elements.replacer_bacteria = {
+	color: ["#fcbbc0", "#f28089", "#f04f5c", "#f04f5c"],
+	behavior: behaviors.WALL,
+	tick: function(pixel) {
+		neighbors = [[-1,0],[0,-1],[1,0],[0,1]]
+		if(pixel.charge) { //when shocked
+			if(!outOfBounds(pixel.x,pixel.y+1) && !isEmpty(pixel.x,pixel.y+1) && !outOfBounds(pixel.x,pixel.y-1) && !isEmpty(pixel.x,pixel.y-1)) { //check if pixels exists above and below to store the elements of
+				if(!pixel.active && !pixel.target && !pixel.replacement && pixelMap[pixel.x][pixel.y+1].element != pixel.element) { //exclude self and only fire once
+					pixel.target = pixelMap[pixel.x][pixel.y+1].element 
+					pixel.replacement = pixelMap[pixel.x][pixel.y-1].element 
+					pixel.active = true
+				} else if(pixel.active || pixel.target || pixel.replacement || pixelMap[pixel.x][pixel.y+1].element == pixel.element) {
+					pixel.active = pixel.active
+					pixel.target = pixel.target
+					pixel.replacement = pixel.replacement
+				}
+			}
+		}
+		if(pixel.active) {
+			if(pixel.target && pixel.replacement) { //safety
+				for(i = 0; i < neighbors.length; i++) { //iterate through neighbor spots
+					if(!isEmpty(pixel.x+neighbors[i][0],pixel.y+neighbors[i][1],true)) { //check for neighbors
+						if(pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]].element == pixel.target) { //if neighbor element is the target
+							changePixel(pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]],pixel.element) //change neighbors to itself
+							pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]].target = pixel.target //set new bacteria target
+							pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]].replacement = pixel.replacement //set new bacteria replacement
+							pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]].active = true //activate new bacteria
+						}
+					}
+				}
+				if(!isEmpty(pixel.x,pixel.y)) { //check if own position is empty
+					if(pixelMap[pixel.x][pixel.y].element == pixel.element) { //check if own position is still bacteria
+						changePixel(pixelMap[pixel.x][pixel.y],pixel.replacement)
+					}
+				}
+			}
+		}
+		/*if(pixel.active && pixel.target && pixel.replacement) { //debug
+			pixel.color = "rgb(0,255,0)"
+		}*/
+	},
+	category: "special",
+	state: "solid",
+	density: 1,
+	conduct: elements.water.conduct + 0.1,
+},
+
+elements.test337 = {
+    color: "#7f7f7f",
+    conduct: 1,
+    viscosity: 0.000001,
+    colorOn: ["#cf7fff"],
+    density: 2000,
+    behavior: behaviors.POWDER,
+    state: "solid",
+    category: "solids",
+    tick: function(pixel) {
+        for(i = 0; i < 3; i++) {
+            var moveSpotsA = [[0,1]]
+            var moveSpotsB = [[-1,1],[1,1]]
+            var msaChoice = randomArrayChoice(moveSpotsA)
+            var msbChoice = randomArrayChoice(moveSpotsB)
+            if(isEmpty(msaChoice[0],pixel.y+msaChoice[1],true)) {
+                if(!tryMove(pixel,pixel.x+msaChoice[0],pixel.y+msaChoice[1])) {
+                    tryMove(pixel,pixel.x+msbChoice[0],pixel.y+msbChoice[1])
+                }
+            }
+            pixelTick(pixel)
+        }
+    },
+},
+
 elements.sencc = { //same element neighbor count check
 	color: "#000000",
 	uwu: 0,
@@ -30,8 +148,8 @@ elements.sencc2 = { //same element neighbor count check
 	uwu: 0,
 	tick: function(pixel) {
 		pixel.uwu = 0
-		for (let i = -2; i < 3; i++) {
-			for (let j = -2; j < 3; j++) {
+		for (let i = -3; i < 4; i++) {
+			for (let j = -3; j < 4; j++) {
 				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 					if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
 						pixel.uwu += 1
@@ -44,6 +162,258 @@ elements.sencc2 = { //same element neighbor count check
 			pixel.color = "rgb(127,127,127)"
 		} else {
 			pixel.color = "rgb(" + (255/24)*pixel.uwu + ",0,0)"
+		}
+	},
+	category: "machines",
+	insulate: true,
+	state: "solid",
+	hidden: true,
+},
+
+elements.sencc3 = { //same element neighbor count check
+	color: "#000000",
+	uwu: 0,
+	tick: function(pixel) {
+		pixel.uwu = 0
+		var squadius = 3
+		for (let i = (-1*squadius); i < (squadius+1); i++) {
+			for (let j = (-1*squadius); j < (squadius+1); j++) {
+				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
+					if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
+						pixel.uwu += 1
+					}
+				}
+			}
+		}
+		pixel.uwu -= 1
+		if(pixel.uwu == undefined || pixel.uwu == null || isNaN(pixel.uwu)) {
+			pixel.color = "rgb(127,127,127)"
+		} else {
+			pixel.color = "rgb(" + (255/((((squadius*2)+1)**2)-1))*pixel.uwu + ",0,0)"
+		}
+	},
+	category: "machines",
+	insulate: true,
+	state: "solid",
+	hidden: true,
+},
+
+elements.sencc4 = { //same element neighbor count check
+	color: "#000000",
+	uwu: 0,
+	tick: function(pixel) {
+		pixel.uwu = 0
+		var squadius = 4
+		for (let i = (-1*squadius); i < (squadius+1); i++) {
+			for (let j = (-1*squadius); j < (squadius+1); j++) {
+				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
+					if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
+						pixel.uwu += 1
+					}
+				}
+			}
+		}
+		pixel.uwu -= 1
+		if(pixel.uwu == undefined || pixel.uwu == null || isNaN(pixel.uwu)) {
+			pixel.color = "rgb(127,127,127)"
+		} else {
+			pixel.color = "rgb(" + (255/((((squadius*2)+1)**2)-1))*pixel.uwu + ",0,0)"
+		}
+	},
+	category: "machines",
+	insulate: true,
+	state: "solid",
+	hidden: true,
+},
+
+elements.sencc5 = { //same element neighbor count check
+	color: "#000000",
+	uwu: 0,
+	tick: function(pixel) {
+		pixel.uwu = 0
+		var squadius = 5
+		for (let i = (-1*squadius); i < (squadius+1); i++) {
+			for (let j = (-1*squadius); j < (squadius+1); j++) {
+				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
+					if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
+						pixel.uwu += 1
+					}
+				}
+			}
+		}
+		pixel.uwu -= 1
+		if(pixel.uwu == undefined || pixel.uwu == null || isNaN(pixel.uwu)) {
+			pixel.color = "rgb(127,127,127)"
+		} else {
+			pixel.color = "rgb(" + (255/((((squadius*2)+1)**2)-1))*pixel.uwu + ",0,0)"
+		}
+	},
+	category: "machines",
+	insulate: true,
+	state: "solid",
+	hidden: true,
+},
+
+elements.sencc6 = { //same element neighbor count check
+	color: "#000000",
+	uwu: 0,
+	tick: function(pixel) {
+		pixel.uwu = 0
+		var squadius = 6
+		for (let i = (-1*squadius); i < (squadius+1); i++) {
+			for (let j = (-1*squadius); j < (squadius+1); j++) {
+				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
+					if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
+						pixel.uwu += 1
+					}
+				}
+			}
+		}
+		pixel.uwu -= 1
+		if(pixel.uwu == undefined || pixel.uwu == null || isNaN(pixel.uwu)) {
+			pixel.color = "rgb(127,127,127)"
+		} else {
+			pixel.color = "rgb(" + (255/((((squadius*2)+1)**2)-1))*pixel.uwu + ",0,0)"
+		}
+	},
+	category: "machines",
+	insulate: true,
+	state: "solid",
+	hidden: true,
+},
+
+elements.sencc7 = { //same element neighbor count check
+	color: "#000000",
+	uwu: 0,
+	tick: function(pixel) {
+		pixel.uwu = 0
+		var squadius = 7
+		for (let i = (-1*squadius); i < (squadius+1); i++) {
+			for (let j = (-1*squadius); j < (squadius+1); j++) {
+				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
+					if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
+						pixel.uwu += 1
+					}
+				}
+			}
+		}
+		pixel.uwu -= 1
+		if(pixel.uwu == undefined || pixel.uwu == null || isNaN(pixel.uwu)) {
+			pixel.color = "rgb(127,127,127)"
+		} else {
+			pixel.color = "rgb(" + (255/((((squadius*2)+1)**2)-1))*pixel.uwu + ",0,0)"
+		}
+	},
+	category: "machines",
+	insulate: true,
+	state: "solid",
+	hidden: true,
+},
+
+elements.sencc8 = { //same element neighbor count check
+	color: "#000000",
+	uwu: 0,
+	tick: function(pixel) {
+		pixel.uwu = 0
+		var squadius = 8
+		for (let i = (-1*squadius); i < (squadius+1); i++) {
+			for (let j = (-1*squadius); j < (squadius+1); j++) {
+				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
+					if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
+						pixel.uwu += 1
+					}
+				}
+			}
+		}
+		pixel.uwu -= 1
+		if(pixel.uwu == undefined || pixel.uwu == null || isNaN(pixel.uwu)) {
+			pixel.color = "rgb(127,127,127)"
+		} else {
+			pixel.color = "rgb(" + (255/((((squadius*2)+1)**2)-1))*pixel.uwu + ",0,0)"
+		}
+	},
+	category: "machines",
+	insulate: true,
+	state: "solid",
+	hidden: true,
+},
+
+elements.sencc9 = { //same element neighbor count check
+	color: "#000000",
+	uwu: 0,
+	tick: function(pixel) {
+		pixel.uwu = 0
+		var squadius = 9
+		for (let i = (-1*squadius); i < (squadius+1); i++) {
+			for (let j = (-1*squadius); j < (squadius+1); j++) {
+				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
+					if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
+						pixel.uwu += 1
+					}
+				}
+			}
+		}
+		pixel.uwu -= 1
+		if(pixel.uwu == undefined || pixel.uwu == null || isNaN(pixel.uwu)) {
+			pixel.color = "rgb(127,127,127)"
+		} else {
+			pixel.color = "rgb(" + (255/((((squadius*2)+1)**2)-1))*pixel.uwu + ",0,0)"
+		}
+	},
+	category: "machines",
+	insulate: true,
+	state: "solid",
+	hidden: true,
+},
+
+elements.sencc10 = { //same element neighbor count check
+	color: "#000000",
+	uwu: 0,
+	tick: function(pixel) {
+		pixel.uwu = 0
+		var squadius = 10
+		for (let i = (-1*squadius); i < (squadius+1); i++) {
+			for (let j = (-1*squadius); j < (squadius+1); j++) {
+				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
+					if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
+						pixel.uwu += 1
+					}
+				}
+			}
+		}
+		pixel.uwu -= 1
+		if(pixel.uwu == undefined || pixel.uwu == null || isNaN(pixel.uwu)) {
+			pixel.color = "rgb(127,127,127)"
+		} else {
+			pixel.color = "rgb(" + (255/((((squadius*2)+1)**2)-1))*pixel.uwu + ",0,0)"
+		}
+	},
+	category: "machines",
+	insulate: true,
+	state: "solid",
+	hidden: true,
+},
+
+elements.sencc11 = { //same element neighbor count check
+	color: "#000000",
+	uwu: 0,
+	tick: function(pixel) {
+		pixel.uwu = 0
+		var squadius = 11
+		for (let i = (-1*squadius); i < (squadius+1); i++) {
+			for (let j = (-1*squadius); j < (squadius+1); j++) {
+				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
+					if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
+						pixel.uwu += 1
+					}
+				}
+			}
+		}
+		pixel.uwu -= 1
+		if(pixel.uwu == undefined || pixel.uwu == null || isNaN(pixel.uwu)) {
+			pixel.color = "rgb(127,127,127)"
+		} else {
+			pixel.color = "rgb(" + (255/((((squadius*2)+1)**2)-1))*pixel.uwu + ",0,0)"
 		}
 	},
 	category: "machines",
@@ -338,6 +708,189 @@ elements.void_first = {
 				}
 			}
 		}
+	},
+	category:"special",
+	hardness: 1,
+},
+
+elements.converter = {
+	color: "#2ec408",
+	tick: function(pixel) {
+		//store 4 touching pixels in variables if the variables don't exist
+		if(!outOfBounds(pixel.x,pixel.y-1) && !isEmpty(pixel.x,pixel.y-1)) {
+			if(!pixel.dc1 && pixelMap[pixel.x][pixel.y-1].element != pixel.element) {
+				pixel.dc1 = pixelMap[pixel.x][pixel.y-1].element
+			}
+		}
+		if(!outOfBounds(pixel.x+1,pixel.y) && !isEmpty(pixel.x+1,pixel.y)) {
+			if(!pixel.dc2 && pixelMap[pixel.x+1][pixel.y].element != pixel.element) {
+				pixel.dc2 = pixelMap[pixel.x+1][pixel.y].element
+			}
+		}
+		if(!outOfBounds(pixel.x,pixel.y+1) && !isEmpty(pixel.x,pixel.y+1)) {
+			if(!pixel.dc3 && pixelMap[pixel.x][pixel.y+1].element != pixel.element) {
+				pixel.dc3 = pixelMap[pixel.x][pixel.y+1].element
+			}
+		}
+		if(!outOfBounds(pixel.x-1,pixel.y) && !isEmpty(pixel.x-1,pixel.y)) {
+			if(!pixel.dc3 && pixelMap[pixel.x-1][pixel.y].element != pixel.element) {
+				pixel.dc4 = pixelMap[pixel.x-1][pixel.y].element
+			}
+		}
+		//choose from 1
+		if(pixel.dc1 && !pixel.dc2 && !pixel.dc3 && !pixel.dc4) {
+			if(!pixel.changeTo) {
+				pixel.changeTo = pixel.dc1
+			}
+		}
+		if(!pixel.dc1 && pixel.dc2 && !pixel.dc3 && !pixel.dc4) {
+			if(!pixel.changeTo) {
+				pixel.changeTo = pixel.dc2
+			}
+		}
+		if(!pixel.dc1 && !pixel.dc2 && pixel.dc3 && !pixel.dc4) {
+			if(!pixel.changeTo) {
+				pixel.changeTo = pixel.dc3
+			}
+		}
+		if(!pixel.dc1 && !pixel.dc2 && !pixel.dc3 && pixel.dc4) {
+			if(!pixel.changeTo) {
+				pixel.changeTo = pixel.dc4
+			}
+		}
+		ggg = Math.random()
+		hhh = Math.random()
+		iii = Math.random()
+		//choose from 2
+		//1100 and 0011
+		if(pixel.dc1 && pixel.dc2 && !pixel.dc3 && !pixel.dc4) {
+			if(!pixel.changeTo) {
+				if(ggg < 1/2) {
+					pixel.changeTo = pixel.dc1
+				} else {
+					pixel.changeTo = pixel.dc2
+				}
+			}
+		}
+		if(!pixel.dc1 && !pixel.dc2 && pixel.dc3 && pixel.dc4) {
+			if(!pixel.changeTo) {
+				if(ggg < 1/2) {
+					pixel.changeTo = pixel.dc3
+				} else {
+					pixel.changeTo = pixel.dc4
+				}
+			}
+		}
+		//1010 and 0101
+		if(pixel.dc1 && !pixel.dc2 && pixel.dc3 && !pixel.dc4) {
+			if(!pixel.changeTo) {
+				if(ggg < 1/2) {
+					pixel.changeTo = pixel.dc1
+				} else {
+					pixel.changeTo = pixel.dc3
+				}
+			}
+		}
+		if(!pixel.dc1 && pixel.dc2 && !pixel.dc3 && pixel.dc4) {
+			if(!pixel.changeTo) {
+				if(ggg < 1/2) {
+					pixel.changeTo = pixel.dc2
+				} else {
+					pixel.changeTo = pixel.dc4
+				}
+			}
+		}
+		//0110 and 1001
+		if(!pixel.dc1 && pixel.dc2 && pixel.dc3 && !pixel.dc4) {
+			if(!pixel.changeTo) {
+				if(ggg < 1/2) {
+					pixel.changeTo = pixel.dc2
+				} else {
+					pixel.changeTo = pixel.dc3
+				}
+			}
+		}
+		if(pixel.dc1 && !pixel.dc2 && !pixel.dc3 && pixel.dc4) {
+			if(!pixel.changeTo) {
+				if(ggg < 1/2) {
+					pixel.changeTo = pixel.dc1
+				} else {
+					pixel.changeTo = pixel.dc4
+				}
+			}
+		}
+		//choose from 3
+		//0111
+		if(!pixel.dc1 && pixel.dc2 && pixel.dc3 && pixel.dc4) {
+			if(!pixel.changeTo) {
+				if(hhh < 1/3) {
+					pixel.changeTo = pixel.dc2
+				} else if(hhh < 2/3) {
+					pixel.changeTo = pixel.dc3
+				} else {
+					pixel.changeTo = pixel.dc4
+				}
+			}
+		}
+		//1011
+		if(pixel.dc1 && !pixel.dc2 && pixel.dc3 && pixel.dc4) {
+			if(!pixel.changeTo) {
+				if(hhh < 1/3) {
+					pixel.changeTo = pixel.dc1
+				} else if(hhh < 2/3) {
+					pixel.changeTo = pixel.dc3
+				} else {
+					pixel.changeTo = pixel.dc4
+				}
+			}
+		}
+		//1101
+		if(pixel.dc1 && pixel.dc2 && !pixel.dc3 && pixel.dc4) {
+			if(!pixel.changeTo) {
+				if(hhh < 1/3) {
+					pixel.changeTo = pixel.dc1
+				} else if(hhh < 2/3) {
+					pixel.changeTo = pixel.dc2
+				} else {
+					pixel.changeTo = pixel.dc4
+				}
+			}
+		}
+		//1110
+		if(pixel.dc1 && pixel.dc2 && pixel.dc3 && !pixel.dc4) {
+			if(!pixel.changeTo) {
+				if(hhh < 1/3) {
+					pixel.changeTo = pixel.dc1
+				} else if(hhh < 2/3) {
+					pixel.changeTo = pixel.dc2
+				} else {
+					pixel.changeTo = pixel.dc3
+				}
+			}
+		}
+		//choose from 4
+		//1111
+		if(pixel.dc1 && pixel.dc2 && pixel.dc3 && pixel.dc4) {
+			if(!pixel.changeTo) {
+				if(iii < 1/4) {
+					pixel.changeTo = pixel.dc1
+				} else if(iii < 2/4) {
+					pixel.changeTo = pixel.dc2
+				} else if(iii < 3/4) {
+					pixel.changeTo = pixel.dc3
+				} else {
+					pixel.changeTo = pixel.dc4
+				}
+			}
+		}
+        neighbors = [[-1,0],[0,-1],[1,0],[0,1]]
+        for(i = 0; i < neighbors.length; i++) {
+            if(!isEmpty(pixel.x+neighbors[i][0],pixel.y+neighbors[i][1],true)) {
+                if(pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]].element != pixel.element) {
+					changePixel(pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]],pixel.changeTo)
+                }
+            }
+        }
 	},
 	category:"special",
 	hardness: 1,
@@ -1226,6 +1779,166 @@ elements.ionized_polka_dotted_powder = {
 	tempLow: 8000,
 	stateLow: "vaporized_polka_dotted_powder",
 	hidden: true,
+},
+
+elements.hdet = {
+	name: "heat- dependent explosion text",
+	color: "#33aa44",
+	behavior: behaviors.POWDER,
+	tick: function(pixel) {
+		if(pixel.charge > 0) {
+			var temp = pixel.temp
+			if(temp < 0) {
+				temp = 0
+			}
+			if(temp >= 0 && temp < 1) {
+				temp = 1
+			}
+			if(temp > 56000) {
+				temp = 56000
+			}
+			if(isNaN(temp) || isNaN(pixel.temp)) {
+				temp = 20
+				pixel.temp = 20
+			}
+			var r = ((Math.sqrt((Math.log(temp)/Math.log(20)))*(temp**0.5))/(6000**0.126284318))/2
+			explodeAt(pixel.x,pixel.y,Math.floor(r))
+			if(temp > 200) {
+				if(Math.random() < (Math.log(temp)/Math.log(56000))**9) {
+					pixel.charge = 1
+					if(pixel.chargeCD) {
+						delete pixel.chargeCD
+					}
+				}
+			}
+			if(isNaN(temp) || isNaN(pixel.temp)) {
+				temp = 20
+				pixel.temp = 20
+			}
+		}
+	},
+	density: 1200,
+	conduct: 0.5,
+	state: "solid",
+	category: "special"
+},
+
+function randInt(max) {
+   return Math.floor(Math.random() * (max + 1))
+}
+
+function randIntR(min,max) {
+   return Math.floor(Math.random() * (max - min + 1)) + min
+}
+
+elements.test293 = {
+    color: "#f0e7e0",
+    behavior: [
+        "XX|SA%40 AND ST|XX",
+        "M2%10 AND SA%40 AND ST|XX|M2%10 AND SA%40 AND ST",
+        "M2 AND M1%10|M1 AND SA%40 AND ST|M2 AND M1%10"
+    ],
+    category: "weapons",
+    state: "solid",
+    density: 2222.22,
+    tick: function(pixel) {
+        if(pixel.burning) {
+            if(pixel.burning == true) {
+                if(isEmpty(pixel.x,pixel.y-1)) {
+                    if(Math.random() < 0.04) { createPixel("fire",pixel.x,pixel.y-1) }
+                    if(Math.random() < 0.04) { pixel.temp++ }
+                }
+                if(isEmpty(pixel.x,pixel.y+1)) {
+                    if(Math.random() < 0.04) { createPixel("fire",pixel.x,pixel.y+1) }
+                    if(Math.random() < 0.04) { pixel.temp++ }
+                }
+                if(isEmpty(pixel.x-1,pixel.y)) {
+                    if(Math.random() < 0.04) { createPixel("fire",pixel.x-1,pixel.y) }
+                    if(Math.random() < 0.04) { pixel.temp++ }
+                }
+                if(isEmpty(pixel.x+1,pixel.y)) {
+                    if(Math.random() < 0.04) { createPixel("fire",pixel.x+1,pixel.y) }
+                    if(Math.random() < 0.04) { pixel.temp++ }
+                }
+                if(Math.random() < 0.0001) { explodeAt(pixel.x,pixel.y,randIntR(7,10),("fire,fire,fire,fire,smoke,"+pixel.element+","+pixel.element)) }
+            }
+        }
+        doHeat(pixel);
+    },
+    burn: 300,
+    burnTime: 500,
+},
+
+elements.test293b = {
+    color: "#e0e7f0",
+    behavior: [
+        "XX|SA%40 AND ST|XX",
+        "M2%10 AND SA%40 AND ST|XX|M2%10 AND SA%40 AND ST",
+        "M2 AND M1%10|M1 AND SA%40 AND ST|M2 AND M1%10"
+    ],
+    category: "weapons",
+    state: "solid",
+    density: 2222.22,
+    tick: function(pixel) {
+        for(i = -1; i < 2; i++) {
+         for(j = -1; j < 2; j++) {
+          if(!isEmpty(pixel.x + i, pixel.y + j) && !outOfBounds(pixel.x + i, pixel.y + j)) {
+           if(pixelMap[pixel.x + i][pixel.y + j].element == "cold_fire" && !pixel.burning) {
+             pixel.burning = true
+            pixel.burnStart = pixelTicks
+           }
+          }
+         }
+        }
+        if(pixel.burning) {
+            if(pixel.burning == true) {
+                for(i = -1; i < 2; i++) {
+                    for(j = -1; j < 2; j++) {
+                        if(!isEmpty(pixel.x + i, pixel.y + j) && !outOfBounds(pixel.x + i, pixel.y + j)) {
+                            if(pixelMap[pixel.x + i][pixel.y + j].element == "fire") {
+                                deletePixel(pixel.x + i, pixel.y + j)
+                                createPixel("cold_fire", pixel.x + i,pixel.y + j)
+                            }
+                            pixelMap[pixel.x + i][pixel.y + j].temp -= randIntR(1,2)
+                        }
+                    }
+                }
+                if(isEmpty(pixel.x,pixel.y-1)) {
+                    if(Math.random() < 0.04) { createPixel("cold_fire",pixel.x,pixel.y-1) }
+                    if(Math.random() < 0.04) { pixel.temp-- }
+                }
+                if(isEmpty(pixel.x,pixel.y+1)) {
+                    if(Math.random() < 0.04) { createPixel("cold_fire",pixel.x,pixel.y+1) }
+                    if(Math.random() < 0.04) { pixel.temp-- }
+                }
+                if(isEmpty(pixel.x-1,pixel.y)) {
+                    if(Math.random() < 0.04) { createPixel("cold_fire",pixel.x-1,pixel.y) }
+                    if(Math.random() < 0.04) { pixel.temp-- }
+                }
+                if(isEmpty(pixel.x+1,pixel.y)) {
+                    if(Math.random() < 0.04) { createPixel("cold_fire",pixel.x+1,pixel.y) }
+                    if(Math.random() < 0.04) { pixel.temp-- }
+                }
+                if(Math.random() < 0.0001) {
+                    var amogus = randIntR(8,11)
+                    var amog1 = (Math.ceil(amogus/2))*-1
+                    var amog2 = (Math.ceil(amogus/2))+1
+                    explodeAt(pixel.x,pixel.y,amogus,("cold_fire,cold_fire,cold_fire,cold_fire,cold_fire,"+pixel.element+","+pixel.element))
+                    for(i = amog1; i < amog2; i++) {
+                        for(j = amog1; j < amog2; j++) {
+                            if(!isEmpty(pixel.x + i, pixel.y + j) && !outOfBounds(pixel.x + i, pixel.y + j)) {
+                                pixelMap[pixel.x + i][pixel.y + j].temp -= randIntR(160,240)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        doHeat(pixel);
+    },
+    burn: 300,
+    burnTime: 500,
+    burnInto: "cold_fire",
 }
 
 runAfterLoad(function() {

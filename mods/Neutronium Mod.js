@@ -1056,6 +1056,84 @@ temp: 2000,
 viscosity: 10000,
 density: 2.65
 };
+elements.liquid_cloner = {
+color: "#ffff00",
+category: "special",
+state: "liquid",
+behavior: [
+"CF|CF|CF",
+"CF AND M2|XX|CF AND M2",
+"CF AND M1|CF AND M1|CF AND M1",
+],
+density: 975,
+};
+elements.fire_cloner = {
+color: "#ff8000",
+category: "special",
+state: "gas",
+behavior: [
+"CF AND HT%1 AND M1|CF AND HT%1|CF AND HT%1 AND M1",
+"CF AND HT%1|HT%1|CF AND HT%1",
+"CF AND HT%1|CF AND HT%1|CF AND HT%1",
+],
+};
+elements.antigravity_powder_cloner = {
+color: "#808000",
+category: "special",
+state: "powder",
+behavior: [
+"CF AND M2|CF AND M1|CF AND M2",
+"CF|XX|CF",
+"CF|CF|CF",
+],
+density: 1050,
+};
+elements.platinum = {
+color: ["#cfdfe3", "#cfdfe3", "#f7f7f7", "#cfdfe3"],
+category: "solids",
+state: "solid",
+behavior: behaviors.WALL,
+tempHigh: 1768,
+conduct: 1,
+};
+elements.uranium233 = {
+name: "Uranium-233",
+color: "#95a395",
+category: "powders",
+state: "solid",
+behavior: behaviors.RADIOACTIVE_POWDER,
+tempHigh: 1132,
+stateHigh: "molten_uranium233",
+density: 19,
+};
+elements.uranium235 = {
+name: "Uranium-235",
+color: "#7a997a",
+category: "powders",
+state: "solid",
+behavior: [
+"XX|XX|XX",
+"XX|DL%0.02|XX",
+"XX|XX|XX",
+],
+tempHigh: 1132.2,
+stateHigh: "molten_uranium235",
+density: 19.1,
+};
+elements.uranium238 = {
+name: "Uranium-238",
+color: "#4a754a",
+category: "powders",
+state: "solid",
+behavior: [
+"XX|XX|XX",
+"XX|DL%0.01 AND CH:uranium235%0.05|XX",
+"M2|M1|M2",
+],
+tempHigh: 1131,
+stateHigh: "molten_uranium238",
+density: 20,
+};
 /* Unfinished:
 magnesium
 hematite mixture

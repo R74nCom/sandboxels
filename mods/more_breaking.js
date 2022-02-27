@@ -66,17 +66,30 @@ elements.oxidized_copper_scrap = {
 
 elements.copper.breakInto = ["copper_scrap","copper_scrap","copper_scrap","copper_scrap","copper_scrap","oxidized_copper_scrap"]
 
-elements.gold.breakInto = "gold_coin"
-
 elements.dry_ice.breakInto = "carbon_dioxide"
 
-regularMetalArray = ["iron", "zinc", "tin", "nickel", "silver", "aluminum", "lead", "tungsten", "brass", "bronze", "sterling", "steel", "rose_gold", "solder"]
+regularMetalArray = ["iron", "zinc", "tin", "nickel", "silver", "aluminum", "lead", "tungsten", "brass", "bronze", "sterling", "steel", "rose_gold", "solder", "gold"]
 
 if(enabledMods.includes("mods/Neutronium Mod.js")) {
     regularMetalArray.push("mythril")
     regularMetalArray.push("mithril_mythril_alloy")
     regularMetalArray.push("titanium")
     regularMetalArray.push("ilitium")
+}
+if(enabledMods.includes("mods/metals.js")) {
+    regularMetalArray.push("beryllium")
+    regularMetalArray.push("boron")
+    regularMetalArray.push("ruthenium")
+    regularMetalArray.push("rhodium")
+    regularMetalArray.push("palladium")
+    regularMetalArray.push("rhenium")
+    regularMetalArray.push("osmium")
+    regularMetalArray.push("iridium")
+    regularMetalArray.push("platinum")
+    regularMetalArray.push("frozen_mercury")
+    if(elements.mercury) {
+        elements.mercury.breakInto = "mercury_gas"
+    }
 }
 
 if(enabledMods.includes("mods/ketchup_mod.js")) {
@@ -114,16 +127,18 @@ elements.nitrogen_ice.breakInto = "nitrogen_snow"
 
 runAfterLoad(function() {
     for(i = 0; i < regularMetalArray.length; i++) {
-        elements[`${regularMetalArray[i]}_scrap`] = {
-            color: elements[regularMetalArray[i]].color,
-            behavior: behaviors.POWDER,
-            tempHigh: elements[regularMetalArray[i]].tempHigh,
-            stateHigh: regularMetalArray[i],
-            category: "powders",
-            hidden: true,
-            density: elements[regularMetalArray[i]].density * 0.09,
-            conduct: elements[regularMetalArray[i]].conduct * 0.4,
+        if(elements[regularMetalArray[i]]) {
+            elements[`${regularMetalArray[i]}_scrap`] = {
+                color: elements[regularMetalArray[i]].color,
+                behavior: behaviors.POWDER,
+                tempHigh: elements[regularMetalArray[i]].tempHigh,
+                stateHigh: regularMetalArray[i],
+                category: "powders",
+                hidden: true,
+                density: elements[regularMetalArray[i]].density * 0.09,
+                conduct: elements[regularMetalArray[i]].conduct * 0.4,
+            };
+            elements[regularMetalArray[i]].breakInto = `${regularMetalArray[i]}_scrap`
         };
-        elements[regularMetalArray[i]].breakInto = `${regularMetalArray[i]}_scrap`
     };
 });

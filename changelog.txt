@@ -3,6 +3,38 @@
     + Machines Update
     + More plans / feedback at https://docs.google.com/document/u/4/d/1R8xljj_J-K5oU-9y4louwplQmM-ZBvUfXmhbgj5LYdk/edit
 
+[Version 1.4 - Feb. 19, 2022]
+    + Improved the look of gases
+    + "Unlock as Discovered" hiding mode
+        ^ When enabled, hidden elements are shown in the toolbar when they are created
+    + Sun
+    + Stench
+    + Fragrance
+    + Incense
+    + Stink Bug
+        ^ First bug with complex behavior
+        ^ Will be added to other animals eventually
+        ^ Three phases: Flying, Landing, and Standing
+    + Malware, the enemy of Gray Goo
+    + Grape
+    + Juice
+    + Sap
+    + Sodium
+    + Basic View, no special effects (Press 3)
+    + Smooth View, blends surrounding pixels (Press 4)
+    + Flowers now come in different colors
+    + Bleach neutralizes Acid
+    ~ Substantial optimizations
+    ~ Light and Laser are now octodirectional
+    ~ Buffed Antimatter Bomb
+    ~ Nerfed Gray Goo
+    ~ Sugar products no longer turn into Molasses
+    ~ Neon no longer stays red after losing charge
+    ~ Electric glow no longer shows in Thermal View
+    ~ Fixed: Pick tool doesn't select the element's category
+    ~ Fixed: Special fire colors not always being used
+    + Technical: color1 and color2 reaction attributes
+
 [Version 1.3 - Feb. 11, 2022]
     + World Generation Setting [Beta]
     + Staining
