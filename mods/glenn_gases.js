@@ -178,6 +178,14 @@ elements.turquoise_dust = {
 	density: 1600,
 }
 
+if(!settings) {
+	settings = {}
+}
+
+if(!settings.bg) {
+	settings.bg = "#000000"
+}
+
 elements.black_damp = {
 	color: "#000000",
 	behavior: [
