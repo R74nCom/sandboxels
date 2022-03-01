@@ -6,7 +6,6 @@ function increment(){
 	incrementt = incrementt % (Math.PI*8.8) + (Math.PI/30);
 }
 
-pixelSize = 30
         function drawPixels(forceTick=false) {
             // newCurrentPixels = shuffled currentPixels
             var newCurrentPixels = currentPixels.slice();
