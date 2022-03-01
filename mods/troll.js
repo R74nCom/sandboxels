@@ -123,3 +123,48 @@ elements.troll5 = {
 	state: "solid",
 	excludeRandom: true,
 }
+
+elements.troll6 = {
+	color: "#eeeeee",
+	tick: function() {
+            if(pixel.temp < -273) {
+                pixel.temp = -273;
+            };
+            if(isNaN(pixel.temp)) {
+                pixel.temp = -1;
+            };
+            pixel.bemp = Math.floor(pixel.temp);
+            if(pixel.bemp > 273) {
+                pixel.bemp = 273;
+            };
+            if(pixel.temp >= 4000) {
+                pixelTicks = -1;
+                pixel.temp = 4000;
+            } else {
+                pixelTicks += pixel.bemp;
+            };
+	},
+	category: "machines",
+	insulate: true,
+	state: "solid",
+	excludeRandom: true,
+        temp: -1,
+},
+
+elements.troll7 = {
+	color: "#eeeeee",
+	tick: function(pixel) {
+		for (var i = 1; i < width; i++) {
+			for (var j = 1; j < height; j++) {
+				if (!isEmpty(i,j)) {
+                                        piskel = pixelMap[i][j]
+					if(Math.random() < 0.003 && piskel.element != pixel.element) { piskel.temp += (Math.floor(Math.random() * 500 + 1) - 250) }
+				}
+			}
+		}
+	},
+	category: "machines",
+	insulate: true,
+	state: "solid",
+	excludeRandom: true,
+}
