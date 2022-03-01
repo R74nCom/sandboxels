@@ -92,10 +92,17 @@
                 }
                 if (pixel.charge && view !== 2) { // Yellow glow on charge
                     if (!elements[pixel.element].colorOn) {
-                        ctx.fillStyle = "rgba(255,255,0,0.5)";
-                        ctx.beginPath();
-                        ctx.arc((pixel.x+0.5)*pixelSize, (pixel.y+0.5)*pixelSize, pixelSize/2, 0, 2 * Math.PI, false);
-                        ctx.fill();
+                        if ((view === null || view === 4) && elements[pixel.element].state === "gas") {
+                            ctx.fillStyle = "rgba(255,255,0,0.5)";
+                            ctx.beginPath();
+                            ctx.arc((pixel.x+0.5)*pixelSize, (pixel.y+0.5)*pixelSize, pixelSize*1.5, 0, 2 * Math.PI, false);
+                            ctx.fill();
+                        } else {
+                            ctx.fillStyle = "rgba(255,255,0,0.5)";
+                            ctx.beginPath();
+                            ctx.arc((pixel.x+0.5)*pixelSize, (pixel.y+0.5)*pixelSize, pixelSize/2, 0, 2 * Math.PI, false);
+                            ctx.fill();
+                        }
                     }
                 }
             }
