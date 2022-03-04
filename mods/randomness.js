@@ -723,6 +723,23 @@ elements.seb = {
 	hardness: 0.3,
 }
 
+elements.densinium = {
+    color: ["#565656","#575657","#565257","#554d57","#554659"],
+    tempHigh: 4712, //arbitrary
+    hardness: 0.9991, //somewhat arbitrary
+    density: 39180,
+    conduct: 0.86, //arbitrary
+    behavior: behaviors.WALL,
+    state: "solid",
+    category: "solids",
+} //this is effectively a mere interpretation of densinium
+
+elements.molten_densinium = {
+    hardness: 0.9991,
+}
+
+elements.acid.ignore.push("densinium","molten_densinium")
+
 if(!enabledMods.includes("mods/minecraft.js")) {
     elements.netherrack = {
         color: ["#802b2b","#4f1b1b","#943232"],
