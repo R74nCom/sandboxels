@@ -32,15 +32,16 @@ elements.wet_promethazine_hydrochloride = {
         var rnx = randomNeighbor[0]
         var rny = randomNeighbor[1]
         if(pixel.temp >= 100) {
-            if(!isEmpty(pixel.x+rnx, pixel.y+rny, true)) {
+            if(isEmpty(pixel.x+rnx, pixel.y+rny, false)) {
                 createPixel("steam", pixel.x+rnx, pixel.y+rny)
                 changePixel(pixel, "promethazine_hydrochloride")
             }
         }
     },
-    color: "#e0e7e0",
+    color: "#b0b7e0",
     behavior: behaviors.POWDER,
     category: "powders",
+    hidden: true,
     state: "solid",
 }
 
@@ -52,7 +53,7 @@ elements.cp_ph_mixture = {
         var rnx = randomNeighbor[0]
         var rny = randomNeighbor[1]
         if(pixel.temp >= 157.5) {
-            if(!isEmpty(pixel.x+rnx, pixel.y+rny, true)) {
+            if(isEmpty(pixel.x+rnx, pixel.y+rny, false)) {
                 createPixel("molten_codeine_phosphate", pixel.x+rnx, pixel.y+rny)
                 changePixel(pixel, "promethazine_hydrochloride")
             }
@@ -69,10 +70,26 @@ elements.cp_ph_mixture = {
 }
 
 elements.cough_syrup = {
-    density: 1200 //(made up)
+    density: 1200, //(made up)
     viscosity: 190, //https://www.dixonvalve.com/sites/default/files/product/files/brochures-literature/viscosity%20chart.pdf
     color: "#870870",
     behavior: behaviors.LIQUID,
+    tick: function(pixel) { //thermal splitting function
+        var neighbors = [ [-1,0], [1,0], [0,-1], [0,1] ]
+        var randomNeighbor1 = neighbors[Math.floor(Math.random() * neighbors.length)]
+        var randomNeighbor2 = neighbors[Math.floor(Math.random() * neighbors.length)]
+        var rn1x = randomNeighbor1[0]
+        var rn1y = randomNeighbor1[1]
+        var rn2x = randomNeighbor2[0]
+        var rn2y = randomNeighbor2[1]
+        if(pixel.temp >= 100) {
+            if(isEmpty(pixel.x+rn1x, pixel.y+rn1y, false) && isEmpty(pixel.x+rn2x, pixel.y+rn2y, false)) {
+                createPixel("steam", pixel.x+rn1x, pixel.y+rn1y)
+                createPixel("sugar", pixel.x+rn2x, pixel.y+rn2y)
+                changePixel(pixel, "cp_ph_mixture")
+            }
+        }
+    },
     category: "liquids",
     hidden: true,
     state: "liquid",
@@ -84,9 +101,35 @@ elements.cough_syrup = {
 
 elements.lean = {
     density: (3*1037+1200)*4, //https://www.quora.com/How-do-I-make-a-cup-of-lean-And-how-many-millilteres-of-cough-syrup-usually-goes-into-a-standard-cup-of-lean ignoring ice and other things
-    viscosity: (1.32*3+190)/4, //with Sprite density | idk if the above math could apply to viscosity, but no scientists are willing to measure the physical properties of lean 
-    color: "#cb58fc",
-    behavior: behaviors.LIQUID,
+    viscosity: 4, //made up
+    color: "#a527db",
+    behavior: [
+        "XX|CR:foam%3|XX",
+        "M2|XX|M2",
+        "M1|M1|M1"
+    ],
+    tick: function(pixel) { //thermal splitting function
+        var neighbors = [ [-1,0], [1,0], [0,-1], [0,1] ]
+        var randomNeighbor1 = neighbors[Math.floor(Math.random() * neighbors.length)]
+        var randomNeighbor2 = neighbors[Math.floor(Math.random() * neighbors.length)]
+        var randomNeighbor3 = neighbors[Math.floor(Math.random() * neighbors.length)]
+        var rn1x = randomNeighbor1[0]
+        var rn1y = randomNeighbor1[1]
+        var rn2x = randomNeighbor2[0]
+        var rn2y = randomNeighbor2[1]
+        var rn3x = randomNeighbor3[0]
+        var rn3y = randomNeighbor3[1]
+        if(pixel.temp >= 100) {
+            if(isEmpty(pixel.x+rn1x, pixel.y+rn1y, false) && isEmpty(pixel.x+rn2x, pixel.y+rn2y, false) && isEmpty(pixel.x+rn3x, pixel.y+rn3y, false)) {
+                createPixel("steam", pixel.x+rn1x, pixel.y+rn1y)
+                createPixel("sugar", pixel.x+rn2x, pixel.y+rn2y)
+                createPixel("carbon_dioxide", pixel.x+rn3x, pixel.y+rn3y)
+                changePixel(pixel, "cp_ph_mixture")
+            }
+        }
+    },
     category: "liquids",
     hidden: true, //for best results, play on unlock mode :eggTF:
     state: "liquid",
+    stain: 0.03, //purple meme
+}
