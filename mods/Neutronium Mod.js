@@ -5,7 +5,7 @@ function deletecoconut() {
 console.log("Welcome to the console.");
 elements.test = {
     color: "#ff0000",
-    behavior: behaviors.POWDER,
+    behavior: rPOWDER,
     category: "land",
     state: "solid",
     density: 10,
@@ -486,7 +486,7 @@ temp: -150
 elements.mythril = {
 color: "#51bd89",
 behavior: behaviors.WALL,
-category: "solids",
+category: "mythical",
 density: 7750,
 state: "solid",
 tempHigh: 2500,
@@ -496,12 +496,12 @@ conduct: 0.93
 elements.molten_mythril = {
 color: ["#eda724", "#f0eabd"],
 behavior: behaviors.LIQUID,
-category: "liquids",
+category: "mythical",
 reactions: {
 "molten_mithril": { "elem1": "molten_mithril_mythril_alloy", "elem2":null },
 },
 density: 6855,
-state: "liquid",
+state: "mythical",
 tempLow: 2500,
 stateLow: "mythril",
 temp: 3000,
@@ -534,7 +534,7 @@ elements.molten_mithril_mythril_alloy = {
 name: "Molten Mithril/Mythril Alloy",
 color: "#ebd8a4",
 behavior: behaviors.LIQUID,
-category: "liquids",
+category: "mythical",
 density: 3922.5,
 state: "liquid",
 tempLow: 1975,
@@ -547,7 +547,7 @@ conduct: 0.965,
 name: "Mithril/Mythril Alloy",
 color: "#bfd8d9",
 behavior: behaviors.WALL,
-category: "solids",
+category: "mythical",
 density: 4425,
 state: "solid",
 tempHigh: 1975,
@@ -1156,6 +1156,64 @@ behavior: behaviors.LIQUID,
 tempLow: 38,
 stateLow: "butter",
 density: 910,
+};
+behaviors.GROW_PETALS = ["XX|CR:petal%5|XX", "CR:petal%5|XX|CR:petal%5", "XX|CR:petal%5|XX"]
+elements.cactus_seed = {
+color: "#2e5931",
+category: "life",
+state: "solid",
+behavior: ["XX|M2%5|XX","CR:cactus%0.5|L2:cactus,DL%0.01|CR:cactus%0.5","XX|M1|XX"],
+density: 1000,
+tempHigh: 200,
+stateHigh: ["steam", "nut"]
+};
+elements.sugar_cactus_seed = {
+color: "#db9ed4",
+category: "mythical",
+state: "solid",
+behavior: ["XX|M2%5|XX","CR:sugar_cactus%0.5|L2:sugar_cactus,DL%0.01|CR:sugar_cactus%0.5","XX|M1|XX"],
+density: 1000,
+stateHigh: ["caramel", "water"],
+tempHigh: 150,
+};
+elements.cactus = {
+color: "#2e5931",
+category: "life",
+state: "solid",
+behavior: ["XX|XX|XX", "XX|CH:flowering_cactus%0.1|XX", "XX|XX|XX"],
+tempHigh: 200,
+stateHigh: ["steam", "wood"]
+};
+elements.sugar_cactus = {
+color: "#db9ed4",
+category: "mythical",
+state: "solid",
+behavior: ["XX|XX|XX", "XX|CH:flowering_sugar_cactus%0.1|XX", "XX|XX|XX"],
+stateHigh: ["caramel", "water"],
+tempHigh: 150,
+};
+elements.flowering_cactus = {
+color: "#2f5a32",
+category: "life",
+state: "solid",
+behavior: behaviors.GROW_PETALS,
+tempHigh: 200,
+stateHigh: ["steam", "wood"]
+};
+elements.flowering_sugar_cactus = {
+color: "#dc9fd5",
+category: "mythical",
+state: "solid",
+behavior: behaviors.GROW_PETALS,
+tempHigh: 150,
+stateHigh: ["caramel", "water"],
+};
+elements.nut = {
+color: "#807353",
+category: "food",
+state: "solid",
+behavior: behaviors.POWDER,
+density: 500,
 };
 /* Unfinished:
 magnesium
