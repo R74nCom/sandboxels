@@ -1,5 +1,5 @@
 currentColor = "#80ffff";
-function deletecoconut {
+function deletecoconut() {
     throw "The game crashed, because you deleted the coconut."
 }
 console.log("Welcome to the console.");
