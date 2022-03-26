@@ -2,7 +2,7 @@ currentColor = "#80ffff";
 function deletecoconut {
     throw "The game crashed, because you deleted the coconut."
 }
-console.log("Welcome to the console.")
+console.log("Welcome to the console.");
 elements.test = {
     color: "#ff0000",
     behavior: behaviors.POWDER,
@@ -1147,7 +1147,7 @@ behavior: ["XX|XX|XX","M2%5|XX|M2%5","M2|M1|M2"],
 tempHigh: 38,
 stateHigh: "molten_butter",
 density: 911,
-}
+};
 elements.molten_butter = {
 color: "#f7e997",
 category: "food",
@@ -1156,7 +1156,7 @@ behavior: behaviors.LIQUID,
 tempLow: 38,
 stateLow: "butter",
 density: 910,
-}
+};
 /* Unfinished:
 magnesium
 hematite mixture
