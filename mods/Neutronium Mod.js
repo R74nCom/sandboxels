@@ -1164,7 +1164,7 @@ elements.cactus_seed = {
 color: "#2e5931",
 category: "life",
 state: "solid",
-behavior: ["XX|M2%5|XX","CR:cactus%0.5|L2:cactus,DL%0.01|CR:cactus%0.5","XX|M1|XX"],
+behavior: ["XX|M2%5|XX","CR:cactus%0.5|CH:cactus%0.01|CR:cactus%0.5","XX|M1,L2:cactus|XX"],
 density: 1000,
 tempHigh: 200,
 stateHigh: ["steam", "nut"]
@@ -1173,7 +1173,7 @@ elements.sugar_cactus_seed = {
 color: "#db9ed4",
 category: "mythical",
 state: "solid",
-behavior: ["XX|M2%5|XX","CR:sugar_cactus%0.5|L2:sugar_cactus,DL%0.01|CR:sugar_cactus%0.5","XX|M1|XX"],
+behavior: ["XX|M2%5|XX","CR:sugar_cactus%0.5|CH:sugar_cactus%0.01|CR:sugar_cactus%0.5","XX|M1,L2:sugar_cactus|XX"],
 density: 1000,
 stateHigh: ["caramel", "water"],
 tempHigh: 150,
