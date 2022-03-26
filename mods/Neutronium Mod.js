@@ -2,10 +2,12 @@ currentColor = "#80ffff";
 function deletecoconut() {
     throw "The game crashed, because you deleted the coconut."
 }
+let rPOWDER = behaviors.POWDER
 console.log("Welcome to the console.");
+console.log(rPOWDER);
 elements.test = {
     color: "#ff0000",
-    behavior: rPOWDER,
+    behavior: behaviors.POWDER,
     category: "land",
     state: "solid",
     density: 10,
