@@ -1941,8 +1941,28 @@ elements.test293b = {
     burnInto: "cold_fire",
 }
 
+elements.lower_color_copy = {
+    behavior: behaviors.POWDER,
+    tick: function(pixel) {
+        if(!isEmpty(pixel.x,pixel.y+1,true)) {
+            pixel.color = pixelMap[pixel.x][pixel.y+1].color;
+        } else {
+            if(settings.bg) {
+                pixel.color = settings.bg;
+            } else {
+                pixel.color = "#000000";
+            }
+        }
+    },
+    color: ["#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#FF0000", "#FF7F00", "#FFFF00", "#00FF00", "#007FFF", "#0000FF", "#7F00FF"],
+    density: 1250,
+    breakInto: ["metal_scrap", "glass_shard"],
+    hardness: 0.7,
+}
+
 runAfterLoad(function() {
   if(enabledMods.includes("mods/fey_and_more.js")) {
+    elements.lower_color_copy.breakInto.push("magic")
     aaa.push("poisonwater")
     aaa.push("poisonwater")
     aaa.push("poisonwater")
