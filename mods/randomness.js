@@ -740,6 +740,164 @@ elements.molten_densinium = {
 
 elements.acid.ignore.push("densinium","molten_densinium")
 
+//https://gist.github.com/kig/2115205
+function hslToHex(c) {
+  var hue=0, saturation=0, lightness=0;
+  var tmp = 0;
+  for (var i=0,j=0,k=0; i<c.length; i++) {
+    var ch = c.charCodeAt(i);
+    if (ch >= 48 && ch <= 57) {
+      tmp = tmp * 10 + (ch-48);
+      k = 1;
+      continue;
+    } else if (k === 1) {
+      switch(j) {
+        case 0: hue = (tmp % 360) / 360; break;
+        case 1:
+          saturation = (tmp > 100 ? 100 : tmp) / 100; break;
+        case 2:
+          lightness = (tmp > 100 ? 100 : tmp) / 100; break;
+      }
+      j++;
+    }
+    k = 0;
+    tmp = 0;
+  }
+  var h = (hue / (1/6));
+  var c = (1-Math.abs(2*lightness-1))*saturation;
+  var x = c * (1-Math.abs((h%2)-1));
+  switch (h | 0) {
+    case 0: r=c; g=x; b=0; break;
+    case 1: r=x; g=c; b=0; break;
+    case 2: r=0; g=c; b=x; break;
+    case 3: r=0; g=x; b=c; break;
+    case 4: r=x; g=0; b=c; break;
+    case 5: r=c; g=0; b=x; break;
+  }
+  var m = lightness - 0.5*c;
+  r+=m; g+=m; b+=m;
+  r=r*255|0; g=g*255|0; b=b*255|0;
+  var hex = '#';
+      k = (r >> 4 & 0xf) + 48;
+      if (k > 57) k += 7;
+      hex += String.fromCharCode(k);
+      k = (r & 0xf) + 48;
+      if (k > 57) k += 7;
+      hex += String.fromCharCode(k);
+      k = (g >> 4 & 0xf) + 48;
+      if (k > 57) k += 7;
+      hex += String.fromCharCode(k);
+      k = (g & 0xf) + 48;
+      if (k > 57) k += 7;
+      hex += String.fromCharCode(k);
+      k = (b >> 4 & 0xf) + 48;
+      if (k > 57) k += 7;
+      hex += String.fromCharCode(k);
+      k = (b & 0xf) + 48;
+      if (k > 57) k += 7;
+      hex += String.fromCharCode(k);
+  return hex;
+}
+//e.g. hslToHex("hsl(60,100,100)")
+
+rainbowDustArray = []
+for(i = 0; i < 24; i++) {
+    rainbowDustArray.push("hsl(" + (i * 15) + ",15,45)")
+}
+
+for(i = 0; i < rainbowDustArray.length; i++) {
+    rainbowDustArray[i] = hslToHex(rainbowDustArray[i])
+}
+
+rainbowStoneArray = []
+for(i = 0; i < 24; i++) {
+    rainbowStoneArray.push("hsl(" + (i * 15) + ",40,48)")
+    rainbowStoneArray.push("hsl(" + (i * 15) + ",48,38)")
+    rainbowStoneArray.push("hsl(" + (i * 15) + ",52,47)")
+}
+
+for(i = 0; i < rainbowStoneArray.length; i++) {
+    rainbowStoneArray[i] = hslToHex(rainbowStoneArray[i])
+}
+
+rainbowGravelArray = []
+for(i = 0; i < 24; i++) { 
+    rainbowGravelArray.push("hsl(" + (i * 15) + ",35,58)")
+    rainbowGravelArray.push("hsl(" + (i * 15) + ",38,49)")
+    rainbowGravelArray.push("hsl(" + (i * 15) + ",53,63)")
+    rainbowGravelArray.push("hsl(" + (i * 15) + ",23,32)")
+}
+
+for(i = 0; i < rainbowGravelArray.length; i++) {
+    rainbowGravelArray[i] = hslToHex(rainbowGravelArray[i])
+}
+
+elements.rainbow_stone = {
+    color: rainbowStoneArray,
+    behavior: behaviors.POWDER,
+    tempHigh: 1271,
+    stateHigh: "rainbow_magma",
+    category: "land",
+    state: "solid",
+    density: 3201,
+    hardness: 0.8,
+    breakInto: ["rainbow_dust","rainbow_gravel"],
+};
+
+elements.rainbow_magma = {
+    color: ["#F14313", "#F17E13", "#F1AB13", "#C8C830", "#F53952", "#F63434", "#CF7932"],
+    behavior: behaviors.MOLTEN,
+    temp: 1300,
+    tempLow: 1271,
+    stateLow: ["rainbow_stone_2", "rainbow_stone_2", "rainbow_stone_2", "rainbow_stone_2", "rainbow_stone"],
+    category: "liquids",
+    state: "solid",
+    density: 2562,
+    hardness: 0.7,
+    breakInto: "rainbow_magma",
+    viscosity: 11000,
+};
+
+elements.rainbow_stone_2 = {
+    color: ["#503A2A","#443228","#533D2D","#4D422B","#433827","#53432D","#4B472B","#423E25","#4F4A2C","#494C2A","#414125","#4B512B","#475328","#3E4725","#4A592A","#40532C","#384529","#45582D","#3C522F","#35462A","#3F572F","#35552F","#2F472D","#375931","#2D5333","#28482E","#2F5836","#2F5138","#2A4634","#31563A","#2F5140","#2B4539","#2F5542","#2F5044","#2C443C","#325449","#30504A","#2D4340","#31544F","#34494B","#2E4040","#354E4E","#35424C","#2F3C40","#374551","#383E4B","#323641","#3D3E50","#3B374C","#352F42","#3C3951","#413649","#393041","#443750","#473548","#3D2E3F","#4A374D","#4B3546","#422F3C","#52364A","#503644","#452E3B","#593447","#50353F","#463137","#583643","#50363A","#463033","#57393B","#4F3832","#443130","#553B35"],
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "M2%81|M1|M2%81"
+    ],
+    tempHigh: 1276,
+    stateHigh: "rainbow_magma",
+    category: "land",
+    state: "solid",
+    density: 3717,
+    hardness: 0.82,
+    breakInto: ["rainbow_dust","rainbow_gravel"],
+};
+
+elements.rainbow_dust = {
+    color: rainbowDustArray,
+    behavior: behaviors.POWDER,
+    tempHigh: 1271,
+    stateHigh: "rainbow_magma",
+    category: "land",
+    state: "solid",
+    density: 3552,
+    hardness: 0.4,
+    breakInto: ["rainbow_dust","color_smoke","color_smoke","color_smoke","smoke","rainbow_dust","color_smoke","color_smoke","color_smoke","smoke","rainbow_magma"],
+};
+
+elements.rainbow_gravel = {
+    color: rainbowGravelArray,
+    behavior: behaviors.POWDER,
+    tempHigh: 1271,
+    stateHigh: "rainbow_magma",
+    category: "land",
+    state: "solid",
+    density: 3552,
+    hardness: 0.4,
+    breakInto: ["rainbow_dust","color_smoke","color_smoke","color_smoke","smoke","rainbow_dust","color_smoke","color_smoke","color_smoke","smoke","rainbow_magma"],
+};
+
 if(!enabledMods.includes("mods/minecraft.js")) {
     elements.netherrack = {
         color: ["#802b2b","#4f1b1b","#943232"],
