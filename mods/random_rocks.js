@@ -254,4 +254,6 @@ for(i = 0; i < 10; i++) {
 
 }
 
-console.log(`Rocks added to rockString (length ${rockString.length})`)
+if(logRocks == true) {
+    console.log(`Rocks added to rockString (length ${rockString.length})`)
+}
