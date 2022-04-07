@@ -11,10 +11,10 @@ function _randomArrayChoice(array) {
 }
 
 //arbitrarily picked
-const initialArray = ["m","n","p","t","ch","k","b","d","j","g","f","th","s","sh","h","l","r","y","w","z","sp","st","sk","sl","spl","stl","skl","sr","spr","str","skr","sl","fl","fr","pl","pr","tl","tr","kl","kr","shr","fl","fr","thr"] //:eggTF:
-const vowelArray = ["a","e","i","o","u","ay","ee","ie","oa","ew","oo","oi","ow"] //:eggTF:
-const medialArray = ["m","n","p","t","k","b","d","g","f","th","s","sh","h","l","r","y","z","sp","st","sk","sl","spl","stl","skl","sr","spr","str","skr","sl","fl","fr","pl","pr","tl","tr","kl","kr","shr","fl","fr","thr"] //:eggTF:
-const finalArray = ["m","n","p","t","k","b","d","g","f","th","s","sh","l","r","y","z","sp","st","sk","sl","spl","stl","skl","sr","spr","str","skr","pl","pr","tl","tr","bl","vr"] //:eggTF:
+const initialArrayR = ["m","n","p","t","ch","k","b","d","j","g","f","th","s","sh","h","l","r","y","w","z","sp","st","sk","sl","spl","stl","skl","sr","spr","str","skr","sl","fl","fr","pl","pr","tl","tr","kl","kr","shr","fl","fr","thr"] //:eggTF:
+const vowelArrayR = ["a","e","i","o","u","ay","ee","ie","oa","ew","oo","oi","ow"] //:eggTF:
+const medialArrayR = ["m","n","p","t","k","b","d","g","f","th","s","sh","h","l","r","y","z","sp","st","sk","sl","spl","stl","skl","sr","spr","str","skr","sl","fl","fr","pl","pr","tl","tr","kl","kr","shr","fl","fr","thr"] //:eggTF:
+const finalArrayR = ["m","n","p","t","k","b","d","g","f","th","s","sh","l","r","y","z","sp","st","sk","sl","spl","stl","skl","sr","spr","str","skr","pl","pr","tl","tr","bl","vr"] //:eggTF:
 
 enabledMods.includes("mods/log_rocks.js") ? logRocks = true : logRocks = false
 //This is intended for people who want to copy their rocks from the console to a file for some reason. Technically, the empty enabler script doesn't even have to exist, but I'll make it just so that index.html doesn't spit out an ERR_FILE_NOT_FOUND.
@@ -27,28 +27,28 @@ function generateName() {
 
     //console.log("generating type " + randomInt1)
     if(randomInt1 == 0) {
-        var randomName = _randomArrayChoice(initialArray) + _randomArrayChoice(vowelArray) + _randomArrayChoice(finalArray)
+        var randomName = _randomArrayChoice(initialArrayR) + _randomArrayChoice(vowelArrayR) + _randomArrayChoice(finalArrayR)
         //console.log("generated T" + randomInt1 + " name")
     } else if(randomInt1 == 1) {
-        var randomName = _randomArrayChoice(initialArray) + _randomArrayChoice(vowelArray) + _randomArrayChoice(medialArray) + _randomArrayChoice(vowelArray) + _randomArrayChoice(finalArray)
+        var randomName = _randomArrayChoice(initialArrayR) + _randomArrayChoice(vowelArrayR) + _randomArrayChoice(medialArrayR) + _randomArrayChoice(vowelArrayR) + _randomArrayChoice(finalArrayR)
         //console.log("generated T" + randomInt1 + " name")
     } else if(randomInt1 == 2) {
-        var randomName = _randomArrayChoice(initialArray) + _randomArrayChoice(vowelArray) + _randomArrayChoice(finalArray) + "e"
+        var randomName = _randomArrayChoice(initialArrayR) + _randomArrayChoice(vowelArrayR) + _randomArrayChoice(finalArrayR) + "e"
         //console.log("generated T" + randomInt1 + " name")
     } else if(randomInt1 == 3) {
-        var randomName = _randomArrayChoice(initialArray) + _randomArrayChoice(vowelArray) + _randomArrayChoice(medialArray) + _randomArrayChoice(vowelArray) + _randomArrayChoice(medialArray) +     _randomArrayChoice(finalArray)
+        var randomName = _randomArrayChoice(initialArrayR) + _randomArrayChoice(vowelArrayR) + _randomArrayChoice(medialArrayR) + _randomArrayChoice(vowelArrayR) + _randomArrayChoice(medialArrayR) +     _randomArrayChoice(finalArrayR)
         //console.log("generated T" + randomInt1 + " name")
     } else if(randomInt1 == 4) {
-        var randomName = _randomArrayChoice(vowelArray) + _randomArrayChoice(initialArray) + _randomArrayChoice(vowelArray) + _randomArrayChoice(finalArray)
+        var randomName = _randomArrayChoice(vowelArrayR) + _randomArrayChoice(initialArrayR) + _randomArrayChoice(vowelArrayR) + _randomArrayChoice(finalArrayR)
         //console.log("generated T" + randomInt1 + " name")
     } else if(randomInt1 == 5) {
-        var randomName = _randomArrayChoice(initialArray) + _randomArrayChoice(vowelArray) + _randomArrayChoice(medialArray) + _randomArrayChoice(vowelArray) + _randomArrayChoice(medialArray) + _randomArrayChoice(vowelArray)
+        var randomName = _randomArrayChoice(initialArrayR) + _randomArrayChoice(vowelArrayR) + _randomArrayChoice(medialArrayR) + _randomArrayChoice(vowelArrayR) + _randomArrayChoice(medialArrayR) + _randomArrayChoice(vowelArrayR)
         //console.log("generated T" + randomInt1 + " name")
     } else if(randomInt1 == 6) {
-        var randomName = _randomArrayChoice(initialArray) + _randomArrayChoice(vowelArray) + _randomArrayChoice(medialArray) + _randomArrayChoice(vowelArray)
+        var randomName = _randomArrayChoice(initialArrayR) + _randomArrayChoice(vowelArrayR) + _randomArrayChoice(medialArrayR) + _randomArrayChoice(vowelArrayR)
         //console.log("generated T" + randomInt1 + " name")
     } else {
-        var randomName = randomArrayChoice(vowelArray) + randomArrayChoice(medialArray) + randomArrayChoice(vowelArray) + randomArrayChoice(finalArray)
+        var randomName = randomArrayChoice(vowelArrayR) + randomArrayChoice(medialArrayR) + randomArrayChoice(vowelArrayR) + randomArrayChoice(finalArrayR)
         //console.log("warning: type was above 6 somehow")
     }
     //console.log(randomName)
@@ -217,7 +217,7 @@ for(i = 0; i < 10; i++) {
     var hardnessAdjustment = avgRndToMult()
     var colors = generateColors()
     if(typeof(elements[name]) != "undefined") {
-        name = name + _randomArrayChoice(vowelArray) + _randomArrayChoice(finalArray)
+        name = name + _randomArrayChoice(vowelArrayR) + _randomArrayChoice(finalArrayR)
     }
     elements[name] = {
         name: name,
