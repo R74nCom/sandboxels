@@ -1,3 +1,16 @@
+urlParams = new URLSearchParams(window.location.search);
+
+if(urlParams.get('rockAmount') != null) { //null check
+    rockAmount = urlParams.get('rockAmount')
+    if(isNaN(rockAmount) || rockAmount === "" || rockAmount === null) { //NaN check
+         rockAmount = 10
+    }
+    rockAmount = parseInt(rockAmount)
+    rockAmount = Math.min(10000,Math.max(rockAmount,1))
+} else {
+    rockAmount = 10
+}
+
 function _randomInt(max) {
     if(max >= 0) {
         return Math.floor(Math.random() * (max + 1))
@@ -210,7 +223,7 @@ if(logRocks == true) {
     rockString = ""
 }
 
-for(i = 0; i < 10; i++) {
+for(i = 0; i < rockAmount; i++) {
     var name = generateName()
     var meltingAdjustment = avgRndToMult()
     var densityAdjustment = avgRndToMult()
