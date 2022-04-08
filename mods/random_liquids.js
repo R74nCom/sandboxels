@@ -1,3 +1,16 @@
+urlParams = new URLSearchParams(window.location.search);
+
+if(urlParams.get('liquidAmount') != null) { //null check
+    liquidAmount = urlParams.get('liquidAmount')
+    if(isNaN(liquidAmount) || liquidAmount === "" || liquidAmount === null) { //NaN check
+         liquidAmount = 10
+    }
+    liquidAmount = parseInt(liquidAmount)
+    liquidAmount = Math.min(10000,Math.max(liquidAmount,1))
+} else {
+    liquidAmount = 10
+}
+
 function _randomInt(max) {
     if(max >= 0) {
         return Math.floor(Math.random() * (max + 1))
@@ -196,7 +209,7 @@ if(logLiquids == true) {
     liquidString = ""
 }
 
-for(i = 0; i < 10; i++) {
+for(i = 0; i < liquidAmount; i++) {
     var name = generateName();
     var meltingAdjustment = avgRndToMult();
     var densityAdjustment = avgRndToMult();
