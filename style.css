@@ -3,6 +3,11 @@
             height: 100%;
             margin: 0;
         }
+        /* Load the font PressStart2P-Regular.ttf */
+        @font-face {
+            font-family: 'Press Start 2P';
+            src: url('fonts/PressStart2P-Regular.ttf');
+        }
         body {
             font-family: 'Press Start 2P';
             background-color: #000000;
