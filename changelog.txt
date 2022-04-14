@@ -3,7 +3,7 @@
     + Machines Update
     + More plans / feedback at https://docs.google.com/document/u/4/d/1R8xljj_J-K5oU-9y4louwplQmM-ZBvUfXmhbgj5LYdk/edit
 
-[Version 1.5 - Apr. 11, 2022]
+[Version 1.5 - Apr. 13, 2022]
     + Greatly improved E/Element Select button
     + Mercury
     + Amalgam
