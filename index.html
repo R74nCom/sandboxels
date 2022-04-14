@@ -230,6 +230,21 @@
                 "M2 AND CR:radiation%2|XX|M2 AND CR:radiation%2",
                 "M1|M1|M1",
             ],
+            BOUNCY: function(pixel) {
+                if (pixel.vx===undefined) {
+                    // choose 1, 0, or -1
+                    pixel.vx = Math.random() < 0.5 ? 1 : Math.random() < 0.5 ? 0 : -1;
+                    pixel.vy = Math.random() < 0.5 ? 1 : Math.random() < 0.5 ? 0 : -1;
+                    // if both are 0, make one of them 1 or -1
+                    if (pixel.vx===0 && pixel.vy===0) {
+                        if (Math.random() < 0.5) { pixel.vx = Math.random() < 0.5 ? 1 : -1; }
+                        else { pixel.vy = Math.random() < 0.5 ? 1 : -1; }
+                    }
+                }
+                // move and invert direction if hit
+                if (pixel.vx && !tryMove(pixel, pixel.x+pixel.vx, pixel.y)) { pixel.vx = -pixel.vx; }
+                if (pixel.vy && !tryMove(pixel, pixel.x, pixel.y+pixel.vy)) { pixel.vy = -pixel.vy; }
+            },
         }
         eLists = {
             "ANIMAL": ["flea","ant","fly","firefly","bee","frog","fish","worm","termite","rat","slug","snail"],
@@ -674,6 +689,7 @@
                 color: "#00bf8c",
                 behavior: behaviors.WALL,
                 category:"life",
+                temp: -2.66,
                 tempHigh: 7,
                 stateHigh: "dead_plant",
                 state: "solid",
@@ -738,6 +754,11 @@
                 behavior: behaviors.UL_UR,
                 reactions: {
                     "water": { "elem1": "smoke" },
+                    "steam": { "elem1": "smoke" },
+                    "carbon_dioxide": { "elem1": "smoke" },
+                    "dirty_water": { "elem1": "smoke" },
+                    "salt_water": { "elem1": "smoke" },
+                    "sugar_water": { "elem1": "smoke" },
                 },
                 temp:600,
                 tempLow:100,
@@ -908,9 +929,24 @@
                 color: ["#9E4839","#BA6449","#D2856C","#A14940"],
                 behavior: [
                     "XX|XX|XX",
-                    "SP|CH:rotten_meat%0.00025|SP",
+                    "SP|XX|SP",
                     "XX|M1|XX",
                 ],
+                reactions: {
+                    "dirty_water": { "elem1":"rotten_meat", "chance":0.1 },
+                    "fly": { "elem1":"rotten_meat", "chance":0.2 },
+                    "dioxin": { "elem1":"rotten_meat", "chance":0.1 },
+                    "uranium": { "elem1":"rotten_meat", "chance":0.1 },
+                    "cancer": { "elem1":"rotten_meat", "chance":0.1 },
+                    "plague": { "elem1":"rotten_meat", "chance":0.1 },
+                    "ant": { "elem1":"rotten_meat", "chance":0.1 },
+                    "worm": { "elem1":"rotten_meat", "chance":0.1 },
+                    "rat": { "elem1":"rotten_meat", "chance":0.3 },
+                    "mushroom_spore": { "elem1":"rotten_meat", "chance":0.1 },
+                    "mushroom_stalk": { "elem1":"rotten_meat", "chance":0.1 },
+                    "mercury": { "elem1":"rotten_meat", "chance":0.1 },
+                    "virus": { "elem1":"rotten_meat", "chance":0.1 },
+                },
                 tempHigh: 80,
                 stateHigh: "cooked_meat",
                 tempLow: -18,
@@ -924,19 +960,19 @@
                 conduct: 0.2,
             },
             "rotten_meat": {
-                color: ["#9ab865","#b8b165","#b89765"],
+                color: ["#b8b165","#b89765"],
                 behavior: [
-                    "XX|CR:plague%0.25|XX",
-                    "SP|XX|SP",
-                    "XX|M1|XX",
+                    "XX|CR:plague,stench,stench,stench,fly%0.25 AND CH:meat>rotten_meat%1|XX",
+                    "SP AND CH:meat>rotten_meat%1|XX|SP AND CH:meat>rotten_meat%1",
+                    "XX|M1 AND CH:meat>rotten_meat%1|XX",
                 ],
                 tempHigh: 120,
-                stateHigh: "plague",
+                stateHigh: ["plague","ash"],
                 category:"food",
                 hidden: true,
                 burn:25,
                 burnTime:200,
-                burnInto:"plague",
+                burnInto:["plague","ash"],
                 state: "solid",
                 density: 1005,
                 conduct: 0.1,
@@ -969,7 +1005,7 @@
                 color: "#4d2818",
                 behavior: behaviors.STURDYPOWDER,
                 tempHigh: 31,
-                stateHigh: "chocolate_syrup",
+                stateHigh: "melted_chocolate",
                 category: "food",
                 state: "solid",
                 density: 1325,
@@ -1085,6 +1121,7 @@
                 viscosity: 5000,
                 tempHigh: 120,
                 stateHigh: "steam",
+                tempLow: 0,
                 category:"liquids",
                 state: "liquid",
                 density: 1450,
@@ -1101,6 +1138,8 @@
                 category:"liquids",
                 tempHigh: 1550,
                 stateHigh: "magma",
+                tempLow: -10,
+                stateLow: "concrete",
                 state: "solid",
                 density: 1440,
                 hardness: 0.1,
@@ -1162,7 +1201,7 @@
                     "alcohol": { "elem1":null, "chance":0.01 },
                     "poison": { "elem1":null, "chance":0.01 },
                 },
-                tempHigh: 202,
+                tempHigh: 80,
                 stateHigh: "plague",
                 state: "solid",
                 density: 1000.2,
@@ -1650,11 +1689,9 @@
             "frozen_frog": {
                 color: "#007349",
                 behavior: behaviors.STURDYPOWDER,
-                temp: -18,
+                temp: -20,
                 tempHigh: 0,
                 stateHigh: "frog",
-                tempLow: -18,
-                stateLow: "frozen_frog",
                 category:"life",
                 hidden: true,
                 state: "solid",
@@ -1810,6 +1847,9 @@
                 },
                 temp:600,
                 category:"special",
+                breakInto: "sawdust",
+                tempLow: -273,
+                stateLow: "wood"
             },
             "spout": {
                 color: "#606378",
@@ -1980,31 +2020,23 @@
                 density: 700,
             },
             "light": {
-                color: "#ffffa8",
+                color: "#fffdcf",
                 behavior: [
                     "XX|XX|XX",
                     "XX|DL%2|XX",
                     "XX|XX|XX",
                 ],
-                tick: function(pixel) {
-                    if (pixel.vx===undefined) {
-                        // choose 1, 0, or -1
-                        pixel.vx = Math.random() < 0.5 ? 1 : Math.random() < 0.5 ? 0 : -1;
-                        pixel.vy = Math.random() < 0.5 ? 1 : Math.random() < 0.5 ? 0 : -1;
-                        // if both are 0, make one of them 1 or -1
-                        if (pixel.vx===0 && pixel.vy===0) {
-                            if (Math.random() < 0.5) { pixel.vx = Math.random() < 0.5 ? 1 : -1; }
-                            else { pixel.vy = Math.random() < 0.5 ? 1 : -1; }
-                        }
-                    }
-                    // move and invert direction if hit
-                    if (pixel.vx && !tryMove(pixel, pixel.x+pixel.vx, pixel.y)) { pixel.vx = -pixel.vx; }
-                    if (pixel.vy && !tryMove(pixel, pixel.x, pixel.y+pixel.vy)) { pixel.vy = -pixel.vy; }
-                },
+                tick: behaviors.BOUNCY,
                 reactions: {
-                    "glass": { "color1":["#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"] }
+                    "glass": { "color1":["#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"] },
+                    "steam": { "color1":["#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"] },
+                    "rain_cloud": { "color1":["#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"] },
+                    "smog": { "color1":["#9f6060","#9f8260","#9f9f60","#609f60","#609f9f","#60609f","#9f609f"] },
+                    "ice": { "color1":"#c2fff9" },
+                    "diamond": { "color1":["#c2c5ff","#c2d9ff"] },
+                    "ozone": { "color1":"#7b9ae0" },
                 },
-                temp: 40,
+                temp: 35,
                 category: "energy",
                 state: "gas",
                 density: 0.00001,
@@ -2016,22 +2048,8 @@
                     "XX|DL%0.25|XX",
                     "XX|XX|XX",
                 ],
-                tick: function(pixel) {
-                    if (pixel.vx===undefined) {
-                        // choose 1, 0, or -1
-                        pixel.vx = Math.random() < 0.5 ? 1 : Math.random() < 0.5 ? 0 : -1;
-                        pixel.vy = Math.random() < 0.5 ? 1 : Math.random() < 0.5 ? 0 : -1;
-                        // if both are 0, make one of them 1 or -1
-                        if (pixel.vx===0 && pixel.vy===0) {
-                            if (Math.random() < 0.5) { pixel.vx = Math.random() < 0.5 ? 1 : -1; }
-                            else { pixel.vy = Math.random() < 0.5 ? 1 : -1; }
-                        }
-                    }
-                    // move and invert direction if hit
-                    if (pixel.vx && !tryMove(pixel, pixel.x+pixel.vx, pixel.y)) { pixel.vx = -pixel.vx; }
-                    if (pixel.vy && !tryMove(pixel, pixel.x, pixel.y+pixel.vy)) { pixel.vy = -pixel.vy; }
-                },
-                temp: 40,
+                tick: behaviors.BOUNCY,
+                temp: 35,
                 category: "energy",
                 state: "gas",
                 density: 0.00001,
@@ -2043,6 +2061,8 @@
                     "XX|FY:0%5|XX",
                     "XX|M1 AND BO|XX",
                 ],
+                tempHigh: 250,
+                stateHigh: "molten_plastic",
                 category: "energy",
                 flipY: false,
                 flippableY: true,
@@ -2108,10 +2128,7 @@
                                         }
                                         else {
                                             deletePixel(newPixel.x, newPixel.y);
-                                        }
-                                    }
-                                }
-                            }
+                                        }}}}
                             deletePixel(pixel.x,pixel.y);
                             break;
                         }}},
@@ -2121,17 +2138,22 @@
                 category: "powders",
                 state: "solid",
                 density: 850,
+                hidden: true,
             },
             "hydrogen": {
                 color: "#558bcf",
                 behavior: behaviors.GAS,
                 reactions: {
                     "oxygen": { "elem1":null, "elem2":"steam" },
+                    "hydrogen": { "elem1":null, "elem2":"helium", "tempMin":10000 },
+                    "nitrogen": { "elem1":null, "elem2":"oxygen", "tempMin":10000 },
+                    "sulphur": { "elem1":null, "elem2":"chlorine", "tempMin":10000 },
+                    "neon": { "elem1":null, "elem2":"sodium", "tempMin":10000 },
                 },
                 category: "gases",
                 burn: 100,
                 burnTime: 2,
-                tempLow: -252.8,
+                tempLow: -253,
                 stateLow: "liquid_hydrogen",
                 state: "gas",
                 density: 0.08375,
@@ -2140,14 +2162,16 @@
                 color: "#99c7ff",
                 behavior: behaviors.GAS,
                 reactions: {
-                    "copper": { "elem2":"oxidized_copper", chance:0.05 },
-                    "iron": { "elem2":"rust", chance:0.025 },
+                    "copper": { "elem1":null, "elem2":"oxidized_copper", chance:0.05 },
+                    "iron": { "elem1":null, "elem2":"rust", chance:0.025 },
                     "water": { "elem1":"foam" },
                     "salt_water": { "elem1":"foam" },
                     "sugar_water": { "elem1":"foam" },
                     "seltzer": { "elem1":"foam" },
                     "soda": { "elem1":"foam" },
                     "dirty_water": { "elem1":"foam" },
+                    "oxygen": { "elem1": null, "elem2": "ozone", "chance":0.3, "y":[0,15] },
+                    "ozone": { "elem1": "ozone", "chance":0.4, "y":[0,12] },
                 },
                 category: "gases",
                 burn: 100,
@@ -2163,6 +2187,7 @@
                 reactions: {
                     "oxygen": { "elem1":null, "elem2":"anesthesia" },
                     "hydrogen": { "elem1":null, "elem2":"ammonia" },
+                    "neon": { "elem1":null, "elem2":"chlorine", "tempMin":10000 },
                 },
                 category: "gases",
                 tempLow: -195.8,
@@ -2716,6 +2741,7 @@
                 category: "liquids",
                 tempHigh: 400,
                 stateHigh: "fire",
+                tempLow: -58.88,
                 burn: 30,
                 burnTime: 1,
                 state: "liquid",
@@ -2865,6 +2891,25 @@
                 category: "special",
                 state: "solid",
                 density: 600,
+                excludeRandom: true,
+            },
+            "ice_nine": {
+                color: ["#B0DCF7","#BBE9FC","#CEFCFC"],
+                behavior: [
+                    "XX|XX|XX",
+                    "XX|CH:ice%0.5|XX",
+                    "M2|M1|M2",
+                ],
+                reactions: {
+                    "water": { "elem2": "ice_nine", "temp2":-100 },
+                    "salt_water": { "elem2": "ice_nine", "temp2":-100 },
+                    "dirty_water": { "elem2": "ice_nine", "temp2":-100 },
+                    "sugar_water": { "elem2": "ice_nine", "temp2":-100 },
+                },
+                temp:-100,
+                category: "special",
+                state: "solid",
+                density: 917,
                 excludeRandom: true,
             },
             "permafrost": {
@@ -3047,7 +3092,7 @@
                 tempHigh: 250,
                 burn: 10,
                 burnTime: 200,
-                burnInto: "dioxin",
+                burnInto: ["dioxin","smoke","dioxin","smoke","stench"],
                 category: "solids",
                 state: "solid",
                 density: 1052,
@@ -3183,9 +3228,15 @@
                             }
                         }
                     }
+                    doBurning(pixel);
                 },
                 category: "solids",
+                burn: 5,
+                burnTime: 300,
+                tempHigh: 500,
+                stateHigh: "fire",
                 state: "solid",
+                density: 65,
             },
             "iron": {
                 color: ["#cbcdcd","#bdbdbd"],
@@ -3371,6 +3422,14 @@
                 density: 8885,
                 conduct: 0.43,
             },
+            "amalgam": {
+                color: ["#6B5535","#96784F","#604928","#A69070"],
+                behavior: behaviors.WALL,
+                tempHigh: 223,
+                category:"solids",
+                state: "solid",
+                density: 13.92,
+            },
             "molten_copper": {
                 reactions: {
                     "molten_zinc": { "elem1": null, "elem2": "molten_brass" },
@@ -3396,6 +3455,7 @@
                 behavior: behaviors.LIQUID,
                 tempHigh: 160,
                 stateHigh: ["steam","sugar"],
+                tempLow: -10,
                 category: "liquids",
                 state: "liquid",
                 density: 1054,
@@ -3404,6 +3464,11 @@
             "milk": {
                 color: "#fafafa",
                 behavior: behaviors.LIQUID,
+                reactions: {
+                    "melted_chocolate": { "elem1":"chocolate_milk", "elem2":null },
+                    "chocolate": { "elem1":"chocolate_milk", "elem2":"melted_chocolate", chance:0.05 },
+                    "juice": { "elem1":"fruit_milk", "elem2":null, chance:0.05 },
+                },
                 tempHigh: 93,
                 stateHigh: "yogurt",
                 viscosity: 1.5,
@@ -3411,9 +3476,37 @@
                 state: "liquid",
                 density: 1036.86,
             },
+            "chocolate_milk": {
+                color: "#664934",
+                behavior: behaviors.LIQUID,
+                tempHigh: 200,
+                stateHigh: "smoke",
+                viscosity: 1.5,
+                category: "liquids",
+                state: "liquid",
+                density: 1036.86,
+                hidden: true,
+            },
+            "fruit_milk": {
+                color: "#c9988f",
+                behavior: behaviors.LIQUID,
+                tempHigh: 200,
+                stateHigh: "smoke",
+                viscosity: 1.5,
+                category: "liquids",
+                state: "liquid",
+                density: 1036.86,
+                hidden: true,
+            },
             "yogurt": {
                 color: "#f0efe6",
-                behavior: behaviors.STURDYPOWDER,
+                behavior: [
+                    "XX|XX|XX",
+                    "XX|XX|XX",
+                    "M2%5|M1|M2%5",
+                ],
+                tempHigh: 1000,
+                stateHigh: "smoke",
                 category: "food",
                 state: "liquid",
                 density: 820.33,
@@ -3551,7 +3644,11 @@
             },
             "potato": {
                 color: ["#d99857","#d98757","#a66933"],
-                behavior: behaviors.STURDYPOWDER,
+                behavior: [
+                    "XX|SH:wire%1|XX",
+                    "SH:wire%1|XX|SH:wire%1",
+                    "XX|M2 AND SH:wire%1|XX",
+                ],
                 tempHigh: 400,
                 stateHigh: "ash",
                 burn: 50,
@@ -3689,8 +3786,8 @@
                     "plague": { "elem2":null },
                 },
                 viscosity: 1,
-                tempHigh: 78,
-                stateHigh: ["steam","carbon_dioxide"],
+                tempHigh: 78.37,
+                tempLow: -113.88,
                 burn: 100,
                 burnTime: 3,
                 fireColor: ["#80ACF0","#96CDFE","#bee6d4"],
@@ -3735,6 +3832,9 @@
                     "acid": { "elem2": "hydrogen" },
                     "acid_cloud": { "elem2": "rain_cloud" },
                     "oil": { "elem2": null },
+                    "soda": { "elem2": "sugar_water" },
+                    "ink": { "elem2": null },
+                    "dye": { "elem2": null },
                 },
                 tempHigh: 100,
                 stateHigh: "bubble",
@@ -3751,6 +3851,11 @@
                     "acid": { "elem1": "chlorine", "elem2":null },
                     "acid_gas": { "elem1": "chlorine", "elem2":null },
                     "acid_cloud": { "elem1": "chlorine", "elem2":null },
+                    "water": { "elem1":null, "elem2":"dirty_water" },
+                    "plague": { "elem2": null },
+                    "cell": { "elem2": null, "chance": 0.05 },
+                    "cancer": { "elem2": null, "chance": 0.01 },
+                    "blood": { "elem2": null },
                 },
                 tempHigh: 111,
                 stateHigh: ["salt","steam"],
@@ -3796,6 +3901,8 @@
                 behavior: behaviors.LIQUID,
                 customColor: true,
                 stain: 0.66,
+                tempHigh: 100,
+                stateHigh: "smoke",
                 category: "liquids",
                 state: "liquid",
                 density: 998,
@@ -3804,9 +3911,32 @@
                 color: "#171717",
                 behavior: behaviors.LIQUID,
                 stain: 0.66,
+                tempHigh: 100,
+                stateHigh: "smoke",
                 category: "liquids",
                 state: "liquid",
                 density: 1074.3,
+            },
+            "mercury": {
+                color: ["#53574B","#65686A"],
+                behavior: behaviors.LIQUID,
+                reactions: {
+                    "gold": { "elem1":null, "elem2":"amalgam", "chance":0.01 },
+                    "zinc": { "elem1":null, "elem2":"amalgam", "chance":0.01 },
+                    "sodium": { "elem1":null, "elem2":"amalgam", "chance":0.01 },
+                    "aluminum": { "elem1":null, "elem2":"amalgam", "chance":0.01 },
+                    "tin": { "elem1":null, "elem2":"amalgam", "chance":0.01 },
+                    "lead": { "elem1":null, "elem2":"amalgam", "chance":0.01 },
+                    "silver": { "elem1":null, "elem2":"amalgam", "chance":0.01 },
+                    "copper": { "elem1":null, "elem2":"amalgam", "chance":0.01 },
+                },
+                viscosity: 1.53,
+                tempLow: -38.83,
+                stateLowName: "solid_mercury",
+                tempHigh: 356.73,
+                category:"liquids",
+                state: "liquid",
+                density: 13.534,
             },
             "blood": {
                 color: "#ff0000",
@@ -3950,7 +4080,7 @@
                 density: 1420,
             },
             "sap": {
-                color: ["#B66B18","#C84805","#CF6719","#E49B3A"],
+                color: ["#b67f18","#c86305","#cf7a19","#e4ae3a"],
                 behavior: behaviors.LIQUID,
                 tempHigh: 412,
                 stateHigh: "sugar",
@@ -3967,7 +4097,7 @@
                 tempLow: 24,
                 stateLow: "candy",
                 tempHigh: 204.44,
-                stateHigh: "fire",
+                stateHigh: "smoke",
                 category: "liquids",
                 state: "liquid",
                 density: 850,
@@ -3994,7 +4124,7 @@
                 density: 1235,
                 stain: 0.05,
             },
-            "chocolate_syrup": {
+            "melted_chocolate": {
                 color: "#3b160b",
                 behavior: behaviors.LIQUID,
                 tempLow: 0,
@@ -4018,9 +4148,10 @@
                 category: "liquids",
                 burn: 100,
                 burnTime: 2,
-                temp:-259.16,
+                temp: -255.879,
                 tempHigh: -252.879,
                 stateHigh: "hydrogen",
+                tempLow: -259.2,
                 state: "liquid",
                 density: 71,
             },
@@ -4033,8 +4164,9 @@
                 category: "liquids",
                 burn: 100,
                 burnTime: 2,
-                temp:-218.79,
+                temp: -190,
                 tempHigh: -182.962,
+                tempLow: -218.8,
                 stateHigh: "oxygen",
                 state: "liquid",
                 density: 1141,
@@ -4043,7 +4175,7 @@
                 color: "#d3e1e3",
                 behavior: behaviors.LIQUID,
                 category: "liquids",
-                temp:-209.86,
+                temp: -209.86,
                 tempHigh: -195.795,
                 stateHigh: "nitrogen",
                 tempLow: -259.86,
@@ -4055,9 +4187,10 @@
                 color: "#e3d3d3",
                 behavior: behaviors.LIQUID,
                 category: "liquids",
-                temp:-272.20,
-                tempHigh: -268.928,
+                temp:-269,
+                tempHigh: -268.95,
                 stateHigh: "helium",
+                tempLow: -272.22,
                 state: "liquid",
                 density: 145,
                 hidden: true,
@@ -4087,6 +4220,9 @@
             "calcium": {
                 color: ["#515053","#7a787d","#748193","#FEF9FF","#748193","#7a787d","#515053"],
                 behavior: behaviors.POWDER,
+                reactions: {
+                    "oxygen": { "elem1":"quicklime", "elem2":null },
+                },
                 tempHigh: 842,
                 category: "powders",
                 state: "solid",
@@ -4167,6 +4303,18 @@
                     pixel.temp ++;
                 }
             },
+            "molten_aluminum": {
+                reactions: {
+                    "rust": { "elem1":null, "elem2":"thermite" },
+                    "oxidized_copper": { "elem1":null, "elem2":"thermite" },
+                }
+            },
+            "molten_zinc": {
+                reactions: {
+                    "rust": { "elem1":null, "elem2":"thermite" },
+                    "oxidized_copper": { "elem1":null, "elem2":"thermite" },
+                }
+            },
             "color_smoke": {
                 color: ["#6b2e2e","#6b4f2e","#6b6b2e","#2e6b2e","#2e6b6b","#2e2e6b","#6b2e6b"],
                 behavior: behaviors.GAS,
@@ -4232,13 +4380,12 @@
                 reactions: {
                     "oxygen": { "elem2":"stench" },
                     "water": { "elem1":null, "elem2":"dirty_water" },
-
+                    "nitrogen": { "elem2":"stench" },
+                    "baking_soda": { "elem1":null },
                 },
                 category: "gases",
                 tempHigh: 500,
                 stateHigh: "fire",
-                burn: 100,
-                burnTime: 1,
                 state: "gas",
                 density: 1.293,
             },
@@ -4360,6 +4507,30 @@
                 state: "gas",
                 density: 0.59,
             },
+            "ozone": {
+                color: "#80a4ff",
+                behavior: [
+                    "XX|M1%4|XX",
+                    "M1%7|XX|M1%7",
+                    "XX|XX|XX",
+                ],
+                reactions: {
+                    "carbon_dioxide": { "elem1":null, "elem2":null, "chance":0.05 },
+                    "copper": { "elem1":"oxygen", "elem2":"oxidized_copper", "chance":0.05 },
+                    "iron": { "elem1":"oxygen", "elem2":"rust", "chance":0.025 },
+                    "charcoal": { "elem1":"oxygen", "elem2":"carbon_dioxide", "chance":0.025 },
+                    "dirty_water": { "elem1":null, "elem2":"water" },
+                    "stench": { "elem1":null, "elem2":null },
+                    "yeast": { "elem2":null, "chance":0.1 },
+                },
+                category:"gases",
+                temp: -37.5,
+                tempLow: -112,
+                stateLow: "liquid_oxygen",
+                state: "gas",
+                stain: -0.1,
+                density: 2.14,
+            },
             "battery": {
                 color: "#9c6c25",
                 behavior: [
@@ -4373,6 +4544,7 @@
             },
             "led_r": {
                 behavior: behaviors.WALL,
+                reactions: {"light": {"charge1":1}},
                 color: "#660000",
                 colorOn: "#ff0000",
                 category: "machines",
@@ -4382,6 +4554,7 @@
             },
             "led_g": {
                 behavior: behaviors.WALL,
+                reactions: {"light": {"charge1":1}},
                 color: "#006600",
                 colorOn: "#00ff00",
                 category: "machines",
@@ -4391,6 +4564,7 @@
             },
             "led_b": {
                 behavior: behaviors.WALL,
+                reactions: {"light": {"charge1":1}},
                 color: "#000066",
                 colorOn: "#0000ff",
                 category: "machines",
@@ -4451,18 +4625,6 @@
                 burn: 50,
                 burnTime: 50,
                 burnInto: ["smoke","smoke","dioxin"],
-            },
-            "electric": {
-                color: "#dddd00",
-                behavior: [
-                    "CL%5|CL%5 AND SH|CL%5",
-                    "CL%5 AND SH|SH%5 AND DL%50|CL%5 AND SH",
-                    "M1%15 AND CL%6|M1%50 AND CL%13 AND SH|M1%15 AND CL%6",
-                ],
-                charge: 3,
-                category: "energy",
-                state: "solid",
-                density: 2.1,
             },
             "snake": {
                 color: "#00bf00",
@@ -4566,7 +4728,7 @@
                     "petal": { "elem2":["straw","grass","flower_seed","pistil"], "chance":0.4 },
                     "vine": { "elem1":["vine"], "chance":0.4 },
                     "worm": { "elem2":"ash", "chance":0.4 },
-                    "corn": { "elem2":"corn_seed", "chance":0.4 },
+                    "corn": { "elem2":"popcorn", "chance":0.4 },
                     "corn_seed": { "elem2":"corn", "chance":0.4 },
                     "potato": { "elem2":"potato_seed", "chance":0.4 },
                     "potato_seed": { "elem2":"potato", "chance":0.4 },
@@ -4630,9 +4792,60 @@
                 state: "solid",
                 density: 1490,
             },
+            "neutron": {
+                color: "#a6ffff",
+                behavior: [
+                    "XX|XX|XX",
+                    "XX|DL%0.5|XX",
+                    "XX|XX|XX",
+                ],
+                tick: behaviors.BOUNCY,
+                reactions: {
+                    "uranium": { "temp2":100 }
+                },
+                temp: 35,
+                category: "energy",
+                state: "gas",
+                density: 0.00003,
+            },
+            "proton": {
+                color: "#ffa6a6",
+                behavior: [
+                    "XX|XX|XX",
+                    "XX|DL%0.5|XX",
+                    "XX|XX|XX",
+                ],
+                tick: behaviors.BOUNCY,
+                reactions: {
+                    "electric": { "elem1":null, "elem2":"hydrogen", "temp2":10 }
+                },
+                temp: 40,
+                category: "energy",
+                state: "gas",
+                density: 0.00002,
+            },
+            "electric": {
+                color: "#fffba6",
+                behavior: [
+                    "CL%5|CL%5 AND SH|CL%5",
+                    "CL%5 AND SH|SH%5 AND DL%50|CL%5 AND SH",
+                    "M1%15 AND CL%6|M1%50 AND CL%13 AND SH|M1%15 AND CL%6",
+                ],
+                charge: 3,
+                category: "energy",
+                state: "gas",
+                density: 2.1,
+            },
             "uranium": {
                 color: ["#599e61","#364d3c","#494D4A","#6c8a42","#798d65","#b5e089"],
-                behavior: behaviors.RADPOWDER,
+                behavior: [
+                    "XX|CR:radiation%1|XX",
+                    "CR:radiation%1|CH:lead%0.001|CR:radiation%1",
+                    "M2|M1|M2",
+                ],
+                reactions: {
+                    "neutron": { "elem1":"n_explosion", "tempMin":500, "chance":0.1 }
+                },
                 tempHigh: 1132.2,
                 category: "powders",
                 state: "solid",
@@ -4640,6 +4853,9 @@
             },
             "molten_uranium": {
                 behavior: behaviors.RADMOLTEN,
+                reactions: {
+                    "neutron": { "elem1":"n_explosion", "tempMin":200 }
+                },
             },
             "glass_shard": {
                 color: ["#5e807d","#679e99","#596b6e"],
@@ -4674,7 +4890,7 @@
                 density: 1730,
             },
             "epsom_salt": {
-                color: ["#f2f2f2","#e0e0e0"],
+                color: ["#f2f2f2","#d6d6d6"],
                 behavior: behaviors.POWDER,
                 category: "powders",
                 burn: 40,
@@ -4707,6 +4923,20 @@
                 state: "gas",
                 density: 1000,
                 excludeRandom: true,
+            },
+            "n_explosion": {
+                color: ["#ffb48f","#ffd991","#ffad91"],
+                behavior: [
+                    "XX|XX|XX",
+                    "XX|EX:40>plasma,plasma,plasma,plasma,radiation,rad_steam|XX",
+                    "XX|XX|XX",
+                ],
+                temp: 100000000,
+                category: "energy",
+                state: "gas",
+                density: 1000,
+                excludeRandom: true,
+                hidden: true,
             },
             "pop": {
                 color: ["#ffb48f","#ffd991","#ffad91"],
@@ -4826,6 +5056,7 @@
                 ],
                 flippableX: true,
                 category: "energy",
+                temp: 300,
                 burn: 10,
                 burnTime: 10,
                 burnInto: "ash",
@@ -4856,6 +5087,7 @@
                 burn: 90,
                 burnTime: 100,
                 density: 2000,
+                state: "solid",
                 category: "weapons",
             },
             "fw_ember": {
@@ -4887,6 +5119,18 @@
                 density: 1500,
                 excludeRandom: true,
             },
+            "h_bomb": {
+                color: "#533636",
+                behavior: [
+                    "XX|EX:90>plasma,plasma,plasma,plasma,fire|XX",
+                    "XX|XX|XX",
+                    "M2|M1 AND EX:90>plasma,plasma,plasma,plasma,fire|M2",
+                ],
+                category: "weapons",
+                state: "solid",
+                density: 1600,
+                excludeRandom: true,
+            },
             "dirty_bomb": {
                 color: "#415336",
                 behavior: [
@@ -4896,7 +5140,7 @@
                 ],
                 category: "weapons",
                 state: "solid",
-                density: 1500,
+                density: 1400,
                 excludeRandom: true,
             },
             "nitroglycerin": {
@@ -5043,6 +5287,7 @@
                     "XX|XX|XX",
                 ],
                 category: "energy",
+                temp: 40,
                 state: "gas",
                 density: 1,
                 tempLow: -270,
@@ -5461,9 +5706,10 @@
                 }
                 else {
                     changePixel(pixel1,elem1);
-                    if (r.charge1) { pixel1.charge = r.charge1; }
                 }
             }
+            if (r.charge1) { pixel1.charge = r.charge1; }
+            if (r.temp1) { pixel1.temp += r.temp1; }
             if (r.color1) { // if it's a list, use a random color from the list, else use the color1 attribute
                 pixel1.color = pixelColorPick(pixel1, Array.isArray(r.color1) ? r.color1[Math.floor(Math.random() * r.color1.length)] : r.color1);
             }
@@ -5478,9 +5724,10 @@
                 }
                 else {
                     changePixel(pixel2,elem2);
-                    if (r.charge2) { pixel2.charge = r.charge2; }
                 }
             }
+            if (r.charge2) { pixel2.charge = r.charge2; }
+            if (r.temp2) { pixel2.temp += r.temp2; }
             if (r.color2) { // if it's a list, use a random color from the list, else use the color2 attribute
                 pixel2.color = pixelColorPick(pixel2, Array.isArray(r.color2) ? r.color2[Math.floor(Math.random() * r.color2.length)] : r.color2);
             }
@@ -5512,12 +5759,14 @@
                 if (!outOfBounds(nx,ny)) {
                     // Reactions
                     newPixel = pixelMap[nx][ny];
+                    var rr1 = false;
                     if (info.reactions != undefined && info.reactions[newPixel.element] != undefined) {
-                        if (reactPixels(pixel,newPixel)) {
+                        rr1 = reactPixels(pixel,newPixel)
+                        if (rr1) {
                             return true;
                         }
                     }
-                    else if (elements[newPixel.element].reactions != undefined && elements[newPixel.element].reactions[pixel.element] != undefined && !elements[newPixel.element].reactions[pixel.element].oneway) {
+                    if (!rr1 && elements[newPixel.element].reactions != undefined && elements[newPixel.element].reactions[pixel.element] != undefined && !elements[newPixel.element].reactions[pixel.element].oneway) {
                         if (reactPixels(newPixel,pixel)) {
                             return true;
                         }
@@ -5864,7 +6113,7 @@
                                     var con = elements[newPixel.element].conduct;
                                     if (con != undefined) {
                                         if (Math.random() < con) { // If random number is less than conductivity
-                                            if (!newPixel.charge && !newPixel.chargeCD) {
+                                            if (!newPixel.charge && !newPixel.chargeCD && (arg == null || newPixel.element == arg)) {
                                                 newPixel.charge = (parseFloat(arg) || 1);
                                                 if (elements[newPixel.element].colorOn) {
                                                     newPixel.color = pixelColorPick(newPixel);
@@ -6353,7 +6602,7 @@
                 if (Array.isArray(result)) {
                     result = result[Math.floor(Math.random() * result.length)];
                 }
-                if (result === null) {deletePixel(pixel.x,pixel.y);}
+                if (result === null) {deletePixel(pixel.x,pixel.y);return false}
                 else {
                     changePixel(pixel,result,false);
                     if (elementInfo.fireColor && result==="fire") {
@@ -6368,11 +6617,12 @@
                 if (Array.isArray(result)) {
                     result = result[Math.floor(Math.random() * result.length)];
                 }
-                if (result === null) {deletePixel(pixel.x,pixel.y);}
+                if (result === null) {deletePixel(pixel.x,pixel.y);return false}
                 else {
                     changePixel(pixel,result,false);
                 }
             }
+            return true;
         }
         function getNeighbors(pixel) {
             var neighbors = [];
@@ -6948,27 +7198,33 @@
                 mouseIsDown = false;
             }
         }
+        lastScroll = new Date().getTime();
         function wheelHandle(e) {
             e.preventDefault();
-            var deltaY = e.deltaY*0.1;
-            if (Math.round(deltaY) == 0) {
-                if (deltaY > 0) { deltaY = 1; }
-                else { deltaY = -1; }
+            // check if scroll is within the last 25ms
+            if (new Date().getTime() - lastScroll < 25) {
+                return;
             }
-            mouseSize += Math.round(deltaY*2);
+            lastScroll = new Date().getTime();
+            var deltaY = e.deltaY;
+            if (deltaY > 0) { deltaY = 1; }
+            else { deltaY = -1.5; }
+            mouseSize += Math.round(deltaY*1.5);
             if (mouseSize < 1) { mouseSize = 1; }
             if (mouseSize > (height > width ? height : width)) { mouseSize = (height > width ? height : width); }
         }
         function chooseElementPrompt() {
             var e = prompt("Enter the element's ID")
-            if (elements[e] != undefined) {
-                e = e.replace(/ /g,"_");
-                selectElement(e);
-                var btn = document.getElementById("elementButton-"+e);
-                if (btn != null) {
-                    btn.setAttribute("current","true");
-                }
-            };
+            // replace spaces with underscores
+            e = e.replace(/ /g, "_");
+            es = mostSimilarElement(e);
+            if (es !== null) {
+                selectElement(es);
+                selectCategory(elements[es].category);
+            }
+            else {
+                alert("Element \"" + e + "\" not found");
+            }
         }
         function togglePause() {
             paused = !paused;
@@ -7005,6 +7261,21 @@
                 // hide the colorSelector
                 document.getElementById("colorSelector").style.display = "none";
             }
+        }
+        function similarity(s1, s2) {var longer = s1;var shorter = s2;if (s1.length < s2.length) {longer = s2;shorter = s1;}var longerLength = longer.length;if (longerLength == 0) {return 1.0;}return (longerLength - editDistance(longer, shorter)) / parseFloat(longerLength);}
+        function editDistance(s1, s2) {s1 = s1.toLowerCase();s2 = s2.toLowerCase();var costs = new Array();for (var i = 0; i <= s1.length; i++) {var lastValue = i;for (var j = 0; j <= s2.length; j++) {if (i == 0)costs[j] = j;else {if (j > 0) {var newValue = costs[j - 1];if (s1.charAt(i - 1) != s2.charAt(j - 1))newValue = Math.min(Math.min(newValue, lastValue),costs[j]) + 1;costs[j - 1] = lastValue;lastValue = newValue;}}}if (i > 0)costs[s2.length] = lastValue;}return costs[s2.length];}
+        function mostSimilarElement(s) {
+            var max = 0;
+            var maxElement = "";
+            for (var e in elements) {
+                var sim = similarity(e,s);
+                if (sim > max) {
+                    max = sim;
+                    maxElement = e;
+                }
+            }
+            if (max < 0.5) { return null }
+            return maxElement;
         }
         function selectCategory(category) {
             var categoryButton = document.getElementById("categoryButton-"+category);
@@ -7572,6 +7843,14 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                 settingsParent.style.display = "none";
                 showingMenu = false;
             }
+            else {
+                // do it to all elements with the class "menuParent"
+                var menuParents = document.getElementsByClassName("menuParent");
+                for (var i = 0; i < menuParents.length; i++) {
+                    menuParents[i].style.display = "none";
+                }
+                showingMenu = false;
+            }
         }
         function showModManager() {
             var modParent = document.getElementById("modParent");
@@ -7705,86 +7984,151 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                 }
             }
 
+            autoElements = {
+                "molten": { // Solid -> Liquid
+                    rgb: [ [2,1.25,0.5], [2,1,0.5], [2,0.75,0] ],
+                    behavior: behaviors.MOLTEN,
+                    type: "high",
+                    viscosity: 10000,
+                    hidden: true,
+                    state: "liquid",
+                },
+                "frozen": { // Liquid -> Solid
+                    rgb: [ [1.2,1.2,1.3] ],
+                    behavior: behaviors.WALL,
+                    type: "low",
+                    hidden: true,
+                    state: "solid",
+                },
+                "condense": { // Gas -> Liquid
+                    rgb: [ [0.5,0.5,0.5] ],
+                    behavior: behaviors.LIQUID,
+                    type: "low",
+                    hidden: true,
+                    state: "liquid",
+                },
+                "evaporate": { // Liquid -> Gas
+                    rgb: [ [1.5,1.5,1.5] ],
+                    behavior: behaviors.GAS,
+                    type: "high",
+                    hidden: true,
+                    state: "gas",
+                }
+            }
+
             // Automatic molten element generation
-            // Loop through each element. If it has a tempHigh, but not a stateHigh, create a new molten element
-            for (element in elements) {
-                if (elements[element].tempHigh && elements[element].stateHigh===undefined) {
-                    var newname = "molten_"+element;
+            function autoGen(newname,element,autoType) {
+                var autoInfo = autoElements[autoType];
+                var newcolor = elements[element].colorObject;
+                var colorList = [];
+                var colorObjectList = [];
+                // if newcolor is not an array, put it in an array
+                if (!(newcolor instanceof Array)) { newcolor = [newcolor]; }
+                // for every color in the newcolor array, add a new color with the same value, but with the r and g values increased
+                for (var i = 0; i < newcolor.length; i++) {
+                    var c = newcolor[i];
+                    for (var j = 0; j < autoInfo.rgb.length; j++) {
+                        var newc = autoInfo.rgb[j];
+                        r = Math.floor(c.r * newc[0]);
+                        g = Math.floor(c.g * newc[1]);
+                        b = Math.floor(c.b * newc[2]);
+                        if (r > 255) {r = 255;} if (g > 255) {g = 255;}
+                        colorList.push("rgb("+r+","+g+","+b+")");
+                        colorObjectList.push({r:r,g:g,b:b});
+                    }
+                }
+                var newelem = {
+                    //"name": newname.replaceAll("_"," "),
+                    behavior: autoInfo.behavior,
+                    hidden: autoInfo.hidden || false,
+                    state: autoInfo.state || "solid",
+                    category: autoInfo.category || "states",
+                }
+                if (colorList.length <= 1) { colorList = colorList[0]; }
+                if (colorObjectList.length <= 1) { colorObjectList = colorObjectList[0]; }
+                newelem.color = colorList;
+                newelem.colorObject = colorObjectList;
+                var multiplier = 1.1;
+                if (autoInfo.type === "high") {
                     elements[element].stateHigh = newname;
-                    var newcolor = elements[element].colorObject;
-                    var colorList = [];
-                    var colorObjectList = [];
-                    // if newcolor is not an array, put it in an array
-                    if (!(newcolor instanceof Array)) {
-                        newcolor = [newcolor];
+                    newelem.temp = elements[element].tempHigh;
+                    newelem.tempLow = elements[element].tempHigh-100;
+                    newelem.stateLow = element;
+                    // Change density by *0.9
+                    if (elements[element].density) { newelem.density = Math.round(elements[element].density * 0.9 * 10) / 10; }
+                }
+                else if (autoInfo.type === "low") {
+                    elements[element].stateLow = newname;
+                    newelem.temp = elements[element].tempLow;
+                    newelem.tempHigh = elements[element].tempLow+100;
+                    newelem.stateHigh = element;
+                    multiplier = 0.5;
+                    // Change density by *1.1
+                    if (elements[element].density) { newelem.density = Math.round(elements[element].density * 1.1 * 10) / 10; }
+                }
+                if (!elements[element].ignore) { elements[element].ignore = [] }
+                elements[element].ignore.push(newname);
+                if (elements[element].viscosity || autoInfo.viscosity) {
+                    newelem.viscosity = elements[element].viscosity || autoInfo.viscosity;
+                }
+                // Change by *multiplier
+                if (elements[element].conduct) { newelem.conductivity = Math.round(elements[element].conduct * multiplier * 10) / 10; }
+                if (elements[element].burn) { newelem.burn = Math.round(elements[element].burn * multiplier * 10) / 10; }
+                if (elements[element].burnTime) { newelem.burnTime = Math.round(elements[element].burnTime * multiplier * 10) / 10; }
+                if (elements[element].burnInto) { newelem.burnInto = elements[element].burnInto; }
+                if (elements[element].fireColor) { newelem.fireColor = elements[element].fireColor; }
+                // If the new element doesn't exist, add it
+                if (!elements[newname]) { elements[newname] = newelem; }
+                else {
+                    // Loop through newelem's keys and values, copy them to the new element if they are not already defined
+                    for (var key in newelem) {
+                        if (elements[newname][key] == undefined) { elements[newname][key] = newelem[key]; }
                     }
-                    // for every color in the newcolor array, add a new color with the same value, but with the r and g values increased
-                    for (var i = 0; i < newcolor.length; i++) {
-                        var c = newcolor[i];
-                        r = c.r * 2;
-                        g = c.g * 1.25;
-                        b = c.b * 0.5;
-                        if (r > 255) {r = 255;}
-                        if (g > 255) {g = 255;}
-                        colorList.push("rgb("+r+","+g+","+b+")");
-                        colorObjectList.push({r:r,g:g,b:b});
-                        
-                        r = c.r * 2;
-                        g = c.g;
-                        b = c.b * 0.5;
-                        if (r > 255) {r = 255;}
-                        if (g > 255) {g = 255;}
-                        colorList.push("rgb("+r+","+g+","+b+")");
-                        colorObjectList.push({r:r,g:g,b:b});
-                        
-                        r = c.r * 2;
-                        g = c.g * 0.75;
-                        b = 0;
-                        if (r > 255) {r = 255;}
-                        if (g > 255) {g = 255;}
-                        colorList.push("rgb("+r+","+g+","+b+")");
-                        colorObjectList.push({r:r,g:g,b:b});
-                    }
-                    var newmolten = {
-                        //"name": newname.replaceAll("_"," "),
-                        color: colorList,
-                        colorObject: colorObjectList,
-                        behavior: behaviors.MOLTEN,
-                        temp: elements[element].tempHigh,
-                        tempLow: elements[element].tempHigh-100,
-                        stateLow: element,
-                        viscosity: elements[element].viscosity || 10000,
-                        hidden: true,
-                        state: "liquid",
-                        category: "molten",
-                    }
-                    // If the element has a density, add it to the new molten element * 0.9
-                    if (elements[element].density) { newmolten.density = Math.round(elements[element].density * 0.9 * 10) / 10; }
-                    // If the element has a conductivity, add it to the new molten element * 1.1
-                    if (elements[element].conduct) { newmolten.conductivity = Math.round(elements[element].conduct * 1.1 * 10) / 10; }
-                    // Same for burn, burnTime, burnInto, and fireColor
-                    if (elements[element].burn) { newmolten.burn = Math.round(elements[element].burn * 1.1 * 10) / 10; }
-                    if (elements[element].burnTime) { newmolten.burnTime = Math.round(elements[element].burnTime * 1.1 * 10) / 10; }
-                    if (elements[element].burnInto) { newmolten.burnInto = elements[element].burnInto; }
-                    if (elements[element].fireColor) { newmolten.fireColor = elements[element].fireColor; }
-                    // If the new element doesn't exist, add it
-                    if (!elements[newname]) { elements[newname] = newmolten; }
-                    else {
-                        // Loop through newmolten's keys and values, copy them to the new element if they are not already defined
-                        for (var key in newmolten) {
-                            if (elements[newname][key] == undefined) {
-                                elements[newname][key] = newmolten[key];
-                            }
-                        }
-                    }
-                    // Slag reactions
-                    // If the element doesn't have reactions, set it to {}
-                    if (!elements[newname].reactions) {
-                        elements[newname].reactions = {};
-                    }
+                }
+
+                if (autoType === "molten") { // Slag reactions
+                    if (!elements[newname].reactions) { elements[newname].reactions = {}; }
                     elements[newname].reactions.ash = { "elem1":null, "elem2":"molten_slag" };
                     elements[newname].reactions.dust = { "elem1":null, "elem2":"molten_slag" };
                     if (newname != "molten_slag") {elements[newname].reactions.magma = { "elem1":null, "elem2":"molten_slag" }};
+                }
+            }
+            // Loop through each element. If it has a tempHigh, but not a stateHigh, create a new molten element
+            for (element in elements) {
+                if (elements[element].tempHigh!==undefined && elements[element].stateHigh===undefined) {
+                    var newname = elements[element].stateHighName;
+                    if ((elements[element].state==="solid" || !elements[element].state)) { // Melting
+                        if (!newname) { newname = "molten_"+element }
+                        autoGen(newname,element,"molten");
+                    }
+                    else if (elements[element].state==="liquid") { // Evaporating
+                        if (!newname) {
+                            newname = element;
+                            if (newname.startsWith("liquid_")) { newname = newname.substring(7); }
+                            newname += "_gas";
+                        }
+                        autoGen(newname,element,"evaporate");
+                    }
+                }
+                if (elements[element].tempLow!==undefined && elements[element].stateLow===undefined) {
+                    var newname = elements[element].stateLowName;
+                    if (elements[element].state==="liquid") { // Freezing
+                        if (!newname) {
+                            newname = element;
+                            if (newname.startsWith("liquid_")) { newname = newname.substring(7); }
+                            if (newname.endsWith("_water")) { newname = newname.substring(0,newname.length-6); }
+                            newname += "_ice";
+                        }
+                        autoGen(newname,element,"frozen");
+                    }
+                    else if (elements[element].state==="gas") { // Condensing
+                        if (!newname) {
+                            newname = element;
+                            if (newname.endsWith("_gas")) { newname = newname.substring(0,newname.length-4); }
+                            newname = "liquid_"+newname;
+                        }
+                        autoGen(newname,element,"condense");
+                    }
                 }
                 if (elements[element].behavior && typeof elements[element].behavior[0] === "string") {
                     var newbehavior = [];
@@ -8053,6 +8397,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                 }
             }
             shiftDown = 0;
+            document.getElementById("game").oncontextmenu = function(e) { e.preventDefault(); return false; }
             // If the user presses [ or -, decrease the mouse size by 2
             document.addEventListener("keydown", function(e) {
                 if (e.ctrlKey || e.metaKey) {
@@ -8244,7 +8589,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             }
             // Set the first button in categoryControls div to be the current category
             document.getElementById("categoryControls").children[0].click()
-            document.getElementById("extraInfo").innerHTML += "<p><small>There are " + elementCount + " elements, including " + hiddenCount + " hidden ones.</small></p>";
+            document.getElementById("extraInfo").innerHTML += "<small><p>There are " + elementCount + " elements, including " + hiddenCount + " hidden ones.</p><p>©2021-" + new Date().getFullYear() + ". All Rights Reserved. <a href='https://r74n.com'>R74n</a></p></small>";
             selectElement(currentElement);
             focusGame();
             // For every button element, onkeyup="event.preventDefault()"
@@ -8253,6 +8598,29 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                 buttonElements[i].onkeyup = function(e) {
                     e.preventDefault();
                 }
+            }
+
+            if (window.self !== window.top && !location.ancestorOrigins[0].includes("itch.io")) {
+                // Open a message that tells the user they aren't on the real website
+                var menuParent = document.createElement("div");
+                menuParent.className = "menuParent";
+                menuParent.style.display = "block";
+                menuParent.innerHTML = `<div class="menuScreen">
+<button class="XButton" onclick="closeMenu();">-</button>
+<span class="menuTitle">Sandboxels</span>
+<div class="menuText" style="padding-top:1em">
+    You may be on a website that has embedded our game involuntarily.
+    <br><br>
+    The real game is at this URL: <a href="https://sandboxels.r74n.com" target="_blank">sandboxels.R74n.com</a>.
+    <br><br>
+    Please use the main website to support us instead.
+    <br><br>
+    You can also join our <a href="https://discord.gg/ejUc6YPQuS" target="_blank">Discord</a> if that isn't possible.
+</div>
+<br><br><br><br>
+</div>`
+                document.body.appendChild(menuParent);
+                showingMenu = "alert";
             }
 
         }
@@ -8264,7 +8632,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
     <h1 class="pagetitle" id="pagetitle"><a href="https://R74n.com" class="backbutton" target="_blank">&lt;</a></h1>
     <div id="gameDiv">
         <div id="canvasDiv">
-            <canvas id="game" width="800" height="600" oncontextmenu="return false;">
+            <canvas id="game" width="800" height="600">
                 Your browser does not support the HTML5 canvas tag.<br>
                 Please update your browser to the latest version.<br>
                 <a href="https://www.google.com/chrome/" tabindex="-1">Chrome</a> 4.0+<br>
@@ -8289,7 +8657,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                 <div id="categoryControls"></div>
                 <div id="elementControls"></div>
             </div>
-            <div id="extraInfo"><small><a href="controls.txt" target="_blank">Controls</a> • <a href="changelog.txt" target="_blank">Changelog</a> • <a href="https://docs.google.com/document/d/1R8xljj_J-K5oU-9y4louwplQmM-ZBvUfXmhbgj5LYdk/edit?usp=sharing" target="_blank">Feedback</a> • <a href="https://discord.gg/ejUc6YPQuS" target="_blank">Discord</a></small></div>
+            <div id="extraInfo"><small><a href="controls.txt" target="_blank">Controls</a> • <a href="changelog.txt" target="_blank">Changelog</a> • <a href="https://docs.google.com/document/d/1R8xljj_J-K5oU-9y4louwplQmM-ZBvUfXmhbgj5LYdk/edit?usp=sharing" target="_blank">Feedback</a> • <a href="https://discord.gg/ejUc6YPQuS" target="_blank" style="text-shadow: 0px 2px 10px #FF00FF;">Discord</a></small></div>
         </div>
     </div>
 

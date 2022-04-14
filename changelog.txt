@@ -3,6 +3,52 @@
     + Machines Update
     + More plans / feedback at https://docs.google.com/document/u/4/d/1R8xljj_J-K5oU-9y4louwplQmM-ZBvUfXmhbgj5LYdk/edit
 
+[Version 1.5 - Apr. 11, 2022]
+    + Greatly improved E/Element Select button
+    + Mercury
+    + Amalgam
+    + Ice forms of Helium, Hydrogen, Oxygen, Alcohol, Acid, Juice, and Slime
+    + Alcohol Gas
+    + Ice-Nine
+    + Neutron
+    + Proton
+    + Uranium can explode if bombarded with Neutrons
+    + Ozone
+    + H-Bomb
+    + Chocolate Milk (Hidden)
+    + Fruit Milk (Hidden)
+    + Revamped Meat rotting completely
+    ~ Fixed: Scroll wheel too sensitive
+    [Minor]
+    + Baking Soda eliminates Stench
+    + Thermite can be made with alloys
+    + Bleach dirties Water
+    + Bleach kills Cells and Cancers
+    + Bleach cleans Blood
+    + Dyes and Ink can be easily evaporated
+    + Soap cleans Soda, Dyes, and Ink
+    + Calcium reacts with Oxygen
+    + Ball (Hidden) melts into Plastic
+    + Light changes color when hitting Steam, Smog, Ice, or Diamond
+    + Torch extinguishes at absolute zero
+    + Torch explodes into Sawdust
+    + Potatoes provide some electricity to Wire
+    + Radiation pops Corn
+    + Fire can be suppressed with CO₂
+    + Sponges are now flammable
+    + Fusion of Hydrogen, Nitrogen, Sulphur, and Neon
+    ~ Adjusted Sap color to look less like Magma
+    ~ Adjusted Yogurt behavior
+    ~ Stench is no longer flammable
+    ~ Plastic releases Stench on burn
+    ~ Hid Hail
+    + Alert for websites embedding the game illegally
+    ~ Renamed Chocolate Syrup to Melted Chocolate
+    ~ Fixed: Fireworks have no state of matter / Don't sink
+    ~ Fixed: Frozen Frogs flickering / constantly refreezing
+    + Technical: More automatic tempHigh/Low element generation for all states of matter
+    + Technical: stateHighName/stateLowName
+
 [Version 1.4 - Feb. 19, 2022]
     + Improved the look of gases
     + "Unlock as Discovered" hiding mode

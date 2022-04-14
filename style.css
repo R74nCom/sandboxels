@@ -32,10 +32,10 @@
                         user-select: none;
             margin-top: 15px;
         }
-        #infoParent, #modParent, #settingsParent {
+        #infoParent, #modParent, #settingsParent, .menuParent {
             display: none;
         }
-        #infoScreen, #modManager, #settingsMenu {
+        #infoScreen, #modManager, #settingsMenu, .menuScreen {
             border: 1px solid #ffffff;
             position: absolute;
             left: 50%;
