@@ -101,6 +101,7 @@ if(enabledMods.includes("mods/ketchup_mod.js")) {
 
 if(enabledMods.includes("mods/randomness.js")) {
     regularMetalArray.push("tungstensteel")
+    regularMetalArray.push("densinium")
 }
 
 if(enabledMods.includes("mods/fey_and_more.js")) {
@@ -109,6 +110,10 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 
 if(enabledMods.includes("mods/some_tf_liquids.js")) {
     regularMetalArray.push("signalum")
+}
+
+if(enabledMods.includes("mods/laetium.js")) {
+    regularMetalArray.push("laetium")
 }
 
 elements.nitrogen_snow = {
@@ -141,4 +146,8 @@ runAfterLoad(function() {
             elements[regularMetalArray[i]].breakInto = `${regularMetalArray[i]}_scrap`
         };
     };
+if(enabledMods.includes("mods/randomness.js")) {
+    elements.acid.ignore.push("densinium_scrap")
+    elements.densinium_scrap.hardness = 0.99
+}
 });

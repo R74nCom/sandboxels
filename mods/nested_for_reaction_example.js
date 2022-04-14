@@ -1,5 +1,13 @@
-arrayNameA = ["radiation", "alcohol", "soap", "acid", "ammonia", "acid_gas"]
-arrayNameB = ["plant", "frozen_plant", "grass", "algae", "sapling", "seeds", "grass_seed", "wheat_seed", "wheat", "flower_seed", "pistil", "petal", "vine", "bamboo", "bamboo_plant", "corn_seed", "potato_seed", "root", "berry_seed", "old_berry_leaf", "berry_leaf", "berry"]
+arrayNameA = ["radiation", "alcohol", "soap", "acid", "ammonia", "acid_gas"];
+arrayNameB = ["plant", "frozen_plant", "grass", "algae", "sapling", "seeds", "grass_seed", "wheat_seed", "wheat", "flower_seed", "pistil", "petal", "vine", "bamboo", "bamboo_plant", "corn_seed", "potato_seed", "root", "berry_seed", "old_berry_leaf", "berry_leaf", "berry"];
+if(enabledMods.includes("mods/alcohol.js")) {
+	arrayNameA.push("methanol");
+	arrayNameA.push("propanol");
+	arrayNameA.push("isopropanol");
+	arrayNameA.push("butanol");
+};
+
+runAfterLoad(function() {
 for(i = 0; i < arrayNameA.length; i++) {
 	if(!elements[arrayNameA[i]].reactions) {
 		elements[arrayNameA[i]].reactions = {}
@@ -8,3 +16,4 @@ for(i = 0; i < arrayNameA.length; i++) {
 		elements[arrayNameA[i]].reactions[arrayNameB[j]] = { "elem1":null, "elem2":"dead_plant" }
 	};
 };
+});

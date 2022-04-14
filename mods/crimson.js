@@ -259,7 +259,7 @@ elements.crimgravel = { //break from canon for crimstone breakInto
 	state: "solid",
 	density: 1680,
 	hardness: 0.2,
-}
+},
 
 elements.crimwater = { //you shouldn't be able to purify ice by melting it
 	color: "#e45c7c",
@@ -275,6 +275,8 @@ elements.crimwater = { //you shouldn't be able to purify ice by melting it
     },
 	tempLow: 0,
 	stateLow: "red_ice",
+	tempHigh: 100,
+	stateHigh: "steam",
 	viscosity: 1,
 	category: "liquids",
 	reactions: {
