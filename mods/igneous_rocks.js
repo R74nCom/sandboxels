@@ -1,3 +1,10 @@
+/*
+TODO:
+porphyritic, vesicular, vitreous, fragmental rocks (if they exist, and i might make some up if they don't)
+dacite, granodiorite, etc. (between intermediate and felsic)
+other rocks that fit these categories??
+*/
+
 //Phaneritic
 
     //Felsic: granite
