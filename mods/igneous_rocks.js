@@ -1,8 +1,8 @@
 /*
 TODO:
 porphyritic, vesicular, vitreous, fragmental rocks (if they exist, and i might make some up if they don't)
-dacite, granodiorite, etc. (between intermediate and felsic)
 other rocks that fit these categories??
+more density decrease steps
 sandstone, sedimentary and metamorphic rocks in general
 */
 
@@ -46,6 +46,46 @@ elements.felsic_magma = {
   "state": "liquid",
   "category": "molten",
   "density": 2421.9
+};
+
+    //Intermediate felsic: granodiorite (such a creative name)
+elements.granodiorite = {
+    color: ["#B1AB9D", "#262001", "#A6A292", "#D6C5BC", "#F2F2F2", "#DED8C2", "#978871", "#A8AAA7"], //From image: By Rudolf Pohl - Own work, CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=7788350
+    behavior: behaviors.WALL,
+    category: "land",
+    tempHigh: 1050, //poorly searchable term, little findable information, idk if accurate
+    stateHigh: "if_magma",
+    density: 2644, //last 2 digits made up again
+    hardness: 0.75,
+    breakInto: "granodiorite_gravel",
+};
+
+elements.granodiorite_gravel = {
+    color: ["#A19B8D", "#161000", "#969282", "#C6B5AC", "#E2E2E2", "#CEC8B2", "#877861", "#989A97", "#B1AB9D", "#262001", "#A6A292", "#D6C5BC", "#F2F2F2", "#DED8C2", "#978871", "#A8AAA7", "#C1BBAD", "#363011", "#B6B2A2", "#E6D5CC", "#FFFFFF", "#EEE8D2", "#A79881", "#B8BAB7"], //placeholder
+    behavior: behaviors.POWDER,
+    category: "land",
+    tempHigh: 1050,
+    stateHigh: "if_magma",
+    density: 1296,
+};
+
+elements.if_magma = {
+  "reactions": {
+    "magma": { "elem1": "intermediate_magma", "elem2": "intermediate_magma" },
+    "ash": { "elem1": null, "elem2": "molten_slag" },
+    "dust": { "elem1": null, "elem2": "molten_slag" },
+  },
+  "name": "intermediate felsic magma",
+  "color": ["#FFD64F", "#FFAB4F", "#FF8000", "#7C5831", "#7C5031", "#7C5830", "#FFCB49", "#FFA249", "#FF7A00", "#FFF65E", "#FFC55E", "#FF9400", "#FFFF79", "#FFF279", "#FFB600", "#FFFF61", "#FFD861", "#FFA200", "#FFAA39", "#FF8839", "#FF6600", "#FFD554", "#FFAA54", "#FF8000"],
+  "behavior": behaviors.MOLTEN,
+  "temp": 1200,
+  "tempLow": 1050,
+  "stateLow": ["dacite","dacite","dacite","granodiorite"],
+  "viscosity": 18700000, //10^average of logarithms
+  "hidden": true,
+  "state": "liquid",
+  "category": "molten",
+  "density": 2320, //averaged lower values
 };
 
     //Intermediate: diorite
@@ -157,6 +197,27 @@ elements.rhyolite_gravel = {
     density: 1254, //approximated from granite values
 };
 
+    //Intermediate felsic: dacite
+elements.dacite = {
+    color: ["#D9CCC5", "#F2E9E4", "#877670", "#A69B97"],
+    behavior: behaviors.WALL,
+    category: "land",
+    tempHigh: 1050,
+    stateHigh: "if_magma",
+    density: 2654, //https://books.google.ca/books?id=ObUPAAAAIAAJ&pg=PA181&lpg=PA181&dq=dacite+specific+gravity&source=bl&ots=qn8B4sirWi&sig=Wp_MHqPuUGPNQobcuNP5c5wqkpU&hl=en&sa=X&ei=cimtUaH8Eab7yAH8joDABQ#v=onepage&q=dacite%20specific%20gravity&f=false
+    hardness: 0.75,
+    breakInto: "dacite_gravel",
+};
+
+elements.dacite_gravel = {
+    color: ["#C9BCB5", "#E2D9D4", "#776660", "#968B87", "#D9CCC5", "#F2E9E4", "#877670", "#A69B97", "#E9DCD5", "#FFF9F4", "#978680", "#B6ABA7"], //placeholder
+    behavior: behaviors.POWDER,
+    category: "land",
+    tempHigh: 1050,
+    stateHigh: "if_magma",
+    density: 1300,
+};
+
     //Intermediate: andesite
 elements.andesite = {
     color: ["#6F7575", "#C5C9CB", "#818787", "#797F7F", "#B5B9BA", "#6D7371", "#909696"],
@@ -208,7 +269,10 @@ elements.komatiite_gravel = {
     //Felsic: pumice
 //Pumice
 
-    //Intermediate: scoria
+    //Intermediate felsic: ???
+//???
+
+//Intermediate: scoria
 //Scoria
 
     //Mafic: still scoria
@@ -222,7 +286,10 @@ elements.komatiite_gravel = {
     //Felsic: obsidian
 //Obsidian
 
-    //Intermediate: ???
+    //Intermediate felsic: ???
+//???
+
+     //Intermediate: ???
 //???
 
     //Mafic: ???
