@@ -1,4 +1,4 @@
-//lily made some stupid things
+//i made some stupid things
 
 //TPT reference
 elements.warp = {
@@ -849,13 +849,13 @@ elements.rainbow_magma = {
     behavior: behaviors.MOLTEN,
     temp: 1300,
     tempLow: 1271,
-    stateLow: ["rainbow_stone_2", "rainbow_stone_2", "rainbow_stone_2", "rainbow_stone_2", "rainbow_stone"],
+    stateLow: ["rainbow_stone_2", "rainbow_stone_2", "rainbow_stone"],
     category: "liquids",
     state: "solid",
     density: 2562,
     hardness: 0.7,
     breakInto: "rainbow_magma",
-    viscosity: 11000,
+    viscosity: 3452400,
 };
 
 elements.rainbow_stone_2 = {
