@@ -3,6 +3,7 @@ TODO:
 porphyritic, vesicular, vitreous, fragmental rocks (if they exist, and i might make some up if they don't)
 dacite, granodiorite, etc. (between intermediate and felsic)
 other rocks that fit these categories??
+more density decrease steps
 */
 
 //Phaneritic
@@ -115,7 +116,6 @@ elements.peridotite_gravel = {
 
 elements.ultramafic_magma = {
   "reactions": {
-    "magma": { "elem1": "intermediate_magma", "elem2": "intermediate_magma" },
     "ash": { "elem1": null, "elem2": "molten_slag" },
     "dust": { "elem1": null, "elem2": "molten_slag" },
   },
