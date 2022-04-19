@@ -4,6 +4,7 @@ porphyritic, vesicular, vitreous, fragmental rocks (if they exist, and i might m
 dacite, granodiorite, etc. (between intermediate and felsic)
 other rocks that fit these categories??
 more density decrease steps
+sandstone, sedimentary and metamorphic rocks in general
 */
 
 //Phaneritic
