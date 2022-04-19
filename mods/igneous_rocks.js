@@ -3,7 +3,6 @@ TODO:
 porphyritic, vesicular, vitreous, fragmental rocks (if they exist, and i might make some up if they don't)
 dacite, granodiorite, etc. (between intermediate and felsic)
 other rocks that fit these categories??
-more density decrease steps
 sandstone, sedimentary and metamorphic rocks in general
 */
 
@@ -42,7 +41,7 @@ elements.felsic_magma = {
   "temp": 1215,
   "tempLow": 800,
   "stateLow": ["rhyolite","rhyolite","rhyolite","granite"],
-  "viscosity": 10000,
+  "viscosity": 100000000,
   "hidden": true,
   "state": "liquid",
   "category": "molten",
@@ -82,7 +81,7 @@ elements.intermediate_magma = {
     "temp": 1215,
     "tempLow": 1115,
     "stateLow": ["andesite", "andesite", "andesite", "diorite"],
-    "viscosity": 10000,
+    "viscosity": 350000,
     "hidden": true,
     "state": "liquid",
     "category": "molten",
@@ -91,6 +90,7 @@ elements.intermediate_magma = {
 
     //Mafic: gabbro
 elements.magma.name = "mafic magma" //because it cools into basalt
+//the vanilla viscosity checks out
 elements.rock.name = "gabbro" //based on it melting into mostly basalt, I am assuming that this is mafic magma cooling quickly, and thus assuming that the remainder is magma cooling more slowly into a phaneritic rock, and that woudld be gabbro
 elements.magma.density = 2650
 
@@ -126,7 +126,7 @@ elements.ultramafic_magma = {
   "temp": 1500,
   "tempLow": 1390,
   "stateLow": ["peridotite","komatiite","komatiite","komatiite"],
-  "viscosity": 100, //its viscosity is really ******* low for magma
+  "viscosity": 100,
   "hidden": true,
   "state": "liquid",
   "category": "molten",
