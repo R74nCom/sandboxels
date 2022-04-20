@@ -100,7 +100,7 @@ elements.cough_syrup = {
 }
 
 elements.lean = {
-    density: (3*1037+1200)*4, //https://www.quora.com/How-do-I-make-a-cup-of-lean-And-how-many-millilteres-of-cough-syrup-usually-goes-into-a-standard-cup-of-lean ignoring ice and other things
+    density: (3*1037+1200)/4, //https://www.quora.com/How-do-I-make-a-cup-of-lean-And-how-many-millilteres-of-cough-syrup-usually-goes-into-a-standard-cup-of-lean ignoring ice and other things
     viscosity: 4, //made up
     color: "#a527db",
     behavior: [

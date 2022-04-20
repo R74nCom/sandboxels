@@ -117,15 +117,15 @@ function _rgbToHex(color) {
         };
         //console.log("Concatenating");
         return "#" + red + green + blue;
-    } else if(typeof(color) == "string") { //Expects string like "rgb(20,137,4)". Also doesn't round properly for some reason...
+    } else if(typeof(color) == "string") { //Expects string like "rgb(20,137,4)".
         //console.log("Splitting string")
         color = color.split(",");
         //console.log("Getting R");
-        var red = parseInt(color[0].substring(4))
+        var red = parseFloat(color[0].substring(4))
         //console.log("Getting G");
-        var green = parseInt(color[1])
+        var green = parseFloat(color[1])
         //console.log("Getting B");
-        var blue = parseInt(color[2].slice(0,-1)) 
+        var blue = parseFloat(color[2].slice(0,-1)) 
         //console.log("Rounding R");
         red = Math.round(red);
         //console.log("Rounding G");
