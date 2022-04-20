@@ -3,6 +3,59 @@
     + Machines Update
     + More plans / feedback at https://docs.google.com/document/u/4/d/1R8xljj_J-K5oU-9y4louwplQmM-ZBvUfXmhbgj5LYdk/edit
 
+[Version 1.5.1 - Apr. 2022]
+    + Hold Shift to draw lines
+    + Info Screen now shows category info
+    + Info Screen shows undiscovered elements
+    + Fire now appears below burning pixels if the top if blocked
+    + Porcelain
+    + Pyrite
+    + Incinerate tool
+    + Unburn tool
+    + Particleboard
+    + Rats, Humans, and Yeasts can now breathe oxygen
+    + Worms decompose Dead Plants
+    + Chlorine Ice
+    + Sulfur Gas
+    + Frozen Yogurt
+    + Antiice
+    + Liquid forms of Ammonia, Propane, Methane
+    + Sawdust can be made into Cellulose
+    + Reset buttons in Settings
+    + Added clarification and mod list link to Mod Manager
+    + All metals given unique hardness values
+    + Lamp Oil removes Glue
+    + Cheese can be vaporized
+    + Bone Marrow, Pointer, Rainbow, and Static can now be obtained
+    + Ash can eliminate Stench
+    - Removed Helium Ice
+    ~ Improved Smash tool
+    ~ Acid no longer errodes Water
+    ~ Fish out of water now fall to side
+    ~ Less Smog forms
+    ~ Algae now floats on water
+    ~ Fish no longer tend to swim downwards
+    ~ Molten Sulfur is now red and non-viscous
+    ~ Fermented alcohols now colored differently
+    ~ More foods can be fermented
+    ~ Tweaked Milk flavor densities
+    ~ Tweaked Rat consumption rates
+    ~ Tweaked most insect consumption rates
+    ~ Tweaked Meat cooking rates
+    ~ Tweaked Yeast fermentation rates
+    ~ Glue no longer sticks to Ice
+    ~ Oil burns longer
+    ~ Fixed: Gaps in lines when drawing fast
+    ~ Fixed: Notifications not showing in Unlock as Discover mode
+    ~ Fixed: Clicking outside menu immediately starting placing
+    ~ Fixed: Molten Slag eats infinite Ash
+    ~ Fixed: Flash color inconsistent with Light
+    ~ Fixed: Mercury not amalgamating with Gold Coins or Rose Gold
+    ~ Fixed: Decimal point TPS
+    + Technical: Tools can now ignore certain elements
+    + Technical: "related" element property, shows a "See Also" in info
+    + Technical: "alias" element property, shows a "Also known as" in info
+
 [Version 1.5 - Apr. 13, 2022]
     + Greatly improved E/Element Select button
     + Mercury

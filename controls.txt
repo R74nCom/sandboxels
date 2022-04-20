@@ -7,6 +7,7 @@ Shift + Heat      =  Intense Heating
 Shift + Cool      =  Intense Cooling
 Shift + Mix       =  Include Fire & Smoke in Mixing
 Shift + Shock     =  Intense Shock
+Shift + Mouse     =  Draw Line
 Scroll            =  Change Cursor Size
 - or [            =  Decrease Cursor Size
 + or ]            =  Increase Cursor Size
