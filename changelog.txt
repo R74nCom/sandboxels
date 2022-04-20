@@ -3,7 +3,7 @@
     + Machines Update
     + More plans / feedback at https://docs.google.com/document/u/4/d/1R8xljj_J-K5oU-9y4louwplQmM-ZBvUfXmhbgj5LYdk/edit
 
-[Version 1.5.1 - Apr. 2022]
+[Version 1.5.1 - Apr. 19, 2022]
     + Hold Shift to draw lines
     + Info Screen now shows category info
     + Info Screen shows undiscovered elements

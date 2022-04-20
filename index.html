@@ -7248,6 +7248,7 @@
             if (evt.touches) {
                 evt.preventDefault();
                 evt = evt.touches[0];
+                isMobile = true;
             }
             var rect = canvas.getBoundingClientRect();
             return {
@@ -7308,7 +7309,7 @@
                 return;
             }
             startPos = startPos || lastPos
-            if (!(elements[currentElement].tool || elements[currentElement].category==="tools")) {
+            if (!(isMobile || elements[currentElement].tool || elements[currentElement].category==="tools")) {
                 var coords = lineCoords(startPos.x,startPos.y,mouseX,mouseY);
             }
             else { var coords = mouseRange(mouseX,mouseY); }
@@ -7430,9 +7431,12 @@
             if (currentElement == "pick" || currentElement == "lookup") {
                 var coords = [[mouseX,mouseY]];
             }
-            else {
+            else if (!isMobile) {
                 startPos = startPos || lastPos
                 var coords = lineCoords(startPos.x,startPos.y,mouseX,mouseY);
+            }
+            else {
+                var coords = mouseRange(mouseX,mouseY);
             }
             // For each x,y in coords
             for (var i = 0; i < coords.length; i++) {
