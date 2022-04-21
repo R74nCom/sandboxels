@@ -15,7 +15,7 @@ if(urlParams.get('pixelSize') != null) { //null check
         }
     }
     pixelSize = parseFloat(pixelSize)
-    pixelSize = Math.min(300,Math.max(pixelSize,0.00001))
+    pixelSize = Math.min(194.73749999999999,Math.max(pixelSize,0.05))
 } else {
     // Vanilla code: If the screen size is under 768px, set pixelSize to 5, otherwise 6
     if (window.innerWidth < 700) {
