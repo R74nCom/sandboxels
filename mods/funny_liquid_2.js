@@ -16,6 +16,7 @@ elements.piss = {
 		"sand": { "elem1": null, "elem2": "pissed_sand" }, // piss goes into sand
 		"wet_sand": { "elem1": "piss_water", "elem2": "pissed_sand", "chance": (1/3) }, // piss goes into wet sand
 		"snow": { "elem1": null, "elem2": "pissed_snow" }, // piss goes into snow
+		"blood": { "elem1": "infection", "elem2": "infection" }, // piss infects blood
 	},
 	tempLow: 0,
 	stateLow: "piss_ice",
@@ -40,6 +41,7 @@ elements.piss_water = {
 		"dirt": { "elem1": "water", "elem2": "pissed_mud" }, //piss goes into dirt
 		"sand": { "elem1": "water", "elem2": "pissed_sand" }, // piss goes into sand
 		"snow": { "elem1": null, "elem2": "pissed_snow" }, // piss goes into snow
+		"blood": { "elem1": "infection", "elem2": "infection" }, // piss infects blood
 	},
 	density: 997,
 	tempHigh: 100,
@@ -58,6 +60,9 @@ elements.piss_ice = {
 	name: "frozen piss",
 	color: "#fff7c4",
 	behavior: behaviors.WALL,
+	reactions: {
+		"blood": { "elem2": "infection" }, // piss stuff on surface infects blood
+	},
 	density: 917,
 	temp: -10,
 	tempHigh: 0,
@@ -70,7 +75,9 @@ elements.piss_ice = {
 elements.piss_water_ice = {
 	name: "pissed ice",
 	color: "#effcd7",
-	behavior: behaviors.WALL,
+	reactions: {
+		"blood": { "elem2": "infection" }, // piss stuff on surface infects blood
+	},
 	density: 917,
 	temp: -10,
 	tempHigh: 0,
@@ -85,6 +92,9 @@ elements.pissed_snow = {
 	name: "yellow snow",
 	color: "#fdf5a4",
 	behavior: behaviors.POWDER,
+	reactions: {
+		"blood": { "elem2": "infection" }, // piss stuff on surface infects blood
+	},
 	temp: -5,
 	tempHigh: 0,
 	stateHigh: "piss",
@@ -105,6 +115,7 @@ elements.pissed_mud = {
 	reactions: {
 		"water": { "elem1": "mud", "elem2": "piss_water", "chance": (3/4) },
 		"water": { "elem2": "mud", "elem2": "piss" },
+		"blood": { "elem2": "infection" }, // piss stuff on surface infects blood
 	},
 	tempLow: -50,
 	stateLow: "pissed_permafrost",
@@ -127,6 +138,7 @@ elements.pissed_sand = {
 	reactions: {
 		"water": { "elem1": "sand", "elem2": "piss_water", "chance": (3/4) },
 		"water": { "elem2": "sand", "elem2": "piss" },
+		"blood": { "elem2": "infection" }, // piss stuff on surface infects blood
 	},
 	tempHigh: 100,
 	stateHigh: "wet_sand",
@@ -140,6 +152,9 @@ elements.pissed_permafrost = {
 	name: "pissed permafrost",
 	color: "#aecc89",
 	behavior: behaviors.SUPPORT,
+	reactions: {
+		"blood": { "elem2": "infection" }, // piss stuff on surface infects blood
+	},
 	temp: -50,
 	tempHigh: 0,
 	stateHigh: "pissed_mud",
