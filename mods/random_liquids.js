@@ -11,6 +11,12 @@ if(urlParams.get('liquidAmount') != null) { //null check
     liquidAmount = 10
 }
 
+if(urlParams.get('makeLiquidString') !== null) { //if the variable exists at all
+    makeLiquidString = true
+} else { //if it doesn't (and it returns null)
+    makeLiquidString = false
+}
+
 function _randomInt(max) {
     if(max >= 0) {
         return Math.floor(Math.random() * (max + 1))
@@ -28,9 +34,6 @@ function _randomArrayChoice(array) {
     const vowelArrayL = ["a","e","i","o","u","ay","ee","ie","oa","ew","oo","oi","ow"] //:eggTF:
     const medialArrayL = ["m","n","p","t","k","b","d","g","f","th","s","sh","h","l","r","y","z","sp","st","sk","sl","spl","stl","skl","sr","spr","str","skr","sl","fl","fr","pl","pr","tl","tr","kl","kr","shr","fl","fr","thr"] //:eggTF:
     const finalArrayL = ["m","n","p","t","k","b","d","g","f","th","s","sh","l","r","y","z","sp","st","sk","sl","spl","stl","skl","sr","spr","str","skr","pl","pr","tl","tr","bl","vr"] //:eggTF:
-
-enabledMods.includes("mods/log_liquids.js") ? logLiquids = true : logLiquids = false
-//This is intended for people who want to copy their liquids from the console to a file for some reason. Technically, the empty enabler script doesn't even have to exist, but I'll make it just so that index.html doesn't spit out an ERR_FILE_NOT_FOUND.
 
 function generateName() {
     //these are picked arbitrarily
@@ -205,7 +208,7 @@ function avgRndToMult() {
 }
 
 
-if(logLiquids == true) {
+if(makeLiquidString == true) {
     liquidString = ""
 }
 
@@ -302,7 +305,7 @@ for(i = 0; i < liquidAmount; i++) {
         elements[`${name}_ice`].conduct = conductivity
     }
 
-    if(logLiquids == true) {
+    if(makeLiquidString == true) {
         //Append moddable code for the liquid state to liquidString
         liquidString = liquidString + `elements.${name} = {\n    name: \"${name}\",\n    color: \"${colors[0]}\",\n    behavior: behaviors.LIQUID,\n    tempLow: ${freezingPoint},\n    temp: ${freezingPoint + 20},\n    tempHigh: ${boilingPoint},\n    stateLow: \"${name}_ice\",\n    stateHigh: \"${name}_gas\",\n    category: \"random liquids\",\n    state: \"liquid\",\n    density: ${1000 * densityAdjustment},\n    `
         if(conducts == true) { liquidString = liquidString + `conduct: ${conductivity * liquidConductivityAdjust},\n    ` }
@@ -323,6 +326,6 @@ for(i = 0; i < liquidAmount; i++) {
 
 }
 
-if(logLiquids == true) {
+if(makeLiquidString == true) {
     console.log(`Liquids added to liquidString (length ${liquidString.length})`)
 }
