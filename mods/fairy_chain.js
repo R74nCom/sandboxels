@@ -1,6 +1,24 @@
+urlParams = new URLSearchParams(window.location.search);
+
+if(urlParams.get('fairyAmount') != null) { //null check
+    fairyAmount = urlParams.get('fairyAmount')
+    if(isNaN(fairyAmount) || fairyAmount === "" || fairyAmount === null) { //NaN check
+         fairyAmount = 10
+    }
+    fairyAmount = parseInt(fairyAmount)
+	if(fairyAmount > 10000) {
+		alert("Maximum amount of additional fairies is 10000.\nOnly 10000 fairies were added.")
+	} else if(fairyAmount < 1) {
+		alert("Minimum amount of additional fairies is 1.\n1 fairy was added.")
+	}
+    fairyAmount = Math.min(10000,Math.max(fairyAmount,1))
+} else {
+    fairyAmount = 10
+}
+
 //For statement by charPointer
 if(enabledMods.includes("mods/fey_and_more.js")) {
-	for (var i = 2; i <= 101; i++) {
+	for (var i = 2; i <= fairyAmount + 1; i++) {
 	  elements[`${i}-fairy`] = {
 		name: `${i}-fairy`,
 		color: ["#33007a","#8e009f","#09009f"],
@@ -24,7 +42,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 
 runAfterLoad(function() {
 	if(enabledMods.includes("mods/fey_and_more.js")) {
-		for (var i = 2; i <= 101; i++) {
+		for (var i = 2; i <= fairyAmount + 1; i++) {
 			eLists.FAIRY.push(`${i}-fairy`);
 		}
 		elements.iron.behavior = [
@@ -56,5 +74,5 @@ runAfterLoad(function() {
 		elements.rainbow.reactions = {}
 	}
 	elements.rainbow.reactions.fairy = { "elem1": "2-fairy", "elem2": null }
-	delete elements["101-fairy"].reactions
+	delete elements[`${fairyAmount + 1}-fairy`].reactions
 });

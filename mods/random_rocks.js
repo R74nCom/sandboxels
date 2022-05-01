@@ -6,9 +6,20 @@ if(urlParams.get('rockAmount') != null) { //null check
          rockAmount = 10
     }
     rockAmount = parseInt(rockAmount)
+	if(rockAmount > 10000) {
+		alert("Maximum amount of rocks is 10000.\nOnly 10000 rocks were added.")
+	} else if(rockAmount < 1) {
+		alert("Minimum amount of rocks is 1.\n1 rock was added.")
+	}
     rockAmount = Math.min(10000,Math.max(rockAmount,1))
 } else {
     rockAmount = 10
+}
+
+if(urlParams.get('makeRockString') !== null) { //if the variable exists at all
+    makeRockString = true
+} else { //if it doesn't (and it returns null)
+    makeRockString = false
 }
 
 function _randomInt(max) {
@@ -28,9 +39,6 @@ const initialArrayR = ["m","n","p","t","ch","k","b","d","j","g","f","th","s","sh
 const vowelArrayR = ["a","e","i","o","u","ay","ee","ie","oa","ew","oo","oi","ow"] //:eggTF:
 const medialArrayR = ["m","n","p","t","k","b","d","g","f","th","s","sh","h","l","r","y","z","sp","st","sk","sl","spl","stl","skl","sr","spr","str","skr","sl","fl","fr","pl","pr","tl","tr","kl","kr","shr","fl","fr","thr"] //:eggTF:
 const finalArrayR = ["m","n","p","t","k","b","d","g","f","th","s","sh","l","r","y","z","sp","st","sk","sl","spl","stl","skl","sr","spr","str","skr","pl","pr","tl","tr","bl","vr"] //:eggTF:
-
-enabledMods.includes("mods/log_rocks.js") ? logRocks = true : logRocks = false
-//This is intended for people who want to copy their rocks from the console to a file for some reason. Technically, the empty enabler script doesn't even have to exist, but I'll make it just so that index.html doesn't spit out an ERR_FILE_NOT_FOUND.
 
 function generateName() {
     //these are picked arbitrarily
@@ -219,7 +227,7 @@ function avgRndToMult() {
 
 elements.gravel.breakInto = "dust"
 
-if(logRocks == true) {
+if(makeRockString == true) {
     rockString = ""
 }
 
@@ -244,7 +252,7 @@ for(i = 0; i < rockAmount; i++) {
         breakInto: ["dust",`${name}_gravel`],
     }
     
-    if(logRocks == true) {
+    if(makeRockString == true) {
         rockString = rockString + `elements.${name} = {\n    name: \"${name}\",\n    color: [\"${colors[0]}\", \"${colors[1]}\", \"${colors[2]}\"],\n    behavior: behaviors.POWDER,\n    tempHigh: ${950 * meltingAdjustment},\n    category: \"random rocks\",\n    state: \"solid\",\n    density: ${2550 * densityAdjustment},\n    hardness: ${0.5 * hardnessAdjustment},\n    breakInto: [\"dust\",\"${name}_gravel\"],\n};\n\n`
     }
 
@@ -261,12 +269,12 @@ for(i = 0; i < rockAmount; i++) {
         breakInto: "dust",
     }
 
-    if(logRocks == true) {
+    if(makeRockString == true) {
         rockString = rockString + `elements.${name}_gravel = {\n    name: \"${name} gravel\",\n    color: [\"${colors[3]}\", \"${colors[4]}\", \"${colors[5]}\", \"${colors[6]}\"],\n    behavior: behaviors.POWDER,\n    tempHigh: ${950 * meltingAdjustment},\n    stateHigh: \"${name}\",\n    category: \"random rocks\",\n    state: \"solid\",\n    density: ${1680 * densityAdjustment},\n    hardness: ${0.2 * (hardnessAdjustment ** (2/3))},\n    breakInto: \"dust\",\n};\n\n`
     }
 
 }
 
-if(logRocks == true) {
+if(makeRockString == true) {
     console.log(`Rocks added to rockString (length ${rockString.length})`)
 }
