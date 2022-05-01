@@ -1,7 +1,71 @@
 [Future Plans]
-    + Artists' Update (Lines, Shapes, etc.)
-    + Machines Update
-    + More plans / feedback at https://docs.google.com/document/u/4/d/1R8xljj_J-K5oU-9y4louwplQmM-ZBvUfXmhbgj5LYdk/edit
+    + Human Update
+    + Baking Update
+    + More plans / suggestions at https://docs.google.com/document/u/4/d/1R8xljj_J-K5oU-9y4louwplQmM-ZBvUfXmhbgj5LYdk/edit
+
+[Version 1.6 - May 1, 2022 - Ecosystem Update]
+    + Air Density - Gases lighter than air will rise
+    + Clouds toggle setting
+    + EMP Bomb
+    + Bird
+    [Roots]
+        + Trees grow roots when planted on soil
+        + Roots can now grow and spread
+        + Fiber (Hidden)
+        + Roots absorb water from soil
+    [The Sun]
+        + The Sun has different color variations depending on its temperature
+        + The Sun outputs more light the hotter it is
+        + Supernova (Hidden)
+        + The Sun will EXPLODE when frozen
+        + More Sun element fusion, depending on temperature
+        ~ Nerfed Sun, it will no longer boil everything
+        + Light takes the color of whatever it hits
+        ~ Pixels now heat up a tiny amount when hit by Light
+    + Room Temp tool
+    + Grass can now grow and spread
+    + Algae can now reproduce
+    + Air in Info Screen
+    + Gravel can break into Sand
+    + Mudstone can be cooled into Permafrost
+    + Pollen dissolves in Water
+    + Acid breaks Charcoal into Carbon Dioxide
+    + Algae and Yeast can team up and become Lichen
+    + Rats can eat Lichen
+    + Lichen can break rocks down into Dirt
+    + Blood absorbs Oxygen and Carbon Dioxide
+    + Cancer can be killed by Proton bombardment
+    + Plants will die when exposed to Vinegar, Baking Soda, or Bleach
+    + Baking Soda can melt
+    + Loopy now clones the first thing it touches
+    + Worms and Rats can sink in Water
+    ~ Recolored Dirt and Permafrost
+    ~ Ozone no longer rises
+    ~ Rotten Meat can be converted to Ammonia
+    ~ Unhid Wheat
+    ~ Moved Flour and Sugar to Food
+    ~ Paper is now a still solid
+    ~ Hid many elements, including some seeds, most alloys, Liquid Hydrogen, Porcelain, Particleboard, some powders, Mycelium, Quicklime, Packed Snow
+    ~ Snow can freeze into Packed Snow, and then into Ice
+    ~ Grenades explode immediately on shock
+    ~ Optimizations for basic powders, liquids, and gases
+    ~ Excluded Uranium, Fire Cloud, Antimatter, and Void from Random
+    ~ Permafrost and Molten Dirt turn into Mudstone
+    ~ Adjusted Dirty Water density
+    ~ Fireworks release Carbon Dioxide instead of Fire
+    ~ Copper no longer oxidizes on its own
+    ~ Slag no longer forms with some molten elements
+    ~ Lichen now only grows horizontally
+    ~ Cellulose can be heated into Paper
+    ~ Fixed: Explosions can't destroy pixels with broken states
+    ~ Fixed: Incinerate tool not doing state changes
+    ~ Fixed: Hyphae changing anything to Mycelium
+    ~ Fixed: Mercury density
+    ~ Fixed: Metal Scrap is invincible
+    ~ Fixed: Sun can be pushed by Rocks
+    ~ Fixed: Trees grow continuously as leaves die from heat
+    + Technical: Reactions can be enabled/disabled with a setting
+    + Technical: maxSize element property
 
 [Version 1.5.1 - Apr. 19, 2022]
     + Hold Shift to draw lines
