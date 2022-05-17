@@ -30,11 +30,7 @@ elements.coal_dust = {
 
 elements.red_gas = {
 	color: "#c74c52",
-	behavior: [
-		"M2%50|M1%50|M2%50",
-		"M1|XX|M1",
-		"M2|M1|M2",
-	],
+	behavior: behaviors.GAS,
 	tick: function(pixel) {
 		if(pixel.burning) {
 			explodeAt(pixel.x,pixel.y,12,"fire,ignited_gas")
@@ -51,11 +47,7 @@ elements.red_gas = {
 
 elements.nitrous_gas = {
 	color: "#854428",
-	behavior: [
-		"M2%50|M1%50|M2%50",
-		"M1|XX|M1",
-		"M2|M1|M2",
-	],
+	behavior: behaviors.GAS,
 	reactions: {
 		"water": {"elem1": "acidic_vapour", "elem2": "acidic_vapour"}
 	},
@@ -79,11 +71,7 @@ elements.acidic_vapour = {
 
 elements.void_gas = {
 	color: "#111111",
-	behavior: [
-		"M2%50|M1%50|M2%50",
-		"M1|XX|M1",
-		"M2|M1|M2",
-	],
+	behavior: behaviors.GAS,
 	reactions: {
 		"light": { "elem1": null, "chance": 0.1 },
 		"fire": { "elem1": null, "chance": 0.08 },
@@ -96,11 +84,11 @@ elements.void_gas = {
 elements.electric_gas = {
 	color: ["#3693b3", "#246e64"],
 	behavior: [
-		"M2%2 AND CR:electric%1|M1%2 AND CR:electric%1|M2%2 AND CR:electric%1",
-		"M1%2 AND CR:electric%1|XX                    |M1%2 AND CR:electric%1",
-		"M2%2 AND CR:electric%1|M1%2 AND CR:electric%1|M2%2 AND CR:electric%1",
+		"M2%33.3 AND CR:electric%1|M1%33.3 AND CR:electric%1|M2%33.3 AND CR:electric%1",
+		"M1%33.3 AND CR:electric%1|XX                      |M1%33.3 AND CR:electric%1",
+		"M2%33.3 AND CR:electric%1|M1%33.3 AND CR:electric%1|M2%33.3 AND CR:electric%1",
 	],
-	hardness: 0.6,
+	hardness: 0.8,
 	reactions: {
 		"corrosive_gas": { "elem2": "turquoise_dust", "elem1": "blue_dust", "chance": 0.5 },
 		"blue_dust": { "elem1": null, "elem2": "turquoise_dust", "chance": 0.5 },
@@ -115,41 +103,24 @@ corrosiveGasMaxHardness = 0.5
 elements.corrosive_gas = {
 	color: ["#2929e6", "#151cad"],
 	behavior: [
-		"M2%2|M1%2|M2%2",
-		"M1%2|XX  |M1%2",
-		"M2%2|M1%2|M2%2",
+		"M2%33.3|M1%33.3|M2%33.3",
+		"M1%33.3|XX     |M1%33.3",
+		"M2%33.3|M1%33.3|M2%33.3",
 	],
-	hardness: 0.6,
+	hardness: 0.8,
 	tick: function(pixel) {
 		//delete neighbors
-		if(!isEmpty(pixel.x-1,pixel.y) && !outOfBounds(pixel.x-1,pixel.y)) {
-			if(!elements[pixelMap[pixel.x-1][pixel.y].element].hardness || elements[pixelMap[pixel.x-1][pixel.y].element].hardness <= corrosiveGasMaxHardness) {
-				if(Math.random() < 0.2) {
-					deletePixel(pixel.x-1,pixel.y)
-				}
-			}
-		}
-		if(!isEmpty(pixel.x+1,pixel.y) && !outOfBounds(pixel.x+1,pixel.y)) {
-			if(!elements[pixelMap[pixel.x+1][pixel.y].element].hardness || elements[pixelMap[pixel.x+1][pixel.y].element].hardness <= corrosiveGasMaxHardness) {
-				if(Math.random() < 0.2) {
-					deletePixel(pixel.x+1,pixel.y)
-				}
-			}
-		}
-		if(!isEmpty(pixel.x,pixel.y-1) && !outOfBounds(pixel.x,pixel.y-1)) {
-			if(!elements[pixelMap[pixel.x][pixel.y-1].element].hardness || elements[pixelMap[pixel.x][pixel.y-1].element].hardness <= corrosiveGasMaxHardness) {
-				if(Math.random() < 0.2) {
-					deletePixel(pixel.x,pixel.y-1)
-				}
-			}
-		}
-		if(!isEmpty(pixel.x,pixel.y+1) && !outOfBounds(pixel.x,pixel.y+1)) {
-			if(!elements[pixelMap[pixel.x][pixel.y+1].element].hardness || elements[pixelMap[pixel.x][pixel.y+1].element].hardness <= corrosiveGasMaxHardness) {
-				if(Math.random() < 0.2) {
-					deletePixel(pixel.x,pixel.y+1)
-				}
-			}
-		}
+		for(i = 0; i < adjacentCoords.length; i++) {
+			nx = pixel.x + adjacentCoords[i][0];
+			ny = pixel.y + adjacentCoords[i][1];
+			if(!isEmpty(nx,ny,true)) {
+				if(!elements[pixelMap[nx][ny].element].hardness || elements[pixelMap[nx][ny].element].hardness <= corrosiveGasMaxHardness) {
+					if(Math.random() < 0.2) {
+						deletePixel(nx,ny);
+					};
+				};
+			};
+		};
 	},
 	reactions: {
 		"electric_gas": { "elem2": "blue_dust", "elem1": "turquoise_dust", "chance": 0.5 },
@@ -187,12 +158,8 @@ if(!settings.bg) {
 }
 
 elements.black_damp = {
-	color: "#000000",
-	behavior: [
-		"M2|M1|M2",
-		"M1|XX|M1",
-		"M2|M1|M2",
-	],
+	color: settings.bg,
+	behavior: behaviors.GAS,
 	reactions: {
 		"fire": { elem2: null },
 	},
@@ -215,19 +182,15 @@ elements.torch.reactions.black_damp = { elem1: "wood" }
 
 elements.rock_dust = {
 	color: "#878783",
-	behavior: [
-		"M2%50|M1%50|M2%50",
-		"M1|XX|M1",
-		"M2|M1|M2",
-	],
+	behavior: behaviors.GAS,
 	reactions: {
 		"water": {"elem1": "dirty_water", "elem2": null }
 	},
 	category: "gases",
-	density: 1.225,
+	density: 2.45,
 	state: "gas",
 	tempHigh: 950,
-	stateHigh: "magma",
+	stateHigh: [null,null,null,null,"magma"],
 }
 
 elements.rock.breakInto.push("rock_dust")
@@ -238,11 +201,7 @@ ledArray = ["led_r", "led_g", "led_b"]
 
 elements.iocalfaeus_gas = {
 	color: ["#562173", "#481b61"],
-	behavior: [
-		"M1|XX|M1",
-		"M2|M1|M2",
-		"M2%50|M1%50|M2%50",
-	],
+	behavior: behaviors.GAS,
 	tick: function(pixel) {
 		if(!pixel.hot) {
 			pixel.hot = false
@@ -250,7 +209,7 @@ elements.iocalfaeus_gas = {
 		for (let i = -2; i < 3; i++) {
 			for (let j = -2; j < 3; j++) {
 				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
-					if ((lightArray.includes(pixelMap[pixel.x+j][pixel.y+i].element)) || (pixelMap[pixel.x+j][pixel.y+i].element.includes("molten_")) || (pixelMap[pixel.x+j][pixel.y+i].element.includes("vaporized_")) || (ledArray.includes(pixelMap[pixel.x+j][pixel.y+i].element) && pixelMap[pixel.x+j][pixel.y+i].charge)) {
+					if ((lightArray.includes(pixelMap[pixel.x+j][pixel.y+i].element)) || (pixelMap[pixel.x+j][pixel.y+i].temp >= 525) || (ledArray.includes(pixelMap[pixel.x+j][pixel.y+i].element) && pixelMap[pixel.x+j][pixel.y+i].charge)) {
 						pixel.hot = true
 					}
 				}
@@ -264,7 +223,7 @@ elements.iocalfaeus_gas = {
 		}
 	},
 	category: "gases",
-	density: 1.2,
+	density: 0.97,
 	state: "gas",
 }
 
@@ -275,35 +234,38 @@ finineRange = 6
 elements.finine = {
 	color: ["#ffffec", "#fafade", "#ebebd5", "#c9c9b7", "#80806f"],
 	behavior: [
-		"M2%2|M1%2|M2%2",
-		"M1%2|XX  |M1%2",
-		"M2%2|M1%2|M2%2",
+		"M2%33.3|M1%33.3|M2%33.3",
+		"M1%33.3|XX     |M1%33.3",
+		"M2%33.3|M1%33.3|M2%33.3",
 	],
 	tick: function(pixel) {
-		for (let i = -2; i < 3; i++) {
-			for (let j = -2; j < 3; j++) {
-				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
-					if (lifeArray.includes(pixelMap[pixel.x+j][pixel.y+i].element)) {
-						pixel.eeex = pixel.x + Math.floor(Math.random() * ((2 * finineRange) + 1)) - finineRange
-						pixel.eeey = pixel.y + Math.floor(Math.random() * ((2 * finineRange) + 1)) - finineRange
-						//if human
-						//handle heads
-						if(pixelMap[pixel.x+j][pixel.y+i].element == "head") {
-							if(isEmpty(pixel.eeex,pixel.eeey) && !outOfBounds(pixel.eeex,pixel.eeey) && isEmpty(pixel.eeex,pixel.eeey+1) && !outOfBounds(pixel.eeex,pixel.eeey+1)) {
-								tryMove(pixelMap[pixel.x+j][pixel.y+i],pixel.eeex,pixel.eeey)
-								tryMove(pixelMap[pixel.x+j][pixel.y+i+1],pixel.eeex,pixel.eeey+1)
-							}
-						} else if(pixelMap[pixel.x+j][pixel.y+i].element == "body") {
-							
-						} else {
-							if(isEmpty(pixel.eeex,pixel.eeey) && !outOfBounds(pixel.eeex,pixel.eeey)) {
-								tryMove(pixelMap[pixel.x+j][pixel.y+i],pixel.eeex,pixel.eeey)
-							}
-						}
-					}
-				}
-			}
-		}
+		for(i = 0; i < adjacentCoords.length; i++) {
+			nx = pixel.x + adjacentCoords[i][0];
+			ny = pixel.y + adjacentCoords[i][1];
+			if(!isEmpty(nx,ny,true)) {
+				if (lifeArray.includes(pixelMap[nx][ny].element)) {
+					pixel.eeex = pixel.x + Math.floor(Math.random() * ((2 * finineRange) + 1)) - finineRange
+					pixel.eeey = pixel.y + Math.floor(Math.random() * ((2 * finineRange) + 1)) - finineRange
+					//if human
+					//handle heads
+					if(pixelMap[nx][ny].element == "head") {
+						if(isEmpty(pixel.eeex,pixel.eeey,false) && isEmpty(pixel.eeex,pixel.eeey+1,false)) {
+							tryMove(pixelMap[nx][ny],pixel.eeex,pixel.eeey)
+							tryMove(pixelMap[nx][ny+1],pixel.eeex,pixel.eeey+1)
+						};
+					} else if(pixelMap[nx][ny].element == "body") {
+						if(isEmpty(pixel.eeex,pixel.eeey,false) && isEmpty(pixel.eeex,pixel.eeey-1,false)) {
+							tryMove(pixelMap[nx][ny],pixel.eeex,pixel.eeey)
+							tryMove(pixelMap[nx][ny-1],pixel.eeex,pixel.eeey-1)
+						};
+					} else {
+						if(isEmpty(pixel.eeex,pixel.eeey,false)) {
+							tryMove(pixelMap[nx][ny],pixel.eeex,pixel.eeey)
+						};
+					};
+				};
+			};
+		};
 	},
 	category: "gases",
 	density: 1.225,
