@@ -3,6 +3,70 @@
     + Baking Update
     + More plans / suggestions at https://docs.google.com/document/u/4/d/1R8xljj_J-K5oU-9y4louwplQmM-ZBvUfXmhbgj5LYdk/edit
 
+[Version 1.6.1 - Egg Update]
+    + Feather
+    + Egg
+        + Yolk
+        + Birds, Frogs, Fish, and all bugs (except bees) can lay eggs after eating enough
+        + Animal Eggs will hatch over time
+        + Hard Yolk
+    + Tadpole (Hidden)
+    + DNA (Hidden), from broken cells
+    + Homunculus (Hidden)
+    ~ Animals are more resistant to temperatures
+    ~ Implemented Google's Monk Skin Tone Scale for Humans
+    ~ Adjusted Human shirt colors
+    + Life can be created via the Miller-Urey method
+    + Ice-nine can freeze more Water-based elements
+    + Primordial Soup can create Seltzer and Oxygen
+    + Primordial Soup can moisten the ground
+    + Electricity speeds up Primordial Soup processes
+    + Ants can dig through Clay Soil
+    + Ants eat Mushroom Caps, Candy
+    ~ Adjusted Ant behavior
+    ~ Adjusted Ant, Fly, and Firefly color
+    + Fleas can eat Antidote, Dead Plant
+    + Fleas will eat Mercury and die
+    + Fleas will eat Ketchup to no dietary gain
+    + Salt Water kills Snails and Slugs
+    + Stinkbugs have a diet
+    + Mercury dirties Water
+    + Water breaks down Mudstone
+    + Birds breathe Oxygen
+    + Birds eat Mushrooms, Seeds
+    + Consistent Bird toxicity reactions
+    + Termites can eat Sawdust, Particleboard, Tinder, and Lichen
+    + Alcohol kills Plants
+    + Chlorine and Baking Soda kills Algae
+    + Chlorine kills Plague and Virus
+    + Some illegal toxic recipes
+    + Vinegar kills Lichen
+    + Snails and Slugs eat Lichen
+    + Roots can grow through Mycelium
+    + Rats eat Grapes
+    + Worms can swim through Water
+    + Acid ignores Plastics
+    + Salt rusts Iron
+    + Some animals can be smashed
+    + Better Baking Soda-Vinegar reaction
+    + Acid can boil into Acid Gas
+    + Algae can grow in any liquid
+    + Udders are now flammable
+    ~ Dirty Water stains less
+    ~ Lowered Slag melting point
+    ~ Nerfed Lichen growth
+    ~ Flowers now use Plant as its stem instead of Grass
+    ~ Primordial Soup is less conductive
+    ~ Fixed: Color Sand not doing its thing
+    ~ Fixed: Dirt doesn't soak up blood but turns to Mud anyway
+    ~ Fixed: Sodium ghost pixels
+    ~ Fixed: Pressure Plate breaks at top of canvas
+    ~ Fixed: Nitroglycerin not activated by electricity
+    ~ Fixed: Sugar Water gives Cells cancer
+    ~ Fixed: EMP Bomb explodes badly
+    ~ Fixed: Fish constantly changing directions
+    + Technical: Debug tool
+
 [Version 1.6 - May 1, 2022 - Ecosystem Update]
     + Air Density - Gases lighter than air will rise
     + Clouds toggle setting

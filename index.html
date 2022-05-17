@@ -121,6 +121,9 @@
             ],
             POWDER: function(pixel) {
                 if (pixel.start === pixelTicks) {return}
+                if (pixel.charge && elements[pixel.element].behaviorOn) {
+                    pixelTick(pixel)
+                }
                 if (!tryMove(pixel, pixel.x, pixel.y+1)) {
                     if (Math.random() < 0.5) {
                         if (!tryMove(pixel, pixel.x+1, pixel.y+1)) {
@@ -146,6 +149,9 @@
             ],
             LIQUID: function(pixel) {
                 if (pixel.start === pixelTicks) {return}
+                if (pixel.charge && elements[pixel.element].behaviorOn) {
+                    pixelTick(pixel)
+                }
                 if (elements[pixel.element].viscosity && (!((Math.random()*100) < 100 / ((elements[pixel.element].viscosity) ** 0.25)))) {
                     var move1Spots = [
                         [pixel.x, pixel.y+1]
@@ -206,6 +212,9 @@
             ],
             GAS: function(pixel) {
                 if (pixel.start === pixelTicks) {return}
+                if (pixel.charge && elements[pixel.element].behaviorOn) {
+                    pixelTick(pixel)
+                }
                 var move1Spots = [
                     [pixel.x, pixel.y+1],
                     [pixel.x, pixel.y-1],
@@ -322,6 +331,23 @@
                 // move and invert direction if hit
                 if (pixel.vx && !tryMove(pixel, pixel.x+pixel.vx, pixel.y)) { pixel.vx = -pixel.vx; }
                 if (pixel.vy && !tryMove(pixel, pixel.x, pixel.y+pixel.vy)) { pixel.vy = -pixel.vy; }
+            },
+            FEEDPIXEL: function(pixel) {
+                if (!pixel.food) { pixel.food = 1 }
+                else { pixel.food ++ }
+                if (pixel.food > (elements[pixel.element].foodNeed||30)) {
+                    // loop through adjacentCoords and check each pixel to lay an egg
+                    for (var i = 0; i < adjacentCoords.length; i++) {
+                        var x = pixel.x+adjacentCoords[i][0];
+                        var y = pixel.y+adjacentCoords[i][1];
+                        if (isEmpty(x, y)) {
+                            createPixel("egg",x,y)
+                            pixelMap[x][y].animal = elements[pixel.element].baby || pixel.element;
+                            pixel.food = 0;
+                            break;
+                        }
+                    }
+                }
             },
         }
         eLists = {
@@ -535,16 +561,20 @@
                     "dust": { "elem1": "dirty_water", "elem2": null, },
                     "ash": { "elem1": "dirty_water", "elem2": null, },
                     "cyanide": { "elem1": "dirty_water", "elem2": null, },
-                    "carbon_dioxide": { "elem1": "seltzer", "elem2": null, },
+                    "carbon_dioxide": { "elem1": "seltzer", "elem2": null, "oneway":true },
                     "sulfur": { "elem1": "dirty_water", "elem2": null, },
                     "rat": { "elem1": "dirty_water", chance:0.005 },
                     "plague": { "elem1": "dirty_water", "elem2": null, },
                     "rust": { "elem1": "dirty_water", chance:0.005 },
                     "fallout": { "elem1": "dirty_water", chance:0.25 },
                     "radiation": { "elem1": "dirty_water", chance:0.25 },
+                    "uranium": { "elem1": "dirty_water", chance:0.25 },
                     "quicklime": { "elem1": null, "elem2": "slaked_lime", },
                     "rock": { "elem2": "wet_sand", "chance": 0.00035 },
                     "ruins": { "elem2": "rock", "chance": 0.00035 },
+                    "mudstone": { "elem2": "mud", "chance": 0.00035 },
+                    "methane": { "elem1":"primordial_soup", "elem2":"primordial_soup", tempMin:60, charged:true },
+                    "ammonia": { "elem1":"primordial_soup", "elem2":"primordial_soup", tempMin:60, charged:true },
                 },
                 state: "liquid",
                 density: 997,
@@ -656,7 +686,7 @@
                 state: "liquid",
                 density: 1005,
                 conduct: 0.1,
-                stain: 0.075,
+                stain: 0.03,
             },
             "dirt": {
                 //color: ["#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#a88c7b"],
@@ -741,6 +771,7 @@
                     "vinegar": { "elem1":"dead_plant", "elem2":null, "chance":0.035 },
                     "baking_soda": { "elem1":"dead_plant", "elem2":null, "chance":0.01 },
                     "bleach": { "elem1":"dead_plant", "elem2":null, "chance":0.05 },
+                    "alcohol": { "elem1":"dead_plant", "elem2":null, "chance":0.035 },
                 },
                 category:"life",
                 tempHigh: 100,
@@ -832,20 +863,23 @@
                 tick: function(pixel) {
                     if (Math.random() < 0.01 && !isEmpty(pixel.x+1,pixel.y+1,true) && isEmpty(pixel.x+1,pixel.y)) {
                         var newPixel = pixelMap[pixel.x+1][pixel.y+1];
-                        if (newPixel.element==="water" || newPixel.element==="salt_water" || newPixel.element==="dirty_water" || newPixel.element==="sugar_water") {
+                        if (newPixel.element !== "algae" && elements[newPixel.element].state === "liquid") {
                             createPixel(pixel.element,pixel.x+1,pixel.y);
                         }
                     }
                     if (Math.random() < 0.01 && !isEmpty(pixel.x-1,pixel.y+1,true) && isEmpty(pixel.x-1,pixel.y)) {
                         var newPixel = pixelMap[pixel.x-1][pixel.y+1];
-                        if (newPixel.element==="water" || newPixel.element==="salt_water" || newPixel.element==="dirty_water" || newPixel.element==="sugar_water") {
+                        if (newPixel.element !== "algae" && elements[newPixel.element].state === "liquid") {
                             createPixel(pixel.element,pixel.x-1,pixel.y);
                         }
                     }
                     doDefaults(pixel);
                 },
                 reactions: {
-                    "wood": { "elem1":"lichen" }
+                    "wood": { "elem1":"lichen" },
+                    "chlorine": { "elem1":"dead_plant", "elem2":null, "chance":0.035 },
+                    "liquid_chlorine": { "elem1":"dead_plant", "elem2":null, "chance":0.035 },
+                    "baking_soda": { "elem1":"dead_plant", "elem2":null, "chance":0.035 },
                 },
                 category:"life",
                 tempHigh: 225,
@@ -1208,7 +1242,7 @@
                 color: "#383645",
                 tool: function(pixel) {
                     if (pixel.burning) {
-                        pixel.burning = false;
+                        delete pixel.burning;
                         delete pixel.burnStart;
                     }
                     if (pixel.element === "fire") {
@@ -1241,6 +1275,11 @@
                 behavior: behaviors.FILL,
                 category:"special",
                 excludeRandom: true,
+                reactions: {
+                    "neutron": { "elem1":"lattice" },
+                    "proton": { "elem1":"vertical" },
+                    "electric": { "elem1":"horizontal" },
+                },
             },
             "lattice": {
                 color: "#cb4cd9",
@@ -1369,8 +1408,8 @@
                     "blood": { "elem1":"blood", "chance":0.01 },
                     "antibody": { "elem1":"antibody", "chance":0.01 },
                     "sugar": { "elem2":"cell", "chance":0.03 },
-                    "sugar_water": { "elem2":"cancer", "chance":0.04 },
-                    "alcohol": { "elem1":null, "chance":0.02 },
+                    "sugar_water": { "elem2":"cell", "chance":0.04 },
+                    "alcohol": { "elem1":[null,"dna"], "chance":0.02 },
                     "poison": { "elem1":null, "chance":0.02 },
                     "oxygen": { "elem2":"carbon_dioxide", "chance":0.05 },
                     "ammonia": { "elem2":"nitrogen", "chance":0.05 },
@@ -1382,6 +1421,7 @@
                 state: "solid",
                 density: 1000.1,
                 category: "life",
+                breakInto: ["water","dna","dna","dna"]
             },
             "cancer": {
                 color: ["#300b29","#5c114e","#870c71"],
@@ -1395,9 +1435,10 @@
                     "frog": { "elem2":"cancer", "chance":0.005 },
                     "fish": { "elem2":"cancer", "chance":0.005 },
                     "rat": { "elem2":"cancer", "chance":0.005 },
+                    "bird": { "elem2":"cancer", "chance":0.005 },
                     "sugar": { "elem2":"cancer", "chance":0.04 },
                     "sugar_water": { "elem2":"cancer", "chance":0.05 },
-                    "alcohol": { "elem1":null, "chance":0.01 },
+                    "alcohol": { "elem1":[null,"dna"], "chance":0.01 },
                     "poison": { "elem1":null, "chance":0.01 },
                     "proton": { "elem1":null, "chance":0.04 },
                 },
@@ -1406,6 +1447,22 @@
                 state: "solid",
                 density: 1000.2,
                 category: "life",
+                breakInto: ["dirty_water","dna","dna","dna","dna"]
+            },
+            "dna": {
+                color: ["#ffe3e3","#e3e3ff","#ffffe3","#e3ffe3"],
+                behavior: behaviors.POWDER,
+                reactions: {
+                    "fire": { "elem2":null },
+                    "radiation": { "color1":["#ffe3e3","#e3e3ff","#ffffe3","#e3ffe3"] },
+                    "neutron": { "color1":["#ffe3e3","#e3e3ff","#ffffe3","#e3ffe3"] },
+                },
+                tempHigh: 190,
+                stateHigh: "smoke",
+                state: "solid",
+                density: 1700,
+                category: "life",
+                hidden: true,
             },
             "plague": {
                 color: "#36005c",
@@ -1416,6 +1473,8 @@
                     "bee": { "elem2":"plague", "chance":0.05 },
                     "fish": { "elem2":"plague", "chance":0.05 },
                     "firefly": { "elem2":"plague", "chance":0.05 },
+                    "chlorine": { "elem1":null },
+                    "liquid_chlorine": { "elem1":null },
                 },
                 category: "life",
                 state: "gas",
@@ -1429,11 +1488,17 @@
                     "M2|M1|M2",
                 ],
                 reactions: {
-                    "blood": { "elem2":null, "chance":0.1875 },
-                    "infection": { "elem2":null, "chance":0.1875 },
-                    "antibody": { "elem2":null, "chance":0.1875 },
+                    "blood": { "elem2":null, "chance":0.1875, func:behaviors.FEEDPIXEL },
+                    "infection": { "elem2":null, "chance":0.1875, func:behaviors.FEEDPIXEL },
+                    "antibody": { "elem2":null, "chance":0.1875, func:behaviors.FEEDPIXEL },
+                    "antidote": { "elem2":null, "chance":0.15, func:behaviors.FEEDPIXEL },
+                    "dead_plant": { "elem2":null, "chance":0.05, func:behaviors.FEEDPIXEL },
+                    "ketchup": { "elem2":null, "chance":0.1 },
+                    "mercury": { "elem2":null, "elem1":null, "chance":0.1875 },
+                    "vinegar": { "elem1":null, "elem2":null },
+                    "alcohol": { "elem1":null, "elem2":null },
                 },
-                tempHigh: 35,
+                tempHigh: 100,
                 stateHigh: "ash",
                 tempLow: 0,
                 stateLow: "ash",
@@ -1452,15 +1517,22 @@
                     "XX|M1|SW:wood,tree_branch%5",
                 ],
                 reactions: {
-                    "wood": { "elem2":null, chance:0.04 },
-                    "tree_branch": { "elem2":null, chance:0.02 },
-                    "cellulose": { "elem2":null, chance:0.04 },
-                    "paper": { "elem2":null, chance:0.04 },
-                    "bamboo": { "elem2":null, chance:0.03 },
-                    "bamboo_plant": { "elem2":null, chance:0.04 },
-                    "sapling": { "elem2":null, chance:0.025 },
+                    "wood": { "elem2":null, chance:0.04, func:behaviors.FEEDPIXEL },
+                    "tree_branch": { "elem2":null, chance:0.02, func:behaviors.FEEDPIXEL },
+                    "cellulose": { "elem2":null, chance:0.04, func:behaviors.FEEDPIXEL },
+                    "paper": { "elem2":null, chance:0.04, func:behaviors.FEEDPIXEL },
+                    "bamboo": { "elem2":null, chance:0.03, func:behaviors.FEEDPIXEL },
+                    "bamboo_plant": { "elem2":null, chance:0.04, func:behaviors.FEEDPIXEL },
+                    "sapling": { "elem2":null, chance:0.025, func:behaviors.FEEDPIXEL },
+                    "sawdust": { "elem2":null, chance:0.025, func:behaviors.FEEDPIXEL },
+                    "particleboard": { "elem2":null, chance:0.025, func:behaviors.FEEDPIXEL },
+                    "tinder": { "elem2":null, chance:0.025, func:behaviors.FEEDPIXEL },
+                    "lichen": { "elem2":null, chance:0.025, func:behaviors.FEEDPIXEL },
+                    "vinegar": { "elem1":null, "elem2":null },
+                    "alcohol": { "elem1":null, "elem2":null },
                 },
-                tempHigh: 37.78,
+                foodNeed: 20,
+                tempHigh: 100,
                 stateHigh: "ash",
                 tempLow: 0,
                 stateLow: "ash",
@@ -1471,22 +1543,26 @@
                 conduct: 0.15,
             },
             "ant": {
-                color: "#4a0903",
+                color: "#5e0b04",
                 behavior: [
-                    "SW:dirt,sand,gravel%5|XX|SW:dirt,sand,gravel%5",
-                    "M2|XX|M2",
-                    "SW:dirt,sand,gravel%5|M1|SW:dirt,sand,gravel%5",
+                    "XX|XX|SW:dirt,sand,gravel,clay_soil%8",
+                    "XX|FX%8|M2 AND BO",
+                    "XX|M1|SW:dirt,sand,gravel,clay_soil%8",
                 ],
                 reactions: {
-                    "wheat": { "elem2":null, chance:0.1 },
-                    "caramel": { "elem2":null, chance:0.15 },
-                    "bread": { "elem2":null, chance:0.05 },
-                    "sugar_water": { "elem2":null, chance:0.15 },
-                    "soda": { "elem2":null, chance:0.15 },
-                    "sugar": { "elem2":null, chance:0.1 },
-                    "rotten_meat": { "elem2":null, chance:0.05 },
+                    "wheat": { "elem2":null, chance:0.1, func:behaviors.FEEDPIXEL },
+                    "caramel": { "elem2":null, chance:0.15, func:behaviors.FEEDPIXEL },
+                    "bread": { "elem2":null, chance:0.05, func:behaviors.FEEDPIXEL },
+                    "sugar_water": { "elem2":null, chance:0.15, func:behaviors.FEEDPIXEL },
+                    "soda": { "elem2":null, chance:0.15, func:behaviors.FEEDPIXEL },
+                    "sugar": { "elem2":null, chance:0.1, func:behaviors.FEEDPIXEL },
+                    "rotten_meat": { "elem2":null, chance:0.05, func:behaviors.FEEDPIXEL },
+                    "vinegar": { "elem1":null, "elem2":null },
+                    "alcohol": { "elem1":null, "elem2":null },
+                    "mushroom_cap": { "elem2":null, chance:0.025, func:behaviors.FEEDPIXEL },
+                    "candy": { "elem2":null, chance:0.025, func:behaviors.FEEDPIXEL },
                 },
-                tempHigh: 53.7,
+                tempHigh: 100,
                 stateHigh: "ash",
                 tempLow: 0,
                 stateLow: "ash",
@@ -1500,29 +1576,30 @@
             "worm": {
                 color: "#D34C37",
                 behavior: [
-                    "SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil%3|XX|SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil%3",
+                    "SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil,water,salt_water,dirty_water%3|XX|SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil,water,salt_water,dirty_water%3",
                     "M2%10|XX|M2%10",
-                    "SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil%3|M1|SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil%3",
+                    "SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil,water,salt_water,dirty_water%3|M1|SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil,water,salt_water,dirty_water%3",
                 ],
                 reactions: {
-                    "ash": { "elem2":null, "chance":0.1 },
-                    "root": { "elem2":"dirt", "chance":0.1 },
-                    "dead_plant": { "elem2":"dirt", "chance":0.1 },
-                    "hyphae": { "elem2":"mycelium", "chance":0.1 },
-                    "plant": { "elem2":"root", "chance":0.1 },
-                    "grass": { "elem2":"dirt", "chance":0.1 },
-                    "limestone": { "elem2":"calcium", "chance":0.1 },
-                    "quicklime": { "elem2":"calcium", "chance":0.1 },
-                    "slaked_lime": { "elem2":"calcium", "chance":0.1 },
+                    "ash": { "elem2":null, "chance":0.1, func:behaviors.FEEDPIXEL },
+                    "root": { "elem2":"dirt", "chance":0.1, func:behaviors.FEEDPIXEL },
+                    "dead_plant": { "elem2":"dirt", "chance":0.1, func:behaviors.FEEDPIXEL },
+                    "hyphae": { "elem2":"mycelium", "chance":0.1, func:behaviors.FEEDPIXEL },
+                    "plant": { "elem2":"root", "chance":0.1, func:behaviors.FEEDPIXEL },
+                    "grass": { "elem2":"dirt", "chance":0.1, func:behaviors.FEEDPIXEL },
+                    "limestone": { "elem2":"calcium", "chance":0.1, func:behaviors.FEEDPIXEL },
+                    "quicklime": { "elem2":"calcium", "chance":0.1, func:behaviors.FEEDPIXEL },
+                    "slaked_lime": { "elem2":"calcium", "chance":0.1, func:behaviors.FEEDPIXEL },
                     "salt": { "elem1": "slime", "elem2": null },
                     "potassium_salt": { "elem1": "slime", "elem2": null },
                     "epsom_salt": { "elem1": "slime", "elem2": null },
                 },
-                tempHigh: 40,
+                tempHigh: 100,
                 stateHigh: "ash",
-                tempLow: 3,
+                tempLow: 0,
                 stateLow: "ash",
                 category:"life",
+                breakInto: "slime",
                 burn:95,
                 burnTime:25,
                 state: "solid",
@@ -1530,28 +1607,30 @@
                 conduct: 0.17,
             },
             "fly": {
-                color: "#303012",
+                color: "#4C4E42",
                 behavior: [
                     "XX|M2|M1",
                     "XX|FX%2|BO",
                     "XX|M2|M1",
                 ],
                 reactions: {
-                    "plant": { "elem2":null, chance:0.15 },
-                    "meat": { "elem2":null, chance:0.15 },
-                    "cooked_meat": { "elem2":null, chance:0.15 },
-                    "rotten_meat": { "elem2":[null,null,"ammonia"], chance:0.15 },
-                    "vine": { "elem2":null, chance:0.15 },
-                    "corn": { "elem2":null, chance:0.05 },
-                    "potato": { "elem2":null, chance:0.05 },
-                    "wheat": { "elem2":null, chance:0.1 },
-                    "yeast": { "elem2":null, chance:0.15 },
-                    "caramel": { "elem2":null, chance:0.15 },
-                    "bread": { "elem2":null, chance:0.1 },
-                    "sugar_water": { "elem2":null, chance:0.15 },
-                    "soda": { "elem2":null, chance:0.15 },
+                    "plant": { "elem2":null, chance:0.15, func:behaviors.FEEDPIXEL },
+                    "dead_plant": { "elem2":null, chance:0.15, func:behaviors.FEEDPIXEL },
+                    "meat": { "elem2":null, chance:0.15, func:behaviors.FEEDPIXEL },
+                    "cooked_meat": { "elem2":null, chance:0.15, func:behaviors.FEEDPIXEL },
+                    "rotten_meat": { "elem2":[null,null,"ammonia"], chance:0.15, func:behaviors.FEEDPIXEL },
+                    "vine": { "elem2":null, chance:0.15, func:behaviors.FEEDPIXEL },
+                    "corn": { "elem2":null, chance:0.05, func:behaviors.FEEDPIXEL },
+                    "potato": { "elem2":null, chance:0.05, func:behaviors.FEEDPIXEL },
+                    "wheat": { "elem2":null, chance:0.1, func:behaviors.FEEDPIXEL },
+                    "yeast": { "elem2":null, chance:0.15, func:behaviors.FEEDPIXEL },
+                    "caramel": { "elem2":null, chance:0.15, func:behaviors.FEEDPIXEL },
+                    "bread": { "elem2":null, chance:0.1, func:behaviors.FEEDPIXEL },
+                    "sugar_water": { "elem2":null, chance:0.15, func:behaviors.FEEDPIXEL },
+                    "soda": { "elem2":null, chance:0.15, func:behaviors.FEEDPIXEL },
                 },
-                tempHigh: 47,
+                foodNeed: 15,
+                tempHigh: 100,
                 stateHigh: "ash",
                 tempLow: 0,
                 stateLow: "ash",
@@ -1563,21 +1642,21 @@
                 conduct: 0.15,
             },
             "firefly": {
-                color: ["#310D09","#310D09","#d9d950","#310D09","#310D09"],
+                color: ["#684841","#684841","#d9d950","#684841","#684841"],
                 behavior: [
                     "XX|M2|M1",
-                    "XX|CC:310D09,310D09,310D09,310D09,d9d950%10 AND FX%2|BO",
+                    "XX|CC:684841,684841,684841,684841,d9d950%10 AND FX%2|BO",
                     "XX|M2|M1",
                 ],
                 reactions: {
-                    "pollen": { "elem2":null, chance:0.25 },
-                    "honey": { "elem2":null, chance:0.25 },
-                    "firefly": { "elem2":null, chance:0.01 },
-                    "sugar_water": { "elem2":null, chance:0.25 },
-                    "soda": { "elem2":null, chance:0.25 },
-                    "sugar": { "elem2":null, chance:0.15 },
+                    "pollen": { "elem2":null, chance:0.25, func:behaviors.FEEDPIXEL },
+                    "honey": { "elem2":null, chance:0.25, func:behaviors.FEEDPIXEL },
+                    "firefly": { "elem2":null, chance:0.01, func:behaviors.FEEDPIXEL },
+                    "sugar_water": { "elem2":null, chance:0.25, func:behaviors.FEEDPIXEL },
+                    "soda": { "elem2":null, chance:0.25, func:behaviors.FEEDPIXEL },
+                    "sugar": { "elem2":null, chance:0.15, func:behaviors.FEEDPIXEL },
                 },
-                tempHigh: 47,
+                tempHigh: 100,
                 stateHigh: "ash",
                 tempLow: 0,
                 stateLow: "ash",
@@ -1603,7 +1682,7 @@
                     "caramel": { "elem2":null, chance:0.25 },
                     "candy": { "elem2":null, chance:0.05 },
                 },
-                tempHigh: 47,
+                tempHigh: 100,
                 stateHigh: "ash",
                 tempLow: 0,
                 stateLow: "ash",
@@ -1652,20 +1731,29 @@
                     doHeat(pixel);
                     doElectricity(pixel);
                 },
+                reactions: {
+                    "petal": { "elem2":null, chance:0.2, func:behaviors.FEEDPIXEL },
+                    "pistil": { "elem2":null, chance:0.2, func:behaviors.FEEDPIXEL },
+                    "grape": { "elem2":null, chance:0.05, func:behaviors.FEEDPIXEL },
+                    "plant": { "elem2":null, chance:0.1, func:behaviors.FEEDPIXEL },
+                },
                 flippableX: true,
-                tempHigh: 47,
-                stateHigh: "ash",
+                tempHigh: 100,
+                stateHigh: "stench",
                 tempLow: 0,
-                stateLow: "ash",
+                stateLow: "stench",
                 category:"life",
                 burn:95,
                 burnTime:25,
+                burnInto: "stench",
+                breakInto: "stench",
                 state: "solid",
                 density: 600,
                 conduct: 0.15,
             },
             "human": {
-                color: ["#f5eac6","#d4c594","#a89160","#7a5733","#523018","#361e0e"],
+                // color: ["#f5eac6","#d4c594","#a89160","#7a5733","#523018","#361e0e"],
+                color: ["#f3e7db","#f7ead0","#eadaba","#d7bd96","#a07e56","#825c43","#604134","#3a312a"],
                 category: "life",
                 properties: {
                     dead: false,
@@ -1690,7 +1778,7 @@
                 related: ["body","head"],
             },
             "body": {
-                color: ["#049699","#638A61"],
+                color: ["#069469","#047e99","#7f5fb0"],
                 category: "life",
                 hidden: true,
                 density: 1500,
@@ -1783,7 +1871,7 @@
                 },
             },
             "head": {
-                color: ["#f5eac6","#d4c594","#a89160","#7a6433","#524018"],
+                color: ["#f3e7db","#f7ead0","#eadaba","#d7bd96","#a07e56","#825c43","#604134","#3a312a"],
                 category: "life",
                 hidden: true,
                 density: 1080,
@@ -1849,7 +1937,18 @@
                     if (pixel.phase === 1) { // Landing
                         newX += pixel.flipX ? -1 : 1;
                         newY += Math.random() < 0.5 ? 0 : 1;
-                        if (!tryMove(pixel, newX, newY)) { pixel.phase = 0 } // Stop landing
+                        if (!tryMove(pixel, newX, newY)) {
+                            if (outOfBounds(newX, newY)) { pixel.phase = 0 }
+                            else {
+                                var newPixel = pixelMap[newX][newY];
+                                if (elements[newPixel.element].state !== "solid") { pixel.phase = 3; }
+                                else if (newPixel.element === "bird") {
+                                    pixel.phase = 3;
+                                    newPixel.phase = 3;
+                                }
+                                else { pixel.phase = 0; }
+                            }
+                        } // Stop landing
                     }
                     else if (pixel.phase === 2) { // Gliding
                         newX += pixel.flipX ? -1 : 1;
@@ -1857,13 +1956,21 @@
                         if (Math.random() < 0.01) { pixel.phase = 1 } // Start landing
                         if (!tryMove(pixel, newX, newY)) {
                             pixel.flipX = !pixel.flipX;
+                            if (!outOfBounds(newX, newY) && pixelMap[newX][newY].element !== "bird") {
+                                pixel.phase = 3;
+                            }
                         }
                     }
                     else if (pixel.phase === 0) { // Standing
                         if (Math.random() < 0.05) { newX += pixel.flipX ? -1 : 1; }
                         newY ++;
                         if (Math.random() < 0.01) { pixel.phase = 3 } // Start rising
-                        tryMove(pixel, newX, newY);
+                        if (!tryMove(pixel, newX, newY)) {
+                            if (!outOfBounds(newX, newY) && pixelMap[newX][newY].element === "bird") {
+                                pixel.phase = 3;
+                                pixelMap[newX][newY].phase = 3;
+                            }
+                        }
                     }
                     else if (pixel.phase === 3) { // Rising
                         newX += pixel.flipX ? -1 : 1;
@@ -1873,18 +1980,30 @@
                     }
                     doHeat(pixel);
                     doElectricity(pixel);
+                    doBurning(pixel);
                 },
                 flippableX: true,
                 reactions: {
-                    "fly": { "elem2":null, chance:0.25 },
-                    "firefly": { "elem2":null, chance:0.3 },
-                    "bee": { "elem2":null, chance:0.05 },
-                    "worm": { "elem2":null, chance:0.25 },
-                    "ant": { "elem2":null, chance:0.025 },
-                    "termite": { "elem2":null, chance:0.025 },
-                    "flea": { "elem2":null, chance:0.025 },
+                    "fly": { "elem2":null, chance:0.25, func:behaviors.FEEDPIXEL },
+                    "firefly": { "elem2":null, chance:0.3, func:behaviors.FEEDPIXEL },
+                    "bee": { "elem2":null, chance:0.05, func:behaviors.FEEDPIXEL },
+                    "worm": { "elem2":null, chance:0.25, func:behaviors.FEEDPIXEL },
+                    "ant": { "elem2":null, chance:0.025, func:behaviors.FEEDPIXEL },
+                    "termite": { "elem2":null, chance:0.025, func:behaviors.FEEDPIXEL },
+                    "flea": { "elem2":null, chance:0.025, func:behaviors.FEEDPIXEL },
+                    "mushroom_cap": { "elem2":null, chance:0.025, func:behaviors.FEEDPIXEL },
+                    "mushroom_gill": { "elem2":null, chance:0.025, func:behaviors.FEEDPIXEL },
+                    "seeds": { "elem2":null, chance:0.25, func:behaviors.FEEDPIXEL },
+                    "flower_seed": { "elem2":null, chance:0.25, func:behaviors.FEEDPIXEL },
+                    "wheat_seed": { "elem2":null, chance:0.25, func:behaviors.FEEDPIXEL },
+                    "corn_seed": { "elem2":null, chance:0.25, func:behaviors.FEEDPIXEL },
+                    "corn": { "elem2":null, chance:0.25, func:behaviors.FEEDPIXEL },
+                    "potato_seed": { "elem2":null, chance:0.25, func:behaviors.FEEDPIXEL },
+                    "grass_seed": { "elem2":null, chance:0.25, func:behaviors.FEEDPIXEL },
                     "plague": { "elem1":"plague", chance:0.05 },
+                    "oxygen": { "elem2":"carbon_dioxide", chance:0.5 },
                 },
+                foodNeed: 20,
                 tempHigh: 120,
                 stateHigh: "cooked_meat",
                 tempLow: -18,
@@ -1892,6 +2011,7 @@
                 category:"life",
                 burn:50,
                 burnTime:100,
+                breakInto: "feather",
                 state: "solid",
                 density: 400,
                 conduct: 0.5,
@@ -1933,12 +2053,16 @@
                     "candy": { "elem2":null, "chance":0.3 },
                     "caramel": { "elem2":null, "chance":0.4 },
                     "lichen": { "elem2":null, "chance":0.1 },
+                    "egg": { "elem2":null, "chance":0.1 },
+                    "yolk": { "elem2":null, "chance":0.2 },
+                    "grape": { "elem2":null, "chance":0.25 },
                 },
                 category: "life",
-                tempHigh: 50,
+                tempHigh: 120,
                 stateHigh: "rotten_meat",
-                tempLow: 15,
+                tempLow: -18,
                 stateLow: "frozen_meat",
+                breakInto: "infection",
                 burn:80,
                 burnTime:150,
                 state: "solid",
@@ -1953,20 +2077,23 @@
                     "XX|M1|XX",
                 ],
                 reactions: {
-                    "fly": { "elem2":null, chance:0.5 },
-                    "firefly": { "elem2":null, chance:0.5 },
-                    "snail": { "elem2":"calcium", chance:0.1 },
-                    "slug": { "elem2":null, chance:0.2 },
-                    "worm": { "elem2":null, chance:0.2 },
-                    "algae": { "elem2":null, chance:0.5 },
+                    "fly": { "elem2":null, chance:0.5, func:behaviors.FEEDPIXEL },
+                    "firefly": { "elem2":null, chance:0.5, func:behaviors.FEEDPIXEL },
+                    "snail": { "elem2":"calcium", chance:0.1, func:behaviors.FEEDPIXEL },
+                    "slug": { "elem2":null, chance:0.2, func:behaviors.FEEDPIXEL },
+                    "worm": { "elem2":null, chance:0.2, func:behaviors.FEEDPIXEL },
+                    "algae": { "elem2":null, chance:0.5, func:behaviors.FEEDPIXEL },
                     "oxygen": { "elem2":"carbon_dioxide", chance:0.5 },
                 },
+                foodNeed: 10,
+                baby: "tadpole",
                 temp: 19.1,
-                tempHigh: 41,
-                stateHigh: "meat",
+                tempHigh: 100,
+                stateHigh: "cooked_meat",
                 tempLow: -18,
                 stateLow: "frozen_frog",
                 category:"life",
+                breakInto: "slime",
                 burn:75,
                 burnTime:30,
                 state: "solid",
@@ -1980,31 +2107,59 @@
                 tempHigh: 0,
                 stateHigh: "frog",
                 category:"life",
+                breakInto: "slime",
                 hidden: true,
                 state: "solid",
                 density: 1500,
+            },
+            "tadpole": {
+                color: "#87b574",
+                behavior: [
+                    "XX|XX|M2%25 AND SW:water,salt_water,sugar_water,dirty_water%14",
+                    "XX|FX%0.5|SW:water,salt_water,sugar_water,dirty_water%14",
+                    "XX|M1|SW:water,salt_water,sugar_water,dirty_water%14",
+                ],
+                tick: function(pixel) {
+                    if (pixelTicks-pixel.start > 500) {
+                        changePixel(pixel,"frog");
+                    }
+                },
+                reactions: {
+                    "algae": { "elem2":null, chance:0.25 },
+                },
+                tempHigh: 100,
+                stateHigh: "steam",
+                tempLow: -10,
+                stateLow: "ice",
+                category:"life",
+                hidden: true,
+                state: "solid",
+                density: 1450,
+                conduct: 0.2,
             },
             "fish": {
                 color: "#ac8650",
                 behavior: [
                     "XX|M2%5|SW:water,salt_water,sugar_water,dirty_water%14",
-                    "XX|FX%1|BO",
+                    "XX|FX%0.5|BO",
                     "M2|M1|M2 AND SW:water,salt_water,sugar_water,dirty_water%5",
                 ],
                 reactions: {
-                    "algae": { "elem2":null, chance:0.25 },
-                    "plant": { "elem2":null, chance:0.125 },
-                    "fly": { "elem2":null, chance:0.4 },
-                    "firefly": { "elem2":null, chance:0.5 },
-                    "worm": { "elem2":null, chance:0.25 },
+                    "algae": { "elem2":null, chance:0.25, func:behaviors.FEEDPIXEL },
+                    "plant": { "elem2":null, chance:0.125, func:behaviors.FEEDPIXEL },
+                    "fly": { "elem2":null, chance:0.4, func:behaviors.FEEDPIXEL },
+                    "firefly": { "elem2":null, chance:0.6, func:behaviors.FEEDPIXEL },
+                    "worm": { "elem2":null, chance:0.25, func:behaviors.FEEDPIXEL },
                     "oxygen": { "elem2":"carbon_dioxide", chance:0.5 },
                 },
+                foodNeed: 20,
                 temp: 20,
-                tempHigh: 32,
+                tempHigh: 120,
                 stateHigh: "meat",
                 tempLow: -20,
                 stateLow: "frozen_meat",
                 category:"life",
+                breakInto: "blood",
                 burn:40,
                 burnTime:100,
                 state: "solid",
@@ -2020,24 +2175,27 @@
                 ],
                 reactions: {
                     "salt": { "elem1": "slime", "elem2": null },
+                    "salt_water": { "elem1": "slime", "elem2": null },
                     "potassium_salt": { "elem1": "slime", "elem2": null },
                     "epsom_salt": { "elem1": "slime", "elem2": null },
-                    "plant": { "elem2":null, "chance":0.05 },
-                    "worm": { "elem2":null, "chance":0.01 },
-                    "mushroom_spore": { "elem2":null, "chance":0.05 },
-                    "grass": { "elem2":null, "chance":0.05 },
-                    "grass_seed": { "elem2":null, "chance":0.05 },
-                    "algae": { "elem2":null, "chance":0.05 },
-                    "mushroom_cap": { "elem2":null, "chance":0.05 },
-                    "mushroom_stalk": { "elem2":null, "chance":0.05 },
-                    "mushroom_gill": { "elem2":null, "chance":0.05 },
-                    "hyphae": { "elem2":"dirt", "chance":0.05 },
-                    "mycelium": { "elem2":"dirt", "chance":0.05 },
+                    "plant": { "elem2":null, "chance":0.05, func:behaviors.FEEDPIXEL },
+                    "worm": { "elem2":null, "chance":0.01, func:behaviors.FEEDPIXEL },
+                    "mushroom_spore": { "elem2":null, "chance":0.05, func:behaviors.FEEDPIXEL },
+                    "grass": { "elem2":null, "chance":0.05, func:behaviors.FEEDPIXEL },
+                    "grass_seed": { "elem2":null, "chance":0.05, func:behaviors.FEEDPIXEL },
+                    "algae": { "elem2":null, "chance":0.05, func:behaviors.FEEDPIXEL },
+                    "mushroom_cap": { "elem2":null, "chance":0.05, func:behaviors.FEEDPIXEL },
+                    "mushroom_stalk": { "elem2":null, "chance":0.05, func:behaviors.FEEDPIXEL },
+                    "mushroom_gill": { "elem2":null, "chance":0.05, func:behaviors.FEEDPIXEL },
+                    "lichen": { "elem2":null, "chance":0.05, func:behaviors.FEEDPIXEL },
+                    "hyphae": { "elem2":"dirt", "chance":0.05, func:behaviors.FEEDPIXEL },
+                    "mycelium": { "elem2":"dirt", "chance":0.05, func:behaviors.FEEDPIXEL },
                 },
                 tempLow: 5,
                 stateLow: "slime",
-                tempHigh: 40,
+                tempHigh: 90,
                 stateHigh: "slime",
+                breakInto: "slime",
                 category: "life",
                 state: "solid",
                 density: 1450,
@@ -2052,24 +2210,27 @@
                 ],
                 reactions: {
                     "salt": { "elem1": "calcium", "elem2": null },
+                    "salt_water": { "elem1": "calcium", "elem2": null },
                     "potassium_salt": { "elem1": "calcium", "elem2": null },
                     "epsom_salt": { "elem1": "calcium", "elem2": null },
-                    "plant": { "elem2":null, "chance":0.05 },
-                    "worm": { "elem2":null, "chance":0.01 },
-                    "mushroom_spore": { "elem2":null, "chance":0.05 },
-                    "grass": { "elem2":null, "chance":0.05 },
-                    "grass_seed": { "elem2":null, "chance":0.05 },
-                    "algae": { "elem2":null, "chance":0.05 },
-                    "mushroom_cap": { "elem2":null, "chance":0.05 },
-                    "mushroom_stalk": { "elem2":null, "chance":0.05 },
-                    "mushroom_gill": { "elem2":null, "chance":0.05 },
-                    "hyphae": { "elem2":"dirt", "chance":0.05 },
-                    "mycelium": { "elem2":"dirt", "chance":0.05 },
+                    "plant": { "elem2":null, "chance":0.05, func:behaviors.FEEDPIXEL },
+                    "worm": { "elem2":null, "chance":0.01, func:behaviors.FEEDPIXEL },
+                    "mushroom_spore": { "elem2":null, "chance":0.05, func:behaviors.FEEDPIXEL },
+                    "grass": { "elem2":null, "chance":0.05, func:behaviors.FEEDPIXEL },
+                    "grass_seed": { "elem2":null, "chance":0.05, func:behaviors.FEEDPIXEL },
+                    "algae": { "elem2":null, "chance":0.05, func:behaviors.FEEDPIXEL },
+                    "mushroom_cap": { "elem2":null, "chance":0.05, func:behaviors.FEEDPIXEL },
+                    "mushroom_stalk": { "elem2":null, "chance":0.05, func:behaviors.FEEDPIXEL },
+                    "mushroom_gill": { "elem2":null, "chance":0.05, func:behaviors.FEEDPIXEL },
+                    "lichen": { "elem2":null, "chance":0.05, func:behaviors.FEEDPIXEL },
+                    "hyphae": { "elem2":"dirt", "chance":0.05, func:behaviors.FEEDPIXEL },
+                    "mycelium": { "elem2":"dirt", "chance":0.05, func:behaviors.FEEDPIXEL },
                 },
                 tempLow: -6.4,
                 stateLow: "calcium",
                 tempHigh: 100,
                 stateHigh: "calcium",
+                breakInto: "slime",
                 category: "life",
                 state: "solid",
                 density: 1500,
@@ -2157,10 +2318,13 @@
                     "XX|XX|XX",
                     "XX|CR:milk%2.5|XX",
                 ],
-                tempHigh: 80,
+                tempHigh: 100,
                 stateHigh: "cooked_meat",
                 tempLow: -18,
                 stateLow: "frozen_meat",
+                burn:15,
+                burnTime:200,
+                burnInto:"cooked_meat",
                 category:"special",
             },
             "bone_marrow": {
@@ -2173,6 +2337,7 @@
                 category:"life",
                 tempHigh: 750,
                 stateHigh: "calcium",
+                breakInto: ["calcium","blood"],
                 hidden: true,
             },
             "bone": {
@@ -2606,8 +2771,9 @@
                     "mud": { "elem1":"grass", "chance":0.05 },
                     "potato_seed": { "elem1":"potato", "chance":0.05 },
                     "yeast": { "elem1":"yeast", "chance":0.05 },
-                    "fish": { "elem2":"meat" },
-                    "frog": { "elem2":"meat" },
+                    "fish": { "elem2":"meat", "chance":0.05 },
+                    "bird": { "elem2":"meat", "chance":0.05 },
+                    "frog": { "elem2":"meat", "chance":0.05 },
                 },
                 tempLow: -33.34,
                 category: "gases",
@@ -2630,7 +2796,7 @@
                 stateLow: "dry_ice",
                 state: "gas",
                 density: 1.977,
-                alias: "CO2"
+                alias: ["CO2","CO₂"]
             },
             "oil": {
                 color: "#470e00",
@@ -2776,6 +2942,10 @@
                 ],
                 reactions: {
                     "water": { "elem1":"clay", "elem2":null },
+                    "salt_water": { "elem1":"clay", "elem2":null },
+                    "sugar_water": { "elem1":"clay", "elem2":null },
+                    "dirty_water": { "elem1":"clay", "elem2":null },
+                    "seltzer": { "elem1":"clay", "elem2":null },
                 },
                 tempHigh: 140,
                 stateHigh: "baked_clay",
@@ -2818,7 +2988,7 @@
                         if (Math.random() < 0.02 && pixel.age > 50 && pixel.temp < 100) {
                             if (!outOfBounds(pixel.x,pixel.y+1)) {
                                 var dirtPixel = pixelMap[pixel.x][pixel.y+1];
-                                if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil") {
+                                if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
                                     changePixel(dirtPixel,"root");
                                 }
                             }
@@ -2952,7 +3122,7 @@
                 color: "#0e990e",
                 behavior: [
                     "XX|M2%1.5|XX",
-                    "XX|L2:grass AND C2:pistil%30|XX",
+                    "XX|L2:plant AND C2:pistil%30|XX",
                     "XX|M1|XX",
                 ],
                 tempHigh: 100,
@@ -3111,7 +3281,7 @@
                     "DB%5 AND M2|XX|DB%5 AND M2",
                     "DB%5 AND M2|DB%10 AND M1|DB%5 AND M2",
                 ],
-                ignore: ["glass","glass_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain"],
+                ignore: ["glass","glass_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","microplastic","molten_plastic"],
                 reactions: {
                     "ash": { "elem1":"neutral_acid", "elem2":null },
                     "limestone": { "elem1":"neutral_acid", "elem2":null },
@@ -3126,8 +3296,8 @@
                     "charcoal": { "elem1":null, "elem2":"carbon_dioxide" },
                 },
                 category: "liquids",
-                tempHigh: 400,
-                stateHigh: "fire",
+                tempHigh: 110,
+                stateHigh: "acid_gas",
                 tempLow: -58.88,
                 burn: 30,
                 burnTime: 1,
@@ -3169,7 +3339,7 @@
                 category: "gases",
                 tempHigh: 400,
                 stateHigh: "fire",
-                tempLow: -10,
+                tempLow: 50,
                 stateLow: "acid",
                 burn: 30,
                 burnTime: 1,
@@ -3203,6 +3373,8 @@
                     "sand": { "elem1": null, "elem2": "wet_sand", },
                     "rock": { "elem2": "wet_sand", "chance": 0.0004 },
                     "water": { "elem1": "sugar_water", "elem2": "sugar_water" },
+                    "salt": { "elem1":"foam", "chance":0.1 },
+                    "salt_water": { "elem1":"foam", "chance":0.1 },
                 },
                 state: "liquid",
                 density: 1030,
@@ -3219,6 +3391,9 @@
                     "XX|DL%5|XX",
                     "M1|M2|M1",
                 ],
+                reactions: {
+                    "antibody": { "elem1":"malware", "elem2":null }
+                },
                 ignore: ["fire","smoke","malware","flash","light","laser"],
                 category: "special",
                 state: "solid",
@@ -3275,6 +3450,10 @@
                     "CH:virus%25|XX|CH:virus%25",
                     "XX|CH:virus%25 AND M1|XX",
                 ],
+                reactions: {
+                    "chlorine": { "elem1":null },
+                    "liquid_chlorine": { "elem1":null },
+                },
                 ignore: ["fire","smoke","soap","plague","cancer"],
                 category: "special",
                 state: "solid",
@@ -3293,6 +3472,12 @@
                     "salt_water": { "elem2": "ice_nine" },
                     "dirty_water": { "elem2": "ice_nine" },
                     "sugar_water": { "elem2": "ice_nine" },
+                    "steam": { "elem2": "ice_nine" },
+                    "rain_cloud": { "elem2": "ice_nine" },
+                    "snow_cloud": { "elem2": "ice_nine" },
+                    "hail_cloud": { "elem2": "ice_nine" },
+                    "snow": { "elem2": "ice_nine" },
+                    "smog": { "elem2": "ice_nine" },
                 },
                 temp:-100,
                 category: "special",
@@ -3487,7 +3672,7 @@
                         ];
                         for (var i = 0; i < coords.length; i++) {
                             if (Math.random() < 0.005 && isEmpty(coords[i][0],coords[i][1])) {
-                                if (!isEmpty(coords[i][0],coords[i][1]+1)) {
+                                if (!isEmpty(coords[i][0],coords[i][1]+1) && (outOfBounds(coords[i][0],coords[i][1]+1) || pixelMap[coords[i][0]][coords[i][1]+1].element!=="lichen") ) {
                                     createPixel(pixel.element,coords[i][0],coords[i][1]);
                                 }
                             }
@@ -3498,6 +3683,7 @@
                 reactions: {
                     "carbon_dioxide": { "elem2":"oxygen", "chance":0.05 },
                     "rock": { "elem2":"dirt", "chance":0.0025 },
+                    "vinegar": { "elem1":null, "chance":0.01 },
                 },
                 tempHigh: 400,
                 stateHigh: "fire",
@@ -3606,6 +3792,7 @@
                     "frog": { "elem2":"meat", "chance":0.05 },
                     "fish": { "elem2":"meat", "chance":0.05 },
                     "rat": { "elem2":"rotten_meat", "chance":0.05 },
+                    "bird": { "elem2":"rotten_meat", "chance":0.05 },
                 },
                 category: "gases",
                 state: "gas",
@@ -3658,6 +3845,7 @@
                     "dirty_water": { "elem1":"rust", chance:0.04 },
                     "sugar_water": { "elem1":"rust", chance:0.0035 },
                     "seltzer": { "elem1":"rust", chance:0.006 },
+                    "salt": { "elem1":"rust", chance:0.004 },
                 },
                 tempHigh: 1538,
                 category: "solids",
@@ -3821,6 +4009,8 @@
                     "molten_tin": { "elem1": null, "elem2": "molten_bronze" },
                     "molten_silver": { "elem1": null, "elem2": "molten_sterling" },
                     "molten_gold": { "elem1": null, "elem2": "molten_rose_gold" },
+                    "molten_sulfur": { "elem1": null, "elem2": "molten_copper_sulfate" },
+                    "sulfur_gas": { "elem1": null, "elem2": "molten_copper_sulfate" },
                 }
             },
             "molten_iron": {
@@ -3912,6 +4102,93 @@
             "frozen_yogurt": {
                 behavior: behaviors.STURDYPOWDER,
                 category: "food"
+            },
+            "egg": {
+                color: "#e0d3ab",
+                tick: function(pixel) {
+                    if (pixel.start === pixelTicks) {return}
+                    if (!tryMove(pixel, pixel.x, pixel.y+1)) {
+                        if (pixel.animal || pixel.fall < 20) {
+                            if (Math.random() < 0.5) {
+                                if (!tryMove(pixel, pixel.x+1, pixel.y+1)) {
+                                    tryMove(pixel, pixel.x-1, pixel.y+1);
+                                }
+                            } else {
+                                if (!tryMove(pixel, pixel.x-1, pixel.y+1)) {
+                                    tryMove(pixel, pixel.x+1, pixel.y+1);
+                                }
+                            }
+                            pixel.fall = 0;
+                        }
+                        else if (outOfBounds(pixel.x,pixel.y+1) || (!isEmpty(pixel.x,pixel.y+1,true) && elements[pixelMap[pixel.x][pixel.y+1].element].state === "solid")) {
+                            changePixel(pixel,"yolk")
+                        }
+                        else {pixel.fall = 0}
+                        if (pixel.animal && pixelTicks-pixel.start >= 500) {
+                            changePixel(pixel,pixel.animal)
+                        }
+                    }
+                    else {pixel.fall ++}
+                    doDefaults(pixel);
+                },
+                properties: { "fall":0 },
+                tempHigh: 1500,
+                stateHigh: ["steam","calcium","carbon_dioxide"],
+                breakInto: "yolk",
+                category: "food",
+                state: "solid",
+                density: 1031,
+            },
+            "yolk": {
+                color: ["#ffbe33","#ffcf33"],
+                behavior: behaviors.LIQUID,
+                reactions: {
+                    "dna": { "elem1":"homunculus", "elem2":null, "chance":0.05 },
+                },
+                tempHigh: 100,
+                stateHigh: "hard_yolk",
+                tempLow: 0,
+                stateLow: "hard_yolk",
+                category: "food",
+                hidden: true,
+                state: "liquid",
+                density: 1027.5,
+                viscosity: 270,
+            },
+            "homunculus": {
+                color: ["#c4b270","#9c916a","#9e8955","#a89a76"],
+                behavior: [
+                    "XX|XX|XX",
+                    "M2%0.5|XX|M2%0.5",
+                    "XX|M1|XX",
+                ],
+                reactions: {
+                    "milk": { "elem2":null, "chance":0.025 },
+                    "blood": { "elem2":null, "chance":0.05 },
+                    "sugar": { "elem2":null, "chance":0.025 },
+                    "meat": { "elem2":null, "chance":0.001 },
+                    "cooked_meat": { "elem2":null, "chance":0.0005 },
+                    "oxygen": { "elem2":"carbon_dioxide" }
+                },
+                tempHigh: 100,
+                stateHigh: "meat",
+                tempLow: 0,
+                stateLow: "frozen_meat",
+                category: "life",
+                state: "solid",
+                density: 1450,
+                hidden: true,
+                breakInto: ["blood","slime"]
+            },
+            "hard_yolk": {
+                color: "#dead43",
+                behavior: behaviors.STURDYPOWDER,
+                tempHigh: 400,
+                stateHigh: "smoke",
+                category: "food",
+                hidden: true,
+                state: "solid",
+                density: 1031,
             },
             "grape": {
                 color: ["#b84b65","#a10e69","#a10e95","#8a3eab"],
@@ -4030,7 +4307,7 @@
                 behavior: [
                     "XX|XX|XX",
                     "XX|XX|XX",
-                    "CH:dirt,mud,sand,wet_sand,clay_soil>root,fiber%0.5|CH:dirt,mud,sand,wet_sand,clay_soil>root,fiber,fiber%0.5|CH:dirt,mud,sand,wet_sand,clay_soil>root,fiber%0.5",
+                    "CH:dirt,mud,sand,wet_sand,clay_soil,mycelium>root,fiber%0.5|CH:dirt,mud,sand,wet_sand,clay_soil,mycelium>root,fiber,fiber%0.5|CH:dirt,mud,sand,wet_sand,clay_soil,mycelium>root,fiber%0.5",
                 ],
                 reactions: {
                     "rock": { "elem2":"sand", "chance":0.0004 },
@@ -4185,6 +4462,9 @@
             "baking_soda": {
                 color: "#ededed",
                 behavior: behaviors.POWDER,
+                reactions: {
+                    "juice": { "elem1":"water", "elem2":"carbon_dioxide" }
+                },
                 category: "food",
                 state: "solid",
                 density: 1000,
@@ -4192,7 +4472,11 @@
             },
             "sodium_acetate": {
                 color: ["#ededed","#dbdbdb"],
-                behavior: behaviors.POWDER,
+                behavior: [
+                    "CR:foam%25|CR:foam%25|CR:foam%25",
+                    "CR:foam%25|XX|CR:foam%25",
+                    "M2|M1|M2",
+                ],
                 hidden: true,
                 state: "solid",
                 density: 900,
@@ -4318,6 +4602,9 @@
                     "cell": { "elem2": null, "chance": 0.05 },
                     "cancer": { "elem2": null, "chance": 0.01 },
                     "blood": { "elem2": null },
+                    "vinegar": { "elem1":"chlorine", "elem2":null },
+                    "ammonia": { "elem1":"chlorine", "elem2":null }, // Mustard Gas
+                    "alcohol": { "elem1":"chlorine", "elem2":null }, // Chloroform
                 },
                 tempHigh: 111,
                 stateHigh: ["salt","steam"],
@@ -4394,6 +4681,9 @@
                     "copper": { "elem1":null, "elem2":"amalgam", "chance":0.01 },
                     "gold_coin": { "elem1":null, "elem2":"amalgam", "chance":0.01 },
                     "rose_gold": { "elem1":null, "elem2":"amalgam", "chance":0.01 },
+                    "water": { "elem1":null, "elem2":"dirty_water" },
+                    "salt_water": { "elem1":null, "elem2":"dirty_water" },
+                    "sugar_water": { "elem1":null, "elem2":"dirty_water" },
                 },
                 viscosity: 1.53,
                 tempLow: -38.83,
@@ -4418,11 +4708,12 @@
                     "oxidized_copper": { "elem1":"infection", "chance":0.05 },
                     "rat": { "elem1":"infection", "chance":0.075 },
                     "flea": { "elem1":"infection", "chance":0.03 },
-                    "dirt": { "elem2":"mud" },
-                    "sand": { "elem2":"wet_sand" },
+                    "dirt": { "elem1":null, "elem2":"mud" },
+                    "sand": { "elem1":null, "elem2":"wet_sand" },
                     "mercury": { "elem1":"infection", "elem2":null, "chance":0.05 },
                     "oxygen": { "elem2":null, "chance":0.05 },
                     "carbon_dioxide": { "elem2":null, "chance":0.05 },
+                    "alcohol": { "elem1":[null,"dna"], "chance":0.02 },
                 },
                 viscosity: 10,
                 tempHigh: 124.55,
@@ -4457,6 +4748,7 @@
                     "infection": { "elem2":"antibody", "chance":0.1 },
                     "cancer": { "elem2":null, "chance":0.01 },
                     "poison": { "elem1":"antidote", "elem2":null, "chance":0.03 },
+                    "alcohol": { "elem1":[null,"dna"], "chance":0.02 },
                 },
                 viscosity: 6.3,
                 tempHigh: 124.55,
@@ -4475,6 +4767,7 @@
                     "frog": { "elem2":"rotten_meat", "chance":0.005 },
                     "fish": { "elem2":"rotten_meat", "chance":0.005 },
                     "meat": { "elem2":"rotten_meat", "chance":0.005 },
+                    "alcohol": { "elem1":[null,"dna"], "chance":0.02 },
                 },
                 viscosity: 15,
                 tempHigh: 124.55,
@@ -4500,6 +4793,7 @@
                     "rat": { "elem1":null, "elem2":"rotten_meat" },
                     "frog": { "elem1":null, "elem2":"rotten_meat" },
                     "fish": { "elem1":null, "elem2":"rotten_meat" },
+                    "bird": { "elem1":null, "elem2":"rotten_meat" },
                     "head": { "elem1":null, "elem2":"rotten_meat" },
                     "body": { "elem1":null, "elem2":"rotten_meat" },
                     "ant": { "elem1":null, "elem2":null },
@@ -4665,8 +4959,8 @@
             },
             "sodium": {
                 color: ["#484849","#5D5E5F","#6B6968","#747775"],
-                behavior: behaviors.POWDER,
                 tick: function(pixel) {
+                    behaviors.POWDER(pixel);
                     for (var i = 0; i < adjacentCoords.length; i++) {
                         var x = pixel.x+adjacentCoords[i][0];
                         var y = pixel.y+adjacentCoords[i][1];
@@ -4675,12 +4969,14 @@
                             break
                         } } },
                 reactions: {
-                    "chlorine": { "elem1":"salt", "elem2":null },
+                    "chlorine": { "elem1":"salt", "elem2":"pop" },
                     "vinegar": { "elem1":"sodium_acetate", "elem2":null },
                     "water": { "elem1":"pop", "chance":0.01 },
                     "salt_water": { "elem1":"pop", "chance":0.01 },
                     "sugar_water": { "elem1":"pop", "chance":0.01 },
                     "dirty_water": { "elem1":"pop", "chance":0.01 },
+                    "seltzer": { "elem1":"pop", "chance":0.01 },
+                    "acid": { "elem1":"explosion" },
                 },
                 tempHigh: 97.794,
                 category: "powders",
@@ -4762,7 +5058,7 @@
             "slag": {
                 color: ["#4B3A2D","#6A5447","#6B5B53","#675851","#78756E"],
                 behavior: behaviors.POWDER,
-                tempHigh: 1780,
+                tempHigh: 1380,
                 category: "powders",
                 density: 2400,
                 state: "solid",
@@ -5088,7 +5384,6 @@
                 color: "#831502",
                 behavior: behaviors.LIQUID,
                 reactions: {
-                    "molten_copper": { "elem1": null, "elem2": "molten_copper_sulfate" },
                     "iron": { "elem1": null, "elem2": "pyrite" },
                 },
                 density: 1819,
@@ -5180,6 +5475,7 @@
                     "frog": { "elem2":["ash","meat","rotten_meat","cooked_meat"], "chance":0.4 },
                     "fish": { "elem2":["ash","meat","rotten_meat","cooked_meat"], "chance":0.4 },
                     "rat": { "elem2":["ash","meat","rotten_meat","cooked_meat","plague"], "chance":0.4 },
+                    "bird": { "elem2":["ash","meat","rotten_meat","cooked_meat","plague"], "chance":0.4 },
                     "bone": { "elem2":["calcium","calcium","calcium","cancer"], "chance":0.4 },
                     "meat": { "elem2":["ash","rotten_meat","cooked_meat"], "chance":0.4 },
                     "rotten_meat": { "elem2":["ash","meat","cooked_meat"], "chance":0.4 },
@@ -5285,13 +5581,19 @@
                     "XX|DL%0.5|XX",
                     "XX|XX|XX",
                 ],
+                behaviorOn: [
+                    "XX|XX|XX",
+                    "XX|CH:hydrogen|XX",
+                    "XX|XX|XX",
+                ],
                 tick: behaviors.BOUNCY,
                 reactions: {
-                    "electric": { "elem1":null, "elem2":"hydrogen", "temp2":10 }
+                    "electric": { "elem1":null, "elem2":"hydrogen", "temp2":10 },
                 },
                 temp: 40,
                 category: "energy",
                 state: "gas",
+                conduct: 1,
                 density: 0.00002,
                 ignoreAir: true,
             },
@@ -5306,6 +5608,7 @@
                 category: "energy",
                 state: "gas",
                 density: 2.1,
+                insulate: true,
                 ignoreAir: true,
             },
             "uranium": {
@@ -5419,6 +5722,22 @@
                 density: 2000,
                 hardness: 0.3
             },
+            "feather": {
+                color: ["#ffffff","#e3e3e3","#d1d1d1"],
+                behavior: [
+                    "XX|XX|XX",
+                    "XX|FX%0.25|XX",
+                    "M2%10|M1%10|M1%10",
+                ],
+                category: "powders",
+                tempHigh: 400,
+                stateHigh: ["ash","smoke","smoke","smoke"],
+                burn:50,
+                burnTime:20,
+                burnInto: ["ash","smoke","smoke","smoke"],
+                state: "solid",
+                density: 500,
+            },
             "glitter": {
                 color: ["#ACE4FB","#D9FCFF","#8F6EB2","#FDEAFC","#180E1C","#6B2778"],
                 behavior: behaviors.POWDER,
@@ -5445,8 +5764,8 @@
             },
             "color_sand": {
                 color: ["#ff4d4d","#ffac4d","#ffff4d","#4dff4d","#4dffff","#4d4dff","#ff4dff"],
-                behavior: behaviors.POWDER,
                 tick: function(pixel) {
+                    behaviors.POWDER(pixel);
                     if (pixel.start === pixelTicks) {
                         pixel.color = "hsl(" + pixel.start + ",100%,65%)";
                         pixel.colorstart = pixel.start;
@@ -5520,6 +5839,7 @@
                 density: 1000,
                 excludeRandom: true,
                 hidden: true,
+                alias: "nuclear explosion",
             },
             "supernova": {
                 color: ["#ffb48f","#ffd991","#ffad91"],
@@ -5734,6 +6054,7 @@
                 hidden: true,
                 state: "gas",
                 density: 700,
+                alias: "firework ember",
             },
             "nuke": {
                 color: "#534636",
@@ -5758,6 +6079,7 @@
                 state: "solid",
                 density: 1600,
                 excludeRandom: true,
+                alias: "hydrogen bomb"
             },
             "dirty_bomb": {
                 color: "#415336",
@@ -5776,14 +6098,16 @@
                 tick: function(pixel) {
                     if (pixel.start===pixelTicks) {return}
                     if (!tryMove(pixel,pixel.x,pixel.y+1)) {
-                        for (i = 0; i < currentPixels.length; i++) {
-                            var newPixel = currentPixels[i];
-                            if (newPixel.charge) {
-                                delete newPixel.charge;
-                                newPixel.chargeCD = 16;
+                        if (outOfBounds(pixel.x,pixel.y+1) || (pixelMap[pixel.x][pixel.y+1].element!=="emp_bomb" && elements[pixelMap[pixel.x][pixel.y+1].element].state!=="gas")) {
+                            for (i = 0; i < currentPixels.length; i++) {
+                                var newPixel = currentPixels[i];
+                                if (newPixel.charge) {
+                                    delete newPixel.charge;
+                                    newPixel.chargeCD = 16;
+                                }
                             }
+                            explodeAt(pixel.x,pixel.y+1,20,"flash");
                         }
-                        explodeAt(pixel.x,pixel.y+1,20,"flash");
                     }
                     doDefaults(pixel);
                 },
@@ -5792,6 +6116,7 @@
                 state: "solid",
                 density: 1400,
                 excludeRandom: true,
+                alias: "electromagnetic pulse bomb",
             },
             "nitroglycerin": {
                 color: "#47c900",
@@ -6070,7 +6395,7 @@
             "pressure_plate": {
                 color: "#8a8a84",
                 tick: function(pixel) {
-                    if (!isEmpty(pixel.x, pixel.y-1)){
+                    if (!isEmpty(pixel.x, pixel.y-1, true)){
                         if (pixelMap[pixel.x][pixel.y-1].element != "pressure_plate" || pixelMap[pixel.x][pixel.y-1].on) {
                             pixel.on = true;
                             var coordsToShock = [
@@ -6101,7 +6426,12 @@
                 color: ["#501F24","#6D2E1D"],
                 behavior: [
                     "XX|CR:foam%2|XX",
-                    "M2|CH:algae,cell,mushroom_spore,lichen,yeast,antibody,cellulose%0.005|M2",
+                    "M2|CH:algae,cell,mushroom_spore,lichen,yeast,antibody,cellulose,seltzer,oxygen%0.005|M2",
+                    "M1|M1|M1",
+                ],
+                behaviorOn: [
+                    "XX|CR:foam%25|XX",
+                    "M2|CH:algae,cell,mushroom_spore,lichen,yeast,antibody,cellulose,seltzer,oxygen%5|M2",
                     "M1|M1|M1",
                 ],
                 reactions: {
@@ -6109,15 +6439,20 @@
                     "cyanide": { "elem1":"dirty_water" },
                     "infection": { "elem1":"dirty_water" },
                     "plague": { "elem1":"dirty_water" },
+                    "bleach": { "elem1":"dirty_water" },
+                    "poison": { "elem1":"dirty_water" },
                     "ammonia": { "elem1":["algae","cell","mushroom_spore","lichen","yeast","antibody"], "chance":0.05 },
                     "radiation": { "elem1":["algae","cell","mushroom_spore","lichen","yeast","antibody"], "chance":0.15 },
                     "light": { "elem1":["algae","cell","mushroom_spore","lichen","yeast","antibody"], "chance":0.5 },
-                    "oxygen": { "elem1":["algae","cell","mushroom_spore","lichen","yeast","antibody"], "chance":0.02 },
+                    "carbon_dioxide": { "elem2":"oxygen" },
+                    "dirt": { "elem2":"mud", "chance":0.2 },
+                    "sand": { "elem2":"wet_sand", "chance":0.2 },
+                    "rock": { "elem2":"wet_sand", "chance":0.001 },
                 },
                 category: "life",
                 tempHigh: 100,
                 stateHigh: "steam",
-                conduct: 0.33,
+                conduct: 0.05,
                 state: "liquid",
                 density: 955,
             },
@@ -6126,6 +6461,24 @@
             },
             "molten_dirt": {
                 stateLow: "mudstone"
+            },
+            "debug": {
+                color: ["#b150d4","#d1b74f"],
+                tool: function(pixel) {
+                    mouseIsDown = false;
+                    shiftDown = false;
+                    var output = pixel.element.toUpperCase()+" at x"+pixel.x+", y"+pixel.y+", tick"+pixelTicks+"\n";
+                    for (var i in pixel) {
+                        if (i !== "x" && i !== "y" && i !== "element") {
+                            output += "  " + i + ": " + pixel[i] + "\n";
+                        }
+                    }
+                    console.log(output);
+                    alert(output);
+                    lastDebug = pixelTicks;
+                },
+                maxSize: 1,
+                category: "special",
             },
 
             
@@ -6177,9 +6530,6 @@
                 if (elementInfo.burning) {
                     this.burning = true;
                     this.burnStart = pixelTicks;
-                }
-                else {
-                    this.burning = false;
                 }
                 if (elementInfo.charge) {
                     this.charge = elementInfo.charge;
@@ -6287,27 +6637,40 @@
             pixel.element = element;
             pixel.color = pixelColorPick(pixel);
             pixel.start = pixelTicks;
-            if (elements[element].burning == true) {
+            var elementInfo = elements[element];
+            if (elementInfo.burning == true) {
                 pixel.burning = true;
                 pixel.burnStart = pixelTicks;
             }
-            else if (pixel.burning && !elements[element].burn) {
-                pixel.burning = false;
+            else if (pixel.burning && !elementInfo.burn) {
+                delete pixel.burning;
                 delete pixel.burnStart;
             }
             delete pixel.origColor; // remove stain
-            if (pixel.r && !elements[element].rotatable) {
+            if (pixel.r && !elementInfo.rotatable) {
                 delete pixel.r;
             }
-            if (pixel.flipX && !elements[element].flippableX) {
+            if (pixel.flipX && !elementInfo.flippableX) {
                 delete pixel.flipX;
             }
-            if (pixel.flipY && !elements[element].flippableY) {
+            if (pixel.flipY && !elementInfo.flippableY) {
                 delete pixel.flipY;
             }
-            if (elements[element].temp != undefined && changetemp) {
-                pixel.temp = elements[element].temp;
+            if (elementInfo.temp != undefined && changetemp) {
+                pixel.temp = elementInfo.temp;
                 pixelTempCheck(pixel)
+            }
+            // If elementInfo.properties, set each key to its value
+            if (elementInfo.properties !== undefined) {
+                for (var key in elementInfo.properties) {
+                    // If it is an array or object, make a copy of it
+                    if (typeof elementInfo.properties[key] == "object") {
+                        pixel[key] = JSON.parse(JSON.stringify(elementInfo.properties[key]));
+                    }
+                    else {
+                        pixel[key] = elementInfo.properties[key];
+                    }
+                }
             }
             checkUnlock(element);
         }
@@ -6370,6 +6733,7 @@
             if (r.color2) { // if it's a list, use a random color from the list, else use the color2 attribute
                 pixel2.color = pixelColorPick(pixel2, Array.isArray(r.color2) ? r.color2[Math.floor(Math.random() * r.color2.length)] : r.color2);
             }
+            if (r.func) { r.func(pixel1,pixel2); }
             return r.elem1!==undefined || r.elem2!==undefined;
         }
 
@@ -6871,7 +7235,7 @@
                             }
                             // Bounce
                             else if (b === "BO") {
-                                if (!isEmpty(newCoords.x,newCoords.y)) {
+                                if (!isEmpty(newCoords.x,newCoords.y) && (outOfBounds(newCoords.x,newCoords.y) || elements[pixelMap[newCoords.x][newCoords.y].element].state === "solid")) {
                                     if (info.flippableX) {
                                         pixel.flipX = !pixel.flipX;
                                     }
@@ -9068,7 +9432,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                             if (pixel.start === pixelTicks) {return}
                             var id = elements[pixel.element].id;
                             elements[pixel.element].tick1(pixel);
-                            if (id === elements[pixel.element].id) {
+                            if (!pixel.del && id === elements[pixel.element].id) {
                                 elements[pixel.element].tick2(pixel);
                             }
                         }
