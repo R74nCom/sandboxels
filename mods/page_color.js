@@ -11,7 +11,6 @@ if(urlParams.get('pageColor') != null) { //null check
 	!settings.bg ? color = "black" : color = settings.bg;
         color = settings.bg;
     };
-};
 
 color_Would_Be_A_Triplet_If_It_Started_With_An_Octothorpe = null;
 color_Is_Supported_As_A_Background_By_The_Browser = null;
@@ -33,3 +32,4 @@ if(color_Is_Supported_As_A_Background_By_The_Browser == false && color_Would_Be_
 }
 
 document.body.style.background = color;
+};
