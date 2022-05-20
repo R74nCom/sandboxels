@@ -14,6 +14,7 @@ elements.invisible_wall = {
 		var rgbValue = "rgb("+backgroundColor.r+","+backgroundColor.g+","+backgroundColor.b+")";
 		pixel.color = rgbValue;
 	},
+	insulate: true,
 	hardness: 1,
 	category: "special",
 	state: "solid",
