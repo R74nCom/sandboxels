@@ -19,7 +19,8 @@ elements.invisible_dye = {
 	tempHigh: 110,
 	stateHigh: "invisible_dye_gas",
 	category: "special",
-	state: "solid",
+	state: "liquid",
+        density: 1,
 	stain: elements.dye.stain,
 };
 
@@ -36,6 +37,7 @@ elements.invisible_dye_gas = {
 	tempLow: 109,
 	stateLow: "invisible_dye",
 	category: "special",
-	state: "solid",
+	state: "liquid",
+        density: 1,
 	stain: elements.spray_paint.stain,
 };
