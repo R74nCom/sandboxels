@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+
+<channel>
+  <title>Sandboxels News</title>
+  <link>https://sandboxels.r74n.com</link>
+  <description>Educational, comprehensive falling-sand game</description>
+
+  <item>
+    <title>Sandboxels v1.6.1 Released - Egg Update</title>
+    <link>https://sandboxels.r74n.com</link>
+    <pubDate>Tue, 17 May 2022 12:00:00 EST</pubDate>
+    <description>This update adds Eggs, Tadpoles, DNA, and many changes</description>
+  </item>
+  <item>
+    <title>Sandboxels v1.6 Released - Ecosystem Update</title>
+    <link>https://sandboxels.r74n.com</link>
+    <pubDate>Sun, 01 May 2022 12:00:00 EST</pubDate>
+    <description>This update adds a ton of nature-related changes, like the Sun, Birds, and many plant improvements</description>
+  </item>
+  <item>
+    <title>Sandboxels v1.5.1 Released - Ecosystem Update</title>
+    <link>https://sandboxels.r74n.com</link>
+    <pubDate>Tue, 19 Apr 2022 12:00:00 EST</pubDate>
+    <description>This update adds many minor changes and a few elements, like Porcelain and Pyrite</description>
+  </item>
+
+</channel>
+
+</rss>
