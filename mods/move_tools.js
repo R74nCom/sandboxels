@@ -3,7 +3,8 @@ elements.move_up = {
     tool: function(pixel) {
         tryMove(pixel,pixel.x,pixel.y-1);
     },
-    category: "tools",
+    category: "movement tools",
+    excludeRandom: true,
 },
 
 elements.move_down = {
@@ -11,7 +12,8 @@ elements.move_down = {
     tool: function(pixel) {
         tryMove(pixel,pixel.x,pixel.y+1);
     },
-    category: "tools",
+    category: "movement tools",
+    excludeRandom: true,
 },
 
 elements.move_left = {
@@ -19,7 +21,8 @@ elements.move_left = {
     tool: function(pixel) {
         tryMove(pixel,pixel.x-1,pixel.y);
     },
-    category: "tools",
+    category: "movement tools",
+    excludeRandom: true,
 },
 
 elements.move_right = {
@@ -27,7 +30,8 @@ elements.move_right = {
     tool: function(pixel) {
         tryMove(pixel,pixel.x+1,pixel.y);
     },
-    category: "tools",
+    category: "movement tools",
+    excludeRandom: true,
 },
 
 elements.move_up_left = {
@@ -35,7 +39,8 @@ elements.move_up_left = {
     tool: function(pixel) {
         tryMove(pixel,pixel.x-1,pixel.y-1);
     },
-    category: "tools",
+    category: "movement tools",
+    excludeRandom: true,
 },
 
 elements.move_down_left = {
@@ -43,7 +48,8 @@ elements.move_down_left = {
     tool: function(pixel) {
         tryMove(pixel,pixel.x-1,pixel.y+1);
     },
-    category: "tools",
+    category: "movement tools",
+    excludeRandom: true,
 },
 
 elements.move_up_right = {
@@ -51,7 +57,8 @@ elements.move_up_right = {
     tool: function(pixel) {
         tryMove(pixel,pixel.x+1,pixel.y-1);
     },
-    category: "tools",
+    category: "movement tools",
+    excludeRandom: true,
 },
 
 elements.move_down_right = {
@@ -59,5 +66,6 @@ elements.move_down_right = {
     tool: function(pixel) {
         tryMove(pixel,pixel.x+1,pixel.y+1);
     },
-    category: "tools",
+    category: "movement tools",
+    excludeRandom: true,
 }
