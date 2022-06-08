@@ -22,4 +22,4 @@ elements.molten_slag = {
     category: "molten",
     density: 2160,
     conduct: 0,
-}
+} 
