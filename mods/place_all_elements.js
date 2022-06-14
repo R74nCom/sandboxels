@@ -1,6 +1,7 @@
 zzzz204689123_array = Object.keys(elements);
 
     function placeAll(limit=zzzz204689123_array.length) {
+        zzzz204689123_array = Object.keys(elements);
         paused = true;
         counterLol = 0;
         loop1:
