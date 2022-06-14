@@ -534,10 +534,11 @@ elements.histrelin = {
     category: "solids",
     density: 1500, //https://www.chemicalbook.com/ProductMSDSDetailCB7457827_EN.htm
     tempHigh: 1800, //https://www.chemsrc.com/en/cas/76712-82-8_1042020.html
+    stateHigh: "vaporized_histrelin",
     category: "powders",
 },
 
-elements.molten_histrelin = {
+elements.vaporized_histrelin = {
     color: ["#ffbf60","#ffdc60","#ff9d60"],
     behavior: behaviors.GAS,
     state: "gas",
@@ -969,8 +970,4 @@ runAfterLoad(function() {
         hidden: true,
     }
   }
-  elements.vaporized_histrelin = elements.molten_histrelin
-  delete elements.molten_histrelin
-  elements.histrelin.stateHigh = "vaporized_histrelin"
-  elements.vaporized_histrelin.stateLow = "histrelin"
 });
