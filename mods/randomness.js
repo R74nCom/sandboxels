@@ -272,6 +272,7 @@ elements.vaporized_estradiol = {
     category: "gases",
     hidden: true,
     density: 972,
+    temp: 500,
     tempLow: 446,
     stateLow: "molten_estradiol",
 },
@@ -308,6 +309,8 @@ elements.vaporized_progesterone = {
 
     //androgens
 
+		//plain testosterone
+
 elements.testosterone = {
     color: "#f7eef7", //it absorbs longer wavelength UV than estradiol and I am treating this like absorbing green for convenience
     behavior: behaviors.POWDER,
@@ -320,6 +323,7 @@ elements.testosterone = {
 
 elements.molten_testosterone = {
     tempHigh: 433,
+	temp: 400,
     stateHigh: "vaporized_testosterone",
 },
 
@@ -330,8 +334,39 @@ elements.vaporized_testosterone = {
     category: "gases",
     hidden: true,
     density: 891,
+	temp: 500,
     tempLow: 433,
     stateLow: "molten_testosterone",
+},
+
+		//undecanoate (form actually used in HRT)
+
+elements.testosterone_undecanoate = {
+    color: "#f8f2fc", //more creatively-interpreted UV data: https://spectrabase.com/spectrum/5Yc7XCCDkA7 plus http://depts.washington.edu/cmditr/modules/lum/color.html and a lot of eyeballing and loose approximation
+    behavior: behaviors.POWDER,
+    state: "solid",
+    category: "solids",
+    density: 1037, //https://www.chembk.com/en/chem/Testosterone%20Undecanoate
+    tempHigh: 63,
+    category: "powders",
+},
+
+elements.molten_testosterone_undecanoate = {
+    tempHigh: 550,
+    stateHigh: "vaporized_testosterone_undecanoate",
+    hidden: true,
+},
+
+elements.vaporized_testosterone_undecanoate = {
+    color: ["#ffbf60","#ffdc60","#ff9d60"],
+    behavior: behaviors.GAS,
+    state: "gas",
+    category: "gases",
+    hidden: true,
+    density: 834, //made-up due to lack of data
+	temp: 600,
+    tempLow: 63,
+    stateLow: "molten_testosterone_undecanoate",
 },
 
 //other
