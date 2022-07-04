@@ -35,7 +35,7 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 		category: "fey",
 		hidden: true,
 	  }
-	  if (i == 101) elements[`${i}-fairy`]["reactions"] = {};
+	  if (i == fairyAmount) { elements[`${i}-fairy`]["reactions"] = {}; }
 	  if (i == 2) elements[`${i}-fairy`]["behavior"][2] = `XX|CR:fairy%1 AND CR:fairy_dust%0.005 AND M1|M1`;
 	}
 }
