@@ -6,6 +6,24 @@ goldObject = {
 
 goldObjectNameArray = Object.keys(goldObject);
 
+urlParams = new URLSearchParams(window.location.search);
+
+if(urlParams.get('goldFairyAmount') != null) { //null check
+    goldFairyAmount = urlParams.get('goldFairyAmount')
+    if(isNaN(goldFairyAmount) || goldFairyAmount === "" || goldFairyAmount === null) { //NaN check
+         goldFairyAmount = 10
+    }
+    goldFairyAmount = parseInt(goldFairyAmount)
+	if(goldFairyAmount > 10000) {
+		alert("Maximum amount of additional gold fairies is 10000.\nOnly 10000 fairies were added.")
+	} else if(goldFairyAmount < 1) {
+		alert("Minimum amount of additional gold fairies is 1.\n1 fairy was added.")
+	}
+    goldFairyAmount = Math.min(10000,Math.max(goldFairyAmount,1))
+} else {
+    goldFairyAmount = 10
+}
+
 elements.cell_1 = {
 	color: ["#bbee00","#eeee00","#cfee00"],
 	behavior: [
@@ -292,13 +310,40 @@ if(enabledMods.includes("mods/fey_and_more.js")) {
 	elements.gold.reactions.fairy = { elem1: null, elem2: "gold_fairy" };
 	elements.gold_coin.reactions.fairy = { elem1: null,  elem2: "gold_fairy" };
 
+	for (var i = 2; i <= goldFairyAmount + 1; i++) {
+	  nameVar = `gold_${i-1}-fairy`
+	  if(i === 2) {
+		nameVar = "gold_fairy";
+	  };
+	  elements[`gold_${i}-fairy`] = {
+		name: `gold_${i}-fairy`,
+		color: ["#cfa65b","#e6df63","#faf673"],
+		behavior: [
+		  "XX|M1|M1",
+		  "XX|FX%5|XX",
+		  "XX|CR:" + nameVar + "%0.25 AND CR:fairy_dust%0.005 AND M1|M1",
+		],
+		reactions: {
+		  "glitter": { "elem1": `gold_${i+1}-fairy`, "elem2": null }
+		},
+		state: "solid",
+		excludeRandom:true,
+		category: "fey",
+		hidden: true,
+	  }
+	  goldObject[`gold_${i}-fairy`] = 3 * i;
+	  if (i == goldFairyAmount) { elements[`gold_${i}-fairy`]["reactions"] = {}; }
+	}
+	
 };
 
 runAfterLoad(function() {
     if(enabledMods.includes("mods/fey_and_more.js")) {
 	//eList rebuilding {
 		eLists.FAIRY.push("gold_fairy");
-
+		for (var i = 2; i <= goldFairyAmount + 1; i++) {
+			eLists.FAIRY.push(`gold_${i}-fairy`);
+		}
 		elements.iron.behavior = [
 			"XX|DL:"+eLists.FAIRY+"|XX",
 			"DL:"+eLists.FAIRY+"|XX|DL:"+eLists.FAIRY+"",
@@ -310,5 +355,24 @@ runAfterLoad(function() {
 			"XX|DL:"+eLists.FAIRY+"|XX"
 		];
 	//}
+	goldObjectNameArray = Object.keys(goldObject);
 	};
+    if(enabledMods.includes("mods/fey_and_more.js") && enabledMods.includes("mods/randomness.js")) {
+		if(elements.tungstensteel && elements.molten_tungstensteel) {
+			elements.tungstensteel.behavior = [
+				"XX|DL:"+eLists.FAIRY+"|XX",
+				"DL:"+eLists.FAIRY+"|XX|DL:"+eLists.FAIRY+"",
+				"XX|DL:"+eLists.FAIRY+"|XX",
+			],
+			elements.molten_tungstensteel.behavior = [
+				"XX|DL:"+eLists.FAIRY+" AND CR:fire%2.5|XX",
+				"DL:"+eLists.FAIRY+" AND M2|XX|DL:"+eLists.FAIRY+" AND M2",
+				"M1|DL:"+eLists.FAIRY+"|M1",
+			]
+		}
+	};
+	if(!elements.rainbow.reactions) {
+		elements.rainbow.reactions = {}
+	}
+	elements.rainbow.reactions.gold_fairy = { "elem1": "gold_2-fairy", "elem2": null }
 });
