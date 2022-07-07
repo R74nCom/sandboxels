@@ -33,9 +33,9 @@ function replaceElementPrompt() {
 }
 
 function updateReplaceDescriptions() {
-	elements.replace.desc = "Changes pixels of a specified type to another specified type.<br/>Currently replacing \"" + replaceFrom + "\" with \"" + replaceTo + "\".<br/>Press [\"] to open the replace prompt.";
-	elements.alt_replace.desc = "Changes pixels of a specified type to another specified type, but keeping their non-element-based properties.<br/>Currently replacing \"" + replaceFrom + "\" with \"" + replaceTo + "\".<br/>Press [\"] to open the replace prompt.";
-	elements.alt_alt_replace.desc = "Changes pixels of a specified type to another specified type, but keeping their non-element-based properties except for color.<br/>Currently replacing \"" + replaceFrom + "\" with \"" + replaceTo + "\".<br/>Press [\"] to open the replace prompt.";
+	elements.replace.desc = "Changes pixels of a specified type to another specified type.<br/>Currently replacing \"" + replaceFrom + "\" with \"" + replaceTo + "\".<br/><span onclick=replaceElementPrompt() style=\"color: #ff00ff;\";>Press [\"] or click here</span> to open the replace prompt.";
+	elements.alt_replace.desc = "Changes pixels of a specified type to another specified type, but keeping their non-element-based properties.<br/>Currently replacing \"" + replaceFrom + "\" with \"" + replaceTo + "\".<br/><span onclick=replaceElementPrompt() style=\"color: #ff00ff;\";>Press [\"] or click here</span> to open the replace prompt.";
+	elements.alt_alt_replace.desc = "Changes pixels of a specified type to another specified type, but keeping their non-element-based properties except for color.<br/>Currently replacing \"" + replaceFrom + "\" with \"" + replaceTo + "\".<br/><span onclick=replaceElementPrompt() style=\"color: #ff00ff;\";>Press [\"] or click here</span> to open the replace prompt.";
 };
 
 elements.replace = {
@@ -46,7 +46,7 @@ elements.replace = {
 		};
     },
     category: "tools",
-	desc: "Changes pixels of a specified type to another specified type.<br/>Currently replacing \"" + replaceFrom + "\" with \"" + replaceTo + "\".<br/>Press [KEY] to open the replace prompt.",
+	desc: "Changes pixels of a specified type to another specified type.<br/>Currently replacing \"" + replaceFrom + "\" with \"" + replaceTo + "\".<br/><span onclick=replaceElementPrompt() style=\"color: #ff00ff;\";>Press [\"] or click here</span> to open the replace prompt.",
 };
 
 elements.alt_replace = {
@@ -57,7 +57,7 @@ elements.alt_replace = {
 		};
     },
     category: "tools",
-	desc: "Changes pixels of a specified type to another specified type, but keeping their non-element-based properties.<br/>Currently replacing \"" + replaceFrom + "\" with \"" + replaceTo + "\".<br/>Press [KEY] to open the replace prompt.",
+	desc: "Changes pixels of a specified type to another specified type, but keeping their non-element-based properties.<br/>Currently replacing \"" + replaceFrom + "\" with \"" + replaceTo + "\".<br/><span onclick=replaceElementPrompt() style=\"color: #ff00ff;\";>Press [\"] or click here</span> to open the replace prompt.",
 	hidden: true,
 };
 
@@ -70,6 +70,6 @@ elements.alt_alt_replace = {
 		};
     },
     category: "tools",
-	desc: "Changes pixels of a specified type to another specified type, but keeping their non-element-based properties except for color.<br/>Currently replacing \"" + replaceFrom + "\" with \"" + replaceTo + "\".<br/>Press [KEY] to open the replace prompt.",
+	desc: "Changes pixels of a specified type to another specified type, but keeping their non-element-based properties except for color.<br/>Currently replacing \"" + replaceFrom + "\" with \"" + replaceTo + "\".<br/><span onclick=replaceElementPrompt() style=\"color: #ff00ff;\";>Press [\"] or click here</span> to open the replace prompt.",
 	hidden: true,
 };
