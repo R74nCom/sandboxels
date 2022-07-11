@@ -1119,6 +1119,11 @@
                     "acid": { "elem1":"rotten_meat", "elem2":null, "chance":0.5 },
                     "acid_gas": { "elem1":"rotten_meat", "chance":0.4 },
                     "cyanide": { "elem1":"rotten_meat", "elem2":null, "chance":0.5 },
+                    "water": { "elem2":"broth", "tempMin":70 },
+                    "salt_water": { "elem2":"broth", "tempMin":70 },
+                    "sugar_water": { "elem2":"broth", "tempMin":70 },
+                    "dirty_water": { "elem2":"broth", "tempMin":70 },
+                    "seltzer": { "elem2":"broth", "tempMin":70 },
                 },
                 tempHigh: 100,
                 stateHigh: "cooked_meat",
@@ -1153,6 +1158,13 @@
             "cooked_meat": {
                 color: ["#AE7D5B","#9B6D54","#7E4D31"],
                 behavior: behaviors.STURDYPOWDER,
+                reactions: {
+                    "water": { "elem2":"broth", "tempMin":70 },
+                    "salt_water": { "elem2":"broth", "tempMin":70 },
+                    "sugar_water": { "elem2":"broth", "tempMin":70 },
+                    "dirty_water": { "elem2":"broth", "tempMin":70 },
+                    "seltzer": { "elem2":"broth", "tempMin":70 },
+                },
                 tempHigh: 300,
                 stateHigh: "ash",
                 category:"food",
@@ -4047,6 +4059,20 @@
                 density: 1054,
                 stain: 0.05,
             },
+            "broth": {
+                color: "#dbb169",
+                behavior: behaviors.LIQUID,
+                tempHigh: 125,
+                stateHigh: ["steam","steam","steam","fragrance"],
+                tempLow: 0,
+                stateLow: "ice",
+                category: "food",
+                state: "liquid",
+                density: 1052,
+                conduct: 0.03,
+                stain: -0.01,
+                hidden: true,
+            },
             "milk": {
                 color: "#fafafa",
                 behavior: behaviors.LIQUID,
@@ -4656,6 +4682,7 @@
                 category: "liquids",
                 state: "liquid",
                 density: 998,
+                stainSelf: true,
             },
             "ink": {
                 color: "#171717",
@@ -6737,6 +6764,27 @@
             return r.elem1!==undefined || r.elem2!==undefined;
         }
 
+        loadedSounds = {};
+        function playSound(sound) {
+            if (loadedSounds[sound] === undefined) {
+                loadedSounds[sound] = new Audio("sounds/" + sound);
+            }
+            loadedSounds[sound].play();
+        }
+        function stopSound(sound) {
+            if (loadedSounds[sound] === undefined) {
+                loadedSounds[sound] = new Audio("sounds/" + sound);
+            }
+            loadedSounds[sound].pause();
+            loadedSounds[sound].currentTime = 0;
+        }
+        function loopSound(sound) {
+            if (loadedSounds[sound] === undefined) {
+                loadedSounds[sound] = new Audio("sounds/" + sound);
+            }
+            loadedSounds[sound].loop = true;
+            loadedSounds[sound].play();
+        }
 
         validDensitySwaps = {
             "solid": {
@@ -7541,6 +7589,10 @@
             }
         }
 
+        solidStates = {solid:true};
+        liquidStates = {liquid:true};
+        gasStates = {gas:true};
+
         function doStaining(pixel) {
             if (settings["stainoff"]) { return }
             var stain = elements[pixel.element].stain;
@@ -7556,28 +7608,38 @@
                 var y = pixel.y+adjacentCoords[i][1];
                 if (!isEmpty(x,y,true)) {
                     var newPixel = pixelMap[x][y];
-                    if (elements[pixel.element].ignore && elements[pixel.element].ignore.indexOf(newPixel.element) != -1) {
+                    if (elements[pixel.element].ignore && elements[pixel.element].ignore.indexOf(newPixel.element) !== -1) {
                         continue;
                     }
-                    if ((newPixel.element != pixel.element || elements[newPixel.element].stainSelf) && (elements[newPixel.element].state == "solid" || !elements[newPixel.element].state || newPixel.element == pixel.element)) {
+                    if ((elements[newPixel.element].id !== elements[pixel.element].id || elements[newPixel.element].stainSelf) && (solidStates[elements[newPixel.element].state] || elements[newPixel.element].id === elements[pixel.element].id)) {
                         if (Math.random() < Math.abs(stain)) {
                             if (stain < 0) {
                                 if (newPixel.origColor) {
-                                    newColor = newPixel.origColor.match(/\d+/g);
+                                    newColor = newPixel.origColor;
                                 }
                                 else { continue; }
                             }
                             else if (!newPixel.origColor) {
-                                newPixel.origColor = newPixel.color;
+                                newPixel.origColor = newPixel.color.match(/\d+/g);
                             }
                             // if newPixel.color doesn't start with rgb, continue
                             if (!newPixel.color.match(/^rgb/)) { continue; }
                             // parse rgb color string of newPixel rgb(r,g,b)
                             var rgb = newPixel.color.match(/\d+/g);
-                            // get the average of rgb and newColor, more intense as stain reaches 1 
-                            var avg = [];
-                            for (var j = 0; j < rgb.length; j++) {
-                                avg.push(Math.floor((rgb[j]*(1-Math.abs(stain))) + (newColor[j]*Math.abs(stain))));
+                            if (elements[pixel.element].stainSelf && elements[newPixel.element].id === elements[pixel.element].id) {
+                                // if rgb and newColor are the same, continue
+                                if (rgb[0] === newColor[0] && rgb[1] === newColor[1] && rgb[2] === newColor[2]) { continue; }
+                                var avg = [];
+                                for (var j = 0; j < rgb.length; j++) {
+                                    avg[j] = Math.round((rgb[j]*(1-Math.abs(stain))) + (newColor[j]*Math.abs(stain)));
+                                }
+                            }
+                            else {
+                                // get the average of rgb and newColor, more intense as stain reaches 1 
+                                var avg = [];
+                                for (var j = 0; j < rgb.length; j++) {
+                                    avg[j] = Math.floor((rgb[j]*(1-Math.abs(stain))) + (newColor[j]*Math.abs(stain)));
+                                }
                             }
                             // set newPixel color to avg
                             newPixel.color = "rgb("+avg.join(",")+")";

@@ -3,7 +3,11 @@
     + Baking Update
     + More plans / suggestions at https://docs.google.com/document/u/4/d/1R8xljj_J-K5oU-9y4louwplQmM-ZBvUfXmhbgj5LYdk/edit
 
-[Version 1.6.1 - Egg Update]
+[Version 1.6.2 - July 10, 2022]
+    + Dyes will mix colors [Warning: Laggy]
+    + Broth, from heating meat in water
+
+[Version 1.6.1 - May 17, 2022 - Egg Update]
     + Feather
     + Egg
         + Yolk
