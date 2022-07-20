@@ -59,7 +59,7 @@ elements.topaz = {
 };
 
 elements.mullite = {
-	color: ["#f2dfcf", "#fadee9", "#edd8ca"], //hardly a gemstone, but i will color it like the others regardless
+	color: ["#f2d7bf", "#f5cbdc", "#f2dfd3"], //hardly a gemstone, but i will color it like the others regardless
 	tempHigh: 1840,
 	behavior: behaviors.POWDER,
 	category: "powders",
@@ -78,4 +78,54 @@ elements.onyx = { //Thorium
 	hardness: 0.7,
 };
 
-//todo: opal (pain), pearl
+elements.opal = {
+	color: ["#ffcfcf", "#fff0d9", "#fcf7c5", "#e4ffd4", "#d1fff5", "#dcecfa", "#dfdbff", "#f5e0ff", "#f7d0f1"],
+	tempHigh: 100,
+	stateHigh: ["broken_opal", "broken_opal", "broken_opal", "broken_opal", "broken_opal", "broken_opal", "broken_opal", "broken_opal", "broken_opal", "steam"],
+	behavior: behaviors.POWDER,
+	category: "powders",
+	state: "solid",
+	density: 2090,
+	hardness: 0.6,
+	breakInto: ["quartz", "quartz", "quartz", "quartz", "quartz", "quartz", "quartz", "quartz", "quartz", "water"],
+};
+
+elements.broken_opal = {
+	color: ["#f5e6e6", "#ebe2d5", "#f7f6ed", "#e4eddf", "#d8ebe7", "#d8e0e8", "#e4e3e8", "#f4edf7", "#ebebeb"],
+	tempHigh: 1650,
+	stateHigh: "molten_quartz",
+	behavior: behaviors.POWDER,
+	category: "powders",
+	state: "solid",
+	density: 2322,
+	hardness: 0.55, //it cracks
+};
+
+elements.quartz = { //silicates, silicates, and more silicates
+	color: ["#f0f0f0", "#e3e3e3", "#f7f7f7"],
+	tempHigh: 1650, 
+	behavior: behaviors.POWDER,
+	category: "powders",
+	state: "solid",
+	density: 2650,
+	hardness: 0.7,
+};
+
+elements.molten_quartz.reactions = {
+	quicklime: { elem1: "molten_glass", elem2: ["quicklime", "quicklime", "quicklime", "quicklime", "quicklime", "quicklime", "quicklime", "quicklime", "quicklime", null]} //lack of vanilla baking soda, lack of tripartite reactions
+};
+/*
+elements.elem1.reactions = {
+	elem2: { elem1: "elem1_becomes", elem2: "elem2_becomes"}
+};
+*/
+
+elements.pearl = {
+	color: ["#e3e3e3", "#e3e0d1", "#eddbce", "#eef2c9", "#d5f5dc", "#d8f2ec", "#fadcf9", "#e3d1c1", "#f2edc9", "#e0f5d7", "#e2beeb", "#e3e3e3", "#e3e0d1", "#eddbce", "#eef2c9", "#d5f5dc", "#d8f2ec", "#fadcf9", "#e3d1c1", "#f2edc9", "#e0f5d7", "#e2beeb", 	"#38332e"],
+	tempHigh: 1340, //yay, more thermal decomposition elements
+	behavior: behaviors.POWDER,
+	category: "powders",
+	state: "solid",
+	density: 772, //It is partly made of proteins and is said to burn, but I can't find an ignition point, so here it melts.
+	hardness: 0.45,
+};
