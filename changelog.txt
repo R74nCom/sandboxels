@@ -3,6 +3,23 @@
     + Baking Update
     + More plans / suggestions at https://docs.google.com/document/u/4/d/1R8xljj_J-K5oU-9y4louwplQmM-ZBvUfXmhbgj5LYdk/edit
 
+[Version 1.6.3 - July 24, 2022]
+    + Random Events! Enable in settings!
+    + Electrum alloy (Hidden)
+    - Dirty Water no longer stains
+   [Minor Reactions]
+    + Hydrogen and Sulfur will create a bad smell
+    + Water breaks down Dyes
+    + Gold breaks into Gold Coins
+    + Snails eat and purify Dirty Water
+    + Poison and Alcohol now kill Yeast
+    + Rats can have babies after eating enough
+    + Bees produce honey after eating enough
+   [Bug Fixes]
+    ~ Fixed: Weird triangular root formations when hot
+    ~ Fixed: Oil doesn’t soak into Dirt and makes infinite Mud
+    ~ Fixed: Dirty Water no longer rots Meat
+
 [Version 1.6.2 - July 10, 2022]
     + Dyes will mix colors [Warning: Laggy]
     + Broth, from heating meat in water

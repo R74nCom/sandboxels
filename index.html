@@ -341,8 +341,13 @@
                         var x = pixel.x+adjacentCoords[i][0];
                         var y = pixel.y+adjacentCoords[i][1];
                         if (isEmpty(x, y)) {
-                            createPixel("egg",x,y)
-                            pixelMap[x][y].animal = elements[pixel.element].baby || pixel.element;
+                            if (elements[pixel.element].egg) {
+                                createPixel(elements[pixel.element].egg,x,y)
+                            }
+                            else {
+                                createPixel("egg",x,y)
+                                pixelMap[x][y].animal = elements[pixel.element].baby || pixel.element;
+                            }
                             pixel.food = 0;
                             break;
                         }
@@ -569,6 +574,7 @@
                     "fallout": { "elem1": "dirty_water", chance:0.25 },
                     "radiation": { "elem1": "dirty_water", chance:0.25 },
                     "uranium": { "elem1": "dirty_water", chance:0.25 },
+                    "rotten_meat": { "elem1": "dirty_water", chance:0.25 },
                     "quicklime": { "elem1": null, "elem2": "slaked_lime", },
                     "rock": { "elem2": "wet_sand", "chance": 0.00035 },
                     "ruins": { "elem2": "rock", "chance": 0.00035 },
@@ -686,7 +692,7 @@
                 state: "liquid",
                 density: 1005,
                 conduct: 0.1,
-                stain: 0.03,
+                //stain: 0.03,
             },
             "dirt": {
                 //color: ["#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#a88c7b"],
@@ -1122,7 +1128,6 @@
                     "water": { "elem2":"broth", "tempMin":70 },
                     "salt_water": { "elem2":"broth", "tempMin":70 },
                     "sugar_water": { "elem2":"broth", "tempMin":70 },
-                    "dirty_water": { "elem2":"broth", "tempMin":70 },
                     "seltzer": { "elem2":"broth", "tempMin":70 },
                 },
                 tempHigh: 100,
@@ -1687,13 +1692,14 @@
                     "XX|CR:pollen%0.025 AND M2|M1",
                 ],
                 reactions: {
-                    "sugar_water": { "elem2":null, chance:0.25 },
-                    "soda": { "elem2":null, chance:0.25 },
-                    "sugar": { "elem2":null, chance:0.15 },
-                    "yeast": { "elem2":null, chance:0.15 },
-                    "caramel": { "elem2":null, chance:0.25 },
-                    "candy": { "elem2":null, chance:0.05 },
+                    "sugar_water": { "elem2":null, chance:0.25, func:behaviors.FEEDPIXEL },
+                    "soda": { "elem2":null, chance:0.25, func:behaviors.FEEDPIXEL },
+                    "sugar": { "elem2":null, chance:0.15, func:behaviors.FEEDPIXEL },
+                    "yeast": { "elem2":null, chance:0.15, func:behaviors.FEEDPIXEL },
+                    "caramel": { "elem2":null, chance:0.25, func:behaviors.FEEDPIXEL },
+                    "candy": { "elem2":null, chance:0.05, func:behaviors.FEEDPIXEL },
                 },
+                egg: "honey",
                 tempHigh: 100,
                 stateHigh: "ash",
                 tempLow: 0,
@@ -2037,38 +2043,39 @@
                 ],
                 reactions: {
                     "oxygen": { "elem2":"carbon_dioxide", "chance":0.5 },
-                    "meat": { "elem2":null, "chance":0.1 },
-                    "cooked_meat": { "elem2":null, "chance":0.1 },
-                    "rotten_meat": { "elem2":null, "chance":0.1 },
-                    "cheese": { "elem2":null, "chance":0.2 },
-                    "melted_cheese": { "elem2":null, "chance":0.3 },
-                    "plant": { "elem2":null, "chance":0.1 },
-                    "algae": { "elem2":null, "chance":0.2 },
-                    "grass_seed": { "elem2":null, "chance":0.3 },
-                    "wheat_seed": { "elem2":null, "chance":0.3 },
-                    "wheat": { "elem2":null, "chance":0.2 },
-                    "potato_seed": { "elem2":null, "chance":0.3 },
-                    "potato": { "elem2":null, "chance":0.1 },
-                    "corn_seed": { "elem2":null, "chance":0.3 },
-                    "corn": { "elem2":null, "chance":0.1 },
-                    "flower_seed": { "elem2":null, "chance":0.4 },
-                    "flour": { "elem2":null, "chance":0.1 },
-                    "dough": { "elem2":null, "chance":0.1 },
-                    "bread": { "elem2":null, "chance":0.1 },
-                    "toast": { "elem2":null, "chance":0.1 },
-                    "salt": { "elem2":null, "chance":0.1 },
-                    "sugar": { "elem2":null, "chance":0.2 },
+                    "meat": { "elem2":null, "chance":0.1, func:behaviors.FEEDPIXEL },
+                    "cooked_meat": { "elem2":null, "chance":0.1, func:behaviors.FEEDPIXEL },
+                    "rotten_meat": { "elem2":null, "chance":0.1, func:behaviors.FEEDPIXEL },
+                    "cheese": { "elem2":null, "chance":0.2, func:behaviors.FEEDPIXEL },
+                    "melted_cheese": { "elem2":null, "chance":0.3, func:behaviors.FEEDPIXEL },
+                    "plant": { "elem2":null, "chance":0.1, func:behaviors.FEEDPIXEL },
+                    "algae": { "elem2":null, "chance":0.2, func:behaviors.FEEDPIXEL },
+                    "grass_seed": { "elem2":null, "chance":0.3 , func:behaviors.FEEDPIXEL},
+                    "wheat_seed": { "elem2":null, "chance":0.3, func:behaviors.FEEDPIXEL },
+                    "wheat": { "elem2":null, "chance":0.2, func:behaviors.FEEDPIXEL },
+                    "potato_seed": { "elem2":null, "chance":0.3, func:behaviors.FEEDPIXEL },
+                    "potato": { "elem2":null, "chance":0.1, func:behaviors.FEEDPIXEL },
+                    "corn_seed": { "elem2":null, "chance":0.3, func:behaviors.FEEDPIXEL },
+                    "corn": { "elem2":null, "chance":0.1 , func:behaviors.FEEDPIXEL},
+                    "flower_seed": { "elem2":null, "chance":0.4 , func:behaviors.FEEDPIXEL},
+                    "flour": { "elem2":null, "chance":0.1 , func:behaviors.FEEDPIXEL},
+                    "dough": { "elem2":null, "chance":0.1, func:behaviors.FEEDPIXEL },
+                    "bread": { "elem2":null, "chance":0.1, func:behaviors.FEEDPIXEL },
+                    "toast": { "elem2":null, "chance":0.1, func:behaviors.FEEDPIXEL },
+                    "salt": { "elem2":null, "chance":0.1, func:behaviors.FEEDPIXEL },
+                    "sugar": { "elem2":null, "chance":0.2, func:behaviors.FEEDPIXEL },
                     "salt_water": { "elem2":"dirty_water", "chance":0.2 },
                     "sugar_water": { "elem2":"dirty_water", "chance":0.2 },
                     "water": { "elem2":"dirty_water", "chance":0.2 },
-                    "popcorn": { "elem2":null, "chance":0.3 },
-                    "candy": { "elem2":null, "chance":0.3 },
-                    "caramel": { "elem2":null, "chance":0.4 },
-                    "lichen": { "elem2":null, "chance":0.1 },
-                    "egg": { "elem2":null, "chance":0.1 },
-                    "yolk": { "elem2":null, "chance":0.2 },
-                    "grape": { "elem2":null, "chance":0.25 },
+                    "popcorn": { "elem2":null, "chance":0.3, func:behaviors.FEEDPIXEL },
+                    "candy": { "elem2":null, "chance":0.3, func:behaviors.FEEDPIXEL },
+                    "caramel": { "elem2":null, "chance":0.4, func:behaviors.FEEDPIXEL },
+                    "lichen": { "elem2":null, "chance":0.1, func:behaviors.FEEDPIXEL },
+                    "egg": { "elem2":null, "chance":0.1, func:behaviors.FEEDPIXEL },
+                    "yolk": { "elem2":null, "chance":0.2, func:behaviors.FEEDPIXEL },
+                    "grape": { "elem2":null, "chance":0.25, func:behaviors.FEEDPIXEL },
                 },
+                egg: "rat",
                 category: "life",
                 tempHigh: 120,
                 stateHigh: "rotten_meat",
@@ -2223,6 +2230,7 @@
                 reactions: {
                     "salt": { "elem1": "calcium", "elem2": null },
                     "salt_water": { "elem1": "calcium", "elem2": null },
+                    "dirty_water": { "elem2":"water", "chance":0.05, func:behaviors.FEEDPIXEL },
                     "potassium_salt": { "elem1": "calcium", "elem2": null },
                     "epsom_salt": { "elem1": "calcium", "elem2": null },
                     "plant": { "elem2":null, "chance":0.05, func:behaviors.FEEDPIXEL },
@@ -2814,8 +2822,8 @@
                 color: "#470e00",
                 behavior: behaviors.LIQUID,
                 reactions: {
-                    "dirt": { "elem2":"mud" },
-                    "sand": { "elem2":"wet_sand" },
+                    "dirt": { "elem1":null, "elem2":"mud" },
+                    "sand": { "elem1":null, "elem2":"wet_sand" },
                 },
                 category: "liquids",
                 tempHigh: 400,
@@ -3889,6 +3897,7 @@
                 density: 19300,
                 conduct: 0.81,
                 hardness: 0.25,
+                breakInto: "gold_coin"
             },
             "nickel": {
                 color: "#727472",
@@ -4005,6 +4014,16 @@
                 hardness: 0.275,
                 hidden: true,
             },
+            "electrum": {
+                color: ["#ffdd63","#ad9532","#bda853","#bdb38e","#fff5d1"],
+                behavior: behaviors.WALL,
+                tempHigh: 1063.9,
+                category: "solids",
+                density: 13750,
+                conduct: 0.9,
+                hardness: 0.25,
+                hidden: true,
+            },
             "solder": {
                 color: "#a1a19d",
                 behavior: behaviors.WALL,
@@ -4023,6 +4042,11 @@
                     "molten_gold": { "elem1": null, "elem2": "molten_rose_gold" },
                     "molten_sulfur": { "elem1": null, "elem2": "molten_copper_sulfate" },
                     "sulfur_gas": { "elem1": null, "elem2": "molten_copper_sulfate" },
+                }
+            },
+            "molten_gold": {
+                reactions: {
+                    "molten_silver": { "elem1": null, "elem2": "molten_electrum" },
                 }
             },
             "molten_iron": {
@@ -4342,7 +4366,7 @@
                     "water": { "elem2":null, "chance":0.005 },
                     "sugar_water": { "elem2":null, "chance":0.008 },
                 },
-                tempHigh: 325,
+                tempHigh: 275,
                 stateHigh: "dirt",
                 burn: 20,
                 burnTime: 100,
@@ -4355,7 +4379,7 @@
             "fiber": {
                 color: ["#6b563e","#5c553e","#42342d"],
                 behavior: behaviors.POWDER,
-                tempHigh:225,
+                tempHigh:275,
                 stateHigh: "dirt",
                 tempLow: -50,
                 stateLow: "permafrost",
@@ -4387,6 +4411,7 @@
                     "molasses": { "elem2":"alcohol", "chance":0.005, "color2":"#803924" },
                     "oxygen": { "elem2":"carbon_dioxide", "chance":0.05 },
                     "algae": { "elem1":"lichen", "elem2":"lichen", "chance":0.02 },
+                    "alcohol": { "elem1":null, "elem2":null },
                 },
                 tempHigh: 100,
                 stateHigh: "bread",
@@ -4675,6 +4700,13 @@
             "dye": {
                 color: ["#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"],
                 behavior: behaviors.LIQUID,
+                reactions: {
+                    "water": { "elem1":null, "chance":0.05 },
+                    "salt_water": { "elem1":null, "chance":0.05 },
+                    "sugar_water": { "elem1":null, "chance":0.05 },
+                    "seltzer": { "elem1":null, "chance":0.05 },
+                    "dirty_water": { "elem1":null, "chance":0.05 },
+                },
                 customColor: true,
                 stain: 0.66,
                 tempHigh: 100,
@@ -4817,6 +4849,7 @@
                     "algae": { "elem1":null, "elem2":null },
                     "mushroom_spore": { "elem1":null, "elem2":null },
                     "lichen": { "elem1":null, "elem2":null },
+                    "yeast": { "elem1":null, "elem2":null },
                     "rat": { "elem1":null, "elem2":"rotten_meat" },
                     "frog": { "elem1":null, "elem2":"rotten_meat" },
                     "fish": { "elem1":null, "elem2":"rotten_meat" },
@@ -5399,6 +5432,9 @@
             "sulfur": {
                 color: ["#E9D74C","#89761B","#DDC56B"],
                 behavior: behaviors.POWDER,
+                reactions: {
+                    "hydrogen": { "elem2":"stench" }
+                },
                 category: "powders",
                 tempHigh: 115.21,
                 burn: 25,
@@ -8091,6 +8127,11 @@
                 ctx.fillStyle = settings["bg"];
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
+
+            if (!paused && settings.events) {
+                doRandomEvents();
+            }
+
             drawPixels();
 
             if (shaping) {
@@ -8776,6 +8817,76 @@
                         }
                     }
                 }
+            }
+        }
+
+        randomEvents = {
+            "falling_pixel": function() {
+                // random x between 1 and width-1
+                var x = Math.floor(Math.random()*(width-1))+1;
+                // random y between 1 and 6
+                var y = Math.floor(Math.random()*6)+1;
+                if (isEmpty(x,y)) {
+                    // random element from randomEventChoices.falling_pixel
+                    var element = randomEventChoices.falling_pixel[Math.floor(Math.random()*randomEventChoices.falling_pixel.length)];
+                    // if element is an array, choose a random element from the array
+                    if (Array.isArray(element)) {
+                        element = element[Math.floor(Math.random()*element.length)];
+                    }
+                    createPixel(element,x,y);
+                }
+            },
+            "element_circle": function() {
+                // random x between 1 and width-1
+                var x = Math.floor(Math.random()*(width-1))+1;
+                // random y between 1 and height-1
+                var y = Math.floor(Math.random()*(height-1))+1;
+                // random radius between 3 and 7
+                var radius = Math.floor(Math.random()*4)+3;
+                // random element from randomEventChoices.element_circle
+                var element = randomEventChoices.element_circle[Math.floor(Math.random()*randomEventChoices.element_circle.length)];
+                var coords = circleCoords(x,y,radius);
+                for (var i = 0; i < coords.length; i++) {
+                    var coord = coords[i];
+                    if (isEmpty(coord.x,coord.y)) {
+                        createPixel(element,coord.x,coord.y);
+                    }
+                }
+            },
+            "explosion": function() {
+                // similar but do explodeAt(x,y,radius,element)
+                var x = Math.floor(Math.random()*(width-1))+1;
+                var y = Math.floor(Math.random()*(height-1))+1;
+                var radius = Math.floor(Math.random()*4)+3;
+                var element = randomEventChoices.explosion[Math.floor(Math.random()*randomEventChoices.explosion.length)];
+                explodeAt(x,y,radius,element);
+            },
+            "temperature": function() {
+                // set the temperature in a random circle to a random value between -273 and 200
+                var x = Math.floor(Math.random()*(width-1))+1;
+                var y = Math.floor(Math.random()*(height-1))+1;
+                var radius = Math.floor(Math.random()*4)+3;
+                var temp = Math.floor(Math.random()*400)-273;
+                var coords = circleCoords(x,y,radius);
+                for (var i = 0; i < coords.length; i++) {
+                    var coord = coords[i];
+                    if (!outOfBounds(coord.x,coord.y) && !isEmpty(coord.x,coord.y)) {
+                        pixelMap[coord.x][coord.y].temp = temp;
+                    }
+                }
+            }
+        }
+        randomEventChoices = {
+            "falling_pixel": ["fireball","fallout","seeds",["bomb","cold_bomb","cluster_bomb"],"human","gold_coin","feather","glitter","homunculus","egg","frozen_frog","sapling","smoke_grenade"],
+            "element_circle": ["carbon_dioxide","primordial_soup","fly","steam","oxygen","dye","yolk","sugar","bee","firefly","tadpole","flash","foam"],
+            "explosion": ["fire","cold_fire","methane","electric","light","laser","radiation","plasma","liquid_nitrogen","liquid_helium","liquid_neon","acid_gas","ember","malware",["stench","plague"],["firework","fire","fire"],"bubble"],
+        }
+        function doRandomEvents() {
+            var chance = settings.events;
+            if (Math.random() < chance) {
+                // run a random function from randomEvents
+                var event = randomEvents[Object.keys(randomEvents)[Math.floor(Math.random()*Object.keys(randomEvents).length)]];
+                event();
             }
         }
 
@@ -9680,6 +9791,15 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                 settings["worldgen"] = "off";
             }
 
+            // Loop through randomEventChoices, and loop through the array of each. If the element doesn't exist, remove it from the array.
+            for (var key in randomEventChoices) {
+                for (var i = 0; i < randomEventChoices[key].length; i++) {
+                    if (!elements[randomEventChoices[key][i]]) {
+                        randomEventChoices[key].splice(i,1);
+                    }
+                }
+            }
+
             // Load settings
             // Loop through all the elements with setting-span class.
             // If the span's setting attribute is in settings, set the first select or input to the value of the setting.
@@ -10064,14 +10184,14 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             <button class="XButton" onclick="closeMenu();">-</button>
             <span class="menuTitle">Settings</span>
             <div class="menuText" style="padding-top:1em">
-                <span setting="units" style="display:block;padding-bottom:0.5em" class="setting-span">
+                <span setting="units" class="setting-span">
                     Units <select onchange="setSetting('units',this.value);">
                         <option value="m" selected>Metric</option>
                         <option value="i">Imperial</option>
                         <option value="s">SI</option>
                     </select>
                 </span>
-                <span setting="unhide" style="display:block;padding-bottom:0.5em" class="setting-span">
+                <span setting="unhide" class="setting-span">
                     Hiding <select onchange="setSetting('unhide',parseInt(this.value));this.nextElementSibling.innerText='Refresh.'">
                         <option value="0" selected>Hide Some Elements</option>
                         <option value="1">Unhide All Elements</option>
@@ -10079,31 +10199,40 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                     </select>
                     <a onclick="window.location.reload();" style="font-style:italic;cursor:pointer"></a>
                 </span>
-                <span setting="bg" style="display:block;padding-bottom:0.5em" class="setting-span">
+                <span setting="bg" class="setting-span">
                     Background <input onchange="setSetting('bg',this.value);" oninput="setSetting('bg',this.value);" type="color" value="#000000">
                 </span>
-                <span setting="stain" style="display:block;padding-bottom:0.5em" class="setting-span">
+                <span setting="stain" class="setting-span">
                     Staining <select onchange="setSetting('stainoff',parseInt(this.value));">
                         <option value="0" selected>Enabled</option>
                         <option value="1">Disabled</option>
                     </select>
                 </span>
-                <span setting="clouds" style="display:block;padding-bottom:0.5em" class="setting-span">
+                <span setting="clouds" class="setting-span">
                     Clouds <select onchange="setSetting('clouds',parseInt(this.value));">
                         <option value="1" selected>Enabled</option>
                         <option value="0">Disabled</option>
                     </select>
                 </span>
-                <span setting="worldgen" style="display:block;padding-bottom:0.5em" class="setting-span">
-                    World Gen [Beta] <select id="worldgenselect" onchange="setSetting('worldgen',this.value);this.nextElementSibling.innerText='Reset.'">
-                        <option value="off" selected>Disabled</option>
+                <span setting="events" class="setting-span">
+                    Random Events <select onchange="setSetting('events',parseFloat(this.value));">
+                        <option value="0" selected>Disabled</option>
+                        <option value="0.005">Rare (Recommended for casual play)</option>
+                        <option value="0.025">Common</option>
+                        <option value="0.05">Annoying</option>
+                        <option value="0.25">Overdrive (DANGEROUS)</option>
                     </select>
-                    <span onclick="clearAll();" style="font-style:italic;cursor:pointer"></span>
                 </span>
                 <span class="setting-span">
                     <button onclick="if(confirm('This action will reset all discovered elements and refresh the page.')){settings.unlocked={};saveSettings();location.reload()}" class="settingsButton">Reset Discovered</button>
                     <button onclick="if(confirm('This action will reset all game data and refresh the page.')){localStorage.removeItem('settings');location.reload()}" class="settingsButton">Reset All</button>
                     <button onclick="if(confirm('This action will disable all enabled mods and refresh the page.')){localStorage.removeItem('enabledMods');location.reload()}" class="settingsButton">Clear Mods</button>
+                </span>
+                <span setting="worldgen" style="padding-bottom:0" class="setting-span">
+                    World Gen [Beta] <select id="worldgenselect" onchange="setSetting('worldgen',this.value);this.nextElementSibling.innerText='Reset.'">
+                        <option value="off" selected>Disabled</option>
+                    </select>
+                    <span onclick="clearAll();" style="font-style:italic;cursor:pointer"></span>
                 </span>
             </div>
             <br><br><br><br>
