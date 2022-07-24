@@ -7,7 +7,8 @@ urlParams = new URLSearchParams(window.location.search);
 if(urlParams.get('pixelSize') != null) { //null check
     pixelSize = urlParams.get('pixelSize')
     if(isNaN(pixelSize) || pixelSize === "" || pixelSize === null) { //NaN check
-        // Vanilla code: If the screen size is under 768px, set pixelSize to 5, otherwise 6
+        //Vanilla code
+        //[Vanilla comment] If the screen size is under 768px, set pixelSize to 5, otherwise 6
         if (window.innerWidth < 700) {
             pixelSize = 5;
         } else {
@@ -17,7 +18,8 @@ if(urlParams.get('pixelSize') != null) { //null check
     pixelSize = parseFloat(pixelSize)
     pixelSize = Math.min(194.73749999999999,Math.max(pixelSize,0.05))
 } else {
-    // Vanilla code: If the screen size is under 768px, set pixelSize to 5, otherwise 6
+    //Vanilla code
+    //[Vanilla comment] If the screen size is under 768px, set pixelSize to 5, otherwise 6
     if (window.innerWidth < 700) {
         pixelSize = 5;
     } else {
