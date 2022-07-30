@@ -118,6 +118,7 @@
             localStorage.setItem("settings", JSON.stringify(settings));
         }
         
+        defaultCooldown = 8;
         behaviors = {
             POWDER_OLD: [
                 "XX|XX|XX",
@@ -586,6 +587,10 @@
                     "mudstone": { "elem2": "mud", "chance": 0.00035 },
                     "methane": { "elem1":"primordial_soup", "elem2":"primordial_soup", tempMin:60, charged:true },
                     "ammonia": { "elem1":"primordial_soup", "elem2":"primordial_soup", tempMin:60, charged:true },
+                    "fly": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
+                    "firefly": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
+                    "bee": { "elem2":"dead_bug", "chance":0.05, "oneway":true },
+                    "stink_bug": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
                 },
                 state: "liquid",
                 density: 997,
@@ -598,7 +603,7 @@
                 tempHigh: 102,
                 stateHigh: ["steam","salt"],
                 tempLow: -2,
-                stateLow: "ice",
+                stateLowName: "salt_ice",
                 category: "liquids",
                 reactions: {
                     "dirt": { "elem1": null, "elem2": "mud" },
@@ -615,6 +620,10 @@
                     "rust": { "elem1": "dirty_water", chance:0.005 },
                     "quicklime": { "elem1": null, "elem2": "slaked_lime", },
                     "rock": { "elem2": "wet_sand", "chance": 0.0005 },
+                    "fly": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
+                    "firefly": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
+                    "bee": { "elem2":"dead_bug", "chance":0.05, "oneway":true },
+                    "stink_bug": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
                 },
                 state: "liquid",
                 density: 1026,
@@ -627,7 +636,7 @@
                 tempHigh: 105,
                 stateHigh: ["steam","sugar"],
                 tempLow: -5,
-                stateLow: "ice",
+                stateLowName: "sugar_ice",
                 category: "liquids",
                 reactions: {
                     "dirt": { "elem1": null, "elem2": "mud" },
@@ -643,6 +652,10 @@
                     "radiation": { "elem1": "dirty_water", chance:0.25 },
                     "rust": { "elem1": "dirty_water", chance:0.005 },
                     "rock": { "elem2": "wet_sand", "chance": 0.0004 },
+                    "fly": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
+                    "firefly": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
+                    "bee": { "elem2":"dead_bug", "chance":0.05, "oneway":true },
+                    "stink_bug": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
                 },
                 hidden: true,
                 state: "liquid",
@@ -660,7 +673,7 @@
                 tempHigh: 98,
                 stateHigh: ["steam","carbon_dioxide"],
                 tempLow: 0,
-                stateLow: "ice",
+                stateLowName: "seltzer_ice",
                 category: "liquids",
                 reactions: {
                     "dirt": { "elem1": null, "elem2": "mud" },
@@ -668,6 +681,10 @@
                     "rock": { "elem2": "wet_sand", "chance": 0.0004 },
                     "sugar": { "elem1": "soda", "elem2": "foam" },
                     "sugar_water": { "elem1": "soda", "elem2": "foam" },
+                    "fly": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
+                    "firefly": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
+                    "bee": { "elem2":"dead_bug", "chance":0.05, "oneway":true },
+                    "stink_bug": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
                 },
                 hidden: true,
                 state: "liquid",
@@ -681,7 +698,7 @@
                 tempHigh: 105,
                 stateHigh: ["steam","carbon_dioxide"],
                 tempLow: -5,
-                stateLow: "ice",
+                stateLowName: "dirty_ice",
                 viscosity: 10,
                 category: "liquids",
                 reactions: {
@@ -692,12 +709,57 @@
                     "algae": { "elem1":"water", "chance":0.05 },
                     "charcoal": { "elem1":"water", "chance":0.02 },
                     "gravel": { "elem1":"water", "chance":0.01 },
+                    "fly": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
+                    "firefly": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
+                    "bee": { "elem2":"dead_bug", "chance":0.05, "oneway":true },
+                    "stink_bug": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
                 },
                 hidden: true,
                 state: "liquid",
                 density: 1005,
                 conduct: 0.1,
                 //stain: 0.03,
+            },
+            "pool_water": {
+                color: "#a8d2e3",
+                behavior: behaviors.LIQUID,
+                tempHigh: 105,
+                stateHigh: ["steam","chlorine"],
+                tempLow: -5,
+                stateLowName: "pool_ice",
+                category: "liquids",
+                reactions: {
+                    "dirt": { "elem1": null, "elem2": "mud" },
+                    "sand": { "elem1": null, "elem2": "wet_sand", },
+                    "rock": { "elem2": "wet_sand", "chance": 0.001 },
+                    "plant": { "elem2":"dead_plant", "chance":0.05 },
+                    "grass": { "elem2":"dead_plant", "chance":0.05 },
+                    "algae": { "elem2":null, "chance":0.05 },
+                    "cell": { "elem2":null, "chance":0.05 },
+                    "cancer": { "elem2":null, "chance":0.05 },
+                    "plague": { "elem2":null },
+                    "flea": { "elem2":"dead_bug", "chance":0.05 },
+                    "termite": { "elem2":"dead_bug", "chance":0.05 },
+                    "ant": { "elem2":"dead_bug", "chance":0.05 },
+                    "worm": { "elem2":"dead_bug", "chance":0.05 },
+                    "fly": { "elem2":"dead_bug", "chance":0.05 },
+                    "firefly": { "elem2":"dead_bug", "chance":0.05 },
+                    "bee": { "elem2":"dead_bug", "chance":0.05 },
+                    "stink_bug": { "elem2":"dead_bug", "chance":0.05 },
+                    "dirty_water": { "elem2":"water", "chance":0.05 },
+                    "tadpole": { "elem1":null, "chance":0.05 },
+                    "slug": { "elem1":null, "chance":0.05 },
+                    "snail": { "elem1":null, "chance":0.05 },
+                    "lichen": { "elem1":null, "chance":0.05 },
+                    "dead_bug": { "elem1":null, "chance":0.001 },
+                    "pollen": { "elem1":null },
+                    "root": { "elem1":"fiber", "chance":0.05 },
+                },
+                hidden: true,
+                state: "liquid",
+                density: 992.72,
+                conduct: 0.15,
+                stain: -0.5,
             },
             "dirt": {
                 //color: ["#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#a88c7b"],
@@ -953,17 +1015,19 @@
                 state: "solid",
                 density: 1300,
                 excludeRandom: true,
+                cooldown: defaultCooldown
             },
             "steam": {
                 color: "#abd6ff",
                 behavior: behaviors.GAS,
                 reactions: {
-                    "steam": { "elem1": null, "elem2": "rain_cloud", "chance":0.3, "y":[0,15], "setting":"clouds" },
+                    "steam": { "elem1": null, "elem2": "cloud", "chance":0.3, "y":[0,15], "setting":"clouds" },
                     "rain_cloud": { "elem1": "rain_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" },
+                    "cloud": { "elem1": "cloud", "chance":0.4, "y":[0,12], "setting":"clouds" },
                     "snow_cloud": { "elem1": "rain_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" },
                     "hail_cloud": { "elem1": "rain_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" },
-                    "pyrocumulus": { "elem1": "rain_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" },
-                    "fire_cloud": { "elem1": "rain_cloud", "elem2": "pyrocumulus", "chance":0.4, "y":[0,12], "setting":"clouds" },
+                    "pyrocumulus": { "elem1": "cloud", "chance":0.4, "y":[0,12], "setting":"clouds" },
+                    "fire_cloud": { "elem1": "cloud", "elem2": "pyrocumulus", "chance":0.4, "y":[0,12], "setting":"clouds" },
                     "smoke": { "elem1": "smog", "elem2": null, "chance":0.001 },
                     "carbon_dioxide": { "elem1": "smog", "elem2": null, "chance":0.001 },
                 },
@@ -1029,6 +1093,7 @@
                 reactions: {
                     "steam": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,12], "setting":"clouds" },
                     "rain_cloud": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,12], "setting":"clouds" },
+                    "cloud": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,12], "setting":"clouds" },
                     "snow_cloud": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,12], "setting":"clouds" },
                     "hail_cloud": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,12], "setting":"clouds" },
                     "acid_cloud": { "elem1": "pyrocumulus", "chance":0.05, "y":[0,12], "setting":"clouds" },
@@ -1455,6 +1520,7 @@
                 reactions: {
                     "cell": { "elem2":"cancer", "chance":0.005 },
                     "frog": { "elem2":"cancer", "chance":0.005 },
+                    "tadpole": { "elem2":"cancer", "chance":0.005 },
                     "fish": { "elem2":"cancer", "chance":0.005 },
                     "rat": { "elem2":"cancer", "chance":0.005 },
                     "bird": { "elem2":"cancer", "chance":0.005 },
@@ -1517,13 +1583,13 @@
                     "dead_plant": { "elem2":null, "chance":0.05, func:behaviors.FEEDPIXEL },
                     "ketchup": { "elem2":null, "chance":0.1 },
                     "mercury": { "elem2":null, "elem1":null, "chance":0.1875 },
-                    "vinegar": { "elem1":null, "elem2":null },
-                    "alcohol": { "elem1":null, "elem2":null },
+                    "vinegar": { "elem1":"dead_bug", "elem2":null },
+                    "alcohol": { "elem1":"dead_bug", "elem2":null },
                 },
                 tempHigh: 100,
                 stateHigh: "ash",
                 tempLow: 0,
-                stateLow: "ash",
+                stateLow: "dead_bug",
                 category:"life",
                 burn:95,
                 burnTime:25,
@@ -1550,14 +1616,14 @@
                     "particleboard": { "elem2":null, chance:0.025, func:behaviors.FEEDPIXEL },
                     "tinder": { "elem2":null, chance:0.025, func:behaviors.FEEDPIXEL },
                     "lichen": { "elem2":null, chance:0.025, func:behaviors.FEEDPIXEL },
-                    "vinegar": { "elem1":null, "elem2":null },
-                    "alcohol": { "elem1":null, "elem2":null },
+                    "vinegar": { "elem1":"dead_bug", "elem2":null },
+                    "alcohol": { "elem1":"dead_bug", "elem2":null },
                 },
                 foodNeed: 20,
                 tempHigh: 100,
                 stateHigh: "ash",
                 tempLow: 0,
-                stateLow: "ash",
+                stateLow: "dead_bug",
                 category:"life",
                 burn:95,
                 burnTime:25,
@@ -1579,15 +1645,15 @@
                     "soda": { "elem2":null, chance:0.15, func:behaviors.FEEDPIXEL },
                     "sugar": { "elem2":null, chance:0.1, func:behaviors.FEEDPIXEL },
                     "rotten_meat": { "elem2":null, chance:0.05, func:behaviors.FEEDPIXEL },
-                    "vinegar": { "elem1":null, "elem2":null },
-                    "alcohol": { "elem1":null, "elem2":null },
+                    "vinegar": { "elem1":"dead_bug", "elem2":null },
+                    "alcohol": { "elem1":"dead_bug", "elem2":null },
                     "mushroom_cap": { "elem2":null, chance:0.025, func:behaviors.FEEDPIXEL },
                     "candy": { "elem2":null, chance:0.025, func:behaviors.FEEDPIXEL },
                 },
                 tempHigh: 100,
                 stateHigh: "ash",
                 tempLow: 0,
-                stateLow: "ash",
+                stateLow: "dead_bug",
                 category:"life",
                 burn:95,
                 burnTime:25,
@@ -1619,7 +1685,7 @@
                 tempHigh: 100,
                 stateHigh: "ash",
                 tempLow: 0,
-                stateLow: "ash",
+                stateLow: "dead_bug",
                 category:"life",
                 breakInto: "slime",
                 burn:95,
@@ -1634,6 +1700,11 @@
                     "XX|M2|M1",
                     "XX|FX%2|BO",
                     "XX|M2|M1",
+                ],
+                behaviorOn: [
+                    "XX|CR:flash|XX",
+                    "CR:flash|CH:ash|CR:flash",
+                    "XX|CR:flash|XX",
                 ],
                 reactions: {
                     "plant": { "elem2":null, chance:0.15, func:behaviors.FEEDPIXEL },
@@ -1655,13 +1726,13 @@
                 tempHigh: 100,
                 stateHigh: "ash",
                 tempLow: 0,
-                stateLow: "ash",
+                stateLow: "dead_bug",
                 category:"life",
                 burn:95,
                 burnTime:25,
                 state: "solid",
                 density: 600,
-                conduct: 0.15,
+                conduct: 1,
             },
             "firefly": {
                 color: ["#684841","#684841","#d9d950","#684841","#684841"],
@@ -1681,7 +1752,7 @@
                 tempHigh: 100,
                 stateHigh: "ash",
                 tempLow: 0,
-                stateLow: "ash",
+                stateLow: "dead_bug",
                 category:"life",
                 burn:95,
                 burnTime:25,
@@ -1708,7 +1779,7 @@
                 tempHigh: 100,
                 stateHigh: "ash",
                 tempLow: 0,
-                stateLow: "ash",
+                stateLow: "dead_bug",
                 category:"life",
                 burn:95,
                 burnTime:25,
@@ -1764,7 +1835,7 @@
                 tempHigh: 100,
                 stateHigh: "stench",
                 tempLow: 0,
-                stateLow: "stench",
+                stateLow: "dead_bug",
                 category:"life",
                 burn:95,
                 burnTime:25,
@@ -1773,6 +1844,19 @@
                 state: "solid",
                 density: 600,
                 conduct: 0.15,
+            },
+            "dead_bug": {
+                color: ["#38302a","403732","#453a2e","#241d15","#242e23"],
+                behavior: behaviors.POWDER,
+                tempHigh: 100,
+                stateHigh: "ash",
+                category:"life",
+                burn:95,
+                burnTime:25,
+                burnInto: ["smoke","smoke","ash"],
+                state: "solid",
+                density: 600,
+                hidden: true
             },
             "human": {
                 // color: ["#f5eac6","#d4c594","#a89160","#7a5733","#523018","#361e0e"],
@@ -2314,9 +2398,13 @@
                     "salt_water": { "elem1":"wood" },
                     "seltzer": { "elem1":"wood" },
                     "dirty_water": { "elem1":"wood" },
+                    "pool_water": { "elem1":"wood" },
                     "steam": { "elem1":"wood" },
                     "smog": { "elem1":"wood" },
                     "rain_cloud": { "elem1":"wood" },
+                    "cloud": { "elem1":"wood" },
+                    "snow_cloud": { "elem1":"wood" },
+                    "hail_cloud": { "elem1":"wood" },
                 },
                 temp:600,
                 category:"special",
@@ -2494,6 +2582,7 @@
                 reactions: {
                     "steam": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,12], "setting":"clouds" },
                     "rain_cloud": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,12], "setting":"clouds" },
+                    "cloud": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,12], "setting":"clouds" },
                     "snow_cloud": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,12], "setting":"clouds" },
                     "hail_cloud": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,12], "setting":"clouds" },
                     "acid_cloud": { "elem1": "pyrocumulus", "chance":0.05, "y":[0,12], "setting":"clouds" },
@@ -2556,6 +2645,7 @@
                     "glass": { "color1":["#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"] },
                     "steam": { "color1":["#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"] },
                     "rain_cloud": { "color1":["#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"] },
+                    "cloud": { "color1":["#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"] },
                     "smog": { "color1":["#9f6060","#9f8260","#9f9f60","#609f60","#609f9f","#60609f","#9f609f"] },
                     "ice": { "color1":"#c2fff9" },
                     "water": { "color1":"#a1bac9" },
@@ -3041,6 +3131,7 @@
                 category: "life",
                 state: "solid",
                 density: 1500,
+                cooldown: defaultCooldown,
             },
             "seeds": {
                 color: ["#359100","#74b332","#b9d461","#dede7a"],
@@ -3050,6 +3141,7 @@
                     pixel.color = pixelColorPick(pixel);
                 },
                 category: "life",
+                cooldown: defaultCooldown,
             },
             "grass_seed": {
                 color: ["#439809","#258B08","#118511","#127B12","#136D14"],
@@ -3068,6 +3160,7 @@
                 state: "solid",
                 density: 1400,
                 hidden: true,
+                cooldown: defaultCooldown
             },
             "wheat_seed": {
                 color: "#b6c981",
@@ -3084,6 +3177,7 @@
                 state: "solid",
                 density: 769,
                 hidden: true,
+                cooldown: defaultCooldown
             },
             "straw": {
                 color: ["#E9D391","#A3835E","#B79A73"],
@@ -3159,6 +3253,7 @@
                 category:"life",
                 state: "solid",
                 density: 1400,
+                cooldown: defaultCooldown
             },
             "pistil": {
                 color: ["#734e39","#2F0603","#D2AC3A","#8A978F","#593117"],
@@ -3274,6 +3369,7 @@
                 state: "solid",
                 density: 686,
                 breakInto: "sawdust",
+                cooldown: defaultCooldown
             },
             "burner": {
                 color: "#d6baa9",
@@ -3306,7 +3402,7 @@
                     "DB%5 AND M2|XX|DB%5 AND M2",
                     "DB%5 AND M2|DB%10 AND M1|DB%5 AND M2",
                 ],
-                ignore: ["glass","glass_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","microplastic","molten_plastic"],
+                ignore: ["glass","glass_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","microplastic","molten_plastic","pool_water"],
                 reactions: {
                     "ash": { "elem1":"neutral_acid", "elem2":null },
                     "limestone": { "elem1":"neutral_acid", "elem2":null },
@@ -3345,10 +3441,11 @@
                     "DB%5 AND M1|XX|DB%5 AND M1",
                     "DB%5 AND M1|DB%10 AND M1|DB%5 AND M1",
                 ],
-                ignore: ["glass","glass_shard","stained_glass","baked_clay","acid","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water"],
+                ignore: ["glass","glass_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","microplastic","molten_plastic","pool_water"],
                 reactions: {
                     "acid_gas": { "elem1": null, "elem2": "acid_cloud", "chance":0.3, "y":[0,12], "setting":"clouds" },
                     "rain_cloud": { "elem1": null, "elem2": "acid_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" },
+                    "cloud": { "elem1": null, "elem2": "acid_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" },
                     "snow_cloud": { "elem1": null, "elem2": "acid_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" },
                     "hail_cloud": { "elem1": null, "elem2": "acid_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" },
                     "pyrocumulus": { "elem1": null, "elem2": "acid_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" },
@@ -3362,9 +3459,10 @@
                     "bleach": { "elem1":"hydrogen", "elem2":null, "chance":0.05 },
                 },
                 category: "gases",
+                temp: 120,
                 tempHigh: 400,
                 stateHigh: "fire",
-                tempLow: 50,
+                tempLow: 30,
                 stateLow: "acid",
                 burn: 30,
                 burnTime: 1,
@@ -3391,7 +3489,7 @@
                 tempHigh: 100,
                 stateHigh: ["steam","carbon_dioxide","sugar"],
                 tempLow: -1.11,
-                stateLow: "ice",
+                stateLow: "seltzer_ice",
                 category: "liquids",
                 reactions: {
                     "dirt": { "elem1": null, "elem2": "mud" },
@@ -3497,8 +3595,11 @@
                     "salt_water": { "elem2": "ice_nine" },
                     "dirty_water": { "elem2": "ice_nine" },
                     "sugar_water": { "elem2": "ice_nine" },
+                    "seltzer": { "elem2": "ice_nine" },
+                    "pool_water": { "elem2": "ice_nine" },
                     "steam": { "elem2": "ice_nine" },
                     "rain_cloud": { "elem2": "ice_nine" },
+                    "cloud": { "elem2": "ice_nine" },
                     "snow_cloud": { "elem2": "ice_nine" },
                     "hail_cloud": { "elem2": "ice_nine" },
                     "snow": { "elem2": "ice_nine" },
@@ -3508,6 +3609,18 @@
                 category: "special",
                 state: "solid",
                 density: 917,
+                excludeRandom: true,
+            },
+            "strange_matter": {
+                color: ["#a4c730","#b6ff57","#74e846","#2ba31d"],
+                behavior: [
+                    "M1%10|M1%10 AND SW%5|M1%10",
+                    "M1%10 AND CH:strange_matter|XX|M1%10 AND CH:strange_matter",
+                    "M1|M1 AND SW%5|M1"
+                ],
+                category: "special",
+                state: "solid",
+                density: 2000,
                 excludeRandom: true,
             },
             "permafrost": {
@@ -3565,6 +3678,7 @@
                 burnTime: 20,
                 state: "solid",
                 density: 123.6,
+                cooldown: defaultCooldown
             },
             "mushroom_stalk": {
                 color: "#d1d1d1",
@@ -3721,9 +3835,9 @@
             "antimatter": {
                 color: "#a89ba8",
                 behavior: [
-                    "M2|DB%50 AND M2 AND EX:8|M2",
+                    "M2|DB%50 AND M2 AND EX:8>fire,positron|M2",
                     "M1|XX|M1",
-                    "M1|DB%50 AND M1 AND EX:8|M1",
+                    "M1|DB%50 AND M1 AND EX:8>fire,positron|M1",
                 ],
                 ignore: ["antimatter_bomb"],
                 category: "special",
@@ -4193,6 +4307,7 @@
                 category: "food",
                 state: "solid",
                 density: 1031,
+                cooldown: defaultCooldown
             },
             "yolk": {
                 color: ["#ffbe33","#ffcf33"],
@@ -4223,7 +4338,8 @@
                     "sugar": { "elem2":null, "chance":0.025 },
                     "meat": { "elem2":null, "chance":0.001 },
                     "cooked_meat": { "elem2":null, "chance":0.0005 },
-                    "oxygen": { "elem2":"carbon_dioxide" }
+                    "oxygen": { "elem2":"carbon_dioxide" },
+                    "radiation": { "elem1":"human", "elem2":null },
                 },
                 tempHigh: 100,
                 stateHigh: "meat",
@@ -4324,6 +4440,7 @@
                 state: "solid",
                 density: 721,
                 hidden: true,
+                cooldown: defaultCooldown
             },
             "potato_seed": {
                 color: ["#CDA57F","#AA7437","#BC9563"],
@@ -4340,6 +4457,7 @@
                 state: "solid",
                 density: 675,
                 hidden: true,
+                cooldown: defaultCooldown
             },
             "potato": {
                 color: ["#d99857","#d98757","#a66933"],
@@ -4374,7 +4492,7 @@
                 tempHigh: 275,
                 stateHigh: "dirt",
                 burn: 20,
-                burnTime: 100,
+                burnTime: 60,
                 burnInto: "dirt",
                 breakInto: "sawdust",
                 category: "life",
@@ -4389,7 +4507,7 @@
                 tempLow: -50,
                 stateLow: "permafrost",
                 burn: 20,
-                burnTime: 40,
+                burnTime: 60,
                 burnInto: "dirt",
                 category:"life",
                 hidden: true,
@@ -4400,8 +4518,8 @@
             "yeast": {
                 color: ["#AD9166","#9A7F4E","#D8BB8D"],
                 behavior: [
-                    "XX|CL:50%20|XX",
-                    "CL:50%20 AND SW:bread%30|XX|CL:50%20 AND SW:bread%30",
+                    "XX|CL:70%10|XX",
+                    "CL:70%10 AND SW:bread%30|XX|CL:70%10 AND SW:bread%30",
                     "XX|M1|XX",
                 ],
                 reactions: {
@@ -4418,11 +4536,11 @@
                     "algae": { "elem1":"lichen", "elem2":"lichen", "chance":0.02 },
                     "alcohol": { "elem1":null, "elem2":null },
                 },
-                tempHigh: 100,
+                tempHigh: 110,
                 stateHigh: "bread",
                 burn: 50,
                 burnTime: 20,
-                burnInto: "ash",
+                burnInto: ["smoke","smoke","smoke","ash"],
                 category: "food",
                 state: "solid",
                 density: 1180,
@@ -4435,7 +4553,7 @@
                 category: "food",
                 burn: 30,
                 burnTime: 200,
-                burnInto: "ash",
+                burnInto: ["smoke","smoke","smoke","ash"],
                 state: "solid",
                 density: 233.96,
             },
@@ -4447,7 +4565,7 @@
                 category: "food",
                 burn: 50,
                 burnTime: 170,
-                burnInto: "ash",
+                burnInto: ["smoke","smoke","smoke","ash"],
                 state: "solid",
                 density: 233.96,
             },
@@ -4656,11 +4774,12 @@
                     "water": { "elem1":null, "elem2":"dirty_water" },
                     "plague": { "elem2": null },
                     "cell": { "elem2": null, "chance": 0.05 },
+                    "tadpole": { "elem2": null, "chance": 0.05 },
                     "cancer": { "elem2": null, "chance": 0.01 },
                     "blood": { "elem2": null },
-                    "vinegar": { "elem1":"chlorine", "elem2":null },
-                    "ammonia": { "elem1":"chlorine", "elem2":null }, // Mustard Gas
-                    "alcohol": { "elem1":"chlorine", "elem2":null }, // Chloroform
+                    "vinegar": { "elem1":"poison_gas", "elem2":null },
+                    "ammonia": { "elem1":"poison_gas", "elem2":null }, // Mustard Gas
+                    "alcohol": { "elem1":"poison_gas", "elem2":null }, // Chloroform
                 },
                 tempHigh: 111,
                 stateHigh: ["salt","steam"],
@@ -4674,9 +4793,9 @@
                 color: "#A5AC50",
                 behavior: behaviors.GAS,
                 reactions: {
-                    "water": { "elem1": "acid", "elem2":null },
-                    "steam": { "elem1": "acid_gas", "elem2":null },
-                    "hydrogen": { "elem1": "acid_gas", "elem2":null },
+                    "water": { "elem1": "pool_water", "elem2":null },
+                    "hydrogen": { "elem1": "acid_gas", "elem2":null },//hydrochloric acid
+                    "dirty_water": { "elem2":"water" },
                 },
                 tempLow: -36.04,
                 stateLow: "liquid_chlorine",
@@ -4782,6 +4901,7 @@
                 viscosity: 10,
                 tempHigh: 124.55,
                 stateHigh: ["steam","salt","oxygen"],
+                tempLow: 0,
                 category:"liquids",
                 state: "liquid",
                 density: 1060,
@@ -4817,6 +4937,7 @@
                 viscosity: 6.3,
                 tempHigh: 124.55,
                 stateHigh: ["steam","salt","oxygen"],
+                tempLow: 0,
                 category:"liquids",
                 hidden: true,
                 state: "liquid",
@@ -4836,6 +4957,7 @@
                 viscosity: 15,
                 tempHigh: 124.55,
                 stateHigh: ["plague","plague","plague","salt","oxygen"],
+                tempLow: 0,
                 category:"liquids",
                 hidden: true,
                 state: "liquid",
@@ -4851,21 +4973,26 @@
                     "soap": { "elem1":null, "chance":0.02 },
                     "plant": { "elem1":null, "elem2":"dead_plant" },
                     "grass": { "elem1":null, "elem2":"dead_plant" },
+                    "vine": { "elem1":null, "elem2":"dead_plant" },
                     "algae": { "elem1":null, "elem2":null },
                     "mushroom_spore": { "elem1":null, "elem2":null },
                     "lichen": { "elem1":null, "elem2":null },
                     "yeast": { "elem1":null, "elem2":null },
                     "rat": { "elem1":null, "elem2":"rotten_meat" },
                     "frog": { "elem1":null, "elem2":"rotten_meat" },
+                    "tadpole": { "elem2":null },
                     "fish": { "elem1":null, "elem2":"rotten_meat" },
                     "bird": { "elem1":null, "elem2":"rotten_meat" },
                     "head": { "elem1":null, "elem2":"rotten_meat" },
                     "body": { "elem1":null, "elem2":"rotten_meat" },
-                    "ant": { "elem1":null, "elem2":null },
-                    "worm": { "elem1":null, "elem2":null },
-                    "fly": { "elem1":null, "elem2":null },
-                    "firefly": { "elem1":null, "elem2":null },
-                    "bee": { "elem1":null, "elem2":null },
+                    "ant": { "elem1":null, "elem2":"dead_bug" },
+                    "worm": { "elem1":null, "elem2":"dead_bug" },
+                    "fly": { "elem1":null, "elem2":"dead_bug" },
+                    "firefly": { "elem1":null, "elem2":"dead_bug" },
+                    "bee": { "elem1":null, "elem2":"dead_bug" },
+                    "stink_bug": { "elem1":null, "elem2":"dead_bug" },
+                    "termite": { "elem1":null, "elem2":"dead_bug" },
+                    "flea": { "elem1":null, "elem2":"dead_bug" },
                     "slug": { "elem1":null, "elem2":"slime" },
                     "snail": { "elem1":null, "elem2":"calcium" },
                     "sapling": { "elem1":null, "elem2":"dead_plant" },
@@ -4877,11 +5004,13 @@
                     "meat": { "elem1":null, "elem2":"rotten_meat" },
                 },
                 viscosity: 2,
-                tempHigh: 400,
-                stateHigh: "plague",
+                tempHigh: 110,
                 category:"liquids",
                 state: "liquid",
                 density: 1060,
+            },
+            "poison_gas": {
+                color: "#98f5b0"
             },
             "antidote": {
                 color: "#c9b836",
@@ -5263,6 +5392,27 @@
                 stain: -0.1,
                 density: 2.14,
             },
+            "cloud": {
+                color: "#d5dce6",
+                behavior: [
+                    "XX|XX|XX",
+                    "XX|CO:1%5|M1%2.5 AND BO",
+                    "XX|XX|XX",
+                ],
+                reactions: {
+                    "rain_cloud": { "elem1":"rain_cloud", "temp1":-20 },
+                    "electric": { "elem1":"rain_cloud", "temp1":-20 },
+                    "cloud": { "elem1":"rain_cloud", "elem2":"rain_cloud", "temp1":-20, "temp2":-20, "charged":true },
+                },
+                category:"gases",
+                temp: 110,
+                tempLow: 100,
+                stateLow: "rain_cloud",
+                state: "gas",
+                density: 0.4,
+                ignoreAir: true,
+                conduct: 0.03
+            },
             "rain_cloud": {
                 color: "#636b78",
                 behavior: [
@@ -5271,7 +5421,9 @@
                     "CR:electric%0.05|CR:electric%0.05|CR:electric%0.05",
                 ],
                 category:"gases",
-                temp: 80,
+                temp: 70,
+                tempHigh: 100,
+                stateHigh: "cloud",
                 tempLow: 0,
                 stateLow: "snow_cloud",
                 state: "gas",
@@ -5541,6 +5693,7 @@
                     "bee": { "elem2":["ash","firefly","fly"], "chance":0.4 },
                     "firefly": { "elem2":["ash","bee","fly"], "chance":0.4 },
                     "frog": { "elem2":["ash","meat","rotten_meat","cooked_meat"], "chance":0.4 },
+                    "tadpole": { "elem2":["frog","worm",null], "chance":0.4 },
                     "fish": { "elem2":["ash","meat","rotten_meat","cooked_meat"], "chance":0.4 },
                     "rat": { "elem2":["ash","meat","rotten_meat","cooked_meat","plague"], "chance":0.4 },
                     "bird": { "elem2":["ash","meat","rotten_meat","cooked_meat","plague"], "chance":0.4 },
@@ -5610,7 +5763,7 @@
                 category:"gases",
                 hidden: true,
                 state: "gas",
-                density: 0.9,
+                density: 0.5,
                 ignoreAir: true,
             },
             "fallout": {
@@ -5975,6 +6128,22 @@
                 category: "energy",
                 excludeRandom: true,
             },
+            "positron": {
+                color: "#a6bfff",
+                behavior: [
+                    "M1%15 AND CL%6|M1%50 AND CL%13|M1%15 AND CL%6",
+                    "CL%5|DL%50|CL%5",
+                    "CL%5|CL%5|CL%5",
+                ],
+                reactions: {
+                    "electric": { "elem1":"explosion", "elem2":"explosion" }
+                },
+                category: "energy",
+                state: "gas",
+                density: 2.1,
+                insulate: true,
+                ignoreAir: true,
+            },
             "tnt": {
                 color: "#c92a2a",
                 behavior: behaviors.WALL,
@@ -6033,6 +6202,7 @@
                 stateHigh: "molten_steel",
                 excludeRandom: true,
                 conduct: 1,
+                cooldown: defaultCooldown
             },
             "dynamite": {
                 color: ["#de5050","#c92a2a","#a61919"],
@@ -6135,6 +6305,7 @@
                 state: "solid",
                 density: 1500,
                 excludeRandom: true,
+                cooldown: defaultCooldown
             },
             "h_bomb": {
                 color: "#533636",
@@ -6147,7 +6318,8 @@
                 state: "solid",
                 density: 1600,
                 excludeRandom: true,
-                alias: "hydrogen bomb"
+                alias: "hydrogen bomb",
+                cooldown: defaultCooldown
             },
             "dirty_bomb": {
                 color: "#415336",
@@ -6160,6 +6332,7 @@
                 state: "solid",
                 density: 1400,
                 excludeRandom: true,
+                cooldown: defaultCooldown
             },
             "emp_bomb": {
                 color: "#418273",
@@ -6185,6 +6358,7 @@
                 density: 1400,
                 excludeRandom: true,
                 alias: "electromagnetic pulse bomb",
+                cooldown: defaultCooldown
             },
             "nitroglycerin": {
                 color: "#47c900",
@@ -6236,6 +6410,7 @@
                 tempHigh: 1455.5,
                 stateHigh: ["molten_steel","slime"],
                 excludeRandom: true,
+                cooldown: defaultCooldown
             },
             "cold_bomb": {
                 color: "#43646e",
@@ -6250,6 +6425,7 @@
                 tempHigh: 1455.5,
                 stateHigh: "molten_steel",
                 excludeRandom: true,
+                cooldown: defaultCooldown
             },
             "hot_bomb": {
                 color: "#6c436e",
@@ -6264,6 +6440,7 @@
                 tempHigh: 10455.5,
                 stateHigh: "molten_steel",
                 excludeRandom: true,
+                cooldown: defaultCooldown
             },
             "electro_bomb": {
                 color: "#6e6d43",
@@ -6278,6 +6455,7 @@
                 tempHigh: 1655.5,
                 stateHigh: "molten_steel",
                 excludeRandom: true,
+                cooldown: defaultCooldown
             },
             "water_bomb": {
                 color: "#34599e",
@@ -6292,6 +6470,7 @@
                 tempHigh: 1455.5,
                 stateHigh: "molten_steel",
                 excludeRandom: true,
+                cooldown: defaultCooldown
             },
             "antimatter_bomb": {
                 color: "#6e4343",
@@ -6306,6 +6485,7 @@
                 tempHigh: 10455.5,
                 stateHigh: "molten_steel",
                 excludeRandom: true,
+                cooldown: defaultCooldown
             },
             "flashbang": {
                 color: "#65665c",
@@ -6320,6 +6500,7 @@
                 tempHigh: 1455.5,
                 stateHigh: "molten_steel",
                 excludeRandom: true,
+                cooldown: defaultCooldown
             },
             "flash": {
                 color: "#fffdcf",
@@ -6355,6 +6536,7 @@
                 tempHigh: 1455.5,
                 stateHigh: "molten_steel",
                 excludeRandom: true,
+                cooldown: defaultCooldown
             },
             "fireball": {
                 color: ["#782828","#783b28","#784b28"],
@@ -6377,6 +6559,7 @@
                 state: "solid",
                 density: 1600,
                 excludeRandom: true,
+                cooldown: defaultCooldown
             },
             "landmine": {
                 color: "#856C7D",
@@ -6391,6 +6574,7 @@
                 tempHigh: 1455.5,
                 stateHigh: "molten_steel",
                 excludeRandom: true,
+                cooldown: defaultCooldown
             },
             "cluster_bomb": {
                 color: "#7d776d",
@@ -6405,6 +6589,7 @@
                 tempHigh: 1455.5,
                 stateHigh: "molten_steel",
                 excludeRandom: true,
+                cooldown: defaultCooldown
             },
             "armageddon": {
                 color: "#a62900",
@@ -6418,7 +6603,8 @@
                 density: 1300,
                 hidden: true,
                 excludeRandom: true,
-                excludeRandom: true,
+                maxSize: 1,
+                cooldown: defaultCooldown
             },
             "tesla_coil": {
                 color: "#725C38",
@@ -6548,7 +6734,15 @@
                 maxSize: 1,
                 category: "special",
             },
-
+            //ice color: "#c5e9f0"
+            "salt_ice": { color: "#b6ced4" },
+            "sugar_ice": { color: "#c8dee3" },
+            "seltzer_ice": { color: "#a7c4c9" },
+            "dirty_ice": { color: "#a9d9c7" },
+            "pool_ice": { color: "#c0eff0" },
+            "blood_ice": { color: "#ff7070" },
+            "antibody_ice": { color: "#ff8080" },
+            "infection_ice": { color: "#ff7090" },
             
         };
 
@@ -6723,6 +6917,16 @@
             }
             if (pixel.flipY && !elementInfo.flippableY) {
                 delete pixel.flipY;
+            }
+            // If elementInfo.flippableX, set it to true or false randomly
+            if (elementInfo.flipX !== undefined) { pixel.flipX = elementInfo.flipX }
+            else if (elementInfo.flippableX) {
+                pixel.flipX = Math.random() >= 0.5;
+            }
+            // If elementInfo.flippableY, set it to true or false randomly
+            if (elementInfo.flipY !== undefined) { pixel.flipY = elementInfo.flipY }
+            else if (elementInfo.flippableY) {
+                pixel.flipY = Math.random() >= 0.5;
             }
             if (elementInfo.temp != undefined && changetemp) {
                 pixel.temp = elementInfo.temp;
@@ -8179,6 +8383,7 @@
                 return false;
             }
             mouseIsDown = true;
+            lastPlace = 0;
             if (e.button === 0) {
                 mouseType = "left";
             }
@@ -8241,6 +8446,7 @@
         mouseSize = 5;
         mousePos = {x:0,y:0};
         lastPos = mousePos;
+        lastPlace = 0;
         function mouseRange(mouseX,mouseY,size) {
             var coords = [];
             size = size || mouseSize;
@@ -8279,8 +8485,16 @@
                 }
                 return;
             }
+            var cooldowned = false;
+            if (mouseSize===1 && elements[currentElement].cooldown) {
+                if (pixelTicks-lastPlace < elements[currentElement].cooldown) {
+                    return;
+                }
+                cooldowned = true;
+            }
+            lastPlace = pixelTicks;
             startPos = startPos || lastPos
-            if (!(isMobile || elements[currentElement].tool || elements[currentElement].category==="tools")) {
+            if (!(isMobile || (cooldowned && startPos.x===lastPos.x && startPos.y===lastPos.y) || elements[currentElement].tool || elements[currentElement].category==="tools")) {
                 var coords = lineCoords(startPos.x,startPos.y,mouseX,mouseY);
             }
             else { var coords = mouseRange(mouseX,mouseY); }
@@ -8867,16 +9081,16 @@
                 explodeAt(x,y,radius,element);
             },
             "temperature": function() {
-                // set the temperature in a random circle to a random value between -273 and 200
+                // set the temperature in a random circle to a random value between -200 and 200
                 var x = Math.floor(Math.random()*(width-1))+1;
                 var y = Math.floor(Math.random()*(height-1))+1;
                 var radius = Math.floor(Math.random()*4)+3;
-                var temp = Math.floor(Math.random()*400)-273;
+                var temp = Math.floor(Math.random()*400)-200;
                 var coords = circleCoords(x,y,radius);
                 for (var i = 0; i < coords.length; i++) {
                     var coord = coords[i];
                     if (!outOfBounds(coord.x,coord.y) && !isEmpty(coord.x,coord.y)) {
-                        pixelMap[coord.x][coord.y].temp = temp;
+                        pixelMap[coord.x][coord.y].temp += temp;
                     }
                 }
             }
@@ -8884,7 +9098,7 @@
         randomEventChoices = {
             "falling_pixel": ["fireball","fallout","seeds",["bomb","cold_bomb","cluster_bomb"],"human","gold_coin","feather","glitter","homunculus","egg","frozen_frog","sapling","smoke_grenade"],
             "element_circle": ["carbon_dioxide","primordial_soup","fly","steam","oxygen","dye","yolk","sugar","bee","firefly","tadpole","flash","foam"],
-            "explosion": ["fire","cold_fire","methane","electric","light","laser","radiation","plasma","liquid_nitrogen","liquid_helium","liquid_neon","acid_gas","ember","malware",["stench","plague"],["firework","fire","fire"],"bubble"],
+            "explosion": ["fire","cold_fire","methane","electric","light","laser","radiation","plasma","liquid_nitrogen","liquid_helium","liquid_neon","acid_gas","fw_ember","malware",["stench","plague"],["firework","fire","fire"],"bubble"],
         }
         function doRandomEvents() {
             var chance = settings.events;
@@ -9802,6 +10016,13 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                     if (!elements[randomEventChoices[key][i]]) {
                         randomEventChoices[key].splice(i,1);
                     }
+                }
+            }
+            
+            // Poison == poison gas reactions
+            if (elements.poison && elements.poison_gas) {
+                if (elements.poison.reactions) {
+                    elements.poison_gas.reactions = elements.poison.reactions;
                 }
             }
 

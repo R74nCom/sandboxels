@@ -3,7 +3,33 @@
     + Baking Update
     + More plans / suggestions at https://docs.google.com/document/u/4/d/1R8xljj_J-K5oU-9y4louwplQmM-ZBvUfXmhbgj5LYdk/edit
 
-[Version 1.6.3 - July 24, 2022]
+[Version 1.6.4 - July 30, 2022]
+    + Seeds and bombs have a short cooldown when on the lowest cursor size
+    + Cloud (The normal, boring kind)
+    ~ Tweaked cloud behavior
+    + Positron
+    + Strange Matter
+    + Dead Bug (Hidden)
+    + Pool Water (Hidden)
+    + Poison Gas (Hidden) - Result of various lethal reactions
+    + Ice forms of all Water and Blood variants
+    + Flies are instantly electrocuted
+    + Tadpoles are affected by Poison, Radiation, etc.
+    + Flying insects will die from drowning
+    ~ Adjusted Root flammability
+    ~ Reduced Acid Gas's condensation point
+    ~ Nerfed Yeast growth rate
+    ~ Burning Bread makes a lot less ash
+   [Bug Fixes]
+    ~ Fixed: Random events can blow up the Sun
+    ~ Fixed: Clouds always start by moving right
+    ~ Fixed: Acid Gas spawns at room temperature
+    ~ Fixed: Some things immune to Acid aren't immune to Acid Gas
+    ~ Fixed: Too much piling up of Rad Steam under Rad Clouds
+   [Technical]
+    + "cooldown" element attribute, in ticks
+
+[Version 1.6.3 - July 24, 2022 - Random Update]
     + Random Events! Enable in settings!
     + Electrum alloy (Hidden)
     - Dirty Water no longer stains
