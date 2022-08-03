@@ -1,7 +1,7 @@
 elements.fluorine = {
 	color: "#FFFFBF",
 	behavior: behaviors.GAS,
-	ignore: ["FOOF","solid_FOOF","oxygen","liquid_oxygen","chlorine","liquid_chlorine","liquid_hydrogen_fluoride","liquid_fluorine","fluorine","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_acid_gas","fire","smoke","acid_gas","neutral_acid","acid","acid_cloud","water","salt_water","sugar_water","dirty_water","steam","gold","hydrogen"],
+	ignore: ["FOOF","solid_FOOF","oxygen","liquid_oxygen","chlorine","liquid_chlorine","liquid_hydrogen_fluoride","liquid_fluorine","fluorine","fluorine_ice","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_acid_gas","fire","smoke","acid_gas","neutral_acid","acid","acid_cloud","water","salt_water","sugar_water","dirty_water","steam","gold","hydrogen"],
 	tick: function(pixel) {
 		let change = false;
 		for (let i = -1; i <= 1; i++) {
@@ -42,7 +42,7 @@ elements.fluorine = {
 elements.liquid_fluorine = {
 	color: "#ffff3b",
 	behavior: behaviors.LIQUID,
-	ignore: ["FOOF","solid_FOOF","oxygen","liquid_oxygen","chlorine","liquid_chlorine","liquid_hydrogen_fluoride","liquid_fluorine","fluorine","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_acid_gas","fire","smoke","acid_gas","neutral_acid","acid","acid_cloud","water","salt_water","sugar_water","dirty_water","steam","gold","hydrogen"],
+	ignore: ["FOOF","solid_FOOF","oxygen","liquid_oxygen","chlorine","liquid_chlorine","liquid_hydrogen_fluoride","liquid_fluorine","fluorine","fluorine_ice","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_acid_gas","fire","smoke","acid_gas","neutral_acid","acid","acid_cloud","water","salt_water","sugar_water","dirty_water","steam","gold","hydrogen"],
 	tick: function(pixel) {
 		let change = false;
 		for (let i = -1; i <= 1; i++) {
@@ -83,7 +83,7 @@ elements.liquid_fluorine = {
 
 elements.hydrofluoric_acid = {
 	color: ["#c8cf91","#efff5e","#a0cc39"],
-	ignore: ["fire","liquid_hydrogen_fluoride","liquid_fluorine","fluorine","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_acid_gas","acid_gas","neutral_acid","acid","acid_cloud","water","salt_water","sugar_water","dirty_water","steam","gold"],
+	ignore: ["fire","liquid_hydrogen_fluoride","liquid_fluorine","fluorine","fluorine_ice","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_acid_gas","acid_gas","neutral_acid","acid","acid_cloud","water","salt_water","sugar_water","dirty_water","steam","gold"],
 	tick: function(pixel) {
 		let change = false;
 		for (let i = -1; i <= 1; i++) {
@@ -125,7 +125,7 @@ elements.hydrofluoric_acid = {
 
 elements.hydrofluoric_acid_gas = {
 	color: ["#acb37d","#bfcc4b","#668224"],
-	ignore: ["liquid_hydrogen_fluoride","liquid_fluorine","fluorine","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_acid_gas","acid_gas","neutral_acid","acid","acid_cloud","water","salt_water","sugar_water","dirty_water","steam","gold"],
+	ignore: ["liquid_hydrogen_fluoride","liquid_fluorine","fluorine","fluorine_ice","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_acid_gas","acid_gas","neutral_acid","acid","acid_cloud","water","salt_water","sugar_water","dirty_water","steam","gold"],
 	tick: function(pixel) {
 		let change = false;
 		for (let i = -1; i <= 1; i++) {
@@ -167,7 +167,7 @@ elements.hydrofluoric_acid_gas = {
 elements.hydrogen_fluoride = {
 	color: "#f2f28d",
 	behavior: behaviors.GAS,
-	ignore: ["liquid_hydrogen_fluoride","liquid_fluorine","fluorine","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_acid_gas","fire","smoke","acid_gas","neutral_acid","acid","acid_cloud","water","salt_water","sugar_water","dirty_water","steam","gold","hydrogen"],
+	ignore: ["liquid_hydrogen_fluoride","liquid_fluorine","fluorine","fluorine_ice","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_acid_gas","fire","smoke","acid_gas","neutral_acid","acid","acid_cloud","water","salt_water","sugar_water","dirty_water","steam","gold","hydrogen"],
 	tick: function(pixel) {
 		let change = false;
 		for (let i = -1; i <= 1; i++) {
@@ -206,7 +206,7 @@ elements.hydrogen_fluoride = {
 elements.liquid_hydrogen_fluoride = {
 	color: "#e2e28d",
 	behavior: behaviors.LIQUID,
-	ignore: ["liquid_hydrogen_fluoride","liquid_fluorine","fluorine","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_acid_gas","fire","smoke","acid_gas","neutral_acid","acid","acid_cloud","water","salt_water","sugar_water","dirty_water","steam","gold","hydrogen"],
+	ignore: ["liquid_hydrogen_fluoride","liquid_fluorine","fluorine","fluorine_ice","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_acid_gas","fire","smoke","acid_gas","neutral_acid","acid","acid_cloud","water","salt_water","sugar_water","dirty_water","steam","gold","hydrogen"],
 	tick: function(pixel) {
 		let change = false;
 		for (let i = -1; i <= 1; i++) {
@@ -247,7 +247,7 @@ elements.liquid_hydrogen_fluoride = {
 elements.FOOF = {
 	color: "#fa1e1e",
 	behavior: behaviors.LIQUID,
-	ignore: ["FOOF","solid_FOOF","fluorine","liquid_fluorine","liquid_oxygen","oxygen","fire"],
+	ignore: ["FOOF","solid_FOOF","fluorine","liquid_fluorine","fluorine_ice","liquid_oxygen","oxygen","fire"],
 	tick: function(pixel) {
 		let change = false;
 		for (let i = -1; i <= 1; i++) {
@@ -285,7 +285,7 @@ elements.FOOF = {
 elements.solid_FOOF = {
 	color: "#fa4a1e",
 	behavior: behaviors.WALL,
-	ignore: ["FOOF","solid_FOOF","fluorine","liquid_fluorine","liquid_oxygen","oxygen","fire"],
+	ignore: ["FOOF","solid_FOOF","fluorine","liquid_fluorine","fluorine_ice","liquid_oxygen","oxygen","fire"],
 	tick: function(pixel) {
 		let change = false;
 		for (let i = -1; i <= 1; i++) {
@@ -325,8 +325,8 @@ if (!elements.acid_gas.ignore) {
 	acid_gas.ignore = [];
 }
 
-elements.acid.ignore.push("liquid_fluorine","fluorine","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_acid_gas");
-elements.acid_gas.ignore.push("liquid_fluorine","fluorine","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_acid_gas");
+elements.acid.ignore.push("liquid_fluorine","fluorine","fluorine_ice","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_acid_gas");
+elements.acid_gas.ignore.push("liquid_fluorine","fluorine","fluorine_ice","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_acid_gas");
 
 
 
