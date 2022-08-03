@@ -8,7 +8,7 @@ elements.fluorine = {
 			for (let j = -1; j <= 1; j++) {
 				if (!(i === 0 && j === 0) && !isEmpty(pixel.x+i,pixel.y+j,true)
 					&& !elements[pixel.element].ignore.includes(pixelMap[pixel.x+i][pixel.y+j].element)) {
-					if(Math.random() > elements[newPixel.element].hardness) {
+					if(!elements[pixelMap[pixel.x+i][pixel.y+j].element].hardness || Math.random() > elements[pixelMap[pixel.x+i][pixel.y+j].element].hardness) {
 						changePixel(pixelMap[pixel.x+i][pixel.y+j],"fire");
 						change = true;
 					}
@@ -49,7 +49,7 @@ elements.liquid_fluorine = {
 			for (let j = -1; j <= 1; j++) {
 				if (!(i === 0 && j === 0) && !isEmpty(pixel.x+i,pixel.y+j,true)
 					&& !elements[pixel.element].ignore.includes(pixelMap[pixel.x+i][pixel.y+j].element)) {
-					if(Math.random() < 0.01 && Math.random() > elements[newPixel.element].hardness) {
+					if(Math.random() < 0.01 && (!elements[pixelMap[pixel.x+i][pixel.y+j].element].hardness || Math.random() > elements[pixelMap[pixel.x+i][pixel.y+j].element].hardness)) {
 						changePixel(pixelMap[pixel.x+i][pixel.y+j],"fire");
 						change = true;
 					}
@@ -90,7 +90,7 @@ elements.hydrofluoric_acid = {
 			for (let j = -1; j <= 1; j++) {
 				if (!(i === 0 && j === 0) && !isEmpty(pixel.x+i,pixel.y+j,true)
 					&& !elements[pixel.element].ignore.includes(pixelMap[pixel.x+i][pixel.y+j].element)) {
-					if(Math.random() < 0.2 && Math.random() > elements[newPixel.element].hardness) {
+					if(!elements[pixelMap[pixel.x+i][pixel.y+j].element].hardness || Math.random() > elements[pixelMap[pixel.x+i][pixel.y+j].element].hardness) {
 						changePixel(pixelMap[pixel.x+i][pixel.y+j],"fire");
 						change = true;
 					}
@@ -132,7 +132,7 @@ elements.hydrofluoric_acid_gas = {
 			for (let j = -1; j <= 1; j++) {
 				if (!(i === 0 && j === 0) && !isEmpty(pixel.x+i,pixel.y+j,true)
 					&& !elements[pixel.element].ignore.includes(pixelMap[pixel.x+i][pixel.y+j].element)) {
-					if(Math.random() > elements[newPixel.element].hardness) {
+					if(!elements[pixelMap[pixel.x+i][pixel.y+j].element].hardness || Math.random() > elements[pixelMap[pixel.x+i][pixel.y+j].element].hardness) {
 						changePixel(pixelMap[pixel.x+i][pixel.y+j],"fire");
 						change = true;
 					}
@@ -174,7 +174,7 @@ elements.hydrogen_fluoride = {
 			for (let j = -1; j <= 1; j++) {
 				if (!(i === 0 && j === 0) && !isEmpty(pixel.x+i,pixel.y+j,true)
 					&& !elements[pixel.element].ignore.includes(pixelMap[pixel.x+i][pixel.y+j].element)) {
-					if(Math.random() > elements[newPixel.element].hardness) {
+					if(!elements[pixelMap[pixel.x+i][pixel.y+j].element].hardness || Math.random() > elements[pixelMap[pixel.x+i][pixel.y+j].element].hardness) {
 						changePixel(pixelMap[pixel.x+i][pixel.y+j],"fire");
 						change = true;
 					}
@@ -213,7 +213,7 @@ elements.liquid_hydrogen_fluoride = {
 			for (let j = -1; j <= 1; j++) {
 				if (!(i === 0 && j === 0) && !isEmpty(pixel.x+i,pixel.y+j,true)
 					&& !elements[pixel.element].ignore.includes(pixelMap[pixel.x+i][pixel.y+j].element)) {
-					if(Math.random() > elements[newPixel.element].hardness) {
+					if(!elements[pixelMap[pixel.x+i][pixel.y+j].element].hardness || Math.random() > elements[pixelMap[pixel.x+i][pixel.y+j].element].hardness) {
 						changePixel(pixelMap[pixel.x+i][pixel.y+j],"fire");
 						change = true;
 					}
@@ -254,7 +254,7 @@ elements.FOOF = {
 			for (let j = -1; j <= 1; j++) {
 				if (!(i === 0 && j === 0) && !isEmpty(pixel.x+i,pixel.y+j,true)
 					&& !elements[pixel.element].ignore.includes(pixelMap[pixel.x+i][pixel.y+j].element)) {
-					if(Math.random() > elements[newPixel.element].hardness) {
+					if(!elements[pixelMap[pixel.x+i][pixel.y+j].element].hardness || Math.random() > elements[pixelMap[pixel.x+i][pixel.y+j].element].hardness) {
 						changePixel(pixelMap[pixel.x+i][pixel.y+j],"fire");
 						change = true;
 					}
@@ -292,7 +292,7 @@ elements.solid_FOOF = {
 			for (let j = -1; j <= 1; j++) {
 				if (!(i === 0 && j === 0) && !isEmpty(pixel.x+i,pixel.y+j,true)
 					&& !elements[pixel.element].ignore.includes(pixelMap[pixel.x+i][pixel.y+j].element)) {
-					if(Math.random() > elements[newPixel.element].hardness) {
+					if(!elements[pixelMap[pixel.x+i][pixel.y+j].element].hardness || Math.random() > elements[pixelMap[pixel.x+i][pixel.y+j].element].hardness) {
 						changePixel(pixelMap[pixel.x+i][pixel.y+j],"fire");
 						change = true;
 					}
