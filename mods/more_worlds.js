@@ -149,7 +149,7 @@ elements.irradiated_dirt = {
 	color: ["#70762b","#4c5c21","#50571a","#4c6b1e"],
 	behavior: behaviors.RAD_POWDER,
 	tempHigh:1200,
-	stateHigh: ["molten_dirt","molten_dirt","fallout"],
+	stateHigh: "irradiated_molten_dirt",
 	reactions: {
 		"dirt": { "elem1":"dirt", "elem2":"irradiated_dirt", "chance":0.0005, "oneway":true },
 	},
@@ -159,6 +159,19 @@ elements.irradiated_dirt = {
 	state: "solid",
 	density: 1220,
 };
+
+elements.irradiated_molten_dirt = {
+    "behavior": behaviors.RAD_MOLTEN,
+    "hidden": true,
+    "state": "liquid",
+    "category": "states",
+    "color": ["#e09315", "#e07615", "#e05800", "#987310", "#985c10", "#984500", "#a06c0d", "#a0570d", "#a04100", "#98850f", "#986b0f", "#985000"],
+    "temp": 1250,
+    "tempLow": 1100,
+    "stateLow": "irradiated_dirt",
+    "density": 1098,
+    "viscosity": 10000
+}
 
 elements.molten_irradiated_dirt = {
 	behavior: behaviors.RAD_MOLTEN
