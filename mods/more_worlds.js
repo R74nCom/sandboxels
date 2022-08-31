@@ -88,7 +88,6 @@ elements.snow_cloud_floater = {
 };
 
 worldgentypes.ice = {
-	name: "TNT World", //unimplemented
 	layers: [
 		//[0.95, "snow_cloud_floater"], //le cutting room floor has arrived
 		[0.9, "snow"],
@@ -149,7 +148,7 @@ elements.irradiated_dirt = {
 	color: ["#70762b","#4c5c21","#50571a","#4c6b1e"],
 	behavior: behaviors.RAD_POWDER,
 	tempHigh:1200,
-	stateHigh: "irradiated_molten_dirt",
+	stateHigh: "molten_irradiated_dirt",
 	reactions: {
 		"dirt": { "elem1":"dirt", "elem2":"irradiated_dirt", "chance":0.0005, "oneway":true },
 	},
@@ -160,21 +159,17 @@ elements.irradiated_dirt = {
 	density: 1220,
 };
 
-elements.irradiated_molten_dirt = {
+elements.molten_irradiated_dirt = {
     "behavior": behaviors.RAD_MOLTEN,
     "hidden": true,
     "state": "liquid",
-    "category": "states",
+    "category": "Irradiated",
     "color": ["#e09315", "#e07615", "#e05800", "#987310", "#985c10", "#984500", "#a06c0d", "#a0570d", "#a04100", "#98850f", "#986b0f", "#985000"],
     "temp": 1250,
     "tempLow": 1100,
     "stateLow": "irradiated_dirt",
     "density": 1098,
     "viscosity": 10000
-}
-
-elements.molten_irradiated_dirt = {
-	behavior: behaviors.RAD_MOLTEN
 }
 
 elements.irradiated_glass = {
@@ -190,7 +185,8 @@ elements.irradiated_glass = {
 };
 
 elements.molten_irradiated_glass = {
-	behavior: behaviors.RAD_MOLTEN
+	behavior: behaviors.RAD_MOLTEN,
+	category: "Irradiated",
 };
 
 elements.irradiated_glass_shard = {
@@ -313,7 +309,7 @@ elements.rad_cloud.behavior =  [
 	"CR:radiation%0.05|CR:radiation%0.05|CR:radiation%0.05",
 ];
 elements.rad_cloud.tempLow = 0;
-elements.rad_cloud.stateLow = "rad_snowcloud";
+elements.rad_cloud.stateLow = "rad_snow_cloud";
 elements.fallout.behavior = behaviors.RAD_POWDER;
 
 elements.irradiated_permafrost = {
@@ -390,7 +386,7 @@ elements.irradiated_packed_snow = {
 	hidden: true,
 };
 
-elements.rad_snowcloud = {
+elements.rad_snow_cloud = {
 	color: ["#2d6e31","#416e21"],
 	behavior: [
 		"XX|XX|XX",
@@ -407,16 +403,16 @@ elements.rad_snowcloud = {
 	stateHigh: "rad_cloud",
 };
 
-elements.rad_snowcloud_floater = {
+elements.rad_snow_cloud_floater = {
 	color: ["#2d6e31","#416e21"],
 	behavior: [
 		"M2|M1|M2",
-		"M1%80|CH:rad_snowcloud_%0.2|M1%80",
+		"M1%80|CH:rad_snow_cloud_%0.2|M1%80",
 		"M%60|XX|M2%60",
 	],
 	reactions: {
-		"rad_snowcloud_floater": { elem1: "rad_snowcloud", elem2: "rad_snowcloud", chance: 0.003 },
-		"rad_snowcloud": { elem1: "rad_snowcloud", elem2: "rad_snowcloud", chance: 0.01 }
+		"rad_snow_cloud_floater": { elem1: "rad_snow_cloud", elem2: "rad_snow_cloud", chance: 0.003 },
+		"rad_snow_cloud": { elem1: "rad_snow_cloud", elem2: "rad_snow_cloud", chance: 0.01 }
 	},
 	category:"Irradiated",
 	hidden: true,
@@ -480,6 +476,116 @@ elements.irradiated_magma = {
 	density: 2725,
 };
 
+irradiatedObject = {
+	dirt:					"irradiated_dirt",
+	molten_dirt:			"molten_irradiated_dirt",
+	glass:					"irradiated_glass",
+	irradiated_glass:		"molten_irradiated_glass",
+	glass_shard:			"irradiated_glass_shard",
+	sand:					"irradiated_sand",
+	mud:					"irradiated_mud",
+	wet_sand:				"irradiated_wet_sand",
+	water:					"irradiated_water",
+	permafrost:				"irradiated_permafrost",
+	mudstone:				"irradiated_mudstone",
+	packed_sand:			"irradiated_packed_sand",
+	ice:					"irradiated_ice",
+	snow:					"irradiated_snow",
+	packed_snow:			"irradiated_packed_snow",
+	snow_cloud:				"rad_snow_cloud",
+	snow_cloud_floater:		"rad_snow_cloud_floater",
+	rock:					"irradiated_rock",
+	gravel:					"irradiated_gravel",
+	basalt:					"irradiated_basalt",
+	magma:					"irradiated_magma"
+};
+
+function getKeyByValue(object, value) {
+  return Object.keys(object).find(key => object[key] === value);
+}
+//getKeyByValue code by UncleLaz on StackOverflow: https://stackoverflow.com/questions/9907419/how-to-get-a-key-in-a-javascript-object-by-its-value"
+
+	//just for fun
+
+elements.super_irradiator = {
+	color: "#66ee33",
+	tick: function(pixel) {
+		var twentiethOfTemp = pixel.temp / 20;
+		var roundOf20th = Math.round(twentiethOfTemp);
+		var boundedR20 = Math.max(1,Math.min(roundOf20th,11));
+		var radius1 = (-1 * boundedR20);
+		var radius2 = (boundedR20 + 1);
+		for (let i = radius1; i < radius2; i++) {
+			for (let j = radius1; j < radius2; j++) {
+				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
+					var destPixel = pixelMap[pixel.x+j][pixel.y+i];
+					var elementToCheck = destPixel.element;
+					if(irradiatedObject[elementToCheck]) {
+						changePixel(destPixel,irradiatedObject[elementToCheck]);
+					};
+				};
+			};
+		};
+	},
+	category:"machines",
+	insulate: true,
+	state: "solid",
+};
+
+elements.super_deirradiator = {
+	color: "#dd33ee",
+	tick: function(pixel) {
+		var twentiethOfTemp = pixel.temp / 20;
+		var roundOf20th = Math.round(twentiethOfTemp);
+		var boundedR20 = Math.max(1,Math.min(roundOf20th,11));
+		var radius1 = (-1 * boundedR20);
+		var radius2 = (boundedR20 + 1);
+		for (let i = radius1; i < radius2; i++) {
+			for (let j = radius1; j < radius2; j++) {
+				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
+					var destPixel = pixelMap[pixel.x+j][pixel.y+i];
+					var elementToCheck = destPixel.element;
+					if(getKeyByValue(irradiatedObject,elementToCheck)) {
+						changePixel(destPixel,getKeyByValue(irradiatedObject,elementToCheck));
+					};
+				};
+			};
+		};
+	},
+	category:"machines",
+	insulate: true,
+	state: "solid",
+};
+
+elements.liquid_irradium = {
+	color: "#5499FF",
+	behavior: behaviors.RAD_LIQUID,
+	tick: function(pixel) {
+        for(i = 0; i < adjacentCoords.length; i++) {
+            if(!isEmpty(pixel.x+adjacentCoords[i][0],pixel.y+adjacentCoords[i][1],true)) {
+				var destPixel = pixelMap[pixel.x+adjacentCoords[i][0]][pixel.y+adjacentCoords[i][1]];
+				var elementToCheck = destPixel.element;
+				if(irradiatedObject[elementToCheck]) {
+					changePixel(destPixel,irradiatedObject[elementToCheck]);
+				};
+            }
+        }
+	},
+	//Becomes rainbow sand by water or poison, as well as by protocite, or bio-ooze
+	//Becomes sulfuric acid on contact with it
+	//Becomes corrupt slime by elder fluid
+	//Converts black tar and organic soup into itself
+	//Turns either grav liquid into aether dust, as well as liquid crystal
+	//Turns blood into bloodstone
+	//Turns blue slime into black slime
+	//Made by {mercury or bio-ooze} and protocite
+	category:"liquids",
+	state: "liquid",
+	density: 18180,	//Cherry-picked from a Tumblr headcanon
+					//https://omniblog-of-starbound.tumblr.com/post/188424072728/starbound-element-headcannon-modded-metals
+	viscosity: 80.1,	//probably misinterpreting tickDelta, and w/o the game assets, I can't compare against water, so this is in relation to H2SO4 scaled to its density in cP and under the assumption that water visc = 1
+};
+
 if(enabledMods.includes("mods/some_tf_liquids.js")) {
 	elements.irradiated_basalt_gravel = {
 		color: ["#394d37", "#3b452f", "#3f452a", "#2d3d2c"],
@@ -497,15 +603,29 @@ if(enabledMods.includes("mods/some_tf_liquids.js")) {
 worldgentypes.nuclear_wasteland = {
 	layers: [
 		[0.9, "smoke", 0.5],
-		[0.9, "rad_snowcloud_floater", 0.75],
+		[0.9, "rad_snow_cloud_floater", 0.75],
 		[0.82, "fallout", 0.4],
+		[0.7, "liquid_irradium", 0.05],
 		[0.7, "dead_plant", 0.12],
 		[0.55, "irradiated_dirt"],
 		[0.45, "irradiated_rock"],
+		[0.25, "uranium", 0.4],
 		[0.35, "irradiated_rock", 0.5],
 		[0.3, "irradiated_gravel", 0.5],
+		[0.2, "uranium", 0.2],
 		[0.05, "rock"],
 		[0, "basalt"],
 	],
 	temperature: -5 //nuclear winter
+};
+
+//Dark world
+
+worldgentypes.dark = {
+	layers: [
+		[0.8, "carbon_dioxide"],
+		[0.65, "ink"],
+		[0.5, "charcoal"],
+		[0, "basalt"]
+	]
 };
