@@ -156,4 +156,16 @@ worldgentypes.test_ocean = {
 		[0.03, "rock"],
 		[0, "basalt"],
 	]
-}
+};
+
+worldgentypes.desert = {
+	layers: [
+		[0.95, "gravel", 0.6],
+		[0.65, "sand"],
+		[0.55, "bone", 0.03],
+		[0.3, "sandstone"],
+		[0.05, "rock"],
+		[-0.78, "basalt"]
+	],
+	temperature: 38
+};
