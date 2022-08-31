@@ -467,6 +467,20 @@ elements.irradiated_magma = {
 	density: 2725,
 };
 
+if(enabledMods.includes("mods/some_tf_liquids.js")) {
+	elements.irradiated_basalt_gravel = {
+		color: ["#394d37", "#3b452f", "#3f452a", "#2d3d2c"],
+		behavior: behaviors.RAD_POWDER,
+		tempHigh: 1262.5,
+		stateHigh: "irradiated_magma",
+		category: "land",
+		state: "solid",
+		density: 1975,
+		hardness: 0.26,
+	}
+	elements.irradiated_basalt.breakInto = "irradiated_basalt_gravel";
+};
+
 worldgentypes.nuclear_wasteland = {
 	layers: [
 		[0.9, "smoke", 0.5],
