@@ -105,8 +105,8 @@ function funniPrompt() {
 				}
 			};
 			if(property === "color") {
-				if(!value.startsWith("rgb(") || value.split(",").length !== 3) {
-					alert("Color must be in the form \"rgb(red,green,blue)\"!");
+				if(!value.startsWith("rgb(") || !value.startsWith("hsl(") || value.split(",").length !== 3) {
+					alert("Color must be in the form \"rgb(red,green,blue)\" or \"hsl(hue,saturation,lightness)\"!");
 					break;
 				}
 				var checkedColorObject = rgbStringToUnvalidatedObject(value);
