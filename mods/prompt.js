@@ -281,8 +281,36 @@ function funniPrompt() {
 			};
 			alert(`There are ${count} pixels of ${inputElement}`);
 			break;
+		case "countall":
+			var listObject = {};
+
+			//Listing code;
+			for (var i = 1; i < width; i++) {
+				for (var j = 1; j < height; j++) {
+					if (!isEmpty(i,j)) {
+						var pixel = pixelMap[i][j];
+						var element = pixel.element;
+						if(!listObject[pixel.element]) {
+							listObject[pixel.element] = 1;
+						} else {
+							listObject[pixel.element]++;
+						}
+					};
+				};
+			};
+			
+			var formattedList = "";
+			var elements = Object.keys(listObject);
+			for(k = 0; k < elements.length; k++) {
+				var elementName = elements[k];
+				var elementCount = listObject[elementName];
+				formattedList += `${elementName}: ${elementCount}\n`;
+			};
+			
+			alert("Elements counts logged to console");
+			console.log(formattedList);
+			break;
 		default:
 			alert(`Command ${firstItem} not found!`);
 	};
 };
-
