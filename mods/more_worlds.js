@@ -629,3 +629,21 @@ worldgentypes.dark = {
 		[0, "basalt"]
 	]
 };
+
+//Money World (requires gems.js)
+
+if(enabledMods.includes("mods/gems.js")) {
+	worldgentypes.money = {
+		layers: [
+			[0.9, "emerald"],
+			[0.6, "diamond"],
+			[0.3, "gold_coin"],
+			[0.1, "ruby", 1/3],
+			[0.1, "amethyst", 1/2],
+			[0.1, "sapphire"],
+			[-0.1, "pearl", 0.4],
+			[-0.1, "onyx"]
+		]
+	};
+};
+
