@@ -3,7 +3,7 @@
 elements.emerald = {
 	color: ["#31e31e", "#88fa5a", "#28d419", "#54e823", "#64f235"],
 	tempHigh: 1287,
-		//1: I can't be arsed to find out what happens to emerald in extreme heat. Apparently, neither can anyone else because Google is f***ing useless for this.
+		//1: I can't be arsed to find out what happens to emerald in extreme heat. Apparently, neither can anyone else, and Google is useless for this.
 		//2: So I'm just assuming that the chromium impurities are polite and remain in solution with the molten beryl.
 	behavior: behaviors.POWDER,
 	category: "powders",
@@ -49,7 +49,7 @@ elements.ruby = {
 elements.topaz = {
 	//Terraria
 	color: ["#f7f431", "#ffff5c", "#f7e048", "#fae43e", "#fff86e", "#ede321"],
-	tempHigh: 1340, //yay, more thermal decomposition elements
+	tempHigh: 1340,
 	stateHigh: "mullite",
 	behavior: behaviors.POWDER,
 	category: "powders",
