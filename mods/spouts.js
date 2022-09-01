@@ -15,6 +15,7 @@ function _randomInt(max) {
 }
 
 excludedElements = ["ketchup", "liquid_cloner", "fire_cloner"]
+includedElements = ["ketchup_spout", "spout", "udder", "torch", "sun"]
 
 runAfterLoad(function() {
     liquidArray = Object.keys(elements).filter(function(e) {
@@ -38,4 +39,20 @@ runAfterLoad(function() {
 			elements[`${liquidArray[i]}_spout`].excludeRandom = false;
 		};
 	};
+	spoutChoices = Object.keys(elements).filter(function(e) {
+		return elements[e].category == "spouts" || includedElements.includes(elements[e]);
+	});
+	spoutChoices = spoutChoices.filter(function(e) {
+		return !elements[e.slice(0,-6)].excludeRandom;
+	});
 });
+
+elements.random_spout = {
+	color: ["#3e5f8a","#a334ec","#ea96f9","#a6ecf6","#70ebc8","#d9286b","#7eed91","#a18b30"],
+	behavior: behaviors.WALL,
+	category: "special",
+	excludeRandom: true,
+	tick: function(pixel) {
+		changePixel(pixel,spoutChoices[Math.floor(Math.random() * spoutChoices.length)])
+	},
+};
