@@ -1,3 +1,4 @@
+colorInvalidError = "Color must be in the form \"rgb(red,green,blue)\" or \"hsl(hue,saturation%,lightness%)\" (without quotes)!";
 stringSynonyms = ["string","str","st","s"];
 numberSynonyms = ["number","num","nm","nu","n","integer","int","i","float","flt","f", //we will say integer but actually make it a float, how evil
 						 "wholenumber","decimalnumber","wn","dn","w","d","deeznuts"]; //Alice (software) reference, and an excuse to include deez nuts
@@ -15,6 +16,14 @@ function rgbStringToUnvalidatedObject(string) {
 	var green = parseFloat(string[1]);
 	var blue = parseFloat(string[2].slice(0,-1));
 	return {r: red, g: green, b: blue};
+}
+
+function hslStringToUnvalidatedObject(string) {
+	string = string.split(",");
+	var hue = parseFloat(string[0].substring(4));
+	var saturation = parseFloat(string[1].slice(0,-1));
+	var lightness = parseFloat(string[2].slice(0,-2));
+	return {h: hue, s: saturation, l: lightness};
 }
 
 function funniPrompt() {
@@ -105,16 +114,39 @@ function funniPrompt() {
 				}
 			};
 			if(property === "color") {
-				if(!value.startsWith("rgb(") || !value.startsWith("hsl(") || value.split(",").length !== 3) {
-					alert("Color must be in the form \"rgb(red,green,blue)\" or \"hsl(hue,saturation,lightness)\"!");
+				if(!value.startsWith("rgb(")) { //if not RGB
+					if(value.startsWith("hsl(")) { //if HSL
+						if(!(value.split(",")[1].endsWith('%')) && !(value.split(",")[2].endsWith('%)'))) { //if missing percent symbols
+							alert("Color must be in the form \"rgb(red,green,blue)\" or \"hsl(hue,saturation%,lightness%)\"!");
+							break;
+						};
+					} else { //if not RGB and not HSL
+						alert("Color must be in the form \"rgb(red,green,blue)\" or \"hsl(hue,saturation%,lightness%)\"!");
+						break;
+					};							
+				}
+				if(value.split(",").length !== 3) { //if too short or long
+					alert("Color must be in the form \"rgb(red,green,blue)\" or \"hsl(hue,saturation%,lightness%)\"!");
 					break;
 				}
-				var checkedColorObject = rgbStringToUnvalidatedObject(value);
-				if(isNaN(checkedColorObject.r) || isNaN(checkedColorObject.g) || isNaN(checkedColorObject.b)) {
-					console.log(checkedColorObject);
-					alert("One or more color values are invalid!");
+				if(value.startsWith("rgb(")) { //if RGB
+					var checkedColorObject = rgbStringToUnvalidatedObject(value); //RGB NaN checking
+					if(isNaN(checkedColorObject.r) || isNaN(checkedColorObject.g) || isNaN(checkedColorObject.b)) {
+						//console.log(checkedColorObject);
+						alert("One or more color values are invalid!");
+						break;
+					};
+				} else if(value.startsWith("hsl(")) { //if HSL
+					var checkedColorObject = hslStringToUnvalidatedObject(value); //HSL NaN checking
+					if(isNaN(checkedColorObject.h) || isNaN(checkedColorObject.s) || isNaN(checkedColorObject.l)) {
+						//console.log(checkedColorObject);
+						alert("One or more color values are invalid!");
+						break;
+					};
+				} else { //if neither
+					alert("Color must be in the form \"rgb(red,green,blue)\" or \"hsl(hue,saturation%,lightness%)\"!");
 					break;
-				}
+				};
 			};
 			
 			//Actual setting code;
