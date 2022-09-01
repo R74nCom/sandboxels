@@ -1,4 +1,4 @@
-//Mod by Sarperen
+//Mod by Sophie
 elements.chalcopyrite_ore = {
 	color: ["#8c7538","#4f4f4f","#949494"],
 	behavior: behaviors.POWDER,
