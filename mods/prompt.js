@@ -218,6 +218,37 @@ function funniPrompt() {
 				};
 			};
 			break;
+		case "count":
+			//alert("To do");
+			if(inputAsArray.length < 2) {
+				alert("Usage: count [element]	\nDon't include the brackets.	\nNote: The element name can't have a space in it because spaces are the separator used in the parsing split().	\nArguments in [brackets] are required.");
+				break;
+			};
+			var inputElement = inputAsArray[1];
+			//console.log("Element gotten: " + inputElement);
+
+			var originalInput = inputElement; //for error display
+			inputElement = mostSimilarElement(inputElement);
+			if(!elements[inputElement]) {
+				alert("Element " + originalInput + " does not exist!");
+				break;
+			}
+			
+			//Actual counting code;
+			var count = 0;
+			for (var i = 1; i < width; i++) {
+				for (var j = 1; j < height; j++) {
+					if (!isEmpty(i,j)) {
+						//console.log("Pixel (" + i + "," + j + ") exists")
+						if(pixelMap[i][j].element === inputElement) {
+							//console.log("Element is a match: " + inputElement + ", " + pixelMap[i][j].element)
+							count++;
+						};
+					};
+				};
+			};
+			alert(`There are ${count} pixels of ${inputElement}`);
+			break;
 		default:
 			alert(`Command ${firstItem} not found!`);
 	};
