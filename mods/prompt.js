@@ -261,7 +261,8 @@ function funniPrompt() {
 
 			var originalInput = inputElement; //for error display
 			inputElement = mostSimilarElement(inputElement);
-			if(!elements[inputElement]) {
+			//console.log("Element gotten: " + inputElement);
+			if(typeof(elements[inputElement]) === "undefined") {
 				alert("Element " + originalInput + " does not exist!");
 				break;
 			}
@@ -300,9 +301,9 @@ function funniPrompt() {
 			};
 			
 			var formattedList = "";
-			var elements = Object.keys(listObject);
-			for(k = 0; k < elements.length; k++) {
-				var elementName = elements[k];
+			var zelements = Object.keys(listObject);
+			for(k = 0; k < zelements.length; k++) {
+				var elementName = zelements[k];
 				var elementCount = listObject[elementName];
 				formattedList += `${elementName}: ${elementCount}\n`;
 			};
@@ -314,3 +315,4 @@ function funniPrompt() {
 			alert(`Command ${firstItem} not found!`);
 	};
 };
+
