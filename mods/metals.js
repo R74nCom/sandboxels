@@ -409,20 +409,20 @@ elements.lithium = {
 	color: "#b0ab9d",
 	behavior: behaviors.WALL,
 	tick: function(pixel) {
-		tryTarnish(pixel,"lithium_oxide",0.007) //oxidation
+		tryTarnish(pixel,"lithium_oxide",0.007) 
 		if(pixel.temp >= 179) {
-			pixel.burning = true; //auto-ignition at 179*C
+			pixel.burning = true; 
 			pixel.burnStart = pixelTicks; 
 		}
 	},
 	reactions: {
-		"steam": { "elem1": "hydrogen", "elem2": "lithium_hydroxide" }, //should be 2 Li(s) + 2 H2O -> 2 LiOH (aq) + H2(g) according to https://www.lenntech.com/periodic/water/lithium/lithium-and-water.htm#ixzz7LUgLrzua
-		"water": { "elem1": "hydrogen", "elem2": "lithium_hydroxide" }, //should be 2 Li(s) + 2 H2O -> 2 LiOH (aq) + H2(g) according to https://www.lenntech.com/periodic/water/lithium/lithium-and-water.htm#ixzz7LUgLrzua
-		"nitrogen": { "elem1": "lithium_nitride", "elem2": "lithium_nitride" }, //should be 6 Li + N2 → 2 Li3N according to Wikipedia
-		"liquid_nitrogen": { "elem1": "lithium_nitride", "elem2": "lithium_nitride" }, //should be 6 Li + N2 → 2 Li3N according to Wikipedia
-		"liquid_hydrogen": { "elem1": "lithium_hydride", "elem2": "lithium_hydride" }, //2 Li + H2 → 2 LiH
-		"ammonia": { "elem1": ["hydrogen",null], "elem2": "lithium_amide" }, //2Li + 2NH_3 → 2LiNH_2 + H_2
-		"liquid_ammonia": { "elem1": ["hydrogen",null], "elem2": "lithium_amide" }, //2Li + 2NH_3 → 2LiNH_2 + H_2
+		"steam": { "elem1": "hydrogen", "elem2": "lithium_hydroxide" }, 
+		"water": { "elem1": "hydrogen", "elem2": "lithium_hydroxide" }, 
+		"nitrogen": { "elem1": "lithium_nitride", "elem2": "lithium_nitride" }, 
+		"liquid_nitrogen": { "elem1": "lithium_nitride", "elem2": "lithium_nitride" }, 
+		"liquid_hydrogen": { "elem1": "lithium_hydride", "elem2": "lithium_hydride" }, 
+		"ammonia": { "elem1": ["hydrogen",null], "elem2": "lithium_amide" }, 
+		"liquid_ammonia": { "elem1": ["hydrogen",null], "elem2": "lithium_amide" }, 
 	},
 	density: 534,
 	category: "solids",
@@ -444,17 +444,17 @@ elements.molten_lithium = { //too damn reactive
 	"M1|M1 AND HT:1%1|M1"
 	],
 	tick: function(pixel) {
-		tryTarnish(pixel,"lithium_oxide",0.014) //oxidation
+		tryTarnish(pixel,"lithium_oxide",0.014) 
 	},
 	reactions: {
-		"steam": { "elem1": "hydrogen", "elem2": "lithium_hydroxide" }, //should be 2 Li(s) + 2 H2O -> 2 LiOH (aq) + H2(g) according to https://www.lenntech.com/periodic/water/lithium/lithium-and-water.htm#ixzz7LUgLrzua
-		"water": { "elem1": "hydrogen", "elem2": "lithium_hydroxide" }, //"
-		"nitrogen": { "elem1": "lithium_nitride", "elem2": "lithium_nitride" }, //should be 6 Li + N2 → 2 Li3N according to Wikipedia
-		"liquid_nitrogen": { "elem1": "lithium_nitride", "elem2": "lithium_nitride" }, //"
-		"hydrogen": { "elem1": "lithium_hydride", "elem2": "lithium_hydride" }, //2 Li + H2 → 2 LiH
-		"liquid_hydrogen": { "elem1": "lithium_hydride", "elem2": "lithium_hydride" }, //"
-		"ammonia": { "elem1": ["hydrogen",null], "elem2": "lithium_amide" }, //2Li + 2NH_3 → 2LiNH_2 + H_2
-		"liquid_ammonia": { "elem1": ["hydrogen",null], "elem2": "lithium_amide" }, //"
+		"steam": { "elem1": "hydrogen", "elem2": "lithium_hydroxide" }, 
+		"water": { "elem1": "hydrogen", "elem2": "lithium_hydroxide" }, 
+		"nitrogen": { "elem1": "lithium_nitride", "elem2": "lithium_nitride" }, 
+		"liquid_nitrogen": { "elem1": "lithium_nitride", "elem2": "lithium_nitride" }, 
+		"hydrogen": { "elem1": "lithium_hydride", "elem2": "lithium_hydride" }, 
+		"liquid_hydrogen": { "elem1": "lithium_hydride", "elem2": "lithium_hydride" }, 
+		"ammonia": { "elem1": ["hydrogen",null], "elem2": "lithium_amide" }, 
+		"liquid_ammonia": { "elem1": ["hydrogen",null], "elem2": "lithium_amide" }, 
 	},
 	burning: true,
 	burnInto: "lithium_oxide",
@@ -466,8 +466,8 @@ elements.lithium_oxide = {
 	color: "#eee9ec", //HRT UV-to-visible strategy again
 	behavior: behaviors.POWDER,
 	reactions: {
-		"steam": { "elem1": "lithium_hydroxide", "elem2": "lithium_hydroxide", chance: 0.03 }, //> The oxide reacts slowly
-		"water": { "elem1": "lithium_hydroxide", "elem2": "lithium_hydroxide", chance: 0.03 }, //> The oxide reacts slowly
+		"steam": { "elem1": "lithium_hydroxide", "elem2": "lithium_hydroxide", chance: 0.03 }, 
+		"water": { "elem1": "lithium_hydroxide", "elem2": "lithium_hydroxide", chance: 0.03 }, 
 		"carbon_dioxide": { "elem1": null, "elem2": "lithium_carbonate" },
 	},
 	density: 2013,
@@ -483,7 +483,7 @@ elements.lithium_hydroxide = {
 	reactions: {
 		"steam": { "elem1": null, "elem2": "lithium_hydroxide_monohydrate" },
 		"water": { "elem1": null, "elem2": "lithium_hydroxide_monohydrate" },
-		"carbon_dioxide": { "elem1": "water", "elem2": [null,"lithium_carbonate"], chance: 0.5 }, //simulating 2 LiOH + CO_2 → Li_2_CO_3 + H_2_O
+		"carbon_dioxide": { "elem1": "water", "elem2": [null,"lithium_carbonate"], chance: 0.5 }, 
 	},
 	density: 1460,
 	category: "powders",
@@ -496,10 +496,10 @@ elements.lithium_hydroxide_monohydrate = {
 	color: "#e0e4e7",
 	behavior: behaviors.POWDER,
 	reactions: {
-		"carbon_dioxide": { "elem1": "water", "elem2": [null,"lithium_carbonate"], chance: 0.5 }, //should be 2x water: 2 LiOH•H_2_O + CO_2 → Li_2_CO_3 + 2 H_2_O
+		"carbon_dioxide": { "elem1": "water", "elem2": [null,"lithium_carbonate"], chance: 0.5 }, 
 	},
 	tick: function(pixel) {
-		emptyNeighborArray = [] //get empty neighbors to place split products
+		emptyNeighborArray = [] 
 		for(i=0;i<4;i++) {
 			if(isEmpty(pixel.x+neighbors[i][0],pixel.y+neighbors[i][1],true)) {
 				emptyNeighborArray.push(neighbors[i])
@@ -521,7 +521,7 @@ elements.lithium_hydroxide_monohydrate = {
 	hidden: true,
 }
 
-elements.lithium_carbonate = { //todo?: https://en.wikipedia.org/wiki/Lithium_carbonate
+elements.lithium_carbonate = { //todo
 	color: "#eeeeee",
 	behavior: behaviors.POWDER,
 	density: 2110,
@@ -535,10 +535,10 @@ elements.lithium_nitride = {
 	color: "#eeeeee",
 	behavior: behaviors.POWDER,
 	reactions: {
-		"steam": { "elem1": "lithium_hydroxide", "elem2": "ammonia" }, //should be Li_3_N + 3 H_2_O → 3 LiOH + NH_3
-		"water": { "elem1": "lithium_hydroxide", "elem2": "ammonia" }, //should be Li_3_N + 3 H_2_O → 3 LiOH + NH_3
-		"hydrogen": { "elem1": "lithium_hydride", "elem2": "lithium_amide" }, //possibly Li_3_N + H → LiH + LiNH_2
-		"liquid_hydrogen": { "elem1": "lithium_hydride", "elem2": "lithium_amide" }, //possibly Li_3_N + H → LiH + LiNH_2
+		"steam": { "elem1": "lithium_hydroxide", "elem2": "ammonia" }, 
+		"water": { "elem1": "lithium_hydroxide", "elem2": "ammonia" }, 
+		"hydrogen": { "elem1": "lithium_hydride", "elem2": "lithium_amide" }, 
+		"liquid_hydrogen": { "elem1": "lithium_hydride", "elem2": "lithium_amide" }, 
 	},
 	density: 1270,
 	category: "powders",
