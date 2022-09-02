@@ -551,7 +551,7 @@ runAfterLoad(function() {
 			elements.concoction.reactions.cold_salt_cloud = { "elem1": "mistake", "elem2": null }
     };
 
-	if(enabledMods.includes("mods/dry_dirt.js")) {
+	if(enabledMods.includes("mods/the_ground.js")) {
 		elements.molten_dirt = { //added manually because the change to dirt will prevent molten_dirt from being auto-generated
 			"behavior": behaviors.MOLTEN,
 			"hidden": true,
