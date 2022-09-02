@@ -630,9 +630,9 @@ worldgentypes.dark = {
 	]
 };
 
-//Money World (requires gems.js)
+//Money World (requires the_ground.js)
 
-if(enabledMods.includes("mods/gems.js")) {
+if(enabledMods.includes("mods/the_ground.js")) {
 	worldgentypes.money = {
 		layers: [
 			[0.9, "emerald"],
