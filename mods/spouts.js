@@ -33,10 +33,10 @@ runAfterLoad(function() {
             temp: elements[liquidArray[i]].temp,
             hardness: 1,
         };
-        if(includeRandom == true) {
+        if(includeRandom) {
 			elements[liquidArray[i]].excludeRandom ? elements[`${liquidArray[i]}_spout`].excludeRandom = true : elements[`${liquidArray[i]}_spout`].excludeRandom = false;
 		} else {
-			elements[`${liquidArray[i]}_spout`].excludeRandom = false;
+			elements[`${liquidArray[i]}_spout`].excludeRandom = true;
 		};
 	};
 	spoutChoices = Object.keys(elements).filter(function(e) {
