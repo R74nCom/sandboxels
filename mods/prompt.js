@@ -9,6 +9,15 @@ trueSynonyms = ["true", "t", "1", "yes"];
 falseSynonyms = ["false", "f", "0", "no"];
 defaultStringTypeValues = ["element","color"];
 defaultNumberTypeValues = ["x","y","temp","start"];
+commandHelpObject = {
+	"set": "Sets properties for every pixel of a given type.\nUsage: set [property] [element] [value] <type>\nDon't include framing characters []<>.\nThe element can be \"all\" to set the property for every pixel.\nNote: Strings can't have spaces because spaces are the separator used in the parsing split().\nArguments in [brackets] are required and ones in <angle brackets> are optional.",
+	"test": "Test.",
+	"fill": "Fills the screen with the given pixel(s). Usage: fill [Overwrite pixels? (should be a bool)] [element] <additional elements>.\nDon't include framing characters []<>.\nArguments in [brackets] are required and ones in <angle brackets> are optional.\nAdditional elements are separated by spaces.",
+	"randomfill": "Fills the screen with pixels from randomChoices. Usage: randomfill <overwrite pixels? (should be a bool) (default: true)>\nDon't include framing characters []<>.\nArguments in <angle brackets> are optional.",
+	"count": "Tells you the amount of a specified pixel on the screen. Usage: count [element]\nDon't include framing characters []<>.\nArguments in [brackets] are required.",
+	"countall": "Logs to console a list of all elements on screen and their amounts. Usage: countall.",
+	"help": "Usage: help <command>\nDon't include framing characters []<>.\nArguments in <angle brackets> are optional."
+}
 
 function rgbStringToUnvalidatedObject(string) {
 	string = string.split(",");
@@ -36,7 +45,7 @@ function funniPrompt() {
 		case "set":
 			//alert("To do");
 			if(inputAsArray.length < 4) {
-				alert("Usage: set [property] [element] [value] <type>	\nArguments are typed without framing characters.	\nThe element can be \"all\" to set the property for every pixel.	\nNote: Strings can't have spaces because spaces are the separator used in the parsing split().	\nArguments in [brackets] are required and ones in <angle brackets> are optional.");
+				alert("Usage: set [property] [element] [value] <type>\nDon't include framing characters []<>.\nThe element can be \"all\" to set the property for every pixel.\nNote: Strings can't have spaces because spaces are the separator used in the parsing split().\nArguments in [brackets] are required and ones in <angle brackets> are optional.");
 				break;
 			};
 			var property = inputAsArray[1];
@@ -123,7 +132,7 @@ function funniPrompt() {
 					} else { //if not RGB and not HSL
 						alert("Color must be in the form \"rgb(red,green,blue)\" or \"hsl(hue,saturation%,lightness%)\"!");
 						break;
-					};							
+					};
 				}
 				if(value.split(",").length !== 3) { //if too short or long
 					alert("Color must be in the form \"rgb(red,green,blue)\" or \"hsl(hue,saturation%,lightness%)\"!");
@@ -168,7 +177,7 @@ function funniPrompt() {
 			break;
 		case "fill":
 			if(inputAsArray.length < 3) {
-				alert("Usage: fill [overwrite (should be a bool)] [element] <additional elements>.	\nArguments in [brackets] are required and ones in <angle brackets> are optional.");
+				alert("Usage: fill [overwrite (should be a bool)] [element] <additional elements>.\nDon't include framing characters []<>.\nArguments in [brackets] are required and ones in <angle brackets> are optional.");
 				break;
 			};
 			
@@ -194,7 +203,7 @@ function funniPrompt() {
 			} else if(falseSynonyms.includes(doOverwrite.toLowerCase())) {
 				doOverwrite = false;
 			} else {
-				alert("Unrecognized boolean value: " + value);
+				alert("Unrecognized boolean value: " + doOverwrite + "\n Note that for this command, the boolean value goes first.");
 				break;
 			}
 			//console.log(doOverwrite);
@@ -215,7 +224,7 @@ function funniPrompt() {
 			break;
 		case "randomfill":
 			if(inputAsArray.length < 1) { //somehow?
-				alert("Usage: randomfill <overwrite (should be a bool) (default: true)>	\nArguments in <angle brackets> are optional.");
+				alert("Usage: randomfill <overwrite (should be a bool) (default: true)>\nDon't include framing characters []<>.\nArguments in <angle brackets> are optional.");
 				break;
 			};
 			
@@ -253,7 +262,7 @@ function funniPrompt() {
 		case "count":
 			//alert("To do");
 			if(inputAsArray.length < 2) {
-				alert("Usage: count [element]	\nDon't include the brackets.	\nNote: The element name can't have a space in it because spaces are the separator used in the parsing split().	\nArguments in [brackets] are required.");
+				alert("Usage: count [element]\nDon't include framing characters []<>.\nNote: The element name can't have a space in it because spaces are the separator used in the parsing split().\nArguments in [brackets] are required.");
 				break;
 			};
 			var inputElement = inputAsArray[1];
@@ -310,6 +319,23 @@ function funniPrompt() {
 			
 			alert("Elements counts logged to console");
 			console.log(formattedList);
+			break;
+		case "help":
+			if(inputAsArray.length < 1) { //somehow
+				alert("Usage: help <command>\nDon't include framing characters []<>.\nArguments in <angle brackets> are optional.");
+				break;
+			};
+			if(inputAsArray.length < 2) {
+				alert("Commands: \nset\ntest\nfill\nrandomfill\ncount\ncountall\nhelp")
+			} else {
+				var command = inputAsArray[1];
+
+				if(typeof(commandHelpObject[command]) === "undefined") {
+					alert("Cound not find help for " + command + ".");
+				} else {
+					alert(commandHelpObject[command]);
+				};
+			};
 			break;
 		default:
 			alert(`Command ${firstItem} not found!`);
