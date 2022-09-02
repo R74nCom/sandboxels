@@ -215,22 +215,25 @@ elements.polusium = {
     state: "solid",
     category: "solids",
     tick: function(pixel) {
-        neighbors = [[-1,0],[0,-1],[1,0],[0,1]]
-        for(i = 0; i < neighbors.length; i++) {
-            if(isEmpty(pixel.x+neighbors[i][0],pixel.y+neighbors[i][1],true)) {
-                if(Math.random() < 0.002) {
-                    changePixel(pixel,"polusium_oxide")
-                }
-            }
-            if(!isEmpty(pixel.x+neighbors[i][0],pixel.y+neighbors[i][1],true)) {
-                if(pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]].element == "salt_water") {
-                    if(Math.random() < 0.006) {
-                        changePixel(pixel,"polusium_oxide")
-                    }
-                }
-            }
-        }
+		var emptyNeighbors = [];
+        for(i = 0; i < adjacentCoords.length; i++) {
+            if(isEmpty(pixel.x+adjacentCoords[i][0],pixel.y+adjacentCoords[i][1],true)) {
+				emptyNeighbors.push(adjacentCoords[i]);
+            };
+        };
+		if(Math.random() < 0.002) {
+			if(emptyNeighbors.length > 0) {
+				var randomEmptyNeighbor = emptyNeighbors[Math.floor(Math.random() * emptyNeighbors.length)];
+				changePixel(pixel,"polusium_oxide")
+				createPixel("nitrogen",pixel.x+randomEmptyNeighbor[0],pixel.y+randomEmptyNeighbor[1])
+			};
+		};
     },
+	reactions: {
+		water: { elem1: "polusium_oxide", elem2: ["water","water","water","water","hydrogen"], chance: 0.006 },
+		salt_water: { elem1: "polusium_oxide", elem2: ["salt_water","salt_water","salt_water","salt","hydrogen"], chance: 0.012 },
+		bleach: { elem1: "polusium_oxide", chance: 0.02 }
+	},
 }
 
 elements.molten_polusium = {
