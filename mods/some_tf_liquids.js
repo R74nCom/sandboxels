@@ -25,9 +25,9 @@ elements.blazing_pyrotheum = {
 elements.gelid_cryotheum = {
 	color: "#00ddff",
 	behavior: [
-		" AND CR:snow%0.35HT:10%2|HT:10%2| AND CR:snow%0.35HT:10%2",
-		"M2 AND CR:snow%0.35 AND HT:10%2|HT:10%2|M2 AND CR:snow%0.35 AND HT:10%2",
-		"M1 AND HT:10%2|M1 AND CR:snow%0.25 AND HT:10%2|M1 AND HT:10%2",
+		" AND CR:snow%0.35CR:10%2|CR:10%2| AND CR:snow%0.35CR:10%2",
+		"M2 AND CR:snow%0.35 AND CR:10%2|CR:10%2|M2 AND CR:snow%0.35 AND CR:10%2",
+		"M1 AND CR:10%2|M1 AND CR:snow%0.25 AND CR:10%2|M1 AND CR:10%2",
 	],
 	tick: function(pixel) {
 		if(pixel.temp >= -223) { //temperature maximum of -223
@@ -51,21 +51,29 @@ elements.tectonic_petrotheum = {
 		"M2|XX|M2",
 		"M1|M1|M1",
 	],
-	reactions: {
-		"rock": { "elem2": "gravel" },
-		"mudstone": { "elem2": "mud" },     //i took creative liberties with what it breaks :eggTF:
-		"packed_sand": { "elem2": "sand" }, //stone->gravel is explicitly shown and chalcopyrite_ore->
-		"ice": { "elem2": "snow" },	 //chalcopyrite_dust is implied, the rest of this section
-		"packed_snow": { "elem2": "snow" }, //isn't thermal foundation canon*/
-		"basalt": { "elem2": "basalt_gravel" },
-		"limestone": { "elem2": "limestone_gravel" },
-		"concrete": { "elem2": "dust" },
-		"brick": { "elem2": "brick_rubble" },
-		"wood": { "elem2": "sawdust" },
-		"glass": { "elem2": "glass_shard" },
-		"ruins": { "elem2": "dust" },
-		"chalcopyrite_ore": { "elem2": "chalcopyrite_dust" }
-	},
+    tick: function(pixel) { //Code from R74n/vanilla "smash" tool
+        neighbors = [[-1,0],[0,-1],[1,0],[0,1]]
+        for(i = 0; i < neighbors.length; i++) {
+            if(!isEmpty(pixel.x+neighbors[i][0],pixel.y+neighbors[i][1],true)) {
+				if (typeof(elements[    pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]].element    ].breakInto) !== "undefined") {
+					var hardness = null;
+					if (typeof(elements[    pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]].element    ].hardness) === "number") {
+						hardness = elements[    pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]].element    ].hardness
+					} else {
+						hardness = 1
+					}
+					if (Math.random() < hardness) {
+						var breakInto = elements[    pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]].element    ].breakInto;
+						// if breakInto is an array, pick one
+						if (Array.isArray(breakInto)) {
+							breakInto = breakInto[Math.floor(Math.random() * breakInto.length)];
+						};
+						changePixel(    pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]]    ,breakInto);
+					}
+				}
+            }
+        }
+    },
 	temp: 120,
 	viscosity: 1.5**4,
 	category: "liquids",
