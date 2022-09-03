@@ -619,6 +619,17 @@ worldgentypes.nuclear_wasteland = {
 	temperature: -5 //nuclear winter
 };
 
+
+enabledMods.includes("mods/the_ground.js") ? waterIrradiationExclusionArray = ["irradiated_water", "irradiated_wet_sand"]: waterIrradiationExclusionArray = ["irradiated_water"]
+
+filteredWaterIrradiationArray = Object.keys(elements).filter(function(e) {
+	return elements[e].category === "Irradiated" && (!waterIrradiationExclusionArray.includes(e));
+});
+
+for(i = 0; i < filteredWaterIrradiationArray.length; i++) {
+	elements.water.reactions[filteredWaterIrradiationArray[i]] = { "elem1":"irradiated_water", chance: 0.01 }
+};
+
 //Dark world
 
 worldgentypes.dark = {
@@ -630,9 +641,12 @@ worldgentypes.dark = {
 	]
 };
 
-//Money World (requires the_ground.js)
+//Requires the_ground.js)
 
 if(enabledMods.includes("mods/the_ground.js")) {
+
+	//Money world
+	
 	worldgentypes.money = {
 		layers: [
 			[0.9, "emerald"],
@@ -645,5 +659,228 @@ if(enabledMods.includes("mods/the_ground.js")) {
 			[-0.1, "onyx"]
 		]
 	};
-};
+	
+	//Irradiated Desert
 
+		runAfterLoad(function() {
+
+			//Elements from which simplified lithification can spread
+
+				sandstoneLithificationElements.push("irradiated_sand_sediment");
+				sandstoneLithificationElements.push("irradiated_sandstone");
+
+			//Water reaction to pick up the fine material (this is very simplified)
+
+				elements.water.reactions.irradiated_wet_sand = {
+					"elem1": "irradiated_sandy_water",
+					"elem2": ["irradiated_wet_sand","irradiated_wet_sand","irradiated_wet_sand","irradiated_wet_sand","irradiated_wet_sand",null],
+					chance: 0.01
+				};
+
+				elements.irradiated_water.reactions.wet_sand = {
+					"elem1": "irradiated_sandy_water",
+					"elem2": ["irradiated_wet_sand","irradiated_wet_sand","irradiated_wet_sand","irradiated_wet_sand","irradiated_wet_sand",null],
+					chance: 0.01
+				};
+
+				elements.irradiated_water.reactions.irradiated_wet_sand = {
+					"elem1": "irradiated_sandy_water",
+					"elem2": ["irradiated_wet_sand","irradiated_wet_sand","irradiated_wet_sand","irradiated_wet_sand","irradiated_wet_sand",null],
+					chance: 0.01
+				};
+
+			//Sediment suspension
+
+				elements.irradiated_sandy_water = {
+					color: ["#84A244", "#90AE50"],
+					behavior: behaviors.RAD_LIQUID,
+					tempHigh: 100,
+					stateHigh: ["rad_steam","rad_steam","irradiated_sand"],
+					//tempLow: 0,
+					//stateLow: "irradiated_sandy_ice",
+					category: "liquids",
+					heatCapacity: 4.184, //unimplemented
+					reactions: {
+						"dirt": { // React with (water reacts with dirt to make mud)
+							"elem1": [null,null,"irradiated_wet_sand"], // First element transforms into; in this case, water deletes itself
+							"elem2": "irradiated_mud", // Second element transforms into; in this case, dirt turns to mud
+						},
+						"irradiated_dirt": { // React with (water reacts with dirt to make mud)
+							"elem1": [null,null,"irradiated_wet_sand"], // First element transforms into; in this case, water deletes itself
+							"elem2": "irradiated_mud", // Second element transforms into; in this case, dirt turns to mud
+						},
+						"water": { "elem1":"irradiated_water", "elem2":"irradiated_sandy_water", "chance":0.025 },
+						"irradiated_water": { "elem1":"irradiated_water", "elem2":"irradiated_sandy_water", "chance":0.025 },
+						"sand": { "elem1": [null,null,"irradiated_wet_sand"], "elem2": "irradiated_wet_sand", },
+						"sandy_water": { "elem1":"irradiated_wet_sand", "elem2":"irradiated_water", "chance": 0.001 },
+						"irradiated_sand": { "elem1": [null,null,"irradiated_wet_sand"], "elem2": "irradiated_wet_sand", },
+						"irradiated_sandy_water": { "elem1":"irradiated_wet_sand", "elem2":"irradiated_water", "chance": 0.001 },
+						"wet_sand": { "elem2":"irradiated_sand_sediment", "chance": 0.0005 },
+						"irradiated_wet_sand": { "elem2":"irradiated_sand_sediment", "chance": 0.0005 },
+						/*"salt": { "elem1": "salt_water", "elem2": null },
+						"sugar": { "elem1": "sugar_water", "elem2": null, },
+						"dust": { "elem1": "dirty_water", "elem2": null, },
+						"ash": { "elem1": "dirty_water", "elem2": null, },
+						"cyanide": { "elem1": "dirty_water", "elem2": null, },
+						"carbon_dioxide": { "elem1": "seltzer", "elem2": null, "oneway":true },
+						"sulfur": { "elem1": "dirty_water", "elem2": null, },
+						"rat": { "elem1": "dirty_water", chance:0.005 },
+						"plague": { "elem1": "dirty_water", "elem2": null, },
+						"rust": { "elem1": "dirty_water", chance:0.005 },
+						"fallout": { "elem1": "dirty_water", chance:0.25 },
+						"radiation": { "elem1": "dirty_water", chance:0.25 },
+						"uranium": { "elem1": "dirty_water", chance:0.25 },
+						"rotten_meat": { "elem1": "dirty_water", chance:0.25 },
+						"quicklime": { "elem1": [null,null,"wet_sand"], "elem2": "slaked_lime", },
+						"rock": { "elem2": "wet_sand", "chance": 0.00035 },
+						"ruins": { "elem2": "rock", "chance": 0.00035 },*/
+						"mudstone": { "elem2": "irradiated_mud", "chance": 0.00035 },
+						"irradiated_mudstone": { "elem2": "irradiated_mud", "chance": 0.00035 },
+						//"methane": { "elem1":"primordial_soup", "elem2":"primordial_soup", tempMin:60, charged:true },
+						//"ammonia": { "elem1":"primordial_soup", "elem2":"primordial_soup", tempMin:60, charged:true },
+						"fly": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
+						"firefly": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
+						"bee": { "elem2":"dead_bug", "chance":0.05, "oneway":true },
+						"stink_bug": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
+					},
+					state: "liquid",
+					density: 1097,
+					conduct: 0.02,
+					stain: 0.01,
+				}
+
+			//Sediment element where lithification code resides
+
+				elements.irradiated_sand_sediment = {
+					hidden: true,
+					color: "#afd182",
+					hardness: 0.2,
+					behavior: [
+						"XX|XX|XX",
+						"XX|XX|XX",
+						"SW:wet_sand,irradiated_wet_sand%1.5 AND M2|SW:wet_sand,irradiated_wet_sand%2.5 AND M1|SW:wet_sand,irradiated_wet_sand%1.5 AND M2"
+					],
+					reactions: {
+						"water": { "elem1":"irradiated_sandy_water", "elem2":"irradiated_sandy_water", "chance":0.025 },
+						"irradiated_water": { "elem1":"irradiated_sandy_water", "elem2":"irradiated_sandy_water", "chance":0.025 },
+						"sand": { "elem1": [null,null,"irradiated_wet_sand"], "elem2": "irradiated_wet_sand", },
+						"irradiated_sand": { "elem1": [null,null,"irradiated_wet_sand"], "elem2": "irradiated_wet_sand", },
+						"sandy_water": { "elem1":["irradiated_water","irradiated_water","irradiated_sand_sediment"], "chance":0.001 },
+						"irradiated_sandy_water": { "elem1":["irradiated_water","irradiated_water","irradiated_sand_sediment"], "chance":0.001 },
+						"wet_sand": { "elem2": "irradiated_sand_sediment", "chance": 0.0005 },
+						"irradiated_wet_sand": { "elem2": "irradiated_sand_sediment", "chance": 0.0005 },
+					},
+					tempHigh: 1700,
+					stateHigh: "molten_irradiated_glass",
+					category: "land",
+					state: "solid",
+					density: 1602,
+					breakInto: "irradiated_sand",
+					tick: function(pixel) {
+						var validNeighborArray = Array.apply(null, Array(adjacentCoords.length)).map(function() {return false});
+						if(Math.random() < 0.0003) {
+							for(i = 0; i < adjacentCoords.length; i++) {
+								if(isEmpty(pixel.x+adjacentCoords[i][0],pixel.y+adjacentCoords[i][1],true)) {
+									validNeighborArray[i] = false;
+								} else if(!isEmpty(pixel.x+adjacentCoords[i][0],pixel.y+adjacentCoords[i][1],true)) {
+									/*if(sandstoneLithificationElements.includes(pixelMap[pixel.x+adjacentCoords[i][0]][pixel.y+adjacentCoords[i][1]].element)) {
+										validNeighborArray[i] = true;
+									} else {
+										validNeighborArray[i] = false;
+									};*/
+									validNeighborArray[i] = sandstoneLithificationElements.includes(pixelMap[pixel.x+adjacentCoords[i][0]][pixel.y+adjacentCoords[i][1]].element);
+								};
+							};
+							if(validNeighborArray.includes(true)) {
+								changePixel(pixel,"irradiated_sandstone");
+							};
+						};
+					},
+				}
+
+			//Fallback reaction setter
+
+				if(!elements.wet_sand.reactions) {
+					elements.wet_sand.reactions = {};
+				};
+
+			//Reactions to add
+
+				elements.wet_sand.reactions.irradiated_sand_sediment = {
+					elem1: "irradiated_sand_sediment",
+					chance: 0.0003
+				};
+
+				elements.irradiated_wet_sand.reactions.sand_sediment = {
+					elem1: "irradiated_sand_sediment",
+					chance: 0.0003
+				};
+
+				elements.irradiated_wet_sand.reactions.irradiated_sand_sediment = {
+					elem1: "irradiated_sand_sediment",
+					chance: 0.0003
+				};
+
+				elements.irradiated_wet_sand.reactions.wet_sand = {
+					elem1: "irradiated_sand_sediment",
+					chance: 0.0003
+				};
+
+				elements.wet_sand.reactions.irradiated_wet_sand = {
+					elem1: "irradiated_sand_sediment",
+					chance: 0.0003
+				};
+
+				elements.irradiated_wet_sand.reactions.irradiated_wet_sand = {
+					elem1: "irradiated_sand_sediment",
+					chance: 0.0003
+				};
+
+			//Final rock
+
+				elements.irradiated_sandstone = {
+					color: ["#85b357", "#b5d177", "#9cd184", "#7bc25f"],
+					behavior: behaviors.RAD_WALL,
+					tempHigh: 1500,
+					stateHigh: "molten_irradiated_glass",
+					category: "land",
+					state: "solid",
+					density: 2323, //wide range
+					hardness: 0.5,
+					breakInto: "irradiated_sand",
+				}
+
+			//Worldgen preset for testing
+
+				worldgentypes.irradiated_test_ocean = {
+					layers: [
+						[0.9, "irradiated_wet_sand", 0.2],
+						[0.9, "irradiated_sand", 0.2],
+						[0.8, "irradiated_sandy_water", 0.7],
+						[0.25, "irradiated_water"],
+						[0.1, "irradiated_sand", 0.1],
+						[0.1, "clay", 0.1],
+						[0.1, "irradiated_gravel", 0.2],
+						[0.1, "irradiated_wet_sand"],
+						[0.03, "irradiated_gravel", 0.5],
+						[0.03, "irradiated_rock"],
+						[0, "irradiated_basalt"],
+					]
+				};
+
+			//Desert
+
+				worldgentypes.irradiated_desert = {
+					layers: [
+						[0.95, "irradiated_gravel", 0.6],
+						[0.65, "irradiated_sand"],
+						[0.55, "cancer", 0.01],
+						[0.55, "bone", 0.01],
+						[0.3, "irradiated_sandstone"],
+						[0.05, "irradiated_rock"],
+						[-0.78, "irradiated_basalt"]
+					],
+					temperature: -13
+				};
+		});
+	};
