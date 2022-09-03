@@ -870,9 +870,13 @@ if(enabledMods.includes("mods/the_ground.js")) {
 
 			//Desert
 
-				worldgentypes.irradiated_desert = {
+				worldgentypes.nuclear_wasteland_desert = {
 					layers: [
+						[0.97, "fallout", 0.4],
 						[0.95, "irradiated_gravel", 0.6],
+						[0.65, "liquid_irradium", 0.01],
+						[0.65, "cancer", 0.02],
+						[0.65, "bone", 0.02],
 						[0.65, "irradiated_sand"],
 						[0.55, "cancer", 0.01],
 						[0.55, "bone", 0.01],
@@ -883,4 +887,4 @@ if(enabledMods.includes("mods/the_ground.js")) {
 					temperature: -13
 				};
 		});
-	};
+};
