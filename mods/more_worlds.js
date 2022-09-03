@@ -843,7 +843,7 @@ if(enabledMods.includes("mods/the_ground.js")) {
 					behavior: behaviors.RAD_WALL,
 					tempHigh: 1500,
 					stateHigh: "molten_irradiated_glass",
-					category: "land",
+					category: "Irradiated",
 					state: "solid",
 					density: 2323, //wide range
 					hardness: 0.5,
