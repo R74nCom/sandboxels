@@ -482,7 +482,7 @@ Proper classification of limestone in comments
 						color: ["#b27853", "#d1a784", "#d1a784", "#d4996e"],
 						behavior: behaviors.WALL,
 						tempHigh: 1500,
-						stateHigh: "glass",
+						stateHigh: "molten_glass",
 						category: "land",
 						state: "solid",
 						density: 2323, //wide range
@@ -521,8 +521,10 @@ Proper classification of limestone in comments
 						],
 						temperature: 38
 					};
+					
+				//Irradiated version in more_worlds.js
 
-				//Grains > 2 mm
+			//Grains > 2 mm
 			
 				//Angular fragments
 
