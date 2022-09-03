@@ -886,5 +886,10 @@ if(enabledMods.includes("mods/the_ground.js")) {
 					],
 					temperature: -13
 				};
+				
+			//Irradiation table updates
+			
+				irradiatedObject.sandstone = "irradiated_sandstone";
+				irradiatedObject.sand_sediment = "irradiated_sand_sediment";
 		});
 };
