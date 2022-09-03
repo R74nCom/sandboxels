@@ -513,8 +513,9 @@ Proper classification of limestone in comments
 					worldgentypes.desert = {
 						layers: [
 							[0.95, "gravel", 0.6],
+							[0.65, "bone", 0.03],
 							[0.65, "sand"],
-							[0.55, "bone", 0.03],
+							[0.55, "bone", 0.02],
 							[0.3, "sandstone"],
 							[0.05, "rock"],
 							[-0.78, "basalt"]
