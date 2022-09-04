@@ -432,7 +432,7 @@ elements.irradiated_rock = {
 	state: "solid",
 	density: 2550,
 	hardness: 0.5,
-	breakInto: ["sand","gravel"],
+	breakInto: ["irradiated_sand","irradiated_gravel"],
 };
 
 elements.irradiated_gravel = {
@@ -470,7 +470,7 @@ elements.irradiated_magma = {
 	temp: 1500,
 	tempLow: 850,
 	stateLow: ["irradiated_basalt","irradiated_basalt","irradiated_basalt","irradiated_rock"],
-	viscosity: 10000,
+	viscosity: 5000,
 	category: "Irradiated",
 	state: "liquid",
 	density: 2725,
