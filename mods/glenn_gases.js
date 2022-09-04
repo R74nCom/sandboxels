@@ -2,17 +2,18 @@
 //http://www.gnu.org/licenses/lgpl.html
 //https://www.jamieswhiteshirt.com/minecraft/mods/gases/information/?Licensing
 
-//This works best with the Neutronium Mod because I really don't feel like remaking coal and chlorine.
+//This works best with the Neutronium Mod because I really don't feel like remaking coal.
 
 //Steam exists.
 
 //Coal only exists in the Neutronium Mod.
+
 elements.coal_dust = {
 	color: "#363023",
 	behavior: behaviors.GAS,
 	tick: function(pixel) {
 		if(pixel.burning) {
-			explodeAt(pixel.x,pixel.y,11,"fire,ignited_gas")
+			explodeAt(pixel.x,pixel.y,5,"fire,ignited_gas")
 		}
 	},
 	category: "gases",
@@ -23,8 +24,7 @@ elements.coal_dust = {
 	burnInto: ["ash", "fire", "carbon_dioxide"],
 };
 
-//Chlorine only exists in the Neutronium Mod and I don't feel like recreating it, so enable NM for the full experience.
-//It will soon exist in vanilla.
+//Chlorine exists.
 
 //Natural gas is mostly ammonia, which exists.
 
@@ -33,7 +33,7 @@ elements.red_gas = {
 	behavior: behaviors.GAS,
 	tick: function(pixel) {
 		if(pixel.burning) {
-			explodeAt(pixel.x,pixel.y,12,"fire,ignited_gas")
+			explodeAt(pixel.x,pixel.y,8,"fire,ignited_gas")
 		}
 	},
 	category: "gases",
@@ -85,7 +85,7 @@ elements.electric_gas = {
 	color: ["#3693b3", "#246e64"],
 	behavior: [
 		"M2%33.3 AND CR:electric%1|M1%33.3 AND CR:electric%1|M2%33.3 AND CR:electric%1",
-		"M1%33.3 AND CR:electric%1|XX                      |M1%33.3 AND CR:electric%1",
+		"M1%33.3 AND CR:electric%1|XX                       |M1%33.3 AND CR:electric%1",
 		"M2%33.3 AND CR:electric%1|M1%33.3 AND CR:electric%1|M2%33.3 AND CR:electric%1",
 	],
 	hardness: 0.8,
@@ -98,7 +98,7 @@ elements.electric_gas = {
 	state: "gas",
 };
 
-corrosiveGasMaxHardness = 0.5
+corrosiveGasMaxHardness = 0.6
 
 elements.corrosive_gas = {
 	color: ["#2929e6", "#151cad"],
@@ -114,9 +114,11 @@ elements.corrosive_gas = {
 			nx = pixel.x + adjacentCoords[i][0];
 			ny = pixel.y + adjacentCoords[i][1];
 			if(!isEmpty(nx,ny,true)) {
-				if(!elements[pixelMap[nx][ny].element].hardness || elements[pixelMap[nx][ny].element].hardness <= corrosiveGasMaxHardness) {
+				if((elements[pixelMap[nx][ny].element].hardness || 0) <= corrosiveGasMaxHardness) {
 					if(Math.random() < 0.2) {
-						deletePixel(nx,ny);
+						if(Math.random() < 1 - ((pixel.hardness || 0))) {
+							deletePixel(nx,ny);
+						};
 					};
 				};
 			};
@@ -382,8 +384,28 @@ runAfterLoad(function() {
 	if(enabledMods.includes("mods/Neutronium Mod.js")) {
 		elements.coal.breakInto = "coal_dust"
 	}
+	if(enabledMods.includes("mods/more_worlds.js")) {
+		elements.irradiated_rock_dust = {
+			color: "#839e78",
+			behavior: behaviors.RAD_GAS,
+			reactions: {
+				"water": {"elem1": "irradiated_water", "elem2": null }
+			},
+			category: "gases",
+			density: 2.45,
+			state: "gas",
+			tempHigh: 950,
+			stateHigh: [null,null,null,null,"irradiated_magma"],
+		}
+
+		elements.irradiated_rock.breakInto.push("irradiated_rock_dust")
+	}
 	if(enabledMods.includes("mods/boiling_rock.js")) {
 		elements.rock_dust.tempHigh = 3000
 		elements.rock_dust.stateHigh = "vaporized_rock"
+		if(enabledMods.includes("mods/more_worlds.js")) {
+			elements.irradiated_rock_dust.tempHigh = 3000
+			elements.irradiated_rock_dust.stateHigh = "vaporized_rock"
+		}
 	}
 });
