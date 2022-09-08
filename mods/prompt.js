@@ -35,8 +35,8 @@ function hslStringToUnvalidatedObject(string) {
 	return {h: hue, s: saturation, l: lightness};
 }
 
-function funniPrompt() {
-	var inputText = prompt("Enter command");
+function funniPrompt(argument=null) {
+	argument === null ? inputText = prompt("Enter command") : inputText = argument;
 	// replace spaces with underscores
 	inputAsArray = inputText.split(" ");
 	var firstItem = inputAsArray[0];
