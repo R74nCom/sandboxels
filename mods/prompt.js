@@ -35,7 +35,25 @@ function hslStringToUnvalidatedObject(string) {
 	return {h: hue, s: saturation, l: lightness};
 }
 
-function funniPrompt(argument=null) {
+function alertIfError(alertError,text) {
+	if(alertError) {
+		alert(text);
+		return(true);
+	} else {
+		return(false);
+	}
+}
+
+function alertIfOutput(alertOutput,text) {
+	if(alertOutput) { 
+		alert(text);
+		return(true);
+	} else {
+		return(false);
+	}
+}
+
+function funniPrompt(argument=null,alertOutput=true,alertError=true) {
 	argument === null ? inputText = prompt("Enter command") : inputText = argument;
 	// replace spaces with underscores
 	inputAsArray = inputText.split(" ");
@@ -43,10 +61,9 @@ function funniPrompt(argument=null) {
 	
 	switch(firstItem) {
 		case "set":
-			//alert("To do");
 			if(inputAsArray.length < 4) {
-				alert("Usage: set [property] [element] [value] <type>\nDon't include framing characters []<>.\nThe element can be \"all\" to set the property for every pixel.\nNote: Strings can't have spaces because spaces are the separator used in the parsing split().\nArguments in [brackets] are required and ones in <angle brackets> are optional.");
-				break;
+				alertIfError(alertError,"Usage: set [property] [element] [value] <type>\nDon't include framing characters []<>.\nThe element can be \"all\" to set the property for every pixel.\nNote: Strings can't have spaces because spaces are the separator used in the parsing split().\nArguments in [brackets] are required and ones in <angle brackets> are optional.");
+				return false;
 			};
 			var property = inputAsArray[1];
 			//console.log("Property gotten: " + property);
@@ -73,8 +90,8 @@ function funniPrompt(argument=null) {
 			} else if(objectSynonyms.includes(type.toLowerCase())) {
 				type = "object";
 			}*/ else {
-				alert("Unrecognized type: \"" + type + "\"");
-				break;
+				alertIfError(alertError,"Unrecognized type: \"" + type + "\".");
+				return false;
 			};
 			
 			if(type === null) {
@@ -83,16 +100,16 @@ function funniPrompt(argument=null) {
 				} else if(defaultNumberTypeValues.includes(property)) {
 					type = "number";
 				} else {
-					alert("Type could not be assumed from property. Please specify the type as a fourth argument.");
-					break;
+					alertIfError(alertError,"Type could not be assumed from property. Please specify the type as a fourth argument.");
+					return false;
 				}
 			}
 			
 			if(type === "number") {
 				value = parseFloat(value);
 				if(isNaN(value)) {
-					alert("Value is not a number!");
-					break;
+					alertIfError(alertError,"Value is not a number!");
+					return false;
 				};
 			} else if(type === "boolean") {
 				if(trueSynonyms.includes(value.toLowerCase())) {
@@ -100,8 +117,8 @@ function funniPrompt(argument=null) {
 				} else if(falseSynonyms.includes(value.toLowerCase())) {
 					value = false;
 				} else {
-					alert("Unrecognized boolean value: " + value);
-					break;
+					alertIfError(alertError,"Unrecognized boolean value: " + value + ".");
+					return false;
 				}
 			}
 			//The values start out as strings when split from the array, so string is kind of the default form.
@@ -112,53 +129,54 @@ function funniPrompt(argument=null) {
 				var originalInput = value; //for error display
 				value = mostSimilarElement(value);
 				if(!elements[value]) {
-					alert("Element " + originalInput + " does not exist!");
-					break;
+					alertIfError(alertError,"Element " + originalInput + " does not exist!");
+					return false;
 				}
 			};
 			if(property === "x") {
 				if(!Number.isSafeInteger(value)) {
-					alert("X cannot be a decimal! And what are you doing trying to set position values anyway?");
-					break;
+					alertIfError(alertError,"X cannot be a decimal! And what are you doing trying to set position values anyway?");
+					return false;
 				}
 			};
 			if(property === "color") {
 				if(!value.startsWith("rgb(")) { //if not RGB
 					if(value.startsWith("hsl(")) { //if HSL
 						if(!(value.split(",")[1].endsWith('%')) && !(value.split(",")[2].endsWith('%)'))) { //if missing percent symbols
-							alert("Color must be in the form \"rgb(red,green,blue)\" or \"hsl(hue,saturation%,lightness%)\"!");
-							break;
+							alertIfError(alertError,"Color must be in the form \"rgb(red,green,blue)\" or \"hsl(hue,saturation%,lightness%)\"!");
+							return false;
 						};
 					} else { //if not RGB and not HSL
-						alert("Color must be in the form \"rgb(red,green,blue)\" or \"hsl(hue,saturation%,lightness%)\"!");
-						break;
+						alertIfError(alertError,"Color must be in the form \"rgb(red,green,blue)\" or \"hsl(hue,saturation%,lightness%)\"!");
+						return false;
 					};
 				}
 				if(value.split(",").length !== 3) { //if too short or long
-					alert("Color must be in the form \"rgb(red,green,blue)\" or \"hsl(hue,saturation%,lightness%)\"!");
-					break;
+					alertIfError(alertError,"Color must be in the form \"rgb(red,green,blue)\" or \"hsl(hue,saturation%,lightness%)\"!");
+					return false;
 				}
 				if(value.startsWith("rgb(")) { //if RGB
 					var checkedColorObject = rgbStringToUnvalidatedObject(value); //RGB NaN checking
 					if(isNaN(checkedColorObject.r) || isNaN(checkedColorObject.g) || isNaN(checkedColorObject.b)) {
 						//console.log(checkedColorObject);
-						alert("One or more color values are invalid!");
-						break;
+						alertIfError(alertError,"One or more color values are invalid!");
+						return false;
 					};
 				} else if(value.startsWith("hsl(")) { //if HSL
 					var checkedColorObject = hslStringToUnvalidatedObject(value); //HSL NaN checking
 					if(isNaN(checkedColorObject.h) || isNaN(checkedColorObject.s) || isNaN(checkedColorObject.l)) {
 						//console.log(checkedColorObject);
-						alert("One or more color values are invalid!");
-						break;
+						alertIfError(alertError,"One or more color values are invalid!");
+						return false;
 					};
 				} else { //if neither
-					alert("Color must be in the form \"rgb(red,green,blue)\" or \"hsl(hue,saturation%,lightness%)\"!");
-					break;
+					alertIfError(alertError,"Color must be in the form \"rgb(red,green,blue)\" or \"hsl(hue,saturation%,lightness%)\"!");
+					return false;
 				};
 			};
 			
 			//Actual setting code;
+			var setCount = 0;
 			for (var i = 1; i < width; i++) {
 				for (var j = 1; j < height; j++) {
 					if (!isEmpty(i,j)) {
@@ -166,19 +184,21 @@ function funniPrompt(argument=null) {
 						if(pixelMap[i][j].element === inputElement || inputElement === "all") {
 							//console.log("Element is a match: " + inputElement + ", " + pixelMap[i][j].element)
 							pixelMap[i][j][property] = value;
+							setCount++;
 						};
 					};
 				};
 			};
-			break;
+			inputElement === "all" ? alertIfOutput(alertOutput,`Set ${property} of ${setCount} pixels to ${value}.`) : alertIfOutput(alertOutput,`Set ${property} of ${setCount} ${inputElement} pixels to ${value}.`)
+			return true;
 		case "test":
-			alert("pong");
+			alertIfOutput(alertOutput,"pong");
 			console.log("qwertyuiopasdfghjklzxcvbnm");
-			break;
+			return true;
 		case "fill":
 			if(inputAsArray.length < 3) {
-				alert("Usage: fill [overwrite (should be a bool)] [element] <additional elements>.\nDon't include framing characters []<>.\nArguments in [brackets] are required and ones in <angle brackets> are optional.");
-				break;
+				alertIfError(alertError,"Usage: fill [overwrite (should be a bool)] [element] <additional elements>.\nDon't include framing characters []<>.\nArguments in [brackets] are required and ones in <angle brackets> are optional.");
+				return false;
 			};
 			
 			var doOverwrite = inputAsArray[1];
@@ -191,8 +211,8 @@ function funniPrompt(argument=null) {
 				var originalElement = elementInConsideration; //also for error display
 				elementInConsideration = mostSimilarElement(elementInConsideration);
 				if(!elements[elementInConsideration]) {
-					alert("Element " + originalElement + " does not exist!");
-					break;
+					alertIfError(alertError,"Element " + originalElement + " does not exist!");
+					return false;
 				}
 				elementList[i] = elementInConsideration;
 			};
@@ -203,13 +223,14 @@ function funniPrompt(argument=null) {
 			} else if(falseSynonyms.includes(doOverwrite.toLowerCase())) {
 				doOverwrite = false;
 			} else {
-				alert("Unrecognized boolean value: " + doOverwrite + "\n Note that for this command, the boolean value goes first.");
-				break;
+				alertIfError(alertError,"Unrecognized boolean value: " + doOverwrite + "\n Note that for this command, the boolean value goes first.");
+				return false;
 			}
 			//console.log(doOverwrite);
 			//console.log(elementList);
 			
 			//Fill code
+			var fillCount = 0;
 			for (var i = 1; i < width; i++) {
 				for (var j = 1; j < height; j++) {
 					var randomElement = elementList[Math.floor(Math.random() * elementList.length)];
@@ -218,14 +239,16 @@ function funniPrompt(argument=null) {
 					};
 					if (isEmpty(i,j,false)) {
 						createPixel(randomElement,i,j);
+						fillCount++;
 					};
 				};
 			};
-			break;
+			alertIfOutput(alertOutput,`Placed ${fillCount} pixels`);
+			return fillCount;
 		case "randomfill":
 			if(inputAsArray.length < 1) { //somehow?
-				alert("Usage: randomfill <overwrite (should be a bool) (default: true)>\nDon't include framing characters []<>.\nArguments in <angle brackets> are optional.");
-				break;
+				alertIfError(alertError,"Usage: randomfill <overwrite (should be a bool) (default: true)>\nDon't include framing characters []<>.\nArguments in <angle brackets> are optional.");
+				return false;
 			};
 			
 			var doOverwrite = null;
@@ -237,8 +260,8 @@ function funniPrompt(argument=null) {
 				} else if(falseSynonyms.includes(doOverwrite.toLowerCase())) {
 					doOverwrite = false;
 				} else {
-					alert("Unrecognized boolean value: " + value);
-					break;
+					alertIfError(alertError,"Unrecognized boolean value: " + value);
+					return false;
 				};
 			} else {
 				doOverwrite = true;
@@ -247,6 +270,7 @@ function funniPrompt(argument=null) {
 			var elementList = randomChoices;
 			
 			//Fill code
+			var fillCount = 0;
 			for (var i = 1; i < width; i++) {
 				for (var j = 1; j < height; j++) {
 					var randomElement = elementList[Math.floor(Math.random() * elementList.length)];
@@ -255,15 +279,16 @@ function funniPrompt(argument=null) {
 					};
 					if (isEmpty(i,j,false)) {
 						createPixel(randomElement,i,j);
+						fillCount++;
 					};
 				};
 			};
-			break;
+			alertIfOutput(alertOutput,`Placed ${fillCount} random pixels`);
+			return fillCount;
 		case "count":
-			//alert("To do");
 			if(inputAsArray.length < 2) {
-				alert("Usage: count [element]\nDon't include framing characters []<>.\nNote: The element name can't have a space in it because spaces are the separator used in the parsing split().\nArguments in [brackets] are required.");
-				break;
+				alertIfError(alertError,"Usage: count [element]\nDon't include framing characters []<>.\nNote: The element name can't have a space in it because spaces are the separator used in the parsing split().\nArguments in [brackets] are required.");
+				return false;
 			};
 			var inputElement = inputAsArray[1];
 			//console.log("Element gotten: " + inputElement);
@@ -272,8 +297,8 @@ function funniPrompt(argument=null) {
 			inputElement = mostSimilarElement(inputElement);
 			//console.log("Element gotten: " + inputElement);
 			if(typeof(elements[inputElement]) === "undefined") {
-				alert("Element " + originalInput + " does not exist!");
-				break;
+				alertIfError(alertError,"Element " + originalInput + " does not exist!");
+				return false;
 			}
 			
 			//Actual counting code;
@@ -289,8 +314,8 @@ function funniPrompt(argument=null) {
 					};
 				};
 			};
-			alert(`There are ${count} pixels of ${inputElement}`);
-			break;
+			alertIfOutput(alertOutput,`There are ${count} pixels of ${inputElement}`);
+			return count;
 		case "countall":
 			var listObject = {};
 
@@ -317,28 +342,31 @@ function funniPrompt(argument=null) {
 				formattedList += `${elementName}: ${elementCount}\n`;
 			};
 			
-			alert("Elements counts logged to console");
+			alertIfOutput(alertOutput,"Elements counts logged to console");
 			console.log(formattedList);
-			break;
+			return listObject;
 		case "help":
 			if(inputAsArray.length < 1) { //somehow
-				alert("Usage: help <command>\nDon't include framing characters []<>.\nArguments in <angle brackets> are optional.");
-				break;
+				alertIfError(alertError,"Usage: help <command>\nDon't include framing characters []<>.\nArguments in <angle brackets> are optional.");
+				return false;
 			};
 			if(inputAsArray.length < 2) {
-				alert("Commands: \nset\ntest\nfill\nrandomfill\ncount\ncountall\nhelp")
+				alertOutput ? alertIfOutput(alertOutput,"Commands: \nset\ntest\nfill\nrandomfill\ncount\ncountall\nhelp") : console.log("Commands:  set, test, fill, randomfill, count, countall, help");
 			} else {
 				var command = inputAsArray[1];
 
 				if(typeof(commandHelpObject[command]) === "undefined") {
-					alert("Cound not find help for " + command + ".");
+					alertIfError(alertError,"Cound not find help for " + command + ".");
+					return false;
 				} else {
-					alert(commandHelpObject[command]);
+					alertOutput ? alertIfOutput(alertOutput,commandHelpObject[command]) : console.log(commandHelpObject[command].replace(/\n/g, "        "));
+					return true;
 				};
 			};
-			break;
+			return true;
 		default:
-			alert(`Command ${firstItem} not found!`);
+			alertIfError(alertError,`Command ${firstItem} not found!`);
+			return false;
 	};
 };
 
