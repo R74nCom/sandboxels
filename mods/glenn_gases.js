@@ -384,7 +384,7 @@ runAfterLoad(function() {
 	if(enabledMods.includes("mods/Neutronium Mod.js")) {
 		elements.coal.breakInto = "coal_dust"
 	}
-	if(enabledMods.includes("mods/more_worlds.js")) {
+	if(enabledMods.includes("mods/the_ground.js")) {
 		elements.irradiated_rock_dust = {
 			color: "#839e78",
 			behavior: behaviors.RAD_GAS,
@@ -403,7 +403,7 @@ runAfterLoad(function() {
 	if(enabledMods.includes("mods/boiling_rock.js")) {
 		elements.rock_dust.tempHigh = 3000
 		elements.rock_dust.stateHigh = "vaporized_rock"
-		if(enabledMods.includes("mods/more_worlds.js")) {
+		if(enabledMods.includes("mods/the_ground.js")) {
 			elements.irradiated_rock_dust.tempHigh = 3000
 			elements.irradiated_rock_dust.stateHigh = "vaporized_rock"
 		}
