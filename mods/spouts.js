@@ -19,7 +19,7 @@ includedElements = ["ketchup_spout", "spout", "udder", "torch", "sun"]
 
 runAfterLoad(function() {
     liquidArray = Object.keys(elements).filter(function(e) {
-        return (elements[e].state == "liquid" || elements[e].state == "gas") && !excludedElements.includes(elements[e]);
+        return (elements[e].state == "liquid" || elements[e].state == "gas" || elements[e].movable) && !excludedElements.includes(elements[e]);
     });
     for(i = 0; i < liquidArray.length; i++) {
         elements[`${liquidArray[i]}_spout`] = {
