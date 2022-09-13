@@ -1,12 +1,331 @@
 /*
 TODO:
-Porphyritic, vesicular, vitreous, and fragmental IRs (if they exist, and i might make some up if they don't)
-Other rocks that fit these categories??
-Sedimentary and metamorphic rocks in general
-Proper classification of limestone in comments
+Fill in remaining IRs (if they exist, and i might make some up if they don't)
+Soils
+More sedimentary rocks
+Metamorphic rocks
+	Ersatz pressure
+Merge crimson?
+Proper classification of limestone within these code comments
 */
 
 //Terrain
+
+	//Soils
+	
+		//Dry
+		//Warning: Crippling lack of online information on the properties of the various soils by texture
+		
+			//Clay
+			
+				//Clay exists
+			
+			//Silty clay
+				
+				//TODO
+				
+			//Silty Clay Loam
+				
+				//TODO
+				
+			//Silty Loam
+				
+				//TODO
+				
+			//Silt
+			
+				//TODO
+				
+			//Clay Loam
+			
+				//TODO
+				//elements.clay_soil.name = "Clay Loam"
+				
+			//Medium Loam
+				
+				//TODO
+				//elements.dirt.name = "Medium Loam";
+				
+			//Sandy Clay
+			
+				/*elements.sandy_clay = {
+					color: "#DDCD8A",
+					behavior: behaviors.POWDER,
+					tempHigh: 1710,
+					tempLow: -50,
+					stateLow: "sandy_clay_permafrost",
+					category:"land",
+					state: "solid",
+					density: 1220,
+				};*/
+				
+			//Sandy Clay Loam
+			
+				//TODO
+				
+			//Sandy Loam
+			
+				//TODO
+				
+			//Loamy Sand
+			
+				//TODO
+				
+			//Sand
+			
+				//Sand exists
+				
+		//Wet
+		
+			//Wet Clay
+			
+				//TODO
+			
+			//Wet Silty clay
+				
+				//TODO
+				
+			//Wet Silty Clay Loam
+				
+				//TODO
+				
+			//Wet Silty Loam
+				
+				//TODO
+				
+			//Wet Silt
+			
+				//TODO
+				
+			//Wet Clay Loam
+			
+				//TODO
+				
+			//Wet Medium Loam
+				
+				//Mud exists
+				
+			//Wet Sandy Clay
+			
+				//TODO
+				
+			//Wet Sandy Clay Loam
+			
+				//TODO
+				
+			//Wet Sandy Loam
+			
+				//TODO
+				
+			//Wet Loamy Sand
+			
+				//TODO
+				
+			//Wet Sand
+			
+				//Wet Sand exists
+				
+		//Permafrost
+
+			//Clay Permafrost
+			
+				//TODO
+			
+			//Silty clay Permafrost
+				
+				//TODO
+				
+			//Silty Clay Loam Permafrost
+				
+				//TODO
+				
+			//Silty Loam Permafrost
+				
+				//TODO
+				
+			//Silt Permafrost
+			
+				//TODO
+				
+			//Clay Loam Permafrost
+			
+				//TODO
+				
+			//Medium Loam Permafrost
+				
+				//Permafrost exists
+				
+			//Sandy Clay Permafrost
+			
+				//TODO
+				
+			//Sandy Clay Loam Permafrost
+			
+				//TODO
+				
+			//Sandy Loam Permafrost
+			
+				//TODO
+				
+			//Loamy Sand Permafrost
+			
+				//TODO
+				
+			//Sand Permafrost
+			
+				//TODO
+
+		//Irradiated (unmoved/TODO)
+	
+			//Dry
+			
+				//Irradiated Clay
+				
+					//Clay exists
+				
+				//Irradiated Silty clay
+					
+					//TODO
+					
+				//Irradiated Silty Clay Loam
+					
+					//TODO
+					
+				//Irradiated Silty Loam
+					
+					//TODO
+					
+				//Irradiated Silt
+				
+					//TODO
+					
+				//Irradiated Clay Loam
+				
+					//Clay Soil exists
+					
+				//Irradiated Medium Loam
+					
+					//Dirt exists
+					
+				//Irradiated Sandy Clay
+				
+					//TODO
+					
+				//Irradiated Sandy Clay Loam
+				
+					//TODO
+					
+				//Irradiated Sandy Loam
+				
+					//TODO
+					
+				//Irradiated Loamy Sand
+				
+					//TODO
+					
+				//Irradiated Sand
+				
+					//Sand exists
+					
+			//Wet
+			
+				//Irradiated Wet Clay
+				
+					//TODO
+				
+				//Irradiated Wet Silty clay
+					
+					//TODO
+					
+				//Irradiated Wet Silty Clay Loam
+					
+					//TODO
+					
+				//Irradiated Wet Silty Loam
+					
+					//TODO
+					
+				//Irradiated Wet Silt
+				
+					//TODO
+					
+				//Irradiated Wet Clay Loam
+				
+					//TODO
+					
+				//Irradiated Wet Medium Loam
+					
+					//Mud exists
+					
+				//Irradiated Wet Sandy Clay
+				
+					//TODO
+					
+				//Irradiated Wet Sandy Clay Loam
+				
+					//TODO
+					
+				//Irradiated Wet Sandy Loam
+				
+					//TODO
+					
+				//Irradiated Wet Loamy Sand
+				
+					//TODO
+					
+				//Irradiated Wet Sand
+				
+					//Wet Sand exists
+
+			//Permafrost
+					
+				//Irradiated Clay Permafrost
+				
+					//TODO
+				
+				//Irradiated Silty clay Permafrost
+					
+					//TODO
+					
+				//Irradiated Silty Clay Loam Permafrost
+					
+					//TODO
+					
+				//Irradiated Silty Loam Permafrost
+					
+					//TODO
+					
+				//Irradiated Silt Permafrost
+				
+					//TODO
+					
+				//Irradiated Clay Loam Permafrost
+				
+					//TODO
+					
+				//Irradiated Medium Loam Permafrost
+					
+					//Permafrost exists
+					
+				//Irradiated Sandy Clay Permafrost
+				
+					//TODO
+					
+				//Irradiated Sandy Clay Loam Permafrost
+				
+					//TODO
+					
+				//Irradiated Sandy Loam Permafrost
+				
+					//TODO
+					
+				//Irradiated Loamy Sand Permafrost
+				
+					//TODO
+					
+				//Irradiated Sand Permafrost
+				
+					//TODO
 
 	//Rocks
 	
@@ -347,13 +666,13 @@ Proper classification of limestone in comments
 				
 					//Elements from which simplified lithification can spread
 
-						sandstoneLithificationElements = ["sand_sediment", "sandstone", "irradiated_sand_sediment", "irradiated_sandstone"]
+						sandstoneLithificationElements = ["sand_sediment", "sandstone", "irradiated_sand_sediment", "irradiated_sandstone"/*, "crimson_sandstone", "crimson_sand_sediment"*/]
 
 					//Water reaction to pick up the fine material (this is very simplified)
 
 						elements.water.reactions.wet_sand = {
 							"elem1": "sandy_water",
-							"elem2": ["wet_sand","wet_sand","wet_sand","wet_sand","wet_sand",null],
+							"elem2": ["wet_sand","wet_sand","wet_sand","sandy_water"],
 							chance: 0.01
 						};
 
@@ -362,6 +681,12 @@ Proper classification of limestone in comments
 							"elem2": ["irradiated_wet_sand","irradiated_wet_sand","irradiated_wet_sand","irradiated_wet_sand","irradiated_wet_sand",null],
 							chance: 0.01
 						};
+
+						/*elements.water.reactions.crimson_wet_sand = { /
+							"elem1": "crimson_sandy_water",
+							"elem2": ["crimson_wet_sand","crimson_wet_sand","crimson_wet_sand","crimson_wet_sand","crimson_wet_sand",null],
+							chance: 0.01
+						};*/
 
 					//Sediment suspension
 
@@ -379,10 +704,10 @@ Proper classification of limestone in comments
 									"elem1": [null,null,"wet_sand"], // First element transforms into; in this case, water deletes itself
 									"elem2": "mud", // Second element transforms into; in this case, dirt turns to mud
 								},
-								"water": { "elem1":"water", "elem2":"sandy_water", "chance":0.025 },
-								"sand": { "elem1": [null,null,"wet_sand"], "elem2": "wet_sand", },
-								"sandy_water": { "elem1":"wet_sand", "elem2":"water", "chance": 0.001 },
-								"wet_sand": { "elem2":"sand_sediment", "chance": 0.0005 },
+								"water": { "elem1":"water", "elem2":"sandy_water", "chance":0.025 }, //swap reaction
+								"sand": { "elem1": [null,null,"wet_sand"], "elem2": "wet_sand", }, 
+								"sandy_water": { "elem1":"water", "elem2":"sand_sediment", "chance": 0.001 }, 
+								"wet_sand": { "elem1": "water", "elem2":"sand_sediment", "chance": 0.0005 },
 								//"salt": { "elem1": "salt_water", "elem2": null },
 								//"sugar": { "elem1": "sugar_water", "elem2": null, },
 								"dust": { "elem1": "dirty_water", "elem2": null, },
@@ -426,7 +751,7 @@ Proper classification of limestone in comments
 								"SW:wet_sand%1.5 AND M2|SW:wet_sand%2.5 AND M1|SW:wet_sand%1.5 AND M2"
 							],
 							reactions: {
-								"water": { "elem1":"sandy_water", "elem2":"sandy_water", "chance":0.025 },
+								"water": { "elem1":"sandy_water", "elem2":"sandy_water", "chance":0.001 },
 								"sand": { "elem1": [null,null,"wet_sand"], "elem2": "wet_sand", },
 								"sandy_water": { "elem1":["water","water","sand_sediment"], "chance":0.001 },
 								"wet_sand": { "elem2": "sand_sediment", "chance": 0.0005 },
@@ -834,7 +1159,7 @@ Proper classification of limestone in comments
 					dirt:				"irradiated_dirt",
 					molten_dirt:		"molten_irradiated_dirt",
 					glass:				"irradiated_glass",
-					irradiated_glass:	"molten_irradiated_glass",
+					molten_glass:		"molten_irradiated_glass",
 					glass_shard:		"irradiated_glass_shard",
 					sand:				"irradiated_sand",
 					mud:				"irradiated_mud",
@@ -993,11 +1318,11 @@ Proper classification of limestone in comments
 						"water": { "elem1":"irradiated_water", "elem2":"irradiated_sandy_water", "chance":0.025 },
 						"irradiated_water": { "elem1":"irradiated_water", "elem2":"irradiated_sandy_water", "chance":0.025 },
 						"sand": { "elem1": [null,null,"irradiated_wet_sand"], "elem2": "irradiated_wet_sand", },
-						"sandy_water": { "elem1":"irradiated_wet_sand", "elem2":"irradiated_water", "chance": 0.001 },
 						"irradiated_sand": { "elem1": [null,null,"irradiated_wet_sand"], "elem2": "irradiated_wet_sand", },
-						"irradiated_sandy_water": { "elem1":"irradiated_wet_sand", "elem2":"irradiated_water", "chance": 0.001 },
-						"wet_sand": { "elem2":"irradiated_sand_sediment", "chance": 0.0005 },
-						"irradiated_wet_sand": { "elem2":"irradiated_sand_sediment", "chance": 0.0005 },
+						"sandy_water": { "elem1":"irradiated_wet_sand", "elem2":"irradiated_sand_sediment", "chance": 0.001 },
+						"irradiated_sandy_water": { "elem1":"irradiated_wet_sand", "elem2":"irradiated_sand_sediment", "chance": 0.001 },
+						"wet_sand": { "elem1": "irradiated_water", "elem2":"irradiated_sand_sediment", "chance": 0.0005 },
+						"irradiated_wet_sand": { "elem1": "irradiated_water", "elem2":"irradiated_sand_sediment", "chance": 0.0005 },
 						/*"salt": { "elem1": "salt_water", "elem2": null },
 						"sugar": { "elem1": "sugar_water", "elem2": null, },
 						"dust": { "elem1": "dirty_water", "elem2": null, },

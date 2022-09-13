@@ -137,19 +137,23 @@ elements.nitrogen_ice.breakInto = "nitrogen_snow"
 
 runAfterLoad(function() {
     for(i = 0; i < regularShinyThingArray.length; i++) {
-        if(elements[regularShinyThingArray[i]]) {
-            elements[`${regularShinyThingArray[i]}_scrap`] = {
-                color: elements[regularShinyThingArray[i]].color,
+		var thing = regularShinyThingArray[i];
+        if(elements[thing]) {
+            elements[`${thing}_scrap`] = {
+                color: elements[thing].color,
                 behavior: behaviors.POWDER,
-                tempHigh: elements[regularShinyThingArray[i]].tempHigh,
-                stateHigh: regularShinyThingArray[i],
-                reactions: elements[regularShinyThingArray[i]].reactions,
+                tempHigh: elements[thing].tempHigh,
+                stateHigh: thing,
                 category: "powders",
                 hidden: true,
-                density: elements[regularShinyThingArray[i]].density * 0.09,
-                conduct: elements[regularShinyThingArray[i]].conduct * 0.4,
+                density: elements[thing].density * 0.09,
+                conduct: elements[thing].conduct * 0.4,
+				movable: true,
             };
-            elements[regularShinyThingArray[i]].breakInto = `${regularShinyThingArray[i]}_scrap`
+			if(elements[thing].reactions) {
+				elements[`${thing}_scrap`].reactions = elements[thing].reactions;
+			};
+            elements[thing].breakInto = `${thing}_scrap`;
         };
     };
 if(enabledMods.includes("mods/randomness.js")) {
