@@ -12,6 +12,9 @@ doVelocity = function(pixel) {
                         var newPixel = pixelMap[x][y];
                         if (elements[newPixel.element].movable) {
                             newPixel.vx = (newPixel.vx||0) + pixel.vx - Math.sign(pixel.vx);
+                            if (elements[pixel.element].breakInto && Math.random()<elements[pixel.element].breakIntoChance) {
+                                changePixel(pixel,elements[pixel.element].breakInto);
+                            }
                         }
                     }
                     pixel.vx = 0;
@@ -29,6 +32,9 @@ doVelocity = function(pixel) {
                         var newPixel = pixelMap[x][y];
                         if (elements[newPixel.element].movable) {
                             newPixel.vy = (newPixel.vy||0) + pixel.vy - Math.sign(pixel.vy);
+                            if (elements[pixel.element].breakInto && Math.random()<elements[pixel.element].breakIntoChance) {
+                                changePixel(pixel,elements[pixel.element].breakInto);
+                            }
                         }
                     }
                     pixel.vy = 0;
@@ -228,8 +234,8 @@ explodeAt = function(x,y,radius,fire="fire") {
             // set the pixel.vx and pixel.vy depending on the angle and power
             if (!elements[pixel.element].excludeRandom) {
                 var angle = Math.atan2(pixel.y-y,pixel.x-x);
-                pixel.vx = Math.floor((pixel.vx|0) + Math.cos(angle) * (radius * power/10));
-                pixel.vy = Math.floor((pixel.vy|0) + Math.sin(angle) * (radius * power/10));
+                pixel.vx = Math.round((pixel.vx|0) + Math.cos(angle) * (radius * power/10));
+                pixel.vy = Math.round((pixel.vy|0) + Math.sin(angle) * (radius * power/10));
             }
         }
     }
