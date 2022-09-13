@@ -226,9 +226,11 @@ explodeAt = function(x,y,radius,fire="fire") {
             pixel.temp += damage*radius*power;
             pixelTempCheck(pixel);
             // set the pixel.vx and pixel.vy depending on the angle and power
-            var angle = Math.atan2(pixel.y-y,pixel.x-x);
-            pixel.vx = Math.floor((pixel.vx|0) + Math.cos(angle) * (radius * power/10));
-            pixel.vy = Math.floor((pixel.vy|0) + Math.sin(angle) * (radius * power/10));
+            if (!elements[pixel.element].excludeRandom) {
+                var angle = Math.atan2(pixel.y-y,pixel.x-x);
+                pixel.vx = Math.floor((pixel.vx|0) + Math.cos(angle) * (radius * power/10));
+                pixel.vy = Math.floor((pixel.vy|0) + Math.sin(angle) * (radius * power/10));
+            }
         }
     }
 }
