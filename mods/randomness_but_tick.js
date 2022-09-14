@@ -412,184 +412,190 @@ elements.troll_powder = {
 elements.void_first = {
 	color: "#262626",
 	tick: function(pixel) {
-		//store 4 touching pixels in variables if the variables don't exist
-		if(!outOfBounds(pixel.x,pixel.y-1) && !isEmpty(pixel.x,pixel.y-1)) {
-			if(!pixel.dc1 && pixelMap[pixel.x][pixel.y-1].element != pixel.element) {
-				pixel.dc1 = pixelMap[pixel.x][pixel.y-1].element
-			}
-		}
-		if(!outOfBounds(pixel.x+1,pixel.y) && !isEmpty(pixel.x+1,pixel.y)) {
-			if(!pixel.dc2 && pixelMap[pixel.x+1][pixel.y].element != pixel.element) {
-				pixel.dc2 = pixelMap[pixel.x+1][pixel.y].element
-			}
-		}
-		if(!outOfBounds(pixel.x,pixel.y+1) && !isEmpty(pixel.x,pixel.y+1)) {
-			if(!pixel.dc3 && pixelMap[pixel.x][pixel.y+1].element != pixel.element) {
-				pixel.dc3 = pixelMap[pixel.x][pixel.y+1].element
-			}
-		}
-		if(!outOfBounds(pixel.x-1,pixel.y) && !isEmpty(pixel.x-1,pixel.y)) {
-			if(!pixel.dc3 && pixelMap[pixel.x-1][pixel.y].element != pixel.element) {
-				pixel.dc4 = pixelMap[pixel.x-1][pixel.y].element
-			}
-		}
-		//choose from 1
-		if(pixel.dc1 && !pixel.dc2 && !pixel.dc3 && !pixel.dc4) {
-			if(!pixel.delete) {
-				pixel.delete = pixel.dc1
-			}
-		}
-		if(!pixel.dc1 && pixel.dc2 && !pixel.dc3 && !pixel.dc4) {
-			if(!pixel.delete) {
-				pixel.delete = pixel.dc2
-			}
-		}
-		if(!pixel.dc1 && !pixel.dc2 && pixel.dc3 && !pixel.dc4) {
-			if(!pixel.delete) {
-				pixel.delete = pixel.dc3
-			}
-		}
-		if(!pixel.dc1 && !pixel.dc2 && !pixel.dc3 && pixel.dc4) {
-			if(!pixel.delete) {
-				pixel.delete = pixel.dc4
-			}
-		}
-		ggg = Math.random()
-		hhh = Math.random()
-		iii = Math.random()
-		//choose from 2
-		//1100 and 0011
-		if(pixel.dc1 && pixel.dc2 && !pixel.dc3 && !pixel.dc4) {
-			if(!pixel.delete) {
-				if(ggg < 1/2) {
-					pixel.delete = pixel.dc1
-				} else {
-					pixel.delete = pixel.dc2
+		if(!pixel.void) {
+			//store 4 touching pixels in variables if the variables don't exist
+			if(!outOfBounds(pixel.x,pixel.y-1) && !isEmpty(pixel.x,pixel.y-1)) {
+				if(!pixel.dc1 && pixelMap[pixel.x][pixel.y-1].element != pixel.element) {
+					pixel.dc1 = pixelMap[pixel.x][pixel.y-1].element
 				}
 			}
-		}
-		if(!pixel.dc1 && !pixel.dc2 && pixel.dc3 && pixel.dc4) {
-			if(!pixel.delete) {
-				if(ggg < 1/2) {
-					pixel.delete = pixel.dc3
-				} else {
-					pixel.delete = pixel.dc4
+			if(!outOfBounds(pixel.x+1,pixel.y) && !isEmpty(pixel.x+1,pixel.y)) {
+				if(!pixel.dc2 && pixelMap[pixel.x+1][pixel.y].element != pixel.element) {
+					pixel.dc2 = pixelMap[pixel.x+1][pixel.y].element
 				}
 			}
-		}
-		//1010 and 0101
-		if(pixel.dc1 && !pixel.dc2 && pixel.dc3 && !pixel.dc4) {
-			if(!pixel.delete) {
-				if(ggg < 1/2) {
-					pixel.delete = pixel.dc1
-				} else {
-					pixel.delete = pixel.dc3
+			if(!outOfBounds(pixel.x,pixel.y+1) && !isEmpty(pixel.x,pixel.y+1)) {
+				if(!pixel.dc3 && pixelMap[pixel.x][pixel.y+1].element != pixel.element) {
+					pixel.dc3 = pixelMap[pixel.x][pixel.y+1].element
 				}
 			}
-		}
-		if(!pixel.dc1 && pixel.dc2 && !pixel.dc3 && pixel.dc4) {
-			if(!pixel.delete) {
-				if(ggg < 1/2) {
-					pixel.delete = pixel.dc2
-				} else {
-					pixel.delete = pixel.dc4
+			if(!outOfBounds(pixel.x-1,pixel.y) && !isEmpty(pixel.x-1,pixel.y)) {
+				if(!pixel.dc3 && pixelMap[pixel.x-1][pixel.y].element != pixel.element) {
+					pixel.dc4 = pixelMap[pixel.x-1][pixel.y].element
 				}
 			}
-		}
-		//0110 and 1001
-		if(!pixel.dc1 && pixel.dc2 && pixel.dc3 && !pixel.dc4) {
-			if(!pixel.delete) {
-				if(ggg < 1/2) {
-					pixel.delete = pixel.dc2
-				} else {
-					pixel.delete = pixel.dc3
+			//choose from 1
+			if(pixel.dc1 && !pixel.dc2 && !pixel.dc3 && !pixel.dc4) {
+				if(!pixel.void) {
+					pixel.void = pixel.dc1
 				}
 			}
-		}
-		if(pixel.dc1 && !pixel.dc2 && !pixel.dc3 && pixel.dc4) {
-			if(!pixel.delete) {
-				if(ggg < 1/2) {
-					pixel.delete = pixel.dc1
-				} else {
-					pixel.delete = pixel.dc4
+			if(!pixel.dc1 && pixel.dc2 && !pixel.dc3 && !pixel.dc4) {
+				if(!pixel.void) {
+					pixel.void = pixel.dc2
 				}
 			}
-		}
-		//choose from 3
-		//0111
-		if(!pixel.dc1 && pixel.dc2 && pixel.dc3 && pixel.dc4) {
-			if(!pixel.delete) {
-				if(hhh < 1/3) {
-					pixel.delete = pixel.dc2
-				} else if(hhh < 2/3) {
-					pixel.delete = pixel.dc3
-				} else {
-					pixel.delete = pixel.dc4
+			if(!pixel.dc1 && !pixel.dc2 && pixel.dc3 && !pixel.dc4) {
+				if(!pixel.void) {
+					pixel.void = pixel.dc3
 				}
 			}
-		}
-		//1011
-		if(pixel.dc1 && !pixel.dc2 && pixel.dc3 && pixel.dc4) {
-			if(!pixel.delete) {
-				if(hhh < 1/3) {
-					pixel.delete = pixel.dc1
-				} else if(hhh < 2/3) {
-					pixel.delete = pixel.dc3
-				} else {
-					pixel.delete = pixel.dc4
+			if(!pixel.dc1 && !pixel.dc2 && !pixel.dc3 && pixel.dc4) {
+				if(!pixel.void) {
+					pixel.void = pixel.dc4
 				}
 			}
-		}
-		//1101
-		if(pixel.dc1 && pixel.dc2 && !pixel.dc3 && pixel.dc4) {
-			if(!pixel.delete) {
-				if(hhh < 1/3) {
-					pixel.delete = pixel.dc1
-				} else if(hhh < 2/3) {
-					pixel.delete = pixel.dc2
-				} else {
-					pixel.delete = pixel.dc4
-				}
-			}
-		}
-		//1110
-		if(pixel.dc1 && pixel.dc2 && pixel.dc3 && !pixel.dc4) {
-			if(!pixel.delete) {
-				if(hhh < 1/3) {
-					pixel.delete = pixel.dc1
-				} else if(hhh < 2/3) {
-					pixel.delete = pixel.dc2
-				} else {
-					pixel.delete = pixel.dc3
-				}
-			}
-		}
-		//choose from 4
-		//1111
-		if(pixel.dc1 && pixel.dc2 && pixel.dc3 && pixel.dc4) {
-			if(!pixel.delete) {
-				if(iii < 1/4) {
-					pixel.delete = pixel.dc1
-				} else if(iii < 2/4) {
-					pixel.delete = pixel.dc2
-				} else if(iii < 3/4) {
-					pixel.delete = pixel.dc3
-				} else {
-					pixel.delete = pixel.dc4
-				}
-			}
-		}
-		for (let i = -1; i < 2; i++) {
-			for (let j = -1; j < 2; j++) {
-				if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
-					if(pixel.delete) {
-						if(pixelMap[pixel.x+j][pixel.y+i].element == pixel.delete) {
-							deletePixel(pixel.x+j,pixel.y+i)
-						}
+			ggg = Math.random()
+			hhh = Math.random()
+			iii = Math.random()
+			//choose from 2
+			//1100 and 0011
+			if(pixel.dc1 && pixel.dc2 && !pixel.dc3 && !pixel.dc4) {
+				if(!pixel.void) {
+					if(ggg < 1/2) {
+						pixel.void = pixel.dc1
+					} else {
+						pixel.void = pixel.dc2
 					}
 				}
 			}
+			if(!pixel.dc1 && !pixel.dc2 && pixel.dc3 && pixel.dc4) {
+				if(!pixel.void) {
+					if(ggg < 1/2) {
+						pixel.void = pixel.dc3
+					} else {
+						pixel.void = pixel.dc4
+					}
+				}
+			}
+			//1010 and 0101
+			if(pixel.dc1 && !pixel.dc2 && pixel.dc3 && !pixel.dc4) {
+				if(!pixel.void) {
+					if(ggg < 1/2) {
+						pixel.void = pixel.dc1
+					} else {
+						pixel.void = pixel.dc3
+					}
+				}
+			}
+			if(!pixel.dc1 && pixel.dc2 && !pixel.dc3 && pixel.dc4) {
+				if(!pixel.void) {
+					if(ggg < 1/2) {
+						pixel.void = pixel.dc2
+					} else {
+						pixel.void = pixel.dc4
+					}
+				}
+			}
+			//0110 and 1001
+			if(!pixel.dc1 && pixel.dc2 && pixel.dc3 && !pixel.dc4) {
+				if(!pixel.void) {
+					if(ggg < 1/2) {
+						pixel.void = pixel.dc2
+					} else {
+						pixel.void = pixel.dc3
+					}
+				}
+			}
+			if(pixel.dc1 && !pixel.dc2 && !pixel.dc3 && pixel.dc4) {
+				if(!pixel.void) {
+					if(ggg < 1/2) {
+						pixel.void = pixel.dc1
+					} else {
+						pixel.void = pixel.dc4
+					}
+				}
+			}
+			//choose from 3
+			//0111
+			if(!pixel.dc1 && pixel.dc2 && pixel.dc3 && pixel.dc4) {
+				if(!pixel.void) {
+					if(hhh < 1/3) {
+						pixel.void = pixel.dc2
+					} else if(hhh < 2/3) {
+						pixel.void = pixel.dc3
+					} else {
+						pixel.void = pixel.dc4
+					}
+				}
+			}
+			//1011
+			if(pixel.dc1 && !pixel.dc2 && pixel.dc3 && pixel.dc4) {
+				if(!pixel.void) {
+					if(hhh < 1/3) {
+						pixel.void = pixel.dc1
+					} else if(hhh < 2/3) {
+						pixel.void = pixel.dc3
+					} else {
+						pixel.void = pixel.dc4
+					}
+				}
+			}
+			//1101
+			if(pixel.dc1 && pixel.dc2 && !pixel.dc3 && pixel.dc4) {
+				if(!pixel.void) {
+					if(hhh < 1/3) {
+						pixel.void = pixel.dc1
+					} else if(hhh < 2/3) {
+						pixel.void = pixel.dc2
+					} else {
+						pixel.void = pixel.dc4
+					}
+				}
+			}
+			//1110
+			if(pixel.dc1 && pixel.dc2 && pixel.dc3 && !pixel.dc4) {
+				if(!pixel.void) {
+					if(hhh < 1/3) {
+						pixel.void = pixel.dc1
+					} else if(hhh < 2/3) {
+						pixel.void = pixel.dc2
+					} else {
+						pixel.void = pixel.dc3
+					}
+				}
+			}
+			//choose from 4
+			//1111
+			if(pixel.dc1 && pixel.dc2 && pixel.dc3 && pixel.dc4) {
+				if(!pixel.void) {
+					if(iii < 1/4) {
+						pixel.void = pixel.dc1
+					} else if(iii < 2/4) {
+						pixel.void = pixel.dc2
+					} else if(iii < 3/4) {
+						pixel.void = pixel.dc3
+					} else {
+						pixel.void = pixel.dc4
+					}
+				}
+			}
+		} else if(pixel.void) {
+			if(pixel.dc1 || pixel.dc2 || pixel.dc3 || pixel.dc4) {
+				delete pixel.dc1;
+				delete pixel.dc2;
+				delete pixel.dc3;
+				delete pixel.dc4;
+			}
 		}
+        neighbors = [[-1,0],[0,-1],[1,0],[0,1]]
+        for(i = 0; i < neighbors.length; i++) {
+            if(!isEmpty(pixel.x+neighbors[i][0],pixel.y+neighbors[i][1],true)) {
+                if(pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]].element != pixel.element) {
+					deletePixel(pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]]);
+                };
+            };
+        };
 	},
 	category:"special",
 	hardness: 1,
