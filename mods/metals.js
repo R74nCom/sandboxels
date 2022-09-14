@@ -6,6 +6,7 @@ elements.iron.hardness = 0.74
 //and because 1 means infinite hardness, the others are derived using
 //1-(0.26/(otherThingBHN/200))
 //it doesn't matter much anyway but I'd like to have some semblance/veneer of accuracy
+//Then I nerfed and buffed some of them with inconsistent rounding.
 
 //Copper exists
 
@@ -17,7 +18,7 @@ elements.ruthenium = {
     state: "solid",
     density: 12450,
     conduct: 0.45,
-    hardness: 0.97593,
+    hardness: 0.97,
 },
 
 elements.molten_ruthenium = {
@@ -32,7 +33,7 @@ elements.rhodium = {
     state: "solid",
     density: 12410,
     conduct: 0.59,
-    hardness: 0.94694,
+    hardness: 0.95,
 },
 
 elements.molten_rhodium = {
@@ -47,7 +48,7 @@ elements.palladium = {
     state: "solid",
     density: 12023,
     conduct: 0.38,
-    hardness: 0.82667,
+    hardness: 0.83,
 },
 
 elements.molten_palladium = {
@@ -64,7 +65,7 @@ elements.rhenium = {
     state: "solid",
     density: 21020,
     conduct: 0.29,
-    hardness: 0.96061,
+    hardness: 0.96,
 },
 
 elements.molten_rhenium = {
@@ -79,7 +80,7 @@ elements.osmium = {
     state: "solid",
     density: 22590,
     conduct: 0.40,
-    hardness: 0.98673,
+    hardness: 0.98,
 },
 
 elements.molten_osmium = {
@@ -94,7 +95,7 @@ elements.iridium = {
     state: "solid",
     density: 22560,
     conduct: 0.54,
-    hardness: 0.96886,
+    hardness: 0.97,
 },
 
 elements.molten_iridium = {
