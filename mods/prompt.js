@@ -1,14 +1,17 @@
 colorInvalidError = "Color must be in the form \"rgb(red,green,blue)\" or \"hsl(hue,saturation%,lightness%)\" (without quotes)!";
-stringSynonyms = ["string","str","st","s"];
-numberSynonyms = ["number","num","nm","nu","n","integer","int","i","float","flt","f", //we will say integer but actually make it a float, how evil
-						 "wholenumber","decimalnumber","wn","dn","w","d","deeznuts"]; //Alice (software) reference, and an excuse to include deez nuts
-booleanSynonyms = ["boolean", "bool", "boo", "bo", "bl", "b"];
-//arraySynonyms = ["array","arr","ar","a","list","lst","l"]; //why
-//objectSynonyms = ["object","obj","ob","o","json"]; //I have no plans to implement these.
+stringSynonyms = [ "string", "str", "st", "s" ];
+numberSynonyms = [ "number", "num", "nm", "nu", "nb", "integer", "int", "i", "it", "float",
+				   "flt", "ft", "fl", "f", "wholenumber", "decimalnumber", "wn", "dn", "w",
+				   "d", "deeznuts" ]; /*The purpose of these blatant lies is, through a 
+				   reference to the Alice series of software, have an excuse to include deez
+				   nuts.*/
+																						//Passing "Infinity" through parseFloat returns Infinity. 
+booleanSynonyms = [ "boolean", "bool", "boole", "boo", "bo", "bl", "b" ];
 trueSynonyms = ["true", "t", "1", "yes"];
 falseSynonyms = ["false", "f", "0", "no"];
-defaultStringTypeValues = ["element","color"];
-defaultNumberTypeValues = ["x","y","temp","start","vx","vy"];
+defaultStringTypeValues = ["element","color","clone","changeTo","void"];
+defaultNumberTypeValues = ["x","y","temp","start","vx","vy","chargeCD","start","burnStart","dir","panic","r"];
+defaultBooleanTypeValues = ["burning","charge","dead"];
 commandHelpObject = {
 	"set": "Sets properties for every pixel of a given type.\nUsage: set [property] [element] [value] <type>\nDon't include framing characters []<>.\nThe element can be \"all\" to set the property for every pixel.\nNote: Strings can't have spaces because spaces are the separator used in the parsing split().\nArguments in [brackets] are required and ones in <angle brackets> are optional.",
 	"test": "Test.",
@@ -142,17 +145,17 @@ function funniPrompt(argument=null,alertOutput=true,alertError=true) {
 			if(property === "color") {
 				if(!value.startsWith("rgb(")) { //if not RGB
 					if(value.startsWith("hsl(")) { //if HSL
-						if(!(value.split(",")[1].endsWith('%')) && !(value.split(",")[2].endsWith('%)'))) { //if missing percent symbols
-							alertIfError(alertError,"Color must be in the form \"rgb(red,green,blue)\" or \"hsl(hue,saturation%,lightness%)\"!");
+						if(!(value.split(",")[1].endsWith('%')) || !(value.split(",")[2].endsWith('%)'))) { //if missing percent symbols
+							alertIfError(alertError,colorInvalidError);
 							return false;
 						};
 					} else { //if not RGB and not HSL
-						alertIfError(alertError,"Color must be in the form \"rgb(red,green,blue)\" or \"hsl(hue,saturation%,lightness%)\"!");
+						alertIfError(alertError,colorInvalidError);
 						return false;
 					};
 				}
 				if(value.split(",").length !== 3) { //if too short or long
-					alertIfError(alertError,"Color must be in the form \"rgb(red,green,blue)\" or \"hsl(hue,saturation%,lightness%)\"!");
+					alertIfError(alertError,colorInvalidError);
 					return false;
 				}
 				if(value.startsWith("rgb(")) { //if RGB
@@ -170,7 +173,7 @@ function funniPrompt(argument=null,alertOutput=true,alertError=true) {
 						return false;
 					};
 				} else { //if neither
-					alertIfError(alertError,"Color must be in the form \"rgb(red,green,blue)\" or \"hsl(hue,saturation%,lightness%)\"!");
+					alertIfError(alertError,colorInvalidError);
 					return false;
 				};
 			};
