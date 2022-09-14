@@ -598,171 +598,180 @@ elements.void_first = {
 elements.converter = {
 	color: "#2ec408",
 	tick: function(pixel) {
-		//store 4 touching pixels in variables if the variables don't exist
-		if(!outOfBounds(pixel.x,pixel.y-1) && !isEmpty(pixel.x,pixel.y-1)) {
-			if(!pixel.dc1 && pixelMap[pixel.x][pixel.y-1].element != pixel.element) {
-				pixel.dc1 = pixelMap[pixel.x][pixel.y-1].element
+		if(!pixel.changeTo) {
+			//store 4 touching pixels in variables if the variables don't exist
+			if(!outOfBounds(pixel.x,pixel.y-1) && !isEmpty(pixel.x,pixel.y-1)) {
+				if(!pixel.dc1 && pixelMap[pixel.x][pixel.y-1].element != pixel.element) {
+					pixel.dc1 = pixelMap[pixel.x][pixel.y-1].element
+				}
 			}
-		}
-		if(!outOfBounds(pixel.x+1,pixel.y) && !isEmpty(pixel.x+1,pixel.y)) {
-			if(!pixel.dc2 && pixelMap[pixel.x+1][pixel.y].element != pixel.element) {
-				pixel.dc2 = pixelMap[pixel.x+1][pixel.y].element
+			if(!outOfBounds(pixel.x+1,pixel.y) && !isEmpty(pixel.x+1,pixel.y)) {
+				if(!pixel.dc2 && pixelMap[pixel.x+1][pixel.y].element != pixel.element) {
+					pixel.dc2 = pixelMap[pixel.x+1][pixel.y].element
+				}
 			}
-		}
-		if(!outOfBounds(pixel.x,pixel.y+1) && !isEmpty(pixel.x,pixel.y+1)) {
-			if(!pixel.dc3 && pixelMap[pixel.x][pixel.y+1].element != pixel.element) {
-				pixel.dc3 = pixelMap[pixel.x][pixel.y+1].element
+			if(!outOfBounds(pixel.x,pixel.y+1) && !isEmpty(pixel.x,pixel.y+1)) {
+				if(!pixel.dc3 && pixelMap[pixel.x][pixel.y+1].element != pixel.element) {
+					pixel.dc3 = pixelMap[pixel.x][pixel.y+1].element
+				}
 			}
-		}
-		if(!outOfBounds(pixel.x-1,pixel.y) && !isEmpty(pixel.x-1,pixel.y)) {
-			if(!pixel.dc3 && pixelMap[pixel.x-1][pixel.y].element != pixel.element) {
-				pixel.dc4 = pixelMap[pixel.x-1][pixel.y].element
+			if(!outOfBounds(pixel.x-1,pixel.y) && !isEmpty(pixel.x-1,pixel.y)) {
+				if(!pixel.dc3 && pixelMap[pixel.x-1][pixel.y].element != pixel.element) {
+					pixel.dc4 = pixelMap[pixel.x-1][pixel.y].element
+				}
 			}
-		}
-		//choose from 1
-		if(pixel.dc1 && !pixel.dc2 && !pixel.dc3 && !pixel.dc4) {
-			if(!pixel.changeTo) {
-				pixel.changeTo = pixel.dc1
-			}
-		}
-		if(!pixel.dc1 && pixel.dc2 && !pixel.dc3 && !pixel.dc4) {
-			if(!pixel.changeTo) {
-				pixel.changeTo = pixel.dc2
-			}
-		}
-		if(!pixel.dc1 && !pixel.dc2 && pixel.dc3 && !pixel.dc4) {
-			if(!pixel.changeTo) {
-				pixel.changeTo = pixel.dc3
-			}
-		}
-		if(!pixel.dc1 && !pixel.dc2 && !pixel.dc3 && pixel.dc4) {
-			if(!pixel.changeTo) {
-				pixel.changeTo = pixel.dc4
-			}
-		}
-		ggg = Math.random()
-		hhh = Math.random()
-		iii = Math.random()
-		//choose from 2
-		//1100 and 0011
-		if(pixel.dc1 && pixel.dc2 && !pixel.dc3 && !pixel.dc4) {
-			if(!pixel.changeTo) {
-				if(ggg < 1/2) {
+			//choose from 1
+			if(pixel.dc1 && !pixel.dc2 && !pixel.dc3 && !pixel.dc4) {
+				if(!pixel.changeTo) {
 					pixel.changeTo = pixel.dc1
-				} else {
+				}
+			}
+			if(!pixel.dc1 && pixel.dc2 && !pixel.dc3 && !pixel.dc4) {
+				if(!pixel.changeTo) {
 					pixel.changeTo = pixel.dc2
 				}
 			}
-		}
-		if(!pixel.dc1 && !pixel.dc2 && pixel.dc3 && pixel.dc4) {
-			if(!pixel.changeTo) {
-				if(ggg < 1/2) {
-					pixel.changeTo = pixel.dc3
-				} else {
-					pixel.changeTo = pixel.dc4
-				}
-			}
-		}
-		//1010 and 0101
-		if(pixel.dc1 && !pixel.dc2 && pixel.dc3 && !pixel.dc4) {
-			if(!pixel.changeTo) {
-				if(ggg < 1/2) {
-					pixel.changeTo = pixel.dc1
-				} else {
+			if(!pixel.dc1 && !pixel.dc2 && pixel.dc3 && !pixel.dc4) {
+				if(!pixel.changeTo) {
 					pixel.changeTo = pixel.dc3
 				}
 			}
-		}
-		if(!pixel.dc1 && pixel.dc2 && !pixel.dc3 && pixel.dc4) {
-			if(!pixel.changeTo) {
-				if(ggg < 1/2) {
-					pixel.changeTo = pixel.dc2
-				} else {
+			if(!pixel.dc1 && !pixel.dc2 && !pixel.dc3 && pixel.dc4) {
+				if(!pixel.changeTo) {
 					pixel.changeTo = pixel.dc4
 				}
 			}
-		}
-		//0110 and 1001
-		if(!pixel.dc1 && pixel.dc2 && pixel.dc3 && !pixel.dc4) {
-			if(!pixel.changeTo) {
-				if(ggg < 1/2) {
-					pixel.changeTo = pixel.dc2
-				} else {
-					pixel.changeTo = pixel.dc3
+			ggg = Math.random()
+			hhh = Math.random()
+			iii = Math.random()
+			//choose from 2
+			//1100 and 0011
+			if(pixel.dc1 && pixel.dc2 && !pixel.dc3 && !pixel.dc4) {
+				if(!pixel.changeTo) {
+					if(ggg < 1/2) {
+						pixel.changeTo = pixel.dc1
+					} else {
+						pixel.changeTo = pixel.dc2
+					}
 				}
 			}
-		}
-		if(pixel.dc1 && !pixel.dc2 && !pixel.dc3 && pixel.dc4) {
-			if(!pixel.changeTo) {
-				if(ggg < 1/2) {
-					pixel.changeTo = pixel.dc1
-				} else {
-					pixel.changeTo = pixel.dc4
+			if(!pixel.dc1 && !pixel.dc2 && pixel.dc3 && pixel.dc4) {
+				if(!pixel.changeTo) {
+					if(ggg < 1/2) {
+						pixel.changeTo = pixel.dc3
+					} else {
+						pixel.changeTo = pixel.dc4
+					}
 				}
 			}
-		}
-		//choose from 3
-		//0111
-		if(!pixel.dc1 && pixel.dc2 && pixel.dc3 && pixel.dc4) {
-			if(!pixel.changeTo) {
-				if(hhh < 1/3) {
-					pixel.changeTo = pixel.dc2
-				} else if(hhh < 2/3) {
-					pixel.changeTo = pixel.dc3
-				} else {
-					pixel.changeTo = pixel.dc4
+			//1010 and 0101
+			if(pixel.dc1 && !pixel.dc2 && pixel.dc3 && !pixel.dc4) {
+				if(!pixel.changeTo) {
+					if(ggg < 1/2) {
+						pixel.changeTo = pixel.dc1
+					} else {
+						pixel.changeTo = pixel.dc3
+					}
 				}
 			}
-		}
-		//1011
-		if(pixel.dc1 && !pixel.dc2 && pixel.dc3 && pixel.dc4) {
-			if(!pixel.changeTo) {
-				if(hhh < 1/3) {
-					pixel.changeTo = pixel.dc1
-				} else if(hhh < 2/3) {
-					pixel.changeTo = pixel.dc3
-				} else {
-					pixel.changeTo = pixel.dc4
+			if(!pixel.dc1 && pixel.dc2 && !pixel.dc3 && pixel.dc4) {
+				if(!pixel.changeTo) {
+					if(ggg < 1/2) {
+						pixel.changeTo = pixel.dc2
+					} else {
+						pixel.changeTo = pixel.dc4
+					}
 				}
 			}
-		}
-		//1101
-		if(pixel.dc1 && pixel.dc2 && !pixel.dc3 && pixel.dc4) {
-			if(!pixel.changeTo) {
-				if(hhh < 1/3) {
-					pixel.changeTo = pixel.dc1
-				} else if(hhh < 2/3) {
-					pixel.changeTo = pixel.dc2
-				} else {
-					pixel.changeTo = pixel.dc4
+			//0110 and 1001
+			if(!pixel.dc1 && pixel.dc2 && pixel.dc3 && !pixel.dc4) {
+				if(!pixel.changeTo) {
+					if(ggg < 1/2) {
+						pixel.changeTo = pixel.dc2
+					} else {
+						pixel.changeTo = pixel.dc3
+					}
 				}
 			}
-		}
-		//1110
-		if(pixel.dc1 && pixel.dc2 && pixel.dc3 && !pixel.dc4) {
-			if(!pixel.changeTo) {
-				if(hhh < 1/3) {
-					pixel.changeTo = pixel.dc1
-				} else if(hhh < 2/3) {
-					pixel.changeTo = pixel.dc2
-				} else {
-					pixel.changeTo = pixel.dc3
+			if(pixel.dc1 && !pixel.dc2 && !pixel.dc3 && pixel.dc4) {
+				if(!pixel.changeTo) {
+					if(ggg < 1/2) {
+						pixel.changeTo = pixel.dc1
+					} else {
+						pixel.changeTo = pixel.dc4
+					}
 				}
 			}
-		}
-		//choose from 4
-		//1111
-		if(pixel.dc1 && pixel.dc2 && pixel.dc3 && pixel.dc4) {
-			if(!pixel.changeTo) {
-				if(iii < 1/4) {
-					pixel.changeTo = pixel.dc1
-				} else if(iii < 2/4) {
-					pixel.changeTo = pixel.dc2
-				} else if(iii < 3/4) {
-					pixel.changeTo = pixel.dc3
-				} else {
-					pixel.changeTo = pixel.dc4
+			//choose from 3
+			//0111
+			if(!pixel.dc1 && pixel.dc2 && pixel.dc3 && pixel.dc4) {
+				if(!pixel.changeTo) {
+					if(hhh < 1/3) {
+						pixel.changeTo = pixel.dc2
+					} else if(hhh < 2/3) {
+						pixel.changeTo = pixel.dc3
+					} else {
+						pixel.changeTo = pixel.dc4
+					}
 				}
+			}
+			//1011
+			if(pixel.dc1 && !pixel.dc2 && pixel.dc3 && pixel.dc4) {
+				if(!pixel.changeTo) {
+					if(hhh < 1/3) {
+						pixel.changeTo = pixel.dc1
+					} else if(hhh < 2/3) {
+						pixel.changeTo = pixel.dc3
+					} else {
+						pixel.changeTo = pixel.dc4
+					}
+				}
+			}
+			//1101
+			if(pixel.dc1 && pixel.dc2 && !pixel.dc3 && pixel.dc4) {
+				if(!pixel.changeTo) {
+					if(hhh < 1/3) {
+						pixel.changeTo = pixel.dc1
+					} else if(hhh < 2/3) {
+						pixel.changeTo = pixel.dc2
+					} else {
+						pixel.changeTo = pixel.dc4
+					}
+				}
+			}
+			//1110
+			if(pixel.dc1 && pixel.dc2 && pixel.dc3 && !pixel.dc4) {
+				if(!pixel.changeTo) {
+					if(hhh < 1/3) {
+						pixel.changeTo = pixel.dc1
+					} else if(hhh < 2/3) {
+						pixel.changeTo = pixel.dc2
+					} else {
+						pixel.changeTo = pixel.dc3
+					}
+				}
+			}
+			//choose from 4
+			//1111
+			if(pixel.dc1 && pixel.dc2 && pixel.dc3 && pixel.dc4) {
+				if(!pixel.changeTo) {
+					if(iii < 1/4) {
+						pixel.changeTo = pixel.dc1
+					} else if(iii < 2/4) {
+						pixel.changeTo = pixel.dc2
+					} else if(iii < 3/4) {
+						pixel.changeTo = pixel.dc3
+					} else {
+						pixel.changeTo = pixel.dc4
+					}
+				}
+			}
+		} else if(pixel.changeTo) {
+			if(pixel.dc1 || pixel.dc2 || pixel.dc3 || pixel.dc4) {
+				delete pixel.dc1;
+				delete pixel.dc2;
+				delete pixel.dc3;
+				delete pixel.dc4;
 			}
 		}
         neighbors = [[-1,0],[0,-1],[1,0],[0,1]]
