@@ -8,7 +8,7 @@ booleanSynonyms = ["boolean", "bool", "boo", "bo", "bl", "b"];
 trueSynonyms = ["true", "t", "1", "yes"];
 falseSynonyms = ["false", "f", "0", "no"];
 defaultStringTypeValues = ["element","color"];
-defaultNumberTypeValues = ["x","y","temp","start"];
+defaultNumberTypeValues = ["x","y","temp","start","vx","vy"];
 commandHelpObject = {
 	"set": "Sets properties for every pixel of a given type.\nUsage: set [property] [element] [value] <type>\nDon't include framing characters []<>.\nThe element can be \"all\" to set the property for every pixel.\nNote: Strings can't have spaces because spaces are the separator used in the parsing split().\nArguments in [brackets] are required and ones in <angle brackets> are optional.",
 	"test": "Test.",
