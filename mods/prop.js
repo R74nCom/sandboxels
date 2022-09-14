@@ -177,9 +177,9 @@ elements.prop = {
 		pixelTempCheck(pixel);
     },
     category: "tools",
-	desc: `Changes pixels of a specified type to another specified type.<br/>Currently setting ${propProperty} to ${propValue} (${propType}).<br/><span onclick=updateReplaceDescriptions() style=\"color: #ff00ff;\";>Press [\"] or click here</span> to open the replace prompt.`,
+	desc: `Sets properties of pixels.<br/>Currently setting ${propProperty} to ${propValue} (${propType}).<br/><span onclick=updatePropDescription() style=\"color: #ff00ff;\";>Press [\"] or click here</span> to open the property tool prompt.`,
 };
 
 function updatePropDescription() {
-	elements.prop.desc = `Changes pixels of a specified type to another specified type.<br/>Currently setting ${propProperty} to ${propValue} (${propType}).<br/><span onclick=updateReplaceDescriptions() style=\"color: #ff00ff;\";>Press [\"] or click here</span> to open the replace prompt.`;
+	elements.prop.desc = `Sets properties of pixels.<br/>Currently setting ${propProperty} to ${propValue} (${propType}).<br/><span onclick=updatePropDescription() style=\"color: #ff00ff;\";>Press [\"] or click here</span> to open the property tool prompt.`;
 };
