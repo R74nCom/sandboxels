@@ -1,18 +1,39 @@
+nonAdjacentCoords = [
+    [1, 1],
+    [1, -1],
+    [-1, 1],
+    [-1, -1]
+];
+
 //pyrotheum
 
 elements.blazing_pyrotheum = {
 	color: "#ffdd55",
-	behavior: [
-		"HT:10%2|CR:fire%0.5 AND HT:10%2|HT:10%2",
-		"M2 AND CR:fire%0.5 AND HT:10%2|HT:10%2|M2 AND CR:fire%0.5 AND HT:10%2",
-		"M1 AND HT:10%2|M1 AND CR:fire%0.5 AND HT:10%2|M1 AND HT:10%2",
-	],
+	behavior: behaviors.LIQUID,
 	tick: function(pixel) {
 		if(pixel.temp >= -273 && pixel.temp <= 3707) { //temperature minimum of 3727
 			pixel.temp += 50
 		} else if(pixel.temp > 3677 && pixel.temp < 3727) {
 			pixel.temp = 3727
 		}
+		var pX = pixel.x;
+		var pY = pixel.y;
+		for(i = 0; i < adjacentCoords.length; i++) {
+			var oX = adjacentCoords[i][0];
+			var oY = adjacentCoords[i][1];
+			var fX = pX+oX;
+			var fY = pY+oY;
+			if(!isEmpty(fX,fY,true)) {
+				var checkPixel = pixelMap[fX][fY];
+				checkPixel.element === pixel.element ? checkPixel.temp+=0.1 : checkPixel.temp+=10;
+			} else if(isEmpty(fX,fY,false)) {
+				if(Math.random() < 0.05) {
+					createPixel("fire",fX,fY);
+					var checkPixel = pixelMap[fX][fY];
+					checkPixel.temp = pixel.temp;
+				}
+			};
+		};
 	},
 	viscosity: 1.2**4,
 	category: "liquids",
@@ -24,17 +45,42 @@ elements.blazing_pyrotheum = {
 
 elements.gelid_cryotheum = {
 	color: "#00ddff",
-	behavior: [
-		" AND CR:snow%0.35CR:10%2|CR:10%2| AND CR:snow%0.35CR:10%2",
-		"M2 AND CR:snow%0.35 AND CR:10%2|CR:10%2|M2 AND CR:snow%0.35 AND CR:10%2",
-		"M1 AND CR:10%2|M1 AND CR:snow%0.25 AND CR:10%2|M1 AND CR:10%2",
-	],
+	behavior: behaviors.LIQUID,
 	tick: function(pixel) {
 		if(pixel.temp >= -223) { //temperature maximum of -223
 			pixel.temp -= 50
 		} else if(pixel.temp > -223 && pixel.temp < -273) {
 			pixel.temp = -223
 		}
+		var pX = pixel.x;
+		var pY = pixel.y;
+		for(i = 0; i < adjacentCoords.length; i++) {
+			var oX = adjacentCoords[i][0];
+			var oY = adjacentCoords[i][1];
+			var fX = pX+oX;
+			var fY = pY+oY;
+			if(!isEmpty(fX,fY,true)) {
+				var checkPixel = pixelMap[fX][fY];
+				var thisElementName = pixel.element;
+				var otherElementName = checkPixel.element;
+				var thisElement = elements[pixel.element];
+				var otherElement = elements[checkPixel.element];
+				thisElementName === otherElementName ? checkPixel.temp-=0.1 : checkPixel.temp-=10;
+			};
+		};
+		/*for(i = 0; i < nonAdjacentCoords.length; i++) {
+			var oX = nonAdjacentCoords[i][0];
+			var oY = nonAdjacentCoords[i][1];
+			var fX = pX+oX;
+			var fY = pY+oY;
+			if(isEmpty(fX,fY,false)) {
+				if(Math.random() < 0.025) {
+					createPixel("snow",fX,fY);
+					var checkPixel = pixelMap[fX][fY];
+					checkPixel.temp = pixel.temp;
+				};
+			};
+		};*/ //It should create snow, but the snow freezes into ice and it leaves unsightly floating ice everywhere.
 	},
 	viscosity: 3**4,
 	category: "liquids",
