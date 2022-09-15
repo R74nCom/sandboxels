@@ -25,7 +25,11 @@ elements.blazing_pyrotheum = {
 			var fY = pY+oY;
 			if(!isEmpty(fX,fY,true)) {
 				var checkPixel = pixelMap[fX][fY];
-				checkPixel.element === pixel.element ? checkPixel.temp+=0.1 : checkPixel.temp+=10;
+				var thisElementName = pixel.element;
+				var otherElementName = checkPixel.element;
+				var thisElement = elements[pixel.element];
+				var otherElement = elements[checkPixel.element];
+				thisElementName === otherElementName ? checkPixel.temp+=0.1 : checkPixel.temp==10;
 			} else if(isEmpty(fX,fY,false)) {
 				if(Math.random() < 0.05) {
 					createPixel("fire",fX,fY);
@@ -98,27 +102,37 @@ elements.tectonic_petrotheum = {
 		"M1|M1|M1",
 	],
     tick: function(pixel) { //Code from R74n/vanilla "smash" tool
-        neighbors = [[-1,0],[0,-1],[1,0],[0,1]]
-        for(i = 0; i < neighbors.length; i++) {
-            if(!isEmpty(pixel.x+neighbors[i][0],pixel.y+neighbors[i][1],true)) {
-				if (typeof(elements[    pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]].element    ].breakInto) !== "undefined") {
+		var pX = pixel.x;
+		var pY = pixel.y;
+		for(i = 0; i < adjacentCoords.length; i++) {
+			var oX = adjacentCoords[i][0];
+			var oY = adjacentCoords[i][1];
+			var fX = pX+oX;
+			var fY = pY+oY;
+			if(!isEmpty(fX,fY,true)) {
+				var checkPixel = pixelMap[fX][fY];
+				var thisElementName = pixel.element;
+				var otherElementName = checkPixel.element;
+				var thisElement = elements[pixel.element];
+				var otherElement = elements[checkPixel.element];
+				if (typeof(otherElement.breakInto) !== "undefined") {
 					var hardness = null;
-					if (typeof(elements[    pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]].element    ].hardness) === "number") {
-						hardness = elements[    pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]].element    ].hardness
+					if (typeof(otherElement.hardness) === "number") {
+						hardness = otherElement.hardness;
 					} else {
-						hardness = 1
-					}
+						hardness = 1;
+					};
 					if (Math.random() < hardness) {
-						var breakInto = elements[    pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]].element    ].breakInto;
+						var breakInto = otherElement.breakInto;
 						// if breakInto is an array, pick one
 						if (Array.isArray(breakInto)) {
 							breakInto = breakInto[Math.floor(Math.random() * breakInto.length)];
 						};
-						changePixel(    pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]]    ,breakInto);
+						changePixel(checkPixel,breakInto);
 					}
 				}
-            }
-        }
+			};
+		};
     },
 	temp: 120,
 	viscosity: 1.5**4,
@@ -172,7 +186,69 @@ elements.zephyrean_aerotheum = {
 	state: "liquid",
 	density:-800,
 	insulate:false,
-},
+};
+
+if(enabledMods.includes("mods/velocity.js")) {
+	elements.zephyrean_aerotheum.tick = function(pixel) {
+		//"Projectiles that come into contact with zephyrean aerotheum are sent flying in a random direction away from the fluid."
+		var pX = pixel.x;
+		var pY = pixel.y;
+		for(i = 0; i < adjacentCoords.length; i++) {
+			var oX = adjacentCoords[i][0];
+			var oY = adjacentCoords[i][1];
+			var fX = pX+oX;
+			var fY = pY+oY;
+			if(!isEmpty(fX,fY,true)) {
+				var checkPixel = pixelMap[fX][fY];
+				var thisElementName = pixel.element;
+				var otherElementName = checkPixel.element;
+				var thisElement = elements[pixel.element];
+				var otherElement = elements[checkPixel.element];
+				if(otherElement.movable) {
+					if(typeof(checkPixel.vx) === "undefined") {
+						checkPixel.vx = 0;
+					};
+					if(typeof(checkPixel.vy) === "undefined") {
+						checkPixel.vy = 0;
+					};
+					if(Math.random() < 1/3) {
+						var randomVxChange = Math.floor(Math.random() * 9) - 4; //random value from -3 to 3
+						var randomVyChange = Math.floor(Math.random() * 9) - 4; //different random value from -3 to 3
+						//Notes
+						/*
+							Positive vx = right
+							Positive vy = down
+							adjacentCoords[0]: [0, 1]	is downward; when it is detected, the pixel there should be sent farther down (positive vy).
+							adjacentCoords[1]: [0, -1]	is upward; when it is detected, the pixel there should be sent farther up (negative vy).
+							adjacentCoords[2]: [1, 0]	is rightward; when it is detected, the pixel there should be sent farther right (positive vx).
+							adjacentCoords[3]: [-1, 0]	is leftward; when it is detected, the pixel there should be sent farther left (negative vx).
+						*/
+						switch(i) {
+							case 0:
+								randomVyChange = Math.abs(randomVyChange);
+								break;
+							case 1:
+								randomVyChange = (Math.abs(randomVyChange) * -1) - 1;
+								break;
+							case 2:
+								randomVxChange = Math.abs(randomVxChange);
+								break;
+							case 3:
+								randomVxChange = Math.abs(randomVxChange) * -1;
+								break;
+							default:
+								console.log("Uh-oh, i was somehow above 3!")
+						};						
+						if(otherElementName !== thisElementName) {
+							checkPixel.vx += randomVxChange;
+							checkPixel.vy += randomVyChange;
+						}
+					}
+				};
+			};
+		};
+	};
+};
 
 elements.energized_glowstone = {
 	color: ["#fbb204", "#fcf605", "#fce704", "#f8c414", "#f8e814"],
