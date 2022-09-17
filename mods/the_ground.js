@@ -13,9 +13,9 @@ Proper classification of limestone within these code comments
 
 	//Generalized sedimentation function
 
-		function sedimentation(pixel,sedimentNeighborTable,finalRock) {
-			var validNeighborArray = Array.apply(null, Array(adjacentCoords.length)).map(function() {return false});
-			if(Math.random() < 0.0003) {
+		function sedimentation(pixel,sedimentNeighborTable,finalRock,chance=0.0003) {
+			if(Math.random() < chance) {
+				var validNeighborArray = Array.apply(null, Array(adjacentCoords.length)).map(function() {return false});
 				//sedimentSandstoneTries++;
 				for(i = 0; i < adjacentCoords.length; i++) {
 					//sedimentSandstoneTryIterations++;
