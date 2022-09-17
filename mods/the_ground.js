@@ -9,6 +9,93 @@ Merge crimson?
 Proper classification of limestone within these code comments
 */
 
+//Functions
+
+	//Generalized sedimentation function
+
+		function sedimentation(pixel,sedimentNeighborTable,finalRock) {
+			var validNeighborArray = Array.apply(null, Array(adjacentCoords.length)).map(function() {return false});
+			if(Math.random() < 0.0003) {
+				//sedimentSandstoneTries++;
+				for(i = 0; i < adjacentCoords.length; i++) {
+					//sedimentSandstoneTryIterations++;
+					if(isEmpty(pixel.x+adjacentCoords[i][0],pixel.y+adjacentCoords[i][1],true)) {
+						validNeighborArray[i] = false;
+						//sedimentSandstoneNoDetects++;
+					} else if(!isEmpty(pixel.x+adjacentCoords[i][0],pixel.y+adjacentCoords[i][1],true)) {
+						/*if(sedimentNeighborTable.includes(pixelMap[pixel.x+adjacentCoords[i][0]][pixel.y+adjacentCoords[i][1]].element)) {
+							validNeighborArray[i] = true;
+							//sedimentSandstoneDetects++;
+						} else {
+							validNeighborArray[i] = false;
+							//sedimentSandstoneNoDetects++;
+						};*/
+						validNeighborArray[i] = sedimentNeighborTable.includes(pixelMap[pixel.x+adjacentCoords[i][0]][pixel.y+adjacentCoords[i][1]].element);
+					};
+				};
+				if(validNeighborArray.includes(true)) {
+					//sandstoneFormations++;
+					changePixel(pixel,finalRock);
+				}/* else {
+					sandstoneFailures++;
+				}*/;
+			};
+		};
+
+	//Function for mass replacement according to an object
+
+		function transformAround(pixel,range,substitutionObject,reverse=false) {
+			var radius1 = (-1 * range);
+			var radius2 = (range + 1);
+			for (let i = radius1; i < radius2; i++) {
+				for (let j = radius1; j < radius2; j++) {
+					if(reverse) {
+						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
+							var destPixel = pixelMap[pixel.x+j][pixel.y+i];
+							var elementToCheck = destPixel.element;
+							if(getKeyByValue(irradiatedObject,elementToCheck)) {
+								changePixel(destPixel,getKeyByValue(irradiatedObject,elementToCheck));
+							};
+						};
+					} else {
+						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
+							var destPixel = pixelMap[pixel.x+j][pixel.y+i];
+							var elementToCheck = destPixel.element;
+							if(substitutionObject[elementToCheck]) {
+								changePixel(destPixel,substitutionObject[elementToCheck]);
+							};
+						};
+					};
+				};
+			};
+		};
+
+	//Previous function with adjacentPixels
+
+		function transformAdjacent(pixel,substitutionObject,reverse=false) {
+			for(k = 0; k < adjacentCoords.length; k++) {
+				var i = adjacentCoords[k][0]
+				var j = adjacentCoords[k][1]
+				if(reverse) {
+					if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
+						var destPixel = pixelMap[pixel.x+j][pixel.y+i];
+						var elementToCheck = destPixel.element;
+						if(getKeyByValue(irradiatedObject,elementToCheck)) {
+							changePixel(destPixel,getKeyByValue(irradiatedObject,elementToCheck));
+						};
+					};
+				} else {
+					if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
+						var destPixel = pixelMap[pixel.x+j][pixel.y+i];
+						var elementToCheck = destPixel.element;
+						if(substitutionObject[elementToCheck]) {
+							changePixel(destPixel,substitutionObject[elementToCheck]);
+						};
+					};
+				};
+			};
+		};
+		
 //Terrain
 
 	//Soils
@@ -763,32 +850,7 @@ Proper classification of limestone within these code comments
 							density: 1602,
 							breakInto: "sand",
 							tick: function(pixel) {
-								var validNeighborArray = Array.apply(null, Array(adjacentCoords.length)).map(function() {return false});
-								if(Math.random() < 0.0003) {
-									//sedimentSandstoneTries++;
-									for(i = 0; i < adjacentCoords.length; i++) {
-										//sedimentSandstoneTryIterations++;
-										if(isEmpty(pixel.x+adjacentCoords[i][0],pixel.y+adjacentCoords[i][1],true)) {
-											validNeighborArray[i] = false;
-											//sedimentSandstoneNoDetects++;
-										} else if(!isEmpty(pixel.x+adjacentCoords[i][0],pixel.y+adjacentCoords[i][1],true)) {
-											/*if(sandstoneLithificationElements.includes(pixelMap[pixel.x+adjacentCoords[i][0]][pixel.y+adjacentCoords[i][1]].element)) {
-												validNeighborArray[i] = true;
-												//sedimentSandstoneDetects++;
-											} else {
-												validNeighborArray[i] = false;
-												//sedimentSandstoneNoDetects++;
-											};*/
-											validNeighborArray[i] = sandstoneLithificationElements.includes(pixelMap[pixel.x+adjacentCoords[i][0]][pixel.y+adjacentCoords[i][1]].element);
-										};
-									};
-									if(validNeighborArray.includes(true)) {
-										//sandstoneFormations++;
-										changePixel(pixel,"sandstone");
-									}/* else {
-										sandstoneFailures++;
-									}*/;
-								};
+								sedimentation(pixel,sandstoneLithificationElements,"sandstone")
 							},
 						}
 
@@ -820,7 +882,7 @@ Proper classification of limestone within these code comments
 
 					//Worldgen preset for testing
 
-						worldgentypes.test_ocean = {
+						worldgentypes.sandstone_test_ocean = {
 							layers: [
 								[0.9, "wet_sand", 0.2],
 								[0.9, "sand", 0.2],
@@ -1381,24 +1443,7 @@ Proper classification of limestone within these code comments
 					density: 1602,
 					breakInto: "irradiated_sand",
 					tick: function(pixel) {
-						var validNeighborArray = Array.apply(null, Array(adjacentCoords.length)).map(function() {return false});
-						if(Math.random() < 0.0003) {
-							for(i = 0; i < adjacentCoords.length; i++) {
-								if(isEmpty(pixel.x+adjacentCoords[i][0],pixel.y+adjacentCoords[i][1],true)) {
-									validNeighborArray[i] = false;
-								} else if(!isEmpty(pixel.x+adjacentCoords[i][0],pixel.y+adjacentCoords[i][1],true)) {
-									/*if(sandstoneLithificationElements.includes(pixelMap[pixel.x+adjacentCoords[i][0]][pixel.y+adjacentCoords[i][1]].element)) {
-										validNeighborArray[i] = true;
-									} else {
-										validNeighborArray[i] = false;
-									};*/
-									validNeighborArray[i] = sandstoneLithificationElements.includes(pixelMap[pixel.x+adjacentCoords[i][0]][pixel.y+adjacentCoords[i][1]].element);
-								};
-							};
-							if(validNeighborArray.includes(true)) {
-								changePixel(pixel,"irradiated_sandstone");
-							};
-						};
+						sedimentation(pixel,sandstoneLithificationElements,"irradiated_sandstone")
 					},
 				}
 
@@ -1635,19 +1680,7 @@ Proper classification of limestone within these code comments
 						var twentiethOfTemp = pixel.temp / 20;
 						var roundOf20th = Math.round(twentiethOfTemp);
 						var boundedR20 = Math.max(1,Math.min(roundOf20th,11));
-						var radius1 = (-1 * boundedR20);
-						var radius2 = (boundedR20 + 1);
-						for (let i = radius1; i < radius2; i++) {
-							for (let j = radius1; j < radius2; j++) {
-								if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
-									var destPixel = pixelMap[pixel.x+j][pixel.y+i];
-									var elementToCheck = destPixel.element;
-									if(irradiatedObject[elementToCheck]) {
-										changePixel(destPixel,irradiatedObject[elementToCheck]);
-									};
-								};
-							};
-						};
+						transformAround(pixel,boundedR20,irradiatedObject)
 					},
 					category:"machines",
 					insulate: true,
@@ -1660,19 +1693,7 @@ Proper classification of limestone within these code comments
 						var twentiethOfTemp = pixel.temp / 20;
 						var roundOf20th = Math.round(twentiethOfTemp);
 						var boundedR20 = Math.max(1,Math.min(roundOf20th,11));
-						var radius1 = (-1 * boundedR20);
-						var radius2 = (boundedR20 + 1);
-						for (let i = radius1; i < radius2; i++) {
-							for (let j = radius1; j < radius2; j++) {
-								if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
-									var destPixel = pixelMap[pixel.x+j][pixel.y+i];
-									var elementToCheck = destPixel.element;
-									if(getKeyByValue(irradiatedObject,elementToCheck)) {
-										changePixel(destPixel,getKeyByValue(irradiatedObject,elementToCheck));
-									};
-								};
-							};
-						};
+						transformAround(pixel,boundedR20,irradiatedObject,reverse=true)
 					},
 					category:"machines",
 					insulate: true,
@@ -1684,13 +1705,7 @@ Proper classification of limestone within these code comments
 					behavior: behaviors.RAD_LIQUID,
 					tick: function(pixel) {
 						for(i = 0; i < adjacentCoords.length; i++) {
-							if(!isEmpty(pixel.x+adjacentCoords[i][0],pixel.y+adjacentCoords[i][1],true)) {
-								var destPixel = pixelMap[pixel.x+adjacentCoords[i][0]][pixel.y+adjacentCoords[i][1]];
-								var elementToCheck = destPixel.element;
-								if(irradiatedObject[elementToCheck]) {
-									changePixel(destPixel,irradiatedObject[elementToCheck]);
-								};
-							}
+							transformAdjacent(pixel,irradiatedObject)
 						}
 					},
 					//Becomes rainbow sand by water or poison, as well as by protocite, or bio-ooze
@@ -1726,7 +1741,7 @@ Proper classification of limestone within these code comments
 
 			//Worldgen preset for testing
 
-				worldgentypes.irradiated_test_ocean = {
+				worldgentypes.irradiated_sandstone_test_ocean = {
 					layers: [
 						[0.9, "irradiated_wet_sand", 0.2],
 						[0.9, "irradiated_sand", 0.2],
