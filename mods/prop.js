@@ -1,6 +1,10 @@
 propProperty = "element";
 propValue = "sand";
 propType = "string";
+numberAdjusterProperty = "temp";
+numberAdjusterValue = 1;
+numberAdjusterMode = "add";
+numberAdjusterVerb = "adding";
 
 stringSynonyms = [ "string", "str", "st", "s" ];
 numberSynonyms = [ "number", "num", "nm", "nu", "nb", "integer", "int", "i", "it", "float",
@@ -38,7 +42,7 @@ document.addEventListener("keydown", function(e) { //prop prompt listener
 	// , = propPrompt()
 	if (e.keyCode == 188) {
 		e.preventDefault();
-		propPrompt();
+		shiftDown ? numberAdjusterPrompt() : propPrompt();
 	};
 });
 
@@ -168,18 +172,113 @@ function propPrompt() {
 		return false;
 	};
 	updatePropDescription();
+	currentElement = "prop";
 };
 
 elements.prop = {
     color: "#ff7f00",
     tool: function(pixel) {
-        pixel[propProperty] = propValue;
+		if(propProperty === "element") {
+			pixel[propProperty] = propValue;
+			pixel.temp = (elements[propValue].temp || pixel.temp);
+		} else {
+			pixel[propProperty] = propValue;
+		};
 		pixelTempCheck(pixel);
     },
     category: "tools",
-	desc: `Sets properties of pixels.<br/>Currently setting ${propProperty} to ${propValue} (${propType}).<br/><span onclick=updatePropDescription() style=\"color: #ff00ff;\";>Press [\"] or click here</span> to open the property tool prompt.`,
+	desc: `Sets properties of pixels.<br/>Currently setting ${propProperty} to ${propValue} (${propType}).<br/><span onclick=propPrompt() style=\"color: #ff00ff;\";>Press [,] or click here</span> to open the property tool prompt.`,
 };
 
 function updatePropDescription() {
-	elements.prop.desc = `Sets properties of pixels.<br/>Currently setting ${propProperty} to ${propValue} (${propType}).<br/><span onclick=updatePropDescription() style=\"color: #ff00ff;\";>Press [\"] or click here</span> to open the property tool prompt.`;
+	elements.prop.desc = `Sets properties of pixels.<br/>Currently setting ${propProperty} to ${propValue} (${propType}).<br/><span onclick=propPrompt() style=\"color: #ff00ff;\";>Press [,] or click here</span> to open the property tool prompt.`;
+};
+
+function numberAdjusterPrompt() {
+	numberAdjusterProperty = prompt("Enter the property you want to change");
+	numberAdjusterValue = prompt("Enter the value you want to use");
+	numberAdjusterMode = prompt("Enter \"set\" to set the property to the value,\nor \"add\" to add the value to the property.");
+
+	//property check
+	//console.log("Null property path");
+	if(numberAdjusterProperty === "" || numberAdjusterProperty === null) {
+		alert("No property was specified! Defaulting to temp.");
+		numberAdjusterProperty = "temp";
+		//console.log(numberAdjusterProperty);
+	};
+	//console.log("Property: " + numberAdjusterProperty);
+
+	//value check
+	if(isNaN(parseFloat(numberAdjusterValue))) {
+		//console.log("Invalid value path");
+		//console.log(numberAdjusterValue);
+		//empty string
+		if(numberAdjusterValue === "" || numberAdjusterValue === null) {
+			//console.log("Null value path");
+			alert("No value was specified! Defaulting to 1");
+			numberAdjusterValue = 1;
+			//console.log(numberAdjusterValue);
+		} else {
+			//console.log("NaN value path");
+			alert("Invalid value! The value must be a number (defaulting to 1)");
+			numberAdjusterValue = 1;
+			//console.log(numberAdjusterValue);
+		};
+	};
+	numberAdjusterValue = parseFloat(numberAdjusterValue);
+	//console.log("Value: " + numberAdjusterValue);
+
+	//mode check
+	if(!["set","add"].includes(numberAdjusterMode.toLowerCase())) {
+		//console.log("Invalid mode path");
+		//console.log(numberAdjusterMode);
+		//empty string
+		if(numberAdjusterMode === "" || numberAdjusterMode === null) {
+			//console.log("Null mode path");
+			alert("No mode was specified! Defaulting to \"add\".");
+			numberAdjusterMode = "add";
+			//console.log(numberAdjusterMode);
+		} else {
+			//console.log("Unknown mode path");
+			alert("Invalid mode! Only the values \"set\" or \"add\" are accepted (defaulting to \"add\").");			
+			numberAdjusterMode = "add";
+			//console.log(numberAdjusterMode);
+		};
+	};
+	numberAdjusterMode = numberAdjusterMode.toLowerCase();
+	//console.log("Mode: " + numberAdjusterMode);
+
+	if(numberAdjusterMode === "set") {
+		numberAdjusterVerb = "setting";
+	} else if(numberAdjusterMode === "add") {
+		numberAdjusterVerb = "adding";
+	} else {
+		numberAdjusterVerb = "doing something probably invalid with";
+	}
+	updateNumberAdjusterDescription();
+	currentElement = "number_adjuster";
+};
+
+elements.number_adjuster = {
+    color: "#7fff00",
+    tool: function(pixel) {
+		if(numberAdjusterProperty !== "element") {			
+			//console.log(numberAdjusterValue);
+			if(numberAdjusterMode === "set") {
+				pixel[numberAdjusterProperty] = numberAdjusterValue;
+			} else if(numberAdjusterMode === "add") {
+				if(typeof(pixel[numberAdjusterProperty]) === "undefined") {
+					pixel[numberAdjusterProperty] = 0;
+				};
+				pixel[numberAdjusterProperty] += numberAdjusterValue;
+			};
+			pixelTempCheck(pixel);
+		};
+    },
+    category: "tools",
+	desc: `Sets or adds to numeric properties of pixels.<br/>Currently ${numberAdjusterVerb} ${numberAdjusterProperty} to ${numberAdjusterValue}.<br/><span onclick=numberAdjusterPrompt() style=\"color: #ff00ff;\";>Press [Shift+,] or click here</span> to open the adjuster tool prompt.`,
+};
+
+function updateNumberAdjusterDescription() {
+	elements.number_adjuster.desc = `Sets or adds to numeric properties of pixels.<br/>Currently ${numberAdjusterVerb} ${numberAdjusterProperty} to ${numberAdjusterValue}.<br/><span onclick=numberAdjusterPrompt() style=\"color: #ff00ff;\";>Press [Shift+,] or click here</span> to open the adjuster tool prompt.`;
 };
