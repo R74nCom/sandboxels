@@ -27,7 +27,7 @@ runAfterLoad(function() {
             behavior: [
                 `XX|CR:${liquidArray[i]}|XX`,
                 `CR:${liquidArray[i]}|XX|CR:${liquidArray[i]}`,
-                `XX|CR:${liquidArray[i]}|X`,
+                `XX|CR:${liquidArray[i]}|XX`,
             ],
             category: "spouts",
             temp: elements[liquidArray[i]].temp,
