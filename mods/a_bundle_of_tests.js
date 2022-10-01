@@ -114,7 +114,7 @@ function includesArray(parentArray, testArray) { //from portals.js
 
 ddAnchorArray = [];
 
-distanceScale = 1;
+distanceScale = 15;
 
 elements.hsl_tool_test = { //with help from ryan
     color: ["#cf3030","cf7f30","#cfcf30"],
@@ -203,10 +203,30 @@ function includesArray(parentArray, testArray) {
     for (let i = 0; i < parentArray.length; i++) {
         if (parentArray[i].every(function(value, index) { return value === testArray[index]})) {
             return true;
-        }
-    }
+        };
+    };
     return false;
-}
+};
+
+function distanceScalePrompt() {
+	var _distanceScale = prompt("Enter the value you want to use");
+
+	//value check
+	if(isNaN(parseFloat(_distanceScale))) {
+		//empty string
+		if(_distanceScale === "" || _distanceScale === null) {
+			alert("No value was specified! Defaulting to 15");
+			_distanceScale = 15;
+		} else {
+			alert("Invalid value! The value must be a number (defaulting to 15)");
+			_distanceScale = 15;
+		};
+	};
+	_distanceScale = parseFloat(_distanceScale);
+
+	distanceScale = _distanceScale;
+	updateDistanceDisplayDescription();
+};
 
 elements.distance_display = {
 	color: "#00FFFF",
@@ -260,6 +280,7 @@ elements.distance_display = {
 	},
 	category: "machines",
 	state: "solid",
+	desc: `It gets more blue the closer it gets to a distance display anchor. The current scale factor is ${distanceScale} (bigger number = smaller blue radius). <span onclick=distanceScalePrompt() style=\"color: #ff00ff;\";>Click here</span> to open the scale prompt.<br/><em>Note: Info pages do not update automatically and must be closed and reopened to show the changed scale.</em>`,
 };
 
 elements.distance_display_anchor = {
@@ -271,7 +292,14 @@ elements.distance_display_anchor = {
 		if(!includesArray(ddAnchorArray,[px,py])) {
 			ddAnchorArray.push([px,py]);
 		};
+		pixel.color = "rgb(0,0,255)";
 	},
 	category: "machines",
 	state: "solid",
+	desc: `Distance display pixels get blue in its distance.`,
 };
+
+function updateDistanceDisplayDescription() {
+	elements.distance_display.desc = `It gets more blue the closer it gets to a distance display anchor. The current scale factor is ${distanceScale} (bigger number = smaller blue radius). <span onclick=distanceScalePrompt() style=\"color: #ff00ff;\";>Click here</span> to open the scale prompt.<br/><em>Note: Info pages do not update automatically and must be closed and reopened to show the changed scale.</em>`;
+};
+
