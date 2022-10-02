@@ -189,6 +189,56 @@ function updateCreeperPreferences() { //Creeper setting handler
 	if(settings.creeperSpawning) { //If the setting is on
 		if(typeof(randomEvents.creeper) !== "function") { //add the event if it's missing
 			randomEvents.creeper = function() {
+				for(i = 0; i < 1; i++) { //dummy for to break
+					if(settings.creeperSpawning) { //setting validation
+						// random x between 1 and width-1
+						var x = Math.floor(Math.random()*(width-1))+1;
+						// random y between 1 and height
+						var y = Math.floor(Math.random()*height-1)+1;
+						if (isEmpty(x,y)) {
+							// random element from randomEventChoices.falling_pixel
+							var element = creepers[Math.floor(Math.random()*creepers.length)];
+							// if element is an array, choose a random element from the array
+							if (Array.isArray(element)) {
+								element = element[Math.floor(Math.random()*element.length)];
+							}
+							createPixel(element,x,y);
+						};
+					} else { //if false (this function is never supposed to fire with the setting false)
+						delete randomEvents.creeper; //self-disable
+						//substitute event
+						var event = randomEvents[Object.keys(randomEvents)[Math.floor(Math.random()*Object.keys(randomEvents).length)]];
+						event();
+						break;
+					};
+				};
+			};
+		};
+	} else if(!settings.creeperSpawning) { //and if it's off
+		if(randomEvents.creeper) { delete randomEvents.creeper }; //delete it if it exists.
+	};
+};
+
+function toggleCreeperSpawning() { //Creeper toggle handler
+	if(settings.creeperSpawning != true) { //If it's false
+		setSetting("creeperSpawning",true); //make it true and update the status display CSS
+		updateCreeperPreferences(); //apply
+		document.getElementById("creeperStatusStylesheet").innerHTML = '.creeperStatus { color: #1E1; text-decoration: underline; }'; //Displayed info doen't update until it's pulled up again, so I'm using CSS to dynamically change the color of an element, like with find.js (RIP).
+	} else { //and the inverse if it's true
+		setSetting("creeperSpawning",false);
+		updateCreeperPreferences();
+		document.getElementById("creeperStatusStylesheet").innerHTML = '.creeperStatus { color: #E11; text-decoration: none; }';
+	};
+};
+
+enemyHumanoidArray = ["head","body"] //just in case
+
+creepers = ["creeper","angelic_creeper","bombing_creeper","hell_creeper"];
+
+if(settings.creeperSpawning) { //creeper spawning option
+	randomEvents.creeper = function() {
+		for(i = 0; i < 1; i++) { //dummy for to break
+			if(settings.creeperSpawning) { //setting validation
 				// random x between 1 and width-1
 				var x = Math.floor(Math.random()*(width-1))+1;
 				// random y between 1 and height
@@ -202,41 +252,13 @@ function updateCreeperPreferences() { //Creeper setting handler
 					}
 					createPixel(element,x,y);
 				};
+			} else { //if false (this function is never supposed to fire with the setting false)
+				delete randomEvents.creeper; //self-disable
+				//substitute event
+				var event = randomEvents[Object.keys(randomEvents)[Math.floor(Math.random()*Object.keys(randomEvents).length)]];
+				event();
+				break;
 			};
-		};
-	} else if(!settings.creeperSpawning) { //and if it's off
-		if(randomEvents.creeper) { delete randomEvents.creeper }; //delete it if it exists.
-	};
-};
-
-function toggleCreeperSpawning() { //Creeper toggle handler
-	if(settings.creeperSpawning != true) { //If it's false
-		setSetting("creeperSpawning",true); //make it true and update the status display CSS
-		document.getElementById("creeperStatusStylesheet").innerHTML = '.creeperStatus { color: #1E1; text-decoration: underline; }'; //Displayed info doen't update until it's pulled up again, so I'm using CSS to dynamically change the color of an element, like with find.js (RIP).
-	} else { //and the inverse if it's true
-		setSetting("creeperSpawning",false);
-		document.getElementById("creeperStatusStylesheet").innerHTML = '.creeperStatus { color: #E11; text-decoration: none; }';
-	};
-};
-
-enemyHumanoidArray = ["head","body"] //just in case
-
-creepers = ["creeper","angelic_creeper","bombing_creeper","hell_creeper"];
-
-if(settings.creeperSpawning) { //creeper spawning option
-	randomEvents.creeper = function() {
-		// random x between 1 and width-1
-		var x = Math.floor(Math.random()*(width-1))+1;
-		// random y between 1 and height
-		var y = Math.floor(Math.random()*height-1)+1;
-		if (isEmpty(x,y)) {
-			// random element from randomEventChoices.falling_pixel
-			var element = creepers[Math.floor(Math.random()*creepers.length)];
-			// if element is an array, choose a random element from the array
-			if (Array.isArray(element)) {
-				element = element[Math.floor(Math.random()*element.length)];
-			}
-			createPixel(element,x,y);
 		};
 	};
 };
