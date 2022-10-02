@@ -1,5 +1,20 @@
 //Prerequisite Functions and Variables
 
+var style = document.createElement('style'); //Initialize CSS for creeper spawning's status indicator
+style.type = 'text/css';
+style.id = 'creeperStatusStylesheet';
+//initial style conditional branch
+if(typeof(settings.creeperSpawning) === "undefined") { //undefined (falsy but it needs special handling)
+	style.innerHTML = '.creeperStatus { color: #E11; text-decoration: none; }';
+} else {
+	if(!settings.creeperSpawning) { //falsy: red
+		style.innerHTML = '.creeperStatus { color: #E11; text-decoration: none; }';
+	} else if(settings.creeperSpawning) { //truthy: green
+		style.innerHTML = '.creeperStatus { color: #1E1; text-decoration: none; }';
+	};
+};
+document.getElementsByTagName('head')[0].appendChild(style);
+
 function pyth(xA,yA,xB,yB) { //Distance function, used for explosion trigger
     var a = Math.abs(xB - xA);
     var b = Math.abs(yB - yA);
@@ -166,7 +181,65 @@ function explodeAtPlus(x,y,radius,fire="fire",smoke="smoke",beforeFunction=null,
 	};
 };
 
+if(typeof(settings.creeperSpawning) === "undefined") { //Default creeper setting
+	setSetting("creeperSpawning",false);
+};
+
+function updateCreeperPreferences() { //Creeper setting handler
+	if(settings.creeperSpawning) { //If the setting is on
+		if(typeof(randomEvents.creeper) !== "function") { //add the event if it's missing
+			randomEvents.creeper = function() {
+				// random x between 1 and width-1
+				var x = Math.floor(Math.random()*(width-1))+1;
+				// random y between 1 and height
+				var y = Math.floor(Math.random()*height-1)+1;
+				if (isEmpty(x,y)) {
+					// random element from randomEventChoices.falling_pixel
+					var element = creepers[Math.floor(Math.random()*creepers.length)];
+					// if element is an array, choose a random element from the array
+					if (Array.isArray(element)) {
+						element = element[Math.floor(Math.random()*element.length)];
+					}
+					createPixel(element,x,y);
+				};
+			};
+		};
+	} else if(!settings.creeperSpawning) { //and if it's off
+		if(randomEvents.creeper) { delete randomEvents.creeper }; //delete it if it exists.
+	};
+};
+
+function toggleCreeperSpawning() { //Creeper toggle handler
+	if(settings.creeperSpawning != true) { //If it's false
+		setSetting("creeperSpawning",true); //make it true and update the status display CSS
+		document.getElementById("creeperStatusStylesheet").innerHTML = '.creeperStatus { color: #1E1; text-decoration: underline; }'; //Displayed info doen't update until it's pulled up again, so I'm using CSS to dynamically change the color of an element, like with find.js (RIP).
+	} else { //and the inverse if it's true
+		setSetting("creeperSpawning",false);
+		document.getElementById("creeperStatusStylesheet").innerHTML = '.creeperStatus { color: #E11; text-decoration: none; }';
+	};
+};
+
 enemyHumanoidArray = ["head","body"] //just in case
+
+creepers = ["creeper","angelic_creeper","bombing_creeper","hell_creeper"];
+
+if(settings.creeperSpawning) { //creeper spawning option
+	randomEvents.creeper = function() {
+		// random x between 1 and width-1
+		var x = Math.floor(Math.random()*(width-1))+1;
+		// random y between 1 and height
+		var y = Math.floor(Math.random()*height-1)+1;
+		if (isEmpty(x,y)) {
+			// random element from randomEventChoices.falling_pixel
+			var element = creepers[Math.floor(Math.random()*creepers.length)];
+			// if element is an array, choose a random element from the array
+			if (Array.isArray(element)) {
+				element = element[Math.floor(Math.random()*element.length)];
+			}
+			createPixel(element,x,y);
+		};
+	};
+};
 
 /*Start Main Creeper
 	##################
@@ -211,7 +284,7 @@ elements.creeper = {
 		}
 	},
 	related: ["creeper_body","creeper_head"],
-	desc: 'So we back in the mine...'
+	desc: "<em>I'd rather this be toggleable mid-game than require a reload.</em><br/><br/><span class=\"creeperStatus\">If this text is green or underlined, creepers can spawn.</span> <span onclick=toggleCreeperSpawning() style=\"color: #ff00ff;\";>Click here</span> to toggle creeper spawning. If it's on, creepers (all types) can spawn through random events."
 };
 
 elements.creeper_body = {
