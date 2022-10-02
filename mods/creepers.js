@@ -5,6 +5,10 @@ function pyth(xA,yA,xB,yB) {
     return c;
 };
 
+function rgbColorBound(number) {
+	return Math.min(255,Math.max(0,number));
+};
+
 elements.creeper = {
 	color: ["#D2D2D2", "#BFDFB9", "#94CE89", "#78D965", "#5ED54C", "#58C546", "#50B143", "#479143", "#559552", "#3F8738", "#5B8B59"],
 	category: "life",
@@ -45,7 +49,7 @@ elements.creeper_body = {
 	stateLow: "frozen_meat",
 	burn: 10,
 	burnTime: 250,
-	burnInto: "cooked_meat",
+	burnInto: ["cooked_meat","cooked_meat","cooked_meat","cooked_meat","gunpowder"],
 	breakInto: ["blood","gunpowder"],
 	reactions: {
 		"cancer": { "elem1":"cancer", "chance":0.005 },
@@ -57,6 +61,7 @@ elements.creeper_body = {
 		dir: 1,
 		panic: 0,
 		charged: false,
+		didChargeBlueTinted: false,
 	},
 	tick: function(pixel) {
 		if (tryMove(pixel, pixel.x, pixel.y+1)) { // Fall
@@ -124,9 +129,9 @@ elements.creeper_body = {
 					pixel.dir *= -1;
 					//console.log("*turns around cutely to face ${pixel.dir < 0 ? 'left' : 'right'}*");
 				};
-			} else {
+			}/* else {
 				//console.log("*chases cutely*");
-			};
+			};*/
 		};
 
 		if(pixel.charge) {
@@ -152,18 +157,71 @@ elements.creeper_body = {
 
 		if(pixel.charged) {
 			var explosionRadius = 10;
+			if(!pixel.didChargeBlueTinted) { //do once, on initial charge
+				//console.log("something something halsey lyric");
+				var color = pixel.color;
+				if(color.startsWith("rgb")) { //too dumb to do equivalent HSL math
+					//console.log("rgb detected");
+					color = color.split(","); //split color for addition
+					var red = parseFloat(color[0].substring(4));
+					var green = parseFloat(color[1]);
+					var blue = parseFloat(color[2].slice(0,-1));
+					red = rgbColorBound(red + 51);
+					green = rgbColorBound(green + 51);
+					blue = rgbColorBound(blue + 102);
+					color = `rgb(${red},${green},${blue})`;
+					pixel.color = color;
+					//console.log("color set");
+				};
+				pixel.didChargeBlueTinted = true;
+			};
 		} else {
 			var explosionRadius = 7;
 		};
 		
 		if(pixel.burning) {
+			pixel.hissing = true;
 			if(!pixel.burnStart) { //I don't like errors.
 				pixel.burnStart = pixel.ticks;
 			};
-			if(pixelTicks - pixel.burnStart > explosionRadius) {
+			if(pixelTicks - pixel.burnStart > 30) {
 				//console.log("Kaboom?");
-				explodeAt(pixel.x,pixel.y,7);
+				explodeAt(pixel.x,pixel.y,explosionRadius);
 				//console.log("Yes, Rico, kaboom.");
+			};
+		};
+
+		//Head hissing color handler: keeps track of head's hissing for coloring purposes
+		for(i = 0; i < 1; i++) { //dummy for loop
+			if(pixel.dead || !head || head.dead) { //can't hiss without a head according to the classic creeper anatomy
+				//console.log("ss-- oof");
+				pixel.hissing = false;
+				break;
+			};
+			if(head.hissing) {
+				//console.log("Ssssssss");
+				if(!head.hissStart) {
+					//console.log("t-30 ticks or whatever it was");
+					head.hissStart = pixelTicks;
+				};
+
+				//Color code {
+					var ticksHissing = pixelTicks - head.hissStart;
+					var color = pixel.color; //do on each hissing tick
+					if(color.startsWith("rgb")) { //too dumb to do equivalent HSL math
+						//console.log("rgb detected");
+						color = color.split(","); //split color for addition
+						var red = parseFloat(color[0].substring(4));
+						var green = parseFloat(color[1]);
+						var blue = parseFloat(color[2].slice(0,-1));
+						red = rgbColorBound(red + (ticksHissing * 3));
+						green = rgbColorBound(green + (ticksHissing * 3));
+						blue = rgbColorBound(blue + (ticksHissing * 3));
+						color = `rgb(${red},${green},${blue})`;
+						pixel.color = color;
+						//console.log("color set");
+					};
+				//}
 			};
 		};
 	},
@@ -181,7 +239,7 @@ elements.creeper_head = {
 	stateLow: "frozen_meat",
 	burn: 10,
 	burnTime: 250,
-	burnInto: "cooked_meat",
+	burnInto: ["cooked_meat","cooked_meat","cooked_meat","cooked_meat","cooked_meat","cooked_meat","cooked_meat","cooked_meat","cooked_meat","gunpowder"],
 	breakInto: "blood",
 	reactions: {
 		"cancer": { "elem1":"cancer", "chance":0.005 },
@@ -194,6 +252,7 @@ elements.creeper_head = {
 		following: false,
 		hissing: false,
 		charged: false,
+		didChargeBlueTinted: false,
 	},
 	tick: function(pixel) {
 		doHeat(pixel);
@@ -261,6 +320,24 @@ elements.creeper_head = {
 
 		if(pixel.charged) {
 			var explosionRadius = 10;
+			if(!pixel.didChargeBlueTinted) { //do once, on initial charge
+				//console.log("something something halsey lyric");
+				var color = pixel.color;
+				if(color.startsWith("rgb")) { //too dumb to do equivalent HSL math
+					//console.log("rgb detected");
+					color = color.split(","); //split color for addition
+					var red = parseFloat(color[0].substring(4));
+					var green = parseFloat(color[1]);
+					var blue = parseFloat(color[2].slice(0,-1));
+					red = rgbColorBound(red + 51);
+					green = rgbColorBound(green + 51);
+					blue = rgbColorBound(blue + 102);
+					color = `rgb(${red},${green},${blue})`;
+					pixel.color = color;
+					//console.log("color set");
+				};
+				pixel.didChargeBlueTinted = true;
+			};
 		} else {
 			var explosionRadius = 7;
 		};
@@ -305,7 +382,7 @@ elements.creeper_head = {
 							};
 						} else {
 							//console.log(`Stopping row look at pixel (${nX},${nY}) due to non-human pixel in the way`)
-							break;
+							break; //can't see through humans
 						};
 					};
 				};
@@ -341,6 +418,7 @@ elements.creeper_head = {
 										pixel.hissStart = pixelTicks;
 									};
 								};
+								break;
 							};
 						} else {
 							//console.log(`Stopping row look at pixel (${nX},${nY}) due to non-human pixel in the way`)
@@ -364,6 +442,24 @@ elements.creeper_head = {
 					//console.log("t-30 ticks or whatever it was");
 					pixel.hissStart = pixelTicks;
 				};
+				//Color code {
+					var ticksHissing = pixelTicks - pixel.hissStart;
+					var color = pixel.color; //do on each hissing tick
+					if(color.startsWith("rgb")) { //too dumb to do equivalent HSL math
+						//console.log("rgb detected");
+						color = color.split(","); //split color for addition
+						var red = parseFloat(color[0].substring(4));
+						var green = parseFloat(color[1]);
+						var blue = parseFloat(color[2].slice(0,-1));
+						red = rgbColorBound(red + (ticksHissing * 3));
+						green = rgbColorBound(green + (ticksHissing * 3));
+						blue = rgbColorBound(blue + (ticksHissing * 3));
+						color = `rgb(${red},${green},${blue})`;
+						pixel.color = color;
+						//console.log("color set");
+					};
+				//}
+
 				if(pixelTicks - pixel.hissStart > 30) {
 					//console.log("Kaboom?");
 					//console.log(`Exploding with radius ${explosionRadius} (charged: ${pixel.charged})`);
