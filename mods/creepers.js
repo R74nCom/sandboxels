@@ -9,6 +9,10 @@ function rgbColorBound(number) {
 	return Math.min(255,Math.max(0,number));
 };
 
+function slBound(number) {
+	return Math.min(100,Math.max(0,number));
+};
+
 elements.creeper = {
 	color: ["#D2D2D2", "#BFDFB9", "#94CE89", "#78D965", "#5ED54C", "#58C546", "#50B143", "#479143", "#559552", "#3F8738", "#5B8B59"],
 	category: "life",
@@ -160,7 +164,7 @@ elements.creeper_body = {
 			if(!pixel.didChargeBlueTinted) { //do once, on initial charge
 				//console.log("something something halsey lyric");
 				var color = pixel.color;
-				if(color.startsWith("rgb")) { //too dumb to do equivalent HSL math
+				if(color.startsWith("rgb")) {
 					//console.log("rgb detected");
 					color = color.split(","); //split color for addition
 					var red = parseFloat(color[0].substring(4));
@@ -170,6 +174,25 @@ elements.creeper_body = {
 					green = rgbColorBound(green + 51);
 					blue = rgbColorBound(blue + 102);
 					color = `rgb(${red},${green},${blue})`;
+					pixel.color = color;
+					//console.log("color set");
+				} else if(color.startsWith("hsl")) {
+					//console.log("hsl detected");
+					color = color.split(","); //split color for addition
+					var hue = parseFloat(color[0].substring(4));
+					var saturation = parseFloat(color[1].slice(0,-1));
+					var luminance = parseFloat(color[2].slice(0,-2));
+					hue = hue % 360; //piecewise hue shift
+					if(hue <= 235 && hue >= 135) {
+						hue = 185;
+					} else if(hue < 135) {
+						hue += 50;
+					} else if(hue > 235 && hue < 360) {
+						hue -= 50;
+					};
+					saturation = slBound (saturation + 10);
+					luminance = slBound(luminance + 20);
+					color = `hsl(${hue},${saturation}%,${luminance}%)`;
 					pixel.color = color;
 					//console.log("color set");
 				};
@@ -208,7 +231,7 @@ elements.creeper_body = {
 				//Color code {
 					var ticksHissing = pixelTicks - head.hissStart;
 					var color = pixel.color; //do on each hissing tick
-					if(color.startsWith("rgb")) { //too dumb to do equivalent HSL math
+					if(color.startsWith("rgb")) {
 						//console.log("rgb detected");
 						color = color.split(","); //split color for addition
 						var red = parseFloat(color[0].substring(4));
@@ -218,6 +241,18 @@ elements.creeper_body = {
 						green = rgbColorBound(green + (ticksHissing * 3));
 						blue = rgbColorBound(blue + (ticksHissing * 3));
 						color = `rgb(${red},${green},${blue})`;
+						pixel.color = color;
+						//console.log("color set");
+					} else if(color.startsWith("hsl")) {
+						//console.log("hsl detected");
+						color = color.split(","); //split color for addition
+						var hue = parseFloat(color[0].substring(4));
+						var saturation = parseFloat(color[1].slice(0,-1));
+						var luminance = parseFloat(color[2].slice(0,-2));
+						//console.log("the j");
+						luminance = slBound(luminance + 1.176);
+						//console.log(luminance);
+						color = `hsl(${hue},${saturation}%,${luminance}%)`;
 						pixel.color = color;
 						//console.log("color set");
 					};
@@ -323,7 +358,7 @@ elements.creeper_head = {
 			if(!pixel.didChargeBlueTinted) { //do once, on initial charge
 				//console.log("something something halsey lyric");
 				var color = pixel.color;
-				if(color.startsWith("rgb")) { //too dumb to do equivalent HSL math
+				if(color.startsWith("rgb")) {
 					//console.log("rgb detected");
 					color = color.split(","); //split color for addition
 					var red = parseFloat(color[0].substring(4));
@@ -333,6 +368,25 @@ elements.creeper_head = {
 					green = rgbColorBound(green + 51);
 					blue = rgbColorBound(blue + 102);
 					color = `rgb(${red},${green},${blue})`;
+					pixel.color = color;
+					//console.log("color set");
+				} else if(color.startsWith("hsl")) {
+					//console.log("hsl detected");
+					color = color.split(","); //split color for addition
+					var hue = parseFloat(color[0].substring(4));
+					var saturation = parseFloat(color[1].slice(0,-1));
+					var luminance = parseFloat(color[2].slice(0,-2));
+					hue = hue % 360; //piecewise hue shift
+					if(hue <= 235 && hue >= 135) {
+						hue = 185;
+					} else if(hue < 135) {
+						hue += 50;
+					} else if(hue > 235 && hue < 360) {
+						hue -= 50;
+					};
+					saturation = slBound (saturation + 10);
+					luminance = slBound(luminance + 20);
+					color = `hsl(${hue},${saturation}%,${luminance}%)`;
 					pixel.color = color;
 					//console.log("color set");
 				};
@@ -445,7 +499,7 @@ elements.creeper_head = {
 				//Color code {
 					var ticksHissing = pixelTicks - pixel.hissStart;
 					var color = pixel.color; //do on each hissing tick
-					if(color.startsWith("rgb")) { //too dumb to do equivalent HSL math
+					if(color.startsWith("rgb")) {
 						//console.log("rgb detected");
 						color = color.split(","); //split color for addition
 						var red = parseFloat(color[0].substring(4));
@@ -455,6 +509,16 @@ elements.creeper_head = {
 						green = rgbColorBound(green + (ticksHissing * 3));
 						blue = rgbColorBound(blue + (ticksHissing * 3));
 						color = `rgb(${red},${green},${blue})`;
+						pixel.color = color;
+						//console.log("color set");
+					} else if(color.startsWith("hsl")) {
+						//console.log("hsl detected");
+						color = color.split(","); //split color for addition
+						var hue = parseFloat(color[0].substring(4));
+						var saturation = parseFloat(color[1].slice(0,-1));
+						var luminance = parseFloat(color[2].slice(0,-2));
+						luminance = slBound(luminance + 1.176);
+						color = `hsl(${hue},${saturation}%,${luminance}%)`;
 						pixel.color = color;
 						//console.log("color set");
 					};
