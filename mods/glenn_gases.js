@@ -85,7 +85,7 @@ elements.electric_gas = {
 	color: ["#3693b3", "#246e64"],
 	behavior: [
 		"M2%33.3 AND CR:electric%1|M1%33.3 AND CR:electric%1|M2%33.3 AND CR:electric%1",
-		"M1%33.3 AND CR:electric%1|XX                       |M1%33.3 AND CR:electric%1",
+		"M1%33.3 AND CR:electric%1|XX%0000000000000000000000|M1%33.3 AND CR:electric%1",
 		"M2%33.3 AND CR:electric%1|M1%33.3 AND CR:electric%1|M2%33.3 AND CR:electric%1",
 	],
 	hardness: 0.8,
@@ -104,7 +104,7 @@ elements.corrosive_gas = {
 	color: ["#2929e6", "#151cad"],
 	behavior: [
 		"M2%33.3|M1%33.3|M2%33.3",
-		"M1%33.3|XX     |M1%33.3",
+		"M1%33.3|XX%0000|M1%33.3",
 		"M2%33.3|M1%33.3|M2%33.3",
 	],
 	hardness: 0.8,
@@ -237,7 +237,7 @@ elements.finine = {
 	color: ["#ffffec", "#fafade", "#ebebd5", "#c9c9b7", "#80806f"],
 	behavior: [
 		"M2%33.3|M1%33.3|M2%33.3",
-		"M1%33.3|XX     |M1%33.3",
+		"M1%33.3|XX%0000|M1%33.3",
 		"M2%33.3|M1%33.3|M2%33.3",
 	],
 	tick: function(pixel) {
