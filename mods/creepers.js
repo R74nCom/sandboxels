@@ -197,7 +197,7 @@ function updateCreeperPreferences() { //Creeper setting handler
 						var y = Math.floor(Math.random()*height-1)+1;
 						if (isEmpty(x,y)) {
 							// random element from randomEventChoices.falling_pixel
-							var element = creepers[Math.floor(Math.random()*creepers.length)];
+							var element = spawnCreepers[Math.floor(Math.random()*spawnCreepers.length)];
 							// if element is an array, choose a random element from the array
 							if (Array.isArray(element)) {
 								element = element[Math.floor(Math.random()*element.length)];
@@ -233,7 +233,7 @@ function toggleCreeperSpawning() { //Creeper toggle handler
 
 enemyHumanoidArray = ["head","body"] //just in case
 
-creepers = ["creeper","angelic_creeper","bombing_creeper","hell_creeper"];
+spawnCreepers = ["creeper","angelic_creeper","bombing_creeper","hell_creeper"];
 
 if(settings.creeperSpawning) { //creeper spawning option
 	randomEvents.creeper = function() {
@@ -244,8 +244,8 @@ if(settings.creeperSpawning) { //creeper spawning option
 				// random y between 1 and height
 				var y = Math.floor(Math.random()*height-1)+1;
 				if (isEmpty(x,y)) {
-					// random element from randomEventChoices.falling_pixel
-					var element = creepers[Math.floor(Math.random()*creepers.length)];
+					// random element from the list of spawnable creepers
+					var element = spawnCreepers[Math.floor(Math.random()*spawnCreepers.length)];
 					// if element is an array, choose a random element from the array
 					if (Array.isArray(element)) {
 						element = element[Math.floor(Math.random()*element.length)];
@@ -473,6 +473,9 @@ elements.creeper_body = {
 		
 		if(pixel.burning) {
 			pixel.hissing = true;
+			if(!pixel.hissStart) {
+				pixel.hissStart = pixelTicks;
+			};
 			if(!pixel.burnStart) { //I don't like errors.
 				pixel.burnStart = pixel.ticks;
 			};
@@ -506,9 +509,9 @@ elements.creeper_body = {
 						var red = parseFloat(color[0].substring(4));
 						var green = parseFloat(color[1]);
 						var blue = parseFloat(color[2].slice(0,-1));
-						red = rgbColorBound(red + (ticksHissing * 3));
-						green = rgbColorBound(green + (ticksHissing * 3));
-						blue = rgbColorBound(blue + (ticksHissing * 3));
+						red = rgbColorBound(red + ticksHissing);
+						green = rgbColorBound(green + ticksHissing);
+						blue = rgbColorBound(blue + ticksHissing);
 						color = `rgb(${red},${green},${blue})`;
 						pixel.color = color;
 						//console.log("color set");
@@ -775,9 +778,9 @@ elements.creeper_head = {
 						var red = parseFloat(color[0].substring(4));
 						var green = parseFloat(color[1]);
 						var blue = parseFloat(color[2].slice(0,-1));
-						red = rgbColorBound(red + (ticksHissing * 3));
-						green = rgbColorBound(green + (ticksHissing * 3));
-						blue = rgbColorBound(blue + (ticksHissing * 3));
+						red = rgbColorBound(red + ticksHissing);
+						green = rgbColorBound(green + ticksHissing);
+						blue = rgbColorBound(blue + ticksHissing);
 						color = `rgb(${red},${green},${blue})`;
 						pixel.color = color;
 						//console.log("color set");
@@ -1040,6 +1043,9 @@ elements.angelic_creeper_body = {
 		
 		if(pixel.burning) {
 			pixel.hissing = true;
+			if(!pixel.hissStart) {
+				pixel.hissStart = pixelTicks;
+			};
 			if(!pixel.burnStart) { //I don't like errors.
 				pixel.burnStart = pixel.ticks;
 			};
@@ -1074,9 +1080,9 @@ elements.angelic_creeper_body = {
 						var red = parseFloat(color[0].substring(4));
 						var green = parseFloat(color[1]);
 						var blue = parseFloat(color[2].slice(0,-1));
-						red = rgbColorBound(red + (ticksHissing * 3));
-						green = rgbColorBound(green + (ticksHissing * 3));
-						blue = rgbColorBound(blue + (ticksHissing * 3));
+						red = rgbColorBound(red + ticksHissing);
+						green = rgbColorBound(green + ticksHissing);
+						blue = rgbColorBound(blue + ticksHissing);
 						color = `rgb(${red},${green},${blue})`;
 						pixel.color = color;
 						//console.log("color set");
@@ -1342,9 +1348,9 @@ elements.angelic_creeper_head = {
 						var red = parseFloat(color[0].substring(4));
 						var green = parseFloat(color[1]);
 						var blue = parseFloat(color[2].slice(0,-1));
-						red = rgbColorBound(red + (ticksHissing * 3));
-						green = rgbColorBound(green + (ticksHissing * 3));
-						blue = rgbColorBound(blue + (ticksHissing * 3));
+						red = rgbColorBound(red + ticksHissing);
+						green = rgbColorBound(green + ticksHissing);
+						blue = rgbColorBound(blue + ticksHissing);
 						color = `rgb(${red},${green},${blue})`;
 						pixel.color = color;
 						//console.log("color set");
@@ -1572,6 +1578,9 @@ elements.bombing_creeper_body = {
 		
 		if(pixel.burning) {
 			pixel.hissing = true;
+			if(!pixel.hissStart) {
+				pixel.hissStart = pixelTicks;
+			};
 			if(!pixel.burnStart) { //I don't like errors.
 				pixel.burnStart = pixel.ticks;
 			};
@@ -1606,9 +1615,9 @@ elements.bombing_creeper_body = {
 						var red = parseFloat(color[0].substring(4));
 						var green = parseFloat(color[1]);
 						var blue = parseFloat(color[2].slice(0,-1));
-						red = rgbColorBound(red + (ticksHissing * 3));
-						green = rgbColorBound(green + (ticksHissing * 3));
-						blue = rgbColorBound(blue + (ticksHissing * 3));
+						red = rgbColorBound(red + ticksHissing);
+						green = rgbColorBound(green + ticksHissing);
+						blue = rgbColorBound(blue + ticksHissing);
 						color = `rgb(${red},${green},${blue})`;
 						pixel.color = color;
 						//console.log("color set");
@@ -1875,9 +1884,9 @@ elements.bombing_creeper_head = {
 						var red = parseFloat(color[0].substring(4));
 						var green = parseFloat(color[1]);
 						var blue = parseFloat(color[2].slice(0,-1));
-						red = rgbColorBound(red + (ticksHissing * 3));
-						green = rgbColorBound(green + (ticksHissing * 3));
-						blue = rgbColorBound(blue + (ticksHissing * 3));
+						red = rgbColorBound(red + ticksHissing);
+						green = rgbColorBound(green + ticksHissing);
+						blue = rgbColorBound(blue + ticksHissing);
 						color = `rgb(${red},${green},${blue})`;
 						pixel.color = color;
 						//console.log("color set");
@@ -2100,6 +2109,9 @@ elements.hell_creeper_body = {
 		
 		if(pixel.burning) {
 			pixel.hissing = true;
+			if(!pixel.hissStart) {
+				pixel.hissStart = pixelTicks;
+			};
 			if(!pixel.burnStart) { //I don't like errors.
 				pixel.burnStart = pixel.ticks;
 			};
@@ -2133,9 +2145,9 @@ elements.hell_creeper_body = {
 						var red = parseFloat(color[0].substring(4));
 						var green = parseFloat(color[1]);
 						var blue = parseFloat(color[2].slice(0,-1));
-						red = rgbColorBound(red + (ticksHissing * 3));
-						green = rgbColorBound(green + (ticksHissing * 3));
-						blue = rgbColorBound(blue + (ticksHissing * 3));
+						red = rgbColorBound(red + ticksHissing);
+						green = rgbColorBound(green + ticksHissing);
+						blue = rgbColorBound(blue + ticksHissing);
 						color = `rgb(${red},${green},${blue})`;
 						pixel.color = color;
 						//console.log("color set");
@@ -2399,9 +2411,9 @@ elements.hell_creeper_head = {
 						var red = parseFloat(color[0].substring(4));
 						var green = parseFloat(color[1]);
 						var blue = parseFloat(color[2].slice(0,-1));
-						red = rgbColorBound(red + (ticksHissing * 3));
-						green = rgbColorBound(green + (ticksHissing * 3));
-						blue = rgbColorBound(blue + (ticksHissing * 3));
+						red = rgbColorBound(red + ticksHissing);
+						green = rgbColorBound(green + ticksHissing);
+						blue = rgbColorBound(blue + ticksHissing);
 						color = `rgb(${red},${green},${blue})`;
 						pixel.color = color;
 						//console.log("color set");
@@ -2433,3 +2445,886 @@ elements.hell_creeper_head = {
 		};
 	},
 };
+
+/* Creeper generation
+___#___#___#___#___#___#___#___#___#___
+__#___#___#___#___#___#___#___#___#___#
+_#___#___#___#___#___#___#___#___#___#_
+#___#___#___#___#___#___#___#___#___#__
+___#___#___#___#___#___#___#___#___#___
+__#___#___#___#___#___#___#___#___#___#
+_#___#___#___#___#___#___#___#___#___#_
+#___#___#___#___#___#___#___#___#___#__
+___#___#___#___#___#___#___#___#___#___
+__#___#___#___#___#___#___#___#___#___#
+_#___#___#___#___#___#___#___#___#___#_
+#___#___#___#___#___#___#___#___#___#__
+___#___#___#___#___#___#___#___#___#___
+__#___#___#___#___#___#___#___#___#___#
+_#___#___#___#___#___#___#___#___#___#_
+#___#___#___#___#___#___#___#___#___#__
+*/
+
+	//This code is a lot worse than I'd have liked it to be...
+
+
+
+urlParams = new URLSearchParams(window.location.search);
+
+//Include generated creepers in Random tool?
+if(urlParams.get('creeperIncludeRandom') !== null) { //if the variable exists at all
+    creeperIncludeRandom = true
+} else { //if it doesn't (and it returns null)
+    creeperIncludeRandom = false
+}
+
+//Start Creeper Template Functions {
+
+	autoCreeperPlacerTick = function(pixel) {
+		var creeperElement = elements[pixel.element].creeperType;
+		var headName,bodyName;
+		if(typeof(creeperElement === "string")) { //comma separated string check
+			if(creeperElement.includes(",")) { //if it is
+				creeperElement = creeperElement.split(","); //to array
+				creeperElement = creeperElement.filter(function(e) { //strip nonexistent elements
+					return typeof(elements[e]) === "object";
+				});
+			};
+		};
+		if(Array.isArray(creeperElement)) {
+			headName = `${creeperElement.join("_")}_creeper_head`; //auto head element name
+			bodyName = `${creeperElement.join("_")}_creeper_body`; //auto body element name
+		} else {
+			headName = `${creeperElement}_creeper_head`; //auto head element name
+			bodyName = `${creeperElement}_creeper_body`; //auto body element name
+		};
+		if (isEmpty(pixel.x, pixel.y+1)) {
+			createPixel(bodyName, pixel.x, pixel.y+1);
+			pixel.element = headName;
+			pixel.color = pixelColorPick(pixel)
+		} else if (isEmpty(pixel.x, pixel.y-1)) {
+			createPixel(headName, pixel.x, pixel.y-1);
+			pixel.element = bodyName;
+			pixel.color = pixelColorPick(pixel)
+		} else {
+			deletePixel(pixel.x, pixel.y);
+		};
+	};
+
+	autoCreeperBodyTick = function(pixel) {
+		var creeperElement = elements[pixel.element].creeperType;
+		var headName,bodyName,explodeInto;
+		if(typeof(creeperElement === "string")) { //comma separated string check
+			if(creeperElement.includes(",")) { //if it is
+				creeperElement = creeperElement.split(","); //to array
+				creeperElement = creeperElement.filter(function(e) { //strip nonexistent elements
+					return typeof(elements[e]) === "object";
+				});
+			};
+		};
+		if(Array.isArray(creeperElement)) {
+			headName = `${creeperElement.join("_")}_creeper_head`; //auto head element name
+			bodyName = `${creeperElement.join("_")}_creeper_body`; //auto body element name
+			explodeInto = creeperElement.join(","); //auto body element name
+		} else {
+			headName = `${creeperElement}_creeper_head`; //auto head element name
+			bodyName = `${creeperElement}_creeper_body`; //auto body element name
+			explodeInto = creeperElement; //auto body element name
+		};
+		if (tryMove(pixel, pixel.x, pixel.y+1)) { // Fall
+			if (!isEmpty(pixel.x, pixel.y-2, true)) { // Drag head down
+				var headPixel = pixelMap[pixel.x][pixel.y-2];
+				if (headPixel.element == headName) {
+					if (isEmpty(pixel.x, pixel.y-1)) {
+						movePixel(pixelMap[pixel.x][pixel.y-2], pixel.x, pixel.y-1);
+					}
+					else {
+						swapPixels(pixelMap[pixel.x][pixel.y-2], pixelMap[pixel.x][pixel.y-1]);
+					}
+				}
+			}
+		}
+		doHeat(pixel);
+		doBurning(pixel);
+		doElectricity(pixel);
+		if (pixel.dead) {
+			// Turn into rotten_meat if pixelTicks-dead > 500
+			if (pixelTicks-pixel.dead > 200) {
+				Math.random() < 0.1 ? changePixel(pixel,"gunpowder") : changePixel(pixel,"rotten_meat");
+			}
+			return
+		}
+
+		// Find the head
+		if (!isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == headName) {
+			var head = pixelMap[pixel.x][pixel.y-1];
+			if (head.dead) { // If head is dead, kill body
+				pixel.dead = head.dead;
+			}
+		}
+		else { var head = null }
+
+		if (isEmpty(pixel.x, pixel.y-1)) {
+			// create blood if decapitated 10% chance
+			if (Math.random() < 0.1) {
+				createPixel("blood", pixel.x, pixel.y-1);
+				// set dead to true 15% chance
+				if (Math.random() < 0.15) {
+					pixel.dead = pixelTicks;
+				}
+			}
+		}
+		else if (head == null) { return }
+		else if (Math.random() < 0.1) { // Move 10% chance
+			var movesToTry = [
+				[1*pixel.dir,0],
+				[1*pixel.dir,-1],
+			];
+			// While movesToTry is not empty, tryMove(pixel, x, y) with a random move, then remove it. if tryMove returns true, break.
+			while (movesToTry.length > 0) {
+				var move = movesToTry.splice(Math.floor(Math.random() * movesToTry.length), 1)[0];
+				if (isEmpty(pixel.x+move[0], pixel.y+move[1]-1)) {
+					if (tryMove(pixel, pixel.x+move[0], pixel.y+move[1])) {
+						movePixel(head, head.x+move[0], head.y+move[1]);
+						break;
+					};
+				};
+			};
+			// 15% chance to change direction while not chasing a human
+			if(!head.following) {
+				if (Math.random() < 0.15) {
+					pixel.dir *= -1;
+					//console.log("*turns around cutely to face ${pixel.dir < 0 ? 'left' : 'right'}*");
+				};
+			}/* else {
+				//console.log("*chases cutely*");
+			};*/
+		};
+
+		if(pixel.charge) {
+			pixel.charged = true;
+		};
+		
+		if(head) {
+			if(typeof(head.charge) !== "undefined") {
+				if(head.charge) {
+					pixel.charged = true;
+				};
+			};
+			if(typeof(head.charged) !== "undefined") {
+				if(head.charged) {
+					pixel.charged = true;
+				};
+			};
+		};
+
+		if(typeof(pixel.charged) === "undefined") {
+			pixel.charged = false;
+		};
+
+		if(pixel.charged) {
+			var explosionRadius = 7;
+			if(!pixel.didChargeBlueTinted) { //do once, on initial charge
+				//console.log("something something halsey lyric");
+				var color = pixel.color;
+				if(color.startsWith("rgb")) {
+					//console.log("rgb detected");
+					color = color.split(","); //split color for addition
+					var red = parseFloat(color[0].substring(4));
+					var green = parseFloat(color[1]);
+					var blue = parseFloat(color[2].slice(0,-1));
+					red = rgbColorBound(red + 51);
+					green = rgbColorBound(green + 51);
+					blue = rgbColorBound(blue + 102);
+					color = `rgb(${red},${green},${blue})`;
+					pixel.color = color;
+					//console.log("color set");
+				} else if(color.startsWith("hsl")) {
+					//console.log("hsl detected");
+					color = color.split(","); //split color for addition
+					var hue = parseFloat(color[0].substring(4));
+					var saturation = parseFloat(color[1].slice(0,-1));
+					var luminance = parseFloat(color[2].slice(0,-2));
+					hue = hue % 360; //piecewise hue shift
+					if(hue <= 235 && hue >= 135) {
+						hue = 185;
+					} else if(hue < 135) {
+						hue += 50;
+					} else if(hue > 235 && hue < 360) {
+						hue -= 50;
+					};
+					saturation = slBound (saturation + 10);
+					luminance = slBound(luminance + 20);
+					color = `hsl(${hue},${saturation}%,${luminance}%)`;
+					pixel.color = color;
+					//console.log("color set");
+				};
+				pixel.didChargeBlueTinted = true;
+			};
+		} else {
+			var explosionRadius = 5;
+		};
+		
+		if(pixel.burning) {
+			pixel.hissing = true;
+			if(!pixel.hissStart) {
+				pixel.hissStart = pixelTicks;
+			};
+			if(!pixel.burnStart) { //I don't like errors.
+				pixel.burnStart = pixel.ticks;
+			};
+			if(pixelTicks - pixel.burnStart > 30) {
+				//console.log("Kaboom?");
+				explodeAt(pixel.x,pixel.y,explosionRadius,creeperElement);
+				//console.log("Yes, Rico, kaboom.");
+			};
+		};
+
+		//Head hissing color handler: keeps track of head's hissing for coloring purposes
+		for(i = 0; i < 1; i++) { //dummy for loop
+			if(pixel.dead || !head || head.dead) { //can't hiss without a head according to the classic creeper anatomy
+				//console.log("ss-- oof");
+				pixel.hissing = false;
+				break;
+			};
+			if(head.hissing) {
+				//console.log("Ssssssss");
+				if(!head.hissStart) {
+					//console.log("t-30 ticks or whatever it was");
+					head.hissStart = pixelTicks;
+				};
+
+				//Color code {
+					var ticksHissing = pixelTicks - head.hissStart;
+					var color = pixel.color; //do on each hissing tick
+					if(color.startsWith("rgb")) {
+						//console.log("rgb detected");
+						color = color.split(","); //split color for addition
+						var red = parseFloat(color[0].substring(4));
+						var green = parseFloat(color[1]);
+						var blue = parseFloat(color[2].slice(0,-1));
+						red = rgbColorBound(red + ticksHissing);
+						green = rgbColorBound(green + ticksHissing);
+						blue = rgbColorBound(blue + ticksHissing);
+						color = `rgb(${red},${green},${blue})`;
+						pixel.color = color;
+						//console.log("color set");
+					} else if(color.startsWith("hsl")) {
+						//console.log("hsl detected");
+						color = color.split(","); //split color for addition
+						var hue = parseFloat(color[0].substring(4));
+						var saturation = parseFloat(color[1].slice(0,-1));
+						var luminance = parseFloat(color[2].slice(0,-2));
+						//console.log("the j");
+						luminance = slBound(luminance + 1.176);
+						//console.log(luminance);
+						color = `hsl(${hue},${saturation}%,${luminance}%)`;
+						pixel.color = color;
+						//console.log("color set");
+					};
+				//}
+			};
+		};
+	};
+
+	autoCreeperHeadTick = function(pixel) {
+		var creeperElement = elements[pixel.element].creeperType;
+		var headName,bodyName,explodeInto;
+		if(typeof(creeperElement === "string")) { //comma separated string check
+			if(creeperElement.includes(",")) { //if it is
+				creeperElement = creeperElement.split(","); //to array
+				creeperElement = creeperElement.filter(function(e) { //strip nonexistent elements
+					return typeof(elements[e]) === "object";
+				});
+			};
+		};
+		if(Array.isArray(creeperElement)) {
+			headName = `${creeperElement.join("_")}_creeper_head`; //auto head element name
+			bodyName = `${creeperElement.join("_")}_creeper_body`; //auto body element name
+			explodeInto = creeperElement.join(","); //auto body element name
+		} else {
+			headName = `${creeperElement}_creeper_head`; //auto head element name
+			bodyName = `${creeperElement}_creeper_body`; //auto body element name
+			explodeInto = creeperElement; //auto body element name
+		};
+		doHeat(pixel);
+		doBurning(pixel);
+		doElectricity(pixel);
+		if (pixel.dead) {
+			// Turn into rotten_meat if pixelTicks-dead > 500
+			if (pixelTicks-pixel.dead > 200) {
+				Math.random() < 0.1 ? changePixel(pixel,"gunpowder") : changePixel(pixel,"rotten_meat");
+				return
+			}
+		}
+
+		// Find the body
+		if (!isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == bodyName) {
+			var body = pixelMap[pixel.x][pixel.y+1];
+			if (body.dead) { // If body is dead, kill head
+				pixel.dead = body.dead;
+			}
+		}
+		else { var body = null }
+
+		if(body) {
+			if(body.dir !== pixel.dir) { //hacky workaround: lock head dir to body dir
+				pixel.dir = body.dir;
+			};
+		};
+
+		if (isEmpty(pixel.x, pixel.y+1)) {
+			tryMove(pixel, pixel.x, pixel.y+1);
+			// create blood if severed 10% chance
+			if (isEmpty(pixel.x, pixel.y+1) && !pixel.dead && Math.random() < 0.1) {
+				createPixel("blood", pixel.x, pixel.y+1);
+				// set dead to true 15% chance
+				if (Math.random() < 0.15) {
+					pixel.dead = pixelTicks;
+				}
+			}
+		}
+		
+		//start of most new code
+		var pX = pixel.x;
+		var pY = pixel.y;
+		
+		if(pixel.charge) {
+			pixel.charged = true;
+		};
+		
+		if(body) {
+			if(typeof(body.charge) !== "undefined") {
+				if(body.charge) {
+					pixel.charged = true;
+				};
+			};
+			if(typeof(body.charged) !== "undefined") {
+				if(body.charged) {
+					pixel.charged = true;
+				};
+			};
+		};
+		
+		if(typeof(pixel.charged) === "undefined") {
+			pixel.charged = false;
+		};
+
+		if(pixel.charged) {
+			var explosionRadius = 10;
+			if(!pixel.didChargeBlueTinted) { //do once, on initial charge
+				//console.log("something something halsey lyric");
+				var color = pixel.color;
+				if(color.startsWith("rgb")) {
+					//console.log("rgb detected");
+					color = color.split(","); //split color for addition
+					var red = parseFloat(color[0].substring(4));
+					var green = parseFloat(color[1]);
+					var blue = parseFloat(color[2].slice(0,-1));
+					red = rgbColorBound(red + 51);
+					green = rgbColorBound(green + 51);
+					blue = rgbColorBound(blue + 102);
+					color = `rgb(${red},${green},${blue})`;
+					pixel.color = color;
+					//console.log("color set");
+				} else if(color.startsWith("hsl")) {
+					//console.log("hsl detected");
+					color = color.split(","); //split color for addition
+					var hue = parseFloat(color[0].substring(4));
+					var saturation = parseFloat(color[1].slice(0,-1));
+					var luminance = parseFloat(color[2].slice(0,-2));
+					hue = hue % 360; //piecewise hue shift
+					if(hue <= 235 && hue >= 135) {
+						hue = 185;
+					} else if(hue < 135) {
+						hue += 50;
+					} else if(hue > 235 && hue < 360) {
+						hue -= 50;
+					};
+					saturation = slBound (saturation + 10);
+					luminance = slBound(luminance + 20);
+					color = `hsl(${hue},${saturation}%,${luminance}%)`;
+					pixel.color = color;
+					//console.log("color set");
+				};
+				pixel.didChargeBlueTinted = true;
+			};
+		} else {
+			var explosionRadius = 7;
+		};
+		
+		//Human detection loop (looks ahead according to direction and sets the "following" variable to true, telling the body to lock the direction)
+		var directionAdverb = "left";
+		if(pixel.dir > 0) {
+			directionAdverb = "right";
+		};
+		//console.log(`Looking ${directionAdverb}`)
+		if(pixel.dir === -1) {
+			for(i = -4; i < 4+1; i++) {
+				var oY = i;
+				//console.log(`Starting row look at row ${pY+oY}`)
+				for(j = (-1); j > (-16 - 1); j--) {
+					var oX = j;
+					var nX = pX+oX;
+					var nY = pY+oY;
+					if(outOfBounds(nX,nY)) {
+						//console.log(`Stopping row look at pixel (${nX},${nY}) due to OoB`)
+						break;
+					};
+					if(isEmpty(nX,nY)) {
+						////console.log(`Skipping pixel (${nX},${nY}) (empty)`)
+						continue;
+					};
+					if(!isEmpty(nX,nY,true)) {
+						var newPixel = pixelMap[nX][nY];
+						var newElement = newPixel.element;
+						if(enemyHumanoidArray.includes(newElement)) {
+							//console.log(`Human part found at (${nX},${nY})`)
+							if(!newPixel.dead) {
+								pixel.following = true;
+								//console.log(`Human detected at (${nX},${nY})`)
+								//Start "hissing" if a human is close enough
+								if(pyth(pX,pY,nX,nY) <= 3.15) { //probably misapplying the tolerance from the MC Wiki line: "Creepers will chase after any player, as long as it is within a 16 block (±5%) radius"
+									pixel.hissing = true;
+									if(!pixel.hissStart) {
+										pixel.hissStart = pixelTicks;
+									};
+								};
+							};
+						} else {
+							//console.log(`Stopping row look at pixel (${nX},${nY}) due to non-human pixel in the way`)
+							break; //can't see through humans
+						};
+					};
+				};
+			};
+		} else if(pixel.dir === 1) {
+			for(i = -4; i < 4+1; i++) {
+				var oY = i;
+				//console.log(`Starting row look at row ${pY+oY}`)
+				for(j = 1; j < 16 + 1; j++) {
+					var oX = j;
+					var nX = pX+oX;
+					var nY = pY+oY;
+					if(outOfBounds(nX,nY)) {
+						//console.log(`Stopping row look at pixel (${nX},${nY}) due to OoB`)
+						break;
+					};
+					if(isEmpty(nX,nY)) {
+						////console.log(`Skipping pixel (${nX},${nY}) (empty)`)
+						continue;
+					};
+					if(!isEmpty(nX,nY,true)) {
+						var newPixel = pixelMap[nX][nY];
+						var newElement = newPixel.element;
+						if(enemyHumanoidArray.includes(newElement)) {
+							//console.log(`Human part found at (${nX},${nY})`)
+							if(!newPixel.dead) {
+								pixel.following = true;
+								//console.log(`Human detected at (${nX},${nY})`)
+								//Start "hissing" if a human is close enough
+								if(pyth(pX,pY,nX,nY) <= 3.15) {
+									pixel.hissing = true;
+									if(!pixel.hissStart) {
+										pixel.hissStart = pixelTicks;
+									};
+								};
+								break;
+							};
+						} else {
+							//console.log(`Stopping row look at pixel (${nX},${nY}) due to non-human pixel in the way`)
+							break;
+						};
+					};
+				};
+			};
+		};
+		
+		//Pre-explosion handler: keeps track of time before the kaboom
+		for(i = 0; i < 1; i++) { //dummy for loop
+			if(pixel.hissing) {
+				//console.log("Ssssssss");
+				if(pixel.dead || !body || body.dead) { //can't explode without a body according to the classic creeper anatomy
+					//console.log("ss-- oof");
+					pixel.hissing = false;
+					break;
+				};
+				if(!pixel.hissStart) {
+					//console.log("t-30 ticks or whatever it was");
+					pixel.hissStart = pixelTicks;
+				};
+				//Color code {
+					var ticksHissing = pixelTicks - pixel.hissStart;
+					var color = pixel.color; //do on each hissing tick
+					if(color.startsWith("rgb")) {
+						//console.log("rgb detected");
+						color = color.split(","); //split color for addition
+						var red = parseFloat(color[0].substring(4));
+						var green = parseFloat(color[1]);
+						var blue = parseFloat(color[2].slice(0,-1));
+						red = rgbColorBound(red + ticksHissing);
+						green = rgbColorBound(green + ticksHissing);
+						blue = rgbColorBound(blue + ticksHissing);
+						color = `rgb(${red},${green},${blue})`;
+						pixel.color = color;
+						//console.log("color set");
+					} else if(color.startsWith("hsl")) {
+						//console.log("hsl detected");
+						color = color.split(","); //split color for addition
+						var hue = parseFloat(color[0].substring(4));
+						var saturation = parseFloat(color[1].slice(0,-1));
+						var luminance = parseFloat(color[2].slice(0,-2));
+						luminance = slBound(luminance + 1.176);
+						color = `hsl(${hue},${saturation}%,${luminance}%)`;
+						pixel.color = color;
+						//console.log("color set");
+					};
+				//}
+
+				if(pixelTicks - pixel.hissStart > 30) {
+					//console.log("Kaboom?");
+					//console.log(`Exploding with element ${creeperElement} and radius ${explosionRadius} (charged: ${pixel.charged})`);
+					explodeAt(body.x,body.y,explosionRadius,explodeInto);
+					//console.log("Yes, Rico, kaboom.");
+				};
+			};
+		};
+		
+		if(Math.random() < 0.01) { //1% chance each tick to lose interest
+			pixel.following = false;
+			//console.log("Meh.");
+		};
+	};
+
+//End Creeper Template Functions }
+
+//Start Color Functions and Variables {
+	function sumArray(array) { //Sum of array numbers
+		return array.reduce((partialSum, a) => partialSum + a, 0);
+	};
+
+	function averageArray(array) { //Average of array numbers
+		return sumArray(array) / array.length;
+	};
+	
+	function _rgbHexCatcher(color) { //Hex triplet to rgb(), while rgb() is untouched
+			//console.log("Logged color for _rgbHexCatcher: " + color);
+									 //I have no idea if this runs before or after parsing hex triplets to rgb() values, so I'm going to handle both (by making everything rgb() and then making it hex at the end)
+		if(typeof(color) === "undefined") {
+			//console.log("Warning: An element has an undefined color. Unfortunately, due to how the code is structured, I can't say which one.");
+			color = "#FF00FF";
+		};
+		if(color.length < 10) {
+			//console.log("Short string detected, likely a hex triplet");
+			if(!color.startsWith("#")) {
+				color = "#" + color;
+			};
+			var object = hexToRGB(color);
+			return `rgb(${object.r},${object.g},${object.b})`
+		} else {
+			//console.log("Non-triplet detected");
+			return color;
+		};
+	};
+
+	function averageRgbPrefixedColorArray(colorArray,returnObject=false) { //array of rgb()s to single rgb() of average color
+		//console.log("Averaging started");
+		var reds = [];
+		var greens = [];
+		var blues = [];
+		for(k = 0; k < colorArray.length; k++) {
+			//console.log("Average function: Executing catcher on " + colorArray);
+			var color = _rgbHexCatcher(colorArray[k]);
+			//console.log("Logged color for aRPCA: " + color);
+			color = color.split(","); 
+			var red = parseFloat(color[0].substring(4));
+			reds.push(red)
+			var green = parseFloat(color[1]);
+			greens.push(green)
+			var blue = parseFloat(color[2].slice(0,-1));
+			blues.push(blue)
+		};
+		redAverage = Math.round(averageArray(reds));
+		greenAverage = Math.round(averageArray(greens));
+		blueAverage = Math.round(averageArray(blues));
+		var output; 
+		returnObject ? output = {r: redAverage, g: greenAverage, b: blueAverage} : output = `rgb(${redAverage},${greenAverage},${blueAverage})`;
+		//console.log("Averaging finished, product: " + output);
+		return output;
+	};
+	//averageRgbPrefixedColorArray(["rgb(255,0,0)", "rgb(0,0,0)", "rgb(0,0,255)"]);
+
+	function rgbStringToUnvalidatedObject(string) { //turns rgb() to {r,g,b} with no bounds checking
+		//console.log("Splitting string into object");
+		string = string.split(",");
+		var red = parseFloat(string[0].substring(4));
+		var green = parseFloat(string[1]);
+		var blue = parseFloat(string[2].slice(0,-1));
+		//console.log("String split: outputs " + red + ", " + green + ", " + blue + ".");
+		return {r: red, g: green, b: blue};
+	};
+
+	//https://stackoverflow.com/questions/46432335/hex-to-hsl-convert-javascript
+	function rgbStringToHSL(rgb) { //Originally a hex-to-HSL function, edited to take RGB and spit out an array
+		//console.log("HSLing some RGBs");
+		var result = rgbStringToUnvalidatedObject(rgb);
+
+		var r = result.r;
+		var g = result.g;
+		var b = result.b;
+
+		r /= 255, g /= 255, b /= 255;
+		var max = Math.max(r, g, b), min = Math.min(r, g, b);
+		var h, s, l = (max + min) / 2;
+
+		if(max == min){
+			h = s = 0; // achromatic
+		} else {
+			var d = max - min;
+			s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+			switch(max) {
+				case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+				case g: h = (b - r) / d + 2; break;
+				case b: h = (r - g) / d + 4; break;
+			}
+			h /= 6;
+		};
+
+		s = s*100;
+		s = Math.round(s);
+		l = l*100;
+		l = Math.round(l);
+		h = Math.round(360*h);
+
+		//var colorInHSL = 'hsl(' + h + ', ' + s + '%, ' + l + '%)';
+		//Edit to return an array
+		var colorInHSL = [h,s,l];
+		//console.log("HSL output "+ colorInHSL + ".");
+		return colorInHSL;
+	};
+
+	//https://stackoverflow.com/questions/36721830/convert-hsl-to-rgb-and-hex
+	function hslToHex(h, s, l) { //h, s, l params to hex triplet
+      //console.log(`Hexing some HSLs (the HSLs are ${h},${s},${l})`)
+	  l /= 100;
+	  var a = s * Math.min(l, 1 - l) / 100;
+	  var f = n => {
+		var k = (n + h / 30) % 12;
+		var color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+		return Math.round(255 * color).toString(16).padStart(2, '0');   // convert to Hex and prefix "0" if needed
+	  };
+	  //console.log(`Hexed to #${f(0)}${f(8)}${f(4)}`)
+	  return `#${f(0)}${f(8)}${f(4)}`;
+	};
+	
+	function pad_array(arr,len,fill) { //https://stackoverflow.com/a/38851957
+		//console.log("Padding array");
+		return arr.concat(Array(len).fill(fill)).slice(0,len);
+	}
+	
+	function addArraysInPairs(array1,array2,fill=0) { //e.g. [1,2,3] + [10,0,-1] = [11,2,2]
+		//console.log("Adding in pairs: " + array1 + " and " + array2 + ".");
+		if(array1.length > array2.length) { //zero-padding
+			array2 = pad_array(array2,array1.length,fill); //if a1 is longer, pad a2 to a1's length
+		} else if(array2.length > array1.length) {
+			array1 = pad_array(array1,array2.length,fill); //if a2 is longer, pad a1 to a2's length
+		};
+		var tempArray = [];
+		for(z = 0; z < array1.length; z++) {
+			//console.log("Forming output values (" + array1[z] + " + " + array2[z] + ")");
+			tempArray[z] = array1[z] + array2[z];
+			//console.log("Sum" + tempArray[z]);
+		};
+		//console.log("Added into " + tempArray + ".");
+		return tempArray;
+	};
+
+	//var placeholderColor = "#FF00FF";
+	
+	var hslOffsets = [[0, -5, 5], [0, -20, 10], [0, 0, 10], [0, -20, 10], [0, -35, 0], [0, -20, -30], [0, 10, -10], [0, 10, 20], [0, -20, 10], [0, -10, 5]];
+//End Color Functions and Variables }
+
+runAfterLoad(function() {
+    creeperElements = Object.keys(elements);
+	creeperElements.push(["rock","sand"]);
+	//creeperElements = ["water","steel","dirt",["dirt","sand"],"frostwind","antimatter,acid","fire,nonexist"]; //Test array
+    for(aaf = 0; aaf < creeperElements.length; aaf++) {
+		var elementOfCreeper = creeperElements[aaf];
+		var startColor;
+		var randomExcl = 0;
+		//console.log("randomExcl set")
+		//console.log(elementOfCreeper);
+
+		var headName,bodyName,placerName,descElement;
+
+		if(typeof(elementOfCreeper === "string")) { //comma separated string check
+			if(elementOfCreeper.includes(",")) { //if it is
+				elementOfCreeper = elementOfCreeper.split(","); //to array
+				elementOfCreeper = elementOfCreeper.filter(function(e) { //strip nonexistent elements
+					return typeof(elements[e]) === "object";
+				});
+			};
+		};
+		if(Array.isArray(elementOfCreeper)) {
+			headName = `${elementOfCreeper.join("_")}_creeper_head`; //auto head element name
+			bodyName = `${elementOfCreeper.join("_")}_creeper_body`; //auto body element name
+			placerName = `${elementOfCreeper.join("_")}_creeper`; //auto placer element name
+			descElement = elementOfCreeper.join(", "); //auto explosion element list
+			
+			//array case color concatenator and excludeRandom handler
+			startColor = [];
+			//console.log(elementOfCreeper);
+			for(ll = 0; ll < elementOfCreeper.length; ll++) {
+				if(typeof(elements[elementOfCreeper[ll]].excludeRandom !== "undefined")) { //if excludeRandom exists (prevent TypeError)
+					if(elements[elementOfCreeper[ll]].excludeRandom) { //it it's true
+						randomExcl = 1; //the whole array creeper is excluded
+						//console.log("array nyet" + elementOfCreeper);
+					};
+				};
+				//console.log(elementOfCreeper[ll]);
+				startColor = startColor.concat(elements[elementOfCreeper[ll]].color);
+			};
+		} else { //they should all be strings, so here
+			headName = `${elementOfCreeper}_creeper_head`; //auto head element name
+			bodyName = `${elementOfCreeper}_creeper_body`; //auto body element name
+			placerName = `${elementOfCreeper}_creeper`; //auto placer element name
+			descElement = elementOfCreeper; //auto explosion element
+			startColor = elements[elementOfCreeper].color;
+			if(typeof(elements[elementOfCreeper].excludeRandom !== "undefined")) { //if excludeRandom exists (prevent TypeError)
+				if(elements[elementOfCreeper].excludeRandom) { //it it's true
+					//console.log("nyet " + elementOfCreeper);
+					randomExcl = 1; //the creeper is excluded
+				} else {
+					//console.log("allow " + elementOfCreeper);
+					randomExcl = 0;
+				};
+			};
+		};
+			//Color gen
+		if(Array.isArray(startColor)) { //Average arrays, make colors rgb()
+			startColor = averageRgbPrefixedColorArray(startColor);
+		} else {
+			startColor = _rgbHexCatcher(startColor);
+		};
+		var preColor = rgbStringToHSL(startColor);
+		var colorsArray = [preColor, preColor, preColor, preColor, preColor, preColor, preColor, preColor, preColor, preColor]
+		for(q = 0; q < hslOffsets.length; q++) {
+			colorsArray[q] = addArraysInPairs(colorsArray[q],hslOffsets[q]);
+			colorsArray[q] = hslToHex((colorsArray[q][0] % 360),slBound(colorsArray[q][1]),slBound(colorsArray[q][2]));
+			
+		};
+		
+			//End color gen
+		
+		//console.log(`${headName}; ${bodyName}; ${placerName}; ${descElement}`)
+
+										//Placer
+        elements[placerName] = {
+			creeperType: elementOfCreeper,
+            color: colorsArray,
+            category: "auto creepers",
+			properties: {
+				dead: false,
+				dir: 1,
+				panic: 0,
+				following: false,
+			},
+			tick: function(pixel) {
+				autoCreeperPlacerTick(pixel);
+			},
+			related: [bodyName,headName,"creeper"],
+			desc: `Auto-generated creeper.<br/>Explodes into ${descElement}.`,
+        };
+										//Body
+		elements[bodyName] = {
+			creeperType: elementOfCreeper,
+			color: colorsArray,
+            category: "auto creepers",
+			hidden: true,
+			excludeRandom: true,
+			density: 1500,
+			state: "solid",
+			conduct: 25,
+			tempHigh: 250,
+			stateHigh: "cooked_meat",
+			tempLow: -30,
+			stateLow: "frozen_meat",
+			burn: 10,
+			burnTime: 250,
+			burnInto: ["cooked_meat","cooked_meat","cooked_meat","cooked_meat","gunpowder"],
+			breakInto: ["blood","gunpowder"],
+			reactions: {
+				"cancer": { "elem1":"cancer", "chance":0.005 },
+				"radiation": { "elem1":["ash","meat","rotten_meat","cooked_meat"], "chance":0.4 },
+				"plague": { "elem1":"plague", "chance":0.05 },
+			},
+			properties: {
+				dead: false,
+				dir: 1,
+				panic: 0,
+				charged: false,
+				didChargeBlueTinted: false,
+			},
+			tick: function(pixel) {
+				autoCreeperBodyTick(pixel);
+			},
+		};
+
+										//Head
+		elements[headName] = {
+			creeperType: elementOfCreeper,
+            color: colorsArray,
+            category: "auto creepers",
+			hidden: true,
+			excludeRandom: true,
+			density: 1080,
+			state: "solid",
+			conduct: 25,
+			tempHigh: 250,
+			stateHigh: "cooked_meat",
+			tempLow: -30,
+			stateLow: "frozen_meat",
+			burn: 10,
+			burnTime: 250,
+			burnInto: ["cooked_meat","cooked_meat","cooked_meat","cooked_meat","cooked_meat","cooked_meat","cooked_meat","cooked_meat","cooked_meat","gunpowder"],
+			breakInto: "blood",
+			reactions: {
+				"cancer": { "elem1":"cancer", "chance":0.005 },
+				"radiation": { "elem1":["ash","meat","rotten_meat","cooked_meat"], "chance":0.4 },
+				"plague": { "elem1":"plague", "chance":0.05 },
+				"oxygen": { "elem2":"carbon_dioxide", "chance":0.5 },
+			},
+			properties: {
+				dead: false,
+				following: false,
+				hissing: false,
+				charged: false,
+				didChargeBlueTinted: false,
+			},
+			tick: function(pixel) {
+				autoCreeperHeadTick(pixel);
+			},
+		};
+		if(creeperIncludeRandom) {
+			randomExcl ? elements[placerName].excludeRandom = true : elements[placerName].excludeRandom = false;
+		} else {
+			elements[placerName].excludeRandom = true;
+		};
+		if(!randomExcl) {
+			//console.log("spawn enabling " + placerName);
+			spawnCreepers.push(placerName);
+		} else {
+			//console.log("nyetted " + placerName);
+		};
+	};
+});
+
+/*elements.random_spout = {
+	color: ["#3e5f8a","#a334ec","#ea96f9","#a6ecf6","#70ebc8","#d9286b","#7eed91","#a18b30"],
+	behavior: behaviors.WALL,
+	category: "special",
+	excludeRandom: true,
+	tick: function(pixel) {
+		changePixel(pixel,spoutChoices[Math.floor(Math.random() * spoutChoices.length)])
+	},
+};*/
