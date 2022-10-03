@@ -306,7 +306,7 @@ elements.ml_tm_bm_mr_mudstone_1 = {
 	color: "#4a341e",
 	behavior: [
 		"XX|SP|XX",
-		"SS|XX|SP",
+		"SP|XX|SP",
 		"M1|SP|XX",
 	],
 	tempHigh: 1200,
@@ -322,7 +322,7 @@ elements.ml_tm_bm_mr_mudstone_2 = {
 	color: "#4a341e",
 	behavior: [
 		"XX|SP|M1",
-		"SS|XX|SP",
+		"SP|XX|SP",
 		"XX|SP|XX",
 	],
 	tempHigh: 1200,
@@ -338,7 +338,7 @@ elements.ml_tm_bm_mr_mudstone_3 = {
 	color: "#4a341e",
 	behavior: [
 		"M1|SP|XX",
-		"SS|XX|SP",
+		"SP|XX|SP",
 		"XX|SP|XX",
 	],
 	tempHigh: 1200,
@@ -354,7 +354,7 @@ elements.ml_tm_bm_mr_mudstone_4 = {
 	color: "#4a341e",
 	behavior: [
 		"XX|SP|XX",
-		"SS|XX|SP",
+		"SP|XX|SP",
 		"XX|SP|M1",
 	],
 	tempHigh: 1200,
