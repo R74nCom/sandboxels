@@ -1,9 +1,9 @@
 elements.alkahest = {
 	color: "#33eeee",
 	behavior: behaviors.LIQUID_OLD,
-	state: "solid",
-	category: "special",
-	density: 999,
+	state: "liquid",
+	category: "liquids",
+	density: 3308,
 	hardness: 1,
 	tick: function(pixel) {
 		for(i = 0; i < adjacentCoords.length; i++) {
