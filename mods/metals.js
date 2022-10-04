@@ -577,3 +577,17 @@ elements.lithium_amide = {
 }
 
 //Sodium exists
+
+//...
+
+//at request of Serioustar#1337
+
+elements.niobium = {
+	color: ["#dedede","#edead8","#e8e9ed"],
+	behavior: behaviors.WALL,
+	tempHigh: 2477,
+	category: "solids",
+	density: 8570,
+	conduct: 0.35,
+	hardness: 0.7, //idk lol
+};
