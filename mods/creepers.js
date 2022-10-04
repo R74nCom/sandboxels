@@ -3354,3 +3354,200 @@ runAfterLoad(function() {
 		};
 	};
 });
+
+//Standalone generator function
+
+function generateCreeper(creeperElements,isAfterScriptLoading=false) {//it can be a single element, though
+	//To specify an array creeper, have the array be inside another array.
+	/*For reasons related to how element colors are loaded, if this function is being run from a JS mod file, isAfterScriptLoading should be false.
+	Otherwise, you'll get TypeErrors for some reason when trying to place your creeper.  If this is being run after the game has loaded (e.g. in the console),
+	then isAfterScriptLoading should be true or you might also get TypeErrors (this latter case was a bit inconsistent when I tested it, but 
+	the former case wasn't. **isAfterScriptLoading must be false when this function is run from a JS mod file**.*/
+	if(typeof(creeperElements) === "string") { //it should be an array, so string check
+		//console.log("String detected");
+		if(creeperElements.includes(",")) { //comma-separated string?
+			//console.log("Splitting string to array");
+			creeperElements = creeperElements.split(","); //,SS to array
+		} else {
+			//console.log("Wrapping string in array");
+			creeperElements = [creeperElements]; //single string to array 
+		};
+	};
+	for(aaf = 0; aaf < creeperElements.length; aaf++) {
+		var elementOfCreeper = creeperElements[aaf];
+		var startColor;
+		var randomExcl = 0;
+		//console.log("randomExcl set")
+		//console.log(elementOfCreeper);
+
+		var headName,bodyName,placerName,descElement;
+
+		if(typeof(elementOfCreeper === "string")) { //comma separated string check
+			if(elementOfCreeper.includes(",")) { //if it is
+				elementOfCreeper = elementOfCreeper.split(","); //to array
+				elementOfCreeper = elementOfCreeper.filter(function(e) { //strip nonexistent elements
+					return typeof(elements[e]) === "object";
+				});
+			};
+		};
+		if(Array.isArray(elementOfCreeper)) {
+			headName = `${elementOfCreeper.join("_")}_creeper_head`; //auto head element name
+			bodyName = `${elementOfCreeper.join("_")}_creeper_body`; //auto body element name
+			placerName = `${elementOfCreeper.join("_")}_creeper`; //auto placer element name
+			descElement = elementOfCreeper.join(", "); //auto explosion element list
+			
+			//array case color concatenator and excludeRandom handler
+			startColor = [];
+			//console.log(elementOfCreeper);
+			for(ll = 0; ll < elementOfCreeper.length; ll++) {
+				if(typeof(elements[elementOfCreeper[ll]].excludeRandom !== "undefined")) { //if excludeRandom exists (prevent TypeError)
+					if(elements[elementOfCreeper[ll]].excludeRandom) { //it it's true
+						randomExcl = 1; //the whole array creeper is excluded
+						//console.log("array nyet" + elementOfCreeper);
+					};
+				};
+				//console.log(elementOfCreeper[ll]);
+				startColor = startColor.concat(elements[elementOfCreeper[ll]].color);
+			};
+		} else { //they should all be strings, so here
+			headName = `${elementOfCreeper}_creeper_head`; //auto head element name
+			bodyName = `${elementOfCreeper}_creeper_body`; //auto body element name
+			placerName = `${elementOfCreeper}_creeper`; //auto placer element name
+			descElement = elementOfCreeper; //auto explosion element
+			startColor = elements[elementOfCreeper].color;
+			if(typeof(elements[elementOfCreeper].excludeRandom !== "undefined")) { //if excludeRandom exists (prevent TypeError)
+				if(elements[elementOfCreeper].excludeRandom) { //it it's true
+					//console.log("nyet " + elementOfCreeper);
+					randomExcl = 1; //the creeper is excluded
+				} else {
+					//console.log("allow " + elementOfCreeper);
+					randomExcl = 0;
+				};
+			};
+		};
+			//Color gen
+		if(Array.isArray(startColor)) { //Average arrays, make colors rgb()
+			startColor = averageRgbPrefixedColorArray(startColor);
+		} else {
+			startColor = _rgbHexCatcher(startColor);
+		};
+		var preColor = rgbStringToHSL(startColor);
+		var colorsArray = [preColor, preColor, preColor, preColor, preColor, preColor, preColor, preColor, preColor, preColor]
+		var colorObjectArray = [];
+		for(q = 0; q < hslOffsets.length; q++) {
+			colorsArray[q] = addArraysInPairs(colorsArray[q],hslOffsets[q]);
+			colorsArray[q] = hslToHex((colorsArray[q][0] % 360),slBound(colorsArray[q][1]),slBound(colorsArray[q][2]));
+			colorObjectArray[q] = hexToRGB(colorsArray[q]); //outputs hex
+			if(isAfterScriptLoading) { // if it's after the hex -> RGB conversion
+				var coq = colorObjectArray[q]; //pull the object
+				colorsArray[q] = `rgb(${coq.r},${coq.g},${coq.b})`; //and change to the RGB from its values
+			};
+		};
+		
+			//End color gen
+		
+		//console.log(`${headName}; ${bodyName}; ${placerName}; ${descElement}`)
+
+										//Placer
+        elements[placerName] = {
+			creeperType: elementOfCreeper,
+            color: colorsArray,
+            colorObject: colorObjectArray,
+            category: "auto creepers",
+			properties: {
+				dead: false,
+				dir: 1,
+				panic: 0,
+				following: false,
+			},
+			tick: function(pixel) {
+				autoCreeperPlacerTick(pixel);
+			},
+			related: [bodyName,headName,"creeper"],
+			desc: `Auto-generated creeper.<br/>Explodes into ${descElement}.`,
+        };
+										//Body
+		elements[bodyName] = {
+			creeperType: elementOfCreeper,
+			color: colorsArray,
+            colorObject: colorObjectArray,
+            category: "auto creepers",
+			hidden: true,
+			excludeRandom: true,
+			density: 1500,
+			state: "solid",
+			conduct: 25,
+			tempHigh: 250,
+			stateHigh: "cooked_meat",
+			tempLow: -30,
+			stateLow: "frozen_meat",
+			burn: 10,
+			burnTime: 250,
+			burnInto: ["cooked_meat","cooked_meat","cooked_meat","cooked_meat","gunpowder"],
+			breakInto: ["blood","gunpowder"],
+			reactions: {
+				"cancer": { "elem1":"cancer", "chance":0.005 },
+				"radiation": { "elem1":["ash","meat","rotten_meat","cooked_meat"], "chance":0.4 },
+				"plague": { "elem1":"plague", "chance":0.05 },
+			},
+			properties: {
+				dead: false,
+				dir: 1,
+				panic: 0,
+				charged: false,
+				didChargeBlueTinted: false,
+			},
+			tick: function(pixel) {
+				autoCreeperBodyTick(pixel);
+			},
+		};
+
+										//Head
+		elements[headName] = {
+			creeperType: elementOfCreeper,
+            color: colorsArray,
+            colorObject: colorObjectArray,
+            category: "auto creepers",
+			hidden: true,
+			excludeRandom: true,
+			density: 1080,
+			state: "solid",
+			conduct: 25,
+			tempHigh: 250,
+			stateHigh: "cooked_meat",
+			tempLow: -30,
+			stateLow: "frozen_meat",
+			burn: 10,
+			burnTime: 250,
+			burnInto: ["cooked_meat","cooked_meat","cooked_meat","cooked_meat","cooked_meat","cooked_meat","cooked_meat","cooked_meat","cooked_meat","gunpowder"],
+			breakInto: "blood",
+			reactions: {
+				"cancer": { "elem1":"cancer", "chance":0.005 },
+				"radiation": { "elem1":["ash","meat","rotten_meat","cooked_meat"], "chance":0.4 },
+				"plague": { "elem1":"plague", "chance":0.05 },
+				"oxygen": { "elem2":"carbon_dioxide", "chance":0.5 },
+			},
+			properties: {
+				dead: false,
+				following: false,
+				hissing: false,
+				charged: false,
+				didChargeBlueTinted: false,
+			},
+			tick: function(pixel) {
+				autoCreeperHeadTick(pixel);
+			},
+		};
+		if(creeperIncludeRandom) {
+			randomExcl ? elements[placerName].excludeRandom = true : elements[placerName].excludeRandom = false;
+		} else {
+			elements[placerName].excludeRandom = true;
+		};
+		if(!randomExcl) {
+			//console.log("spawn enabling " + placerName);
+			spawnCreepers.push(placerName);
+		} else {
+			//console.log("nyetted " + placerName);
+		};
+	};
+};
