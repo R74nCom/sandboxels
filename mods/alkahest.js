@@ -17,7 +17,7 @@ elements.alkahest = {
 				if(!isEmpty(checkPosX,checkPosY,true)) {
 					var newPixel = pixelMap[checkPosX][checkPosY];
 					var newElement = newPixel.element;
-					if(![pixel.element,"wall"].includes(newElement)) { //unless someone's willing to implement dragon parts
+					if(![pixel.element,"wall","alkahest_spout"].includes(newElement)) { //unless someone's willing to implement dragon parts
 						if(typeof(pixel[newElement]) === "undefined") {
 							pixel[newElement] = 0;
 						};
