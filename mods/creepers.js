@@ -263,6 +263,26 @@ if(settings.creeperSpawning) { //creeper spawning option
 	};
 };
 
+standaloneSpawnCreeper = function(amount=1) {
+	/*	The amount is the maximum amount of *attempts*. Often, less creepers will spawn due to things in the way.
+		In a generated world, which uses half of the space, you can expect about half of this number to spawn.	*/
+	for(i = 0; i < amount; i++) { //dummy for to break
+		// random x between 1 and width-1
+		var x = Math.floor(Math.random()*(width-1))+1;
+		// random y between 1 and height
+		var y = Math.floor(Math.random()*height-1)+1;
+		if (isEmpty(x,y)) {
+			// random element from the list of spawnable creepers
+			var element = spawnCreepers[Math.floor(Math.random()*spawnCreepers.length)];
+			// if element is an array, choose a random element from the array
+			if (Array.isArray(element)) {
+				element = element[Math.floor(Math.random()*element.length)];
+			}
+			createPixel(element,x,y);
+		};
+	};
+};
+
 /*Start Main Creeper
 	##################
 	#########   ######
@@ -3144,6 +3164,19 @@ if(urlParams.get('creeperIncludeRandom') !== null) { //if the variable exists at
 	var hslOffsets = [[0, -5, 5], [0, -20, 10], [0, 0, 10], [0, -20, 10], [0, -35, 0], [0, -20, -30], [0, 10, -10], [0, 10, 20], [0, -20, 10], [0, -10, 5]];
 //End Color Functions and Variables }
 
+	var colorOfRandomCreeper = ["#7ba883", "#8aba8a", "#87b292", "#8aba8a", "#71a171", "#346434", "#4d6d72", "#a0caad", "#8aba8a", "#7dac7f"]
+	//random_creeper's final color but all values of the sixth one increased by 16 decimal and then everything's R and B -= 48 decimal
+
+	elements.spawn_random_creeper = {
+		color: colorOfRandomCreeper,
+		behavior: behaviors.WALL,
+		category: "special",
+		excludeRandom: false, //see below
+		tick: function(pixel) {
+			changePixel(pixel,spawnCreepers[Math.floor(Math.random() * spawnCreepers.length)]) //spawnCreepers is already excludeRandom filtered
+		},
+	};
+
 runAfterLoad(function() {
     creeperElements = Object.keys(elements);
 	creeperElements.push(["rock","sand"]);
@@ -3318,13 +3351,3 @@ runAfterLoad(function() {
 		};
 	};
 });
-
-/*elements.random_spout = {
-	color: ["#3e5f8a","#a334ec","#ea96f9","#a6ecf6","#70ebc8","#d9286b","#7eed91","#a18b30"],
-	behavior: behaviors.WALL,
-	category: "special",
-	excludeRandom: true,
-	tick: function(pixel) {
-		changePixel(pixel,spoutChoices[Math.floor(Math.random() * spoutChoices.length)])
-	},
-};*/
