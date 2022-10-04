@@ -189,7 +189,9 @@ function updateCreeperPreferences() { //Creeper setting handler
 	if(settings.creeperSpawning) { //If the setting is on
 		if(typeof(randomEvents.creeper) !== "function") { //add the event if it's missing
 			randomEvents.creeper = function() {
-				for(i = 0; i < 1; i++) { //dummy for to break
+				var amount = Math.floor((Math.random() * 3)+1); //1-3
+				//In worldgen worlds, you can expect about half of this because about half of the world is pixels in it.
+				for(i = 0; i < amount; i++) { //dummy for to break
 					if(settings.creeperSpawning) { //setting validation
 						// random x between 1 and width-1
 						var x = Math.floor(Math.random()*(width-1))+1;
@@ -237,7 +239,8 @@ spawnCreepers = ["creeper","angelic_creeper","bombing_creeper","hell_creeper"];
 
 if(settings.creeperSpawning) { //creeper spawning option
 	randomEvents.creeper = function() {
-		for(i = 0; i < 1; i++) { //dummy for to break
+		var amount = Math.floor((Math.random() * 3)+1); //1-3
+		for(i = 0; i < amount; i++) { //dummy for to break
 			if(settings.creeperSpawning) { //setting validation
 				// random x between 1 and width-1
 				var x = Math.floor(Math.random()*(width-1))+1;
