@@ -1,9 +1,9 @@
 urlParams = new URLSearchParams(window.location.search);
 
-if(urlParams.get('includeRandom') !== null) { //if the variable exists at all
-    includeRandom = true
+if(urlParams.get('spoutIncludeRandom') !== null) { //if the variable exists at all
+    spoutIncludeRandom = true
 } else { //if it doesn't (and it returns null)
-    includeRandom = false
+    spoutIncludeRandom = false
 }
 
 function _randomInt(max) {
@@ -14,12 +14,12 @@ function _randomInt(max) {
     }
 }
 
-excludedElements = ["ketchup", "liquid_cloner", "fire_cloner"]
-includedElements = ["ketchup_spout", "spout", "udder", "torch", "sun"]
+excludedSpoutElements = ["ketchup", "liquid_cloner", "fire_cloner"]
+includedSpouts = ["ketchup_spout", "spout", "udder", "torch", "sun"]
 
 runAfterLoad(function() {
     liquidArray = Object.keys(elements).filter(function(e) {
-        return (elements[e].state == "liquid" || elements[e].state == "gas" || elements[e].movable) && !excludedElements.includes(elements[e]);
+        return (elements[e].state == "liquid" || elements[e].state == "gas" || elements[e].movable) && !excludedSpoutElements.includes(elements[e]);
     });
     for(i = 0; i < liquidArray.length; i++) {
         elements[`${liquidArray[i]}_spout`] = {
@@ -33,14 +33,14 @@ runAfterLoad(function() {
             temp: elements[liquidArray[i]].temp,
             hardness: 1,
         };
-        if(includeRandom) {
+        if(spoutIncludeRandom) {
 			elements[liquidArray[i]].excludeRandom ? elements[`${liquidArray[i]}_spout`].excludeRandom = true : elements[`${liquidArray[i]}_spout`].excludeRandom = false;
 		} else {
 			elements[`${liquidArray[i]}_spout`].excludeRandom = true;
 		};
 	};
 	spoutChoices = Object.keys(elements).filter(function(e) {
-		return elements[e].category == "spouts" || includedElements.includes(elements[e]);
+		return elements[e].category == "spouts" || includedSpouts.includes(elements[e]);
 	});
 	spoutChoices = spoutChoices.filter(function(e) {
 		return !elements[e.slice(0,-6)].excludeRandom;
