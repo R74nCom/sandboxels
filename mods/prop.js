@@ -249,7 +249,7 @@ function numberAdjusterPrompt() {
 	//console.log("Mode: " + numberAdjusterMode);
 
 	if(numberAdjusterMode === "set") {
-		numberAdjusterVerb = "setting";
+		numberAdjusterVerb = "assigning";
 	} else if(numberAdjusterMode === "add") {
 		numberAdjusterVerb = "adding";
 	} else {
@@ -276,9 +276,9 @@ elements.number_adjuster = {
 		};
     },
     category: "tools",
-	desc: `Sets or adds to numeric properties of pixels.<br/>Currently ${numberAdjusterVerb} ${numberAdjusterProperty} to ${numberAdjusterValue}.<br/><span onclick=numberAdjusterPrompt() style=\"color: #ff00ff;\";>Press [Shift+,] or click here</span> to open the adjuster tool prompt.`,
+	desc: `Sets or adds to numeric properties of pixels.<br/>Currently ${numberAdjusterVerb} ${numberAdjusterValue} to ${numberAdjusterProperty}.<br/><span onclick=numberAdjusterPrompt() style=\"color: #ff00ff;\";>Press [Shift+,] or click here</span> to open the adjuster tool prompt.`,
 };
 
 function updateNumberAdjusterDescription() {
-	elements.number_adjuster.desc = `Sets or adds to numeric properties of pixels.<br/>Currently ${numberAdjusterVerb} ${numberAdjusterProperty} to ${numberAdjusterValue}.<br/><span onclick=numberAdjusterPrompt() style=\"color: #ff00ff;\";>Press [Shift+,] or click here</span> to open the adjuster tool prompt.`;
+	elements.number_adjuster.desc = `Sets or adds to numeric properties of pixels.<br/>Currently ${numberAdjusterVerb} ${numberAdjusterValue} to ${numberAdjusterProperty}.<br/><span onclick=numberAdjusterPrompt() style=\"color: #ff00ff;\";>Press [Shift+,] or click here</span> to open the adjuster tool prompt.`;
 };
