@@ -1,788 +1,284 @@
-function marasi(number) {
-	return Math.min(255,Math.round(Math.abs(Math.sin(number) * 255)));
+propProperty = "element";
+propValue = "sand";
+propType = "string";
+numberAdjusterProperty = "temp";
+numberAdjusterValue = 1;
+numberAdjusterMode = "add";
+numberAdjusterVerb = "adding";
+
+stringSynonyms = [ "string", "str", "st", "s" ];
+numberSynonyms = [ "number", "num", "nm", "nu", "nb", "integer", "int", "i", "it", "float",
+				   "flt", "ft", "fl", "f", "wholenumber", "decimalnumber", "wn", "dn", "w",
+				   "d", "deeznuts" ]; /*The purpose of these blatant lies is, through a 
+				   reference to the Alice series of software, have an excuse to include deez
+				   nuts.*/
+objectSynonyms = [ "object", "oj", "obj", "ob", "o", "json" ];
+booleanSynonyms = [ "boolean", "bool", "boole", "boo", "bo", "bl", "b" ];
+
+defaultStringTypeValues = ["element","color","clone","changeTo","void"];
+defaultNumberTypeValues = ["x","y","temp","start","vx","vy","chargeCD","start","burnStart","dir","panic","r"];
+defaultBooleanTypeValues = ["burning","charge","dead"];
+
+trueSynonyms = ["true", "t", "1", "yes"];
+falseSynonyms = ["false", "f", "0", "no"];
+colorInvalidError = "Color must be in the form \"rgb(red,green,blue)\" or \"hsl(hue,saturation%,lightness%)\" (without quotes)!";
+function rgbStringToUnvalidatedObject(string) {
+	string = string.split(",");
+	var red = parseFloat(string[0].substring(4));
+	var green = parseFloat(string[1]);
+	var blue = parseFloat(string[2].slice(0,-1));
+	return {r: red, g: green, b: blue};
+};
+function hslStringToUnvalidatedObject(string) {
+	string = string.split(",");
+	var hue = parseFloat(string[0].substring(4));
+	var saturation = parseFloat(string[1].slice(0,-1));
+	var lightness = parseFloat(string[2].slice(0,-2));
+	return {h: hue, s: saturation, l: lightness};
 };
 
-function _rgbHexCatcher(color) { //Hex triplet to rgb(), while rgb() is untouched
-		//console.log("Logged color for _rgbHexCatcher: " + color);
-								 //I have no idea if this runs before or after parsing hex triplets to rgb() values, so I'm going to handle both (by making everything rgb() and then making it hex at the end)
-	if(typeof(color) === "undefined") {
-		//console.log("Warning: An element has an undefined color. Unfortunately, due to how the code is structured, I can't say which one.");
-		color = "#FF00FF";
+
+document.addEventListener("keydown", function(e) { //prop prompt listener
+	// , = propPrompt()
+	if (e.keyCode == 188) {
+		e.preventDefault();
+		shiftDown ? numberAdjusterPrompt() : propPrompt();
 	};
-	if(color.length < 10) {
-		//console.log("Short string detected, likely a hex triplet");
-		if(!color.startsWith("#")) {
-			color = "#" + color;
+});
+
+function propPrompt() {
+	propProperty = prompt("Enter the property you want to set");
+	
+
+	propValue = prompt("Enter the value you want to set to");
+
+	//special check: element
+	if(propProperty === "element") {
+		//empty string
+		if(propValue === "") {
+			alert("No element was specified!");
+			return false;
 		};
-		var object = hexToRGB(color);
-		return `rgb(${object.r},${object.g},${object.b})`
+		// replace spaces with underscores
+		propValue = propValue.replace(/ /g, "_");
+		var propValueS = mostSimilarElement(propValue);
+		if (propValueS === null || propValueS === undefined) {
+			alert("Element \"" + value + "\" not found! Defaulting to sand.");
+			propValue = "sand";
+		} else {
+			propValue = propValueS;
+		};
+	};
+
+	//special check: color
+	if(propProperty === "color") {
+		//empty string
+		if(propValue === "") {
+			alert("No color was specified!");
+			return false;
+		};
+		var splitValue = propValue.split(",");
+		if(!propValue.startsWith("rgb(")) { //if not RGB
+			if(propValue.startsWith("hsl(")) { //if HSL
+				if(!(splitValue[1].endsWith('%')) || !(splitValue[2].endsWith('%)'))) { //if missing percent symbols
+					alert(colorInvalidError);
+					return false;
+				};
+			} else { //if not RGB and not HSL
+				alert(colorInvalidError);
+				return false;
+			};
+		};
+		if(propValue.split(",").length !== 3) { //if too short or long
+			alert(colorInvalidError);
+			return false;
+		}
+		if(propValue.startsWith("rgb(")) { //if RGB
+			var checkedColorObject = rgbStringToUnvalidatedObject(propValue); //RGB NaN checking
+			if(isNaN(checkedColorObject.r) || isNaN(checkedColorObject.g) || isNaN(checkedColorObject.b)) {
+				//console.log(checkedColorObject);
+				alert("One or more color values are invalid!");
+				return false;
+			};
+		} else if(propValue.startsWith("hsl(")) { //if HSL
+			var checkedColorObject = hslStringToUnvalidatedObject(propValue); //HSL NaN checking
+			if(isNaN(checkedColorObject.h) || isNaN(checkedColorObject.s) || isNaN(checkedColorObject.l)) {
+				//console.log(checkedColorObject);
+				alert("One or more color values are invalid!");
+				return false;
+			};
+		} else { //if neither
+			alert(colorInvalidError);
+			return false;
+		};
+	};
+
+	//special check: x
+	if(propProperty === "x") {
+		//empty string
+		if(!propValue.isInteger) {
+			alert("X values must be integers!");
+		};
+	};
+
+
+	if(defaultNumberTypeValues.includes(propProperty.toLowerCase())) {
+		propType = "number";
+	} else if(defaultBooleanTypeValues.includes(propProperty.toLowerCase())) {
+		propType = "boolean";
+	} else if(defaultStringTypeValues.includes(propProperty.toLowerCase())) {
+		propType = "string";
 	} else {
-		//console.log("Non-triplet detected");
-		return color;
-	};
-}; //color function
-
-mooreDonutCoords = [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]]; //Moore neighborhood (includes corners) minus center, as opposed to the von Neumann neighborhood which is the + shape.
-
-elements.lookup.tick = function(pixel) {
-	//console.log(`### Tick ${pixelTicks} ###`);
-	//console.log(`Storing coordinates`);
-	var pX = pixel.x;
-	var pY = pixel.y;
-	//console.log(`Position (${pX},${pY})`);
-	//console.log(`Iterating`);
-	var neighborArray = [];
-	for(i = 0; i < mooreDonutCoords.length; i++) {
-		//console.log(`i: ${i}`);
-		//console.log(`Initialized array`);
-		var coord = mooreDonutCoords[i];
-		//console.log(`Offset pair: ${coord}`);
-		var oX = coord[0];
-		var oY = coord[1];
-		//console.log(`Stored offset pair`);
-		var nX = pX+oX;
-		var nY = pY+oY;
-		//console.log(`Final coordinates: (${nX},${nY}) (index ${i})`);
-		if(isEmpty(nX,nY,true)) {
-			//console.log(`Skipping empty pixel (${nX},${nY})`);
-			continue;
-		} else {
-			//console.log(`Found pixel at (${nX},${nY})`);
-			var newPixel = pixelMap[nX][nY];
-			//console.log(`Pixel stored`);
-			var newElement = newPixel.element;
-			//console.log(`Element is ${newElement}, running exclusion check;`);
-			if(newElement !== pixel.element) { //exclude self
-				//console.log(`Element is different, storing in array;`);
-				neighborArray.push(newElement); //build array of valid neighbors
-			};
-			//console.log("Finding iteration done");
+		propType = prompt("Enter the type of the value");
+		if(stringSynonyms.includes(propType)) {
+			propType = "string"
 		};
-		//console.log("End of for block (not loop)");
+		if(numberSynonyms.includes(propType)) {
+			propType = "number" //Infinity (case-sensitively) is a *number*.
+		};
+		if(booleanSynonyms.includes(propType)) {
+			propType = "boolean"
+		};
+		if(objectSynonyms.includes(propType)) {
+			propType = "object" //null (case-sensitively) is an *object*.
+		}
 	};
-	//console.log(`Loop done: ${neighborArray}`);
-	if(neighborArray.length > 0) {
-		var changeToElement = neighborArray[Math.floor(Math.random() * neighborArray.length)];
-		changePixel(pixel,changeToElement);
+	
+	//Conversion
+	if(propType === "number") {
+		propValue = parseFloat(propValue);
+		if(isNaN(propValue)) {
+			alert("Value is not a number!");
+			return false;
+		};
+	} else if(propType === "boolean") {
+		if(trueSynonyms.includes(propValue.toLowerCase())) {
+			propValue = true;
+		} else if(falseSynonyms.includes(propValue.toLowerCase())) {
+			propValue = false;
+		} else {
+			alert("Unrecognized boolean value: " + propValue + ".");
+			return false;
+		};
+	} else if(propType === "object") {
+		try {
+			propValue = JSON.parse(propValue);
+		} catch (error) {
+			alert("JSON is invalid! Note that it requires quotes around keys as well as those curly {} parentheses.");
+			return false;
+		};
+	} else if(propType !== "string") {
+		alert("Unrecognized or unsupported type!");
+		return false;
 	};
+	updatePropDescription();
+	currentElement = "prop";
 };
 
-elements.paint.tick = function(pixel) {
-	pixel.color = _rgbHexCatcher(currentColor);
-	var pX = pixel.x;
-	var pY = pixel.y;
-	for(i = 0; i < mooreDonutCoords.length; i++) {
-		var coord = mooreDonutCoords[i];
-		var oX = coord[0];
-		var oY = coord[1];
-		var nX = pX+oX;
-		var nY = pY+oY;
-		if(isEmpty(nX,nY,true)) {
-			continue;
+elements.prop = {
+    color: "#ff7f00",
+    tool: function(pixel) {
+		if(propProperty === "element") {
+			pixel[propProperty] = propValue;
+			pixel.temp = (elements[propValue].temp || pixel.temp);
 		} else {
-			var newPixel = pixelMap[nX][nY];
-			var newElement = newPixel.element;
-			if(newElement !== pixel.element) { //exclude self
-				newPixel.color = pixel.color; //change color of other pixel
-			};
+			pixel[propProperty] = propValue;
 		};
-	};
+		pixelTempCheck(pixel);
+    },
+    category: "tools",
+	desc: `Sets properties of pixels.<br/>Currently setting ${propProperty} to ${propValue} (${propType}).<br/><span onclick=propPrompt() style=\"color: #ff00ff;\";>Press [,] or click here</span> to open the property tool prompt.`,
 };
 
-elements.unpaint.tick = function(pixel) {
-	var pX = pixel.x;
-	var pY = pixel.y;
-	for(i = 0; i < mooreDonutCoords.length; i++) {
-		var coord = mooreDonutCoords[i];
-		var oX = coord[0];
-		var oY = coord[1];
-		var nX = pX+oX;
-		var nY = pY+oY;
-		if(isEmpty(nX,nY,true)) {
-			continue;
+function updatePropDescription() {
+	elements.prop.desc = `Sets properties of pixels.<br/>Currently setting ${propProperty} to ${propValue} (${propType}).<br/><span onclick=propPrompt() style=\"color: #ff00ff;\";>Press [,] or click here</span> to open the property tool prompt.`;
+};
+
+function numberAdjusterPrompt() {
+	numberAdjusterProperty = prompt("Enter the property you want to change");
+	numberAdjusterValue = prompt("Enter the value you want to use");
+	numberAdjusterMode = prompt("Enter \"set\" to set the property to the value,\nor \"add\" to add the value to the property.");
+
+	//property check
+	//console.log("Null property path");
+	if(numberAdjusterProperty === "" || numberAdjusterProperty === null) {
+		alert("No property was specified! Defaulting to temp.");
+		numberAdjusterProperty = "temp";
+		//console.log(numberAdjusterProperty);
+	};
+	//console.log("Property: " + numberAdjusterProperty);
+
+	//value check
+	if(isNaN(parseFloat(numberAdjusterValue))) {
+		//console.log("Invalid value path");
+		//console.log(numberAdjusterValue);
+		//empty string
+		if(numberAdjusterValue === "" || numberAdjusterValue === null) {
+			//console.log("Null value path");
+			alert("No value was specified! Defaulting to 1");
+			numberAdjusterValue = 1;
+			//console.log(numberAdjusterValue);
 		} else {
-			var newPixel = pixelMap[nX][nY];
-			var newElement = newPixel.element;
-			if(newElement !== pixel.element) { //slow for self, see below
-				newPixel.color = pixelColorPick(newPixel); //change color of other pixel
-			} else {
-				if(pixelTicks % 10 === 0) { //every 10 ticks because unpaint shouldn't be paintable, but it shouldn't be a seizure machine either
-					newPixel.color = pixelColorPick(newPixel);
+			//console.log("NaN value path");
+			alert("Invalid value! The value must be a number (defaulting to 1)");
+			numberAdjusterValue = 1;
+			//console.log(numberAdjusterValue);
+		};
+	};
+	numberAdjusterValue = parseFloat(numberAdjusterValue);
+	//console.log("Value: " + numberAdjusterValue);
+
+	//mode check
+	if(!["set","add"].includes(numberAdjusterMode.toLowerCase())) {
+		//console.log("Invalid mode path");
+		//console.log(numberAdjusterMode);
+		//empty string
+		if(numberAdjusterMode === "" || numberAdjusterMode === null) {
+			//console.log("Null mode path");
+			alert("No mode was specified! Defaulting to \"add\".");
+			numberAdjusterMode = "add";
+			//console.log(numberAdjusterMode);
+		} else {
+			//console.log("Unknown mode path");
+			alert("Invalid mode! Only the values \"set\" or \"add\" are accepted (defaulting to \"add\").");			
+			numberAdjusterMode = "add";
+			//console.log(numberAdjusterMode);
+		};
+	};
+	numberAdjusterMode = numberAdjusterMode.toLowerCase();
+	//console.log("Mode: " + numberAdjusterMode);
+
+	if(numberAdjusterMode === "set") {
+		numberAdjusterVerb = "assigning";
+	} else if(numberAdjusterMode === "add") {
+		numberAdjusterVerb = "adding";
+	} else {
+		numberAdjusterVerb = "doing something probably invalid with";
+	}
+	updateNumberAdjusterDescription();
+	currentElement = "number_adjuster";
+};
+
+elements.number_adjuster = {
+    color: "#7fff00",
+    tool: function(pixel) {
+		if(numberAdjusterProperty !== "element") {			
+			//console.log(numberAdjusterValue);
+			if(numberAdjusterMode === "set") {
+				pixel[numberAdjusterProperty] = numberAdjusterValue;
+			} else if(numberAdjusterMode === "add") {
+				if(typeof(pixel[numberAdjusterProperty]) === "undefined") {
+					pixel[numberAdjusterProperty] = 0;
 				};
+				pixel[numberAdjusterProperty] += numberAdjusterValue;
 			};
-		};
-	};
-};
-
-if(typeof(elements.sandreplacer) !== "undefined") {
-	elements.sandreplacer.behavior = [
-		"CH:sand|CH:sand|CH:sand",
-		"CH:sand|CH:sand|CH:sand",
-		"CH:sand|CH:sand|CH:sand"
-	];
-};
-
-if(typeof(elements.delete_all_of_element) !== "undefined") {
-	elements.delete_all_of_element.tick = function(pixel) {
-		var pX = pixel.x;
-		var pY = pixel.y;
-		for(i = 0; i < mooreDonutCoords.length; i++) {
-			var coord = mooreDonutCoords[i];
-			var oX = coord[0];
-			var oY = coord[1];
-			var nX = pX+oX;
-			var nY = pY+oY;
-			if(isEmpty(nX,nY,true)) {
-				continue;
-			} else {
-				var newPixel = pixelMap[nX][nY];
-				var newElement = newPixel.element;
-				//console.log(`stored adjacent element ${newElement} at (${nX},${nY})`);
-				if(newElement !== pixel.element) { //exclude self
-					var coordCircle = circleCoords(pX,pY,7);
-					//console.log(`got coordinate circle centered at (${pX},${pY}) with ${coordCircle.length} ${coordCircle.length === 1 ? "pixel" : "pixels"}`);
-					for(j = 0; j < coordCircle.length; j++) {
-						//console.log(`itting through circle, index ${j}`);
-						var coordCircleCoord = coordCircle[j];
-						var cNX = coordCircleCoord.x;
-						var cNY = coordCircleCoord.y;
-						//console.log(`circle coords stored (${cNX},${cNY})`);
-						if(isEmpty(cNX,cNY,true)) {
-							continue;
-							//console.log("skipped empty pixel");
-						} else {
-							var circleNewPixel = pixelMap[cNX][cNY];
-							var circleNewElement = circleNewPixel.element;
-							//console.log(`found pixel of element ${circleNewElement}`);
-							if(circleNewElement === newElement && circleNewElement !== pixel.element) { //exclude self, match the stored element from before
-								deletePixel(cNX,cNY);
-							};
-						};
-					};
-				};
-			};
-		};
-	};
-};
-
-elements.room_temp.tick = function(pixel) {
-	var pX = pixel.x;
-	var pY = pixel.y;
-	for(i = 0; i < mooreDonutCoords.length; i++) {
-		var coord = mooreDonutCoords[i];
-		var oX = coord[0];
-		var oY = coord[1];
-		var nX = pX+oX;
-		var nY = pY+oY;
-		if(isEmpty(nX,nY,true)) {
-			continue;
-		} else {
-			var newPixel = pixelMap[nX][nY];
-			newPixel.temp = 20; //to room temp
 			pixelTempCheck(pixel);
 		};
-	};
+    },
+    category: "tools",
+	desc: `Sets or adds to numeric properties of pixels.<br/>Currently ${numberAdjusterVerb} ${numberAdjusterValue} to ${numberAdjusterProperty}.<br/><span onclick=numberAdjusterPrompt() style=\"color: #ff00ff;\";>Press [Shift+,] or click here</span> to open the adjuster tool prompt.`,
 };
 
-elements.uncharge.tick = function(pixel) {
-	var pX = pixel.x;
-	var pY = pixel.y;
-	for(i = 0; i < mooreDonutCoords.length; i++) {
-		var coord = mooreDonutCoords[i];
-		var oX = coord[0];
-		var oY = coord[1];
-		var nX = pX+oX;
-		var nY = pY+oY;
-		if(isEmpty(nX,nY,true)) {
-			continue;
-		} else {
-			var newPixel = pixelMap[nX][nY];
-			if(newPixel.charge) { //remove charge properties
-				delete pixel.charge;
-			};
-			if(newPixel.chargeCD) {
-				delete pixel.chargeCD;
-			};
-		};
-	};
+function updateNumberAdjusterDescription() {
+	elements.number_adjuster.desc = `Sets or adds to numeric properties of pixels.<br/>Currently ${numberAdjusterVerb} ${numberAdjusterValue} to ${numberAdjusterProperty}.<br/><span onclick=numberAdjusterPrompt() style=\"color: #ff00ff;\";>Press [Shift+,] or click here</span> to open the adjuster tool prompt.`;
 };
-
-elements.unburn.tick = function(pixel) {
-	var pX = pixel.x;
-	var pY = pixel.y;
-	for(i = 0; i < mooreDonutCoords.length; i++) {
-		var coord = mooreDonutCoords[i];
-		var oX = coord[0];
-		var oY = coord[1];
-		var nX = pX+oX;
-		var nY = pY+oY;
-		if(isEmpty(nX,nY,true)) {
-			continue;
-		} else {
-			var newPixel = pixelMap[nX][nY];
-			var newElement = newPixel.element;
-			if(newElement === "fire") { //fire to smoke
-				changePixel(newPixel,"smoke");
-			};
-			if(newPixel.burning) { //remove burning properties
-				delete pixel.burning;
-			};
-			if(newPixel.burnStart) {
-				delete pixel.burnStart;
-			};
-		};
-	};
-};
-
-elements.smash.tick = function(pixel) {
-	var pX = pixel.x;
-	var pY = pixel.y;
-	for(i = 0; i < mooreDonutCoords.length; i++) {
-		var coord = mooreDonutCoords[i];
-		var oX = coord[0];
-		var oY = coord[1];
-		var nX = pX+oX;
-		var nY = pY+oY;
-		if(isEmpty(nX,nY,true)) {
-			continue;
-		} else {
-			var newPixel = pixelMap[nX][nY];
-			var newElement = newPixel.element;
-			if (elements[newElement].breakInto) {
-				var breakInto = elements[pixel.element].breakInto; //edited vanilla code
-				// if breakInto is an array, pick one
-				if (Array.isArray(breakInto)) {
-					breakInto = breakInto[Math.floor(Math.random() * breakInto.length)];
-				}
-				changePixel(pixel,breakInto);
-			};
-		};
-	};
-};
-
-elements.cook.behavior = [
-	"HT:0.5|HT:0.5|HT:0.5",
-	"HT:0.5|HT:0.5|HT:0.5",
-	"HT:0.5|HT:0.5|HT:0.5",
-];
-
-elements.ultraheat.behavior = [
-	"HT:350|HT:350|HT:350",
-	"HT:350|HT:350|HT:350",
-	"HT:350|HT:350|HT:350",
-];
-
-elements.ultracool.behavior = [
-	"CO:350|CO:350|CO:350",
-	"CO:350|CO:350|CO:350",
-	"CO:350|CO:350|CO:350",
-];
-
-elements.incinerate.behavior = [
-	"HT:10000|HT:10000|HT:10000",
-	"HT:10000|HT:10000|HT:10000",
-	"HT:10000|HT:10000|HT:10000",
-];
-
-if(typeof(elements.na_ntemp) !== "undefined") {
-	elements.na_ntemp.tick = function(pixel) {
-		var pX = pixel.x;
-		var pY = pixel.y;
-		for(i = 0; i < mooreDonutCoords.length; i++) {
-			var coord = mooreDonutCoords[i];
-			var oX = coord[0];
-			var oY = coord[1];
-			var nX = pX+oX;
-			var nY = pY+oY;
-			if(isEmpty(nX,nY,true)) {
-				continue;
-			} else {
-				var newPixel = pixelMap[nX][nY];
-				newPixel.temp = NaN;
-			};
-		};
-	};
-};
-
-if(typeof(elements.inftemp) !== "undefined") {
-	elements.inftemp.tick = function(pixel) {
-		var pX = pixel.x;
-		var pY = pixel.y;
-		for(i = 0; i < mooreDonutCoords.length; i++) {
-			var coord = mooreDonutCoords[i];
-			var oX = coord[0];
-			var oY = coord[1];
-			var nX = pX+oX;
-			var nY = pY+oY;
-			if(isEmpty(nX,nY,true)) {
-				continue;
-			} else {
-				var newPixel = pixelMap[nX][nY];
-				newPixel.temp = Infinity;
-			};
-		};
-	};
-};
-
-if(typeof(elements.superheat) !== "undefined") {
-	elements.superheat.behavior = [
-		"HT:10|HT:10|HT:10",
-		"HT:10|HT:10|HT:10",
-		"HT:10|HT:10|HT:10",
-	];
-};
-
-if(typeof(elements.supercool) !== "undefined") {
-	elements.supercool.behavior = [
-		"CO:10|CO:10|CO:10",
-		"CO:10|CO:10|CO:10",
-		"CO:10|CO:10|CO:10",
-	];
-};
-
-if(typeof(elements.hyperheat) !== "undefined") {
-	elements.hyperheat.behavior = [
-		"HT:50|HT:50|HT:50",
-		"HT:50|HT:50|HT:50",
-		"HT:50|HT:50|HT:50",
-	];
-};
-
-if(typeof(elements.hypercool) !== "undefined") {
-	elements.hypercool.behavior = [
-		"CO:50|CO:50|CO:50",
-		"CO:50|CO:50|CO:50",
-		"CO:50|CO:50|CO:50",
-	];
-};
-
-if(typeof(elements.absolutezero) !== "undefined") {
-	elements.absolutezero.tick = function(pixel) {
-		var pX = pixel.x;
-		var pY = pixel.y;
-		for(i = 0; i < mooreDonutCoords.length; i++) {
-			var coord = mooreDonutCoords[i];
-			var oX = coord[0];
-			var oY = coord[1];
-			var nX = pX+oX;
-			var nY = pY+oY;
-			if(isEmpty(nX,nY,true)) {
-				continue;
-			} else {
-				var newPixel = pixelMap[nX][nY];
-				newPixel.temp = -273.15;
-			};
-		};
-	};
-};
-
-if(typeof(elements.antigrav) !== "undefined") {
-	elements.antigrav.tick = function(pixel) {
-		var pX = pixel.x;
-		var pY = pixel.y;
-		for(i = 0; i < mooreDonutCoords.length; i++) {
-			var coord = mooreDonutCoords[i];
-			var oX = coord[0];
-			var oY = coord[1];
-			var nX = pX+oX;
-			var nY = pY+oY;
-			if(isEmpty(nX,nY,true)) {
-				continue;
-			} else {
-				var newPixel = pixelMap[nX][nY];
-				newPixel.r = 2;
-			};
-		};
-	};
-};
-
-if(typeof(elements.normalgrav) !== "undefined") {
-	elements.normalgrav.tick = function(pixel) {
-		var pX = pixel.x;
-		var pY = pixel.y;
-		for(i = 0; i < mooreDonutCoords.length; i++) {
-			var coord = mooreDonutCoords[i];
-			var oX = coord[0];
-			var oY = coord[1];
-			var nX = pX+oX;
-			var nY = pY+oY;
-			if(isEmpty(nX,nY,true)) {
-				continue;
-			} else {
-				var newPixel = pixelMap[nX][nY];
-				newPixel.r = 0;
-			};
-		};
-	};
-};
-
-if(typeof(elements.leftgrav) !== "undefined") {
-	elements.leftgrav.tick = function(pixel) {
-		var pX = pixel.x;
-		var pY = pixel.y;
-		for(i = 0; i < mooreDonutCoords.length; i++) {
-			var coord = mooreDonutCoords[i];
-			var oX = coord[0];
-			var oY = coord[1];
-			var nX = pX+oX;
-			var nY = pY+oY;
-			if(isEmpty(nX,nY,true)) {
-				continue;
-			} else {
-				var newPixel = pixelMap[nX][nY];
-				newPixel.r = 3;
-			};
-		};
-	};
-};
-
-if(typeof(elements.rightgrav) !== "undefined") {
-	elements.rightgrav.tick = function(pixel) {
-		var pX = pixel.x;
-		var pY = pixel.y;
-		for(i = 0; i < mooreDonutCoords.length; i++) {
-			var coord = mooreDonutCoords[i];
-			var oX = coord[0];
-			var oY = coord[1];
-			var nX = pX+oX;
-			var nY = pY+oY;
-			if(isEmpty(nX,nY,true)) {
-				continue;
-			} else {
-				var newPixel = pixelMap[nX][nY];
-				newPixel.r = 1;
-			};
-		};
-	};
-};
-
-if(typeof(elements.burn) !== "undefined") {
-	elements.burn.burnTime = Infinity;
-	elements.burn.burn = 100;
-	elements.burn.burnInto = "burn";
-	elements.burn.tick = function(pixel) {
-		var pX = pixel.x;
-		var pY = pixel.y;
-		for(i = 0; i < mooreDonutCoords.length; i++) {
-			var coord = mooreDonutCoords[i];
-			var oX = coord[0];
-			var oY = coord[1];
-			var nX = pX+oX;
-			var nY = pY+oY;
-			if(isEmpty(nX,nY,true)) {
-				continue;
-			} else {
-				var newPixel = pixelMap[nX][nY];
-				var newElement = newPixel.element;
-				if(newElement === "smoke") { //smoke to fire
-					changePixel(newPixel,"smoke");
-				};
-				newPixel.burning = true;
-			};
-		};
-	};
-};
-
-if(typeof(elements.cursed_shock) !== "undefined") {
-	elements.cursed_shock.tick = function(pixel) {
-		var pX = pixel.x;
-		var pY = pixel.y;
-		for(i = 0; i < mooreDonutCoords.length; i++) {
-			var coord = mooreDonutCoords[i];
-			var oX = coord[0];
-			var oY = coord[1];
-			var nX = pX+oX;
-			var nY = pY+oY;
-			if(isEmpty(nX,nY,true)) {
-				continue;
-			} else {
-				var newPixel = pixelMap[nX][nY];
-				newPixel.charge = 2;
-				if(newPixel.chargeCD) {
-					delete newPixel.chargeCD;
-				};
-			};
-		};
-	};
-};
-
-if(typeof(elements.offset_fourth_y) !== "undefined") {
-	elements.offset_fourth_y.tick = function(pixel) {
-		var pX = pixel.x;
-		var pY = pixel.y;
-		for(i = 0; i < mooreDonutCoords.length; i++) {
-			var coord = mooreDonutCoords[i];
-			var oX = coord[0];
-			var oY = coord[1];
-			var nX = pX+oX;
-			var nY = pY+oY;
-			if(isEmpty(nX,nY,true)) {
-				continue;
-			} else {
-				var newPixel = pixelMap[nX][nY];
-				var newElement = newPixel.element;
-				if(newElement !== pixel.element) { //self-exclude
-					tryMove(newPixel,nX,nY+0.25)
-				};
-			};
-		};
-	};
-};
-
-if(typeof(elements.offset_half_y) !== "undefined") {
-	elements.offset_half_y.tick = function(pixel) {
-		var pX = pixel.x;
-		var pY = pixel.y;
-		for(i = 0; i < mooreDonutCoords.length; i++) {
-			var coord = mooreDonutCoords[i];
-			var oX = coord[0];
-			var oY = coord[1];
-			var nX = pX+oX;
-			var nY = pY+oY;
-			if(isEmpty(nX,nY,true)) {
-				continue;
-			} else {
-				var newPixel = pixelMap[nX][nY];
-				var newElement = newPixel.element;
-				if(newElement !== pixel.element) { //self-exclude
-					tryMove(newPixel,nX,nY+0.5)
-				};
-			};
-		};
-	};
-};
-
-if(typeof(elements.offset_three_fourth_y) !== "undefined") {
-	elements.offset_three_fourth_y.tick = function(pixel) {
-		var pX = pixel.x;
-		var pY = pixel.y;
-		for(i = 0; i < mooreDonutCoords.length; i++) {
-			var coord = mooreDonutCoords[i];
-			var oX = coord[0];
-			var oY = coord[1];
-			var nX = pX+oX;
-			var nY = pY+oY;
-			if(isEmpty(nX,nY,true)) {
-				continue;
-			} else {
-				var newPixel = pixelMap[nX][nY];
-				var newElement = newPixel.element;
-				if(newElement !== pixel.element) { //self-exclude
-					tryMove(newPixel,nX,nY+0.75)
-				};
-			};
-		};
-	};
-};
-
-if(typeof(elements.offset_three_fourth_y) !== "undefined") {
-	if(typeof(elements.find_toggle) !== "find") {
-		elements.find_toggle.behavior = behaviors.WALL;
-		elements.find_toggle.tick = function(pixel) {
-			pixel.color = "rgb(255," + marasi(pixelTicks / 10) + ",0)";
-		};
-	};
-};
-
-if(typeof(elements.replace) !== "undefined") {
-	elements.replace.tick = function(pixel) {
-		var pX = pixel.x;
-		var pY = pixel.y;
-		for(i = 0; i < mooreDonutCoords.length; i++) {
-			var coord = mooreDonutCoords[i];
-			var oX = coord[0];
-			var oY = coord[1];
-			var nX = pX+oX;
-			var nY = pY+oY;
-			if(isEmpty(nX,nY,true)) {
-				continue;
-			} else {
-				var newPixel = pixelMap[nX][nY];
-				var newElement = newPixel.element;
-				if(newElement === replaceFrom) {
-					changePixel(newPixel,replaceTo);
-				};
-			};
-		};
-	};
-};
-
-if(typeof(elements.alt_replace) !== "undefined") {
-	elements.alt_replace.tick = function(pixel) {
-		var pX = pixel.x;
-		var pY = pixel.y;
-		for(i = 0; i < mooreDonutCoords.length; i++) {
-			var coord = mooreDonutCoords[i];
-			var oX = coord[0];
-			var oY = coord[1];
-			var nX = pX+oX;
-			var nY = pY+oY;
-			if(isEmpty(nX,nY,true)) {
-				continue;
-			} else {
-				var newPixel = pixelMap[nX][nY];
-				var newElement = newPixel.element;
-				if(newElement === replaceFrom) {
-					newPixel.element = replaceTo;
-				};
-			};
-		};
-	};
-};
-
-if(typeof(elements.alt_alt_replace) !== "undefined") {
-	elements.alt_alt_replace.tick = function(pixel) {
-		var pX = pixel.x;
-		var pY = pixel.y;
-		for(i = 0; i < mooreDonutCoords.length; i++) {
-			var coord = mooreDonutCoords[i];
-			var oX = coord[0];
-			var oY = coord[1];
-			var nX = pX+oX;
-			var nY = pY+oY;
-			if(isEmpty(nX,nY,true)) {
-				continue;
-			} else {
-				var newPixel = pixelMap[nX][nY];
-				var newElement = newPixel.element;
-				if(newElement === replaceFrom) {
-					newPixel.element = replaceTo;
-					newPixel.color = pixelColorPick(newPixel);
-				};
-			};
-		};
-	};
-};
-
-if(typeof(elements.change) !== "undefined") {
-	elements.change.tick = function(pixel) {
-		var pX = pixel.x;
-		var pY = pixel.y;
-		for(i = 0; i < mooreDonutCoords.length; i++) {
-			var coord = mooreDonutCoords[i];
-			var oX = coord[0];
-			var oY = coord[1];
-			var nX = pX+oX;
-			var nY = pY+oY;
-			if(isEmpty(nX,nY,true)) {
-				continue;
-			} else {
-				var newPixel = pixelMap[nX][nY];
-				var newElement = newPixel.element;
-				if(newElement !== pixel.element) {
-					changePixel(newPixel,changeTo);
-				};
-			};
-		};
-	};
-};
-
-if(typeof(elements.alt_change) !== "undefined") {
-	elements.alt_change.tick = function(pixel) {
-		var pX = pixel.x;
-		var pY = pixel.y;
-		for(i = 0; i < mooreDonutCoords.length; i++) {
-			var coord = mooreDonutCoords[i];
-			var oX = coord[0];
-			var oY = coord[1];
-			var nX = pX+oX;
-			var nY = pY+oY;
-			if(isEmpty(nX,nY,true)) {
-				continue;
-			} else {
-				var newPixel = pixelMap[nX][nY];
-				var newElement = newPixel.element;
-				if(newElement !== pixel.element) {
-					newPixel.element = changeTo;
-				};
-			};
-		};
-	};
-};
-
-if(typeof(elements.alt_alt_change) !== "undefined") {
-	elements.alt_alt_change.tick = function(pixel) {
-		var pX = pixel.x;
-		var pY = pixel.y;
-		for(i = 0; i < mooreDonutCoords.length; i++) {
-			var coord = mooreDonutCoords[i];
-			var oX = coord[0];
-			var oY = coord[1];
-			var nX = pX+oX;
-			var nY = pY+oY;
-			if(isEmpty(nX,nY,true)) {
-				continue;
-			} else {
-				var newPixel = pixelMap[nX][nY];
-				var newElement = newPixel.element;
-				if(newElement !== pixel.element) {
-					newPixel.element = changeTo;
-					newPixel.color = pixelColorPick(newPixel);
-				};
-			};
-		};
-	};
-};
-
-if(typeof(elements.prop) !== "undefined") {
-	elements.prop.tick = function(pixel) {
-		var pX = pixel.x;
-		var pY = pixel.y;
-		for(i = 0; i < mooreDonutCoords.length; i++) {
-			var coord = mooreDonutCoords[i];
-			var oX = coord[0];
-			var oY = coord[1];
-			var nX = pX+oX;
-			var nY = pY+oY;
-			if(isEmpty(nX,nY,true)) {
-				continue;
-			} else {
-				var newPixel = pixelMap[nX][nY];
-				var newElement = newPixel.element;
-				if(propProperty === "element") {
-					if(newElement !== pixel.element) { //self exclude if element is the change
-						newPixel[propProperty] = propValue;
-						newPixel.temp = (elements[propValue].temp || newPixel.temp);
-					};
-				} else {
-					newPixel[propProperty] = propValue;
-				};
-			};
-		};
-	};
-};
-
-if(typeof(elements.number_adjuster) !== "undefined") {
-	elements.number_adjuster.tick = function(pixel) {
-		var pX = pixel.x;
-		var pY = pixel.y;
-		for(i = 0; i < mooreDonutCoords.length; i++) {
-			var coord = mooreDonutCoords[i];
-			var oX = coord[0];
-			var oY = coord[1];
-			var nX = pX+oX;
-			var nY = pY+oY;
-			if(isEmpty(nX,nY,true)) {
-				continue;
-			} else {
-				var newPixel = pixelMap[nX][nY];
-				if(numberAdjusterProperty !== "element") {			
-					//console.log(numberAdjusterValue);
-					if(numberAdjusterMode === "set") {
-						newPixel[numberAdjusterProperty] = numberAdjusterValue;
-					} else if(numberAdjusterMode === "add") {
-						if(typeof(newPixel[numberAdjusterProperty]) === "undefined") {
-							newPixel[numberAdjusterProperty] = 0;
-						};
-						newPixel[numberAdjusterProperty] += numberAdjusterValue;
-					};
-					pixelTempCheck(newPixel);
-				};
-			};
-		};
-	};
-};
-
-/*elements.pointer.behavior = [
-	"XX|XX|XX","XX|CH:cursed_shock|XX","XX|XX|XX"
-];*/
