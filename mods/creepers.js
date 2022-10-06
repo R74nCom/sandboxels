@@ -198,7 +198,7 @@ function updateCreeperPreferences() { //Creeper setting handler
 						// random y between 1 and height
 						var y = Math.floor(Math.random()*height-1)+1;
 						if (isEmpty(x,y)) {
-							// random element from randomEventChoices.falling_pixel
+							// random element from the list of spawnable creepers
 							var element = spawnCreepers[Math.floor(Math.random()*spawnCreepers.length)];
 							// if element is an array, choose a random element from the array
 							if (Array.isArray(element)) {
