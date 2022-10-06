@@ -1,5 +1,14 @@
 //Prerequisite Functions and Variables
 
+headBodyObject = {
+	"head": "body",
+	"creeper_head": "creeper_body",
+	"angelic_creeper_head": "angelic_creeper_body",
+	"hell_creeper_head": "hell_creeper_body",
+	"bombing_creeper_head": "bombing_creeper_body",
+	"zombie_head": "zombie_body",
+};
+
 var style = document.createElement('style'); //Initialize CSS for creeper spawning's status indicator
 style.type = 'text/css';
 style.id = 'creeperStatusStylesheet';
@@ -284,6 +293,820 @@ standaloneSpawnCreeper = function(amount=1) {
 			createPixel(element,x,y);
 		};
 	};
+};
+
+//Prerequisite Functions and Variables
+
+function getKeyByValue(object, value) {
+  return Object.keys(object).find(key => object[key] === value);
+}
+//getKeyByValue code by UncleLaz on StackOverflow: https://stackoverflow.com/questions/9907419/how-to-get-a-key-in-a-javascript-object-by-its-value"
+
+function headHasBody(pixel) {
+	var pX = pixel.x;
+	var pY = pixel.y;
+	//console.log("Checking head for body");
+	if(Object.keys(headBodyObject).includes(pixel.element)) {
+		//console.log("The head has a corresponding body element.");
+		if(typeof(pixelMap[pX][pY+1]) === "undefined") {
+			//console.log("The body's place is empty.");
+			return false;
+		} else {
+			var bodyPixel = pixelMap[pX][pY+1];
+			//console.log("The body's place is not empty.");
+			return (bodyPixel.element === headBodyObject[pixel.element]);
+		};
+	} else {
+		//console.log("The head does not have corresponding body element.");
+		return null;
+	};
+};
+
+function bodyHasHead(pixel) {
+	var pX = pixel.x;
+	var pY = pixel.y;
+	//console.log("Checking body for head");
+	if(Object.values(headBodyObject).includes(pixel.element)) {
+		//console.log("The body has a corresponding head element.");
+		if(typeof(pixelMap[pX][pY-1]) === "undefined") {
+			//console.log("The head's place is empty.");
+			return false;
+		} else {
+			var headPixel = pixelMap[pX][pY-1];
+			//console.log("The head's place is not empty.");
+			return (headPixel.element === getKeyByValue(headBodyObject,pixel.element));
+		};
+	} else {
+		//console.log("The body does not have corresponding head element.");
+		return null;
+	};
+};
+
+function zombifyHuman(pixel) {
+	var pX = pixel.x;
+	var pY = pixel.y;
+	if(!["head","body"].includes(pixel.element)) {
+		//console.log("Not part of a human");
+		return false;
+	} else {
+		if(pixel.element === "head") {
+			//console.log("Head");
+			if(headHasBody(pixel)) {
+				//console.log("There's also a body");
+				var body = pixelMap[pX][pY+1];
+				changePixel(body,"zombie_body",false);
+				//console.log("Body turned (head path)");
+			};
+			changePixel(pixel,"zombie_head");
+			//console.log("Head turned (head path)");
+		} else {
+			//console.log("Not head (i.e. body)");
+			if(bodyHasHead(pixel)) {
+				//console.log("There's also a head");
+				var head = pixelMap[pX][pY-1];
+				changePixel(head,"zombie_head",false);
+				//console.log("Head turned (body path)");
+			};
+			changePixel(pixel,"zombie_body");
+			//console.log("Body turned (body path)");
+		};
+	};
+};
+
+function dezombifyHuman(pixel) {
+	var pX = pixel.x;
+	var pY = pixel.y;
+	if(!["zombie_head","zombie_body"].includes(pixel.element)) {
+		return false;
+	} else {
+		if(pixel.element === "zombie_head") {
+			if(headHasBody(pixel)) {
+				var body = pixelMap[pX][pY+1];
+				changePixel(body,"body",false);
+			};
+			changePixel(pixel,"head");
+		} else {
+			if(bodyHasHead(pixel)) {
+				var head = pixelMap[pX][pY-1];
+				changePixel(head,"head",false);
+			};
+			changePixel(pixel,"body");
+		};
+	};
+};
+
+elements.frozen_rotten_meat = {
+	color: ["#8FB588", "#8FA888"],
+	behavior: [
+		"XX|CR:plague,stench,stench%0.125 AND CH:meat>rotten_meat%1 AND CH:frozen_meat>frozen_rotten_meat%0.85|XX",
+		"SP%99 AND CH:meat>rotten_meat%1 AND CH:frozen_meat>frozen_rotten_meat%0.85|XX|SP%99 AND CH:meat>rotten_meat%1 AND CH:frozen_meat>frozen_rotten_meat%0.85",
+		"XX|M1 AND CH:meat>rotten_meat%1 AND CH:frozen_meat>frozen_rotten_meat%0.85|XX",
+	],
+	temp: -18,
+	tempHigh: 0,
+	stateHigh: "rotten_meat",
+	category:"food",
+	hidden:true,
+	state: "solid",
+	density: 1037.5,
+};
+
+elements.rotten_meat.tempLow = -18;
+elements.rotten_meat.stateLow = "frozen_rotten_meat";
+
+elements.zombie_blood = {
+	color: ["#d18228", "#9a9e2f"],
+	behavior: behaviors.LIQUID,
+	reactions: {
+		"vaccine": { "elem2":null, "chance": 0.01 },
+		"plague": { "elem2":null, "chance": 0.01 },
+		"virus": { "elem2":null, "chance": 0.01 },
+		"cancer": { "elem1":"cancer", "chance": 0.02 },
+		/*"rat": { "elem2":"infection", "chance":0.075 },
+		"flea": { "elem1":"infection", "chance":0.03 },
+		"dirt": { "elem1":null, "elem2":"mud" },
+		"sand": { "elem1":null, "elem2":"wet_sand" },
+		"mercury": { "elem1":"infection", "elem2":null, "chance":0.05 },
+		"carbon_dioxide": { "elem2":null, "chance":0.05 },
+		"alcohol": { "elem1":[null,"dna"], "chance":0.02 },*/
+		"oxygen": { "elem2":null, "chance":0.04 },
+		"blood": { "elem2":"zombie_blood", "chance":0.1 },
+	},
+	viscosity: 30,
+	tempHigh: 127.55,
+	stateHigh: ["steam","salt","oxygen","plague"],
+	tempLow: 0,
+	category:"liquids",
+	state: "liquid",
+	density: 1160,
+	stain: 0.06,
+	tick: function(pixel) {
+		if(Math.random() < 0.2) {
+			var pX = pixel.x;
+			var pY = pixel.y;
+			for(i = 0; i < adjacentCoords.length; i++) {
+				var coord = adjacentCoords[i];
+				var oX = coord[0];
+				var oY = coord[1];
+				var nX = pX+oX;
+				var nY = pY+oY;
+				if(isEmpty(nX,nY,true)) {
+					continue;
+				} else {
+					var newPixel = pixelMap[nX][nY];
+					var newElement = newPixel.element;
+					if(enemyHumanoidArray.includes(newElement)) {
+						if(Math.random() < 0.1) { zombifyHuman(newPixel) };
+					};
+				};
+			};
+		};
+	},
+};
+
+var style = document.createElement('style'); //Initialize CSS for zombie spawning's status indicator
+style.type = 'text/css';
+style.id = 'zombieStatusStylesheet';
+//initial style conditional branch
+if(typeof(settings.zombieSpawning) === "undefined") { //undefined (falsy but it needs special handling)
+	style.innerHTML = '.zombieStatus { color: #E11; text-decoration: none; }';
+} else {
+	if(!settings.zombieSpawning) { //falsy: red
+		style.innerHTML = '.zombieStatus { color: #E11; text-decoration: none; }';
+	} else if(settings.zombieSpawning) { //truthy: green
+		style.innerHTML = '.zombieStatus { color: #1E1; text-decoration: none; }';
+	};
+};
+document.getElementsByTagName('head')[0].appendChild(style);
+
+if(typeof(settings.zombieSpawning) === "undefined") { //Default zombie setting
+	setSetting("zombieSpawning",false);
+};
+
+function updateZombiePreferences() { //Zombie setting handler
+	if(settings.zombieSpawning) { //If the setting is on
+		if(typeof(randomEvents.zombie) !== "function") { //add the event if it's missing
+			randomEvents.zombie = function() {
+				var amount = Math.floor((Math.random() * 3)+1); //1-3
+				//In worldgen worlds, you can expect about half of this because about half of the world is pixels in it.
+				for(i = 0; i < amount; i++) { //dummy for to break
+					if(settings.zombieSpawning) { //setting validation
+						// random x between 1 and width-1
+						var x = Math.floor(Math.random()*(width-1))+1;
+						// random y between 1 and height
+						var y = Math.floor(Math.random()*height-1)+1;
+						if (isEmpty(x,y)) {
+							// random element from the list of spawnable zombies
+							var element = spawnZombies[Math.floor(Math.random()*spawnZombies.length)];
+							// if element is an array, choose a random element from the array
+							if (Array.isArray(element)) {
+								element = element[Math.floor(Math.random()*element.length)];
+							}
+							createPixel(element,x,y);
+						};
+					} else { //if false (this function is never supposed to fire with the setting false)
+						delete randomEvents.zombie; //self-disable
+						//substitute event
+						var event = randomEvents[Object.keys(randomEvents)[Math.floor(Math.random()*Object.keys(randomEvents).length)]];
+						event();
+						break;
+					};
+				};
+			};
+		};
+	} else if(!settings.zombieSpawning) { //and if it's off
+		if(randomEvents.zombie) { delete randomEvents.zombie }; //delete it if it exists.
+	};
+};
+
+function toggleZombieSpawning() { //Zombie toggle handler
+	if(settings.zombieSpawning != true) { //If it's false
+		setSetting("zombieSpawning",true); //make it true and update the status display CSS
+		updateZombiePreferences(); //apply
+		document.getElementById("zombieStatusStylesheet").innerHTML = '.zombieStatus { color: #1E1; text-decoration: underline; }'; //Displayed info doen't update until it's pulled up again, so I'm using CSS to dynamically change the color of an element, like with find.js (RIP).
+	} else { //and the inverse if it's true
+		setSetting("zombieSpawning",false);
+		updateZombiePreferences();
+		document.getElementById("zombieStatusStylesheet").innerHTML = '.zombieStatus { color: #E11; text-decoration: none; }';
+	};
+};
+
+spawnZombies = ["zombie","baby_zombie"];
+
+if(settings.zombieSpawning) { //zombie spawning option
+	randomEvents.zombie = function() {
+		var amount = Math.floor((Math.random() * 3)+1); //1-3
+		for(i = 0; i < amount; i++) { //dummy for to break
+			if(settings.zombieSpawning) { //setting validation
+				// random x between 1 and width-1
+				var x = Math.floor(Math.random()*(width-1))+1;
+				// random y between 1 and height
+				var y = Math.floor(Math.random()*height-1)+1;
+				if (isEmpty(x,y)) {
+					// random element from the list of spawnable zombies
+					var element = spawnZombies[Math.floor(Math.random()*spawnZombies.length)];
+					// if element is an array, choose a random element from the array
+					if (Array.isArray(element)) {
+						element = element[Math.floor(Math.random()*element.length)];
+					}
+					createPixel(element,x,y);
+				};
+			} else { //if false (this function is never supposed to fire with the setting false)
+				delete randomEvents.zombie; //self-disable
+				//substitute event
+				var event = randomEvents[Object.keys(randomEvents)[Math.floor(Math.random()*Object.keys(randomEvents).length)]];
+				event();
+				break;
+			};
+		};
+	};
+};
+
+standaloneSpawnZombie = function(amount=1) {
+	/*	The amount is the maximum amount of *attempts*. Often, less zombies will spawn due to things in the way.
+		In a generated world, which uses half of the space, you can expect about half of this number to spawn.	*/
+	for(i = 0; i < amount; i++) { //dummy for to break
+		// random x between 1 and width-1
+		var x = Math.floor(Math.random()*(width-1))+1;
+		// random y between 1 and height
+		var y = Math.floor(Math.random()*height-1)+1;
+		if (isEmpty(x,y)) {
+			// random element from the list of spawnable zombies
+			var element = spawnZombies[Math.floor(Math.random()*spawnZombies.length)];
+			// if element is an array, choose a random element from the array
+			if (Array.isArray(element)) {
+				element = element[Math.floor(Math.random()*element.length)];
+			}
+			createPixel(element,x,y);
+		};
+	};
+};
+
+/*Start Main Zombie
+	..................
+	.........###......
+	.......#######....
+	......#####OOOOO..
+	....######OOOOOOO.
+	...########OOOOO..
+	...###########....
+	...###########....
+	...###########....
+	....##########....
+	......########....
+	.......##...##....
+	.......##...##....
+	..................
+*/
+
+elements.zombie = {
+	color: ["#567C44","#199A9A","#41369B"],
+	category: "life",
+	properties: {
+		dead: false,
+		dir: 1,
+		panic: 0,
+		following: false,
+	},
+	tick: function(pixel) {
+		if (isEmpty(pixel.x, pixel.y+1)) {
+			createPixel("zombie_body", pixel.x, pixel.y+1);
+			pixel.element = "zombie_head";
+			pixel.color = pixelColorPick(pixel)
+		}
+		else if (isEmpty(pixel.x, pixel.y-1)) {
+			createPixel("zombie_head", pixel.x, pixel.y-1);
+			pixelMap[pixel.x][pixel.y-1].color = pixel.color;
+			pixel.element = "zombie_body";
+			pixel.color = pixelColorPick(pixel)
+		}
+		else {
+			deletePixel(pixel.x, pixel.y);
+		}
+	},
+	related: ["zombie_body","zombie_head"],
+	desc: "<em>I'd rather this be toggleable mid-game than require a reload.</em><br/><br/><span class=\"zombieStatus\">If this text is green or underlined, zombies (all types) can spawn.</span> <span onclick=toggleZombieSpawning() style=\"color: #ff00ff;\";>Click here</span> to toggle zombie spawning. If it's on, zombies can spawn through random events."
+};
+
+elements.zombie_body = {
+	color: "#27719D",
+	category: "life",
+	hidden: true,
+	density: 1500,
+	state: "solid",
+	conduct: 25,
+	tempHigh: 250,
+	stateHigh: "rotten_meat",
+	tempLow: -30,
+	stateLow: "frozen_rotten_meat",
+	burn: 10,
+	burnTime: 250,
+	burnInto: "rotten_meat",
+	breakInto: ["zombie_blood","rotten_meat"],
+	reactions: {
+		"cancer": { "elem1":"cancer", "chance":0.005 },
+		"radiation": { "elem1":["ash","rotten_meat","rotten_meat"], "chance":0.4 },
+		"plague": { "elem1":"plague", "chance":0.025 },
+	},
+	properties: {
+		dead: false,
+		dir: 1,
+		panic: 0,
+	},
+	tick: function(pixel) {
+		if (tryMove(pixel, pixel.x, pixel.y+1)) { // Fall
+			if (!isEmpty(pixel.x, pixel.y-2, true)) { // Drag head down
+				var headPixel = pixelMap[pixel.x][pixel.y-2];
+				if (headPixel.element == "zombie_head") {
+					if (isEmpty(pixel.x, pixel.y-1)) {
+						movePixel(pixelMap[pixel.x][pixel.y-2], pixel.x, pixel.y-1);
+					}
+					else {
+						swapPixels(pixelMap[pixel.x][pixel.y-2], pixelMap[pixel.x][pixel.y-1]);
+					}
+				}
+			}
+		}
+		doHeat(pixel);
+		doBurning(pixel);
+		doElectricity(pixel);
+		if (pixel.dead) {
+			// Turn into rotten_meat if pixelTicks-dead > 100
+			if (pixelTicks-pixel.dead > 100) {
+				changePixel(pixel,"rotten_meat");
+			};
+			return;
+		};
+
+		// Find the head
+		if (!isEmpty(pixel.x, pixel.y-1, true)) {
+			if(pixelMap[pixel.x][pixel.y-1].element == "head") {
+				changePixel(pixelMap[pixel.x][pixel.y-1],"zombie_head");
+			} else if(pixelMap[pixel.x][pixel.y-1].element == "zombie_head") {
+				var head = pixelMap[pixel.x][pixel.y-1];
+				if (head.dead) { // If head is dead, kill body
+					pixel.dead = head.dead;
+				};
+			} else {
+				var head = null;
+			};
+		} else { var head = null };
+
+		if (isEmpty(pixel.x, pixel.y-1)) {
+			// create zombie blood if decapitated 10% chance
+			if (Math.random() < 0.1) {
+				createPixel("zombie_blood", pixel.x, pixel.y-1);
+				// set dead to true 10% chance
+				if (Math.random() < 0.10) {
+					pixel.dead = pixelTicks;
+				}
+			}
+		}
+		else if (head == null) { return }
+		else if (Math.random() < 0.1) { // Move 10% chance
+			var movesToTry = [
+				[1*pixel.dir,0],
+				[1*pixel.dir,-1],
+			];
+			// While movesToTry is not empty, tryMove(pixel, x, y) with a random move, then remove it. if tryMove returns true, break.
+			while (movesToTry.length > 0) {
+				var move = movesToTry.splice(Math.floor(Math.random() * movesToTry.length), 1)[0];
+				if (isEmpty(pixel.x+move[0], pixel.y+move[1]-1)) {
+					if (tryMove(pixel, pixel.x+move[0], pixel.y+move[1])) {
+						movePixel(head, head.x+move[0], head.y+move[1]);
+						break;
+					};
+				};
+			};
+			// 15% chance to change direction while not chasing a human
+			if(!head.following) {
+				if (Math.random() < 0.15) {
+					pixel.dir *= -1;
+					//console.log("*turns around cutely to face ${pixel.dir < 0 ? 'left' : 'right'}*");
+				};
+			}/* else {
+				//console.log("*chases cutely*");
+			};*/
+		};
+	},
+};
+
+elements.zombie_head = {
+	color: "#567C44",
+	category: "life",
+	hidden: true,
+	density: 1500,
+	state: "solid",
+	conduct: 25,
+	tempHigh: 250,
+	stateHigh: "rotten_meat",
+	tempLow: -30,
+	stateLow: "frozen_rotten_meat",
+	burn: 10,
+	burnTime: 250,
+	burnInto: "rotten_meat",
+	breakInto: ["zombie_blood","rotten_meat"],
+	reactions: {
+		"cancer": { "elem1":"cancer", "chance":0.005 },
+		"radiation": { "elem1":["ash","rotten_meat","rotten_meat"], "chance":0.4 },
+		"plague": { "elem1":"plague", "chance":0.025 },
+	},
+	properties: {
+		dead: false,
+		following: false,
+		dir: 1,
+		panic: 0,
+	},
+	tick: function(pixel) {
+		doHeat(pixel);
+		doBurning(pixel);
+		doElectricity(pixel);
+		if (pixel.dead) {
+			// Turn into rotten_meat if pixelTicks-dead > 100
+			if (pixelTicks-pixel.dead > 100) {
+				changePixel(pixel,"rotten_meat");
+			};
+			return;
+		};
+
+		// Find the body
+		if (!isEmpty(pixel.x, pixel.y+1, true)) {
+			if(pixelMap[pixel.x][pixel.y+1].element == "body") {
+				changePixel(pixelMap[pixel.x][pixel.y+1],"zombie_body");
+			} else if(pixelMap[pixel.x][pixel.y+1].element == "zombie_body") {
+				var body = pixelMap[pixel.x][pixel.y+1];
+				if (body.dead) { // If body is dead, kill body
+					pixel.dead = body.dead;
+				};
+			} else {
+				var body = null;
+			};
+		} else { var body = null };
+
+		if(body) {
+			if(body.dir !== pixel.dir) { //hacky workaround: lock head dir to body dir
+				pixel.dir = body.dir;
+			};
+		};
+
+		if (isEmpty(pixel.x, pixel.y+1)) {
+			tryMove(pixel, pixel.x, pixel.y+1);
+			// create zombie blood if severed 10% chance
+			if (isEmpty(pixel.x, pixel.y+1) && !pixel.dead && Math.random() < 0.1) {
+				createPixel("zombie_blood", pixel.x, pixel.y+1);
+				// set dead to true 10% chance
+				if (Math.random() < 0.10) {
+					pixel.dead = pixelTicks;
+				}
+			}
+		}
+		
+		//start of most new code
+		var pX = pixel.x;
+		var pY = pixel.y;
+		
+		//Human detection loop (looks ahead according to direction and sets the "following" variable to true, telling the body to lock the direction)
+		if(pixelTicks % 2 == 0) { //reduce rate for performance
+			/*var directionAdverb = "left";
+			if(pixel.dir > 0) {
+				directionAdverb = "right";
+			};*/
+			//console.log(`Looking ${directionAdverb}`)
+			if(pixel.dir === -1) {
+				for(i = -4; i < 4+1; i++) {
+					var oY = i;
+					//console.log(`Starting row look at row ${pY+oY}`)
+					for(j = (-1); j > (-35 - 1); j--) {
+						var oX = j;
+						var nX = pX+oX;
+						var nY = pY+oY;
+						if(outOfBounds(nX,nY)) {
+							//console.log(`Stopping row look at pixel (${nX},${nY}) due to OoB`)
+							break;
+						};
+						if(isEmpty(nX,nY)) {
+							////console.log(`Skipping pixel (${nX},${nY}) (empty)`)
+							continue;
+						};
+						if(!isEmpty(nX,nY,true)) {
+							var newPixel = pixelMap[nX][nY];
+							var newElement = newPixel.element;
+							if(enemyHumanoidArray.includes(newElement)) {
+								//console.log(`Human part found at (${nX},${nY})`)
+								if(!newPixel.dead) { //If not dead
+									pixel.following = true;
+									//console.log(`Human detected at (${nX},${nY})`)
+									//Infect/kill if a human is close enough
+									if(pyth(pX,pY,nX,nY) <= 1.5) { //approx. sqrt(2)
+										if(Math.random() < 1/3) {	//One-third chance to mutilate (changePixel)
+											if(Math.random() < 1/3) {	//One-third chance to change to blood
+												changePixel(newPixel,"zombie_blood",false); //blood is turned in place
+											} else {					//Remaining 2/3 chance to change to rotten flesh
+												changePixel(newPixel,"rotten_meat",false);
+											};
+										} else {					//Remaining 2/3 chance to turn the human
+											zombifyHuman(newPixel);
+										};
+									};
+								} else { //Mutilate if dead
+									if(Math.random() < 1/3) {	//One-third chance to change to blood
+										changePixel(newPixel,"zombie_blood",false); //blood is turned in place
+									} else {					//Remaining 2/3 chance to change to rotten flesh
+										changePixel(newPixel,"rotten_meat",false);
+									};
+								};
+							} else {
+								//console.log(`Stopping row look at pixel (${nX},${nY}) due to non-human pixel in the way`)
+								break; //can't see through humans
+							};
+						};
+					};
+				};
+			} else if(pixel.dir === 1) {
+				for(i = -4; i < 4+1; i++) {
+					var oY = i;
+					//console.log(`Starting row look at row ${pY+oY}`)
+					for(j = 1; j < 35 + 1; j++) {
+						var oX = j;
+						var nX = pX+oX;
+						var nY = pY+oY;
+						if(outOfBounds(nX,nY)) {
+							//console.log(`Stopping row look at pixel (${nX},${nY}) due to OoB`)
+							break;
+						};
+						if(isEmpty(nX,nY)) {
+							////console.log(`Skipping pixel (${nX},${nY}) (empty)`)
+							continue;
+						};
+						if(!isEmpty(nX,nY,true)) {
+							var newPixel = pixelMap[nX][nY];
+							var newElement = newPixel.element;
+							if(enemyHumanoidArray.includes(newElement)) {
+								//console.log(`Human part found at (${nX},${nY})`)
+								if(!newPixel.dead) { //If not dead
+									pixel.following = true;
+									//console.log(`Human detected at (${nX},${nY})`)
+									//Infect/kill if a human is close enough
+									if(pyth(pX,pY,nX,nY) <= 1.5) { //approx. sqrt(2)
+										if(Math.random() < 1/3) {	//One-third chance to mutilate (changePixel)
+											if(Math.random() < 1/3) {	//One-third chance to change to blood
+												changePixel(newPixel,"zombie_blood",false); //blood is turned in place
+											} else {					//Remaining 2/3 chance to change to rotten flesh
+												changePixel(newPixel,"rotten_meat",false);
+											};
+										} else {					//Remaining 2/3 chance to turn the human
+											zombifyHuman(newPixel);
+										};
+									};
+								} else { //Mutilate if dead
+									if(Math.random() < 1/3) {	//One-third chance to change to blood
+										changePixel(newPixel,"zombie_blood",false); //blood is turned in place
+									} else {					//Remaining 2/3 chance to change to rotten flesh
+										changePixel(newPixel,"rotten_meat",false);
+									};
+								};
+							} else {
+								//console.log(`Stopping row look at pixel (${nX},${nY}) due to non-human pixel in the way`)
+								break; //can't see through humans
+							};
+						};
+					};
+				};
+			};
+		};
+				
+		if(Math.random() < 0.01) { //1% chance each tick to lose interest
+			pixel.following = false;
+			//console.log("Meh.");
+		};
+	},
+};
+
+	//Baby Zombie
+
+elements.baby_zombie = {
+	color: "#199A9A",
+	category: "life",
+	hidden: true,
+	density: 1500,
+	state: "solid",
+	conduct: 25,
+	tempHigh: 250,
+	stateHigh: "rotten_meat",
+	tempLow: -30,
+	stateLow: "frozen_rotten_meat",
+	burn: 10,
+	burnTime: 250,
+	burnInto: "rotten_meat",
+	breakInto: ["zombie_blood","rotten_meat"],
+	reactions: {
+		"cancer": { "elem1":"cancer", "chance":0.005 },
+		"radiation": { "elem1":["ash","rotten_meat","rotten_meat"], "chance":0.4 },
+		"plague": { "elem1":"plague", "chance":0.025 },
+	},
+	properties: {
+		dead: false,
+		dir: 1,
+		panic: 0,
+	},
+	tick: function(pixel) {
+		tryMove(pixel, pixel.x, pixel.y+1); // Fall
+		doHeat(pixel);
+		doBurning(pixel);
+		doElectricity(pixel);
+		if (pixel.dead) {
+			// Turn into rotten_meat if pixelTicks-dead > 100
+			if (pixelTicks-pixel.dead > 100) {
+				changePixel(pixel,"rotten_meat");
+			};
+			return;
+		};
+
+		if (Math.random() < 0.15) { // Move 10% chance
+			var movesToTry = [
+				[1*pixel.dir,0],	//dash move
+				[1*pixel.dir,-1],	//slash move
+			];
+			// While movesToTry is not empty, tryMove(pixel, x, y) with a random move, then remove it. if tryMove returns true, break.
+			while (movesToTry.length > 0) {
+				var move = movesToTry.splice(Math.floor(Math.random() * movesToTry.length), 1)[0];
+				if (isEmpty(pixel.x+move[0], pixel.y+move[1]-1)) {
+					if(tryMove(pixel, pixel.x+move[0], pixel.y+move[1])) {
+						break;
+					};
+				};
+			};
+			// 15% chance to change direction while not chasing a human
+			if(!pixel.following) {
+				if (Math.random() < 0.15) {
+					pixel.dir *= -1;
+					//console.log("*turns around cutely to face ${pixel.dir < 0 ? 'left' : 'right'}*");
+				};
+			}/* else {
+				//console.log("*chases cutely*");
+			};*/
+		};
+
+		var pX = pixel.x;
+		var pY = pixel.y;
+
+		//Human detection loop (looks ahead according to direction and sets the "following" variable to true, telling the body to lock the direction)
+		if(pixelTicks % 2 == 0) { //reduce rate for performance
+			/*var directionAdverb = "left";
+			if(pixel.dir > 0) {
+				directionAdverb = "right";
+			};*/
+			//console.log(`Looking ${directionAdverb}`)
+			if(pixel.dir === -1) {
+				for(i = -4; i < 4+1; i++) {
+					var oY = i;
+					//console.log(`Starting row look at row ${pY+oY}`)
+					for(j = (-1); j > (-35 - 1); j--) {
+						var oX = j;
+						var nX = pX+oX;
+						var nY = pY+oY;
+						if(outOfBounds(nX,nY)) {
+							//console.log(`Stopping row look at pixel (${nX},${nY}) due to OoB`)
+							break;
+						};
+						if(isEmpty(nX,nY)) {
+							////console.log(`Skipping pixel (${nX},${nY}) (empty)`)
+							continue;
+						};
+						if(!isEmpty(nX,nY,true)) {
+							var newPixel = pixelMap[nX][nY];
+							var newElement = newPixel.element;
+							if(enemyHumanoidArray.includes(newElement)) {
+								//console.log(`Human part found at (${nX},${nY})`)
+								if(!newPixel.dead) { //If not dead
+									pixel.following = true;
+									//console.log(`Human detected at (${nX},${nY})`)
+									//Infect/kill if a human is close enough
+									if(pyth(pX,pY,nX,nY) <= 1.5) { //approx. sqrt(2)
+										if(Math.random() < 1/3) {	//One-third chance to mutilate (changePixel)
+											if(Math.random() < 1/4) {	//One-fourth chance to change to blood
+												changePixel(newPixel,"zombie_blood",false); //blood is turned in place
+											} else {					//Remaining 3/4 chance to change to rotten flesh
+												changePixel(newPixel,"rotten_meat",false);
+											};
+										} else {					//Remaining 2/3 chance to turn the human
+											zombifyHuman(newPixel);
+										};
+									};
+								} else { //Mutilate if dead
+									if(Math.random() < 1/4) {	//One-fourth chance to change to blood
+										changePixel(newPixel,"zombie_blood",false); //blood is turned in place
+									} else {					//Remaining 3/4 chance to change to rotten flesh
+										changePixel(newPixel,"rotten_meat",false);
+									};
+								};
+							} else {
+								//console.log(`Stopping row look at pixel (${nX},${nY}) due to non-human pixel in the way`)
+								break; //can't see through humans
+							};
+						};
+					};
+				};
+			} else if(pixel.dir === 1) {
+				for(i = -4; i < 4+1; i++) {
+					var oY = i;
+					//console.log(`Starting row look at row ${pY+oY}`)
+					for(j = 1; j < 35 + 1; j++) {
+						var oX = j;
+						var nX = pX+oX;
+						var nY = pY+oY;
+						if(outOfBounds(nX,nY)) {
+							//console.log(`Stopping row look at pixel (${nX},${nY}) due to OoB`)
+							break;
+						};
+						if(isEmpty(nX,nY)) {
+							////console.log(`Skipping pixel (${nX},${nY}) (empty)`)
+							continue;
+						};
+						if(!isEmpty(nX,nY,true)) {
+							var newPixel = pixelMap[nX][nY];
+							var newElement = newPixel.element;
+							if(enemyHumanoidArray.includes(newElement)) {
+								//console.log(`Human part found at (${nX},${nY})`)
+								if(!newPixel.dead) { //If not dead
+									pixel.following = true;
+									//console.log(`Human detected at (${nX},${nY})`)
+									//Infect/kill if a human is close enough
+									if(pyth(pX,pY,nX,nY) <= 1.5) { //approx. sqrt(2)
+										if(Math.random() < 1/3) {	//One-third chance to mutilate (changePixel)
+											if(Math.random() < 1/4) {	//One-fourth chance to change to blood
+												changePixel(newPixel,"zombie_blood",false); //blood is turned in place
+											} else {					//Remaining 3/4 chance to change to rotten flesh
+												changePixel(newPixel,"rotten_meat",false);
+											};
+										} else {					//Remaining 2/3 chance to turn the human
+											zombifyHuman(newPixel);
+										};
+									};
+								} else { //Mutilate if dead
+									if(Math.random() < 1/4) {	//One-fourth chance to change to blood
+										changePixel(newPixel,"zombie_blood",false); //blood is turned in place
+									} else {					//Remaining 3/4 chance to change to rotten flesh
+										changePixel(newPixel,"rotten_meat",false);
+									};
+								};
+							} else {
+								//console.log(`Stopping row look at pixel (${nX},${nY}) due to non-human pixel in the way`)
+								break; //can't see through humans
+							};
+						};
+					};
+				};
+			};
+		};
+				
+		if(Math.random() < 0.01) { //1% chance each tick to lose interest
+			pixel.following = false;
+			//console.log("Meh.");
+		};
+	},
+	related: ["zombie"],
+	desc: "Baby zombies: smaller, faster, and more annoying.",
 };
 
 /*Start Main Creeper
@@ -3352,6 +4175,8 @@ runAfterLoad(function() {
 		} else {
 			//console.log("nyetted " + placerName);
 		};
+		
+		headBodyObject[headName] = bodyName;
 	};
 });
 
