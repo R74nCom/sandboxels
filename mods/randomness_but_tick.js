@@ -588,11 +588,14 @@ elements.void_first = {
 				delete pixel.dc4;
 			}
 		}
-        neighbors = [[-1,0],[0,-1],[1,0],[0,1]]
-        for(i = 0; i < neighbors.length; i++) {
-            if(!isEmpty(pixel.x+neighbors[i][0],pixel.y+neighbors[i][1],true)) {
-                if(pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]].element != pixel.element) {
-					deletePixel(pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]]);
+        
+        for(i = 0; i < adjacentCoords.length; i++) {
+			var pX = pixel.x; var pY = pixel.y; var oX = adjacentCoords[i][0]; var oY = adjacentCoords[i][1]; var nX = pX+oX; var nY = pY+oY;
+            if(!isEmpty(nX,nY,true)) {
+				var newPixel = pixelMap[nX][nY]
+				var newElement = newPixel.element;
+                if(newElement != pixel.element) {
+					deletePixel(nX,nY);
                 };
             };
         };
@@ -780,14 +783,17 @@ elements.converter = {
 				delete pixel.dc4;
 			}
 		}
-        neighbors = [[-1,0],[0,-1],[1,0],[0,1]]
-        for(i = 0; i < neighbors.length; i++) {
-            if(!isEmpty(pixel.x+neighbors[i][0],pixel.y+neighbors[i][1],true)) {
-                if(pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]].element != pixel.element) {
-					changePixel(pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]],pixel.changeTo)
-                }
-            }
-        }
+        
+        for(i = 0; i < adjacentCoords.length; i++) {
+			var pX = pixel.x; var pY = pixel.y; var oX = adjacentCoords[i][0]; var oY = adjacentCoords[i][1]; var nX = pX+oX; var nY = pY+oY;
+            if(!isEmpty(nX,nY,true)) {
+				var newPixel = pixelMap[nX][nY]
+				var newElement = newPixel.element;
+                if(newElement != pixel.element) {
+					changePixel(newPixel,pixel.changeTo)
+                };
+            };
+        };
 	},
 	category:"special",
 	hardness: 1,
