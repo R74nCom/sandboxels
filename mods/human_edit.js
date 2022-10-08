@@ -257,11 +257,11 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 	};
 	elements.head.tick = function(pixel) {
 			//debugging: display panic through color and temp
-			pixel.temp = (pixel.panic * 100);
+			/*pixel.temp = (pixel.panic * 100);
 			var spookyColor = Math.min(pixel.panic,1) * 255;
 			var spookyColor2 = 255 - Math.max(pixel.panic-1, 0);
-			pixel.color = `rgb(${spookyColor},${spookyColor2},0)`;
-		//doHeat(pixel);
+			pixel.color = `rgb(${spookyColor},${spookyColor2},0)`;*/
+		doHeat(pixel);
 		doBurning(pixel);
 		doElectricity(pixel);
 		if (pixel.dead) {
