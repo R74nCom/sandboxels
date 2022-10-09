@@ -429,7 +429,10 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 								};
 								pixel.dirLocked = true;
 							} else if(Object.keys(badPixels).includes(newElement)) {
-								body.dir = -1; //flip dir
+								if(hasPixel(pX,pY+1,"body")) {
+									var body = pixelMap[pX][pY+1];
+									body.dir = -1; //run away
+								};
 								if(Math.random() > badPixels[newElement].panicIncreaseChance) {
 									pixel.panic += badPixels[newElement].panicIncrease;
 								};
