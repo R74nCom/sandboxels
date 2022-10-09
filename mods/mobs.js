@@ -1,5 +1,9 @@
 var modName = "mods/mobs.js";
 var runAfterAutogenMod = "mods/runAfterAutogen and onload restructure.js";
+maximumCreeperTries = 3;
+minimumCreeperTries = 1;
+maximumZombieTries = 3;
+minimumZombieTries = 3;
 
 if(enabledMods.includes(runAfterAutogenMod)) {
 	//Prerequisite Functions and Variables
@@ -202,7 +206,7 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 		if(settings.creeperSpawning) { //If the setting is on
 			if(typeof(randomEvents.creeper) !== "function") { //add the event if it's missing
 				randomEvents.creeper = function() {
-					var amount = Math.floor((Math.random() * 3)+1); //1-3
+					var amount = Math.floor((Math.random() * maximumCreeperTries)+minimumCreeperTries); //1-3
 					//In worldgen worlds, you can expect about half of this because about half of the world is pixels in it.
 					for(i = 0; i < amount; i++) { //dummy for to break
 						if(settings.creeperSpawning) { //setting validation
@@ -252,7 +256,7 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 
 	if(settings.creeperSpawning) { //creeper spawning option
 		randomEvents.creeper = function() {
-			var amount = Math.floor((Math.random() * 3)+1); //1-3
+			var amount = Math.floor((Math.random() * maximumCreeperTries)+minimumCreeperTries); //1-3
 			for(i = 0; i < amount; i++) { //dummy for to break
 				if(settings.creeperSpawning) { //setting validation
 					// random x between 1 and width-1
@@ -491,7 +495,7 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 		if(settings.zombieSpawning) { //If the setting is on
 			if(typeof(randomEvents.zombie) !== "function") { //add the event if it's missing
 				randomEvents.zombie = function() {
-					var amount = Math.floor((Math.random() * 3)+1); //1-3
+					var amount = Math.floor((Math.random() * maximumZombieTries)+minimumZombieTries); //1-3
 					//In worldgen worlds, you can expect about half of this because about half of the world is pixels in it.
 					for(i = 0; i < amount; i++) { //dummy for to break
 						if(settings.zombieSpawning) { //setting validation
@@ -539,7 +543,7 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 
 	if(settings.zombieSpawning) { //zombie spawning option
 		randomEvents.zombie = function() {
-			var amount = Math.floor((Math.random() * 3)+1); //1-3
+			var amount = Math.floor((Math.random() * maximumZombieTries)+minimumZombieTries); //1-3
 			for(i = 0; i < amount; i++) { //dummy for to break
 				if(settings.zombieSpawning) { //setting validation
 					// random x between 1 and width-1
