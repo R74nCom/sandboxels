@@ -231,19 +231,6 @@ elements.warp_bomb = {
     excludeRandom: true,
 },
 
-elements.cluster_nuke = {
-    color: "#e3f636",
-    behavior: [
-        "CR:radiation%5|EX:90>plasma,plasma,plasma,nuke,nuke,nuke,radiation,radiation,radiation,rad_steam,rad_steam,radiation,rad_steam AND CR:radiation%5|CR:radiation%5",
-        "CR:radiation%5|XX|CR:radiation%5",
-        "M2 AND CR:radiation%5|M1 AND EX:90>plasma,plasma,plasma,nuke,nuke,nuke,radiation,radiation,radiation,rad_steam,rad_steam,radiation,rad_steam AND CR:radiation%5|M2 AND CR:radiation%5",
-    ],
-    category: "weapons",
-    state: "solid",
-    density: 1500,
-    excludeRandom: true,
-},
-
 //hormones
 
     //estrogens
@@ -585,19 +572,6 @@ elements.vaporized_histrelin = {
 
 //end of hrt section
 
-elements.anti_bomb = {
-    color: "#525c61",
-    behavior: [
-        "M2|M1 AND EX:10|M2",
-        "XX|XX|XX",
-        "XX|EX:10|XX",
-    ],
-    category: "weapons",
-    state: "solid",
-    density: 1300,
-    excludeRandom: true,
-}
-
 liquidBalloonDepth = 8
 
 elements.rm_water_balloon = {
@@ -727,36 +701,6 @@ for (var i = 2; i <= 10; i++) {
 		excludeRandom:true,
 		category: "weapons",
 	}
-}
-
-elements.sebA = {
-	color: "#ffffff",
-	behavior: [
-	    "SH%50|EX:8>electric AND SH%50      |SH%50",
-	    "SH%50|EX:9>electric%0.5|SH%50",
-	    "M2 AND SH%50|M1 AND SH%50 AND EX:8>electric AND SW:electric|M2 AND SH%50",
-	],
-	category: "weapons",
-	state: "solid",
-	density: 1200,
-	hidden: true,
-	excludeRandom: true,
-	hardness: 0.3,
-},
-
-elements.seb = {
-	color: "#ffffff",
-	behavior: [
-	    "SH%50|EX:8>sebA AND SH%50      |SH%50",
-	    "SH%50|XX           |SH%50",
-	    "M2 AND SH%50|M1 AND SH%50 AND EX:8>sebA AND SW:electric|M2 AND SH%50",
-	],
-	category: "weapons",
-	state: "solid",
-	density: 1800,
-	hidden: true,
-	excludeRandom: true,
-	hardness: 0.3,
 }
 
 elements.densinium = {
