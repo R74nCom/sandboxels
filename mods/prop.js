@@ -17,7 +17,7 @@ booleanSynonyms = [ "boolean", "bool", "boole", "boo", "bo", "bl", "b" ];
 
 defaultStringTypeValues = ["element","color","clone","changeTo","void"];
 defaultNumberTypeValues = ["x","y","temp","start","vx","vy","chargeCD","start","burnStart","dir","panic","r"];
-defaultBooleanTypeValues = ["burning","charge","dead"];
+defaultBooleanTypeValues = ["burning","charge","dead","hissing","following","dirLocked","del"];
 
 trueSynonyms = ["true", "t", "1", "yes"];
 falseSynonyms = ["false", "f", "0", "no"];
