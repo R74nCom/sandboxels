@@ -104,6 +104,9 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 		if (fire.indexOf(",") !== -1) {
 			fire = fire.split(",");
 		}
+		if (smoke.indexOf(",") !== -1) {
+			smoke = smoke.split(",");
+		};
 		var coords = circleCoords(x,y,radius);
 		var power = radius/10;
 		//for (var p = 0; p < Math.round(radius/10+1); p++) {
