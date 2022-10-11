@@ -635,7 +635,7 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 				deletePixel(pixel.x, pixel.y);
 			}
 		},
-		related: ["zombie_body","zombie_head"],
+		movable: true, related: ["zombie_body","zombie_head"],
 		desc: "<em>I'd rather this be toggleable mid-game than require a reload.</em><br/><br/><span class=\"zombieStatus\">If this text is green or underlined, zombies (all types) can spawn.</span> <span onclick=toggleZombieSpawning() style=\"color: #ff00ff;\";>Click here</span> to toggle zombie spawning. If it's on, zombies can spawn through random events."
 	};
 
@@ -1116,7 +1116,7 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 				//console.log("Meh.");
 			};
 		},
-		related: ["zombie"],
+		movable: true, related: ["zombie"],
 		desc: "Baby zombies: smaller, faster, and more annoying.",
 	};
 
@@ -1162,7 +1162,7 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 				deletePixel(pixel.x, pixel.y);
 			}
 		},
-		related: ["creeper_body","creeper_head"],
+		movable: true, related: ["creeper_body","creeper_head"],
 		desc: "<em>I'd rather this be toggleable mid-game than require a reload.</em><br/><br/><span class=\"creeperStatus\">If this text is green or underlined, creepers can spawn.</span> <span onclick=toggleCreeperSpawning() style=\"color: #ff00ff;\";>Click here</span> to toggle creeper spawning. If it's on, creepers (all types) can spawn through random events."
 	};
 
@@ -1964,7 +1964,7 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 				};
 			};
 		},
-		related: ["creeper"],
+		movable: true, related: ["creeper"],
 	};
 
 															//Angelic Creeper
@@ -1994,7 +1994,7 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 				deletePixel(pixel.x, pixel.y);
 			}
 		},
-		related: ["angelic_creeper_body","angelic_creeper_head"],
+		movable: true, related: ["angelic_creeper_body","angelic_creeper_head"],
 		desc: 'A creeper type from <em>Extra Creeper Types</em> <a href="https://www.curseforge.com/minecraft/mc-mods/extra-creeper-types">(CF)</a>. It sends things upward.'
 	};
 
@@ -2547,7 +2547,7 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 				deletePixel(pixel.x, pixel.y);
 			}
 		},
-		related: ["bombing_creeper_body","bombing_creeper_head"],
+		movable: true, related: ["bombing_creeper_body","bombing_creeper_head"],
 		desc: 'A creeper type from <em>Extra Creeper Types</em> <a href="https://www.curseforge.com/minecraft/mc-mods/extra-creeper-types">(CF)</a>. It spawns more explosives when it explodes.'
 	};
 
@@ -3083,7 +3083,7 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 				deletePixel(pixel.x, pixel.y);
 			}
 		},
-		related: ["hell_creeper_body","hell_creeper_head"],
+		movable: true, related: ["hell_creeper_body","hell_creeper_head"],
 		desc: 'A creeper type from <em>Extra Creeper Types</em> <a href="https://www.curseforge.com/minecraft/mc-mods/extra-creeper-types">(CF)</a>. It has a small explosion radius, but spawns a lot of fire around its explosion.'
 	};
 
@@ -4386,7 +4386,7 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 				tick: function(pixel) {
 					autoCreeperPlacerTick(pixel);
 				},
-				related: [bodyName,headName,"creeper"],
+				movable: true, related: [bodyName,headName,"creeper"],
 				desc: `Auto-generated creeper.<br/>Explodes into ${descElement}.`,
 			};
 											//Body
@@ -4585,7 +4585,7 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 				tick: function(pixel) {
 					autoCreeperPlacerTick(pixel);
 				},
-				related: [bodyName,headName,"creeper"],
+				movable: true, related: [bodyName,headName,"creeper"],
 				desc: `Auto-generated creeper.<br/>Explodes into ${descElement}.`,
 			};
 											//Body
