@@ -1,3 +1,21 @@
+urlParams = new URLSearchParams(window.location.search);
+
+if(urlParams.get('bombAmount') != null) { //null check
+    bombAmount = urlParams.get('bombAmount')
+    if(isNaN(bombAmount) || bombAmount === "" || bombAmount === null) { //NaN check
+         bombAmount = 10
+    }
+    bombAmount = parseInt(bombAmount)
+	if(bombAmount > 50) {
+		alert("Maximum amount of additional bomb/anti-bomb pairs is 50.\nOnly 50 were added.")
+	} else if(bombAmount < 1) {
+		alert("Minimum amount of additional bomb/anti-bomb pairs is 1.\n1 pair was added.")
+	}
+    bombAmount = Math.min(50,Math.max(bombAmount,1))
+} else {
+    bombAmount = 10
+}
+
 if(typeof(runAfterAutogen) === "function") {
 	runAfterAutogen(function() {
 		if(typeof(elements.vaporized_rock) === "object") {
@@ -171,6 +189,36 @@ elements.electric_cluster_bomb = {
 	hardness: 0.3,
 };
 
+elements.radioactive_popper = {
+	color: "#d6ce72",
+	behavior: [
+		"XX|EX:7>radiation|XX",
+		"XX|XX|XX",
+		"M2|M1 AND EX:7>radiation|M2",
+	],
+	category: "weapons",
+	state: "solid",
+	density: 1200,
+	hidden: true,
+	excludeRandom: true,
+	hardness: 0.3,
+	cooldown: 3,
+};
+
+elements.acid_bomb = {
+    color: "#7d8a63",
+    behavior: [
+        "XX|EX:15>acid_gas|XX",
+        "XX|XX|XX",
+        "M2|M1 AND EX:15>acid_gas|M2",
+    ],
+    category: "weapons",
+    state: "solid",
+    density: 1400,
+    excludeRandom: true,
+	cooldown: defaultCooldown,
+};
+
 amalgamatedBombFire = "plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,smoke,plasma,plasma,fire,smoke,fire,smoke,plasma,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,acid,acid,oil,oil,oil,oil,oil,oil,oil,plasma,plasma,plasma,plasma,plasma,smoke,plasma,plasma,fire,smoke,plasma,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,flash,flash,flash,flash,flash,acid_gas,acid_gas,acid_gas,acid,oil,oil,oil,oil,oil,oil,oil,oil,oil,oil,plasma,plasma,plasma,plasma,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,acid,acid,oil,oil,oil,oil,oil,oil,oil,plasma,plasma,plasma,plasma,plasma,smoke,plasma,plasma,fire,smoke,plasma,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,electric_cluster_bomb,electric_cluster_bomb,flash,flash,flash,flash,flash,acid_gas,acid_gas,acid_gas,acid,oil,oil,oil,oil,oil,oil,oil,oil,oil,oil,plasma,plasma,plasma,plasma,plague,plague,plague,plague,plague,plague,radiation,radiation,radiation,radiation,radiation,radiation,radiation,radiation,uranium,uranium,uranium,uranium,uranium,uranium,greek_fire,greek_fire,greek_fire,greek_fire,greek_fire,antimatter,antimatter,antimatter,antimatter,antimatter,smoke_grenade,antimatter,smoke_grenade,fireball,flash,acid_gas,acid_gas,acid_gas,plague,plague,plague,plague,plague,plague,radiation,radiation,radiation,radiation,radiation,radiation,radiation,radiation,uranium,uranium,uranium,uranium,uranium,uranium,greek_fire,greek_fire,greek_fire,greek_fire,greek_fire,antimatter,antimatter,antimatter,antimatter,antimatter,smoke_grenade,antimatter,flash,acid_gas,acid_gas,acid_gas,radiation,radiation,radiation,radiation,plague,acid_gas,acid_gas,acid_gas,chlorine,chlorine,chlorine"
 
 elements.amalgamated_bomb = {
@@ -203,7 +251,7 @@ elements.amalgamated_bomb = {
     category: "weapons",
     state: "solid",
     temp: 7065,
-    density: 7065,
+    density: 158000,
     excludeRandom: true,
 };
 
@@ -240,8 +288,57 @@ elements.op_hottester_bomb = {
     category: "weapons",
     state: "solid",
     temp: 7065,
-    density: 1300,
+    density: 1900,
     excludeRandom: true,
+};
+
+for (var i = 2; i <= bombAmount + 1; i++) {
+	elements[`bomb_${i}`] = {
+		name: `bomb ${i}`,
+		color: "#624c41",
+		behavior: [
+			`XX|EX:${5*(i+1)}>fire|XX`,
+			"XX|XX|XX",
+			`M2|M1 AND EX:${5*(i+1)}>fire|M2`,
+		],
+		state: "solid",
+		density: 1300 * 8**((i-1)/2),
+		excludeRandom:true,
+		category: "weapons",
+		desc: `${5*(i+1)/10} times the radius of the regular bomb`,
+		cooldown: defaultCooldown,
+	};
+};
+
+elements.anti_bomb = {
+	color: "#625c71",
+	behavior: [
+		"M2|M1 AND EX:10|M2",
+		"XX|XX|XX",
+		"XX|EX:10|XX",
+	],
+	category: "weapons",
+	state: "solid",
+	density: 1300,
+	excludeRandom: true,
+	cooldown: defaultCooldown,
+};
+
+for (var i = 2; i <= bombAmount + 1; i++) {
+	elements[`anti_bomb_${i}`] = {
+		color: "#625c71",
+		behavior: [
+			`M2|M1 AND EX:${5*(i+1)}>fire|M2`,
+			"XX|XX|XX",
+			`XX|EX:${5*(i+1)}>fire|XX`,
+		],
+		state: "solid",
+		density: 1300 * 8**((i-1)/2),
+		excludeRandom:true,
+		category: "weapons",
+		desc: `${5*(i+1)/10} times the radius of the regular anti-bomb`,
+		cooldown: defaultCooldown,
+	};
 };
 
 runAfterLoad(function() {
