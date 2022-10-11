@@ -659,50 +659,6 @@ elements.lb1 = {
     excludeRandom: true,
 }
 
-for (var i = 2; i <= 10; i++) {
-	elements[`bomb_${i}`] = {
-		name: `bomb ${i}`,
-		color: "#624c41",
-		behavior: [
-			`XX|EX:${5*(i+1)}>fire|XX`,
-			"XX|XX|XX",
-			`M2|M1 AND EX:${5*(i+1)}>fire|M2`,
-		],
-		state: "solid",
-		excludeRandom:true,
-		category: "weapons",
-	}
-}
-
-for (var i = 2; i <= 10; i++) {
-	elements[`anti_bomb_${i}`] = {
-		color: "#625c71",
-		behavior: [
-			`M2|M1 AND EX:${5*(i+1)}>fire|M2`,
-			"XX|XX|XX",
-			`XX|EX:${5*(i+1)}>fire|XX`,
-		],
-		state: "solid",
-		excludeRandom:true,
-		category: "weapons",
-	}
-}
-
-for (var i = 2; i <= 10; i++) {
-	elements[`bomb_${i}`] = {
-		name: `bomb ${i}`,
-		color: "#624c41",
-		behavior: [
-			`XX|EX:${5*(i+1)}>fire|XX`,
-			"XX|XX|XX",
-			`M2|M1 AND EX:${5*(i+1)}>fire|M2`,
-		],
-		state: "solid",
-		excludeRandom:true,
-		category: "weapons",
-	}
-}
-
 elements.densinium = {
     color: ["#565656","#575657","#565257","#554d57","#554659"],
     tempHigh: 4712, //arbitrary
