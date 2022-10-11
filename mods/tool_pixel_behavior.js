@@ -575,7 +575,7 @@ if(typeof(elements.offset_three_fourth_y) !== "undefined") {
 	};
 };
 
-if(typeof(elements.offset_three_fourth_y) !== "undefined") {
+if(typeof(elements.find_toggle) !== "undefined") {
 	if(typeof(elements.find_toggle) !== "find") {
 		elements.find_toggle.behavior = behaviors.WALL;
 		elements.find_toggle.tick = function(pixel) {
