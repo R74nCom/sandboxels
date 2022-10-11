@@ -475,6 +475,8 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 		},
 	};
 
+	elements.human.movable = true;
+	
 	var style = document.createElement('style'); //Initialize CSS for zombie spawning's status indicator
 	style.type = 'text/css';
 	style.id = 'zombieStatusStylesheet';
