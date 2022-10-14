@@ -25,6 +25,7 @@ function breakPixel(pixel,changetemp=false) {
 		breakIntoElement = breakIntoElement[Math.floor(Math.random() * breakIntoElement.length)]
 	};
 	changePixel(pixel,breakIntoElement,changetemp)
+	return true;
 };
 
 if(enabledMods.includes(onTryMoveIntoMod)) {
