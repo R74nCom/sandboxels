@@ -8,6 +8,7 @@ oscillatorDefaults = {
 	endType: "none",
 	length: 1,
 	volume: 1,
+	delay: 0,
 };
 
 audioObject = {};
@@ -21,7 +22,7 @@ function oscillator(name="test",parameterObject=oscillatorDefaults){ //creates o
 			parameterObject[key] = oscillatorDefaults[key];
 		};
 	};
-	
+
 	var oscillatorNodeName = `${name}Oscillator`;
 	var gainNodeName = `${name}Gain`;
 
@@ -32,7 +33,7 @@ function oscillator(name="test",parameterObject=oscillatorDefaults){ //creates o
 	audioObject[oscillatorNodeName].connect(audioObject[gainNodeName])
 	audioObject[oscillatorNodeName].frequency.value = parameterObject.frequency
 	audioObject[gainNodeName].connect(audioContext.destination)
-	audioObject[oscillatorNodeName].start(0)
+	audioObject[oscillatorNodeName].start(audioContext.currentTime + parameterObject.delay)
 
 	//stopping handler
 	if(parameterObject.endType === "exponential") { //starts fading immediately
@@ -44,17 +45,18 @@ function oscillator(name="test",parameterObject=oscillatorDefaults){ //creates o
 			0.00001, audioContext.currentTime + parameterObject.length
 		);	
 	} else { //waits to stop
-		audioObject[oscillatorNodeName].stop(audioContext.currentTime + parameterObject.length);
+		audioObject[oscillatorNodeName].stop(audioContext.currentTime + parameterObject.delay + parameterObject.length);
 	};
 };
 
 elements.note_block = {
 	color: "#ee33ee",
 	behavior: behaviors.WALL,
-	state: "liquid",
-	category: "liquids",
+	state: "solid",
+	category: "machines",
 	density: 1200,
-	hardness: 1,
+	hardness: 0.2,
+	breakInto: ["plastic","metal_scrap","metal_scrap","metal_scrap"],
 	conduct: 1,
 	properties: {
 		frequency: 440,
@@ -62,6 +64,7 @@ elements.note_block = {
 		endType: "none",
 		length: 1,
 		volume: 1,
+		delay: 0,
 		debounce: 0,
 		debounceLength: tps,
 	},
@@ -74,6 +77,7 @@ elements.note_block = {
 			endType: pixel.endType,
 			length: pixel.length,
 			volume: pixel.volume,
+			delay: pixel.delay,
 		};
 		
 		//console.log(pixelPropertyObject);
@@ -90,4 +94,14 @@ elements.note_block = {
 			pixel.debounce--;
 		};
 	},
+};
+
+runAfterLoad(function() {
+	elements.note_block.movable = false;
+});
+
+if(runAfterAutogen) {
+	runAfterAutogen(function() {
+		elements.note_block.movable = false;
+	});
 };
