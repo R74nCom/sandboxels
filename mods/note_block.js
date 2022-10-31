@@ -6,7 +6,8 @@ oscillatorDefaults = {
 	frequency: 440,
 	type: "sine",
 	endType: "none",
-	length: 1
+	length: 1,
+	volume: 1,
 };
 
 audioObject = {};
@@ -26,6 +27,7 @@ function oscillator(name="test",parameterObject=oscillatorDefaults){ //creates o
 
 	audioObject[oscillatorNodeName] = audioContext.createOscillator()
 	audioObject[gainNodeName] = audioContext.createGain()
+	audioObject[gainNodeName].gain.value = parameterObject.volume;
 	audioObject[oscillatorNodeName].type = parameterObject.type
 	audioObject[oscillatorNodeName].connect(audioObject[gainNodeName])
 	audioObject[oscillatorNodeName].frequency.value = parameterObject.frequency
@@ -59,6 +61,7 @@ elements.note_block = {
 		type: "sine",
 		endType: "none",
 		length: 1,
+		volume: 1,
 		debounce: 0,
 		debounceLength: tps,
 	},
@@ -70,6 +73,7 @@ elements.note_block = {
 			type: pixel.type,
 			endType: pixel.endType,
 			length: pixel.length,
+			volume: pixel.volume,
 		};
 		
 		//console.log(pixelPropertyObject);
