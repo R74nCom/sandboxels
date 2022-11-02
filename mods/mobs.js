@@ -3966,7 +3966,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 	elements.nothing_there_phase_3 = {
 		color: "#fc1e35",
 		category: "life",
-		desc: "Intended for debugging. Spawns Nothing There in its humanoid third phase, for when you don't want to wait for it to go through the other phases.",
+		desc: "Spawns Nothing There in its humanoid third phase, for when you don't want to wait for it to go through the other phases.",
 		properties: {
 			dead: false,
 			dir: 1,
@@ -3997,6 +3997,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 		state: "solid",
 		tempHigh: 3000,
 		hardness: 0.9975,
+		hidden: true,
 		stateHigh: "cooked_meat",
 		burn: 1,
 		burnTime: 300000,
@@ -4101,6 +4102,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 		state: "solid",
 		tempHigh: 3000,
 		hardness: 0.9975,
+		hidden: true,
 		stateHigh: "cooked_meat",
 		burn: 1,
 		burnTime: 300000,
