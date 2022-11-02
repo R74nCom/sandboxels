@@ -7,11 +7,11 @@ numberSynonyms = [ "number", "num", "nm", "nu", "nb", "integer", "int", "i", "it
 				   nuts.*/
 																						//Passing "Infinity" through parseFloat returns Infinity. 
 booleanSynonyms = [ "boolean", "bool", "boole", "boo", "bo", "bl", "b" ];
-trueSynonyms = ["true", "t", "1", "yes"];
-falseSynonyms = ["false", "f", "0", "no"];
-defaultStringTypeValues = ["element","color","clone","changeTo","void"];
-defaultNumberTypeValues = ["x","y","temp","start","vx","vy","chargeCD","start","burnStart","dir","panic","r"];
-defaultBooleanTypeValues = ["burning","charge","dead","hissing","following","dirLocked","del"];
+synonymsOfTrue = ["true", "t", "1", "yes"];
+synonymsOfFalse = ["false", "f", "0", "no"];
+defaultStringTypeValues = ["element","color","clone","changeTo","void","type"];
+defaultNumberTypeValues = ["x","y","temp","start","vx","vy","chargeCD","start","burnStart","dir","panic","r","frequency","length","delay","volume","debounce","debounceLength"];
+defaultBooleanTypeValues = ["burning","charge","dead","hissing","following","dirLocked","del","didChargeBlueTinted"];
 commandHelpObject = {
 	"set": "Sets properties for every pixel of a given type.\nUsage: set [property] [element] [value] <type>\nDon't include framing characters []<>.\nThe element can be \"all\" to set the property for every pixel.\nNote: Strings can't have spaces because spaces are the separator used in the parsing split().\nArguments in [brackets] are required and ones in <angle brackets> are optional.",
 	"test": "Test.",
@@ -115,9 +115,9 @@ function funniPrompt(argument=null,alertOutput=true,alertError=true) {
 					return false;
 				};
 			} else if(type === "boolean") {
-				if(trueSynonyms.includes(value.toLowerCase())) {
+				if(synonymsOfTrue.includes(value.toLowerCase())) {
 					value = true;
-				} else if(falseSynonyms.includes(value.toLowerCase())) {
+				} else if(synonymsOfFalse.includes(value.toLowerCase())) {
 					value = false;
 				} else {
 					alertIfError(alertError,"Unrecognized boolean value: " + value + ".");
@@ -221,9 +221,9 @@ function funniPrompt(argument=null,alertOutput=true,alertError=true) {
 			};
 			//console.log(elementList);
 			
-			if(trueSynonyms.includes(doOverwrite.toLowerCase())) {
+			if(synonymsOfTrue.includes(doOverwrite.toLowerCase())) {
 				doOverwrite = true;
-			} else if(falseSynonyms.includes(doOverwrite.toLowerCase())) {
+			} else if(synonymsOfFalse.includes(doOverwrite.toLowerCase())) {
 				doOverwrite = false;
 			} else {
 				alertIfError(alertError,"Unrecognized boolean value: " + doOverwrite + "\n Note that for this command, the boolean value goes first.");
@@ -258,9 +258,9 @@ function funniPrompt(argument=null,alertOutput=true,alertError=true) {
 			
 			if(inputAsArray.length > 1) {
 				var doOverwrite = inputAsArray[1];
-				if(trueSynonyms.includes(doOverwrite.toLowerCase())) {
+				if(synonymsOfTrue.includes(doOverwrite.toLowerCase())) {
 					doOverwrite = true;
-				} else if(falseSynonyms.includes(doOverwrite.toLowerCase())) {
+				} else if(synonymsOfFalse.includes(doOverwrite.toLowerCase())) {
 					doOverwrite = false;
 				} else {
 					alertIfError(alertError,"Unrecognized boolean value: " + value);
