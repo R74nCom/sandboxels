@@ -1,12 +1,14 @@
 var modName = "mods/mobs.js";
 var runAfterAutogenMod = "mods/runAfterAutogen and onload restructure.js";
-maximumCreeperTries = 3;
-minimumCreeperTries = 1;
-maximumZombieTries = 3;
-minimumZombieTries = 3;
+var explodeAtPlusMod = "mods/explodeAtPlus.js";
 
-if(enabledMods.includes(runAfterAutogenMod)) {
+if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlusMod)) {
 	//Prerequisite Functions and Variables
+
+	maximumCreeperTries = 3;
+	minimumCreeperTries = 1;
+	maximumZombieTries = 3;
+	minimumZombieTries = 3;
 
 	headBodyObject = {
 		"head": "body",
@@ -99,107 +101,7 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 		};
 	};
 
-	function explodeAtPlus(x,y,radius,fire="fire",smoke="smoke",beforeFunction=null,afterFunction=null) { //explodeAt with additional arguments, used to allow implementation of Angelic Creeper's effect
-		// if fire contains , split it into an array
-		if (fire.indexOf(",") !== -1) {
-			fire = fire.split(",");
-		}
-		if (smoke.indexOf(",") !== -1) {
-			smoke = smoke.split(",");
-		};
-		var coords = circleCoords(x,y,radius);
-		var power = radius/10;
-		//for (var p = 0; p < Math.round(radius/10+1); p++) {
-		for (var i = 0; i < coords.length; i++) {
-			// damage value is based on distance from x and y
-			var damage = Math.random() + (Math.floor(Math.sqrt(Math.pow(coords[i].x-x,2) + Math.pow(coords[i].y-y,2)))) / radius;
-			// invert
-			damage = 1 - damage;
-			if (damage < 0) { damage = 0; }
-			damage *= power;
-			if (isEmpty(coords[i].x,coords[i].y)) {
-				// create smoke or fire depending on the damage if empty
-				if (damage < 0.02) { } // do nothing
-				else if (damage < 0.2) {
-					// if smoke is an array, choose a random item
-					if (Array.isArray(smoke)) {
-						createPixel(smoke[Math.floor(Math.random() * smoke.length)],coords[i].x,coords[i].y);
-					}
-					else {
-						createPixel(smoke,coords[i].x,coords[i].y);
-					}
-				}
-				else {
-					// if fire is an array, choose a random item
-					if (Array.isArray(fire)) {
-						createPixel(fire[Math.floor(Math.random() * fire.length)],coords[i].x,coords[i].y);
-					}
-					else {
-						createPixel(fire,coords[i].x,coords[i].y);
-					}
-				}
-			}
-			else if (!outOfBounds(coords[i].x,coords[i].y)) {
-				// damage the pixel
-				var pixel = pixelMap[coords[i].x][coords[i].y];
-				var info = elements[pixel.element];
-				if(typeof(beforeFunction) === "function") {
-					beforeFunction(pixel,x,y,radius,fire,smoke,power,damage);
-				};
-				if (info.hardness) { // lower damage depending on hardness(0-1)
-					if (info.hardness < 1) {
-						damage = damage * ((1 - info.hardness)*10);
-					}
-					else { damage = 0; }
-				}
-				if (damage > 0.9) {
-					if (Array.isArray(fire)) {
-						var newfire = fire[Math.floor(Math.random() * fire.length)];
-					}
-					else {
-						var newfire = fire;
-					}
-					changePixel(pixel,newfire);
-					continue;
-				}
-				else if (damage > 0.25) {
-					if (info.breakInto) {
-						// if it is an array, choose a random item, else just use the value
-						if (Array.isArray(info.breakInto)) {
-							var result = info.breakInto[Math.floor(Math.random() * info.breakInto.length)];
-						}
-						else {
-							var result = info.breakInto;
-						}
-						// change the pixel to the result
-						changePixel(pixel,result);
-						continue;
-					}
-					else {
-						if (Array.isArray(fire)) {
-							var newfire = fire[Math.floor(Math.random() * fire.length)];
-						}
-						else {
-							var newfire = fire;
-						}
-						changePixel(pixel,newfire);
-						continue;
-					}
-				}
-				if (damage > 0.75 && info.burn) {
-					pixel.burning = true;
-					pixel.burnStart = pixelTicks;
-				}
-				pixel.temp += damage*radius*power;
-				pixelTempCheck(pixel);
-				if(typeof(afterFunction) === "function") {
-					//console.log(`running afterFunction ${afterFunction}`)
-					//console.log(`arguments: ${pixel}, ${x}, ${y}, ${radius}, ${fire}, ${smoke}, ${power}, ${damage}`)
-					afterFunction(pixel,x,y,radius,fire,smoke,power,damage);
-				};
-			};
-		};
-	};
+	//explodeAtPlus moved to separate file
 
 	if(typeof(settings.creeperSpawning) === "undefined") { //Default creeper setting
 		setSetting("creeperSpawning",false);
@@ -252,6 +154,106 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 			document.getElementById("creeperStatusStylesheet").innerHTML = '.creeperStatus { color: #E11; text-decoration: none; }';
 		};
 	};
+	
+	//Functions used by Nothing There
+
+	function hasPixel(x,y,elementInput) {
+		if(isEmpty(x,y,true)) { //if empty, it can't have a pixel
+			return false;
+		} else {
+			if(elementInput.includes(",")) { //CSTA
+				elementInput = elementInput.split(",");
+			};
+			if(Array.isArray(elementInput)) { //if element list
+				return elementInput.includes(pixelMap[x][y].element);
+			} else { //if single element
+				return pixelMap[x][y].element === elementInput;
+			};
+		};		
+	};
+
+	function breakPixel(pixel,changetemp=false,defaultBreakIntoDust=false) {
+		var info = elements[pixel.element];
+		if(typeof(info.breakInto) === "undefined") {
+			if(defaultBreakIntoDust) {
+				if(Math.random() < defaultBreakIntoDust) { changePixel(pixel,"dust",changetemp) };
+			};
+			return defaultBreakIntoDust;
+		};
+		var breakIntoElement = info.breakInto;
+		if(Array.isArray(breakIntoElement)) {
+			breakIntoElement = breakIntoElement[Math.floor(Math.random() * breakIntoElement.length)]
+		};
+		changePixel(pixel,breakIntoElement,changetemp)
+		return true;
+	};
+
+	defaultHardness = 0;
+
+	function tryBreak(pixel,changetemp=false,defaultBreakIntoDust=false) {
+		var info = elements[pixel.element];
+		var hardness = defaultHardness;
+		if(typeof(info.hardness) === "number") {
+			hardness = info.hardness;
+		};
+		hardness = 1 - hardness; //invert hardness, so a hardness of 0 becomes a 100% chance and a hardness of 1 becomes a 0% chance
+		if(Math.random() < hardness) {
+			return breakPixel(pixel,changetemp=false,defaultBreakIntoDust=false);
+		} else {
+			return false;
+		};
+	};
+
+	function newTestTryMoveOrSwap(pixel,x,y) {
+		//console.log(`calling pixel element ${pixel.element}, d ${elements[pixel.element]}`)
+		if(!tryMove(pixel,x,y)) {
+			if(!isEmpty(x,y,true)) {
+				var thisDensity = elements[pixel.element].density;
+				var newPixel = pixelMap[x][y];
+				var newElement = newPixel.element;
+				var newInfo = elements[newElement];
+				if(nothingThereBulletExcludedElements.includes(newElement)) {
+					return false;
+				};
+				if(typeof(newInfo.state) === "undefined") {
+					swapPixels(pixel,newPixel);
+				} else {
+					if(newElement == pixel.element) {
+						swapPixels(pixel,newPixel);
+					} else if(newInfo.state == "gas") {
+						swapPixels(pixel,newPixel);
+					} else if(newInfo.state == "liquid") {
+						var newDensity = 1000;
+						if(typeof(newInfo.density) === "number") {
+							newDensity = newInfo.density;
+							//console.log(`density ${newInfo.density} for ${newElement}`);   
+						//} else {
+							//console.log(`undef density for ${newElement}, 1000 default`);   
+						};
+						//console.log(`thisDensity: ${thisDensity}`);
+						//console.log(`newDensity: ${newDensity}`);
+						var chance = thisDensity/(thisDensity+newDensity);
+						//console.log(`${newElement}, ${chance}`)
+						if(Math.random() < chance) {
+							swapPixels(pixel,newPixel);
+						};
+					} else if(newInfo.state == "solid") {
+						breakPixel(newPixel,false,0.3);
+						swapPixels(pixel,newPixel);
+					};
+				};
+				return true;
+			} else {
+				return false;
+			};
+		} else {
+			return true;
+		};
+	};
+
+	//End NT functions
+
+	nothingThereBulletExcludedElements = ["wall","nothing_there_phase_1","nothing_there_phase_2","nothing_there_phase_3_body","nothing_there_phase_3_head", "nothing_there_cleaver", "nothing_there_mace"];
 
 	enemyHumanoidArray = ["head","body"] //just in case
 
@@ -475,8 +477,6 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 		},
 	};
 
-	elements.human.movable = true;
-	
 	var style = document.createElement('style'); //Initialize CSS for zombie spawning's status indicator
 	style.type = 'text/css';
 	style.id = 'zombieStatusStylesheet';
@@ -637,7 +637,7 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 				deletePixel(pixel.x, pixel.y);
 			}
 		},
-		movable: true, related: ["zombie_body","zombie_head"],
+		related: ["zombie_body","zombie_head"],
 		desc: "<em>I'd rather this be toggleable mid-game than require a reload.</em><br/><br/><span class=\"zombieStatus\">If this text is green or underlined, zombies (all types) can spawn.</span> <span onclick=toggleZombieSpawning() style=\"color: #ff00ff;\";>Click here</span> to toggle zombie spawning. If it's on, zombies can spawn through random events."
 	};
 
@@ -1118,7 +1118,7 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 				//console.log("Meh.");
 			};
 		},
-		movable: true, related: ["zombie"],
+		related: ["zombie"],
 		desc: "Baby zombies: smaller, faster, and more annoying.",
 	};
 
@@ -1164,7 +1164,7 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 				deletePixel(pixel.x, pixel.y);
 			}
 		},
-		movable: true, related: ["creeper_body","creeper_head"],
+		related: ["creeper_body","creeper_head"],
 		desc: "<em>I'd rather this be toggleable mid-game than require a reload.</em><br/><br/><span class=\"creeperStatus\">If this text is green or underlined, creepers can spawn.</span> <span onclick=toggleCreeperSpawning() style=\"color: #ff00ff;\";>Click here</span> to toggle creeper spawning. If it's on, creepers (all types) can spawn through random events."
 	};
 
@@ -1966,7 +1966,7 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 				};
 			};
 		},
-		movable: true, related: ["creeper"],
+		related: ["creeper"],
 	};
 
 															//Angelic Creeper
@@ -1996,7 +1996,7 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 				deletePixel(pixel.x, pixel.y);
 			}
 		},
-		movable: true, related: ["angelic_creeper_body","angelic_creeper_head"],
+		related: ["angelic_creeper_body","angelic_creeper_head"],
 		desc: 'A creeper type from <em>Extra Creeper Types</em> <a href="https://www.curseforge.com/minecraft/mc-mods/extra-creeper-types">(CF)</a>. It sends things upward.'
 	};
 
@@ -2549,7 +2549,7 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 				deletePixel(pixel.x, pixel.y);
 			}
 		},
-		movable: true, related: ["bombing_creeper_body","bombing_creeper_head"],
+		related: ["bombing_creeper_body","bombing_creeper_head"],
 		desc: 'A creeper type from <em>Extra Creeper Types</em> <a href="https://www.curseforge.com/minecraft/mc-mods/extra-creeper-types">(CF)</a>. It spawns more explosives when it explodes.'
 	};
 
@@ -3085,7 +3085,7 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 				deletePixel(pixel.x, pixel.y);
 			}
 		},
-		movable: true, related: ["hell_creeper_body","hell_creeper_head"],
+		related: ["hell_creeper_body","hell_creeper_head"],
 		desc: 'A creeper type from <em>Extra Creeper Types</em> <a href="https://www.curseforge.com/minecraft/mc-mods/extra-creeper-types">(CF)</a>. It has a small explosion radius, but spawns a lot of fire around its explosion.'
 	};
 
@@ -3584,6 +3584,834 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 			};
 		},
 	};
+
+	/* +-----------------------------------+
+	   | Nothing There                     |
+	   |                                   |
+	   | amogus                            |
+	   |                                   |
+	   | red imposter                      |
+	   |                                   |
+	   |                                   |
+	   |                                   |
+	   |                                   |
+	   |                                   |
+	   |                                   |
+	   |                                   |
+	   +-----------------------------------+ */
+
+	elements.nothing_there_bullet = {
+		flippableX: true,
+		movable: true,
+		density: 10000,
+		desc: "A hypersonic bullet made of Nothing There's flesh. I don't remember if it can turn humans into red clouds.",
+		color: "#a3281a",
+		related: ["nothing_there_phase_3_body","nothing_there_phase_3_head"],
+		tick: function(pixel) {
+			if(pixel.flipX) {
+				for(i = 0; i < 3; i++) {
+					newTestTryMoveOrSwap(pixel,pixel.x-1,pixel.y);
+					if(outOfBounds(pixel.x-1,pixel.y)) {
+						deletePixel(pixel.x,pixel.y);
+						break;
+					};
+					if(!isEmpty(pixel.x-1,pixel.y,true)) {
+						if(nothingThereBulletExcludedElements.includes(pixelMap[pixel.x-1][pixel.y].element)) {
+							deletePixel(pixel.x,pixel.y);
+							break;
+						};
+					};
+				};
+			} else {
+				for(i = 0; i < 3; i++) {
+					newTestTryMoveOrSwap(pixel,pixel.x+1,pixel.y);
+					if(outOfBounds(pixel.x+1,pixel.y)) {
+						deletePixel(pixel.x,pixel.y);
+						break;
+					};
+					if(!isEmpty(pixel.x+1,pixel.y,true)) {
+						if(nothingThereBulletExcludedElements.includes(pixelMap[pixel.x+1][pixel.y].element)) {
+							deletePixel(pixel.x,pixel.y);
+							break;
+						};
+					};
+				};
+			};
+		},
+	};
+
+	elements.nothing_there_mace = {
+		movable: true,
+		density: 10000,
+		desc: "A spiky mace attached to Nothing There, which can turn humans into red clouds.",
+		color: "#fa4632",
+		properties: {
+			counter: 2,
+		},
+		related: ["nothing_there_phase_3_body","nothing_there_phase_3_head"],
+		tick: function(pixel) {
+			if(outOfBounds(pixel.x,pixel.y + 1)) {
+				deletePixel(pixel.x,pixel.y);
+				return false;
+			};
+			if(!tryMove(pixel,pixel.x,pixel.y + 1)) {
+				var newPixel = pixelMap[pixel.x][pixel.y + 1];
+				var newElement = newPixel.element;
+				var newInfo = elements[newElement];
+				if(newElement !== pixel.element) {
+					if(newInfo.state === "gas") {
+						swapPixels(pixel,newPixel);
+					} else {
+						if(pixel.counter > 0) {
+							explodeAtPlus(pixel.x,pixel.y + 1,5,null,null);
+							pixel.counter--;
+						} else {
+							deletePixel(pixel.x,pixel.y);
+							return true;
+						};
+					};
+				};
+			};
+		},
+	};
+
+	elements.nothing_there_cleaver = {
+		movable: true,
+		density: 10000,
+		desc: "A very sharp blade attached to Nothing There, which can turn humans into red clouds.",
+		color: "#a33c3c",
+		properties: {
+			counter: 3,
+		},
+		related: ["nothing_there_phase_3_body","nothing_there_phase_3_head"],
+		tick: function(pixel) {
+			if(outOfBounds(pixel.x,pixel.y + 1)) {
+				deletePixel(pixel.x,pixel.y);
+				return false;
+			};
+			if(!tryMove(pixel,pixel.x,pixel.y + 1)) {
+				var newPixel = pixelMap[pixel.x][pixel.y + 1];
+				var newElement = newPixel.element;
+				var newInfo = elements[newElement];
+				if(!nothingThereBulletExcludedElements.includes(newElement)) {
+					if(pixel.counter > 0) {
+						swapPixels(pixel,newPixel);
+						breakPixel(newPixel,false,false);
+						pixel.counter--;
+					} else {
+						deletePixel(pixel.x,pixel.y);
+						return true;
+					};
+				} else {
+					deletePixel(pixel.x,pixel.y);
+					return false;
+				};
+			};
+		},
+	};
+
+	testSwapArray = ["meat","cooked_meat","rotten_meat","blood","infection","antibody","plague","zombie_blood","frozen_meat","frozen_rotten_meat"];
+
+	elements.nothing_there_phase_1 = {
+		color: "#faacac",
+		category: "life",
+		density: 2000,
+		desc: "O-06-20 <span style='color: red;'>(ALEPH)</span><br/>In this phase, it looks like a dog made of misshapen human parts. It can easily turn humans into unrecognizable messes.",
+		state: "solid",
+		tempHigh: 3000,
+		hardness: 0.995,
+		stateHigh: "cooked_meat",
+		burn: 1,
+		burnTime: 250000,
+		burnInto: "cooked_meat",
+		breakInto: (enabledMods.includes("mods/fey_and_more.js") ? ["blood","meat","magic"] : ["blood","meat"]),
+		reactions: {
+			"cancer": { "elem1":"cancer", "chance":0.00002 },
+			"radiation": { "elem1":["ash","meat","rotten_meat","cooked_meat"], "chance":0.00004 },
+			"plague": { "elem1":"plague", "chance":0.000003 },
+		},
+		related: ["nothing_there_phase_2", "nothing_there_phase_3_body", "nothing_there_phase_3_head"],
+		properties: {
+			dead: false,
+			dir: 1,
+			following: false,
+		},
+		movable: true,
+		tick: function(pixel) {
+			var pixelBreakInto = elements[pixel.element].breakInto;
+			tryMove(pixel, pixel.x, pixel.y+1); // Fall
+			doHeat(pixel);
+			doBurning(pixel);
+			doElectricity(pixel);
+			if (pixel.dead) {
+				// Break if pixelTicks-dead > 5
+				if (pixelTicks-pixel.dead > 5) {
+					changePixel(pixel,pixelBreakInto[Math.floor(Math.random() * pixelBreakInto.length)],false);
+				};
+				return;
+			};
+
+			if (Math.random() < 0.1) { // Move 10% chance
+				var movesToTry = [
+					[1*pixel.dir,0],	//dash move
+					[1*pixel.dir,-1],	//cleave move
+				];
+				// While movesToTry is not empty, tryMove(pixel, x, y) with a random move, then remove it. if tryMove returns true, break.
+				while (movesToTry.length > 0) {
+					var move = movesToTry.splice(Math.floor(Math.random() * movesToTry.length), 1)[0];
+					if(tryMove(pixel, pixel.x+move[0], pixel.y+move[1])) {
+						break;
+					} else { //move through given pixels
+						if(!isEmpty(pixel.x+move[0], pixel.y+move[1], true)) {
+							var blockingPixel = pixelMap[pixel.x+move[0]][pixel.y+move[1]];
+							//console.log(blockingPixel);
+							var blockingElement = blockingPixel.element;
+							if(testSwapArray.includes(blockingElement)) {
+								swapPixels(pixel,blockingPixel);
+								break;
+							};
+						};
+					};
+				};
+				// 15% chance to change direction while not chasing a human
+				if(!pixel.following) {
+					if (Math.random() < 0.15) {
+						pixel.dir *= -1;
+						//console.log("*turns around cutely to face ${pixel.dir < 0 ? 'left' : 'right'}*");
+					};
+				}/* else {
+					//console.log("*chases cutely*");
+				};*/
+			};
+
+			var pX = pixel.x;
+			var pY = pixel.y;
+
+			if(Math.random() < 0.01) { //1% chance each tick to lose interest
+				pixel.following = false;
+				//console.log("Meh.");
+			};
+
+			//Human detection loop (looks ahead according to direction and sets the "following" variable to true, telling the body to lock the direction)
+			if(pixelTicks % 2 == 0 && !pixel.dead) { //reduce rate for performance
+				/*var directionAdverb = "left";
+				if(pixel.dir > 0) {
+					directionAdverb = "right";
+				};*/
+				//console.log(`Looking ${directionAdverb}`)
+				if(pixel.dir === -1) {
+					for(i = -4; i < 4+1; i++) {
+						var oY = i;
+						//console.log(`Starting row look at row ${pY+oY}`)
+						for(j = (-1); j > (-35 - 1); j--) {
+							var oX = j;
+							var nX = pX+oX;
+							var nY = pY+oY;
+							if(outOfBounds(nX,nY)) {
+								//console.log(`Stopping row look at pixel (${nX},${nY}) due to OoB`)
+								break;
+							};
+							if(isEmpty(nX,nY)) {
+								////console.log(`Skipping pixel (${nX},${nY}) (empty)`)
+								continue;
+							};
+							if(!isEmpty(nX,nY,true)) {
+								var newPixel = pixelMap[nX][nY];
+								var newElement = newPixel.element;
+								if(enemyHumanoidArray.includes(newElement)) {
+									//console.log(`Human part found at (${nX},${nY})`)
+									if(!newPixel.dead) { //If not dead
+										pixel.following = true;
+										//console.log(`Human detected at (${nX},${nY})`)
+										//Infect/kill if a human is close enough
+										if(pyth(pX,pY,nX,nY) <= 1.5) { //approx. sqrt(2)
+											if(Math.random() < 1/4) {	//One-fourth chance to change to blood
+												changePixel(newPixel,"blood",false);
+											} else {					//Remaining 3/4 chance to change to meat
+												changePixel(newPixel,"meat",false);
+											};
+										};
+									} else { //Mutilate if dead
+										if(Math.random() < 1/4) {	//One-fourth chance to change to blood
+											changePixel(newPixel,"blood",false);
+										} else {					//Remaining 3/4 chance to change to meat
+											changePixel(newPixel,"meat",false);
+										};
+									};
+								} else {
+									//console.log(`Stopping row look at pixel (${nX},${nY}) due to non-human pixel in the way`)
+									break; //can't see through humans
+								};
+							};
+						};
+					};
+				} else if(pixel.dir === 1) {
+					for(i = -4; i < 4+1; i++) {
+						var oY = i;
+						//console.log(`Starting row look at row ${pY+oY}`)
+						for(j = 1; j < 35 + 1; j++) {
+							var oX = j;
+							var nX = pX+oX;
+							var nY = pY+oY;
+							if(outOfBounds(nX,nY)) {
+								//console.log(`Stopping row look at pixel (${nX},${nY}) due to OoB`)
+								break;
+							};
+							if(isEmpty(nX,nY)) {
+								////console.log(`Skipping pixel (${nX},${nY}) (empty)`)
+								continue;
+							};
+							if(!isEmpty(nX,nY,true)) {
+								var newPixel = pixelMap[nX][nY];
+								var newElement = newPixel.element;
+								if(enemyHumanoidArray.includes(newElement)) {
+									//console.log(`Human part found at (${nX},${nY})`)
+									if(!newPixel.dead) { //If not dead
+										pixel.following = true;
+										//console.log(`Human detected at (${nX},${nY})`)
+										//Infect/kill if a human is close enough
+										if(pyth(pX,pY,nX,nY) <= 1.5) { //approx. sqrt(2)
+											if(Math.random() < 1/4) {	//One-fourth chance to change to blood
+												changePixel(newPixel,"blood",false);
+											} else {					//Remaining 3/4 chance to change to meat
+												changePixel(newPixel,"meat",false);
+											};
+										};
+									} else { //Mutilate if dead
+										if(Math.random() < 1/4) {	//One-fourth chance to change to blood
+											changePixel(newPixel,"blood",false);
+										} else {					//Remaining 3/4 chance to change to meat
+											changePixel(newPixel,"meat",false);
+										};
+									};
+								} else {
+									//console.log(`Stopping row look at pixel (${nX},${nY}) due to non-human pixel in the way`)
+									break; //can't see through humans
+								};
+							};
+						};
+					};
+				};
+			};
+
+			if(pixelTicks - pixel.start > 300 && (Math.random() < 0.003)) {
+				var dir = pixel.dir;
+				changePixel(pixel,"nothing_there_phase_2",false);
+				pixel.dir = dir;
+			};
+
+			//End
+		},
+	};
+
+	elements.nothing_there_phase_2 = {
+		behavior: behaviors.POWDER_OLD,
+		color: "#d90b0b",
+		category: "life",
+		density: 4000,
+		desc: "O-06-20 <span style='color: red;'>(ALEPH)</span><br/>In this phase, it looks like a red, fibrous cocoon. It will soon hatch into its third phase.",
+		state: "solid",
+		tempHigh: 3500,
+		hardness: 0.999,
+		stateHigh: "cooked_meat",
+		burn: 1,
+		burnTime: 350000,
+		burnInto: "cooked_meat",
+		breakInto: (enabledMods.includes("mods/fey_and_more.js") ? ["blood","meat","magic"] : ["blood","meat"]),
+		reactions: {
+			"cancer": { "elem1":"cancer", "chance":0.000001 },
+			"radiation": { "elem1":["ash","meat","rotten_meat","cooked_meat"], "chance":0.000001 },
+			"plague": { "elem1":"plague", "chance":0.000001 },
+		},
+		related: ["nothing_there_phase_1", "nothing_there_phase_3_body", "nothing_there_phase_3_head"],
+		properties: {
+			dead: false,
+			dir: 1,
+			timer: 0,
+		},
+		tick: function(pixel) {
+			var pixelBreakInto = elements[pixel.element].breakInto;
+					doHeat(pixel);
+			doBurning(pixel);
+			doElectricity(pixel);
+			if (pixel.dead) {
+				// Break if pixelTicks-dead > 5
+				if (pixelTicks-pixel.dead > 5) {
+					changePixel(pixel,pixelBreakInto[Math.floor(Math.random() * pixelBreakInto.length)],false);
+				};
+				return;
+			};
+
+			if(pixelTicks - pixel.start > 300) {
+				var dir = pixel.dir;
+				if (isEmpty(pixel.x, pixel.y+1)) {
+					createPixel("nothing_there_phase_3_body", pixel.x, pixel.y+1);
+					pixel.element = "nothing_there_phase_3_head";
+					pixel.color = pixelColorPick(pixel)
+					pixelMap[pixel.x][pixel.y+1].dir = dir;
+				}
+				else if (isEmpty(pixel.x, pixel.y-1)) {
+					createPixel("nothing_there_phase_3_head", pixel.x, pixel.y-1);
+					pixelMap[pixel.x][pixel.y-1].color = pixel.color;
+					pixel.element = "nothing_there_phase_3_body";
+					pixel.color = pixelColorPick(pixel)
+					pixel.dir = dir;
+				};
+			};
+
+			//End
+		},
+	};
+
+	elements.nothing_there_phase_3 = {
+		color: "#fc1e35",
+		category: "life",
+		desc: "Intended for debugging. Spawns Nothing There in its humanoid third phase, for when you don't want to wait for it to go through the other phases.",
+		properties: {
+			dead: false,
+			dir: 1,
+			panic: 0,
+			following: false,
+		},
+		tick: function(pixel) {
+			if (isEmpty(pixel.x, pixel.y+1)) {
+				createPixel("nothing_there_phase_3_body", pixel.x, pixel.y+1);
+				pixel.element = "nothing_there_phase_3_head";
+				pixel.color = pixelColorPick(pixel)
+			} else if (isEmpty(pixel.x, pixel.y-1)) {
+				createPixel("nothing_there_phase_3_head", pixel.x, pixel.y-1);
+				pixel.element = "nothing_there_phase_3_body";
+				pixel.color = pixelColorPick(pixel)
+			} else {
+				deletePixel(pixel.x, pixel.y);
+			}
+		},
+		related: ["nothing_there_phase_3_body","nothing_there_phase_3_head"],
+	};
+
+	elements.nothing_there_phase_3_body = {
+		color: "#fc1e35",
+		category: "life",
+		density: 3000,
+		desc: "O-06-20 <span style='color: red;'>(ALEPH)</span><br/>In this phase, it looks like a humanoid made of misarranged flesh. It is almost indestructible and has a variety of ways to destroy your canvas and annihilate any humans inside of it.<br/>Let's hope it doesn't learn to blend in and walk among us.",
+		state: "solid",
+		tempHigh: 3000,
+		hardness: 0.9975,
+		stateHigh: "cooked_meat",
+		burn: 1,
+		burnTime: 300000,
+		burnInto: "cooked_meat",
+		breakInto: (enabledMods.includes("mods/fey_and_more.js") ? ["blood","meat","magic"] : ["blood","meat"]),
+		reactions: {
+			"cancer": { "elem1":"cancer", "chance":0.00001 },
+			"radiation": { "elem1":["ash","meat","rotten_meat","cooked_meat"], "chance":0.00002 },
+			"plague": { "elem1":"plague", "chance":0.0000015 },
+		},
+		properties: {
+			dead: false,
+			dir: 1,
+			panic: 0,
+			following: false,
+		},
+		movable: true,
+		related: ["nothing_there_phase_1", "nothing_there_phase_2", "nothing_there_mace", "nothing_there_cleaver", , "nothing_there_bullet"],
+		tick: function(pixel) {
+			var pixelBreakInto = elements[pixel.element].breakInto;
+
+			if (tryMove(pixel, pixel.x, pixel.y+1)) { // Fall
+				if (!isEmpty(pixel.x, pixel.y-2, true)) { // Drag head down
+					var headPixel = pixelMap[pixel.x][pixel.y-2];
+					if (headPixel.element == "nothing_there_phase_3_head") {
+						if (isEmpty(pixel.x, pixel.y-1)) {
+							movePixel(pixelMap[pixel.x][pixel.y-2], pixel.x, pixel.y-1);
+						}
+						else {
+							swapPixels(pixelMap[pixel.x][pixel.y-2], pixelMap[pixel.x][pixel.y-1]);
+						}
+					}
+				}
+			}
+			doHeat(pixel);
+			doBurning(pixel);
+			doElectricity(pixel);
+			if (pixel.dead) {
+				// Break if pixelTicks-dead > 5
+				if (pixelTicks-pixel.dead > 5) {
+					changePixel(pixel,pixelBreakInto[Math.floor(Math.random() * pixelBreakInto.length)],false);
+				};
+				return;
+			};
+
+			// Find the head
+			if (!isEmpty(pixel.x, pixel.y-1, true)) {
+				if(pixelMap[pixel.x][pixel.y-1].element == "nothing_there_phase_3_head") {
+					var head = pixelMap[pixel.x][pixel.y-1];
+					if (head.dead) { // If head is dead, kill body
+						pixel.dead = head.dead;
+					};
+				} else {
+					var head = null;
+				};
+			} else { var head = null };
+
+			if (isEmpty(pixel.x, pixel.y-1)) {
+				// create blood if decapitated 30% chance
+				if (Math.random() < 0.3) {
+					createPixel("blood", pixel.x, pixel.y-1);
+					// set dead to true 10% chance
+					if (Math.random() < 0.1) {
+						pixel.dead = pixelTicks;
+					}
+				}
+			}
+			else if (head == null) { return } //do not proceed if headless
+			else if (Math.random() < 0.1) { // Move 10% chance
+				var movesToTry = [
+					[1*pixel.dir,0],
+					[1*pixel.dir,-1],
+				];
+				// While movesToTry is not empty, tryMove(pixel, x, y) with a random move, then remove it. if tryMove returns true, break.
+				while (movesToTry.length > 0) {
+					var move = movesToTry.splice(Math.floor(Math.random() * movesToTry.length), 1)[0];
+					if (isEmpty(pixel.x+move[0], pixel.y+move[1]-1)) {
+						if (tryMove(pixel, pixel.x+move[0], pixel.y+move[1])) {
+							movePixel(head, head.x+move[0], head.y+move[1]);
+							break;
+						};
+					};
+				};
+				// 15% chance to change direction while not chasing a human
+				if(!head.following) {
+					if (Math.random() < 0.15) {
+						pixel.dir *= -1;
+						//console.log("*turns around cutely to face ${pixel.dir < 0 ? 'left' : 'right'}*");
+					};
+				}/* else {
+					//console.log("*chases cutely*");
+				};*/
+			};
+		},
+	};
+
+	elements.nothing_there_phase_3_head = {
+		color: "#ff3046",
+		category: "life",
+		density: 3000,
+		desc: "O-06-20 <span style='color: red;'>(ALEPH)</span><br/>In this phase, it looks like a humanoid made of misarranged flesh. It is almost indestructible and has a variety of ways to destroy your canvas and annihilate any humans inside of it.<br/>Let's hope it doesn't learn to blend in and walk among us.",
+		state: "solid",
+		tempHigh: 3000,
+		hardness: 0.9975,
+		stateHigh: "cooked_meat",
+		burn: 1,
+		burnTime: 300000,
+		burnInto: "cooked_meat",
+		breakInto: (enabledMods.includes("mods/fey_and_more.js") ? ["blood","meat","magic"] : ["blood","meat"]),
+		reactions: {
+			"cancer": { "elem1":"cancer", "chance":0.00001 },
+			"radiation": { "elem1":["ash","meat","rotten_meat","cooked_meat"], "chance":0.00002 },
+			"plague": { "elem1":"plague", "chance":0.0000015 },
+		},
+		properties: {
+			dead: false,
+			dir: 1,
+			panic: 0,
+			following: false,
+		},
+		movable: true,
+		related: ["nothing_there_phase_1", "nothing_there_phase_2", "nothing_there_mace", "nothing_there_cleaver", , "nothing_there_bullet"],
+		tick: function(pixel) {
+			var pixelBreakInto = elements[pixel.element].breakInto;
+			doHeat(pixel);
+			doBurning(pixel);
+			doElectricity(pixel);
+			if (pixel.dead) {
+				// Break if pixelTicks-dead > 5
+				if (pixelTicks-pixel.dead > 5) {
+					changePixel(pixel,pixelBreakInto[Math.floor(Math.random() * pixelBreakInto.length)],false);
+				};
+				return;
+			};
+
+			// Find the body
+			if (!isEmpty(pixel.x, pixel.y+1, true)) {
+				if(pixelMap[pixel.x][pixel.y+1].element == "nothing_there_phase_3_body") {
+					var body = pixelMap[pixel.x][pixel.y+1];
+					if (body.dead) { // If body is dead, kill body
+						pixel.dead = body.dead;
+					};
+				} else {
+					var body = null;
+				};
+			} else { var body = null };
+
+			if(body) {
+				if(body.dir !== pixel.dir) { //hacky workaround: lock head dir to body dir
+					pixel.dir = body.dir;
+				};
+			};
+
+			if (isEmpty(pixel.x, pixel.y+1)) {
+				tryMove(pixel, pixel.x, pixel.y+1);
+				// create blood if severed 30% chance
+				if (isEmpty(pixel.x, pixel.y+1) && Math.random() < 0.3) {
+					createPixel("blood", pixel.x, pixel.y+1);
+					// set dead to true 10% chance
+					if (Math.random() < 0.10) {
+						pixel.dead = pixelTicks;
+					}
+				}
+			}
+			
+			//start of most new code
+			var pX = pixel.x;
+			var pY = pixel.y;
+			
+			//Human detection loop
+			if(pixelTicks % 2 == 0 && !pixel.dead) { //reduce rate for performance
+				/*var directionAdverb = "left";
+				if(pixel.dir > 0) {
+					directionAdverb = "right";
+				};*/
+				//console.log(`Looking ${directionAdverb}`)
+				if(pixel.dir === -1) {
+					//do action every 40 ticks
+					var bulletPositions = [[-1, -1], [-1, 0]];
+					var bulletPosition = bulletPositions[Math.floor(Math.random() * 2)];
+					
+					var smashPosition = [-1, -1];
+					
+					var cleavePositions = [[-1, -1], [-2, -1]];
+					
+					var start = 2 * Math.floor(pixel.start/2);
+					if((pixelTicks - start) % 40 == 0) {
+						var action = Math.floor(Math.random() * 3);
+						if(action == 0) { //bullet
+							var bX = pX + bulletPosition[0];
+							var bY = pY + bulletPosition[1];
+							
+							if(!outOfBounds(bX,bY)) {
+								if(isEmpty(bX,bY)) {
+									createPixel("nothing_there_bullet",bX,bY);
+									pixelMap[bX][bY].flipX = true;
+								} else {
+									if(!nothingThereBulletExcludedElements.includes(pixelMap[bX][bY].element)) {
+										deletePixel(bX,bY);
+										createPixel("nothing_there_bullet",bX,bY);
+										pixelMap[bX][bY].flipX = true;
+									};
+								};
+							};
+						} else if(action == 1) { //smash
+							var sX = pX + smashPosition[0];
+							var sY = pY + smashPosition[1];
+							
+							if(!outOfBounds(sX,sY)) {
+								if(isEmpty(sX,sY)) {
+									createPixel("nothing_there_mace",sX,sY);
+								} else {
+									if(!nothingThereBulletExcludedElements.includes(pixelMap[sX][sY].element)) {
+										deletePixel(sX,sY);
+										createPixel("nothing_there_mace",sX,sY);
+									};
+								};
+							};
+						} else if(action == 2) { //cleave
+							for(cleaverIndex = 0; cleaverIndex < cleavePositions.length; cleaverIndex++) {
+								var cX = pX + cleavePositions[cleaverIndex][0];
+								var cY = pY + cleavePositions[cleaverIndex][1];
+								
+								if(!outOfBounds(cX,cY)) {
+									if(isEmpty(cX,cY)) {
+										createPixel("nothing_there_cleaver",cX,cY);
+									} else {
+										if(!nothingThereBulletExcludedElements.includes(pixelMap[cX][cY].element)) {
+											deletePixel(cX,cY);
+											createPixel("nothing_there_cleaver",cX,cY);
+										};
+									};
+								};
+							};
+						};
+					};
+					
+					for(i = -4; i < 4+1; i++) {
+						var oY = i;
+						//console.log(`Starting row look at row ${pY+oY}`)
+						for(j = (-1); j > (-35 - 1); j--) {
+							var oX = j;
+							var nX = pX+oX;
+							var nY = pY+oY;
+							if(outOfBounds(nX,nY)) {
+								//console.log(`Stopping row look at pixel (${nX},${nY}) due to OoB`)
+								break;
+							};
+							if(isEmpty(nX,nY)) {
+								////console.log(`Skipping pixel (${nX},${nY}) (empty)`)
+								continue;
+							};
+							if(!isEmpty(nX,nY,true)) {
+								var newPixel = pixelMap[nX][nY];
+								var newElement = newPixel.element;
+								if(enemyHumanoidArray.includes(newElement)) {
+									//console.log(`Human part found at (${nX},${nY})`)
+									if(!newPixel.dead) { //If not dead
+										pixel.following = true;
+										//console.log(`Human detected at (${nX},${nY})`)
+										//Infect/kill if a human is close enough
+										if(pyth(pX,pY,nX,nY) <= 1.5) { //approx. sqrt(2)
+											if(Math.random() < 1/4) {	//One-fourth chance to change to blood
+												changePixel(newPixel,"blood",false);
+											} else {					//Remaining 3/4 chance to change to meat
+												changePixel(newPixel,"meat",false);
+											};
+										};
+									} else { //Mutilate if dead
+										if(Math.random() < 1/4) {	//One-fourth chance to change to blood
+											changePixel(newPixel,"blood",false);
+										} else {					//Remaining 3/4 chance to change to meat
+											changePixel(newPixel,"meat",false);
+										};
+									};
+								} else {
+									//console.log(`Stopping row look at pixel (${nX},${nY}) due to non-human pixel in the way`)
+									break; //can't see through humans
+								};
+							};
+						};
+					};
+				} else if(pixel.dir === 1) {
+					//do action every 40 ticks
+					var bulletPositions = [[1, -1], [1, 0]];
+					var bulletPosition = bulletPositions[Math.floor(Math.random() * 2)];
+					
+					var smashPosition = [1, -1];
+					
+					var cleavePositions = [[1, -1], [2, -1]];
+					
+					var start = 2 * Math.floor(pixel.start/2);
+					if((pixelTicks - start) % 40 == 0) {
+						var action = Math.floor(Math.random() * 3);
+						if(action == 0) { //bullet
+							var bX = pX + bulletPosition[0];
+							var bY = pY + bulletPosition[1];
+							
+							if(!outOfBounds(bX,bY)) {
+								if(isEmpty(bX,bY)) {
+									createPixel("nothing_there_bullet",bX,bY);
+									pixelMap[bX][bY].flipX = true;
+								} else {
+									if(!nothingThereBulletExcludedElements.includes(pixelMap[bX][bY].element)) {
+										deletePixel(bX,bY);
+										createPixel("nothing_there_bullet",bX,bY);
+										pixelMap[bX][bY].flipX = true;
+									};
+								};
+							};
+						} else if(action == 1) { //smash
+							var sX = pX + smashPosition[0];
+							var sY = pY + smashPosition[1];
+							
+							if(!outOfBounds(sX,sY)) {
+								if(isEmpty(sX,sY)) {
+									createPixel("nothing_there_mace",sX,sY);
+								} else {
+									if(!nothingThereBulletExcludedElements.includes(pixelMap[sX][sY].element)) {
+										deletePixel(sX,sY);
+										createPixel("nothing_there_mace",sX,sY);
+									};
+								};
+							};
+						} else if(action == 2) { //cleave
+							for(cleaverIndex = 0; cleaverIndex < cleavePositions.length; cleaverIndex++) {
+								var cX = pX + cleavePositions[cleaverIndex][0];
+								var cY = pY + cleavePositions[cleaverIndex][1];
+								
+								if(!outOfBounds(cX,cY)) {
+									if(isEmpty(cX,cY)) {
+										createPixel("nothing_there_cleaver",cX,cY);
+									} else {
+										if(!nothingThereBulletExcludedElements.includes(pixelMap[cX][cY].element)) {
+											deletePixel(cX,cY);
+											createPixel("nothing_there_cleaver",cX,cY);
+										};
+									};
+								};
+							};
+						};
+					};
+
+					for(i = -4; i < 4+1; i++) {
+						var oY = i;
+						//console.log(`Starting row look at row ${pY+oY}`)
+						for(j = 1; j < 35 + 1; j++) {
+							var oX = j;
+							var nX = pX+oX;
+							var nY = pY+oY;
+							if(outOfBounds(nX,nY)) {
+								//console.log(`Stopping row look at pixel (${nX},${nY}) due to OoB`)
+								break;
+							};
+							if(isEmpty(nX,nY)) {
+								//console.log(`Skipping pixel (${nX},${nY}) (empty)`)
+								continue;
+							};
+							if(!isEmpty(nX,nY,true)) {
+								var newPixel = pixelMap[nX][nY];
+								var newElement = newPixel.element;
+								if(enemyHumanoidArray.includes(newElement)) {
+									//console.log(`Human part found at (${nX},${nY})`)
+									if(!newPixel.dead) { //If not dead
+										pixel.following = true;
+										//console.log(`Human detected at (${nX},${nY})`)
+										//Infect/kill if a human is close enough
+										if(pyth(pX,pY,nX,nY) <= 1.5) { //approx. sqrt(2)
+											if(Math.random() < 1/4) {	//One-fourth chance to change to blood
+												changePixel(newPixel,"blood",false);
+											} else {					//Remaining 3/4 chance to change to meat
+												changePixel(newPixel,"meat",false);
+											};
+										};
+									} else { //Mutilate if dead
+										if(Math.random() < 1/4) {	//One-fourth chance to change to blood
+											changePixel(newPixel,"blood",false);
+										} else {					//Remaining 3/4 chance to change to meat
+											changePixel(newPixel,"meat",false);
+										};
+									};
+								} else {
+									//console.log(`Stopping row look at pixel (${nX},${nY}) due to non-human pixel in the way`)
+									break; //can't see through humans
+								};
+							};
+						};
+					};
+				};
+			};
+					
+			if(Math.random() < 0.01) { //1% chance each tick to lose interest
+				pixel.following = false;
+				//console.log("Meh.");
+			};
+		},
+	};
+
+	runAfterLoad(function() {
+		if(typeof(badPixels) === "object") {
+			badPixels.nothing_there_phase_1 = { panicIncrease: 1, panicIncreaseChance: 1 } //insta-panic for "aleph" thing and "level 1" humans
+			badPixels.nothing_there_phase_2 = { panicIncrease: 1, panicIncreaseChance: 1 }
+			badPixels.nothing_there_phase_3_body = { panicIncrease: 1, panicIncreaseChance: 1 }
+			badPixels.nothing_there_phase_3_head = { panicIncrease: 1, panicIncreaseChance: 1 }
+		}
+	});
+
+	/* +-----------------------------------+
+	   | End Nothing There elements        |
+	   |                                   |
+	   |                                   |
+	   |                                   |
+	   |                                   |
+	   |                                   |
+	   +-----------------------------------+ */
 
 	/* Creeper generation
 	___#___#___#___#___#___#___#___#___#___
@@ -4388,7 +5216,7 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 				tick: function(pixel) {
 					autoCreeperPlacerTick(pixel);
 				},
-				movable: true, related: [bodyName,headName,"creeper"],
+				related: [bodyName,headName,"creeper"],
 				desc: `Auto-generated creeper.<br/>Explodes into ${descElement}.`,
 			};
 											//Body
@@ -4587,7 +5415,7 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 				tick: function(pixel) {
 					autoCreeperPlacerTick(pixel);
 				},
-				movable: true, related: [bodyName,headName,"creeper"],
+				related: [bodyName,headName,"creeper"],
 				desc: `Auto-generated creeper.<br/>Explodes into ${descElement}.`,
 			};
 											//Body
@@ -4676,7 +5504,26 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 		};
 	};
 } else {
-	alert(`The ${runAfterAutogenMod} mod is required and has been automatically inserted (reload for this to take effect).`)
-	enabledMods.splice(enabledMods.indexOf(modName),0,runAfterAutogenMod)
-	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
+	switch (enabledMods.includes(runAfterAutogenMod) + enabledMods.includes(explodeAtPlusMod)) {
+		case 0:
+			alert(`The "${runAfterAutogenMod}" and "${explodeAtPlusMod}" mods are required and has been automatically inserted (reload for this to take effect).`)
+			enabledMods.splice(enabledMods.indexOf(modName),0,runAfterAutogenMod)
+			enabledMods.splice(enabledMods.indexOf(modName),0,explodeAtPlusMod)
+			localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
+			break;
+		case 1:
+			if(!enabledMods.includes(runAfterAutogenMod)) {
+				alert(`The ${runAfterAutogenMod} mod is required and has been automatically inserted (reload for this to take effect).`)
+				enabledMods.splice(enabledMods.indexOf(modName),0,runAfterAutogenMod)
+				localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
+			} else if(!enabledMods.includes(explodeAtPlusMod)) {
+				alert(`The ${explodeAtPlusMod} mod is required and has been automatically inserted (reload for this to take effect).`)
+				enabledMods.splice(enabledMods.indexOf(modName),0,explodeAtPlusMod)
+				localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
+			};
+			break;
+		default:
+			console.log("Something's wrong with the dependency check switch...");
+			break;
+	};
 };
