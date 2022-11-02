@@ -1,3 +1,4 @@
+propProperty = "element";
 propValue = "sand";
 propType = "string";
 numberAdjusterProperty = "temp";
