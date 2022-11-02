@@ -1,4 +1,3 @@
-propProperty = "element";
 propValue = "sand";
 propType = "string";
 numberAdjusterProperty = "temp";
@@ -15,12 +14,12 @@ numberSynonyms = [ "number", "num", "nm", "nu", "nb", "integer", "int", "i", "it
 objectSynonyms = [ "object", "oj", "obj", "ob", "o", "json" ];
 booleanSynonyms = [ "boolean", "bool", "boole", "boo", "bo", "bl", "b" ];
 
-defaultStringTypeValues = ["element","color","clone","changeTo","void"];
-defaultNumberTypeValues = ["x","y","temp","start","vx","vy","chargeCD","start","burnStart","dir","panic","r"];
-defaultBooleanTypeValues = ["burning","charge","dead","hissing","following","dirLocked","del"];
+defaultStringTypeValues = ["element","color","clone","changeTo","void","type"];
+defaultNumberTypeValues = ["x","y","temp","start","vx","vy","chargeCD","start","burnStart","dir","panic","r","frequency","length","delay","volume","debounce","debounceLength"];
+defaultBooleanTypeValues = ["burning","charge","dead","hissing","following","dirLocked","del","didChargeBlueTinted"];
 
-trueSynonyms = ["true", "t", "1", "yes"];
-falseSynonyms = ["false", "f", "0", "no"];
+synonymsOfTrue = ["true", "t", "1", "yes"];
+synonymsOfFalse = ["false", "f", "0", "no"];
 colorInvalidError = "Color must be in the form \"rgb(red,green,blue)\" or \"hsl(hue,saturation%,lightness%)\" (without quotes)!";
 function rgbStringToUnvalidatedObject(string) {
 	string = string.split(",");
@@ -152,9 +151,9 @@ function propPrompt() {
 			return false;
 		};
 	} else if(propType === "boolean") {
-		if(trueSynonyms.includes(propValue.toLowerCase())) {
+		if(synonymsOfTrue.includes(propValue.toLowerCase())) {
 			propValue = true;
-		} else if(falseSynonyms.includes(propValue.toLowerCase())) {
+		} else if(synonymsOfFalse.includes(propValue.toLowerCase())) {
 			propValue = false;
 		} else {
 			alert("Unrecognized boolean value: " + propValue + ".");
