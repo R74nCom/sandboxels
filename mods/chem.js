@@ -463,6 +463,7 @@ elements.neutronium = {
 	category: "special",
 	state: "solid",
 	density: 4e17,
+	excludeRandom: true,
 }
 
 
@@ -498,6 +499,7 @@ elements.liquid_neutronium = {
 	category: "special",
 	state: "liquid",
 	density: 2e17,
+	excludeRandom: true,
 }
 
 elements.liquid_helium.behavior2 = [
@@ -542,4 +544,5 @@ elements.quark_matter = {
 	category: "special",
 	state: "liquid",
 	density: 4e18,
+	excludeRandom: true,
 }
