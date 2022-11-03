@@ -204,24 +204,38 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 		};
 	};
 
-	function newTestTryMoveOrSwap(pixel,x,y) {
-		//console.log(`calling pixel element ${pixel.element}, d ${elements[pixel.element]}`)
+	function nothingThereBulletMovement(pixel,x,y) {
 		if(!tryMove(pixel,x,y)) {
 			if(!isEmpty(x,y,true)) {
 				var thisDensity = elements[pixel.element].density;
 				var newPixel = pixelMap[x][y];
 				var newElement = newPixel.element;
 				var newInfo = elements[newElement];
+				var newHardness = 0;
 				if(nothingThereBulletExcludedElements.includes(newElement)) {
 					return false;
 				};
-				if(typeof(newInfo.state) === "undefined") {
-					swapPixels(pixel,newPixel);
+				if(typeof(newInfo.hardness) === "number") {
+					newHardness = newInfo.hardness;
+					//it's inverted later
+				};
+				if(typeof(newInfo.state) === "undefined" && newElement !== pixel.element) { //Copy-paste of "break" code
+					if(Math.random() < ((1 - newHardness) ** 0.6)) {
+						swapPixels(pixel,newPixel);
+						//console.log(`nothingThereBulletMovement: Breaking pixel (${newPixel.element}, ${newPixel.x}, ${newPixel.y}))`)
+						breakPixel(newPixel,false,0.3);
+						return true;
+					} else {
+						deletePixel(pixel.x,pixel.y);
+						return false;
+					};
 				} else {
 					if(newElement == pixel.element) {
 						swapPixels(pixel,newPixel);
+						return true;
 					} else if(newInfo.state == "gas") {
 						swapPixels(pixel,newPixel);
+						return true;
 					} else if(newInfo.state == "liquid") {
 						var newDensity = 1000;
 						if(typeof(newInfo.density) === "number") {
@@ -237,12 +251,19 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 						if(Math.random() < chance) {
 							swapPixels(pixel,newPixel);
 						};
+						return true;
 					} else if(newInfo.state == "solid") {
-						breakPixel(newPixel,false,0.3);
-						swapPixels(pixel,newPixel);
+						if(Math.random() < ((1 - newHardness) ** 0.6)) {
+							swapPixels(pixel,newPixel);
+							//console.log(`nothingThereBulletMovement: Breaking pixel (${newPixel.element}, ${newPixel.x}, ${newPixel.y}))`)
+							breakPixel(newPixel,false,0.3);
+							return true;
+						} else {
+							deletePixel(pixel.x,pixel.y);
+							return false;
+						};
 					};
 				};
-				return true;
 			} else {
 				return false;
 			};
@@ -621,6 +642,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 			panic: 0,
 			following: false,
 		},
+		movable: true,
 		tick: function(pixel) {
 			if (isEmpty(pixel.x, pixel.y+1)) {
 				createPixel("zombie_body", pixel.x, pixel.y+1);
@@ -666,6 +688,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 			dir: 1,
 			panic: 0,
 		},
+		movable: true,
 		tick: function(pixel) {
 			if (tryMove(pixel, pixel.x, pixel.y+1)) { // Fall
 				if (!isEmpty(pixel.x, pixel.y-2, true)) { // Drag head down
@@ -770,6 +793,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 			dir: 1,
 			panic: 0,
 		},
+		movable: true,
 		tick: function(pixel) {
 			doHeat(pixel);
 			doBurning(pixel);
@@ -962,6 +986,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 			dir: 1,
 			panic: 0,
 		},
+		movable: true,
 		tick: function(pixel) {
 			tryMove(pixel, pixel.x, pixel.y+1); // Fall
 			doHeat(pixel);
@@ -1148,6 +1173,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 			panic: 0,
 			following: false,
 		},
+		movable: true,
 		tick: function(pixel) {
 			if (isEmpty(pixel.x, pixel.y+1)) {
 				createPixel("creeper_body", pixel.x, pixel.y+1);
@@ -1195,6 +1221,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 			charged: false,
 			didChargeBlueTinted: false,
 		},
+		movable: true,
 		tick: function(pixel) {
 			if (tryMove(pixel, pixel.x, pixel.y+1)) { // Fall
 				if (!isEmpty(pixel.x, pixel.y-2, true)) { // Drag head down
@@ -1421,6 +1448,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 			charged: false,
 			didChargeBlueTinted: false,
 		},
+		movable: true,
 		tick: function(pixel) {
 			doHeat(pixel);
 			doBurning(pixel);
@@ -1717,6 +1745,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 			charged: false,
 			didChargeBlueTinted: false,
 		},
+		movable: true,
 		tick: function(pixel) {
 			tryMove(pixel, pixel.x, pixel.y+1); // Fall
 			doHeat(pixel);
@@ -1980,6 +2009,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 			panic: 0,
 			following: false,
 		},
+		movable: true,
 		tick: function(pixel) {
 			if (isEmpty(pixel.x, pixel.y+1)) {
 				createPixel("angelic_creeper_body", pixel.x, pixel.y+1);
@@ -2027,6 +2057,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 			charged: false,
 			didChargeBlueTinted: false,
 		},
+		movable: true,
 		tick: function(pixel) {
 			if(!pixel.hissing) { //If not hissing (it floats when hissing)
 				if(Math.random() < 0.2) { //20% chance to fall
@@ -2271,6 +2302,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 			charged: false,
 			didChargeBlueTinted: false,
 		},
+		movable: true,
 		tick: function(pixel) {
 			doHeat(pixel);
 			doBurning(pixel);
@@ -2533,6 +2565,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 			panic: 0,
 			following: false,
 		},
+		movable: true,
 		tick: function(pixel) {
 			if (isEmpty(pixel.x, pixel.y+1)) {
 				createPixel("bombing_creeper_body", pixel.x, pixel.y+1);
@@ -2580,6 +2613,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 			charged: false,
 			didChargeBlueTinted: false,
 		},
+		movable: true,
 		tick: function(pixel) {
 			if (tryMove(pixel, pixel.x, pixel.y+1)) { // Fall
 				if (!isEmpty(pixel.x, pixel.y-2, true)) { // Drag head down
@@ -2807,6 +2841,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 			charged: false,
 			didChargeBlueTinted: false,
 		},
+		movable: true,
 		tick: function(pixel) {
 			doHeat(pixel);
 			doBurning(pixel);
@@ -3069,6 +3104,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 			panic: 0,
 			following: false,
 		},
+		movable: true,
 		tick: function(pixel) {
 			if (isEmpty(pixel.x, pixel.y+1)) {
 				createPixel("hell_creeper_body", pixel.x, pixel.y+1);
@@ -3111,6 +3147,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 			charged: false,
 			didChargeBlueTinted: false,
 		},
+		movable: true,
 		tick: function(pixel) {
 			if (tryMove(pixel, pixel.x, pixel.y+1)) { // Fall
 				if (!isEmpty(pixel.x, pixel.y-2, true)) { // Drag head down
@@ -3334,6 +3371,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 			charged: false,
 			didChargeBlueTinted: false,
 		},
+		movable: true,
 		tick: function(pixel) {
 			doHeat(pixel);
 			doBurning(pixel);
@@ -3607,34 +3645,19 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 		desc: "A hypersonic bullet made of Nothing There's flesh. I don't remember if it can turn humans into red clouds.",
 		color: "#a3281a",
 		related: ["nothing_there_phase_3_body","nothing_there_phase_3_head"],
+		movable: true,
 		tick: function(pixel) {
-			if(pixel.flipX) {
-				for(i = 0; i < 3; i++) {
-					newTestTryMoveOrSwap(pixel,pixel.x-1,pixel.y);
-					if(outOfBounds(pixel.x-1,pixel.y)) {
-						deletePixel(pixel.x,pixel.y);
-						break;
-					};
-					if(!isEmpty(pixel.x-1,pixel.y,true)) {
-						if(nothingThereBulletExcludedElements.includes(pixelMap[pixel.x-1][pixel.y].element)) {
-							deletePixel(pixel.x,pixel.y);
-							break;
-						};
-					};
+			if(typeof(pixel.flipX) == undefined) {
+				pixel.flipX = !!Math.floor(Math.random() * 2);
+			};
+			var dir = pixel.flipX ? -1 : 1;
+			for(i = 0; i < 6; i++) {
+				if(outOfBounds(pixel.x+dir,pixel.y)) {
+					deletePixel(pixel.x,pixel.y);
+					break;
 				};
-			} else {
-				for(i = 0; i < 3; i++) {
-					newTestTryMoveOrSwap(pixel,pixel.x+1,pixel.y);
-					if(outOfBounds(pixel.x+1,pixel.y)) {
-						deletePixel(pixel.x,pixel.y);
-						break;
-					};
-					if(!isEmpty(pixel.x+1,pixel.y,true)) {
-						if(nothingThereBulletExcludedElements.includes(pixelMap[pixel.x+1][pixel.y].element)) {
-							deletePixel(pixel.x,pixel.y);
-							break;
-						};
-					};
+				if(!nothingThereBulletMovement(pixel,pixel.x+dir,pixel.y)) {
+					return true;
 				};
 			};
 		},
@@ -3649,6 +3672,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 			counter: 2,
 		},
 		related: ["nothing_there_phase_3_body","nothing_there_phase_3_head"],
+		movable: true,
 		tick: function(pixel) {
 			if(outOfBounds(pixel.x,pixel.y + 1)) {
 				deletePixel(pixel.x,pixel.y);
@@ -3681,9 +3705,10 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 		desc: "A very sharp blade attached to Nothing There, which can turn humans into red clouds.",
 		color: "#a33c3c",
 		properties: {
-			counter: 3,
+			counter: 4,
 		},
 		related: ["nothing_there_phase_3_body","nothing_there_phase_3_head"],
+		movable: true,
 		tick: function(pixel) {
 			if(outOfBounds(pixel.x,pixel.y + 1)) {
 				deletePixel(pixel.x,pixel.y);
@@ -3929,6 +3954,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 			dir: 1,
 			timer: 0,
 		},
+		movable: true,
 		tick: function(pixel) {
 			var pixelBreakInto = elements[pixel.element].breakInto;
 					doHeat(pixel);
@@ -3973,6 +3999,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 			panic: 0,
 			following: false,
 		},
+		movable: true,
 		tick: function(pixel) {
 			if (isEmpty(pixel.x, pixel.y+1)) {
 				createPixel("nothing_there_phase_3_body", pixel.x, pixel.y+1);
@@ -4182,7 +4209,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 					
 					var smashPosition = [-1, -1];
 					
-					var cleavePositions = [[-1, -1], [-2, -1]];
+					var cleavePositions = [[-1, -1], [-2, -1], [-3, -1]];
 					
 					var start = 2 * Math.floor(pixel.start/2);
 					if((pixelTicks - start) % 40 == 0) {
@@ -4288,7 +4315,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 					
 					var smashPosition = [1, -1];
 					
-					var cleavePositions = [[1, -1], [2, -1]];
+					var cleavePositions = [[1, -1], [2, -1], [3, -1]];
 					
 					var start = 2 * Math.floor(pixel.start/2);
 					if((pixelTicks - start) % 40 == 0) {
@@ -5121,12 +5148,14 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 			behavior: behaviors.WALL,
 			category: "special",
 			excludeRandom: false, //see below
+			movable: true,
 			tick: function(pixel) {
 				changePixel(pixel,spawnCreepers[Math.floor(Math.random() * spawnCreepers.length)]) //spawnCreepers is already excludeRandom filtered
 			},
 		};
 
 	runAfterAutogen(function() {
+		//Creeper autogen function
 		creeperElements = Object.keys(elements);
 		creeperElements.push(["rock","sand"]);
 		//creeperElements = ["water","steel","dirt",["dirt","sand"],"frostwind","antimatter,acid","fire,nonexist"]; //Test array
@@ -5404,6 +5433,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 
 											//Placer
 			elements[placerName] = {
+				movable: true,
 				creeperType: elementOfCreeper,
 				color: colorsArray,
 				colorObject: colorObjectArray,
@@ -5422,6 +5452,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 			};
 											//Body
 			elements[bodyName] = {
+				movable: true,
 				creeperType: elementOfCreeper,
 				color: colorsArray,
 				colorObject: colorObjectArray,
@@ -5458,6 +5489,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 
 											//Head
 			elements[headName] = {
+				movable: true,
 				creeperType: elementOfCreeper,
 				color: colorsArray,
 				colorObject: colorObjectArray,
@@ -5505,6 +5537,18 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 			};
 		};
 	};
+	
+	var solidBlacklist = ["mistake", "birthpool", "firesea"]; //exclude these since they seem to be liquid
+	
+	solids = Object.keys(elements).filter(function(e) {
+		return elements[e].category === "solids" && !solidBlacklist.includes(e);
+	});
+	
+	for(i = 0; i < solids.length; i++) { //A lot of elements in solids, particularly metals, are missing a "state: solid".
+		var solidName = solids[i]
+		elements[solidName].state = "solid";
+	};
+	
 } else {
 	switch (enabledMods.includes(runAfterAutogenMod) + enabledMods.includes(explodeAtPlusMod)) {
 		case 0:
