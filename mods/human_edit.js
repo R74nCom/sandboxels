@@ -15,10 +15,13 @@ function hasPixel(x,y,elementInput) {
 	};		
 };
 
-function breakPixel(pixel,changetemp=false) {
+function breakPixel(pixel,changetemp=false,defaultBreakIntoDust=false) {
 	var info = elements[pixel.element];
 	if(typeof(info.breakInto) === "undefined") {
-		return false;
+		if(defaultBreakIntoDust) {
+			if(Math.random() < defaultBreakIntoDust) { changePixel(pixel,"dust",changetemp) };
+		};
+		return defaultBreakIntoDust;
 	};
 	var breakIntoElement = info.breakInto;
 	if(Array.isArray(breakIntoElement)) {
@@ -61,6 +64,7 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 		tempHigh: 100,
 		stateHigh: "cooked_meat",
 		tempLow: -18,
+		stateLow: "frozen_meat",
 		category:"life",
 		hidden: true,
 		breakInto: ["meat", "blood"],
