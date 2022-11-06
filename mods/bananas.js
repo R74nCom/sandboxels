@@ -2,6 +2,10 @@ var modName = "mods/human_edit.js";
 var onTryMoveIntoMod = "mods/onTryMoveInto.js";
 
 if(enabledMods.includes(onTryMoveIntoMod)) {
+	randomNumberFromOneToThree = function() {
+		return 1 + Math.floor(Math.random() * 3)
+	};
+	
 	debugSpeedGrowth = false;
 	logLeaves = false;
 	bananaAttachWhitelist = ["banana_pseudostem","banana_peduncle_1","banana_peduncle_2","petal","banana_leaf","banana_plant_top","banana"];
@@ -12,7 +16,7 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 		return (number - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
 	};
 
-	bananaDirtElements = ["dirt","mud","sand","wet_sand","clay_soil","mycelium"];
+	bananaDirtElements = ["dirt","mud","sand","wet_sand","clay_soil","mycelium","grass"];
 
 	function logPixelCoords(pixel) {
 		return `(${pixel.x}, ${pixel.y})`
@@ -36,6 +40,10 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 	elements.banana_seed = {
 		color: "#3b3b2e",
 		tick: function(pixel) {
+			if(pixel.bananaRange === null) {
+				pixel.bananaRange = randomNumberFromOneToThree();
+			};
+			
 			if (isEmpty(pixel.x,pixel.y+1)) {
 				movePixel(pixel,pixel.x,pixel.y+1);
 			} else {
@@ -49,6 +57,7 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 					if (isEmpty(pixel.x,pixel.y-1)) {
 						movePixel(pixel,pixel.x,pixel.y-1);
 						createPixel("banana_pseudostem",pixel.x,pixel.y+1);
+						pixelMap[pixel.x][pixel.y+1].bananaRange = pixel.bananaRange; //pass banana range down to pseudostem
 					};
 				} else if (pixel.age > (debugSpeedGrowth ? 500 : 1000)) {
 					changePixel(pixel,"banana_plant_top");
@@ -61,7 +70,9 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 			doDefaults(pixel);
 		},
 		properties: {
-			"age":0
+			"age": 0,
+			//"bananaRange": null, //apparently this is suddenly, in an illogical, never-before-seen, completely new, unprecedented incident of bad behavior, evaluated before being put into the property database, so RNG has to be done in tick
+			"bananaRange": null,
 		},
 		tempHigh: 100,
 		stateHigh: "dead_plant",
@@ -80,6 +91,10 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 		hidden: true,
 		color: "#d5e39f",
 		tick: function(pixel) {
+			if(pixel.bananaRange === null) {
+				pixel.bananaRange = randomNumberFromOneToThree();
+			};
+
 			if (pixel.age > 60 && pixel.temp < 100 && !pixel.grewPeduncle) {
 				var peduncleOffsets = [-1, 1]; //placed to the left, placed to the right
 				for(i = 0; i < peduncleOffsets.length; i++) {
@@ -87,7 +102,8 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 						if (Math.random() < 0.005) {
 							createPixel("banana_peduncle_1",pixel.x+peduncleOffsets[i],pixel.y);
 							pixelMap[pixel.x+peduncleOffsets[i]][pixel.y].dir = Math.sign(peduncleOffsets[i]);
-							pixel.grewPeduncle = true;
+							pixelMap[pixel.x+peduncleOffsets[i]][pixel.y].bananaRange = pixel.bananaRange; //pass banana range down to peduncle
+							if(Math.random() < 0.8) { pixel.grewPeduncle = true; } //20% chance to not mark as true, allowing for a chance to try another peduncle
 						};
 					};
 				};
@@ -98,6 +114,7 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 		properties: {
 			"age": 0,
 			"grewPeduncle": false,
+			"bananaRange": null,
 		},
 		tempHigh: 100,
 		stateHigh: "dead_plant",
@@ -181,6 +198,10 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 		name: "banana peduncle (offshoot)",
 		color: "#acb55b",
 		tick: function(pixel) {
+			if(pixel.bananaRange === null) {
+				pixel.bananaRange = randomNumberFromOneToThree();
+			};
+
 			if (pixel.age > 20 && pixel.temp < 100) {
 				var peduncleCoords1 = [pixel.x + pixel.dir, pixel.y];
 				var peduncleCoords2 = [pixel.x + pixel.dir, pixel.y + 1];
@@ -188,8 +209,10 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 					if(Math.random() < 0.5) {
 						createPixel(pixel.element,peduncleCoords1[0],peduncleCoords1[1]);
 						pixelMap[peduncleCoords1[0]][peduncleCoords1[1]].dir = pixel.dir;
+						pixelMap[peduncleCoords1[0]][peduncleCoords1[1]].bananaRange = pixel.bananaRange; //pass banana range down to next pixel of peduncle horizontal
 					} else {
 						createPixel("banana_peduncle_2",peduncleCoords2[0],peduncleCoords2[1]);
+						pixelMap[peduncleCoords2[0]][peduncleCoords2[1]].bananaRange = pixel.bananaRange; //pass banana range down to diagonal offshoot
 					};
 				};
 			};
@@ -199,6 +222,8 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 		properties: {
 			"dir": (!Math.floor(Math.random() * 2)) ? 1 : -1,
 			"age": 0,
+			//"bananaRange": (1 + (Math.floor(Math.random() * 3))), //1-3
+			"bananaRange": null,
 		},
 		tempHigh: 100,
 		stateHigh: "dead_plant",
@@ -217,12 +242,17 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 		name: "banana peduncle (hanging)",
 		color: "#9bad51",
 		tick: function(pixel) {
+			if(pixel.bananaRange === null) {
+				pixel.bananaRange = randomNumberFromOneToThree();
+			};
+
 			// Grow/Flower
 			if (pixel.age > 20 && pixel.temp < 100) {
 				var growthCoords = [pixel.x, pixel.y + 1];
 				if(isEmpty(...growthCoords)) { 
 					if(Math.random() < 0.9) {
 						createPixel(pixel.element,...growthCoords);
+						pixelMap[growthCoords[0]][growthCoords[1]].bananaRange = pixel.bananaRange; //pass banana range down to next pixel of peduncle vertical
 					} else {
 						createPixel("petal",...growthCoords); //the sexual dimorphism of the banana plant has zonked me
 					};
@@ -233,28 +263,39 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 			if (pixel.age > 40 && pixel.temp < 100) {
 				var bananaOffsets = [-1, 1]; //placed to the left, placed to the right
 				for(i = 0; i < bananaOffsets.length; i++) {
-					if (isEmpty(pixel.x+bananaOffsets[i],pixel.y,false)) {
-						if (Math.random() < 0.005) {
-							createPixel("banana",pixel.x+bananaOffsets[i],pixel.y);
-							pixelMap[pixel.x+bananaOffsets[i]][pixel.y].attached = true;
-							pixelMap[pixel.x+bananaOffsets[i]][pixel.y].attachDirection = -1 * Math.sign(bananaOffsets[i]); //attach dir is the opposite of placement dir so it attaches towards the stem
-						};
-					} else {
-						if (isEmpty(pixel.x+(2 * bananaOffsets[i]),pixel.y,false)) {
-							if (Math.random() < 0.005) {
-								createPixel("banana",pixel.x+(2 * bananaOffsets[i]),pixel.y);
-								pixelMap[pixel.x+(2 * bananaOffsets[i])][pixel.y].attached = true;
-								pixelMap[pixel.x+(2 * bananaOffsets[i])][pixel.y].attachDirection = -1 * Math.sign((2 * bananaOffsets[i])); //attach dir is the opposite of placement dir so it attaches towards the stem
+					//console.log(`Looping through left and right positions: ${bananaOffsets}`);
+					for(j = 1; j < pixel.bananaRange + 1; j++) { //for max banana distance, using the banana range
+						//console.log(`Looping through banana offset multipliers: ${j}`);
+						if (isEmpty(pixel.x+(j * bananaOffsets[i]),pixel.y,false)) { //if there's an empty space
+							//console.log(`Banana position is empty: [${j * bananaOffsets[i]}, 0]\nTrying banana at (${pixel.x+(j * bananaOffsets[i])},${pixel.y})`);
+							if (Math.random() < (debugSpeedGrowth ? 0.05 : 0.005)) { //try to place the banana
+								//console.log(`Placing banana`);
+								createPixel("banana",pixel.x+(j * bananaOffsets[i]),pixel.y);
+								pixelMap[pixel.x+(j * bananaOffsets[i])][pixel.y].attached = true;
+								pixelMap[pixel.x+(j * bananaOffsets[i])][pixel.y].attachDirection = -1 * Math.sign(bananaOffsets[i]); //attach dir is the opposite of placement dir so it attaches towards the stem
+							} else {
+								//console.log(`NOT placing banana`);
 							};
+							//console.log(`Banana tried, stopping iteration`);
+							break; //and then stop iteration
+						} else {
+							//console.log(`Banana position is NOT empty: [${j * bananaOffsets[i]}, 0]\nSkipping this offset`);
+							continue; //if not empty, skip that pixel and move on the next distance
 						};
-					};
+						//console.log(`====End of side try====`);
+					};					
+					//console.log(`####End of side iterator####`);
 				};
+				//console.log(`>>>>End of banana iterator<<<<`);
 			};
 			pixel.age++;
 			doDefaults(pixel);
+			//console.log(`\nEnd of peduncle tick\n`);
 		},
 		properties: {
 			"age": 0, 
+			//"bananaRange": (1 + (Math.floor(Math.random() * 3))), //1-3
+			"bananaRange": null,
 		},
 		tempHigh: 100,
 		stateHigh: "dead_plant",
@@ -290,6 +331,10 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 		hidden: true,
 		color: "#9df24e",
 		tick: function(pixel) {
+			if(pixel.bananaRange === null) {
+				pixel.bananaRange = randomNumberFromOneToThree();
+			};
+
 			if(pixel.attached) {
 				var attachCoords = [pixel.x + pixel.attachOffset[0], pixel.y + pixel.attachOffset[1]];
 				if(isEmpty(attachCoords[0],attachCoords[1],false)) { //consider OOB full
@@ -317,6 +362,7 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 		properties: {
 			"attached": false,
 			"attachOffset": [(!Math.floor(Math.random() * 2)) ? 1 : -1, 0],
+			"bananaRange": null,
 		},
 		burn: 5,
 		burnInto: ["steam", "ash"],
@@ -395,6 +441,10 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 		hidden: true,
 		color: "#d5e39f",
 		tick: function(pixel) {
+			if(pixel.bananaRange === null) {
+				pixel.bananaRange = randomNumberFromOneToThree();
+			};
+
 			if (pixel.age > 30 && pixel.temp < 100) {
 				if(!pixel.grewLeftLeaves) {
 					for(i = (0 - pixel.leafRange); i < 0; i++) { //left half
@@ -419,6 +469,7 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 							createPixel("banana_leaf",leafX,leafY);
 							pixelMap[leafX][leafY].attached = true; //set leaf's attached to true
 							pixelMap[leafX][leafY].attachOffset = leafAttachOffset; //array of 2 numbers
+							pixelMap[leafX][leafY].bananaRange = pixel.bananaRange;
 							pixel.grewLeftLeaves = true; //difference 2: separate flag for left side
 						} else {
 							break;
@@ -449,6 +500,7 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 							createPixel("banana_leaf",leafX,leafY);
 							pixelMap[leafX][leafY].attached = true; //set leaf's attached to true
 							pixelMap[leafX][leafY].attachOffset = leafAttachOffset; //array of 2 numbers
+							pixelMap[leafX][leafY].bananaRange = pixel.bananaRange;
 							pixel.grewRightLeaves = true; //difference 2: separate flag for right side
 						} else {
 							break;
@@ -464,6 +516,7 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 			"leafRange": 2 + (Math.floor(Math.random() * 3)), //2-4
 			"grewLeftLeaves": false,
 			"grewRightLeaves": false,
+			"bananaRange": null,
 		},
 		tempHigh: 100,
 		stateHigh: "dead_plant",
