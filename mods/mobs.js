@@ -4042,7 +4042,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 			following: false,
 		},
 		movable: true,
-		related: ["nothing_there_phase_1", "nothing_there_phase_2", "nothing_there_mace", "nothing_there_cleaver", , "nothing_there_bullet"],
+		related: ["nothing_there_phase_1", "nothing_there_phase_2", "nothing_there_mace", "nothing_there_cleaver", "nothing_there_bullet"],
 		tick: function(pixel) {
 			var pixelBreakInto = elements[pixel.element].breakInto;
 
@@ -4093,7 +4093,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 				}
 			}
 			else if (head == null) { return } //do not proceed if headless
-			else if (Math.random() < 0.1) { // Move 10% chance
+			else if (Math.random() < 0.08) { // Move 10% chance
 				var movesToTry = [
 					[1*pixel.dir,0],
 					[1*pixel.dir,-1],
@@ -4327,12 +4327,12 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 							if(!outOfBounds(bX,bY)) {
 								if(isEmpty(bX,bY)) {
 									createPixel("nothing_there_bullet",bX,bY);
-									pixelMap[bX][bY].flipX = true;
+									pixelMap[bX][bY].flipX = false;
 								} else {
 									if(!nothingThereBulletExcludedElements.includes(pixelMap[bX][bY].element)) {
 										deletePixel(bX,bY);
 										createPixel("nothing_there_bullet",bX,bY);
-										pixelMap[bX][bY].flipX = true;
+										pixelMap[bX][bY].flipX = false;
 									};
 								};
 							};
