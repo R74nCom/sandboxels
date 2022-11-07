@@ -1,0 +1,11 @@
+elements.ruby = {
+color: ["#ff0000","#f44336","#990000","#ea9999","#f4cccc"], behavior: [
+category: "powders",
+state: "solid",
+density: 265,
+burn: 1000,
+burnTime: 300,
+burnInto: ["carbon dioxide ",null,null],
+tempHigh: 1000, //bs
+stateHigh: ["oxygen",null,null],
+}
