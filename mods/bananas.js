@@ -1,4 +1,4 @@
-var modName = "mods/human_edit.js";
+var modName = "mods/bananas.js";
 var onTryMoveIntoMod = "mods/onTryMoveInto.js";
 
 if(enabledMods.includes(onTryMoveIntoMod)) {
