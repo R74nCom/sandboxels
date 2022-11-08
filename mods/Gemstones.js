@@ -6,7 +6,7 @@ elements.ruby = {
   burn: 1000,
   burnTime: 300,
   burnInto: ["carbon dioxide ",null,null],
-},
+};
 elements.sappire = {
   color: ["#2986cc","#16537e","#0086ff","#9da0f7","#54aeff"], behavior: [
   category: "powders",
@@ -15,7 +15,7 @@ elements.sappire = {
   burn: 1000,
   burnTime: 300,
   burnInto: ["carbon dioxide ",null,null],
-},
+};
 elements.emerald = {
   color: ["#6aa84f","#8fce00","#7cc95a","#8fce00","#c4dabd"], behavior: [
   category: "powders",
