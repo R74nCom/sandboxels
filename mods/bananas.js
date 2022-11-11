@@ -336,7 +336,7 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 			};
 
 			if(pixel.attached) {
-				var attachCoords = [pixel.x + pixel.attachOffset[0], pixel.y + pixel.attachOffset[1]];
+				var attachCoords = [pixel.x + pixel.attachOffsets[0], pixel.y + pixel.attachOffset[1]];
 				if(isEmpty(attachCoords[0],attachCoords[1],false)) { //consider OOB full
 					pixel.attached = false;
 				};
@@ -540,7 +540,6 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 		density: 593,
 		tick: functi
 	};*/
-
 } else {
 	alert(`The ${onTryMoveIntoMod} mod is required and has been automatically inserted (reload for this to take effect).`)
 	enabledMods.splice(enabledMods.indexOf(modName),0,onTryMoveIntoMod)
