@@ -5,10 +5,14 @@ var explodeAtPlusMod = "mods/explodeAtPlus.js";
 if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlusMod)) {
 	//Prerequisite Functions and Variables
 
+	minimumCreeperTries = 3;
 	maximumCreeperTries = 3;
-	minimumCreeperTries = 1;
-	maximumZombieTries = 3;
+
 	minimumZombieTries = 3;
+	maximumZombieTries = 3;
+
+	minimumSkeletonTries = 3;
+	maximumSkeletonTries = 3;
 
 	headBodyObject = {
 		"head": "body",
@@ -17,6 +21,8 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 		"hell_creeper_head": "hell_creeper_body",
 		"bombing_creeper_head": "bombing_creeper_body",
 		"zombie_head": "zombie_body",
+		"skeleton_head": "skeleton_body",
+		"nothing_there_phase_3_head": "nothing_there_phase_3_body",
 	};
 
 	var style = document.createElement('style'); //Initialize CSS for creeper spawning's status indicator
@@ -34,11 +40,15 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 	};
 	document.getElementsByTagName('head')[0].appendChild(style);
 
-	function pyth(xA,yA,xB,yB) { //Distance function, used for explosion trigger
+	function coordPyth(xA,yA,xB,yB) { //Distance function, used for explosion trigger
 		var a = Math.abs(xB - xA);
 		var b = Math.abs(yB - yA);
 		var c = Math.sqrt(a**2 + b**2);
 		return c;
+	};
+
+	function pythSpeed(number1,number2) {
+		return Math.sqrt(number1**2 + number2**2);
 	};
 
 	function rgbColorBound(number) { //RGB bounding function, used for safety checking color changes
@@ -197,6 +207,21 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 			hardness = info.hardness;
 		};
 		hardness = 1 - hardness; //invert hardness, so a hardness of 0 becomes a 100% chance and a hardness of 1 becomes a 0% chance
+		if(Math.random() < hardness) {
+			return breakPixel(pixel,changetemp=false,defaultBreakIntoDust=false);
+		} else {
+			return false;
+		};
+	};
+
+	function arrowAltTb(pixel,breakChanceMultiplier,changetemp=false,defaultBreakIntoDust=false) {
+		var info = elements[pixel.element];
+		var hardness = defaultHardness;
+		if(typeof(info.hardness) === "number") {
+			hardness = info.hardness;
+		};
+		hardness = 1 - hardness; //invert hardness, so a hardness of 0 becomes a 100% chance and a hardness of 1 becomes a 0% chance
+		hardness *= breakChanceMultiplier;
 		if(Math.random() < hardness) {
 			return breakPixel(pixel,changetemp=false,defaultBreakIntoDust=false);
 		} else {
@@ -616,6 +641,124 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 		};
 	};
 
+	var style = document.createElement('style'); //Initialize CSS for skeleton spawning's status indicator
+	style.type = 'text/css';
+	style.id = 'skeletonStatusStylesheet';
+	//initial style conditional branch
+	if(typeof(settings.skeletonSpawning) === "undefined") { //undefined (falsy but it needs special handling)
+		style.innerHTML = '.skeletonStatus { color: #E11; text-decoration: none; }';
+	} else {
+		if(!settings.skeletonSpawning) { //falsy: red
+			style.innerHTML = '.skeletonStatus { color: #E11; text-decoration: none; }';
+		} else if(settings.skeletonSpawning) { //truthy: green
+			style.innerHTML = '.skeletonStatus { color: #1E1; text-decoration: none; }';
+		};
+	};
+	document.getElementsByTagName('head')[0].appendChild(style);
+
+	if(typeof(settings.skeletonSpawning) === "undefined") { //Default skeleton setting
+		setSetting("skeletonSpawning",false);
+	};
+
+	function updateSkeletonPreferences() { //Skeleton setting handler
+		if(settings.skeletonSpawning) { //If the setting is on
+			if(typeof(randomEvents.skeleton) !== "function") { //add the event if it's missing
+				randomEvents.skeleton = function() {
+					var amount = Math.floor((Math.random() * maximumSkeletonTries)+minimumSkeletonTries); //1-3
+					//In worldgen worlds, you can expect about half of this because about half of the world is pixels in it.
+					for(i = 0; i < amount; i++) { //dummy for to break
+						if(settings.skeletonSpawning) { //setting validation
+							// random x between 1 and width-1
+							var x = Math.floor(Math.random()*(width-1))+1;
+							// random y between 1 and height
+							var y = Math.floor(Math.random()*height-1)+1;
+							if (isEmpty(x,y)) {
+								// random element from the list of spawnable skeletons
+								var element = spawnSkeletons[Math.floor(Math.random()*spawnSkeletons.length)];
+								// if element is an array, choose a random element from the array
+								if (Array.isArray(element)) {
+									element = element[Math.floor(Math.random()*element.length)];
+								}
+								createPixel(element,x,y);
+							};
+						} else { //if false (this function is never supposed to fire with the setting false)
+							delete randomEvents.skeleton; //self-disable
+							//substitute event
+							var event = randomEvents[Object.keys(randomEvents)[Math.floor(Math.random()*Object.keys(randomEvents).length)]];
+							event();
+							break;
+						};
+					};
+				};
+			};
+		} else if(!settings.skeletonSpawning) { //and if it's off
+			if(randomEvents.skeleton) { delete randomEvents.skeleton }; //delete it if it exists.
+		};
+	};
+
+	function toggleSkeletonSpawning() { //Skeleton toggle handler
+		if(settings.skeletonSpawning != true) { //If it's false
+			setSetting("skeletonSpawning",true); //make it true and update the status display CSS
+			updateSkeletonPreferences(); //apply
+			document.getElementById("skeletonStatusStylesheet").innerHTML = '.skeletonStatus { color: #1E1; text-decoration: underline; }'; //Displayed info doen't update until it's pulled up again, so I'm using CSS to dynamically change the color of an element, like with find.js (RIP).
+		} else { //and the inverse if it's true
+			setSetting("skeletonSpawning",false);
+			updateSkeletonPreferences();
+			document.getElementById("skeletonStatusStylesheet").innerHTML = '.skeletonStatus { color: #E11; text-decoration: none; }';
+		};
+	};
+
+	spawnSkeletons = ["skeleton"];
+
+	if(settings.skeletonSpawning) { //skeleton spawning option
+		randomEvents.skeleton = function() {
+			var amount = Math.floor((Math.random() * maximumSkeletonTries)+minimumSkeletonTries); //1-3
+			for(i = 0; i < amount; i++) { //dummy for to break
+				if(settings.skeletonSpawning) { //setting validation
+					// random x between 1 and width-1
+					var x = Math.floor(Math.random()*(width-1))+1;
+					// random y between 1 and height
+					var y = Math.floor(Math.random()*height-1)+1;
+					if (isEmpty(x,y)) {
+						// random element from the list of spawnable skeletons
+						var element = spawnSkeletons[Math.floor(Math.random()*spawnSkeletons.length)];
+						// if element is an array, choose a random element from the array
+						if (Array.isArray(element)) {
+							element = element[Math.floor(Math.random()*element.length)];
+						}
+						createPixel(element,x,y);
+					};
+				} else { //if false (this function is never supposed to fire with the setting false)
+					delete randomEvents.skeleton; //self-disable
+					//substitute event
+					var event = randomEvents[Object.keys(randomEvents)[Math.floor(Math.random()*Object.keys(randomEvents).length)]];
+					event();
+					break;
+				};
+			};
+		};
+	};
+
+	standaloneSpawnSkeleton = function(amount=1) {
+		/*	The amount is the maximum amount of *attempts*. Often, less skeletons will spawn due to things in the way.
+			In a generated world, which uses half of the space, you can expect about half of this number to spawn.	*/
+		for(i = 0; i < amount; i++) { //dummy for to break
+			// random x between 1 and width-1
+			var x = Math.floor(Math.random()*(width-1))+1;
+			// random y between 1 and height
+			var y = Math.floor(Math.random()*height-1)+1;
+			if (isEmpty(x,y)) {
+				// random element from the list of spawnable skeletons
+				var element = spawnSkeletons[Math.floor(Math.random()*spawnSkeletons.length)];
+				// if element is an array, choose a random element from the array
+				if (Array.isArray(element)) {
+					element = element[Math.floor(Math.random()*element.length)];
+				}
+				createPixel(element,x,y);
+			};
+		};
+	};
+
 	/*Start Main Zombie
 		..................
 		.........###......
@@ -874,7 +1017,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 										pixel.following = true;
 										//console.log(`Human detected at (${nX},${nY})`)
 										//Infect/kill if a human is close enough
-										if(pyth(pX,pY,nX,nY) <= 1.5) { //approx. sqrt(2)
+										if(coordPyth(pX,pY,nX,nY) <= 1.5) { //approx. sqrt(2)
 											if(Math.random() < 1/3) {	//One-third chance to mutilate (changePixel)
 												if(Math.random() < 1/3) {	//One-third chance to change to blood
 													changePixel(newPixel,"zombie_blood",false); //blood is turned in place
@@ -924,7 +1067,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 										pixel.following = true;
 										//console.log(`Human detected at (${nX},${nY})`)
 										//Infect/kill if a human is close enough
-										if(pyth(pX,pY,nX,nY) <= 1.5) { //approx. sqrt(2)
+										if(coordPyth(pX,pY,nX,nY) <= 1.5) { //approx. sqrt(2)
 											if(Math.random() < 1/3) {	//One-third chance to mutilate (changePixel)
 												if(Math.random() < 1/3) {	//One-third chance to change to blood
 													changePixel(newPixel,"zombie_blood",false); //blood is turned in place
@@ -1060,7 +1203,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 										pixel.following = true;
 										//console.log(`Human detected at (${nX},${nY})`)
 										//Infect/kill if a human is close enough
-										if(pyth(pX,pY,nX,nY) <= 1.5) { //approx. sqrt(2)
+										if(coordPyth(pX,pY,nX,nY) <= 1.5) { //approx. sqrt(2)
 											if(Math.random() < 1/3) {	//One-third chance to mutilate (changePixel)
 												if(Math.random() < 1/4) {	//One-fourth chance to change to blood
 													changePixel(newPixel,"zombie_blood",false); //blood is turned in place
@@ -1110,7 +1253,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 										pixel.following = true;
 										//console.log(`Human detected at (${nX},${nY})`)
 										//Infect/kill if a human is close enough
-										if(pyth(pX,pY,nX,nY) <= 1.5) { //approx. sqrt(2)
+										if(coordPyth(pX,pY,nX,nY) <= 1.5) { //approx. sqrt(2)
 											if(Math.random() < 1/3) {	//One-third chance to mutilate (changePixel)
 												if(Math.random() < 1/4) {	//One-fourth chance to change to blood
 													changePixel(newPixel,"zombie_blood",false); //blood is turned in place
@@ -1587,7 +1730,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 									pixel.following = true;
 									//console.log(`Human detected at (${nX},${nY})`)
 									//Start "hissing" if a human is close enough
-									if(pyth(pX,pY,nX,nY) <= 3.15) { //probably misapplying the tolerance from the MC Wiki line: "Creepers will chase after any player, as long as it is within a 16 block (±5%) radius"
+									if(coordPyth(pX,pY,nX,nY) <= 3.15) { //probably misapplying the tolerance from the MC Wiki line: "Creepers will chase after any player, as long as it is within a 16 block (±5%) radius"
 										pixel.hissing = true;
 										if(!pixel.hissStart) {
 											pixel.hissStart = pixelTicks;
@@ -1626,7 +1769,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 									pixel.following = true;
 									//console.log(`Human detected at (${nX},${nY})`)
 									//Start "hissing" if a human is close enough
-									if(pyth(pX,pY,nX,nY) <= 3.15) {
+									if(coordPyth(pX,pY,nX,nY) <= 3.15) {
 										pixel.hissing = true;
 										if(!pixel.hissStart) {
 											pixel.hissStart = pixelTicks;
@@ -1939,7 +2082,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 									pixel.following = true;
 									//console.log(`Human detected at (${nX},${nY})`)
 									//Start "hissing" if a human is close enough
-									if(pyth(pX,pY,nX,nY) <= 3.15) { //probably misapplying the tolerance from the MC Wiki line: "Creepers will chase after any player, as long as it is within a 16 block (±5%) radius"
+									if(coordPyth(pX,pY,nX,nY) <= 3.15) { //probably misapplying the tolerance from the MC Wiki line: "Creepers will chase after any player, as long as it is within a 16 block (±5%) radius"
 										pixel.hissing = true;
 										if(!pixel.hissStart) {
 											pixel.hissStart = pixelTicks;
@@ -1978,7 +2121,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 									pixel.following = true;
 									//console.log(`Human detected at (${nX},${nY})`)
 									//Start "hissing" if a human is close enough
-									if(pyth(pX,pY,nX,nY) <= 3.15) {
+									if(coordPyth(pX,pY,nX,nY) <= 3.15) {
 										pixel.hissing = true;
 										if(!pixel.hissStart) {
 											pixel.hissStart = pixelTicks;
@@ -2441,7 +2584,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 									pixel.following = true;
 									//console.log(`Human detected at (${nX},${nY})`)
 									//Start "hissing" if a human is close enough
-									if(pyth(pX,pY,nX,nY) <= 3.15) { //probably misapplying the tolerance from the MC Wiki line: "Creepers will chase after any player, as long as it is within a 16 block (±5%) radius"
+									if(coordPyth(pX,pY,nX,nY) <= 3.15) { //probably misapplying the tolerance from the MC Wiki line: "Creepers will chase after any player, as long as it is within a 16 block (±5%) radius"
 										pixel.hissing = true;
 										if(!pixel.hissStart) {
 											pixel.hissStart = pixelTicks;
@@ -2480,7 +2623,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 									pixel.following = true;
 									//console.log(`Human detected at (${nX},${nY})`)
 									//Start "hissing" if a human is close enough
-									if(pyth(pX,pY,nX,nY) <= 3.15) {
+									if(coordPyth(pX,pY,nX,nY) <= 3.15) {
 										pixel.hissing = true;
 										if(!pixel.hissStart) {
 											pixel.hissStart = pixelTicks;
@@ -2980,7 +3123,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 									pixel.following = true;
 									//console.log(`Human detected at (${nX},${nY})`)
 									//Start "hissing" if a human is close enough
-									if(pyth(pX,pY,nX,nY) <= 3.15) { //probably misapplying the tolerance from the MC Wiki line: "Creepers will chase after any player, as long as it is within a 16 block (±5%) radius"
+									if(coordPyth(pX,pY,nX,nY) <= 3.15) { //probably misapplying the tolerance from the MC Wiki line: "Creepers will chase after any player, as long as it is within a 16 block (±5%) radius"
 										pixel.hissing = true;
 										if(!pixel.hissStart) {
 											pixel.hissStart = pixelTicks;
@@ -3019,7 +3162,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 									pixel.following = true;
 									//console.log(`Human detected at (${nX},${nY})`)
 									//Start "hissing" if a human is close enough
-									if(pyth(pX,pY,nX,nY) <= 3.15) {
+									if(coordPyth(pX,pY,nX,nY) <= 3.15) {
 										pixel.hissing = true;
 										if(!pixel.hissStart) {
 											pixel.hissStart = pixelTicks;
@@ -3510,7 +3653,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 									pixel.following = true;
 									//console.log(`Human detected at (${nX},${nY})`)
 									//Start "hissing" if a human is close enough
-									if(pyth(pX,pY,nX,nY) <= 3.15) { //probably misapplying the tolerance from the MC Wiki line: "Creepers will chase after any player, as long as it is within a 16 block (±5%) radius"
+									if(coordPyth(pX,pY,nX,nY) <= 3.15) { //probably misapplying the tolerance from the MC Wiki line: "Creepers will chase after any player, as long as it is within a 16 block (±5%) radius"
 										pixel.hissing = true;
 										if(!pixel.hissStart) {
 											pixel.hissStart = pixelTicks;
@@ -3549,7 +3692,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 									pixel.following = true;
 									//console.log(`Human detected at (${nX},${nY})`)
 									//Start "hissing" if a human is close enough
-									if(pyth(pX,pY,nX,nY) <= 3.15) {
+									if(coordPyth(pX,pY,nX,nY) <= 3.15) {
 										pixel.hissing = true;
 										if(!pixel.hissStart) {
 											pixel.hissStart = pixelTicks;
@@ -3849,7 +3992,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 										pixel.following = true;
 										//console.log(`Human detected at (${nX},${nY})`)
 										//Infect/kill if a human is close enough
-										if(pyth(pX,pY,nX,nY) <= 1.5) { //approx. sqrt(2)
+										if(coordPyth(pX,pY,nX,nY) <= 1.5) { //approx. sqrt(2)
 											if(Math.random() < 1/4) {	//One-fourth chance to change to blood
 												changePixel(newPixel,"blood",false);
 											} else {					//Remaining 3/4 chance to change to meat
@@ -3895,7 +4038,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 										pixel.following = true;
 										//console.log(`Human detected at (${nX},${nY})`)
 										//Infect/kill if a human is close enough
-										if(pyth(pX,pY,nX,nY) <= 1.5) { //approx. sqrt(2)
+										if(coordPyth(pX,pY,nX,nY) <= 1.5) { //approx. sqrt(2)
 											if(Math.random() < 1/4) {	//One-fourth chance to change to blood
 												changePixel(newPixel,"blood",false);
 											} else {					//Remaining 3/4 chance to change to meat
@@ -4287,7 +4430,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 										pixel.following = true;
 										//console.log(`Human detected at (${nX},${nY})`)
 										//Infect/kill if a human is close enough
-										if(pyth(pX,pY,nX,nY) <= 1.5) { //approx. sqrt(2)
+										if(coordPyth(pX,pY,nX,nY) <= 1.5) { //approx. sqrt(2)
 											if(Math.random() < 1/4) {	//One-fourth chance to change to blood
 												changePixel(newPixel,"blood",false);
 											} else {					//Remaining 3/4 chance to change to meat
@@ -4393,7 +4536,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 										pixel.following = true;
 										//console.log(`Human detected at (${nX},${nY})`)
 										//Infect/kill if a human is close enough
-										if(pyth(pX,pY,nX,nY) <= 1.5) { //approx. sqrt(2)
+										if(coordPyth(pX,pY,nX,nY) <= 1.5) { //approx. sqrt(2)
 											if(Math.random() < 1/4) {	//One-fourth chance to change to blood
 												changePixel(newPixel,"blood",false);
 											} else {					//Remaining 3/4 chance to change to meat
@@ -4441,6 +4584,471 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 	   |                                   |
 	   |                                   |
 	   +-----------------------------------+ */
+
+	/* +++++++++++++++++++++++++++
+	   + Start skeleton elements +
+	   +++++++++++++++++++++++++++ */
+
+	arrowExcludedElements = ["wall"];
+
+	arrowPlacementExcludedElements = ["skeleton_head", "skeleton_body", "arrow", "wall"];
+
+	elements.rock.hardness = 0.55;
+
+	elements.arrow = {
+		cooldown: 2,
+		flippableX: true,
+		movable: true,
+		properties: {
+			flipY: false,
+			speed: 5,
+			fall: 0,
+			attached: false,
+			attachOffsets: [null, null],
+			penetrateCounter: 7,
+		},
+		density: 2471,
+		color: "#cacdcf",
+		related: ["skeleton_body","skeleton_head"],
+		movable: true,
+		burn: 20,
+		//burnInto: "flint",
+		burnInto: "rock",
+		burnTime: 250,
+		breakInto: ["gravel","gravel","sawdust","feather"],
+		tick: function(pixel) {
+			if(pixel.attachOffsets.includes(null)) {
+				pixel.attached = false;
+			};
+			if(pixel.attached) {
+				var attachCoords = [pixel.x+pixel.attachOffsets[0], pixel.y+pixel.attachOffsets[1]];
+				var attachX = pixel.x + pixel.attachOffsets[0];
+				var attachY = pixel.y + pixel.attachOffsets[1];
+				if(isEmpty(attachX,attachY,true)) {
+					pixel.attached = false;
+				} else {
+					var attachPixel = pixelMap[attachX][attachY];
+					var attachInfo = elements[attachPixel.element];
+					var attachState = "solid";
+					if(typeof(attachInfo.state) === "string") {
+						attachState = attachInfo.state;
+					};
+					var attachBlacklistStates = ["liquid","gas"];
+					if(attachBlacklistStates.includes(attachState)) {
+						pixel.attached = false;
+					};
+				};
+			} else { //Move if not attached
+				var speedForBreakMult = pythSpeed(pixel.speed,pixel.y);
+				var breakMult = speedForBreakMult/5;
+				
+				if(typeof(pixel.flipX) == undefined) {
+					pixel.flipX = !!Math.floor(Math.random() * 2);
+				};
+				var dir = pixel.flipX ? -1 : 1;
+				if(Math.random() < (1/(pixel.speed**1.585))) { //1/0 is Infinity in JavaScript, so this should always be true at 0 speed)
+					pixel.fall++;
+				};
+				//Horizontal movement
+				for(i = 0; i < pixel.speed; i++) {
+					if(outOfBounds(pixel.x+dir,pixel.y)) {
+						deletePixel(pixel.x,pixel.y);
+						break;
+					};
+					if(!isEmpty(pixel.x+dir,pixel.y,true)) {
+						var otherPixel = pixelMap[pixel.x+dir][pixel.y];
+						var otherElement = otherPixel.element;
+						var otherInfo = elements[otherElement];
+						if(arrowExcludedElements.includes(otherElement)) {
+							pixel.attached = true; //attach
+							pixel.speed = 0;
+							pixel.fall = 0;
+							pixel.attachOffsets = [dir, 0];
+							break;
+						};
+						var otherDensity = (typeof(otherInfo.density) === "undefined" ? 1000 : otherInfo.density);
+						var swapChance = 1 - Math.max(0,(otherDensity / 2471));
+						if(Math.random() < swapChance && pixel.penetrateCounter > 0) {
+							swapPixels(pixel,otherPixel);
+							arrowAltTb(otherPixel,breakMult);
+							pixel.speed = Math.max(0,--pixel.speed);
+							pixel.penetrateCounter--;
+						} else {
+							if(!arrowAltTb(otherPixel,breakMult)) { //if this didn't break it
+								pixel.attached = true; //attach
+								pixel.speed = 0;
+								pixel.fall = 0;
+								pixel.attachOffsets = [dir, 0];
+							};
+						};
+						break;
+					} else {
+						tryMove(pixel,pixel.x+dir,pixel.y);
+					};
+				};
+				if(Math.random() < 0.1) {
+					pixel.speed = Math.max(0,--pixel.speed);
+				};
+				
+				var dirY = 1;
+				//Vertical movement
+				if(typeof(pixel.flipY) !== "undefined") {
+					if(pixel.flipY) {
+						pixel.dirY = -1;
+					};
+				};
+
+				for(j = 0; j < pixel.fall; j++) {
+					if(outOfBounds(pixel.x,pixel.y+dirY)) {
+						deletePixel(pixel.x,pixel.y);
+						break;
+					};
+					if(!isEmpty(pixel.x,pixel.y+dirY,true)) {
+						var otherPixel = pixelMap[pixel.x][pixel.y+dirY];
+						var otherElement = otherPixel.element;
+						var otherInfo = elements[otherElement];
+						if(arrowExcludedElements.includes(otherElement)) {
+							pixel.attached = true; //attach
+							pixel.speed = 0;
+							pixel.fall = 0;
+							pixel.attachOffsets = [0, dirY];
+							break;
+						};
+						var otherDensity = (typeof(otherInfo.density) === "undefined" ? 1000 : otherInfo.density);
+						var swapChance = 1 - Math.max(0,(otherDensity / 2471));
+						if(Math.random() < swapChance && pixel.penetrateCounter > 0) {
+							swapPixels(pixel,otherPixel);
+							arrowAltTb(otherPixel,breakMult);
+							pixel.speed = Math.max(0,--pixel.speed);
+							pixel.penetrateCounter--;
+						} else {
+							if(!arrowAltTb(otherPixel,breakMult)) { //if this didn't break it
+								pixel.attached = true; //attach
+								pixel.speed = 0;
+								pixel.fall = 0;
+								pixel.attachOffsets = [0, dirY];
+							};
+						};
+						break;
+					} else {
+						tryMove(pixel,pixel.x,pixel.y+dirY);
+					};
+				};
+
+				//End
+			};
+		},
+	};
+
+	elements.skeleton = {
+		color: ["#ebebe6", "#cfcfc8"],
+		category: "life",
+		properties: {
+			dead: false,
+			dir: 1,
+			panic: 0,
+			following: false,
+		},
+		movable: true,
+		tick: function(pixel) {
+			if (isEmpty(pixel.x, pixel.y+1)) {
+				createPixel("skeleton_body", pixel.x, pixel.y+1);
+				pixel.element = "skeleton_head";
+				pixel.color = pixelColorPick(pixel)
+			}
+			else if (isEmpty(pixel.x, pixel.y-1)) {
+				createPixel("skeleton_head", pixel.x, pixel.y-1);
+				pixelMap[pixel.x][pixel.y-1].color = pixel.color;
+				pixel.element = "skeleton_body";
+				pixel.color = pixelColorPick(pixel)
+			}
+			else {
+				deletePixel(pixel.x, pixel.y);
+			}
+		},
+		related: ["skeleton_body","skeleton_head"],
+		desc: "<span class=\"skeletonStatus\">If this text is green or underlined, skeletons can spawn.</span> <span onclick=toggleSkeletonSpawning() style=\"color: #ff00ff;\";>Click here</span> to toggle skeleton spawning. If it's on, skeletons (all types) can spawn through random events."
+	};
+
+	elements.skeleton_body = {
+		color: "#ebebe6",
+		category: "life",
+		hidden: true,
+		density: 1500,
+		state: "solid",
+		conduct: 25,
+		tempHigh: 250,
+		stateHigh: "bone",
+		burn: 10,
+		burnTime: 250,
+		burnInto: ["bone","ash","arrow"],
+		hardness: 0.55,
+		breakInto: ["bone","bone","bone","bone_marrow"],
+		reactions: {
+			"cancer": { "elem1":"cancer", "chance":0.005 },
+			"radiation": { "elem1":["ash","meat","rotten_meat","cooked_meat"], "chance":0.4 },
+			"plague": { "elem1":"plague", "chance":0.05 },
+		},
+		properties: {
+			dead: false,
+			dir: 1,
+			panic: 0,
+			chargeCounter: 20,
+			shooting: false,
+		},
+		movable: true,
+		tick: function(pixel) {
+			if (tryMove(pixel, pixel.x, pixel.y+1)) { // Fall
+				if (!isEmpty(pixel.x, pixel.y-2, true)) { // Drag head down
+					var headPixel = pixelMap[pixel.x][pixel.y-2];
+					if (headPixel.element == "skeleton_head") {
+						if (isEmpty(pixel.x, pixel.y-1)) {
+							movePixel(pixelMap[pixel.x][pixel.y-2], pixel.x, pixel.y-1);
+						}
+						else {
+							swapPixels(pixelMap[pixel.x][pixel.y-2], pixelMap[pixel.x][pixel.y-1]);
+						}
+					}
+				}
+			}
+			doHeat(pixel);
+			doBurning(pixel);
+			doElectricity(pixel);
+			if (pixel.dead) {
+				// Turn into bone if pixelTicks-dead > 500
+				if (pixelTicks-pixel.dead > 200) {
+					changePixel(pixel,"bone");
+				}
+				return
+			}
+
+			// Find the head
+			if (!isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "skeleton_head") {
+				var head = pixelMap[pixel.x][pixel.y-1];
+				if (head.dead) { // If head is dead, kill body
+					pixel.dead = head.dead;
+				}
+			}
+			else { var head = null }
+
+			if (isEmpty(pixel.x, pixel.y-1)) {
+				// create blood if decapitated 10% chance (bone marrow)
+				if (Math.random() < 0.1) {
+					createPixel("blood", pixel.x, pixel.y-1);
+					// set dead to true 15% chance
+					if (Math.random() < 0.15) {
+						pixel.dead = pixelTicks;
+					}
+				}
+			}
+			else if (head == null) { return }
+			else if (Math.random() < 0.1) { // Move 10% chance
+				var movesToTry = [
+					[1*pixel.dir,0],
+					[1*pixel.dir,-1],
+				];
+				// While movesToTry is not empty, tryMove(pixel, x, y) with a random move, then remove it. if tryMove returns true, break.
+				while (movesToTry.length > 0) {
+					var move = movesToTry.splice(Math.floor(Math.random() * movesToTry.length), 1)[0];
+					if (isEmpty(pixel.x+move[0], pixel.y+move[1]-1)) {
+						if (tryMove(pixel, pixel.x+move[0], pixel.y+move[1])) {
+							movePixel(head, head.x+move[0], head.y+move[1]);
+							break;
+						};
+					};
+				};
+				// 15% chance to change direction while not chasing a human
+				if(!head.following) {
+					if (Math.random() < 0.15) {
+						pixel.dir *= -1;
+						//console.log("*turns around cutely to face ${pixel.dir < 0 ? 'left' : 'right'}*");
+					};
+				}/* else {
+					//console.log("*chases cutely*");
+				};*/
+			};
+
+			if(pixel.shooting) {
+				if(pixel.chargeCounter <= 0) {
+					var bX = pixel.x + pixel.dir;
+					var bY = pixel.y - 1;
+					var arrowFlipX = null;
+					if(pixel.dir < 0) {
+						arrowFlipX = true;
+					} else if(pixel.dir > 0) {
+						arrowFlipX = false;
+					};
+					if(!outOfBounds(bX,bY)) {
+						if(isEmpty(bX,bY)) {
+							createPixel("arrow",bX,bY);
+							pixelMap[bX][bY].flipX = arrowFlipX;
+						} else {
+							if(!arrowExcludedElements.includes(pixelMap[bX][bY].element) && !arrowPlacementExcludedElements.includes(pixelMap[bX][bY].element)) {
+								deletePixel(bX,bY);
+								createPixel("arrow",bX,bY);
+								pixelMap[bX][bY].flipX = arrowFlipX;
+							};
+						};
+					};
+					pixel.chargeCounter = 20;
+				};
+				if(pixel.chargeCounter > 0) {
+					pixel.chargeCounter--;
+				};
+			};
+		},
+	};
+
+	elements.skeleton_head = {
+		color: ["#ebebe6", "#cfcfc8"],
+		category: "life",
+		hidden: true,
+		density: 1500,
+		state: "solid",
+		conduct: 25,
+		tempHigh: 250,
+		stateHigh: "bone",
+		burn: 10,
+		burnTime: 250,
+		burnInto: ["bone","ash","arrow"],
+		hardness: 0.55,
+		breakInto: ["bone","bone","bone","bone_marrow"],
+		reactions: {
+			"cancer": { "elem1":"cancer", "chance":0.005 },
+			"radiation": { "elem1":["ash","meat","rotten_meat","cooked_meat"], "chance":0.4 },
+			"plague": { "elem1":"plague", "chance":0.05 },
+		},
+		properties: {
+			dead: false,
+			dir: 1,
+			panic: 0,
+		},
+		movable: true,
+		tick: function(pixel) {
+			doHeat(pixel);
+			doBurning(pixel);
+			doElectricity(pixel);
+			if (pixel.dead) {
+				// Turn into bone if pixelTicks-dead > 500
+				if (pixelTicks-pixel.dead > 200) {
+					changePixel(pixel,"bone");
+				}
+				return
+			}
+
+			// Find the body
+			if (!isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "skeleton_body") {
+				var body = pixelMap[pixel.x][pixel.y+1];
+				if (body.dead) { // If body is dead, kill head
+					pixel.dead = body.dead;
+				}
+			}
+			else { var body = null }
+
+			if(body) {
+				if(body.dir !== pixel.dir) { //hacky workaround: lock head dir to body dir
+					pixel.dir = body.dir;
+				};
+			};
+
+			if (isEmpty(pixel.x, pixel.y+1)) {
+				tryMove(pixel, pixel.x, pixel.y+1);
+				// create blood if severed 10% chance
+				if (isEmpty(pixel.x, pixel.y+1) && !pixel.dead && Math.random() < 0.1) {
+					createPixel("blood", pixel.x, pixel.y+1);
+					// set dead to true 15% chance
+					if (Math.random() < 0.15) {
+						pixel.dead = pixelTicks;
+					}
+				}
+			}
+			
+			//start of most new code
+			var pX = pixel.x;
+			var pY = pixel.y;
+			
+			//Human detection loop (looks ahead according to direction and sets the "following" variable to true, telling the body to lock the direction)
+			var directionAdverb = "left";
+			if(pixel.dir > 0) {
+				directionAdverb = "right";
+			};
+			//console.log(`Looking ${directionAdverb}`)
+			if(pixel.dir === -1) {
+				for(i = -4; i < 4+1; i++) {
+					var oY = i;
+					//console.log(`Starting row look at row ${pY+oY}`)
+					for(j = (-1); j > (-16 - 1); j--) {
+						var oX = j;
+						var nX = pX+oX;
+						var nY = pY+oY;
+						if(outOfBounds(nX,nY)) {
+							//console.log(`Stopping row look at pixel (${nX},${nY}) due to OoB`)
+							break;
+						};
+						if(isEmpty(nX,nY)) {
+							//console.log(`Skipping pixel (${nX},${nY}) (empty)`)
+							continue;
+						};
+						if(!isEmpty(nX,nY,true)) {
+							var newPixel = pixelMap[nX][nY];
+							var newElement = newPixel.element;
+							if(enemyHumanoidArray.includes(newElement)) {
+								//console.log(`Human part found at (${nX},${nY})`)
+								if(!newPixel.dead) {
+									pixel.following = true;
+									body.shooting = true;
+								};
+							} else {
+								//console.log(`Stopping row look at pixel (${nX},${nY}) due to non-human pixel in the way`)
+								break; //can't see through humans
+							};
+						};
+					};
+				};
+			} else if(pixel.dir === 1) {
+				for(i = -4; i < 4+1; i++) {
+					var oY = i;
+					//console.log(`Starting row look at row ${pY+oY}`)
+					for(j = 1; j < 16 + 1; j++) {
+						var oX = j;
+						var nX = pX+oX;
+						var nY = pY+oY;
+						if(outOfBounds(nX,nY)) {
+							//console.log(`Stopping row look at pixel (${nX},${nY}) due to OoB`)
+							break;
+						};
+						if(isEmpty(nX,nY)) {
+							//console.log(`Skipping pixel (${nX},${nY}) (empty)`)
+							continue;
+						};
+						if(!isEmpty(nX,nY,true)) {
+							var newPixel = pixelMap[nX][nY];
+							var newElement = newPixel.element;
+							if(enemyHumanoidArray.includes(newElement)) {
+								//console.log(`Human part found at (${nX},${nY})`)
+								if(!newPixel.dead) {
+									pixel.following = true;
+									body.shooting = true;
+								};
+							} else {
+								//console.log(`Stopping row look at pixel (${nX},${nY}) due to non-human pixel in the way`)
+								break;
+							};
+						};
+					};
+				};
+			};
+			
+			if(Math.random() < 0.01) { //1% chance each tick to lose interest
+				pixel.following = false;
+				//console.log("Meh.");
+			};
+		},
+	};
+
+	/* -------------------------
+	   - End skeleton elements -
+	   ------------------------- */
 
 	/* Creeper generation
 	___#___#___#___#___#___#___#___#___#___
@@ -4880,7 +5488,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 									pixel.following = true;
 									//console.log(`Human detected at (${nX},${nY})`)
 									//Start "hissing" if a human is close enough
-									if(pyth(pX,pY,nX,nY) <= 3.15) { //probably misapplying the tolerance from the MC Wiki line: "Creepers will chase after any player, as long as it is within a 16 block (±5%) radius"
+									if(coordPyth(pX,pY,nX,nY) <= 3.15) { //probably misapplying the tolerance from the MC Wiki line: "Creepers will chase after any player, as long as it is within a 16 block (±5%) radius"
 										pixel.hissing = true;
 										if(!pixel.hissStart) {
 											pixel.hissStart = pixelTicks;
@@ -4919,7 +5527,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 									pixel.following = true;
 									//console.log(`Human detected at (${nX},${nY})`)
 									//Start "hissing" if a human is close enough
-									if(pyth(pX,pY,nX,nY) <= 3.15) {
+									if(coordPyth(pX,pY,nX,nY) <= 3.15) {
 										pixel.hissing = true;
 										if(!pixel.hissStart) {
 											pixel.hissStart = pixelTicks;
