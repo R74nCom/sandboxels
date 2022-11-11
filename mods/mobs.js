@@ -454,6 +454,100 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 		};
 	};
 
+	//Random integer from m to n
+	function randomIntegerBetweenTwoValues(min,max) {
+		if(min > max) {
+			var temp = max; //the need of a temporary space has always annoyed me
+			max = min;
+			min = temp;
+		};
+		return Math.floor(Math.random() * (max - min + 1)) + min
+	};
+
+	//Element exists in the elements object
+	function elementExists(elementName) {
+		return typeof(elements[elementName]) === "object";
+	};
+
+	elements.spawner = {
+		color: "#1c3038",
+		breakInto: ["steel","steel","smoke",null,null,null,null,null],
+		properties: {
+			spawnCounter: 0,
+			spawnTime: 160,
+			spawn: null,
+			squadiusX: 4,
+			squadiusY: 4,
+			spawnTries: 4,
+			//spawnRangeMax: null, //Disabled by default for performance and because I can't think of how to make it count MPL elements towards the limit
+		},
+		tick: function(pixel) {
+			//validation
+			if(Array.isArray(pixel.spawn)) {
+				pixel.spawn = pixel.spawn.filter(function(e){ return elementExists(e) });
+				if(pixel.spawn.length == 0) {
+					pixel.spawn = null;
+				};
+			} else {
+				if(!elementExists(pixel.spawn)) {
+					pixel.spawn = null;
+				};
+			};
+			if(pixel.spawn === null) {
+				return false;
+			};
+			if(pixel.spawnCounter <= 0) {
+				//var pixelsOfSpawnElement = 0;
+				
+				var newSpawn = pixel.spawn;
+				if(Array.isArray(newSpawn)) {
+					newSpawn = newSpawn[Math.floor(Math.random() * newSpawn.length)];
+				};
+
+				var xForMin = -1 * pixel.squadiusX;
+				var xForMax = pixel.squadiusX + 1;
+				var yForMin = -1 * pixel.squadiusY;
+				var yForMax = pixel.squadiusY + 1;
+				
+				/*if(pixel.spawnRangeMax !== null) {
+					for(xOffset = xForMin; xOffset < xForMax; xOffset++) {
+						for(yOffset = yForMin; yOffset < yForMax; yOffset++) {
+							var newX = pixel.x + xOffset;
+							var newY = pixel.y + yOffset;
+							if(isEmpty(newX,newY,true) || outOfBounds(newX,newY)) {
+								continue;
+							};
+							newPixel = pixelMap[newX][newY];
+							if(newPixel.element == pixel.spawn || pixel.spawn.includes(newPixel.element)) {
+								pixelsOfSpawnElement++;
+							};
+						};
+					};
+					if(pixelsOfSpawnElement > pixel.spawnRangeMax) {
+						return false;
+					};
+				};*/
+
+				for(s = 0; s < pixel.spawnTries; s++) {
+					var randomX = pixel.x + randomIntegerBetweenTwoValues(0 - pixel.squadiusX, pixel.squadiusX);
+					var randomY = pixel.y + randomIntegerBetweenTwoValues(0	- pixel.squadiusY, pixel.squadiusY);
+					if(isEmpty(randomX,randomY,false)) {
+						createPixel(newSpawn,randomX,randomY);
+					};
+				};
+				pixel.spawnCounter = pixel.spawnTime;
+			} else {
+				pixel.spawnCounter--;
+			};
+		},
+		hardness: 0.7,
+		state: "solid",
+	}
+
+	if(enabledMods.includes("mods/fey_and_more.js")) {
+		elements.spawner.breakInto.push("magic");
+	};
+
 	elements.frozen_rotten_meat = {
 		color: ["#8FB588", "#8FA888"],
 		behavior: [
