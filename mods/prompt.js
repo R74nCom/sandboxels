@@ -9,9 +9,9 @@ numberSynonyms = [ "number", "num", "nm", "nu", "nb", "integer", "int", "i", "it
 booleanSynonyms = [ "boolean", "bool", "boole", "boo", "bo", "bl", "b" ];
 synonymsOfTrue = ["true", "t", "1", "yes"];
 synonymsOfFalse = ["false", "f", "0", "no"];
-defaultStringTypeValues = ["element","color","clone","changeTo","void","type"];
-defaultNumberTypeValues = ["x","y","temp","start","vx","vy","chargeCD","start","burnStart","dir","panic","r","frequency","length","delay","volume","debounce","debounceLength"];
-defaultBooleanTypeValues = ["burning","charge","dead","hissing","following","dirLocked","del","didChargeBlueTinted"];
+defaultStringTypeValues = ["element","color","clone","changeTo","void","type","spawn"];
+defaultNumberTypeValues = ["x","y","temp","start","vx","vy","chargeCD","start","burnStart","dir","panic","r","frequency","length","delay","volume","debounce","debounceLength","speed","fall","penetrateCounter","chargeCounter","spawnCounter","spawnTime","squadiusX","squadiusY","spawnTries","counter"];
+defaultBooleanTypeValues = ["burning","charge","dead","hissing","following","dirLocked","del","didChargeBlueTinted","shooting","del"];
 commandHelpObject = {
 	"set": "Sets properties for every pixel of a given type.\nUsage: set [property] [element] [value] <type>\nDon't include framing characters []<>.\nThe element can be \"all\" to set the property for every pixel.\nNote: Strings can't have spaces because spaces are the separator used in the parsing split().\nArguments in [brackets] are required and ones in <angle brackets> are optional.",
 	"test": "Test.",
