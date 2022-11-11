@@ -157,7 +157,7 @@ if(enabledMods.includes(variablesMod)) {
 				return false;
 			};
 		} else if(propType === "array") {
-			array = propType.split(",");
+			array = propValue.split(",");
 			for(i = 0; i < array.length; i++) {
 				if(array[i].startsWith("s")) { //String
 					array[i] = array[i].substring(1);
@@ -191,7 +191,7 @@ if(enabledMods.includes(variablesMod)) {
 					return false;
 				};
 			};
-			propType = array;
+			propValue = array;
 		} else if(propType !== "string") {
 			alert("Unrecognized or unsupported type!");
 			return false;
