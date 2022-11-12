@@ -71,6 +71,15 @@
 		return total / array.length
 	};
 
+	function sumNumericArray(array) { //Sum of array numbers
+		return array.reduce((partialSum, a) => partialSum + a, 0);
+	};
+
+	function pad_array(arr,len,fill) { //https://stackoverflow.com/a/38851957
+		//console.log("Padding array");
+		return arr.concat(Array(len).fill(fill)).slice(0,len);
+	}
+	
 	//Function to check if an array includes a given array by SO Johnny Tisdale: https://stackoverflow.com/a/60922255
 	//CC-BY-SA-4.0
 	function includesArray(parentArray, testArray) {
@@ -80,6 +89,23 @@
 			};
 		};
 		return false;
+	};
+
+	function addArraysInPairs(array1,array2,fill=0) { //e.g. [1,2,3] + [10,0,-1] = [11,2,2]
+		//console.log("Adding in pairs: " + array1 + " and " + array2 + ".");
+		if(array1.length > array2.length) { //zero-padding
+			array2 = pad_array(array2,array1.length,fill); //if a1 is longer, pad a2 to a1's length
+		} else if(array2.length > array1.length) {
+			array1 = pad_array(array1,array2.length,fill); //if a2 is longer, pad a1 to a2's length
+		};
+		var tempArray = [];
+		for(z = 0; z < array1.length; z++) {
+			//console.log("Forming output values (" + array1[z] + " + " + array2[z] + ")");
+			tempArray[z] = array1[z] + array2[z];
+			//console.log("Sum" + tempArray[z]);
+		};
+		//console.log("Added into " + tempArray + ".");
+		return tempArray;
 	};
 
 //Checks
@@ -593,7 +619,87 @@
 		};
 	};
 
-// Pixels
+	function averageRgbPrefixedColorArray(colorArray,returnObject=false) { //array of rgb()s to single rgb() of average color
+		//averageRgbPrefixedColorArray(["rgb(255,0,0)", "rgb(0,0,0)", "rgb(0,0,255)"]);
+		//console.log("Averaging started");
+		var reds = [];
+		var greens = [];
+		var blues = [];
+		for(k = 0; k < colorArray.length; k++) {
+			//console.log("Average function: Executing catcher on " + colorArray);
+			var color = rgbHexCatcher(colorArray[k]);
+			//console.log("Logged color for aRPCA: " + color);
+			color = color.split(","); 
+			var red = parseFloat(color[0].substring(4));
+			reds.push(red)
+			var green = parseFloat(color[1]);
+			greens.push(green)
+			var blue = parseFloat(color[2].slice(0,-1));
+			blues.push(blue)
+		};
+		redAverage = Math.round(averageNumericArray(reds));
+		greenAverage = Math.round(averageNumericArray(greens));
+		blueAverage = Math.round(averageNumericArray(blues));
+		var output; 
+		returnObject ? output = {r: redAverage, g: greenAverage, b: blueAverage} : output = `rgb(${redAverage},${greenAverage},${blueAverage})`;
+		//console.log("Averaging finished, product: " + output);
+		return output;
+	};
+
+	//https://stackoverflow.com/questions/46432335/hex-to-hsl-convert-javascript
+	function rgbStringToHSL(rgb) { //Originally a hex-to-HSL function, edited to take RGB and spit out an array
+		//console.log("HSLing some RGBs");
+		var result = rgbStringToUnvalidatedObject(rgb);
+
+		var r = result.r;
+		var g = result.g;
+		var b = result.b;
+
+		r /= 255, g /= 255, b /= 255;
+		var max = Math.max(r, g, b), min = Math.min(r, g, b);
+		var h, s, l = (max + min) / 2;
+
+		if(max == min){
+			h = s = 0; // achromatic
+		} else {
+			var d = max - min;
+			s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+			switch(max) {
+				case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+				case g: h = (b - r) / d + 2; break;
+				case b: h = (r - g) / d + 4; break;
+			}
+			h /= 6;
+		};
+
+		s = s*100;
+		s = Math.round(s);
+		l = l*100;
+		l = Math.round(l);
+		h = Math.round(360*h);
+
+		//var colorInHSL = 'hsl(' + h + ', ' + s + '%, ' + l + '%)';
+		//Edit to return an array
+		var colorInHSL = [h,s,l];
+		//console.log("HSL output "+ colorInHSL + ".");
+		return colorInHSL;
+	};
+
+	//https://stackoverflow.com/questions/36721830/convert-hsl-to-rgb-and-hex
+	function hslToHex(h, s, l) { //h, s, l params to hex triplet
+	  //console.log(`Hexing some HSLs (the HSLs are ${h},${s},${l})`)
+	  l /= 100;
+	  var a = s * Math.min(l, 1 - l) / 100;
+	  var f = n => {
+		var k = (n + h / 30) % 12;
+		var color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+		return Math.round(255 * color).toString(16).padStart(2, '0');   // convert to Hex and prefix "0" if needed
+	  };
+	  //console.log(`Hexed to #${f(0)}${f(8)}${f(4)}`)
+	  return `#${f(0)}${f(8)}${f(4)}`;
+	};
+		
+//Pixels
 
 	function exposedToAir(pixel) {	
 		return (isEmpty(pixel.x+1,pixel.y) || isEmpty(pixel.x-1,pixel.y) || isEmpty(pixel.x,pixel.y+1) || isEmpty(pixel.x,pixel.y-1));
@@ -651,6 +757,20 @@
 			breakIntoElement = breakIntoElement[Math.floor(Math.random() * breakIntoElement.length)]
 		};
 		changePixel(pixel,breakIntoElement,changetemp)
+	};
+
+	function tryBreak(pixel,changetemp=false,defaultBreakIntoDust=false) {
+		var info = elements[pixel.element];
+		var hardness = defaultHardness;
+		if(typeof(info.hardness) === "number") {
+			hardness = info.hardness;
+		};
+		hardness = 1 - hardness; //invert hardness, so a hardness of 0 becomes a 100% chance and a hardness of 1 becomes a 0% chance
+		if(Math.random() < hardness) {
+			return breakPixel(pixel,changetemp=false,defaultBreakIntoDust=false);
+		} else {
+			return false;
+		};
 	};
 
 //Logic
