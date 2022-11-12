@@ -1,8 +1,9 @@
 var modName = "mods/mobs.js";
 var runAfterAutogenMod = "mods/runAfterAutogen and onload restructure.js";
 var explodeAtPlusMod = "mods/explodeAtPlus.js";
+var libraryMod = "mods/code_library.js";
 
-if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlusMod)) {
+if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlusMod) && enabledMods.includes(libraryMod)) {
 	//Prerequisite Functions and Variables
 
 	minimumCreeperTries = 3;
@@ -200,20 +201,6 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 
 	defaultHardness = 0;
 
-	function tryBreak(pixel,changetemp=false,defaultBreakIntoDust=false) {
-		var info = elements[pixel.element];
-		var hardness = defaultHardness;
-		if(typeof(info.hardness) === "number") {
-			hardness = info.hardness;
-		};
-		hardness = 1 - hardness; //invert hardness, so a hardness of 0 becomes a 100% chance and a hardness of 1 becomes a 0% chance
-		if(Math.random() < hardness) {
-			return breakPixel(pixel,changetemp=false,defaultBreakIntoDust=false);
-		} else {
-			return false;
-		};
-	};
-
 	function arrowAltTb(pixel,breakChanceMultiplier,changetemp=false,defaultBreakIntoDust=false) {
 		var info = elements[pixel.element];
 		var hardness = defaultHardness;
@@ -356,11 +343,6 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 
 	//Prerequisite Functions and Variables
 
-	function getKeyByValue(object, value) {
-	  return Object.keys(object).find(key => object[key] === value);
-	}
-	//getKeyByValue code by UncleLaz on StackOverflow: https://stackoverflow.com/questions/9907419/how-to-get-a-key-in-a-javascript-object-by-its-value"
-
 	function headHasBody(pixel) {
 		var pX = pixel.x;
 		var pY = pixel.y;
@@ -452,21 +434,6 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 				changePixel(pixel,"body");
 			};
 		};
-	};
-
-	//Random integer from m to n
-	function randomIntegerBetweenTwoValues(min,max) {
-		if(min > max) {
-			var temp = max; //the need of a temporary space has always annoyed me
-			max = min;
-			min = temp;
-		};
-		return Math.floor(Math.random() * (max - min + 1)) + min
-	};
-
-	//Element exists in the elements object
-	function elementExists(elementName) {
-		return typeof(elements[elementName]) === "object";
 	};
 
 	elements.spawner = {
@@ -2511,6 +2478,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 			};
 		},
 	},
+
 	elements.angelic_creeper_head = {
 		color: ["#f5ef56", "#f0ea4f", "#f0ea60"],
 		category: "life",
@@ -5696,151 +5664,9 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 
 	//End Creeper Template Functions }
 
-	//Start Color Functions and Variables {
-		function sumArray(array) { //Sum of array numbers
-			return array.reduce((partialSum, a) => partialSum + a, 0);
-		};
-
-		function averageArray(array) { //Average of array numbers
-			return sumArray(array) / array.length;
-		};
-		
-		function _rgbHexCatcher(color) { //Hex triplet to rgb(), while rgb() is untouched
-				//console.log("Logged color for _rgbHexCatcher: " + color);
-										 //I have no idea if this runs before or after parsing hex triplets to rgb() values, so I'm going to handle both (by making everything rgb() and then making it hex at the end)
-			if(typeof(color) === "undefined") {
-				//console.log("Warning: An element has an undefined color. Unfortunately, due to how the code is structured, I can't say which one.");
-				color = "#FF00FF";
-			};
-			if(color.length < 10) {
-				//console.log("Short string detected, likely a hex triplet");
-				if(!color.startsWith("#")) {
-					color = "#" + color;
-				};
-				var object = hexToRGB(color);
-				return `rgb(${object.r},${object.g},${object.b})`
-			} else {
-				//console.log("Non-triplet detected");
-				return color;
-			};
-		};
-
-		function averageRgbPrefixedColorArray(colorArray,returnObject=false) { //array of rgb()s to single rgb() of average color
-			//console.log("Averaging started");
-			var reds = [];
-			var greens = [];
-			var blues = [];
-			for(k = 0; k < colorArray.length; k++) {
-				//console.log("Average function: Executing catcher on " + colorArray);
-				var color = _rgbHexCatcher(colorArray[k]);
-				//console.log("Logged color for aRPCA: " + color);
-				color = color.split(","); 
-				var red = parseFloat(color[0].substring(4));
-				reds.push(red)
-				var green = parseFloat(color[1]);
-				greens.push(green)
-				var blue = parseFloat(color[2].slice(0,-1));
-				blues.push(blue)
-			};
-			redAverage = Math.round(averageArray(reds));
-			greenAverage = Math.round(averageArray(greens));
-			blueAverage = Math.round(averageArray(blues));
-			var output; 
-			returnObject ? output = {r: redAverage, g: greenAverage, b: blueAverage} : output = `rgb(${redAverage},${greenAverage},${blueAverage})`;
-			//console.log("Averaging finished, product: " + output);
-			return output;
-		};
-		//averageRgbPrefixedColorArray(["rgb(255,0,0)", "rgb(0,0,0)", "rgb(0,0,255)"]);
-
-		function rgbStringToUnvalidatedObject(string) { //turns rgb() to {r,g,b} with no bounds checking
-			//console.log("Splitting string into object");
-			string = string.split(",");
-			var red = parseFloat(string[0].substring(4));
-			var green = parseFloat(string[1]);
-			var blue = parseFloat(string[2].slice(0,-1));
-			//console.log("String split: outputs " + red + ", " + green + ", " + blue + ".");
-			return {r: red, g: green, b: blue};
-		};
-
-		//https://stackoverflow.com/questions/46432335/hex-to-hsl-convert-javascript
-		function rgbStringToHSL(rgb) { //Originally a hex-to-HSL function, edited to take RGB and spit out an array
-			//console.log("HSLing some RGBs");
-			var result = rgbStringToUnvalidatedObject(rgb);
-
-			var r = result.r;
-			var g = result.g;
-			var b = result.b;
-
-			r /= 255, g /= 255, b /= 255;
-			var max = Math.max(r, g, b), min = Math.min(r, g, b);
-			var h, s, l = (max + min) / 2;
-
-			if(max == min){
-				h = s = 0; // achromatic
-			} else {
-				var d = max - min;
-				s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-				switch(max) {
-					case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-					case g: h = (b - r) / d + 2; break;
-					case b: h = (r - g) / d + 4; break;
-				}
-				h /= 6;
-			};
-
-			s = s*100;
-			s = Math.round(s);
-			l = l*100;
-			l = Math.round(l);
-			h = Math.round(360*h);
-
-			//var colorInHSL = 'hsl(' + h + ', ' + s + '%, ' + l + '%)';
-			//Edit to return an array
-			var colorInHSL = [h,s,l];
-			//console.log("HSL output "+ colorInHSL + ".");
-			return colorInHSL;
-		};
-
-		//https://stackoverflow.com/questions/36721830/convert-hsl-to-rgb-and-hex
-		function hslToHex(h, s, l) { //h, s, l params to hex triplet
-		  //console.log(`Hexing some HSLs (the HSLs are ${h},${s},${l})`)
-		  l /= 100;
-		  var a = s * Math.min(l, 1 - l) / 100;
-		  var f = n => {
-			var k = (n + h / 30) % 12;
-			var color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-			return Math.round(255 * color).toString(16).padStart(2, '0');   // convert to Hex and prefix "0" if needed
-		  };
-		  //console.log(`Hexed to #${f(0)}${f(8)}${f(4)}`)
-		  return `#${f(0)}${f(8)}${f(4)}`;
-		};
-		
-		function pad_array(arr,len,fill) { //https://stackoverflow.com/a/38851957
-			//console.log("Padding array");
-			return arr.concat(Array(len).fill(fill)).slice(0,len);
-		}
-		
-		function addArraysInPairs(array1,array2,fill=0) { //e.g. [1,2,3] + [10,0,-1] = [11,2,2]
-			//console.log("Adding in pairs: " + array1 + " and " + array2 + ".");
-			if(array1.length > array2.length) { //zero-padding
-				array2 = pad_array(array2,array1.length,fill); //if a1 is longer, pad a2 to a1's length
-			} else if(array2.length > array1.length) {
-				array1 = pad_array(array1,array2.length,fill); //if a2 is longer, pad a1 to a2's length
-			};
-			var tempArray = [];
-			for(z = 0; z < array1.length; z++) {
-				//console.log("Forming output values (" + array1[z] + " + " + array2[z] + ")");
-				tempArray[z] = array1[z] + array2[z];
-				//console.log("Sum" + tempArray[z]);
-			};
-			//console.log("Added into " + tempArray + ".");
-			return tempArray;
-		};
-
-		//var placeholderColor = "#FF00FF";
+		var placeholderColor = "#FF00FF";
 		
 		var hslOffsets = [[0, -5, 5], [0, -20, 10], [0, 0, 10], [0, -20, 10], [0, -35, 0], [0, -20, -30], [0, 10, -10], [0, 10, 20], [0, -20, 10], [0, -10, 5]];
-	//End Color Functions and Variables }
 
 		var colorOfRandomCreeper = ["#7ba883", "#8aba8a", "#87b292", "#8aba8a", "#71a171", "#346434", "#4d6d72", "#a0caad", "#8aba8a", "#7dac7f"]
 		//random_creeper's final color but all values of the sixth one increased by 16 decimal and then everything's R and B -= 48 decimal
@@ -5855,190 +5681,6 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 				changePixel(pixel,spawnCreepers[Math.floor(Math.random() * spawnCreepers.length)]) //spawnCreepers is already excludeRandom filtered
 			},
 		};
-
-	runAfterAutogen(function() {
-		//Creeper autogen function
-		creeperElements = Object.keys(elements);
-		creeperElements.push(["rock","sand"]);
-		//creeperElements = ["water","steel","dirt",["dirt","sand"],"frostwind","antimatter,acid","fire,nonexist"]; //Test array
-		for(aaf = 0; aaf < creeperElements.length; aaf++) {
-			var elementOfCreeper = creeperElements[aaf];
-			var startColor;
-			var randomExcl = 0;
-			//console.log("randomExcl set")
-			//console.log(elementOfCreeper);
-
-			var headName,bodyName,placerName,descElement;
-
-			if(typeof(elementOfCreeper === "string")) { //comma separated string check
-				if(elementOfCreeper.includes(",")) { //if it is
-					elementOfCreeper = elementOfCreeper.split(","); //to array
-					elementOfCreeper = elementOfCreeper.filter(function(e) { //strip nonexistent elements
-						return typeof(elements[e]) === "object";
-					});
-				};
-			};
-			if(Array.isArray(elementOfCreeper)) {
-				headName = `${elementOfCreeper.join("_")}_creeper_head`; //auto head element name
-				bodyName = `${elementOfCreeper.join("_")}_creeper_body`; //auto body element name
-				placerName = `${elementOfCreeper.join("_")}_creeper`; //auto placer element name
-				descElement = elementOfCreeper.join(", "); //auto explosion element list
-				
-				//array case color concatenator and excludeRandom handler
-				startColor = [];
-				//console.log(elementOfCreeper);
-				for(ll = 0; ll < elementOfCreeper.length; ll++) {
-					if(typeof(elements[elementOfCreeper[ll]].excludeRandom !== "undefined")) { //if excludeRandom exists (prevent TypeError)
-						if(elements[elementOfCreeper[ll]].excludeRandom) { //it it's true
-							randomExcl = 1; //the whole array creeper is excluded
-							//console.log("array nyet" + elementOfCreeper);
-						};
-					};
-					//console.log(elementOfCreeper[ll]);
-					startColor = startColor.concat(elements[elementOfCreeper[ll]].color);
-				};
-			} else { //they should all be strings, so here
-				headName = `${elementOfCreeper}_creeper_head`; //auto head element name
-				bodyName = `${elementOfCreeper}_creeper_body`; //auto body element name
-				placerName = `${elementOfCreeper}_creeper`; //auto placer element name
-				descElement = elementOfCreeper; //auto explosion element
-				startColor = elements[elementOfCreeper].color;
-				if(typeof(elements[elementOfCreeper].excludeRandom !== "undefined")) { //if excludeRandom exists (prevent TypeError)
-					if(elements[elementOfCreeper].excludeRandom) { //it it's true
-						//console.log("nyet " + elementOfCreeper);
-						randomExcl = 1; //the creeper is excluded
-					} else {
-						//console.log("allow " + elementOfCreeper);
-						randomExcl = 0;
-					};
-				};
-			};
-				//Color gen
-			if(Array.isArray(startColor)) { //Average arrays, make colors rgb()
-				startColor = averageRgbPrefixedColorArray(startColor);
-			} else {
-				startColor = _rgbHexCatcher(startColor);
-			};
-			var preColor = rgbStringToHSL(startColor);
-			var colorsArray = [preColor, preColor, preColor, preColor, preColor, preColor, preColor, preColor, preColor, preColor]
-			var colorObjectArray = [];
-			for(q = 0; q < hslOffsets.length; q++) {
-				colorsArray[q] = addArraysInPairs(colorsArray[q],hslOffsets[q]);
-				colorsArray[q] = hslToHex((colorsArray[q][0] % 360),slBound(colorsArray[q][1]),slBound(colorsArray[q][2]));
-				colorObjectArray[q] = hexToRGB(colorsArray[q]); //hex to RGB
-				var coq = colorObjectArray[q]; //pull the object
-				colorsArray[q] = `rgb(${coq.r},${coq.g},${coq.b})`; //and change to the RGB from its values
-			};
-			
-				//End color gen
-			
-			//console.log(`${headName}; ${bodyName}; ${placerName}; ${descElement}`)
-
-											//Placer
-			elements[placerName] = {
-				creeperType: elementOfCreeper,
-				color: colorsArray,
-				colorObject: colorObjectArray,
-				category: "auto creepers",
-				properties: {
-					dead: false,
-					dir: 1,
-					panic: 0,
-					following: false,
-				},
-				tick: function(pixel) {
-					autoCreeperPlacerTick(pixel);
-				},
-				related: [bodyName,headName,"creeper"],
-				desc: `Auto-generated creeper.<br/>Explodes into ${descElement}.`,
-			};
-											//Body
-			elements[bodyName] = {
-				creeperType: elementOfCreeper,
-				color: colorsArray,
-				colorObject: colorObjectArray,
-				category: "auto creepers",
-				hidden: true,
-				excludeRandom: true,
-				density: 1500,
-				state: "solid",
-				conduct: 25,
-				tempHigh: 250,
-				stateHigh: "cooked_meat",
-				tempLow: -30,
-				stateLow: "frozen_meat",
-				burn: 10,
-				burnTime: 250,
-				burnInto: ["cooked_meat","cooked_meat","cooked_meat","cooked_meat","gunpowder"],
-				breakInto: ["blood","gunpowder"],
-				reactions: {
-					"cancer": { "elem1":"cancer", "chance":0.005 },
-					"radiation": { "elem1":["ash","meat","rotten_meat","cooked_meat"], "chance":0.4 },
-					"plague": { "elem1":"plague", "chance":0.05 },
-				},
-				properties: {
-					dead: false,
-					dir: 1,
-					panic: 0,
-					charged: false,
-					didChargeBlueTinted: false,
-				},
-				tick: function(pixel) {
-					autoCreeperBodyTick(pixel);
-				},
-			};
-
-											//Head
-			elements[headName] = {
-				creeperType: elementOfCreeper,
-				color: colorsArray,
-				colorObject: colorObjectArray,
-				category: "auto creepers",
-				hidden: true,
-				excludeRandom: true,
-				density: 1080,
-				state: "solid",
-				conduct: 25,
-				tempHigh: 250,
-				stateHigh: "cooked_meat",
-				tempLow: -30,
-				stateLow: "frozen_meat",
-				burn: 10,
-				burnTime: 250,
-				burnInto: ["cooked_meat","cooked_meat","cooked_meat","cooked_meat","cooked_meat","cooked_meat","cooked_meat","cooked_meat","cooked_meat","gunpowder"],
-				breakInto: "blood",
-				reactions: {
-					"cancer": { "elem1":"cancer", "chance":0.005 },
-					"radiation": { "elem1":["ash","meat","rotten_meat","cooked_meat"], "chance":0.4 },
-					"plague": { "elem1":"plague", "chance":0.05 },
-					"oxygen": { "elem2":"carbon_dioxide", "chance":0.5 },
-				},
-				properties: {
-					dead: false,
-					following: false,
-					hissing: false,
-					charged: false,
-					didChargeBlueTinted: false,
-				},
-				tick: function(pixel) {
-					autoCreeperHeadTick(pixel);
-				},
-			};
-			if(creeperIncludeRandom) {
-				randomExcl ? elements[placerName].excludeRandom = true : elements[placerName].excludeRandom = false;
-			} else {
-				elements[placerName].excludeRandom = true;
-			};
-			if(!randomExcl) {
-				//console.log("spawn enabling " + placerName);
-				spawnCreepers.push(placerName);
-			} else {
-				//console.log("nyetted " + placerName);
-			};
-			
-			headBodyObject[headName] = bodyName;
-		};
-	});
 
 	//Standalone generator function
 
@@ -6114,7 +5756,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 			if(Array.isArray(startColor)) { //Average arrays, make colors rgb()
 				startColor = averageRgbPrefixedColorArray(startColor);
 			} else {
-				startColor = _rgbHexCatcher(startColor);
+				startColor = rgbHexCatcher(startColor);
 			};
 			var preColor = rgbStringToHSL(startColor);
 			var colorsArray = [preColor, preColor, preColor, preColor, preColor, preColor, preColor, preColor, preColor, preColor]
@@ -6240,6 +5882,12 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 		};
 	};
 	
+	var tempArray = Object.keys(elements); tempArray.push(["rock", "sand"]);
+	
+	runAfterAutogen(function() {
+		generateCreeper(tempArray,false);
+	});
+	
 	var solidBlacklist = ["mistake", "birthpool", "firesea"]; //exclude these since they seem to be liquid
 	
 	solids = Object.keys(elements).filter(function(e) {
@@ -6252,26 +5900,9 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 	};
 	
 } else {
-	switch (enabledMods.includes(runAfterAutogenMod) + enabledMods.includes(explodeAtPlusMod)) {
-		case 0:
-			alert(`The "${runAfterAutogenMod}" and "${explodeAtPlusMod}" mods are required and has been automatically inserted (reload for this to take effect).`)
-			enabledMods.splice(enabledMods.indexOf(modName),0,runAfterAutogenMod)
-			enabledMods.splice(enabledMods.indexOf(modName),0,explodeAtPlusMod)
-			localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-			break;
-		case 1:
-			if(!enabledMods.includes(runAfterAutogenMod)) {
-				alert(`The ${runAfterAutogenMod} mod is required and has been automatically inserted (reload for this to take effect).`)
-				enabledMods.splice(enabledMods.indexOf(modName),0,runAfterAutogenMod)
-				localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-			} else if(!enabledMods.includes(explodeAtPlusMod)) {
-				alert(`The ${explodeAtPlusMod} mod is required and has been automatically inserted (reload for this to take effect).`)
-				enabledMods.splice(enabledMods.indexOf(modName),0,explodeAtPlusMod)
-				localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-			};
-			break;
-		default:
-			console.log("Something's wrong with the dependency check switch...");
-			break;
-	};
+	if(!enabledMods.includes(runAfterAutogenMod))	{ enabledMods.splice(enabledMods.indexOf(modName),0,runAfterAutogenMod) };
+	if(!enabledMods.includes(explodeAtPlusMod))		{ enabledMods.splice(enabledMods.indexOf(modName),0,explodeAtPlusMod) };
+	if(!enabledMods.includes(libraryMod))			{ enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod) };
+	alert(`The "${runAfterAutogenMod}", "${libraryMod}", and "${explodeAtPlusMod}" mods are all required; any missing mods in this list have been automatically inserted (reload for this to take effect).`)
+	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
 };
