@@ -10,99 +10,6 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 		spoutIncludeRandom = false
 	}
 
-	function makeSpout(name) { //no ex post facto generation support or array spouts for this one
-		if(typeof(elements[name]) !== "object") {
-			throw new Error(`Nonexistent element ${name}`);
-		};
-	
-		elements[`${name}_spout`] = {
-			color: elements[name].color,
-			colorObject: elements[name].colorObject,
-			behavior: [
-				["XX",`CR:${name}`,"XX"],
-				[`CR:${name}`,"XX",`CR:${name}`],
-				["XX",`CR:${name}`,"XX"]
-			],
-			category: "spouts",
-			temp: elements[name].temp,
-			hardness: 1,
-		};
-		if(spoutIncludeRandom) {
-			elements[name].excludeRandom ? elements[`${name}_spout`].excludeRandom = true : elements[`${name}_spout`].excludeRandom = false;
-		} else {
-			elements[`${name}_spout`].excludeRandom = true;
-		};
-	};
-	
-	logString2 = "";
-	
-	var backupCategoryWhitelist = ["land","powders","weapons","food","life","corruption","states","fey","Fantastic Creatures","dyes","energy liquids","random liquids","random gases","random rocks"];
-	var backupElementWhitelist = ["mercury", "chalcopyrite_ore", "chalcopyrite_dust", "copper_concentrate", "fluxed_copper_concentrate", "unignited_pyrestone", "ignited_pyrestone", "everfire_dust", "extinguished_everfire_dust", "mistake", "polusium_oxide", "vaporized_polusium_oxide", "glowstone_dust", "redstone_dust", "soul_mud", "wet_soul_sand", "nitrogen_snow", "fusion_catalyst", "coal", "coal_coke", "blast_furnace_fuel", "molten_mythril"];
-	//forces elements that logically should be spouted, but are refused even though the condition is true, to be spouted
-	function spoutCondition(name) {
-		if(typeof(elements[name]) !== "object") {
-			throw new Error(`Nonexistent element ${name}`);
-		};
-		var info = elements[name];
-		//console.log(`${name} (${JSON.stringify(elements[name])})`);
-		if(typeof(info.state) === "undefined") {
-			var state = null;
-		} else {
-			var state = info.state;
-		};
-		if(typeof(info.category) === "undefined") {
-			var category = "other";
-		} else {
-			var category = info.category;
-		};
-		if(spoutBlacklist.includes(name)) {
-			return false
-		};
-		var include = false;
-		if(["liquid","gas"].includes(state)) {
-			include = true;
-		};
-		if(info.movable) {
-			include = true;
-		};
-		if(backupCategoryWhitelist.includes(category)) {
-			include = true;
-		};
-		if(backupElementWhitelist.includes(name)) {
-			include = true;
-		};
-		if(category.includes("mudstone")) {
-			include = true;
-		};
-		//console.log(include);
-		return include;
-	};
-	
-	function generateSpouts() {
-		/*liquidArray = Object.keys(elements).filter(function(e) {
-			return (elements[e].state == "liquid" || elements[e].state == "gas" || elements[e].movable) && !spoutBlacklist.includes(e);
-		});*/
-		var liquidArray = [];
-		
-		for (key in elements) {
-			if(spoutCondition(key)) {
-				liquidArray.push(key);
-				logString2 += `Added element ${key} to spoutee list\n`
-			} else {
-				logString2 += `    Did not add element ${key} to spoutee list\n`
-			};
-		};
-		for(i = 0; i < liquidArray.length; i++) {
-			makeSpout(liquidArray[i]);
-		};
-		spoutChoices = Object.keys(elements).filter(function(e) {
-			return elements[e].category == "spouts" || includedSpouts.includes(elements[e]);
-		});
-		spoutChoices = spoutChoices.filter(function(e) {
-			return !elements[e.slice(0,-6)].excludeRandom;
-		});
-	};
-
 	function _randomInt(max) {
 		if(max >= 0) {
 			return Math.floor(Math.random() * (max + 1))
@@ -111,22 +18,263 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 		}
 	}
 
-	spoutBlacklist = ["ketchup", "liquid_cloner", "fire_cloner"]
+	excludedSpoutElements = ["ketchup", "liquid_cloner", "fire_cloner"]
 	includedSpouts = ["ketchup_spout", "spout", "udder", "torch", "sun"]
 
-	runAfterLoad(function() { //make sure it's the last function in the list
-	  runAfterAutogenList[runAfterAutogenList.length] = function() {
-		for (key in elements) { //include a separate movable setter because I'm not willing to run this after final checks
-			// If the element's behavior is an array and contains M1 or M2, set its movable to true
-			if (elements[key].behavior && typeof elements[key].behavior[0] === "object") {
-				var bstring = JSON.stringify(elements[key].behavior);
-				if (bstring.indexOf("M1")!==-1 || bstring.indexOf("M2")!==-1) { elements[key].movable = true; }
+//Generator function
+
+	function tryJoin(stringOrArray,joiner) {
+		//console.log(`tryJoin: ${stringOrArray}`);
+		if(typeof(stringOrArray) === "string") {
+			//console.log("tryJoin: String");
+			return stringOrArray;
+		} else if(Array.isArray(stringOrArray)) {
+			//console.log("tryJoin: Array");
+			return stringOrArray.join(joiner);
+		} else {
+			throw new TypeError(`Unexpected type: ${typeof(stringOrArray)}`);
+		};
+	};
+
+	function bound(number,lowerBound,upperBound) {
+		return Math.min(upperBound,Math.max(lowerBound,number));
+	};
+
+	function rgbStringToObject(string,doRounding=true,doBounding=true) { //turns rgb() to {r,g,b} with no bounds/rounding/NaN checking
+			//console.log("Splitting string into object");
+		string = string.split(",");
+		if( (!string[0].startsWith("rgb(")) || (!string[2].endsWith(")")) ) {
+			throw new Error("Color must start with \"rgb(\" and end with \")\"");
+		};
+		var red = parseFloat(string[0].substring(4));
+		var green = parseFloat(string[1]);
+		var blue = parseFloat(string[2].slice(0,-1));
+			//console.log(`Colors loaded (${red}, ${green}, ${blue})`);
+		if(doRounding) {
+			red = Math.round(red);
+			green = Math.round(green);
+			blue = Math.round(blue);
+				//console.log(`Colors rounded to (${red}, ${green}, ${blue})`);
+		};
+		if(doBounding) {
+			red = bound(red,0,255)
+			green = bound(green,0,255)
+			blue = bound(blue,0,255)
+				//console.log(`Colors bounded to (${red}, ${green}, ${blue})`);
+		};
+			//console.log("String split: outputs " + red + ", " + green + ", " + blue + ".");
+		return {r: red, g: green, b: blue};
+	};
+
+	function sumArray(array) { //Sum of array numbers
+		return array.reduce((partialSum, a) => partialSum + a, 0);
+	};
+
+	function averageArray(array) { //Average of array numbers
+		return sumArray(array) / array.length;
+	};
+	
+	function _rgbHexCatcher(color) { //Hex triplet to rgb(), while rgb() is untouched
+			//console.log("Logged color for _rgbHexCatcher: " + color);
+									 //I have no idea if this runs before or after parsing hex triplets to rgb() values, so I'm going to handle both (by making everything rgb() and then making it hex at the end)
+		if(typeof(color) === "undefined") {
+			//console.log("Warning: An element has an undefined color. Unfortunately, due to how the code is structured, I can't say which one.");
+			color = "#FF00FF";
+		};
+		if(color.length < 10) {
+			//console.log("Short string detected, likely a hex triplet");
+			if(!color.startsWith("#")) {
+				color = "#" + color;
+			};
+			var object = hexToRGB(color);
+			return `rgb(${object.r},${object.g},${object.b})`
+		} else {
+			//console.log("Non-triplet detected");
+			return color;
+		};
+	};
+
+	function averageRgbPrefixedColorArray(colorArray,returnObject=false) { //array of rgb()s to single rgb() of average color
+		//console.log("Averaging started");
+		var reds = [];
+		var greens = [];
+		var blues = [];
+		for(k = 0; k < colorArray.length; k++) {
+			//console.log("Average function: Executing catcher on " + colorArray);
+			var color = _rgbHexCatcher(colorArray[k]);
+			//console.log("Logged color for aRPCA: " + color);
+			color = color.split(","); 
+			var red = parseFloat(color[0].substring(4));
+			reds.push(red)
+			var green = parseFloat(color[1]);
+			greens.push(green)
+			var blue = parseFloat(color[2].slice(0,-1));
+			blues.push(blue)
+		};
+		redAverage = Math.round(averageArray(reds));
+		greenAverage = Math.round(averageArray(greens));
+		blueAverage = Math.round(averageArray(blues));
+		var output; 
+		returnObject ? output = {r: redAverage, g: greenAverage, b: blueAverage} : output = `rgb(${redAverage},${greenAverage},${blueAverage})`;
+		//console.log("Averaging finished, product: " + output);
+		return output;
+	};
+
+	//Standalone generator
+	function generateSpout(spoutElements,isAfterScriptLoading=false) {//it can be a single element, though
+		//To specify an array spout, have the array be inside another array.
+		/*For reasons related to how element colors are loaded, if this function is being run from a JS mod file, isAfterScriptLoading should be false.
+		Otherwise, you'll get TypeErrors for some reason when trying to place your spout.  If this is being run after the game has loaded (e.g. in the console),
+		then isAfterScriptLoading should be true or you might also get TypeErrors (this latter case was a bit inconsistent when I tested it, but 
+		the former case wasn't. **isAfterScriptLoading must be false when this function is run from a JS mod file**.*/
+		if(typeof(spoutElements) === "string") { //it should be an array, so string check
+			//console.log("String detected");
+			if(spoutElements.includes(",")) { //comma-separated string?
+				//console.log("Splitting string to array");
+				spoutElements = spoutElements.split(","); //,SS to array
+			} else {
+				//console.log("Wrapping string in array");
+				spoutElements = [spoutElements]; //single string to array 
+			};
+		};
+		for(aaf = 0; aaf < spoutElements.length; aaf++) {
+			var elementOfSpout = spoutElements[aaf];
+			var startColor;
+			var randomExcl = 0;
+			//console.log("randomExcl set")
+			//console.log(elementOfSpout);
+
+			var spoutName;
+
+			if(typeof(elementOfSpout === "string")) { //comma separated string check
+				if(elementOfSpout.includes(",")) { //if it is
+					elementOfSpout = elementOfSpout.split(","); //to array
+					elementOfSpout = elementOfSpout.filter(function(e) { //strip nonexistent elements
+						return typeof(elements[e]) === "object";
+					});
+				};
+			};
+			if(Array.isArray(elementOfSpout)) {
+				spoutName = `${elementOfSpout.join("_")}_spout`; //auto placer element name
+				
+				//array case color concatenator and excludeRandom handler
+				startColor = [];
+				//console.log(elementOfSpout);
+				for(ll = 0; ll < elementOfSpout.length; ll++) {
+					if(typeof(elements[elementOfSpout[ll]].excludeRandom !== "undefined")) { //if excludeRandom exists (prevent TypeError)
+						if(elements[elementOfSpout[ll]].excludeRandom) { //it it's true
+							randomExcl = 1; //the whole array spout is excluded
+							//console.log("array nyet" + elementOfSpout);
+						};
+					};
+					//console.log(elementOfSpout[ll]);
+					startColor = startColor.concat(elements[elementOfSpout[ll]].color);
+				};
+			} else { //they should all be strings, so here
+				spoutName = `${elementOfSpout}_spout`; //auto placer element name
+				startColor = elements[elementOfSpout].color;
+				if(typeof(elements[elementOfSpout].excludeRandom !== "undefined")) { //if excludeRandom exists (prevent TypeError)
+					if(elements[elementOfSpout].excludeRandom) { //it it's true
+						//console.log("nyet " + elementOfSpout);
+						randomExcl = 1; //the spout is excluded
+					} else {
+						//console.log("allow " + elementOfSpout);
+						randomExcl = 0;
+					};
+				};
+			};
+				//Color gen
+			if(Array.isArray(startColor)) { //Average arrays, make colors rgb()
+				startColor = averageRgbPrefixedColorArray(startColor);
+			} else {
+				startColor = _rgbHexCatcher(startColor);
+			};
+			
+			var newColorObject = rgbStringToObject(startColor);
+			
+				//End color gen
+			
+											//The spout
+			
+			//console.log(elementOfSpout);
+			var firstInfo, firstTemp;
+			if(Array.isArray(elementOfSpout)) {
+				firstInfo = elements[elementOfSpout[0]];
+				firstTemp = airTemp;
+				if(typeof(firstInfo.temp) !== "undefined") {
+					firstTemp = firstInfo.temp;
+				};
+			} else {
+				firstInfo = elements[elementOfSpout];
+				firstTemp = airTemp;
+				if(typeof(firstInfo.temp) !== "undefined") {
+					firstTemp = firstInfo.temp;
+				};
+			};
+			
+			elementOfSpout = tryJoin(elementOfSpout,",");
+			
+			//console.log(elementOfSpout);
+			
+			elements[spoutName] = {
+				color: startColor,
+				insulate: true,
+				colorObject: newColorObject,
+				behavior: [
+					["XX",`CR:${elementOfSpout}`,"XX"],
+					[`CR:${elementOfSpout}`,"XX",`CR:${elementOfSpout}`],
+					["XX",`CR:${elementOfSpout}`,"XX"]
+				],
+				category: "spouts",
+				temp: firstTemp,
+				hardness: 1,
+			};
+			if(!randomExcl) {
+				if(typeof(spoutChoices) === "undefined") {
+					spoutChoices = []
+				};
+				if(!spoutChoices.includes(spoutName)) {
+					spoutChoices.push(spoutName);
+				};
 			}
-			if (elements[key].tick) { elements[key].movable = true; }
-		}
-		//Spout autogen function
-		generateSpouts();
-	  };
+			if(spoutIncludeRandom) {
+				randomExcl ? elements[spoutName].excludeRandom = true : elements[spoutName].excludeRandom = false;
+			} else {
+				elements[spoutName].excludeRandom = true;
+			};
+		};
+	};
+
+	runAfterAutogen(function() {
+		liquidArray = Object.keys(elements).filter(function(e) {
+			return (elements[e].state == "liquid" || elements[e].state == "gas" || elements[e].movable) && !excludedSpoutElements.includes(elements[e]);
+		});
+		/*for(i = 0; i < liquidArray.length; i++) {
+			elements[`${liquidArray[i]}_spout`] = {
+				color: elements[liquidArray[i]].color,
+				colorObject: elements[liquidArray[i]].colorObject,
+				behavior: [
+					["XX",`CR:${liquidArray[i]}`,"XX"],
+					[`CR:${liquidArray[i]}`,"XX",`CR:${liquidArray[i]}`],
+					["XX",`CR:${liquidArray[i]}`,"XX"]
+				],
+				category: "spouts",
+				temp: elements[liquidArray[i]].temp,
+				hardness: 1,
+			};
+			if(spoutIncludeRandom) {
+				elements[liquidArray[i]].excludeRandom ? elements[`${liquidArray[i]}_spout`].excludeRandom = true : elements[`${liquidArray[i]}_spout`].excludeRandom = false;
+			} else {
+				elements[`${liquidArray[i]}_spout`].excludeRandom = true;
+			};
+		};
+		spoutChoices = Object.keys(elements).filter(function(e) {
+			return elements[e].category == "spouts" || includedSpouts.includes(elements[e]);
+		});
+		spoutChoices = spoutChoices.filter(function(e) {
+			return !elements[e.slice(0,-6)].excludeRandom;
+		});*/
+		generateSpout(liquidArray,false);
 	});
 
 	elements.random_spout = {
