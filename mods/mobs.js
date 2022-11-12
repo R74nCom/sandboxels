@@ -5689,7 +5689,8 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 		/*For reasons related to how element colors are loaded, if this function is being run from a JS mod file, isAfterScriptLoading should be false.
 		Otherwise, you'll get TypeErrors for some reason when trying to place your creeper.  If this is being run after the game has loaded (e.g. in the console),
 		then isAfterScriptLoading should be true or you might also get TypeErrors (this latter case was a bit inconsistent when I tested it, but 
-		the former case wasn't. **isAfterScriptLoading must be false when this function is run from a JS mod file**.*/
+		the former case wasn't. **isAfterScriptLoading must be false when this function is run from a JS mod file**.
+		If isAfterScriptLoading is true, buttons (depending on the hiding setting) will be added to the auto creeper category, the 3 new elements per creeper will be assigned IDs, and the footer will be updated with the increased element counts.*/
 		if(typeof(creeperElements) === "string") { //it should be an array, so string check
 			//console.log("String detected");
 			if(creeperElements.includes(",")) { //comma-separated string?
@@ -5763,10 +5764,13 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 			var colorObjectArray = [];
 			for(q = 0; q < hslOffsets.length; q++) {
 				colorsArray[q] = addArraysInPairs(colorsArray[q],hslOffsets[q]);
-				colorsArray[q] = hslToHex((colorsArray[q][0] % 360),slBound(colorsArray[q][1]),slBound(colorsArray[q][2]));
+				//console.log(colorsArray[q]);
+				hslColorString = `hsl(${(colorsArray[q][0] % 360)},${slBound(colorsArray[q][1])}%,${slBound(colorsArray[q][2])}%)`
+				colorsArray[q] = hslToHex(hslColorString);
 				colorObjectArray[q] = hexToRGB(colorsArray[q]); //outputs hex
 				if(isAfterScriptLoading) { // if it's after the hex -> RGB conversion
 					var coq = colorObjectArray[q]; //pull the object
+					//console.log(coq.r);
 					colorsArray[q] = `rgb(${coq.r},${coq.g},${coq.b})`; //and change to the RGB from its values
 				};
 			};
@@ -5867,6 +5871,23 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 				tick: function(pixel) {
 					autoCreeperHeadTick(pixel);
 				},
+			};
+			if(isAfterScriptLoading) {
+				elementCount += 3; //placer, body, head
+				createElementButton(placerName)
+				if(settings["unhide"] === 0) { //hide some elements: body and head would be hidden, so only update hidden count
+					hiddenCount += 2;
+				} else if(settings["unhide"] === 1) { //unhide all elements: b/h would not be hidden, so only create their buttons
+					createElementButton(bodyName);
+					createElementButton(headName);
+				} else if(settings["unhide"] === 2) {
+					settings.unlocked[bodyName] ? createElementButton(bodyName) : hiddenCount++; //ternary: if headName is unlocked, create button, else increase hiddenCount
+					settings.unlocked[headName] ? createElementButton(headName) : hiddenCount++; //above with headName
+				};
+				elements[placerName].id = nextid++; //set placer's id to nextid and then increment nextid 
+				elements[bodyName].id = nextid++; //repeat with body and head
+				elements[headName].id = nextid++;
+				document.getElementById("extraInfo").innerHTML = "<small><p>There are " + elementCount + " elements, including " + hiddenCount + " hidden ones.</p><p>©2021-" + new Date().getFullYear() + ". All Rights Reserved. <a href='https://r74n.com'>R74n</a></p></small>"; //update extra info counts (and the copyright year, due to the method used)
 			};
 			if(creeperIncludeRandom) {
 				randomExcl ? elements[placerName].excludeRandom = true : elements[placerName].excludeRandom = false;
