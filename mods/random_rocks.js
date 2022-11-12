@@ -171,7 +171,7 @@ function _rgbToHex(color) {
     };
 };
 
-function _multiplyColorObjects(color1,color2,weight1=0.5) { /*third argument is for color1 and expects a float from 0
+function _averageColorObjects(color1,color2,weight1=0.5) { /*third argument is for color1 and expects a float from 0
                                                               to 1, where 0 means "all color2" and 1 means "all color1"*/
     var w1 = Math.min(Math.max(weight1,0),1)
     var red1 = color1.r
@@ -191,13 +191,13 @@ function generateColors() {
     var randomG = _randomInt(255)
     var randomB = _randomInt(255)
     var randomColor = {r: randomR, g: randomG, b: randomB}
-    var newRockColor1 = _multiplyColorObjects(rockColor1,randomColor,weight1=0.65)
-    var newRockColor2 = _multiplyColorObjects(rockColor2,randomColor,weight1=0.65)
-    var newRockColor3 = _multiplyColorObjects(rockColor3,randomColor,weight1=0.65)
-    var newGravelColor1 = _multiplyColorObjects(gravelColor1,randomColor,weight1=0.675)
-    var newGravelColor2 = _multiplyColorObjects(gravelColor2,randomColor,weight1=0.675)
-    var newGravelColor3 = _multiplyColorObjects(gravelColor3,randomColor,weight1=0.675)
-    var newGravelColor4 = _multiplyColorObjects(gravelColor4,randomColor,weight1=0.675)
+    var newRockColor1 = _averageColorObjects(rockColor1,randomColor,weight1=0.65)
+    var newRockColor2 = _averageColorObjects(rockColor2,randomColor,weight1=0.65)
+    var newRockColor3 = _averageColorObjects(rockColor3,randomColor,weight1=0.65)
+    var newGravelColor1 = _averageColorObjects(gravelColor1,randomColor,weight1=0.675)
+    var newGravelColor2 = _averageColorObjects(gravelColor2,randomColor,weight1=0.675)
+    var newGravelColor3 = _averageColorObjects(gravelColor3,randomColor,weight1=0.675)
+    var newGravelColor4 = _averageColorObjects(gravelColor4,randomColor,weight1=0.675)
     var newRockColor1 = _rgbToHex(newRockColor1)
     var newRockColor2 = _rgbToHex(newRockColor2)
     var newRockColor3 = _rgbToHex(newRockColor3)
