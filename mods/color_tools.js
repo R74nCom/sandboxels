@@ -2,13 +2,15 @@ var modName = "mods/color_tools.js";
 var libraryMod = "mods/code_library.js";
 
 if(enabledMods.includes(libraryMod)) {
-	function colorToolCounter() {
+	var colorToolCounter = 0;
+	
+	function colorToolCounterIncrement() {
 		if(typeof(colorToolCounter) === "undefined") {
 			colorToolCounter = 0;
 		};
 		colorToolCounter++;
 	};
-	colorToolCounterInterval = setInterval(colorToolCounter, 50);
+	colorToolCounterInterval = setInterval(colorToolCounterIncrement, 50);
 
 	elements.multiply_color = {
 		color: ["#c27070","#c29c70","#c2c270","#70c270","#70c2c2","#7070c2","#c270c2"],
