@@ -735,12 +735,12 @@
 
 		//existence check
 		if(!elementExists(elementInput)) {
-			throw new Error("Element " + _element + " doesn't exist!");
+			throw new Error("Element " + elementInput + " doesn't exist!");
 		};
 
 		//actual creation check
 		if(isEmpty(x,y)) {
-			createPixel(element,x,y);
+			createPixel(elementInput,x,y);
 			return true;
 		} else {
 			return false;
