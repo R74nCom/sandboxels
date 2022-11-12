@@ -26,7 +26,7 @@
 	function randomChoice(array) {
 		if(array.length === 0) { throw new Error(`The array ${array} is empty`) };
 		var length = array.length;
-		var randomIndex = randomNumberFromZeroToValue(length - 1);
+		var randomIndex = randomIntegerFromZeroToValue(length - 1);
 		return array[randomIndex];
 	};
 
