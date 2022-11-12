@@ -1,23 +1,8 @@
 var modName = "mods/cpt_alt.js";
 var explodeAtPlusMod = "mods/explodeAtPlus.js";
+var libraryMod = "mods/code_library.js";
 
-if(enabledMods.includes(explodeAtPlusMod)) {
-	function breakPixel(pixel,changetemp=false,defaultBreakIntoDust=false) {
-		var info = elements[pixel.element];
-		if(typeof(info.breakInto) === "undefined") {
-			if(defaultBreakIntoDust) {
-				if(Math.random() < defaultBreakIntoDust) { changePixel(pixel,"dust",changetemp) };
-			};
-			return defaultBreakIntoDust;
-		};
-		var breakIntoElement = info.breakInto;
-		if(Array.isArray(breakIntoElement)) {
-			breakIntoElement = breakIntoElement[Math.floor(Math.random() * breakIntoElement.length)]
-		};
-		changePixel(pixel,breakIntoElement,changetemp)
-		return true;
-	};
-
+if(enabledMods.includes(explodeAtPlusMod) && enabledMods.includes(libraryMod)) {
 	actExcludedElements = ["wall","alt_controllable_pixel"];
 	
 	function breakCircle(x,y,radius,respectHardness=false,changeTemp=false,defaultBreakIntoDust=false) {
@@ -32,20 +17,6 @@ if(enabledMods.includes(explodeAtPlusMod)) {
 		};
 	};
 	
-	function tryBreak(pixel,changetemp=false,defaultBreakIntoDust=false) {
-		var info = elements[pixel.element];
-		var hardness = defaultHardness;
-		if(typeof(info.hardness) === "number") {
-			hardness = info.hardness;
-		};
-		hardness = 1 - hardness; //invert hardness, so a hardness of 0 becomes a 100% chance and a hardness of 1 becomes a 0% chance
-		if(Math.random() < hardness) {
-			return breakPixel(pixel,changetemp=false,defaultBreakIntoDust=false);
-		} else {
-			return false;
-		};
-	};
-
 	function fillCircle(element,x,y,radius,overwrite=false) {
 		var coords = circleCoords(x,y,radius);
 		var newElement = element;
@@ -179,24 +150,12 @@ if(enabledMods.includes(explodeAtPlusMod)) {
 		};
 	});
 
-	function tryCreatePixel(_element,_x,_y) {
-		if(!elements[_element]) {
-			throw new Error("Element " + _element + " doesn't exist!");
-		};
-		if(isEmpty(_x,_y)) {
-			createPixel(_element,_x,_y);
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	function controllablePixelTryCreatePixelNullCheck(_element,_x,_y) {
-		if(!elements[_element]) { //catch the null
+	function controllablePixelTryCreatePixelNullCheck(element,x,y) {
+		if(!elements[element]) { //catch the null
 			return false;
 		};
-		if(isEmpty(_x,_y)) {
-			tryCreatePixel(_element,_x,_y);
+		if(isEmpty(x,y)) {
+			tryCreatePixel(element,x,y);
 			return true;
 		} else {
 			return false;
@@ -305,7 +264,8 @@ if(enabledMods.includes(explodeAtPlusMod)) {
 		},
 	}
 } else {
-	alert(`The ${explodeAtPlusMod} mod is required and has been automatically inserted (reload for this to take effect).`)
-	enabledMods.splice(enabledMods.indexOf(modName),0,explodeAtPlusMod)
+	if(!enabledMods.includes(explodeAtPlusMod))		{ enabledMods.splice(enabledMods.indexOf(modName),0,explodeAtPlusMod) };
+	if(!enabledMods.includes(libraryMod))			{ enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod) };
+	alert(`The "${libraryMod}" and "${explodeAtPlusMod}" mods are required; any missing mods in this list have been automatically inserted (reload for this to take effect).`)
 	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
 };
