@@ -1,7 +1,7 @@
 var modName = "mods/controllable_pixel_test.js";
 var libraryMod = "mods/code_library.js";
 
-if(enabledMods.includes(explodeAtPlusMod) && enabledMods.includes(libraryMod)) {
+if(enabledMods.includes(libraryMod)) {
 	sussyKey = null;
 	isShift = false;
 	isAlt = false;
