@@ -233,7 +233,7 @@
 			return "#" + red + green + blue;
 		} else if(typeof(color) == "string") { //Expects string like "rgb(20,137,4)". Also doesn't round properly for some reason...
 				//console.log("Splitting string")
-			color = rgbColorStringToUnvalidatedObject(color);
+			color = rgbStringToUnvalidatedObject(color);
 			red = color.r;
 			green = color.g;
 			blue = color.b;
@@ -472,6 +472,125 @@
 		var green3 = (green1 * w1) + (green2 * (1 - w1))
 		var blue3 = (blue1 * w1) + (blue2 * (1 - w1))
 		return {r: red3, g: green3, b: blue3}
+	};
+
+	function multiplyColors(color1,color2,outputType="rgb") {
+		//normalize rgb()/hex by turning any hex into rgb() and then rgb()s to {r,g,b}
+		if(typeof(color1) !== "object") {
+			color1 = rgbHexCatcher(color1);
+			color1 = rgbStringToObject(color1);
+		};
+		if(typeof(color2) !== "object") {
+			color2 = rgbHexCatcher(color2);
+			color2 = rgbStringToObject(color2);
+		};
+		var finalR = Math.round(color1.r * (color2.r/255));
+		var finalG = Math.round(color1.g * (color2.g/255));
+		var finalB = Math.round(color1.b * (color2.b/255));
+		var finalColor = {r: finalR, g: finalG, b: finalB};
+		switch(outputType.toLowerCase()) {
+			case "rgb":
+				return `rgb(${finalColor.r},${finalColor.g},${finalColor.b})`;
+				break;
+			case "hex":
+				return rgbToHex(finalColor);
+				break;
+			case "json":
+				return finalColor;
+				break;
+			default:
+				throw new Error("outputType must be \"rgb\", \"hex\", \"json\"");
+		};
+	};
+
+	function divideColors(color1,color2,outputType="rgb") { //color2 is the divisor and color1 the dividend (base/original color)
+		//normalize rgb()/hex by turning any hex into rgb() and then rgb()s to {r,g,b}
+		if(typeof(color1) !== "object") {
+			color1 = rgbHexCatcher(color1);
+			color1 = rgbStringToObject(color1);
+		};
+		if(typeof(color2) !== "object") {
+			color2 = rgbHexCatcher(color2);
+			color2 = rgbStringToObject(color2);
+		};
+		var finalR = bound(Math.round(255 / (color2.r / color1.r)),0,255);
+		var finalG = bound(Math.round(255 / (color2.g / color1.g)),0,255);
+		var finalB = bound(Math.round(255 / (color2.b / color1.b)),0,255);
+		if(isNaN(finalR)) { finalR = 255 };
+		if(isNaN(finalG)) { finalG = 255 };
+		if(isNaN(finalB)) { finalB = 255 };
+		var finalColor = {r: finalR, g: finalG, b: finalB};
+		switch(outputType.toLowerCase()) {
+			case "rgb":
+				return `rgb(${finalColor.r},${finalColor.g},${finalColor.b})`;
+				break;
+			case "hex":
+				return rgbToHex(finalColor);
+				break;
+			case "json":
+				return finalColor;
+				break;
+			default:
+				throw new Error("outputType must be \"rgb\", \"hex\", \"json\"");
+		};
+	};
+
+	function addColors(color1,color2,outputType="rgb") {
+		//normalize rgb()/hex by turning any hex into rgb() and then rgb()s to {r,g,b}
+		if(typeof(color1) !== "object") {
+			color1 = rgbHexCatcher(color1);
+			color1 = rgbStringToObject(color1);
+		};
+		if(typeof(color2) !== "object") {
+			color2 = rgbHexCatcher(color2);
+			color2 = rgbStringToObject(color2);
+		}; 
+		var finalR = bound(Math.round(color1.r + color2.r),0,255)
+		var finalG = bound(Math.round(color1.g + color2.b),0,255)
+		var finalB = bound(Math.round(color1.b + color2.b),0,255)
+		var finalColor = {r: finalR, g: finalG, b: finalB};
+		switch(outputType.toLowerCase()) {
+			case "rgb":
+				return `rgb(${finalColor.r},${finalColor.g},${finalColor.b})`;
+				break;
+			case "hex":
+				return rgbToHex(finalColor);
+				break;
+			case "json":
+				return finalColor;
+				break;
+			default:
+				throw new Error("outputType must be \"rgb\", \"hex\", \"json\"");
+		};
+	};
+
+	function subtractColors(color1,color2,outputType="rgb") {
+		//normalize rgb()/hex by turning any hex into rgb() and then rgb()s to {r,g,b}
+		if(typeof(color1) !== "object") {
+			color1 = rgbHexCatcher(color1);
+			color1 = rgbStringToObject(color1);
+		};
+		if(typeof(color2) !== "object") {
+			color2 = rgbHexCatcher(color2);
+			color2 = rgbStringToObject(color2);
+		}; 
+		var finalR = bound(Math.round(color1.r - color2.r),0,255)
+		var finalG = bound(Math.round(color1.g - color2.b),0,255)
+		var finalB = bound(Math.round(color1.b - color2.b),0,255)
+		var finalColor = {r: finalR, g: finalG, b: finalB};
+		switch(outputType.toLowerCase()) {
+			case "rgb":
+				return `rgb(${finalColor.r},${finalColor.g},${finalColor.b})`;
+				break;
+			case "hex":
+				return rgbToHex(finalColor);
+				break;
+			case "json":
+				return finalColor;
+				break;
+			default:
+				throw new Error("outputType must be \"rgb\", \"hex\", \"json\"");
+		};
 	};
 
 // Pixels
