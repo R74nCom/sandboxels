@@ -8,6 +8,11 @@ if(enabledMods.includes(libraryMod)) {
 			 liquidAmount = 10
 		}
 		liquidAmount = parseInt(liquidAmount)
+		if(liquidAmount > 10000) {
+			alert("Maximum amount of liquids is 10000.\nOnly 10000 liquids were added.")
+		} else if(liquidAmount < 1) {
+			alert("Minimum amount of liquids is 1.\n1 liquid was added.")
+		}
 		liquidAmount = Math.min(10000,Math.max(liquidAmount,1))
 	} else {
 		liquidAmount = 10
