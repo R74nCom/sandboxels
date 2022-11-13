@@ -1,4 +1,6 @@
-urlParams = new URLSearchParams(window.location.search);
+if(typeof(urlParams) === "undefined") {
+	urlParams = new URLSearchParams(window.location.search);
+};
 if(urlParams.get('loadTheModList') !== null) { //if the variable exists at all
     loadTheModList = true
 } else { //if it doesn't (and it returns null)
@@ -6,17 +8,31 @@ if(urlParams.get('loadTheModList') !== null) { //if the variable exists at all
 }
 
 if(loadTheModList) {
-	enabledMods = ["mods/adjustablepixelsize.js", "mods/boiling_rock.js", "mods/chalcopyrite.js", "mods/clone_liquid.js", "mods/conveyance.js", "mods/CrashTestDummy.js", "mods/crimson.js", "mods/delete_all_of_element.js", "mods/evenmoretemptools.js", "mods/extra_element_info.js", "mods/fairy_chain.js", "mods/fantastic_creatures.js", "mods/fey_and_more.js", "mods/glenn_gases.js", "mods/grav_mudstones.js", "mods/icb.js", "mods/iean.js", "mods/ketchup_mod.js", "mods/laetium.js", "mods/liquid_energy.js", "mods/metals.js", "mods/minecraft.js", "mods/minesweeper.js", "mods/more_breaking.js", "mods/more_fairies.js", "mods/moreliquids.js", "mods/moretools.js", "mods/move_tools.js", "mods/nested_for_reaction_example.js", "mods/Neutronium Mod.js", "mods/portal.js", "mods/pushers.js", "mods/rainbow_tests.js", "mods/random_elems.js", "mods/random_liquids.js", "mods/random_rocks.js", "mods/randomness.js", "mods/randomness_but_tick.js", "mods/randomness_but_tool.js", "mods/slag_fix.js", "mods/some_tf_liquids.js", "mods/structure_test.js", "mods/sus.js", "mods/test.js", "mods/ticking_temp_stuff.js", "mods/time.js", "mods/toothpaste.js", "mods/troll.js", "mods/unhide.js", "mods/worldgen_test.js", "mods/page_color.js", "mods/color_tools.js", "mods/invisible_wall.js", "mods/replace_all.js", "mods/bacteria_mod.js", "mods/controllable_pixel_test.js", "mods/fire_slime.js", "mods/bioooze.js", "mods/cover_yourself_in.js", "mods/color_tools.js", "mods/cells.js", "mods/triggerable_random_powders.js", "mods/replace.js", "mods/change.js", "mods/prompt.js", "mods/miscible_psoup_and_birthpool.js", "mods/primordial_birthpool.js", "mods/liquid_void.js", "mods/solid_rock.js", "mods/invisible_dye.js", "mods/alcohol.js", "mods/a_bundle_of_tests.js", "mods/paint_event.js", "mods/amogus.js", "mods/chem.js", "mods/roseyiede.js", "mods/state_voids.js", "mods/the_ground.js", "mods/lone_urea.js", "mods/fwibblen.js", "mods/velocity.js", "mods/prop.js", "mods/x_dependent_change_test.js", "mods/alkahest.js", "mods/tool_pixel_behavior.js", "mods/onTryMoveInto.js", "mods/human_edit.js", "mods/runAfterAutogen and onload restructure.js", "mods/spouts.js", "mods/explodeAtPlus.js", "mods/more_bombs.js", "mods/note_block.js", "mods/wirelike_test.js", "mods/mobs.js"];
+	enabledMods = ["mods/code_library.js", "mods/adjustablepixelsize.js", "mods/boiling_rock.js", "mods/chalcopyrite.js", "mods/clone_liquid.js", "mods/conveyance.js", "mods/CrashTestDummy.js", "mods/crimson.js", "mods/delete_all_of_element.js", "mods/evenmoretemptools.js", "mods/extra_element_info.js", "mods/fairy_chain.js", "mods/fantastic_creatures.js", "mods/fey_and_more.js", "mods/glenn_gases.js", "mods/grav_mudstones.js", "mods/icb.js", "mods/iean.js", "mods/ketchup_mod.js", "mods/laetium.js", "mods/liquid_energy.js", "mods/metals.js", "mods/minecraft.js", "mods/minesweeper.js", "mods/more_breaking.js", "mods/moreliquids.js", "mods/moretools.js", "mods/move_tools.js", "mods/nested_for_reaction_example.js", "mods/Neutronium Mod.js", "mods/portal.js", "mods/pushers.js", "mods/rainbow_tests.js", "mods/random_elems.js", "mods/random_liquids.js", "mods/random_rocks.js", "mods/randomness.js", "mods/randomness_but_tick.js", "mods/randomness_but_tool.js", "mods/slag_fix.js", "mods/some_tf_liquids.js", "mods/structure_test.js", "mods/test.js", "mods/ticking_temp_stuff.js", "mods/time.js", "mods/toothpaste.js", "mods/troll.js", "mods/unhide.js", "mods/worldgen_test.js", "mods/page_color.js", "mods/color_tools.js", "mods/invisible_wall.js", "mods/replace_all.js", "mods/bacteria_mod.js", "mods/controllable_pixel_test.js", "mods/fire_slime.js", "mods/bioooze.js", "mods/more_clouds.js", "mods/color_tools.js", "mods/cells.js", "mods/triggerable_random_powders.js", "mods/replace.js", "mods/change.js", "mods/prompt.js", "mods/miscible_psoup_and_birthpool.js", "mods/primordial_birthpool.js", "mods/liquid_void.js", "mods/solid_rock.js", "mods/invisible_dye.js", "mods/alcohol.js", "mods/a_bundle_of_tests.js", "mods/paint_event.js", "mods/amogus.js", "mods/chem.js", "mods/roseyiede.js", "mods/state_voids.js", "mods/the_ground.js", "mods/lone_urea.js", "mods/fwibblen.js", "mods/velocity.js", "mods/prop and prompt variables.js", "mods/prop.js", "mods/x_dependent_change_test.js", "mods/alkahest.js", "mods/tool_pixel_behavior.js", "mods/onTryMoveInto.js", "mods/human_edit.js", "mods/runAfterAutogen and onload restructure.js", "mods/explodeAtPlus.js", "mods/more_bombs.js", "mods/note_block.js", "mods/wirelike_test.js", "mods/no_random_grbs.js", "mods/bananas.js", "mods/trapdoor.js", "mods/apioforms.js", "mods/cpt_alt.js", "mods/more_fairies.js", "mods/spouts.js", "mods/mobs.js"];
 	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
 	alert("Mod list loaded. Refresh the page without the loadTheModList query parameter.");
 	console.log("Mod list loaded. Refresh the page without the loadTheModList query parameter.");
 };
 
-function pyth(xA,yA,xB,yB) {
-    var a = Math.abs(xB - xA);
-    var b = Math.abs(yB - yA);
-    var c = Math.sqrt(a**2 + b**2);
-    return c;
+if(typeof(pyth) === "undefined") { //has to be in here due to the role in loading the mod list
+	function pyth(xA,yA,xB,yB) {
+		var a = Math.abs(xB - xA);
+		var b = Math.abs(yB - yA);
+		var c = Math.sqrt(a**2 + b**2);
+		return c;
+	};
+};
+
+if(typeof(xor) === "undefined") {
+	xor = function(c1,c2) { //Unused
+		if(!!c1 && !c2) {
+			return true;
+		} else if(!c1 && !!c2) {
+			return true;
+		} else {
+			return false;
+		};
+	};
 };
 
 function test(centerX,centerY,integer,chosenElement,createPixels=true,replacePixels=true,radialColor=false) {
@@ -89,16 +105,6 @@ var canSupportWithEdge = function(x,y) {
 	};
 };*/
 
-xor = function(c1,c2) { //Unused
-	if(!!c1 && !c2) {
-		return true;
-	} else if(!c1 && !!c2) {
-		return true;
-	} else {
-		return false;
-	};
-};
-
 var powderMovementSnippet = function(pixel) { //Unused
 	if (!tryMove(pixel, pixel.x, pixel.y+1)) {
 		if (Math.random() < 0.5) {
@@ -117,13 +123,15 @@ var sturdyMovementSnippet = function(pixel) { //readability wrapper
 	tryMove(pixel, pixel.x, pixel.y+1);
 };
 
-function includesArray(parentArray, testArray) { //from portals.js
-    for (let i = 0; i < parentArray.length; i++) {
-        if (parentArray[i].every(function(value, index) { return value === testArray[index]})) {
-            return true;
-        };
-    };
-    return false;
+if(typeof(includesArray) === "undefined") {
+	function includesArray(parentArray, testArray) { //from portals.js
+		for (let i = 0; i < parentArray.length; i++) {
+			if (parentArray[i].every(function(value, index) { return value === testArray[index]})) {
+				return true;
+			};
+		};
+		return false;
+	};
 };
 
 ddAnchorArray = [];
@@ -211,15 +219,6 @@ elements.steel_silk = {
 	state: "solid",
 	density: 6850,
 	breakInto: "metal_scrap",
-};
-
-function includesArray(parentArray, testArray) {
-    for (let i = 0; i < parentArray.length; i++) {
-        if (parentArray[i].every(function(value, index) { return value === testArray[index]})) {
-            return true;
-        };
-    };
-    return false;
 };
 
 function distanceScalePrompt() {
