@@ -1,21 +1,12 @@
 var modName = "mods/spouts.js";
 var runAfterAutogenMod = "mods/runAfterAutogen and onload restructure.js";
+var libraryMod = "mods/code_library.js";
 
-if(enabledMods.includes(runAfterAutogenMod)) {
-	urlParams = new URLSearchParams(window.location.search);
-
+if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod)) {
 	if(urlParams.get('spoutIncludeRandom') !== null) { //if the variable exists at all
 		spoutIncludeRandom = true
 	} else { //if it doesn't (and it returns null)
 		spoutIncludeRandom = false
-	}
-
-	function _randomInt(max) {
-		if(max >= 0) {
-			return Math.floor(Math.random() * (max + 1))
-		} else {
-			return 0 - Math.floor(Math.random() * (Math.abs(max) + 1))
-		}
 	}
 
 	excludedSpoutElements = ["ketchup", "liquid_cloner", "fire_cloner"]
@@ -34,90 +25,6 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 		} else {
 			throw new TypeError(`Unexpected type: ${typeof(stringOrArray)}`);
 		};
-	};
-
-	function bound(number,lowerBound,upperBound) {
-		return Math.min(upperBound,Math.max(lowerBound,number));
-	};
-
-	function rgbStringToObject(string,doRounding=true,doBounding=true) { //turns rgb() to {r,g,b} with no bounds/rounding/NaN checking
-			//console.log("Splitting string into object");
-		string = string.split(",");
-		if( (!string[0].startsWith("rgb(")) || (!string[2].endsWith(")")) ) {
-			throw new Error("Color must start with \"rgb(\" and end with \")\"");
-		};
-		var red = parseFloat(string[0].substring(4));
-		var green = parseFloat(string[1]);
-		var blue = parseFloat(string[2].slice(0,-1));
-			//console.log(`Colors loaded (${red}, ${green}, ${blue})`);
-		if(doRounding) {
-			red = Math.round(red);
-			green = Math.round(green);
-			blue = Math.round(blue);
-				//console.log(`Colors rounded to (${red}, ${green}, ${blue})`);
-		};
-		if(doBounding) {
-			red = bound(red,0,255)
-			green = bound(green,0,255)
-			blue = bound(blue,0,255)
-				//console.log(`Colors bounded to (${red}, ${green}, ${blue})`);
-		};
-			//console.log("String split: outputs " + red + ", " + green + ", " + blue + ".");
-		return {r: red, g: green, b: blue};
-	};
-
-	function sumArray(array) { //Sum of array numbers
-		return array.reduce((partialSum, a) => partialSum + a, 0);
-	};
-
-	function averageArray(array) { //Average of array numbers
-		return sumArray(array) / array.length;
-	};
-	
-	function _rgbHexCatcher(color) { //Hex triplet to rgb(), while rgb() is untouched
-			//console.log("Logged color for _rgbHexCatcher: " + color);
-									 //I have no idea if this runs before or after parsing hex triplets to rgb() values, so I'm going to handle both (by making everything rgb() and then making it hex at the end)
-		if(typeof(color) === "undefined") {
-			//console.log("Warning: An element has an undefined color. Unfortunately, due to how the code is structured, I can't say which one.");
-			color = "#FF00FF";
-		};
-		if(color.length < 10) {
-			//console.log("Short string detected, likely a hex triplet");
-			if(!color.startsWith("#")) {
-				color = "#" + color;
-			};
-			var object = hexToRGB(color);
-			return `rgb(${object.r},${object.g},${object.b})`
-		} else {
-			//console.log("Non-triplet detected");
-			return color;
-		};
-	};
-
-	function averageRgbPrefixedColorArray(colorArray,returnObject=false) { //array of rgb()s to single rgb() of average color
-		//console.log("Averaging started");
-		var reds = [];
-		var greens = [];
-		var blues = [];
-		for(k = 0; k < colorArray.length; k++) {
-			//console.log("Average function: Executing catcher on " + colorArray);
-			var color = _rgbHexCatcher(colorArray[k]);
-			//console.log("Logged color for aRPCA: " + color);
-			color = color.split(","); 
-			var red = parseFloat(color[0].substring(4));
-			reds.push(red)
-			var green = parseFloat(color[1]);
-			greens.push(green)
-			var blue = parseFloat(color[2].slice(0,-1));
-			blues.push(blue)
-		};
-		redAverage = Math.round(averageArray(reds));
-		greenAverage = Math.round(averageArray(greens));
-		blueAverage = Math.round(averageArray(blues));
-		var output; 
-		returnObject ? output = {r: redAverage, g: greenAverage, b: blueAverage} : output = `rgb(${redAverage},${greenAverage},${blueAverage})`;
-		//console.log("Averaging finished, product: " + output);
-		return output;
 	};
 
 	//Standalone generator
@@ -187,7 +94,7 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 			if(Array.isArray(startColor)) { //Average arrays, make colors rgb()
 				startColor = averageRgbPrefixedColorArray(startColor);
 			} else {
-				startColor = _rgbHexCatcher(startColor);
+				startColor = rgbHexCatcher(startColor);
 			};
 			
 			var newColorObject = rgbStringToObject(startColor);
@@ -242,6 +149,12 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 			} else {
 				elements[spoutName].excludeRandom = true;
 			};
+			if(isAfterScriptLoading) {
+				elementCount++; //increment for new spout element
+				createElementButton(spoutName);
+				elements[spoutName].id = nextid++;
+				document.getElementById("extraInfo").innerHTML = "<small><p>There are " + elementCount + " elements, including " + hiddenCount + " hidden ones.</p><p>©2021-" + new Date().getFullYear() + ". All Rights Reserved. <a href='https://r74n.com'>R74n</a></p></small>"; //update extra info counts (and the copyright year, due to the method used)
+			};
 		};
 	};
 
@@ -287,7 +200,8 @@ if(enabledMods.includes(runAfterAutogenMod)) {
 		},
 	};
 } else {
-	alert(`The ${runAfterAutogenMod} mod is required and has been automatically inserted (reload for this to take effect).`)
-	enabledMods.splice(enabledMods.indexOf(modName),0,runAfterAutogenMod)
+	if(!enabledMods.includes(runAfterAutogenMod))	{ enabledMods.splice(enabledMods.indexOf(modName),0,runAfterAutogenMod) };
+	if(!enabledMods.includes(libraryMod))			{ enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod) };
+	alert(`The "${runAfterAutogenMod}" and "${libraryMod}" mods are required; any missing mods in this list have been automatically inserted (reload for this to take effect).`)
 	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
 };
