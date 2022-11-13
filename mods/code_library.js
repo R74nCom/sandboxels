@@ -471,7 +471,7 @@
 		if(typeof(color) === "undefined") {
 			//console.log("Warning: An element has an undefined color. Unfortunately, due to how the code is structured, I can't say which one.");
 			//color = "#FF00FF";
-			throw new Error("Warning: An element has an undefined color. Unfortunately, due to how the code is structured, I can't say which one.");
+			throw new Error("Color is undefined!");
 		};
 		//console.log("Logged color for convertColorFormats: " + color);
 		if(typeof(color) === "string") {
@@ -498,8 +498,11 @@
 					case "json":
 						return color;
 						break;
+					case "array":
+						return [color.r, color.g, color.b];
+						break;
 					default:
-						throw new Error("outputType must be \"rgb\", \"hex\", \"json\"");
+						throw new Error("outputType must be \"rgb\", \"hex\", \"json\", or \"array\"");
 				};
 			} else {
 				if(typeof(color) === "string" && color.startsWith("rgb(")) {
@@ -516,8 +519,11 @@
 						case "json":
 							return color;
 							break;
+						case "array":
+							return [color.r, color.g, color.b];
+							break;
 						default:
-							throw new Error("outputType must be \"rgb\", \"hex\", \"json\"");
+							throw new Error("outputType must be \"rgb\", \"hex\", \"json\", or \"array\"");
 					};
 				} else {
 					throw new Error('Color must be of the type "rgb(red,green,blue)"');
@@ -534,8 +540,11 @@
 				case "json":
 					return color;
 					break;
+				case "array":
+					return [color.r, color.g, color.b];
+					break;
 				default:
-					throw new Error("outputType must be \"rgb\", \"hex\", \"json\"");
+					throw new Error("outputType must be \"rgb\", \"hex\", \"json\", or \"array\"");
 			};
 		};
 	};
@@ -698,7 +707,7 @@
 	};
 
 	//https://stackoverflow.com/questions/46432335/hex-to-hsl-convert-javascript
-	function rgbStringToHSL(rgb) { //Originally a hex-to-HSL function, edited to take RGB and spit out an array
+	function rgbStringToHSL(rgb,outputType="array") { //Originally a hex-to-HSL function, edited to take RGB and spit out an array
 		//console.log("HSLing some RGBs");
 		var result = rgbStringToUnvalidatedObject(rgb);
 
@@ -731,14 +740,191 @@
 
 		//var colorInHSL = 'hsl(' + h + ', ' + s + '%, ' + l + '%)';
 		//Edit to return an array
-		var colorInHSL = [h,s,l];
+		switch(outputType.toLowerCase()) {
+			case "array":
+				return [h,s,l];
+				break;
+			case "hsl":
+				return `hsl(${h},${s}%,${l}%)`;
+				break;
+			case "json":
+				return {h: h, s: s, l: l};
+			default:
+				throw new Error("outputType must be \"array\", \"hsl\", or \"json\"");
+				break;				
+		};
 		//console.log("HSL output "+ colorInHSL + ".");
-		return colorInHSL;
+		
+	};
+
+	function normalizeColorToHslObject(color,arrayType=null) {
+		var ambiguousArrayError = "changeSaturation can't tell if the array input is supposed to be RGB or HSL. Please use an \"arrayType\" argument of \"rgb\" or \"hsl\".";
+		var isHsl = false;
+		if(Array.isArray(color)) {
+			if(arrayType === null) {
+				throw new Error(ambiguousArrayError);
+			} else if(arrayType === "rgb") {
+				color = `rgb(${color[0]},${color[1]},${color[2]})`;
+				color = rgbStringToHSL(color,"json"); //rgb arr to hsl obj
+			} else if(arrayType === "hsl") {
+				color = {h: color[0], s: color[1], l: color[2]}; //hsl arr to hsl obj
+			} else {
+				throw new Error(ambiguousArrayError);
+			};
+		} else {
+			//by this point, any array cases would have been handled, leaving just hex (rgb), json rgb, json hsl, string rgb, and string hsl 
+			if(typeof(color) === "string") {
+				if(color.length < 10) { //detect hex: assume hex triplet if too short to be a well-formed rgb()
+					if(!color.startsWith("#")) {
+						color = "#" + color; //catch missing #
+					};
+					isHsl = false;
+				};
+				if(color.startsWith("rgb(")) { //detect rgb(): self-explanatory
+					isHsl = false;
+				};
+				if(color.startsWith("hsl(")) { //detect hsl(): self-explanatory
+					isHsl = true;
+				};
+			} else if(typeof(color) === "object") {
+				if(typeof(color.r) !== "undefined") { //detect {r,g,b}: check for r key
+					isHsl = false;
+				};
+				if(typeof(color.h) !== "undefined") { //detect {h,s,l}: check for h key
+					isHsl = true;
+				};
+			};
+			if(!isHsl) {
+				color = convertColorFormats(color,"rgb"); //make any RGBs rgb()
+				color = rgbStringToHSL(color,"json"); //make that rgb() an {h,s,l}
+			} else { //by this point, it would have to either be a string or an object
+				if(typeof(color) === "string") { //if it's a string
+					color = hslColorStringToObject(color) //now it's an object
+				};
+			};
+		};
+		return color;		
+	};
+
+	function convertHslObjects(color,outputType="rgb") {
+		switch(outputType.toLowerCase()) {
+			//RGB cases
+			case "rgb":
+				color = hexToRGB(hslToHex(...Object.values(color))); //hsl to hex, hex to rgb_json, and rgb_json to rgb()
+				return `rgb(${color.r},${color.g},${color.b})`;
+				break;
+			case "hex":
+				color = hslToHex(...Object.values(color)); //hsl to hex
+				return color;
+				break;
+			case "rgbjson":
+			case "rgb-json":
+			case "rgb_json":
+				color = hexToRGB(hslToHex(...Object.values(color))); //hsl to hex and hex to rgb_json
+				return color; 
+				break;
+			case "rgbarray":
+			case "rgb-array":
+			case "rgb_array":
+				color = hexToRGB(hslToHex(...Object.values(color))); //hsl to hex, hex to rgb_json, and rgb_json to rgb_array
+				return [color.r, color.g, color.b]; 
+				break;
+			//HSL cases
+			case "hsl":
+				//note: color was previously converted to {h, s, l}
+				return `hsl(${color.h},${color.s}%,${color.l}%)`;
+				break;
+			case "hsljson":
+			case "hsl-json":
+			case "hsl_json":
+				return color; 
+				break;
+			case "hslarray":
+			case "hsl-array":
+			case "hsl_array":
+				return [color.h, color.s, color.l]; 
+				break;
+			default:
+				throw new Error("outputType must be \"rgb\", \"hex\", \"rgb_json\", \"rgb_array\", \"hsl\", \"hsl_json\", or \"hsl_array\"");
+		};
+	}
+
+	function changeSaturation(color,saturationChange,operationType="add",outputType="rgb",arrayType=null) {
+		color = normalizeColorToHslObject(color,arrayType);
+		//only {h,s,l} should exist now
+		
+		//Math
+		switch(operationType.toLowerCase()) {
+			case "+":
+			case "add":
+				color.s += saturationChange;
+				break;
+			case "-":
+			case "subtract":
+				color.s -= saturationChange;
+				break;
+			case "*":
+			case "multiply":
+				color.s *= saturationChange;
+				break;
+			case "/":
+			case "divide":
+				color.s /= saturationChange;
+				break;
+			default:
+				throw new Error("operationType must be \"add\", \"subtract\", \"multiply\", or \"divide\"");
+		};
+		
+		color.h = Math.round(color.h % 360);
+		color.s = Math.round(bound(color.s,0,100));
+		color.l = Math.round(bound(color.l,0,100));
+		
+		return convertHslObjects(color,outputType)
+	};
+
+	function changeLuminance(color,luminanceChange,operationType="add",outputType="rgb",arrayType=null) {
+		color = normalizeColorToHslObject(color,arrayType);
+		//only {h,s,l} should exist now
+		
+		//Math
+		switch(operationType.toLowerCase()) {
+			case "+":
+			case "add":
+				color.s += luminanceChange;
+				break;
+			case "-":
+			case "subtract":
+				color.s -= luminanceChange;
+				break;
+			case "*":
+			case "multiply":
+				color.s *= luminanceChange;
+				break;
+			case "/":
+			case "divide":
+				color.s /= luminanceChange;
+				break;
+			default:
+				throw new Error("operationType must be \"add\", \"subtract\", \"multiply\", or \"divide\"");
+		};
+		
+		color.h = Math.round(color.h % 360);
+		color.s = Math.round(bound(color.s,0,100));
+		color.l = Math.round(bound(color.l,0,100));
+		
+		return convertHslObjects(color,outputType);
+	};
+
+	function colorToHsl(color,outputType) {
+		color = convertColorFormats(color,"rgb");
+		color = rgbStringToHSL("color",)
 	};
 
 	//https://stackoverflow.com/questions/36721830/convert-hsl-to-rgb-and-hex
 	function hslToHex(h, s, l) { //h, s, l params to hex triplet
 	  //console.log(`Hexing some HSLs (the HSLs are ${h},${s},${l})`)
+	  s = bound(s,0,100); //limit to 0-100
+	  l = bound(l,0,100);
 	  l /= 100;
 	  var a = s * Math.min(l, 1 - l) / 100;
 	  var f = n => {
