@@ -266,17 +266,21 @@ elements.cook.behavior = [
 	"HT:0.5|HT:0.5|HT:0.5",
 ];
 
-elements.ultraheat.behavior = [
-	"HT:350|HT:350|HT:350",
-	"HT:350|HT:350|HT:350",
-	"HT:350|HT:350|HT:350",
-];
+if(typeof(elements.ultraheat) !== "undefined") {
+	elements.ultraheat.behavior = [
+		"HT:350|HT:350|HT:350",
+		"HT:350|HT:350|HT:350",
+		"HT:350|HT:350|HT:350",
+	];
+};
 
-elements.ultracool.behavior = [
-	"CO:350|CO:350|CO:350",
-	"CO:350|CO:350|CO:350",
-	"CO:350|CO:350|CO:350",
-];
+if(typeof(elements.ultracool) !== "undefined") {
+	elements.ultracool.behavior = [
+		"CO:350|CO:350|CO:350",
+		"CO:350|CO:350|CO:350",
+		"CO:350|CO:350|CO:350",
+	];
+};
 
 elements.incinerate.behavior = [
 	"HT:10000|HT:10000|HT:10000",
