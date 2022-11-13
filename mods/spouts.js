@@ -9,9 +9,50 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 		spoutIncludeRandom = false
 	}
 
-	excludedSpoutElements = ["ketchup", "liquid_cloner", "fire_cloner"]
-	includedSpouts = ["ketchup_spout", "spout", "udder", "torch", "sun"]
-
+	var excludedSpoutElements = ["ketchup", "liquid_cloner", "fire_cloner"]
+	var includedSpouts = ["ketchup_spout", "spout", "udder", "torch", "sun"]
+	var backupCategoryWhitelist = ["land","powders","weapons","food","life","corruption","states","fey","Fantastic Creatures","dyes","energy liquids","random liquids","random gases","random rocks"];
+	var backupElementWhitelist = ["mercury", "chalcopyrite_ore", "chalcopyrite_dust", "copper_concentrate", "fluxed_copper_concentrate", "unignited_pyrestone", "ignited_pyrestone", "everfire_dust", "extinguished_everfire_dust", "mistake", "polusium_oxide", "vaporized_polusium_oxide", "glowstone_dust", "redstone_dust", "soul_mud", "wet_soul_sand", "nitrogen_snow", "fusion_catalyst", "coal", "coal_coke", "blast_furnace_fuel", "molten_mythril"];
+	//forces elements that logically should be spouted, but are refused even though the condition is true, to be spouted
+	function defaultSpoutCondition(name) {
+		if(typeof(elements[name]) !== "object") {
+			throw new Error(`Nonexistent element ${name}`);
+		};
+		var info = elements[name];
+		//console.log(`${name} (${JSON.stringify(elements[name])})`);
+		if(typeof(info.state) === "undefined") {
+			var state = null;
+		} else {
+			var state = info.state;
+		};
+		if(typeof(info.category) === "undefined") {
+			var category = "other";
+		} else {
+			var category = info.category;
+		};
+		if(excludedSpoutElements.includes(name)) {
+			return false
+		};
+		var include = false;
+		if(["liquid","gas"].includes(state)) {
+			include = true;
+		};
+		if(info.movable) {
+			include = true;
+		};
+		if(backupCategoryWhitelist.includes(category)) {
+			include = true;
+		};
+		if(backupElementWhitelist.includes(name)) {
+			include = true;
+		};
+		if(category.includes("mudstone")) {
+			include = true;
+		};
+		//console.log(include);
+		return include;
+	};
+	
 //Generator function
 
 	function tryJoin(stringOrArray,joiner) {
@@ -160,7 +201,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 
 	runAfterAutogen(function() {
 		liquidArray = Object.keys(elements).filter(function(e) {
-			return (elements[e].state == "liquid" || elements[e].state == "gas" || elements[e].movable) && !excludedSpoutElements.includes(elements[e]);
+			return (defaultSpoutCondition(e));
 		});
 		/*for(i = 0; i < liquidArray.length; i++) {
 			elements[`${liquidArray[i]}_spout`] = {
