@@ -215,6 +215,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod) 
 				elements[fairyName] = {
 					color: newColorArray,
 					insulate: true,
+					flippableX: true,
 					colorObject: newColorObjectArray,
 					behavior: [
 						["XX","M1","M1"],
@@ -246,6 +247,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod) 
 					elements[fairyName].excludeRandom = true;
 				};
 				if(isAfterScriptLoading) {
+					elements[fairyName].flippableX = true;
 					elementCount++; //increment for new fairy element
 					createElementButton(fairyName);
 					elements[fairyName].id = nextid++;
@@ -259,6 +261,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod) 
 		fairyArray = Object.keys(elements).filter(function(e) { //same criteria as spouts
 			return (defaultFairyCondition(e));
 		});
+		fairyArray.push(["rock","sand"]);
 		generateFairy(fairyArray,false);
 	});
 
