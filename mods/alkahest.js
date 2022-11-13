@@ -1,3 +1,5 @@
+alkahestBlacklist = ["alkahest","alkahest_fairy","wall","alkahest_spout"]
+
 elements.alkahest = {
 	color: "#33eeee",
 	behavior: behaviors.LIQUID_OLD,
@@ -17,7 +19,7 @@ elements.alkahest = {
 				if(!isEmpty(checkPosX,checkPosY,true)) {
 					var newPixel = pixelMap[checkPosX][checkPosY];
 					var newElement = newPixel.element;
-					if(![pixel.element,"wall","alkahest_spout"].includes(newElement)) { //unless someone's willing to implement dragon parts
+					if(!alkahestBlacklist.includes(newElement)) { //unless someone's willing to implement dragon parts
 						if(typeof(pixel[newElement]) === "undefined") {
 							pixel[newElement] = 0;
 						};
