@@ -165,6 +165,7 @@
 	};
 
 	function rgbStringToObject(string,doRounding=true,doBounding=true) { //turns rgb() to {r,g,b}
+		//console.log(`rgbStringToObject: ${string}`);
 			//console.log("Splitting string into object");
 		string = string.split(",");
 		if( (!string[0].startsWith("rgb(")) || (!string[2].endsWith(")")) ) {
@@ -226,6 +227,7 @@
 	};
 
 	function rgbToHex(color) {
+		//console.log(`rgbToHex called on ${typeof(color) === "object" ? JSON.stringify(color) : color}`);
 		if(typeof(color) == "object") { //Expects object like "{r: 172, g: 11, b: 34}"
 			var red = color.r;
 			var green = color.g;
@@ -363,7 +365,7 @@
 				};
 			} else {
 				if(color.startsWith("rgb(")) {
-					color = rgbStringToObject(color,false,false); //object conversion
+					color = convertColorFormats(color,"json"); //object conversion
 				//console.log(`color converted to object: ${JSON.stringify(color)}`);
 
 					offset = parseFloat(offset);
@@ -465,24 +467,81 @@
 		return `rgb(${red},${green},${blue})`
 	};
 	
-	function rgbHexCatcher(color) { //Hex triplet to rgb(), while rgb() is untouched
-			//console.log("Logged color for _rgbHexCatcher: " + color);
-									 //I have no idea if this runs before or after parsing hex triplets to rgb() values, so I'm going to handle both (by making everything rgb() and then making it hex at the end)
+	function convertColorFormats(color,outputType="rgb") { //Hex triplet and object to rgb(), while rgb() is untouched
 		if(typeof(color) === "undefined") {
 			//console.log("Warning: An element has an undefined color. Unfortunately, due to how the code is structured, I can't say which one.");
-			color = "#FF00FF";
+			//color = "#FF00FF";
+			throw new Error("Warning: An element has an undefined color. Unfortunately, due to how the code is structured, I can't say which one.");
 		};
-		if(color.length < 10) {
-			//console.log("Short string detected, likely a hex triplet");
-			if(!color.startsWith("#")) {
-				color = "#" + color;
+		//console.log("Logged color for convertColorFormats: " + color);
+		if(typeof(color) === "string") {
+			if(typeof(color) === "string" && color.length < 10) {
+				//console.log(`detected as hex: ${color}`);
+					//catch missing octothorpes
+					if(!color.startsWith("#")) {
+						color = "#" + color;
+					};
+				//console.log(`octothorpe checked: ${color}`);
+
+				color = hexToRGB(color);
+				if(color === null) {
+					throw new Error("hexToRGB(color) was null (maybe it's an invalid hex triplet?)");
+				};
+				
+				switch(outputType.toLowerCase()) {
+					case "rgb":
+						return `rgb(${color.r},${color.g},${color.b})`;
+						break;
+					case "hex":
+						return rgbToHex(color);
+						break;
+					case "json":
+						return color;
+						break;
+					default:
+						throw new Error("outputType must be \"rgb\", \"hex\", \"json\"");
+				};
+			} else {
+				if(typeof(color) === "string" && color.startsWith("rgb(")) {
+					//console.log(`convertColorFormats: calling rgbStringToObject on color ${color}`);
+					color = rgbStringToObject(color,true,false);
+					switch(outputType.toLowerCase()) {
+						case "rgb":
+							if(typeof(color) === "string") { color = rgbStringToObject(color) };
+							return `rgb(${color.r},${color.g},${color.b})`;
+							break;
+						case "hex":
+							return rgbToHex(color);
+							break;
+						case "json":
+							return color;
+							break;
+						default:
+							throw new Error("outputType must be \"rgb\", \"hex\", \"json\"");
+					};
+				} else {
+					throw new Error('Color must be of the type "rgb(red,green,blue)"');
+				};
 			};
-			var object = hexToRGB(color);
-			return `rgb(${object.r},${object.g},${object.b})`
-		} else {
-			//console.log("Non-triplet detected");
-			return color;
+		} else if(typeof(color) === "object") {
+			switch(outputType.toLowerCase()) {
+				case "rgb":
+					return `rgb(${color.r},${color.g},${color.b})`;
+					break;
+				case "hex":
+					return rgbToHex(color);
+					break;
+				case "json":
+					return color;
+					break;
+				default:
+					throw new Error("outputType must be \"rgb\", \"hex\", \"json\"");
+			};
 		};
+	};
+	
+	function rgbHexCatcher(color) {
+		return convertColorFormats(color,"rgb");
 	};
 
 	function averageColorObjects(color1,color2,weight1=0.5) { /*third argument is for color1 and expects a float from 0
@@ -503,12 +562,10 @@
 	function multiplyColors(color1,color2,outputType="rgb") {
 		//normalize rgb()/hex by turning any hex into rgb() and then rgb()s to {r,g,b}
 		if(typeof(color1) !== "object") {
-			color1 = rgbHexCatcher(color1);
-			color1 = rgbStringToObject(color1);
+			color1 = convertColorFormats(color1,"json");
 		};
 		if(typeof(color2) !== "object") {
-			color2 = rgbHexCatcher(color2);
-			color2 = rgbStringToObject(color2);
+			color2 = convertColorFormats(color2,"json");
 		};
 		var finalR = Math.round(color1.r * (color2.r/255));
 		var finalG = Math.round(color1.g * (color2.g/255));
@@ -532,12 +589,10 @@
 	function divideColors(color1,color2,outputType="rgb") { //color2 is the divisor and color1 the dividend (base/original color)
 		//normalize rgb()/hex by turning any hex into rgb() and then rgb()s to {r,g,b}
 		if(typeof(color1) !== "object") {
-			color1 = rgbHexCatcher(color1);
-			color1 = rgbStringToObject(color1);
+			color1 = convertColorFormats(color1,"json");
 		};
 		if(typeof(color2) !== "object") {
-			color2 = rgbHexCatcher(color2);
-			color2 = rgbStringToObject(color2);
+			color2 = convertColorFormats(color2,"json");
 		};
 		var finalR = bound(Math.round(255 / (color2.r / color1.r)),0,255);
 		var finalG = bound(Math.round(255 / (color2.g / color1.g)),0,255);
@@ -564,13 +619,11 @@
 	function addColors(color1,color2,outputType="rgb") {
 		//normalize rgb()/hex by turning any hex into rgb() and then rgb()s to {r,g,b}
 		if(typeof(color1) !== "object") {
-			color1 = rgbHexCatcher(color1);
-			color1 = rgbStringToObject(color1);
+			color1 = convertColorFormats(color1,"json");
 		};
 		if(typeof(color2) !== "object") {
-			color2 = rgbHexCatcher(color2);
-			color2 = rgbStringToObject(color2);
-		}; 
+			color2 = convertColorFormats(color2,"json");
+		};
 		var finalR = bound(Math.round(color1.r + color2.r),0,255)
 		var finalG = bound(Math.round(color1.g + color2.b),0,255)
 		var finalB = bound(Math.round(color1.b + color2.b),0,255)
@@ -593,13 +646,11 @@
 	function subtractColors(color1,color2,outputType="rgb") {
 		//normalize rgb()/hex by turning any hex into rgb() and then rgb()s to {r,g,b}
 		if(typeof(color1) !== "object") {
-			color1 = rgbHexCatcher(color1);
-			color1 = rgbStringToObject(color1);
+			color1 = convertColorFormats(color1,"json");
 		};
 		if(typeof(color2) !== "object") {
-			color2 = rgbHexCatcher(color2);
-			color2 = rgbStringToObject(color2);
-		}; 
+			color2 = convertColorFormats(color2,"json");
+		};
 		var finalR = bound(Math.round(color1.r - color2.r),0,255)
 		var finalG = bound(Math.round(color1.g - color2.b),0,255)
 		var finalB = bound(Math.round(color1.b - color2.b),0,255)
@@ -627,7 +678,7 @@
 		var blues = [];
 		for(k = 0; k < colorArray.length; k++) {
 			//console.log("Average function: Executing catcher on " + colorArray);
-			var color = rgbHexCatcher(colorArray[k]);
+			var color = convertColorFormats(colorArray[k]);
 			//console.log("Logged color for aRPCA: " + color);
 			color = color.split(","); 
 			var red = parseFloat(color[0].substring(4));
