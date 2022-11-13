@@ -16,7 +16,6 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod) 
 		state: "solid",
 		category: "fey",
 	}
-	eLists.FAIRY.push("acid_fairy");
 
 	elements.oil_fairy = {
 		name: "oil fairy",
@@ -29,7 +28,6 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod) 
 		state: "solid",
 		category: "fey",
 	}
-	eLists.FAIRY.push("oil_fairy");
 
 	elements.honey_fairy = {
 		name: "honey fairy",
@@ -42,7 +40,6 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod) 
 		state: "solid",
 		category: "fey",
 	}
-	eLists.FAIRY.push("honey_fairy");
 
 	excludedFairyElements = [];
 	
@@ -235,6 +232,11 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod) 
 	};
 
 	//Post-generation tasks
+		//Manual eLists.FAIRY updates
+	eLists.FAIRY.push("acid_fairy");
+	eLists.FAIRY.push("oil_fairy");
+	eLists.FAIRY.push("honey_fairy");
+
 		//Revamp fairykill
 	behaviors.FAIRYKILL_OLD = behaviors.FAIRYKILL;
 	behaviors.FAIRYKILL = function(pixel) {
