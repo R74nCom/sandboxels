@@ -203,6 +203,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 		liquidArray = Object.keys(elements).filter(function(e) {
 			return (defaultSpoutCondition(e));
 		});
+		liquidArray.push(["rock","sand"]);
 		/*for(i = 0; i < liquidArray.length; i++) {
 			elements[`${liquidArray[i]}_spout`] = {
 				color: elements[liquidArray[i]].color,
