@@ -5764,9 +5764,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 			var colorObjectArray = [];
 			for(q = 0; q < hslOffsets.length; q++) {
 				colorsArray[q] = addArraysInPairs(colorsArray[q],hslOffsets[q]);
-				//console.log(colorsArray[q]);
-				hslColorString = `hsl(${(colorsArray[q][0] % 360)},${slBound(colorsArray[q][1])}%,${slBound(colorsArray[q][2])}%)`
-				colorsArray[q] = hslToHex(hslColorString);
+				colorsArray[q] = hslToHex(...colorsArray[q]);
 				colorObjectArray[q] = hexToRGB(colorsArray[q]); //outputs hex
 				if(isAfterScriptLoading) { // if it's after the hex -> RGB conversion
 					var coq = colorObjectArray[q]; //pull the object
