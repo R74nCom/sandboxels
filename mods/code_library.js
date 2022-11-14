@@ -864,15 +864,22 @@
 				color.s -= saturationChange;
 				break;
 			case "*":
+			case "x":
+			case "×":
 			case "multiply":
 				color.s *= saturationChange;
 				break;
 			case "/":
+			case "÷":
 			case "divide":
 				color.s /= saturationChange;
 				break;
+			case "=":
+			case "set":
+				color.s = saturationChange;
+				break;
 			default:
-				throw new Error("operationType must be \"add\", \"subtract\", \"multiply\", or \"divide\"");
+				throw new Error("operationType must be \"add\", \"subtract\", \"multiply\", \"divide\", or \"set\"");
 		};
 		
 		color.h = Math.round(color.h % 360);
@@ -890,22 +897,69 @@
 		switch(operationType.toLowerCase()) {
 			case "+":
 			case "add":
-				color.s += luminanceChange;
+				color.l += luminanceChange;
 				break;
 			case "-":
 			case "subtract":
-				color.s -= luminanceChange;
+				color.l -= luminanceChange;
 				break;
 			case "*":
+			case "x":
+			case "×":
 			case "multiply":
-				color.s *= luminanceChange;
+				color.l *= luminanceChange;
 				break;
 			case "/":
+			case "÷":
 			case "divide":
-				color.s /= luminanceChange;
+				color.l /= luminanceChange;
+				break;
+			case "=":
+			case "set":
+				color.l = luminanceChange;
 				break;
 			default:
-				throw new Error("operationType must be \"add\", \"subtract\", \"multiply\", or \"divide\"");
+				throw new Error("operationType must be \"add\", \"subtract\", \"multiply\", \"divide\", or \"set\"");
+		};
+		
+		color.h = Math.round(color.h % 360);
+		color.s = Math.round(bound(color.s,0,100));
+		color.l = Math.round(bound(color.l,0,100));
+		
+		return convertHslObjects(color,outputType);
+	};
+
+	function changeHue(color,hueChange,operationType="add",outputType="rgb",arrayType=null) {
+		color = normalizeColorToHslObject(color,arrayType);
+		//only {h,s,l} should exist now
+		
+		//Math
+		switch(operationType.toLowerCase()) {
+			case "+":
+			case "add":
+				color.h += hueChange;
+				break;
+			case "-":
+			case "subtract":
+				color.h -= hueChange;
+				break;
+			case "*":
+			case "x":
+			case "×":
+			case "multiply":
+				color.h *= hueChange;
+				break;
+			case "/":
+			case "÷":
+			case "divide":
+				color.h /= hueChange;
+				break;
+			case "=":
+			case "set":
+				color.h = hueChange;
+				break;
+			default:
+				throw new Error("operationType must be \"add\", \"subtract\", \"multiply\", \"divide\", or \"set\"");
 		};
 		
 		color.h = Math.round(color.h % 360);
