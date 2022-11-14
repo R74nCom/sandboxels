@@ -1395,7 +1395,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 			}
 		},
 		related: ["creeper_body","creeper_head"],
-		desc: "<em>I'd rather this be toggleable mid-game than require a reload.</em><br/><br/><span class=\"creeperStatus\">If this text is green or underlined, creepers can spawn.</span> <span onclick=toggleCreeperSpawning() style=\"color: #ff00ff;\";>Click here</span> to toggle creeper spawning. If it's on, creepers (all types) can spawn through random events."
+		desc: "<em>I'd rather this be toggleable mid-game than require a reload.</em><br/><br/><span class=\"creeperStatus\">If this text is green or underlined, creepers can spawn.</span> <span onclick=toggleCreeperSpawning() style=\"color: #ff00ff;\";>Click here</span> to toggle creeper spawning. If it's on, creepers (all types) can spawn through random events.<br/>To enable automatic creeper generation, set the generateCreepers query parameter."
 	};
 
 	elements.creeper_body = {
@@ -5133,15 +5133,18 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 
 		//This code is a lot worse than I'd have liked it to be...
 
-
-
-	urlParams = new URLSearchParams(window.location.search);
-
 	//Include generated creepers in Random tool?
 	if(urlParams.get('creeperIncludeRandom') !== null) { //if the variable exists at all
 		creeperIncludeRandom = true
 	} else { //if it doesn't (and it returns null)
 		creeperIncludeRandom = false
+	}
+
+	//Generate creepers
+	if(urlParams.get('generateCreepers') !== null) { //if the variable exists at all
+		generateCreepers = true
+	} else { //if it doesn't (and it returns null)
+		generateCreepers = false
 	}
 
 	//Start Creeper Template Functions {
@@ -5901,10 +5904,12 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 		};
 	};
 	
-	var tempArray = Object.keys(elements); tempArray.push(["rock", "sand"]);
-	
 	runAfterAutogen(function() {
-		generateCreeper(tempArray,false);
+		if(generateCreepers) {
+			var tempArray = Object.keys(elements);
+			tempArray.push(["rock", "sand"]);
+			generateCreeper(tempArray,false)
+		};
 	});
 	
 	var solidBlacklist = ["mistake", "birthpool", "firesea"]; //exclude these since they seem to be liquid
