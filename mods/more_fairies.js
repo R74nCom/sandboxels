@@ -15,6 +15,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod) 
 		],
 		state: "solid",
 		category: "fey",
+		desc: "Like the other fairies, but with acid. <br/>To enable automatic fairy generation, set the generateFairies query parameter.",
 	}
 
 	elements.oil_fairy = {
@@ -27,6 +28,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod) 
 		],
 		state: "solid",
 		category: "fey",
+		desc: "Like the other fairies, but with oil. <br/>To enable automatic fairy generation, set the generateFairies query parameter.",
 	}
 
 	elements.honey_fairy = {
@@ -39,6 +41,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod) 
 		],
 		state: "solid",
 		category: "fey",
+		desc: "Like the other fairies, but with sweet honey. <br/>To enable automatic fairy generation, set the generateFairies query parameter.",
 	}
 
 	var excludedFairyElements = []
@@ -88,6 +91,13 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod) 
 		fairyIncludeRandom = true
 	} else { //if it doesn't (and it returns null)
 		fairyIncludeRandom = false
+	}
+
+	//Generate creepers
+	if(urlParams.get('generateFairies') !== null) { //if the variable exists at all
+		generateFairies = true
+	} else { //if it doesn't (and it returns null)
+		generateFairies = false
 	}
 
 	//Generator function
@@ -258,11 +268,13 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod) 
 	};
 
 	runAfterAutogen(function() {
-		fairyArray = Object.keys(elements).filter(function(e) { //same criteria as spouts
-			return (defaultFairyCondition(e));
-		});
-		fairyArray.push(["rock","sand"]);
-		generateFairy(fairyArray,false);
+		if(generateFairies) {
+			fairyArray = Object.keys(elements).filter(function(e) { //same criteria as spouts
+				return (defaultFairyCondition(e));
+			});
+			fairyArray.push(["rock","sand"]);
+			generateFairy(fairyArray,false);
+		};
 	});
 
 	elements.spawn_random_fairy = {
