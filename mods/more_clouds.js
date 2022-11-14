@@ -9,8 +9,9 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 		cloudIncludeRandom = false
 	}
 
+	eLists.CLOUD = ["cloud", "rain_cloud", "snow_cloud", "fire_cloud", "hail_cloud", "acid_cloud", "pyrocumulus"];
 	var excludedCloudElements = ["snow", "fire", "hail", "acid"];
-	var includedClouds = ["cloud", "rain_cloud", "snow_cloud", "fire_cloud", "hail_cloud", "acid_cloud"];
+	var includedClouds = ["cloud", "rain_cloud", "snow_cloud", "fire_cloud", "hail_cloud", "acid_cloud", "pyrocumulus"];
 	var backupCategoryWhitelist = ["land","powders","weapons","food","life","corruption","states","fey","Fantastic Creatures","dyes","energy liquids","random liquids","random gases","random rocks"];
 	var backupElementWhitelist = ["mercury", "chalcopyrite_ore", "chalcopyrite_dust", "copper_concentrate", "fluxed_copper_concentrate", "unignited_pyrestone", "ignited_pyrestone", "everfire_dust", "extinguished_everfire_dust", "mistake", "polusium_oxide", "vaporized_polusium_oxide", "glowstone_dust", "redstone_dust", "soul_mud", "wet_soul_sand", "nitrogen_snow", "fusion_catalyst", "coal", "coal_coke", "blast_furnace_fuel", "molten_mythril"];
 	//forces elements that logically should be clouded, but are refused even though the condition is true, to be clouded
@@ -184,6 +185,8 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 					conduct: 0.01,
 				};
 			};
+
+			eLists.CLOUD.push(cloudName);
 
 			if(!randomExcl) {
 				if(typeof(cloudChoices) === "undefined") {
