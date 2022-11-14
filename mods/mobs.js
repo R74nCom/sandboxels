@@ -15,6 +15,8 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 	minimumSkeletonTries = 3;
 	maximumSkeletonTries = 3;
 
+	eLists.CREEPER = ["creeper", "angelic_creeper", "hell_creeper", "bombing_creeper", "baby_creeper"];
+
 	headBodyObject = {
 		"head": "body",
 		"creeper_head": "creeper_body",
@@ -5799,6 +5801,9 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 				related: [bodyName,headName,"creeper"],
 				desc: `Auto-generated creeper.<br/>Explodes into ${descElement}.`,
 			};
+			
+			eLists.CREEPER.push(placerName);
+			
 											//Body
 			elements[bodyName] = {
 				movable: true,
