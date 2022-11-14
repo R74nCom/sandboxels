@@ -9,8 +9,9 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 		spoutIncludeRandom = false
 	}
 
+	eLists.SPOUT = ["spout", "udder", "torch"];
 	var excludedSpoutElements = ["ketchup", "liquid_cloner", "fire_cloner"]
-	var includedSpouts = ["ketchup_spout", "spout", "udder", "torch", "sun"]
+	var includedSpouts = ["ketchup_spout", "spout", "udder", "torch"]
 	var backupCategoryWhitelist = ["land","powders","weapons","food","life","corruption","states","fey","Fantastic Creatures","dyes","energy liquids","random liquids","random gases","random rocks"];
 	var backupElementWhitelist = ["mercury", "chalcopyrite_ore", "chalcopyrite_dust", "copper_concentrate", "fluxed_copper_concentrate", "unignited_pyrestone", "ignited_pyrestone", "everfire_dust", "extinguished_everfire_dust", "mistake", "polusium_oxide", "vaporized_polusium_oxide", "glowstone_dust", "redstone_dust", "soul_mud", "wet_soul_sand", "nitrogen_snow", "fusion_catalyst", "coal", "coal_coke", "blast_furnace_fuel", "molten_mythril"];
 	//forces elements that logically should be spouted, but are refused even though the condition is true, to be spouted
@@ -196,6 +197,8 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 				elements[spoutName].id = nextid++;
 				document.getElementById("extraInfo").innerHTML = "<small><p>There are " + elementCount + " elements, including " + hiddenCount + " hidden ones.</p><p>©2021-" + new Date().getFullYear() + ". All Rights Reserved. <a href='https://r74n.com'>R74n</a></p></small>"; //update extra info counts (and the copyright year, due to the method used)
 			};
+			
+			eLists.SPOUT.push(spoutName);
 		};
 	};
 
