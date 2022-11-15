@@ -43,7 +43,7 @@ function doBurning(pixel) {
 				newFireIsCold = (newFire === "cold_fire");
 
 
-				//console.log(`burning pixel ${pixel.element}: ${fire} (${fireIsCold}) / ${newFire} (${newFireIsCold})`);
+				//console.log(`burning pixel ${pixel.element}: ${fire} (${fireIsCold}) / burned element ${newPixel.element}: ${newFire} (${newFireIsCold})`);
 				if((!fireIsCold && !newFireIsCold) || (fireIsCold && newFireIsCold)) {
 					if (elements[newPixel.element].burn && !newPixel.burning) {
 						if (Math.floor(Math.random()*100) < elements[newPixel.element].burn) {
@@ -210,5 +210,16 @@ runAfterLoad(function() {
 			state: "liquid",
 			density: 42,
 		};
+	};
+	
+	if(enabledMods.includes("mods/randomness.js")) {
+		elements.unnamed_gas.burnTempChange = 10;
+		elements.unnamed_gas.fireElement = "plasma";
+		elements.unnamed_powder.burnTempChange = 20;
+		elements.unnamed_powder.fireElement = "plasma";
+		elements.burning_unnamed_gas.burnTempChange = 15;
+		elements.burning_unnamed_gas.fireElement = "plasma";
+		elements.burning_unnamed_powder.burnTempChange = 30;
+		elements.burning_unnamed_powder.fireElement = "plasma";
 	};
 });
