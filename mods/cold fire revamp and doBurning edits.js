@@ -9,6 +9,19 @@ function doBurning(pixel) {
 		if (burnTempChange == undefined) {
 			burnTempChange = 1;
 		};
+		//move fire ahead so that cold burners don't light hot burners
+		var fireIsCold;
+		//Fire getter block
+			var fire = info.fireElement;
+			if (fire == undefined) {
+				fire = 'fire';
+			}
+			else if(fire instanceof Array) {
+				fire = fire[Math.floor(Math.random()*fire.length)];
+			}
+		//End fire getter block
+		fireIsCold = (fire === "cold_fire");
+
 		pixel.temp += burnTempChange;
 		pixelTempCheck(pixel);
 		for (var i = 0; i < adjacentCoords.length; i++) { // Burn adjacent pixels
@@ -16,10 +29,27 @@ function doBurning(pixel) {
 			var y = pixel.y+adjacentCoords[i][1];
 			if (!isEmpty(x,y,true)) {
 				var newPixel = pixelMap[x][y];
-				if (elements[newPixel.element].burn && !newPixel.burning) {
-					if (Math.floor(Math.random()*100) < elements[newPixel.element].burn) {
-						newPixel.burning = true;
-						newPixel.burnStart = pixelTicks;
+				var newInfo = elements[newPixel.element];
+				var newFireIsCold;
+				//Fire getter block
+					var newFire = newInfo.fireElement;
+					if (newFire == undefined) {
+						newFire = 'fire';
+					}
+					else if(newFire instanceof Array) {
+						newFire = newFire[Math.floor(Math.random()*newFire.length)];
+					}
+				//End fire getter block
+				newFireIsCold = (newFire === "cold_fire");
+
+
+				//console.log(`burning pixel ${pixel.element}: ${fire} (${fireIsCold}) / ${newFire} (${newFireIsCold})`);
+				if((!fireIsCold && !newFireIsCold) || (fireIsCold && newFireIsCold)) {
+					if (elements[newPixel.element].burn && !newPixel.burning) {
+						if (Math.floor(Math.random()*100) < elements[newPixel.element].burn) {
+							newPixel.burning = true;
+							newPixel.burnStart = pixelTicks;
+						}
 					}
 				}
 			}
@@ -43,7 +73,7 @@ function doBurning(pixel) {
 		}
 		else if (Math.floor(Math.random()*100)<10 && !fireSpawnBlacklist.includes(pixel.element)) { // Spawn fire
 			if (isEmpty(pixel.x,pixel.y-1)) {
-				createPixel((info.fireElement || "fire"),pixel.x,pixel.y-1);
+				createPixel(fire,pixel.x,pixel.y-1);
 				pixelMap[pixel.x][pixel.y-1].temp = pixel.temp//+(pixelTicks - (pixel.burnStart || 0));
 				if (info.fireColor != undefined) {
 					pixelMap[pixel.x][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x][pixel.y-1],info.fireColor);
@@ -51,7 +81,7 @@ function doBurning(pixel) {
 			}
 			// same for below if top is blocked
 			else if (isEmpty(pixel.x,pixel.y+1)) {
-				createPixel((info.fireElement || "fire"),pixel.x,pixel.y+1);
+				createPixel(fire,pixel.x,pixel.y+1);
 				pixelMap[pixel.x][pixel.y+1].temp = pixel.temp//+(pixelTicks - (pixel.burnStart || 0));
 				if (info.fireColor != undefined) {
 					pixelMap[pixel.x][pixel.y+1].color = pixelColorPick(pixelMap[pixel.x][pixel.y+1],info.fireColor);
@@ -66,13 +96,37 @@ function doBurning(pixel) {
 elements.cold_fire.burning = true;
 elements.cold_fire.burnTempChange = -1;
 elements.cold_fire.burnTime = 25;
-elements.cold_fire.burnInto = "smoke";
+elements.cold_fire.burnInto = "cold_smoke";
 elements.cold_fire.fireElement = "cold_fire";
 elements.cold_fire.behavior = [
 	"M1|M1|M1",
 	"M2|XX|M2",
 	"XX|M2|XX"
 ],
+
+elements.cold_smoke = {
+	color: "#282848",
+	behavior: behaviors.DGAS,
+	reactions: {
+		"steam": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,12], "setting":"clouds" },
+		"rain_cloud": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,12], "setting":"clouds" },
+		"cloud": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,12], "setting":"clouds" },
+		"snow_cloud": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,12], "setting":"clouds" },
+		"hail_cloud": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,12], "setting":"clouds" },
+		"acid_cloud": { "elem1": "pyrocumulus", "chance":0.05, "y":[0,12], "setting":"clouds" },
+		"fire_cloud": { "elem1": "pyrocumulus", "chance":0.05, "y":[0,12], "setting":"clouds" },
+		"pyrocumulus": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,12], "setting":"clouds" },
+	},
+	temp: -100,
+	tempHigh: 0,
+	stateHigh: "smoke",
+	tempLow: -114,
+	stateLow: "cold_fire",
+	category: "gases",
+	state: "gas",
+	density: 1280,
+	stain: 0.075,
+};
 
 elements.cold_torch = {
 	"color": "#4394d6",
