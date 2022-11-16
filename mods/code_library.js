@@ -634,7 +634,7 @@
 			color2 = convertColorFormats(color2,"json");
 		};
 		var finalR = bound(Math.round(color1.r + color2.r),0,255)
-		var finalG = bound(Math.round(color1.g + color2.b),0,255)
+		var finalG = bound(Math.round(color1.g + color2.g),0,255)
 		var finalB = bound(Math.round(color1.b + color2.b),0,255)
 		var finalColor = {r: finalR, g: finalG, b: finalB};
 		switch(outputType.toLowerCase()) {
@@ -661,7 +661,7 @@
 			color2 = convertColorFormats(color2,"json");
 		};
 		var finalR = bound(Math.round(color1.r - color2.r),0,255)
-		var finalG = bound(Math.round(color1.g - color2.b),0,255)
+		var finalG = bound(Math.round(color1.g - color2.g),0,255)
 		var finalB = bound(Math.round(color1.b - color2.b),0,255)
 		var finalColor = {r: finalR, g: finalG, b: finalB};
 		switch(outputType.toLowerCase()) {
