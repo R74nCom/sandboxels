@@ -4,6 +4,7 @@ var creeperMod = "mods/mobs.js";
 var spoutMod = "mods/spouts.js";
 var fairyMod = "mods/more_fairies.js";
 var cloudMod = "mods/more_clouds.js";
+var bombMod = "mods/more_bombs.js";
 if(enabledMods.includes(creeperMod)) {
 	lategenOptions.push("creeper");
 };
@@ -16,9 +17,12 @@ if(enabledMods.includes(fairyMod)) {
 if(enabledMods.includes(cloudMod)) {
 	lategenOptions.push("cloud");
 };
+if(enabledMods.includes(bombMod)) {
+	lategenOptions.push("bomb");
+};
 lgoDisplayString = lategenOptions.join(", ");
 if(lgoDisplayString === "") {
-	lgoDisplayString: "[None. This requires at least one element-generating mod: mobs.js, spouts.js, more_fairies.js, or more_clouds.js!]";
+	lgoDisplayString: "[None. This requires at least one element-generating mod: mobs.js, spouts.js, more_fairies.js, more_clouds.js, or more_bombs.js!]";
 };
 
 document.addEventListener("keydown", function(e) { //prop prompt listener
@@ -59,6 +63,9 @@ function generatorPrompt() {
 				break;
 			case "cloud":
 				generateCloud(elements,true);
+				break;
+			case "bomb":
+				generateBomb(elements,true);
 				break;
 			default:
 				alert("An invalid type made it past the if statement. You shouldn't ever see this error.");
