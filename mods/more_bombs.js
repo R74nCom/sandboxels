@@ -72,6 +72,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 		state: "solid",
 		density: 1300,
 		excludeRandom: true,
+		desc: "It's a nuke that drops more nukes. <br/>To enable automatic bomb generation, set the generateBombs query parameter.",
 	};
 
 	elements.electric_bomblet = {
