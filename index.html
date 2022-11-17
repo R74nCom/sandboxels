@@ -10491,19 +10491,6 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             var firstElementButton = firstDiv.getElementsByClassName("elementButton")[0];
             selectElement(firstElementButton.getAttribute("element"));
 
-            // Add ad to page
-            document.getElementById("adSpot").innerHTML = `<!-- Ad ^_^ -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8485284630785740"
-    crossorigin="anonymous"></scr`+`ipt>
-<!-- Sandboxels Main Page -->
-<ins class="adsbygoogle"
-    style="display:inline-block;width:728px;height:90px"
-    data-ad-client="ca-pub-8485284630785740"
-    data-ad-slot="9484672079"></ins>
-<script>
-    (adsbygoogle = window.adsbygoogle || []).push({});
-</scr`+`ipt>`
-
         }
     </script>
   <link rel="stylesheet" type="text/css" href="style.css?nocache=2">
@@ -10641,7 +10628,19 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
         <img src="icons/wallpaper.png" style="width:100%" alt="Rainforest landscape made in Sandboxels" title="Rainforest landscape made in Sandboxels">
         <p>Sandboxels has a thriving community on <a href="https://discord.gg/ejUc6YPQuS" target="_blank">Discord</a>! There you can post feedback or share your creations.</p>
         <p>This game is developed by R74n. Check out <a href="https://r74n.com" target="_blank">our other projects</a>!</p>
-        <div id="adSpot"></div>
+        <!-- Ad ^_^ -->
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8485284630785740"
+            crossorigin="anonymous"></script>
+        <!-- Sandboxels Main Page -->
+        <ins class="adsbygoogle"
+            style="display:inline-block;width:728px;height:90px"
+            data-ad-client="ca-pub-8485284630785740"
+            data-ad-slot="9484672079"></ins>
+        <script>
+            window.addEventListener('load', function() {
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            });
+        </script>
     </div>
     <div id="bottomRightBox">
         <h2>Controls</h2>
