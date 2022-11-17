@@ -3,6 +3,20 @@
     + Baking Update
     + More plans / suggestions at https://docs.google.com/document/u/4/d/1R8xljj_J-K5oU-9y4louwplQmM-ZBvUfXmhbgj5LYdk/edit
 
+[Version 1.6.5 - November 16, 2022]
+    + Radiated Glass
+    + Gallium
+    ~ Improved Baking Soda and Vinegar reaction
+    + Fireflies sync up blinking over time
+    + Bees can pollinate any plants that they touch
+    + Added Sandboxels introduction and controls underneath game
+    + Loading screen
+   [Bug Fixes]
+    ~ Fixed: Yeast immediately killed by yeast it ferments
+   [Technical]
+    ~ Revamped CSS, report any bugs on the Discord
+    + New "attr1" and "attr2" reaction property
+
 [Version 1.6.4 - July 30, 2022]
     + Seeds and bombs have a short cooldown when on the lowest cursor size
     + Cloud (The normal, boring kind)

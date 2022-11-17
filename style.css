@@ -26,31 +26,101 @@ a:hover {color: rgb(255, 121, 255);}
 a:active, a:hover:active {color: rgb(255, 179, 255);}
 #gameDiv { /*game canvas*/
     border: 1px solid #ffffff;
-    position: absolute;
+    position: relative;
     left: 50%;
     transform: translate(-50%, -0%);
     -webkit-touch-callout: none; /* iOS Safari */
-        -webkit-user-select: none; /* Safari */
-        -khtml-user-select: none; /* Konqueror HTML */
-        -moz-user-select: none; /* Old versions of Firefox */
-            -ms-user-select: none; /* Internet Explorer/Edge */
-                user-select: none;
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none;
     margin-top: 15px;
+}
+#gameWrapper { /* make this normally positioned on the page so other elements can be under it */
+
+}
+#underDiv { /* make this fit inside the div */
+
+}
+#totalWrapper {
+
+}
+#bottomInfoBox { /* place under the game canvas */
+    margin: 1.5em 50px 0px 50px;
+    font-family: 'Arial';
+}
+#bottomLeftBox {
+    float: left;
+    width: 50%;
+    text-align: left;
+}
+#bottomRightBox {
+    float: right;
+    width: 50%;
+    text-align: right;
+}
+table {
+    border-collapse: collapse;
+    width: 75%;
+    background-color: rgba(255, 255, 255, 0.125);
+    margin-left: auto;
+    margin-right: 0px;
+}
+/* alternating table row colors */
+tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.0625);
+}
+th, td {
+    text-align: left;
+    padding: 8px;
+    border: 1px solid #9f9f9f;
+}
+kbd {
+    /* Look like a button */
+    display: inline-block;
+    padding: 0.2em 0.6em 0.3em;
+    font-size: 90%;
+    font-weight: 700;
+    color: rgb(255, 255, 255);
+    background-color: rgb(95, 95, 95);
+    border-radius: 0.2em;
+    border: 1px solid #000;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 0 2px rgba(0, 0, 0, 0.05);
+    font-family: 'Arial';
 }
 #infoParent, #modParent, #settingsParent, .menuParent {
     display: none;
 }
 #infoScreen, #modManager, #settingsMenu, .menuScreen {
-    border: 1px solid #ffffff;
     position: absolute;
+    border: 1px solid #ffffff;
     left: 50%;
-    transform: translate(-50%, 28%);
+    top: 5%;
+    transform: translate(-50%, 0%);
     width: 95%;
     height: 50%;
     max-width: 700px;
     padding: 10px;
     background-color: rgb(31, 31, 31);
     overflow-x: hidden;
+}
+#infoSearch, #modManagerUrl {
+    position: absolute;
+    bottom: 59.4%;
+    width: 95%;
+    max-width: 700px;
+    height: 50px;
+    left: 50%;
+    transform: translate(-50%, 198.5%);
+    background-color: rgb(66, 66, 66);
+    color: white;
+    font-size: 1.5em;
+    padding: 8px;
+    font-family: 'Press Start 2P';
+}
+#infoSearch:focus, #modManagerUrl:focus {
+    outline: none;
 }
 .menuTitle {
     font-size: 1.5em;
@@ -75,23 +145,6 @@ a:active, a:hover:active {color: rgb(255, 179, 255);}
 }
 .XButton:hover {
     background-color: rgb(200, 33, 33);
-}
-#infoSearch, #modManagerUrl {
-    position: absolute;
-    bottom: 50%;
-    width: 95%;
-    max-width: 700px;
-    height: 50px;
-    left: 50%;
-    transform: translate(-50%, 198.5%);
-    background-color: rgb(66, 66, 66);
-    color: white;
-    font-size: 1.5em;
-    padding: 8px;
-    font-family: 'Press Start 2P';
-}
-#infoSearch:focus, #modManagerUrl:focus {
-    outline: none;
 }
 /*#modManagerAdd {
     position: absolute;
@@ -145,7 +198,7 @@ button, input[type="submit"], input[type="reset"] {
     outline: none;
 }
 #underBox {
-    position: absolute;
+    position: relative;
     left: 50%;
     transform: translate(-50%, -0%);
     margin-top: 10px;
@@ -197,17 +250,26 @@ button, input[type="submit"], input[type="reset"] {
     float:right;
 }
 #stats {
-    margin: 0px 5px 5px 5px;
+    margin: 0px 5px 0px 5px;
     font-size: 0.75em;
-    height: 2em;
+    height: 1.5em;
     width:100%;
 }
 /* screen size < 700px */
-@media screen and (max-width: 700px) {
-    #stats {padding-bottom:2em;}
+@media screen and (max-width: 700px) { /* Mobile Styles */
     .pagetitle {
         font-size: 1em;
         padding-left: 0.25em;
+    }
+    #bottomLeftBox, #bottomRightBox {
+        width: 100%;
+        margin: 1px;
+        text-align: left;
+    }
+    table {
+        width: 100%;
+        margin-left: 0px;
+        margin-right: 0px;
     }
 }
 /* screen size > 1325px, h1::after {content:" Sandboxels"} */
@@ -231,7 +293,6 @@ button, input[type="submit"], input[type="reset"] {
     overflow-x: auto;
     overflow-y: hidden;
     width: 100%;
-    position: absolute;
 }
 
 /* Scrollbars */
@@ -243,7 +304,7 @@ button, input[type="submit"], input[type="reset"] {
 
 @media screen and (max-width: 700px) {
     #toolControls, #category-tools, #categoryControls, #elementControls {
-    margin-bottom: 200px !important;
+    margin-bottom: 5px !important;
     }
 }
 
@@ -265,25 +326,20 @@ button, input[type="submit"], input[type="reset"] {
 }
 
 #toolControls {
-    margin-top: -3.5em;
     z-index: 3;
 }
 #category-tools {
-    margin-top: -1.5em;
     z-index: 2;
 }
-.category {
-    padding-top: 3em;
-}
+
 #categoryControls {
-    margin-top: 0.5em;
     margin-bottom: 5px;
     background-color: rgba(255, 255, 255, 0.125);
     white-space: nowrap;
     overflow-x: auto;
     overflow-y: hidden;
     width: 100%;
-    position: absolute;
+    position: relative;
     z-index: 1;
     padding-bottom:1px;
 }
@@ -307,7 +363,7 @@ button, input[type="submit"], input[type="reset"] {
     background-color: rgba(255, 255, 255, 0.4);
 }
 .category {
-    margin-top:3.1em;
+    margin-top:0.75em;
     position:relative;
     display:flex;
     flex-direction: column;
