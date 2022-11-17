@@ -437,6 +437,9 @@ function setCanvasWidthAndHeight(ctx) {
 	if (window.innerWidth > 1000 && newHeight > 500) { newHeight = 500; }
 	ctx.canvas.width = newWidth;
 	ctx.canvas.height = newHeight;
+	document.getElementById("gameDiv").style.width = newWidth + "px";
+	document.getElementById("loadingP").style.display = "none";
+	document.getElementById("canvasDiv").style.display = "block";
 
 	width = Math.round(newWidth/pixelSize)-1;
 	height = Math.round(newHeight/pixelSize)-1;
