@@ -506,6 +506,7 @@ function addKeyboardListeners() {
 				document.getElementById("underDiv").style.display = "block";
 				document.getElementById("pagetitle").style.display = "block";
 				document.getElementById("colorSelector").style.display = "block";
+				document.getElementById("bottomInfoBox").style.display = "block";
 			} else {
 				document.getElementById("underDiv").style.display = "none";
 				if (showingMenu) {
@@ -513,6 +514,7 @@ function addKeyboardListeners() {
 				};
 				document.getElementById("pagetitle").style.display = "none";
 				document.getElementById("colorSelector").style.display = "none";
+				document.getElementById("bottomInfoBox").style.display = "none";
 			}
 		}
 		if (showingMenu) {

@@ -1,8 +1,30 @@
 var modName = "mods/more_bombs.js";
-var explodeAtPlusMod = "mods/explodeAtPlus.js";
+var runAfterAutogenMod = "mods/runAfterAutogen and onload restructure.js";
+var libraryMod = "mods/code_library.js";
 
-if(enabledMods.includes(explodeAtPlusMod)) {
-	urlParams = new URLSearchParams(window.location.search);
+if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod)) {
+	eLists.BOMB = ["bomb", "tnt", "c4", "grenade", "dynamite", "gunpowder", "firework", "nuke", "h_bomb", "dirty_bomb", "emp_bomb", "sticky_bomb", "cold_bomb", "hot_bomb", "electro_bomb", "water_bomb", "antimatter_bomb", "flashbang", "smoke_grenade", "fireball", "landmine", "cluster_bomb", "cluster_nuke", "op_hottester_bomb", "anti-bomb", "electric_bomblet", "electric_cluster_bomb", "radioactive_popper", "acid_bomb", "amalgamated_bomb"];
+	var excludedBombElements = ["water", "antimatter", "acid"];
+
+	//Generate bombs
+	if(urlParams.get('generateBombs') !== null) { //if the variable exists at all
+		generateBombs = true
+	} else { //if it doesn't (and it returns null)
+		generateBombs = false
+	}
+
+	function tryJoin(stringOrArray,joiner) {
+		//console.log(`tryJoin: ${stringOrArray}`);
+		if(typeof(stringOrArray) === "string") {
+			//console.log("tryJoin: String");
+			return stringOrArray;
+		} else if(Array.isArray(stringOrArray)) {
+			//console.log("tryJoin: Array");
+			return stringOrArray.join(joiner);
+		} else {
+			throw new TypeError(`Unexpected type: ${typeof(stringOrArray)}`);
+		};
+	};
 
 	if(urlParams.get('bombAmount') != null) { //null check
 		bombAmount = urlParams.get('bombAmount')
@@ -19,15 +41,6 @@ if(enabledMods.includes(explodeAtPlusMod)) {
 	} else {
 		bombAmount = 10
 	}
-
-	if(typeof(runAfterAutogen) === "function") {
-		runAfterAutogen(function() {
-			if(typeof(elements.vaporized_rock) === "object") {
-				elements.molten_dirt.tempHigh = 3000;
-				elements.molten_dirt.stateHigh = "vaporized_rock";
-			};
-		});
-	};
 
 	function hotterBomb(pixel,x,y,radius,fire,smoke,power,damage) {
 		//console.log(`Radius: ${radius}\nPower: ${power}\nPixel: (${pixel.x},${pixel.y})\nDamage: ${damage}`);
@@ -59,6 +72,7 @@ if(enabledMods.includes(explodeAtPlusMod)) {
 		state: "solid",
 		density: 1300,
 		excludeRandom: true,
+		desc: "It's a nuke that drops more nukes. <br/>To enable automatic bomb generation, set the generateBombs query parameter.",
 	};
 
 	elements.electric_bomblet = {
@@ -210,6 +224,7 @@ if(enabledMods.includes(explodeAtPlusMod)) {
 			desc: `${5*(i+1)/10} times the radius of the regular bomb`,
 			cooldown: defaultCooldown,
 		};
+		eLists.BOMB.push(`bomb_${i}`);
 	};
 
 	elements.anti_bomb = {
@@ -241,11 +256,143 @@ if(enabledMods.includes(explodeAtPlusMod)) {
 			desc: `${5*(i+1)/10} times the radius of the regular anti-bomb`,
 			cooldown: defaultCooldown,
 		};
+		eLists.BOMB.push(`anti_bomb_${i}`);
 	};
 
+	//genfunc
+	function generateBomb(bombElements,isAfterScriptLoading=false) {//it can be a single element, though
+		//To specify an array bomb, have the array be inside another array.
+		/*For reasons related to how element colors are loaded, if this function is being run from a JS mod file, isAfterScriptLoading should be false.
+		Otherwise, you'll get TypeErrors for some reason when trying to place your bomb.  If this is being run after the game has loaded (e.g. in the console),
+		then isAfterScriptLoading should be true or you might also get TypeErrors (this latter case was a bit inconsistent when I tested it, but 
+		the former case wasn't. **isAfterScriptLoading must be false when this function is run from a JS mod file**.*/
+		if(typeof(bombElements) === "string") { //it should be an array, so string check
+			//console.log("String detected");
+			if(bombElements.includes(",")) { //comma-separated string?
+				//console.log("Splitting string to array");
+				bombElements = bombElements.split(","); //,SS to array
+			} else {
+				//console.log("Wrapping string in array");
+				bombElements = [bombElements]; //single string to array 
+			};
+		};
+		for(aaf = 0; aaf < bombElements.length; aaf++) {
+			var elementOfBomb = bombElements[aaf];
+			var startColor;
+			//console.log(elementOfBomb);
+
+			var bombName;
+
+			if(typeof(elementOfBomb === "string")) { //comma separated string check
+				if(elementOfBomb.includes(",")) { //if it is
+					elementOfBomb = elementOfBomb.split(","); //to array
+					elementOfBomb = elementOfBomb.filter(function(e) { //strip nonexistent elements
+						return typeof(elements[e]) === "object";
+					});
+				};
+			};
+			if(Array.isArray(elementOfBomb)) {
+				bombName = `${elementOfBomb.join("_")}_bomb`; //auto placer element name
+				
+				//array case color concatenator (bombs are always excludeRandom)
+				startColor = [];
+				//console.log(elementOfBomb);
+				for(ll = 0; ll < elementOfBomb.length; ll++) {
+					startColor = startColor.concat(elements[elementOfBomb[ll]].color);
+				};
+			} else { //they should all be strings, so here
+				bombName = `${elementOfBomb}_bomb`; //auto placer element name
+				startColor = elements[elementOfBomb].color;
+			};
+
+				//Color gen
+			if(Array.isArray(startColor)) { //Average arrays, make colors rgb()
+				startColor = averageRgbPrefixedColorArray(startColor);
+			} else {
+				startColor = rgbHexCatcher(startColor);
+			};
+			
+			startColor = addColors(changeLuminance(changeSaturation(startColor,0.6,"multiply","hsl_json"),0.5,"multiply","rgb"),"rgb(24,0,0)","rgb");
+			
+			var newColorObject = rgbStringToObject(startColor);
+			
+				//End color gen
+			
+											//The bomb
+			
+			//console.log(elementOfBomb);
+			var firstInfo, firstTemp;
+			if(Array.isArray(elementOfBomb)) {
+				firstInfo = elements[elementOfBomb[0]];
+				firstTemp = airTemp;
+				if(typeof(firstInfo.temp) !== "undefined") {
+					firstTemp = firstInfo.temp;
+				};
+			} else {
+				firstInfo = elements[elementOfBomb];
+				firstTemp = airTemp;
+				if(typeof(firstInfo.temp) !== "undefined") {
+					firstTemp = firstInfo.temp;
+				};
+			};
+			
+			elementOfBomb = tryJoin(elementOfBomb,",");
+			
+			//console.log(elementOfBomb);
+			
+			if(!elementExists(bombName)) {
+				elements[bombName] = {
+					color: startColor,
+					insulate: true,
+					flippableX: true,
+					colorObject: newColorObject,
+					behavior: [
+						["XX",`EX:10>${elementOfBomb}`,"XX"],
+						["XX","XX","XX"],
+						["M2",`M1 AND EX:10>${elementOfBomb}`,"M2"]
+					],
+					category: "auto_bombs",
+					temp: firstTemp,
+					excludeRandom: true,
+				};
+				if(typeof(eLists) === "undefined") {
+					eLists = {};
+				};
+				if(typeof(eLists.BOMB) === "undefined") {
+					eLists.BOMB = [];
+				};
+				eLists.BOMB.push(bombName);
+				if(typeof(bombChoices) === "undefined") {
+					bombChoices = []
+				};
+				if(!bombChoices.includes(bombName)) {
+					bombChoices.push(bombName);
+				};
+				if(isAfterScriptLoading) {
+					elements[bombName].flippableX = true;
+					elementCount++; //increment for new bomb element
+					createElementButton(bombName);
+					elements[bombName].id = nextid++;
+					document.getElementById("extraInfo").innerHTML = "<small><p>There are " + elementCount + " elements, including " + hiddenCount + " hidden ones.</p><p>©2021-" + new Date().getFullYear() + ". All Rights Reserved. <a href='https://r74n.com'>R74n</a></p></small>"; //update extra info counts (and the copyright year, due to the method used)
+				};
+			};
+		};
+	};
+	
+	runAfterAutogen(function() {
+		if(elementExists("vaporized_rock")) {
+			elements.molten_dirt.tempHigh = 3000;
+			elements.molten_dirt.stateHigh = "vaporized_rock";
+		};
+		if(generateBombs) {
+			var tempArray = Object.keys(elements);
+			tempArray.push(["rock", "sand"]);
+			generateBomb(tempArray,false)
+		};
+	});
+	
 	runAfterLoad(function() {
 	  if(enabledMods.includes("mods/fey_and_more.js")) {
-		elements.lower_color_copy.breakInto.push("magic")
 		amalgamatedBombFire += ",poisonwater".repeat(8);
 		amalgamatedBombFire += ",mystic_fire".repeat(4);
 		amalgamatedBombFire += ",firesea".repeat(6);
@@ -261,6 +408,8 @@ if(enabledMods.includes(explodeAtPlusMod)) {
 		amalgamatedBombFire += ",warp".repeat(6);
 		amalgamatedBombFire += ",bomb_3".repeat(3);
 		amalgamatedBombFire += ",op_hottester_bomb".repeat(3);
+		eLists.BOMB.push("unnamed_bomb");
+		eLists.BOMB.push("warp_bomb");
 	  };
 	  if(enabledMods.includes("mods/glenn_gases.js")) {
 		amalgamatedBombFire += ",electric_gas".repeat(3);
@@ -289,7 +438,8 @@ if(enabledMods.includes(explodeAtPlusMod)) {
 	  };
 	});
 } else {
-	alert(`The ${explodeAtPlusMod} mod is required and has been automatically inserted (reload for this to take effect).`)
-	enabledMods.splice(enabledMods.indexOf(modName),0,explodeAtPlusMod)
+	if(!enabledMods.includes(runAfterAutogenMod))	{ enabledMods.splice(enabledMods.indexOf(modName),0,runAfterAutogenMod) };
+	if(!enabledMods.includes(libraryMod))			{ enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod) };
+	alert(`The "${runAfterAutogenMod}" and "${libraryMod}" mods are all required; any missing mods in this list have been automatically inserted (reload for this to take effect).`)
 	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
 };

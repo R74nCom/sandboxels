@@ -289,9 +289,11 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod) 
 
 	//Post-generation tasks
 		//Manual eLists.FAIRY updates
-	eLists.FAIRY.push("acid_fairy");
-	eLists.FAIRY.push("oil_fairy");
-	eLists.FAIRY.push("honey_fairy");
+	runAfterLoad(function() {
+		eLists.FAIRY.push("acid_fairy");
+		eLists.FAIRY.push("oil_fairy");
+		eLists.FAIRY.push("honey_fairy");
+	});
 
 		//Revamp fairykill
 	behaviors.FAIRYKILL_OLD = behaviors.FAIRYKILL;
