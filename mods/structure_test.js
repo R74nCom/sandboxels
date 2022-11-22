@@ -123,6 +123,11 @@ if(!elements.glass_shard.reactions) {
 };
 elements.glass_shard.reactions.radiation = { "elem1":"rad_glass_shard", "chance":0.33 };
 
+if(!elements.molten_glass.reactions) {
+	elements.molten_glass.reactions = {};
+};
+elements.molten_glass.reactions.radiation = { "elem1":"molten_rad_glass", "chance":0.33 };
+
 elements.rad_glass_shard = {
 	color: ["#648c64","#6aad83","#6a9171"],
 	behavior: [
