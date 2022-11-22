@@ -1,14 +1,14 @@
 arrayLoaderVoids = ["air", "null", null];
 
 buildingOneSegmentDoor = ["concrete","wood","concrete","wood","concrete"];
-buildingOneSegmentWindows = ["concrete","glass","concrete","glass","concrete"];
+buildingOneSegmentWindows = ["concrete","glass_pane","concrete","glass_pane","concrete"];
 buildingOneSegmentConcrete = ["concrete","concrete","concrete","concrete","concrete"];
 
 buildingTwoSegments = [
 	["concrete","concrete","concrete","concrete","concrete"],
 	["concrete","concrete","concrete","concrete","concrete"],
 	["brick","wood","brick"],
-	["glass","wood","glass"],
+	["glass_pane","wood","glass_pane"],
 	["brick","brick","brick"],
 	["wood","wood","wood","wood","wood"],
 	["wood","wood","wood"],
@@ -84,6 +84,68 @@ function loadPixelRowFromArray(pixelArray,centerX,centerY,evenLengthBiasedLeft=t
 	};
 };
 
+delete elements.rad_glass.stateHigh;
+
+//Prereq elements
+elements.glass_pane = {
+	color: ["#5e807d","#679e99"],
+	behavior: behaviors.SUPPORT,
+	reactions: {
+		"radiation": { "elem1":"rad_glass_pane", "chance":0.33 },
+	},
+	tempHigh: 1500,
+	category: "solids",
+	state: "solid",
+	density: 2500,
+	breakInto: "glass_shard",
+};
+
+elements.rad_glass_pane = {
+	color: ["#648c64","#6aad83"],
+	behavior: [
+		"XX|CR:radiation%0.075|XX",
+		"SP AND CR:radiation%0.075|XX|SP AND CR:radiation%0.075",
+		"XX|M1 AND CR:radiation%0.075|XX",
+	],
+	tempHigh: 1500,
+	stateHigh: "molten_rad_glass",
+	category: "solids",
+	state: "solid",
+	density: 2500,
+	breakInto: "rad_glass_shard",
+	hidden: true
+};
+
+elements.rad_glass.breakInto = "rad_glass_shard";
+
+if(!elements.glass_shard.reactions) {
+	elements.glass_shard.reactions = {};
+};
+elements.glass_shard.reactions.radiation = { "elem1":"rad_glass_shard", "chance":0.33 };
+
+elements.rad_glass_shard = {
+	color: ["#648c64","#6aad83","#6a9171"],
+	behavior: [
+		"XX|CR:radiation%0.075|XX",
+		"CR:radiation%0.075|XX|CR:radiation%0.075",
+		"M2|M1 AND CR:radiation%0.075|M2",
+	],
+	tempHigh: 1500,
+	stateHigh: "molten_rad_glass",
+	category: "powders",
+	state: "solid",
+	density: 2500,
+};
+
+elements.molten_rad_glass = {
+	behavior: [
+		"XX|CR:radiation%0.15 AND CR:fire%2.5|XX",
+		"M2 AND CR:radiation%0.15|XX|M2 AND CR:radiation%0.15",
+		"M1|M1 AND CR:radiation%0.15|M1",
+	],
+};
+
+//Seeds
 elements.building_1_seed = {
 	tick: function(pixel) {
 		if(!tryMove(pixel,pixel.x,pixel.y+1)) {
