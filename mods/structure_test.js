@@ -1,17 +1,17 @@
 arrayLoaderVoids = ["air", "null", null];
-buildingOneSegmentDoor = ["concrete","wood","concrete","wood","concrete"];
+buildingOneSegmentDoor = ["concrete","wood_plank","concrete","wood_plank","concrete"];
 buildingOneSegmentWindows = ["concrete","glass_pane","concrete","glass_pane","concrete"];
 buildingOneSegmentConcrete = ["concrete","concrete","concrete","concrete","concrete"];
 
 buildingTwoSegments = [
 	["concrete","concrete","concrete","concrete","concrete"],
 	["concrete","concrete","concrete","concrete","concrete"],
-	["brick","wood","brick"],
-	["glass_pane","wood","glass_pane"],
+	["brick","wood_plank","brick"],
+	["glass_pane","wood_plank","glass_pane"],
 	["brick","brick","brick"],
-	["wood","wood","wood","wood","wood"],
-	["wood","wood","wood"],
-	["wood"]
+	["wood","wood_plank","wood_plank","wood_plank","wood"],
+	["wood_plank","wood_plank","wood_plank"],
+	["wood_plank"]
 ];
 
 oldRoom= [["brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "glass",  "glass",  "glass",  "glass",  "glass",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick"],
@@ -118,6 +118,22 @@ elements.rad_glass_pane = {
 	density: 2500,
 	breakInto: "rad_glass_shard",
 	hidden: true
+};
+
+elements.wood.hardness = 0.2;
+
+elements.wood_plank = {
+	color: "#ab6c3f",
+	behavior: behaviors.SUPPORT,
+	tempHigh: 400,
+	stateHigh: ["ember","charcoal","fire","fire","fire"],
+	category: "solids",
+	burn: 5,
+	burnTime: 300,
+	burnInto: ["ember","charcoal","fire"],
+	state: "solid",
+	hardness: 0.2,
+	breakInto: "sawdust",
 };
 
 elements.rad_glass.breakInto = "rad_glass_shard";
