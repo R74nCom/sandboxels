@@ -1,5 +1,4 @@
 arrayLoaderVoids = ["air", "null", null];
-
 buildingOneSegmentDoor = ["concrete","wood","concrete","wood","concrete"];
 buildingOneSegmentWindows = ["concrete","glass_pane","concrete","glass_pane","concrete"];
 buildingOneSegmentConcrete = ["concrete","concrete","concrete","concrete","concrete"];
@@ -86,6 +85,9 @@ function loadPixelRowFromArray(pixelArray,centerX,centerY,evenLengthBiasedLeft=t
 
 delete elements.rad_glass.stateHigh;
 
+elements.glass.hardness = 0.25,
+elements.rad_glass.hardness = 0.25,
+
 //Prereq elements
 elements.glass_pane = {
 	color: ["#5e807d","#679e99"],
@@ -94,6 +96,7 @@ elements.glass_pane = {
 		"radiation": { "elem1":"rad_glass_pane", "chance":0.33 },
 	},
 	tempHigh: 1500,
+	hardness: 0.2,
 	category: "solids",
 	state: "solid",
 	density: 2500,
@@ -108,6 +111,7 @@ elements.rad_glass_pane = {
 		"XX|M1 AND CR:radiation%0.075|XX",
 	],
 	tempHigh: 1500,
+	hardness: 0.2,
 	stateHigh: "molten_rad_glass",
 	category: "solids",
 	state: "solid",
@@ -153,6 +157,26 @@ elements.molten_rad_glass = {
 //Seeds
 elements.building_1_seed = {
 	tick: function(pixel) {
+		for(cx = -3; cx <= 3; cx++) {
+			for(cy = -3; cy <= 3; cy++) {
+				if(cx === 0 && cy === 0) {
+					continue;
+				};
+				var finalCoords = [pixel.x+cx,pixel.y+cy];
+				if(isEmpty(...finalCoords,true)) {
+					continue;
+				} else {
+					var otherPixel = pixelMap[finalCoords[0]][finalCoords[1]];
+					if(otherPixel.element === pixel.element) {
+						deletePixel(...finalCoords);
+					};
+				};
+			};
+		};
+		if(!isEmpty(pixel.x,pixel.y-1,true)) {
+			swapPixels(pixel,pixelMap[pixel.x][pixel.y-1]);
+			return;
+		};
 		if(!tryMove(pixel,pixel.x,pixel.y+1)) {
 			var randomHeight = 13 + Math.floor(Math.random() * (8 + 1)) //min 12, variance 8
 			var currentHeight = pixel.y + 2;
@@ -192,6 +216,26 @@ elements.building_1_seed = {
 
 elements.building_2_seed = {
 	tick: function(pixel) {
+		for(cx = -3; cx <= 3; cx++) {
+			for(cy = -3; cy <= 3; cy++) {
+				if(cx === 0 && cy === 0) {
+					continue;
+				};
+				var finalCoords = [pixel.x+cx,pixel.y+cy];
+				if(isEmpty(...finalCoords,true)) {
+					continue;
+				} else {
+					var otherPixel = pixelMap[finalCoords[0]][finalCoords[1]];
+					if(otherPixel.element === pixel.element) {
+						deletePixel(...finalCoords);
+					};
+				};
+			};
+		};
+		if(!isEmpty(pixel.x,pixel.y-1,true)) {
+			swapPixels(pixel,pixelMap[pixel.x][pixel.y-1]);
+			return;
+		};
 		if(!tryMove(pixel,pixel.x,pixel.y+1)) {
 			var currentHeight = pixel.y + 2;
 			for(q = 0; q < buildingTwoSegments.length; q++) {
@@ -389,4 +433,13 @@ elements.nested_structure_test = {
 	insulate: true,
 	state: "solid",
 	excludeRandom: true,
+};
+
+function _toggleDesertBuildings() {
+	var layer = worldgentypes.desert.layers[0];
+	if(layer[1] !== "building_1_seed") { //if the first layer isn't a building layer, add one
+		worldgentypes.desert.layers.unshift([0.95,"building_1_seed",0.01]);
+	} else if(layer[1] === "building_1_seed") { //if the first layer is a building layer, remove it
+		worldgentypes.desert.layers.shift();
+	};
 };
