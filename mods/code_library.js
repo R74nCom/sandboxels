@@ -878,8 +878,18 @@
 			case "set":
 				color.s = saturationChange;
 				break;
+			case ">":
+			case ">=":
+			case "min": //lower-bounds the color
+				color.s = Math.max(color.s,saturationChange); //math.max to bound it to the higher of the input number or the existing color
+				break;
+			case "<":
+			case "<=":
+			case "max": //upper-bounds the color
+				color.s = Math.min(color.s,saturationChange); //math.min to bound it to the lower of the input number or the existing color
+				break;
 			default:
-				throw new Error("operationType must be \"add\", \"subtract\", \"multiply\", \"divide\", or \"set\"");
+				throw new Error("Operation must be \"add\", \"subtract\", \"multiply\", \"divide\", \"set\", \"min\", or \"max\"");
 		};
 		
 		color.h = Math.round(color.h % 360);
@@ -918,8 +928,18 @@
 			case "set":
 				color.l = luminanceChange;
 				break;
+			case ">":
+			case ">=":
+			case "min":
+				color.l = Math.max(color.l,luminanceChange);
+				break;
+			case "<":
+			case "<=":
+			case "max":
+				color.l = Math.min(color.l,luminanceChange);
+				break;
 			default:
-				throw new Error("operationType must be \"add\", \"subtract\", \"multiply\", \"divide\", or \"set\"");
+				throw new Error("Operation must be \"add\", \"subtract\", \"multiply\", \"divide\", \"set\", \"min\", or \"max\"");
 		};
 		
 		color.h = Math.round(color.h % 360);
@@ -958,8 +978,18 @@
 			case "set":
 				color.h = hueChange;
 				break;
+			case ">":
+			case ">=":
+			case "min":
+				color.h = Math.max(color.h,hueChange);
+				break;
+			case "<":
+			case "<=":
+			case "max":
+				color.h = Math.min(color.h,hueChange);
+				break;
 			default:
-				throw new Error("operationType must be \"add\", \"subtract\", \"multiply\", \"divide\", or \"set\"");
+				throw new Error("Operation must be \"add\", \"subtract\", \"multiply\", \"divide\", \"set\", \"min\", or \"max\"");
 		};
 		
 		color.h = Math.round(color.h % 360);
