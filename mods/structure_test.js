@@ -173,8 +173,8 @@ elements.molten_rad_glass = {
 //Seeds
 elements.building_1_seed = {
 	tick: function(pixel) {
-		for(cx = -3; cx <= 3; cx++) {
-			for(cy = -3; cy <= 3; cy++) {
+		for(cx = -4; cx <= 4; cx++) {
+			for(cy = -4; cy <= 4; cy++) {
 				if(cx === 0 && cy === 0) {
 					continue;
 				};
@@ -232,8 +232,8 @@ elements.building_1_seed = {
 
 elements.building_2_seed = {
 	tick: function(pixel) {
-		for(cx = -3; cx <= 3; cx++) {
-			for(cy = -3; cy <= 3; cy++) {
+		for(cx = -4; cx <= 4; cx++) {
+			for(cy = -4; cy <= 4; cy++) {
 				if(cx === 0 && cy === 0) {
 					continue;
 				};
