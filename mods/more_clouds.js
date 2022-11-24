@@ -184,6 +184,23 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 					ignoreAir: true,
 					conduct: 0.01,
 				};
+			} else {
+				elements[`auto_${cloudName}`] = {
+					color: startColor,
+					insulate: true,
+					colorObject: newColorObject,
+					behavior: [
+						["XX","XX","XX"],
+						["XX",`CH:${elementOfCloud}%0.05`,"M1%2.5 AND BO"],
+						["XX","XX","XX"]
+					],
+					category: "clouds",
+					temp: firstTemp,
+					state: "gas",
+					density: 0.6,
+					ignoreAir: true,
+					conduct: 0.01,
+				};
 			};
 
 			eLists.CLOUD.push(cloudName);

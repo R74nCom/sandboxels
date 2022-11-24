@@ -10,7 +10,7 @@ if(enabledMods.includes(libraryMod)) {
 	var hueAmount = 1;
 	var hueOp = "add";
 	
-	var ops = ["add","subtract","multiply","divide","set","+","-","*","x","×","/","÷","="];
+	var ops = ["add","subtract","multiply","divide","set","min","max","+","-","*","x","×","/","÷","=",">",">=","<","<="];
 
 	function saturationPrompt() {
 		var preSaturation = prompt("Enter the value you want to use");
@@ -34,7 +34,7 @@ if(enabledMods.includes(libraryMod)) {
 				alert(`No operation was specified! Defaulting to "add".`);
 				preSatOp = "add";
 			} else {
-				alert(`Invalid operation! Only "add", "subract", "multiply", "divide", and "set" are accepted (defaulting to "add").`);			
+				alert(`Invalid operation! Only "add", "subract", "multiply", "divide", "set", "min", and "max" are accepted (defaulting to "add").`);			
 				preSatOp = "add";
 			};
 		};
@@ -65,7 +65,7 @@ if(enabledMods.includes(libraryMod)) {
 				alert(`No operation was specified! Defaulting to "add".`);
 				preLumOp = "add";
 			} else {
-				alert(`Invalid operation! Only "add", "subract", "multiply", "divide", and "set" are accepted (defaulting to "add").`);			
+				alert(`Invalid operation! Only "add", "subract", "multiply", "divide", "set", "min", and "max" are accepted (defaulting to "add").`);			
 				preLumOp = "add";
 			};
 		};
@@ -99,7 +99,7 @@ if(enabledMods.includes(libraryMod)) {
 				alert(`No operation was specified! Defaulting to "add".`);
 				preHueOp = "add";
 			} else {
-				alert(`Invalid operation! Only "add", "subract", "multiply", "divide", and "set" are accepted (defaulting to "add").`);			
+				alert(`Invalid operation! Only "add", "subract", "multiply", "divide", "set", "min", and "max" are accepted (defaulting to "add").`);			
 				preHueOp = "add";
 			};
 		};
