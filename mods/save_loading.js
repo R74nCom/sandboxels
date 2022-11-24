@@ -58,7 +58,10 @@ function formatCurrentDate() { //derived from https://gist.github.com/Ivlyth/c49
 function savePrompt() {
 	var filename = prompt("Please enter the desired filename, without the .json (defaults to current date)");
 	if(filename === null) {
-		filename = `Sandboxels save ${formatCurrentDate()}`;
+		return false;
+        };
+        if(filename === "") {
+            filename = `Sandboxels save ${formatCurrentDate()}`;
 	};
 	filename += ".json";
 	downloadSave(filename)
