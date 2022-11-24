@@ -161,7 +161,7 @@ function importJsonState(json) {
 		};
 		localStorage.setItem("enabledMods",JSON.stringify(currentEnmods));
 		if((enMods.length > 0 && enMods[0] !== modName) || enMods.length > 1) {
-			alert("Saves with other mods might require a reload (and then importing the save file again).");
+			alert("Saves with other mods might require a reload (and then importing the save file again).\nIf you see a blank screen, try refreshing and loading the file again before you panic.");
 		};
 	//}
 	
@@ -229,4 +229,4 @@ elements.save_loader = {
 	excludeRandom: true,
 	color: "#FFFFFF",
 	desc: saveLoaderDescription,
-}
+};
