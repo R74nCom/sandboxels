@@ -37,15 +37,6 @@ a:active, a:hover:active {color: rgb(255, 179, 255);}
     user-select: none;
     margin-top: 15px;
 }
-#gameWrapper { /* make this normally positioned on the page so other elements can be under it */
-
-}
-#underDiv { /* make this fit inside the div */
-
-}
-#totalWrapper {
-
-}
 #bottomInfoBox { /* place under the game canvas */
     margin: 1.5em 50px 0px 50px;
     font-family: 'Arial';
@@ -255,8 +246,8 @@ button, input[type="submit"], input[type="reset"] {
     height: 1.5em;
     width:100%;
 }
-/* screen size < 700px */
-@media screen and (max-width: 700px) { /* Mobile Styles */
+/* screen size < 800px */
+@media screen and (max-width: 800px) { /* Mobile Styles */
     .pagetitle {
         font-size: 1em;
         padding-left: 0.25em;
