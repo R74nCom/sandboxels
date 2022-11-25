@@ -6,6 +6,7 @@ elements.chalcopyrite_ore = {
 		steel: { "elem1": "chalcopyrite_dust", "elem2": "steel" },
 	},
 	tempHigh: 950,
+	breakInto: "chalcopyrite_dust",
 	stateHigh: "magma",
 	category: "refining",
 	state: "solid",
