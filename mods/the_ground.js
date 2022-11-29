@@ -1153,42 +1153,42 @@ Proper classification of limestone within these code comments
 
 				behaviors.RAD_POWDER = [
 					"XX|CR:radiation%2|XX",
-					"CR:radiation%2|XX|CR:radiation%2",
+					"CR:radiation%2|HT%1.5|CR:radiation%2",
 					"M2|M1 AND CR:radiation%2|M2",
 				],
 				behaviors.RAD_STURDYPOWDER = [
 					"XX|CR:radiation%2|XX",
-					"CR:radiation%2|XX|CR:radiation%2",
+					"CR:radiation%2|HT%1.5|CR:radiation%2",
 					"XX|M1 AND CR:radiation%2|XX",
 				],
 				behaviors.RAD_SUPPORT = [
 					"CR:radiation%1|CR:radiation%2|CR:radiation%1",
-					"SP AND CR:radiation%2|XX|SP AND CR:radiation%2",
+					"SP AND CR:radiation%2|HT%1.5|SP AND CR:radiation%2",
 					"XX|M1 AND CR:radiation%2|XX",
 				],
 				behaviors.RAD_SUPPORTPOWDER = [
 					"CR:radiation%1|CR:radiation%2|CR:radiation%1",
-					"SP AND CR:radiation%2|XX|SP AND CR:radiation%2",
+					"SP AND CR:radiation%2|HT%1.5|SP AND CR:radiation%2",
 					"M2|M1 AND CR:radiation%2|M2",
 				],
 				behaviors.RAD_LIQUID = [
 					"XX|CR:radiation%2|XX",
-					"M2 AND CR:radiation%2|XX|M2 AND CR:radiation%2",
+					"M2 AND CR:radiation%2|HT%1.5|M2 AND CR:radiation%2",
 					"M1|M1 AND CR:radiation%2|M1",
 				],
 				behaviors.RAD_WALL = [
 					"CR:radiation%0.7|CR:radiation%1.4|CR:radiation%0.7",
-					"CR:radiation%1.4|XX%0000000000000|CR:radiation%1.4",
+					"CR:radiation%1.4|HT%1.50000000000|CR:radiation%1.4",
 					"CR:radiation%0.7|CR:radiation%1.4|CR:radiation%0.7",
 				],
 				behaviors.RAD_GAS = [
-					"M2 AND CR:radiation%1|M1 AND CR:radiation%2|M2 AND CR:radiation%1",
-					"M1 AND CR:radiation%2|XX AND CR:radiation%2|M1 AND CR:radiation%2",
-					"M2 AND CR:radiation%1|M1 AND CR:radiation%2|M2 AND CR:radiation%1",
+					"M2 AND CR:radiation%1.0|M1 AND CR:radiation%2|M2 AND CR:radiation%1",
+					"M1 AND CR:radiation%2|HT%1 AND CR:radiation%2|M1 AND CR:radiation%2",
+					"M2 AND CR:radiation%1.0|M1 AND CR:radiation%2|M2 AND CR:radiation%1",
 				],
 				behaviors.RAD_MOLTEN = [
 					"XX|CR:radiation%2.5 AND CR:fire%2.5|XX",
-					"M2 AND CR:radiation%1|XX|M2 AND CR:radiation%1",
+					"M2 AND CR:radiation%1|HT%2|M2 AND CR:radiation%1",
 					"M1|M1 AND CR:radiation%1|M1",
 				]
 
