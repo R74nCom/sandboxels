@@ -44,6 +44,20 @@ altRoom= [["brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick", 
 	return Math.floor(Math.random() * 256);
 };*/
 
+canSupportWithEdge = function(x,y) {
+	if(outOfBounds(x,y)) { //count edges
+		return true;
+	} else {
+		if(!isEmpty(x,y,true)) { //if there is a pixel
+			if(elements[pixelMap[x][y].element].state === "solid") {
+				return true;
+			} else {
+				return false;
+			};
+		};
+	};
+};
+
 function loadPixelRowFromArray(pixelArray,centerX,centerY,evenLengthBiasedLeft=true,doOverwrite=true) {
 	var arrayLength = pixelArray.length;
 	var leftmostOffset = (evenLengthBiasedLeft ? Math.floor(0 - ((arrayLength - 1) / 2)) : Math.ceil(0 - ((arrayLength - 1) / 2))) //floor and ceil have no effect on the integer values produced by odd lengths
@@ -89,6 +103,40 @@ elements.glass.hardness = 0.25,
 elements.rad_glass.hardness = 0.25,
 
 //Prereq elements
+elements.crumbling_concrete = {
+	color: "#ababab",
+	tick: function(pixel) {
+		var px = pixel.x;
+		var py = pixel.y;
+
+		if (pixel.start === pixelTicks) {return}
+
+		var supportCondition1 = (canSupportWithEdge(px-1,py-1) && canSupportWithEdge(px+1,py-1))	// V shape
+		var supportCondition2 = (canSupportWithEdge(px-1,py) && canSupportWithEdge(px+1,py)) 		// - shape
+		var supportCondition3 = (canSupportWithEdge(px-1,py+1) && canSupportWithEdge(px+1,py+1))	// Λ shape
+		var supportCondition4 = (canSupportWithEdge(px-1,py+1) && canSupportWithEdge(px+1,py-1))	// / shape
+		var supportCondition5 = (canSupportWithEdge(px-1,py-1) && canSupportWithEdge(px+1,py+1))	// \ shape
+		var supportCondition6 = (canSupportWithEdge(px-1,py-1) && canSupportWithEdge(px+1,py))		// '- shape
+		var supportCondition7 = (canSupportWithEdge(px-1,py+1) && canSupportWithEdge(px+1,py))		// ,- shape
+		var supportCondition8 = (canSupportWithEdge(px+1,py-1) && canSupportWithEdge(px-1,py))		// -' shape
+		var supportCondition9 = (canSupportWithEdge(px+1,py+1) && canSupportWithEdge(px-1,py))		// -, shape
+		var supportCondition10 = (canSupportWithEdge(px,py+1) && canSupportWithEdge(px,py-1))		// | shape
+		var supports = (supportCondition1 || supportCondition2 || supportCondition3 || supportCondition4 || supportCondition5 || supportCondition6 || supportCondition7 || supportCondition8 || supportCondition9 || supportCondition10);
+
+		if(!supports) {
+			behaviors.POWDER(pixel);
+		};
+	},
+	tempHigh: 1500,
+	stateHigh: "magma",
+	category: "powders",
+	state: "solid",
+	density: 2400,
+	hardness: 0.5,
+	breakInto: "dust",
+};
+
+
 elements.glass_pane = {
 	color: ["#5e807d","#679e99"],
 	behavior: behaviors.SUPPORT,
@@ -174,17 +222,13 @@ elements.support_copper = {
 	hidden: true,
 };
 
-elements.hanging_bulb = {
+elements.support_bulb = {
 	color: "#a8a897",
-	behavior: [
-		"XX|SP|XX",
-		"XX|XX|XX",
-		"M2|M1|M2"
-	],
+	behavior: behaviors.SUPPORTPOWDER,
 	behaviorOn: [
-		"XX|SP AND CR:light|XX",
-		"CR:light|XX|CR:light",
-		"M2|M1 AND CR:light|M2",
+		"XX|CR:light|XX",
+		"CR:light AND SP|XX|CR:light AND SP",
+		"M2|CR:light AND M1|M2"
 	],
 	colorOn: "#ebebc3",
 	category: "machines",
