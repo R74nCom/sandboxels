@@ -209,7 +209,7 @@ elements.support_plastic = {
 	hidden: true,
 };
 
-elements.support_steel =: {
+elements.support_steel = {
 	color: "#71797E",
 	behavior: behaviors.SUPPORT,
 	tempHigh: 1455.5,
