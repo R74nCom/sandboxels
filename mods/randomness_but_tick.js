@@ -1231,6 +1231,7 @@ if(enabledMods.includes(coldFireMod)) {
 		burnTempChange: 2,
 		burn: 300,
 		burnTime: 500,
+		temp: airTemp,
 	},
 
 	elements.hypernapalm = {
