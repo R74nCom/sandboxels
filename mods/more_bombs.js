@@ -1,4 +1,5 @@
 var modName = "mods/more_bombs.js";
+var explodeAtPlusMod = "mods/explodeAtPlus.js";
 var runAfterAutogenMod = "mods/runAfterAutogen and onload restructure.js";
 var libraryMod = "mods/code_library.js";
 
@@ -26,6 +27,38 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 		};
 	};
 
+	function firebombFire(pixel,x,y,radius,fire,smoke,power,damage) {
+		var coords = circleCoords(pixel.x,pixel.y,radius);
+		for (var i = 0; i < coords.length; i++) {
+			var x = coords[i].x;
+			var y = coords[i].y;
+			if(!isEmpty(x,y,true)) {
+				var pixel = pixelMap[x][y];
+				var info = elements[pixel.element];
+				var cursedFireChance = 0.15 + power;
+				if (info.burn) { //Light everything on fire
+					pixel.burning = true;
+					pixel.burnStart = pixelTicks;
+					pixel.temp += 10; //smoke prevention
+				} else if(Math.random() < cursedFireChance) { //(15+power)%/px cursed burning
+					pixel.burning = true;
+					pixel.burnStart = pixelTicks;
+					pixel.temp += 10;
+				};
+			} else if(isEmpty(x,y)) { //if there's space for fire
+				if (Array.isArray(fire)) { //this should remain "fire"
+					var newfire = fire[Math.floor(Math.random() * fire.length)];
+				} else {
+					var newfire = fire;
+				};
+				createPixel(newfire,x,y); //add fire
+				var firePixel = pixelMap[x][y];
+				firePixel.temp = Math.max(elements[newfire].temp,firePixel.temp);
+				firePixel.burning = true;
+			};
+		};
+	};
+
 	if(urlParams.get('bombAmount') != null) { //null check
 		bombAmount = urlParams.get('bombAmount')
 		if(isNaN(bombAmount) || bombAmount === "" || bombAmount === null) { //NaN check
@@ -48,6 +81,39 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 		pixel.temp += (800 * ((1 + (7 * damage)) ** 2) * ((power ** 2) * 1.5));
 	};
 
+	elements.firebomb = {
+		color: "#ee7e3e",
+		tick: function(pixel) {
+			if(!isEmpty(pixel.x,pixel.y-1,true)) { //[0][1] EX (ignore bounds)
+				var newPixel = pixelMap[pixel.x][pixel.y-1];
+				var newElement = newPixel.element;
+				var newInfo = elements[newElement];
+				if(newInfo.state !== "gas" && newElement !== pixel.element) {
+					explodeAtPlus(pixel.x,pixel.y,10,"fire,fire,fire,fire,fire,greek_fire","fire",null,firebombFire);
+				};
+			};
+			if(!isEmpty(pixel.x,pixel.y+1,true)) { //[2][1] EX (don't ignore bounds, non-bound case)
+				var newPixel = pixelMap[pixel.x][pixel.y+1];
+				var newElement = newPixel.element;
+				var newInfo = elements[newElement];
+				if(newInfo.state !== "gas" && newElement !== pixel.element) {
+					explodeAtPlus(pixel.x,pixel.y,10,"fire,fire,fire,fire,fire,greek_fire","fire",null,firebombFire);
+				};
+			};
+			if(outOfBounds(pixel.x,pixel.y+1)) { //[2][1] EX (don't ignore bounds, bound case)
+				explodeAtPlus(pixel.x,pixel.y,10,"fire,fire,fire,fire,fire,greek_fire","fire",null,firebombFire);
+			};
+			if(!tryMove(pixel,pixel.x,pixel.y+1)) { //behaviors.POWDER
+				Math.random() < 0.5 ? tryMove(pixel,pixel.x-1,pixel.y+1) : tryMove(pixel,pixel.x+1,pixel.y+1);
+			};
+		},
+		category: "weapons",
+		state: "solid",
+		density: 1500,
+		excludeRandom: true,
+		desc: "An advanced incendiary weapon. <br/>To enable automatic bomb generation, set the generateBombs query parameter.",
+	};
+
 	elements.cluster_nuke = {
 		color: "#e3f636",
 		behavior: [
@@ -59,8 +125,9 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 		state: "solid",
 		density: 1500,
 		excludeRandom: true,
+		desc: "It's a nuke that drops more nukes. <br/>To enable automatic bomb generation, set the generateBombs query parameter.",
 	};
-
+	
 	elements.anti_bomb = {
 		color: "#525c61",
 		behavior: [
@@ -72,7 +139,6 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 		state: "solid",
 		density: 1300,
 		excludeRandom: true,
-		desc: "It's a nuke that drops more nukes. <br/>To enable automatic bomb generation, set the generateBombs query parameter.",
 	};
 
 	elements.electric_bomblet = {
@@ -439,7 +505,8 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 	});
 } else {
 	if(!enabledMods.includes(runAfterAutogenMod))	{ enabledMods.splice(enabledMods.indexOf(modName),0,runAfterAutogenMod) };
+	if(!enabledMods.includes(explodeAtPlusMod))		{ enabledMods.splice(enabledMods.indexOf(modName),0,explodeAtPlusMod) };
 	if(!enabledMods.includes(libraryMod))			{ enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod) };
-	alert(`The "${runAfterAutogenMod}" and "${libraryMod}" mods are all required; any missing mods in this list have been automatically inserted (reload for this to take effect).`)
 	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
+	alert(`The "${runAfterAutogenMod}", "${explodeAtPlusMod}", and "${libraryMod}" mods are all required; any missing mods in this list have been automatically inserted (reload for this to take effect).`)
 };
