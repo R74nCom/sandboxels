@@ -126,6 +126,8 @@ elements.crumbling_concrete = {
 		if(!supports) {
 			behaviors.POWDER(pixel);
 		};
+		
+		doDefaults(pixel);
 	},
 	tempHigh: 1500,
 	stateHigh: "magma",
