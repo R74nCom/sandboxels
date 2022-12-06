@@ -20,7 +20,20 @@ function doBurning(pixel) {
 				fire = fire[Math.floor(Math.random()*fire.length)];
 			}
 		//End fire getter block
-		fireIsCold = (fire === "cold_fire");
+		//Fire temp getter block
+			var fireTemp = info.fireSpawnTemp;
+			if (fireTemp == undefined) {
+				fireTemp = pixel.temp;
+			};
+		//End fire temp getter block
+		//Fire chance getter block
+			var fireChance = info.fireSpawnChance;
+			if (fireChance == undefined) {
+				fireChance = 10;
+			};
+		//End fire chance getter block
+		var fireIsCold = (fire === "cold_fire");
+		var fireInfo = elements[fire];
 
 		pixel.temp += burnTempChange;
 		pixelTempCheck(pixel);
@@ -41,7 +54,6 @@ function doBurning(pixel) {
 					}
 				//End fire getter block
 				newFireIsCold = (newFire === "cold_fire");
-
 
 				//console.log(`burning pixel ${pixel.element}: ${fire} (${fireIsCold}) / burned element ${newPixel.element}: ${newFire} (${newFireIsCold})`);
 				if((!fireIsCold && !newFireIsCold) || (fireIsCold && newFireIsCold)) {
@@ -71,21 +83,23 @@ function doBurning(pixel) {
 				pixel.color = pixelColorPick(pixel)
 			}
 		}
-		else if (Math.floor(Math.random()*100)<10 && !fireSpawnBlacklist.includes(pixel.element)) { // Spawn fire
+		else if (Math.floor(Math.random()*100)<fireChance && !fireSpawnBlacklist.includes(pixel.element)) { // Spawn fire
 			if (isEmpty(pixel.x,pixel.y-1)) {
 				createPixel(fire,pixel.x,pixel.y-1);
+				pixelMap[pixel.x][pixel.y-1].temp = fireTemp;
 				pixelMap[pixel.x][pixel.y-1].temp = pixel.temp//+(pixelTicks - (pixel.burnStart || 0));
 				if (info.fireColor != undefined) {
 					pixelMap[pixel.x][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x][pixel.y-1],info.fireColor);
-				}
+				};
 			}
 			// same for below if top is blocked
 			else if (isEmpty(pixel.x,pixel.y+1)) {
 				createPixel(fire,pixel.x,pixel.y+1);
+				pixelMap[pixel.x][pixel.y+1].temp = fireTemp;
 				pixelMap[pixel.x][pixel.y+1].temp = pixel.temp//+(pixelTicks - (pixel.burnStart || 0));
 				if (info.fireColor != undefined) {
 					pixelMap[pixel.x][pixel.y+1].color = pixelColorPick(pixelMap[pixel.x][pixel.y+1],info.fireColor);
-				}
+				};
 			}
 		}
 	}
