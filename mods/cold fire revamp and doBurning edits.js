@@ -87,7 +87,6 @@ function doBurning(pixel) {
 			if (isEmpty(pixel.x,pixel.y-1)) {
 				createPixel(fire,pixel.x,pixel.y-1);
 				pixelMap[pixel.x][pixel.y-1].temp = fireTemp;
-				pixelMap[pixel.x][pixel.y-1].temp = pixel.temp//+(pixelTicks - (pixel.burnStart || 0));
 				if (info.fireColor != undefined) {
 					pixelMap[pixel.x][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x][pixel.y-1],info.fireColor);
 				};
@@ -96,7 +95,6 @@ function doBurning(pixel) {
 			else if (isEmpty(pixel.x,pixel.y+1)) {
 				createPixel(fire,pixel.x,pixel.y+1);
 				pixelMap[pixel.x][pixel.y+1].temp = fireTemp;
-				pixelMap[pixel.x][pixel.y+1].temp = pixel.temp//+(pixelTicks - (pixel.burnStart || 0));
 				if (info.fireColor != undefined) {
 					pixelMap[pixel.x][pixel.y+1].color = pixelColorPick(pixelMap[pixel.x][pixel.y+1],info.fireColor);
 				};
