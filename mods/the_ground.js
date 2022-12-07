@@ -1229,6 +1229,7 @@ Proper classification of limestone within these code comments
 
 				radioactiveObject = {
 					dirt:				"radioactive_dirt",
+					dry_dirt:			"radioactive_dry_dirt",
 					molten_dirt:		"molten_radioactive_dirt",
 					glass:				"radioactive_glass",
 					molten_glass:		"molten_radioactive_glass",
@@ -1238,6 +1239,7 @@ Proper classification of limestone within these code comments
 					wet_sand:			"radioactive_wet_sand",
 					water:				"radioactive_water",
 					permafrost:			"radioactive_permafrost",
+					dry_permafrost:		"radioactive_dry_permafrost",
 					mudstone:			"radioactive_mudstone",
 					packed_sand:		"radioactive_packed_sand",
 					ice:				"radioactive_ice",
@@ -1252,6 +1254,21 @@ Proper classification of limestone within these code comments
 					magma:				"radioactive_magma",
 					sandstone:			"radioactive_sandstone",
 					sand_sediment: 		"radioactive_sand_sediment"
+				};
+				
+				if(enabledMods.includes("mods/glenn_gases.js")) {
+					radioactiveObject.rock_dust = "radioactive_rock_dust";
+				};
+			
+				if(enabledMods.includes("mods/fire_mod.js")) {
+					radioactiveObject.fire = "rad_fire";
+					radioactiveObject.torch = "rad_torch";
+				};
+			
+				if(enabledMods.includes("mods/structure_test.js")) {
+					radioactiveObject.glass = "rad_glass";
+					radioactiveObject.glass_pane = "rad_glass_pane";
+					radioactiveObject.glass_shard = "rad_glass_shard";
 				};
 			
 			//Reverse lookup function
