@@ -1145,12 +1145,6 @@ Proper classification of limestone within these code comments
 			elements.mud.reactions.dry_dirt = { elem1: "dirt", elem2: "dirt", chance: 0.06 }
 			elements.mud.reactions.radioactive_dry_dirt = { elem1: "radioactive_dirt", elem2: "radioactive_dirt", chance: 0.06 }
 
-			if(!elements.dirt.reactions) {
-				elements.dirt.reactions = {};
-			};
-			elements.dirt.reactions.dry_dirt = { elem1: "dry_dirt", elem2: "dirt", chance: 0.03 }
-			elements.dirt.reactions.radioactive_dry_dirt = { elem1: "radioactive_dry_dirt", elem2: "radioactive_dirt", chance: 0.03 }
-
 	//Land Element Cults
 		/*
 		"Cult" is used similarly to its EoD sense; here, it signifies a set of elements that systematically replicates another set of elements except for a given modification.
