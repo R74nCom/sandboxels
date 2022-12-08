@@ -326,7 +326,9 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 	};
 
 	//genfunc
-	function generateBomb(bombElements,isAfterScriptLoading=false) {//it can be a single element, though
+	function generateBomb(bombElements,isAfterScriptLoading=false,bombNumber=1) {//it can be a single element, though
+		bombNumber = Math.max(0,bombNumber);
+	
 		//To specify an array bomb, have the array be inside another array.
 		/*For reasons related to how element colors are loaded, if this function is being run from a JS mod file, isAfterScriptLoading should be false.
 		Otherwise, you'll get TypeErrors for some reason when trying to place your bomb.  If this is being run after the game has loaded (e.g. in the console),
@@ -403,8 +405,13 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 			};
 			
 			elementOfBomb = tryJoin(elementOfBomb,",");
+			descElement = tryJoin(elementOfBomb,", ");
 			
 			//console.log(elementOfBomb);
+			
+			if(bombNumber !== 1) {
+				bombName += `_${bombNumber}`;
+			};
 			
 			if(!elementExists(bombName)) {
 				elements[bombName] = {
@@ -413,11 +420,12 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 					flippableX: true,
 					colorObject: newColorObject,
 					behavior: [
-						["XX",`EX:10>${elementOfBomb}`,"XX"],
+						["XX",`EX:${5*(bombNumber+1)}>${elementOfBomb}`,"XX"],
 						["XX","XX","XX"],
-						["M2",`M1 AND EX:10>${elementOfBomb}`,"M2"]
+						["M2",`M1 AND EX:${5*(bombNumber+1)}>${elementOfBomb}`,"M2"]
 					],
 					category: "auto_bombs",
+					desc: `Explodes into ${descElement}<br/>Radius: ${5*(bombNumber+1)}`,
 					temp: firstTemp,
 					excludeRandom: true,
 				};
