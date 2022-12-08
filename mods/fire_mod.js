@@ -259,10 +259,17 @@ elements.rad_fire = { //this is BBB
 			pixel.temp++;
 		};
 		
+		if(Math.random() < 0.05) { //5%/t to radify
+			if(typeof(transformAdjacent) === "function" && typeof(radioactiveObject) === "object") {
+				transformAdjacent(pixel,radioactiveObject);
+			};
+		};
+		
 		var move1Spots = [[-1,-1],[0,-1],[1,-1]];
 		var move2Spots = [[-1,0],[0,1],[1,0]];
 		
 		var randomMove1 = move1Spots[Math.floor(Math.random() * move1Spots.length)];
+		
 		if(!tryMove(pixel, pixel.x+randomMove1[0], pixel.y+randomMove1[1])) {
 			//console.log((pixel.x+randomMove1[0]) + " " + (pixel.y+randomMove1[1]))
 			var newPixel = null;
@@ -283,10 +290,6 @@ elements.rad_fire = { //this is BBB
 		doDefaults(pixel);
 	},
 	reactions: { //fire + radiation reacts
-		//Spreading
-		"liquid_fire": { "elem2":"liquid_rad_fire", "chance":0.4 },
-		"fire": { "elem2":"rad_fire", "chance":0.4 },
-		"smoke": { "elem2":"rad_smoke", "chance":0.4 },
 		//Merged water-radiation reactions, plus altered seltzer
 		"water": { "elem1": "rad_smoke", "elem2":"rad_steam", "chance":0.4 },
 		"steam": { "elem1": "rad_smoke", "elem2":"rad_steam", "chance":0.4 },
@@ -295,69 +298,7 @@ elements.rad_fire = { //this is BBB
 		"salt_water": { "elem1": "rad_smoke", "elem2":"rad_steam", "chance":0.4 },
 		"sugar_water": { "elem1": "rad_smoke", "elem2":"rad_steam", "chance":0.4 },
 		"seltzer": { "elem1": "rad_smoke", "elem2":"rad_steam", "chance":0.4 },
-		//Radiation reactions
-		"bubble": { "elem2":"rad_steam", "chance":0.4 },
-		"foam": { "elem2":"rad_steam", "chance":0.4 },
-		"ice": { "elem2":"rad_steam", "chance":0.4 },
-		"snow": { "elem2":"rad_steam", "chance":0.4 },
-		"packed_snow": { "elem2":"rad_steam", "chance":0.4 },
-		"slime": { "elem2":"rad_steam", "chance":0.4 },
-		"milk": { "elem2":"cheese", "chance":0.4 },
-		"permafrost": { "elem1":"rad_steam", "elem2":"dirt", "chance":0.4 },
-		"mud": { "elem1":"rad_steam", "elem2":"dirt", "chance":0.4 },
-		"wet_sand": { "elem1":"rad_steam", "elem2":"sand", "chance":0.4 },
-		"clay": { "elem1":"rad_steam", "elem2":"clay_soil", "chance":0.4 },
-		"slaked_lime": { "elem1":"rad_steam", "elem2":"limestone", "chance":0.4 },
-		"rain_cloud": { "elem2":"rad_cloud", "chance":0.4 },
-		"snow_cloud": { "elem2":"rad_cloud", "chance":0.4 },
-		"hail_cloud": { "elem2":"rad_cloud", "chance":0.4 },
-		"plant": { "elem2":"dead_plant", "chance":0.4 },
-		"frozen_plant": { "elem2":"dead_plant", "chance":0.4 },
-		"grass": { "elem2":["dead_plant","straw","grass_seed","wheat_seed"], "chance":0.4 },
-		"algae": { "elem2":["mushroom_spore","lichen","yeast"], "chance":0.4 },
-		"mushroom_spore": { "elem2":["lichen","yeast"], "chance":0.4 },
-		"mushroom_cap": { "elem2":["lichen","plant"], "chance":0.4 },
-		"mushroom_stalk": { "elem2":["lichen","yeast"], "chance":0.4 },
-		"mushroom_gill": { "elem2":["lichen","yeast"], "chance":0.4 },
-		"flea": { "elem2":["ash","ant","termite"], "chance":0.4 },
-		"ant": { "elem2":["ash","flea","termite"], "chance":0.4 },
-		"termite": { "elem2":["ash","flea","ant"], "chance":0.4 },
-		"fly": { "elem2":["ash","firefly","bee"], "chance":0.4 },
-		"bee": { "elem2":["ash","firefly","fly"], "chance":0.4 },
-		"firefly": { "elem2":["ash","bee","fly"], "chance":0.4 },
-		"frog": { "elem2":["ash","meat","rotten_meat","cooked_meat"], "chance":0.4 },
-		"tadpole": { "elem2":["frog","worm",null], "chance":0.4 },
-		"fish": { "elem2":["ash","meat","rotten_meat","cooked_meat"], "chance":0.4 },
-		"rat": { "elem2":["ash","meat","rotten_meat","cooked_meat","plague"], "chance":0.4 },
-		"bird": { "elem2":["ash","meat","rotten_meat","cooked_meat","plague"], "chance":0.4 },
-		"bone": { "elem2":["calcium","calcium","calcium","cancer"], "chance":0.4 },
-		"meat": { "elem2":["ash","rotten_meat","cooked_meat"], "chance":0.4 },
-		"rotten_meat": { "elem2":["ash","meat","cooked_meat"], "chance":0.4 },
-		"cooked_meat": { "elem2":["ash","rotten_meat"], "chance":0.4 },
-		"bamboo": { "elem2":["wood","plant","bamboo_plant"], "chance":0.4 },
-		"bamboo_plant": { "elem2":["wood","plant","bamboo"], "chance":0.4 },
-		"sapling": { "elem2":["wood","plant","tree_branch"], "chance":0.4 },
-		"tree_branch": { "elem2":["wood","plant","sapling"], "chance":0.4 },
-		"grass_seed": { "elem2":["straw","wheat_seed"], "chance":0.4 },
-		"lichen": { "elem2":"algae", "chance":0.4 },
-		"yeast": { "elem2":["algae","mushroom_spore","lichen"], "chance":0.4 },
-		"wheat_seed": { "elem2":["straw","wheat","grass_seed"], "chance":0.4 },
-		"flower_seed": { "elem2":["straw","grass","pistil","petal"], "chance":0.4 },
-		"pistil": { "elem2":["straw","grass","flower_seed","petal"], "chance":0.4 },
-		"petal": { "elem2":["straw","grass","flower_seed","pistil"], "chance":0.4 },
-		"vine": { "elem1":["vine"], "chance":0.4 },
-		"worm": { "elem2":"ash", "chance":0.4 },
-		"corn": { "elem2":"popcorn", "chance":0.4 },
-		"corn_seed": { "elem2":"corn", "chance":0.4 },
-		"potato": { "elem2":"potato_seed", "chance":0.4 },
-		"potato_seed": { "elem2":"potato", "chance":0.4 },
-		"slug": { "elem2":"slime", "chance":0.4 },
-		"snail": { "elem2":"slime", "chance":0.4 },
-		"cell": { "elem2":"cancer", "chance":0.4 },
-		"blood": { "elem2":["infection","cancer"], "chance":0.4 },
-		"antibody": { "elem2":"cancer", "chance":0.4 },
-		"infection": { "elem2":"cancer", "chance":0.4 },
-		"cancer": { "elem2":null, "chance":0.1 },
+		//Radiation reactions added programatically
 	},
 	temp:800,
 	tempLow:150,
@@ -390,6 +331,12 @@ elements.rad_smoke = {
 			pixel.temp++;
 		};
 		
+		if(Math.random() < 0.04) { //4%/t to radify
+			if(typeof(transformAdjacent) === "function" && typeof(radioactiveObject) === "object") {
+				transformAdjacent(pixel,radioactiveObject);
+			};
+		};
+
 		var move1Spots = [[0,-1],[1,0],[0,1],[-1,0]];
 		var move2Spots = [[-1,-1],[1,-1],[1,1],[-1,1]];
 		
@@ -426,69 +373,7 @@ elements.rad_smoke = {
 		"acid_cloud": { "elem1": "pyrocumulus", "chance":0.05, "y":[0,12], "setting":"clouds" },
 		"fire_cloud": { "elem1": "pyrocumulus", "chance":0.05, "y":[0,12], "setting":"clouds" },
 		"pyrocumulus": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,12], "setting":"clouds" },*/
-		//Radiation reactions
-		"bubble": { "elem2":"rad_steam", "chance":0.4 },
-		"foam": { "elem2":"rad_steam", "chance":0.4 },
-		"ice": { "elem2":"rad_steam", "chance":0.4 },
-		"snow": { "elem2":"rad_steam", "chance":0.4 },
-		"packed_snow": { "elem2":"rad_steam", "chance":0.4 },
-		"slime": { "elem2":"rad_steam", "chance":0.4 },
-		"milk": { "elem2":"cheese", "chance":0.4 },
-		"permafrost": { "elem1":"rad_steam", "elem2":"dirt", "chance":0.4 },
-		"mud": { "elem1":"rad_steam", "elem2":"dirt", "chance":0.4 },
-		"wet_sand": { "elem1":"rad_steam", "elem2":"sand", "chance":0.4 },
-		"clay": { "elem1":"rad_steam", "elem2":"clay_soil", "chance":0.4 },
-		"slaked_lime": { "elem1":"rad_steam", "elem2":"limestone", "chance":0.4 },
-		"rain_cloud": { "elem2":"rad_cloud", "chance":0.4 },
-		"snow_cloud": { "elem2":"rad_cloud", "chance":0.4 },
-		"hail_cloud": { "elem2":"rad_cloud", "chance":0.4 },
-		"plant": { "elem2":"dead_plant", "chance":0.4 },
-		"frozen_plant": { "elem2":"dead_plant", "chance":0.4 },
-		"grass": { "elem2":["dead_plant","straw","grass_seed","wheat_seed"], "chance":0.4 },
-		"algae": { "elem2":["mushroom_spore","lichen","yeast"], "chance":0.4 },
-		"mushroom_spore": { "elem2":["lichen","yeast"], "chance":0.4 },
-		"mushroom_cap": { "elem2":["lichen","plant"], "chance":0.4 },
-		"mushroom_stalk": { "elem2":["lichen","yeast"], "chance":0.4 },
-		"mushroom_gill": { "elem2":["lichen","yeast"], "chance":0.4 },
-		"flea": { "elem2":["ash","ant","termite"], "chance":0.4 },
-		"ant": { "elem2":["ash","flea","termite"], "chance":0.4 },
-		"termite": { "elem2":["ash","flea","ant"], "chance":0.4 },
-		"fly": { "elem2":["ash","firefly","bee"], "chance":0.4 },
-		"bee": { "elem2":["ash","firefly","fly"], "chance":0.4 },
-		"firefly": { "elem2":["ash","bee","fly"], "chance":0.4 },
-		"frog": { "elem2":["ash","meat","rotten_meat","cooked_meat"], "chance":0.4 },
-		"tadpole": { "elem2":["frog","worm",null], "chance":0.4 },
-		"fish": { "elem2":["ash","meat","rotten_meat","cooked_meat"], "chance":0.4 },
-		"rat": { "elem2":["ash","meat","rotten_meat","cooked_meat","plague"], "chance":0.4 },
-		"bird": { "elem2":["ash","meat","rotten_meat","cooked_meat","plague"], "chance":0.4 },
-		"bone": { "elem2":["calcium","calcium","calcium","cancer"], "chance":0.4 },
-		"meat": { "elem2":["ash","rotten_meat","cooked_meat"], "chance":0.4 },
-		"rotten_meat": { "elem2":["ash","meat","cooked_meat"], "chance":0.4 },
-		"cooked_meat": { "elem2":["ash","rotten_meat"], "chance":0.4 },
-		"bamboo": { "elem2":["wood","plant","bamboo_plant"], "chance":0.4 },
-		"bamboo_plant": { "elem2":["wood","plant","bamboo"], "chance":0.4 },
-		"sapling": { "elem2":["wood","plant","tree_branch"], "chance":0.4 },
-		"tree_branch": { "elem2":["wood","plant","sapling"], "chance":0.4 },
-		"grass_seed": { "elem2":["straw","wheat_seed"], "chance":0.4 },
-		"lichen": { "elem2":"algae", "chance":0.4 },
-		"yeast": { "elem2":["algae","mushroom_spore","lichen"], "chance":0.4 },
-		"wheat_seed": { "elem2":["straw","wheat","grass_seed"], "chance":0.4 },
-		"flower_seed": { "elem2":["straw","grass","pistil","petal"], "chance":0.4 },
-		"pistil": { "elem2":["straw","grass","flower_seed","petal"], "chance":0.4 },
-		"petal": { "elem2":["straw","grass","flower_seed","pistil"], "chance":0.4 },
-		"vine": { "elem1":["vine"], "chance":0.4 },
-		"worm": { "elem2":"ash", "chance":0.4 },
-		"corn": { "elem2":"popcorn", "chance":0.4 },
-		"corn_seed": { "elem2":"corn", "chance":0.4 },
-		"potato": { "elem2":"potato_seed", "chance":0.4 },
-		"potato_seed": { "elem2":"potato", "chance":0.4 },
-		"slug": { "elem2":"slime", "chance":0.4 },
-		"snail": { "elem2":"slime", "chance":0.4 },
-		"cell": { "elem2":"cancer", "chance":0.4 },
-		"blood": { "elem2":["infection","cancer"], "chance":0.4 },
-		"antibody": { "elem2":"cancer", "chance":0.4 },
-		"infection": { "elem2":"cancer", "chance":0.4 },
-		"cancer": { "elem2":null, "chance":0.1 },
+		//Radiation reactions added programatically
 	},
 	temp: 134,
 	tempHigh: 595,
@@ -698,6 +583,12 @@ runAfterLoad(function() {
 					pixel.temp++;
 				};
 				
+				if(Math.random() < 0.06) { //6%/t to radify
+					if(typeof(transformAdjacent) === "function" && typeof(radioactiveObject) === "object") {
+						transformAdjacent(pixel,radioactiveObject);
+					};
+				};
+		
 				var move1Spots = [[-1,1],[0,1],[1,1]];
 				var move2Spots = [[-1,0],[0,-1],[1,0]];
 				
@@ -722,10 +613,6 @@ runAfterLoad(function() {
 				doDefaults(pixel);
 			},
 			reactions: { //fire + radiation reacts
-				//Spreading
-				"liquid_fire": { "elem2":"liquid_rad_fire", "chance":0.6 },
-				"fire": { "elem2":"rad_fire", "chance":0.6 },
-				"smoke": { "elem2":"rad_smoke", "chance":0.6 },
 				//Merged water-radiation reactions, plus altered seltzer
 				"water": { "elem1": "rad_smoke", "elem2":"rad_steam", "chance":0.4 },
 				"steam": { "elem1": "rad_smoke", "elem2":"rad_steam", "chance":0.4 },
@@ -734,69 +621,7 @@ runAfterLoad(function() {
 				"salt_water": { "elem1": "rad_smoke", "elem2":"rad_steam", "chance":0.4 },
 				"sugar_water": { "elem1": "rad_smoke", "elem2":"rad_steam", "chance":0.4 },
 				"seltzer": { "elem1": "rad_smoke", "elem2":"rad_steam", "chance":0.4 },
-				//Radiation reactions
-				"bubble": { "elem2":"rad_steam", "chance":0.4 },
-				"foam": { "elem2":"rad_steam", "chance":0.4 },
-				"ice": { "elem2":"rad_steam", "chance":0.4 },
-				"snow": { "elem2":"rad_steam", "chance":0.4 },
-				"packed_snow": { "elem2":"rad_steam", "chance":0.4 },
-				"slime": { "elem2":"rad_steam", "chance":0.4 },
-				"milk": { "elem2":"cheese", "chance":0.4 },
-				"permafrost": { "elem1":"rad_steam", "elem2":"dirt", "chance":0.4 },
-				"mud": { "elem1":"rad_steam", "elem2":"dirt", "chance":0.4 },
-				"wet_sand": { "elem1":"rad_steam", "elem2":"sand", "chance":0.4 },
-				"clay": { "elem1":"rad_steam", "elem2":"clay_soil", "chance":0.4 },
-				"slaked_lime": { "elem1":"rad_steam", "elem2":"limestone", "chance":0.4 },
-				"rain_cloud": { "elem2":"rad_cloud", "chance":0.4 },
-				"snow_cloud": { "elem2":"rad_cloud", "chance":0.4 },
-				"hail_cloud": { "elem2":"rad_cloud", "chance":0.4 },
-				"plant": { "elem2":"dead_plant", "chance":0.4 },
-				"frozen_plant": { "elem2":"dead_plant", "chance":0.4 },
-				"grass": { "elem2":["dead_plant","straw","grass_seed","wheat_seed"], "chance":0.4 },
-				"algae": { "elem2":["mushroom_spore","lichen","yeast"], "chance":0.4 },
-				"mushroom_spore": { "elem2":["lichen","yeast"], "chance":0.4 },
-				"mushroom_cap": { "elem2":["lichen","plant"], "chance":0.4 },
-				"mushroom_stalk": { "elem2":["lichen","yeast"], "chance":0.4 },
-				"mushroom_gill": { "elem2":["lichen","yeast"], "chance":0.4 },
-				"flea": { "elem2":["ash","ant","termite"], "chance":0.4 },
-				"ant": { "elem2":["ash","flea","termite"], "chance":0.4 },
-				"termite": { "elem2":["ash","flea","ant"], "chance":0.4 },
-				"fly": { "elem2":["ash","firefly","bee"], "chance":0.4 },
-				"bee": { "elem2":["ash","firefly","fly"], "chance":0.4 },
-				"firefly": { "elem2":["ash","bee","fly"], "chance":0.4 },
-				"frog": { "elem2":["ash","meat","rotten_meat","cooked_meat"], "chance":0.4 },
-				"tadpole": { "elem2":["frog","worm",null], "chance":0.4 },
-				"fish": { "elem2":["ash","meat","rotten_meat","cooked_meat"], "chance":0.4 },
-				"rat": { "elem2":["ash","meat","rotten_meat","cooked_meat","plague"], "chance":0.4 },
-				"bird": { "elem2":["ash","meat","rotten_meat","cooked_meat","plague"], "chance":0.4 },
-				"bone": { "elem2":["calcium","calcium","calcium","cancer"], "chance":0.4 },
-				"meat": { "elem2":["ash","rotten_meat","cooked_meat"], "chance":0.4 },
-				"rotten_meat": { "elem2":["ash","meat","cooked_meat"], "chance":0.4 },
-				"cooked_meat": { "elem2":["ash","rotten_meat"], "chance":0.4 },
-				"bamboo": { "elem2":["wood","plant","bamboo_plant"], "chance":0.4 },
-				"bamboo_plant": { "elem2":["wood","plant","bamboo"], "chance":0.4 },
-				"sapling": { "elem2":["wood","plant","tree_branch"], "chance":0.4 },
-				"tree_branch": { "elem2":["wood","plant","sapling"], "chance":0.4 },
-				"grass_seed": { "elem2":["straw","wheat_seed"], "chance":0.4 },
-				"lichen": { "elem2":"algae", "chance":0.4 },
-				"yeast": { "elem2":["algae","mushroom_spore","lichen"], "chance":0.4 },
-				"wheat_seed": { "elem2":["straw","wheat","grass_seed"], "chance":0.4 },
-				"flower_seed": { "elem2":["straw","grass","pistil","petal"], "chance":0.4 },
-				"pistil": { "elem2":["straw","grass","flower_seed","petal"], "chance":0.4 },
-				"petal": { "elem2":["straw","grass","flower_seed","pistil"], "chance":0.4 },
-				"vine": { "elem1":["vine"], "chance":0.4 },
-				"worm": { "elem2":"ash", "chance":0.4 },
-				"corn": { "elem2":"popcorn", "chance":0.4 },
-				"corn_seed": { "elem2":"corn", "chance":0.4 },
-				"potato": { "elem2":"potato_seed", "chance":0.4 },
-				"potato_seed": { "elem2":"potato", "chance":0.4 },
-				"slug": { "elem2":"slime", "chance":0.4 },
-				"snail": { "elem2":"slime", "chance":0.4 },
-				"cell": { "elem2":"cancer", "chance":0.4 },
-				"blood": { "elem2":["infection","cancer"], "chance":0.4 },
-				"antibody": { "elem2":"cancer", "chance":0.4 },
-				"infection": { "elem2":"cancer", "chance":0.4 },
-				"cancer": { "elem2":null, "chance":0.1 },
+				//Radiation reactions added programatically
 			},
 			temp:800,
 			//tempLow:100,
@@ -813,6 +638,20 @@ runAfterLoad(function() {
 			density: 21,
 		};
 	};
+	
+	elements.radiation.reactions.liquid_fire = { "elem2":"liquid_rad_fire", "chance":0.4 };
+	elements.radiation.reactions.fire = { "elem2":"rad_fire", "chance":0.4 };
+	elements.radiation.reactions.smoke = { "elem2":"rad_smoke", "chance":0.4 };
+	
+	runAfterLoad(function() {
+		for(key in elements.radiation.reactions) {
+			var value = elements.radiation.reactions[key];
+			
+			if(typeof(elements.rad_fire.reactions[key]) === "undefined") {
+				elements.rad_fire.reactions[key] = value;
+			};
+		};
+	});
 	
 	if(enabledMods.includes("mods/randomness.js")) {
 		elements.unnamed_gas.burnTempChange = 10;
