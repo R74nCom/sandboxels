@@ -65,7 +65,10 @@ function generatorPrompt() {
 				generateCloud(elements,true);
 				break;
 			case "bomb":
-				generateBomb(elements,true);
+				var number = prompt(`Enter a bomb number (default: 1)
+				1 corresponds to radius 10, 2 corresponds to radius 15, etc.`);
+				if(isNaN(parseFloat(number))) { number = 1 };
+				generateBomb(elements,true,number);
 				break;
 			default:
 				alert("An invalid type made it past the if statement. You shouldn't ever see this error.");
