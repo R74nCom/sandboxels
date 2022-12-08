@@ -181,7 +181,7 @@ elements.acid.reactions.limestone_gravel = { "elem1":"neutral_acid", "elem2":nul
 elements.zephyrean_aerotheum = {
 	color: ["#FFFCD9","#FEFFFC","#FDFFDB","#FFFFE8","#FBF6D3","#F1EDD0"],
 	behavior: behaviors.AGLIQUID,
-	viscosity: -800,
+	viscosity: 0.1**4,
 	category: "liquids",
 	state: "liquid",
 	density:-800,
