@@ -136,6 +136,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(runAfterAutogenMod) &&
 
 	elements.haseulite = {
 		color: ["#3cb00e", "#25d119", "#79f553"],
+		fireColor: ["#08a953", "#2ea332", "#d1e0d3"],
 		properties: {
 			value: 0,
 			oldColor: null
@@ -178,6 +179,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(runAfterAutogenMod) &&
 
 	elements.haseulite_vent = {
 		color: "#88b058",
+		fireColor: ["#08a953", "#2ea332", "#d1e0d3"],
 		behavior: behaviors.WALL,
 		rotatable: true,
 		desc: "This uses rotation, so just use debug to see the r value. r 0 means it vents haseulite below it upwards, r 1 means it vents haseulite above it downwards, r 2 means it vents left, and r 3 means it vents right.",
@@ -243,6 +245,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(runAfterAutogenMod) &&
 			value: 0,
 			oldColor: null
 		},
+		fireColor: ["#08a953", "#2ea332", "#d1e0d3"],
 		tempHigh: 1757,
 		behavior: behaviors.POWDER,
 		tick: function(pixel) { haseulitoidTick(pixel) },
@@ -288,13 +291,31 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(runAfterAutogenMod) &&
 		density: 7214,
 		hardness: 0.52,
 		breakInto: "haseulite_gas",
+		temp: 1957,
 		tempHigh: 3100,
 		conduct: 0.23,
 	};
 
 	elements.haseulite_gas = {
 		color: ["#ffff9d", "#ffffff", "#e9ffe6", "#ffffe5"],
+		properties: {
+			value: 0,
+			oldColor: null
+		},
+		tick: function(pixel) { haseulitoidTick(pixel) },
+		onExplosionBreakOrSurvive: function(pixel,x,y,radius) {
+			/*power is always radius/10
+				r 5: value 7
+				r 10: value 14
+				r 15: value 28 
+				r 20: value 56 
+				r 25: value 112 
+				r 30: value 224 
+			*/
+			pixel.value += (2**(((radius) / 5) - 1) * 7);
+		},
 		density: 0.289,
+		temp: 3700,
 		hardness: 1,
 		conduct: 0.13,
 	};
