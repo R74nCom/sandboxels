@@ -85,20 +85,22 @@ elements.generator_prompt = {
 };
 
 function parseForLateGenerationParameter(input) {
-    if(typeof(input) === "string") { //it should be an array, so string check
-        //console.log("String detected");
-        if(input.includes(",")) { //comma-separated string?
-            //console.log("Splitting string to array");
-            input = input.split(","); //,SS to array
-        } else {
-            //console.log("Wrapping string in array");
-            input = [input]; //single string to array 
-        };
-    };
-    for(i = 0; i < input.length; i++) {
-        if(input[i].includes("+")) {
-            input[i] = input[i].split("+")
-        };
-    };
-    return input;
+	if(typeof(input) === "string") { //it should be an array, so string check
+		input = input.replace(/ /g,"_");
+		//console.log("String detected");
+		if(input.includes(",")) { //comma-separated string?
+			//console.log("Splitting string to array");
+			input = input.split(","); //,SS to array
+		} else {
+			//console.log("Wrapping string in array");
+			input = [input]; //single string to array 
+		};
+	};
+	for(i = 0; i < input.length; i++) {
+		input[i] = input[i].replace(/ /g,"_");
+		if(input[i].includes("+")) {
+			input[i] = input[i].split("+")
+		};
+	};
+	return input;
 };
