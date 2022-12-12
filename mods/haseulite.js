@@ -96,9 +96,6 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(runAfterAutogenMod) &&
 		} else {
 			var category = info.category;
 		};
-		if(excludedSpoutElements.includes(name)) {
-			return false
-		};
 		var include = false;
 		if(["liquid","gas"].includes(state)) {
 			include = true;
@@ -500,6 +497,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(runAfterAutogenMod) &&
 				if(isEmpty(rfX,rfY,false)) {
 					var randomEligibleHotElement = hotHeejiniteElements[Math.floor(Math.random() * hotHeejiniteElements.length)];
 					createPixel(randomEligibleHotElement,rfX,rfY);
+					pixelMap[rfX][rfY].temp = pixel.temp;
 				};
 			};
 		};
