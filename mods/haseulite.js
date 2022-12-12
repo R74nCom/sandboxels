@@ -11,6 +11,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 	oldExplodeAt = explodeAt;
 	explodeAt = explodeAtPlus;
 	haseuliteSpreadWhitelist = ["haseulite","haseulite_powder","molten_haseulite"];
+	jinsouliteSpreadWhitelist = ["jinsoulite","jinsoulite_powder","molten_jinsoulite"];
 
 	function coldExplosionAfterCooling(pixel,x,y,radius,fire,smoke,power,damage) {
 		pixel.temp -= 2*damage*radius*power;
@@ -233,6 +234,14 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		liquid_irradium: [4, null]
 	};
 
+	jinsouliteValueObject = {
+		steam: [1, ["steam",null]],
+		cloud: [1, ["cloud",null]],
+		snow_cloud: [1, ["snow_cloud",null]],
+		hail_cloud: [1, ["hail_cloud",null]],
+		rain_cloud: [3, ["rain_cloud","rain_cloud",null]]
+	};
+
 	/*function customStaining(pixel,customColorRgb,stainOverride=null) {
 		if (settings["stainoff"]) { return }
 		var stain = (stainOverride !== null ? stainOverride : elements[pixel.element].stain);
@@ -289,7 +298,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		}
 	}*/
 
-	function haseuliteValueSpreading(pixel) {
+	function valueSpreading(pixel,whitelist=null) {
 		var randomNeighborOffset = adjacentCoords[Math.floor(Math.random() * adjacentCoords.length)];
 		var rX = randomNeighborOffset[0];
 		var rY = randomNeighborOffset[1];
@@ -298,7 +307,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		if(!isEmpty(rfX,rfY,true)) {
 			var rOtherPixel = pixelMap[rfX][rfY];
 			var rOtherElement = rOtherPixel.element;
-			if(haseuliteSpreadWhitelist.includes(rOtherElement)) {
+			if(whitelist === null || (whitelist !== null && whitelist.includes(rOtherElement))) {
 				if(typeof(rOtherPixel.value) !== "number") {
 					rOtherPixel.value = 0;
 				};
@@ -313,7 +322,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		return true;
 	};
 
-	function haseuliteValueAbsorbency(pixel) {
+	function valueAbsorbency(pixel,valueObject) {
 		for(i = 0; i < adjacentCoords.length; i++) {
 			var oX = adjacentCoords[i][0];
 			var oY = adjacentCoords[i][1];
@@ -323,13 +332,13 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 				var otherPixel = pixelMap[fX][fY];
 				var otherElement = otherPixel.element;
 				var otherInfo = elements[otherElement];
-				if(haseuliteValueObject[otherElement]) {
+				if(valueObject[otherElement]) {
 					if(typeof(otherPixel) === "undefined" || isEmpty(fX,fY,true)) {
 						return false;
 					};
-					var haseuliteValueData = haseuliteValueObject[otherElement];
-					if(haseuliteValueData instanceof Array) {
-						var finalElement = haseuliteValueData[1];
+					var ValueData = valueObject[otherElement];
+					if(ValueData instanceof Array) {
+						var finalElement = ValueData[1];
 						if(finalElement instanceof Array) {
 							finalElement = finalElement[Math.floor(Math.random() * finalElement.length)];
 						};
@@ -340,10 +349,10 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 								changePixel(otherPixel,finalElement);
 							};
 						};
-						pixel.value += haseuliteValueData[0];
-					} else if(typeof(haseuliteValueData) === "number") {
+						pixel.value += ValueData[0];
+					} else if(typeof(ValueData) === "number") {
 						deletePixel(otherPixel.x,otherPixel.y);
-						pixel.value += haseuliteValueData[0];
+						pixel.value += ValueData[0];
 					};
 				};
 			};
@@ -351,24 +360,24 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		return true;
 	};
 
-	function haseuliteValueFunction(pixel) {
+	function valueFunction(pixel,valueObject,elementWhitelist=null) {
 		if(typeof(pixel.value) === "undefined") {
 			pixel.value = 0;
 		};
 
 		var oldValue = pixel.value;
-		if(!haseuliteValueAbsorbency(pixel) || isNaN(pixel.value)) {
+		if(!valueAbsorbency(pixel,valueObject) || isNaN(pixel.value)) {
 			pixel.value = oldValue;
 		};
 
 		var oldValue = pixel.value;
-		if(!haseuliteValueSpreading(pixel) || isNaN(pixel.value)) {
+		if(!valueSpreading(pixel,elementWhitelist) || isNaN(pixel.value)) {
 			pixel.value = oldValue;
 		};
 	}
 
 	function haseulitoidTick(pixel) {
-		haseuliteValueFunction(pixel);
+		valueFunction(pixel,haseuliteValueObject,haseuliteSpreadWhitelist);
 		if(pixel.oldColor === null) { pixel.oldColor = pixel.color };
 		pixel.color = lightenColor(pixel.oldColor,pixel.value / 3);
 		
@@ -809,21 +818,53 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		return true;
 	};
 
+	function jinsouliteValue(pixel) {
+		valueFunction(pixel,jinsouliteValueObject,jinsouliteSpreadWhitelist);
+		if(pixel.oldColor === null) { pixel.oldColor = pixel.color };
+		pixel.color = changeSaturation(pixel.oldColor,pixel.value / 3,"subtract","rgb")
+		
+		if(pixel.value > 1) {
+			if(Math.random() < Math.min((pixel.value / 200),0.5)) {
+				var randomNeighborOffset = adjacentCoords[Math.floor(Math.random() * adjacentCoords.length)];
+				var rX = randomNeighborOffset[0];
+				var rY = randomNeighborOffset[1];
+				var rfX = pixel.x+rX;
+				var rfY = pixel.y+rY;
+				if(isEmpty(rfX,rfY,false)) {
+					createPixel("water",rfX,rfY);
+					pixel.value--;
+				};
+			};
+		};
+	}
+
 	function jinsoulitoidTick(pixel,move1Spots=[],move2Spots=[]) {
 		if(jinsouliteDissolution(pixel)) {
 			return;
 		};
+		jinsouliteValue(pixel);
 		jinsouliteMovement(pixel,move1Spots,move2Spots);
 	};
 
 	elements.jinsoulite = {
 		color: ["#0e51b0", "#2129ff", "#3b3dbf"],
 		fireColor: ["#121978", "#6a9fe6", "#5963d9"],
-		/*properties: {
+		behavior: [
+			"XX|CR:water%0.03|XX",
+			"CR:water%0.03|XX|CR:water%0.03",
+			"XX|CR:water%0.03|XX"
+		],
+		behaviorOn: [
+			"XX|CR:water%0.1|XX",
+			"CR:water%0.1|XX|CR:water%0.1",
+			"XX|CR:water%0.1|XX"
+		],
+		properties: {
+			value: 0,
 			oldColor: null
-		},*/
-		behavior: behaviors.WALL,
+		},
 		tick: function(pixel) { 
+			jinsouliteValue(pixel);
 			jinsouliteSolidNonWaterSideReactions(pixel);
 			jinsouliteSolidWaterSideReactions(pixel);
 		},
@@ -840,7 +881,20 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		color: ["#4580ba", "#355eb0", "#2d6fc4"],
 		fireColor: ["#121978", "#6a9fe6", "#5963d9"],
 		tempHigh: 2606,
-		behavior: behaviors.POWDER,
+		behavior: [
+			"XX|CR:water%0.03|XX",
+			"CR:water%0.03|XX|CR:water%0.03",
+			"XX|CR:water%0.03|XX"
+		],
+		properties: {
+			value: 0,
+			oldColor: null
+		},
+		behaviorOn: [
+			"XX|CR:water%0.1|XX",
+			"CR:water%0.1|XX|CR:water%0.1",
+			"XX|CR:water%0.1|XX"
+		],
 		tick: function(pixel) { jinsoulitoidTick(pixel,[[0,1]],[[-1,1],[1,1]]) },
 		stateHigh: "molten_jinsoulite",
 		category: "powders",
@@ -853,12 +907,22 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 
 	elements.molten_jinsoulite = {
 		behavior: [
-			"XX|CR:fire%0.5|XX",
+			"XX|CR:fire,fire,steam%0.5|XX",
 			"XX|XX|XX",
 			"XX|XX|XX"
 		],
+		behaviorOn: [
+			"XX|CR:fire,steam,steam%0.7|XX",
+			"CR:steam%0.1|XX|CR:steam%0.1",
+			"XX|CR:steam%0.1|XX"
+		],
+		properties: {
+			value: 0,
+			oldColor: null
+		},
 		color: ["#4e35db","#7767eb","#a876f5", "#78acff"],
 		fireColor: ["#121978", "#6a9fe6", "#5963d9"],
+		fireElement: ["fire","fire","steam"],
 		tick: function(pixel) { jinsoulitoidTick(pixel,[[-1,1],[0,1],[1,1]],[[-1,0],[1,0]]); },
 		density: 6448,
 		hardness: 0.61,
@@ -870,6 +934,16 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 
 	elements.jinsoulite_gas = {
 		color: ["#c0f0ef", "#c2c1db", "#c0bff5", "#cdcce6"],
+		behavior: [
+			"XX|CR:steam%0.5|XX",
+			"CR:steam%0.5|XX|CR:steam%0.5",
+			"XX|CR:steam%0.5|XX",
+		],
+		behaviorOn: [
+			"XX|CR:steam%1|XX",
+			"CR:steam%1|XX|CR:steam%1",
+			"XX|CR:steam%1|XX",
+		],
 		fireColor: ["#08a953", "#2ea332", "#d1e0d3"],
 		properties: {
 			value: 0,
