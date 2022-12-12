@@ -1,10 +1,11 @@
 var modName = "mods/haseulite.js";
 var loonaMod = "mods/funny elements 2022-11-15.js";
+var fireMod = "mods/fire_mod.js";
 var runAfterAutogenMod = "mods/runAfterAutogen and onload restructure.js";
 var explodeAtPlusMod = "mods/explodeAtPlus.js";
 var libraryMod = "mods/code_library.js";
 
-if(enabledMods.includes(loonaMod) && enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlusMod) && enabledMods.includes(libraryMod)) {
+if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlusMod) && enabledMods.includes(libraryMod)) {
 	//move explodeAt to YG Entertainment's dungeon
 
 	oldExplodeAt = explodeAt;
@@ -24,7 +25,10 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(runAfterAutogenMod) &&
 		density: 2466.73,
 		hardness: 0.56,
 		breakInto: ["rock","sulfur","loona_gravel","loona_gravel","loona_gravel","haseulite_powder", "rock","sulfur","loona_gravel","loona_gravel","loona_gravel","haseulite_powder", "rock","sulfur","loona_gravel","loona_gravel","loona_gravel","heejinite_powder"],
-	},
+	};
+
+	var backupCategoryWhitelist = ["land","powders","weapons","food","life","corruption","states","fey","Fantastic Creatures","dyes","energy liquids","random liquids","random gases","random rocks"];
+	var backupElementWhitelist = ["mercury", "chalcopyrite_ore", "chalcopyrite_dust", "copper_concentrate", "fluxed_copper_concentrate", "unignited_pyrestone", "ignited_pyrestone", "everfire_dust", "extinguished_everfire_dust", "mistake", "polusium_oxide", "vaporized_polusium_oxide", "glowstone_dust", "redstone_dust", "soul_mud", "wet_soul_sand", "nitrogen_snow", "fusion_catalyst", "coal", "coal_coke", "blast_furnace_fuel", "molten_mythril"];
 
 	function spoutCriteria(name) {
 		if(typeof(elements[name]) !== "object") {
@@ -578,9 +582,10 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(runAfterAutogenMod) &&
 
 } else {
 	if(!enabledMods.includes(loonaMod))				{ enabledMods.splice(enabledMods.indexOf(modName),0,loonaMod) };
+	if(!enabledMods.includes(fireMod))				{ enabledMods.splice(enabledMods.indexOf(modName),0,fireMod) };
 	if(!enabledMods.includes(runAfterAutogenMod))	{ enabledMods.splice(enabledMods.indexOf(modName),0,runAfterAutogenMod) };
 	if(!enabledMods.includes(explodeAtPlusMod))		{ enabledMods.splice(enabledMods.indexOf(modName),0,explodeAtPlusMod) };
 	if(!enabledMods.includes(libraryMod))			{ enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod) };
 	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-	alert(`The "${runAfterAutogenMod}", "${loonaMod}", "${libraryMod}", and "${explodeAtPlusMod}" mods are all required; any missing mods in this list have been automatically inserted (reload for this to take effect).`)
+	alert(`The "${runAfterAutogenMod}", "${loonaMod}", "${fireMod}", "${libraryMod}", and "${explodeAtPlusMod}" mods are all required; any missing mods in this list have been automatically inserted (reload for this to take effect).`)
 };
