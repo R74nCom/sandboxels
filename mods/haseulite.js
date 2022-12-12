@@ -146,7 +146,11 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		radiation: 4,
 		fire: [6, "smoke"],
 		rad_fire: [10, "rad_smoke"],
-		plasma: [15, "fire"]
+		liquid_fire: [12, ["fire","liquid_smoke","smoke"]],
+		plasma: [15, "fire"],
+		liquid_rad_fire: [20, [null,"rad_fire","rad_fire","rad_smoke","rad_smoke"]],
+		liquid_plasma: [30, ["plasma","liquid_fire","fire"]],
+		liquid_irradium: [4, null]
 	};
 
 	/*function customStaining(pixel,customColorRgb,stainOverride=null) {
@@ -246,8 +250,16 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 					var haseuliteValueData = haseuliteValueObject[otherElement];
 					if(haseuliteValueData instanceof Array) {
 						var finalElement = haseuliteValueData[1];
-						if(finalElement instanceof Array) { finalElement = finalElement[Math.floor(Math.random() * finalElement.length)] };
-						changePixel(otherPixel,haseuliteValueData[1]);
+						if(finalElement instanceof Array) {
+							finalElement = finalElement[Math.floor(Math.random() * finalElement.length)];
+						};
+						if(finalElement !== null) {
+							if(finalElement === -1) {
+								deletePixel(otherPixel.x,otherPixel.y);
+							} else {
+								changePixel(otherPixel,finalElement);
+							};
+						};
 						pixel.value += haseuliteValueData[0];
 					} else if(typeof(haseuliteValueData) === "number") {
 						deletePixel(otherPixel.x,otherPixel.y);
