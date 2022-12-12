@@ -26,8 +26,106 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(runAfterAutogenMod) &&
 		breakInto: ["rock","sulfur","loona_gravel","loona_gravel","loona_gravel","haseulite_powder"],
 	},
 
+	function spoutCriteria(name) {
+		if(typeof(elements[name]) !== "object") {
+			throw new Error(`Nonexistent element ${name}`);
+		};
+		var info = elements[name];
+		//console.log(`${name} (${JSON.stringify(elements[name])})`);
+		if(typeof(info.state) === "undefined") {
+			var state = null;
+		} else {
+			var state = info.state;
+		};
+		if(typeof(info.category) === "undefined") {
+			var category = "other";
+		} else {
+			var category = info.category;
+		};
+		if(excludedSpoutElements.includes(name)) {
+			return false
+		};
+		var include = false;
+		if(["liquid","gas"].includes(state)) {
+			include = true;
+		};
+		if(info.movable) {
+			include = true;
+		};
+		if(backupCategoryWhitelist.includes(category)) {
+			include = true;
+		};
+		if(backupElementWhitelist.includes(name)) {
+			include = true;
+		};
+		if(category.includes("mudstone")) {
+			include = true;
+		};
+		//console.log(include);
+		return include;
+	};
+	
+	function heejiniteHeatCriteria(name) {
+		if(typeof(elements[name]) !== "object") {
+			throw new Error(`Nonexistent element ${name}`);
+		};
+		var info = elements[name];
+		//console.log(`${name} (${JSON.stringify(elements[name])})`);
+		if(typeof(info.tempLow) === "undefined") {
+			return false;
+		};
+		if(typeof(info.tempHigh) !== "undefined" && info.tempHigh < elements.heejinite.tempHigh) {
+			return false;
+		};
+		return (info.tempLow < elements.heejinite.tempHigh) || ((typeof(info.state) !== "undefined") && (info.state === "gas"));
+	};
+
+	spoutCriteria = function(name) {
+		if(typeof(elements[name]) !== "object") {
+			throw new Error(`Nonexistent element ${name}`);
+		};
+		var info = elements[name];
+		//console.log(`${name} (${JSON.stringify(elements[name])})`);
+		if(typeof(info.state) === "undefined") {
+			var state = null;
+		} else {
+			var state = info.state;
+		};
+		if(typeof(info.category) === "undefined") {
+			var category = "other";
+		} else {
+			var category = info.category;
+		};
+		if(excludedSpoutElements.includes(name)) {
+			return false
+		};
+		var include = false;
+		if(["liquid","gas"].includes(state)) {
+			include = true;
+		};
+		if(info.movable) {
+			include = true;
+		};
+		if(backupCategoryWhitelist.includes(category)) {
+			include = true;
+		};
+		if(backupElementWhitelist.includes(name)) {
+			include = true;
+		};
+		if(category.includes("mudstone")) {
+			include = true;
+		};
+		//console.log(include);
+		return include;
+	};
+
+	//it doesn't want to acknowledge spoutCriteria, so...
+
 	runAfterAutogen(function() {
 		elements.loona.stateHigh = ["molten_loona","rock","rock","rock","sulfur_gas","sulfur_gas","molten_haseulite"];
+		hotHeejiniteElements = Object.keys(elements).filter(function(e) {
+			return spoutCriteria(e) && heejiniteHeatCriteria(e) && !elements[e].excludeRandom;
+		});
 	});
 
 	elements.loona_gravel = {
@@ -49,6 +147,62 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(runAfterAutogenMod) &&
 		rad_fire: [10, "rad_smoke"],
 		plasma: [15, "fire"]
 	};
+
+	/*function customStaining(pixel,customColorRgb,stainOverride=null) {
+		if (settings["stainoff"]) { return }
+		var stain = (stainOverride !== null ? stainOverride : elements[pixel.element].stain);
+		if (stain > 0) {
+			var newColor = customColorRgb.match(/\d+/g);
+		}
+		else {
+			var newColor = null;
+		}
+
+		for (var i = 0; i < adjacentCoords.length; i++) {
+			var x = pixel.x+adjacentCoords[i][0];
+			var y = pixel.y+adjacentCoords[i][1];
+			if (!isEmpty(x,y,true)) {
+				var newPixel = pixelMap[x][y];
+				if (elements[pixel.element].ignore && elements[pixel.element].ignore.indexOf(newPixel.element) !== -1) {
+					continue;
+				}
+				if ((elements[newPixel.element].id !== elements[pixel.element].id || elements[newPixel.element].stainSelf) && (solidStates[elements[newPixel.element].state] || elements[newPixel.element].id === elements[pixel.element].id)) {
+					if (Math.random() < Math.abs(stain)) {
+						if (stain < 0) {
+							if (newPixel.origColor) {
+								newColor = newPixel.origColor;
+							}
+							else { continue; }
+						}
+						else if (!newPixel.origColor) {
+							newPixel.origColor = newPixel.color.match(/\d+/g);
+						}
+						// if newPixel.color doesn't start with rgb, continue
+						if (!newPixel.color.match(/^rgb/)) { continue; }
+						// parse rgb color string of newPixel rgb(r,g,b)
+						var rgb = newPixel.color.match(/\d+/g);
+						if (elements[pixel.element].stainSelf && elements[newPixel.element].id === elements[pixel.element].id) {
+							// if rgb and newColor are the same, continue
+							if (rgb[0] === newColor[0] && rgb[1] === newColor[1] && rgb[2] === newColor[2]) { continue; }
+							var avg = [];
+							for (var j = 0; j < rgb.length; j++) {
+								avg[j] = Math.round((rgb[j]*(1-Math.abs(stain))) + (newColor[j]*Math.abs(stain)));
+							}
+						}
+						else {
+							// get the average of rgb and newColor, more intense as stain reaches 1 
+							var avg = [];
+							for (var j = 0; j < rgb.length; j++) {
+								avg[j] = Math.floor((rgb[j]*(1-Math.abs(stain))) + (newColor[j]*Math.abs(stain)));
+							}
+						}
+						// set newPixel color to avg
+						newPixel.color = "rgb("+avg.join(",")+")";
+					}
+				}
+			}
+		}
+	}*/
 
 	function haseuliteValueSpreading(pixel) {
 		var randomNeighborOffset = adjacentCoords[Math.floor(Math.random() * adjacentCoords.length)];
@@ -298,6 +452,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(runAfterAutogenMod) &&
 
 	elements.haseulite_gas = {
 		color: ["#ffff9d", "#ffffff", "#e9ffe6", "#ffffe5"],
+		fireColor: ["#08a953", "#2ea332", "#d1e0d3"],
 		properties: {
 			value: 0,
 			oldColor: null
@@ -319,6 +474,109 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(runAfterAutogenMod) &&
 		hardness: 1,
 		conduct: 0.13,
 	};
+
+	/*
+	var shimmeringColor = convertHslObjects(hslColorStringToObject(`hsl(${(pixelTicks / 2) % 360},100%,50%)`,"rgb"));
+	customStaining(pixel,shimmeringColor,0.2);
+	*/
+
+	function heejinitoidTick(pixel) {
+		if(pixel.oldColor === null) { pixel.oldColor = pixel.color };
+		var color = rgbStringToHSL(convertColorFormats(pixel.oldColor,"rgb"),"json");
+		var heejiniteHueSpread = 30 + (pixel.temp/9.25)
+		var hueOffset = (Math.sin(pixelTicks / 11) * heejiniteHueSpread) + 15; color.h += hueOffset;
+		var color = convertHslObjects(color,"rgb");
+		pixel.color = color;
+	};
+
+	function hotHeejinitoidTick(pixel) {
+		if(Math.random() < (pixel.temp >= 1500 ? 0.02 : 0.01)) {
+			if(pixel.temp >= 1387.5) {
+				var randomNeighborOffset = adjacentCoords[Math.floor(Math.random() * adjacentCoords.length)];
+				var rX = randomNeighborOffset[0];
+				var rY = randomNeighborOffset[1];
+				var rfX = pixel.x+rX;
+				var rfY = pixel.y+rY;
+				if(isEmpty(rfX,rfY,false)) {
+					var randomEligibleHotElement = hotHeejiniteElements[Math.floor(Math.random() * hotHeejiniteElements.length)];
+					createPixel(randomEligibleHotElement,rfX,rfY);
+				};
+			};
+		};
+	}
+
+	elements.heejinite = {
+		color: ["#cf1172", "#fa1977", "#ff619e"],
+		fireColor: ["#a9085e", "#a32e61", "#fca7c6"],
+		properties: {
+			oldColor: null
+		},
+		behavior: behaviors.WALL,
+		tick: function(pixel) { heejinitoidTick(pixel) },
+		excludeVelocity: true, //wall shouldn't move
+		tempHigh: 837,
+		category: "solids",
+		state: "solid",
+		density: 3773,
+		stain: 0.1,
+		hardness: 0.79,
+		breakInto: "heejinite_powder",
+		conduct: 0.86,
+	};
+
+	elements.heejinite_powder = {
+		color: ["#d64790", "#e63e84", "#f054ac"],
+		fireColor: ["#a9085e", "#a32e61", "#fca7c6"],
+		properties: {
+			oldColor: null
+		},
+		behavior: behaviors.WALL,
+		tick: function(pixel) { heejinitoidTick(pixel) },
+		excludeVelocity: true, //wall shouldn't move
+		tempHigh: 837,
+		category: "solids",
+		state: "solid",
+		density: 1412,
+		stain: 0.1,
+		hardness: 0.66,
+		breakInto: "heejinite_powder",
+		conduct: 0.42,
+	};
+
+	elements.molten_heejinite = {
+		color: ["#ff0f77","#ff59c2","#ff405c", "#fa5a48"],
+		fireColor: ["#a9085e", "#a32e61", "#fca7c6"],
+		properties: {
+			oldColor: null
+		},
+		tick: function(pixel) {
+			heejinitoidTick(pixel);
+			hotHeejinitoidTick(pixel);
+		},
+		density: 3121,
+		hardness: 0.5,
+		breakInto: "heejinite_gas",
+		temp: 1000,
+		tempHigh: 1501,
+		conduct: 0.22,
+	};
+
+	elements.heejinite_gas = {
+		color: ["#fffab8", "#ffdab3", "#ffd1d1", "#ffc4df", "#ffb0eb"],
+		fireColor: ["#a9085e", "#a32e61", "#fca7c6"],
+		properties: {
+			oldColor: null
+		},
+		tick: function(pixel) {
+			heejinitoidTick(pixel);
+			hotHeejinitoidTick(pixel);
+		},
+		density: 0.117,
+		temp: 1800,
+		hardness: 1,
+		conduct: 0.12,
+	};
+
 } else {
 	if(!enabledMods.includes(loonaMod))				{ enabledMods.splice(enabledMods.indexOf(modName),0,loonaMod) };
 	if(!enabledMods.includes(runAfterAutogenMod))	{ enabledMods.splice(enabledMods.indexOf(modName),0,runAfterAutogenMod) };
