@@ -23,7 +23,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(runAfterAutogenMod) &&
 		state: "solid",
 		density: 2466.73,
 		hardness: 0.56,
-		breakInto: ["rock","sulfur","loona_gravel","loona_gravel","loona_gravel","haseulite_powder"],
+		breakInto: ["rock","sulfur","loona_gravel","loona_gravel","loona_gravel","haseulite_powder", "rock","sulfur","loona_gravel","loona_gravel","loona_gravel","haseulite_powder", "rock","sulfur","loona_gravel","loona_gravel","loona_gravel","heejinite_powder"],
 	},
 
 	function spoutCriteria(name) {
@@ -122,9 +122,9 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(runAfterAutogenMod) &&
 	//it doesn't want to acknowledge spoutCriteria, so...
 
 	runAfterAutogen(function() {
-		elements.loona.stateHigh = ["molten_loona","rock","rock","rock","sulfur_gas","sulfur_gas","molten_haseulite"];
+		elements.loona.stateHigh = ["molten_loona","rock","rock","rock","sulfur_gas","sulfur_gas","molten_haseulite","molten_loona","rock","rock","rock","sulfur_gas","sulfur_gas","molten_haseulite","molten_loona","rock","rock","rock","sulfur_gas","sulfur_gas","molten_heejinite"];
 		hotHeejiniteElements = Object.keys(elements).filter(function(e) {
-			return spoutCriteria(e) && heejiniteHeatCriteria(e) && !elements[e].excludeRandom;
+			return spoutCriteria(e) && heejiniteHeatCriteria(e) && !elements[e].excludeRandom && !e.startsWith("rad");
 		});
 	});
 
@@ -132,12 +132,12 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(runAfterAutogenMod) &&
 		color: ["#b3be98","#919a6f","#68744b","#515931"],
 		behavior: behaviors.POWDER,
 		tempHigh: 1031,
-		stateHigh: ["molten_loona","rock","rock","rock","sulfur_gas","sulfur_gas","molten_haseulite"],
+		stateHigh: ["molten_loona","rock","rock","rock","sulfur_gas","sulfur_gas","molten_haseulite","molten_loona","rock","rock","rock","sulfur_gas","sulfur_gas","molten_haseulite","molten_loona","rock","rock","rock","sulfur_gas","sulfur_gas","molten_heejinite"],
 		category: "random rocks",
 		state: "solid",
 		density: 1625.14,
 		hardness: 0.97,
-		breakInto: ["rock","sulfur","rock","haseulite_powder"],
+		breakInto: ["rock","sulfur","rock","haseulite_powder","rock","sulfur","rock","haseulite_powder","rock","sulfur","rock","heejinite_powder"],
 	};
 
 	haseuliteValueObject = {
@@ -385,7 +385,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(runAfterAutogenMod) &&
 		tempHigh: elements.steel.tempHigh,
 		stateHigh: ["molten_steel","haseulite_powder"],
 		breakInto: ["metal_scrap","haseulite_powder"],
-		category: "solids",
+		category: "machines",
 		state: "solid",
 		density: 7550,
 		hardness: 0.93,
@@ -530,10 +530,11 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(runAfterAutogenMod) &&
 		properties: {
 			oldColor: null
 		},
-		behavior: behaviors.WALL,
+		behavior: behaviors.POWDER,
 		tick: function(pixel) { heejinitoidTick(pixel) },
 		excludeVelocity: true, //wall shouldn't move
 		tempHigh: 837,
+		stateHigh: "molten_heejinite",
 		category: "solids",
 		state: "solid",
 		density: 1412,
