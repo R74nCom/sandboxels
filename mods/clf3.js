@@ -45,7 +45,7 @@ if(enabledMods.includes(chemMod)) {
 		};
 	};
 
-	var clf3IgnoreList = ["FOOF","solid_FOOF","oxygen","liquid_oxygen","oxygen_ice","chlorine","liquid_chlorine","liquid_hydrogen_fluoride","liquid_fluorine","fluorine","fluorine_ice","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_acid_gas","fire","acid_gas","neutral_acid","acid","acid_cloud","nitrogen","helium","neon","argon","krypton","xenon","radon","wall","chlorine_trifluoride","chlorine_trifluoride_ice","chlorine_trifluoride_gas","quartz"];
+	var clf3IgnoreList = ["FOOF","solid_FOOF","oxygen","liquid_oxygen","oxygen_ice","chlorine","liquid_chlorine","liquid_hydrogen_fluoride","liquid_fluorine","fluorine","fluorine_ice","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_acid_gas","fire","acid_gas","neutral_acid","acid","acid_cloud","nitrogen","helium","liquid_helium","tralphium","liquid_tralphium","neon","liquid_neon","solid_neon","neon_ice","neon_snow","argon","liquid_argon","solid_argon","argon_ice","argon_snow", "krypton","liquid_krypton","solid_krypton","krypton_ice","krypton_snow", "xenon","liquid_xenon","solid_xenon","xenon_ice","xenon_snow", "radon","liquid_radon","solid_radon","radon_ice","radon_snow","ionized_helium","ionized_tralphium","wall","chlorine_trifluoride","chlorine_trifluoride_ice","chlorine_trifluoride_gas","quartz"];
 
 	//todo: PTFE, passivation
 
