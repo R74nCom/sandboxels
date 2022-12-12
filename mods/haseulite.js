@@ -16,6 +16,86 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		pixel.temp -= 2*damage*radius*power;
 	};
 
+	function reactionStealerImmutableElem2(pixel,newPixel,reactionTarget,ignoreSelf=true) {
+		if(!elements[reactionTarget]) {
+			throw new Error(`No such element ${reactionTarget}!`);
+		};
+		if(typeof(newPixel) === "undefined") { //timing issue?
+			return false;
+		};
+		var newElement = newPixel.element;
+		if(ignoreSelf && newElement === pixel.element) {
+			return false;
+		};
+		var newInfo = elements[newElement];
+		if(typeof(newInfo.reactions) === "undefined") {
+			return false;
+		};
+		if(typeof(newInfo.reactions[reactionTarget]) === "undefined") {
+			return false;
+		};
+		var pixel2 = pixel;
+		var pixel1 = newPixel;
+		var r = newInfo.reactions[reactionTarget];
+		
+		if (r.setting && settings[r.setting]===0) {
+			return false;
+		}
+		// r has the attribute "y" which is a range between two y values
+		// r.y example: [10,30]
+		// return false if y is defined and pixel1's y is not in the range
+		if (r.tempMin !== undefined && pixel1.temp < r.tempMin) {
+			return false;
+		}
+		if (r.tempMax !== undefined && pixel1.temp > r.tempMax) {
+			return false;
+		}
+		if (r.charged && !pixel.charge) {
+			return false;
+		}
+		if (r.chance !== undefined && Math.random() > r.chance) {
+			return false;
+		}
+		if (r.y !== undefined && (pixel1.y < r.y[0] || pixel1.y > r.y[1])) {
+			return false;
+		}
+		if (r.elem1 !== undefined) {
+			// if r.elem1 is an array, set elem1 to a random element from the array, otherwise set it to r.elem1
+			if (Array.isArray(r.elem1)) {
+				var elem1 = r.elem1[Math.floor(Math.random() * r.elem1.length)];
+			} else { var elem1 = r.elem1; }
+			
+			if (elem1 == null) {
+				deletePixel(pixel1.x,pixel1.y);
+			}
+			else {
+				changePixel(pixel1,elem1);
+			}
+		}
+		if (r.charge1) { pixel1.charge = r.charge1; }
+		if (r.temp1) { pixel1.temp += r.temp1; pixelTempCheck(pixel1); }
+		if (r.color1) { // if it's a list, use a random color from the list, else use the color1 attribute
+			pixel1.color = pixelColorPick(pixel1, Array.isArray(r.color1) ? r.color1[Math.floor(Math.random() * r.color1.length)] : r.color1);
+		}
+		if (r.attr1) { // add each attribute to pixel1
+			for (var key in r.attr1) {
+				pixel1[key] = r.attr1[key];
+			}
+		}
+		if (r.charge2) { pixel2.charge = r.charge2; }
+		if (r.temp2) { pixel2.temp += r.temp2; pixelTempCheck(pixel2); }
+		if (r.color2) { // if it's a list, use a random color from the list, else use the color2 attribute
+			pixel2.color = pixelColorPick(pixel2, Array.isArray(r.color2) ? r.color2[Math.floor(Math.random() * r.color2.length)] : r.color2);
+		}
+		if (r.attr2) { // add each attribute to pixel2
+			for (var key in r.attr2) {
+				pixel2[key] = r.attr2[key];
+			}
+		}
+		if (r.func) { r.func(pixel1,pixel2); }
+		return r.elem1!==undefined;
+	};
+
 	elements.loona = {
 		color: ["#6f7d54","#4f5d34","#7c8a61"],
 		behavior: behaviors.POWDER,
@@ -592,6 +672,236 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		conduct: 0.12,
 	};
 
+	jinsouliteReducedSwapWhitelist = ["slime","glue","soda","milk","chocolate_milk","fruit_milk","ink","blood","vaccine","antibody","infection","sap","ketchup","spirit_tear","enchanted_ketchup","lean","poisoned_ketchup","dirty_ketchup","zombie_blood"];
+
+	function jinsouliteDissolution(pixel) {
+		var did = false;
+		for(i = 0; i < 2; i++) {
+			var randomNeighborOffset = adjacentCoords[Math.floor(Math.random() * adjacentCoords.length)];
+			if(Math.random() < 0.6) { randomNeighborOffset = [0,-1] }; //bias upwards
+			var rfX = pixel.x+randomNeighborOffset[0];
+			var rfY = pixel.y+randomNeighborOffset[1];
+			if(!isEmpty(rfX,rfY,true)) {
+				var rOtherPixel = pixelMap[rfX][rfY];
+				if(!rOtherPixel) { return false };
+				var rOtherElement = rOtherPixel.element;
+				if(rOtherElement.includes("water") || (Math.random() < 0.3 && jinsouliteReducedSwapWhitelist.includes(rOtherElement))) {
+					swapPixels(pixel,rOtherPixel);
+					did = true;
+				};
+			};
+		};
+		return did;
+	};
+
+	function jinsouliteMovement(pixel,move1Spots,move2Spots) {		
+		if(move1Spots.length > 0) {
+			var randomMove1 = move1Spots[Math.floor(Math.random() * move1Spots.length)];
+			if(!tryMove(pixel, pixel.x+randomMove1[0], pixel.y+randomMove1[1])) {
+				//console.log((pixel.x+randomMove1[0]) + " " + (pixel.y+randomMove1[1]))
+				var newPixel = null;
+				if(!outOfBounds(pixel.x+randomMove1[0],pixel.y+randomMove1[1])) {
+					newPixel = pixelMap[pixel.x+randomMove1[0]][pixel.y+randomMove1[1]]; //newPixel is AAA
+				};
+				if(outOfBounds(pixel.x+randomMove1[0],pixel.y+randomMove1[1]) || !reactionStealerImmutableElem2(pixel,newPixel,"water")) {
+					if(move2Spots.length > 0) {
+						var randomMove2 = move2Spots[Math.floor(Math.random() * move2Spots.length)];
+						if(!tryMove(pixel, pixel.x+randomMove2[0], pixel.y+randomMove2[1])) {
+							var newPixel = null;
+							if(!outOfBounds(pixel.x+randomMove1[0],pixel.y+randomMove1[1])) {
+								newPixel = pixelMap[pixel.x+randomMove1[0]][pixel.y+randomMove1[1]]; //newPixel is AAA
+							};
+							if(newPixel !== null) { reactionStealerImmutableElem2(pixel,newPixel,"water") };
+						};
+					};
+				};
+			};
+		};
+		doDefaults(pixel);
+	};
+
+	function jinsouliteSolidNonWaterSideReactions(pixel) {
+		var randomNeighborOffset = adjacentCoords[Math.floor(Math.random() * adjacentCoords.length)];
+		var rfX = pixel.x+randomNeighborOffset[0];
+		var rfY = pixel.y+randomNeighborOffset[1];
+		if(!isEmpty(rfX,rfY,true)) {
+			var rOtherPixel = pixelMap[rfX][rfY];
+			if(typeof(rOtherPixel) === "undefined" || isEmpty(rfX,rfY,true)) {
+				return false;
+			};
+			reactionStealerImmutableElem2(pixel,rOtherPixel,"water");
+		};
+		return true;
+	};
+	
+	function jinsouliteSolidWaterSideReactions(pixel) {
+		var randomNeighborOffset = adjacentCoords[Math.floor(Math.random() * adjacentCoords.length)];
+		var rfX = pixel.x+randomNeighborOffset[0];
+		var rfY = pixel.y+randomNeighborOffset[1];
+		if(!isEmpty(rfX,rfY,true)) {
+			var pixel2 = pixelMap[rfX][rfY];
+			if(typeof(pixel2) === "undefined" || isEmpty(rfX,rfY,true)) {
+				return false;
+			};
+			var rOtherElement = pixel2.element;
+			var waterReactions = elements.water.reactions;
+			if(waterReactions[rOtherElement]) {
+				var r = waterReactions[rOtherElement];				
+
+				if (r.setting && settings[r.setting]===0) {
+					return false;
+				}
+				// r has the attribute "y" which is a range between two y values
+				// r.y example: [10,30]
+				// return false if y is defined and pixel1's y is not in the range
+				if (r.tempMin !== undefined && pixel1.temp < r.tempMin) {
+					return false;
+				}
+				if (r.tempMax !== undefined && pixel1.temp > r.tempMax) {
+					return false;
+				}
+				if (r.charged && !pixel.charge) {
+					return false;
+				}
+				if (r.chance !== undefined && Math.random() > r.chance) {
+					return false;
+				}
+				if (r.y !== undefined && (pixel1.y < r.y[0] || pixel1.y > r.y[1])) {
+					return false;
+				}
+				if (r.charge1) { pixel1.charge = r.charge1; }
+				if (r.temp1) { pixel1.temp += r.temp1; pixelTempCheck(pixel1); }
+				if (r.color1) { // if it's a list, use a random color from the list, else use the color1 attribute
+					pixel1.color = pixelColorPick(pixel1, Array.isArray(r.color1) ? r.color1[Math.floor(Math.random() * r.color1.length)] : r.color1);
+				}
+				if (r.attr1) { // add each attribute to pixel1
+					for (var key in r.attr1) {
+						pixel1[key] = r.attr1[key];
+					}
+				}
+				if (r.elem2 !== undefined) {
+					// if r.elem2 is an array, set elem2 to a random element from the array, otherwise set it to r.elem2
+					if (Array.isArray(r.elem2)) {
+						var elem2 = r.elem2[Math.floor(Math.random() * r.elem2.length)];
+					} else { var elem2 = r.elem2; }
+
+					if (elem2 == null) {
+						deletePixel(pixel2.x,pixel2.y);
+					}
+					else {
+						changePixel(pixel2,elem2);
+					}
+				}
+				if (r.charge2) { pixel2.charge = r.charge2; }
+				if (r.temp2) { pixel2.temp += r.temp2; pixelTempCheck(pixel2); }
+				if (r.color2) { // if it's a list, use a random color from the list, else use the color2 attribute
+					pixel2.color = pixelColorPick(pixel2, Array.isArray(r.color2) ? r.color2[Math.floor(Math.random() * r.color2.length)] : r.color2);
+				}
+				if (r.attr2) { // add each attribute to pixel2
+					for (var key in r.attr2) {
+						pixel2[key] = r.attr2[key];
+					}
+				}
+				if (r.func) { r.func(pixel1,pixel2); }
+				return r.elem1!==undefined || r.elem2!==undefined;
+			};
+		};
+		return true;
+	};
+
+	function jinsoulitoidTick(pixel,move1Spots=[],move2Spots=[]) {
+		if(jinsouliteDissolution(pixel)) {
+			return;
+		};
+		jinsouliteMovement(pixel,move1Spots,move2Spots);
+	};
+
+	elements.jinsoulite = {
+		color: ["#0e51b0", "#2129ff", "#3b3dbf"],
+		fireColor: ["#121978", "#6a9fe6", "#5963d9"],
+		/*properties: {
+			oldColor: null
+		},*/
+		behavior: behaviors.WALL,
+		tick: function(pixel) { 
+			jinsouliteSolidNonWaterSideReactions(pixel);
+			jinsouliteSolidWaterSideReactions(pixel);
+		},
+		tempHigh: 2606,
+		category: "solids",
+		state: "solid",
+		density: 8331,
+		hardness: 0.82,
+		breakInto: "jinsoulite_powder",
+		conduct: 0.93,
+	};
+
+	elements.jinsoulite_powder = {
+		color: ["#4580ba", "#355eb0", "#2d6fc4"],
+		fireColor: ["#121978", "#6a9fe6", "#5963d9"],
+		tempHigh: 2606,
+		behavior: behaviors.POWDER,
+		tick: function(pixel) { jinsoulitoidTick(pixel,[[0,1]],[[-1,1],[1,1]]) },
+		stateHigh: "molten_jinsoulite",
+		category: "powders",
+		state: "solid",
+		hidden: true,
+		density: 5801,
+		hardness: 0.7,
+		conduct: 0.43,
+	};
+
+	elements.molten_jinsoulite = {
+		behavior: [
+			"XX|CR:fire%0.5|XX",
+			"XX|XX|XX",
+			"XX|XX|XX"
+		],
+		color: ["#4e35db","#7767eb","#a876f5", "#78acff"],
+		fireColor: ["#121978", "#6a9fe6", "#5963d9"],
+		tick: function(pixel) { jinsoulitoidTick(pixel,[[-1,1],[0,1],[1,1]],[[-1,0],[1,0]]); },
+		density: 6448,
+		hardness: 0.61,
+		breakInto: "jinsoulite_gas",
+		temp: 3000,
+		tempHigh: 5532.8509,
+		conduct: 0.34,
+	};
+
+	elements.jinsoulite_gas = {
+		color: ["#c0f0ef", "#c2c1db", "#c0bff5", "#cdcce6"],
+		fireColor: ["#08a953", "#2ea332", "#d1e0d3"],
+		properties: {
+			value: 0,
+			oldColor: null
+		},
+		tick: function(pixel) { jinsoulitoidTick(pixel,adjacentCoords,[[-1,-1],[1,-1],[1,1],[-1,1]]) },
+		density: 0.5833,
+		temp: 6000,
+		hardness: 1,
+		conduct: 0.19,
+	};
+
+	runAfterLoad(function() {
+		for(key in elements.water.reactions) {
+			var value = JSON.parse(JSON.stringify(elements.water.reactions[key]));
+			if(value.elem2 === null && value.elem1 !== null) { 
+				value.elem2 = value.elem1;
+			};
+			delete value.elem1;
+			
+			var movableJinsoulitoids = ["jinsoulite_powder","molten_jinsoulite","jinsoulite_gas"];
+			for(j = 0; j < movableJinsoulitoids.length; j++) {
+				var jinsoulitoid = movableJinsoulitoids[j];
+				if(typeof(elements[jinsoulitoid].reactions) === "undefined") {
+					elements[jinsoulitoid].reactions = {};
+				};
+				if(typeof(elements[jinsoulitoid].reactions[key]) === "undefined") {
+					elements[jinsoulitoid].reactions[key] = value;
+				};
+			};
+		};
+	});
 } else {
 	if(!enabledMods.includes(loonaMod))				{ enabledMods.splice(enabledMods.indexOf(modName),0,loonaMod) };
 	if(!enabledMods.includes(fireMod))				{ enabledMods.splice(enabledMods.indexOf(modName),0,fireMod) };
