@@ -37,7 +37,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		};
 		var pixel2 = pixel;
 		var pixel1 = newPixel;
-		var r = newInfo.reactions[reactionTarget];
+		var r = JSON.parse(JSON.stringify(newInfo.reactions[reactionTarget]));
 		
 		if (r.setting && settings[r.setting]===0) {
 			return false;
@@ -60,6 +60,11 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		if (r.y !== undefined && (pixel1.y < r.y[0] || pixel1.y > r.y[1])) {
 			return false;
 		}
+		if(r.elem1 !== undefined && r.elem2 !== undefined) {
+			if(r.elem1 !== null && r.elem2 !== null) {
+				r.elem1 = [r.elem1,r.elem2].flat();
+			};
+		};
 		if (r.elem1 !== undefined) {
 			// if r.elem1 is an array, set elem1 to a random element from the array, otherwise set it to r.elem1
 			if (Array.isArray(r.elem1)) {
@@ -695,7 +700,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 				var rOtherPixel = pixelMap[rfX][rfY];
 				if(!rOtherPixel) { return false };
 				var rOtherElement = rOtherPixel.element;
-				if(rOtherElement.includes("water") || (Math.random() < 0.3 && jinsouliteReducedSwapWhitelist.includes(rOtherElement))) {
+				if(rOtherElement.endsWith("water") || (Math.random() < 0.3 && jinsouliteReducedSwapWhitelist.includes(rOtherElement))) {
 					swapPixels(pixel,rOtherPixel);
 					did = true;
 				};
@@ -753,10 +758,13 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 			if(typeof(pixel2) === "undefined" || isEmpty(rfX,rfY,true)) {
 				return false;
 			};
+			if(typeof(pixel1) === "undefined" || isEmpty(pixel.x,pixel.y,true)) {
+				return false;
+			};
 			var rOtherElement = pixel2.element;
 			var waterReactions = elements.water.reactions;
 			if(waterReactions[rOtherElement]) {
-				var r = waterReactions[rOtherElement];				
+				var r = waterReactions[rOtherElement];
 
 				if (r.setting && settings[r.setting]===0) {
 					return false;
@@ -789,6 +797,11 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 						pixel1[key] = r.attr1[key];
 					}
 				}
+				var elem1 = r.elem1
+				if (elem1 !== undefined && elem1 instanceof Array) {
+					elem1 = elem1[Math.floor(Math.random() * elem1.length)];
+				};
+				
 				if (r.elem2 !== undefined) {
 					// if r.elem2 is an array, set elem2 to a random element from the array, otherwise set it to r.elem2
 					if (Array.isArray(r.elem2)) {
@@ -796,7 +809,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 					} else { var elem2 = r.elem2; }
 
 					if (elem2 == null) {
-						deletePixel(pixel2.x,pixel2.y);
+						if(elem1 !== undefined) { changePixel(pixel2,elem1) };
 					}
 					else {
 						changePixel(pixel2,elem2);
