@@ -7000,7 +7000,7 @@
         }
         function deletePixel(x,y) {
             // remove pixelMap[x][y] from currentPixels
-            currentPixels.splice(currentPixels.indexOf(pixelMap[x][y]),1);
+            if(currentPixels.indexOf(pixelMap[x][y]) !== -1) { currentPixels.splice(currentPixels.indexOf(pixelMap[x][y]),1) };
             if (pixelMap[x][y]) {pixelMap[x][y].del = true;}
             delete pixelMap[x][y];
             /*for (var i = 0; i < currentPixels.length; i++) {
