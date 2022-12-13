@@ -501,6 +501,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 			value: 0,
 			oldColor: null
 		},
+		category: "powders",
 		fireColor: ["#08a953", "#2ea332", "#d1e0d3"],
 		tempHigh: 1757,
 		behavior: behaviors.POWDER,
@@ -637,8 +638,9 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		tick: function(pixel) { heejinitoidTick(pixel) },
 		excludeVelocity: true, //wall shouldn't move
 		tempHigh: 837,
+		hidden: true,
 		stateHigh: "molten_heejinite",
-		category: "solids",
+		category: "powders",
 		state: "solid",
 		density: 1412,
 		stain: 0.1,
@@ -890,6 +892,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 			value: 0,
 			oldColor: null
 		},
+		category: "powders",
 		behaviorOn: [
 			"XX|CR:water%0.1|XX",
 			"CR:water%0.1|XX|CR:water%0.1",
