@@ -17,7 +17,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		pixel.temp -= 2*damage*radius*power;
 	};
 
-	function reactionStealerImmutableElem2(pixel,newPixel,reactionTarget,ignoreSelf=true) {
+	function reactionStealerImmutableElem2(pixel,newPixel,reactionTarget,ignoreSelf=true,_chanceMultMeantForJinsoulites=1) {
 		if(!elements[reactionTarget]) {
 			throw new Error(`No such element ${reactionTarget}!`);
 		};
@@ -54,7 +54,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		if (r.charged && !pixel.charge) {
 			return false;
 		}
-		if (r.chance !== undefined && Math.random() > r.chance) {
+		if (r.chance !== undefined && Math.random() < (r.chance * _chanceMultMeantForJinsoulites)) {
 			return false;
 		}
 		if (r.y !== undefined && (pixel1.y < r.y[0] || pixel1.y > r.y[1])) {
@@ -689,7 +689,6 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		var did = false;
 		for(i = 0; i < 2; i++) {
 			var randomNeighborOffset = adjacentCoords[Math.floor(Math.random() * adjacentCoords.length)];
-			if(Math.random() < 0.6) { randomNeighborOffset = [0,-1] }; //bias upwards
 			var rfX = pixel.x+randomNeighborOffset[0];
 			var rfY = pixel.y+randomNeighborOffset[1];
 			if(!isEmpty(rfX,rfY,true)) {
@@ -714,7 +713,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 				if(!outOfBounds(pixel.x+randomMove1[0],pixel.y+randomMove1[1])) {
 					newPixel = pixelMap[pixel.x+randomMove1[0]][pixel.y+randomMove1[1]]; //newPixel is AAA
 				};
-				if(outOfBounds(pixel.x+randomMove1[0],pixel.y+randomMove1[1]) || !reactionStealerImmutableElem2(pixel,newPixel,"water")) {
+				if(outOfBounds(pixel.x+randomMove1[0],pixel.y+randomMove1[1]) || !reactionStealerImmutableElem2(pixel,newPixel,"water",true,2)) {
 					if(move2Spots.length > 0) {
 						var randomMove2 = move2Spots[Math.floor(Math.random() * move2Spots.length)];
 						if(!tryMove(pixel, pixel.x+randomMove2[0], pixel.y+randomMove2[1])) {
@@ -722,7 +721,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 							if(!outOfBounds(pixel.x+randomMove1[0],pixel.y+randomMove1[1])) {
 								newPixel = pixelMap[pixel.x+randomMove1[0]][pixel.y+randomMove1[1]]; //newPixel is AAA
 							};
-							if(newPixel !== null) { reactionStealerImmutableElem2(pixel,newPixel,"water") };
+							if(newPixel !== null) { reactionStealerImmutableElem2(pixel,newPixel,"water",true,2) };
 						};
 					};
 				};
@@ -740,7 +739,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 			if(typeof(rOtherPixel) === "undefined" || isEmpty(rfX,rfY,true)) {
 				return false;
 			};
-			reactionStealerImmutableElem2(pixel,rOtherPixel,"water");
+			reactionStealerImmutableElem2(pixel,rOtherPixel,"water",true,2);
 		};
 		return true;
 	};
@@ -774,7 +773,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 				if (r.charged && !pixel.charge) {
 					return false;
 				}
-				if (r.chance !== undefined && Math.random() > r.chance) {
+				if (r.chance !== undefined && Math.random() < (r.chance * 2)) {
 					return false;
 				}
 				if (r.y !== undefined && (pixel1.y < r.y[0] || pixel1.y > r.y[1])) {
@@ -852,14 +851,14 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		color: ["#0e51b0", "#2129ff", "#3b3dbf"],
 		fireColor: ["#121978", "#6a9fe6", "#5963d9"],
 		behavior: [
-			"XX|CR:water%0.03|XX",
-			"CR:water%0.03|XX|CR:water%0.03",
-			"XX|CR:water%0.03|XX"
+			"XX|CR:water%0.05|XX",
+			"CR:water%0.05|XX|CR:water%0.05",
+			"XX|CR:water%0.05|XX"
 		],
 		behaviorOn: [
-			"XX|CR:water%0.1|XX",
-			"CR:water%0.1|XX|CR:water%0.1",
-			"XX|CR:water%0.1|XX"
+			"XX|CR:water%0.15|XX",
+			"CR:water%0.15|XX|CR:water%0.15",
+			"XX|CR:water%0.15|XX"
 		],
 		properties: {
 			value: 0,
@@ -884,9 +883,9 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		fireColor: ["#121978", "#6a9fe6", "#5963d9"],
 		tempHigh: 2606,
 		behavior: [
-			"XX|CR:water%0.03|XX",
-			"CR:water%0.03|XX|CR:water%0.03",
-			"XX|CR:water%0.03|XX"
+			"XX|CR:water%0.05|XX",
+			"CR:water%0.05|XX|CR:water%0.05",
+			"XX|CR:water%0.05|XX"
 		],
 		properties: {
 			value: 0,
@@ -894,9 +893,9 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		},
 		category: "powders",
 		behaviorOn: [
-			"XX|CR:water%0.1|XX",
-			"CR:water%0.1|XX|CR:water%0.1",
-			"XX|CR:water%0.1|XX"
+			"XX|CR:water%0.15|XX",
+			"CR:water%0.15|XX|CR:water%0.15",
+			"XX|CR:water%0.15|XX"
 		],
 		tick: function(pixel) { jinsoulitoidTick(pixel,[[0,1]],[[-1,1],[1,1]]) },
 		stateHigh: "molten_jinsoulite",
@@ -962,6 +961,9 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 	runAfterLoad(function() {
 		for(key in elements.water.reactions) {
 			var value = JSON.parse(JSON.stringify(elements.water.reactions[key]));
+			if(typeof(value.chance) === "number") {
+				value.chance = Math.min(1,value.chance * 2);
+			};
 			if(value.elem2 === null && value.elem1 !== null) { 
 				value.elem2 = value.elem1;
 			};
