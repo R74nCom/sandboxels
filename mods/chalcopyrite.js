@@ -1,4 +1,4 @@
-//Mod by Sarperen
+//Mod by Sophie
 elements.chalcopyrite_ore = {
 	color: ["#8c7538","#4f4f4f","#949494"],
 	behavior: behaviors.POWDER,
@@ -6,6 +6,7 @@ elements.chalcopyrite_ore = {
 		steel: { "elem1": "chalcopyrite_dust", "elem2": "steel" },
 	},
 	tempHigh: 950,
+	breakInto: "chalcopyrite_dust",
 	stateHigh: "magma",
 	category: "refining",
 	state: "solid",

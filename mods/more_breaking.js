@@ -68,86 +68,122 @@ elements.copper.breakInto = ["copper_scrap","copper_scrap","copper_scrap","coppe
 
 elements.dry_ice.breakInto = "carbon_dioxide"
 
-regularMetalArray = ["iron", "zinc", "tin", "nickel", "silver", "aluminum", "lead", "tungsten", "brass", "bronze", "sterling", "steel", "rose_gold", "solder", "gold"]
-
-if(enabledMods.includes("mods/Neutronium Mod.js")) {
-    regularMetalArray.push("mythril")
-    regularMetalArray.push("mithril_mythril_alloy")
-    regularMetalArray.push("titanium")
-    regularMetalArray.push("ilitium")
-}
-if(enabledMods.includes("mods/metals.js")) {
-    regularMetalArray.push("beryllium")
-    regularMetalArray.push("boron")
-    regularMetalArray.push("ruthenium")
-    regularMetalArray.push("rhodium")
-    regularMetalArray.push("palladium")
-    regularMetalArray.push("rhenium")
-    regularMetalArray.push("osmium")
-    regularMetalArray.push("iridium")
-    regularMetalArray.push("platinum")
-    regularMetalArray.push("frozen_mercury")
-    if(elements.mercury) {
-        elements.mercury.breakInto = "mercury_gas"
-    }
-}
-
-if(enabledMods.includes("mods/ketchup_mod.js")) {
-    regularMetalArray.push("ketchup_metal")
-    regularMetalArray.push("ketchup_gold")
-    elements.frozen_ketchup.breakInto = "ketchup_snow"
-    elements.frozen_poisoned_ketchup.breakInto = "poisoned_ketchup_snow"
-}
-
-if(enabledMods.includes("mods/randomness.js")) {
-    regularMetalArray.push("tungstensteel")
-    regularMetalArray.push("densinium")
-}
-
-if(enabledMods.includes("mods/fey_and_more.js")) {
-    regularMetalArray.push("mithril")
-}
-
-if(enabledMods.includes("mods/some_tf_liquids.js")) {
-    regularMetalArray.push("signalum")
-}
-
-if(enabledMods.includes("mods/laetium.js")) {
-    regularMetalArray.push("laetium")
-}
-
-elements.nitrogen_snow = {
-	color: "#efefef",
-	behavior: behaviors.POWDER,
-	category: "solids",
-	temp: -259.86,
-	tempHigh: -209.86,
-	stateHigh: "liquid_nitrogen",
-	state: "solid",
-	density: 850,
-	hidden: true,
-}
-
-elements.nitrogen_ice.breakInto = "nitrogen_snow"
+regularShinyThingArray = ["iron", "zinc", "tin", "nickel", "silver", "aluminum", "lead", "tungsten", "brass", "bronze", "sterling", "steel", "rose_gold", "solder", "gold", "pyrite"]
+//pyrite is a mineral
 
 runAfterLoad(function() {
-    for(i = 0; i < regularMetalArray.length; i++) {
-        if(elements[regularMetalArray[i]]) {
-            elements[`${regularMetalArray[i]}_scrap`] = {
-                color: elements[regularMetalArray[i]].color,
-                behavior: behaviors.POWDER,
-                tempHigh: elements[regularMetalArray[i]].tempHigh,
-                stateHigh: regularMetalArray[i],
-                category: "powders",
-                hidden: true,
-                density: elements[regularMetalArray[i]].density * 0.09,
-                conduct: elements[regularMetalArray[i]].conduct * 0.4,
-            };
-            elements[regularMetalArray[i]].breakInto = `${regularMetalArray[i]}_scrap`
-        };
-    };
-if(enabledMods.includes("mods/randomness.js")) {
-    elements.acid.ignore.push("densinium_scrap")
-    elements.densinium_scrap.hardness = 0.99
-}
+	if(enabledMods.includes("mods/Neutronium Mod.js")) {
+		regularShinyThingArray.push("mythril")
+		regularShinyThingArray.push("mithril_mythril_alloy")
+		regularShinyThingArray.push("titanium")
+		regularShinyThingArray.push("ilitium")
+	}
+	if(enabledMods.includes("mods/fey_and_more.js")) {
+		regularShinyThingArray.push("mithril")
+	}
+	if(enabledMods.includes("mods/metals.js")) {
+		regularShinyThingArray.push("beryllium")
+		regularShinyThingArray.push("boron")
+		regularShinyThingArray.push("ruthenium")
+		regularShinyThingArray.push("rhodium")
+		regularShinyThingArray.push("palladium")
+		regularShinyThingArray.push("rhenium")
+		regularShinyThingArray.push("osmium")
+		regularShinyThingArray.push("iridium")
+		regularShinyThingArray.push("platinum")
+		regularShinyThingArray.push("frozen_mercury")
+		regularShinyThingArray.push("lithium")
+		regularShinyThingArray.push("niobium")
+		if(elements.mercury) {
+			elements.mercury.breakInto = "mercury_gas"
+		}
+	}
+
+	if(enabledMods.includes("mods/ketchup_mod.js")) {
+		regularShinyThingArray.push("ketchup_metal")
+		regularShinyThingArray.push("ketchup_gold")
+		elements.frozen_ketchup.breakInto = "ketchup_snow"
+		elements.frozen_poisoned_ketchup.breakInto = "poisoned_ketchup_snow"
+	}
+
+	if(enabledMods.includes("mods/randomness.js")) {
+		regularShinyThingArray.push("tungstensteel")
+		regularShinyThingArray.push("densinium")
+	}
+
+	if(enabledMods.includes("mods/fey_and_more.js")) {
+		regularShinyThingArray.push("mithril")
+	}
+
+	if(enabledMods.includes("mods/some_tf_liquids.js")) {
+		regularShinyThingArray.push("signalum")
+	}
+
+	if(enabledMods.includes("mods/laetium.js")) {
+		regularShinyThingArray.push("laetium")
+	}
+
+	elements.nitrogen_snow = {
+		color: "#efefef",
+		behavior: behaviors.POWDER,
+		category: "solids",
+		temp: -259.86,
+		tempHigh: -209.86,
+		stateHigh: "liquid_nitrogen",
+		state: "solid",
+		density: 850,
+		hidden: true,
+	}
+
+	elements.nitrogen_ice.breakInto = "nitrogen_snow"
+
+	runAfterLoad(function() {
+		for(i = 0; i < regularShinyThingArray.length; i++) {
+			var thing = regularShinyThingArray[i];
+			if(elements[thing]) {
+				elements[`${thing}_scrap`] = {
+					color: elements[thing].color,
+					behavior: behaviors.POWDER,
+					tempHigh: elements[thing].tempHigh,
+					stateHigh: thing,
+					category: "powders",
+					hidden: true,
+					density: elements[thing].density * 0.09,
+					conduct: elements[thing].conduct * 0.4,
+					movable: true,
+				};
+				if(elements[thing].reactions) {
+					elements[`${thing}_scrap`].reactions = elements[thing].reactions;
+				};
+				elements[thing].breakInto = `${thing}_scrap`;
+			};
+		};
+	if(enabledMods.includes("mods/randomness.js")) {
+		elements.acid.ignore.push("densinium_scrap")
+		elements.densinium_scrap.hardness = 0.99
+	}
+	if(enabledMods.includes("mods/metals.js")) {
+		elements.lithium_scrap.tick = function(pixel) {
+			tryTarnish(pixel,"lithium_oxide",0.021) 
+			if(pixel.temp >= 178) {
+				pixel.burning = true; 
+				pixel.burnStart = pixelTicks; 
+			};
+		};
+	};
+	if(enabledMods.includes("mods/laetium.js")) {
+		elements.laetium_scrap.tick = function(pixel) {
+			neighbors = [[-1,0],[0,-1],[1,0],[0,1]]
+			for(i = 0; i < neighbors.length; i++) {
+				if(!isEmpty(pixel.x+neighbors[i][0],pixel.y+neighbors[i][1],true)) {
+					if(elements[pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]].element].category) {
+						if(elements[pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]].element].category == "cum") {
+							pixel.temp += 7
+						};
+					};
+				};
+			};
+		};
+	};
+	});
 });

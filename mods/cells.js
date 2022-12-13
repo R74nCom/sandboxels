@@ -285,60 +285,58 @@ elements.cell_3 = {
 	breakInto: ["water","dna","dna","dna"]
 };
 
-if(enabledMods.includes("mods/fey_and_more.js")) {
-
-	elements.gold_fairy = {
-		name: "gold fairy",
-		color: ["#cfa65b","#e6df63","#faf673"],
-		behavior: [
-			"XX|M1|M1",
-			"XX|FX%5|XX",
-			"XX|CR:gold_coin%0.25 AND CR:fairy_dust%0.005 AND M1|M1",
-		],
-		state: "solid",
-		category: "fey"
-	};
-
-	elements.fairy.reactions.gold = { elem1: "gold_fairy", "elem2": null };
-	elements.fairy.reactions.gold_coin = { elem1: "gold_fairy", "elem2": null };
-	if(!elements.gold.reactions) {
-		elements.gold.reactions = {};
-	};
-	if(!elements.gold_coin.reactions) {
-		elements.gold_coin.reactions = {};
-	};
-	elements.gold.reactions.fairy = { elem1: null, elem2: "gold_fairy" };
-	elements.gold_coin.reactions.fairy = { elem1: null,  elem2: "gold_fairy" };
-
-	for (var i = 2; i <= goldFairyAmount + 1; i++) {
-	  nameVar = `gold_${i-1}-fairy`
-	  if(i === 2) {
-		nameVar = "gold_fairy";
-	  };
-	  elements[`gold_${i}-fairy`] = {
-		name: `gold_${i}-fairy`,
-		color: ["#cfa65b","#e6df63","#faf673"],
-		behavior: [
-		  "XX|M1|M1",
-		  "XX|FX%5|XX",
-		  "XX|CR:" + nameVar + "%0.25 AND CR:fairy_dust%0.005 AND M1|M1",
-		],
-		reactions: {
-		  "glitter": { "elem1": `gold_${i+1}-fairy`, "elem2": null }
-		},
-		state: "solid",
-		excludeRandom:true,
-		category: "fey",
-		hidden: true,
-	  }
-	  goldObject[`gold_${i}-fairy`] = 3 * i;
-	  if (i == goldFairyAmount) { elements[`gold_${i}-fairy`]["reactions"] = {}; }
-	}
-	
-};
-
 runAfterLoad(function() {
     if(enabledMods.includes("mods/fey_and_more.js")) {
+	//old code {
+		elements.gold_fairy = {
+			name: "gold fairy",
+			color: ["#cfa65b","#e6df63","#faf673"],
+			behavior: [
+				"XX|M1|M1",
+				"XX|FX%5|XX",
+				"XX|CR:gold_coin%0.25 AND CR:fairy_dust%0.005 AND M1|M1",
+			],
+			state: "solid",
+			category: "fey"
+		};
+
+		elements.fairy.reactions.gold = { elem1: "gold_fairy", "elem2": null };
+		elements.fairy.reactions.gold_coin = { elem1: "gold_fairy", "elem2": null };
+		if(!elements.gold.reactions) {
+			elements.gold.reactions = {};
+		};
+		if(!elements.gold_coin.reactions) {
+			elements.gold_coin.reactions = {};
+		};
+		elements.gold.reactions.fairy = { elem1: null, elem2: "gold_fairy" };
+		elements.gold_coin.reactions.fairy = { elem1: null,  elem2: "gold_fairy" };
+
+		for (var i = 2; i <= goldFairyAmount + 1; i++) {
+		  nameVar = `gold_${i-1}-fairy`
+		  if(i === 2) {
+			nameVar = "gold_fairy";
+		  };
+		  elements[`gold_${i}-fairy`] = {
+			name: `gold_${i}-fairy`,
+			color: ["#cfa65b","#e6df63","#faf673"],
+			behavior: [
+			  "XX|M1|M1",
+			  "XX|FX%5|XX",
+			  "XX|CR:" + nameVar + "%0.25 AND CR:fairy_dust%0.005 AND M1|M1",
+			],
+			reactions: {
+			  "glitter": { "elem1": `gold_${i+1}-fairy`, "elem2": null }
+			},
+			state: "solid",
+			excludeRandom:true,
+			category: "fey",
+			hidden: true,
+		  }
+		  goldObject[`gold_${i}-fairy`] = 3 * i;
+		  if (i == goldFairyAmount) { elements[`gold_${i}-fairy`]["reactions"] = {}; }
+		}
+	//}
+		
 	//eList rebuilding {
 		eLists.FAIRY.push("gold_fairy");
 		for (var i = 2; i <= goldFairyAmount + 1; i++) {

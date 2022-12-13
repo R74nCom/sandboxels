@@ -643,7 +643,7 @@ elements.burning_pyrestone = {
      "behavior": [
         "HT:6|HT:8 AND CR:fire%1|HT:6",
         "HT:6|XX|HT:6",
-        "M2 AND HT68|M1 AND HT:6|M2 AND HT:6",
+        "M2 AND HT:6|M1 AND HT:6|M2 AND HT:6",
     ],
 	"density": 2600,
     "category": "solids",

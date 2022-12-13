@@ -1,6 +1,7 @@
 elements.amogus = {
 	name: "Amogus",
 	color: "#ffffff",
+	cooldown: 6,
 	tick: function(pixel) {
 	pixel.arr=[["brick",  "brick",  "brick"],
 			   ["brick",  "glass",  "glass"],
@@ -28,13 +29,13 @@ elements.amogus = {
 		}
 		for (let j = cc; j < dd; j++) { //Iterative placing and coloring of pixels
 			for (let i = aa; i < bb; i++) {
-				if(!isEmpty(pixel.x+i,pixel.y+j) && !outOfBounds(pixel.x+i,pixel.y+j)) {
-					if(pixel.arr[j+nc][i+na] != "null" || pixel.arr[j+nc][i+na] == "air") {
+				if(!isEmpty(pixel.x+i,pixel.y+j,true)) {
+					if(pixel.arr[j+nc][i+na] !== "null") {
 						deletePixel(pixel.x+i,pixel.y+j)
 					}
 				}
 				if(pixel.arr[j+nc][i+na]) {
-					if(isEmpty(pixel.x+i,pixel.y+j,true) && pixel.arr[j+nc][i+na] != "null" && pixel.arr[j+nc][i+na] != "air") {
+					if(isEmpty(pixel.x+i,pixel.y+j,false) && pixel.arr[j+nc][i+na] !== "null" && pixel.arr[j+nc][i+na] !== "air") {
 						createPixel(pixel.arr[j+nc][i+na],pixel.x+i,pixel.y+j)
 						if(pixel.carr[j+nc][i+na]) {
 							if(!isEmpty(pixel.x+i,pixel.y+j,true) && pixel.carr[j+nc][i+na] != "null") {
@@ -55,6 +56,7 @@ elements.amogus = {
 elements.amogus_seed = {
 	name: "Amogus Seed",
 	color: "#df2f47",
+	cooldown: 6,
 	behavior: [
 		"DL:amogus_seed|DL:amogus_seed AND M2|DL:amogus_seed",
 		"DL:amogus_seed|C2:amogus|DL:amogus_seed",

@@ -15,7 +15,7 @@ runAfterLoad(function() {
 		"explosion": randomChoices,
 	}
 	randomEvents.falling_pixel = function() {
-		console.log("changed");
+		//console.log("changed");
 		// random x between 1 and width-1
 		var x = Math.floor(Math.random()*(width-1))+1;
 		// random y between 1 and 6
@@ -36,7 +36,7 @@ runAfterLoad(function() {
 		// random y between 1 and height-1
 		var y = Math.floor(Math.random()*(height-1))+1;
 		// random radius between 1 and 9
-		var radius = Math.floor(Math.random()*18)+1;
+		var radius = Math.floor(Math.random()*19)+1;
 		// random element from randomEventChoices.element_circle
 		var element = randomEventChoices.element_circle[Math.floor(Math.random()*randomEventChoices.element_circle.length)];
 		var coords = circleCoords(x,y,radius);
@@ -51,7 +51,7 @@ runAfterLoad(function() {
 		// similar but do explodeAt(x,y,radius,element)
 		var x = Math.floor(Math.random()*(width-1))+1;
 		var y = Math.floor(Math.random()*(height-1))+1;
-		var radius = Math.floor(Math.random()*18)+1;
+		var radius = Math.floor(Math.random()*19)+1;
 		var element = randomEventChoices.explosion[Math.floor(Math.random()*randomEventChoices.explosion.length)];
 		explodeAt(x,y,radius,element);
 	};
@@ -59,7 +59,7 @@ runAfterLoad(function() {
 		// set the temperature in a random circle to a random value
 		var x = Math.floor(Math.random()*(width-1))+1;
 		var y = Math.floor(Math.random()*(height-1))+1;
-		var radius = Math.floor(Math.random()*18)+1;
+		var radius = Math.floor(Math.random()*19)+1;
 		var temp = Math.floor(Math.random()*400)-273;
 		var coords = circleCoords(x,y,radius);
 		for (var i = 0; i < coords.length; i++) {
@@ -77,7 +77,7 @@ runAfterLoad(function() {
 			var randomR = Math.floor(Math.random() * 256);
 			var randomG = Math.floor(Math.random() * 256);
 			var randomB = Math.floor(Math.random() * 256);
-			var radius = Math.floor(Math.random()*18)+1;
+			var radius = Math.floor(Math.random()*19)+1;
 			var rColor = "rgb(" + randomR + "," + randomG + "," + randomB + ")";
 			var coords = circleCoords(x,y,radius);
 			for (var i = 0; i < coords.length; i++) {
@@ -87,5 +87,15 @@ runAfterLoad(function() {
 				};
 			};
 		};
-	}
+	};
+	//creeper event
+	if(typeof(maximumCreeperTries) !== "undefined") {
+		minimumCreeperTries = 10;
+		maximumCreeperTries = 30;
+	};
+	//zombie event
+	if(typeof(maximumZombieTries) !== "undefined") {
+		minimumZombieTries = 10;
+		maximumZombieTries = 30;
+	};
 });

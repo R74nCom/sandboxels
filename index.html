@@ -360,6 +360,28 @@
                     }
                 }
             },
+            FLY: function(pixel, onHit) {
+                var nx = pixel.flipX ? -1 : 1;
+                var ny = Math.random() < 0.5 ? -1 : 1;
+                var hit = false;
+                if (!tryMove(pixel, pixel.x+nx, pixel.y+ny)) {
+                    if (!tryMove(pixel, pixel.x+nx, pixel.y-ny)) {
+                        if (!tryMove(pixel, pixel.x, pixel.y+ny)) {
+                            if (!tryMove(pixel, pixel.x, pixel.y-ny)) {hit=[pixel.x, pixel.y-ny]}
+                        }else {hit=[pixel.x, pixel.y+ny]}
+                    }else {hit=[pixel.x+nx, pixel.y-ny]}
+                }else {hit=[pixel.x+nx, pixel.y+ny]}
+                if (hit && onHit) {
+                    if (!isEmpty(hit[0], hit[1], true)) {
+                        onHit(pixel, pixelMap[hit[0]][hit[1]]);
+                    }
+                    else {onHit(pixel);}
+                }
+                if (!isEmpty(pixel.x+nx,pixel.y) || Math.random() < 0.02) {
+                    pixel.flipX = !pixel.flipX;
+                }
+                doDefaults(pixel);
+            }
         }
         eLists = {
             "ANIMAL": ["flea","ant","fly","firefly","bee","frog","fish","worm","termite","rat","slug","snail"],
@@ -856,6 +878,7 @@
                 burnInto: "dead_plant",
                 state: "solid",
                 density: 1050,
+                seed: "flower_seed"
             },
             "dead_plant": {
                 color: ["#826521","#826021","#825321","#70360c"],
@@ -925,6 +948,7 @@
                 category:"life",
                 state: "solid",
                 density: 1400,
+                seed: "grass_seed"
             },
             "algae": {
                 color: ["#395706","#6F9315","#9DCA19"],
@@ -961,6 +985,7 @@
                 burnTime:20,
                 state: "liquid",
                 density: 920,
+                seed: "algae"
             },
             "concrete": {
                 color: "#ababab",
@@ -1161,11 +1186,34 @@
             "glass": {
                 color: ["#5e807d","#679e99"],
                 behavior: behaviors.WALL,
+                reactions: {
+                    "radiation": { "elem1":"rad_glass", "chance":0.33 },
+                },
                 tempHigh: 1500,
                 category: "solids",
                 state: "solid",
                 density: 2500,
                 breakInto: "glass_shard",
+            },
+            "molten_glass": {
+                reactions: {
+                    "radiation": { "elem1":"molten_rad_glass", "chance":0.66 },
+                    "molten_uranium": { "elem1":"molten_rad_glass", "elem2":null },
+                },
+            },
+            "rad_glass": {
+                color: ["#648c64","#6aad83"],
+                behavior: [
+                    "XX|CR:radiation%0.075|XX",
+                    "CR:radiation%0.075|XX|CR:radiation%0.075",
+                    "XX|CR:radiation%0.075|XX",
+                ],
+                tempHigh: 1500,
+                category: "solids",
+                state: "solid",
+                density: 2500,
+                breakInto: "glass_shard",
+                hidden: true
             },
             "meat": {
                 color: ["#9E4839","#BA6449","#D2856C","#A14940"],
@@ -1696,11 +1744,7 @@
             },
             "fly": {
                 color: "#4C4E42",
-                behavior: [
-                    "XX|M2|M1",
-                    "XX|FX%2|BO",
-                    "XX|M2|M1",
-                ],
+                tick: behaviors.FLY,
                 behaviorOn: [
                     "XX|CR:flash|XX",
                     "CR:flash|CH:ash|CR:flash",
@@ -1736,11 +1780,23 @@
             },
             "firefly": {
                 color: ["#684841","#684841","#d9d950","#684841","#684841"],
-                behavior: [
-                    "XX|M2|M1",
-                    "XX|CC:684841,684841,684841,684841,d9d950%10 AND FX%2|BO",
-                    "XX|M2|M1",
-                ],
+                tick: function(pixel) {
+                    if (!pixel.fff) { // firefly flicker
+                        // choose a number between 20 and 80
+                        pixel.fff = Math.floor(Math.random() * 60) + 20;
+                    }
+                    if (pixelTicks % pixel.fff === 0) {
+                        pixel.color = pixelColorPick(pixel,"#d9d950")
+                    }
+                    else if (pixelTicks % pixel.fff === 2) {
+                        pixel.color = pixelColorPick(pixel,"#684841");
+                    }
+                    behaviors.FLY(pixel,function(firefly,newfly){
+                        if (newfly) {
+                            newfly.fff = firefly.fff;
+                        }
+                    })
+                },
                 reactions: {
                     "pollen": { "elem2":null, chance:0.25, func:behaviors.FEEDPIXEL },
                     "honey": { "elem2":null, chance:0.25, func:behaviors.FEEDPIXEL },
@@ -1762,11 +1818,27 @@
             },
             "bee": {
                 color: "#c4b100",
-                behavior: [
-                    "XX|M2|M1",
-                    "XX|FX%2|M1 AND BO",
-                    "XX|CR:pollen%0.025 AND M2|M1",
-                ],
+                // behavior: [
+                //     "XX|M2|M1",
+                //     "XX|FX%2|M1 AND BO",
+                //     "XX|CR:pollen%0.025 AND M2|M1",
+                // ],
+                tick: function(pixel) {
+                    if (pixel.pollen && Math.random() < 0.0005 && isEmpty(pixel.x,pixel.y+1)) {
+                        createPixel("pollen",pixel.x,pixel.y+1);
+                        pixelMap[pixel.x][pixel.y+1].seed = pixel.pollen
+                    }
+                    behaviors.FLY(pixel,function(bee,pollenpixel){
+                        if (pollenpixel) {
+                            if (elements[pollenpixel.element].seed === true) {
+                                bee.pollen = pollenpixel.element
+                            }
+                            else if (elements[pollenpixel.element].seed) {
+                                bee.pollen = elements[pollenpixel.element].seed
+                            }
+                        }
+                    })
+                },
                 reactions: {
                     "sugar_water": { "elem2":null, chance:0.25, func:behaviors.FEEDPIXEL },
                     "soda": { "elem2":null, chance:0.25, func:behaviors.FEEDPIXEL },
@@ -2643,6 +2715,7 @@
                 },
                 reactions: {
                     "glass": { "color1":["#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"] },
+                    "rad_glass": { "color1":["#9f6060","#9f8260","#9f9f60","#609f60","#609f9f","#60609f","#9f609f"] },
                     "steam": { "color1":["#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"] },
                     "rain_cloud": { "color1":["#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"] },
                     "cloud": { "color1":["#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"] },
@@ -3132,6 +3205,7 @@
                 state: "solid",
                 density: 1500,
                 cooldown: defaultCooldown,
+                seed: true
             },
             "seeds": {
                 color: ["#359100","#74b332","#b9d461","#dede7a"],
@@ -3142,6 +3216,7 @@
                 },
                 category: "life",
                 cooldown: defaultCooldown,
+                seed: true
             },
             "grass_seed": {
                 color: ["#439809","#258B08","#118511","#127B12","#136D14"],
@@ -3160,7 +3235,8 @@
                 state: "solid",
                 density: 1400,
                 hidden: true,
-                cooldown: defaultCooldown
+                cooldown: defaultCooldown,
+                seed: true
             },
             "wheat_seed": {
                 color: "#b6c981",
@@ -3177,7 +3253,8 @@
                 state: "solid",
                 density: 769,
                 hidden: true,
-                cooldown: defaultCooldown
+                cooldown: defaultCooldown,
+                seed: true
             },
             "straw": {
                 color: ["#E9D391","#A3835E","#B79A73"],
@@ -3220,9 +3297,14 @@
                 color: "#ffffc0",
                 behavior: [
                     "XX|XX|XX",
-                    "XX|CH:flower_seed%0.01|XX",
+                    "XX|XX|XX",
                     "M2|M1|M2",
                 ],
+                tick: function(pixel) {
+                    if (Math.random() < 0.01) {
+                        changePixel(pixel,pixel.seed||"flower_seed");
+                    }
+                },
                 reactions: {
                     "sugar_water": { "elem1": null, "elem2": "honey" },
                     "water": { "elem1": null },
@@ -3253,7 +3335,8 @@
                 category:"life",
                 state: "solid",
                 density: 1400,
-                cooldown: defaultCooldown
+                cooldown: defaultCooldown,
+                seed: true
             },
             "pistil": {
                 color: ["#734e39","#2F0603","#D2AC3A","#8A978F","#593117"],
@@ -3287,6 +3370,7 @@
                 hidden: true,
                 state: "solid",
                 density: 1400,
+                seed: "flower_seed"
             },
             "petal": {
                 color: "#ff0000",
@@ -3301,6 +3385,7 @@
                 hidden: true,
                 state: "solid",
                 density: 1400,
+                seed: "flower_seed"
             },
             "tree_branch": {
                 color: "#a0522d",
@@ -3322,6 +3407,7 @@
                 density: 1500,
                 hardness: 0.15,
                 breakInto: ["sap","sawdust"],
+                seed: "sapling"
             },
             "vine": {
                 color: "#005900",
@@ -3339,6 +3425,7 @@
                 category: "life",
                 state: "solid",
                 density: 1050,
+                seed: "vine"
             },
             "bamboo": {
                 color: ["#7CC00C","#77A012"],
@@ -3351,6 +3438,7 @@
                 state: "solid",
                 density: 686,
                 breakInto: "sawdust",
+                seed: "bamboo_plant"
             },
             "bamboo_plant": {
                 color: ["#FBC882","#DFAD64"],
@@ -3369,7 +3457,8 @@
                 state: "solid",
                 density: 686,
                 breakInto: "sawdust",
-                cooldown: defaultCooldown
+                cooldown: defaultCooldown,
+                seed: true
             },
             "burner": {
                 color: "#d6baa9",
@@ -3384,6 +3473,13 @@
             "foam": {
                 color: "#cad2e3",
                 behavior: behaviors.FOAM,
+                tick: function(pixel) {
+                    if (pixel.foam && isEmpty(pixel.x,pixel.y-1)) {
+                        createPixel("foam",pixel.x,pixel.y-1);
+                        pixel.foam--;
+                        pixelMap[pixel.x][pixel.y-1].foam = pixel.foam;
+                    }
+                },
                 category: "liquids",
                 state: "gas",
                 density: 40,
@@ -3402,7 +3498,7 @@
                     "DB%5 AND M2|XX|DB%5 AND M2",
                     "DB%5 AND M2|DB%10 AND M1|DB%5 AND M2",
                 ],
-                ignore: ["glass","glass_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","microplastic","molten_plastic","pool_water"],
+                ignore: ["glass","rad_glass","glass_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","microplastic","molten_plastic","pool_water"],
                 reactions: {
                     "ash": { "elem1":"neutral_acid", "elem2":null },
                     "limestone": { "elem1":"neutral_acid", "elem2":null },
@@ -3441,7 +3537,7 @@
                     "DB%5 AND M1|XX|DB%5 AND M1",
                     "DB%5 AND M1|DB%10 AND M1|DB%5 AND M1",
                 ],
-                ignore: ["glass","glass_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","microplastic","molten_plastic","pool_water"],
+                ignore: ["glass","rad_glass","glass_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","microplastic","molten_plastic","pool_water"],
                 reactions: {
                     "acid_gas": { "elem1": null, "elem2": "acid_cloud", "chance":0.3, "y":[0,12], "setting":"clouds" },
                     "rain_cloud": { "elem1": null, "elem2": "acid_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" },
@@ -3678,7 +3774,8 @@
                 burnTime: 20,
                 state: "solid",
                 density: 123.6,
-                cooldown: defaultCooldown
+                cooldown: defaultCooldown,
+                seed: true
             },
             "mushroom_stalk": {
                 color: "#d1d1d1",
@@ -3704,6 +3801,7 @@
                 burnTime: 65,
                 state: "solid",
                 density: 90.445,
+                seed: "mushroom_spore"
             },
             "mushroom_gill": {
                 color: "#d4cfa9",
@@ -3745,6 +3843,7 @@
                 burnInto: "mushroom_spore",
                 state: "solid",
                 density: 90.445,
+                seed: "mushroom_spore"
             },
             "mushroom_cap": {
                 color: ["#c74442","#c74442","#c74442","#cfb4b4","#c74442","#c74442","#c74442"],
@@ -3758,6 +3857,7 @@
                 burnInto: "mushroom_spore",
                 state: "solid",
                 density: 90.445,
+                seed: "mushroom_spore"
             },
             "hyphae": {
                 color: "#c79789",
@@ -3783,6 +3883,7 @@
                 burnTime: 20,
                 state: "solid",
                 density: 462,
+                seed: "mushroom_spore"
             },
             "mycelium": {
                 color: ["#734d5e","#b5949f","#734d53"],
@@ -3798,6 +3899,7 @@
                 state: "solid",
                 density: 462,
                 hidden: true,
+                seed: "mushroom_spore"
             },
             "lichen": {
                 color: ["#b6d6c3","#769482"],
@@ -4123,6 +4225,26 @@
                 conduct: 0.42,
                 hardness: 0.8,
             },
+            "gallium": {
+                color: ["#b3b3b3","#cccccc","#dbdbdb"],
+                behavior: behaviors.WALL,
+                tempHigh: 29.76,
+                category: "solids",
+                density: 5100,
+                conduct: 0.05,
+                hardness: 0.15,
+            },
+            "molten_gallium": {
+                color: ["#f7f7f7","#d9d7d7"],
+                behavior: behaviors.LIQUID,
+                tempHigh: 2400,
+                reactions: {
+                    "aluminum": { "elem2":null, chance:0.005 },
+                    "molten_aluminum": { "elem2":null, chance:0.025 },
+                    "sodium": { "elem1":"hydrogen", "elem2":"salt", chance:0.005 },
+                    "steel": { "elem2":"iron", chance:0.005 },
+                },
+            },
             "rose_gold": {
                 color: ["#B76E79","#a1334d","#f06283"],
                 behavior: behaviors.WALL,
@@ -4390,7 +4512,7 @@
                 behavior: behaviors.LIQUID,
                 reactions: {
                     "milk": { "elem1": null, "elem2": "cheese" },
-                    "baking_soda": { "elem1": "sodium_acetate", "elem2": "carbon_dioxide" },
+                    "baking_soda": { "elem1": "sodium_acetate", "elem2": "carbon_dioxide", "attr1":{"foam":20} },
                     "rust": { "elem2":"iron", chance:0.05 },
                     "oxidized_copper": { "elem2":"copper", chance:0.05 },
                 },
@@ -4412,6 +4534,7 @@
                 stateHigh: "popcorn",
                 state: "solid",
                 density: 721,
+                seed: "corn_seed"
             },
             "popcorn": {
                 color: ["#a6a076","#ebe4ab","#ebe4ab","#ebe4ab","#ebe4ab","#ebe4ab","#ebe4ab","#c99947"],
@@ -4440,7 +4563,8 @@
                 state: "solid",
                 density: 721,
                 hidden: true,
-                cooldown: defaultCooldown
+                cooldown: defaultCooldown,
+                seed: true
             },
             "potato_seed": {
                 color: ["#CDA57F","#AA7437","#BC9563"],
@@ -4457,7 +4581,8 @@
                 state: "solid",
                 density: 675,
                 hidden: true,
-                cooldown: defaultCooldown
+                cooldown: defaultCooldown,
+                seed: true
             },
             "potato": {
                 color: ["#d99857","#d98757","#a66933"],
@@ -4474,6 +4599,7 @@
                 category: "food",
                 state: "solid",
                 density: 675,
+                seed: "potato_seed"
             },
             "root": {
                 color: "#80715b",
@@ -4534,7 +4660,6 @@
                     "molasses": { "elem2":"alcohol", "chance":0.005, "color2":"#803924" },
                     "oxygen": { "elem2":"carbon_dioxide", "chance":0.05 },
                     "algae": { "elem1":"lichen", "elem2":"lichen", "chance":0.02 },
-                    "alcohol": { "elem1":null, "elem2":null },
                 },
                 tempHigh: 110,
                 stateHigh: "bread",
@@ -4585,6 +4710,7 @@
                 breakInto: "flour",
                 state: "solid",
                 density: 769,
+                seed: "wheat_seed"
             },
             "flour": {
                 color: "#F0E2B7",
@@ -4641,19 +4767,27 @@
                 },
                 category: "food",
                 state: "solid",
-                density: 1000,
+                density: 2200,
                 tempHigh: 3000,
             },
             "sodium_acetate": {
                 color: ["#ededed","#dbdbdb"],
                 behavior: [
-                    "CR:foam%25|CR:foam%25|CR:foam%25",
-                    "CR:foam%25|XX|CR:foam%25",
+                    "XX|XX|XX",
+                    "XX|XX|XX",
                     "M2|M1|M2",
                 ],
+                tick: function(pixel) {
+                    if ((pixel.foam || Math.random() < 0.25) && isEmpty(pixel.x,pixel.y-1)) {
+                        createPixel("foam",pixel.x,pixel.y-1);
+                        if (pixel.foam) {
+                            pixelMap[pixel.x][pixel.y-1].foam = pixel.foam;
+                        }
+                    }
+                },
                 hidden: true,
                 state: "solid",
-                density: 900,
+                density: 1530,
                 category: "powders",
             },
             "dry_ice": {
@@ -5164,7 +5298,7 @@
                         } } },
                 reactions: {
                     "chlorine": { "elem1":"salt", "elem2":"pop" },
-                    "vinegar": { "elem1":"sodium_acetate", "elem2":null },
+                    "vinegar": { "elem1":"sodium_acetate", "elem2":null, "attr1":{"foam":15} },
                     "water": { "elem1":"pop", "chance":0.01 },
                     "salt_water": { "elem1":"pop", "chance":0.01 },
                     "sugar_water": { "elem1":"pop", "chance":0.01 },
@@ -6987,6 +7121,11 @@
             if (r.color1) { // if it's a list, use a random color from the list, else use the color1 attribute
                 pixel1.color = pixelColorPick(pixel1, Array.isArray(r.color1) ? r.color1[Math.floor(Math.random() * r.color1.length)] : r.color1);
             }
+            if (r.attr1) { // add each attribute to pixel1
+                for (var key in r.attr1) {
+                    pixel1[key] = r.attr1[key];
+                }
+            }
             if (r.elem2 !== undefined) {
                 // if r.elem2 is an array, set elem2 to a random element from the array, otherwise set it to r.elem2
                 if (Array.isArray(r.elem2)) {
@@ -7004,6 +7143,11 @@
             if (r.temp2) { pixel2.temp += r.temp2; pixelTempCheck(pixel2); }
             if (r.color2) { // if it's a list, use a random color from the list, else use the color2 attribute
                 pixel2.color = pixelColorPick(pixel2, Array.isArray(r.color2) ? r.color2[Math.floor(Math.random() * r.color2.length)] : r.color2);
+            }
+            if (r.attr2) { // add each attribute to pixel2
+                for (var key in r.attr2) {
+                    pixel2[key] = r.attr2[key];
+                }
             }
             if (r.func) { r.func(pixel1,pixel2); }
             return r.elem1!==undefined || r.elem2!==undefined;
@@ -7080,6 +7224,16 @@
                         }
                     }
                 }
+                // else { // same-element density swapping
+                //     if (info.density !== undefined) {
+                //         if (validDensitySwaps[info.state][info.state]) {
+                //             if (Math.random() < 0.01) {
+                //                 swapPixels(pixel,newPixel);
+                //                 return true;
+                //             }
+                //         }
+                //     }
+                // }
             }
             return false;
         }
@@ -10054,6 +10208,10 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             if (window.innerWidth > 1000 && newHeight > 500) { newHeight = 500; }
             ctx.canvas.width = newWidth;
             ctx.canvas.height = newHeight;
+            document.getElementById("gameDiv").style.width = newWidth + "px";
+            document.getElementById("loadingP").style.display = "none";
+            document.getElementById("canvasDiv").style.display = "block";
+
 
             width = Math.round(newWidth/pixelSize)-1;
             height = Math.round(newHeight/pixelSize)-1;
@@ -10118,6 +10276,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                         document.getElementById("underDiv").style.display = "block";
                         document.getElementById("pagetitle").style.display = "block";
                         document.getElementById("colorSelector").style.display = "block";
+                        document.getElementById("bottomInfoBox").style.display = "block";
                     } else {
                         document.getElementById("underDiv").style.display = "none";
                         if (showingMenu) {
@@ -10125,6 +10284,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                         };
                         document.getElementById("pagetitle").style.display = "none";
                         document.getElementById("colorSelector").style.display = "none";
+                        document.getElementById("bottomInfoBox").style.display = "none";
                     }
                 }
                 if (showingMenu) {
@@ -10343,13 +10503,16 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 
         }
     </script>
-  <link rel="stylesheet" type="text/css" href="style.css">
+  <link rel="stylesheet" type="text/css" href="style.css?nocache=3">
 </head>
 
 <body>
     <h1 class="pagetitle" id="pagetitle"><a href="https://R74n.com" class="backbutton" target="_blank">&lt;</a></h1>
-    <div id="gameDiv">
-        <div id="canvasDiv">
+    <div id="totalWrapper">
+    <div id="gameWrapper">
+    <div id="gameDiv" style="width:800px;max-width:90%">
+        <p id="loadingP" style="text-align:center;height:500px;line-height:500px;">Loading...</p>
+        <div id="canvasDiv" style="display:none">
             <canvas id="game" width="800" height="600">
                 Your browser does not support the HTML5 canvas tag.<br>
                 Please update your browser to the latest version.<br>
@@ -10377,93 +10540,144 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             </div>
             <div id="extraInfo"><small><a href="controls.txt" target="_blank">Controls</a> • <a href="changelog.txt" target="_blank">Changelog</a> • <a href="https://docs.google.com/document/d/1R8xljj_J-K5oU-9y4louwplQmM-ZBvUfXmhbgj5LYdk/edit?usp=sharing" target="_blank">Feedback</a> • <a href="https://discord.gg/ejUc6YPQuS" target="_blank" style="text-shadow: 0px 2px 10px #FF00FF;">Discord</a></small></div>
         </div>
-    </div>
-
-    <div id="infoParent">
-        <div id="infoScreen"> <!--Element Info Page-->
-            <button class="XButton" onclick="closeMenu();">-</button>
-            <span class='infoLink noselect' id="infoBackButton" onclick='infoBack()' style='text-decoration:none!important;display:none'>←&nbsp;</span><span class="menuTitle" id="infoTitle">Title</span>
-            <div class="menuText" id="infoText">Text</div>
-        </div>
-        <input type="text" id="infoSearch" placeholder="Element..." oninput="showInfo(this.value);"></input>
-    </div>
-
-    <!--Mod Manager Page with the list of current mods and a url input box with a plus button to add it-->
-    <div id="modParent">
-        <div id="modManager">
-            <button class="XButton" onclick="closeMenu();">-</button>
-            <span class="menuTitle">Enabled Mods</span>
-            <ul class="menuText" id="modManagerList"></ul>
-            <span id="noMods" style="display:none">You have no mods enabled.<br><br></span>
-            See the <a href="https://docs.google.com/document/d/1YWPLKEvGeaaLuYWzObCyLK2Y09JPZgF1ODQQCbU3Sng/edit?usp=sharing" target="_blank">Mod List</a>.
-            <br><br><br><br>
-            <!-- Link to the Google Doc that floats at the bottom -->
-            <!--If the key is Enter, addMod -->
-        </div>
-        <input type="text" id="modManagerUrl" placeholder=".JS URL..." onkeydown="if (event.keyCode == 13) {addMod(this.value);this.value = '';};this.focus();"></input>
-        <!-- <button id="modManagerAdd" onclick="addMod(document.getElementById('modManagerUrl').value); document.getElementById('modManagerUrl').value = '';">+</button> -->
-    </div>
-
-    <!--Settings Menu-->
-    <div id="settingsParent">
-        <div id="settingsMenu">
-            <button class="XButton" onclick="closeMenu();">-</button>
-            <span class="menuTitle">Settings</span>
-            <div class="menuText" style="padding-top:1em">
-                <span setting="units" class="setting-span">
-                    Units <select onchange="setSetting('units',this.value);">
-                        <option value="m" selected>Metric</option>
-                        <option value="i">Imperial</option>
-                        <option value="s">SI</option>
-                    </select>
-                </span>
-                <span setting="unhide" class="setting-span">
-                    Hiding <select onchange="setSetting('unhide',parseInt(this.value));this.nextElementSibling.innerText='Refresh.'">
-                        <option value="0" selected>Hide Some Elements</option>
-                        <option value="1">Unhide All Elements</option>
-                        <option value="2">Unlock as Discovered</option>
-                    </select>
-                    <a onclick="window.location.reload();" style="font-style:italic;cursor:pointer"></a>
-                </span>
-                <span setting="bg" class="setting-span">
-                    Background <input onchange="setSetting('bg',this.value);" oninput="setSetting('bg',this.value);" type="color" value="#000000">
-                </span>
-                <span setting="stain" class="setting-span">
-                    Staining <select onchange="setSetting('stainoff',parseInt(this.value));">
-                        <option value="0" selected>Enabled</option>
-                        <option value="1">Disabled</option>
-                    </select>
-                </span>
-                <span setting="clouds" class="setting-span">
-                    Clouds <select onchange="setSetting('clouds',parseInt(this.value));">
-                        <option value="1" selected>Enabled</option>
-                        <option value="0">Disabled</option>
-                    </select>
-                </span>
-                <span setting="events" class="setting-span">
-                    Random Events <select onchange="setSetting('events',parseFloat(this.value));">
-                        <option value="0" selected>Disabled</option>
-                        <option value="0.005">Rare (Recommended for casual play)</option>
-                        <option value="0.025">Common</option>
-                        <option value="0.05">Annoying</option>
-                        <option value="0.25">Overdrive (DANGEROUS)</option>
-                    </select>
-                </span>
-                <span class="setting-span">
-                    <button onclick="if(confirm('This action will reset all discovered elements and refresh the page.')){settings.unlocked={};saveSettings();location.reload()}" class="settingsButton">Reset Discovered</button>
-                    <button onclick="if(confirm('This action will reset all game data and refresh the page.')){localStorage.removeItem('settings');location.reload()}" class="settingsButton">Reset All</button>
-                    <button onclick="if(confirm('This action will disable all enabled mods and refresh the page.')){localStorage.removeItem('enabledMods');location.reload()}" class="settingsButton">Clear Mods</button>
-                </span>
-                <span setting="worldgen" style="padding-bottom:0" class="setting-span">
-                    World Gen [Beta] <select id="worldgenselect" onchange="setSetting('worldgen',this.value);this.nextElementSibling.innerText='Reset.'">
-                        <option value="off" selected>Disabled</option>
-                    </select>
-                    <span onclick="clearAll();" style="font-style:italic;cursor:pointer"></span>
-                </span>
+        <div id="infoParent">
+            <div id="infoScreen"> <!--Element Info Page-->
+                <button class="XButton" onclick="closeMenu();">-</button>
+                <span class='infoLink noselect' id="infoBackButton" onclick='infoBack()' style='text-decoration:none!important;display:none'>←&nbsp;</span><span class="menuTitle" id="infoTitle">Title</span>
+                <div class="menuText" id="infoText">Text</div>
             </div>
-            <br><br><br><br>
+            <input type="text" id="infoSearch" placeholder="Element..." oninput="showInfo(this.value);"></input>
+        </div>
+    
+        <!--Mod Manager Page with the list of current mods and a url input box with a plus button to add it-->
+        <div id="modParent">
+            <div id="modManager">
+                <button class="XButton" onclick="closeMenu();">-</button>
+                <span class="menuTitle">Enabled Mods</span>
+                <ul class="menuText" id="modManagerList"></ul>
+                <span id="noMods" style="display:none">You have no mods enabled.<br><br></span>
+                See the <a href="https://docs.google.com/document/d/1YWPLKEvGeaaLuYWzObCyLK2Y09JPZgF1ODQQCbU3Sng/edit?usp=sharing" target="_blank">Mod List</a>.
+                <br><br><br><br>
+                <!-- Link to the Google Doc that floats at the bottom -->
+                <!--If the key is Enter, addMod -->
+            </div>
+            <input type="text" id="modManagerUrl" placeholder=".JS URL..." onkeydown="if (event.keyCode == 13) {addMod(this.value);this.value = '';};this.focus();"></input>
+            <!-- <button id="modManagerAdd" onclick="addMod(document.getElementById('modManagerUrl').value); document.getElementById('modManagerUrl').value = '';">+</button> -->
+        </div>
+    
+        <!--Settings Menu-->
+        <div id="settingsParent">
+            <div id="settingsMenu">
+                <button class="XButton" onclick="closeMenu();">-</button>
+                <span class="menuTitle">Settings</span>
+                <div class="menuText" style="padding-top:1em">
+                    <span setting="units" class="setting-span">
+                        Units <select onchange="setSetting('units',this.value);">
+                            <option value="m" selected>Metric</option>
+                            <option value="i">Imperial</option>
+                            <option value="s">SI</option>
+                        </select>
+                    </span>
+                    <span setting="unhide" class="setting-span">
+                        Hiding <select onchange="setSetting('unhide',parseInt(this.value));this.nextElementSibling.innerText='Refresh.'">
+                            <option value="0" selected>Hide Some Elements</option>
+                            <option value="1">Unhide All Elements</option>
+                            <option value="2">Unlock as Discovered</option>
+                        </select>
+                        <a onclick="window.location.reload();" style="font-style:italic;cursor:pointer"></a>
+                    </span>
+                    <span setting="bg" class="setting-span">
+                        Background <input onchange="setSetting('bg',this.value);" oninput="setSetting('bg',this.value);" type="color" value="#000000">
+                    </span>
+                    <span setting="stain" class="setting-span">
+                        Staining <select onchange="setSetting('stainoff',parseInt(this.value));">
+                            <option value="0" selected>Enabled</option>
+                            <option value="1">Disabled</option>
+                        </select>
+                    </span>
+                    <span setting="clouds" class="setting-span">
+                        Clouds <select onchange="setSetting('clouds',parseInt(this.value));">
+                            <option value="1" selected>Enabled</option>
+                            <option value="0">Disabled</option>
+                        </select>
+                    </span>
+                    <span setting="events" class="setting-span">
+                        Random Events <select onchange="setSetting('events',parseFloat(this.value));">
+                            <option value="0" selected>Disabled</option>
+                            <option value="0.005">Rare (Recommended for casual play)</option>
+                            <option value="0.025">Common</option>
+                            <option value="0.05">Annoying</option>
+                            <option value="0.25">Overdrive (DANGEROUS)</option>
+                        </select>
+                    </span>
+                    <span class="setting-span">
+                        <button onclick="if(confirm('This action will reset all discovered elements and refresh the page.')){settings.unlocked={};saveSettings();location.reload()}" class="settingsButton">Reset Discovered</button>
+                        <button onclick="if(confirm('This action will reset all game data and refresh the page.')){localStorage.removeItem('settings');location.reload()}" class="settingsButton">Reset All</button>
+                        <button onclick="if(confirm('This action will disable all enabled mods and refresh the page.')){localStorage.removeItem('enabledMods');location.reload()}" class="settingsButton">Clear Mods</button>
+                    </span>
+                    <span setting="worldgen" style="padding-bottom:0" class="setting-span">
+                        World Gen [Beta] <select id="worldgenselect" onchange="setSetting('worldgen',this.value);this.nextElementSibling.innerText='Reset.'">
+                            <option value="off" selected>Disabled</option>
+                        </select>
+                        <span onclick="clearAll();" style="font-style:italic;cursor:pointer"></span>
+                    </span>
+                </div>
+                <br><br><br><br>
+            </div>
         </div>
     </div>
+
+</div>
+
+<div id="bottomInfoBox">
+    <div id="bottomLeftBox">
+        <h2>Sandboxels Introduction</h2>
+        <p><strong><def>Sandboxels</def></strong> is a free falling-sand simulator that can be played in your browser. It features heat simulation, electricity, density, chemical reactions, and fire spread. With over 500 unique elements to play with, Sandboxels is a great way to pass the time. There are thousands of interactions between the many materials, plants, animals, and fluids in the game.</p>
+        <p>Falling-sand games are a genre of sandbox games characterized by falling particles of various types.</p>
+        <p>Simply click or use your touchscreen to select a category, like <strong>Liquids</strong>, then pick an element, like <strong>Water</strong>. Drag on the canvas above to place your pixels, and watch them interact with others!</p>
+        <img src="icons/wallpaper.png" style="width:100%" alt="Rainforest landscape made in Sandboxels" title="Rainforest landscape made in Sandboxels">
+        <p>Sandboxels has many applications in education. It can give students an understanding of emerging phenomena in many fields, such as biology, chemistry, ecology, geology, and even virology. There are countless aspects to discover.</p>
+        <p>We have a thriving community on <a href="https://discord.gg/ejUc6YPQuS" target="_blank">Discord</a>! There you can post feedback or share your creations.</p>
+        <p>If you'd like to support us, consider donating on <a href="https://www.paypal.com/donate/?hosted_button_id=GCX4VHQ7SZWTN" target="_blank">PayPal</a> or <a href="https://cash.app/$emojiartist" target="_blank" title="$emojiartist">CashApp</a>.</p>
+        <p>This game is developed by R74n. Check out <a href="https://r74n.com" target="_blank">our other projects</a>!</p>
+        <!-- Ad ^_^ -->
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8485284630785740"
+            crossorigin="anonymous"></script>
+        <!-- Sandboxels Main Page -->
+        <ins class="adsbygoogle"
+            style="display:inline-block;width:728px;height:90px"
+            data-ad-client="ca-pub-8485284630785740"
+            data-ad-slot="9484672079"></ins>
+        <script>
+            window.addEventListener('load', function() {
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            });
+        </script>
+    </div>
+    <div id="bottomRightBox">
+        <h2>Controls</h2>
+        <table>
+            <tr><td>Draw pixels</td>   <td><kbd>Left Click</kbd></td></tr>
+            <tr><td>Erase pixels</td>   <td><kbd>Right Click</kbd></td></tr>
+            <tr><td>Pick element</td>   <td><kbd>Middle Click</kbd></td></tr>
+            <tr><td>Pause simulation</td>   <td><kbd>Space</kbd> or <kbd>P</kbd></td></tr>
+            <tr><td>Intensify effect</td>   <td><kbd>Shift</kbd> + <kbd style="background-color:red;">Heat</kbd>/<kbd style="background-color:blue;">Cool</kbd>/<kbd style="background-color:yellow;color:black">Shock</kbd></td></tr>
+            <tr><td>Draw line</td>   <td><kbd>Shift</kbd> + <kbd>Click</kbd></td></tr>
+            <tr><td>Change cursor size</td>   <td><kbd>Scroll</kbd> or <kbd>+</kbd><kbd>-</kbd> or <kbd>[</kbd><kbd>]</kbd></td></tr>
+            <tr><td>Change category</td>   <td><kbd>←</kbd><kbd>→</kbd></td></tr>
+            <tr><td>Select by name</td>   <td><kbd>E</kbd></td></tr>
+            <tr><td>Element info</td>   <td><kbd>I</kbd> or <kbd>/</kbd></td></tr>
+            <tr><td>Open settings</td>   <td><kbd>\</kbd></td></tr>
+            <tr><td>Single step</td>   <td><kbd>&gt;</kbd></td></tr>
+            <tr><td>Fullscreen</td>   <td><kbd>F</kbd> or <kbd>F11</kbd></td></tr>
+            <tr><td>Change view</td>   <td><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd></td></tr>
+            <tr><td>Toggle GUI</td>   <td><kbd>F1</kbd></td></tr>
+            <tr><td>Capture screenshot</td>   <td><kbd>C</kbd> or <kbd>F2</kbd></td></tr>
+            <tr><td colspan="2" style="text-align:center"><strong><a href="controls.txt" target="_blank" title="Open the controls file">More controls</a></strong></td></tr>
+        </table>
+    </div>
+</div>
+</div>
 
 <!-- i like having this but ublock blocks these things anyway -->
 <!-- Global site tag (gtag.js) - Google Analytics -->

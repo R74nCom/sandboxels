@@ -1,4 +1,4 @@
-elements.daoe = {
+elements.delete_all_of_element = {
 	name: "delete all of element",
 	color: ["#a7a7a7", "#a7a7a7", "#a7a7a7", "#a7a7a7", "#000000", "#000000", "#000000", "#000000"],
 	tool: function(pixel) {

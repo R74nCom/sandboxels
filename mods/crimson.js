@@ -51,10 +51,10 @@ function includesArray(parentArray, testArray) {
 
 crimRate = 0.002
 
-function grassSpread(pixel,dirt,grass) {
+function grassSpread(pixel,dirt,grass,chance) {
 	pixel.dirtArray = [] //initialize dirt neighbor list
-	for (i = -3; i < 4; i++) { //iterate around
-		for (j = -3; j < 4; j++) {
+	for (i = -2; i < 3; i++) { //iterate around
+		for (j = -2; j < 3; j++) {
 			if (!isEmpty(pixel.x+i,pixel.y+j,true)) { //check for a pixel to see if it's dirt
 				if(Array.isArray(dirt)) {
 					if(dirt.includes(pixelMap[pixel.x+i][pixel.y+j].element)) { //see if it's dirt
@@ -73,7 +73,7 @@ function grassSpread(pixel,dirt,grass) {
 		}
 	}
 	for (k = 0; k < pixel.dirtArray.length; k++) { //iterate through dirt list
-		if(Math.random() < crimRate*3.5) { //random chance
+		if(Math.random() < chance) { //random chance
 			if(isEmpty(pixel.x+pixel.dirtArray[k][0],pixel.y+pixel.dirtArray[k][1]-1)) { //check for empty space to grow grass
 				createPixel(grass,pixel.x+pixel.dirtArray[k][0],pixel.y+pixel.dirtArray[k][1]-1) //place grass above dirt
 			}
@@ -81,75 +81,41 @@ function grassSpread(pixel,dirt,grass) {
 	}
 }
 
-function crimSpread(pixel) { //corrupting (crimsonning?) blocks
-	for (i = -3; i < 4; i++) { 
-		for (j = -3; j < 4; j++) {
-			if(i == 0 && j == 0) {
-				continue
-			}
-			if(!isEmpty(pixel.x+i,pixel.y+j,true)) {
-				if(pixelMap[pixel.x+i][pixel.y+j].element == "grass") {
-					if(Math.random() < crimRate) {
-						changePixel(pixelMap[pixel.x+i][pixel.y+j],"crimson_grass")
-					}
-				} else if(pixelMap[pixel.x+i][pixel.y+j].element == "rock") {
-					if(Math.random() < crimRate) {
-						changePixel(pixelMap[pixel.x+i][pixel.y+j],"crimstone")
-					}
-				} else if(pixelMap[pixel.x+i][pixel.y+j].element == "sand") {
-					if(Math.random() < crimRate) {
-						changePixel(pixelMap[pixel.x+i][pixel.y+j],"crimsand")
-					}
-				} else if(pixelMap[pixel.x+i][pixel.y+j].element == "ice") {
-					if(Math.random() < crimRate) {
-						changePixel(pixelMap[pixel.x+i][pixel.y+j],"red_ice")
-					}
-				} else if(pixelMap[pixel.x+i][pixel.y+j].element == "gravel") {
-					if(Math.random() < crimRate) {
-						changePixel(pixelMap[pixel.x+i][pixel.y+j],"crimgravel")
-					}
-				} else if(pixelMap[pixel.x+i][pixel.y+j].element == "water") {
-					if(Math.random() < crimRate*3) {
-						changePixel(pixelMap[pixel.x+i][pixel.y+j],"crimwater")
-					}
-				} else if(pixelMap[pixel.x+i][pixel.y+j].element == "snow") {
-					if(Math.random() < crimRate) {
-						changePixel(pixelMap[pixel.x+i][pixel.y+j],"crimsnow")
-					}
-				} else if(pixelMap[pixel.x+i][pixel.y+j].element == "packed_snow") {
-					if(Math.random() < crimRate) {
-						changePixel(pixelMap[pixel.x+i][pixel.y+j],"crimsnow")
-					}
-				} else if(pixelMap[pixel.x+i][pixel.y+j].element == "wet_sand") {
-					if(Math.random() < crimRate) {
-						changePixel(pixelMap[pixel.x+i][pixel.y+j],"crimsand")
-					}
-				} else if(pixelMap[pixel.x+i][pixel.y+j].element == "mud") {
-					if(Math.random() < crimRate) {
-						changePixel(pixelMap[pixel.x+i][pixel.y+j],"dirt")
-					}
-				} else if(pixelMap[pixel.x+i][pixel.y+j].element == "permafrost") {
-					if(Math.random() < crimRate) {
-						changePixel(pixelMap[pixel.x+i][pixel.y+j],"dirt")
-					}
-				} else if(pixelMap[pixel.x+i][pixel.y+j].element == "vine") {
-					if(Math.random() < crimRate) {
-						changePixel(pixelMap[pixel.x+i][pixel.y+j],"crimson_vine")
-					}
-				} else if(pixelMap[pixel.x+i][pixel.y+j].element == "fish") {
-					if(Math.random() < crimRate) {
-						changePixel(pixelMap[pixel.x+i][pixel.y+j],"vicious_goldfish")
-					}
-				} else if(pixelMap[pixel.x+i][pixel.y+j].element == "sapling") {
-					if(Math.random() < crimRate*4) {
-						changePixel(pixelMap[pixel.x+i][pixel.y+j],"shadewood_sapling")
-					}
-				}
-			}
-		}
-	}
-	grassSpread(pixel,"dirt","crimson_grass")
-}
+
+
+crimsonObject = {
+	grass: "crimson_grass",
+	rock: "crimstone",
+	sand: "crimsand",
+	ice: "red_ice",
+	gravel: "crimgravel",
+	water: "crimwater",
+	snow: "crimsnow",
+	packed_snow: "crimsnow",
+	wet_sand: "crimsand",
+	mud: "dirt",
+	permafrost: "dirt",
+	vine: "crimson_vine",
+	fish: "vicious_goldfish",
+	sapling: "shadewood_sapling"
+};
+
+function crimSpread(pixel) {
+	for (let i = -2; i < 3; i++) {
+		for (let j = -2; j < 3; j++) {
+			if (!isEmpty(pixel.x+j,pixel.y+i,true)) {
+				var destPixel = pixelMap[pixel.x+j][pixel.y+i];
+				var elementToCheck = destPixel.element;
+				if(Math.random() < crimRate) {
+					if(crimsonObject[elementToCheck]) {
+						changePixel(destPixel,crimsonObject[elementToCheck]);
+					};
+					grassSpread(pixel,"dirt","crimson_grass",0.5);
+				};
+			};
+		};
+	};
+};
 
 eLists.WHL = "water,salt_water,sugar_water,dirty_water,swamp_water,heavy_water,radioactive_water,crimwater,pure_water,chilly_water,honey,magma"
 
@@ -161,13 +127,7 @@ elements.crimson_grass = {
         "XX|M1|XX",
     ],
     tick: function(pixel) {
-        if(!pixel.ft) {
-            pixel.ft = 0
-        }
-        if(pixel.ft % 3 == 0) { 
-			crimSpread(pixel)
-        }
-		pixel.ft++
+        crimSpread(pixel)
     },
     tempHigh: 100,
     stateHigh: "dead_plant",
@@ -184,13 +144,7 @@ elements.crimstone = {
 	color: ["#cb4444", "#953333", "#611c1c", "#b43434", "#752424"],
 	behavior: behaviors.POWDER,
     tick: function(pixel) {
-        if(!pixel.ft) {
-            pixel.ft = 0
-        }
-        if(pixel.ft % 3 == 0) { 
-			crimSpread(pixel)
-        }
-        pixel.ft++
+        crimSpread(pixel)
     },
 	tempHigh: 950,
 	stateHigh: "magma",
@@ -205,13 +159,7 @@ elements.crimsand = {
 	color: ["#4c4c44", "#6c645c", "#5c544c", "#847c6c", "#24241c", "#4c4c44", "#6c645c", "#5c544c", "#847c6c", "#24241c", "#3c140c", "#842c24"],
 	behavior: behaviors.POWDER,
     tick: function(pixel) {
-        if(!pixel.ft) {
-            pixel.ft = 0
-        }
-        if(pixel.ft % 3 == 0) { 
-			crimSpread(pixel)
-        }
-        pixel.ft++
+        crimSpread(pixel)
     },
 	tempHigh: 1700,
 	stateHigh: "molten_glass",
@@ -224,13 +172,7 @@ elements.red_ice = {
 	color: ["#f0ccc5", "#f7d8d2", "#eba39b"],
 	behavior: behaviors.WALL,
     tick: function(pixel) {
-        if(!pixel.ft) {
-            pixel.ft = 0
-        }
-        if(pixel.ft % 3 == 0) { 
-			crimSpread(pixel)
-        }
-        pixel.ft++
+        crimSpread(pixel)
     },
 	temp: 0,
 	tempHigh: 5,
@@ -245,13 +187,7 @@ elements.crimgravel = { //break from canon for crimstone breakInto
 	color: ["#c4533f", "#de6957", "#b84639", "#cf4634", "#db6758", "#d17366", "#ab2b2b"],
 	behavior: behaviors.POWDER,
     tick: function(pixel) {
-        if(!pixel.ft) {
-            pixel.ft = 0
-        }
-        if(pixel.ft % 3 == 0) { 
-			crimSpread(pixel)
-        }
-        pixel.ft++
+        crimSpread(pixel)
     },
 	category:"land",
 	tempHigh: 950,
@@ -265,13 +201,7 @@ elements.crimwater = { //you shouldn't be able to purify ice by melting it
 	color: "#e45c7c",
 	behavior: behaviors.LIQUID,
     tick: function(pixel) {
-        if(!pixel.ft) {
-            pixel.ft = 0
-        }
-        if(pixel.ft % 3 == 0) { 
-			crimSpread(pixel)
-        }
-        pixel.ft++
+        crimSpread(pixel)
     },
 	tempLow: 0,
 	stateLow: "red_ice",
@@ -293,13 +223,7 @@ elements.crimsnow = { //BIG break from canon but you shouldn't be able to purify
 	color: "#fce1e4",
 	behavior: behaviors.POWDER,
     tick: function(pixel) {
-        if(!pixel.ft) {
-            pixel.ft = 0
-        }
-        if(pixel.ft % 3 == 0) { 
-			crimSpread(pixel)
-        }
-        pixel.ft++
+        crimSpread(pixel)
     },
 	temp: 0,
 	tempHigh: 5,
@@ -313,13 +237,7 @@ elements.vicious_mushroom = {
 	color: "#e36554",
 	behavior: behaviors.POWDER,
     tick: function(pixel) {
-        if(!pixel.ft) {
-            pixel.ft = 0
-        }
-        if(pixel.ft % 3 == 0) { 
-			crimSpread(pixel)
-        }
-        pixel.ft++
+        crimSpread(pixel)
     },
 	category: "life",
 	hidden: true,
@@ -382,13 +300,7 @@ elements.crimson_vine = {
 		"XX|CL%1 AND M1|XX",
 	],
     tick: function(pixel) {
-        if(!pixel.ft) {
-            pixel.ft = 0
-        }
-        if(pixel.ft % 3 == 0) { 
-			crimSpread(pixel)
-        }
-        pixel.ft++
+        crimSpread(pixel)
     },
 	tempHigh: 100,
 	stateHigh: "dead_plant",

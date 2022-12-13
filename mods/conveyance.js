@@ -15,7 +15,7 @@ elements.r_conveyor = {
 		
 		let pixelAbove = pixelMap[pixel.x][pixel.y-1]
 		
-		if (!isEmpty(pixel.x, pixel.y-1) && pixel.charge > 0.5 && elements[pixelAbove.element].movable == true ) {
+		if (!isEmpty(pixel.x, pixel.y-1, true) && pixel.charge > 0.5 && elements[pixelAbove.element].movable == true ) {
 			tryMove(pixelAbove,pixel.x+1,pixel.y-1)
 		}
 	}
@@ -34,7 +34,7 @@ elements.l_conveyor = {
 		
 		let pixelAbove = pixelMap[pixel.x][pixel.y-1]
 		
-		if (!isEmpty(pixel.x, pixel.y-1) && pixel.charge > 0.5 && elements[pixelAbove.element].movable == true ) {
+		if (!isEmpty(pixel.x, pixel.y-1, true) && pixel.charge > 0.5 && elements[pixelAbove.element].movable == true ) {
 			tryMove(pixelAbove,pixel.x-1,pixel.y-1)
 		}
 	}
@@ -51,7 +51,7 @@ elements.r_autoconveyor = {
 		
 		let pixelAbove = pixelMap[pixel.x][pixel.y-1]
 		
-		if (!isEmpty(pixel.x, pixel.y-1) && elements[pixelAbove.element].movable == true ) {
+		if (!isEmpty(pixel.x, pixel.y-1, true) && elements[pixelAbove.element].movable == true ) {
 			tryMove(pixelAbove,pixel.x+1,pixel.y-1)
 		}
 	}
@@ -68,7 +68,7 @@ elements.l_autoconveyor = {
 		
 		let pixelAbove = pixelMap[pixel.x][pixel.y-1]
 		
-		if (!isEmpty(pixel.x, pixel.y-1) && elements[pixelAbove.element].movable == true ) {
+		if (!isEmpty(pixel.x, pixel.y-1, true) && elements[pixelAbove.element].movable == true ) {
 			tryMove(pixelAbove,pixel.x-1,pixel.y-1)
 		}
 	}

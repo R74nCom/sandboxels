@@ -1,18 +1,43 @@
+nonAdjacentCoords = [
+    [1, 1],
+    [1, -1],
+    [-1, 1],
+    [-1, -1]
+];
+
 //pyrotheum
 
 elements.blazing_pyrotheum = {
 	color: "#ffdd55",
-	behavior: [
-		"HT:10%2|CR:fire%0.5 AND HT:10%2|HT:10%2",
-		"M2 AND CR:fire%0.5 AND HT:10%2|HT:10%2|M2 AND CR:fire%0.5 AND HT:10%2",
-		"M1 AND HT:10%2|M1 AND CR:fire%0.5 AND HT:10%2|M1 AND HT:10%2",
-	],
+	behavior: behaviors.LIQUID,
 	tick: function(pixel) {
 		if(pixel.temp >= -273 && pixel.temp <= 3707) { //temperature minimum of 3727
 			pixel.temp += 50
 		} else if(pixel.temp > 3677 && pixel.temp < 3727) {
 			pixel.temp = 3727
 		}
+		var pX = pixel.x;
+		var pY = pixel.y;
+		for(i = 0; i < adjacentCoords.length; i++) {
+			var oX = adjacentCoords[i][0];
+			var oY = adjacentCoords[i][1];
+			var fX = pX+oX;
+			var fY = pY+oY;
+			if(!isEmpty(fX,fY,true)) {
+				var checkPixel = pixelMap[fX][fY];
+				var thisElementName = pixel.element;
+				var otherElementName = checkPixel.element;
+				var thisElement = elements[pixel.element];
+				var otherElement = elements[checkPixel.element];
+				thisElementName === otherElementName ? checkPixel.temp+=0.1 : checkPixel.temp==10;
+			} else if(isEmpty(fX,fY,false)) {
+				if(Math.random() < 0.05) {
+					createPixel("fire",fX,fY);
+					var checkPixel = pixelMap[fX][fY];
+					checkPixel.temp = pixel.temp;
+				}
+			};
+		};
 	},
 	viscosity: 1.2**4,
 	category: "liquids",
@@ -24,17 +49,42 @@ elements.blazing_pyrotheum = {
 
 elements.gelid_cryotheum = {
 	color: "#00ddff",
-	behavior: [
-		" AND CR:snow%0.35HT:10%2|HT:10%2| AND CR:snow%0.35HT:10%2",
-		"M2 AND CR:snow%0.35 AND HT:10%2|HT:10%2|M2 AND CR:snow%0.35 AND HT:10%2",
-		"M1 AND HT:10%2|M1 AND CR:snow%0.25 AND HT:10%2|M1 AND HT:10%2",
-	],
+	behavior: behaviors.LIQUID,
 	tick: function(pixel) {
 		if(pixel.temp >= -223) { //temperature maximum of -223
 			pixel.temp -= 50
 		} else if(pixel.temp > -223 && pixel.temp < -273) {
 			pixel.temp = -223
 		}
+		var pX = pixel.x;
+		var pY = pixel.y;
+		for(i = 0; i < adjacentCoords.length; i++) {
+			var oX = adjacentCoords[i][0];
+			var oY = adjacentCoords[i][1];
+			var fX = pX+oX;
+			var fY = pY+oY;
+			if(!isEmpty(fX,fY,true)) {
+				var checkPixel = pixelMap[fX][fY];
+				var thisElementName = pixel.element;
+				var otherElementName = checkPixel.element;
+				var thisElement = elements[pixel.element];
+				var otherElement = elements[checkPixel.element];
+				thisElementName === otherElementName ? checkPixel.temp-=0.1 : checkPixel.temp-=10;
+			};
+		};
+		/*for(i = 0; i < nonAdjacentCoords.length; i++) {
+			var oX = nonAdjacentCoords[i][0];
+			var oY = nonAdjacentCoords[i][1];
+			var fX = pX+oX;
+			var fY = pY+oY;
+			if(isEmpty(fX,fY,false)) {
+				if(Math.random() < 0.025) {
+					createPixel("snow",fX,fY);
+					var checkPixel = pixelMap[fX][fY];
+					checkPixel.temp = pixel.temp;
+				};
+			};
+		};*/ //It should create snow, but the snow freezes into ice and it leaves unsightly floating ice everywhere.
 	},
 	viscosity: 3**4,
 	category: "liquids",
@@ -51,21 +101,39 @@ elements.tectonic_petrotheum = {
 		"M2|XX|M2",
 		"M1|M1|M1",
 	],
-	reactions: {
-		"rock": { "elem2": "gravel" },
-		"mudstone": { "elem2": "mud" },     //i took creative liberties with what it breaks :eggTF:
-		"packed_sand": { "elem2": "sand" }, //stone->gravel is explicitly shown and chalcopyrite_ore->
-		"ice": { "elem2": "snow" },	 //chalcopyrite_dust is implied, the rest of this section
-		"packed_snow": { "elem2": "snow" }, //isn't thermal foundation canon*/
-		"basalt": { "elem2": "basalt_gravel" },
-		"limestone": { "elem2": "limestone_gravel" },
-		"concrete": { "elem2": "dust" },
-		"brick": { "elem2": "brick_rubble" },
-		"wood": { "elem2": "sawdust" },
-		"glass": { "elem2": "glass_shard" },
-		"ruins": { "elem2": "dust" },
-		"chalcopyrite_ore": { "elem2": "chalcopyrite_dust" }
-	},
+    tick: function(pixel) { //Code from R74n/vanilla "smash" tool
+		var pX = pixel.x;
+		var pY = pixel.y;
+		for(i = 0; i < adjacentCoords.length; i++) {
+			var oX = adjacentCoords[i][0];
+			var oY = adjacentCoords[i][1];
+			var fX = pX+oX;
+			var fY = pY+oY;
+			if(!isEmpty(fX,fY,true)) {
+				var checkPixel = pixelMap[fX][fY];
+				var thisElementName = pixel.element;
+				var otherElementName = checkPixel.element;
+				var thisElement = elements[pixel.element];
+				var otherElement = elements[checkPixel.element];
+				if (typeof(otherElement.breakInto) !== "undefined") {
+					var hardness = null;
+					if (typeof(otherElement.hardness) === "number") {
+						hardness = otherElement.hardness;
+					} else {
+						hardness = 1;
+					};
+					if (Math.random() < hardness) {
+						var breakInto = otherElement.breakInto;
+						// if breakInto is an array, pick one
+						if (Array.isArray(breakInto)) {
+							breakInto = breakInto[Math.floor(Math.random() * breakInto.length)];
+						};
+						changePixel(checkPixel,breakInto);
+					}
+				}
+			};
+		};
+    },
 	temp: 120,
 	viscosity: 1.5**4,
 	category: "liquids",
@@ -118,7 +186,69 @@ elements.zephyrean_aerotheum = {
 	state: "liquid",
 	density:-800,
 	insulate:false,
-},
+};
+
+if(enabledMods.includes("mods/velocity.js")) {
+	elements.zephyrean_aerotheum.tick = function(pixel) {
+		//"Projectiles that come into contact with zephyrean aerotheum are sent flying in a random direction away from the fluid."
+		var pX = pixel.x;
+		var pY = pixel.y;
+		for(i = 0; i < adjacentCoords.length; i++) {
+			var oX = adjacentCoords[i][0];
+			var oY = adjacentCoords[i][1];
+			var fX = pX+oX;
+			var fY = pY+oY;
+			if(!isEmpty(fX,fY,true)) {
+				var checkPixel = pixelMap[fX][fY];
+				var thisElementName = pixel.element;
+				var otherElementName = checkPixel.element;
+				var thisElement = elements[pixel.element];
+				var otherElement = elements[checkPixel.element];
+				if(otherElement.movable) {
+					if(typeof(checkPixel.vx) === "undefined") {
+						checkPixel.vx = 0;
+					};
+					if(typeof(checkPixel.vy) === "undefined") {
+						checkPixel.vy = 0;
+					};
+					if(Math.random() < 1/3) {
+						var randomVxChange = Math.floor(Math.random() * 9) - 4; //random value from -3 to 3
+						var randomVyChange = Math.floor(Math.random() * 9) - 4; //different random value from -3 to 3
+						//Notes
+						/*
+							Positive vx = right
+							Positive vy = down
+							adjacentCoords[0]: [0, 1]	is downward; when it is detected, the pixel there should be sent farther down (positive vy).
+							adjacentCoords[1]: [0, -1]	is upward; when it is detected, the pixel there should be sent farther up (negative vy).
+							adjacentCoords[2]: [1, 0]	is rightward; when it is detected, the pixel there should be sent farther right (positive vx).
+							adjacentCoords[3]: [-1, 0]	is leftward; when it is detected, the pixel there should be sent farther left (negative vx).
+						*/
+						switch(i) {
+							case 0:
+								randomVyChange = Math.abs(randomVyChange);
+								break;
+							case 1:
+								randomVyChange = (Math.abs(randomVyChange) * -1) - 1;
+								break;
+							case 2:
+								randomVxChange = Math.abs(randomVxChange);
+								break;
+							case 3:
+								randomVxChange = Math.abs(randomVxChange) * -1;
+								break;
+							default:
+								console.log("Uh-oh, i was somehow above 3!")
+						};						
+						if(otherElementName !== thisElementName) {
+							checkPixel.vx += randomVxChange;
+							checkPixel.vy += randomVyChange;
+						}
+					}
+				};
+			};
+		};
+	};
+};
 
 elements.energized_glowstone = {
 	color: ["#fbb204", "#fcf605", "#fce704", "#f8c414", "#f8e814"],

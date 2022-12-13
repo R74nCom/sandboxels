@@ -550,4 +550,19 @@ runAfterLoad(function() {
 			elements.concoction.reactions.hot_salt_cloud = { "elem1": "mistake", "elem2": null }
 			elements.concoction.reactions.cold_salt_cloud = { "elem1": "mistake", "elem2": null }
     };
+
+	if(enabledMods.includes("mods/the_ground.js")) {
+		elements.molten_dirt = { //added manually because the change to dirt will prevent molten_dirt from being auto-generated
+			"behavior": behaviors.MOLTEN,
+			"hidden": true,
+			"state": "liquid",
+			"category": "states",
+			"color": ["#EC6A15", "#EC5515", "#EC3F00", "#B85210", "#B84210", "#B83100", "#AE4B0D", "#AE3C0D", "#AE2D00", "#D65A0F", "#D6480F", "#D63600"],
+			"temp": 1200,
+			"tempLow": 1100,
+			"stateLow": "dry_dirt",
+			"density": 1098,
+			"viscosity": 10000
+		}
+    };
 });

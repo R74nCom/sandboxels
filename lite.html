@@ -1,0 +1,1600 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Sandboxels Lite</title>
+    <meta charset="utf-8">
+    <meta name="description" content="A falling sand simulation game.">
+    <meta name="keywords" content="falling sand, elements, pixel art, simulator, powder">
+    <meta name="author" content="R74n">
+    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://R74n.com/load.js"></script>
+
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            font-family: 'Press Start 2P';
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        h1 {
+            padding: 10px;
+        }
+
+        a {
+            color: rgb(255, 0, 255);
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: rgb(255, 121, 255);
+        }
+
+        a:active,
+        a:hover:active {
+            color: rgb(255, 179, 255);
+        }
+
+        #gameDiv {
+            /*game canvas*/
+            border: 1px solid #ffffff;
+            position: absolute;
+            left: 50%;
+            transform: translate(-50%, -0%);
+            -webkit-touch-callout: none;
+            /* iOS Safari */
+            -webkit-user-select: none;
+            /* Safari */
+            -khtml-user-select: none;
+            /* Konqueror HTML */
+            -moz-user-select: none;
+            /* Old versions of Firefox */
+            -ms-user-select: none;
+            /* Internet Explorer/Edge */
+            user-select: none;
+        }
+
+        button,
+        input[type="submit"],
+        input[type="reset"] {
+            background: none;
+            color: inherit;
+            border: none;
+            padding: 0;
+            font: inherit;
+            cursor: pointer;
+            outline: inherit;
+        }
+
+        #underBox {
+            position: absolute;
+            left: 50%;
+            transform: translate(-50%, -0%);
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        #controls button {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 1em;
+            text-shadow: 0.5px 1px 4px #000000;
+            color: rgba(255, 255, 255, 0.75);
+            border: 1px solid #797979;
+            margin: 0px 5px 5px 5px;
+            font-variant: small-caps;
+        }
+
+        #controls button.bright {
+            text-shadow: 0.5px 1px 4px #ffffff;
+            color: rgba(0, 0, 0, 0.75);
+        }
+
+        /*Darken when active*/
+        #controls button:active,
+        #controls button:active:hover {
+            filter: brightness(60%);
+        }
+
+        #controls button:hover {
+            filter: brightness(90%);
+        }
+
+        #controls button:disabled {
+            cursor: not-allowed;
+        }
+
+        #controls button[current="true"],
+        #controls button[on="true"] {
+            border: 1px solid #ffffff;
+            filter: brightness(110%);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, .4);
+            color: rgba(255, 255, 255, 1);
+        }
+
+        #controls button.bright[current="true"] {
+            color: rgba(0, 0, 0, 1);
+        }
+
+        #controls button[on="true"] {
+            border-color: lime;
+            color: lime;
+        }
+
+        #controls div {
+            display: block;
+        }
+
+        .stat {
+            margin-right: 25px;
+            margin-bottom: 5px;
+            float: right;
+        }
+
+        #stats {
+            margin: 0px 5px 5px 5px;
+            font-size: 0.75em;
+            height: 2em;
+        }
+
+        #stat-pos,
+        #stat-pixels,
+        #stat-shift,
+        #stat-tps,
+        #stat-ticks {
+            float: left;
+        }
+
+        .categoryName {
+            font-size: 0.75em;
+            text-transform: uppercase;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+
+        #extraInfo {
+            margin: 5px
+        }
+    </style>
+
+    <script>
+        //replaceAll polyfill
+        if (!String.prototype.replaceAll) {
+            String.prototype.replaceAll = function (str, newStr) {
+                if (Object.prototype.toString.call(str).toLowerCase() === '[object regexp]') {
+                    return this.replace(str, newStr);
+                }
+                return this.replace(new RegExp(str, 'g'), newStr);
+            };
+        }
+    </script>
+
+    <script>
+        behaviors = {
+            "POWDER": [
+                "XX|XX|XX",
+                "XX|XX|XX",
+                "M2|M1|M2",
+            ],
+            "AGPOWDER": [
+                "M2|M1|M2",
+                "XX|XX|XX",
+                "XX|XX|XX",
+            ],
+            "LIQUID": [
+                "XX|XX|XX",
+                "M2|XX|M2",
+                "M1|M1|M1",
+            ],
+            "AGLIQUID": [
+                "M1|M1|M1",
+                "M2|XX|M2",
+                "XX|XX|XX",
+            ],
+            "WALL": [
+                "XX|XX|XX",
+                "XX|XX|XX",
+                "XX|XX|XX",
+            ],
+            "UL_UR": [
+                "M1|M1|M1",
+                "M2|XX|M2",
+                "XX|XX|XX",
+            ],
+            "GAS": [
+                "M2|M1|M2",
+                "M1|XX|M1",
+                "M2|M1|M2",
+            ],
+            "DGAS": [
+                "M2|M1|M2",
+                "M1|DL%5|M1",
+                "M2|M1|M2",
+            ],
+            "SUPPORT": [
+                "XX|XX|XX",
+                "SP|XX|SP",
+                "XX|M1|XX",
+            ],
+            "SUPPORTPOWDER": [
+                "XX|XX|XX",
+                "SP|XX|SP",
+                "M2|M1|M2",
+            ],
+            "DELETE": [
+                "XX|DL|XX",
+                "DL|XX|DL",
+                "XX|DL|XX",
+            ],
+            "FILL": [
+                "XX|CL|XX",
+                "CL|XX|CL",
+                "XX|CL|XX",
+            ],
+            "STURDYPOWDER": [
+                "XX|XX|XX",
+                "XX|XX|XX",
+                "XX|M1|XX",
+            ],
+            "SELFDELETE": [
+                "XX|XX|XX",
+                "XX|DL|XX",
+                "XX|XX|XX",
+            ],
+            "FOAM": [
+                "SW:water%10|SW:water%10|SW:water%10",
+                "XX|DL%5|XX",
+                "M2%25|M1%25|M2%25",
+            ],
+            "BUBBLE": [
+                "SW:water%25|SW:water%25|SW:water%25",
+                "M1%5|DL%0.25|M1%5",
+                "M1%2|M1%1|M1%2",
+            ],
+            "STICKY": [
+                "XX|ST|XX",
+                "ST|XX|ST",
+                "XX|ST AND M1|XX",
+            ],
+            "MOLTEN": [
+                "XX|CR:fire%2.5|XX",
+                "M2|XX|M2",
+                "M1|M1|M1",
+            ],
+        }
+        eLists = {
+            "ANIMAL": ["flea", "ant", "fly", "firefly", "bee", "frog", "fish", "worm", "termite", "rat"],
+            "CLEANANIMAL": ["ant", "firefly", "bee", "frog", "fish"],
+        }
+
+        airDensity = 1.225; // kg/m^3
+        airTemp = 20; // Celsius
+        // Object storing various powders, called elements
+        // name - name of the element
+        // color - color of the element's pixel
+        // density - density of the element [unused currently] (kg/m^3)
+        // behavior - behavior of the element
+        // flam - temperature of combustion [unused currently]
+        // temp - default temperature of the element (Celsius)
+        // tempHigh - highest temperature before state change
+        // tempLow - lowest temperature before state change
+        // stateHigh - element transformed into when tempHigh is reached
+        // stateLow - element transformed into when tempLow is reached
+        // viscosity - how slow a liquid will move (higher = slower) (cps)
+
+        // [Future]
+        // changeAfter - seconds before element dissolves
+        // change - element transformed into after time
+        elements = {
+            "heat": {
+                "name": "heat",
+                "color": "#ff0000",
+                "behavior": behaviors.WALL,
+                "temp": 2,
+                "category": "tools",
+            },
+            "cool": {
+                "name": "cool",
+                "color": "#0000ff",
+                "behavior": behaviors.WALL,
+                "temp": -2,
+                "category": "tools",
+            },
+            "erase": {
+                "name": "erase",
+                "color": "#ff00ff",
+                "behavior": behaviors.WALL,
+                "category": "tools",
+            },
+            "sand": {
+                "name": "sand",
+                "color": "#ffff00",
+                "behavior": behaviors.POWDER,
+                "density": 1602,
+                "category": "land",
+            },
+            "water": {
+                "name": "water",
+                "color": "#0055ff",
+                "behavior": behaviors.LIQUID,
+                "density": 997,
+                "tempHigh": 100,
+                "stateHigh": "steam",
+                "tempLow": 0,
+                "stateLow": "ice",
+                "viscosity": 1,
+                "category": "liquids",
+            },
+            "dirt": {
+                "name": "dirt",
+                "color": "#555500",
+                "behavior": behaviors.POWDER,
+                "category": "land",
+            },
+            "grass": {
+                "name": "grass",
+                "color": "#00ff00",
+                "behavior": behaviors.WALL,
+                "category": "land",
+            },
+            "wall": {
+                "name": "wall",
+                "color": "#3a3a3a",
+                "behavior": behaviors.WALL,
+                "density": 0,
+                "category": "solids",
+            },
+            "steam": {
+                "name": "steam",
+                "color": "#70fff5",
+                "behavior": behaviors.GAS,
+                "density": 0.013,
+                "temp": 100,
+                "stateLow": "water",
+                "category": "gases",
+            },
+            "ice": {
+                "name": "ice",
+                "color": "#00a6ff",
+                "behavior": behaviors.WALL,
+                "density": 917,
+                "temp": 0,
+                "tempHigh": 5,
+                "stateHigh": "water",
+                "category": "solids",
+            },
+            "snow": {
+                "name": "snow",
+                "color": "#ffffff",
+                "behavior": behaviors.POWDER,
+                "density": 100,
+                "temp": 0,
+                "tempHigh": 5,
+                "stateHigh": "water",
+                "category": "land",
+            },
+            "wood": {
+                "name": "wood",
+                "color": "#5b3a00",
+                "behavior": behaviors.WALL,
+                "density": 745,
+                "category": "solids",
+            },
+
+        }
+
+        // Loop through behaviors and each behavior, if it is a string, split the items and replace the value with the array
+        for (var behavior in behaviors) {
+            if (typeof behaviors[behavior][0] === "string") {
+                var newbehavior = [];
+                for (var i = 0; i < behaviors[behavior].length; i++) {
+                    newbehavior.push(behaviors[behavior][i].split("|"));
+                }
+                behaviors[behavior] = newbehavior;
+            }
+        }
+
+        // Loop through each element. If it has a tempHigh, but not a stateHigh, create a new molten element
+        for (element in elements) {
+            if (elements[element].tempHigh && !elements[element].stateHigh) {
+                var newname = "molten_" + element;
+                elements[element].stateHigh = newname;
+                elements[newname] = {
+                    "name": newname.replaceAll("_", " "),
+                    "color": ["#ff6f00", "#ff8c00", "#ff4d00"],
+                    "behavior": behaviors.MOLTEN,
+                    "density": elements[element].density / 2,
+                    "temp": elements[element].tempHigh,
+                    "tempLow": elements[element].tempHigh - 100,
+                    "stateLow": element,
+                    "viscosity": 10000,
+                    "hidden": true,
+                }
+            }
+            if (elements[element].behavior && typeof elements[element].behavior[0] === "string") {
+                var newbehavior = [];
+                for (var i = 0; i < elements[element].behavior.length; i++) {
+                    newbehavior.push(elements[element].behavior[i].split("|"));
+                }
+                elements[element].behavior = newbehavior;
+            }
+        }
+
+        function hexToRGB(hex) {
+            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+        // convert every color in the elements object to rgb
+        for (var key in elements) {
+            if (elements.hasOwnProperty(key)) {
+                // if the color is an array, loop over each one
+                if (elements[key].color instanceof Array) {
+                    var rgbs = [];
+                    var rgbos = [];
+                    for (var i = 0; i < elements[key].color.length; i++) {
+                        var c = elements[key].color[i];
+                        if (c.startsWith("#")) {
+                            var rgb = hexToRGB(c);
+                            rgbs.push("rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")");
+                            rgbos.push(rgb);
+                        } else {
+                            rgbs.push(c);
+                        }
+                    }
+                    elements[key].color = rgbs;
+                    elements[key].colorObject = rgbos;
+                } else {
+                    // if elements[key].color starts with #
+                    if (elements[key].color.startsWith("#")) {
+                        var rgb = hexToRGB(elements[key].color);
+                        elements[key].color = "rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")";
+                        elements[key].colorObject = rgb;
+                    }
+                }
+            }
+        }
+
+        currentPixels = [];
+        currentID = 0;
+        // Pixel class, with attributes such as x, y, and element
+        class Pixel {
+            constructor(x, y, element) {
+                this.x = x;
+                this.y = y;
+                this.element = element;
+                var elementInfo = elements[element];
+                this.color = pixelColorPick(this);
+                // If element doesn't have temp attribute, set temp to airTemp
+                if (elementInfo.temp == undefined) {
+                    this.temp = airTemp;
+                } else {
+                    this.temp = elementInfo.temp;
+                }
+                this.start = pixelTicks;
+                this.id = currentID;
+                if (elementInfo.burning) {
+                    this.burning = true;
+                    this.burnStart = pixelTicks;
+                } else {
+                    this.burning = false;
+                }
+                currentID++;
+                pixelMap[x][y] = this;
+            }
+        }
+        pixelSize = 10;
+
+        function outOfBounds(x, y) {
+            // Returns true if the pixel is out of bounds
+            return y > height - 1 || y < 1 || x > width - 1 || x < 1
+        }
+
+        function isEmpty(x, y, ignoreBounds = false) {
+            if (outOfBounds(x, y)) {
+                return ignoreBounds;
+            }
+            return pixelMap[x][y] == undefined;
+        }
+
+        function canMove(pixel, x, y) {
+            if (isEmpty(x, y)) {
+                return true;
+            }
+        }
+
+        function movePixel(pixel, x, y, leaveBehind = null) {
+            // if the pixel isn't in currentPixels, return
+            if (!currentPixels.includes(pixel)) {
+                return;
+            }
+            // Delete the pixel from the old position
+            delete pixelMap[pixel.x][pixel.y];
+            if (leaveBehind != null && isEmpty(pixel.x, pixel.y)) {
+                createPixel(leaveBehind, pixel.x, pixel.y);
+            }
+            pixel.x = x;
+            pixel.y = y;
+            pixelMap[x][y] = pixel;
+        }
+
+        function clonePixel(pixel, x, y) {
+            currentPixels.push(new Pixel(x, y, pixel.element));
+        }
+
+        function createPixel(element, x, y) {
+            currentPixels.push(new Pixel(x, y, element));
+        }
+
+        function deletePixel(x, y, id = null) {
+            delete pixelMap[x][y];
+            if (id != null) {
+                for (var i = 0; i < currentPixels.length; i++) {
+                    if (currentPixels[i].id == id) {
+                        currentPixels.splice(i, 1);
+                        return;
+                    }
+                }
+            }
+            for (var i = 0; i < currentPixels.length; i++) {
+                if (currentPixels[i].x == x && currentPixels[i].y == y) {
+                    currentPixels.splice(i, 1);
+                    break;
+                }
+            }
+        }
+
+        function swapPixels(pixel1, pixel2) {
+            var tempX = pixel1.x;
+            var tempY = pixel1.y;
+            pixel1.x = pixel2.x;
+            pixel1.y = pixel2.y;
+            pixel2.x = tempX;
+            pixel2.y = tempY;
+            pixelMap[pixel1.x][pixel1.y] = pixel1;
+            pixelMap[pixel2.x][pixel2.y] = pixel2;
+        }
+
+        function behaviorCoords(x, y, bx, by) {
+            bx -= 1;
+            by -= 1;
+            x += bx;
+            y += by;
+            return {
+                x: x,
+                y: y
+            };
+        }
+        /* New Behavior Example (Sand)
+        [
+            ["XX","XX","XX"],
+            ["XX","XX","XX"],
+            ["M2","M1","M2"]
+        ]                    */
+        /* Behavior Rules
+            XX = Ignore
+            M1 = Move (First Priority)
+            M2 = Move (Second Priority)
+            SP = Support (Doesn't move if all aren't empty)
+            DL = Delete
+            CL = Clone
+            CH = Change
+            RP = Replace (Move to an existing element)
+            CR:element_name = Create a pixel of element_name
+            LB:element_name = Leave behind a pixel of element_name when moved (Must be center cell)
+            %(num) = Chance of rule happening
+            L1:element_name = Leave behind only on M1 moves
+            L2:element_name = Leave behind only on M2 moves
+            SW = Swap
+            HT = Heat
+            CO = Cool
+            CC = Change Color (Hexadecimal)
+            ST = Stick
+        */
+        function pixelTick(pixel) {
+            if (pixel.start == pixelTicks) {
+                return
+            }
+            var info = elements[pixel.element];
+            var behavior = info.behavior;
+            var x = pixel.x;
+            var y = pixel.y;
+            var move1Spots = [];
+            var move2Spots = [];
+            var supportSpots = [];
+            var replaceSpots = [];
+            var swapSpots = [];
+            var sticking = false;
+            var deleted = false;
+            var leaveBehind = null;
+            var leaveBehind1 = null;
+            var leaveBehind2 = null;
+            // Parse behavior
+            for (var by = 0; by < behavior.length; by++) {
+                for (var bx = 0; bx < behavior[by].length; bx++) {
+                    var b0 = behavior[by][bx].trim();
+                    //if (b.includes(" OR ")) {
+                    //    b = b.split(" OR ")[Math.floor(Math.random()*b.split(" OR ").length)];
+                    //}
+                    // Loop through b0.split(" AND ")
+                    for (var i = 0; i < b0.split(" AND ").length; i++) {
+                        var b = b0.split(" AND ")[i];
+                        var arg = null;
+                        if (b.includes(":")) {
+                            arg = b.split(":")[1].split(/[\:\%]/)[0];
+                            if (!b.includes("%")) {
+                                b = b.split(/[\:\%]/)[0];
+                            }
+                        }
+                        // If b has "%" followed by a number in it, it's a chance to move
+                        if (b.includes("%")) {
+                            // Split the string at the "%" and use the second half as the chance (float)
+                            var chance = parseFloat(b.split("%")[1]);
+                            //console.log(b+": "+(Math.random()*100 < chance));
+                            b = b.split(/[\:\%]/)[0];
+                        } else {
+                            var chance = 100;
+                        }
+                        if (b == "XX" || b == "") {
+                            continue
+                        }
+                        if (Math.random() * 100 < chance) {
+                            var newCoords = behaviorCoords(x, y, bx, by);
+                            if (b == "M1") {
+                                if (!((Math.random() * 100) < 100 / ((info.viscosity || 1) ** 0.25))) {
+                                    newCoords.x = x;
+                                }
+                                move1Spots.push(newCoords);
+                            } else if (b == "M2") {
+                                if (!((Math.random() * 100) < 100 / ((info.viscosity || 1) ** 0.25))) {
+                                    newCoords.x = x;
+                                }
+                                move2Spots.push(newCoords);
+                            } else if (b == "SP") {
+                                supportSpots.push({
+                                    x: newCoords.x,
+                                    y: newCoords.y,
+                                    arg: arg
+                                });
+                            } else if (b == "DL") {
+                                if ((!isEmpty(newCoords.x, newCoords.y)) && !outOfBounds(newCoords.x, newCoords.y)) {
+                                    // if the pixel at newCoords is the same element as the pixel, ignore
+                                    newPixel = pixelMap[newCoords.x][newCoords.y];
+                                    if ((!(newPixel.element == pixel.element)) || (newCoords.x == x && newCoords.y ==
+                                            y)) {
+                                        if (arg != null) {
+                                            var args = arg.split(",");
+                                        }
+                                        if (arg == null || args.includes(newPixel.element)) {
+                                            deletePixel(newCoords.x, newCoords.y);
+                                            if (newCoords.x == x && newCoords.y == y) {
+                                                deleted = true;
+                                            }
+                                        }
+                                    }
+                                }
+                            } else if (b == "CL") {
+                                if (isEmpty(newCoords.x, newCoords.y)) {
+                                    clonePixel(pixel, newCoords.x, newCoords.y);
+                                }
+                            }
+                            //Change pixel
+                            else if (b == "CH") {
+                                if (!isEmpty(newCoords.x, newCoords.y) && !outOfBounds(newCoords.x, newCoords.y)) {
+                                    var newPixel = pixelMap[newCoords.x][newCoords.y];
+                                    if (arg.includes(">")) {
+                                        var argfrom = arg.split(">")[0];
+                                        var argto = arg.split(">")[1];
+                                    } else {
+                                        var argfrom = null;
+                                        var argto = arg;
+                                    }
+                                    if (argto.includes(",")) {
+                                        var argto = argto.split(",")[Math.floor(Math.random() * argto.split(",")
+                                            .length)];
+                                    }
+                                    if ((newPixel.element != argto) && (argfrom == null || argfrom == newPixel
+                                            .element)) {
+                                        newPixel.element = argto;
+                                        newPixel.color = pixelColorPick(newPixel);
+                                        newPixel.start = pixelTicks;
+                                        if (elements[argto].burning != true) {
+                                            newPixel.burning = false;
+                                        }
+                                    }
+                                }
+                            }
+                            //Replace pixel
+                            /*else if (b == "RP") {
+                                replaceSpots.push({x:newCoords.x,y:newCoords.y,arg:arg});
+                            }*/
+                            //Create pixel
+                            else if (b == "CR") {
+                                if (isEmpty(newCoords.x, newCoords.y)) {
+                                    if (arg == null) {
+                                        arg = pixel.element;
+                                    } else if (arg.includes(",")) {
+                                        arg = arg.split(",")[Math.floor(Math.random() * arg.split(",").length)];
+                                    }
+                                    createPixel(arg, newCoords.x, newCoords.y);
+                                }
+                            }
+                            //Leave behind element
+                            else if (b == "LB" || b == "L1" || b == "L2") {
+                                if (arg != null && arg.includes(",")) {
+                                    arg = arg.split(",")[Math.floor(Math.random() * arg.split(",").length)];
+                                }
+                                if (b == "LB") {
+                                    leaveBehind = arg;
+                                } else if (b == "L1") {
+                                    leaveBehind1 = arg;
+                                } else if (b == "L2") {
+                                    leaveBehind2 = arg;
+                                }
+                            }
+                            //Swap
+                            else if (b == "SW") {
+                                if (!isEmpty(newCoords.x, newCoords.y) && !outOfBounds(newCoords.x, newCoords.y)) {
+                                    var newPixel = pixelMap[newCoords.x][newCoords.y];
+                                    if (arg != null) {
+                                        var args = arg.split(",");
+                                    }
+                                    if (arg == null || args.includes(newPixel.element)) {
+                                        swapSpots.push({
+                                            x: newCoords.x,
+                                            y: newCoords.y
+                                        });
+                                    }
+                                }
+                            }
+                            //Heat
+                            else if (b == "HT") {
+                                if (!isEmpty(newCoords.x, newCoords.y) && !outOfBounds(newCoords.x, newCoords.y)) {
+                                    var newPixel = pixelMap[newCoords.x][newCoords.y];
+                                    if (arg != null) {
+                                        arg = parseFloat(arg)
+                                    } else {
+                                        arg = 1
+                                    }
+                                    if (arg == NaN) {
+                                        arg = 1
+                                    }
+                                    newPixel.temp += arg;
+                                    pixelTempCheck(newPixel);
+                                }
+                            }
+                            //Cool
+                            else if (b == "CO") {
+                                if (!isEmpty(newCoords.x, newCoords.y) && !outOfBounds(newCoords.x, newCoords.y)) {
+                                    var newPixel = pixelMap[newCoords.x][newCoords.y];
+                                    if (arg != null) {
+                                        arg = parseFloat(arg)
+                                    } else {
+                                        arg = 1
+                                    }
+                                    if (arg == NaN) {
+                                        arg = 1
+                                    }
+                                    newPixel.temp -= arg;
+                                    pixelTempCheck(newPixel);
+                                }
+                            }
+                            //Change color
+                            else if (b == "CC") {
+                                if (!isEmpty(newCoords.x, newCoords.y) && !outOfBounds(newCoords.x, newCoords.y)) {
+                                    var newPixel = pixelMap[newCoords.x][newCoords.y];
+                                    if (arg == null) {
+                                        arg = newPixel.colorObject
+                                    } else {
+                                        if (arg.includes(",")) {
+                                            arg = arg.split(",")[Math.floor(Math.random() * arg.split(",").length)];
+                                        }
+                                        if (!arg.startsWith("#")) {
+                                            arg = "#" + arg;
+                                        }
+                                    }
+                                    newPixel.color = pixelColorPick(newPixel, arg);
+                                }
+                            }
+                            //Stick
+                            else if (b == "ST") {
+                                if (!isEmpty(newCoords.x, newCoords.y) && !outOfBounds(newCoords.x, newCoords.y)) {
+                                    var newPixel = pixelMap[newCoords.x][newCoords.y];
+                                    if (newPixel.element != pixel.element && (arg == null || newPixel.element == arg)) {
+                                        sticking = true
+                                    }
+                                }
+                            }
+
+
+                        }
+                    }
+                }
+            }
+            if (deleted) {
+                return;
+            }
+            var move = true;
+            if (supportSpots.length > 0) {
+                var supportCount = 0;
+                var allEmpty = true;
+                for (var i = 0; i < supportSpots.length; i++) {
+                    var bx = supportSpots[i].x;
+                    var by = supportSpots[i].y;
+                    var arg = supportSpots[i].arg;
+                    if ((!isEmpty(bx, by)) && !outOfBounds(bx, by)) {
+                        if (pixelMap[bx][by].element == arg || arg == null) {
+                            supportCount++;
+                        }
+                    }
+                }
+                if (supportCount == supportSpots.length) {
+                    move = false;
+                }
+            }
+            /*replaceSpotsCopy = replaceSpots.slice();
+            if (replaceSpots.length > 0) {
+                while (move1Spots.length > 0) {
+                    // coords = random item of replaceSpots
+                    var newCoords = replaceSpots[Math.floor(Math.random()*replaceSpots.length)];
+                    if (!isEmpty(newCoords.x,newCoords.y) && !outOfBounds(newCoords.x,newCoords.y)) {
+                        if (newPixel.element == newCoords.arg || newCoords.arg == null) {
+                            var newPixel = pixelMap[newCoords.x][newCoords.y];
+                            var newCoords = replaceSpots[Math.floor(Math.random()*replaceSpots.length)];
+                            deletePixel(newCoords.x,newCoords.y);
+                            pixelMap[newCoords.x][newCoords.y] = pixel;
+                            pixel.x = newCoords.x;
+                            pixel.y = newCoords.y;
+                            moved = true;
+                            replaceSpotsCopy.splice(replaceSpotsCopy.indexOf(newCoords),1);
+                            break;
+                        }
+                    }
+                    replaceSpots.splice(replaceSpots.indexOf(newCoords),1);
+                }
+            }
+            if (replaceSpotsCopy.length > 0 && !moved) {
+                // combine replaceSpotsCopy and move2Spots
+                move2Spots = move2Spots.concat(replaceSpotsCopy);
+            }*/
+
+            var moved = false;
+
+            if (swapSpots.length > 0) {
+                var coords = swapSpots[Math.floor(Math.random() * swapSpots.length)];
+                swapPixels(pixel, pixelMap[coords.x][coords.y]);
+                move = false;
+                moved = true;
+            }
+
+            if (sticking) {
+                move = false;
+            }
+
+            // Move First Priority
+            if (move) {
+                if (move1Spots.length > 0) {
+                    // While move1Spots is not empty
+                    while (move1Spots.length > 0) {
+                        // coords = random item of move1Spots
+                        var coords = move1Spots[Math.floor(Math.random() * move1Spots.length)];
+                        var nx = coords.x;
+                        var ny = coords.y;
+                        if (isEmpty(nx, ny)) { // If coords is empty, move to coords
+                            movePixel(pixel, nx, ny, leaveBehind1 || leaveBehind);
+                            moved = true;
+                            break;
+                        } else { // Remove from move1Spots
+                            move1Spots.splice(move1Spots.indexOf(coords), 1);
+                        }
+                    }
+                }
+                // Move Second Priority
+                if (!moved && move2Spots.length > 0) {
+                    // While move2Spots is not empty
+                    while (move2Spots.length > 0) {
+                        // coords = random item of move2Spots
+                        var coords = move2Spots[Math.floor(Math.random() * move2Spots.length)];
+                        var nx = coords.x;
+                        var ny = coords.y;
+                        if (isEmpty(nx, ny)) { // If coords is empty, move to coords
+                            movePixel(pixel, nx, ny, leaveBehind2 || leaveBehind);
+                            moved = true;
+                            break;
+                        } else { // Remove from move2Spots
+                            move2Spots.splice(move2Spots.indexOf(coords), 1);
+                        }
+                    }
+                }
+            }
+
+            if (pixel.burning) {
+                pixel.temp += 1;
+                pixelTempCheck(pixel);
+                var burnSpots = [{
+                        x: pixel.x + 1,
+                        y: pixel.y
+                    },
+                    {
+                        x: pixel.x - 1,
+                        y: pixel.y
+                    },
+                    {
+                        x: pixel.x,
+                        y: pixel.y + 1
+                    },
+                    {
+                        x: pixel.x,
+                        y: pixel.y - 1
+                    },
+                ];
+                // loop through burnspots
+                for (var i = 0; i < burnSpots.length; i++) {
+                    var burnSpot = burnSpots[i];
+                    if (!isEmpty(burnSpot.x, burnSpot.y) && !outOfBounds(burnSpot.x, burnSpot.y)) {
+                        var newPixel = pixelMap[burnSpot.x][burnSpot.y];
+                        if (elements[newPixel.element].burn && !newPixel.burning) {
+                            if (Math.floor(Math.random() * 100) < elements[newPixel.element].burn) {
+                                newPixel.burning = true;
+                                newPixel.burnStart = pixelTicks;
+                            }
+                        }
+                    }
+                }
+
+                if ((pixelTicks - pixel.burnStart > (info.burnTime || 200)) && Math.floor(Math.random() * 100) < (info
+                        .burn || 10)) {
+                    var burnInto = info.burnInto;
+                    if (burnInto == undefined) {
+                        burnInto = 'fire';
+                    } else if (burnInto instanceof Array) {
+                        burnInto = burnInto[Math.floor(Math.random() * burnInto.length)];
+                    }
+                    pixel.element = burnInto;
+                    if (info.fireColor != undefined && burnInto == "fire") {
+                        pixel.color = pixelColorPick(pixel, info.fireColor);
+                    } else {
+                        pixel.color = pixelColorPick(pixel)
+                    }
+                    pixel.start = pixelTicks;
+                    if (elements[burnInto].burning != true) {
+                        pixel.burning = false;
+                        delete pixel.burnStart;
+                    } else {
+                        pixel.burning = true;
+                        pixel.burnStart = pixelTicks;
+                    }
+                    if (elements[burnInto].temp != undefined) {
+                        pixel.temp = elements[burnInto].temp;
+                        pixelTempCheck(pixel)
+                    }
+                } else if (pixel.element != "fire" && isEmpty(pixel.x, pixel.y - 1) && Math.floor(Math.random() * 100) <
+                    10) {
+                    createPixel("fire", pixel.x, pixel.y - 1);
+                    pixelMap[pixel.x][pixel.y - 1].temp = pixel.temp + (pixelTicks - (pixel.burnStart || 0));
+                    if (info.fireColor != undefined) {
+                        pixelMap[pixel.x][pixel.y - 1].color = pixelColorPick(pixelMap[pixel.x][pixel.y - 1], info
+                            .fireColor);
+                    }
+                }
+
+            }
+
+            if (info.tempChange != undefined) {
+                pixel.temp += info.tempChange;
+                pixelTempCheck(pixel);
+            }
+
+
+        }
+
+        function pixelColorPick(pixel, customColor = null) {
+            var element = pixel.element;
+            var elementInfo = elements[element];
+            //if (elementInfo.behavior instanceof Array) {
+
+            if (customColor != null) {
+                if (Array.isArray(customColor)) {
+                    customColor = customColor[Math.floor(Math.random() * customColor.length)];
+                }
+                if (customColor.startsWith("#")) {
+                    customColor = hexToRGB(customColor);
+                }
+                var rgb = customColor;
+            } else {
+                var rgb = elements[element].colorObject; // {r, g, b}
+                // If rgb is an array, choose a random item
+                if (Array.isArray(rgb)) {
+                    rgb = rgb[Math.floor(Math.random() * rgb.length)];
+                }
+            }
+            // Randomly darken or lighten the RGB color
+            var coloroffset = Math.floor(Math.random() * (Math.random() > 0.5 ? -1 : 1) * Math.random() * 15);
+            var r = rgb.r + coloroffset;
+            var g = rgb.g + coloroffset;
+            var b = rgb.b + coloroffset;
+            // Make sure the color is within the RGB range
+            r = Math.max(0, Math.min(255, r));
+            g = Math.max(0, Math.min(255, g));
+            b = Math.max(0, Math.min(255, b));
+            var color = "rgb(" + r + "," + g + "," + b + ")";
+
+            /*}
+            else {
+                var color = elementInfo.color;
+                if (Array.isArray(color)) {
+                    color = color[Math.floor(Math.random() * color.length)];
+                }
+            }*/
+            return color;
+        }
+
+        function pixelTempCheck(pixel) {
+            var elementInfo = elements[pixel.element];
+            // If the pixel's temp >= the elementInfo tempHigh, change pixel.element to elementInfo.stateHigh
+            if (pixel.temp >= elementInfo.tempHigh) {
+                pixel.element = elementInfo.stateHigh;
+                pixel.color = pixelColorPick(pixel);
+                if (pixel.burning) {
+                    pixel.burning = false;
+                    delete pixel.burnStart;
+                }
+                if (elements[elementInfo.stateHigh].burning == true) {
+                    pixel.burning = true;
+                    pixel.burnStart = pixelTicks;
+                }
+            }
+            // If the pixel's temp <= the elementInfo tempLow, change pixel.element to elementInfo.stateLow
+            else if (pixel.temp <= elementInfo.tempLow) {
+                pixel.element = elementInfo.stateLow;
+                pixel.color = pixelColorPick(pixel);
+                if (pixel.burning) {
+                    pixel.burning = false;
+                    delete pixel.burnStart;
+                }
+                if (elements[elementInfo.stateLow].burning) {
+                    pixel.burning = true;
+                    pixel.burnStart = pixelTicks;
+                }
+            }
+        }
+
+        function getNeighbors(pixel) {
+            var neighbors = [];
+            var x = pixel.x;
+            var y = pixel.y;
+            if (!isEmpty(x - 1, y, true)) {
+                neighbors.push(pixelMap[x - 1][y]);
+            }
+            if (!isEmpty(x + 1, y, true)) {
+                neighbors.push(pixelMap[x + 1][y]);
+            }
+            if (!isEmpty(x, y - 1, true)) {
+                neighbors.push(pixelMap[x][y - 1]);
+            }
+            if (!isEmpty(x, y + 1, true)) {
+                neighbors.push(pixelMap[x][y + 1]);
+            }
+            return neighbors;
+        }
+        hiding = false;
+
+        function drawPixels(forceTick = false) {
+            if (!hiding) {
+                var canvas = document.getElementById("game");
+                var ctx = canvas.getContext("2d");
+            }
+            // Draw the current pixels
+            // newCurrentPixels = shuffled currentPixels
+            var newCurrentPixels = currentPixels.slice();
+            newCurrentPixels.sort(function () {
+                return 0.5 - Math.random()
+            });
+            for (var i = 0; i < newCurrentPixels.length; i++) {
+                pixel = newCurrentPixels[i];
+                if (pixelMap[pixel.x][pixel.y] == undefined) {
+                    continue
+                }
+                if ((!paused) || forceTick) {
+                    pixelTick(pixel);
+                };
+            }
+            for (var i = 0; i < newCurrentPixels.length; i++) {
+                pixel = newCurrentPixels[i];
+                if (pixelMap[pixel.x][pixel.y] == undefined) {
+                    continue
+                }
+                if (!hiding) {
+                    ctx.fillStyle = pixel.color;
+                    ctx.fillRect(pixel.x * pixelSize, pixel.y * pixelSize, pixelSize, pixelSize);
+                }
+            }
+            if ((!paused) || forceTick) {
+                pixelTicks++
+            };
+        }
+
+        function tick() {
+            // If mouseIsDown, do mouseAction
+            if (mouseIsDown) {
+                mouseAction(null, mousePos.x, mousePos.y);
+            }
+            // Get the canvas
+            var canvas = document.getElementById("game");
+            var ctx = canvas.getContext("2d");
+            // Clear the canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawPixels();
+
+            if (currentElement == "pick") {
+                var mouseOffset = 0;
+            } else {
+                var mouseOffset = Math.trunc(mouseSize / 2);
+            }
+            var topLeft = [mousePos.x - mouseOffset, mousePos.y - mouseOffset];
+            var bottomRight = [mousePos.x + mouseOffset, mousePos.y + mouseOffset];
+            // Draw a rectangle around the mouse
+            ctx.strokeStyle = "white";
+            ctx.strokeRect(topLeft[0] * pixelSize, topLeft[1] * pixelSize, (bottomRight[0] - topLeft[0] + 1) *
+                pixelSize, (bottomRight[1] - topLeft[1] + 1) * pixelSize);
+            ticks++;
+        }
+
+        currentElement = "sand";
+        mouseIsDown = false;
+        mouseType = null;
+
+        function mouseClick(e) {
+            mouseIsDown = true;
+            // If it's a left click
+            if (e.button == 0) {
+                mouseType = "left";
+            } else if (e.button == 2) {
+                mouseType = "right";
+            }
+            // middle click
+            else if (e.button == 1) {
+                mouseType = "middle";
+            }
+            mouseMove(e);
+        }
+
+        function mouseUp(e) {
+            mouseIsDown = false;
+        }
+
+        function getMousePos(canvas, evt) {
+            // If evt.touches is defined, use the first touch
+            if (evt.touches) {
+                evt.preventDefault();
+                evt = evt.touches[0];
+            }
+            var rect = canvas.getBoundingClientRect();
+            return {
+                // Round to nearest pixel
+                x: Math.round((evt.clientX - rect.left) / pixelSize - 0.5),
+                y: Math.round((evt.clientY - rect.top) / pixelSize - 0.5)
+            };
+        }
+
+        function mouseMove(e) {
+            if (mouseIsDown) {
+                mouseAction(e);
+            } else {
+                var canvas = document.getElementById("game");
+                mousePos = getMousePos(canvas, e);
+            }
+        }
+
+        function mouseAction(e, mouseX = undefined, mouseY = undefined) {
+            if (mouseType == "left") {
+                mouse1Action(e, mouseX, mouseY);
+            } else if (mouseType == "right") {
+                mouse2Action(e, mouseX, mouseY);
+            } else if (mouseType == "middle") {
+                mouseMiddleAction(e, mouseX, mouseY);
+            }
+        }
+        mouseSize = 5;
+        mousePos = {
+            x: 0,
+            y: 0
+        };
+
+        function mouseRange(mouseX, mouseY) {
+            var coords = [];
+            var mouseOffset = Math.trunc(mouseSize / 2);
+            var topLeft = [mouseX - mouseOffset, mouseY - mouseOffset];
+            var bottomRight = [mouseX + mouseOffset, mouseY + mouseOffset];
+            // Starting at the top left, go through each pixel
+            for (var x = topLeft[0]; x <= bottomRight[0]; x++) {
+                for (var y = topLeft[1]; y <= bottomRight[1]; y++) {
+                    // If the pixel is empty, add it to coords
+                    coords.push([x, y]);
+                }
+            }
+            return coords;
+        }
+
+        function mouse1Action(e, mouseX = undefined, mouseY = undefined) {
+            if (currentElement == "erase") {
+                mouse2Action(e, mouseX, mouseY);
+                return;
+            } else if (currentElement == "pick") {
+                mouseMiddleAction(e, mouseX, mouseY);
+                return;
+            }
+            // If x and y are undefined, get the mouse position
+            if (mouseX == undefined && mouseY == undefined) {
+                var canvas = document.getElementById("game");
+                var ctx = canvas.getContext("2d");
+                mousePos = getMousePos(canvas, e);
+                var mouseX = mousePos.x;
+                var mouseY = mousePos.y;
+            }
+            var coords = mouseRange(mouseX, mouseY);
+            var element = elements[currentElement];
+            // For each x,y in coords
+            for (var i = 0; i < coords.length; i++) {
+                var x = coords[i][0];
+                var y = coords[i][1];
+
+                // If element name is heat or cool
+                if (currentElement == "heat" || currentElement == "cool") {
+                    if (!isEmpty(x, y, false)) {
+                        if (outOfBounds(x, y)) {
+                            continue;
+                        }
+                        var pixel = pixelMap[x][y];
+                        if (shiftDown) {
+                            pixel.temp += element.temp + (Math.random() * element.temp / 5) * 20;
+                        } else {
+                            pixel.temp += element.temp + (Math.random() * element.temp / 5);
+                        }
+                        pixelTempCheck(pixel);
+                    }
+                } else if (placeMode == "replace") {
+                    if (outOfBounds(x, y)) {
+                        continue;
+                    }
+                    // Remove pixel at position from currentPixels
+                    var index = currentPixels.indexOf(pixelMap[x][y]);
+                    if (index > -1) {
+                        currentPixels.splice(index, 1);
+                    }
+                    currentPixels.push(new Pixel(x, y, currentElement));
+                } else if (isEmpty(x, y)) {
+                    currentPixels.push(new Pixel(x, y, currentElement));
+                }
+            }
+        }
+
+        function mouse2Action(e, mouseX = undefined, mouseY = undefined) {
+            // Erase pixel at mouse position
+            if (mouseX == undefined && mouseY == undefined) {
+                var canvas = document.getElementById("game");
+                var ctx = canvas.getContext("2d");
+                mousePos = getMousePos(canvas, e);
+                var mouseX = mousePos.x;
+                var mouseY = mousePos.y;
+            }
+            var coords = mouseRange(mouseX, mouseY);
+            // For each x,y in coords
+            for (var i = 0; i < coords.length; i++) {
+                var x = coords[i][0];
+                var y = coords[i][1];
+
+                if (!isEmpty(x, y)) {
+                    if (outOfBounds(x, y)) {
+                        continue
+                    }
+                    var pixel = pixelMap[x][y];
+                    delete pixelMap[x][y];
+                    // Remove pixel from currentPixels
+                    for (var j = 0; j < currentPixels.length; j++) {
+                        if (currentPixels[j].x == x && currentPixels[j].y == y) {
+                            currentPixels.splice(j, 1);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        function mouseMiddleAction(e, mouseX = undefined, mouseY = undefined) {
+            // Erase pixel at mouse position
+            if (mouseX == undefined && mouseY == undefined) {
+                var canvas = document.getElementById("game");
+                var ctx = canvas.getContext("2d");
+                mousePos = getMousePos(canvas, e);
+                var mouseX = mousePos.x;
+                var mouseY = mousePos.y;
+            }
+            if (!isEmpty(mouseX, mouseY) && !outOfBounds(mouseX, mouseY)) {
+                selectElement(pixelMap[mouseX][mouseY].element);
+                mouseIsDown = false;
+            }
+        }
+
+        function chooseElementPrompt() {
+            var e = prompt("Enter the element's ID").replaceAll(" ", "_");
+            if (elements[e] != undefined) {
+                selectElement(e);
+                var btn = document.getElementById("elementButton-" + e);
+                if (btn != null) {
+                    btn.setAttribute("current", "true");
+                }
+            };
+        }
+
+        function togglePause() {
+            paused = !paused;
+            if (paused) {
+                document.getElementById("pauseButton").setAttribute("on", "true");
+            } else {
+                document.getElementById("pauseButton").setAttribute("on", "false");
+            }
+        }
+
+        function doFrame() {
+            if (!paused) {
+                paused = true;
+                document.getElementById("pauseButton").setAttribute("on", "true");
+            }
+            drawPixels(true);
+        }
+
+        function selectElement(element) {
+            var e1 = document.getElementById("elementButton-" + currentElement)
+            if (e1 != null) {
+                e1.setAttribute("current", "false");
+            }
+            currentElement = element;
+            var e2 = document.getElementById("elementButton-" + element)
+            if (e2 != null) {
+                e2.setAttribute("current", "true");
+            }
+        }
+
+        function clearAll() {
+            currentPixels = [];
+            pixelMap = [];
+            for (var i = 0; i < width; i++) {
+                pixelMap[i] = [];
+                for (var j = 0; j < height; j++) {
+                    pixelMap[i][j] = undefined;
+                }
+            }
+            pixelTicks = 0;
+        }
+
+        // Update stats
+
+
+        // On window load, run tick() 20 times per second
+        tps = 30;
+        tickInterval = window.setInterval(tick, 1000 / tps);
+
+        function resetInterval(newtps = 30) {
+            window.clearInterval(tickInterval);
+            tickInterval = window.setInterval(tick, 1000 / newtps);
+        }
+        ticks = 0;
+        pixelTicks = 0;
+
+        placeMode = null;
+        paused = false;
+
+        function focusGame() {
+            document.getElementById("game").focus();
+        }
+        //on window load
+        window.onload = function () {
+            // While the mouse is down, run mouseDown()
+            var gameCanvas = document.getElementById("game");
+            // Get context
+            var ctx = gameCanvas.getContext("2d");
+            var newWidth = Math.ceil(window.innerWidth * 0.9 / pixelSize) * pixelSize;
+            var newHeight = Math.ceil(window.innerHeight * 0.675 / pixelSize) * pixelSize;
+            // If the new width is greater than 800, set it to 800
+            if (newWidth > 1000) {
+                newWidth = 1000;
+            }
+            // If we are on a desktop and the new height is greater than 600, set it to 600
+            if (window.innerWidth > 1000 && newHeight > 600) {
+                newHeight = 600;
+            }
+            ctx.canvas.width = newWidth;
+            ctx.canvas.height = newHeight;
+
+            width = Math.round(newWidth / pixelSize) - 1;
+            height = Math.round(newHeight / pixelSize) - 1;
+            // Object with width arrays of pixels starting at 0
+            pixelMap = {};
+            for (var i = 0; i < width; i++) {
+                pixelMap[i] = [];
+            }
+            //...drawing code...
+            gameCanvas.addEventListener("mousedown", mouseClick);
+            gameCanvas.addEventListener("touchstart", mouseClick);
+            window.addEventListener("mouseup", mouseUp);
+            window.addEventListener("touchend", mouseUp);
+            window.addEventListener("mousemove", mouseMove);
+            gameCanvas.addEventListener("touchmove", mouseMove);
+            gameCanvas.ontouchstart = function (e) {
+                if (e.touches) e = e.touches[0];
+                return false;
+            }
+            shiftDown = false;
+            // If the user presses [ or -, decrease the mouse size by 2
+            document.addEventListener("keydown", function (e) {
+                if (e.keyCode == 219 || e.keyCode == 189) {
+                    if (shiftDown) {
+                        mouseSize = 1
+                    } else {
+                        mouseSize -= 2;
+                        if (mouseSize < 1) {
+                            mouseSize = 1;
+                        }
+                    }
+                }
+                // If the user presses ] or =, increase the mouse size by 2
+                if (e.keyCode == 221 || e.keyCode == 187) {
+                    if (shiftDown) {
+                        mouseSize = (mouseSize + 15) - ((mouseSize + 15) % 15)
+                    } else {
+                        mouseSize += 2;
+                    }
+                    // if height>width and mouseSize>height, set mouseSize to height, if width>height and mouseSize>width, set mouseSize to width
+                    if (mouseSize > (height > width ? height : width)) {
+                        mouseSize = (height > width ? height : width);
+                    }
+                } else if (e.keyCode == 16 || e.keyCode == 18) {
+                    shiftDown = true;
+                }
+                // p or spacebar or ` or k = pause
+                if (e.keyCode == 80 || e.keyCode == 32 || e.keyCode == 192 || e.keyCode == 75) {
+                    e.preventDefault();
+                    togglePause();
+                }
+                // e = chooseElementPrompt()
+                else if (e.keyCode == 69) {
+                    e.preventDefault();
+                    chooseElementPrompt();
+                }
+                // . = doFrame()
+                else if (e.keyCode == 190) {
+                    e.preventDefault();
+                    doFrame();
+                }
+
+            });
+            // If the user releases either shift
+            document.addEventListener("keyup", function (e) {
+                if (e.keyCode == 16 || e.keyCode == 18) {
+                    shiftDown = false;
+                }
+            });
+
+            // Create buttons for elements
+            // For each element type in elements, create a button in controls that sets the current element to that type
+            // Alphabetically sort and loop through dictionary named "elements"
+            elementCount = 0;
+            hiddenCount = 0;
+            for (var element in elements) {
+                elementCount++;
+                if (elements[element].hidden) {
+                    hiddenCount++;
+                    continue;
+                }
+                var category = elements[element].category;
+                if (category == null) {
+                    category = "Other"
+                }
+                var categoryDiv = document.getElementById("category-" + category);
+                if (categoryDiv == null) {
+                    categoryDiv = document.createElement("div");
+                    categoryDiv.innerHTML = "<span class='categoryName'>" + category + "</span>";
+                    categoryDiv.setAttribute("id", "category-" + category);
+                    categoryDiv.setAttribute("class", "category");
+                    document.getElementById("elementControls").appendChild(categoryDiv);
+                }
+                var button = document.createElement("button");
+                button.innerHTML = elements[element].name
+                //capitalize first letter of each word
+                button.innerHTML = button.innerHTML.replace(".", "   ").replace(/\w\S*/g, function (txt) {
+                    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+                }).replace("   ", ".").replace(/ /g, "");
+                //set attribute of element to the element
+                button.setAttribute("element", element);
+                button.setAttribute("current", "false");
+                button.className = "elementButton";
+                //color of the element
+                // if the element color is an array, make a gradient background color, otherwise, set the background color to the element color
+                if (elements[element].color instanceof Array) {
+                    button.style.backgroundImage = "linear-gradient(to bottom right, " + elements[element].color
+                        .join(", ") + ")";
+                } else {
+                    button.style.background = elements[element].color;
+                    var colorObject = elements[element].colorObject;
+                    if ((colorObject.r + colorObject.g + colorObject.b) / 3 > 200) {
+                        button.className += " bright"
+                    }
+                }
+                button.id = "elementButton-" + element;
+                button.onclick = function () {
+                    selectElement(this.getAttribute("element"));
+                }
+                categoryDiv.appendChild(button);
+            }
+            selectElement(currentElement);
+            focusGame();
+            // For every button element, onkeyup="event.preventDefault()"
+            var buttonElements = document.getElementsByTagName("button");
+            for (var i = 0; i < buttonElements.length; i++) {
+                buttonElements[i].onkeyup = function (e) {
+                    e.preventDefault();
+                }
+            }
+
+        }
+    </script>
+</head>
+
+<body>
+    <h1 class="pagetitle">
+        <a href="https://sandboxels.R74n.com" class="backbutton">&lt;</a>
+        Sandboxels Lite (by <a href="http://markverb1.xyz">markverb1</a>)</h1><br>
+    <div id="gameDiv">
+        <h1>
+            <canvas id="game" width="800" height="600" oncontextmenu="return false;">
+                Your browser does not support the HTML5 canvas tag.
+            </canvas>
+            <div id="underDiv">
+                <div id="stats"></div>
+                <div id="controls">
+                    <div id="toolControls">
+                        <button id="pauseButton" title="Pause/play the simulation" class="controlButton"
+                            onclick='togglePause();focusGame();' on="false">Pause</button><button id="sizeUpButton"
+                            title="Increase the brush size" class="controlButton"
+                            onclick="mouseSize += 2;if (mouseSize > (height > width ? height : width)) { mouseSize = (height > width ? height : width); };focusGame();">+</button><button
+                            id="sizeDownButton" title="Decrease the brush size" class="controlButton"
+                            onclick="mouseSize -= 2;if (mouseSize < 1) { mouseSize = 1; };focusGame();">-</button><button
+                            id="resetButton" title="Clear the entire scene" class="controlButton"
+                            onclick="if (confirm('Are you sure you want to clear the whole scene?')) {clearAll();};focusGame();">Reset</button>
+                    </div>
+                    <div id="elementControls"></div>
+                </div>
+            </div>
+    </div>
+    </h1>
+
+
+    <!-- i like having this but ublock blocks these things anyway -->
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-93720349-6"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-93720349-6');
+    </script>
+    </h1>
+</body>
+
+</html>

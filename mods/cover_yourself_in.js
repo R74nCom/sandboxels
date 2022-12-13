@@ -1,26 +1,34 @@
-function highBloodColumn(xx,yy) {
-  //console.log("from " + xx + "," + yy)
-  if(!outOfBounds(xx,yy)) {
-    for(i = yy; i < pixelMap[xx].length; i++) {
-        if(isEmpty(xx,i,false)) {
-            if(Math.random() < 0.5) {
-                createPixel("blood",xx,i)
-            }
-            if(Math.random() < 0.3) { 
-                if(!isEmpty(xx,yy,true)) {
-                    deletePixel(xx,yy)
-                }
-            }
-        } else if(!isEmpty(xx,i,false) && !outOfBounds(xx,i)) {
-            break;
-        } else if(!isEmpty(xx,i,false) && outOfBounds(xx,i)) {
-            break;
-        } else {
-            break;
-        } 
-    }
-  }
-}
+function placeDownwardColumn(element,xx,yy,creationChance) {
+	var newElement = element;
+	if(Array.isArray(newElement)) {
+		newElement = newElement[Math.floor(Math.random() * newElement.length)];
+	};
+	//console.log("from " + xx + "," + yy)
+	if(!outOfBounds(xx,yy)) {
+		for(i = yy; i < pixelMap[xx].length; i++) {
+			if(isEmpty(xx,i,false)) {
+				if(Math.random() < creationChance) {
+					createPixel(element,xx,i)
+				}
+			} else if(!isEmpty(xx,i,true)) {
+				var newPixel = pixelMap[xx][i];
+				var newElement = newPixel.element;
+				var newInfo = elements[newElement];
+				var newState = "solid";
+				if(typeof(newInfo.state) !== "undefined") {
+					newState = newInfo.state
+				};
+				if(newState !== "solid") {
+					continue;
+				} else {
+					break;
+				};
+			} else if(outOfBounds(xx,i)) {
+				break;
+			}; 
+		};
+	};
+};
 
 //cliche'
 elements.blood_cloud = {
@@ -96,24 +104,7 @@ elements.heaviester_blood_cloud = {
     ],
     tick: function(pixel) {
         if(Math.random() < 0.01) {
-            for(i = pixel.y + 1; i < pixelMap[i].length; i++) {
-                if(isEmpty(pixel.x,i,false)) {
-                    if(Math.random() < 0.5) {
-                        createPixel("blood",pixel.x,i)
-                    }
-                    if(Math.random() < 0.3) { 
-                        if(!isEmpty(pixel.x,pixel.y,true)) {
-                            deletePixel(pixel.x,pixel.y)
-                        }
-                    }
-                } else if(!isEmpty(pixel.x,i,false) && !outOfBounds(pixel.x,i)) {
-                    break;
-                } else if(!isEmpty(pixel.x,i,false) && outOfBounds(pixel.x,i)) {
-                    break;
-                } else {
-                    break;
-                } 
-            }
+			placeDownwardColumn("blood",pixel.x,pixel.y+1,0.5);
         }
     },
     category:"gases",
@@ -134,10 +125,10 @@ elements.heaviestest_blood_cloud = {
     ],
     tick: function(pixel) {
         if(Math.random() < 0.02) {
-            highBloodColumn(pixel.x-1,pixel.y + 1)
-            highBloodColumn(pixel.x,pixel.y + 1)
-            highBloodColumn(pixel.x+1,pixel.y + 1)
-        }
+            for(j = -1; j <= 1; j++) {
+				placeDownwardColumn("blood",pixel.x+j,pixel.y+1,0.5);
+			};
+        };
     },
     category:"gases",
     temp: 30,
