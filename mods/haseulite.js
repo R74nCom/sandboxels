@@ -755,6 +755,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		var rfY = pixel.y+randomNeighborOffset[1];
 		if(!isEmpty(rfX,rfY,true)) {
 			var pixel2 = pixelMap[rfX][rfY];
+			var pixel1 = pixel;
 			if(typeof(pixel2) === "undefined" || isEmpty(rfX,rfY,true)) {
 				return false;
 			};
@@ -763,6 +764,10 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 			};
 			var rOtherElement = pixel2.element;
 			var waterReactions = elements.water.reactions;
+			
+			if(rOtherElement === pixel.element) {
+				return false;
+			};
 			if(waterReactions[rOtherElement]) {
 				var r = waterReactions[rOtherElement];
 
