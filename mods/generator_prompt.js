@@ -65,7 +65,10 @@ function generatorPrompt() {
 				generateCloud(elements,true);
 				break;
 			case "bomb":
-				generateBomb(elements,true);
+				var number = prompt(`Enter a bomb number (default: 1)
+				1 corresponds to radius 10, 2 corresponds to radius 15, etc.`);
+				if(isNaN(parseFloat(number))) { number = 1 };
+				generateBomb(elements,true,number);
 				break;
 			default:
 				alert("An invalid type made it past the if statement. You shouldn't ever see this error.");
@@ -82,20 +85,22 @@ elements.generator_prompt = {
 };
 
 function parseForLateGenerationParameter(input) {
-    if(typeof(input) === "string") { //it should be an array, so string check
-        //console.log("String detected");
-        if(input.includes(",")) { //comma-separated string?
-            //console.log("Splitting string to array");
-            input = input.split(","); //,SS to array
-        } else {
-            //console.log("Wrapping string in array");
-            input = [input]; //single string to array 
-        };
-    };
-    for(i = 0; i < input.length; i++) {
-        if(input[i].includes("+")) {
-            input[i] = input[i].split("+")
-        };
-    };
-    return input;
+	if(typeof(input) === "string") { //it should be an array, so string check
+		input = input.replace(/ /g,"_");
+		//console.log("String detected");
+		if(input.includes(",")) { //comma-separated string?
+			//console.log("Splitting string to array");
+			input = input.split(","); //,SS to array
+		} else {
+			//console.log("Wrapping string in array");
+			input = [input]; //single string to array 
+		};
+	};
+	for(i = 0; i < input.length; i++) {
+		input[i] = input[i].replace(/ /g,"_");
+		if(input[i].includes("+")) {
+			input[i] = input[i].split("+")
+		};
+	};
+	return input;
 };

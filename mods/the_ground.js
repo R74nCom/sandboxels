@@ -1,3 +1,5 @@
+//This mod is on indefinite hiatus
+
 /*
 TODO:
 Fill in remaining IRs (if they exist, and i might make some up if they don't)
@@ -53,8 +55,8 @@ Proper classification of limestone within these code comments
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							var destPixel = pixelMap[pixel.x+j][pixel.y+i];
 							var elementToCheck = destPixel.element;
-							if(getKeyByValue(irradiatedObject,elementToCheck)) {
-								changePixel(destPixel,getKeyByValue(irradiatedObject,elementToCheck));
+							if(getKeyByValue(radioactiveObject,elementToCheck)) {
+								changePixel(destPixel,getKeyByValue(radioactiveObject,elementToCheck));
 							};
 						};
 					} else {
@@ -80,8 +82,8 @@ Proper classification of limestone within these code comments
 					if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 						var destPixel = pixelMap[pixel.x+j][pixel.y+i];
 						var elementToCheck = destPixel.element;
-						if(getKeyByValue(irradiatedObject,elementToCheck)) {
-							changePixel(destPixel,getKeyByValue(irradiatedObject,elementToCheck));
+						if(getKeyByValue(radioactiveObject,elementToCheck)) {
+							changePixel(destPixel,getKeyByValue(radioactiveObject,elementToCheck));
 						};
 					};
 				} else {
@@ -262,155 +264,155 @@ Proper classification of limestone within these code comments
 			
 				//TODO
 
-		//Irradiated (unmoved/TODO)
+		//Radioactive (unmoved/TODO)
 	
 			//Dry
 			
-				//Irradiated Clay
+				//Radioactive Clay
 				
 					//Clay exists
 				
-				//Irradiated Silty clay
+				//Radioactive Silty clay
 					
 					//TODO
 					
-				//Irradiated Silty Clay Loam
+				//Radioactive Silty Clay Loam
 					
 					//TODO
 					
-				//Irradiated Silty Loam
+				//Radioactive Silty Loam
 					
 					//TODO
 					
-				//Irradiated Silt
+				//Radioactive Silt
 				
 					//TODO
 					
-				//Irradiated Clay Loam
+				//Radioactive Clay Loam
 				
 					//Clay Soil exists
 					
-				//Irradiated Medium Loam
+				//Radioactive Medium Loam
 					
 					//Dirt exists
 					
-				//Irradiated Sandy Clay
+				//Radioactive Sandy Clay
 				
 					//TODO
 					
-				//Irradiated Sandy Clay Loam
+				//Radioactive Sandy Clay Loam
 				
 					//TODO
 					
-				//Irradiated Sandy Loam
+				//Radioactive Sandy Loam
 				
 					//TODO
 					
-				//Irradiated Loamy Sand
+				//Radioactive Loamy Sand
 				
 					//TODO
 					
-				//Irradiated Sand
+				//Radioactive Sand
 				
 					//Sand exists
 					
 			//Wet
 			
-				//Irradiated Wet Clay
+				//Radioactive Wet Clay
 				
 					//TODO
 				
-				//Irradiated Wet Silty clay
+				//Radioactive Wet Silty clay
 					
 					//TODO
 					
-				//Irradiated Wet Silty Clay Loam
+				//Radioactive Wet Silty Clay Loam
 					
 					//TODO
 					
-				//Irradiated Wet Silty Loam
+				//Radioactive Wet Silty Loam
 					
 					//TODO
 					
-				//Irradiated Wet Silt
+				//Radioactive Wet Silt
 				
 					//TODO
 					
-				//Irradiated Wet Clay Loam
+				//Radioactive Wet Clay Loam
 				
 					//TODO
 					
-				//Irradiated Wet Medium Loam
+				//Radioactive Wet Medium Loam
 					
 					//Mud exists
 					
-				//Irradiated Wet Sandy Clay
+				//Radioactive Wet Sandy Clay
 				
 					//TODO
 					
-				//Irradiated Wet Sandy Clay Loam
+				//Radioactive Wet Sandy Clay Loam
 				
 					//TODO
 					
-				//Irradiated Wet Sandy Loam
+				//Radioactive Wet Sandy Loam
 				
 					//TODO
 					
-				//Irradiated Wet Loamy Sand
+				//Radioactive Wet Loamy Sand
 				
 					//TODO
 					
-				//Irradiated Wet Sand
+				//Radioactive Wet Sand
 				
 					//Wet Sand exists
 
 			//Permafrost
 					
-				//Irradiated Clay Permafrost
+				//Radioactive Clay Permafrost
 				
 					//TODO
 				
-				//Irradiated Silty clay Permafrost
+				//Radioactive Silty clay Permafrost
 					
 					//TODO
 					
-				//Irradiated Silty Clay Loam Permafrost
+				//Radioactive Silty Clay Loam Permafrost
 					
 					//TODO
 					
-				//Irradiated Silty Loam Permafrost
+				//Radioactive Silty Loam Permafrost
 					
 					//TODO
 					
-				//Irradiated Silt Permafrost
+				//Radioactive Silt Permafrost
 				
 					//TODO
 					
-				//Irradiated Clay Loam Permafrost
+				//Radioactive Clay Loam Permafrost
 				
 					//TODO
 					
-				//Irradiated Medium Loam Permafrost
+				//Radioactive Medium Loam Permafrost
 					
 					//Permafrost exists
 					
-				//Irradiated Sandy Clay Permafrost
+				//Radioactive Sandy Clay Permafrost
 				
 					//TODO
 					
-				//Irradiated Sandy Clay Loam Permafrost
+				//Radioactive Sandy Clay Loam Permafrost
 				
 					//TODO
 					
-				//Irradiated Sandy Loam Permafrost
+				//Radioactive Sandy Loam Permafrost
 				
 					//TODO
 					
-				//Irradiated Loamy Sand Permafrost
+				//Radioactive Loamy Sand Permafrost
 				
 					//TODO
 					
-				//Irradiated Sand Permafrost
+				//Radioactive Sand Permafrost
 				
 					//TODO
 
@@ -753,7 +755,7 @@ Proper classification of limestone within these code comments
 				
 					//Elements from which simplified lithification can spread
 
-						sandstoneLithificationElements = ["sand_sediment", "sandstone", "irradiated_sand_sediment", "irradiated_sandstone"/*, "crimson_sandstone", "crimson_sand_sediment"*/]
+						sandstoneLithificationElements = ["sand_sediment", "sandstone", "radioactive_sand_sediment", "radioactive_sandstone"/*, "crimson_sandstone", "crimson_sand_sediment"*/]
 
 					//Water reaction to pick up the fine material (this is very simplified)
 
@@ -763,9 +765,9 @@ Proper classification of limestone within these code comments
 							chance: 0.01
 						};
 
-						elements.water.reactions.irradiated_wet_sand = {
-							"elem1": "irradiated_sandy_water",
-							"elem2": ["irradiated_wet_sand","irradiated_wet_sand","irradiated_wet_sand","irradiated_wet_sand","irradiated_wet_sand",null],
+						elements.water.reactions.radioactive_wet_sand = {
+							"elem1": "radioactive_sandy_water",
+							"elem2": ["radioactive_wet_sand","radioactive_wet_sand","radioactive_wet_sand","radioactive_wet_sand","radioactive_wet_sand",null],
 							chance: 0.01
 						};
 
@@ -1135,11 +1137,13 @@ Proper classification of limestone within these code comments
 			elements.dirt.stateHigh = "dry_dirt";
 
 			elements.water.reactions.dry_dirt = { elem1: null, elem2: "dirt", chance: 0.1 }
+			elements.water.reactions.radioactive_dry_dirt = { elem1: null, elem2: "radioactive_dirt", chance: 0.1 }
 
 			if(!elements.mud.reactions) {
 				elements.mud.reactions = {};
 			};
 			elements.mud.reactions.dry_dirt = { elem1: "dirt", elem2: "dirt", chance: 0.06 }
+			elements.mud.reactions.radioactive_dry_dirt = { elem1: "radioactive_dirt", elem2: "radioactive_dirt", chance: 0.06 }
 
 	//Land Element Cults
 		/*
@@ -1147,48 +1151,48 @@ Proper classification of limestone within these code comments
 		In this case, they replicate some land elements; a "yellow" cult, for example, would have yellow_dirt, yellow_mud, yellow_mudstone, yellow_permafrost, yellow_sand...
 		*/
 
-		//Irradiated land
+		//Radioactive land
 
-			//Irradiated behavior cult (see above)
+			//Radioactive behavior cult (see above)
 
 				behaviors.RAD_POWDER = [
 					"XX|CR:radiation%2|XX",
-					"CR:radiation%2|XX|CR:radiation%2",
+					"CR:radiation%2|HT%1.5|CR:radiation%2",
 					"M2|M1 AND CR:radiation%2|M2",
 				],
 				behaviors.RAD_STURDYPOWDER = [
 					"XX|CR:radiation%2|XX",
-					"CR:radiation%2|XX|CR:radiation%2",
+					"CR:radiation%2|HT%1.5|CR:radiation%2",
 					"XX|M1 AND CR:radiation%2|XX",
 				],
 				behaviors.RAD_SUPPORT = [
 					"CR:radiation%1|CR:radiation%2|CR:radiation%1",
-					"SP AND CR:radiation%2|XX|SP AND CR:radiation%2",
+					"SP AND CR:radiation%2|HT%1.5|SP AND CR:radiation%2",
 					"XX|M1 AND CR:radiation%2|XX",
 				],
 				behaviors.RAD_SUPPORTPOWDER = [
 					"CR:radiation%1|CR:radiation%2|CR:radiation%1",
-					"SP AND CR:radiation%2|XX|SP AND CR:radiation%2",
+					"SP AND CR:radiation%2|HT%1.5|SP AND CR:radiation%2",
 					"M2|M1 AND CR:radiation%2|M2",
 				],
 				behaviors.RAD_LIQUID = [
 					"XX|CR:radiation%2|XX",
-					"M2 AND CR:radiation%2|XX|M2 AND CR:radiation%2",
+					"M2 AND CR:radiation%2|HT%1.5|M2 AND CR:radiation%2",
 					"M1|M1 AND CR:radiation%2|M1",
 				],
 				behaviors.RAD_WALL = [
 					"CR:radiation%0.7|CR:radiation%1.4|CR:radiation%0.7",
-					"CR:radiation%1.4|XX%0000000000000|CR:radiation%1.4",
+					"CR:radiation%1.4|HT%1.50000000000|CR:radiation%1.4",
 					"CR:radiation%0.7|CR:radiation%1.4|CR:radiation%0.7",
 				],
 				behaviors.RAD_GAS = [
-					"M2 AND CR:radiation%1|M1 AND CR:radiation%2|M2 AND CR:radiation%1",
-					"M1 AND CR:radiation%2|XX AND CR:radiation%2|M1 AND CR:radiation%2",
-					"M2 AND CR:radiation%1|M1 AND CR:radiation%2|M2 AND CR:radiation%1",
+					"M2 AND CR:radiation%1.0|M1 AND CR:radiation%2|M2 AND CR:radiation%1",
+					"M1 AND CR:radiation%2|HT%1 AND CR:radiation%2|M1 AND CR:radiation%2",
+					"M2 AND CR:radiation%1.0|M1 AND CR:radiation%2|M2 AND CR:radiation%1",
 				],
 				behaviors.RAD_MOLTEN = [
 					"XX|CR:radiation%2.5 AND CR:fire%2.5|XX",
-					"M2 AND CR:radiation%1|XX|M2 AND CR:radiation%1",
+					"M2 AND CR:radiation%1|HT%2|M2 AND CR:radiation%1",
 					"M1|M1 AND CR:radiation%1|M1",
 				]
 
@@ -1204,44 +1208,61 @@ Proper classification of limestone within these code comments
 					};
 				};
 			
-				elements.water.reactions.radiation = { elem1: "irradiated_water", elem2: null, chance:0.25 },
-				elements.radiation.reactions.water = { elem2: "irradiated_water", elem1: null, chance:0.25 },
-				elements.dirt.reactions.radiation = { elem1: "irradiated_dirt", elem2: null, chance:0.25 },
-				elements.radiation.reactions.dirt = { elem2: "irradiated_dirt", elem1: null, chance:0.25 },
-				elements.sand.reactions.radiation = { elem1: "irradiated_sand", elem2: null, chance:0.25 },
-				elements.radiation.reactions.sand = { elem2: "irradiated_sand", elem1: null, chance:0.25 },
-				elements.mud.reactions.radiation = { elem1: "irradiated_mud", elem2: null, chance:0.25 },
-				elements.radiation.reactions.mud = { elem2: "irradiated_mud", elem1: null, chance:0.25 },
-				elements.wet_sand.reactions.radiation = { elem1: "irradiated_wet_sand", elem2: null, chance:0.25 },
-				elements.radiation.reactions.wet_sand = { elem2: "irradiated_wet_sand", elem1: null, chance:0.25 },
+				elements.water.reactions.radiation = { elem1: "radioactive_water", elem2: null, chance:0.25 },
+				elements.radiation.reactions.water = { elem2: "radioactive_water", elem1: null, chance:0.25 },
+				elements.dirt.reactions.radiation = { elem1: "radioactive_dirt", elem2: null, chance:0.25 },
+				elements.radiation.reactions.dirt = { elem2: "radioactive_dirt", elem1: null, chance:0.25 },
+				elements.sand.reactions.radiation = { elem1: "radioactive_sand", elem2: null, chance:0.25 },
+				elements.radiation.reactions.sand = { elem2: "radioactive_sand", elem1: null, chance:0.25 },
+				elements.mud.reactions.radiation = { elem1: "radioactive_mud", elem2: null, chance:0.25 },
+				elements.radiation.reactions.mud = { elem2: "radioactive_mud", elem1: null, chance:0.25 },
+				elements.wet_sand.reactions.radiation = { elem1: "radioactive_wet_sand", elem2: null, chance:0.25 },
+				elements.radiation.reactions.wet_sand = { elem2: "radioactive_wet_sand", elem1: null, chance:0.25 },
 
 			//Substitution table
 
-				irradiatedObject = {
-					dirt:				"irradiated_dirt",
-					molten_dirt:		"molten_irradiated_dirt",
-					glass:				"irradiated_glass",
-					molten_glass:		"molten_irradiated_glass",
-					glass_shard:		"irradiated_glass_shard",
-					sand:				"irradiated_sand",
-					mud:				"irradiated_mud",
-					wet_sand:			"irradiated_wet_sand",
-					water:				"irradiated_water",
-					permafrost:			"irradiated_permafrost",
-					mudstone:			"irradiated_mudstone",
-					packed_sand:		"irradiated_packed_sand",
-					ice:				"irradiated_ice",
-					snow:				"irradiated_snow",
-					packed_snow:		"irradiated_packed_snow",
+				radioactiveObject = {
+					dirt:				"radioactive_dirt",
+					dry_dirt:			"radioactive_dry_dirt",
+					molten_dirt:		"molten_radioactive_dirt",
+					glass:				"radioactive_glass",
+					molten_glass:		"molten_radioactive_glass",
+					glass_shard:		"radioactive_glass_shard",
+					sand:				"radioactive_sand",
+					mud:				"radioactive_mud",
+					wet_sand:			"radioactive_wet_sand",
+					water:				"radioactive_water",
+					permafrost:			"radioactive_permafrost",
+					dry_permafrost:		"radioactive_dry_permafrost",
+					mudstone:			"radioactive_mudstone",
+					packed_sand:		"radioactive_packed_sand",
+					ice:				"radioactive_ice",
+					snow:				"radioactive_snow",
+					packed_snow:		"radioactive_packed_snow",
 					rain_cloud:			"rad_cloud",
 					snow_cloud:			"rad_snow_cloud",
 					snow_cloud_floater:	"rad_snow_cloud_floater",
-					rock:				"irradiated_rock",
-					gravel:				"irradiated_gravel",
-					basalt:				"irradiated_basalt",
-					magma:				"irradiated_magma",
-					sandstone:			"irradiated_sandstone",
-					sand_sediment: 		"irradiated_sand_sediment"
+					rock:				"radioactive_rock",
+					gravel:				"radioactive_gravel",
+					basalt:				"radioactive_basalt",
+					magma:				"radioactive_magma",
+					sandstone:			"radioactive_sandstone",
+					sand_sediment: 		"radioactive_sand_sediment"
+				};
+				
+				if(enabledMods.includes("mods/glenn_gases.js")) {
+					radioactiveObject.rock_dust = "radioactive_rock_dust";
+				};
+			
+				if(enabledMods.includes("mods/fire_mod.js")) {
+					radioactiveObject.fire = "rad_fire";
+					radioactiveObject.torch = "rad_torch";
+				};
+			
+				if(enabledMods.includes("mods/structure_test.js")) {
+					radioactiveObject.glass = "rad_glass";
+					radioactiveObject.glass_pane = "rad_glass_pane";
+					radioactiveObject.glass_shard = "rad_glass_shard";
 				};
 			
 			//Reverse lookup function
@@ -1253,35 +1274,53 @@ Proper classification of limestone within these code comments
 
 			//Main elements
 
-				elements.irradiated_dirt = {
+				elements.radioactive_dirt = {
 					color: ["#70762b","#4c5c21","#50571a","#4c6b1e"],
 					behavior: behaviors.RAD_POWDER,
-					tempHigh:1200,
-					stateHigh: "molten_irradiated_dirt",
+					tempHigh:110,
+					stateHigh: "radioactive_dry_dirt",
 					reactions: {
-						"dirt": { "elem1":"dirt", "elem2":"irradiated_dirt", "chance":0.0005, "oneway":true },
+						"dirt": { "elem1":"dirt", "elem2":"radioactive_dirt", "chance":0.0005, "oneway":true },
+						"dry_dirt": { "elem1":"radioactive_dry_dirt", "elem2":"radioactive_dirt", "chance":0.0005, "oneway":true },
+						"radioactive_dry_dirt": { "elem1":"radioactive_dry_dirt", "elem2":"radioactive_dirt", "chance":0.0005, "oneway":true },
 					},
 					tempLow: -50,
-					stateLow: "irradiated_permafrost",
-					category: "Irradiated",
+					stateLow: "radioactive_permafrost",
+					category: "Radioactive",
 					state: "solid",
 					density: 1220,
 				};
 
-				elements.molten_irradiated_dirt = {
+				elements.radioactive_dry_dirt = {
+					color: ["#8aa85e","#999c5d","#7f8a45","#b5ad59"],
+					behavior: [
+						"XX|SW:radioactive_dirt%3 AND SW:radioactive_mud%6 AND CR:radiation%2|XX",
+						"AND CR:radiation%2|HT%1.5|CR:radiation%2",
+						"M2|M1 AND CR:radiation%2|M2",
+					],
+					tempHigh:1200,
+					stateHigh: "molten_radioactive_dirt",
+					tempLow: -50,
+					stateLow: "radioactive_dry_permafrost",
+					category:"land",
+					state: "solid",
+					density: 1100,
+				},
+
+				elements.molten_radioactive_dirt = {
 					"behavior": behaviors.RAD_MOLTEN,
 					"hidden": true,
 					"state": "liquid",
-					"category": "Irradiated",
+					"category": "Radioactive",
 					"color": ["#e09315", "#e07615", "#e05800", "#987310", "#985c10", "#984500", "#a06c0d", "#a0570d", "#a04100", "#98850f", "#986b0f", "#985000"],
 					"temp": 1250,
 					"tempLow": 1100,
-					"stateLow": "irradiated_dirt",
+					"stateLow": "radioactive_dirt",
 					"density": 1098,
 					"viscosity": 10000
 				}
 
-				elements.irradiated_glass = {
+				elements.radioactive_glass = {
 					color: ["#597a58","#719171"],
 					colorOn: ["#6dab67","#88b567"],
 					behavior: behaviors.RAD_WALL,
@@ -1289,102 +1328,103 @@ Proper classification of limestone within these code comments
 					category: "solids",
 					state: "solid",
 					density: 2500,
-					breakInto: "irradiated_glass_shard",
+					breakInto: "radioactive_glass_shard",
 					conduct: 0.01,
 				};
 
-				elements.molten_irradiated_glass = {
+				elements.molten_radioactive_glass = {
 					behavior: behaviors.RAD_MOLTEN,
-					category: "Irradiated",
+					category: "Radioactive",
 				};
 
-				elements.irradiated_glass_shard = {
+				elements.radioactive_glass_shard = {
 					color: ["#597a58","#719171", "#628263"],
 					colorOn: ["#6dab67","#88b567", "#7bad6f"],
 					behavior: behaviors.RAD_POWDER,
 					tempHigh: 1500,
-					stateHigh: "molten_irradiated_glass",
+					stateHigh: "molten_radioactive_glass",
 					category: "powders",
 					state: "solid",
 					density: 2500,
 					conduct: 0.01,
 				};
 
-				elements.irradiated_sand = {
+				elements.radioactive_sand = {
 					color: "#cbdb7b",
 					behavior: behaviors.RAD_POWDER,
 					tempHigh: 1700,
-					stateHigh: "molten_irradiated_glass",
-					category: "Irradiated",
+					stateHigh: "molten_radioactive_glass",
+					category: "Radioactive",
 					state: "solid",
 					density: 1602
 				};
 
-				elements.irradiated_mud = {
+				elements.radioactive_mud = {
 					color: "#3c401c",
 					behavior: behaviors.RAD_STURDYPOWDER,
 					reactions: {
-						"irradiated_dirt": { "elem1":"irradiated_dirt", "elem2":"irradiated_mud", "chance":0.0005, "oneway":true },
-						"irradiated_sand": { "elem1":"irradiated_dirt", "elem2":"irradiated_wet_sand", "chance":0.0005, "oneway":true },
-						"sand": { "elem1":"irradiated_dirt", "elem2":"irradiated_wet_sand", "chance":0.0005, "oneway":true },
-						"dirt": { "elem1":"irradiated_dirt", "elem2":"irradiated_mud", "chance":0.0005, "oneway":true },
+						"dry_dirt": { "elem1": "radioactive_dirt", "elem2": "radioactive_dirt", chance: 0.06 },
+						"radioactive_dirt": { "elem1":"radioactive_dirt", "elem2":"radioactive_mud", "chance":0.0005, "oneway":true },
+						"radioactive_sand": { "elem1":"radioactive_dirt", "elem2":"radioactive_wet_sand", "chance":0.0005, "oneway":true },
+						"sand": { "elem1":"radioactive_dirt", "elem2":"radioactive_wet_sand", "chance":0.0005, "oneway":true },
+						"dirt": { "elem1":"radioactive_dirt", "elem2":"radioactive_mud", "chance":0.0005, "oneway":true },
 					},
 					tempHigh: 100,
-					stateHigh: "irradiated_mudstone",
+					stateHigh: "radioactive_mudstone",
 					tempLow: -50,
-					stateLow: "irradiated_permafrost",
-					category: "Irradiated",
+					stateLow: "radioactive_permafrost",
+					category: "Radioactive",
 					state: "solid",
 					density: 1730,
 					stain: 0.02,
 				};
 
-				elements.irradiated_wet_sand = {
+				elements.radioactive_wet_sand = {
 					color: ["#848c3a","#969e4c"],
 					behavior: behaviors.RAD_STURDYPOWDER,
 					reactions: {
-						"irradiated_sand": { "elem1":"irradiated_sand", "elem2":"irradiated_wet_sand", "chance":0.0005, "oneway":true },
-						"irradiated_dirt": { "elem1":"irradiated_sand", "elem2":"irradiated_mud", "chance":0.0005, "oneway":true },
-						"sand": { "elem1":"irradiated_sand", "elem2":"irradiated_wet_sand", "chance":0.0005, "oneway":true },
-						"dirt": { "elem1":"irradiated_sand", "elem2":"irradiated_mud", "chance":0.0005, "oneway":true },
-						"wet_sand": { "elem1":"irradiated_sand", "elem2":"irradiated_sand_sediment", "chance":0.0005, "oneway":true },
-						"sand_sediment": { "elem1":"irradiated_sand", "elem2":"irradiated_sand_sediment", "chance":0.0005, "oneway":true },
-						"irradiated_wet_sand": { "elem1":"irradiated_sand", "elem2":"irradiated_sand_sediment", "chance":0.0005, "oneway":true },
-						"irradiated_sand_sediment": { "elem1":"irradiated_sand", "elem2":"irradiated_sand_sediment", "chance":0.0005, "oneway":true },
+						"radioactive_sand": { "elem1":"radioactive_sand", "elem2":"radioactive_wet_sand", "chance":0.0005, "oneway":true },
+						"radioactive_dirt": { "elem1":"radioactive_sand", "elem2":"radioactive_mud", "chance":0.0005, "oneway":true },
+						"sand": { "elem1":"radioactive_sand", "elem2":"radioactive_wet_sand", "chance":0.0005, "oneway":true },
+						"dirt": { "elem1":"radioactive_sand", "elem2":"radioactive_mud", "chance":0.0005, "oneway":true },
+						"wet_sand": { "elem1":"radioactive_sand", "elem2":"radioactive_sand_sediment", "chance":0.0005, "oneway":true },
+						"sand_sediment": { "elem1":"radioactive_sand", "elem2":"radioactive_sand_sediment", "chance":0.0005, "oneway":true },
+						"radioactive_wet_sand": { "elem1":"radioactive_sand", "elem2":"radioactive_sand_sediment", "chance":0.0005, "oneway":true },
+						"radioactive_sand_sediment": { "elem1":"radioactive_sand", "elem2":"radioactive_sand_sediment", "chance":0.0005, "oneway":true },
 					},
 					tempHigh: 100,
-					stateHigh: "irradiated_packed_sand",
-					category: "Irradiated",
+					stateHigh: "radioactive_packed_sand",
+					category: "Radioactive",
 					state: "solid",
 					density: 1905,
 				};
 
-				elements.irradiated_sandy_water = {
+				elements.radioactive_sandy_water = {
 					color: ["#84A244", "#90AE50"],
 					behavior: behaviors.RAD_LIQUID,
 					tempHigh: 100,
-					stateHigh: ["rad_steam","rad_steam","irradiated_sand"],
+					stateHigh: ["rad_steam","rad_steam","radioactive_sand"],
 					//tempLow: 0,
-					//stateLow: "irradiated_sandy_ice",
-					category: "Irradiated",
+					//stateLow: "radioactive_sandy_ice",
+					category: "Radioactive",
 					heatCapacity: 4.184, //unimplemented
 					reactions: {
 						"dirt": { // React with (water reacts with dirt to make mud)
-							"elem1": [null,null,"irradiated_wet_sand"], // First element transforms into; in this case, water deletes itself
-							"elem2": "irradiated_mud", // Second element transforms into; in this case, dirt turns to mud
+							"elem1": [null,null,"radioactive_wet_sand"], // First element transforms into; in this case, water deletes itself
+							"elem2": "radioactive_mud", // Second element transforms into; in this case, dirt turns to mud
 						},
-						"irradiated_dirt": { // React with (water reacts with dirt to make mud)
-							"elem1": [null,null,"irradiated_wet_sand"], // First element transforms into; in this case, water deletes itself
-							"elem2": "irradiated_mud", // Second element transforms into; in this case, dirt turns to mud
+						"radioactive_dirt": { // React with (water reacts with dirt to make mud)
+							"elem1": [null,null,"radioactive_wet_sand"], // First element transforms into; in this case, water deletes itself
+							"elem2": "radioactive_mud", // Second element transforms into; in this case, dirt turns to mud
 						},
-						"water": { "elem1":"irradiated_water", "elem2":"irradiated_sandy_water", "chance":0.025 },
-						"irradiated_water": { "elem1":"irradiated_water", "elem2":"irradiated_sandy_water", "chance":0.025 },
-						"sand": { "elem1": [null,null,"irradiated_wet_sand"], "elem2": "irradiated_wet_sand", },
-						"irradiated_sand": { "elem1": [null,null,"irradiated_wet_sand"], "elem2": "irradiated_wet_sand", },
-						"sandy_water": { "elem1":"irradiated_wet_sand", "elem2":"irradiated_sand_sediment", "chance": 0.001 },
-						"irradiated_sandy_water": { "elem1":"irradiated_wet_sand", "elem2":"irradiated_sand_sediment", "chance": 0.001 },
-						"wet_sand": { "elem1": "irradiated_water", "elem2":"irradiated_sand_sediment", "chance": 0.0005 },
-						"irradiated_wet_sand": { "elem1": "irradiated_water", "elem2":"irradiated_sand_sediment", "chance": 0.0005 },
+						"water": { "elem1":"radioactive_water", "elem2":"radioactive_sandy_water", "chance":0.025 },
+						"radioactive_water": { "elem1":"radioactive_water", "elem2":"radioactive_sandy_water", "chance":0.025 },
+						"sand": { "elem1": [null,null,"radioactive_wet_sand"], "elem2": "radioactive_wet_sand", },
+						"radioactive_sand": { "elem1": [null,null,"radioactive_wet_sand"], "elem2": "radioactive_wet_sand", },
+						"sandy_water": { "elem1":"radioactive_wet_sand", "elem2":"radioactive_sand_sediment", "chance": 0.001 },
+						"radioactive_sandy_water": { "elem1":"radioactive_wet_sand", "elem2":"radioactive_sand_sediment", "chance": 0.001 },
+						"wet_sand": { "elem1": "radioactive_water", "elem2":"radioactive_sand_sediment", "chance": 0.0005 },
+						"radioactive_wet_sand": { "elem1": "radioactive_water", "elem2":"radioactive_sand_sediment", "chance": 0.0005 },
 						/*"salt": { "elem1": "salt_water", "elem2": null },
 						"sugar": { "elem1": "sugar_water", "elem2": null, },
 						"dust": { "elem1": "dirty_water", "elem2": null, },
@@ -1402,8 +1442,8 @@ Proper classification of limestone within these code comments
 						"quicklime": { "elem1": [null,null,"wet_sand"], "elem2": "slaked_lime", },
 						"rock": { "elem2": "wet_sand", "chance": 0.00035 },
 						"ruins": { "elem2": "rock", "chance": 0.00035 },*/
-						"mudstone": { "elem2": "irradiated_mud", "chance": 0.00035 },
-						"irradiated_mudstone": { "elem2": "irradiated_mud", "chance": 0.00035 },
+						"mudstone": { "elem2": "radioactive_mud", "chance": 0.00035 },
+						"radioactive_mudstone": { "elem2": "radioactive_mud", "chance": 0.00035 },
 						//"methane": { "elem1":"primordial_soup", "elem2":"primordial_soup", tempMin:60, charged:true },
 						//"ammonia": { "elem1":"primordial_soup", "elem2":"primordial_soup", tempMin:60, charged:true },
 						"fly": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
@@ -1417,75 +1457,77 @@ Proper classification of limestone within these code comments
 					stain: 0.01,
 				}
 
-				elements.irradiated_sand_sediment = {
+				elements.radioactive_sand_sediment = {
 					hidden: true,
 					color: "#afd182",
 					hardness: 0.2,
 					behavior: [
 						"XX|XX|XX",
 						"XX|XX|XX",
-						"SW:wet_sand,irradiated_wet_sand%1.5 AND M2|SW:wet_sand,irradiated_wet_sand%2.5 AND M1|SW:wet_sand,irradiated_wet_sand%1.5 AND M2"
+						"SW:wet_sand,radioactive_wet_sand%1.5 AND M2|SW:wet_sand,radioactive_wet_sand%2.5 AND M1|SW:wet_sand,radioactive_wet_sand%1.5 AND M2"
 					],
 					reactions: {
-						"water": { "elem1":"irradiated_sandy_water", "elem2":"irradiated_sandy_water", "chance":0.025 },
-						"irradiated_water": { "elem1":"irradiated_sandy_water", "elem2":"irradiated_sandy_water", "chance":0.025 },
-						"sand": { "elem1": [null,null,"irradiated_wet_sand"], "elem2": "irradiated_wet_sand", },
-						"irradiated_sand": { "elem1": [null,null,"irradiated_wet_sand"], "elem2": "irradiated_wet_sand", },
-						"sandy_water": { "elem1":["irradiated_water","irradiated_water","irradiated_sand_sediment"], "chance":0.001 },
-						"irradiated_sandy_water": { "elem1":["irradiated_water","irradiated_water","irradiated_sand_sediment"], "chance":0.001 },
-						"wet_sand": { "elem2": "irradiated_sand_sediment", "chance": 0.0005 },
-						"irradiated_wet_sand": { "elem2": "irradiated_sand_sediment", "chance": 0.0005 },
+						"water": { "elem1":"radioactive_sandy_water", "elem2":"radioactive_sandy_water", "chance":0.025 },
+						"radioactive_water": { "elem1":"radioactive_sandy_water", "elem2":"radioactive_sandy_water", "chance":0.025 },
+						"sand": { "elem1": [null,null,"radioactive_wet_sand"], "elem2": "radioactive_wet_sand", },
+						"radioactive_sand": { "elem1": [null,null,"radioactive_wet_sand"], "elem2": "radioactive_wet_sand", },
+						"sandy_water": { "elem1":["radioactive_water","radioactive_water","radioactive_sand_sediment"], "chance":0.001 },
+						"radioactive_sandy_water": { "elem1":["radioactive_water","radioactive_water","radioactive_sand_sediment"], "chance":0.001 },
+						"wet_sand": { "elem2": "radioactive_sand_sediment", "chance": 0.0005 },
+						"radioactive_wet_sand": { "elem2": "radioactive_sand_sediment", "chance": 0.0005 },
 					},
 					tempHigh: 1700,
-					stateHigh: "molten_irradiated_glass",
-					category: "Irradiated",
+					stateHigh: "molten_radioactive_glass",
+					category: "Radioactive",
 					state: "solid",
 					density: 1602,
-					breakInto: "irradiated_sand",
+					breakInto: "radioactive_sand",
 					tick: function(pixel) {
-						sedimentation(pixel,sandstoneLithificationElements,"irradiated_sandstone")
+						sedimentation(pixel,sandstoneLithificationElements,"radioactive_sandstone")
 					},
 				}
 
-				elements.irradiated_sandstone = {
+				elements.radioactive_sandstone = {
 					color: ["#85b357", "#b5d177", "#9cd184", "#7bc25f"],
 					behavior: behaviors.RAD_WALL,
 					tempHigh: 1500,
-					stateHigh: "molten_irradiated_glass",
-					category: "Irradiated",
+					stateHigh: "molten_radioactive_glass",
+					category: "Radioactive",
 					state: "solid",
 					density: 2323, //wide range
 					hardness: 0.5,
-					breakInto: "irradiated_sand",
+					breakInto: "radioactive_sand",
 				}
 
-				elements.irradiated_water = {
+				elements.radioactive_water = {
 					color: "#85cf57",
 					behavior: behaviors.RAD_LIQUID,
 					tempHigh: 100,
 					stateHigh: ["rad_steam","rad_steam","fallout"],
 					tempLow: -5,
-					stateLow: "irradiated_ice",
-					category: "Irradiated",
+					stateLow: "radioactive_ice",
+					category: "Radioactive",
 					heatCapacity: 4.184,
 					reactions: {
-						"water": { elem1: "water", elem2: "irradiated_water", chance:0.05 }, //swap
+						"water": { elem1: "water", elem2: "radioactive_water", chance:0.05 }, //swap
 						"dirt": { // React with (water reacts with dirt to make mud)
 							"elem1": null, // First element transforms into; in this case, water deletes itself
-							"elem2": "irradiated_dirt", // Second element transforms into; in this case, dirt turns to mud
+							"elem2": "radioactive_dirt", // Second element transforms into; in this case, dirt turns to mud
 						},
-						"sand": { "elem1": null, "elem2": "irradiated_wet_sand", },
-						"wet_sand": { "elem1": "irradiated_sandy_water", "elem2": ["irradiated_wet_sand","irradiated_wet_sand","irradiated_wet_sand","irradiated_wet_sand","irradiated_wet_sand",null], chance: 0.01 },
-						"irradiated_wet_sand": { "elem1": "irradiated_sandy_water", "elem2": ["irradiated_wet_sand","irradiated_wet_sand","irradiated_wet_sand","irradiated_wet_sand","irradiated_wet_sand",null], chance: 0.01 },
+						"dry_dirt": { "elem1": null, "elem2": "radioactive_dirt", },
+						"radioactive_dirt": { "elem1": null, "elem2": "radioactive_dirt", },
+						"sand": { "elem1": null, "elem2": "radioactive_wet_sand", },
+						"wet_sand": { "elem1": "radioactive_sandy_water", "elem2": ["radioactive_wet_sand","radioactive_wet_sand","radioactive_wet_sand","radioactive_wet_sand","radioactive_wet_sand",null], chance: 0.01 },
+						"radioactive_wet_sand": { "elem1": "radioactive_sandy_water", "elem2": ["radioactive_wet_sand","radioactive_wet_sand","radioactive_wet_sand","radioactive_wet_sand","radioactive_wet_sand",null], chance: 0.01 },
 						"rat": { "elem2": "rotten_meat", chance:0.005 },
 						"plague": { "elem2": null, chance: 0.3, },
 						//"quicklime": { "elem1": null, "elem2": "slaked_lime", },
-						"rock": { "elem2": "irradiated_wet_sand", "chance": 0.00035 },
+						"rock": { "elem2": "radioactive_wet_sand", "chance": 0.00035 },
 						//"ruins": { "elem2": "rock", "chance": 0.00035 },
-						"mudstone": { "elem2": "irradiated_mud", "chance": 0.00035 },
-						"irradiated_mudstone": { "elem2": "irradiated_mud", "chance": 0.00035 },
-						"packed_sand": { "elem2": "irradiated_wet_sand", "chance": 0.00035 },
-						"irradiated_packed_sand": { "elem2": "irradiated_wet_sand", "chance": 0.00035 },
+						"mudstone": { "elem2": "radioactive_mud", "chance": 0.00035 },
+						"radioactive_mudstone": { "elem2": "radioactive_mud", "chance": 0.00035 },
+						"packed_sand": { "elem2": "radioactive_wet_sand", "chance": 0.00035 },
+						"radioactive_packed_sand": { "elem2": "radioactive_wet_sand", "chance": 0.00035 },
 						"fly": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
 						"firefly": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
 						"bee": { "elem2":"dead_bug", "chance":0.05, "oneway":true },
@@ -1498,85 +1540,96 @@ Proper classification of limestone within these code comments
 				}
 
 				elements.rad_steam.behavior = behaviors.RAD_GAS;
-				elements.rad_steam.stateLow = "irradiated_water";
+				elements.rad_steam.stateLow = "radioactive_water";
 				elements.rad_cloud.behavior =  [
 					"XX|XX|XX",
-					"XX|CH:fallout,radiation,irradiated_water%0.025|M1%2.5 AND BO",
+					"XX|CH:fallout,radiation,radioactive_water%0.025|M1%2.5 AND BO",
 					"CR:radiation%0.05|CR:radiation%0.05|CR:radiation%0.05",
 				];
 				elements.rad_cloud.tempLow = 0;
 				elements.rad_cloud.stateLow = "rad_snow_cloud";
 				elements.fallout.behavior = behaviors.RAD_POWDER;
 
-				elements.irradiated_permafrost = {
+				elements.radioactive_permafrost = {
 					color: ["#51613d","#495234","#3b4a30","#4a4f35"],
 					behavior: behaviors.RAD_SUPPORT,
 					temp: -50,
 					tempHigh: 10,
-					stateHigh: "irradiated_mudstone",
-					category: "Irradiated",
+					stateHigh: "radioactive_mudstone",
+					category: "Radioactive",
 					state: "solid",
 					density: 700,
 				};
 
-				elements.irradiated_mudstone = {
+				elements.radioactive_dry_permafrost = {
+					color: ["#6e9970","#64756a","#4e7864", "#5f8a78"],
+					behavior: behaviors.POWDER, //not enough water for cementing
+					temp: -50,
+					tempHigh: 10,
+					stateHigh: "radioactive_dry_dirt",
+					category: "land",
+					state: "solid",
+					density: 1200,
+				}
+
+				elements.radioactive_mudstone = {
 					color: "#4f5e25",
 					behavior: behaviors.RAD_SUPPORT,
 					tempHigh:1200,
-					stateHigh: "molten_irradiated_dirt",
+					stateHigh: "molten_radioactive_dirt",
 					tempLow: -50,
-					stateLow: "irradiated_permafrost",
-					category: "Irradiated",
+					stateLow: "radioactive_permafrost",
+					category: "Radioactive",
 					state: "solid",
 					density: 1250,
-					breakInto: "irradiated_dirt",
+					breakInto: "radioactive_dirt",
 				};
 
-				elements.irradiated_packed_sand = {
+				elements.radioactive_packed_sand = {
 					color: "#79945c",
 					behavior: behaviors.RAD_SUPPORT,
 					tempHigh: 1700,
-					stateHigh: "molten_irradiated_glass",
-					category: "Irradiated",
+					stateHigh: "molten_radioactive_glass",
+					category: "Radioactive",
 					state: "solid",
 					density: 1682,
-					breakInto: "irradiated_sand",
+					breakInto: "radioactive_sand",
 				};
 
-				elements.irradiated_ice = {
+				elements.radioactive_ice = {
 					color: "#b7e0b4",
 					behavior: behaviors.RAD_WALL,
 					temp: 0,
 					tempHigh: 5,
-					stateHigh: "irradiated_water",
+					stateHigh: "radioactive_water",
 					category: "solids",
 					state: "solid",
 					density: 917,
-					breakInto: "irradiated_snow",
+					breakInto: "radioactive_snow",
 				};
 
-				elements.irradiated_snow = {
+				elements.radioactive_snow = {
 					color: "#d5f2d3",
 					behavior: behaviors.RAD_POWDER,
 					temp: 0,
 					tempHigh: 5,
 					tempLow: -100,
-					stateLow: "irradiated_packed_snow",
-					stateHigh: "irradiated_water",
-					category: "Irradiated",
+					stateLow: "radioactive_packed_snow",
+					stateHigh: "radioactive_water",
+					category: "Radioactive",
 					state: "solid",
 					density: 100,
 				};
 
-				elements.irradiated_packed_snow = {
+				elements.radioactive_packed_snow = {
 					color: "#a7d4a3",
 					behavior: behaviors.RAD_SUPPORTPOWDER,
 					temp: 0,
 					tempHigh: 20,
 					tempLow: -200,
-					stateLow: "irradiated_ice",
-					stateHigh: "irradiated_water",
-					category: "Irradiated",
+					stateLow: "radioactive_ice",
+					stateHigh: "radioactive_water",
+					category: "Radioactive",
 					state: "solid",
 					density: 400,
 					hidden: true,
@@ -1586,10 +1639,10 @@ Proper classification of limestone within these code comments
 					color: ["#2d6e31","#416e21"],
 					behavior: [
 						"XX|XX|XX",
-						"XX|CH:fallout,radiation,irradiated_snow%0.025|M1%2.5 AND BO",
+						"XX|CH:fallout,radiation,radioactive_snow%0.025|M1%2.5 AND BO",
 						"CR:radiation%0.05|CR:radiation%0.05|CR:radiation%0.05",
 					],
-					category:"Irradiated",
+					category:"Radioactive",
 					hidden: true,
 					state: "gas",
 					density: 0.5,
@@ -1610,7 +1663,7 @@ Proper classification of limestone within these code comments
 						"rad_snow_cloud_floater": { elem1: "rad_snow_cloud", elem2: "rad_snow_cloud", chance: 0.003 },
 						"rad_snow_cloud": { elem1: "rad_snow_cloud", elem2: "rad_snow_cloud", chance: 0.01 }
 					},
-					category:"Irradiated",
+					category:"Radioactive",
 					hidden: true,
 					state: "gas",
 					density: 0.5,
@@ -1619,55 +1672,55 @@ Proper classification of limestone within these code comments
 					stateHigh: "rad_cloud",
 				};
 
-				elements.irradiated_rock = {
+				elements.radioactive_rock = {
 					color: ["#768063","#444f3f","#7a9476"],
 					behavior: behaviors.RAD_POWDER,
 					tempHigh: 950,
-					stateHigh: "irradiated_magma",
-					category: "Irradiated",
+					stateHigh: "radioactive_magma",
+					category: "Radioactive",
 					state: "solid",
 					density: 2550,
 					hardness: 0.5,
-					breakInto: ["irradiated_sand","irradiated_gravel"],
+					breakInto: ["radioactive_sand","radioactive_gravel"],
 				};
 
-				elements.irradiated_gravel = {
+				elements.radioactive_gravel = {
 					color: ["#d1e3c8","#a6b090","#657360","#4d523f"],
 					behavior: behaviors.RAD_POWDER,
-					category: "Irradiated",
+					category: "Radioactive",
 					tempHigh: 950,
-					stateHigh: "irradiated_magma",
+					stateHigh: "radioactive_magma",
 					state: "solid",
 					density: 1680,
 					hardness: 0.2,
-					breakInto: "irradiated_sand",
+					breakInto: "radioactive_sand",
 				};
 
-				elements.irradiated_basalt = {
+				elements.radioactive_basalt = {
 					color: ["#262e20","#23331f","#3f4235"],
 					behavior: behaviors.RAD_STURDYPOWDER,
 					tempHigh: 1262.5,
-					stateHigh: "irradiated_magma",
-					category: "Irradiated",
+					stateHigh: "radioactive_magma",
+					category: "Radioactive",
 					state: "solid",
 					density: 3000,
 					hardness: 0.65,
-					breakInto: "irradiated_gravel",
+					breakInto: "radioactive_gravel",
 				};
 
-				elements.irradiated_magma = {
+				elements.radioactive_magma = {
 					color: ["#ff9100","#ffae00","#ff8400"],
 					behavior: behaviors.RAD_MOLTEN,
 					reactions: {
-						"ice": { "elem1": "irradiated_basalt" },
-						"irradiated_ice": { "elem1": "irradiated_basalt" },
-						"magma": { "elem1":"magma", "elem2":"irradiated_magma", "chance":0.0005, "oneway":true },
+						"ice": { "elem1": "radioactive_basalt" },
+						"radioactive_ice": { "elem1": "radioactive_basalt" },
+						"magma": { "elem1":"magma", "elem2":"radioactive_magma", "chance":0.0005, "oneway":true },
 					},
 					temp: 1500,
 					tempLow: 850,
-					stateLow: ["irradiated_basalt","irradiated_basalt","irradiated_basalt","irradiated_rock"],
+					stateLow: ["radioactive_basalt","radioactive_basalt","radioactive_basalt","radioactive_rock"],
 					viscosity: 5000,
-					category: "Irradiated",
+					category: "Radioactive",
 					state: "liquid",
 					density: 2725,
 				};
@@ -1680,7 +1733,7 @@ Proper classification of limestone within these code comments
 						var twentiethOfTemp = pixel.temp / 20;
 						var roundOf20th = Math.round(twentiethOfTemp);
 						var boundedR20 = Math.max(1,Math.min(roundOf20th,11));
-						transformAround(pixel,boundedR20,irradiatedObject)
+						transformAround(pixel,boundedR20,radioactiveObject)
 					},
 					category:"machines",
 					insulate: true,
@@ -1693,7 +1746,7 @@ Proper classification of limestone within these code comments
 						var twentiethOfTemp = pixel.temp / 20;
 						var roundOf20th = Math.round(twentiethOfTemp);
 						var boundedR20 = Math.max(1,Math.min(roundOf20th,11));
-						transformAround(pixel,boundedR20,irradiatedObject,reverse=true)
+						transformAround(pixel,boundedR20,radioactiveObject,reverse=true)
 					},
 					category:"machines",
 					insulate: true,
@@ -1705,7 +1758,7 @@ Proper classification of limestone within these code comments
 					behavior: behaviors.RAD_LIQUID,
 					tick: function(pixel) {
 						for(i = 0; i < adjacentCoords.length; i++) {
-							transformAdjacent(pixel,irradiatedObject)
+							transformAdjacent(pixel,radioactiveObject)
 						}
 					},
 					//Becomes rainbow sand by water or poison, as well as by protocite, or bio-ooze
@@ -1726,47 +1779,47 @@ Proper classification of limestone within these code comments
 			//Inter-mod compatibility
 
 				if(enabledMods.includes("mods/some_tf_liquids.js")) {
-					elements.irradiated_basalt_gravel = {
+					elements.radioactive_basalt_gravel = {
 						color: ["#394d37", "#3b452f", "#3f452a", "#2d3d2c"],
 						behavior: behaviors.RAD_POWDER,
 						tempHigh: 1262.5,
-						stateHigh: "irradiated_magma",
-						category: "Irradiated",
+						stateHigh: "radioactive_magma",
+						category: "Radioactive",
 						state: "solid",
 						density: 1975,
 						hardness: 0.26,
 					}
-					elements.irradiated_basalt.breakInto = "irradiated_basalt_gravel";
+					elements.radioactive_basalt.breakInto = "radioactive_basalt_gravel";
 				};
 
 			//Worldgen preset for testing
 
-				worldgentypes.irradiated_sandstone_test_ocean = {
+				worldgentypes.radioactive_sandstone_test_ocean = {
 					layers: [
-						[0.9, "irradiated_wet_sand", 0.2],
-						[0.9, "irradiated_sand", 0.2],
-						[0.8, "irradiated_sandy_water", 0.7],
-						[0.25, "irradiated_water"],
-						[0.1, "irradiated_sand", 0.1],
+						[0.9, "radioactive_wet_sand", 0.2],
+						[0.9, "radioactive_sand", 0.2],
+						[0.8, "radioactive_sandy_water", 0.7],
+						[0.25, "radioactive_water"],
+						[0.1, "radioactive_sand", 0.1],
 						[0.1, "clay", 0.1],
-						[0.1, "irradiated_gravel", 0.2],
-						[0.1, "irradiated_wet_sand"],
-						[0.03, "irradiated_gravel", 0.5],
-						[0.03, "irradiated_rock"],
-						[0, "irradiated_basalt"],
+						[0.1, "radioactive_gravel", 0.2],
+						[0.1, "radioactive_wet_sand"],
+						[0.03, "radioactive_gravel", 0.5],
+						[0.03, "radioactive_rock"],
+						[0, "radioactive_basalt"],
 					]
 				};
 
 			/*/Water irradiation reactions (must be done last)
 
-				waterIrradiationExclusionArray = ["irradiated_water", "irradiated_wet_sand"]
+				waterIrradiationExclusionArray = ["radioactive_water", "radioactive_wet_sand"]
 				
 				filteredWaterIrradiationArray = Object.keys(elements).filter(function(e) {
-					return elements[e].category === "Irradiated" && (!waterIrradiationExclusionArray.includes(e));
+					return elements[e].category === "Radioactive" && (!waterIrradiationExclusionArray.includes(e));
 				});
 
 				for(i = 0; i < filteredWaterIrradiationArray.length; i++) {
-					elements.water.reactions[filteredWaterIrradiationArray[i]] = { "elem1":"irradiated_water", chance: 0.01 }
+					elements.water.reactions[filteredWaterIrradiationArray[i]] = { "elem1":"radioactive_water", chance: 0.01 }
 				};*/
 
 //Generation
@@ -1895,11 +1948,11 @@ Proper classification of limestone within these code comments
 					[0.82, "fallout", 0.4],
 					[0.7, "liquid_irradium", 0.05],
 					[0.7, "dead_plant", 0.12],
-					[0.55, "irradiated_dirt"],
-					[0.45, "irradiated_rock"],
+					[0.55, "radioactive_dirt"],
+					[0.45, "radioactive_rock"],
 					[0.25, "uranium", 0.4],
-					[0.35, "irradiated_rock", 0.5],
-					[0.3, "irradiated_gravel", 0.5],
+					[0.35, "radioactive_rock", 0.5],
+					[0.3, "radioactive_gravel", 0.5],
 					[0.2, "uranium", 0.2],
 					[0.05, "rock"],
 					[0, "basalt"],
@@ -1933,23 +1986,23 @@ Proper classification of limestone within these code comments
 		]
 	};
 	
-	//Irradiated Desert
+	//Radioactive Desert
 
 		//Main preset
 
 			worldgentypes.nuclear_wasteland_desert = {
 				layers: [
 					[0.97, "fallout", 0.4],
-					[0.95, "irradiated_gravel", 0.6],
+					[0.95, "radioactive_gravel", 0.6],
 					[0.65, "liquid_irradium", 0.01],
 					[0.65, "cancer", 0.02],
 					[0.65, "bone", 0.02],
-					[0.65, "irradiated_sand"],
+					[0.65, "radioactive_sand"],
 					[0.55, "cancer", 0.01],
 					[0.55, "bone", 0.01],
-					[0.3, "irradiated_sandstone"],
-					[0.05, "irradiated_rock"],
-					[-0.78, "irradiated_basalt"]
+					[0.3, "radioactive_sandstone"],
+					[0.05, "radioactive_rock"],
+					[-0.78, "radioactive_basalt"]
 				],
 				temperature: -13
 			};

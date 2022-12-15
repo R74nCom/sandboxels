@@ -410,7 +410,7 @@
 				};
 			};
 		} else if(typeof(color) === "object") {
-			if(!color.r || !color.g || !color.b) {
+			if(typeof(color.r) === "undefined" || typeof(color.g) === "undefined" || typeof(color.b) === "undefined") {
 				throw new Error("Color must be of the form {r: red, g: green, b: blue}");
 			};
 			
@@ -1091,6 +1091,38 @@
 			return breakPixel(pixel,changetemp=false,defaultBreakIntoDust=false);
 		} else {
 			return false;
+		};
+	};
+
+//World
+
+	function breakCircle(x,y,radius,respectHardness=false,changeTemp=false,defaultBreakIntoDust=false) {
+		var coords = circleCoords(x,y,radius);
+		for(i = 0; i < coords.length; i++) {
+			coordX = coords[i].x;
+			coordY = coords[i].y;
+			if(!isEmpty(coordX,coordY,true)) {
+				var pixel = pixelMap[coordX][coordY];
+				respectHardness ? tryBreak(pixel,changeTemp,defaultBreakIntoDust) : breakPixel(pixel,changeTemp,defaultBreakIntoDust);
+			};
+		};
+	};
+	
+	function fillCircle(element,x,y,radius,overwrite=false) {
+		var coords = circleCoords(x,y,radius);
+		var newElement = element;
+		if(Array.isArray(newElement)) {
+			newElement = newElement[Math.floor(Math.random() * newElement.length)];
+		};
+		for(i = 0; i < coords.length; i++) {
+			coordX = coords[i].x;
+			coordY = coords[i].y;
+			if(overwrite && !isEmpty(coordX,coordY,true)) {
+				changePixel(pixelMap[coordX][coordY],element);
+			};
+			if(isEmpty(coordX,coordY,false)) {
+				createPixel(element,coordX,coordY);
+			};
 		};
 	};
 

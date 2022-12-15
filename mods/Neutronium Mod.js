@@ -470,6 +470,11 @@ elements.chlorine = {
 color: "#89b87b",
 behavior: behaviors.GAS,
 category: "gases",
+reactions: {
+    "water": { "elem1": "pool_water", "elem2":null },
+    "hydrogen": { "elem1": "acid_gas", "elem2":null },//hydrochloric acid
+    "dirty_water": { "elem2":"water" },
+},
 density:3.2,
 state: "gas",
 tempLow: -101.5,

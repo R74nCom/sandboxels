@@ -385,27 +385,27 @@ runAfterLoad(function() {
 		elements.coal.breakInto = "coal_dust"
 	}
 	if(enabledMods.includes("mods/the_ground.js")) {
-		elements.irradiated_rock_dust = {
+		elements.radioactive_rock_dust = {
 			color: "#839e78",
 			behavior: behaviors.RAD_GAS,
 			reactions: {
-				"water": {"elem1": "irradiated_water", "elem2": null }
+				"water": {"elem1": "radioactive_water", "elem2": null }
 			},
 			category: "gases",
 			density: 2.45,
 			state: "gas",
 			tempHigh: 950,
-			stateHigh: [null,null,null,null,"irradiated_magma"],
+			stateHigh: [null,null,null,null,"radioactive_magma"],
 		}
 
-		elements.irradiated_rock.breakInto.push("irradiated_rock_dust")
+		elements.radioactive_rock.breakInto.push("radioactive_rock_dust")
 	}
 	if(enabledMods.includes("mods/boiling_rock.js")) {
 		elements.rock_dust.tempHigh = 3000
 		elements.rock_dust.stateHigh = "vaporized_rock"
 		if(enabledMods.includes("mods/the_ground.js")) {
-			elements.irradiated_rock_dust.tempHigh = 3000
-			elements.irradiated_rock_dust.stateHigh = "vaporized_rock"
+			elements.radioactive_rock_dust.tempHigh = 3000
+			elements.radioactive_rock_dust.stateHigh = "vaporized_rock"
 		}
 	}
 });

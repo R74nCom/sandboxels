@@ -5,36 +5,6 @@ var libraryMod = "mods/code_library.js";
 if(enabledMods.includes(explodeAtPlusMod) && enabledMods.includes(libraryMod)) {
 	actExcludedElements = ["wall","alt_controllable_pixel"];
 	
-	function breakCircle(x,y,radius,respectHardness=false,changeTemp=false,defaultBreakIntoDust=false) {
-		var coords = circleCoords(x,y,radius);
-		for(i = 0; i < coords.length; i++) {
-			coordX = coords[i].x;
-			coordY = coords[i].y;
-			if(!isEmpty(coordX,coordY,true)) {
-				var pixel = pixelMap[coordX][coordY];
-				respectHardness ? tryBreak(pixel,changeTemp,defaultBreakIntoDust) : breakPixel(pixel,changeTemp,defaultBreakIntoDust);
-			};
-		};
-	};
-	
-	function fillCircle(element,x,y,radius,overwrite=false) {
-		var coords = circleCoords(x,y,radius);
-		var newElement = element;
-		if(Array.isArray(newElement)) {
-			newElement = newElement[Math.floor(Math.random() * newElement.length)];
-		};
-		for(i = 0; i < coords.length; i++) {
-			coordX = coords[i].x;
-			coordY = coords[i].y;
-			if(overwrite && !isEmpty(coordX,coordY,true)) {
-				changePixel(pixelMap[coordX][coordY],element);
-			};
-			if(isEmpty(coordX,coordY,false)) {
-				createPixel(element,coordX,coordY);
-			};
-		};
-	};
-	
 	function actTryMove(pixel,x,y) {
 		if(!tryMove(pixel,x,y)) {
 			if(outOfBounds(x,y)) {

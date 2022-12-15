@@ -14,6 +14,20 @@ function getSimulationState() {
 	return simulationState;
 };
 
+//https://stackoverflow.com/a/46118025
+function copyToClipboard(text) {
+    var dummy = document.createElement("textarea");
+    // to avoid breaking orgain page when copying more words
+    // cant copy when adding below this code
+    // dummy.style.display = 'none'
+    document.body.appendChild(dummy);
+    //Be careful if you use textarea. setAttribute('value', value), which works with "input" does not work with "textarea". – Eduard
+    dummy.value = text;
+    dummy.select();
+    document.execCommand("copy");
+    document.body.removeChild(dummy);
+}
+
 const saveTemplateAsFile = (filename, dataObjToWrite) => { //from https://stackoverflow.com/a/65939108
     const blob = new Blob([JSON.stringify(dataObjToWrite)], { type: "text/json" });
     const link = document.createElement("a");
@@ -74,6 +88,11 @@ function downloadSave(filename=null) {
 	saveTemplateAsFile(filename, getSimulationState());
 };
 
+function copySaveJSON(doAlert=true) {
+	copyToClipboard(JSON.stringify(getSimulationState()));
+	if(doAlert) { alert("Save copied as JSON") };
+};
+
 function loadFile() {
 	//Initialize
 	var json;
@@ -112,6 +131,40 @@ function loadFile() {
 		//return json;
 		return importJsonState(json);
 	};
+};
+
+function loadText() {
+	//Initialize
+	var json;
+	
+	//load JSON
+	var json = document.getElementById('mytext').value;
+	if(json === "") {
+		if(document.getElementById("textFormStatus") !== "null") {
+			document.getElementById("textFormStatus").style.color = "red";
+			document.getElementById("textFormStatus").innerHTML = "No text was present!";
+		};
+		throw new Error("No text was present");
+	};
+
+	//validate
+	try {
+		json = JSON.parse(json);
+	} catch (error) {
+		if(document.getElementById("textFormStatus") !== "null") {
+			document.getElementById("textFormStatus").style.color = "red";
+			document.getElementById("textFormStatus").innerHTML = "The text wasn't valid JSON!";
+		};
+		throw error;
+	};
+	
+	if(document.getElementById("textFormStatus") !== "null") {
+		document.getElementById("textFormStatus").style.color = "yellow";
+		document.getElementById("textFormStatus").innerHTML = "JSON was parsed successfully";
+	};
+	
+	//return json;
+	return importJsonState(json);
 };
 
 function importJsonState(json) {
@@ -214,10 +267,15 @@ function setPixelSize(size=null) {
 
 var saveLoaderDescription = `<div>
 <span id="downloadButton" onclick=savePrompt() style="color: #FF00FF;">Download simulation</span>
+<span id="copyButton" onClick=copySaveJSON() style="color: #FF66FF;">Alternatively, copy simulation JSON</span>
 
 <span id="fileFormStatus">No file loader status</span>
-One file, please: <input type="file" name="" id="myfile">
+One file, please: <input type="file" name="Save upload button" id="myfile">
 <button id="loadButton" onclick=loadFile() style="color: #FF00FF;">Load File</button>
+<span>Or paste JSON</span>
+<span id="textFormStatus">No text loader status</span>
+<input name="Text load field" id="mytext">
+<button id="textLoadButton" onclick=loadText() style="color: #FF66FF;">Load Text</button>
 
 <span id="pixelSizeStatus">No size setter status</span>
 Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut off)

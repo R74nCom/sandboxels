@@ -44,6 +44,20 @@ altRoom= [["brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick", 
 	return Math.floor(Math.random() * 256);
 };*/
 
+canSupportWithEdge = function(x,y) {
+	if(outOfBounds(x,y)) { //count edges
+		return true;
+	} else {
+		if(!isEmpty(x,y,true)) { //if there is a pixel
+			if(elements[pixelMap[x][y].element].state === "solid") {
+				return true;
+			} else {
+				return false;
+			};
+		};
+	};
+};
+
 function loadPixelRowFromArray(pixelArray,centerX,centerY,evenLengthBiasedLeft=true,doOverwrite=true) {
 	var arrayLength = pixelArray.length;
 	var leftmostOffset = (evenLengthBiasedLeft ? Math.floor(0 - ((arrayLength - 1) / 2)) : Math.ceil(0 - ((arrayLength - 1) / 2))) //floor and ceil have no effect on the integer values produced by odd lengths
@@ -89,6 +103,42 @@ elements.glass.hardness = 0.25,
 elements.rad_glass.hardness = 0.25,
 
 //Prereq elements
+elements.crumbling_concrete = {
+	color: "#ababab",
+	tick: function(pixel) {
+		var px = pixel.x;
+		var py = pixel.y;
+
+		if (pixel.start === pixelTicks) {return}
+
+		var supportCondition1 = (canSupportWithEdge(px-1,py-1) && canSupportWithEdge(px+1,py-1))	// V shape
+		var supportCondition2 = (canSupportWithEdge(px-1,py) && canSupportWithEdge(px+1,py)) 		// - shape
+		var supportCondition3 = (canSupportWithEdge(px-1,py+1) && canSupportWithEdge(px+1,py+1))	// Λ shape
+		var supportCondition4 = (canSupportWithEdge(px-1,py+1) && canSupportWithEdge(px+1,py-1))	// / shape
+		var supportCondition5 = (canSupportWithEdge(px-1,py-1) && canSupportWithEdge(px+1,py+1))	// \ shape
+		var supportCondition6 = (canSupportWithEdge(px-1,py-1) && canSupportWithEdge(px+1,py))		// '- shape
+		var supportCondition7 = (canSupportWithEdge(px-1,py+1) && canSupportWithEdge(px+1,py))		// ,- shape
+		var supportCondition8 = (canSupportWithEdge(px+1,py-1) && canSupportWithEdge(px-1,py))		// -' shape
+		var supportCondition9 = (canSupportWithEdge(px+1,py+1) && canSupportWithEdge(px-1,py))		// -, shape
+		var supportCondition10 = (canSupportWithEdge(px,py+1) && canSupportWithEdge(px,py-1))		// | shape
+		var supports = (supportCondition1 || supportCondition2 || supportCondition3 || supportCondition4 || supportCondition5 || supportCondition6 || supportCondition7 || supportCondition8 || supportCondition9 || supportCondition10);
+
+		if(!supports) {
+			behaviors.POWDER(pixel);
+		};
+		
+		doDefaults(pixel);
+	},
+	tempHigh: 1500,
+	stateHigh: "magma",
+	category: "powders",
+	state: "solid",
+	density: 2400,
+	hardness: 0.5,
+	breakInto: "dust",
+};
+
+
 elements.glass_pane = {
 	color: ["#5e807d","#679e99"],
 	behavior: behaviors.SUPPORT,
@@ -96,11 +146,13 @@ elements.glass_pane = {
 		"radiation": { "elem1":"rad_glass_pane", "chance":0.33 },
 	},
 	tempHigh: 1500,
+	stateHigh: "molten_glass",
 	hardness: 0.2,
 	category: "solids",
 	state: "solid",
 	density: 2500,
 	breakInto: "glass_shard",
+	hidden: true,
 };
 
 elements.rad_glass_pane = {
@@ -117,7 +169,7 @@ elements.rad_glass_pane = {
 	state: "solid",
 	density: 2500,
 	breakInto: "rad_glass_shard",
-	hidden: true
+	hidden: true,
 };
 
 elements.wood.hardness = 0.2;
@@ -134,6 +186,90 @@ elements.wood_plank = {
 	state: "solid",
 	hardness: 0.2,
 	breakInto: "sawdust",
+};
+
+elements.hanging_concrete = {
+	color: "#ababab",
+	behavior: [
+		"XX|SP|XX",
+		"XX|XX|XX",
+		"M2|M1|M2" //crumbling from the top down is acceptable
+	],
+	tempHigh: 1500,
+	stateHigh: "magma",
+	category: "powders",
+	state: "solid",
+	density: 2400,
+	hardness: 0.5,
+	breakInto: "dust",
+	hidden: true,
+};
+
+elements.support_copper = {
+	color: ["#A95232","#BE4322","#C76035"],
+	behavior: behaviors.SUPPORT,
+	reactions: {
+		"water": { "elem1":"oxidized_copper", chance:0.0025 },
+		"salt_water": { "elem1":"oxidized_copper", chance:0.005 },
+		"dirty_water": { "elem1":"oxidized_copper", chance:0.04 },
+		"sugar_water": { "elem1":"oxidized_copper", chance:0.0035 },
+		"seltzer": { "elem1":"oxidized_copper", chance:0.006 },
+	},
+	category: "solids",
+	tempHigh: 1085,
+	stateHigh: "molten_copper",
+	density: 8960,
+	conduct: 0.95,
+	hardness: 0.3,
+	hidden: true,
+};
+
+elements.support_bulb = {
+	color: "#a8a897",
+	behavior: behaviors.SUPPORTPOWDER,
+	behaviorOn: [
+		"XX|CR:light|XX",
+		"CR:light AND SP|XX|CR:light AND SP",
+		"M2|CR:light AND M1|M2"
+	],
+	colorOn: "#ebebc3",
+	category: "machines",
+	tempHigh: 1500,
+	stateHigh: ["molten_glass","molten_glass","molten_copper"],
+	conduct: 1,
+	breakInto: "glass_shard",
+	hidden: true,
+};
+
+elements.support_plastic = {
+	color: "#c5dede",
+	behavior: behaviors.SUPPORT,
+	tempHigh: 250,
+	stateHigh: "molten_plastic",
+	burn: 10,
+	burnTime: 200,
+	burnInto: ["dioxin","smoke","dioxin","smoke","stench"],
+	category: "solids",
+	state: "solid",
+	density: 1052,
+	hidden: true,
+};
+
+elements.support_steel = {
+	color: "#71797E",
+	behavior: behaviors.SUPPORT,
+	tempHigh: 1455.5,
+	stateHigh: "molten_steel",
+	category: "solids",
+	density: 7850,
+	conduct: 0.42,
+	hardness: 0.8,
+};
+
+var newAcidIgnores = ["glass_pane", "rad_glass_pane", "rad_glass_shard", "hanging_plastic"];
+for(i = 0; i < newAcidIgnores.length; i++) {
+	elements.acid.ignore.push(newAcidIgnores[i]);
+	elements.acid_gas.ignore.push(newAcidIgnores[i]);
 };
 
 elements.rad_glass.breakInto = "rad_glass_shard";
@@ -168,6 +304,38 @@ elements.molten_rad_glass = {
 		"M2 AND CR:radiation%0.15|XX|M2 AND CR:radiation%0.15",
 		"M1|M1 AND CR:radiation%0.15|M1",
 	],
+};
+
+elements.steel_plate_ledge = {
+	color: "#F2F2F2",
+	tick: function(pixel) {
+		if(pixel.attached) {
+			if(pixel.attachOffsets === null) {
+				pixel.attached = false;
+			} else if(pixel.attachOffsets.includes(null)) {
+				pixel.attached = false;
+			} else {
+				var attachCoords = [pixel.x + pixel.attachOffsets[0], pixel.y + pixel.attachOffsets[1]];
+				if(isEmpty(attachCoords[0],attachCoords[1],false)) { //consider OOB full
+					pixel.attached = false;
+				};
+			};
+		} else { //Move if not attached
+			tryMove(pixel,pixel.x,pixel.y+1);
+		};
+		doDefaults(pixel);
+	},
+	properties: {
+		"attached": false,
+		"attachOffsets": [null, null],
+	},
+	tempHigh: 1455.5,
+	stateHigh: "molten_steel",
+	category: "solids",
+	density: 785,
+	conduct: 0.32,
+	hardness: 0.7,
+	breakInto: "metal_scrap",
 };
 
 //Seeds
