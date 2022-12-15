@@ -3,6 +3,49 @@
     + Baking Update
     + More plans / suggestions at https://docs.google.com/document/u/4/d/1R8xljj_J-K5oU-9y4louwplQmM-ZBvUfXmhbgj5LYdk/edit
 
+[Version 1.7 - December 15, 2022 - Anniversary Update]
+    + Confetti
+    + Party Popper
+    + Balloon
+    + Evergreen Trees
+        + Pinecone, sapling equivalent
+        + Evergreen (Hidden)
+    + Gingerbread, a sturdy building material
+    + Slush, made when snow mixes with water
+    + Snow world gen type
+    + Taiga world gen type
+    + Tide Pool world gen type
+    + New party-themed random events
+    + Molten Ash
+    + AlGa alloy (Hidden)
+    + Eggnog (Hidden)
+    + Pilk (Hidden)
+    + Supporters list below game, donate to be added for life!
+   [Changes]
+    ~ Snow more resilient to heat
+    ~ Tweaked Ice color
+    ~ Improved world gen for: Flower Field, Wheat Field, Forest, Jungle, Ocean
+    ~ Dyanmite must now be triggered to explode
+    ~ Plague now dissipates over time
+    ~ Plague now dies at high temperatures
+    + Snails and Slugs can now eat Dead Plant
+    + Rats killed by Soap
+    + Soap can damage Cancer
+    + Cancer dirties Water
+    + Cancer can now be frozen
+    + Roots can freeze to death
+    + Milk and variants can wet Dirt and Sand
+    + Wet Sand can freeze
+    + Cheerful Mode for when tragedy hits
+    - Removed Yolk random event
+   [Bug Fixes]
+    ~ Fixed: Gallium freezing point too low
+    ~ Fixed: Clouds getting stuck on each other
+    ~ Fixed: Molten conductivity not being set properly
+    ~ Fixed: Dead Bug button color not showing
+   [Technical]
+    + "decor" world gen property, see "forest" or "tide_pool"
+
 [Version 1.6.5 - November 16, 2022]
     + Radiated Glass
     + Gallium
@@ -12,7 +55,7 @@
     + Added Sandboxels introduction and controls underneath game
     + Loading screen
    [Bug Fixes]
-    ~ Fixed: Yeast immediately killed by yeast it ferments
+    ~ Fixed: Yeast immediately killed by alcohol it ferments
    [Technical]
     ~ Revamped CSS, report any bugs on the Discord
     + New "attr1" and "attr2" reaction property
