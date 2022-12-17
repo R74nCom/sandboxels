@@ -1,6 +1,6 @@
 var modName = "mods/mobs.js";
-var runAfterAutogenMod = "mods/runAfterAutogen and onload restructure.js";
 var explodeAtPlusMod = "mods/explodeAtPlus.js";
+var runAfterAutogenMod = "mods/runAfterAutogen and onload restructure.js";
 var libraryMod = "mods/code_library.js";
 
 if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlusMod) && enabledMods.includes(libraryMod)) {
@@ -5893,6 +5893,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 				elements[placerName].id = nextid++; //set placer's id to nextid and then increment nextid 
 				elements[bodyName].id = nextid++; //repeat with body and head
 				elements[headName].id = nextid++;
+				headBodyObject[headName] = bodyName;
 				document.getElementById("extraInfo").innerHTML = "<small><p>There are " + elementCount + " elements, including " + hiddenCount + " hidden ones.</p><p>©2021-" + new Date().getFullYear() + ". All Rights Reserved. <a href='https://r74n.com'>R74n</a></p></small>"; //update extra info counts (and the copyright year, due to the method used)
 			};
 			if(creeperIncludeRandom) {
