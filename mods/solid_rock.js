@@ -1,7 +1,8 @@
 var modName = "mods/random_rocks.js";
+var onTryMoveIntoMod = "mods/onTryMoveInto.js";
 var libraryMod = "mods/code_library.js";
 
-if(enabledMods.includes(libraryMod)) {
+if(enabledMods.includes(onTryMoveIntoMod) && enabledMods.includes(libraryMod)) {
 	elements.solid_rock = {
 		color: ["#808080","#4f4f4f","#949494"],
 		behavior: behaviors.WALL,
@@ -46,7 +47,6 @@ if(enabledMods.includes(libraryMod)) {
 			state: "solid",
 			density: 1250,
 			breakInto: "corrupt_rock",
-			reactions: elements.corrupt_land.reactions,
 			tick: function(pixel) {
 				var randomNeighborOffset = adjacentCoords[Math.floor(Math.random() * adjacentCoords.length)];
 				var rfX = pixel.x+randomNeighborOffset[0];
@@ -61,9 +61,14 @@ if(enabledMods.includes(libraryMod)) {
 				};
 			},
 		};
+		
+		runAfterLoad(function() {
+			elements.corrupt_solid_rock.reactions = elements.corrupt_land.reactions;
+		});
 	}
 } else {
-	alert(`The ${libraryMod} mod is required and has been automatically inserted (reload for this to take effect).`)
-	enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod)
+	if(!enabledMods.includes(libraryMod))		{ enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod) };
+	if(!enabledMods.includes(onTryMoveIntoMod))	{ enabledMods.splice(enabledMods.indexOf(modName),0,onTryMoveIntoMod) };
 	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
+	alert(`The "${libraryMod}" and "${onTryMoveIntoMod}" mods are all required; any missing mods in this list have been automatically inserted (reload for this to take effect).`)
 };
