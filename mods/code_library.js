@@ -1094,6 +1094,96 @@
 		};
 	};
 
+	function reactionStealer(pixel,newPixel,reactionTarget) {
+		if(!elements[reactionTarget]) {
+			throw new Error(`No such element ${reactionTarget}!`);
+		};
+		if(typeof(newPixel) === "undefined") { //timing issue?
+			return false;
+		};
+		var newElement = newPixel.element;
+		var newInfo = elements[newElement];
+		if(typeof(newInfo.reactions) === "undefined") {
+			return false;
+		};
+		if(typeof(newInfo.reactions[reactionTarget]) === "undefined") {
+			return false;
+		};
+		var pixel2 = pixel;
+		var pixel1 = newPixel;
+		var r = newInfo.reactions[reactionTarget];
+		
+		if (r.setting && settings[r.setting]===0) {
+			return false;
+		}
+		// r has the attribute "y" which is a range between two y values
+		// r.y example: [10,30]
+		// return false if y is defined and pixel1's y is not in the range
+		if (r.tempMin !== undefined && pixel1.temp < r.tempMin) {
+			return false;
+		}
+		if (r.tempMax !== undefined && pixel1.temp > r.tempMax) {
+			return false;
+		}
+		if (r.charged && !pixel.charge) {
+			return false;
+		}
+		if (r.chance !== undefined && Math.random() > r.chance) {
+			return false;
+		}
+		if (r.y !== undefined && (pixel1.y < r.y[0] || pixel1.y > r.y[1])) {
+			return false;
+		}
+		if (r.elem1 !== undefined) {
+			// if r.elem1 is an array, set elem1 to a random element from the array, otherwise set it to r.elem1
+			if (Array.isArray(r.elem1)) {
+				var elem1 = r.elem1[Math.floor(Math.random() * r.elem1.length)];
+			} else { var elem1 = r.elem1; }
+			
+			if (elem1 == null) {
+				deletePixel(pixel1.x,pixel1.y);
+			}
+			else {
+				changePixel(pixel1,elem1);
+			}
+		}
+		if (r.charge1) { pixel1.charge = r.charge1; }
+		if (r.temp1) { pixel1.temp += r.temp1; pixelTempCheck(pixel1); }
+		if (r.color1) { // if it's a list, use a random color from the list, else use the color1 attribute
+			pixel1.color = pixelColorPick(pixel1, Array.isArray(r.color1) ? r.color1[Math.floor(Math.random() * r.color1.length)] : r.color1);
+		}
+		if (r.attr1) { // add each attribute to pixel1
+			for (var key in r.attr1) {
+				pixel1[key] = r.attr1[key];
+			}
+		}
+		if (r.elem2 !== undefined) {
+			// if r.elem2 is an array, set elem2 to a random element from the array, otherwise set it to r.elem2
+			if (Array.isArray(r.elem2)) {
+				var elem2 = r.elem2[Math.floor(Math.random() * r.elem2.length)];
+			} else { var elem2 = r.elem2; }
+
+			if (elem2 == null) {
+				deletePixel(pixel2.x,pixel2.y);
+			}
+			else {
+				changePixel(pixel2,elem2);
+			}
+		}
+		if (r.charge2) { pixel2.charge = r.charge2; }
+		if (r.temp2) { pixel2.temp += r.temp2; pixelTempCheck(pixel2); }
+		if (r.color2) { // if it's a list, use a random color from the list, else use the color2 attribute
+			pixel2.color = pixelColorPick(pixel2, Array.isArray(r.color2) ? r.color2[Math.floor(Math.random() * r.color2.length)] : r.color2);
+		}
+		if (r.attr2) { // add each attribute to pixel2
+			for (var key in r.attr2) {
+				pixel2[key] = r.attr2[key];
+			}
+		}
+		if (r.func) { r.func(pixel1,pixel2); }
+		return r.elem1!==undefined || r.elem2!==undefined;
+	};
+
 //World
 
 	function breakCircle(x,y,radius,respectHardness=false,changeTemp=false,defaultBreakIntoDust=false) {
@@ -1136,4 +1226,45 @@
 		} else {
 			return false;
 		};
+	};
+
+//currentPixels operations
+
+	function findInCurrentPixels(x,y) {
+		var pixel = currentPixels.filter(function(pixelObject) {
+			return pixelObject.x == x && pixelObject.y == y;
+		});
+		if(pixel.length <= 0) {
+			return undefined;
+		};
+		if(pixel.length > 1) {
+			pixel.length = 1;
+		};
+		pixel = pixel[0];
+		return pixel;
+	};
+
+	function filterCurrentPixels(filterFunction) {
+		return currentPixels.filter(filterFunction);
+	};
+	
+	//Filter test functions
+
+	function _filterTest_xIsTwenty(pixel) {
+		return pixel.x == 20;
+	};
+
+	function _filterTest_tempIsOdd(pixel) {
+		return Math.trunc(pixel.temp) % 2 == 1;
+	};
+
+	function _filterTest_redRock(pixel) {
+		if(typeof(convertColorFormats) === "undefined") {
+			throw new Error("code_library.js is required!");
+		};
+		var color = rgbStringToHSL(convertColorFormats(pixel.color,"rgb"),"json");
+		var isRed = ((color.h % 360) >= 350) || ((color.h % 360) <= 10);
+		var isVivid = (color.s > 30);
+		var isBright = (color.l > 20);
+		return isRed && isVivid && isBright;
 	};
