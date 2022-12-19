@@ -3,6 +3,13 @@ var runAfterAutogenMod = "mods/runAfterAutogen and onload restructure.js";
 var libraryMod = "mods/code_library.js";
 
 if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod)) {
+	//Generate spouts
+	if(urlParams.get('generateSpouts') !== null) { //if the variable exists at all
+		generateSpouts = true
+	} else { //if it doesn't (and it returns null)
+		generateSpouts = false
+	}
+
 	if(urlParams.get('spoutIncludeRandom') !== null) { //if the variable exists at all
 		spoutIncludeRandom = true
 	} else { //if it doesn't (and it returns null)
@@ -90,6 +97,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 			var elementOfSpout = spoutElements[aaf];
 			var startColor;
 			var randomExcl = 0;
+			var isNocheer = 0;
 			//console.log("randomExcl set")
 			//console.log(elementOfSpout);
 
@@ -119,6 +127,17 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 					//console.log(elementOfSpout[ll]);
 					startColor = startColor.concat(elements[elementOfSpout[ll]].color);
 				};
+
+				for(ll = 0; ll < elementOfSpout.length; ll++) {
+					if(typeof(elements[elementOfSpout[ll]].nocheer !== "undefined")) { //if nocheer exists (prevent TypeError)
+						if(elements[elementOfSpout[ll]].nocheer) { //it it's true
+							isNocheer = 1; //the whole array spout is excluded
+							//console.log("array nyet" + elementOfSpout);
+						};
+					};
+					//console.log(elementOfSpout[ll]);
+					startColor = startColor.concat(elements[elementOfSpout[ll]].color);
+				};
 			} else { //they should all be strings, so here
 				spoutName = `${elementOfSpout}_spout`; //auto placer element name
 				startColor = elements[elementOfSpout].color;
@@ -129,6 +148,16 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 					} else {
 						//console.log("allow " + elementOfSpout);
 						randomExcl = 0;
+					};
+				};
+
+				if(typeof(elements[elementOfSpout].nocheer !== "undefined")) { //if nocheer exists (prevent TypeError)
+					if(elements[elementOfSpout].nocheer) { //it it's true
+						//console.log("nyet " + elementOfSpout);
+						isNocheer = 1; //the spout is excluded
+					} else {
+						//console.log("allow " + elementOfSpout);
+						isNocheer = 0;
 					};
 				};
 			};
@@ -191,9 +220,17 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 			} else {
 				elements[spoutName].excludeRandom = true;
 			};
+			if(isNocheer) {
+				elements[spoutName].nocheer = true;
+			}
 			if(isAfterScriptLoading) {
 				elementCount++; //increment for new spout element
-				createElementButton(spoutName);
+				if (settings.cheerful && elements[spoutName].nocheer) {
+					elements[spoutName].hidden = true;
+					hiddenCount++;
+				} else {						
+					createElementButton(spoutName);
+				};
 				elements[spoutName].id = nextid++;
 				document.getElementById("extraInfo").innerHTML = "<small><p>There are " + elementCount + " elements, including " + hiddenCount + " hidden ones.</p><p>©2021-" + new Date().getFullYear() + ". All Rights Reserved. <a href='https://r74n.com'>R74n</a></p></small>"; //update extra info counts (and the copyright year, due to the method used)
 			};
@@ -203,36 +240,13 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 	};
 
 	runAfterAutogen(function() {
-		liquidArray = Object.keys(elements).filter(function(e) {
-			return (defaultSpoutCondition(e));
-		});
-		liquidArray.push(["rock","sand"]);
-		/*for(i = 0; i < liquidArray.length; i++) {
-			elements[`${liquidArray[i]}_spout`] = {
-				color: elements[liquidArray[i]].color,
-				colorObject: elements[liquidArray[i]].colorObject,
-				behavior: [
-					["XX",`CR:${liquidArray[i]}`,"XX"],
-					[`CR:${liquidArray[i]}`,"XX",`CR:${liquidArray[i]}`],
-					["XX",`CR:${liquidArray[i]}`,"XX"]
-				],
-				category: "spouts",
-				temp: elements[liquidArray[i]].temp,
-				hardness: 1,
-			};
-			if(spoutIncludeRandom) {
-				elements[liquidArray[i]].excludeRandom ? elements[`${liquidArray[i]}_spout`].excludeRandom = true : elements[`${liquidArray[i]}_spout`].excludeRandom = false;
-			} else {
-				elements[`${liquidArray[i]}_spout`].excludeRandom = true;
-			};
+		if(generateSpouts) {
+			liquidArray = Object.keys(elements).filter(function(e) {
+				return (defaultSpoutCondition(e));
+			});
+			liquidArray.push(["rock","sand"]);
+			generateSpout(liquidArray,false);
 		};
-		spoutChoices = Object.keys(elements).filter(function(e) {
-			return elements[e].category == "spouts" || includedSpouts.includes(elements[e]);
-		});
-		spoutChoices = spoutChoices.filter(function(e) {
-			return !elements[e.slice(0,-6)].excludeRandom;
-		});*/
-		generateSpout(liquidArray,false);
 	});
 
 	elements.random_spout = {
