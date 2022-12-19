@@ -183,7 +183,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod) 
 				};
 
 				for(ll = 0; ll < elementOfFairy.length; ll++) {
-					if(typeof(elements[elementOfFairy[ll]].nocheer !== "undefined")) { //if excludeRandom exists (prevent TypeError)
+					if(typeof(elements[elementOfFairy[ll]].nocheer !== "undefined")) { //if nocheer exists (prevent TypeError)
 						if(elements[elementOfFairy[ll]].nocheer) { //it it's true
 							isNocheer = 1; //the whole array fairy is excluded
 							//console.log("array nyet" + elementOfFairy);
@@ -205,7 +205,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod) 
 					};
 				};
 
-				if(typeof(elements[elementOfFairy].nocheer !== "undefined")) { //if excludeRandom exists (prevent TypeError)
+				if(typeof(elements[elementOfFairy].nocheer !== "undefined")) { //if nocheer exists (prevent TypeError)
 					if(elements[elementOfFairy].nocheer) { //it it's true
 						//console.log("nyet " + elementOfFairy);
 						isNocheer = 1; //the fairy is excluded
@@ -299,8 +299,8 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod) 
 				if(isAfterScriptLoading) {
 					elements[fairyName].flippableX = true;
 					elementCount++; //increment for new fairy element
-					if (settings.cheerful && elements[element].nocheer) {
-						elements[element].hidden = true;
+					if (settings.cheerful && elements[fairyName].nocheer) {
+						elements[fairyName].hidden = true;
 						hiddenCount++;
 					} else {						
 						createElementButton(fairyName);
