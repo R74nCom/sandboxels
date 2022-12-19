@@ -501,7 +501,6 @@ elements.acid.ignore.push("water")
 runAfterLoad(function() {
 	
     if(enabledMods.includes("mods/fey_and_more.js")) {
-			elements.cum_reviver.stateHigh.push("magic");
 		//cum elements as impurities {
 			eLists.IMPURITY.push("cum");
 			eLists.IMPURITY.push("cum_water");
