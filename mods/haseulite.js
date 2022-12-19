@@ -110,7 +110,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		state: "solid",
 		density: 2466.73,
 		hardness: 0.56,
-		breakInto: ["rock","sulfur","loona_gravel","loona_gravel","loona_gravel","haseulite_powder", "rock","sulfur","loona_gravel","loona_gravel","loona_gravel","haseulite_powder", "rock","sulfur","loona_gravel","loona_gravel","loona_gravel","heejinite_powder"],
+		breakInto: ["rock","sulfur","loona_gravel","loona_gravel","loona_gravel","haseulite_powder", "rock","sulfur","loona_gravel","loona_gravel","loona_gravel","jinsoulite_powder", "rock","sulfur","loona_gravel","loona_gravel","loona_gravel","heejinite_powder"],
 	};
 
 	var backupCategoryWhitelist = ["land","powders","weapons","food","life","corruption","states","fey","Fantastic Creatures","dyes","energy liquids","random liquids","random gases","random rocks"];
@@ -209,7 +209,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 	//it doesn't want to acknowledge spoutCriteria, so...
 
 	runAfterAutogen(function() {
-		elements.loona.stateHigh = ["molten_loona","rock","rock","rock","sulfur_gas","sulfur_gas","molten_haseulite","molten_loona","rock","rock","rock","sulfur_gas","sulfur_gas","molten_haseulite","molten_loona","rock","rock","rock","sulfur_gas","sulfur_gas","molten_heejinite"];
+		elements.loona.stateHigh = ["molten_loona","rock","rock","rock","sulfur_gas","sulfur_gas","molten_haseulite","molten_loona","rock","rock","rock","sulfur_gas","sulfur_gas","molten_jinsoulite","molten_loona","rock","rock","rock","sulfur_gas","sulfur_gas","molten_heejinite"];
 		hotHeejiniteElements = Object.keys(elements).filter(function(e) {
 			return spoutCriteria(e) && heejiniteHeatCriteria(e) && !elements[e].excludeRandom && !e.startsWith("rad");
 		});
@@ -219,12 +219,12 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		color: ["#b3be98","#919a6f","#68744b","#515931"],
 		behavior: behaviors.POWDER,
 		tempHigh: 1031,
-		stateHigh: ["molten_loona","rock","rock","rock","sulfur_gas","sulfur_gas","molten_haseulite","molten_loona","rock","rock","rock","sulfur_gas","sulfur_gas","molten_haseulite","molten_loona","rock","rock","rock","sulfur_gas","sulfur_gas","molten_heejinite"],
+		stateHigh: ["molten_loona","rock","rock","rock","sulfur_gas","sulfur_gas","molten_haseulite","molten_loona","rock","rock","rock","sulfur_gas","sulfur_gas","molten_jinsoulite","molten_loona","rock","rock","rock","sulfur_gas","sulfur_gas","molten_heejinite"],
 		category: "random rocks",
 		state: "solid",
 		density: 1625.14,
 		hardness: 0.97,
-		breakInto: ["rock","sulfur","rock","haseulite_powder","rock","sulfur","rock","haseulite_powder","rock","sulfur","rock","heejinite_powder"],
+		breakInto: ["rock","sulfur","rock","haseulite_powder","rock","sulfur","rock","jinsoulite_powder","rock","sulfur","rock","heejinite_powder"],
 	};
 
 	haseuliteValueObject = {
@@ -240,11 +240,49 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 	};
 
 	jinsouliteValueObject = {
-		steam: [1, ["steam",null]],
-		cloud: [1, ["cloud",null]],
-		snow_cloud: [1, ["snow_cloud",null]],
-		hail_cloud: [1, ["hail_cloud",null]],
-		rain_cloud: [3, ["rain_cloud","rain_cloud",null]]
+		cloud: 1,
+		cloud_cloud: [1, "cloud"],
+		snow_cloud: 2,
+		hail_cloud: 2,
+		rain_cloud: [3, "cloud"],
+		water_cloud: [3, "cloud"],
+		steam: 4,
+		steam_cloud: [2, "steam"],
+		rain_cloud_cloud: [1, "rain_cloud"],
+		snow_cloud_cloud: [1, "snow_cloud"],
+		hail_cloud_cloud: [1, "hail_cloud"],
+		water_bomb: 59,
+		water_bomb_2: 164.5,
+		water_bomb_3: 322.5,
+		water_bomb_4: 534,
+		water_bomb_5: 798,
+		water_bomb_6: 1112.5,
+		water_bomb_7: 1480,
+		water_bomb_8: 1901.5,
+		water_bomb_9: 2373,
+		water_bomb_10: 2898, //average rates from in-game simulation since I can't come up with an exponential function
+		water_bomb_bomb: 59*59,
+		water_bomb_bomb_2: 59*164.5,
+		water_bomb_bomb_3: 59*322.5,
+		water_bomb_bomb_4: 59*534,
+		water_bomb_bomb_5: 59*798,
+		water_bomb_bomb_6: 59*1112.5,
+		water_bomb_bomb_7: 59*1480,
+		water_bomb_bomb_8: 59*1901.5,
+		water_bomb_bomb_9: 59*2373,
+		water_bomb_bomb_10: 59*2898, //creates up to around 2,898 water bombs, each of which theoretically create up to around 59 water
+		water_bomb_bomb: 59*59,
+		water_bomb_2_bomb: 164.5*59,
+		water_bomb_3_bomb: 322.5*59,
+		water_bomb_4_bomb: 534*59,
+		water_bomb_5_bomb: 798*59,
+		water_bomb_6_bomb: 1112.5*59,
+		water_bomb_7_bomb: 1480*59,
+		water_bomb_8_bomb: 1901.5*59,
+		water_bomb_9_bomb: 2373*59,
+		water_bomb_10_bomb: 2898*59,  //creates up to around 59 water bombs, each of which theoretically create up to around 2,898 water
+		water_bomb_10_bomb_10: 2898*2898,  //skipping to the funny
+		water_bomb_cloud: 30,
 	};
 
 	/*function customStaining(pixel,customColorRgb,stainOverride=null) {
@@ -338,10 +376,13 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 				var otherElement = otherPixel.element;
 				var otherInfo = elements[otherElement];
 				if(valueObject[otherElement]) {
+					//console.log(`${otherElement} in your area`)
 					if(typeof(otherPixel) === "undefined" || isEmpty(fX,fY,true)) {
+						console.log(`nope`)
 						return false;
 					};
 					var ValueData = valueObject[otherElement];
+					//console.log(ValueData.toString())
 					if(ValueData instanceof Array) {
 						var finalElement = ValueData[1];
 						if(finalElement instanceof Array) {
@@ -357,7 +398,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 						pixel.value += ValueData[0];
 					} else if(typeof(ValueData) === "number") {
 						deletePixel(otherPixel.x,otherPixel.y);
-						pixel.value += ValueData[0];
+						pixel.value += ValueData;
 					};
 				};
 			};
@@ -538,6 +579,11 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 			value: 0,
 			oldColor: null
 		},
+		behavior: [
+			"XX|CR:fire%3|XX", //PTT
+			"M2|XX|M2",
+			"M1|M1|M1",
+		],
 		tick: function(pixel) { haseulitoidTick(pixel) },
 		onExplosionBreakOrSurvive: function(pixel,x,y,radius) {
 			/*power is always radius/10
