@@ -2,18 +2,21 @@ elements.cum = {
 	name: "cum",
 	color: "#e6e1d5",
 	behavior: [
-		"ST%50 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15|ST%50 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15|XX AND ST%50 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15",
-		"M2 AND ST%65 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15|XX|M2 AND ST%65 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15",
-		"M1 AND ST%80 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15|M1 AND ST%80 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15|M1 AND ST%80 AND SW:water,cum_water,dead_cum,dead_cum_water,slime%15",
+		"ST%50|ST%50|ST%50",
+		"M2 AND ST%65|XX|M2 AND ST%65",
+		"M1 AND ST%80|M1 AND ST%80|M1 AND ST%80",
 	],
 	density: 997,
-	tempHigh: 35,
+	tempHigh: 36,
 	stateHigh: "dead_cum",
 	state: "liquid",
 	reactions: {
-		"water": { "elem1": "cum_water", "elem2": "cum_water", "chance":0.7 }, //cum mixing
+		"water": { "elem1": "cum_water", "elem2": "cum_water", "chance":0.1 }, //cum mixing
+		"cum_water": { "elem1": "cum_water", "elem2": "cum", "chance":0.03, "oneway": true }, //cum mixing
+		"dead_cum": { "elem1": "dead_cum", "elem2": "cum", "chance":0.03, "oneway": true }, //cum mixing
+		"dead_cum_water": { "elem1": "dead_cum_water", "elem2": "cum", "chance":0.03, "oneway": true }, //cum mixing
 		"sugar": { "elem1": null, "elem2": "cum", "chance":0.7 }, //sperm eat sugar
-		"sugar_water": { "elem1": "cum_water", "elem2": "cum_water", "chance":0.7 }, //fed and diluted
+		"sugar_water": { "elem1": "cum_water", "elem2": "cum_water", "chance":0.15 }, //fed and diluted
 		"dirt": { "elem1": null, "elem2": "cummy_mud" }, //cum goes into dirt
 		"mud": { "elem1": "cum_water", "elem2": "cummy_mud", "chance": (1/3) }, // cum goes into mud
 		"sand": { "elem1": null, "elem2": "cummy_sand" }, // cum goes into sand
@@ -28,7 +31,7 @@ elements.cum = {
 	},
 	tempLow: 0,
 	stateLow: "cum_ice",
-	viscosity: 20,
+	viscosity: 30,
 	category:"cum",
 	conduct:0,
 	extraInfo: "A whitish, sticky liquid that contains sperm. <span style=\"font-size: 0;\">It isn't funny.</span>",
@@ -38,15 +41,18 @@ elements.dead_cum = {
 	name: "dead cum",
 	color: "#d0d0d0",
 	behavior: [
-		"ST%50 AND SW:water,dead_cum_water%15|ST%50 AND SW:water,dead_cum_water%15|XX AND ST%50 AND SW:water,dead_cum_water%15",
-		"M2 AND ST%65 AND SW:water,dead_cum_water%15|XX|M2 AND ST%65 AND SW:water,dead_cum_water%15",
-		"M1 AND ST%80 AND SW:water,dead_cum_water%15|M1 AND ST%80 AND SW:water,dead_cum_water%15|M1 AND ST%80 AND SW:water,dead_cum_water%15",
+		"ST%50|ST%50|ST%50",
+		"M2 AND ST%65|XX|M2 AND ST%65",
+		"M1 AND ST%80|M1 AND ST%80|M1 AND ST%80",
 	],
 	density: 997,
 	tempHigh: 100,
 	stateHigh: ["steam","burnt_cum"],
 	reactions: {
-		"water": { "elem1": "dead_cum_water", "elem2": "dead_cum_water", "chance":0.7 }, //cum mixing
+		"water": { "elem1": "dead_cum_water", "elem2": "dead_cum_water", "chance":0.1 }, //cum mixing
+		"cum_water": { "elem1": "cum_water", "elem2": "dead_cum", "chance":0.03, "oneway": true }, //cum mixing
+		"cum": { "elem1": "cum", "elem2": "dead_cum", "chance":0.03, "oneway": true }, //cum mixing
+		"dead_cum_water": { "elem1": "dead_cum_water", "elem2": "dead_cum", "chance":0.03, "oneway": true }, //cum mixing
 		"dirt": { "elem1": null, "elem2": "dead_cummy_mud" }, //cum goes into dirt
 		"mud": { "elem1": "dead_cum_water", "elem2": "dead_cummy_mud", "chance": (1/3) }, // cum goes into mud
 		"sand": { "elem1": null, "elem2": "dead_cummy_sand" }, // cum goes into sand
@@ -69,9 +75,9 @@ elements.cum_water = {
 	name: "cum water",
 	color: "#a7c1db",
 	behavior: [
-		"SW:water,cum,dead_cum_water,dead_cum%5|SW:water,cum,dead_cum_water,dead_cum%5|SW:water,cum,dead_cum_water,dead_cum%5",
-		"M2 AND SW:water,cum,dead_cum_water,dead_cum%5|XX|M2 AND SW:water,cum,dead_cum_water,dead_cum%5",
-		"M1 AND SW:water,cum,dead_cum_water,dead_cum%5|M1 AND SW:water,cum,dead_cum_water,dead_cum%5|M1 AND SW:water,cum,dead_cum_water,dead_cum%5",
+		"XX|XX|XX",
+		"M2|XX|M2",
+		"M1|M1|M1",
 	],
 	reactions: {
 		"sugar_water": { "elem1": "cum_water", "elem2": "cum_water", "chance":0.7 }, //sperm eat sugar
@@ -103,11 +109,7 @@ elements.cum_water = {
 elements.dead_cum_water = {
 	name: "dead cum water",
 	color: "#b7b7c6",
-	behavior: [
-		"SW:water,cum,dead_cum_water,dead_cum%3|SW:water,cum,dead_cum_water,dead_cum%3|SW:water,cum,dead_cum_water,dead_cum%3",
-		"M2 AND SW:water,cum,dead_cum_water,dead_cum%4|XX|M2 AND SW:water,cum,dead_cum_water,dead_cum%4",
-		"M1 AND SW:water,cum,dead_cum_water,dead_cum%5|M1 AND SW:water,cum,dead_cum_water,dead_cum%5|M1 AND SW:water,cum,dead_cum_water,dead_cum%5",
-	],
+	behavior: behaviors.LIQUID,
 	reactions: {
 		"acid": { "elem1": ["acid", "water"], "elem2": "water" }, //diluted cum is less effective
 	},
@@ -416,9 +418,9 @@ elements.precum = {
 	name: "pre-cum",
 	color: "#d0d0d0",
 	behavior: [
-		"ST%50 AND SW:water,cum%15|ST%50 AND SW:water,cum%15|XX AND ST%50 AND SW:water,cum%15",
-		"M2 AND ST%65 AND SW:water,cum%15|XX|M2 AND ST%65 AND SW:water,cum%15",
-		"M1 AND ST%80 AND SW:water,cum%15|M1 AND ST%80 AND SW:water,cum%15|M1 AND ST%80 AND SW:water,cum%15",
+		"ST%50|ST%50|ST%50",
+		"M2 AND ST%65|XX|M2 AND ST%65",
+		"M1 AND ST%80|M1 AND ST%80|M1 AND ST%80",
 	],
 	density: 997,
 	tempHigh: 100,
@@ -465,42 +467,6 @@ elements.precum_snow = {
 	hidden: true,
 	state: "solid",
 	density: 100,
-},
-elements.cum_bomb = {
-	color: "#e3deba",
-	behavior: [
-		"XX|XX|XX",
-		"XX|XX|XX",
-		"M2|M1 AND EX:12>cum,cum,cum,cum_reviver,cum_reviver,cum_reviver,cold_fire,cold_fire,precum|M2",
-	],
-	category: "weapons",
-	state: "solid",
-	density: 1300,
-	extraInfo: "A bomb full of semen.",
-},
-
-elements.cum_reviver = {
-	color: "#b2f5b2",
-	behavior: [
-		"SW:cum,cum_ice,dead_cum_ice,precum,precum_ice AND CO:1%10|SW:cum,cum_ice,dead_cum_ice,precum,precum_ice AND CO:1%10|SW:cum,cum_ice,dead_cum_ice,precum,precum_ice AND CO:1%10",
-		"M2%20 AND SW:cum,cum_ice,dead_cum_ice,precum,precum_ice AND CO:1%10|CO:1%10 AND DL%0.5|M2%20 AND SW:cum,cum_ice,dead_cum_ice,precum,precum_ice AND CO:1%10",
-		"M1%20 AND M2 AND SW:cum,cum_ice,dead_cum_ice,precum,precum_ice AND CO:1%10|M1 AND SW:cum,cum_ice,dead_cum_ice,precum,precum_ice AND CO:1%10|M1%20 AND M2 AND SW:cum,cum_ice,dead_cum_ice,precum,precum_ice AND CO:1%10",
-	],
-	reactions: {
-		"dead_cum": { "elem1": null, "elem2": "cum" },
-		"dead_cum_water": { "elem1": null, "elem2": "cum_water" },
-		"dead_cum_ice": { "elem1": null, "elem2": "cum_ice" },
-		"dead_cum_water_ice": { "elem1": null, "elem2": "cum_water_ice" },
-		"dead_cummy_mud": { "elem1": null, "elem2": "cummy_mud" },
-		"dead_cummy_sand": { "elem1": null, "elem2": "cummy_sand" },
-		"dead_cummy_permafrost": { "elem1": null, "elem2": "cummy_permafrost" }
-	},
-	category: "special",
-	tempHigh: 50,
-	stateHigh: ["light","sugar","diamond","glitter","honey","flower_seed","dirt","water"],
-	state: "liquid",
-	density: 1210,
-	extraInfo: "A magical substance that revives dead semen.",
 },
 
 elements.precum.conduct = elements.water.conduct;
