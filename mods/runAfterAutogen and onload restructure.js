@@ -87,7 +87,7 @@ function autoGen(newname,element,autoType) {
 	newelem.colorObject = colorObjectList;
 	var multiplier = 1.1;
 	if (autoInfo.type === "high") {
-		elements[element].stateHigh = newname;
+		if (!elements[element].stateHigh) {elements[element].stateHigh = newname;}
 		newelem.temp = elements[element].tempHigh;
 		newelem.tempLow = elements[element].tempHigh+(autoInfo.tempDiff || 0);
 		newelem.stateLow = element;
@@ -95,7 +95,7 @@ function autoGen(newname,element,autoType) {
 		if (elements[element].density) { newelem.density = Math.round(elements[element].density * 0.9 * 10) / 10; }
 	}
 	else if (autoInfo.type === "low") {
-		elements[element].stateLow = newname;
+		if (!elements[element].stateLow) {elements[element].stateLow = newname;}
 		newelem.temp = elements[element].tempLow;
 		newelem.tempHigh = elements[element].tempLow+(autoInfo.tempDiff || 0);
 		newelem.stateHigh = element;
@@ -109,7 +109,7 @@ function autoGen(newname,element,autoType) {
 		newelem.viscosity = elements[element].viscosity || autoInfo.viscosity;
 	}
 	// Change by *multiplier
-	if (elements[element].conduct) { newelem.conductivity = Math.round(elements[element].conduct * multiplier * 10) / 10; }
+	if (elements[element].conduct) { newelem.conduct = Math.round(elements[element].conduct * multiplier * 10) / 10; }
 	if (elements[element].burn) { newelem.burn = Math.round(elements[element].burn * multiplier * 10) / 10; }
 	if (elements[element].burnTime) { newelem.burnTime = Math.round(elements[element].burnTime * multiplier * 10) / 10; }
 	if (elements[element].burnInto) { newelem.burnInto = elements[element].burnInto; }
@@ -135,7 +135,7 @@ function autoGen(newname,element,autoType) {
 
 function autoGenAllElements() {
 	for (element in elements) {
-		if (elements[element].tempHigh!==undefined && elements[element].stateHigh===undefined) {
+		if (elements[element].tempHigh!==undefined && (elements[element].stateHigh===undefined||elements[element].forceAutoGen)) {
 			var newname = elements[element].stateHighName;
 			if ((elements[element].state==="solid" || !elements[element].state)) { // Melting
 				if (!newname) { newname = "molten_"+element }
@@ -151,7 +151,7 @@ function autoGenAllElements() {
 				autoGen(newname,element,"evaporate");
 			}
 		}
-		if (elements[element].tempLow!==undefined && elements[element].stateLow===undefined) {
+		if (elements[element].tempLow!==undefined && (elements[element].stateLow===undefined||elements[element].forceAutoGen)) {
 			var newname = elements[element].stateLowName;
 			if (elements[element].state==="liquid") { // Freezing
 				if (!newname) {
@@ -679,6 +679,11 @@ function createButtonsAndCountElements() {
 	categoryList = [];
 	for (var element in elements) {
 		elementCount++;
+		if (settings.cheerful && elements[element].nocheer) {
+			elements[element].hidden = true;
+			hiddenCount++;
+			continue;
+		}
 		var category = elements[element].category;
 		if (category==null) {category="other"}
 		if (categoryList.indexOf(category) === -1) {
@@ -695,6 +700,8 @@ function createButtonsAndCountElements() {
 	// Set the first button in categoryControls div to be the current category
 	document.getElementById("categoryControls").children[0].click()
 	document.getElementById("extraInfo").innerHTML += "<small><p>There are " + elementCount + " elements, including " + hiddenCount + " hidden ones.</p><p>©2021-" + new Date().getFullYear() + ". All Rights Reserved. <a href='https://r74n.com'>R74n</a></p></small>";
+	selectElement(currentElement);
+	focusGame();
 };
 
 window.onload = function() {
