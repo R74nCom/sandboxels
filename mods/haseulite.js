@@ -423,6 +423,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 	}
 
 	function haseulitoidTick(pixel) {
+		if(pixel.value == undefined) { pixel.value = 0 };
 		valueFunction(pixel,haseuliteValueObject,haseuliteSpreadWhitelist);
 		if(pixel.oldColor === null) { pixel.oldColor = pixel.color };
 		pixel.color = lightenColor(pixel.oldColor,pixel.value / 3);
@@ -440,7 +441,6 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		color: ["#3cb00e", "#25d119", "#79f553"],
 		fireColor: ["#08a953", "#2ea332", "#d1e0d3"],
 		properties: {
-			value: 0,
 			oldColor: null
 		},
 		behavior: behaviors.WALL,
@@ -544,7 +544,6 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 	elements.haseulite_powder = {
 		color: ["#5fb33e", "#32ba29", "#63d141"],
 		properties: {
-			value: 0,
 			oldColor: null
 		},
 		category: "powders",
@@ -576,7 +575,6 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		color: ["#cbf569","#f1ffd6","#fdffb5", "#fffa99"],
 		fireColor: ["#08a953", "#2ea332", "#d1e0d3"],
 		properties: {
-			value: 0,
 			oldColor: null
 		},
 		behavior: [
@@ -608,7 +606,6 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		color: ["#ffff9d", "#ffffff", "#e9ffe6", "#ffffe5"],
 		fireColor: ["#08a953", "#2ea332", "#d1e0d3"],
 		properties: {
-			value: 0,
 			oldColor: null
 		},
 		tick: function(pixel) { haseulitoidTick(pixel) },
@@ -904,6 +901,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 	}
 
 	function jinsoulitoidTick(pixel,move1Spots=[],move2Spots=[]) {
+		if(pixel.value == undefined) { pixel.value = 0 };
 		if(jinsouliteDissolution(pixel)) {
 			return;
 		};
@@ -925,10 +923,10 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 			"XX|CR:water%0.15|XX"
 		],
 		properties: {
-			value: 0,
 			oldColor: null
 		},
 		tick: function(pixel) { 
+			if(pixel.value == undefined) { pixel.value = 0 };
 			jinsouliteValue(pixel);
 			jinsouliteSolidNonWaterSideReactions(pixel);
 			jinsouliteSolidWaterSideReactions(pixel);
@@ -952,7 +950,6 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 			"XX|CR:water%0.05|XX"
 		],
 		properties: {
-			value: 0,
 			oldColor: null
 		},
 		category: "powders",
@@ -983,7 +980,6 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 			"XX|CR:steam%0.1|XX"
 		],
 		properties: {
-			value: 0,
 			oldColor: null
 		},
 		color: ["#4e35db","#7767eb","#a876f5", "#78acff"],
@@ -1012,7 +1008,6 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		],
 		fireColor: ["#08a953", "#2ea332", "#d1e0d3"],
 		properties: {
-			value: 0,
 			oldColor: null
 		},
 		tick: function(pixel) { jinsoulitoidTick(pixel,adjacentCoords,[[-1,-1],[1,-1],[1,1],[-1,1]]) },
