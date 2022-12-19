@@ -93,7 +93,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod) 
 		fairyIncludeRandom = false
 	}
 
-	//Generate creepers
+	//Generate fairies
 	if(urlParams.get('generateFairies') !== null) { //if the variable exists at all
 		generateFairies = true
 	} else { //if it doesn't (and it returns null)
@@ -114,6 +114,21 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod) 
 			throw new TypeError(`Unexpected type: ${typeof(stringOrArray)}`);
 		};
 	};
+
+	runAfterLoad(function() {
+		if(typeof(eLists.FAIRY) === "undefined") { eLists.FAIRY = [] };
+		eLists.FAIRY.push("acid_fairy");
+		eLists.FAIRY.push("oil_fairy");
+		eLists.FAIRY.push("honey_fairy");
+		fairyChoices = eLists.FAIRY;
+		for(i = 0; i < eLists.FAIRY.length; i++) {
+			var fairyName = eLists.FAIRY[i];
+			if(!fairyChoices.includes(fairyName)) {
+				fairyChoices.push(fairyName);
+			};
+		};
+	});
+
 
 	//Standalone generator
 	function generateFairy(fairyElements,isAfterScriptLoading=false) {//it can be a single element, though
@@ -136,6 +151,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod) 
 			var elementOfFairy = fairyElements[aaf];
 			var startColor;
 			var randomExcl = 0;
+			var isNocheer = 0;
 			//console.log("randomExcl set")
 			//console.log(elementOfFairy);
 
@@ -165,6 +181,17 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod) 
 					//console.log(elementOfFairy[ll]);
 					startColor = startColor.concat(elements[elementOfFairy[ll]].color);
 				};
+
+				for(ll = 0; ll < elementOfFairy.length; ll++) {
+					if(typeof(elements[elementOfFairy[ll]].nocheer !== "undefined")) { //if excludeRandom exists (prevent TypeError)
+						if(elements[elementOfFairy[ll]].nocheer) { //it it's true
+							isNocheer = 1; //the whole array fairy is excluded
+							//console.log("array nyet" + elementOfFairy);
+						};
+					};
+					//console.log(elementOfFairy[ll]);
+					startColor = startColor.concat(elements[elementOfFairy[ll]].color);
+				};
 			} else { //they should all be strings, so here
 				fairyName = `${elementOfFairy}_fairy`; //auto placer element name
 				startColor = elements[elementOfFairy].color;
@@ -175,6 +202,16 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod) 
 					} else {
 						//console.log("allow " + elementOfFairy);
 						randomExcl = 0;
+					};
+				};
+
+				if(typeof(elements[elementOfFairy].nocheer !== "undefined")) { //if excludeRandom exists (prevent TypeError)
+					if(elements[elementOfFairy].nocheer) { //it it's true
+						//console.log("nyet " + elementOfFairy);
+						isNocheer = 1; //the fairy is excluded
+					} else {
+						//console.log("allow " + elementOfFairy);
+						isNocheer = 0;
 					};
 				};
 			};
@@ -251,6 +288,9 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod) 
 						fairyChoices.push(fairyName);
 					};
 				}
+				if(isNocheer) {
+					elements[fairyName].nocheer = true;
+				}
 				if(fairyIncludeRandom) {
 					randomExcl ? elements[fairyName].excludeRandom = true : elements[fairyName].excludeRandom = false;
 				} else {
@@ -259,7 +299,12 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod) 
 				if(isAfterScriptLoading) {
 					elements[fairyName].flippableX = true;
 					elementCount++; //increment for new fairy element
-					createElementButton(fairyName);
+					if (settings.cheerful && elements[element].nocheer) {
+						elements[element].hidden = true;
+						hiddenCount++;
+					} else {						
+						createElementButton(fairyName);
+					};
 					elements[fairyName].id = nextid++;
 					document.getElementById("extraInfo").innerHTML = "<small><p>There are " + elementCount + " elements, including " + hiddenCount + " hidden ones.</p><p>©2021-" + new Date().getFullYear() + ". All Rights Reserved. <a href='https://r74n.com'>R74n</a></p></small>"; //update extra info counts (and the copyright year, due to the method used)
 				};
@@ -288,13 +333,6 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod) 
 	};
 
 	//Post-generation tasks
-		//Manual eLists.FAIRY updates
-	runAfterLoad(function() {
-		eLists.FAIRY.push("acid_fairy");
-		eLists.FAIRY.push("oil_fairy");
-		eLists.FAIRY.push("honey_fairy");
-	});
-
 		//Revamp fairykill
 	behaviors.FAIRYKILL_OLD = behaviors.FAIRYKILL;
 	behaviors.FAIRYKILL = function(pixel) {
