@@ -3,8 +3,6 @@ var runAfterAutogenMod = "mods/runAfterAutogen and onload restructure.js";
 var libraryMod = "mods/code_library.js";
 
 if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod)) {
-	var testName = "neutronium_compressor";
-
 	var singularityColorTemplate = ["#202020", "#505050", "#b0b0b0", "#c7c7c7"];
 
 	singularityNumber = 10000;
@@ -242,7 +240,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 		return count;
 	};
 
-	elements[testName] = {
+	elements.neutronium_compressor = {
 		color: "#e7e7ee",
 		properties: {
 			range: 4,
@@ -254,6 +252,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 		state: "solid",
 		density: 54000,
 		hardness: 1,
+		excludeRandom: true,
 		tick: function(pixel) {
 			if(pixel.range == undefined) {
 				pixel.range = 4;
@@ -272,7 +271,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 					if(!isEmpty(fX,fY,true)) {
 						var newPixel = pixelMap[fX][fY];
 						var newElement = newPixel.element;
-						if(newElement !== testName) {
+						if(newElement !== "neutronium_compressor") {
 							//Jinsoulite handling
 							if(typeof(jinsouliteSpreadWhitelist) !== "undefined") {
 								if(jinsouliteSpreadWhitelist.includes(newPixel.element)) {
