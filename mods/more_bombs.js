@@ -14,19 +14,6 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 		generateBombs = false
 	}
 
-	function tryJoin(stringOrArray,joiner) {
-		//console.log(`tryJoin: ${stringOrArray}`);
-		if(typeof(stringOrArray) === "string") {
-			//console.log("tryJoin: String");
-			return stringOrArray;
-		} else if(Array.isArray(stringOrArray)) {
-			//console.log("tryJoin: Array");
-			return stringOrArray.join(joiner);
-		} else {
-			throw new TypeError(`Unexpected type: ${typeof(stringOrArray)}`);
-		};
-	};
-
 	function firebombFire(pixel,x,y,radius,fire,smoke,power,damage) {
 		var coords = circleCoords(pixel.x,pixel.y,radius);
 		for (var i = 0; i < coords.length; i++) {
