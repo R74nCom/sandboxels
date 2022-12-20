@@ -274,13 +274,15 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 						var newElement = newPixel.element;
 						if(newElement !== testName) {
 							//Jinsoulite handling
-							if(jinsouliteSpreadWhitelist && jinsouliteSpreadWhitelist.includes(newPixel.element)) {
+							if(typeof(jinsouliteSpreadWhitelist) !== "undefined") {
+                                                            if(jinsouliteSpreadWhitelist.includes(newPixel.element)) {
 								if(newPixel.value > 0) { //if jinsoulitoid and value is positive
 									//if compressor has no recorded water, initialize to zero
 									if(typeof(pixel.absorbed.water) === "undefined") { pixel.absorbed.water = 0 };
 									//add jinsoulite's water to compressor water
 									pixel.absorbed.water += newPixel.value;
 								};
+                                                            };
 							};
 
 							//Alkahest handling
