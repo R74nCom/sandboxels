@@ -5,6 +5,7 @@ var spoutMod = "mods/spouts.js";
 var fairyMod = "mods/more_fairies.js";
 var cloudMod = "mods/more_clouds.js";
 var bombMod = "mods/more_bombs.js";
+var singularityMod = "mods/neutronium_compressor.js";
 if(enabledMods.includes(creeperMod)) {
 	lategenOptions.push("creeper");
 };
@@ -20,9 +21,15 @@ if(enabledMods.includes(cloudMod)) {
 if(enabledMods.includes(bombMod)) {
 	lategenOptions.push("bomb");
 };
+if(enabledMods.includes(bombMod)) {
+	lategenOptions.push("bomb");
+};
+if(enabledMods.includes(singularityMod)) {
+	lategenOptions.push("singularity");
+};
 lgoDisplayString = lategenOptions.join(", ");
 if(lgoDisplayString === "") {
-	lgoDisplayString: "[None. This requires at least one element-generating mod: mobs.js, spouts.js, more_fairies.js, more_clouds.js, or more_bombs.js!]";
+	lgoDisplayString: "[None. This requires at least one element-generating mod: mobs.js, spouts.js, more_fairies.js, more_clouds.js, more_bombs.js, or neutronium_compressor.js!]";
 };
 
 document.addEventListener("keydown", function(e) { //prop prompt listener
@@ -63,6 +70,9 @@ function generatorPrompt() {
 				break;
 			case "cloud":
 				generateCloud(elements,true);
+				break;
+			case "singularity":
+				generateSingularity(elements,true);
 				break;
 			case "bomb":
 				var number = prompt(`Enter a bomb number (default: 1)
