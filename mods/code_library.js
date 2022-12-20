@@ -108,6 +108,19 @@
 		return tempArray;
 	};
 
+	function tryJoin(stringOrArray,joiner) {
+		//console.log(`tryJoin: ${stringOrArray}`);
+		if(typeof(stringOrArray) === "string") {
+			//console.log("tryJoin: String");
+			return stringOrArray;
+		} else if(Array.isArray(stringOrArray)) {
+			//console.log("tryJoin: Array");
+			return stringOrArray.join(joiner);
+		} else {
+			throw new TypeError(`Unexpected type: ${typeof(stringOrArray)}`);
+		};
+	};
+
 //Checks
 
 	//Element exists in the elements object
