@@ -63,19 +63,6 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 	
 //Generator function
 
-	function tryJoin(stringOrArray,joiner) {
-		//console.log(`tryJoin: ${stringOrArray}`);
-		if(typeof(stringOrArray) === "string") {
-			//console.log("tryJoin: String");
-			return stringOrArray;
-		} else if(Array.isArray(stringOrArray)) {
-			//console.log("tryJoin: Array");
-			return stringOrArray.join(joiner);
-		} else {
-			throw new TypeError(`Unexpected type: ${typeof(stringOrArray)}`);
-		};
-	};
-
 	//Standalone generator
 	function generateSpout(spoutElements,isAfterScriptLoading=false) {//it can be a single element, though
 		//To specify an array spout, have the array be inside another array.
