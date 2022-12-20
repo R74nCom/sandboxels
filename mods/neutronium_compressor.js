@@ -215,6 +215,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 					};
 					if(!singularityChoices.includes(singularityName)) {
 						singularityChoices.push(singularityName);
+						console.log(3);
 					};
 				}
 				if(isNocheer) {
@@ -275,14 +276,14 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 						if(newElement !== testName) {
 							//Jinsoulite handling
 							if(typeof(jinsouliteSpreadWhitelist) !== "undefined") {
-                                                            if(jinsouliteSpreadWhitelist.includes(newPixel.element)) {
-								if(newPixel.value > 0) { //if jinsoulitoid and value is positive
-									//if compressor has no recorded water, initialize to zero
-									if(typeof(pixel.absorbed.water) === "undefined") { pixel.absorbed.water = 0 };
-									//add jinsoulite's water to compressor water
-									pixel.absorbed.water += newPixel.value;
+								if(jinsouliteSpreadWhitelist.includes(newPixel.element)) {
+									if(newPixel.value > 0) { //if jinsoulitoid and value is positive
+										//if compressor has no recorded water, initialize to zero
+										if(typeof(pixel.absorbed.water) === "undefined") { pixel.absorbed.water = 0 };
+										//add jinsoulite's water to compressor water
+										pixel.absorbed.water += newPixel.value;
+									};
 								};
-                                                            };
 							};
 
 							//Alkahest handling
@@ -360,13 +361,17 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 		};
 	});
 
+	if(typeof(singularityChoices) === "undefined") {
+		singularityChoices = [];
+	};
+
 	elements.spawn_random_singularity = {
 		color: ["#3e5f8a","#a334ec","#ea96f9","#a6ecf6","#70ebc8","#d9286b","#7eed91","#a18b30"],
 		behavior: behaviors.WALL,
 		category: "special",
 		excludeRandom: true,
 		tick: function(pixel) {
-			changePixel(pixel,singularityChoices[Math.floor(Math.random() * singularityChoices.length)])
+			singularityChoices.length == 0 ? deletePixel(pixel.x,pixel.y) : changePixel(pixel,singularityChoices[Math.floor(Math.random() * singularityChoices.length)]);
 		},
 	};
 
