@@ -273,6 +273,35 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 						var newPixel = pixelMap[fX][fY];
 						var newElement = newPixel.element;
 						if(newElement !== testName) {
+							//Jinsoulite handling
+							if(jinsouliteSpreadWhitelist && jinsouliteSpreadWhitelist.includes(newPixel.element)) {
+								if(newPixel.value > 0) { //if jinsoulitoid and value is positive
+									//if compressor has no recorded water, initialize to zero
+									if(typeof(pixel.absorbed.water) === "undefined") { pixel.absorbed.water = 0 };
+									//add jinsoulite's water to compressor water
+									pixel.absorbed.water += newPixel.value;
+								};
+							};
+
+							//Alkahest handling
+							if(newPixel.element === "alkahest") {
+								//get properties that are actually elements
+								var elementEntries = Object.keys(newPixel).filter(function(key) { return elementExists(key) });
+								for(i = 0; i < elementEntries.length; i++) {
+									//iterate through element properties
+									//store elemname for readability
+									var key = elementEntries[i];
+									//store amount for readability
+									var value = newPixel[key];
+									//initialize nonexistent names
+									if(typeof(pixel.absorbed[key]) === "undefined") {
+										pixel.absorbed[key] = 0;
+									};
+									//add amounts
+									pixel.absorbed[key] += value;
+								};
+							};
+
 							if(typeof(pixel.absorbed[newElement]) === "undefined") {
 								pixel.absorbed[newElement] = 0;
 							};
@@ -298,6 +327,27 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 					};
 				};
 			};
+			/*
+			for(q = -2; q <= 2; q++) {
+				for(q2 = -2; q2 <= 2; q2++) {
+					if(Object.keys(pixel.absorbed).length > 0) {
+						for(elementName in pixel.absorbed) {
+							if(pixel.absorbed[elementName] >= singularityNumber) {
+								if(isEmpty(outputPos.x+q,outputPos.y+q2,false)) {
+									if(!elementExists(`${elementName}_singularity`)) {
+										generateSingularity(elementName,true);
+									};
+									createPixel(`${elementName}_singularity`,outputPos.x+q,outputPos.y+q2);
+									pixel.absorbed[elementName] -= singularityNumber;
+								} else {
+									break;
+								};
+							};
+						};
+					};
+				};
+			};
+			*/
 		},
 	};
 	
