@@ -102,19 +102,6 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod) 
 
 	//Generator function
 
-	function tryJoin(stringOrArray,joiner) {
-		//console.log(`tryJoin: ${stringOrArray}`);
-		if(typeof(stringOrArray) === "string") {
-			//console.log("tryJoin: String");
-			return stringOrArray;
-		} else if(Array.isArray(stringOrArray)) {
-			//console.log("tryJoin: Array");
-			return stringOrArray.join(joiner);
-		} else {
-			throw new TypeError(`Unexpected type: ${typeof(stringOrArray)}`);
-		};
-	};
-
 	runAfterLoad(function() {
 		if(typeof(eLists.FAIRY) === "undefined") { eLists.FAIRY = [] };
 		eLists.FAIRY.push("acid_fairy");
