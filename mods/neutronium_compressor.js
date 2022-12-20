@@ -215,7 +215,6 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 					};
 					if(!singularityChoices.includes(singularityName)) {
 						singularityChoices.push(singularityName);
-						console.log(3);
 					};
 				}
 				if(isNocheer) {
