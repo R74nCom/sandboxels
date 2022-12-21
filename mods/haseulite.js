@@ -1032,6 +1032,51 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		conduct: 0.19,
 	};
 
+	var dl_ekf_dml_th_su_ae_yu_eo_d_ch_s = {
+		"19-10": {eu_deu_yu_d_g: "HeeJin", chae_i_ae_g: "rgb(255,0,146)"},
+		"15-11": {eu_deu_yu_d_g: "HyunJin", chae_i_ae_g: "rgb(255,204,0)"},
+		"18-08": {eu_deu_yu_d_g: "HaSeul", chae_i_ae_g: "rgb(0,166,81)"},
+		"11-11": {eu_deu_yu_d_g: "YeoJin", chae_i_ae_g: "rgb(244,111,31)"},
+		"09-12": {eu_deu_yu_d_g: "ViVi", chae_i_ae_g: "rgb(255,152,180)"},
+		"10-02": {eu_deu_yu_d_g: "Kim Lip", chae_i_ae_g: "rgb(234,2,1)"},
+		"13-06": {eu_deu_yu_d_g: "JinSoul", chae_i_ae_g: "rgb(20,36,176)"},
+		"04-06": {eu_deu_yu_d_g: "Choerry", chae_i_ae_g: "rgb(92,44,146)"},
+		"24-05": {eu_deu_yu_d_g: "Yves", chae_i_ae_g: "rgb(125,0,30)"},
+		"20-10": {eu_deu_yu_d_g: "Chuu", chae_i_ae_g: "rgb(246,144,126)"},
+		"19-11": {eu_deu_yu_d_g: "Go Won", chae_i_ae_g: "rgb(48,195,156)"},
+		"13-11": {eu_deu_yu_d_g: "Olivia Hye", chae_i_ae_g: "rgb(143,143,143)"}//,
+		//"20-12": {eu_deu_yu_d_g: "Test Member", chae_i_ae_g: "rgb(191,255,63)"}
+	};
+
+	//just to confuse the hell out of anyone reading this (they will still quickly figure it out)
+	var r_dyu_gyeom_gyo_10_ae_p_d_g_gyang_d = false;
+
+	runAfterAutogen(function() {
+		var d = r_dyu_gyeom_gyo_10_ae_p_d_g_gyang_d ? new Date(1549800000000) : new Date();
+		var eu_ae_u_so = (d.getMonth()+1).toString();
+		if(eu_ae_u_so.length == 1) { eu_ae_u_so = "0" + eu_ae_u_so };
+		var X_myo = d.getDate().toString();
+		if(X_myo.length == 1) { X_myo = "0" + X_myo };
+		var X_myo_eu_ae_u_so = X_myo + "-" + eu_ae_u_so;
+		
+		var g_mu_Xae_eu_ddi_deu_dus_n = Object.keys(elements); shuffleArray(g_mu_Xae_eu_ddi_deu_dus_n); g_mu_Xae_eu_ddi_deu_dus_n = g_mu_Xae_eu_ddi_deu_dus_n.slice(0,12);
+
+		var ryeo_u_u_yo_ddi_deu_dus_n = ["heejinite","heejinite_powder","molten_heejinite","heejinite_gas","haseulite","haseulite_powder","molten_haseulite","haseulite_gas","jinsoulite","jinsoulite_powder","molten_jinsoulite","jinsoulite_gas","haseulite_vent","loona","loona_gravel","molten_loona"].concat(g_mu_Xae_eu_ddi_deu_dus_n);
+		if(dl_ekf_dml_th_su_ae_yu_eo_d_ch_s[X_myo_eu_ae_u_so]) {
+			var X_m_s_m = dl_ekf_dml_th_su_ae_yu_eo_d_ch_s[X_myo_eu_ae_u_so];
+			var i_ae_ae_u_m_ssod_HTML = `<span style="color:${X_m_s_m.chae_i_ae_g}">Happy birthday, ${X_m_s_m.eu_deu_yu_d_g}!</span>`;
+			for(ya = 0; ya < ryeo_u_u_yo_ddi_deu_dus_n.length; ya++) {
+				var di_deu_u_meud = ryeo_u_u_yo_ddi_deu_dus_n[ya];
+				var ya_u_rae = elements[di_deu_u_meud];
+				if(typeof(ya_u_rae.desc) === "undefined") {
+					ya_u_rae.desc = i_ae_ae_u_m_ssod_HTML
+				} else if(typeof(ya_u_rae.desc) === "string") {
+					ya_u_rae.desc += ("<br/>" + i_ae_ae_u_m_ssod_HTML);
+				};
+			};
+		};
+	});
+
 	runAfterLoad(function() {
 		for(key in elements.water.reactions) {
 			var value = JSON.parse(JSON.stringify(elements.water.reactions[key]));
