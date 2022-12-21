@@ -1034,6 +1034,9 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		conduct: 0.19,
 	};
 
+	r_mad_X_m_s_d = urlParams.get('r_mad_X_m_s_d');
+
+
 	dl_ekf_dml_th_su_ae_yu_eo_d_ch_s = {
 		"19-10": {eu_deu_yu_d_g: "HeeJin", chae_i_ae_g: "rgb(255,0,146)"},
 		"15-11": {eu_deu_yu_d_g: "HyunJin", chae_i_ae_g: "rgb(255,204,0)"},
@@ -1060,14 +1063,18 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		var X_myo = d.getDate().toString();
 		if(X_myo.length == 1) { X_myo = "0" + X_myo };
 		var X_myo_eu_ae_u_so = X_myo + "-" + eu_ae_u_so;
-		return X_myo_eu_ae_u_so;
+		return (r_mad_X_m_s_d === null ? X_myo_eu_ae_u_so : r_mad_X_m_s_d);
 	}
 
 	function g_d_hyan_s_d_g_ddi_deu_chi_ya_cha(u_meud) {
-		if(chi_ya_chad_X_ddi_deu_dus_n[u_meud] === false) {
-			chi_ya_chad_X_ddi_deu_dus_n[u_meud] = true;
+		var r_mad_X_m_s_deud_n_n_m_h_d = "";
+		if(r_mad_X_m_s_d !== null) {
+			r_mad_X_m_s_deud_n_n_m_h_d += "(Fake date) ";
 		};
-		if(d_p_mi_yeo_m_s_d__sod__chi_ya_chad_X_ddi_deu_dus_n()) {
+		if($_xqXchi_ya_chad_X_ddi_deu_dus_nXqx__[u_meud] === false) {
+			$_xqXchi_ya_chad_X_ddi_deu_dus_nXqx__[u_meud] = true;
+		};
+		if(d_p_mi_yeo_m_s_d__sod__$_xqXchi_ya_chad_X_ddi_deu_dus_nXqx__()) {
 			var X_myo_eu_ae_u_so = h_d_s_X_myo_eu_ae_u_so();
 			var eu_deu_yu_d_geud_n_n_m_h_d = dl_ekf_dml_th_su_ae_yu_eo_d_ch_s[X_myo_eu_ae_u_so];
 			if(eu_deu_yu_d_geud_n_n_m_h_d == undefined) { eu_deu_yu_d_geud_n_n_m_h_d = "[No such member?]" };
@@ -1075,20 +1082,24 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 				eu_deu_yu_d_geud_n_n_m_h_d = eu_deu_yu_d_geud_n_n_m_h_d.eu_deu_yu_d_g;
 			};
 alert(`You have clicked on all 12 birthday messages spread throughout some of the elements. I'd like if it you screenshotted this and posted it in #sandboxels-modding.
-Member: ${eu_deu_yu_d_geud_n_n_m_h_d}. Stan Loona!`);
+Member: ${r_mad_X_m_s_deud_n_n_m_h_d}${eu_deu_yu_d_geud_n_n_m_h_d}. Stan Loona!`);
 		};
 	};
 
-	function d_p_mi_yeo_m_s_d__sod__chi_ya_chad_X_ddi_deu_dus_n() {
+	function d_p_mi_yeo_m_s_d__sod__$_xqXchi_ya_chad_X_ddi_deu_dus_nXqx__() {
 		var Xae_u_d = true;
-		for(di_deu_dus in chi_ya_chad_X_ddi_deu_dus_n) {
-			Xae_u_d = Xae_u_d && chi_ya_chad_X_ddi_deu_dus_n[di_deu_dus];
+		for(di_deu_dus in $_xqXchi_ya_chad_X_ddi_deu_dus_nXqx__) {
+			Xae_u_d = Xae_u_d && $_xqXchi_ya_chad_X_ddi_deu_dus_nXqx__[di_deu_dus];
 		};
 		return Xae_u_d;
 	};
 
 	runAfterAutogen(function() {
 		
+		cho_mu_hya_u_h_X_d_n_chyu_i_m_cha_i_ya_n_s = ["distance_display","find_toggle","prop","number_adjuster","replace","alt_replace","alt_alt_replace","change","alt_change","alt_alt_change"]; //츄 lmao
+
+		yu_i_m_cha_i_ya_n_s = ["toxin","poison","blood","cancer","rotten_meat","frozen_rotten_meat","zombie_blood","plague","stench","infection","acid","acid_gas","rot","shit","shit_gravel","poo","dioxin","lean"];
+
 		X_myo_eu_ae_u_so = h_d_s_X_myo_eu_ae_u_so();
 		
 		if(dl_ekf_dml_th_su_ae_yu_eo_d_ch_s[X_myo_eu_ae_u_so]) {
@@ -1102,6 +1113,21 @@ Member: ${eu_deu_yu_d_geud_n_n_m_h_d}. Stan Loona!`);
 						elements[e].category !== "spouts" &&
 						elements[e].category !== "singularities" &&
 						elements[e].category !== "random" &&
+						elements[e].category !== "weapons" &&
+						elements[e].category !== "idk" &&
+						elements[e].category !== "corruption" &&
+						elements[e].category !== "radioactive" &&
+						elements[e].category !== "piss" &&
+						elements[e].category !== "shit" &&
+						elements[e].category !== "vomit" &&
+						elements[e].category !== "cum" &&
+						!e.includes("head") &&
+						(!e.includes("body") || e.includes("antibody")) &&
+						!elements[e].category.includes("random") &&
+						!elements[e].category.includes("udstone") &&
+						!elements[e].nocheer &&
+						!cho_mu_hya_u_h_X_d_n_chyu_i_m_cha_i_ya_n_s.includes(e) &&
+						!yu_i_m_cha_i_ya_n_s.includes(e) &&
 						!elements[e].hidden
 					);
 				} else {
@@ -1109,10 +1135,10 @@ Member: ${eu_deu_yu_d_geud_n_n_m_h_d}. Stan Loona!`);
 				};
 			}); shuffleArray(g_mu_Xae_eu_ddi_deu_dus_n); g_mu_Xae_eu_ddi_deu_dus_n = g_mu_Xae_eu_ddi_deu_dus_n.slice(0,12);
 
-			chi_ya_chad_X_ddi_deu_dus_n = {};
+			$_xqXchi_ya_chad_X_ddi_deu_dus_nXqx__ = {};
 			for(eo = 0; eo < g_mu_Xae_eu_ddi_deu_dus_n.length; eo++) {
 				var di_deu_u_meud = g_mu_Xae_eu_ddi_deu_dus_n[eo];
-				chi_ya_chad_X_ddi_deu_dus_n[di_deu_u_meud] = false;
+				$_xqXchi_ya_chad_X_ddi_deu_dus_nXqx__[di_deu_u_meud] = false;
 			};
 			
 			var baseArray = ["heejinite","heejinite_powder","molten_heejinite","heejinite_gas","haseulite","haseulite_powder","molten_haseulite","haseulite_gas","jinsoulite","jinsoulite_powder","molten_jinsoulite","jinsoulite_gas","haseulite_vent","loona","loona_gravel","molten_loona"];
@@ -1126,7 +1152,7 @@ Member: ${eu_deu_yu_d_geud_n_n_m_h_d}. Stan Loona!`);
 				if(baseArray.includes(di_deu_u_meud)) {
 					i_ae_ae_u_m_ssod_HTML = `<span style="color:${X_m_s_m.chae_i_ae_g}">Happy birthday, ${X_m_s_m.eu_deu_yu_d_g}!</span>`;
 				} else {
-					i_ae_ae_u_m_ssod_HTML = `<span style="color:${X_m_s_m.chae_i_ae_g}" onclick=g_d_hyan_s_d_g_ddi_deu_chi_ya_cha("${di_deu_u_meud}")>Happy birthday, ${X_m_s_m.eu_deu_yu_d_g}!</span>`
+					i_ae_ae_u_m_ssod_HTML = `<em style="color:${X_m_s_m.chae_i_ae_g}" onclick=g_d_hyan_s_d_g_ddi_deu_chi_ya_cha("${di_deu_u_meud}")>Happy birthday, ${X_m_s_m.eu_deu_yu_d_g}!</em>`
 				};
 				if(typeof(ya_u_rae.desc) === "undefined") {
 					ya_u_rae.desc = i_ae_ae_u_m_ssod_HTML
