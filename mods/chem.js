@@ -427,8 +427,8 @@ function acidIgnore(ignore)
 }
 
 acidIgnore(["acid", "acid_gas"]);
-elements.acid.name = "hydrochloric acid";
-elements.acid_gas.name = "hydrochloric acid gas";
+elements.acid.name = "hydrochloricAcid";
+elements.acid_gas.name = "hydrochloricAcidGas";
 
 
 createAcid("generic_acid",defaultAcidReactions,defaultAcidGasReactions,"#80d488","#9bf4a4","hidden","hidden",110,100,-10,400,1020,1)
@@ -870,7 +870,7 @@ function doStaining(pixel) {
             }
         }
 elements["bleach"].reactions.vinegar = { "elem1":"chlorine", "elem2":null };
-elements["bleach"].reactions.alchohol = { "elem1":"chloroform", "elem2":null };
+elements["bleach"].reactions.alcohol = { "elem1":"chloroform", "elem2":null };
 elements["chlorine"].reactions.methane = { "elem1":"chloroform", "elem2":null };
 
 elements.chloroform = {
@@ -948,7 +948,8 @@ elements.ethane = {
     color: "#afafaf",
     behavior: behaviors.GAS,
     reactions: {
-        "steam": { "elem1":null, "elem2":"ethylene", "chance":0.25 }
+        "steam": { "elem1":"hydrogen", "elem2":"ethylene", "chance":0.01 },
+        "chlorine": { "elem1":"chloroethane", "elem2": null }
     },
     category: "gases",
     tempHigh: 400,
@@ -961,16 +962,48 @@ elements.ethane = {
     density: 1.356,
 };
 
+elements.chloroethane = {
+    color: "#afdfaf",
+    behavior: behaviors.GAS,
+    reactions: {
+        "aluminum": { "elem1":"diethylaluminium_chloride", "elem2": null, "chance":0.1 }
+    },
+    category: "gases",
+    tempHigh: 510,
+    stateHigh: "fire",
+    tempLow: 12.27,
+    burn: 85,
+    burnTime: 5,
+    fireColor: ["#00ffff","#00ffdd"],
+    state: "gas",
+    density: 2.879,
+};
+
+elements.diethylaluminium_chloride = {
+    color: "#7faf7f",
+    behavior: behaviors.LIQUID,
+    category: "hidden",
+    hidden: true,
+    tempHigh: 125,
+    stateHigh: "fire",
+    tempLow: -74,
+    burn: 85,
+    burnTime: 10,
+    state: "liquid",
+    density: 2.879,
+};
+
 elements.ethylene = {
     color: "#a7a7a7",
     behavior: behaviors.GAS,
     reactions: {
-        "titanium_trichloride": { "elem1":"polyethylene", "elem2":"titanium_trichloride", "chance":0.25 },
+        "titanium_trichloride": { "elem1":"polyethylene", "elem2":"titanium_trichloride", "chance":0.1 },
+        "diethylaluminium_chloride": { "elem1":"polyethylene", "elem2":"diethylaluminium_chloride", "chance":0.1 },
     },
     category: "gases",
     tempHigh: 400,
     stateHigh: "fire",
-    tempLow: -88.5,
+    tempLow: -103.7,
     burn: 85,
     burnTime: 5,
     fireColor: ["#00ffff","#00ffdd"],
@@ -986,7 +1019,7 @@ elements.titanium = {
     state: "solid",
     behavior: behaviors.WALL,
     reactions: {
-        "hydrochloric_acid": { "elem1": "titanium_trichloride", "elem2":null },
+        "acid": { "elem1": "titanium_trichloride", "elem2": null, "elem2":null },
     },
     stateHigh: "molten_titanium",
     tempHigh: 1668,
