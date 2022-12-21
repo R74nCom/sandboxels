@@ -427,6 +427,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		valueFunction(pixel,haseuliteValueObject,haseuliteSpreadWhitelist);
 		if(pixel.oldColor === undefined) { pixel.oldColor = pixelColorPick(pixel) };
 		if(pixel.oldColor === null) { pixel.oldColor = pixel.color };
+		if(isNaN(pixel.value)) { pixel.value = 0 };
 		pixel.color = lightenColor(pixel.oldColor,pixel.value / 3);
 		
 		if(pixel.value >= 350) {
@@ -886,6 +887,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 	function jinsouliteValue(pixel) {
 		valueFunction(pixel,jinsouliteValueObject,jinsouliteSpreadWhitelist);
 		if(pixel.oldColor === null) { pixel.oldColor = pixel.color };
+		if(isNaN(pixel.value)) { pixel.value = 0 };
 		pixel.color = changeSaturation(pixel.oldColor,pixel.value / 3,"subtract","rgb")
 		
 		if(pixel.value > 1) {
