@@ -3,6 +3,8 @@ var runAfterAutogenMod = "mods/runAfterAutogen and onload restructure.js";
 var libraryMod = "mods/code_library.js";
 
 if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod)) {
+	spoutChoices = ["spout", "udder", "torch"];
+	
 	//Generate spouts
 	if(urlParams.get('generateSpouts') !== null) { //if the variable exists at all
 		generateSpouts = true
