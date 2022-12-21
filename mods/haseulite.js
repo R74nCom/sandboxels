@@ -1044,8 +1044,8 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		"24-05": {eu_deu_yu_d_g: "Yves", chae_i_ae_g: "rgb(125,0,30)"},
 		"20-10": {eu_deu_yu_d_g: "Chuu", chae_i_ae_g: "rgb(246,144,126)"},
 		"19-11": {eu_deu_yu_d_g: "Go Won", chae_i_ae_g: "rgb(48,195,156)"},
-		"13-11": {eu_deu_yu_d_g: "Olivia Hye", chae_i_ae_g: "rgb(143,143,143)"},
-		"20-12": {eu_deu_yu_d_g: "Test Member", chae_i_ae_g: "rgb(191,255,63)"}
+		"13-11": {eu_deu_yu_d_g: "Olivia Hye", chae_i_ae_g: "rgb(143,143,143)"}//,
+		//"20-12": {eu_deu_yu_d_g: "Test Member", chae_i_ae_g: "rgb(191,255,63)"}
 	};
 
 	//just to confuse the hell out of anyone reading this (they will still quickly figure it out)
@@ -1072,8 +1072,8 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 			if(typeof(eu_deu_yu_d_geud_n_n_m_h_d) === "object") {
 				eu_deu_yu_d_geud_n_n_m_h_d = eu_deu_yu_d_geud_n_n_m_h_d.eu_deu_yu_d_g;
 			};
-alert(`You have clicked on all of the birthday messages and win the game. I'd like if it you screenshotted this and posted it in #sandboxels-modding.
-Member: ${eu_deu_yu_d_geud_n_n_m_h_d}`);
+alert(`You have clicked on all 12 birthday messages spread throughout some of the elements. I'd like if it you screenshotted this and posted it in #sandboxels-modding.
+Member: ${eu_deu_yu_d_geud_n_n_m_h_d}. Stan Loona!`);
 		};
 	};
 
@@ -1090,7 +1090,22 @@ Member: ${eu_deu_yu_d_geud_n_n_m_h_d}`);
 		X_myo_eu_ae_u_so = h_d_s_X_myo_eu_ae_u_so();
 		
 		if(dl_ekf_dml_th_su_ae_yu_eo_d_ch_s[X_myo_eu_ae_u_so]) {
-			g_mu_Xae_eu_ddi_deu_dus_n = Object.keys(elements); shuffleArray(g_mu_Xae_eu_ddi_deu_dus_n); g_mu_Xae_eu_ddi_deu_dus_n = g_mu_Xae_eu_ddi_deu_dus_n.slice(0,12);
+			g_mu_Xae_eu_ddi_deu_dus_n = Object.keys(elements).filter(function(e) {
+				if(typeof(elements[e].category) !== "undefined") {
+					return (
+						elements[e].category !== "clouds" &&
+						elements[e].category !== "auto creepers" &&
+						elements[e].category !== "auto_bombs" &&
+						elements[e].category !== "auto_fey" &&
+						elements[e].category !== "spouts" &&
+						elements[e].category !== "singularities" &&
+						elements[e].category !== "random" &&
+						!elements[e].hidden
+					);
+				} else {
+					return true;
+				};
+			}); shuffleArray(g_mu_Xae_eu_ddi_deu_dus_n); g_mu_Xae_eu_ddi_deu_dus_n = g_mu_Xae_eu_ddi_deu_dus_n.slice(0,12);
 
 			chi_ya_chad_X_ddi_deu_dus_n = {};
 			for(eo = 0; eo < g_mu_Xae_eu_ddi_deu_dus_n.length; eo++) {
@@ -1098,13 +1113,19 @@ Member: ${eu_deu_yu_d_geud_n_n_m_h_d}`);
 				chi_ya_chad_X_ddi_deu_dus_n[di_deu_u_meud] = false;
 			};
 			
+			var baseArray = ["heejinite","heejinite_powder","molten_heejinite","heejinite_gas","haseulite","haseulite_powder","molten_haseulite","haseulite_gas","jinsoulite","jinsoulite_powder","molten_jinsoulite","jinsoulite_gas","haseulite_vent","loona","loona_gravel","molten_loona"];
 			var ryeo_u_u_yo_ddi_deu_dus_n = ["heejinite","heejinite_powder","molten_heejinite","heejinite_gas","haseulite","haseulite_powder","molten_haseulite","haseulite_gas","jinsoulite","jinsoulite_powder","molten_jinsoulite","jinsoulite_gas","haseulite_vent","loona","loona_gravel","molten_loona"].concat(g_mu_Xae_eu_ddi_deu_dus_n);
 
 			var X_m_s_m = dl_ekf_dml_th_su_ae_yu_eo_d_ch_s[X_myo_eu_ae_u_so];
 			for(ya = 0; ya < ryeo_u_u_yo_ddi_deu_dus_n.length; ya++) {
 				var di_deu_u_meud = ryeo_u_u_yo_ddi_deu_dus_n[ya];
 				var ya_u_rae = elements[di_deu_u_meud];
-				var i_ae_ae_u_m_ssod_HTML = `<span style="color:${X_m_s_m.chae_i_ae_g}" onclick=g_d_hyan_s_d_g_ddi_deu_chi_ya_cha("${di_deu_u_meud}");>Happy birthday, ${X_m_s_m.eu_deu_yu_d_g}!</span>`;
+				var i_ae_ae_u_m_ssod_HTML = null;
+				if(baseArray.includes(di_deu_u_meud)) {
+					i_ae_ae_u_m_ssod_HTML = `<span style="color:${X_m_s_m.chae_i_ae_g}">Happy birthday, ${X_m_s_m.eu_deu_yu_d_g}!</span>`;
+				} else {
+					i_ae_ae_u_m_ssod_HTML = `<span style="color:${X_m_s_m.chae_i_ae_g}" onclick=g_d_hyan_s_d_g_ddi_deu_chi_ya_cha("${di_deu_u_meud}")>Happy birthday, ${X_m_s_m.eu_deu_yu_d_g}!</span>`
+				};
 				if(typeof(ya_u_rae.desc) === "undefined") {
 					ya_u_rae.desc = i_ae_ae_u_m_ssod_HTML
 				} else if(typeof(ya_u_rae.desc) === "string") {
