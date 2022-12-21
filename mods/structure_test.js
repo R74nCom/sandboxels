@@ -138,6 +138,38 @@ elements.crumbling_concrete = {
 	breakInto: "dust",
 };
 
+elements.attach_powder_silk = {
+	color: ["#ebebeb", "#e6d9d1"],
+	properties: {
+		"attached": false,
+		"attachOffsets": [null, null],
+	},
+	tick: function(pixel) {
+		if (pixel.start === pixelTicks) {return}
+		if(pixel.attached) {
+			if(pixel.attachOffsets === null) {
+				pixel.attached = false;
+			} else if(pixel.attachOffsets.includes(null)) {
+				pixel.attached = false;
+			} else {
+				var attachCoords = [pixel.x + pixel.attachOffsets[0], pixel.y + pixel.attachOffsets[1]];
+				if(isEmpty(attachCoords[0],attachCoords[1],false)) { //consider OOB full
+					pixel.attached = false;
+				};
+			};
+		} else {
+			behaviors.POWDER(pixel);
+		};
+		doDefaults(pixel);
+	},
+	burnInto: "ash",
+    burn:75,
+    burnTime:25,
+	category: "solids",
+	state: "solid",
+	density: 1000,
+	hidden: true
+};
 
 elements.glass_pane = {
 	color: ["#5e807d","#679e99"],
@@ -304,6 +336,41 @@ elements.molten_rad_glass = {
 		"M2 AND CR:radiation%0.15|XX|M2 AND CR:radiation%0.15",
 		"M1|M1 AND CR:radiation%0.15|M1",
 	],
+};
+
+elements.attach_concrete = {
+	color: "#ababab",
+	properties: {
+		"attached": false,
+		"attachOffsets": [null, null],
+	},
+	tick: function(pixel) {
+		if (pixel.start === pixelTicks) {return}
+		if(pixel.attached) {
+			if(pixel.attachOffsets === null) {
+				pixel.attached = false;
+			} else if(pixel.attachOffsets.includes(null)) {
+				pixel.attached = false;
+			} else {
+				var attachCoords = [pixel.x + pixel.attachOffsets[0], pixel.y + pixel.attachOffsets[1]];
+				if(isEmpty(attachCoords[0],attachCoords[1],false)) { //consider OOB full
+					pixel.attached = false;
+				};
+			};
+		} else { //Support behavior if not attached
+			if(!isEmpty(pixel.x-1,pixel.y,true) || !isEmpty(pixel.x+1,pixel.y,true)) {
+				tryMove(pixel,pixel.x,pixel.y+1);
+			};
+		};
+		doDefaults(pixel);
+	},
+	tempHigh: 1500,
+	stateHigh: "magma",
+	category: "powders",
+	state: "solid",
+	density: 2400,
+	hardness: 0.5,
+	breakInto: "dust",
 };
 
 elements.steel_plate_ledge = {
