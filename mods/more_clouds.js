@@ -3,6 +3,14 @@ var runAfterAutogenMod = "mods/runAfterAutogen and onload restructure.js";
 var libraryMod = "mods/code_library.js";
 
 if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod)) {
+
+	//Generate clouds
+	if(urlParams.get('generateClouds') !== null) { //if the variable exists at all
+		generateClouds = true
+	} else { //if it doesn't (and it returns null)
+		generateClouds = false
+	}
+
 	if(urlParams.get('cloudIncludeRandom') !== null) { //if the variable exists at all
 		cloudIncludeRandom = true
 	} else { //if it doesn't (and it returns null)
@@ -55,19 +63,6 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 	};
 	
 //Generator function
-
-	function tryJoin(stringOrArray,joiner) {
-		//console.log(`tryJoin: ${stringOrArray}`);
-		if(typeof(stringOrArray) === "string") {
-			//console.log("tryJoin: String");
-			return stringOrArray;
-		} else if(Array.isArray(stringOrArray)) {
-			//console.log("tryJoin: Array");
-			return stringOrArray.join(joiner);
-		} else {
-			throw new TypeError(`Unexpected type: ${typeof(stringOrArray)}`);
-		};
-	};
 
 	//Standalone generator
 	function generateCloud(cloudElements,isAfterScriptLoading=false) {//it can be a single element, though
@@ -228,11 +223,13 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 	};
 
 	runAfterAutogen(function() {
-		liquidArray = Object.keys(elements).filter(function(e) {
-			return (defaultCloudCondition(e));
-		});
-		liquidArray.push(["rock","sand"]);
-		generateCloud(liquidArray,false);
+		if(generateClouds) {
+			liquidArray = Object.keys(elements).filter(function(e) {
+				return (defaultCloudCondition(e));
+			});
+			liquidArray.push(["rock","sand"]);
+			generateCloud(liquidArray,false);
+		};
 	});
 
 	elements.random_cloud = {
