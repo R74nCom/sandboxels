@@ -9,6 +9,8 @@ if(enabledMods.includes(variablesMod)) {
 	numberAdjusterValue = 1;
 	numberAdjusterMode = "add";
 	numberAdjusterVerb = "adding";
+	numberAdjusterPreposition = "to";
+	numberAdjusterReverseOrder = false;
 
 	function rgbStringToUnvalidatedObject(string) {
 		string = string.split(",");
@@ -37,7 +39,6 @@ if(enabledMods.includes(variablesMod)) {
 	function propPrompt() {
 		propProperty = prompt("Enter the property you want to set");
 		
-
 		propValue = prompt("Enter the value you want to set to");
 
 		//special check: element
@@ -220,24 +221,26 @@ if(enabledMods.includes(variablesMod)) {
 	};
 
 	function numberAdjusterPrompt() {
+		var oldProperty = numberAdjusterProperty;
+		if(oldProperty === null) {
+			oldProperty = "temp";
+		};
 		numberAdjusterProperty = prompt("Enter the property you want to change");
+		if(numberAdjusterProperty === null) {
+			numberAdjusterProperty = oldProperty;
+			return false;
+		};
 		numberAdjusterValue = prompt("Enter the value you want to use");
-		numberAdjusterMode = prompt("Enter \"set\" to set the property to the value,\nor \"add\" to add the value to the property.");
+		numberAdjusterMode = prompt("Enter the operation you want to use");
 
 		//property check
-		//console.log("Null property path");
-		if(numberAdjusterProperty === "" || numberAdjusterProperty === null) {
+		if(numberAdjusterProperty === "") {
 			alert("No property was specified! Defaulting to temp.");
 			numberAdjusterProperty = "temp";
-			//console.log(numberAdjusterProperty);
 		};
-		//console.log("Property: " + numberAdjusterProperty);
 
 		//value check
 		if(isNaN(parseFloat(numberAdjusterValue))) {
-			//console.log("Invalid value path");
-			//console.log(numberAdjusterValue);
-			//empty string
 			if(numberAdjusterValue === "" || numberAdjusterValue === null) {
 				//console.log("Null value path");
 				alert("No value was specified! Defaulting to 1");
@@ -254,32 +257,113 @@ if(enabledMods.includes(variablesMod)) {
 		//console.log("Value: " + numberAdjusterValue);
 
 		//mode check
-		if(!["set","add"].includes(numberAdjusterMode.toLowerCase())) {
-			//console.log("Invalid mode path");
-			//console.log(numberAdjusterMode);
-			//empty string
-			if(numberAdjusterMode === "" || numberAdjusterMode === null) {
-				//console.log("Null mode path");
-				alert("No mode was specified! Defaulting to \"add\".");
-				numberAdjusterMode = "add";
-				//console.log(numberAdjusterMode);
-			} else {
-				//console.log("Unknown mode path");
-				alert("Invalid mode! Only the values \"set\" or \"add\" are accepted (defaulting to \"add\").");			
-				numberAdjusterMode = "add";
-				//console.log(numberAdjusterMode);
-			};
+		
+		if(numberAdjusterMode === null) {
+			alert("No operation was specified! Defaulting to add.");
+			numberAdjusterMode = "add";
 		};
-		numberAdjusterMode = numberAdjusterMode.toLowerCase();
-		//console.log("Mode: " + numberAdjusterMode);
 
-		if(numberAdjusterMode === "set") {
-			numberAdjusterVerb = "assigning";
-		} else if(numberAdjusterMode === "add") {
-			numberAdjusterVerb = "adding";
-		} else {
-			numberAdjusterVerb = "doing something probably invalid with";
-		}
+		numberAdjusterMode = numberAdjusterMode.toLowerCase();
+
+		var opNames = ["+", "add", "addition", "plus", "increase", "increment", "-", "subtract", "subtraction", "minus", "take away", "takeaway", "decrease", "decrement", "*", "x", "×", "multiply", "multiplication", "times", "by", "/", "÷", "divide", "division", "divided by", "%", "mod", "modulo", "modulus", "modulo by", "=", "set", "equals", "assign", "assignment", ">", ">=", "min", "minimum", "<", "<=", "max", "maximum", "^", "**", "exp", "exponent", "exponentiate", "raise", "raise to", "raised to"];
+
+		switch(numberAdjusterMode) {
+			case "+":
+			case "add":
+			case "addition":
+			case "plus":
+			case "increase":
+			case "increment":
+				numberAdjusterVerb = "adding";
+				numberAdjusterPreposition = "to";
+				numberAdjusterReverseOrder = false;
+				break;
+			case "-":
+			case "subtract":
+			case "subtraction":
+			case "minus":
+			case "take away":
+			case "takeaway":
+			case "decrease":
+			case "decrement":
+				numberAdjusterVerb = "subtracting";
+				numberAdjusterPreposition = "from";
+				numberAdjusterReverseOrder = false;
+				break;
+			case "*":
+			case "x":
+			case "×":
+			case "multiply":
+			case "multiplication":
+			case "times":
+			case "by":
+				numberAdjusterVerb = "multiplying";
+				numberAdjusterPreposition = "by";
+				numberAdjusterReverseOrder = true;
+				break;
+			case "/":
+			case "÷":
+			case "divide":
+			case "division":
+			case "divided by":
+				numberAdjusterVerb = "dividing";
+				numberAdjusterPreposition = "by";
+				numberAdjusterReverseOrder = true;
+				break;
+			case "%":
+			case "mod":
+			case "modulo":
+			case "modulus":
+			case "modulo by":
+				numberAdjusterVerb = "reducing";
+				numberAdjusterPreposition = "modulo";
+				numberAdjusterReverseOrder = true;
+				break;
+			case "=":
+			case "set":
+			case "equals":
+			case "assign":
+			case "assignment":
+				numberAdjusterVerb = "setting";
+				numberAdjusterPreposition = "to";
+				numberAdjusterReverseOrder = true;
+				break;
+			case ">": //lower-bounds the color
+			case ">=":
+			case "min":
+			case "minimum":
+				numberAdjusterVerb = "lower-bounding";
+				numberAdjusterPreposition = "to";
+				numberAdjusterReverseOrder = true;
+				break;
+			case "<":
+			case "<=":
+			case "max": //upper-bounds the color
+			case "maximum":
+				numberAdjusterVerb = "limiting";
+				numberAdjusterPreposition = "to";
+				numberAdjusterReverseOrder = true;
+				break;
+			case "^":
+			case "**":
+			case "exp":
+			case "exponent":
+			case "exponentiate":
+			case "raise":
+			case "raise to":
+			case "raised to":
+				numberAdjusterVerb = "raising";
+				numberAdjusterPreposition = "to";
+				numberAdjusterReverseOrder = true;
+				break;
+			default:
+				alert(`Invalid operation (defaulting to "add")!`);
+				numberAdjusterMode = "add";
+				numberAdjusterVerb = "adding";
+				numberAdjusterPreposition = "to";
+				numberAdjusterReverseOrder = false;
+				break;
+		};
 		updateNumberAdjusterDescription();
 		currentElement = "number_adjuster";
 	};
@@ -287,25 +371,93 @@ if(enabledMods.includes(variablesMod)) {
 	elements.number_adjuster = {
 		color: "#7fff00",
 		tool: function(pixel) {
-			if(numberAdjusterProperty !== "element") {			
-				//console.log(numberAdjusterValue);
-				if(numberAdjusterMode === "set") {
-					pixel[numberAdjusterProperty] = numberAdjusterValue;
-				} else if(numberAdjusterMode === "add") {
-					if(typeof(pixel[numberAdjusterProperty]) === "undefined") {
-						pixel[numberAdjusterProperty] = 0;
-					};
-					pixel[numberAdjusterProperty] += numberAdjusterValue;
+			if(typeof(pixel[numberAdjusterProperty]) === "undefined") {
+				pixel[numberAdjusterProperty] = 0;
+			};
+			if(typeof(pixel[numberAdjusterProperty]) === "number") {
+				switch(numberAdjusterMode.toLowerCase()) {
+					case "+":
+					case "add":
+					case "addition":
+					case "plus":
+					case "increase":
+					case "increment":
+						pixel[numberAdjusterProperty] += numberAdjusterValue;
+						break;
+					case "-":
+					case "subtract":
+					case "subtraction":
+					case "minus":
+					case "take away":
+					case "takeaway":
+					case "decrease":
+					case "decrement":
+						pixel[numberAdjusterProperty] -= numberAdjusterValue;
+						break;
+					case "*":
+					case "x":
+					case "×":
+					case "multiply":
+					case "multiplication":
+					case "times":
+					case "by":
+						pixel[numberAdjusterProperty] *= numberAdjusterValue;
+						break;
+					case "/":
+					case "÷":
+					case "divide":
+					case "division":
+					case "divided by":
+						pixel[numberAdjusterProperty] /= numberAdjusterValue;
+						break;
+					case "%":
+					case "mod":
+					case "modulo":
+					case "modulus":
+					case "modulo by":
+						pixel[numberAdjusterProperty] %= numberAdjusterValue;
+						break;
+					case "=":
+					case "set":
+					case "equals":
+					case "assign":
+					case "assignment":
+						pixel[numberAdjusterProperty] = numberAdjusterValue;
+						break;
+					case ">": //lower-bounds the color
+					case ">=":
+					case "min":
+					case "minimum":
+						pixel[numberAdjusterProperty] = Math.max(numberAdjusterValue,pixel[numberAdjusterProperty]);
+						break;
+					case "<":
+					case "<=":
+					case "max": //upper-bounds the color
+					case "maximum":
+						pixel[numberAdjusterProperty] = Math.min(numberAdjusterValue,pixel[numberAdjusterProperty]);
+						break;
+					case "^":
+					case "**":
+					case "exp":
+					case "exponent":
+					case "exponentiate":
+					case "raise":
+					case "raise to":
+					case "raised to":
+						pixel[numberAdjusterProperty] = pixel[numberAdjusterProperty] ** numberAdjusterValue;
+						break;
+					default:
+						pixel[numberAdjusterProperty] += numberAdjusterValue;
 				};
 				pixelTempCheck(pixel);
 			};
 		},
 		category: "tools",
-		desc: `Sets or adds to numeric properties of pixels.<br/>Currently ${numberAdjusterVerb} ${numberAdjusterValue} to ${numberAdjusterProperty}.<br/><span onclick=numberAdjusterPrompt() style=\"color: #ff00ff;\";>Press [Shift+,] or click here</span> to open the adjuster tool prompt.`,
+		desc: `Changes properties of pixels.<br/>Currently ${numberAdjusterVerb} ${numberAdjusterValue} ${numberAdjusterPreposition} ${numberAdjusterProperty}.<br/><span onclick=numberAdjusterPrompt() style=\"color: #ff00ff;\";>Press [Shift+,] or click here</span> to open the adjuster tool prompt.`,
 	};
 
 	function updateNumberAdjusterDescription() {
-		elements.number_adjuster.desc = `Sets or adds to numeric properties of pixels.<br/>Currently ${numberAdjusterVerb} ${numberAdjusterValue} to ${numberAdjusterProperty}.<br/><span onclick=numberAdjusterPrompt() style=\"color: #ff00ff;\";>Press [Shift+,] or click here</span> to open the adjuster tool prompt.`;
+		elements.number_adjuster.desc = numberAdjusterReverseOrder ? `Changes numeric properties of pixels.<br/>Currently ${numberAdjusterVerb} ${numberAdjusterProperty} ${numberAdjusterPreposition} ${numberAdjusterValue}.<br/><span onclick=numberAdjusterPrompt() style=\"color: #ff00ff;\";>Press [Shift+,] or click here</span> to open the adjuster tool prompt.` : `Changes numeric properties of pixels.<br/>Currently ${numberAdjusterVerb} ${numberAdjusterValue} ${numberAdjusterPreposition} ${numberAdjusterProperty}.<br/><span onclick=numberAdjusterPrompt() style=\"color: #ff00ff;\";>Press [Shift+,] or click here</span> to open the adjuster tool prompt.`;
 	};
 } else {
 	alert(`The ${variablesMod} mod is required and has been automatically inserted (reload for this to take effect).`)
