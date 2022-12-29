@@ -2,7 +2,13 @@ function runAfterAutogen(func) {
 	runAfterAutogenList.push(func);
 };
 
+function runAfterButtons(func) {
+	runAfterButtonsList.push(func);
+};
+
 runAfterAutogenList = [];
+
+runAfterButtonsList = [];
 
 function behaviorStringsToArrays() {
 	for (var behavior in behaviors) {
@@ -820,6 +826,10 @@ window.onload = function() {
 	// For each element type in elements, create a button in controls that sets the current element to that type
 	// Alphabetically sort and loop through dictionary named "elements"
 	createButtonsAndCountElements();
+
+	for (var i = 0; i < runAfterButtonsList.length; i++) {
+		runAfterButtonsList[i]();
+	};
 
 	selectElement(currentElement);
 	focusGame();
