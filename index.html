@@ -1009,6 +1009,7 @@
                 category: "solids",
                 insulate: true,
                 hardness: 1,
+                noMix: true,
             },
             "fire": {
                 color: ["#ff6b21","#ffa600","#ff4000"],
@@ -1033,6 +1034,7 @@
                 state: "gas",
                 density: 0.1,
                 ignoreAir: true,
+                noMix: true,
             },
             "bomb": {
                 color: "#524c41",
@@ -1163,6 +1165,7 @@
                 state: "gas",
                 density: 1180,
                 stain: 0.075,
+                noMix: true,
             },
             "magma": {
                 color: ["#ff6f00","#ff8c00","#ff4d00"],
@@ -1225,6 +1228,7 @@
                 state: "solid",
                 density: 2500,
                 breakInto: "glass_shard",
+                noMix: true,
             },
             "molten_glass": {
                 reactions: {
@@ -1244,7 +1248,8 @@
                 state: "solid",
                 density: 2500,
                 breakInto: "glass_shard",
-                hidden: true
+                hidden: true,
+                noMix: true,
             },
             "meat": {
                 color: ["#9E4839","#BA6449","#D2856C","#A14940"],
@@ -4742,6 +4747,7 @@
                 burnInto: ["fire","ash"],
                 state: "solid",
                 density: 360.5,
+                hidden: true
             },
             "corn_seed": {
                 color: ["#F2B813","#F9E3BA"],
@@ -5002,6 +5008,19 @@
                 state: "solid",
                 density: 1530,
                 category: "powders",
+                tempHigh: 881.4
+            },
+            "beans": {
+                //color: ["#F33D02","#F04703","#FD9D24","#FFBF61"],
+                //color: ["#B81901","#B61A00","#E97501","#F9922B"],
+                color: ["#db1c0b","#db3c0b","#fa8023","#ffa12e"],
+                behavior: behaviors.LIQUID,
+                category: "food",
+                tempHigh: 350,
+                stateHigh: ["fire","fire","ash"],
+                state: "solid",
+                density: 721,
+                viscosity: 1000
             },
             "dry_ice": {
                 color: "#e6e6e6",
@@ -8945,7 +8964,7 @@
                 else if (currentElement === "mix") {
                     if (!isEmpty(x,y,true)) {
                         var pixel = pixelMap[x][y];
-                        if ((pixel.element != "fire" && pixel.element != "smoke") || shiftDown) {
+                        if (elements[pixel.element].noMix !== true || shiftDown) {
                             mixList.push(pixel);
                         }
                     }

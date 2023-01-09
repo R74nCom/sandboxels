@@ -3,6 +3,12 @@
     + Baking Update
     + More plans / suggestions at https://docs.google.com/document/u/4/d/1R8xljj_J-K5oU-9y4louwplQmM-ZBvUfXmhbgj5LYdk/edit
 
+[Version 1.7.1 - January 8, 2022]
+    + Walls and Glass aren't affected by Mix unless holding Shift
+    + Beans
+    + Sodium Acetate can melt
+    ~ Popcorn hidden ;)
+
 [Version 1.7 - December 15, 2022 - Anniversary Update]
     + Confetti
     + Party Popper
