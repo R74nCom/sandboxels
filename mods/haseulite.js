@@ -1033,6 +1033,190 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		hardness: 1,
 		conduct: 0.19,
 	};
+	
+	//apples (used for yvesite)
+
+	appleAttachWhitelist = ["wood","tree_branch"];
+
+	elements.apple = {
+		color: ["#ad2333", "#b51616", "#d6782f", "#e3c634", "#99de31"],
+		tick: function(pixel) {
+			if(pixel.attached) { //only attaches upwards
+				if(isEmpty(pixel.x,pixel.y-1,true)) {
+					pixel.attached = false;
+				};
+			} else { //Move if not attached
+				if (!tryMove(pixel, pixel.x, pixel.y+1)) {
+					if(Math.random() < 0.3) {
+						if (Math.random() < 0.5) {
+							if (!tryMove(pixel, pixel.x+1, pixel.y+1)) {
+								tryMove(pixel, pixel.x-1, pixel.y+1);
+							};
+						} else {
+							if (!tryMove(pixel, pixel.x-1, pixel.y+1)) {
+								tryMove(pixel, pixel.x+1, pixel.y+1);
+							};
+						};
+					};
+				};
+			};
+			doDefaults(pixel);
+			var shouldSpoil = true; //spoil by default
+			if(pixel.attached) { //if it's attached
+				if(!isEmpty(pixel.x,pixel.y-1,true)) { //if the attachment coords are a pixel and not OOB
+					var attachPixel = pixelMap[pixel.x][pixel.y-1];
+					var attachElement = attachPixel.element;
+					if(appleAttachWhitelist.includes(attachElement)) {//if the element is a whitelisted "don't spoil" element
+						shouldSpoil = false; //then don't spoil
+					};
+				};
+			};
+			if(shouldSpoil) { //spoil if not attached
+				if(pixel.temp > -18 && pixel.temp <= 4) { //(no spoiling below -18C)
+					pixel.spoilage += Math.max(Math.min(scale(pixel.temp,-18,4,0,9),9),0)
+				} else if(pixel.temp > 4) {
+					pixel.spoilage += Math.max(Math.min(scale(pixel.temp,4,20,9,30),40),0)
+				};
+			};
+			if(pixel.spoilage > 14400) { //3600 = 120 ticks at 20C
+				if(Math.random() < 0.05) {
+					changePixel(pixel,"rotten_apple");
+				};
+			};
+		},
+		properties: {
+			"spoilage": 0,
+			"attached": false,
+		},
+		burn: 5,
+		burnInto: ["steam", "ash"],
+		burnTime: 600,
+		tempHigh: 200,
+		stateHigh: ["steam", "ash"],
+		onTryMoveInto: function(pixel,otherPixel) {
+			var otherInfo = elements[otherPixel.element]
+			if(typeof(otherInfo.state) === "string" && otherInfo.state !== "gas") {
+				pixel.attached = false;
+			};
+		},
+	};
+
+	elements.rotten_apple = {
+		hidden: true,
+		color: ["#802e24", "#9c4227", "#a34b26"],
+		behavior: [
+			"XX|CR:stench,fly%0.1|XX",
+			"M2%0.5|CH:dirty_water,fly,fly%0.007|M2%0.5",
+			"M2|M1|M2"
+		],
+		stain: 0.01,
+		burn: 5,
+		burnInto: ["steam", "ash"],
+		burnTime: 600,
+		tempHigh: 200,
+		stateHigh: ["steam", "ash"],
+	};
+
+	//Yvesite
+
+	var yvesiteAppleSpots = [[-1, 1], [0, 1], [1, 1]];
+	var yvesitePowderAppleSpots = [[-1, 0], [0, -1], [1, 0]];
+
+	function yvesiteApples(pixel,offsets) {
+		if(pixel.charge) {
+			var probAdd = Math.min(0,Math.max(pixel.temp,100)) / 2500;
+			if(Math.random() < (0.02 + probAdd)) {
+				var appleOffset = randomArrayChoice(offsets);
+				if(tryCreatePixel("apple",pixel.x+appleOffset[0],pixel.y+appleOffset[1])) {
+					var apple = pixelMap[pixel.x+appleOffset[0]][pixel.y+appleOffset[1]];
+					apple.color = pixelColorPick(apple,"#c40e2c");
+					apple.spoilage = -Infinity;
+					return true;
+				} else {
+					return null;
+				};
+			};
+		};
+		return false;
+	};
+
+	elements.yvesite = {
+		color: ["#850f2c", "#9c0e3d", "#911f3b", "#701625"],
+		fireColor: ["#b5103f", "#ab3254", "#cc2157", "#ba0936"],
+		behavior: behaviors.WALL,
+		tick: function(pixel) {
+			yvesiteApples(pixel,yvesiteAppleSpots);
+		},
+		reactions: {
+			heejinite: {temp1: 1, temp2: 1},
+			molten_heejinite: {temp1: 2, temp2: 2},
+			heejinite_powder: {temp1: 2, temp2: 2},
+			heejinite_gas: {temp1: 3, temp2: 3},
+		},
+		tempHigh: 1545,
+		category: "solids",
+		state: "solid",
+		density: 3601,
+		hardness: 0.88,
+		breakInto: "yvesite_powder",
+		conduct: 0.94,
+	};
+
+	elements.yvesite_powder = {
+		color: ["#8f1734", "#962638", "#b32749", "#911a3e"],
+		fireColor: ["#b5103f", "#ab3254", "#cc2157", "#ba0936"],
+		behavior: behaviors.POWDER,
+		tick: function(pixel) {
+			yvesiteApples(pixel,yvesitePowderAppleSpots);
+		},
+		reactions: {
+			heejinite: {temp1: 2, temp2: 2},
+			molten_heejinite: {temp1: 3, temp2: 3},
+			heejinite_powder: {temp1: 3, temp2: 3},
+			heejinite_gas: {temp1: 4, temp2: 4},
+		},
+		tempHigh: 1545,
+		stateHigh: "molten_yvesite",
+		category: "solids",
+		state: "solid",
+		density: 1500,
+		hardness: 0.43,
+		breakInto: "yvesite_powder",
+		conduct: 0.84,
+	};
+	
+	elements.molten_yvesite = {
+		color: ["#e81554", "#c90842", "#db4d70", "#cf2b54"],
+		fireColor: ["#b5103f", "#ab3254", "#cc2157", "#ba0936"],
+		behavior: behaviors.MOLTEN,
+		density: 3608,
+		state: "liquid",
+		hardness: 0.57,
+		breakInto: "yvesite_gas",
+		temp: 1545,
+		tempHigh: 3145,
+		stateHigh: "yvesite_gas",
+		tempLow: 1545,
+		stateLow: "yvesite",
+		conduct: 0.22,
+	};
+
+	elements.yvesite_gas = {
+		color: ["#e34070", "#d13060", "#c2234a", "#db4866"],
+		fireColor: ["#b5103f", "#ab3254", "#cc2157", "#ba0936"],
+		behavior: behaviors.GAS,
+		state: "gas",
+		tempLow: 3145,
+		stateLow: "molten_yvesite",
+		density: 8.16,
+		temp: 3300,
+		hardness: 1,
+		conduct: 0.11,
+	};
+
+	elements.fly.reactions.rotten_apple = { "elem2":null, chance:0.15, func:behaviors.FEEDPIXEL };
+	
+	//:eggTF: section
 
 	r_mad_X_m_s_d = urlParams.get('r_mad_X_m_s_d');
 	noaegs_dud_X_ss_d_n_s = (urlParams.get('noaegs_dud_X_ss_d_n_s') !== null);
@@ -1140,7 +1324,6 @@ Member: ${r_mad_X_m_s_deud_n_n_m_h_d}${noaegs_dud_X_ss_d_n_seud_n_n_m_h_d}${eu_d
 		X_myo_eu_ae_u_so = h_d_s_X_myo_eu_ae_u_so();
 		
 		var baseArray = ["heejinite","heejinite_powder","molten_heejinite","heejinite_gas","haseulite","haseulite_powder","molten_haseulite","haseulite_gas","jinsoulite","jinsoulite_powder","molten_jinsoulite","jinsoulite_gas","haseulite_vent","loona","loona_gravel","molten_loona"];
-
 
 		if(dl_ekf_dml_th_su_ae_yu_eo_d_ch_s[X_myo_eu_ae_u_so]) {
 			g_mu_Xae_eu_ddi_deu_dus_n = Object.keys(elements).filter(function(e) {
