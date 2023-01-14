@@ -1,3 +1,6 @@
+/* Helps make managing many dependencies easier */
+// Version 1.0.0
+
 /*
  * Requires that certain mods are installed for the callback to proceed.
  * @param {array} mods - The mods your mod depends on.
@@ -5,6 +8,7 @@
  */
 function requireMods(mods, cal) {
   if (__checkMods(mods)) {
+    // The whole callback system remains from a feature that was nerfed soon before release. It will either be removed or taken advantage of in future versions.
     cal();
   }
   else {
