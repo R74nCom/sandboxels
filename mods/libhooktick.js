@@ -1,3 +1,4 @@
+clearInterval(tickInterval);
 const oldTick = tick;
 let __registeredTickCallbacks = [];
 function everyTick(callback){
@@ -9,3 +10,4 @@ tick = function(){
     func();
   });
 }
+tickInterval = setInterval(tick, 1000/tps);
