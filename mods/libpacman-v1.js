@@ -1,6 +1,11 @@
 /* Helps make managing many dependencies easier */
-// Version 1.0.0
+// Version 1.0.1
+// Update Description: Refresh quickfix
+let __needRefresh = false;
 
+window.addEventListener("load", e=>{
+  if(__needRefresh) location.reload();
+});
 /*
  * Requires that certain mods are installed for the callback to proceed.
  * @param {array} mods - The mods your mod depends on.
@@ -13,7 +18,7 @@ function requireMods(mods, cal) {
   }
   else {
     __installMods(mods);
-    window.location.reload();
+    __needRefresh = true;
   }
 }
 
@@ -47,9 +52,9 @@ function __installMods(mods) {
 }
 
 function __installMod(mod) {
-  let mods = JSON.parse(window.localStorage.getItem("enabledMods") || "[]");
+  let mods = JSON.parse(localStorage.getItem("enabledMods") || "[]");
   mods.push(mod);
-  window.localStorage.setItem("enabledMods", JSON.stringify(mods));
+  localStorage.setItem("enabledMods", JSON.stringify(mods));
 }
 
 // Ensure it's available in the global scope
