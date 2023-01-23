@@ -344,3 +344,87 @@ elements.black_pink_test = {
 function updateDistanceDisplayDescription() {
 	elements.distance_display.desc = `It gets more blue the closer it gets to a distance display anchor. The current scale factor is ${distanceScale} (bigger number = smaller blue radius). <span onclick=distanceScalePrompt() style=\"color: #ff00ff;\";>Click here</span> to open the scale prompt.<br/><em>Note: Info pages do not update automatically and must be closed and reopened to show the changed scale.</em>`;
 };
+
+if(enabledMods.includes("mods/code_library.js")) {
+	function createDownAtFirstAvailableSpace(element,x) {
+		//Get the Y of the first empty pixel on a row which is on a full pixel or the bottom of the canvas
+		//1. map(x => !x) coerces empty pixels' `undefined` values to !false = true, while full pixels are coerced to !true = false
+		//2. spread with false adds a sentinel value for the bottom of the canvas
+		//3. slice(1) removes empty (OOB) position at y=0
+		//4. indexOf(false) always shows the first matching item
+		//5. an offset I don't understand (probably from that slice) shifts the first match to the empty spot above the first full pixel
+		var firstEmptyY = [...pixelMap[x].map(obj => !obj),false].slice(1).indexOf(false);
+
+		if(firstEmptyY == -1) {
+			return false;
+		};
+		
+		createPixel(element,x,firstEmptyY);
+		return true;
+	};
+
+	function createReplacingGases(element,x,y) {
+		if(isEmpty(x,y,false)) {
+			createPixel(element,x,y);
+			return true;
+		};
+		if(!isEmpty(x,y,true)) {
+			var isGas = (elements[pixelMap[x][y].element].state == "gas");
+			if(isGas) {
+				deletePixel(x,y);
+				createPixel(element,x,y);
+			};
+			return isGas;
+		};
+	};
+
+	function cdafasIgnoringGas(element,x) {
+		//Get the Y of the first empty pixel on a row which is on a full pixel or the bottom of the canvas
+		//1. map(x => !x) coerces empty pixels' `undefined` values to !false = true, while full pixels are coerced to !true = false
+		//2. spread with false adds a sentinel value for the bottom of the canvas
+		//3. slice(1) removes empty (OOB) position at y=0
+		//4. indexOf(false) always shows the first matching item
+		//5. an offset I don't understand (probably from that slice) shifts the first match to the empty spot above the first full pixel
+		var firstEmptyY = [...pixelMap[x].map(obj =>!obj || elements[obj.element].state == "gas"),false].slice(1).indexOf(false);
+
+		if(firstEmptyY == -1) {
+			return false;
+		};
+		
+		createReplacingGases(element,x,firstEmptyY);
+		return true;
+	};
+
+	elements.temporal_fire_test = {
+		color: ["#8f8f8f","3f3f3f"],
+		behavior: behaviors.WALL,
+		properties: {
+			direction: 1,
+			counter: 1,
+			active: true,
+			fromX: null,
+		},
+		tick: function(pixel) {
+			if(pixel.fromX == null) {
+				pixel.fromX = pixel.x;
+			};
+			if(!pixel) {
+				return;
+			};
+			if(!pixel.active) {
+				return;
+			};
+			var newX = pixel.fromX + pixel.counter;
+			if(outOfBounds(newX,1)) {
+				pixel.active = false;
+				newX = pixel.fromX + pixel.counter; //reset
+				pixel.counter = 1;
+				return;
+			};
+			cdafasIgnoringGas("fire",newX);
+			pixel.counter += pixel.direction;
+		},
+		state: "gas",
+		category: "special",
+	};
+};
