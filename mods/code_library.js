@@ -128,6 +128,32 @@
 		return typeof(elements[elementName]) === "object";
 	};
 
+	//Has a given state
+	function isState(elementName,inputState) {
+		if(!elementExists(elementName)) {
+			throw new Error(`Element ${elementName} doesn't exist`);
+		};
+
+		var infoState = elements[elementName].state;
+
+		if(infoState == undefined) { infoState = "undefined" };
+
+		if(inputState == undefined) { inputState = "undefined" };
+		if(inputState instanceof Array) {
+			var limit = 0;
+			while(inputState.includes(undefined) && limit < 3) {
+				inputState[inputState.indexOf(undefined)] = "undefined"
+				limit++;
+			};
+		};
+
+		if(inputState instanceof Array) {
+			return inputState.includes(infoState);
+		};
+
+		return infoState == inputState;
+	};
+
 	//Check if pixel of given element exists at given location
 	function hasPixel(x,y,elementInput) {
 		if(isEmpty(x,y,true)) { //if empty, it can't have a pixel
@@ -1012,9 +1038,10 @@
 		return convertHslObjects(color,outputType);
 	};
 
-	function colorToHsl(color,outputType) {
+	function colorToHsl(color,outputType="rgb") {
 		color = convertColorFormats(color,"rgb");
-		color = rgbStringToHSL("color",)
+		color = rgbStringToHSL(color,outputType);
+		return color;
 	};
 
 	//https://stackoverflow.com/questions/36721830/convert-hsl-to-rgb-and-hex
@@ -1227,6 +1254,16 @@
 				createPixel(element,coordX,coordY);
 			};
 		};
+	};
+
+	function isOpenAndOnSurface(x,y,includeBottomBound=true) {
+		if(!isEmpty(x,y,false)) {
+			return false;
+		};
+		if(y + 1 == height) {
+			return includeBottomBound;
+		};
+		return !isEmpty(x,y+1,true);
 	};
 
 //Logic
