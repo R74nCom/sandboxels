@@ -1,27 +1,12 @@
 var lategenOptions = [];
 
-var creeperMod = "mods/mobs.js";
-var spoutMod = "mods/spouts.js";
-var fairyMod = "mods/more_fairies.js";
-var cloudMod = "mods/more_clouds.js";
-var bombMod = "mods/more_bombs.js";
+var mainMod = "mods/generative_mods.js";
 var singularityMod = "mods/neutronium_compressor.js";
-if(enabledMods.includes(creeperMod)) {
+if(enabledMods.includes(mainMod)) {
 	lategenOptions.push("creeper");
-};
-if(enabledMods.includes(spoutMod)) {
 	lategenOptions.push("spout");
-};
-if(enabledMods.includes(fairyMod)) {
 	lategenOptions.push("fairy");
-};
-if(enabledMods.includes(cloudMod)) {
 	lategenOptions.push("cloud");
-};
-if(enabledMods.includes(bombMod)) {
-	lategenOptions.push("bomb");
-};
-if(enabledMods.includes(bombMod)) {
 	lategenOptions.push("bomb");
 };
 if(enabledMods.includes(singularityMod)) {
@@ -29,7 +14,7 @@ if(enabledMods.includes(singularityMod)) {
 };
 lgoDisplayString = lategenOptions.join(", ");
 if(lgoDisplayString === "") {
-	lgoDisplayString: "[None. This requires at least one element-generating mod: mobs.js, spouts.js, more_fairies.js, more_clouds.js, more_bombs.js, or neutronium_compressor.js!]";
+	lgoDisplayString: "[None. This requires at least one element-generating mod!: generative_mods.js or neutronium_compressor.js]";
 };
 
 document.addEventListener("keydown", function(e) { //prop prompt listener
@@ -58,31 +43,43 @@ function generatorPrompt() {
 		elements = prompt(`Enter the element(s) you want to generate ${typePlural} for.
 		Elements are separated by commas; to use a combination of elements, the elements are separated by plus signs (like "gold_coin+diamond").`);
 		elements = parseForLateGenerationParameter(elements);
-		switch(type) {
-			case "creeper":
-				generateCreeper(elements,true);
-				break;
-			case "spout":
-				generateSpout(elements,true);
-				break;
-			case "fairy":
-				generateFairy(elements,true);
-				break;
-			case "cloud":
-				generateCloud(elements,true);
-				break;
-			case "singularity":
-				generateSingularity(elements,true);
-				break;
-			case "bomb":
-				var number = prompt(`Enter a bomb number (default: 1)
-				1 corresponds to radius 10, 2 corresponds to radius 15, etc.`);
-				if(isNaN(parseFloat(number))) { number = 1 };
-				generateBomb(elements,true,number);
-				break;
-			default:
-				alert("An invalid type made it past the if statement. You shouldn't ever see this error.");
-				throw new Error("An invalid type made it through the if statement.");
+		try {
+			var amount = 0;
+			switch(type) {
+				case "creeper":
+					amount += generateCreeper(elements,true).length;
+					break;
+				case "spout":
+					amount += generateSpout(elements,true).length;
+					break;
+				case "fairy":
+					amount += generateFairy(elements,true).length;
+					break;
+				case "cloud":
+					amount += generateCloud(elements,true).length;
+					break;
+				case "singularity":
+					amount += generateSingularity(elements,true).length;
+					break;
+				case "bomb":
+					var number = prompt(`Enter a bomb number (default: 1)
+					1 corresponds to radius 10, 2 corresponds to radius 15, etc.`);
+					if(isNaN(parseFloat(number))) { number = 1 };
+					amount += generateBomb(elements,true,number).length;
+					break;
+				default:
+					alert("An invalid type made it past the if statement. You shouldn't ever see this error.");
+					throw new Error("An invalid type made it through the if statement.");
+			};
+			alert(`Generated ${amount} ${amount == 1 ? "element" : "elements"}`);
+		} catch (error) {
+			var errorString = error.toString();
+			var errorText = "";
+			if(errorString.includes("Cannot read properties of undefined")) {
+				errorText += "\r\n(This is most likely from a nonexistent or misspelled element)";
+			};
+			alert("There was an error!\r\n" + error.toString() + errorText);
+			throw error; //for console
 		};
 	};
 };
