@@ -592,8 +592,10 @@
 		return convertColorFormats(color,"rgb");
 	};
 
-	function averageColorObjects(color1,color2,weight1=0.5) { /*third argument is for color1 and expects a float from 0
-																  to 1, where 0 means "all color2" and 1 means "all color1"*/
+	
+	function averageColorObjects(color1,color2,weight1=0.5) { //misnomer, actually a linear interpolation but it's too late to rename that
+		//third argument is for color1 and expects a float from 0 to 1, where 0 means "all color2" and 1 means "all color1"
+		//(backwards from how it should work)
 		var w1 = Math.min(Math.max(weight1,0),1)
 		var red1 = color1.r
 		var green1 = color1.g
@@ -605,6 +607,13 @@
 		var green3 = (green1 * w1) + (green2 * (1 - w1))
 		var blue3 = (blue1 * w1) + (blue2 * (1 - w1))
 		return {r: red3, g: green3, b: blue3}
+	};
+
+	function lerpColors(color1,color2,outputType="rgb",weight1=0.5) {
+		color1 = convertColorFormats(color1,"json");
+		color2 = convertColorFormats(color2,"json");
+		theColor = averageColorObjects(color1,color2,weight1);
+		return convertColorFormats(theColor,outputType);
 	};
 
 	function multiplyColors(color1,color2,outputType="rgb") {
