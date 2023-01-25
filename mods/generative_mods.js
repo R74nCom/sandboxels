@@ -2087,9 +2087,9 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 					return (commonMovableCriteria(e));
 				});
 				movableArray.push(["rock","sand"]);
-				generateCloud(movableArray,false);
-				generateFairy(movableArray,false);
-				generateSpout(movableArray,false);
+				if(generateClouds) { generateCloud(movableArray,false) };
+				if(generateFairies) { generateFairy(movableArray,false) };
+				if(generateSpouts) { generateSpout(movableArray,false) };
 			});
 
 	//Random spawners
