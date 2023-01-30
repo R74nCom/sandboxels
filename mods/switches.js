@@ -7,6 +7,7 @@ if(enabledMods.includes(noConductMod)) {
 		color: "#7F3333",
 		behavior: behaviors.WALL,
 		noConduct: ["switch_on_control","switch_off_control"],
+		category: "machines",
 	};
 
 	elements.switch_on = {
@@ -15,6 +16,7 @@ if(enabledMods.includes(noConductMod)) {
 		behavior: behaviors.WALL,
 		conduct: 1,
 		noConduct: ["switch_on_control","switch_off_control"],
+		category: "machines",
 	};
 
 	elements.switch_off_control = {
@@ -27,6 +29,7 @@ if(enabledMods.includes(noConductMod)) {
 		],
 		conduct: 1,
 		noConduct: ["switch_on","switch_off"],
+		category: "machines",
 	};
 
 	elements.switch_on_control = {
@@ -39,6 +42,7 @@ if(enabledMods.includes(noConductMod)) {
 		],
 		conduct: 1,
 		noConduct: ["switch_on","switch_off"],
+		category: "machines",
 	};
 } else {
 	enabledMods.splice(enabledMods.indexOf(modName),0,noConductMod)
