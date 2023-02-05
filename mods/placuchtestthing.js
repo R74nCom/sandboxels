@@ -6,3 +6,12 @@ elements.testdust = {
     state: "powder",
     density: 1250,
 };
+
+elements.testliquid = {
+    color: "EEAA33",
+    behavior: behaviors.LIQUID,
+    category: "liquids",
+    viscosity: 100000,
+    state: "liquid",
+    density: 1150,
+};
