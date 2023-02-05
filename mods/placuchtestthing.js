@@ -8,7 +8,7 @@ elements.testdust = {
 };
 
 elements.testliquid = {
-    color: "EEAA33",
+    color: "#EEAA33",
     behavior: behaviors.LIQUID,
     category: "liquids",
     viscosity: 100000,
