@@ -70,6 +70,20 @@ if(enabledMods.includes(changeTempMod) && enabledMods.includes(runAfterAutogenMo
 		reactions: { //(test.hello ??= {}).world
 			molten_nickel: { elem1: "molten_nickel", elem2: "molten_nichrome", chance: 0.4, changeTemp: false, oneway: true },
 		},
+		tick: function(pixel) {
+			if(nichromeDoNeighborCount) {
+				var neighbors = 0;
+				for(i = 0; i < adjacentCoords.length; i++) {
+					if(!isEmpty(pixel.x+adjacentCoords[i][0],pixel.y+adjacentCoords[i][1],true)) {
+						var newPixel = pixelMap[pixel.x+adjacentCoords[i][0]][pixel.y+adjacentCoords[i][1]];
+						if(elements[newPixel.element].conduct) { neighbors++ };
+					};
+				};
+			};
+			if(pixel.charge) {
+				pixel.temp += ((1.1 + nichromeNeighborLogic(neighbors)) * pixel.charge);
+			};
+		},
 	};
 
 	worldgentypes.test = {
