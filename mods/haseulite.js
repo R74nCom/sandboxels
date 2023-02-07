@@ -240,17 +240,18 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 	};
 
 	jinsouliteValueObject = {
-		cloud: 1,
-		cloud_cloud: [1, "cloud"],
-		snow_cloud: 2,
-		hail_cloud: 2,
-		rain_cloud: [3, "cloud"],
-		water_cloud: [3, "cloud"],
-		steam: 4,
-		steam_cloud: [2, "steam"],
-		rain_cloud_cloud: [1, "rain_cloud"],
-		snow_cloud_cloud: [1, "snow_cloud"],
-		hail_cloud_cloud: [1, "hail_cloud"],
+		cloud: 0.5,
+		cloud_cloud: [0.5, "cloud"],
+		snow_cloud: 0.75,
+		hail_cloud: 75,
+		steam: 1,
+		steam_cloud: [0.5, "steam"],
+		rain_cloud_cloud: [0.5, "rain_cloud"],
+		snow_cloud_cloud: [0.5, "snow_cloud"],
+		hail_cloud_cloud: [0.5, "hail_cloud"],
+		rain_cloud: [1, "cloud"],
+		water_cloud: [1, "cloud"],
+		water: 1,
 		water_bomb: 59,
 		water_bomb_2: 164.5,
 		water_bomb_3: 322.5,
@@ -380,6 +381,11 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 					if(typeof(otherPixel) === "undefined" || isEmpty(fX,fY,true)) {
 						console.log(`nope`)
 						return false;
+					};
+					if(jinsouliteSpreadWhitelist.includes(pixel.element) && otherElement == "water") {
+						if(pixel.temp < 80) {
+							continue;
+						};
 					};
 					var ValueData = valueObject[otherElement];
 					//console.log(ValueData.toString())
