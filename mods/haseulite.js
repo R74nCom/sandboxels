@@ -579,11 +579,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		properties: {
 			oldColor: null
 		},
-		behavior: [
-			"XX|CR:fire%3|XX", //PTT
-			"M2|XX|M2",
-			"M1|M1|M1",
-		],
+		behavior: behaviors.LIQUID, //fire creation is problematic due to smoke cooling
 		tick: function(pixel) { haseulitoidTick(pixel) },
 		onExplosionBreakOrSurvive: function(pixel,x,y,radius) {
 			/*power is always radius/10
@@ -626,6 +622,50 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		temp: 3700,
 		hardness: 1,
 		conduct: 0.13,
+	};
+
+	if(enabledMods.includes("mods/metals.js")) {
+		elements.hanichrite = { //the names nickel, chrome, and haseulite do not mix
+			color: ["#dde6bc", "#ebf2ef", "#e8fab1"],
+			behavior: behaviors.WALL,
+			tempHigh: 1560,
+			category: "solids",
+			density: 8218,
+			conduct: 0.75,
+			hardness: 0.78,
+			state: "solid",
+			tick: function(pixel) {
+				if(nichromeDoNeighborCount) {
+					var neighbors = 0;
+					for(i = 0; i < adjacentCoords.length; i++) {
+						if(!isEmpty(pixel.x+adjacentCoords[i][0],pixel.y+adjacentCoords[i][1],true)) {
+							var newPixel = pixelMap[pixel.x+adjacentCoords[i][0]][pixel.y+adjacentCoords[i][1]];
+							if(elements[newPixel.element].conduct) { neighbors++ };
+						};
+					};
+				};
+				if(pixel.charge) {
+					pixel.temp -= ((1.13 + nichromeNeighborLogic(neighbors)) * pixel.charge);
+				};
+			},
+		};
+
+		elements.molten_hanichrite = {
+			tick: function(pixel) {
+				if(nichromeDoNeighborCount) {
+					var neighbors = 0;
+					for(i = 0; i < adjacentCoords.length; i++) {
+						if(!isEmpty(pixel.x+adjacentCoords[i][0],pixel.y+adjacentCoords[i][1],true)) {
+							var newPixel = pixelMap[pixel.x+adjacentCoords[i][0]][pixel.y+adjacentCoords[i][1]];
+							if(elements[newPixel.element].conduct) { neighbors++ };
+						};
+					};
+				};
+				if(pixel.charge) {
+					pixel.temp -= ((1.13 + nichromeNeighborLogic(neighbors)) * pixel.charge) * 1.09;
+				};
+			},
+		};
 	};
 
 	/*
