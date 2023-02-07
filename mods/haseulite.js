@@ -230,28 +230,39 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 	haseuliteValueObject = {
 		light: 1,
 		radiation: 4,
-		fire: [6, "smoke"],
-		rad_fire: [10, "rad_smoke"],
-		liquid_fire: [12, ["fire","liquid_smoke","smoke"]],
-		plasma: [15, "fire"],
-		liquid_rad_fire: [20, [null,"rad_fire","rad_fire","rad_smoke","rad_smoke"]],
-		liquid_plasma: [30, ["plasma","liquid_fire","fire"]],
-		liquid_irradium: [4, null]
+		fire: {value: 6, remainder: "smoke"},
+		rad_fire: {value: 10, remainder: "rad_smoke"},
+		liquid_fire: {value: 12, remainder: ["fire","liquid_smoke","smoke"]},
+		plasma: {value: 15, remainder: "fire"},
+		liquid_rad_fire: {value: 20, remainder: [null,"rad_fire","rad_fire","rad_smoke","rad_smoke"]},
+		liquid_plasma: {value: 30, remainder: ["plasma","liquid_fire","fire"]},
+		liquid_irradium: {value: 4, remainder: 0}
 	};
 
 	jinsouliteValueObject = {
 		cloud: 0.5,
-		cloud_cloud: [0.5, "cloud"],
-		snow_cloud: 0.75,
-		hail_cloud: 75,
+		cloud_cloud: {value: 0.5, remainder: "cloud"},
+		snow_cloud: {value: 0.75},
+		hail_cloud: {value: 0.75},
 		steam: 1,
-		steam_cloud: [0.5, "steam"],
-		rain_cloud_cloud: [0.5, "rain_cloud"],
-		snow_cloud_cloud: [0.5, "snow_cloud"],
-		hail_cloud_cloud: [0.5, "hail_cloud"],
-		rain_cloud: [1, "cloud"],
-		water_cloud: [1, "cloud"],
-		water: 1,
+		steam_cloud: {value: 0.5, remainder: "steam"},
+		rain_cloud_cloud: {value: 0.5, remainder: "rain_cloud"},
+		snow_cloud_cloud: {value: 0.5, remainder: "snow_cloud"},
+		hail_cloud_cloud: {value: 0.5, remainder: "hail_cloud"},
+		rain_cloud: {value: 1, remainder: "cloud"},
+		water_cloud: {value: 1, remainder: "cloud"},
+		snow: {value: 0.125},
+		soda: {value: 0.8984375, remainder: "sugar"},
+		packed_snow: {value: 0.90625},
+		slime: {value: 0.9609375, remainder: "salt"}, //:eggTF:
+		slush: {value: 0.9609375},
+		ice: {value: 0.98046875},
+		salt_water: {value: 1, remainder: "salt"}, //should be 0.965 but simplified here
+		dirty_water: {value: 1, remainder: ["ash","dust","carbon_dioxide","ash","dust","carbon_dioxide","infection"]},
+		sugar_water: {value: 1, remainder: "sugar"},
+		seltzer: {value: 1, remainder: "carbon_dioxide"},
+		pool_water: {value: 1, remainder: "chlorine"},
+		water: {value: 1, tempMin: 80},
 		water_bomb: 59,
 		water_bomb_2: 164.5,
 		water_bomb_3: 322.5,
@@ -382,26 +393,25 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 						console.log(`nope`)
 						return false;
 					};
-					if(jinsouliteSpreadWhitelist.includes(pixel.element) && otherElement == "water") {
-						if(pixel.temp < 80) {
-							continue;
-						};
-					};
 					var ValueData = valueObject[otherElement];
 					//console.log(ValueData.toString())
-					if(ValueData instanceof Array) {
-						var finalElement = ValueData[1];
+					if(typeof(ValueData) == "object") {
+						var tempMin = ValueData.tempMin ?? null;
+						if(pixel.temp < tempMin) {
+							continue;
+						};
+						var finalElement = ValueData.remainder ?? null;
 						if(finalElement instanceof Array) {
 							finalElement = finalElement[Math.floor(Math.random() * finalElement.length)];
 						};
-						if(finalElement !== null) {
-							if(finalElement === -1) {
-								deletePixel(otherPixel.x,otherPixel.y);
-							} else {
+						if(finalElement !== 0) {
+							if(finalElement !== null) {
 								changePixel(otherPixel,finalElement);
+							} else {
+								deletePixel(otherPixel.x,otherPixel.y);
 							};
 						};
-						pixel.value += ValueData[0];
+						pixel.value += ValueData.value;
 					} else if(typeof(ValueData) === "number") {
 						deletePixel(otherPixel.x,otherPixel.y);
 						pixel.value += ValueData;
