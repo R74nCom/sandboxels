@@ -253,6 +253,8 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		water_cloud: {value: 1, remainder: "cloud"},
 		snow: {value: 0.125},
 		soda: {value: 0.8984375, remainder: "sugar"},
+		blood: {value: 0.90625, remainder: "dna"},
+		infection: {value: 0.90625, remainder: "dna"},
 		packed_snow: {value: 0.90625},
 		slime: {value: 0.9609375, remainder: "salt"}, //:eggTF:
 		slush: {value: 0.9609375},
