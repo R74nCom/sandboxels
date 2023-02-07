@@ -69,6 +69,7 @@ if(enabledMods.includes(changeTempMod) && enabledMods.includes(runAfterAutogenMo
 	elements.molten_nichrome = {
 		reactions: { //(test.hello ??= {}).world
 			molten_nickel: { elem1: "molten_nickel", elem2: "molten_nichrome", chance: 0.4, changeTemp: false, oneway: true },
+			molten_haseulite: { elem2: "molten_hanichrite", elem1: ["molten_nichrome","molten_nichrome","molten_nichrome","molten_nichrome","molten_nichrome","molten_nichrome","molten_nichrome","molten_nichrome","molten_nichrome","molten_hanichrite"], changeTemp: false },
 		},
 		tick: function(pixel) {
 			if(nichromeDoNeighborCount) {
@@ -81,7 +82,7 @@ if(enabledMods.includes(changeTempMod) && enabledMods.includes(runAfterAutogenMo
 				};
 			};
 			if(pixel.charge) {
-				pixel.temp += ((1.1 + nichromeNeighborLogic(neighbors)) * pixel.charge);
+				pixel.temp += ((1.1 + nichromeNeighborLogic(neighbors)) * pixel.charge) * 1.1;
 			};
 		},
 	};
