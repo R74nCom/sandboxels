@@ -8748,7 +8748,7 @@
                         ctx.fillStyle = averageRGB(colorlist);
                     }
                 }
-                if ((view === null || view === 4) && elements[pixel.element].state === "gas") {
+                if ((view === null || view === 4) && elements[pixel.element].isGas) {
                     ctx.globalAlpha = 0.5;
                     ctx.fillRect((pixel.x-1)*pixelSize, (pixel.y)*pixelSize, pixelSize*3, pixelSize);
                     ctx.fillRect((pixel.x)*pixelSize, (pixel.y-1)*pixelSize, pixelSize, pixelSize*3);
