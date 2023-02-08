@@ -108,6 +108,17 @@
         }
     </script>
 
+    <script> // PWA things
+        // add service worker service-worker.js
+        if (typeof navigator !== 'undefined') {
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('/service-worker.js');
+                });
+            }
+        }
+    </script>
+
     <script>
         // If settings is in localStorage, load it. If not, create an empty object.
         settings = localStorage.getItem("settings") ? JSON.parse(localStorage.getItem("settings")) : {};
