@@ -230,27 +230,41 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 	haseuliteValueObject = {
 		light: 1,
 		radiation: 4,
-		fire: [6, "smoke"],
-		rad_fire: [10, "rad_smoke"],
-		liquid_fire: [12, ["fire","liquid_smoke","smoke"]],
-		plasma: [15, "fire"],
-		liquid_rad_fire: [20, [null,"rad_fire","rad_fire","rad_smoke","rad_smoke"]],
-		liquid_plasma: [30, ["plasma","liquid_fire","fire"]],
-		liquid_irradium: [4, null]
+		fire: {value: 6, remainder: "smoke"},
+		rad_fire: {value: 10, remainder: "rad_smoke"},
+		liquid_fire: {value: 12, remainder: ["fire","liquid_smoke","smoke"]},
+		plasma: {value: 15, remainder: "fire"},
+		liquid_rad_fire: {value: 20, remainder: [null,"rad_fire","rad_fire","rad_smoke","rad_smoke"]},
+		liquid_plasma: {value: 30, remainder: ["plasma","liquid_fire","fire"]},
+		liquid_irradium: {value: 4, remainder: 0}
 	};
 
 	jinsouliteValueObject = {
-		cloud: 1,
-		cloud_cloud: [1, "cloud"],
-		snow_cloud: 2,
-		hail_cloud: 2,
-		rain_cloud: [3, "cloud"],
-		water_cloud: [3, "cloud"],
-		steam: 4,
-		steam_cloud: [2, "steam"],
-		rain_cloud_cloud: [1, "rain_cloud"],
-		snow_cloud_cloud: [1, "snow_cloud"],
-		hail_cloud_cloud: [1, "hail_cloud"],
+		cloud: 0.5,
+		cloud_cloud: {value: 0.5, remainder: "cloud"},
+		snow_cloud: {value: 0.75},
+		hail_cloud: {value: 0.75},
+		steam: 1,
+		steam_cloud: {value: 0.5, remainder: "steam"},
+		rain_cloud_cloud: {value: 0.5, remainder: "rain_cloud"},
+		snow_cloud_cloud: {value: 0.5, remainder: "snow_cloud"},
+		hail_cloud_cloud: {value: 0.5, remainder: "hail_cloud"},
+		rain_cloud: {value: 1, remainder: "cloud"},
+		water_cloud: {value: 1, remainder: "cloud"},
+		snow: {value: 0.125},
+		soda: {value: 0.8984375, remainder: "sugar"},
+		blood: {value: 0.90625, remainder: "dna"},
+		infection: {value: 0.90625, remainder: "dna"},
+		packed_snow: {value: 0.90625},
+		slime: {value: 0.9609375, remainder: "salt"}, //:eggTF:
+		slush: {value: 0.9609375},
+		ice: {value: 0.98046875},
+		salt_water: {value: 1, remainder: "salt"}, //should be 0.965 but simplified here
+		dirty_water: {value: 1, remainder: ["ash","dust","carbon_dioxide","ash","dust","carbon_dioxide","infection"]},
+		sugar_water: {value: 1, remainder: "sugar"},
+		seltzer: {value: 1, remainder: "carbon_dioxide"},
+		pool_water: {value: 1, remainder: "chlorine"},
+		water: {value: 1, tempMin: 80},
 		water_bomb: 59,
 		water_bomb_2: 164.5,
 		water_bomb_3: 322.5,
@@ -383,19 +397,23 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 					};
 					var ValueData = valueObject[otherElement];
 					//console.log(ValueData.toString())
-					if(ValueData instanceof Array) {
-						var finalElement = ValueData[1];
+					if(typeof(ValueData) == "object") {
+						var tempMin = ValueData.tempMin ?? null;
+						if(pixel.temp < tempMin) {
+							continue;
+						};
+						var finalElement = ValueData.remainder ?? null;
 						if(finalElement instanceof Array) {
 							finalElement = finalElement[Math.floor(Math.random() * finalElement.length)];
 						};
-						if(finalElement !== null) {
-							if(finalElement === -1) {
-								deletePixel(otherPixel.x,otherPixel.y);
-							} else {
+						if(finalElement !== 0) {
+							if(finalElement !== null) {
 								changePixel(otherPixel,finalElement);
+							} else {
+								deletePixel(otherPixel.x,otherPixel.y);
 							};
 						};
-						pixel.value += ValueData[0];
+						pixel.value += ValueData.value;
 					} else if(typeof(ValueData) === "number") {
 						deletePixel(otherPixel.x,otherPixel.y);
 						pixel.value += ValueData;
@@ -579,11 +597,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		properties: {
 			oldColor: null
 		},
-		behavior: [
-			"XX|CR:fire%3|XX", //PTT
-			"M2|XX|M2",
-			"M1|M1|M1",
-		],
+		behavior: behaviors.LIQUID, //fire creation is problematic due to smoke cooling
 		tick: function(pixel) { haseulitoidTick(pixel) },
 		onExplosionBreakOrSurvive: function(pixel,x,y,radius) {
 			/*power is always radius/10
@@ -626,6 +640,50 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		temp: 3700,
 		hardness: 1,
 		conduct: 0.13,
+	};
+
+	if(enabledMods.includes("mods/metals.js")) {
+		elements.hanichrite = { //the names nickel, chrome, and haseulite do not mix
+			color: ["#dde6bc", "#ebf2ef", "#e8fab1"],
+			behavior: behaviors.WALL,
+			tempHigh: 1560,
+			category: "solids",
+			density: 8218,
+			conduct: 0.75,
+			hardness: 0.78,
+			state: "solid",
+			tick: function(pixel) {
+				if(nichromeDoNeighborCount) {
+					var neighbors = 0;
+					for(i = 0; i < adjacentCoords.length; i++) {
+						if(!isEmpty(pixel.x+adjacentCoords[i][0],pixel.y+adjacentCoords[i][1],true)) {
+							var newPixel = pixelMap[pixel.x+adjacentCoords[i][0]][pixel.y+adjacentCoords[i][1]];
+							if(elements[newPixel.element].conduct) { neighbors++ };
+						};
+					};
+				};
+				if(pixel.charge) {
+					pixel.temp -= ((1.13 + nichromeNeighborLogic(neighbors)) * pixel.charge);
+				};
+			},
+		};
+
+		elements.molten_hanichrite = {
+			tick: function(pixel) {
+				if(nichromeDoNeighborCount) {
+					var neighbors = 0;
+					for(i = 0; i < adjacentCoords.length; i++) {
+						if(!isEmpty(pixel.x+adjacentCoords[i][0],pixel.y+adjacentCoords[i][1],true)) {
+							var newPixel = pixelMap[pixel.x+adjacentCoords[i][0]][pixel.y+adjacentCoords[i][1]];
+							if(elements[newPixel.element].conduct) { neighbors++ };
+						};
+					};
+				};
+				if(pixel.charge) {
+					pixel.temp -= ((1.13 + nichromeNeighborLogic(neighbors)) * pixel.charge) * 1.09;
+				};
+			},
+		};
 	};
 
 	/*
@@ -1033,191 +1091,189 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		hardness: 1,
 		conduct: 0.19,
 	};
-
-	r_mad_X_m_s_d = urlParams.get('r_mad_X_m_s_d');
-	noaegs_dud_X_ss_d_n_s = (urlParams.get('noaegs_dud_X_ss_d_n_s') !== null);
-
-	dl_ekf_dml_th_su_ae_yu_eo_d_ch_s = {
-		"01-02": {eu_deu_yu_d_g: "Jihyo", chae_i_ae_g: "rgb(250,200,87)", h_gae_yeo_e: "Twice"},
-		"03-02": {eu_deu_yu_d_g: "Rei and Gong Yubin", chae_i_ae_g: "linear-gradient(90deg, rgba(105,195,45,1) 0%, rgba(105,195,45,1) 20%, rgba(255,227,226,1) 80%, rgba(255,227,226,1) 100%)", h_gae_yeo_e: "IVE and tripleS", h_g_m_Xya_dus: true},
-		"09-02": {eu_deu_yu_d_g: "Kim Yooyeon", chae_i_ae_g: "rgb(205,102,171)", h_gae_yeo_e: "tripleS"},
-		"21-02": {eu_deu_yu_d_g: "Leeseo", chae_i_ae_g: "rgb(255,240,1)", h_gae_yeo_e: "IVE"},
-		"10-02": {eu_deu_yu_d_g: "Kim Lip", chae_i_ae_g: "rgb(234,2,1)", h_gae_yeo_e: "Loona"},
-		"24-03": {eu_deu_yu_d_g: "Mina", chae_i_ae_g: "rgb(111,197,194)", h_gae_yeo_e: "Twice"},
-		"12-04": {eu_deu_yu_d_g: "Jeong Hyerin", chae_i_ae_g: "rgb(142,108,255)", h_gae_yeo_e: "tripleS"},
-		"23-04": {eu_deu_yu_d_g: "Chaeyoung", chae_i_ae_g: "rgb(255,23,68)", h_gae_yeo_e: "Twice"},
-		"24-05": {eu_deu_yu_d_g: "Yves", chae_i_ae_g: "rgb(125,0,30)", h_gae_yeo_e: "Loona"},
-		"28-05": {eu_deu_yu_d_g: "Dahyun", chae_i_ae_g: "rgb(255,255,255)", h_gae_yeo_e: "Twice"},
-		"04-06": {eu_deu_yu_d_g: "Choerry", chae_i_ae_g: "rgb(92,44,146)", h_gae_yeo_e: "Loona"},
-		"13-06": {eu_deu_yu_d_g: "JinSoul", chae_i_ae_g: "rgb(20,36,176)", h_gae_yeo_e: "Loona"},
-		"14-06": {eu_deu_yu_d_g: "Tzuyu", chae_i_ae_g: "rgb(2,119,189)", h_gae_yeo_e: "Twice"},
-		"06-08": {eu_deu_yu_d_g: "Yoon Seoyeon", chae_i_ae_g: "rgb(34,174,255)", h_gae_yeo_e: "tripleS"},
-		"18-08": {eu_deu_yu_d_g: "HaSeul", chae_i_ae_g: "rgb(0,166,81)", h_gae_yeo_e: "Loona"},
-		"31-08": {eu_deu_yu_d_g: "Wonyoung", chae_i_ae_g: "rgb(255,0,30)", h_gae_yeo_e: "IVE"}, //stay mad
-		"01-09": {eu_deu_yu_d_g: "Yujin", chae_i_ae_g: "rgb(255,57,154)", h_gae_yeo_e: "IVE"},
-		"22-09": {eu_deu_yu_d_g: "Nayeon", chae_i_ae_g: "rgb(129,212,250)", h_gae_yeo_e: "Twice"},
-		"24-09": {eu_deu_yu_d_g: "Gaeul", chae_i_ae_g: "rgb(0,85,168)", h_gae_yeo_e: "IVE"},
-		"03-10": {eu_deu_yu_d_g: "Kim Soomin", chae_i_ae_g: "rgb(236,138,165)", h_gae_yeo_e: "tripleS"},
-		"13-10": {eu_deu_yu_d_g: "Kim Nakyoung", chae_i_ae_g: "rgb(101,153,164)", h_gae_yeo_e: "tripleS"},
-		"19-10": {eu_deu_yu_d_g: "HeeJin", chae_i_ae_g: "rgb(255,0,146)", h_gae_yeo_e: "Loona"},
-		"20-10": {eu_deu_yu_d_g: "Chuu", chae_i_ae_g: "rgb(246,144,126)", h_gae_yeo_e: "Loona"},
-		"24-10": {eu_deu_yu_d_g: "Lee Jiwoo", chae_i_ae_g: "rgb(255,249,36)", h_gae_yeo_e: "tripleS"},
-		"01-11": {eu_deu_yu_d_g: "Jeongyeon", chae_i_ae_g: "rgb(188,215,118)", h_gae_yeo_e: "Twice"},
-		"09-11": {eu_deu_yu_d_g: "Momo", chae_i_ae_g: "rgb(248,207,215)", h_gae_yeo_e: "Twice"},
-		"11-11": {eu_deu_yu_d_g: "YeoJin", chae_i_ae_g: "rgb(244,111,31)", h_gae_yeo_e: "Loona"},
-		"13-11": {eu_deu_yu_d_g: "Olivia Hye", chae_i_ae_g: "rgb(143,143,143)", h_gae_yeo_e: "Loona"},
-		"15-11": {eu_deu_yu_d_g: "HyunJin", chae_i_ae_g: "rgb(255,204,0)", h_gae_yeo_e: "Loona"},
-		"19-11": {eu_deu_yu_d_g: "Go Won", chae_i_ae_g: "rgb(48,195,156)", h_gae_yeo_e: "Loona"},
-		"21-11": {eu_deu_yu_d_g: "Liz", chae_i_ae_g: "rgb(0,195,245)", h_gae_yeo_e: "IVE"},
-		"04-12": {eu_deu_yu_d_g: "Kim Chaeyeon", chae_i_ae_g: "rgb(141,191,65)", h_gae_yeo_e: "tripleS"},
-		"09-12": {eu_deu_yu_d_g: "ViVi", chae_i_ae_g: "rgb(255,152,180)", h_gae_yeo_e: "Loona"},
-		"20-12": {eu_deu_yu_d_g: "Kaede", chae_i_ae_g: "rgb(255,201,53)", h_gae_yeo_e: "tripleS"},
-		"29-12": {eu_deu_yu_d_g: "Sana", chae_i_ae_g: "rgb(159,168,218)", h_gae_yeo_e: "Twice"}
-	};
-
-	//just to confuse the hell out of anyone reading this (they will still quickly figure it out)
-	var r_dyu_gyeom_gyo_10_ae_p_d_g_gyang_d = false;
-
-	function h_d_s_X_myo_eu_ae_u_so() {
-		var d = r_dyu_gyeom_gyo_10_ae_p_d_g_gyang_d ? new Date(1549800000000) : new Date();
-		var eu_ae_u_so = (d.getMonth()+1).toString();
-		if(eu_ae_u_so.length == 1) { eu_ae_u_so = "0" + eu_ae_u_so };
-		var X_myo = d.getDate().toString();
-		if(X_myo.length == 1) { X_myo = "0" + X_myo };
-		var X_myo_eu_ae_u_so = X_myo + "-" + eu_ae_u_so;
-		return (r_mad_X_m_s_d === null ? X_myo_eu_ae_u_so : r_mad_X_m_s_d);
-	}
-
-	function g_d_hyan_s_d_g_ddi_deu_chi_ya_cha(u_meud) {
-		var r_mad_X_m_s_deud_n_n_m_h_d = "";
-		if(r_mad_X_m_s_d !== null) {
-			r_mad_X_m_s_deud_n_n_m_h_d += "(Fake date) ";
-		};
-		var noaegs_dud_X_ss_d_n_seud_n_n_m_h_d = "";
-		if(noaegs_dud_X_ss_d_n_s) {
-			noaegs_dud_X_ss_d_n_seud_n_n_m_h_d += "(Shortened to 2) ";
-		};
-		if($_xqXchi_ya_chad_X_ddi_deu_dus_nXqx__[u_meud] === false) {
-			$_xqXchi_ya_chad_X_ddi_deu_dus_nXqx__[u_meud] = true;
-		};
-		if(d_p_mi_yeo_m_s_d__sod__$_xqXchi_ya_chad_X_ddi_deu_dus_nXqx__()) {
-			var X_myo_eu_ae_u_so = h_d_s_X_myo_eu_ae_u_so();
-			var eu_deu_yu_d_geud_n_n_m_h_d = dl_ekf_dml_th_su_ae_yu_eo_d_ch_s[X_myo_eu_ae_u_so];
-			if(eu_deu_yu_d_geud_n_n_m_h_d == undefined) { eu_deu_yu_d_geud_n_n_m_h_d = "[No such member?]" };
-			if(typeof(eu_deu_yu_d_geud_n_n_m_h_d) === "object") {
-				eu_deu_yu_d_geud_n_n_m_h_d = eu_deu_yu_d_geud_n_n_m_h_d.eu_deu_yu_d_g;
-			};
-alert(`You have clicked on all ${Object.keys($_xqXchi_ya_chad_X_ddi_deu_dus_nXqx__).length} birthday messages spread throughout some of the elements.
-Member: ${r_mad_X_m_s_deud_n_n_m_h_d}${noaegs_dud_X_ss_d_n_seud_n_n_m_h_d}${eu_deu_yu_d_geud_n_n_m_h_d}. Stan ${dl_ekf_dml_th_su_ae_yu_eo_d_ch_s[h_d_s_X_myo_eu_ae_u_so()].h_gae_yeo_e}!`);
-		};
-	};
-
-	function d_p_mi_yeo_m_s_d__sod__$_xqXchi_ya_chad_X_ddi_deu_dus_nXqx__() {
-		var Xae_u_d = true;
-		for(di_deu_dus in $_xqXchi_ya_chad_X_ddi_deu_dus_nXqx__) {
-			Xae_u_d = Xae_u_d && $_xqXchi_ya_chad_X_ddi_deu_dus_nXqx__[di_deu_dus];
-		};
-		return Xae_u_d;
-	};
-
-	function highlightButton(element,color,blurRadius="15px",spreadRadius="5px") {
-		var button = document.getElementById(`elementButton-${element}`);
-		if(button == null) {
-			throw new Error(`Nonexistent button for ${element}`)
-		};
-		if(typeof(blurRadius) == "number") { blurRadius = blurRadius + "px" };
-		if(typeof(spreadRadius) == "number") { spreadRadius = spreadRadius + "px" };
-		document.getElementById(`elementButton-${element}`).style["-webkit-box-shadow"] = `0px 0px ${blurRadius} ${spreadRadius} ${color}`;
-		document.getElementById(`elementButton-${element}`).style["box-shadow"] = `0px 0px ${blurRadius} ${spreadRadius} ${color}`;
-	};
-
-	runAfterAutogen(function() {
-		
-		cho_mu_hya_u_h_X_d_n_chyu_i_m_cha_i_ya_n_s = ["distance_display","find_toggle","prop","number_adjuster","replace","alt_replace","alt_alt_replace","change","alt_change","alt_alt_change"]; //츄 lmao
-
-		yu_i_m_cha_i_ya_n_s = ["toxin","poison","blood","cancer","rotten_meat","frozen_rotten_meat","zombie_blood","plague","stench","infection","acid","acid_gas","rot","shit","shit_gravel","poo","dioxin","lean"];
-
-		X_myo_eu_ae_u_so = h_d_s_X_myo_eu_ae_u_so();
-		
-		var baseArray = ["heejinite","heejinite_powder","molten_heejinite","heejinite_gas","haseulite","haseulite_powder","molten_haseulite","haseulite_gas","jinsoulite","jinsoulite_powder","molten_jinsoulite","jinsoulite_gas","haseulite_vent","loona","loona_gravel","molten_loona"];
-
-
-		if(dl_ekf_dml_th_su_ae_yu_eo_d_ch_s[X_myo_eu_ae_u_so]) {
-			g_mu_Xae_eu_ddi_deu_dus_n = Object.keys(elements).filter(function(e) {
-				var cat = elements[e].category;
-				if(cat == undefined) { cat = "other" };
-				cat = cat.toLowerCase();
-				return (
-					cat !== "clouds" &&
-					cat !== "auto creepers" &&
-					cat !== "auto_bombs" &&
-					cat !== "auto_fey" &&
-					cat !== "spouts" &&
-					cat !== "singularities" &&
-					cat !== "random" &&
-					cat !== "weapons" &&
-					cat !== "idk" &&
-					cat !== "corruption" &&
-					cat !== "radioactive" &&
-					cat !== "piss" &&
-					cat !== "shit" &&
-					cat !== "vomit" &&
-					cat !== "cum" &&
-					!e.includes("head") &&
-					(!e.includes("body") || e.includes("antibody")) &&
-					!cat.includes("random") &&
-					!cat.includes("udstone") &&
-					!elements[e].nocheer &&
-					!cho_mu_hya_u_h_X_d_n_chyu_i_m_cha_i_ya_n_s.includes(e) &&
-					!yu_i_m_cha_i_ya_n_s.includes(e) &&
-					!elements[e].hidden && 
-					!baseArray.includes(e)
-				);
-			}); shuffleArray(g_mu_Xae_eu_ddi_deu_dus_n); g_mu_Xae_eu_ddi_deu_dus_n = g_mu_Xae_eu_ddi_deu_dus_n.slice(0,noaegs_dud_X_ss_d_n_s ? 2 : 12);
-
-			$_xqXchi_ya_chad_X_ddi_deu_dus_nXqx__ = {};
-			for(eo = 0; eo < g_mu_Xae_eu_ddi_deu_dus_n.length; eo++) {
-				var di_deu_u_meud = g_mu_Xae_eu_ddi_deu_dus_n[eo];
-				$_xqXchi_ya_chad_X_ddi_deu_dus_nXqx__[di_deu_u_meud] = false;
-			};
-
-			runAfterButtons(function() {
-				var di_deun = Object.keys($_xqXchi_ya_chad_X_ddi_deu_dus_nXqx__);
-				for(ya = 0; ya < di_deun.length; ya++) {
-					var u_meud = di_deun[ya];
-					var chae_i_ae_g = dl_ekf_dml_th_su_ae_yu_eo_d_ch_s[X_myo_eu_ae_u_so].chae_i_ae_g;
-					if(X_m_s_m.h_g_m_Xya_dus) {
-						chae_i_ae_g = "rgb(255,255,255)";
-					};
-					//console.log(u_meud);
-					//console.log(chae_i_ae_g);
-					highlightButton(u_meud,chae_i_ae_g,7,2);
-				};
-			});
-			
-			var ryeo_u_u_yo_ddi_deu_dus_n = ["heejinite","heejinite_powder","molten_heejinite","heejinite_gas","haseulite","haseulite_powder","molten_haseulite","haseulite_gas","jinsoulite","jinsoulite_powder","molten_jinsoulite","jinsoulite_gas","haseulite_vent","loona","loona_gravel","molten_loona"].concat(g_mu_Xae_eu_ddi_deu_dus_n);
-
-			var X_m_s_m = dl_ekf_dml_th_su_ae_yu_eo_d_ch_s[X_myo_eu_ae_u_so];
-			for(ya = 0; ya < ryeo_u_u_yo_ddi_deu_dus_n.length; ya++) {
-				var di_deu_u_meud = ryeo_u_u_yo_ddi_deu_dus_n[ya];
-				var ya_u_rae = elements[di_deu_u_meud];
-				var i_ae_ae_u_m_ssod_HTML = null;
-				if(baseArray.includes(di_deu_u_meud)) {
-					i_ae_ae_u_m_ssod_HTML = `<span style="${X_m_s_m.h_g_m_Xya_dus ? ('background: ' + X_m_s_m.chae_i_ae_g + '; background-clip: text; -webkit-background-clip: text; text-fill-color: transparent; -webkit-text-fill-color: transparent;') : ('color:' + X_m_s_m.chae_i_ae_g)}">Happy birthday, ${X_m_s_m.eu_deu_yu_d_g}!</span>`;
-				} else {
-					i_ae_ae_u_m_ssod_HTML = `<em style="${X_m_s_m.h_g_m_Xya_dus ? ('background: ' + X_m_s_m.chae_i_ae_g + '; background-clip: text; -webkit-background-clip: text; text-fill-color: transparent; -webkit-text-fill-color: transparent;') : ('color:' + X_m_s_m.chae_i_ae_g)}" onclick=g_d_hyan_s_d_g_ddi_deu_chi_ya_cha("${di_deu_u_meud}")>Happy birthday, ${X_m_s_m.eu_deu_yu_d_g}!</em>`
-				};
-				if(typeof(ya_u_rae.desc) === "undefined") {
-					ya_u_rae.desc = i_ae_ae_u_m_ssod_HTML
-				} else if(typeof(ya_u_rae.desc) === "string") {
-					ya_u_rae.desc += ("<br/>" + i_ae_ae_u_m_ssod_HTML);
-				};
-			};
-		};
-		
-	});
 	
+	//apples (used for yvesite)
 
+	appleAttachWhitelist = ["wood","tree_branch"];
+
+	elements.apple = {
+		color: ["#ad2333", "#b51616", "#d6782f", "#e3c634", "#99de31"],
+		tick: function(pixel) {
+			if(pixel.attached) { //only attaches upwards
+				if(isEmpty(pixel.x,pixel.y-1,true)) {
+					pixel.attached = false;
+				};
+			} else { //Move if not attached
+				if (!tryMove(pixel, pixel.x, pixel.y+1)) {
+					if(Math.random() < 0.3) {
+						if (Math.random() < 0.5) {
+							if (!tryMove(pixel, pixel.x+1, pixel.y+1)) {
+								tryMove(pixel, pixel.x-1, pixel.y+1);
+							};
+						} else {
+							if (!tryMove(pixel, pixel.x-1, pixel.y+1)) {
+								tryMove(pixel, pixel.x+1, pixel.y+1);
+							};
+						};
+					};
+				};
+			};
+			doDefaults(pixel);
+			var shouldSpoil = true; //spoil by default
+			if(pixel.attached) { //if it's attached
+				if(!isEmpty(pixel.x,pixel.y-1,true)) { //if the attachment coords are a pixel and not OOB
+					var attachPixel = pixelMap[pixel.x][pixel.y-1];
+					var attachElement = attachPixel.element;
+					if(appleAttachWhitelist.includes(attachElement)) {//if the element is a whitelisted "don't spoil" element
+						shouldSpoil = false; //then don't spoil
+					};
+				};
+			};
+			if(shouldSpoil) { //spoil if not attached
+				if(pixel.temp > -18 && pixel.temp <= 4) { //(no spoiling below -18C)
+					pixel.spoilage += Math.max(Math.min(scale(pixel.temp,-18,4,0,9),9),0)
+				} else if(pixel.temp > 4) {
+					pixel.spoilage += Math.max(Math.min(scale(pixel.temp,4,20,9,30),40),0)
+				};
+			};
+			if(pixel.spoilage > 14400) { //3600 = 120 ticks at 20C
+				if(Math.random() < 0.05) {
+					changePixel(pixel,"rotten_apple");
+				};
+			};
+		},
+		properties: {
+			"spoilage": 0,
+			"attached": false,
+		},
+		burn: 5,
+		burnInto: ["steam", "ash"],
+		burnTime: 600,
+		tempHigh: 200,
+		stateHigh: ["steam", "ash"],
+		onTryMoveInto: function(pixel,otherPixel) {
+			var otherInfo = elements[otherPixel.element]
+			if(typeof(otherInfo.state) === "string" && otherInfo.state !== "gas") {
+				pixel.attached = false;
+			};
+		},
+	};
+
+	elements.rotten_apple = {
+		hidden: true,
+		color: ["#802e24", "#9c4227", "#a34b26"],
+		behavior: [
+			"XX|CR:stench,fly%0.1|XX",
+			"M2%0.5|CH:dirty_water,fly,fly%0.007|M2%0.5",
+			"M2|M1|M2"
+		],
+		stain: 0.01,
+		burn: 5,
+		burnInto: ["steam", "ash"],
+		burnTime: 600,
+		tempHigh: 200,
+		stateHigh: ["steam", "ash"],
+	};
+
+	//Yvesite
+
+	var yvesiteAppleSpots = [[-1, 1], [0, 1], [1, 1]];
+	var yvesitePowderAppleSpots = [[-1, 0], [0, -1], [1, 0]];
+
+	function yvesiteApples(pixel,offsets) {
+		if(pixel.charge) {
+			var probAdd = Math.min(0,Math.max(pixel.temp,100)) / 2500;
+			if(Math.random() < (0.02 + probAdd)) {
+				var appleOffset = randomArrayChoice(offsets);
+				if(tryCreatePixel("apple",pixel.x+appleOffset[0],pixel.y+appleOffset[1])) {
+					var apple = pixelMap[pixel.x+appleOffset[0]][pixel.y+appleOffset[1]];
+					apple.color = pixelColorPick(apple,"#c40e2c");
+					apple.spoilage = -Infinity;
+					return true;
+				} else {
+					return null;
+				};
+			};
+		};
+		return false;
+	};
+
+	elements.yvesite = {
+		color: ["#850f2c", "#9c0e3d", "#911f3b", "#701625"],
+		fireColor: ["#b5103f", "#ab3254", "#cc2157", "#ba0936"],
+		behavior: behaviors.WALL,
+		tick: function(pixel) {
+			yvesiteApples(pixel,yvesiteAppleSpots);
+		},
+		reactions: {
+			heejinite: {temp1: 1, temp2: 1},
+			molten_heejinite: {temp1: 2, temp2: 2},
+			heejinite_powder: {temp1: 2, temp2: 2},
+			heejinite_gas: {temp1: 3, temp2: 3},
+		},
+		tempHigh: 1545,
+		category: "solids",
+		state: "solid",
+		density: 3601,
+		hardness: 0.88,
+		breakInto: "yvesite_powder",
+		conduct: 0.94,
+	};
+
+	elements.yvesite_powder = {
+		color: ["#8f1734", "#962638", "#b32749", "#911a3e"],
+		fireColor: ["#b5103f", "#ab3254", "#cc2157", "#ba0936"],
+		behavior: behaviors.POWDER,
+		tick: function(pixel) {
+			yvesiteApples(pixel,yvesitePowderAppleSpots);
+		},
+		reactions: {
+			heejinite: {temp1: 2, temp2: 2},
+			molten_heejinite: {temp1: 3, temp2: 3},
+			heejinite_powder: {temp1: 3, temp2: 3},
+			heejinite_gas: {temp1: 4, temp2: 4},
+		},
+		tempHigh: 1545,
+		stateHigh: "molten_yvesite",
+		category: "solids",
+		state: "solid",
+		density: 1500,
+		hardness: 0.43,
+		breakInto: "yvesite_powder",
+		conduct: 0.84,
+	};
+	
+	elements.molten_yvesite = {
+		color: ["#e81554", "#c90842", "#db4d70", "#cf2b54"],
+		fireColor: ["#b5103f", "#ab3254", "#cc2157", "#ba0936"],
+		behavior: behaviors.MOLTEN,
+		density: 3608,
+		state: "liquid",
+		hardness: 0.57,
+		breakInto: "yvesite_gas",
+		temp: 1545,
+		tempHigh: 3145,
+		stateHigh: "yvesite_gas",
+		tempLow: 1545,
+		stateLow: "yvesite",
+		conduct: 0.22,
+	};
+
+	elements.yvesite_gas = {
+		color: ["#e34070", "#d13060", "#c2234a", "#db4866"],
+		fireColor: ["#b5103f", "#ab3254", "#cc2157", "#ba0936"],
+		behavior: behaviors.GAS,
+		state: "gas",
+		tempLow: 3145,
+		stateLow: "molten_yvesite",
+		density: 8.16,
+		temp: 3300,
+		hardness: 1,
+		conduct: 0.11,
+	};
+
+	elements.fly.reactions.rotten_apple = { "elem2":null, chance:0.15, func:behaviors.FEEDPIXEL };
+	
 	runAfterLoad(function() {
 		for(key in elements.water.reactions) {
 			var value = JSON.parse(JSON.stringify(elements.water.reactions[key]));

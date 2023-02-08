@@ -429,7 +429,7 @@ if(enabledMods.includes(libraryMod)) {
 	//do cooldown for mouse size > 1
 	
 } else {
-	alert(`The ${libraryMod} mod is required and has been automatically inserted (reload for this to take effect).`)
 	enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod)
+	alert(`The ${libraryMod} mod is required and has been automatically inserted (reload for this to take effect).`)
 	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
 };

@@ -128,6 +128,32 @@
 		return typeof(elements[elementName]) === "object";
 	};
 
+	//Has a given state
+	function isState(elementName,inputState) {
+		if(!elementExists(elementName)) {
+			throw new Error(`Element ${elementName} doesn't exist`);
+		};
+
+		var infoState = elements[elementName].state;
+
+		if(infoState == undefined) { infoState = "undefined" };
+
+		if(inputState == undefined) { inputState = "undefined" };
+		if(inputState instanceof Array) {
+			var limit = 0;
+			while(inputState.includes(undefined) && limit < 3) {
+				inputState[inputState.indexOf(undefined)] = "undefined"
+				limit++;
+			};
+		};
+
+		if(inputState instanceof Array) {
+			return inputState.includes(infoState);
+		};
+
+		return infoState == inputState;
+	};
+
 	//Check if pixel of given element exists at given location
 	function hasPixel(x,y,elementInput) {
 		if(isEmpty(x,y,true)) { //if empty, it can't have a pixel
@@ -566,8 +592,10 @@
 		return convertColorFormats(color,"rgb");
 	};
 
-	function averageColorObjects(color1,color2,weight1=0.5) { /*third argument is for color1 and expects a float from 0
-																  to 1, where 0 means "all color2" and 1 means "all color1"*/
+	
+	function averageColorObjects(color1,color2,weight1=0.5) { //misnomer, actually a linear interpolation but it's too late to rename that
+		//third argument is for color1 and expects a float from 0 to 1, where 0 means "all color2" and 1 means "all color1"
+		//(backwards from how it should work)
 		var w1 = Math.min(Math.max(weight1,0),1)
 		var red1 = color1.r
 		var green1 = color1.g
@@ -579,6 +607,13 @@
 		var green3 = (green1 * w1) + (green2 * (1 - w1))
 		var blue3 = (blue1 * w1) + (blue2 * (1 - w1))
 		return {r: red3, g: green3, b: blue3}
+	};
+
+	function lerpColors(color1,color2,outputType="rgb",weight1=0.5) {
+		color1 = convertColorFormats(color1,"json");
+		color2 = convertColorFormats(color2,"json");
+		theColor = averageColorObjects(color1,color2,weight1);
+		return convertColorFormats(theColor,outputType);
 	};
 
 	function multiplyColors(color1,color2,outputType="rgb") {
@@ -1012,9 +1047,10 @@
 		return convertHslObjects(color,outputType);
 	};
 
-	function colorToHsl(color,outputType) {
+	function colorToHsl(color,outputType="rgb") {
 		color = convertColorFormats(color,"rgb");
-		color = rgbStringToHSL("color",)
+		color = rgbStringToHSL(color,outputType);
+		return color;
 	};
 
 	//https://stackoverflow.com/questions/36721830/convert-hsl-to-rgb-and-hex
@@ -1227,6 +1263,16 @@
 				createPixel(element,coordX,coordY);
 			};
 		};
+	};
+
+	function isOpenAndOnSurface(x,y,includeBottomBound=true) {
+		if(!isEmpty(x,y,false)) {
+			return false;
+		};
+		if(y + 1 == height) {
+			return includeBottomBound;
+		};
+		return !isEmpty(x,y+1,true);
 	};
 
 //Logic

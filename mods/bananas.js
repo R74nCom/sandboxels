@@ -336,7 +336,7 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 			};
 
 			if(pixel.attached) {
-				var attachCoords = [pixel.x + pixel.attachOffsets[0], pixel.y + pixel.attachOffset[1]];
+				var attachCoords = [pixel.x + pixel.attachOffsets[0], pixel.y + pixel.attachOffsets[1]];
 				if(isEmpty(attachCoords[0],attachCoords[1],false)) { //consider OOB full
 					pixel.attached = false;
 				};
@@ -361,7 +361,7 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 		},
 		properties: {
 			"attached": false,
-			"attachOffset": [(!Math.floor(Math.random() * 2)) ? 1 : -1, 0],
+			"attachOffsets": [(!Math.floor(Math.random() * 2)) ? 1 : -1, 0],
 			"bananaRange": null,
 		},
 		burn: 5,
@@ -468,7 +468,7 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 						if (isEmpty(leafX,leafY,false)) {
 							createPixel("banana_leaf",leafX,leafY);
 							pixelMap[leafX][leafY].attached = true; //set leaf's attached to true
-							pixelMap[leafX][leafY].attachOffset = leafAttachOffset; //array of 2 numbers
+							pixelMap[leafX][leafY].attachOffsets = leafAttachOffset; //array of 2 numbers
 							pixelMap[leafX][leafY].bananaRange = pixel.bananaRange;
 							pixel.grewLeftLeaves = true; //difference 2: separate flag for left side
 						} else {
@@ -499,7 +499,7 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 						if (isEmpty(leafX,leafY,false)) {
 							createPixel("banana_leaf",leafX,leafY);
 							pixelMap[leafX][leafY].attached = true; //set leaf's attached to true
-							pixelMap[leafX][leafY].attachOffset = leafAttachOffset; //array of 2 numbers
+							pixelMap[leafX][leafY].attachOffsets = leafAttachOffset; //array of 2 numbers
 							pixelMap[leafX][leafY].bananaRange = pixel.bananaRange;
 							pixel.grewRightLeaves = true; //difference 2: separate flag for right side
 						} else {
