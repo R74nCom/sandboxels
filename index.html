@@ -117,12 +117,6 @@
                 });
             }
         }
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            //showInAppInstallPromotion();
-        });
     </script>
 
     <script>
@@ -11084,9 +11078,13 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span> <select onchange="setSetting(
 </div>
 
 <script>
-    if (deferredPrompt) {
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
         document.getElementById("install-button").style.display = "inline-block";
-    }
+        //showInAppInstallPromotion();
+    });
 </script>
 
 <!-- i like having this but ublock blocks these things anyway -->
