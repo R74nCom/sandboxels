@@ -1,9 +1,9 @@
 doLog = true;
 oldChangePixel = changePixel;
-function changePixel(pixel,element,changetemp=true) {
-	if(!elements[element]) {
+changePixel = function(pixel,element,changetemp=true) {
+	if(typeof(elements[element]) == "undefined") {
 		if(doLog) { console.error(`Something tried to change a pixel (${pixel.x},${pixel.y}) to nonexistent element "${element}"`) };
+		return false;
 	};
-	return false;
-	changePixel(pixel,element,changetemp);
+	oldChangePixel(pixel,element,changetemp);
 };
