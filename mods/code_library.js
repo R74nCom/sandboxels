@@ -192,13 +192,11 @@
 		} else {
 			var category = info.category;
 		};
-		if(shallowBlacklist !== null) {
-			if(shallowBlacklist.includes(name)) {
-				return false;
-			};
-		};
 		if(shallowBlacklist !== null && shallowBlacklist.includes(name)) {
-			return false
+			return false;
+		};
+		if(elements[name].tool) {
+			return false;
 		};
 		if(elements[name].behavior && elements[name].behavior.toString() == elements.wall.behavior.toString() && !elements[name].tick) {
 			return false;
@@ -208,6 +206,10 @@
 		};
 		if(info.movable) {
 			return true;
+		};
+		if(elements[name].behavior instanceof Array) {
+			var behaviorString = elements[name].behavior.toString();
+			return behaviorString.includes("M1") || behaviorString.includes("M2");
 		};
 		if(backupCategoryWhitelist.includes(category)) {
 			return true;
