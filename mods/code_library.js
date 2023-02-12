@@ -172,6 +172,55 @@
 		};		
 	};
 
+	//Is movable
+	var backupCategoryWhitelist = ["land","powders","weapons","food","life","corruption","states","fey","Fantastic Creatures","dyes","energy liquids","random liquids","random gases","random rocks"];
+	var backupElementWhitelist = ["mercury", "chalcopyrite_ore", "chalcopyrite_dust", "copper_concentrate", "fluxed_copper_concentrate", "unignited_pyrestone", "ignited_pyrestone", "everfire_dust", "extinguished_everfire_dust", "mistake", "polusium_oxide", "vaporized_polusium_oxide", "glowstone_dust", "redstone_dust", "soul_mud", "wet_soul_sand", "nitrogen_snow", "fusion_catalyst", "coal", "coal_coke", "blast_furnace_fuel", "molten_mythril"];
+
+	function commonMovableCriteria(name,shallowBlacklist=null) {
+		if(typeof(elements[name]) !== "object") {
+			throw new Error(`Nonexistent element ${name}`);
+		};
+		var info = elements[name];
+		//console.log(`${name} (${JSON.stringify(elements[name])})`);
+		if(typeof(info.state) === "undefined") {
+			var state = null;
+		} else {
+			var state = info.state;
+		};
+		if(typeof(info.category) === "undefined") {
+			var category = "other";
+		} else {
+			var category = info.category;
+		};
+		if(shallowBlacklist !== null) {
+			if(shallowBlacklist.includes(name)) {
+				return false;
+			};
+		};
+		if(shallowBlacklist !== null && shallowBlacklist.includes(name)) {
+			return false
+		};
+		if(elements[name].behavior && elements[name].behavior.toString() == elements.wall.behavior.toString() && !elements[name].tick) {
+			return false;
+		};
+		if(["liquid","gas"].includes(state)) {
+			return true;
+		};
+		if(info.movable) {
+			return true;
+		};
+		if(backupCategoryWhitelist.includes(category)) {
+			return true;
+		};
+		if(backupElementWhitelist.includes(name)) {
+			return true;
+		};
+		if(category.includes("mudstone")) {
+			return true;
+		};
+		return false;
+	};
+
 //Math(s)
 
 	//Distance between points
