@@ -5,11 +5,11 @@ function zeroToNull(val) {
 	return val;
 };
 
-if(!localStorage.saveSettings) {
-	localStorage.setItem("saveSettings", '{"shortenNulls":false,"roundTemps":true}');
+if(!localStorage.slSaveSettings) {
+	localStorage.setItem("slSaveSettings", '{"shortenNulls":false,"roundTemps":true}');
 };
 
-saveSettings = JSON.parse(localStorage.saveSettings);
+slSaveSettings = JSON.parse(localStorage.slSaveSettings);
 
 function epsilonRound(num,precision) {
 	return Math.round((num + Number.EPSILON) * (10 ** precision)) / (10 ** precision);
@@ -26,7 +26,7 @@ function getSimulationState() {
 		version: 1,
 		enabledMods: localStorage.enabledMods,
 	};
-	nulls: if(saveSettings.shortenNulls) {
+	nulls: if(slSaveSettings.shortenNulls) {
 		if(!structuredClone) {
 			alert("Your browser does not support structuredClone, which is needed to shorten nulls to zeroes without corrupting the current pixelMap.");
 			console.error("shortenNulls: structuredClone not supported");
@@ -41,7 +41,7 @@ function getSimulationState() {
 			};
 		};
 	};
-	if(saveSettings.roundTemps) {
+	if(slSaveSettings.roundTemps) {
 		for(i = 0; i < simulationState.pixelMap.length; i++) {
 			var column = simulationState.pixelMap[i];
 			for(j = 0; j < column.length; j++) {
