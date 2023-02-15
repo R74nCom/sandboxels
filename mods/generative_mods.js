@@ -120,10 +120,9 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 		//Clouds
 
 			eLists.CLOUD = ["cloud", "rain_cloud", "snow_cloud", "fire_cloud", "hail_cloud", "acid_cloud", "pyrocumulus"];
-			var excludedCloudElements = ["snow", "fire", "hail", "acid"];
 			var includedClouds = ["cloud", "rain_cloud", "snow_cloud", "fire_cloud", "hail_cloud", "acid_cloud", "pyrocumulus"];
-			var backupCategoryWhitelist = ["land","powders","weapons","food","life","corruption","states","fey","Fantastic Creatures","dyes","energy liquids","random liquids","random gases","random rocks"];
-			var backupElementWhitelist = ["mercury", "chalcopyrite_ore", "chalcopyrite_dust", "copper_concentrate", "fluxed_copper_concentrate", "unignited_pyrestone", "ignited_pyrestone", "everfire_dust", "extinguished_everfire_dust", "mistake", "polusium_oxide", "vaporized_polusium_oxide", "glowstone_dust", "redstone_dust", "soul_mud", "wet_soul_sand", "nitrogen_snow", "fusion_catalyst", "coal", "coal_coke", "blast_furnace_fuel", "molten_mythril"];
+			var excludedCloudElements = ["snow", "fire", "hail", "acid"];
+			if(typeof(behaviorGenerators) === "undefined") { behaviorGenerators = {} };
 
 		//Creepers
 
@@ -185,6 +184,107 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 				//console.log(`Radius: ${radius}\nPower: ${power}\nPixel: (${pixel.x},${pixel.y})\nDamage: ${damage}`);
 				//console.log(`Expected temperature increase for pixel at (${pixel.x},${pixel.y}): ${800 * ((1 + (7 * damage)) ** 2) * ((power ** 2) * 1.5)}`);
 				pixel.temp += (800 * ((1 + (7 * damage)) ** 2) * ((power ** 2) * 1.5));
+			};
+
+		//Clouds
+
+			behaviorGenerators.cloud = function(element) {
+				if(element instanceof Array) { element = element.join(",") };
+				return [
+					["XX","XX","XX"],
+					["XX",`CH:${element}%0.05`,"M1%2.5 AND BO"],
+					["XX","XX","XX"]
+				];
+			};
+
+			behaviorGenerators.heavy_cloud = function(element) {
+				if(element instanceof Array) { element = element.join(",") };
+				return [
+					["XX","XX","XX"],
+					["XX",`CH:${element}%0.1`,"M1%2.5 AND BO"],
+					["XX",`CR:${element}%0.05`,"XX"]
+				];
+			};
+
+			behaviorGenerators.heavier_cloud = function(element) {
+				if(element instanceof Array) { element = element.join(",") };
+				return [
+					["XX","XX","XX"],
+					["XX",`CH:${element}%0.2`,"M1%2.5 AND BO"],
+					["XX",`CR:${element}%0.1`,"XX"]
+				];
+			};
+
+			behaviorGenerators.heaviest_cloud = function(element) {
+				if(element instanceof Array) { element = element.join(",") };
+				return [
+					["XX","XX","XX"],
+					["XX",`CH:${element}%0.4`,"M1%2.5 AND BO"],
+					["XX",`CR:${element}%0.2`,"XX"]
+				];
+			};
+
+			behaviorGenerators.heaviester_cloud = function(element) {
+				if(element instanceof Array) { element = element.join(",") };
+				return [
+					["XX","XX","XX"],
+					["XX",`CH:${element}%0.8`,"M1%2.5 AND BO"],
+					["XX",`CR:${element}%0.4`,"XX"]
+				];
+			};
+
+			behaviorGenerators.heaviestest_cloud = function(element) {
+				if(element instanceof Array) { element = element.join(",") };
+				return [
+					["XX",`CR:${element}%0.8`,"XX"],
+					[`CR:${element}%0.05`,`CH:${element}%3`,`CR:${element}%0.05 AND M1%2.5 AND BO`],
+					["XX",`CR:${element}%0.8`,"XX"]
+				];
+			};
+
+			function placeDownwardColumn(element,xx,yy,creationChance) {
+				if(element.includes(",")) { element = element.split(",") };
+				var newElement = element;
+				//console.log(JSON.stringify(element));
+				//console.log("from " + xx + "," + yy)
+				if(!outOfBounds(xx,yy)) {
+					for(i = yy; i < pixelMap[xx].length; i++) {
+						if(Array.isArray(element)) {
+							newElement = element[Math.floor(Math.random() * element.length)];
+						};
+						//console.log(JSON.stringify(newElement));
+						if(isEmpty(xx,i,false)) {
+							if(Math.random() < creationChance) {
+								createPixel(newElement,xx,i)
+							}
+						} else if(!isEmpty(xx,i,true)) {
+							var newPixel = pixelMap[xx][i];
+							var otherElement = newPixel.element;
+							var newState = elements[otherElement].state ?? "solid"; //assume undefined = solid
+							if(newState !== "solid") {
+								continue;
+							} else {
+								break;
+							};
+						} else if(outOfBounds(xx,i)) {
+							break;
+						}; 
+					};
+				};
+			};
+
+			function singleColumn(pixel,element,chance,fillAmountDecimal) {
+				if(Math.random() < chance) {
+					placeDownwardColumn(element,pixel.x,pixel.y+1,fillAmountDecimal);
+				}
+			};
+
+			function multiColumn(pixel,element,chance,fillAmountDecimal,columnRadius) {
+				if(Math.random() < chance) {
+					for(j = 0 - columnRadius; j <= columnRadius; j++) {
+						placeDownwardColumn(element,pixel.x+j,pixel.y+1,fillAmountDecimal);
+					};
+				}
 			};
 
 		//Creepers
@@ -1293,164 +1393,209 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 
 		//Clouds
 
-			function generateCloud(cloudElements,isAfterScriptLoading=false) {//it can be a single element, though
+		//Clouds
+
+			function generateCloud(cloudElements,cloudType=0,isAfterScriptLoading=false) {//it can be a single element, though
 				//To specify an array cloud, have the array be inside another array.
 				/*For reasons related to how element colors are loaded, if this function is being run from a JS mod file, isAfterScriptLoading should be false.
 				Otherwise, you'll get TypeErrors for some reason when trying to place your cloud.  If this is being run after the game has loaded (e.g. in the console),
 				then isAfterScriptLoading should be true or you might also get TypeErrors (this latter case was a bit inconsistent when I tested it, but 
 				the former case wasn't. **isAfterScriptLoading must be false when this function is run from a JS mod file**.*/
-				if(typeof(cloudElements) === "string") { //it should be an array, so string check
-					//console.log("String detected");
-					if(cloudElements.includes(",")) { //comma-separated string?
-						//console.log("Splitting string to array");
-						cloudElements = cloudElements.split(","); //,SS to array
-					} else {
-						//console.log("Wrapping string in array");
-						cloudElements = [cloudElements]; //single string to array 
-					};
-				};
-				var returns = [];
-				for(aaf = 0; aaf < cloudElements.length; aaf++) {
-					var elementOfCloud = cloudElements[aaf];
-					var startColor;
-					var randomExcl = 0;
-					//console.log("randomExcl set")
-					//console.log(elementOfCloud);
-
-					var cloudName;
-
-					if(typeof(elementOfCloud === "string")) { //comma separated string check
-						if(elementOfCloud.includes(",")) { //if it is
-							elementOfCloud = elementOfCloud.split(","); //to array
-							elementOfCloud = elementOfCloud.filter(function(e) { //strip nonexistent elements
-								return typeof(elements[e]) === "object";
-							});
+				if(cloudType !== "*") {
+					if(typeof(cloudElements) === "string") { //it should be an array, so string check
+						//console.log("String detected");
+						if(cloudElements.includes(",")) { //comma-separated string?
+							//console.log("Splitting string to array");
+							cloudElements = cloudElements.split(","); //,SS to array
+						} else {
+							//console.log("Wrapping string in array");
+							cloudElements = [cloudElements]; //single string to array 
 						};
 					};
-					if(Array.isArray(elementOfCloud)) {
-						cloudName = `${elementOfCloud.join("_")}_cloud`; //auto placer element name
-						
-						//array case color concatenator and excludeRandom handler
-						startColor = [];
+					var returns = [];
+					for(aaf = 0; aaf < cloudElements.length; aaf++) {
+						var elementOfCloud = cloudElements[aaf];
+						var startColor;
+						var randomExcl = 0;
+						//console.log("randomExcl set")
 						//console.log(elementOfCloud);
-						for(ll = 0; ll < elementOfCloud.length; ll++) {
-							if(typeof(elements[elementOfCloud[ll]].excludeRandom !== "undefined")) { //if excludeRandom exists (prevent TypeError)
-								if(elements[elementOfCloud[ll]].excludeRandom) { //it it's true
-									randomExcl = 1; //the whole array cloud is excluded
-									//console.log("array nyet" + elementOfCloud);
+
+						var cloudName, cloudPrefix, cloudBehavior;
+
+						switch(cloudType) {
+							case 0:
+								cloudPrefix = "";
+								cloudBehavior = behaviorGenerators.cloud(elementOfCloud);
+								break;
+							case 1:
+								cloudPrefix = "heavy_";
+								cloudBehavior = behaviorGenerators.heavy_cloud(elementOfCloud);
+								break;
+							case 2:
+								cloudPrefix = "heavier_";
+								cloudBehavior = behaviorGenerators.heavier_cloud(elementOfCloud);
+								break;
+							case 3:
+								cloudPrefix = "heaviest_";
+								cloudBehavior = behaviorGenerators.heaviest_cloud(elementOfCloud);
+								break;
+							case 4:
+								cloudPrefix = "heaviester_";
+								cloudBehavior = behaviorGenerators.heaviester_cloud(elementOfCloud);
+								break;
+							case 5:
+								cloudPrefix = "heaviestest_";
+								cloudBehavior = behaviorGenerators.heaviestest_cloud(elementOfCloud);
+								break;
+							default:
+								throw new RangeError("Cloud type must be between 0 and 5");
+						};
+
+						if(typeof(elementOfCloud === "string")) { //comma separated string check
+							if(elementOfCloud.includes(",")) { //if it is
+								elementOfCloud = elementOfCloud.split(","); //to array
+								elementOfCloud = elementOfCloud.filter(function(e) { //strip nonexistent elements
+									return typeof(elements[e]) === "object";
+								});
+							};
+						};
+						if(Array.isArray(elementOfCloud)) {
+							cloudName = `${elementOfCloud.join("_")}_cloud`; //auto placer element name
+							
+							//array case color concatenator and excludeRandom handler
+							startColor = [];
+							//console.log(elementOfCloud);
+							for(ll = 0; ll < elementOfCloud.length; ll++) {
+								if(typeof(elements[elementOfCloud[ll]].excludeRandom !== "undefined")) { //if excludeRandom exists (prevent TypeError)
+									if(elements[elementOfCloud[ll]].excludeRandom) { //it it's true
+										randomExcl = 1; //the whole array cloud is excluded
+										//console.log("array nyet" + elementOfCloud);
+									};
+								};
+								//console.log(elementOfCloud[ll]);
+								startColor = startColor.concat(elements[elementOfCloud[ll]].color);
+							};
+						} else { //they should all be strings, so here
+							cloudName = `${elementOfCloud}_cloud`; //auto placer element name
+							startColor = elements[elementOfCloud].color;
+							if(typeof(elements[elementOfCloud].excludeRandom !== "undefined")) { //if excludeRandom exists (prevent TypeError)
+								if(elements[elementOfCloud].excludeRandom) { //it it's true
+									//console.log("nyet " + elementOfCloud);
+									randomExcl = 1; //the cloud is excluded
+								} else {
+									//console.log("allow " + elementOfCloud);
+									randomExcl = 0;
 								};
 							};
-							//console.log(elementOfCloud[ll]);
-							startColor = startColor.concat(elements[elementOfCloud[ll]].color);
 						};
-					} else { //they should all be strings, so here
-						cloudName = `${elementOfCloud}_cloud`; //auto placer element name
-						startColor = elements[elementOfCloud].color;
-						if(typeof(elements[elementOfCloud].excludeRandom !== "undefined")) { //if excludeRandom exists (prevent TypeError)
-							if(elements[elementOfCloud].excludeRandom) { //it it's true
-								//console.log("nyet " + elementOfCloud);
-								randomExcl = 1; //the cloud is excluded
-							} else {
-								//console.log("allow " + elementOfCloud);
-								randomExcl = 0;
+							//Color gen
+						if(Array.isArray(startColor)) { //Average arrays, make colors rgb()
+							startColor = averageRgbPrefixedColorArray(startColor);
+						} else {
+							startColor = rgbHexCatcher(startColor);
+						};
+						
+						startColor = changeLuminance(
+							changeSaturation(
+								startColor,
+								(0.4 + (cloudType/10)),
+								"multiply",
+								"hsl_json"
+							),
+							(0.6 - (cloudType/10)),
+							"multiply",
+							"rgb"
+						);
+						
+						var newColorObject = rgbStringToObject(startColor);
+						
+							//End color gen
+						
+														//The cloud
+						
+						//console.log(elementOfCloud);
+						var firstInfo, firstTemp;
+						if(Array.isArray(elementOfCloud)) {
+							firstInfo = elements[elementOfCloud[0]];
+							firstTemp = airTemp;
+							if(typeof(firstInfo.temp) !== "undefined") {
+								firstTemp = firstInfo.temp;
+							};
+						} else {
+							firstInfo = elements[elementOfCloud];
+							firstTemp = airTemp;
+							if(typeof(firstInfo.temp) !== "undefined") {
+								firstTemp = firstInfo.temp;
 							};
 						};
-					};
-						//Color gen
-					if(Array.isArray(startColor)) { //Average arrays, make colors rgb()
-						startColor = averageRgbPrefixedColorArray(startColor);
-					} else {
-						startColor = rgbHexCatcher(startColor);
-					};
-					
-					startColor = changeLuminance(changeSaturation(startColor,0.5,"multiply","hsl_json"),0.5,"multiply","rgb");
-					
-					var newColorObject = rgbStringToObject(startColor);
-					
-						//End color gen
-					
-													//The cloud
-					
-					//console.log(elementOfCloud);
-					var firstInfo, firstTemp;
-					if(Array.isArray(elementOfCloud)) {
-						firstInfo = elements[elementOfCloud[0]];
-						firstTemp = airTemp;
-						if(typeof(firstInfo.temp) !== "undefined") {
-							firstTemp = firstInfo.temp;
+						
+						elementOfCloud = tryJoin(elementOfCloud,",");
+						
+						//console.log(elementOfCloud);
+						
+						cloudName = cloudPrefix + cloudName;
+						
+						if(elementExists(cloudName)) {
+							cloudName = "auto_" + cloudName;
 						};
-					} else {
-						firstInfo = elements[elementOfCloud];
-						firstTemp = airTemp;
-						if(typeof(firstInfo.temp) !== "undefined") {
-							firstTemp = firstInfo.temp;
-						};
-					};
-					
-					elementOfCloud = tryJoin(elementOfCloud,",");
-					
-					//console.log(elementOfCloud);
-					
-					if(!elementExists(cloudName)) {
+						
 						elements[cloudName] = {
 							color: startColor,
+							cloudType: elementOfCloud,
 							insulate: true,
 							colorObject: newColorObject,
-							behavior: [
-								["XX","XX","XX"],
-								["XX",`CH:${elementOfCloud}%0.05`,"M1%2.5 AND BO"],
-								["XX","XX","XX"]
-							],
+							behavior: cloudBehavior,
 							category: "clouds",
 							temp: firstTemp,
 							state: "gas",
-							density: 0.6,
+							density: 0.6 * (2**cloudType),
 							ignoreAir: true,
-							conduct: 0.01,
+							conduct: 0.01 * (2**cloudType),
 						};
-					} else {
-						elements[`auto_${cloudName}`] = {
-							color: startColor,
-							insulate: true,
-							colorObject: newColorObject,
-							behavior: [
-								["XX","XX","XX"],
-								["XX",`CH:${elementOfCloud}%0.05`,"M1%2.5 AND BO"],
-								["XX","XX","XX"]
-							],
-							category: "clouds",
-							temp: firstTemp,
-							state: "gas",
-							density: 0.6,
-							ignoreAir: true,
-							conduct: 0.01,
+						
+						if(cloudType === 4) { //column tick for heaviester clouds
+							elements[cloudName].tick = function(pixel) {
+								singleColumn(pixel,elements[pixel.element].cloudType,0.01,0.3);
+							};
 						};
-					};
 
-					eLists.CLOUD.push(cloudName);
+						if(cloudType === 5) { //three-column tick for heaviestest clouds
+							elements[cloudName].tick = function(pixel) {
+								multiColumn(pixel,elements[pixel.element].cloudType,0.02,0.4,1);
+							};
+						};
 
-					if(!randomExcl) {
-						if(typeof(cloudChoices) === "undefined") {
-							cloudChoices = []
+						eLists.CLOUD.push(cloudName);
+
+						if(!randomExcl) {
+							if(typeof(cloudChoices) === "undefined") {
+								cloudChoices = []
+							};
+							if(!cloudChoices.includes(cloudName)) {
+								cloudChoices.push(cloudName);
+							};
+						}
+						if(cloudIncludeRandom) {
+							randomExcl ? elements[cloudName].excludeRandom = true : elements[cloudName].excludeRandom = false;
+						} else {
+							elements[cloudName].excludeRandom = true;
 						};
-						if(!cloudChoices.includes(cloudName)) {
-							cloudChoices.push(cloudName);
+						if(isAfterScriptLoading) {
+							elementCount++; //increment for new cloud element
+							createElementButton(cloudName);
+							elements[cloudName].id = nextid++;
+							document.getElementById("extraInfo").innerHTML = "<small><p>There are " + elementCount + " elements, including " + hiddenCount + " hidden ones.</p><p>©2021-" + new Date().getFullYear() + ". All Rights Reserved. <a href='https://r74n.com'>R74n</a></p></small>"; //update extra info counts (and the copyright year, due to the method used)
 						};
-					}
-					if(cloudIncludeRandom) {
-						randomExcl ? elements[cloudName].excludeRandom = true : elements[cloudName].excludeRandom = false;
-					} else {
-						elements[cloudName].excludeRandom = true;
+						returns.push(cloudName);
 					};
-					if(isAfterScriptLoading) {
-						elementCount++; //increment for new cloud element
-						createElementButton(cloudName);
-						elements[cloudName].id = nextid++;
-						document.getElementById("extraInfo").innerHTML = "<small><p>There are " + elementCount + " elements, including " + hiddenCount + " hidden ones.</p><p>©2021-" + new Date().getFullYear() + ". All Rights Reserved. <a href='https://r74n.com'>R74n</a></p></small>"; //update extra info counts (and the copyright year, due to the method used)
+					return returns;
+				} else if(cloudType === "*") {
+					var trueReturns = [];
+					for(cloudTypeForIndex = 0; cloudTypeForIndex <= 5; cloudTypeForIndex++) {
+						trueReturns = trueReturns.concat(generateCloud(cloudElements,cloudTypeForIndex,isAfterScriptLoading));
 					};
-					returns.push(cloudName);
+					return trueReturns;
 				};
-				return returns;
 			};
 
 		//Creepers
@@ -2083,13 +2228,24 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 		//Several
 
 			runAfterAutogen(function() {
-				movableArray = Object.keys(elements).filter(function(e) { //same criteria as spouts
-					return (commonMovableCriteria(e));
-				});
-				movableArray.push(["rock","sand"]);
-				if(generateClouds) { generateCloud(movableArray,false) };
-				if(generateFairies) { generateFairy(movableArray,false) };
-				if(generateSpouts) { generateSpout(movableArray,false) };
+				cloudElements = [...Object.keys(elements).filter(function(e) { //same criteria as spouts
+					return (commonMovableCriteria(e,excludedCloudElements));
+				}),["rock","sand"]];
+				fairyElements = [...Object.keys(elements).filter(function(e) { //same criteria as spouts
+					return (commonMovableCriteria(e,excludedFairyElements));
+				}),["rock","sand"]];
+				spoutElements = [...Object.keys(elements).filter(function(e) { //same criteria as spouts
+					return (commonMovableCriteria(e,excludedSpoutElements));
+				}),["rock","sand"]];
+				if(generateFairies) { 
+					generateFairy(fairyElements,false);
+				};
+				if(generateClouds) { 
+					generateCloud(cloudElements,"*",false);
+				};
+				if(generateSpouts) { 
+					generateSpout(spoutElements,false);
+				};
 			});
 
 	//Random spawners
