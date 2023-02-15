@@ -56,7 +56,10 @@ function generatorPrompt() {
 					amount += generateFairy(elements,true).length;
 					break;
 				case "cloud":
-					amount += generateCloud(elements,true).length;
+					var number = prompt(`Enter a cloud number between 0 and 5 (default: 0)
+					A higher number means a rainier cloud.`);
+					if(number !== "*") { isNaN(parseFloat(number)) ? number = 0 : number = parseFloat(number) };
+					amount += generateCloud(elements,number,true).length;
 					break;
 				case "singularity":
 					amount += generateSingularity(elements,true).length;
@@ -64,7 +67,7 @@ function generatorPrompt() {
 				case "bomb":
 					var number = prompt(`Enter a bomb number (default: 1)
 					1 corresponds to radius 10, 2 corresponds to radius 15, etc.`);
-					if(isNaN(parseFloat(number))) { number = 1 };
+					isNaN(parseFloat(number)) ? number = 0 : number = parseFloat(number);
 					amount += generateBomb(elements,true,number).length;
 					break;
 				default:
