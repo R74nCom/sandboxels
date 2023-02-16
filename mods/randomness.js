@@ -178,7 +178,36 @@ if(enabledMods.includes(libraryMod)) {
 		temp: 3500,
 		tempHigh: 5555,
 		stateHigh: "tungsten_gas",
-	},         
+	},
+	
+	elements.pop_rock_pop = {
+		color: ["#ffb49f","#ffd9a1","#ffada1"],
+		behavior: [
+			"XX|XX|XX",
+			"XX|EX:3>carbon_dioxide,sugar|XX",
+			"XX|XX|XX",
+		],
+		category: "energy",
+		state: "gas",
+		density: 100,
+		excludeRandom: true,
+		hidden: true,
+	},
+
+	elements.pop_rocks = {
+		color: ["#d4d4d4","#74d4d4","#d474d4","#7474d4","#d4d474","#74d474","#d47474","#747474","#2f2f2f","#8f2f2f","#2f8f2f","#8f8f2f","#2f2f8f","#8f2f8f","#2f8f8f","#8f8f8f","#606060","#c06060","#60c060","#c0c060","#6060c0","#c060c0","#60c0c0","#c0c0c0"],
+		behavior: behaviors.POWDER,
+		reactions: {
+			water: { elem1: "sugar_water", elem2: [null,"pop_rock_pop"] },
+		},
+		tempHigh: 138,
+		stateHigh: ["caramel","pop_rock_pop"],
+		category: "land",
+		state: "solid",
+		density: 333.333333333, //made-up
+		hardness: 0.2,
+		breakInto: ["sugar","pop_rock_pop"],
+	},
 
 	elements.tungsten_gas = {
 		color: "#FFEEE2",
@@ -577,93 +606,6 @@ if(enabledMods.includes(libraryMod)) {
 	},
 
 	//end of hrt section
-
-	liquidBalloonDepth = 8
-
-	elements.rm_water_balloon = {
-		name: "water balloon",
-		color: "#3dc2ff",
-		behavior: [
-			"XX|M2|XX",
-			"XX|C2:wb"+liquidBalloonDepth+"|XX",
-			"XX|M1|XX",
-		],
-		category: "special",
-		state: "solid",
-		density: 997,
-	}
-
-	//For statement syntax by charPointer
-	for (var i = liquidBalloonDepth; i > 1; i--) {
-		elements[`wb${i}`] = {
-			color: "#2167ff",
-			behavior: [
-				`XX|CR:wb${i-1}|XX`,
-				`CR:wb${i-1}|CH:wb${i-1}|CR:wb${i-1}`,
-				`XX|CR:wb${i-1}|XX`,
-			],
-			state: "solid",
-			excludeRandom:true,
-			hidden: true,
-			category: "weapons",
-		}
-	}
-
-	elements.wb1 = {
-		name: "wb1",
-		color: "#2167ff",
-		behavior: [
-			"XX|CR:water|XX",
-			"CR:water|CH:water|CR:water",
-			"XX|CR:water|XX",
-		],
-		category: "special",
-		density: 997,
-		hidden: true,
-		excludeRandom: true,
-	}
-
-	elements.rm_lava_balloon = {
-		name: "lava balloon",
-		color: "#ffab36",
-		behavior: [
-			"XX|M2|XX",
-			"XX|C2:lb"+liquidBalloonDepth+"|XX",
-			"XX|M1|XX",
-		],
-		temp: 950,
-		category: "special",
-		state: "solid",
-		density: 2725,
-	}
-
-	for (var i = liquidBalloonDepth; i > 1; i--) {
-		elements[`lb${i}`] = {
-			color: "#ff8c00",
-			behavior: [
-				`XX|CR:lb${i-1}|XX`,
-				`CR:lb${i-1}|CH:lb${i-1}|CR:lb${i-1}`,
-				`XX|CR:lb${i-1}|XX`,
-			],
-			state: "solid",
-			excludeRandom:true,
-			hidden: true,
-			category: "weapons",
-		}
-	}
-
-	elements.lb1 = {
-		color: "#ff8c00",
-		behavior: [
-			"XX|CR:magma|XX",
-			"CR:magma|CH:magma|CR:magma",
-			"XX|CR:magma|XX",
-		],
-		category: "special",
-		density: 997,
-		hidden: true,
-		excludeRandom: true,
-	}
 
 	elements.densinium = {
 		color: ["#565656","#575657","#565257","#554d57","#554659"],
