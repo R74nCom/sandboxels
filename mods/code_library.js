@@ -1168,6 +1168,33 @@
 		};
 	};
 
+	function storeFirstTouchingElement(pixel,propertyName,copyTemp=true,spread=true) {
+		var info = elements[pixel.element];
+		if(pixel[propertyName]) {
+			return false;
+		};
+		for(i = 0; i < adjacentCoords.length; i++) {
+			var newCoords = {x: pixel.x+adjacentCoords[i][0], y: pixel.y+adjacentCoords[i][1]};
+
+			if (!isEmpty(newCoords.x,newCoords.y,true)) {
+				newPixel = pixelMap[newCoords.x][newCoords.y];
+				if (info.ignore && info.ignore.indexOf(newPixel.element) !== -1) {
+					continue;
+				};
+				if (newPixel.element != pixel.element && newPixel.element != "wire") {
+					pixel[propertyName] = newPixel.element;
+					if(copyTemp) { pixel.temp = newPixel.temp };
+					return newPixel.element;
+				}
+				else if (newPixel[propertyName] && spread) {
+					pixel[propertyName] = newPixel[propertyName];
+					pixel.temp = newPixel.temp;
+					return newPixel[propertyName];
+				}
+			}
+		};
+	};
+
 	function breakPixel(pixel,changetemp=false) {
 		var info = elements[pixel.element];
 		if(typeof(info.breakInto) === "undefined") {
