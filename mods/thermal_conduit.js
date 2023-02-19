@@ -145,6 +145,9 @@ autoConduitTable = {
 	down_to_up_left_and_right: {outs: [[0,-1],[-1,0],[1,0]], ins: [[0,1]]},
 	left_to_up_down_and_right: {outs: [[0,-1],[0,1],[1,0]], ins: [[-1,0]]},
 	up_to_down_left_and_right: {outs: [[0,1],[-1,0],[1,0]], ins: [[0,-1]]},
+	
+	left_and_down_to_right: {ins: [[-1,0],[0,1]], outs: [[1,0]]},
+	right_and_down_to_left: {ins: [[1,0],[0,1]], outs: [[-1,0]]},
 };
 
 for(direction in autoConduitTable) {
