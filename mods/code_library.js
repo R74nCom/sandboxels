@@ -225,6 +225,11 @@
 
 //Math(s)
 
+	//Base n logarithm from https://stackoverflow.com/a/3019290
+	function logN(number,base) { //Vulnerable to float issues
+		return Math.log(number) / Math.log(base);
+	};
+
 	//Distance between points
 	function pyth(xA,yA,xB,yB) {
 		var a = Math.abs(xB - xA);
