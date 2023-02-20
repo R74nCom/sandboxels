@@ -186,6 +186,13 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 				pixel.temp += (800 * ((1 + (7 * damage)) ** 2) * ((power ** 2) * 1.5));
 			};
 
+			function starbombHeat(pixel,x,y,radius,fire,smoke,power,damage) { //Massively heats depending on distance from explosion center
+				var distanceFromEdge = Math.max(0,radius - coordPyth(pixel.x,pixel.y,x,y));
+				var radiusRelatedIncrease = 10 ** logN(distanceFromEdge,5);
+				pixel.temp += (10000 * radiusRelatedIncrease);
+				pixelTempCheck(pixel);
+			};
+
 		//Clouds
 
 			behaviorGenerators.cloud = function(element) {
@@ -1121,6 +1128,49 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 				temp: 7065,
 				density: 1900,
 				excludeRandom: true,
+			};
+
+			if(enabledMods.includes("mods/the_ground.js")) { //uses things from that but not worth requiring for the whole mod
+				elements.star_bomb = {
+					color: "#fffbb5",
+					properties: {
+						radius: 50, //just so people can edit it per pixel to be stupidly high
+					},
+					tick: function(pixel) {
+						var starFire = "stellar_plasma,stellar_plasma,stellar_plasma,liquid_stellar_plasma,liquid_stellar_plasma,plasma,plasma";
+						var starSmoke = "light,light,radiation";
+						doDefaults(pixel);
+						if(!isEmpty(pixel.x,pixel.y-1,true)) { //[0][1] EX (ignore bounds)
+							var newPixel = pixelMap[pixel.x][pixel.y-1];
+							newPixel.temp += 10000000; //[0][1] HT:10000000
+							var newElement = newPixel.element;
+							var newInfo = elements[newElement];
+							if(newInfo.state !== "gas" && newElement !== pixel.element) {
+								explodeAtPlus(pixel.x,pixel.y,pixel.radius,starFire,starSmoke,starbombHeat,starbombHeat,false);
+							};
+						};
+						if(!isEmpty(pixel.x,pixel.y+1,true)) { //[2][1] EX (don't ignore bounds, non-bound case)
+							var newPixel = pixelMap[pixel.x][pixel.y+1];
+							newPixel.temp += 10000000;
+							var newElement = newPixel.element;
+							var newInfo = elements[newElement];
+							if(newInfo.state !== "gas" && newElement !== pixel.element) {
+								explodeAtPlus(pixel.x,pixel.y,pixel.radius,starFire,starSmoke,starbombHeat,starbombHeat,false);
+							};
+						};
+						if(outOfBounds(pixel.x,pixel.y+1)) { //[2][1] EX (don't ignore bounds, bound case)
+							explodeAtPlus(pixel.x,pixel.y,pixel.radius,starFire,starSmoke,starbombHeat,starbombHeat,false);
+						};
+						if(!tryMove(pixel,pixel.x,pixel.y+1)) { //behaviors.POWDER
+							Math.random() < 0.5 ? tryMove(pixel,pixel.x-1,pixel.y+1) : tryMove(pixel,pixel.x+1,pixel.y+1);
+						};
+					},
+					category: "weapons",
+					state: "solid",
+					density: 3.663e33,
+					excludeRandom: true,
+					cooldown: defaultCooldown
+				};
 			};
 
 		//Fairies
