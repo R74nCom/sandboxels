@@ -13,6 +13,43 @@ Proper classification of limestone within these code comments
 
 //Functions
 
+	//Star world matter function
+
+		var stellarPlasmaSpreadWhitelist = ["stellar_plasma","liquid_stellar_plasma"];
+
+		function almostSun(pixel,lightScale=1,whitelist=["sun"]) {
+			// minimum 1726
+			// maximum 7726
+			if (pixel.temp < 3600) { pixel.color = pixelColorPick(pixel,"#ffbdbd"); var c=0.015 }
+			else if (pixel.temp < 5000) { pixel.color = pixelColorPick(pixel,"#ffd5bd"); var c=0.025 }
+			else if (pixel.temp < 6000) { pixel.color = pixelColorPick(pixel,"#ffe7bd"); var c=0.035 } //new in-between state because the transition is too jarring
+			else if (pixel.temp < 7000) { pixel.color = pixelColorPick(pixel,"#ffffbd"); var c=0.05 }
+			else if (pixel.temp < 11000) { pixel.color = pixelColorPick(pixel,"#f7fff5"); var c=0.1 }
+			else if (pixel.temp < 28000) { pixel.color = pixelColorPick(pixel,"#bde0ff"); var c=0.2 }
+			else { pixel.color = pixelColorPick(pixel,"#c3bdff"); var c=0.4 }
+			for (var i = 0; i < adjacentCoords.length; i++) {
+				if (Math.random() > (c * lightScale)) {continue}
+				var x = pixel.x+adjacentCoords[i][0];
+				var y = pixel.y+adjacentCoords[i][1];
+				if (isEmpty(x,y)) {
+					createPixel("light", x, y);
+					pixelMap[x][y].color = pixel.color;
+				}
+				else if (!outOfBounds(x,y)) {
+					var newPixel = pixelMap[x][y];
+					if(elements[pixel.element].insulate && whitelist !== null) {
+						if (pixel.temp!==newPixel.temp && whitelist.includes(newPixel.element)) {
+							var avg = (pixel.temp + newPixel.temp)/2;
+							pixel.temp = avg;
+							newPixel.temp = avg;
+							pixelTempCheck(pixel);
+							pixelTempCheck(newPixel);
+						}
+					};
+				}
+			}
+		};
+
 	//Generalized sedimentation function
 
 		function sedimentation(pixel,sedimentNeighborTable,finalRock,chance=0.0003) {
@@ -1986,6 +2023,77 @@ Proper classification of limestone within these code comments
 		]
 	};
 	
+	//Star world
+	
+		//Supplementary elements
+
+			elements.liquid_stellar_plasma = {
+				color: "#ffffbd",
+				colorOn: "#ffffbd",
+				behavior: [
+					"XX|M2%5 AND CR:plasma%1|XX",
+					"M2|XX|M2",
+					"M1|M1|M1",
+				],
+				behaviorOn: [
+					"XX|M2%10 AND M1%0.5 AND CR:plasma%2.3|XX",
+					"M2|XX|M2",
+					"M1|M1|M1",
+				],
+				tick: function(pixel) {
+					almostSun(pixel,0.6,stellarPlasmaSpreadWhitelist);
+				},
+				temp:5500,
+				isGas: true,
+				tempLow:2300,
+				stateLow: "plasma",
+				category: "liquids",
+				state: "liquid",
+				density: 1000, //density actually depends on depth in the star: https://astronomy.stackexchange.com/a/32734
+				conduct: 0.5,
+			};
+
+			elements.stellar_plasma = {
+				color: "#ffffbd",
+				colorOn: "#ffffbd",
+				behavior: [
+					"M2|M1 AND CR:plasma%0.6|M2",
+					"M1 AND CR:plasma%0.6|XX|M1 AND CR:plasma%0.6",
+					"M2|M1 AND CR:plasma%0.6|M2",
+				],
+				behaviorOn: [
+					"M2|M1 AND CR:plasma%1|M2",
+					"M1 AND CR:plasma%1|XX|M1 AND CR:plasma%1",
+					"M2|M1 AND CR:plasma%1|M2",
+				],
+				tick: function(pixel) {
+					almostSun(pixel,0.5,stellarPlasmaSpreadWhitelist);
+				},
+				temp:5500,
+				tempLow:2300,
+				stateLow: "plasma",
+				category: "gases",
+				state: "gas",
+				density: 10,
+				conduct: 0.,
+			};
+			
+			elements.plasma.noConduct = ["stellar_plasma","liquid_stellar_plasma"]; //I can't suppress the charge overlay and keep the tick color, only effective with noConduct.js but not strictly required
+
+		//Main preset
+
+			worldgentypes.star = {
+				layers: [
+					[0.9, "stellar_plasma"],
+					[0.65, "liquid_stellar_plasma"],
+					[0.4, "liquid_stellar_plasma", 1/2],
+					[0, "sun"],
+				],
+				complexity: 100,
+				baseHeight: 0.3,
+				temperature: 6500,
+			};
+
 	//Radioactive Desert
 
 		//Main preset
