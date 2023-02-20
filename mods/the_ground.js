@@ -15,20 +15,43 @@ Proper classification of limestone within these code comments
 
 	//Star world matter function
 
-		var stellarPlasmaSpreadWhitelist = ["stellar_plasma","liquid_stellar_plasma"];
+		var stellarPlasmaSpreadWhitelist = ["sun","stellar_plasma","liquid_stellar_plasma"];
 
-		function almostSun(pixel,lightScale=1,whitelist=["sun"]) {
-			// minimum 1726
-			// maximum 7726
-			if (pixel.temp < 3600) { pixel.color = pixelColorPick(pixel,"#ffbdbd"); var c=0.015 }
+		function starColor(pixel) {
+			if (pixel.temp < 0) { pixel.color = pixelColorPick(pixel,"#615e5e"); var c=0 }
+			else if (pixel.temp < 200) { pixel.color = pixelColorPick(pixel,"#6e4c4b"); var c=0 }
+			else if (pixel.temp < 400) { pixel.color = pixelColorPick(pixel,"#944340"); var c=0.00003 }
+			else if (pixel.temp < 650) { pixel.color = pixelColorPick(pixel,"#d14c47"); var c=0.0001 }
+			else if (pixel.temp < 900) { pixel.color = pixelColorPick(pixel,"#e35b56"); var c=0.0004 }
+			else if (pixel.temp < 1300) { pixel.color = pixelColorPick(pixel,"#eb6a6a"); var c=0.001 }
+			else if (pixel.temp < 1500) { pixel.color = pixelColorPick(pixel,"#f27e7e"); var c=0.0025 }
+			else if (pixel.temp < 1700) { pixel.color = pixelColorPick(pixel,"#f58e8e"); var c=0.004 }
+			else if (pixel.temp < 2400) { pixel.color = pixelColorPick(pixel,"#f59a9a"); var c=0.007 }
+			else if (pixel.temp < 3000) { pixel.color = pixelColorPick(pixel,"#faaaaa"); var c=0.01 }
+			else if (pixel.temp < 3600) { pixel.color = pixelColorPick(pixel,"#ffbdbd"); var c=0.015 }
 			else if (pixel.temp < 5000) { pixel.color = pixelColorPick(pixel,"#ffd5bd"); var c=0.025 }
 			else if (pixel.temp < 6000) { pixel.color = pixelColorPick(pixel,"#ffe7bd"); var c=0.035 } //new in-between state because the transition is too jarring
 			else if (pixel.temp < 7000) { pixel.color = pixelColorPick(pixel,"#ffffbd"); var c=0.05 }
+			else if (pixel.temp < 9000) { pixel.color = pixelColorPick(pixel,"#feffd6"); var c=0.07 }
 			else if (pixel.temp < 11000) { pixel.color = pixelColorPick(pixel,"#f7fff5"); var c=0.1 }
-			else if (pixel.temp < 28000) { pixel.color = pixelColorPick(pixel,"#bde0ff"); var c=0.2 }
-			else { pixel.color = pixelColorPick(pixel,"#c3bdff"); var c=0.4 }
+			else if (pixel.temp < 14000) { pixel.color = pixelColorPick(pixel,"#e3fcfc"); var c=0.125 }
+			else if (pixel.temp < 17000) { pixel.color = pixelColorPick(pixel,"#d1f6ff"); var c=0.15 }
+			else if (pixel.temp < 20000) { pixel.color = pixelColorPick(pixel,"#d1f0ff"); var c=0.175 }
+			else if (pixel.temp < 27000) { pixel.color = pixelColorPick(pixel,"#bde0ff"); var c=0.2 }
+			else if (pixel.temp < 34000) { pixel.color = pixelColorPick(pixel,"#bdd3ff"); var c=0.25 }
+			else if (pixel.temp < 43000) { pixel.color = pixelColorPick(pixel,"#bdc7ff"); var c=0.3 }
+			else if (pixel.temp < 56000) { pixel.color = pixelColorPick(pixel,"#c3bdff"); var c=0.4 }
+			else if (pixel.temp < 56000) { pixel.color = pixelColorPick(pixel,"#c3bdff"); var c=0.45 }
+			else if (pixel.temp < 61000) { pixel.color = pixelColorPick(pixel,"#bba9fc"); var c=0.5 }
+			else if (pixel.temp < 66000) { pixel.color = pixelColorPick(pixel,"#a590f5"); var c=0.6 }
+			else if (pixel.temp < 71000) { pixel.color = pixelColorPick(pixel,"#a68af2"); var c=0.7 }
+			else { pixel.color = pixelColorPick(pixel,"#a26ffc"); var c=0.8 }
+			return c;
+		};
+		
+		function starLightAndConduction(pixel,c,whitelist=["sun"]) {
 			for (var i = 0; i < adjacentCoords.length; i++) {
-				if (Math.random() > (c * lightScale)) {continue}
+				if (Math.random() > c) {continue}
 				var x = pixel.x+adjacentCoords[i][0];
 				var y = pixel.y+adjacentCoords[i][1];
 				if (isEmpty(x,y)) {
@@ -37,17 +60,23 @@ Proper classification of limestone within these code comments
 				}
 				else if (!outOfBounds(x,y)) {
 					var newPixel = pixelMap[x][y];
-					if(elements[pixel.element].insulate && whitelist !== null) {
-						if (pixel.temp!==newPixel.temp && whitelist.includes(newPixel.element)) {
-							var avg = (pixel.temp + newPixel.temp)/2;
-							pixel.temp = avg;
-							newPixel.temp = avg;
-							pixelTempCheck(pixel);
-							pixelTempCheck(newPixel);
-						}
-					};
+					if (pixel.temp!==newPixel.temp && whitelist.includes(newPixel.element)) {
+						var avg = (pixel.temp + newPixel.temp)/2;
+						pixel.temp = avg;
+						newPixel.temp = avg;
+						pixelTempCheck(pixel);
+						pixelTempCheck(newPixel);
+					}
 				}
 			}
+		};
+
+		function almostSun(pixel,lightScale=1,whitelist=["sun"]) {
+			starLightAndConduction(pixel,starColor(pixel) * lightScale,whitelist);
+		};
+		
+		elements.sun.tick = function(pixel) {
+			almostSun(pixel);
 		};
 
 	//Generalized sedimentation function
@@ -2079,7 +2108,7 @@ Proper classification of limestone within these code comments
 			};
 			
 			elements.plasma.noConduct = ["stellar_plasma","liquid_stellar_plasma"]; //I can't suppress the charge overlay and keep the tick color, only effective with noConduct.js but not strictly required
-
+			
 		//Main preset
 
 			worldgentypes.star = {
