@@ -15,7 +15,7 @@ Proper classification of limestone within these code comments
 
 	//Star world matter function
 
-		var stellarPlasmaSpreadWhitelist = ["sun","stellar_plasma","liquid_stellar_plasma"];
+		var stellarPlasmaSpreadWhitelist = ["stellar_plasma","liquid_stellar_plasma","liquid_degenerate_neutronium","gaseous_degenerate_neutronium","neutron_star"];
 
 		function starColor(pixel) {
 			if (pixel.temp < 0) { pixel.color = pixelColorPick(pixel,"#615e5e"); var c=0 }
@@ -51,15 +51,40 @@ Proper classification of limestone within these code comments
 		
 		function starLightAndConduction(pixel,c,whitelist=["sun"]) {
 			for (var i = 0; i < adjacentCoords.length; i++) {
-				if (Math.random() > c) {continue}
 				var x = pixel.x+adjacentCoords[i][0];
 				var y = pixel.y+adjacentCoords[i][1];
 				if (isEmpty(x,y)) {
-					createPixel("light", x, y);
-					pixelMap[x][y].color = pixel.color;
-				}
-				else if (!outOfBounds(x,y)) {
+					if (Math.random() <= c) {
+						createPixel("light", x, y);
+						pixelMap[x][y].color = pixel.color;
+					};
+				} else if (!outOfBounds(x,y)) {
 					var newPixel = pixelMap[x][y];
+					//console.log(whitelist,newPixel.element,whitelist.includes(newPixel.element));
+					if (pixel.temp!==newPixel.temp && whitelist.includes(newPixel.element)) {
+						var avg = (pixel.temp + newPixel.temp)/2;
+						pixel.temp = avg;
+						newPixel.temp = avg;
+						pixelTempCheck(pixel);
+						pixelTempCheck(newPixel);
+					}
+				}
+			}
+		};
+
+		function neutronStarLightAndConduction(pixel,c,whitelist=["neutron_star"]) {
+			for (var i = 0; i < adjacentCoords.length; i++) {
+				var x = pixel.x+adjacentCoords[i][0];
+				var y = pixel.y+adjacentCoords[i][1];
+				if (isEmpty(x,y)) {
+					if (Math.random() <= c) {
+						createPixel(Math.random() < 0.8 ? "light" : "neutron", x, y);
+						pixelMap[x][y].color = pixel.color;
+					};
+				} else if (!outOfBounds(x,y)) {
+					var newPixel = pixelMap[x][y];
+					if(Math.random() < 0.1 && newPixel.conduct) { newPixel.charge = 3 }; //no magnetism in sb
+					//console.log(whitelist,newPixel.element,whitelist.includes(newPixel.element));
 					if (pixel.temp!==newPixel.temp && whitelist.includes(newPixel.element)) {
 						var avg = (pixel.temp + newPixel.temp)/2;
 						pixel.temp = avg;
@@ -73,6 +98,10 @@ Proper classification of limestone within these code comments
 
 		function almostSun(pixel,lightScale=1,whitelist=["sun"]) {
 			starLightAndConduction(pixel,starColor(pixel) * lightScale,whitelist);
+		};
+		
+		function nsTick(pixel,lightScale=1,whitelist=["sun"]) {
+			neutronStarLightAndConduction(pixel,starColor(pixel) * lightScale,whitelist);
 		};
 		
 		elements.sun.tick = function(pixel) {
@@ -2053,6 +2082,7 @@ Proper classification of limestone within these code comments
 	};
 	
 	//Star world
+	//If GWSN can have a decidedly Earth-y name and a space concept, then I should be able to do the same
 	
 		//Supplementary elements
 
@@ -2104,10 +2134,87 @@ Proper classification of limestone within these code comments
 				category: "gases",
 				state: "gas",
 				density: 10,
-				conduct: 0.,
+				conduct: 0.5,
 			};
 			
-			elements.plasma.noConduct = ["stellar_plasma","liquid_stellar_plasma"]; //I can't suppress the charge overlay and keep the tick color, only effective with noConduct.js but not strictly required
+			elements.neutron_star = {
+				color: "#e9eaf7",
+				colorOn: "#ffffbd",
+				behavior: [
+					"XX|CR:neutron%0.1|XX", //no neutrinos though
+					"CR:neutron%0.1|XX|CR:neutron%0.1",
+					"XX|CR:neutron%0.1|XX"
+				],
+				tick: function(pixel) {
+					nsTick(pixel,0.7,stellarPlasmaSpreadWhitelist);
+				},
+                temp: 1e6, //can be a lot hotter, but the cooling involves neutrons and their whole gimmick is going through things, which isn't really possible in this game
+                category: "special",
+                state: "gas",
+                density: 1e17,
+                insulate: true,
+				conduct: 1,
+			};
+			
+			elements.liquid_degenerate_neutronium = {
+				color: "#e9eaf7",
+				behavior: [
+					"XX|M2%5 AND CR:neutron%0.6|XX",
+					"M2|XX|M2",
+					"M1|M1|M1",
+				],
+				behaviorOn: [
+					"XX|M2%10 AND M1%0.5 AND CR:neutron%1.2|XX",
+					"M2|XX|M2",
+					"M1|M1|M1",
+				],
+				tick: function(pixel) {
+					nsTick(pixel,0.7,stellarPlasmaSpreadWhitelist);
+				},
+				temp:1e6,
+				isGas: true,
+				tempLow:2300,
+				stateLow: elements.liquid_neutronium ? "liquid_neutronium" : "neutron",
+				category: "liquids",
+				state: "liquid",
+				density: 100000, //i'm not doing any more research on these neutron stars because google is useless
+				conduct: 1,
+			};
+
+			elements.gaseous_degenerate_neutronium = {
+				color: "#e9eaf7",
+				behavior: [
+					"M2|M1 AND CR:neutron%0.6|M2",
+					"M1 AND CR:neutron%0.6|XX|M1 AND CR:neutron%0.6",
+					"M2|M1 AND CR:neutron%0.6|M2",
+				],
+				behaviorOn: [
+					"M2|M1 AND CR:neutron%1|M2",
+					"M1 AND CR:neutron%1|XX|M1 AND CR:neutron%1",
+					"M2|M1 AND CR:neutron%1|M2",
+				],
+				tick: function(pixel) {
+					nsTick(pixel,0.6,stellarPlasmaSpreadWhitelist);
+				},
+				temp:1e6,
+				isGas: true,
+				tempLow:2300,
+				stateLow: "neutron",
+				category: "gases",
+				state: "gas",
+				density: 10000, //i'm not doing any more research on these neutron stars because google is useless
+				conduct: 1,
+			};
+			
+			if(enabledMods.includes("mods/chem.js")) {
+				elements.supernova.behavior = [
+					"XX|XX|XX",
+					"XX|EX:80>plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,molten_iron,molten_uranium,molten_lead AND CH:neutron_star,neutron_star,neutron_star,neutronium,quark_matter,void|XX",
+					"XX|XX|XX",
+				]
+			};
+			
+			elements.plasma.noConduct = ["stellar_plasma","liquid_stellar_plasma","liquid_degenerate_neutronium","gaseous_degenerate_neutronium","neutron_star"]; //I can't suppress the charge overlay and keep the tick color, only effective with noConduct.js but not strictly required
 			
 		//Main preset
 
