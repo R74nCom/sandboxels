@@ -1173,6 +1173,66 @@
 		};
 	};
 
+	function createPixelReturn(element,x,y) { //sugar
+		var newPixel = new Pixel(x, y, element);
+		currentPixels.push(newPixel);
+		checkUnlock(element);
+		return newPixel;
+	};
+
+	function changePixelReturn(pixel,element,changetemp=true) {
+		pixel.element = element;
+		pixel.color = pixelColorPick(pixel);
+		pixel.start = pixelTicks;
+		var elementInfo = elements[element];
+		if (elementInfo.burning == true) {
+			pixel.burning = true;
+			pixel.burnStart = pixelTicks;
+		}
+		else if (pixel.burning && !elementInfo.burn) {
+			delete pixel.burning;
+			delete pixel.burnStart;
+		}
+		delete pixel.origColor; // remove stain
+		if (pixel.r && !elementInfo.rotatable) {
+			delete pixel.r;
+		}
+		if (pixel.flipX && !elementInfo.flippableX) {
+			delete pixel.flipX;
+		}
+		if (pixel.flipY && !elementInfo.flippableY) {
+			delete pixel.flipY;
+		}
+		// If elementInfo.flippableX, set it to true or false randomly
+		if (elementInfo.flipX !== undefined) { pixel.flipX = elementInfo.flipX }
+		else if (elementInfo.flippableX) {
+			pixel.flipX = Math.random() >= 0.5;
+		}
+		// If elementInfo.flippableY, set it to true or false randomly
+		if (elementInfo.flipY !== undefined) { pixel.flipY = elementInfo.flipY }
+		else if (elementInfo.flippableY) {
+			pixel.flipY = Math.random() >= 0.5;
+		}
+		if (elementInfo.temp != undefined && changetemp) {
+			pixel.temp = elementInfo.temp;
+			pixelTempCheck(pixel)
+		}
+		// If elementInfo.properties, set each key to its value
+		if (elementInfo.properties !== undefined) {
+			for (var key in elementInfo.properties) {
+				// If it is an array or object, make a copy of it
+				if (typeof elementInfo.properties[key] == "object") {
+					pixel[key] = JSON.parse(JSON.stringify(elementInfo.properties[key]));
+				}
+				else {
+					pixel[key] = elementInfo.properties[key];
+				}
+			}
+		}
+		checkUnlock(element);
+		return pixel;
+	};
+
 	function storeFirstTouchingElement(pixel,propertyName,copyTemp=true,spread=true) {
 		var info = elements[pixel.element];
 		if(pixel[propertyName]) {
@@ -1337,8 +1397,8 @@
 			newElement = newElement[Math.floor(Math.random() * newElement.length)];
 		};
 		for(i = 0; i < coords.length; i++) {
-			coordX = coords[i].x;
-			coordY = coords[i].y;
+			coordX = Math.round(coords[i].x);
+			coordY = Math.round(coords[i].y);
 			if(overwrite && !isEmpty(coordX,coordY,true)) {
 				changePixel(pixelMap[coordX][coordY],element);
 			};
@@ -1346,6 +1406,26 @@
 				createPixel(element,coordX,coordY);
 			};
 		};
+	};
+
+	function fillCircleReturn(element,x,y,radius,overwrite=false) {
+		var pixels = [];
+		var coords = circleCoords(x,y,radius);
+		var newElement = element;
+		if(Array.isArray(newElement)) {
+			newElement = newElement[Math.floor(Math.random() * newElement.length)];
+		};
+		for(i = 0; i < coords.length; i++) {
+			coordX = Math.round(coords[i].x);
+			coordY = Math.round(coords[i].y);
+			if(overwrite && !isEmpty(coordX,coordY,true)) {
+				pixels.push(changePixelReturn(pixelMap[coordX][coordY],element));
+			};
+			if(isEmpty(coordX,coordY,false)) {
+				pixels.push(createPixelReturn(element,coordX,coordY));
+			};
+		};
+		return pixels;
 	};
 
 	function isOpenAndOnSurface(x,y,includeBottomBound=true) {
