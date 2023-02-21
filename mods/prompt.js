@@ -441,8 +441,12 @@ if(enabledMods.includes(variablesMod)) {
 											for(pixel in sunPixels) {
 												sunPixels[pixel].temp = randTemp;
 											};
-										} else if(value2 < 0.75) {
-											createPixelReturn("sun",i,j).temp = randomIntegerBetweenTwoValues(100000,300000);
+										} else if(value2 < 0.7) {
+											if(Math.random() < 0.6) {
+												createPixelReturn("sun",i,j).temp = randomIntegerBetweenTwoValues(100000,300000);
+											} else {
+												elements.neutron_star ? createPixelReturn("neutron_star",i,j).temp = randomIntegerBetweenTwoValues(100000,10000000) : createPixelReturn("sun",i,j).temp = randomIntegerBetweenTwoValues(100000,300000);
+											};
 										} else {
 											createPixelReturn("sun",i,j).temp = randomIntegerBetweenTwoValues(100,800);
 										};
