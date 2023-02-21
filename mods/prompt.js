@@ -13,7 +13,7 @@ if(enabledMods.includes(variablesMod)) {
 	};
 	
 	if(enabledMods.includes("mods/code_library.js")) {
-		commandHelpObject.stars = "Clears the screen and replaces it with random stars. Usage: stars <density (number, default: 0.001)> <seed (number, no default value)>\nDon't include framing characters <>.\nArguments in <angle brackets> are optional."
+		commandHelpObject.stars = "Clears the screen and replaces it with random stars. Usage: stars <density (number, default: 0.001)> <seed (string or number, no default value)>\nDon't include framing characters <>.\nArguments in <angle brackets> are optional."
 		commandHelpObject.starseed = "Alerts the last used seed for stars. Usage: starseed";
 		var lastStarSeed = "[None]";
 	};
@@ -410,21 +410,26 @@ if(enabledMods.includes(variablesMod)) {
 					};
 				};
 				
-				if(seed == undefined) {
-					seed = null;
+				var stringSeed = false;
+				var seedString = null;
+				
+				if(seed === undefined) {
+					seed = Math.random();
+					stringSeed = false;
 				} else {
-					seed = parseFloat(seed);
-					if(isNaN(seed)) {
-						alert("seed was NaN, ignoring");
-						seed = null;
+					if(isNaN(parseFloat(seed))) {
+						stringSeed = true;
+						seedString = seed;
+						seed = cyrb128(seed)[2];
+					} else {
+						stringSeed = false;
+						seed = parseFloat(seed);
 					};
 				};
 				
-				if(seed == null) {
-					seed = Math.random();
-				};
-				
-				lastStarSeed = seed;
+				lastStarSeed = stringSeed ? seedString : seed;
+				//console.log(stringSeed);
+				//console.log(lastStarSeed);
 				var randomFunction = mulberry32(seed);
 				
 				if(!enabledMods.includes("mods/code_library.js")) {
