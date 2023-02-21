@@ -13,7 +13,9 @@ if(enabledMods.includes(variablesMod)) {
 	};
 	
 	if(enabledMods.includes("mods/code_library.js")) {
-		commandHelpObject.stars = "Clears the screen and replaces it with random stars. Usage: stars <density (float, default: 0.001)>\nDon't include framing characters <>.\nArguments in <angle brackets> are optional."
+		commandHelpObject.stars = "Clears the screen and replaces it with random stars. Usage: stars <density (number, default: 0.001)> <seed (number, no default value)>\nDon't include framing characters <>.\nArguments in <angle brackets> are optional."
+		commandHelpObject.starseed = "Alerts the last used seed for stars. Usage: starseed";
+		var lastStarSeed = "[None]";
 	};
 
 	function rgbStringToUnvalidatedObject(string) {
@@ -395,6 +397,9 @@ if(enabledMods.includes(variablesMod)) {
 				return listObject;
 			case "stars":
 				var starDensity = inputAsArray[1];
+				
+				var seed = inputAsArray[2]; //〜カクセイ〜
+
 				if(starDensity == undefined) {
 					starDensity = 0.001
 				} else {
@@ -405,15 +410,33 @@ if(enabledMods.includes(variablesMod)) {
 					};
 				};
 				
+				if(seed == undefined) {
+					seed = null;
+				} else {
+					seed = parseFloat(seed);
+					if(isNaN(seed)) {
+						alert("seed was NaN, ignoring");
+						seed = null;
+					};
+				};
+				
+				if(seed == null) {
+					seed = Math.random();
+				};
+				
+				lastStarSeed = seed;
+				var randomFunction = mulberry32(seed);
+				
 				if(!enabledMods.includes("mods/code_library.js")) {
 					alert("'stars' command requires 'code_library.js' mod!");
+					return false;
 				} else {
 					clearAll();
 					for(j = 1; j < height; j++) {
 						for(i = 1; i < width; i++) {
-							if(Math.random() < starDensity) {
+							if(randomFunction() < starDensity) {
 								if(isEmpty(i,j,false)) {
-									var value = Math.random() ** 4;
+									var value = randomFunction() ** 4;
 
 									if(value < 0.3) {
 										createPixelReturn("sun",i,j).temp = randomIntegerBetweenTwoValues(1800,3300);
@@ -428,9 +451,9 @@ if(enabledMods.includes(variablesMod)) {
 									} else if(value < 0.88) {
 										createPixelReturn("sun",i,j).temp = randomIntegerBetweenTwoValues(35000,90000);
 									} else { //other stuff
-										var value2 = Math.random();
+										var value2 = randomFunction();
 										if(value2 < 0.5) { //giant stars
-											var value3 = Math.random();
+											var value3 = randomFunction();
 											if(value3 < 0.6) { //favor red giants
 												var sunPixels = fillCircleReturn("sun",i,j,randomIntegerBetweenTwoValues(3,4));
 												var randTemp = randomIntegerBetweenTwoValues(1800,3300)
@@ -451,7 +474,7 @@ if(enabledMods.includes(variablesMod)) {
 												};
 											};
 										} else if(value2 < 0.6) { //supergiants
-											var value3 = Math.random();
+											var value3 = randomFunction();
 											if(value3 < 0.6) {
 												var sunPixels = fillCircleReturn("sun",i,j,randomIntegerBetweenTwoValues(6,8));
 												var randTemp = randomIntegerBetweenTwoValues(1700,3200)
@@ -472,7 +495,7 @@ if(enabledMods.includes(variablesMod)) {
 												};
 											};
 										} else if(value2 < 0.65) { //hypergiants
-											var value3 = Math.random();
+											var value3 = randomFunction();
 											if(value3 < 0.6) {
 												var sunPixels = fillCircleReturn("sun",i,j,randomIntegerBetweenTwoValues(9,12));
 												var randTemp = randomIntegerBetweenTwoValues(1600,3100)
@@ -493,7 +516,7 @@ if(enabledMods.includes(variablesMod)) {
 												};
 											};
 										} else if(value2 < 0.8) { //white dwarfs/neutron stars
-											if(Math.random() < 0.8) { //favor white dwarfs
+											if(randomFunction() < 0.8) { //favor white dwarfs
 												createPixelReturn("sun",i,j).temp = randomIntegerBetweenTwoValues(100000,300000);
 											} else {
 												elements.neutron_star ? createPixelReturn("neutron_star",i,j).temp = randomIntegerBetweenTwoValues(100000,10000000) : createPixelReturn("sun",i,j).temp = randomIntegerBetweenTwoValues(100000,300000);
@@ -507,7 +530,17 @@ if(enabledMods.includes(variablesMod)) {
 						};
 					};
 				};
+				return true;
 				break;
+			case "kakusei":
+			case "starseed":
+				if(!enabledMods.includes("mods/code_library.js")) {
+					alert("'starseed' command requires 'code_library.js' mod!");
+					return false;
+				};
+				alertIfOutput(alertOutput,lastStarSeed);
+				console.log(lastStarSeed);
+				return lastStarSeed;
 			case "help":
 				if(inputAsArray.length < 1) { //somehow
 					alertIfError(alertError,"Usage: help <command>\nDon't include framing characters []<>.\nArguments in <angle brackets> are optional.");
