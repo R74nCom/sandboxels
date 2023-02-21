@@ -5,12 +5,16 @@ if(enabledMods.includes(variablesMod)) {
 	commandHelpObject = {
 		"set": "Sets properties for every pixel of a given type.\nUsage: set [property] [element] [value] <type>\nDon't include framing characters []<>.\nThe element can be \"all\" to set the property for every pixel.\nNote: Strings can't have spaces because spaces are the separator used in the parsing split().\nArguments in [brackets] are required and ones in <angle brackets> are optional.",
 		"test": "Test.",
-		"fill": "Fills the screen with the given pixel(s). Usage: fill [Overwrite pixels? (should be a bool)] [element] <additional elements>.\nDon't include framing characters []<>.\nArguments in [brackets] are required and ones in <angle brackets> are optional.\nAdditional elements are separated by spaces.",
-		"randomfill": "Fills the screen with pixels from randomChoices. Usage: randomfill <overwrite pixels? (should be a bool) (default: true)>\nDon't include framing characters []<>.\nArguments in <angle brackets> are optional.",
+		"fill": "Fills the screen with the given pixel(s). Usage: fill [Overwrite pixels? (bool)] [element] <additional elements>.\nDon't include framing characters []<>.\nArguments in [brackets] are required and ones in <angle brackets> are optional.\nAdditional elements are separated by spaces.",
+		"randomfill": "Fills the screen with pixels from randomChoices. Usage: randomfill <overwrite pixels? (bool, default: true)>\nDon't include framing characters []<>.\nArguments in <angle brackets> are optional.",
 		"count": "Tells you the amount of a specified pixel on the screen. Usage: count [element]\nDon't include framing characters []<>.\nArguments in [brackets] are required.",
 		"countall": "Logs to console a list of all elements on screen and their amounts. Usage: countall.",
 		"help": "Usage: help <command>\nDon't include framing characters []<>.\nArguments in <angle brackets> are optional."
-	}
+	};
+	
+	if(enabledMods.includes("mods/code_library.js")) {
+		commandHelpObject.stars = "Clears the screen and replaces it with random stars. Usage: stars <density (float, default: 0.001)>\nDon't include framing characters <>.\nArguments in <angle brackets> are optional."
+	};
 
 	function rgbStringToUnvalidatedObject(string) {
 		string = string.split(",");
@@ -227,6 +231,7 @@ if(enabledMods.includes(variablesMod)) {
 							if(pixelMap[i][j].element === inputElement || inputElement === "all") {
 								//console.log("Element is a match: " + inputElement + ", " + pixelMap[i][j].element)
 								pixelMap[i][j][property] = value;
+								if(property == "temp") { pixelTempCheck(pixelMap[i][j]) };
 								setCount++;
 							};
 						};
@@ -388,13 +393,73 @@ if(enabledMods.includes(variablesMod)) {
 				alertIfOutput(alertOutput,"Elements counts logged to console");
 				console.log(formattedList);
 				return listObject;
+			case "stars":
+				var starDensity = inputAsArray[1];
+				if(starDensity == undefined) {
+					starDensity = 0.001
+				} else {
+					starDensity = parseFloat(starDensity);
+					if(isNaN(starDensity)) {
+						alert("starDensity was NaN, defaulting to 0.001");
+						starDensity = 0.001;
+					};
+				};
+				
+				if(!enabledMods.includes("mods/code_library.js")) {
+					alert("'stars' command requires 'code_library.js' mod!");
+				} else {
+					clearAll();
+					for(j = 1; j < height; j++) {
+						for(i = 1; i < width; i++) {
+							if(Math.random() < starDensity) {
+								if(isEmpty(i,j,false)) {
+									var value = Math.random() ** 4;
+
+									if(value < 0.3) {
+										createPixelReturn("sun",i,j).temp = randomIntegerBetweenTwoValues(1800,3300);
+									} else if(value < 0.55) {
+										createPixelReturn("sun",i,j).temp = randomIntegerBetweenTwoValues(3300,5500);
+									} else if(value < 0.70) {
+										createPixelReturn("sun",i,j).temp = randomIntegerBetweenTwoValues(5500,8000);
+									} else if(value < 0.8) {
+										createPixelReturn("sun",i,j).temp = randomIntegerBetweenTwoValues(8000,13000);
+									} else if(value < 0.85) {
+										createPixelReturn("sun",i,j).temp = randomIntegerBetweenTwoValues(13000,35000);
+									} else if(value < 0.88) {
+										createPixelReturn("sun",i,j).temp = randomIntegerBetweenTwoValues(35000,90000);
+									} else { //other stuff
+										var value2 = Math.random();
+										if(value2 < 0.15) {
+											var sunPixels = fillCircleReturn("sun",i,j,randomIntegerBetweenTwoValues(2,3));
+											var randTemp = randomIntegerBetweenTwoValues(20000,80000)
+											for(pixel in sunPixels) {
+												sunPixels[pixel].temp = randTemp;
+											};
+										} else if(value2 < 0.45) {
+											var sunPixels = fillCircleReturn("sun",i,j,randomIntegerBetweenTwoValues(3,4));
+											var randTemp = randomIntegerBetweenTwoValues(1800,3300)
+											for(pixel in sunPixels) {
+												sunPixels[pixel].temp = randTemp;
+											};
+										} else if(value2 < 0.75) {
+											createPixelReturn("sun",i,j).temp = randomIntegerBetweenTwoValues(100000,300000);
+										} else {
+											createPixelReturn("sun",i,j).temp = randomIntegerBetweenTwoValues(100,800);
+										};
+									};
+								};
+							};
+						};
+					};
+				};
+				break;
 			case "help":
 				if(inputAsArray.length < 1) { //somehow
 					alertIfError(alertError,"Usage: help <command>\nDon't include framing characters []<>.\nArguments in <angle brackets> are optional.");
 					return false;
 				};
 				if(inputAsArray.length < 2) {
-					alertOutput ? alertIfOutput(alertOutput,"Commands: \nset\ntest\nfill\nrandomfill\ncount\ncountall\nhelp") : console.log("Commands:  set, test, fill, randomfill, count, countall, help");
+					alertOutput ? alertIfOutput(alertOutput,"Commands: " + Object.keys(commandHelpObject).join("\n")) : console.log("Commands: " + Object.keys(commandHelpObject).join(", "));
 				} else {
 					var command = inputAsArray[1];
 
@@ -412,6 +477,13 @@ if(enabledMods.includes(variablesMod)) {
 				return false;
 		};
 	};
+
+	document.addEventListener("keydown", function(e) { //prop prompt listener
+		// , = propPrompt()
+		if (e.keyCode == 49) { //!
+			if(shiftDown) { funniPrompt() };
+		};
+	});
 } else {
 	alert(`The ${variablesMod} mod is required and has been automatically inserted (reload for this to take effect).`)
 	enabledMods.splice(enabledMods.indexOf(modName),0,variablesMod)
