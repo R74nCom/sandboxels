@@ -40,6 +40,15 @@
 		return Math.floor(Math.random() * (max - min + 1)) + min
 	};
 
+	function mulberry32(a) { //Mulberry32 implemented in JS from StackOverflow, https://gist.github.com/tommyettinger/46a874533244883189143505d203312c
+		return function() {
+		  var t = a += 0x6D2B79F5;
+		  t = Math.imul(t ^ t >>> 15, t | 1);
+		  t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+		  return ((t ^ t >>> 14) >>> 0) / 4294967296;
+		}
+	} //returns random function seeded with a
+
 //Arrays
 
 	//Shallow array comparer by SO Tim Down: https://stackoverflow.com/a/10260204
