@@ -484,6 +484,13 @@ if(enabledMods.includes(variablesMod)) {
 			if(shiftDown) { funniPrompt() };
 		};
 	});
+
+	elements.funni_prompt = {
+		color: ["#000000","#00ff00","#000000","#00ff00","#000000","#00ff00","#000000","#00ff00","#000000","#00ff00"],
+		behavior: behaviors.SELFDELETE,
+		desc: "<span style='color:#FF00FF;' onClick=funniPrompt()>Click here or press Shift+1 to open the command prompt.</span>",
+		category:"special",
+	};
 } else {
 	alert(`The ${variablesMod} mod is required and has been automatically inserted (reload for this to take effect).`)
 	enabledMods.splice(enabledMods.indexOf(modName),0,variablesMod)
