@@ -254,14 +254,135 @@ if(enabledMods.includes(changeTempMod) && enabledMods.includes(runAfterAutogenMo
 		hidden: true,
 	}
 
+	var mooreNeighborhood = [[-1,-1],[0,-1],[1,1],[-1,0],[1,0],[-1,1],[0,1],[1,1]];
+	
+	var bismuthCrystalColorArray = [
+		"#f58887",
+		"#fcd19a",
+		"#fcf588",
+		"#aef29d",
+		"#9af5e4",
+		"#b3bef5",
+		"#dbb9f0",
+		"#f2acdb"
+	]
+	
+	var bismuthCrystalElements = ["bismuth","molten_bismuth"];
+	
+	quadriCoords = [[-1,1],[0,1],[1,1],[1,0]];
+	
+	//i'm not replacing pixelTick for this shit
+	/*function mooreDoHeat(pixel) {
+		// Check right and bottom adjacent pixels
+		for (var i = 0; i < quadriCoords.length; i++) {
+			var x = pixel.x+quadriCoords[i][0];
+			var y = pixel.y+quadriCoords[i][1];
+			if (!isEmpty(x,y,true)) {
+				var newPixel = pixelMap[x][y];
+				// Skip if both temperatures are the same
+				if (pixel.temp == newPixel.temp || elements[newPixel.element].insulate == true) {
+					continue;
+				}
+				// Set both pixel temperatures to their average
+				var avg = (pixel.temp + newPixel.temp)/2;
+				pixel.temp = avg;
+				newPixel.temp = avg;
+				pixelTempCheck(pixel);
+				pixelTempCheck(newPixel);
+			};
+		};
+	};*/
+	
+	function bismuthCrystallization(pixel) {
+		if(pixel.temp < elements.bismuth.tempHigh) { //initial crystal on cool
+			//pixel.color = "rgb(255,0,0)";
+			pixel.crystalColorCounter ??= 0; //initialize CCC
+			if(pixel.element !== "bismuth") {
+				pixel.temp -= 0.05; //incentivize cooling
+				pixel.element = "bismuth"
+				//console.log(`pixel (${pixel.x},${pixel.y}) frozen by bismuthCrystallization`)
+				pixel.color = pixelColorPick(pixel,bismuthCrystalColorArray[pixel.crystalColorCounter % 8]);
+			}; //solidify
+		};
+		
+		if(pixel.crystalColorCounter !== undefined) {
+			for(i = 0; i < mooreNeighborhood.length; i++) {
+				var newX = pixel.x + mooreNeighborhood[i][0];
+				var newY = pixel.y + mooreNeighborhood[i][1];
+				
+				if(isEmpty(newX,newY,true)) {
+					continue;
+				} else {
+					var newPixel = pixelMap[newX][newY];
+					if(bismuthCrystalElements.includes(newPixel.element)) {
+						if(newPixel.temp < elements.bismuth.tempHigh) {
+							newPixel.temp -= 0.05;
+							newPixel.element = "bismuth";
+							newPixel.crystalColorCounter = (pixel.crystalColorCounter + 1) % 8;
+							newPixel.color = pixelColorPick(pixel,bismuthCrystalColorArray[pixel.crystalColorCounter % 8]);
+						};
+					};
+				};
+			};
+		};
+		
+		//mooreDoHeat(pixel);
+	};
+
+	elements.molten_bismuth = {
+		color: "#d1c6b0", //not really hot enough to be red
+		behavior: behaviors.LIQUID,
+		tempLow: -Infinity, //suppress normal freezing mechanism
+		stateLow: "molten_bismuth",
+		tick: function(pixel) {
+			bismuthCrystallization(pixel);
+		},
+		density: 10050,
+		state: "liquid",
+		category: "liquids",
+		temp: 300,
+		tempHigh: 1560,
+		fireColor: "#4275db",
+	};
+
+	runAfterAutogen(function() {
+		delete elements.molten_bismuth.tempLow;
+		delete elements.molten_bismuth.stateLow;
+	});
+
+	elements.bismuth = {
+		color: "#d1c6b0",
+		behavior: behaviors.WALL,
+		/*reactions: {
+			
+		},*/
+		tempHigh: 271.5,
+		category: "solids",
+		density: 9780,
+		conduct: 0.12,
+		hardness: 0.22,
+		state: "solid",
+		fireColor: "#4275db",
+	};
+
+	elements.bismuth_gas = {
+		density: 9, //made-up number
+		fireColor: "#4275db",
+	};
+	
 	neighbors = [[-1,0],[0,-1],[1,0],[0,1]]
 
 	function randomChoice(array) {
 		return array[Math.floor(Math.random() * array.length)];
 	}
 
-	function exposedToAir(pixel) {	
-		return (isEmpty(pixel.x+1,pixel.y) || isEmpty(pixel.x-1,pixel.y) || isEmpty(pixel.x,pixel.y+1) || isEmpty(pixel.x,pixel.y-1));
+	function exposedToAir(pixel) {
+		for(i = 0; i < adjacentCoords.length; i++) {
+			if(isEmpty(pixel.x+adjacentCoords[i][0],pixel.y+adjacentCoords[i][1])) {
+				return true;
+			};
+		};
+		return false;
 	}
 
 	function tryTarnish(pixel,element,chance) {
