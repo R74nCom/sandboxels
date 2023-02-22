@@ -19,6 +19,122 @@ if(enabledMods.includes(variablesMod)) {
 		commandHelpObject.stars = "Clears the screen and replaces it with random stars. Usage: stars <density (number, default: 0.001)> <seed (string or number, no default value)>\nDon't include framing characters <>.\nArguments in <angle brackets> are optional."
 		commandHelpObject.starseed = "Alerts the last used seed for stars. Usage: starseed";
 		var lastStarSeed = "[None]";
+		function seededCreateLargeStar(x,y,minRadius,maxRadius,minTemp,maxTemp,randomFunction) {
+			//console.log("start");
+			var sunPixels = fillCircleReturn("sun",x,y,seededRandBetween(minRadius,maxRadius,randomFunction),true);
+			//console.log("filled");
+			var randTemp = seededRandBetween(minTemp,maxTemp,randomFunction);
+			//console.log("setting temps");
+			for(pixelIndex = 0; pixelIndex < sunPixels.length; pixelIndex++) {
+				//console.log("pixel " + pixelIndex, sunPixels[pixelIndex].element);
+				sunPixels[pixelIndex].temp = randTemp;
+			};
+			//console.log(sunPixels.map(x => x.element));
+			//console.log("finished");
+			return true;
+		};
+		
+			//G
+		elements.red_giant = {
+			color: "#f19898",
+			behavior: behaviors.WALL,
+			tick: function(pixel) {
+				seededCreateLargeStar(pixel.x,pixel.y,3,4,1800,3300,Math.random);
+			},
+			category: "stars",
+			state: "gas",
+			density: 1000,
+		};
+
+		elements.blue_giant = {
+			color: "#a085eb",
+			behavior: behaviors.WALL,
+			tick: function(pixel) {
+				seededCreateLargeStar(pixel.x,pixel.y,2,3,20000,80000,Math.random);
+			},
+			category: "stars",
+			state: "gas",
+			density: 1000,
+		};
+
+		elements.yellow_giant = {
+			color: "#fafad4",
+			behavior: behaviors.WALL,
+			tick: function(pixel) {
+				seededCreateLargeStar(pixel.x,pixel.y,2,3,6000,11000,Math.random);
+			},
+			category: "stars",
+			state: "gas",
+			density: 1000,
+		};
+
+			//SG
+		elements.red_supergiant = {
+			color: "#f48585",
+			behavior: behaviors.WALL,
+			tick: function(pixel) {
+				seededCreateLargeStar(pixel.x,pixel.y,6,8,1700,3200,Math.random);
+			},
+			category: "stars",
+			state: "gas",
+			density: 1000,
+		};
+
+		elements.blue_supergiant = {
+			color: "#93b0ec",
+			behavior: behaviors.WALL,
+			tick: function(pixel) {
+				seededCreateLargeStar(pixel.x,pixel.y,5,7,19000,83000,Math.random);
+			},
+			category: "stars",
+			state: "gas",
+			density: 1000,
+		};
+
+		elements.yellow_supergiant = {
+			color: "#f4f9ae",
+			behavior: behaviors.WALL,
+			tick: function(pixel) {
+				seededCreateLargeStar(pixel.x,pixel.y,5,7,5500,10500,Math.random);
+			},
+			category: "stars",
+			state: "gas",
+			density: 1000,
+		};
+
+			//HG
+		elements.red_hypergiant = {
+			color: "#ee5d5d",
+			behavior: behaviors.WALL,
+			tick: function(pixel) {
+				seededCreateLargeStar(pixel.x,pixel.y,9,12,1600,3100,Math.random);
+			},
+			category: "stars",
+			state: "gas",
+			density: 1000,
+		};
+
+		elements.blue_hypergiant = {
+			color: "#719df4",
+			behavior: behaviors.WALL,
+			tick: function(pixel) {
+				seededCreateLargeStar(pixel.x,pixel.y,8,11,18000,84000,Math.random);
+			},
+			category: "stars",
+			state: "gas",
+			density: 1000,
+		};
+
+		elements.yellow_hypergiant = {
+			color: "#f7f990",
+			behavior: behaviors.WALL,
+			tick: function(pixel) {
+				seededCreateLargeStar(pixel.x,pixel.y,8,11,5000,10000,Math.random);
+			},
+			category: "stars",
+			state: "gas",
+			density: 1000,
+		};
 	};
 
 	function rgbStringToUnvalidatedObject(string) {
@@ -648,7 +764,11 @@ height: ${height}
 											if(randomFunction() < 0.8) { //favor white dwarfs
 												createPixelReturn("sun",i,j).temp = seededRandBetween(100000,300000,randomFunction);
 											} else {
-												elements.neutron_star ? createPixelReturn("neutron_star",i,j).temp = seededRandBetween(100000,10000000,randomFunction) : createPixelReturn("sun",i,j).temp = seededRandBetween(100000,300000,randomFunction);
+												if(!elements.neutron_star) {
+													createPixelReturn("sun",i,j).temp = seededRandBetween(100000,300000,randomFunction);
+												} else {
+													createPixelReturn("neutron_star",i,j).temp = seededRandBetween(2000000,10000000,randomFunction);
+												};
 											};
 										} else { //brown dwarfs
 											createPixelReturn("sun",i,j).temp = seededRandBetween(100,800,randomFunction);
