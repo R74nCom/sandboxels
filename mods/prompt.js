@@ -444,36 +444,36 @@ if(enabledMods.includes(variablesMod)) {
 									var value = randomFunction() ** 4;
 
 									if(value < 0.3) {
-										createPixelReturn("sun",i,j).temp = randomIntegerBetweenTwoValues(1800,3300);
+										createPixelReturn("sun",i,j).temp = seededRandBetween(1800,3300,randomFunction);
 									} else if(value < 0.55) {
-										createPixelReturn("sun",i,j).temp = randomIntegerBetweenTwoValues(3300,5500);
+										createPixelReturn("sun",i,j).temp = seededRandBetween(3300,5500,randomFunction);
 									} else if(value < 0.70) {
-										createPixelReturn("sun",i,j).temp = randomIntegerBetweenTwoValues(5500,8000);
+										createPixelReturn("sun",i,j).temp = seededRandBetween(5500,8000,randomFunction);
 									} else if(value < 0.8) {
-										createPixelReturn("sun",i,j).temp = randomIntegerBetweenTwoValues(8000,13000);
+										createPixelReturn("sun",i,j).temp = seededRandBetween(8000,13000,randomFunction);
 									} else if(value < 0.85) {
-										createPixelReturn("sun",i,j).temp = randomIntegerBetweenTwoValues(13000,35000);
+										createPixelReturn("sun",i,j).temp = seededRandBetween(13000,35000,randomFunction);
 									} else if(value < 0.88) {
-										createPixelReturn("sun",i,j).temp = randomIntegerBetweenTwoValues(35000,90000);
+										createPixelReturn("sun",i,j).temp = seededRandBetween(35000,90000,randomFunction);
 									} else { //other stuff
 										var value2 = randomFunction();
 										if(value2 < 0.5) { //giant stars
 											var value3 = randomFunction();
 											if(value3 < 0.6) { //favor red giants
-												var sunPixels = fillCircleReturn("sun",i,j,randomIntegerBetweenTwoValues(3,4));
-												var randTemp = randomIntegerBetweenTwoValues(1800,3300)
+												var sunPixels = fillCircleReturn("sun",i,j,seededRandBetween(3,4,randomFunction));
+												var randTemp = seededRandBetween(1800,3300,randomFunction);
 												for(pixel in sunPixels) {
 													sunPixels[pixel].temp = randTemp;
 												};
 											} else if(value3 < 0.9) { //blue giants are rarer
-												var sunPixels = fillCircleReturn("sun",i,j,randomIntegerBetweenTwoValues(2,3));
-												var randTemp = randomIntegerBetweenTwoValues(20000,80000)
+												var sunPixels = fillCircleReturn("sun",i,j,seededRandBetween(2,3,randomFunction));
+												var randTemp = seededRandBetween(20000,80000,randomFunction);
 												for(pixel in sunPixels) {
 													sunPixels[pixel].temp = randTemp;
 												};
 											} else { //yellows are even rarer
-												var sunPixels = fillCircleReturn("sun",i,j,randomIntegerBetweenTwoValues(2,3));
-												var randTemp = randomIntegerBetweenTwoValues(6000,11000)
+												var sunPixels = fillCircleReturn("sun",i,j,seededRandBetween(2,3,randomFunction));
+												var randTemp = seededRandBetween(6000,11000,randomFunction);
 												for(pixel in sunPixels) {
 													sunPixels[pixel].temp = randTemp;
 												};
@@ -481,20 +481,20 @@ if(enabledMods.includes(variablesMod)) {
 										} else if(value2 < 0.6) { //supergiants
 											var value3 = randomFunction();
 											if(value3 < 0.6) {
-												var sunPixels = fillCircleReturn("sun",i,j,randomIntegerBetweenTwoValues(6,8));
-												var randTemp = randomIntegerBetweenTwoValues(1700,3200)
+												var sunPixels = fillCircleReturn("sun",i,j,seededRandBetween(6,8,randomFunction));
+												var randTemp = seededRandBetween(1700,3200,randomFunction);
 												for(pixel in sunPixels) {
 													sunPixels[pixel].temp = randTemp;
 												};
 											} else if(value3 < 0.9) {
-												var sunPixels = fillCircleReturn("sun",i,j,randomIntegerBetweenTwoValues(5,7));
-												var randTemp = randomIntegerBetweenTwoValues(19000,83000)
+												var sunPixels = fillCircleReturn("sun",i,j,seededRandBetween(5,7,randomFunction));
+												var randTemp = seededRandBetween(19000,83000,randomFunction);
 												for(pixel in sunPixels) {
 													sunPixels[pixel].temp = randTemp;
 												};
 											} else {
-												var sunPixels = fillCircleReturn("sun",i,j,randomIntegerBetweenTwoValues(5,6));
-												var randTemp = randomIntegerBetweenTwoValues(5500,10500)
+												var sunPixels = fillCircleReturn("sun",i,j,seededRandBetween(5,6,randomFunction));
+												var randTemp = seededRandBetween(5500,10500,randomFunction);
 												for(pixel in sunPixels) {
 													sunPixels[pixel].temp = randTemp;
 												};
@@ -502,32 +502,32 @@ if(enabledMods.includes(variablesMod)) {
 										} else if(value2 < 0.65) { //hypergiants
 											var value3 = randomFunction();
 											if(value3 < 0.6) {
-												var sunPixels = fillCircleReturn("sun",i,j,randomIntegerBetweenTwoValues(9,12));
-												var randTemp = randomIntegerBetweenTwoValues(1600,3100)
+												var sunPixels = fillCircleReturn("sun",i,j,seededRandBetween(9,12,randomFunction));
+												var randTemp = seededRandBetween(1600,3100,randomFunction);
 												for(pixel in sunPixels) {
 													sunPixels[pixel].temp = randTemp;
 												};
 											} else if(value3 < 0.94) {
-												var sunPixels = fillCircleReturn("sun",i,j,randomIntegerBetweenTwoValues(8,11));
-												var randTemp = randomIntegerBetweenTwoValues(18000,84000)
+												var sunPixels = fillCircleReturn("sun",i,j,seededRandBetween(8,11,randomFunction));
+												var randTemp = seededRandBetween(18000,84000,randomFunction);
 												for(pixel in sunPixels) {
 													sunPixels[pixel].temp = randTemp;
 												};
 											} else {
-												var sunPixels = fillCircleReturn("sun",i,j,randomIntegerBetweenTwoValues(8,11));
-												var randTemp = randomIntegerBetweenTwoValues(5000,10000)
+												var sunPixels = fillCircleReturn("sun",i,j,seededRandBetween(8,11,randomFunction));
+												var randTemp = seededRandBetween(5000,10000,randomFunction);
 												for(pixel in sunPixels) {
 													sunPixels[pixel].temp = randTemp;
 												};
 											};
 										} else if(value2 < 0.8) { //white dwarfs/neutron stars
 											if(randomFunction() < 0.8) { //favor white dwarfs
-												createPixelReturn("sun",i,j).temp = randomIntegerBetweenTwoValues(100000,300000);
+												createPixelReturn("sun",i,j).temp = seededRandBetween(100000,300000,randomFunction);
 											} else {
-												elements.neutron_star ? createPixelReturn("neutron_star",i,j).temp = randomIntegerBetweenTwoValues(100000,10000000) : createPixelReturn("sun",i,j).temp = randomIntegerBetweenTwoValues(100000,300000);
+												elements.neutron_star ? createPixelReturn("neutron_star",i,j).temp = seededRandBetween(100000,10000000,randomFunction) : createPixelReturn("sun",i,j).temp = seededRandBetween(100000,300000,randomFunction);
 											};
 										} else { //brown dwarfs
-											createPixelReturn("sun",i,j).temp = randomIntegerBetweenTwoValues(100,800);
+											createPixelReturn("sun",i,j).temp = seededRandBetween(100,800,randomFunction);
 										};
 									};
 								};
