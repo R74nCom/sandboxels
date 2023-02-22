@@ -1446,22 +1446,33 @@
 	};
 
 	function fillCircleReturn(element,x,y,radius,overwrite=false) {
+		//console.log("fcr");
 		var pixels = [];
+		//console.log("pixels initted");
 		var coords = circleCoords(x,y,radius);
+		//console.log("coords gotten");
 		var newElement = element;
+		//console.log("element processing");
 		if(Array.isArray(newElement)) {
 			newElement = newElement[Math.floor(Math.random() * newElement.length)];
 		};
+		//console.log("element processed");
 		for(i = 0; i < coords.length; i++) {
+			//console.log("iterator through spots: " + i);
 			coordX = Math.round(coords[i].x);
 			coordY = Math.round(coords[i].y);
+			//console.log(`coord: (${coords[i].x},${coords[i].y})`);
 			if(overwrite && !isEmpty(coordX,coordY,true)) {
-				pixels.push(changePixelReturn(pixelMap[coordX][coordY],element));
+				//console.log("replaced pixel");
+				pixels.push(changePixelReturn(pixelMap[coordX][coordY],newElement));
 			};
 			if(isEmpty(coordX,coordY,false)) {
-				pixels.push(createPixelReturn(element,coordX,coordY));
+				//console.log("created pixel");
+				pixels.push(createPixelReturn(newElement,coordX,coordY));
 			};
 		};
+		//console.log("fcr finished");
+		//console.log(pixels.map(x => x.element));
 		return pixels;
 	};
 
