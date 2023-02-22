@@ -296,7 +296,9 @@ if(enabledMods.includes(changeTempMod) && enabledMods.includes(runAfterAutogenMo
 	function bismuthCrystallization(pixel) {
 		if(pixel.temp < elements.bismuth.tempHigh) { //initial crystal on cool
 			//pixel.color = "rgb(255,0,0)";
-			pixel.crystalColorCounter ??= 0; //initialize CCC
+				//initialize CCC
+			pixel.crystalColorCounter ??= Math.floor(Math.random() * 8); //initialize CCC
+			//pixel.crystalColorCounter ??= 0; 
 			if(pixel.element !== "bismuth") {
 				pixel.temp -= 0.05; //incentivize cooling
 				pixel.element = "bismuth"
