@@ -67,6 +67,16 @@
 		}
 	} //returns random function seeded with a
 
+	//Seeded randbetween
+	function seededRandBetween(min,max,randomFunction) {
+		if(min > max) {
+			var temp = max;
+			max = min;
+			min = temp;
+		};
+		return Math.floor(randomFunction() * (max - min + 1)) + min
+	};
+
 //Arrays
 
 	//Shallow array comparer by SO Tim Down: https://stackoverflow.com/a/10260204
