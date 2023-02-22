@@ -5,6 +5,9 @@ if(enabledMods.includes(variablesMod)) {
 	commandHelpObject = {
 		"set": "Sets properties for every pixel of a given type.\nUsage: set [property] [element] [value] <type>\nDon't include framing characters []<>.\nThe element can be \"all\" to set the property for every pixel.\nNote: Strings can't have spaces because spaces are the separator used in the parsing split().\nArguments in [brackets] are required and ones in <angle brackets> are optional.",
 		"test": "Test.",
+		"setdimensions": "#This command clears the canvas#\nSets the width and height of the canvas and resets it to regenerate pixelMap.\nThis is offsetted so it doesn't count the OoB area on the top left; a 50x50 save will have a 50x50 usable area.\nUsage: setdimensions [width] [height] <pixel rendering size>.\nDon't include framing characters []<>.\nArguments in [brackets] are required and ones in <angle brackets> are optional.",
+		"pixelsize": "Sets the size of the pixels on screen. If no size is given, it instead alerts the current pixel size. Usage: pixelsize <pixel rendering size>.\nDon't include framing characters <>.\nArguments in <angle brackets> are optional.",
+		"dimensions": "Alerts the current dimensions. Usage: dimensions",
 		"fill": "Fills the screen with the given pixel(s). Usage: fill [Overwrite pixels? (bool)] [element] <additional elements>.\nDon't include framing characters []<>.\nArguments in [brackets] are required and ones in <angle brackets> are optional.\nAdditional elements are separated by spaces.",
 		"randomfill": "Fills the screen with pixels from randomChoices. Usage: randomfill <overwrite pixels? (bool, default: true)>\nDon't include framing characters []<>.\nArguments in <angle brackets> are optional.",
 		"count": "Tells you the amount of a specified pixel on the screen. Usage: count [element]\nDon't include framing characters []<>.\nArguments in [brackets] are required.",
@@ -58,7 +61,7 @@ if(enabledMods.includes(variablesMod)) {
 		inputAsArray = inputText.split(" ");
 		var firstItem = inputAsArray[0];
 		
-		switch(firstItem) {
+		switch(firstItem.toLowerCase()) {
 			case "set":
 				if(inputAsArray.length < 4) {
 					alertIfError(alertError,"Usage: set [property] [element] [value] <type>\nDon't include framing characters []<>.\nThe element can be \"all\" to set the property for every pixel.\nNote: Strings can't have spaces because spaces are the separator used in the parsing split().\nArguments in [brackets] are required and ones in <angle brackets> are optional.");
@@ -245,9 +248,130 @@ if(enabledMods.includes(variablesMod)) {
 				alertIfOutput(alertOutput,"pong");
 				console.log("qwertyuiopasdfghjklzxcvbnm");
 				return true;
+			case "setdimensions":
+				if(inputAsArray.length < 3) {
+					alertIfError(alertError,commandHelpObject.setdimensions);
+					return false;
+				};
+
+				var argWidth = inputAsArray[1];
+
+				var argHeight = inputAsArray[2];
+
+				var argPixelSize = inputAsArray[3];
+				
+				if(argWidth == undefined) {
+					alertIfError(alertError,commandHelpObject.setdimensions);
+					return false;
+				} else {
+					argWidth = parseInt(argWidth);
+					if(isNaN(argWidth)) {
+						alert("Error: width was NaN");
+						console.error("setdimensions: supplied width was NaN");
+						return false;
+					} else {
+						if(argWidth < 1) {
+							alert("Width must be greater than 0");
+							console.error("setdimensions: supplied width was zero or negative");
+							return false;
+						};
+					};
+				};
+				
+				if(argHeight == undefined) {
+					alertIfError(alertError,commandHelpObject.setdimensions);
+					return false;
+				} else {
+					argHeight = parseInt(argHeight);
+					if(isNaN(argHeight)) {
+						alert("Error: height was NaN");
+						console.error("setdimensions: supplied height was NaN");
+						return false;
+					} else {
+						if(argHeight < 1) {
+							alert("Height must be greater than 0");
+							console.error("setdimensions: supplied height was zero or negative");
+							return false;
+						};
+					};
+				};
+				
+				if(argPixelSize == undefined) {
+					argPixelSize = null;
+				} else {
+					argPixelSize = parseFloat(argPixelSize);
+					if(isNaN(argPixelSize)) {
+						argPixelSize = null;
+						alert("pixelSize was NaN, ignoring");
+						console.log("setdimensions: supplied pixelSize was NaN");
+					} else {
+						if(argPixelSize <= 0) {
+							alert("Pixel size was non-positive, ignoring");
+							console.error("setdimensions: supplied pixel size was zero or negative");
+							argPixelSize = null;
+						};
+					};
+				};
+				
+				width = argWidth + 1;
+				
+				height = argHeight + 1;
+				
+				if(typeof(argPixelSize) === "number" && argPixelSize !== null && !isNaN(argPixelSize)) {
+					if(argPixelSize > 0) {
+						pixelSize = argPixelSize;
+					};
+				};
+
+				clearAll();
+
+				return true;
+			case "pixelsize":
+				if(inputAsArray.length < 1) { //?
+					alertIfError(alertError,commandHelpObject.setpixelsize);
+					return false;
+				};
+
+				var argPixelSize = inputAsArray[1];
+				
+				if(argPixelSize == undefined) {
+					argPixelSize = null;
+				} else {
+					argPixelSize = parseFloat(argPixelSize);
+					if(isNaN(argPixelSize)) {
+						alert("Error: size was NaN");
+						console.error("setpixelsize: supplied pixel size was NaN");
+						return false;
+					};
+				};
+				
+				if(typeof(argPixelSize) === "number" && argPixelSize !== null && !isNaN(argPixelSize)) {
+					if(argPixelSize <= 0) {
+						alert("Pixel size must be greater than 0");
+						console.error("setpixelsize: supplied pixel size was zero or negative");
+						return false;
+					} else {
+						pixelSize = argPixelSize;
+					};
+				} else {
+					alert(pixelSize);
+				};
+
+				return pixelSize;
+			case "dimensions":
+				if(inputAsArray.length < 1) { //?
+					alertIfError(alertError,commandHelpObject.dimensions);
+					return false;
+				};
+
+alert(`width: ${width}
+height: ${height}
+(Usable area is 1 pixel less in both dimensions)`);
+
+				return [width,height];
 			case "fill":
 				if(inputAsArray.length < 3) {
-					alertIfError(alertError,"Usage: fill [overwrite (should be a bool)] [element] <additional elements>.\nDon't include framing characters []<>.\nArguments in [brackets] are required and ones in <angle brackets> are optional.");
+					alertIfError(alertError,commandHelpObject.fill);
 					return false;
 				};
 				
