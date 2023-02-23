@@ -72,18 +72,21 @@ Proper classification of limestone within these code comments
 			}
 		};
 
+		ferromagneticMaterials = ["iron", "cobalt", "nickel", "steel", "hematite"];
+
 		function neutronStarLightAndConduction(pixel,c,whitelist=["neutron_star"]) {
 			for (var i = 0; i < adjacentCoords.length; i++) {
 				var x = pixel.x+adjacentCoords[i][0];
 				var y = pixel.y+adjacentCoords[i][1];
 				if (isEmpty(x,y)) {
 					if (Math.random() <= c) {
-						createPixel(Math.random() < 0.8 ? "light" : "neutron", x, y);
+						createPixel(Math.random() < 0.995 ? "light" : "neutron", x, y);
 						pixelMap[x][y].color = pixel.color;
 					};
 				} else if (!outOfBounds(x,y)) {
 					var newPixel = pixelMap[x][y];
-					if(Math.random() < 0.1 && newPixel.conduct) { newPixel.charge = 3 }; //no magnetism in sb
+					//console.log(elements[newPixel.element].conduct);
+					if(ferromagneticMaterials.includes(newPixel.element) && (Math.random() < 0.1)) { newPixel.charge = 20 }; //no magnetism in sb
 					//console.log(whitelist,newPixel.element,whitelist.includes(newPixel.element));
 					if (pixel.temp!==newPixel.temp && whitelist.includes(newPixel.element)) {
 						var avg = (pixel.temp + newPixel.temp)/2;
