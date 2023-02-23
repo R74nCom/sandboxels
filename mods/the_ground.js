@@ -74,7 +74,43 @@ Proper classification of limestone within these code comments
 
 		ferromagneticMaterials = ["iron", "cobalt", "nickel", "steel", "hematite"];
 
+		if(!enabledMods.includes("mods/code_library.js")) {
+			//x = real number
+			//L = maximum value
+			//x_0 = "the x value of the sigmoid midpoint" i.e. the x center of the bendy part
+			//k = steepness
+			function logisticCurve(x,L,k,x0) {
+				return L/(   1 + (  Math.E ** ( -k * (x - x0) )  )   );
+			};
+
+			// https://stackoverflow.com/questions/10756313/javascript-jquery-map-a-range-of-numbers-to-another-range-of-numbers
+			// Function from August Miller
+			function scale (number, inMin, inMax, outMin, outMax) {
+				return (number - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+			};
+		};
+
 		function neutronStarLightAndConduction(pixel,c,whitelist=["neutron_star"]) {
+			var pixelAge = pixelTicks - pixel.start;
+			var coolingFactor;
+			var logistic = logisticCurve(pixelAge/1000, 1, 0.6, -7.7);
+			if(pixel.temp > 1000000) {
+				//console.log('case 1');
+				coolingFactor = logistic
+			};
+			if(pixel.temp <= 1000000 && pixel.temp > 100000) {
+				//console.log('case 2');
+				//console.log("l",logistic);
+				coolingFactor = scale(pixel.temp,1000000,100000,logistic,0.99999);
+				//if(pixelAge % 10 == 0 || pixel.temp < 100500) { console.log(coolingFactor) };
+			};
+			if(pixel.temp < 100000) {
+				//console.log('case 3');
+				coolingFactor = 0.99999
+			};
+			//console.log(coolingFactor);
+			pixel.temp = ((pixel.temp + 273.15) * coolingFactor) - 273.15;
+			
 			for (var i = 0; i < adjacentCoords.length; i++) {
 				var x = pixel.x+adjacentCoords[i][0];
 				var y = pixel.y+adjacentCoords[i][1];
@@ -2151,7 +2187,7 @@ Proper classification of limestone within these code comments
 				tick: function(pixel) {
 					nsTick(pixel,0.7,stellarPlasmaSpreadWhitelist);
 				},
-                temp: 1e6, //can be a lot hotter, but the cooling involves neutrons and their whole gimmick is going through things, which isn't really possible in this game
+                temp: 1e12,
                 category: "special",
                 state: "gas",
                 density: 1e17,
