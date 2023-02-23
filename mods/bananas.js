@@ -1,7 +1,8 @@
 var modName = "mods/bananas.js";
 var onTryMoveIntoMod = "mods/onTryMoveInto.js";
+var libraryMod = "mods/code_library.js";
 
-if(enabledMods.includes(onTryMoveIntoMod)) {
+if(enabledMods.includes(onTryMoveIntoMod) && enabledMods.includes(libraryMod)) {
 	randomNumberFromOneToThree = function() {
 		return 1 + Math.floor(Math.random() * 3)
 	};
@@ -10,12 +11,6 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 	logLeaves = false;
 	bananaAttachWhitelist = ["banana_pseudostem","banana_peduncle_1","banana_peduncle_2","petal","banana_leaf","banana_plant_top","banana"];
 	
-	// https://stackoverflow.com/questions/10756313/javascript-jquery-map-a-range-of-numbers-to-another-range-of-numbers
-	// Function from August Miller
-	function scale(number, inMin, inMax, outMin, outMax) {
-		return (number - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
-	};
-
 	bananaDirtElements = ["dirt","mud","sand","wet_sand","clay_soil","mycelium","grass"];
 
 	function logPixelCoords(pixel) {
@@ -541,7 +536,8 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 		tick: functi
 	};*/
 } else {
-	alert(`The ${onTryMoveIntoMod} mod is required and has been automatically inserted (reload for this to take effect).`)
-	enabledMods.splice(enabledMods.indexOf(modName),0,onTryMoveIntoMod)
+	enabledMods.splice(enabledMods.indexOf(modName),0,onTryMoveIntoMod);
+	enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod);
 	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
+	alert(`The ${onTryMoveIntoMod} mod and ${libraryMod} mods are required and have been automatically inserted (reload for this to take effect).`);
 };
