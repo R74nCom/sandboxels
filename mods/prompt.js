@@ -43,6 +43,9 @@ if(enabledMods.includes(variablesMod)) {
 			},
 			category: "stars",
 			state: "gas",
+			excludeRandom: true,
+			maxSize: 1,
+			cooldown: defaultCooldown,
 			density: 1000,
 		};
 
@@ -54,6 +57,9 @@ if(enabledMods.includes(variablesMod)) {
 			},
 			category: "stars",
 			state: "gas",
+			excludeRandom: true,
+			maxSize: 1,
+			cooldown: defaultCooldown,
 			density: 1000,
 		};
 
@@ -65,6 +71,9 @@ if(enabledMods.includes(variablesMod)) {
 			},
 			category: "stars",
 			state: "gas",
+			excludeRandom: true,
+			maxSize: 1,
+			cooldown: defaultCooldown,
 			density: 1000,
 		};
 
@@ -77,6 +86,9 @@ if(enabledMods.includes(variablesMod)) {
 			},
 			category: "stars",
 			state: "gas",
+			excludeRandom: true,
+			maxSize: 1,
+			cooldown: defaultCooldown,
 			density: 1000,
 		};
 
@@ -88,6 +100,9 @@ if(enabledMods.includes(variablesMod)) {
 			},
 			category: "stars",
 			state: "gas",
+			excludeRandom: true,
+			maxSize: 1,
+			cooldown: defaultCooldown,
 			density: 1000,
 		};
 
@@ -99,6 +114,9 @@ if(enabledMods.includes(variablesMod)) {
 			},
 			category: "stars",
 			state: "gas",
+			excludeRandom: true,
+			maxSize: 1,
+			cooldown: defaultCooldown,
 			density: 1000,
 		};
 
@@ -111,6 +129,9 @@ if(enabledMods.includes(variablesMod)) {
 			},
 			category: "stars",
 			state: "gas",
+			excludeRandom: true,
+			maxSize: 1,
+			cooldown: defaultCooldown,
 			density: 1000,
 		};
 
@@ -122,6 +143,9 @@ if(enabledMods.includes(variablesMod)) {
 			},
 			category: "stars",
 			state: "gas",
+			excludeRandom: true,
+			maxSize: 1,
+			cooldown: defaultCooldown,
 			density: 1000,
 		};
 
@@ -133,6 +157,9 @@ if(enabledMods.includes(variablesMod)) {
 			},
 			category: "stars",
 			state: "gas",
+			excludeRandom: true,
+			maxSize: 1,
+			cooldown: defaultCooldown,
 			density: 1000,
 		};
 	};
