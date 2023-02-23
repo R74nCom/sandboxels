@@ -40,7 +40,7 @@ if(enabledMods.includes(onTryMoveIntoMod) && enabledMods.includes(libraryMod)) {
 			return false;
 		};
 		var otherInfo = elements[otherPixel.element]
-		if((otherInfo.state ?? "solid") == "solid") {
+		if((otherInfo.state ?? "solid") == "solid" && (otherInfo.density ?? 1000) >= 200) {
 			//console.log(otherPixel.element,otherInfo.state);
 			var outputOffsets = [pixel.x - otherPixel.x, pixel.y - otherPixel.y];
 			var twiceOffsets = outputOffsets.map(x => x * 2);
