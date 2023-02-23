@@ -284,6 +284,22 @@
 		return number1 + number2
 	}
 
+	//Logistic curve
+		//x = real number
+		//L = maximum value
+		//x_0 = "the x value of the sigmoid midpoint" i.e. the x center of the bendy part
+		//k = steepness
+	function logisticCurve(x,L,k,x0) {
+		return L/(   1 + (  Math.E ** ( -k * (x - x0) )  )   );
+	};
+
+	// https://stackoverflow.com/questions/10756313/javascript-jquery-map-a-range-of-numbers-to-another-range-of-numbers
+	// Function from August Miller
+	//Map a range of numbers to another range of numbers
+	function scale (number, inMin, inMax, outMin, outMax) {
+		return (number - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+	}
+
 //Color
 
 	function rgbStringToUnvalidatedObject(string) { //turns rgb() to {r,g,b} with no bounds checking
