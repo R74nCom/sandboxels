@@ -590,7 +590,7 @@ elements.liquid_neutronium = {
 	color: "#ffffaa",
 	behavior2: [
 		"XX|CR:neutron%0.2|XX".split("|"),
-		"M2 AND CR:neutron%0.2|XX|M2 AND CR:neutron%0.2".split("|"),
+		"M1 AND CR:neutron%0.2|XX|M1 AND CR:neutron%0.2".split("|"),
 		"M1|M1|M1".split("|"),
 	],
 	tick: function(pixel) {
