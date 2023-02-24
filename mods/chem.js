@@ -590,11 +590,27 @@ elements.liquid_neutronium = {
 	color: "#ffffaa",
 	behavior2: [
 		"XX|CR:neutron%0.2|XX".split("|"),
-		"M1 AND CR:neutron%0.2|XX|M1 AND CR:neutron%0.2".split("|"),
+		"M2 AND CR:neutron%0.2|XX|M2 AND CR:neutron%0.2".split("|"),
 		"M1|M1|M1".split("|"),
 	],
 	tick: function(pixel) {
-		if(
+        if(
+        ((!isEmpty(pixel.x-1,pixel.y,false) && 
+        (isEmpty(pixel.x-1,pixel.y,true) || pixelMap[pixel.x-1][pixel.y].element !== "liquid_neutronium"))) && 
+        !(outOfBounds(pixel.x-1,pixel.y-1) ||
+        !isEmpty(pixel.x-1,pixel.y-1,true)))
+        {
+            tryMove(pixel, pixel.x-1, pixel.y-1);
+        }
+        else if(
+        ((!isEmpty(pixel.x+1,pixel.y,false) && 
+        (isEmpty(pixel.x+1,pixel.y,true) || pixelMap[pixel.x+1][pixel.y].element !== "liquid_neutronium"))) && 
+        !(outOfBounds(pixel.x+1,pixel.y-1) ||
+        !isEmpty(pixel.x+1,pixel.y-1,true)))
+        {
+            tryMove(pixel, pixel.x+1, pixel.y-1);
+        }
+		else if(
 		((!isEmpty(pixel.x+1,pixel.y,false) && 
 		(isEmpty(pixel.x+1,pixel.y,true) || pixelMap[pixel.x+1][pixel.y].element !== "liquid_neutronium")) || 
 		(!isEmpty(pixel.x-1,pixel.y,false) && 
@@ -604,7 +620,7 @@ elements.liquid_neutronium = {
 		{
 			tryMove(pixel, pixel.x, pixel.y-1);
 		}
-		else
+        else 
 		{
 			pixelTick(pixel,elements.liquid_neutronium.behavior2);
 		}
@@ -628,20 +644,44 @@ elements.liquid_helium.behavior2 = [
 elements.liquid_helium.behavior = null;
 
 elements.liquid_helium.tick = function(pixel) {
-	if(
-	((!isEmpty(pixel.x+1,pixel.y,false) && 
-	(isEmpty(pixel.x+1,pixel.y,true) || pixelMap[pixel.x+1][pixel.y].element !== "liquid_helium")) || 
-	(!isEmpty(pixel.x-1,pixel.y,false) && 
-	(isEmpty(pixel.x-1,pixel.y,true) || pixelMap[pixel.x-1][pixel.y].element !== "liquid_helium"))) && 
-	!(outOfBounds(pixel.x,pixel.y-1) ||
-	!isEmpty(pixel.x,pixel.y-1,true)))
-	{
-		tryMove(pixel, pixel.x, pixel.y-1);
-	}
-	else
-	{
-		pixelTick(pixel,elements.liquid_helium.behavior2);
-	}
+    if(Math.random() < 0.9)
+    {
+        if(
+        ((!isEmpty(pixel.x-1,pixel.y,false) && 
+        (isEmpty(pixel.x-1,pixel.y,true) || pixelMap[pixel.x-1][pixel.y].element !== "liquid_helium"))) && 
+        !(outOfBounds(pixel.x-1,pixel.y-1) ||
+        !isEmpty(pixel.x-1,pixel.y-1,true)))
+        {
+            tryMove(pixel, pixel.x-1, pixel.y-1);
+        }
+        else if(
+        ((!isEmpty(pixel.x+1,pixel.y,false) && 
+        (isEmpty(pixel.x+1,pixel.y,true) || pixelMap[pixel.x+1][pixel.y].element !== "liquid_helium"))) && 
+        !(outOfBounds(pixel.x+1,pixel.y-1) ||
+        !isEmpty(pixel.x+1,pixel.y-1,true)))
+        {
+            tryMove(pixel, pixel.x+1, pixel.y-1);
+        }
+        else if(
+        ((!isEmpty(pixel.x+1,pixel.y,false) && 
+        (isEmpty(pixel.x+1,pixel.y,true) || pixelMap[pixel.x+1][pixel.y].element !== "liquid_helium")) || 
+        (!isEmpty(pixel.x-1,pixel.y,false) && 
+        (isEmpty(pixel.x-1,pixel.y,true) || pixelMap[pixel.x-1][pixel.y].element !== "liquid_helium"))) && 
+        !(outOfBounds(pixel.x,pixel.y-1) ||
+        !isEmpty(pixel.x,pixel.y-1,true)))
+        {
+            tryMove(pixel, pixel.x, pixel.y-1);
+        }
+        else 
+        {
+            pixelTick(pixel,elements.liquid_helium.behavior2);
+        }
+    }
+    else 
+    {
+        pixelTick(pixel,elements.liquid_helium.behavior2);
+    }
+	doDefaults(pixel);
 };
 
 
@@ -1189,3 +1229,81 @@ elements.molten_magnesium_chloride = {
     conduct: 0.3,
 };
 
+elements.francium = {
+    color: "#3eff3b",
+    behavior: [
+        "XX|CR:radiation%50|XX",
+        "CR:radiation%50|CH:radon%0.1|CR:radiation%50",
+        "M2|M1|M2",
+    ],
+    tick: function(pixel) {
+        pixel.temp += 5;
+    },
+    reactions: {
+        "water": { "elem1":"radon", "elem2":"rad_pop"},
+        "salt_water": { "elem1":"radon", "elem2":"rad_pop"},
+        "sugar_water": { "elem1":"radon", "elem2":"rad_pop"},
+        "dirty_water": { "elem1":"radon", "elem2":"rad_pop"},
+        "seltzer": { "elem1":"radon", "elem2":"rad_pop"},
+        "steam": { "elem1":"radon", "elem2":"rad_pop"},
+        "rad_steam": { "elem1":"radon", "elem2":"rad_pop"}
+    },
+    tempHigh: 27,
+    category: "powders",
+    state: "solid",
+    density: 2480,
+},
+elements.molten_francium = {
+    color: "#3eff3b",
+    behavior: [
+        "XX|CR:radiation%50|XX",
+        "M2 AND CR:radiation%50|CH:radon%0.1|M2 AND CR:radiation%50",
+        "M1|M1|M1",
+    ],
+    tick: function(pixel) {
+        pixel.temp += 5;
+    },
+    reactions: {
+        "water": { "elem1":"radon", "elem2":"rad_pop"},
+        "salt_water": { "elem1":"radon", "elem2":"rad_pop"},
+        "sugar_water": { "elem1":"radon", "elem2":"rad_pop"},
+        "dirty_water": { "elem1":"radon", "elem2":"rad_pop"},
+        "seltzer": { "elem1":"radon", "elem2":"rad_pop"},
+        "steam": { "elem1":"radon", "elem2":"rad_pop"},
+        "rad_steam": { "elem1":"radon", "elem2":"rad_pop"}
+    },
+    tempLow: 27,
+    hidden: true,
+    state: "liquid",
+    density: 2480,
+},
+
+elements.radon = {
+    color: "#b6ffb5",
+    behavior: [
+        "M2|M1 AND CR:radiation%10|M2",
+        "M1 AND CR:radiation%10|CH:lead%0.1|M1 AND CR:radiation%10",
+        "M2|M1 AND CR:radiation%10|M2",
+    ],
+    tick: function(pixel) {
+        pixel.temp += 1;
+    },
+    category: "gases",
+    state: "gas",
+    density: 9.73,
+},
+
+
+elements.rad_pop = {
+    color: ["#ffb48f","#ffd991","#ffad91"],
+    behavior: [
+        "XX|XX|XX",
+        "XX|EX:10>fire,radiation,rad_steam,radon|XX",
+        "XX|XX|XX",
+    ],
+    category: "energy",
+    state: "gas",
+    density: 1000,
+    excludeRandom: true,
+    hidden: true,
+}
