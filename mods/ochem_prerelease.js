@@ -178,9 +178,13 @@ if(enabledMods.includes(fireMod)) {
 
 				elements.acetylene_ice = {
 					color: "#ffa8d8",
-					behavior: behaviors.WALL,
+					behavior: behaviors.POWDER,
 					state: "solid",
 					category: "states",
+					reactions: {
+						liquid_oxygen: { elem1: ["acetylene_ice","oxy_fuel_slush"], elem2: null, changeTemp: false },
+						oxygen_ice: { elem1: ["acetylene_ice","oxy_fuel_snow"], elem2: null, changeTemp: false },
+					},
 					tick: function(pixel) {
 						if(pixel.temp > 325 && !pixel.burning) {
 							pixel.burning = true;
@@ -513,6 +517,59 @@ if(enabledMods.includes(fireMod)) {
 					burnInto: ["fire","plasma"],
 					tempLow: -84,
 					stateLow: ["oxygen","oxygen","acetylene_ice"],
+					hidden: true,
+				};
+
+				elements.oxy_fuel_slush = {
+					color: "#d85fed", 
+					behavior: behaviors.LIQUID,
+					viscosity: 100,
+					state: "liquid",
+					category: "liquids",
+					tick: function(pixel) { //tick-based autoignition point to trigger acetylene fire properties
+						if(pixel.temp > 325 && !pixel.burning) {
+							pixel.burning = true;
+						};
+					},
+					density: 873, //made-up
+					burn: 100, 
+					burnTime: 10,
+					burnTempChange: 330,
+					fireSpawnTemp: 3100,
+					fireSpawnChance: 5, //reduce own flame to reduce said effects from smoke
+					fireElement: ["oxy_fuel","fire","plasma"],
+					fireColor: "#5e91ff",
+					burnInto: "oxy_fuel",
+					temp: -200,
+					tempLow: -218.8,
+					stateLow: "oxy_fuel_snow",
+					tempHigh: -183.94,
+					stateHigh: ["oxygen","oxygen","acetylene_ice"],
+					hidden: true,
+				};
+
+				elements.oxy_fuel_snow = {
+					color: "#dd9afc", 
+					behavior: behaviors.POWDER,
+					state: "solid",
+					category: "powders",
+					tick: function(pixel) { //tick-based autoignition point to trigger acetylene fire properties
+						if(pixel.temp > 325 && !pixel.burning) {
+							pixel.burning = true;
+						};
+					},
+					density: 912, //made-up
+					burn: 100, 
+					temp: -250,
+					burnTime: 10,
+					burnTempChange: 330,
+					fireSpawnTemp: 3100,
+					fireSpawnChance: 5, //reduce own flame to reduce said effects from smoke
+					fireElement: ["fire","plasma"],
+					fireColor: "#5e91ff",
+					burnInto: "oxy_fuel",
+					tempHigh: -218.8,
+					stateHigh: "oxy_fuel_slush",
 					hidden: true,
 				};
 
