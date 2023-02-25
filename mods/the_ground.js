@@ -1,8 +1,5 @@
-//This mod is on indefinite hiatus
-
 /*
 TODO:
-Fill in remaining IRs (if they exist, and i might make some up if they don't)
 Soils
 More sedimentary rocks
 Metamorphic rocks
@@ -10,6 +7,14 @@ Metamorphic rocks
 Merge crimson?
 Proper classification of limestone within these code comments
 */
+
+//Variables
+	
+	//var vitreousInterfelsicName = "obsidian";
+	var vitreousInterfelsicName = "dacidian";
+	var vitreousIntermediateName = "andesidian";
+	var vitreousMaficName = "basalidian";
+	var vitreousUltramaficName = "komatidian";
 
 //Functions
 
@@ -231,7 +236,40 @@ Proper classification of limestone within these code comments
 				};
 			};
 		};
+	
+	//Cooling rate-varied magma solidification
+
+	function magmaRateBasedCooling(pixel,freezingPoint,vitriteName,vitriteThreshold,aphaniteName,aphaniteThreshold,phaneriteName) {
+		pixel.lastTemperatures ??= [];
+		pixel.lastTemperatures.push(pixel.temp); //due to how it's structured, last temp will always equal pixel.temp;
+
+		while(pixel.lastTemperatures.length > 2) {
+			pixel.lastTemperatures.shift();
+		};
 		
+		if(pixel.lastTemperatures.length > 1) {
+			var overallTemperatureChangeRate = (pixel.temp - pixel.lastTemperatures[0]) / (pixel.lastTemperatures.length - 1);
+			//console.log(overallTemperatureChangeRate);
+			if(overallTemperatureChangeRate >= 0) {
+				return;
+			};
+			if(pixel.temp > freezingPoint) {
+				return;
+			};
+			//console.log(pixel.x,pixel.y,overallTemperatureChangeRate)
+			if(overallTemperatureChangeRate < vitriteThreshold) { //numbers made up
+				//console.log("f99fd90");
+				changePixel(pixel,vitriteName,false);
+			} else if(overallTemperatureChangeRate < aphaniteThreshold) {
+				//console.log("aaaaaaaaaa");
+				changePixel(pixel,aphaniteName,false);
+			} else {
+				//console.log("03");
+				changePixel(pixel,phaneriteName,false);
+			};
+		};
+	};
+
 //Terrain
 
 	//Soils
@@ -562,6 +600,7 @@ Proper classification of limestone within these code comments
 						color: ["#F3C3AD", "#F0AB75", "#DDA888", "#BD927E", "#998473", "#5C5E53", "#BD8366"],
 						behavior: behaviors.WALL,
 						category: "land",
+						state: "solid",
 						tempHigh: 1215,
 						stateHigh: "felsic_magma",
 						density: 2691,
@@ -573,6 +612,7 @@ Proper classification of limestone within these code comments
 						color: ["#E3B39D", "#E09B65", "#CD9878", "#AD826E", "#897463", "#4C4E43", "#AD7356", "#F3C3AD", "#F0AB75", "#DDA888", "#BD927E", "#998473", "#5C5E53", "#BD8366", "#FFD3BD", "#FFBB85", "#EDB898", "#CDA28E", "#A99483", "#6C6E63", "#CD9376"],
 						behavior: behaviors.POWDER,
 						category: "land",
+						state: "solid",
 						tempHigh: 1215,
 						stateHigh: "felsic_magma",
 						density: 1320,
@@ -583,13 +623,17 @@ Proper classification of limestone within these code comments
 						"magma": { "elem1": "intermediate_magma", "elem2": "intermediate_magma" },
 						"ash": { "elem1": null, "elem2": "molten_slag" },
 						"dust": { "elem1": null, "elem2": "molten_slag" },
+						"foam": { "elem1": "pumice", "elem2": "pumice" },
+					  },
+					  tick: function(pixel) {
+						  magmaRateBasedCooling(pixel,780,"obsidian",-85,"rhyolite",-20,"granite"); //to give rhyolites a chance
 					  },
 					  "name": "felsic magma",
 					  "color": ["#FFF457", "#FF9257", "#FF9200", "#FFD63B", "#FFAB3B", "#FF8000", "#FFD244", "#FFA844", "#FF7E00", "#FFB73F", "#FF923F", "#FF6E00", "#FFA53A", "#FF843A", "#FF6300", "#B8762A", "#B85E2A", "#B84700", "#FFA433", "#FF8333", "#FF6200"],
 					  "behavior": behaviors.MOLTEN,
-					  "temp": 1215,
-					  "tempLow": 800,
-					  "stateLow": ["rhyolite","rhyolite","rhyolite","granite"],
+					  "temp": 1300,
+					  "tempLow": -Infinity, //cosmetic info
+					  "stateLow": ["rhyolite","granite","obsidian"],
 					  "viscosity": 100000000,
 					  "hidden": true,
 					  "state": "liquid",
@@ -603,7 +647,8 @@ Proper classification of limestone within these code comments
 						color: ["#B1AB9D", "#262001", "#A6A292", "#D6C5BC", "#F2F2F2", "#DED8C2", "#978871", "#A8AAA7"], //From image: By Rudolf Pohl - Own work, CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=7788350
 						behavior: behaviors.WALL,
 						category: "land",
-						tempHigh: 1050, //poorly searchable term, little findable information, idk if accurate
+						state: "solid",
+						tempHigh: 1277, //made-up/interpolated from granite and diorite
 						stateHigh: "intermediate_felsic_magma",
 						density: 2644, //last 2 digits made up again
 						hardness: 0.75,
@@ -614,7 +659,8 @@ Proper classification of limestone within these code comments
 						color: ["#A19B8D", "#161000", "#969282", "#C6B5AC", "#E2E2E2", "#CEC8B2", "#877861", "#989A97", "#B1AB9D", "#262001", "#A6A292", "#D6C5BC", "#F2F2F2", "#DED8C2", "#978871", "#A8AAA7", "#C1BBAD", "#363011", "#B6B2A2", "#E6D5CC", "#FFFFFF", "#EEE8D2", "#A79881", "#B8BAB7"], //placeholder
 						behavior: behaviors.POWDER,
 						category: "land",
-						tempHigh: 1050,
+						state: "solid",
+						tempHigh: 1277,
 						stateHigh: "intermediate_felsic_magma",
 						density: 1296,
 					};
@@ -624,13 +670,17 @@ Proper classification of limestone within these code comments
 						"magma": { "elem1": "intermediate_magma", "elem2": "intermediate_magma" },
 						"ash": { "elem1": null, "elem2": "molten_slag" },
 						"dust": { "elem1": null, "elem2": "molten_slag" },
+						"foam": { "elem1": "intermediate_pumice", "elem2": "intermediate_pumice" },
+					  },
+					  tick: function(pixel) {
+						  magmaRateBasedCooling(pixel,1020,vitreousInterfelsicName,-95,"dacite",-23,"granodiorite");
 					  },
 					  "name": "intermediate felsic magma",
 					  "color": ["#FFD64F", "#FFAB4F", "#FF8000", "#7C5831", "#7C5031", "#7C5830", "#FFCB49", "#FFA249", "#FF7A00", "#FFF65E", "#FFC55E", "#FF9400", "#FFFF79", "#FFF279", "#FFB600", "#FFFF61", "#FFD861", "#FFA200", "#FFAA39", "#FF8839", "#FF6600", "#FFD554", "#FFAA54", "#FF8000"],
 					  "behavior": behaviors.MOLTEN,
 					  "temp": 1200,
-					  "tempLow": 1050,
-					  "stateLow": ["dacite","dacite","dacite","granodiorite"],
+					  "tempLow": -Infinity,
+					  "stateLow": ["dacite","granodiorite",vitreousInterfelsicName],
 					  "viscosity": 18700000, //10^average of logarithms
 					  "hidden": true,
 					  "state": "liquid",
@@ -645,6 +695,7 @@ Proper classification of limestone within these code comments
 						//By Michael C. Rygel - Own work, CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=31124755
 						behavior: behaviors.WALL,
 						category: "land",
+						state: "solid",
 						tempHigh: 1300,
 						stateHigh: "intermediate_magma",
 						density: 2822, //last 2 digits made up.
@@ -656,6 +707,7 @@ Proper classification of limestone within these code comments
 						color: ["#F1F1F1","#E1E1E1","#D1D1D1","#C0B6A6","#B0A696","#A09686","#808281","#707271","#606261","#535469","#434459","#333449","#343434","#242424","#141414"],
 						behavior: behaviors.POWDER,
 						category: "land",
+						state: "solid",
 						tempHigh: 1260,
 						stateHigh: "intermediate_magma",
 						density: 1717, //approximated from granite values
@@ -665,13 +717,17 @@ Proper classification of limestone within these code comments
 						"reactions": {
 							"ash": { "elem1": null, "elem2": "molten_slag" },
 							"dust": { "elem1": null, "elem2": "molten_slag" },
+							"foam": { "elem1": "scoria", "elem2": "scoria" },
 						},
 						"name": "intermediate magma",
 						"color": ["#FFFF70", "#FFE170", "#FFA800", "#FFCF4B", "#FFA64B", "#FF7C00", "#E08E38", "#E07238", "#E05500", "#86552C", "#86442C", "#863300", "#482D12", "#482412", "#481B00"],
 						"behavior": behaviors.MOLTEN,
+						tick: function(pixel) {
+							magmaRateBasedCooling(pixel,1065,vitreousIntermediateName,-105,"andesite",-26,"diorite");
+						},
 						"temp": 1215,
-						"tempLow": 1115,
-						"stateLow": ["andesite", "andesite", "andesite", "diorite"],
+						"tempLow": -Infinity,
+						"stateLow": ["andesite","diorite",vitreousIntermediateName],
 						"viscosity": 350000,
 						"hidden": true,
 						"state": "liquid",
@@ -681,10 +737,19 @@ Proper classification of limestone within these code comments
 
 				//Mafic: gabbro
 
-					elements.magma.name = "mafic magma" //because it cools into basalt
-					//the vanilla viscosity checks out
-					elements.rock.name = "gabbro" //based on it melting into mostly basalt, I am assuming that this is mafic magma cooling quickly, and thus assuming that the remainder is magma cooling more slowly into a phaneritic rock, and that woudld be gabbro
-					elements.magma.density = 2650
+					elements.rock.name = "gabbro";
+					elements.rock.tempHigh = 1474;
+					elements.rock.density = 3300;
+					elements.rock.breakInto = ["gravel"];
+					elements.magma.name = "mafic magma";
+					elements.magma.density = 2650;
+					elements.magma.tick = function(pixel) {
+						magmaRateBasedCooling(pixel,1180,vitreousMaficName,-115,"basalt",-29,"rock");
+					};
+					elements.magma.tempLow = -Infinity;
+					elements.magma.stateLow = ["basalt","gabbro",vitreousMaficName]
+					elements.magma.reactions ??= {};
+					elements.magma.reactions.foam = { "elem1": "mafic_scoria", "elem2": "mafic_scoria" };
 
 				//Ultramafic: peridotite
 
@@ -692,6 +757,7 @@ Proper classification of limestone within these code comments
 						color: ["#908557","#A29E78","#7F8044","#C6BC87","#8C8656","#7C7C40","#837840","#8B8B69"],
 						behavior: behaviors.WALL,
 						category: "land",
+						state: "solid",
 						tempHigh: 1400,
 						stateHigh: "ultramafic_magma",
 						density: 3347, //appr from https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/GL003i009p00509#:~:text=Abstract,and%20the%20bulk%20rock%20analyses.
@@ -703,6 +769,7 @@ Proper classification of limestone within these code comments
 						color: ["#807547","#928e68","#6f7034","#b6ac77","#7c7646","#6c6c30","#736830","#7b7b59","#908557","#a29e78","#7f8044","#c6bc87","#8c8656","#7c7c40","#837840","#8b8b69","#a09567","#b2ae88","#8f9054","#d6cc97","#9c9666","#8c8c50","#938850","#9b9b79"],
 						behavior: behaviors.POWDER,
 						category: "land",
+						state: "solid",
 						tempHigh: 1400,
 						stateHigh: "ultramafic_magma",
 						density: 1681,
@@ -716,9 +783,12 @@ Proper classification of limestone within these code comments
 					  "name": "ultramafic magma",
 					  "color": ["#ffa62b","#ff852b","#ff6300","#ffc53c","#ff9e3c","#ff7600","#fea022","#fe8022","#fe6000","#ffeb43","#ffbc43","#ff8d00","#ffa72b","#ff862b","#ff6400","#f89b20","#f87c20","#f85d00","#ff9620","#ff7820","#ff5a00","#ffad34","#ff8b34","#ff6800"],
 					  "behavior": behaviors.MOLTEN,
+					  tick: function(pixel) {
+						magmaRateBasedCooling(pixel,1280,vitreousUltramaficName,-125,"komatiite",-32,"peridotite");
+					  },
 					  "temp": 1500,
-					  "tempLow": 1390,
-					  "stateLow": ["peridotite","komatiite","komatiite","komatiite"],
+					  "tempLow": -Infinity,
+					  "stateLow": ["komatiite","peridotite",vitreousUltramaficName],
 					  "viscosity": 100,
 					  "hidden": true,
 					  "state": "liquid",
@@ -735,6 +805,7 @@ Proper classification of limestone within these code comments
 						// also from one of Michael C. Rygel's images
 						behavior: behaviors.WALL,
 						category: "land",
+						state: "solid",
 						tempHigh: 800,
 						stateHigh: "felsic_magma",
 						density: 2555, //very wide range
@@ -746,6 +817,7 @@ Proper classification of limestone within these code comments
 						color: ["#B68163","#A67153","#966143","#CFA68E","#BF967E","#AF866E","#E9C5B0","#D9B5A0","#C9A590","#9C634E","#8C533E","#7C432E","#D9AF96","#C99F86","#B98F76","#D5A98E","#C5997E","#B5896E","#CB9A79","#BB8A69","#DB7A59"],
 						behavior: behaviors.POWDER,
 						category: "land",
+						state: "solid",
 						tempHigh: 800,
 						stateHigh: "felsic_magma",
 						density: 1254, //approximated from granite values
@@ -757,6 +829,7 @@ Proper classification of limestone within these code comments
 						color: ["#D9CCC5", "#F2E9E4", "#877670", "#A69B97"],
 						behavior: behaviors.WALL,
 						category: "land",
+						state: "solid",
 						tempHigh: 1050,
 						stateHigh: "intermediate_felsic_magma",
 						density: 2654, //https://books.google.ca/books?id=ObUPAAAAIAAJ&pg=PA181&lpg=PA181&dq=dacite+specific+gravity&source=bl&ots=qn8B4sirWi&sig=Wp_MHqPuUGPNQobcuNP5c5wqkpU&hl=en&sa=X&ei=cimtUaH8Eab7yAH8joDABQ#v=onepage&q=dacite%20specific%20gravity&f=false
@@ -768,6 +841,7 @@ Proper classification of limestone within these code comments
 						color: ["#C9BCB5", "#E2D9D4", "#776660", "#968B87", "#D9CCC5", "#F2E9E4", "#877670", "#A69B97", "#E9DCD5", "#FFF9F4", "#978680", "#B6ABA7"], //placeholder
 						behavior: behaviors.POWDER,
 						category: "land",
+						state: "solid",
 						tempHigh: 1050,
 						stateHigh: "intermediate_felsic_magma",
 						density: 1300,
@@ -779,6 +853,7 @@ Proper classification of limestone within these code comments
 						color: ["#6F7575", "#C5C9CB", "#818787", "#797F7F", "#B5B9BA", "#6D7371", "#909696"],
 						behavior: behaviors.WALL,
 						category: "land",
+						state: "solid",
 						tempHigh: 1215,
 						stateHigh: "intermediate_magma",
 						density: 2474, //it varies very widely, so I made the last 2 digits up.
@@ -790,6 +865,7 @@ Proper classification of limestone within these code comments
 						color: ['#5f6565', '#b5b9bb', '#717777', '#696f6f', '#a5a9aa', '#5d6361', '#808686', '#6f7575', '#c5c9cb', '#818787', '#797f7f', '#b5b9ba', '#6d7371', '#909696', '#7f8585', '#d5d9db', '#919797', '#898f8f', '#c5c9ca', '#7d8381', '#a0a6a6'],
 						behavior: behaviors.POWDER,
 						category: "land",
+						state: "solid",
 						tempHigh: 1260,
 						stateHigh: "intermediate_magma",
 						density: 1214, //approximated from granite values
@@ -797,7 +873,8 @@ Proper classification of limestone within these code comments
 
 				//Mafic: basalt
 
-					//No changes from vanilla
+					elements.basalt.tempHigh = 1122;
+					elements.basalt.density = 2949;
 
 				//Ultramafic: komatiite
 
@@ -805,6 +882,7 @@ Proper classification of limestone within these code comments
 						color: ["#AEB5AE","#A9B8B5","#7B8881","#858B87","#949F97","#505B55"],
 						behavior: behaviors.WALL,
 						category: "land",
+						state: "solid",
 						tempHigh: 1600,
 						stateHigh: "ultramafic_magma",
 						density: 3100, //approximate density extrapolated from intermediate and mafic density
@@ -817,6 +895,7 @@ Proper classification of limestone within these code comments
 						color: ["#9ea59e","#99a8a5","#6b7871","#757b77","#848f87","#404b45","#aeb5ae","#a9b8b5","#7b8881","#858b87","#949f97","#505b55","#bec5be","#b9c8c5","#8b9891","#959b97","#a4afa7","#606b65"],
 						behavior: behaviors.POWDER,
 						category: "land",
+						state: "solid",
 						tempHigh: 1600,
 						stateHigh: "ultramafic_magma",
 						density: 1650, //approximated from granite values
@@ -826,46 +905,241 @@ Proper classification of limestone within these code comments
 
 				//Felsic: pumice
 
-					//Pumice goes here
+					elements.pumice = {
+						color: ["#ebe1c3", "#ada386", "#f0bd9e", "#ab846c", "#bfbebd", "#75726f", "#f5e595", "#ab9e60", "#ad683d", "#633d25", "#6e6d6d", "#3b3a39"],
+						behavior: behaviors.WALL,
+						category: "land",
+						state: "solid",
+						tempHigh: 1350,
+						stateHigh: "felsic_magma",
+						density: 641,
+						hardness: 0.7,
+						breakInto: "pumice_gravel",
+					};
+
+					elements.pumice_gravel = {
+						color: ["#f6f3e9","#e8dfc5","#d9cba0","#bfb9a6","#a9a189","#948a6b","#f3dccd","#eabfa4","#e0a27b","#baa191","#a78672","#8d6d58","#dad8d8","#c1bfbe","#a8a5a4","#908d89","#76736f","#5c5a57","#f5eec6","#eee09b","#e7d36f","#b7af85","#a49a65","#877e4f","#bd8461","#a56a45","#815336","#83563a","#603f2a","#3c271a","#575552","#3c3b39","#222120","#3c3b39","#222120","#080807"],
+						behavior: behaviors.POWDER,
+						category: "land",
+						state: "solid",
+						tempHigh: 1350,
+						stateHigh: "felsic_magma",
+						density: 2080,
+					};
 
 				//Intermediate felsic: ???
 
-					//???
+					elements.intermediate_pumice = {
+						color: ["#dbd4bd", "#b5ad94", "#e3ceb6", "#bda891", "#c2c2c2", "#a1a1a1", "#e6c8a1", "#b8a48c"],
+						behavior: behaviors.WALL,
+						category: "land",
+						state: "solid",
+						tempHigh: 1190,
+						stateHigh: "intermediate_felsic_magma",
+						density: 991, //110% made-up
+						hardness: 0.7,
+						breakInto: "intermediate_pumice_gravel",
+					};
+
+					elements.intermediate_pumice_gravel = {
+						color: ["#e3ddc8", "#b0aa99", "#e6d4c1", "#c9b7a3", "#cfcccc", "#919191", "#e0ceb6", "#b0a292"],
+						behavior: behaviors.POWDER,
+						category: "land",
+						state: "solid",
+						tempHigh: 1190,
+						stateHigh: "intermediate_felsic_magma",
+						density: 2213, //see above
+					};
 
 				//Intermediate: scoria
 
-					//Scoria
+					elements.scoria = {
+						color: ["#594545", "#573b31", "#522e28"],
+						behavior: behaviors.WALL,
+						category: "land",
+						state: "solid",
+						tempHigh: 1085,
+						stateHigh: "intermediate_magma",
+						density: 2550,
+						hardness: 0.68,
+						breakInto: "scoria_gravel",
+					};
+
+					elements.scoria_gravel = {
+						color: ["#665e5e", "#454343", "#694d47", "#523731", "#57322d", "#3b221e"],
+						behavior: behaviors.POWDER,
+						category: "land",
+						state: "solid",
+						tempHigh: 1085,
+						stateHigh: "intermediate_magma",
+						density: 2790, //https://www.astm.org/gtj12675.html#:~:text=Particle%20density%20was%20found%20to,a%2074%2D%C2%B5m%20sieve).
+					};
 
 				//Mafic: still scoria
 
-					//Also scoria
-					//Perhaps a "mafic_scoria"-"intermediate scoria" split if the literature allows
+					elements.mafic_scoria = {
+						color: ["#756666", "#695751", "#737272"],
+						behavior: behaviors.WALL,
+						category: "land",
+						state: "solid",
+						tempHigh: 1298, //Density and melting point provided by ChatGPT
+						stateHigh: "magma",
+						density: 2717,
+						hardness: 0.7,
+						breakInto: "mafic_scoria_gravel",
+					};
+
+					elements.mafic_scoria_gravel = {
+						color: ["#807a7a", "#665e5e", "#82716c", "#635652", "#8a8a8a", "#636161"],
+						behavior: behaviors.POWDER,
+						category: "land",
+						state: "solid",
+						tempHigh: 1298,
+						stateHigh: "magma",
+						density: 2993, //https://www.astm.org/gtj12675.html#:~:text=Particle%20density%20was%20found%20to,a%2074%2D%C2%B5m%20sieve).
+					};
 
 				//Ultramafic: ???
 
-					//???
+					elements.ultramafic_scoria = {
+						color: ["#737565", "#7a7761", "#727372"],
+						behavior: behaviors.WALL,
+						category: "land",
+						state: "solid",
+						tempHigh: 1400, //Density and melting point provided by ChatGPT
+						stateHigh: "ultramafic_magma",
+						density: 2924,
+						hardness: 0.7,
+						breakInto: "ultramafic_scoria_gravel",
+					};
 
-			//Glassy
+					elements.ultramafic_scoria_gravel = {
+						color: ["#85877a", "#5b5c50", "#87846b", "#61694f", "#7e807e", "#5c5e5c"],
+						behavior: behaviors.POWDER,
+						category: "land",
+						state: "solid",
+						tempHigh: 1400,
+						stateHigh: "ultramafic_magma",
+						density: 3132,
+					};
+
+			//Vitreous
 
 				//Felsic: obsidian
 
-					//Obsidian
+					elements.obsidian = {
+						color: ["#252422", "#171616", "#161915", "#161018"],
+						behavior: behaviors.WALL,
+						tempHigh: 1000,
+						stateHigh: "felsic_magma",
+						category: "land",
+						state: "solid",
+						density: 2488, //2.35-2.6
+						breakInto: "obsidian_shard",
+					};
+
+					elements.obsidian_shard = {
+						color: ["#363330","#231f1a","#272121","#161313","#22281f","#131712","#211924","#100c13"],
+						behavior: behaviors.POWDER,
+						tempHigh: 1000,
+						stateHigh: "felsic_magma",
+						category: "land",
+						state: "solid",
+						density: 2313, //made-up
+					},
 
 				//Intermediate felsic: ???
 
-					//???
+					elements[vitreousInterfelsicName] = {
+						color: ["#4f4b42", "#474646", "#4a4d49", "#342f36"],
+						behavior: behaviors.WALL,
+						tempHigh: 1040, //All vitrites past obsidian have ChatGPT tempHighs and densities
+						stateHigh: "intermediate_felsic_magma",
+						category: "land",
+						state: "solid",
+						density: 2640,
+						breakInto: vitreousInterfelsicName + "_shard",
+					};
+
+					elements[vitreousInterfelsicName + "_shard"] = {
+						color: ["#69645b", "#454139", "#5c5b5b", "#424040", "#5e615d", "#454745", "#4d474f", "#39363b"],
+						behavior: behaviors.POWDER,
+						tempHigh: 1040,
+						stateHigh: "intermediate_felsic_magma",
+						category: "land",
+						state: "solid",
+						density: 2401,
+					},
 
 				//Intermediate: ???
 
-					//???
+					elements[vitreousIntermediateName] = {
+						color: ["#636059", "#707070", "#5f615f", "#504b52"],
+						behavior: behaviors.WALL,
+						tempHigh: 1085,
+						stateHigh: "intermediate_magma",
+						category: "land",
+						state: "solid",
+						density: 2710,
+						breakInto: vitreousIntermediateName + "_shard",
+					};
+
+					elements[vitreousIntermediateName + "_shard"] = {
+						color: ["#7d7972", "#59554e", "#757474", "#575656", "#7b7d7a", "#5a5c5a", "#69646b", "#4f4b52"],
+						behavior: behaviors.POWDER,
+						tempHigh: 1085,
+						stateHigh: "intermediate_magma",
+						category: "land",
+						state: "solid",
+						density: 2482,
+					},
 
 				//Mafic: ???
 
-					//???
+					elements[vitreousMaficName] = {
+						color: ["#6e615d", "#706767", "#6a6b63", "#6e5e68"],
+						behavior: behaviors.WALL,
+						tempHigh: 1200,
+						stateHigh: "magma",
+						category: "land",
+						state: "solid",
+						density: 2900,
+						breakInto: vitreousMaficName + "_shard",
+					};
+
+					elements[vitreousMaficName + "_shard"] = {
+						color: ["#887b77","#5d5351","#8b8484","#5f5959","#82837c","#595954","#887782","#5d5158"],
+						behavior: behaviors.POWDER,
+						tempHigh: 1200,
+						stateHigh: "magma",
+						category: "land",
+						state: "solid",
+						density: 2777,
+					},
 
 				//Ultramafic: ???
 
-					//???
+					elements[vitreousUltramaficName] = {
+						color: ["#6e6d5e", "#626659", "#54574b", "#665d55"],
+						behavior: behaviors.WALL,
+						tempHigh: 1300,
+						stateHigh: "ultramafic_magma",
+						category: "land",
+						state: "solid",
+						density: 3200,
+						breakInto: vitreousUltramaficName + "_shard",
+					};
+
+					elements[vitreousUltramaficName + "_shard"] = {
+						color: ["#888777","#5d5c51","#787c6e","#51544a","#696c60","#474941","#7f756c","#554f49"],
+						behavior: behaviors.POWDER,
+						tempHigh: 1300,
+						stateHigh: "ultramafic_magma",
+						category: "land",
+						state: "solid",
+						density: 2998,
+					},
+
 
 		//Sedimentary
 
@@ -983,6 +1257,7 @@ Proper classification of limestone within these code comments
 							stateHigh: "molten_glass",
 							category: "land",
 							state: "solid",
+							state: "solid",
 							density: 1602,
 							breakInto: "sand",
 							tick: function(pixel) {
@@ -1010,6 +1285,7 @@ Proper classification of limestone within these code comments
 							tempHigh: 1500,
 							stateHigh: "molten_glass",
 							category: "land",
+							state: "solid",
 							state: "solid",
 							density: 2323, //wide range
 							hardness: 0.5,
@@ -1263,6 +1539,7 @@ Proper classification of limestone within these code comments
 				tempHigh: 10,
 				stateHigh: "dry_dirt",
 				category: "land",
+				state: "solid",
 				state: "solid",
 				density: 1200,
 			}
@@ -1702,6 +1979,7 @@ Proper classification of limestone within these code comments
 					tempHigh: 10,
 					stateHigh: "radioactive_dry_dirt",
 					category: "land",
+					state: "solid",
 					state: "solid",
 					density: 1200,
 				}
