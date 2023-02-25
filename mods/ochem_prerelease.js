@@ -1,7 +1,8 @@
 var modName = "mods/ochem_prerelease.js";
 var fireMod = "mods/fire_mod.js";
+var changeTempMod = "mods/changeTempReactionParameter.js";
 
-if(enabledMods.includes(fireMod)) {
+if(enabledMods.includes(fireMod) && enabledMods.includes(changeTempMod)) {
 	/*####################################\
 	#TODO: Pentyl line physical properties#
 	\####################################*/
@@ -752,6 +753,7 @@ if(enabledMods.includes(fireMod)) {
 	*/
 } else {
 	enabledMods.splice(enabledMods.indexOf(modName),0,fireMod);
+	enabledMods.splice(enabledMods.indexOf(modName),0,changeTempMod);
 	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-	alert(`The ${fireMod} mod is required and has been automatically inserted (reload for this to take effect).`);
+	alert(`The ${fireMod} and ${changeTempMod} mods are required and have been automatically inserted (reload for this to take effect).`);
 };
