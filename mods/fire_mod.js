@@ -23,36 +23,19 @@ if(enabledMods.includes(libraryMod)) {
 	//doBurning
 	function doBurning(pixel) {
 		if (pixel.burning) { // Burning
+			pixel.burnStart ??= pixelTicks;
 			var info = elements[pixel.element];
-			var burnTempChange = info.burnTempChange
-			if (burnTempChange == undefined) {
-				burnTempChange = 1;
-			};
-			//move fire ahead so that cold burners don't light hot burners
+			var burnTempChange = info.burnTempChange ?? 1;
 			var fireIsCold;
-			//Fire getter block
-				var fire = info.fireElement;
-				if (fire == undefined) {
-					fire = 'fire';
-				}
-				else if(fire instanceof Array) {
-					fire = fire[Math.floor(Math.random()*fire.length)];
-				}
-			//End fire getter block
-			//Fire temp getter block
-				var fireTemp = info.fireSpawnTemp;
-				if (fireTemp == undefined) {
-					fireTemp = pixel.temp;
-				};
-			//End fire temp getter block
-			//Fire chance getter block
-				var fireChance = info.fireSpawnChance;
-				if (fireChance == undefined) {
-					fireChance = 10;
-				};
-			//End fire chance getter block
+			var fire = info.fireElement === undefined ? "fire" : info.fireElement; //allow null but disallow undefined
+			//console.log(info.fireElement,fire);
+			while(fire instanceof Array) {
+				fire = fire[Math.floor(Math.random()*fire.length)];
+			};
+			var fireTemp = info.fireSpawnTemp ?? pixel.temp;
+			var fireChance = info.fireSpawnChance ?? 10;
 			var fireIsCold = (fire === "cold_fire");
-			var fireInfo = elements[fire];
+			//var fireInfo = fire === null ? null : elements[fire];
 
 			pixel.temp += burnTempChange;
 			pixelTempCheck(pixel);
@@ -64,17 +47,11 @@ if(enabledMods.includes(libraryMod)) {
 					var newPixel = pixelMap[x][y];
 					var newInfo = elements[newPixel.element];
 					var newFireIsCold;
-					//Fire getter block
-						var newFire = newInfo.fireElement;
-						if (newFire == undefined) {
-							newFire = 'fire';
-						}
-						else if(newFire instanceof Array) {
-							newFire = newFire[Math.floor(Math.random()*newFire.length)];
-						}
-					//End fire getter block
+					var newFire = newInfo.fireElement == undefined ? "fire" : newInfo.fireElement;
+					while(newFire instanceof Array) {
+						newFire = newFire[Math.floor(Math.random()*newFire.length)];
+					};
 					newFireIsCold = (newFire === "cold_fire");
-
 					//console.log(`burning pixel ${pixel.element}: ${fire} (${fireIsCold}) / burned element ${newPixel.element}: ${newFire} (${newFireIsCold})`);
 					if((!fireIsCold && !newFireIsCold) || (fireIsCold && newFireIsCold)) {
 						if (elements[newPixel.element].burn && !newPixel.burning) {
@@ -88,14 +65,13 @@ if(enabledMods.includes(libraryMod)) {
 			}
 
 			if ((pixelTicks - pixel.burnStart > (info.burnTime || 200)) && Math.floor(Math.random()*100)<(info.burn || 10)) {
-				var burnInto = info.burnInto;
-				if (burnInto == undefined) {
-					burnInto = 'fire';
-				}
-				else if (burnInto instanceof Array) {
+				var burnInto = info.burnInto ?? "fire";
+				while(burnInto instanceof Array) {
 					burnInto = burnInto[Math.floor(Math.random()*burnInto.length)];
-				}
-				changePixel(pixel,burnInto,(burnInto !== "smoke"));
+				};
+				changePixel(pixel,burnInto,burnInto !== "smoke");
+				//console.log("ass");
+				pixel.temp = fireTemp;
 				if (info.fireColor != undefined && burnInto == "fire") {
 					pixel.color = pixelColorPick(pixel,info.fireColor);
 				}
@@ -104,19 +80,24 @@ if(enabledMods.includes(libraryMod)) {
 				}
 			}
 			else if (Math.floor(Math.random()*100)<fireChance && !fireSpawnBlacklist.includes(pixel.element)) { // Spawn fire
+				//console.log(fire);
 				if (isEmpty(pixel.x,pixel.y-1)) {
-					createPixel(fire,pixel.x,pixel.y-1);
-					pixelMap[pixel.x][pixel.y-1].temp = fireTemp;
-					if (info.fireColor != undefined) {
-						pixelMap[pixel.x][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x][pixel.y-1],info.fireColor);
+					if(fire !== null) {
+						createPixel(fire,pixel.x,pixel.y-1);
+						pixelMap[pixel.x][pixel.y-1].temp = fireTemp;
+						if (info.fireColor != undefined) {
+							pixelMap[pixel.x][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x][pixel.y-1],info.fireColor);
+						};
 					};
 				}
 				// same for below if top is blocked
 				else if (isEmpty(pixel.x,pixel.y+1)) {
-					createPixel(fire,pixel.x,pixel.y+1);
-					pixelMap[pixel.x][pixel.y+1].temp = fireTemp;
-					if (info.fireColor != undefined) {
-						pixelMap[pixel.x][pixel.y+1].color = pixelColorPick(pixelMap[pixel.x][pixel.y+1],info.fireColor);
+					if(fire !== null) {
+						createPixel(fire,pixel.x,pixel.y+1);
+						pixelMap[pixel.x][pixel.y+1].temp = fireTemp;
+						if (info.fireColor != undefined) {
+							pixelMap[pixel.x][pixel.y+1].color = pixelColorPick(pixelMap[pixel.x][pixel.y+1],info.fireColor);
+						};
 					};
 				}
 			}
@@ -366,7 +347,7 @@ if(enabledMods.includes(libraryMod)) {
 		state: "liquid",
 		viscosity: 1000,
 		density: 1200, //google was f***ing useless and i'm not searching that again, so arbitrary 1.2 it is
-		burnTempChange: 2,
+		burnTempChange: 3,
 		burn: 300,
 		burnTime: 500,
 		temp: airTemp,
