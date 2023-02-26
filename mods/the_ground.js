@@ -8,6 +8,17 @@ Merge crimson?
 Proper classification of limestone within these code comments
 */
 
+var modName = "mods/the_ground.js";
+var libraryMod = "mods/code_library.js";
+
+if(!enabledMods.includes(libraryMod)) {
+	enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod);
+	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
+	alert(`The ${libraryMod} mod is required and has been automatically inserted (reload for this to take effect).`);
+} else {
+
+
+
 //Variables
 	
 	//var vitreousInterfelsicName = "obsidian";
@@ -311,7 +322,7 @@ Proper classification of limestone within these code comments
 		return false;
 	};
 	
-	//Erosion
+	/*//Erosion
 	function toGravelErodeOtmi(pixel,otherPixel,erosionChanceDivisor=5500) {
 		var gravelName = getGravelElementName(pixel.element);
 		//console.log(gravelName);
@@ -343,34 +354,510 @@ Proper classification of limestone within these code comments
 			changePixel(pixel,sandName,false);
 			//changePixelReturn(pixel,sandName,false).color = "rgb(255,255,0)";
 		};
-	};
+	};*/
 
-	//I fucking hate boilerplate
-	function newPowder(name,color,density=null,tempHigh=null,stateHigh=null,breakInto=null) { //boilerplate my dick
-		if(tempHigh == null) {
-			stateHigh = null;
-		};
+	//I really hate boilerplate
+
+		//Array maker
 		
-		elements[name] = {
-			color: color,
-			behavior: behaviors.POWDER,
-			category: "solids",
-			state: "solid",
-			density: density ?? 1000,
-		};
+			function twoPartRepeatedArray(value1,amount1,value2,amount2) {
+				var array1 = Array(amount1).fill(value1);
+				var array2 = Array(amount2).fill(value2);
+				return array1.concat(array2)
+			};
+	
+		//Color gen
 		
-		if(tempHigh !== null) {
-			elements[name].tempHigh = tempHigh;
-		};
+			//Gravels
 
-		if(tempHigh !== null && stateHigh !== null) {
-			elements[name].stateHigh = stateHigh;
-		};
+				function gravelizeToHex(colorIn) {
+					//console.log("gravelizeToHex called",colorIn);
+					var colorInput = colorIn; //side effects?
+					
+					//make sure in is array
+					if(!colorInput instanceof Array) {
+						colorInput = [colorInput];
+					};
 
-		if(breakInto !== null) {
-			elements[name].breakInto = breakInto;
+					//console.log(colorInput);
+
+					//prepare final color
+					var finalColor = [];
+
+					//console.log(colorInput);
+					for(var i = 0; i < colorInput.length; i++) {
+						finalColor.push(colorInput[i]);
+						finalColor.push(colorInput[i]);
+						finalColor.push(colorInput[i]);
+					};
+
+
+					//vary luminance
+					for(i = 0; i < finalColor.length; i+=3) {
+						finalColor[i] = changeLuminance(finalColor[i],1.25,"multiply","hsljson");
+					};
+
+					//leave offset-1 colors as-is
+
+					for(i = 2; i < finalColor.length; i+=3) {
+						finalColor[i] = changeLuminance(finalColor[i],0.85,"multiply","hsljson");
+					};
+					
+					
+					//desaturate
+					for(i = 0; i < finalColor.length; i++) {
+						finalColor[i] = changeSaturation(finalColor[i],0.9,"multiply","hex");
+					};
+
+					//finish
+					//console.log(finalColor);
+					return finalColor;
+				};
+
+			//Sands
+
+				function sandizeToHex(rockName,type="normal") {
+					//console.log(rockName);
+					if(!["normal","n","wet","w","packed","p"].includes(type.toLowerCase())) {
+						throw new Error("Type must be 'normal', 'wet', or 'packed'");
+					};
+					var rockInfo = elements[rockName];
+					if(!rockInfo) { throw new Error("No such element '" + rockName + "'") };
+					var sandColor = [];
+					//var sandColorObject = [];
+					var rockColor = rockInfo.color;
+					if(!rockColor instanceof Array) {
+						rockColor = [rockColor];
+					};
+					for(i = 0; i < rockColor.length; i++) {
+						var colorAsHsl = normalizeColorToHslObject(rockColor[i]);
+						colorAsHsl.l = 60 + (-0.5 * (60 - colorAsHsl.l)); //bring towards 60
+						colorAsHsl.s = 31 + (-0.5 * (31 - colorAsHsl.s)); //bring towards 31;
+						switch(type.toLowerCase()) {
+							case "normal":
+							case "n":
+								break;
+							case "wet":
+							case "w":
+								colorAsHsl.s += 2;
+								colorAsHsl.l -= 13;
+								break;
+							case "packed":
+							case "p":
+								colorAsHsl.s -= 10;
+								colorAsHsl.l += 5;
+								break;
+							default:
+								break;
+						};								
+						sandColor.push(convertHslObjects(colorAsHsl,"hex"));
+						//sandColorObject.push(convertHslObjects(colorAsHsl,"rgbjson"));
+					};
+
+					return sandColor;
+				};
+
+			//Magmas
+
+				function makeMoltenColor(colorIn) { //Edited vanilla code
+				
+					var newcolor = colorIn;
+					var moltenColorFactors = [ [2,1.25,0.5], [2,1,0.5], [2,0.75,0] ];
+					var colorList = [];
+					var colorObjectList = [];
+					// if newcolor is not an array, put it in an array
+					if (!(newcolor instanceof Array)) { newcolor = [newcolor]; }
+					newcolor = newcolor.map(x => convertColorFormats(x,"json"));
+					// for every color in the newcolor array, add a new color with the same value, but with the r and g values increased
+					for (var i = 0; i < newcolor.length; i++) {
+						var c = newcolor[i];
+						for (var j = 0; j < moltenColorFactors.length; j++) {
+							var newc = moltenColorFactors[j];
+							//console.log(c,newc);
+							r = Math.floor(c.r * newc[0]);
+							g = Math.floor(c.g * newc[1]);
+							b = Math.floor(c.b * newc[2]);
+							if (r > 255) {r = 255}; if (g > 255) {g = 255};
+							//edit: to hex
+							var rHex = r.toString(16); if(rHex.length == 1) { rHex = "0" + rHex };
+							var gHex = g.toString(16); if(gHex.length == 1) { gHex = "0" + gHex };
+							var bHex = b.toString(16); if(bHex.length == 1) { bHex = "0" + bHex };
+							colorList.push("#"+rHex+gHex+bHex);
+						}
+					}
+					return colorList;
+				}
+
+		//Generate an entire composition family at once
+
+		function newIgneousCompositionFamily(
+			compositionFamilyName,
+			magmaViscosity,
+			magmaDensity,
+			vitriteCoolingRateThreshold,
+			aphaniteCoolingRateThreshold,
+			
+			phaneriteName,
+			phaneriteColor,
+			phaneriteMeltingPoint,
+			phaneriteDensity,
+			
+			aphaniteName,
+			aphaniteColor,
+			aphaniteMeltingPoint,
+			aphaniteDensity,
+			
+			vesiculiteName,
+			vesiculiteColor,
+			vesiculiteMeltingPoint,
+			vesiculiteDensity,
+			
+			vitriteName,
+			vitriteColor,
+			vitriteMeltingPoint,
+			vitriteDensity,
+			
+			sandFormationReactionRegularSandCount,
+			sandFormationReactionSpecificSandCount,
+		) {
+			//console.log(compositionFamilyName,vesiculiteMeltingPoint,vitriteMeltingPoint);
+			
+			var phaneriteSandName = compositionFamilyName == "mafic" ? "gabbro_sand" : phaneriteName + "_sand";
+			var aphaniteSandName = aphaniteName + "_sand";
+			var vesiculiteSandName = vesiculiteName + "_sand";
+			var vitriteSandName = vitriteName + "_sand";
+
+			var magmaName = compositionFamilyName + "_magma";
+			if(compositionFamilyName !== "mafic") { //skip phanerite, phangravel, and aphanite for mafic rocks (rock, gravel, basalt)
+				elements[phaneriteName] = {
+					color: phaneriteColor,
+					behavior: behaviors.POWDER,
+					category: "land",
+					state: "solid",
+					tempHigh: phaneriteMeltingPoint,
+					stateHigh: magmaName,
+					density: phaneriteDensity,
+					hardness: 0.75,
+					breakInto: phaneriteName + "_gravel",
+				};
+				
+				elements.water.reactions[phaneriteName] = { "elem2": phaneriteName + "_gravel", "chance": 0.00035 }
+
+				elements[phaneriteName + "_gravel"] = {
+					color: gravelizeToHex(phaneriteColor),
+					behavior: behaviors.POWDER,
+					category: "land",
+					state: "solid",
+					tempHigh: phaneriteMeltingPoint,
+					stateHigh: magmaName,
+					density: phaneriteDensity * 0.55,
+				};
+				
+				elements.water.reactions[phaneriteName + "_gravel"] = { "elem2": twoPartRepeatedArray(phaneriteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
+
+				elements[aphaniteName] = {
+					color: aphaniteColor,
+					behavior: behaviors.POWDER,
+					category: "land",
+					state: "solid",
+					tempHigh: aphaniteMeltingPoint,
+					stateHigh: magmaName,
+					density: aphaniteDensity,
+					hardness: 0.75,
+					breakInto: aphaniteName + "_gravel",
+				};
+			} else {
+				phaneriteName = "rock";
+				aphaniteName = "basalt";
+				magmaName = "magma";
+			};
+
+			elements.water.reactions[aphaniteName] = { "elem2": aphaniteName + "_gravel", "chance": 0.00035 }
+			
+			elements[phaneriteSandName] = {
+				color: sandizeToHex(phaneriteName,"normal"),
+				behavior: behaviors.POWDER,
+				category: "land",
+				state: "solid",
+				tempHigh: phaneriteMeltingPoint,
+				stateHigh: vitriteName,
+				density: phaneriteDensity * 0.595,
+			};
+			
+			//console.log(phaneriteSandName, elements[phaneriteSandName].color);
+
+			elements["wet_" + phaneriteSandName] = {
+				color: sandizeToHex(phaneriteName,"wet"),
+				behavior: behaviors.STURDYPOWDER,
+				category: "land",
+				reactions: {
+                    "dirt": { "elem1":"sand", "elem2":"mud", "chance":0.0005, "oneway":true },
+				},
+				state: "solid",
+                tempHigh: 100,
+                stateHigh: "packed_" + phaneriteSandName,
+                tempLow: -50,
+                stateLow:"packed_" + phaneriteSandName,
+				density: phaneriteDensity * 0.595 + 150,
+			};
+
+			elements["packed_" + phaneriteSandName] = {
+				color: sandizeToHex(phaneriteName,"packed"),
+				behavior: behaviors.SUPPORT,
+				category: "land",
+				state: "solid",
+				tempHigh: phaneriteMeltingPoint,
+				stateHigh: vitriteName,
+				density: phaneriteDensity * 0.59,
+				breakInto: phaneriteSandName,
+			};
+
+			elements.water.reactions[phaneriteSandName] = {
+				"elem1": null, "elem2": "wet_" + phaneriteSandName,
+			};
+			
+			elements[aphaniteName + "_gravel"] = {
+				color: gravelizeToHex(aphaniteColor),
+				behavior: behaviors.POWDER,
+				category: "land",
+				state: "solid",
+				tempHigh: aphaniteMeltingPoint,
+				stateHigh: magmaName,
+				density: aphaniteDensity * 0.55,
+			};
+
+			elements.water.reactions[aphaniteName + "_gravel"] = { "elem2": twoPartRepeatedArray(aphaniteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
+
+			elements[aphaniteName + "_sand"] = {
+				color: sandizeToHex(aphaniteName),
+				behavior: behaviors.POWDER,
+				category: "land",
+				state: "solid",
+				tempHigh: aphaniteMeltingPoint,
+				stateHigh: magmaName,
+				density: aphaniteDensity * 0.595,
+			};
+
+			elements[aphaniteSandName] = {
+				color: sandizeToHex(aphaniteName,"normal"),
+				behavior: behaviors.POWDER,
+				category: "land",
+				state: "solid",
+				tempHigh: aphaniteMeltingPoint,
+				stateHigh: vitriteName,
+				density: aphaniteDensity * 0.595,
+			};
+
+			elements["wet_" + aphaniteSandName] = {
+				color: sandizeToHex(aphaniteName,"wet"),
+				behavior: behaviors.STURDYPOWDER,
+				category: "land",
+				reactions: {
+                    "dirt": { "elem1":"sand", "elem2":"mud", "chance":0.0005, "oneway":true },
+				},
+				state: "solid",
+                tempHigh: 100,
+                stateHigh: "packed_" + aphaniteSandName,
+                tempLow: -50,
+                stateLow:"packed_" + aphaniteSandName,
+				density: aphaniteDensity * 0.595 + 150,
+			};
+
+			elements["packed_" + aphaniteSandName] = {
+				color: sandizeToHex(aphaniteName,"packed"),
+				behavior: behaviors.SUPPORT,
+				category: "land",
+				state: "solid",
+				tempHigh: aphaniteMeltingPoint,
+				stateHigh: vitriteName,
+				density: aphaniteDensity * 0.59,
+				breakInto: aphaniteSandName,
+			};
+
+			elements.water.reactions[aphaniteSandName] = {
+				"elem1": null, "elem2": "wet_" + aphaniteSandName,
+			};
+			
+			elements[vesiculiteName] = {
+				color: vesiculiteColor,
+				behavior: behaviors.POWDER,
+				category: "land",
+				state: "solid",
+				tempHigh: vesiculiteMeltingPoint,
+				stateHigh: magmaName,
+				density: vesiculiteDensity,
+				hardness: 0.75,
+				breakInto: vesiculiteName + "_gravel",
+			};
+			
+			elements.water.reactions[vesiculiteName] = { "elem2": vesiculiteName + "_gravel", "chance": 0.00035 }
+
+			elements[vesiculiteName + "_gravel"] = {
+				color: gravelizeToHex(vesiculiteColor),
+				behavior: behaviors.POWDER,
+				category: "land",
+				state: "solid",
+				tempHigh: vesiculiteMeltingPoint,
+				stateHigh: magmaName,
+				density: vesiculiteDensity * 3.2,
+			};
+			
+			elements.water.reactions[vesiculiteName + "_gravel"] = { "elem2": twoPartRepeatedArray(vesiculiteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
+
+			elements[vesiculiteSandName] = {
+				color: sandizeToHex(vesiculiteName,"normal"),
+				behavior: behaviors.POWDER,
+				category: "land",
+				state: "solid",
+				tempHigh: vesiculiteMeltingPoint,
+				stateHigh: vitriteName,
+				density: vesiculiteDensity * 1.9,
+			};
+
+			elements["wet_" + vesiculiteSandName] = {
+				color: sandizeToHex(vesiculiteName,"wet"),
+				behavior: behaviors.STURDYPOWDER,
+				category: "land",
+				reactions: {
+                    "dirt": { "elem1":"sand", "elem2":"mud", "chance":0.0005, "oneway":true },
+				},
+				state: "solid",
+                tempHigh: 100,
+                stateHigh: "packed_" + vesiculiteSandName,
+                tempLow: -50,
+                stateLow:"packed_" + vesiculiteSandName,
+				density: vesiculiteDensity * 1.9 + 150,
+			};
+
+			elements["packed_" + vesiculiteSandName] = {
+				color: sandizeToHex(vesiculiteName,"packed"),
+				behavior: behaviors.SUPPORT,
+				category: "land",
+				state: "solid",
+				tempHigh: vesiculiteMeltingPoint,
+				stateHigh: vitriteName,
+				density: vesiculiteDensity * 1.888,
+				breakInto: vesiculiteSandName,
+			};
+
+			elements.water.reactions[vesiculiteSandName] = {
+				"elem1": null, "elem2": "wet_" + vesiculiteSandName,
+			};
+			
+			elements[vitriteName] = {
+				color: vitriteColor,
+				behavior: behaviors.POWDER,
+				category: "land",
+				state: "solid",
+				tempHigh: vitriteMeltingPoint,
+				stateHigh: magmaName,
+				density: vitriteDensity,
+				hardness: 0.75,
+				breakInto: vitriteName + "_shard",
+			};
+
+			elements.water.reactions[vitriteName] = { "elem2": vitriteName + "_shard", "chance": 0.00035 }
+
+			elements[vitriteName + "_shard"] = {
+				color: gravelizeToHex(vitriteColor),
+				behavior: behaviors.POWDER,
+				category: "land",
+				state: "solid",
+				tempHigh: vitriteMeltingPoint,
+				stateHigh: magmaName,
+				density: vitriteDensity * 0.55,
+			};
+
+			elements.water.reactions[vitriteName + "_shard"] = { "elem2": twoPartRepeatedArray(vitriteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
+
+			elements[vitriteSandName] = {
+				color: sandizeToHex(vitriteName,"normal"),
+				behavior: behaviors.POWDER,
+				category: "land",
+				state: "solid",
+				tempHigh: vitriteMeltingPoint,
+				stateHigh: vitriteName,
+				density: vitriteDensity * 0.595,
+			};
+
+			elements["wet_" + vitriteSandName] = {
+				color: sandizeToHex(vitriteName,"wet"),
+				behavior: behaviors.STURDYPOWDER,
+				category: "land",
+				reactions: {
+                    "dirt": { "elem1":"sand", "elem2":"mud", "chance":0.0005, "oneway":true },
+				},
+				state: "solid",
+                tempHigh: 100,
+                stateHigh: "packed_" + vitriteSandName,
+                tempLow: -50,
+                stateLow:"packed_" + vitriteSandName,
+				density: vitriteDensity * 0.595 + 150,
+			};
+
+			elements["packed_" + vitriteSandName] = {
+				color: sandizeToHex(vitriteName,"packed"),
+				behavior: behaviors.SUPPORT,
+				category: "land",
+				state: "solid",
+				tempHigh: vitriteMeltingPoint,
+				stateHigh: vitriteName,
+				density: vitriteDensity * 0.59,
+				breakInto: vitriteSandName,
+			};
+
+			elements.water.reactions[vitriteSandName] = {
+				"elem1": null, "elem2": "wet_" + vitriteSandName,
+			};
+			
+			if(compositionFamilyName !== "mafic") {
+				elements[magmaName] = {
+					"reactions": {
+						"ash": { "elem1": null, "elem2": "molten_slag" },
+						"dust": { "elem1": null, "elem2": "molten_slag" },
+						"foam": { "elem1": vesiculiteName, "elem2": vesiculiteName },
+					},
+					_magmaCoolingPassToElement: {
+						vitreous: [vitriteCoolingRateThreshold,vitriteName],
+						aphanitic: [aphaniteCoolingRateThreshold,aphaniteName],
+						phaneritic: [Infinity,phaneriteName],
+						meltingPoints: {
+							vitreous: vitriteMeltingPoint,
+							vesicular: vesiculiteMeltingPoint,
+							aphanitic: aphaniteMeltingPoint,
+							phaneritic: phaneriteMeltingPoint,
+						},
+					},
+					tick: function(pixel) {
+						var coolingInfo = elements[pixel.element]._magmaCoolingPassToElement;
+						magmaRateBasedCooling(
+							pixel,
+							Math.min(
+								coolingInfo.meltingPoints.vitreous,
+								coolingInfo.meltingPoints.vesicular,
+								coolingInfo.meltingPoints.aphanitic,
+								coolingInfo.meltingPoints.phaneritic
+							) - 20,
+							coolingInfo.vitreous[1],
+							coolingInfo.vitreous[0],
+							coolingInfo.aphanitic[1],
+							coolingInfo.aphanitic[0],
+							coolingInfo.phaneritic[1]
+						);
+					},
+					"color": makeMoltenColor(phaneriteColor),
+					"behavior": behaviors.MOLTEN,
+					"temp": Math.max(phaneriteMeltingPoint,aphaniteMeltingPoint,vesiculiteMeltingPoint,vitriteMeltingPoint) + 100,
+					"tempLow": -Infinity, //cosmetic info
+					"stateLow": [aphaniteName,phaneriteName,vitriteName],
+					"viscosity": magmaViscosity,
+					"hidden": true,
+					"state": "liquid",
+					"category": "molten",
+					"density": magmaDensity,
+				};
+			};
 		};
-	};
 
 //Terrain
 
@@ -694,223 +1181,205 @@ Proper classification of limestone within these code comments
 	
 		//Igneous
 
+			//Felsic
+
+				newIgneousCompositionFamily(
+					"felsic",
+					1e12,
+					2200,
+					-85,
+					-20,
+					
+					"granite",
+					["#F3C3AD", "#F0AB75", "#DDA888", "#BD927E", "#998473", "#5C5E53", "#BD8366"],
+					1215,
+					2691,
+					
+					"rhyolite",
+					["#A67153","#BF967E","#D9B5A0","#8C533E","#C99F86","#C5997E","#BB8A69"],
+					800,
+					1254,
+					
+					"pumice",
+					["#ebe1c3", "#ada386", "#f0bd9e", "#ab846c", "#bfbebd", "#75726f", "#f5e595", "#ab9e60", "#ad683d", "#633d25", "#6e6d6d", "#3b3a39"],
+					1350,
+					641,
+					
+					"obsidian",
+					["#252422", "#171616", "#161915", "#161018"],
+					1000,
+					2488,
+					
+					7,3
+				);
+				
+				elements.water.reactions.obsidian_shard.elem2 = ["obsidian_sand","obsidian_sand","obsidian_sand","sand","sand"]
+				elements.obsidian_sand.color = ["#3b3730", "#211e1e", "#293321", "#31133b"];
+
+			//Intermediate felsic
+
+				newIgneousCompositionFamily(
+					"intermediate_felsic",
+					1e10,
+					2320,
+					-95,
+					-23,
+					
+					"granodiorite",
+					["#B1AB9D", "#262001", "#A6A292", "#D6C5BC", "#F2F2F2", "#DED8C2", "#978871", "#A8AAA7"], //From image: By Rudolf Pohl - Own work, CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=7788350
+					1277, //made-up/interpolated from granite and diorite
+					2644, //last 2 digits made up again
+					
+					"dacite",
+					["#D9CCC5", "#F2E9E4", "#877670", "#A69B97"],
+					1050,
+					2654, //https://books.google.ca/books?id=ObUPAAAAIAAJ&pg=PA181&lpg=PA181&dq=dacite+specific+gravity&source=bl&ots=qn8B4sirWi&sig=Wp_MHqPuUGPNQobcuNP5c5wqkpU&hl=en&sa=X&ei=cimtUaH8Eab7yAH8joDABQ#v=onepage&q=dacite%20specific%20gravity&f=false
+					
+					"intermediate_pumice",
+					["#dbd4bd", "#b5ad94", "#e3ceb6", "#bda891", "#c2c2c2", "#a1a1a1", "#e6c8a1", "#b8a48c"],
+					1190,
+					991,
+					
+					vitreousInterfelsicName,
+					["#4f4b42", "#474646", "#4a4d49", "#342f36"],
+					1040,
+					2640,
+					
+					6,4
+				);
+
+			//Intermediate
+
+				newIgneousCompositionFamily(
+					"intermediate",
+					1e8,
+					2450,
+					-105,
+					-26,
+					
+					"diorite",
+					["#E1E1E1","#B0A696","#707271","#434459","#242424"], //Extracted from image and blended; Michael C. Rygel - Own work, CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=31124755 https://commons.wikimedia.org/w/index.php?curid=7788350
+					1300,
+					2822, //last 2 digits made up again
+					
+					"andesite",
+					["#6F7575", "#C5C9CB", "#818787", "#797F7F", "#B5B9BA", "#6D7371", "#909696"],
+					1215,
+					2474, //https://books.google.ca/books?id=ObUPAAAAIAAJ&pg=PA181&lpg=PA181&dq=dacite+specific+gravity&source=bl&ots=qn8B4sirWi&sig=Wp_MHqPuUGPNQobcuNP5c5wqkpU&hl=en&sa=X&ei=cimtUaH8Eab7yAH8joDABQ#v=onepage&q=dacite%20specific%20gravity&f=false
+					
+					"scoria",
+					["#594545", "#573b31", "#522e28"],
+					1085,
+					2550,
+					
+					vitreousIntermediateName,
+					["#636059", "#707070", "#5f615f", "#504b52"],
+					1085,
+					2710,
+					
+					5,5
+				);
+				
+				elements.scoria_gravel.density = 2790;
+			
+			//Mafic
+
+				elements.rock.name = "gabbro";
+				elements.rock.tempHigh = 1200;
+				elements.rock.density = 3300;
+				elements.rock.breakInto = ["gravel"];
+				delete elements.wet_sand.reactions.gravel;
+
+				elements.magma.name = "mafic magma";
+				elements.magma.density = 2650;
+				elements.magma.tick = function(pixel) {
+					magmaRateBasedCooling(pixel,1180,vitreousMaficName,-115,"basalt",-29,"rock");
+				};
+				elements.magma.temp = 1400;
+				elements.magma.tempLow = -Infinity;
+				elements.magma.stateLow = ["basalt","gabbro",vitreousMaficName]
+				elements.magma.reactions ??= {};
+				elements.magma.reactions.foam = { "elem1": "mafic_scoria", "elem2": "mafic_scoria" };
+
+				elements.basalt.tempHigh = 1122;
+				elements.basalt.density = 2949;
+				elements.basalt.breakInto = "basalt_gravel",
+
+				newIgneousCompositionFamily(
+					"mafic",
+					10000,
+					2200,
+					-115,
+					-29,
+					
+					"rock",
+					["#808080","#4f4f4f","#949494"],
+					1474,
+					3300,
+					
+					"basalt",
+					["#2e2e2e","#333333","#3d3d3d"],
+					1122,
+					2949,
+					
+					"mafic_scoria",
+					["#756666", "#695751", "#737272"],
+					1298,
+					2717,
+					
+					vitreousMaficName,
+					["#6e615d", "#706767", "#6a6b63", "#6e5e68"],
+					1200,
+					2900,
+					
+					3,7
+				);
+
+				elements.mafic_scoria.tempHigh = 1298;
+				elements.mafic_scoria.stateHigh = "magma";
+				elements.mafic_scoria_gravel.density = 2993;
+
+			//Ultramafic
+
+				newIgneousCompositionFamily(
+					"ultramafic",
+					800,
+					2800,
+					-125,
+					-32,
+					
+					"peridotite",
+					["#908557","#A29E78","#7F8044","#C6BC87","#8C8656","#7C7C40","#837840","#8B8B69"],
+					1400,
+					3347, //appr from https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/GL003i009p00509#:~:text=Abstract,and%20the%20bulk%20rock%20analyses.
+					
+					"komatiite",
+					["#AEB5AE","#A9B8B5","#7B8881","#858B87","#949F97","#505B55"],
+					1600,
+					3100, 
+					
+					"ultramafic_scoria",
+					["#737565", "#7a7761", "#727372"],
+					1400,
+					2924,
+					
+					vitreousUltramaficName,
+					["#6e6d5e", "#626659", "#54574b", "#665d55"],
+					1300,
+					3200,
+					
+					2,8
+				);
+				
+				elements.ultramafic_scoria_gravel.density =.3132;
+			
+/*	//Rocks
+	
+		//Igneous
+
 			//Phaneritic
 
-				//Felsic: granite
-
-					elements.granite = {
-						color: ["#F3C3AD", "#F0AB75", "#DDA888", "#BD927E", "#998473", "#5C5E53", "#BD8366"],
-						behavior: behaviors.WALL,
-						category: "land",
-						state: "solid",
-						tempHigh: 1215,
-						stateHigh: "felsic_magma",
-						density: 2691,
-						hardness: 0.75,
-						breakInto: "granite_gravel",
-					};
-
-					elements.granite_gravel = {
-						color: ["#E3B39D", "#E09B65", "#CD9878", "#AD826E", "#897463", "#4C4E43", "#AD7356", "#F3C3AD", "#F0AB75", "#DDA888", "#BD927E", "#998473", "#5C5E53", "#BD8366", "#FFD3BD", "#FFBB85", "#EDB898", "#CDA28E", "#A99483", "#6C6E63", "#CD9376"],
-						behavior: behaviors.POWDER,
-						category: "land",
-						state: "solid",
-						tempHigh: 1215,
-						stateHigh: "felsic_magma",
-						density: 1320,
-					};
-
-					elements.felsic_magma = {
-					  "reactions": {
-						"magma": { "elem1": "intermediate_magma", "elem2": "intermediate_magma" },
-						"ash": { "elem1": null, "elem2": "molten_slag" },
-						"dust": { "elem1": null, "elem2": "molten_slag" },
-						"foam": { "elem1": "pumice", "elem2": "pumice" },
-					  },
-					  tick: function(pixel) {
-						  magmaRateBasedCooling(pixel,780,"obsidian",-85,"rhyolite",-20,"granite"); //to give rhyolites a chance
-					  },
-					  "name": "felsic magma",
-					  "color": ["#FFF457", "#FF9257", "#FF9200", "#FFD63B", "#FFAB3B", "#FF8000", "#FFD244", "#FFA844", "#FF7E00", "#FFB73F", "#FF923F", "#FF6E00", "#FFA53A", "#FF843A", "#FF6300", "#B8762A", "#B85E2A", "#B84700", "#FFA433", "#FF8333", "#FF6200"],
-					  "behavior": behaviors.MOLTEN,
-					  "temp": 1300,
-					  "tempLow": -Infinity, //cosmetic info
-					  "stateLow": ["rhyolite","granite","obsidian"],
-					  "viscosity": 100000000,
-					  "hidden": true,
-					  "state": "liquid",
-					  "category": "molten",
-					  "density": 2421.9
-					};
-
-				//Intermediate felsic: granodiorite (such a creative name)
-
-					elements.granodiorite = {
-						color: ["#B1AB9D", "#262001", "#A6A292", "#D6C5BC", "#F2F2F2", "#DED8C2", "#978871", "#A8AAA7"], //From image: By Rudolf Pohl - Own work, CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=7788350
-						behavior: behaviors.WALL,
-						category: "land",
-						state: "solid",
-						tempHigh: 1277, //made-up/interpolated from granite and diorite
-						stateHigh: "intermediate_felsic_magma",
-						density: 2644, //last 2 digits made up again
-						hardness: 0.75,
-						breakInto: "granodiorite_gravel",
-					};
-
-					elements.granodiorite_gravel = {
-						color: ["#A19B8D", "#161000", "#969282", "#C6B5AC", "#E2E2E2", "#CEC8B2", "#877861", "#989A97", "#B1AB9D", "#262001", "#A6A292", "#D6C5BC", "#F2F2F2", "#DED8C2", "#978871", "#A8AAA7", "#C1BBAD", "#363011", "#B6B2A2", "#E6D5CC", "#FFFFFF", "#EEE8D2", "#A79881", "#B8BAB7"], //placeholder
-						behavior: behaviors.POWDER,
-						category: "land",
-						state: "solid",
-						tempHigh: 1277,
-						stateHigh: "intermediate_felsic_magma",
-						density: 1296,
-					};
-
-					elements.intermediate_felsic_magma = {
-					  "reactions": {
-						"magma": { "elem1": "intermediate_magma", "elem2": "intermediate_magma" },
-						"ash": { "elem1": null, "elem2": "molten_slag" },
-						"dust": { "elem1": null, "elem2": "molten_slag" },
-						"foam": { "elem1": "intermediate_pumice", "elem2": "intermediate_pumice" },
-					  },
-					  tick: function(pixel) {
-						  magmaRateBasedCooling(pixel,1020,vitreousInterfelsicName,-95,"dacite",-23,"granodiorite");
-					  },
-					  "name": "intermediate felsic magma",
-					  "color": ["#FFD64F", "#FFAB4F", "#FF8000", "#7C5831", "#7C5031", "#7C5830", "#FFCB49", "#FFA249", "#FF7A00", "#FFF65E", "#FFC55E", "#FF9400", "#FFFF79", "#FFF279", "#FFB600", "#FFFF61", "#FFD861", "#FFA200", "#FFAA39", "#FF8839", "#FF6600", "#FFD554", "#FFAA54", "#FF8000"],
-					  "behavior": behaviors.MOLTEN,
-					  "temp": 1200,
-					  "tempLow": -Infinity,
-					  "stateLow": ["dacite","granodiorite",vitreousInterfelsicName],
-					  "viscosity": 18700000, //10^average of logarithms
-					  "hidden": true,
-					  "state": "liquid",
-					  "category": "molten",
-					  "density": 2320, //averaged lower values
-					};
-
-				//Intermediate: diorite
-
-					elements.diorite = {
-						color: ["#E1E1E1","#B0A696","#707271","#434459","#242424"], //Extracted from image and blended
-						//By Michael C. Rygel - Own work, CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=31124755
-						behavior: behaviors.WALL,
-						category: "land",
-						state: "solid",
-						tempHigh: 1300,
-						stateHigh: "intermediate_magma",
-						density: 2822, //last 2 digits made up.
-						hardness: 0.70, //bs'd from MH rel to granite
-						breakInto: "diorite_gravel",
-					};
-
-					elements.diorite_gravel = {
-						color: ["#F1F1F1","#E1E1E1","#D1D1D1","#C0B6A6","#B0A696","#A09686","#808281","#707271","#606261","#535469","#434459","#333449","#343434","#242424","#141414"],
-						behavior: behaviors.POWDER,
-						category: "land",
-						state: "solid",
-						tempHigh: 1260,
-						stateHigh: "intermediate_magma",
-						density: 1717, //approximated from granite values
-					};
-
-					elements.intermediate_magma = {
-						"reactions": {
-							"ash": { "elem1": null, "elem2": "molten_slag" },
-							"dust": { "elem1": null, "elem2": "molten_slag" },
-							"foam": { "elem1": "scoria", "elem2": "scoria" },
-						},
-						"name": "intermediate magma",
-						"color": ["#FFFF70", "#FFE170", "#FFA800", "#FFCF4B", "#FFA64B", "#FF7C00", "#E08E38", "#E07238", "#E05500", "#86552C", "#86442C", "#863300", "#482D12", "#482412", "#481B00"],
-						"behavior": behaviors.MOLTEN,
-						tick: function(pixel) {
-							magmaRateBasedCooling(pixel,1065,vitreousIntermediateName,-105,"andesite",-26,"diorite");
-						},
-						"temp": 1215,
-						"tempLow": -Infinity,
-						"stateLow": ["andesite","diorite",vitreousIntermediateName],
-						"viscosity": 350000,
-						"hidden": true,
-						"state": "liquid",
-						"category": "molten",
-						"density": 2450,
-					}
-
-				//Mafic: gabbro
-
-					elements.rock.name = "gabbro";
-					elements.rock.tempHigh = 1474;
-					elements.rock.density = 3300;
-					elements.rock.breakInto = ["gravel"];
-					delete elements.water.reactions.rock;
-					delete elements.wet_sand.reactions.gravel;
-
-					elements.basalt_gravel = {
-						color: ["#4d4c4c", "#42403f", "#333130", "#36322f"],
-						behavior: behaviors.POWDER,
-						tempHigh: 1262.5,
-						stateHigh: "magma",
-						category: "land",
-						state: "solid",
-						density: 1975,
-						hardness: 0.26,
-					},
-
-					elements.magma.name = "mafic magma";
-					elements.magma.density = 2650;
-					elements.magma.tick = function(pixel) {
-						magmaRateBasedCooling(pixel,1180,vitreousMaficName,-115,"basalt",-29,"rock");
-					};
-					elements.magma.tempLow = -Infinity;
-					elements.magma.stateLow = ["basalt","gabbro",vitreousMaficName]
-					elements.magma.reactions ??= {};
-					elements.magma.reactions.foam = { "elem1": "mafic_scoria", "elem2": "mafic_scoria" };
-
 				//Ultramafic: peridotite
-
-					elements.peridotite = {
-						color: ["#908557","#A29E78","#7F8044","#C6BC87","#8C8656","#7C7C40","#837840","#8B8B69"],
-						behavior: behaviors.WALL,
-						category: "land",
-						state: "solid",
-						tempHigh: 1400,
-						stateHigh: "ultramafic_magma",
-						density: 3347, //appr from https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/GL003i009p00509#:~:text=Abstract,and%20the%20bulk%20rock%20analyses.
-						hardness: 0.76,
-						breakInto: "peridotite_gravel",
-					};
-
-					elements.peridotite_gravel = {
-						color: ["#807547","#928e68","#6f7034","#b6ac77","#7c7646","#6c6c30","#736830","#7b7b59","#908557","#a29e78","#7f8044","#c6bc87","#8c8656","#7c7c40","#837840","#8b8b69","#a09567","#b2ae88","#8f9054","#d6cc97","#9c9666","#8c8c50","#938850","#9b9b79"],
-						behavior: behaviors.POWDER,
-						category: "land",
-						state: "solid",
-						tempHigh: 1400,
-						stateHigh: "ultramafic_magma",
-						density: 1681,
-					};
-
-					elements.ultramafic_magma = {
-					  "reactions": {
-						"ash": { "elem1": null, "elem2": "molten_slag" },
-						"dust": { "elem1": null, "elem2": "molten_slag" },
-					  },
-					  "name": "ultramafic magma",
-					  "color": ["#ffa62b","#ff852b","#ff6300","#ffc53c","#ff9e3c","#ff7600","#fea022","#fe8022","#fe6000","#ffeb43","#ffbc43","#ff8d00","#ffa72b","#ff862b","#ff6400","#f89b20","#f87c20","#f85d00","#ff9620","#ff7820","#ff5a00","#ffad34","#ff8b34","#ff6800"],
-					  "behavior": behaviors.MOLTEN,
-					  tick: function(pixel) {
-						magmaRateBasedCooling(pixel,1280,vitreousUltramaficName,-125,"komatiite",-32,"peridotite");
-					  },
-					  "temp": 1500,
-					  "tempLow": -Infinity,
-					  "stateLow": ["komatiite","peridotite",vitreousUltramaficName],
-					  "viscosity": 100,
-					  "hidden": true,
-					  "state": "liquid",
-					  "category": "molten",
-					  "density": 2800
-					};
 
 					var molten_olivine = ["molten_fayalite","molten_forsterite","molten_forsterite"];
 
@@ -976,375 +1445,8 @@ Proper classification of limestone within these code comments
 						breakInto: "olivine_shard",
 					},
 
-					newPowder("olivine_shard",["#97ba65","#7a994e","#99d96c","#7cb553"],2811,1890,molten_olivine,null);
-
-			//Aphanitic
-
-				//Felsic: rhyolite
-
-					elements.rhyolite = {
-						color: ["#A67153","#BF967E","#D9B5A0","#8C533E","#C99F86","#C5997E","#BB8A69"],
-						// also from one of Michael C. Rygel's images
-						behavior: behaviors.WALL,
-						category: "land",
-						state: "solid",
-						tempHigh: 800,
-						stateHigh: "felsic_magma",
-						density: 2555, //very wide range
-						hardness: 0.75,
-						breakInto: "rhyolite_gravel",
-					};
-
-					elements.rhyolite_gravel = {
-						color: ["#B68163","#A67153","#966143","#CFA68E","#BF967E","#AF866E","#E9C5B0","#D9B5A0","#C9A590","#9C634E","#8C533E","#7C432E","#D9AF96","#C99F86","#B98F76","#D5A98E","#C5997E","#B5896E","#CB9A79","#BB8A69","#DB7A59"],
-						behavior: behaviors.POWDER,
-						category: "land",
-						state: "solid",
-						tempHigh: 800,
-						stateHigh: "felsic_magma",
-						density: 1254, //approximated from granite values
-					};
-
-				//Intermediate felsic: dacite
-
-					elements.dacite = {
-						color: ["#D9CCC5", "#F2E9E4", "#877670", "#A69B97"],
-						behavior: behaviors.WALL,
-						category: "land",
-						state: "solid",
-						tempHigh: 1050,
-						stateHigh: "intermediate_felsic_magma",
-						density: 2654, //https://books.google.ca/books?id=ObUPAAAAIAAJ&pg=PA181&lpg=PA181&dq=dacite+specific+gravity&source=bl&ots=qn8B4sirWi&sig=Wp_MHqPuUGPNQobcuNP5c5wqkpU&hl=en&sa=X&ei=cimtUaH8Eab7yAH8joDABQ#v=onepage&q=dacite%20specific%20gravity&f=false
-						hardness: 0.75,
-						breakInto: "dacite_gravel",
-					};
-
-					elements.dacite_gravel = {
-						color: ["#C9BCB5", "#E2D9D4", "#776660", "#968B87", "#D9CCC5", "#F2E9E4", "#877670", "#A69B97", "#E9DCD5", "#FFF9F4", "#978680", "#B6ABA7"], //placeholder
-						behavior: behaviors.POWDER,
-						category: "land",
-						state: "solid",
-						tempHigh: 1050,
-						stateHigh: "intermediate_felsic_magma",
-						density: 1300,
-					};
-
-				//Intermediate: andesite
-
-					elements.andesite = {
-						color: ["#6F7575", "#C5C9CB", "#818787", "#797F7F", "#B5B9BA", "#6D7371", "#909696"],
-						behavior: behaviors.WALL,
-						category: "land",
-						state: "solid",
-						tempHigh: 1215,
-						stateHigh: "intermediate_magma",
-						density: 2474, //it varies very widely, so I made the last 2 digits up.
-						hardness: 0.75,
-						breakInto: "andesite_gravel",
-					};
-
-					elements.andesite_gravel = {
-						color: ['#5f6565', '#b5b9bb', '#717777', '#696f6f', '#a5a9aa', '#5d6361', '#808686', '#6f7575', '#c5c9cb', '#818787', '#797f7f', '#b5b9ba', '#6d7371', '#909696', '#7f8585', '#d5d9db', '#919797', '#898f8f', '#c5c9ca', '#7d8381', '#a0a6a6'],
-						behavior: behaviors.POWDER,
-						category: "land",
-						state: "solid",
-						tempHigh: 1260,
-						stateHigh: "intermediate_magma",
-						density: 1214, //approximated from granite values
-					};
-
-				//Mafic: basalt
-
-					elements.basalt.tempHigh = 1122;
-					elements.basalt.density = 2949;
-
-				//Ultramafic: komatiite
-
-					elements.komatiite = {
-						color: ["#AEB5AE","#A9B8B5","#7B8881","#858B87","#949F97","#505B55"],
-						behavior: behaviors.WALL,
-						category: "land",
-						state: "solid",
-						tempHigh: 1600,
-						stateHigh: "ultramafic_magma",
-						density: 3100, //approximate density extrapolated from intermediate and mafic density
-						//the magma's density is more well-known but there's nothing on the solid rock (probably because it's so rare and often metamorphosed)
-						hardness: 0.75,
-						breakInto: "komatiite_gravel",
-					};
-
-					elements.komatiite_gravel = {
-						color: ["#9ea59e","#99a8a5","#6b7871","#757b77","#848f87","#404b45","#aeb5ae","#a9b8b5","#7b8881","#858b87","#949f97","#505b55","#bec5be","#b9c8c5","#8b9891","#959b97","#a4afa7","#606b65"],
-						behavior: behaviors.POWDER,
-						category: "land",
-						state: "solid",
-						tempHigh: 1600,
-						stateHigh: "ultramafic_magma",
-						density: 1650, //approximated from granite values
-					};
-
-			//Vesicular
-
-				//Felsic: pumice
-
-					elements.pumice = {
-						color: ["#ebe1c3", "#ada386", "#f0bd9e", "#ab846c", "#bfbebd", "#75726f", "#f5e595", "#ab9e60", "#ad683d", "#633d25", "#6e6d6d", "#3b3a39"],
-						behavior: behaviors.WALL,
-						category: "land",
-						state: "solid",
-						tempHigh: 1350,
-						stateHigh: "felsic_magma",
-						density: 641,
-						hardness: 0.7,
-						breakInto: "pumice_gravel",
-					};
-
-					elements.pumice_gravel = {
-						color: ["#f6f3e9","#e8dfc5","#d9cba0","#bfb9a6","#a9a189","#948a6b","#f3dccd","#eabfa4","#e0a27b","#baa191","#a78672","#8d6d58","#dad8d8","#c1bfbe","#a8a5a4","#908d89","#76736f","#5c5a57","#f5eec6","#eee09b","#e7d36f","#b7af85","#a49a65","#877e4f","#bd8461","#a56a45","#815336","#83563a","#603f2a","#3c271a","#575552","#3c3b39","#222120","#3c3b39","#222120","#080807"],
-						behavior: behaviors.POWDER,
-						category: "land",
-						state: "solid",
-						tempHigh: 1350,
-						stateHigh: "felsic_magma",
-						density: 2080,
-					};
-
-				//Intermediate felsic: ???
-
-					elements.intermediate_pumice = {
-						color: ["#dbd4bd", "#b5ad94", "#e3ceb6", "#bda891", "#c2c2c2", "#a1a1a1", "#e6c8a1", "#b8a48c"],
-						behavior: behaviors.WALL,
-						category: "land",
-						state: "solid",
-						tempHigh: 1190,
-						stateHigh: "intermediate_felsic_magma",
-						density: 991, //110% made-up
-						hardness: 0.7,
-						breakInto: "intermediate_pumice_gravel",
-					};
-
-					elements.intermediate_pumice_gravel = {
-						color: ["#e3ddc8", "#b0aa99", "#e6d4c1", "#c9b7a3", "#cfcccc", "#919191", "#e0ceb6", "#b0a292"],
-						behavior: behaviors.POWDER,
-						category: "land",
-						state: "solid",
-						tempHigh: 1190,
-						stateHigh: "intermediate_felsic_magma",
-						density: 2213, //see above
-					};
-
-				//Intermediate: scoria
-
-					elements.scoria = {
-						color: ["#594545", "#573b31", "#522e28"],
-						behavior: behaviors.WALL,
-						category: "land",
-						state: "solid",
-						tempHigh: 1085,
-						stateHigh: "intermediate_magma",
-						density: 2550,
-						hardness: 0.68,
-						breakInto: "scoria_gravel",
-					};
-
-					elements.scoria_gravel = {
-						color: ["#665e5e", "#454343", "#694d47", "#523731", "#57322d", "#3b221e"],
-						behavior: behaviors.POWDER,
-						category: "land",
-						state: "solid",
-						tempHigh: 1085,
-						stateHigh: "intermediate_magma",
-						density: 2790, //https://www.astm.org/gtj12675.html#:~:text=Particle%20density%20was%20found%20to,a%2074%2D%C2%B5m%20sieve).
-					};
-
-				//Mafic: still scoria
-
-					elements.mafic_scoria = {
-						color: ["#756666", "#695751", "#737272"],
-						behavior: behaviors.WALL,
-						category: "land",
-						state: "solid",
-						tempHigh: 1298, //Density and melting point provided by ChatGPT
-						stateHigh: "magma",
-						density: 2717,
-						hardness: 0.7,
-						breakInto: "mafic_scoria_gravel",
-					};
-
-					elements.mafic_scoria_gravel = {
-						color: ["#807a7a", "#665e5e", "#82716c", "#635652", "#8a8a8a", "#636161"],
-						behavior: behaviors.POWDER,
-						category: "land",
-						state: "solid",
-						tempHigh: 1298,
-						stateHigh: "magma",
-						density: 2993, //https://www.astm.org/gtj12675.html#:~:text=Particle%20density%20was%20found%20to,a%2074%2D%C2%B5m%20sieve).
-					};
-
-				//Ultramafic: ???
-
-					elements.ultramafic_scoria = {
-						color: ["#737565", "#7a7761", "#727372"],
-						behavior: behaviors.WALL,
-						category: "land",
-						state: "solid",
-						tempHigh: 1400, //Density and melting point provided by ChatGPT
-						stateHigh: "ultramafic_magma",
-						density: 2924,
-						hardness: 0.7,
-						breakInto: "ultramafic_scoria_gravel",
-					};
-
-					elements.ultramafic_scoria_gravel = {
-						color: ["#85877a", "#5b5c50", "#87846b", "#61694f", "#7e807e", "#5c5e5c"],
-						behavior: behaviors.POWDER,
-						category: "land",
-						state: "solid",
-						tempHigh: 1400,
-						stateHigh: "ultramafic_magma",
-						density: 3132,
-					};
-
-			//Vitreous
-
-				//Felsic: obsidian
-
-					elements.obsidian = {
-						color: ["#252422", "#171616", "#161915", "#161018"],
-						behavior: behaviors.WALL,
-						tempHigh: 1000,
-						stateHigh: "felsic_magma",
-						category: "land",
-						state: "solid",
-						density: 2488, //2.35-2.6
-						breakInto: "obsidian_shard",
-					};
-
-					elements.obsidian_shard = {
-						color: ["#363330","#231f1a","#272121","#161313","#22281f","#131712","#211924","#100c13"],
-						behavior: behaviors.POWDER,
-						tempHigh: 1000,
-						stateHigh: "felsic_magma",
-						category: "land",
-						state: "solid",
-						density: 2313, //made-up
-					},
-
-					elements.obsidian_sand = {
-						color: ["#3b3730", "#211e1e", "#293321", "#31133b"],
-						behavior: behaviors.POWDER,
-						tempHigh: 1000,
-						stateHigh: "felsic_magma",
-						category: "land",
-						state: "solid",
-						density: 2683, //made-up
-					},
-
-				//Intermediate felsic: ???
-
-					elements[vitreousInterfelsicName] = {
-						color: ["#4f4b42", "#474646", "#4a4d49", "#342f36"],
-						behavior: behaviors.WALL,
-						tempHigh: 1040, //All vitrites past obsidian have ChatGPT tempHighs and densities
-						stateHigh: "intermediate_felsic_magma",
-						category: "land",
-						state: "solid",
-						density: 2640,
-						breakInto: vitreousInterfelsicName + "_shard",
-					};
-
-					elements[vitreousInterfelsicName + "_shard"] = {
-						color: ["#69645b", "#454139", "#5c5b5b", "#424040", "#5e615d", "#454745", "#4d474f", "#39363b"],
-						behavior: behaviors.POWDER,
-						tempHigh: 1040,
-						stateHigh: "intermediate_felsic_magma",
-						category: "land",
-						state: "solid",
-						density: 2401,
-					},
-
-				//Intermediate: ???
-
-					elements[vitreousIntermediateName] = {
-						color: ["#636059", "#707070", "#5f615f", "#504b52"],
-						behavior: behaviors.WALL,
-						tempHigh: 1085,
-						stateHigh: "intermediate_magma",
-						category: "land",
-						state: "solid",
-						density: 2710,
-						breakInto: vitreousIntermediateName + "_shard",
-					};
-
-					elements[vitreousIntermediateName + "_shard"] = {
-						color: ["#7d7972", "#59554e", "#757474", "#575656", "#7b7d7a", "#5a5c5a", "#69646b", "#4f4b52"],
-						behavior: behaviors.POWDER,
-						tempHigh: 1085,
-						stateHigh: "intermediate_magma",
-						category: "land",
-						state: "solid",
-						density: 2482,
-					},
-
-				//Mafic: ???
-
-					elements[vitreousMaficName] = {
-						color: ["#6e615d", "#706767", "#6a6b63", "#6e5e68"],
-						behavior: behaviors.WALL,
-						tempHigh: 1200,
-						stateHigh: "magma",
-						category: "land",
-						state: "solid",
-						density: 2900,
-						breakInto: vitreousMaficName + "_shard",
-					};
-
-					elements[vitreousMaficName + "_shard"] = {
-						color: ["#887b77","#5d5351","#8b8484","#5f5959","#82837c","#595954","#887782","#5d5158"],
-						behavior: behaviors.POWDER,
-						tempHigh: 1200,
-						stateHigh: "magma",
-						category: "land",
-						state: "solid",
-						density: 2777,
-					},
-
-				//Ultramafic: ???
-
-					elements[vitreousUltramaficName] = {
-						color: ["#6e6d5e", "#626659", "#54574b", "#665d55"],
-						behavior: behaviors.WALL,
-						tempHigh: 1300,
-						stateHigh: "ultramafic_magma",
-						category: "land",
-						state: "solid",
-						density: 3200,
-						breakInto: vitreousUltramaficName + "_shard",
-					};
-
-					elements[vitreousUltramaficName + "_shard"] = {
-						color: ["#888777","#5d5c51","#787c6e","#51544a","#696c60","#474941","#7f756c","#554f49"],
-						behavior: behaviors.POWDER,
-						tempHigh: 1300,
-						stateHigh: "ultramafic_magma",
-						category: "land",
-						state: "solid",
-						density: 2998,
-					};
-
-
-			for(var rockName in rocks) {
-				elements[rocks[rockName]].onTryMoveInto = function(pixel,otherPixel) {
-					toGravelErodeOtmi(pixel,otherPixel);
-				};
-			};
-
-			for(var gravelName in gravels) {
-				elements[gravels[gravelName]].onTryMoveInto = function(pixel,otherPixel) {
-					toSandErodeOtmi(pixel,otherPixel);
-				};
-			};
-
+					newPowder("olivine_shard",["#97ba65","#7a994e","#99d96c","#7cb553"],2811,1890,molten_olivine,null);						
+*/
 		//Sedimentary
 
 			//Chemical
@@ -2772,3 +2874,6 @@ Proper classification of limestone within these code comments
 				temperature: -13
 			};
 			
+
+
+};
