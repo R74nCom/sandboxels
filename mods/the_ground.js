@@ -15,6 +15,12 @@ Proper classification of limestone within these code comments
 	var vitreousIntermediateName = "andesidian";
 	var vitreousMaficName = "basalidian";
 	var vitreousUltramaficName = "komatidian";
+	
+	var sandSimplification = ["gravel","granite_gravel","granodiorite_gravel","diorite_gravel","basalt_gravel","peridotite_gravel","rhyolite_gravel","dacite_gravel","andesite_gravel","komatiite_gravel","pumice_gravel","intermediate_pumice_gravel","scoria_gravel","mafic_scoria_gravel","ultramafic_scoria_gravel", "dacidian_shard", "andesidian_shard", "basalidian_shard", "komatidian_shard"];
+
+	var rocks = [ "granite",  "granodiorite",  "diorite",  "rock",  "peridotite",   "rhyolite",  "dacite",  "andesite",  "basalt",  "komatiite",   "pumice",  "intermediate_pumice",  "scoria",  "mafic_scoria",  "ultramafic_scoria",   "obsidian",  "dacidian",  "andesidian",  "basalidian",  "komatidian"];
+
+	var gravels = [ "granite_gravel",  "granodiorite_gravel",  "diorite_gravel",  "gravel",  "peridotite_gravel",   "rhyolite_gravel",  "dacite_gravel",  "andesite_gravel",  "basalt_gravel",  "komatiite_gravel",   "pumice_gravel",  "intermediate_pumice_gravel",  "scoria_gravel",  "mafic_scoria_gravel",  "ultramafic_scoria_gravel",   "obsidian_shard",  "dacidian_shard",  "andesidian_shard",  "basalidian_shard",  "komatidian_shard" ];
 
 //Functions
 
@@ -267,6 +273,102 @@ Proper classification of limestone within these code comments
 				//console.log("03");
 				changePixel(pixel,phaneriteName,false);
 			};
+		};
+	};
+	
+	//Gravel finder
+	function getGravelElementName(rockName) {
+		if(rockName == "rock") {
+			return "gravel";
+		};
+		var gravelBasedName = rockName + "_gravel";
+		if(elements[gravelBasedName]) {
+			return gravelBasedName;
+		};
+		var shardBasedName = rockName + "_shard";
+		if(elements[shardBasedName]) {
+			return shardBasedName;
+		};
+		return false;		
+	};
+	
+	//Sand finder
+	function getSandElementName(sandName) {
+		var theName = sandName;
+		if(getGravelElementName(theName)) { //will fire if it was a rock with a valid gravel
+			theName = getGravelElementName(theName)
+		};
+		if(["komatiite","peridotite","komatiite_gravel","peridotite_gravel"].includes(theName)) {
+			return "olivine_sand";
+		};
+		if(theName == "gravel" || sandSimplification.includes(theName)) {
+			return "sand";
+		};
+		theName = theName.replace(/(gravel|shard)/,"sand");
+		if(elements[theName]) {
+			return theName;
+		};
+		return false;
+	};
+	
+	//Erosion
+	function toGravelErodeOtmi(pixel,otherPixel,erosionChanceDivisor=5500) {
+		var gravelName = getGravelElementName(pixel.element);
+		//console.log(gravelName);
+		if(!gravelName) { return false };
+		var otherState = elements[otherPixel.element].state ?? "solid";
+		if(otherState == "solid") {
+			return false;
+		};
+		//console.log(otherState);
+		var otherDensity = elements[otherPixel.element].density ?? otherState == "gas" ? 1.3 : 1000;
+		var erosionChance = ((otherState == "gas" ? otherDensity * 5 : otherDensity) ** 1/1.7) / erosionChanceDivisor;
+		if(Math.random() < erosionChance) {
+			changePixel(pixel,gravelName,false);
+			//changePixelReturn(pixel,gravelName,false).color = "rgb(255,0,0)";
+		};
+	};
+
+	function toSandErodeOtmi(pixel,otherPixel,erosionChanceDivisor=5500) {
+		var sandName = getSandElementName(pixel.element);
+		//console.log(sandName);
+		if(!sandName) { return false };
+		var otherState = elements[otherPixel.element].state ?? "solid";
+		if(otherState == "solid") {
+			return false;
+		};
+		var otherDensity = elements[otherPixel.element].density ?? otherState == "gas" ? 1.3 : 1000;
+		var erosionChance = ((otherState == "gas" ? otherDensity * 5 : otherDensity) ** 1/1.7) / erosionChanceDivisor;
+		if(Math.random() < erosionChance) {
+			changePixel(pixel,sandName,false);
+			//changePixelReturn(pixel,sandName,false).color = "rgb(255,255,0)";
+		};
+	};
+
+	//I fucking hate boilerplate
+	function newPowder(name,color,density=null,tempHigh=null,stateHigh=null,breakInto=null) { //boilerplate my dick
+		if(tempHigh == null) {
+			stateHigh = null;
+		};
+		
+		elements[name] = {
+			color: color,
+			behavior: behaviors.POWDER,
+			category: "solids",
+			state: "solid",
+			density: density ?? 1000,
+		};
+		
+		if(tempHigh !== null) {
+			elements[name].tempHigh = tempHigh;
+		};
+
+		if(tempHigh !== null && stateHigh !== null) {
+			elements[name].stateHigh = stateHigh;
+		};
+
+		if(breakInto !== null) {
+			elements[name].breakInto = breakInto;
 		};
 	};
 
@@ -741,6 +843,20 @@ Proper classification of limestone within these code comments
 					elements.rock.tempHigh = 1474;
 					elements.rock.density = 3300;
 					elements.rock.breakInto = ["gravel"];
+					delete elements.water.reactions.rock;
+					delete elements.wet_sand.reactions.gravel;
+
+					elements.basalt_gravel = {
+						color: ["#4d4c4c", "#42403f", "#333130", "#36322f"],
+						behavior: behaviors.POWDER,
+						tempHigh: 1262.5,
+						stateHigh: "magma",
+						category: "land",
+						state: "solid",
+						density: 1975,
+						hardness: 0.26,
+					},
+
 					elements.magma.name = "mafic magma";
 					elements.magma.density = 2650;
 					elements.magma.tick = function(pixel) {
@@ -795,6 +911,72 @@ Proper classification of limestone within these code comments
 					  "category": "molten",
 					  "density": 2800
 					};
+
+					var molten_olivine = ["molten_fayalite","molten_forsterite","molten_forsterite"];
+
+					//apparently olivine sand exists
+					elements.olivine_sand = {
+						color: ['#b5a773', '#b5af78', '#b2b471', '#bab07b', '#b4ae74', '#b4b471', '#b5a970', '#b4b476'],
+						behavior: behaviors.POWDER,
+						tempHigh: 1750, //https://www.indiamart.com/olivineindia/olivine-sand.html
+						stateHigh: molten_olivine,
+						category: "land",
+						state: "solid",
+						density: 1720,
+					};
+
+					elements.wet_olivine_sand = {
+						color: ["#a08d4b","#918949","999c49","#aa9b50","#8f8743","#adad53","#9d8f48","#838f43"],
+						behavior: behaviors.STURDYPOWDER,
+						reactions: {
+							"sand": { "elem1":"sand", "elem2":"wet_olivine_sand", "chance":0.0005, "oneway":true },
+							"olivine_sand": { "elem1":"olivine_sand", "elem2":"wet_olivine_sand", "chance":0.0005, "oneway":true },
+							"dirt": { "elem1":"olivine_sand", "elem2":"mud", "chance":0.0005, "oneway":true },
+						},
+						tempHigh: 100,
+						stateHigh: "packed_olivine_sand",
+						tempLow: -50,
+						stateLow: "packed_olivine_sand",
+						category: "land",
+						state: "solid",
+						density: 2002,
+					};
+
+					elements.packed_olivine_sand = {
+						color: ["#968f64","#969669","#8d9362","#9d996c","#959465","#8f9362","#949061","#909366"],
+						behavior: behaviors.SUPPORT,
+						tempHigh: 1700,
+						stateHigh: molten_olivine,
+						category: "land",
+						state: "solid",
+						density: 1811,
+						breakInto: "olivine_sand",
+					};
+					
+					elements.water.reactions.olivine_sand = { "elem1": null, "elem2": "wet_olivine_sand" };
+
+					newPowder("fayalite",["#bf7432","#ad8e3e"],4390,1200,null,null);
+
+					newPowder("forsterite","#cccccc",3270,1890,null,null);
+
+					elements.molten_forsterite = {
+						reactions: {
+							"molten_fayalite": { elem1: "olivine", elem2: ["molten_fayalite","olivine"], tempMax: 1890 },
+						},
+					};
+
+					elements.olivine = {
+						color: ["#7fa14f","#7dba52"],
+						behavior: behaviors.POWDER,
+						tempHigh: 1890,
+						stateHigh: molten_olivine,
+						category: "solids",
+						state: "solid",
+						density: 2700,
+						breakInto: "olivine_shard",
+					},
+
+					newPowder("olivine_shard",["#97ba65","#7a994e","#99d96c","#7cb553"],2811,1890,molten_olivine,null);
 
 			//Aphanitic
 
@@ -1048,6 +1230,16 @@ Proper classification of limestone within these code comments
 						density: 2313, //made-up
 					},
 
+					elements.obsidian_sand = {
+						color: ["#3b3730", "#211e1e", "#293321", "#31133b"],
+						behavior: behaviors.POWDER,
+						tempHigh: 1000,
+						stateHigh: "felsic_magma",
+						category: "land",
+						state: "solid",
+						density: 2683, //made-up
+					},
+
 				//Intermediate felsic: ???
 
 					elements[vitreousInterfelsicName] = {
@@ -1138,8 +1330,20 @@ Proper classification of limestone within these code comments
 						category: "land",
 						state: "solid",
 						density: 2998,
-					},
+					};
 
+
+			for(var rockName in rocks) {
+				elements[rocks[rockName]].onTryMoveInto = function(pixel,otherPixel) {
+					toGravelErodeOtmi(pixel,otherPixel);
+				};
+			};
+
+			for(var gravelName in gravels) {
+				elements[gravels[gravelName]].onTryMoveInto = function(pixel,otherPixel) {
+					toSandErodeOtmi(pixel,otherPixel);
+				};
+			};
 
 		//Sedimentary
 
