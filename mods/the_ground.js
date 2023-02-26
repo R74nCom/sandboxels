@@ -10,14 +10,14 @@ Proper classification of limestone within these code comments
 
 var modName = "mods/the_ground.js";
 var libraryMod = "mods/code_library.js";
+var colorOffsetMod = "mods/maxColorOffset.js";
 
 if(!enabledMods.includes(libraryMod)) {
 	enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod);
 	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-	alert(`The ${libraryMod} mod is required and has been automatically inserted (reload for this to take effect).`);
+	localStorage.setItem("enabledMods", JSON.stringify(colorOffsetMod));
+	alert(`The ${libraryMod} and ${colorOffsetMod} mods are required and have been automatically inserted (reload for this to take effect).`);
 } else {
-
-
 
 //Variables
 	
@@ -172,6 +172,7 @@ if(!enabledMods.includes(libraryMod)) {
 	//Generalized sedimentation function
 
 		function sedimentation(pixel,sedimentNeighborTable,finalRock,chance=0.0003) {
+			if(finalRock == undefined) { return false };
 			if(Math.random() < chance) {
 				var validNeighborArray = Array.apply(null, Array(adjacentCoords.length)).map(function() {return false});
 				//sedimentSandstoneTries++;
@@ -193,6 +194,7 @@ if(!enabledMods.includes(libraryMod)) {
 				};
 				if(validNeighborArray.includes(true)) {
 					//sandstoneFormations++;
+					//console.log(finalRock);
 					changePixel(pixel,finalRock);
 				}/* else {
 					sandstoneFailures++;
@@ -457,6 +459,40 @@ if(!enabledMods.includes(libraryMod)) {
 					return sandColor;
 				};
 
+			//Sandstones
+
+				function sandstonizeToHex(sandName,type="normal") {
+					//console.log(sandName);
+					var sandInfo = elements[sandName];
+					if(!sandInfo) { throw new Error("No such element '" + sandName + "'") };
+					var finalColor = [];
+					//var sandColorObject = [];
+					var sandColor = sandInfo.color;
+					if(!(sandColor instanceof Array)) {
+						sandColor = [sandColor];
+					};
+					//console.log(sandColor);
+					for(var i = 0; i < sandColor.length; i++) {
+						//console.log(i,sandColor[i]);
+						var colorAsHsl = normalizeColorToHslObject(sandColor[i]);
+						//console.log(colorAsHsl);
+						colorAsHsl.h -= 10;
+						colorAsHsl.s = 41 + (-0.4 * (41 - colorAsHsl.s)); //bring towards 41;
+						colorAsHsl.l = 58 + (-0.4 * (58 - colorAsHsl.l)); //bring towards 58
+						colorAsHsl.s -= 4;
+						colorAsHsl.l += 2;
+						//console.log(colorAsHsl);
+						finalColor.push(convertHslObjects(colorAsHsl,"hex"));
+						//sandColorObject.push(convertHslObjects(colorAsHsl,"rgbjson"));
+					};
+
+					return finalColor;
+				};
+
+				function sedimentHslOffset(hslJsonColor) {
+					return {h: hslJsonColor.h - 4, s: hslJsonColor.s - 20, l: hslJsonColor.l - 25};
+				};
+
 			//Magmas
 
 				function makeMoltenColor(colorIn) { //Edited vanilla code
@@ -489,6 +525,12 @@ if(!enabledMods.includes(libraryMod)) {
 				}
 
 		//Generate an entire composition family at once
+
+		var sands = ["sand"];
+		var wetSands = ["wet_sand"];
+		var sandSolutions = [];
+		var sandSediments = ["radioactive_sand_sediment"];
+		var sandstones = ["radioactive_sandstone"];
 
 		function newIgneousCompositionFamily(
 			compositionFamilyName,
@@ -523,9 +565,19 @@ if(!enabledMods.includes(libraryMod)) {
 			//console.log(compositionFamilyName,vesiculiteMeltingPoint,vitriteMeltingPoint);
 			
 			var phaneriteSandName = compositionFamilyName == "mafic" ? "gabbro_sand" : phaneriteName + "_sand";
+			
 			var aphaniteSandName = aphaniteName + "_sand";
 			var vesiculiteSandName = vesiculiteName + "_sand";
 			var vitriteSandName = vitriteName + "_sand";
+			
+			sands.push(phaneriteSandName);
+			sands.push(aphaniteSandName);
+			sands.push(vesiculiteSandName);
+			sands.push(vitriteSandName);
+			wetSands.push("wet_" + phaneriteSandName);
+			wetSands.push("wet_" + aphaniteSandName);
+			wetSands.push("wet_" + vesiculiteSandName);
+			wetSands.push("wet_" + vitriteSandName);
 
 			var magmaName = compositionFamilyName + "_magma";
 			if(compositionFamilyName !== "mafic") { //skip phanerite, phangravel, and aphanite for mafic rocks (rock, gravel, basalt)
@@ -858,6 +910,207 @@ if(!enabledMods.includes(libraryMod)) {
 				};
 			};
 		};
+
+		function makeSedimentationElements(sandName) {
+
+			var sandInfo = elements[sandName];
+			if(!sandInfo) {
+				throw new Error("No such element '" + sandName + "'");
+			};
+
+			var suspensionName = sandName + "y_water";
+			
+			var wetSandName = "wet_" + sandName;
+			
+			var sedimentName = sandName + "_sediment";
+			
+			var sandstoneName = sandName + "stone";
+			
+			//Water reaction to pick up the fine material (this is very simplified)
+
+				elements.water.reactions[wetSandName] = {
+					"elem1": suspensionName,
+					"elem2": [wetSandName,wetSandName,wetSandName,suspensionName],
+					chance: 0.01
+				};
+
+			//Sediment suspension
+
+				//Color generation
+				
+				var sandColor = sandInfo.color;
+				if(!(sandColor instanceof Array)) {
+					sandColor = [sandColor];
+				};
+				
+				var waterColor = "#2167ff";
+				
+				//console.log(sandColor);
+				
+				suspensionColor = sandColor.map(sandSubcolor => lerpColors(waterColor,sandSubcolor,"hex",weight1=0.5)); //lerp all with half water
+
+				var sedimentColor = sandColor.map(sandSubcolor => convertHslObjects(sedimentHslOffset(normalizeColorToHslObject(sandSubcolor)),"hex"));
+				
+				elements[suspensionName] = {
+					color: suspensionColor,
+					behavior: behaviors.LIQUID,
+					tempHigh: 100,
+					stateHigh: ["steam","steam",sandName],
+					//tempLow: 0,
+					//stateLow: "sandy_ice",
+					category: "liquids",
+					reactions: {
+						"dirt": { // React with (water reacts with dirt to make mud)
+							"elem1": [null,null,wetSandName], // First element transforms into; in this case, water deletes itself
+							"elem2": "mud", // Second element transforms into; in this case, dirt turns to mud
+						},
+						"water": { "elem1":"water", "elem2":suspensionName, "chance":0.025 }, //swap reaction
+						"sand": { "elem1": [null,null,wetSandName], "elem2": wetSandName, }, 
+						suspensionName: { "elem1":"water", "elem2":sedimentName, "chance": 0.001 }, 
+						wetSandName: { "elem1": "water", "elem2":sedimentName, "chance": 0.0005 },
+						//"salt": { "elem1": "salt_water", "elem2": null },
+						//"sugar": { "elem1": "sugar_water", "elem2": null, },
+						"dust": { "elem1": "dirty_water", "elem2": null, },
+						"ash": { "elem1": "dirty_water", "elem2": null, },
+						"cyanide": { "elem1": "dirty_water", "elem2": null, },
+						//"carbon_dioxide": { "elem1": "seltzer", "elem2": null, "oneway":true },
+						"sulfur": { "elem1": "dirty_water", "elem2": null, },
+						"rat": { "elem1": "dirty_water", chance:0.005 },
+						"plague": { "elem1": "dirty_water", "elem2": null, },
+						"rust": { "elem1": "dirty_water", chance:0.005 },
+						"fallout": { "elem1": "dirty_water", chance:0.25 },
+						"radiation": { "elem1": "dirty_water", chance:0.25 },
+						"uranium": { "elem1": "dirty_water", chance:0.25 },
+						"rotten_meat": { "elem1": "dirty_water", chance:0.25 },
+						"quicklime": { "elem1": [null,null,wetSandName], "elem2": "slaked_lime", },
+						"rock": { "elem2": wetSandName, "chance": 0.00035 },
+						"ruins": { "elem2": "rock", "chance": 0.00035 },
+						"mudstone": { "elem2": "mud", "chance": 0.00035 },
+						//"methane": { "elem1":"primordial_soup", "elem2":"primordial_soup", tempMin:60, charged:true },
+						//"ammonia": { "elem1":"primordial_soup", "elem2":"primordial_soup", tempMin:60, charged:true },
+						"fly": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
+						"firefly": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
+						"bee": { "elem2":"dead_bug", "chance":0.05, "oneway":true },
+						"stink_bug": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
+					},
+					state: "liquid",
+					density: 1000 + (sandInfo.density * 0.06),
+					conduct: 0.02,
+					stain: 0.01,
+				}
+
+			//Sediment element where lithification code resides
+
+				elements[sedimentName] = {
+					hidden: true,
+					color: sedimentColor,
+					hardness: 0.2,
+					tick: function(pixel) {
+						if(!tryMove(pixel,pixel.x,pixel.y+1)) {
+							var newPixel = pixelMap[pixel.x]?.[pixel.y+1];
+							if(!newPixel) {
+								return;
+							};
+							var newElement = newPixel.element;
+							var thisSandName = pixel.element.slice(0,-9); //ABCD_sand_sediment - _sediment
+							var thisWetSandName = "wet_" + thisSandName;
+							var thisSolutionName = pixel.element.slice(0,-9) + "y_water";
+
+							var sandstoneName = thisSandName + "stone";
+
+							if(Math.random() < 0.005 && (newElement == "wet_sand" || newElement.match(/^wet_[a-z_]+_sand$/i))) { //0.5% chance to swap with wet
+								swapPixels(pixel,newPixel);
+								return;
+							};
+							if(Math.random() < 0.001 && (newElement == "sand" || newElement.match(/^[a-z_]+_sand$/i))) { //0.1% chance to give water away
+							
+								var newWetSandName = "wet_" + newPixel.element; //wet_ + ABCD_sand
+								if(elements[thisWetSandName] && elements[newWetSandName]) {
+									//console.log(thisSandName);
+									//console.log(newWetSandName);
+									changePixel(pixel,thisSandName,false);
+									changePixel(newPixel,newWetSandName,false);
+								};
+							};
+							if(Math.random() < 0.001 && newElement == "water") { //0.1% chance to give dissolve in water
+								if(elements[thisSolutionName]) {
+									//console.log(thisSolutionName);
+									changePixel(pixel,thisSolutionName,false);
+									changePixel(newPixel,thisSolutionName,false);
+								};
+							};
+							if(Math.random() < 0.001 && (newElement == "sandy_water" || newElement.match(/^[a-z_]+_sandy_water$/i))) { //0.1% chance to sediment a solution
+								var newSedimentName = newPixel.element.replace("y_water","_sediment");
+								//console.log(newSedimentName);
+								if(elements[newSedimentName]) {
+									changePixel(newPixel,newSedimentName,false);
+								};
+							};
+						};
+
+						//console.log(sandstoneName);
+						sedimentation(pixel,sandstoneLithificationElements,sandstoneName)
+					},
+					tempHigh: sandInfo.tempHigh,
+					tempHigh: sandInfo.stateHigh,
+					category: "land",
+					state: "solid",
+					density: elements[wetSandName].density + 150,
+					breakInto: sandName,
+				};
+
+			//Final rock
+
+				//console.log(sandName);
+
+				elements[sandstoneName] = {
+					color: sandstonizeToHex(sandName), //["#b27853", "#d1a784", "#d1a784", "#d4996e"]
+					behavior: behaviors.WALL,
+					tempHigh: elements[sandName].tempHigh,
+					stateHigh: sandName == "sand" ? "glass" : sandName == "gabbro_sand" ? "mafic_magma" : elements[sandName.slice(0,-5)].stateHigh,
+					category: "land",
+					state: "solid",
+					density: sandInfo.density * 1.5, //wide range
+					hardness: 0.5,
+					breakInto: sandName,
+					maxColorOffset: 30,
+				};
+		};
+
+		runAfterLoad(function() {
+			for(i = 0; i < sands.length; i++) {
+				sandSolutions.push(sands[i] + "y_water");
+				sandSediments.push(sands[i] + "_sediment");
+				sandstones.push(sands[i] + "stone");
+				
+				makeSedimentationElements(sands[i]);
+			};
+			
+			sandstoneLithificationElements = sandSediments.concat(sandstones);
+			
+			for(fei = 0; fei < sandSolutions.length; fei++) {
+				var solutionToAddReactionTo = sandSolutions[fei];
+				//console.log(solutionToAddReactionTo);
+				elements[solutionToAddReactionTo].reactions ??= {};
+				for(sei = 0; sei < sandSolutions.length; sei++) {
+					var solutionToReactWith = sandSolutions[sei];
+					var firstSedimentName = solutionToAddReactionTo.replace("y_water","_sediment");
+					var secondSedimentName = solutionToReactWith.replace("y_water","_sediment");
+					elements[solutionToAddReactionTo].reactions[solutionToReactWith] = {
+						elem1: "water", "elem2": [firstSedimentName,secondSedimentName], "chance": 0.001, 
+					};
+				};
+
+				for(sej = 0; sej < wetSands.length; sej++) {
+					var wetSandToReactWith = wetSands[sej];
+					var firstSedimentName = solutionToAddReactionTo.replace("y_water","_sediment");
+					var secondSedimentName = wetSandToReactWith.replace("wet_","") + "_sediment";
+					elements[solutionToAddReactionTo].reactions[wetSandToReactWith] = {
+						elem1: "water", "elem2": [firstSedimentName,secondSedimentName], "chance": 0.0005,
+					};
+				};
+			};
+		});
 
 //Terrain
 
@@ -1373,6 +1626,9 @@ if(!enabledMods.includes(libraryMod)) {
 				
 				elements.ultramafic_scoria_gravel.density =.3132;
 			
+		makeSedimentationElements("komatiite_sand");
+
+
 /*	//Rocks
 	
 		//Igneous
@@ -1447,200 +1703,6 @@ if(!enabledMods.includes(libraryMod)) {
 
 					newPowder("olivine_shard",["#97ba65","#7a994e","#99d96c","#7cb553"],2811,1890,molten_olivine,null);						
 */
-		//Sedimentary
-
-			//Chemical
-			
-			//Clastic
-				
-				//Grains < 1/16 mm
-			
-				//Grains 1/16-2 mm
-				//Partly intermingled with the radiation cult
-				
-					//Dummied-out debug counters
-
-						/*sedimentSandstoneTries = 0;
-						sedimentSandstoneTryIterations = 0;
-						sedimentSandstoneDetects = 0;
-						sedimentSandstoneNoDetects = 0;
-						sandstoneFormations = 0;
-						sandstoneFailures = 0;*/
-				
-					//Elements from which simplified lithification can spread
-
-						sandstoneLithificationElements = ["sand_sediment", "sandstone", "radioactive_sand_sediment", "radioactive_sandstone"/*, "crimson_sandstone", "crimson_sand_sediment"*/]
-
-					//Water reaction to pick up the fine material (this is very simplified)
-
-						elements.water.reactions.wet_sand = {
-							"elem1": "sandy_water",
-							"elem2": ["wet_sand","wet_sand","wet_sand","sandy_water"],
-							chance: 0.01
-						};
-
-						elements.water.reactions.radioactive_wet_sand = {
-							"elem1": "radioactive_sandy_water",
-							"elem2": ["radioactive_wet_sand","radioactive_wet_sand","radioactive_wet_sand","radioactive_wet_sand","radioactive_wet_sand",null],
-							chance: 0.01
-						};
-
-						/*elements.water.reactions.crimson_wet_sand = { /
-							"elem1": "crimson_sandy_water",
-							"elem2": ["crimson_wet_sand","crimson_wet_sand","crimson_wet_sand","crimson_wet_sand","crimson_wet_sand",null],
-							chance: 0.01
-						};*/
-
-					//Sediment suspension
-
-						elements.sandy_water = {
-							color: ["#768485", "#849294"],
-							behavior: behaviors.LIQUID,
-							tempHigh: 100,
-							stateHigh: ["steam","steam","sand"],
-							//tempLow: 0,
-							//stateLow: "sandy_ice",
-							category: "liquids",
-							heatCapacity: 4.184, //unimplemented
-							reactions: {
-								"dirt": { // React with (water reacts with dirt to make mud)
-									"elem1": [null,null,"wet_sand"], // First element transforms into; in this case, water deletes itself
-									"elem2": "mud", // Second element transforms into; in this case, dirt turns to mud
-								},
-								"water": { "elem1":"water", "elem2":"sandy_water", "chance":0.025 }, //swap reaction
-								"sand": { "elem1": [null,null,"wet_sand"], "elem2": "wet_sand", }, 
-								"sandy_water": { "elem1":"water", "elem2":"sand_sediment", "chance": 0.001 }, 
-								"wet_sand": { "elem1": "water", "elem2":"sand_sediment", "chance": 0.0005 },
-								//"salt": { "elem1": "salt_water", "elem2": null },
-								//"sugar": { "elem1": "sugar_water", "elem2": null, },
-								"dust": { "elem1": "dirty_water", "elem2": null, },
-								"ash": { "elem1": "dirty_water", "elem2": null, },
-								"cyanide": { "elem1": "dirty_water", "elem2": null, },
-								//"carbon_dioxide": { "elem1": "seltzer", "elem2": null, "oneway":true },
-								"sulfur": { "elem1": "dirty_water", "elem2": null, },
-								"rat": { "elem1": "dirty_water", chance:0.005 },
-								"plague": { "elem1": "dirty_water", "elem2": null, },
-								"rust": { "elem1": "dirty_water", chance:0.005 },
-								"fallout": { "elem1": "dirty_water", chance:0.25 },
-								"radiation": { "elem1": "dirty_water", chance:0.25 },
-								"uranium": { "elem1": "dirty_water", chance:0.25 },
-								"rotten_meat": { "elem1": "dirty_water", chance:0.25 },
-								"quicklime": { "elem1": [null,null,"wet_sand"], "elem2": "slaked_lime", },
-								"rock": { "elem2": "wet_sand", "chance": 0.00035 },
-								"ruins": { "elem2": "rock", "chance": 0.00035 },
-								"mudstone": { "elem2": "mud", "chance": 0.00035 },
-								//"methane": { "elem1":"primordial_soup", "elem2":"primordial_soup", tempMin:60, charged:true },
-								//"ammonia": { "elem1":"primordial_soup", "elem2":"primordial_soup", tempMin:60, charged:true },
-								"fly": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
-								"firefly": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
-								"bee": { "elem2":"dead_bug", "chance":0.05, "oneway":true },
-								"stink_bug": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
-							},
-							state: "liquid",
-							density: 1097,
-							conduct: 0.02,
-							stain: 0.01,
-						}
-
-					//Sediment element where lithification code resides
-
-						elements.sand_sediment = {
-							hidden: true,
-							color: "#d3b387",
-							hardness: 0.2,
-							behavior: [
-								"XX|XX|XX",
-								"XX|XX|XX",
-								"SW:wet_sand%1.5 AND M2|SW:wet_sand%2.5 AND M1|SW:wet_sand%1.5 AND M2"
-							],
-							reactions: {
-								"water": { "elem1":"sandy_water", "elem2":"sandy_water", "chance":0.001 },
-								"sand": { "elem1": [null,null,"wet_sand"], "elem2": "wet_sand", },
-								"sandy_water": { "elem1":["water","water","sand_sediment"], "chance":0.001 },
-								"wet_sand": { "elem2": "sand_sediment", "chance": 0.0005 },
-							},
-							tempHigh: 1700,
-							stateHigh: "molten_glass",
-							category: "land",
-							state: "solid",
-							state: "solid",
-							density: 1602,
-							breakInto: "sand",
-							tick: function(pixel) {
-								sedimentation(pixel,sandstoneLithificationElements,"sandstone")
-							},
-						}
-
-					//Reactions to add
-
-						elements.wet_sand.reactions.sand_sediment = {
-							elem1: "sand_sediment",
-							chance: 0.0003
-						};
-
-						elements.wet_sand.reactions.wet_sand = {
-							elem1: "sand_sediment",
-							chance: 0.0003
-						};
-
-					//Final rock
-
-						elements.sandstone = {
-							color: ["#b27853", "#d1a784", "#d1a784", "#d4996e"],
-							behavior: behaviors.WALL,
-							tempHigh: 1500,
-							stateHigh: "molten_glass",
-							category: "land",
-							state: "solid",
-							state: "solid",
-							density: 2323, //wide range
-							hardness: 0.5,
-							breakInto: "sand",
-						}
-
-					//Worldgen preset for testing
-
-						worldgentypes.sandstone_test_ocean = {
-							layers: [
-								[0.9, "wet_sand", 0.2],
-								[0.9, "sand", 0.2],
-								[0.8, "sandy_water", 0.7],
-								[0.25, "water"],
-								[0.1, "sand", 0.1],
-								[0.1, "clay", 0.1],
-								[0.1, "gravel", 0.2],
-								[0.1, "wet_sand"],
-								[0.03, "gravel", 0.5],
-								[0.03, "rock"],
-								[0, "basalt"],
-							]
-						};
-
-					//Changes to vanilla desert
-
-						worldgentypes.desert = {
-							layers: [
-								[0.95, "gravel", 0.6],
-								[0.65, "bone", 0.03],
-								[0.65, "sand"],
-								[0.55, "bone", 0.02],
-								[0.3, "sandstone"],
-								[0.05, "rock"],
-								[-0.78, "basalt"]
-							],
-							temperature: 38
-						};
-						
-				//Grains > 2 mm
-				
-					//Angular fragments
-
-						//Breccia
-
-					//Rounded fragments
-					
-						//Conglomerate
-	
 	//Gems
 	  //There is a mineral classification scheme, but it will take a while to implement if I ever get around to it.
 	  //We're assuming that the crystal structures reform properly because I don't want to have to research and implement refrozen amorphous forms.
