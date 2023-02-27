@@ -433,21 +433,21 @@ if(!enabledMods.includes(libraryMod)) {
 					};
 					for(i = 0; i < rockColor.length; i++) {
 						var colorAsHsl = normalizeColorToHslObject(rockColor[i]);
-						colorAsHsl.l = 60 + (-0.5 * (60 - colorAsHsl.l)); //bring towards 60
-						colorAsHsl.s = 31 + (-0.5 * (31 - colorAsHsl.s)); //bring towards 31;
+						colorAsHsl.l = 70 + (-0.6 * (70 - colorAsHsl.l)); //bring towards 70
+						colorAsHsl.s = 31 + (-0.4 * (31 - colorAsHsl.s)); //bring towards 31;
 						switch(type.toLowerCase()) {
 							case "normal":
 							case "n":
 								break;
 							case "wet":
 							case "w":
-								colorAsHsl.s += 2;
-								colorAsHsl.l -= 13;
+								colorAsHsl.s += 3;
+								colorAsHsl.l -= 15;
 								break;
 							case "packed":
 							case "p":
-								colorAsHsl.s -= 10;
-								colorAsHsl.l += 5;
+								colorAsHsl.s -= 11;
+								colorAsHsl.l += 6;
 								break;
 							default:
 								break;
@@ -636,6 +636,7 @@ if(!enabledMods.includes(libraryMod)) {
 					density: phaneriteDensity,
 					hardness: 0.75,
 					breakInto: phaneriteName + "_gravel",
+					_data: [compositionFamilyName,"phanerite","rock"],
 				};
 				
 				elements.water.reactions[phaneriteName] = { "elem2": phaneriteName + "_gravel", "chance": 0.00035 }
@@ -648,6 +649,7 @@ if(!enabledMods.includes(libraryMod)) {
 					tempHigh: phaneriteMeltingPoint,
 					stateHigh: magmaName,
 					density: phaneriteDensity * 0.55,
+					_data: [compositionFamilyName,"phanerite","sand"],
 				};
 				
 				elements.water.reactions[phaneriteName + "_gravel"] = { "elem2": twoPartRepeatedArray(phaneriteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
@@ -662,6 +664,7 @@ if(!enabledMods.includes(libraryMod)) {
 					density: aphaniteDensity,
 					hardness: 0.75,
 					breakInto: aphaniteName + "_gravel",
+					_data: [compositionFamilyName,"aphanite","rock"],
 				};
 			} else {
 				phaneriteName = "rock";
@@ -679,6 +682,7 @@ if(!enabledMods.includes(libraryMod)) {
 				tempHigh: phaneriteMeltingPoint,
 				stateHigh: vitriteName,
 				density: phaneriteDensity * 0.595,
+				_data: [compositionFamilyName,"phanerite","sand"],
 			};
 			
 			//console.log(phaneriteSandName, elements[phaneriteSandName].color);
@@ -696,6 +700,7 @@ if(!enabledMods.includes(libraryMod)) {
                 tempLow: -50,
                 stateLow:"packed_" + phaneriteSandName,
 				density: phaneriteDensity * 0.595 + 150,
+				_data: [compositionFamilyName,"phanerite","wet_sand"],
 			};
 
 			elements["packed_" + phaneriteSandName] = {
@@ -707,6 +712,7 @@ if(!enabledMods.includes(libraryMod)) {
 				stateHigh: vitriteName,
 				density: phaneriteDensity * 0.59,
 				breakInto: phaneriteSandName,
+				_data: [compositionFamilyName,"phanerite","packed_sand"],
 			};
 
 			elements.water.reactions[phaneriteSandName] = {
@@ -721,19 +727,10 @@ if(!enabledMods.includes(libraryMod)) {
 				tempHigh: aphaniteMeltingPoint,
 				stateHigh: magmaName,
 				density: aphaniteDensity * 0.55,
+				_data: [compositionFamilyName,"aphanite","gravel"],
 			};
 
 			elements.water.reactions[aphaniteName + "_gravel"] = { "elem2": twoPartRepeatedArray(aphaniteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
-
-			elements[aphaniteName + "_sand"] = {
-				color: sandizeToHex(aphaniteName),
-				behavior: behaviors.POWDER,
-				category: "land",
-				state: "solid",
-				tempHigh: aphaniteMeltingPoint,
-				stateHigh: magmaName,
-				density: aphaniteDensity * 0.595,
-			};
 
 			elements[aphaniteSandName] = {
 				color: sandizeToHex(aphaniteName,"normal"),
@@ -743,6 +740,7 @@ if(!enabledMods.includes(libraryMod)) {
 				tempHigh: aphaniteMeltingPoint,
 				stateHigh: vitriteName,
 				density: aphaniteDensity * 0.595,
+				_data: [compositionFamilyName,"aphanite","sand"],
 			};
 
 			elements["wet_" + aphaniteSandName] = {
@@ -758,6 +756,7 @@ if(!enabledMods.includes(libraryMod)) {
                 tempLow: -50,
                 stateLow:"packed_" + aphaniteSandName,
 				density: aphaniteDensity * 0.595 + 150,
+				_data: [compositionFamilyName,"aphanite","wet_sand"],
 			};
 
 			elements["packed_" + aphaniteSandName] = {
@@ -769,6 +768,7 @@ if(!enabledMods.includes(libraryMod)) {
 				stateHigh: vitriteName,
 				density: aphaniteDensity * 0.59,
 				breakInto: aphaniteSandName,
+				_data: [compositionFamilyName,"aphanite","packed_sand"],
 			};
 
 			elements.water.reactions[aphaniteSandName] = {
@@ -785,6 +785,7 @@ if(!enabledMods.includes(libraryMod)) {
 				density: vesiculiteDensity,
 				hardness: 0.75,
 				breakInto: vesiculiteName + "_gravel",
+				_data: [compositionFamilyName,"vesiculite","rock"],
 			};
 			
 			elements.water.reactions[vesiculiteName] = { "elem2": vesiculiteName + "_gravel", "chance": 0.00035 }
@@ -797,6 +798,7 @@ if(!enabledMods.includes(libraryMod)) {
 				tempHigh: vesiculiteMeltingPoint,
 				stateHigh: magmaName,
 				density: vesiculiteDensity * 3.2,
+				_data: [compositionFamilyName,"vesiculite","gravel"],
 			};
 			
 			elements.water.reactions[vesiculiteName + "_gravel"] = { "elem2": twoPartRepeatedArray(vesiculiteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
@@ -809,6 +811,7 @@ if(!enabledMods.includes(libraryMod)) {
 				tempHigh: vesiculiteMeltingPoint,
 				stateHigh: vitriteName,
 				density: vesiculiteDensity * 1.9,
+				_data: [compositionFamilyName,"vesiculite","sand"],
 			};
 
 			elements["wet_" + vesiculiteSandName] = {
@@ -824,6 +827,7 @@ if(!enabledMods.includes(libraryMod)) {
                 tempLow: -50,
                 stateLow:"packed_" + vesiculiteSandName,
 				density: vesiculiteDensity * 1.9 + 150,
+				_data: [compositionFamilyName,"vesiculite","wet_sand"],
 			};
 
 			elements["packed_" + vesiculiteSandName] = {
@@ -835,6 +839,7 @@ if(!enabledMods.includes(libraryMod)) {
 				stateHigh: vitriteName,
 				density: vesiculiteDensity * 1.888,
 				breakInto: vesiculiteSandName,
+				_data: [compositionFamilyName,"vesiculite","packed_sand"],
 			};
 
 			elements.water.reactions[vesiculiteSandName] = {
@@ -851,6 +856,7 @@ if(!enabledMods.includes(libraryMod)) {
 				density: vitriteDensity,
 				hardness: 0.75,
 				breakInto: vitriteName + "_shard",
+				_data: [compositionFamilyName,"vitrite","rock"],
 			};
 
 			elements.water.reactions[vitriteName] = { "elem2": vitriteName + "_shard", "chance": 0.00035 }
@@ -863,6 +869,7 @@ if(!enabledMods.includes(libraryMod)) {
 				tempHigh: vitriteMeltingPoint,
 				stateHigh: magmaName,
 				density: vitriteDensity * 0.55,
+				_data: [compositionFamilyName,"vitrite","glass_shard"],
 			};
 
 			elements.water.reactions[vitriteName + "_shard"] = { "elem2": twoPartRepeatedArray(vitriteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
@@ -875,6 +882,7 @@ if(!enabledMods.includes(libraryMod)) {
 				tempHigh: vitriteMeltingPoint,
 				stateHigh: vitriteName,
 				density: vitriteDensity * 0.595,
+				_data: [compositionFamilyName,"vitrite","sand"],
 			};
 
 			elements["wet_" + vitriteSandName] = {
@@ -890,6 +898,7 @@ if(!enabledMods.includes(libraryMod)) {
                 tempLow: -50,
                 stateLow:"packed_" + vitriteSandName,
 				density: vitriteDensity * 0.595 + 150,
+				_data: [compositionFamilyName,"vitrite","wet_sand"],
 			};
 
 			elements["packed_" + vitriteSandName] = {
@@ -901,6 +910,7 @@ if(!enabledMods.includes(libraryMod)) {
 				stateHigh: vitriteName,
 				density: vitriteDensity * 0.59,
 				breakInto: vitriteSandName,
+				_data: [compositionFamilyName,"vitrite","packed_sand"],
 			};
 
 			elements.water.reactions[vitriteSandName] = {
@@ -954,6 +964,7 @@ if(!enabledMods.includes(libraryMod)) {
 					"state": "liquid",
 					"category": "molten",
 					"density": magmaDensity,
+					"_data": [compositionFamilyName,"magma","liquid"],
 				};
 			} else {
 				elements[magmaName].tempHigh = magmaBoilingPoint;
@@ -970,6 +981,7 @@ if(!enabledMods.includes(libraryMod)) {
 				category: "gases",
 				state: "gas",
 				hidden: true,
+				_data: [compositionFamilyName,"magma","vaporized"],
 			};
 			
 			vaporizedMagmas.push("vaporized_" + magmaName);
@@ -987,6 +999,7 @@ if(!enabledMods.includes(libraryMod)) {
 				stateLow: aphaniteSandName,
 				category: "gases",
 				state: "gas",
+				_data: [compositionFamilyName,"magma","cloud"],
 			};
 
 			magmaClouds.push(magmaName + "_cloud");
@@ -1032,6 +1045,8 @@ if(!enabledMods.includes(libraryMod)) {
 				suspensionColor = sandColor.map(sandSubcolor => lerpColors(waterColor,sandSubcolor,"hex",weight1=0.5)); //lerp all with half water
 
 				var sedimentColor = sandColor.map(sandSubcolor => convertHslObjects(sedimentHslOffset(normalizeColorToHslObject(sandSubcolor)),"hex"));
+				
+				//console.log(sandInfo);
 				
 				elements[suspensionName] = {
 					color: suspensionColor,
@@ -1079,6 +1094,7 @@ if(!enabledMods.includes(libraryMod)) {
 					density: 1000 + (sandInfo.density * 0.06),
 					conduct: 0.02,
 					stain: 0.01,
+					_data: [sandInfo._data[0], sandInfo._data[1], "sandy_water"],
 				}
 
 			//Sediment element where lithification code resides
@@ -1134,11 +1150,12 @@ if(!enabledMods.includes(libraryMod)) {
 						sedimentation(pixel,sandstoneLithificationElements,sandstoneName)
 					},
 					tempHigh: sandInfo.tempHigh,
-					tempHigh: sandInfo.stateHigh,
+					stateHigh: sandInfo.stateHigh,
 					category: "land",
 					state: "solid",
 					density: elements[wetSandName].density + 150,
 					breakInto: sandName,
+					_data: [sandInfo._data[0], sandInfo._data[1], "sand_sediment"],
 				};
 
 			//Final rock
@@ -1156,6 +1173,7 @@ if(!enabledMods.includes(libraryMod)) {
 					hardness: 0.5,
 					breakInto: sandName,
 					maxColorOffset: 30,
+					_data: [sandInfo._data[0], "rock", "sandstone"],
 				};
 		};
 
@@ -1683,6 +1701,7 @@ if(!enabledMods.includes(libraryMod)) {
 				elements.rock.density = 3300;
 				elements.rock.breakInto = ["gravel"];
 				delete elements.wet_sand.reactions.gravel;
+				elements.rock._data = ["mafic","phanerite","rock"],
 
 				elements.magma.name = "mafic magma";
 				elements.magma.density = 2650;
@@ -1694,10 +1713,15 @@ if(!enabledMods.includes(libraryMod)) {
 				elements.magma.stateLow = ["basalt","gabbro",vitreousMaficName]
 				elements.magma.reactions ??= {};
 				elements.magma.reactions.foam = { "elem1": "mafic_scoria", "elem2": "mafic_scoria" };
+				elements.magma._data = ["mafic","magma","liquid"],
 
 				elements.basalt.tempHigh = 1122;
 				elements.basalt.density = 2949;
 				elements.basalt.breakInto = "basalt_gravel",
+				elements.rock._data = ["mafic","aphanite","rock"],
+				elements.sand._data = ["silica","silica","sand"],
+				elements.wet_sand._data = ["silica","silica","wet_sand"],
+				elements.packed_sand._data = ["silica","silica","packed_sand"],
 
 				newIgneousCompositionFamily(
 					"mafic",
