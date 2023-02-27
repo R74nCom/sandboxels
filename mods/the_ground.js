@@ -947,6 +947,8 @@ if(!enabledMods.includes(libraryMod)) {
 					"temp": Math.max(phaneriteMeltingPoint,aphaniteMeltingPoint,vesiculiteMeltingPoint,vitriteMeltingPoint) + 100,
 					"tempLow": -Infinity, //cosmetic info
 					"stateLow": [aphaniteName,phaneriteName,vitriteName],
+					"tempHigh": magmaBoilingPoint,
+					"stateHigh": "vaporized_" + magmaName,
 					"viscosity": magmaViscosity,
 					"hidden": true,
 					"state": "liquid",
