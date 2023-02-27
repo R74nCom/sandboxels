@@ -1,3 +1,5 @@
+defaultColorOffset = 15;
+
 pixelColorPick = function(pixel,customColor=null,maxOffset=null) {
 	var element = pixel.element;
 	var elementInfo = elements[element];
@@ -24,7 +26,12 @@ pixelColorPick = function(pixel,customColor=null,maxOffset=null) {
 	}
 	// Randomly darken or lighten the RGB color
 		//try maxOffset parameter, then info maxColorOffset, then default 15
-	var offsetAmount = (maxOffset == null ? (elementInfo.maxColorOffset == undefined ? 15 : elementInfo.maxColorOffset) : maxOffset);
+	var offsetAmount; 
+	if(maxOffset !== null) {
+		offsetAmount = maxOffset;
+	} else {
+		offsetAmount = elementInfo?.maxColorOffset ?? defaultColorOffset;
+	};
 	
 	var maxColorOffset = Math.floor(Math.random() * (Math.random() > 0.5 ? -1 : 1) * Math.random() * offsetAmount);
 	var r = rgb.r + maxColorOffset;
