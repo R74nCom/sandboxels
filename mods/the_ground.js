@@ -1241,6 +1241,13 @@ if(!enabledMods.includes(libraryMod)) {
 			elements.intermediate_magma.reactions.ultramafic_magma = { //mafic magma
 				elem1: "magma", elem2: "magma", chance: 0.6,
 			};
+			
+			elements.molten_dirt.tempHigh = 3313;
+			var rockStateHigh = JSON.parse(JSON.stringify(vaporizedMagmas));
+			if(rockStateHigh.includes("vaporized_hellish_magma")) { 
+				rockStateHigh.splice(rockStateHigh.indexOf("vaporized_hellish_magma"));
+			};
+			elements.molten_dirt.stateHigh = rockStateHigh; //assuming mixture
 		});
 
 //Terrain
