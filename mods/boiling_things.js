@@ -1,60 +1,3 @@
-//lava {
-
-	elements.magma.tempHigh = 3000
-	elements.magma.stateHigh = "vaporized_rock"
-	
-	elements.vaporized_rock = {
-		color: ["#ffc94a", "#fcd34c", "#ffae36"],
-		behavior: [
-			"M2|M1|M2",
-			"M1|XX|M1",
-			"M2|M1|M2",
-		],
-		reactions: {
-			"vaporized_rock": { "elem1": null, "elem2": "lava_cloud", "chance":0.3, "y":[0,15] },
-			"lava_cloud": { "elem1": "lava_cloud", "chance":0.4, "y":[0,15] },
-		},
-		density: 2452, //just magma density * 0.9
-		temp: 3100,
-		tempLow: 3000,
-		stateLow: "magma",
-		category: "gases",
-		state: "gas",
-		hidden: true,
-	},
-
-	elements.lava_cloud = {
-		color: ["#c58b2a", "#e48b15", "#df8317", "#eb930f"],
-		behavior: [
-			"XX|XX|XX",
-			"M1%7|CH:magma%0.05|M1%7",
-			"XX|XX|XX",
-		],
-		density: 2,
-		temp: 3000,
-		tempLow: 850,
-		stateLow: "rock_cloud",
-		category: "gases",
-		state: "gas",
-	},
-
-	elements.rock_cloud = {
-		color: ["#ba8843", "#c28a4a", "#bf8245", "#c4904b"],
-		behavior: [
-			"XX|XX|XX",
-			"M1%7|CH:basalt,basalt,basalt,rock%0.05|M1%7",
-			"XX|XX|XX",
-		],
-		density: 2,
-		temp: 800,
-		tempHigh: 3000,
-		stateHigh: "lava_cloud",
-		category: "gases",
-		state: "gas",
-	},
-
-//}
-
 //glass {
 
 	elements.molten_glass = {
@@ -299,15 +242,6 @@
 
 //}
 
-// dirt {
-
-	elements.molten_dirt = {
-		tempHigh: 3000,
-		stateHigh: "vaporized_rock",
-	}
-
-//}
-
 // calcium {
 
 	elements.molten_calcium = {
@@ -523,9 +457,6 @@ runAfterLoad(function() {
 
 	if(enabledMods.includes("mods/fey_and_more.js")) {
         //mistake
-			elements.concoction.reactions.vaporized_rock = { "elem1": "mistake", "elem2": null }
-			elements.concoction.reactions.lava_cloud = { "elem1": "mistake", "elem2": null }
-			elements.concoction.reactions.rock_cloud = { "elem1": "mistake", "elem2": null }
 			elements.concoction.reactions.vaporized_glass = { "elem1": "mistake", "elem2": null }
 			elements.concoction.reactions.hot_glass_cloud = { "elem1": "mistake", "elem2": null }
 			elements.concoction.reactions.cold_glass_cloud = { "elem1": "mistake", "elem2": null }
@@ -551,18 +482,4 @@ runAfterLoad(function() {
 			elements.concoction.reactions.cold_salt_cloud = { "elem1": "mistake", "elem2": null }
     };
 
-	if(enabledMods.includes("mods/the_ground.js")) {
-		elements.molten_dirt = { //added manually because the change to dirt will prevent molten_dirt from being auto-generated
-			"behavior": behaviors.MOLTEN,
-			"hidden": true,
-			"state": "liquid",
-			"category": "states",
-			"color": ["#EC6A15", "#EC5515", "#EC3F00", "#B85210", "#B84210", "#B83100", "#AE4B0D", "#AE3C0D", "#AE2D00", "#D65A0F", "#D6480F", "#D63600"],
-			"temp": 1200,
-			"tempLow": 1100,
-			"stateLow": "dry_dirt",
-			"density": 1098,
-			"viscosity": 10000
-		}
-    };
 });
