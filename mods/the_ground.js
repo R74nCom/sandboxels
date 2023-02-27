@@ -14,8 +14,8 @@ var colorOffsetMod = "mods/maxColorOffset.js";
 
 if(!enabledMods.includes(libraryMod)) {
 	enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod);
+	enabledMods.splice(enabledMods.indexOf(modName),0,colorOffsetMod);
 	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-	localStorage.setItem("enabledMods", JSON.stringify(colorOffsetMod));
 	alert(`The ${libraryMod} and ${colorOffsetMod} mods are required and have been automatically inserted (reload for this to take effect).`);
 } else {
 
