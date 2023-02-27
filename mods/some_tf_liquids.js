@@ -142,42 +142,6 @@ elements.tectonic_petrotheum = {
 	insulate:false,
 },
 
-elements.basalt_gravel = {
-	color: ["#4d4c4c", "#42403f", "#333130", "#36322f"],
-	behavior: behaviors.POWDER,
-	tempHigh: 1262.5,
-	stateHigh: "magma",
-	category: "land",
-	state: "solid",
-	density: 1975,
-	hardness: 0.26,
-},
-
-elements.limestone_gravel = {
-	color: ["#c7baa1", "#e8d8b7", "#fcf3d7", "#fffce6"],
-	behavior: behaviors.POWDER,
-    tempHigh: 825,
-    stateHigh: "quicklime",
-    category: "land",
-    state: "solid",
-    density: 1380,
-    hardness: 0.16,
-    breakInto: ["quicklime","calcium","dust"],
-}
-
-if(!Array.isArray(elements.basalt.breakInto)) {
-	tempArray = []
-	tempArray.push(elements.basalt.breakInto)
-	elements.basalt.breakInto = tempArray
-}
-
-elements.basalt.breakInto.push("basalt_gravel")
-elements.limestone.breakInto.push("limestone_gravel")
-elements.limestone.breakInto.push("limestone_gravel")
-
-elements.worm.reactions.limestone_gravel = { "elem2":"calcium", "chance":0.1 },
-elements.acid.reactions.limestone_gravel = { "elem1":"neutral_acid", "elem2":null },
-
 elements.zephyrean_aerotheum = {
 	color: ["#FFFCD9","#FEFFFC","#FDFFDB","#FFFFE8","#FBF6D3","#F1EDD0"],
 	behavior: behaviors.AGLIQUID,
