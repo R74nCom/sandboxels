@@ -476,10 +476,10 @@ if(!enabledMods.includes(libraryMod)) {
 						//console.log(i,sandColor[i]);
 						var colorAsHsl = normalizeColorToHslObject(sandColor[i]);
 						//console.log(colorAsHsl);
-						colorAsHsl.h -= 10;
-						colorAsHsl.s = 41 + (-0.4 * (41 - colorAsHsl.s)); //bring towards 41;
-						colorAsHsl.l = 58 + (-0.4 * (58 - colorAsHsl.l)); //bring towards 58
-						colorAsHsl.s -= 4;
+						if(colorAsHsl.s > 5 && colorAsHsl.h !== 0) { colorAsHsl.h -= 10 };
+						if(colorAsHsl.s > 5 && colorAsHsl.h !== 0) { colorAsHsl.s = 21 + (-0.8 * (21 - colorAsHsl.s)) }; //bring towards 21;
+						colorAsHsl.l = 58 + (-0.8 * (58 - colorAsHsl.l)); //bring towards 58
+						if(colorAsHsl.s > 5 && colorAsHsl.h !== 0) { colorAsHsl.s -= 4 };
 						colorAsHsl.l += 2;
 						//console.log(colorAsHsl);
 						finalColor.push(convertHslObjects(colorAsHsl,"hex"));
@@ -496,6 +496,7 @@ if(!enabledMods.includes(libraryMod)) {
 			//Magmas
 
 				function makeMoltenColor(colorIn) { //Edited vanilla code
+					//console.log(colorIn);
 				
 					var newcolor = colorIn;
 					var moltenColorFactors = [ [2,1.25,0.5], [2,1,0.5], [2,0.75,0] ];
@@ -523,6 +524,47 @@ if(!enabledMods.includes(libraryMod)) {
 					}
 					return colorList;
 				}
+			
+			//Magma vapors
+				function magmavaporizeToHex(colorIn) {
+					var color = colorIn;
+
+					if(!(color instanceof Array)) {
+						color = [color];
+					};
+					
+					color = color.map(x => normalizeColorToHslObject(x));
+
+					for(i = 0; i < color.length; i++) {
+						color[i].h += 5;
+						color[i].s -= 5;
+						color[i].l += 20;
+					};
+
+					color = color.map(x => convertHslObjects(x,"hex"));
+
+					return color;
+				};
+
+				function magmacloudizeToHex(colorIn) {
+					var color = colorIn;
+
+					if(!(color instanceof Array)) {
+						color = [color];
+					};
+					
+					color = color.map(x => normalizeColorToHslObject(x));
+
+					for(i = 0; i < color.length; i++) {
+						color[i].h += 5;
+						color[i].s -= 8;
+						color[i].l += 5;
+					};
+
+					color = color.map(x => convertHslObjects(x,"hex"));
+
+					return color;
+				};
 
 		//Generate an entire composition family at once
 
@@ -531,6 +573,8 @@ if(!enabledMods.includes(libraryMod)) {
 		var sandSolutions = [];
 		var sandSediments = ["radioactive_sand_sediment"];
 		var sandstones = ["radioactive_sandstone"];
+		var vaporizedMagmas = [];
+		var magmaClouds = [];
 
 		function newIgneousCompositionFamily(
 			compositionFamilyName,
@@ -538,6 +582,7 @@ if(!enabledMods.includes(libraryMod)) {
 			magmaDensity,
 			vitriteCoolingRateThreshold,
 			aphaniteCoolingRateThreshold,
+			magmaBoilingPoint,
 			
 			phaneriteName,
 			phaneriteColor,
@@ -908,7 +953,42 @@ if(!enabledMods.includes(libraryMod)) {
 					"category": "molten",
 					"density": magmaDensity,
 				};
+			} else {
+				elements[magmaName].tempHigh = magmaBoilingPoint;
+				elements[magmaName].stateHigh = ["vaporized_" + magmaName];
 			};
+
+			elements["vaporized_" + magmaName] = {
+				color: magmavaporizeToHex(elements[magmaName].color),
+				behavior: behaviors.GAS,
+				density: magmaDensity * 0.0028,
+				temp: magmaBoilingPoint + 100,
+				tempLow: magmaBoilingPoint,
+				stateLow: magmaName,
+				category: "gases",
+				state: "gas",
+				hidden: true,
+			};
+			
+			vaporizedMagmas.push("vaporized_" + magmaName);
+			
+			elements[magmaName + "_cloud"] = {
+				color: magmacloudizeToHex(elements[magmaName].color),
+				behavior: [
+					"XX|XX|XX",
+					"M1%7|CH:" + magmaName + "%0.05|M1%7",
+					"XX|XX|XX",
+				],
+				density: magmaDensity * 0.0021,
+				temp: magmaBoilingPoint + 100,
+				tempLow: Math.min(phaneriteMeltingPoint,aphaniteMeltingPoint,vesiculiteMeltingPoint,vitriteMeltingPoint) - 50,
+				stateLow: aphaniteSandName,
+				category: "gases",
+				state: "gas",
+			};
+
+			magmaClouds.push(magmaName + "_cloud");
+			
 		};
 
 		function makeSedimentationElements(sandName) {
@@ -1067,7 +1147,7 @@ if(!enabledMods.includes(libraryMod)) {
 					color: sandstonizeToHex(sandName), //["#b27853", "#d1a784", "#d1a784", "#d4996e"]
 					behavior: behaviors.WALL,
 					tempHigh: elements[sandName].tempHigh,
-					stateHigh: sandName == "sand" ? "glass" : sandName == "gabbro_sand" ? "mafic_magma" : elements[sandName.slice(0,-5)].stateHigh,
+					stateHigh: sandName == "sand" ? "glass" : sandName == "gabbro_sand" ? "magma" : elements[sandName.slice(0,-5)].stateHigh,
 					category: "land",
 					state: "solid",
 					density: sandInfo.density * 1.5, //wide range
@@ -1109,6 +1189,55 @@ if(!enabledMods.includes(libraryMod)) {
 						elem1: "water", "elem2": [firstSedimentName,secondSedimentName], "chance": 0.0005,
 					};
 				};
+			};
+
+			sandstoneLithificationElements = sandSediments.concat(sandstones);
+			
+			for(fei = 0; fei < vaporizedMagmas.length; fei++) {
+				var vaporToAddReactionTo = vaporizedMagmas[fei];
+				//console.log(vaporToAddReactionTo);
+				elements[vaporToAddReactionTo].reactions ??= {};
+				for(sei = 0; sei < vaporizedMagmas.length; sei++) {
+					var vaporToReactWith = vaporizedMagmas[sei];
+					var firstCloudName = vaporToAddReactionTo.replace("vaporized_","") + "_cloud";
+					var secondCloudName = vaporToReactWith.replace("vaporized_","") + "_cloud";
+					elements[vaporToAddReactionTo].reactions[vaporToReactWith] = {
+						elem1: null, "elem2": [firstCloudName,secondCloudName], "chance": 0.3, y: [0,15] 
+					};
+				};
+
+				for(sej = 0; sej < magmaClouds.length; sej++) {
+					var cloudToReactWith = magmaClouds[sej];
+					var firstCloudName = vaporToAddReactionTo.replace("vaporized_","") + "_cloud";
+					elements[vaporToAddReactionTo].reactions[cloudToReactWith] = {
+						elem1: firstCloudName, "chance": 0.4, y: [0,15]
+					};
+				};
+			};
+			
+			elements.felsic_magma.reactions ??= {};
+			elements.felsic_magma.reactions.intermediate_magma = {
+				elem1: "intermediate_felsic_magma", elem2: "intermediate_felsic_magma", chance: 0.8,
+			};
+
+			elements.intermediate_felsic_magma.reactions ??= {};
+			elements.intermediate_felsic_magma.reactions.magma = {
+				elem1: "intermediate_magma", elem2: "intermediate_magma", chance: 0.7,
+			};
+
+			elements.felsic_magma.reactions ??= {};
+			elements.felsic_magma.reactions.magma = { //mafic magma
+				elem1: "intermediate_magma", elem2: "intermediate_magma", chance: 0.7,
+			};
+
+			elements.felsic_magma.reactions ??= {};
+			elements.felsic_magma.reactions.ultramafic_magma = { //mafic magma
+				elem1: "intermediate_magma", elem2: "magma", chance: 0.6,
+			};
+
+			elements.intermediate_magma.reactions ??= {};
+			elements.intermediate_magma.reactions.ultramafic_magma = { //mafic magma
+				elem1: "magma", elem2: "magma", chance: 0.6,
 			};
 		});
 
@@ -1442,6 +1571,7 @@ if(!enabledMods.includes(libraryMod)) {
 					2200,
 					-85,
 					-20,
+					2850,
 					
 					"granite",
 					["#F3C3AD", "#F0AB75", "#DDA888", "#BD927E", "#998473", "#5C5E53", "#BD8366"],
@@ -1477,6 +1607,7 @@ if(!enabledMods.includes(libraryMod)) {
 					2320,
 					-95,
 					-23,
+					2900,
 					
 					"granodiorite",
 					["#B1AB9D", "#262001", "#A6A292", "#D6C5BC", "#F2F2F2", "#DED8C2", "#978871", "#A8AAA7"], //From image: By Rudolf Pohl - Own work, CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=7788350
@@ -1509,6 +1640,7 @@ if(!enabledMods.includes(libraryMod)) {
 					2450,
 					-105,
 					-26,
+					2950,
 					
 					"diorite",
 					["#E1E1E1","#B0A696","#707271","#434459","#242424"], //Extracted from image and blended; Michael C. Rygel - Own work, CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=31124755 https://commons.wikimedia.org/w/index.php?curid=7788350
@@ -1564,6 +1696,7 @@ if(!enabledMods.includes(libraryMod)) {
 					2200,
 					-115,
 					-29,
+					3000,
 					
 					"rock",
 					["#808080","#4f4f4f","#949494"],
@@ -1600,6 +1733,7 @@ if(!enabledMods.includes(libraryMod)) {
 					2800,
 					-125,
 					-32,
+					3050,
 					
 					"peridotite",
 					["#908557","#A29E78","#7F8044","#C6BC87","#8C8656","#7C7C40","#837840","#8B8B69"],
