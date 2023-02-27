@@ -43,12 +43,11 @@ function planetCrackerFinale(doColorChange=true) {
 };
 
 elements.planet_cracker = {
-	color: ["#8f8f8f","3f3f3f"],
+	color: "#ffc8ba",
 	behavior: behaviors.WALL,
 	properties: {
 		active: true,
 		counter: 1,
-		changeTemp: true
 	},
 	tick: function(pixel) {
 		if(!pixel?.active) {
@@ -68,7 +67,7 @@ elements.planet_cracker = {
 			var finalRadius = Math.round(((1 + closenessToBottom) ** 2) * 6);
 
 			if(typeof(explodeAtPlus) === "function") {
-				explodeAtPlus(pixel.x,pixel.y+pixel.counter,finalRadius,"plasma","fire",null,planetCrackerHeat,pixel.changeTemp);
+				explodeAtPlus(pixel.x,pixel.y+pixel.counter,finalRadius,"plasma","fire",null,planetCrackerHeat);
 			} else {
 				explodeAt(pixel.x,pixel.y+pixel.counter,finalRadius,"plasma");
 			};
@@ -76,7 +75,7 @@ elements.planet_cracker = {
 		};
 	},
 	state: "solid",
-	density: 1000,
+	density: 10000,
 	category: "weapons",
 	hardness: 1,
 };
