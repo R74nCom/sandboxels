@@ -40,6 +40,8 @@ elements.life_eater_infection = {
 	density: 1050,
 	burn: 70,
 	burnTime: 20,
+        fireSpawnTemp: 1000,
+        burnTempChange: 100,
 	excludeRandom: true,
 };
 
@@ -55,5 +57,7 @@ elements.organic_slurry = {
 	density: 1050,
 	burn: 80,
 	burnTime: 10,
+        fireSpawnTemp: 1000,
+        burnTempChange: 100,
 	excludeRandom: true,
 };
