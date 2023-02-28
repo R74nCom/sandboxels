@@ -1554,3 +1554,33 @@
 		var isBright = (color.l > 20);
 		return isRed && isVivid && isBright;
 	};
+
+	//Ghost pixel repair function
+	function rebuildCurrentPixels() {
+		var currPix = []; //rebuild currentPixels from pixelMap to try to fix bug
+		for(pmi = 0; pmi < pixelMap.length; pmi++) {
+			var pixelMapPart = pixelMap[pmi];
+			for(pmj = 0; pmj < pixelMapPart.length; pmj++) {
+				var pixelMapUnit = pixelMapPart[pmj];
+				if(typeof(pixelMapUnit) === "object") {
+					if(pixelMapUnit !== null) {
+						currPix.push(pixelMapUnit);
+					};
+				};
+			};
+		};
+		currentPixels = currPix;
+	};
+
+
+//Sugar functions
+
+	function newElement(name="element_name",color="#FF00FF",otherProps={}) {
+		elements[name] = {
+			color: color,
+		};
+		for(property in otherProps) {
+			elements[name][property] = otherProps[property];
+		};
+		return elements[name];
+	};
