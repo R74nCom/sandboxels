@@ -171,7 +171,7 @@ if(!enabledMods.includes(libraryMod)) {
 
 	//Generalized sedimentation function
 
-		function sedimentation(pixel,sedimentNeighborTable,finalRock,chance=0.0003) {
+		function sedimentation(pixel,finalRock,chance=0.0003) {
 			if(finalRock == undefined) { return false };
 			if(Math.random() < chance) {
 				var validNeighborArray = Array.apply(null, Array(adjacentCoords.length)).map(function() {return false});
@@ -189,7 +189,8 @@ if(!enabledMods.includes(libraryMod)) {
 							validNeighborArray[i] = false;
 							//sedimentSandstoneNoDetects++;
 						};*/
-						validNeighborArray[i] = sedimentNeighborTable.includes(pixelMap[pixel.x+adjacentCoords[i][0]][pixel.y+adjacentCoords[i][1]].element);
+						//validNeighborArray[i] = sedimentNeighborTable.includes(pixelMap[pixel.x+adjacentCoords[i][0]][pixel.y+adjacentCoords[i][1]].element);
+						validNeighborArray[i] = (pixelMap[pixel.x+adjacentCoords[i][0]][pixel.y+adjacentCoords[i][1]].state ?? "solid") == "solid";
 					};
 				};
 				if(validNeighborArray.includes(true)) {
@@ -367,7 +368,33 @@ if(!enabledMods.includes(libraryMod)) {
 				var array2 = Array(amount2).fill(value2);
 				return array1.concat(array2)
 			};
-	
+		//Powder maker
+		function newPowder(name,color,density=null,tempHigh=null,stateHigh=null,breakInto=null) { //boilerplate my dick
+			if(tempHigh == null) {
+				stateHigh = null;
+			};
+			
+			elements[name] = {
+				color: color,
+				behavior: behaviors.POWDER,
+				category: "solids",
+				state: "solid",
+				density: density ?? 1000,
+			};
+			
+			if(tempHigh !== null) {
+				elements[name].tempHigh = tempHigh;
+			};
+
+			if(tempHigh !== null && stateHigh !== null) {
+				elements[name].stateHigh = stateHigh;
+			};
+
+			if(breakInto !== null) {
+				elements[name].breakInto = breakInto;
+			};
+		};
+
 		//Color gen
 		
 			//Gravels
@@ -1146,7 +1173,7 @@ if(!enabledMods.includes(libraryMod)) {
 						};
 
 						//console.log(sandstoneName);
-						sedimentation(pixel,lithificationElements,sandstoneName)
+						sedimentation(pixel,sandstoneName)
 					},
 					tempHigh: sandInfo.tempHigh,
 					stateHigh: sandInfo.stateHigh,
@@ -1309,7 +1336,7 @@ if(!enabledMods.includes(libraryMod)) {
 						};
 
 						//console.log(rockName);
-						sedimentation(pixel,lithificationElements,rockName)
+						sedimentation(pixel,rockName)
 					},
 					tempHigh: particulateInfo.tempHigh,
 					stateHigh: particulateInfo.stateHigh,
@@ -1328,19 +1355,62 @@ if(!enabledMods.includes(libraryMod)) {
 
 				//console.log(particulateName);
 
-				elements[rockName] = {
-					color: sandstonizeToHex(particulateName), //["#b27853", "#d1a784", "#d1a784", "#d4996e"]
-					behavior: behaviors.WALL,
-					tempHigh: particulateInfo.tempHigh,
-					stateHigh: particulateInfo.stateHigh, 
-					category: "land",
-					state: "solid",
-					density: particulateInfo.density * 1.5, //wide range
-					hardness: 0.7,
-					breakInto: particulateName,
-					maxColorOffset: 30,
-					_data: [particulateInfo._data[0], "rock", "sedimentary_rock"],
+				if(rockName !== "limestone") {
+					elements[rockName] = {
+						color: sandstonizeToHex(particulateName), //["#b27853", "#d1a784", "#d1a784", "#d4996e"]
+						behavior: behaviors.WALL,
+						tempHigh: particulateInfo.tempHigh,
+						stateHigh: particulateInfo.stateHigh, 
+						category: "land",
+						state: "solid",
+						density: particulateInfo.density * 1.5, //wide range
+						hardness: 0.7,
+						breakInto: particulateName,
+						maxColorOffset: 30,
+						_data: [particulateInfo._data[0], "rock", "sedimentary_rock"],
+					};
 				};
+		};
+
+		newPowder("calcite","#f5ecd0",2711,825,["carbon_dioxide","quicklime"],"calcium_carbonate_dust");
+		newPowder("aragonite","#e3c58d",2830,825,["carbon_dioxide","quicklime"],"calcium_carbonate_dust");
+		newPowder("vaterite","#e8ebd8",2540,825,["carbon_dioxide","quicklime"],"calcium_carbonate_dust");
+		newPowder("calcium_carbonate_dust","#f7f7f5",2930,825,["carbon_dioxide","quicklime"]);
+		
+		elements.calcite._data = ["calcium","calcium","mineral"];
+		elements.aragonite._data = ["calcium","calcium","mineral"];
+		elements.vaterite._data = ["calcium","calcium","mineral"];
+		elements.calcium_carbonate_dust._data = ["calcium","calcium","particulate"];
+		elements.limestone._data = ["calcium", "rock", "sedimentary_rock"];
+		
+		elements.aragonite.tick = function(pixel) {
+			if(Math.random() < (0.001 + Math.max(0,(pixel.temp - 300) / 100))) {
+				changePixel(pixel,"calcite",false);
+			};
+		};
+		
+		elements.vaterite.tick = function(pixel) {
+			if(Math.random() < (0.01 + Math.max(0,(pixel.temp - 30) / 10))) {
+				changePixel(pixel,"calcite",false);
+			};
+		};
+		
+		makeNonSandSedimentationElements("calcium_carbonate_dust","calcium_carbonate_solution","limestone")
+
+		var calcitoids = ["calcite","aragonite","vaterite"];
+		for(i = 0; i < calcitoids.length; i++) {
+			var mineral = calcitoids[i];
+			elements.water.reactions[mineral] = {
+				"elem1":"calcium_carbonate_solution",
+				"elem2":[mineral,mineral,mineral,"calcium_carbonate_solution"],
+				"chance":0.004
+			};
+
+			elements.seltzer.reactions[mineral] = {
+				"elem1":"calcium_carbonate_solution",
+				"elem2":[mineral,mineral,mineral,"calcium_carbonate_solution"],
+				"chance":0.02
+			};
 		};
 
 		runAfterLoad(function() {
@@ -1381,7 +1451,7 @@ if(!enabledMods.includes(libraryMod)) {
 				};
 			};
 
-			lithificationElements = sandSediments.concat(sandstones);
+			//lithificationElements = sandSediments.concat(sandstones);
 			
 			for(fei = 0; fei < vaporizedMagmas.length; fei++) {
 				var vaporToAddReactionTo = vaporizedMagmas[fei];
@@ -1965,6 +2035,23 @@ if(!enabledMods.includes(libraryMod)) {
 			
 		makeSandstoningElements("komatiite_sand");
 
+
+			elements.limestone_gravel = {
+				color: ["#c7baa1", "#e8d8b7", "#fcf3d7", "#fffce6"],
+				behavior: behaviors.POWDER,
+				tempHigh: 825,
+				stateHigh: "quicklime",
+				category: "land",
+				state: "solid",
+				density: 1380,
+				hardness: 0.16,
+				breakInto: ["quicklime","calcium","dust"],
+			}
+
+			elements.limestone.breakInto = "limestone_gravel";
+
+			elements.worm.reactions.limestone_gravel = { "elem2":"calcium", "chance":0.1 },
+			elements.acid.reactions.limestone_gravel = { "elem1":"neutral_acid", "elem2":null },
 
 /*	//Rocks
 	
@@ -2599,7 +2686,7 @@ if(!enabledMods.includes(libraryMod)) {
 					density: 1602,
 					breakInto: "radioactive_sand",
 					tick: function(pixel) {
-						sedimentation(pixel,lithificationElements,"radioactive_sandstone")
+						sedimentation(pixel,"radioactive_sandstone")
 					},
 				}
 
