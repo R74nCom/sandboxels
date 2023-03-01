@@ -538,7 +538,7 @@ if(enabledMods.includes(groundMod) && enabledMods.includes(libHookTickMod)) {
 		info.nellFireColor
 	*/
 
-	function doHellfire(pixel) {
+	function doNellfire(pixel) {
 		var info = elements[pixel.element];
 		if((info.nellfireImmune && info.nellfireImmune !== "torch") && pixel.nellburn) {
 			delete pixel.nellburn;
@@ -706,7 +706,7 @@ if(enabledMods.includes(groundMod) && enabledMods.includes(libHookTickMod)) {
 		if(paused) { return };
 		var nellfirePixels = currentPixels.filter(function(pixel) { return pixel.nellburn });
 		for(var pixel in nellfirePixels) {
-			doHellfire(nellfirePixels[pixel]);
+			doNellfire(nellfirePixels[pixel]);
 		};
 	});
 } else {
