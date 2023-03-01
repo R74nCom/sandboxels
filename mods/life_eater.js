@@ -8,8 +8,12 @@ if(!enabledMods.includes(fireMod)) {
 } else {
 
 	var lifeEaterCategories = ["life","auto creepers","shit","cum","food","fantastic creatures","fey","auto_fey"];
-	var lifeEaterBlacklist = ["life_eater_virus","life_eater_slurry"];
-	var lifeEaterWhitelist = ["blood","poop","blood_ice","wood","wood_plank","sawdust","straw","paper","birthpool","dried_poop","gloomfly","meat_monster","rotten_ravager","bone_beast","withery","withery_plant","banana","apple","rotten_apple","apioform_player","apioform_bee","apioform","apiodiagoform","sugar_cactus","sugar_cactus_seed","flowering_sugar_cactus"];
+	var lifeEaterBlacklist = ["life_eater_virus","life_eater_slurry","life_eater_infected_dirt"];
+	var lifeEaterWhitelist = ["blood","poop","blood_ice","wood","wood_plank","sawdust","straw","paper","birthpool","dried_poop","gloomfly","meat_monster","rotten_ravager","bone_beast","withery","withery_plant","banana","apple","rotten_apple","apioform_player","apioform_bee","apioform","apiodiagoform","sugar_cactus","sugar_cactus_seed","flowering_sugar_cactus","tree_branch","sap","silk","red_velvet","silk_velvet","ketchup", "enchanted_ketchup", "frozen_ketchup", "poisoned_ketchup", "frozen_poisoned_ketchup", "ketchup_spout", "ketchup_cloud", "poisoned_ketchup_cloud", "ketchup_snow", "ketchup_snow_cloud", "poisoned_ketchup_snow", "poisoned_ketchup_snow_cloud", "ketchup_gas", "poisoned_ketchup_gas", "ketchup_powder", "poisoned_ketchup_powder", "eketchup_spout", "ketchup_metal", "antiketchup", "dirty_ketchup", "ketchup_gold", "molten_ketchup_metal", "ketchup_fairy", "ketchup_metal_scrap", "ketchup_gold_scrap", "molten_ketchup_gold", "mycelium","vaccine","antibody","infection","sap","caramel","molasses","melted_chocolate","soda","mustard","fry_sauce","tomato_sauce","sugary_tomato_sauce","bio_ooze","zombie_blood","feather","tooth","decayed_tooth","plaque","tartar","bacteria","replacer_bacteria","pop_rocks"];
+	var lifeEaterSubstitutions = {
+		"dirt": "life_eater_infected_dirt",
+	};
+
 
 	function tryCreatePlus(element,centerX,centerY) {
 		var plusCoords = adjacentCoords.concat([[0,0]]);
@@ -34,12 +38,25 @@ if(!enabledMods.includes(fireMod)) {
 				var isLifeEaterFairy = (elements[newPixel.element].category == "auto_fey" && newPixel.element.includes("life_eater_"))
 				//console.log(newPixel.element,isLifeEaterFairy);
 				if(
-					(lifeEaterCategories.includes(elements[newPixel.element].category) || lifeEaterWhitelist.includes(newPixel.element)) && 
+					(lifeEaterCategories.includes(elements[newPixel.element].category) || lifeEaterWhitelist.includes(newPixel.element) || Object.keys(lifeEaterSubstitutions).includes(newPixel.element)) && 
 					!lifeEaterBlacklist.includes(newPixel.element) &&
 					!isLifeEaterFairy //exclude fairies which produce life eater
 				) {
-					changePixel(newPixel,"life_eater_slurry");
-					convertedPixels.push(newPixel);
+					if(Object.keys(lifeEaterSubstitutions).includes(newPixel.element)) {
+						var data = lifeEaterSubstitutions[newPixel.element];
+						while(data instanceof Array) {
+							data = data[Math.floor(Math.random() * data.length)];
+						};
+						if(data === null) {
+							if(newPixel) { deletePixel(newPixel.x,newPixel.y) };
+						} else {
+							changePixel(newPixel,data);
+							convertedPixels.push(newPixel);
+						};
+					} else {
+						changePixel(newPixel,"life_eater_slurry");
+						convertedPixels.push(newPixel);
+					};
 				};
 			};
 		};
@@ -105,6 +122,34 @@ if(!enabledMods.includes(fireMod)) {
 		excludeRandom: true,
 	};
 
+	var crRule25 = "CR:life_eater_virus,methane,methane,methane%0.25";
+	var crRule50 = "CR:life_eater_virus,methane,methane,methane%0.25";
+
+	elements.life_eater_infected_dirt = {
+		behavior: [
+			"XX|"+crRule50+"|XX",
+			crRule25+"|XX|"+crRule25,
+			"M2|M1 AND "+crRule25+"|M2",
+		],
+		color: ["#757137","#617a35","#66622c","#707538"],
+		tick: function(pixel) {
+			spreadLifeEater(pixel).forEach(infectedPixel => spreadLifeEater(infectedPixel));
+		},
+		category: "life",
+		state: "liquid",
+		density: 1050,
+		burn: 70,
+		burnTime: 15,
+		fireSpawnTemp: 1400,
+		burnTempChange: 180,
+		burnInto: ["life_eater_virus","fire","plasma","life_eater_explosion"],
+		excludeRandom: true,
+	};
+	
+	for(i = 0; i < 4; i++) {
+		elements.life_eater_infected_dirt.burnInto.push(elements.dry_dirt ? "dry_dirt" : "sand");
+	};
+
 	elements.virus_bomb = {
 		color: "#accc70",
 		behavior: [
@@ -116,6 +161,8 @@ if(!enabledMods.includes(fireMod)) {
 		hardness: 0.95,
 		breakInto: "life_eater_virus",
 		tempHigh: 2400,
+		category: "weapons",
+		excludeRandom: true,
 		stateHigh: elements.metal_scrap.stateHigh.concat("life_eater_virus","life_eater_virus","life_eater_virus"),
 	};
 
