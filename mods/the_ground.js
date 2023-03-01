@@ -63,11 +63,11 @@ if(!enabledMods.includes(libraryMod)) {
 			else if (pixel.temp < 34000) { pixel.color = pixelColorPick(pixel,"#bdd3ff"); var c=0.25 }
 			else if (pixel.temp < 43500) { pixel.color = pixelColorPick(pixel,"#bdc7ff"); var c=0.3 }
 			else if (pixel.temp < 50000) { pixel.color = pixelColorPick(pixel,"#c3bdff"); var c=0.4 }
-			else if (pixel.temp < 56000) { pixel.color = pixelColorPick(pixel,"#c3bdff"); var c=0.45 }
-			else if (pixel.temp < 61000) { pixel.color = pixelColorPick(pixel,"#bba9fc"); var c=0.5 }
-			else if (pixel.temp < 66000) { pixel.color = pixelColorPick(pixel,"#a590f5"); var c=0.6 }
-			else if (pixel.temp < 71000) { pixel.color = pixelColorPick(pixel,"#a68af2"); var c=0.7 }
-			else { pixel.color = pixelColorPick(pixel,"#a26ffc"); var c=0.8 }
+			else if (pixel.temp < 56000) { pixel.color = pixelColorPick(pixel,"#c3bdff"); var c=0.5 }
+			else if (pixel.temp < 61000) { pixel.color = pixelColorPick(pixel,"#bba9fc"); var c=0.6 }
+			else if (pixel.temp < 66000) { pixel.color = pixelColorPick(pixel,"#a590f5"); var c=0.7 }
+			else if (pixel.temp < 71000) { pixel.color = pixelColorPick(pixel,"#a68af2"); var c=0.8 }
+			else { pixel.color = pixelColorPick(pixel,"#a26ffc"); var c=0.9 }
 			return c;
 		};
 		
@@ -1427,6 +1427,7 @@ if(!enabledMods.includes(libraryMod)) {
 			elements.shale.color = ["#787b80","#535557","#695e58", "#696969", "#6b5d5b"];
 			elements.shale.maxColorOffset = 15;
 			elements.shale.tempHigh = 200; //shale does get baked (https://pubs.usgs.gov/pp/0108a/report.pdf), but it feels wrong for it to happen so soon
+			elements.shale.behavior = behaviors.POWDER;
 			
 			for(fei = 0; fei < sandSuspensions.length; fei++) {
 				var suspensionToAddReactionTo = sandSuspensions[fei];
