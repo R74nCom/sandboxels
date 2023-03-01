@@ -676,7 +676,7 @@ if(!enabledMods.includes(libraryMod)) {
 					tempHigh: phaneriteMeltingPoint,
 					stateHigh: magmaName,
 					density: phaneriteDensity * 0.55,
-					_data: [compositionFamilyName,"phanerite","particulate"],
+					_data: [compositionFamilyName,"phanerite","igneous_gravel"],
 				};
 				
 				elements.water.reactions[phaneriteName + "_gravel"] = { "elem2": twoPartRepeatedArray(phaneriteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
@@ -754,7 +754,7 @@ if(!enabledMods.includes(libraryMod)) {
 				tempHigh: aphaniteMeltingPoint,
 				stateHigh: magmaName,
 				density: aphaniteDensity * 0.55,
-				_data: [compositionFamilyName,"aphanite","gravel"],
+				_data: [compositionFamilyName,"aphanite","igneous_gravel"],
 			};
 
 			elements.water.reactions[aphaniteName + "_gravel"] = { "elem2": twoPartRepeatedArray(aphaniteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
@@ -825,7 +825,7 @@ if(!enabledMods.includes(libraryMod)) {
 				tempHigh: vesiculiteMeltingPoint,
 				stateHigh: magmaName,
 				density: vesiculiteDensity * 3.2,
-				_data: [compositionFamilyName,"vesiculite","gravel"],
+				_data: [compositionFamilyName,"vesiculite","igneous_gravel"],
 			};
 			
 			elements.water.reactions[vesiculiteName + "_gravel"] = { "elem2": twoPartRepeatedArray(vesiculiteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
@@ -1199,7 +1199,7 @@ if(!enabledMods.includes(libraryMod)) {
 					hardness: 0.5,
 					breakInto: sandName,
 					maxColorOffset: 30,
-					_data: [sandInfo._data[0], "rock", "sedimentary_rock"],
+					_data: [sandInfo._data[0], sandInfo._data[1]+"_sandstone", "sedimentary_rock"],
 				};
 		};
 
@@ -1502,8 +1502,8 @@ if(!enabledMods.includes(libraryMod)) {
 			
 			elements.molten_dirt.tempHigh = 3313;
 			var rockStateHigh = JSON.parse(JSON.stringify(vaporizedMagmas));
-			if(rockStateHigh.includes("vaporized_hellish_magma")) { 
-				rockStateHigh.splice(rockStateHigh.indexOf("vaporized_hellish_magma"));
+			if(rockStateHigh.includes("vaporized_nellish_magma")) { 
+				rockStateHigh.splice(rockStateHigh.indexOf("vaporized_nellish_magma"));
 			};
 			elements.molten_dirt.stateHigh = rockStateHigh; //assuming mixture
 		});
@@ -1958,7 +1958,9 @@ if(!enabledMods.includes(libraryMod)) {
 				elements.basalt.tempHigh = 1122;
 				elements.basalt.density = 2949;
 				elements.basalt.breakInto = "basalt_gravel",
-				elements.rock._data = ["mafic","aphanite","igneous_rock"],
+				elements.rock._data = ["mafic","phanerite","igneous_rock"],
+				elements.gravel._data = ["mafic","phanerite","igneous_gravel"],
+				elements.basalt._data = ["mafic","aphanite","igneous_rock"],
 				elements.sand._data = ["silica","silica","particulate"],
 				elements.wet_sand._data = ["silica","silica","wet_particulate"],
 				elements.packed_sand._data = ["silica","silica","packed_particulate"],
@@ -2031,27 +2033,25 @@ if(!enabledMods.includes(libraryMod)) {
 					2,8
 				);
 				
-				elements.ultramafic_scoria_gravel.density =.3132;
+				elements.ultramafic_scoria_gravel.density = 3132;
+				elements.basalt_gravel._data = ["mafic","aphanite","igneous_gravel"],
 			
-		makeSandstoningElements("komatiite_sand");
+				elements.limestone_gravel = {
+					color: ["#c7baa1", "#e8d8b7", "#fcf3d7", "#fffce6"],
+					behavior: behaviors.POWDER,
+					tempHigh: 825,
+					stateHigh: "quicklime",
+					category: "land",
+					state: "solid",
+					density: 1380,
+					hardness: 0.16,
+					breakInto: ["quicklime","calcium","dust"],
+				}
 
+				elements.limestone.breakInto = "limestone_gravel";
 
-			elements.limestone_gravel = {
-				color: ["#c7baa1", "#e8d8b7", "#fcf3d7", "#fffce6"],
-				behavior: behaviors.POWDER,
-				tempHigh: 825,
-				stateHigh: "quicklime",
-				category: "land",
-				state: "solid",
-				density: 1380,
-				hardness: 0.16,
-				breakInto: ["quicklime","calcium","dust"],
-			}
-
-			elements.limestone.breakInto = "limestone_gravel";
-
-			elements.worm.reactions.limestone_gravel = { "elem2":"calcium", "chance":0.1 },
-			elements.acid.reactions.limestone_gravel = { "elem1":"neutral_acid", "elem2":null },
+				elements.worm.reactions.limestone_gravel = { "elem2":"calcium", "chance":0.1 },
+				elements.acid.reactions.limestone_gravel = { "elem1":"neutral_acid", "elem2":null },
 
 /*	//Rocks
 	
