@@ -122,14 +122,14 @@ if(!enabledMods.includes(fireMod)) {
 		excludeRandom: true,
 	};
 
-	var crRule25 = "CR:life_eater_virus,methane,methane,methane%0.25";
-	var crRule50 = "CR:life_eater_virus,methane,methane,methane%0.25";
+	var crRule50 = "CR:life_eater_virus,methane,methane,methane%0.5";
+	var crRule100 = "CR:life_eater_virus,methane,methane,methane%1";
 
 	elements.life_eater_infected_dirt = {
 		behavior: [
-			"XX|"+crRule50+"|XX",
-			crRule25+"|XX|"+crRule25,
-			"M2|M1 AND "+crRule25+"|M2",
+			"XX|"+crRule100+"|XX",
+			crRule50+"|XX|"+crRule50,
+			"M2|M1 AND "+crRule50+"|M2",
 		],
 		color: ["#757137","#617a35","#66622c","#707538"],
 		tick: function(pixel) {
