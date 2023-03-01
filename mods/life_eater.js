@@ -3,7 +3,6 @@ var fireMod = "mods/fire_mod.js";
 
 if(!enabledMods.includes(fireMod)) {
 	enabledMods.splice(enabledMods.indexOf(modName),0,fireMod);
-	enabledMods.splice(enabledMods.indexOf(modName),0,fireMod);
 	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
 	alert(`The ${fireMod} mod is required and has been automatically inserted (reload for this to take effect).`);
 } else {
@@ -104,6 +103,20 @@ if(!enabledMods.includes(fireMod)) {
 		burnTempChange: 200,
 		burnInto: ["life_eater_virus","plasma","fire","life_eater_explosion"],
 		excludeRandom: true,
+	};
+
+	elements.virus_bomb = {
+		color: "#accc70",
+		behavior: [
+			"XX|EX:16>life_eater_virus|XX",
+			"XX|XX|XX",
+			"XX|EX:16>life_eater_virus AND M1|XX"
+		],
+		density: 3500,
+		hardness: 0.95,
+		breakInto: "life_eater_virus",
+		tempHigh: 2400,
+		stateHigh: elements.metal_scrap.stateHigh.concat("life_eater_virus","life_eater_virus","life_eater_virus"),
 	};
 
 }
