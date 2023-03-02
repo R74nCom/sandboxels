@@ -95,6 +95,56 @@ elements.generator_prompt = {
 };
 
 function parseForLateGenerationParameter(input) {
+	if(input.startsWith("*")) {
+		var elemList = Object.keys(elements);
+		input = input.toLowerCase().substring(1);
+		if(input === "all") {
+			return elemList;
+		} else {
+			input = input.split(" "); //'*nocreeper nofairy' to ['nocreeper' 'nofairy']
+			//include no auto elements
+			if(input.includes("noauto")) {
+				return Object.keys(elements).filter(function(name) { return elements[name].autoType === undefined });
+			};
+
+
+			var filteredList = elemList;
+
+			//include only auto elements
+			if(input.includes("auto")) {
+				filteredList = filteredList.filter(function(name) { return elements[name].autoType !== undefined });
+				//console.log("limit to autogens", filteredList.length);
+			};
+			//exclude fairies
+			if(input.includes("nofairy") || input.includes("nofairies")) {
+				filteredList = filteredList.filter(function(name) { return elements[name].autoType !== "fairy" });
+				//console.log("remove fairies", filteredList.length);
+			};
+			//exclude spouts
+			if(input.includes("nospout") || input.includes("nospouts")) {
+				filteredList = filteredList.filter(function(name) { return elements[name].autoType !== "spout" });
+				//console.log("remove spouts", filteredList.length);
+			};
+			//exclude creepers
+			if(input.includes("nocreeper") || input.includes("nocreepers")) {
+				filteredList = filteredList.filter(function(name) { return elements[name].autoType !== "creeper" });
+				//console.log("remove creepers", filteredList.length);
+			};
+			//exclude clouds
+			if(input.includes("nocloud") || input.includes("noclouds")) {
+				filteredList = filteredList.filter(function(name) { return elements[name].autoType !== "cloud" });
+				//console.log("remove clouds", filteredList.length);
+			};
+			//exclude bombs
+			if(input.includes("nobomb") || input.includes("nobombs")) {
+				filteredList = filteredList.filter(function(name) { return elements[name].autoType !== "bomb" });
+				//console.log("remove bombs", filteredList.length);
+			};
+			
+			//console.log(input);
+			return filteredList;
+		};
+	};
 	if(typeof(input) === "string") { //it should be an array, so string check
 		input = input.replace(/ /g,"_");
 		//console.log("String detected");
