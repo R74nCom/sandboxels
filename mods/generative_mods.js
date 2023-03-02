@@ -1412,6 +1412,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 							desc: `Explodes into ${descElement}<br/>Radius: ${5*(bombNumber+1)}`,
 							temp: firstTemp,
 							excludeRandom: true,
+							autoType: "bomb",
 						};
 						if(typeof(eLists) === "undefined") {
 							eLists = {};
@@ -1601,6 +1602,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 							density: 0.6 * (2**cloudType),
 							ignoreAir: true,
 							conduct: 0.01 * (2**cloudType),
+							autoType: "cloud",
 						};
 						
 						if(cloudType === 4) { //column tick for heaviester clouds
@@ -1762,6 +1764,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 						},
 						related: [bodyName,headName,"creeper"],
 						desc: `Auto-generated creeper.<br/>Explodes into ${descElement}.`,
+						autoType: "creeper",
 					};
 					
 					eLists.CREEPER.push(placerName);
@@ -1801,6 +1804,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 						tick: function(pixel) {
 							autoCreeperBodyTick(pixel);
 						},
+						autoType: "creeper",
 					};
 
 													//Head
@@ -1839,6 +1843,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 						tick: function(pixel) {
 							autoCreeperHeadTick(pixel);
 						},
+						autoType: "creeper",
 					};
 					if(isAfterScriptLoading) {
 						elementCount += 3; //placer, body, head
@@ -2018,6 +2023,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 							category: "auto_fey",
 							temp: firstTemp,
 							hardness: 1,
+							autoType: "fairy",
 						};
 						if(typeof(eLists) === "undefined") {
 							eLists = {};
@@ -2192,6 +2198,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 						category: "spouts",
 						temp: firstTemp,
 						hardness: 1,
+						autoType: "spout",
 					};
 					if(!randomExcl) {
 						if(typeof(spoutChoices) === "undefined") {
