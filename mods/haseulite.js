@@ -1290,8 +1290,12 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 			for(i = 0; i < adjacentCoords.length; i++) {
 				var newPixel = pixelMap[pixel.x+adjacentCoords[i][0]]?.[pixel.y+adjacentCoords[i][1]];
 				if(newPixel) {
+					newPixel.charge ??= 0;
+					if(isNaN(newPixel.charge)) { newPixel.charge = 0 };
 					try {
+						newPixel.charge ??= 0;
 						doElectricity(newPixel)
+						if(isNaN(newPixel.charge)) { newPixel.charge = 0 };
 					} catch (error) {
 						if(error.toString().includes("Maximum call stack size exceeded")) {
 							return;
