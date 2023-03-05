@@ -186,6 +186,17 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 				pixel.temp += (800 * ((1 + (7 * damage)) ** 2) * ((power ** 2) * 1.5));
 			};
 
+			function empCharge(pixel,x,y,radius,fire,smoke,power,damage) {
+				var info = elements[pixel.element];
+				if(info.conduct) {
+					var distanceFromEdge = Math.max(0,radius - coordPyth(pixel.x,pixel.y,x,y));
+					var radiusRelatedIncrease = Math.sqrt(distanceFromEdge/5);
+					pixel.charge ??= 0;
+					pixel.charge += (50 * radiusRelatedIncrease);
+					pixel.temp += 700/bound(info.conduct,0.1,1);
+				};
+			};
+
 			function starbombHeat(pixel,x,y,radius,fire,smoke,power,damage) { //Massively heats depending on distance from explosion center
 				var distanceFromEdge = Math.max(0,radius - coordPyth(pixel.x,pixel.y,x,y));
 				var radiusRelatedIncrease = 10 ** logN(distanceFromEdge,5);
@@ -1129,6 +1140,33 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 				density: 1900,
 				excludeRandom: true,
 			};
+
+            elements.op_electromagneticester_emp = {				
+                color: "#818253",
+                tick: function(pixel) { //replace EMP
+					if (pixel.start===pixelTicks) {return}
+					if (!tryMove(pixel,pixel.x,pixel.y+1)) {
+						if (outOfBounds(pixel.x,pixel.y+1) || (pixelMap[pixel.x][pixel.y+1].element!=="emp_bomb" && elements[pixelMap[pixel.x][pixel.y+1].element].state!=="gas")) {
+							for (i = 0; i < currentPixels.length; i++) {
+								var newPixel = currentPixels[i];
+								if (newPixel.charge) {
+									delete newPixel.charge;
+									newPixel.chargeCD = 50;
+								}
+							}
+							explodeAtPlus(pixel.x,pixel.y+1,20,"electric","smoke",empCharge,null,false);
+						}
+					}
+					doDefaults(pixel);
+				},
+                maxSize: 1,
+                category: "weapons",
+                state: "solid",
+                density: 1500,
+                excludeRandom: true,
+                alias: "overpowered electromagnetic pulse bomb",
+                cooldown: defaultCooldown
+            };
 
 			if(enabledMods.includes("mods/the_ground.js")) { //uses things from that but not worth requiring for the whole mod
 				elements.star_bomb = {
