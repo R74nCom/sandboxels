@@ -1226,6 +1226,32 @@
 		};
 	};
 
+	function tryCreatePixelReturn(elementInput,x,y) {
+		//array handling
+		if(elementInput.includes(",")) { //CSTA
+			elementInput = elementInput.split(",");
+		};
+		if(Array.isArray(elementInput)) { //if element list
+			elementInput = elementInput.filter(function(e) {
+				return elementExists(e);
+			});
+			if(elementInput.length === 0) { throw new Error("elementInput has no existing elements") };
+			elementInput = randomChoice(elementInput);
+		};
+
+		//existence check
+		if(!elementExists(elementInput)) {
+			throw new Error("Element " + elementInput + " doesn't exist!");
+		};
+
+		//actual creation check
+		if(isEmpty(x,y)) {
+			return createPixelReturn(elementInput,x,y);
+		} else {
+			return false;
+		};
+	};
+
 	function createPixelReturn(element,x,y) { //sugar
 		var newPixel = new Pixel(x, y, element);
 		currentPixels.push(newPixel);
