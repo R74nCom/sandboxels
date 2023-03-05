@@ -1284,6 +1284,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		behavior: behaviors.WALL,
 		onCharge: function(pixel) {
 			if(isNaN(pixel.charge)) { pixel.charge = 0 };
+			if(isNaN(pixel.temp)) { pixel.temp = 20 };
 			if(!pixel) { return false };
 			doElectricity(pixel);
 			for(i = 0; i < adjacentCoords.length; i++) {
@@ -1303,6 +1304,8 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 			};
 		},
 		tick: function(pixel) {
+			if(isNaN(pixel.charge)) { pixel.charge = 0 };
+			if(isNaN(pixel.temp)) { pixel.temp = 20 };
 			if(Math.random() < 0.013 && exposedToAir(pixel)) {
 				changePixel(pixel,"vivite_oxide",false);
 				pixel.temp += 0.1;
