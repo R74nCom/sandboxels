@@ -1,9 +1,8 @@
 //console.log("doElectricity should be changed");
 
 function doElectricity(pixel) {
-	if(typeof(pixel.charge) == "number" && isNaN(pixel.charge)) {
+	if(isNaN(pixel.charge)) {
 		pixel.charge = 0;
-		return;
 	};
 	if (pixel.charge) {
 		// Check each adjacent pixel, if that pixel's charge is false, set it to the same charge
@@ -21,6 +20,8 @@ function doElectricity(pixel) {
 							newPixel.color = pixelColorPick(newPixel);
 						}
 						if(elements[newPixel.element].onCharge) {
+							pixel.charge ??= 0;
+							if(isNaN(pixel.charge)) { pixel.charge = 0 };
 							elements[newPixel.element].onCharge(pixel);
 						};
 					}
