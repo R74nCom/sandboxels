@@ -3,9 +3,10 @@ var loonaMod = "mods/funny elements 2022-11-15.js";
 var fireMod = "mods/fire_mod.js";
 var runAfterAutogenMod = "mods/runAfterAutogen and onload restructure.js";
 var explodeAtPlusMod = "mods/explodeAtPlus.js";
+var doElectricityMod = "mods/doElectricity changes.js";
 var libraryMod = "mods/code_library.js";
 
-if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlusMod) && enabledMods.includes(libraryMod)) {
+if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlusMod) && enabledMods.includes(doElectricityMod) && enabledMods.includes(libraryMod)) {
 	//move explodeAt to YG Entertainment's dungeon
 
 	oldExplodeAt = explodeAt;
@@ -1274,6 +1275,331 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 
 	elements.fly.reactions.rotten_apple = { "elem2":null, chance:0.15, func:behaviors.FEEDPIXEL };
 	
+	//Vivite
+
+	elements.vivite = {
+		color: ["#ffb5ee", "#fc9fe0", "#fcd9fb"],
+		colorOn: ["#ff8ca9", "#f76583", "#fcb8d5"],
+		fireColor: ["#ff66ba", "#ff85ef", "#ff99f7"],
+		behavior: behaviors.WALL,
+		onCharge: function(pixel) {
+			if(isNaN(pixel.charge)) { pixel.charge = 0 };
+			if(!pixel) { return false };
+			doElectricity(pixel);
+			for(i = 0; i < adjacentCoords.length; i++) {
+				var newPixel = pixelMap[pixel.x+adjacentCoords[i][0]]?.[pixel.y+adjacentCoords[i][1]];
+				if(newPixel) {
+					try {
+						doElectricity(newPixel)
+					} catch (error) {
+						if(error.toString().includes("Maximum call stack size exceeded")) {
+							return;
+						};
+						throw error;
+					};
+				} else {
+					continue;
+				};
+			};
+		},
+		tick: function(pixel) {
+			if(Math.random() < 0.013 && exposedToAir(pixel)) {
+				changePixel(pixel,"vivite_oxide",false)
+			};			
+		},
+		reactions: {
+			"ice": { elem1: "vivite_oxide", elem2: null },
+			"water": { elem1: "vivite_oxide", elem2: null },
+			"steam": { elem1: "vivite_oxide", elem2: null },
+			"seltzer": { elem1: "vivite_oxide", elem2: "carbon_dioxide" },
+			"seltzer_ice": { elem1: "vivite_oxide", elem2: "carbon_dioxide" },
+			"sugar_water": { elem1: "vivite_oxide", elem2: "sugar" },
+			"sugar_ice": { elem1: "vivite_oxide", elem2: "sugar" },
+			"pool_water": { elem1: "vivite_oxide", elem2: "chlorine" },
+			"pool_ice": { elem1: "vivite_oxide", elem2: "chlorine" },
+			"salt_water": { elem1: "vivite_oxide", elem2: "salt" },
+			"salt_ice": { elem1: "vivite_oxide", elem2: "salt" },
+		},
+		tempHigh: 938,
+		category: "solids",
+		state: "solid",
+		density: 11013,
+		hardness: 0.98,
+		breakInto: "vivite_powder",
+		conduct: 1,
+	};
+
+	elements.vivite_powder = {
+		color: ["#f7a6e5", "#fa70d1", "#f0bbf2"],
+		fireColor: ["#ff66ba", "#ff85ef", "#ff99f7"],
+		behavior: behaviors.POWDER,
+		tick: function(pixel) {
+			if(Math.random() < 0.027 && exposedToAir(pixel)) {
+				changePixel(pixel,"vivite_oxide_powder",false);
+			};			
+		},
+		reactions: {
+			"ice": { elem1: "vivite_oxide_powder", elem2: null },
+			"water": { elem1: "vivite_oxide_powder", elem2: null },
+			"steam": { elem1: "vivite_oxide_powder", elem2: null },
+			"seltzer": { elem1: "vivite_oxide_powder", elem2: "carbon_dioxide" },
+			"seltzer_ice": { elem1: "vivite_oxide_powder", elem2: "carbon_dioxide" },
+			"sugar_water": { elem1: "vivite_oxide_powder", elem2: "sugar" },
+			"sugar_ice": { elem1: "vivite_oxide_powder", elem2: "sugar" },
+			"pool_water": { elem1: "vivite_oxide_powder", elem2: "chlorine" },
+			"pool_ice": { elem1: "vivite_oxide_powder", elem2: "chlorine" },
+			"salt_water": { elem1: "vivite_oxide_powder", elem2: "salt" },
+			"salt_ice": { elem1: "vivite_oxide_powder", elem2: "salt" },
+		},
+		tempHigh: 938,
+		stateHigh: "molten_vivite",
+		category: "solids",
+		state: "solid",
+		density: 8471,
+		hardness: 0.99613,
+		breakInto: "vivite_powder",
+		conduct: 0.89,
+	};
+	
+	elements.smog.stateLow = ["water","dirty_water"];
+	
+	var wateroids = Object.keys(elements).filter(
+		function(name) {
+			return (
+				elements[name].stateHigh == "water" || 
+				elements[name].stateLow == "water" ||
+				elements[name].stateHigh == "heavy_water" || 
+				elements[name].stateLow == "heavy_water"
+			)
+		}
+	);
+	
+	/*Object.keys(elements).filter(
+		function(elem) {
+			return (
+				!wateroids.includes(elem) && (
+					wateroids.includes(elements[elem].stateHigh) ||
+					wateroids.includes(elements[elem].stateLow)
+				)
+			)
+		}
+	);*/
+	
+	for(var i = 0; i < wateroids.length; i++) {
+		if(elements[wateroids[i]]) { elements[wateroids[i]].noViviteSlag = true };
+	};
+	
+	function doViviteSlag(pixel,target) {
+		if(!target) { //No pixel
+			return false;
+		};
+		
+		var newElement = target.element;
+		if(newElement.includes("vivite")) { //Is vivite
+			return false;
+		};
+
+		if(elements[pixel.element].reactions?.[newElement]) { //Pre-existing reaction
+			return false;
+		};
+		
+		if(elements[newElement].noViviteSlag) { //Excluded
+			return false;
+		};
+
+		if(elements[newElement].state == "gas" && !elements[newElement].viviteSlag) {
+			return false;
+		};
+
+		changePixel(newPixel,"vivite_slag",false);
+		if(Math.random() < 1/3) { changePixel(pixel,"molten_vivite_slag",false) };
+		return true;
+	};
+	
+	elements.molten_vivite = {
+		color: ["#f7a6e5", "#fa70d1", "#f0bbf2"],
+		colorOn: ["#ff63ac", "#ff21bd", "#e81af0"],
+		fireColor: ["#ff66ba", "#ff85ef", "#ff99f7"],
+		tick: function(pixel) {
+			var info = elements[pixel.element];
+			
+			if(Math.random() < 0.022 && exposedToAir(pixel)) {
+				changePixel(pixel,pixel.temp > 7315.27 ? "molten_vivite_oxide" : "vivite_oxide_powder",false)
+			};			
+
+			if(Math.random() < 0.025) {
+				var fireColor = info.fireColor;
+				while(fireColor instanceof Array) { fireColor = fireColor[Math.floor(Math.random() * fireColor.length)] };
+				var newFire = tryCreatePixelReturn("fire",pixel.x,pixel.y-1);
+				if(newFire) {
+					newFire.color = pixelColorPick(newFire,fireColor);
+					newFire.temp = pixel.temp;
+				};
+			};
+			
+			var viscosityMoveChance = ((Math.random()*100) < 100 / ((info.viscosity ?? 1) ** 0.25)); //returns true if doing m2
+
+			var move1Spots = viscosityMoveChance ? [[-1,1],[0,1],[1,1]] : [[0,1]];
+
+			var move1Offset = move1Spots[Math.floor(Math.random() * move1Spots.length)];
+			
+			if(!tryMove(pixel, pixel.x + move1Offset[0], pixel.y + move1Offset[1])) {
+				var newPixel = pixelMap[pixel.x + move1Offset[0]]?.[pixel.y + move1Offset[1]];
+				if(newPixel) {
+					doViviteSlag(pixel,newPixel);
+				};
+				var move2Spots = [[-1,0],[1,0]];
+
+				var move2Offset = move2Spots[Math.floor(Math.random() * move2Spots.length)];
+
+				//console.log(info.viscosity);
+
+				var viscosityMoveChance = ((Math.random()*100) < 100 / ((info.viscosity ?? 1) ** 0.25)); //returns true if doing m2
+
+				if(viscosityMoveChance) {
+					if(!tryMove(pixel, pixel.x + move2Offset[0], pixel.y + move2Offset[1])) {
+						var newPixel = pixelMap[pixel.x + move2Offset[0]]?.[pixel.y + move2Offset[1]];
+						if(newPixel) {
+							doViviteSlag(pixel,newPixel);
+						};
+					};
+				};
+			};
+		},
+		density: 8212,
+		state: "liquid",
+		hardness: 0.88,
+		viscosity: 10000,
+		breakInto: "vivite_gas",
+		temp: 1100,
+		tempHigh: 2256,
+		stateHigh: "vivite_gas",
+		tempLow: 938,
+		stateLow: "vivite",
+		conduct: 1,
+		stain: 0.03,
+		behavior: behaviors.WALL, //placeholder to prevent an auto-behaviors.MOLTEN process
+	};
+
+	elements.vivite_slag = {
+		color: ["#d962b1", "#bf67b6", "#b57b9e"],
+		fireColor: ["#fa5584", "#e85a70", "#e05c69", "#ed8672"],
+		behavior: [
+			"XX|XX|XX",
+			"XX|XX|XX",
+			"M2%25|M1|M2%25"
+		],
+		density: 9777,
+		category: "solids",
+		state: "solid",
+		hardness: 0.71,
+		breakInto: ["vivite_powder","slag"],
+		tempHigh: 953,
+		conduct: 0.27,
+	};
+
+	elements.vivite_oxide = {
+		color: ["#f5b3c5", "#ffb0c6"],
+		fireColor: ["#ff1f69", "#ff0004", "#ff006a"],
+		behavior: behaviors.WALL,
+		reactions: {
+			"ice": { elem1: "vivite_hydroxide", elem2: null, temp1: 234, tempMax: 733},
+			"water": { elem1: "vivite_hydroxide", elem2: null, temp1: 234, tempMax: 733},
+			"steam": { elem1: "vivite_hydroxide", elem2: null, temp1: 234, tempMax: 733},
+			"seltzer": { elem1: "vivite_hydroxide", elem2: "carbon_dioxide", temp1: 234, tempMax: 733},
+			"seltzer_ice": { elem1: "vivite_hydroxide", elem2: "carbon_dioxide", temp1: 234, tempMax: 733},
+			"sugar_water": { elem1: "vivite_hydroxide", elem2: "sugar", temp1: 234, tempMax: 733},
+			"sugar_ice": { elem1: "vivite_hydroxide", elem2: "sugar", temp1: 234, tempMax: 733},
+			"pool_water": { elem1: "vivite_hydroxide", elem2: "chlorine", temp1: 234, tempMax: 733},
+			"pool_ice": { elem1: "vivite_hydroxide", elem2: "chlorine", temp1: 234, tempMax: 733},
+			"salt_water": { elem1: "vivite_hydroxide", elem2: "salt", temp1: 234, tempMax: 733},
+			"salt_ice": { elem1: "vivite_hydroxide", elem2: "salt", temp1: 234, tempMax: 733},
+		},
+		density: 5135,
+		category: "solids",
+		state: "solid",
+		hardness: 0.9983,
+		breakInto: "vivite_oxide_powder",
+		tempHigh: 7315.27,
+	};
+
+	elements.vivite_oxide_powder = {
+		color: ["#f5b3c5", "#ffb0c6"],
+		fireColor: ["#ff1f69", "#ff0004", "#ff006a"],
+		behavior: behaviors.POWDER,
+		reactions: {
+			"ice": { elem1: "vivite_hydroxide", elem2: null, temp1: 234, tempMax: 733},
+			"water": { elem1: "vivite_hydroxide", elem2: null, temp1: 234, tempMax: 733},
+			"steam": { elem1: "vivite_hydroxide", elem2: null, temp1: 234, tempMax: 733},
+			"seltzer": { elem1: "vivite_hydroxide", elem2: "carbon_dioxide", temp1: 234, tempMax: 733},
+			"seltzer_ice": { elem1: "vivite_hydroxide", elem2: "carbon_dioxide", temp1: 234, tempMax: 733},
+			"sugar_water": { elem1: "vivite_hydroxide", elem2: "sugar", temp1: 234, tempMax: 733},
+			"sugar_ice": { elem1: "vivite_hydroxide", elem2: "sugar", temp1: 234, tempMax: 733},
+			"pool_water": { elem1: "vivite_hydroxide", elem2: "chlorine", temp1: 234, tempMax: 733},
+			"pool_ice": { elem1: "vivite_hydroxide", elem2: "chlorine", temp1: 234, tempMax: 733},
+			"salt_water": { elem1: "vivite_hydroxide", elem2: "salt", temp1: 234, tempMax: 733},
+			"salt_ice": { elem1: "vivite_hydroxide", elem2: "salt", temp1: 234, tempMax: 733},
+		},
+		density: 4813,
+		category: "solids",
+		state: "solid",
+		hardness: 0.964,
+		breakInto: "vivite_oxide_powder",
+		tempHigh: 7315.27,
+		stateHigh: "molten_vivite_oxide",
+	};
+
+	elements.vivite_hydroxide = {
+		color: ["#f19cf7", "#d88aff"],
+		behavior: behaviors.POWDER,
+		density: 6112,
+		category: "solids",
+		state: "solid",
+		hardness: 0.9983,
+		breakInto: "vivite_hydroxide",
+		tempHigh: 733,
+		stateHigh: ["vivite_oxide_powder","water"],
+	};
+
+	elements.molten_vivite_oxide = {
+		fireColor: ["#ff1f69", "#ff0004", "#ff006a"],
+		density: 6113,
+		hardness: 0.9993,
+		breakInto: "molten_vivite_oxide",
+		temp: 8000,
+		tempHigh: 15500,
+	};
+
+	elements.molten_vivite_slag = {
+		color: ["#d44e88", "#db7258", "#eda455"],
+		fireColor: ["#fa5584", "#e85a70", "#e05c69", "#ed8672"],
+		density: 9213,
+		hardness: 0.71,
+		breakInto: ["molten_vivite","slag"],
+		temp: 1100,
+		conduct: 0.18,
+		stain: 0.04
+	};
+
+	elements.vivite_gas = {
+		color: ["#ffedfe", "#ffe0fd", "#ffd9f9", "#ffd1f0", "#ffccdf"],
+		colorOn: ["#eec7fc", "#f5b1fc", "#faa2f1", "#fa93c3", "#ff99b1"],
+		fireColor: ["#ff66ba", "#ff85ef", "#ff99f7"],
+		tick: function(pixel) {
+			if(Math.random() < 0.032 && exposedToAir(pixel)) {
+				changePixel(pixel,pixel.temp > 15500 ? "vivite_oxide_gas" : pixel.temp > 7315.27 ? "molten_vivite_oxide" : "vivite_oxide_powder",false);
+			};
+		},
+		behavior: behaviors.GAS,
+		state: "gas",
+		tempLow: 2256,
+		stateLow: "molten_vivite",
+		density: 18.02,
+		temp: 3300,
+		hardness: 1,
+		conduct: 1,
+	};
+	
 	runAfterLoad(function() {
 		for(key in elements.water.reactions) {
 			var value = JSON.parse(JSON.stringify(elements.water.reactions[key]));
@@ -1302,7 +1628,8 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 	if(!enabledMods.includes(fireMod))				{ enabledMods.splice(enabledMods.indexOf(modName),0,fireMod) };
 	if(!enabledMods.includes(runAfterAutogenMod))	{ enabledMods.splice(enabledMods.indexOf(modName),0,runAfterAutogenMod) };
 	if(!enabledMods.includes(explodeAtPlusMod))		{ enabledMods.splice(enabledMods.indexOf(modName),0,explodeAtPlusMod) };
+	if(!enabledMods.includes(doElectricityMod))		{ enabledMods.splice(enabledMods.indexOf(modName),0,doElectricityMod) };
 	if(!enabledMods.includes(libraryMod))			{ enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod) };
 	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-	alert(`The "${runAfterAutogenMod}", "${loonaMod}", "${fireMod}", "${libraryMod}", and "${explodeAtPlusMod}" mods are all required; any missing mods in this list have been automatically inserted (reload for this to take effect).`)
+	alert(`The "${runAfterAutogenMod}", "${loonaMod}", "${fireMod}", "${libraryMod}", ${doElectricityMod}, and "${explodeAtPlusMod}" mods are all required; any missing mods in this list have been automatically inserted (reload for this to take effect).`)
 };
