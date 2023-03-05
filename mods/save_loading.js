@@ -6,7 +6,7 @@ function zeroToNull(val) {
 };
 
 if(!localStorage.slSaveSettings) {
-	localStorage.setItem("slSaveSettings", '{"shortenNulls":false,"roundTemps":true}');
+	localStorage.setItem("slSaveSettings", '{"roundTemps":true}');
 };
 
 slSaveSettings = JSON.parse(localStorage.slSaveSettings);
@@ -18,7 +18,7 @@ function epsilonRound(num,precision) {
 function getSimulationState() {
 	var simulationState = {
 		//currentPixels: currentPixels,
-		pixelMap: structuredClone(pixelMap),
+		pixelMap: structuredClone ? structuredClone(pixelMap) : JSON.parse(JSON.stringify(pixelMap)),
 		width: width,
 		height: height,
 		pixelSize: pixelSize,
@@ -26,18 +26,11 @@ function getSimulationState() {
 		version: 1,
 		enabledMods: localStorage.enabledMods,
 	};
-	nulls: if(slSaveSettings.shortenNulls) {
-		if(!structuredClone) {
-			alert("Your browser does not support structuredClone, which is needed to shorten nulls to zeroes without corrupting the current pixelMap.");
-			console.error("shortenNulls: structuredClone not supported");
-			break nulls;
-		};
-		for(i = 0; i < simulationState.pixelMap.length; i++) {
-			var column = simulationState.pixelMap[i];
-			for(j = 0; j < column.length; j++) {
-				if(column[j] === null || typeof(column[j]) === "undefined") {
-					column[j] = 0;
-				};
+	for(i = 0; i < simulationState.pixelMap.length; i++) {
+		var column = simulationState.pixelMap[i];
+		for(j = 0; j < column.length; j++) {
+			if(column[j] === null || typeof(column[j]) === "undefined") {
+				column[j] = 0;
 			};
 		};
 	};
