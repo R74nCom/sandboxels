@@ -1304,13 +1304,14 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		},
 		tick: function(pixel) {
 			if(Math.random() < 0.013 && exposedToAir(pixel)) {
-				changePixel(pixel,"vivite_oxide",false)
+				changePixel(pixel,"vivite_oxide",false);
+				pixel.temp += 0.1;
 			};			
 		},
 		reactions: {
-			"ice": { elem1: "vivite_oxide", elem2: null },
-			"water": { elem1: "vivite_oxide", elem2: null },
-			"steam": { elem1: "vivite_oxide", elem2: null },
+			"ice": { elem1: "vivite_oxide", elem2: null, temp1: 0.2 },
+			"water": { elem1: "vivite_oxide", elem2: null, temp1: 0.2 },
+			"steam": { elem1: "vivite_oxide", elem2: null, temp1: 0.2 },
 			"seltzer": { elem1: "vivite_oxide", elem2: "carbon_dioxide" },
 			"seltzer_ice": { elem1: "vivite_oxide", elem2: "carbon_dioxide" },
 			"sugar_water": { elem1: "vivite_oxide", elem2: "sugar" },
@@ -1336,12 +1337,13 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		tick: function(pixel) {
 			if(Math.random() < 0.027 && exposedToAir(pixel)) {
 				changePixel(pixel,"vivite_oxide_powder",false);
-			};			
+				pixel.temp += 0.1;
+			};
 		},
 		reactions: {
-			"ice": { elem1: "vivite_oxide_powder", elem2: null },
-			"water": { elem1: "vivite_oxide_powder", elem2: null },
-			"steam": { elem1: "vivite_oxide_powder", elem2: null },
+			"ice": { elem1: "vivite_oxide_powder", elem2: null, temp1: 0.2 },
+			"water": { elem1: "vivite_oxide_powder", elem2: null, temp1: 0.2 },
+			"steam": { elem1: "vivite_oxide_powder", elem2: null, temp1: 0.2 },
 			"seltzer": { elem1: "vivite_oxide_powder", elem2: "carbon_dioxide" },
 			"seltzer_ice": { elem1: "vivite_oxide_powder", elem2: "carbon_dioxide" },
 			"sugar_water": { elem1: "vivite_oxide_powder", elem2: "sugar" },
@@ -1425,6 +1427,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 			
 			if(Math.random() < 0.022 && exposedToAir(pixel)) {
 				changePixel(pixel,pixel.temp > 7315.27 ? "molten_vivite_oxide" : "vivite_oxide_powder",false)
+				pixel.temp += 0.1;
 			};			
 
 			if(Math.random() < 0.025) {
@@ -1501,6 +1504,9 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 	elements.vivite_oxide = {
 		color: ["#f5b3c5", "#ffb0c6"],
 		fireColor: ["#ff1f69", "#ff0004", "#ff006a"],
+		reactions: {
+			"carbon_monoxide": { elem1: "vivite", elem2: "carbon_dioxide", tempMin: 543, chance: 0.03 },
+		},
 		behavior: behaviors.WALL,
 		reactions: {
 			"ice": { elem1: "vivite_hydroxide", elem2: null, temp1: 234, tempMax: 733},
@@ -1527,6 +1533,9 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		color: ["#f5b3c5", "#ffb0c6"],
 		fireColor: ["#ff1f69", "#ff0004", "#ff006a"],
 		behavior: behaviors.POWDER,
+		reactions: {
+			"carbon_monoxide": { elem1: "vivite_powder", elem2: "carbon_dioxide", tempMin: 543, chance: 0.03 },
+		},
 		reactions: {
 			"ice": { elem1: "vivite_hydroxide", elem2: null, temp1: 234, tempMax: 733},
 			"water": { elem1: "vivite_hydroxide", elem2: null, temp1: 234, tempMax: 733},
@@ -1563,11 +1572,20 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 
 	elements.molten_vivite_oxide = {
 		fireColor: ["#ff1f69", "#ff0004", "#ff006a"],
+		reactions: {
+			"carbon_monoxide": { elem1: "vivite_gas", elem2: "carbon_dioxide", tempMin: 543, chance: 0.03 },
+		},
 		density: 6113,
 		hardness: 0.9993,
 		breakInto: "molten_vivite_oxide",
 		temp: 8000,
 		tempHigh: 15500,
+	};
+	
+	elements.vivite_oxide_gas = {
+		reactions: {
+			"carbon_monoxide": { elem1: "vivite", elem2: "carbon_dioxide", tempMin: 543, chance: 0.03 },
+		},
 	};
 
 	elements.molten_vivite_slag = {
@@ -1598,6 +1616,14 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 		temp: 3300,
 		hardness: 1,
 		conduct: 1,
+	};
+	
+	if(elements.carbon_monoxide) {
+		elements.carbon_monoxide.reactions ??= {};
+		elements.carbon_monoxide.reactions.vivite_oxide = { elem1: "carbon_dioxide", elem2: "vivite", tempMin: 543, chance: 0.03 };
+		elements.carbon_monoxide.reactions.vivite_oxide_powder = { elem1: "carbon_dioxide", elem2: "vivite_powder", tempMin: 543, chance: 0.03 };
+		elements.carbon_monoxide.reactions.molten_vivite_oxide = { elem1: "carbon_dioxide", elem2: "vivite_gas", tempMin: 543, chance: 0.03 };
+		elements.carbon_monoxide.reactions.vivite_oxide_gas = { elem1: "carbon_dioxide", elem2: "vivite_gas", tempMin: 543, chance: 0.03 };
 	};
 	
 	runAfterLoad(function() {
