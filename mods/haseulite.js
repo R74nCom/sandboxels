@@ -1633,7 +1633,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 			elements.carbon_monoxide.reactions.molten_vivite_oxide = { elem1: "carbon_dioxide", elem2: "vivite_gas", tempMin: 543, chance: 0.03 };
 			elements.carbon_monoxide.reactions.vivite_oxide_gas = { elem1: "carbon_dioxide", elem2: "vivite_gas", tempMin: 543, chance: 0.03 };
 		}
-	);
+	});
 	
 	runAfterLoad(function() {
 		for(key in elements.water.reactions) {
