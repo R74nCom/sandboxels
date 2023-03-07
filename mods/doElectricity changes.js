@@ -26,8 +26,8 @@ function doElectricity(pixel) {
 						};
 					}
 				}
-				else if (elements[newPixel.element].insulate != true) { // Otherwise heat the pixel (Resistance simulation)
-					newPixel.temp += pixel.charge/4;
+				else if (elements[newPixel.element].insulate != true && !elements[newPixel.element].noResistance) { // Otherwise heat the pixel (Resistance simulation)
+					newPixel.temp += isNaN(pixel.charge) ? 0.25 : pixel.charge/4;
 					pixelTempCheck(newPixel);
 				}
 			}
