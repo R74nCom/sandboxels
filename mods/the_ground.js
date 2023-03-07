@@ -796,7 +796,7 @@ if(!enabledMods.includes(libraryMod)) {
 				tempHigh: phaneriteMeltingPoint,
 				stateHigh: ["fire",magmaName],
 				reactions: {
-					phaneriteDustName: {elem1: phaneriteSandName, elem2: null, chance: 0.01},
+					[phaneriteDustName]: {elem1: phaneriteSandName, elem2: null, chance: 0.003},
 				},
 				density: airDensity + (phaneriteDensity / 1000), //unmeasured value
 				_data: [compositionFamilyName,"phanerite","dust"],
@@ -869,7 +869,7 @@ if(!enabledMods.includes(libraryMod)) {
 				tempHigh: aphaniteMeltingPoint,
 				stateHigh: ["fire",magmaName],
 				reactions: {
-					aphaniteDustName: {elem1: aphaniteSandName, elem2: null, chance: 0.01},
+					[aphaniteDustName]: {elem1: aphaniteSandName, elem2: null, chance: 0.003},
 				},
 				density: airDensity + (aphaniteDensity / 1000), //unmeasured value
 				_data: [compositionFamilyName,"aphanite","dust"],
@@ -955,7 +955,7 @@ if(!enabledMods.includes(libraryMod)) {
 				tempHigh: vesiculiteMeltingPoint,
 				stateHigh: ["fire",magmaName],
 				reactions: {
-					vesiculiteDustName: {elem1: vesiculiteSandName, elem2: null, chance: 0.01},
+					[vesiculiteDustName]: {elem1: vesiculiteSandName, elem2: null, chance: 0.003},
 				},
 				density: airDensity + (vesiculiteDensity / 800), //unmeasured value
 				_data: [compositionFamilyName,"vesiculite","dust"],
@@ -1041,7 +1041,7 @@ if(!enabledMods.includes(libraryMod)) {
 				tempHigh: vitriteMeltingPoint,
 				stateHigh: ["fire",magmaName],
 				reactions: {
-					vitriteDustName: {elem1: vitriteSandName, elem2: null, chance: 0.01},
+					[vitriteDustName]: {elem1: vitriteSandName, elem2: null, chance: 0.003},
 				},
 				density: airDensity + (vitriteDensity / 1000), //unmeasured value
 				_data: [compositionFamilyName,"vitrite","dust"],
