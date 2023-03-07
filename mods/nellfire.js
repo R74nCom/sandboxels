@@ -284,7 +284,7 @@ if(enabledMods.includes(groundMod) && enabledMods.includes(libHookTickMod)) {
 		"sun": "nellsun",
 	};
 
-	var otherImmunes = ["fire","smoke","plasma","cold_fire","radiation","light","proton","neutron","electron","positron","antimatter","cold_smoke","rad_fire","rad_smoke","laser","liquid_fire","liquid_smoke","liquid_plasma","liquid_cold_fire","liquid_cold_smoke","liquid_rad_fire","liquid_rad_fire","liquid_rad_smoke","le_liquid_light","liquid_laser","pure_ice","pure_water","pure_steam","magic","gold","zinc","molten_gold","molten_zinc","pyreite","infernium","molten_pyreite","molten_infernium","infernyrite","molten_infernyrite","infernyreitheum","molten_infernyreitheum","pyrinfernyreitheum","molten_pyrinfernyreitheum","stellar_plasma","liquid_stellar_plasma","hydrogen","liquid_hydrogen","hydrogen_ice","neutronium","molten_neutronium","liquid_neutronium","neutronium_gas","liquid_degenerate_neutronium","gaseous_degenerate_neutronium"];
+	var otherImmunes = ["fire","smoke","plasma","cold_fire","radiation","light","proton","neutron","electron","positron","antimatter","cold_smoke","rad_fire","rad_smoke","laser","liquid_fire","liquid_smoke","liquid_plasma","liquid_cold_fire","liquid_cold_smoke","liquid_rad_fire","liquid_rad_fire","liquid_rad_smoke","le_liquid_light","liquid_laser","pure_ice","pure_water","pure_steam","magic","gold","zinc","molten_gold","molten_zinc","pyreite","infernium","molten_pyreite","molten_infernium","infernyrite","molten_infernyrite","infernyreitheum","molten_infernyreitheum","pyrinfernyreitheum","molten_pyrinfernyreitheum","stellar_plasma","liquid_stellar_plasma","hydrogen","liquid_hydrogen","hydrogen_ice","neutronium","molten_neutronium","liquid_neutronium","neutronium_gas","liquid_degenerate_neutronium","gaseous_degenerate_neutronium"].concat(["water","ice","slush","snow","packed_snow","steam",   "heavy_steam","heavy_water","heavy_ice","heavy_snow",    "hydrogen_ice","liquid_hydrogen","hydrogen","ionized_hydrogen",   "liquid_helium","helium","ionized_helium",   "tralphium","liquid_tralphium","ionized_tralphium", "carbon","charcoal","diamond","molten_carbon",   "carbon_monoxide","liquid_carbon_monoxide","carbon_monoxide_ice",   "carbon_dioxide","dry_ice","seltzer","seltzer_ice","foam"]);
 
 	for(let i = 0; i < otherImmunes.length; i++) {
 		var element = otherImmunes[i];
@@ -314,6 +314,9 @@ if(enabledMods.includes(groundMod) && enabledMods.includes(libHookTickMod)) {
 						case "particulate":
 							nellburnObject[name] = "gehennite_sand"
 							break;
+						case "dust":
+							nellburnObject[name] = "gehennite_dust"
+							break;
 						case "wet_particulate":
 							nellburnObject[name] = "wet_gehennite_sand"
 							break;
@@ -339,6 +342,9 @@ if(enabledMods.includes(groundMod) && enabledMods.includes(libHookTickMod)) {
 							break;
 						case "particulate":
 							nellburnObject[name] = "nellrock_sand"
+							break;
+						case "dust":
+							nellburnObject[name] = "nellrock_dust"
 							break;
 						case "wet_particulate":
 							nellburnObject[name] = "wet_nellrock_sand"
@@ -366,6 +372,9 @@ if(enabledMods.includes(groundMod) && enabledMods.includes(libHookTickMod)) {
 						case "particulate":
 							nellburnObject[name] = "hadean_sponge_sand"
 							break;
+						case "dust":
+							nellburnObject[name] = "hadean_sponge_dust"
+							break;
 						case "wet_particulate":
 							nellburnObject[name] = "wet_hadean_sponge_sand"
 							break;
@@ -391,6 +400,9 @@ if(enabledMods.includes(groundMod) && enabledMods.includes(libHookTickMod)) {
 							break;
 						case "particulate":
 							nellburnObject[name] = "gehidian_sand"
+							break;
+						case "dust":
+							nellburnObject[name] = "gehidian_dust"
 							break;
 						case "wet_particulate":
 							nellburnObject[name] = "wet_gehidian_sand"
@@ -690,7 +702,7 @@ if(enabledMods.includes(groundMod) && enabledMods.includes(libHookTickMod)) {
 		"chance":0.02
 	};
 
-	var resultingAutoElems = [ "gehennite", "gehennite_gravel", "nellrock", "gehennite_sand", "wet_gehennite_sand", "packed_gehennite_sand", "nellrock_gravel", "nellrock_sand", "wet_nellrock_sand", "packed_nellrock_sand", "hadean_sponge", "hadean_sponge_gravel", "hadean_sponge_sand", "wet_hadean_sponge_sand", "packed_hadean_sponge_sand", "gehidian", "gehidian_shard", "gehidian_sand", "wet_gehidian_sand", "packed_gehidian_sand", "nellish_magma", "vaporized_nellish_magma", "nellish_magma_cloud", "gehennite_sandy_water", "gehennite_sand_sediment", "gehennite_sandstone", "nellrock_sandy_water", "nellrock_sand_sediment", "nellrock_sandstone", "hadean_sponge_sandy_water", "hadean_sponge_sand_sediment", "hadean_sponge_sandstone", "gehidian_sandy_water", "gehidian_sand_sediment", "gehidian_sandstone", bccd, bccs, "black_limestone" ] //hard-coded
+	var resultingAutoElems = [ "gehennite", "gehennite_gravel", "nellrock", "gehennite_sand", "gehennite_dust", "wet_gehennite_sand", "packed_gehennite_sand", "nellrock_gravel", "nellrock_sand", "nellrock_dust", "wet_nellrock_sand", "packed_nellrock_sand", "hadean_sponge", "hadean_sponge_gravel", "hadean_sponge_sand", "hadean_sponge_dust", "wet_hadean_sponge_sand", "packed_hadean_sponge_sand", "gehidian", "gehidian_shard", "gehidian_sand", "gehidian_dust", "wet_gehidian_sand", "packed_gehidian_sand", "nellish_magma", "vaporized_nellish_magma", "nellish_magma_cloud", "gehennite_sandy_water", "gehennite_sand_sediment", "gehennite_sandstone", "nellrock_sandy_water", "nellrock_sand_sediment", "nellrock_sandstone", "hadean_sponge_sandy_water", "hadean_sponge_sand_sediment", "hadean_sponge_sandstone", "gehidian_sandy_water", "gehidian_sand_sediment", "gehidian_sandstone", bccd, bccs, "black_limestone" ] //hard-coded
 
 	runAfterLoad(function() {
 		for(i = 0; i < resultingAutoElems.length; i++) {
