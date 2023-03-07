@@ -441,6 +441,8 @@ if(!enabledMods.includes(libraryMod)) {
 			if(breakInto !== null) {
 				elements[name].breakInto = breakInto;
 			};
+			
+			return elements[name];
 		};
 
 		//Color gen
@@ -2086,12 +2088,24 @@ if(!enabledMods.includes(libraryMod)) {
 				elements.rock.density = 3300;
 				elements.rock.breakInto = ["gravel"];
 				elements.gravel.breakInto = ["gabbro_dust"];
-				elements.gravel.name = "gabbro_gravel";
+				elements.gravel.name = "gabbro gravel";
 				delete elements.wet_sand.reactions.gravel;
 				elements.rock._data = ["mafic","phanerite","igneous_rock"],
 
 				elements.magma.name = "mafic magma";
 				elements.magma.density = 2650;
+				elements.magma._magmaCoolingPassToElement = {
+					vitreous: [-115,"basalidian"],
+					aphanitic: [-29,"basalt"],
+					phaneritic: [Infinity,"gabbro"],
+					meltingPoints: {
+						vitreous: 1200,
+						vesicular: 1298,
+						aphanitic: 1122,
+						phaneritic: 1200,
+					},
+				},
+
 				elements.magma.tick = function(pixel) {
 					magmaRateBasedCooling(pixel,1180,vitreousMaficName,-115,"basalt",-29,"rock");
 				};
@@ -2199,6 +2213,202 @@ if(!enabledMods.includes(libraryMod)) {
 
 				elements.worm.reactions.limestone_gravel = { "elem2":"calcium", "chance":0.1 },
 				elements.acid.reactions.limestone_gravel = { "elem1":"neutral_acid", "elem2":null },
+
+				newPowder("aluminum_oxide","#f2f2f2",3987,2072).hardness = 0.93;
+				
+				elements.molten_aluminum_oxide = {
+					tempHigh: 2977,
+				};
+				
+				newPowder("sulfur_trioxide","#ededed",1995,16.9).reactions = {
+					water: { elem1: "acid", elem2: "acid" }, //no H2SO4, hydronium doesn't really seem to be its own substance
+					steam: { elem1: "acid", elem2: "acid" },
+					ice: { elem1: "acid", elem2: "acid" },
+					snow: { elem1: "acid", elem2: "acid" },
+					packed_snow: { elem1: "acid", elem2: "acid" },
+					slush: { elem1: "acid", elem2: "acid" },
+				};
+				
+				elements.molten_sulfur_trioxide = {
+					color: "#c0c0c0",
+					behavior: behaviors.LIQUID,
+					density: 1920,
+					viscosity: 5, //idk idc
+					tempHigh: 45,
+					reactions: {
+						water: { elem1: "acid", elem2: "acid" }, //no H2SO4, hydronium doesn't really seem to be its own substance
+						steam: { elem1: "acid", elem2: "acid" },
+						ice: { elem1: "acid", elem2: "acid" },
+						snow: { elem1: "acid", elem2: "acid" },
+						packed_snow: { elem1: "acid", elem2: "acid" },
+						slush: { elem1: "acid", elem2: "acid" },
+					},
+				};
+
+				elements.sulfur_trioxide_gas = {
+					color: "#c0c0c0",
+					density: 2.3, //idk idc
+					reactions: {
+						water: { elem1: "acid", elem2: "acid" }, //no H2SO4, hydronium doesn't really seem to be its own substance
+						steam: { elem1: "acid", elem2: "acid" },
+						ice: { elem1: "acid", elem2: "acid" },
+						snow: { elem1: "acid", elem2: "acid" },
+						packed_snow: { elem1: "acid", elem2: "acid" },
+						slush: { elem1: "acid", elem2: "acid" },
+					},
+				};
+				
+				var tempaaa = {
+					sulfur_trioxide: "value doesn't matter",
+					molten_sulfur_trioxide: "stan loona",
+					sulfur_trioxide_gas: "aaaaaaa"
+				};
+				
+				delete elements.concrete.tempHigh;
+				delete elements.concrete.stateHigh;
+				if(elements.hanging_concrete) {
+					delete elements.hanging_concrete.tempHigh;
+					delete elements.hanging_concrete.stateHigh;
+				};
+				if(elements.crumbling_concrete) {
+					delete elements.crumbling_concrete.tempHigh;
+					delete elements.crumbling_concrete.stateHigh;
+				};
+				if(elements.attach_concrete) {
+					delete elements.attach_concrete.tempHigh;
+					delete elements.attach_concrete.stateHigh;
+				};
+				delete elements.quicklime.stateHigh;
+				elements.quicklime.tempHigh = 2572;
+				elements.molten_quicklime = {
+					tempHigh: 2850
+				};
+				elements.concrete.properties ??= {};
+				elements.concrete.properties.composition = "mafic";
+				elements.concrete.tick = function(pixel) {
+					pixel.composition ??= "mafic";
+					pixel.didColorChange ??= 0;
+					
+					var magmaName = (pixel.composition == "mafic") ? "magma" : pixel.composition + "_magma";
+					var magmaTempHigh = Math.max(...Object.values(elements[magmaName]._magmaCoolingPassToElement.meltingPoints));
+
+					//console.log(pixel.temp,pixel.didColorChange);
+					if(pixel.temp > 400 && pixel.didColorChange < 1) {
+						if(Math.random() < 0.02) { breakPixel(pixel) };
+						var colorWasHSL = pixel.color.startsWith("hsl");
+						var oldColor = convertHslObjects(normalizeColorToHslObject(pixel.color),"rgbjson");
+						oldColor.r += 81/2;
+						oldColor.g += 60/2;
+						oldColor.b += 56/2;
+						pixel.color = convertHslObjects(normalizeColorToHslObject(oldColor),colorWasHSL ? "hsl" : "rgb");
+						pixel.didColorChange = 1;
+					} else if(pixel.temp > 600 && pixel.didColorChange < 2) {
+						if(Math.random() < 0.04) { breakPixel(pixel) };
+						var colorWasHSL = pixel.color.startsWith("hsl");
+						var oldColor = convertHslObjects(normalizeColorToHslObject(pixel.color),"rgbjson");
+						oldColor.r += 81/4;
+						oldColor.g += 60/4;
+						oldColor.b += 56/4;
+						pixel.color = convertHslObjects(normalizeColorToHslObject(oldColor),colorWasHSL ? "hsl" : "rgb");
+						pixel.didColorChange = 2;
+					} else if(pixel.temp > 800 && pixel.didColorChange < 3) {
+						if(Math.random() < 0.06) { breakPixel(pixel) };
+						var colorWasHSL = pixel.color.startsWith("hsl");
+						var oldColor = convertHslObjects(normalizeColorToHslObject(pixel.color),"rgbjson");
+						oldColor.r += 81/4;
+						oldColor.g += 60/4;
+						oldColor.b += 56/4;
+						pixel.color = convertHslObjects(normalizeColorToHslObject(oldColor),colorWasHSL ? "hsl" : "rgb");
+						pixel.didColorChange = 3;
+					};
+										
+					pixel.role ??= randomChoice(["aggregate","aggregate","aggregate","aggregate","sand","sand","cement"]);
+					if(pixel.role == "cement") {
+						var chooserValue = Math.random();
+						if(chooserValue < 0.65) {
+							pixel.role = "lime";
+						} else if(chooserValue < 0.85) {
+							pixel.role = "silica";
+						} else if(chooserValue < 0.91) {
+							pixel.role = "alumina";
+						} else if(chooserValue < 0.96) {
+							pixel.role = "ferricOxide";
+						} else {
+							pixel.role = "sulfurTrioxide";
+						};
+					};
+
+					if(pixel.role == "sand" && pixel.temp > elements.sand.tempHigh) {
+						changePixel(pixel,"molten_glass",false);
+						return;
+					};
+					
+					if(pixel.role == "aggregate" && pixel.temp > magmaTempHigh) {
+						changePixel(pixel,magmaName,false);
+						return;
+					};
+
+					if(pixel.role == "alumina" && pixel.temp > elements.aluminum_oxide.tempHigh) {
+						changePixel(pixel,"molten_aluminum_oxide",false);
+						return;
+					};
+
+					if(pixel.role == "ferricOxide" && pixel.temp > elements.rust.tempHigh) {
+						changePixel(pixel,"molten_iron",false);
+						return;
+					};
+
+					if(pixel.role == "sulfurTrioxide" && pixel.temp > magmaTempHigh) { //arbitrary choice: leave when the aggregate leaves
+						changePixel(pixel,"sulfur_trioxide_gas",false);
+						return;
+					};
+
+					if(pixel.role == "lime" && pixel.temp > 550) {
+						changePixel(pixel,"slaked_lime",false);
+						return;
+					};
+
+					if(pixel.role == "silica") {
+						pixel.didQuartzThermalExpansion ??= false;
+
+						if(pixel.temp > 573 && !pixel.didQuartzThermalExpansion) {
+							if(Math.random() < 0.13) {
+								changePixel(pixel,"pop",false);
+							};
+							pixel.didQuartzThermalExpansion = true;
+						};
+						 
+						if(pixel.temp > elements.silica.tempHigh) {
+							changePixel(pixel,"molten_silica",false);
+							return;
+						};
+					};
+				};
+
+				newConcreteTick = elements.concrete.tick;
+
+				if(elements.hanging_concrete) {
+					elements.hanging_concrete.tick = function(pixel) {
+						newConcreteTick(pixel);
+					};
+				};
+
+				if(elements.attach_concrete) {
+					oldAttachConcreteTick = elements.attach_concrete.tick ;
+					elements.attach_concrete.tick = function(pixel) {
+						oldAttachConcreteTick(pixel);
+						newConcreteTick(pixel);
+					};
+				};
+
+				if(elements.crumbling_concrete) {
+					oldCrumblingConcreteTick = elements.crumbling_concrete.tick ;
+					newConcreteTick = elements.concrete.tick ;
+					elements.crumbling_concrete.tick = function(pixel) {
+						oldCrumblingConcreteTick(pixel);
+						newConcreteTick(pixel);
+					};
+				};
 
 /*	//Rocks
 	
@@ -2404,6 +2614,12 @@ if(!enabledMods.includes(libraryMod)) {
 				state: "solid",
 				density: 2650,
 				hardness: 0.7,
+			};
+			
+			newPowder("silica","#faf9f0",2196,1713).hardness = 0.7;
+			
+			elements.molten_silica = {
+				tempHigh: 2950,
 			};
 
 			//Re-add molten quartz because it stopped auto-generating
