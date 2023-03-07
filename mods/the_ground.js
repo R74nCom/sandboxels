@@ -169,7 +169,7 @@ if(!enabledMods.includes(libraryMod)) {
 			almostSun(pixel);
 		};
 
-	//Generalized sedimentation function
+	//"Generalized" sedimentation function
 
 		function sedimentation(pixel,finalRock,chance=0.0003) {
 			if(finalRock == undefined) { return false };
@@ -324,8 +324,56 @@ if(!enabledMods.includes(libraryMod)) {
 		};
 		return false;
 	};
+
+	/*Metamorphism test
+	function metamorphosisPressureHandler(rockBeingSquished,rockDoingSquishing) {
+		pixel.lastPressures ??= [];
+
+		while(pixel.lastPressures.length > 2) {
+			pixel.lastPressures.shift();
+		};
+
+		var squisherInfo = elements[rockDoingSquishing.element];
+		var squisheeInfo = elements[rockBeingSquished.element];
 	
-	/*//Erosion
+		rockBeingSquished._squishers ??= {};
+		rockBeingSquished._squishers[pixelTicks] ??= {};
+		rockBeingSquished._squishers[pixelTicks][`x${rockDoingSquishing.x}y${rockDoingSquishing.y}`] = (squisherInfo.density ?? 2500) + (rockDoingSquishing._receivedPressure ?? 0);
+		
+		rockBeingSquished._receivedPressure = sumNumericArray(Object.values(rockBeingSquished._squishers[pixelTicks]));
+	
+		if(squisheeInfo.metamorphismFunction) {
+			squisheeInfo.metamorphismFunction(rockBeingSquished)
+		};
+	};	
+
+	function removeLastSquishers(pixel) {
+		if(!pixel._squishers) {
+			return false;
+		};
+		if(pixel._squishers[pixelTicks - 1]) {
+			delete pixel._squishers[pixelTicks - 1];
+		};
+	};
+	
+	elements.metal_scrap.onTryMoveInto = function(pixel,otherPixel) {
+		metamorphosisPressureHandler(pixel,otherPixel);
+	};
+
+	elements.metal_scrap.tick = function(pixel) {
+		removeLastSquishers(pixel);
+	};
+	
+	elements.metal_scrap.metamorphismFunction = function(pixel) {
+		pixel.temp = pixel._receivedPressure;
+	};
+	
+	elements.metal_scrap.insulate = true;
+	delete elements.metal_scrap.tempHigh;
+	delete elements.metal_scrap.stateHigh;
+	*/
+
+	/*Erosion
 	function toGravelErodeOtmi(pixel,otherPixel,erosionChanceDivisor=5500) {
 		var gravelName = getGravelElementName(pixel.element);
 		//console.log(gravelName);
@@ -445,7 +493,7 @@ if(!enabledMods.includes(libraryMod)) {
 
 			//Sands
 
-				function sandizeToHex(rockName,type="normal") {
+				function sandizeToHex(rockName,type="normal",sBringTo=31,sBringFactor=0.4,lBringTo=70,lBringFactor=0.6) {
 					//console.log(rockName);
 					if(!["normal","n","wet","w","packed","p"].includes(type.toLowerCase())) {
 						throw new Error("Type must be 'normal', 'wet', or 'packed'");
@@ -460,20 +508,20 @@ if(!enabledMods.includes(libraryMod)) {
 					};
 					for(i = 0; i < rockColor.length; i++) {
 						var colorAsHsl = normalizeColorToHslObject(rockColor[i]);
-						colorAsHsl.l = 70 + (-0.6 * (70 - colorAsHsl.l)); //bring towards 70
-						colorAsHsl.s = 31 + (-0.4 * (31 - colorAsHsl.s)); //bring towards 31;
+						if(colorAsHsl.s > 0) {	colorAsHsl.s = sBringTo + (-sBringFactor * (sBringTo - colorAsHsl.s)) }; //bring towards 31;
+												colorAsHsl.l = lBringTo + (-lBringFactor * (lBringTo - colorAsHsl.l)); //bring towards 70
 						switch(type.toLowerCase()) {
 							case "normal":
 							case "n":
 								break;
 							case "wet":
 							case "w":
-								colorAsHsl.s += 3;
+								if(colorAsHsl.s > 0) { colorAsHsl.s += 3 };
 								colorAsHsl.l -= 15;
 								break;
 							case "packed":
 							case "p":
-								colorAsHsl.s -= 11;
+								colorAsHsl.s = Math.max(colorAsHsl.s - 11, 0);
 								colorAsHsl.l += 6;
 								break;
 							default:
@@ -484,6 +532,27 @@ if(!enabledMods.includes(libraryMod)) {
 					};
 
 					return sandColor;
+				};
+
+				function dustizeToHex(rockName,sBringTo=25,sBringFactor=0.4,lBringTo=55,lBringFactor=0.6) {
+					//console.log(rockName);
+					var rockInfo = elements[rockName];
+					if(!rockInfo) { throw new Error("No such element '" + rockName + "'") };
+					var dustColor = [];
+					//var dustColorObject = [];
+					var rockColor = rockInfo.color;
+					if(!rockColor instanceof Array) {
+						rockColor = [rockColor];
+					};
+					for(i = 0; i < rockColor.length; i++) {
+						var colorAsHsl = normalizeColorToHslObject(rockColor[i]);
+						if(colorAsHsl.s > 0) {	colorAsHsl.s = sBringTo + (-sBringFactor * (sBringTo - colorAsHsl.s)) }; //bring towards 31;
+												colorAsHsl.l = lBringTo + (-lBringFactor * (lBringTo - colorAsHsl.l)); //bring towards 70
+						dustColor.push(convertHslObjects(colorAsHsl,"hex"));
+						//dustColorObject.push(convertHslObjects(colorAsHsl,"rgbjson"));
+					};
+
+					return dustColor;
 				};
 
 			//Sandstones
@@ -642,6 +711,12 @@ if(!enabledMods.includes(libraryMod)) {
 			var vesiculiteSandName = vesiculiteName + "_sand";
 			var vitriteSandName = vitriteName + "_sand";
 			
+			var phaneriteDustName = compositionFamilyName == "mafic" ? "gabbro_dust" : phaneriteName + "_dust";
+			
+			var aphaniteDustName = aphaniteName + "_dust";
+			var vesiculiteDustName = vesiculiteName + "_dust";
+			var vitriteDustName = vitriteName + "_dust";
+			
 			sands.push(phaneriteSandName);
 			sands.push(aphaniteSandName);
 			sands.push(vesiculiteSandName);
@@ -675,6 +750,7 @@ if(!enabledMods.includes(libraryMod)) {
 					state: "solid",
 					tempHigh: phaneriteMeltingPoint,
 					stateHigh: magmaName,
+					breakInto: phaneriteDustName,
 					density: phaneriteDensity * 0.55,
 					_data: [compositionFamilyName,"phanerite","igneous_gravel"],
 				};
@@ -710,6 +786,20 @@ if(!enabledMods.includes(libraryMod)) {
 				stateHigh: vitriteName,
 				density: phaneriteDensity * 0.595,
 				_data: [compositionFamilyName,"phanerite","particulate"],
+			};
+			
+			elements[phaneriteDustName] = {
+				color: dustizeToHex(phaneriteName),
+				behavior: behaviors.GAS,
+				category: "land",
+				state: "gas",
+				tempHigh: phaneriteMeltingPoint,
+				stateHigh: ["fire",magmaName],
+				reactions: {
+					phaneriteDustName: {elem1: phaneriteSandName, elem2: null, chance: 0.01},
+				},
+				density: airDensity + (phaneriteDensity / 1000), //unmeasured value
+				_data: [compositionFamilyName,"phanerite","dust"],
 			};
 			
 			//console.log(phaneriteSandName, elements[phaneriteSandName].color);
@@ -753,6 +843,7 @@ if(!enabledMods.includes(libraryMod)) {
 				state: "solid",
 				tempHigh: aphaniteMeltingPoint,
 				stateHigh: magmaName,
+				breakInto: aphaniteDustName,
 				density: aphaniteDensity * 0.55,
 				_data: [compositionFamilyName,"aphanite","igneous_gravel"],
 			};
@@ -770,6 +861,20 @@ if(!enabledMods.includes(libraryMod)) {
 				_data: [compositionFamilyName,"aphanite","particulate"],
 			};
 
+			elements[aphaniteDustName] = {
+				color: dustizeToHex(aphaniteName),
+				behavior: behaviors.GAS,
+				category: "land",
+				state: "gas",
+				tempHigh: aphaniteMeltingPoint,
+				stateHigh: ["fire",magmaName],
+				reactions: {
+					aphaniteDustName: {elem1: aphaniteSandName, elem2: null, chance: 0.01},
+				},
+				density: airDensity + (aphaniteDensity / 1000), //unmeasured value
+				_data: [compositionFamilyName,"aphanite","dust"],
+			};
+			
 			elements["wet_" + aphaniteSandName] = {
 				color: sandizeToHex(aphaniteName,"wet"),
 				behavior: behaviors.STURDYPOWDER,
@@ -824,6 +929,7 @@ if(!enabledMods.includes(libraryMod)) {
 				state: "solid",
 				tempHigh: vesiculiteMeltingPoint,
 				stateHigh: magmaName,
+				breakInto: vesiculiteDustName,
 				density: vesiculiteDensity * 3.2,
 				_data: [compositionFamilyName,"vesiculite","igneous_gravel"],
 			};
@@ -841,6 +947,20 @@ if(!enabledMods.includes(libraryMod)) {
 				_data: [compositionFamilyName,"vesiculite","particulate"],
 			};
 
+			elements[vesiculiteDustName] = {
+				color: dustizeToHex(vesiculiteName),
+				behavior: behaviors.GAS,
+				category: "land",
+				state: "gas",
+				tempHigh: vesiculiteMeltingPoint,
+				stateHigh: ["fire",magmaName],
+				reactions: {
+					vesiculiteDustName: {elem1: vesiculiteSandName, elem2: null, chance: 0.01},
+				},
+				density: airDensity + (vesiculiteDensity / 800), //unmeasured value
+				_data: [compositionFamilyName,"vesiculite","dust"],
+			};
+			
 			elements["wet_" + vesiculiteSandName] = {
 				color: sandizeToHex(vesiculiteName,"wet"),
 				behavior: behaviors.STURDYPOWDER,
@@ -895,6 +1015,7 @@ if(!enabledMods.includes(libraryMod)) {
 				state: "solid",
 				tempHigh: vitriteMeltingPoint,
 				stateHigh: magmaName,
+				breakInto: vitriteDustName,
 				density: vitriteDensity * 0.55,
 				_data: [compositionFamilyName,"vitrite","glass_shard"],
 			};
@@ -912,6 +1033,20 @@ if(!enabledMods.includes(libraryMod)) {
 				_data: [compositionFamilyName,"vitrite","particulate"],
 			};
 
+			elements[vitriteDustName] = {
+				color: dustizeToHex(vitriteName),
+				behavior: behaviors.GAS,
+				category: "land",
+				state: "gas",
+				tempHigh: vitriteMeltingPoint,
+				stateHigh: ["fire",magmaName],
+				reactions: {
+					vitriteDustName: {elem1: vitriteSandName, elem2: null, chance: 0.01},
+				},
+				density: airDensity + (vitriteDensity / 1000), //unmeasured value
+				_data: [compositionFamilyName,"vitrite","dust"],
+			};
+			
 			elements["wet_" + vitriteSandName] = {
 				color: sandizeToHex(vitriteName,"wet"),
 				behavior: behaviors.STURDYPOWDER,
@@ -1048,6 +1183,8 @@ if(!enabledMods.includes(libraryMod)) {
 			
 			var sandstoneName = sandName + "stone";
 			
+			var dustName = sandName.replace("_sand","_dust");
+			
 			//Water reaction to pick up the fine material (this is very simplified)
 
 				elements.water.reactions[wetSandName] = {
@@ -1123,6 +1260,13 @@ if(!enabledMods.includes(libraryMod)) {
 					stain: 0.01,
 					_data: [sandInfo._data[0], sandInfo._data[1], "suspension"],
 				}
+				
+				if(elements[dustName]) {
+					elements[dustName].reactions ??= {};
+					elements[dustName].reactions.water = {
+						elem1: null, elem2: suspensionName
+					};
+				};
 
 			//Sediment element where lithification code resides
 
@@ -1941,6 +2085,8 @@ if(!enabledMods.includes(libraryMod)) {
 				elements.rock.tempHigh = 1200;
 				elements.rock.density = 3300;
 				elements.rock.breakInto = ["gravel"];
+				elements.gravel.breakInto = ["gabbro_dust"];
+				elements.gravel.name = "gabbro_gravel";
 				delete elements.wet_sand.reactions.gravel;
 				elements.rock._data = ["mafic","phanerite","igneous_rock"],
 
