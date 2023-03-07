@@ -1294,6 +1294,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 					if(isNaN(newPixel.charge)) { newPixel.charge = 0 };
 					try {
 						newPixel.charge ??= 0;
+						if(isNaN(newPixel.charge)) { newPixel.charge = 0 };
 						doElectricity(newPixel)
 						if(isNaN(newPixel.charge)) { newPixel.charge = 0 };
 					} catch (error) {
@@ -1315,6 +1316,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 				pixel.temp += 0.1;
 			};			
 		},
+		noResistance: true,
 		reactions: {
 			"ice": { elem1: "vivite_oxide", elem2: null, temp1: 0.2 },
 			"water": { elem1: "vivite_oxide", elem2: null, temp1: 0.2 },
@@ -1360,6 +1362,7 @@ if(enabledMods.includes(loonaMod) && enabledMods.includes(fireMod) && enabledMod
 			"salt_water": { elem1: "vivite_oxide_powder", elem2: "salt" },
 			"salt_ice": { elem1: "vivite_oxide_powder", elem2: "salt" },
 		},
+		noResistance: true,
 		tempHigh: 938,
 		stateHigh: "molten_vivite",
 		category: "solids",
