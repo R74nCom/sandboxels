@@ -32,15 +32,21 @@ function tryMove(pixel,nx,ny,leaveBehind=undefined) {
 	var info = elements[pixel.element];
 	var oob = outOfBounds(nx,ny);
 	if (isEmpty(nx,ny,false,oob)) { // If coords is empty, move to coords
+		//console.log(`Moving ${pixel.element} (${pixel.x},${pixel.y}) to (${nx},${ny})`);
 		movePixel(pixel,nx,ny,leaveBehind);
 		return true;
 	}
 	else if (!oob) {
+		//console.log(`Moving ${pixel.element} (${pixel.x},${pixel.y}) to (${nx},${ny})`);
 		// Reactions
 		newPixel = pixelMap[nx][ny];
 		var newInfo = elements[newPixel.element];
 		if(newInfo.onTryMoveInto !== undefined) {
 			newInfo.onTryMoveInto(newPixel,pixel);
+			if(!pixel || pixel.del) {
+				return "deleted";
+			};
+			return true;
 		}
 		var rr1 = false;
 		if (info.reactions !== undefined && info.reactions[newPixel.element] !== undefined) {
