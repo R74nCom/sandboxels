@@ -2509,7 +2509,7 @@ if(!enabledMods.includes(libraryMod)) {
 
 					if(pixel.wet && pixel.temp > 300) {
 						if(overallTemperatureChangeRate > 25) { //if temp change is fast enough, always spall
-							if(Math.random() < Math.max(0.25,1.05 - (pixel.wet/20))) { //decresingly less likely to spall as it gets wetter, for balance
+							if(Math.random() < Math.max(0.1,0.35 - (pixel.wet/20))) { //decresingly less likely to spall as it gets wetter, for balance
 								explodeAt(pixel.x,pixel.y,Math.random() < 1/3 ? 2 : 1,"steam,dust")
 								if(!pixel || pixel.element !== "concrete") { //if destroyed or changed
 									return;
@@ -2524,6 +2524,8 @@ if(!enabledMods.includes(libraryMod)) {
 								if(isEmpty(pixel.x+rnx, pixel.y+rny, false)) {
 									createPixel("steam", pixel.x+rnx, pixel.y+rny)
 									pixel.wet--;
+									var colorWasHSL = pixel.color.startsWith("hsl");
+									pixel.color = changeLuminance(pixel.color,6,"+",colorWasHSL ? "hsl" : "rgb");
 								};
 							} else { //if surrounded, lower chance to spall and higher chance to dissipate
 								if(Math.random() < 0.03) {
@@ -2534,6 +2536,8 @@ if(!enabledMods.includes(libraryMod)) {
 										};
 									};
 									pixel.wet--;
+									var colorWasHSL = pixel.color.startsWith("hsl");
+									pixel.color = changeLuminance(pixel.color,6,"+",colorWasHSL ? "hsl" : "rgb");
 								};
 							};
 						};
