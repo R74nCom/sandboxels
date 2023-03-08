@@ -308,6 +308,9 @@ if(enabledMods.includes(groundMod) && enabledMods.includes(libHookTickMod)) {
 						case "igneous_rock":
 							nellburnObject[name] = "gehennite"
 							break;
+						case "solid_igneous_rock":
+							nellburnObject[name] = "solid_gehennite"
+							break;
 						case "igneous_gravel":
 							nellburnObject[name] = "gehennite_gravel"
 							break;
@@ -336,6 +339,9 @@ if(enabledMods.includes(groundMod) && enabledMods.includes(libHookTickMod)) {
 					switch(info._data[2]) {
 						case "igneous_rock":
 							nellburnObject[name] = "nellrock"
+							break;
+						case "solid_igneous_rock":
+							nellburnObject[name] = "solid_nellrock"
 							break;
 						case "igneous_gravel":
 							nellburnObject[name] = "nellrock_gravel"
@@ -366,6 +372,9 @@ if(enabledMods.includes(groundMod) && enabledMods.includes(libHookTickMod)) {
 						case "igneous_rock":
 							nellburnObject[name] = "hadean_sponge"
 							break;
+						case "solid_igneous_rock":
+							nellburnObject[name] = "solid_hadean_sponge"
+							break;
 						case "igneous_gravel":
 							nellburnObject[name] = "hadean_sponge_gravel"
 							break;
@@ -394,6 +403,9 @@ if(enabledMods.includes(groundMod) && enabledMods.includes(libHookTickMod)) {
 					switch(info._data[2]) {
 						case "igneous_rock":
 							nellburnObject[name] = "gehidian"
+							break;
+						case "solid_igneous_rock":
+							nellburnObject[name] = "solid_gehidian"
 							break;
 						case "igneous_gravel":
 							nellburnObject[name] = "gehidian_gravel"
@@ -702,7 +714,7 @@ if(enabledMods.includes(groundMod) && enabledMods.includes(libHookTickMod)) {
 		"chance":0.02
 	};
 
-	var resultingAutoElems = [ "gehennite", "gehennite_gravel", "nellrock", "gehennite_sand", "gehennite_dust", "wet_gehennite_sand", "packed_gehennite_sand", "nellrock_gravel", "nellrock_sand", "nellrock_dust", "wet_nellrock_sand", "packed_nellrock_sand", "hadean_sponge", "hadean_sponge_gravel", "hadean_sponge_sand", "hadean_sponge_dust", "wet_hadean_sponge_sand", "packed_hadean_sponge_sand", "gehidian", "gehidian_shard", "gehidian_sand", "gehidian_dust", "wet_gehidian_sand", "packed_gehidian_sand", "nellish_magma", "vaporized_nellish_magma", "nellish_magma_cloud", "gehennite_sandy_water", "gehennite_sand_sediment", "gehennite_sandstone", "nellrock_sandy_water", "nellrock_sand_sediment", "nellrock_sandstone", "hadean_sponge_sandy_water", "hadean_sponge_sand_sediment", "hadean_sponge_sandstone", "gehidian_sandy_water", "gehidian_sand_sediment", "gehidian_sandstone", bccd, bccs, "black_limestone" ] //hard-coded
+	var resultingAutoElems = [ "gehennite", "solid_gehennite", "gehennite_gravel", "nellrock", "solid_nellrock", "gehennite_sand", "gehennite_dust", "wet_gehennite_sand", "packed_gehennite_sand", "nellrock_gravel", "nellrock_sand", "nellrock_dust", "wet_nellrock_sand", "packed_nellrock_sand", "hadean_sponge", "solid_hadean_sponge", "hadean_sponge_gravel", "hadean_sponge_sand", "hadean_sponge_dust", "wet_hadean_sponge_sand", "packed_hadean_sponge_sand", "gehidian", "solid_gehidian", "gehidian_shard", "gehidian_sand", "gehidian_dust", "wet_gehidian_sand", "packed_gehidian_sand", "nellish_magma", "vaporized_nellish_magma", "nellish_magma_cloud", "gehennite_sandy_water", "gehennite_sand_sediment", "gehennite_sandstone", "nellrock_sandy_water", "nellrock_sand_sediment", "nellrock_sandstone", "hadean_sponge_sandy_water", "hadean_sponge_sand_sediment", "hadean_sponge_sandstone", "gehidian_sandy_water", "gehidian_sand_sediment", "gehidian_sandstone", bccd, bccs, "black_limestone" ] //hard-coded
 
 	runAfterLoad(function() {
 		for(i = 0; i < resultingAutoElems.length; i++) {
