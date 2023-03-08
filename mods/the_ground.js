@@ -777,6 +777,37 @@ if(!enabledMods.includes(libraryMod)) {
 				magmaName = "magma";
 			};
 
+			elements["solid_" + phaneriteName] = {
+				color: phaneriteColor,
+				behavior: behaviors.WALL,
+				category: "land",
+				state: "solid",
+				tempHigh: phaneriteMeltingPoint,
+				stateHigh: magmaName,
+				density: phaneriteDensity,
+				hardness: 0.8,
+				breakInto: phaneriteName,
+				_data: [compositionFamilyName,"phanerite","solid_igneous_rock"],
+			};
+			
+			elements["solid_" + aphaniteName] = {
+				color: aphaniteColor,
+				behavior: behaviors.WALL,
+				category: "land",
+				state: "solid",
+				tempHigh: aphaniteMeltingPoint,
+				stateHigh: magmaName,
+				density: aphaniteDensity,
+				hardness: 0.8,
+				breakInto: aphaniteName,
+				_data: [compositionFamilyName,"aphanite","solid_igneous_rock"],
+			};
+			
+			elements.water.reactions["solid_" + phaneriteName] = { "elem2": phaneriteName, "chance": 0.00035 }
+			elements.water.reactions["solid_" + aphaniteName] = { "elem2": aphaniteName, "chance": 0.00035 }
+			elements.water.reactions["solid_" + vesiculiteName] = { "elem2": vesiculiteName, "chance": 0.00035 }
+			elements.water.reactions["solid_" + vitriteName] = { "elem2": vitriteName, "chance": 0.00035 }
+
 			elements.water.reactions[aphaniteName] = { "elem2": aphaniteName + "_gravel", "chance": 0.00035 }
 			
 			elements[phaneriteSandName] = {
@@ -922,6 +953,19 @@ if(!enabledMods.includes(libraryMod)) {
 				_data: [compositionFamilyName,"vesiculite","igneous_rock"],
 			};
 			
+			elements["solid_" + vesiculiteName] = {
+				color: vesiculiteColor,
+				behavior: behaviors.WALL,
+				category: "land",
+				state: "solid",
+				tempHigh: vesiculiteMeltingPoint,
+				stateHigh: magmaName,
+				density: vesiculiteDensity,
+				hardness: 0.8,
+				breakInto: vesiculiteName,
+				_data: [compositionFamilyName,"vesiculite","solid_igneous_rock"],
+			};
+			
 			elements.water.reactions[vesiculiteName] = { "elem2": vesiculiteName + "_gravel", "chance": 0.00035 }
 
 			elements[vesiculiteName + "_gravel"] = {
@@ -1008,6 +1052,19 @@ if(!enabledMods.includes(libraryMod)) {
 				_data: [compositionFamilyName,"vitrite","igneous_rock"],
 			};
 
+			elements["solid_" + vitriteName] = {
+				color: vitriteColor,
+				behavior: behaviors.SOLID,
+				category: "land",
+				state: "solid",
+				tempHigh: vitriteMeltingPoint,
+				stateHigh: magmaName,
+				density: vitriteDensity,
+				hardness: 0.8,
+				breakInto: vitriteName,
+				_data: [compositionFamilyName,"vitrite","solid_igneous_rock"],
+			};
+			
 			elements.water.reactions[vitriteName] = { "elem2": vitriteName + "_shard", "chance": 0.00035 }
 
 			elements[vitriteName + "_shard"] = {
@@ -2083,12 +2140,12 @@ if(!enabledMods.includes(libraryMod)) {
 			
 			//Mafic
 
-				elements.rock.name = "gabbro";
+				elements.rock.name = "Gabbro";
 				elements.rock.tempHigh = 1200;
 				elements.rock.density = 3300;
 				elements.rock.breakInto = ["gravel"];
 				elements.gravel.breakInto = ["gabbro_dust"];
-				elements.gravel.name = "gabbro gravel";
+				elements.gravel.name = "Gabbro Gravel";
 				delete elements.wet_sand.reactions.gravel;
 				elements.rock._data = ["mafic","phanerite","igneous_rock"],
 
