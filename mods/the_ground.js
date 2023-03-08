@@ -2413,8 +2413,8 @@ if(!enabledMods.includes(libraryMod)) {
 				elements.concrete.properties.composition = "mafic";
 				elements.concrete.tick = function(pixel) {
 					pixel.composition ??= "mafic";
-					pixel.wet ??= (Math.random() < 0.03);
-					pixel.didWetColorChange ??= false;
+					pixel.wet ??= Math.random() < 0.03 ? 1 : 0;
+					pixel.frozen ??= false;
 					pixel.didColorChange ??= 0;
 					pixel.lastTemperatures ??= [];
 					
@@ -2429,10 +2429,27 @@ if(!enabledMods.includes(libraryMod)) {
 					var magmaName = (pixel.composition == "mafic") ? "magma" : pixel.composition + "_magma";
 					var magmaTempHigh = Math.max(...Object.values(elements[magmaName]._magmaCoolingPassToElement.meltingPoints));
 
-					if(pixel.wet && !pixel.didWetColorChange) {
-						var colorWasHSL = pixel.color.startsWith("hsl");
-						pixel.color = changeLuminance(pixel.color,11,"-",colorWasHSL ? "hsl" : "rgb");
-						pixel.didWetColorChange = true;
+					if(pixel.wet && !pixel.frozen && pixel.temp < 0) {
+						if(Math.random() < (pixel.wet / 40)) { //if unfrozen, crack apart (freezing damage) with small chance, and then mark survivors as frozen
+							explodeAt(pixel.x,pixel.y,2,"ice");
+							if(!pixel) { //if deleted
+								return;
+							};
+							if(pixel.element !== "ice") { //chance to just change to ice after the fact if survivor
+								if(Math.random() < (pixel.wet / 8)) {
+									changePixel(pixel,"ice",false);
+								};
+							};
+							if(pixel.element !== "concrete") { //if changed, stop execution
+								return;
+							};
+						};
+						//if unchanged and undeleted, mark as frozen
+						pixel.frozen = true;
+					};
+					
+					if(pixel.frozen && pixel.temp > 0) {
+						pixel.frozen = false;
 					};
 
 					//console.log(pixel.temp,pixel.didColorChange);
@@ -2492,11 +2509,13 @@ if(!enabledMods.includes(libraryMod)) {
 
 					if(pixel.wet && pixel.temp > 300) {
 						if(overallTemperatureChangeRate > 25) { //if temp change is fast enough, always spall
-							explodeAt(pixel.x,pixel.y,Math.random() < 1/3 ? 2 : 1,"steam,dust")
-							if(!pixel || pixel.element !== "concrete") { //if destroyed or changed
-								return;
+							if(Math.random() < Math.max(0.25,1.05 - (pixel.wet/20))) { //decresingly less likely to spall as it gets wetter, for balance
+								explodeAt(pixel.x,pixel.y,Math.random() < 1/3 ? 2 : 1,"steam,dust")
+								if(!pixel || pixel.element !== "concrete") { //if destroyed or changed
+									return;
+								};
 							};
-							pixel.wet = false;
+							pixel.wet--;
 						} else { //if exposed, continuously try to boil off to random neighbor
 							if(exposedToAir(pixel)) {
 								var randomNeighbor = adjacentCoords[Math.floor(Math.random() * neighbors.length)]
@@ -2504,7 +2523,7 @@ if(!enabledMods.includes(libraryMod)) {
 								var rny = randomNeighbor[1]
 								if(isEmpty(pixel.x+rnx, pixel.y+rny, false)) {
 									createPixel("steam", pixel.x+rnx, pixel.y+rny)
-									pixel.wet = false;
+									pixel.wet--;
 								};
 							} else { //if surrounded, lower chance to spall and higher chance to dissipate
 								if(Math.random() < 0.03) {
@@ -2514,27 +2533,68 @@ if(!enabledMods.includes(libraryMod)) {
 											return;
 										};
 									};
-									pixel.wet = false;
+									pixel.wet--;
 								};
 							};
 						};
 						return;
 					};
 					
-					if(!pixel.wet) {
-						for(i = 0; i < adjacentCoords.length; i++) {
+					if(Math.random() < 1/3) { //tick wetness behavior only 1/3 of the time, for performance
+						var randomCoords = JSON.parse(JSON.stringify(adjacentCoords)); //so we don't need both an adjacentCoords for *and* a random coord iterator
+						shuffleArray(randomCoords);
+						for(i = 0; i < randomCoords.length; i++) {
 							var coords = [
-								pixel.x+adjacentCoords[i][0],
-								pixel.y+adjacentCoords[i][1]
+								pixel.x+randomCoords[i][0],
+								pixel.y+randomCoords[i][1]
 							];
 							if(isEmpty(coords[0],coords[1],true)) {
 								continue;
 							} else {
 								var newPixel = pixelMap[coords[0]]?.[coords[1]];
 								if(newPixel?.element) {
-									if(newPixel.element == "water") {
-										pixel.wet = true;
-										if(Math.random() < 1/4) { deletePixel(newPixel.x,newPixel.y) };
+									if(newPixel.element === "water" && pixel.wet < 4) {
+										//console.log("touching water",pixel.wet);
+										if(pixel.wet < 1) {
+											var colorWasHSL = pixel.color.startsWith("hsl");
+											pixel.color = changeLuminance(pixel.color,6,"-",colorWasHSL ? "hsl" : "rgb");
+											pixel.wet = 1;
+											if(Math.random() < 0.8) { deletePixel(newPixel.x,newPixel.y) };
+											break;
+										};
+										if(pixel.wet == 1) {
+											var colorWasHSL = pixel.color.startsWith("hsl");
+											pixel.color = changeLuminance(pixel.color,6,"-",colorWasHSL ? "hsl" : "rgb");
+											pixel.wet = 2;
+											if(Math.random() < 0.6) { deletePixel(newPixel.x,newPixel.y) };
+											break;
+										};
+										if(pixel.wet == 2) {
+											var colorWasHSL = pixel.color.startsWith("hsl");
+											pixel.color = changeLuminance(pixel.color,6,"-",colorWasHSL ? "hsl" : "rgb");
+											pixel.wet = 3;
+											if(Math.random() < 0.4) { deletePixel(newPixel.x,newPixel.y) };
+											break;
+										};
+										if(pixel.wet == 3) {
+											var colorWasHSL = pixel.color.startsWith("hsl");
+											pixel.color = changeLuminance(pixel.color,6,"-",colorWasHSL ? "hsl" : "rgb");
+											pixel.wet = 4;
+											if(Math.random() < 0.2) { deletePixel(newPixel.x,newPixel.y) };
+											break;
+										};
+									} else {
+										//console.log(3);
+										if(pixel.wet > 1 && !pixel.frozen && newPixel.element.endsWith("concrete") && newPixel.wet != undefined && newPixel.wet < pixel.wet) {
+											if(pixel.wet <= 1) { break };
+											pixel.wet--;
+											var colorWasHSL = pixel.color.startsWith("hsl");
+											pixel.color = changeLuminance(pixel.color,6,"+",colorWasHSL ? "hsl" : "rgb");
+
+											newPixel.wet++;
+											var newColorWasHSL = newPixel.color.startsWith("hsl");
+											newPixel.color = changeLuminance(newPixel.color,6,"-",newColorWasHSL ? "hsl" : "rgb");
+										};
 									};
 								};
 							};
