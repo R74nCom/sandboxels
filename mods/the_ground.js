@@ -1183,7 +1183,7 @@ if(!enabledMods.includes(libraryMod)) {
 					"viscosity": magmaViscosity,
 					"hidden": true,
 					"state": "liquid",
-					"category": "molten",
+					"category": "magma",
 					"density": magmaDensity,
 					"_data": [compositionFamilyName,"magma","liquid"],
 				};
@@ -1225,6 +1225,55 @@ if(!enabledMods.includes(libraryMod)) {
 
 			magmaClouds.push(magmaName + "_cloud");
 			
+		};
+
+		function standaloneBrokenFormMaker(elementName,suffixWithoutUnderscore,addBreakIntoToSourceElement=false,category=null,density=null,tempHigh=null,stateHigh=null,breakInto=null) {	
+			var newName = elementName + "_" + suffixWithoutUnderscore;
+			elements[newName] = {
+				color: gravelizeToHex(elements[elementName].color),
+				behavior: behaviors.POWDER,
+				state: "solid",
+			};
+			if(density !== null) {
+				if(density == "auto") {
+					elements[newName].density = (elements[elementName].density ?? 2000) * 0.55;
+				} else {
+					elements[newName].density = density;
+				};
+			};
+			if(category !== null) {
+				elements[newName].category = category;
+			};
+			if(tempHigh !== null) {
+				if(tempHigh == "auto") {
+					elements[newName].tempHigh = elements[elementName].tempHigh;
+				} else {
+					elements[newName].tempHigh = tempHigh;
+				};
+			};
+			if(stateHigh !== null) {
+				if(stateHigh == "auto") {
+					elements[newName].stateHigh = elements[elementName].stateHigh;
+				} else {
+					elements[newName].stateHigh = stateHigh;
+				};
+			};
+			if(breakInto !== null) {
+				elements[newName].breakInto = breakInto;
+			};
+			
+			if(addBreakIntoToSourceElement) {
+				if(!elements[elementName].breakInto) {
+					elements[elementName].breakInto = newName;
+				} else {
+					if(!(elements[elementName].breakInto instanceof Array)) {
+						elements[elementName].breakInto = [elements[elementName].breakInto];
+					};
+					elements[elementName].breakInto.push(newName);
+				};
+			};
+			
+			return elements[newName];
 		};
 
 		function makeSandstoningElements(sandName) {
@@ -1679,6 +1728,25 @@ if(!enabledMods.includes(libraryMod)) {
 				};
 			};
 			
+			newPowder("silica","#faf9f0",2196,1713).hardness = 0.7;
+			elements.silica.reactions = {
+				intermediate_felsic_magma: { elem1: "felsic_magma", elem2: "felsic_magma", chance: 0.9 },
+				intermediate_magma: { elem1: "intermediate_felsic_magma", elem2: "intermediate_felsic_magma", chance: 0.9 },
+				magma: { elem1: "intermediate_magma", elem2: "intermediate_felsic_magma", chance: 0.9 },
+				ultramafic_magma: { elem1: "magma", elem2: "magma", chance: 0.9 },
+			};
+			
+			elements.molten_silica = {
+				tempHigh: 2950,
+				viscosity: 1e14, //idk lol
+				reactions: {
+					intermediate_felsic_magma: { elem1: "felsic_magma", elem2: "felsic_magma", chance: 0.9 },
+					intermediate_magma: { elem1: "intermediate_felsic_magma", elem2: "intermediate_felsic_magma", chance: 0.9 },
+					magma: { elem1: "intermediate_magma", elem2: "intermediate_felsic_magma", chance: 0.9 },
+					ultramafic_magma: { elem1: "magma", elem2: "magma", chance: 0.9 },
+				},
+			};
+
 			elements.felsic_magma.reactions ??= {};
 			elements.felsic_magma.reactions.intermediate_magma = {
 				elem1: "intermediate_felsic_magma", elem2: "intermediate_felsic_magma", chance: 0.8,
@@ -2151,6 +2219,7 @@ if(!enabledMods.includes(libraryMod)) {
 
 				elements.magma.name = "mafic magma";
 				elements.magma.density = 2650;
+				elements.magma.category = "magma";
 				elements.magma._magmaCoolingPassToElement = {
 					vitreous: [-115,"basalidian"],
 					aphanitic: [-29,"basalt"],
@@ -2344,13 +2413,23 @@ if(!enabledMods.includes(libraryMod)) {
 				elements.concrete.properties.composition = "mafic";
 				elements.concrete.tick = function(pixel) {
 					pixel.composition ??= "mafic";
+					pixel.wet ??= (Math.random() < 0.03);
 					pixel.didColorChange ??= 0;
+					pixel.lastTemperatures ??= [];
 					
+					pixel.lastTemperatures.push(pixel.temp); //due to how it's structured, last temp will always equal pixel.temp;
+
+					while(pixel.lastTemperatures.length > 2) {
+						pixel.lastTemperatures.shift();
+					};
+
+					var overallTemperatureChangeRate = (pixel.temp - pixel.lastTemperatures[0]) / (pixel.lastTemperatures.length - 1);
+
 					var magmaName = (pixel.composition == "mafic") ? "magma" : pixel.composition + "_magma";
 					var magmaTempHigh = Math.max(...Object.values(elements[magmaName]._magmaCoolingPassToElement.meltingPoints));
 
 					//console.log(pixel.temp,pixel.didColorChange);
-					if(pixel.temp > 400 && pixel.didColorChange < 1) {
+					if(pixel.temp > 300 && pixel.didColorChange < 1) {
 						if(Math.random() < 0.02) { breakPixel(pixel) };
 						var colorWasHSL = pixel.color.startsWith("hsl");
 						var oldColor = convertHslObjects(normalizeColorToHslObject(pixel.color),"rgbjson");
@@ -2359,7 +2438,7 @@ if(!enabledMods.includes(libraryMod)) {
 						oldColor.b += 56/2;
 						pixel.color = convertHslObjects(normalizeColorToHslObject(oldColor),colorWasHSL ? "hsl" : "rgb");
 						pixel.didColorChange = 1;
-					} else if(pixel.temp > 600 && pixel.didColorChange < 2) {
+					} else if(pixel.temp > 500 && pixel.didColorChange < 2) {
 						if(Math.random() < 0.04) { breakPixel(pixel) };
 						var colorWasHSL = pixel.color.startsWith("hsl");
 						var oldColor = convertHslObjects(normalizeColorToHslObject(pixel.color),"rgbjson");
@@ -2368,15 +2447,24 @@ if(!enabledMods.includes(libraryMod)) {
 						oldColor.b += 56/4;
 						pixel.color = convertHslObjects(normalizeColorToHslObject(oldColor),colorWasHSL ? "hsl" : "rgb");
 						pixel.didColorChange = 2;
-					} else if(pixel.temp > 800 && pixel.didColorChange < 3) {
+					} else if(pixel.temp > 700 && pixel.didColorChange < 3) {
 						if(Math.random() < 0.06) { breakPixel(pixel) };
 						var colorWasHSL = pixel.color.startsWith("hsl");
 						var oldColor = convertHslObjects(normalizeColorToHslObject(pixel.color),"rgbjson");
-						oldColor.r += 81/4;
-						oldColor.g += 60/4;
-						oldColor.b += 56/4;
+						oldColor.r += 81/7;
+						oldColor.g += 60/7;
+						oldColor.b += 56/7;
 						pixel.color = convertHslObjects(normalizeColorToHslObject(oldColor),colorWasHSL ? "hsl" : "rgb");
 						pixel.didColorChange = 3;
+					} else if(pixel.temp > 900 && pixel.didColorChange < 4) {
+						if(Math.random() < 0.08) { breakPixel(pixel) };
+						var colorWasHSL = pixel.color.startsWith("hsl");
+						var oldColor = convertHslObjects(normalizeColorToHslObject(pixel.color),"rgbjson");
+						oldColor.r += 81/8;
+						oldColor.g += 60/8;
+						oldColor.b += 56/8;
+						pixel.color = convertHslObjects(normalizeColorToHslObject(oldColor),colorWasHSL ? "hsl" : "rgb");
+						pixel.didColorChange = 4;
 					};
 										
 					pixel.role ??= randomChoice(["aggregate","aggregate","aggregate","aggregate","sand","sand","cement"]);
@@ -2392,6 +2480,57 @@ if(!enabledMods.includes(libraryMod)) {
 							pixel.role = "ferricOxide";
 						} else {
 							pixel.role = "sulfurTrioxide";
+						};
+					};
+
+					if(pixel.wet && pixel.temp > 300) {
+						if(overallTemperatureChangeRate > 25) { //if temp change is fast enough, always spall
+							explodeAt(pixel.x,pixel.y,Math.random() < 1/3 ? 2 : 1,"steam,dust")
+							if(!pixel || pixel.element !== "concrete") { //if destroyed or changed
+								return;
+							};
+							pixel.wet = false;
+						} else { //if exposed, continuously try to boil off to random neighbor
+							if(exposedToAir(pixel)) {
+								var randomNeighbor = adjacentCoords[Math.floor(Math.random() * neighbors.length)]
+								var rnx = randomNeighbor[0]
+								var rny = randomNeighbor[1]
+								if(isEmpty(pixel.x+rnx, pixel.y+rny, false)) {
+									createPixel("steam", pixel.x+rnx, pixel.y+rny)
+									pixel.wet = false;
+								};
+							} else { //if surrounded, lower chance to spall and higher chance to dissipate
+								if(Math.random() < 0.03) {
+									if(Math.random() < 2/5) {
+										explodeAt(pixel.x,pixel.y,Math.random() < 1/2 ? 2 : 3,"steam,dust")
+										if(!pixel || pixel.element !== "concrete") { //if destroyed or changed
+											return;
+										};
+									};
+									pixel.wet = false;
+								};
+							};
+						};
+						return;
+					};
+					
+					if(!pixel.wet) {
+						for(i = 0; i < adjacentCoords.length; i++) {
+							var coords = [
+								pixel.x+adjacentCoords[i][0],
+								pixel.y+adjacentCoords[i][1]
+							];
+							if(isEmpty(coords[0],coords[1],true)) {
+								continue;
+							} else {
+								var newPixel = pixelMap[coords[0]]?.[coords[1]];
+								if(newPixel?.element) {
+									if(newPixel.element == "water") {
+										pixel.wet = true;
+										deletePixel(newPixel.x,newPixel.y);
+									};
+								};
+							};
 						};
 					};
 
@@ -2572,6 +2711,10 @@ if(!enabledMods.includes(libraryMod)) {
 				density: 2650,
 				hardness: 0.7,
 			};
+			
+			standaloneBrokenFormMaker("iron","scrap",true,"powders","auto","auto","molten_iron",null).hidden = true;
+			
+			standaloneBrokenFormMaker("amethyst","shard",true,"powders","auto","auto","molten_amethyst",["silica","silica","silica","silica","silica","silica","silica","silica","silica","iron_scrap"]).hidden = true;
 
 		//Sapphire
 
@@ -2673,12 +2816,6 @@ if(!enabledMods.includes(libraryMod)) {
 				hardness: 0.7,
 			};
 			
-			newPowder("silica","#faf9f0",2196,1713).hardness = 0.7;
-			
-			elements.molten_silica = {
-				tempHigh: 2950,
-			};
-
 			//Re-add molten quartz because it stopped auto-generating
 			
 			elements.molten_quartz = {"behavior":behaviors.MOLTEN,"hidden":true,"state":"liquid","category":"states","color":['#ffff78', '#fff078', '#ffb400', '#ffff71', '#ffe371', '#ffaa00', '#ffff7b', '#fff77b', '#ffb900'],"temp":1650,"tempLow":1550,"stateLow":"quartz","density":2385,"viscosity":10000,"reactions":{"ash":{"elem1":null,"elem2":"molten_slag"},"dust":{"elem1":null,"elem2":"molten_slag"},"magma":{"elem1":null,"elem2":"molten_slag"}},"movable":true}
@@ -3610,6 +3747,17 @@ if(!enabledMods.includes(libraryMod)) {
 		]
 	};
 	
+	//Concrete
+
+	worldgentypes.concrete = {
+		layers: [
+			[0.13, "concrete"],
+			[0.1, "concrete", 0.5],
+			[-0.1, "dirt"]
+		],
+		heightVariance: 0.00000000000000000000000000000001, //R74n didn't use the nullish ??, so 0 is disallowed.
+	};
+
 	//Star world
 	//If GWSN can have a decidedly Earth-y name and a space concept, then I should be able to do the same
 	
