@@ -2414,6 +2414,7 @@ if(!enabledMods.includes(libraryMod)) {
 				elements.concrete.tick = function(pixel) {
 					pixel.composition ??= "mafic";
 					pixel.wet ??= (Math.random() < 0.03);
+					pixel.didWetColorChange ??= false;
 					pixel.didColorChange ??= 0;
 					pixel.lastTemperatures ??= [];
 					
@@ -2427,6 +2428,12 @@ if(!enabledMods.includes(libraryMod)) {
 
 					var magmaName = (pixel.composition == "mafic") ? "magma" : pixel.composition + "_magma";
 					var magmaTempHigh = Math.max(...Object.values(elements[magmaName]._magmaCoolingPassToElement.meltingPoints));
+
+					if(pixel.wet && !pixel.didWetColorChange) {
+						var colorWasHSL = pixel.color.startsWith("hsl");
+						pixel.color = changeLuminance(pixel.color,11,"-",colorWasHSL ? "hsl" : "rgb");
+						pixel.didWetColorChange = true;
+					};
 
 					//console.log(pixel.temp,pixel.didColorChange);
 					if(pixel.temp > 300 && pixel.didColorChange < 1) {
@@ -2527,7 +2534,7 @@ if(!enabledMods.includes(libraryMod)) {
 								if(newPixel?.element) {
 									if(newPixel.element == "water") {
 										pixel.wet = true;
-										deletePixel(newPixel.x,newPixel.y);
+										if(Math.random() < 1/4) { deletePixel(newPixel.x,newPixel.y) };
 									};
 								};
 							};
