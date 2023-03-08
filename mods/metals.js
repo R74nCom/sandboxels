@@ -1,7 +1,9 @@
 var modName = "mods/metals.js";
 var changeTempMod = "mods/changeTempReactionParameter.js";
 var runAfterAutogenMod = "mods/runAfterAutogen and onload restructure.js";
-if(enabledMods.includes(changeTempMod) && enabledMods.includes(runAfterAutogenMod)) {
+var libraryMod = "mods/code_library.js";
+var onTryMoveIntoMod = "mods/onTryMoveInto.js";
+if(enabledMods.includes(changeTempMod) && enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod) && enabledMods.includes(onTryMoveIntoMod)) {
 	elements.iron.hardness = 0.74
 	//https://www.engineeringtoolbox.com/bhn-brinell-hardness-number-d_1365.html
 	//https://en.wikipedia.org/wiki/Hardnesses_of_the_elements_(data_page)
@@ -372,19 +374,139 @@ if(enabledMods.includes(changeTempMod) && enabledMods.includes(runAfterAutogenMo
 		fireColor: "#4275db",
 	};
 	
+	zirconoids = ["zirconium","molten_zirconium","zirconium_gas"];
+
+	function zirconiumMoveContainedNeutron(pixelFrom,pixelTo) {
+		if(!pixelFrom || !pixelTo) {
+			return false
+		};
+		pixelFrom.neutrons ??= 0;
+		if(pixelFrom.neutrons < 1) {
+			return false;
+		};
+		pixelTo.neutrons ??= 0;
+		pixelFrom.neutrons--;
+		pixelTo.neutrons++;
+	};
+
+	function neutronAbsorbency(pixel,otherPixel) {
+		if(isNaN(pixel.neutrons)) {
+			pixel.neutrons = 0;
+		};
+		pixel.neutrons ??= 0; //probably redundant with the above
+		if(!otherPixel) {
+			return null;
+		};
+		if(otherPixel.element === "neutron") {
+			/*var otherIndex = currentPixels.indexOf(otherPixel);
+			if(otherIndex !== -1) { currentPixels.splice(otherIndex,1) };
+			pixelMap[otherPixel.x][otherPixel.y] = undefined;*/
+			deletePixel(otherPixel.x,otherPixel.y);
+			pixel.neutrons++;
+			return true;
+		} else {
+			return false;
+		};
+	};
+
+	function neutronMovement(pixel,whitelist=null) {
+		if(!pixel.oldColor) {
+			pixel.oldColor = pixel.color;
+		};
+		if(isNaN(pixel.neutrons)) {
+			pixel.neutrons = 0;
+		};
+		pixel.neutrons ??= 0; //probably redundant with the above
+
+		if(pixel.oldColor === null) { pixel.oldColor = pixel.color };
+
+		var color = convertColorFormats(pixel.oldColor,"json");
+		//color.g += (pixel.neutrons * 4);
+		//color.b += (pixel.neutrons * 6);
+		color.g += (pixel.neutrons * 32);
+		color.b += (pixel.neutrons * 48);
+		color = convertColorFormats(color,"rgb");
+		pixel.color = color;
+
+		for(i = 0; i < pixel.neutrons; i++) {
+			if(pixel.neutrons < 1) { break };
+			var vx = Math.floor(Math.random() * 3) - 1;
+			var vy = Math.floor(Math.random() * 3) - 1;
+			if (vx===0 && vy===0) {
+				if (Math.random() < 0.5)	{ vx = Math.random() < 0.5 ? 1 : -1; }
+				else						{ vy = Math.random() < 0.5 ? 1 : -1; }
+			};
+
+			var newPos = {x: pixel.x+vx, y: pixel.y+vy};
+						
+			if(outOfBounds(newPos.x,newPos.y)) {
+				continue;
+			};
+
+			if(isEmpty(newPos.x,newPos.y,false)) {
+				createPixelReturn("neutron",newPos.x,newPos.y).temp = pixel.temp;
+				pixel.neutrons--;
+				if(pixel.neutrons < 1) { break };
+			} else if(!isEmpty(newPos.x,newPos.y,true)) {
+				var newPixel = pixelMap[newPos.x][newPos.y];
+				if(whitelist == null || whitelist.includes(newPixel.element)) {
+					zirconiumMoveContainedNeutron(pixel,newPixel);
+					if(pixel.neutrons < 1) { break };
+				};
+			};
+		};
+	};
+
+	elements.zirconium = {
+		color: ["#ccc59b", "#dbd3a4"],
+		behavior: behaviors.WALL,
+		properties: {
+			oldColor: null,
+		},
+		onTryMoveInto: function(pixel,otherPixel) {
+			neutronAbsorbency(pixel,otherPixel);
+		},
+		tick: function(pixel) {
+			neutronMovement(pixel,zirconoids);
+		},
+		tempHigh: 1855,
+		category: "solids",
+		density: 6520,
+		conduct: 0.19,
+		hardness: 0.5,
+	},
+
+	elements.molten_zirconium = {
+		density: 5803,
+		tempHigh: 4409,
+		behavior: behaviors.MOLTEN,
+		onTryMoveInto: function(pixel,otherPixel) {
+			neutronAbsorbency(pixel,otherPixel);
+		},
+		tick: function(pixel) {
+			neutronMovement(pixel,zirconoids);
+		},
+	};
+
+
+	elements.zirconium_gas = {
+		density: 3, //Unknown/Unmeasured value
+		behavior: behaviors.GAS,
+		onTryMoveInto: function(pixel,otherPixel) {
+			neutronAbsorbency(pixel,otherPixel);
+		},
+		tick: function(pixel) {
+			neutronMovement(pixel,zirconoids);
+		},
+	};
+
+	elements.neutron.state = "gas";
+	elements.neutron.ignoreAir = "true";
+
 	neighbors = [[-1,0],[0,-1],[1,0],[0,1]]
 
 	function randomChoice(array) {
 		return array[Math.floor(Math.random() * array.length)];
-	}
-
-	function exposedToAir(pixel) {
-		for(i = 0; i < adjacentCoords.length; i++) {
-			if(isEmpty(pixel.x+adjacentCoords[i][0],pixel.y+adjacentCoords[i][1])) {
-				return true;
-			};
-		};
-		return false;
 	}
 
 	function tryTarnish(pixel,element,chance) {
@@ -642,6 +764,8 @@ if(enabledMods.includes(changeTempMod) && enabledMods.includes(runAfterAutogenMo
 } else {
 	if(!enabledMods.includes(changeTempMod))		{ enabledMods.splice(enabledMods.indexOf(modName),0,changeTempMod) };
 	if(!enabledMods.includes(runAfterAutogenMod))	{ enabledMods.splice(enabledMods.indexOf(modName),0,runAfterAutogenMod) };
+	if(!enabledMods.includes(libraryMod))	{ enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod) };
+	if(!enabledMods.includes(onTryMoveIntoMod))	{ enabledMods.splice(enabledMods.indexOf(modName),0,onTryMoveIntoMod) };
 	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-	alert(`The "${changeTempMod}" and "${runAfterAutogenMod}" mods are required; any missing mods in this list have been automatically inserted (reload for this to take effect).`)
+	alert(`The "${changeTempMod}", "${runAfterAutogenMod}", "${libraryMod}", and "${onTryMoveIntoMod}" mods are required; any missing mods in this list have been automatically inserted (reload for this to take effect).`);
 };
