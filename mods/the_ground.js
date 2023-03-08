@@ -2814,6 +2814,18 @@ if(!enabledMods.includes(libraryMod)) {
 				hardness: 0.9,
 			}
 
+		//Spinel (kek)
+
+			elements.spinel = {
+				color: ["#ff1261", "#db2776", "#f20732", "#f71670", "#f7167f"],
+				tempHigh: 2130,
+				behavior: behaviors.POWDER,
+				category: "powders",
+				state: "solid",
+				density: 3600,
+				hardness: 0.85,
+			}
+
 		//Topaz
 
 			elements.topaz = {
