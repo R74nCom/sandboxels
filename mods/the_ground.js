@@ -2430,7 +2430,8 @@ if(!enabledMods.includes(libraryMod)) {
 					var magmaTempHigh = Math.max(...Object.values(elements[magmaName]._magmaCoolingPassToElement.meltingPoints));
 
 					if(pixel.wet && !pixel.frozen && pixel.temp < 0) {
-						if(Math.random() < (pixel.wet / 40)) { //if unfrozen, crack apart (freezing damage) with small chance, and then mark survivors as frozen
+						if(Math.random() < (pixel.wet / 25)) { //if unfrozen, crack apart (freezing damage) with small chance, and then mark survivors as frozen
+							//console.log("freezing");
 							explodeAt(pixel.x,pixel.y,2,"ice");
 							if(!pixel) { //if deleted
 								return;
