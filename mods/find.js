@@ -112,8 +112,8 @@ function findFilterPrompt() {
 
 runAfterLoad(function() {
 	oldDrawPixels = drawPixels;
-	drawPixels = function() {
-		oldDrawPixels();
+	drawPixels = function(forceTick=false) {
+		oldDrawPixels(forceTick);
 		//console.log(find);
 		if(find) { findHighlighting() };
 	};
