@@ -1455,6 +1455,86 @@
 		return r.elem1!==undefined || r.elem2!==undefined;
 	};
 
+	function spreadingProperty(pixel,propertyName,whitelist=null) {
+		if(isNaN(pixel[propertyName])) {
+			pixel[propertyName] = 0;
+		};
+		var randomNeighborOffset = adjacentCoords[Math.floor(Math.random() * adjacentCoords.length)];
+		var rX = randomNeighborOffset[0];
+		var rY = randomNeighborOffset[1];
+		var rfX = pixel.x+rX;
+		var rfY = pixel.y+rY;
+		if(!isEmpty(rfX,rfY,true)) {
+			if(!pixelMap[rfX]) {
+				return false;
+			};
+			var rOtherPixel = pixelMap[rfX][rfY];
+			var rOtherElement = rOtherPixel.element;
+			if(whitelist === null || (whitelist !== null && whitelist.includes(rOtherElement))) {
+				if(typeof(rOtherPixel) === "undefined" || isEmpty(rfX,rfY,true)) {
+					return false;
+				};
+				if(isNaN(pixel[propertyName])) { //should include undefined
+					pixel[propertyName] = 0;
+				};
+				var averageValue = (pixel[propertyName] + rOtherPixel[propertyName]) / 2;
+				pixel[propertyName] = averageValue;
+				rOtherPixel[propertyName] = averageValue;
+			};
+		};
+		return true;
+	};
+
+	function spreadingPropertyReturn(pixel,propertyName,whitelist=null) {
+		if(isNaN(pixel[propertyName])) {
+			pixel[propertyName] = 0;
+		};
+		var recipients = []; //will never be more than one but done with [] for forEach
+		var randomNeighborOffset = adjacentCoords[Math.floor(Math.random() * adjacentCoords.length)];
+		var rX = randomNeighborOffset[0];
+		var rY = randomNeighborOffset[1];
+		var rfX = pixel.x+rX;
+		var rfY = pixel.y+rY;
+		if(!isEmpty(rfX,rfY,true)) {
+			if(!pixelMap[rfX]) {
+				return [];
+			};
+			var rOtherPixel = pixelMap[rfX][rfY];
+			var rOtherElement = rOtherPixel.element;
+			if(whitelist === null || (whitelist !== null && whitelist.includes(rOtherElement))) {
+				if(typeof(rOtherPixel) === "undefined" || isEmpty(rfX,rfY,true)) {
+					return [];
+				};
+				if(isNaN(pixel[propertyName])) { //should include undefined
+					pixel[propertyName] = 0;
+				};
+				var averageValue = (pixel[propertyName] + rOtherPixel[propertyName]) / 2;
+				pixel[propertyName] = averageValue;
+				rOtherPixel[propertyName] = averageValue;
+				recipients.push(rOtherPixel);
+			};
+		};
+		return recipients;
+	};
+
+	function swapNumericPropertyValues(pixel1,pixel2,propertyName,whitelist=null) {
+		if(!pixel1 || !pixel2) {
+			return false;
+		};
+		if(isNaN(pixel1[propertyName])) {
+			pixel1[propertyName] = 0;
+		};
+		if(isNaN(pixel2[propertyName])) {
+			pixel2[propertyName] = 0;
+		};
+		if(whitelist === null || (whitelist !== null && whitelist.includes(pixel1.element) && whitelist.includes(pixel2.element))) {
+			var temp1 = pixel1[propertyName];
+			pixel1[propertyName] = pixel2[propertyName];
+			pixel2[propertyName] = temp1;
+		};
+		return true;
+	};
+
 //World
 
 	function breakCircle(x,y,radius,respectHardness=false,changeTemp=false,defaultBreakIntoDust=false) {
