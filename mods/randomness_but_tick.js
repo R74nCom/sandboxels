@@ -594,7 +594,7 @@ elements.void_first = {
 			if(!isEmpty(nX,nY,true)) {
 				var newPixel = pixelMap[nX][nY]
 				var newElement = newPixel.element;
-				if(newElement != pixel.element) {
+				if(newElement != pixel.element && newElement === pixel.void) {
 					deletePixel(nX,nY);
 				};
 			};
@@ -974,6 +974,7 @@ elements.conveyor_2 = {
 elements.vanishing_wall = {
 	behavior: behaviors.WALL,
 	color: "#8080b0",
+	colorObject: hexToRGB("#8080b0"),
 	density: 3333,
 	tick: function(pixel) {
 		pixelTick(pixel)
@@ -991,6 +992,29 @@ elements.vanishing_wall = {
 	extraInfo: "It disappears when charged.",
 },
 
+elements.vanishing_steel = {
+	color: "#71797E",
+	behavior: behaviors.WALL,
+	tick: function(pixel) {
+		pixelTick(pixel);
+		if(pixel.charge) {
+			if(!isEmpty(pixel.x,pixel.y)) {
+				deletePixel(pixel.x,pixel.y);
+			};
+		};
+	},
+	category: "solids",
+	state: "solid",
+	density: 7850,
+	conduct: 1,
+	hardness: 0.8,
+	//tempHigh: 1455.5, //JavaScript Illogically refuses to autogen
+	forceAutoGen: true,
+};
+
+//go fuck yourself javascript
+//why the fuck won't you FUCKING generate the molten element
+//I am not adding another FUCKING dependency today
 elements.polka_dotted_powder = {
 	color: ["#000000","#000000","#7f7f7f","#ffffff","#ffffff"],
 	behavior: behaviors.POWDER,
