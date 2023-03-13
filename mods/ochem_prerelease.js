@@ -748,7 +748,22 @@ if(enabledMods.includes(fireMod) && enabledMods.includes(changeTempMod)) {
 	delete elements.oil.tempHigh;
 
 	elements.oil.tick = function(pixel) {
-		if(pixel.temp < 
+		if(!pixel.role) {
+			var value = Math.random()
+			if(value < 0.03) {
+				pixel.role = "lpg";
+			};
+		};
+		
+		if(pixel.role == "lpg") {
+			var value = Math.random()
+			//LPG composition weighted chooser
+		};
+		
+		
+		if(pixel.temp > 30) { //https://www.crownoil.co.uk/guides/crude-oil-fractional-distillation/: Butane and propane and other petroleum gases are formed right at the top of the distillation tower, where it is coolest, a very mild 25°C: the temperature range that forms these gases is between 25°C and 50°C. These gases are the lightest products formed in crude oil distillation and are flammable gases.
+			//LPG change switch(pixel.role) statement
+		};
 	};
 	*/
 } else {
