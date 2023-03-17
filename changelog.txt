@@ -3,7 +3,52 @@
     + Baking Update
     + More plans / suggestions at https://docs.google.com/document/u/4/d/1R8xljj_J-K5oU-9y4louwplQmM-ZBvUfXmhbgj5LYdk/edit
 
-[Version 1.7.1 - January 8, 2022]
+[Version 1.8 - March 17, 2023 - Cooking Update]
+    + Updated Donator list
+    + Butter
+    + Setting to disable reset warnings
+    + EWall, conductive wall
+    + Rock Wall
+    + Sodium Gas
+   [Dough and Batter]
+    + Batter, made from Flour and Yolk (Hidden)
+    + Can be mixed with any food to create a unique dough/batter
+    + Baked Batter (Hidden)
+   [Changes]
+    + Bones can break into Bone Marrow
+    + Acid dissolves Rocks into Sand
+    + Pyrocumulus forms in Rad Clouds
+    + Poison can kill Tree Branches
+    + Different cheese colors from milk variants
+    + Bleach and Yeast reaction
+    ~ Plasma no longer charged by default
+    ~ Sun, Stained Glass, Wires, Flash, and Explosions won't mix unless Shift is held
+    ~ Unhid Yolk
+    ~ Hid Cellulose
+    ~ Reordered Food category
+    ~ Tweaked Flour color
+    ~ Sodium has a bright yellow flame
+    ~ Sulfur Gas burns quickly
+    ~ Poison can kill Mushrooms
+    ~ Oxygen no longer flammable, but can be destroyed by fire
+    ~ Hydrogen and Oxygen now need heat to combine
+    ~ Milk from Udders comes out warm
+    - Removed Controls button as it is no longer needed
+    + Added link to Reddit
+   [Bug Fixes]
+    ~ Fixed: Heating trees causes odd growth patterns
+    ~ Fixed: Sodium freezing point too low
+    ~ Fixed: Molten Sodium missing reactions
+    ~ Fixed: Melted Wax default temperature too low
+    ~ Fixed: Inaccurate Mercury gas density
+    ~ Fixed: Humans superconductive
+    ~ Fixed: Canvas overflows on the right on mobile
+   [Technical]
+    + onMix element attribute function(pixel1,pixel2)
+    + isFood element attribute for dough/batter mixing
+    + stateHighColorMultiplier element attribute for batter
+
+[Version 1.7.1 - January 8, 2023]
     + Walls and Glass aren't affected by Mix unless holding Shift
     + Beans
     + Sodium Acetate can melt

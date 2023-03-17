@@ -388,6 +388,7 @@ select {
 }
 #canvasDiv {
     position:relative;
+    overflow-x:hidden
 }
 #colorSelector {
     position:absolute;
