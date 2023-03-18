@@ -1,7 +1,7 @@
 elements.fluorine = {
 	color: "#FFFFBF",
 	behavior: behaviors.GAS,
-	ignore: ["FOOF","solid_FOOF","oxygen","liquid_oxygen","oxygen_ice","chlorine","liquid_chlorine","liquid_hydrogen_fluoride","liquid_fluorine","fluorine","fluorine_ice","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_ice","hydrofluoric_acid_gas","fire","smoke","acid_gas","neutral_acid","acid","acid_cloud","water","salt_water","sugar_water","dirty_water","steam","gold","hydrogen","polytetrafluoroethylene","molten_polytetrafluoroethylene"],
+	ignore: ["FOOF","solid_FOOF","oxygen","liquid_oxygen","oxygen_ice","chlorine","liquid_chlorine","liquid_hydrogen_fluoride","liquid_fluorine","fluorine","fluorine_ice","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_ice","hydrofluoric_acid_gas","fire","smoke","acid_gas","neutral_acid","acid","acid_cloud","water","salt_water","sugar_water","dirty_water","steam","gold","hydrogen","polytetrafluoroethylene","molten_polytetrafluoroethylene","tungsten","tungsten_hexafluoride"],
 	tick: function(pixel) {
 		let change = false;
 		for (let i = -1; i <= 1; i++) {
@@ -28,6 +28,7 @@ elements.fluorine = {
 		"neutral_acid": { "elem1": "hydrofluoric_acid", "elem2": "hydrogen" },
 		"liquid_oxygen": { "elem1": "FOOF", "elem2": null },
 		"hydrogen": { "elem1": "hydrogen_fluoride", "elem2":null },
+		"tungsten": { "elem1": "tungsten_hexafluoride", "elem2": null},
 	},
 	tempLow: -188.1,
 	stateLow: "liquid_fluorine",
@@ -40,7 +41,7 @@ elements.fluorine = {
 elements.liquid_fluorine = {
 	color: "#ffff3b",
 	behavior: behaviors.LIQUID,
-	ignore: ["FOOF","solid_FOOF","oxygen","liquid_oxygen","oxygen_ice","chlorine","liquid_chlorine","liquid_hydrogen_fluoride","liquid_fluorine","fluorine","fluorine_ice","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_ice","hydrofluoric_acid_gas","fire","smoke","acid_gas","neutral_acid","acid","acid_cloud","water","salt_water","sugar_water","dirty_water","steam","gold","hydrogen","polytetrafluoroethylene","molten_polytetrafluoroethylene"],
+	ignore: ["FOOF","solid_FOOF","oxygen","liquid_oxygen","oxygen_ice","chlorine","liquid_chlorine","liquid_hydrogen_fluoride","liquid_fluorine","fluorine","fluorine_ice","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_ice","hydrofluoric_acid_gas","fire","smoke","acid_gas","neutral_acid","acid","acid_cloud","water","salt_water","sugar_water","dirty_water","steam","gold","hydrogen","polytetrafluoroethylene","molten_polytetrafluoroethylene","tungsten","tungsten_hexafluoride"],
 	tick: function(pixel) {
 		let change = false;
 		for (let i = -1; i <= 1; i++) {
@@ -66,6 +67,7 @@ elements.liquid_fluorine = {
 		"steam": { "elem1": "hydrofluoric_acid_gas", "elem2": "hydrogen" },
 		"neutral_acid": { "elem1": "hydrofluoric_acid", "elem2": "hydrogen" },
 		"hydrogen": { "elem1": "hydrogen_fluoride", "elem2":null },
+		"tungsten": { "elem1": "tungsten_hexafluoride", "elem2": null },
 	},
 	temp: -198.1,
 	tempHigh: -188.1,
@@ -79,7 +81,7 @@ elements.liquid_fluorine = {
 
 elements.hydrofluoric_acid = {
 	color: ["#c8cf91","#efff5e","#a0cc39"],
-	ignore: ["fire","liquid_hydrogen_fluoride","liquid_fluorine","fluorine","fluorine_ice","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_ice","hydrofluoric_acid_gas","acid_gas","neutral_acid","acid","acid_cloud","water","salt_water","sugar_water","dirty_water","steam","gold","polytetrafluoroethylene","molten_polytetrafluoroethylene","chloroform","chloroform_gas","chloroform_ice","tetrafluoroethylene"],
+	ignore: ["fire","liquid_hydrogen_fluoride","liquid_fluorine","fluorine","fluorine_ice","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_ice","hydrofluoric_acid_gas","acid_gas","neutral_acid","acid","acid_cloud","water","salt_water","sugar_water","dirty_water","steam","gold","polytetrafluoroethylene","molten_polytetrafluoroethylene","chloroform","chloroform_gas","chloroform_ice","tetrafluoroethylene","tungsten","tungsten_hexafluoride"],
 	tick: function(pixel) {
 		let change = false;
 		for (let i = -1; i <= 1; i++) {
@@ -121,7 +123,7 @@ elements.hydrofluoric_acid = {
 
 elements.hydrofluoric_acid_gas = {
 	color: ["#acb37d","#bfcc4b","#668224"],
-	ignore: ["liquid_hydrogen_fluoride","liquid_fluorine","fluorine","fluorine_ice","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_ice","hydrofluoric_acid_gas","acid_gas","neutral_acid","acid","acid_cloud","water","salt_water","sugar_water","dirty_water","steam","gold","polytetrafluoroethylene","molten_polytetrafluoroethylene","chloroform","chloroform_gas","chloroform_ice","tetrafluoroethylene"],
+	ignore: ["liquid_hydrogen_fluoride","liquid_fluorine","fluorine","fluorine_ice","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_ice","hydrofluoric_acid_gas","acid_gas","neutral_acid","acid","acid_cloud","water","salt_water","sugar_water","dirty_water","steam","gold","polytetrafluoroethylene","molten_polytetrafluoroethylene","chloroform","chloroform_gas","chloroform_ice","tetrafluoroethylene","tungsten","tungsten_hexafluoride"],
 	tick: function(pixel) {
 		let change = false;
 		for (let i = -1; i <= 1; i++) {
@@ -314,6 +316,29 @@ elements.solid_FOOF = {
 	stateHigh: "FOOF",
 };
 
+elements.tungsten_hexafluoride = {
+	color: "#f5f57a",
+	behavior: behaviors.GAS,
+	reactions: {
+		"water": { "elem1": "hydrofluoric_acid", "elem2": "tungsten" },
+		"salt_water": { "elem1": "hydrofluoric_acid", "elem2": "tungsten" },
+		"sugar_water": { "elem1": "hydrofluoric_acid", "elem2": "tungsten" },
+		"dirty_water": { "elem1": "hydrofluoric_acid", "elem2": "tungsten" },
+		"steam": { "elem1": "hydrofluoric_acid_gas", "elem2": "tungsten" },
+		"neutral_acid": { "elem1": "hydrofluoric_acid", "elem2": "tungsten" },
+	},
+	tempLow: 17.1,
+	state: "gas",
+	category:"gases",
+	density: 12.4,
+	stain: 0.005,
+};
+
+elements.liquid_tungsten_hexafluoride = {
+	density: 4560,
+	tempLow: 2.3,
+};
+
 if (!elements.acid.ignore) {
 	acid.ignore = [];
 };
@@ -339,7 +364,7 @@ let defaultAcidReactions = {
 	"soap": { "elem1": "hydrogen" },
 	"sodium": { "elem1":"explosion" },
 	"meat": { "elem2":"rotten_meat", "elem1":null, "chance":0.5 },
-}
+};
 
 let defaultAcidGasReactions = {
 	"acid_gas": { "elem1": null, "elem2": "acid_cloud", "chance":0.3, "y":[0,12], "setting":"clouds" },
@@ -360,11 +385,12 @@ let defaultAcidGasReactions = {
 	"soap": { "elem1": "hydrogen" },
 	"sodium": { "elem1":"explosion" },
 	"meat": { "elem2":"rotten_meat", "elem1":null, "chance":0.4 },
-}
+};
 
 acids = [elements.acid, elements.acid_gas, elements.fluorine, elements.liquid_fluorine, elements.hydrofluoric_acid, elements.hydrofluoric_acid_gas, elements.hydrogen_fluoride, elements.liquid_hydrogen_fluoride];
 ignoreAcid = [];
-
+trueAcids = ["acid", "hydrofluoric_acid"];
+trueAcidGases = ["acid_gas", "hydrofluoric_acid_gas"];
 function createAcid(name,reactions, gasReactions, color, colorGas, category, categoryGas, tempHigh, tempLowGas, tempLow, tempHighGas, density, densityGas)
 {
 	elements[name] = {
@@ -377,7 +403,7 @@ function createAcid(name,reactions, gasReactions, color, colorGas, category, cat
 		ignore: elements.acid.ignore.concat(ignoreAcid),
 		reactions: reactions,
 		category: category,
-        hidden: categoryGas === "hidden",
+        hidden: category === "hidden",
 		tempHigh: tempHigh,
 		stateHigh: name + "_gas",
 		tempLow: tempLow,
@@ -420,6 +446,7 @@ function acidIgnore(ignore)
     ignoreAcid = ignoreAcid.concat(ignore);
 }
 
+
 acidIgnore(["acid", "acid_gas", "acid_ice", "liquid_fluorine","fluorine","fluorine_ice","hydrogen_fluoride","liquid_hydrogen_fluoride","hydrogen_fluoride_ice","hydrofluoric_acid_ice","hydrofluoric_acid","hydrofluoric_acid_gas"]);
 elements.acid.name = "hydrochloricAcid";
 elements.acid_gas.name = "hydrochloricAcidGas";
@@ -427,6 +454,9 @@ elements.acid_gas.name = "hydrochloricAcidGas";
 createAcid("generic_acid",defaultAcidReactions,defaultAcidGasReactions,"#80d488","#9bf4a4","hidden","hidden",110,100,-10,400,1020,1)
 elements.generic_acid.name = "acid";
 elements.generic_acid_gas.name = "acid_gas";
+
+trueAcids.push("generic_acid")
+trueAcidGases.push("generic_acid_gas");
 
 elements.acid_cloud.behavior = [
                     "XX|XX|XX",
@@ -437,6 +467,10 @@ elements.acid_cloud.behavior = [
 createAcid("nitric_acid",defaultAcidReactions,defaultAcidGasReactions,["#5ee9c7","#7ac2b1","#7c9f96"],["#78edd2","#8eccbe","#8aa8a1"],"liquids","gases",83,70,-42,400,1500,1.5)
 
 elements.nitric_acid.reactions["ammonia"] = { "elem1": "fertilizer", "elem2": null};
+elements.nitric_acid_gas.reactions["ammonia"] = { "elem1": "fertilizer", "elem2": null};
+
+trueAcids.push("nitric_acid")
+trueAcidGases.push("nitric_acid_gas");
 
 elements.nitric_oxide = {
 	color: "#b8926c",
@@ -786,6 +820,7 @@ createAcid("sulfuric_acid",defaultAcidReactions,defaultAcidGasReactions,["#e9e05
 
 elements.sulfuric_acid.ignore.push("charcoal");
 elements.sulfuric_acid_gas.ignore.push("charcoal");
+elements.sulfuric_acid.reactions["water"] = { "elem1":"sulfuric_acid", "elem2":"dirty_water"};
 elements.sulfuric_acid.reactions["chocolate"] = { "elem1": "charcoal", "elem2": "steam", "temp2": 200};
 elements.sulfuric_acid.reactions["grape"] = { "elem1": "charcoal", "elem2": "steam", "temp2": 200};
 elements.sulfuric_acid.reactions["juice"] = { "elem1": "charcoal", "elem2": "steam", "temp2": 200};
@@ -814,6 +849,10 @@ elements.sulfuric_acid_gas.reactions["dough"] = { "elem1": "charcoal", "elem2": 
 elements.sulfuric_acid_gas.reactions["sugar"] = { "elem1": "charcoal", "elem2": "steam", "temp2": 200};
 elements.sulfuric_acid_gas.reactions["candy"] = { "elem1": "charcoal", "elem2": "steam", "temp2": 200};
 delete elements.sulfuric_acid_gas.reactions["charcoal"];
+
+
+trueAcids.push("sulfuric_acid")
+trueAcidGases.push("sulfuric_acid_gas");
 
 elements.polytetrafluoroethylene = {
 	color: "#efefef",
@@ -1135,8 +1174,6 @@ elements.titanium_trichloride = {
     state: "solid",
 };
 
-//todo: magnesium for titanium production
-
 elements.magnesium = {
     color: "#dddce6",
     category: "solids",
@@ -1194,7 +1231,7 @@ elements.magnesium_oxide = {
     reactions: {
         "quicklime": { "elem1": "cement", "elem2": null},
     },
-    category: "solids",
+    category: "powders",
     density: 3600,
     state: "solid",
     tempHigh: 2852,
@@ -1204,7 +1241,7 @@ elements.magnesium_oxide = {
 elements.magnesium_chloride = {
     color: "#bfbfbf",
     behavior: behaviors.POWDER,
-    category: "solids",
+    category: "powders",
     density: 2640,
     state: "solid",
     tempHigh: 714,
@@ -1219,9 +1256,6 @@ elements.molten_magnesium_chloride = {
         "M2|CH:chlorine,magnesium%25|M2",
         "M1|M1|M1",
     ],
-    reactions: {
-        "quicklime": { "elem1": "cement", "elem2": null},
-    },
     hidden: true,
     temp: 750,
     density: 2620,
@@ -1246,15 +1280,16 @@ elements.francium = {
         "dirty_water": { "elem1":"radon", "elem2":"rad_pop"},
         "seltzer": { "elem1":"radon", "elem2":"rad_pop"},
         "steam": { "elem1":"radon", "elem2":"rad_pop"},
-        "rad_steam": { "elem1":"radon", "elem2":"rad_pop"}
+        "rad_steam": { "elem1":"radon", "elem2":"rad_pop"},
+        "quark_matter": { "elem1":"stable_francium", "elem2":"quark_matter"}
     },
     tempHigh: 27,
     category: "powders",
     state: "solid",
     density: 2480,
-},
+};
 elements.molten_francium = {
-    color: "#3eff3b",
+    color: "#9ff31e",
     behavior: [
         "XX|CR:radiation%50|XX",
         "M2 AND CR:radiation%50|CH:radon%0.1|M2 AND CR:radiation%50",
@@ -1270,35 +1305,76 @@ elements.molten_francium = {
         "dirty_water": { "elem1":"radon", "elem2":"rad_pop"},
         "seltzer": { "elem1":"radon", "elem2":"rad_pop"},
         "steam": { "elem1":"radon", "elem2":"rad_pop"},
-        "rad_steam": { "elem1":"radon", "elem2":"rad_pop"}
+        "rad_steam": { "elem1":"radon", "elem2":"rad_pop"},
+        "quark_matter": { "elem1":"molten_stable_francium", "elem2":"quark_matter"}
     },
     tempLow: 27,
     hidden: true,
     state: "liquid",
     density: 2480,
-},
+};
 
 elements.radon = {
     color: "#b6ffb5",
     behavior: [
         "M2|M1 AND CR:radiation%10|M2",
-        "M1 AND CR:radiation%10|CH:lead%0.1|M1 AND CR:radiation%10",
+        "M1 AND CR:radiation%10|CH:polonium%0.1|M1 AND CR:radiation%10",
         "M2|M1 AND CR:radiation%10|M2",
     ],
+    reactions: {
+        "quark_matter": { "elem1":"stable_radon", "elem2":"quark_matter"}
+    },
     tick: function(pixel) {
         pixel.temp += 1;
     },
     category: "gases",
     state: "gas",
     density: 9.73,
-},
+};
 
+
+elements.polonium = {
+    color: "#56b870",
+    behavior: [
+        "XX|CR:radiation%10|XX",
+        "CR:radiation%10|CH:lead%0.1|CR:radiation%10",
+        "XX|CR:radiation%10|XX",
+    ],
+    reactions: {
+        "quark_matter": { "elem1":"stable_polonium", "elem2":"quark_matter"}
+    },
+    tick: function(pixel) {
+        pixel.temp += 1;
+    },
+    tempHigh: 254,
+    category: "solids",
+    state: "solid",
+    density: 9196,
+};
+elements.molten_polonium = {
+    color: ["#ace638","#acb838","ac8a00"],
+    behavior: [
+        "XX|CR:radiation%10|XX",
+        "M2 AND CR:radiation%10|CH:lead%0.1|M2 AND CR:radiation%10",
+        "M1|M1|M1",
+    ],
+    reactions: {
+        "quark_matter": { "elem1":"molten_stable_polonium", "elem2":"quark_matter"}
+    },
+    tick: function(pixel) {
+        pixel.temp += 1;
+    },
+    tempLow: 254,
+    hidden: true,
+    state: "liquid",
+    density: 9196,
+};
 
 elements.rad_pop = {
     color: ["#ffb48f","#ffd991","#ffad91"],
     behavior: [
         "XX|XX|XX",
-        "XX|EX:10>fire,radiation,rad_steam,radon|XX",
+        "XX|EX:10>fire,radiation,radiation|XX",
         "XX|XX|XX",
     ],
     category: "energy",
@@ -1306,4 +1382,128 @@ elements.rad_pop = {
     density: 1000,
     excludeRandom: true,
     hidden: true,
+};
+
+
+function blendColors(colorA, colorB, amount = 0.5) {
+    const [rA, gA, bA] = colorA.match(/\w\w/g).map((c) => parseInt(c, 16));
+    const [rB, gB, bB] = colorB.match(/\w\w/g).map((c) => parseInt(c, 16));
+    const r = Math.round(rA + (rB - rA) * amount).toString(16).padStart(2, '0');
+    const g = Math.round(gA + (gB - gA) * amount).toString(16).padStart(2, '0');
+    const b = Math.round(bA + (bB - bA) * amount).toString(16).padStart(2, '0');
+    return '#' + r + g + b;
 }
+
+
+elements.stable_radon = {
+    color: [blendColors("#b6ffb5","#ff0000"),blendColors("#b6ffb5","#00ff00"),blendColors("#b6ffb5","#0000ff")],
+    behavior: behaviors.GAS,
+    category: "gases",
+    state: "gas",
+    density: 9.73,
+    hidden: true,
+};
+
+
+elements.stable_polonium = {
+    color: [blendColors("#56b870","#ff0000"),blendColors("#56b870","#00ff00"),blendColors("#56b870","#0000ff")],
+    behavior: behaviors.WALL,
+    tempHigh: 254,
+    hidden: true,
+    category: "solids",
+    state: "solid",
+    density: 9196,
+};
+elements.molten_stable_polonium = {
+    color: [blendColors("#ace638","#ff0000"),blendColors("#acb838","#00ff00"),blendColors("#ac8a00","#0000ff")],
+    behavior: behaviors.MOLTEN,
+    tempLow: 254,
+    hidden: true,
+    state: "liquid",
+    density: 9196,
+};
+
+elements.stable_francium = {
+    color: [blendColors("#3eff3b","#ff0000"),blendColors("#3eff3b","#00ff00"),blendColors("#3eff3b","#0000ff")],
+    behavior: behaviors.POWDER,
+    reactions: {
+        "water": { "elem1":"francium_hydroxide", "elem2":"big_pop"},
+        "salt_water": { "elem1":"francium_hydroxide", "elem2":"big_pop"},
+        "sugar_water": { "elem1":"francium_hydroxide", "elem2":"big_pop"},
+        "dirty_water": { "elem1":"francium_hydroxide", "elem2":"big_pop"},
+        "seltzer": { "elem1":"francium_hydroxide", "elem2":"big_pop"},
+        "steam": { "elem1":"francium_hydroxide", "elem2":"big_pop"},
+        "rad_steam": { "elem1":"francium_hydroxide", "elem2":"big_pop"}
+    },
+    tempHigh: 27,
+    category: "powders",
+    state: "solid",
+    density: 2480,
+    hidden: true,
+};
+elements.molten_stable_francium = {
+    color: [blendColors("#9ff31e","#ff0000"),blendColors("#9ff31e","#00ff00"),blendColors("#9ff31e","#0000ff")],
+    behavior: behaviors.LIQUID,
+    reactions: {
+        "water": { "elem1":"francium_hydroxide", "elem2":"big_pop"},
+        "salt_water": { "elem1":"francium_hydroxide", "elem2":"big_pop"},
+        "sugar_water": { "elem1":"francium_hydroxide", "elem2":"big_pop"},
+        "dirty_water": { "elem1":"francium_hydroxide", "elem2":"big_pop"},
+        "seltzer": { "elem1":"francium_hydroxide", "elem2":"big_pop"},
+        "steam": { "elem1":"francium_hydroxide", "elem2":"big_pop"},
+        "rad_steam": { "elem1":"francium_hydroxide", "elem2":"big_pop"}
+    },
+    tempLow: 27,
+    state: "liquid",
+    hidden: true,
+    density: 2480,
+};
+
+
+elements.big_pop = {
+    color: ["#ffb48f","#ffd991","#ffad91"],
+    behavior: [
+        "XX|XX|XX",
+        "XX|EX:10|XX",
+        "XX|XX|XX",
+    ],
+    category: "energy",
+    state: "gas",
+    density: 1000,
+    excludeRandom: true,
+    hidden: true,
+};
+
+
+let defaultBaseReactions = {
+	"grape": { "elem2":"juice", "color1":"#291824" },
+	"sodium": { "elem1":"pop" },
+	"meat": { "elem2":"rotten_meat", "elem1":null, "chance":0.5 },
+}
+
+let defaultBaseGasReactions = {
+	"grape": { "elem2":"juice", "color1":"#291824" },
+	"sodium": { "elem1":"pop" },
+	"meat": { "elem2":"rotten_meat", "elem1":null, "chance":0.4 },
+}
+
+createAcid("francium_hydroxide",defaultBaseReactions,defaultBaseGasReactions,["#863bff","#4d00ca","#897b9e"],["#a46cff","#7a40d7","#a79cb6"],"hidden","hidden",100,100,0,1000,1010,1)
+
+function acidNeutralize(base)
+{
+    for(let i = 0; i < trueAcids.length; i++)
+    {
+        elements[trueAcids[i]].reactions[base] = { "elem1":"neutral_acid", "elem2":null };
+    }
+    for(let i = 0; i < trueAcidGases.length; i++)
+    {
+        elements[trueAcidGases[i]].reactions[base] = { "elem1":"hydrogen", "elem2":null };
+    }
+}
+
+elements.francium_hydroxide.breakInto = "francium_hydroxide";
+elements.francium_hydroxide_gas.breakInto = "francium_hydroxide_gas";
+delete elements.francium_hydroxide.burn;
+delete elements.francium_hydroxide_gas.burn;
+acidNeutralize("francium_hydroxide");
+acidNeutralize("francium_hydroxide_gas");
