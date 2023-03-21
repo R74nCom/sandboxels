@@ -6,7 +6,7 @@ elements.exploder = {
         }
     },
     category: "tools",
-
+};
   
 elements.radiator = {
     color: "#248c1c",
@@ -25,5 +25,5 @@ elements.radiator = {
         }
     },
     category: "tools",
-
+};
 //im aware that theres more radiation stuf than this
