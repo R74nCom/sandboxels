@@ -742,7 +742,7 @@ elements.quark_matter = {
 elements.sulfur.burnInto = ["sulfur_dioxide"];
 elements.molten_sulfur.burnInto = ["sulfur_dioxide"];
 elements.sulfur_gas.burnInto = ["sulfur_dioxide"];
-
+elements.sulfur.reactions["hydrogen"] = "hydrogen_sulfide";
 
 elements.sulfur_dioxide = {
 	color: "#FFF700",
@@ -814,7 +814,47 @@ elements.liquid_sulfur_dioxide = {
 	density: 1435,
 };
 
+elements.hydrogen_sulfide = {
+    color: "#d9e366",
+    behavior: behaviors.GAS,
+    reactions: {
+        "oxygen": { "elem2":"stench" },
+        "water": { "elem1":null, "elem2":"dirty_water" },
+        "nitrogen": { "elem2":"stench" },
+        "baking_soda": { "elem1":null }
+    },
+    category: "gases",
+    tempHigh: 1000,
+    stateHigh: "fire",
+    state: "gas",
+    density: 1.539,
+    tempLow: -59.55,
+    burn: 1,
+    burnTime: 10,
+    burnInto: ["sulfur_dioxide","steam"],
+    fireColor: ["#8180CC","#7F84E6"],
+}
+
 acidIgnore(["sulfur_dioxide","liquid_sulfur_dioxide","sulfur_dioxide_ice"]);
+
+elements.acid.ignore.push("pyrite","hydrogen_sulfide","liquid_hydrogen_sulfide","iron_chloride");
+elements.acid_gas.ignore.push("pyrite","hydrogen_sulfide","liquid_hydrogen_sulfide","iron_chloride");
+elements.acid.reactions["pyrite"] = { "elem1":"iron_chloride", "elem2":"hydrogen_sulfide"};
+elements.acid_gas.reactions["pyrite"] = { "elem1":"iron_chloride", "elem2":"hydrogen_sulfide"};
+
+elements.iron_chloride = {
+    color: ["#207d09","#b51259"],
+    behavior: behaviors.POWDER,
+    reactions: {
+        "dirty_water": { "elem1": null, "elem2":"water" },
+        //"ethylene": { "elem2":"1,2_dichloroethane" }, todo: vinyl chloride
+    },
+    category: "powders",
+    tempHigh: 307.6,
+    state: "solid",
+    density: 2900,
+    tempLow: -59.55,
+}
 
 createAcid("sulfuric_acid",defaultAcidReactions,defaultAcidGasReactions,["#e9e05e","#c2bd7a","#9e9c7b"],["#ede579","#ccc88f","#a8a68a"],"liquids","gases",337,337,10,500,1830,1.26)
 
@@ -849,6 +889,12 @@ elements.sulfuric_acid_gas.reactions["dough"] = { "elem1": "charcoal", "elem2": 
 elements.sulfuric_acid_gas.reactions["sugar"] = { "elem1": "charcoal", "elem2": "steam", "temp2": 200};
 elements.sulfuric_acid_gas.reactions["candy"] = { "elem1": "charcoal", "elem2": "steam", "temp2": 200};
 delete elements.sulfuric_acid_gas.reactions["charcoal"];
+
+
+elements.sulfuric_acid.ignore.push("magnesium_oxide","epsom_salt");
+elements.sulfuric_acid_gas.ignore.push("magnesium_oxide","epsom_salt");
+elements.sulfuric_acid.reactions["magnesium_oxide"] = { "elem1": "epsom_salt", "elem2": null};
+elements.sulfuric_acid_gas.reactions["magnesium_oxide"] = { "elem1": "epsom_salt", "elem2": null};
 
 
 trueAcids.push("sulfuric_acid")
@@ -1201,7 +1247,7 @@ elements.molten_magnesium = {
     color: ["#cc9c7c", "#ebb896", "#f5bb95", "#f7cd9c", "#fcd2a2", "#fff8f0"],
     hidden: true,
     state: "liquid",
-    behavior: behaviors.LIQUID,
+    behavior: behaviors.MOLTEN,
     reactions: {
         "titanium_tetrachloride": { "elem1": "titanium", "elem2": "magnesium_chloride"},
         "titanium_tetrachloride_gas": { "elem1": "titanium", "elem2": "magnesium_chloride"},
@@ -1408,6 +1454,9 @@ elements.stable_radon = {
 elements.stable_polonium = {
     color: [blendColors("#56b870","#ff0000"),blendColors("#56b870","#00ff00"),blendColors("#56b870","#0000ff")],
     behavior: behaviors.WALL,
+    reactions: {
+        "oxygen": { "elem1":"polonium_dioxide", "elem2": null},
+    },
     tempHigh: 254,
     hidden: true,
     category: "solids",
@@ -1417,10 +1466,53 @@ elements.stable_polonium = {
 elements.molten_stable_polonium = {
     color: [blendColors("#ace638","#ff0000"),blendColors("#acb838","#00ff00"),blendColors("#ac8a00","#0000ff")],
     behavior: behaviors.MOLTEN,
+    reactions: {
+        "oxygen": { "elem1":"polonium_dioxide", "elem2": null},
+        "magnesium": { "elem1":"magnesium_polonide", "elem2": null},
+        "molten_magnesium": { "elem1":"magnesium_polonide", "elem2": null},
+    },
     tempLow: 254,
     hidden: true,
     state: "liquid",
     density: 9196,
+};
+
+elements.polonium_dioxide = {
+    color: "#ffff7f",
+    behavior: behaviors.POWDER,
+    tempHigh: 500,
+    hidden: true,
+    state: "solid",
+    density: 8900,
+};
+
+elements.magnesium_polonide = {
+    color: [blendColors("#b5b5b5","#ff0000",.25),blendColors("#b5b5b5","#00ff00",.25),blendColors("#b5b5b5","#0000ff",.25)],
+    behavior: behaviors.POWDER,
+    tempHigh: 1800,
+    hidden: true,
+    state: "solid",
+    density: 6700,
+};
+
+elements.acid.reactions["magnesium_polonide"] = { "elem1": "polonium_hydride", "elem2": "magnesium_chloride"};
+elements.acid_gas.reactions["magnesium_polonide"] = { "elem1": "polonium_hydride", "elem2": "magnesium_chloride"};
+elements.acid.reactions["molten_magnesium_polonide"] = { "elem1": "polonium_hydride", "elem2": "magnesium_chloride"};
+elements.acid_gas.reactions["molten_magnesium_polonide"] = { "elem1": "polonium_hydride", "elem2": "magnesium_chloride"};
+elements.acid.ignore.push("magnesium_polonide","molten_magnesium_polonide","polonium_hydride","polonium_hydride_ice","polonium_hydride_gas","magnesium_chloride","molten_magnesium_chloride");
+elements.acid_gas.ignore.push("magnesium_polonide","molten_magnesium_polonide","polonium_hydride","polonium_hydride_ice","polonium_hydride_gas","magnesium_chloride","molten_magnesium_chloride");
+
+elements.polonium_hydride = {
+    density: 2450,
+    color: "#838396",
+    hidden: true,
+    state: "liquid",
+    behavior: behaviors.LIQUID,
+    tempLow: -35.3,
+    tempHigh: 6.1,
+    burn: 1,
+    burnTime: 10,
+    burnInto: ["polonium_dioxide","steam"],
 };
 
 elements.stable_francium = {
