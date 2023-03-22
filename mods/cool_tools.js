@@ -11,9 +11,7 @@ elements.exploder = {
 elements.radiator = {
     color: "#248c1c",
     tool: function(pixel) {
-        if (pixel.element == "null") {
-            pixel.element = "radiation"
-        }
+        
         if (pixel.element == "cloud") {
             pixel.element = "rad_cloud"
         }
