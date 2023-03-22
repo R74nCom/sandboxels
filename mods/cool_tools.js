@@ -21,10 +21,10 @@ elements.radiator = {
             pixel.element = 'rad_steam'
         }
         if (pixel.element == 'dust') {
-        pixel.element = 'fallout'
+            pixel.element = 'fallout'
         }
         if (pixel.element == 'explosion') {
-        pixel.element = 'n_explosion'
+            pixel.element = 'n_explosion'
         }
         if (pixel.element == 'null') {
             pixel.element = 'radiation'
