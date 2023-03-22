@@ -1,5 +1,5 @@
 elements.exploder = {
-    color: "#fa872f",
+    color: "#ffffff",
     tool: function(pixel) {
         if (pixel.element == "sand") {
             pixel.element = "explosion"
@@ -9,7 +9,7 @@ elements.exploder = {
 };
   
 elements.radiator = {
-    color: '#248c1c',
+    color: '#ffffff',
     tool: function (pixel) {
         if (pixel.element == 'cloud') {
             pixel.element = 'rad_cloud'
