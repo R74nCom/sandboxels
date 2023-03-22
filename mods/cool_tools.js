@@ -9,21 +9,30 @@ elements.exploder = {
 };
   
 elements.radiator = {
-    color: "#248c1c",
-    tool: function(pixel) {
-        if (pixel.element == "null") {
-            pixel.element = "radiation"
-        }
-        if (pixel.element == "cloud") {
-            pixel.element = "rad_cloud"
-        }
-        if (pixel.element == "cell") {
-            pixel.element = "cancer"
-        }
-        if (pixel.element == "steam" {
-            pixel.element = "rad_steam"
-        }
-    },
-    category: "tools",
+  color: '#248c1c',
+  tool: function (pixel) {
+    if (pixel.element == 'cloud') {
+      pixel.element = 'rad_cloud';
+    }
+    if (pixel.element == 'cell') {
+      pixel.element = 'cancer';
+    }
+    if (pixel.element == 'steam') {
+      pixel.element = 'rad_steam';
+    }
+    if (pixel.element == 'dust') {
+        pixel.element = 'fallout';
+    }
+    if (pixel.element == 'explosion') {
+        pixel.element = 'n_explosion';
+    }
+    if (pixel.element == 'null') {
+        pixel.element = 'radiation';
+    }
+  
+  },
+  
+ 
+  category: 'tools',
 };
 //im aware that theres more radiation stuf than this
