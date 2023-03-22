@@ -21,7 +21,7 @@ elements.radiator = {
             pixel.element = "cancer"
         }
         if (pixel.element == "steam" {
-            pixel.element = "rad_steam”
+            pixel.element = "rad_steam"
         }
     },
     category: "tools",
