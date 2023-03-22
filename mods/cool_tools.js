@@ -7,7 +7,7 @@ elements.exploder = {
     },
     category: "tools",
 };
-  
+
 elements.radiator = {
     color: "#248c1c",
     tool: function(pixel) {
@@ -22,7 +22,7 @@ elements.radiator = {
         }
         if (pixel.element == "steam" {
             pixel.element = "rad_steam"
-        }
+            }
     },
     category: "tools",
 };
