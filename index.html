@@ -106,6 +106,12 @@
                 console.log(e);
             }
         }
+        // if the URL contains fools=true, load the fools.js mod
+        if (window.location.href.includes("fools=true")) {
+            var script = document.createElement('script');
+            script.src = "mods/fools.js"
+            document.head.appendChild(script);
+        }
     </script>
 
     <script> // PWA things
@@ -11217,6 +11223,20 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                 <div id="toolControls">
                     <button id="pauseButton" title="Pause/play the simulation" class="controlButton" onclick='togglePause();focusGame();' on="false">Pause</button><button id="frameButton" title="Pause and play one frame" class="controlButton" onclick='doFrame();focusGame();' on="false">Step</button><button id="sizeDownButton" title="Decrease the brush size" class="controlButton" onclick="mouseSize -= 2;if (mouseSize < 1) { mouseSize = 1; };focusGame();">-</button><button id="sizeUpButton" title="Increase the brush size" class="controlButton" onclick="mouseSize += 2;if (mouseSize > (height > width ? height : width)) { mouseSize = (height > width ? height : width); };focusGame();">+</button><button id="resetButton" title="Clear the entire scene" class="controlButton" onclick="if (settings.resetwarning===0 || confirm('Are you sure you want to clear the whole scene?')) {clearAll();};focusGame();">Reset</button><button id="replaceButton" title="Override existing pixels when placing" class="controlButton" onclick='if (mode == "replace") {mode = null;this.setAttribute("on","false");}else {mode = "replace";this.setAttribute("on","true");};focusGame();' on="false">Replace</button><button id="elemSelectButton" title="Select an element by name" class="controlButton" onclick='chooseElementPrompt();focusGame();'>E</button><button id="tpsButton" title="Change the simulation Ticks Per Second (TPS)" class="controlButton" onclick='var newtps = parseInt(prompt("Enter the new simulation Ticks Per Second (TPS). This is how many updates per second the simulation will run.\n\nThe default is 30.\n\nThe current TPS is " + tps + "."));if (newtps !== null) {if (isNaN(newtps) || newtps == "" || newtps == "0") {alert("You did not enter a valid TPS.");}else if (newtps > 1000) {alert("You entered a TPS that is too high. The TPS will be set to the maximum, 1000.");tps = 1000;}else {tps = parseInt(newtps);if (isNaN(tps)) {alert("You did not enter a valid TPS.");tps = 30;}}resetInterval(tps);}focusGame();'>Tps</button><!--<button id="hideButton" title="Stops updating the scene to allow more resources towards simulation" class="controlButton" onclick='if (hiding) {hiding = false;this.setAttribute("on","false");}else {hiding = true;this.setAttribute("on","true");};focusGame();' on="false">Hide</button>--><button id="infoButton" title="Brings up the element info screen" class="controlButton" onclick='if (showingMenu!="info"){closeMenu();showInfo("")}else{closeMenu()};' on="false">Info</button><button id="modsButton" title="Brings up the Mod Manager" class="controlButton" onclick='if (showingMenu!="mods"){closeMenu();showModManager()}else{closeMenu()};' on="false">Mods</button><button id="settingsButton" title="Brings up the settings screen" class="controlButton" onclick='if (showingMenu!="settings"){closeMenu();showSettings()}else{closeMenu()};' on="false">Settings</button>
                 </div>
+                <script>
+                    // if it is the 1st of April, add a rainbow-colored button
+                    if (new Date().getMonth() == 3 && new Date().getDate() <= 3) {
+                        // if url contains "fools=true"
+                        if (!window.location.href.includes("fools=true")) {
+                            var foolsButton = `<button id="foolsButton" title="Enable Fools Mode" class="controlButton" onclick="window.location.href = '?fools=true'" style="background: linear-gradient(90deg, #FF0000, #FF7F00, #FFFF00, #00FF00, #0000FF, #4B0082, #9400D3); background-size: 800% 800%; animation: rainbow 15s ease infinite; -webkit-background-clip: text; -webkit-text-fill-color: transparent; border: none; outline: none; box-shadow: 0px 0px 10px #FF00FF; text-shadow: 0px 0px 10px #FF00FF;">Fools</button>`
+                        }
+                        else {
+                            var foolsButton = `<button id="foolsButton" title="Disable Fools Mode" class="controlButton" onclick="window.location.href = '?fools=false'" style="background: linear-gradient(90deg, #FF0000, #FF7F00, #FFFF00, #00FF00, #0000FF, #4B0082, #9400D3); background-size: 800% 800%; animation: rainbow 15s ease infinite; -webkit-background-clip: text; -webkit-text-fill-color: transparent; border: none; outline: none; box-shadow: 0px 0px 10px #FF00FF; text-shadow: 0px 0px 10px #FF00FF;">Escape</button>`
+                        }
+                        // insert before pauseButton
+                        document.getElementById("pauseButton").insertAdjacentHTML("beforebegin", foolsButton);
+                    }
+                </script>
                 <div id="category-tools" category="tools" style="display: block;"></div>
                 <div id="categoryControls"></div>
                 <div id="elementControls"></div>
