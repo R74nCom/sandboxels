@@ -2513,7 +2513,7 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 								pixel.wet--;
 							} else { //if exposed, continuously try to boil off to random neighbor
 								if(exposedToAir(pixel)) {
-									var randomNeighbor = adjacentCoords[Math.floor(Math.random() * neighbors.length)]
+									var randomNeighbor = adjacentCoords[Math.floor(Math.random() * adjacentCoords.length)]
 									var rnx = randomNeighbor[0]
 									var rny = randomNeighbor[1]
 									if(isEmpty(pixel.x+rnx, pixel.y+rny, false)) {
