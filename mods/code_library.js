@@ -279,6 +279,11 @@
 	function bound(number,lowerBound,upperBound) {
 		return Math.min(upperBound,Math.max(lowerBound,number));
 	};
+	
+	//Emergency color wrapper
+	rgbColorBound = function(color) {
+		return bound(color,0,255);
+	};
 
 	function addTwoNumbers(number1,number2) { //reducer
 		return number1 + number2
