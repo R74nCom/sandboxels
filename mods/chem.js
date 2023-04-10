@@ -259,7 +259,7 @@ elements.FOOF = {
 				}
 			}
 		}
-		if (change && Math.random() < 0.5) {
+		if (change && Math.random() < 0.01) {
 			changePixel(pixel,"explosion");
 		} else if (Math.random() < 0.0001) {
 			if(Math.random() < 0.5) {
@@ -297,7 +297,7 @@ elements.solid_FOOF = {
 				}
 			}
 		}
-		if (change && Math.random() < 0.5) {
+		if (change && Math.random() < 0.01) {
 			changePixel(pixel,"explosion");
 		} else if (Math.random() < 0.00005) {
 			if(Math.random() < 0.5) {
@@ -1099,7 +1099,7 @@ elements.ethane = {
     behavior: behaviors.GAS,
     reactions: {
         "steam": { "elem1":"hydrogen", "elem2":"ethylene", "chance":0.01 },
-        "chlorine": { "elem1":"chloroethane", "elem2": null }
+        "chlorine": { "elem1":"chloroethane", "elem2": null, "chance":0.01 }
     },
     category: "gases",
     tempHigh: 400,
@@ -1148,6 +1148,7 @@ elements.ethylene = {
     behavior: behaviors.GAS,
     reactions: {
         "titanium_trichloride": { "elem1":"polyethylene", "elem2":"titanium_trichloride", "chance":0.1 },
+        "acid_gas": { "elem1":"chloroethane", "elem2":null },
         "diethylaluminium_chloride": { "elem1":"polyethylene", "elem2":"diethylaluminium_chloride", "chance":0.1 },
     },
     category: "gases",
@@ -1160,6 +1161,9 @@ elements.ethylene = {
     state: "gas",
     density: 1.356,
 };
+
+elements.acid.ignore.push("ethylene","liquid_ethylene","chloroethane","liquid_chloroethane");
+elements.acid_gas.ignore.push("ethylene","liquid_ethylene","chloroethane","liquid_chloroethane");
 
 
 
