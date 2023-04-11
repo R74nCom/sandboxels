@@ -259,7 +259,7 @@ elements.FOOF = {
 				}
 			}
 		}
-		if (change && Math.random() < 0.5) {
+		if (change && Math.random() < 0.01) {
 			changePixel(pixel,"explosion");
 		} else if (Math.random() < 0.0001) {
 			if(Math.random() < 0.5) {
@@ -297,7 +297,7 @@ elements.solid_FOOF = {
 				}
 			}
 		}
-		if (change && Math.random() < 0.5) {
+		if (change && Math.random() < 0.01) {
 			changePixel(pixel,"explosion");
 		} else if (Math.random() < 0.00005) {
 			if(Math.random() < 0.5) {
@@ -340,11 +340,13 @@ elements.liquid_tungsten_hexafluoride = {
 };
 
 if (!elements.acid.ignore) {
-	acid.ignore = [];
+	elements.acid.ignore = [];
 };
 if (!elements.acid_gas.ignore) {
-	acid_gas.ignore = [];
+	elements.acid_gas.ignore = [];
 };
+defaultAcidIgnore = structuredClone(elements.acid.ignore);
+defaultAcidGasIgnore = structuredClone(elements.acid_gas.ignore);
 
 
 
@@ -391,6 +393,20 @@ acids = [elements.acid, elements.acid_gas, elements.fluorine, elements.liquid_fl
 ignoreAcid = [];
 trueAcids = ["acid", "hydrofluoric_acid"];
 trueAcidGases = ["acid_gas", "hydrofluoric_acid_gas"];
+
+
+if (enabledMods.includes("mods/generative_mods.js")) {
+    runAfterLoad(function() {
+        generateCloud("hydrofluoric_acid");
+    });
+    elements["hydrofluoric_acid_gas"].reactions["hydrofluoric_acid_gas"]= { "elem1": null, "elem2": "hydrofluoric_acid_cloud", "chance":0.3, "y":[0,12], "setting":"clouds" };
+    elements["hydrofluoric_acid_gas"].reactions["rain_cloud"]= { "elem1": null, "elem2":  "hydrofluoric_acid_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" };
+    elements["hydrofluoric_acid_gas"].reactions["cloud"]= { "elem1": null, "elem2":  "hydrofluoric_acid_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" };
+    elements["hydrofluoric_acid_gas"].reactions["snow_cloud"]= { "elem1": null, "elem2":  "hydrofluoric_acid_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" };
+    elements["hydrofluoric_acid_gas"].reactions["hail_cloud"]= { "elem1": null, "elem2":  "hydrofluoric_acid_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" };
+    elements["hydrofluoric_acid_gas"].reactions["pyrocumulus"]= { "elem1": null, "elem2":  "hydrofluoric_acid_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" };
+    elements["hydrofluoric_acid_gas"].reactions["fire_cloud"]= { "elem1": null, "elem2":  "hydrofluoric_acid_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" };
+}
 function createAcid(name,reactions, gasReactions, color, colorGas, category, categoryGas, tempHigh, tempLowGas, tempLow, tempHighGas, density, densityGas)
 {
 	elements[name] = {
@@ -400,7 +416,7 @@ function createAcid(name,reactions, gasReactions, color, colorGas, category, cat
 			"DB%5 AND M2|XX|DB%5 AND M2",
 			"DB%5 AND M2|DB%10 AND M1|DB%5 AND M2",
 		],
-		ignore: elements.acid.ignore.concat(ignoreAcid),
+		ignore: defaultAcidIgnore.concat(ignoreAcid),
 		reactions: reactions,
 		category: category,
         hidden: category === "hidden",
@@ -419,7 +435,7 @@ function createAcid(name,reactions, gasReactions, color, colorGas, category, cat
 			"DB%5 AND M1|XX|DB%5 AND M1",
 			"DB%5 AND M1|DB%10 AND M1|DB%5 AND M1",
 		],
-		ignore: elements.acid_gas.ignore.concat(ignoreAcid),
+		ignore: defaultAcidGasIgnore.concat(ignoreAcid),
 		reactions: gasReactions,
 		category: categoryGas,
         hidden: categoryGas === "hidden",
@@ -433,8 +449,24 @@ function createAcid(name,reactions, gasReactions, color, colorGas, category, cat
 		state: "gas",
 		density: densityGas,
 	}
+    if (enabledMods.includes("mods/generative_mods.js")) {
+        runAfterLoad(function() {
+            generateCloud(name);
+        });
+        elements[name+"_gas"].reactions[name+"_gas"]= { "elem1": null, "elem2": name + "_cloud", "chance":0.3, "y":[0,12], "setting":"clouds" };
+        elements[name+"_gas"].reactions["rain_cloud"]= { "elem1": null, "elem2":  name + "_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" };
+        elements[name+"_gas"].reactions["cloud"]= { "elem1": null, "elem2":  name + "_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" };
+        elements[name+"_gas"].reactions["snow_cloud"]= { "elem1": null, "elem2":  name + "_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" };
+        elements[name+"_gas"].reactions["hail_cloud"]= { "elem1": null, "elem2":  name + "_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" };
+        elements[name+"_gas"].reactions["pyrocumulus"]= { "elem1": null, "elem2":  name + "_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" };
+        elements[name+"_gas"].reactions["fire_cloud"]= { "elem1": null, "elem2":  name + "_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" };
+    }
+    else
+    {
+        elements[name+"_gas"].reactions[name+"_gas"]= { "elem1": null, "elem2": "acid_cloud", "chance":0.3, "y":[0,12], "setting":"clouds" };
+    }
     acids.push(elements[name], elements[name+"_gas"]);
-    acidIgnore([name, name + "_gas", name + "_ice"]);
+    acidIgnore([name, name + "_gas", name + "_ice", name + "_cloud"]);
 }
 
 function acidIgnore(ignore)
@@ -447,7 +479,7 @@ function acidIgnore(ignore)
 }
 
 
-acidIgnore(["acid", "acid_gas", "acid_ice", "liquid_fluorine","fluorine","fluorine_ice","hydrogen_fluoride","liquid_hydrogen_fluoride","hydrogen_fluoride_ice","hydrofluoric_acid_ice","hydrofluoric_acid","hydrofluoric_acid_gas"]);
+acidIgnore(["acid", "acid_gas", "acid_ice", "liquid_fluorine","fluorine","fluorine_ice","hydrogen_fluoride","liquid_hydrogen_fluoride","hydrogen_fluoride_ice","hydrofluoric_acid_ice","hydrofluoric_acid","hydrofluoric_acid_gas","hydrofluoric_acid_cloud","acid_cloud"]);
 elements.acid.name = "hydrochloricAcid";
 elements.acid_gas.name = "hydrochloricAcidGas";
 
@@ -458,11 +490,13 @@ elements.generic_acid_gas.name = "acid_gas";
 trueAcids.push("generic_acid")
 trueAcidGases.push("generic_acid_gas");
 
-elements.acid_cloud.behavior = [
-                    "XX|XX|XX",
-                    "XX|CH:generic_acid%0.05|M1%2.5 AND BO",
-                    "XX|XX|XX",
-                ];
+if (!enabledMods.includes("mods/generative_mods.js")) {
+    elements.acid_cloud.behavior = [
+                        "XX|XX|XX",
+                        "XX|CH:generic_acid%0.05|M1%2.5 AND BO",
+                        "XX|XX|XX",
+                    ];
+}
 
 createAcid("nitric_acid",defaultAcidReactions,defaultAcidGasReactions,["#5ee9c7","#7ac2b1","#7c9f96"],["#78edd2","#8eccbe","#8aa8a1"],"liquids","gases",83,70,-42,400,1500,1.5)
 
@@ -853,7 +887,6 @@ elements.iron_chloride = {
     tempHigh: 307.6,
     state: "solid",
     density: 2900,
-    tempLow: -59.55,
 }
 
 createAcid("sulfuric_acid",defaultAcidReactions,defaultAcidGasReactions,["#e9e05e","#c2bd7a","#9e9c7b"],["#ede579","#ccc88f","#a8a68a"],"liquids","gases",337,337,10,500,1830,1.26)
@@ -1066,7 +1099,7 @@ elements.ethane = {
     behavior: behaviors.GAS,
     reactions: {
         "steam": { "elem1":"hydrogen", "elem2":"ethylene", "chance":0.01 },
-        "chlorine": { "elem1":"chloroethane", "elem2": null }
+        "chlorine": { "elem1":"chloroethane", "elem2": null, "chance":0.01 }
     },
     category: "gases",
     tempHigh: 400,
@@ -1115,6 +1148,7 @@ elements.ethylene = {
     behavior: behaviors.GAS,
     reactions: {
         "titanium_trichloride": { "elem1":"polyethylene", "elem2":"titanium_trichloride", "chance":0.1 },
+        "acid_gas": { "elem1":"chloroethane", "elem2":null },
         "diethylaluminium_chloride": { "elem1":"polyethylene", "elem2":"diethylaluminium_chloride", "chance":0.1 },
     },
     category: "gases",
@@ -1127,6 +1161,9 @@ elements.ethylene = {
     state: "gas",
     density: 1.356,
 };
+
+elements.acid.ignore.push("ethylene","liquid_ethylene","chloroethane","liquid_chloroethane");
+elements.acid_gas.ignore.push("ethylene","liquid_ethylene","chloroethane","liquid_chloroethane");
 
 
 
@@ -1400,7 +1437,7 @@ elements.polonium = {
 elements.molten_polonium = {
     color: ["#ace638","#acb838","ac8a00"],
     behavior: [
-        "XX|CR:radiation%10|XX",
+        "XX|CR:fire,CR:radiation%12.5|XX",
         "M2 AND CR:radiation%10|CH:lead%0.1|M2 AND CR:radiation%10",
         "M1|M1|M1",
     ],
@@ -1509,7 +1546,7 @@ elements.polonium_hydride = {
     state: "liquid",
     behavior: behaviors.LIQUID,
     tempLow: -35.3,
-    tempHigh: 6.1,
+    tempHigh: 36.1,
     burn: 1,
     burnTime: 10,
     burnInto: ["polonium_dioxide","steam"],
