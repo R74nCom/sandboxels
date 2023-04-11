@@ -300,7 +300,7 @@
 	}
 
 //}
-
+/*
 // clay {
 
 	if(!elements.baked_clay) {
@@ -380,7 +380,7 @@
 	},
 
 //}
-
+*/
 // salt {
 
 	elements.molten_salt = {
@@ -473,10 +473,10 @@ runAfterLoad(function() {
 			elements.concoction.reactions.vaporized_calcium = { "elem1": "mistake", "elem2": null }
 			elements.concoction.reactions.hot_calcium_cloud = { "elem1": "mistake", "elem2": null }
 			elements.concoction.reactions.cold_calcium_cloud = { "elem1": "mistake", "elem2": null }
-			elements.concoction.reactions.molten_clay = { "elem1": "mistake", "elem2": null }
+			/*elements.concoction.reactions.molten_clay = { "elem1": "mistake", "elem2": null }
 			elements.concoction.reactions.vaporized_clay = { "elem1": "mistake", "elem2": null }
 			elements.concoction.reactions.hot_clay_cloud = { "elem1": "mistake", "elem2": null }
-			elements.concoction.reactions.cold_clay_cloud = { "elem1": "mistake", "elem2": null }
+			elements.concoction.reactions.cold_clay_cloud = { "elem1": "mistake", "elem2": null }*/
 			elements.concoction.reactions.vaporized_salt = { "elem1": "mistake", "elem2": null }
 			elements.concoction.reactions.hot_salt_cloud = { "elem1": "mistake", "elem2": null }
 			elements.concoction.reactions.cold_salt_cloud = { "elem1": "mistake", "elem2": null }
