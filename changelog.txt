@@ -1,7 +1,112 @@
 [Future Plans]
+    + Save Gallery
     + Human Update
-    + Baking Update
-    + More plans / suggestions at https://docs.google.com/document/u/4/d/1R8xljj_J-K5oU-9y4louwplQmM-ZBvUfXmhbgj5LYdk/edit
+    + Suggest new additions at https://link.r74n.com/sandboxels-feedback
+
+See sneak peaks for upcoming updates on the Discord: https://discord.gg/ejUc6YPQuS
+
+[Version 1.8.1 - April 14, 2023 - Striking Detail]
+    + Lightning (!!!)
+    + Bless
+    + Thunder Cloud
+    + God Ray
+    + Heat Ray
+    + Rotten Cheese (Hidden)
+    + Herb
+    + Tea (Hidden)
+    + Rime (Hidden)
+    + Frozen Worm (Hidden)
+    + Frozen Ink (Hidden)
+    + Poison Ice (Hidden)
+    + Rain world gen type
+    + Changelog notification after new update
+    + Version number shown below game
+    ~ Improved load times
+   [Changes]
+    ~ Reworked Vines
+        + Vines hang from ceilings and walls
+        + Vines spread naturally sideways, down, and on walls
+    + Frogs can absorb harmful pollutants through their skin (Educational!)
+    + Sun brown dwarf stage
+    + Mercury can conduct electricity
+    + Plant, Grass, and Vine break into Dead Plant
+    + Insects break into Dead Bugs
+    + Borax can kill insects
+    + Ants, Frogs, Fish, and Birds can eat Dead Bugs
+    + Ants and Flies can eat Cheese
+    + Birds and Rats can eat Lichen
+    + Fish can eat Tadpoles
+    + Fish and Tadpoles can swim in Seltzer and Pool Water
+    + Radiation can make Frogs young again
+    + Worms can compost Dead Bugs
+    + Worms can break down Mudstone, Permafrost, and Packed Sand
+    + Worms can eat Sawdust, Tinder, Dust, and Rotten Meat
+    + Worms can break down Eggs slowly
+    + Eggs will die when frozen
+    + Rats can eat Gingerbread, Yogurt, and Beans
+    + Ammonia can kill Rats
+    + Plants absorb Carbon Dioxide from Seltzer
+    + Plants can clean Smog
+    + Ice Nine can convert Rad Steam
+    + Rad Steam can radiate Glass
+    + Stench can be burned away by Fire
+    + Soap cleans Smog and Stench
+    + Soap dissolves in Water
+    + Steam is a very bad electrical conductor
+    + Juice can wet soils
+    + Pool Water, Blood, Soda, and Milk can wet Clay Soil
+    + Bubble, Steam, Foam, Acid, Primordial Soup, Vaccine, and Antidote can clean stains
+    + Malware can damage Wires
+    + Cancer can damage Plant
+    + Cancer can spread to Bones
+    + Bone Marrow can freeze and be poisoned
+    + AlGa and Water reaction
+    + Stink Bugs can be radiated
+    + Info page shows decimal points if density is low
+    + New random event element choices
+    + More Bleach reactions
+    + Neutral Acid can vaporize
+    + Vinegar can kill Mushrooms and Pollen
+    + Poison, Bleach, Seltzer, and Pool Water can kill Pollen
+    ~ Fireflies will kill Frogs if eaten
+    ~ Recolored Mycelium
+    ~ Unhid Mycelium
+    ~ Hid Positron
+    ~ Moved Worm apart from insects
+    ~ Moved Unpaint to Special
+    ~ Flies no longer eat living plants
+    ~ Worms no longer decompose growing plants
+    ~ EMP Bomb is no longer limited to cursor size 1
+    ~ Smog condensates into Dirty Water
+    ~ Lowered Poison Gas condensation point
+    ~ Acid will no longer destroy Chlorine
+    ~ Cyanide is now a liquid at room temperature
+    ~ Hid Cyanide
+    + Cyanide Gas, Cyanide Ice (Hidden)
+    + Neon Ice (Hidden)
+    + Ball recipe
+    + Rocket recipe
+    + Armageddon recipe
+    + Secret rare Ball Lightning
+   [Bug Fixes]
+    ~ Fixed: Hardness does not resist explosion damage
+    ~ Fixed: E button (Element Select) doesn't change active category
+    ~ Fixed: Vines support themselves mid-air
+    ~ Fixed: Grapes break into yellow Juice
+    ~ Fixed: Game takes long to load on slow connections
+    ~ Fixed: Cursor box becomes thicker after drawing line
+    ~ Fixed: Flies make trees grow out of control
+    ~ Fixed: Dough and batter eat each other when mixing
+    ~ Fixed: Tadpoles, Slugs, Snails, Lichen, Dead Bugs, and Pollen drink all Pool Water
+    ~ Fixed: Roots turn Pool Water into Fiber
+    ~ Fixed: Cooldown not working when maximum cursor size is 1
+    ~ Fixed: Worms turn Plant and Evergreen to Roots
+   [Technical]
+    ~ Optimized gas rendering
+    ~ Optimized fire somewhat
+    + SP behavior cell now works with "ignore" element property
+    + extraTempHigh and extraTempLow element properties (see Steam)
+    + canPlace element property, for tools that can also be placed
 
 [Version 1.8 - March 17, 2023 - Cooking Update]
     + Updated Donator list
@@ -184,7 +289,7 @@
     + Fleas will eat Mercury and die
     + Fleas will eat Ketchup to no dietary gain
     + Salt Water kills Snails and Slugs
-    + Stinkbugs have a diet
+    + Stink Bugs have a diet
     + Mercury dirties Water
     + Water breaks down Mudstone
     + Birds breathe Oxygen

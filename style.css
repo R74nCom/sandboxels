@@ -95,6 +95,7 @@ kbd {
     padding: 10px;
     background-color: rgb(31, 31, 31);
     overflow-x: hidden;
+    z-index: 10;
 }
 #infoSearch, #modManagerUrl {
     position: absolute;
@@ -109,6 +110,7 @@ kbd {
     font-size: 1.5em;
     padding: 8px;
     font-family: 'Press Start 2P';
+    z-index: 11;
 }
 #infoSearch:focus, #modManagerUrl:focus {
     outline: none;
@@ -133,6 +135,7 @@ kbd {
     padding:5px;
     text-align:center;
     border: 1px solid #ffffff;
+    z-index: 12;
 }
 .XButton:hover {
     background-color: rgb(200, 33, 33);
@@ -269,6 +272,9 @@ button, input[type="submit"], input[type="reset"] {
 }
 #stat-pos, #stat-pixels, #stat-shift, #stat-tps, #stat-ticks, #stat-view {
     float:left;
+}
+#stat-view, #stat-element {
+    text-transform: uppercase;
 }
 .categoryName {
     font-size: 0.75em;

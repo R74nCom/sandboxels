@@ -30,6 +30,22 @@ elements.firefly.color = [
     "#310D09",
     "#310D09"
 ];
+elements.firefly.tick = function(pixel) {
+    if (!pixel.fff) {
+        pixel.fff = Math.floor(Math.random() * 60) + 20;
+    }
+    if (pixelTicks % pixel.fff === 0) {
+        pixel.color = pixelColorPick(pixel,"#d9d950")
+    }
+    else if (pixelTicks % pixel.fff === 2) {
+        pixel.color = pixelColorPick(pixel,"#310D09");
+    }
+    behaviors.FLY(pixel,function(firefly,newfly){
+        if (newfly) {
+            newfly.fff = firefly.fff;
+        }
+    })
+},
 elements.human.color = [
     "#f5eac6",
     "#d4c594",
@@ -82,4 +98,6 @@ elements.epsom_salt.color = [
     "#f2f2f2",
     "#e0e0e0"
 ];
-elements.flash.color = "#ffffa8"
+elements.flash.color = "#ffffa8";
+elements.bread.color = "#F2CF99";
+elements.mycelium.color = ["#734d5e","#b5949f","#734d53"];
