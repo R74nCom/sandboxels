@@ -1,5 +1,5 @@
 var modName = "mods/save_loading.js";
-
+try {
 function zeroToNull(val) {
 	if(val === 0) { return null };
 	return val;
@@ -324,4 +324,7 @@ elements.save_loader = {
 	excludeRandom: true,
 	color: "#FFFFFF",
 	desc: saveLoaderDescription,
+};
+} catch (error) {
+	alert(`save_loading error: ${error.message}`);
 };
