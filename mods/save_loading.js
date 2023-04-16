@@ -320,6 +320,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 </div>`;
 
 runAfterLoad(function() { //somehow it gets defined before elements on xbox
+	elements ??= {};
 	elements.save_loader = {
 	  behavior: behaviors.SELFDELETE,
 	  excludeRandom: true,
