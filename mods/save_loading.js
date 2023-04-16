@@ -319,12 +319,14 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 <button id="sizeButton" onclick=setPixelSize() style="color: #FF00FF;">Set pixel size</button>
 </div>`;
 
-elements.save_loader = {
-	behavior: behaviors.SELFDELETE,
-	excludeRandom: true,
-	color: "#FFFFFF",
-	desc: saveLoaderDescription,
-};
+runAfterLoad(function() { //somehow it gets defined before elements on xbox
+	elements.save_loader = {
+	  behavior: behaviors.SELFDELETE,
+	  excludeRandom: true,
+	  color: "#FFFFFF",
+	  desc: saveLoaderDescription,
+	};
+});
 } catch (error) {
 	alert(`save_loading error: ${error.message}`);
 };
