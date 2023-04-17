@@ -49,7 +49,7 @@ if(enabledMods.includes(groundMod) && enabledMods.includes(libraryMod)) {
 			}
 		);
 
-		console.log(igneousRocksAndSands);
+		//console.log(igneousRocksAndSands);
 
 		function hotData2Switch(data2) {
 			switch(data2) {
