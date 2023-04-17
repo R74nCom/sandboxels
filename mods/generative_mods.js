@@ -1352,6 +1352,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 				var returns = [];
 				for(aaf = 0; aaf < bombElements.length; aaf++) {
 					var elementOfBomb = bombElements[aaf];
+					if(!(elements[elementOfBomb]?.color)) { continue };
 					var startColor;
 					var randomExcl = 0;
 					//console.log(elementOfBomb);
@@ -1504,6 +1505,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 					var returns = [];
 					for(aaf = 0; aaf < cloudElements.length; aaf++) {
 						var elementOfCloud = cloudElements[aaf];
+						if(!(elements[elementOfCloud]?.color)) { continue };
 						var startColor;
 						var randomExcl = 0;
 						//console.log("randomExcl set")
@@ -1710,6 +1712,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 				var returns = [];
 				for(aaf = 0; aaf < creeperElements.length; aaf++) {
 					var elementOfCreeper = creeperElements[aaf];
+					if(!(elements[elementOfCreeper]?.color)) { continue };
 					var startColor;
 					var randomExcl = 0;
 					//console.log("randomExcl set")
@@ -1938,6 +1941,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 				var returns = [];
 				for(aaf = 0; aaf < fairyElements.length; aaf++) {
 					var elementOfFairy = fairyElements[aaf];
+					if(!(elements[elementOfFairy]?.color)) { continue };
 					var startColor;
 					var randomExcl = 0;
 					var isNocheer = 0;
@@ -2125,6 +2129,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 				var returns = [];
 				for(aaf = 0; aaf < spoutElements.length; aaf++) {
 					var elementOfSpout = spoutElements[aaf];
+					if(!(elements[elementOfSpout]?.color)) { continue };
 					var startColor;
 					var randomExcl = 0;
 					var isNocheer = 0;
