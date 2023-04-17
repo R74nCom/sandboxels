@@ -14,6 +14,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 	});
 
 	elements.insulate_flash = {
+		hidden: true,
 		color: "#fffdcf",
 		tick: function(pixel) {
 			if (Math.random() < 0.75 && pixelTicks - pixel.start > 1) {
