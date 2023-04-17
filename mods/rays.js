@@ -84,7 +84,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 						};
 						continue; 
 					};
-					if (elements[pixelMap[x][y].element].id === elements.cool_ray.id) { break }
+					if (elements[pixelMap[x][y].element].id === elements.cold_ray.id) { break }
 					pixelMap[x][y].temp -= 150;
 					break;
 				}
