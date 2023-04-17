@@ -62,7 +62,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 	if(elements.nellsun) { elements.nellsun.isSun = true };
 	if(elements.rainbow_sun) { elements.rainbow_sun.isSun = true };
 
-	elements.cool_ray = {
+	elements.cold_ray = {
 		color: ["#00ffae","#00ffff"],
 		tick: function(pixel) {
 			var x = pixel.x;
