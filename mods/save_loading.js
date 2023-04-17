@@ -446,6 +446,31 @@ try {
 	qlb.innerText = "Quickload";
 	document.getElementById("gameDiv").before(qlb);
 	document.getElementById("gameDiv").before(document.createElement("br"));
+
+	quickloadDetectorLastKeys = [];
+	justPromptedQuickload = false;
+
+	document.addEventListener("keydown", function(e) { //prop prompt listener
+		quickloadDetectorLastKeys.push(e.key);
+		if(quickloadDetectorLastKeys.length > 2) {
+			quickloadDetectorLastKeys.shift();
+		};
+		justPromptedQuickload = false;
+	});
+
+	document.addEventListener("keydown", function(e) { //prop prompt listener
+		if (e.key == "@" && !justPromptedQuickload && quickloadDetectorLastKeys[quickloadDetectorLastKeys.length - 2] == "@") {
+			e.preventDefault();
+			var confirm = prompt("Are you sure you want to quickload? (Type 'yes' to confirm)");
+			if(confirm == "yes") {
+				clearAll();
+				quickload(true,false,true);
+			};
+			justPromptedQuickload = true;
+			quickloadDetectorLastKeys = [];
+		};
+	});
+
 } catch (error) {
 	alert(`save_loading error: ${error.message}`);
 };
