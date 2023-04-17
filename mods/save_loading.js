@@ -447,27 +447,35 @@ try {
 	document.getElementById("gameDiv").before(qlb);
 	document.getElementById("gameDiv").before(document.createElement("br"));
 
-	quickloadDetectorLastKeys = [];
-	justPromptedQuickload = false;
+	quickSlDetectorLastKeys = [];
+	justPromptedQuickSL = false;
 
 	document.addEventListener("keydown", function(e) { //prop prompt listener
-		quickloadDetectorLastKeys.push(e.key);
-		if(quickloadDetectorLastKeys.length > 2) {
-			quickloadDetectorLastKeys.shift();
+		quickSlDetectorLastKeys.push(e.key);
+		if(quickSlDetectorLastKeys.length > 3) {
+			quickSlDetectorLastKeys.shift();
 		};
-		justPromptedQuickload = false;
+		justPromptedQuickSL = false;
 	});
 
 	document.addEventListener("keydown", function(e) { //prop prompt listener
-		if (e.key == "@" && !justPromptedQuickload && quickloadDetectorLastKeys[quickloadDetectorLastKeys.length - 2] == "@") {
+		if (quickSlDetectorLastKeys.join(",") == "(,(,L") {
 			e.preventDefault();
-			var confirm = prompt("Are you sure you want to quickload? (Type 'yes' to confirm)");
+			var confirm = prompt("Are you sure you want to quickLOAD? (Type 'yes' to confirm)");
 			if(confirm == "yes") {
 				clearAll();
 				quickload(true,false,true);
 			};
-			justPromptedQuickload = true;
-			quickloadDetectorLastKeys = [];
+			justPromptedQuickSL = true;
+			quickSlDetectorLastKeys = [];
+		} else if (quickSlDetectorLastKeys.join(",") == "(,(,S") {
+			e.preventDefault();
+			var confirm = prompt("Are you sure you want to quickSAVE? (Type 'yes' to confirm)");
+			if(confirm == "yes") {
+				quicksave(true,true);
+			};
+			justPromptedQuickSL = true;
+			quickSlDetectorLastKeys = [];
 		};
 	});
 
