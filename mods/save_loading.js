@@ -192,6 +192,9 @@ try {
 			if(pause) {
 				paused = true;
 				document.getElementById("pauseButton").setAttribute("on","true");
+			} else {
+				paused = false;
+				document.getElementById("pauseButton").setAttribute("on","false");
 			};
 			return true;
 		};
@@ -378,22 +381,22 @@ try {
 		return true;
 	};
 
-	var saveLoaderDescription = `<div>
-	<span id="downloadButton" onclick=savePrompt() style="color: #FF00FF;">Download simulation</span>
-	<span id="copyButton" onClick=copySaveJSON() style="color: #FF66FF;">Alternatively, copy simulation JSON</span>
+var saveLoaderDescription = `<div>
+<span id="downloadButton" onclick=savePrompt() style="color: #FF00FF;">Download simulation</span>
+<span id="copyButton" onClick=copySaveJSON() style="color: #FF66FF;">Alternatively, copy simulation JSON</span>
 
-	<span id="fileFormStatus">No file loader status</span>
-	One file, please: <input type="file" name="Save upload button" id="myfile">
-	<button id="loadButton" onclick=loadFile() style="color: #FF00FF;">Load File</button>
-	<span>Or paste JSON</span>
-	<span id="textFormStatus">No text loader status</span>
-	<input name="Text load field" id="mytext">
-	<button id="textLoadButton" onclick=loadText() style="color: #FF66FF;">Load Text</button>
+<span id="fileFormStatus">No file loader status</span>
+One file, please: <input type="file" name="Save upload button" id="myfile">
+<button id="loadButton" onclick=loadFile() style="color: #FF00FF;">Load File</button>
+<span>Or paste JSON</span>
+<span id="textFormStatus">No text loader status</span>
+<input name="Text load field" id="mytext">
+<button id="textLoadButton" onclick=loadText() style="color: #FF66FF;">Load Text</button>
 
-	<span id="pixelSizeStatus">No size setter status</span>
-	Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut off)
-	<button id="sizeButton" onclick=setPixelSize() style="color: #FF00FF;">Set pixel size</button>
-	</div>`;
+<span id="pixelSizeStatus">No size setter status</span>
+Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut off)
+<button id="sizeButton" onclick=setPixelSize() style="color: #FF00FF;">Set pixel size</button>
+</div>`;
 
 	elements.save_loader = {
 		behavior: behaviors.SELFDELETE,
@@ -433,6 +436,7 @@ try {
 		statsDiv.innerHTML = stats;
 	}
 
+	quickloadIsPaused = true;
 	//Element-based quicksave toggle has proven impossible due to numerous irreparable illogic incidents, so have some buttons instead
 	var qsb = document.createElement("button");
 	qsb.setAttribute("id","quicksaveButton");
@@ -442,9 +446,21 @@ try {
 	qsb.after(document.createTextNode(String.fromCharCode(160)));
 	var qlb = document.createElement("button");
 	qlb.setAttribute("id","quickloadButton");
-	qlb.setAttribute("onclick","clearAll(); quickload()");
+	qlb.setAttribute("onclick","clearAll(); quickload(quickloadIsPaused ?? true)");
 	qlb.innerText = "Quickload";
 	document.getElementById("gameDiv").before(qlb);
+	qlb.after(document.createTextNode(String.fromCharCode(160,160)));
+	var qpc = document.createElement("input");
+	qpc.setAttribute("type","checkbox");
+	qpc.setAttribute("id","quickloadPausedInput");
+	qpc.setAttribute("onchange","quickloadIsPaused = this.checked;");
+	qpc.checked = true;
+	var qpcd = document.createElement("span");
+	qpcd.setAttribute("id","quickloadPausedInputLabel");
+	qpcd.innerText = "Pause after quickloading?";
+	document.getElementById("gameDiv").before(qpc);
+	qpc.after(document.createTextNode(String.fromCharCode(160)));
+	document.getElementById("gameDiv").before(qpcd);
 	document.getElementById("gameDiv").before(document.createElement("br"));
 
 	quickSlDetectorLastKeys = [];
