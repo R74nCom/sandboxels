@@ -121,7 +121,7 @@ elements.fairy = {
 		"petal": { "elem1": "nature_fairy",},
 		"dirt": { "elem1": "earth_fairy",},
 		"mud": { "elem1": "earth_fairy",},
-		"raincloud": { "elem1": "rain_fairy",},
+		"rain_cloud": { "elem1": "rain_fairy",},
 		"electric": { "elem1": "thunder_fairy",},
 		"little_star": { "elem1": "stellar_fairy",},
 		"moonrock": { "elem1": "lunar_fairy",},
@@ -1569,22 +1569,6 @@ elements.snowcloud_cotton = {
 	temp: 0,
 	tempLow: -10,
 	stateLow: "snow_cloud",
-},
-elements.cloud = {
-    color: "#f0f5ff",
-    behavior: [
-        "XX|XX|XX",
-        "M1%5|XX|M1%5",
-        "XX|XX|XX",
-    ],
-    category:"gases",
-    state: "gas",
-    density: 1,
-    conduct: 0.03,
-	reactions: {
-		"water": { "elem1": "raincloud", "elem2": null },
-		"snow": { "elem1": "snowcloud", "elem2": null },
-	}
 },
 elements.frostbomb = {
 	color: "#72dfed",
