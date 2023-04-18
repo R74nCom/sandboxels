@@ -247,6 +247,82 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 	elements.bless.reactions.frozen_diarrhea = { elem2: null };
 	elements.bless.reactions.piss = { elem2: null };
 	elements.bless.reactions.vomit = { elem2: null };
+	elements.bless.reactions.crimson_grass = { elem2: "grass" };
+	elements.bless.reactions.crimstone = { elem2: "rock" };
+	elements.bless.reactions.crimsand = { elem2: "sand" };
+	elements.bless.reactions.red_ice = { elem2: "ice" };
+	elements.bless.reactions.crimgravel = { elem2: "gravel" };
+	elements.bless.reactions.crimwater = { elem2: "water" };
+	elements.bless.reactions.crimsnow = { elem2: "snow" };
+	elements.bless.reactions.vicious_mushroom = { elem2: null };
+	elements.bless.reactions.crimson_vine = { elem2: "vine" };
+	/*elements.bless.reactions.shadewood = { elem2: "wood" };
+	elements.bless.reactions.shadewood_tree_branch = { elem2: "tree_branch" };
+	elements.bless.reactions.shadewood_sapling = { elem2: "sapling" };
+	elements.bless.reactions.shadewood_sawdust = { elem2: "sawdust" };
+	elements.bless.reactions.crimson_leaf = { elem2: "leaf" };*/
+	elements.bless.reactions.ichor = { elem2: null }; //per blood, absent the gods' immune systems (apparenly they don't need immune systems because of immortality anyway)
+	elements.bless.reactions.virus_bomb = { elem2: null };
+	elements.bless.reactions.life_eater_slurry = { elem2: null };
+	elements.bless.reactions.life_eater_explosion = { elem2: null };
+	elements.bless.reactions.life_eater_virus = { elem2: null };
+	elements.bless.reactions.injector_poison = { elem2: null };
+	elements.bless.reactions.dead_matter = { elem2: null };
+	elements.bless.reactions.life_eater_infected_dirt = { elem2: "dirt" };
+	elements.bless.reactions.poisoned_dirt = { elem2: "dirt" };
+	elements.bless.reactions.vicious_goldfish = { elem2: "fish" };
+	elements.bless.reactions.nellfire = { elem2: "bless" };
+	elements.bless.reactions.gloomwind = { elem2: null };
+	elements.bless.reactions.gloomfly = { elem2: null };
+	elements.bless.reactions.meat_monster = { elem2: null };
+	elements.bless.reactions.rotten_ravager = { elem2: null };
+	elements.bless.reactions.bone_beast = { elem2: null };
+	elements.bless.reactions.poisonwater = { elem2: "water" };
+	elements.bless.reactions.poisoned_ice = { elem2: "ice" };
+	elements.bless.reactions.poisoned_gas = { elem2: "steam" };
+	elements.bless.reactions.corrupt_land = { elem2: "dirt" };
+	elements.bless.reactions.corrupt_rock = { elem2: "rock" };
+	elements.bless.reactions.withery = { elem2: null };
+	elements.bless.reactions.withery_plant = { elem2: null };
+	elements.bless.reactions.corrupt_solid_rock = { elem2: "rock_wall" };
+	elements.bless.reactions.toxin = { elem2: "antidote" };
+	elements.bless.reactions.dead = { elem2: null };
+	elements.bless.reactions.brain = { elem2: null };
+	elements.bless.reactions.bioooze = { elem2: null };
+	elements.bless.tool = function(pixel) {
+        if (elements.bless.ignore.indexOf(pixel.element) !== -1) { return; }
+        if (pixel.burning) { // stop burning
+            delete pixel.burning;
+            delete pixel.burnStart;
+        }
+        if (pixel.nellburn) { // change: stop nellburn
+            delete pixel.nellburn;
+            delete pixel.nellburnStart;
+        }
+        if (pixel.temp > 100) {
+            pixel.temp = (pixel.temp+100)/2;
+            pixelTempCheck(pixel);
+            if (pixel.del) {return}
+        }
+        if (pixel.origColor) {
+            pixel.color = "rgb("+pixel.origColor.join(",")+")";
+            delete pixel.origColor;
+        }
+        if (pixel.charge) {
+            delete pixel.charge;
+            pixel.chargeCD = 16;
+        }
+        if (elements.bless.reactions[pixel.element] && Math.random()<0.25) {
+            var r = elements.bless.reactions[pixel.element];
+            var elem2 = r.elem2;
+            if (elem2 !== undefined) {
+                if (Array.isArray(elem2)) { elem2 = elem2[Math.floor(Math.random()*elem2.length)]; }
+                if (elem2 === null) { deletePixel(pixel.x,pixel.y) }
+                else { changePixel(pixel, elem2); }
+            }
+        }
+	};
+
 } else {
 	if(!enabledMods.includes(libraryMod))			{ enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod) };
 	if(!enabledMods.includes(runAfterAutogenMod))	{ enabledMods.splice(enabledMods.indexOf(modName),0,runAfterAutogenMod) };
