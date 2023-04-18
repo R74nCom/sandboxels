@@ -227,6 +227,59 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 		noMix: true
 	};
 
+	//combines heat ray and smash ray
+	elements.death_ray = {
+		color: ["#a88d77", "#ff4a36"],
+		tick: function(pixel) {
+			var x = pixel.x;
+			for (var y = pixel.y; y < height; y++) {
+				if (outOfBounds(x, y)) {
+					break;
+				}
+				if (isEmpty(x, y)) {
+					if (Math.random() > 0.05) { continue }
+					createPixel("insulate_flash", x, y);
+					pixelMap[x][y].color = "#eb7b59";
+				}
+				else {
+					var otherPixel = pixelMap[x][y]
+					var otherInfo = elements[otherPixel.element];
+					otherPixel.temp += 400;
+					if(otherPixel.del) { continue };
+					if (!(grbBreakIntos.includes(otherPixel.element))) {
+						if (otherInfo.isGas) {
+							if(Math.random() > ((otherInfo.hardness ?? 0) ** 4)) { breakPixel(otherPixel,false,false) };
+							if(hasVelocity && otherPixel && !(lightlikes.includes(otherPixel.element))) {
+								var vels = [randomIntegerBetweenTwoValues(-7,7),randomIntegerBetweenTwoValues(-7,7)];
+								otherPixel.vx = vels[0];
+								otherPixel.vy = vels[1];
+							};
+							continue;
+							
+						};
+						if (otherInfo.id === elements.heat_ray.id) { break }
+						if(Math.random() > ((otherInfo.hardness ?? 0) ** 2)) { breakPixel(otherPixel,false,false) };
+						if(hasVelocity && otherPixel) {
+							var vels = [randomIntegerBetweenTwoValues(-9,9),randomIntegerBetweenTwoValues(-7,0)];
+							otherPixel.vx = vels[0];
+							otherPixel.vy = vels[1];
+						};
+						if(Math.random() < Math.max(0.9,0.4 + ((1 - (otherInfo.hardness ?? 0)) / 2))) { //thanks, I hate random continue
+							continue;
+						};
+						break;
+					}
+				}
+			}
+			deletePixel(pixel.x, pixel.y);
+		},
+		temp: -200,
+		category: "energy",
+		state: "gas",
+		excludeRandom: true,
+		noMix: true
+	};
+
 	//bless falls within god ray
 	elements.bless.reactions.dry_dirt = { elem2: "dirt" };
 	elements.bless.reactions.dead_cum = { elem2: "cum" };
