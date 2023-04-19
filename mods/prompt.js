@@ -378,6 +378,21 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			console.log("Prompt canceled");
 			return false;
 		};
+		//console.log(inputText);
+		if(inputText.includes("|")) {
+			var commands = inputText.split("|");
+			var results = []; results.length = commands.length;
+			for(var cmdi in commands) {
+				commands[cmdi] = commands[cmdi].trim();
+				try {
+					results[cmdi] = funniPrompt(commands[cmdi]);
+				} catch(error) {
+					results[cmdi] = error;
+				};
+			};
+			console.log(results);
+			return results;
+		};
 		inputAsArray = inputText.split(" ");
 		var firstItem = inputAsArray[0];
 		
