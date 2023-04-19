@@ -5,7 +5,7 @@ var libraryMod = "mods/code_library.js";
 if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod)) {
 	runAfterAutogen(function() {
 		snowAndIceCache = Object.keys(elements).filter(function(name) {
-			return name.endsWith("snow") || name.endsWith("ice")
+			return name.endsWith("snow") || name.endsWith("ice") || name == "rime"
 		})
 	});
 	lightlikes = ["light","flash","laser","radiation","insulate_flash"];
