@@ -1613,6 +1613,32 @@
 		return !isEmpty(x,y+1,true);
 	};
 
+	//Freeze pixel
+	function freezePixel(pixel,changetemp=true) {
+		var info = elements[pixel.element];
+		var result = info.stateLow;
+		if (!result) {
+			return false
+		};
+		if(result instanceof Array) {
+			result = result.filter(elementExists);
+			if(result.length == 0) {
+				return false;
+			};
+		} else {
+			if(!(elementExists(result))) {
+				return false;
+			};
+		};
+		
+		while(result instanceof Array) {
+			result = randomChoice(result);
+		};
+		
+		changePixel(pixel,result,changetemp);
+		return true;
+	};
+
 //Logic
 
 	function xor(c1,c2) {
