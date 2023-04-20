@@ -1,6 +1,22 @@
 var modName = "mods/save_loading.js";
 
 try {
+	rebuildCurrentPixels ??= function() {
+		var currPix = []; //rebuild currentPixels from pixelMap to try to fix bug
+		for(pmi = 0; pmi < pixelMap.length; pmi++) {
+			var pixelMapPart = pixelMap[pmi];
+			for(pmj = 0; pmj < pixelMapPart.length; pmj++) {
+				var pixelMapUnit = pixelMapPart[pmj];
+				if(typeof(pixelMapUnit) === "object") {
+					if(pixelMapUnit !== null) {
+						currPix.push(pixelMapUnit);
+					};
+				};
+			};
+		};
+		currentPixels = currPix;
+	};
+
 	//https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
 	function storageAvailable(type) {
 	  let storage;
