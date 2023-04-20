@@ -1,8 +1,9 @@
 var modName = "mods/save_loading.js";
 
 try {
-	rebuildCurrentPixels ??= function() {
-		var currPix = []; //rebuild currentPixels from pixelMap to try to fix bug
+	if(typeof(rebuildCurrentPixels) !== "function") {
+	    rebuildCurrentPixels = function() {
+                var currPix = []; //rebuild currentPixels from pixelMap to try to fix bug
 		for(pmi = 0; pmi < pixelMap.length; pmi++) {
 			var pixelMapPart = pixelMap[pmi];
 			for(pmj = 0; pmj < pixelMapPart.length; pmj++) {
@@ -15,6 +16,7 @@ try {
 			};
 		};
 		currentPixels = currPix;
+            };
 	};
 
 	//https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
@@ -512,5 +514,5 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 	});
 
 } catch (error) {
-	alert(`save_loading error: ${error.message}`);
+	alert(`save_loading error: ${error.toString()}`);
 };
