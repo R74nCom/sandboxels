@@ -150,6 +150,7 @@ elements.beehive = {
                 pixel.pollen = 0;
             }
         }
+        doDefaults(pixel);
     },
     properties: {
         "pollen": 0,
