@@ -1721,3 +1721,30 @@
 		};
 		return elements[name];
 	};
+
+//Fixes
+
+	//fix -1-caused ghost pixels
+	function deletePixel(x,y) {
+		// remove pixelMap[x][y] from currentPixels
+		var pixelIndex = currentPixels.indexOf(pixelMap[x][y]);
+		if(pixelIndex !== -1) {
+			currentPixels.splice(pixelIndex,1)
+		};
+		if (pixelMap[x][y]) {pixelMap[x][y].del = true}
+		delete pixelMap[x][y];
+		/*for (var i = 0; i < currentPixels.length; i++) {
+			if (currentPixels[i].x == x && currentPixels[i].y == y) {
+				currentPixels.splice(i, 1);
+				break;
+			}
+		}*/
+		/*if (id != null) {
+			for (var i = 0; i < currentPixels.length; i++) {
+				if (currentPixels[i].id == id) {
+					currentPixels.splice(i, 1);
+					return;
+				}
+			}
+		}*/
+	}
