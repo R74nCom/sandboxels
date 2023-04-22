@@ -220,7 +220,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 			}
 			deletePixel(pixel.x, pixel.y);
 		},
-		temp: -200,
+		temp: 20,
 		category: "energy",
 		state: "gas",
 		excludeRandom: true,
@@ -257,7 +257,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 							continue;
 							
 						};
-						if (otherInfo.id === elements.heat_ray.id) { break }
+						if (otherInfo.id === elements[pixel.element].id) { break }
 						if(Math.random() > ((otherInfo.hardness ?? 0) ** 2)) { breakPixel(otherPixel,false,false) };
 						if(hasVelocity && otherPixel) {
 							var vels = [randomIntegerBetweenTwoValues(-9,9),randomIntegerBetweenTwoValues(-7,0)];
@@ -273,7 +273,67 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 			}
 			deletePixel(pixel.x, pixel.y);
 		},
-		temp: -200,
+		temp: 4000,
+		category: "energy",
+		state: "gas",
+		excludeRandom: true,
+		noMix: true
+	};
+
+	elements.annihilation_ray = {
+		color: ["#220c0c", "#c11515"],
+		tick: function(pixel) {
+			var x = pixel.x;
+			for (var y = pixel.y; y < height; y++) {
+				if (outOfBounds(x, y)) {
+					break;
+				}
+				if (isEmpty(x, y)) {
+					if (Math.random() > 0.05) { continue }
+					createPixel("insulate_flash", x, y);
+					pixelMap[x][y].color = "#292929";
+				}
+				else {
+					var otherPixel = pixelMap[x][y];
+					var otherInfo = elements[otherPixel?.element];
+
+					if(otherPixel) {
+						otherPixel.temp += 2500 * (shiftDown + 1);
+						if(otherPixel.del || !otherPixel) { continue };
+
+						if (otherPixel && grbBreakIntos.includes(otherPixel.element)) {
+							if(Math.random() < 0.01 && otherPixel) {
+								deletePixel(otherPixel.x,otherPixel.y);
+							};
+							continue;
+						} else if(otherPixel) {
+							breakPixel(otherPixel,false,false);
+							if(otherPixel.del || !otherPixel) {
+								continue
+							};
+
+							if(otherPixel && hasVelocity) {
+								var vels = [randomIntegerBetweenTwoValues(-8,8),randomIntegerBetweenTwoValues(-6,0)];
+								otherPixel.vx = vels[0];
+								otherPixel.vy = vels[1];
+							};
+
+							if(otherPixel && Math.random() < (otherInfo.isGas ? 0.2 : 0.1)) {
+								deletePixel(otherPixel.x,otherPixel.y);
+								continue;
+							};
+
+							if(Math.random() > 0.8) {
+								continue;
+							};
+						};
+						if (otherInfo.id === elements[pixel.element].id) { break }
+					};
+				}
+			}
+			deletePixel(pixel.x, pixel.y);
+		},
+		temp: 150000000,
 		category: "energy",
 		state: "gas",
 		excludeRandom: true,
