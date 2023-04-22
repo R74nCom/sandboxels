@@ -1613,6 +1613,32 @@
 		return !isEmpty(x,y+1,true);
 	};
 
+	//Freeze pixel
+	function freezePixel(pixel,changetemp=true) {
+		var info = elements[pixel.element];
+		var result = info.stateLow;
+		if (!result) {
+			return false
+		};
+		if(result instanceof Array) {
+			result = result.filter(elementExists);
+			if(result.length == 0) {
+				return false;
+			};
+		} else {
+			if(!(elementExists(result))) {
+				return false;
+			};
+		};
+		
+		while(result instanceof Array) {
+			result = randomChoice(result);
+		};
+		
+		changePixel(pixel,result,changetemp);
+		return true;
+	};
+
 //Logic
 
 	function xor(c1,c2) {
@@ -1695,3 +1721,30 @@
 		};
 		return elements[name];
 	};
+
+//Fixes
+
+	//fix -1-caused ghost pixels
+	function deletePixel(x,y) {
+		// remove pixelMap[x][y] from currentPixels
+		var pixelIndex = currentPixels.indexOf(pixelMap[x][y]);
+		if(pixelIndex !== -1) {
+			currentPixels.splice(pixelIndex,1)
+		};
+		if (pixelMap[x][y]) {pixelMap[x][y].del = true}
+		delete pixelMap[x][y];
+		/*for (var i = 0; i < currentPixels.length; i++) {
+			if (currentPixels[i].x == x && currentPixels[i].y == y) {
+				currentPixels.splice(i, 1);
+				break;
+			}
+		}*/
+		/*if (id != null) {
+			for (var i = 0; i < currentPixels.length; i++) {
+				if (currentPixels[i].id == id) {
+					currentPixels.splice(i, 1);
+					return;
+				}
+			}
+		}*/
+	}

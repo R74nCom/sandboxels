@@ -1,18 +1,61 @@
 var modName = "mods/prompt.js";
 var variablesMod = "mods/prop and prompt variables.js";
+var promptInputNullishes = ["null","none","","n/a"];
+var eightSpaces = " ".repeat(8);
 
 if(enabledMods.includes(variablesMod)) {
 	commandHelpObject = {
 		"set": "Sets properties for every pixel of a given type.\nUsage: set [property] [element] [value] <type>\nDon't include framing characters []<>.\nThe element can be \"all\" to set the property for every pixel.\nNote: Strings can't have spaces because spaces are the separator used in the parsing split().\nArguments in [brackets] are required and ones in <angle brackets> are optional.",
+
 		"test": "Test.",
+
 		"setdimensions": "#This command clears the canvas#\nSets the width and height of the canvas and resets it to regenerate pixelMap.\nThis is offsetted so it doesn't count the OoB area on the top left; a 50x50 save will have a 50x50 usable area.\nUsage: setdimensions [width] [height] <pixel rendering size>.\nDon't include framing characters []<>.\nArguments in [brackets] are required and ones in <angle brackets> are optional.",
+
 		"pixelsize": "Sets the size of the pixels on screen. If no size is given, it instead alerts the current pixel size. Usage: pixelsize <pixel rendering size>.\nDon't include framing characters <>.\nArguments in <angle brackets> are optional.",
+
 		"dimensions": "Alerts the current dimensions. Usage: dimensions",
+
 		"fill": "Fills the screen with the given pixel(s). Usage: fill [Overwrite pixels? (bool)] [element] <additional elements>.\nDon't include framing characters []<>.\nArguments in [brackets] are required and ones in <angle brackets> are optional.\nAdditional elements are separated by spaces.",
+
 		"randomfill": "Fills the screen with pixels from randomChoices. Usage: randomfill <overwrite pixels? (bool, default: true)>\nDon't include framing characters []<>.\nArguments in <angle brackets> are optional.",
+
 		"count": "Tells you the amount of a specified pixel on the screen. Usage: count [element]\nDon't include framing characters []<>.\nArguments in [brackets] are required.",
+
 		"countall": "Logs to console a list of all elements on screen and their amounts. Usage: countall.",
-		"help": "Usage: help <command>\nDon't include framing characters []<>.\nArguments in <angle brackets> are optional."
+
+		"worldgen": 
+`Names or sets the current world type, lists all world types, or generates a given world type.
+Usages:
+${eightSpaces}Show the current worldgen setting: worldgen
+${eightSpaces}List all available worldgen settings: worldgen list
+${eightSpaces}Set the current worldgen setting: worldgen set [setting]
+${eightSpaces}Generate a specified worldgen setting: worldgen generate [setting]`,
+		
+		"defineworldgen":
+`Creates or replaces a worldgen preset.
+Usage (See below for formats):  [name] [layers] <baseHeight> <heightVariance> <complexity> <temperature> <decor>.
+Don't include framing characters []<>.
+Arguments in [brackets] are required and ones in <angle brackets> are optional.",
+
+(Required) name: String. Cannot have spaces. Example: grass
+(Required) layers: 
+${eightSpaces}Each layer is specified as [RelativeBottomStartPosition:ElementName]<:PixelProbability>
+${eightSpaces}Layers are joined with the semicolon ;
+${eightSpaces}Layer definitions must not have any spaces.
+${eightSpaces}Example full layer definition: 0.85:grass;0.5:dirt;0.05:rock;-0.2:basalt`,
+
+		"defineworldgen2":
+`(Optional) baseHeight: Number (ideally between 0 and 1). Default: 0.5.
+(Optional) heightVariance: Number. Default: 0.5.
+(Optional) complexity: Number. Default: 20.
+(Optional) temperature: Number. No default value (use null or none to skip).
+(Optional) decor:
+${eightSpaces}Each decor layer is specified as [ElementName:PixelProbability]<:DistanceFromTop><:ListOfHexColors>
+${eightSpaces}Distance from top, if not specified, defaults to 5.
+${eightSpaces}The fourth part (optional) is a list of hex codes (like #FFFFFF) separated by commas.
+${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF00;diamond:0.3:5`,
+
+		"help": "Usage: help <command>\nDon't include framing characters []<>\nArguments in <angle brackets> are optional."
 	};
 	
 	if(enabledMods.includes("mods/code_library.js")) {
@@ -180,6 +223,23 @@ if(enabledMods.includes(variablesMod)) {
 		return {h: hue, s: saturation, l: lightness};
 	}
 
+	function rebuildWorldgenList() { //vanilla code
+		for (var key in worldgentypes) {
+			document.getElementById("worldgenselect").innerHTML += "<option value='" + key + "'>" + key.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase()) + "</option>";
+		}
+	};
+
+	function bareClear() {
+		currentPixels = [];
+		pixelMap = [];
+		for (var i = 0; i < width; i++) {
+			pixelMap[i] = [];
+			for (var j = 0; j < height; j++) {
+				pixelMap[i][j] = undefined;
+			}
+		}
+	};
+
 	function alertIfError(alertError,text) {
 		if(alertError) {
 			alert(text);
@@ -198,9 +258,141 @@ if(enabledMods.includes(variablesMod)) {
 		}
 	}
 
+	function parsefloatFirst(arr) { var array = arr; array[0] = parseFloat(array[0]); return array };
+	function stringToLayers(string) {
+		return string.split(";").map(x => x.split(":")).map(y => parsefloatFirst(y));
+	};
+
+	function validateSingleHexCode(hexCode) {
+		return !!"#FFFFFF".match(/^#[0-9A-F]{6}$/);
+	};
+
+	function validateHexColorArray(colorsArray) {
+		if(!(colorsArray instanceof Array)) {
+			return false;
+		};
+		if(colorsArray.length == 0) {
+			return false;
+		};
+		var colorsIsValid = 1;
+		for(var i in colorsArray) {
+			colorsIsValid *= validateSingleHexCode(colorsArray[i]);
+		};
+		return !!colorsIsValid;
+	};
+
+	function validateSingleLayer(layerArray) {
+		if(layerArray.length < 2) {
+			return false;
+		};
+		if(isNaN(layerArray[0])) {
+			return false;
+		};
+		if(typeof(layerArray[1]) !== "string") {
+			return false;
+		};
+		if(!elements[layerArray[1]]) {
+			return false;
+		};
+		if(typeof(layerArray[2]) !== "undefined") {
+			if(isNaN(layerArray[2])) {
+				return false
+			};
+		};
+		return true;
+	};
+
+	function validateLayersStructure(layersArray) {
+		if(!(layersArray instanceof Array)) {
+			return false;
+		};
+		if(layersArray.length == 0) {
+			return false;
+		};
+		var layersIsValid = 1;
+		for(var i in layersArray) {
+			layersIsValid *= validateSingleLayer(layersArray[i]);
+		};
+		return !!layersIsValid;
+	};
+
+	function stringToDecor(string) {
+		decorLayers = string.split(";").map(x => x.split(":"));
+		for(var q in decorLayers) {
+			var decorLayer = decorLayers[q];
+			if(decorLayer[1]) {
+				decorLayer[1] = parseFloat(decorLayer[1]);
+			};
+			if(decorLayer[2]) {
+				decorLayer[2] = parseInt(decorLayer[2]);
+			};
+			if(decorLayer[3]) {
+				decorLayer[3] = decorLayer[3].split(",");
+			};
+		};
+		return decorLayers;
+	};
+	//console.log(stringToDecor("bird:0.025:10:#FF0000,#FFFF00,#00FF00"));
+	
+	function validateSingleDecorLayer(decorLayer) {
+		if(decorLayer.length < 2) {
+			return false;
+		};
+		if(!elements[decorLayer[0]]) {
+			return false;
+		};
+		if(isNaN(decorLayer[1])) {
+			return false;
+		};
+		if(typeof(decorLayer[2]) !== "undefined") {
+			if(isNaN(decorLayer[2])) {
+				return false;
+			};
+		};
+		if(typeof(decorLayer[3]) !== "undefined") {
+			if(!(validateHexColorArray(decorLayer[3]))) {
+				return false;
+			};
+		};
+		return true;
+	};
+
+	function validateDecorStructure(decorArraysArray) {
+		if(!(decorArraysArray instanceof Array)) {
+			return false;
+		};
+		if(decorArraysArray.length == 0) {
+			return false;
+		};
+		var decorIsValid = 1;
+		for(var i in decorArraysArray) {
+			decorIsValid *= validateSingleDecorLayer(decorArraysArray[i]);
+		};
+		return !!decorIsValid;
+	};
+
 	function funniPrompt(argument=null,alertOutput=true,alertError=true) {
 		argument === null ? inputText = prompt("Enter command") : inputText = argument;
 		// replace spaces with underscores
+		if(["",null].includes(inputText)) {
+			console.log("Prompt canceled");
+			return false;
+		};
+		//console.log(inputText);
+		if(inputText.includes("|")) {
+			var commands = inputText.split("|");
+			var results = []; results.length = commands.length;
+			for(var cmdi in commands) {
+				commands[cmdi] = commands[cmdi].trim();
+				try {
+					results[cmdi] = funniPrompt(commands[cmdi]);
+				} catch(error) {
+					results[cmdi] = error;
+				};
+			};
+			console.log(results);
+			return results;
+		};
 		inputAsArray = inputText.split(" ");
 		var firstItem = inputAsArray[0];
 		
@@ -662,6 +854,153 @@ height: ${height}
 				alertIfOutput(alertOutput,"Elements counts logged to console");
 				console.log(formattedList);
 				return listObject;
+			case "wg":
+			case "worldgen":
+				if(inputAsArray.length < 1) {
+					alertIfError(alertError,commandHelpObject.worldgen);
+					return false;
+				};
+
+				var action = inputAsArray[1];
+				if(!action) {
+					alertIfOutput(`Current worldgen setting: ${settings.worldgen}`);
+					return settings.worldgen;
+				};
+				
+				var worldgenTypesList = Object.keys(worldgentypes).concat(["off"]);
+				if(["list","lst","ls","l"].includes(action)) {
+					alertIfOutput(alertOutput,worldgenTypesList.join(",  "));
+					console.log(worldgenTypesList.map(x => "   " + x).join("\n"));
+					return worldgenTypesList;
+				} else {
+					var targetPreset = inputAsArray[2];
+					if(!targetPreset) {
+						alertIfError(alertError,commandHelpObject.worldgen);
+						return false;
+					};
+					if(!(worldgenTypesList.includes(targetPreset))) {
+						alertIfError(alertError,`No such preset ${targetPreset}!`);
+						return false;
+					};
+					if(["select","sel","pick","set","s"].includes(action)) {
+						settings.worldgen = targetPreset;
+						alertIfOutput(alertOutput,`Worldgen setting set to ${targetPreset}`);
+						return true;
+					} else if(["generate","gen","make","worldgen","wg","g","w","world","run","do","world"].includes(action)) {
+						bareClear();
+						if(targetPreset == "off") {
+							alertIfOutput(alertOutput,`Cleared world`);
+						} else {
+							console.log(targetPreset,worldgentypes[targetPreset].complexity);
+							worldGen(worldgentypes[targetPreset]);
+							alertIfOutput(alertOutput,`Generated preset ${targetPreset}`);
+						};
+						return true;
+					} else {
+						alertIfError(alertError,commandHelpObject.worldgen);
+						return false;
+					};
+				};
+				return true;
+			case "dwg":
+			case "defineworldgen":
+				if(inputAsArray.length < 3) {
+					alertIfError(commandHelpObject.defineworldgen);
+					alertIfError(commandHelpObject.defineworldgen2);
+					return false;
+				};
+				var presetName = inputAsArray[1];
+				//overwrite confirm below
+
+				var newPreset = {};
+
+				var layers = stringToLayers(inputAsArray[2]);
+				if(!validateLayersStructure(layers)) {
+					alertIfError(alertError,"Layers definition is invalid or malformed!");
+					return false;
+				};
+				newPreset.layers = layers;
+
+				var baseHeight = inputAsArray[3];
+				if(typeof(baseHeight) !== "undefined") {
+					if(promptInputNullishes.includes(baseHeight)) {
+						baseHeight = "0.5";
+					};
+					baseHeight = parseFloat(baseHeight);
+					if(isNaN(baseHeight)) {
+						alertIfError(alertError,"Invalid baseHeight!");
+						return false;
+					};
+					newPreset.baseHeight = baseHeight;
+				};
+
+				var heightVariance = inputAsArray[4];
+				if(typeof(heightVariance) !== "undefined") {
+					if(promptInputNullishes.includes(heightVariance)) {
+						heightVariance = "0.5";
+					};
+					heightVariance = parseFloat(heightVariance);
+					if(isNaN(heightVariance)) {
+						alertIfError(alertError,"Invalid heightVariance!");
+						return false;
+					};
+					newPreset.heightVariance = heightVariance;
+				};
+
+				var complexity = inputAsArray[5];
+				if(typeof(complexity) !== "undefined") {
+					if(promptInputNullishes.includes(complexity)) {
+						complexity = "20";
+					};
+					complexity = parseFloat(complexity);
+					if(isNaN(complexity)) {
+						alertIfError(alertError,"Invalid complexity!");
+						return false;
+					};
+					newPreset.complexity = complexity;
+				};
+
+				var temperature = inputAsArray[6];
+				if(typeof(temperature) !== "undefined") {
+					if(promptInputNullishes.includes(temperature.toLowerCase())) {
+						temperature = null;
+					} else {
+						temperature = parseFloat(temperature);
+						if(isNaN(temperature)) {
+							alertIfError(alertError,"Invalid temperature!");
+							return false;
+						};
+						newPreset.temperature = temperature;
+					};
+				};
+
+				var decor = inputAsArray[7];
+				if(typeof(decor) !== "undefined") {
+					decor = stringToDecor(decor);
+					if(!validateDecorStructure(decor)) {
+						alertIfError(alertError,"Decor definition is invalid or malformed!");
+						return false;
+					};
+					newPreset.decor = decor;
+				};
+
+				if(worldgentypes[presetName]) {
+					var doOverwrite = confirm(`Overwrite worldgen preset ${presetName}?`);
+					if(!doOverwrite) {
+						alertIfError(alertError,"defineworldgen canceled");
+						return false;
+					};
+				};
+				worldgentypes[presetName] = newPreset;
+				settings.worldgen = presetName;
+				rebuildWorldgenList();
+				
+				alertIfOutput(alertOutput,
+`Defined worldgen preset ${presetName}.
+Make sure to save your command in a file if you want to add this preset again.`
+);
+				console.log(inputText);
+				return [presetName,newPreset];
 			case "stars":
 				var starDensity = inputAsArray[1];
 				
@@ -818,20 +1157,34 @@ height: ${height}
 				console.log(lastStarSeed);
 				return lastStarSeed;
 			case "help":
+				var commandsWithoutDwg2 = Object.keys(commandHelpObject).filter(function(cmdName) { return cmdName !== "defineworldgen2" });
 				if(inputAsArray.length < 1) { //somehow
 					alertIfError(alertError,"Usage: help <command>\nDon't include framing characters []<>.\nArguments in <angle brackets> are optional.");
 					return false;
 				};
 				if(inputAsArray.length < 2) {
-					alertOutput ? alertIfOutput(alertOutput,"Commands: " + Object.keys(commandHelpObject).join("\n")) : console.log("Commands: " + Object.keys(commandHelpObject).join(", "));
+					alertOutput ? alertIfOutput(alertOutput,"Commands: " + commandsWithoutDwg2.join("\n")) : console.log("Commands: " + commandsWithoutDwg2.join(", "));
 				} else {
 					var command = inputAsArray[1];
 
-					if(typeof(commandHelpObject[command]) === "undefined") {
+					if(typeof(commandHelpObject[command]) === "undefined" || command == "defineworldgen2") {
 						alertIfError(alertError,"Cound not find help for " + command + ".");
 						return false;
 					} else {
-						alertOutput ? alertIfOutput(alertOutput,commandHelpObject[command]) : console.log(commandHelpObject[command].replace(/\n/g, "        "));
+						if(command == "defineworldgen") {
+							if(alertOutput) {
+								alert(commandHelpObject.defineworldgen);
+								alert(commandHelpObject.defineworldgen2);
+							} else {
+								console.log(commandHelpObject.defineworldgen + "\n" + commandHelpObject.defineworldgen2);
+							};
+						} else {
+							if(alertOutput) {
+								alert(commandHelpObject[command]);
+							} else {
+								console.log(commandHelpObject[command]);
+							};
+						};
 						return true;
 					};
 				};
