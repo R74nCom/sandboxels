@@ -1,4 +1,4 @@
-var modName = "mods/fire_mpd.js";
+var modName = "mods/fire_mod.js";
 var libraryMod = "mods/code_library.js";
 
 if(enabledMods.includes(libraryMod)) {
