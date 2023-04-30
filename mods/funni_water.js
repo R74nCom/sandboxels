@@ -49,7 +49,7 @@
         "tin": { elem1:["hydrogen","hydrogen","oxygen"], charged:true, chance:0.01 },
         "lead": { elem1:["hydrogen","hydrogen","oxygen"], charged:true, chance:0.01 },
         "brass": { elem1:["hydrogen","hydrogen","oxygen"], charged:true, chance:0.001 },
-        “snow": { elem1: "armageddon", elem2: null, "oneway":false },
+        "snow": { elem1: "armageddon", elem2: null, "oneway":false },
         "bronze": { elem1:["hydrogen","hydrogen","oxygen"], charged:true, chance:0.001 },
         "copper": { elem1:["hydrogen","hydrogen","oxygen"], charged:true, chance:0.0075 },
         "silver": { elem1:["hydrogen","hydrogen","oxygen"], charged:true, chance:0.0075 },
