@@ -84,7 +84,7 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 					};
 					var rockData = rockInfo._data ?? ["error","error","hot_unknown"];
 					var newName = hotNameOverrides[rockName] ?? "hot_" + rockName;
-					console.log(newName,igneousRocksAndSands.indexOf(rockName));
+					//console.log(newName,igneousRocksAndSands.indexOf(rockName));
 					//console.log(rockInfo.stateHigh);
 					elements[newName] = {
 						color: redHotColorgen(rockInfo.color,"hex"),
