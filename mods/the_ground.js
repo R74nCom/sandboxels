@@ -29,6 +29,108 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 
 	//Functions
 
+		//Basically the entire hot_rocks.js code
+
+			function hotRockFunction() {
+				var hotNameOverrides = {
+					dry_dirt: "hot_dirt",
+				};
+
+				var igneousRocksAndSands = Object.keys(elements).filter(
+					function(elemName) {
+						//console.log(elemName,elements[elemName]._data?.[2]);
+						return ["igneous_rock","solid_igneous_rock","igneous_gravel","sedimentary_rock","particulate"].includes(elements[elemName]._data?.[2]) && !("clay","limestone","black_limestone","shale".includes(elemName))
+					}
+				);
+				
+				function hotData2Switch(data2) {
+					switch(data2) {
+						case "igneous_rock":
+							return "hot_igneous_rock";
+						case "solid_igneous_rock":
+							return "hot_solid_igneous_rock";
+						case "particulate":
+							return "hot_particulate";
+						case "sedimentary_rock":
+							return "hot_sedimentary_rock";
+						case "igneous_gravel":
+							return "hot_igneous_gravel";
+						default:
+							return "hot_" + data2;
+					};
+				};
+
+				igneousRocksAndSands = igneousRocksAndSands.concat("dry_dirt");
+
+				hotRockBehavior = [
+					"XX|CR:fire%0.5|XX",
+					"XX|XX|XX",
+					"M2|M1|M2"
+				];
+
+				solidHotRockBehavior = [
+					"XX|CR:fire%0.1|XX",
+					"CR:fire%0.1|XX|CR:fire%0.1",
+					"XX|CR:fire%0.1|XX"
+				];
+
+				console.log(igneousRocksAndSands)
+				for(j = 0; j < igneousRocksAndSands.length; j++) {
+					var rockName = igneousRocksAndSands[j];
+					var rockInfo = elements[rockName];
+					if(!rockInfo) {
+						console.error(rockName);
+						continue;
+					};
+					var rockData = rockInfo._data ?? ["error","error","hot_unknown"];
+					var newName = hotNameOverrides[rockName] ?? "hot_" + rockName;
+					console.log(newName,igneousRocksAndSands.indexOf(rockName));
+					//console.log(rockInfo.stateHigh);
+					elements[newName] = {
+						color: redHotColorgen(rockInfo.color,"hex"),
+						behavior: hotData2Switch(rockData[2]).includes("solid") ? solidHotRockBehavior : hotRockBehavior,
+						category: "land",
+						state: "solid",
+						temp: Math.min(rockInfo.tempHigh - 50,850),
+						tempHigh: rockInfo.tempHigh,
+						tempLow: Math.min(rockInfo.tempHigh - 100,800),
+						stateLow: rockName,
+						stateHigh: rockInfo.stateHigh,
+						density: rockData.density * 0.9,
+						hardness: rockData.density * 0.85,
+						//breakInto: newName + "_gravel",
+						_data: [rockData[0], rockData[1], hotData2Switch(rockData[2])],
+					};
+					
+					if(rockName == "basalt") {
+						elements[newName].behavior = [
+							"XX|CR:fire%0.5|XX",
+							"XX|XX|XX",
+							"XX|M1|XX"
+						]
+					};
+					
+					//console.log(j);
+					
+					if(rockInfo.nellfireImmune) {
+						elements[newName].nellfireImmune = true;
+					};
+					
+					elements[rockName].tempHigh = Math.min(rockInfo.tempHigh - 100,800);
+					elements[rockName].stateHigh = newName;
+					if(rockInfo._data[2] == "igneous_rock" && elements[newName + "_gravel"]) {
+						elements[newName].stateHigh = newName + "_gravel";
+					};
+				};
+
+				elements.dirt.tempHigh = 100;
+				elements.dirt.stateHigh = "dry_dirt";
+				elements.hot_dirt.tempHigh = 1200;
+				elements.hot_dirt.stateHigh = "molten_dirt";
+				elements.hot_dirt.tempLow = 800;
+				elements.hot_dirt.stateLow = "dry_dirt";
+			};
+			
 		//Star world matter function
 
 			var stellarPlasmaSpreadWhitelist = ["stellar_plasma","liquid_stellar_plasma","liquid_degenerate_neutronium","gaseous_degenerate_neutronium","neutron_star"];
@@ -271,16 +373,27 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 					return;
 				};
 				//console.log(pixel.x,pixel.y,overallTemperatureChangeRate)
+				var stateLow;
 				if(overallTemperatureChangeRate < vitriteThreshold) { //numbers made up
 					//console.log("f99fd90");
-					changePixel(pixel,vitriteName,false);
+					stateLow = vitriteName;
 				} else if(overallTemperatureChangeRate < aphaniteThreshold) {
 					//console.log("aaaaaaaaaa");
-					changePixel(pixel,aphaniteName,false);
+					stateLow = aphaniteName;
 				} else {
 					//console.log("03");
-					changePixel(pixel,phaneriteName,false);
+					stateLow = phaneriteName;
 				};
+				var stateLowInfo = elements[stateLow];
+				var slHasHotRock = (stateLowInfo.stateLow == "hot_" + stateLow);
+				var changeToRockIsHot = false;
+				if(slHasHotRock) {
+					var hotRockPoint = stateLowInfo.tempHigh;
+					if(pixel.temp >= hotRockPoint) {
+						changeToRockIsHot = true;
+					};
+				};
+				changePixel(pixel,changeToRockIsHot ? "hot_" + stateLow : stateLow,false);
 			};
 		};
 		
@@ -660,6 +773,36 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 
 			//Generate an entire composition family at once
 
+			function redHotColorgen(colorIn,outputFormat="rgb") {
+				var color = colorIn;
+				//console.log(color);
+				if(!Array.isArray(color)) {
+					color = [color];
+				};
+				//console.log(color);
+				color = color.map(x => convertColorFormats(x,"json"));
+				//console.log(color);
+				for(i = 0; i < color.length; i++) {
+					var subcolor = color[i];
+					//console.log(i);
+					subcolor.r += 48;
+					subcolor.r *= 1.7;
+					subcolor.g += 24;
+					subcolor.g *= 1.2;
+					subcolor.g -= 16;
+					subcolor.b -= 10;
+					subcolor.b *= 0.75;
+					for(colorlet in subcolor) {
+						subcolor[colorlet] = Math.round(rgbColorBound(subcolor[colorlet]));
+					};
+					//console.log(color);
+				};
+				//console.log(color);
+				color = color.map(x => convertColorFormats(x,outputFormat));
+				if(color.length == 1) { color = color[0] };
+				return color;
+			};
+
 			var sands = ["sand"];
 			var wetSands = ["wet_sand"];
 			var sandSuspensions = [];
@@ -667,6 +810,22 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 			var sandstones = ["radioactive_sandstone","shale"];
 			var vaporizedMagmas = [];
 			var magmaClouds = [];
+			var rockClouds = [];
+
+			function nicffunc_getReactions(elemName) {
+				if(!(elements[elemName])) {
+					return null;
+				};
+				if(!(elements[elemName].reactions)) {
+					return null;
+				};
+				var reactions = elements[elemName].reactions;
+				if(structuredClone) {
+					return !!reactions ? structuredClone(reactions) : null;
+				} else {
+					return !!reactions ? JSON.parse(JSON.stringify(reactions)) : null;
+				};
+			};
 
 			function newIgneousCompositionFamily(
 				compositionFamilyName,
@@ -701,18 +860,31 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 			) {
 				//console.log(compositionFamilyName,vesiculiteMeltingPoint,vitriteMeltingPoint);
 				
+				//gabbro_sand instead of rock_sand for rock's unique sand
 				var phaneriteSandName = compositionFamilyName == "mafic" ? "gabbro_sand" : phaneriteName + "_sand";
-				
 				var aphaniteSandName = aphaniteName + "_sand";
 				var vesiculiteSandName = vesiculiteName + "_sand";
 				var vitriteSandName = vitriteName + "_sand";
 				
-				var phaneriteDustName = compositionFamilyName == "mafic" ? "gabbro_dust" : phaneriteName + "_dust";
+				//keep rock_wall to replace vanilla rock wall
+				var phaneriteWallName = phaneriteName + "_wall";
+				var aphaniteWallName = aphaniteName + "_wall";
+				var vesiculiteWallName = vesiculiteName + "_wall";
+				var vitriteWallName = vitriteName + "_wall";
 				
+				//gravel instead of rock_gravel for normal gravel (as rock's unique gravel)
+				var phaneriteGravelName = compositionFamilyName == "mafic" ? "gravel" : phaneriteName + "_gravel";
+				var aphaniteGravelName = aphaniteName + "_gravel";
+				var vesiculiteGravelName = vesiculiteName + "_gravel";
+				var vitriteGravelName = vitriteName + "_shard";
+				
+				//gabbro_dust instead of rock_dust for rock's unique dust
+				var phaneriteDustName = compositionFamilyName == "mafic" ? "gabbro_dust" : phaneriteName + "_dust";		
 				var aphaniteDustName = aphaniteName + "_dust";
 				var vesiculiteDustName = vesiculiteName + "_dust";
 				var vitriteDustName = vitriteName + "_dust";
 				
+				//push future sand names and wet sand names to sand list for sandstone system generation
 				sands.push(phaneriteSandName);
 				sands.push(aphaniteSandName);
 				sands.push(vesiculiteSandName);
@@ -722,56 +894,50 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 				wetSands.push("wet_" + vesiculiteSandName);
 				wetSands.push("wet_" + vitriteSandName);
 
-				var magmaName = compositionFamilyName + "_magma";
-				if(compositionFamilyName !== "mafic") { //skip phanerite, phangravel, and aphanite for mafic rocks (rock, gravel, basalt)
-					elements[phaneriteName] = {
-						color: phaneriteColor,
-						behavior: behaviors.POWDER,
-						category: "land",
-						state: "solid",
-						tempHigh: phaneriteMeltingPoint,
-						stateHigh: magmaName,
-						density: phaneriteDensity,
-						hardness: 0.75,
-						breakInto: phaneriteName + "_gravel",
-						_data: [compositionFamilyName,"phanerite","igneous_rock"],
-					};
-					
-					elements.water.reactions[phaneriteName] = { "elem2": phaneriteName + "_gravel", "chance": 0.00035 }
+				//generate magma name for whole igneous family
+				var magmaName = compositionFamilyName == "mafic" ? "magma" : compositionFamilyName + "_magma";
+				var magmaCloudName = magmaName + "_cloud"
+				var rockCloudName = compositionFamilyName + "_rock_cloud"
 
-					elements[phaneriteName + "_gravel"] = {
-						color: gravelizeToHex(phaneriteColor),
-						behavior: behaviors.POWDER,
-						category: "land",
-						state: "solid",
-						tempHigh: phaneriteMeltingPoint,
-						stateHigh: magmaName,
-						breakInto: phaneriteDustName,
-						density: phaneriteDensity * 0.55,
-						_data: [compositionFamilyName,"phanerite","igneous_gravel"],
-					};
-					
-					elements.water.reactions[phaneriteName + "_gravel"] = { "elem2": twoPartRepeatedArray(phaneriteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
-
-					elements[aphaniteName] = {
-						color: aphaniteColor,
-						behavior: behaviors.POWDER,
-						category: "land",
-						state: "solid",
-						tempHigh: aphaniteMeltingPoint,
-						stateHigh: magmaName,
-						density: aphaniteDensity,
-						hardness: 0.75,
-						breakInto: aphaniteName + "_gravel",
-						_data: [compositionFamilyName,"aphanite","igneous_rock"],
-					};
-				} else {
-					phaneriteName = "rock";
-					aphaniteName = "basalt";
-					magmaName = "magma";
+				//create phanerite and transplant existing reactions if they exist
+				var phaneriteOldReactions = nicffunc_getReactions(phaneriteName);
+				elements[phaneriteName] = {
+					color: phaneriteColor,
+					behavior: behaviors.POWDER,
+					category: "land",
+					state: "solid",
+					tempHigh: phaneriteMeltingPoint,
+					stateHigh: magmaName,
+					density: phaneriteDensity,
+					hardness: 0.75,
+					breakInto: phaneriteGravelName,
+					_data: [compositionFamilyName,"phanerite","igneous_rock"],
+				};
+				if(phaneriteOldReactions) {
+					elements[phaneriteName].reactions = phaneriteOldReactions;
 				};
 
-				elements["solid_" + phaneriteName] = {
+				//replace water rock-erosion reaction
+				elements.water.reactions[phaneriteName] = { "elem2": phaneriteGravelName, "chance": 0.00035 }
+
+				//create unique gravel
+				elements[phaneriteGravelName] = {
+					color: gravelizeToHex(phaneriteColor),
+					behavior: behaviors.POWDER,
+					category: "land",
+					state: "solid",
+					tempHigh: phaneriteMeltingPoint,
+					stateHigh: magmaName,
+					breakInto: phaneriteDustName,
+					density: phaneriteDensity * 0.55,
+					_data: [compositionFamilyName,"phanerite","igneous_gravel"],
+				};
+				
+				//generate water gravel-erosion reaction using rock family's sand ratio
+				elements.water.reactions[phaneriteGravelName] = { "elem2": twoPartRepeatedArray(phaneriteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
+
+				//generate unique solid version
+				elements[phaneriteWallName] = {
 					color: phaneriteColor,
 					behavior: behaviors.WALL,
 					category: "land",
@@ -784,7 +950,24 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 					_data: [compositionFamilyName,"phanerite","solid_igneous_rock"],
 				};
 				
-				elements["solid_" + aphaniteName] = {
+				var aphaniteOldReactions = nicffunc_getReactions(aphaniteName);
+				elements[aphaniteName] = {
+					color: aphaniteColor,
+					behavior: behaviors.POWDER,
+					category: "land",
+					state: "solid",
+					tempHigh: aphaniteMeltingPoint,
+					stateHigh: magmaName,
+					density: aphaniteDensity,
+					hardness: 0.75,
+					breakInto: aphaniteGravelName,
+					_data: [compositionFamilyName,"aphanite","igneous_rock"],
+				};
+				if(aphaniteOldReactions) {
+					elements[aphaniteName].reactions = aphaniteOldReactions;
+				};
+
+				elements[aphaniteWallName] = {
 					color: aphaniteColor,
 					behavior: behaviors.WALL,
 					category: "land",
@@ -797,12 +980,12 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 					_data: [compositionFamilyName,"aphanite","solid_igneous_rock"],
 				};
 				
-				elements.water.reactions["solid_" + phaneriteName] = { "elem2": phaneriteName, "chance": 0.00035 }
-				elements.water.reactions["solid_" + aphaniteName] = { "elem2": aphaniteName, "chance": 0.00035 }
-				elements.water.reactions["solid_" + vesiculiteName] = { "elem2": vesiculiteName, "chance": 0.00035 }
-				elements.water.reactions["solid_" + vitriteName] = { "elem2": vitriteName, "chance": 0.00035 }
+				elements.water.reactions[phaneriteWallName] = { "elem2": phaneriteName, "chance": 0.00035 }
+				elements.water.reactions[aphaniteWallName] = { "elem2": aphaniteName, "chance": 0.00035 }
+				elements.water.reactions[vesiculiteWallName] = { "elem2": vesiculiteName, "chance": 0.00035 }
+				elements.water.reactions[vitriteWallName] = { "elem2": vitriteName, "chance": 0.00035 }
 
-				elements.water.reactions[aphaniteName] = { "elem2": aphaniteName + "_gravel", "chance": 0.00035 }
+				elements.water.reactions[aphaniteName] = { "elem2": aphaniteGravelName, "chance": 0.00035 }
 				
 				elements[phaneriteSandName] = {
 					color: sandizeToHex(phaneriteName,"normal"),
@@ -863,7 +1046,7 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 					"elem1": null, "elem2": "wet_" + phaneriteSandName,
 				};
 				
-				elements[aphaniteName + "_gravel"] = {
+				elements[aphaniteGravelName] = {
 					color: gravelizeToHex(aphaniteColor),
 					behavior: behaviors.POWDER,
 					category: "land",
@@ -875,7 +1058,7 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 					_data: [compositionFamilyName,"aphanite","igneous_gravel"],
 				};
 
-				elements.water.reactions[aphaniteName + "_gravel"] = { "elem2": twoPartRepeatedArray(aphaniteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
+				elements.water.reactions[aphaniteGravelName] = { "elem2": twoPartRepeatedArray(aphaniteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
 
 				elements[aphaniteSandName] = {
 					color: sandizeToHex(aphaniteName,"normal"),
@@ -943,11 +1126,11 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 					stateHigh: magmaName,
 					density: vesiculiteDensity,
 					hardness: 0.75,
-					breakInto: vesiculiteName + "_gravel",
+					breakInto: vesiculiteGravelName,
 					_data: [compositionFamilyName,"vesiculite","igneous_rock"],
 				};
 				
-				elements["solid_" + vesiculiteName] = {
+				elements[vesiculiteWallName] = {
 					color: vesiculiteColor,
 					behavior: behaviors.WALL,
 					category: "land",
@@ -960,9 +1143,9 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 					_data: [compositionFamilyName,"vesiculite","solid_igneous_rock"],
 				};
 				
-				elements.water.reactions[vesiculiteName] = { "elem2": vesiculiteName + "_gravel", "chance": 0.00035 }
+				elements.water.reactions[vesiculiteName] = { "elem2": vesiculiteGravelName, "chance": 0.00035 }
 
-				elements[vesiculiteName + "_gravel"] = {
+				elements[vesiculiteGravelName] = {
 					color: gravelizeToHex(vesiculiteColor),
 					behavior: behaviors.POWDER,
 					category: "land",
@@ -974,7 +1157,7 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 					_data: [compositionFamilyName,"vesiculite","igneous_gravel"],
 				};
 				
-				elements.water.reactions[vesiculiteName + "_gravel"] = { "elem2": twoPartRepeatedArray(vesiculiteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
+				elements.water.reactions[vesiculiteGravelName] = { "elem2": twoPartRepeatedArray(vesiculiteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
 
 				elements[vesiculiteSandName] = {
 					color: sandizeToHex(vesiculiteName,"normal"),
@@ -1042,11 +1225,11 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 					stateHigh: magmaName,
 					density: vitriteDensity,
 					hardness: 0.75,
-					breakInto: vitriteName + "_shard",
+					breakInto: vitriteGravelName,
 					_data: [compositionFamilyName,"vitrite","igneous_rock"],
 				};
 
-				elements["solid_" + vitriteName] = {
+				elements[vitriteWallName] = {
 					color: vitriteColor,
 					behavior: behaviors.SOLID,
 					category: "land",
@@ -1059,9 +1242,9 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 					_data: [compositionFamilyName,"vitrite","solid_igneous_rock"],
 				};
 				
-				elements.water.reactions[vitriteName] = { "elem2": vitriteName + "_shard", "chance": 0.00035 }
+				elements.water.reactions[vitriteName] = { "elem2": vitriteGravelName, "chance": 0.00035 }
 
-				elements[vitriteName + "_shard"] = {
+				elements[vitriteGravelName] = {
 					color: gravelizeToHex(vitriteColor),
 					behavior: behaviors.POWDER,
 					category: "land",
@@ -1073,7 +1256,7 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 					_data: [compositionFamilyName,"vitrite","glass_shard"],
 				};
 
-				elements.water.reactions[vitriteName + "_shard"] = { "elem2": twoPartRepeatedArray(vitriteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
+				elements.water.reactions[vitriteGravelName] = { "elem2": twoPartRepeatedArray(vitriteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
 
 				elements[vitriteSandName] = {
 					color: sandizeToHex(vitriteName,"normal"),
@@ -1132,63 +1315,69 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 					"elem1": null, "elem2": "wet_" + vitriteSandName,
 				};
 				
-				if(compositionFamilyName !== "mafic") {
-					elements[magmaName] = {
-						"reactions": {
-							"ash": { "elem1": null, "elem2": "molten_slag" },
-							"dust": { "elem1": null, "elem2": "molten_slag" },
-							"foam": { "elem1": vesiculiteName, "elem2": vesiculiteName },
+				var magmaOldReactions = nicffunc_getReactions(magmaName);
+				var magmaOldColor = elements.magma.color;
+				elements[magmaName] = {
+					reactions: {
+						"ash": { "elem1": null, "elem2": "molten_slag" },
+						"dust": { "elem1": null, "elem2": "molten_slag" },
+					},
+					_magmaCoolingPassToElement: {
+						vitreous: [vitriteCoolingRateThreshold,vitriteName],
+						aphanitic: [aphaniteCoolingRateThreshold,aphaniteName],
+						phaneritic: [Infinity,phaneriteName],
+						meltingPoints: {
+							vitreous: vitriteMeltingPoint,
+							vesicular: vesiculiteMeltingPoint,
+							aphanitic: aphaniteMeltingPoint,
+							phaneritic: phaneriteMeltingPoint,
 						},
-						_magmaCoolingPassToElement: {
-							vitreous: [vitriteCoolingRateThreshold,vitriteName],
-							aphanitic: [aphaniteCoolingRateThreshold,aphaniteName],
-							phaneritic: [Infinity,phaneriteName],
-							meltingPoints: {
-								vitreous: vitriteMeltingPoint,
-								vesicular: vesiculiteMeltingPoint,
-								aphanitic: aphaniteMeltingPoint,
-								phaneritic: phaneriteMeltingPoint,
-							},
-						},
-						tick: function(pixel) {
-							var coolingInfo = elements[pixel.element]._magmaCoolingPassToElement;
-							magmaRateBasedCooling(
-								pixel,
-								Math.min(
-									coolingInfo.meltingPoints.vitreous,
-									coolingInfo.meltingPoints.vesicular,
-									coolingInfo.meltingPoints.aphanitic,
-									coolingInfo.meltingPoints.phaneritic
-								) - 20,
-								coolingInfo.vitreous[1],
-								coolingInfo.vitreous[0],
-								coolingInfo.aphanitic[1],
-								coolingInfo.aphanitic[0],
-								coolingInfo.phaneritic[1]
-							);
-						},
-						"color": makeMoltenColor(phaneriteColor),
-						"behavior": behaviors.MOLTEN,
-						"temp": Math.max(phaneriteMeltingPoint,aphaniteMeltingPoint,vesiculiteMeltingPoint,vitriteMeltingPoint) + 100,
-						"tempLow": -Infinity, //cosmetic info
-						"stateLow": [aphaniteName,phaneriteName,vitriteName],
-						"tempHigh": magmaBoilingPoint,
-						"stateHigh": "vaporized_" + magmaName,
-						"viscosity": magmaViscosity,
-						"hidden": true,
-						"state": "liquid",
-						"category": "magma",
-						"density": magmaDensity,
-						"_data": [compositionFamilyName,"magma","liquid"],
-					};
-				} else {
-					elements[magmaName].tempHigh = magmaBoilingPoint;
-					elements[magmaName].stateHigh = ["vaporized_" + magmaName];
+					},
+					tick: function(pixel) {
+						var coolingInfo = elements[pixel.element]._magmaCoolingPassToElement;
+						magmaRateBasedCooling(
+							pixel,
+							Math.min(
+								coolingInfo.meltingPoints.vitreous,
+								coolingInfo.meltingPoints.vesicular,
+								coolingInfo.meltingPoints.aphanitic,
+								coolingInfo.meltingPoints.phaneritic
+							) - 20,
+							coolingInfo.vitreous[1],
+							coolingInfo.vitreous[0],
+							coolingInfo.aphanitic[1],
+							coolingInfo.aphanitic[0],
+							coolingInfo.phaneritic[1]
+						);
+					},
+					"color": makeMoltenColor(phaneriteColor),
+					"behavior": behaviors.MOLTEN,
+					"temp": Math.max(phaneriteMeltingPoint,aphaniteMeltingPoint,vesiculiteMeltingPoint,vitriteMeltingPoint) + 100,
+					"tempLow": -Infinity, //cosmetic info
+					"stateLow": [aphaniteName,phaneriteName,vitriteName],
+					"tempHigh": magmaBoilingPoint,
+					"stateHigh": "vaporized_" + magmaName,
+					"viscosity": magmaViscosity,
+					"hidden": true,
+					"state": "liquid",
+					"category": "magma",
+					"density": magmaDensity,
+					"_data": [compositionFamilyName,"magma","liquid"],
 				};
+				if(magmaOldReactions) {
+					elements[magmaName].reactions = magmaOldReactions;
+				};
+				if(magmaName == "magma") {
+					elements.magma.color = magmaOldColor;
+				};
+				elements[magmaName].reactions.foam = { "elem1": vesiculiteName, "elem2": vesiculiteName };
 
 				elements["vaporized_" + magmaName] = {
 					color: magmavaporizeToHex(elements[magmaName].color),
 					behavior: behaviors.GAS,
+					reactions: {
+						["vaporized_" + magmaName]: { elem1: null, elem2: magmaCloudName, chance:0.3, "y":[0,15], "setting":"clouds" }
+					},
 					density: magmaDensity * 0.0028,
 					temp: magmaBoilingPoint + 100,
 					tempLow: magmaBoilingPoint,
@@ -1201,7 +1390,7 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 				
 				vaporizedMagmas.push("vaporized_" + magmaName);
 				
-				elements[magmaName + "_cloud"] = {
+				elements[magmaCloudName] = {
 					color: magmacloudizeToHex(elements[magmaName].color),
 					behavior: [
 						"XX|XX|XX",
@@ -1211,13 +1400,31 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 					density: magmaDensity * 0.0021,
 					temp: magmaBoilingPoint + 100,
 					tempLow: Math.min(phaneriteMeltingPoint,aphaniteMeltingPoint,vesiculiteMeltingPoint,vitriteMeltingPoint) - 50,
-					stateLow: aphaniteSandName,
+					stateLow: rockCloudName,
 					category: "gases",
 					state: "gas",
 					_data: [compositionFamilyName,"magma","cloud"],
 				};
 
 				magmaClouds.push(magmaName + "_cloud");
+				
+				elements[rockCloudName] = {
+					color: magmacloudizeToHex(elements[magmaName].color),
+					behavior: [
+						"XX|XX|XX",
+						"M1%7|CH:" + [aphaniteName,aphaniteGravelName,aphaniteDustName].join(",") + "%0.05|M1%7",
+						"XX|XX|XX",
+					],
+					density: magmaDensity * 0.0024,
+					temp: magmaBoilingPoint + 100,
+					tempHigh: Math.min(phaneriteMeltingPoint,aphaniteMeltingPoint,vesiculiteMeltingPoint,vitriteMeltingPoint) - 50,
+					stateHigh: magmaCloudName,
+					category: "gases",
+					state: "gas",
+					_data: [compositionFamilyName,"magma","cloud"],
+				};
+
+				rockClouds.push(rockCloudName);
 				
 			};
 
@@ -2671,7 +2878,7 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 							newConcreteTick(pixel);
 						};
 					};
-
+					
 	/*	//Rocks
 		
 			//Igneous
@@ -2932,14 +3139,17 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 						"XX|XX|XX",
 						"M2|M1|M2",
 					],
-					tempHigh:1200,
-					stateHigh: "molten_dirt",
+					tempHigh: 800,
+					stateHigh: "hot_dirt",
 					tempLow: -50,
 					stateLow: "dry_permafrost",
 					category:"land",
 					state: "solid",
 					density: 1100,
+					_data: ["mixed","mixed","particulate"]
 				},
+
+				elements.dirt._data = ["mixed","mixed","particulate"];
 
 				elements.molten_dirt = { //added manually because the change to dirt will prevent molten_dirt from being auto-generated
 					"behavior": behaviors.MOLTEN,
@@ -2974,22 +3184,13 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 				elements.dirt.tempHigh = 110;
 				elements.dirt.stateHigh = "dry_dirt";
 
-				elements.water.reactions.dry_dirt = { elem1: null, elem2: "dirt", chance: 0.1 }
-				elements.water.reactions.radioactive_dry_dirt = { elem1: null, elem2: "radioactive_dirt", chance: 0.1 }
-
-				if(!elements.mud.reactions) {
-					elements.mud.reactions = {};
-				};
-				elements.mud.reactions.dry_dirt = { elem1: "dirt", elem2: "dirt", chance: 0.06 }
-				elements.mud.reactions.radioactive_dry_dirt = { elem1: "radioactive_dirt", elem2: "radioactive_dirt", chance: 0.06 }
-
 		//Land Element Cults
 			/*
 			"Cult" is used similarly to its EoD sense; here, it signifies a set of elements that systematically replicates another set of elements except for a given modification.
 			In this case, they replicate some land elements; a "yellow" cult, for example, would have yellow_dirt, yellow_mud, yellow_mudstone, yellow_permafrost, yellow_sand...
 			*/
 
-			//Radioactive land
+			/*//Radioactive land
 
 				//Radioactive behavior cult (see above)
 
@@ -3280,11 +3481,11 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 							"quicklime": { "elem1": [null,null,"wet_sand"], "elem2": "slaked_lime", },
 							"rock": { "elem2": "wet_sand", "chance": 0.00035 },
 							"ruins": { "elem2": "rock", "chance": 0.00035 },*/
-							"mudstone": { "elem2": "radioactive_mud", "chance": 0.00035 },
-							"radioactive_mudstone": { "elem2": "radioactive_mud", "chance": 0.00035 },
+							/*"mudstone": { "elem2": "radioactive_mud", "chance": 0.00035 },
+							"radioactive_mudstone": { "elem2": "radioactive_mud", "chance": 0.00035 },*/
 							//"methane": { "elem1":"primordial_soup", "elem2":"primordial_soup", tempMin:60, charged:true },
 							//"ammonia": { "elem1":"primordial_soup", "elem2":"primordial_soup", tempMin:60, charged:true },
-							"fly": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
+							/*"fly": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
 							"firefly": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
 							"bee": { "elem2":"dead_bug", "chance":0.05, "oneway":true },
 							"stink_bug": { "elem2":"dead_bug", "chance":0.1, "oneway":true },
@@ -3590,16 +3791,16 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 						category:"machines",
 						insulate: true,
 						state: "solid",
-					};
+					};*/	
 
 					elements.liquid_irradium = {
 						color: "#5499FF",
 						behavior: behaviors.RAD_LIQUID,
-						tick: function(pixel) {
+						/*tick: function(pixel) {
 							for(i = 0; i < adjacentCoords.length; i++) {
 								transformAdjacent(pixel,radioactiveObject)
 							}
-						},
+						},*/
 						//Becomes rainbow sand by water or poison, as well as by protocite, or bio-ooze
 						//Becomes sulfuric acid on contact with it
 						//Becomes corrupt slime by elder fluid
@@ -3614,10 +3815,20 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 										//https://omniblog-of-starbound.tumblr.com/post/188424072728/starbound-element-headcannon-modded-metals
 						viscosity: 80.1,	//probably misinterpreting tickDelta, and w/o the game assets, I can't compare against water, so this is in relation to H2SO4 scaled to its density in cP and under the assumption that water visc = 1
 					};
-					
+								
+
+				elements.water.reactions.dry_dirt = { elem1: null, elem2: "dirt", chance: 0.1 }
+				//elements.water.reactions.radioactive_dry_dirt = { elem1: null, elem2: "radioactive_dirt", chance: 0.1 }
+
+				if(!elements.mud.reactions) {
+					elements.mud.reactions = {};
+				};
+				elements.mud.reactions.dry_dirt = { elem1: "dirt", elem2: "dirt", chance: 0.06 }
+				//elements.mud.reactions.radioactive_dry_dirt = { elem1: "radioactive_dirt", elem2: "radioactive_dirt", chance: 0.06 }
+
 				//Inter-mod compatibility
 
-					if(enabledMods.includes("mods/some_tf_liquids.js")) {
+					/*if(enabledMods.includes("mods/some_tf_liquids.js")) {
 						elements.radioactive_basalt_gravel = {
 							color: ["#394d37", "#3b452f", "#3f452a", "#2d3d2c"],
 							behavior: behaviors.RAD_POWDER,
@@ -3629,7 +3840,7 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 							hardness: 0.26,
 						}
 						elements.radioactive_basalt.breakInto = "radioactive_basalt_gravel";
-					};
+					};*/
 
 				//Worldgen preset for testing
 
@@ -3660,6 +3871,8 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 					for(i = 0; i < filteredWaterIrradiationArray.length; i++) {
 						elements.water.reactions[filteredWaterIrradiationArray[i]] = { "elem1":"radioactive_water", chance: 0.01 }
 					};*/
+
+					hotRockFunction(); //needs to happen after dry dirt is defined
 
 	//Generation
 
