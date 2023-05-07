@@ -1,51 +1,55 @@
-var modName = "mods/switches.js";
-var formerlyNoConductMod = "mods/doElectricity changes.js";
+console.log("doElectricity should be changed");
 
-if(enabledMods.includes(formerlyNoConductMod)) {
-	elements.switch_off = {
-		name: "switch (off)",
-		color: "#7F3333",
-		behavior: behaviors.WALL,
-		noConduct: ["switch_on_control","switch_off_control"],
-		category: "machines",
+function doElectricity(pixel) {
+	if(isNaN(pixel.charge)) {
+		pixel.charge = 0;
 	};
-
-	elements.switch_on = {
-		name: "switch (on)",
-		color: "#33CC33",
-		behavior: behaviors.WALL,
-		conduct: 1,
-		noConduct: ["switch_on_control","switch_off_control"],
-		category: "machines",
-	};
-
-	elements.switch_off_control = {
-		color: "#FF3333",
-		behavior: behaviors.WALL,
-		behaviorOn: [
-			"XX|CH:switch_on>switch_off|XX",
-			"CH:switch_on>switch_off|XX|CH:switch_on>switch_off",
-			"XX|CH:switch_on>switch_off|XX"
-		],
-		conduct: 1,
-		noConduct: ["switch_on","switch_off"],
-		category: "machines",
-	};
-
-	elements.switch_on_control = {
-		color: "#33FF33",
-		behavior: behaviors.WALL,
-		behaviorOn: [
-			"XX|CH:switch_off>switch_on|XX",
-			"CH:switch_off>switch_on|XX|CH:switch_off>switch_on",
-			"XX|CH:switch_off>switch_on|XX"
-		],
-		conduct: 1,
-		noConduct: ["switch_on","switch_off"],
-		category: "machines",
-	};
-} else {
-	enabledMods.splice(enabledMods.indexOf(modName),0,formerlyNoConductMod)
-	alert(`The ${formerlyNoConductMod} mod is required and has been automatically inserted (reload for this to take effect).`)
-	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-};
+	if (pixel.charge) {
+		// Check each adjacent pixel, if that pixel's charge is false, set it to the same charge
+		for (var i = 0; i < adjacentCoords.length; i++) {
+			var x = pixel.x+adjacentCoords[i][0];
+			var y = pixel.y+adjacentCoords[i][1];
+			if (!isEmpty(x,y,true)) {
+				var newPixel = pixelMap[x][y];
+				var con = elements[newPixel.element].conduct;
+				if (con == undefined) {continue}
+				var info = elements[pixel.element];
+				if (info.noConduct && info.noConduct.includes(newPixel.element)) {continue};
+				if (Math.random() < con) { // If random number is less than conductivity
+					if (!newPixel.charge && !newPixel.chargeCD) {
+						newPixel.charge = isNaN(pixel.charge) ? 0 : pixel.charge; //Actually set it to the same charge
+						if (elements[newPixel.element].colorOn) {
+							newPixel.color = pixelColorPick(newPixel);
+						}
+						if(elements[newPixel.element].onCharge) {
+							pixel.charge ??= 0;
+							if(isNaN(pixel.charge)) { pixel.charge = 0 };
+							elements[newPixel.element].onCharge(pixel);
+						};
+					}
+				}
+				else if (elements[newPixel.element].insulate != true && !elements[newPixel.element].noResistance) { // Otherwise heat the pixel (Resistance simulation)
+					newPixel.temp += isNaN(pixel.charge) ? 0.25 : pixel.charge/4;
+					pixelTempCheck(newPixel);
+				}
+			}
+		}
+		pixel.charge -= 0.25;
+		if (pixel.charge <= 0) {
+			delete pixel.charge;
+			//console.log(elements[pixel.element].chargeCD);
+			var chargeCd = elements[pixel.element].chargeCD ?? 4;
+			pixel.chargeCD = chargeCd; //Customizable chargeCD
+		}
+	}
+	// Lower charge cooldown
+	else if (pixel.chargeCD) {
+		pixel.chargeCD -= 1;
+		if (pixel.chargeCD <= 0) {
+			delete pixel.chargeCD;
+			if (elements[pixel.element].colorOn) {
+				pixel.color = pixelColorPick(pixel);
+			}
+		}
+	}
+}
