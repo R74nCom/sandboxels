@@ -692,7 +692,23 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 			tempHigh: 200,
 			stateHigh: ["ash","molten_plastic"],
 			density: 332, //based off of First Impact: https://www.amazon.com/Kep1er-IMPACT-Contents-Tracking-Connect/dp/B09MQMNZ62
-			behavior: behaviors.POWDER,
+			tick: function(pixel) {
+				if(!(tryMove(pixel,pixel.x,pixel.y+1))) {
+					var directions = [];
+					if(isEmpty(pixel.x-1,pixel.y+2)) {
+						directions.push(-1)
+					};
+					if(isEmpty(pixel.x+1,pixel.y+2)) {
+						directions.push(1)
+					};
+					if(directions.length > 0) {
+						tryMove(pixel,pixel.x+directions[Math.floor(Math.random() * directions.length)],pixel.y)
+					};
+				}
+			},
+			reactions: {
+				water: { elem1: ["plastic","cellulose","cellulose"], elem2: ["water","water","cellulose",null,null], chance: 0.8 }
+			},
 			burn: 40,
 			burnTime: 150,
 			burnInto: ["ash","molten_plastic","carbon_dioxide","smoke"],
