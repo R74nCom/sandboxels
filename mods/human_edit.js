@@ -603,17 +603,17 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 						var otherBody = pixelMap[oX][oY+1];
 						if(otherPixel.dead || otherBody.dead) { //if either part of that human is dead
 							pixel.panic += 0.08; //being hit by a dead ******* body is terrifying
-							console.log("head.onTryMoveInto: panic increase, case: head hit by dead whole body (head's code branch)");
+							//console.log("head.onTryMoveInto: panic increase, case: head hit by dead whole body (head's code branch)");
 						} else {
-							if(otherPixel.panic > 0.04) { pixel.panic += 0.04; console.log("head.onTryMoveInto: panic increase, case: head hit by panicked whole body (head's code branch)"); }; //living, normal, headed bodies scare only if that incoming human is already scared
+							//if(otherPixel.panic > 0.04) { pixel.panic += 0.04; console.log("head.onTryMoveInto: panic increase, case: head hit by panicked whole body (head's code branch)"); }; //living, normal, headed bodies scare only if that incoming human is already scared
 						};
 					} else { //if it's a severed head
 						if(otherPixel.dead) { //if the head is dead
 							pixel.panic += 0.08; //being hit by a /severed ******* head/ is terrifying
-							console.log("head.onTryMoveInto: panic increase, case: head hit by dead severed head");
+							//console.log("head.onTryMoveInto: panic increase, case: head hit by dead severed head");
 						} else {
 							pixel.panic += 0.1; //being hit by a //******* severed head that's still alive// is even worse
-							console.log("head.onTryMoveInto: panic increase, case: head hit by living severed head");
+							//console.log("head.onTryMoveInto: panic increase, case: head hit by living severed head");
 						};					
 					};
 				} else if(otherElement === "body") { //if the pixel hitting this head is a body
@@ -695,10 +695,10 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 			tick: function(pixel) {
 				if(!(tryMove(pixel,pixel.x,pixel.y+1))) {
 					var directions = [];
-					if(isEmpty(pixel.x-1,pixel.y+2)) {
+					if(isEmpty(pixel.x-1,pixel.y+1) && isEmpty(pixel.x-1,pixel.y+2)) {
 						directions.push(-1)
 					};
-					if(isEmpty(pixel.x+1,pixel.y+2)) {
+					if(isEmpty(pixel.x+1,pixel.y+1) && isEmpty(pixel.x+1,pixel.y+2)) {
 						directions.push(1)
 					};
 					if(directions.length > 0) {
