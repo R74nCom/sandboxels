@@ -9,6 +9,8 @@ if(enabledMods.includes(libraryMod)) {
 			_channel: 0,
 			_correspondingWifi: null,
 		},
+		hardness: 0.8,
+		breakInto: ["plastic","steel","copper"],
 		conduct: 1,
 		insulate: true,
 		tick: function(pixel) {
@@ -66,6 +68,8 @@ if(enabledMods.includes(libraryMod)) {
 			_channel: 0,
 			_correspondingWifi: null,
 		},
+		hardness: 0.8,
+		breakInto: ["plastic","steel","copper"],
 		conduct: 1,
 		insulate: true,
 		tick: function(pixel) {
@@ -122,6 +126,8 @@ if(enabledMods.includes(libraryMod)) {
 		properties: {
 			_channel: 0,
 		},
+		hardness: 0.8,
+		breakInto: ["plastic","steel","copper"],
 		conduct: 1,
 		insulate: true,
 		tick: function(pixel) {
