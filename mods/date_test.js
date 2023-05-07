@@ -5,70 +5,83 @@ if(enabledMods.includes(haseuliteMod)) {
 	fakeDate = urlParams.get('fakeDate');
 	shortenedTest = (urlParams.get('shortenedTest') !== null);
 
-	loonaObject = {
+	idolData = {
 		"08-01": [
-			{member: "Seo Dahyun",color: "rgb(251,160,227)",group: "tripleS"},
-			{member: "Kwak Yeonji",color: "rgb(89,116,255)",group: "tripleS"},//Fod gucking damn it
+			{member: "Seo Dahyun", color: "rgb(251,160,227)", group: "tripleS"},
+			{member: "Kwak Yeonji", color: "rgb(89,116,255)", group: "tripleS"},
 		],
-		"23-01": {member: "Isa",color: "rgb(0,0,0)",group: "STAYC"},
-		"01-02": {member: "Jihyo",color: "rgb(250,200,87)",group: "Twice"},
+		"23-01": {member: "Isa", color: "rgb(0,0,0)", group: "STAYC"},
+		"01-02": {member: "Jihyo", color: "rgb(250,200,87)", group: "Twice"},
 		"03-02": [
-			{member: "Rei",color: "rgba(105,195,45)",group: "IVE"},
-			{member: "Gong Yubin",color: "rgb(255,227,226)",group: "tripleS"},
+			{member: "Rei", color: "rgba(105,195,45)", group: "IVE"},
+			{member: "Gong Yubin", color: "rgb(255,227,226)", group: "tripleS"},
 		],
-		"09-02": {member: "Kim Yooyeon",color: "rgb(205,102,171)",group: "tripleS"},
-		"21-02": {member: "Leeseo",color: "rgb(255,240,1)",group: "IVE"},
-		"10-02": {member: "Kim Lip",color: "rgb(234,2,1)",group: "Loona"},
-		"10-03": {member: "Kotone",color: "rgb(255,246,84)",group: "tripleS"},
-		"13-03": {member: "Sumin",color: "rgb(255,192,203)",group: "STAYC"},
-		"24-03": {member: "Mina",color: "rgb(111,197,194)",group: "Twice"},
-		"12-04": {member: "Jeong Hyerin",color: "rgb(142,108,255)",group: "tripleS"},
-		"14-04": {member: "Yoon",color: "rgb(50,205,50)",group: "STAYC"},//so pretty soijejdsjiodiopziajreldkxf
-		"23-04": {member: "Chaeyoung",color: "rgb(255,23,68)",group: "Twice"},
-		"24-05": {member: "Yves",color: "rgb(125,0,30)",group: "Loona"},
-		"28-05": {member: "Dahyun",color: "rgb(255,255,255)",group: "Twice"},
-		"04-06": {member: "Choerry",color: "rgb(92,44,146)",group: "Loona"},
-		"13-06": {member: "JinSoul",color: "rgb(20,36,176)",group: "Loona"},
+		"09-02": {member: "Kim Yooyeon", color: "rgb(205,102,171)", group: "tripleS"},
+		"21-02": {member: "Leeseo", color: "rgb(255,240,1)", group: "IVE"},
+		"10-02": {member: "Kim Lip", color: "rgb(234,2,1)", group: "Loona"},
+		"02-03": {member: "Dayeon", color: "rgb", group: "Kep1er"},
+		"10-03": {member: "Kotone", color: "rgb(255,246,84)", group: "tripleS"},
+		"12-03": {member: "Hikaru", color:"rgb", group: "Kep1er"},
+		"13-03": {member: "Sumin", color: "rgb(255,192,203)", group: "STAYC"},
+		"24-03": {member: "Mina", color: "rgb(111,197,194)", group: "Twice"},
+		"12-04": {member: "Jeong Hyerin", color: "rgb(142,108,255)", group: "tripleS"},
+		"14-04": {member: "Yoon", color: "rgb(50,205,50)", group: "STAYC"},
+		"23-04": {member: "Chaeyoung", color: "rgb(255,23,68)", group: "Twice"},
+		"26-04": {member: "Chaehyun", color:"rgb", group: "Kep1er"},
+		"24-05": {member: "Yves", color: "rgb(125,0,30)", group: "Loona"},
+		"28-05": {member: "Dahyun", color: "rgb(255,255,255)", group: "Twice"},
+		"02-06": {member: "Nien", color: "rgb(255,149,64)", group: "tripleS"},
+		"04-06": {member: "Choerry", color: "rgb(92,44,146)", group: "Loona"},
+		"13-06": {member: "JinSoul", color: "rgb(20,36,176)", group: "Loona"},
 		"14-06": [
-			{member: "Seeun",color: "rgb(135,206,235)",group: "STAYC"},
-			{member: "Tzuyu",color: "rgb(2,119,189)",group: "Twice"}
+			{member: "Seeun", color: "rgb(135,206,235)", group: "STAYC"},
+			{member: "Tzuyu", color: "rgb(2,119,189)", group: "Twice"}
 		],
-		"01-08": {member: "Sieun",color: "rgb(255,255,255)",group: "STAYC"},
-		"06-08": {member: "Yoon Seoyeon",color: "rgb(34,174,255)",group: "tripleS"},
-		"18-08": {member: "HaSeul",color: "rgb(0,166,81)",group: "Loona"},
-		"31-08": {member: "Wonyoung",color: "rgb(255,0,30)",group: "IVE"},//stay mad
-		"01-09": {member: "Yujin",color: "rgb(255,57,154)",group: "IVE"},
-		"22-09": {member: "Nayeon",color: "rgb(129,212,250)",group: "Twice"},
-		"24-09": {member: "Gaeul",color: "rgb(0,85,168)",group: "IVE"},
-		"03-10": {member: "Kim Soomin",color: "rgb(236,138,165)",group: "tripleS"},
-		"13-10": {member: "Kim Nakyoung",color: "rgb(101,153,164)",group: "tripleS"},
-		"19-10": {member: "HeeJin",color: "rgb(255,0,146)",group: "Loona"},
-		"20-10": {member: "Chuu",color: "rgb(246,144,126)",group: "Loona"},
-		"24-10": {member: "Lee Jiwoo",color: "rgb(255,249,36)",group: "tripleS"},
-		"01-11": {member: "Jeongyeon",color: "rgb(188,215,118)",group: "Twice"},
-		"09-11": {member: "Momo",color: "rgb(248,207,215)",group: "Twice"},
-		"11-11": {member: "YeoJin",color: "rgb(244,111,31)",group: "Loona"},
-		"13-11": {member: "Olivia Hye",color: "rgb(143,143,143)",group: "Loona"},
-		"15-11": {member: "HyunJin",color: "rgb(255,204,0)",group: "Loona"},
-		"19-11": {member: "Go Won",color: "rgb(48,195,156)",group: "Loona"},
-		"21-11": {member: "Liz",color: "rgb(0,195,245)",group: "IVE"},
-		"04-12": {member: "Kim Chaeyeon",color: "rgb(141,191,65)",group: "tripleS"},
+		"27-07": {member: "Huening Bahiyyih", color:"rgb", group: "Kep1er"},
+		"01-08": {member: "Sieun", color: "rgb(255,255,255)", group: "STAYC"},
+		"06-08": {member: "Yoon Seoyeon", color: "rgb(34,174,255)", group: "tripleS"},
+		"12-08": {member: "Choi Yujin", color:"rgb", group: "Kep1er"},
+		"18-08": {member: "HaSeul", color: "rgb(0,166,81)", group: "Loona"},
+		"22-08": {member: "Yeseo", color:"rgb", group: "Kep1er"},
+		"31-08": {member: "Wonyoung", color: "rgb(255,0,30)", group: "IVE"},//stay mad
+		"01-09": {member: "Yujin", color: "rgb(255,57,154)", group: "IVE"},
+		"22-09": {member: "Nayeon", color: "rgb(129,212,250)", group: "Twice"},
+		"24-09": {member: "Gaeul", color: "rgb(0,85,168)", group: "IVE"},
+		"03-10": {member: "Kim Soomin", color: "rgb(236,138,165)", group: "tripleS"},
+		"13-10": [
+			{member: "Kim Nakyoung", color: "rgb(101,153,164)", group: "tripleS"},
+			{member: "Park Sohyun", color: "rgb(19,34,182)", group: "tripleS"},
+		],
+		"19-10": {member: "HeeJin", color: "rgb(255,0,146)", group: "Loona"},
+		"20-10": {member: "Chuu", color: "rgb(246,144,126)", group: "Loona"},
+		"24-10": {member: "Lee Jiwoo", color: "rgb(255,249,36)", group: "tripleS"},
+		"01-11": {member: "Jeongyeon", color: "rgb(188,215,118)", group: "Twice"},
+		"09-11": {member: "Momo", color: "rgb(248,207,215)", group: "Twice"},
+		"11-11": {member: "YeoJin", color: "rgb(244,111,31)", group: "Loona"},
+		"12-11": {member: "Xiaoting", color:"rgb", group: "Kep1er"},
+		"13-11": {member: "Olivia Hye", color: "rgb(143,143,143)", group: "Loona"},
+		"15-11": {member: "HyunJin", color: "rgb(255,204,0)", group: "Loona"},
+		"19-11": {member: "Go Won", color: "rgb(48,195,156)", group: "Loona"},
+		"21-11": {member: "Liz", color: "rgb(0,195,245)", group: "IVE"},
+		"04-12": {member: "Kim Chaeyeon", color: "rgb(141,191,65)", group: "tripleS"},
 		"09-12": [
-			{member: "ViVi",color: "rgb(255,152,180)",group: "Loona"},
-			{member: "J",color: "rgb(255,0,0)",group: "STAYC"}
+			{member: "ViVi", color: "rgb(255,152,180)", group: "Loona"},
+			{member: "J", color: "rgb(255,0,0)", group: "STAYC"}
 		],
-		"20-12": {member: "Kaede",color: "rgb(255,201,53)",group: "tripleS"},
-		"29-12": {member: "Sana",color: "rgb(159,168,218)",group: "Twice"}
+		"16-12": {member: "Mashiro", color:"rgb", group: "Kep1er"},
+		"20-12": {member: "Kaede", color: "rgb(255,201,53)", group: "tripleS"},
+		"27-12": {member: "Youngeun", color:"rgb", group: "Kep1er"},
+		"29-12": {member: "Sana", color: "rgb(159,168,218)", group: "Twice"}
 	};
 	
 	var chaos = [];
-	for(date in loonaObject) {
+	for(date in idolData) {
 		if(date == "chaos") { continue };
-		if(!(loonaObject[date] instanceof Array)) { loonaObject[date] = [loonaObject[date]] }; //array wrap
+		if(!(idolData[date] instanceof Array)) { idolData[date] = [idolData[date]] }; //array wrap
 		
-		chaos = chaos.concat(loonaObject[date]);
+		chaos = chaos.concat(idolData[date]);
 	};
-	loonaObject.chaos = chaos;
+	idolData.chaos = chaos;
 
 	var february10Override = false;
 
@@ -83,7 +96,7 @@ if(enabledMods.includes(haseuliteMod)) {
 	}
 
 	function registerElemClick(elementName,memberDataIndex) {
-		var dateData = loonaObject[getDayMonth()];
+		var dateData = idolData[getDayMonth()];
 		if(!dateData) {
 			alert("No birthday data here");
 			return false;
@@ -155,8 +168,8 @@ if(enabledMods.includes(haseuliteMod)) {
 
 		var randomElementSets = {};
 
-		if(loonaObject[dayMonth]) {
-			var data = loonaObject[dayMonth];
+		if(idolData[dayMonth]) {
+			var data = idolData[dayMonth];
 
 			for(var memberIndex = 0; memberIndex < data.length; memberIndex++) {
 				var member = data[memberIndex].member;
@@ -203,7 +216,7 @@ if(enabledMods.includes(haseuliteMod)) {
 				};
 
 				runAfterButtons(function() {
-					var data = loonaObject[getDayMonth()];
+					var data = idolData[getDayMonth()];
 					//console.log(data);
 					for(var memberIndex = 0; memberIndex < data.length; memberIndex++) {
 						var member = data[memberIndex].member;
@@ -230,6 +243,7 @@ if(enabledMods.includes(haseuliteMod)) {
 				for(element in funnyElements) {
 					var elemName = funnyElements[element];
 					var info = elements[elemName];
+					if(!info) { console.log(element) };
 					var memberData = data[memberIndex];
 					if(typeof(info.desc) === "undefined") {
 						info.desc = ""
