@@ -175,6 +175,8 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 			
 			//console.log(elementOfSingularity);
 			
+			var returns = [];
+			
 			if(!elementExists(singularityName)) {
 				elements[singularityName] = {
 					color: newColorArray,
@@ -184,9 +186,14 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 					temp: firstTemp,
 					hardness: 0.995,
 					singularityNumber: null,
+					originalElementDisplay: elements[elementOfSingularity.replaceAll(",","_")]?.originalElementKey ?? elementOfSingularity.split(","),
+					originalElementKey: elements[elementOfSingularity.replaceAll(",","_")]?.originalElementKey ?? elementOfSingularity.split(","),
 					state: "solid",
 					density: finalDensity,
 				};
+				var newInfo = elements[singularityName];
+				elements[singularityName].originalElementDisplay = newInfo.originalElementKey.map(x => elements[x].name ?? x);
+				if(elements[singularityName].originalElementDisplay.length == 1) { elements[singularityName].originalElementDisplay = elements[singularityName].originalElementDisplay[0] };
 				if(singularityElements[0] instanceof Array) {
 					elements[singularityName].singularityNumber = 1;
 				} else {
@@ -196,6 +203,11 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 						elements[singularityName].singularityNumber = elements[singularityElements[0]].singularityNumber + 1;
 					};
 				};
+				var num = newInfo.singularityNumber ?? NaN;
+				var descTypeString = (num == 1 ? "singularity" : `${num.toString()}-singularity`);
+				var descNumberString = (num < 4 ? (10 ** (num * 4)).toLocaleString("en-US") : `10<sup>${num * 4}</sup>`);
+				var descElementString = tryJoin((newInfo.originalElementDisplay ?? "[Original element could not be determined]"),", ");
+				elements[singularityName].desc = `A ${descTypeString} normally made of ${descNumberString} pixels of ${descElementString}.`.replaceAll("NaN","[Quantity could not be determined]");
 				if(singularityName.includes("haseulite") && !singularityName.includes("haseulite_vent")) {
 					elements[singularityName].tick = function(pixel) { haseulitoidSingularityTick(pixel) };
 					haseuliteSpreadWhitelist.push(singularityName);
@@ -236,8 +248,9 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 				};
 			};
 			count++;
+			returns.push(singularityName);
 		};
-		return count;
+		return returns;
 	};
 
 	elements.neutronium_compressor = {
