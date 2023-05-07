@@ -273,7 +273,7 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 						if(otherPixel.dead || otherBody.dead) { //if either part of that human is dead
 							head.panic += 0.08; //being hit by a dead ******* body is terrifying
 						} else {
-							if(otherPixel.panic > 0.04) { head.panic += 0.04 }; //living, normal, bodied heads scare only if that incoming human is already scared
+							if(otherPixel.panic > 0.04 && otherPixel.mood <= 0) { head.panic += 0.04 }; //living, normal, bodied heads scare only if that incoming human is already scared
 						};
 					} else { //if it's a severed head
 						if(otherPixel.dead) { //if the head is dead
