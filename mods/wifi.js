@@ -3,12 +3,6 @@ var libraryMod = "mods/code_library.js";
 
 if(enabledMods.includes(libraryMod)) {
 	//https://stackoverflow.com/a/60922255
-	if(!enabledMods.includes("mods/mobs.js")) {
-		headBodyObject = {
-			"head": "body",
-		};
-	};
-
 	elements.wifi = {
 		color: "#bfff7f",
 		properties: {
@@ -21,10 +15,10 @@ if(enabledMods.includes(libraryMod)) {
 			pixel._channel = Math.floor(pixel.temp / 100);
 			
 			var colorBase = (pixel._channel + 3);
-			if(colorBase < 0 || colorBase > 63) {
+			if(colorBase < 0 || colorBase > 124) {
 				pixel.color == "rgb(212,185,222)";
 			} else {
-				colorBase = colorBase.toString(4).padStart(3,"0").split("").map(x => parseInt(x) * 64);
+				colorBase = colorBase.toString(5).padStart(3,"0").split("").map(x => parseInt(x) * 64);
 				pixel.color = `rgb(${colorBase.join(",")})`
 			};
 
@@ -78,10 +72,10 @@ if(enabledMods.includes(libraryMod)) {
 			pixel._channel = Math.floor(pixel.temp / 100);
 
 			var colorBase = (pixel._channel + 3);
-			if(colorBase < 0 || colorBase > 63) {
+			if(colorBase < 0 || colorBase > 124) {
 				pixel.color == "rgb(212,185,222)";
 			} else {
-				colorBase = colorBase.toString(4).padStart(3,"0").split("").map(x => parseInt(x) * 64);
+				colorBase = colorBase.toString(5).padStart(3,"0").split("").map(x => parseInt(x) * 64);
 				pixel.color = `rgb(${colorBase.join(",")})`
 			};
 
@@ -134,10 +128,10 @@ if(enabledMods.includes(libraryMod)) {
 			pixel._channel = Math.floor(pixel.temp / 100);
 
 			var colorBase = (pixel._channel + 3);
-			if(colorBase < 0 || colorBase > 63) {
-				pixel.color == "rgb(212,185,222)";
+			if(colorBase < 0 || colorBase > 124) {
+				pixel.color = "rgb(212,185,222)";
 			} else {
-				colorBase = colorBase.toString(4).padStart(3,"0").split("").map(x => parseInt(x) * 64);
+				colorBase = colorBase.toString(5).padStart(3,"0").split("").map(x => parseInt(x) * 64);
 				pixel.color = `rgb(${colorBase.join(",")})`
 			};
 
