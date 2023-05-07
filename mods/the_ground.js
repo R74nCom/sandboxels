@@ -32,11 +32,7 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 		//Basically the entire hot_rocks.js code
 
 			function hotRockFunction() {
-				var hotNameOverrides = {
-					dry_dirt: "hot_dirt",
-				};
-
-				var igneousRocksAndSands = Object.keys(elements).filter(
+				var rocksSandsAndSoils = Object.keys(elements).filter(
 					function(elemName) {
 						//console.log(elemName,elements[elemName]._data?.[2]);
 						return ["igneous_rock","solid_igneous_rock","igneous_gravel","sedimentary_rock","particulate"].includes(elements[elemName]._data?.[2]) && !("clay","limestone","black_limestone","shale".includes(elemName))
@@ -60,8 +56,6 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 					};
 				};
 
-				igneousRocksAndSands = igneousRocksAndSands.concat("dry_dirt");
-
 				hotRockBehavior = [
 					"XX|CR:fire%0.5|XX",
 					"XX|XX|XX",
@@ -74,33 +68,35 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 					"XX|CR:fire%0.1|XX"
 				];
 
-				console.log(igneousRocksAndSands)
-				for(j = 0; j < igneousRocksAndSands.length; j++) {
-					var rockName = igneousRocksAndSands[j];
+				//console.log(rocksSandsAndSoils)
+				for(j = 0; j < rocksSandsAndSoils.length; j++) {
+					var rockName = rocksSandsAndSoils[j];
 					var rockInfo = elements[rockName];
 					if(!rockInfo) {
-						console.error(rockName);
+						console.error(`${rockName}`);
 						continue;
 					};
 					var rockData = rockInfo._data ?? ["error","error","hot_unknown"];
-					var newName = hotNameOverrides[rockName] ?? "hot_" + rockName;
-					//console.log(newName,igneousRocksAndSands.indexOf(rockName));
+					var newName = rockName.startsWith("dry_") ? rockName.replace("dry_","hot_") : "hot_" + rockName;
 					//console.log(rockInfo.stateHigh);
 					elements[newName] = {
 						color: redHotColorgen(rockInfo.color,"hex"),
 						behavior: hotData2Switch(rockData[2]).includes("solid") ? solidHotRockBehavior : hotRockBehavior,
 						category: "land",
 						state: "solid",
+						stateHigh: rockInfo.stateHigh,
 						temp: Math.min(rockInfo.tempHigh - 50,850),
 						tempHigh: rockInfo.tempHigh,
 						tempLow: Math.min(rockInfo.tempHigh - 100,800),
 						stateLow: rockName,
-						stateHigh: rockInfo.stateHigh,
-						density: rockData.density * 0.9,
-						hardness: rockData.density * 0.85,
+						density: rockInfo.density * 0.9,
+						hardness: rockInfo.density * 0.85,
 						//breakInto: newName + "_gravel",
 						_data: [rockData[0], rockData[1], hotData2Switch(rockData[2])],
 					};
+
+					//console.log([elements[rockName].tempHigh,elements[rockName].stateHigh]);
+					//console.log([elements[newName].tempLow,elements[newName].stateLow])
 					
 					if(rockName == "basalt") {
 						elements[newName].behavior = [
@@ -125,10 +121,6 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 
 				elements.dirt.tempHigh = 100;
 				elements.dirt.stateHigh = "dry_dirt";
-				elements.hot_dirt.tempHigh = 1200;
-				elements.hot_dirt.stateHigh = "molten_dirt";
-				elements.hot_dirt.tempLow = 800;
-				elements.hot_dirt.stateLow = "dry_dirt";
 			};
 			
 		//Star world matter function
@@ -602,17 +594,17 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 
 				//Sands
 
-					function sandizeToHex(rockName,type="normal",sBringTo=31,sBringFactor=0.4,lBringTo=70,lBringFactor=0.6) {
-						//console.log(rockName);
+					function sandizeToHex(rockColor,type="normal",sBringTo=31,sBringFactor=0.4,lBringTo=70,lBringFactor=0.6) {
+						if(elements[rockColor]) {
+							//Assuming an element was given, for compatibility
+							rockColor = elements[rockColor].color
+						};
 						if(!["normal","n","wet","w","packed","p"].includes(type.toLowerCase())) {
 							throw new Error("Type must be 'normal', 'wet', or 'packed'");
 						};
-						var rockInfo = elements[rockName];
-						if(!rockInfo) { throw new Error("No such element '" + rockName + "'") };
 						var sandColor = [];
 						//var sandColorObject = [];
-						var rockColor = rockInfo.color;
-						if(!rockColor instanceof Array) {
+						if(!(rockColor instanceof Array)) {
 							rockColor = [rockColor];
 						};
 						for(i = 0; i < rockColor.length; i++) {
@@ -643,14 +635,15 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 						return sandColor;
 					};
 
-					function dustizeToHex(rockName,sBringTo=25,sBringFactor=0.4,lBringTo=55,lBringFactor=0.6) {
+					function dustizeToHex(rockColor,sBringTo=25,sBringFactor=0.4,lBringTo=55,lBringFactor=0.6) {
+						if(elements[rockColor]) {
+							//Assuming an element was given, for compatibility
+							rockColor = elements[rockColor].color
+						};
 						//console.log(rockName);
-						var rockInfo = elements[rockName];
-						if(!rockInfo) { throw new Error("No such element '" + rockName + "'") };
 						var dustColor = [];
 						//var dustColorObject = [];
-						var rockColor = rockInfo.color;
-						if(!rockColor instanceof Array) {
+						if(!(rockColor instanceof Array)) {
 							rockColor = [rockColor];
 						};
 						for(i = 0; i < rockColor.length; i++) {
@@ -764,6 +757,26 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 							color[i].h += 5;
 							color[i].s -= 8;
 							color[i].l += 5;
+						};
+
+						color = color.map(x => convertHslObjects(x,"hex"));
+
+						return color;
+					};
+
+					function rockcloudizeToHex(colorIn) {
+						var color = colorIn;
+
+						if(!(color instanceof Array)) {
+							color = [color];
+						};
+						
+						color = color.map(x => normalizeColorToHslObject(x));
+
+						for(i = 0; i < color.length; i++) {
+							color[i].h -= 12;
+							color[i].s *= 0.12;
+							color[i].l -= 6;
 						};
 
 						color = color.map(x => convertHslObjects(x,"hex"));
@@ -1401,7 +1414,7 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 					temp: magmaBoilingPoint + 100,
 					tempLow: Math.min(phaneriteMeltingPoint,aphaniteMeltingPoint,vesiculiteMeltingPoint,vitriteMeltingPoint) - 50,
 					stateLow: rockCloudName,
-					category: "gases",
+					category: "magma",
 					state: "gas",
 					_data: [compositionFamilyName,"magma","cloud"],
 				};
@@ -1409,17 +1422,17 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 				magmaClouds.push(magmaName + "_cloud");
 				
 				elements[rockCloudName] = {
-					color: magmacloudizeToHex(elements[magmaName].color),
+					color: rockcloudizeToHex(elements[magmaName].color),
 					behavior: [
 						"XX|XX|XX",
 						"M1%7|CH:" + [aphaniteName,aphaniteGravelName,aphaniteDustName].join(",") + "%0.05|M1%7",
 						"XX|XX|XX",
 					],
 					density: magmaDensity * 0.0024,
-					temp: magmaBoilingPoint + 100,
+					temp: Math.min(phaneriteMeltingPoint,aphaniteMeltingPoint,vesiculiteMeltingPoint,vitriteMeltingPoint) - 300,
 					tempHigh: Math.min(phaneriteMeltingPoint,aphaniteMeltingPoint,vesiculiteMeltingPoint,vitriteMeltingPoint) - 50,
 					stateHigh: magmaCloudName,
-					category: "gases",
+					category: "magma",
 					state: "gas",
 					_data: [compositionFamilyName,"magma","cloud"],
 				};
@@ -1975,77 +1988,76 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 				
 				elements.molten_dirt.tempHigh = 3313;
 				var rockStateHigh = JSON.parse(JSON.stringify(vaporizedMagmas));
+				//no nellish or rainbow magma in dirt
 				if(rockStateHigh.includes("vaporized_nellish_magma")) { 
 					rockStateHigh.splice(rockStateHigh.indexOf("vaporized_nellish_magma"));
 				};
+				if(rockStateHigh.includes("vaporized_rainbow_magma")) { 
+					rockStateHigh.splice(rockStateHigh.indexOf("vaporized_rainbow_magma"));
+				};
 				elements.molten_dirt.stateHigh = rockStateHigh; //assuming mixture
+				
+				for(var sandIndex in sands) {
+					sandIndex = parseInt(sandIndex);
+					var sandName = sands[sandIndex];
+					var usedSandColor = elements[sandName].color;
+					if(!(usedSandColor instanceof Array)) {
+						usedSandColor = [usedSandColor];
+					};
+					
+					var newSandyClayColor = usedSandColor.map(subcolor => lerpColors(subcolor,elements.clay.color,"hex",weight1=0.5));
+					
+					var newSandyLoamColor = [];
+					for(var dirtSubcolorIndex in elements.dirt.color) {
+						dirtSubcolorIndex = parseInt(dirtSubcolorIndex);
+						dirtSubcolor = elements.dirt.color[dirtSubcolorIndex];
+						//for each dirt subcolor, to the final new color concatenate the result of mapping each of the sand color's subcolors to one of dirt's subcolors
+						newSandyLoamColor = newSandyLoamColor.concat(usedSandColor.map(subcolor => lerpColors(subcolor,dirtSubcolor,"hex",weight1=0.6)));
+					};
+					
+					var newLoamySandColor = [];
+					for(var dirtSubcolorIndex in elements.dirt.color) {
+						dirtSubcolorIndex = parseInt(dirtSubcolorIndex);
+						dirtSubcolor = elements.dirt.color[dirtSubcolorIndex];
+						//for each dirt subcolor, to the final new color concatenate the result of mapping each of the sand color's subcolors to one of dirt's subcolors
+						newLoamySandColor = newLoamySandColor.concat(usedSandColor.map(subcolor => lerpColors(subcolor,dirtSubcolor,"hex",weight1=0.4)));
+					};
+					
+					var newSandyClayLoamColor = newSandyLoamColor.map(subcolor => lerpColors(subcolor,elements.clay.color,"hex",weight1=2/3));
+					
+					
+					var newSandyLoamColor = elements.dirt.color.map(subcolor => lerpColors(subcolor,elements.clay.color,"hex",weight1=0.5));
+				}
+				
+				var newClayLoamColor = elements.dirt.color.map(subcolor => changeHue(lerpColors(subcolor,elements.clay.color,"hex",weight1=0.5),0.9,"multiply","hex"));
+				var newDryClayLoamColor = newClayLoamColor.map(x => changeSaturation(changeLuminance(x,15,"add","hsljson"),0.9,"multiply","hex"));
+				newPowder("clay_loam",newClayLoamColor,1500,100,"dry_clay_loam",["dirt","clay_soil"]);
+
+				elements.clay_loam._data = ["clay_loam","soil","particulate"];
+
+				//manual addition due to autogen fuckery and i don't feel like calling in runAfterAutogen
+				elements.molten_clay_loam = {
+					"behavior": behaviors.MOLTEN,
+					"hidden": true,
+					"state": "liquid",
+					"category": "states",
+					"color": [ "rgb(255,217,75)", "rgb(255,174,75)", "rgb(255,130,0)", "rgb(255,205,70)", "rgb(255,164,70)", "rgb(255,123,0)", "rgb(255,202,68)", "rgb(255,162,68)", "rgb(255,121,0)", "rgb(255,210,72)", "rgb(255,168,72)", "rgb(255,126,0)" ].map(x => convertColorFormats(x,"hex")),
+					"tempLow": 1250,
+					"stateLow": "dry_clay_loam",
+					"density": 1350,
+					"viscosity": 10000
+				};
+
+				newPowder("dry_clay_loam",newDryClayLoamColor,1500,1250,"molten_clay_loam",["dry_dirt","clay_soil"]);
+
+				elements.dry_clay_loam.data = ["clay_loam","dry_soil","particulate"];
+				
+				//newPowder(name,color,density=null,tempHigh=null,stateHigh=null,breakInto=null)
 			});
 
 	//Terrain
 
 		//Soils
-		
-			//Dry
-			//Warning: Crippling lack of online information on the properties of the various soils by texture
-			
-				//Clay
-				
-					//Clay exists
-				
-				//Silty clay
-					
-					//TODO
-					
-				//Silty Clay Loam
-					
-					//TODO
-					
-				//Silty Loam
-					
-					//TODO
-					
-				//Silt
-				
-					//TODO
-					
-				//Clay Loam
-				
-					//TODO
-					//elements.clay_soil.name = "Clay Loam"
-					
-				//Medium Loam
-					
-					//TODO
-					//elements.dirt.name = "Medium Loam";
-					
-				//Sandy Clay
-				
-					/*elements.sandy_clay = {
-						color: "#DDCD8A",
-						behavior: behaviors.POWDER,
-						tempHigh: 1710,
-						tempLow: -50,
-						stateLow: "sandy_clay_permafrost",
-						category:"land",
-						state: "solid",
-						density: 1220,
-					};*/
-					
-				//Sandy Clay Loam
-				
-					//TODO
-					
-				//Sandy Loam
-				
-					//TODO
-					
-				//Loamy Sand
-				
-					//TODO
-					
-				//Sand
-				
-					//Sand exists
 					
 			//Wet
 			
@@ -3132,6 +3144,8 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 
 			//Dry dirt
 
+				elements.dirt.forceAutoGen = true;
+
 				elements.dry_dirt = {
 					color: ["#a88e5e","#8f7950","#8a7045","#9e804c"],
 					behavior: [
@@ -3139,20 +3153,21 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 						"XX|XX|XX",
 						"M2|M1|M2",
 					],
-					tempHigh: 800,
-					stateHigh: "hot_dirt",
+					tempHigh: 1200,
+					stateHigh: "molten_dirt",
 					tempLow: -50,
 					stateLow: "dry_permafrost",
 					category:"land",
 					state: "solid",
 					density: 1100,
-					_data: ["mixed","mixed","particulate"]
+					_data: ["loam","dry_soil","particulate"]
 				},
 
-				elements.dirt._data = ["mixed","mixed","particulate"];
+				elements.dirt._data = ["loam","soil","particulate"];
 
 				elements.molten_dirt = { //added manually because the change to dirt will prevent molten_dirt from being auto-generated
 					"behavior": behaviors.MOLTEN,
+					"name": "molten_loam",
 					"hidden": true,
 					"state": "liquid",
 					"category": "states",
@@ -3164,10 +3179,8 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 					"viscosity": 10000
 				}
 
-				if(enabledMods.includes("mods/boiling_rock.js")) {
-					elements.molten_dirt.tempHigh = 3000;
-					elements.molten_dirt.stateHigh = "vaporized_rock";
-				};
+				elements.molten_dirt.tempHigh = 3000;
+				elements.molten_dirt.stateHigh = "vaporized_rock";
 
 				elements.dry_permafrost = {
 					color: ["#5B7870","#535D51","#52746A","#5A7A6F"],
