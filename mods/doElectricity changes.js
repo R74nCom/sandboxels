@@ -13,8 +13,7 @@ function doElectricity(pixel) {
 				var newPixel = pixelMap[x][y];
 				var con = elements[newPixel.element].conduct;
 				if (con == undefined) {continue}
-				var info = elements[pixel.element];
-				if (info.noConduct && info.noConduct.includes(newPixel.element)) {continue};
+				if (elements[pixel.element].noConduct?.length && elements[pixel.element].noConduct.includes(newPixel.element)) {continue};
 				if (Math.random() < con) { // If random number is less than conductivity
 					if (!newPixel.charge && !newPixel.chargeCD) {
 						newPixel.charge = isNaN(pixel.charge) ? 0 : pixel.charge; //Actually set it to the same charge
