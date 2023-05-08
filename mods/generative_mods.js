@@ -1352,17 +1352,21 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 				var returns = [];
 				for(aaf = 0; aaf < bombElements.length; aaf++) {
 					var elementOfBomb = bombElements[aaf];
-					if(!(elements[elementOfBomb]?.color)) { continue };
+					//console.log("1",elementOfBomb);
+					var allElementsHaveColors = ((elementOfBomb instanceof Array ? elementOfBomb : [elementOfBomb]).map(function(name) { return !!(elements[name]?.color)}).reduce(function(a,b) { return a*b }) == 1)
+					if(!allElementsHaveColors) { continue };
 					var startColor;
 					var randomExcl = 0;
 					//console.log(elementOfBomb);
 
 					var bombName;
 
+					//console.log("2-1");
 					if(typeof(elementOfBomb === "string")) { //comma separated string check
 						if(elementOfBomb.includes(",")) { //if it is
 							elementOfBomb = elementOfBomb.split(","); //to array
 							elementOfBomb = elementOfBomb.filter(function(e) { //strip nonexistent elements
+								//console.log("3 a");
 								return typeof(elements[e]) === "object";
 							});
 						};
@@ -1395,6 +1399,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 							};
 						};
 					};
+					//console.log("e",bombName);
 
 						//Color gen
 					if(Array.isArray(startColor)) { //Average arrays, make colors rgb()
@@ -1505,7 +1510,8 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 					var returns = [];
 					for(aaf = 0; aaf < cloudElements.length; aaf++) {
 						var elementOfCloud = cloudElements[aaf];
-						if(!(elements[elementOfCloud]?.color)) { continue };
+						var allElementsHaveColors = ((elementOfCloud instanceof Array ? elementOfCloud : [elementOfCloud]).map(function(name) { return !!(elements[name]?.color)}).reduce(function(a,b) { return a*b }) == 1)
+						if(!allElementsHaveColors) { continue };
 						var startColor;
 						var randomExcl = 0;
 						//console.log("randomExcl set")
@@ -1712,7 +1718,8 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 				var returns = [];
 				for(aaf = 0; aaf < creeperElements.length; aaf++) {
 					var elementOfCreeper = creeperElements[aaf];
-					if(!(elements[elementOfCreeper]?.color)) { continue };
+					var allElementsHaveColors = ((elementOfCreeper instanceof Array ? elementOfCreeper : [elementOfCreeper]).map(function(name) { return !!(elements[name]?.color)}).reduce(function(a,b) { return a*b }) == 1)
+					if(!allElementsHaveColors) { continue };
 					var startColor;
 					var randomExcl = 0;
 					//console.log("randomExcl set")
@@ -1941,7 +1948,8 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 				var returns = [];
 				for(aaf = 0; aaf < fairyElements.length; aaf++) {
 					var elementOfFairy = fairyElements[aaf];
-					if(!(elements[elementOfFairy]?.color)) { continue };
+					var allElementsHaveColors = ((elementOfFairy instanceof Array ? elementOfFairy : [elementOfFairy]).map(function(name) { return !!(elements[name]?.color)}).reduce(function(a,b) { return a*b }) == 1)
+					if(!allElementsHaveColors) { continue };
 					var startColor;
 					var randomExcl = 0;
 					var isNocheer = 0;
@@ -2129,7 +2137,8 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 				var returns = [];
 				for(aaf = 0; aaf < spoutElements.length; aaf++) {
 					var elementOfSpout = spoutElements[aaf];
-					if(!(elements[elementOfSpout]?.color)) { continue };
+					var allElementsHaveColors = ((elementOfSpout instanceof Array ? elementOfSpout : [elementOfSpout]).map(function(name) { return !!(elements[name]?.color)}).reduce(function(a,b) { return a*b }) == 1)
+					if(!allElementsHaveColors) { continue };
 					var startColor;
 					var randomExcl = 0;
 					var isNocheer = 0;
