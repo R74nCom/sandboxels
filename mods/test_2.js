@@ -2,9 +2,7 @@ var modName = "mods/test_2.js";
 var libraryMod = "mods/code_library.js";
 
 if(enabledMods.includes(libraryMod)) {
-	alert("this requires code library and i am out of time to add a dependency if-block");
-
-	function defaultIonizationColorFormula(state) {
+	/*function defaultIonizationColorFormula(state) {
 		return convertColorFormats({r: 255, g: 221 - ((state + 1) * 32), b: 255 - ((state + 1) * 8)},"hex");
 	};
 
@@ -19,10 +17,33 @@ if(enabledMods.includes(libraryMod)) {
 
 	function fourthTestDefaultIonizationColorFormula(state) {
 		return convertColorFormats({r: 0x9f + (state * 4), g: 0xff - state, b: 0x7f - (state * 3)},"hex");
+	};*/
+	
+	function iHeliumColorFunction(state) {
+		return convertColorFormats({r: 128 - (state * 64), g: 0, b: 255},"hex")
+	};
+	
+	function iCarbonColorFunction(state) {
+		return convertColorFormats({r: 128, g: 128 + (state * 25.6), b: 128},"hex")
 	};
 
+	function iNitrogenColorFunction(state) {
+		var fraction = 256/6;
+		return convertColorFormats({r: (state * fraction), g: (state * fraction), b: 256 - (state * fraction)},"hex")
+	};
+
+	function iOxygenColorFunction(state) {
+		return convertColorFormats({r: 255, g: 25, b: state * 24},"hex")
+	};
+	
+	if(elements.carbon.reactions) {
+		var TheReVeFestival_Finale = structuredClone(elements.carbon.reactions)
+	};
+	
+	delete elements.carbon;
+
 	scientificElementoids = {
-		defaultium:		{	sublimates: false,		solidColor: "#EEEEEE",		solidDensity: 1000,		meltingPoint: 1200,	solidHardness: 0.8,
+		/*defaultium:	{	sublimates: false,		solidColor: "#EEEEEE",		solidDensity: 1000,		meltingPoint: 1200,	solidHardness: 0.8,
 							liquidColor: "#FFFFFF",	liquidDensity: 850,			liquidViscosity: 4000,	boilingPoint: 2500,
 							gasColor: "#FFDDFF",	gasDensity: 3.5,
 							ionizationEnergies_eV: [15,30,45,60,100],			ionizationColorFormula: defaultIonizationColorFormula,	
@@ -42,21 +63,52 @@ if(enabledMods.includes(libraryMod)) {
 							ionizationEnergies_eV: [11,22,33,44,55,66,77,88,99,110,121,1337],
 							ionizationColorFormula: thirdTestDefaultIonizationColorFormula,	
 							defaultState: "gas"
+						},*/
+
+		hydrogen:		{	sublimates: false,		solidColor: "#e6e6ff",		solidDensity: 86,		meltingPoint: -259.2,	solidHardness: 0.3,
+							liquidColor: "#97afcf",	liquidDensity: 70.85,		liquidViscosity: 0.013,	boilingPoint: -253,
+							gasColor: "#558bcf",	gasDensity: 0.084,
+							ionizationEnergies_eV: [13.59844],					ionizationColorFormula: function() { return "#FF00FF" },	
+							defaultState: "gas"
 						},
 
-		trollolium:		{	sublimates: false,		solidColor: "#559933",		solidDensity: 6969,		meltingPoint: 1337,	solidHardness: 0.69,
-							liquidColor: "#55aa33",	liquidDensity: 4201,		liquidViscosity: 12345,	boilingPoint: 4444,
-							gasColor: "#9fff7f",	gasDensity: 2.2,
-							ionizationEnergies_eV: [],
-							ionizationColorFormula: fourthTestDefaultIonizationColorFormula,	
+						//non-superfluid viscosity: https://royalsocietypublishing.org/doi/pdf/10.1098/rspa.1950.0181
+		helium:			{	sublimates: false,		solidColor: "#faebeb",		solidDensity: 214,			meltingPoint: -Infinity,	solidHardness: 0.3,
+							liquidColor: "#e3d3d3",	liquidDensity: 124.8,		liquidViscosity: 0.0033,	boilingPoint: -268.9,
+							gasColor: "#a69494",	gasDensity: 0.138 * airDensity, //i used a relative density because i can't make sense  of the units in given liquid vs gas densities
+							ionizationEnergies_eV: [24.587387936,54.41776311],					ionizationColorFormula: iHeliumColorFunction,	
+							defaultState: "gas"
+						},
+		
+		//lithium
+		
+		//beryllium
+		
+		//boron
+		
+		carbon:			{	sublimates: true,		solidColor: "#171717",		solidDensity: 3500,			meltingPoint: 3642,			solidHardness: 0.7,
+							liquidColor: ["#ffae9f", "#ffba80", "#ff9c8f"],		liquidDensity: 1200,		liquidViscosity: 69,		boilingPoint: 3642,
+							gasColor: ["#ffce9f", "#ffda80", "#ffbc8f"],		gasDensity: 2, //made-up due to insufficient science
+							ionizationEnergies_eV: [11.26030,24.38332,47.8878,64.4939,392.087,489.99334],	ionizationColorFormula: iCarbonColorFunction,	
 							defaultState: "solid"
-						}
-	};
+						},
+		
+		nitrogen:		{	sublimates: false,		solidColor: "#e6e6e6",		solidDensity: 1026.5,			meltingPoint: -210,		solidHardness: 0.3,
+							liquidColor: "#d3e1e3",	liquidDensity: 806.4,		liquidViscosity: 0.00545,		boilingPoint: -198.5,
+							gasColor: "#b8d1d4",	gasDensity: 1.1606,
+							ionizationEnergies_eV: [14.53414,29.6013,47.44924,77.4735,97.8902,552.0718,667.046],	ionizationColorFormula: iNitrogenColorFunction,	
+							defaultState: "gas"
+						},
 
-	for(var q = 1; q < 30; q++) {
-		scientificElementoids.trollolium.ionizationEnergies_eV.push(q);
+		oxygen:			{	sublimates: false,		solidColor: "#00cfc6",		solidDensity: 214,				meltingPoint: -218,		solidHardness: 0.3,
+							liquidColor: "#00ad99",	liquidDensity: 1141,		liquidViscosity: 0.2849,		boilingPoint: -189,
+							gasColor: "#99c7ff",	gasDensity: 1.4291,
+							ionizationEnergies_eV: [13.61806,35.11730,54.9355,77.41353,113.8990,138.1197,739.29,871.4101],	ionizationColorFormula: iOxygenColorFunction,	
+							defaultState: "gas"
+						}
+		
+
 	};
-	scientificElementoids.trollolium.ionizationEnergies_eV.push(747.5802880508742);
 
 	behaviors.HOT_GAS = [
 		"CR:fire%0.25 AND M2|M1|CR:fire%0.25 AND M2",
@@ -257,9 +309,91 @@ if(enabledMods.includes(libraryMod)) {
 		};
 		
 		elements[names[elemInfo.defaultState]].hidden = false;
+		elements[names[elemInfo.defaultState]].temp = 20;
 	};
-} else {
-	alert(`The ${libraryMod} mod is required and has been automatically inserted (reload for this to take effect).`)
+
+	//Manual work for diatomic gases and other shit
+		elements.carbon_dioxide.tempHigh = 6275.6434478747902; //50% point
+		elements.carbon_dioxide.stateHigh = ["carbon","oxygen","carbon_dioxide","carbon_dioxide"];
+		if(typeof(TheReVeFestival_Finale) !== "undefined") {
+			elements.carbon.reactions = TheReVeFestival_Finale;
+		};
+		elements.carbon.behavior = behaviors.POWDER;
+
+		elements.monatomic_nitrogen = {
+			temp: 13000,
+			tempLow: 12345, //Number pulled entirely out of my ass due to acute literature deficiency (does nobody care?)
+			stateLow: "nitrogen",
+			behavior: behaviors.GAS,
+			tempHigh: elements.nitrogen.tempHigh,
+			stateHigh: "ionized_nitrogen",
+			color: "#add2ff",
+			category: "gases",
+			state: "gas",
+			density: 1
+		};
+		elements.nitrogen.tempHigh = 12345;
+		elements.nitrogen.stateHigh = "monatomic_nitrogen";
+		elements.ionized_nitrogen.tempLow = elements.monatomic_nitrogen.tempHigh;
+		elements.ionized_nitrogen.stateLow = "monatomic_nitrogen";
+
+		elements.monatomic_oxygen = {
+			temp: 18000,
+			tempLow: 16851,
+			stateLow: "oxygen",
+			behavior: behaviors.GAS,
+			tempHigh: elements.oxygen.tempHigh,
+			stateHigh: "ionized_oxygen",
+			color: "#d2adff",
+			category: "gases",
+			state: "gas",
+			density: 1
+		};
+		elements.oxygen.tempHigh = 16851;
+		elements.oxygen.stateHigh = "monatomic_oxygen";
+		elements.ionized_oxygen.tempLow = elements.monatomic_oxygen.tempHigh;
+		elements.ionized_oxygen.stateLow = "monatomic_oxygen";
+		
+		var newSteamTick = function(pixel) {
+			pixel.split ??= 0;
+			if(pixel.split == 0 && pixel.temp >= 2200) {
+				if(Math.random() < 0.03) {
+					changePixel(pixel,Math.random() < 1/3 ? "oxygen" : "hydrogen",false)
+				};
+				pixel.split = 1
+			} else if(pixel.split == 1 && pixel.temp >= 2600) { //made-up data point for smoothness
+				if(Math.random() < 0.097) {
+					changePixel(pixel,Math.random() < 1/3 ? "oxygen" : "hydrogen",false)
+				};
+				pixel.split = 2
+			} else if(pixel.split == 2 && pixel.temp >= 3000) {
+				if(Math.random() < 0.45) {
+					changePixel(pixel,Math.random() < 1/3 ? "oxygen" : "hydrogen",false)
+				};
+				pixel.split = 3
+			};
+			if(pixel.split > 1 && Math.random() < 0.03) { pixel.split = 0 }
+		};
+		
+		var tempkeys = {steam: 0, cloud: 0};
+		for(var name in tempkeys) {
+			if(typeof(elements[name].tick) == "function") {
+				var tick1 = elements[name].tick;
+				var tick2 = newSteamTick;
+				elements[name].tick = function(pixel) {
+					tick1(pixel);
+					if(pixel && !(pixel.del)) {
+						tick2(pixel)
+					}
+				}
+			} else {
+				elements[name].tick = newSteamTick;
+			};
+		};
+		elements.hydrogen.reactions.oxygen.tempMax = 3000;
+
+	} else {
 	enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod)
 	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
+	alert(`The ${libraryMod} mod is required and has been automatically inserted (reload for this to take effect).`)
 };
