@@ -5,6 +5,89 @@
 
 See sneak peaks for upcoming updates on the Discord: https://discord.gg/ejUc6YPQuS
 
+[Version 1.8.2 - May 12, 2023 - Very Necessary Update]
+    + Lettuce
+    + Liquid Light at absolute zero (Hidden)
+    + Ice Cream (Frozen Milk)
+    + Baked Potato (Hidden)
+    + Bricks and Glass have a texture when placed
+    + Clay Shard
+    + Frozen Fish (Hidden, 25% chance)
+    ~ Smash is now located on the toolbar
+    + Press R to reset scene
+    + Toggle buttons in Settings
+    + Fancy Textures setting
+    + Default View setting for mobile
+    + Air Temp, Air Density, and Abs Zero settings
+    + Mushrooms world gen type
+   [Changes]
+    ~ Liquid Helium now has new superfluid behavior
+    ~ Burning now stops below 0°C
+    ~ Porcelain unhidden in Solids
+    ~ Porcelain won't mix unless Shift is held
+    ~ Optimized and buffed Strange Matter
+    + Strange Matter ignores Fire and Smoke, can be destroyed by Antimatter
+    + Bless warms pixels below -200°C
+    + Humans will try to regulate their body temperature
+    + Humans can eat food
+    + Bones and Dead Plants can turn into fossil fuels under right conditions
+    + Charcoal can turn into Diamonds under right conditions
+    + Sugar and Milk can dissolve in Tea
+    + Mixing Cement will reset the time until solidification
+    + Termites can dig through soil
+    + Potatoes can fall to the side
+    + Potatoes break into Juice
+    + Borax and Glue makes Slime
+    + Incense gives off Smoke when burning
+    + Herbs give off Fragrance when burnt
+    + Flying Bugs and Birds can be crushed by falling Rocks
+    + Fish can eat Broth, Slugs, Herbs, Lettuce, Dead Plants, Lichen, Yeast, Yogurt, and Tea
+    + Snails, Algae, Gravel, and Charcoal can clean Broth and Tea
+    + Worms can break down Lichen
+    + Worms can eat Yolk
+    + Gingerbread can be made with Flour and Sap or Caramel
+    + Infection, Antibody, and Vaccine will wet soil
+    + Radiation affects Milk variants
+    + Malware messes with more machines
+    + Copper Sulfate can be used as pesticide
+    + Bubbles and Foam remove Stench
+    + Bless can convert Lead to Gold
+    + Tea can be made from Wheat
+    + Uncharge tool converts Protons to Neutrons
+    + Uncharge tool deletes Electric
+    + Unburn tool converts Plasma to Smoke
+    + GitHub linked in Mod Manager
+    ~ Herbs burn slower
+    ~ Tweaked Rad Glass color
+    ~ Tweaked Dough color
+    ~ Tweaked Lookup tool color to be like Glass
+    ~ Pick, Mix, Shock, Mushroom Spore, Iron, and Gray Goo now have dark text
+    ~ Settings menu is taller
+    ~ Reset warning no longer appears if scene is empty
+    ~ Ember cools into Ash
+    ~ Firework Ember cools into Carbon Dioxide
+    ~ Acid ignores Hydrogen
+    ~ Renamed Nitroglycerin to Nitro
+    + Frozen Nitro (Hidden)
+    + Cream (Hidden)
+   [Bug Fixes]
+    ~ Fixed: Background color setting input not syncing after refresh
+    ~ Fixed: Pixels from Spout don't inherit temperature
+    ~ Fixed: Stats bar makes GUI jumpy on mobile
+    ~ Fixed: Sponge doesn't conduct heat
+    ~ Fixed: Flies no longer electrocute
+    ~ Fixed: Sun heat transfer dependent on phase
+    ~ Fixed: Neutrons/Protons/Blessing Strange Matter can make ghost pixels
+   [Technical]
+    + colorPattern and colorKey element properties (see Brick)
+    + SUPERFLUID behavior preset
+    + Absolute Zero is now controlled with global variable absoluteZero
+    + fireElement element property accepts an array of elements
+    + breakInto element property accepts null values
+    + Uncharge tool supports reactions
+    + stateLowColorMultiplier element attribute for Ice Cream
+    + darkText element attribute for buttons (true/false)
+
 [Version 1.8.1 - April 14, 2023 - Striking Detail]
     + Lightning (!!!)
     + Bless
@@ -150,8 +233,8 @@ See sneak peaks for upcoming updates on the Discord: https://discord.gg/ejUc6YPQ
     ~ Fixed: Canvas overflows on the right on mobile
    [Technical]
     + onMix element attribute function(pixel1,pixel2)
-    + isFood element attribute for dough/batter mixing
-    + stateHighColorMultiplier element attribute for batter
+    + isFood element attribute for Dough/Batter mixing
+    + stateHighColorMultiplier element attribute for Batter
 
 [Version 1.7.1 - January 8, 2023]
     + Walls and Glass aren't affected by Mix unless holding Shift

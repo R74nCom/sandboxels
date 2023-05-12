@@ -22,8 +22,8 @@ body {
     left: 0;
 }
 a {color: rgb(255, 0, 255);text-decoration: none;}
-a:hover {color: rgb(255, 121, 255);}
-a:active, a:hover:active {color: rgb(255, 179, 255);}
+a:hover {filter: brightness(200%);}
+a:active, a:hover:active {filter: brightness(275%);}
 #gameDiv { /*game canvas*/
     border: 1px solid #ffffff;
     position: relative;
@@ -96,6 +96,9 @@ kbd {
     background-color: rgb(31, 31, 31);
     overflow-x: hidden;
     z-index: 10;
+}
+#settingsMenu {
+    height: 75%;
 }
 #infoSearch, #modManagerUrl {
     position: absolute;
@@ -248,6 +251,9 @@ button, input[type="submit"], input[type="reset"] {
     font-size: 0.75em;
     height: 1.5em;
     width:100%;
+    /* no wrapping */
+    white-space: nowrap;
+    overflow-x: hidden;
 }
 /* screen size < 800px */
 @media screen and (max-width: 800px) { /* Mobile Styles */
@@ -370,27 +376,42 @@ button, input[type="submit"], input[type="reset"] {
 button, input { /*Disable double tap zoom on mobile devices*/
     touch-action: manipulation;
 }
-select {
+select, .toggleInput, #settingsMenu input[type="number"], #settingsMenu input[type="text"] {
     background-color: black;
     vertical-align: middle;
     margin-left: 5px;
     margin-right: 5px;
-    border: white 0.5px solid;
+    border: rgb(150, 150, 150) 1px solid;
     border-radius: 20px;
     padding: 0.5em;
     color: white;
+    font-size: 1em;
     font-family: Arial, Helvetica, sans-serif;
+}
+.toggleInput {
+    display: inline-block;
+    width: 4em;
+    text-align: center;
+    cursor: pointer;
+}
+.toggleInput[state="1"] {color: lime;}
+.toggleInput[state="0"] {color: red;}
+#settingsMenu input[type="number"] {
+    width: 3em;
 }
 .settingsButton {
     background-color: black;
     vertical-align: middle;
     margin-left: 5px;
     margin-right: 5px;
-    border: white 0.5px solid;
+    border: rgb(150, 150, 150) 1px solid;
     border-radius: 20px;
     padding: 0.5em;
     color: white;
     font-family: Arial, Helvetica, sans-serif;
+}
+.settingsButton:active, .toggleInput:active {
+    filter: brightness(75%);
 }
 #canvasDiv {
     position:relative;
@@ -421,3 +442,7 @@ select {
 .setting-span {
     display:block;padding-bottom:0.5em
 }
+.multisetting {
+    display: inline-block
+}
+.helpMark {text-decoration:dotted underline; font-style:italic; cursor:help; color:yellow}

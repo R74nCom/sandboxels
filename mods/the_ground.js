@@ -3713,8 +3713,8 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod)) {
 					layers: [
 						[0.9, "oil_cloud_floater"],
 						[0.65, "coal", 0.1],
-						[0.65, "nitroglycerin"],
-						[0.55, "nitroglycerin", 0.5],
+						[0.65, "nitro"],
+						[0.55, "nitro", 0.5],
 						[0.2, "coal", 0.2],
 						[0.2, "tnt"],
 						[0.05, "coal", 0.3],

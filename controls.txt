@@ -18,6 +18,7 @@ E                 =  Element Selection
 / or I            =  Element Info Screen
 \                 =  Settings Menu
 M                 =  Mod Manager
+R                 =  Reset Canvas
 >                 =  Step
 F or F11          =  Toggle Fullscreen
 1 or 0            =  Normal View
