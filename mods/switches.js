@@ -1,7 +1,7 @@
 var modName = "mods/switches.js";
-var noConductMod = "mods/noConduct.js";
+var formerlyNoConductMod = "mods/doElectricity changes.js";
 
-if(enabledMods.includes(noConductMod)) {
+if(enabledMods.includes(formerlyNoConductMod)) {
 	elements.switch_off = {
 		name: "switch (off)",
 		color: "#7F3333",
@@ -45,7 +45,7 @@ if(enabledMods.includes(noConductMod)) {
 		category: "machines",
 	};
 } else {
-	enabledMods.splice(enabledMods.indexOf(modName),0,noConductMod)
-	alert(`The ${noConductMod} mod is required and has been automatically inserted (reload for this to take effect).`)
+	enabledMods.splice(enabledMods.indexOf(modName),0,formerlyNoConductMod)
+	alert(`The ${formerlyNoConductMod} mod is required and has been automatically inserted (reload for this to take effect).`)
 	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
 };

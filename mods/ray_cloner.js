@@ -3,7 +3,7 @@ var libraryMod = "mods/code_library.js";
 var propMod = "mods/prop.js";
 var variablesMod = "mods/prop and prompt variables.js";
 if(enabledMods.includes(libraryMod) && enabledMods.includes(propMod) && enabledMods.includes(variablesMod)) {
-	function placeRegularlySpacedPixels(element,startX,startY,xSpacing,ySpacing,overwrite=false,stopAt=null,rayIgnore=null,spawnTemp=null,limit=1000) {
+	function placeRegularlySpacedPixels(element,startX,startY,xSpacing,ySpacing,overwrite=false,stopAt=null,rayIgnore=[],spawnTemp=null,limit=1000) {
 		if(element.includes(",")) { element = element.split(",") };
 		var newElement = element;
 		if(isNaN(xSpacing) || isNaN(ySpacing)) {
@@ -94,7 +94,7 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(propMod) && enabledM
 			ySpacing: 0,
 			overwrite: false,
 			stopAt: null,
-			rayIgnoreSelf: true,
+			rayIgnore: [],
 			spawnAtPixelTemp: false,
 			maxPixels: 1000,
 			/*clone: "plasma",
@@ -118,7 +118,7 @@ if(enabledMods.includes(libraryMod) && enabledMods.includes(propMod) && enabledM
 					pixel.ySpacing,
 					pixel.overwrite,
 					pixel.stopAt,
-					pixel.rayIgnoreSelf ? pixel.clone : null,
+					pixel.rayIgnore,
 					pixel.spawnAtPixelTemp ? pixel.temp : null,
 					pixel.maxPixels
 				);

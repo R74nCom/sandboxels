@@ -1,5 +1,23 @@
 var modName = "mods/human_edit.js";
 var onTryMoveIntoMod = "mods/onTryMoveInto.js";
+if(typeof(breakPixel) == "undefined") {
+	function breakPixel(pixel,changetemp=false,defaultBreakIntoDust=false) {
+		var info = elements[pixel.element];
+		if(typeof(info.breakInto) === "undefined") {
+			if(defaultBreakIntoDust) {
+				if(Math.random() < defaultBreakIntoDust) { changePixel(pixel,"dust",changetemp) };
+			};
+			return defaultBreakIntoDust;
+		};
+		var breakIntoElement = info.breakInto;
+		if(Array.isArray(breakIntoElement)) {
+			breakIntoElement = breakIntoElement[Math.floor(Math.random() * breakIntoElement.length)]
+		};
+		changePixel(pixel,breakIntoElement,changetemp)
+		return true
+	}
+};
+
 function hasPixel(x,y,elementInput) {
 	if(isEmpty(x,y,true)) { //if empty, it can't have a pixel
 		return false;
@@ -13,22 +31,6 @@ function hasPixel(x,y,elementInput) {
 			return pixelMap[x][y].element === elementInput;
 		};
 	};		
-};
-
-function breakPixel(pixel,changetemp=false,defaultBreakIntoDust=false) {
-	var info = elements[pixel.element];
-	if(typeof(info.breakInto) === "undefined") {
-		if(defaultBreakIntoDust) {
-			if(Math.random() < defaultBreakIntoDust) { changePixel(pixel,"dust",changetemp) };
-		};
-		return defaultBreakIntoDust;
-	};
-	var breakIntoElement = info.breakInto;
-	if(Array.isArray(breakIntoElement)) {
-		breakIntoElement = breakIntoElement[Math.floor(Math.random() * breakIntoElement.length)]
-	};
-	changePixel(pixel,breakIntoElement,changetemp)
-	return true;
 };
 
 if(enabledMods.includes(onTryMoveIntoMod)) {
@@ -98,31 +100,39 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 		//console.log(`Bounding code running from value of ${pixel.panic}`);
 		pixel.panic = Math.max(0,Math.min(1,pixel.panic));
 		//console.log(`Validation result: Panic set to ${pixel.panic}`);
+
+		if(Number.isNaN(pixel.mood)) {
+			//console.log("NaN case: panic set to 0");
+			pixel.mood = 0;
+		};
+		//console.log(`Bounding code running from value of ${pixel.panic}`);
+		pixel.mood = Math.max(-3,Math.min(3,pixel.mood));
+		//console.log(`Validation result: Panic set to ${pixel.panic}`);
 	};
 
 	goodPixels = {
-		silver: { panicIncrease: 0.01, panicIncreaseChance: 0.1 },
-		gold: { panicIncrease: 0.02, panicIncreaseChance: 0.15 },
-		diamond: { panicIncrease: 0.03, panicIncreaseChance: 0.2 },
+		silver: { panicChange: 0.01, panicChangeChance: 0.1, moodChange: 0.004 },
+		gold: { panicChange: 0.02, panicChangeChance: 0.15, moodChange: 0.01 },
+		diamond: { panicChange: 0.03, panicChangeChance: 0.2, moodChange: 0.02 },
 	}; //effectively, the difference is that good pixels don't make the human flip direction (run away);
 	badPixels = {
-		rotten_meat: { panicIncrease: 0.02, panicIncreaseChance: 0.15 },
-		blood: { panicIncrease: 0.06, panicIncreaseChance: 0.2 },
-		brain: { panicIncrease: 0.1, panicIncreaseChance: 0.3 },
-		fire: { panicIncrease: 0.1, panicIncreaseChance: 0.1 },
-		poison: { panicIncrease: 0.2, panicIncreaseChance: 0.05 },
-		grenade: { panicIncrease: 0.2, panicIncreaseChance: 0.4 },
-		bomb: { panicIncrease: 0.2, panicIncreaseChance: 0.4 },
-		tnt: { panicIncrease: 0.2, panicIncreaseChance: 0.4 },
-		dynamite: { panicIncrease: 0.2, panicIncreaseChance: 0.4 },
-		anti_bomb: { panicIncrease: 0.2, panicIncreaseChance: 0.4 },
-		cluster_bomb: { panicIncrease: 0.2, panicIncreaseChance: 0.4 },
-		landmine: { panicIncrease: 0.25, panicIncreaseChance: 0.1 },
-		fireball: { panicIncrease: 0.25, panicIncreaseChance: 0.45 },
-		magma: { panicIncrease: 0.3, panicIncreaseChance: 0.2 },
-		plasma: { panicIncrease: 0.3, panicIncreaseChance: 0.2 },
-		nuke: { panicIncrease: 1, panicIncreaseChance: 1 }, //insta-panic
-		cluster_nuke: { panicIncrease: 1, panicIncreaseChance: 1 }, //insta-panic
+		rotten_meat: { panicChange: 0.02, panicChangeChance: 0.15, moodChange: -0.015 },
+		blood: { panicChange: 0.06, panicChangeChance: 0.2, moodChange: -0.006 },
+		brain: { panicChange: 0.1, panicChangeChance: 0.3, moodChange: -0.005 },
+		fire: { panicChange: 0.1, panicChangeChance: 0.1, moodChange: 0 },
+		poison: { panicChange: 0.2, panicChangeChance: 0.05, moodChange: -0.01 },
+		grenade: { panicChange: 0.2, panicChangeChance: 0.4, moodChange: -0.3 },
+		bomb: { panicChange: 0.2, panicChangeChance: 0.4, moodChange: -0.3 },
+		tnt: { panicChange: 0.2, panicChangeChance: 0.4, moodChange: 0 },
+		dynamite: { panicChange: 0.2, panicChangeChance: 0.4, moodChange: -0.3 },
+		anti_bomb: { panicChange: 0.2, panicChangeChance: 0.4, moodChange: -0.3 },
+		cluster_bomb: { panicChange: 0.2, panicChangeChance: 0.4, moodChange: -0.4 },
+		landmine: { panicChange: 0.25, panicChangeChance: 0.1, moodChange: -0.3 },
+		fireball: { panicChange: 0.25, panicChangeChance: 0.45, moodChange: -0.35 },
+		magma: { panicChange: 0.3, panicChangeChance: 0.2, moodChange: 0 },
+		plasma: { panicChange: 0.3, panicChangeChance: 0.2, moodChange: 0 },
+		nuke: { panicChange: 1, panicChangeChance: 1, moodChange: -1 }, //insta-panic
+		cluster_nuke: { panicChange: 1, panicChangeChance: 1, moodChange: -1 }, //insta-panic
 	}; //testing
 	otherPixels = ["head","body"]; //do custom code here
 
@@ -137,8 +147,13 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 	elements.body.properties = {
 		dead: false,
 		dir: 1,
+		extremePanicStart: null,
 	};
 	elements.body.tick = function(pixel) {
+		if(typeof(pixel.extremePanicStart) == "undefined") {
+			//console.log("oops");
+			pixel.extremePanicStart = null
+		};
 		if (tryMove(pixel, pixel.x, pixel.y+1)) { // Fall
 			if (!isEmpty(pixel.x, pixel.y-2, true)) { // Drag head down
 				var headpixel = pixelMap[pixel.x][pixel.y-2];
@@ -192,9 +207,20 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 			// While movesToTry is not empty, tryMove(pixel, x, y) with a random move, then remove it. if tryMove returns true, break.
 			while (movesToTry.length > 0) {
 				var move = movesToTry.splice(Math.floor(Math.random() * movesToTry.length), 1)[0];
-				if (isEmpty(pixel.x+move[0], pixel.y+move[1]-1)) {
+				/*
+				console.log(move);
+				console.log("Body X:", pixel.x, "to", pixel.x+move[0]);
+				console.log("Body Y:", pixel.y, "to", pixel.y+move[1]);
+				console.log("Head X:",head.x, "to", head.x+move[0]);
+				console.log("Head Y:", head.y, "to", head.y+move[1]);
+				*/
+				//If head coords are empty
+				if (isEmpty(pixel.x+move[0], pixel.y+move[1]) && isEmpty(head.x+move[0], head.y+move[1])) {
+					//console.log("Head target coords are empty");
 					if (tryMove(pixel, pixel.x+move[0], pixel.y+move[1])) {
 						movePixel(head, head.x+move[0], head.y+move[1]);
+						//console.log(`Moved body to (${pixel.x},${pixel.y}) and head to (${head.x},${head.y})`);
+						//console.log(`Head-body offset (should always be [0,-1]): [${head.x-pixel.x},${head.y-pixel.y}]`)
 						break;
 					}
 				}
@@ -206,11 +232,32 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 					//console.log("*turns around cutely to face ${pixel.dir < 0 ? 'left' : 'right'}*");
 				};
 			};
+		};	
+
+		//if not flagged for extreme panic
+		//extreme panic will not be flagged in good moods, just to be nice
+		if(pixel.extremePanicStart == null && head.panic > 0.8 && head.mood <= 0) {
+			//flag extreme panic
+			pixel.extremePanicStart = pixelTicks;
+		}
+		//if flagged for extreme panic and panic is still extreme
+		else if(pixel.extremePanicStart != null && (head.panic > 0.8 && head.mood <= 0)) {
+			//if extreme panic lasts too long
+			if(pixelTicks - pixel.extremePanicStart > 350) {
+				//random chance to die from exhaustion/a heart attack/whatever
+				if(Math.random() < 0.01) {
+					pixel.dead = true;
+				};
+			};
+		}
+		//if flagged for extreme panic and extreme panic is no longer extreme
+		else if(pixel.extremePanicStart != null && (head.panic <= 0.8 || head.mood > 0)) {
+			//unflag
+			pixel.extremePanicStart = null;
 		};
 		
-		var pX = pixel.x;
-		var pY = pixel.y;
 	};
+
 	elements.body.onTryMoveInto = function(pixel,otherPixel) {
 		var pX = pixel.x;
 		var pY = pixel.y;
@@ -226,7 +273,7 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 						if(otherPixel.dead || otherBody.dead) { //if either part of that human is dead
 							head.panic += 0.08; //being hit by a dead ******* body is terrifying
 						} else {
-							if(otherPixel.panic > 0.04) { head.panic += 0.04 }; //living, normal, bodied heads scare only if that incoming human is already scared
+							if(otherPixel.panic > 0.04 && otherPixel.mood <= 0) { head.panic += 0.04 }; //living, normal, bodied heads scare only if that incoming human is already scared
 						};
 					} else { //if it's a severed head
 						if(otherPixel.dead) { //if the head is dead
@@ -260,12 +307,8 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 		dirLocked: false,
 		panic: 0,
 	};
+
 	elements.head.tick = function(pixel) {
-			//debugging: display panic through color and temp
-			/*pixel.temp = (pixel.panic * 100);
-			var spookyColor = Math.min(pixel.panic,1) * 255;
-			var spookyColor2 = 255 - Math.max(pixel.panic-1, 0);
-			pixel.color = `rgb(${spookyColor},${spookyColor2},0)`;*/
 		doHeat(pixel);
 		doBurning(pixel);
 		doElectricity(pixel);
@@ -297,6 +340,8 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 				}
 			}
 		}
+		
+		pixel.mood ??= 0;
 
 		if((pixelTicks-pixel.start) % 5 === 0) {
 			//Vision loop
@@ -323,14 +368,16 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 							var newElement = newPixel.element;
 							if(Object.keys(goodPixels).includes(newElement)) {
 								//no dir flip
-								if(Math.random() > goodPixels[newElement].panicIncreaseChance) {
-									pixel.panic += goodPixels[newElement].panicIncrease;
+								if(Math.random() > goodPixels[newElement].panicChangeChance) {
+									pixel.panic += goodPixels[newElement].panicChange;
+									pixel.mood += goodPixels[newElement].moodChange; //like if there was a pretty painting item, it would make you feel better but you wouldn't necessarily feel the need to run towards it
 								};
 								pixel.dirLocked = true;
 							} else if(Object.keys(badPixels).includes(newElement)) {
 								body.dir = 1; //flip dir
-								if(Math.random() > badPixels[newElement].panicIncreaseChance) {
-									pixel.panic += badPixels[newElement].panicIncrease;
+								if(Math.random() > badPixels[newElement].panicChangeChance) {
+									pixel.panic += badPixels[newElement].panicChange;
+									pixel.mood += badPixels[newElement].moodChange;
 								};
 								pixel.dirLocked = true;
 							}; //good and bad should be mutually exclusive; good will be evaulated first because one inevitably has to be considered first
@@ -358,6 +405,12 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 													pixel.panic += 0.006;
 												} else {
 													pixel.panic += 0.003;
+												};
+												
+												//the vision loop is in the head, and this is in the "seeing head" case, then this will happen when the head sees another head, and heads store panic; this is in the "other head" is panicking case so this will ultimately be the code that runs when its human sees another human panicking
+												if(Math.random() < 0.5) {
+													//run in same direction as panicking person
+													pixel.dir = newPixel.dir
 												};
 											};
 										};
@@ -429,8 +482,9 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 							var newElement = newPixel.element;
 							if(Object.keys(goodPixels).includes(newElement)) {
 								//no dir flip
-								if(Math.random() > goodPixels[newElement].panicIncreaseChance) {
-									pixel.panic += goodPixels[newElement].panicIncrease;
+								if(Math.random() > goodPixels[newElement].panicChangeChance) {
+									pixel.panic += goodPixels[newElement].panicChange;
+									pixel.mood += goodPixels[newElement].moodChange;
 								};
 								pixel.dirLocked = true;
 							} else if(Object.keys(badPixels).includes(newElement)) {
@@ -438,8 +492,9 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 									var body = pixelMap[pX][pY+1];
 									body.dir = -1; //run away
 								};
-								if(Math.random() > badPixels[newElement].panicIncreaseChance) {
-									pixel.panic += badPixels[newElement].panicIncrease;
+								if(Math.random() > badPixels[newElement].panicChangeChance) {
+									pixel.panic += badPixels[newElement].panicChange;
+									pixel.mood += badPixels[newElement].moodChange;
 								};
 								pixel.dirLocked = true;
 							}; //good and bad should be mutually exclusive; good will be evaulated first because one inevitably has to be considered first
@@ -526,12 +581,14 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 			//console.log("Meh.");
 		};
 
-		if(Math.random() < 0.02) { //2% chance each tick to decrease panic
+		if(Math.random() < ((pixel.panic) > 0.8 ? 0.04 : 0.02)) { //2% chance each tick to decrease panic (4% if the panic is extreme)
 			//console.log("Decreasing panic");
 			pixel.panic < 0.05 ? pixel.panic = 0 : pixel.panic -= 0.05;
 		};
+
 	};
 	elements.head.breakInto = ["bone","brain","brain","cerebrospinal_fluid","blood","blood","meat"];
+
 	elements.head.onTryMoveInto = function(pixel,otherPixel) {
 		var pX = pixel.x;
 		var pY = pixel.y;
@@ -548,7 +605,7 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 							pixel.panic += 0.08; //being hit by a dead ******* body is terrifying
 							//console.log("head.onTryMoveInto: panic increase, case: head hit by dead whole body (head's code branch)");
 						} else {
-							if(otherPixel.panic > 0.04) { pixel.panic += 0.04; console.log("head.onTryMoveInto: panic increase, case: head hit by panicked whole body (head's code branch)"); }; //living, normal, headed bodies scare only if that incoming human is already scared
+							//if(otherPixel.panic > 0.04) { pixel.panic += 0.04; console.log("head.onTryMoveInto: panic increase, case: head hit by panicked whole body (head's code branch)"); }; //living, normal, headed bodies scare only if that incoming human is already scared
 						};
 					} else { //if it's a severed head
 						if(otherPixel.dead) { //if the head is dead
@@ -563,23 +620,23 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 					if(hasPixel(oX,oY-1,"head")) { //if the body hitting this pixel has a head on it
 						var otherHead = pixelMap[oX][oY-1];
 						if(otherPixel.dead || otherHead.dead) { //if either part of that human is dead
-							pixel.panic += 0.06; //dead whole body case
+							pixel.panic += 0.03; //dead whole body case
 							//console.log("head.onTryMoveInto: panic increase, case: head hit by dead whole body (body's code branch)");
 						} else {
 							if(otherHead.panic > 0.04) {
-								pixel.panic += 0.06;
+								pixel.panic += 0.03;
 								//console.log("head.onTryMoveInto: panic increase, case: head crushed by panicked whole body (body's code branch)");
 							} else {
-								pixel.panic += 0.04;
+								pixel.panic += 0.02;
 								//console.log("head.onTryMoveInto: panic increase, case: head crushed by whole body (body's code branch)");
 							};
 						};
 					} else { //severed body case
 						if(otherPixel.dead) { //if the body is dead
-							pixel.panic += 0.08; //imagine being hit by a severed human without the head
+							pixel.panic += 0.04; //imagine being hit by a severed human without the head
 							//console.log("head.onTryMoveInto: panic increase, case: head hit by dead severed body");
 						} else {
-							pixel.panic += 0.1; //imagine the above but the heart is still beating
+							pixel.panic += 0.05; //imagine the above but the heart is still beating
 							//console.log("head.onTryMoveInto: panic increase, case: head hit by living severed body");
 						};
 					};
@@ -614,8 +671,55 @@ if(enabledMods.includes(onTryMoveIntoMod)) {
 			[0, "dirt"]
 		]
 	};
+
+	kep1er = [
+		["first_impact",	["#664482","#cf4ba3","#c15ca9","#f0a669"]],
+		["doublast",		["#2b98fd","#d0e26d","#e6f049","#dce4b3"]],
+		["fly-up",			["#f2f2f2","#15a667","#de0180"]],
+		["troubleshooter",	["#291923","#ed3fb6","#fee6f8","#64c5e0","#d6cdca","#330d25"]],
+		["fly-by",			["#e7e6dd","#fcf0ef","#efa1ba","#8d7cb6","#5e74ba","#2b5db5","#e292b7"]],
+		["lovestruck",		["#bfd9f0","#bfd9f0","#fef792","#c36475","#edd1d6"]],
+	];
+	
+	for(index in kep1er) {
+		index = parseInt(index);
+		var newName = kep1er[index][0];
+		var newColor = kep1er[index][1];
+		var newDisplayName = newName.replaceAll("_"," ").replaceAll("-"," - ").split(" ").map(x => x.substring(0,1).toUpperCase() + x.substring(1)).join(" ").replace(" - ","-");
+		elements[newName] = {
+			name: newDisplayName,
+			color: newColor,
+			tempHigh: 200,
+			stateHigh: ["ash","molten_plastic"],
+			density: 332, //based off of First Impact: https://www.amazon.com/Kep1er-IMPACT-Contents-Tracking-Connect/dp/B09MQMNZ62
+			tick: function(pixel) {
+				if(!(tryMove(pixel,pixel.x,pixel.y+1))) {
+					var directions = [];
+					if(isEmpty(pixel.x-1,pixel.y+1) && isEmpty(pixel.x-1,pixel.y+2)) {
+						directions.push(-1)
+					};
+					if(isEmpty(pixel.x+1,pixel.y+1) && isEmpty(pixel.x+1,pixel.y+2)) {
+						directions.push(1)
+					};
+					if(directions.length > 0) {
+						tryMove(pixel,pixel.x+directions[Math.floor(Math.random() * directions.length)],pixel.y)
+					};
+				}
+			},
+			reactions: {
+				water: { elem1: ["plastic","cellulose","cellulose"], elem2: ["water","water","cellulose",null,null], chance: 0.8 }
+			},
+			burn: 40,
+			burnTime: 150,
+			burnInto: ["ash","molten_plastic","carbon_dioxide","smoke"],
+			category: "other"
+		};
+		
+		goodPixels[newName] = { panicChange: 0.01, panicChangeChance: 0.2, moodChange: 0.035 };
+	};
+	
 } else {
-	alert(`The ${onTryMoveIntoMod} mod is required and has been automatically inserted (reload for this to take effect).`)
 	enabledMods.splice(enabledMods.indexOf(modName),0,onTryMoveIntoMod)
 	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
+	alert(`The ${onTryMoveIntoMod} mod is required and has been automatically inserted (reload for this to take effect).`)
 };
