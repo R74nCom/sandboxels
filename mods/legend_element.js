@@ -4,7 +4,7 @@ elements.liquid_legend = {
 
     behavior: behaviors.LIQUID,
 
-    category: "energy_liquids",
+    category: "energyliquids",
 
     viscosity: 43,
 
