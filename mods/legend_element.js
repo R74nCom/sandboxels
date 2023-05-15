@@ -1,61 +1,41 @@
 elements.liquid_legend = {
+color: "#13d644",			
+behavior: [
+"XX|XX|XX",
+"M2|EX:15>radon,radon,radon,liquid_legend%0.4 AND DL%0.2|M2",
+"M1|M1|M1",
 
-    color: "#13d644",
+			],
 
-    behavior: behaviors.LIQUID,
+			temp: 300,
 
-    category: "energyliquids",
+			category: "energy liquids",
 
-    viscosity: 43,
+			state: "liquid",
 
-    state: "liquid",
+			density: 2000,
 
-    density: 720,
+			excludeRandom: true,
+    
+reactions: {
 
-};
-
-behaviors.liquid_legend.tick = function(pixel) {
-
-    if (tryMove(pixel, pixel.x, pixel.y+1)) {
-
-        console.log("Moved!");
-
+        "magma": { "elem1": "armageddon", "elem2": null },
+        "void": { "elem1": "light", "elm2": null },
     }
+runAfterLoad(function() {
+        if(enabledMods.includes("banana.js")) {
+           elements.banana_juice = {
+           color: "#e0f542",
+           temp: 800,
 
-    else {
+			category: "food",
 
-        console.log("Couldn't move!")
+			state: "liquid",
 
-    }
+			density: 200,
 
-};
+			excludeRandom: true,
 
-if (!elements.liquid_legend.reactions) {
-
-    elements.liquid_legend.reactions = {}
-
-}
-
-elements.liquid_legend.reactions.magma = { "elem1":null, "elem2":"armageddon" }
-
-elements.liquid_legend.reactions.radiation = { "elem1":null, "elem2":"fallout" }
-
-AfterLoad(function() {
-
-    6766
-
-    console.log("Hello World!");
-
+     }
+                 
 });
-
-if (enabledMods.includes("test.js")) {
-
-    runAfterLoad(function() {
-
-        6766
-
-        console.log("Hello World!");
-
-    });
-
-}
