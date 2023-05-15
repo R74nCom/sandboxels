@@ -23,7 +23,7 @@ reactions: {
         "void": { "elem1": "light", "elm2": null },
     }
 runAfterLoad(function() {
-        if(enabledMods.includes("banana.js")) {
+        if(enabledMods.includes("bananas.js")) {
            elements.banana_juice = {
            color: "#e0f542",
            temp: 800,
