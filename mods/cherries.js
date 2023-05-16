@@ -9,7 +9,7 @@ if(enabledMods.includes(onTryMoveIntoMod) && enabledMods.includes(libraryMod)) {
 	
 	debugSpeedGrowth = false;
 	logLeaves = false;
-	cherryAttachWhitelist = ["cherry_pseudostem","cherry_peduncle_1","cherry_peduncle_2","petal","cherry_leaf","cherry_plant_top","cherry"];
+	cherryAttachWhitelist = ["cherry_log","cherry_branch_1","cherry_branch_2","blossom","cherry_leaf","cherry_plant_top","cherry"];
 	
 	cherryDirtElements = ["dirt","mud","sand","wet_sand","clay_soil","mycelium","grass"];
 
@@ -51,8 +51,8 @@ if(enabledMods.includes(onTryMoveIntoMod) && enabledMods.includes(libraryMod)) {
 					};
 					if (isEmpty(pixel.x,pixel.y-1)) {
 						movePixel(pixel,pixel.x,pixel.y-1);
-						createPixel("banana_pseudostem",pixel.x,pixel.y+1);
-						pixelMap[pixel.x][pixel.y+1].cherryRange = pixel.cherryRange; //pass cherry range down to pseudostem
+						createPixel("cherry_log",pixel.x,pixel.y+1);
+						pixelMap[pixel.x][pixel.y+1].cherryRange = pixel.cherryRange; //pass cherry range down to log
 					};
 				} else if (pixel.age > (debugSpeedGrowth ? 500 : 1000)) {
 					changePixel(pixel,"cherry_plant_top");
@@ -82,7 +82,7 @@ if(enabledMods.includes(onTryMoveIntoMod) && enabledMods.includes(libraryMod)) {
 		cooldown: defaultCooldown,
 	};
 
-	elements.cherry_pseudostem = {
+	elements.cherry_log = {
 		hidden: true,
 		color: "#310a0b",
 		tick: function(pixel) {
@@ -95,10 +95,10 @@ if(enabledMods.includes(onTryMoveIntoMod) && enabledMods.includes(libraryMod)) {
 				for(i = 0; i < peduncleOffsets.length; i++) {
 					if (isEmpty(pixel.x+peduncleOffsets[i],pixel.y,false)) {
 						if (Math.random() < 0.005) {
-							createPixel("cherry_peduncle_1",pixel.x+peduncleOffsets[i],pixel.y);
+							createPixel("cherry_branch_1",pixel.x+peduncleOffsets[i],pixel.y);
 							pixelMap[pixel.x+peduncleOffsets[i]][pixel.y].dir = Math.sign(peduncleOffsets[i]);
-							pixelMap[pixel.x+peduncleOffsets[i]][pixel.y].cherryRange = pixel.cherryRange; //pass cherry range down to peduncle
-							if(Math.random() < 0.8) { pixel.grewPeduncle = true; } //20% chance to not mark as true, allowing for a chance to try another peduncle
+							pixelMap[pixel.x+peduncleOffsets[i]][pixel.y].cherryRange = pixel.cherryRange; //pass cherry range down to branch
+							if(Math.random() < 0.8) { pixel.grewPeduncle = true; } //20% chance to not mark as true, allowing for a chance to try another branch
 						};
 					};
 				};
@@ -188,10 +188,10 @@ if(enabledMods.includes(onTryMoveIntoMod) && enabledMods.includes(libraryMod)) {
 		},
 	};
 
-	elements.banana_cherry_1 = {
+	elements.cherry_branch_1 = {
 		hidden: true,
-		name: "cherry peduncle (offshoot)",
-		color: "#acb55b",
+		name: "cherry branch (offshoot)",
+		color: "#310a0b",
 		tick: function(pixel) {
 			if(pixel.cherryRange === null) {
 				pixel.cherryRange = randomNumberFromOneToThree();
@@ -204,9 +204,9 @@ if(enabledMods.includes(onTryMoveIntoMod) && enabledMods.includes(libraryMod)) {
 					if(Math.random() < 0.5) {
 						createPixel(pixel.element,peduncleCoords1[0],peduncleCoords1[1]);
 						pixelMap[peduncleCoords1[0]][peduncleCoords1[1]].dir = pixel.dir;
-						pixelMap[peduncleCoords1[0]][peduncleCoords1[1]].cherryRange = pixel.cherryRange; //pass cherry range down to next pixel of peduncle horizontal
+						pixelMap[peduncleCoords1[0]][peduncleCoords1[1]].cherryRange = pixel.cherryRange; //pass cherry range down to next pixel of branch horizontal
 					} else {
-						createPixel("cherry_peduncle_2",peduncleCoords2[0],peduncleCoords2[1]);
+						createPixel("cherry_branch_2",peduncleCoords2[0],peduncleCoords2[1]);
 						pixelMap[peduncleCoords2[0]][peduncleCoords2[1]].cherryRange = pixel.cherryRange; //pass cherry range down to diagonal offshoot
 					};
 				};
@@ -232,10 +232,10 @@ if(enabledMods.includes(onTryMoveIntoMod) && enabledMods.includes(libraryMod)) {
 		density: 1500,
 	};
 
-	elements.cherry_peduncle_2 = {
+	elements.cherry_branch_2 = {
 		hidden: true,
-		name: "cherry peduncle (hanging)",
-		color: "#9bad51",
+		name: "cherry branch (hanging)",
+		color: "#310a0b",
 		tick: function(pixel) {
 			if(pixel.cherryRange === null) {
 				pixel.cherryRange = randomNumberFromOneToThree();
@@ -247,9 +247,9 @@ if(enabledMods.includes(onTryMoveIntoMod) && enabledMods.includes(libraryMod)) {
 				if(isEmpty(...growthCoords)) { 
 					if(Math.random() < 0.9) {
 						createPixel(pixel.element,...growthCoords);
-						pixelMap[growthCoords[0]][growthCoords[1]].bananaRange = pixel.cherryRange; //pass cherry range down to next pixel of peduncle vertical
+						pixelMap[growthCoords[0]][growthCoords[1]].cherryRange = pixel.cherryRange; //pass cherry range down to next pixel of branch vertical
 					} else {
-						createPixel("petal",...growthCoords); //the sexual dimorphism of the cherry plant has zonked me
+						createPixel("blossom",...growthCoords); // cherry flower
 					};
 				};
 			};
@@ -285,7 +285,7 @@ if(enabledMods.includes(onTryMoveIntoMod) && enabledMods.includes(libraryMod)) {
 			};
 			pixel.age++;
 			doDefaults(pixel);
-			//console.log(`\nEnd of peduncle tick\n`);
+			//console.log(`\nEnd of branch tick\n`);
 		},
 		properties: {
 			"age": 0, 
@@ -492,7 +492,7 @@ if(enabledMods.includes(onTryMoveIntoMod) && enabledMods.includes(libraryMod)) {
 						};
 
 						if (isEmpty(leafX,leafY,false)) {
-							createPixel("banana_leaf",leafX,leafY);
+							createPixel("cherry_leaf",leafX,leafY);
 							pixelMap[leafX][leafY].attached = true; //set leaf's attached to true
 							pixelMap[leafX][leafY].attachOffsets = leafAttachOffset; //array of 2 numbers
 							pixelMap[leafX][leafY].cherryRange = pixel.cherryRange;
