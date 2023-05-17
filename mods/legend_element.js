@@ -10,7 +10,6 @@ elements.legendary_energy = {
                                 "magma": { "elem1": "armageddon", "elem2": null },
                                 "void": { "elem1": "light", "elm2": null },
     }
-
 runAfterLoad(function() {
         if(enabledMods.includes("liquid_energy.js")) {
 		elements.liquid_legend = {
