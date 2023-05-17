@@ -12,7 +12,6 @@ elements.legendary_energy = {
     }
 
 runAfterLoad(function() {
-
         if(enabledMods.includes("liquid_energy.js")) {
 		elements.liquid_legend = {
                         "name": "liquid legend"
