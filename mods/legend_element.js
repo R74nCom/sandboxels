@@ -3,7 +3,7 @@ elements.legendary_energy = {
                         "color": "#13d649",
 	                "behavior": behaviors.GAS
                         "temp": 300,
-                        "category": "energy liquids",
+                        "category": "energy",
                         "state": "gas",
                         "density": 2000,
 			"reactions": {
