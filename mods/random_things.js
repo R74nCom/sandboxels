@@ -11,7 +11,7 @@ elements.legendary_energy = {
                                 "void": { "elem1": "light", "elm2": null },
     }
 runAfterLoad(function() {
-        if(enabledMods.includes("liquid_energy.js")) {
+        if(enabledMods.includes("liquid_energy.js") && enabledMods.includes("bananas.js")) {
 		elements.liquid_legend = {
                         "name": "liquid legend"
 		        "color": "#13d644",			
@@ -29,11 +29,7 @@ runAfterLoad(function() {
                                 "magma": { "elem1": "armageddon", "elem2": null },
                                 "void": { "elem1": "light", "elm2": null },
     }
-
-}
-runAfterLoad(function() {
-        if(enabledMods.includes("bananas.js")) {
-           elements.banana_juice = {
+		elements.banana_juice = {
                         "name": "banana juice"
 		        "color": "#e0f542",
                         "behavior": behaviors.LIQUID
