@@ -16,7 +16,8 @@ elements.legendary_energy = {
 			reactions: {
                                 "magma": { "elem1": "armageddon", "elem2": null },
                                 "void": { "elem1": "light", "elm2": null },
-    }
+}
+
 runAfterLoad(function() {
         if(enabledMods.includes("liquid_energy.js") && enabledMods.includes("bananas.js")) {
 		elements.liquid_legend = {
@@ -34,8 +35,8 @@ runAfterLoad(function() {
                         excludeRandom: true,
 			reactions" {
                                 "magma": { "elem1": "armageddon", "elem2": null },
-                                "void": { "elem1": "light", "elm2": null },
-    }
+                                "void": { "elem1": "light", "elm2": null }
+	}
 		elements.banana_juice = {
                         name: "banana juice",
 		        color: "#e0f542",
