@@ -1,11 +1,19 @@
 elements.legendary_energy = {
                         "name": "legendary energy"
                         "color": "#13d649",
-	                "behavior": behaviors.GAS
-                        "temp": 300,
+	                "behavior": [
+        "XX|XX|XX",
+        "XX|EX:90>plasma,plasma,plasma,plasma,radon,radon,radon,radon,radon,radon,molten_iron,molten_uranium,molten_lead AND CH:light|XX",
+        "XX|XX|XX",
+    ],
+                        "temp": 99999999700,
                         "category": "energy",
                         "state": "gas",
-                        "density": 2000,
+                        "density": 1000,
+                        "hardness": 1,
+                        "hidden": true,
+                        "excludeRandom": true,
+                        "noMix": true
 			"reactions": {
                                 "magma": { "elem1": "armageddon", "elem2": null },
                                 "void": { "elem1": "light", "elm2": null },
