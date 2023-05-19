@@ -7901,49 +7901,7 @@
     maxSize: 1,
     noMix: true
 },
-"legendary_energy": {
-    color: "#13d649",
-	behavior: [        
-        "XX|XX|XX",
-        "XX|EX:90>plasma,plasma,plasma,plasma,radon,radon,radon,radon,radon,radon,molten_iron,molten_uranium,molten_lead AND CH:light|XX",
-        "XX|XX|XX",
-    ],
-    temp: 99999999700,
-    category: "energy",
-    state: "gas",
-    density: 1000,
-    hardness: 1,
-    hidden: true,
-    excludeRandom: true,
-    noMix: true,
-    reactions: {
-                   "magma": { "elem1": "armageddon", "elem2": null },
-                   "void": { "elem1": "light", "elm2": null }
-},
-"liquid_legend": {
-    color: "#13d644",			
-    behavior: [
-         "XX|XX|XX",
-         "M2|EX:15>radon,radon,radon,liquid_legend%0.4 AND DL%0.2|M2",
-         "M1|M1|M1",
-			],
-    temp: 300,
-    category: "energy_liquids",
-    state: "liquid",
-    excludeRandom: true,
-    reactions: {
-                                "magma": { "elem1": "armageddon", "elem2": null },
-                                "void": { "elem1": "light", "elm2": null },
-},
-"banana_juice": {
-     color: "#e0f542",
-     behavior: behaviors.LIQUID,
-     temp: 800,
-     category: "food",
-     state: "liquid",
-     density: 200,
-	 excludeRandom: true
-},
+
 "pop": {
     color: ["#ffb48f","#ffd991","#ffad91"],
     behavior: [
