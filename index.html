@@ -12556,14 +12556,14 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                     document.getElementById("changelogButton").innerHTML = "Changelog";
                     setSetting("lastversion",currentversion);
                 });
-                // wiki clicked check
-                // if (!settings["clickedwiki"]) {
-                //     document.getElementById("wikiButton").insertAdjacentHTML("beforeend",`<span style="color:red">(NEW)</span>`);
-                // }
-                // document.getElementById("wikiButton").addEventListener("click", function() {
-                //     document.getElementById("wikiButton").innerHTML = "Wiki";
-                //     setSetting("clickedwiki",true);
-                // });
+                wiki clicked check
+                if (!settings["clickedwiki"]) {
+                    document.getElementById("wikiButton").insertAdjacentHTML("beforeend",`<span style="color:red">(NEW)</span>`);
+                }
+                document.getElementById("wikiButton").addEventListener("click", function() {
+                    document.getElementById("wikiButton").innerHTML = "Wiki";
+                    setSetting("clickedwiki",true);
+                });
             </script>
         </div>
         <div id="infoParent">
