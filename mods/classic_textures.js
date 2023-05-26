@@ -106,3 +106,4 @@ if (elements.rad_glass) {elements.rad_glass.color = ["#648c64","#6aad83"];}
 if (elements.packed_sand) {elements.packed_sand.color = "#a1975d";}
 if (elements.dough) {elements.dough.color = "#edd8ba";}
 if (elements.flour) {elements.flour.color = "#f0e2b7";}
+if (elements.frozen_meat) {elements.frozen_meat.color = "#65b8aa";}

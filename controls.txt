@@ -1,3 +1,5 @@
+A fancier version of this can be found here: https://sandboxels.r74n.com/controls
+
 [Sandboxels Controls]
 Left Click        =  Place Pixels
 Right Click       =  Erase Pixels
@@ -32,13 +34,13 @@ F2 or C           =  Capture Screenshot
 
 [Button Info]
 Pause           =  Pause/play the simulation
-Step            =  Run a single frame
+Step            =  Run a single frame of simulation
 Minus           =  Decrease the cursor size
 Plus            =  Increase the cursor size
-Reset           =  Clears the entire simulation
-Replace         =  Overrides pixels when placing
+Reset           =  Clear the entire simulation
+Replace         =  Override existing pixels when placing
 E               =  Select any element by name
 TPS             =  Change how fast the simulation runs
-Info            =  Brings up the element info screen
-Mods            =  Opens the Mod Manager
-Settings        =  Opens the Settings Menu
+Info            =  Open the element info screen
+Mods            =  Open the Mod Manager
+Settings        =  Open the Settings Menu
