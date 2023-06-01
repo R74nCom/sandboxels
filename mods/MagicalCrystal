@@ -1,0 +1,27 @@
+elements.magical_crystal = {
+	color: ["#FAB2B2", "#FACEA1", "#FCFCBF", "#B9FBCF", "#B3D2FF", "#D6AEF8", "#FAC0F8"],
+	behavior: behaviors.WALL,
+	reactions: {
+		"ash": { elem1:null, elem2:"fire" },
+		"blood": { elem1:"steam", elem2:"human" },
+		"fish": { elem1:"steam", elem2:"bird" },
+		"rust": { elem1:"steam", elem2:"iron" },
+		"hydrogen": { elem2:"helium"},
+		"oxidized_copper": { elem2:"copper" },
+		"radiation": { elem2:"steam" },
+		"strange_matter": { elem2:"steam" },
+		"filler": { elem2:"steam" },
+		"laser": { elem2:"supernova" },
+		"magma": { elem2:"cold_fire" },
+		"acid": { elem2:null },
+		"fire": { elem2:"water" },
+	},
+	category: "solids",
+	tempHigh: 99999999999999.99999,
+	stateHigh: ["supernova","supernova","supernova"],
+	tempLow: -99999999999999.99999
+	stateLow: ["supernova","supernova","supernova"],
+	state: "solid",
+	hardness: 999999999999,
+	conduct: 0.5
+}
