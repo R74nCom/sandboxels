@@ -3,7 +3,7 @@ elements.legendary_energy = {
                         color: "#13d649",
 	                behavior: [
         "XX|XX|XX",
-        "XX|EX:90>plasma,plasma,plasma,plasma,radon,radon,radon,radon,radon,radon,molten_iron,molten_uranium,legendary_energy AND CH:light|XX",
+        "XX|EX:90>plasma,plasma,plasma,plasma,radon,radon,radon,radon,radon,radon,molten_iron,molten_uranium,molten_lead AND CH:light|XX",
         "XX|XX|XX",
     ],
                         temp: 99999999700,
