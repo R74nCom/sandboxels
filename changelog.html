@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Sandboxels Changelog</title>
+    <meta name="description" content="Latest updates to the free falling-sand browser game.">
+    <meta name="keywords" content="falling sand, elements, pixel art, simulator, powder">
+    <meta name="author" content="R74n">
+    <meta name="copyright" content="R74n">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="all">
+
+    <!--Favicons-->
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png?v=2">
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png?v=2">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png?v=2">
+    <link rel="manifest" href="manifest.json">
+    <link rel="mask-icon" href="icons/safari-pinned-tab.svg?v=2" color="#2167ff">
+    <link rel="shortcut icon" href="icons/favicon.ico?v=2">
+    <meta name="msapplication-TileColor" content="#e6d577">
+    <meta name="theme-color" content="#000000">
+
+    <!--OpenGraph-->
+    <meta property="og:locale" content="en_US">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Sandboxels Changelog">
+    <meta property="og:description" content="Latest updates to the free falling-sand browser game.">
+    <meta property="og:url" content="https://sandboxels.r74n.com">
+    <meta property="og:site_name" content="Sandboxels">
+    <meta property="og:image" content="https://sandboxels.r74n.com/icons/wallpaper.png">
+    <meta property="og:image:width" content="1980">
+    <meta property="og:image:height" content="971">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="A rainforest made in Sandboxels">
+
+    <!--Twitter-->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:description" content="Latest updates to the free falling-sand browser game.">
+    <meta name="twitter:title" content="Sandboxels Changelog">
+    <meta name="twitter:site:id" content="1436857621827530753">
+    <meta name="twitter:image" content="https://sandboxels.r74n.com/icons/card.png">
+    <meta name="twitter:image:alt" content="A rainforest made in Sandboxels">
+    <meta name="twitter:creator:id" content="1436857621827530753">
+
+    <link rel="stylesheet" type="text/css" href="style.css?nocache=3">
+    <style>
+        /* on mobile, make h1 fit on one line */
+        @media only screen and (max-width: 800px) {
+            h1 {
+                font-size: 1em;
+            }
+        }
+        #changelog {
+
+            font-family: Arial, Helvetica, sans-serif
+        }
+        h2 {
+            margin-bottom: 5px;
+            display: inline-block;
+        }
+        ul {
+            margin: 0;
+            padding: 0;
+            list-style-type: none;
+        }
+        li {
+            margin-left: 20px;
+            margin-top: 0;
+            margin-bottom: 0;
+            padding: 0;
+        }
+        li.ad::before {
+            content: "+";
+            color: #00ff00;
+        }
+        li.ch::before {
+            content: "~";
+            color: #ffff00;
+        }
+        li.rm::before {
+            content: "-";
+            color: #ff0000;
+        }
+        li.update-section {
+            font-size: 1.25em;
+            margin-left: 10px;
+        }
+        #intro {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+<h1><a href="https://sandboxels.R74n.com" class="backbutton" target="_blank">&lt;</a> Sandboxels Changelog</h1>
+
+</ul>
+<div id="changelog">
+
+<div id="intro">
+<p>Below are all of the updates to Sandboxels.</p>
+<p>Suggest new additions on our <strong><a href="https://link.r74n.com/sandboxels-feedback" target="_blank">Feedback Form</a></strong>.</p>
+<p>Join our <strong><a href="https://link.r74n.com/discord" target="_blank">Discord</a></strong> to be notified when new updates drop.</p>
+<p>The original <a href="https://sandboxels.r74n.com/changelog.txt">plain text version</a> of this is still maintained.</p>
+</div>
+
+<h2 id="1.8.3">[Version 1.8.3 - May 16, 2023 - Deserted Update]</h2>
+<ul>
+<li>+ Cactus</li>
+<li>+ Fancy Changelog and Controls pages</li>
+<li>+ Toggle Burning setting</li>
+<li>+ Broth Ice (Hidden)</li>
+<li>+ Rad Shard (Hidden)</li>
+<li>+ Linked to our <a href="https://sandboxels.wiki.gg/" target="_blank" title="Official Sandboxels Wiki - wiki.gg">official Sandboxels Wiki</a> on wiki.gg</li>
+<li>[Changes]</li>
+<li>+ Cacti and Charcoal now spawn in Desert world gen</li>
+<li>+ Petals will fall slowly if detached from flower</li>
+<li>+ Pointer color can be customized</li>
+<li>+ Bless grows Grass on Dirt</li>
+<li>+ Frogs can somewhat swim</li>
+<li>+ Pool Water can kill Frogs and Seeds</li>
+<li>+ Pool Water will break down Blood and Poison</li>
+<li>+ Cream releases Steam when boiling</li>
+<li>+ Cream can wet soil</li>
+<li>+ Popcorn pops when made from Corn</li>
+<li>+ Melted Butter stains solids</li>
+<li>+ Mushroom parts break into Mycelium</li>
+<li>+ Eggs melting leaves behind Sulfur Gas</li>
+<li>+ Eggs won't break when dropped on soft material</li>
+<li>+ Bless turns Molten Lead to Molten Gold</li>
+<li>+ Unique fire colors for Molten Copper, Lead, Zinc, Salt, and Calcium</li>
+<li>+ Broth can be made from Bones and Mushroom parts</li>
+<li>+ Unique Broth color for soups with Flowers, Potato, Rotten Meat, Cheese, Beans, Wheat, Algae</li>
+<li>+ Milk and Cream can be churned to Butter</li>
+<li>+ Rats can eat Eggnog</li>
+<li>+ Fish eat Yolk and Cell</li>
+<li>+ Ants can drink Juice</li>
+<li>+ Soap kills bugs</li>
+<li>+ Ozone kills Plant</li>
+<li>+ Charcoal, Roots, Hyphae, and Amalgam conduct electricity</li>
+<li>+ Rad Glass has a texture when placed manually</li>
+<li>+ Rad Glass can be made with Fallout</li>
+<li>+ LEDs melt into Gallium</li>
+<li>+ Molten Calcium can burn</li>
+<li>+ Salt alias 'Sodium Chloride'</li>
+<li>+ Anesthesia alias 'Nitrous Oxide'</li>
+<li>+ Anesthesia turns Clouds to Acid Clouds</li>
+<li>+ Anesthesia depletes Ozone</li>
+<li>+ Sulfur alias 'Sulphur'</li>
+<li>+ TNT alias 'Trinitrotoluene'</li>
+<li>+ DNA alias 'Deoxyribonucleic Acid'</li>
+<li>+ DNA from Cancer appears corrupted</li>
+<li>+ Potatoes can explode when radiated</li>
+<li>+ Cellulose freezes into Paper</li>
+<li>+ Bees can be crushed into Honey</li>
+<li>+ Bamboo and Vines can convert Carbon Dioxide to Oxygen</li>
+<li>+ Flour can be wet by Pool Water, Milk, Cream, Broth, Soda, Tea, Blood, Antibody, and Infection</li>
+<li>+ Slag can be made with Smog, Pyrocumulus, Dioxin, and Poison Gas</li>
+<li>+ Cream changes color when mixed with Milk variant ingredients</li>
+<li>+ Radiation affects Aluminum, Pool Water, Soda, Broth, and Tea</li>
+<li>+ Pistils can be broken</li>
+<li>+ Sugar and Candy dissolve in Soda</li>
+<li>+ Bleach and Yeast reaction generates heat</li>
+<li>+ Bleach and Soap reaction</li>
+<li>+ Bleach breaks down Antidote</li>
+<li>+ Sponge creates Bubbles when absorbing Soap</li>
+<li>~ Potatoes, Straw, Wheat, and Worms burn slower</li>
+<li>~ Sap boils at a lower point</li>
+<li>~ Strange Matter is now a liquid</li>
+<li>~ Bless turns Soda into Seltzer</li>
+<li>~ Cellulose burns less</li>
+<li>~ Recolored Frozen Meat</li>
+<li>~ Adjusted Sulfur Gas density</li>
+<li>~ Adjusted Molten Gallium density</li>
+<li>[Bug Fixes]</li>
+<li>~ Fixed: Grape Juice and Potato Juice turns yellow when frozen</li>
+<li>~ Fixed: Color-customizable elements don't show selector if hidden</li>
+<li>~ Fixed: Foam created by other foam takes air temperature</li>
+<li>[Technical]</li>
+<li>+ Element property glow for gas effect (true/false)</li>
+<li>+ LIGHTWEIGHT behavior preset</li>
+<li>+ Reaction properties burning1 and burning2 requirement (true/false)</li>
+<li>~ Seeds element now uses eLists.SEEDS</li>
+</ul>
+
+<h2 id="1.8.2">[Version 1.8.2 - May 12, 2023 - Very Necessary Update]</h2>
+<ul>
+<li>+ Lettuce</li>
+<li>+ Liquid Light at absolute zero (Hidden)</li>
+<li>+ Ice Cream (Frozen Milk)</li>
+<li>+ Baked Potato (Hidden)</li>
+<li>+ Bricks and Glass have a texture when placed</li>
+<li>+ Clay Shard</li>
+<li>+ Frozen Fish (Hidden, 25% chance)</li>
+<li>~ Smash is now located on the toolbar</li>
+<li>+ Press R to reset scene</li>
+<li>+ Toggle buttons in Settings</li>
+<li>+ Fancy Textures setting</li>
+<li>+ Default View setting for mobile</li>
+<li>+ Air Temp, Air Density, and Abs Zero settings</li>
+<li>+ Mushrooms world gen type</li>
+<li>[Changes]</li>
+<li>~ Liquid Helium now has new superfluid behavior</li>
+<li>~ Burning now stops below 0°C</li>
+<li>~ Porcelain unhidden in Solids</li>
+<li>~ Porcelain won't mix unless Shift is held</li>
+<li>~ Optimized and buffed Strange Matter</li>
+<li>+ Strange Matter ignores Fire and Smoke, can be destroyed by Antimatter</li>
+<li>+ Bless warms pixels below -200°C</li>
+<li>+ Humans will try to regulate their body temperature</li>
+<li>+ Humans can eat food</li>
+<li>+ Bones and Dead Plants can turn into fossil fuels under right conditions</li>
+<li>+ Charcoal can turn into Diamonds under right conditions</li>
+<li>+ Sugar and Milk can dissolve in Tea</li>
+<li>+ Mixing Cement will reset the time until solidification</li>
+<li>+ Termites can dig through soil</li>
+<li>+ Potatoes can fall to the side</li>
+<li>+ Potatoes break into Juice</li>
+<li>+ Borax and Glue makes Slime</li>
+<li>+ Incense gives off Smoke when burning</li>
+<li>+ Herbs give off Fragrance when burnt</li>
+<li>+ Flying Bugs and Birds can be crushed by falling Rocks</li>
+<li>+ Fish can eat Broth, Slugs, Herbs, Lettuce, Dead Plants, Lichen, Yeast, Yogurt, and Tea</li>
+<li>+ Snails, Algae, Gravel, and Charcoal can clean Broth and Tea</li>
+<li>+ Worms can break down Lichen</li>
+<li>+ Worms can eat Yolk</li>
+<li>+ Gingerbread can be made with Flour and Sap or Caramel</li>
+<li>+ Infection, Antibody, and Vaccine will wet soil</li>
+<li>+ Radiation affects Milk variants</li>
+<li>+ Malware messes with more machines</li>
+<li>+ Copper Sulfate can be used as pesticide</li>
+<li>+ Bubbles and Foam remove Stench</li>
+<li>+ Bless can convert Lead to Gold</li>
+<li>+ Tea can be made from Wheat</li>
+<li>+ Uncharge tool converts Protons to Neutrons</li>
+<li>+ Uncharge tool deletes Electric</li>
+<li>+ Unburn tool converts Plasma to Smoke</li>
+<li>+ <a href="https://github.com/R74nCom/sandboxels/" target="_blank">GitHub</a> linked in Mod Manager</li>
+<li>~ Herbs burn slower</li>
+<li>~ Tweaked Rad Glass color</li>
+<li>~ Tweaked Dough color</li>
+<li>~ Tweaked Lookup tool color to be like Glass</li>
+<li>~ Pick, Mix, Shock, Mushroom Spore, Iron, and Gray Goo now have dark text</li>
+<li>~ Settings menu is taller</li>
+<li>~ Reset warning no longer appears if scene is empty</li>
+<li>~ Ember cools into Ash</li>
+<li>~ Firework Ember cools into Carbon Dioxide</li>
+<li>~ Acid ignores Hydrogen</li>
+<li>~ Renamed Nitroglycerin to Nitro</li>
+<li>+ Frozen Nitro (Hidden)</li>
+<li>+ Cream (Hidden)</li>
+<li>[Bug Fixes]</li>
+<li>~ Fixed: Background color setting input not syncing after refresh</li>
+<li>~ Fixed: Pixels from Spout don't inherit temperature</li>
+<li>~ Fixed: Stats bar makes GUI jumpy on mobile</li>
+<li>~ Fixed: Sponge doesn't conduct heat</li>
+<li>~ Fixed: Flies no longer electrocute</li>
+<li>~ Fixed: Sun heat transfer dependent on phase</li>
+<li>~ Fixed: Neutrons/Protons/Blessing Strange Matter can make ghost pixels</li>
+<li>[Technical]</li>
+<li>+ colorPattern and colorKey element properties (see Brick)</li>
+<li>+ SUPERFLUID behavior preset</li>
+<li>+ Absolute Zero is now controlled with global variable absoluteZero</li>
+<li>+ fireElement element property accepts an array of elements</li>
+<li>+ breakInto element property accepts null values</li>
+<li>+ Uncharge tool supports reactions</li>
+<li>+ stateLowColorMultiplier element attribute for Ice Cream</li>
+<li>+ darkText element attribute for buttons (true/false)</li>
+</ul>
+
+<h2 id="1.8.1">[Version 1.8.1 - April 14, 2023 - Striking Detail]</h2>
+<ul>
+<li>+ Lightning (!!!)</li>
+<li>+ Bless</li>
+<li>+ Thunder Cloud</li>
+<li>+ God Ray</li>
+<li>+ Heat Ray</li>
+<li>+ Rotten Cheese (Hidden)</li>
+<li>+ Herb</li>
+<li>+ Tea (Hidden)</li>
+<li>+ Rime (Hidden)</li>
+<li>+ Frozen Worm (Hidden)</li>
+<li>+ Frozen Ink (Hidden)</li>
+<li>+ Poison Ice (Hidden)</li>
+<li>+ Rain world gen type</li>
+<li>+ Changelog notification after new update</li>
+<li>+ Version number shown below game</li>
+<li>~ Improved load times</li>
+<li>[Changes]</li>
+<li>~ Reworked Vines</li>
+<li>+ Vines hang from ceilings and walls</li>
+<li>+ Vines spread naturally sideways, down, and on walls</li>
+<li>+ Frogs can absorb harmful pollutants through their skin (Educational!)</li>
+<li>+ Sun brown dwarf stage</li>
+<li>+ Mercury can conduct electricity</li>
+<li>+ Plant, Grass, and Vine break into Dead Plant</li>
+<li>+ Insects break into Dead Bugs</li>
+<li>+ Borax can kill insects</li>
+<li>+ Ants, Frogs, Fish, and Birds can eat Dead Bugs</li>
+<li>+ Ants and Flies can eat Cheese</li>
+<li>+ Birds and Rats can eat Lichen</li>
+<li>+ Fish can eat Tadpoles</li>
+<li>+ Fish and Tadpoles can swim in Seltzer and Pool Water</li>
+<li>+ Radiation can make Frogs young again</li>
+<li>+ Worms can compost Dead Bugs</li>
+<li>+ Worms can break down Mudstone, Permafrost, and Packed Sand</li>
+<li>+ Worms can eat Sawdust, Tinder, Dust, and Rotten Meat</li>
+<li>+ Worms can break down Eggs slowly</li>
+<li>+ Eggs will die when frozen</li>
+<li>+ Rats can eat Gingerbread, Yogurt, and Beans</li>
+<li>+ Ammonia can kill Rats</li>
+<li>+ Plants absorb Carbon Dioxide from Seltzer</li>
+<li>+ Plants can clean Smog</li>
+<li>+ Ice Nine can convert Rad Steam</li>
+<li>+ Rad Steam can radiate Glass</li>
+<li>+ Stench can be burned away by Fire</li>
+<li>+ Soap cleans Smog and Stench</li>
+<li>+ Soap dissolves in Water</li>
+<li>+ Steam is a very bad electrical conductor</li>
+<li>+ Juice can wet soils</li>
+<li>+ Pool Water, Blood, Soda, and Milk can wet Clay Soil</li>
+<li>+ Bubble, Steam, Foam, Acid, Primordial Soup, Vaccine, and Antidote can clean stains</li>
+<li>+ Malware can damage Wires</li>
+<li>+ Cancer can damage Plant</li>
+<li>+ Cancer can spread to Bones</li>
+<li>+ Bone Marrow can freeze and be poisoned</li>
+<li>+ AlGa and Water reaction</li>
+<li>+ Stink Bugs can be radiated</li>
+<li>+ Info page shows decimal points if density is low</li>
+<li>+ New random event element choices</li>
+<li>+ More Bleach reactions</li>
+<li>+ Neutral Acid can vaporize</li>
+<li>+ Vinegar can kill Mushrooms and Pollen</li>
+<li>+ Poison, Bleach, Seltzer, and Pool Water can kill Pollen</li>
+<li>~ Fireflies will kill Frogs if eaten</li>
+<li>~ Recolored Mycelium</li>
+<li>~ Unhid Mycelium</li>
+<li>~ Hid Positron</li>
+<li>~ Moved Worm apart from insects</li>
+<li>~ Moved Unpaint to Special</li>
+<li>~ Flies no longer eat living plants</li>
+<li>~ Worms no longer decompose growing plants</li>
+<li>~ EMP Bomb is no longer limited to cursor size 1</li>
+<li>~ Smog condensates into Dirty Water</li>
+<li>~ Lowered Poison Gas condensation point</li>
+<li>~ Acid will no longer destroy Chlorine</li>
+<li>~ Cyanide is now a liquid at room temperature</li>
+<li>~ Hid Cyanide</li>
+<li>+ Cyanide Gas, Cyanide Ice (Hidden)</li>
+<li>+ Neon Ice (Hidden)</li>
+<li>+ Ball recipe</li>
+<li>+ Rocket recipe</li>
+<li>+ Armageddon recipe</li>
+<li>+ Secret rare Ball Lightning</li>
+<li>[Bug Fixes]</li>
+<li>~ Fixed: Hardness does not resist explosion damage</li>
+<li>~ Fixed: E button (Element Select) doesn't change active category</li>
+<li>~ Fixed: Vines support themselves mid-air</li>
+<li>~ Fixed: Grapes break into yellow Juice</li>
+<li>~ Fixed: Game takes long to load on slow connections</li>
+<li>~ Fixed: Cursor box becomes thicker after drawing line</li>
+<li>~ Fixed: Flies make trees grow out of control</li>
+<li>~ Fixed: Dough and batter eat each other when mixing</li>
+<li>~ Fixed: Tadpoles, Slugs, Snails, Lichen, Dead Bugs, and Pollen drink all Pool Water</li>
+<li>~ Fixed: Roots turn Pool Water into Fiber</li>
+<li>~ Fixed: Cooldown not working when maximum cursor size is 1</li>
+<li>~ Fixed: Worms turn Plant and Evergreen to Roots</li>
+<li>[Technical]</li>
+<li>~ Optimized gas rendering</li>
+<li>~ Optimized fire somewhat</li>
+<li>+ SP behavior cell now works with "ignore" element property</li>
+<li>+ extraTempHigh and extraTempLow element properties (see Steam)</li>
+<li>+ canPlace element property, for tools that can also be placed</li>
+</ul>
+
+<h2 id="1.8">[Version 1.8 - March 17, 2023 - Cooking Update]</h2>
+<ul>
+<li>+ Updated Donator list</li>
+<li>+ Butter</li>
+<li>+ Setting to disable reset warnings</li>
+<li>+ EWall, conductive wall</li>
+<li>+ Rock Wall</li>
+<li>+ Sodium Gas</li>
+<li>[Dough and Batter]</li>
+<li>+ Batter, made from Flour and Yolk (Hidden)</li>
+<li>+ Can be mixed with any food to create a unique dough/batter</li>
+<li>+ Baked Batter (Hidden)</li>
+<li>[Changes]</li>
+<li>+ Bones can break into Bone Marrow</li>
+<li>+ Acid dissolves Rocks into Sand</li>
+<li>+ Pyrocumulus forms in Rad Clouds</li>
+<li>+ Poison can kill Tree Branches</li>
+<li>+ Different cheese colors from milk variants</li>
+<li>+ Bleach and Yeast reaction</li>
+<li>~ Plasma no longer charged by default</li>
+<li>~ Sun, Stained Glass, Wires, Flash, and Explosions won't mix unless Shift is held</li>
+<li>~ Unhid Yolk</li>
+<li>~ Hid Cellulose</li>
+<li>~ Reordered Food category</li>
+<li>~ Tweaked Flour color</li>
+<li>~ Sodium has a bright yellow flame</li>
+<li>~ Sulfur Gas burns quickly</li>
+<li>~ Poison can kill Mushrooms</li>
+<li>~ Oxygen no longer flammable, but can be destroyed by fire</li>
+<li>~ Hydrogen and Oxygen now need heat to combine</li>
+<li>~ Milk from Udders comes out warm</li>
+<li>- Removed Controls button as it is no longer needed</li>
+<li>+ Added link to <a href="https://www.reddit.com/r/sandboxels" target="_blank">Reddit</a></li>
+<li>[Bug Fixes]</li>
+<li>~ Fixed: Heating trees causes odd growth patterns</li>
+<li>~ Fixed: Sodium freezing point too low</li>
+<li>~ Fixed: Molten Sodium missing reactions</li>
+<li>~ Fixed: Melted Wax default temperature too low</li>
+<li>~ Fixed: Inaccurate Mercury gas density</li>
+<li>~ Fixed: Humans superconductive</li>
+<li>~ Fixed: Canvas overflows on the right on mobile</li>
+<li>[Technical]</li>
+<li>+ onMix element attribute function(pixel1,pixel2)</li>
+<li>+ isFood element attribute for Dough/Batter mixing</li>
+<li>+ stateHighColorMultiplier element attribute for Batter</li>
+</ul>
+
+<h2 id="1.7.1">[Version 1.7.1 - January 8, 2023]</h2>
+<ul>
+<li>+ Walls and Glass aren't affected by Mix unless holding Shift</li>
+<li>+ Beans</li>
+<li>+ Sodium Acetate can melt</li>
+<li>~ Popcorn hidden ;)</li>
+</ul>
+
+<h2 id="1.7">[Version 1.7 - December 15, 2022 - Anniversary Update]</h2>
+<ul>
+<li>+ Confetti</li>
+<li>+ Party Popper</li>
+<li>+ Balloon</li>
+<li>+ Evergreen Trees</li>
+<li>+ Pinecone, sapling equivalent</li>
+<li>+ Evergreen (Hidden)</li>
+<li>+ Gingerbread, a sturdy building material</li>
+<li>+ Slush, made when snow mixes with water</li>
+<li>+ Snow world gen type</li>
+<li>+ Taiga world gen type</li>
+<li>+ Tide Pool world gen type</li>
+<li>+ New party-themed random events</li>
+<li>+ Molten Ash</li>
+<li>+ AlGa alloy (Hidden)</li>
+<li>+ Eggnog (Hidden)</li>
+<li>+ Pilk (Hidden)</li>
+<li>+ Supporters list below game, donate to be added for life!</li>
+<li>[Changes]</li>
+<li>~ Snow more resilient to heat</li>
+<li>~ Tweaked Ice color</li>
+<li>~ Improved world gen for: Flower Field, Wheat Field, Forest, Jungle, Ocean</li>
+<li>~ Dyanmite must now be triggered to explode</li>
+<li>~ Plague now dissipates over time</li>
+<li>~ Plague now dies at high temperatures</li>
+<li>+ Snails and Slugs can now eat Dead Plant</li>
+<li>+ Rats killed by Soap</li>
+<li>+ Soap can damage Cancer</li>
+<li>+ Cancer dirties Water</li>
+<li>+ Cancer can now be frozen</li>
+<li>+ Roots can freeze to death</li>
+<li>+ Milk and variants can wet Dirt and Sand</li>
+<li>+ Wet Sand can freeze</li>
+<li>+ Cheerful Mode for when tragedy hits</li>
+<li>- Removed Yolk random event</li>
+<li>[Bug Fixes]</li>
+<li>~ Fixed: Gallium freezing point too low</li>
+<li>~ Fixed: Clouds getting stuck on each other</li>
+<li>~ Fixed: Molten conductivity not being set properly</li>
+<li>~ Fixed: Dead Bug button color not showing</li>
+<li>[Technical]</li>
+<li>+ "decor" world gen property, see "forest" or "tide_pool"</li>
+</ul>
+
+<h2 id="1.6.5">[Version 1.6.5 - November 16, 2022]</h2>
+<ul>
+<li>+ Radiated Glass</li>
+<li>+ Gallium</li>
+<li>~ Improved Baking Soda and Vinegar reaction</li>
+<li>+ Fireflies sync up blinking over time</li>
+<li>+ Bees can pollinate any plants that they touch</li>
+<li>+ Added Sandboxels introduction and controls underneath game</li>
+<li>+ Loading screen</li>
+<li>[Bug Fixes]</li>
+<li>~ Fixed: Yeast immediately killed by alcohol it ferments</li>
+<li>[Technical]</li>
+<li>~ Revamped CSS, report any bugs on the Discord</li>
+<li>+ New "attr1" and "attr2" reaction property</li>
+</ul>
+
+<h2 id="1.6.4">[Version 1.6.4 - July 30, 2022]</h2>
+<ul>
+<li>+ Seeds and bombs have a short cooldown when on the lowest cursor size</li>
+<li>+ Cloud (The normal, boring kind)</li>
+<li>~ Tweaked cloud behavior</li>
+<li>+ Positron</li>
+<li>+ Strange Matter</li>
+<li>+ Dead Bug (Hidden)</li>
+<li>+ Pool Water (Hidden)</li>
+<li>+ Poison Gas (Hidden) - Result of various lethal reactions</li>
+<li>+ Ice forms of all Water and Blood variants</li>
+<li>+ Flies are instantly electrocuted</li>
+<li>+ Tadpoles are affected by Poison, Radiation, etc.</li>
+<li>+ Flying insects will die from drowning</li>
+<li>~ Adjusted Root flammability</li>
+<li>~ Reduced Acid Gas's condensation point</li>
+<li>~ Nerfed Yeast growth rate</li>
+<li>~ Burning Bread makes a lot less ash</li>
+<li>[Bug Fixes]</li>
+<li>~ Fixed: Random events can blow up the Sun</li>
+<li>~ Fixed: Clouds always start by moving right</li>
+<li>~ Fixed: Acid Gas spawns at room temperature</li>
+<li>~ Fixed: Some things immune to Acid aren't immune to Acid Gas</li>
+<li>~ Fixed: Too much piling up of Rad Steam under Rad Clouds</li>
+<li>[Technical]</li>
+<li>+ "cooldown" element attribute, in ticks</li>
+</ul>
+
+<h2 id="1.6.3">[Version 1.6.3 - July 24, 2022 - Random Update]</h2>
+<ul>
+<li>+ Random Events! Enable in settings!</li>
+<li>+ Electrum alloy (Hidden)</li>
+<li>- Dirty Water no longer stains</li>
+<li>[Minor Reactions]</li>
+<li>+ Hydrogen and Sulfur will create a bad smell</li>
+<li>+ Water breaks down Dyes</li>
+<li>+ Gold breaks into Gold Coins</li>
+<li>+ Snails eat and purify Dirty Water</li>
+<li>+ Poison and Alcohol now kill Yeast</li>
+<li>+ Rats can have babies after eating enough</li>
+<li>+ Bees produce honey after eating enough</li>
+<li>[Bug Fixes]</li>
+<li>~ Fixed: Weird triangular root formations when hot</li>
+<li>~ Fixed: Oil doesn’t soak into Dirt and makes infinite Mud</li>
+<li>~ Fixed: Dirty Water no longer rots Meat</li>
+</ul>
+
+<h2 id="1.6.2">[Version 1.6.2 - July 10, 2022]</h2>
+<ul>
+<li>+ Dyes will mix colors [Warning: Laggy]</li>
+<li>+ Broth, from heating meat in water</li>
+</ul>
+
+<h2 id="1.6.1">[Version 1.6.1 - May 17, 2022 - Egg Update]</h2>
+<ul>
+<li>+ Feather</li>
+<li>+ Egg</li>
+<li>+ Yolk</li>
+<li>+ Birds, Frogs, Fish, and all bugs (except bees) can lay eggs after eating enough</li>
+<li>+ Animal Eggs will hatch over time</li>
+<li>+ Hard Yolk</li>
+<li>+ Tadpole (Hidden)</li>
+<li>+ DNA (Hidden), from broken cells</li>
+<li>+ Homunculus (Hidden)</li>
+<li>~ Animals are more resistant to temperatures</li>
+<li>~ Implemented Google's Monk Skin Tone Scale for Humans</li>
+<li>~ Adjusted Human shirt colors</li>
+<li>+ Life can be created via the Miller-Urey method</li>
+<li>+ Ice-nine can freeze more Water-based elements</li>
+<li>+ Primordial Soup can create Seltzer and Oxygen</li>
+<li>+ Primordial Soup can moisten the ground</li>
+<li>+ Electricity speeds up Primordial Soup processes</li>
+<li>+ Ants can dig through Clay Soil</li>
+<li>+ Ants eat Mushroom Caps, Candy</li>
+<li>~ Adjusted Ant behavior</li>
+<li>~ Adjusted Ant, Fly, and Firefly color</li>
+<li>+ Fleas can eat Antidote, Dead Plant</li>
+<li>+ Fleas will eat Mercury and die</li>
+<li>+ Fleas will eat Ketchup to no dietary gain</li>
+<li>+ Salt Water kills Snails and Slugs</li>
+<li>+ Stink Bugs have a diet</li>
+<li>+ Mercury dirties Water</li>
+<li>+ Water breaks down Mudstone</li>
+<li>+ Birds breathe Oxygen</li>
+<li>+ Birds eat Mushrooms, Seeds</li>
+<li>+ Consistent Bird toxicity reactions</li>
+<li>+ Termites can eat Sawdust, Particleboard, Tinder, and Lichen</li>
+<li>+ Alcohol kills Plants</li>
+<li>+ Chlorine and Baking Soda kills Algae</li>
+<li>+ Chlorine kills Plague and Virus</li>
+<li>+ Some illegal toxic recipes</li>
+<li>+ Vinegar kills Lichen</li>
+<li>+ Snails and Slugs eat Lichen</li>
+<li>+ Roots can grow through Mycelium</li>
+<li>+ Rats eat Grapes</li>
+<li>+ Worms can swim through Water</li>
+<li>+ Acid ignores Plastics</li>
+<li>+ Salt rusts Iron</li>
+<li>+ Some animals can be smashed</li>
+<li>+ Better Baking Soda-Vinegar reaction</li>
+<li>+ Acid can boil into Acid Gas</li>
+<li>+ Algae can grow in any liquid</li>
+<li>+ Udders are now flammable</li>
+<li>~ Dirty Water stains less</li>
+<li>~ Lowered Slag melting point</li>
+<li>~ Nerfed Lichen growth</li>
+<li>~ Flowers now use Plant as its stem instead of Grass</li>
+<li>~ Primordial Soup is less conductive</li>
+<li>~ Fixed: Color Sand not doing its thing</li>
+<li>~ Fixed: Dirt doesn't soak up blood but turns to Mud anyway</li>
+<li>~ Fixed: Sodium ghost pixels</li>
+<li>~ Fixed: Pressure Plate breaks at top of canvas</li>
+<li>~ Fixed: Nitroglycerin not activated by electricity</li>
+<li>~ Fixed: Sugar Water gives Cells cancer</li>
+<li>~ Fixed: EMP Bomb explodes badly</li>
+<li>~ Fixed: Fish constantly changing directions</li>
+<li>+ Technical: Debug tool</li>
+</ul>
+
+<h2 id="1.6">[Version 1.6 - May 1, 2022 - Ecosystem Update]</h2>
+<ul>
+<li>+ Air Density - Gases lighter than air will rise</li>
+<li>+ Clouds toggle setting</li>
+<li>+ EMP Bomb</li>
+<li>+ Bird</li>
+<li>[Roots]</li>
+<li>+ Trees grow roots when planted on soil</li>
+<li>+ Roots can now grow and spread</li>
+<li>+ Fiber (Hidden)</li>
+<li>+ Roots absorb water from soil</li>
+<li>[The Sun]</li>
+<li>+ The Sun has different color variations depending on its temperature</li>
+<li>+ The Sun outputs more light the hotter it is</li>
+<li>+ Supernova (Hidden)</li>
+<li>+ The Sun will EXPLODE when frozen</li>
+<li>+ More Sun element fusion, depending on temperature</li>
+<li>~ Nerfed Sun, it will no longer boil everything</li>
+<li>+ Light takes the color of whatever it hits</li>
+<li>~ Pixels now heat up a tiny amount when hit by Light</li>
+<li>+ Room Temp tool</li>
+<li>+ Grass can now grow and spread</li>
+<li>+ Algae can now reproduce</li>
+<li>+ Air in Info Screen</li>
+<li>+ Gravel can break into Sand</li>
+<li>+ Mudstone can be cooled into Permafrost</li>
+<li>+ Pollen dissolves in Water</li>
+<li>+ Acid breaks Charcoal into Carbon Dioxide</li>
+<li>+ Algae and Yeast can team up and become Lichen</li>
+<li>+ Rats can eat Lichen</li>
+<li>+ Lichen can break rocks down into Dirt</li>
+<li>+ Blood absorbs Oxygen and Carbon Dioxide</li>
+<li>+ Cancer can be killed by Proton bombardment</li>
+<li>+ Plants will die when exposed to Vinegar, Baking Soda, or Bleach</li>
+<li>+ Baking Soda can melt</li>
+<li>+ Loopy now clones the first thing it touches</li>
+<li>+ Worms and Rats can sink in Water</li>
+<li>~ Recolored Dirt and Permafrost</li>
+<li>~ Ozone no longer rises</li>
+<li>~ Rotten Meat can be converted to Ammonia</li>
+<li>~ Unhid Wheat</li>
+<li>~ Moved Flour and Sugar to Food</li>
+<li>~ Paper is now a still solid</li>
+<li>~ Hid many elements, including some seeds, most alloys, Liquid Hydrogen, Porcelain, Particleboard, some powders, Mycelium, Quicklime, Packed Snow</li>
+<li>~ Snow can freeze into Packed Snow, and then into Ice</li>
+<li>~ Grenades explode immediately on shock</li>
+<li>~ Optimizations for basic powders, liquids, and gases</li>
+<li>~ Excluded Uranium, Fire Cloud, Antimatter, and Void from Random</li>
+<li>~ Permafrost and Molten Dirt turn into Mudstone</li>
+<li>~ Adjusted Dirty Water density</li>
+<li>~ Fireworks release Carbon Dioxide instead of Fire</li>
+<li>~ Copper no longer oxidizes on its own</li>
+<li>~ Slag no longer forms with some molten elements</li>
+<li>~ Lichen now only grows horizontally</li>
+<li>~ Cellulose can be heated into Paper</li>
+<li>~ Fixed: Explosions can't destroy pixels with broken states</li>
+<li>~ Fixed: Incinerate tool not doing state changes</li>
+<li>~ Fixed: Hyphae changing anything to Mycelium</li>
+<li>~ Fixed: Mercury density</li>
+<li>~ Fixed: Metal Scrap is invincible</li>
+<li>~ Fixed: Sun can be pushed by Rocks</li>
+<li>~ Fixed: Trees grow continuously as leaves die from heat</li>
+<li>+ Technical: Reactions can be enabled/disabled with a setting</li>
+<li>+ Technical: maxSize element property</li>
+</ul>
+
+<h2 id="1.5.1">[Version 1.5.1 - Apr. 19, 2022]</h2>
+<ul>
+<li>+ Hold Shift to draw lines</li>
+<li>+ Info Screen now shows category info</li>
+<li>+ Info Screen shows undiscovered elements</li>
+<li>+ Fire now appears below burning pixels if the top if blocked</li>
+<li>+ Porcelain</li>
+<li>+ Pyrite</li>
+<li>+ Incinerate tool</li>
+<li>+ Unburn tool</li>
+<li>+ Particleboard</li>
+<li>+ Rats, Humans, and Yeasts can now breathe oxygen</li>
+<li>+ Worms decompose Dead Plants</li>
+<li>+ Chlorine Ice</li>
+<li>+ Sulfur Gas</li>
+<li>+ Frozen Yogurt</li>
+<li>+ Antiice</li>
+<li>+ Liquid forms of Ammonia, Propane, Methane</li>
+<li>+ Sawdust can be made into Cellulose</li>
+<li>+ Reset buttons in Settings</li>
+<li>+ Added clarification and <a href="https://docs.google.com/document/d/1YWPLKEvGeaaLuYWzObCyLK2Y09JPZgF1ODQQCbU3Sng/edit?usp=sharing" target="_blank">mod list</a> link to Mod Manager</li>
+<li>+ All metals given unique hardness values</li>
+<li>+ Lamp Oil removes Glue</li>
+<li>+ Cheese can be vaporized</li>
+<li>+ Bone Marrow, Pointer, Rainbow, and Static can now be obtained</li>
+<li>+ Ash can eliminate Stench</li>
+<li>- Removed Helium Ice</li>
+<li>~ Improved Smash tool</li>
+<li>~ Acid no longer errodes Water</li>
+<li>~ Fish out of water now fall to side</li>
+<li>~ Less Smog forms</li>
+<li>~ Algae now floats on water</li>
+<li>~ Fish no longer tend to swim downwards</li>
+<li>~ Molten Sulfur is now red and non-viscous</li>
+<li>~ Fermented alcohols now colored differently</li>
+<li>~ More foods can be fermented</li>
+<li>~ Tweaked Milk flavor densities</li>
+<li>~ Tweaked Rat consumption rates</li>
+<li>~ Tweaked most insect consumption rates</li>
+<li>~ Tweaked Meat cooking rates</li>
+<li>~ Tweaked Yeast fermentation rates</li>
+<li>~ Glue no longer sticks to Ice</li>
+<li>~ Oil burns longer</li>
+<li>~ Fixed: Gaps in lines when drawing fast</li>
+<li>~ Fixed: Notifications not showing in Unlock as Discover mode</li>
+<li>~ Fixed: Clicking outside menu immediately starting placing</li>
+<li>~ Fixed: Molten Slag eats infinite Ash</li>
+<li>~ Fixed: Flash color inconsistent with Light</li>
+<li>~ Fixed: Mercury not amalgamating with Gold Coins or Rose Gold</li>
+<li>~ Fixed: Decimal point TPS</li>
+<li>+ Technical: Tools can now ignore certain elements</li>
+<li>+ Technical: "related" element property, shows a "See Also" in info</li>
+<li>+ Technical: "alias" element property, shows a "Also known as" in info</li>
+</ul>
+
+<h2 id="1.5">[Version 1.5 - Apr. 13, 2022]</h2>
+<ul>
+<li>+ Greatly improved E/Element Select button</li>
+<li>+ Mercury</li>
+<li>+ Amalgam</li>
+<li>+ Ice forms of Helium, Hydrogen, Oxygen, Alcohol, Acid, Juice, and Slime</li>
+<li>+ Alcohol Gas</li>
+<li>+ Ice-Nine</li>
+<li>+ Neutron</li>
+<li>+ Proton</li>
+<li>+ Uranium can explode if bombarded with Neutrons</li>
+<li>+ Ozone</li>
+<li>+ H-Bomb</li>
+<li>+ Chocolate Milk (Hidden)</li>
+<li>+ Fruit Milk (Hidden)</li>
+<li>+ Revamped Meat rotting completely</li>
+<li>~ Fixed: Scroll wheel too sensitive</li>
+<li>[Minor]</li>
+<li>+ Baking Soda eliminates Stench</li>
+<li>+ Thermite can be made with alloys</li>
+<li>+ Bleach dirties Water</li>
+<li>+ Bleach kills Cells and Cancers</li>
+<li>+ Bleach cleans Blood</li>
+<li>+ Dyes and Ink can be easily evaporated</li>
+<li>+ Soap cleans Soda, Dyes, and Ink</li>
+<li>+ Calcium reacts with Oxygen</li>
+<li>+ Ball (Hidden) melts into Plastic</li>
+<li>+ Light changes color when hitting Steam, Smog, Ice, or Diamond</li>
+<li>+ Torch extinguishes at absolute zero</li>
+<li>+ Torch explodes into Sawdust</li>
+<li>+ Potatoes provide some electricity to Wire</li>
+<li>+ Radiation pops Corn</li>
+<li>+ Fire can be suppressed with CO₂</li>
+<li>+ Sponges are now flammable</li>
+<li>+ Fusion of Hydrogen, Nitrogen, Sulphur, and Neon</li>
+<li>~ Adjusted Sap color to look less like Magma</li>
+<li>~ Adjusted Yogurt behavior</li>
+<li>~ Stench is no longer flammable</li>
+<li>~ Plastic releases Stench on burn</li>
+<li>~ Hid Hail</li>
+<li>+ Alert for websites embedding the game illegally</li>
+<li>~ Renamed Chocolate Syrup to Melted Chocolate</li>
+<li>~ Fixed: Fireworks have no state of matter / Don't sink</li>
+<li>~ Fixed: Frozen Frogs flickering / constantly refreezing</li>
+<li>+ Technical: More automatic tempHigh/Low element generation for all states of matter</li>
+<li>+ Technical: stateHighName/stateLowName</li>
+</ul>
+
+<h2 id="1.4">[Version 1.4 - Feb. 19, 2022]</h2>
+<ul>
+<li>+ Improved the look of gases</li>
+<li>+ "Unlock as Discovered" hiding mode</li>
+<li>^ When enabled, hidden elements are shown in the toolbar when they are created</li>
+<li>+ Sun</li>
+<li>+ Stench</li>
+<li>+ Fragrance</li>
+<li>+ Incense</li>
+<li>+ Stink Bug</li>
+<li>^ First bug with complex behavior</li>
+<li>^ Will be added to other animals eventually</li>
+<li>^ Three phases: Flying, Landing, and Standing</li>
+<li>+ Malware, the enemy of Gray Goo</li>
+<li>+ Grape</li>
+<li>+ Juice</li>
+<li>+ Sap</li>
+<li>+ Sodium</li>
+<li>+ Basic View, no special effects (Press 3)</li>
+<li>+ Smooth View, blends surrounding pixels (Press 4)</li>
+<li>+ Flowers now come in different colors</li>
+<li>+ Bleach neutralizes Acid</li>
+<li>~ Substantial optimizations</li>
+<li>~ Light and Laser are now octodirectional</li>
+<li>~ Buffed Antimatter Bomb</li>
+<li>~ Nerfed Gray Goo</li>
+<li>~ Sugar products no longer turn into Molasses</li>
+<li>~ Neon no longer stays red after losing charge</li>
+<li>~ Electric glow no longer shows in Thermal View</li>
+<li>~ Fixed: Pick tool doesn't select the element's category</li>
+<li>~ Fixed: Special fire colors not always being used</li>
+<li>+ Technical: color1 and color2 reaction attributes</li>
+</ul>
+
+<h2 id="1.3">[Version 1.3 - Feb. 11, 2022]</h2>
+<ul>
+<li>+ World Generation Setting [Beta]</li>
+<li>+ Staining</li>
+<li>+ Some liquids will stain solids, some will clean</li>
+<li>+ Smoke now stains solids (soot)</li>
+<li>+ Staining can be disabled in settings</li>
+<li>+ Paint tool</li>
+<li>+ Hold Shift to color solid</li>
+<li>+ Unpaint tool</li>
+<li>+ Color Sand</li>
+<li>+ Stained Glass</li>
+<li>+ Smog</li>
+<li>+ Hail</li>
+<li>+ Hail Cloud</li>
+<li>+ Seltzer (Carbonated Water, Hidden)</li>
+<li>+ Soda</li>
+<li>+ Bleach</li>
+<li>+ Chlorine</li>
+<li>+ Liquid Chlorine (Hidden)</li>
+<li>+ Thermite</li>
+<li>+ Cement</li>
+<li>+ Dye (Color mixing not added)</li>
+<li>+ Ink</li>
+<li>+ Color Smoke</li>
+<li>+ Sponge</li>
+<li>+ "Art" element, a wall that can be colored</li>
+<li>+ Uncharge tool</li>
+<li>+ Smash tool</li>
+<li>+ Cook tool</li>
+<li>+ Sugar will help Cells and Cancer grow</li>
+<li>+ Alcohol and Poison will kill Cells and Cancer</li>
+<li>+ Soap now removes Oil</li>
+<li>+ Gray Goo can now be electrocuted</li>
+<li>+ Rats now eat cheese</li>
+<li>+ Oxygen and Water makes Foam</li>
+<li>+ Torches can be extinguished with more types of Water</li>
+<li>+ Acid Gas now turns to Acid when cold</li>
+<li>~ Tweaked Acid Gas color</li>
+<li>~ Grenades now explode into metal fragments</li>
+<li>~ Fixed: Pressure Plates...</li>
+<li>+ Technical: Custom tools, see example_mod.js</li>
+<li>+ Technical: "stain" element attribute, decimal value -1 to 1, negative values remove stains</li>
+<li>+ Technical: "customColor" element attribute, true/false, allows for picking of a color before placing</li>
+<li>+ Technical: "desc" element attribute, string, allows for custom descriptions in Element Info ("extraInfo" an alias)</li>
+<li>+ Technical: null allowed in stateHigh and stateLow, deletes pixel</li>
+<li>+ Technical: Reaction attributes "tempMin"(number) "tempMax"(number) "charged"(true/false) "charge1"(number) "charge2"(number)</li>
+<li>+ Technical: changePixel(pixel,newElement) function</li>
+</ul>
+
+<h2 id="1.2">[Version 1.2 - Feb. 4, 2022]</h2>
+<ul>
+<li>+ Human</li>
+<li>+ Firework</li>
+<li>+ Dynamite</li>
+<li>+ Primordial Soup</li>
+<li>+ Seeds - a mixture of various seeds</li>
+<li>+ Paper</li>
+<li>+ Cellulose</li>
+<li>+ Pressure Plate</li>
+<li>+ Border</li>
+<li>+ Poison</li>
+<li>+ Antidote</li>
+<li>+ Dirty Bomb</li>
+<li>+ Dead Plant (Hidden)</li>
+<li>+ Frozen Plant (Hidden)</li>
+<li>+ Ember (Hidden, burned into by wood)</li>
+<li>+ Fw_Ember (Hidden)</li>
+<li>+ View Switcher (Press 1-9)</li>
+<li>+ Thermal View (2)</li>
+<li>+ Settings Menu</li>
+<li>+ Metric, Imperial, and SI units</li>
+<li>+ Unhide All Element</li>
+<li>+ Background Color</li>
+<li>+ C or F2 - Download Screenshot</li>
+<li>+ F1 - Hide/Show GUI and HUD</li>
+<li>+ Left Arrow & Right Arrow change categories</li>
+<li>+ New smooth animation for Rainbow element</li>
+<li>+ Acid Clouds can slowly burn</li>
+<li>+ Acid Gas and Acid Clouds can be neutralized like Acid</li>
+<li>+ Nitroglycerin now explodes when sparked</li>
+<li>+ Bamboo now breaks into Sawdust</li>
+<li>+ Most explosives can now melt</li>
+<li>+ Sand and Dirt can now absorb Blood and Oil</li>
+<li>+ Alcohol can fight against Virus and Plague</li>
+<li>+ 404 Page</li>
+<li>~ Explosives are no longer included in Random</li>
+<li>~ Unhid pollen</li>
+<li>~ Hid Chocolate Syrup</li>
+<li>~ Moved Meat to Food category</li>
+<li>~ Meat rots a lot slower</li>
+<li>~ Animals die from plague slower</li>
+<li>~ Less collection of applicable gases below clouds</li>
+<li>~ Page title takes up less space</li>
+<li>~ Viruses and Gray Goo now ignore Fire and Smoke</li>
+<li>~ Viruses no longer consume Soap, Plague, or Cancer</li>
+<li>~ Gray Goo now moves sideways while on surface</li>
+<li>~ Cloners no longer clone other Cloner types</li>
+<li>~ Molten Plastic now flows faster</li>
+<li>~ Tweaked Wet Sand color</li>
+<li>~ Recolored Slag</li>
+<li>~ Made Oil more visible</li>
+<li>~ GUI takes up less vertical space</li>
+<li>- Removed Hide button</li>
+<li>+ Accessibility: Tab can be used to navigate GUI</li>
+<li>~ Fixed: Light doesn't bounce properly</li>
+<li>~ Fixed: Magma is absorbed by Molten Slag</li>
+<li>~ Fixed: Acid deletes Acid Clouds</li>
+<li>~ Fixed: Random not working with Replace mode</li>
+<li>~ Fixed: Holding Ctrl/Cmd while using a control gets overriden</li>
+<li>~ Fixed: LEDs don't lose charge</li>
+<li>~ Fixed: Info links show element IDs even if they have names</li>
+<li>+ Technical: Element "ignore" property now works on CH (Change) and CF (Clone First Touched)</li>
+<li>+ Technical: Elements can now have a behavior and tick function at the same time</li>
+</ul>
+
+<h2 id="1.1.2">[Version 1.1.2 - Jan. 26, 2022] </h2>
+<ul>
+<li>+ Technical: New functions to use in coded elements</li>
+<li>doBurning(pixel); // Using this function will allow burning simulation</li>
+<li>doHeat(pixel); // Using this function will allow heat simulation</li>
+<li>doElectricity(pixel); // Using this function will allow electricity simulation</li>
+<li>+ Technical: New hidden example elements: tick_sand, tick_wood, tick_wall, tick_props</li>
+<li>+ Technical: New "properties" element attribute. See the tick_props element</li>
+</ul>
+
+<h2 id="1.1.1">[Version 1.1.1 - Jan. 25, 2022]</h2>
+<ul>
+<li>+ Technical: "tick" element attribute, takes a function</li>
+<li>tick: function(pixel) {</li>
+<li>tryMove(pixel, pixel.x, pixel.y+1) // try to move down each tick</li>
+<li>}</li>
+<li>runs every tick on each pixel</li>
+</ul>
+
+<h2 id="1.1">[Version 1.1 - Blast Off - Jan. 22, 2022]</h2>
+<ul>
+<li>+ Explosions</li>
+<li>+ Weapons Category</li>
+<li>+ Bomb</li>
+<li>+ TNT</li>
+<li>+ C-4</li>
+<li>+ Grenade</li>
+<li>+ Gunpowder</li>
+<li>+ Nuke</li>
+<li>+ Greek Fire</li>
+<li>+ Nitroglycerin</li>
+<li>+ Sticky Bomb</li>
+<li>+ Cold Bomb</li>
+<li>+ Hot Bomb</li>
+<li>+ Electro Bomb</li>
+<li>+ Water Bomb</li>
+<li>+ Antimatter Bomb</li>
+<li>+ Flashbang</li>
+<li>+ Flash (Hidden)</li>
+<li>+ Landmine</li>
+<li>+ Cluster Bomb</li>
+<li>+ Explosion (Element, explodes immediately)</li>
+<li>+ Armageddon (Hidden, lag warning)</li>
+<li>+ Tesla Coil</li>
+<li>+ Light Bulb</li>
+<li>+ Shocker</li>
+<li>+ Tungsten</li>
+<li>+ Helium</li>
+<li>+ Liquid Helium (Hidden)</li>
+<li>+ Nitrogen Ice (Hidden)</li>
+<li>+ Sawdust</li>
+<li>+ Brick Rubble (Hidden)</li>
+<li>+ Slag</li>
+<li>+ Loopy</li>
+<li>+ Neutral Acid, from neutralizing Acid with Ash, Limestone, Borax, or Ammonia</li>
+<li>+ Cancer can now take over Frogs, Fish, and Rats</li>
+<li>+ Dioxin can now cause Cancer, kill things, and damage Antibodies</li>
+<li>+ Chocolate Syrup can now evaporate</li>
+<li>+ Wet Sand and Mud seep into each other's dry counterparts</li>
+<li>+ Salt now kills Worms</li>
+<li>+ Mushrooms now compost Ash</li>
+<li>+ Udders can now cook</li>
+<li>~ Fireballs now explode on impact</li>
+<li>~ Magma now cools into mostly Basalt</li>
+<li>~ Molten Plastic is no longer on fire</li>
+<li>~ Unhid Dioxin</li>
+<li>~ Moved Straw and Ruins to Solids category</li>
+<li>~ Moved Tinder to Powders category</li>
+<li>~ Moved Smoke Grenade and Fireball to Weapons category</li>
+<li>~ Fixed: Direction not reset when changing pixels' elements</li>
+<li>~ Fixed: Mod Manager unable to scroll</li>
+<li>~ Fixed: Acid and Acid Gas dissolve each other</li>
+<li>~ Fixed: Potassium and Epsom Salt didn't kill Slugs and Snails</li>
+</ul>
+
+<h2 id="1.0.1">[Version 1.0.1 - Jan. 20, 2022]</h2>
+<ul>
+<li>~ Slowed down Udder</li>
+<li>+ Technical: runAfterLoad() function, pass a function to run after all mods load. See example_mod.js</li>
+</ul>
+
+<h2 id="1.0">[Version 1.0 - Full Steam Ahead! - Jan. 19, 2022]</h2>
+<ul>
+<li>+ Radiation</li>
+<li>+ Uranium</li>
+<li>+ Rad Steam</li>
+<li>+ Rad Cloud</li>
+<li>+ Fallout</li>
+<li>+ Reorganized elements</li>
+<li>+ Powders category</li>
+<li>+ Food category</li>
+<li>+ Fullscreen Mode (Press F)</li>
+<li>+ Hold down Shift when using Mix to include Fire</li>
+<li>+ Salt melts Ice and Snow</li>
+<li>+ Dirty Water can be filtered by Charcoal and Gravel</li>
+<li>+ Worms can move through Mycelium, Wet Sand, and Clay Soil</li>
+<li>+ Worms break down some organic matter</li>
+<li>+ Glass now resists Acid</li>
+<li>~ Metal Scrap melts into various metals</li>
+<li>~ Recolored Aluminum</li>
+<li>~ Recolored Grass to have less contrast</li>
+<li>~ Recolored Mycelium</li>
+<li>~ Mycelium is no longer hidden</li>
+<li>~ Lichen now grows</li>
+<li>~ Cells and Cancer now have gravity</li>
+<li>~ Cancer now grows on its own</li>
+<li>~ Vaccines and Antibodies kill Cancer slowly</li>
+<li>~ Straw no longer falls</li>
+<li>~ Random no longer makes Snake</li>
+<li>~ Water Spout renamed to just Spout</li>
+<li>~ Hid Lattice</li>
+<li>~ Took all vanilla elements out of the Other category</li>
+<li>~ Moved Ash and Charcoal into the Powders category</li>
+<li>+ Technical: Reactions can now use arrays for random choices</li>
+<li>~ Fixed: Mod Manager removes only the top mod</li>
+<li>~ Fixed: Saplings, Mushrooms, Flowers, Bamboo, Wheat, Corn grow in mid-air</li>
+<li>~ Fixed: Acid, Acid Gas, and Antimatter delete themselves without touching anything</li>
+<li>~ Fixed: Pistils fall and create a lot of petals</li>
+<li>~ Fixed: Cloner doesn't inherit the temperature of it's source / don't clone fire properly</li>
+<li>~ Fixed: Ammonia fertilizes plants too fast</li>
+<li>~ Fixed: Info menu search bar doesn't stick to the bottom</li>
+<li>~ Fixed: Some bright background buttons like salt have white text</li>
+<li>~ Fixed: Elements can't heat or cool themselves with HT or CO</li>
+<li>~ Fixed: TPS resets when you don't enter anything</li>
+<li>- Removed plus button in the Mod Manager</li>
+<li>- Removed Structure category</li>
+</ul>
+
+<h2 id="0.9.1">[Version 0.9.1 - Jan. 17, 2022]</h2>
+<ul>
+<li>~ Mods can now work together (e.g. having reactions with elements from other mods, stateHighs, etc.)</li>
+</ul>
+
+<h2 id="0.9">[Version 0.9 - Mod Manager Update - Jan. 16, 2022]</h2>
+<ul>
+<li>+ Mod Manager Menu</li>
+<li>+ Clay Soil</li>
+<li>+ Salt Water, Sugar Water, and Dirty Water evaporate into their components</li>
+<li>+ Blood, Ketchup, Molasses, Slime, Vinegar, and Alcohol evaporate into their components</li>
+<li>+ Reactions between cloud types</li>
+<li>+ Acid Gas can form Acid Clouds</li>
+<li>+ Fire Clouds turn to Pyrocumulus when cooled</li>
+<li>+ Torches can be extinguished with water</li>
+<li>+ Some Fireballs will burn into steam</li>
+<li>~ Improved color of Permafrost, Dirt, Grass, Gravel, Basalt, Lamp Oil, Honey, Molasses, Chocolate Syrup, Bamboo, Corn, Corn Seed, Root, Potato Seed, Iron, Rust, Glass, Copper, Zinc, Tin, Silver, and Straw</li>
+<li>~ Anaesthesia now a gas</li>
+<li>+ Technical: stateHigh and stateLow can be an array, a random option is chosen</li>
+<li>~ Fixed: Fireball rocks continue to burn after being extinguished</li>
+</ul>
+
+<h2 id="0.8.3">[Version 0.8.3 - Jan. 14, 2022]</h2>
+<ul>
+<li>+ Laser</li>
+<li>+ Snake (Not the animal)</li>
+<li>+ Ball (Hidden experiment)</li>
+<li>+ Cyanide</li>
+<li>+ Ammonia, a fertilizer</li>
+<li>+ Vaccine</li>
+<li>+ Antibody</li>
+<li>+ Infection</li>
+<li>+ Cell</li>
+<li>+ Cancer</li>
+<li>+ Rain Clouds form from steam high up</li>
+<li>+ Pyrocumulus Clouds</li>
+<li>+ Fire Clouds</li>
+<li>+ Fuse</li>
+<li>+ RGB LEDs</li>
+<li>+ Mud and Wet Sand seaps into the ground</li>
+<li>+ Algae and Plants can clean water</li>
+<li>+ Cloners are now invincible</li>
+<li>+ Animals eat more varieties of things</li>
+<li>+ Fireballs now extinguish in water</li>
+<li>~ Fireballs now flicker and are colored differently</li>
+<li>~ Light is now directional and doesn't delete immediately</li>
+<li>~ Frogs, Flies, Fireflies, Bees, Fish, Termites, Rats, Slugs, Snails, and Bubbles now move more realistically</li>
+<li>~ Rats now create less Plague</li>
+<li>~ Fireflies now realistically color</li>
+<li>~ Moved Clouds to Gases category</li>
+<li>~ Moved Gray Goo to Special category</li>
+<li>~ Mushrooms stalks now have gravity</li>
+<li>~ Dirty water looks dirtier</li>
+<li>~ Lattice is given a different color than Filler</li>
+<li>+ Technical: Reaction property "oneway"</li>
+<li>+ Technical: Support Any (SA) behavior</li>
+<li>~ Technical: All animals now use reactions to eat</li>
+<li>~ Fixed: Rocks don't sink in liquids</li>
+<li>~ Fixed: Supportive elements like concrete don't sink in liquids</li>
+<li>~ Fixed: Large decimal values for molten elements</li>
+<li>~ Fixed: Fish can't swim through dirty water</li>
+<li>~ Fixed: Pixels that should be burning created by other pixels aren't burn</li>
+<li>~ Fixed: Acid Cloud density not working</li>
+<li>~ Fixed: Fire causes Clouds to lower</li>
+<li>~ Fixed: Algae tends to move rightwards</li>
+</ul>
+
+<h2 id="0.8.2">[Version 0.8.2 - Jan. 9, 2022]</h2>
+<ul>
+<li>+ Cold Fire</li>
+<li>+ Sulfur</li>
+<li>+ Copper Sulfate</li>
+<li>+ Diamonds</li>
+<li>+ Glitter</li>
+<li>+ Electric element</li>
+<li>+ Rain Clouds sometimes spark</li>
+<li>+ Holding [Shift] while shocking increases the shock</li>
+<li>+ Antimolten, Antifire, Antigas</li>
+<li>+ Dirty Water</li>
+<li>+ Walls are now invincible</li>
+<li>+ Water weathers down rock over time</li>
+<li>+ Water oxidizes iron and copper</li>
+<li>+ Vinegar deoxidizes rust and copper</li>
+<li>+ Blood can now boil</li>
+<li>+ Many new combustion and melting temperatures</li>
+<li>+ Install button to add to homescreen</li>
+<li>~ Improved Random tool</li>
+<li>~ Reordered liquids tab</li>
+<li>~ Pixels are now smaller on small screens to allow for more space</li>
+<li>~ Unhid Vine</li>
+<li>~ Recolored Meat</li>
+<li>~ Optimizations</li>
+<li>~ Tweaked shock tool</li>
+<li>+ Technical: "hardness" element attribute, chance of resisting damage (0-1)</li>
+<li>+ Technical: Reactions can now have a chance of occuring (0-1)</li>
+<li>~ Technical: Quotes removed from element keys, not necessary for mods</li>
+<li>~ Technical: All element attributes are now optional</li>
+<li>~ Technical: Updated element property list comment</li>
+<li>~ Fixed: Controls link goes to changelog</li>
+<li>~ Fixed: Elements like Potassium Salt don't continue burning after melting</li>
+</ul>
+
+<h2 id="0.8.1">[Version 0.8.1 - Jan. 6, 2022]</h2>
+<ul>
+<li>+ Progressive web app support</li>
+<li>+ Confirms when you are about to leave the page</li>
+<li>+ Favicons and social cards</li>
+</ul>
+
+<h2 id="0.8">[Version 0.8 - Electricity - Jan. 3, 2022]</h2>
+<ul>
+<li>+ Mobile Support (Potentially buggy)</li>
+<li>+ Electricity</li>
+<li>+ Shock tool</li>
+<li>+ Wire (100% conductivity)</li>
+<li>+ Metal Scrap</li>
+<li>+ E-cloner (Clones when powered)</li>
+<li>+ Neon gas</li>
+<li>+ "Random" element</li>
+<li>+ Each conductive element has its own conductivity</li>
+<li>+ Lower conductivity = higher resistance, which heats up faster when charged</li>
+<li>~ Plasma now shocks things</li>
+<li>~ Electrified plasma now creates more plasma</li>
+<li>~ Speed optimizations allowing for more pixels on screen</li>
+<li>+ Smoke Grenades can now melt</li>
+<li>+ Technical: "conduct" attribute, chance of conducting electricity per tick, 0-1</li>
+<li>+ Technical: "behaviorOn" attribute, behavior to override when powered</li>
+<li>+ Technical: "colorOn" attribute, color to change to when powered</li>
+<li>+ Technical: "SH" behavior rule, shocks / adds charge</li>
+<li>~ Fixed: Invalid info links</li>
+</ul>
+
+<h2 id="0.7.3">[Version 0.7.3 - Dec. 30, 2021]</h2>
+<ul>
+<li>~ Salt and sugar are more dense; can sink in water</li>
+<li>~ Fixed: Fish and Algae can't move through sugar water</li>
+</ul>
+
+<h2 id="0.7.2">[Version 0.7.2 - Cloning - Dec. 29, 2021]</h2>
+<ul>
+<li>+ Cloner</li>
+<li>+ Slow Cloner, Clone Powder, Floating Cloner</li>
+<li>+ Soap, cleans various things</li>
+<li>~ Plasma revamped</li>
+<li>~ Rain/Snow/Acid Clouds revamped</li>
+<li>+ Basalt</li>
+<li>+ Calcium, Limestone, Quicklime, Slaked Lime</li>
+<li>+ Lattice</li>
+<li>+ Mud can freeze</li>
+<li>+ Slugs and Snails</li>
+<li>~ Frogs can now move underwater</li>
+<li>~ Light has a temperature of 50°C</li>
+<li>~ Swapped Special and Machines category spots</li>
+</ul>
+
+<h2 id="0.7.1.2">[Version 0.7.1.2 - Dec. 28, 2021]</h2>
+<ul>
+</ul>
+
+<h2 id="0.7.1">[Version 0.7.1 - Dec. 28, 2021]</h2>
+<ul>
+<li>+ Sugar Water + Pollen = Honey</li>
+<li>~ Lowered Rat Plague spawn rates</li>
+<li>~ Fixed: Water dissolves salt and sugar way too much</li>
+<li>~ Fixed: Plants don't grow anymore</li>
+<li>~ Fixed: Fleas don't eat blood underneath them</li>
+<li>~ Fixed: Info page says seconds instead of ticks</li>
+<li>~ Fixed: Info shows duplicate elements</li>
+<li>~ Fixed: "1 ticks"</li>
+</ul>
+
+<h2 id="0.7">[Version 0.7 - Density & Reactions - Dec. 28, 2021]</h2>
+<ul>
+<li>+ New category-based element selection menu</li>
+<li>+ Pixels are now slightly smaller allowing for more space</li>
+<li>+ Scroll wheel now controls cursor size</li>
+<li>+ Absolute zero temperature (-273.15°C)</li>
+<li>+ Molten elements are now colored differently</li>
+<li>+ Mix tool</li>
+<li>+ **Density**</li>
+<li>+ If density is higher, powders will sink in liquids, liquids in liquids, powders in gases, etc.</li>
+<li>+ Each powder, liquid, and gas has its own density value</li>
+<li>+ **Reactions between elements**</li>
+<li>+ Element info lookup GUI</li>
+<li>+ Right click an element button to open its info</li>
+<li>+ Press the / or I key to open the info screen</li>
+<li>+ Click underlined elements to open their info</li>
+<li>+ Info button</li>
+<li>+ Lookup tool</li>
+<li>+ Mud & Mudstone</li>
+<li>+ Wet Sand & Packed Sand</li>
+<li>+ Zinc, Tin, Nickel, Silver, Gold, Aluminum</li>
+<li>+ Alloys made by mixing molten metals</li>
+<li>+ Brass, Bronze, Sterling, Steel, Rose Gold</li>
+<li>+ Gold Coins</li>
+<li>+ Milk, Yogurt, Udder</li>
+<li>+ Vinegar</li>
+<li>+ Baking Soda</li>
+<li>+ Corn, Corn Seed, Popcorn</li>
+<li>+ Plant Root</li>
+<li>+ Potato, Potato Seed</li>
+<li>+ Yeast, Bread, Toast</li>
+<li>+ Flour, Dough</li>
+<li>+ Salt, Salt Water</li>
+<li>+ Sugar, Caramel, Candy, Sugar Water</li>
+<li>+ Plants convert carbon dioxide to oxygen</li>
+<li>+ Rust</li>
+<li>+ Hydrogen</li>
+<li>+ Nitrogen</li>
+<li>+ Alcohol</li>
+<li>+ Lichen</li>
+<li>+ Ruins can now melt</li>
+<li>+ Permafrost now melts into mud</li>
+<li>~ Arrow buttons have been changed to + and -</li>
+<li>+ New icons for holding Alt/Option and Right Shift</li>
+<li>~ Fixed: Ghost pixels</li>
+<li>~ Fixed: Fire turns to smoke too much</li>
+<li>~ Fixed: Plasma goes out of control</li>
+<li>~ Fixed: Console error when leaving element select popup blank</li>
+<li>+ Technical: "name" is no longer a required element attribute</li>
+<li>+ Technical: New element attributes used for moving elements for density simulation</li>
+<li>+ "state" (solid, liquid, or gas)</li>
+<li>+ "density" (density of the element in kg/m³)</li>
+<li>+ Automatic molten elements are given 0.9x density</li>
+</ul>
+
+<h2 id="0.6">[Version 0.6 - Thermal Conductivity - Dec. 23, 2021]</h2>
+<ul>
+<li>+ Thermal Conductivity / Heat Transfer</li>
+<li>+ Insulation</li>
+<li>+ Walls insulate</li>
+<li>+ Bees now drop pollen which turns into flower seeds</li>
+</ul>
+
+<h2 id="0.5.2">[Version 0.5.2 - Dec. 22, 2021]</h2>
+<ul>
+<li>+ Antimatter</li>
+<li>+ Acid Cloud</li>
+<li>+ Acid Gas</li>
+<li>+ Bees</li>
+<li>+ Rats</li>
+<li>+ Rotten Meat</li>
+<li>+ Plague, spawns from Rats and Rotten Meat, kills some animals</li>
+<li>+ Plastic, Dioxin, Beads</li>
+<li>+ Epsom Salt</li>
+<li>+ Potassium Salt</li>
+<li>+ Mycelium, obtained from hyphae converting dirt</li>
+<li>~ Hyphae spreads more naturally</li>
+<li>+ Mushrooms can spread and multiply via hyphae</li>
+<li>+ All molten elements now spawn fire like magma</li>
+<li>~ Fixed: NaN fire temperatures</li>
+</ul>
+
+<h2 id="0.5.1">[Version 0.5.1 - Dec. 22, 2021]</h2>
+<ul>
+<li>+ Erase tool</li>
+<li>+ Pick tool (Middle click works too)</li>
+<li>+ Press E to select an element by name</li>
+<li>+ Press > to forward by one frame</li>
+<li>+ Changelog and controls link</li>
+<li>~ Shift + Heat/Cool is twice as fast as before</li>
+<li>~ Fixed: Placing continues after hovering outside of game</li>
+<li>~ Fixed: Cursor doesn't follow mouse after hovering outside of game</li>
+<li>~ Fixed: Element select button doesn't deselect previous element</li>
+<li>~ Fixed: Arrow buttons can set the cursor size to negatives</li>
+<li>~ Fixed: Virus spreads fire infinitely</li>
+<li>~ Fixed: Shift icon [⬆ ] doesn't show when hovering outside of game</li>
+<li>~ Fixed: Console error sometimes when page loads</li>
+</ul>
+
+<h2 id="0.5">[Version 0.5 - Dec. 21, 2021]</h2>
+<ul>
+<li>+ New name: Sandboxels (Sandbox + Pixels)</li>
+<li>+ Mushrooms</li>
+<li>+ Mushroom Spore grows a mushroom</li>
+<li>+ Mushroom Stalk makes up the stem</li>
+<li>+ Mushroom gill creates the cap</li>
+<li>+ Mushroom Cap</li>
+<li>+ Hyphae grows underneath the mushroom in dirt</li>
+<li>+ Permafrost</li>
+<li>+ Chocolate & Chocolate Syrup</li>
+<li>+ Cheese</li>
+<li>+ Fireflies</li>
+<li>+ Fireballs</li>
+<li>+ Frozen Meat</li>
+<li>+ Frozen Frogs</li>
+<li>~ Heat & Cool tools look more natural</li>
+<li>~ Gravel can now melt</li>
+</ul>
+
+<h2>[Public Release - Dec. 15, 2021]</h2>
+
+</div>
+
+
+<script>
+    // replaceAll polyfill
+    if (!String.prototype.replaceAll) {String.prototype.replaceAll = function(str, newStr){if (Object.prototype.toString.call(str).toLowerCase() === '[object regexp]') {return this.replace(str, newStr);}return this.replace(new RegExp(str, 'g'), newStr);};}
+</script>
+<script>
+    changelog = document.getElementById("changelog");
+    changelog.innerHTML = changelog.innerHTML.replaceAll("<li>+","<li class='ad'>");
+    changelog.innerHTML = changelog.innerHTML.replaceAll("<li>-","<li class='rm'>");
+    changelog.innerHTML = changelog.innerHTML.replaceAll("<li>~","<li class='ch'>");
+    changelog.innerHTML = changelog.innerHTML.replaceAll("<li>[","<li class='update-section'>[");
+</script>
+
+
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-93720349-9"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-93720349-9');
+</script>
+
+</body>
+
+</html>

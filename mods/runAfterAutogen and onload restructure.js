@@ -385,6 +385,35 @@ function doFinalChecks() {
 				if (!elements[elements[key].breakInto]) { delete elements[key].breakInto; }
 			}
 		}
+
+		if (elements[key].colorPattern) {
+			if (!elements[key].colorKey) {
+				delete elements[key].colorPattern;
+			}
+			else {
+			var newPattern = [];
+			for (var i = 0; i < elements[key].colorPattern.length; i++) {
+				newPattern.push([]);
+				var line = elements[key].colorPattern[i];
+				// loop through each character in the line
+				for (var j = 0; j < line.length; j++) {
+					var char = line[j];
+					if (elements[key].colorKey[char]) {
+						if (elements[key].colorKey[char].startsWith("#")) {
+							var rgb = hexToRGB(elements[key].colorKey[char]);
+							elements[key].colorKey[char] = "rgb("+rgb.r+","+rgb.g+","+rgb.b+")";
+						}
+						newPattern[i].push(elements[key].colorKey[char]);
+					}
+					else {
+						newPattern[i].push("rgb(255,255,255)");
+					}
+				}
+			}
+			elements[key].colorPattern = newPattern;
+			delete elements[key].colorKey;
+			}
+		}
 	}
 };
 

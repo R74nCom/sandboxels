@@ -5,6 +5,85 @@
 
 See sneak peaks for upcoming updates on the Discord: https://discord.gg/ejUc6YPQuS
 
+A fancier version of this changelog can be found here: https://sandboxels.r74n.com/changelog
+
+[Version 1.8.3 - May 26, 2023 - Deserted Update]
+    + Cactus
+    + Fancy Changelog and Controls pages
+    + Toggle Burning setting
+    + Broth Ice (Hidden)
+    + Rad Shard (Hidden)
+    + Linked to our official Sandboxels Wiki on wiki.gg (https://sandboxels.wiki.gg/)
+   [Changes]
+    + Cacti and Charcoal now spawn in Desert world gen
+    + Petals will fall slowly if detached from flower
+    + Pointer color can be customized
+    + Bless grows Grass on Dirt
+    + Frogs can somewhat swim
+    + Pool Water can kill Frogs and Seeds
+    + Pool Water will break down Blood and Poison
+    + Cream releases Steam when boiling
+    + Cream can wet soil
+    + Popcorn pops when made from Corn
+    + Melted Butter stains solids
+    + Mushroom parts break into Mycelium
+    + Eggs melting leaves behind Sulfur Gas
+    + Eggs won't break when dropped on soft material
+    + Bless turns Molten Lead to Molten Gold
+    + Unique fire colors for Molten Copper, Lead, Zinc, Salt, and Calcium
+    + Broth can be made from Bones and Mushroom parts
+    + Unique Broth color for soups with Flowers, Potato, Rotten Meat, Cheese, Beans, Wheat, Algae
+    + Milk and Cream can be churned to Butter
+    + Rats can eat Eggnog
+    + Fish eat Yolk and Cell
+    + Ants can drink Juice
+    + Soap kills bugs
+    + Ozone kills Plant
+    + Charcoal, Roots, Hyphae, and Amalgam conduct electricity
+    + Rad Glass has a texture when placed manually
+    + Rad Glass can be made with Fallout
+    + LEDs melt into Gallium
+    + Molten Calcium can burn
+    + Salt alias 'Sodium Chloride'
+    + Anesthesia alias 'Nitrous Oxide'
+    + Anesthesia turns Clouds to Acid Clouds
+    + Anesthesia depletes Ozone
+    + Sulfur alias 'Sulphur'
+    + TNT alias 'Trinitrotoluene'
+    + DNA alias 'Deoxyribonucleic Acid'
+    + DNA from Cancer appears corrupted
+    + Potatoes can explode when radiated
+    + Cellulose freezes into Paper
+    + Bees can be crushed into Honey
+    + Bamboo and Vines can convert Carbon Dioxide to Oxygen
+    + Flour can be wet by Pool Water, Milk, Cream, Broth, Soda, Tea, Blood, Antibody, and Infection
+    + Slag can be made with Smog, Pyrocumulus, Dioxin, and Poison Gas
+    + Cream changes color when mixed with Milk variant ingredients
+    + Radiation affects Aluminum, Pool Water, Soda, Broth, and Tea
+    + Pistils can be broken
+    + Sugar and Candy dissolve in Soda
+    + Bleach and Yeast reaction generates heat
+    + Bleach and Soap reaction
+    + Bleach breaks down Antidote
+    + Sponge creates Bubbles when absorbing Soap
+    ~ Potatoes, Straw, Wheat, and Worms burn slower
+    ~ Sap boils at a lower point
+    ~ Strange Matter is now a liquid
+    ~ Bless turns Soda into Seltzer
+    ~ Cellulose burns less
+    ~ Recolored Frozen Meat
+    ~ Adjusted Sulfur Gas density
+    ~ Adjusted Molten Gallium density
+   [Bug Fixes]
+    ~ Fixed: Grape Juice and Potato Juice turns yellow when frozen
+    ~ Fixed: Color-customizable elements don't show selector if hidden
+    ~ Fixed: Foam created by other foam takes air temperature
+   [Technical]
+    + Element property glow for gas effect (true/false)
+    + LIGHTWEIGHT behavior preset
+    + Reaction properties burning1 and burning2 requirement (true/false)
+    ~ Seeds element now uses eLists.SEEDS
+
 [Version 1.8.2 - May 12, 2023 - Very Necessary Update]
     + Lettuce
     + Liquid Light at absolute zero (Hidden)
