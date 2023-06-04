@@ -41,6 +41,9 @@ a:active, a:hover:active {filter: brightness(275%);}
     margin: 1.5em 50px 0px 50px;
     font-family: 'Arial';
 }
+#bottomTopBox {
+    text-align: center;
+}
 #bottomLeftBox {
     float: left;
     width: 50%;
