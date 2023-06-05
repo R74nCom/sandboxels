@@ -1197,8 +1197,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 
 	document.addEventListener("keydown", function(e) { //prop prompt listener
 		// , = propPrompt()
-		if (e.keyCode == 49) { //!
-			if(shiftDown) { funniPrompt() };
+		if ([1,3].includes(shiftDown) && e.keyCode == 49) { //either shift + 1
+			funniPrompt();
 		};
 	});
 
