@@ -197,6 +197,10 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 		if(Array.isArray(breakIntoElement)) {
 			breakIntoElement = breakIntoElement[Math.floor(Math.random() * breakIntoElement.length)]
 		};
+		if(typeof(breakIntoElement) === "undefined") {
+			deletePixel(pixel.x,pixel.y);
+			return true;
+		};
 		changePixel(pixel,breakIntoElement,changetemp)
 		return true;
 	};
@@ -5060,7 +5064,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 								//console.log(`Human part found at (${nX},${nY})`)
 								if(!newPixel.dead) {
 									pixel.following = true;
-									body.shooting = true;
+									if(body) body.shooting = true;
 								};
 							} else {
 								//console.log(`Stopping row look at pixel (${nX},${nY}) due to non-human pixel in the way`)
@@ -5092,7 +5096,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 								//console.log(`Human part found at (${nX},${nY})`)
 								if(!newPixel.dead) {
 									pixel.following = true;
-									body.shooting = true;
+									if(body) body.shooting = true;
 								};
 							} else {
 								//console.log(`Stopping row look at pixel (${nX},${nY}) due to non-human pixel in the way`)

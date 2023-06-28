@@ -67,6 +67,7 @@ function newHeightMap(pixelType, pixelType2, offset, amplitude1, amplitude2, sca
         scale2: scale2,
         generator: new Simple1DNoise(),
         generator2: new Simple1DNoise(),
+        excludeRandom: true,
         tick: function(pixel) {
             generator = this.generator;
             generator2 = this.generator2;
