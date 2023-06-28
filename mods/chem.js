@@ -976,10 +976,10 @@ elements.polytetrafluoroethylene = {
 			let b = rgb.b + coloroffset;
 			pixel.color = "rgb("+r+","+g+","+b+")";
 			pixel.colored = true;
-			pixel.origColor = pixel.color;
+			pixel.origColor = pixel.color.match(/\d+/g);
 		}
 		if (pixel.origColor != pixel.color) {
-			pixel.color = pixel.origColor;
+			pixel.color = "rgb("+pixel.origColor.join(",")+")";
 		}
 	},
 	state: "solid",
@@ -1038,6 +1038,7 @@ function doStaining(pixel) {
                                     avg[j] = Math.floor((rgb[j]*(1-Math.abs(stain))) + (newColor[j]*Math.abs(stain)));
                                 }
                             }
+                                console.log(avg);
                             // set newPixel color to avg
                             newPixel.color = "rgb("+avg.join(",")+")";
                         }
@@ -1110,7 +1111,7 @@ elements.polyethylene = {
 			let b = rgb.b + coloroffset;
 			pixel.color = "rgb("+r+","+g+","+b+")";
 			pixel.colored = true;
-			pixel.origColor = pixel.color;
+			pixel.origColor = pixel.color.match(/\d+/g);
 		}
 	},
 	state: "solid",
@@ -1499,7 +1500,7 @@ elements.polonium = {
     density: 9196,
 };
 elements.molten_polonium = {
-    color: ["#ace638","#acb838","ac8a00"],
+    color: ["#ace638","#acb838","#ac8a00"],
     behavior: [
         "XX|CR:fire,CR:radiation%12.5|XX",
         "M2 AND CR:radiation%10|CH:lead%0.1|M2 AND CR:radiation%10",
@@ -1941,7 +1942,7 @@ elements.bromine = {
     behavior: behaviors.LIQUID,
     tick: function(pixel) {
             if(pixel.temp > 0 && Math.random() < 0.001) {
-                changePixel(pixelMap[pixel.x][pixel.y],"bromine_gas");
+                changePixel(pixelMap[pixel.x][pixel.y],"bromine_gas",false);
             }
     },
     reactions: {
@@ -1961,7 +1962,7 @@ elements.bromine_gas = {
     behavior: behaviors.GAS,
     tick: function(pixel) {
             if(pixel.temp < 58.8 && pixel.temp > 0 && Math.random() < 0.01) {
-                changePixel(pixelMap[pixel.x][pixel.y],"bromine");
+                changePixel(pixelMap[pixel.x][pixel.y],"bromine",false);
             }
     },
     reactions: {
@@ -2163,7 +2164,7 @@ elements.iodine = {
     behavior: behaviors.POWDER,
     tick: function(pixel) {
             if(pixel.temp > 25 && Math.random() < 0.001) {
-                changePixel(pixelMap[pixel.x][pixel.y],"iodine_gas");
+                changePixel(pixelMap[pixel.x][pixel.y],"iodine_gas",false);
             }
     },
     reactions: {
@@ -2199,7 +2200,7 @@ elements.iodine_gas = {
     behavior: behaviors.GAS,
     tick: function(pixel) {
             if(pixel.temp < 113 && pixel.temp > 25 && Math.random() < 0.01) {
-                changePixel(pixelMap[pixel.x][pixel.y],"iodine");
+                changePixel(pixelMap[pixel.x][pixel.y],"iodine",false);
             }
     },
     tempLow: 25,

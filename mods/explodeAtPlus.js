@@ -84,6 +84,10 @@ function explodeAtPlus(x,y,radius,fire="fire",smoke="smoke",beforeFunction=null,
 					else {
 						var result = info.breakInto;
 					}
+					if(typeof(breakIntoElement) === "undefined") {
+						deletePixel(pixel.x,pixel.y);
+						continue
+					};
 					// change the pixel to the result
 					changePixel(pixel,result,changeTemp);
 					if(info.onExplosionBreakOrSurvive) {
