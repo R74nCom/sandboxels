@@ -1038,7 +1038,6 @@ function doStaining(pixel) {
                                     avg[j] = Math.floor((rgb[j]*(1-Math.abs(stain))) + (newColor[j]*Math.abs(stain)));
                                 }
                             }
-                                console.log(avg);
                             // set newPixel color to avg
                             newPixel.color = "rgb("+avg.join(",")+")";
                         }
