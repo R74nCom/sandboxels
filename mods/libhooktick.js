@@ -1,4 +1,6 @@
-clearInterval(tickInterval);
+window.addEventListener("load", ()=>{
+  clearInterval(tickInterval);
+});
 const oldTick = tick;
 let __registeredTickCallbacks = [];
 function everyTick(callback){
