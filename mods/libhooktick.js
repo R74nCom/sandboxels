@@ -1,3 +1,4 @@
+alert("The mod libhooktick.js is currently broken at the moment. Please blame MollTheCoder.");
 let __registeredTickCallbacks = [];
 window.addEventListener("load", ()=>{
   clearInterval(tickInterval);
