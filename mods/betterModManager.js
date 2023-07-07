@@ -4,7 +4,6 @@ function updateModManager() {
     const modManager = document.getElementById("modManager");
     // make the title a bit better
     // modManager.getElementsByClassName("menuTitle").item(0).innerHTML = '<span class="menuTitle">Mod Manager</span>';
-    // '<button id="modList" onclick="openModList()">Open Mod List</button>'
     document.getElementById("modManagerUrl").remove();
     const button = document.createElement("button");
     button.id = "modListOpen";
@@ -40,7 +39,7 @@ function addModList() {
     <span>NOTE: This list contains mods ONLY available on GitHub. For custom mods hosted elsewhere, enter JS url in the <a href="#modManagerUrl">.JS URL input box</a>.</span>`;
     const modListUl = document.createElement("ul");
     modListUl.id = "modListUl";
-    modListUl.style.maxHeight = `50%`;
+    modListUl.style.maxHeight = "50%";
     modListUl.style.overflowY = "scroll";
     modList.appendChild(modListUl);
     parent.appendChild(modList);
