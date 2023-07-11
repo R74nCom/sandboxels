@@ -10692,48 +10692,7 @@
             }
             if ((e.button === 0 || e.touches) && placingImage) {
                 if (e.touches) { mouseMove(e); }
-                // downscale the <img to mouseSize x mouseSize and draw it
-                var canvas = document.createElement("canvas");
-                // set width or height proportional to mouseSize
-                if (placingImage.width > placingImage.height) {
-                    canvas.width = mouseSize;
-                    canvas.height = Math.round(placingImage.height/placingImage.width*mouseSize);
-                }
-                else {
-                    canvas.height = mouseSize;
-                    canvas.width = Math.round(placingImage.width/placingImage.height*mouseSize);
-                }
-                var newWidth = canvas.width;
-                var newHeight = canvas.height;
-                var ctx = canvas.getContext("2d");
-                if (settings.imagesmooth === 0) {
-                    ctx.webkitImageSmoothingEnabled = false;
-                    ctx.mozImageSmoothingEnabled = false;
-                    ctx.imageSmoothingEnabled = false;
-                }
-                ctx.drawImage(placingImage,0,0,newWidth,newHeight);
-                var newImage = ctx.getImageData(0,0,newWidth,newHeight);
-                // loop through each pixel in the ImageData
-                for (var x = 0; x < newWidth; x++) {
-                    for (var y = 0; y < newHeight; y++) {
-                        var i = (y*newWidth+x)*4;
-                        var r = newImage.data[i];
-                        var g = newImage.data[i+1];
-                        var b = newImage.data[i+2];
-                        var a = newImage.data[i+3];
-                        if (a > 0.33) {
-                            // mousePos is the center of the image
-                            var pixelX = mousePos.x - Math.round(newWidth/2) + x+1;
-                            var pixelY = mousePos.y - Math.round(newHeight/2) + y+1;
-                            if (isEmpty(pixelX,pixelY)) {
-                                var elem = (settings.imageelem || "wood");
-                                if (!elements[elem]) { elem = "wood";}
-                                createPixel(elem,pixelX,pixelY);
-                                pixelMap[pixelX][pixelY].color = pixelColorPick(pixelMap[pixelX][pixelY], RGBToHex([r,g,b]));
-                            }
-                        }
-                    }
-                }
+                placeImage();
                 return false;
             }
             else if (shiftDown && e.button !== 1 && !((elements[currentElement].tool || elements[currentElement].category==="tools") && mouseType==="left")) {
@@ -10742,6 +10701,51 @@
             }
             mouseMove(e);
             return false;
+        }
+        function placeImage(placementX,placementY,scale) {
+            if (!scale) { scale = mouseSize }
+            // downscale the <img to mouseSize x mouseSize and draw it
+            var canvas = document.createElement("canvas");
+            // set width or height proportional to mouseSize
+            if (placingImage.width > placingImage.height) {
+                canvas.width = mouseSize;
+                canvas.height = Math.round(placingImage.height/placingImage.width*mouseSize);
+            }
+            else {
+                canvas.height = mouseSize;
+                canvas.width = Math.round(placingImage.width/placingImage.height*mouseSize);
+            }
+            var newWidth = canvas.width;
+            var newHeight = canvas.height;
+            var ctx = canvas.getContext("2d");
+            if (settings.imagesmooth === 0) {
+                ctx.webkitImageSmoothingEnabled = false;
+                ctx.mozImageSmoothingEnabled = false;
+                ctx.imageSmoothingEnabled = false;
+            }
+            ctx.drawImage(placingImage,0,0,newWidth,newHeight);
+            var newImage = ctx.getImageData(0,0,newWidth,newHeight);
+            // loop through each pixel in the ImageData
+            for (var x = 0; x < newWidth; x++) {
+                for (var y = 0; y < newHeight; y++) {
+                    var i = (y*newWidth+x)*4;
+                    var r = newImage.data[i];
+                    var g = newImage.data[i+1];
+                    var b = newImage.data[i+2];
+                    var a = newImage.data[i+3];
+                    if (a > 0.33) {
+                        // mousePos is the center of the image
+                        var pixelX = (placementX||mousePos.x) - Math.round(newWidth/2) + x+1;
+                        var pixelY = (placementY||mousePos.y) - Math.round(newHeight/2) + y+1;
+                        if (isEmpty(pixelX,pixelY)) {
+                            var elem = (settings.imageelem || "wood");
+                            if (!elements[elem]) { elem = "wood";}
+                            createPixel(elem,pixelX,pixelY);
+                            pixelMap[pixelX][pixelY].color = pixelColorPick(pixelMap[pixelX][pixelY], RGBToHex([r,g,b]));
+                        }
+                    }
+                }
+            }
         }
         function mouseUp(e) {
             mouseIsDown = false;
@@ -12627,6 +12631,55 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                 if (e.touches) e = e.touches[0];
                 return false;
             }
+            gameCanvas.addEventListener("dragenter", function(e){e.stopPropagation(); e.preventDefault();})
+            gameCanvas.addEventListener("dragover", function(e){e.stopPropagation(); e.preventDefault();})
+            gameCanvas.addEventListener("drop", function(e){
+                e.stopPropagation();
+                e.preventDefault();
+                var url = e.dataTransfer.getData('text/plain');
+                if (url) {
+                    var img = new Image();
+                    img.onload = function(){placingImage = img; placeImage(); placingImage = null;}
+                    img.src = url;
+                // for img file(s), read the file & draw to canvas
+                } else {
+                    console.log(e.dataTransfer.files)
+                    if (!e.dataTransfer.files || e.dataTransfer.files.length === 0) { return; }
+                    var file = e.dataTransfer.files[0];
+                    if (file.type.indexOf('image/') === -1) { return; }
+                    var img = document.createElement("img");
+                    img.classList.add("obj");
+                    img.file = file;
+                    var reader = new FileReader();
+                    reader.onload = (function(aImg){
+                        return function(e) {
+                            aImg.onload=function(){
+                                placingImage = aImg;
+                                placeImage();
+                                placingImage = null;
+                            }
+                            // e.target.result is a dataURL for the image
+                            aImg.src = e.target.result;
+                        }; 
+                    })(img);
+                    reader.readAsDataURL(file);
+                }
+            }, false);
+            // if pasted image, draw to canvas
+            window.addEventListener("paste", function(e){
+                if (e.clipboardData) {
+                    var items = e.clipboardData.items;
+                    if (!items) { return; }
+                    var item = items[items.length-1];
+                    if (item.type.indexOf('image/') === -1) { return; }
+                    var blob = item.getAsFile();
+                    var URLObj = window.URL || window.webkitURL;
+                    var source = URLObj.createObjectURL(blob);
+                    var img = new Image();
+                    img.onload = function(){placingImage = img; placeImage(); placingImage = null;}
+                    img.src = source;
+                }
+            }, false);
             window.onbeforeunload = function(){ // Confirm leaving page if there are pixels on-screen
                 if (currentPixels.length > 0){
                     return 'Are you sure you want to leave?';

@@ -14,6 +14,7 @@ A fancier version of this changelog can be found here: https://sandboxels.r74n.c
         + Place it on the canvas at any scale
         + Choose its element or disable smoothing in Settings
         + Burn it, blow it up, or make it a powder!
+        + Paste or Drag-and-Drop images!
    [Bug Fixes]
     ~ Fixed: Old browsers that don't support ECMAScript 2016 crash
    Stay tuned for bigger updates in the coming months!
