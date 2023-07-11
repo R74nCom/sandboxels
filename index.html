@@ -10690,7 +10690,8 @@
             else {
                 mouseType = "left";
             }
-            if (e.button === 0 && placingImage) {
+            if ((e.button === 0 || e.touches) && placingImage) {
+                if (e.touches) { mouseMove(e); }
                 // downscale the <img to mouseSize x mouseSize and draw it
                 var canvas = document.createElement("canvas");
                 // set width or height proportional to mouseSize
