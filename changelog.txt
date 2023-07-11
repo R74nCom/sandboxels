@@ -7,6 +7,17 @@ See sneak peaks for upcoming updates on the Discord: https://discord.gg/ejUc6YPQ
 
 A fancier version of this changelog can be found here: https://sandboxels.r74n.com/changelog
 
+[Version 1.8.4 - July 11, 2023]
+    + Image placing
+        + Image tool in Special
+        + Select any image from your computer
+        + Place it on the canvas at any scale
+        + Choose its element or disable smoothing in Settings
+        + Burn it, blow it up, or make it a powder!
+   [Bug Fixes]
+    ~ Fixed: Old browsers that don't support ECMAScript 2016 crash
+   Stay tuned for bigger updates in the coming months!
+
 [Version 1.8.3 - May 26, 2023 - Deserted Update]
     + Cactus
     + Fancy Changelog and Controls pages
