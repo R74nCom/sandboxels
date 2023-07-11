@@ -114,8 +114,7 @@ function openModList() {
     showingMenu = "modList";
 }
 
-// called just once, changes the menu title, adds the button, changes the modManagerList css and adds modList component
-updateModManager();
+runAfterLoadList.push(updateModManager);
 
 closeMenu = function() {
     if (!showingMenu) { return; }
