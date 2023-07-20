@@ -11,7 +11,46 @@ elements.test = {
     behavior: behaviors.POWDER,
     category: "land",
     state: "solid",
+    density: 15,
+    temp: 22,
+    tempHigh: 35,
+    stateHigh: "molten_testium",
+    reactions: {
+        "ilitium": { "elem1":"tralphium", "elem2":null },
+        "nickel": { "elem1":"iron", "elem2":null },
+    }
+};
+elements.molten_testium = {
+    name:"Liquid Testium",
+    color:"#0000ff",
+    behavior: behaviors.LIQUID,
+    category: "liquids",
+    state: "liquid",
     density: 10,
+    temp: 50,
+    tempHigh: 450,
+    stateHigh: "testium_gas",
+    tempLow: 35,
+    stateLow: "test",
+    reactions: {
+        "ilitium": { "elem1":"tralphium", "elem2":null },
+        "molten_nickel": { "elem1":"molten_iron", "elem2":null },
+    },
+};
+
+elements.testium_gas = {
+    name:"Liquid Testium",
+    color:"#00ff00",
+    behavior: behaviors.GAS,
+    category: "gases",
+    state: "gas",
+    density: 5,
+    temp: 525,
+    tempLow: 450,
+    stateLow: "molten_testium",
+    reactions: {
+        "ilitium": { "elem1":"helium", "elem2":null },
+    },
 };
 elements.neutronium = {
     name: "Neutronium",
