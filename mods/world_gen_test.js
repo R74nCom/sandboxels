@@ -138,6 +138,84 @@ if (enabledMods.includes("mods/chem.js")) {
             };
 }
 
+if (enabledMods.includes("mods/structure_test.js")) {
+    elements.smooth_tungsten = {
+    color: "#bcbaae",
+    behavior: behaviors.WALL,
+    tempHigh: 3422,
+    stateHigh: "molten_tungsten",
+    category: "solids",
+    hidden: true,
+    density: 19300,
+    conduct: 0.65,
+    hardness: 0.75
+},
+    elements.francium_reactor = {
+		tick: function(pixel) {
+			for(cx = -4; cx <= 4; cx++) {
+				for(cy = -4; cy <= 4; cy++) {
+					if(cx === 0 && cy === 0) {
+						continue;
+					};
+					var finalCoords = [pixel.x+cx,pixel.y+cy];
+					if(isEmpty(...finalCoords,true)) {
+						continue;
+					} else {
+						var otherPixel = pixelMap[finalCoords[0]][finalCoords[1]];
+						if(otherPixel.element === pixel.element) {
+							deletePixel(...finalCoords);
+						};
+					};
+				};
+			};
+			if(!isEmpty(pixel.x,pixel.y-1,true)) {
+				swapPixels(pixel,pixelMap[pixel.x][pixel.y-1]);
+				return;
+			};
+			if(!tryMove(pixel,pixel.x,pixel.y+1)) {
+                let width = 10 + Math.floor(Math.random() * (8 + 1));
+                let randomHeight = 2 + Math.floor(Math.random() * (2 + 1));
+                var heights = [];
+                for(let i = 1; i <= randomHeight; i++)
+                {
+                    heights.push(Math.floor(i));
+                }
+				var currentHeight = pixel.y + 100;
+                while(currentHeight > pixel.y)
+                {
+                    loadPixelRowFromArray(Array((width)*2-1).fill("tungsten"),pixel.x,currentHeight,true,true);
+                    currentHeight--;
+                }
+                for(let i = 0; i < heights.length; i++)
+                {
+                    for(let j = 0; j < heights[i]; j++)
+                    {
+                        loadPixelRowFromArray(Array((width-i)*2+1).fill("smooth_tungsten"),pixel.x,currentHeight,true,true);
+                        currentHeight--;
+                    }
+                }
+                
+                for(let i = heights.length-1; i >= 0; i--)
+                {
+                    for(let j = 0; j < heights[i]; j++)
+                    {
+                        loadPixelRowFromArray(Array((width-i)*2+1).fill("smooth_tungsten"),pixel.x,currentHeight,true,true);
+                        currentHeight--;
+                    }
+                }
+			};
+		},
+		excludeRandom: true,
+		desc: "Creates a francium reactor for the francium lake worldgen.",
+		cooldown: 6,
+		state: "solid",
+		hardness: 1,
+		category: "structures",
+		color: ["#adadad", "#70b8ba", "#adadad", "#70b8ba", "#adadad"],
+	};
+    elements.francium_height_map = newHeightMap(Array(5000).fill("tungsten").concat(["francium_reactor"]), "francium_height", 0.125, 1, 0.2, 2.5, 20);
+}
+
 
 //override function until fix
 worldGen = function (worldtype) {

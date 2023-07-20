@@ -1903,8 +1903,10 @@ trueAcids.push("hexafluorosilicic_acid");
 trueAcidGases.push("hexafluorosilicic_acid_gas");
 
 
-elements.hydrofluoric_acid.ignore.push("sand","hexafluorosilicic_acid","hexafluorosilicic_acid_gas","potassium_carbonate","potassium_fluoride");
-elements.hydrofluoric_acid_gas.ignore.push("sand","hexafluorosilicic_acid","hexafluorosilicic_acid_gas","potassium_carbonate","potassium_fluoride");
+elements.hydrofluoric_acid.ignore.push("sand","hexafluorosilicic_acid","hexafluorosilicic_acid_gas","potassium_carbonate","potassium_fluoride","carbon_dioxide","hydrogen");
+elements.hydrofluoric_acid_gas.ignore.push("sand","hexafluorosilicic_acid","hexafluorosilicic_acid_gas","potassium_carbonate","potassium_fluoride","carbon_dioxide","hydrogen");
+elements.hydrogen_fluoride.ignore.push("sand","hexafluorosilicic_acid","hexafluorosilicic_acid_gas","potassium_carbonate","potassium_fluoride","carbon_dioxide","hydrogen");
+elements.liquid_hydrogen_fluoride.ignore.push("sand","hexafluorosilicic_acid","hexafluorosilicic_acid_gas","potassium_carbonate","potassium_fluoride","carbon_dioxide","hydrogen");
 elements.hexafluorosilicic_acid.ignore.push("sand");
 elements.hexafluorosilicic_acid_gas.ignore.push("sand");
 
@@ -1912,8 +1914,13 @@ elements.hydrofluoric_acid.reactions.sand = { elem1:"hexafluorosilicic_acid", el
 elements.hydrofluoric_acid_gas.reactions.sand = { elem1:"hexafluorosilicic_acid", elem2: null};
 elements.hydrofluoric_acid.reactions.potassium_carbonate = { elem1:"potassium_fluoride", elem2: "carbon_dioxide"};
 elements.hydrofluoric_acid_gas.reactions.potassium_carbonate = { elem1:"potassium_fluoride", elem2: "carbon_dioxide"};
+elements.hydrogen_fluoride.reactions.potassium_carbonate = { elem1:"potassium_fluoride", elem2: "carbon_dioxide"};
+elements.liquid_hydrogen_fluoride.reactions.potassium_carbonate = { elem1:"potassium_fluoride", elem2: "carbon_dioxide"};
 elements.hydrofluoric_acid.reactions.potassium_fluoride = { elem1:["hydrogen","fluorine"], elem2: "potassium_fluoride"};
 elements.hydrofluoric_acid_gas.reactions.potassium_fluoride = { elem1:["hydrogen","fluorine"], elem2: "potassium_fluoride"};
+
+elements.fluorine.ignore.push("sand","potassium_fluoride","carbon_dioxide");
+elements.liquid_fluorine.ignore.push("sand","potassium_fluoride","carbon_dioxide");
 
 elements.potassium_carbonate = {
     color: "#e2e1e8",
@@ -2314,7 +2321,6 @@ elements.bless.reactions["hydrogen_fluoride"] = {elem2: "hydrogen"};
 elements.bless.reactions["liquid_hydrogen_fluoride"] = {elem2: "hydrogen"};
 elements.bless.reactions["hydrogen_fluoride_ice"] = {elem2: "hydrogen"};
 elements.bless.reactions["hydrofluoric_acid"] = {elem2: "hydrogen"};
-elements.bless.reactions["liquid_hydrofluoric_acid"] = {elem2: "hydrogen"};
 elements.bless.reactions["hydrofluoric_acid_ice"] = {elem2: "hydrogen"};
 elements.bless.reactions["francium"] = {elem2: null};
 elements.bless.reactions["molten_francium"] = {elem2: null};
