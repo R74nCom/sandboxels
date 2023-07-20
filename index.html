@@ -44,7 +44,7 @@
     <meta name="twitter:creator:id" content="1436857621827530753">
 
     <script> // versioning info
-        currentversion = "1.8.3"
+        currentversion = "1.8.4"
     </script>
     <style>
         .setting-span {
@@ -190,7 +190,7 @@
                 if (pixel.charge && elements[pixel.element].behaviorOn) {
                     pixelTick(pixel)
                 }
-                if (elements[pixel.element].viscosity && (!((Math.random()*100) < 100 / ((elements[pixel.element].viscosity) ** 0.25)))) {
+                if (elements[pixel.element].viscosity && (!((Math.random()*100) < 100 / Math.pow(elements[pixel.element].viscosity, 0.25)))) {
                     var move1Spots = [
                         [pixel.x, pixel.y+1]
                     ]
@@ -209,7 +209,7 @@
                     else { move1Spots.splice(move1Spots.indexOf(coords), 1); }
                 }
                 if (!moved) {
-                    if (elements[pixel.element].viscosity===undefined || !(!((Math.random()*100) < 100 / ((elements[pixel.element].viscosity) ** 0.25)))) {
+                    if (elements[pixel.element].viscosity===undefined || !(!((Math.random()*100) < 100 / Math.pow(elements[pixel.element].viscosity, 0.25)))) {
                         if (Math.random() < 0.5) {
                             if (!tryMove(pixel, pixel.x+1, pixel.y)) {
                                 tryMove(pixel, pixel.x-1, pixel.y);
@@ -1716,6 +1716,32 @@
     behavior: behaviors.WALL,
     category: "special",
     excludeRandom: true
+},
+"image": {
+    color: ["#78bbff","#5bb81a"],
+    onSelect: function() {
+        // prompt to upload an image file, then store the image in placingImage
+        var file = document.createElement("input");
+        file.type = "file";
+        file.accept = "image/*";
+        file.onchange = function() {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var img = new Image();
+                img.onload = function() {
+                    placingImage = img;
+                }
+                img.src = e.target.result;
+            }
+            reader.readAsDataURL(file.files[0]);
+        }
+        file.click();
+    },
+    onUnselect: function() {
+        placingImage = null;
+    },
+    tool: function() {},
+    category: "special",
 },
 "unpaint": {
     color: ["#ffffff","#000000"],
@@ -9451,7 +9477,7 @@
                     default: break;
                     case "M1":
                         if (info.viscosity !== undefined) {
-                            if (!((Math.random()*100) < 100 / ((info.viscosity) ** 0.25))) {
+                            if (!((Math.random()*100) < 100 / Math.pow(info.viscosity, 0.25))) {
                                 newCoords.x = x;
                             }
                         }
@@ -9459,7 +9485,7 @@
                         break;
                     case "M2":
                         if (info.viscosity !== undefined) {
-                            if (!((Math.random()*100) < 100 / ((info.viscosity) ** 0.25))) {
+                            if (!((Math.random()*100) < 100 / Math.pow(info.viscosity, 0.25))) {
                                 newCoords.x = x;
                             }
                         }
@@ -10420,7 +10446,7 @@
                     if (info.hardness) { // lower damage depending on hardness(0-1)
                         if (info.hardness < 1) {
                             // more hardness = less damage, logarithmic
-                            damage *= (1-info.hardness)**info.hardness;
+                            damage *= Math.pow((1-info.hardness),info.hardness);
                         }
                         else { damage = 0; }
                     }
@@ -10664,12 +10690,62 @@
             else {
                 mouseType = "left";
             }
-            if (shiftDown && e.button !== 1 && !((elements[currentElement].tool || elements[currentElement].category==="tools") && mouseType==="left")) {
+            if ((e.button === 0 || e.touches) && placingImage) {
+                if (e.touches) { mouseMove(e); }
+                placeImage();
+                return false;
+            }
+            else if (shiftDown && e.button !== 1 && !((elements[currentElement].tool || elements[currentElement].category==="tools") && mouseType==="left")) {
                 shaping = 1;
                 shapeStart = mousePos;
             }
             mouseMove(e);
             return false;
+        }
+        function placeImage(placementX,placementY,scale) {
+            if (!scale) { scale = mouseSize }
+            // downscale the <img to mouseSize x mouseSize and draw it
+            var canvas = document.createElement("canvas");
+            // set width or height proportional to mouseSize
+            if (placingImage.width > placingImage.height) {
+                canvas.width = mouseSize;
+                canvas.height = Math.round(placingImage.height/placingImage.width*mouseSize);
+            }
+            else {
+                canvas.height = mouseSize;
+                canvas.width = Math.round(placingImage.width/placingImage.height*mouseSize);
+            }
+            var newWidth = canvas.width;
+            var newHeight = canvas.height;
+            var ctx = canvas.getContext("2d");
+            if (settings.imagesmooth === 0) {
+                ctx.webkitImageSmoothingEnabled = false;
+                ctx.mozImageSmoothingEnabled = false;
+                ctx.imageSmoothingEnabled = false;
+            }
+            ctx.drawImage(placingImage,0,0,newWidth,newHeight);
+            var newImage = ctx.getImageData(0,0,newWidth,newHeight);
+            // loop through each pixel in the ImageData
+            for (var x = 0; x < newWidth; x++) {
+                for (var y = 0; y < newHeight; y++) {
+                    var i = (y*newWidth+x)*4;
+                    var r = newImage.data[i];
+                    var g = newImage.data[i+1];
+                    var b = newImage.data[i+2];
+                    var a = newImage.data[i+3];
+                    if (a > 0.33) {
+                        // mousePos is the center of the image
+                        var pixelX = (placementX||mousePos.x) - Math.round(newWidth/2) + x+1;
+                        var pixelY = (placementY||mousePos.y) - Math.round(newHeight/2) + y+1;
+                        if (isEmpty(pixelX,pixelY)) {
+                            var elem = (settings.imageelem || "wood");
+                            if (!elements[elem]) { elem = "wood";}
+                            createPixel(elem,pixelX,pixelY);
+                            pixelMap[pixelX][pixelY].color = pixelColorPick(pixelMap[pixelX][pixelY], RGBToHex([r,g,b]));
+                        }
+                    }
+                }
+            }
         }
         function mouseUp(e) {
             mouseIsDown = false;
@@ -10697,7 +10773,7 @@
             };
         }
         function mouseMove(e) {
-            if (mouseIsDown && !shaping) {
+            if (mouseIsDown && !shaping && !placingImage) {
                 mouseAction(e);
             }
             else {
@@ -10986,6 +11062,9 @@
         function selectElement(element) {
             var e1 = document.getElementById("elementButton-"+currentElement);
             if (e1 != null) { e1.setAttribute("current","false"); }
+            if (elements[currentElement].onUnselect) {
+                elements[currentElement].onUnselect();
+            }
             currentElement = element;
             if (elements[element].customColor) {
                 // show the colorSelector
@@ -10994,6 +11073,9 @@
             else {
                 // hide the colorSelector
                 document.getElementById("colorSelector").style.display = "none";
+            }
+            if (elements[element].onSelect) {
+                elements[element].onSelect();
             }
             var e2 = document.getElementById("elementButton-"+element);
             if (!e2) { return; }
@@ -11980,6 +12062,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
         shiftDown = 0;
         shaping = 0;
         shapeStart = null;
+        placingImage = null;
         // On window load, run tick() 20 times per second
         tps = 30;
         tickInterval = window.setInterval(tick, 1000/tps);
@@ -12548,6 +12631,55 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                 if (e.touches) e = e.touches[0];
                 return false;
             }
+            gameCanvas.addEventListener("dragenter", function(e){e.stopPropagation(); e.preventDefault();})
+            gameCanvas.addEventListener("dragover", function(e){e.stopPropagation(); e.preventDefault();})
+            gameCanvas.addEventListener("drop", function(e){
+                e.stopPropagation();
+                e.preventDefault();
+                var url = e.dataTransfer.getData('text/plain');
+                if (url) {
+                    var img = new Image();
+                    img.onload = function(){placingImage = img; placeImage(); placingImage = null;}
+                    img.src = url;
+                // for img file(s), read the file & draw to canvas
+                } else {
+                    console.log(e.dataTransfer.files)
+                    if (!e.dataTransfer.files || e.dataTransfer.files.length === 0) { return; }
+                    var file = e.dataTransfer.files[0];
+                    if (file.type.indexOf('image/') === -1) { return; }
+                    var img = document.createElement("img");
+                    img.classList.add("obj");
+                    img.file = file;
+                    var reader = new FileReader();
+                    reader.onload = (function(aImg){
+                        return function(e) {
+                            aImg.onload=function(){
+                                placingImage = aImg;
+                                placeImage();
+                                placingImage = null;
+                            }
+                            // e.target.result is a dataURL for the image
+                            aImg.src = e.target.result;
+                        }; 
+                    })(img);
+                    reader.readAsDataURL(file);
+                }
+            }, false);
+            // if pasted image, draw to canvas
+            window.addEventListener("paste", function(e){
+                if (e.clipboardData) {
+                    var items = e.clipboardData.items;
+                    if (!items) { return; }
+                    var item = items[items.length-1];
+                    if (item.type.indexOf('image/') === -1) { return; }
+                    var blob = item.getAsFile();
+                    var URLObj = window.URL || window.webkitURL;
+                    var source = URLObj.createObjectURL(blob);
+                    var img = new Image();
+                    img.onload = function(){placingImage = img; placeImage(); placingImage = null;}
+                    img.src = source;
+                }
+            }, false);
             window.onbeforeunload = function(){ // Confirm leaving page if there are pixels on-screen
                 if (currentPixels.length > 0){
                     return 'Are you sure you want to leave?';
@@ -12880,13 +13012,13 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                     setSetting("lastversion",currentversion);
                 });
                 // wiki clicked check
-                if (!settings["clickedwiki"]) {
+                /*if (!settings["clickedwiki"]) {
                     document.getElementById("wikiButton").insertAdjacentHTML("beforeend",`<span style="color:red">(NEW)</span>`);
                 }
                 document.getElementById("wikiButton").addEventListener("click", function() {
                     document.getElementById("wikiButton").innerHTML = "Wiki";
                     setSetting("clickedwiki",true);
-                });
+                });*/
             </script>
         </div>
         <div id="infoParent">
@@ -12995,6 +13127,12 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span> <input type="button" value="O
                         </select>
                         <span onclick="clearAll();" style="font-style:italic;cursor:pointer"></span>
                     </span>
+                    <span setting="imageelem" class="setting-span multisetting" title="Default: Wood">
+                        Image Elem<input type="text" value="wood" onchange="if(this.value===''){this.value='wood'}; setSetting('imageelem',this.value.trim())">
+                    </span>
+                    <span setting="imagesmooth" class="setting-span multisetting" title="Default: ON">
+                        Smoothing<input type="button" value="ON" class="toggleInput" onclick="toggleInput(this,'imagesmooth')" state="1">
+                    </span>
                 </div>
             </div>
         </div>
@@ -13003,6 +13141,10 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span> <input type="button" value="O
 </div>
 
 <div id="bottomInfoBox">
+    <div id="bottomTopBox">
+        <p>Want your ad here? Email us at <a href="mailto:contact@r74n.com">contact@r74n.com</a>!</p>
+    </div>
+
     <div id="bottomLeftBox">
         <h2>Sandboxels Introduction</h2>
         <p><strong><def>Sandboxels</def></strong> is a free falling-sand simulator that can be played in your browser. It features heat simulation, electricity, density, chemical reactions, and fire spread. With over 400 unique elements to play with, Sandboxels is a great way to pass the time. There are thousands of interactions between the many materials, plants, animals, and fluids in the game.</p>
@@ -13011,7 +13153,8 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span> <input type="button" value="O
         <img src="icons/wallpaper.webp" style="width:100%" alt="Rainforest landscape made in Sandboxels" title="Rainforest landscape made in Sandboxels">
         <p>Sandboxels has many applications in education. With a hands-on experience, it can give students an understanding of emerging phenomena in many fields, such as biology, chemistry, ecology, geology, and even virology. There are countless aspects to discover.</p>
         <p>We have a thriving community on <a href="https://discord.gg/ejUc6YPQuS" target="_blank">Discord</a>! There you can post feedback or share your creations.</p>
-        <p>If you'd like to support us, consider donating on <a href="https://www.paypal.com/donate/?hosted_button_id=GCX4VHQ7SZWTN" target="_blank">PayPal</a> or <a href="https://cash.app/$emojiartist" target="_blank" title="$emojiartist">CashApp</a>, or subscribing on Discord.</p>
+        <!-- <p>If you'd like to support us, consider donating on <a href="https://www.paypal.com/donate/?hosted_button_id=GCX4VHQ7SZWTN" target="_blank">PayPal</a> or <a href="https://cash.app/$emojiartist" target="_blank" title="$emojiartist">CashApp</a>, or subscribing on Discord.</p> -->
+        <p>Business inquiries? Education stories? Help needed? Email us at <a href="mailto:contact@r74n.com">contact@r74n.com</a>!</p>
         <p>Thanks to our Donators: Serioustar, Trent, u2ce</p>
         <p>Sandboxels is developed by R74n. Check out <a href="https://r74n.com" target="_blank">our other projects</a>!</p>
         <script>
