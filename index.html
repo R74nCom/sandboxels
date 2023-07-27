@@ -12944,7 +12944,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             var gameCanvas = document.getElementById("game");
             // Get context
             var ctx = gameCanvas.getContext("2d");
-            if (window.innerWidth < 600) {
+            if (window.innerWidth < 700) {
                 var newWidth = Math.ceil(window.innerWidth / pixelSize) * pixelSize;
                 var newHeight = Math.ceil(window.innerHeight*0.6 / pixelSize) * pixelSize;
             }
@@ -13330,7 +13330,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
     <h1 class="pagetitle" id="pagetitle"><a href="https://R74n.com" class="backbutton" target="_blank">&lt;</a></h1>
     <div id="totalWrapper">
     <div id="gameWrapper">
-    <div id="gameDiv" style="width:800px;">
+    <div id="gameDiv">
         <p id="loadingP" style="text-align:center;height:500px;line-height:500px;">Loading...</p>
         <div id="canvasDiv" style="display:none">
             <canvas id="game" width="800" height="600">
