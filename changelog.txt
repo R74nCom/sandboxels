@@ -1,11 +1,89 @@
 [Future Plans]
     + Save Gallery
     + Human Update
-    + Suggest new additions at https://link.r74n.com/sandboxels-feedback
+    + Suggest new additions at https://link.R74n.com/sandboxels-feedback
 
 See sneak peaks for upcoming updates on the Discord: https://discord.gg/ejUc6YPQuS
 
-A fancier version of this changelog can be found here: https://sandboxels.r74n.com/changelog
+A fancier version of this changelog can be found here: https://sandboxels.R74n.com/changelog
+
+[Version 1.8.5 - July 27, 2023]
+    + Drag tool
+    + Tree color variety (8 variants!)
+    ~ Mobile UI improvements
+    + Warp (Special)
+    + Crumb (Hidden, from broken foods)
+    + Skin (Solid)
+    + Hair (Hidden)
+   [States]
+    + Soda Ice (Hidden)
+    + Bleach Ice (Hidden)
+    + Frozen Vinegar (Hidden)
+    + Amber (Hidden, frozen Sap)
+    + Perfume (Hidden, liquid Fragrance)
+    + Liquid Stench (Hidden)
+   [Changes]
+    + Molten Dirt can solidify into some Rock
+    + Tools have descriptions on info page
+    + Oil dirties Water
+    + Humans will panic and run when burning
+    + Rad Shards and Molten Rad Glass can produce radiation
+    + Light and Laser retain color when liquified
+    + Slag can be formed with Dirt
+    + Slag can break into Gravel
+    + Corn breaks into Flour
+    + Mushrooms can release Poison when broken
+    + Poison and Antidote can wet soil
+    + Juice can wet Flour
+    + Blood can oxidize Iron and Copper
+    + Fallout will infect Blood
+    + Birds turn to white meat when cooked
+    + Birds smash into Blood
+    + Cacti can be killed by Vinegar, Bleach, Baking Soda, and Alcohol
+    + Humans can be killed by Poison and Cyanide
+    + Cells can be killed by Plague, Soap, Mercury, Chlorine, and Cyanide
+    + Dioxin can kill Plants, Grass, Vines, Saplings, and Cacti
+    + Vinegar can kill Frogs slowly
+    + Vinegar can kill Grass
+    + Algae dies at hot and cold temperatures
+    + Dust will burn at high temperatures
+    + Melted Wax will break down at high temperatures
+    + Uranium conducts electricity
+    + Unburn tool can put out Embers and Torches
+    + Bless turns Static to Rainbow
+    + Static conducts electricity
+    + Grapes can turn Water into Juice
+    + Primordial Soup can wet Clay Soil
+    + Hydrogen produces heat during fusion
+    + Helium, Hydrogen, and Mercury Gas glow when electrified
+    + Cactus and Liquid Light random events
+    + Cement can be made with Slaked Lime
+    ~ Recolored Slaked Lime
+    ~ Placing Petals or Mushroom Caps now picks a random color
+    ~ Unhid Petal
+    ~ Hid Root
+    ~ Moved Bamboo to Solids
+    ~ Moved Steel
+    ~ Moved Melted Cheese, Butter, and Chocolate to States
+    ~ Moved Liquid Hydrogen, Helium, and Neon to States
+    ~ States category always appears last if unhidden
+    ~ Humans rot more randomly
+    ~ Bamboo Plant grows faster
+    ~ Worms no longer break Eggs
+    ~ Strange Matter can no longer travel through indestructible things
+    ~ Strange Matter can no longer destroy Void
+    ~ Tweaked Molten Uranium radiation rate
+   [Fixes]
+    ~ Fixed: Alt-Tab locks Alt key
+    ~ Fixed: Cacti break into Sap
+    ~ Fixed: Cream deletes infinite Soda and Juice
+    ~ Fixed: Null in info page error (e.g. tea)
+    ~ Fixed: Unknown element in info page error (e.g. salt)
+    ~ Fixed: Reactions, related, and aliases don't show up in tool info pages
+    ~ Capitalization fixes
+   [Technical]
+    + Element properties onSelect, onMouseUp, perTick, singleColor
+    ~ Element property fireElement can accept null
 
 [Version 1.8.4 - July 11, 2023]
     + Image placing
