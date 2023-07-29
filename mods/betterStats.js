@@ -4,7 +4,7 @@ let realTps = 0;
 let lastTps = 0;
 window.addEventListener("load", ()=>{
   requireMods(["mods/libhooktick.js"], () => {
-    everyTick(()=>{
+    beforeEveryTick(()=>{
       lastTps++;
     });
     setInterval(()=>{
