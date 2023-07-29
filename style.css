@@ -7,9 +7,10 @@ html, body {
 @font-face {
     font-family: 'Press Start 2P';
     src: url('fonts/PressStart2P-Regular.ttf');
+    font-display: swap;
 }
 body {
-    font-family: 'Press Start 2P';
+    font-family: 'Press Start 2P', Arial;
     background-color: #000000;
     color: #ffffff;
 }
@@ -274,6 +275,33 @@ button, input[type="submit"], input[type="reset"] {
         margin-left: 0px;
         margin-right: 0px;
     }
+    #gameDiv { /*game canvas*/
+        margin-top: 0;
+    }
+    .stat {
+        margin-right: 15px;
+        margin-bottom: 3px;
+    }
+    #stats {
+        width: 97%;
+        margin-left: 5px;
+        font-size: 0.75em;
+        height: 2.5em
+    }
+}
+@media screen and (max-width: 600px) {
+    #gameDiv { /*game canvas*/
+        margin-top: 0;
+        border-left: none;
+        border-right: none;
+        border-top: none;
+    }
+    .pagetitle {
+        display: none
+    }
+}
+@media screen and (min-width: 800px) { /* Desktop-Only Styles */
+    #gameDiv { width:800px }
 }
 /* screen size > 1325px, h1::after {content:" Sandboxels"} */
 @media screen and (min-width: 1325px) {

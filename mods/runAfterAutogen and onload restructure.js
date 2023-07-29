@@ -377,12 +377,12 @@ function doFinalChecks() {
 		if (elements[key].breakInto) {
 			if (Array.isArray(elements[key].breakInto)) {
 				for (var i = 0; i < elements[key].breakInto.length; i++) {
-					if (!elements[elements[key].breakInto[i]]) { delete elements[key].breakInto[i]; }
+					if (elements[key].breakInto[i]!==null && !elements[elements[key].breakInto[i]]) { delete elements[key].breakInto[i]; }
 				}
 				if (elements[key].breakInto.length == 0) { delete elements[key].breakInto; }
 			}
 			else {
-				if (!elements[elements[key].breakInto]) { delete elements[key].breakInto; }
+				if (elements[key].breakInto[i]!==null && !elements[elements[key].breakInto]) { delete elements[key].breakInto; }
 			}
 		}
 
