@@ -23,7 +23,7 @@ var menuScreens = {
             infoSearch.value = "";
             infoHistory = [];
         },
-        open: showInfo
+        open: () => {showInfo();}
     },
     mods: {
         name: "Mods",
@@ -36,14 +36,14 @@ var menuScreens = {
             modParent.style.display = "none";
             modManagerUrl.value = "";
         },
-        open: showModManager
+        open: () => {showModManager();}
     },
     settings: {
         name: "Settings",
         parentDiv: "settingsParent",
         buttonDescription: "Brings up the settings screen",
         show: true,
-        open: showSettings
+        open: () => {showSettings();}
     }
 }
 
