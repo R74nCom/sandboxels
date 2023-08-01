@@ -5,6 +5,7 @@
  * @property {string} buttonDescription Description that is shown when the button is hovered
  * @property {boolean} show Whether menu screen button should get shown on tool controls
  * @property {() => void} [close] Closing method. Optional
+ * @property {() => void} [preOpen] Method called before opening. Optional
  * @property {() => void} [open] Opening method. Optional
  * @property {() => void} [onClose] Method that gets called on close (except when menu is force closed, like when clicking on a different menu button). Optional
  * @property {() => void} [loader] Method that injects the menu screen into HTML. Can be set to ModScreen build method. Optional
@@ -22,7 +23,7 @@ var menuScreens = {
             infoSearch.value = "";
             infoHistory = [];
         },
-        open: showInfo
+        open: () => {showInfo();}
     },
     mods: {
         name: "Mods",
@@ -35,18 +36,18 @@ var menuScreens = {
             modParent.style.display = "none";
             modManagerUrl.value = "";
         },
-        open: showModManager
+        open: () => {showModManager();}
     },
     settings: {
         name: "Settings",
         parentDiv: "settingsParent",
         buttonDescription: "Brings up the settings screen",
         show: true,
-        open: showSettings
+        open: () => {showSettings();}
     }
 }
 
-closeMenu = (force) => {
+closeMenu = (force = false) => {
     if (!showingMenu) return;
     const menu = menuScreens[showingMenu];
     if (!menu) {
@@ -68,6 +69,8 @@ closeMenu = (force) => {
 const inject = () => {
     const toolControls = document.getElementById("toolControls");
     const buttons = [];
+    const style = document.createElement("style");
+    document.head.appendChild(style);
     for (const key in menuScreens) {
         const element = menuScreens[key];
         if (element.show) {
@@ -77,6 +80,7 @@ const inject = () => {
             button.onclick = () => {
                 if (showingMenu != key) {
                     closeMenu(true);
+                    if (element.preOpen) element.preOpen();
                     if (element.open) element.open();
                     else {
                         const menuParent = document.getElementById(element.parentDiv);
@@ -100,12 +104,32 @@ const inject = () => {
     
 }
 
+/**
+ * 
+ * @param {string} menu Menu do be opened 
+ * @param {boolean} [closeCurrent] Whether it should forcefully close the current screen
+ */
+const openMenu = (menu, closeCurrent = false) => {
+    if (closeCurrent) closeMenu(true);
+    const menuScreen = menuScreens[menu];
+    if (menuScreen) {
+        showingMenu = menu;
+        if (menuScreen.preOpen) menuScreen.preOpen();
+        if (menuScreen.open) menuScreen.open();
+        else {
+            const menuParent = document.getElementById(menuScreen.parentDiv);
+            menuParent.style.display = "block";
+        }
+    }
+}
+
 class MenuScreen {
     constructor () {
         this.nodes = [];
         this.innerHtml = "";
         this.showCloseButton = true;
         this.closeButtonText = "-";
+        this.closeButtonClass = "XButton";
     }
 
     /**
@@ -123,6 +147,7 @@ class MenuScreen {
      */
     setShowCloseButton(show) {
         this.showCloseButton = show;
+        return this;
     }
 
     /**
@@ -131,6 +156,16 @@ class MenuScreen {
      */
     setCloseButtonText(text = "-") {
         this.closeButtonText = text;
+        return this;
+    }
+
+    /**
+     * Sets the close button class
+     * @param {string} [className] Close button class. "XButton" by default
+     */
+    setCloseButtonClass(className = "XButton") {
+        this.closeButtonClass = className;
+        return this;
     }
 
     /**
@@ -199,7 +234,6 @@ class MenuScreen {
 
     /**
      * Checks whether the menu screen is ready for build. That method should not be called outside of build method
-     * @private
      */
     _check() {
         if (!this.parentDivId) throw "No parent div id specified";
@@ -218,9 +252,9 @@ class MenuScreen {
         parent.style.display = "none";
         const inner = document.createElement("div");
         inner.className = this.innerDivClass ?? "menuScreen";
-        inner.innerHTML = `${this.showCloseButton ? `<button class="XButton" onclick="closeMenu();">${this.closeButtonText}` : ""}</button>
+        inner.innerHTML = `${this.showCloseButton ? `<button class="${this.closeButtonClass ?? "XButton"}" onclick="closeMenu();">${this.closeButtonText}` : ""}</button>
         <span class="menuTitle">${this.title ?? "Menu Screen"}</span><br><br><div class="menuText">` + this.innerHtml + "</div>";
-        inner.append(this.nodes);
+        this.nodes.forEach(n => inner.querySelector(".menuText").appendChild(n));
         parent.appendChild(inner);
         document.getElementById(id).appendChild(parent);
     }
