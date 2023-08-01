@@ -397,6 +397,8 @@ if (enabledMods.includes(mod)) {
     }
 
     const parseColor = (colorString) => {
+        // technically color arrays are handled differently, but ill add it just in case
+        if (colorString instanceof Array) return parseColor(colorString[0]);
         if (typeof colorString != "string") return "#ffffff";
         if (colorString.startsWith("rgb(")) {
             const color = colorString.replace("rgb(", "").replace(")", "");
