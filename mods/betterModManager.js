@@ -126,8 +126,8 @@ if (enabledMods.includes("mods/betterMenuScreens.js")) {
             modManagerUrl.value = "";
             showingMenu = false;
         },
-        onClose: showModManager,
-        loader: updateModManager
+        onClose: () => {showModManager();},
+        loader: () => {updateModManager();}
     }
 } else {
     closeMenu = function() {

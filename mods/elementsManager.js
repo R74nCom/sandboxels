@@ -397,6 +397,9 @@ if (enabledMods.includes(mod)) {
     }
 
     const parseColor = (colorString) => {
+        // technically color arrays are handled differently, but ill add it just in case
+        if (colorString instanceof Array) return parseColor(colorString[0]);
+        if (typeof colorString != "string") return "#ffffff";
         if (colorString.startsWith("rgb(")) {
             const color = colorString.replace("rgb(", "").replace(")", "");
             return `#${color.split(",").map(a => parseInt(a).toString(16)).join("")}`;
@@ -603,7 +606,7 @@ if (enabledMods.includes(mod)) {
                     el.onchange = (ev) => {
                         const elementData = Storage.get("newElement", {});
                         if (prop.type == "number") elementData[prop.name] = parseFloat(ev.target.value);
-                        else if (prop.type == "color" || prop.type[0] == "color") elementData[prop.name] = hexToRGB(ev.target.value);
+                        else if (prop.type == "color" || prop.type[0] == "color") elementData[prop.name] = parseColor(ev.target.value);
                         else if (prop.type == "string") elementData[prop.name] = ev.target.value;
                         Storage.set("newElement", elementData);
                     }
@@ -984,11 +987,9 @@ if (enabledMods.includes(mod)) {
                             elementData[prop.name] = "POWDER_OLD";
                         } else {
                             el.setAttribute("value", default_[prop.type]);
-                            elementData[prop.name] = default_[prop.type];
                         }
                         if (prop.type == "boolean") {
                             el.setAttribute("state", "0")
-                            elementData[prop.name] = false;
                         }
                     }
                 }
