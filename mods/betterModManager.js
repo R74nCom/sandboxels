@@ -114,45 +114,61 @@ function openModList() {
     showingMenu = "modList";
 }
 
-runAfterLoadList.push(updateModManager);
-
-closeMenu = function() {
-    if (!showingMenu) { return; }
-    if (showingMenu == "info") {
-        var infoParent = document.getElementById("infoParent");
-        var infoSearch = document.getElementById("infoSearch");
-        infoParent.style.display = "none";
-        infoSearch.value = "";
-        showingMenu = false;
-        infoHistory = [];
+if (enabledMods.includes("mods/betterMenuScreens.js")) {
+    menuScreens.modList = {
+        name: "Mod manager",
+        parentDiv: "modListParent",
+        show: false,
+        close: () => {
+            var modParent = document.getElementById("modListParent");
+            var modManagerUrl = document.getElementById("modManagerUrl");
+            modParent.style.display = "none";
+            modManagerUrl.value = "";
+            showingMenu = false;
+        },
+        onClose: () => {showModManager();},
+        loader: () => {updateModManager();}
     }
-    else if (showingMenu == "mods") {
-        var modParent = document.getElementById("modParent");
-        var modManagerUrl = document.getElementById("modManagerUrl");
-        modParent.style.display = "none";
-        modManagerUrl.value = "";
-        showingMenu = false;
-    }
-    else if (showingMenu == "modList") {
-        var modParent = document.getElementById("modListParent");
-        var modManagerUrl = document.getElementById("modManagerUrl");
-        modParent.style.display = "none";
-        modManagerUrl.value = "";
-        showingMenu = false;
-        // open mod manager again so the mod list menu looks like a submenu
-        showModManager();
-    }
-    else if (showingMenu == "settings") {
-        var settingsParent = document.getElementById("settingsParent");
-        settingsParent.style.display = "none";
-        showingMenu = false;
-    }
-    else {
-        // do it to all elements with the class "menuParent"
-        var menuParents = document.getElementsByClassName("menuParent");
-        for (var i = 0; i < menuParents.length; i++) {
-            menuParents[i].style.display = "none";
+} else {
+    closeMenu = function() {
+        if (!showingMenu) { return; }
+        if (showingMenu == "info") {
+            var infoParent = document.getElementById("infoParent");
+            var infoSearch = document.getElementById("infoSearch");
+            infoParent.style.display = "none";
+            infoSearch.value = "";
+            showingMenu = false;
+            infoHistory = [];
         }
-        showingMenu = false;
+        else if (showingMenu == "mods") {
+            var modParent = document.getElementById("modParent");
+            var modManagerUrl = document.getElementById("modManagerUrl");
+            modParent.style.display = "none";
+            modManagerUrl.value = "";
+            showingMenu = false;
+        }
+        else if (showingMenu == "modList") {
+            var modParent = document.getElementById("modListParent");
+            var modManagerUrl = document.getElementById("modManagerUrl");
+            modParent.style.display = "none";
+            modManagerUrl.value = "";
+            showingMenu = false;
+            // open mod manager again so the mod list menu looks like a submenu
+            showModManager();
+        }
+        else if (showingMenu == "settings") {
+            var settingsParent = document.getElementById("settingsParent");
+            settingsParent.style.display = "none";
+            showingMenu = false;
+        }
+        else {
+            // do it to all elements with the class "menuParent"
+            var menuParents = document.getElementsByClassName("menuParent");
+            for (var i = 0; i < menuParents.length; i++) {
+                menuParents[i].style.display = "none";
+            }
+            showingMenu = false;
+        }
     }
+    runAfterLoadList.push(updateModManager);
 }
