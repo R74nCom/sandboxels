@@ -28,7 +28,8 @@ elements.on_try_move_into_test = {
 	related: ["debug", "ash"],
 }
 
-function tryMove(pixel,nx,ny,leaveBehind=undefined) {
+function tryMove(pixel,nx,ny,leaveBehind,force) {
+	if (pixel.drag && !force) { return true; }
 	var info = elements[pixel.element];
 	var oob = outOfBounds(nx,ny);
 	if (isEmpty(nx,ny,false,oob)) { // If coords is empty, move to coords
