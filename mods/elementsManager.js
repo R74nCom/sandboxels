@@ -296,7 +296,7 @@ if (enabledMods.includes("mods/betterMenuScreens.js")) {
 
     const applyChange = (property, value) => {
         const element = Storage.get("currentElement");
-        if (elements[element])
+        if (element && elements[element])
             elements[element][property] = value;
         let changes = Storage.get("changes", []);
         let a;
@@ -320,6 +320,7 @@ if (enabledMods.includes("mods/betterMenuScreens.js")) {
         let customElements = Storage.get("elements", []);
         let deletedElements = Storage.get("deletedElements", []);
         let lastFreeRemoval = Storage.get("settings", {allowFreeRemoval: false, clearElements: false}, true).allowFreeRemoval;
+        Storage.set("lastFreeRemoval", lastFreeRemoval);
         for (const key of Object.keys(elements).concat(customElements.map(e => e.name)).sort((a, b) => a.localeCompare(b, undefined, {caseFirst: "false"}))) {
             const element = document.createElement("li");
             const text = span(key); // only the text should be clickable
@@ -376,7 +377,7 @@ if (enabledMods.includes("mods/betterMenuScreens.js")) {
         filterInput.placeholder = "Search elements...";
         filterInput.onkeyup = (ev) => {
             const val = ev.target.value;
-            const deleted = Storage.get("deletedElements");
+            const deleted = Storage.get("deletedElements", []);
             for (const c of document.getElementById("elementsList").children) {
                 const span_ = c.querySelector("span");
                 if (!span_.innerText.toLowerCase().includes(val.toLowerCase()) || deleted.includes(span_.innerText)) {
@@ -646,7 +647,7 @@ if (enabledMods.includes("mods/betterMenuScreens.js")) {
         const createButton = span("Create Element");
         createButton.className = "createButton";
         createButton.onclick = () => {
-            const elementData = Storage.get("newElement");
+            const elementData = Storage.get("newElement", {});
             if (!elementData["name"]) {
                 document.getElementById("elementsManager/creator/meta/name/required").style.display = "";
             }
@@ -759,10 +760,10 @@ if (enabledMods.includes("mods/betterMenuScreens.js")) {
             clearElementsButton.type = "button";
         if (settings && settings.clearElements) {
             clearElementsButton.value = "ON";
-            clearElementsButton.state = "1";
+            clearElementsButton.setAttribute("state", "1");
         } else {
             clearElementsButton.value = "OFF";
-            clearElementsButton.state = "0";
+            clearElementsButton.setAttribute("state", "0");
         }
         clearElementsButton.onclick = (ev) => {
             toggleSetting("clearElements", ev.target)
@@ -776,13 +777,13 @@ if (enabledMods.includes("mods/betterMenuScreens.js")) {
             allowRemovalButton.type = "button";
         if (settings && settings.allowFreeRemoval) {
             allowRemovalButton.value = "ON";
-            allowRemovalButton.state = "1";
+            allowRemovalButton.setAttribute("state", "1");
         } else {
             allowRemovalButton.value = "OFF";
-            allowRemovalButton.state = "0";
+            allowRemovalButton.setAttribute("state", "0");
         }
         allowRemovalButton.onclick = (ev) => {
-            toggleSetting("allowFreeRemoval", ev.target)
+            toggleSetting("allowFreeRemoval", ev.target);
         }
         allowRemovalDiv.appendChild(allowRemovalButton);
         general.appendChild(allowRemovalDiv);
@@ -885,8 +886,9 @@ if (enabledMods.includes("mods/betterMenuScreens.js")) {
         loader: elementManagerLoader,
         preOpen: () => {
             const currentElement = Storage.get("currentElement");
+            if (!currentElement) return closeMenu();
             const element = elements[currentElement];
-            if (!element) closeMenu();
+            if (!element) return closeMenu();
             for (const key of Object.keys(properties)) {
                 for (const prop of properties[key]) { 
                     const id = "elementsManager/" + key + "/" + prop.name;
@@ -1080,6 +1082,7 @@ if (enabledMods.includes("mods/betterMenuScreens.js")) {
         onClose: () => {
             const settings = Storage.get("settings", {allowFreeRemoval: false, clearElements: false}, true);
             const elements_ = Storage.get("elements", []).map(e => e.name); 
+            const lastFreeRemoval = Storage.get("lastFreeRemoval", false);
             if (settings.allowFreeRemoval && !lastFreeRemoval) {
                 for (const li of document.getElementById("elementsList").children) {
                     const name = li.querySelector("span").innerText
@@ -1115,7 +1118,7 @@ if (enabledMods.includes("mods/betterMenuScreens.js")) {
                         li.querySelectorAll(".elementRemoveButton").forEach(e => e.remove());
                 }
             }
-            lastFreeRemoval = settings.allowFreeRemoval;
+            Storage.set("lastFreeRemoval", settings.allowFreeRemoval);
             openMenu("elementsManager", true);
         }
     }
