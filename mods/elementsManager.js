@@ -1,5 +1,4 @@
-const mod = "mods/betterMenuScreens.js";
-if (enabledMods.includes(mod)) {
+if (enabledMods.includes("mods/betterMenuScreens.js")) {
     const properties = {
         meta: [
             {name: "name", type: "string", viewOnly: true, required: true},
@@ -256,18 +255,37 @@ if (enabledMods.includes(mod)) {
         document.head.appendChild(style);
     }
 
+    // ugly way of doing it but probably works
+    const checkType = (key, value) => {
+        if (key == "behavior" && (typeof value == "function" || value instanceof Array)) return true;
+        if (["darkText", "hidden", "insulate", "noMix", "isFood", "forceAutoGen", "customColor", "ignoreAir", "excludeRandom", "burning", "flipX", "flipY", "flippableX", "flippableY"].includes(key) && typeof value != "boolean") return false;
+        if (["name", "category", "desc", "alias", "seed", "baby", "state", "stateHigh", "stateHighName", "stateHighColor", "stateLow", "stateLowNmae", "stateLowColor"].includes(key) && typeof value != "string") return false;
+        if (["id", "burn", "burnTime", "stateHighColorMultiplier", "stateLowColorMutliplier", "temp", "tempHigh", "extraTempHigh", "tempLow", "extraTempLow"].includes(key) && typeof value != "number") return false;
+        if (["color", "breakInto", "burnInto", "fireElement", "fireColor"].includes(key)) {
+            if (value instanceof Array) return value.filter(l => typeof l == "string").length == value.length;
+            if (typeof value != "string") return false; 
+        }
+        return true;
+    }
+
     const loadChanges = () => {
         const newElements = Storage.get("elements", []);
         for (const element of newElements) {
             const element_ = element;
             element_["behavior"] = behaviors[element_["behavior"]];
-            elements[element.name] = element_;
+            elements[element.name] = {};
+            // elements[element.name] = element_;
+            for (const key of Object.keys(element_)) {
+                const val = element_[key];
+                if (checkType(key, val)) elements[element.name][key] = val;
+                else if (["name", "category"].includes(key)) elements[element.name][key] = key == "name" ? "NewElement" : "other"; 
+            }
         }
         const changes = Storage.get("changes", []);
         for (const change of changes) {
             for (const key of Object.keys(change.changes)) {
                 const c = change.changes[key];
-                elements[change.element][key] = c;
+                if (checkType(key, c)) elements[change.element][key] = c;
             }
         }
         const deleted = Storage.get("deletedElements", []);
@@ -1104,7 +1122,7 @@ if (enabledMods.includes(mod)) {
 
     runAfterLoadList.push(cssInject, loadChanges);
 } else {
-    enabledMods.unshift(mod);
+    enabledMods.unshift("mods/betterMenuScreens.js");
     localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
     window.location.reload();
 }
