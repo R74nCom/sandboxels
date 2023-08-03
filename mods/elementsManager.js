@@ -257,7 +257,8 @@ if (enabledMods.includes("mods/betterMenuScreens.js")) {
 
     // ugly way of doing it but probably works
     const checkType = (key, value) => {
-        if (key == "behavior" && (typeof value == "function" || value instanceof Array)) return true;
+        if (key == "behavior" && (typeof value == "function" || (value instanceof Array && value.filter(e => e instanceof Array && e.filter(s => typeof s == "string").length == e.length).length == value.length))) return true;
+        else if (key == "behavior") return false;
         if (["darkText", "hidden", "insulate", "noMix", "isFood", "forceAutoGen", "customColor", "ignoreAir", "excludeRandom", "burning", "flipX", "flipY", "flippableX", "flippableY"].includes(key) && typeof value != "boolean") return false;
         if (["name", "category", "desc", "alias", "seed", "baby", "state", "stateHigh", "stateHighName", "stateHighColor", "stateLow", "stateLowNmae", "stateLowColor"].includes(key) && typeof value != "string") return false;
         if (["id", "burn", "burnTime", "stateHighColorMultiplier", "stateLowColorMutliplier", "temp", "tempHigh", "extraTempHigh", "tempLow", "extraTempLow"].includes(key) && typeof value != "number") return false;
@@ -272,7 +273,7 @@ if (enabledMods.includes("mods/betterMenuScreens.js")) {
         const newElements = Storage.get("elements", []);
         for (const element of newElements) {
             const element_ = element;
-            element_["behavior"] = behaviors[element_["behavior"]];
+            if (Object.keys(behaviors).includes(element_["behavior"])) element_["behavior"] = behaviors[element_["behavior"]];
             elements[element.name] = {};
             // elements[element.name] = element_;
             for (const key of Object.keys(element_)) {
@@ -294,23 +295,50 @@ if (enabledMods.includes("mods/betterMenuScreens.js")) {
         }
     }
 
-    const applyChange = (property, value) => {
+    const saveChanges = () => {
         const element = Storage.get("currentElement");
-        if (element && elements[element])
-            elements[element][property] = value;
-        let changes = Storage.get("changes", []);
-        let a;
-        if (a = changes.find(c => c.element == element)) {
-            a.changes[property] = value;
+        const changes = Storage.get("tempChanges", []);
+        if (Storage.get("elements", []).find(a => a.name == element)) {
+            const elements_ = Storage.get("elements", []);
+            for (const change of changes) {
+                elements_.find(a => a.name == element)[change.property] = change.value;
+            }
+            Storage.set("elements", elements_);
         } else {
-            let c = {};
-            c[property] = value;
-            changes.push({
-                element,
-                changes: c
-            })
+            const permChanges = Storage.get("changes", []);
+            for (const change of changes) {
+                let a;
+                if (a = permChanges.find(c => c.element == element)) {
+                    a.changes[change.property] = change.value;
+                } else {
+                    let c = {};
+                    c[change.property] = change.value;
+                    permChanges.push({
+                        element,
+                        changes: c
+                    })
+                }
+            }
+            Storage.set("changes", permChanges);
         }
-        Storage.set("changes", changes);
+    }
+
+    const applyChange = (property, value) => {
+        // if (element && elements[element])
+        //     elements[element][property] = value;
+        const element = Storage.get("currentElement");
+        const changes = Storage.get("tempChanges", []);
+        changes.push({property, value});
+        Storage.set("tempChanges", changes);
+        const nullish = {
+            string: "",
+            boolean: false,
+            number: 0,
+            array: [],
+        }
+        if (elements[element][property] == value || value == nullish[value instanceof Array ? "array" : typeof value]) { 
+            Storage.filter("tempChanges", e => e.property != property);
+        }
     }
 
     const elementsManagerLoader = () => {
@@ -503,16 +531,23 @@ if (enabledMods.includes("mods/betterMenuScreens.js")) {
                         dropdown.onchange = (ev) => {
                             if (ev.target.value == "CUSTOM") {
                                 document.getElementById(id + "/textInput").style.display = "";
+                            } else if (ev.target.value == "NONE") {
+                                applyChange(prop.name, null);
                             } else {
                                 document.getElementById(id + "/textInput").style.display = "none";
                                 applyChange(prop.name, ev.target.value);
                             }
                         }
+                        const noneOption = document.createElement("option");
+                            noneOption.value = "NONE";
+                            noneOption.id = id + "/option/none"
+                            noneOption.innerText = "None";
+                        dropdown.appendChild(noneOption);
                         const el = createInput("text", false, id + "/textInput");
                         el.style.display = "none";
                         el.onchange = (ev) => {
                             if (document.getElementById(id).value == "CUSTOM") {
-                                applyChange(prop.name, ev.target.value.split(";"));
+                                applyChange(prop.name, ev.target.value.split(";").map(e => e.split(",")));
                             } else {
                                 ev.target.style.display = "none";
                             }
@@ -532,7 +567,18 @@ if (enabledMods.includes("mods/betterMenuScreens.js")) {
             category.appendChild(br());
             nodes.push(category);
         }
+
+        const saveButton = span("Save Changes");
+        saveButton.className = "createButton";
+        saveButton.onclick = () => {
+            saveChanges();
+            Storage.remove("tempChanges");
+            closeMenu();
+            alert("Changes successfully applied");
+        }
     
+        nodes.push(br(), saveButton)
+
         new MenuScreen()
             .setTitle("Element Manager")
             .setCloseButtonText("<")
@@ -612,7 +658,7 @@ if (enabledMods.includes("mods/betterMenuScreens.js")) {
                     el.onchange = (ev) => {
                         if (document.getElementById(id).value == "CUSTOM") {
                             const elementData = Storage.get("newElement", {});
-                            elementData[prop.name] = ev.target.value.split(";");
+                            elementData[prop.name] = ev.target.value.split(";").map(e => e.split(","));
                             Storage.set("newElement", elementData);
                         } else {
                             ev.target.style.display = "none";
@@ -885,6 +931,7 @@ if (enabledMods.includes("mods/betterMenuScreens.js")) {
         show: false,
         loader: elementManagerLoader,
         preOpen: () => {
+            Storage.remove("tempChanges");
             const currentElement = Storage.get("currentElement");
             if (!currentElement) return closeMenu();
             const element = elements[currentElement];
@@ -936,6 +983,10 @@ if (enabledMods.includes("mods/betterMenuScreens.js")) {
                             }
                         } else if (prop.name == "name") {
                             el.setAttribute("value", currentElement);
+                        } else if (prop.name == "behavior") {
+                            console.log(element[prop.name], element);
+                            document.getElementById(id + "/option/none").selected = true;
+                            document.getElementById(id + "/textInput").style.display = "none";
                         } else {
                             const default_ = {
                                 string: "none",
@@ -953,8 +1004,21 @@ if (enabledMods.includes("mods/betterMenuScreens.js")) {
                 }
             }
         },
+        close: () => {
+            if (!Storage.get("tempChanges") || !Storage.get("tempChanges", []).length || confirm("Are you sure you want to close the menu without saving the changes?")) {
+                const menuParent = document.getElementById("elementManagerParent");
+                menuParent.style.display = "none";
+                Storage.remove("tempChanges");
+                Storage.remove("noClose");
+            } else {
+                Storage.set("noClose", true);
+            }
+        },
         onClose: () => {
-            openMenu("elementsManager");
+            if (!Storage.get("noClose")) {
+                showingMenu = false;
+                openMenu("elementsManager", true);
+            }
         }
     }
 
