@@ -411,8 +411,8 @@ if (enabledMods.includes("mods/generative_mods.js")) {
     elements["hydrofluoric_acid_gas"].reactions["pyrocumulus"]= { "elem1": null, "elem2":  "hydrofluoric_acid_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" };
     elements["hydrofluoric_acid_gas"].reactions["fire_cloud"]= { "elem1": null, "elem2":  "hydrofluoric_acid_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" };
     
-    elements["cloud"].reactions["anesthesia"] = { elem1:"acid_cloud", elem2:null, chance:0.05 };
-    elements["rain_cloud"].reactions["anesthesia"] = { elem1:"acid_cloud", elem2:null, chance:0.05 };
+    elements["cloud"].reactions["anesthesia"] = { elem1:"nitric_acid_cloud", elem2:null, chance:0.05 };
+    elements["rain_cloud"].reactions["anesthesia"] = { elem1:"nitric_acid_cloud", elem2:null, chance:0.05 };
     
 }
 function createAcid(name,reactions, gasReactions, color, category, categoryGas, tempHigh, tempLowGas, tempLow, tempHighGas, density, densityGas)
@@ -462,6 +462,7 @@ function createAcid(name,reactions, gasReactions, color, category, categoryGas, 
     if (enabledMods.includes("mods/generative_mods.js")) {
         runAfterLoad(function() {
             generateCloud(name);
+			console.log(name);
         });
         elements[name+"_gas"].reactions[name+"_gas"]= { "elem1": null, "elem2": name + "_cloud", "chance":0.3, "y":[0,12], "setting":"clouds" };
         elements[name+"_gas"].reactions["rain_cloud"]= { "elem1": null, "elem2":  name + "_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" };
@@ -2197,9 +2198,11 @@ elements.molten_iodine = {
     behavior: behaviors.LIQUID,
     tempHigh: 184,
     tempLow: 113,
+    temp: 123,
     stateHigh: "iodine_gas",
     stateLow: "iodine",
     state: "liquid",
+    hidden: true,
 };
 
 elements.iodine_gas = {
