@@ -1,5 +1,4 @@
-const mod = "mods/betterMenuScreens.js";
-if (enabledMods.includes(mod)) {
+if (enabledMods.includes("mods/betterMenuScreens.js")) {
     const properties = {
         meta: [
             {name: "name", type: "string", viewOnly: true, required: true},
@@ -256,18 +255,38 @@ if (enabledMods.includes(mod)) {
         document.head.appendChild(style);
     }
 
+    // ugly way of doing it but probably works
+    const checkType = (key, value) => {
+        if (key == "behavior" && (typeof value == "function" || (value instanceof Array && value.filter(e => e instanceof Array && e.filter(s => typeof s == "string").length == e.length).length == value.length))) return true;
+        else if (key == "behavior") return false;
+        if (["darkText", "hidden", "insulate", "noMix", "isFood", "forceAutoGen", "customColor", "ignoreAir", "excludeRandom", "burning", "flipX", "flipY", "flippableX", "flippableY"].includes(key) && typeof value != "boolean") return false;
+        if (["name", "category", "desc", "alias", "seed", "baby", "state", "stateHigh", "stateHighName", "stateHighColor", "stateLow", "stateLowNmae", "stateLowColor"].includes(key) && typeof value != "string") return false;
+        if (["id", "burn", "burnTime", "stateHighColorMultiplier", "stateLowColorMutliplier", "temp", "tempHigh", "extraTempHigh", "tempLow", "extraTempLow"].includes(key) && typeof value != "number") return false;
+        if (["color", "breakInto", "burnInto", "fireElement", "fireColor"].includes(key)) {
+            if (value instanceof Array) return value.filter(l => typeof l == "string").length == value.length;
+            if (typeof value != "string") return false; 
+        }
+        return true;
+    }
+
     const loadChanges = () => {
         const newElements = Storage.get("elements", []);
         for (const element of newElements) {
             const element_ = element;
-            element_["behavior"] = behaviors[element_["behavior"]];
-            elements[element.name] = element_;
+            if (Object.keys(behaviors).includes(element_["behavior"])) element_["behavior"] = behaviors[element_["behavior"]];
+            elements[element.name] = {};
+            // elements[element.name] = element_;
+            for (const key of Object.keys(element_)) {
+                const val = element_[key];
+                if (checkType(key, val)) elements[element.name][key] = val;
+                else if (["name", "category"].includes(key)) elements[element.name][key] = key == "name" ? "NewElement" : "other"; 
+            }
         }
         const changes = Storage.get("changes", []);
         for (const change of changes) {
             for (const key of Object.keys(change.changes)) {
                 const c = change.changes[key];
-                elements[change.element][key] = c;
+                if (checkType(key, c)) elements[change.element][key] = c;
             }
         }
         const deleted = Storage.get("deletedElements", []);
@@ -276,23 +295,50 @@ if (enabledMods.includes(mod)) {
         }
     }
 
-    const applyChange = (property, value) => {
+    const saveChanges = () => {
         const element = Storage.get("currentElement");
-        if (elements[element])
-            elements[element][property] = value;
-        let changes = Storage.get("changes", []);
-        let a;
-        if (a = changes.find(c => c.element == element)) {
-            a.changes[property] = value;
+        const changes = Storage.get("tempChanges", []);
+        if (Storage.get("elements", []).find(a => a.name == element)) {
+            const elements_ = Storage.get("elements", []);
+            for (const change of changes) {
+                elements_.find(a => a.name == element)[change.property] = change.value;
+            }
+            Storage.set("elements", elements_);
         } else {
-            let c = {};
-            c[property] = value;
-            changes.push({
-                element,
-                changes: c
-            })
+            const permChanges = Storage.get("changes", []);
+            for (const change of changes) {
+                let a;
+                if (a = permChanges.find(c => c.element == element)) {
+                    a.changes[change.property] = change.value;
+                } else {
+                    let c = {};
+                    c[change.property] = change.value;
+                    permChanges.push({
+                        element,
+                        changes: c
+                    })
+                }
+            }
+            Storage.set("changes", permChanges);
         }
-        Storage.set("changes", changes);
+    }
+
+    const applyChange = (property, value) => {
+        // if (element && elements[element])
+        //     elements[element][property] = value;
+        const element = Storage.get("currentElement");
+        const changes = Storage.get("tempChanges", []);
+        changes.push({property, value});
+        Storage.set("tempChanges", changes);
+        const nullish = {
+            string: "",
+            boolean: false,
+            number: 0,
+            array: [],
+        }
+        if (elements[element][property] == value || value == nullish[value instanceof Array ? "array" : typeof value]) { 
+            Storage.filter("tempChanges", e => e.property != property);
+        }
     }
 
     const elementsManagerLoader = () => {
@@ -302,6 +348,7 @@ if (enabledMods.includes(mod)) {
         let customElements = Storage.get("elements", []);
         let deletedElements = Storage.get("deletedElements", []);
         let lastFreeRemoval = Storage.get("settings", {allowFreeRemoval: false, clearElements: false}, true).allowFreeRemoval;
+        Storage.set("lastFreeRemoval", lastFreeRemoval);
         for (const key of Object.keys(elements).concat(customElements.map(e => e.name)).sort((a, b) => a.localeCompare(b, undefined, {caseFirst: "false"}))) {
             const element = document.createElement("li");
             const text = span(key); // only the text should be clickable
@@ -358,7 +405,7 @@ if (enabledMods.includes(mod)) {
         filterInput.placeholder = "Search elements...";
         filterInput.onkeyup = (ev) => {
             const val = ev.target.value;
-            const deleted = Storage.get("deletedElements");
+            const deleted = Storage.get("deletedElements", []);
             for (const c of document.getElementById("elementsList").children) {
                 const span_ = c.querySelector("span");
                 if (!span_.innerText.toLowerCase().includes(val.toLowerCase()) || deleted.includes(span_.innerText)) {
@@ -484,16 +531,23 @@ if (enabledMods.includes(mod)) {
                         dropdown.onchange = (ev) => {
                             if (ev.target.value == "CUSTOM") {
                                 document.getElementById(id + "/textInput").style.display = "";
+                            } else if (ev.target.value == "NONE") {
+                                applyChange(prop.name, null);
                             } else {
                                 document.getElementById(id + "/textInput").style.display = "none";
                                 applyChange(prop.name, ev.target.value);
                             }
                         }
+                        const noneOption = document.createElement("option");
+                            noneOption.value = "NONE";
+                            noneOption.id = id + "/option/none"
+                            noneOption.innerText = "None";
+                        dropdown.appendChild(noneOption);
                         const el = createInput("text", false, id + "/textInput");
                         el.style.display = "none";
                         el.onchange = (ev) => {
                             if (document.getElementById(id).value == "CUSTOM") {
-                                applyChange(prop.name, ev.target.value.split(";"));
+                                applyChange(prop.name, ev.target.value.split(";").map(e => e.split(",")));
                             } else {
                                 ev.target.style.display = "none";
                             }
@@ -513,7 +567,18 @@ if (enabledMods.includes(mod)) {
             category.appendChild(br());
             nodes.push(category);
         }
+
+        const saveButton = span("Save Changes");
+        saveButton.className = "createButton";
+        saveButton.onclick = () => {
+            saveChanges();
+            Storage.remove("tempChanges");
+            closeMenu();
+            alert("Changes successfully applied");
+        }
     
+        nodes.push(br(), saveButton)
+
         new MenuScreen()
             .setTitle("Element Manager")
             .setCloseButtonText("<")
@@ -593,7 +658,7 @@ if (enabledMods.includes(mod)) {
                     el.onchange = (ev) => {
                         if (document.getElementById(id).value == "CUSTOM") {
                             const elementData = Storage.get("newElement", {});
-                            elementData[prop.name] = ev.target.value.split(";");
+                            elementData[prop.name] = ev.target.value.split(";").map(e => e.split(","));
                             Storage.set("newElement", elementData);
                         } else {
                             ev.target.style.display = "none";
@@ -628,7 +693,7 @@ if (enabledMods.includes(mod)) {
         const createButton = span("Create Element");
         createButton.className = "createButton";
         createButton.onclick = () => {
-            const elementData = Storage.get("newElement");
+            const elementData = Storage.get("newElement", {});
             if (!elementData["name"]) {
                 document.getElementById("elementsManager/creator/meta/name/required").style.display = "";
             }
@@ -741,10 +806,10 @@ if (enabledMods.includes(mod)) {
             clearElementsButton.type = "button";
         if (settings && settings.clearElements) {
             clearElementsButton.value = "ON";
-            clearElementsButton.state = "1";
+            clearElementsButton.setAttribute("state", "1");
         } else {
             clearElementsButton.value = "OFF";
-            clearElementsButton.state = "0";
+            clearElementsButton.setAttribute("state", "0");
         }
         clearElementsButton.onclick = (ev) => {
             toggleSetting("clearElements", ev.target)
@@ -758,13 +823,13 @@ if (enabledMods.includes(mod)) {
             allowRemovalButton.type = "button";
         if (settings && settings.allowFreeRemoval) {
             allowRemovalButton.value = "ON";
-            allowRemovalButton.state = "1";
+            allowRemovalButton.setAttribute("state", "1");
         } else {
             allowRemovalButton.value = "OFF";
-            allowRemovalButton.state = "0";
+            allowRemovalButton.setAttribute("state", "0");
         }
         allowRemovalButton.onclick = (ev) => {
-            toggleSetting("allowFreeRemoval", ev.target)
+            toggleSetting("allowFreeRemoval", ev.target);
         }
         allowRemovalDiv.appendChild(allowRemovalButton);
         general.appendChild(allowRemovalDiv);
@@ -866,9 +931,11 @@ if (enabledMods.includes(mod)) {
         show: false,
         loader: elementManagerLoader,
         preOpen: () => {
+            Storage.remove("tempChanges");
             const currentElement = Storage.get("currentElement");
+            if (!currentElement) return closeMenu();
             const element = elements[currentElement];
-            if (!element) closeMenu();
+            if (!element) return closeMenu();
             for (const key of Object.keys(properties)) {
                 for (const prop of properties[key]) { 
                     const id = "elementsManager/" + key + "/" + prop.name;
@@ -916,6 +983,10 @@ if (enabledMods.includes(mod)) {
                             }
                         } else if (prop.name == "name") {
                             el.setAttribute("value", currentElement);
+                        } else if (prop.name == "behavior") {
+                            console.log(element[prop.name], element);
+                            document.getElementById(id + "/option/none").selected = true;
+                            document.getElementById(id + "/textInput").style.display = "none";
                         } else {
                             const default_ = {
                                 string: "none",
@@ -933,8 +1004,21 @@ if (enabledMods.includes(mod)) {
                 }
             }
         },
+        close: () => {
+            if (!Storage.get("tempChanges") || !Storage.get("tempChanges", []).length || confirm("Are you sure you want to close the menu without saving the changes?")) {
+                const menuParent = document.getElementById("elementManagerParent");
+                menuParent.style.display = "none";
+                Storage.remove("tempChanges");
+                Storage.remove("noClose");
+            } else {
+                Storage.set("noClose", true);
+            }
+        },
         onClose: () => {
-            openMenu("elementsManager");
+            if (!Storage.get("noClose")) {
+                showingMenu = false;
+                openMenu("elementsManager", true);
+            }
         }
     }
 
@@ -1062,6 +1146,7 @@ if (enabledMods.includes(mod)) {
         onClose: () => {
             const settings = Storage.get("settings", {allowFreeRemoval: false, clearElements: false}, true);
             const elements_ = Storage.get("elements", []).map(e => e.name); 
+            const lastFreeRemoval = Storage.get("lastFreeRemoval", false);
             if (settings.allowFreeRemoval && !lastFreeRemoval) {
                 for (const li of document.getElementById("elementsList").children) {
                     const name = li.querySelector("span").innerText
@@ -1097,14 +1182,14 @@ if (enabledMods.includes(mod)) {
                         li.querySelectorAll(".elementRemoveButton").forEach(e => e.remove());
                 }
             }
-            lastFreeRemoval = settings.allowFreeRemoval;
+            Storage.set("lastFreeRemoval", settings.allowFreeRemoval);
             openMenu("elementsManager", true);
         }
     }
 
     runAfterLoadList.push(cssInject, loadChanges);
 } else {
-    enabledMods.unshift(mod);
+    enabledMods.unshift("mods/betterMenuScreens.js");
     localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
     window.location.reload();
 }
