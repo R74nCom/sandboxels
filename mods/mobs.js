@@ -197,7 +197,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 		if(Array.isArray(breakIntoElement)) {
 			breakIntoElement = breakIntoElement[Math.floor(Math.random() * breakIntoElement.length)]
 		};
-		if(typeof(breakIntoElement) === "undefined") {
+		if(typeof(breakIntoElement) === "undefined" || breakIntoElement === null) {
 			deletePixel(pixel.x,pixel.y);
 			return true;
 		};

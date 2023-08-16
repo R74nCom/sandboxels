@@ -9,6 +9,8 @@ elements.on_try_move_into_test = {
 		"dirt": { elem1: "diamond" },
 	},
 	state: "solid",
+	hidden: true,
+	excludeRandom: true,
 	category: "special",
 	density: 1000,
 	tick: function(pixel) {
@@ -42,12 +44,13 @@ function tryMove(pixel,nx,ny,leaveBehind,force) {
 		// Reactions
 		newPixel = pixelMap[nx][ny];
 		var newInfo = elements[newPixel.element];
+		var returnVal = false;
 		if(newInfo.onTryMoveInto !== undefined) {
 			newInfo.onTryMoveInto(newPixel,pixel);
 			if(!pixel || pixel.del) {
 				return "deleted";
 			};
-			return true;
+			returnVal = true;
 		}
 		var rr1 = false;
 		if (info.reactions !== undefined && info.reactions[newPixel.element] !== undefined) {
@@ -73,6 +76,9 @@ function tryMove(pixel,nx,ny,leaveBehind,force) {
 					}
 				}
 			}
+		}
+		if(returnVal) {
+			return true;
 		}
 	}
 	return false;
