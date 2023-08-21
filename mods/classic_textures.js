@@ -135,3 +135,5 @@ if (elements.mushroom_gill) {
     }
 }
 if (elements.slaked_lime) {elements.slaked_lime.color = "#adb8b5";}
+if (elements.lead) {elements.lead.color = "#6c6c6a";}
+if (elements.drag) {elements.drag.color = "#ffffff";}

@@ -51,3 +51,12 @@ elements.earthquake = {
     cooldown: defaultCooldown,
     excludeRandom: true,
 }
+
+elements.rad_fluid = {
+    behavior: behaviors.LIQUID,
+    category: "liquids",
+    density: 1500,
+    state: "liquid",
+}
+elements.rad_fluid.color = elements.radiation.color;
+elements.rad_fluid.reactions = elements.radiation.reactions;
