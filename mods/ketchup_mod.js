@@ -30,8 +30,7 @@ elements.ketchup.reactions = {
     "mayonnaise": { "elem1": null, "elem2": "fry_sauce" },
     "plague": { "elem1": "poisoned_ketchup", "elem2": null},
     "infection": { "elem1": "poisoned_ketchup", "elem2": null},
-    "radiation": { "elem1": "poisoned_ketchup", chance:025},
-    "fallout": { "elem1": "poisoned_ketchup", chance:025},
+    "fallout": { "elem1": "poisoned_ketchup", chance:25},
     "gloomwind": { "elem1": "poisoned_ketchup", "elem2": null},
     };
 
@@ -61,7 +60,10 @@ elements.smoke.reactions = {
     "pyrocumulus": { "elem1": "pyrocumulus", "chance":0.08, "y":[0,15] },
     "ketchup_cloud": { "elem1": "pyrocumulus", "chance":0.08, "y":[0.15] },
     "poisoned_ketchup_cloud": { "elem1": "pyrocumulus", "chance":0.08, "y":[0.15] },
-};        
+};
+
+// fixing radiation reactions
+elements.radiation.reactions.ketchup = { "elem1": "poisoned_ketchup", chance:25}
 
 // elements
 elements.frozen_ketchup = {
@@ -76,8 +78,8 @@ elements.frozen_ketchup = {
     reactions: {
         "plague": { "elem1": "frozen_poisoned_ketchup", "elem2": null},
         "infection": { "elem1": "frozen_poisoned_ketchup", "elem2": null},
-        "radiation": { "elem1": "frozen_poisoned_ketchup", chance:025},
-        "fallout": { "elem1": "frozen_poisoned_ketchup", chance:025},
+        "radiation": { "elem1": "frozen_poisoned_ketchup", chance:25},
+        "fallout": { "elem1": "frozen_poisoned_ketchup", chance:25},
         "gloomwind": { "elem1": "frozen_poisoned_ketchup", "elem2": null},
     },
 };
@@ -128,8 +130,8 @@ elements.ketchup_cloud = {
     reactions: {
         "plague": { "elem1": "poisoned_ketchup_cloud", "elem2": null},
         "infection": { "elem1": "poisoned_ketchup_cloud"},
-        "radiation": { "elem1": "poisoned_ketchup_cloud", chance:025},
-        "fallout": { "elem1": "poisoned_ketchup_cloud", chance:025},
+        "radiation": { "elem1": "poisoned_ketchup_cloud", chance:25},
+        "fallout": { "elem1": "poisoned_ketchup_cloud", chance:25},
         "gloomwind": { "elem1": "poisoned_ketchup_cloud", "elem2": null},
     },
     conduct: 0.03,
@@ -161,8 +163,8 @@ elements.ketchup_snow = {
     reactions: {
         "plague": { "elem1": "poisoned_ketchup_snow", "elem2": null},
         "infection": { "elem1": "poisoned_ketchup_snow", "elem2": null},
-        "radiation": { "elem1": "poisoned_ketchup_snow", chance:025},
-        "fallout": { "elem1": "poisoned_ketchup_snow", chance:025},
+        "radiation": { "elem1": "poisoned_ketchup_snow", chance:25},
+        "fallout": { "elem1": "poisoned_ketchup_snow", chance:25},
         "gloomwind": { "elem1": "poisoned_ketchup_snow", "elem2": null},
     },
 };
@@ -182,8 +184,8 @@ elements.ketchup_snow_cloud = {
     reactions: {
         "plague": { "elem1": "poisoned_ketchup_snow_cloud", "elem2": null},
         "infection": { "elem1": "poisoned_ketchup_snow_cloud"},
-        "radiation": { "elem1": "poisoned_ketchup_snow_cloud", chance:025},
-        "fallout": { "elem1": "poisoned_ketchup_snow_cloud", chance:025},
+        "radiation": { "elem1": "poisoned_ketchup_snow_cloud", chance:25},
+        "fallout": { "elem1": "poisoned_ketchup_snow_cloud", chance:25},
         "gloomwind": { "elem1": "poisoned_ketchup_snow_cloud", "elem2": null},
     },
 };
@@ -239,8 +241,8 @@ elements.ketchup_gas = {
         "plague": { "elem1": "poisoned_ketchup_gas", "elem2": null},
         "ketchup_gas": { "elem1": null, "elem2": "ketchup_cloud", "chance":0.3, "y":[0,15] },
         "infection": { "elem1": "poisoned_ketchup_gas"},
-        "radiation": { "elem1": "poisoned_ketchup_gas", chance:025},
-        "fallout": { "elem1": "poisoned_ketchup_gas", chance:025},
+        "radiation": { "elem1": "poisoned_ketchup_gas", chance:25},
+        "fallout": { "elem1": "poisoned_ketchup_gas", chance:25},
         "gloomwind": { "elem1": "poisoned_ketchup_gas", "elem2": null},
     },
 };
@@ -271,8 +273,8 @@ elements.ketchup_powder = {
     reactions: {
         "plague": { "elem1": "poisoned_ketchup_powder", "elem2": null},
         "infection": { "elem1": "poisoned_ketchup_powder", "elem2": null},
-        "radiation": { "elem1": "poisoned_ketchup_powder", chance:025},
-        "fallout": { "elem1": "poisoned_ketchup_powder", chance:025},
+        "radiation": { "elem1": "poisoned_ketchup_powder", chance:25},
+        "fallout": { "elem1": "poisoned_ketchup_powder", chance:25},
         "gloomwind": { "elem1": "poisoned_ketchup_powder", "elem2": null},
     },
     state: "solid",
@@ -284,44 +286,6 @@ elements.poisoned_ketchup_powder = {
     density: 1879,
     state: "solid",
     category: "powders",
-};
-elements.tomato = {
-    color: "#B11E0C",
-    behavior: behaviors.STURDYPOWDER,
-    category: "food",
-    density: 470,
-    state: "solid",
-    tempHigh: 400,
-    stateHigh: "ash",
-    reactions: {
-        "rock": { "elem1": "tomato_sauce", "elem2": "rock" },
-    },
-    burn: 40,
-    burnTime: 30,
-    burnInto: "ash",
-};
-elements.tomato_sauce = {
-    color: "#B72003",
-    behavior: behaviors.LIQUID,
-    category: "liquids",
-    density: 1031,
-    state: "liquid",
-    reactions: {
-        "sugar": { "elem1": "sugary_tomato_sauce", "elem2": null },
-    },
-    viscosity: 25000,
-};
-elements.sugary_tomato_sauce = {
-    color: "#b53921",
-    behavior: behaviors.LIQUID,
-    category: "liquids",
-    density: 1031,
-    state: "liquid",
-    reactions: {
-        "vinegar": { "elem1": "ketchup", "elem2": null },
-    },
-    viscosity: 25000,
-    hidden: true,
 };
 elements.cumin = {
     color: "#8B7778",
@@ -444,8 +408,15 @@ runAfterLoad(function() {
 
 /*
 Changelog
-Mod made primarily by Nubo318. Contributors include deviantEquinox and Lily129.
-Version 1.3.1
+Mod made by Nubo318. Contributors include DeviantEquinox and An Orbit.
+Version 1.3.2
+
+Version 1.3.2 (22nd of August 2023)
+- Removed some elements due to their inclusion or some form of it in the vanilla game, including:
+    - Tomato
+    - Tomato Sauce
+    - Sugary Tomato Sauce
+- Removed a vanilla reaction which turned ketchup into sauce when exposed to radiation
 
 Version 1.3.1 (20th of January 2022)
 ~ Ketchup fairies are now killed by iron and silver
