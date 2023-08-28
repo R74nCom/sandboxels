@@ -19,9 +19,12 @@ settingsManager.registerTab(settingsTab);
 runAfterLoadList.push(() => {
     // the game doesn't load without the setTimeout
     setTimeout(() => {
-        document.getElementById("elementButton-select").style.backgroundColor = "transparent";
-        document.getElementById("elementButton-select").style.border = "2px dashed rgba(255, 255, 255, 0.75)";
-        document.getElementById("elementButton-select").classList = ["elementButton"];
+        // well apparently the game crashes anyway
+        try {
+            document.getElementById("elementButton-select").style.backgroundColor = "transparent";
+            document.getElementById("elementButton-select").style.border = "2px dashed rgba(255, 255, 255, 0.75)";
+            document.getElementById("elementButton-select").classList = ["elementButton"];
+        } catch (_) {}
     }, 1)
 })
 
