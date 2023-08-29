@@ -331,7 +331,7 @@ elements.selectionMove = {
                 const y = selectionPosition.y + j;
                 if (!selectionMoved[i][j] && transparentSelection.get()) continue;
                 if (pixelMap[x][y]) deletePixel(x, y);
-                createPixelColor(selectionMoved[i][j].element, x, y, selectionMoved[i][j].color);
+                if (selectionMoved[i][j]) createPixelColor(selectionMoved[i][j].element, x, y, selectionMoved[i][j].color);
             }
         }
         selectionMoved = [];
@@ -350,6 +350,10 @@ elements.paste = {
                 const x = mousePos.x + i;
                 const y = mousePos.y + j;
                 if (outOfBounds(x, y) || (!clipboard[i][j] && transparentSelection.get())) continue;
+                if (!clipboard[i][j]) {
+                    if (pixelMap[x][y]) deletePixel(x, y);
+                    continue;
+                }
                 if (!pixelMap[x][y]) createPixelColor(clipboard[i][j].element, x, y, clipboard[i][j].color);
                 else {
                     deletePixel(x, y);
