@@ -2,3 +2,4 @@ https://sandboxels.r74n.com/
 https://sandboxels.r74n.com/lite
 https://sandboxels.r74n.com/changelog
 https://sandboxels.r74n.com/controls
+https://sandboxels.r74n.com/icons/
