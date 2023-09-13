@@ -13736,13 +13736,19 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
     <div id="gameWrapper">
     <div id="gameDiv">
         <p id="loadingP" style="text-align:center;height:500px;line-height:500px;">Loading...</p>
+        <script>
+            if (enabledMods.length > 0) {
+                document.getElementById("loadingP").innerHTML += ` Not loading? <a href="#" onclick="localStorage.removeItem('enabledMods');location.reload()">Click to Clear Mods</a>`
+                document.getElementById("loadingP").style.fontSize = "0.8em"
+            }
+        </script>
         <div id="canvasDiv" style="display:none">
             <canvas id="game" width="800" height="600">
                 Your browser does not support the HTML5 canvas tag.<br>
                 Please update your browser to the latest version.<br>
                 <a href="https://www.google.com/chrome/" tabindex="-1">Chrome</a> 4.0+<br>
                 <a href="https://www.mozilla.org/firefox/new/" tabindex="-1">Firefox</a> 2.0+<br>
-                <a href="http://www.apple.com/safari/" tabindex="-1">Safari</a> 3.1+<br><br>
+                <a href="http://www.apple.com/safari/" tabindex="-1">Safari</a> 3.1+<br>
                 <a href="http://www.opera.com/" tabindex="-1">Opera</a> 9.0+<br>
                 <a href="http://www.microsoft.com/windows/internet-explorer/default.aspx" tabindex="-1">Internet Explorer</a> 9.0+<br>
             </canvas>
