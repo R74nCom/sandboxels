@@ -57,8 +57,10 @@ a:active, a:hover:active {filter: brightness(275%);}
 }
 table {
     border-collapse: collapse;
-    width: 75%;
     background-color: rgba(255, 255, 255, 0.125);
+}
+#controlsTable {
+    width: 75%;
     margin-left: auto;
     margin-right: 0px;
 }
@@ -477,3 +479,8 @@ select, .toggleInput, #settingsMenu input[type="number"], #settingsMenu input[ty
     display: inline-block
 }
 .helpMark {text-decoration:dotted underline; font-style:italic; cursor:help; color:yellow}
+#content {
+    margin-left:10px;
+    margin-right:10px;
+    padding-bottom: 10px;
+}

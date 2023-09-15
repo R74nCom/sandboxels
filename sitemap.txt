@@ -3,3 +3,8 @@ https://sandboxels.r74n.com/lite
 https://sandboxels.r74n.com/changelog
 https://sandboxels.r74n.com/controls
 https://sandboxels.r74n.com/icons/
+https://sandboxels.r74n.com/education-use
+https://sandboxels.r74n.com/help
+https://sandboxels.r74n.com/mobile-use
+https://sandboxels.r74n.com/mod-list
+https://sandboxels.r74n.com/offline-use

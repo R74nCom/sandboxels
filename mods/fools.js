@@ -2,6 +2,7 @@ allproperties = {}
 
 skipproperties = ["color", "colorOn", "forceAutoGen", "name", "category", "colorObject", "hidden", "tempHigh", "tempLow", "stateHigh", "stateLow"]
 goodproperties = ["behavior","tick"]
+elements.molten_rad_glass.color = "#ffffff"
 
 for (element in elements) {
     var elementdata = elements[element]

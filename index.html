@@ -13697,14 +13697,14 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                 }
             }
 
-            if (window.self !== window.top && !location.ancestorOrigins[0].includes("itch.io")) {
+            if ((window.self !== window.top && !location.ancestorOrigins[0].includes("itch.io")) || (location.host && location.host.indexOf("74n.com") === -1)) {
                 // Open a message that tells the user they aren't on the real website
                 var menuParent = document.createElement("div");
                 menuParent.className = "menuParent";
                 menuParent.style.display = "block";
                 menuParent.innerHTML = `<div class="menuScreen">
 <button class="XButton" onclick="closeMenu();">-</button>
-<span class="menuTitle">Sandboxels</span>
+<span class="menuTitle">WARNING</span>
 <div class="menuText" style="padding-top:1em">
     You may be on a website that has embedded our game involuntarily.
     <br><br>
@@ -13847,7 +13847,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                         document.getElementById("noMods").style.display = "block";
                     }
                 </script>
-                See the <a href="https://docs.google.com/document/d/1YWPLKEvGeaaLuYWzObCyLK2Y09JPZgF1ODQQCbU3Sng/edit?usp=sharing" target="_blank">Mod List</a> or <a href="https://github.com/R74nCom/sandboxels/" target="_blank">GitHub</a>.
+                See the <a href="mod-list" target="_blank">Mod List</a> or <a href="https://github.com/R74nCom/sandboxels/" target="_blank">GitHub</a>.
                 <br><br><br><br>
                 <!-- Link to the Google Doc that floats at the bottom -->
                 <!--If the key is Enter, addMod -->
@@ -13962,12 +13962,12 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span> <input type="button" value="O
         <p>Falling-sand games are a genre of sandbox games characterized by falling particles of various types.</p>
         <p>Simply click or use your touchscreen to select a category, like <strong>Liquids</strong>, then pick an element, like <strong>Water</strong>. Drag on the canvas above to place your pixels, and watch them interact with others!</p>
         <img src="icons/wallpaper.webp" style="width:100%" alt="Rainforest landscape made in Sandboxels" title="Rainforest landscape made in Sandboxels">
-        <p>Sandboxels has many applications in education. With a hands-on experience, it can give students an understanding of emerging phenomena in many fields, such as biology, chemistry, ecology, geology, cooking, and even virology. There are countless aspects to discover.</p>
+        <p>Sandboxels has many applications in <a href="education-use">education</a>. With a hands-on experience, it can give students an understanding of emerging phenomena in many fields, such as biology, chemistry, ecology, geology, cooking, and even virology. There are countless aspects to discover.</p>
         <p>We have a thriving community on <a href="https://discord.gg/ejUc6YPQuS" target="_blank">Discord</a>! There you can post feedback or share your creations.</p>
         <!-- <p>If you'd like to support us, consider donating on <a href="https://www.paypal.com/donate/?hosted_button_id=GCX4VHQ7SZWTN" target="_blank">PayPal</a> or <a href="https://cash.app/$emojiartist" target="_blank" title="$emojiartist">CashApp</a>, or subscribing on Discord.</p> -->
-        <p>Business inquiries? Education stories? Help needed? Email us at <a href="mailto:contact@r74n.com">contact@R74n.com</a>!</p>
+        <p>Business inquiries? Education stories? <a href="help">Help needed?</a> Email us at <a href="mailto:contact@r74n.com">contact@R74n.com</a>!</p>
         <p>Thanks to: Serioustar, ggod, Trent, u2ce</p>
-        <p>Sandboxels is developed by R74n. Check out <a href="https://r74n.com" target="_blank">our other projects</a>!</p>
+        <p>Sandboxels is developed by R74n. Check out <a href="https://R74n.com" target="_blank">our other projects</a>! <a href="https://R74n.com/privacy">Privacy Policy</a></p>
         <script>
             // add the above elements programmatically when the page loads
             window.addEventListener('load', function() {
@@ -13989,7 +13989,7 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span> <input type="button" value="O
     </div>
     <div id="bottomRightBox">
         <h2>Controls</h2>
-        <table>
+        <table id="controlsTable">
             <tr><td>Draw pixels</td>   <td><kbd>Left Click</kbd></td></tr>
             <tr><td>Erase pixels</td>   <td><kbd>Right Click</kbd></td></tr>
             <tr><td>Pick element</td>   <td><kbd>Middle Click</kbd></td></tr>
