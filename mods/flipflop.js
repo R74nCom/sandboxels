@@ -10,7 +10,7 @@ elements.flipflop = {
 		doBurning(pixel)
 		doElectricity(pixel)
 		
-		let Powerstate = pixel.powerst
+		let Powerstate = pixel.powerstate
     		let Output = pixelMap[pixel.x+1][pixel.y]
     		let Input = pixelMap[pixel.x-1][pixel.y]
 		console.log(typeof Output)
