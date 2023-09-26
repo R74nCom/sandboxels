@@ -13,15 +13,18 @@ elements.flipflop = {
 		let Powerstate = pixel.powerst
     		let Output = pixelMap[pixel.x+1][pixel.y]
     		let Input = pixelMap[pixel.x-1][pixel.y]
-		Output.charge = 0
-		if (Powerstate == "true" && Input.charge > 0.9) {
-			Powerstate == "false"
-      			pixel.color = "#CF300D"
-      			Output.charge = 0
-		} else if (Powerstate == false && Input.charge < 0.9) {
-      			Powerstate == true
-      			pixel.color = "#94CF0D"
-      			Output.charge = 5
-    		}
+		
+		if (isEmpty(Output.x,Output.y) == false && isEmpty(Input.x,Input.y)){
+			Output.charge = 0
+			if (Powerstate == "true" && Input.charge > 0.9) {
+				Powerstate == "false"
+      				pixel.color = "#CF300D"
+      				Output.charge = 0
+			} else if (Powerstate == false && Input.charge < 0.9) {
+      				Powerstate == true
+      				pixel.color = "#94CF0D"
+      				Output.charge = 5
+    			}
+		}
 	}
 };
