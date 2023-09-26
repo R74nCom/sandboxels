@@ -14,11 +14,11 @@ elements.flipflop = {
     		let Input = pixelMap[pixel.x-1][pixel.y]
 		if (typeof Output !== "undefined" && typeof Input !== "undefined"){
 			Output.charge = 0
-			if (pixel.powerstate == "true" && Input.charge > 0.2) {
+			if (pixel.powerstate == "true" && pixel.charge > 0.2) {
 				pixel.powerstate = "false"
       				pixel.color = "#CF300D"
       				Output.charge = 0
-			} else if (pixel.powerstate == "false" && Input.charge > 0.2) {
+			} else if (pixel.powerstate == "false" && pixel.charge > 0.2) {
       				pixel.powerstate = "true"
       				pixel.color = "#94CF0D"
       				Output.charge = 5
