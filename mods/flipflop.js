@@ -13,8 +13,8 @@ elements.flipflop = {
 		let Powerstate = pixel.powerst
     		let Output = pixelMap[pixel.x+1][pixel.y]
     		let Input = pixelMap[pixel.x-1][pixel.y]
-		
-		if (typeof Output.x !== "undefined" && typeof Input.x !== "undefined"){
+		console.log(Output)
+		if (typeof Output !== "null" && typeof Input !== "null"){
 			Output.charge = 0
 			if (Powerstate == "true" && Input.charge > 0.9) {
 				Powerstate == "false"
