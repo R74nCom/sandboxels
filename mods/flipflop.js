@@ -17,11 +17,11 @@ elements.flipflop = {
 		if (typeof Output !== "undefined" && typeof Input !== "undefined"){
 			Output.charge = 0
 			if (Powerstate == "true" && Input.charge > 0.2) {
-				Powerstate == "false"
+				Powerstate = "false"
       				pixel.color = "#CF300D"
       				Output.charge = 0
 			} else if (Powerstate == false && Input.charge > 0.2) {
-      				Powerstate == true
+      				Powerstate = true
       				pixel.color = "#94CF0D"
       				Output.charge = 5
     			}
