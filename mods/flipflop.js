@@ -22,13 +22,13 @@ elements.flipflop = {
 			Output.charge = 0
 			if (pixel.powerstate == "true" && Input.charge > 0.2 && pixel.cooldown < 1) {
 				Input.charge = 0
-				pixel.cooldown = 7
+				pixel.cooldown = 5
 				pixel.powerstate = "false"
       				pixel.color = "#CF300D"
       				Output.charge = 0
 			} else if (pixel.powerstate == "false" && Input.charge > 0.2 && pixel.cooldown < 1) {
 				Input.chare = 0
-				pixel.cooldown = 7
+				pixel.cooldown = 5
       				pixel.powerstate = "true"
       				pixel.color = "#94CF0D"
       				Output.charge = 5
