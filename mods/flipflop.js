@@ -16,18 +16,17 @@ elements.flipflop = {
     		let Input = pixelMap[pixel.x-1][pixel.y]
 		if (typeof Output !== "undefined" && typeof Input !== "undefined"){
 			if (pixel.cooldown > 0){
-				Input.charge = 0
 				pixel.cooldown--
 				console.log(pixel.cooldown)
 			}
 			Output.charge = 0
-			if (pixel.powerstate == "true" && Input.charge > 0.2) {
+			if (pixel.powerstate == "true" && Input.charge > 0.2 && pixel.cooldown > 0) {
 				Input.charge = 0
 				pixel.cooldown = 3
 				pixel.powerstate = "false"
       				pixel.color = "#CF300D"
       				Output.charge = 0
-			} else if (pixel.powerstate == "false" && Input.charge > 0.2) {
+			} else if (pixel.powerstate == "false" && Input.charge > 0.2 && pixel.cooldown > 0) {
 				Input.chare = 0
 				pixel.cooldown = 3
       				pixel.powerstate = "true"
