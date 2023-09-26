@@ -1,9 +1,8 @@
 elements.flipflop = {
 	properties: {
 		powerstate: "false",
-		cooldown: "0"
+		cooldown: "0",
 	},
-	if (pixel.cooldown > 0)
 	name: "Flip Flop",
     	color: "#CF300D",
 	state: "solid",
