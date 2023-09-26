@@ -1,7 +1,9 @@
 elements.flipflop = {
 	properties: {
 		powerstate: "false",
+		cooldown: "0"
 	},
+	if (pixel.cooldown > 0)
 	name: "Flip Flop",
     	color: "#CF300D",
 	state: "solid",
@@ -10,11 +12,15 @@ elements.flipflop = {
 		doHeat(pixel)
 		doBurning(pixel)
 		doElectricity(pixel)
-		
+			
     		let Output = pixelMap[pixel.x+1][pixel.y]
     		let Input = pixelMap[pixel.x-1][pixel.y]
 		console.log(pixel.powerstate)
 		if (typeof Output !== "undefined" && typeof Input !== "undefined"){
+			if (pixel.cooldown > 0){
+			Input.charge=0
+			pixel.cooldown--
+			}
 			Output.charge = 0
 			if (pixel.powerstate == "true" && Input.charge > 0.2) {
 				Input.charge = 0
