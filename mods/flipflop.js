@@ -24,7 +24,6 @@ elements.flipflop = {
       				pixel.powerstate = "true"
       				pixel.color = "#94CF0D"
       				Output.charge = 5
-    			}
 		}
 	}
 };
