@@ -17,8 +17,6 @@ elements.flipflop = {
 		if (typeof Output !== "undefined" && typeof Input !== "undefined"){
 			if (pixel.cooldown > 0){
 				pixel.cooldown--
-			}
-			Output.charge = 0
 			if (pixel.powerstate == "true" && Input.charge > 0.2 && pixel.cooldown < 1) {
 				Input.charge = 0
 				pixel.cooldown = 5
