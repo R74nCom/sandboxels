@@ -16,16 +16,16 @@ elements.flipflop = {
 		if (typeof Output !== "undefined" && typeof Input !== "undefined") {
 			if (Input.charge > 0.7) {
 				if (pixel.powerstate == "true") {
-					Input.charge = 0
 					pixel.powerstate = "false"
       					pixel.color = "#CF300D"
       					Output.charge = 0
-				} else {
-					Input.charge = 0
+				} else if (pixel.powerstate == "true") {
       					pixel.powerstate = "true"
       					pixel.color = "#94CF0D"
-      					Output.charge = 5
+      					Output.charge = 1
 				}
+			} else { 
+				Output.charge = 0
 			}
 		}
 	}
