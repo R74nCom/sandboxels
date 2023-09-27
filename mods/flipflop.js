@@ -14,7 +14,7 @@ elements.flipflop = {
     		let Output = pixelMap[pixel.x+1][pixel.y]
     		let Input = pixelMap[pixel.x-1][pixel.y]
 		if (typeof Output !== "undefined" && typeof Input !== "undefined") {
-			if (Input.charge > 0.4) {
+			if (Input.charge > 0.7) {
 				if (pixel.powerstate == "true") {
 					Input.charge = 0
 					pixel.powerstate = "false"
