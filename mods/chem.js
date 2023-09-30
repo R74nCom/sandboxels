@@ -2,7 +2,7 @@ function whenAvailable(name, callback) {
     var interval = 10; // ms
     window.setTimeout(function() {
         if (window[name]) {
-            callback(window[name]);
+            callback();
         } else {
             whenAvailable(name, callback);
         }
@@ -10,7 +10,7 @@ function whenAvailable(name, callback) {
 }
 var runAfterAutogenMod = "mods/runAfterAutogen and onload restructure.js";
 if(enabledMods.includes(runAfterAutogenMod)){
-whenAvailable("runAfterAutogen", function(t) {
+whenAvailable("runAfterAutogen", function() {
 
 elements.fluorine = {
 	color: "#FFFFBF",
