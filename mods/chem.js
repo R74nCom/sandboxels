@@ -1,6 +1,16 @@
+function whenAvailable(name, callback) {
+    var interval = 10; // ms
+    window.setTimeout(function() {
+        if (window[name]) {
+            callback(window[name]);
+        } else {
+            whenAvailable(name, callback);
+        }
+    }, interval);
+}
 var runAfterAutogenMod = "mods/runAfterAutogen and onload restructure.js";
 if(enabledMods.includes(runAfterAutogenMod)){
-
+whenAvailable("runAfterAutogen", function(t) {
 
 elements.fluorine = {
 	color: "#FFFFBF",
@@ -369,6 +379,7 @@ let defaultAcidReactions = {
 	"grape": { "elem2":"juice", "color1":"#291824" },
 	"soap": { "elem1": "hydrogen" },
 	"sodium": { "elem1":"explosion" },
+	"potassium": { "elem1":"explosion" },
 	"meat": { "elem2":"rotten_meat", "elem1":null, "chance":0.5 },
 };
 
@@ -462,7 +473,6 @@ function createAcid(name,reactions, gasReactions, color, category, categoryGas, 
     if (enabledMods.includes("mods/generative_mods.js")) {
         runAfterLoad(function() {
             generateCloud(name);
-			console.log(name);
         });
         elements[name+"_gas"].reactions[name+"_gas"]= { "elem1": null, "elem2": name + "_cloud", "chance":0.3, "y":[0,12], "setting":"clouds" };
         elements[name+"_gas"].reactions["rain_cloud"]= { "elem1": null, "elem2":  name + "_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" };
@@ -636,7 +646,7 @@ elements.ammonia.reactions["oxygen"] = { "elem1": "steam", "elem2": "nitric_oxid
 
 elements.supernova.behavior = [
 	"XX|XX|XX",
-	"XX|EX:80>plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,molten_iron,molten_uranium,molten_lead AND CH:neutronium,neutronium,quark_matter,void|XX",
+	"XX|EX:80>plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,molten_iron,molten_uranium,molten_lead,oxygen,molten_sodium,sulfur_gas,fluorine,neon,molten_potassium,chlorine,molten_calcium,molten_titanium,molten_nickel,molten_copper,molten_zinc,gallium_gas,bromine_gas,iodine_gas AND CH:neutronium,neutronium,quark_matter,void|XX",
 	"XX|XX|XX",
 ];
 
@@ -645,7 +655,7 @@ elements.gamma_ray_burst = {
 	color: ["#ffb48f","#ffd991","#ffad91"],
 	behavior: [
 		"XX|XX|XX",
-		"XX|EX:100>plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,molten_uranium,molten_gold,molten_tungsten,molten_lead AND CH:void|XX",
+		"XX|EX:100>plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,molten_gold,molten_uranium,molten_lead,molten_tungsten,molten_nickel,molten_copper,molten_zinc,gallium_gas,bromine_gas,iodine_gas,molten_tin,molten_silver AND CH:void|XX",
 		"XX|XX|XX",
 	],
 	temp: 99999999700,
@@ -1944,8 +1954,20 @@ elements.potassium_fluoride = {
     tempHigh: 858
 }
 
+
+elements.soy_sauce = {
+    color: "#470500",
+    behavior: behaviors.LIQUID,
+    tempLow: -5,
+    tempHigh: 105,
+    state: "liquid",
+    category:"liquids",
+    density: 1200,
+    stain: 0.5
+};
+
 elements.bromine = {
-    color: "#8a0707",
+    color: "#470500",
     behavior: behaviors.LIQUID,
     tick: function(pixel) {
             if(pixel.temp > 0 && Math.random() < 0.001) {
@@ -2256,6 +2278,32 @@ elements.disinfectant = {
 };
 
 
+
+elements.bauxite = {
+    color: ["#915a30","#cc7533"],
+    behavior: behaviors.POWDER,
+    category: "land",
+    density: 2420,
+    state: "solid",
+    tempHigh: 300
+};
+
+elements.sodium_aluminate = {
+    color: ["#e6c9b3","#ebc8ad"],
+    behavior: behaviors.POWDER,
+    category: "powders",
+	hidden: true,
+    density: 1500,
+    state: "solid",
+    tempHigh: 1650
+};
+
+function acidReact(acid,element,product1,product2)
+{
+	elements[acid].ignore.push(element,product1,product2);
+	elements[acid].reactions[element] = { "elem1": product1, "elem2": product2 };
+}
+
 let defaultBaseReactions = {
 	"grape": { "elem2":"juice", "color1":"#291824" },
 	"sodium": { "elem1":"pop" },
@@ -2267,6 +2315,7 @@ let defaultBaseGasReactions = {
 	"sodium": { "elem1":"pop" },
 	"meat": { "elem2":"rotten_meat", "elem1":null, "chance":0.4 },
 }
+
 
 createAcid("francium_hydroxide",structuredClone(defaultBaseReactions),structuredClone(defaultBaseGasReactions),["#863bff","#4d00ca","#897b9e"],"hidden","hidden",100,100,0,1000,1010,1)
 
@@ -2296,6 +2345,16 @@ acidNeutralize("sodium_hydroxide_gas");
 createAcid("potassium_hydroxide",structuredClone(defaultBaseReactions),structuredClone(defaultBaseGasReactions),["#3bc4ff","#0062ca","#7b949e"],"liquids","hidden",100,100,0,1000,1020,1);
 acidNeutralize("potassium_hydroxide");
 acidNeutralize("potassium_hydroxide_gas");
+
+
+createAcid("red_mud",structuredClone(defaultBaseReactions),structuredClone(defaultBaseGasReactions),["#ab3d24","#cc5d2d","#a81b1b"],"hidden","hidden",1600,1600,0,Infinity,5200,3);
+acidNeutralize("red_mud");
+acidNeutralize("red_mud_gas");
+elements.red_mud.viscosity = 1000000;
+elements.red_mud.reactions.water = {"elem2":"dirty_water" };
+elements.red_mud.reactions.salt_water = {"elem2":"dirty_water" };
+elements.red_mud.reactions.sugar_water = {"elem2":"dirty_water" };
+
 elements.potassium_hydroxide.reactions["fertilizer"] = { elem1: "niter", elem2: "ammonia"};
 elements.potassium_hydroxide_gas.reactions["fertilizer"] = { elem1: "niter", elem2: "ammonia"};
 elements.potassium_hydroxide.ignore.push("fertilizer","niter","ammonia");
@@ -2314,6 +2373,8 @@ elements.potassium_salt_water.reactions["mercury"] = { elem1:["potassium_hydroxi
 elements.potassium_hydroxide.ignore.push("mercury");
 elements.potassium_hydroxide.ignore.push("potassium_salt_water");
 
+acidReact("sodium_hydroxide","bauxite","sodium_aluminate","red_mud")
+elements.red_mud.ignore.push("bauxite","sodium_aluminate");
 
 elements.bless.reactions["FOOF"] = {elem2: "oxygen"};
 elements.bless.reactions["solid_FOOF"] = {elem2: "oxygen"};
@@ -2346,6 +2407,8 @@ elements.bless.reactions["sulfur_dioxide_ice"] = {elem2: "oxygen"};
 elements.bless.reactions["hydrogen_sulfide"] = {elem2: "hydrogen"};
 elements.bless.reactions["liquid_hydrogen_sulfide"] = {elem2: "hydrogen"};
 elements.bless.reactions["rocket_fuel"] = {elem2: null};
+// do something
+});
 } else {
 	if(!enabledMods.includes(runAfterAutogenMod))	{ enabledMods.unshift(runAfterAutogenMod) };
 	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
