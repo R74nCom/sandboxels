@@ -104,6 +104,7 @@
         // If it doesn't exist, create an empty array.
         enabledMods = localStorage.getItem("enabledMods") ? JSON.parse(localStorage.getItem("enabledMods")) : [];
         // Run all scripts in the enabledMods array, if it fails print to console
+        
         for (var i = 0; i < enabledMods.length; i++) {
             try {
                 var script = document.createElement('script');
