@@ -104,12 +104,7 @@
         // If it doesn't exist, create an empty array.
         enabledMods = localStorage.getItem("enabledMods") ? JSON.parse(localStorage.getItem("enabledMods")) : [];
         // Run all scripts in the enabledMods array, if it fails print to console
-        
-	</script>
-	<script src="mods/neutronium_compressor.js"></script>
-	
-	<script> 
-	for (var i = 0; i < enabledMods.length; i++) {
+        for (var i = 0; i < enabledMods.length; i++) {
             try {
                 var script = document.createElement('script');
                 var src = enabledMods[i];
