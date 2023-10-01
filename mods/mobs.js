@@ -1,9 +1,28 @@
+function whenAvailable(names, callback) {
+    var interval = 10; // ms
+    window.setTimeout(function() {
+		let bool = true;
+		for(let i = 0; i < names.length; i++)
+		{
+			if(!window[names[i]])
+			{
+				bool = false;
+			}
+		}
+        if (bool) {
+            callback();
+        } else {
+            whenAvailable(names, callback);
+        }
+    }, interval);
+}
 var modName = "mods/mobs.js";
 var explodeAtPlusMod = "mods/explodeAtPlus.js";
-var runAfterAutogenMod = "mods/runAfterAutogen and onload restructure.js";
+var runAfterAutogenMod = "mods/runAfterAutogen2.js";
 var libraryMod = "mods/code_library.js";
-
+var mobsLoaded = false;
 if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlusMod) && enabledMods.includes(libraryMod)) {
+whenAvailable(["runAfterAutogen","explodeAtPlus"], function() {
 	//Prerequisite Functions and Variables
 
 	minimumCreeperTries = 3;
@@ -5117,6 +5136,8 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlu
 	/* -------------------------
 	   - End skeleton elements -
 	   ------------------------- */
+	mobsLoaded = true;
+});
 } else {
 	if(!enabledMods.includes(runAfterAutogenMod))	{ enabledMods.splice(enabledMods.indexOf(modName),0,runAfterAutogenMod) };
 	if(!enabledMods.includes(explodeAtPlusMod))		{ enabledMods.splice(enabledMods.indexOf(modName),0,explodeAtPlusMod) };
