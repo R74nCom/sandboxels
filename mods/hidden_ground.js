@@ -4,13 +4,13 @@
 runAfterLoad(function() {
 	if (enabledMods.includes("mods/the_ground.js")) {
 		let regexRocks = /(granite)|(rhyolite)|(pumice)|(obsidian)|(dacite)|(dacidian)|(andesite)|(diorite)|(scoria)|(andesidian)|(gabbro)|(basalt)|(basalidian)|(peridotite)|(komatiite)|(komatidian)/
-		let regexType = /(_gravel)|(_sand)|(_dust)|(_shard)|(hot_)/
+		let regexType = /(_gravel)|(_sand)|(_sandstone)|(_dust)|(_shard)|(hot_)/
 		let toHide = ["dry_permafrost", "hot_sand", "hot_dirt", "hot_rock", "hot_rock_wall", "hot_gravel", "hot_limestone", "hot_calcium_carbonate_dust", "sandy_water", "clay_water", "dry_clay_loam"]
 		
 		// hides all elements part of both rocks and type
 		// false positives *can* be hit because this doesn't check if it comes from The Ground (it can't), but ideally none given how specific it is
-		for (elem in elements) {
-			if (regexRocks.test(elem)) {
+		for (let elem in elements) {
+			if (typeof(elements[elem]) == "object" && regexRocks.test(elem)) {
 				// move wall to solids to not make land too big
 				if (/_wall/.test(elem)) {
 					elements[elem].category = "solids"
@@ -23,12 +23,14 @@ runAfterLoad(function() {
 		}
 		
 		// manual hiding
-		for (elem in toHide) {
-			elements[toHide[elem]].hidden = true;
+		for (let elem of toHide) {
+			if (typeof(elements[elem]) == "object") {
+				elements[elem].hidden = true;
+			}
 		}
 		
 		// while i'm here, might as well fix Sandstone's color
-		elements.sandstone.color = "#dbbe80";
+		//elements.sandstone.color = "#dbbe80";
 	}
 	
 	else {
