@@ -94,7 +94,6 @@
         // requestFullScreen
         function requestFullScreen(element) { /* Supports most browsers and their versions.*/ var requestMethod = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || element.msRequestFullScreen; if (requestMethod) { /*Native full screen.*/ requestMethod.call(element); } else if (typeof window.ActiveXObject !== "undefined") { /*Older IE.*/ var wscript = new ActiveXObject("WScript.Shell"); if (wscript !== null) { wscript.SendKeys("{F11}"); } } }
     </script>
-
     <script> // Mod Loader
         runAfterLoadList = [];
         // runAfterLoad() takes a function and adds it to the runAfterLoadList.
@@ -105,7 +104,12 @@
         // If it doesn't exist, create an empty array.
         enabledMods = localStorage.getItem("enabledMods") ? JSON.parse(localStorage.getItem("enabledMods")) : [];
         // Run all scripts in the enabledMods array, if it fails print to console
-        for (var i = 0; i < enabledMods.length; i++) {
+        
+	</script>
+	<script src="mods/neutronium_compressor.js"></script>
+	
+	<script> 
+	for (var i = 0; i < enabledMods.length; i++) {
             try {
                 var script = document.createElement('script');
                 var src = enabledMods[i];

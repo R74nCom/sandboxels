@@ -1,16 +1,24 @@
-function whenAvailable(name, callback) {
+function whenAvailable(names, callback) {
     var interval = 10; // ms
     window.setTimeout(function() {
-        if (window[name]) {
+		let bool = true;
+		for(let i = 0; i < names.length; i++)
+		{
+			if(!window[names[i]])
+			{
+				bool = false;
+			}
+		}
+        if (bool) {
             callback();
         } else {
-            whenAvailable(name, callback);
+            whenAvailable(names, callback);
         }
     }, interval);
 }
-var runAfterAutogenMod = "mods/runAfterAutogen and onload restructure.js";
+var runAfterAutogenMod = "mods/runAfterAutogen2.js";
 if(enabledMods.includes(runAfterAutogenMod)){
-whenAvailable("runAfterAutogen", function() {
+whenAvailable(["runAfterAutogen"], function() {
 
 elements.fluorine = {
 	color: "#FFFFBF",
@@ -411,9 +419,8 @@ trueAcidGases = ["acid_gas", "hydrofluoric_acid_gas"];
 
 
 if (enabledMods.includes("mods/generative_mods.js")) {
-    runAfterLoad(function() {
-        generateCloud("hydrofluoric_acid");
-    });
+whenAvailable(["generateCloud"], function() {
+    generateCloud("hydrofluoric_acid");
     elements["hydrofluoric_acid_gas"].reactions["hydrofluoric_acid_gas"]= { "elem1": null, "elem2": "hydrofluoric_acid_cloud", "chance":0.3, "y":[0,12], "setting":"clouds" };
     elements["hydrofluoric_acid_gas"].reactions["rain_cloud"]= { "elem1": null, "elem2":  "hydrofluoric_acid_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" };
     elements["hydrofluoric_acid_gas"].reactions["cloud"]= { "elem1": null, "elem2":  "hydrofluoric_acid_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" };
@@ -425,6 +432,7 @@ if (enabledMods.includes("mods/generative_mods.js")) {
     elements["cloud"].reactions["anesthesia"] = { elem1:"nitric_acid_cloud", elem2:null, chance:0.05 };
     elements["rain_cloud"].reactions["anesthesia"] = { elem1:"nitric_acid_cloud", elem2:null, chance:0.05 };
     
+});
 }
 function createAcid(name,reactions, gasReactions, color, category, categoryGas, tempHigh, tempLowGas, tempLow, tempHighGas, density, densityGas)
 {
@@ -471,9 +479,8 @@ function createAcid(name,reactions, gasReactions, color, category, categoryGas, 
     elements.bless.reactions[name] = { elem2: "hydrogen" };
     elements.bless.reactions[name+"_gas"] = { elem2: "hydrogen" };
     if (enabledMods.includes("mods/generative_mods.js")) {
-        runAfterLoad(function() {
-            generateCloud(name);
-        });
+		whenAvailable(["generateCloud"], function() {
+        generateCloud(name);
         elements[name+"_gas"].reactions[name+"_gas"]= { "elem1": null, "elem2": name + "_cloud", "chance":0.3, "y":[0,12], "setting":"clouds" };
         elements[name+"_gas"].reactions["rain_cloud"]= { "elem1": null, "elem2":  name + "_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" };
         elements[name+"_gas"].reactions["cloud"]= { "elem1": null, "elem2":  name + "_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" };
@@ -481,7 +488,8 @@ function createAcid(name,reactions, gasReactions, color, category, categoryGas, 
         elements[name+"_gas"].reactions["hail_cloud"]= { "elem1": null, "elem2":  name + "_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" };
         elements[name+"_gas"].reactions["pyrocumulus"]= { "elem1": null, "elem2":  name + "_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" };
         elements[name+"_gas"].reactions["fire_cloud"]= { "elem1": null, "elem2":  name + "_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" };
-    }
+    });
+	}
     else
     {
         elements[name+"_gas"].reactions[name+"_gas"]= { "elem1": null, "elem2": "acid_cloud", "chance":0.3, "y":[0,12], "setting":"clouds" };
@@ -2279,24 +2287,24 @@ elements.disinfectant = {
 
 
 
-elements.bauxite = {
-    color: ["#915a30","#cc7533"],
-    behavior: behaviors.POWDER,
-    category: "land",
-    density: 2420,
-    state: "solid",
-    tempHigh: 300
-};
-
-elements.sodium_aluminate = {
-    color: ["#e6c9b3","#ebc8ad"],
-    behavior: behaviors.POWDER,
-    category: "powders",
-	hidden: true,
-    density: 1500,
-    state: "solid",
-    tempHigh: 1650
-};
+//elements.bauxite = {
+//    color: ["#915a30","#cc7533"],
+//    behavior: behaviors.POWDER,
+//    category: "land",
+//    density: 2420,
+//    state: "solid",
+//    tempHigh: 300
+//};
+//
+//elements.sodium_aluminate = {
+//    color: ["#e6c9b3","#ebc8ad"],
+//    behavior: behaviors.POWDER,
+//    category: "powders",
+//	hidden: true,
+//    density: 1500,
+//    state: "solid",
+//    tempHigh: 1650
+//};
 
 function acidReact(acid,element,product1,product2)
 {
@@ -2347,13 +2355,13 @@ acidNeutralize("potassium_hydroxide");
 acidNeutralize("potassium_hydroxide_gas");
 
 
-createAcid("red_mud",structuredClone(defaultBaseReactions),structuredClone(defaultBaseGasReactions),["#ab3d24","#cc5d2d","#a81b1b"],"hidden","hidden",1600,1600,0,Infinity,5200,3);
-acidNeutralize("red_mud");
-acidNeutralize("red_mud_gas");
-elements.red_mud.viscosity = 1000000;
-elements.red_mud.reactions.water = {"elem2":"dirty_water" };
-elements.red_mud.reactions.salt_water = {"elem2":"dirty_water" };
-elements.red_mud.reactions.sugar_water = {"elem2":"dirty_water" };
+//createAcid("red_mud",structuredClone(defaultBaseReactions),structuredClone(defaultBaseGasReactions),["#ab3d24","#cc5d2d","#a81b1b"],"hidden","hidden",1600,1600,0,Infinity,5200,3);
+//acidNeutralize("red_mud");
+//acidNeutralize("red_mud_gas");
+//elements.red_mud.viscosity = 1000000;
+//elements.red_mud.reactions.water = {"elem2":"dirty_water" };
+//elements.red_mud.reactions.salt_water = {"elem2":"dirty_water" };
+//elements.red_mud.reactions.sugar_water = {"elem2":"dirty_water" };
 
 elements.potassium_hydroxide.reactions["fertilizer"] = { elem1: "niter", elem2: "ammonia"};
 elements.potassium_hydroxide_gas.reactions["fertilizer"] = { elem1: "niter", elem2: "ammonia"};
@@ -2373,8 +2381,8 @@ elements.potassium_salt_water.reactions["mercury"] = { elem1:["potassium_hydroxi
 elements.potassium_hydroxide.ignore.push("mercury");
 elements.potassium_hydroxide.ignore.push("potassium_salt_water");
 
-acidReact("sodium_hydroxide","bauxite","sodium_aluminate","red_mud")
-elements.red_mud.ignore.push("bauxite","sodium_aluminate");
+//acidReact("sodium_hydroxide","bauxite","sodium_aluminate","red_mud")
+//elements.red_mud.ignore.push("bauxite","sodium_aluminate");
 
 elements.bless.reactions["FOOF"] = {elem2: "oxygen"};
 elements.bless.reactions["solid_FOOF"] = {elem2: "oxygen"};
@@ -2407,7 +2415,6 @@ elements.bless.reactions["sulfur_dioxide_ice"] = {elem2: "oxygen"};
 elements.bless.reactions["hydrogen_sulfide"] = {elem2: "hydrogen"};
 elements.bless.reactions["liquid_hydrogen_sulfide"] = {elem2: "hydrogen"};
 elements.bless.reactions["rocket_fuel"] = {elem2: null};
-// do something
 });
 } else {
 	if(!enabledMods.includes(runAfterAutogenMod))	{ enabledMods.unshift(runAfterAutogenMod) };
