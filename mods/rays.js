@@ -1,28 +1,8 @@
-function whenAvailable(names, callback) {
-    var interval = 10; // ms
-    window.setTimeout(function() {
-		let bool = true;
-		for(let i = 0; i < names.length; i++)
-		{
-			if(!window[names[i]])
-			{
-				bool = false;
-			}
-		}
-        if (bool) {
-            callback();
-        } else {
-            whenAvailable(names, callback);
-        }
-    }, interval);
-}
-
 var modName = "mods/rays.js";
-var runAfterAutogenMod = "mods/runAfterAutogen2.js";
+var runAfterAutogenMod = "mods/runAfterAutogen and onload restructure.js";
 var libraryMod = "mods/code_library.js";
 
 if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod)) {
-whenAvailable(["runAfterAutogen","libraryLoaded"], function() {
 	runAfterAutogen(function() {
 		snowAndIceCache = Object.keys(elements).filter(function(name) {
 			return name.endsWith("snow") || name.endsWith("ice") || name == "rime"
@@ -455,7 +435,7 @@ whenAvailable(["runAfterAutogen","libraryLoaded"], function() {
             }
         }
 	};
-});
+
 } else {
 	if(!enabledMods.includes(libraryMod))			{ enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod) };
 	if(!enabledMods.includes(runAfterAutogenMod))	{ enabledMods.splice(enabledMods.indexOf(modName),0,runAfterAutogenMod) };

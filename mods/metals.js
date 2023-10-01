@@ -1,29 +1,9 @@
-function whenAvailable(names, callback) {
-    var interval = 10; // ms
-    window.setTimeout(function() {
-		let bool = true;
-		for(let i = 0; i < names.length; i++)
-		{
-			if(!window[names[i]])
-			{
-				bool = false;
-			}
-		}
-        if (bool) {
-            callback();
-        } else {
-            whenAvailable(names, callback);
-        }
-    }, interval);
-}
-
 var modName = "mods/metals.js";
 var changeTempMod = "mods/changeTempReactionParameter.js";
-var runAfterAutogenMod = "mods/runAfterAutogen2.js";
+var runAfterAutogenMod = "mods/runAfterAutogen and onload restructure.js";
 var libraryMod = "mods/code_library.js";
 var onTryMoveIntoMod = "mods/onTryMoveInto.js";
 if(enabledMods.includes(changeTempMod) && enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod) && enabledMods.includes(onTryMoveIntoMod)) {
-	whenAvailable(["runAfterAutogen"], function() {
 	elements.iron.hardness = 0.74
 	//https://www.engineeringtoolbox.com/bhn-brinell-hardness-number-d_1365.html
 	//https://en.wikipedia.org/wiki/Hardnesses_of_the_elements_(data_page)
@@ -781,7 +761,6 @@ if(enabledMods.includes(changeTempMod) && enabledMods.includes(runAfterAutogenMo
 		conduct: 0.35,
 		hardness: 0.7, //idk lol
 	};
-});
 } else {
 	if(!enabledMods.includes(changeTempMod))		{ enabledMods.splice(enabledMods.indexOf(modName),0,changeTempMod) };
 	if(!enabledMods.includes(runAfterAutogenMod))	{ enabledMods.splice(enabledMods.indexOf(modName),0,runAfterAutogenMod) };

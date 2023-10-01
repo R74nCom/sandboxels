@@ -1,30 +1,11 @@
-function whenAvailable(names, callback) {
-    var interval = 10; // ms
-    window.setTimeout(function() {
-		let bool = true;
-		for(let i = 0; i < names.length; i++)
-		{
-			if(!window[names[i]])
-			{
-				bool = false;
-			}
-		}
-        if (bool) {
-            callback();
-        } else {
-            whenAvailable(names, callback);
-        }
-    }, interval);
-}
 var modName = "mods/generative_mods.js";
 var explodeAtPlusMod = "mods/explodeAtPlus.js";
-var runAfterAutogenMod = "mods/runAfterAutogen2.js";
+var runAfterAutogenMod = "mods/runAfterAutogen and onload restructure.js";
 var libraryMod = "mods/code_library.js";
 var feyAndMoreMod = "mods/fey_and_more.js";
 var mobsMod = "mods/mobs.js";
 
 if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(explodeAtPlusMod) && enabledMods.includes(libraryMod) && enabledMods.includes(feyAndMoreMod) && enabledMods.includes(mobsMod)) {
-whenAvailable(["eLists","explodeAtPlus","urlParams","runAfterAutogen","mobsLoaded"], function() {
 	
 	//urlParams reads
 		
@@ -1350,7 +1331,7 @@ whenAvailable(["eLists","explodeAtPlus","urlParams","runAfterAutogen","mobsLoade
 
 		//Bombs
 
-			generateBomb = function(bombElements,isAfterScriptLoading=false,bombNumber=1) {//it can be a single element, though
+			function generateBomb(bombElements,isAfterScriptLoading=false,bombNumber=1) {//it can be a single element, though
 				bombNumber = Math.max(0,bombNumber);
 			
 				//To specify an array bomb, have the array be inside another array.
@@ -1509,7 +1490,7 @@ whenAvailable(["eLists","explodeAtPlus","urlParams","runAfterAutogen","mobsLoade
 
 		//Clouds
 
-			generateCloud = function(cloudElements,cloudType=0,isAfterScriptLoading=false) {//it can be a single element, though
+			function generateCloud(cloudElements,cloudType=0,isAfterScriptLoading=false) {//it can be a single element, though
 				//To specify an array cloud, have the array be inside another array.
 				/*For reasons related to how element colors are loaded, if this function is being run from a JS mod file, isAfterScriptLoading should be false.
 				Otherwise, you'll get TypeErrors for some reason when trying to place your cloud.  If this is being run after the game has loaded (e.g. in the console),
@@ -1717,7 +1698,7 @@ whenAvailable(["eLists","explodeAtPlus","urlParams","runAfterAutogen","mobsLoade
 
 		//Creepers
 
-			generateCreeper = function(creeperElements,isAfterScriptLoading=false) {//it can be a single element, though
+			function generateCreeper(creeperElements,isAfterScriptLoading=false) {//it can be a single element, though
 				//To specify an array creeper, have the array be inside another array.
 				/*For reasons related to how element colors are loaded, if this function is being run from a JS mod file, isAfterScriptLoading should be false.
 				Otherwise, you'll get TypeErrors for some reason when trying to place your creeper.  If this is being run after the game has loaded (e.g. in the console),
@@ -1948,7 +1929,7 @@ whenAvailable(["eLists","explodeAtPlus","urlParams","runAfterAutogen","mobsLoade
 
 		//Fairies
 
-			generateFairy = function(fairyElements,isAfterScriptLoading=false) {//it can be a single element, though
+			function generateFairy(fairyElements,isAfterScriptLoading=false) {//it can be a single element, though
 				//To specify an array fairy, have the array be inside another array.
 				/*For reasons related to how element colors are loaded, if this function is being run from a JS mod file, isAfterScriptLoading should be false.
 				Otherwise, you'll get TypeErrors for some reason when trying to place your fairy.  If this is being run after the game has loaded (e.g. in the console),
@@ -2137,7 +2118,7 @@ whenAvailable(["eLists","explodeAtPlus","urlParams","runAfterAutogen","mobsLoade
 
 		//Spouts
 
-			generateSpout = function(spoutElements,isAfterScriptLoading=false) {//it can be a single element, though
+			function generateSpout(spoutElements,isAfterScriptLoading=false) {//it can be a single element, though
 				//To specify an array spout, have the array be inside another array.
 				/*For reasons related to how element colors are loaded, if this function is being run from a JS mod file, isAfterScriptLoading should be false.
 				Otherwise, you'll get TypeErrors for some reason when trying to place your spout.  If this is being run after the game has loaded (e.g. in the console),
@@ -2513,7 +2494,6 @@ whenAvailable(["eLists","explodeAtPlus","urlParams","runAfterAutogen","mobsLoade
 					elements[name].behavior = behaviors.FAIRYKILL;
 				};
 			};
-});
 } else {
 	if(!enabledMods.includes(runAfterAutogenMod))	{ enabledMods.splice(enabledMods.indexOf(modName),0,runAfterAutogenMod) };
 	if(!enabledMods.includes(explodeAtPlusMod))		{ enabledMods.splice(enabledMods.indexOf(modName),0,explodeAtPlusMod) };
