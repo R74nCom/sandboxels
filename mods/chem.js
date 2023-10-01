@@ -20,6 +20,7 @@ var runAfterAutogenMod = "mods/runAfterAutogen2.js";
 if(enabledMods.includes(runAfterAutogenMod)){
 whenAvailable(["runAfterAutogen"], function() {
 
+
 elements.fluorine = {
 	color: "#FFFFBF",
 	behavior: behaviors.GAS,
@@ -2286,7 +2287,7 @@ elements.disinfectant = {
 };
 
 
-
+  
 //elements.bauxite = {
 //    color: ["#915a30","#cc7533"],
 //    behavior: behaviors.POWDER,
@@ -2362,6 +2363,7 @@ acidNeutralize("potassium_hydroxide_gas");
 //elements.red_mud.reactions.water = {"elem2":"dirty_water" };
 //elements.red_mud.reactions.salt_water = {"elem2":"dirty_water" };
 //elements.red_mud.reactions.sugar_water = {"elem2":"dirty_water" };
+
 
 elements.potassium_hydroxide.reactions["fertilizer"] = { elem1: "niter", elem2: "ammonia"};
 elements.potassium_hydroxide_gas.reactions["fertilizer"] = { elem1: "niter", elem2: "ammonia"};
