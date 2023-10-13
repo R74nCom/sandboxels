@@ -89,6 +89,10 @@
         #intro {
             font-family: Arial, Helvetica, sans-serif;
         }
+        .indent {
+            display: inline-block;
+            width: 1em;
+        }
     </style>
 </head>
 
@@ -104,6 +108,92 @@
 <p>Join our <strong><a href="https://link.r74n.com/discord" target="_blank">Discord</a></strong> to be notified when new updates drop.</p>
 <p>The original <a href="https://sandboxels.r74n.com/changelog.txt">plain text version</a> of this is still maintained.</p>
 </div>
+
+<h2 id="1.9">[Version 1.9 - October 13, 2023 - Local Saves]</h2>
+<ul>
+<li>+ Local Saves</li>
+<li>    + SAVES button</li>
+<li>    + Save the scene to 1 of 12 slots</li>
+<li>    + Save the scene to a file</li>
+<li>    + Load a scene from a file</li>
+<li>    + Saves include a ton of information, even your selected element!</li>
+<li>    + Choose to include your settings or mods</li>
+<li>    + Drag & Drop or Paste a save file</li>
+<li>+ Pumpkin</li>
+<li>    + Fireproof solid for carving activities</li>
+<li>+ Pumpkin Seed</li>
+<li>    + Will grow when planted on soil!</li>
+<li>~ Thermal View now uses a more useful logarithmic scale</li>
+<li>[Changes]</li>
+<li>+ Resetting now adjusts canvas size if needed</li>
+<li>+ Dot appears in center of cursor</li>
+<li>+ E-cloner can select an element while unpowered</li>
+<li>+ E-cloner ignores Wires and E-walls</li>
+<li>+ Grass can spread on Sand, Clay, and Mycelium</li>
+<li>+ Tree roots can grow through Clay</li>
+<li>~ Sap no longer mixes with Sawdust</li>
+<li>+ Plant and Sauce remove Stench</li>
+<li>+ Humans break Eggs, Grapes, and bugs when on top of them</li>
+<li>+ Humans can trample Grass</li>
+<li>+ Termites can eat Confetti, Straw, and Wheat</li>
+<li>+ Fleas can eat Hair</li>
+<li>+ Ants can eat Honey</li>
+<li>+ Snails can eat Calcium, Limestone, and Paper</li>
+<li>+ Worms can infect and swim in Blood</li>
+<li>+ Worms are killed by Antibodies</li>
+<li>+ Eggs die at high temperatures</li>
+<li>+ Bugs will form Amber when touching Sap</li>
+<li>~ Frogs and Fish burn slower</li>
+<li>+ Uranium dirties Salt Water</li>
+<li>+ Radiation can dirty Ice</li>
+<li>+ Blood is infected by Rotten Meat and Rotten Cheese</li>
+<li>+ Vinegar and Limestone reaction</li>
+<li>+ Ketchup slowly deoxidizes Rust</li>
+<li>~ Charcoal leaves behind Ash and less CO₂</li>
+<li>~ C4 no longer explodes when burnt</li>
+<li>+ C4 releases poisonous fumes when burnt</li>
+<li>+ C4 burns longer, can be used as fuel</li>
+<li>+ C4 explodes when broken</li>
+<li>+ Fireworks ignite at high temperatures</li>
+<li>+ Dye dissolves in Pool Water</li>
+<li>+ Ink slowly dissolves in Water</li>
+<li>+ Honey dissolves in Tea</li>
+<li>+ Molten Salt conducts electricity</li>
+<li>+ Hair can be made by radiating Skin</li>
+<li>+ Skin can absorb Soap</li>
+<li>+ Proton and Electric reaction generates heat</li>
+<li>+ Positron and Electric reaction generates Light</li>
+<li>+ Escape key resets to Normal View</li>
+<li>~ Recolored Tuff</li>
+<li>~ Recolored Blood</li>
+<li>~ Selected element outline is more clear</li>
+<li>~ Improved button readability</li>
+<li>~ Improved canvas pixel sharpness</li>
+<li>+ Pressing - or + button centers the cursor</li>
+<li>~ Step button is now an arrow</li>
+<li>+ Clear Saves setting</li>
+<li>[Bug Fixes]</li>
+<li>~ Fixed: Fireworks and Flash don't transfer heat</li>
+<li>~ Fixed: Flash from Heat Ray is not hot</li>
+<li>~ Fixed: Alcohol Gas density too high</li>
+<li>~ Fixed: Pistil and Mushroom Gill can be dragged</li>
+<li>~ Fixed: Herb can't be mixed in Batter or Dough</li>
+<li>~ Fixed: Amber spawns at high temperature</li>
+<li>~ Fixed: Heads can detach if Body moves during reaction</li>
+<li>~ Fixed: Many Flour reactions make Gingerbread instead of Dough</li>
+<li>~ Fixed: Ghost pixels when burning Plague, other deleting gases</li>
+<li>~ Fixed: Color picker always appears when toggling GUI on (F1)</li>
+<li>~ Fixed: Cooldowned elements can't be placed before 8th tick</li>
+<li>~ Fixed: Frozen Fish break into Slime</li>
+<li>[Technical]</li>
+<li>+ logMessage() function</li>
+<li>+ SOIL eList</li>
+<li>+ generateSave() and loadSave() functions</li>
+<li>+ resizeCanvas() and autoResizeCanvas() functions</li>
+<li>+ sb1 save format</li>
+<li>~ Browser dark color scheme for UI elements</li>
+<li>~ Light, Laser, etc. use bx/by instead of vx/vy (velocity.js fix)</li>
+</ul>
 
 <h2 id="1.8.6">[Version 1.8.6 - August 21, 2023 - Reaction Overload]</h2>
 <ul>
@@ -1578,6 +1668,7 @@
     changelog.innerHTML = changelog.innerHTML.replaceAll("<li>+","<li class='ad'>");
     changelog.innerHTML = changelog.innerHTML.replaceAll("<li>-","<li class='rm'>");
     changelog.innerHTML = changelog.innerHTML.replaceAll("<li>~","<li class='ch'>");
+    changelog.innerHTML = changelog.innerHTML.replaceAll(">   ","><span class='indent'></span>");
     changelog.innerHTML = changelog.innerHTML.replaceAll("<li>[","<li class='update-section'>[");
 </script>
 

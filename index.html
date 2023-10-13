@@ -44,7 +44,7 @@
     <meta name="twitter:creator:id" content="1436857621827530753">
 
     <script> // versioning info
-        currentversion = "1.8.6"
+        currentversion = "1.9"
     </script>
     <style>
         .setting-span {
@@ -143,6 +143,11 @@
         console.log("©2021-" + new Date().getFullYear() + ". All Rights Reserved.");
         // If settings is in localStorage, load it. If not, create an empty object.
         settings = localStorage.getItem("settings") ? JSON.parse(localStorage.getItem("settings")) : {};
+        // URL query handling
+        var urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has("worldgen")) {
+            settings.worldgen = urlParams.get("worldgen");
+        }
         if (!settings["unlocked"]) {
             settings["unlocked"] = {};
         }
@@ -418,19 +423,19 @@
                 "M1|M1|M1",
             ],
             BOUNCY: function(pixel) {
-                if (pixel.vx===undefined) {
+                if (pixel.bx===undefined) {
                     // choose 1, 0, or -1
-                    pixel.vx = Math.random() < 0.5 ? 1 : Math.random() < 0.5 ? 0 : -1;
-                    pixel.vy = Math.random() < 0.5 ? 1 : Math.random() < 0.5 ? 0 : -1;
+                    pixel.bx = Math.random() < 0.5 ? 1 : Math.random() < 0.5 ? 0 : -1;
+                    pixel.by = Math.random() < 0.5 ? 1 : Math.random() < 0.5 ? 0 : -1;
                     // if both are 0, make one of them 1 or -1
-                    if (pixel.vx===0 && pixel.vy===0) {
-                        if (Math.random() < 0.5) { pixel.vx = Math.random() < 0.5 ? 1 : -1; }
-                        else { pixel.vy = Math.random() < 0.5 ? 1 : -1; }
+                    if (pixel.bx===0 && pixel.by===0) {
+                        if (Math.random() < 0.5) { pixel.bx = Math.random() < 0.5 ? 1 : -1; }
+                        else { pixel.by = Math.random() < 0.5 ? 1 : -1; }
                     }
                 }
                 // move and invert direction if hit
-                if (!pixel.del && pixel.vx && !tryMove(pixel, pixel.x+pixel.vx, pixel.y)) { pixel.vx = -pixel.vx; }
-                if (!pixel.del && pixel.vy && !tryMove(pixel, pixel.x, pixel.y+pixel.vy)) { pixel.vy = -pixel.vy; }
+                if (!pixel.del && pixel.bx && !tryMove(pixel, pixel.x+pixel.bx, pixel.y)) { pixel.bx = -pixel.bx; }
+                if (!pixel.del && pixel.by && !tryMove(pixel, pixel.x, pixel.y+pixel.by)) { pixel.by = -pixel.by; }
             },
             FEEDPIXEL: function(pixel) {
                 if (!pixel.food) { pixel.food = 1 }
@@ -513,7 +518,8 @@
         eLists = {
             ANIMAL: ["flea","ant","fly","firefly","bee","frog","fish","worm","termite","rat","slug","snail","stink_bug"],
             CLEANANIMAL: ["ant","firefly","bee","frog","fish"],
-            SEEDS: ["grass_seed","wheat_seed","flower_seed","bamboo_plant","mushroom_spore","corn_seed","potato_seed","cactus"]
+            SEEDS: ["grass_seed","wheat_seed","flower_seed","bamboo_plant","mushroom_spore","corn_seed","potato_seed","cactus","pumpkin_seed"],
+            SOIL: ["dirt","mud","sand","wet_sand","clay_soil","clay","mycelium"]
         }
 
         airDensity = settings.airdensity || 1.225; // kg/m^3
@@ -718,63 +724,6 @@
     state: "solid",
     density: 1602
 },
-/* Tick Examples
-"tick_sand": {
-    color: "#e6d577",
-    tick: function(pixel) {
-        tryMove(pixel, pixel.x, pixel.y+1);
-        doHeat(pixel);
-    },
-    tempHigh: 1700,
-    stateHigh: "molten_glass",
-    category: "land",
-    state: "solid",
-    density: 1602,
-    hidden: true,
-    category: "land"
-},
-"tick_wood": {
-    color: "#a0522d",
-    tick: function(pixel) {
-        doBurning(pixel);
-        doHeat(pixel);
-    },
-    tempHigh: 400,
-    stateHigh: "fire",
-    category: "solids",
-    burn: 5,
-    burnTime: 300,
-    burnInto: ["ash","charcoal","fire"],
-    state: "solid",
-    hardness: 0.15,
-    breakInto: "sawdust",
-    hidden: true,
-    category: "solids"
-},
-"tick_wall": {
-    color: "#808080",
-    category: "solids",
-    hidden: true
-},
-"tick_props": {
-    color: "#ffffff",
-    tick: function(pixel) {
-        if (tryMove(pixel, pixel.x, pixel.y+1)) {
-            pixel.moves += 1;
-        }
-        pixel.age += 1;
-        if (pixel.moves > 20) { // This pixel will delete itself if it moves 20 times
-            deletePixel(pixel.x, pixel.y);
-        }
-    },
-    properties: { // Default properties to set when the pixel is created:
-        "moves": 0,
-        "age": 0
-    },
-    category: "powders",
-    hidden: true
-},
-*/
 "water": {
     color: "#2167ff",
     behavior: behaviors.LIQUID,
@@ -871,6 +820,7 @@
         "stink_bug": { elem2:"dead_bug", chance:0.1, oneway:true },
         "cancer": { elem1: "dirty_water", chance:0.25 },
         "oil": { elem1: "dirty_water", chance:0.005 },
+        "uranium": { elem1: "dirty_water" },
         // electrolysis:
         "aluminum": { elem1:["hydrogen","hydrogen","oxygen","salt"], charged:true, chance:0.0025 },
         "zinc": { elem1:["hydrogen","hydrogen","oxygen","salt"], charged:true, chance:0.015 },
@@ -1176,6 +1126,7 @@
         "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
         "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 },
         "mercury": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "stench": { elem2:null, chance:0.25 },
     },
     category:"life",
     tempHigh: 100,
@@ -1237,7 +1188,7 @@
                 if (Math.random() < 0.005 && isEmpty(coords[i][0],coords[i][1])) {
                     if (!isEmpty(coords[i][0],coords[i][1]+1,true)) {
                         var soil = pixelMap[coords[i][0]][coords[i][1]+1];
-                        if (soil.element==="dirt" || soil.element==="mud" || soil.element==="clay_soil") {
+                        if (eLists.SOIL.indexOf(soil.element) !== -1) {
                             createPixel(pixel.element,coords[i][0],coords[i][1]);
                         }
                     }
@@ -1742,6 +1693,9 @@
     fireColor: "#F1E906",
     alias: "sodium chloride"
 },
+"molten_salt": {
+    conduct: 0.1,
+},
 "sugar": {
     color: "#f2f2f2",
     behavior: behaviors.POWDER,
@@ -1768,14 +1722,14 @@
         "molasses": { elem1:"gingerbread", elem2:null },
         "sap": { elem1:"gingerbread", elem2:null },
         "caramel": { elem1:"gingerbread", elem2:null },
-        "broth": { elem1:"gingerbread", elem2:null },
-        "soda": { elem1:"gingerbread", elem2:null },
-        "tea": { elem1:"gingerbread", elem2:null },
-        "blood": { elem1:"gingerbread", elem2:null },
-        "infection": { elem1:"gingerbread", elem2:null },
-        "antibody": { elem1:"gingerbread", elem2:null },
-        "milk": { elem1:"gingerbread", elem2:null },
-        "cream": { elem1:"gingerbread", elem2:null },
+        "broth": { elem1:"dough", elem2:null },
+        "soda": { elem1:"dough", elem2:null },
+        "tea": { elem1:"dough", elem2:null },
+        "blood": { elem1:"dough", elem2:null },
+        "infection": { elem1:"dough", elem2:null },
+        "antibody": { elem1:"dough", elem2:null },
+        "milk": { elem1:"dough", elem2:null },
+        "cream": { elem1:"dough", elem2:null },
     },
     category: "food",
     tempHigh: 400,
@@ -1951,7 +1905,7 @@
 "smash": {
     color: ["#666666","#888888","#666666"],
     tool: function(pixel) {
-        if (elements[pixel.element].breakInto) {
+        if (elements[pixel.element].breakInto !== undefined) {
             // times 0.25 if not shiftDown else 1
             if (Math.random() < (elements[pixel.element].hardness || 1) * (shiftDown ? 1 : 0.25)) {
                 var breakInto = elements[pixel.element].breakInto;
@@ -2224,9 +2178,9 @@
 "worm": {
     color: "#d34c37",
     behavior: [
-        "SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil,water,salt_water,dirty_water,primordial_soup%3|XX|SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil,water,salt_water,dirty_water,primordial_soup%3",
+        "SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil,water,salt_water,dirty_water,primordial_soup,blood,infection%3|XX|SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil,water,salt_water,dirty_water,primordial_soup,blood,infection%3",
         "M2%10|XX|M2%10",
-        "SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil,water,salt_water,dirty_water,primordial_soup%3|M1|SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil,water,salt_water,dirty_water,primordial_soup%3",
+        "SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil,water,salt_water,dirty_water,primordial_soup,blood,infection%3|M1|SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil,water,salt_water,dirty_water,primordial_soup,blood,infection%3",
     ],
     reactions: {
         "ash": { elem2:[null,null,null,null,null,null,null,null,null,null,"dirt"], chance:0.1, func:behaviors.FEEDPIXEL },
@@ -2293,6 +2247,7 @@
         "antidote": { elem2:null, chance:0.15, func:behaviors.FEEDPIXEL },
         "dead_plant": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
         "ketchup": { elem2:null, chance:0.1 },
+        "hair": { elem2:null, chance:0.01 },
         "mercury": { elem2:null, elem1:null, chance:0.1875 },
         "vinegar": { elem1:"dead_bug", elem2:null },
         "alcohol": { elem1:"dead_bug", elem2:null }
@@ -2325,6 +2280,9 @@
         "bamboo_plant": { elem2:null, chance:0.04, func:behaviors.FEEDPIXEL },
         "sapling": { elem2:null, chance:0.025, func:behaviors.FEEDPIXEL },
         "sawdust": { elem2:null, chance:0.025, func:behaviors.FEEDPIXEL },
+        "confetti": { elem2:null, chance:0.025, func:behaviors.FEEDPIXEL },
+        "wheat": { elem2:null, chance:0.025, func:behaviors.FEEDPIXEL },
+        "straw": { elem2:null, chance:0.025, func:behaviors.FEEDPIXEL },
         "particleboard": { elem2:null, chance:0.025, func:behaviors.FEEDPIXEL },
         "tinder": { elem2:null, chance:0.025, func:behaviors.FEEDPIXEL },
         "lichen": { elem2:null, chance:0.025, func:behaviors.FEEDPIXEL },
@@ -2355,6 +2313,7 @@
         "caramel": { elem2:null, chance:0.15, func:behaviors.FEEDPIXEL },
         "bread": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
         "sugar_water": { elem2:null, chance:0.15, func:behaviors.FEEDPIXEL },
+        "honey": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
         "soda": { elem2:null, chance:0.15, func:behaviors.FEEDPIXEL },
         "juice": { elem2:null, chance:0.15, func:behaviors.FEEDPIXEL },
         "sugar": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
@@ -2366,7 +2325,9 @@
         "vinegar": { elem1:"dead_bug", elem2:null },
         "alcohol": { elem1:"dead_bug", elem2:null },
         "mushroom_cap": { elem2:null, chance:0.025, func:behaviors.FEEDPIXEL },
-        "candy": { elem2:null, chance:0.025, func:behaviors.FEEDPIXEL }
+        "candy": { elem2:null, chance:0.025, func:behaviors.FEEDPIXEL },
+        "pumpkin": { elem2:null, chance:0.025, func:behaviors.FEEDPIXEL },
+        "pumpkin_seed": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
     },
     tempHigh: 100,
     stateHigh: "ash",
@@ -2463,11 +2424,6 @@
 },
 "bee": {
     color: "#c4b100",
-    // behavior: [
-    //     "XX|M2|M1",
-    //     "XX|FX%2|M1 AND BO",
-    //     "XX|CR:pollen%0.025 AND M2|M1",
-    // ],
     tick: function(pixel) {
         if (pixel.pollen && Math.random() < 0.0005 && isEmpty(pixel.x,pixel.y+1)) {
             createPixel("pollen",pixel.x,pixel.y+1);
@@ -2621,7 +2577,19 @@
     reactions: {
         "cancer": { elem1:"cancer", chance:0.005 },
         "radiation": { elem1:["ash","meat","rotten_meat","cooked_meat"], chance:0.4 },
-        "plague": { elem1:"plague", chance:0.05 }
+        "plague": { elem1:"plague", chance:0.05 },
+        "egg": { elem2:"yolk", chance:0.5, oneway:true },
+        "grape": { elem2:"juice", chance:0.5, color2:"#291824", oneway:true },
+        "ant": { elem2:"dead_bug", chance:0.05, oneway:true },
+        "fly": { elem2:"dead_bug", oneway:true },
+        "firefly": { elem2:"dead_bug", oneway:true },
+        "bee": { elem2:"dead_bug", oneway:true },
+        "flea": { elem2:"dead_bug", oneway:true },
+        "termite": { elem2:"dead_bug", oneway:true },
+        "worm": { elem2:"slime", chance:0.05, oneway:true },
+        "stink_bug": { elem2:"stench", oneway:true },
+        "grass": { elem2:null, chance:0.05 },
+        "grass_seed": { elem2:null, chance:0.05 },
     },
     properties: {
         dead: false,
@@ -2685,7 +2653,9 @@
             while (movesToTry.length > 0) {
                 var move = movesToTry.splice(Math.floor(Math.random() * movesToTry.length), 1)[0];
                 if (isEmpty(pixel.x+move[0], pixel.y+move[1]-1)) {
-                    if (tryMove(pixel, pixel.x+move[0], pixel.y+move[1])) {
+                    var origx = pixel.x+move[0];
+                    var origy = pixel.y+move[1];
+                    if (tryMove(pixel, pixel.x+move[0], pixel.y+move[1]) && pixel.x===origx && pixel.y===origy) {
                         movePixel(head, head.x+move[0], head.y+move[1]);
                         break;
                     }
@@ -2883,6 +2853,8 @@
         "potato_seed": { elem2:null, chance:0.25, func:behaviors.FEEDPIXEL },
         "grass_seed": { elem2:null, chance:0.25, func:behaviors.FEEDPIXEL },
         "crumb": { elem2:null, chance:0.25, func:behaviors.FEEDPIXEL },
+        "pumpkin": { elem2:null, chance:0.025, func:behaviors.FEEDPIXEL },
+        "pumpkin_seed": { elem2:null, chance:0.25, func:behaviors.FEEDPIXEL },
         "plague": { elem1:"plague", chance:0.05 },
         "oxygen": { elem2:"carbon_dioxide", chance:0.5 }
     },
@@ -2960,6 +2932,8 @@
         "baked_potato": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
         "ice_cream": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
         "cream": { elem2:null, chance:0.3, func:behaviors.FEEDPIXEL },
+        "pumpkin": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
+        "pumpkin_seed": { elem2:null, chance:0.3, func:behaviors.FEEDPIXEL },
     },
     egg: "rat",
     category: "life",
@@ -3012,8 +2986,8 @@
     stateLow: "frozen_frog",
     category:"life",
     breakInto: "slime",
-    burn:75,
-    burnTime:30,
+    burn:15,
+    burnTime:300,
     state: "solid",
     density: 1450,
     conduct: 0.2
@@ -3095,8 +3069,8 @@
     stateLow: ["frozen_meat","frozen_meat","frozen_meat","frozen_fish"],
     category:"life",
     breakInto: "blood",
-    burn:40,
-    burnTime:100,
+    burn:20,
+    burnTime:200,
     state: "solid",
     density: 1080,
     conduct: 0.2
@@ -3108,7 +3082,7 @@
     tempHigh: 5,
     stateHigh: "fish",
     category:"life",
-    breakInto: "slime",
+    breakInto: "blood",
     hidden: true,
     state: "solid",
     density: 1050,
@@ -3141,7 +3115,8 @@
         "mushroom_gill": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
         "lichen": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
         "hyphae": { elem2:"dirt", chance:0.05, func:behaviors.FEEDPIXEL },
-        "mycelium": { elem2:"dirt", chance:0.05, func:behaviors.FEEDPIXEL }
+        "mycelium": { elem2:"dirt", chance:0.05, func:behaviors.FEEDPIXEL },
+        "pumpkin": { elem2:null, chance:0.01, func:behaviors.FEEDPIXEL },
     },
     tempLow: 5,
     stateLow: "slime",
@@ -3183,7 +3158,13 @@
         "mushroom_gill": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
         "lichen": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
         "hyphae": { elem2:"dirt", chance:0.05, func:behaviors.FEEDPIXEL },
-        "mycelium": { elem2:"dirt", chance:0.05, func:behaviors.FEEDPIXEL }
+        "mycelium": { elem2:"dirt", chance:0.05, func:behaviors.FEEDPIXEL },
+        "pumpkin": { elem2:null, chance:0.01, func:behaviors.FEEDPIXEL },
+        "calcium": { elem2:null, chance:0.01, func:behaviors.FEEDPIXEL },
+        "limestone": { elem2:null, chance:0.01, func:behaviors.FEEDPIXEL },
+        "quicklime": { elem2:null, chance:0.01, func:behaviors.FEEDPIXEL },
+        "slaked_lime": { elem2:null, chance:0.01, func:behaviors.FEEDPIXEL },
+        "paper": { elem2:null, chance:0.01, func:behaviors.FEEDPIXEL },
     },
     tempLow: -6.4,
     stateLow: "calcium",
@@ -3483,49 +3464,49 @@
 "light": {
     color: "#fffdcf",
     tick: function(pixel) {
-        if (Math.random() < 0.02) {
-            deletePixel(pixel.x,pixel.y);
-            return;
+            if (Math.random() < 0.02) {
+        deletePixel(pixel.x,pixel.y);
+        return;
+    }
+    if (pixel.bx===undefined) {
+        // choose 1, 0, or -1
+        pixel.bx = Math.random() < 0.5 ? 1 : Math.random() < 0.5 ? 0 : -1;
+        pixel.by = Math.random() < 0.5 ? 1 : Math.random() < 0.5 ? 0 : -1;
+        // if both are 0, make one of them 1 or -1
+        if (pixel.bx===0 && pixel.by===0) {
+            if (Math.random() < 0.5) { pixel.bx = Math.random() < 0.5 ? 1 : -1; }
+            else { pixel.by = Math.random() < 0.5 ? 1 : -1; }
         }
-        if (pixel.vx===undefined) {
-            // choose 1, 0, or -1
-            pixel.vx = Math.random() < 0.5 ? 1 : Math.random() < 0.5 ? 0 : -1;
-            pixel.vy = Math.random() < 0.5 ? 1 : Math.random() < 0.5 ? 0 : -1;
-            // if both are 0, make one of them 1 or -1
-            if (pixel.vx===0 && pixel.vy===0) {
-                if (Math.random() < 0.5) { pixel.vx = Math.random() < 0.5 ? 1 : -1; }
-                else { pixel.vy = Math.random() < 0.5 ? 1 : -1; }
+    }
+    // move and invert direction if hit
+    if (pixel.bx && !tryMove(pixel, pixel.x+pixel.bx, pixel.y)) {
+        var newX = pixel.x + pixel.bx;
+        if (!isEmpty(newX, pixel.y, true)) {
+            var newPixel = pixelMap[pixel.x+pixel.bx][pixel.y];
+            if (!elements[newPixel.element].insulate) {
+                newPixel.temp += 1;
+                pixelTempCheck(newPixel);
+            }
+            if (!elements.light.reactions[newPixel.element]) {
+                pixel.color = newPixel.color;
             }
         }
-        // move and invert direction if hit
-        if (pixel.vx && !tryMove(pixel, pixel.x+pixel.vx, pixel.y)) {
-            var newX = pixel.x + pixel.vx;
-            if (!isEmpty(newX, pixel.y, true)) {
-                var newPixel = pixelMap[pixel.x+pixel.vx][pixel.y];
-                if (!elements[newPixel.element].insulate) {
-                    newPixel.temp += 1;
-                    pixelTempCheck(newPixel);
-                }
-                if (!elements.light.reactions[newPixel.element]) {
-                    pixel.color = newPixel.color;
-                }
+        pixel.bx = -pixel.bx;
+    }
+    if (pixel.by && !tryMove(pixel, pixel.x, pixel.y+pixel.by)) {
+        var newY = pixel.y + pixel.by;
+        if (!isEmpty(pixel.x, newY, true)) {
+            var newPixel = pixelMap[pixel.x][pixel.y+pixel.by];
+            if (!elements[newPixel.element].insulate) {
+                newPixel.temp += 1;
+                pixelTempCheck(newPixel);
             }
-            pixel.vx = -pixel.vx;
-        }
-        if (pixel.vy && !tryMove(pixel, pixel.x, pixel.y+pixel.vy)) {
-            var newY = pixel.y + pixel.vy;
-            if (!isEmpty(pixel.x, newY, true)) {
-                var newPixel = pixelMap[pixel.x][pixel.y+pixel.vy];
-                if (!elements[newPixel.element].insulate) {
-                    newPixel.temp += 1;
-                    pixelTempCheck(newPixel);
-                }
-                if (!elements.light.reactions[newPixel.element]) {
-                    pixel.color = newPixel.color;
-                }
+            if (!elements.light.reactions[newPixel.element]) {
+                pixel.color = newPixel.color;
             }
-            pixel.vy = -pixel.vy;
         }
+        pixel.by = -pixel.by;
+    }
     },
     reactions: {
         "glass": { "color1":["#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"] },
@@ -3672,7 +3653,7 @@
     },
     burn: 25,
     burnTime: 1000,
-    burnInto: "carbon_dioxide",
+    burnInto: ["fire","fire","fire","fire","ash","carbon_dioxide"],
     category: "powders",
     state: "solid",
     density: 208,
@@ -3699,7 +3680,6 @@
         "dirty_water": { elem1:"cellulose", elem2:null },
         "salt_water": { elem1:"cellulose", elem2:null },
         "sugar_water": { elem1:"cellulose", elem2:null },
-        "sap": { elem1:"particleboard", elem2:null },
         "honey": { elem1:"particleboard", elem2:null },
         "glue": { elem1:"particleboard", elem2:null }
     },
@@ -4114,7 +4094,7 @@
             if (Math.random() < 0.02 && pixel.age > 50 && pixel.temp < 100) {
                 if (!outOfBounds(pixel.x,pixel.y+1)) {
                     var dirtPixel = pixelMap[pixel.x][pixel.y+1];
-                    if (dirtPixel && (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium")) {
+                    if (dirtPixel && (eLists.SOIL.indexOf(dirtPixel.element) !== -1)) {
                         changePixel(dirtPixel,"root");
                     }
                 }
@@ -4172,7 +4152,7 @@
             if (Math.random() < 0.02 && pixel.h > 0 && pixel.temp < 100) {
                 if (!outOfBounds(pixel.x,pixel.y+1)) { // grow roots
                     var dirtPixel = pixelMap[pixel.x][pixel.y+1];
-                    if (dirtPixel && (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium")) {
+                    if (dirtPixel && (eLists.SOIL.indexOf(dirtPixel.element) !== -1)) {
                         changePixel(dirtPixel,"root");
                     }
                 }
@@ -4484,6 +4464,7 @@
     burnTime:20,
     category:"life",
     hidden: true,
+    movable: false,
     state: "solid",
     density: 1400,
     breakInto: "dead_plant",
@@ -4575,13 +4556,9 @@
 },
 "vine": {
     color: "#005900",
-    // behavior: [
-    //     "XX|SP|XX",
-    //     "XX|XX|XX",
-    //     "XX|CL%1 AND M1|XX",
-    // ],
     tick: function(pixel) {
-        if (pixel.start === pixelTicks && pixel.fruit === undefined) {
+        doDefaults(pixel);
+        if (pixel.start === pixelTicks && pixel.fruit === undefined && !pixel.stop) {
             if (Math.random() < 0.1) {
                 pixel.fruit = Math.random() < 0.5 ? "grape" : "tomato";
             }
@@ -4594,6 +4571,10 @@
             pixel.sp = 0;
         }
         else { pixel.sp = 1 } //supported
+        if (pixel.stop) {
+            if (pixel.sp === 0) { tryMove(pixel, pixel.x, pixel.y+1); }
+            return;
+        }
         if (pixel.sp === 0) { tryMove(pixel, pixel.x, pixel.y+1); }
         else {
             if (pixel.fert && pixel.stage && Math.random() < 0.01 && isEmpty(pixel.x,pixel.y+1)) {
@@ -4636,7 +4617,6 @@
                 }
             }
         }
-        doDefaults(pixel);
     },
     tempHigh: 100,
     stateHigh: "dead_plant",
@@ -4869,7 +4849,22 @@
     color: "#dddd00",
     behavior: behaviors.WALL,
     behaviorOn: behaviors.CLONER,
-    ignore: ["cloner","slow_cloner","clone_powder","floating_cloner"],
+    tick: function(pixel) {
+        if (pixel.clone) { return }
+        for (var i = 0; i < adjacentCoords.length; i++) {
+            var coords = adjacentCoords[i];
+            var x = pixel.x + coords[0];
+            var y = pixel.y + coords[1];
+            if (!isEmpty(x,y,true)) {
+                if (pixelMap[x][y].clone) { pixel.clone = pixelMap[x][y].clone; break }
+                var element = pixelMap[x][y].element;
+                if (element === pixel.element || elements[pixel.element].ignore.indexOf(element) !== -1) { continue }
+                pixel.clone = element;
+                break;
+            }
+        }
+    },
+    ignore: ["cloner","slow_cloner","clone_powder","floating_cloner","wire","ewall"],
     category:"machines",
     insulate:true,
     darkText: true,
@@ -5160,6 +5155,7 @@
     },
     category: "life",
     hidden: true,
+    movable: false,
     tempHigh: 225,
     stateHigh: "fire",
     burn: 10,
@@ -5806,7 +5802,7 @@
         "dirt": { elem1: null, elem2: "mud" },
         "sand": { elem1: null, elem2: "wet_sand" },
         "clay_soil": { elem1: null, elem2: "clay" },
-        "caramel": { color1:"#C8B39A", elem2:null, chance:0.05 }
+        "caramel": { color1:"#C8B39A", elem2:null, chance:0.05 },
     },
     tempLow: 0,
     stateLow: "ice_cream",
@@ -5925,7 +5921,7 @@
             }
         }
         else {pixel.fall ++}
-        if (pixel.temp < -2) {
+        if (pixel.temp < -2 || pixel.temp > 100) {
             pixel.animal = null;
         }
         doDefaults(pixel);
@@ -5971,7 +5967,7 @@
     color: "#bfac91",
     behavior: behaviors.STURDYPOWDER,
     onMix: function(dough,ingredient) {
-        if (elements[ingredient.element].isFood && elements[ingredient.element].id !== elements.dough.id && elements[ingredient.element].id !== elements.flour.id && elements[ingredient.element].id !== elements.batter.id) {
+        if (elements[ingredient.element].isFood && elements[ingredient.element].id !== elements.dough.id && elements[ingredient.element].id !== elements.flour.id && elements[ingredient.element].id !== elements.batter.id && elements[ingredient.element].id !== elements.bread.id) {
             var rgb1 = dough.color.match(/\d+/g);
             var rgb2 = ingredient.color.match(/\d+/g);
             // average the colors
@@ -5990,6 +5986,10 @@
                 ingredient.color = pixelColorPick(ingredient, hex);
             }
         }
+    },
+    reactions: {
+        "milk": { elem2:"broth", color2:"#ECC891", tempMin:70 },
+        "cream": { elem2:"broth", color2:"#ECC891", tempMin:70 },
     },
     category: "food",
     tempHigh: 94,
@@ -6174,6 +6174,7 @@
         "chocolate_milk": { elem1: null, elem2: "cheese", "color2":"#6b4000" },
         "eggnog": { elem1: null, elem2: "cheese", "color2":"#ffdb63" },
         "baking_soda": { elem1: "sodium_acetate", elem2: "carbon_dioxide", attr1:{"foam":20} },
+        "limestone": { elem1: "sodium_acetate", elem2: "carbon_dioxide", attr1:{"foam":5} },
         "rust": { elem2:"iron", chance:0.05 },
         "oxidized_copper": { elem2:"copper", chance:0.05 },
         "mushroom_spore": { elem2:null, chance:0.05 },
@@ -6221,7 +6222,8 @@
     burnInto: ["fire","smoke","smoke","smoke","smoke","smoke","smoke","fragrance"],
     category:"food",
     state: "solid",
-    density: 1400
+    density: 1400,
+    isFood: true,
 },
 "lettuce": {
     color: ["#a2c96b","#81C520","#639917"],
@@ -6268,6 +6270,7 @@
         "sugar": { elem1:"ketchup", elem2:null, chance:0.1 },
         "sugar_water": { elem1:"ketchup", elem2:"water", chance:0.1 },
         "vinegar": { elem1:"ketchup", elem2:null, chance:0.1 },
+        "stench": { elem2:null },
     },
     viscosity: 2600,
     tempHigh: 260,
@@ -6276,6 +6279,75 @@
     state: "liquid",
     density: 1235,
     stain: 0.01,
+    isFood: true
+},
+"pumpkin": {
+    color: ["#ff822e","#ff8c2e"],
+    tick: function(pixel) {
+        if (pixel.grow && Math.random() < 0.01) {
+            if (isEmpty(pixel.x,pixel.y-1)) { createPixel("wood",pixel.x,pixel.y-1) }
+            if (isEmpty(pixel.x,pixel.y+1)) { createPixel("pumpkin",pixel.x,pixel.y+1) }
+            if (isEmpty(pixel.x+pixel.grow,pixel.y+1)) { createPixel("pumpkin",pixel.x+pixel.grow,pixel.y+1) }
+            if (isEmpty(pixel.x+pixel.grow,pixel.y)) { createPixel("pumpkin",pixel.x+pixel.grow,pixel.y) }
+            pixel.grow = 0;
+        }
+        doDefaults(pixel);
+    },
+    category: "food",
+    tempHigh: 800,
+    stateHigh: "ash",
+    state: "solid",
+    density: 490.3,
+    seed: "pumpkin_seed",
+    breakInto: [null,null,null,null,null,"pumpkin_seed"],
+    isFood: true
+},
+"pumpkin_seed": {
+    color: ["#FFE9CA","#ffdcc2","#ffcaab"],
+    tick: function(pixel) {
+        if (!tryMove(pixel,pixel.x,pixel.y+1) && Math.random() < 0.01) {
+            if (!pixel.stage) {
+                if (!isEmpty(pixel.x,pixel.y+1,true)) {
+                    var soil = pixelMap[pixel.x][pixel.y+1];
+                    if (eLists.SOIL.indexOf(soil.element) !== -1) {
+                        if (tryMove(pixel,pixel.x,pixel.y-1,"vine")) {
+                            pixelMap[pixel.x][pixel.y+1].stop = true;
+                            pixel.stage = 1;
+                        }
+                    }
+                }
+            }
+            else if (pixel.stage == 1) {
+                if (isEmpty(pixel.x,pixel.y-1)) {
+                    createPixel("plant",pixel.x,pixel.y-1);
+                }
+                pixel.stage = 2;
+            }
+            else if (pixel.stage == 2) {
+                var dir = Math.random() < 0.5 ? -1 : 1;
+                if (!isEmpty(pixel.x+dir,pixel.y)) { dir = -dir; }
+                if (isEmpty(pixel.x+dir,pixel.y)) {
+                    createPixel("pumpkin",pixel.x+dir,pixel.y);
+                    pixelMap[pixel.x+dir][pixel.y].grow = dir;
+                }
+                changePixel(pixel,"vine");
+                pixel.stop = true;
+            }
+        }
+        doDefaults(pixel);
+    },
+    tempHigh: 400,
+    stateHigh: "fire",
+    tempLow: -2,
+    stateLow: "frozen_plant",
+    burn: 50,
+    burnTime: 20,
+    category: "life",
+    state: "solid",
+    density: 950.33,
+    hidden: true,
+    cooldown: defaultCooldown,
+    seed: true,
     isFood: true
 },
 "corn": {
@@ -6403,7 +6475,7 @@
     behavior: [
         "XX|XX|XX",
         "XX|XX|XX",
-        "CH:dirt,mud,sand,wet_sand,clay_soil,mycelium>root,fiber%0.5|CH:dirt,mud,sand,wet_sand,clay_soil,mycelium>root,fiber,fiber%0.5|CH:dirt,mud,sand,wet_sand,clay_soil,mycelium>root,fiber%0.5",
+        "CH:dirt,mud,sand,wet_sand,clay_soil,clay,mycelium>root,fiber%0.5|CH:dirt,mud,sand,wet_sand,clay_soil,clay,mycelium>root,fiber,fiber%0.5|CH:dirt,mud,sand,wet_sand,clay_soil,clay,mycelium>root,fiber%0.5",
     ],
     reactions: {
         "rock": { elem2:"sand", chance:0.0004 },
@@ -6743,7 +6815,8 @@
             pixel2.color = pixelColorPick(pixel2,RGBToHex(pixel1.color.match(/\d+/g)))
             if (pixel1.origColor) { pixel2.origColor = pixel1.origColor }
         } },
-        "acid": { elem1:"blood" }
+        "acid": { elem1:"blood" },
+        "soap": { elem2:null, chance:0.005 }
     },
     category:"solids",
     breakInto: [null,null,null,"blood","dust"],
@@ -6794,6 +6867,9 @@
     isFood: true,
     darkText: true
 },
+"alcohol_gas": {
+    density: 1.627
+},
 "basalt": {
     color: ["#2e2e2e","#333333","#3d3d3d"],
     behavior: behaviors.STURDYPOWDER,
@@ -6817,7 +6893,7 @@
     breakInto: "gravel"
 },
 "tuff": {
-    color: ["#A16A49","#C98256","#C7834F","#BF7640","#DB8641","#D1732C","#AF5D30","#A55E35","#8B5B4C"],
+    color: ["#927659","#81644B","#685843","#685135","#644F3A"],
     behavior: behaviors.SUPPORTPOWDER,
     reactions: {
         "fly": { elem2:"dead_bug", chance:0.25, oneway:true },
@@ -6979,7 +7055,8 @@
         "salt_water": { elem1:null, chance:0.05 },
         "sugar_water": { elem1:null, chance:0.05 },
         "seltzer": { elem1:null, chance:0.05 },
-        "dirty_water": { elem1:null, chance:0.05 }
+        "dirty_water": { elem1:null, chance:0.05 },
+        "pool_water": { elem1:null, chance:0.05 }
     },
     customColor: true,
     stain: 0.66,
@@ -6993,6 +7070,14 @@
 "ink": {
     color: "#171717",
     behavior: behaviors.LIQUID,
+    reactions: {
+        "water": { elem1:null, chance:0.01 },
+        "salt_water": { elem1:null, chance:0.01 },
+        "sugar_water": { elem1:null, chance:0.01 },
+        "seltzer": { elem1:null, chance:0.01 },
+        "dirty_water": { elem1:null, chance:0.01 },
+        "pool_water": { elem1:null, chance:0.01 }
+    },
     stain: 0.66,
     tempHigh: 100,
     stateHigh: "smoke",
@@ -7039,11 +7124,13 @@
     conduct: 0.99
 },
 "blood": {
-    color: "#ff0000",
+    color: ["#ff0000","#ee0000"],
     behavior: behaviors.LIQUID,
     reactions: {
         "vaccine": { elem1:"antibody", elem2:null },
         "plague": { elem1:"infection", elem2:null },
+        "rotten_meat": { elem1:"infection" },
+        "rotten_cheese": { elem1:"infection" },
         "virus": { elem1:"infection", elem2:null },
         "cancer": { elem1:"infection" },
         "cyanide": { elem1:"infection", elem2:null },
@@ -7060,6 +7147,7 @@
         "oxidized_copper": { elem1:"infection", chance:0.05 },
         "rat": { elem1:"infection", chance:0.075 },
         "flea": { elem1:"infection", chance:0.03 },
+        "worm": { elem1:"infection", chance:0.03 },
         "dirt": { elem1:null, elem2:"mud" },
         "sand": { elem1:null, elem2:"wet_sand" },
         "clay_soil": { elem1: null, elem2: "clay" },
@@ -7106,6 +7194,7 @@
         "blood": { elem2:"antibody", chance:0.01 },
         "infection": { elem2:"antibody", chance:0.1 },
         "cancer": { elem2:null, chance:0.01 },
+        "worm": { elem2:null, chance:0.01 },
         "poison": { elem1:"antidote", elem2:null, chance:0.03 },
         "alcohol": { elem1:[null,"dna"], chance:0.02 },
         "dirt": { elem1:null, elem2:"mud" },
@@ -7123,7 +7212,7 @@
     stain: 0.05
 },
 "infection": {
-    color: "#cf005d",
+    color: ["#cf005d","#be004c"],
     behavior: behaviors.LIQUID,
     reactions: {
         "blood": { elem2:"infection", chance:0.01 },
@@ -7245,6 +7334,7 @@
         "infection": { elem2:"blood", chance:0.005 },
         "plague": { elem2:null, chance:0.004 },
         "sugar": { elem2:null, color1:"#8f5a21", chance:0.005},
+        "honey": { elem2:null, color1:"#8f5a21", chance:0.005},
         "milk": { elem2:null, color1:"#9c6c38", chance:0.005},
         "cream": { elem2:null, color1:"#9c6c38", chance:0.005},
         "ice_cream": { elem2:null, color1:"#9c6c38", chance:0.005},
@@ -7273,6 +7363,19 @@
 "sap": {
     color: ["#b67f18","#c86305","#cf7a19","#e4ae3a"],
     behavior: behaviors.LIQUID,
+    reactions: {
+        "dead_bug": { elem1:"amber", elem2:null, chance:0.1 },
+        "ant": { elem1:"amber", elem2:null, chance:0.1 },
+        "fly": { elem1:"amber", elem2:null, chance:0.1 },
+        "flea": { elem1:"amber", elem2:null, chance:0.1 },
+        "termite": { elem1:"amber", elem2:null, chance:0.1 },
+        "worm": { elem1:"amber", elem2:null, chance:0.1 },
+        "bee": { elem1:"amber", elem2:null, chance:0.1 },
+        "firefly": { elem1:"amber", elem2:null, chance:0.1 },
+        "stinkbug": { elem1:"amber", elem2:null, chance:0.1 },
+        "slug": { elem1:"amber", elem2:null, chance:0.1 },
+        "snail": { elem1:"amber", elem2:null, chance:0.1 },
+    },
     tempHigh: 103.05,
     stateHigh: ["sugar","smoke","smoke"],
     tempLow: 0,
@@ -7283,6 +7386,7 @@
     density: 1400
 },
 "amber": {
+    temp: 20,
     tempHigh: 345,
     stateHigh: "smoke",
     breakInto: [null,null,"sap"]
@@ -7316,6 +7420,10 @@
 "ketchup": {
     color: "#ff3119",
     behavior: behaviors.LIQUID,
+    reactions: {
+        "rust": { elem2:"iron", chance:0.01 },
+        "oxidized_copper": { elem2:"copper", chance:0.01 },
+    },
     viscosity: 50000,
     tempHigh: 260,
     stateHigh: ["vinegar","steam","salt","sugar"],
@@ -8065,6 +8173,8 @@
         "dirty_water": { elem2:"rad_steam", chance:0.4 },
         "seltzer": { elem2:"rad_steam", chance:0.3 },
         "pool_water": { elem2:"rad_steam", chance:0.2 },
+        "ice": { elem2:"dirty_ice", chance:0.5 },
+        "salt_ice": { elem2:"dirty_ice", chance:0.5 },
         "soda": { elem2:"rad_steam", chance:0.25 },
         "broth": { elem2:"rad_steam", chance:0.3 },
         "tea": { elem2:"rad_steam", chance:0.25 },
@@ -8141,11 +8251,13 @@
         "fruit_milk": { elem2:["cheese","rotten_cheese","butter","melted_cheese","melted_butter","cream"], chance:0.4 },
         "pilk": { elem2:["cheese","rotten_cheese","butter","melted_cheese","melted_butter","cream"], chance:0.4 },
         "eggnog": { elem2:["cheese","rotten_cheese","butter","melted_cheese","melted_butter","cream"], chance:0.4 },
-        "skin": { elem2:["cooked_meat","cancer","ash","skin"], chance:0.4 },
+        "skin": { elem2:["cooked_meat","cancer","ash","skin","hair"], chance:0.4 },
         "hair": { elem2:[null,null,"ash"], chance:0.4 },
         "tomato": { elem2:["sauce","ketchup"], chance:0.4 },
         "sauce": { elem2:["ketchup","rad_steam"], chance:0.4 },
         "ketchup": { elem2:["sauce","rad_steam"], chance:0.4 },
+        "pumpkin": { elem2:"pumpkin_seed", chance:0.4 },
+        "pumpkin_seed": { elem2:"pumpkin", chance:0.4 },
     },
     state: "gas",
     density: 1.5,
@@ -8231,7 +8343,7 @@
     ],
     tick: behaviors.BOUNCY,
     reactions: {
-        "electric": { elem1:null, elem2:"hydrogen", temp2:10 }
+        "electric": { elem1:null, elem2:"hydrogen", temp2:200 }
     },
     temp: 40,
     category: "energy",
@@ -8816,6 +8928,7 @@
                 if (Math.random() > 0.05) { continue }
                 createPixel("flash", x, y);
                 pixelMap[x][y].color = "#ff0000";
+                pixelMap[x][y].temp = 3500;
             }
             else {
                 if (elements[pixelMap[x][y].element].isGas) { continue }
@@ -8939,7 +9052,7 @@
         "CL%5|CL%5|CL%5",
     ],
     reactions: {
-        "electric": { elem1:"explosion", elem2:"explosion" }
+        "electric": { elem1:"light", elem2:"light" }
     },
     category: "energy",
     state: "gas",
@@ -8979,11 +9092,10 @@
     ],
     conduct: 1,
     category: "weapons",
-    burn: 100,
-    burnTime: 1,
-    burnInto: "explosion",
-    tempHigh: 600,
-    stateHigh: "explosion",
+    burn: 5,
+    burnTime: 800,
+    burnInto: ["fire","fire","poison_gas"],
+    breakInto: "explosion",
     state: "solid",
     density: 1630,
     excludeRandom: true
@@ -9066,6 +9178,10 @@
 "firework": {
     color: "#c44f45",
     tick: function(pixel) {
+        if (pixel.temp > 1000 && !pixel.burning) {
+            pixel.burning = true;
+            pixel.burnStart = pixelTicks;
+        }
         if (pixel.burning) {
             if (!tryMove(pixel, pixel.x, pixel.y-1)) {
                 // tryMove again to the top left or top right
@@ -9081,6 +9197,7 @@
                 tryMove(pixel, pixel.x+(Math.random() < 0.5 ? -1 : 1), pixel.y+1);
             }
         }
+        doHeat(pixel);
     },
     burn: 90,
     burnTime: 100,
@@ -9351,6 +9468,7 @@
         if (Math.random() < 0.75 && pixelTicks - pixel.start > 1) {
             deletePixel(pixel.x, pixel.y)
         }
+        doHeat(pixel);
     },
     reactions: {
         "blood": { elem1:"pointer" },
@@ -9605,6 +9723,10 @@
 "infection_ice": { color: "#ff7090" },
 
 };
+// October - unhide Pumpkin Seed
+if (new Date().getMonth() == 9) {
+    elements.pumpkin_seed.hidden = false;
+}
 
         function hexToRGB(hex) {
             var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -9634,6 +9756,24 @@
             g = Math.floor(g/rgblist.length);
             b = Math.floor(b/rgblist.length);
             return "rgb("+r+","+g+","+b+")";
+        }
+
+        logInterval = null;
+        function logMessage(text) {
+            var logText = document.getElementById("logText");
+            logText.innerHTML += "\n"+text;
+            logText.innerHTML = logText.innerHTML.trim();
+            if (!logInterval) {
+                logInterval = setInterval(function(){
+                    var lines = logText.innerHTML.split("\n");
+                    lines.shift();
+                    logText.innerHTML = lines.join("\n");
+                    if (logText.innerHTML.length === 0) {
+                        clearInterval(logInterval);
+                        logInterval = null;
+                    }
+                }, 3000)
+            }
         }
 
         currentPixels = [];
@@ -9748,20 +9888,6 @@
             currentPixels.splice(currentPixels.indexOf(pixelMap[x][y]),1);
             if (pixelMap[x][y]) {pixelMap[x][y].del = true;}
             delete pixelMap[x][y];
-            /*for (var i = 0; i < currentPixels.length; i++) {
-                if (currentPixels[i].x == x && currentPixels[i].y == y) {
-                    currentPixels.splice(i, 1);
-                    break;
-                }
-            }*/
-            /*if (id != null) {
-                for (var i = 0; i < currentPixels.length; i++) {
-                    if (currentPixels[i].id == id) {
-                        currentPixels.splice(i, 1);
-                        return;
-                    }
-                }
-            }*/
         }
         function swapPixels(pixel1,pixel2) {
             var tempX = pixel1.x;
@@ -10103,7 +10229,7 @@
         */
         function pixelTick(pixel,custom=null) {
             if (pixel.start === pixelTicks) {return}
-            if (!elements[pixel.element]) {
+            if (elements[pixel.element] === undefined) {
                 pixel.invalidElement = pixel.element;
                 changePixel(pixel,"unknown");
                 return;
@@ -10154,7 +10280,7 @@
                     b = b.split(/[\:\%]/)[0];
                 }
                 else { var chance = 100; }
-                if (chance==100 || Math.random()*100 < chance) {
+                if (chance===100 || Math.random()*100 < chance) {
                     var newCoords = behaviorCoords(x,y,bx,by);
                     switch (b) {
                     default: break;
@@ -10661,7 +10787,7 @@
                         pixel.color = pixelColorPick(pixel)
                     }
                 }
-                else if (Math.floor(Math.random()*100)<10 && pixel.element != "fire" && info.fireElement !== null) { // Spawn fire
+                else if (Math.floor(Math.random()*100)<10 && info.id !== elements.fire.id && info.fireElement !== null) { // Spawn fire
                     if (isEmpty(pixel.x,pixel.y-1)) {
                         createPixel((info.fireElement || "fire"),pixel.x,pixel.y-1);
                         pixelMap[pixel.x][pixel.y-1].temp = pixel.temp//+(pixelTicks - (pixel.burnStart || 0));
@@ -10750,7 +10876,7 @@
         gasStates = {gas:true};
 
         function doStaining(pixel) {
-            if (settings["stain"]===0) { return }
+            if (settings.stain===0) { return }
             var stain = elements[pixel.element].stain;
             if (stain > 0) {
                 var newColor = pixel.color.match(/\d+/g);
@@ -10850,6 +10976,7 @@
             return color;
         }
         function pixelTempCheck(pixel) {
+            if (pixel.del) { return }
             var elementInfo = elements[pixel.element];
             if (pixel.temp < absoluteZero) { // Absolute Zero
                 pixel.temp = absoluteZero;
@@ -11010,8 +11137,6 @@
                 }
             }
         }
-        // pixelMap is a 2D array of pixels.
-        // function to get a new 2D array of pixels from a rectangular area
        function selection(x1,y1,x2,y2) {
             var selection = [];
             for (var i = x1; i <= x2; i++) {
@@ -11023,7 +11148,7 @@
             return selection;
         } 
         unicodeSkips = {
-            0: 65, // null -> 0
+            0: 65, // null -> A
             58: 65, // : -> A
             91: 97, // [ -> a
             123: 192, // { -> À
@@ -11046,58 +11171,211 @@
             12544: 13312
         };
         // version;codes;pixels;
-        function generateSave(pixelarray=null) {
-            if (pixelarray == null) {
-                pixelarray = pixelMap;
+        basicProperties = ["x","y","color","start","origColor","temp"];
+        vitalSettings = ["abszero","airdensity","airtemp","bg","burn","clouds","events","stain"];
+        function uuidv4() {
+            return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
+                (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+            );
+        }
+        function generateSave(pixelarray,saveOptions) {
+            if (!pixelarray) { pixelarray = pixelMap; }
+            if (!saveOptions) { saveOptions = {}; }
+            var ignoreProperties = JSON.parse(JSON.stringify(basicProperties));
+            if (saveOptions.keep) {
+                for (var i = 0; i < saveOptions.keep.length; i++) {
+                    ignoreProperties.splice(ignoreProperties.indexOf(saveOptions.keep[i]),1);
+                }
             }
-            var n = 65;
-            var codes = "";
-            var codelist = {" ":" "};
-            var save = "";
-            // Add char*the number of consecutive pixels with the same element
-            var lastelem = "";
-            var samecount = 0;
+            pixelarray = JSON.parse(JSON.stringify(pixelarray));
+
+            var codes = {};
+            var codesReverse = {};
+            var codeN = 65;
+
             for (var i = 0; i < pixelarray.length; i++) {
                 for (var j = 0; j < pixelarray[i].length; j++) {
                     var pixel = pixelarray[i][j];
                     if (pixel) {
-                        if (codelist[pixel.element] == undefined) {
-                            var char = String.fromCharCode(n);
-                            codelist[pixel.element] = char;
-                            codes += char+"="+pixel.element+",";
-                            n++;
-                        }
-                        if (pixel.element == lastelem) {
-                            samecount++;
-                        }
-                        else {
-                            if (samecount > 0) {
-                                save += codelist[lastelem]+"*"+samecount;
+                        // remove unneeded properties
+                        for (var k = 0; k < ignoreProperties.length; k++) { delete pixel[ignoreProperties[k]]; }
+                        if (pixel.element) {
+                            if (!codes[pixel.element]) {
+                                var char = String.fromCharCode(codeN);
+                                codes[pixel.element] = char;
+                                codesReverse[char] = pixel.element;
+                                codeN++;
+                                if (unicodeSkips[codeN]) {
+                                    codeN = unicodeSkips[codeN];
+                                }
                             }
-                            samecount = 1;
-                            lastelem = pixel.element;
+                            pixel.element = codes[pixel.element];
+                        }
+                        if (pixel.temp !== undefined) {
+                            pixel.temp = Math.round(pixel.temp);
+                            if (pixel.temp === airTemp) { delete pixel.temp; }
+                        }
+                        for (var prop in pixel) {
+                            if (!codes[prop]) {
+                                var char = String.fromCharCode(codeN);
+                                codes[prop] = char;
+                                codesReverse[char] = prop;
+                                codeN++;
+                                if (unicodeSkips[codeN]) {
+                                    codeN = unicodeSkips[codeN];
+                                }
+                            }
+                            pixel[codes[prop]] = pixel[prop];
+                            delete pixel[prop];
                         }
                     }
                     else {
-                        // use " " for empty pixels
-                        if (lastelem == " ") {
-                            samecount++;
-                        }
-                        else {
-                            if (samecount > 0) {
-                                save += codelist[lastelem]+"*"+samecount
-                            }
-                            samecount = 1;
-                            lastelem = " ";
-                        }
+                        pixelarray[i][j] = 0;
                     }
                 }
-                save += "|";
             }
-            // save = codes(without the last character) + save
-            save = codes.slice(0,-1)+";"+save;
-            return save;
+            var userSettings = {};
+            if (saveOptions.settings !== false) {
+                for (var key in settings) {
+                    if (vitalSettings.indexOf(key) !== -1) {
+                        userSettings[key] = settings[key];
+                    }
+                }
+            }
+            if (saveOptions.mods === false) { var mods = []; }
+            else { var mods = enabledMods }
+            if (window.location.protocol === "file:") {
+                var url = "";
+            }
+            else {
+                var url = window.location.href;
+            }
+            var compressedMap = JSON.stringify(pixelarray).replace(/,0/g,"×").replace(/":"/g,"»").replace(/,"/g,"§").replace(/element»/g,"©").replace(/"\},\{"/g,"¸").replace(/×××/g,"³").replace(/¸©/g,"¦").replace(/"\}\],\[/g,"®").replace(/\{"/g,"¶").replace(/:true/g,"¥").replace(/:false/g,"¡").replace(/":/g,"¼").replace(/\},/g,"½").replace(/"¥§/g,"¾").replace(/³³³/g,"°").replace(/\],\[/g,"¤");
+            var seriesIndex = 0;
+            var createdTime = Date.now();
+            var seriesId = uuidv4();
+            if (currentSaveData) {
+                if (currentSaveData.seriesIndex !== undefined) {
+                    seriesIndex = currentSaveData.seriesIndex + 1;
+                }
+                if (currentSaveData.created) {
+                    createdTime = currentSaveData.created;
+                }
+                if (currentSaveData.seriesId) {
+                    seriesId = currentSaveData.seriesId;
+                }
+            }
+            return {
+                "meta":{
+                    "saveVersion":"sb1",
+                    "gameVersion":currentversion,
+                    "name":saveOptions.name||"",
+                    "desc":saveOptions.desc||"",
+                    "author":saveOptions.author||"",
+                    "created":createdTime,
+                    "updated":Date.now(),
+                    "seriesIndex":seriesIndex,
+                    "uuid":uuidv4(),
+                    "seriesId":seriesId,
+                    "url":url,
+                },
+                "saveConfig":{
+                    "settings":userSettings,
+                    "mods":mods,
+                    "pixelTicks":pixelTicks,
+                    "tps":tps,
+                    "currentElement":currentElement,
+                    "height":height,
+                    "width":width,
+                    "pixelSize":pixelSize,
+                    "view":view,
+                    "paused":paused,
+                    "mouseSize":mouseSize,
+                },
+                "codes":codesReverse,
+                "pixelMap":compressedMap
+            }
         }
+        function loadSave(saveJSON) {
+            if (!saveJSON.pixelMap) { return }
+            var compressedMap = saveJSON.pixelMap;
+            if (!compressedMap) {
+                alert("Invalid save file - missing pixelMap."); return;
+            }
+            var saveConfig = saveJSON.saveConfig || {};
+            compressedMap = compressedMap.replace(/¤/g,"],[").replace(/°/g,"³³³").replace(/¾/g,'"¥§').replace(/½/g,'},').replace(/¼/g,'":').replace(/¡/g,":false").replace(/¥/g,":true").replace(/¶/g,'{"').replace(/®/g,'"}],[').replace(/¦/g,"¸©").replace(/³/g,"×××").replace(/¸/g,'"},{"').replace(/©/g,"element»").replace(/§/g,',"').replace(/»/g,'":"').replace(/×/g,",0");
+            var savePixelSize = saveConfig.pixelSize||6;
+            resizeCanvas(saveConfig.height*savePixelSize+savePixelSize,saveConfig.width*savePixelSize+savePixelSize,savePixelSize);
+            clearAll();
+            if (saveConfig.settings) {
+                for (var key in saveConfig.settings) {
+                    settings[key] = saveConfig.settings[key];
+                }
+            }
+            if (saveConfig.mods) {
+                var modConfirm = false;
+                for (var i = 0; i < saveConfig.mods.length; i++) {
+                    if (enabledMods.indexOf(saveConfig.mods[i]) === -1) {
+                        modConfirm = confirm("Install included mods for this save? Only continue if you trust this file's source. They may or may not be necessary.\n\n"+saveConfig.mods.join("\n"));
+                        break;
+                    }
+                }
+                if (modConfirm) {
+                    for (var i = 0; i < saveConfig.mods.length; i++) {
+                        if (enabledMods.indexOf(saveConfig.mods[i]) === -1) {
+                            addMod(saveConfig.mods[i],true);
+                        }
+                    }
+                    window.location.reload();
+                }
+            }
+            tps = saveConfig.tps||30;
+            resetInterval(tps);
+            if (saveConfig.currentElement) {
+                selectElement(saveConfig.currentElement||"sand");
+                selectCategory(elements[currentElement].category);
+            }
+            if (saveConfig.mouseSize) { mouseSize = saveConfig.mouseSize };
+            if (saveConfig.view) { setView(saveConfig.view) };
+            if (saveConfig.paused && !paused) { togglePause(); }
+            pixelarray = JSON.parse(compressedMap);
+            for (var x = 0; x < pixelarray.length; x++) {
+                for (var y = 0; y < pixelarray[x].length; y++) {
+                    var pixel = pixelarray[x][y];
+                    if (pixel) {
+                        for (var prop in pixel) {
+                            if (saveJSON.codes[prop]) {
+                                pixel[saveJSON.codes[prop]] = pixel[prop];
+                                delete pixel[prop];
+                            }
+                            if (pixel.element) {
+                                pixel.element = saveJSON.codes[pixel.element]||pixel.element;
+                                if (!elements[pixel.element]) {
+                                    pixel.element = "unknown";
+                                }
+                            }
+                        }
+                        createPixel(pixel.element,x,y);
+                        // set the properties
+                        for (var prop in pixel) {
+                            pixelMap[x][y][prop] = pixel[prop];
+                        }
+                    }
+                    else {
+                        pixelarray[x][y] = undefined;
+                    }
+                }
+            }
+            pixelTicks = saveConfig.pixelTicks||0;
+            currentSaveData = {
+                "seriesIndex":saveJSON.meta.seriesIndex,
+                "uuid":saveJSON.meta.uuid,
+                "seriesId":saveJSON.meta.seriesId,
+                "created":saveJSON.meta.created,
+            }
+            return pixelarray;
+        }
+
         function explodeAt(x,y,radius,fire="fire") {
             // if fire contains , split it into an array
             if (fire.indexOf(",") !== -1) {
@@ -11151,7 +11429,7 @@
                         continue;
                     }
                     else if (damage > 0.25) {
-                        if (info.breakInto) {
+                        if (info.breakInto !== undefined) {
                             breakPixel(pixel);
                             continue;
                         }
@@ -11176,7 +11454,7 @@
             }
         }
         function breakPixel(pixel) {
-            if (!elements[pixel.element].breakInto) {return;}
+            if (elements[pixel.element].breakInto === undefined) {return;}
             // if it is an array, choose a random item, else just use the value
             if (Array.isArray(elements[pixel.element].breakInto)) {
                 var result = elements[pixel.element].breakInto[Math.floor(Math.random() * elements[pixel.element].breakInto.length)];
@@ -11268,11 +11546,11 @@
                     ctx.fillStyle = pixel.color;
                 }
                 else if (view === 2) { // thermal view
-                    // set the color to pixel.temp, from hottest at 0 hue to coldest 225 hue, with the minimum being -273, max being 6000
                     var temp = pixel.temp;
-                    if (temp < -273) {temp = -273}
+                    if (temp < -50) {temp = -50}
                     if (temp > 6000) {temp = 6000}
-                    var hue = 225 - (temp/6000)*225;
+                    // logarithmic scale, with coldest being 225 (-50 degrees) and hottest being 0 (6000 degrees)
+                    var hue = Math.round(225 - (Math.log(temp+50)/Math.log(6000+50))*225);
                     if (hue < 0) {hue = 0}
                     if (hue > 225) {hue = 225}
                     ctx.fillStyle = "hsl("+hue+",100%,50%)";
@@ -11363,15 +11641,20 @@
             }
             var topLeft = [mousePos.x-mouseOffset,mousePos.y-mouseOffset];
             var bottomRight = [mousePos.x+mouseOffset,mousePos.y+mouseOffset];
-            // Draw a rectangle around the mouse
+            // Draw a square around the mouse
             ctx.strokeStyle = "white";
             ctx.strokeRect(topLeft[0]*pixelSize,topLeft[1]*pixelSize,(bottomRight[0]-topLeft[0]+1)*pixelSize,(bottomRight[1]-topLeft[1]+1)*pixelSize);
+            // draw one transparent pixel in the center
+            ctx.fillStyle = "rgba(255,255,255,0.5)";
+            ctx.fillRect(mousePos.x*pixelSize,mousePos.y*pixelSize,pixelSize,pixelSize);
             updateStats();
             //ticks ++;
         }
     
         currentElement = "sand";
         currentColor = "#ff0000";
+        currentSaveData = null;
+        savingState = null;
         mouseIsDown = false;
         isMobile = false;
         // detect if mobile
@@ -11387,7 +11670,7 @@
                 return false;
             }
             mouseIsDown = true;
-            lastPlace = 0;
+            lastPlace = -100;
             if (e.button === 0) {
                 mouseType = "left";
             }
@@ -11516,7 +11799,7 @@
         mouseSize = 5;
         mousePos = {x:0,y:0};
         lastPos = mousePos;
-        lastPlace = 0;
+        lastPlace = -100;
         function mouseRange(mouseX,mouseY,size) {
             var coords = [];
             size = size || mouseSize;
@@ -11575,7 +11858,6 @@
                 var x = coords[i][0];
                 var y = coords[i][1];
 
-                // If element name is heat or cool
                 if (currentElement === "heat" || currentElement === "cool") {
                     if (!isEmpty(x,y,false)) {
                         if (outOfBounds(x,y)) {
@@ -11775,7 +12057,7 @@
             }
         }
         function resetPrompt() {
-            if (settings.resetwarning===0 || currentPixels.length===0 || confirm('Are you sure you want to clear the whole scene?')) {clearAll();};
+            if (settings.resetwarning===0 || currentPixels.length===0 || confirm('Are you sure you want to clear the whole scene?')) {autoResizeCanvas()};
         }
         function doFrame() {
             if (!paused) {
@@ -11786,6 +12068,7 @@
         }
 
         function selectElement(element) {
+            if (!elements[element]) { element = "unknown" }
             if (elements[currentElement].onUnselect) {
                 elements[currentElement].onUnselect();
             }
@@ -11831,6 +12114,7 @@
             return maxElement;
         }
         function selectCategory(category) {
+            if (!category) { return; }
             var categoryButton = document.getElementById("categoryButton-"+category);
             if (!categoryButton) {return}
             // if categoryButton has the class "notify", remove it
@@ -11860,6 +12144,9 @@
             else { // reset view
                 view = null;
             }
+        }
+        function centerMouse() {
+            mousePos = {x:width/2,y:height/2};
         }
 
         function handleElementButtonClick() {
@@ -12159,6 +12446,7 @@
         function clearAll() {
             currentPixels = [];
             pixelMap = [];
+            currentSaveData = null;
             for (var i = 0; i < width; i++) {
                 pixelMap[i] = [];
                 for (var j = 0; j < height; j++) {
@@ -12723,6 +13011,17 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                 modManagerUrl.value = "";
                 showingMenu = false;
             }
+            else if (showingMenu == "saves") {
+                var savesParent = document.getElementById("savesParent");
+                savesParent.style.display = "none";
+                showingMenu = false;
+            }
+            else if (showingMenu == "savePrompt") {
+                var savePrompt = document.getElementById("savePromptParent");
+                savePrompt.style.display = "none";
+                showingMenu = false;
+                savingState = null;
+            }
             else if (showingMenu == "settings") {
                 var settingsParent = document.getElementById("settingsParent");
                 settingsParent.style.display = "none";
@@ -12744,7 +13043,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             modManagerUrl.focus();
             showingMenu = "mods";
         }
-        function addMod(url) {
+        function addMod(url,noMessage) {
             // remove trailing slashes
             while (url.charAt(url.length-1) == "/") { url = url.substring(0, url.length-1); }
             // if the mod is in enabledMods, return
@@ -12757,7 +13056,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                 return;
             }
             // if the url doesn't start with http, add "mods/" to the beginning
-            if (url.indexOf("http") == -1) { url = "mods/"+url; }
+            if (url.indexOf("http") == -1 && url.indexOf("mods/") == -1) { url = "mods/"+url; }
             // add it to enabledMods and set the localStorage
             enabledMods.push(url);
             localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
@@ -12766,7 +13065,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             var modName = url.split("/").pop();
             modManagerList.innerHTML += "<li><a href='" + url + "' target='_blank'>" + modName + "</a> <span class='removeModX' onclick='removeMod(\"" + url + "\")'>X</span></li>";
             document.getElementById("noMods").style.display = "none";
-            alert("Added mod. Refresh the page to see changes.");
+            if (!noMessage) { alert("Added mod. Refresh the page to see changes."); }
         }
         function removeMod(url) {
             // remove url from enabledMods and set the localStorage
@@ -12791,6 +13090,124 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             }
             alert("Removed mod. Refresh the page to see changes.");
         }
+        function showSaves() {
+            var savesParent = document.getElementById("savesParent");
+            var saveSlotList = document.getElementById("saveSlotList");
+            saveSlotList.innerHTML = "";
+            // loop 12 times, checking if local storage SandboxelsSaves/x exists
+            // <span class="saveSlot">Slot 1 <span disabled="true">Clear</span> <span disabled="true">Load</span> <span onclick="saveSlot(2)">Save</span></span>
+            // <span class="saveSlot">Unnamed <span onclick="clearSlot(2)">Clear</span> <span onclick="loadSlot(2)">Load</span> <span onclick="saveSlot(2)">Save</span></span>
+            for (var i = 1; i < 13; i++) {
+                var save = localStorage.getItem("SandboxelsSaves/"+i);
+                var name = "Slot "+i;
+                if (save) {
+                    name = JSON.parse(save).meta.name || "Unnamed";
+                    name = name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+                    saveSlotList.innerHTML += "<span id='saveSlot"+i+"' data-name='"+name+"' class='saveSlot'><span class='saveSlotName'>"+name+"</span> <span onclick='clearSlot("+i+")' class='saveOption'>Clear</span> <span onclick='loadSlot("+i+")' class='saveOption'>Load</span> <span onclick='saveSlot("+i+")' class='saveOption'>Save</span></span>";
+                }
+                else {
+                    saveSlotList.innerHTML += "<span id='saveSlot"+i+"' data-name='"+name+"' class='saveSlot'><span class='saveSlotName'>"+name+"</span> <span disabled='true' class='saveOption'>Clear</span> <span disabled='true' class='saveOption'>Load</span> <span onclick='saveSlot("+i+")' class='saveOption'>Save</span></span>";
+                }
+            }
+            savesParent.style.display = "block";
+            showingMenu = "saves";
+        }
+        function saveSlot(i) {
+            savingState = {slot:i};
+            document.getElementById("saveName").value = document.getElementById("saveSlot"+i).getAttribute("data-name") || "Slot "+i;
+            showSavePrompt();
+        }
+        function loadSlot(i) {
+            var save = localStorage.getItem("SandboxelsSaves/"+i);
+            if (save) {
+                loadSave(JSON.parse(save));
+                closeMenu();
+            }
+        }
+        function clearSlot(i) {
+            if (!confirm("Are you sure you want to erase this save slot?")) { return }
+            localStorage.removeItem("SandboxelsSaves/"+i);
+            showSaves();
+        }
+        function confirmSave() {
+            if (!savingState) { return }
+            var saveName = document.getElementById("saveName").value || "Unnamed";
+            var saveTemp = document.getElementById("saveTemp").getAttribute("state") === "1";
+            var saveColors = document.getElementById("saveColors").getAttribute("state") === "1";
+            var saveMods = document.getElementById("saveMods").getAttribute("state") === "1";
+            var saveSettings = document.getElementById("saveSettings").getAttribute("state") === "1";
+            var config = {name:saveName,temp:saveTemp,mods:saveMods,settings:saveSettings,keep:[]};
+            if (saveTemp) { config.keep.push("temp") }
+            if (saveColors) { config.keep.push("color") }
+            if (savingState.slot) {
+                // save stringified generateSave() to localStorage SandboxelsSaves/i
+                localStorage.setItem("SandboxelsSaves/"+savingState.slot, JSON.stringify(generateSave(undefined,config)));
+                closeMenu();
+                showSaves();
+            }
+            else {
+                // save to <name>.sbxls
+                var save = generateSave(undefined,config);
+                var blob = new Blob([JSON.stringify(save)], {type: "application/json"});
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement("a");
+                a.href = url;
+                a.download = saveName+".sbxls";
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(function() {
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                }, 0);
+                closeMenu();
+            }
+        }
+        function saveToFile() {
+            savingState = {slot:null};
+            document.getElementById("saveName").value = "";
+            showSavePrompt();
+        }
+        function loadFromFile() {
+            var input = document.createElement("input");
+            input.type = "file";
+            input.accept = ".sbxls, .json, .txt";
+            input.onchange = e => {
+                var file = e.target.files[0];
+                var reader = new FileReader();
+                reader.readAsText(file,"UTF-8");
+                reader.onload = readerEvent => {
+                    var content = readerEvent.target.result;
+                        loadSave(JSON.parse(content));
+                }
+                closeMenu();
+            }
+            input.click();
+        }
+        function showSavePrompt() {
+            closeMenu();
+            var savePromptParent = document.getElementById("savePromptParent");
+            var saveWarning = document.getElementById("saveWarning");
+            saveWarning.innerHTML = "<br>"
+            var menuTitle = document.querySelector("#savePromptMenu .menuTitle");
+            if (savingState.slot === null) {
+                menuTitle.innerHTML = "Save to File";
+            }
+            else {
+                menuTitle.innerHTML = "Save to Slot";
+                if (localStorage["SandboxelsSaves/"+savingState.slot]) {
+                    saveWarning.innerHTML += "<br>This will overwrite the save in slot "+savingState.slot+"!";
+                }
+            }
+            var saveMods = document.getElementById("saveMods");
+            if (enabledMods.length !== 0) {
+                saveMods.style.display = "inline-block";
+                saveWarning.innerHTML += "<br>Mods might not be necessary to include, and may annoy the user!";
+            }
+            else { saveMods.style.display = "none"; }
+            savePromptParent.style.display = "block";
+            showingMenu = "savePrompt";
+            document.getElementById("saveName").focus();
+        }
         function showSettings() {
             var settingsParent = document.getElementById("settingsParent");
             settingsParent.style.display = "block";
@@ -12800,16 +13217,16 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             settings[setting] = value;
             saveSettings();
         }
-        function toggleInput(input,setting) {
+        function toggleInput(input,setting,updateText) {
             if (input.getAttribute("state") === "0") {
                 input.setAttribute("state","1");
-                input.value = "ON";
-                setSetting(setting,1);
+                if (updateText !== false) { input.value = "ON"; }
+                if (setting) { setSetting(setting,1); }
             }
             else {
                 input.setAttribute("state","0");
-                input.value = "OFF";
-                setSetting(setting,0);
+                if (updateText !== false) { input.value = "OFF"; }
+                if (setting) { setSetting(setting,0); }
             }
         }
 
@@ -12834,897 +13251,954 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
         paused = false;
         function focusGame() { document.getElementById("game").focus(); if(showingMenu) { closeMenu(); } }
         //on window load
-        window.onload = function() {
-            // If the browser is Firefox, set #categoryControls padding-bottom:11px;
-            if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
-                document.getElementById("categoryControls").style.paddingBottom = "11px";
-            }
+window.onload = function() {
+    // If the browser is Firefox, set #categoryControls padding-bottom:11px;
+    if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+        document.getElementById("categoryControls").style.paddingBottom = "11px";
+    }
 
-            // Loop through runAfterLoadList and run each function
-            for (var i = 0; i < runAfterLoadList.length; i++) {
-                runAfterLoadList[i]();
-            }
+    // Loop through runAfterLoadList and run each function
+    for (var i = 0; i < runAfterLoadList.length; i++) {
+        runAfterLoadList[i]();
+    }
 
-            // Unknown fallback element
-            elements.unknown = {
-                hidden: true,
-                tool: function(){},
-                canPlace: false,
-                excludeRandom: true,
-                "desc": "Fallback for invalid elements."
-            }
+    // Unknown fallback element
+    elements.unknown = {
+        hidden: true,
+        tool: function(){},
+        canPlace: false,
+        excludeRandom: true,
+        "desc": "Fallback for invalid elements."
+    }
 
-            // Loop through behaviors and each behavior, if it is a string, split the items and replace the value with the array
-            for (var behavior in behaviors) {
-                if (typeof behaviors[behavior][0] === "string") {
-                    var newbehavior = [];
-                    for (var i = 0; i < behaviors[behavior].length; i++) {
-                        newbehavior.push(behaviors[behavior][i].split("|"));
-                    }
-                    behaviors[behavior] = newbehavior;
-                }
+    // Loop through behaviors and each behavior, if it is a string, split the items and replace the value with the array
+    for (var behavior in behaviors) {
+        if (typeof behaviors[behavior][0] === "string") {
+            var newbehavior = [];
+            for (var i = 0; i < behaviors[behavior].length; i++) {
+                newbehavior.push(behaviors[behavior][i].split("|"));
             }
+            behaviors[behavior] = newbehavior;
+        }
+    }
 
-            // convert every color in the elements object to rgb
-            for (var key in elements) {
-                if (elements.hasOwnProperty(key)) {
-                    // if the element has no color, skip it
-                    if (elements[key].color === undefined) {
-                        continue;
-                    }
-                    // if the color is an array, loop over each one
-                    if (elements[key].color instanceof Array) {
-                        var rgbs = [];
-                        var rgbos = [];
-                        for (var i = 0; i < elements[key].color.length; i++) {
-                            var c = elements[key].color[i];
-                            if (c.startsWith("#")) {
-                                var rgb = hexToRGB(c);
-                                rgbs.push("rgb("+rgb.r+","+rgb.g+","+rgb.b+")");
-                                rgbos.push(rgb);
-                            }
-                            else {
-                                rgbs.push(c);
-                            }
-                        }
-                        elements[key].color = rgbs;
-                        elements[key].colorObject = rgbos;
-                    } else {
-                        // if elements[key].color starts with #
-                        if (elements[key].color.startsWith("#")) {
-                            var rgb = hexToRGB(elements[key].color);
-                            elements[key].color = "rgb("+rgb.r+","+rgb.g+","+rgb.b+")";
-                            elements[key].colorObject = rgb;
-                        }
-                    }
-                }
+    // convert every color in the elements object to rgb
+    for (var key in elements) {
+        if (elements.hasOwnProperty(key)) {
+            // if the element has no color, skip it
+            if (elements[key].color === undefined) {
+                continue;
             }
-
-            autoElements = {
-                "molten": { // Solid -> Liquid
-                    rgb: [ [2,1.25,0.5], [2,1,0.5], [2,0.75,0] ],
-                    behavior: behaviors.MOLTEN,
-                    type: "high",
-                    viscosity: 10000,
-                    hidden: true,
-                    state: "liquid",
-                    tempDiff: -100
-                },
-                "frozen": { // Liquid -> Solid
-                    rgb: [ [1.2,1.2,1.3] ],
-                    behavior: behaviors.WALL,
-                    type: "low",
-                    hidden: true,
-                    state: "solid"
-                },
-                "condense": { // Gas -> Liquid
-                    rgb: [ [0.5,0.5,0.5] ],
-                    behavior: behaviors.LIQUID,
-                    type: "low",
-                    hidden: true,
-                    state: "liquid"
-                },
-                "vaporize": { // Liquid -> Gas
-                    rgb: [ [1.5,1.5,1.5] ],
-                    behavior: behaviors.GAS,
-                    type: "high",
-                    hidden: true,
-                    state: "gas"
-                }
-            }
-
-            // Automatic molten element generation
-            function autoGen(newname,element,autoType) {
-                var autoInfo = autoElements[autoType];
-                var newcolor = elements[element].colorObject;
-                var colorList = [];
-                var colorObjectList = [];
-                // if newcolor is not an array, put it in an array
-                if (!(newcolor instanceof Array)) { newcolor = [newcolor]; }
-                // for every color in the newcolor array, add a new color with the same value, but with the r and g values increased
-                for (var i = 0; i < newcolor.length; i++) {
-                    var c = newcolor[i];
-                    for (var j = 0; j < autoInfo.rgb.length; j++) {
-                        var newc = autoInfo.rgb[j];
-                        r = Math.floor(c.r * newc[0]);
-                        g = Math.floor(c.g * newc[1]);
-                        b = Math.floor(c.b * newc[2]);
-                        if (r > 255) {r = 255;} if (g > 255) {g = 255;}
-                        colorList.push("rgb("+r+","+g+","+b+")");
-                        colorObjectList.push({r:r,g:g,b:b});
-                    }
-                }
-                var newelem = {
-                    //"name": newname.replaceAll("_"," "),
-                    behavior: autoInfo.behavior,
-                    hidden: autoInfo.hidden || false,
-                    state: autoInfo.state || "solid",
-                    category: autoInfo.category || "states"
-                }
-                if (colorList.length <= 1) { colorList = colorList[0]; }
-                if (colorObjectList.length <= 1) { colorObjectList = colorObjectList[0]; }
-                newelem.color = colorList;
-                newelem.colorObject = colorObjectList;
-                var multiplier = 1.1;
-                if (autoInfo.type === "high") {
-                    if (!elements[element].stateHigh) {elements[element].stateHigh = newname;}
-                    newelem.temp = elements[element].tempHigh;
-                    newelem.tempLow = elements[element].tempHigh+(autoInfo.tempDiff || 0);
-                    newelem.stateLow = element;
-                    // Change density by *0.9
-                    if (elements[element].density) { newelem.density = Math.round(elements[element].density * 0.9 * 10) / 10; }
-                }
-                else if (autoInfo.type === "low") {
-                    if (!elements[element].stateLow) {elements[element].stateLow = newname;}
-                    newelem.temp = elements[element].tempLow;
-                    newelem.tempHigh = elements[element].tempLow+(autoInfo.tempDiff || 0);
-                    newelem.stateHigh = element;
-                    multiplier = 0.5;
-                    // Change density by *1.1
-                    if (elements[element].density) { newelem.density = Math.round(elements[element].density * 1.1 * 10) / 10; }
-                }
-                if (!elements[element].ignore) { elements[element].ignore = [] }
-                elements[element].ignore.push(newname);
-                if (elements[element].viscosity || autoInfo.viscosity) {
-                    newelem.viscosity = elements[element].viscosity || autoInfo.viscosity;
-                }
-                // Change by *multiplier
-                if (elements[element].conduct) { newelem.conduct = Math.round(elements[element].conduct * multiplier * 10) / 10; }
-                if (elements[element].burn) { newelem.burn = Math.round(elements[element].burn * multiplier * 10) / 10; }
-                if (elements[element].burnTime) { newelem.burnTime = Math.round(elements[element].burnTime * multiplier * 10) / 10; }
-                if (elements[element].burnInto) { newelem.burnInto = elements[element].burnInto; }
-                if (elements[element].fireColor) { newelem.fireColor = elements[element].fireColor; }
-                // If the new element doesn't exist, add it
-                if (!elements[newname]) { elements[newname] = newelem; }
-                else {
-                    // Loop through newelem's keys and values, copy them to the new element if they are not already defined
-                    for (var key in newelem) {
-                        if (elements[newname][key] == undefined) { elements[newname][key] = newelem[key]; }
-                    }
-                }
-
-                if (autoType === "molten" && (elements.molten_slag && elements.molten_slag.ignore && elements.molten_slag.ignore.indexOf(element) === -1)) { // Slag reactions
-                    if (newname !== "molten_slag") {
-                        if (!elements[newname].reactions) { elements[newname].reactions = {}; }
-                        elements[newname].reactions.ash = { elem1:null, elem2:"molten_slag" };
-                        elements[newname].reactions.dust = { elem1:null, elem2:"molten_slag" };
-                        elements[newname].reactions.magma = { elem1:null, elem2:"molten_slag" }
-                        elements[newname].reactions.smog = { elem1:null, elem2:"molten_slag" }
-                        elements[newname].reactions.pyrocumulus = { elem1:null, elem2:"molten_slag" }
-                        elements[newname].reactions.dioxin = { elem1:null, elem2:"molten_slag" }
-                        elements[newname].reactions.poison_gas = { elem1:null, elem2:"molten_slag" }
-                        elements[newname].reactions.dirt = { elem1:null, elem2:"molten_slag" }
-                        elements[newname].reactions.molten_dirt = { elem1:null, elem2:"molten_slag" }
-                    };
-                }
-            }
-            // Loop through each element. If it has a tempHigh, but not a stateHigh, create a new molten element
-            for (element in elements) {
-                if (elements[element].tempHigh!==undefined && (elements[element].stateHigh===undefined||elements[element].forceAutoGen)) {
-                    var newname = elements[element].stateHighName;
-                    if ((elements[element].state==="solid" || !elements[element].state)) { // Melting
-                        if (!newname) { newname = "molten_"+element }
-                        autoGen(newname,element,"molten");
-                    }
-                    else if (elements[element].state==="liquid") { // Evaporating
-                        if (!newname) {
-                            newname = element;
-                            if (newname.startsWith("liquid_")) { newname = newname.substring(7); }
-                            if (newname.startsWith("molten_")) { newname = newname.substring(7); }
-                            newname += "_gas";
-                        }
-                        autoGen(newname,element,"vaporize");
-                    }
-                }
-                if (elements[element].tempLow!==undefined && (elements[element].stateLow===undefined||elements[element].forceAutoGen)) {
-                    var newname = elements[element].stateLowName;
-                    if (elements[element].state==="liquid") { // Freezing
-                        if (!newname) {
-                            newname = element;
-                            if (newname.startsWith("liquid_")) { newname = newname.substring(7); }
-                            if (newname.endsWith("_water")) { newname = newname.substring(0,newname.length-6); }
-                            newname += "_ice";
-                        }
-                        autoGen(newname,element,"frozen");
-                    }
-                    else if (elements[element].state==="gas") { // Condensing
-                        if (!newname) {
-                            newname = element;
-                            if (newname.endsWith("_gas")) { newname = newname.substring(0,newname.length-4); }
-                            newname = "liquid_"+newname;
-                        }
-                        autoGen(newname,element,"condense");
-                    }
-                }
-                if (elements[element].behavior && typeof elements[element].behavior[0] === "string") {
-                    var newbehavior = [];
-                    for (var i = 0; i < elements[element].behavior.length; i++) {
-                        newbehavior.push(elements[element].behavior[i].split("|"));
-                    }
-                    elements[element].behavior = newbehavior;
-                }
-                if (elements[element].behaviorOn && typeof elements[element].behaviorOn[0] === "string") {
-                    var newbehavior = [];
-                    for (var i = 0; i < elements[element].behaviorOn.length; i++) {
-                        newbehavior.push(elements[element].behaviorOn[i].split("|"));
-                    }
-                    elements[element].behaviorOn = newbehavior;
-                }
-            }
-            
-            // Loop through each element, final checks
-            nextid = 1;
-            for (key in elements) {
-                elements[key].id = nextid;
-                nextid++;
-                // If the element has no behavior, set it to behaviors.WALL
-                if (!elements[key].behavior && !elements[key].tick) {
-                    elements[key].tick = function(pixel) {};
-                }
-                // If the behavior is a function, delete it and set tick to it instead
-                if (typeof elements[key].behavior === "function") {
-                    if (elements[key].tick) {
-                        elements[key].tick1 = elements[key].tick;
-                        elements[key].tick2 = elements[key].behavior;
-                        elements[key].tick = function(pixel) {
-                            if (pixel.start === pixelTicks) {return}
-                            var id = elements[pixel.element].id;
-                            elements[pixel.element].tick1(pixel);
-                            if (!pixel.del && id === elements[pixel.element].id) {
-                                elements[pixel.element].tick2(pixel);
-                            }
-                        }
+            // if the color is an array, loop over each one
+            if (elements[key].color instanceof Array) {
+                var rgbs = [];
+                var rgbos = [];
+                for (var i = 0; i < elements[key].color.length; i++) {
+                    var c = elements[key].color[i];
+                    if (c.startsWith("#")) {
+                        var rgb = hexToRGB(c);
+                        rgbs.push("rgb("+rgb.r+","+rgb.g+","+rgb.b+")");
+                        rgbos.push(rgb);
                     }
                     else {
-                        elements[key].tick = elements[key].behavior;
-                    }
-                    delete elements[key].behavior;
-                }
-                // If the element has no color, set it to white
-                if (elements[key].color === undefined) {
-                    elements[key].color = "rgb(255,255,255)";
-                    elements[key].colorObject = {r:255,g:255,b:255};
-                }
-                if (elements[key].movable === undefined) {
-                    // If the element's behavior is an array and contains M1 or M2, set its movable to true
-                    if (elements[key].behavior && typeof elements[key].behavior[0] === "object") {
-                        var bstring = JSON.stringify(elements[key].behavior);
-                        if (bstring.indexOf("M1")!==-1 || bstring.indexOf("M2")!==-1) { elements[key].movable = true; }
-                    }
-                    if (elements[key].tick) { elements[key].movable = true; }
-                }
-                if (elements[key].behavior) {
-                    // If the element's behavior[1][1] includes "FX", set it's flippableX to true
-                    if (elements[key].behavior[1][1].indexOf("FX") !== -1) {
-                        elements[key].flippableX = true;
-                    }
-                    // If the element's behavior[1][1] includes "FY", set it's flippableY to true
-                    if (elements[key].behavior[1][1].indexOf("FY") !== -1) {
-                        elements[key].flippableY = true;
-                    }
-
-                    // If the element's behavior stringified includes "BO", loop through the behavior
-                    if (elements[key].behavior.toString().indexOf("BO") !== -1 && !elements[key].rotatable) {
-                        for (var i = 0; i < elements[key].behavior.length; i++) {
-                            // Loop through each array in the behavior
-                            for (var j = 0; j < elements[key].behavior[i].length; j++) {
-                                // If the behavior includes "BO", set the behaviorOn to the behavior
-                                if (elements[key].behavior[i][j].indexOf("BO") !== -1) {
-                                    if ((i==0 && j==0) || (i==0 && j==2) || (i==2 && j==0) && (i==2 && j==2)) {
-                                        elements[key].flippableX = true;
-                                        elements[key].flippableY = true;
-                                    }
-                                    else if (i==0 || i==2) {
-                                        elements[key].flippableY = true;
-                                    }
-                                    else if (j==0 || j==2) {
-                                        elements[key].flippableX = true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    // If the element's behavior[1][1] includes "RT", set it's rotatable to "true"
-                    if (elements[key].behavior[1][1].indexOf("RT") !== -1) {
-                        elements[key].rotatable = true;
-                    }
-
-                }
-
-                // If the element's state is "gas", isGas = true
-                if (elements[key].state === "gas") {
-                    elements[key].isGas = true;
-                }
-                // Else if the state is not "solid" or "liquid", delete it
-                else if (elements[key].state !== "solid" && elements[key].state !== "liquid") {
-                    delete elements[key].state;
-                }
-
-                // If the element has reactions, loop through each one (it is an object), if the value for elem1 or elem2 is not an element and is not null, remove that key
-                if (elements[key].reactions) {
-                    for (var reaction in elements[key].reactions) {
-                        // If elem1 exists
-                        if (elements[key].reactions[reaction].elem1) {
-                            // If elem1 is an array, loop through each element, else check once. Don't delete if it === null
-                            if (Array.isArray(elements[key].reactions[reaction].elem1)) {
-                                for (var i = 0; i < elements[key].reactions[reaction].elem1.length; i++) {
-                                    if (elements[key].reactions[reaction].elem1[i] && !elements[elements[key].reactions[reaction].elem1[i]]) {
-                                        elements[key].reactions[reaction].elem1.splice(i,1);
-                                    }
-                                }
-                            }
-                            else if (elements[key].reactions[reaction].elem1 && !elements[elements[key].reactions[reaction].elem1]) {
-                                delete elements[key].reactions[reaction].elem1;
-                            }
-                        }
-                        // If elem2 exists
-                        if (elements[key].reactions[reaction].elem2) {
-                            // If elem2 is an array, loop through each element, else check once. Don't delete if it === null
-                            if (Array.isArray(elements[key].reactions[reaction].elem2)) {
-                                for (var i = 0; i < elements[key].reactions[reaction].elem2.length; i++) {
-                                    if (elements[key].reactions[reaction].elem2[i] && !elements[elements[key].reactions[reaction].elem2[i]]) {
-                                        elements[key].reactions[reaction].elem2.splice(i,1);
-                                    }
-                                }
-                            }
-                            else if (elements[key].reactions[reaction].elem2 && !elements[elements[key].reactions[reaction].elem2]) {
-                                delete elements[key].reactions[reaction].elem2;
-                            }
-                        }
+                        rgbs.push(c);
                     }
                 }
-
-                // If the element's stateHigh or stateLow is not an element, remove it and tempHigh/Low
-                if (elements[key].stateHigh) {
-                    // If it's an array, do it for each item, otherwise, just do it once
-                    if (Array.isArray(elements[key].stateHigh)) {
-                        for (var i = 0; i < elements[key].stateHigh.length; i++) {
-                            if (!elements[elements[key].stateHigh[i]] && elements[key].stateHigh[i] !== null) {
-                                elements[key].stateHigh.splice(i,1);
-                            }
-                        }
-                        if (elements[key].stateHigh.length == 0) {
-                            delete elements[key].stateHigh;
-                            delete elements[key].tempHigh;
-                        }
-                    }
-                    else {
-                        if (!elements[elements[key].stateHigh] && elements[key].stateHigh !== null) {
-                            delete elements[key].stateHigh;
-                            delete elements[key].tempHigh;
-                        }
-                    }
-                }
-                if (elements[key].stateLow) {
-                    if (Array.isArray(elements[key].stateLow)) {
-                        for (var i = 0; i < elements[key].stateLow.length; i++) {
-                            if (!elements[elements[key].stateLow[i]] && elements[key].stateLow[i] !== null) {
-                                elements[key].stateLow.splice(i,1);
-                            }
-                        }
-                        if (elements[key].stateLow.length == 0) {
-                            delete elements[key].stateLow;
-                            delete elements[key].tempLow;
-                        }
-                    }
-                    else {
-                        if (!elements[elements[key].stateLow] && elements[key].stateLow !== null) {
-                            delete elements[key].stateLow;
-                            delete elements[key].tempLow;
-                        }
-                    }
-                }
-                // same for burnInto
-                if (elements[key].burnInto) {
-                    if (Array.isArray(elements[key].burnInto)) {
-                        for (var i = 0; i < elements[key].burnInto.length; i++) {
-                            if (!elements[elements[key].burnInto[i]]) {
-                                delete elements[key].burnInto[i];
-                            }
-                        }
-                        if (elements[key].burnInto.length == 0) {
-                            delete elements[key].burnInto;
-                        }
-                    }
-                    else {
-                        if (!elements[elements[key].burnInto]) {
-                            delete elements[key].burnInto;
-                        }
-                    }
-                }
-                // same for breakInto
-                if (elements[key].breakInto) {
-                    if (Array.isArray(elements[key].breakInto)) {
-                        for (var i = 0; i < elements[key].breakInto.length; i++) {
-                            if (elements[key].breakInto[i]!==null && !elements[elements[key].breakInto[i]]) { delete elements[key].breakInto[i]; }
-                        }
-                        if (elements[key].breakInto.length == 0) { delete elements[key].breakInto; }
-                    }
-                    else {
-                        if (elements[key].breakInto[i]!==null && !elements[elements[key].breakInto]) { delete elements[key].breakInto; }
-                    }
-                }
-
-                if (elements[key].colorPattern) {
-                    if (!elements[key].colorKey) {
-                        delete elements[key].colorPattern;
-                    }
-                    else {
-                    var newPattern = [];
-                    for (var i = 0; i < elements[key].colorPattern.length; i++) {
-                        newPattern.push([]);
-                        var line = elements[key].colorPattern[i];
-                        // loop through each character in the line
-                        for (var j = 0; j < line.length; j++) {
-                            var char = line[j];
-                            if (elements[key].colorKey[char]) {
-                                if (elements[key].colorKey[char].startsWith("#")) {
-                                    var rgb = hexToRGB(elements[key].colorKey[char]);
-                                    elements[key].colorKey[char] = "rgb("+rgb.r+","+rgb.g+","+rgb.b+")";
-                                }
-                                newPattern[i].push(elements[key].colorKey[char]);
-                            }
-                            else {
-                                newPattern[i].push("rgb(255,255,255)");
-                            }
-                        }
-                    }
-                    elements[key].colorPattern = newPattern;
-                    delete elements[key].colorKey;
-                    }
-                }
-
-
-            }
-
-            // Generate worldgen options
-            // Loop through the worldgentypes object, add the key to the #worldgenselect select as an option with the value of the key and the name of the key capitalized and underscores replaced with spaces
-            for (var key in worldgentypes) {
-                document.getElementById("worldgenselect").innerHTML += "<option value='" + key + "'>" + key.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase()) + "</option>";
-            }
-            if (settings["worldgen"] && !worldgentypes[settings["worldgen"]]) {
-                settings["worldgen"] = "off";
-            }
-
-            // Loop through randomEventChoices, and loop through the array of each. If the element doesn't exist, remove it from the array.
-            for (var key in randomEventChoices) {
-                for (var i = 0; i < randomEventChoices[key].length; i++) {
-                    if (!elements[randomEventChoices[key][i]]) {
-                        randomEventChoices[key].splice(i,1);
-                    }
+                elements[key].color = rgbs;
+                elements[key].colorObject = rgbos;
+            } else {
+                // if elements[key].color starts with #
+                if (elements[key].color.startsWith("#")) {
+                    var rgb = hexToRGB(elements[key].color);
+                    elements[key].color = "rgb("+rgb.r+","+rgb.g+","+rgb.b+")";
+                    elements[key].colorObject = rgb;
                 }
             }
-            
-            // Poison == poison gas reactions
-            if (elements.poison && elements.poison_gas) {
-                if (elements.poison.reactions) {
-                    elements.poison_gas.reactions = elements.poison.reactions;
-                }
-            }
+        }
+    }
 
-            // Load settings
-            // Loop through all the elements with setting-span class.
-            // If the span's setting attribute is in settings, set the first select or input to the value of the setting.
-            var settingSpans = document.getElementsByClassName("setting-span");
-            for (var i = 0; i < settingSpans.length; i++) {
-                var setting = settingSpans[i].getAttribute("setting");
-                if (setting in settings) {
-                    var settingValue = settings[setting];
-                    var toggleButtons = settingSpans[i].getElementsByClassName("toggleInput");
-                    if (toggleButtons.length > 0) {
-                        if (settingValue == 1) {
-                            toggleButtons[0].setAttribute("state","1");
-                            toggleButtons[0].value = "ON";
-                        }
-                        else {
-                            toggleButtons[0].setAttribute("state","0");
-                            toggleButtons[0].value = "OFF";
-                        }
-                    }
-                    else {
-                        var settingElements = settingSpans[i].getElementsByTagName("select")
-                        if (settingElements.length === 0) {
-                            settingElements = settingSpans[i].getElementsByTagName("input");
-                        }
-                        if (settingElements.length > 0) {
-                            settingElements[0].value = settingValue;
-                        }
-                    }
-                }
-            }
-            
+    autoElements = {
+        "molten": { // Solid -> Liquid
+            rgb: [ [2,1.25,0.5], [2,1,0.5], [2,0.75,0] ],
+            behavior: behaviors.MOLTEN,
+            type: "high",
+            viscosity: 10000,
+            hidden: true,
+            state: "liquid",
+            tempDiff: -100
+        },
+        "frozen": { // Liquid -> Solid
+            rgb: [ [1.2,1.2,1.3] ],
+            behavior: behaviors.WALL,
+            type: "low",
+            hidden: true,
+            state: "solid"
+        },
+        "condense": { // Gas -> Liquid
+            rgb: [ [0.5,0.5,0.5] ],
+            behavior: behaviors.LIQUID,
+            type: "low",
+            hidden: true,
+            state: "liquid"
+        },
+        "vaporize": { // Liquid -> Gas
+            rgb: [ [1.5,1.5,1.5] ],
+            behavior: behaviors.GAS,
+            type: "high",
+            hidden: true,
+            state: "gas"
+        }
+    }
 
+    // Automatic molten element generation
+    function autoGen(newname,element,autoType) {
+        var autoInfo = autoElements[autoType];
+        var newcolor = elements[element].colorObject;
+        var colorList = [];
+        var colorObjectList = [];
+        // if newcolor is not an array, put it in an array
+        if (!(newcolor instanceof Array)) { newcolor = [newcolor]; }
+        // for every color in the newcolor array, add a new color with the same value, but with the r and g values increased
+        for (var i = 0; i < newcolor.length; i++) {
+            var c = newcolor[i];
+            for (var j = 0; j < autoInfo.rgb.length; j++) {
+                var newc = autoInfo.rgb[j];
+                r = Math.floor(c.r * newc[0]);
+                g = Math.floor(c.g * newc[1]);
+                b = Math.floor(c.b * newc[2]);
+                if (r > 255) {r = 255;} if (g > 255) {g = 255;}
+                colorList.push("rgb("+r+","+g+","+b+")");
+                colorObjectList.push({r:r,g:g,b:b});
+            }
+        }
+        var newelem = {
+            //"name": newname.replaceAll("_"," "),
+            behavior: autoInfo.behavior,
+            hidden: autoInfo.hidden || false,
+            state: autoInfo.state || "solid",
+            category: autoInfo.category || "states"
+        }
+        if (colorList.length <= 1) { colorList = colorList[0]; }
+        if (colorObjectList.length <= 1) { colorObjectList = colorObjectList[0]; }
+        newelem.color = colorList;
+        newelem.colorObject = colorObjectList;
+        var multiplier = 1.1;
+        if (autoInfo.type === "high") {
+            if (!elements[element].stateHigh) {elements[element].stateHigh = newname;}
+            newelem.temp = elements[element].tempHigh;
+            newelem.tempLow = elements[element].tempHigh+(autoInfo.tempDiff || 0);
+            newelem.stateLow = element;
+            // Change density by *0.9
+            if (elements[element].density) { newelem.density = Math.round(elements[element].density * 0.9 * 10) / 10; }
+        }
+        else if (autoInfo.type === "low") {
+            if (!elements[element].stateLow) {elements[element].stateLow = newname;}
+            newelem.temp = elements[element].tempLow;
+            newelem.tempHigh = elements[element].tempLow+(autoInfo.tempDiff || 0);
+            newelem.stateHigh = element;
+            multiplier = 0.5;
+            // Change density by *1.1
+            if (elements[element].density) { newelem.density = Math.round(elements[element].density * 1.1 * 10) / 10; }
+        }
+        if (!elements[element].ignore) { elements[element].ignore = [] }
+        elements[element].ignore.push(newname);
+        if (elements[element].viscosity || autoInfo.viscosity) {
+            newelem.viscosity = elements[element].viscosity || autoInfo.viscosity;
+        }
+        // Change by *multiplier
+        if (elements[element].conduct) { newelem.conduct = Math.round(elements[element].conduct * multiplier * 10) / 10; }
+        if (elements[element].burn) { newelem.burn = Math.round(elements[element].burn * multiplier * 10) / 10; }
+        if (elements[element].burnTime) { newelem.burnTime = Math.round(elements[element].burnTime * multiplier * 10) / 10; }
+        if (elements[element].burnInto) { newelem.burnInto = elements[element].burnInto; }
+        if (elements[element].fireColor) { newelem.fireColor = elements[element].fireColor; }
+        // If the new element doesn't exist, add it
+        if (!elements[newname]) { elements[newname] = newelem; }
+        else {
+            // Loop through newelem's keys and values, copy them to the new element if they are not already defined
+            for (var key in newelem) {
+                if (elements[newname][key] == undefined) { elements[newname][key] = newelem[key]; }
+            }
+        }
 
-            var gameCanvas = document.getElementById("game");
-            // Get context
-            var ctx = gameCanvas.getContext("2d");
-            if (window.innerWidth < 700) {
-                var newWidth = Math.ceil(window.innerWidth / pixelSize) * pixelSize;
-                var newHeight = Math.ceil(window.innerHeight*0.6 / pixelSize) * pixelSize;
-            }
-            else {
-                var newWidth  = Math.ceil(window.innerWidth*0.9 / pixelSize) * pixelSize;
-                var newHeight = Math.ceil(window.innerHeight*0.675 / pixelSize) * pixelSize;
-            }
-            // If the new width is greater than 1000, set it to 1000
-            if (newWidth > 1000) { newWidth = 1000; }
-            // If we are on a desktop and the new height is greater than 500, set it to 500
-            if (window.innerWidth > 1000 && newHeight > 500) { newHeight = 500; }
-            ctx.canvas.width = newWidth;
-            ctx.canvas.height = newHeight;
-            document.getElementById("gameDiv").style.width = newWidth + "px";
-            document.getElementById("loadingP").style.display = "none";
-            document.getElementById("canvasDiv").style.display = "block";
-
-
-            width = Math.round(newWidth/pixelSize)-1;
-            height = Math.round(newHeight/pixelSize)-1;
-            mousePos = {x:width/2,y:height/2};
-            if (settings["worldgen"]) {
-                clearAll();
-            }
-            else {
-                // Object with width arrays of pixels starting at 0
-                pixelMap = [];
-                for (var i = 0; i < width; i++) {
-                    pixelMap[i] = [];
-                }
-            }
-            // randomChoices = the keys of "elements" with any element with the category "tools" or the property excludeRandom set to true removed
-            randomChoices = Object.keys(elements).filter(function(e) {
-                return elements[e].excludeRandom != true && elements[e].category != "tools" && !elements[e].tool;
-            });
-            gameCanvas.addEventListener("mousedown", mouseClick);
-            gameCanvas.addEventListener("touchstart", mouseClick, { passive: false });
-            window.addEventListener("mouseup", mouseUp);
-            window.addEventListener("touchend", mouseUp, { passive: false });
-            window.addEventListener("mousemove", mouseMove);
-            gameCanvas.addEventListener("touchmove", mouseMove, { passive: false });
-            gameCanvas.addEventListener("wheel", wheelHandle);
-            gameCanvas.ontouchstart = function(e) {
-                if (e.touches) e = e.touches[0];
-                return false;
-            }
-            gameCanvas.addEventListener("dragenter", function(e){e.stopPropagation(); e.preventDefault();})
-            gameCanvas.addEventListener("dragover", function(e){e.stopPropagation(); e.preventDefault();})
-            gameCanvas.addEventListener("drop", function(e){
-                e.stopPropagation();
-                e.preventDefault();
-                var url = e.dataTransfer.getData('text/plain');
-                if (url) {
-                    var img = new Image();
-                    img.onload = function(){placingImage = img; placeImage(); placingImage = null;}
-                    img.src = url;
-                // for img file(s), read the file & draw to canvas
-                } else {
-                    console.log(e.dataTransfer.files)
-                    if (!e.dataTransfer.files || e.dataTransfer.files.length === 0) { return; }
-                    var file = e.dataTransfer.files[0];
-                    if (file.type.indexOf('image/') === -1) { return; }
-                    var img = document.createElement("img");
-                    img.classList.add("obj");
-                    img.file = file;
-                    var reader = new FileReader();
-                    reader.onload = (function(aImg){
-                        return function(e) {
-                            aImg.onload=function(){
-                                placingImage = aImg;
-                                placeImage();
-                                placingImage = null;
-                            }
-                            // e.target.result is a dataURL for the image
-                            aImg.src = e.target.result;
-                        }; 
-                    })(img);
-                    reader.readAsDataURL(file);
-                }
-            }, false);
-            // if pasted image, draw to canvas
-            window.addEventListener("paste", function(e){
-                if (e.clipboardData) {
-                    var items = e.clipboardData.items;
-                    if (!items) { return; }
-                    var item = items[items.length-1];
-                    if (item.type.indexOf('image/') === -1) { return; }
-                    var blob = item.getAsFile();
-                    var URLObj = window.URL || window.webkitURL;
-                    var source = URLObj.createObjectURL(blob);
-                    var img = new Image();
-                    img.onload = function(){placingImage = img; placeImage(); placingImage = null;}
-                    img.src = source;
-                }
-            }, false);
-            window.onbeforeunload = function(){ // Confirm leaving page if there are pixels on-screen
-                if (currentPixels.length > 0){
-                    return 'Are you sure you want to leave?';
-                }
+        if (autoType === "molten" && (elements.molten_slag && elements.molten_slag.ignore && elements.molten_slag.ignore.indexOf(element) === -1)) { // Slag reactions
+            if (newname !== "molten_slag") {
+                if (!elements[newname].reactions) { elements[newname].reactions = {}; }
+                elements[newname].reactions.ash = { elem1:null, elem2:"molten_slag" };
+                elements[newname].reactions.dust = { elem1:null, elem2:"molten_slag" };
+                elements[newname].reactions.magma = { elem1:null, elem2:"molten_slag" }
+                elements[newname].reactions.smog = { elem1:null, elem2:"molten_slag" }
+                elements[newname].reactions.pyrocumulus = { elem1:null, elem2:"molten_slag" }
+                elements[newname].reactions.dioxin = { elem1:null, elem2:"molten_slag" }
+                elements[newname].reactions.poison_gas = { elem1:null, elem2:"molten_slag" }
+                elements[newname].reactions.dirt = { elem1:null, elem2:"molten_slag" }
+                elements[newname].reactions.molten_dirt = { elem1:null, elem2:"molten_slag" }
             };
-            document.getElementById("game").oncontextmenu = function(e) { e.preventDefault(); return false; }
-            // If the user presses [ or -, decrease the mouse size by 2
-            document.addEventListener("keydown", function(e) {
-                if (e.ctrlKey || e.metaKey) {
-                    return
+        }
+    }
+    // Loop through each element. If it has a tempHigh, but not a stateHigh, create a new molten element
+    for (element in elements) {
+        if (elements[element].tempHigh!==undefined && (elements[element].stateHigh===undefined||elements[element].forceAutoGen)) {
+            var newname = elements[element].stateHighName;
+            if ((elements[element].state==="solid" || !elements[element].state)) { // Melting
+                if (!newname) { newname = "molten_"+element }
+                autoGen(newname,element,"molten");
+            }
+            else if (elements[element].state==="liquid") { // Evaporating
+                if (!newname) {
+                    newname = element;
+                    if (newname.startsWith("liquid_")) { newname = newname.substring(7); }
+                    if (newname.startsWith("molten_")) { newname = newname.substring(7); }
+                    newname += "_gas";
                 }
-                // else if tab, set document.body.class to "usingTab"
-                else if (e.keyCode == 9) {
-                    document.body.classList.add("usingTab");
+                autoGen(newname,element,"vaporize");
+            }
+        }
+        if (elements[element].tempLow!==undefined && (elements[element].stateLow===undefined||elements[element].forceAutoGen)) {
+            var newname = elements[element].stateLowName;
+            if (elements[element].state==="liquid") { // Freezing
+                if (!newname) {
+                    newname = element;
+                    if (newname.startsWith("liquid_")) { newname = newname.substring(7); }
+                    if (newname.endsWith("_water")) { newname = newname.substring(0,newname.length-6); }
+                    newname += "_ice";
                 }
-                // F1 = hide #underDiv, #infoParent, #modParent, #pagetitle, #colorSelector if they aren't hidden, otherwise show them
-                if (e.keyCode == 112) {
-                    e.preventDefault();
-                    if (document.getElementById("underDiv").style.display == "none") {
-                        document.getElementById("underDiv").style.display = "block";
-                        document.getElementById("pagetitle").style.display = "block";
-                        document.getElementById("colorSelector").style.display = "block";
-                        document.getElementById("bottomInfoBox").style.display = "block";
-                    } else {
-                        document.getElementById("underDiv").style.display = "none";
-                        if (showingMenu) {
-                            closeMenu()
-                        };
-                        document.getElementById("pagetitle").style.display = "none";
-                        document.getElementById("colorSelector").style.display = "none";
-                        document.getElementById("bottomInfoBox").style.display = "none";
+                autoGen(newname,element,"frozen");
+            }
+            else if (elements[element].state==="gas") { // Condensing
+                if (!newname) {
+                    newname = element;
+                    if (newname.endsWith("_gas")) { newname = newname.substring(0,newname.length-4); }
+                    newname = "liquid_"+newname;
+                }
+                autoGen(newname,element,"condense");
+            }
+        }
+        if (elements[element].behavior && typeof elements[element].behavior[0] === "string") {
+            var newbehavior = [];
+            for (var i = 0; i < elements[element].behavior.length; i++) {
+                newbehavior.push(elements[element].behavior[i].split("|"));
+            }
+            elements[element].behavior = newbehavior;
+        }
+        if (elements[element].behaviorOn && typeof elements[element].behaviorOn[0] === "string") {
+            var newbehavior = [];
+            for (var i = 0; i < elements[element].behaviorOn.length; i++) {
+                newbehavior.push(elements[element].behaviorOn[i].split("|"));
+            }
+            elements[element].behaviorOn = newbehavior;
+        }
+    }
+    
+    // Loop through each element, final checks
+    nextid = 1;
+    for (key in elements) {
+        elements[key].id = nextid;
+        nextid++;
+        // If the element has no behavior, set it to behaviors.WALL
+        if (!elements[key].behavior && !elements[key].tick) {
+            elements[key].tick = function(pixel) {};
+        }
+        // If the behavior is a function, delete it and set tick to it instead
+        if (typeof elements[key].behavior === "function") {
+            if (elements[key].tick) {
+                elements[key].tick1 = elements[key].tick;
+                elements[key].tick2 = elements[key].behavior;
+                elements[key].tick = function(pixel) {
+                    if (pixel.start === pixelTicks) {return}
+                    var id = elements[pixel.element].id;
+                    elements[pixel.element].tick1(pixel);
+                    if (!pixel.del && id === elements[pixel.element].id) {
+                        elements[pixel.element].tick2(pixel);
                     }
                 }
-                if (showingMenu) {
-                    // esc or / or tab / or \ (while in settings) to close
-                    if (e.keyCode == 27 || (e.keyCode == 191 && showingMenu=="info") || e.keyCode == 9 || (e.keyCode == 220 && showingMenu=="settings")) {
-                        e.preventDefault();
-                        closeMenu();
+            }
+            else {
+                elements[key].tick = elements[key].behavior;
+            }
+            delete elements[key].behavior;
+        }
+        // If the element has no color, set it to white
+        if (elements[key].color === undefined) {
+            elements[key].color = "rgb(255,255,255)";
+            elements[key].colorObject = {r:255,g:255,b:255};
+        }
+        if (elements[key].movable === undefined) {
+            // If the element's behavior is an array and contains M1 or M2, set its movable to true
+            if (elements[key].behavior && typeof elements[key].behavior[0] === "object") {
+                var bstring = JSON.stringify(elements[key].behavior);
+                if (bstring.indexOf("M1")!==-1 || bstring.indexOf("M2")!==-1) { elements[key].movable = true; }
+            }
+            if (elements[key].tick) { elements[key].movable = true; }
+        }
+        if (elements[key].behavior) {
+            // If the element's behavior[1][1] includes "FX", set it's flippableX to true
+            if (elements[key].behavior[1][1].indexOf("FX") !== -1) {
+                elements[key].flippableX = true;
+            }
+            // If the element's behavior[1][1] includes "FY", set it's flippableY to true
+            if (elements[key].behavior[1][1].indexOf("FY") !== -1) {
+                elements[key].flippableY = true;
+            }
+
+            // If the element's behavior stringified includes "BO", loop through the behavior
+            if (elements[key].behavior.toString().indexOf("BO") !== -1 && !elements[key].rotatable) {
+                for (var i = 0; i < elements[key].behavior.length; i++) {
+                    // Loop through each array in the behavior
+                    for (var j = 0; j < elements[key].behavior[i].length; j++) {
+                        // If the behavior includes "BO", set the behaviorOn to the behavior
+                        if (elements[key].behavior[i][j].indexOf("BO") !== -1) {
+                            if ((i==0 && j==0) || (i==0 && j==2) || (i==2 && j==0) && (i==2 && j==2)) {
+                                elements[key].flippableX = true;
+                                elements[key].flippableY = true;
+                            }
+                            else if (i==0 || i==2) {
+                                elements[key].flippableY = true;
+                            }
+                            else if (j==0 || j==2) {
+                                elements[key].flippableX = true;
+                            }
+                        }
                     }
-                    // enter to clear infoSearch
-                    else if (e.keyCode == 13 && showingMenu == "info") {
-                        var infoSearch = document.getElementById("infoSearch");
-                        infoSearch.value = "";
-                        showInfo();
-                    }
-                    return;
                 }
-                if (e.keyCode == 219 || e.keyCode == 189) {
-                    if (shiftDown) {mouseSize = 1}
+            }
+
+            // If the element's behavior[1][1] includes "RT", set it's rotatable to "true"
+            if (elements[key].behavior[1][1].indexOf("RT") !== -1) {
+                elements[key].rotatable = true;
+            }
+
+        }
+
+        // If the element's state is "gas", isGas = true
+        if (elements[key].state === "gas") {
+            elements[key].isGas = true;
+        }
+        // Else if the state is not "solid" or "liquid", delete it
+        else if (elements[key].state !== "solid" && elements[key].state !== "liquid") {
+            delete elements[key].state;
+        }
+
+        // If the element has reactions, loop through each one (it is an object), if the value for elem1 or elem2 is not an element and is not null, remove that key
+        if (elements[key].reactions) {
+            for (var reaction in elements[key].reactions) {
+                // If elem1 exists
+                if (elements[key].reactions[reaction].elem1) {
+                    // If elem1 is an array, loop through each element, else check once. Don't delete if it === null
+                    if (Array.isArray(elements[key].reactions[reaction].elem1)) {
+                        for (var i = 0; i < elements[key].reactions[reaction].elem1.length; i++) {
+                            if (elements[key].reactions[reaction].elem1[i] && !elements[elements[key].reactions[reaction].elem1[i]]) {
+                                elements[key].reactions[reaction].elem1.splice(i,1);
+                            }
+                        }
+                    }
+                    else if (elements[key].reactions[reaction].elem1 && !elements[elements[key].reactions[reaction].elem1]) {
+                        delete elements[key].reactions[reaction].elem1;
+                    }
+                }
+                // If elem2 exists
+                if (elements[key].reactions[reaction].elem2) {
+                    // If elem2 is an array, loop through each element, else check once. Don't delete if it === null
+                    if (Array.isArray(elements[key].reactions[reaction].elem2)) {
+                        for (var i = 0; i < elements[key].reactions[reaction].elem2.length; i++) {
+                            if (elements[key].reactions[reaction].elem2[i] && !elements[elements[key].reactions[reaction].elem2[i]]) {
+                                elements[key].reactions[reaction].elem2.splice(i,1);
+                            }
+                        }
+                    }
+                    else if (elements[key].reactions[reaction].elem2 && !elements[elements[key].reactions[reaction].elem2]) {
+                        delete elements[key].reactions[reaction].elem2;
+                    }
+                }
+            }
+        }
+
+        // If the element's stateHigh or stateLow is not an element, remove it and tempHigh/Low
+        if (elements[key].stateHigh) {
+            // If it's an array, do it for each item, otherwise, just do it once
+            if (Array.isArray(elements[key].stateHigh)) {
+                for (var i = 0; i < elements[key].stateHigh.length; i++) {
+                    if (!elements[elements[key].stateHigh[i]] && elements[key].stateHigh[i] !== null) {
+                        elements[key].stateHigh.splice(i,1);
+                    }
+                }
+                if (elements[key].stateHigh.length == 0) {
+                    delete elements[key].stateHigh;
+                    delete elements[key].tempHigh;
+                }
+            }
+            else {
+                if (!elements[elements[key].stateHigh] && elements[key].stateHigh !== null) {
+                    delete elements[key].stateHigh;
+                    delete elements[key].tempHigh;
+                }
+            }
+        }
+        if (elements[key].stateLow) {
+            if (Array.isArray(elements[key].stateLow)) {
+                for (var i = 0; i < elements[key].stateLow.length; i++) {
+                    if (!elements[elements[key].stateLow[i]] && elements[key].stateLow[i] !== null) {
+                        elements[key].stateLow.splice(i,1);
+                    }
+                }
+                if (elements[key].stateLow.length == 0) {
+                    delete elements[key].stateLow;
+                    delete elements[key].tempLow;
+                }
+            }
+            else {
+                if (!elements[elements[key].stateLow] && elements[key].stateLow !== null) {
+                    delete elements[key].stateLow;
+                    delete elements[key].tempLow;
+                }
+            }
+        }
+        // same for burnInto
+        if (elements[key].burnInto) {
+            if (Array.isArray(elements[key].burnInto)) {
+                for (var i = 0; i < elements[key].burnInto.length; i++) {
+                    if (!elements[elements[key].burnInto[i]]) {
+                        delete elements[key].burnInto[i];
+                    }
+                }
+                if (elements[key].burnInto.length == 0) {
+                    delete elements[key].burnInto;
+                }
+            }
+            else {
+                if (!elements[elements[key].burnInto]) {
+                    delete elements[key].burnInto;
+                }
+            }
+        }
+        // same for breakInto
+        if (elements[key].breakInto) {
+            if (Array.isArray(elements[key].breakInto)) {
+                for (var i = 0; i < elements[key].breakInto.length; i++) {
+                    if (elements[key].breakInto[i]!==null && !elements[elements[key].breakInto[i]]) { delete elements[key].breakInto[i]; }
+                }
+                if (elements[key].breakInto.length == 0) { delete elements[key].breakInto; }
+            }
+            else {
+                if (elements[key].breakInto[i]!==null && !elements[elements[key].breakInto]) { delete elements[key].breakInto; }
+            }
+        }
+
+        if (elements[key].colorPattern) {
+            if (!elements[key].colorKey) {
+                delete elements[key].colorPattern;
+            }
+            else {
+            var newPattern = [];
+            for (var i = 0; i < elements[key].colorPattern.length; i++) {
+                newPattern.push([]);
+                var line = elements[key].colorPattern[i];
+                // loop through each character in the line
+                for (var j = 0; j < line.length; j++) {
+                    var char = line[j];
+                    if (elements[key].colorKey[char]) {
+                        if (elements[key].colorKey[char].startsWith("#")) {
+                            var rgb = hexToRGB(elements[key].colorKey[char]);
+                            elements[key].colorKey[char] = "rgb("+rgb.r+","+rgb.g+","+rgb.b+")";
+                        }
+                        newPattern[i].push(elements[key].colorKey[char]);
+                    }
                     else {
-                        mouseSize -= 2;
-                        if (mouseSize < 1) { mouseSize = 1; }
+                        newPattern[i].push("rgb(255,255,255)");
                     }
-                }
-                // If the user presses ] or =, increase the mouse size by 2
-                if (e.keyCode == 221 || e.keyCode == 187) {
-                    if (shiftDown) {mouseSize = (mouseSize+15)-((mouseSize+15) % 15)}
-                    else {mouseSize += 2;}
-                    // if height>width and mouseSize>height, set mouseSize to height, if width>height and mouseSize>width, set mouseSize to width
-                    if (mouseSize > (height > width ? height : width)) { mouseSize = (height > width ? height : width); }
-                }
-                // User presses shift
-                else if (e.keyCode == 16) {
-                    if (event.location === KeyboardEvent.DOM_KEY_LOCATION_LEFT) {
-                        shiftDown = 1;
-                    } else if (event.location === KeyboardEvent.DOM_KEY_LOCATION_RIGHT) {
-                        shiftDown = 3;
-                    }
-                }
-                // User presses alt
-                else if (e.keyCode == 18) {
-                    if (event.location === KeyboardEvent.DOM_KEY_LOCATION_LEFT) {
-                        shiftDown = 2;
-                    } else if (event.location === KeyboardEvent.DOM_KEY_LOCATION_RIGHT) {
-                        shiftDown = 4;
-                    }
-                }
-                // p or spacebar or ` or k = pause
-                if (e.keyCode == 80 || e.keyCode == 32 || e.keyCode == 192 || e.keyCode == 75) {
-                    e.preventDefault();
-                    togglePause();
-                }
-                // e = chooseElementPrompt()
-                else if (e.keyCode == 69) {
-                    e.preventDefault();
-                    chooseElementPrompt();
-                }
-                // r = resetPrompt()
-                else if (e.keyCode == 82) {
-                    e.preventDefault();
-                    resetPrompt();
-                }
-                // . = doFrame()
-                else if (e.keyCode == 190) {
-                    e.preventDefault();
-                    doFrame();
-                }
-                // / or i = showInfo()
-                else if (e.keyCode == 191 || e.keyCode == 73) {
-                    e.preventDefault();
-                    showInfo();
-                }
-                // f = full screen
-                else if (e.keyCode == 70) {
-                    e.preventDefault();
-                    if (document.fullscreenElement) {
-                        document.exitFullscreen(document.documentElement);
-                    } else {
-                        requestFullScreen(document.documentElement);
-                    }
-                }
-                // 0-9 = setView(the number)
-                else if (e.keyCode >= 48 && e.keyCode <= 57) {
-                    // if not command or control down, set view to the number
-                    e.preventDefault();
-                    setView(e.keyCode-48);
-                }
-                // right arrow = switch the category to the one after the current category
-                else if (e.keyCode == 39) {
-                    e.preventDefault();
-                    // in categoryControls, find the button with the class categoryButton and the attribute current="true"
-                    var currentButton = document.querySelector(".categoryButton[current='true']");
-                    var currentCategory = currentButton.getAttribute("category");
-                    // get the categoryButton that is after the current one in the div
-                    var nextButton = currentButton.nextElementSibling;
-                    // if there is no next button, go to the first one
-                    if (nextButton == null) {
-                        nextButton = document.querySelector(".categoryButton");
-                    }
-                    var nextCategory = nextButton.getAttribute("category");
-                    selectCategory(nextCategory);
-                    // focus on categoryControls
-                    document.getElementById("categoryControls").focus();
-                }
-                // left arrow = switch the category to the one before the current category
-                else if (e.keyCode == 37) {
-                    e.preventDefault();
-                    // in categoryControls, find the button with the class categoryButton and the attribute current="true"
-                    var currentButton = document.querySelector(".categoryButton[current='true']");
-                    var currentCategory = currentButton.getAttribute("category");
-                    // get the categoryButton that is before the current one in the div
-                    var prevButton = currentButton.previousElementSibling;
-                    // if there is no previous button, go to the last one
-                    if (prevButton == null) {
-                        prevButton = document.querySelector(".categoryButton:last-child");
-                    }
-                    var prevCategory = prevButton.getAttribute("category");
-                    selectCategory(prevCategory);
-                }
-                // m = closeMenu() and showModManager()
-                else if (e.keyCode == 77) {
-                    e.preventDefault();
-                    closeMenu();
-                    showModManager();
-                }
-                // \ = closeMenu() and showSettings()
-                else if (e.keyCode == 220) {
-                    e.preventDefault();
-                    closeMenu();
-                    showSettings();
-                }
-                // c or F2 = screenshot
-                else if (e.keyCode == 67 || e.keyCode == 113) {
-                    e.preventDefault();
-                    var link = document.createElement('a');
-                    link.setAttribute('download', 'sandboxels-screenshot.png');
-                    link.setAttribute('href', document.getElementById("game").toDataURL("image/png").replace("image/png", "image/octet-stream"));
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                }
-
-
-                // x = explodeAt()
-                /*else if (e.keyCode == 88) {
-                    e.preventDefault();
-                    explodeAt(mousePos.x, mousePos.y, Math.round(mouseSize/2));
-                }*/
-
-            });
-            // If the user releases either shift
-            document.addEventListener("keyup", function(e) {
-                if (e.keyCode == 16 || e.keyCode == 18) {
-                    shiftDown = 0;
-                    if (shaping) {
-                        shaping = 0;
-                        shapeStart = null;
-                    }
-                }
-            });
-            // when window blur, shiftDown = 0
-            window.addEventListener("blur", function(e) {
-                shiftDown = 0;
-                if (shaping) {
-                    shaping = 0;
-                    shapeStart = null;
-                }
-            });
-
-            // Create buttons for elements
-            // For each element type in elements, create a button in controls that sets the current element to that type
-            elementCount = 0;
-            hiddenCount = 0;
-            categoryList = [];
-            for (var element in elements) {
-                elementCount++;
-                if (settings.cheerful && elements[element].nocheer) {
-                    elements[element].hidden = true;
-                    hiddenCount++;
-                    continue;
-                }
-                if (element === "unknown") {continue;}
-                var category = elements[element].category;
-                if (category==null) {category="other"}
-                if (categoryList.indexOf(category) === -1) {
-                    categoryList.push(category);
-                }
-                if (elements[element].hidden && (!settings["unhide"] || ( settings["unhide"]===2 && !settings.unlocked[element] ))) { hiddenCount++; continue; }
-                var categoryDiv = document.getElementById("category-"+category);
-                if (categoryDiv == null) {
-                    createCategoryDiv(category);
-                    categoryDiv = document.getElementById("category-"+category);
-                }
-                createElementButton(element);
-            }
-            if (document.getElementById("categoryButton-states")) {
-                // move it to the end of its parent
-                document.getElementById("categoryButton-states").parentNode.appendChild(document.getElementById("categoryButton-states"));
-            }
-            // Set the first button in categoryControls div to be the current category
-            document.getElementById("categoryControls").children[0].click()
-            document.getElementById("extraInfo").insertAdjacentHTML("beforeend", "<small><p>v" + currentversion + " • " + elementCount + " elements, including " + hiddenCount + " hidden ones.</p><p>©2021-" + new Date().getFullYear() + ". All Rights Reserved. <a style='color:#00ffff' href='https://r74n.com'>R74n</a></p></small>");
-            selectElement(currentElement);
-            focusGame();
-            // For every button element, onkeyup="event.preventDefault()"
-            var buttonElements = document.getElementsByTagName("button");
-            for (var i = 0; i < buttonElements.length; i++) {
-                buttonElements[i].onkeyup = function(e) {
-                    e.preventDefault();
                 }
             }
+            elements[key].colorPattern = newPattern;
+            delete elements[key].colorKey;
+            }
+        }
 
-            if ((window.self !== window.top && !location.ancestorOrigins[0].includes("itch.io")) || (location.host && location.host.indexOf("74n.com") === -1)) {
-                // Open a message that tells the user they aren't on the real website
-                var menuParent = document.createElement("div");
-                menuParent.className = "menuParent";
-                menuParent.style.display = "block";
-                menuParent.innerHTML = `<div class="menuScreen">
+
+    }
+
+    // Generate worldgen options
+    // Loop through the worldgentypes object, add the key to the #worldgenselect select as an option with the value of the key and the name of the key capitalized and underscores replaced with spaces
+    for (var key in worldgentypes) {
+        document.getElementById("worldgenselect").innerHTML += "<option value='" + key + "'>" + key.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase()) + "</option>";
+    }
+    if (settings["worldgen"] && !worldgentypes[settings["worldgen"]]) {
+        settings["worldgen"] = "off";
+    }
+
+    // Loop through randomEventChoices, and loop through the array of each. If the element doesn't exist, remove it from the array.
+    for (var key in randomEventChoices) {
+        for (var i = 0; i < randomEventChoices[key].length; i++) {
+            if (!elements[randomEventChoices[key][i]]) {
+                randomEventChoices[key].splice(i,1);
+            }
+        }
+    }
+    
+    // Poison == poison gas reactions
+    if (elements.poison && elements.poison_gas) {
+        if (elements.poison.reactions) {
+            elements.poison_gas.reactions = elements.poison.reactions;
+        }
+    }
+
+    // Load settings
+    // Loop through all the elements with setting-span class.
+    // If the span's setting attribute is in settings, set the first select or input to the value of the setting.
+    var settingSpans = document.getElementsByClassName("setting-span");
+    for (var i = 0; i < settingSpans.length; i++) {
+        var setting = settingSpans[i].getAttribute("setting");
+        if (setting in settings) {
+            var settingValue = settings[setting];
+            var toggleButtons = settingSpans[i].getElementsByClassName("toggleInput");
+            if (toggleButtons.length > 0) {
+                if (settingValue == 1) {
+                    toggleButtons[0].setAttribute("state","1");
+                    toggleButtons[0].value = "ON";
+                }
+                else {
+                    toggleButtons[0].setAttribute("state","0");
+                    toggleButtons[0].value = "OFF";
+                }
+            }
+            else {
+                var settingElements = settingSpans[i].getElementsByTagName("select")
+                if (settingElements.length === 0) {
+                    settingElements = settingSpans[i].getElementsByTagName("input");
+                }
+                if (settingElements.length > 0) {
+                    settingElements[0].value = settingValue;
+                }
+            }
+        }
+    }
+    
+
+
+    var gameCanvas = document.getElementById("game");
+    // Get context
+    var ctx = gameCanvas.getContext("2d");
+    if (window.innerWidth < 700) {
+        var newWidth = Math.ceil(window.innerWidth / pixelSize) * pixelSize;
+        var newHeight = Math.ceil(window.innerHeight*0.6 / pixelSize) * pixelSize;
+    }
+    else {
+        var newWidth  = Math.ceil(window.innerWidth*0.9 / pixelSize) * pixelSize;
+        var newHeight = Math.ceil(window.innerHeight*0.675 / pixelSize) * pixelSize;
+    }
+    // If the new width is greater than 1000, set it to 1000
+    if (newWidth > 1000) { newWidth = 1000; }
+    // If we are on a desktop and the new height is greater than 500, set it to 500
+    if (window.innerWidth > 1000 && newHeight > 500) { newHeight = 500; }
+
+    autoResizeCanvas = function(clear) {
+        if (window.innerWidth < 700) {
+            pixelSize = 5;
+        } else {
+            pixelSize = 6;
+        }
+        if (window.innerWidth < 700) {
+            var newWidth = Math.ceil(window.innerWidth / pixelSize) * pixelSize;
+            var newHeight = Math.ceil(window.innerHeight*0.6 / pixelSize) * pixelSize;
+        }
+        else {
+            var newWidth  = Math.ceil(window.innerWidth*0.9 / pixelSize) * pixelSize;
+            var newHeight = Math.ceil(window.innerHeight*0.675 / pixelSize) * pixelSize;
+        }
+        // If the new width is greater than 1000, set it to 1000
+        if (newWidth > 1000) { newWidth = 1000; }
+        // If we are on a desktop and the new height is greater than 500, set it to 500
+        if (window.innerWidth > 1000 && newHeight > 500) { newHeight = 500; }
+        resizeCanvas(newHeight,newWidth,pixelSize,clear);
+    }
+    resizeCanvas = function(newHeight,newWidth,newPixelSize,clear) {
+        var gameCanvas = document.getElementById("game");
+        var ctx = gameCanvas.getContext("2d");
+        ctx.canvas.width = newWidth;
+        ctx.canvas.height = newHeight;
+        document.getElementById("gameDiv").style.width = newWidth + "px";
+        pixelSize = newPixelSize;
+        pixelSizeHalf = newPixelSize/2;
+        height = Math.round(newHeight/newPixelSize)-1;
+        width = Math.round(newWidth/newPixelSize)-1;
+        mousePos = {x:width/2,y:height/2};
+        if (clear!==false) { clearAll(); }
+    }
+    autoResizeCanvas(false);
+
+    document.getElementById("loadingP").style.display = "none";
+    document.getElementById("canvasDiv").style.display = "block";
+
+    if (settings["worldgen"]) {
+        clearAll();
+    }
+    else {
+        // Object with width arrays of pixels starting at 0
+        pixelMap = [];
+        for (var i = 0; i < width; i++) {
+            pixelMap[i] = [];
+        }
+    }
+    // randomChoices = the keys of "elements" with any element with the category "tools" or the property excludeRandom set to true removed
+    randomChoices = Object.keys(elements).filter(function(e) {
+        return elements[e].excludeRandom != true && elements[e].category != "tools" && !elements[e].tool;
+    });
+    gameCanvas.addEventListener("mousedown", mouseClick);
+    gameCanvas.addEventListener("touchstart", mouseClick, { passive: false });
+    window.addEventListener("mouseup", mouseUp);
+    window.addEventListener("touchend", mouseUp, { passive: false });
+    window.addEventListener("mousemove", mouseMove);
+    gameCanvas.addEventListener("touchmove", mouseMove, { passive: false });
+    gameCanvas.addEventListener("wheel", wheelHandle);
+    gameCanvas.ontouchstart = function(e) {
+        if (e.touches) e = e.touches[0];
+        return false;
+    }
+    gameCanvas.addEventListener("dragenter", function(e){e.stopPropagation(); e.preventDefault();})
+    gameCanvas.addEventListener("dragover", function(e){e.stopPropagation(); e.preventDefault();})
+    gameCanvas.addEventListener("drop", function(e){
+        e.stopPropagation();
+        e.preventDefault();
+        var url = e.dataTransfer.getData('text/plain');
+        if (url) {
+            var img = new Image();
+            img.onload = function(){placingImage = img; placeImage(); placingImage = null;}
+            img.src = url;
+        } else {
+            if (!e.dataTransfer.files || e.dataTransfer.files.length === 0) { return; }
+            var file = e.dataTransfer.files[0];
+            // for img file(s), read the file & draw to canvas
+            if (file.type.indexOf('image/') !== -1) {
+                var img = document.createElement("img");
+                img.classList.add("obj");
+                img.file = file;
+                var reader = new FileReader();
+                reader.onload = (function(aImg){
+                    return function(e) {
+                        aImg.onload=function(){
+                            placingImage = aImg;
+                            placeImage();
+                            placingImage = null;
+                        }
+                        // e.target.result is a dataURL for the image
+                        aImg.src = e.target.result;
+                    }; 
+                })(img);
+                reader.readAsDataURL(file);
+            }
+            else if (file.name.indexOf(".sbxls") !== -1 || file.name.indexOf(".json") !== -1) {
+                if (!confirm("Clear this scene and load save file?")) { return }
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    loadSave(JSON.parse(e.target.result));
+                }
+                reader.readAsText(file);
+            }
+        }
+    }, false);
+    // handle pasting
+    window.addEventListener("paste", function(e){
+        if (e.clipboardData) {
+            var items = e.clipboardData.items;
+            if (items.length === 0 && e.clipboardData.files.length !== 0) {
+                items = e.clipboardData.files;
+            }
+            if (!items) { return; }
+            var item = items[items.length-1];
+            console.log(item);
+            if (item.type.indexOf('image/') !== -1) {
+                var blob = item.getAsFile();
+                var URLObj = window.URL || window.webkitURL;
+                var source = URLObj.createObjectURL(blob);
+                var img = new Image();
+                img.onload = function(){placingImage = img; placeImage(); placingImage = null;}
+                img.src = source;
+            }
+            else if (item.type === "" || item.type.indexOf('application/json') !== -1) {
+                if (!confirm("Clear this scene and load save file?")) { return }
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    loadSave(JSON.parse(e.target.result));
+                }
+                reader.readAsText(item.getAsFile());
+            }
+        }
+    }, false);
+    window.onbeforeunload = function(){
+        if (currentPixels.length > 0){
+            return 'Are you sure you want to leave?';
+        }
+    };
+    document.getElementById("game").oncontextmenu = function(e) { e.preventDefault(); return false; }
+    document.addEventListener("keydown", function(e) {
+        if (e.ctrlKey || e.metaKey) {
+            return
+        }
+        // else if tab, set document.body.class to "usingTab"
+        else if (e.keyCode == 9) {
+            document.body.classList.add("usingTab");
+        }
+        // F1 = hide #underDiv, #infoParent, #modParent, #pagetitle, #colorSelector if they aren't hidden, otherwise show them
+        if (e.keyCode == 112) {
+            e.preventDefault();
+            if (document.getElementById("underDiv").style.display == "none") {
+                document.getElementById("underDiv").style.display = "block";
+                document.getElementById("pagetitle").style.display = "block";
+                if (elements[currentElement].customColor) { document.getElementById("colorSelector").style.display = "block"; }
+                document.getElementById("bottomInfoBox").style.display = "block";
+            } else {
+                document.getElementById("underDiv").style.display = "none";
+                if (showingMenu) {
+                    closeMenu()
+                };
+                document.getElementById("pagetitle").style.display = "none";
+                document.getElementById("colorSelector").style.display = "none";
+                document.getElementById("bottomInfoBox").style.display = "none";
+            }
+        }
+        if (showingMenu) {
+            // esc or / or tab / or \ (while in settings) to close
+            if (e.keyCode == 27 || (e.keyCode == 191 && showingMenu=="info") || e.keyCode == 9 || (e.keyCode == 220 && showingMenu=="settings")) {
+                e.preventDefault();
+                closeMenu();
+            }
+            // enter to clear infoSearch
+            else if (e.keyCode == 13 && showingMenu == "info") {
+                var infoSearch = document.getElementById("infoSearch");
+                infoSearch.value = "";
+                showInfo();
+            }
+            // l to closeMenu() if showing saves
+            else if (e.keyCode == 76 && showingMenu == "saves") {
+                e.preventDefault();
+                closeMenu();
+            }
+            return;
+        }
+        else {
+            if (e.keyCode == 27) {
+                e.preventDefault();
+                setView(1);
+            }
+        }
+        // [ or - = decrease the mouse size by 2
+        if (e.keyCode == 219 || e.keyCode == 189) {
+            if (shiftDown) {mouseSize = 1}
+            else {
+                mouseSize -= 2;
+                if (mouseSize < 1) { mouseSize = 1; }
+            }
+        }
+        // ] or = = increase the mouse size by 2
+        if (e.keyCode == 221 || e.keyCode == 187) {
+            if (shiftDown) {mouseSize = (mouseSize+15)-((mouseSize+15) % 15)}
+            else {mouseSize += 2;}
+            // if height>width and mouseSize>height, set mouseSize to height, if width>height and mouseSize>width, set mouseSize to width
+            if (mouseSize > (height > width ? height : width)) { mouseSize = (height > width ? height : width); }
+        }
+        else if (e.keyCode == 16) { // shift
+            if (event.location === KeyboardEvent.DOM_KEY_LOCATION_LEFT) {
+                shiftDown = 1;
+            } else if (event.location === KeyboardEvent.DOM_KEY_LOCATION_RIGHT) {
+                shiftDown = 3;
+            }
+        }
+        else if (e.keyCode == 18) { // alt
+            if (event.location === KeyboardEvent.DOM_KEY_LOCATION_LEFT) {
+                shiftDown = 2;
+            } else if (event.location === KeyboardEvent.DOM_KEY_LOCATION_RIGHT) {
+                shiftDown = 4;
+            }
+        }
+        // p or spacebar or ` or k = pause
+        if (e.keyCode == 80 || e.keyCode == 32 || e.keyCode == 192 || e.keyCode == 75) {
+            e.preventDefault();
+            togglePause();
+        }
+        // e = chooseElementPrompt()
+        else if (e.keyCode == 69) {
+            e.preventDefault();
+            chooseElementPrompt();
+        }
+        // r = resetPrompt()
+        else if (e.keyCode == 82) {
+            e.preventDefault();
+            resetPrompt();
+        }
+        // . = doFrame()
+        else if (e.keyCode == 190) {
+            e.preventDefault();
+            doFrame();
+        }
+        // / or i = showInfo()
+        else if (e.keyCode == 191 || e.keyCode == 73) {
+            e.preventDefault();
+            showInfo();
+        }
+        // f = full screen
+        else if (e.keyCode == 70) {
+            e.preventDefault();
+            if (document.fullscreenElement) {
+                document.exitFullscreen(document.documentElement);
+            } else {
+                requestFullScreen(document.documentElement);
+            }
+        }
+        // 0-9 = setView(the number)
+        else if (e.keyCode >= 48 && e.keyCode <= 57) {
+            // if not command or control down, set view to the number
+            e.preventDefault();
+            setView(e.keyCode-48);
+        }
+        // right arrow = switch the category to the one after the current category
+        else if (e.keyCode == 39) {
+            e.preventDefault();
+            // in categoryControls, find the button with the class categoryButton and the attribute current="true"
+            var currentButton = document.querySelector(".categoryButton[current='true']");
+            var currentCategory = currentButton.getAttribute("category");
+            // get the categoryButton that is after the current one in the div
+            var nextButton = currentButton.nextElementSibling;
+            // if there is no next button, go to the first one
+            if (nextButton == null) {
+                nextButton = document.querySelector(".categoryButton");
+            }
+            var nextCategory = nextButton.getAttribute("category");
+            selectCategory(nextCategory);
+            // focus on categoryControls
+            document.getElementById("categoryControls").focus();
+        }
+        // left arrow = switch the category to the one before the current category
+        else if (e.keyCode == 37) {
+            e.preventDefault();
+            // in categoryControls, find the button with the class categoryButton and the attribute current="true"
+            var currentButton = document.querySelector(".categoryButton[current='true']");
+            var currentCategory = currentButton.getAttribute("category");
+            // get the categoryButton that is before the current one in the div
+            var prevButton = currentButton.previousElementSibling;
+            // if there is no previous button, go to the last one
+            if (prevButton == null) {
+                prevButton = document.querySelector(".categoryButton:last-child");
+            }
+            var prevCategory = prevButton.getAttribute("category");
+            selectCategory(prevCategory);
+        }
+        // m = closeMenu() and showModManager()
+        else if (e.keyCode == 77) {
+            e.preventDefault();
+            closeMenu();
+            showModManager();
+        }
+        // \ = closeMenu() and showSettings()
+        else if (e.keyCode == 220) {
+            e.preventDefault();
+            closeMenu();
+            showSettings();
+        }
+        // l = showSaves()
+        else if (e.keyCode == 76) {
+            e.preventDefault();
+            showSaves();
+        }
+        // c or F2 = screenshot
+        else if (e.keyCode == 67 || e.keyCode == 113) {
+            e.preventDefault();
+            var link = document.createElement('a');
+            link.setAttribute('download', 'sandboxels-screenshot.png');
+            link.setAttribute('href', document.getElementById("game").toDataURL("image/png").replace("image/png", "image/octet-stream"));
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+    });
+    // If the user releases either shift
+    document.addEventListener("keyup", function(e) {
+        if (e.keyCode == 16 || e.keyCode == 18) {
+            shiftDown = 0;
+            if (shaping) {
+                shaping = 0;
+                shapeStart = null;
+            }
+        }
+    });
+    // when window blur, shiftDown = 0
+    window.addEventListener("blur", function(e) {
+        shiftDown = 0;
+        if (shaping) {
+            shaping = 0;
+            shapeStart = null;
+        }
+    });
+
+    // Create buttons for elements
+    // For each element type in elements, create a button in controls that sets the current element to that type
+    elementCount = 0;
+    hiddenCount = 0;
+    categoryList = [];
+    for (var element in elements) {
+        elementCount++;
+        if (settings.cheerful && elements[element].nocheer) {
+            elements[element].hidden = true;
+            hiddenCount++;
+            continue;
+        }
+        if (element === "unknown") {continue;}
+        var category = elements[element].category;
+        if (category==null) {category="other"}
+        if (categoryList.indexOf(category) === -1) {
+            categoryList.push(category);
+        }
+        if (elements[element].hidden && (!settings["unhide"] || ( settings["unhide"]===2 && !settings.unlocked[element] ))) { hiddenCount++; continue; }
+        var categoryDiv = document.getElementById("category-"+category);
+        if (categoryDiv == null) {
+            createCategoryDiv(category);
+            categoryDiv = document.getElementById("category-"+category);
+        }
+        createElementButton(element);
+    }
+    if (document.getElementById("categoryButton-states")) {
+        // move it to the end of its parent
+        document.getElementById("categoryButton-states").parentNode.appendChild(document.getElementById("categoryButton-states"));
+    }
+    // Set the first button in categoryControls div to be the current category
+    document.getElementById("categoryControls").children[0].click()
+    document.getElementById("extraInfo").insertAdjacentHTML("beforeend", "<small><p>v" + currentversion + " • " + elementCount + " elements, including " + hiddenCount + " hidden ones.</p><p>©2021-" + new Date().getFullYear() + ". All Rights Reserved. <a style='color:#00ffff' href='https://r74n.com'>R74n</a></p></small>");
+    selectElement(currentElement);
+    focusGame();
+    // For every button element, onkeyup="event.preventDefault()"
+    var buttonElements = document.getElementsByTagName("button");
+    for (var i = 0; i < buttonElements.length; i++) {
+        buttonElements[i].onkeyup = function(e) {
+            e.preventDefault();
+        }
+    }
+
+    if (((window.self !== window.top) || (location.host && location.host.indexOf("74n.com") === -1)) && !(location.ancestorOrigins[0].includes("itch.io") || location.ancestorOrigins[0].includes("vscode"))) {
+        // Open a message that tells the user they aren't on the real website
+        var menuParent = document.createElement("div");
+        menuParent.className = "menuParent";
+        menuParent.style.display = "block";
+        menuParent.innerHTML = `<div class="menuScreen">
 <button class="XButton" onclick="closeMenu();">-</button>
 <span class="menuTitle">WARNING</span>
 <div class="menuText" style="padding-top:1em">
-    You may be on a website that has embedded our game involuntarily.
-    <br><br>
-    The real game is at this URL: <a href="https://sandboxels.r74n.com" target="_blank">sandboxels.R74n.com</a>.
-    <br><br>
-    Please use the main website to support us instead.
-    <br><br>
-    You can also join our <a href="https://discord.gg/ejUc6YPQuS" target="_blank">Discord</a> if that isn't possible.
+You may be on a website that has embedded our game involuntarily.
+<br><br>
+The real game is at this URL: <a href="https://sandboxels.r74n.com" target="_blank">sandboxels.R74n.com</a>.
+<br><br>
+Please use the main website to support us instead.
+<br><br>
+You can also join our <a href="https://discord.gg/ejUc6YPQuS" target="_blank">Discord</a> if that isn't possible.
 </div>
 <br><br><br><br>
 </div>`
-                document.body.appendChild(menuParent);
-                showingMenu = "alert";
-            }
-            //get the first .elementButton in the first .category, and selectElement(button.element)
-            var firstDiv = document.getElementsByClassName("category")[0];
-            var firstElementButton = firstDiv.getElementsByClassName("elementButton")[0];
-            selectElement(firstElementButton.getAttribute("element"));
+        document.body.appendChild(menuParent);
+        showingMenu = "alert";
+    }
+    //get the first .elementButton in the first .category, and selectElement(button.element)
+    var firstDiv = document.getElementsByClassName("category")[0];
+    var firstElementButton = firstDiv.getElementsByClassName("elementButton")[0];
+    selectElement(firstElementButton.getAttribute("element"));
 
-        }
+}
     </script>
     <link rel="stylesheet" type="text/css" href="style.css?nocache=3">
 </head>
@@ -13757,12 +14231,13 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             document.getElementById('elementButton-'+currentElement).style.background = currentColor;" oninput="currentColor=this.value;
             document.getElementById('elementButton-'+currentElement).style.removeProperty('background-image');
             document.getElementById('elementButton-'+currentElement).style.background = currentColor;">
+            <div id="logDiv"><span id="logText"></span></div>
         </div>
         <div id="underDiv">
             <div id="stats"></div>
             <div id="controls">
                 <div id="toolControls">
-                    <button id="pauseButton" title="Pause/play the simulation" class="controlButton" onclick='togglePause();focusGame();' on="false">Pause</button><button id="frameButton" title="Pause and play one frame" class="controlButton" onclick='doFrame();focusGame();' on="false">Step</button><button id="sizeDownButton" title="Decrease the brush size" class="controlButton" onclick="mouseSize -= 2;if (mouseSize < 1) { mouseSize = 1; };focusGame();">-</button><button id="sizeUpButton" title="Increase the brush size" class="controlButton" onclick="mouseSize += 2;if (mouseSize > (height > width ? height : width)) { mouseSize = (height > width ? height : width); };focusGame();">+</button><button id="resetButton" title="Clear the entire scene" class="controlButton" onclick="resetPrompt();focusGame();">Reset</button><button id="replaceButton" title="Override existing pixels when placing" class="controlButton" onclick='if (mode == "replace") {mode = null;this.setAttribute("on","false");}else {mode = "replace";this.setAttribute("on","true");};focusGame();' on="false">Replace</button><button id="elemSelectButton" title="Select an element by name" class="controlButton" onclick='chooseElementPrompt();focusGame();'>E</button><button id="tpsButton" title="Change the simulation Ticks Per Second (TPS)" class="controlButton" onclick='var newtps = parseInt(prompt("Enter the new simulation Ticks Per Second (TPS). This is how many updates per second the simulation will run.\n\nThe default is 30.\n\nThe current TPS is " + tps + "."));if (newtps !== null) {if (isNaN(newtps) || newtps == "" || newtps == "0") {alert("You did not enter a valid TPS.");}else if (newtps > 1000) {alert("You entered a TPS that is too high. The TPS will be set to the maximum, 1000.");tps = 1000;}else {tps = parseInt(newtps);if (isNaN(tps)) {alert("You did not enter a valid TPS.");tps = 30;}}resetInterval(tps);}focusGame();'>Tps</button><!--<button id="hideButton" title="Stops updating the scene to allow more resources towards simulation" class="controlButton" onclick='if (hiding) {hiding = false;this.setAttribute("on","false");}else {hiding = true;this.setAttribute("on","true");};focusGame();' on="false">Hide</button>--><button id="infoButton" title="Brings up the element info screen" class="controlButton" onclick='if (showingMenu!="info"){closeMenu();showInfo("")}else{closeMenu()};' on="false">Info</button><button id="modsButton" title="Brings up the Mod Manager" class="controlButton" onclick='if (showingMenu!="mods"){closeMenu();showModManager()}else{closeMenu()};' on="false">Mods</button><button id="settingsButton" title="Brings up the settings screen" class="controlButton" onclick='if (showingMenu!="settings"){closeMenu();showSettings()}else{closeMenu()};' on="false">Settings</button>
+                    <button id="pauseButton" title="Pause/play the simulation" class="controlButton" onclick='togglePause();focusGame();' on="false">Pause</button><button id="frameButton" title="Pause and play one frame" class="controlButton" onclick='doFrame();focusGame();' on="false">&gt;</button><button id="sizeDownButton" title="Decrease the brush size" class="controlButton" onclick="mouseSize -= 2;if (mouseSize < 1) { mouseSize = 1; };centerMouse();focusGame();">-</button><button id="sizeUpButton" title="Increase the brush size" class="controlButton" onclick="mouseSize += 2;if (mouseSize > (height > width ? height : width)) { mouseSize = (height > width ? height : width); };centerMouse();focusGame();">+</button><button id="resetButton" title="Clear the entire scene" class="controlButton" onclick="resetPrompt();focusGame();">Reset</button><button id="replaceButton" title="Override existing pixels when placing" class="controlButton" onclick='if (mode == "replace") {mode = null;this.setAttribute("on","false");}else {mode = "replace";this.setAttribute("on","true");};focusGame();' on="false">Replace</button><button id="elemSelectButton" title="Select an element by name" class="controlButton" onclick='chooseElementPrompt();focusGame();'>E</button><button id="tpsButton" title="Change the simulation Ticks Per Second (TPS)" class="controlButton" onclick='var newtps = parseInt(prompt("Enter the new simulation Ticks Per Second (TPS). This is how many updates per second the simulation will run.\n\nThe default is 30.\n\nThe current TPS is " + tps + "."));if (newtps !== null) {if (isNaN(newtps) || newtps == "" || newtps == "0") {alert("You did not enter a valid TPS.");}else if (newtps > 1000) {alert("You entered a TPS that is too high. The TPS will be set to the maximum, 1000.");tps = 1000;}else {tps = parseInt(newtps);if (isNaN(tps)) {alert("You did not enter a valid TPS.");tps = 30;}}resetInterval(tps);}focusGame();'>Tps</button><!--<button id="hideButton" title="Stops updating the scene to allow more resources towards simulation" class="controlButton" onclick='if (hiding) {hiding = false;this.setAttribute("on","false");}else {hiding = true;this.setAttribute("on","true");};focusGame();' on="false">Hide</button>--><button id="infoButton" title="Brings up the element info screen" class="controlButton" onclick='if (showingMenu!="info"){closeMenu();showInfo("")}else{closeMenu()};' on="false">Info</button><button id="savesButton" title="Brings up the Save & Load menu" class="controlButton" onclick='if (showingMenu!="saves"){closeMenu();showSaves()}else{closeMenu()};' on="false">Saves</button><button id="modsButton" title="Brings up the Mod Manager" class="controlButton" onclick='if (showingMenu!="mods"){closeMenu();showModManager()}else{closeMenu()};' on="false">Mods</button><button id="settingsButton" title="Brings up the settings screen" class="controlButton" onclick='if (showingMenu!="settings"){closeMenu();showSettings()}else{closeMenu()};' on="false">Settings</button>
                 </div>
                 <script>
                     // if it is the 1st of April, add a rainbow-colored button
@@ -13855,6 +14330,35 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             <input type="text" id="modManagerUrl" placeholder=".JS URL..." onkeydown="if (event.keyCode == 13) {addMod(this.value);this.value = '';};this.focus();"></input>
             <!-- <button id="modManagerAdd" onclick="addMod(document.getElementById('modManagerUrl').value); document.getElementById('modManagerUrl').value = '';">+</button> -->
         </div>
+
+        <div id="savesParent" class="menuParent">
+            <div id="savesMenu" class="menuScreen">
+                <button class="XButton" onclick="closeMenu();">-</button>
+                <span class="menuTitle">Save & Load</span>
+                <div class="menuText" style="padding-top:1em; height:70%; overflow-y:scroll" id="saveSlotList">
+                </div>
+                <span id="saveFile" onclick="saveToFile()">Save to File</span>
+                <span id="loadFile" onclick="loadFromFile()">Load File</span>
+            </div>
+        </div>
+        <div id="savePromptParent" class="menuParent">
+            <div id="savePromptMenu" class="menuScreen">
+                <button class="XButton" onclick="closeMenu();">-</button>
+                <span class="menuTitle">Save to Slot</span>
+                <div class="menuText" style="padding-top:1em">
+                    <span class="setting-span">Name: <input type="text" id="saveName" placeholder="Save Name..."></span>
+                    <span class="setting-span multisetting">
+                        Include:
+                        <input type="button" value="Temperature" class="toggleInput" onclick="toggleInput(this,undefined,false)" state="1" id="saveTemp">
+                        <input type="button" value="Colors" class="toggleInput" onclick="toggleInput(this,undefined,false)" state="0" id="saveColors">
+                        <input type="button" value="Settings" class="toggleInput" onclick="toggleInput(this,undefined,false)" state="0" id="saveSettings">
+                        <input type="button" value="Mods" class="toggleInput" onclick="toggleInput(this,undefined,false)" state="0" id="saveMods">
+                    </span>
+                    <span id="saveWarning"></span>
+                </div>
+                <span id="saveConfirm" onclick="confirmSave();">Save</span>
+            </div>
+        </div>
     
         <!--Settings Menu-->
         <div id="settingsParent">
@@ -13928,8 +14432,9 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span> <input type="button" value="O
                     </span>
                     <span class="setting-span" style="text-align:center">
                         <button onclick="if(confirm('This action will reset all discovered elements and refresh the page.')){settings.unlocked={};saveSettings();location.reload()}" class="settingsButton">Reset Discovered</button>
-                        <button onclick="if(confirm('This action will reset all game data and refresh the page.')){localStorage.removeItem('settings');location.reload()}" class="settingsButton">Reset All</button>
+                        <button onclick="if(confirm('This action will reset all game data, not including save slots, and refresh the page.')){localStorage.removeItem('settings');location.reload()}" class="settingsButton">Reset All</button>
                         <button onclick="if(confirm('This action will disable all enabled mods and refresh the page.')){localStorage.removeItem('enabledMods');location.reload()}" class="settingsButton">Clear Mods</button>
+                        <button onclick="if(confirm('This action will permanently erase all local save slots.')){for (var i = 1; i <= 12; i++) {localStorage.removeItem('SandboxelsSaves/'+i)}; ;closeMenu();showSaves()}" class="settingsButton">Clear Saves</button>
                     </span>
                     <span setting="worldgen" style="padding-bottom:0" class="setting-span" title="Default: Disabled">
                         World Gen <small>[Beta]</small> <select id="worldgenselect" onchange="setSetting('worldgen',this.value);this.nextElementSibling.innerText='Reset Scene'">
@@ -13967,7 +14472,7 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span> <input type="button" value="O
         <p>We have a thriving community on <a href="https://discord.gg/ejUc6YPQuS" target="_blank">Discord</a>! There you can post feedback or share your creations.</p>
         <!-- <p>If you'd like to support us, consider donating on <a href="https://www.paypal.com/donate/?hosted_button_id=GCX4VHQ7SZWTN" target="_blank">PayPal</a> or <a href="https://cash.app/$emojiartist" target="_blank" title="$emojiartist">CashApp</a>, or subscribing on Discord.</p> -->
         <p>Business inquiries? Education stories? <a href="https://sandboxels.R74n.com/help">Help needed?</a> Email us at <a href="mailto:contact@r74n.com">contact@R74n.com</a>!</p>
-        <p>Thanks to: Serioustar, WeiChei, ggod, Trent, u2ce</p>
+        <p>Thanks to: Serioustar, WeiChei, Midi_png, ggod, Trent, u2ce</p>
         <p>Sandboxels is developed by R74n. Check out <a href="https://R74n.com" target="_blank">our other projects</a>! <a href="https://R74n.com/privacy">Privacy Policy</a></p>
         <script>
             // add the above elements programmatically when the page loads

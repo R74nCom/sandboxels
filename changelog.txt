@@ -7,6 +7,90 @@ See sneak peaks for upcoming updates on the Discord: https://discord.gg/ejUc6YPQ
 
 A fancier version of this changelog can be found here: https://sandboxels.R74n.com/changelog
 
+[Version 1.9 - October 13, 2023 - Local Saves]
+    + Local Saves
+        + SAVES button
+        + Save the scene to 1 of 12 slots
+        + Save the scene to a file
+        + Load a scene from a file
+        + Saves include a ton of information, even your selected element!
+        + Choose to include your settings or mods
+        + Drag & Drop or Paste a save file
+    + Pumpkin
+        + Fireproof solid for carving activities
+    + Pumpkin Seed
+        + Will grow when planted on soil!
+    ~ Thermal View now uses a more useful logarithmic scale
+   [Changes]
+    + Resetting now adjusts canvas size if needed
+    + Dot appears in center of cursor
+    + E-cloner can select an element while unpowered
+    + E-cloner ignores Wires and E-walls
+    + Grass can spread on Sand, Clay, and Mycelium
+    + Tree roots can grow through Clay
+    ~ Sap no longer mixes with Sawdust
+    + Plant and Sauce remove Stench
+    + Humans break Eggs, Grapes, and bugs when on top of them
+    + Humans can trample Grass
+    + Termites can eat Confetti, Straw, and Wheat
+    + Fleas can eat Hair
+    + Ants can eat Honey
+    + Snails can eat Calcium, Limestone, and Paper
+    + Worms can infect and swim in Blood
+    + Worms are killed by Antibodies
+    + Eggs die at high temperatures
+    + Bugs will form Amber when touching Sap
+    ~ Frogs and Fish burn slower
+    + Uranium dirties Salt Water
+    + Radiation can dirty Ice
+    + Blood is infected by Rotten Meat and Rotten Cheese
+    + Vinegar and Limestone reaction
+    + Ketchup slowly deoxidizes Rust
+    ~ Charcoal leaves behind Ash and less CO₂
+    ~ C4 no longer explodes when burnt
+    + C4 releases poisonous fumes when burnt
+    + C4 burns longer, can be used as fuel
+    + C4 explodes when broken
+    + Fireworks ignite at high temperatures
+    + Dye dissolves in Pool Water
+    + Ink slowly dissolves in Water
+    + Honey dissolves in Tea
+    + Molten Salt conducts electricity
+    + Hair can be made by radiating Skin
+    + Skin can absorb Soap
+    + Proton and Electric reaction generates heat
+    + Positron and Electric reaction generates Light
+    + Escape key resets to Normal View
+    ~ Recolored Tuff
+    ~ Recolored Blood
+    ~ Selected element outline is more clear
+    ~ Improved button readability
+    ~ Improved canvas pixel sharpness
+    + Pressing - or + button centers the cursor
+    ~ Step button is now an arrow
+    + Clear Saves setting
+   [Bug Fixes]
+    ~ Fixed: Fireworks and Flash don't transfer heat
+    ~ Fixed: Flash from Heat Ray is not hot
+    ~ Fixed: Alcohol Gas density too high
+    ~ Fixed: Pistil and Mushroom Gill can be dragged
+    ~ Fixed: Herb can't be mixed in Batter or Dough
+    ~ Fixed: Amber spawns at high temperature
+    ~ Fixed: Heads can detach if Body moves during reaction
+    ~ Fixed: Many Flour reactions make Gingerbread instead of Dough
+    ~ Fixed: Ghost pixels when burning Plague, other deleting gases
+    ~ Fixed: Color picker always appears when toggling GUI on (F1)
+    ~ Fixed: Cooldowned elements can't be placed before 8th tick
+    ~ Fixed: Frozen Fish break into Slime
+   [Technical]
+    + logMessage() function
+    + SOIL eList
+    + generateSave() and loadSave() functions
+    + resizeCanvas() and autoResizeCanvas() functions
+    + sb1 save format
+    ~ Browser dark color scheme for UI elements
+    ~ Light, Laser, etc. use bx/by instead of vx/vy (velocity.js fix)
+
 [Version 1.8.6 - August 21, 2023 - Reaction Overload]
     + Tomato
     + Sauce

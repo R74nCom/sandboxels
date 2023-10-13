@@ -137,3 +137,7 @@ if (elements.mushroom_gill) {
 if (elements.slaked_lime) {elements.slaked_lime.color = "#adb8b5";}
 if (elements.lead) {elements.lead.color = "#6c6c6a";}
 if (elements.drag) {elements.drag.color = "#ffffff";}
+if (elements.tuff) {elements.tuff.color = ["#A16A49","#C98256","#C7834F","#BF7640","#DB8641","#D1732C","#AF5D30","#A55E35","#8B5B4C"];}
+if (elements.blood) {elements.blood.color = "#ff0000";}
+if (elements.antibody) {elements.antibody.color = "#ff4040";}
+if (elements.infection) {elements.infection.color = "#cf005d";}

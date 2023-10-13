@@ -22,14 +22,12 @@ body {
     top: 0;
     left: 0;
 }
-a {color: rgb(255, 0, 255);text-decoration: none;}
-a:hover {filter: brightness(200%);}
-a:active, a:hover:active {filter: brightness(275%);}
+a, .saveOption {color: rgb(255, 0, 255);text-decoration: none;}
+a:hover, .saveOption:hover {filter: brightness(200%);}
+a:active, a:hover:active, .saveOption:active, .saveOption:hover:active {filter: brightness(275%);}
 #gameDiv { /*game canvas*/
     border: 1px solid #ffffff;
     position: relative;
-    left: 50%;
-    transform: translate(-50%, -0%);
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
     -khtml-user-select: none; /* Konqueror HTML */
@@ -37,6 +35,9 @@ a:active, a:hover:active {filter: brightness(275%);}
     -ms-user-select: none; /* Internet Explorer/Edge */
     user-select: none;
     margin-top: 15px;
+}
+#game {
+    image-rendering: pixelated;
 }
 #bottomInfoBox { /* place under the game canvas */
     margin: 1.5em 50px 0px 50px;
@@ -106,7 +107,7 @@ kbd {
 #settingsMenu {
     height: 75%;
 }
-#infoSearch, #modManagerUrl {
+#infoSearch, #modManagerUrl, #saveButtons {
     position: absolute;
     bottom: 59.4%;
     width: 95%;
@@ -188,6 +189,54 @@ kbd {
     cursor: pointer;
     text-decoration: underline;
 }
+.saveSlot {
+    display: block;
+    border-top: solid gray;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    padding-left: 1em;
+}
+.saveSlot:last-child {
+    border-bottom: solid gray;
+}
+.saveOption {
+    float: right;
+    padding-left: 2em;
+    padding-right: 1em;
+    color: #ff00ff;
+    cursor: pointer;
+}
+.saveOption:first-child {
+    padding-right: 2em;
+}
+.saveOption[disabled="true"] {
+    color: gray;
+    cursor: not-allowed;
+}
+#saveFile, #loadFile, #saveConfirm {
+    background-color: black;
+    text-align: center;
+    vertical-align: middle;
+    height: 3em;
+    line-height: 3em;
+    position:absolute;
+    bottom: 0;
+    cursor: pointer;
+    border-top: solid white;
+}
+#saveFile {
+    left: 0;
+    width: 50%;
+}
+#loadFile {
+    right: 0;
+    width: 50%;
+    border-left: solid white;
+}
+#saveConfirm {
+    left: 0;
+    width: 100%;
+}
 button, input[type="submit"], input[type="reset"] {
     background: none;
     color: inherit;
@@ -212,14 +261,14 @@ button, input[type="submit"], input[type="reset"] {
     border-radius: 5px;
     font-size: 1em;
     text-shadow: 0.5px 1px 4px #000000;
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(255, 255, 255, 0.85);
     border: 1px solid #797979;
     margin: 0px 5px 5px 5px;
     font-variant: small-caps;
 }
 #controls button.bright {
     text-shadow: 0.5px 1px 4px #ffffff;
-    color: rgba(0, 0, 0, 0.75);   
+    color: rgba(0, 0, 0, 0.85);   
 }
 /*Darken when active*/
 #controls button:active, #controls button:active:hover {
@@ -236,6 +285,10 @@ button, input[type="submit"], input[type="reset"] {
     filter: brightness(110%);
     box-shadow: 0 5px 15px rgba(255, 255, 255, .4);
     color: rgba(255, 255, 255, 1);
+}
+#controls .elementButton[current="true"] {
+    border: 1px solid #00ff00;
+    box-shadow: 0px 1px 15px rgba(0, 255, 0, .75);
 }
 #controls button.bright[current="true"] {
     color: rgba(0, 0, 0, 1);
@@ -303,7 +356,11 @@ button, input[type="submit"], input[type="reset"] {
     }
 }
 @media screen and (min-width: 800px) { /* Desktop-Only Styles */
-    #gameDiv { width:800px }
+    #gameDiv {
+        width:800px;
+        left: 50%;
+        transform: translate(-50%, -0%);
+    }
 }
 /* screen size > 1325px, h1::after {content:" Sandboxels"} */
 @media screen and (min-width: 1325px) {
@@ -408,8 +465,9 @@ button, input[type="submit"], input[type="reset"] {
 }
 button, input { /*Disable double tap zoom on mobile devices*/
     touch-action: manipulation;
+    color-scheme: dark;
 }
-select, .toggleInput, #settingsMenu input[type="number"], #settingsMenu input[type="text"] {
+select, .toggleInput, #settingsMenu input[type="number"], #settingsMenu input[type="text"], #savePromptMenu input {
     background-color: black;
     vertical-align: middle;
     margin-left: 5px;
@@ -421,14 +479,14 @@ select, .toggleInput, #settingsMenu input[type="number"], #settingsMenu input[ty
     font-size: 1em;
     font-family: Arial, Helvetica, sans-serif;
 }
-.toggleInput {
+#settingsMenu .toggleInput {
     display: inline-block;
     width: 4em;
     text-align: center;
-    cursor: pointer;
 }
-.toggleInput[state="1"] {color: lime;}
-.toggleInput[state="0"] {color: red;}
+.toggleInput { cursor: pointer; }
+.toggleInput[state="1"] {color: lime!important;}
+.toggleInput[state="0"] {color: red!important;}
 #settingsMenu input[type="number"] {
     width: 3em;
 }
@@ -483,4 +541,12 @@ select, .toggleInput, #settingsMenu input[type="number"], #settingsMenu input[ty
     margin-left:10px;
     margin-right:10px;
     padding-bottom: 10px;
+}
+#logDiv {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    pointer-events: none;
+    padding: 5px;
+    white-space: pre-wrap;
 }
