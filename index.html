@@ -11645,8 +11645,10 @@ if (new Date().getMonth() == 9) {
             ctx.strokeStyle = "white";
             ctx.strokeRect(topLeft[0]*pixelSize,topLeft[1]*pixelSize,(bottomRight[0]-topLeft[0]+1)*pixelSize,(bottomRight[1]-topLeft[1]+1)*pixelSize);
             // draw one transparent pixel in the center
-            ctx.fillStyle = "rgba(255,255,255,0.5)";
-            ctx.fillRect(mousePos.x*pixelSize,mousePos.y*pixelSize,pixelSize,pixelSize);
+            if (settings.precision) {
+                ctx.fillStyle = "rgba(255,255,255,0.5)";
+                ctx.fillRect(mousePos.x*pixelSize,mousePos.y*pixelSize,pixelSize,pixelSize);
+            }
             updateStats();
             //ticks ++;
         }
@@ -14406,6 +14408,9 @@ You can also join our <a href="https://discord.gg/ejUc6YPQuS" target="_blank">Di
                     </span>
                     <span setting="textures" class="setting-span multisetting" title="Default: ON">
                         Fancy Textures <span class="helpMark" title="For now, fancy textures are limited to Brick and Glass">?</span> <input type="button" value="ON" class="toggleInput" onclick="toggleInput(this,'textures')" state="1">
+                    </span>
+                    <span setting="precision" class="setting-span multisetting" title="Default: OFF">
+                        Precision Dot<input type="button" value="OFF" class="toggleInput" onclick="toggleInput(this,'precision')" state="0">
                     </span>
                     <span setting="events" class="setting-span" title="Default: Disabled">
                         Random Events <select onchange="setSetting('events',parseFloat(this.value));">
