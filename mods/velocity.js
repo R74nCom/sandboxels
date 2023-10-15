@@ -202,6 +202,16 @@ explodeAt = function(x,y,radius,fire="fire") {
                     breakPixel(pixel);
                     continue;
                 }
+                else {
+                    if (Array.isArray(fire)) {
+                        var newfire = fire[Math.floor(Math.random() * fire.length)];
+                    }
+                    else {
+                        var newfire = fire;
+                    }
+                    changePixel(pixel,newfire);
+                    continue;
+                }
             }
             if (damage > 0.75 && info.burn) {
                 pixel.burning = true;
