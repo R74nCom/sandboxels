@@ -927,7 +927,7 @@ elements.iron_chloride = {
     behavior: behaviors.POWDER,
     reactions: {
         "dirty_water": { "elem1": null, "elem2":"water" },
-        //"ethylene": { "elem2":"1,2_dichloroethane" }, todo: vinyl chloride
+        //"ethylene": { "elem2":"one_two_dichloroethane" }, todo: vinyl chloride
     },
     category: "powders",
     tempHigh: 307.6,
@@ -1208,8 +1208,51 @@ elements.ethylene = {
     density: 1.356,
 };
 
-elements.acid.ignore.push("ethylene","liquid_ethylene","chloroethane","liquid_chloroethane");
-elements.acid_gas.ignore.push("ethylene","liquid_ethylene","chloroethane","liquid_chloroethane");
+
+elements.liquid_ethylene = {
+    tempHigh: -103.7,
+    stateHigh: "ethylene",
+    tempLow: -154.4,
+};
+elements.liquid_ethane = {
+    tempHigh: -88.5,
+    stateHigh: "ethane",
+    tempLow: -128.2,
+};
+
+
+elements.liquid_ethylene = {
+    tempHigh: -103.7,
+    stateHigh: "ethylene",
+    tempLow: -169.2,
+};
+elements.liquid_ethane = {
+    tempHigh: -88.5,
+    stateHigh: "ethane",
+    tempLow: -182.8,
+};
+
+elements.liquid_chloroethane = {
+    tempHigh: -12.27,
+    stateHigh: "chloroethane",
+    tempLow: -138.7,
+};
+
+elements.liquid_propane = {
+    tempHigh: -42.25,
+    stateHigh: "propane",
+    tempLow: -187.7,
+};
+elements.liquid_methane = {
+    tempHigh: -161.5,
+    stateHigh: "methane",
+    tempLow: -182.45,
+};
+
+
+
+elements.acid.ignore.push("ethylene","ethylene_ice","liquid_ethylene","chloroethane","chloroethane_ice","liquid_chloroethane");
+elements.acid_gas.ignore.push("ethylene","ethylene_ice","liquid_ethylene","chloroethane","chloroethane_ice","liquid_chloroethane");
 
 
 
@@ -1842,6 +1885,10 @@ runAfterAutogen(function() {
     elements.molten_potassium_salt.conduct = 0.7;
     delete elements.molten_potassium_salt.burn;
     delete elements.molten_potassium.burn;
+    
+    //Hall–Heroult process
+    elements.molten_cryolite_solution.reactions = {};
+    elements.molten_cryolite_solution.reactions.charcoal = { elem1:"molten_aluminum", elem2:"carbon_dioxide" };
 });
 
 elements.niter = {
@@ -2032,9 +2079,20 @@ elements.silver_bromide = {
     tick: function(pixel) {
 		for (let i = -1; i <= 1; i++) {
 			for (let j = -1; j <= 1; j++) {
-				if (!isEmpty(pixel.x+i,pixel.y+j,true) && pixelMap[pixel.x+i][pixel.y+j].element === "light") {
-                    pixel.color = pixelMap[pixel.x+i][pixel.y+j].color;
-					deletePixel(pixel.x+i,pixel.y+j);
+				if (!isEmpty(pixel.x+i,pixel.y+j,true) && (pixelMap[pixel.x+i][pixel.y+j].element === "light" || pixelMap[pixel.x+i][pixel.y+j].element === "liquid_light")) {
+                    
+					for (let k = -1; k <= 1; k++) {
+						for (let l = -1; l <= 1; l++) {
+							if(!isEmpty(pixel.x+k,pixel.y+l,true) && pixelMap[pixel.x+k][pixel.y+l].element === "silver_bromide")
+							{
+								pixelMap[pixel.x+k][pixel.y+l].color = pixelMap[pixel.x+i][pixel.y+j].color;
+							}
+						}
+					}
+					if(pixelMap[pixel.x+i][pixel.y+j].element === "light")
+					{
+						deletePixel(pixel.x+i,pixel.y+j);
+					}
 				}
 			}
 		}
@@ -2288,24 +2346,162 @@ elements.disinfectant = {
 
 
   
-//elements.bauxite = {
-//    color: ["#915a30","#cc7533"],
-//    behavior: behaviors.POWDER,
-//    category: "land",
-//    density: 2420,
-//    state: "solid",
-//    tempHigh: 300
-//};
-//
-//elements.sodium_aluminate = {
-//    color: ["#e6c9b3","#ebc8ad"],
-//    behavior: behaviors.POWDER,
-//    category: "powders",
-//	hidden: true,
-//    density: 1500,
-//    state: "solid",
-//    tempHigh: 1650
-//};
+elements.bauxite = {
+    color: ["#915a30","#cc7533"],
+    behavior: behaviors.POWDER,
+    category: "land",
+    density: 2420,
+    state: "solid",
+    tempHigh: 300
+};
+
+elements.sodium_aluminate_solution = {
+    color: ["#bdb3e6","#b4adeb"],
+    behavior: behaviors.LIQUID,
+    category: "liquids",
+	hidden: true,
+    density: 1005,
+    state: "liquid",
+    tempHigh: 100,
+	stateHigh: ["sodium_aluminate","steam"],
+    reactions: {
+        //Bayer process
+        "carbon_dioxide": { elem1:"aluminum_hydroxide", elem2: ["sodium_carbonate_solution","spent_sodium_aluminate_solution"] },
+    },
+};
+
+
+elements.spent_sodium_aluminate_solution = {
+    color: ["#696380","#7a759e"],
+    behavior: behaviors.LIQUID,
+    category: "liquids",
+	hidden: true,
+    density: 1005,
+    state: "liquid",
+    tempHigh: 100,
+	stateHigh: ["sodium_aluminate","sodium_aluminate","sodium_aluminate","gallium","steam","steam","steam","steam"],
+};
+
+
+elements.sodium_aluminate = {
+    color: ["#e6c9b3","#ebc8ad"],
+    behavior: behaviors.POWDER,
+    category: "powders",
+	hidden: true,
+    density: 1500,
+    state: "solid",
+    tempHigh: 1650,
+    reactions: {
+        "water": { elem1: "sodium_aluminate_solution", elem2: null },
+    },
+};
+
+elements.sodium_carbonate_solution = {
+    color: ["#c5c1d6","#afacc2"],
+    behavior: behaviors.LIQUID,
+    category: "liquids",
+	hidden: true,
+    density: 1005,
+    state: "liquid",
+    tempHigh: 100,
+	stateHigh: ["sodium_carbonate","steam"],
+};
+
+
+elements.sodium_carbonate = {
+    color: "#d8dae6",
+    behavior: behaviors.POWDER,
+    category: "powders",
+    hidden: false,
+    density: 2540,
+    state: "solid",
+    tempHigh: 851,
+    reactions: {
+        "water": { elem1: "sodium_carbonate_solution", elem2: null },
+    },
+}
+
+
+elements.aluminum_hydroxide = {
+    color: "#d1cbcb",
+    behavior: behaviors.POWDER,
+    category: "powders",
+    hidden: true,
+    density: 2420,
+    state: "solid",
+    tempHigh: 300,
+    stateHigh: ["alumina","steam"],
+}
+
+elements.alumina = {
+    color: "#d1cbcb",
+    behavior: behaviors.SOLID,
+    category: "solids",
+    density: 3987,
+    state: "solid",
+    tempHigh: 2072,
+    reactions: {
+        "molten_cryolite_mixture": { elem1: "molten_cryolite_solution", elem2: "molten_cryolite_solution"},
+    },
+}
+
+
+
+elements.cryolite = {
+    color: ["#9ab6d9","#dae4f0"],
+    behavior: behaviors.POWDER,
+    category: "land",
+    density: 2900,
+    state: "solid",
+    tempHigh: 950,
+    reactions: {
+        "aluminum_trifluoride": { elem1: "cryolite_mixture", elem2: "cryolite_mixture"},
+    },
+}
+
+
+elements.aluminum_trifluoride = {
+    color: ["#ebf4ff","#e3fdff"],
+    behavior: behaviors.POWDER,
+    category: "powder",
+    hidden: true,
+    density: 3100,
+    state: "solid",
+    tempHigh: 1290,
+}
+
+
+elements.molten_aluminum_trifluoride = {
+    tempHigh: 1290,
+    tempLow: 1290,
+}
+
+elements.aluminum_trifluoride_gas = {
+    tempLow: 1290,
+}
+
+
+
+
+elements.cryolite_mixture = {
+    color: [blendColors("#9ab6d9","#ebf4ff"),blendColors("#dae4f0","#e3fdff")],
+    behavior: behaviors.POWDER,
+    category: "land",
+    hidden: true,
+    density: 2910,
+    state: "solid",
+    tempHigh: 950,
+}
+
+elements.cryolite_solution = {
+    color: [blendColors(blendColors("#9ab6d9","#ebf4ff"),"#d1cbcb"),blendColors(blendColors("#dae4f0","#e3fdff"),"#d1cbcb")],
+    behavior: behaviors.POWDER,
+    category: "land",
+    hidden: true,
+    density: 2920,
+    state: "solid",
+    tempHigh: 950,
+}
 
 function acidReact(acid,element,product1,product2)
 {
@@ -2356,13 +2552,13 @@ acidNeutralize("potassium_hydroxide");
 acidNeutralize("potassium_hydroxide_gas");
 
 
-//createAcid("red_mud",structuredClone(defaultBaseReactions),structuredClone(defaultBaseGasReactions),["#ab3d24","#cc5d2d","#a81b1b"],"hidden","hidden",1600,1600,0,Infinity,5200,3);
-//acidNeutralize("red_mud");
-//acidNeutralize("red_mud_gas");
-//elements.red_mud.viscosity = 1000000;
-//elements.red_mud.reactions.water = {"elem2":"dirty_water" };
-//elements.red_mud.reactions.salt_water = {"elem2":"dirty_water" };
-//elements.red_mud.reactions.sugar_water = {"elem2":"dirty_water" };
+createAcid("red_mud",structuredClone(defaultBaseReactions),structuredClone(defaultBaseGasReactions),["#ab3d24","#cc5d2d","#a81b1b"],"hidden","hidden",1600,1600,0,Infinity,5200,3);
+acidNeutralize("red_mud");
+acidNeutralize("red_mud_gas");
+elements.red_mud.viscosity = 1000000;
+elements.red_mud.reactions.water = {"elem2":"dirty_water" };
+elements.red_mud.reactions.salt_water = {"elem2":"dirty_water" };
+elements.red_mud.reactions.sugar_water = {"elem2":"dirty_water" };
 
 
 elements.potassium_hydroxide.reactions["fertilizer"] = { elem1: "niter", elem2: "ammonia"};
@@ -2383,8 +2579,50 @@ elements.potassium_salt_water.reactions["mercury"] = { elem1:["potassium_hydroxi
 elements.potassium_hydroxide.ignore.push("mercury");
 elements.potassium_hydroxide.ignore.push("potassium_salt_water");
 
-//acidReact("sodium_hydroxide","bauxite","sodium_aluminate","red_mud")
-//elements.red_mud.ignore.push("bauxite","sodium_aluminate");
+acidReact("sodium_hydroxide","bauxite","sodium_aluminate_solution","red_mud");
+acidReact("sodium_hydroxide_gas","bauxite","sodium_aluminate_solution","red_mud");
+elements.red_mud.ignore.push("bauxite","sodium_aluminate_solution","sodium_aluminate_solution_ice","sodium_aluminate","molten_sodium_aluminate","sodium_carbonate_solution","spent_sodium_aluminate_solution","spent_sodium_aluminate_solution_ice","aluminum_hydroxide","alumina","molten_alumina");
+elements.red_mud_gas.ignore.push("bauxite","sodium_aluminate_solution","sodium_aluminate_solution_ice","sodium_aluminate","molten_sodium_aluminate","sodium_carbonate_solution","spent_sodium_aluminate_solution","spent_sodium_aluminate_solution_ice","aluminum_hydroxide","alumina","molten_alumina");
+elements.sodium_hydroxide.ignore.push("sodium_aluminate_solution","sodium_aluminate_solution_ice","sodium_aluminate","molten_sodium_aluminate","sodium_carbonate_solution","spent_sodium_aluminate_solution","spent_sodium_aluminate_solution_ice","aluminum_hydroxide","alumina","molten_alumina");
+elements.sodium_hydroxide_gas.ignore.push("sodium_aluminate_solution","sodium_aluminate_solution_ice","sodium_aluminate","molten_sodium_aluminate","sodium_carbonate_solution","spent_sodium_aluminate_solution","spent_sodium_aluminate_solution_ice","aluminum_hydroxide","alumina","molten_alumina");
+
+
+
+//Cryolite
+acidReact("hydrofluoric_acid","sodium_aluminate","cryolite",null);
+acidReact("hydrofluoric_acid_gas","sodium_aluminate","cryolite",null);
+
+acidReact("hydrogen_fluoride","sodium_aluminate","cryolite",null);
+acidReact("liquid_hydrogen_fluoride","sodium_aluminate","cryolite",null);
+
+elements.hydrofluoric_acid.ignore.push("molten_cryolite","molten_sodium_aluminate");
+elements.hydrofluoric_acid_gas.ignore.push("molten_cryolite","molten_sodium_aluminate");
+elements.hydrogen_fluoride.ignore.push("molten_cryolite","molten_sodium_aluminate");
+elements.liquid_hydrogen_fluoride.ignore.push("molten_cryolite","molten_sodium_aluminate");
+
+acidReact("hexafluorosilicic_acid","sodium_aluminate","cryolite","sand");
+acidReact("hexafluorosilicic_acid_gas","sodium_aluminate","cryolite","sand");
+elements.hexafluorosilicic_acid.ignore.push("molten_cryolite","molten_sodium_aluminate");
+elements.hexafluorosilicic_acid_gas.ignore.push("molten_cryolite","molten_sodium_aluminate");
+
+//Aluminum trifluoride
+acidReact("hydrofluoric_acid","alumina","aluminum_trifluoride",null);
+acidReact("hydrofluoric_acid_gas","alumina","aluminum_trifluoride",null);
+
+acidReact("hydrogen_fluoride","alumina","aluminum_trifluoride",null);
+acidReact("liquid_hydrogen_fluoride","alumina","aluminum_trifluoride",null);
+
+elements.hydrofluoric_acid.ignore.push("molten_alumina","molten_aluminum_trifluoride");
+elements.hydrofluoric_acid_gas.ignore.push("molten_alumina","molten_aluminum_trifluoride");
+elements.hydrogen_fluoride.ignore.push("molten_alumina","molten_aluminum_trifluoride");
+elements.liquid_hydrogen_fluoride.ignore.push("molten_alumina","molten_aluminum_trifluoride");
+
+
+acidReact("hydrofluoric_acid","aluminum_hydroxide","aluminum_trifluoride",null);
+acidReact("hydrofluoric_acid_gas","aluminum_hydroxide","aluminum_trifluoride",null);
+
+acidReact("hydrogen_fluoride","aluminum_hydroxide","aluminum_trifluoride",null);
+acidReact("liquid_hydrogen_fluoride","aluminum_hydroxide","aluminum_trifluoride",null);
 
 elements.bless.reactions["FOOF"] = {elem2: "oxygen"};
 elements.bless.reactions["solid_FOOF"] = {elem2: "oxygen"};
