@@ -198,16 +198,8 @@ explodeAt = function(x,y,radius,fire="fire") {
                 continue;
             }
             else if (damage > 0.25) {
-                if (info.breakInto) {
-                    // if it is an array, choose a random item, else just use the value
-                    if (Array.isArray(info.breakInto)) {
-                        var result = info.breakInto[Math.floor(Math.random() * info.breakInto.length)];
-                    }
-                    else {
-                        var result = info.breakInto;
-                    }
-                    // change the pixel to the result
-                    changePixel(pixel,result);
+                if (info.breakInto !== undefined) {
+                    breakPixel(pixel);
                     continue;
                 }
                 else {

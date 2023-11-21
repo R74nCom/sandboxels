@@ -11306,7 +11306,7 @@ if (new Date().getMonth() == 9) {
             compressedMap = compressedMap.replace(/¤/g,"],[").replace(/°/g,"³³³").replace(/¾/g,'"¥§').replace(/½/g,'},').replace(/¼/g,'":').replace(/¡/g,":false").replace(/¥/g,":true").replace(/¶/g,'{"').replace(/®/g,'"}],[').replace(/¦/g,"¸©").replace(/³/g,"×××").replace(/¸/g,'"},{"').replace(/©/g,"element»").replace(/§/g,',"').replace(/»/g,'":"').replace(/×/g,",0");
             var savePixelSize = saveConfig.pixelSize||6;
             resizeCanvas(saveConfig.height*savePixelSize+savePixelSize,saveConfig.width*savePixelSize+savePixelSize,savePixelSize);
-            clearAll();
+            clearAll(true);
             if (saveConfig.settings) {
                 for (var key in saveConfig.settings) {
                     settings[key] = saveConfig.settings[key];
@@ -12445,7 +12445,7 @@ if (new Date().getMonth() == 9) {
                 temperature: 38,
             }
         };
-        function clearAll() {
+        function clearAll(skipworldgen) {
             currentPixels = [];
             pixelMap = [];
             currentSaveData = null;
@@ -12456,7 +12456,7 @@ if (new Date().getMonth() == 9) {
                 }
             }
             pixelTicks = 0;
-            if (settings["worldgen"] && settings["worldgen"] != "off") {
+            if (!skipworldgen && settings["worldgen"] && settings["worldgen"] != "off") {
                 worldGen(worldgentypes[settings["worldgen"]]);
             }
         }
