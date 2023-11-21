@@ -157,7 +157,7 @@ function startDebugLive() {
 }
 function statChange() {
   if (live == true) {
-    output = targetedPixel.element.toUpperCase() + " at x" + targetedPixel.x + ", y" + targetedPixel.y + ", tick" + pixelTicks + `<br>`;
+    output = targetedPixel.element.toUpperCase() + " at x" + targetedPixel.x + ", y" + targetedPixel.y + ", tick: " + pixelTicks + `<br>`;
     for (let i in targetedPixel) {
       if (i !== "x" && i !== "y" && i !== "element") {
         output += "  " + i + ": " + targetedPixel[i] + `<br>`;
