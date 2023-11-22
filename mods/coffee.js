@@ -2,7 +2,7 @@
 // Created by Cerulean - special thanks to ggod :D
 // If you have any suggestions for the mod, please leave a dm at @playblooket on discord (me)
 // I'm not a pro modder, don't expect much lololol
-// Version 1.0 // Last update - Nov 22
+// Version 1.01 // Last update - Nov 22
 
 elements.coffee = {
     color: "#22120d",
@@ -116,7 +116,7 @@ elements.ground_coffee_bean = {
 elements.frozen_coffee_bean = {
     color: "#5d4037",
     behavior: behaviors.POWDER,
-    temp: -25
+    temp: -25,
     category: "food",
     viscosity: 1,
     state: "solid",
@@ -128,7 +128,7 @@ elements.frozen_coffee_bean = {
 elements.frozen_ground_coffee_bean = {
     color: "#533328",
     behavior: behaviors.POWDER,
-    temp: -25
+    temp: -25,
     category: "food",
     viscosity: 1,
     state: "solid",
@@ -140,7 +140,7 @@ elements.frozen_ground_coffee_bean = {
 elements.roasted_ground_coffee_bean = {
     color: "#803e29",
     behavior: behaviors.POWDER,
-    temp: 150
+    temp: 150,
     category: "food",
     viscosity: 1,
     state: "solid",
@@ -161,7 +161,7 @@ elements.roasted_coffee_bean = {
     stateLow: "frozen_coffee_bean",
     tempHigh: 300,
     stateHigh: "ash",
-    breakInto: ["coffee_grounds", "roasted_ground_coffee_bean"]
+    breakInto: ["coffee_grounds", "roasted_ground_coffee_bean"],
     density: 400
 };
 
@@ -173,7 +173,7 @@ elements.toffee = {
     state: "solid",
     tempHigh: 186,
     stateHigh: "sugar",
-    breakInto: ["sugar", "h_bomb"]
+    breakInto: ["sugar", "h_bomb"],
     density: 1000
 };
 
