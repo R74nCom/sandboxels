@@ -129,7 +129,7 @@ function startDebugUi(pixel) {
   setTimeout(() => {
     openedByClick = false;
     document.addEventListener('click', clickHandler);
-  }, 0);
+  }, 1000);
 };
 
 function closeDebugUi() {
