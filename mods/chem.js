@@ -16,10 +16,6 @@ function whenAvailable(names, callback) {
         }
     }, interval);
 }
-var runAfterAutogenMod = "mods/runAfterAutogen2.js";
-if(enabledMods.includes(runAfterAutogenMod)){
-whenAvailable(["runAfterAutogen"], function() {
-
 
 elements.fluorine = {
 	color: "#FFFFBF",
@@ -420,7 +416,7 @@ trueAcidGases = ["acid_gas", "hydrofluoric_acid_gas"];
 
 
 if (enabledMods.includes("mods/generative_mods.js")) {
-whenAvailable(["generateCloud"], function() {
+runAfterLoad(function() {
     generateCloud("hydrofluoric_acid");
     elements["hydrofluoric_acid_gas"].reactions["hydrofluoric_acid_gas"]= { "elem1": null, "elem2": "hydrofluoric_acid_cloud", "chance":0.3, "y":[0,12], "setting":"clouds" };
     elements["hydrofluoric_acid_gas"].reactions["rain_cloud"]= { "elem1": null, "elem2":  "hydrofluoric_acid_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" };
@@ -480,7 +476,7 @@ function createAcid(name,reactions, gasReactions, color, category, categoryGas, 
     elements.bless.reactions[name] = { elem2: "hydrogen" };
     elements.bless.reactions[name+"_gas"] = { elem2: "hydrogen" };
     if (enabledMods.includes("mods/generative_mods.js")) {
-		whenAvailable(["generateCloud"], function() {
+		runAfterLoad(function() {
         generateCloud(name);
         elements[name+"_gas"].reactions[name+"_gas"]= { "elem1": null, "elem2": name + "_cloud", "chance":0.3, "y":[0,12], "setting":"clouds" };
         elements[name+"_gas"].reactions["rain_cloud"]= { "elem1": null, "elem2":  name + "_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" };
@@ -1854,8 +1850,9 @@ elements.molten_potassium = {
 elements.potassium_gas = {
     color: "#5e6fdb"
 };
+elements.molten_salt = {};
+elements.molten_potassium_salt = {};
 
-runAfterAutogen(function() {
     elements.molten_salt.reactions = {};
     elements.molten_salt.reactions.aluminum = { elem1:["sodium","chlorine"], charged:true, chance:0.0025 };
     elements.molten_salt.reactions.zinc = { elem1:["sodium","chlorine"], charged:true, chance:0.015 };
@@ -1883,13 +1880,14 @@ runAfterAutogen(function() {
     elements.molten_potassium_salt.reactions.silver = { elem1:["potassium","chlorine"], charged:true, chance:0.0075 };
     elements.molten_potassium_salt.reactions.gold = { elem1:["potassium","chlorine"], charged:true, chance:0.0075 };
     elements.molten_potassium_salt.conduct = 0.7;
-    delete elements.molten_potassium_salt.burn;
-    delete elements.molten_potassium.burn;
+    elements.molten_potassium_salt.burn = 0;
+    elements.molten_potassium.burn = 0;
     
     //Hall–Heroult process
+    elements.molten_cryolite_solution = {};
     elements.molten_cryolite_solution.reactions = {};
     elements.molten_cryolite_solution.reactions.charcoal = { elem1:"molten_aluminum", elem2:"carbon_dioxide" };
-});
+
 
 elements.niter = {
 	color: "#f0efcc",
@@ -2655,9 +2653,3 @@ elements.bless.reactions["sulfur_dioxide_ice"] = {elem2: "oxygen"};
 elements.bless.reactions["hydrogen_sulfide"] = {elem2: "hydrogen"};
 elements.bless.reactions["liquid_hydrogen_sulfide"] = {elem2: "hydrogen"};
 elements.bless.reactions["rocket_fuel"] = {elem2: null};
-});
-} else {
-	if(!enabledMods.includes(runAfterAutogenMod))	{ enabledMods.unshift(runAfterAutogenMod) };
-	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-	alert(`The "${runAfterAutogenMod}" is required and have been automatically inserted (reload for this to take effect).`);
-};
