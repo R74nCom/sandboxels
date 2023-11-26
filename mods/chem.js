@@ -416,7 +416,7 @@ trueAcidGases = ["acid_gas", "hydrofluoric_acid_gas"];
 
 
 if (enabledMods.includes("mods/generative_mods.js")) {
-whenAvailable(["generateCloud"], function() {
+runAfterLoad(function() {
     generateCloud("hydrofluoric_acid");
     elements["hydrofluoric_acid_gas"].reactions["hydrofluoric_acid_gas"]= { "elem1": null, "elem2": "hydrofluoric_acid_cloud", "chance":0.3, "y":[0,12], "setting":"clouds" };
     elements["hydrofluoric_acid_gas"].reactions["rain_cloud"]= { "elem1": null, "elem2":  "hydrofluoric_acid_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" };
@@ -476,7 +476,7 @@ function createAcid(name,reactions, gasReactions, color, category, categoryGas, 
     elements.bless.reactions[name] = { elem2: "hydrogen" };
     elements.bless.reactions[name+"_gas"] = { elem2: "hydrogen" };
     if (enabledMods.includes("mods/generative_mods.js")) {
-		whenAvailable(["generateCloud"], function() {
+		runAfterLoad(function() {
         generateCloud(name);
         elements[name+"_gas"].reactions[name+"_gas"]= { "elem1": null, "elem2": name + "_cloud", "chance":0.3, "y":[0,12], "setting":"clouds" };
         elements[name+"_gas"].reactions["rain_cloud"]= { "elem1": null, "elem2":  name + "_cloud", "chance":0.4, "y":[0,12], "setting":"clouds" };
