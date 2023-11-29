@@ -7,10 +7,18 @@ elements.carbonite = {
     tempHigh: 1000,
     stateHigh: "carbondioxide",
     reactions:{
-	"acid": "slag",	
+	"acid": {elem1: null, elem2: "slag"},
+	
 }
 
 };
+
+elements.light_saber = {
+	color: "#06d106",
+	behavior: behaviors.WALL,
+	category: "star wars",
+	state: "solid"
+}
 
 // look it up:
 // https://starwars.fandom.com/wiki/Plastoid
@@ -22,7 +30,7 @@ elements.plastoid = {
 	state: "solid",
 	density: 400,
 	tempHigh: 300,
-	stateHigh: "molten_plastic"
+	stateHigh: "molten_plastic",
 	hardness: 1,
 	burn: 0
 };
