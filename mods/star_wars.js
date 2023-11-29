@@ -22,6 +22,7 @@ elements.plastoid = {
 	state: "solid",
 	density: 400,
 	tempHigh: 300,
+	stateHigh: "molten_plastic"
 	hardness: 1,
 	burn: 0
 };
