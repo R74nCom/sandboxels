@@ -15,7 +15,7 @@ var libHookTickMod = "mods/libhooktick.js";
 var propertyLibrary = "mods/special_property_library.js";
 
 //someone retroactively turned off ??= assignment on undeclared variables /hj
-if(!urlParams) { urlParams = new URLSearchParams(window.location.search) };
+if(!window["urlParams"] || !urlParams) { urlParams = new URLSearchParams(window.location.search) };
 
 modRequirementsPartOne = (enabledMods.includes(libraryMod) && enabledMods.includes(colorOffsetMod));
 if(urlParams.get("radiationSystemEnabled") === null) {

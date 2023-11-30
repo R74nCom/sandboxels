@@ -1,8 +1,27 @@
+function whenAvailable(names, callback) {
+    var interval = 10; // ms
+    window.setTimeout(function() {
+		let bool = true;
+		for(let i = 0; i < names.length; i++)
+		{
+			if(!window[names[i]])
+			{
+				bool = false;
+			}
+		}
+        if (bool) {
+            callback();
+        } else {
+            whenAvailable(names, callback);
+        }
+    }, interval);
+}
 var modName = "mods/neutronium_compressor.js";
-var runAfterAutogenMod = "mods/runAfterAutogen and onload restructure.js";
+var runAfterAutogenMod = "mods/runAfterAutogen2.js";
 var libraryMod = "mods/code_library.js";
 
 if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod)) {
+	whenAvailable(["urlParams","runAfterAutogen"], function() {
 	var singularityColorTemplate = ["#202020", "#505050", "#b0b0b0", "#c7c7c7"];
 
 	singularityNumber = 10000;
@@ -388,6 +407,7 @@ if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod))
 
 	//Post-generation tasks
 	
+	});
 } else {
 	if(!enabledMods.includes(runAfterAutogenMod))	{ enabledMods.splice(enabledMods.indexOf(modName),0,runAfterAutogenMod) };
 	if(!enabledMods.includes(libraryMod))			{ enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod) };

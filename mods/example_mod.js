@@ -2,7 +2,7 @@
 
 // Create a new Javascript file like this one.
 // Add the file to the mods folder on GitHub, or host it somewhere else.
-// https://github.com/slweeb/sandboxels/tree/main/mods
+// https://github.com/R74nCom/sandboxels/tree/main/mods
 
 // To add it in the Mod Loader:
 // If it is in the mods folder, you can just use the name of the file.

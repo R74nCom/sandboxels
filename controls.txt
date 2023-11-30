@@ -19,6 +19,7 @@ Left/Right Arrow  =  Change Category
 E                 =  Element Selection
 / or I            =  Element Info Screen
 \                 =  Settings Menu
+L                 =  Save & Load Menu
 M                 =  Mod Manager
 R                 =  Reset Canvas
 >                 =  Step
@@ -29,12 +30,14 @@ F or F11          =  Toggle Fullscreen
 4                 =  Smooth View
 F1                =  Toggle GUI / HUD
 F2 or C           =  Capture Screenshot
+Drag & Drop       =  Insert an image or load save file
+Paste             =  Insert an image or load save file
 
 (Alt/Option can be used in place of Shift)
 
 [Button Info]
 Pause           =  Pause/play the simulation
-Step            =  Run a single frame of simulation
+>               =  Run a single frame of simulation
 Minus           =  Decrease the cursor size
 Plus            =  Increase the cursor size
 Reset           =  Clear the entire simulation

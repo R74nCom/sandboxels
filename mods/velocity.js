@@ -20,7 +20,7 @@ doVelocity = function(pixel) {
                     pixel.vx = 0;
                 }
             }
-            if (pixel.vx) { pixel.vx -= Math.sign(pixel.vx); }
+            if (pixel.vx) { pixel.vx = Math.floor(Math.abs(pixel.vx)/1.25)*Math.sign(pixel.vx) }
         }
         if (pixel.vy) {
             // move the pixel vy times
@@ -41,7 +41,7 @@ doVelocity = function(pixel) {
                     return;
                 }
             }
-            if (pixel.vy) { pixel.vy -= Math.sign(pixel.vy); }
+            if (pixel.vy) { pixel.vy = Math.floor(Math.abs(pixel.vy)/1.25)*Math.sign(pixel.vy) }
         }
     }
 }
@@ -72,25 +72,16 @@ drawPixels = function(forceTick=false) {
                 pixelTick(pixel);
             }
         };
-        if (elements[pixel.element].isGas) {
+        if (elements[pixel.element].isGas || elements[pixel.element].glow) {
             pixelsLast.push(pixel);
         }
         else {
             pixelsFirst.push(pixel);
         }
     }
-    adjacentCoords = [
-        [0,1],
-        [0,-1],
-        [1,0],
-        [-1,0]
-    ];
-    biCoords = [
-        [0,1],
-        [1,0]
-    ];
     // Draw the current pixels
     var canvas = document.getElementById("game");
+    if (canvas === null) {return}
     var ctx = canvas.getContext("2d");
     var pixelDrawList = pixelsFirst.concat(pixelsLast);
     for (var i = 0; i < pixelDrawList.length; i++) {
@@ -100,11 +91,11 @@ drawPixels = function(forceTick=false) {
             ctx.fillStyle = pixel.color;
         }
         else if (view === 2) { // thermal view
-            // set the color to pixel.temp, from hottest at 0 hue to coldest 225 hue, with the minimum being -273, max being 6000
             var temp = pixel.temp;
-            if (temp < -273) {temp = -273}
+            if (temp < -50) {temp = -50}
             if (temp > 6000) {temp = 6000}
-            var hue = 225 - (temp/6000)*225;
+            // logarithmic scale, with coldest being 225 (-50 degrees) and hottest being 0 (6000 degrees)
+            var hue = Math.round(225 - (Math.log(temp+50)/Math.log(6000+50))*225);
             if (hue < 0) {hue = 0}
             if (hue > 225) {hue = 225}
             ctx.fillStyle = "hsl("+hue+",100%,50%)";
@@ -128,11 +119,13 @@ drawPixels = function(forceTick=false) {
                 ctx.fillStyle = averageRGB(colorlist);
             }
         }
-        if ((view === null || view === 4) && elements[pixel.element].state === "gas") {
-            ctx.globalAlpha = 0.5;
+        if (ctx.globalAlpha < 1 && !(elements[pixel.element].isGas || elements[pixel.element].glow)) {
+            ctx.globalAlpha = 1;
+        }
+        if ((view === null || view === 4) && (elements[pixel.element].isGas || elements[pixel.element].glow)) {
+            if (ctx.globalAlpha!==0.5) { ctx.globalAlpha = 0.5; }
             ctx.fillRect((pixel.x-1)*pixelSize, (pixel.y)*pixelSize, pixelSize*3, pixelSize);
             ctx.fillRect((pixel.x)*pixelSize, (pixel.y-1)*pixelSize, pixelSize, pixelSize*3);
-            ctx.globalAlpha = 1;
         }
         else { // draw the pixel (default)
             ctx.fillRect(pixel.x*pixelSize, pixel.y*pixelSize, pixelSize, pixelSize);
@@ -143,6 +136,9 @@ drawPixels = function(forceTick=false) {
                 ctx.fillRect(pixel.x*pixelSize, pixel.y*pixelSize, pixelSize, pixelSize);
             }
         }
+    }
+    if (ctx.globalAlpha < 1) {
+        ctx.globalAlpha = 1;
     }
     if ((!paused) || forceTick) {pixelTicks++};
 }
@@ -202,16 +198,8 @@ explodeAt = function(x,y,radius,fire="fire") {
                 continue;
             }
             else if (damage > 0.25) {
-                if (info.breakInto) {
-                    // if it is an array, choose a random item, else just use the value
-                    if (Array.isArray(info.breakInto)) {
-                        var result = info.breakInto[Math.floor(Math.random() * info.breakInto.length)];
-                    }
-                    else {
-                        var result = info.breakInto;
-                    }
-                    // change the pixel to the result
-                    changePixel(pixel,result);
+                if (info.breakInto !== undefined) {
+                    breakPixel(pixel);
                     continue;
                 }
                 else {

@@ -107,3 +107,37 @@ if (elements.packed_sand) {elements.packed_sand.color = "#a1975d";}
 if (elements.dough) {elements.dough.color = "#edd8ba";}
 if (elements.flour) {elements.flour.color = "#f0e2b7";}
 if (elements.frozen_meat) {elements.frozen_meat.color = "#65b8aa";}
+if (elements.petal) {elements.petal.color = "#ff0000"; elements.petal.singleColor = false;}
+if (elements.mushroom_cap) {
+    elements.mushroom_cap.color = ["#c74442","#c74442","#c74442","#cfb4b4","#c74442","#c74442","#c74442"];
+    elements.mushroom_cap.singleColor = false;
+}
+if (elements.mushroom_gill) {
+    elements.mushroom_gill.tick = function(pixel) {
+        if (isEmpty(pixel.x,pixel.y-1) && Math.random() < 0.1) {
+            createPixel("mushroom_cap",pixel.x,pixel.y-1);
+        }
+        if (isEmpty(pixel.x-1,pixel.y) && Math.random() < 0.02) {
+            // create either mushroom_gill or mushroom_cap
+            if (Math.random() < 0.5) {
+                createPixel("mushroom_gill",pixel.x-1,pixel.y);
+            } else {
+                createPixel("mushroom_cap",pixel.x-1,pixel.y);
+            }
+        }
+        if (isEmpty(pixel.x+1,pixel.y) && Math.random() < 0.02) {
+            if (Math.random() < 0.5) {
+                createPixel("mushroom_gill",pixel.x+1,pixel.y);
+            } else {
+                createPixel("mushroom_cap",pixel.x+1,pixel.y);
+            }
+        }
+    }
+}
+if (elements.slaked_lime) {elements.slaked_lime.color = "#adb8b5";}
+if (elements.lead) {elements.lead.color = "#6c6c6a";}
+if (elements.drag) {elements.drag.color = "#ffffff";}
+if (elements.tuff) {elements.tuff.color = ["#A16A49","#C98256","#C7834F","#BF7640","#DB8641","#D1732C","#AF5D30","#A55E35","#8B5B4C"];}
+if (elements.blood) {elements.blood.color = "#ff0000";}
+if (elements.antibody) {elements.antibody.color = "#ff4040";}
+if (elements.infection) {elements.infection.color = "#cf005d";}

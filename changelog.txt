@@ -1,11 +1,307 @@
 [Future Plans]
     + Save Gallery
     + Human Update
-    + Suggest new additions at https://link.r74n.com/sandboxels-feedback
+    + Suggest new additions at https://link.R74n.com/sandboxels-feedback
 
 See sneak peaks for upcoming updates on the Discord: https://discord.gg/ejUc6YPQuS
 
-A fancier version of this changelog can be found here: https://sandboxels.r74n.com/changelog
+A fancier version of this changelog can be found here: https://sandboxels.R74n.com/changelog
+
+[Version 1.9 - October 13, 2023 - Local Saves]
+    + Local Saves
+        + SAVES button
+        + Save the scene to 1 of 12 slots
+        + Save the scene to a file
+        + Load a scene from a file
+        + Saves include a ton of information, even your selected element!
+        + Choose to include your settings or mods
+        + Drag & Drop or Paste a save file
+    + Pumpkin
+        + Fireproof solid for carving activities
+    + Pumpkin Seed
+        + Will grow when planted on soil!
+    ~ Thermal View now uses a more useful logarithmic scale
+   [Changes]
+    + Resetting now adjusts canvas size if needed
+    + Dot appears in center of cursor
+    + E-cloner can select an element while unpowered
+    + E-cloner ignores Wires and E-walls
+    + Grass can spread on Sand, Clay, and Mycelium
+    + Tree roots can grow through Clay
+    ~ Sap no longer mixes with Sawdust
+    + Plant and Sauce remove Stench
+    + Humans break Eggs, Grapes, and bugs when on top of them
+    + Humans can trample Grass
+    + Termites can eat Confetti, Straw, and Wheat
+    + Fleas can eat Hair
+    + Ants can eat Honey
+    + Snails can eat Calcium, Limestone, and Paper
+    + Worms can infect and swim in Blood
+    + Worms are killed by Antibodies
+    + Eggs die at high temperatures
+    + Bugs will form Amber when touching Sap
+    ~ Frogs and Fish burn slower
+    + Uranium dirties Salt Water
+    + Radiation can dirty Ice
+    + Blood is infected by Rotten Meat and Rotten Cheese
+    + Vinegar and Limestone reaction
+    + Ketchup slowly deoxidizes Rust
+    ~ Charcoal leaves behind Ash and less CO₂
+    ~ C4 no longer explodes when burnt
+    + C4 releases poisonous fumes when burnt
+    + C4 burns longer, can be used as fuel
+    + C4 explodes when broken
+    + Fireworks ignite at high temperatures
+    + Dye dissolves in Pool Water
+    + Ink slowly dissolves in Water
+    + Honey dissolves in Tea
+    + Molten Salt conducts electricity
+    + Hair can be made by radiating Skin
+    + Skin can absorb Soap
+    + Proton and Electric reaction generates heat
+    + Positron and Electric reaction generates Light
+    + Escape key resets to Normal View
+    ~ Recolored Tuff
+    ~ Recolored Blood
+    ~ Selected element outline is more clear
+    ~ Improved button readability
+    ~ Improved canvas pixel sharpness
+    + Pressing - or + button centers the cursor
+    ~ Step button is now an arrow
+    + Clear Saves setting
+   [Bug Fixes]
+    ~ Fixed: Fireworks and Flash don't transfer heat
+    ~ Fixed: Flash from Heat Ray is not hot
+    ~ Fixed: Alcohol Gas density too high
+    ~ Fixed: Pistil and Mushroom Gill can be dragged
+    ~ Fixed: Herb can't be mixed in Batter or Dough
+    ~ Fixed: Amber spawns at high temperature
+    ~ Fixed: Heads can detach if Body moves during reaction
+    ~ Fixed: Many Flour reactions make Gingerbread instead of Dough
+    ~ Fixed: Ghost pixels when burning Plague, other deleting gases
+    ~ Fixed: Color picker always appears when toggling GUI on (F1)
+    ~ Fixed: Cooldowned elements can't be placed before 8th tick
+    ~ Fixed: Frozen Fish break into Slime
+   [Technical]
+    + logMessage() function
+    + SOIL eList
+    + generateSave() and loadSave() functions
+    + resizeCanvas() and autoResizeCanvas() functions
+    + sb1 save format
+    ~ Browser dark color scheme for UI elements
+    ~ Light, Laser, etc. use bx/by instead of vx/vy (velocity.js fix)
+
+[Version 1.8.6 - August 21, 2023 - Reaction Overload]
+    + Tomato
+    + Sauce
+    + Sensor - Detects movable pixels
+    + Tuff - Formed from Ash and Magma
+    + Clicking on an element again will deselect it
+    + Sun world gen type
+   [Changes]
+    ~ Moved Salt to Food category [Feedback?]
+    + Supernovae create many more elements
+    + Stench now dissipates over time
+    + Humans can drink Soda
+    + Worms turn Ash and Crumbs into some Dirt
+    + Birds can eat Crumbs
+    + Birds and Rats spawn at body temperature
+    + Flies can eat Honey
+    + Grapes can be crushed by Limestone
+    + Grapes will stick to Vine on all sides
+    + Some Vines can grow Grapes or Tomatoes
+    + Ketchup can be radiated
+    + Eggs will crack if Rocks land on them
+    + Seeds element can spawn Cacti
+    + Candy breaks into Sugar
+    + Snails break into Calcium
+    + Lichen and Pollen break into Dust
+    + Fleas and Termites die when broken
+    + All seeds can be broken or frozen
+    + Mercury can turn to Gold when hit with Neutrons
+    + Mercury kills Plant and Grass
+    + Grass can photosynthesize
+    + Yogurt color variants for milk variants
+    + Foam freezes into Dry Ice
+    + Steel and Bronze can oxidize
+    + Brass can corrode on contact with Ammonia
+    + Confetti slowly breaks down in Water
+    + Pool Water, Steam, Primordial Soup, and Fire can oxidize things
+    + Charcoal purifies Pool Water
+    + Charcoal desaturates Alcohol
+    + Dioxins are absorbed by Ash and soils
+    + Dioxin, Lead, and Solder dirty Water
+    + Baking Soda and Acid reaction
+    + Calcium and Water reaction
+    + Limestone releases some Carbon Dioxide when heated
+    + Quicklime can be converted back to Limestone with CO₂
+    + Slaked Lime with Milk can make Glue
+    + Lamp Oil starts burning at 220°C
+    + Lamp Oil breaks down Wax
+    + Lasers can break into Light
+    ~ Liquid Light dissipates much slower
+    + Light hitting Oxygen high up can form Ozone
+    + Ozone forms when Lightning hits a body of Water
+    + Ozone can kill Cells, Cancer, Infection, Plague, and small animals
+    ~ Ozone oxidizes things faster than Oxygen
+    + Ozone removes Chlorine
+    + Chlorine can damage Tree Branches, Roots, and Pistils
+    + Chlorine and burning Oil reaction
+    + Chlorine and Baking Soda reaction
+    + Chlorine and Sodium reaction
+    + Greek Fire ignites on contact with water
+    + Greek Fire recipe
+    ~ Greek Fire no longer is burning by default
+    + Sand and Vinegar can put out Greek Fire
+    + Greek Fire and Vinegar can wet soil
+    + Vinegar and Sodium also produces Hydrogen
+    + Vinegar boils into Carbon Dioxide and Methane
+    + Methane and Propane can be ignited with electricity
+    + Sodium and Water also produces Hydrogen
+    ~ Tweaked Sodium and Water reaction
+    + Sodium can react with Pool Water and Primordial Soup
+    + Uranium radiates Primordial Soup slowly
+    + Primordial Soup is killed by Soap, Alcohol, and Mercury
+    + Fish and Worms can swim in Primordial Soup
+    + Primordial Soup converts Blood to Antibodies
+    + Bleach deletes Blood
+    + Bleach turns Poison into a gas
+    + Skin wound healing
+    + Skin will sweat to regulate temperature
+    + Skin will bleed on contact with Acid
+    + Skin will convert Cells
+    ~ Infection no longer turns Cells to Cancer
+    + Skin can spread Cancer
+    + Skin and Hair can be radiated
+    + Skin and Hair can break into Dust
+    + Hair can burn into some Stench
+    + Hair can be poisoned
+    + Antidote deleting Poison is more random
+    ~ Cement is more random when hardening
+    + Nitro explodes on smash
+    ~ Ammonia and Methane reaction also makes Hydrogen and Water
+    ~ Tweaked Lead color
+    + Molten Metal Scrap
+    + Ammonia Ice
+    + Oxidized Copper alias Copper Carbonate
+    + Oil alias Petroleum
+    + Alcohol, Cement, Concrete, and Cloners display with dark text
+    + JavaScript disabled message
+    + Unmixable elements specified in info page
+    ~ Tweaked Drag color
+    ~ Reordered Machines category
+    ~ Randomized social link at bottom
+   [Bug Fixes]
+    ~ Fixed: Mods don't show in Mod Manager and can't be removed after crash
+    ~ Fixed: Scroll disabled on fullscreen
+    ~ Fixed: Pixels float if Drag is unselected by middle click or E prompt
+    ~ Fixed: Border and Rainbow can be moved by Drag
+    ~ Fixed: Border can be destroyed by Strange Matter
+    ~ Fixed: Tools can be placed with Image tool
+    ~ Fixed: Heat Ray doesn't make single pixels change state
+    ~ Fixed: Bless doesn't remove Poison Gas or Poison Ice
+    ~ Fixed: Heads don't fall through gases
+    ~ Fixed: Rotten Meat at abs zero creates living abs zero flies
+    ~ Fixed: Charcoal dirties Salt Water
+    ~ Fixed: Pistils don't conduct heat or spread burning
+    ~ Fixed: Density too high for Poison Gas, Dioxin, Liquid Ammonia, and Gallium Gas
+    ~ Fixed: Sodium Acetate foams forever
+    ~ Fixed: Lettuce can't be mixed into Dough or Batter
+   [Technical]
+    + Special Unknown element
+        + Used when no element is selected
+        + Replaces pixels created with invalid element
+        + Will show the invalid element in Debug
+
+[Version 1.8.5 - July 27, 2023]
+    + Drag tool
+    + Tree color variety (8 variants!)
+    ~ Mobile UI improvements
+    + Warp (Special)
+    + Crumb (Hidden, from broken foods)
+    + Skin (Solid)
+    + Hair (Hidden)
+   [States]
+    + Soda Ice (Hidden)
+    + Bleach Ice (Hidden)
+    + Frozen Vinegar (Hidden)
+    + Amber (Hidden, frozen Sap)
+    + Perfume (Hidden, liquid Fragrance)
+    + Liquid Stench (Hidden)
+   [Changes]
+    + Molten Dirt can solidify into some Rock
+    + Tools have descriptions on info page
+    + Oil dirties Water
+    + Humans will panic and run when burning
+    + Rad Shards and Molten Rad Glass can produce radiation
+    + Light and Laser retain color when liquified
+    + Slag can be formed with Dirt
+    + Slag can break into Gravel
+    + Corn breaks into Flour
+    + Mushrooms can release Poison when broken
+    + Poison and Antidote can wet soil
+    + Juice can wet Flour
+    + Blood can oxidize Iron and Copper
+    + Fallout will infect Blood
+    + Birds turn to white meat when cooked
+    + Birds smash into Blood
+    + Cacti can be killed by Vinegar, Bleach, Baking Soda, and Alcohol
+    + Humans can be killed by Poison and Cyanide
+    + Cells can be killed by Plague, Soap, Mercury, Chlorine, and Cyanide
+    + Dioxin can kill Plants, Grass, Vines, Saplings, and Cacti
+    + Vinegar can kill Frogs slowly
+    + Vinegar can kill Grass
+    + Algae dies at hot and cold temperatures
+    + Dust will burn at high temperatures
+    + Melted Wax will break down at high temperatures
+    + Uranium conducts electricity
+    + Unburn tool can put out Embers and Torches
+    + Bless turns Static to Rainbow
+    + Static conducts electricity
+    + Grapes can turn Water into Juice
+    + Primordial Soup can wet Clay Soil
+    + Hydrogen produces heat during fusion
+    + Helium, Hydrogen, and Mercury Gas glow when electrified
+    + Cactus and Liquid Light random events
+    + Cement can be made with Slaked Lime
+    ~ Recolored Slaked Lime
+    ~ Placing Petals or Mushroom Caps now picks a random color
+    ~ Unhid Petal
+    ~ Hid Root
+    ~ Moved Bamboo to Solids
+    ~ Moved Steel
+    ~ Moved Melted Cheese, Butter, and Chocolate to States
+    ~ Moved Liquid Hydrogen, Helium, and Neon to States
+    ~ States category always appears last if unhidden
+    ~ Humans rot more randomly
+    ~ Bamboo Plant grows faster
+    ~ Worms no longer break Eggs
+    ~ Strange Matter can no longer travel through indestructible things
+    ~ Strange Matter can no longer destroy Void
+    ~ Tweaked Molten Uranium radiation rate
+   [Fixes]
+    ~ Fixed: Alt-Tab locks Alt key
+    ~ Fixed: Cacti break into Sap
+    ~ Fixed: Cream deletes infinite Soda and Juice
+    ~ Fixed: Null in info page error (e.g. tea)
+    ~ Fixed: Unknown element in info page error (e.g. salt)
+    ~ Fixed: Reactions, related, and aliases don't show up in tool info pages
+    ~ Capitalization fixes
+   [Technical]
+    + Element properties onSelect, onMouseUp, perTick, singleColor
+    ~ Element property fireElement can accept null
+
+[Version 1.8.4 - July 11, 2023]
+    + Image placing
+        + Image tool in Special
+        + Select any image from your computer
+        + Place it on the canvas at any scale
+        + Choose its element or disable smoothing in Settings
+        + Burn it, blow it up, or make it a powder!
+        + Paste or Drag-and-Drop images!
+   [Bug Fixes]
+    ~ Fixed: Old browsers that don't support ECMAScript 2016 crash
+   Stay tuned for bigger updates in the coming months!
 
 [Version 1.8.3 - May 26, 2023 - Deserted Update]
     + Cactus
