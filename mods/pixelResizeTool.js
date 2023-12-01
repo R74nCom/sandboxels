@@ -7,4 +7,6 @@ pixelResizeButton.onclick = function(pixel) {
     resizeCanvas(canvas_height,canvas_width, parseFloat(pixelSizeNeeded), true);
 };
 pixelResizeButton.textContent = "Resize";
-document.getElementById("toolControls").appendChild(pixelResizeButton);
+window.addEventListener("load",function(){
+   document.getElementById("toolControls").appendChild(pixelResizeButton); 
+});
