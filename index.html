@@ -44,7 +44,8 @@
     <meta name="twitter:creator:id" content="1436857621827530753">
 
     <script> // versioning info
-        currentversion = "1.9"
+        currentversion = "1.9.1";
+        saveVersion = 2;
     </script>
     <style>
         .setting-span {
@@ -100,6 +101,10 @@
         // runAfterLoad() takes a function and adds it to the runAfterLoadList.
         function runAfterLoad(func) {
             runAfterLoadList.push(func);
+        }
+        runAfterAutogenList = [];
+        function runAfterAutogen(callback) {
+            runAfterAutogenList.push(callback);
         }
         // If the localStorage key "enabledMods" exists, load it as an array.
         // If it doesn't exist, create an empty array.
@@ -517,7 +522,7 @@
         }
         eLists = {
             ANIMAL: ["flea","ant","fly","firefly","bee","frog","fish","worm","termite","rat","slug","snail","stink_bug"],
-            CLEANANIMAL: ["ant","firefly","bee","frog","fish"],
+            CLEANANIMAL: ["ant","firefly","bee","frog","fish","tadpole"],
             SEEDS: ["grass_seed","wheat_seed","flower_seed","bamboo_plant","mushroom_spore","corn_seed","potato_seed","cactus","pumpkin_seed"],
             SOIL: ["dirt","mud","sand","wet_sand","clay_soil","clay","mycelium"]
         }
@@ -740,7 +745,7 @@
         },
         "sand": { elem1: null, elem2: "wet_sand" },
         "clay_soil": { elem1: null, elem2: "clay" },
-        "salt": { elem1: "salt_water", elem2: null },
+        "salt": { elem1: "salt_water", elem2: null, temp1:-20 },
         "sugar": { elem1: "sugar_water", elem2: null },
         "dust": { elem1: "dirty_water", elem2: null },
         "ash": { elem1: "dirty_water", elem2: null },
@@ -763,7 +768,8 @@
         "dioxin": { elem1: "dirty_water", chance:0.1 },
         "quicklime": { elem1: null, elem2: "slaked_lime" },
         "rock": { elem2: "wet_sand", chance: 0.00035 },
-        "tuff": { elem2: "wet_sand", color2:"#BC5916", chance: 0.00035 },
+        "limestone": { elem2: "wet_sand", chance: 0.00035 },
+        "tuff": { elem2: "wet_sand", color2:"#7a6b5c", chance: 0.00035 },
         "ruins": { elem2: "rock", chance: 0.00035 },
         "mudstone": { elem2: "mud", chance: 0.00035 },
         "methane": { elem1:"primordial_soup", elem2:"primordial_soup", tempMin:60, charged:true },
@@ -814,6 +820,7 @@
         "solder": { elem1: "dirty_water", chance:0.005 },
         "quicklime": { elem1: null, elem2: "slaked_lime" },
         "rock": { elem2: "wet_sand", chance: 0.0005 },
+        "limestone": { elem2: "wet_sand", chance: 0.0005 },
         "fly": { elem2:"dead_bug", chance:0.1, oneway:true },
         "firefly": { elem2:"dead_bug", chance:0.1, oneway:true },
         "bee": { elem2:"dead_bug", chance:0.05, oneway:true },
@@ -863,6 +870,7 @@
         "lead": { elem1: "dirty_water", chance:0.005 },
         "solder": { elem1: "dirty_water", chance:0.005 },
         "rock": { elem2: "wet_sand", chance: 0.0004 },
+        "limestone": { elem2: "wet_sand", chance: 0.0004 },
         "fly": { elem2:"dead_bug", chance:0.1, oneway:true },
         "firefly": { elem2:"dead_bug", chance:0.1, oneway:true },
         "bee": { elem2:"dead_bug", chance:0.05, oneway:true },
@@ -902,6 +910,7 @@
         "sand": { elem1: null, elem2: "wet_sand" },
         "clay_soil": { elem1: null, elem2: "clay" },
         "rock": { elem2: "wet_sand", chance: 0.0004 },
+        "limestone": { elem2: null, chance: 0.0004 },
         "sugar": { elem1: "soda", elem2: "foam" },
         "sugar_water": { elem1: "soda", elem2: "foam" },
         "fly": { elem2:"dead_bug", chance:0.1, oneway:true },
@@ -945,6 +954,7 @@
         "sand": { elem1: null, elem2: "wet_sand" },
         "clay_soil": { elem1: null, elem2: "clay" },
         "rock": { elem2: "wet_sand", chance: 0.0004 },
+        "limestone": { elem2: "wet_sand", chance: 0.0004 },
         "plant": { elem1:"water", chance:0.05 },
         "algae": { elem1:"water", chance:0.05 },
         "charcoal": { elem1:"water", chance:0.02 },
@@ -973,6 +983,7 @@
         "sand": { elem1: null, elem2: "wet_sand" },
         "clay_soil": { elem1: null, elem2: "clay" },
         "rock": { elem2: "wet_sand", chance: 0.001 },
+        "limestone": { elem2: "wet_sand", chance: 0.001 },
         "plant": { elem2:"dead_plant", chance:0.05 },
         "evergreen": { elem2:"dead_plant", chance:0.05 },
         "cactus": { elem2:"dead_plant", chance:0.05 },
@@ -1016,10 +1027,7 @@
     stain: -0.5
 },
 "dirt": {
-    //color: ["#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#9e6b4b","#a88c7b"],
-    //color: ["#9b7653","#806144","#7d5937","#66482c"],
     color: ["#76552b","#5c4221","#573c1a","#6b481e"],
-    //color: ["#b9855d","#976c4b","#7a5639","#5b3d26"],
     behavior: behaviors.POWDER,
     tempHigh:1200,
     tempLow: -50,
@@ -1033,7 +1041,9 @@
     behavior: behaviors.STURDYPOWDER,
     reactions: {
         "dirt": { elem1:"dirt", elem2:"mud", chance:0.0005, oneway:true },
-        "sand": { elem1:"dirt", elem2:"wet_sand", chance:0.0005, oneway:true }
+        "sand": { elem1:"dirt", elem2:"wet_sand", chance:0.0005, oneway:true },
+        "sawdust": { elem1:"mulch", "elem2":null },
+        "evergreen": { elem1:"mulch", "elem2":null },
     },
     tempHigh: 100,
     stateHigh: "mudstone",
@@ -1050,7 +1060,7 @@
     reactions: {
         "sand": { elem1:"sand", elem2:"wet_sand", chance:0.0005, oneway:true },
         "dirt": { elem1:"sand", elem2:"mud", chance:0.0005, oneway:true },
-        "gravel": { elem1:"cement", elem2:null, chance:0.2 }
+        "gravel": { elem1:"cement", elem2:null, chance:0.2 },
     },
     tempHigh: 100,
     stateHigh: "packed_sand",
@@ -1133,7 +1143,7 @@
     stateHigh: "dead_plant",
     tempLow: -1.66,
     stateLow: "frozen_plant",
-    burn:65,
+    burn:15,
     burnTime:60,
     burnInto: "dead_plant",
     breakInto: "dead_plant",
@@ -1208,7 +1218,7 @@
     stateHigh: "dead_plant",
     tempLow: -2,
     stateLow: "frozen_plant",
-    burn:50,
+    burn:3,
     burnTime:20,
     breakInto: "dead_plant",
     category:"life",
@@ -1699,6 +1709,9 @@
 "sugar": {
     color: "#f2f2f2",
     behavior: behaviors.POWDER,
+    reactions: {
+        "grape": { elem1:null, elem2:"jelly", chance:0.005, tempMin:100 },
+    },
     category: "food",
     tempHigh: 186,
     stateHigh: "caramel",
@@ -1762,7 +1775,7 @@
 "cloner": {
     color: "#dddd00",
     behavior: behaviors.CLONER,
-    ignore: ["ecloner","slow_cloner","clone_powder","floating_cloner"],
+    ignore: ["ecloner","slow_cloner","clone_powder","floating_cloner","wall","ewall"],
     category:"machines",
     insulate:true,
     hardness: 1,
@@ -1813,6 +1826,9 @@
 "random": { //hard-coded
     color: ["#3e5f8a","#a334ec","#ea96f9","#a6ecf6","#70ebc8","#d9286b","#7eed91","#a18b30"],
     behavior: behaviors.WALL,
+    tick: function(pixel) {
+        changePixel(pixel,randomChoices[Math.floor(Math.random() * randomChoices.length)]);
+    },
     category: "special",
     excludeRandom: true
 },
@@ -2068,7 +2084,8 @@
     //density: 1408,
     insulate: true,
     noMix: true,
-    alias: "star"
+    alias: "star",
+    movable: false
 },
 "cell": {
     color: ["#00ee00","#83ee00","#d6ee00"],
@@ -2196,6 +2213,8 @@
         "plant": { elem2:"dirt", chance:0.01, func:behaviors.FEEDPIXEL },
         "evergreen": { elem2:"dirt", chance:0.01, func:behaviors.FEEDPIXEL },
         "herb": { elem2:"dirt", chance:0.1, func:behaviors.FEEDPIXEL },
+        "coffee_ground": { elem2:"dirt", chance:0.1, func:behaviors.FEEDPIXEL },
+        "nut": { elem2:"dirt", chance:0.05, func:behaviors.FEEDPIXEL },
         "limestone": { elem2:"calcium", chance:0.025, func:behaviors.FEEDPIXEL },
         "yolk": { elem2:null, chance:0.01, func:behaviors.FEEDPIXEL },
         "quicklime": { elem2:"calcium", chance:0.025, func:behaviors.FEEDPIXEL },
@@ -2250,7 +2269,8 @@
         "hair": { elem2:null, chance:0.01 },
         "mercury": { elem2:null, elem1:null, chance:0.1875 },
         "vinegar": { elem1:"dead_bug", elem2:null },
-        "alcohol": { elem1:"dead_bug", elem2:null }
+        "alcohol": { elem1:"dead_bug", elem2:null },
+        "mayo": { elem1:"dead_bug", elem2:null, chance:0.025 }
     },
     tempHigh: 100,
     stateHigh: "ash",
@@ -2280,12 +2300,14 @@
         "bamboo_plant": { elem2:null, chance:0.04, func:behaviors.FEEDPIXEL },
         "sapling": { elem2:null, chance:0.025, func:behaviors.FEEDPIXEL },
         "sawdust": { elem2:null, chance:0.025, func:behaviors.FEEDPIXEL },
+        "mulch": { elem2:"dirt", chance:0.025, func:behaviors.FEEDPIXEL },
         "confetti": { elem2:null, chance:0.025, func:behaviors.FEEDPIXEL },
         "wheat": { elem2:null, chance:0.025, func:behaviors.FEEDPIXEL },
         "straw": { elem2:null, chance:0.025, func:behaviors.FEEDPIXEL },
         "particleboard": { elem2:null, chance:0.025, func:behaviors.FEEDPIXEL },
         "tinder": { elem2:null, chance:0.025, func:behaviors.FEEDPIXEL },
         "lichen": { elem2:null, chance:0.025, func:behaviors.FEEDPIXEL },
+        "nut": { elem2:["nut_meat",null], chance:0.025, func:behaviors.FEEDPIXEL },
         "vinegar": { elem1:"dead_bug", elem2:null },
         "alcohol": { elem1:"dead_bug", elem2:null }
     },
@@ -2304,9 +2326,9 @@
 "ant": {
     color: "#5e0b04",
     behavior: [
-        "XX|XX|SW:dirt,sand,gravel,clay_soil%8",
+        "XX|XX|SW:dirt,sand,gravel,clay_soil,mulch%8",
         "XX|FX%8|M2 AND BO",
-        "XX|M1|SW:dirt,sand,gravel,clay_soil%8",
+        "XX|M1|SW:dirt,sand,gravel,clay_soil,mulch%8",
     ],
     reactions: {
         "wheat": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
@@ -2328,6 +2350,8 @@
         "candy": { elem2:null, chance:0.025, func:behaviors.FEEDPIXEL },
         "pumpkin": { elem2:null, chance:0.025, func:behaviors.FEEDPIXEL },
         "pumpkin_seed": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
+        "nut_butter": { elem2:null, chance:0.01, func:behaviors.FEEDPIXEL },
+        "jelly": { elem2:null, chance:0.02, func:behaviors.FEEDPIXEL },
     },
     tempHigh: 100,
     stateHigh: "ash",
@@ -2590,6 +2614,7 @@
         "stink_bug": { elem2:"stench", oneway:true },
         "grass": { elem2:null, chance:0.05 },
         "grass_seed": { elem2:null, chance:0.05 },
+        "gold_coin": { elem2:null, chance:0.05 },
     },
     properties: {
         dead: false,
@@ -2622,6 +2647,9 @@
         }
         if (pixel.burning) {
             pixel.panic += 0.1;
+        }
+        else if (pixel.panic > 0) {
+            pixel.panic -= 0.1;
         }
 
         // Find the head
@@ -2706,6 +2734,7 @@
         "chocolate": { elem2:null, chance:0.2 },
         "melted_chocolate": { elem2:null, chance:0.3 },
         "grape": { elem2:null, chance:0.1 },
+        "tomato": { elem2:null, chance:0.1 },
         "herb": { elem2:null, chance:0.1 },
         "lettuce": { elem2:null, chance:0.1 },
         "corn": { elem2:null, chance:0.1 },
@@ -2721,9 +2750,11 @@
         "yogurt": { elem2:null, chance:0.2 },
         "frozen_yogurt": { elem2:null, chance:0.1 },
         "ice_cream": { elem2:null, chance:0.2 },
-        "beans": { elem2:null, chance:0.2 },
+        "beans": { elem2:[null,null,null,null,null,null,null,null,"stench"], chance:0.2 },
         "tea": { elem2:null, chance:0.2 },
+        "coffee": { elem2:null, chance:0.2 },
         "milk": { elem2:null, chance:0.2 },
+        "cream": { elem2:null, chance:0.2 },
         "soda": { elem2:null, chance:0.2 },
         "chocolate_milk": { elem2:null, chance:0.2 },
         "fruit_milk": { elem2:null, chance:0.2 },
@@ -2738,6 +2769,11 @@
         "caramel": { elem2:null, chance:0.2 },
         "molasses": { elem2:null, chance:0.05 },
         "ketchup": { elem2:null, chance:0.1 },
+        "pumpkin_seed": { elem2:null, chance:0.1 },
+        "nut": { elem2:null, chance:0.1 },
+        "nut_meat": { elem2:null, chance:0.1 },
+        "nut_butter": { elem2:null, chance:0.1 },
+        "nut_milk": { elem2:null, chance:0.2 },
     },
     properties: {
         dead: false
@@ -2855,6 +2891,12 @@
         "crumb": { elem2:null, chance:0.25, func:behaviors.FEEDPIXEL },
         "pumpkin": { elem2:null, chance:0.025, func:behaviors.FEEDPIXEL },
         "pumpkin_seed": { elem2:null, chance:0.25, func:behaviors.FEEDPIXEL },
+        "coffee_bean": { elem2:null, chance:0.25, func:behaviors.FEEDPIXEL },
+        "coffee_ground": { elem2:null, chance:0.25, func:behaviors.FEEDPIXEL },
+        "nut": { elem2:null, chance:0.25, func:behaviors.FEEDPIXEL },
+        "nut_meat": { elem2:null, chance:0.25, func:behaviors.FEEDPIXEL },
+        "nut_butter": { elem2:null, chance:0.25, func:behaviors.FEEDPIXEL },
+        "jelly": { elem2:null, chance:0.25, func:behaviors.FEEDPIXEL },
         "plague": { elem1:"plague", chance:0.05 },
         "oxygen": { elem2:"carbon_dioxide", chance:0.5 }
     },
@@ -2884,7 +2926,6 @@
         "oxygen": { elem2:"carbon_dioxide", chance:0.5 },
         "meat": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
         "cooked_meat": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
-        "rotten_meat": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
         "cheese": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
         "rotten_cheese": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
         "melted_cheese": { elem2:null, chance:0.3, func:behaviors.FEEDPIXEL },
@@ -2923,6 +2964,7 @@
         "egg": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
         "yolk": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
         "eggnog": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "milk": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
         "grape": { elem2:null, chance:0.25, func:behaviors.FEEDPIXEL },
         "batter": { elem2:null, chance:0.25, func:behaviors.FEEDPIXEL },
         "baked_batter": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
@@ -2933,7 +2975,13 @@
         "ice_cream": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
         "cream": { elem2:null, chance:0.3, func:behaviors.FEEDPIXEL },
         "pumpkin": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
-        "pumpkin_seed": { elem2:null, chance:0.3, func:behaviors.FEEDPIXEL },
+        "pumpkin_seed": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "coffee_bean": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
+        "coffee_ground": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
+        "nut": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
+        "nut_meat": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
+        "nut_butter": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
+        "jelly": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
     },
     egg: "rat",
     category: "life",
@@ -3023,6 +3071,7 @@
     stateHigh: "steam",
     tempLow: -10,
     stateLow: "ice",
+    breakInto: ["slime",null],
     category:"life",
     hidden: true,
     state: "solid",
@@ -3108,6 +3157,7 @@
         "mushroom_spore": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
         "grass": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
         "herb": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
+        "lettuce": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
         "grass_seed": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
         "algae": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
         "mushroom_cap": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
@@ -3151,6 +3201,7 @@
         "mushroom_spore": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
         "grass": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
         "herb": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
+        "lettuce": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
         "grass_seed": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
         "algae": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
         "mushroom_cap": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
@@ -3205,6 +3256,122 @@
     ],
     category:"machines",
     insulate:true
+},
+"pipe": {
+    color: "#414c4f",
+    onSelect: function() {
+        logMessage("Draw a pipe, wait for walls to appear, then erase the exit hole.");
+    },
+    tick: function(pixel) {
+        if (!pixel.stage && pixelTicks-pixel.start > 60) {
+            for (var i = 0; i < squareCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (isEmpty(x,y)) {
+                    createPixel("brick",x,y);
+                    pixelMap[x][y].color = pixelColorPick(pixel,"#808080");
+                }
+            }
+            pixel.stage = 1;
+        }
+        else if (pixel.stage === 1 && pixelTicks-pixel.start > 70) { //uninitialized
+            for (var i = 0; i < adjacentCoords.length; i++) {
+                var coord = adjacentCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (isEmpty(x,y)) {
+                    pixel.stage = 2; //blue
+                    pixel.color = pixelColorPick(pixel,"#000036");
+                    break;
+                }
+            }
+        }
+        else if (pixel.stage > 1 && pixelTicks % 3 === pixel.stage-2) { //initialized
+            for (var i = 0; i < squareCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (!isEmpty(x,y,true) && pixelMap[x][y].element === "pipe") {
+                    var newPixel = pixelMap[x][y];
+                    if (newPixel.stage === 1) {
+                        var newColor;
+                        switch (pixel.stage) {
+                            case 2: newPixel.stage = 3; newColor = "#003600"; break; //green
+                            case 3: newPixel.stage = 4; newColor = "#360000"; break; //red
+                            case 4: newPixel.stage = 2; newColor = "#000036"; break; //blue
+                        }
+                        newPixel.color = pixelColorPick(newPixel,newColor);
+                    }
+                }
+            }
+            var moved = false;
+            shuffleArray(squareCoordsShuffle);
+            for (var i = 0; i < squareCoordsShuffle.length; i++) {
+                var coord = squareCoordsShuffle[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (!isEmpty(x,y,true)) {
+                    var newPixel = pixelMap[x][y];
+                    if (newPixel.element === "pipe") {
+                        var nextStage;
+                        switch (pixel.stage) {
+                            case 2: nextStage = 4; break; //green
+                            case 3: nextStage = 2; break; //red
+                            case 4: nextStage = 3; break; //blue
+                        }
+                        if (pixel.con && !newPixel.con && newPixel.stage === nextStage) { //transfer to adjacent pipe
+                            newPixel.con = pixel.con;
+                            newPixel.con.x = newPixel.x;
+                            newPixel.con.y = newPixel.y;
+                            pixel.con = null;
+                            moved = true;
+                            break;
+                        }
+                    }
+                    else if (!pixel.con && elements[newPixel.element].movable) { //suck up pixel
+                        pixel.con = newPixel;
+                        deletePixel(newPixel.x,newPixel.y);
+                        pixel.con.x = pixel.x;
+                        pixel.con.y = pixel.y;
+                        pixel.con.del;
+                        moved = true;
+                        break;
+                    }
+                }
+            }
+            if (pixel.con && !moved) { // move to same stage if none other
+                for (var i = 0; i < squareCoordsShuffle.length; i++) {
+                    var coord = squareCoordsShuffle[i];
+                    var x = pixel.x+coord[0];
+                    var y = pixel.y+coord[1];
+                    if (isEmpty(x,y)) {
+                        delete pixel.con.del;
+                        pixel.con.x = x;
+                        pixel.con.y = y;
+                        pixelMap[x][y] = pixel.con;
+                        currentPixels.push(pixel.con);
+                        pixel.con = null;
+                        break;
+                    }
+                    if (!isEmpty(x,y,true) && pixelMap[x][y].element === "pipe") {
+                        var newPixel = pixelMap[x][y];
+                        if (pixel.con && !newPixel.con && newPixel.stage === pixel.stage) {
+                            newPixel.con = pixel.con;
+                            newPixel.con.x = newPixel.x;
+                            newPixel.con.y = newPixel.y;
+                            pixel.con = null;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        doDefaults(pixel);
+    },
+    category: "machines",
+    movable: false,
+    canContain: true,
 },
 "ewall": {
     color: "#7a7769",
@@ -3314,9 +3481,19 @@
         "M2%5|XX|M2%5",
         "M2%5|M2%5|M2%5",
     ],
+    reactions: {
+        "cloud": {elem1:"pop"},
+        "rain_cloud": {elem1:"pop"},
+        "snow_cloud": {elem1:"pop"},
+        "thunder_cloud": {elem1:"pop"},
+        "hail_cloud": {elem1:"pop"},
+        "acid_cloud": {elem1:"pop"},
+    },
     category:"special",
     tempHigh: 120,
     stateHigh: "pop",
+    tempLow: -272.20,
+    stateLow: "pop",
     burn: 20,
     burnTime: 2,
     burnInto: "pop",
@@ -3357,7 +3534,7 @@
         "M1|M1|M1",
     ],
     reactions: {
-        "antiliquid": { elem1: "antigas" }
+        "antifluid": { elem1: "antigas" }
     },
     temp:600,
     tempLow:100,
@@ -3703,17 +3880,7 @@
                     if (elements[newPixel.element].state == "solid") {
                         if (Math.random() > (elements[newPixel.element].hardness || 0)) {
                             if (elements[newPixel.element].breakInto) {
-                                var breakInto = elements[newPixel.element].breakInto;
-                                // if it is an array, pick a random element
-                                if (Array.isArray(breakInto)) {
-                                    breakInto = breakInto[Math.floor(Math.random()*breakInto.length)];
-                                }
-                                if (breakInto === null) {
-                                    deletePixel(newPixel.x, newPixel.y);
-                                }
-                                else {
-                                    changePixel(newPixel,breakInto);
-                                }
+                                breakPixel(newPixel);
                             }
                             else {
                                 deletePixel(newPixel.x, newPixel.y);
@@ -3721,12 +3888,13 @@
                 deletePixel(pixel.x,pixel.y);
                 break;
             }}},
-    temp: -200,
+    temp: -20,
     tempHigh: 10,
     stateHigh: "water",
     category: "powders",
     state: "solid",
     density: 850,
+    insulate: true,
     hidden: true
 },
 "hydrogen": {
@@ -3734,7 +3902,7 @@
     behavior: behaviors.GAS,
     reactions: {
         "oxygen": { elem1:null, elem2:"steam", tempMin:500 },
-        "hydrogen": { elem1:null, elem2:"helium", tempMin:10000, temp1:10000, temp2:10000 },
+        "hydrogen": { elem1:"neutron", elem2:"helium", tempMin:10000, temp1:10000, temp2:10000 },
         "nitrogen": { elem1:null, elem2:"oxygen", tempMin:10000 },
         "sulphur": { elem1:null, elem2:"chlorine", tempMin:10000 },
         "neon": { elem1:null, elem2:"sodium", tempMin:10000 }
@@ -3742,6 +3910,7 @@
     category: "gases",
     burn: 100,
     burnTime: 2,
+    burnInto: ["fire","fire","fire","fire","fire","fire","fire","fire","fire","fire","fire","fire","steam"],
     tempLow: -253,
     stateLow: "liquid_hydrogen",
     state: "gas",
@@ -3804,6 +3973,8 @@
     color: "#d3e1e3",
     behavior: behaviors.GAS,
     category: "gases",
+    tempHigh: 300,
+    stateHigh: ["oxygen","fire"],
     tempLow: -88.48,
     stateLow: ["nitrogen","oxygen"],
     hidden: true,
@@ -3833,6 +4004,9 @@
         "dirt": { elem1:"grass", chance:0.05 },
         "mud": { elem1:"grass", chance:0.05 },
         "potato_seed": { elem1:"potato", chance:0.05 },
+        "pumpkin_seed": { elem1:"pumpkin", chance:0.05 },
+        "herb": { elem1:"herb", chance:0.05 },
+        "lettuce": { elem1:"lettuce", chance:0.05 },
         "yeast": { elem1:"yeast", chance:0.05 },
         "fish": { elem2:"meat", chance:0.05 },
         "bird": { elem2:"meat", chance:0.05 },
@@ -3895,7 +4069,7 @@
     color: "#b3b38b",
     behavior: behaviors.LIQUID,
     tick: function(pixel) {
-        if (pixel.temp > 220) {
+        if (pixel.temp > 220 && !pixel.burning) {
             pixel.burning = true;
             pixel.burnStart = pixelTicks;
         }
@@ -3955,6 +4129,9 @@
     state: "gas",
     density: 0.554
 },
+"liquid_methane": {
+    "tempLow": -182
+},
 "stained_glass": {
     color: ["#6b2e2e","#6b4f2e","#6b6b2e","#2e6b2e","#2e6b6b","#2e2e6b","#6b2e6b"],
     behavior: behaviors.WALL,
@@ -3971,7 +4148,8 @@
     state: "solid",
     density: 2500,
     breakInto: "color_sand",
-    noMix: true
+    noMix: true,
+    movable: false,
 },
 "molten_stained_glass": {
     color: ["#c27070","#c29c70","#c2c270","#70c270","#70c2c2","#7070c2","#c270c2"],
@@ -4083,8 +4261,7 @@
     state: "solid",
     density: 2403,
     hardness: 0.4,
-    breakInto: "clay_shard",
-    breakIntoColor: ["#e1e4dd","#c7c7c7","#b8b8b8"],
+    breakInto: "porcelain_shard",
     noMix: true,
 },
 "sapling": {
@@ -4094,7 +4271,7 @@
             if (Math.random() < 0.02 && pixel.age > 50 && pixel.temp < 100) {
                 if (!outOfBounds(pixel.x,pixel.y+1)) {
                     var dirtPixel = pixelMap[pixel.x][pixel.y+1];
-                    if (dirtPixel && (eLists.SOIL.indexOf(dirtPixel.element) !== -1)) {
+                    if (dirtPixel && (eLists.SOIL.indexOf(dirtPixel.element) !== -1 || dirtPixel.element === "grass")) {
                         changePixel(dirtPixel,"root");
                     }
                 }
@@ -4119,7 +4296,7 @@
                     pixelMap[pixel.x][pixel.y+1].color = pixelColorPick(pixelMap[pixel.x][pixel.y+1], pixel.wc);
                 }
             }
-            else if (pixel.age > 1000) {
+            else if (pixel.age > 1000 && Math.random() < 0.05) {
                 changePixel(pixel,"wood");
                 pixel.color = pixelColorPick(pixel, pixel.wc);
             }
@@ -4152,7 +4329,7 @@
             if (Math.random() < 0.02 && pixel.h > 0 && pixel.temp < 100) {
                 if (!outOfBounds(pixel.x,pixel.y+1)) { // grow roots
                     var dirtPixel = pixelMap[pixel.x][pixel.y+1];
-                    if (dirtPixel && (eLists.SOIL.indexOf(dirtPixel.element) !== -1)) {
+                    if (dirtPixel && (eLists.SOIL.indexOf(dirtPixel.element) !== -1  || dirtPixel.element === "grass")) {
                         changePixel(dirtPixel,"root");
                     }
                 }
@@ -4211,6 +4388,7 @@
     burn:45,
     burnTime:75,
     burnInto: "dead_plant",
+    breakInto: ["dead_plant","dead_plant","dead_plant","dirt"],
     state: "solid",
     density: 1050,
     seed: "pinecone",
@@ -4498,42 +4676,44 @@
 "tree_branch": {
     color: "#a0522d",
     tick: function(pixel) {
-        if (!pixel.lc) { pixel.lc = "#00bf00" }
-        if (!pixel.wc) { pixel.wc = "#a0522d" }
-        if (isEmpty(pixel.x-1,pixel.y-1) && Math.random() < 0.02) {
-            if (Math.random() < 0.5) {
-                createPixel("plant",pixel.x-1,pixel.y-1);
-                pixelMap[pixel.x-1][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x-1][pixel.y-1], pixel.lc);
+        if (!pixel.burning) {
+            if (!pixel.lc) { pixel.lc = "#00bf00" }
+            if (!pixel.wc) { pixel.wc = "#a0522d" }
+            if (isEmpty(pixel.x-1,pixel.y-1) && Math.random() < 0.02) {
+                if (Math.random() < 0.5) {
+                    createPixel("plant",pixel.x-1,pixel.y-1);
+                    pixelMap[pixel.x-1][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x-1][pixel.y-1], pixel.lc);
+                }
+                else {
+                    createPixel("tree_branch",pixel.x-1,pixel.y-1);
+                    pixelMap[pixel.x-1][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x-1][pixel.y-1], pixel.wc);
+                    pixelMap[pixel.x-1][pixel.y-1].wc = pixel.wc;
+                    pixelMap[pixel.x-1][pixel.y-1].lc = pixel.lc;
+                }
             }
-            else {
-                createPixel("tree_branch",pixel.x-1,pixel.y-1);
-                pixelMap[pixel.x-1][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x-1][pixel.y-1], pixel.wc);
-                pixelMap[pixel.x-1][pixel.y-1].wc = pixel.wc;
-                pixelMap[pixel.x-1][pixel.y-1].lc = pixel.lc;
+            if (isEmpty(pixel.x+1,pixel.y-1) && Math.random() < 0.02) {
+                if (Math.random() < 0.5) {
+                    createPixel("plant",pixel.x+1,pixel.y-1);
+                    pixelMap[pixel.x+1][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x+1][pixel.y-1], pixel.lc);
+                }
+                else {
+                    createPixel("tree_branch",pixel.x+1,pixel.y-1);
+                    pixelMap[pixel.x+1][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x+1][pixel.y-1], pixel.wc);
+                    pixelMap[pixel.x+1][pixel.y-1].wc = pixel.wc;
+                    pixelMap[pixel.x+1][pixel.y-1].lc = pixel.lc;
+                }
             }
-        }
-        if (isEmpty(pixel.x+1,pixel.y-1) && Math.random() < 0.02) {
-            if (Math.random() < 0.5) {
-                createPixel("plant",pixel.x+1,pixel.y-1);
-                pixelMap[pixel.x+1][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x+1][pixel.y-1], pixel.lc);
-            }
-            else {
-                createPixel("tree_branch",pixel.x+1,pixel.y-1);
-                pixelMap[pixel.x+1][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x+1][pixel.y-1], pixel.wc);
-                pixelMap[pixel.x+1][pixel.y-1].wc = pixel.wc;
-                pixelMap[pixel.x+1][pixel.y-1].lc = pixel.lc;
-            }
-        }
-        if (isEmpty(pixel.x,pixel.y-1) && Math.random() < 0.02) {
-            if (Math.random() < 0.75) {
-                createPixel("plant",pixel.x,pixel.y-1);
-                pixelMap[pixel.x][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x][pixel.y-1], pixel.lc);
-            }
-            else {
-                createPixel("tree_branch",pixel.x,pixel.y-1);
-                pixelMap[pixel.x][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x][pixel.y-1], pixel.wc);
-                pixelMap[pixel.x][pixel.y-1].wc = pixel.wc;
-                pixelMap[pixel.x][pixel.y-1].lc = pixel.lc;
+            if (isEmpty(pixel.x,pixel.y-1) && Math.random() < 0.02) {
+                if (Math.random() < 0.75) {
+                    createPixel("plant",pixel.x,pixel.y-1);
+                    pixelMap[pixel.x][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x][pixel.y-1], pixel.lc);
+                }
+                else {
+                    createPixel("tree_branch",pixel.x,pixel.y-1);
+                    pixelMap[pixel.x][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x][pixel.y-1], pixel.wc);
+                    pixelMap[pixel.x][pixel.y-1].wc = pixel.wc;
+                    pixelMap[pixel.x][pixel.y-1].lc = pixel.lc;
+                }
             }
         }
         doDefaults(pixel);
@@ -4544,9 +4724,9 @@
     tempLow: -30,
     stateLow: "wood",
     category: "life",
-    burn: 40,
-    burnTime: 50,
-    burnInto: ["sap","ember","charcoal"],
+    burn: 2,
+    burnTime: 300,
+    burnInto: ["sap","ember","charcoal","smoke"],
     hidden: true,
     state: "solid",
     density: 1500,
@@ -4760,6 +4940,14 @@
 "glue": {
     color: "#f0f0f0",
     behavior: behaviors.STICKY,
+    reactions: {
+        "clay_shard": {elem1:"baked_clay"},
+        "porcelain_shard": {elem1:"porcelain"},
+        "glass_shard": {elem1:"glass"},
+        "rad_shard": {elem1:"rad_glass"},
+        "confetti": {elem1:"paper"},
+        "gold_coin": {elem1:"gold"},
+    },
     tempHigh: 475,
     stateHigh: ["cyanide_gas","dioxin"],
     category: "liquids",
@@ -4784,11 +4972,13 @@
         "clay_soil": { elem1: null, elem2: "clay" },
         "rock": { elem2: "wet_sand", chance: 0.0004 },
         "water": { elem1: "sugar_water", elem2: "sugar_water" },
-        "salt": { elem1:"foam", chance:0.1 },
-        "salt_water": { elem1:"foam", chance:0.1 },
+        "salt": { elem2:"foam", chance:0.05 },
+        "salt_water": { elem2:"foam", chance:0.01 },
         "sugar": { elem2:"foam", chance:0.001 },
         "candy": { elem2:"foam", chance:0.01 },
         "caramel": { elem2:"foam", chance:0.01 },
+        "rust": { elem2:"iron", chance:0.01 },
+        "oxidized_copper": { elem2:"copper", chance:0.01 },
     },
     state: "liquid",
     density: 1030,
@@ -4864,12 +5054,13 @@
             }
         }
     },
-    ignore: ["cloner","slow_cloner","clone_powder","floating_cloner","wire","ewall"],
+    ignore: ["cloner","slow_cloner","clone_powder","floating_cloner","wire","ewall","wire","sensor","battery"],
     category:"machines",
     insulate:true,
     darkText: true,
     conduct: 1,
-    hardness: 1
+    hardness: 1,
+    movable: false
 },
 "slow_cloner": {
     color: "#888800",
@@ -4878,7 +5069,7 @@
         "CF%10|XX|CF%10",
         "XX|CF%10|XX",
     ],
-    ignore: ["cloner","ecloner","clone_powder","floating_cloner"],
+    ignore: ["cloner","ecloner","clone_powder","floating_cloner","wall","ewall"],
     category:"machines",
     insulate:true,
     hardness: 1
@@ -4890,7 +5081,7 @@
         "CF|XX|CF",
         "M2|CF AND M1|M2",
     ],
-    ignore: ["cloner","ecloner","slow_cloner","floating_cloner"],
+    ignore: ["cloner","ecloner","slow_cloner","floating_cloner","wall","ewall"],
     category:"machines",
     insulate:true,
     state:"solid",
@@ -4905,7 +5096,7 @@
         "CF%3 AND M1%10|XX|CF%3 AND M1%10",
         "XX|CF%3 AND M1%10|XX",
     ],
-    ignore: ["cloner","ecloner","slow_cloner","clone_powder"],
+    ignore: ["cloner","ecloner","slow_cloner","clone_powder","wall","ewall"],
     category:"machines",
     insulate:true,
     state:"solid",
@@ -5044,6 +5235,9 @@
 "melted_cheese": {
     color: "#fcdb53",
     behavior: behaviors.LIQUID,
+    reactions: {
+        "salt": { elem2:null, chance:0.005},
+    },
     temp: 54,
     tempLow: 0,
     stateLow: "cheese",
@@ -5146,6 +5340,7 @@
                 pixelMap[pixel.x+1][pixel.y].color = pixel.mColor;
             }
         }
+        doDefaults(pixel);
     },
     reactions: {
         "water": { elem2:"broth", tempMin:70, color2:["#CC9978","#CD8C6F","#BE785E"] },
@@ -5236,6 +5431,18 @@
     density: 462,
     seed: "mushroom_spore"
 },
+"mulch": {
+    color: ["#94432c","#7a2912","#571a09"],
+    behavior: behaviors.POWDER,
+    tempHigh: 400,
+    stateHigh: ["dirt","dirt","ash","fire"],
+    burn: 1,
+    burnTime: 200,
+    burnInto: ["dirt","dirt","ash","fire"],
+    category:"land",
+    state: "solid",
+    density: 380
+},
 "lichen": {
     color: ["#b6d6c3","#769482"],
     tick: function(pixel) {
@@ -5259,6 +5466,8 @@
     reactions: {
         "carbon_dioxide": { elem2:"oxygen", chance:0.05 },
         "rock": { elem2:"dirt", chance:0.0025 },
+        "rock_wall": { elem2:"dirt", chance:0.0025 },
+        "gravel": { elem2:"dirt", chance:0.0025 },
         "vinegar": { elem1:null, chance:0.01 }
     },
     tempHigh: 400,
@@ -5302,6 +5511,9 @@
 "cellulose": {
     color: "#c7d4c9",
     behavior: behaviors.LIQUID,
+    reactions: {
+        "herb": {elem1:"incense", elem2:null}
+    },
     tempHigh: 100,
     stateHigh: "paper",
     tempLow: 0,
@@ -5398,7 +5610,8 @@
     behavior: behaviors.WALL,
     category: "solids",
     insulate: true,
-    state: "solid"
+    state: "solid",
+    noMix: true
 },
 "sponge": {
     color: ["#bf9c00","#ad8e05","#876f05"],
@@ -5433,7 +5646,8 @@
     tempHigh: 500,
     stateHigh: "fire",
     state: "solid",
-    density: 65
+    density: 65,
+    movable: false,
 },
 "bamboo": {
     color: ["#7cc00c","#77a012"],
@@ -5685,6 +5899,17 @@
     hardness: 0.25,
     hidden: true
 },
+"pyrite": {
+    color: ["#e8e0cb","#cdcaaf","#726a53","#8f835e","#bfb9a0",],
+    behavior: behaviors.WALL,
+    tempHigh: 1182.5,
+    category: "solids",
+    density: 4900,
+    state: "solid",
+    conduct: 0.5,
+    hardness: 0.6,
+    hidden: true
+},
 "solder": {
     color: "#a1a19d",
     behavior: behaviors.WALL,
@@ -5717,21 +5942,14 @@
         "carbon_dioxide": { elem1: "molten_steel", elem2: null }
     }
 },
-"pyrite": {
-    color: ["#e8e0cb","#cdcaaf","#726a53","#8f835e","#bfb9a0",],
-    behavior: behaviors.WALL,
-    tempHigh: 1182.5,
-    category: "solids",
-    density: 4900,
-    state: "solid",
-    conduct: 0.5,
-    hardness: 0.6,
-    hidden: true
-},
 "molten_tin": {
     reactions: {
         "molten_lead": { elem1: null, elem2: "molten_solder" }
     }
+},
+"molten_solder": {
+    color: ["#94A4B0","#AFBBC9","#CCD6E5","#FFFFFF"],
+    behavior: behaviors.LIQUID
 },
 "juice": {
     color: "#f0bf3d",
@@ -5740,6 +5958,8 @@
         "dirt": { elem1: null, elem2: "mud" },
         "sand": { elem1: null, elem2: "wet_sand" },
         "clay_soil": { elem1: null, elem2: "clay" },
+        "seltzer": { elem1: "soda", elem2: "foam" },
+        "carbon_dioxide": { elem1: "soda", elem2: "foam" },
     },
     tempHigh: 160,
     stateHigh: ["steam","sugar"],
@@ -5752,7 +5972,7 @@
     isFood: true
 },
 "juice_ice": {
-    stateHighColorMultiplier: 0.9,
+    stateHighColorMultiplier: 0.91,
 },
 "broth": {
     color: "#dbb169",
@@ -5796,6 +6016,7 @@
     reactions: {
         "melted_chocolate": { elem1:"chocolate_milk", elem2:null },
         "chocolate": { elem1:"chocolate_milk", elem2:"melted_chocolate", chance:0.05 },
+        "coffee_ground": { elem1:"chocolate_milk", chance:0.05 },
         "juice": { elem1:"fruit_milk", elem2:null, chance:0.05 },
         "soda": { elem1:"pilk", elem2:null, chance:0.1 },
         "yolk": { elem1:"eggnog", elem2:null, chance:0.1 },
@@ -5803,6 +6024,7 @@
         "sand": { elem1: null, elem2: "wet_sand" },
         "clay_soil": { elem1: null, elem2: "clay" },
         "caramel": { color1:"#C8B39A", elem2:null, chance:0.05 },
+        "sugar": { elem2:null, chance:0.005},
     },
     tempLow: 0,
     stateLow: "ice_cream",
@@ -5960,8 +6182,25 @@
     stateHigh: "smoke",
     category: "food",
     hidden: true,
+    isFood: true,
     state: "solid",
     density: 1031
+},
+"nut_milk": {
+    color: "#D7D1C3",
+    behavior: behaviors.LIQUID,
+    viscosity: 1.5,
+    tempHigh: 100,
+    stateHigh: "steam",
+    tempLow: 0,
+    stateLow: "ice",
+    category: "liquids",
+    state: "liquid",
+    density: 1107.41,
+    conduct: 0.005,
+    stain: -0.1,
+    desc: "Dairy-free!",
+    hidden: true
 },
 "dough": {
     color: "#bfac91",
@@ -6177,6 +6416,8 @@
         "limestone": { elem1: "sodium_acetate", elem2: "carbon_dioxide", attr1:{"foam":5} },
         "rust": { elem2:"iron", chance:0.05 },
         "oxidized_copper": { elem2:"copper", chance:0.05 },
+        "egg": { elem2:"yolk", chance:0.0005 },
+        "yolk": { elem1:"mayo", elem2:"mayo", chance:0.1 },
         "mushroom_spore": { elem2:null, chance:0.05 },
         "mushroom_gill": { elem2:null, chance:0.05 },
         "mushroom_cap": { elem2:null, chance:0.05 },
@@ -6271,13 +6512,14 @@
         "sugar_water": { elem1:"ketchup", elem2:"water", chance:0.1 },
         "vinegar": { elem1:"ketchup", elem2:null, chance:0.1 },
         "stench": { elem2:null },
+        "salt": { elem2:null, chance:0.005},
     },
     viscosity: 2600,
     tempHigh: 260,
     stateHigh: ["steam","salt"],
     category:"food",
     state: "liquid",
-    density: 1235,
+    density: 1031.33,
     stain: 0.01,
     isFood: true
 },
@@ -6300,7 +6542,8 @@
     density: 490.3,
     seed: "pumpkin_seed",
     breakInto: [null,null,null,null,null,"pumpkin_seed"],
-    isFood: true
+    isFood: true,
+    movable: false
 },
 "pumpkin_seed": {
     color: ["#FFE9CA","#ffdcc2","#ffcaab"],
@@ -6418,8 +6661,7 @@
         "M2|M1 AND SH:wire%1|M2",
     ],
     innerColor: "#e3c688",
-    breakInto: "juice",
-    breakIntoColor: "#C7C255",
+    breakInto: "mashed_potato",
     tempHigh: 176,
     stateHigh: "baked_potato",
     burn: 10,
@@ -6434,8 +6676,6 @@
 "baked_potato": {
     color: ["#F5B72F","#E89F0C","#9f7501"],
     behavior: behaviors.STURDYPOWDER,
-    breakInto: ["juice",null],
-    breakIntoColor: "#C7C255",
     tempHigh: 400,
     stateHigh: "ash",
     burn: 20,
@@ -6443,6 +6683,20 @@
     burnInto: "ash",
     breakInto: "crumb",
     breakIntoColor: ["#f6be46","#F5B72F","#f5b324","#f4aa0b","#f3ab1b","#E89F0C","#d08f0b","#b87e0a","#b28201","#9f7501"],
+    category: "food",
+    state: "solid",
+    density: 675,
+    isFood: true,
+    hidden: true
+},
+"mashed_potato": {
+    color: ["#F7F6E4","#F0ECD4","#E4D38B"],
+    behavior: behaviors.STURDYPOWDER,
+    tempHigh: 400,
+    stateHigh: ["ash","steam",null,null,null],
+    burn: 3,
+    burnTime: 300,
+    burnInto: ["ash","steam","smoke","smoke","smoke"],
     category: "food",
     state: "solid",
     density: 675,
@@ -6475,7 +6729,7 @@
     behavior: [
         "XX|XX|XX",
         "XX|XX|XX",
-        "CH:dirt,mud,sand,wet_sand,clay_soil,clay,mycelium>root,fiber%0.5|CH:dirt,mud,sand,wet_sand,clay_soil,clay,mycelium>root,fiber,fiber%0.5|CH:dirt,mud,sand,wet_sand,clay_soil,clay,mycelium>root,fiber%0.5",
+        "CH:dirt,mud,sand,wet_sand,clay_soil,clay,mycelium,grass>root,fiber%0.5|CH:dirt,mud,sand,wet_sand,clay_soil,clay,mycelium,grass>root,fiber,fiber%0.5|CH:dirt,mud,sand,wet_sand,clay_soil,clay,mycelium,grass>root,fiber%0.5",
     ],
     reactions: {
         "rock": { elem2:"sand", chance:0.0004 },
@@ -6523,11 +6777,12 @@
     ],
     reactions: {
         "bread": { elem1:"bread" },
-        "sugar": { elem2:"alcohol", chance:0.005 },
         "potato": { elem2:"alcohol", chance:0.005, "color2":"#fec400" },
-        "grape": { elem2:"alcohol", chance:0.01, "color2":"#916851" },
+        "grape": { elem2:"alcohol", chance:0.005, "color2":"#916851" },
         "juice": { elem2:"alcohol", chance:0.015, "color2":"#916851" },
         "sugar": { elem2:"alcohol", chance:0.005, "color2":"#80724d" },
+        "sugar_water": { elem2:"alcohol", chance:0.005, "color2":"#80724d" },
+        "soda": { elem2:"alcohol", chance:0.005, "color2":"#80724d" },
         "corn": { elem2:"alcohol", chance:0.005, "color2":"#b8b6a2" },
         "honey": { elem2:"alcohol", chance:0.005, "color2":"#dccb72" },
         "molasses": { elem2:"alcohol", chance:0.005, "color2":"#803924" },
@@ -6619,6 +6874,7 @@
     burn: 10,
     burnTime: 400,
     burnInto: ["smoke","smoke","smoke","ash"],
+    breakInto: "crumb",
     state: "solid",
     density: 233.96,
     hidden: true,
@@ -6659,6 +6915,120 @@
     density: 900,
     isFood: true
 },
+"coffee_bean": {
+    color: ["#994528","#772C12","#5c2513","#4a2416"],
+    behavior: behaviors.POWDER,
+    reactions: {
+        "water": { elem2:"coffee", tempMin:80 },
+        "salt_water": { elem2:"coffee", tempMin:80 },
+        "sugar_water": { elem2:"melted_chocolate", tempMin:65 },
+        "seltzer": { elem2:"coffee", tempMin:80 },
+        "stench": { elem2:null },
+        "oxygen": { elem2:"fragrance", chance:0.01 },
+    },
+    tempHigh: 400,
+    stateHigh: "fire",
+    breakInto: ["coffee_ground",null],
+    burn: 10,
+    burnInto: ["fire","smoke","smoke","smoke","smoke","smoke","smoke","fragrance"],
+    category: "food",
+    state: "solid",
+    density: 650,
+    isFood: true
+},
+"coffee_ground": {
+    color: ["#26130C","#422213"],
+    behavior: behaviors.POWDER,
+    reactions: {
+        "water": { elem1:"coffee", elem2:"coffee", tempMin:70 },
+        "salt_water": { elem1:"coffee", elem2:"coffee", tempMin:70 },
+        "sugar_water": { elem1:"melted_chocolate", elem2:"melted_chocolate", tempMin:60 },
+        "seltzer": { elem1:"coffee", elem2:"coffee", tempMin:70 },
+        "coffee": { elem1:"coffee", tempMin:70 },
+        "melted_chocolate": { elem1:"melted_chocolate", tempMin:60 },
+        "stench": { elem2:null },
+        "oxygen": { elem2:"fragrance", chance:0.01 },
+        "flea": { elem2:null, chance:0.01 },
+    },
+    tempHigh: 400,
+    stateHigh: "fire",
+    burn: 25,
+    burnInto: ["fire","smoke","smoke","smoke","smoke","smoke","smoke","fragrance"],
+    category: "food",
+    state: "solid",
+    density: 1002,
+    isFood: true,
+    hidden: true
+},
+"nut": {
+    color: ["#d69965","#c98c57","#b57a47","#8f6038"],
+    behavior: behaviors.POWDER,
+    reactions: {
+        "water": { elem2:"nut_milk", chance:0.00025 },
+        "salt_water": { elem2:"nut_milk", chance:0.00025 },
+        "sugar_water": { elem2:"nut_milk", chance:0.00025 },
+        "seltzer": { elem2:"nut_milk", chance:0.00025 },
+    },
+    tempHigh: 400,
+    stateHigh: "fire",
+    burn: 25,
+    burnInto: ["fire","smoke","ash"],
+    breakInto: ["nut_meat",null],
+    category: "food",
+    state: "solid",
+    density: 325,
+    isFood: true,
+},
+"nut_meat": {
+    color: ["#deba8e","#d1a56f","#ba8b50"],
+    behavior: behaviors.POWDER,
+    reactions: {
+        "water": { elem2:"nut_milk", chance:0.0005 },
+        "salt_water": { elem2:"nut_milk", chance:0.0005 },
+        "sugar_water": { elem2:"nut_milk", chance:0.0005 },
+        "seltzer": { elem2:"nut_milk", chance:0.0005 },
+    },
+    tempHigh: 150,
+    stateHigh: "nut_butter",
+    burn: 20,
+    burnInto: ["fire","smoke"],
+    category: "food",
+    state: "solid",
+    density: 905,
+    isFood: true,
+    hidden: true,
+},
+"nut_butter": {
+    color: "#cd9141",
+    behavior: behaviors.LIQUID,
+    reactions: {
+        "salt": { elem2:null, chance:0.005},
+        "water": { elem1:"nut_milk", elem2:"nut_milk", chance:0.05 },
+        "salt_water": { elem1:"nut_milk", elem2:"nut_milk", chance:0.05 },
+        "sugar_water": { elem1:"nut_milk", elem2:"nut_milk", chance:0.05 },
+        "seltzer": { elem1:"nut_milk", elem2:"nut_milk", chance:0.05 },
+    },
+    viscosity: 200000,
+    tempHigh: 232,
+    stateHigh: ["smoke","smoke","smoke","smoke","salt"],
+    category: "food",
+    state: "liquid",
+    density: 1090.5,
+    isFood: true,
+    hidden: true,
+},
+"jelly": {
+    color: "#A35298",
+    behavior: behaviors.LIQUID,
+    viscosity: 200000,
+    tempHigh: 200,
+    stateHigh: ["smoke","sugar"],
+    category: "food",
+    state: "liquid",
+    density: 1245,
+    isFood: true,
+    hidden: true,
+},
 "baking_soda": {
     color: "#ededed",
     behavior: behaviors.POWDER,
@@ -6670,7 +7040,8 @@
     category: "food",
     state: "solid",
     density: 2200,
-    tempHigh: 3000,
+    tempHigh: 200,
+    stateHigh: ["salt","carbon_dioxide"],
     isFood: true
 },
 "yogurt": {
@@ -6724,7 +7095,8 @@
         "juice": { elem1:"fruit_milk", elem2:null, chance:0.05 },
         "soda": { elem1:"pilk", elem2:null, chance:0.1 },
         "yolk": { elem1:"#eggnog", elem2:null, chance:0.1 },
-        "caramel": { color1:"#C8B39A", chance:0.05 }
+        "caramel": { color1:"#C8B39A", chance:0.05 },
+        "sugar": { elem2:null, chance:0.005},
     },
     viscosity: 1.5,
     tempHigh: 1000,
@@ -6802,14 +7174,12 @@
                 }
             }
         }
+        if (pixel.temp < 36 && Math.random() < 0.1) {
+            pixel.temp += 1;
+        }
         doDefaults(pixel);
     },
     reactions: {
-        "blood": { chance:0.01, func:function(pixel1,pixel2){
-            changePixel(pixel2,"skin");
-            pixel2.color = pixelColorPick(pixel2,RGBToHex(pixel1.color.match(/\d+/g)))
-            if (pixel1.origColor) { pixel2.origColor = pixel1.origColor }
-        } },
         "cell": { chance:0.01, func:function(pixel1,pixel2){
             changePixel(pixel2,"skin");
             pixel2.color = pixelColorPick(pixel2,RGBToHex(pixel1.color.match(/\d+/g)))
@@ -6820,6 +7190,7 @@
     },
     category:"solids",
     breakInto: [null,null,null,"blood","dust"],
+    temp: 37,
     tempHigh: 200,
     stateHigh: ["cooked_meat","cooked_meat","cooked_meat","steam"],
     tempLow: -18,
@@ -6830,6 +7201,7 @@
     state: "solid",
     density: 1019.5,
     conduct: 0.05,
+    movable: false,
 },
 "hair": {
     color: ["#C6C3BF","#EEDFC0","#DAB575","#BF9F6C","#C67945","#9B6E47","#967454","#945F36","#4C3D2E","#5A3E2D","#1c1c1c","#4A2227","#6D342B","#9D4C3B","#C25E3B"],
@@ -6907,11 +7279,24 @@
         "charcoal": { elem2:"diamond", tempMin:800, chance:0.005, oneway:true },
     },
     tempHigh: 1080,
+    stateHigh: "magma",
     category: "land",
     state: "solid",
     density: 2605,
     hardness: 0.4,
     breakInto: "gravel"
+},
+"molten_tuff": {
+    color: ["#ff932c","#ff762c","#ff5800"],
+    behavior: behaviors.MOLTEN,
+    temp: 1080,
+    tempLow: 1000,
+    stateLow: "tuff",
+    viscosity: 10000,
+    category: "states",
+    state: "liquid",
+    density: 2725,
+    hidden: true
 },
 "soap": {
     color: "#f2f2f2",
@@ -7093,7 +7478,8 @@
     reactions: {
         "gold": { elem1:null, elem2:"amalgam", chance:0.01 },
         "zinc": { elem1:null, elem2:"amalgam", chance:0.01 },
-        "sodium": { elem1:null, elem2:"amalgam", chance:0.01 },
+        "sodium": { elem1:["pop","electric"], elem2:"amalgam", chance:0.01, temp2:600 },
+        "molten_sodium": { elem1:["pop","electric"], elem2:"amalgam", chance:0.01, temp2:600 },
         "aluminum": { elem1:null, elem2:"amalgam", chance:0.01 },
         "tin": { elem1:null, elem2:"amalgam", chance:0.01 },
         "lead": { elem1:null, elem2:"amalgam", chance:0.01 },
@@ -7349,6 +7735,34 @@
     hidden: true,
     isFood: true
 },
+"coffee": {
+    color: "#24100b",
+    behavior: behaviors.LIQUID,
+    reactions: {
+        "stench": { elem2:null },
+        "oxygen": { elem2:"fragrance", chance:0.01 },
+        "sugar": { elem2:null, color1:"#99552A", chance:0.005},
+        "honey": { elem2:null, color1:"#99552A", chance:0.005},
+        "milk": { elem2:"foam", color1:"#CA9D68", chance:0.005},
+        "cream": { elem2:"foam", color1:"#CA9D68", chance:0.005},
+        "ice_cream": { elem2:null, color1:"#CA9D68", chance:0.005},
+        "chocolate": { elem2:null, color1:"#6A3517", chance:0.005},
+        "melted_chocolate": { elem2:null, color1:"#6A3517", chance:0.005},
+        "water": { elem2:"coffee", tempMin:70, chance:0.2 },
+        "salt_water": { elem2:"coffee", tempMin:70, chance:0.2 },
+        "sugar_water": { elem2:"melted_chocolate", tempMin:60, chance:0.3 },
+        "seltzer": { elem2:"coffee", tempMin:70, chance:0.2 },
+    },
+    tempHigh: 130,
+    stateHigh: ["steam","fragrance",null],
+    tempLow: 0,
+    category:"liquids",
+    state: "liquid",
+    density: 1001.74,
+    stain: 0.001,
+    hidden: true,
+    isFood: true
+},
 "honey": {
     color: ["#f6ce1a","#e79001","#bb5503"],
     behavior: behaviors.LIQUID,
@@ -7395,8 +7809,7 @@
     color: "#e89a51",
     behavior: behaviors.LIQUID,
     viscosity: 500,
-    temp: 40,
-    tempLow: 24,
+    tempLow: -20,
     stateLow: "candy",
     tempHigh: 204.44,
     stateHigh: "smoke",
@@ -7431,6 +7844,23 @@
     state: "liquid",
     density: 1235,
     stain: 0.05,
+    isFood: true
+},
+"mayo": {
+    color: "#fcffbd",
+    behavior: behaviors.LIQUID,
+    reactions: {
+        "glue": { elem2:null, chance:0.01 },
+        "oil": { elem2:null, chance:0.01 },
+        "sap": { elem2:null, chance:0.01 },
+    },
+    viscosity: 3491,
+    tempHigh: 100.6,
+    stateHigh: ["steam","carbon_dioxide","methane"],
+    category:"liquids",
+    state: "liquid",
+    density: 910,
+    stain: 0.01,
     isFood: true
 },
 "melted_chocolate": {
@@ -7609,6 +8039,7 @@
         "sand": { elem1:"cement", elem2:null, chance:0.2 },
         "ash": { elem1:"cement", elem2:null, chance:0.2 },
         "clay_shard": { elem1:"cement", elem2:null, chance:0.2 },
+        "porcelain_shard": { elem1:"cement", elem2:null, chance:0.2 },
         "milk": { elem1:"glue", elem2:"glue", chance:0.02 },
     },
     tempHigh: 580,
@@ -7658,6 +8089,9 @@
 },
 "amalgam": {
     color: ["#6b5535","#96784f","#604928","#a69070"],
+    reactions: {
+        "salt_water": { elem1:"mercury", elem2:["sodium","hydrogen","hydrogen"], charged:true, chance:0.01 },
+    },
     behavior: behaviors.SUPPORT,
     tempHigh: 223,
     category:"powders",
@@ -7734,7 +8168,7 @@
         "M2|M1|M2",
     ],
     reactions: {
-        "oxygen": { elem2:"stench" },
+        "oxygen": { elem2:"stench", chance:0.01 },
         "water": { elem1:null, elem2:"dirty_water" },
         "nitrogen": { elem2:"stench" },
         "baking_soda": { elem1:null },
@@ -7755,11 +8189,18 @@
 },
 "fragrance": {
     color: "#967bb6",
-    behavior: behaviors.GAS,
+    behavior: [
+        "M2|M1|M2",
+        "M1|DL%0.5|M1",
+        "M2|M1|M2",
+    ],
     reactions: {
         "stench": { elem2:null },
-        "oxygen": { elem2:"fragrance" },
-        "dirty_water": { elem1:null, elem2:"water" }
+        "oxygen": { elem2:"fragrance", chance:0.01 },
+        "dirty_water": { elem1:null, elem2:"water" },
+        "rotten_meat": { elem1:null },
+        "rotten_cheese": { elem1:null },
+        "fly": { elem1:null },
     },
     tempHigh: 1000,
     stateHigh: "fire",
@@ -7929,7 +8370,7 @@
     ],
     category:"gases",
     temp: -200,
-    tempHigh: -180,
+    tempHigh: -160,
     stateHigh: "snow_cloud",
     state: "gas",
     density: 0.6,
@@ -8047,7 +8488,8 @@
     category: "machines",
     tempHigh: 1500,
     stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
-    conduct: 1
+    conduct: 1,
+    breakInto: "glass_shard"
 },
 "led_g": {
     behavior: behaviors.WALL,
@@ -8060,7 +8502,8 @@
     category: "machines",
     tempHigh: 1500,
     stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
-    conduct: 1
+    conduct: 1,
+    breakInto: "glass_shard"
 },
 "led_b": {
     behavior: behaviors.WALL,
@@ -8073,7 +8516,8 @@
     category: "machines",
     tempHigh: 1500,
     stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
-    conduct: 1
+    conduct: 1,
+    breakInto: "glass_shard"
 },
 "sulfur": {
     color: ["#e9d74c","#89761b","#ddc56b"],
@@ -8102,12 +8546,14 @@
     tempHigh: 444.6,
     viscosity: 8.5,
     fireColor: ["#8180cc","#7f84e6"],
+    burnInto: ["smoke","smoke","smoke","smoke","stench"],
     alias: "molten sulphur"
 },
 "sulfur_gas": {
     color: "#b0a65d",
-    burnTime: 57,
-    density: 2.16
+    burnTime: 10,
+    density: 2.16,
+    burnInto: ["smoke","smoke","smoke","smoke","stench"],
 },
 "copper_sulfate": {
     color: ["#4391fd","#004cfe"],
@@ -8176,8 +8622,10 @@
         "ice": { elem2:"dirty_ice", chance:0.5 },
         "salt_ice": { elem2:"dirty_ice", chance:0.5 },
         "soda": { elem2:"rad_steam", chance:0.25 },
+        "juice": { elem2:"rad_steam", chance:0.25 },
         "broth": { elem2:"rad_steam", chance:0.3 },
         "tea": { elem2:"rad_steam", chance:0.25 },
+        "coffee": { elem2:"rad_steam", chance:0.25 },
         "bubble": { elem2:"rad_steam", chance:0.4 },
         "foam": { elem2:"rad_steam", chance:0.4 },
         "ice": { elem2:"rad_steam", chance:0.4 },
@@ -8198,7 +8646,7 @@
         "evergreen": { elem2:["dead_plant","plant"], chance:0.4 },
         "cactus": { elem2:["dead_plant","plant","cactus"], chance:0.4 },
         "frozen_plant": { elem2:"dead_plant", chance:0.4 },
-        "grass": { elem2:["dead_plant","straw","grass_seed","wheat_seed"], chance:0.4 },
+        "grass": { elem2:["dead_plant","straw","grass_seed","wheat_seed","lettuce","herb"], chance:0.4 },
         "herb": { elem2:"dead_plant", chance:0.4 },
         "algae": { elem2:["mushroom_spore","lichen","yeast"], chance:0.4 },
         "mushroom_spore": { elem2:["lichen","yeast"], chance:0.4 },
@@ -8403,7 +8851,7 @@
     hardness: 1
 },
 "gold_coin": {
-    color: ["#fff0b5","#986a1a","#f0bb62"],
+    color: ["#fff0b5","#ffe680","#c48821","#986a1a","#eca832","#f0bb62"],
     behavior: behaviors.POWDER,
     tempHigh: 1064,
     stateHigh: "molten_gold",
@@ -8518,10 +8966,19 @@
     behavior: behaviors.POWDER,
     category: "powders",
     tempHigh: 1300,
-    stateHigh: "porcelain",
+    stateHigh: "porcelain_shard",
     state: "solid",
     density: 2000,
     hardness: 0.25
+},
+"porcelain_shard": {
+    color: ["#e1e4dd","#c7c7c7","#b8b8b8"],
+    behavior: behaviors.POWDER,
+    category: "powders",
+    state: "solid",
+    density: 2000,
+    hardness: 0.325,
+    hidden: true
 },
 "feather": {
     color: ["#ffffff","#e3e3e3","#d1d1d1"],
@@ -8543,12 +9000,12 @@
         "M2%25|M1%25|M1%25",
     ],
     reactions: {
-        "water": { elem1:null, chance:0.001 },
-        "salt_water": { elem1:null, chance:0.001 },
-        "sugar_water": { elem1:null, chance:0.001 },
-        "dirty_water": { elem1:null, chance:0.001 },
-        "seltzer": { elem1:null, chance:0.001 },
-        "pool_water": { elem1:null, chance:0.001 },
+        "water": { elem1:[null,"cellulose"], chance:0.001 },
+        "salt_water": { elem1:[null,"cellulose"], chance:0.001 },
+        "sugar_water": { elem1:[null,"cellulose"], chance:0.001 },
+        "dirty_water": { elem1:[null,"cellulose"], chance:0.001 },
+        "seltzer": { elem1:[null,"cellulose"], chance:0.001 },
+        "pool_water": { elem1:[null,"cellulose"], chance:0.001 },
     },
     category: "powders",
     tempHigh: 248,
@@ -8628,7 +9085,8 @@
     tempHigh: 1124,
     state: "solid",
     density: 1680,
-    hidden: true
+    hidden: true,
+    alias: "epsom"
 },
 "potassium_salt": {
     color: ["#f2f2f2","#e0e0e0"],
@@ -9212,7 +9670,6 @@
         "XX|DL%25|M2",
         "XX|M2|M1",
     ],
-    name: "firework ember",
     burning: true,
     burnInto: "ash",
     fireElement: "carbon_dioxide",
@@ -9384,8 +9841,6 @@
     category: "weapons",
     state: "solid",
     density: 1300,
-    tempHigh: 10455.5,
-    stateHigh: "molten_steel",
     excludeRandom: true,
     cooldown: defaultCooldown
 },
@@ -9473,7 +9928,6 @@
     reactions: {
         "blood": { elem1:"pointer" },
         "molten_stained_glass": { elem1:"rainbow" },
-        "gray_goo": { elem1:"static" }
     },
     category: "energy",
     temp: 40,
@@ -9681,6 +10135,7 @@
         "steel": { elem1:null, elem2:"rust", chance:0.02 },
     },
     category: "life",
+    temp: 30,
     tempHigh: 100,
     stateHigh: "steam",
     conduct: 0.05,
@@ -9706,10 +10161,54 @@
             }
         }
         console.log(output);
+        console.log(JSON.stringify(pixel));
         alert(output);
         lastDebug = pixelTicks;
     },
     maxSize: 1,
+    category: "special"
+},
+"prop": {
+    color: ["#d46f50","#d4aa50"],
+    onSelect: function(){
+        var answer1 = prompt("Warning - This tool may break the game if used incorrectly.\n\nEnter a pixel attribute to modify:",(currentProp||undefined));
+        if (!answer1) { return }
+        var answer2 = prompt("Now, enter a value for "+answer1+":",(currentPropValue||undefined));
+        if (!answer2) { return }
+        var valueL = answer2.toLowerCase();
+        if (valueL === "true") { answer2 = true }
+        else if (valueL === "false") { answer2 = false }
+        else if (valueL === "null") { answer2 = null }
+        else if (valueL === "undefined") { answer2 = undefined }
+        else if (answer1 === "color" && valueL[0] === "#") {
+            var rgb = hexToRGB(valueL);
+            answer2 = "rgb("+rgb.r+","+rgb.g+","+rgb.b+")";
+        }
+        currentProp = answer1;
+        var num = parseFloat(answer2);
+        if (!isNaN(num)) { answer2 = num }
+        currentPropValue = answer2;
+        logMessage("Prop: "+currentProp);
+        logMessage("Value: "+currentPropValue);
+    },
+    tool: function(pixel) {
+        if (!currentProp) { return }
+        if (pixel[currentProp] !== undefined && typeof pixel[currentProp] !== typeof currentPropValue) {
+            logMessage("Error: "+currentProp+" type is "+typeof pixel[currentProp]+", not "+typeof currentPropValue+".");
+            currentProp = null;
+            currentPropValue = null;
+            return;
+        }
+        if (currentProp === "element") {
+            changePixel(pixel, currentPropValue);
+            return;
+        }
+        if (currentProp === "burning" && currentPropValue === "true") {
+            pixel.burnStart = pixelTicks;
+            return;
+        }
+        pixel[currentProp] = currentPropValue;
+    },
     category: "special"
 },
 //ice color: "#c5e9f0"
@@ -9723,9 +10222,25 @@
 "infection_ice": { color: "#ff7090" },
 
 };
-// October - unhide Pumpkin Seed
-if (new Date().getMonth() == 9) {
+var currentMonth = new Date().getMonth();
+if (currentMonth == 9) { // October
     elements.pumpkin_seed.hidden = false;
+}
+else if (currentMonth == 10) { // December
+    elements.candy.colorPattern = [
+        "WWRRRWWRRR",
+        "WWRRWWWRRW",
+        "WRRRWWRRRW",
+        "WRRWWWRRWW",
+        "RRRWWRRRWW",
+        "RRWWWRRWWW",
+        "RRWWRRRWWR",
+        "RWWWRRWWWR",
+        "RWWRRRWWRR",
+        "WWWRRWWWRR",
+    ]
+    elements.candy.colorKey = {"R":"#c92626", "W":"#e3e3e3"}
+    elements.candy.color = ["#c92626","#e3e3e3","#c92626","#e3e3e3","#c92626"]
 }
 
         function hexToRGB(hex) {
@@ -9761,8 +10276,14 @@ if (new Date().getMonth() == 9) {
         logInterval = null;
         function logMessage(text) {
             var logText = document.getElementById("logText");
+            text = text.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&/g, "&amp;");
             logText.innerHTML += "\n"+text;
             logText.innerHTML = logText.innerHTML.trim();
+            if (logText.innerHTML.split("\n").length > 10) {
+                var lines = logText.innerHTML.split("\n");
+                lines.shift();
+                logText.innerHTML = lines.join("\n");
+            }
             if (!logInterval) {
                 logInterval = setInterval(function(){
                     var lines = logText.innerHTML.split("\n");
@@ -9774,6 +10295,11 @@ if (new Date().getMonth() == 9) {
                     }
                 }, 3000)
             }
+        }
+        function clearLog() {
+            document.getElementById("logText").innerHTML = "";
+            if (logInterval) {clearInterval(logInterval);}
+            logInterval = null;
         }
 
         currentPixels = [];
@@ -9941,6 +10467,9 @@ if (new Date().getMonth() == 9) {
                 pixel.temp = elementInfo.temp;
                 pixelTempCheck(pixel)
             }
+            if (pixel.con && !elementInfo.canContain) {
+                delete pixel.con;
+            }
             // If elementInfo.properties, set each key to its value
             if (elementInfo.properties !== undefined) {
                 for (var key in elementInfo.properties) {
@@ -9969,10 +10498,10 @@ if (new Date().getMonth() == 9) {
             if (r.tempMax !== undefined && pixel1.temp > r.tempMax) {
                 return false;
             }
-            if (r.burning1 && !pixel1.burning) {
+            if (r.burning1 !== undefined && Boolean(pixel1.burning) !== r.burning1) {
                 return false;
             }
-            if (r.burning2 && !pixel2.burning) {
+            if (r.burning2 !== undefined && Boolean(pixel2.burning) !== r.burning2) {
                 return false;
             }
             if (r.charged && !pixel.charge) {
@@ -10428,6 +10957,7 @@ if (new Date().getMonth() == 9) {
                             if (isEmpty(newCoords.x,newCoords.y)) {
                                 createPixel(pixel.clone,newCoords.x,newCoords.y);
                                 pixelMap[newCoords.x][newCoords.y].temp = pixel.temp;
+                                pixelTempCheck(pixelMap[newCoords.x][newCoords.y]);
                             }
                         }
                         else {
@@ -11199,7 +11729,7 @@ if (new Date().getMonth() == 9) {
                     if (pixel) {
                         // remove unneeded properties
                         for (var k = 0; k < ignoreProperties.length; k++) { delete pixel[ignoreProperties[k]]; }
-                        if (pixel.element) {
+                        if (!saveOptions.raw && pixel.element) {
                             if (!codes[pixel.element]) {
                                 var char = String.fromCharCode(codeN);
                                 codes[pixel.element] = char;
@@ -11215,18 +11745,20 @@ if (new Date().getMonth() == 9) {
                             pixel.temp = Math.round(pixel.temp);
                             if (pixel.temp === airTemp) { delete pixel.temp; }
                         }
-                        for (var prop in pixel) {
-                            if (!codes[prop]) {
-                                var char = String.fromCharCode(codeN);
-                                codes[prop] = char;
-                                codesReverse[char] = prop;
-                                codeN++;
-                                if (unicodeSkips[codeN]) {
-                                    codeN = unicodeSkips[codeN];
+                        if (!saveOptions.raw) {
+                            for (var prop in pixel) {
+                                if (!codes[prop]) {
+                                    var char = String.fromCharCode(codeN);
+                                    codes[prop] = char;
+                                    codesReverse[char] = prop;
+                                    codeN++;
+                                    if (unicodeSkips[codeN]) {
+                                        codeN = unicodeSkips[codeN];
+                                    }
                                 }
+                                pixel[codes[prop]] = pixel[prop];
+                                delete pixel[prop];
                             }
-                            pixel[codes[prop]] = pixel[prop];
-                            delete pixel[prop];
                         }
                     }
                     else {
@@ -11250,7 +11782,8 @@ if (new Date().getMonth() == 9) {
             else {
                 var url = window.location.href;
             }
-            var compressedMap = JSON.stringify(pixelarray).replace(/,0/g,"×").replace(/":"/g,"»").replace(/,"/g,"§").replace(/element»/g,"©").replace(/"\},\{"/g,"¸").replace(/×××/g,"³").replace(/¸©/g,"¦").replace(/"\}\],\[/g,"®").replace(/\{"/g,"¶").replace(/:true/g,"¥").replace(/:false/g,"¡").replace(/":/g,"¼").replace(/\},/g,"½").replace(/"¥§/g,"¾").replace(/³³³/g,"°").replace(/\],\[/g,"¤");
+            if (!saveOptions.raw) { var compressedMap = JSON.stringify(pixelarray).replace(/,0/g,"×").replace(/":"/g,"»").replace(/,"/g,"§").replace(/element»/g,"©").replace(/"\},\{"/g,"¸").replace(/×××/g,"³").replace(/¸©/g,"¦").replace(/"\}\],\[/g,"®").replace(/\{"/g,"¶").replace(/:true/g,"¥").replace(/:false/g,"¡").replace(/":/g,"¼").replace(/\},/g,"½").replace(/"¥§/g,"¾").replace(/³³³/g,"°").replace(/\],\[/g,"¤").replace(/rgb\(/g,"º").replace(/\)¸/g,"ª"); }
+            else { var compressedMap = pixelarray; }
             var seriesIndex = 0;
             var createdTime = Date.now();
             var seriesId = uuidv4();
@@ -11267,7 +11800,7 @@ if (new Date().getMonth() == 9) {
             }
             return {
                 "meta":{
-                    "saveVersion":"sb1",
+                    "saveVersion":"sb"+saveVersion,
                     "gameVersion":currentversion,
                     "name":saveOptions.name||"",
                     "desc":saveOptions.desc||"",
@@ -11303,8 +11836,14 @@ if (new Date().getMonth() == 9) {
                 alert("Invalid save file - missing pixelMap."); return;
             }
             var saveConfig = saveJSON.saveConfig || {};
-            compressedMap = compressedMap.replace(/¤/g,"],[").replace(/°/g,"³³³").replace(/¾/g,'"¥§').replace(/½/g,'},').replace(/¼/g,'":').replace(/¡/g,":false").replace(/¥/g,":true").replace(/¶/g,'{"').replace(/®/g,'"}],[').replace(/¦/g,"¸©").replace(/³/g,"×××").replace(/¸/g,'"},{"').replace(/©/g,"element»").replace(/§/g,',"').replace(/»/g,'":"').replace(/×/g,",0");
             var savePixelSize = saveConfig.pixelSize||6;
+            var version = parseInt(saveJSON.meta.saveVersion.split("sb")[1]);
+            if (version < 1 || !version) {
+                alert("This save was made in an unknown version of Sandboxels, and may not load correctly.")
+            }
+            else if (version > saveVersion) {
+                alert("This save was made in a newer version of Sandboxels, and may not load correctly. Please use the latest version.")
+            }
             resizeCanvas(saveConfig.height*savePixelSize+savePixelSize,saveConfig.width*savePixelSize+savePixelSize,savePixelSize);
             clearAll(true);
             if (saveConfig.settings) {
@@ -11338,7 +11877,16 @@ if (new Date().getMonth() == 9) {
             if (saveConfig.mouseSize) { mouseSize = saveConfig.mouseSize };
             if (saveConfig.view) { setView(saveConfig.view) };
             if (saveConfig.paused && !paused) { togglePause(); }
-            pixelarray = JSON.parse(compressedMap);
+            if (typeof compressedMap !== "object") {
+                if (version >= 2) {
+                    compressedMap = compressedMap.replace(/ª/g,")¸").replace(/º/g,"rgb(");
+                }
+                compressedMap = compressedMap.replace(/¤/g,"],[").replace(/°/g,"³³³").replace(/¾/g,'"¥§').replace(/½/g,'},').replace(/¼/g,'":').replace(/¡/g,":false").replace(/¥/g,":true").replace(/¶/g,'{"').replace(/®/g,'"}],[').replace(/¦/g,"¸©").replace(/³/g,"×××").replace(/¸/g,'"},{"').replace(/©/g,"element»").replace(/§/g,',"').replace(/»/g,'":"').replace(/×/g,",0");
+                pixelarray = JSON.parse(compressedMap);
+            }
+            else {
+                pixelarray = compressedMap;
+            }
             for (var x = 0; x < pixelarray.length; x++) {
                 for (var y = 0; y < pixelarray[x].length; y++) {
                     var pixel = pixelarray[x][y];
@@ -11372,6 +11920,9 @@ if (new Date().getMonth() == 9) {
                 "uuid":saveJSON.meta.uuid,
                 "seriesId":saveJSON.meta.seriesId,
                 "created":saveJSON.meta.created,
+            }
+            if (saveJSON.meta.author) {
+                logMessage("Created by "+saveJSON.meta.author);
             }
             return pixelarray;
         }
@@ -11500,6 +12051,18 @@ if (new Date().getMonth() == 9) {
             [1,0],
             [-1,0]
         ];
+        squareCoords = [
+            [0,1],
+            [0,-1],
+            [1,0],
+            [-1,0],
+            [1,1],
+            [1,-1],
+            [-1,1],
+            [-1,-1]
+        ];
+        squareCoordsShuffle = squareCoords.slice();
+        adjacentCoordsShuffle = adjacentCoords.slice();
         biCoords = [
             [0,1],
             [1,0]
@@ -11528,6 +12091,7 @@ if (new Date().getMonth() == 9) {
                         pixelTick(pixel);
                     }
                 };
+                if (pixel.con) { pixel = pixel.con }
                 if (elements[pixel.element].isGas || elements[pixel.element].glow) {
                     pixelsLast.push(pixel);
                 }
@@ -11538,10 +12102,17 @@ if (new Date().getMonth() == 9) {
             // Draw the current pixels
             var canvas = document.getElementById("game");
             var ctx = canvas.getContext("2d");
+            // Clear the canvas
+            if (!settings["bg"]) {ctx.clearRect(0, 0, canvas.width, canvas.height)}
+            else {
+                ctx.fillStyle = settings["bg"];
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
             var pixelDrawList = pixelsFirst.concat(pixelsLast);
             for (var i = 0; i < pixelDrawList.length; i++) {
                 pixel = pixelDrawList[i];
                 if (pixelMap[pixel.x][pixel.y] == undefined) {continue}
+                if (pixel.con) { pixel = pixel.con }
                 if (view===null || view===3) {
                     ctx.fillStyle = pixel.color;
                 }
@@ -11605,12 +12176,6 @@ if (new Date().getMonth() == 9) {
             // Get the canvas
             var canvas = document.getElementById("game");
             var ctx = canvas.getContext("2d");
-            // Clear the canvas
-            if (!settings["bg"]) {ctx.clearRect(0, 0, canvas.width, canvas.height)}
-            else {
-                ctx.fillStyle = settings["bg"];
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-            }
 
             if (!paused && settings.events) {
                 doRandomEvents();
@@ -11655,6 +12220,8 @@ if (new Date().getMonth() == 9) {
     
         currentElement = "sand";
         currentColor = "#ff0000";
+        currentProp = null;
+        currentPropValue = null;
         currentSaveData = null;
         savingState = null;
         mouseIsDown = false;
@@ -12459,6 +13026,7 @@ if (new Date().getMonth() == 9) {
             if (!skipworldgen && settings["worldgen"] && settings["worldgen"] != "off") {
                 worldGen(worldgentypes[settings["worldgen"]]);
             }
+            clearLog();
         }
         function mean(arr) {
             var sum = 0;
@@ -12644,6 +13212,12 @@ if (new Date().getMonth() == 9) {
                     }
                     if (currentPixel.burning) {
                         stats += "<span id='stat-burning' class='stat'>Burning</span>";
+                    }
+                    if (currentPixel.clone) {
+                        stats += "<span id='stat-clone' class='stat'>"+currentPixel.clone.toUpperCase()+"</span>";
+                    }
+                    else if (currentPixel.con && currentPixel.con.element) {
+                        stats += "<span id='stat-clone' class='stat'>"+currentPixel.con.element.toUpperCase()+"</span>";
                     }
                 }
             }
@@ -13138,7 +13712,8 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             var saveColors = document.getElementById("saveColors").getAttribute("state") === "1";
             var saveMods = document.getElementById("saveMods").getAttribute("state") === "1";
             var saveSettings = document.getElementById("saveSettings").getAttribute("state") === "1";
-            var config = {name:saveName,temp:saveTemp,mods:saveMods,settings:saveSettings,keep:[]};
+            var saveRaw = document.getElementById("saveRaw").getAttribute("state") === "1";
+            var config = {name:saveName,temp:saveTemp,mods:saveMods,settings:saveSettings,raw:saveRaw,keep:[]};
             if (saveTemp) { config.keep.push("temp") }
             if (saveColors) { config.keep.push("color") }
             if (savingState.slot) {
@@ -13489,6 +14064,10 @@ window.onload = function() {
             }
             elements[element].behaviorOn = newbehavior;
         }
+    }
+    // Loop through runAfterAutogenList and run each function
+    for (var i = 0; i < runAfterAutogenList.length; i++) {
+        runAfterAutogenList[i]();
     }
     
     // Loop through each element, final checks
@@ -13887,7 +14466,7 @@ window.onload = function() {
                 reader.readAsDataURL(file);
             }
             else if (file.name.indexOf(".sbxls") !== -1 || file.name.indexOf(".json") !== -1) {
-                if (!confirm("Clear this scene and load save file?")) { return }
+                if (currentPixels.length!==0 && !confirm("Clear this scene and load save file?")) { return }
                 var reader = new FileReader();
                 reader.onload = function(e) {
                     loadSave(JSON.parse(e.target.result));
@@ -13915,7 +14494,7 @@ window.onload = function() {
                 img.src = source;
             }
             else if (item.type === "" || item.type.indexOf('application/json') !== -1) {
-                if (!confirm("Clear this scene and load save file?")) { return }
+                if (currentPixels.length!==0 && !confirm("Clear this scene and load save file?")) { return }
                 var reader = new FileReader();
                 reader.onload = function(e) {
                     loadSave(JSON.parse(e.target.result));
@@ -13978,7 +14557,12 @@ window.onload = function() {
         else {
             if (e.keyCode == 27) {
                 e.preventDefault();
-                setView(1);
+                if (logInterval) {
+                    clearLog();
+                }
+                else {
+                    setView(1);
+                }
             }
         }
         // [ or - = decrease the mouse size by 2
@@ -14029,6 +14613,11 @@ window.onload = function() {
         else if (e.keyCode == 190) {
             e.preventDefault();
             doFrame();
+        }
+        // ; = click replaceButton
+        else if (e.keyCode == 186) {
+            e.preventDefault();
+            document.getElementById("replaceButton").click();
         }
         // / or i = showInfo()
         else if (e.keyCode == 191 || e.keyCode == 73) {
@@ -14355,6 +14944,8 @@ You can also join our <a href="https://discord.gg/ejUc6YPQuS" target="_blank">Di
                         <input type="button" value="Colors" class="toggleInput" onclick="toggleInput(this,undefined,false)" state="0" id="saveColors">
                         <input type="button" value="Settings" class="toggleInput" onclick="toggleInput(this,undefined,false)" state="0" id="saveSettings">
                         <input type="button" value="Mods" class="toggleInput" onclick="toggleInput(this,undefined,false)" state="0" id="saveMods">
+                        <br><br>
+                        <input type="button" value="Raw Data" class="toggleInput" onclick="toggleInput(this,undefined,false)" state="0" id="saveRaw">
                     </span>
                     <span id="saveWarning"></span>
                 </div>
@@ -14462,8 +15053,9 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span> <input type="button" value="O
 
 <div id="bottomInfoBox">
     <div id="bottomTopBox">
+        <!-- <iframe src="promo.html" style="border:none;width: 300px; height: 250px;"></iframe> -->
+        <p>Email us at <a href="mailto:contact@R74n.com">contact@R74n.com</a> for advertising, help, or education!</p>
         <p>Support development by subscribing on <a href="https://www.patreon.com/R74n" target="_blank">our Patreon</a>! Many benefits!!</p>
-        <p>Want your ad here? Email us at <a href="mailto:contact@r74n.com">contact@R74n.com</a>!</p>
     </div>
 
     <div id="bottomLeftBox">
