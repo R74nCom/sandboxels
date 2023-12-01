@@ -17,7 +17,7 @@ elements.legendary_energy = {
                                 "magma": { "elem1": "armageddon", "elem2": null },
                                 "void": { "elem1": "light", "elm2": null },
           },
-}
+},
 
 elements.liquid_legend = {
                         name: "liquid legend",
@@ -35,6 +35,5 @@ elements.liquid_legend = {
 			reactions: {
                                 "magma": { "elem1": "armageddon", "elem2": null },
                          	"void": { "elem1": "light", "elm2": null },
-	                },
-             }
-});
+	 }
+};
