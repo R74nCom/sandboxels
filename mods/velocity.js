@@ -62,7 +62,6 @@ drawPixels = function(forceTick=false) {
         //if (pixelMap[pixel.x][pixel.y] == undefined || currentPixels.indexOf(pixel) == -1) {continue}
         if (pixel.del) {continue}
         if (!paused || forceTick) {
-            // VELOCITY
             doVelocity(pixel);
             if (elements[pixel.element].tick) { // Run tick function if it exists
                 elements[pixel.element].tick(pixel);
@@ -72,6 +71,7 @@ drawPixels = function(forceTick=false) {
                 pixelTick(pixel);
             }
         };
+        if (pixel.con) { pixel = pixel.con }
         if (elements[pixel.element].isGas || elements[pixel.element].glow) {
             pixelsLast.push(pixel);
         }
@@ -81,12 +81,18 @@ drawPixels = function(forceTick=false) {
     }
     // Draw the current pixels
     var canvas = document.getElementById("game");
-    if (canvas === null) {return}
     var ctx = canvas.getContext("2d");
+    // Clear the canvas
+    if (!settings["bg"]) {ctx.clearRect(0, 0, canvas.width, canvas.height)}
+    else {
+        ctx.fillStyle = settings["bg"];
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
     var pixelDrawList = pixelsFirst.concat(pixelsLast);
     for (var i = 0; i < pixelDrawList.length; i++) {
         pixel = pixelDrawList[i];
         if (pixelMap[pixel.x][pixel.y] == undefined) {continue}
+        if (pixel.con) { pixel = pixel.con }
         if (view===null || view===3) {
             ctx.fillStyle = pixel.color;
         }
