@@ -35,6 +35,19 @@ elements.liquid_legend = {
 			reactions: {
                                 "magma": { "elem1": "armageddon", "elem2": null },
                          	"void": { "elem1": "light", "elm2": null },
-	                },
-             }
+	 },
+},
+	runAfterLoad(function() {
+		if(enabledMods.includes("bananas.js")) {
+	elements.banana_juice = {
+                        name: "banana juice",
+		        color: "#e0f542",
+                        behavior: behaviors.LIQUID,
+		        temp: 800,
+			category: "food",
+			state: "liquid",
+			density: 200,
+			excludeRandom: true,
+	       }
+	}
 });
