@@ -269,7 +269,6 @@ elements.destroyable_cloner = {
     behavior: behaviors.CLONER,
     ignore: ["ecloner","slow_cloner","clone_powder","floating_cloner","wall","ewall","destroyable_cloner","destroyable_clone_powder","cloner"],
     category:"machines",
-    hardness: 1,
     darkText: true,
 	breakInto: "destroyable_clone_powder",
 	tempHigh: 1538,
@@ -286,7 +285,6 @@ elements.destroyable_clone_powder = {
     category:"machines",
     state:"solid",
     density:2710,
-    hardness: 1,
     darkText: true,
 	breakInto: "destroyable_clone_powder",
 	tempHigh: 1538,
@@ -297,3 +295,49 @@ elements.cloner.ignore = eLists.CLONERS;
 elements.slow_cloner.ignore = eLists.CLONERS;
 elements.clone_powder.ignore = eLists.CLONERS;
 elements.floating_cloner.ignore = eLists.CLONERS;
+elements.roomtemper = {
+	color: "#29632f",
+	behavior: behaviors.SOLID,
+	tick: function(pixel) {
+		for (var i = 0; i < squareCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (!isEmpty(x,y)) {
+					if(pixelMap[x][y].temp < 20) {
+                    pixelMap[x][y].temp = (pixelMap[x][y].temp + 2)
+					} else if(pixelMap[x][y].temp > 20) {
+						pixelMap[x][y].temp = (pixelMap[x][y].temp - 2)
+					}
+                }
+            }
+	},
+	category:"machines",
+	state:"solid",
+	insulate: true,
+},
+elements.destrotable_roomtemper = {
+	color: "#18401a",
+	behavior: behaviors.SOLID,
+	tick: function(pixel) {
+		for (var i = 0; i < squareCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (!isEmpty(x,y)) {
+					if(pixelMap[x][y].temp < 20) {
+                    pixelMap[x][y].temp = (pixelMap[x][y].temp + 2)
+					} else if(pixelMap[x][y].temp > 20) {
+						pixelMap[x][y].temp = (pixelMap[x][y].temp - 2)
+					}
+                }
+            }
+	},
+	category:"machines",
+	state:"solid",
+	tempHigh: 1538,
+	stateHigh: ["steam","molten_iron"],
+	tempLow: -200,
+	stateLow: ["ice", "iron"],
+	breakInto: ["snow","metal_scrap"],
+}
