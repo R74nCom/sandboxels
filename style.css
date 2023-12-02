@@ -549,4 +549,5 @@ select, .toggleInput, #settingsMenu input[type="number"], #settingsMenu input[ty
     pointer-events: none;
     padding: 5px;
     white-space: pre-wrap;
+    font-size: 0.75em;
 }

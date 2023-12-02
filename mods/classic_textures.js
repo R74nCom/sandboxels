@@ -139,5 +139,8 @@ if (elements.lead) {elements.lead.color = "#6c6c6a";}
 if (elements.drag) {elements.drag.color = "#ffffff";}
 if (elements.tuff) {elements.tuff.color = ["#A16A49","#C98256","#C7834F","#BF7640","#DB8641","#D1732C","#AF5D30","#A55E35","#8B5B4C"];}
 if (elements.blood) {elements.blood.color = "#ff0000";}
+if (elements.water && elements.tuff) {elements.water.reactions.tuff = { elem2: "wet_sand", color2:"#7a6b5c", chance: 0.00035 };}
 if (elements.antibody) {elements.antibody.color = "#ff4040";}
 if (elements.infection) {elements.infection.color = "#cf005d";}
+if (elements.molten_solder) {delete elements.molten_solder.color;}
+if (elements.gold_coin) {elements.gold_coin.color = ["#fff0b5","#986a1a","#f0bb62"];}

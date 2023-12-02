@@ -7,6 +7,115 @@ See sneak peaks for upcoming updates on the Discord: https://discord.gg/ejUc6YPQ
 
 A fancier version of this changelog can be found here: https://sandboxels.R74n.com/changelog
 
+[Version 1.9.1 - December 1, 2023 - Cozy Solstice]
+    + Pipe
+        1. Draw a line with Pipe, maybe while paused
+        2. Wait for walls to form around it
+        3. Erase an exit point and allow Pipe to generate
+    + Mayo
+    + Mulch
+    + Porcelain Shard (Hidden)
+    + Jelly (Hidden)
+   [Coffee]
+    + Coffee Bean
+    + Coffee Ground (Hidden)
+    + Coffee (Hidden)
+   [Nuts]
+    + Nuts
+    + Nut Meat (Hidden, from crushing)
+    + Nut Butter (Hidden, from cooking)
+    + Nut Milk (Hidden, from soaking)
+   [Festivities]
+    + Candy is candy cane-colored
+    + Mashed Potato (Hidden)
+    + Skin will warm itself up when cold
+   [Other Changes]
+    + Roots grow through Grass
+    ~ Saplings no longer turn to wood all at once
+    ~ Tree Branches no longer grow when burning
+    ~ Tree Branches, Plant, and Grass are less flammable
+    + Soda deoxidizes Rust and Copper
+    + Balloons pop near absolute zero
+    + Balloons pop when touching Clouds
+    + Humans can consume Tomatoes, Pumpkin Seeds, and Cream
+    + Humans get gas when eating Beans
+    + Humans can take Gold Coins
+    + Skin spawns at average body temperature
+    ~ Skin no longer heals wounds
+    + Snails can eat Lettuce
+    + Tadpoles and Evergreen can be smashed
+    ~ Rats no longer eat Rotten Meat
+    + Rats can drink Milk
+    + Lichen convert Gravel and Rock Wall to Dirt
+    + Yeast ferments Sugar Water and Soda
+    + Caramel freezes into Candy much colder
+    + Baked Batter breaks into Crumbs
+    + Rotten Meat or Cheese and Flies remove Fragrance
+    + Primordial Soup spawns at a warmer temperature
+    + Ammonia affects Pumpkin Seeds, Herbs, and Tomatoes
+    + Glue can fix shards
+    + Salt makes Water colder
+    + Water breaks down Confetti into Cellulose
+    + Hydrogen burns into some Steam
+    + Hydrogen fusion releases Neutrons
+    + Anesthesia breaks down to Oxygen at high temperatures
+    + Castner–Kellner process
+    + Sodium and Mercury reaction shocks and releases heat
+    + Sulfur burns into Stench
+    + Sugar dissolves in Milk
+    + Salt dissolves in Sauce and Melted Cheese
+    + Juice can be radiated
+    + Carbonating Juice makes Soda
+    + Seltzer can dissolve Limestone over time
+    + Water can weather Limestone into Sand
+    + Vinegar slowly dissolves the shell of Eggs
+    + Baking Soda releases CO₂ when heated
+    + Tuff melts into Magma
+    + E-cloner ignores Wire, Sensor, and Battery
+    + Cloners ignore Wall
+    + Incense recipe
+    ~ Fragrance now dissipates over time
+    ~ Oxygen spreads Fragrance and Stench slower
+    ~ Molten Solder no longer makes Fire
+    ~ Recolored Molten Solder
+    ~ Recolored Gold Coin
+    + Insulation won't mix unless Shift is held
+    + LEDs can break into Glass Shards
+    + Cloners display element on hover
+    + Author name appears if present in loaded save
+    + Pressing ; toggles Replace mode
+    + Methane Ice
+    - Removed Molten Baking Soda
+   [Bug Fixes]
+    ~ Fixed: Flicker when stepping frame
+    ~ Fixed: Lamp Oil burns forever
+    ~ Fixed: Mushroom Gills don't conduct heat
+    ~ Fixed: Pumpkin, Stained Glass, Skin, Sponge, E-cloner can be dragged
+    ~ Fixed: God Raying Gray Goo makes Rainbow
+    ~ Fixed: Soda deletes Salt Water quickly
+    ~ Fixed: Juice Ice darkens when melting
+    ~ Fixed: Sand from Water weathering Tuff uses wrong color
+    ~ Fixed: Hail doesn't apply color variants when breaking
+    ~ Fixed: Confirmation appears when dropping save onto empty canvas
+    ~ Fixed: Sauce density too high
+    ~ Fixed: Hail is way too cold
+    ~ Fixed: Humans continue panicking after extinguished
+    ~ Fixed: Cloned pixels don't change state based on Cloner temperature
+    ~ Fixed: Antifire doesn't react with Antifluid right
+    ~ Fixed: Porcelain reforms immediately after breaking when hot
+    ~ Fixed: Hot Bomb often melts itself
+    ~ Fixed: Hard Yolk can't be mixed into Batter/Dough
+   [Technical]
+    + Prop tool
+    + Option for uncompressed raw save data
+    ~ Save version is now sb2
+        ~ New saves may not work in older versions
+        ~ Old saves will work fine
+        + Version handling system, warnings
+    + Random will work when placed by cheating
+    ~ FW_Ember no longer has a long name
+    + runAfterAutogen function
+
 [Version 1.9 - October 13, 2023 - Local Saves]
     + Local Saves
         + SAVES button
@@ -23,7 +132,7 @@ A fancier version of this changelog can be found here: https://sandboxels.R74n.c
     ~ Thermal View now uses a more useful logarithmic scale
    [Changes]
     + Resetting now adjusts canvas size if needed
-    + Dot appears in center of cursor
+    + Setting for dot in center of cursor
     + E-cloner can select an element while unpowered
     + E-cloner ignores Wires and E-walls
     + Grass can spread on Sand, Clay, and Mycelium
