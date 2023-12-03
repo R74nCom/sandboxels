@@ -13748,7 +13748,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             var input = document.createElement("input");
             input.type = "file";
             input.accept = ".sbxls, .json, .txt";
-            input.onchange = e => {
+            input.addEventListener("change", function(e) {
                 var file = e.target.files[0];
                 var reader = new FileReader();
                 reader.readAsText(file,"UTF-8");
@@ -13757,7 +13757,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                         loadSave(JSON.parse(content));
                 }
                 closeMenu();
-            }
+            });
             input.click();
         }
         function showSavePrompt() {
