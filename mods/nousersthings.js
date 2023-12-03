@@ -262,7 +262,7 @@ elements.destroyable_freezer = {
     category:"machines",
 	stateHigh:["iron","copper"],
 	tempHigh: 49,
-	breakInto:["metal_scrap","oxidixed_copper"],
+	breakInto:["metal_scrap","oxidized_copper"],
 },
 elements.destroyable_cloner = {
     color: "#dddd00",
@@ -304,9 +304,13 @@ elements.roomtemper = {
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
                 if (!isEmpty(x,y)) {
-					if(pixelMap[x][y].temp < 20) {
-                    pixelMap[x][y].temp = (pixelMap[x][y].temp + 2)
-					} else if(pixelMap[x][y].temp > 20) {
+					if(pixelMap[x][y].temp < -230) {
+                    pixelMap[x][y].temp = (pixelMap[x][y].temp + 7)
+					} else if(pixelMap[x][y].temp > 270) {
+						pixelMap[x][y].temp = (pixelMap[x][y].temp - 7)
+					} else if (pixelMap[x][y].temp < 20) {
+						pixelMap[x][y].temp = (pixelMap[x][y].temp + 2)
+					} else if (pixelMap[x][y].temp > 20) {
 						pixelMap[x][y].temp = (pixelMap[x][y].temp - 2)
 					}
                 }
@@ -316,7 +320,7 @@ elements.roomtemper = {
 	state:"solid",
 	insulate: true,
 },
-elements.destrotable_roomtemper = {
+elements.destroyable_roomtemper = {
 	color: "#18401a",
 	behavior: behaviors.SOLID,
 	tick: function(pixel) {
@@ -325,9 +329,13 @@ elements.destrotable_roomtemper = {
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
                 if (!isEmpty(x,y)) {
-					if(pixelMap[x][y].temp < 20) {
-                    pixelMap[x][y].temp = (pixelMap[x][y].temp + 2)
-					} else if(pixelMap[x][y].temp > 20) {
+					if(pixelMap[x][y].temp < -230) {
+                    pixelMap[x][y].temp = (pixelMap[x][y].temp + 7)
+					} else if(pixelMap[x][y].temp > 270) {
+						pixelMap[x][y].temp = (pixelMap[x][y].temp - 7)
+					} else if (pixelMap[x][y].temp < 20) {
+						pixelMap[x][y].temp = (pixelMap[x][y].temp + 2)
+					} else if (pixelMap[x][y].temp > 20) {
 						pixelMap[x][y].temp = (pixelMap[x][y].temp - 2)
 					}
                 }
@@ -340,4 +348,55 @@ elements.destrotable_roomtemper = {
 	tempLow: -200,
 	stateLow: ["ice", "iron"],
 	breakInto: ["snow","metal_scrap"],
+},
+elements.customtemper = {
+	color: "#421b6b",
+	behavior: behaviors.SOLID,
+	tick: function(pixel) {
+		for (var i = 0; i < squareCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (!isEmpty(x,y)) {
+					if(pixelMap[x][y].temp < (pixel.temp - 250)) {
+                    pixelMap[x][y].temp = (pixelMap[x][y].temp + 7)
+					} else if(pixelMap[x][y].temp > (pixel.temp + 250)) {
+						pixelMap[x][y].temp = (pixelMap[x][y].temp - 7)
+					} else if (pixelMap[x][y].temp < pixel.temp) {
+						pixelMap[x][y].temp = (pixelMap[x][y].temp + 2)
+					} else if (pixelMap[x][y].temp > pixel.temp) {
+						pixelMap[x][y].temp = (pixelMap[x][y].temp - 2)
+					}
+                }
+            }
+	},
+	category:"machines",
+	state:"solid",
+	insulate: true,
+},
+elements.destroyable_customtemper = {
+	color: "#261047",
+	behavior: behaviors.SOLID,
+	tick: function(pixel) {
+		for (var i = 0; i < squareCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (!isEmpty(x,y)) {
+					if(pixelMap[x][y].temp < (pixel.temp - 250)) {
+                    pixelMap[x][y].temp = (pixelMap[x][y].temp + 7)
+					} else if(pixelMap[x][y].temp > (pixel.temp + 250)) {
+						pixelMap[x][y].temp = (pixelMap[x][y].temp - 7)
+					} else if (pixelMap[x][y].temp < pixel.temp) {
+						pixelMap[x][y].temp = (pixelMap[x][y].temp + 2)
+					} else if (pixelMap[x][y].temp > pixel.temp) {
+						pixelMap[x][y].temp = (pixelMap[x][y].temp - 2)
+					}
+                }
+            }
+	},
+	category:"machines",
+	state:"solid",
+	insulate: true,
+	breakInto: ["snow","metal_scrap","oxidized_copper","wire"],
 }
