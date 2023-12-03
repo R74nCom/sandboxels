@@ -15054,6 +15054,24 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span> <input type="button" value="O
 <div id="bottomInfoBox">
     <div id="bottomTopBox">
         <!-- <iframe src="promo.html" style="border:none;width: 300px; height: 250px;"></iframe> -->
+        <!-- Affiliate Links -->
+        <p style="font-size:1.2em;display:none" id="aff"><strong>Christmas <span style="color:red">GIFT</span> <span style="color:lime">IDEA</span></strong>: <a id="affLink" href="#" target="_blank">Loading...</a></p>
+        <script>
+            var aff = {};
+            var affRequest = new XMLHttpRequest();
+            affRequest.open("GET", "https://sandboxels.R74n.com/aff.json", true);
+            affRequest.onload = function() {
+                if (affRequest.status >= 200 && affRequest.status < 400) {
+                    aff = JSON.parse(affRequest.responseText);
+                    var affKeys = Object.keys(aff);
+                    var randomAff = affKeys[Math.floor(Math.random() * affKeys.length)];
+                    document.getElementById("affLink").innerHTML = aff[randomAff];
+                    document.getElementById("affLink").href = randomAff;
+                    document.getElementById("aff").style.display = "block";
+                }
+            };
+            affRequest.send();
+        </script>
         <p>Email us at <a href="mailto:contact@R74n.com">contact@R74n.com</a> for advertising, help, or education!</p>
         <p>Support development by subscribing on <a href="https://www.patreon.com/R74n" target="_blank">our Patreon</a>! Many benefits!!</p>
     </div>
