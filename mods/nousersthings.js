@@ -1105,4 +1105,126 @@ elements.pipe.tick = function(pixel) {
             }
         }
         doDefaults(pixel);
-    }
+    },
+	filterTypeVar = 0;
+elements.filter = {
+    color: "#599fc2",
+    onSelect: function() {
+        var answer4 = prompt("Please input the desired element of this filter. It will not work if you do multiple filter types while paused.",(filterTypeVar||undefined));
+        if (!answer4) { return }
+		filterTypeVar = answer4;
+    },
+    tick: function(pixel) {
+		if (pixel.start === pixelTicks) {
+			pixel.filterType = filterTypeVar
+		}
+        if (1 === 2) {
+           for (var i = 0; i < squareCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (isEmpty(x,y)) {
+//                    createPixel("brick",x,y);
+//                    pixelMap[x][y].color = pixelColorPick(pixel,"#808080");
+                }
+            }
+ //           pixel.stage = 1;
+        }
+        else if (1 === 2) { //uninitialized
+            for (var i = 0; i < adjacentCoords.length; i++) {
+                var coord = adjacentCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (isEmpty(x,y)) {
+ //                   pixel.stage = 2; //blue
+ //                   pixel.color = pixelColorPick(pixel,"#000036");
+                    break;
+                }
+            }
+        }
+        else if (1 === 1) { //initialized
+            for (var i = 0; i < squareCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (!isEmpty(x,y,true) && listPipes.includes(pixelMap[x][y].element)) {
+                    var newPixel = pixelMap[x][y];
+                    if (newPixel.stage === 1) {
+                        var newColor;
+                        switch (pixel.stage) {
+//                            case 2: newPixel.stage = 3; newColor = "#003600"; break; //green
+ //                           case 3: newPixel.stage = 4; newColor = "#360000"; break; //red
+//                            case 4: newPixel.stage = 2; newColor = "#000036"; break; //blue
+                        }
+ //                       newPixel.color = pixelColorPick(newPixel,newColor);
+                    }
+                }
+            }
+            var moved = false;
+            shuffleArray(squareCoordsShuffle);
+            for (var i = 0; i < squareCoordsShuffle.length; i++) {
+                var coord = squareCoordsShuffle[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (!isEmpty(x,y,true)) {
+                    var newPixel = pixelMap[x][y];
+                    if (listPipes.includes(newPixel.element)) {
+                        var nextStage;
+                        switch (pixel.stage) {
+ //                           case 2: nextStage = 4; break; //green
+//                            case 3: nextStage = 2; break; //red
+ //                           case 4: nextStage = 3; break; //blue
+                        }
+                        if (pixel.con && !newPixel.con) { //transfer to adjacent pipe
+                            newPixel.con = pixel.con;
+                            newPixel.con.x = newPixel.x;
+                            newPixel.con.y = newPixel.y;
+                            pixel.con = null;
+                            moved = true;
+                            break;
+                        }
+                    }
+                    else if (!pixel.con && elements[newPixel.element].movable && (newPixel.element == pixel.filterType) ) { //suck up pixel
+                        pixel.con = newPixel;
+                        deletePixel(newPixel.x,newPixel.y);
+                        pixel.con.x = pixel.x;
+                        pixel.con.y = pixel.y;
+                        pixel.con.del;
+                        moved = true;
+                        break;
+                    }
+                }
+            }
+            if (pixel.con && !moved) { // move to same stage if none other
+                for (var i = 0; i < squareCoordsShuffle.length; i++) {
+                    var coord = squareCoordsShuffle[i];
+                    var x = pixel.x+coord[0];
+                    var y = pixel.y+coord[1];
+                    if (isEmpty(x,y)) {
+                        delete pixel.con.del;
+                        pixel.con.x = x;
+                        pixel.con.y = y;
+                        pixelMap[x][y] = pixel.con;
+                        currentPixels.push(pixel.con);
+                        pixel.con = null;
+                        break;
+                    }
+                    if (!isEmpty(x,y,true) && listPipes.includes(pixelMap[x][y].element)) {
+                        var newPixel = pixelMap[x][y];
+                        if (pixel.con && !newPixel.con) {
+                            newPixel.con = pixel.con;
+                            newPixel.con.x = newPixel.x;
+                            newPixel.con.y = newPixel.y;
+                            pixel.con = null;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        doDefaults(pixel);
+    },
+    category: "machines",
+    movable: false,
+    canContain: true,
+}
