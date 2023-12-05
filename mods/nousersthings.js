@@ -1,6 +1,6 @@
 elements.caesium = {
 color: ["#917921", "#ebcb59", "#a48b2d", "#d6b84c"],
-behavior: behaviors.SOLID,
+behavior: behaviors.WALL,
 category: "solids",
 state: "solid",
 tempHigh: 28.44,
@@ -297,7 +297,7 @@ elements.clone_powder.ignore = eLists.CLONERS;
 elements.floating_cloner.ignore = eLists.CLONERS;
 elements.roomtemper = {
 	color: "#29632f",
-	behavior: behaviors.SOLID,
+	behavior: behaviors.WALL,
 	tick: function(pixel) {
 		for (var i = 0; i < squareCoords.length; i++) {
                 var coord = squareCoords[i];
@@ -319,10 +319,11 @@ elements.roomtemper = {
 	category:"machines",
 	state:"solid",
 	insulate: true,
+		noMix: true,
 },
 elements.destroyable_roomtemper = {
 	color: "#18401a",
-	behavior: behaviors.SOLID,
+	behavior: behaviors.WALL,
 	tick: function(pixel) {
 		for (var i = 0; i < squareCoords.length; i++) {
                 var coord = squareCoords[i];
@@ -348,10 +349,11 @@ elements.destroyable_roomtemper = {
 	tempLow: -200,
 	stateLow: ["ice", "iron"],
 	breakInto: ["snow","metal_scrap"],
+		noMix: true,
 },
 elements.customtemper = {
 	color: "#421b6b",
-	behavior: behaviors.SOLID,
+	behavior: behaviors.WALL,
 	tick: function(pixel) {
 		for (var i = 0; i < squareCoords.length; i++) {
                 var coord = squareCoords[i];
@@ -373,10 +375,11 @@ elements.customtemper = {
 	category:"machines",
 	state:"solid",
 	insulate: true,
+		noMix: true,
 },
 elements.destroyable_customtemper = {
 	color: "#261047",
-	behavior: behaviors.SOLID,
+	behavior: behaviors.WALL,
 	tick: function(pixel) {
 		for (var i = 0; i < squareCoords.length; i++) {
                 var coord = squareCoords[i];
@@ -399,6 +402,7 @@ elements.destroyable_customtemper = {
 	state:"solid",
 	insulate: true,
 	breakInto: ["snow","metal_scrap","oxidized_copper","wire"],
+		noMix: true,
 },
 elements.e_pipe = {
     color: "#414c4f",
@@ -1227,4 +1231,36 @@ elements.filter = {
     category: "machines",
     movable: false,
     canContain: true,
+	noMix: true,
+},
+elements.heat_test = {
+	color: "#787878",
+	behavior: behaviors.WALL,
+	category: "solids",
+	state: "solid",
+	tempHigh: 1538,
+	stateHigh: "molten_iron",
+	tick: function(pixel){
+		if (pixel.start == pixelTicks){
+			pixel.ogR = parseInt(pixel.color.slice(4, pixel.color.indexOf(',')), 10)
+			pixel.ogG = parseInt(pixel.color.slice(pixel.color.indexOf(',') + 1, pixel.color.lastIndexOf(',')), 10)
+			pixel.ogB = parseInt(pixel.color.slice(pixel.color.lastIndexOf(',') + 1, -1), 10)
+		}else if (pixelTicks > pixel.start){
+			if (pixel.temp <= (elements.heat_test.tempHigh) - 700){ // replace 700 with lower limit of range
+				pixel.ctemp = 0;
+			} else if (pixel.temp > (elements.heat_test.tempHigh)-700 && pixel.temp <= elements.heat_test.tempHigh){ // replace 700 with lower limit of range
+				pixel.ctemp = ((1/700)*pixel.temp)-(((elements.heat_test.tempHigh)-700)/700) // replace 700 with lower limit of range
+			}
+			if (pixel.ctemp <= 0.5){
+				pixel.newR = (((510-(2*pixel.ogR))*pixel.ctemp)+pixel.ogR);
+				pixel.newG = ((0-((2*pixel.ogG)*pixel.ctemp))+pixel.ogG);
+				pixel.newB = ((0-((5*pixel.ogB)*pixel.ctemp))+pixel.ogB);
+			}else if (pixel.ctemp > 0.5){
+				pixel.newR = 255;
+				pixel.newG = ((510*pixel.ctemp)-256);
+				pixel.newB= ((280*pixel.ctemp)-140);
+			}
+			pixel.color = "rgb(" + pixel.newR + "," + pixel.newG + "," + pixel.newB + ")";
+		}
+	},
 }
