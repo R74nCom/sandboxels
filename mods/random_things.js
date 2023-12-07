@@ -37,9 +37,9 @@ elements.liquid_legend = {
                          	"void": { "elem1": "light", "elm2": null },
 	 },
 },
-	runAfterLoad(function() {
-		if(enabledMods.includes("bananas.js")) {
-	elements.banana_juice = {
+if (enabledMods.includes("bananas.js")) {
+    runAfterLoad(function() {
+	    elements.banana_juice = {
                         name: "banana juice",
 		        color: "#e0f542",
                         behavior: behaviors.LIQUID,
@@ -48,6 +48,6 @@ elements.liquid_legend = {
 			state: "liquid",
 			density: 200,
 			excludeRandom: true,
-	       }
-	}
-});
+	    }
+    }
+)};
