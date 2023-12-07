@@ -1263,4 +1263,38 @@ elements.heat_test = {
 			pixel.color = "rgb(" + pixel.newR + "," + pixel.newG + "," + pixel.newB + ")";
 		}
 	},
+},
+elements.soup = {
+	color: "#3d2812",
+	behavior: behaviors.LIQUID,
+	category: "food",
+	tempHigh: 100,
+	stateHigh: "steam",
+	onMix: function(soup,ingredient) {
+        if (elements[ingredient.element].isFood && elements[ingredient.element].id !== elements.soup.id && elements[ingredient.element].id !== elements.broth.id) {
+            var rgb1 = soup.color.match(/\d+/g);
+            var rgb2 = ingredient.color.match(/\d+/g);
+            // average the colors
+            var rgb = [
+                Math.round((parseInt(rgb1[0])+parseInt(rgb2[0]))/2),
+                Math.round((parseInt(rgb1[1])+parseInt(rgb2[1]))/2),
+                Math.round((parseInt(rgb1[2])+parseInt(rgb2[2]))/2)
+            ];
+            changePixel(ingredient, "soup")
+            // convert rgb to hex
+            var hex = RGBToHex(rgb);
+            soup.color = pixelColorPick(soup, hex);
+            // 50% change to delete ingredient
+            if (Math.random() < 0.5) { deletePixel(ingredient.x, ingredient.y); }
+            else {
+                ingredient.color = pixelColorPick(ingredient, hex);
+            }
+		}
+	},
+	density: 1100,
+	stain: 0.02,
+	state: "liquid",
+},
+elements.broth.onMix = function(pixel){
+	changePixel(pixel, "soup")
 }
