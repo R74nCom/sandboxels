@@ -6,10 +6,12 @@ elements.legendary_energy = {
         "XX|EX:90>plasma,plasma,plasma,plasma,radon,radon,radon,radon,radon,radon,molten_iron,molten_uranium,legendary_energy AND CH:light|XX",
         "XX|XX|XX",
     ],
-                        temp: 99999999700,
+                        temp: 9869,
+	                tempLow: 6382,
+	                stateLow: "liquid_legend",
                         category: "energy",
                         state: "gas",
-                        density: 1000,
+                        density: 3000,
                         hardness: 1,
                         excludeRandom: true,
                         noMix: true,
@@ -27,7 +29,9 @@ elements.liquid_legend = {
                         "M2|EX:15>radon,radon,legendary_energy,liquid_legend%0.4 AND DL%0.2|M2",
                         "M1|M1|M1",
 			],
-                        temp: 300,
+                        temp: 6382,
+	                tempHigh: 9869,
+			stateHigh: "legendary_energy",
                         category: "liquids",
                         state: "liquid",
                         density: 2000,
@@ -37,17 +41,29 @@ elements.liquid_legend = {
                          	"void": { "elem1": "light", "elm2": null },
 	 },
 },
-	runAfterLoad(function() {
-		if(enabledMods.includes("bananas.js")) {
-	elements.banana_juice = {
+
+elements.wine = {
+                name: "wine",
+		color: "#f02263",
+                behavior: behaviors.LIQUID,
+		temp: 30,
+		category: "liquids",
+		state: "liquid",
+		density: 20,
+		excludeRandom: true,
+	 },
+	
+if (enabledMods.includes("bananas.js")) {
+    runAfterLoad(function() {
+	    elements.banana_juice = {
                         name: "banana juice",
 		        color: "#e0f542",
                         behavior: behaviors.LIQUID,
 		        temp: 800,
-			category: "food",
+			category: "liquids",
 			state: "liquid",
-			density: 200,
+			density: 20,
 			excludeRandom: true,
-	       }
-	}
-});
+	    }
+    }
+)};
