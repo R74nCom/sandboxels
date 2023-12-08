@@ -11,7 +11,7 @@ elements.legendary_energy = {
 	                stateLow: "liquid_legend",
                         category: "energy",
                         state: "gas",
-                        density: 1000,
+                        density: 3000,
                         hardness: 1,
                         excludeRandom: true,
                         noMix: true,
@@ -49,7 +49,7 @@ elements.wine = {
 		temp: 30,
 		category: "liquids",
 		state: "liquid",
-		density: 200,
+		density: 20,
 		excludeRandom: true,
 	 },
 	
