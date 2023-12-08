@@ -37,6 +37,18 @@ elements.liquid_legend = {
                          	"void": { "elem1": "light", "elm2": null },
 	 },
 },
+
+elements.wine = {
+                name: "wine",
+		color: "#f02263",
+                behavior: behaviors.LIQUID,
+		temp: 30,
+		category: "liquids",
+		state: "liquid",
+		density: 200,
+		excludeRandom: true,
+	 },
+	
 if (enabledMods.includes("bananas.js")) {
     runAfterLoad(function() {
 	    elements.banana_juice = {
@@ -44,9 +56,9 @@ if (enabledMods.includes("bananas.js")) {
 		        color: "#e0f542",
                         behavior: behaviors.LIQUID,
 		        temp: 800,
-			category: "food",
+			category: "liquids",
 			state: "liquid",
-			density: 200,
+			density: 20,
 			excludeRandom: true,
 	    }
     }
