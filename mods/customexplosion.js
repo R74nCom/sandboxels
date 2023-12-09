@@ -1,3 +1,4 @@
+//This mod was made by Alex the transfem, https://discord.com/users/778753696804765696 on discord and https://www.tiktok.com/@alextheagenenby?_t=8hoCVI3NRhu&_r=1 on tiktok.
 //How to use this:
 //in the reactions of an element, this is what it could look like:
 //reactions: { "water": elem1: "CustomExplosion", items: "fire,fire,hydrogen,sodiumhydroxide" }
