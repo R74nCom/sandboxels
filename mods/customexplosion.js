@@ -98,7 +98,7 @@ function reactPixels(pixel1,pixel2) {
     if (r.func) { r.func(pixel1,pixel2); }
     return r.elem1!==undefined || r.elem2!==undefined;
 }
-elements.CustomExplosion = {
+elements.customExplosion = {
   items: "",
   rItems: "",
   behavior: behaviors.SOLID,
