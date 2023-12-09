@@ -665,33 +665,8 @@ elements.acid.ignore.push("gold_coin");
 if(enabledMods.includes("mods/nousersthings.js")) {
   elements.acid.ignore.push("filter");
 }
-elements.customExplosion = {
-  items: "",
-  rItems: "",
-  behavior: behaviors.SOLID,
-  state: "solid",
-  onSelect: function(){
-    items = prompt("What should this explosion include?");
-    this.items = items;
-    console.log(items);
-    elements.customExplosion.behavior = [["XX", "XX", "XX"], ["XX", `EX:4>${items}`, "XX"], ["XX", "XX", "XX"]]
-  },
-  tick: function(pixel){
-    let items = elements.customExplosion.rItems;
-    if (items !== ""){
-      items = elements.customExplosion.rItems;
-    } else {
-      items = elements.customExplosion.items;
-    }
-    
-    console.log(items)
-    if(!items.includes("EX:")){
-      elements.customExplosion.behavior = [["XX", "XX", "XX"], ["XX", `EX:4>${items}`, "XX"], ["XX", "XX", "XX"]]
-    } else{
-      elements.customExplosion.behavior = [["XX", "XX", "XX"], ["XX", items, "XX"], ["XX", "XX", "XX"]]
-    }
-      
-  }
+if(!enabledMods.includes("mods/customexplosion.js")){
+  alert("This mod needs customexplosion.js to work. Without enabling it you may run into some issues, Please enable it in the mods menu.");
 }
 
 elements.NaK = {
@@ -702,7 +677,7 @@ elements.NaK = {
   color: "#848484",
   reactions: {
     "water": {
-      elem1: "customExplosion", items: "EX:3>fire,fire,hydrogen,pop,sodiumhydroxide,potassiumhydroxide",
+      elem1: "customExplosion", items: "EX:6>fire,fire,hydrogen,pop,sodiumhydroxide,potassiumhydroxide",
     }
   },
 };
