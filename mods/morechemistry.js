@@ -1,4 +1,100 @@
 //This mod was made by Alex the transfem, https://discord.com/users/778753696804765696 on discord and https://www.tiktok.com/@alextheagenenby?_t=8hoCVI3NRhu&_r=1 on tiktok.
+function reactPixels(pixel1,pixel2) {
+    var r = elements[pixel1.element].reactions[pixel2.element];
+    if (r.setting && settings[r.setting]===0) {
+        return false;
+    }
+    // r has the attribute "y" which is a range between two y values
+    // r.y example: [10,30]
+    // return false if y is defined and pixel1's y is not in the range
+    if (r.tempMin !== undefined && pixel1.temp < r.tempMin) {
+        return false;
+    }
+    if (r.tempMax !== undefined && pixel1.temp > r.tempMax) {
+        return false;
+    }
+    if (r.burning1 !== undefined && Boolean(pixel1.burning) !== r.burning1) {
+        return false;
+    }
+    if (r.burning2 !== undefined && Boolean(pixel2.burning) !== r.burning2) {
+        return false;
+    }
+    if (r.charged && !pixel.charge) {
+        return false;
+    }
+    if (r.chance !== undefined && Math.random() > r.chance) {
+        return false;
+    }
+    if (r.y !== undefined && (pixel1.y < r.y[0] || pixel1.y > r.y[1])) {
+        return false;
+    }
+    if (r.elem1 !== undefined) {
+        // if r.elem1 is an array, set elem1 to a random element from the array, otherwise set it to r.elem1
+        if (Array.isArray(r.elem1)) {
+            var elem1 = r.elem1[Math.floor(Math.random() * r.elem1.length)];
+            if(elem1 == "customExplosion"){
+              if(r.items !== undefined){
+                elements.customExplosion.rItems = r.items
+              } else{
+                return false;
+              }
+            }
+        } else { 
+          var elem1 = r.elem1;
+          if(elem1 == "customExplosion"){
+            if(r.items !== undefined){
+              elements.customExplosion.rItems = r.items
+            } else{
+              return false;
+            }
+          }
+        }
+
+        if (elem1 == null) {
+            deletePixel(pixel1.x,pixel1.y);
+        }
+        else {
+          changePixel(pixel1,elem1);
+        }
+    }
+    if (r.charge1) { pixel1.charge = r.charge1; }
+    if (r.temp1) { pixel1.temp += r.temp1; pixelTempCheck(pixel1); }
+    if (r.color1) { // if it's a list, use a random color from the list, else use the color1 attribute
+        pixel1.color = pixelColorPick(pixel1, Array.isArray(r.color1) ? r.color1[Math.floor(Math.random() * r.color1.length)] : r.color1);
+    }
+    if (r.attr1) { // add each attribute to pixel1
+        for (var key in r.attr1) {
+            pixel1[key] = r.attr1[key];
+        }
+    }
+    if (r.elem2 !== undefined) {
+        // if r.elem2 is an array, set elem2 to a random element from the array, otherwise set it to r.elem2
+        if (Array.isArray(r.elem2)) {
+            var elem2 = r.elem2[Math.floor(Math.random() * r.elem2.length)];
+        } else { var elem2 = r.elem2; }
+
+        if (elem2 == null) {
+            deletePixel(pixel2.x,pixel2.y);
+        }
+        else {
+            changePixel(pixel2,elem2);
+        }
+    }
+    if (r.charge2) { pixel2.charge = r.charge2; }
+    if (r.temp2) { pixel2.temp += r.temp2; pixelTempCheck(pixel2); }
+    if (r.color2) { // if it's a list, use a random color from the list, else use the color2 attribute
+        pixel2.color = pixelColorPick(pixel2, Array.isArray(r.color2) ? r.color2[Math.floor(Math.random() * r.color2.length)] : r.color2);
+    }
+    if (r.attr2) { // add each attribute to pixel2
+        for (var key in r.attr2) {
+            pixel2[key] = r.attr2[key];
+        }
+    }
+    if (r.func) { r.func(pixel1,pixel2); }
+    return r.elem1!==undefined || r.elem2!==undefined;
+}
+let obj = {};
+obj.items = "";
 elements.sodiumhydroxide = {
     color: "#c9c5b1",
     behavior: behaviors.LIQUID,
@@ -26,7 +122,7 @@ elements.sodiumhydroxide = {
     state: "liquid",
     density: 2130,
     stain: -0.25,
-    name: "Sodium Hydroxide",
+    name: "SodiumHydroxide",
     stateHigh: "sodiumhydroxidecrystals",
     tempHigh: "1388",
 }
@@ -54,7 +150,7 @@ elements.sodiumhydroxidecrystals = {
     category: "powders",
     state: "powder",
     density: 2130,
-    name: "Sodium Hydroxide Crystals",
+    name: "SodiumHydroxideCrystals",
 }
 
 elements.sodium.reactions = {
@@ -129,7 +225,7 @@ elements.molten_magnesium = {
   category: "states",
   state: "liquid",
   density: 1740,
-  name: "Molten Magnesium",
+  name: "MoltenMagnesium",
   temp: 650,
   stateLow: "magnesium",
   tempLow: 600
@@ -148,7 +244,7 @@ elements.acidic_water = {
     category: "liquids",
     state: "liquid",
     density: 1000,
-    name: "Acid Water",
+    name: "AcidWater",
 }
 elements.acid.ignore.push("magnesium");
 elements.acid.ignore.push("sodiumhydroxide");
@@ -253,7 +349,7 @@ elements.chloroauric_acid = {
   behavior: behaviors.POWDER,
   category: "powders",
   state: "solid",
-  name: "Chloroauric Acid",
+  name: "ChloroauricAcid",
   color: "#ba7b00",
   tempHigh: 60,
   stateHigh: "liquid_chloroauric_acid",
@@ -262,7 +358,7 @@ elements.liquid_chloroauric_acid = {
   behavior: behaviors.LIQUID,
   category: "states",
   state: "liquid",
-  name: "Liquid Chloroauric Acid",
+  name: "LiquidChloroauricAcid",
   color: "#ba7b00",
   reactions: {
     "sodiumhydroxide": { "elem2": "gold", "elem1": ["water", "pop", "pop", "fire", "fire"], },
@@ -279,7 +375,7 @@ elements.nitrogen_oxide = {
   behavior: behaviors.GAS,
   category: "gases",
   state: "gas",
-  name: "Nitrogen Oxide",
+  name: "NitrogenOxide",
   color: "#961400",
   reactions: {
     "water": { "elem1": null, "elem2": "nitric_acid", },
@@ -289,7 +385,7 @@ elements.nitric_acid = {
   behavior: behaviors.LIQUID,
   category: "liquids",
   state: "liquid",
-  name: "Nitric Acid",
+  name: "NitricAcid",
   color: "#ffffff",
   reactions: { "acid": { "elem1": null, "elem2": "aqua_regia",}, },
 }
@@ -413,13 +509,13 @@ elements.aqua_regia = {
       "state": "liquid",
       "density": 1049,
       "stain": -0.1,
-      name: "Aqua Regia",
+      name: "AquaRegia",
       "alias": "HCl + HN03",
       "movable": true,
       "color": "#ffdd9b",
   }
 elements.potassium = {
-  behavior: behaviors.SOLID,
+  behavior: behaviors.POWDER,
   color: ["#545454", "#737373", "#7d7d7d", "#8f8f8f"],
   "category": "solids",
   "state": "solid",
@@ -460,7 +556,7 @@ elements.potassiumhydroxide = {
     state: "liquid",
     density: 2130,
     stain: -0.25,
-    name: "Potassium Hydroxide",
+    name: "PotassiumHydroxide",
     stateHigh: "potassiumhydroxidecrystals",
     tempHigh: "1388",
 }
@@ -488,10 +584,10 @@ elements.potassiumhydroxidecrystals = {
     category: "powders",
     state: "powder",
     density: 2130,
-    name: "Potassium Hydroxide Crystals",
+    name: "PotassiumHydroxideCrystals",
 }
 elements.supercooler = {
-  name: "Super Cooler",
+  name: "SuperCooler",
   category: "machines"
 }
 elements.supercooler.behavior = [["XX","CO:10","XX"],["CO:10","XX","CO:10"],["XX","CO:10","XX"]]
@@ -506,7 +602,7 @@ elements.iron_chloride = {
   state: "solid",
   density: 1740,
   burnTime: 500,
-  name: "Iron Chloride",
+  name: "IronChloride",
 }
 elements.aluminum_chloride = {
   color: ["#faff61", "#f7f7e4", "#ffffb5"],
@@ -518,7 +614,7 @@ elements.aluminum_chloride = {
   state: "solid",
   density: 1740,
   burnTime: 500,
-  name: "Aluminum Chloride",
+  name: "AluminumChloride",
 }
 elements.zinc_chloride = {
   color: ["#faff61", "#f7f7e4", "#ffffb5"],
@@ -531,7 +627,7 @@ elements.zinc_chloride = {
   state: "solid",
   density: 1740,
   burnTime: 500,
-  name: "Zinc Chloride",
+  name: "ZincChloride",
 }
 elements.acid.ignore.push("zinc");
 elements.acid.ignore.push("iron");
@@ -542,5 +638,71 @@ elements.acid.ignore.push("aluminum_chloride");
 elements.kilonova = {
   name: "Kilonova",
   category: "energy",
+  maxSize: 1,
+  temp: 100000000,
 }
-elements.kilonova.behavior = [ ["XX","XX","XX"],["XX","EX:80>plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,explosion,explosion,explosion,molten_gold,molten_uranium,molten_lead,oxygen,molten_sodium,neon,chlorine,molten_calcium,molten_nickel,molten_copper,molten_zinc,gallium_gas,molten_silver,hydrogen,helium,nitrogen,nitrogen_oxide,water AND CH:void","XX"],["XX","XX","XX"]]
+elements.supernova.behavior = [ ["XX", "XX", "XX"], [ "XX", "EX:80>plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,molten_iron,molten_uranium,oxygen,molten_sodium,sulfur_gas,neon,chlorine,molten_calcium,molten_nickel,molten_copper,molten_zinc,gallium_gas AND CH:NeutronStar", "XX" ], ["XX", "XX", "XX"] ]
+elements.kilonova.behavior = [ ["XX", "XX", "XX"], [ "XX", "EX:200>plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,molten_iron,molten_uranium,molten_lead,oxygen,molten_sodium,molten_gold,molten_tungsten,sulfur_gas,neon,chlorine,molten_calcium,molten_nickel,molten_copper,molten_zinc,gallium_gas AND CH:void", "XX" ], ["XX", "XX", "XX"] ]
+elements.NeutronStar = {
+  behavior: [["XX", "XX", "XX"], ["CR:light", "XX", "CR:light"], ["XX", "XX", "XX"]],
+  name: "NeutronStar",
+  category: "energy",
+  maxSize: 1,
+  color: "#ffffff",
+  temp: 1000000000,
+  tempLow: -100,
+  insulate: true,
+  noMix: true,
+  movable: false,
+  stateLow: "kilonova",
+  reactions: {
+    "NeutronStar": { "elem1": "kilonova", "temp1": 100000000, },
+  },
+}
+elements.acid.ignore.push("pipe");
+elements.acid.ignore.push("gold");
+elements.acid.ignore.push("gold_coin");
+if(enabledMods.includes("mods/nousersthings.js")) {
+  elements.acid.ignore.push("filter");
+}
+elements.customExplosion = {
+  items: "",
+  rItems: "",
+  behavior: behaviors.SOLID,
+  state: "solid",
+  onSelect: function(){
+    items = prompt("What should this explosion include?");
+    this.items = items;
+    console.log(items);
+    elements.customExplosion.behavior = [["XX", "XX", "XX"], ["XX", `EX:4>${items}`, "XX"], ["XX", "XX", "XX"]]
+  },
+  tick: function(pixel){
+    let items = elements.customExplosion.rItems;
+    if (items !== ""){
+      items = elements.customExplosion.rItems;
+    } else {
+      items = elements.customExplosion.items;
+    }
+    
+    console.log(items)
+    if(!items.includes("EX:")){
+      elements.customExplosion.behavior = [["XX", "XX", "XX"], ["XX", `EX:4>${items}`, "XX"], ["XX", "XX", "XX"]]
+    } else{
+      elements.customExplosion.behavior = [["XX", "XX", "XX"], ["XX", items, "XX"], ["XX", "XX", "XX"]]
+    }
+      
+  }
+}
+
+elements.NaK = {
+  behavior: behaviors.LIQUID,
+  category: "liquids",
+  state: "liquid",
+  alias: "Sodium-Potassium alloy",
+  color: "#848484",
+  reactions: {
+    "water": {
+      elem1: "customExplosion", items: "EX:3>fire,fire,hydrogen,pop,sodiumhydroxide,potassiumhydroxide",
+    }
+  },
+};
