@@ -1,4 +1,11 @@
 //This mod was made by Alex the transfem, https://discord.com/users/778753696804765696 on discord and https://www.tiktok.com/@alextheagenenby?_t=8hoCVI3NRhu&_r=1 on tiktok.
+function customExplosion(pixel1, pixel2, radius, list) {
+  let x = pixel1.x;
+  let y = pixel1.y;
+  deletePixel(x, y);
+  deletePixel(pixel2.x, pixel2.y);
+  explodeAt(x, y, radius, list);
+};
 function reactPixels(pixel1,pixel2) {
     var r = elements[pixel1.element].reactions[pixel2.element];
     if (r.setting && settings[r.setting]===0) {
@@ -441,6 +448,7 @@ elements.aqua_regia = {
           "acid_ice",
           "acid",
           "nitric_acid",
+          "NaK",
       ],
       "reactions": {
           "ash": {
@@ -517,8 +525,8 @@ elements.aqua_regia = {
 elements.potassium = {
   behavior: behaviors.POWDER,
   color: ["#545454", "#737373", "#7d7d7d", "#8f8f8f"],
-  "category": "solids",
-  "state": "solid",
+  "category": "powders",
+  "state": "powder",
   "alias": "K",
   reactions: {
     "water": { "elem1": "potassiumhydroxide", "elem2": ["fire", "fire", "pop", "water"], },
@@ -532,6 +540,7 @@ elements.potassium = {
     "acid_water": { "elem1": null, "elem2": ["water", "pop", "pop"], },
     "nitric_acid": { "elem1": null, "elem2": ["fire", "pop", "fire", "pop", "hydrogen"], },
     "chloroauric_acid": {"elem1": "gold", "elem2": ["fire", "fire", "pop", "pop"], },
+    "liquid_chloroauric_acid": {"elem1": "gold", "elem2": ["fire", "fire", "pop", "pop"], },
   },
 }
 elements.potassiumhydroxide = {
@@ -665,10 +674,7 @@ elements.acid.ignore.push("gold_coin");
 if(enabledMods.includes("mods/nousersthings.js")) {
   elements.acid.ignore.push("filter");
 }
-if(!enabledMods.includes("mods/customexplosion.js")){
-  alert("This mod needs customexplosion.js to work. Without enabling it you may run into some issues, Please enable it in the mods menu.");
-}
-
+elements.acid.ignore.push("NaK");
 elements.NaK = {
   behavior: behaviors.LIQUID,
   category: "liquids",
@@ -677,7 +683,25 @@ elements.NaK = {
   color: "#848484",
   reactions: {
     "water": {
-      elem1: "customExplosion", items: "EX:6>fire,fire,hydrogen,pop,sodiumhydroxide,potassiumhydroxide",
+      func: function (pixel1, pixel2) {customExplosion(pixel1, pixel2, 5, ["fire", "fire", "pop", "hydrogen", "sodiumhydroxide", "potassiumhydroxide","sodiumhydroxide", "potassiumhydroxide","sodiumhydroxide", "potassiumhydroxide"])}
+      },
+    acid: {
+      func: function (pixel1, pixel2) {customExplosion(pixel1, pixel2, 6, ["fire", "pop", "hydrogen", "water", "pop", "hydrogen", "hydrogen"])}
+    },
+    acid_water: {
+      func: function (pixel1, pixel2) {customExplosion(pixel1, pixel2, 3, ["pop", "hydrogen", "hydrogen", "water"])}
+    },
+    chloroauric_acid: { elem1: "gold",
+      func: function (pixel1, pixel2) {customExplosion(pixel1, pixel2, 7, ["fire", "fire", "pop", "hydrogen", "gold_coin", "hydrogen", "pop"])}
+    },
+    liquid_chloroauric_acid: { elem1: "gold",
+      func: function (pixel1, pixel2) {customExplosion(pixel1, pixel2, 7, ["fire", "fire", "pop", "hydrogen", "gold_coin", "hydrogen", "hydrogen", "pop"])}
+    },
+    nitric_acid:{
+      func: function (pixel1, pixel2) {customExplosion(pixel1, pixel2, 6, ["fire", "fire", "pop", "hydrogen", "hydrogen", "pop"])}
+    },
+    aqua_regia: {
+      func: function (pixel1, pixel2) {customExplosion(pixel1, pixel2, 9, ["fire", "fire", "pop", "hydrogen", "fire", "fire", "hydrogen", "pop", "flash"])}
     }
-  },
-};
+    },
+  };
