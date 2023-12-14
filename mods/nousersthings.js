@@ -1254,7 +1254,7 @@ elements.heat_test = {
 			if (pixel.ctemp <= 0.5){
 				pixel.newR = (((510-(2*pixel.ogR))*pixel.ctemp)+pixel.ogR);
 				pixel.newG = ((0-((2*pixel.ogG)*pixel.ctemp))+pixel.ogG);
-				pixel.newB = ((0-((5*pixel.ogB)*pixel.ctemp))+pixel.ogB);
+				pixel.newB = ((0-((2*pixel.ogB)*pixel.ctemp))+pixel.ogB);
 			}else if (pixel.ctemp > 0.5){
 				pixel.newR = 255;
 				pixel.newG = ((510*pixel.ctemp)-256);
