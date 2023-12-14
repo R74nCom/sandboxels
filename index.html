@@ -97,36 +97,7 @@
     </script>
 
     <script> // Mod Loader
-        runAfterLoadList = [];
-        // runAfterLoad() takes a function and adds it to the runAfterLoadList.
-        function runAfterLoad(func) {
-            runAfterLoadList.push(func);
-        }
-        runAfterAutogenList = [];
-        function runAfterAutogen(callback) {
-            runAfterAutogenList.push(callback);
-        }
-        // If the localStorage key "enabledMods" exists, load it as an array.
-        // If it doesn't exist, create an empty array.
-        enabledMods = localStorage.getItem("enabledMods") ? JSON.parse(localStorage.getItem("enabledMods")) : [];
-        // Run all scripts in the enabledMods array, if it fails print to console
-        for (var i = 0; i < enabledMods.length; i++) {
-            try {
-                var script = document.createElement('script');
-                var src = enabledMods[i];
-                script.src = src;
-                document.head.appendChild(script);
-            } catch (e) {
-                console.log("Error in mod: " + enabledMods[i]);
-                console.log(e);
-            }
-        }
-        // if the URL contains fools=true, load the fools.js mod
-        if (window.location.href.includes("fools=true")) {
-            var script = document.createElement('script');
-            script.src = "mods/fools.js"
-            document.head.appendChild(script);
-        }
+        
     </script>
 
     <script> // PWA things
@@ -10243,6 +10214,38 @@ else if (currentMonth == 11) { // December
     elements.candy.color = ["#c92626","#e3e3e3","#c92626","#e3e3e3","#c92626"]
 }
 
+// Mod Loader
+runAfterLoadList = [];
+// runAfterLoad() takes a function and adds it to the runAfterLoadList.
+function runAfterLoad(func) {
+    runAfterLoadList.push(func);
+}
+runAfterAutogenList = [];
+function runAfterAutogen(callback) {
+    runAfterAutogenList.push(callback);
+}
+// If the localStorage key "enabledMods" exists, load it as an array.
+// If it doesn't exist, create an empty array.
+enabledMods = localStorage.getItem("enabledMods") ? JSON.parse(localStorage.getItem("enabledMods")) : [];
+// Run all scripts in the enabledMods array, if it fails print to console
+for (var i = 0; i < enabledMods.length; i++) {
+    try {
+        var script = document.createElement('script');
+        var src = enabledMods[i];
+        script.src = src;
+        document.head.appendChild(script);
+    } catch (e) {
+        console.log("Error in mod: " + enabledMods[i]);
+        console.log(e);
+    }
+}
+// if the URL contains fools=true, load the fools.js mod
+if (window.location.href.includes("fools=true")) {
+    var script = document.createElement('script');
+    script.src = "mods/fools.js"
+    document.head.appendChild(script);
+}
+
         function hexToRGB(hex) {
             var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
             return result ? {
@@ -14848,7 +14851,7 @@ You can also join our <a href="https://discord.gg/ejUc6YPQuS" target="_blank">Di
                 <div id="categoryControls"></div>
                 <div id="elementControls"></div>
             </div>
-            <div id="extraInfo"><small><a href="https://sandboxels.r74n.com/changelog" id="changelogButton" target="_blank">Changelog</a> • <a href="feedback" target="_blank">Feedback</a> • <a href="https://sandboxels.wiki.gg/" target="_blank" id="wikiButton" title="Official Sandboxels Wiki - wiki.gg">Wiki</a> • <a id="moreSocial" href="https://reddit.com/r/Sandboxels" target="_blank">Reddit</a> • <a href="https://discord.gg/ejUc6YPQuS" target="_blank" style="text-shadow: 0px 2px 10px #ff00ff;">Discord</a><span id="install-button" style="display:none">&nbsp;• <a onclick="deferredPrompt.prompt(); return false" style="text-shadow: 0px 2px 10px #ff00ff; cursor:pointer">Install Offline</a></span><br><br><!----><a style="color:lime" target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSf8pVMSdC6oSnBSaTpzjPQa8Ef-vxG_eXL99UITnMSQtJFTJA/viewform?usp=sf_link">FILL OUT THE CENSUS<span style="color:red">(NEW)</span></a><!----></small></div>
+            <div id="extraInfo"><small><a href="https://sandboxels.r74n.com/changelog" id="changelogButton" target="_blank">Changelog</a> • <a href="feedback" target="_blank">Feedback</a> • <a href="https://sandboxels.wiki.gg/" target="_blank" id="wikiButton" title="Official Sandboxels Wiki - wiki.gg">Wiki</a> • <a id="moreSocial" href="https://reddit.com/r/Sandboxels" target="_blank">Reddit</a> • <a href="https://discord.gg/ejUc6YPQuS" target="_blank" style="text-shadow: 0px 2px 10px #ff00ff;">Discord</a><span id="install-button" style="display:none">&nbsp;• <a onclick="deferredPrompt.prompt(); return false" href="#" style="text-shadow: 0px 2px 10px #ff00ff; cursor:pointer">Install Offline</a></span><br><br><!----><a style="color:lime" target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSf8pVMSdC6oSnBSaTpzjPQa8Ef-vxG_eXL99UITnMSQtJFTJA/viewform?usp=sf_link">FILL OUT THE CENSUS<span style="color:red">(NEW)</span></a><!----></small></div>
             <script>
                 // version check
                 if (!settings["lastversion"] || settings["lastversion"]!==currentversion) {
@@ -14972,7 +14975,7 @@ You can also join our <a href="https://discord.gg/ejUc6YPQuS" target="_blank">Di
                             <option value="1">Unhide All Elements</option>
                             <option value="2">Unlock as Discovered</option>
                         </select>
-                        <a onclick="window.location.reload();" style="font-style:italic;cursor:pointer"></a>
+                        <a onclick="window.location.reload();" href="#" style="font-style:italic;cursor:pointer"></a>
                     </span>
                     <span setting="bg" class="setting-span" title="Default: Black (#000000)">
                         Background <input onchange="setSetting('bg',this.value);" oninput="setSetting('bg',this.value);" type="color" value="#000000">
@@ -15015,7 +15018,7 @@ You can also join our <a href="https://discord.gg/ejUc6YPQuS" target="_blank">Di
                     <span setting="cheerful" class="setting-span">
                         Cheerful Mode <span class="helpMark" title="If you're going through a bad time, enable this to hide these elements from the menu:
 Cancer, Landmine, Grenade, Smoke Grenade">?</span> <input type="button" value="OFF" class="toggleInput" onclick="toggleInput(this,'cheerful');this.nextElementSibling.innerText='Refresh Page'" state="0">
-                        <a onclick="window.location.reload();" style="font-style:italic;cursor:pointer"></a>
+                        <a onclick="window.location.reload();" href="#" style="font-style:italic;cursor:pointer"></a>
                     </span>
                     <span setting="airtemp" class="setting-span multisetting" title="Temperature that pixels spawn in at. Default: 20 (°C)">
                         Air Temp<input type="number" value="20" onchange="if(this.value===''){this.value=20} airTemp=parseFloat(this.value); setSetting('airtemp',airTemp)">

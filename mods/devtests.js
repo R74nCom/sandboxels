@@ -130,3 +130,12 @@ elements.food = {
     },
     category: "food"
 }
+
+elements.liquid = {
+    behavior: [
+        "XX|XX|XX",
+        "M2|XX|M2",
+        "M1|M1|M1",
+    ],
+    category: "special"
+}
