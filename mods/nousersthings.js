@@ -1268,8 +1268,6 @@ elements.soup = {
 	color: "#3d2812",
 	behavior: behaviors.LIQUID,
 	category: "food",
-	tempHigh: 100,
-	stateHigh: "steam",
 	onMix: function(soup,ingredient) {
         if (elements[ingredient.element].isFood && elements[ingredient.element].id !== elements.soup.id && elements[ingredient.element].id !== elements.broth.id) {
             var rgb1 = soup.color.match(/\d+/g);
@@ -1280,7 +1278,13 @@ elements.soup = {
                 Math.round((parseInt(rgb1[1])+parseInt(rgb2[1]))/2),
                 Math.round((parseInt(rgb1[2])+parseInt(rgb2[2]))/2)
             ];
-            changePixel(ingredient, "soup")
+				if (!soup.elemlist){
+				soup.elemlist = [];
+				}
+				soup.decidedHigh = soup.elemlist[Math.floor(Math.random()*soup.elemlist.length)];
+				soup.elemlist.push(ingredient.element)
+				soup.stateHigh = soup.elemlist;
+            changePixel(ingredient, "soup");
             // convert rgb to hex
             var hex = RGBToHex(rgb);
             soup.color = pixelColorPick(soup, hex);
@@ -1291,26 +1295,22 @@ elements.soup = {
             }
 		}
 	},
+	tick: function(pixel) {
+		if (!pixel.decidedHigh){
+			pixel.decidedHigh = "steam";
+		}
+		if (pixel.temp > 100){
+			if (Math.random() < 0.5) {
+				changePixel(pixel, "steam");
+		} else {
+			changePixel(pixel, pixel.decidedHigh)
+		}
+		}
+		},
 	density: 1100,
 	stain: 0.02,
 	state: "liquid",
 },
 elements.broth.onMix = function(pixel){
 	changePixel(pixel, "soup")
-}//,
-//elements.portal_in = {
-//	color: "#FFA000",
-//	behavior: behaviors.WALL,
-//	tick: function(pixel) {
-//	},
-//	category: "machines",
-//	state: "solid",
-//},
-//elements.portal_out = {
-//	color: "#0000FF",
-//	behavior: behaviors.WALL,
-//	tick: function(pixel) {
-//	},
-//	category: "machines",
-//	state: "solid",
-//}
+}
