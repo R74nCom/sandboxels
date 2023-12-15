@@ -130,3 +130,30 @@ elements.food = {
     },
     category: "food"
 }
+
+elements.liquid = {
+    behavior: [
+        "XX|XX|XX",
+        "M2|XX|M2",
+        "M1|M1|M1",
+    ],
+    category: "special"
+}
+elements.gas = {
+    behavior: [
+        "M1|M1|M1",
+        "M1|XX|M1",
+        "M1|M1|M1",
+    ],
+    state: "gas",
+    category: "special"
+}
+elements.liquid_gas = {
+    behavior: [
+        "M1%25|M1%25|M1%25",
+        "M2|XX|M2",
+        "M1|M1|M1",
+    ],
+    state: "gas",
+    category: "special"
+}
