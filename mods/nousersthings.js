@@ -1234,6 +1234,9 @@ elements.filter = {
 	noMix: true,
 },
 elements.heat_test = {
+	onSelect: function() {
+        logMessage("Use heatglow.js for more elements to glow when they are hot.");
+    },
 	color: "#787878",
 	behavior: behaviors.WALL,
 	category: "solids",
