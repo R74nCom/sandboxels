@@ -23,8 +23,9 @@ const heatfunc = function(pixel){
 			pixel.color = "rgb(" + pixel.newR + "," + pixel.newG + "," + pixel.newB + ")";
 		}
 	};
-	const metals = ["iron", "glass", "copper", "gold", "brass","steel","nickel","zinc","silver","aluminum","bronze","metal_scrap","oxidized_copper","tin","lead"];
-metals.forEach(metal => { 
+	if (!eLists.metals) { eLists.metals = [] }
+	eLists.metals = eLists.metals.concat(["iron", "glass", "copper", "gold", "brass","steel","nickel","zinc","silver","aluminum","bronze","metal_scrap","oxidized_copper","tin","lead"])
+eLists.metals.forEach(metal => { 
 	const prefunc = elements[metal].tick;
 	if (!prefunc){
 		elements[metal].tick = heatfunc;
