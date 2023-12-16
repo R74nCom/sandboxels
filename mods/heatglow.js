@@ -1,7 +1,7 @@
 const heatfunc = function(pixel){
 		pixel.gethigh = (elements[pixel.element].tempHigh)
 		pixel.halftemp = ((20+pixel.gethigh)/2)
-		if (pixel.start == pixelTicks){
+		if (!pixel.ogR || !pixel.ogG || !pixel.ogB){
 			pixel.ogR = parseInt(pixel.color.slice(4, pixel.color.indexOf(',')), 10)
 			pixel.ogG = parseInt(pixel.color.slice(pixel.color.indexOf(',') + 1, pixel.color.lastIndexOf(',')), 10)
 			pixel.ogB = parseInt(pixel.color.slice(pixel.color.lastIndexOf(',') + 1, -1), 10)
