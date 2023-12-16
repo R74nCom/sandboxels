@@ -35,33 +35,26 @@ function reactPixels(pixel1,pixel2) {
     if (r.y !== undefined && (pixel1.y < r.y[0] || pixel1.y > r.y[1])) {
         return false;
     }
+    if (r.explosion !== undefined){
+      if (r.radius !== undefined){
+        let radius = r.radius;
+        let list = r.explosion.split(",");
+        console.log(list);
+        console.log(pixel1, pixel2, radius, list);
+        customExplosion(pixel1, pixel2, radius, list);
+      }
+    }
     if (r.elem1 !== undefined) {
         // if r.elem1 is an array, set elem1 to a random element from the array, otherwise set it to r.elem1
         if (Array.isArray(r.elem1)) {
             var elem1 = r.elem1[Math.floor(Math.random() * r.elem1.length)];
-            if(elem1 == "customExplosion"){
-              if(r.items !== undefined){
-                elements.customExplosion.rItems = r.items
-              } else{
-                return false;
-              }
-            }
-        } else { 
-          var elem1 = r.elem1;
-          if(elem1 == "customExplosion"){
-            if(r.items !== undefined){
-              elements.customExplosion.rItems = r.items
-            } else{
-              return false;
-            }
-          }
-        }
+        } else { var elem1 = r.elem1; }
 
         if (elem1 == null) {
             deletePixel(pixel1.x,pixel1.y);
         }
         else {
-          changePixel(pixel1,elem1);
+            changePixel(pixel1,elem1);
         }
     }
     if (r.charge1) { pixel1.charge = r.charge1; }
@@ -100,6 +93,13 @@ function reactPixels(pixel1,pixel2) {
     if (r.func) { r.func(pixel1,pixel2); }
     return r.elem1!==undefined || r.elem2!==undefined;
 }
+function customExplosion(pixel1, pixel2, radius, list) {
+  let x = pixel1.x;
+  let y = pixel1.y;
+  deletePixel(x, y);
+  deletePixel(pixel2.x, pixel2.y);
+  explodeAt(x, y, radius, list);
+};
 let obj = {};
 obj.items = "";
 elements.sodiumhydroxide = {
@@ -118,7 +118,7 @@ elements.sodiumhydroxide = {
         "acid_gas": { "elem2":"fire", },
         "vinegar": { "elem1": ["sodium_acetate", "water"], },
         "aqua_regia": { "elem1": null, "elem2": ["fire", "fire", "hydrogen"], },
-        "acid_water": { "elem1": null, "elem2": ["water", "pop"], },
+        "acidic_water": { "elem1": null, "elem2": ["water", "pop"], },
         "nitric_acid": { "elem1": null, "elem2": ["fire", "pop", "hydrogen"], },
         "chloroauric_acid": {"elem1": "gold", "elem2": ["fire", "fire", "pop"], },
     },
@@ -127,7 +127,7 @@ elements.sodiumhydroxide = {
     fireColor: "#fba600",
     category: "liquids",
     state: "liquid",
-    density: 2130,
+    density: 1.525,
     stain: -0.25,
     name: "SodiumHydroxide",
     stateHigh: "sodiumhydroxidecrystals",
@@ -148,7 +148,7 @@ elements.sodiumhydroxidecrystals = {
         "water": { "elem1": null, "elem2": "sodiumhydroxide", },
         "vinegar": { "elem1": null, "elem2": "sodium_acetate", },
         "aqua_regia": { "elem1": null, "elem2": ["fire", "fire", "hydrogen"], },
-        "acid_water": { "elem1": null, "elem2": ["water", "pop"], },
+        "acidic_water": { "elem1": null, "elem2": ["water", "pop"], },
         "nitric_acid": { "elem1": null, "elem2": ["fire", "pop", "hydrogen"], },
         "chloroauric_acid": {"elem1": "gold", "elem2": ["fire", "fire", "pop"], },
     },
@@ -202,17 +202,18 @@ elements.sodium.reactions = {
   },
   "acid": {
     "elem1": "explosion",
+  },
   "aqua_regia": { "elem1": null, "elem2": ["fire", "pop", "fire", "fire", "hydrogen"], },
-  "acid_water": { "elem1": null, "elem2": ["water", "pop", "pop"], },
+  "acidic_water": { "elem1": null, "elem2": ["water", "pop", "pop"], },
   "nitric_acid": { "elem1": null, "elem2": ["fire", "pop", "pop", "hydrogen"], },
-  "chloroauric_acid": {"elem1": "gold", "elem2": ["fire", "fire", "pop"], },
-  }
+  "chloroauric_acid": { "elem1": "gold", "elem2": ["fire", "fire", "pop"], },
 };
 elements.magnesium = {
   color: "#e6e6e6",
   reactions: {
     "acid": { "elem1": "hydrogen", "chance": 0.02, },
     "aqua_regia": { "elem1": "hydrogen", "chance": 0.2, "elem2": "pop", },
+    
   },
   behavior: behaviors.POWDER,
   fireColor: "#ffffff",
@@ -224,6 +225,7 @@ elements.magnesium = {
   stateHigh: "molten_magnesium",
   tempHigh: "650",
   burn: 50,
+  density: 1738,
 }
 elements.molten_magnesium = {
   color: ["#fab298", "#f78157", "#ff9169", "#ff9e7a"],
@@ -235,7 +237,8 @@ elements.molten_magnesium = {
   name: "MoltenMagnesium",
   temp: 650,
   stateLow: "magnesium",
-  tempLow: 600
+  tempLow: 600,
+  density: 1460,
 }
 elements.acidic_water = {
   burn: 0,
@@ -252,10 +255,20 @@ elements.acidic_water = {
     state: "liquid",
     density: 1000,
     name: "AcidWater",
+  density: 1100,
 }
 elements.acid.ignore.push("magnesium");
 elements.acid.ignore.push("sodiumhydroxide");
 elements.acid.ignore.push("sodiumhydroxidecrystals");
+elements.acid.ignore.push("rubidiumhydroxide");
+elements.acid.ignore.push("rubidiumhydroxidecrystals");
+elements.acid.ignore.push("rubidiumsalt");
+elements.acid.ignore.push("rubidium");
+elements.acid.ignore.push("moltenrubidium");
+elements.acid.ignore.push("potassium");
+elements.acid.ignore.push("MoltenPotassium");
+elements.acid.ignore.push("potassiumhydroxide");
+elements.acid.ignore.push("potassiumhydroxidecrystals");
 elements.acid.ignore.push("water");
 elements.acid.ignore.push("acidic_water");
 elements.acid.ignore.push("gold");
@@ -360,6 +373,7 @@ elements.chloroauric_acid = {
   color: "#ba7b00",
   tempHigh: 60,
   stateHigh: "liquid_chloroauric_acid",
+  density: 4400,
 }
 elements.liquid_chloroauric_acid = {
   behavior: behaviors.LIQUID,
@@ -377,6 +391,7 @@ elements.liquid_chloroauric_acid = {
   stateLow: "chloroauric_acid",
   tempHigh: 115,
   stateHigh: "gold",
+  density: 2500,
 }
 elements.nitrogen_oxide = {
   behavior: behaviors.GAS,
@@ -386,7 +401,8 @@ elements.nitrogen_oxide = {
   color: "#961400",
   reactions: {
     "water": { "elem1": null, "elem2": "nitric_acid", },
-  }
+  },
+  density: 2.62,
 }
 elements.nitric_acid = {
   behavior: behaviors.LIQUID,
@@ -395,6 +411,7 @@ elements.nitric_acid = {
   name: "NitricAcid",
   color: "#ffffff",
   reactions: { "acid": { "elem1": null, "elem2": "aqua_regia",}, },
+  density: 1.51,
 }
 elements.aqua_regia = {
       "behavior": [
@@ -521,6 +538,7 @@ elements.aqua_regia = {
       "alias": "HCl + HN03",
       "movable": true,
       "color": "#ffdd9b",
+  density: 1.3,
   }
 elements.potassium = {
   behavior: behaviors.POWDER,
@@ -528,6 +546,8 @@ elements.potassium = {
   "category": "powders",
   "state": "powder",
   "alias": "K",
+  tempHigh: 63.65,
+  stateHigh: "MoltenPotassium",
   reactions: {
     "water": { "elem1": "potassiumhydroxide", "elem2": ["fire", "fire", "pop", "water"], },
     "acid": { "elem1": null, "elem2": ["water", "smoke", "fire"], },
@@ -537,11 +557,34 @@ elements.potassium = {
     "acid_gas": { "elem2":"fire", },
     "acid_gas": { "elem2":"fire", },
     "aqua_regia": { "elem1": null, "elem2": ["fire", "pop", "pop", "fire", "fire", "hydrogen"], },
-    "acid_water": { "elem1": null, "elem2": ["water", "pop", "pop"], },
+    "acidic_water": { "elem1": null, "elem2": ["water", "pop", "pop"], },
     "nitric_acid": { "elem1": null, "elem2": ["fire", "pop", "fire", "pop", "hydrogen"], },
     "chloroauric_acid": {"elem1": "gold", "elem2": ["fire", "fire", "pop", "pop"], },
     "liquid_chloroauric_acid": {"elem1": "gold", "elem2": ["fire", "fire", "pop", "pop"], },
   },
+  density: 862,
+}
+elements.MoltenPotassium = {
+  behavior: behaviors.LIQUID,
+  color: ["#9c9c9c", "#8c8b8b", "#7d7d7d", "#999797"],
+  state: "liquid",
+  name: "MoltenPotassium",
+  viscosity: 0.55,
+  reactions: {
+    water: { explosion: "fire,potassiumhydroxide,potassiumhydroxide,potassiumhydroxide,hydrogen,hydrogen,pop", radius: 3 },
+    molten_sodium: { elem1: null, elem2: "NaK" },
+    acid: { explosion: "fire,fire,hydrogen,pop,pop,hydrogen", radius: 5 },
+    chloroauric_acid: { elem1: "gold", explosion: "fire,fire,gold_coin,hydrogen,hydrogen,pop", radius: 6},
+    liquid_chloroauric_acid: { elem1: "gold", explosion: "fire,fire,gold_coin,hydrogen,hydrogen,pop", radius: 6
+    },
+    aqua_regia: { explosion: "fire,fire,fire,fire,hydrogen,pop,hydrogen,pop", radius: 7},
+    nitric_acid: { explosion: "fire,fire,fire,hydrogen,pop", radius: 6},
+    acidic_water: { explosion: "fire,potassiumhydroxide,hydrogen,hydrogen", radius: 4 },
+  },
+  temp: 70,
+  tempLow: 63.65,
+  stateLow: "potassium",
+  density: 862,
 }
 elements.potassiumhydroxide = {
     color: "#c9c5b1",
@@ -554,7 +597,7 @@ elements.potassiumhydroxide = {
         "acid_gas": { "elem2":"fire", },
         "acid_gas": { "elem2":"fire", },
         "aqua_regia": { "elem1": null, "elem2": ["fire", "pop", "pop", "fire", "fire", "hydrogen"], },
-        "acid_water": { "elem1": null, "elem2": ["water", "pop", "pop"], },
+        "acidic_water": { "elem1": null, "elem2": ["water", "pop", "pop"], },
         "nitric_acid": { "elem1": null, "elem2": ["fire", "pop", "fire", "pop", "hydrogen"], },
         "chloroauric_acid": {"elem1": "gold", "elem2": ["fire", "pop"], }
     },
@@ -563,7 +606,7 @@ elements.potassiumhydroxide = {
     fireColor: "#fba600",
     category: "liquids",
     state: "liquid",
-    density: 2130,
+    density: 2.12,
     stain: -0.25,
     name: "PotassiumHydroxide",
     stateHigh: "potassiumhydroxidecrystals",
@@ -584,7 +627,7 @@ elements.potassiumhydroxidecrystals = {
         "water": { "elem1": null, "elem2": "potassiumhydroxide", },
         "vinegar": { "elem1": null, "elem2": "sodium_acetate", },
         "aqua_regia": { "elem1": null, "elem2": ["fire", "pop", "pop", "fire", "fire", "hydrogen"], },
-        "acid_water": { "elem1": null, "elem2": ["water", "pop", "pop"], },
+        "acidic_water": { "elem1": null, "elem2": ["water", "pop", "pop"], },
         "nitric_acid": { "elem1": null, "elem2": ["fire", "pop", "fire", "pop", "hydrogen"], },
         "chloroauric_acid": {"elem1": "gold", "elem2": ["fire", "fire", "pop", "pop"], },
     },
@@ -592,7 +635,7 @@ elements.potassiumhydroxidecrystals = {
     fireColor: "#fba600",
     category: "powders",
     state: "powder",
-    density: 2130,
+    density: 2040,
     name: "PotassiumHydroxideCrystals",
 }
 elements.supercooler = {
@@ -612,6 +655,7 @@ elements.iron_chloride = {
   density: 1740,
   burnTime: 500,
   name: "IronChloride",
+  density: 2900,
 }
 elements.aluminum_chloride = {
   color: ["#faff61", "#f7f7e4", "#ffffb5"],
@@ -624,7 +668,9 @@ elements.aluminum_chloride = {
   density: 1740,
   burnTime: 500,
   name: "AluminumChloride",
+  density: 2440,
 }
+
 elements.zinc_chloride = {
   color: ["#faff61", "#f7f7e4", "#ffffb5"],
   reactions: {
@@ -637,6 +683,7 @@ elements.zinc_chloride = {
   density: 1740,
   burnTime: 500,
   name: "ZincChloride",
+  density: 2910,
 }
 elements.acid.ignore.push("zinc");
 elements.acid.ignore.push("iron");
@@ -650,8 +697,8 @@ elements.kilonova = {
   maxSize: 1,
   temp: 100000000,
 }
-elements.supernova.behavior = [ ["XX", "XX", "XX"], [ "XX", "EX:80>plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,molten_iron,molten_uranium,oxygen,molten_sodium,sulfur_gas,neon,chlorine,molten_calcium,molten_nickel,molten_copper,molten_zinc,gallium_gas AND CH:NeutronStar", "XX" ], ["XX", "XX", "XX"] ]
-elements.kilonova.behavior = [ ["XX", "XX", "XX"], [ "XX", "EX:200>plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,molten_iron,molten_uranium,molten_lead,oxygen,molten_sodium,molten_gold,molten_tungsten,sulfur_gas,neon,chlorine,molten_calcium,molten_nickel,molten_copper,molten_zinc,gallium_gas AND CH:void", "XX" ], ["XX", "XX", "XX"] ]
+elements.supernova.behavior = [ ["XX", "XX", "XX"], [ "XX", "EX:80>plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,molten_iron,molten_uranium,oxygen,molten_sodium,sulfur_gas,neon,chlorine,molten_calcium,molten_nickel,molten_copper,molten_zinc,gallium_gas,hydrogen,hydrogen,hydrogen,hydrogen,helium,helium,helium AND CH:NeutronStar", "XX" ], ["XX", "XX", "XX"] ]
+elements.kilonova.behavior = [ ["XX", "XX", "XX"], [ "XX", "EX:200>plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,molten_iron,molten_uranium,molten_lead,oxygen,molten_sodium,molten_gold,molten_tungsten,sulfur_gas,neon,chlorine,molten_calcium,molten_nickel,molten_copper,molten_zinc,gallium_gas,hydrogen,hydrogen,hydrogen,hydrogen,hydrogen,helium,helium,helium,helium AND CH:void", "XX" ], ["XX", "XX", "XX"] ]
 elements.NeutronStar = {
   behavior: [["XX", "XX", "XX"], ["CR:light", "XX", "CR:light"], ["XX", "XX", "XX"]],
   name: "NeutronStar",
@@ -667,6 +714,7 @@ elements.NeutronStar = {
   reactions: {
     "NeutronStar": { "elem1": "kilonova", "temp1": 100000000, },
   },
+  density: 10**17,
 }
 elements.acid.ignore.push("pipe");
 elements.acid.ignore.push("gold");
@@ -681,6 +729,7 @@ elements.NaK = {
   state: "liquid",
   alias: "Sodium-Potassium alloy",
   color: "#848484",
+  viscosity: 9.4,
   reactions: {
     "water": {
       func: function (pixel1, pixel2) {customExplosion(pixel1, pixel2, 5, ["fire", "fire", "pop", "hydrogen", "sodiumhydroxide", "potassiumhydroxide","sodiumhydroxide", "potassiumhydroxide","sodiumhydroxide", "potassiumhydroxide"])}
@@ -688,8 +737,8 @@ elements.NaK = {
     acid: {
       func: function (pixel1, pixel2) {customExplosion(pixel1, pixel2, 6, ["fire", "pop", "hydrogen", "water", "pop", "hydrogen", "hydrogen"])}
     },
-    acid_water: {
-      func: function (pixel1, pixel2) {customExplosion(pixel1, pixel2, 3, ["pop", "hydrogen", "hydrogen", "water"])}
+    acidic_water: {
+      func: function (pixel1, pel2) {customExplosion(pixel1, pixel2, 3, ["pop", "hydrogen", "hydrogen", "water","sodiumhyixdroxide", "potassiumhydroxide"])}
     },
     chloroauric_acid: { elem1: "gold",
       func: function (pixel1, pixel2) {customExplosion(pixel1, pixel2, 7, ["fire", "fire", "pop", "hydrogen", "gold_coin", "hydrogen", "pop"])}
@@ -702,6 +751,162 @@ elements.NaK = {
     },
     aqua_regia: {
       func: function (pixel1, pixel2) {customExplosion(pixel1, pixel2, 9, ["fire", "fire", "pop", "hydrogen", "fire", "fire", "hydrogen", "pop", "flash"])}
-    }
     },
-  };
+  },
+  density: 868,
+};
+elements.rubidium = {
+  behavior: behaviors.POWDER,
+  category: "powders",
+  name: "Rubidium",
+  color: ["#9e9e9e", "#ababab", "#bababa", "#adadad"],
+  tempHigh: 39.5,
+  stateHigh: "moltenrubidium",
+  reactions: {
+    chlorine: { elem1: "rubidiumsalt" },
+    acid: { explosion: "fire,rubidiumsalt,water", radius: 7, },
+    aqua_regia: { explosion: "fire,rubidiumsalt,fire,water", radius: 8, },
+    acidic_water: { explosion: "water,water,water,rubidiumsalt", radius: 3.5, },
+    nitric_acid: { explosion: "fire,fire,hydrogen", radius: 7 },
+    chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
+    liquid_chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
+    },
+  density: 1532,
+  fireColor: "#d91e1e",
+  tick: function(pixel) {
+    pixel.burning = true;
+  },
+}
+elements.moltenrubidium = {
+  density: 1532,
+  behavior: behaviors.LIQUID,
+  viscosity: 8,
+  name: "MoltenRubidium",
+  category: "liquids",
+  color: ["#adacac", "#adadad", "#c2c2c2", "#b8b8b8"],
+  reactions: {
+    chlorine: { elem1: "rubidiumsalt" },
+    acid: { explosion: "fire,rubidiumsalt,water", radius: 7, },
+    aqua_regia: { explosion: "fire,rubidiumsalt,fire,water", radius: 8, },
+    acidic_water: { explosion: "water,water,water,rubidiumsalt", radius: 3.5, },
+    nitric_acid: { explosion: "fire,fire,hydrogen", radius: 7 },
+    chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
+    liquid_chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
+    fireColor: "#d91e1e",
+    },
+  tick: function(pixel) {
+    pixel.burning = true;
+  },
+  tempLow: 38,
+  stateLow: "rubidium",
+}
+
+elements.rubidiumsalt = {
+  state: "powder",
+  name: "RubidiumSalt",
+  alias: "Rubidium Chloride or RbCl",
+  color: ["#e6e6e6", "#f5f5f5", "#fafafa", "#f0f0f0"],
+  behavior: behaviors.POWDER,
+  category: "powders",
+  density: 2800,
+}
+
+elements.hydrogen.burnInto = "steam";
+elements.irradiate = {
+      "color": "rgb(25,150,25)",
+      "temp": 2,
+      "category": "tools",
+      "canPlace": false,
+      "desc": "Use on irradiatable pixels to turn them radioactive.",
+      "colorObject": {
+          "r": 25,
+          "g": 150,
+          "b": 25
+      },
+  tool: function(pixel) {
+        if (pixel.element == "lead") {
+            changePixel(pixel, "uranium");
+        } else if(pixel.element == "glass"){
+          changePixel(pixel, "rad_glass");
+        } else if (pixel.element == "steam"){
+          changePixel(pixel, "rad_steam");
+        }  else if (pixel.element == "cloud" || pixel.element == "rain_cloud"){
+          changePixel(pixel, "rad_cloud");
+        } else if (pixel.element == "water"){
+          changePixel(pixel, "fallout");
+        }
+    },
+  }
+elements.deradiate = {
+  name: "DE-radiate",
+    "color": "rgb(255,255,255)",
+    "temp": 2,
+    "category": "tools",
+    "canPlace": false,
+    "desc": "Use on irradiatable pixels to turn them radioactive.",
+    "colorObject": {
+        "r": 25,
+        "g": 150,
+        "b": 25
+    },
+tool: function(pixel) {
+      if (pixel.element == "uranium") {
+          changePixel(pixel, "lead");
+      } else if (pixel.element == "rad_glass") {
+        changePixel(pixel, "glass");
+      } else if (pixel.element == "rad_steam"){
+        changePixel(pixel, "steam");
+      } else if (pixel.element == "rad_cloud"){
+        changePixel(pixel, "cloud");
+      } else if (pixel.element == "fallout"){
+        changePixel(pixel, "water");
+      } else if (pixel.element == "radiation"){
+        deletePixel(pixel.x, pixel.y);
+      }
+    },
+};
+elements.rubidiumhydroxide = {
+  burn: 50,
+    color: "#c9c5b1",
+    behavior: behaviors.LIQUID,
+  reactions: {
+    chlorine: { elem1: "rubidiumsalt" },
+    acid: { explosion: "fire,rubidiumsalt,water", radius: 7, },
+    aqua_regia: { explosion: "fire,rubidiumsalt,fire,water", radius: 8, },
+    acidic_water: { explosion: "water,water,water,rubidiumsalt", radius: 3.5, },
+    nitric_acid: { explosion: "fire,fire,hydrogen", radius: 7 },
+    chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
+    liquid_chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
+    },
+    viscosity: 0.56,
+    //tempHigh: 64.7,
+    fireColor: "#d91e1e",
+    category: "liquids",
+    state: "liquid",
+    density: 2.12,
+    name: "RubidiumHydroxide",
+    stateHigh: "potassiumhydroxidecrystals",
+    tempHigh: "1388",
+}
+elements.rubidiumhydroxidecrystals = {
+  burn: 50,
+  color: "#c9c5b1",
+  behavior: behaviors.POWDER,
+  reactions: {
+    water: { elem1: null, elem2: "rubidiumhydroxide", },
+    chlorine: { elem1: "rubidiumsalt" },
+    acid: { explosion: "fire,rubidiumsalt,water", radius: 7, },
+    aqua_regia: { explosion: "fire,rubidiumsalt,fire,water", radius: 8, },
+    acidic_water: { explosion: "water,water,water,rubidiumsalt", radius: 3.5, },
+    nitric_acid: { explosion: "fire,fire,hydrogen", radius: 7 },
+    chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
+    liquid_chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
+    },
+  fireColor: "#d91e1e",
+  category: "powders",
+  state: "powder",
+  density: 2.12,
+  name: "RubidiumHydroxideCrystals",
+  stateHigh: "potassiumhydroxidecrystals",
+  tempHigh: "1388",
+}
