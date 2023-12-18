@@ -319,7 +319,8 @@ elements.roomtemper = {
 	category:"machines",
 	state:"solid",
 	insulate: true,
-		noMix: true,
+	noMix: true,
+	movable: false,
 },
 elements.destroyable_roomtemper = {
 	color: "#18401a",
@@ -349,7 +350,8 @@ elements.destroyable_roomtemper = {
 	tempLow: -200,
 	stateLow: ["ice", "iron"],
 	breakInto: ["snow","metal_scrap"],
-		noMix: true,
+	noMix: true,
+	movable: false,
 },
 elements.customtemper = {
 	color: "#421b6b",
@@ -375,7 +377,8 @@ elements.customtemper = {
 	category:"machines",
 	state:"solid",
 	insulate: true,
-		noMix: true,
+	noMix: true,
+	movable: false,
 },
 elements.destroyable_customtemper = {
 	color: "#261047",
@@ -402,7 +405,8 @@ elements.destroyable_customtemper = {
 	state:"solid",
 	insulate: true,
 	breakInto: ["snow","metal_scrap","oxidized_copper","wire"],
-		noMix: true,
+	noMix: true,
+	movable: false,
 },
 elements.e_pipe = {
     color: "#414c4f",
@@ -886,7 +890,7 @@ elements.destroyable_channel_pipe = {
     movable: false,
     canContain: true,
 },
-listPipes = ["pipe", "destroyable_pipe", "destroyable_e_pipe","channel_pipe","destroyable_channel_pipe","bridge_pipe"];
+listPipes = ["pipe", "destroyable_pipe", "destroyable_e_pipe","channel_pipe","destroyable_channel_pipe","bridge_pipe","e_pipe"];
 elements.bridge_pipe = {
     color: "#414c4f",
     onSelect: function() {
@@ -1243,6 +1247,7 @@ elements.heat_test = {
 	state: "solid",
 	tempHigh: 1538,
 	stateHigh: "molten_iron",
+	movable: false,
 	tick: function(pixel){
 		if (pixel.start == pixelTicks){
 			pixel.ogR = parseInt(pixel.color.slice(4, pixel.color.indexOf(',')), 10)
