@@ -1,4 +1,5 @@
 //This mod was made by Alex the transfem, https://discord.com/users/778753696804765696 on discord and https://www.tiktok.com/@alextheagenenby?_t=8hoCVI3NRhu&_r=1 on tiktok.
+//V1.4.1: added a mixer element and an improved sensor element.
 function customExplosion(pixel1, pixel2, radius, list) {
   let x = pixel1.x;
   let y = pixel1.y;
@@ -278,23 +279,7 @@ elements.acid.ignore.push("aqua_regia");
 elements.cwall = {
       "color": "rgb(128,128,128)",
       "name": "Conductive Wall",
-      "behavior": [
-          [
-              "XX",
-              "XX",
-              "XX"
-          ],
-          [
-              "XX",
-              "XX",
-              "XX"
-          ],
-          [
-              "XX",
-              "XX",
-              "XX"
-          ]
-      ],
+      "behavior": [["XX", "XX", "XX"], ["XX", "XX", "XX"], ["XX", "XX", "XX"]],
       "category": "solids",
       "insulate": false,
       "hardness": 1,
@@ -811,7 +796,6 @@ elements.rubidiumsalt = {
   density: 2800,
 }
 
-elements.hydrogen.burnInto = "steam";
 elements.irradiate = {
       "color": "rgb(25,150,25)",
       "temp": 2,
@@ -910,3 +894,116 @@ elements.rubidiumhydroxidecrystals = {
   stateHigh: "potassiumhydroxidecrystals",
   tempHigh: "1388",
 }
+elements.esuperheater = {
+  conduct: 1,
+  color: '#dd1111',
+  colorObject: {
+        "r": 221,
+        "g": 17,
+        "b": 17
+    },
+  behavior: behaviors.WALL,
+  behaviorOn: [
+        [
+            "XX",
+            "HT:10",
+            "XX"
+        ],
+        [
+            "HT:10",
+            "XX",
+            "HT:10"
+        ],
+        [
+            "XX",
+            "HT:10",
+            "XX"
+        ]
+    ],
+  category: "machines",
+  name: "e-superheater",
+},
+  elements.efreezer = {
+    conduct: 1,
+    color: '#ffffff',
+    colorObject: {
+          "r": 255,
+          "g": 255,
+          "b": 255
+      },
+    behavior: behaviors.WALL,
+    behaviorOn: [
+          [
+              "XX",
+              "CO:10",
+              "XX"
+          ],
+          [
+              "CO:10",
+              "XX",
+              "CO:10"
+          ],
+          [
+              "XX",
+              "CO:10",
+              "XX"
+          ]
+      ],
+    category: "machines",
+    name: "e-freezer",
+  },
+  elements.mixer = {
+    name: "Mixer",
+    behavior:[
+          [
+              "SW",
+              "SW",
+              "SW"
+          ],
+          [
+              "SW",
+              "XX",
+              "SW"
+          ],
+          [
+              "SW",
+              "SW",
+              "SW"
+          ]
+      ],
+    category: "machines",
+    noMix: true,
+  }
+let item = "";
+elements.improvedsensor = {
+  behavior: behaviors.WALL,
+      color: "#bebfa3",
+      onSelect: function(){
+        item = prompt("what item should it detect?");
+      },
+      tick: function(pixel) {
+        if(pixel.start == pixelTicks){
+          pixel.clone = item;
+        }
+        
+          for (var i = 0; i < adjacentCoords.length; i++) {
+              var coords = adjacentCoords[i];
+              var x = pixel.x + coords[0];
+              var y = pixel.y + coords[1];
+              if (!isEmpty(x,y,true)) {
+                  var sensed = pixelMap[x][y];
+                  if (sensed.element == pixel.clone) {
+                      pixel.charge = 5;
+                      break;
+                  }
+              }
+          }
+          doDefaults(pixel);
+      },
+      conduct: 1,
+      movable: false,
+      category:"machines",
+      darkText: true,
+  hardness: 1,
+  
+  };
