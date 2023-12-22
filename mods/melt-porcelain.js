@@ -1,6 +1,6 @@
 //Porcelain turns into molten_porcelain at 3275 degrees.
 
-elements.molten_porcelain{
+elements.molten_porcelain = {
   color: ["#ff0000", "#ffa500", "#ffd700"],          // Set color to red, orange, and gold.
   category: "states",
   behavior: behaviors.MOLTEN,                        // Set state to MOLTEN.
