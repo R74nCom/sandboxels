@@ -1354,5 +1354,6 @@ elements.converter = {
 		converter2Var = answer6;
     },
 	ignore: ["converter", "wall", "ewall", "border"],
+	movable: false,
 }
 	
