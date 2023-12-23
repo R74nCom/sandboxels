@@ -1,0 +1,46 @@
+# R74n Content License
+
+> Version 1.0, December 2023
+> Original: https://R74n.com/license.txt
+
+> Copyright (C) 2024 R74n
+> All Rights Reserved
+> Original content hosted at: https://sandboxels.R74n.com/
+
+Everyone is permitted to copy and distribute verbatim or modified copies of this license document.
+
+"Content" in this license refers to, but is not limited to, the following:
+ - Software
+ - Text (Documentation, code, etc.)
+ - Media (Images, videos, audio, etc.)
+ - Other files
+
+"Our", "we", and "us" in this license refers to the licensor. "You" and "your" in this license refers to the agent (individual, organization, or otherwise) to which this license applies, being the one who distributes or modifies the content, or one that otherwise uses our content.
+
+> R74n Content License
+> TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION, AND MODIFICATION
+
+1. We reserve the right to request that you remove our content from your project at any time, for any reason.
+
+ 1a. If you do not comply with our request, we reserve the right to take legal action against you. We also reserve the right to take legal action without requesting that you remove our content directly.
+
+ 1b. You are typically free to create and distribute scripts that modify our content, such as mods or plugins, with segments of our content (i.e. code) included, as long as you comply with the rest of this license. In the unlikely event that we request that you remove your script, you must comply with our request.
+
+ 1c. We may submit our content to third-party services. This is explicitly allowed by this license, only if we ourselves have published it there, and us alone.
+
+2. You may not use our content for any commercial purposes without our explicit permission, unless otherwise stated, including but not limited to:
+
+ - Advertising
+ - Selling
+ - Any other means of generating income
+
+3. Any content you use must be clearly credited to us, unless otherwise stated.
+
+ 3a. Any credit included in the original content, including, but not limited to, links, warnings, and popup messages, must not be removed or modified.
+
+4. We are free to use any content you create using our content for any commercial or other purpose. Content you create includes, but is not limited to:
+
+ - User-generated content
+ - Derivative works
+
+5. Content (i.e. code) is provided with no warranty. We are not required to provide support for any of our content.

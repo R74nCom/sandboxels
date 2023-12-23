@@ -18,6 +18,9 @@
     <link rel="manifest" href="manifest.json">
     <link rel="mask-icon" href="icons/safari-pinned-tab.svg?v=2" color="#2167ff">
     <link rel="shortcut icon" href="icons/favicon.ico?v=2">
+    <link rel="help" href="https://sandboxels.R74n.com/help">
+    <link rel="search" href="https://R74n.com/search/#gsc.tab=0">
+    <link rel="license" href="https://sandboxels.R74n.com/license.txt">
     <meta name="msapplication-TileColor" content="#e6d577">
     <meta name="theme-color" content="#000000">
 
@@ -63,7 +66,7 @@
           "name":"Sandboxels",
           "author":"R74n",
           "creator":"R74n",
-          "description":"Sandboxels is an in-browser falling sand simulation game, with mechanics such as heat simulation, electricity, density, chemical reactions, fire, and over 400 unique elements to play with.",
+          "description":"Sandboxels is an in-browser falling sand simulation game, with mechanics such as heat simulation, electricity, density, chemical reactions, fire, and over 500 unique elements to play with.",
           "offers":{
             "@type":"Offer",
             "price":"0",
@@ -71,7 +74,7 @@
             "availability":"https://schema.org/InStock"
           },
           "genre": "Falling-sand game",
-          "softwareVersion":"1.8.3",
+          "softwareVersion":"1.9.1",
           "datePublished":"2021-12-15",
           "dateCreated":"2021-12-15",
           "gameTip":"https://sandboxels.r74n.com/controls",
@@ -80,8 +83,9 @@
           "screenshot": "https://sandboxels.r74n.com/icons/wallpaper.png",
           "softwareRequirements": "HTML5",
           "archivedAt": "https://web.archive.org/web/20230519005427/https://sandboxels.r74n.com/",
-          "copyrightYear": 2023,
-          "copyrightNotice": "©2021-2023. All Rights Reserved. R74n",
+          "copyrightYear": 2024,
+          "copyrightNotice": "©2021-2024. All Rights Reserved. R74n",
+          "license": "https://sandboxels.r74n.com/license.txt",
           "discussionUrl": "https://link.r74n.com/discord",
           "educationalUse": "Hands-on lab experiments and learning",
           "headline": "Sandboxels",
@@ -112,7 +116,7 @@
         console.log("Sandboxels is developed by R74n and can be played on the official website: https://sandboxels.R74n.com/");
         console.log("Can't access? Join our Discord: https://link.R74n.com/discord");
         console.log("Found this on another website? Let us know!");
-        console.log("©2021-" + new Date().getFullYear() + ". All Rights Reserved.");
+        console.log("©2021-" + new Date().getFullYear() + ". All Rights Reserved. https://sandboxels.R74n.com/license.txt");
         // If settings is in localStorage, load it. If not, create an empty object.
         settings = localStorage.getItem("settings") ? JSON.parse(localStorage.getItem("settings")) : {};
         // URL query handling
@@ -14750,7 +14754,7 @@ window.onload = function() {
     }
     // Set the first button in categoryControls div to be the current category
     document.getElementById("categoryControls").children[0].click()
-    document.getElementById("extraInfo").insertAdjacentHTML("beforeend", "<small><p>v" + currentversion + " • " + elementCount + " elements, including " + hiddenCount + " hidden ones.</p><p>©2021-" + new Date().getFullYear() + ". All Rights Reserved. <a style='color:#00ffff' href='https://r74n.com'>R74n</a></p></small>");
+    document.getElementById("extraInfo").insertAdjacentHTML("beforeend", "<small><p>v" + currentversion + " • " + elementCount + " elements, including " + hiddenCount + " hidden ones.</p><p>©2021-" + new Date().getFullYear() + ". <a href='https://sandboxels.R74n.com/license.txt' rel='license' target='_blank'>All Rights Reserved</a>. <a style='color:#00ffff' rel='author' href='https://r74n.com'>R74n</a></p></small>");
     selectElement(currentElement);
     focusGame();
     // For every button element, onkeyup="event.preventDefault()"
@@ -14847,7 +14851,7 @@ You can also join our <a href="https://discord.gg/ejUc6YPQuS" target="_blank">Di
                 <div id="categoryControls"></div>
                 <div id="elementControls"></div>
             </div>
-            <div id="extraInfo"><small><a href="https://sandboxels.r74n.com/changelog" id="changelogButton" target="_blank">Changelog</a> • <a href="feedback" target="_blank">Feedback</a> • <a href="https://sandboxels.wiki.gg/" target="_blank" id="wikiButton" title="Official Sandboxels Wiki - wiki.gg">Wiki</a> • <a id="moreSocial" href="https://reddit.com/r/Sandboxels" target="_blank">Reddit</a> • <a href="https://discord.gg/ejUc6YPQuS" target="_blank" style="text-shadow: 0px 2px 10px #ff00ff;">Discord</a><span id="install-button" style="display:none">&nbsp;• <a onclick="deferredPrompt.prompt(); return false" href="#" style="text-shadow: 0px 2px 10px #ff00ff; cursor:pointer">Install Offline</a></span><!--<br><br><a style="color:lime" target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSf8pVMSdC6oSnBSaTpzjPQa8Ef-vxG_eXL99UITnMSQtJFTJA/viewform?usp=sf_link">FILL OUT THE CENSUS<span style="color:red">(NEW)</span></a>--></small></div>
+            <div id="extraInfo"><small><a href="https://sandboxels.r74n.com/changelog" id="changelogButton" target="_blank">Changelog</a> • <a href="feedback" target="_blank">Feedback</a> • <a href="https://sandboxels.wiki.gg/" target="_blank" id="wikiButton" title="Official Sandboxels Wiki - wiki.gg">Wiki</a> • <a id="moreSocial" href="https://twitter.com/R74nCom" rel="me" target="_blank">Twitter</a> • <a href="https://discord.gg/ejUc6YPQuS" target="_blank" style="text-shadow: 0px 2px 10px #ff00ff;">Discord</a><span id="install-button" style="display:none">&nbsp;• <a onclick="deferredPrompt.prompt(); return false" href="#" style="text-shadow: 0px 2px 10px #ff00ff; cursor:pointer">Install Offline</a></span><!--<br><br><a style="color:lime" target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSf8pVMSdC6oSnBSaTpzjPQa8Ef-vxG_eXL99UITnMSQtJFTJA/viewform?usp=sf_link">FILL OUT THE CENSUS<span style="color:red">(NEW)</span></a>--></small></div>
             <script>
                 // version check
                 if (!settings["lastversion"] || settings["lastversion"]!==currentversion) {
@@ -15054,7 +15058,7 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span> <input type="button" value="O
     <div id="bottomTopBox">
         <!-- <iframe src="promo.html" style="border:none;width: 300px; height: 250px;"></iframe> -->
         <!-- Affiliate Links -->
-        <!-- <p style="font-size:1.2em;display:none" id="aff"><a id="affLink" href="#" target="_blank">Loading...</a></p>
+        <!-- <p style="font-size:1.2em;display:none" id="aff"><a id="affLink" href="#" target="_blank" rel="sponsored">Loading...</a></p>
         <script>
             var aff = {};
             var affRequest = new XMLHttpRequest();
@@ -15078,7 +15082,7 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span> <input type="button" value="O
                 document.getElementById("newsletteriframe").src = "https://r74n.substack.com/embed";
             })
         </script>
-        <p>Support development by subscribing on <a href="https://www.patreon.com/R74n" target="_blank">our Patreon</a>! Many benefits!!</p>
+        <p>Support development by subscribing on <a href="https://www.patreon.com/R74n" rel="me" target="_blank">our Patreon</a>! Many benefits!!</p>
     </div>
 
     <div id="bottomLeftBox">
@@ -15092,9 +15096,9 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span> <input type="button" value="O
         <p>We have a thriving community on <a href="https://discord.gg/ejUc6YPQuS" target="_blank">Discord</a>! There you can post feedback or share your creations.</p>
         <!-- <p>If you'd like to support us, consider donating on <a href="https://www.paypal.com/donate/?hosted_button_id=GCX4VHQ7SZWTN" target="_blank">PayPal</a> or <a href="https://cash.app/$emojiartist" target="_blank" title="$emojiartist">CashApp</a>, or subscribing on Discord.</p> -->
         <p>Business inquiries? Education stories? Help needed? Email us at <a href="mailto:contact@r74n.com">contact@R74n.com</a>!</p>
-        <p>More links: <a href="https://sandboxels.R74n.com/help">Help</a> • <a href="https://sandboxels.R74n.com/tips">Tips</a> • <a href="https://sandboxels.R74n.com/mod-list">Mods</a> • <a href="https://sandboxels.R74n.com/mobile-use">Mobile</a> • <a href="https://sandboxels.R74n.com/offline-use">Offline</a> • <a href="https://R74n.com/privacy">Privacy</a></p>
+        <p>More links: <a href="https://sandboxels.R74n.com/help" rel="help">Help</a> • <a href="https://sandboxels.R74n.com/tips">Tips</a> • <a href="https://sandboxels.R74n.com/mod-list">Mods</a> • <a href="https://sandboxels.R74n.com/mobile-use">Mobile</a> • <a href="https://sandboxels.R74n.com/offline-use">Offline</a> • <a href="https://R74n.com/privacy">Privacy</a></p>
         <p>Thanks to: Serioustar, WeiChei, Midi_png, ggod, Trent, u2ce</p>
-        <p>Sandboxels is developed by R74n. Check out <a href="https://R74n.com" target="_blank">our other projects</a>!</p>
+        <p>Sandboxels is developed by R74n. Check out <a href="https://R74n.com" rel="author" target="_blank">our other projects</a>!</p>
         <script>
             // add the above elements programmatically when the page loads
             window.addEventListener('load', function() {
