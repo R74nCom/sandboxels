@@ -1355,5 +1355,39 @@ elements.converter = {
     },
 	ignore: ["converter", "wall", "ewall", "border"],
 	movable: false,
+},
+elements.blackhole_storage = {
+	color: "#171717",
+	behavior: behaviors.WALL,
+	category: "machines",
+	tick: function(pixel) {
+		if (!pixel.bhcontents){
+			pixel.bhcontents = [];
+		} else {
+			pixel.decidedcontent = pixel.bhcontents[Math.floor(Math.random()*pixel.bhcontents.length)];
+		}
+		 for (var i = 0; i < squareCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (!isEmpty(x,y) && (!pixel.charge && !pixel.chargeCD)) {
+					var otherPixel = pixelMap[x][y];
+					if (elements[otherPixel.element].movable == true){
+						pixel.bhcontents.push(otherPixel);
+						deletePixel(otherPixel.x, otherPixel.y);
+					}
+                } else if (pixel.charge && isEmpty(x,y) && pixel.decidedcontent){
+					var otherPixel = pixelMap[x][y];
+					pixel.decidedcontent.x = x;
+					pixel.decidedcontent.y = y;
+					delete pixel.decidedcontent.del;
+					otherPixel = pixel.decidedcontent;
+					currentPixels.push(pixel.decidedcontent);
+					pixel.bhcontents.splice(pixel.bhcontents.indexOf(pixel.decidedcontent), 1);
+					pixel.decidedcontent = pixel.bhcontents[Math.floor(Math.random()*pixel.bhcontents.length)];
+				}
+            }
+	},
+	movable: false,
+	conduct: 1,
 }
-	
