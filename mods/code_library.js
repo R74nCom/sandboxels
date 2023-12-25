@@ -1749,4 +1749,9 @@
 		}*/
 	};
 
-const libraryLoaded = true
+libraryLoaded = true;
+
+runAfterLoad(function() {
+	libraryLoaded = true;
+	const libraryLoaded = true;
+};
