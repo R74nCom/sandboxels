@@ -1,8 +1,9 @@
 const heatfunc = function(pixel){
-		if (pixel.ogR == null || pixel.ogG == null || pixel.ogB == null){
+		if (pixel.ogR == null || pixel.ogG == null || pixel.ogB == null || !(pixel.element == pixel.ogElement)){
 			pixel.ogR = parseInt(pixel.color.slice(4, pixel.color.indexOf(',')), 10)
 			pixel.ogG = parseInt(pixel.color.slice(pixel.color.indexOf(',') + 1, pixel.color.lastIndexOf(',')), 10)
 			pixel.ogB = parseInt(pixel.color.slice(pixel.color.lastIndexOf(',') + 1, -1), 10)
+			pixel.ogElement = pixel.element 
 		}else{
 		pixel.gethigh = (elements[pixel.element].tempHigh)
 		pixel.halftemp = ((20+pixel.gethigh)/2)
@@ -24,7 +25,7 @@ const heatfunc = function(pixel){
 		}
 	};
 	if (!eLists.metals) { eLists.metals = [] }
-	eLists.metals = eLists.metals.concat(["iron", "glass", "copper", "gold", "brass","steel","nickel","zinc","silver","aluminum","bronze","metal_scrap","oxidized_copper","tin","lead"])
+	eLists.metals = eLists.metals.concat(["iron", "glass", "copper", "gold", "brass","steel","nickel","zinc","silver","aluminum","bronze","metal_scrap","oxidized_copper","tin","lead", "rose_gold"])
 eLists.metals.forEach(metal => { 
 	const prefunc = elements[metal].tick;
 	if (!prefunc){
