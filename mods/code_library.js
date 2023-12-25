@@ -1748,3 +1748,5 @@
 			}
 		}*/
 	}
+
+libraryLoaded = true;
