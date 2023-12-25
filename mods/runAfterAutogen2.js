@@ -52,3 +52,5 @@ function createButtonsAndCountElements() {
 };
 
 runAfterAutogen(createButtonsAndCountElements);
+
+raaLoaded = true;
