@@ -1,5 +1,3 @@
-libraryLoaded = true;
-
 //URL
 
 	urlParams = new URLSearchParams(window.location.search);
@@ -1751,4 +1749,4 @@ libraryLoaded = true;
 		}*/
 	};
 
-libraryLoaded = true
+const libraryLoaded = true
