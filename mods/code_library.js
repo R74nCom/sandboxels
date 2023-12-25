@@ -1747,6 +1747,6 @@
 				}
 			}
 		}*/
-	}
+	};
 
-libraryLoaded = true;
+libraryLoaded = true
