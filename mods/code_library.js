@@ -1,3 +1,5 @@
+libraryLoaded = true;
+
 //URL
 
 	urlParams = new URLSearchParams(window.location.search);
