@@ -1427,10 +1427,13 @@ elements.molten_plutonium = {
 	},
 	reactions: {
         "neutron": { elem1:"pn_explosion", tempMin:400, chance:0.1 },
-		"neutron": { temp1: 100, temp2: 100 },
     },
 	density: 16629,
-}
+},
+elements.neutron.reactions = {
+	"uranium": { temp2:100 },
+	"plutonium": { temp2: 100 }
+},
 elements.pn_explosion = {
     color: ["#ffb48f","#ffd991","#ffad91"],
     behavior: [
