@@ -1449,4 +1449,51 @@ elements.pn_explosion = {
     hidden: true,
     alias: "plutonium nuclear explosion",
     noMix: true
+},
+elements.smasher = {
+	color: "#606060",
+	behavior: behaviors.WALL,
+	category: "machines",
+	tick: function(pixel){
+		for (var i = 0; i < squareCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (!isEmpty(x,y)) {
+					var otherPixel = pixelMap[x][y];
+					breakPixel(otherPixel);
+					}
+        }
+    },
+},
+elements.mixer = {
+	color: "#F0F0F0",
+	behavior: behaviors.WALL,
+	category: "machines",
+	tick: function(pixel){
+		pixel.mixList = [];
+		for (var i = 0; i < squareCoords.length; i++) {
+            var coord = squareCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (!isEmpty(x,y)) {
+				var otherPixel = pixelMap[x][y];
+				pixel.mixList.push(otherPixel);
+			}
+        }
+		for (var i = 0; i < pixel.mixList.length; i++) {
+                    var pixel1 = pixel.mixList[Math.floor(Math.random()*pixel.mixList.length)];
+                    var pixel2 = pixel.mixList[Math.floor(Math.random()*pixel.mixList.length)];
+                    swapPixels(pixel1,pixel2);
+                    pixel.mixList.splice(pixel.mixList.indexOf(pixel1),1);
+                    pixel.mixList.splice(pixel.mixList.indexOf(pixel2),1);
+                    if (elements[pixel1.element].onMix) {
+                        elements[pixel1.element].onMix(pixel1,pixel2);
+                    }
+                    if (elements[pixel2.element].onMix) {
+                        elements[pixel2.element].onMix(pixel2,pixel1);
+                    }
+                }
+	}
 }
+	
