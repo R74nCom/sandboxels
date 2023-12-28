@@ -1465,6 +1465,7 @@ elements.smasher = {
 					}
         }
     },
+	movable: false,
 },
 elements.mixer = {
 	color: "#F0F0F0",
@@ -1494,6 +1495,6 @@ elements.mixer = {
                         elements[pixel2.element].onMix(pixel2,pixel1);
                     }
                 }
-	}
+	},
+	movable: false,
 }
-	
