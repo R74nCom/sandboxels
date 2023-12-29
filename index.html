@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <title>Sandboxels</title>
-    <meta name="description" content="A falling sand simulation game, with heat transfer, electricity, density, fire, explosions, and more.">
+    <meta name="description" content="Relax or experiment with over 500 materials in this falling sand simulator.">
     <meta name="keywords" content="falling sand, elements, pixel art, simulator, powder">
     <meta name="author" content="R74n">
     <meta name="copyright" content="R74n">
@@ -28,7 +28,7 @@
     <meta property="og:locale" content="en_US">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Sandboxels">
-    <meta property="og:description" content="A falling sand simulation game, with heat transfer, electricity, density, fire, explosions, and more.">
+    <meta property="og:description" content="Relax or experiment with over 500 materials in this falling sand simulator.">
     <meta property="og:url" content="https://sandboxels.r74n.com">
     <meta property="og:site_name" content="Sandboxels">
     <meta property="og:image" content="https://sandboxels.r74n.com/icons/wallpaper.png">
@@ -39,7 +39,7 @@
 
     <!--Twitter-->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:description" content="A falling sand simulation game, with heat transfer, electricity, density, fire, explosions, and more.">
+    <meta name="twitter:description" content="Relax or experiment with over 500 materials in this falling sand simulator.">
     <meta name="twitter:title" content="Sandboxels">
     <meta name="twitter:site:id" content="1436857621827530753">
     <meta name="twitter:image" content="https://sandboxels.r74n.com/icons/card.png">
@@ -66,7 +66,7 @@
           "name":"Sandboxels",
           "author":"R74n",
           "creator":"R74n",
-          "description":"Sandboxels is an in-browser falling sand simulation game, with mechanics such as heat simulation, electricity, density, chemical reactions, fire, and over 500 unique elements to play with.",
+          "description":"Sandboxels is an in-browser falling sand simulator, with mechanics such as heat simulation, electricity, density, chemical reactions, fire, and over 500 unique elements to play with.",
           "offers":{
             "@type":"Offer",
             "price":"0",
@@ -10142,7 +10142,7 @@
 "prop": {
     color: ["#d46f50","#d4aa50"],
     onSelect: function(){
-        var answer1 = prompt("Warning - This tool may break the game if used incorrectly.\n\nEnter a pixel attribute to modify:",(currentProp||undefined));
+        var answer1 = prompt("Warning - This tool may break the simulator if used incorrectly.\n\nEnter a pixel attribute to modify:",(currentProp||undefined));
         if (!answer1) { return }
         var answer2 = prompt("Now, enter a value for "+answer1+":",(currentPropValue||undefined));
         if (!answer2) { return }
@@ -14774,9 +14774,9 @@ window.onload = function() {
 <button class="XButton" onclick="closeMenu();">-</button>
 <span class="menuTitle">WARNING</span>
 <div class="menuText" style="padding-top:1em">
-You may be on a website that has embedded our game involuntarily.
+You may be on a website that has embedded our simulator involuntarily.
 <br><br>
-The real game is at this URL: <a href="https://sandboxels.r74n.com" target="_blank">sandboxels.R74n.com</a>.
+The real one is at this URL: <a href="https://sandboxels.r74n.com" target="_blank">sandboxels.R74n.com</a>.
 <br><br>
 Please use the main website to support us instead.
 <br><br>
@@ -14799,7 +14799,7 @@ You can also join our <a href="https://discord.gg/ejUc6YPQuS" target="_blank">Di
 
 <body>
     <h1 class="pagetitle" id="pagetitle"><a href="https://R74n.com" class="backbutton" target="_blank">&lt;</a></h1>
-    <noscript>You don't have JavaScript enabled! JavaScript is required to play Sandboxels, and most other browser games.</noscript>
+    <noscript>You don't have JavaScript enabled! JavaScript is required to play Sandboxels, and most other browser tools.</noscript>
     <div id="totalWrapper">
     <div id="gameWrapper">
     <div id="gameDiv">
@@ -14818,7 +14818,7 @@ You can also join our <a href="https://discord.gg/ejUc6YPQuS" target="_blank">Di
                 <a href="https://www.mozilla.org/firefox/new/" tabindex="-1">Firefox</a> 2.0+<br>
                 <a href="http://www.apple.com/safari/" tabindex="-1">Safari</a> 3.1+<br>
                 <a href="http://www.opera.com/" tabindex="-1">Opera</a> 9.0+<br>
-                <a href="http://www.microsoft.com/windows/internet-explorer/default.aspx" tabindex="-1">Internet Explorer</a> 9.0+<br>
+                <a href="https://www.microsoft.com/edge" tabindex="-1">Microsoft Edge</a> 12.0+<br>
             </canvas>
             <input id="colorSelector" type="color" value="#ff0000" onchange="currentColor=this.value;
             document.getElementById('elementButton-'+currentElement).style.removeProperty('background-image');
@@ -14851,7 +14851,7 @@ You can also join our <a href="https://discord.gg/ejUc6YPQuS" target="_blank">Di
                 <div id="categoryControls"></div>
                 <div id="elementControls"></div>
             </div>
-            <div id="extraInfo"><small><a href="https://sandboxels.r74n.com/changelog" id="changelogButton" target="_blank">Changelog</a> • <a href="feedback" target="_blank">Feedback</a> • <a href="https://sandboxels.wiki.gg/" target="_blank" id="wikiButton" title="Official Sandboxels Wiki - wiki.gg">Wiki</a> • <a id="moreSocial" href="https://twitter.com/R74nCom" rel="me" target="_blank">Twitter</a> • <a href="https://discord.gg/ejUc6YPQuS" target="_blank" style="text-shadow: 0px 2px 10px #ff00ff;">Discord</a><span id="install-button" style="display:none">&nbsp;• <a onclick="deferredPrompt.prompt(); return false" href="#" style="text-shadow: 0px 2px 10px #ff00ff; cursor:pointer">Install Offline</a></span><!--<br><br><a style="color:lime" target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSf8pVMSdC6oSnBSaTpzjPQa8Ef-vxG_eXL99UITnMSQtJFTJA/viewform?usp=sf_link">FILL OUT THE CENSUS<span style="color:red">(NEW)</span></a>--></small></div>
+            <div id="extraInfo"><small><a href="https://sandboxels.r74n.com/changelog" id="changelogButton" target="_blank">Changelog</a> • <a href="https://sandboxels.R74n.com/feedback" target="_blank">Feedback</a> • <a href="https://sandboxels.wiki.gg/" target="_blank" id="wikiButton" title="Official Sandboxels Wiki - wiki.gg">Wiki</a> • <a id="moreSocial" href="https://twitter.com/R74nCom" rel="me" target="_blank">Twitter</a> • <a href="https://discord.gg/ejUc6YPQuS" target="_blank" style="text-shadow: 0px 2px 10px #ff00ff;">Discord</a><span id="install-button" style="display:none">&nbsp;• <a onclick="deferredPrompt.prompt(); return false" href="#" style="text-shadow: 0px 2px 10px #ff00ff; cursor:pointer">Install Offline</a></span><!--<br><br><a style="color:lime" target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSf8pVMSdC6oSnBSaTpzjPQa8Ef-vxG_eXL99UITnMSQtJFTJA/viewform?usp=sf_link">FILL OUT THE CENSUS<span style="color:red">(NEW)</span></a>--></small></div>
             <script>
                 // version check
                 if (!settings["lastversion"] || settings["lastversion"]!==currentversion) {
@@ -15031,7 +15031,7 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span> <input type="button" value="O
                     </span>
                     <span class="setting-span" style="text-align:center">
                         <button onclick="if(confirm('This action will reset all discovered elements and refresh the page.')){settings.unlocked={};saveSettings();location.reload()}" class="settingsButton">Reset Discovered</button>
-                        <button onclick="if(confirm('This action will reset all game data, not including save slots, and refresh the page.')){localStorage.removeItem('settings');location.reload()}" class="settingsButton">Reset All</button>
+                        <button onclick="if(confirm('This action will reset all your data, not including save slots, and refresh the page.')){localStorage.removeItem('settings');location.reload()}" class="settingsButton">Reset All</button>
                         <button onclick="if(confirm('This action will disable all enabled mods and refresh the page.')){localStorage.removeItem('enabledMods');location.reload()}" class="settingsButton">Clear Mods</button>
                         <button onclick="if(confirm('This action will permanently erase all local save slots.')){for (var i = 1; i <= 12; i++) {localStorage.removeItem('SandboxelsSaves/'+i)}; ;closeMenu();showSaves()}" class="settingsButton">Clear Saves</button>
                     </span>
@@ -15087,7 +15087,7 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span> <input type="button" value="O
 
     <div id="bottomLeftBox">
         <h2>Sandboxels Introduction</h2>
-        <p><strong><def>Sandboxels</def></strong> is a free falling-sand simulator that can be played in your browser. It features heat simulation, electricity, density, chemical reactions, cooking, and fire spread. With over 400 unique elements to play with, Sandboxels is a great way to pass the time and relax.</p>
+        <p><strong><def>Sandboxels</def></strong> is a free falling-sand simulator that can be played in your browser. It features heat simulation, electricity, density, chemical reactions, cooking, and fire spread. With over 500 unique elements to play with, Sandboxels is a great way to pass the time and relax.</p>
         <p>There are thousands of interactions between the many materials, plants, animals, fluids, and powders in the game.</p>
         <p>Falling-sand games are a genre of sandbox games characterized by falling particles of various types.</p>
         <p>Simply click or use your touchscreen to select a category, like <strong>Liquids</strong>, then pick an element, like <strong>Water</strong>. Drag on the canvas above to place your pixels, and watch them interact with others!</p>
