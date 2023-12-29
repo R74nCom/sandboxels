@@ -1390,4 +1390,111 @@ elements.blackhole_storage = {
 	},
 	movable: false,
 	conduct: 1,
+},
+elements.plutonium = {
+	color: ["#616161", "#4b4949", "#353232", "#211c1c"],
+	behavior: behaviors.STURDYPOWDER,
+	category: "powders",
+	tempHigh: 640,
+	stateHigh: "molten_plutonium",
+	state: "solid",
+	tick: function(pixel){
+		if (Math.random() < 0.0007) {
+			changePixel(pixel, "neutron", false);
+		} else if (Math.random() < 0.0007) {
+			changePixel(pixel, "uranium", false);
+		}
+	},
+	reactions: {
+        "neutron": { elem1:"pn_explosion", tempMin:400, chance:0.1 },
+		"neutron": { temp1: 100, temp2: 100 },
+    },
+	density: 19186,
+}
+elements.molten_plutonium = {
+	color: ["#6b5133", "#743f26", "#7c2727"],
+	behavior: behaviors.LIQUID,
+	category: "states",
+	state: "liquid",
+	tempLow: 620,
+	stateLow: "plutonium",
+	tick: function(pixel){
+		if (Math.random() < 0.0007) {
+			changePixel(pixel, "neutron", false);
+		} else if (Math.random() < 0.0007) {
+			changePixel(pixel, "uranium", false);
+		}
+	},
+	reactions: {
+        "neutron": { elem1:"pn_explosion", tempMin:400, chance:0.1 },
+    },
+	density: 16629,
+},
+elements.neutron.reactions = {
+	"uranium": { temp2:100 },
+	"plutonium": { temp2: 100 }
+},
+elements.pn_explosion = {
+    color: ["#ffb48f","#ffd991","#ffad91"],
+    behavior: [
+        "XX|XX|XX",
+        "XX|EX:80>plasma,plasma,plasma,plasma,radiation,rad_steam,neutron|XX",
+        "XX|XX|XX",
+    ],
+    temp: 100000000,
+    category: "energy",
+    state: "gas",
+    density: 1000,
+    excludeRandom: true,
+    hidden: true,
+    alias: "plutonium nuclear explosion",
+    noMix: true
+},
+elements.smasher = {
+	color: "#606060",
+	behavior: behaviors.WALL,
+	category: "machines",
+	tick: function(pixel){
+		for (var i = 0; i < squareCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (!isEmpty(x,y)) {
+					var otherPixel = pixelMap[x][y];
+					breakPixel(otherPixel);
+					}
+        }
+    },
+	movable: false,
+},
+elements.mixer = {
+	color: "#F0F0F0",
+	behavior: behaviors.WALL,
+	category: "machines",
+	tick: function(pixel){
+		pixel.mixList = [];
+		for (var i = 0; i < squareCoords.length; i++) {
+            var coord = squareCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (!isEmpty(x,y)) {
+				var otherPixel = pixelMap[x][y];
+				pixel.mixList.push(otherPixel);
+			}
+        }
+		for (var i = 0; i < pixel.mixList.length; i++) {
+                    var pixel1 = pixel.mixList[Math.floor(Math.random()*pixel.mixList.length)];
+                    var pixel2 = pixel.mixList[Math.floor(Math.random()*pixel.mixList.length)];
+                    swapPixels(pixel1,pixel2);
+                    pixel.mixList.splice(pixel.mixList.indexOf(pixel1),1);
+                    pixel.mixList.splice(pixel.mixList.indexOf(pixel2),1);
+                    if (elements[pixel1.element].onMix) {
+                        elements[pixel1.element].onMix(pixel1,pixel2);
+                    }
+                    if (elements[pixel2.element].onMix) {
+                        elements[pixel2.element].onMix(pixel2,pixel1);
+                    }
+                }
+	},
+	movable: false,
 }
