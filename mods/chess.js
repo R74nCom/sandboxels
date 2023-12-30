@@ -1433,19 +1433,26 @@ function cellTick() {
     }
 }
 
+runAfterLoadList.push(() => {
+    if (!localStorage.getItem("chessjs-tutorial")) {
+        // "might break"
+        // i know damn well it will 100% break on mobile
+        alert("To start or restart chess board press 'u'. Might break on different resolutions and on mobile.");
+        localStorage.setItem("chessjs-tutorial", true);
+    }
+})
+
 window.addEventListener("keydown", (ev) => {
     if (ev.key == "u") {
         if (!running) {
-            videoFrame = 0;
-
             for (let i = offsetX; i < width - offsetX; i++) {
                 for (let j = offsetY; j < height - offsetY; j++) {
                     if (pixelMap[i][j]) deletePixel(i, j);
                     createPixel("screen", i, j);
                 }
             }
+            running = true;
         }
-        running = !running;
         game.resetBoard();
     } else {
         game.onKey(ev);
