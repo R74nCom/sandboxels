@@ -8,11 +8,35 @@ message: >-
   metadata from this file.
 type: software
 authors:
-  - given-names: R74n
-    email: contact@r74n.com
-    affiliation: R74n
+  - name: R74n
+    email: contact@R74n.com
+    date-start: '2017-05-02'
+    website: 'https://r74n.com/'
+identifiers:
+  - type: doi
+    value: 10.17605/OSF.IO/H7TDY
+  - type: swh
+    value: 'swh:1:rev:5a5813a8f4f418540f1bdb765d293735541bf7fd'
+  - type: url
+    value: 'https://sandboxels.r74n.com/'
+  - type: doi
+    value: 10.5281/zenodo.10044909
+  - type: other
+    value: /g/11spmybz10
+    description: KGMID
+  - type: url
+    value: 'https://purl.org/r74n/sandboxels'
+    description: PURL
+  - type: url
+    value: 'https://w3id.org/r74n/sandboxels'
+    description: W3ID
 repository-code: 'https://github.com/R74nCom/sandboxels'
 url: 'https://sandboxels.r74n.com'
+abstract: >-
+  Sandboxels is a free falling-sand simulator that can be
+  played in your browser. It features heat simulation,
+  electricity, density, chemical reactions, cooking, and
+  fire spread.
 keywords:
   - R74n
   - Sandboxels

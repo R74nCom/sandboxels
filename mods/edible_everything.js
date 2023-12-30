@@ -1,5 +1,5 @@
 window.addEventListener('load', function() {
-	for (element in elements) {
+	for (var element in elements) {
 		elements[element].isFood = true;
 	}
 });

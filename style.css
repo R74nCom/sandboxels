@@ -86,7 +86,9 @@ kbd {
     border: 1px solid #000;
     box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 0 2px rgba(0, 0, 0, 0.05);
     font-family: 'Arial';
+    cursor: pointer;
 }
+kbd:active {filter: brightness(70%);}
 #infoParent, #modParent, #settingsParent, .menuParent {
     display: none;
 }
@@ -549,4 +551,5 @@ select, .toggleInput, #settingsMenu input[type="number"], #settingsMenu input[ty
     pointer-events: none;
     padding: 5px;
     white-space: pre-wrap;
+    font-size: 0.75em;
 }

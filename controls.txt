@@ -7,8 +7,9 @@ Middle Click      =  Pick Element
 Space or P        =  Pause Simulation
 Shift + Heat      =  Intense Heating
 Shift + Cool      =  Intense Cooling
-Shift + Mix       =  Include Fire & Smoke in Mixing
+Shift + Mix       =  Include Fire, Smoke, and more in Mixing
 Shift + Shock     =  Intense Shock
+Shift + Smash     =  Intense Smash
 Shift + Mouse     =  Draw Line
 Scroll            =  Change Cursor Size
 - or [            =  Decrease Cursor Size
@@ -32,6 +33,8 @@ F1                =  Toggle GUI / HUD
 F2 or C           =  Capture Screenshot
 Drag & Drop       =  Insert an image or load save file
 Paste             =  Insert an image or load save file
+Escape            =  Close Menu / Clear Logs
+;                 =  Replace Mode
 
 (Alt/Option can be used in place of Shift)
 

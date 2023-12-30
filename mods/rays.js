@@ -22,7 +22,7 @@ var runAfterAutogenMod = "mods/runAfterAutogen2.js";
 var libraryMod = "mods/code_library.js";
 
 if(enabledMods.includes(runAfterAutogenMod) && enabledMods.includes(libraryMod)) {
-whenAvailable(["runAfterAutogen","libraryLoaded"], function() {
+whenAvailable(["raaLoaded","libraryLoaded"], function() {
 	runAfterAutogen(function() {
 		snowAndIceCache = Object.keys(elements).filter(function(name) {
 			return name.endsWith("snow") || name.endsWith("ice") || name == "rime"

@@ -11,8 +11,10 @@ function runAfterAutogen(callback) {
     }, interval);
 }
 function createButtonsAndCountElements() {
-	document.getElementById("categoryControls").innerHTML = "";
+	window.setTimeout(function() {
+    document.getElementById("categoryControls").innerHTML = "";
 	document.getElementById("elementControls").innerHTML = "";
+    document.getElementById("category-tools").innerHTML = "";
 	document.getElementById("extraInfo").innerHTML = "";
 	elementCount = 0;
 	hiddenCount = 0;
@@ -46,7 +48,9 @@ function createButtonsAndCountElements() {
 	document.getElementById("categoryControls").children[0].click()
 	document.getElementById("extraInfo").insertAdjacentHTML("beforeend", "<small><p>v" + currentversion + " • " + elementCount + " elements, including " + hiddenCount + " hidden ones.</p><p>©2021-" + new Date().getFullYear() + ". All Rights Reserved. <a style='color:#00ffff' href='https://r74n.com'>R74n</a></p></small>");
 	selectElement(currentElement);
-	
+	}, 10);
 };
 
 runAfterAutogen(createButtonsAndCountElements);
+
+raaLoaded = true;
