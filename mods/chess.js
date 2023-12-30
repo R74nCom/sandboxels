@@ -1,4 +1,4 @@
-
+{
 elements.screen = {
     name: "Screen",
     color: "#000000"
@@ -1455,3 +1455,4 @@ window.addEventListener("keydown", (ev) => {
 window.addEventListener("mousedown", (ev) => {
     game.onMouseClick(ev);
 })
+}
