@@ -6,6 +6,7 @@ state: "solid",
 tempHigh: 28.44,
 stateHigh: "molten_caesium",
 density: 1873,
+conduct: 1,
 reactions: {
 		"water": { "elem1":"pop", "elem2":"hydrogen" },
 		"sugar_water": { "elem1":"pop", "elem2":"hydrogen" },
@@ -26,6 +27,7 @@ elements.molten_caesium = {
 	stateHigh: "caesium_vapor",
 	density: 1843,
 	temp: 29,
+	conduct: 1,
 	reactions: {
 		"water": { "elem1":"pop", "elem2":"hydrogen" },
 		"sugar_water": { "elem1":"pop", "elem2":"hydrogen" },
@@ -80,7 +82,8 @@ elements.technetium = {
 	state: "solid",
 	tempHigh: 2157,
 	stateHigh: "molten_technetium",
-	density: 11500
+	density: 11500,
+	conduct: 1
 },
  elements.molten_technetium = {
 	color: ["#d16b42", "#da904c", "#dfb360", "#e2d57f"],
@@ -1497,4 +1500,21 @@ elements.mixer = {
                 }
 	},
 	movable: false,
+},
+elements.invisiblesupport = {
+	color: "#000000",
+	behavior: behaviors.WALL,
+	tick: function(pixel){
+		var x = pixel.x
+		var y = pixel.y
+		if (currentElement == "invisiblesupport"){
+			pixel.color = "rgb(15, 15, 15)";
+		} else {
+			pixel.color = "rgba(0, 0, 0, -1)";
+		}
+		if ((isEmpty(x-1, y) || isEmpty(x+1,y)) && isEmpty(x,y+1)){
+			deletePixel(pixel.x, pixel.y);
+		}
+	},
+	category: "powders",
 }
