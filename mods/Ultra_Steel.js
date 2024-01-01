@@ -1,7 +1,7 @@
 elements.Ultra_Steel = {
 	color: "#8f748f",
 	behavior: behaviors.WALL,
-	category: "solid",
+	category: "solids",
 	state: "solid",
 	tempHigh: 26525,
 	stateHigh: "Molten_Ultra_Steel",
