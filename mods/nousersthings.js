@@ -1,3 +1,4 @@
+// Gallium is the best element
 elements.caesium = {
 	color: ["#917921", "#ebcb59", "#a48b2d", "#d6b84c"],
 	behavior: behaviors.WALL,
