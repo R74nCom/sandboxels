@@ -1,20 +1,21 @@
+// Gallium is the best element
 elements.caesium = {
-color: ["#917921", "#ebcb59", "#a48b2d", "#d6b84c"],
-behavior: behaviors.WALL,
-category: "solids",
-state: "solid",
-tempHigh: 28.44,
-stateHigh: "molten_caesium",
-density: 1873,
-conduct: 1,
-reactions: {
-		"water": { "elem1":"pop", "elem2":"hydrogen" },
-		"sugar_water": { "elem1":"pop", "elem2":"hydrogen" },
-		"dirty_water": { "elem1":"pop", "elem2":"hydrogen" },
-		"pool_water": { "elem1":"pop", "elem2":"hydrogen" },
-		"salt_water": { "elem1":"pop", "elem2":"hydrogen" },
-		"seltzer":  { "elem1":"pop", "elem2":"hydrogen" },
-	}
+	color: ["#917921", "#ebcb59", "#a48b2d", "#d6b84c"],
+	behavior: behaviors.WALL,
+	category: "solids",
+	state: "solid",
+	tempHigh: 28.44,
+	stateHigh: "molten_caesium",
+	density: 1873,
+	conduct: 0.90,
+	reactions: {
+			"water": { "elem1":"pop", "elem2":"hydrogen" },
+			"sugar_water": { "elem1":"pop", "elem2":"hydrogen" },
+			"dirty_water": { "elem1":"pop", "elem2":"hydrogen" },
+			"pool_water": { "elem1":"pop", "elem2":"hydrogen" },
+			"salt_water": { "elem1":"pop", "elem2":"hydrogen" },
+			"seltzer":  { "elem1":"pop", "elem2":"hydrogen" },
+		}
 },
 elements.molten_caesium = {
 	color: ["#735c0a", "#a68e37", "#7e6715", "#9b832e"],
@@ -27,7 +28,7 @@ elements.molten_caesium = {
 	stateHigh: "caesium_vapor",
 	density: 1843,
 	temp: 29,
-	conduct: 1,
+	conduct: 0.90,
 	reactions: {
 		"water": { "elem1":"pop", "elem2":"hydrogen" },
 		"sugar_water": { "elem1":"pop", "elem2":"hydrogen" },
@@ -83,7 +84,7 @@ elements.technetium = {
 	tempHigh: 2157,
 	stateHigh: "molten_technetium",
 	density: 11500,
-	conduct: 1
+	conduct: 0.9
 },
  elements.molten_technetium = {
 	color: ["#d16b42", "#da904c", "#dfb360", "#e2d57f"],
@@ -1410,7 +1411,6 @@ elements.plutonium = {
 	},
 	reactions: {
         "neutron": { elem1:"pn_explosion", tempMin:400, chance:0.1 },
-		"neutron": { temp1: 100, temp2: 100 },
     },
 	density: 19186,
 }
