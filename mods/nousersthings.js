@@ -307,7 +307,7 @@ elements.roomtemper = {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
-                if (!isEmpty(x,y)) {
+                if (!isEmpty(x,y, true)) {
 					if(pixelMap[x][y].temp < -230) {
                     pixelMap[x][y].temp = (pixelMap[x][y].temp + 7)
 					} else if(pixelMap[x][y].temp > 270) {
@@ -334,7 +334,7 @@ elements.destroyable_roomtemper = {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
-                if (!isEmpty(x,y)) {
+                if (!isEmpty(x,y, true)) {
 					if(pixelMap[x][y].temp < -230) {
                     pixelMap[x][y].temp = (pixelMap[x][y].temp + 7)
 					} else if(pixelMap[x][y].temp > 270) {
@@ -365,7 +365,7 @@ elements.customtemper = {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
-                if (!isEmpty(x,y)) {
+                if (!isEmpty(x,y, true)) {
 					if(pixelMap[x][y].temp < (pixel.temp - 250)) {
                     pixelMap[x][y].temp = (pixelMap[x][y].temp + 7)
 					} else if(pixelMap[x][y].temp > (pixel.temp + 250)) {
@@ -392,7 +392,7 @@ elements.destroyable_customtemper = {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
-                if (!isEmpty(x,y)) {
+                if (!isEmpty(x,y, true)) {
 					if(pixelMap[x][y].temp < (pixel.temp - 250)) {
                     pixelMap[x][y].temp = (pixelMap[x][y].temp + 7)
 					} else if(pixelMap[x][y].temp > (pixel.temp + 250)) {
@@ -1341,7 +1341,7 @@ elements.converter = {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
-                if (!isEmpty(x,y)) {
+                if (!isEmpty(x,y, true)) {
 					var otherPixel = pixelMap[x][y];
 					if ((otherPixel.element == pixel.specialturn || pixel.specialturn == "all") && !elements.converter.ignore.includes(otherPixel.element)){
 						changePixel(otherPixel, pixel.contype)
@@ -1374,7 +1374,7 @@ elements.blackhole_storage = {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
-                if (!isEmpty(x,y) && (!pixel.charge && !pixel.chargeCD)) {
+                if (!isEmpty(x,y, true) && (!pixel.charge && !pixel.chargeCD)) {
 					var otherPixel = pixelMap[x][y];
 					if (elements[otherPixel.element].movable == true){
 						pixel.bhcontents.push(otherPixel);
@@ -1462,7 +1462,7 @@ elements.smasher = {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
-                if (!isEmpty(x,y)) {
+                if (!isEmpty(x,y, true)) {
 					var otherPixel = pixelMap[x][y];
 					breakPixel(otherPixel);
 					}
