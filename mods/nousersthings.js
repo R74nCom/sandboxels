@@ -1517,4 +1517,16 @@ elements.invisiblesupport = {
 		}
 	},
 	category: "powders",
+},
+elements.invisiblewall = {
+	color: "#000000",
+	behavior: behaviors.WALL,
+	tick: function(pixel){
+		if (currentElement == "invisiblewall"){
+			pixel.color = "rgb(15, 15, 15)";
+		} else {
+			pixel.color = "rgba(0, 0, 0, -1)";
+		}
+	},
+	category: "solids",
 }
