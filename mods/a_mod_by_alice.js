@@ -40494,6 +40494,847 @@ Make sure to save your command in a file if you want to add this preset again.`
 			});
 		};
 
+	//EXPERIMENTAL STRICTLY DIRECTIONAL WIRE ##
+
+		//The CMYK is symbolic
+		elements.start_test = {
+			color: "#dddddd",
+			category: "test",
+			behavior: behaviors.WALL,
+			insulate: true,
+			hardness: 1,
+			conduct: 1,
+			tick: function(pixel) {
+				if(pixel.charge) {
+					for(i = 0; i < adjacentCoords.length; i++) {
+						var pX = pixel.x;
+						var pY = pixel.y;
+						var nX = pixel.x + adjacentCoords[i][0];
+						var nY = pixel.y + adjacentCoords[i][1];
+
+						if(!isEmpty(nX,nY,true)) {
+							var newPixel = pixelMap[nX][nY];
+							var newInfo = elements[newPixel.element];
+							var newCategory = newInfo.category;
+							if(newCategory == elements[pixel.element].category) {
+								newPixel.value = 1;
+							};
+						};
+					};
+				};
+			},
+		};
+
+		elements.end_test = {
+			color: "#888888",
+			category: "test",
+			properties: {
+				value: 0,
+				offColor: null,
+				onColor: null,
+			},
+			behavior: behaviors.WALL,
+			insulate: true,
+			hardness: 1,
+			tick: function(pixel) {
+				if(pixel.offColor === null) {
+					pixel.offColor = _rgbHexCatcher(pixel.color)
+				};
+				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
+				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
+
+				if(pixel.value === 1) {
+					for(i = 0; i < adjacentCoords.length; i++) {
+						var pX = pixel.x;
+						var pY = pixel.y;
+						var nX = pixel.x + adjacentCoords[i][0];
+						var nY = pixel.y + adjacentCoords[i][1];
+
+						if(!isEmpty(nX,nY,true)) {
+							var newPixel = pixelMap[nX][nY];
+							var newInfo = elements[newPixel.element];
+							if(newInfo.conduct) {
+								//console.log(`cond ${nX} ${nY}`)
+								if(!newPixel.chargeCD) {
+									//console.log(`noCD ${nX} ${nY}`)
+									if(Math.random() < newInfo.conduct) {
+										//console.log(`rolled ${nX} ${nY}`)
+										if(isNaN(newPixel.charge) || newPixel.charge <= 1) {
+											//console.log(`dead ${nX} ${nY}`)
+											newPixel.charge = 1
+										}/* else {
+											console.log(`maybe if you had stanned loona ${nX} ${nY}`)
+										}*/;
+									};
+								};
+							};
+						};
+					};
+					pixel.value = 0;
+				};
+			},
+		};
+
+		elements.right_test = {
+			color: "#dddd22",
+			category: "test",
+			properties: {
+				value: 0,
+				offColor: null,
+				onColor: null,
+			},
+			behavior: behaviors.WALL,
+			insulate: true,
+			hardness: 1,
+			tick: function(pixel) {
+				if(pixel.offColor === null) {
+					pixel.offColor = _rgbHexCatcher(pixel.color)
+				};
+				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
+				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
+
+				var newPixelCoordOffset = [1, 0];
+				var pX = pixel.x;
+				var pY = pixel.y;
+				var nX = pixel.x+newPixelCoordOffset[0];
+				var nY = pixel.y+newPixelCoordOffset[1];
+
+				if(pixel.value === 1) {
+					if(!isEmpty(nX,nY,true)) {
+						var newPixel = pixelMap[nX][nY];
+						var newInfo = elements[newPixel.element];
+						var newCategory = newInfo.category;
+						if(newCategory == elements[pixel.element].category) {
+							newPixel.value = 1;
+						};
+					};
+					pixel.value = 0;
+				};
+			},
+		};
+
+		elements.left_test = {
+			color: "#dd22dd",
+			category: "test",
+			properties: {
+				value: 0,
+				offColor: null,
+				onColor: null,
+			},
+			behavior: behaviors.WALL,
+			insulate: true,
+			hardness: 1,
+			tick: function(pixel) {
+				if(pixel.offColor === null) {
+					pixel.offColor = _rgbHexCatcher(pixel.color)
+				};
+				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
+				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
+
+				var newPixelCoordOffset = [-1, 0];
+				var pX = pixel.x;
+				var pY = pixel.y;
+				var nX = pixel.x+newPixelCoordOffset[0];
+				var nY = pixel.y+newPixelCoordOffset[1];
+
+				if(pixel.value === 1) {
+					if(!isEmpty(nX,nY,true)) {
+						var newPixel = pixelMap[nX][nY];
+						var newInfo = elements[newPixel.element];
+						var newCategory = newInfo.category;
+						if(newCategory == elements[pixel.element].category) {
+							newPixel.value = 1;
+						};
+					};
+					pixel.value = 0;
+				};
+			},
+		};
+
+		elements.down_test = {
+			color: "#222222",
+			category: "test",
+			properties: {
+				value: 0,
+				offColor: null,
+				onColor: null,
+			},
+			behavior: behaviors.WALL,
+			insulate: true,
+			hardness: 1,
+			tick: function(pixel) {
+				if(pixel.offColor === null) {
+					pixel.offColor = _rgbHexCatcher(pixel.color)
+				};
+				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
+				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
+
+				var newPixelCoordOffset = [0, 1];
+				var pX = pixel.x;
+				var pY = pixel.y;
+				var nX = pixel.x+newPixelCoordOffset[0];
+				var nY = pixel.y+newPixelCoordOffset[1];
+
+				if(pixel.value === 1) {
+					if(!isEmpty(nX,nY,true)) {
+						var newPixel = pixelMap[nX][nY];
+						var newInfo = elements[newPixel.element];
+						var newCategory = newInfo.category;
+						if(newCategory == elements[pixel.element].category) {
+							newPixel.value = 1;
+						};
+					};
+					pixel.value = 0;
+				};
+			},
+		};
+
+		elements.up_test = {
+			color: "#22dddd",
+			category: "test",
+			properties: {
+				value: 0,
+				offColor: null,
+				onColor: null,
+			},
+			behavior: behaviors.WALL,
+			insulate: true,
+			hardness: 1,
+			tick: function(pixel) {
+				if(pixel.offColor === null) {
+					pixel.offColor = _rgbHexCatcher(pixel.color)
+				};
+				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
+				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
+
+				var newPixelCoordOffset = [0, -1];
+				var pX = pixel.x;
+				var pY = pixel.y;
+				var nX = pixel.x+newPixelCoordOffset[0];
+				var nY = pixel.y+newPixelCoordOffset[1];
+
+				if(pixel.value === 1) {
+					if(!isEmpty(nX,nY,true)) {
+						var newPixel = pixelMap[nX][nY];
+						var newInfo = elements[newPixel.element];
+						var newCategory = newInfo.category;
+						if(newCategory == elements[pixel.element].category) {
+							newPixel.value = 1;
+						};
+					};
+					pixel.value = 0;
+				};
+			},
+		};
+
+		elements.up_left_test = {
+			color: "#2222dd",
+			category: "test",
+			properties: {
+				value: 0,
+				offColor: null,
+				onColor: null,
+			},
+			behavior: behaviors.WALL,
+			insulate: true,
+			hardness: 1,
+			tick: function(pixel) {
+				if(pixel.offColor === null) {
+					pixel.offColor = _rgbHexCatcher(pixel.color)
+				};
+				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
+				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
+
+				var newPixelCoordOffsets = [[0, -1], [-1, 0]];
+
+				if(pixel.value === 1) {
+					for(i = 0; i < newPixelCoordOffsets.length; i++) {
+						var pX = pixel.x;
+						var pY = pixel.y;
+						var nX = pixel.x+newPixelCoordOffsets[i][0];
+						var nY = pixel.y+newPixelCoordOffsets[i][1];
+						if(!isEmpty(nX,nY,true)) {
+							var newPixel = pixelMap[nX][nY];
+							var newInfo = elements[newPixel.element];
+							var newCategory = newInfo.category;
+							if(newCategory == elements[pixel.element].category) {
+								newPixel.value = 1;
+							};
+						};
+						pixel.value = 0;
+					};
+				};
+			},
+		};
+
+		elements.up_left_test = {
+			color: "#2222dd",
+			category: "test",
+			properties: {
+				value: 0,
+				offColor: null,
+				onColor: null,
+			},
+			behavior: behaviors.WALL,
+			insulate: true,
+			hardness: 1,
+			tick: function(pixel) {
+				if(pixel.offColor === null) {
+					pixel.offColor = _rgbHexCatcher(pixel.color)
+				};
+				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
+				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
+
+				var newPixelCoordOffsets = [[0, -1], [-1, 0]];
+
+				if(pixel.value === 1) {
+					for(i = 0; i < newPixelCoordOffsets.length; i++) {
+						var pX = pixel.x;
+						var pY = pixel.y;
+						var nX = pixel.x+newPixelCoordOffsets[i][0];
+						var nY = pixel.y+newPixelCoordOffsets[i][1];
+						if(!isEmpty(nX,nY,true)) {
+							var newPixel = pixelMap[nX][nY];
+							var newInfo = elements[newPixel.element];
+							var newCategory = newInfo.category;
+							if(newCategory == elements[pixel.element].category) {
+								newPixel.value = 1;
+							};
+						};
+						pixel.value = 0;
+					};
+				};
+			},
+		};
+
+		elements.up_right_test = {
+			color: "#22dd22",
+			category: "test",
+			properties: {
+				value: 0,
+				offColor: null,
+				onColor: null,
+			},
+			behavior: behaviors.WALL,
+			insulate: true,
+			hardness: 1,
+			tick: function(pixel) {
+				if(pixel.offColor === null) {
+					pixel.offColor = _rgbHexCatcher(pixel.color)
+				};
+				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
+				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
+
+				var newPixelCoordOffsets = [[0, -1], [1, 0]];
+
+				if(pixel.value === 1) {
+					for(i = 0; i < newPixelCoordOffsets.length; i++) {
+						var pX = pixel.x;
+						var pY = pixel.y;
+						var nX = pixel.x+newPixelCoordOffsets[i][0];
+						var nY = pixel.y+newPixelCoordOffsets[i][1];
+						if(!isEmpty(nX,nY,true)) {
+							var newPixel = pixelMap[nX][nY];
+							var newInfo = elements[newPixel.element];
+							var newCategory = newInfo.category;
+							if(newCategory == elements[pixel.element].category) {
+								newPixel.value = 1;
+							};
+						};
+						pixel.value = 0;
+					};
+				};
+			},
+		};
+
+		elements.up_down_test = {
+			color: "#228888",
+			category: "test",
+			properties: {
+				value: 0,
+				offColor: null,
+				onColor: null,
+			},
+			behavior: behaviors.WALL,
+			insulate: true,
+			hardness: 1,
+			tick: function(pixel) {
+				if(pixel.offColor === null) {
+					pixel.offColor = _rgbHexCatcher(pixel.color)
+				};
+				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
+				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
+
+				var newPixelCoordOffsets = [[0, -1], [0, 1]];
+
+				if(pixel.value === 1) {
+					for(i = 0; i < newPixelCoordOffsets.length; i++) {
+						var pX = pixel.x;
+						var pY = pixel.y;
+						var nX = pixel.x+newPixelCoordOffsets[i][0];
+						var nY = pixel.y+newPixelCoordOffsets[i][1];
+						if(!isEmpty(nX,nY,true)) {
+							var newPixel = pixelMap[nX][nY];
+							var newInfo = elements[newPixel.element];
+							var newCategory = newInfo.category;
+							if(newCategory == elements[pixel.element].category) {
+								newPixel.value = 1;
+							};
+						};
+						pixel.value = 0;
+					};
+				};
+			},
+		};
+
+
+		elements.left_right_test = {
+			color: "#dd2222",
+			category: "test",
+			properties: {
+				value: 0,
+				offColor: null,
+				onColor: null,
+			},
+			behavior: behaviors.WALL,
+			insulate: true,
+			hardness: 1,
+			tick: function(pixel) {
+				if(pixel.offColor === null) {
+					pixel.offColor = _rgbHexCatcher(pixel.color)
+				};
+				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
+				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
+
+				var newPixelCoordOffsets = [[-1, 0], [1, 0]];
+
+				if(pixel.value === 1) {
+					for(i = 0; i < newPixelCoordOffsets.length; i++) {
+						var pX = pixel.x;
+						var pY = pixel.y;
+						var nX = pixel.x+newPixelCoordOffsets[i][0];
+						var nY = pixel.y+newPixelCoordOffsets[i][1];
+						if(!isEmpty(nX,nY,true)) {
+							var newPixel = pixelMap[nX][nY];
+							var newInfo = elements[newPixel.element];
+							var newCategory = newInfo.category;
+							if(newCategory == elements[pixel.element].category) {
+								newPixel.value = 1;
+							};
+						};
+						pixel.value = 0;
+					};
+				};
+			},
+		};
+
+		elements.left_down_test = {
+			color: "#882288",
+			category: "test",
+			properties: {
+				value: 0,
+				offColor: null,
+				onColor: null,
+			},
+			behavior: behaviors.WALL,
+			insulate: true,
+			hardness: 1,
+			tick: function(pixel) {
+				if(pixel.offColor === null) {
+					pixel.offColor = _rgbHexCatcher(pixel.color)
+				};
+				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
+				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
+
+				var newPixelCoordOffsets = [[-1, 0], [0, 1]];
+
+				if(pixel.value === 1) {
+					for(i = 0; i < newPixelCoordOffsets.length; i++) {
+						var pX = pixel.x;
+						var pY = pixel.y;
+						var nX = pixel.x+newPixelCoordOffsets[i][0];
+						var nY = pixel.y+newPixelCoordOffsets[i][1];
+						if(!isEmpty(nX,nY,true)) {
+							var newPixel = pixelMap[nX][nY];
+							var newInfo = elements[newPixel.element];
+							var newCategory = newInfo.category;
+							if(newCategory == elements[pixel.element].category) {
+								newPixel.value = 1;
+							};
+						};
+						pixel.value = 0;
+					};
+				};
+			},
+		};
+
+
+		elements.right_down_test = {
+			color: "#888822",
+			category: "test",
+			properties: {
+				value: 0,
+				offColor: null,
+				onColor: null,
+			},
+			behavior: behaviors.WALL,
+			insulate: true,
+			hardness: 1,
+			tick: function(pixel) {
+				if(pixel.offColor === null) {
+					pixel.offColor = _rgbHexCatcher(pixel.color)
+				};
+				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
+				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
+
+				var newPixelCoordOffsets = [[1, 0], [0, 1]];
+
+				if(pixel.value === 1) {
+					for(i = 0; i < newPixelCoordOffsets.length; i++) {
+						var pX = pixel.x;
+						var pY = pixel.y;
+						var nX = pixel.x+newPixelCoordOffsets[i][0];
+						var nY = pixel.y+newPixelCoordOffsets[i][1];
+						if(!isEmpty(nX,nY,true)) {
+							var newPixel = pixelMap[nX][nY];
+							var newInfo = elements[newPixel.element];
+							var newCategory = newInfo.category;
+							if(newCategory == elements[pixel.element].category) {
+								newPixel.value = 1;
+							};
+						};
+						pixel.value = 0;
+					};
+				};
+			},
+		};
+
+		elements.up_left_right_test = {
+			color: "#454545",
+			category: "test",
+			properties: {
+				value: 0,
+				offColor: null,
+				onColor: null,
+			},
+			behavior: behaviors.WALL,
+			insulate: true,
+			hardness: 1,
+			tick: function(pixel) {
+				if(pixel.offColor === null) {
+					pixel.offColor = _rgbHexCatcher(pixel.color)
+				};
+				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
+				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
+
+				var newPixelCoordOffsets = [[0, -1], [-1, 0], [1, 0]];
+
+				if(pixel.value === 1) {
+					for(i = 0; i < newPixelCoordOffsets.length; i++) {
+						var pX = pixel.x;
+						var pY = pixel.y;
+						var nX = pixel.x+newPixelCoordOffsets[i][0];
+						var nY = pixel.y+newPixelCoordOffsets[i][1];
+						if(!isEmpty(nX,nY,true)) {
+							var newPixel = pixelMap[nX][nY];
+							var newInfo = elements[newPixel.element];
+							var newCategory = newInfo.category;
+							if(newCategory == elements[pixel.element].category) {
+								newPixel.value = 1;
+							};
+						};
+						pixel.value = 0;
+					};
+				};
+			},
+		};
+
+		elements.left_right_down_test = {
+			color: "#882222",
+			category: "test",
+			properties: {
+				value: 0,
+				offColor: null,
+				onColor: null,
+			},
+			behavior: behaviors.WALL,
+			insulate: true,
+			hardness: 1,
+			tick: function(pixel) {
+				if(pixel.offColor === null) {
+					pixel.offColor = _rgbHexCatcher(pixel.color)
+				};
+				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
+				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
+
+				var newPixelCoordOffsets = [[-1, 0], [1, 0], [0, 1]];
+
+				if(pixel.value === 1) {
+					for(i = 0; i < newPixelCoordOffsets.length; i++) {
+						var pX = pixel.x;
+						var pY = pixel.y;
+						var nX = pixel.x+newPixelCoordOffsets[i][0];
+						var nY = pixel.y+newPixelCoordOffsets[i][1];
+						if(!isEmpty(nX,nY,true)) {
+							var newPixel = pixelMap[nX][nY];
+							var newInfo = elements[newPixel.element];
+							var newCategory = newInfo.category;
+							if(newCategory == elements[pixel.element].category) {
+								newPixel.value = 1;
+							};
+						};
+						pixel.value = 0;
+					};
+				};
+			},
+		};
+
+		elements.up_right_down_test = {
+			color: "#228822",
+			category: "test",
+			properties: {
+				value: 0,
+				offColor: null,
+				onColor: null,
+			},
+			behavior: behaviors.WALL,
+			insulate: true,
+			hardness: 1,
+			tick: function(pixel) {
+				if(pixel.offColor === null) {
+					pixel.offColor = _rgbHexCatcher(pixel.color)
+				};
+				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
+				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
+
+				var newPixelCoordOffsets = [[0, -1], [1, 0], [0, 1]];
+
+				if(pixel.value === 1) {
+					for(i = 0; i < newPixelCoordOffsets.length; i++) {
+						var pX = pixel.x;
+						var pY = pixel.y;
+						var nX = pixel.x+newPixelCoordOffsets[i][0];
+						var nY = pixel.y+newPixelCoordOffsets[i][1];
+						if(!isEmpty(nX,nY,true)) {
+							var newPixel = pixelMap[nX][nY];
+							var newInfo = elements[newPixel.element];
+							var newCategory = newInfo.category;
+							if(newCategory == elements[pixel.element].category) {
+								newPixel.value = 1;
+							};
+						};
+						pixel.value = 0;
+					};
+				};
+			},
+		};
+
+		elements.up_left_down_test = {
+			color: "#222288",
+			category: "test",
+			properties: {
+				value: 0,
+				offColor: null,
+				onColor: null,
+			},
+			behavior: behaviors.WALL,
+			insulate: true,
+			hardness: 1,
+			tick: function(pixel) {
+				if(pixel.offColor === null) {
+					pixel.offColor = _rgbHexCatcher(pixel.color)
+				};
+				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
+				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
+
+				var newPixelCoordOffsets = [[0, -1], [-1, 0], [0, 1]];
+
+				if(pixel.value === 1) {
+					for(i = 0; i < newPixelCoordOffsets.length; i++) {
+						var pX = pixel.x;
+						var pY = pixel.y;
+						var nX = pixel.x+newPixelCoordOffsets[i][0];
+						var nY = pixel.y+newPixelCoordOffsets[i][1];
+						if(!isEmpty(nX,nY,true)) {
+							var newPixel = pixelMap[nX][nY];
+							var newInfo = elements[newPixel.element];
+							var newCategory = newInfo.category;
+							if(newCategory == elements[pixel.element].category) {
+								newPixel.value = 1;
+							};
+						};
+						pixel.value = 0;
+					};
+				};
+			},
+		};
+
+	//RAY CLONER (like TPT CRAY) ##
+
+		function placeRegularlySpacedPixels(element,startX,startY,xSpacing,ySpacing,overwrite=false,stopAt=null,rayIgnore=[],spawnTemp=null,limit=1000) {
+			if(element.includes(",")) { element = element.split(",") };
+			var newElement = element;
+			if(isNaN(xSpacing) || isNaN(ySpacing)) {
+				throw new Error("Missing xSpacing or ySpacing");
+			};
+			if(xSpacing == 0 && ySpacing == 0) {
+				//pixel.color = convertColorFormats("#5F5F5F","rgb");
+				return false;
+			};
+			if(outOfBounds(startX,startY) /*|| (!overwrite && !isEmpty(startX,startY,false))*/) {
+				return false;
+			};	
+			var posX = startX;
+			var posY = startY;
+			var pixelsPlaced = 0;
+			//var tries = 0;
+			while(!outOfBounds(posX,posY) /*&& tries < 100*/) {
+				//tries++;
+				if(newElement instanceof Array) { newElement = newElement[Math.floor(Math.random() * newElement.length)] };
+				if(!elements[newElement]) {
+					//pixel.color = convertColorFormats("#FF5F5F","rgb");
+					console.error(`Nonexistent element ${newElement}`);
+					return false;
+				};
+				if(isEmpty(posX,posY,true)) {
+					createPixel(newElement,posX,posY);
+					if(spawnTemp !== null) { pixelMap[posX][posY].temp = spawnTemp };
+					pixelsPlaced++;
+				} else {
+					if(outOfBounds(posX,posY)) {
+						break;
+					} else {
+						if(!isEmpty(posX,posY,true)) {
+							var otherElement = pixelMap[posX][posY].element;
+							//console.log(tries,"tries");
+							//console.log("ri",rayIgnore);
+							if(rayIgnore) {
+								/*console.log(
+									rayIgnore instanceof Array,
+									otherElement,
+									otherElement == rayIgnore || rayIgnore.includes(otherElement)
+								);*/
+								if(rayIgnore instanceof Array) {
+									if(rayIgnore.includes(otherElement)) {
+										posX += xSpacing;
+										posY += ySpacing;
+										//console.log(posX, posY);
+										continue;
+									};
+								} else {
+									if(otherElement == rayIgnore) {
+										posX += xSpacing;
+										posY += ySpacing;
+										//console.log(posX,posY);
+										continue;
+									};
+								};
+							};
+							if(stopAt) {
+								if(stopAt instanceof Array) {
+									if(stopAt.includes(otherElement)) { break };
+								} else {
+									if(otherElement == stopAt) { break };
+								};
+							};
+							if(overwrite) {
+								changePixel(pixelMap[posX][posY],newElement)
+								if(spawnTemp !== null) {
+									pixelMap[posX][posY].temp = spawnTemp;
+								};
+								pixelsPlaced++
+							} else { break };
+						};
+					};
+				};
+				posX += xSpacing;
+				posY += ySpacing;
+				if(limit !== null && pixelsPlaced >= limit) {
+					return true;
+				};
+			};
+			return true;
+		};
+
+		elements.ray_cloner = {
+			properties: {
+				xSpacing: 0,
+				ySpacing: 0,
+				overwrite: false,
+				stopAt: null,
+				rayIgnore: [],
+				spawnAtPixelTemp: false,
+				maxPixels: 1000,
+				/*clone: "plasma",
+				xSpacing: 0,
+				ySpacing: 1,
+				overwrite: false,
+				stopAt: null,
+				rayIgnoreSelf: true,
+				spawnAtPixelTemp: true,
+				maxPixels: 1000,*/
+			},
+			//temp: 100000,
+			tick: function(pixel) {
+				storeFirstTouchingElement(pixel,"clone",true,true);
+				if(pixel.clone && pixel.charge) {
+						placeRegularlySpacedPixels(
+						pixel.clone,
+						pixel.x+pixel.xSpacing,
+						pixel.y+pixel.ySpacing,
+						pixel.xSpacing,
+						pixel.ySpacing,
+						pixel.overwrite,
+						pixel.stopAt,
+						pixel.rayIgnore,
+						pixel.spawnAtPixelTemp ? pixel.temp : null,
+						pixel.maxPixels
+					);
+					pixel.charge = 0
+				};
+			},
+			conduct: 1,
+			category: "machines",
+			state: "solid",
+			density: 3000,
+			insulate: true,
+			hardness: 0.8,
+			color: "#FFFF7F",
+			desc: `clone: Which element to place. Cannot be an array or comma-separated string, and will be chosen from the first pixel to touch it.<br/>
+xSpacing and ySpacing: Horizontal and vertical spacing between x pixels. Note that blocking is only checked at these intervals. An xSpacing of 0 with a ySpacing of 1 would give a straight line going down; xS1 and yS0 would give a line to the right.<br/>
+overwrite (default false): Whether to replace pixels the line goes into.<br/>
+stopAt (default null): Elements the line to stop at if it hits. Also applies to overwrite, and has no effect if set to null. Can be a string or an array.<br/>
+spawnAtPixelTemp (default false): Whether to place new pixels at the same temperature as this pixel.<br/>
+maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpacing are both less than 2, this corresponds to the pixel length of the line).
+
+<em>prop or old_prop are highly recommended to set pixel properties</em>`,
+		};
+
+	//NO GAMMA RAY SPAWNERS IN RANDOM ##
+
+		runAfterLoad(function() {
+			randomBlacklist = ["quark_matter", "liquid_neutronium", "molten_neutronium", "neutronium", "neutronium_gas"];
+			for(i = 0; i < randomBlacklist.length; i++) {
+				var element = randomBlacklist[i];
+				elements[element].excludeRandom = true;
+			};
+		});
+
+	//NO RADIOACTIVE ELEMENTS IN FALLING PIXEL EVENTS ##
+
+		window.addEventListener("load",function(){
+			var rads = Object.keys(elements).filter(function(name) {
+				return !!((elements[name].behavior ?? "undefined").toString().match(/C[RH]:[A-Za-z0-9_,]*radiation/))
+			}).concat(["radiation"]);
+
+			for(var i = 0; i < rads.length; i++) {
+				var radElem = rads[i];
+				if(randomEventChoices.falling_pixel.includes(radElem)) {
+					randomEventChoices.falling_pixel.splice(randomEventChoices.falling_pixel.indexOf(radElem),1)
+				}
+			};	
+		})
+
 	//END ##
 
 	elements.unknown = {
