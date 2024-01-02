@@ -1480,7 +1480,7 @@ elements.mixer = {
             var coord = squareCoords[i];
             var x = pixel.x+coord[0];
             var y = pixel.y+coord[1];
-            if (!isEmpty(x,y)) {
+            if (!isEmpty(x,y, true) && !elements[pixelMap[x][y].element].noMix) {
 				var otherPixel = pixelMap[x][y];
 				pixel.mixList.push(otherPixel);
 			}
