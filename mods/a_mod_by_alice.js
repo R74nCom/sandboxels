@@ -4331,11 +4331,28 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				// Draw the current pixels
 				var canvas = document.getElementById("game");
 				var ctx = canvas.getContext("2d");
-				ctx.clearRect(0,0,canvas.width,canvas.height);
-				if(settings.bg) {
-					ctx.fillStyle = settings.bg;
-					ctx.fillRect(0,0,canvas.width,canvas.height)
-				};
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				if(settings["bg"]) {
+					if(settings["bg"] instanceof Array) {
+						settings.bgAngle ??= 0;
+						var angle = (settings.bgAngle) * Math.PI / 180;
+						ctx.fillStyle = ctx.createLinearGradient(
+							0,
+							0,
+							canvas.width * Math.cos(angle) + 0,
+							canvas.height * Math.sin(angle)
+						);
+						var colors = settings["bg"];
+						for(i = 0; i < colors.length; i++) {
+							var color = colors[i];
+							var position = i / (colors.length - 1);
+							ctx.fillStyle.addColorStop(position,color);
+						};
+					} else {
+						ctx.fillStyle = settings["bg"];
+					};
+					ctx.fillRect(0, 0, canvas.width, canvas.height);
+				}
 				var pixelDrawList = pixelsFirst.concat(pixelsLast);
 				for (var i = 0; i < pixelDrawList.length; i++) {
 					pixel = pixelDrawList[i];
