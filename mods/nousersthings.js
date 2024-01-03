@@ -1433,10 +1433,8 @@ elements.molten_plutonium = {
     },
 	density: 16629,
 },
-elements.neutron.reactions = {
-	"uranium": { temp2:100 },
-	"plutonium": { temp2: 100 }
-},
+elements.neutron.reactions.plutonium = { temp2:100 };
+elements.neutron.reactions.molten_plutonium = { temp2:100 }
 elements.pn_explosion = {
     color: ["#ffb48f","#ffd991","#ffad91"],
     behavior: [
