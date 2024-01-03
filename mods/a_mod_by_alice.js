@@ -2193,6 +2193,20 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 
 	//ENABLE RUNNING CODE AFTER STATE ELEMENT AUTOGENERATION (runAfterAutogen) ##
 
+		resizeCanvas = function(newHeight,newWidth,newPixelSize,clear) {
+			var gameCanvas = document.getElementById("game");
+			var ctx = gameCanvas.getContext("2d");
+			ctx.canvas.width = newWidth;
+			ctx.canvas.height = newHeight;
+			document.getElementById("gameDiv").style.width = newWidth + "px";
+			pixelSize = newPixelSize;
+			pixelSizeHalf = newPixelSize/2;
+			height = Math.round(newHeight/newPixelSize)-1;
+			width = Math.round(newWidth/newPixelSize)-1;
+			mousePos = {x:width/2,y:height/2};
+			if (clear!==false) { clearAll(); }
+		}
+
 		function runAfterAutogen(func) {
 			runAfterAutogenList.push(func);
 		};
