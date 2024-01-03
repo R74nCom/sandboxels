@@ -6769,6 +6769,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					if(!isEmpty(nX,nY,true)) {
 						var newPixel = pixelMap[nX][nY]
 						var newElement = newPixel.element;
+						if((elements[pixel.element].ignore ?? []).includes(newElement)) { return };
 						if(newElement != pixel.element) {
 							changePixel(newPixel,pixel.changeTo)
 						};
@@ -6776,6 +6777,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				};
 			},
 			category:"special",
+			ignore: ["wall","cloner","liquid_cloner","slow_cloner","void","clone_powder","floating_cloner","void_first","converter"],
 			hardness: 1,
 		},
 
@@ -7232,6 +7234,19 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		}
 
 	//ASSORTED RAINBOW VARIANTS ##
+
+		elements.concoction.reactions.diorite_gravel = {
+			elem1: "static", elem2: null
+		};
+
+		elements.concoction.reactions.static = { //spread
+			elem1: "static", elem2: "static"
+		};
+
+		elements.concoction.state = "liquid";
+		
+		elements.static.reactions ??= {}; elements.static.reactions.concoction = { "elem1": "static", "elem2": "static", "chance":0.005},
+
 
 		/*function isRed(colorIn) {
 			var color = colorToHsl(colorIn,"json");
@@ -7982,11 +7997,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				}
 			},
 			reactions: {
-				dye: elements.rainbow.reactions.dye,
+				dye: elements.rainbow.reactions.dye, //7989 yay soshi!
 			},
 			behavior: behaviors.WALL,
 			state: "solid",
-			category: "rainbow variants", //7989 yay soshi!
+			category: "rainbow variants",
 		};
 
 		elements.quarkshimmer = {
@@ -13144,6 +13159,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 
 		elements.banana = {
 			color: "#ede84c",
+			isFood: true,
 			tick: function(pixel) {
 				if(pixel.attached) {
 					var attachCoords = [pixel.x+Math.sign(pixel.attachDirection), pixel.y];
@@ -17285,6 +17301,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 
 		elements.apple = {
 			color: ["#ad2333", "#b51616", "#d6782f", "#e3c634", "#99de31"],
+			isFood: true,
 			tick: function(pixel) {
 				if(pixel.attached) { //only attaches upwards
 					if(isEmpty(pixel.x,pixel.y-1,true)) {
@@ -20815,6 +20832,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					if(rockStateHigh.includes("vaporized_rainbow_magma")) { 
 						rockStateHigh.splice(rockStateHigh.indexOf("vaporized_rainbow_magma"));
 					};
+					if(rockStateHigh.includes("vaporized_crimson_magma")) { 
+						rockStateHigh.splice(rockStateHigh.indexOf("vaporized_crimson_magma"));
+					};
 					elements.molten_dirt.stateHigh = rockStateHigh; //assuming mixture
 
 					for(var sandIndex in sands) {
@@ -23150,8 +23170,32 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					};
 
 					standaloneBrokenFormMaker("iron","scrap",true,"powders","auto","auto","molten_iron",null).hidden = true;
-
+					standaloneBrokenFormMaker("chromium","scrap",true,"powders","auto","auto","molten_chromium",null).hidden = true;
 					standaloneBrokenFormMaker("amethyst","shard",true,"powders","auto","auto","molten_amethyst",["silica","silica","silica","silica","silica","silica","silica","silica","silica","iron_scrap"]).hidden = true;
+
+				//Corundum
+
+					elements.corundum = {
+						color: ["#e3e3e3", "#d9d9d9", "#cccccc", "#dbdbdb", "#f2f2f2"],
+						tempHigh: 2072,
+						stateHigh: "molten_alumina",
+						behavior: behaviors.POWDER,
+						category: "powders",
+						state: "solid",
+						density: 4020,
+						hardness: 0.9,
+						breakInto: "alumina",
+					};
+
+					elements.molten_alumina ??= {};
+					elements.molten_alumina.reactions ??= {};
+					elements.molten_alumina.reactions.iron_scrap = {elem1: "molten_sapphire", elem2: ["molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron",null] };
+					elements.molten_alumina.reactions.molten_iron = {elem1: "molten_sapphire", elem2: ["molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron",null] };
+					elements.molten_alumina.reactions.titanium_scrap = {elem1: "molten_sapphire", elem2: ["molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium",null] };
+					elements.molten_alumina.reactions.molten_titanium = {elem1: "molten_sapphire", elem2: ["molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium",null] };
+					elements.molten_alumina.reactions.chromium_scrap = {elem1: "molten_ruby", elem2: ["molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium",null] };
+					elements.molten_alumina.reactions.molten_chromium = {elem1: "molten_ruby", elem2: ["molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium",null] };					
+					elements.molten_alumina.stateLow = "corundum";
 
 				//Sapphire
 
@@ -23164,7 +23208,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						state: "solid",
 						density: 3980,
 						hardness: 0.9,
-					}
+					};
+
+					standaloneBrokenFormMaker("sapphire","shard",true,"powders","auto","auto","molten_sapphire",["alumina","alumina","alumina","alumina","alumina","alumina","alumina","alumina","alumina","iron_scrap","titanium_scrap"]).hidden = true;
 
 				//Ruby
 
@@ -23177,7 +23223,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						state: "solid",
 						density: 3980,
 						hardness: 0.9,
-					}
+					};
+
+					standaloneBrokenFormMaker("ruby","shard",true,"powders","auto","auto","molten_sapphire",["alumina","alumina","alumina","alumina","alumina","alumina","alumina","alumina","alumina","chromium_scrap"]).hidden = true;
 
 				//Spinel (kek)
 
@@ -24059,6 +24107,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						],
 						temperature: -13
 					};*/
+
+		runAfterLoad(function() {
+			elements.muddy_water.reactions.mud.elem2 = "soil_sediment";
+			elements.muddy_water.reactions.muddy_water.elem2 = "soil_sediment"
+		});
 
 	//PRIMITIVE IN-GAME CONSOLE ##
 	//featuring stars
@@ -34543,12 +34596,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 
 			//Bombs
 
-				runAfterAutogen(function() {
-					if(elementExists("vaporized_rock")) {
-						elements.molten_dirt.tempHigh = 3000;
-						elements.molten_dirt.stateHigh = "vaporized_rock";
-					};
-				});
+				elements.molten_dirt.tempHigh = 3000;
+				elements.molten_dirt.stateHigh = "vaporized_rock";
 
 			//Modless orphaned code that I don't want meeting La Maison
 
@@ -36212,6 +36261,204 @@ Make sure to save your command in a file if you want to add this preset again.`
 			};
 			return input;
 		};
+
+	//WEATHER MACHINE ##
+
+		function pixelRain(element,density=0.1,rainRelativeBottom=0.35,rainRelativeTop=0) {
+			for(i = 1; i < width; i++) {
+				for(j = Math.round(height * rainRelativeTop); j < Math.round(height * rainRelativeBottom); j++) {
+					if(Math.random() < density && isEmpty(i,j)) {
+						while(element instanceof Array) { element = randomChoice(element) };
+						createPixel(element,i,j)
+					}
+				}
+			}
+		};
+
+		generateCloud("water",3,false);
+		generateCloud("blood",0,false);
+		generateCloud("snow",3,false);
+		generateCloud("sand",1,false);
+
+		_weatherElems = ["cloud", "rain_cloud", "heaviest_water_cloud", "blood_cloud", "snow_cloud", "heaviest_snow_cloud", "hail_cloud", "hail_cloud", "fireball", "fire_cloud", "magma_cloud", "heavy_sand_cloud", "electric", "lightning"];
+
+		elements.weather_controller = {
+			color: "#ebdf91",
+			behavior: [
+				"XX|M2 AND SA|XX",
+				"SA|XX|SA",
+				"XX|M1|XX"
+			],
+			breakInto: ["steel_scrap","iron_scrap","copper_scrap","gold_scrap","cloud","emerald","magic"],
+			tempHigh: 50000,
+			stateHigh: ["molten_steel","molten_iron","molten_copper","molten_gold","hydrogen","oxygen","molten_aluminum","silica_gas","magic"],
+			tick: function(pixel) {
+				if(!pixel.charge) { return };
+				if(pixel.charge) {
+					if(isEmpty(pixel.x,pixel.y+1,true)) { return };
+					var pixelUnder = pixelMap[pixel.x]?.[pixel.y+1];
+					if(!pixelUnder) { return };
+					switch(pixelUnder.element) {
+						case "cloud":
+							pixelRain("cloud",0.1,0.3);
+							break;
+						case "steam":
+							pixelRain("cloud",0.2,0.35);
+							break;
+						case "rain_cloud":
+							pixelRain("rain_cloud",0.2,0.25);
+							break;
+						case "water":
+							pixelRain("rain_cloud",0.4,0.3);
+							break;
+						case "ketchup":
+							pixelRain("ketchup_cloud",0.3,0.35);
+							break;
+						case "jinsoulite_powder":
+						case "jinsoulite_gas":
+						case "molten_jinsoulite":
+						case "jinsoulite":
+							pixelRain("heaviest_water_cloud",0.8,0.35);
+							break;
+						case "blood":
+							pixelRain("blood_cloud",0.2,0.25);
+							break;
+						case "snow":
+							pixelRain("snow_cloud",0.2,0.25);
+							break;
+						case "packed_snow":
+							pixelRain("snow_cloud",0.4,0.3);
+							break;
+						case "haseulite":
+						case "haseulite_powder":
+						case "molten_haseulite":
+						case "haseulite_gas":
+							pixelRain("heaviest_snow_cloud",0.5,0.35);
+							pixelRain("diamond",0.002,0.35);
+							pixelRain("hail_cloud",0.05,0.2);
+							break;
+						case "liquid_nitrogen":
+							pixelRain("liquid_nitrogen",	0.3,1);
+							pixelRain("liquid_oxygen",		0.1,1);
+							pixelRain("liquid_argon",		0.004,1);
+							currentPixels.forEach(pixel => pixel.temp = Math.min(pixel.temp,elements.liquid_nitrogen.tempLow - 5));
+							break;
+						case "ice":
+							pixelRain("hail_cloud",0.2,0.3);
+							break;
+						case "fire":
+							pixelRain("fire_cloud",0.15,0.3);
+							break;
+						case "magma":
+							pixelRain("magma_cloud",0.2,0.3);
+							break;
+						case "sand":
+							pixelRain("heavy_sand_cloud",0.4,1,0.2);
+							pixelRain("sand",0.05,1,0.2);
+							break;
+						case "battery":
+							pixelRain("electric",0.3,0.35);
+							pixelRain("lightning",0.002,0.2);
+							break;
+						case "sun":
+						case "stellar_plasma":
+						case "liquid_stellar_plasma":
+						case "plasma":
+							settings.bg = "#93c3e1"
+							break;
+						case "moonrock":
+							settings.bg = "#000000";
+							break;
+						case "oxygen":							
+							for(var i in "six  ") {
+								currentPixels.forEach(function(pixel) {
+									if(_weatherElems.includes(pixel.element)) {
+										deletePixel(pixel.x,pixel.y);
+										return
+									}
+								});
+							};
+
+							currentPixels.forEach(function(pixel) {
+								var data = elements[pixel.element];
+								var tl = data.tempLow;
+								var th = data.tempHigh;
+								var noTL = (typeof(tl) == "undefined");
+								var noTH = (typeof(th) == "undefined");
+								if(noTL && noTH) {
+									pixel.temp = airTemp ?? 20
+								} else if(noTL && !noTH) {
+									if(th < airTemp) {
+										pixel.temp = th - 10;
+									} else {
+										pixel.temp = airTemp
+									}
+								} else if(!noTL && noTH) {
+									if(tl > airTemp) {
+										if(tl == Infinity) {
+											pixel.temp = airTemp
+										} else {
+											pixel.temp = tl + 10
+										}
+									} else {
+										pixel.temp = airTemp
+									}
+								};
+								return
+							});
+							break;
+					};
+					if(pixelUnder) { deletePixel(pixelUnder.x,pixelUnder.y) };
+					delete pixel.charge;
+					pixel.chargeCD = 4;
+					return true;
+				}
+			},
+			conduct: 1,
+			category: "machines",
+			hardness: 0.6
+		};
+
+	//KETCUP ##
+
+		elements.ketcup = {
+			color: "#ab2513",
+			behavior: behaviors.LIQUID,
+			reactions: {
+				"rust": { elem2:"iron", chance:0.01 },
+				"oxidized_copper": { elem2:"copper", chance:0.01 },
+			},
+			viscosity: 50000,
+			tempHigh: 260,
+			stateHigh: ["vinegar","steam","salt","sugar"],
+			category:"liquids",
+			state: "liquid",
+			density: 1235,
+			stain: 0.05,
+			isFood: true
+		};
+
+		elements.ruphire = {
+			color: ["#7C319B", "#BC4F80", "#692287", "#B13B77", "#772A94"],
+			tempHigh: 2040,
+			behavior: behaviors.POWDER,
+			category: "powders",
+			state: "solid",
+			density: 3980,
+			hardness: 0.9,
+		};
+
+		standaloneBrokenFormMaker("ruphire","shard",true,"powders","auto","auto","molten_ruphire",["alumina","alumina","alumina","alumina","alumina","alumina","alumina","alumina","alumina","iron_scrap","titanium_scrap","chromium_scrap","chromium_scrap"]).hidden = true;
+
+		elements.molten_ruby ??= {};
+		elements.molten_ruby.reactions ??= {};
+		elements.molten_sapphire ??= {};
+		elements.molten_sapphire.reactions ??= {};
+		elements.molten_ruby.reactions.molten_sapphire = {
+			elem1: "molten_ruphire",
+			elem2: "molten_ruphire"
+		}; //they don't make garnet :'(
+		elements.molten_sapphire.reactions.molten_ruby = elements.molten_ruby.reactions.molten_sapphire;
 
 	//REPLACER TOOL ##
 
