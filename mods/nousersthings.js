@@ -1,19 +1,21 @@
+// Gallium is the best element
 elements.caesium = {
-color: ["#917921", "#ebcb59", "#a48b2d", "#d6b84c"],
-behavior: behaviors.WALL,
-category: "solids",
-state: "solid",
-tempHigh: 28.44,
-stateHigh: "molten_caesium",
-density: 1873,
-reactions: {
-		"water": { "elem1":"pop", "elem2":"hydrogen" },
-		"sugar_water": { "elem1":"pop", "elem2":"hydrogen" },
-		"dirty_water": { "elem1":"pop", "elem2":"hydrogen" },
-		"pool_water": { "elem1":"pop", "elem2":"hydrogen" },
-		"salt_water": { "elem1":"pop", "elem2":"hydrogen" },
-		"seltzer":  { "elem1":"pop", "elem2":"hydrogen" },
-	}
+	color: ["#917921", "#ebcb59", "#a48b2d", "#d6b84c"],
+	behavior: behaviors.WALL,
+	category: "solids",
+	state: "solid",
+	tempHigh: 28.44,
+	stateHigh: "molten_caesium",
+	density: 1873,
+	conduct: 0.90,
+	reactions: {
+			"water": { "elem1":"pop", "elem2":"hydrogen" },
+			"sugar_water": { "elem1":"pop", "elem2":"hydrogen" },
+			"dirty_water": { "elem1":"pop", "elem2":"hydrogen" },
+			"pool_water": { "elem1":"pop", "elem2":"hydrogen" },
+			"salt_water": { "elem1":"pop", "elem2":"hydrogen" },
+			"seltzer":  { "elem1":"pop", "elem2":"hydrogen" },
+		}
 },
 elements.molten_caesium = {
 	color: ["#735c0a", "#a68e37", "#7e6715", "#9b832e"],
@@ -26,6 +28,7 @@ elements.molten_caesium = {
 	stateHigh: "caesium_vapor",
 	density: 1843,
 	temp: 29,
+	conduct: 0.90,
 	reactions: {
 		"water": { "elem1":"pop", "elem2":"hydrogen" },
 		"sugar_water": { "elem1":"pop", "elem2":"hydrogen" },
@@ -80,7 +83,8 @@ elements.technetium = {
 	state: "solid",
 	tempHigh: 2157,
 	stateHigh: "molten_technetium",
-	density: 11500
+	density: 11500,
+	conduct: 0.9
 },
  elements.molten_technetium = {
 	color: ["#d16b42", "#da904c", "#dfb360", "#e2d57f"],
@@ -303,7 +307,7 @@ elements.roomtemper = {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
-                if (!isEmpty(x,y)) {
+                if (!isEmpty(x,y, true)) {
 					if(pixelMap[x][y].temp < -230) {
                     pixelMap[x][y].temp = (pixelMap[x][y].temp + 7)
 					} else if(pixelMap[x][y].temp > 270) {
@@ -330,7 +334,7 @@ elements.destroyable_roomtemper = {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
-                if (!isEmpty(x,y)) {
+                if (!isEmpty(x,y, true)) {
 					if(pixelMap[x][y].temp < -230) {
                     pixelMap[x][y].temp = (pixelMap[x][y].temp + 7)
 					} else if(pixelMap[x][y].temp > 270) {
@@ -361,7 +365,7 @@ elements.customtemper = {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
-                if (!isEmpty(x,y)) {
+                if (!isEmpty(x,y, true)) {
 					if(pixelMap[x][y].temp < (pixel.temp - 250)) {
                     pixelMap[x][y].temp = (pixelMap[x][y].temp + 7)
 					} else if(pixelMap[x][y].temp > (pixel.temp + 250)) {
@@ -388,7 +392,7 @@ elements.destroyable_customtemper = {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
-                if (!isEmpty(x,y)) {
+                if (!isEmpty(x,y, true)) {
 					if(pixelMap[x][y].temp < (pixel.temp - 250)) {
                     pixelMap[x][y].temp = (pixelMap[x][y].temp + 7)
 					} else if(pixelMap[x][y].temp > (pixel.temp + 250)) {
@@ -1337,7 +1341,7 @@ elements.converter = {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
-                if (!isEmpty(x,y)) {
+                if (!isEmpty(x,y, true)) {
 					var otherPixel = pixelMap[x][y];
 					if ((otherPixel.element == pixel.specialturn || pixel.specialturn == "all") && !elements.converter.ignore.includes(otherPixel.element)){
 						changePixel(otherPixel, pixel.contype)
@@ -1370,7 +1374,7 @@ elements.blackhole_storage = {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
-                if (!isEmpty(x,y) && (!pixel.charge && !pixel.chargeCD)) {
+                if (!isEmpty(x,y, true) && (!pixel.charge && !pixel.chargeCD)) {
 					var otherPixel = pixelMap[x][y];
 					if (elements[otherPixel.element].movable == true){
 						pixel.bhcontents.push(otherPixel);
@@ -1407,7 +1411,6 @@ elements.plutonium = {
 	},
 	reactions: {
         "neutron": { elem1:"pn_explosion", tempMin:400, chance:0.1 },
-		"neutron": { temp1: 100, temp2: 100 },
     },
 	density: 19186,
 }
@@ -1430,10 +1433,8 @@ elements.molten_plutonium = {
     },
 	density: 16629,
 },
-elements.neutron.reactions = {
-	"uranium": { temp2:100 },
-	"plutonium": { temp2: 100 }
-},
+elements.neutron.reactions.plutonium = { temp2:100 };
+elements.neutron.reactions.molten_plutonium = { temp2:100 }
 elements.pn_explosion = {
     color: ["#ffb48f","#ffd991","#ffad91"],
     behavior: [
@@ -1459,7 +1460,7 @@ elements.smasher = {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
-                if (!isEmpty(x,y)) {
+                if (!isEmpty(x,y, true)) {
 					var otherPixel = pixelMap[x][y];
 					breakPixel(otherPixel);
 					}
@@ -1477,7 +1478,7 @@ elements.mixer = {
             var coord = squareCoords[i];
             var x = pixel.x+coord[0];
             var y = pixel.y+coord[1];
-            if (!isEmpty(x,y)) {
+            if (!isEmpty(x,y, true) && !elements[pixelMap[x][y].element].noMix) {
 				var otherPixel = pixelMap[x][y];
 				pixel.mixList.push(otherPixel);
 			}
@@ -1497,4 +1498,33 @@ elements.mixer = {
                 }
 	},
 	movable: false,
+},
+elements.invisiblesupport = {
+	color: "#000000",
+	behavior: behaviors.WALL,
+	tick: function(pixel){
+		var x = pixel.x
+		var y = pixel.y
+		if (currentElement == "invisiblesupport"){
+			pixel.color = "rgb(15, 15, 15)";
+		} else {
+			pixel.color = "rgba(0, 0, 0, -1)";
+		}
+		if ((isEmpty(x-1, y) || isEmpty(x+1,y)) && isEmpty(x,y+1)){
+			deletePixel(pixel.x, pixel.y);
+		}
+	},
+	category: "powders",
+},
+elements.invisiblewall = {
+	color: "#000000",
+	behavior: behaviors.WALL,
+	tick: function(pixel){
+		if (currentElement == "invisiblewall"){
+			pixel.color = "rgb(15, 15, 15)";
+		} else {
+			pixel.color = "rgba(0, 0, 0, -1)";
+		}
+	},
+	category: "solids",
 }
