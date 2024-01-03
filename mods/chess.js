@@ -1396,9 +1396,7 @@ class GameScreen {
     }
 
     onKey(ev) {
-        if (!this.menuScreen) {
-            player.update(ev);
-        } else {
+        if (this.menuScreen) {
             this.menuScreen.onKey(ev);
         }
     }
