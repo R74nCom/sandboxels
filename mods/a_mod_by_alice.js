@@ -2205,7 +2205,28 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			width = Math.round(newWidth/newPixelSize)-1;
 			mousePos = {x:width/2,y:height/2};
 			if (clear!==false) { clearAll(); }
-		}
+		};
+
+		autoResizeCanvas = function(clear) {
+			if (window.innerWidth < 700) {
+				pixelSize = 5;
+			} else {
+				pixelSize = 6;
+			}
+			if (window.innerWidth < 700) {
+				var newWidth = Math.ceil(window.innerWidth / pixelSize) * pixelSize;
+				var newHeight = Math.ceil(window.innerHeight*0.6 / pixelSize) * pixelSize;
+			}
+			else {
+				var newWidth  = Math.ceil(window.innerWidth*0.9 / pixelSize) * pixelSize;
+				var newHeight = Math.ceil(window.innerHeight*0.675 / pixelSize) * pixelSize;
+			}
+			// If the new width is greater than 1000, set it to 1000
+			if (newWidth > 1000) { newWidth = 1000; }
+			// If we are on a desktop and the new height is greater than 500, set it to 500
+			if (window.innerWidth > 1000 && newHeight > 500) { newHeight = 500; }
+			resizeCanvas(newHeight,newWidth,pixelSize,clear);
+		};
 
 		function runAfterAutogen(func) {
 			runAfterAutogenList.push(func);
@@ -2727,6 +2748,85 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			window.addEventListener("mousemove", mouseMove);
 			gameCanvas.addEventListener("touchmove", mouseMove, { passive: false });
 			gameCanvas.addEventListener("wheel", wheelHandle);
+			gameCanvas.ontouchstart = function(e) {
+				if (e.touches) e = e.touches[0];
+				return false;
+			}
+			gameCanvas.addEventListener("dragenter", function(e){e.stopPropagation(); e.preventDefault();})
+			gameCanvas.addEventListener("dragover", function(e){e.stopPropagation(); e.preventDefault();})
+			gameCanvas.addEventListener("drop", function(e){
+				e.stopPropagation();
+				e.preventDefault();
+				var url = e.dataTransfer.getData('text/plain');
+				if (url) {
+					var img = new Image();
+					img.onload = function(){placingImage = img; placeImage(); placingImage = null;}
+					img.src = url;
+				} else {
+					if (!e.dataTransfer.files || e.dataTransfer.files.length === 0) { return; }
+					var file = e.dataTransfer.files[0];
+					// for img file(s), read the file & draw to canvas
+					if (file.type.indexOf('image/') !== -1) {
+						var img = document.createElement("img");
+						img.classList.add("obj");
+						img.file = file;
+						var reader = new FileReader();
+						reader.onload = (function(aImg){
+							return function(e) {
+								aImg.onload=function(){
+									placingImage = aImg;
+									placeImage();
+									placingImage = null;
+								}
+								// e.target.result is a dataURL for the image
+								aImg.src = e.target.result;
+							}; 
+						})(img);
+						reader.readAsDataURL(file);
+					}
+					else if (file.name.indexOf(".sbxls") !== -1 || file.name.indexOf(".json") !== -1) {
+						if (currentPixels.length!==0 && !confirm("Clear this scene and load save file?")) { return }
+						var reader = new FileReader();
+						reader.onload = function(e) {
+							loadSave(JSON.parse(e.target.result));
+						}
+						reader.readAsText(file);
+					}
+				}
+			}, false);
+			// handle pasting
+			window.addEventListener("paste", function(e){
+				if (e.clipboardData) {
+					var items = e.clipboardData.items;
+					if (items.length === 0 && e.clipboardData.files.length !== 0) {
+						items = e.clipboardData.files;
+					}
+					if (!items) { return; }
+					var item = items[items.length-1];
+					console.log(item);
+					if (item.type.indexOf('image/') !== -1) {
+						var blob = item.getAsFile();
+						var URLObj = window.URL || window.webkitURL;
+						var source = URLObj.createObjectURL(blob);
+						var img = new Image();
+						img.onload = function(){placingImage = img; placeImage(); placingImage = null;}
+						img.src = source;
+					}
+					else if (item.type === "" || item.type.indexOf('application/json') !== -1) {
+						if (currentPixels.length!==0 && !confirm("Clear this scene and load save file?")) { return }
+						var reader = new FileReader();
+						reader.onload = function(e) {
+							loadSave(JSON.parse(e.target.result));
+						}
+						reader.readAsText(item.getAsFile());
+					}
+				}
+			}, false);
+			window.onbeforeunload = function(){
+				if (currentPixels.length > 0){
+					return 'Are you sure you want to leave?';
+				}
+			};
 		};
 
 		function generateModManagerList() {
