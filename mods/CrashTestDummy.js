@@ -1,8 +1,6 @@
-// This new crashtestdummy mod will be more used for code that I'm not sure will actually work
-elements.sandreplacer = {
-    color: "#ff80ff",
-    tool: function(pixel) {
-        pixel.element = "sand"
-    },
-    category: "tools",
+elements.hello_world = {
+	color: "#ff0000",
+	behavior: behaviors.WALL,
+	category: "land",
+	state: "solid",
 };
