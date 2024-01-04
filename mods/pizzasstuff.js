@@ -1,39 +1,39 @@
-elements.Fruit_Slushy = {
+elements.fruit_slushy = {
 	color: "#b867cf",
-	behavior: behaviors.SUPERFLUID,
+	behavior: behaviors.LIQUID,
 	category: "food",
 	state: "solid",
 	hidden: "TRUE",
 };
 
-elements.Chocolate_Slushy = {
+elements.chocolate_slushy = {
 	color: "#4f2e16",
-	behavior: behaviors.SUPERFLUID,
+	behavior: behaviors.LIQUID,
 	category: "food",
 	state: "solid",
 	hidden: "TRUE",
 };
 
-elements.Chocolate_Sauce = {
+elements.chocolate_sauce = {
 	color: "#754828",
-	behavior: behaviors.SUPERFLUID,
+	behavior: behaviors.LIQUID,
 	category: "food",
 	state: "solid",
 	hidden: "TRUE",
 };
 
-elements.Cooking_Oil = {
+elements.cooking_oil = {
 	color: "#c4ab4f",
-	behavior: behaviors.SUPERFLUID,
+	behavior: behaviors.LIQUID,
 	category: "liquids",
 	state: "solid",
 	reactions: {
-        "meat": { elem1: null, elem2: "Chicken_Nuggets" },
-		"potato": { elem1: null, elem2: "Fries" },
+        "meat": { elem1: null, elem2: "chicken_nuggets" },
+		"potato": { elem1: null, elem2: "fries" },
 	}
 };
 
-elements.Chicken_Nuggets = {
+elements.chicken_nuggets = {
 	color: "#967242",
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
@@ -41,7 +41,7 @@ elements.Chicken_Nuggets = {
 	hidden: "TRUE",
 };
 
-elements.Fries = {
+elements.fries = {
 	color: "#ebba34",
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
@@ -49,28 +49,65 @@ elements.Fries = {
 	hidden: "TRUE",
 };
 
+elements.rose_sauce = {
+	color: "#f0340e",
+	behavior: behaviors.LIQUID,
+	category: "food",
+	state: "solid",
+	hidden: "TRUE",
+};
 
-elements.Smashed_Ice = {
+elements.mayo = {
+	color: "#f7d00c",
+	behavior: behaviors.LIQUID,
+	category: "food",
+	state: "solid",
+};
+
+elements.smashed_ice = {
 	color: "#c3d4e6",
-	behavior: behaviors.SUPERFLUID,
+	behavior: behaviors.LIQUID,
 	category: "food",
 	state: "solid",
 	 reactions: {
-        "grape": { elem1: null, elem2: "Fruit_Slushy" },
-		"chocolate": { elem1: null, elem2: "Chocolate_Slushy" },
+        "grape": { elem1: null, elem2: "fruit_slushy" },
+		"chocolate": { elem1: null, elem2: "chocolate_slushy" },
+		"juice": { elem1: null, elem2: "fruit_slushy" },
+		"chocolate_sauce": { elem1: null, elem2: "chocolate_slushy" },
     },
 };
 
-elements.Moss = {
+elements.moss = {
 	color: "#389639",
 	behavior: behaviors.STURDYPOWDER,
 	category: "life",
 	state: "solid",
+	burn: 5,
+	burnTime: 15,
+	density: 1400,
+	breakInto: "dead_plant",
+	tempHigh: 120,
+	stateHigh: "dead_plant",
+	tempLow: -4,
+	stateLow: "frozen_plant",
+	
+	reactions: {
+        "dna": { elem1: "moth", elem2: null },
+	}
+	
 };
 
-elements.Moth = {
+elements.moth = {
 	color: "#665233",
 	behavior: behaviors.BOUNCY,
 	category: "life",
 	state: "solid",
 };
+if (!elements.lettuce.reactions) elements.lettuce.reactions = {};
+elements.lettuce.reactions.ice_cream = { elem1: "moss", elem2: null }
+
+if (!elements.yolk.reactions) elements.yolk.reactions = {};
+elements.yolk.reactions.vinegar = { elem1: null, elem2: "mayo" }
+
+if (!elements.ketchup.reactions) elements.ketchup.reactions = {};
+elements.ketchup.reactions.mayo = { elem1: "rose_sauce", elem2: null }
