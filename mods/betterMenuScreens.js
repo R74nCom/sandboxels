@@ -144,7 +144,7 @@ class MenuScreen {
 
     /**
      * Sets screen title ID
-     * @param {string} [id] Screen title. "New Menu Screen" by default
+     * @param {string} [id] Screen title element ID
      */
     setTitleId(id) {
         this.titleId = id;
