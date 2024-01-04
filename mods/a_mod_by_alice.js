@@ -3669,8 +3669,13 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			}
 		}
 
-		//New elements
+		//No changeTemp for fire=>smoke
+		elements.fire.tick = function(pixel){
+			behaviors.UL_UR_OPTIMIZED(pixel);
+			if (!pixel.del && settings.burn===0 && (pixelTicks-pixel.start > 70) && Math.random() < 0.1 ) { changePixel(pixel,"smoke",false) }
+		};
 
+		//New elements
 		elements.cold_fire.burning = true;
 		elements.cold_fire.burnTempChange = -1;
 		elements.cold_fire.burnTime = 25;
@@ -13432,12 +13437,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				elements.lamp_oil.density = 810;
 				elements.lamp_oil.name = "kerosene";
 				elements.lamp_oil.forceAutoGen = true;
+				elements.lamp_oil.burnInto = "smoke,smoke,fire,fire,fire,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(",");
 				elements.lamp_oil_gas = {
 					name: "kerosene gas",
 					burn: 100,
 					density: 4.5,
 					tick: elements.lamp_oil.tick,
-					burnInto: "explosion,fire,fire,fire,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(",")
+					burnInto: "explosion,smoke,smoke,fire,fire,fire,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(",")
 				};
 
 				elements.gasoline = {
@@ -13463,7 +13469,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					tempLow: -60,
 					burn: 20,
 					burnTime: 500,
-					burnInto: "explosion,fire,fire,fire,fire,ash,ash,carbon_monoxide,carbon_monoxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(","),
+					burnInto: "fire,fire,fire,fire,ash,ash,carbon_monoxide,carbon_monoxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(","),
 					viscosity: 7.04,
 					state: "liquid",
 					density: 755,
@@ -13501,7 +13507,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					forceAutoGen: true,
 					burn: 80,
 					burnTime: 500,
-					burnInto: "explosion,fire,fire,fire,fire,ash,ash,carbon_monoxide,carbon_monoxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(","),
+					burnInto: "fire,fire,fire,fire,ash,ash,carbon_monoxide,carbon_monoxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(","),
 					viscosity: 5.77,
 					state: "liquid",
 					density: 740
@@ -13535,7 +13541,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					tempLow: -25,
 					burn: 20,
 					burnTime: 500,
-					burnInto: "explosion,fire,fire,fire,fire,ash,ash,carbon_monoxide,carbon_monoxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(","),
+					burnInto: "fire,fire,fire,fire,ash,ash,carbon_monoxide,carbon_monoxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(","),
 					viscosity: 7.04,
 					state: "liquid",
 					density: 755,
@@ -13564,7 +13570,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					burn: 20,
 					burnTime: 600,
 					forceAutoGen: true,
-					burnInto: "explosion,fire,fire,fire,ash,ash,carbon_monoxide,carbon_monoxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(","),
+					burnInto: "fire,fire,fire,ash,ash,carbon_monoxide,carbon_monoxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(","),
 					viscosity: 7.04,
 					state: "liquid",
 					density: 800,
@@ -13580,6 +13586,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 
 				elements.heavy_fuel_oil = {
 					color: "#1c1a18",
+					stain: 0.3,
 					behavior: behaviors.LIQUID,
 					tick: function(pixel) {
 						if (pixel.temp > 407 && !pixel.burning) {
@@ -13613,7 +13620,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					viscosity: 700,
 					burnTime: 800,
 					fireElement: ["fire","fire","fire","smoke","smoke","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_monoxide","carbon_monoxide","carbon_monoxide","sulfur_dioxide","sulfur_trioxide_gas","poison_gas"],
-					burnInto: "explosion,fire,fire,fire,fire,fire,fire,ash,ash,ash,carbon_monoxide,carbon_monoxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,poison_gas".split(","),
+					burnInto: "fire,fire,fire,fire,fire,fire,ash,ash,ash,carbon_monoxide,carbon_monoxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,poison_gas".split(","),
 					viscosity: 7.04,
 					state: "liquid",
 					density: 755,
@@ -22518,28 +22525,30 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 
 						newConcreteTick = elements.concrete.tick;
 
-						if(elements.hanging_concrete) {
-							elements.hanging_concrete.tick = function(pixel) {
-								newConcreteTick(pixel);
+						runAfterLoad(function() { //mamma mia that's some tasty spaghetti
+							if(elements.hanging_concrete) {
+								elements.hanging_concrete.tick = function(pixel) {
+									newConcreteTick(pixel);
+								};
 							};
-						};
 
-						if(elements.attach_concrete) {
-							oldAttachConcreteTick = elements.attach_concrete.tick ;
-							elements.attach_concrete.tick = function(pixel) {
-								oldAttachConcreteTick(pixel);
-								newConcreteTick(pixel);
+							if(elements.attach_concrete) {
+								oldAttachConcreteTick = elements.attach_concrete.tick ;
+								elements.attach_concrete.tick = function(pixel) {
+									oldAttachConcreteTick(pixel);
+									newConcreteTick(pixel);
+								};
 							};
-						};
 
-						if(elements.crumbling_concrete) {
-							oldCrumblingConcreteTick = elements.crumbling_concrete.tick ;
-							newConcreteTick = elements.concrete.tick ;
-							elements.crumbling_concrete.tick = function(pixel) {
-								oldCrumblingConcreteTick(pixel);
-								newConcreteTick(pixel);
-							};
-						};
+							if(elements.crumbling_concrete) {
+								oldCrumblingConcreteTick = elements.crumbling_concrete.tick ;
+								newConcreteTick = elements.concrete.tick ;
+								elements.crumbling_concrete.tick = function(pixel) {
+									oldCrumblingConcreteTick(pixel);
+									newConcreteTick(pixel);
+								}
+							}
+						});
 
 					//Crimson
 						//Made-up lore: Crimson naturally drives rocks towards a somewhat mafic comp.
@@ -23997,14 +24006,20 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						breakInto: "alumina",
 					};
 
+
+					elements.molten_titanium ??= {}; elements.molten_titanium.tempHigh = 3287;
+					elements.molten_iron ??= {}; elements.molten_iron.tempHigh = 2861;
+					elements.molten_chromium ??= {}; elements.molten_chromium.tempHigh = 2671;
+					elements.molten_copper ??= {}; elements.molten_molten_copper.tempHigh = 4700;
 					elements.molten_alumina ??= {};
+					elements.molten_alumina.tempHigh = 5400;
 					elements.molten_alumina.reactions ??= {};
-					elements.molten_alumina.reactions.iron_scrap = {elem1: "molten_sapphire", elem2: ["molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron",null] };
-					elements.molten_alumina.reactions.molten_iron = {elem1: "molten_sapphire", elem2: ["molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron",null] };
-					elements.molten_alumina.reactions.titanium_scrap = {elem1: "molten_sapphire", elem2: ["molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium",null] };
-					elements.molten_alumina.reactions.molten_titanium = {elem1: "molten_sapphire", elem2: ["molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium",null] };
-					elements.molten_alumina.reactions.chromium_scrap = {elem1: "molten_ruby", elem2: ["molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium",null] };
-					elements.molten_alumina.reactions.molten_chromium = {elem1: "molten_ruby", elem2: ["molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium",null] };					
+					elements.molten_alumina.reactions.iron_scrap = {elem1: "molten_sapphire", elem2: ["molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron",null] };
+					elements.molten_alumina.reactions.molten_iron = {elem1: "molten_sapphire", elem2: ["molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron",null] };
+					elements.molten_alumina.reactions.titanium_scrap = {elem1: "molten_sapphire", elem2: ["molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium",null] };
+					elements.molten_alumina.reactions.molten_titanium = {elem1: "molten_sapphire", elem2: ["molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium","molten_titanium",null] };
+					elements.molten_alumina.reactions.chromium_scrap = {elem1: "molten_ruby", elem2: ["molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium",null] };
+					elements.molten_alumina.reactions.molten_chromium = {elem1: "molten_ruby", elem2: ["molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium",null] };
 					elements.molten_alumina.stateLow = "corundum";
 
 				//Sapphire
@@ -24020,6 +24035,16 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						hardness: 0.9,
 					};
 
+					elements.molten_sapphire ??= {}; elements.molten_sapphire.tick = function(pixel) {
+						if(pixel.temp >= 5040) {
+							if(Math.random() < 0.005) { //the real proportion of 0.01% is so low that you'd just melt sapphire and get back corundum
+								changePixel(pixel,Math.random() < 0.5 ? "titanium_gas" : "iron_gas",false)
+							} else {
+								changePixel(pixel,"alumina_gas",false)
+							}
+						};
+					};
+
 					standaloneBrokenFormMaker("sapphire","shard",true,"powders","auto","auto","molten_sapphire",["alumina","alumina","alumina","alumina","alumina","alumina","alumina","alumina","alumina","iron_scrap","titanium_scrap"]).hidden = true;
 
 				//Ruby
@@ -24033,6 +24058,16 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						state: "solid",
 						density: 3980,
 						hardness: 0.9,
+					};
+
+					elements.molten_ruby ??= {}; elements.molten_ruby.tick = function(pixel) {
+						if(pixel.temp >= 5040) {
+							if(Math.random() < 0.02) { //1% also too low
+								changePixel(pixel,"chromium_gas",false)
+							} else {
+								changePixel(pixel,"alumina_gas",false)
+							}
+						};
 					};
 
 					standaloneBrokenFormMaker("ruby","shard",true,"powders","auto","auto","molten_sapphire",["alumina","alumina","alumina","alumina","alumina","alumina","alumina","alumina","alumina","chromium_scrap"]).hidden = true;
@@ -26328,6 +26363,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 
 		function changeElementPrompt() {
 			var cmToElement = prompt("Enter what you want to change pixels to");
+			if(cmToElement == null) { return };
 			// replace spaces with underscores
 			cmToElement = cmToElement.replace(/ /g, "_");
 			cmToElementS = mostSimilarElement(cmToElement);
@@ -26806,6 +26842,169 @@ Make sure to save your command in a file if you want to add this preset again.`
 					else { changePixel(pixel, elem2); }
 				}
 			}
+		};
+		
+		rayAbsorbElements = [];
+		rayPassElements = [];
+		
+		function summonRay(element,xIn,intensity,radius) {
+			var forMin = 0 - radius;
+			var forMax = radius + 1;
+			if(intensity < 1) { return };
+			for(var i = forMin; i < forMax; i++) {
+				for(var j = 1; j < intensity + 1; j++) {
+					var pos = {x: xIn + i, y: j};
+					if(isEmpty(pos.x,pos.y)) {
+						createPixel(element,pos.x,pos.y)
+					} else {
+						if(outOfBounds(pos.x,pos.y)) {
+							break
+						} else {
+							var pixel = pixelMap[pos.x][pos.y];
+							var pElem = pixel.element;
+							var data = elements[pElem];
+							if(rayAbsorbElements.includes(pElem)) {
+								break
+							} else if(rayPassElements.includes(pElem)) {
+								continue
+							} else {
+								if(data.state == "gas") {
+									continue
+								} else {
+									break
+								}
+							}
+						}
+					}
+				}
+			}
+		};
+
+		elements.orbital_ray_beacon = {
+			color: "#ebdf91",
+			behavior: [
+				"XX|M2 AND SA|XX",
+				"SA|XX|SA",
+				"XX|M1|XX"
+			],
+			breakInto: ["steel_scrap","iron_scrap","copper_scrap","gold_scrap","battery","sapphire","magic"],
+			temp: 0,
+			tempHigh: 5010,
+			insulate: true,
+			conduct: 1,
+			stateHigh: ["molten_steel","molten_iron","molten_copper","molten_gold","acid_gas","titanium_gas","molten_sapphire","magic"],
+			tick: function(pixel) {
+				pixelTempCheck(pixel);
+				if(!pixel.charge) { return };
+				if(pixel.charge) {
+					//var intensity = Math.max(1,Math.floor((pixel.temp + 1) / 100));
+					if(isEmpty(pixel.x,pixel.y+1,true)) { return };
+					var pixelUnder = pixelMap[pixel.x]?.[pixel.y+1];
+					if(!pixelUnder) { return };
+					switch(pixelUnder.element) {
+						case "fire":
+							summonRay("heat_ray",pixel.x,10,5);
+							break;
+						case "ultramafic_magma":
+						case "magma":
+						case "intermediate_magma":
+						case "intermediate_felsic_magma":
+						case "felsic_magma":
+						case "nellish_magma":
+						case "rainbow_magma":
+						case "crimson_magma":
+							summonRay("heat_ray",pixel.x,16,10);
+							break;
+						case "vaporized_ultramafic_magma":
+						case "vaporized_magma":
+						case "vaporized_intermediate_magma":
+						case "vaporized_intermediate_felsic_magma":
+						case "vaporized_felsic_magma":
+						case "vaporized_nellish_magma":
+						case "vaporized_rainbow_magma":
+						case "vaporized_crimson_magma":
+							summonRay("heat_ray",pixel.x,24,18);
+							break;
+						case "greek_fire":
+							summonRay("heat_ray",pixel.x,16,25);
+							break;
+						case "quark_matter":
+							summonRay("heat_ray",pixel.x,45,80);
+							break;
+						case "cold_fire":
+							summonRay("cold_ray",pixel.x,10,5);
+							break;
+						case "chilly_water":
+							summonRay("cold_ray",pixel.x,14,8);
+							break;
+						case "frostwind":
+							summonRay("cold_ray",pixel.x,20,15);
+							break;
+						case "liquid_frostwind":
+							summonRay("cold_ray",pixel.x,30,20);
+							break;
+						case "gelid_cryotheum":
+							summonRay("cold_ray",pixel.x,36,25);
+							break;
+						case "snow":
+							summonRay("freeze_ray",pixel.x,3,6);
+							break;
+						case "slush":
+							summonRay("freeze_ray",pixel.x,4,6);
+							break;
+						case "packed_snow":
+							summonRay("freeze_ray",pixel.x,4,7);
+							break;
+						case "ice":
+							summonRay("freeze_ray",pixel.x,4,8);
+							break;
+						case "alcohol_ice":
+							summonRay("freeze_ray",pixel.x,6,11);
+							break;
+						case "liquid_nitrogen":
+							summonRay("freeze_ray",pixel.x,9,18);
+							break;
+						case "nitrogen_ice":
+							summonRay("freeze_ray",pixel.x,11,19);
+							break;
+						case "liquid_hydrogen":
+							summonRay("freeze_ray",pixel.x,14,26);
+							break;
+						case "hydrogen_ice":
+							summonRay("freeze_ray",pixel.x,15,27);
+							break;
+						case "liquid_helium":
+							summonRay("freeze_ray",pixel.x,18,34);
+							break;
+						case "tectonic_petrotheum":
+							summonRay("smash_ray",pixel.x,2,10);
+							break;
+						case "bomb":
+						case "tnt":
+							summonRay("smash_ray",pixel.x,5,7);
+							break;
+						case "cluster_bomb":
+							summonRay("death_ray",pixel.x,7,11);
+							break;
+						case "nuke":
+							summonRay("annihilation_ray",pixel.x,20,40);
+							break;
+						case "cluster_nuke":
+							summonRay("annihilation_ray",pixel.x,30,60);
+							break;
+						case "armageddon":
+							summonRay("annihilation_ray",pixel.x,40,80);
+							break;
+					};
+					//if(pixelUnder) { deletePixel(pixelUnder.x,pixelUnder.y) };
+					delete pixel.charge;
+					pixel.chargeCD = 4;
+					return true;
+				}
+			},
+			conduct: 1,
+			category: "machines",
+			hardness: 0.6
 		};
 
 	//PUSHERS ##
@@ -39390,6 +39589,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 				if(!supports) {
 					behaviors.POWDER(pixel);
 				};
+				
+				elements.concrete.tick
 
 				doDefaults(pixel);
 			},
