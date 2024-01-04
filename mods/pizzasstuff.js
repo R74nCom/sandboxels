@@ -57,13 +57,6 @@ elements.rose_sauce = {
 	hidden: "TRUE",
 };
 
-elements.mayo = {
-	color: "#f7d00c",
-	behavior: behaviors.LIQUID,
-	category: "food",
-	state: "solid",
-};
-
 elements.smashed_ice = {
 	color: "#c3d4e6",
 	behavior: behaviors.LIQUID,
@@ -105,9 +98,6 @@ elements.moth = {
 };
 if (!elements.lettuce.reactions) elements.lettuce.reactions = {};
 elements.lettuce.reactions.ice_cream = { elem1: "moss", elem2: null }
-
-if (!elements.yolk.reactions) elements.yolk.reactions = {};
-elements.yolk.reactions.vinegar = { elem1: null, elem2: "mayo" }
 
 if (!elements.ketchup.reactions) elements.ketchup.reactions = {};
 elements.ketchup.reactions.mayo = { elem1: "rose_sauce", elem2: null }
