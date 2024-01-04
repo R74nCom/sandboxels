@@ -274,6 +274,92 @@ if(allDependenciesExist) {
 				};
 				return false;
 			};
+			
+			//Element name search
+				window.searchQuery = {};
+
+				function searchElements(query) {
+					if(typeof(window.searchQuery) == "undefined") { window.searchQuery = "" }; //necessary because of filter's idiotic no-argument policy
+					window.searchQuery = query;
+					var elemNames = Object.keys(elements);
+					var matches = elemNames.filter(function(name) {
+						return !!(name.match(window.searchQuery))
+					});
+					return matches
+				};
+
+				function getStateHigh(element,forceArray=false) {
+					if(!(element instanceof Array)) { element = [element] };
+					var existantElements = element.filter(function(name) { return elementExists(name) });
+					if(existantElements.length == 0) { return undefined } else { element = existantElements };
+					var results = element.map(name => elements[name].stateHigh).filter(function(nameOrUndefined) { return typeof(nameOrUndefined) !== "undefined" });
+					switch(results.length) {
+						case 0:
+							return null;
+						case 1:
+							if(!forceArray) { return results[0] };
+						default:
+							return results
+					}
+				};
+
+				function getState(element,forceArray=false) {
+					if(!(element instanceof Array)) { element = [element] };
+					var existantElements = element.filter(function(name) { return elementExists(name) });
+					if(existantElements.length == 0) { return undefined } else { element = existantElements };
+					var results = element.map(name => elements[name].state).filter(function(nameOrUndefined) { return typeof(nameOrUndefined) !== "undefined" });
+					switch(results.length) {
+						case 0:
+							return null;
+						case 1:
+							if(!forceArray) { return results[0] };
+						default:
+							return results
+					}
+				};
+
+				function getStateLow(element,forceArray=false) {
+					if(!(element instanceof Array)) { element = [element] };
+					var existantElements = element.filter(function(name) { return elementExists(name) });
+					if(existantElements.length == 0) { return undefined } else { element = existantElements };
+					var results = element.map(name => elements[name].stateLow).filter(function(nameOrUndefined) { return typeof(nameOrUndefined) !== "undefined" });
+					switch(results.length) {
+						case 0:
+							return null;
+						case 1:
+							if(!forceArray) { return results[0] };
+						default:
+							return results
+					}
+				};
+
+				function getStateAtTemp(element,temp) {
+					var data = elements[element];
+					var tl = data.tempLow;
+					var th = data.tempHigh;
+					if(typeof(tl) == "number" && temp <= tl) {
+						return data.stateLow
+					} else if(typeof(th) == "number" && temp >= th) {
+						return data.stateHigh
+					} else {
+						return element
+					}
+				};
+
+				function getBreakInto(element,forceArray=false) {
+					if(!(element instanceof Array)) { element = [element] };
+					var existantElements = element.filter(function(name) { return elementExists(name) });
+					if(existantElements.length == 0) { return undefined } else { element = existantElements };
+					var results = element.map(name => elements[name].breakInto).filter(function(nameOrUndefined) { return typeof(nameOrUndefined) !== "undefined" });
+					switch(results.length) {
+						case 0:
+							return null;
+						case 1:
+							if(!forceArray) { return results[0] };
+						default:
+							return results
+					}
+				};
 
 		//Math(s)
 
@@ -1273,7 +1359,8 @@ if(allDependenciesExist) {
 				};
 			};
 
-			function createPixelReturn(element,x,y) { //sugar
+			function createPixelReturn(elementIn,x,y) { //sugar
+				var element = elementIn; while(element instanceof Array) { element = randomChoice(element) };
 				var newPixel = new Pixel(x, y, element);
 				currentPixels.push(newPixel);
 				checkUnlock(element);
@@ -3218,6 +3305,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			var firstElementButton = firstDiv.getElementsByClassName("elementButton")[0];
 			selectElement(firstElementButton.getAttribute("element"));
 		};
+
 
 	//MORE CONFIGURABLE EXPLOSIONS (explodeAtPlus) ##
 
@@ -12468,6 +12556,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						burn: 100,
 						burnTime: 5,
 						fireColor: ["#00ffff","#00ffdd"],
+						burnInto: ["fire","carbon_dioxide","carbon_dioxide","steam","steam"],
 						state: "gas",
 						density: 1.93 * airDensity,
 					};
@@ -12726,7 +12815,218 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 
 			//Quintuple carbon line
 
-				//To do
+				//Single bond
+					elements.pentane = {
+						color: "#b5685b",
+						behavior: behaviors.GAS,
+						category: "gases",
+						tempHigh: 533,
+						stateHigh: "fire",
+						reactions: {
+							"head": { elem2: "rotten_meat", chance: 0.00015},
+							"body": { elem2: "rotten_meat", chance: 0.00015},
+						},
+						tempLow: 36.1,
+						burn: 85,
+						burnTime: 5,
+						burnInto: ["fire","fire","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_dioxide","steam","steam","steam","steam","steam","steam"],
+						fireColor: ["#00ffff","#00ffdd"],
+						state: "gas",
+						density: 2.48 * airDensity,
+					};
+
+					elements.liquid_pentane = {
+						color: "#a62711",
+						tempLow: -130.2,
+						density: 626,
+					};
+
+					elements.isopentane = {
+						color: "#bb6c54",
+						behavior: behaviors.GAS,
+						category: "gases",
+						tempHigh: 427,
+						stateHigh: "fire",
+						reactions: {
+							"head": { elem2: "rotten_meat", chance: 0.00015},
+							"body": { elem2: "rotten_meat", chance: 0.00015},
+						},
+						tempLow: -11.7,
+						burn: 85,
+						burnTime: 5,
+						burnInto: ["fire","fire","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_dioxide","steam","steam","steam","steam","steam"],
+						fireColor: ["#00ffff","#00ffdd"],
+						state: "gas",
+						density: 2.48 * airDensity,
+					};
+
+					elements.liquid_isopentane = {
+						color: "#ab320d",
+						tempLow: -160,
+						density: 616,
+					};
+
+					elements.neopentane = {
+						color: "#c1724e",
+						behavior: behaviors.GAS,
+						category: "gases",
+						tempHigh: 427,
+						stateHigh: "fire",
+						reactions: {
+							"head": { elem2: "rotten_meat", chance: 0.00015},
+							"body": { elem2: "rotten_meat", chance: 0.00015},
+						},
+						tempLow: 9.5,
+						burn: 85,
+						burnTime: 5,
+						burnInto: ["fire","fire","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_dioxide","steam","steam","steam","steam","steam"],
+						fireColor: ["#00ffff","#00ffdd"],
+						state: "gas",
+						density: 3.255,
+					};
+
+					elements.liquid_neopentane = {
+						color: "#af3d08",
+						tempLow: -16.5,
+						density: 601.172,
+					};
+
+				//Double bond
+					elements.pentylene = { //pentene
+						name: "1-pentylene",
+						color: "#af5a4b",
+						behavior: behaviors.GAS,
+						category: "gases",
+						tempHigh: 527,
+						stateHigh: ["fire","fire","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_dioxide","steam","steam","steam","steam","steam"],
+						tempLow: 30,
+						temp: 40,
+						burn: 100,
+						burnTime: 5,
+						burnInto: ["fire","fire","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_dioxide","steam","steam","steam","steam","steam"],
+						fireColor: ["#00ffff","#00ffdd"],
+						state: "gas",
+						density: 2.4 * airDensity,
+					};
+
+					elements.liquid_pentylene = {
+						tempLow: -165.2,
+						density: 640,
+					};
+
+					elements.trans_2_pentylene = {
+						name: "t-pentylene-2",
+						color: "#924b3f",
+						behavior: behaviors.GAS,
+						category: "gases",
+						tempHigh: 324, //Unknown
+						stateHigh: ["fire","fire","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_dioxide","steam","steam","steam","steam","steam"],
+						tempLow: 36.3,
+						burn: 85,
+						burnTime: 5,
+						burnInto: ["fire","fire","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_dioxide","steam","steam","steam","steam","steam"],
+						fireColor: ["#00ffff","#00ffdd"],
+						state: "gas",
+						density: 2.4 * airDensity,
+					};
+
+					elements.liquid_trans_2_pentylene = {
+						tempLow: -140.2,
+						density: 643.1,
+					};
+
+					elements.cis_2_pentylene = {
+						name: "c-pentylene-2",
+						color: "#9d5143",
+						behavior: behaviors.GAS,
+						category: "gases",
+						tempHigh: 324, //Unknown
+						stateHigh: ["fire","fire","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_dioxide","steam","steam","steam","steam","steam"],
+						tempLow: 36.9,
+						burn: 85,
+						burnTime: 5,
+						burnInto: ["fire","fire","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_dioxide","steam","steam","steam","steam","steam"],
+						fireColor: ["#00ffff","#00ffdd"],
+						state: "gas",
+						density: 2 * airDensity,
+					};
+
+					elements.liquid_cis_2_pentylene = {
+						tempLow: -151.4,
+						density: 655.6,
+					};
+
+				//Triple bond
+					elements.pentyne = {
+						name: "1-pentyne",
+						color: "#9d5143",
+						behavior: behaviors.GAS,
+						category: "gases",			
+						tempHigh: 454, //Unknown
+						stateHigh: ["fire","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_dioxide","oxygen","oxygen","oxygen"],
+						tempLow: 40.2,
+						temp: 55,
+						burn: 100,
+						burnTime: 5,
+						burnInto: ["fire","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_dioxide","oxygen","oxygen","oxygen"],
+						fireColor: ["#00ffff","#00ffdd"],
+						state: "gas",
+						density: 2.6 * airDensity, //made-up due to also unknown vapor density
+					};
+
+					elements.liquid_1_pentyne = {
+						tempLow: -105.5,
+						density: 691,
+					};
+
+					elements.pentyne_2 = {
+						name: "2-pentyne",
+						color: "#9d5143",
+						behavior: behaviors.GAS,
+						category: "gases",			
+						tempHigh: 454, //Unknown
+						stateHigh: ["fire","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_dioxide","oxygen","oxygen","oxygen"],
+						tempLow: 56.5,
+						temp: 65,
+						burn: 70,
+						burnTime: 5,
+						burnInto: ["fire","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_dioxide","oxygen","oxygen","oxygen"],
+						fireColor: ["#00ffff","#00ffdd"],
+						state: "gas",
+						density: 2.6 * airDensity, //made-up due to also unknown vapor density
+					};
+
+					elements.liquid_pentyne_2 = {
+						tempLow: -109,
+						density: 710,
+					};
+
+					elements.isopentyne = {
+						color: "#a6533a",
+						behavior: behaviors.GAS,
+						category: "gases",			
+						tempHigh: 454, //Unknown
+						stateHigh: ["fire","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_dioxide","oxygen","oxygen","oxygen"],
+						tempLow: 29.5,
+						temp: 40,
+						burn: 70,
+						burnTime: 5,
+						burnInto: ["fire","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_dioxide","oxygen","oxygen","oxygen"],
+						fireColor: ["#00ffff","#00ffdd"],
+						state: "gas",
+						density: 2.6 * airDensity, //made-up due to also unknown vapor density
+					};
+
+					elements.liquid_isopentyne = {
+						tempLow: -89.7,
+						density: 666,
+					};
+
+				//Alcohol
+					//Fuck no I'm not doing 8 isomers
+
+				//Benzene ver.
+					//i'm tired
 
 			//Vodka
 
@@ -12980,6 +13280,66 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 
 		//Inorganic compounds
 
+			runAfterAutogen(function() {
+				var waters = searchElements("water").filter(function(name) { return getState(name) == "liquid" });
+				var whitelistWaters = ["hail","rime","cloud","rain_cloud","thunder_cloud","snow_cloud","hail_cloud","rain_cloud_cloud","snow_cloud_cloud","hail_cloud_cloud","cloud_cloud","heaviest_water_cloud","heaviest_snow_cloud","snow_cloud_floater","jinsoulite","jinsoulite_gas","jinsoulite_powder","molten_jinsoulite"];
+				var jvoWaters = Object.keys(jinsouliteValueObject).filter(function(name) { return !(name.includes("bomb")) });
+				var coldWaters = (getStateLow(waters,true) ?? []).filter(
+					function(name) { return typeof(name) == "string" }
+				);
+				var colderWaters = (getStateLow(coldWaters,true) ?? []).filter(
+					function(name) { return typeof(name) == "string" }
+				);
+				var hotWaters = (getStateHigh(waters,true) ?? []).filter(
+					function(name) { return typeof(name) == "string" }
+				);
+				var brokenColdWaters = (getBreakInto(coldWaters,true) ?? []).filter(
+					function(name) { return typeof(name) == "string" }
+				);
+				var coldBrokenColdWaters = (getStateLow(brokenColdWaters,true) ?? []).filter(
+					function(name) { return typeof(name) == "string" }
+				);
+				wateroids = [waters,coldWaters,colderWaters,hotWaters,brokenColdWaters,coldBrokenColdWaters,whitelistWaters,jvoWaters].flat()
+
+				//moved vivite-related code to where it happens
+				for(var i = 0; i < wateroids.length; i++) {
+					if(elements[wateroids[i]]) { elements[wateroids[i]].noViviteSlag = true };
+				};
+			});
+
+			//Hydrogen sulfide (in chem.js)
+				_h_2s = ["hydrogen_sulfide","liquid_hydrogen_sulfide","hydrogen_sulfide_ice"];
+			
+				elements.hydrogen_sulfide.density = 1.19 * airDensity;
+				elements.hydrogen_sulfide.reactions ??= {};
+				elements.hydrogen_sulfide.reactions.head = { elem2: "rotten_meat", chance: 0.4};
+				elements.hydrogen_sulfide.fireColor = { elem2: "rotten_meat", chance: 0.4};
+				elements.hydrogen_sulfide.tempHigh = 1200;
+				elements.hydrogen_sulfide.stateHigh = ["sulfur_gas","steam"];				
+				delete elements.sulfur_dioxide.reactions.water;
+				delete elements.sulfur_dioxide.reactions.steam;
+				delete elements.water.reactions.sulfur;
+				elements.sulfur_dioxide.tick = function(pixel) {
+					var neighbors = adjacentCoords.map(offsetPair => pixelMap[pixel.x+offsetPair[0]]?.[pixel.y+offsetPair[1]]).filter(function(pixelOrUndefined) { return typeof(pixelOrUndefined) == "object" });
+					if(neighbors.length < 2) { return };
+					var neighboringElements = neighbors.filter(function(px) { return !!px }).map(x => x.element);
+					var waterNeighbor = null;
+					var sulfideNeighbor = null; 
+					for(var i = 0; i < neighboringElements.length; i++) {
+						if(_h_2s.includes(neighboringElements[i])) {
+							sulfideNeighbor = adjacentCoords[i];
+						};
+						if(wateroids.includes(neighboringElements[i])) {
+							waterNeighbor = adjacentCoords[i];
+						};
+						if(sulfideNeighbor && waterNeighbor) {
+							if(!sulfideNeighbor || isEmpty(sulfideNeighbor.x,sulfideNeighbor.y,true)) { return };
+							changePixel(sulfideNeighbor,getStateAtTemp("sulfur",pixel.temp));
+							changePixel(pixel,getStateAtTemp("water",pixel.temp));
+						}
+					}
+				};
+
 			//Carbon monoxide
 
 				elements.carbon_monoxide = {
@@ -13006,28 +13366,357 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				elements.steam.reactions.charcoal = { tempMin: 680, elem1: "hydrogen", elem2: "carbon_monoxide" };
 				elements.steam.reactions.diamond = { tempMin: 680, elem1: "hydrogen", elem2: "carbon_monoxide" };
 
-		/* //Oil refining
-		delete elements.oil.tempHigh;
+			//Oil refining
 
-		elements.oil.tick = function(pixel) {
-			if(!pixel.role) {
-				var value = Math.random()
-				if(value < 0.03) {
-					pixel.role = "lpg";
+				delete elements.oil.tempHigh;
+
+				function liquidMoveCustomViscosity(pixel,viscosity) {
+					if (pixel.start === pixelTicks) {return}
+					if (pixel.charge && elements[pixel.element].behaviorOn) {
+						pixelTick(pixel)
+					}
+					var viscosityPass = ((Math.random()*100) < 100 / Math.pow(viscosity, 0.25));
+					if (!viscosityPass) {
+						var move1Spots = [
+							[pixel.x, pixel.y+1]
+						]
+					}
+					else {
+						var move1Spots = [
+							[pixel.x+1, pixel.y+1],
+							[pixel.x, pixel.y+1],
+							[pixel.x-1, pixel.y+1],
+						]
+					}
+					var moved = false;
+					for (var i = 0; i < move1Spots.length; i++) {
+						var coords = move1Spots[Math.floor(Math.random()*move1Spots.length)];
+						if (tryMove(pixel, coords[0], coords[1])) { moved = true; break; }
+						else { move1Spots.splice(move1Spots.indexOf(coords), 1); }
+					}
+					if (!moved) {
+						if (viscosityPass) {
+							if (Math.random() < 0.5) {
+								if (!tryMove(pixel, pixel.x+1, pixel.y)) {
+									tryMove(pixel, pixel.x-1, pixel.y);
+								}
+							} else {
+								if (!tryMove(pixel, pixel.x-1, pixel.y)) {
+									tryMove(pixel, pixel.x+1, pixel.y);
+								}
+							}
+						}
+					}
+					doDefaults(pixel);
 				};
-			};
 
-			if(pixel.role == "lpg") {
-				var value = Math.random()
-				//LPG composition weighted chooser
-			};
+				elements.light_petroleum_fuel_gas = { //it's not liquified, and sandboxels doesn't even have a pressure system, and there is no generic name for uncompressed, gaseous "L"PG, so we need a different name
+					burn: 100,
+					color: "#b5b5b3",
+					density: 3.5,
+					tempLow: -44,
+					tick: function(pixel) {
+						if (pixel.temp >= 495 && !pixel.burning) {
+							pixel.burning = true;
+							pixel.burnStart = pixelTicks;
+						}
+					},
+					burnInto: "explosion,explosion,fire,fire,fire,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(","),
+					state: "gas",
+					behavior: behaviors.GAS,
+				};
 
+				elements.lamp_oil.tempHigh = 170;
+				elements.lamp_oil.density = 810;
+				elements.lamp_oil.name = "kerosene";
+				elements.lamp_oil.forceAutoGen = true;
+				elements.lamp_oil_gas = {
+					name: "kerosene gas",
+					burn: 100,
+					density: 4.5,
+					tick: elements.lamp_oil.tick,
+					burnInto: "explosion,fire,fire,fire,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(",")
+				};
 
-			if(pixel.temp > 30) { //https://www.crownoil.co.uk/guides/crude-oil-fractional-distillation/: Butane and propane and other petroleum gases are formed right at the top of the distillation tower, where it is coolest, a very mild 25°C: the temperature range that forms these gases is between 25°C and 50°C. These gases are the lightest products formed in crude oil distillation and are flammable gases.
-				//LPG change switch(pixel.role) statement
-			};
-		};
-		*/
+				elements.gasoline = {
+					color: "#d1cf9d",
+					behavior: behaviors.LIQUID,
+					tick: function(pixel) {
+						if (pixel.temp > 263 && !pixel.burning) {
+							pixel.burning = true;
+							pixel.burnStart = pixelTicks;
+						}
+					},
+					reactions: {
+						"styrofoam": { elem1: ["gasoline","gasoline","gasoline","gasoline","napalm"], elem2: null }, //the joke
+						"polystyrene": { elem1: "napalm", elem2: ["polystyrene","polystyrene",null] },
+						"molten_polystyrene": { elem1: "napalm", elem2: ["molten_polystyrene","molten_polystyrene",null] },
+						"glue": {elem2:null, chance:0.05},
+						"wax": {elem2:null, chance:0.005},
+						"melted_wax": {elem2:null, chance:0.025},
+					},
+					forceAutoGen: true,
+					category: "liquids",
+					tempHigh: 70,
+					tempLow: -60,
+					burn: 20,
+					burnTime: 500,
+					burnInto: "explosion,fire,fire,fire,fire,ash,ash,carbon_monoxide,carbon_monoxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(","),
+					viscosity: 7.04,
+					state: "liquid",
+					density: 755,
+					alias: "petrol"
+				};
+
+				elements.gasoline_gas = {
+					burn: 100,
+					burnTime: 10,
+					density: 3.5,
+					tick: elements.gasoline.tick,
+					burnInto: "explosion,fire,fire,fire,fire,ash,ash,carbon_monoxide,carbon_monoxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(",")
+				};
+
+				elements.naphtha = {
+					color: "#d1d1d1",
+					behavior: behaviors.LIQUID,
+					tick: function(pixel) {
+						if (pixel.temp > 270 && !pixel.burning) {
+							pixel.burning = true;
+							pixel.burnStart = pixelTicks;
+						}
+					},
+					reactions: {
+						"styrofoam": { elem1: ["naphtha","naphtha","naphtha","naphtha","napalm"], elem2: null },
+						"polystyrene": { elem1: "napalm", elem2: ["polystyrene","polystyrene",null] },
+						"molten_polystyrene": { elem1: "napalm", elem2: ["molten_polystyrene","molten_polystyrene",null] },
+						"glue": {elem2:null, chance:0.05},
+						"wax": {elem2:null, chance:0.005},
+						"melted_wax": {elem2:null, chance:0.025},
+					},
+					category: "liquids",
+					tempHigh: 120,
+					tempLow: -30,
+					forceAutoGen: true,
+					burn: 80,
+					burnTime: 500,
+					burnInto: "explosion,fire,fire,fire,fire,ash,ash,carbon_monoxide,carbon_monoxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(","),
+					viscosity: 5.77,
+					state: "liquid",
+					density: 740
+				};
+
+				elements.naphtha_gas = {
+					burn: 100,
+					burnTime: 10,
+					density: 3.5,
+					tick: elements.naphtha.tick,
+					burnInto: "explosion,fire,fire,fire,fire,ash,ash,carbon_monoxide,carbon_monoxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(",")
+				};
+
+				elements.diesel = {
+					color: "#d3d9b4",
+					behavior: behaviors.LIQUID,
+					tick: function(pixel) {
+						if (pixel.temp > 210 && !pixel.burning) {
+							pixel.burning = true;
+							pixel.burnStart = pixelTicks;
+						}
+					},
+					reactions: {
+						"glue": {elem2:null, chance:0.05},
+						"wax": {elem2:null, chance:0.005},
+						"melted_wax": {elem2:null, chance:0.025},
+					},
+					category: "liquids",
+					tempHigh: 260,
+					forceAutoGen: true,
+					tempLow: -25,
+					burn: 20,
+					burnTime: 500,
+					burnInto: "explosion,fire,fire,fire,fire,ash,ash,carbon_monoxide,carbon_monoxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(","),
+					viscosity: 7.04,
+					state: "liquid",
+					density: 755,
+				};
+
+				elements.diesel_gas = {
+					burn: 100,
+					burnTime: 12,
+					density: 3.5,
+					tick: elements.diesel.tick,
+					burnInto: "explosion,fire,fire,fire,fire,ash,ash,carbon_monoxide,carbon_monoxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(",")
+				};
+
+				elements.lubricating_oil = {
+					color: "#d3d9b4",
+					behavior: behaviors.LIQUID,
+					tick: function(pixel) {
+						if (pixel.temp > 450 && !pixel.burning) {
+							pixel.burning = true;
+							pixel.burnStart = pixelTicks;
+						}
+					},
+					category: "liquids",
+					tempHigh: 350,
+					tempLow: -40,
+					burn: 20,
+					burnTime: 600,
+					forceAutoGen: true,
+					burnInto: "explosion,fire,fire,fire,ash,ash,carbon_monoxide,carbon_monoxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(","),
+					viscosity: 7.04,
+					state: "liquid",
+					density: 800,
+				};
+
+				elements.lubricating_oil_gas = {
+					burn: 100,
+					burnTime: 13,
+					density: 3.5,
+					tick: elements.lubricating_oil.tick,
+					burnInto: "explosion,fire,fire,fire,ash,ash,carbon_monoxide,carbon_monoxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(",")
+				};
+
+				elements.heavy_fuel_oil = {
+					color: "#1c1a18",
+					behavior: behaviors.LIQUID,
+					tick: function(pixel) {
+						if (pixel.temp > 407 && !pixel.burning) {
+							pixel.burning = true;
+							pixel.burnStart = pixelTicks;
+						};
+						if(pixel.burning && Math.random() < 0.01) {
+							var emptyNeighbors = [];
+							for(i = 0; i < adjacentCoords.length; i++) {
+								if(isEmpty(pixel.x+adjacentCoords[i][0],pixel.y+adjacentCoords[i][1],false)) {
+									emptyNeighbors.push(adjacentCoords[i]);
+								};
+							};
+							if(emptyNeighbors.length > 0) {
+								var randomEmptyNeighbor = emptyNeighbors[Math.floor(Math.random() * emptyNeighbors.length)];
+								createPixelReturn(["smoke","carbon_dioxide"],pixel.x+randomEmptyNeighbor[0],pixel.y+randomEmptyNeighbor[1]).temp = pixel.temp
+							};
+						}
+					},
+					reactions: {
+						"polystyrene": { elem1: "napalm", elem2: "napalm", chance:0.05 }, //the joke
+						"glue": {elem2:null, chance:0.05},
+						"wax": {elem2:null, chance:0.005},
+						"melted_wax": {elem2:null, chance:0.025},
+					},
+					category: "liquids",
+					tempHigh: 300,
+					forceAutoGen: true,
+					tempLow: 0,
+					burn: 10,
+					viscosity: 700,
+					burnTime: 800,
+					fireElement: ["fire","fire","fire","smoke","smoke","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_monoxide","carbon_monoxide","carbon_monoxide","sulfur_dioxide","sulfur_trioxide_gas","poison_gas"],
+					burnInto: "explosion,fire,fire,fire,fire,fire,fire,ash,ash,ash,carbon_monoxide,carbon_monoxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,poison_gas".split(","),
+					viscosity: 7.04,
+					state: "liquid",
+					density: 755,
+					alias: "petrol"
+				};
+
+				elements.heavy_fuel_oil_gas = {
+					burn: 80,
+					burnTime: 60,
+					density: 2.5,
+					tick: elements.heavy_fuel_oil.tick,
+					fireElement: ["explosion","fire","fire","fire","smoke","smoke","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_monoxide","carbon_monoxide","carbon_monoxide","sulfur_dioxide","sulfur_trioxide_gas","poison_gas"],
+					burnInto: "fire,fire,fire,fire,fire,ash,ash,carbon_monoxide,carbon_monoxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(",")
+				};
+
+				elements.bitumen = {
+					color: "#0d0c0c",
+					maxColorOffset: 5,
+					tick: function(pixel) {
+						var viscosity = 1e16 / (1.09 ** pixel.temp);
+						liquidMoveCustomViscosity(pixel,viscosity)
+					},
+					reactions: {
+						"polystyrene": { elem1: "napalm", elem2: "napalm", chance:0.05 }, //the joke
+						"glue": {elem2:null, chance:0.05},
+						"wax": {elem2:null, chance:0.005},
+						"melted_wax": {elem2:null, chance:0.025},
+					},
+					category: "liquids",
+					tempHigh: 750,
+					stateHigh: ["bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","bitumen","fire","fire","fire","smoke","smoke","smoke","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_monoxide","carbon_monoxide","carbon_monoxide","sulfur_dioxide","sulfur_trioxide_gas","poison_gas"],
+					burn: 2,
+					burnTime: 800,
+					fireElement: ["fire","fire","fire","smoke","smoke","smoke","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_monoxide","carbon_monoxide","carbon_monoxide","sulfur_dioxide","sulfur_trioxide_gas","poison_gas"],
+					burnInto: "fire,fire,fire,fire,fire,fire,ash,ash,ash,carbon_monoxide,carbon_monoxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,poison_gas".split(","),
+					viscosity: 7.04,
+					state: "liquid",
+					density: 1050,
+					reactions: {
+						gravel: { elem1: "asphalt", elem2: "asphalt" }
+					}
+				};
+
+				elements.asphalt ={
+					color: "#191919",
+					behavior: behaviors.STURDYPOWDER,
+					tempHigh: 750,
+					stateHigh: ["asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","asphalt","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel",,"fire","fire","fire","smoke","smoke","smoke","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_monoxide","carbon_monoxide","carbon_monoxide","sulfur_dioxide","sulfur_trioxide_gas","poison_gas"],
+					category: "land",
+					state: "solid",
+					density: 2322,
+					burn: 0.5,
+					burnTime: 5000,
+					burnInto: ["gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel","gravel",,"fire","fire","fire","smoke","smoke","smoke","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_monoxide","carbon_monoxide","carbon_monoxide","sulfur_dioxide","sulfur_trioxide_gas","poison_gas"],
+					fireElement: ["smoke","smoke","smoke","carbon_dioxide","carbon_monoxide","fire","fire","fire","fire","fire","fire"],
+					fireChance: 2,
+					hardness: 0.5,
+					breakInto: ["bitumen","gravel"],
+					reactions: {
+						light: { temp1: 0.25, elem2: null }
+					}
+				};
+
+				elements.oil.tick = function(pixel) {
+					if(!pixel.role) {
+						var value = Math.random()
+						if(value <= 0.03) {
+							pixel.role = "lpg";
+						} else if(value <= 0.45) { //42%
+							pixel.role = "gasoline";
+						} else if(value <= 0.60) { //15%
+							pixel.role = "naphtha";
+						} else if(value <= 0.70) { //10%
+							pixel.role = "kerosene"; //kerosene/lamp oil/jet fuel are apparently the same funny bunch of hydrocarbons
+						} else if(value <= 0.9) { //20%
+							pixel.role = "diesel";
+						} else if(value <= 0.91) { //1%
+							pixel.role = "lubricant";
+						} else if(value <= 0.97) { //6%
+							pixel.role = "heavy_fuel_oil"; //700 cP
+						} else if(value < 1) { //3%
+							pixel.role = "bitumen";
+						};
+					};
+
+					if(pixel.temp > 30 && pixel.role == "lpg") { //https://www.crownoil.co.uk/guides/crude-oil-fractional-distillation/: Butane and propane and other petroleum gases are formed right at the top of the distillation tower, where it is coolest, a very mild 25°C: the temperature range that forms these gases is between 25°C and 50°C. These gases are the lightest products formed in crude oil distillation and are flammable gases.
+						changePixel(pixel,"light_petroleum_fuel_gas")
+					} else if(pixel.temp > 70 && pixel.role == "gasoline") { //https://www.crownoil.co.uk/guides/crude-oil-fractional-distillation/: Butane and propane and other petroleum gases are formed right at the top of the distillation tower, where it is coolest, a very mild 25°C: the temperature range that forms these gases is between 25°C and 50°C. These gases are the lightest products formed in crude oil distillation and are flammable gases.
+						changePixel(pixel,"gasoline_gas")
+					} else if(pixel.temp > 120 && pixel.role == "naphtha") { //https://www.crownoil.co.uk/guides/crude-oil-fractional-distillation/: Butane and propane and other petroleum gases are formed right at the top of the distillation tower, where it is coolest, a very mild 25°C: the temperature range that forms these gases is between 25°C and 50°C. These gases are the lightest products formed in crude oil distillation and are flammable gases.
+						changePixel(pixel,"naphtha_gas")
+					} else if(pixel.temp > 170 && pixel.role == "kerosene") { //https://www.crownoil.co.uk/guides/crude-oil-fractional-distillation/: Butane and propane and other petroleum gases are formed right at the top of the distillation tower, where it is coolest, a very mild 25°C: the temperature range that forms these gases is between 25°C and 50°C. These gases are the lightest products formed in crude oil distillation and are flammable gases.
+						changePixel(pixel,"lamp_oil_gas")
+					} else if(pixel.temp > 270 && pixel.role == "diesel") { //https://www.crownoil.co.uk/guides/crude-oil-fractional-distillation/: Butane and propane and other petroleum gases are formed right at the top of the distillation tower, where it is coolest, a very mild 25°C: the temperature range that forms these gases is between 25°C and 50°C. These gases are the lightest products formed in crude oil distillation and are flammable gases.
+						changePixel(pixel,"diesel_gas")
+					} else if(pixel.temp > 300 && pixel.role == "heavy_fuel_oil") { //https://www.crownoil.co.uk/guides/crude-oil-fractional-distillation/: Butane and propane and other petroleum gases are formed right at the top of the distillation tower, where it is coolest, a very mild 25°C: the temperature range that forms these gases is between 25°C and 50°C. These gases are the lightest products formed in crude oil distillation and are flammable gases.
+						changePixel(pixel,"heavy_fuel_oil_gas")
+					} else if(pixel.temp > 350 && pixel.role == "lubricant") { //https://www.crownoil.co.uk/guides/crude-oil-fractional-distillation/: Butane and propane and other petroleum gases are formed right at the top of the distillation tower, where it is coolest, a very mild 25°C: the temperature range that forms these gases is between 25°C and 50°C. These gases are the lightest products formed in crude oil distillation and are flammable gases.
+						if(pixel.role == "lubricant") {
+							changePixel(pixel,"lubricating_oil_gas")
+						} else {
+							changePixel(pixel,"bitumen")
+						}
+					}
+				};
 
 	//UREA ##
 
@@ -14930,6 +15619,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			else if (burnInto instanceof Array) {
 				burnInto = burnInto[Math.floor(Math.random()*burnInto.length)];
 			}
+			if (burnInto == undefined) {
+				burnInto = 'fire';
+			}
 			changePixel(pixel,burnInto,(burnInto !== "smoke"));
 			if (info.fireColor != undefined && burnInto == "fire") {
 				pixel.color = pixelColorPick(pixel,info.fireColor);
@@ -16173,8 +16865,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			tick: function(pixel) {
 				emptyNeighborArray = [] 
 				for(i=0;i<4;i++) {
-					if(isEmpty(pixel.x+neighbors[i][0],pixel.y+neighbors[i][1],true)) {
-						emptyNeighborArray.push(neighbors[i])
+					if(isEmpty(pixel.x+adjacentCoords[i][0],pixel.y+adjacentCoords[i][1],false)) {
+						emptyNeighborArray.push(adjacentCoords[i])
 					}
 				}
 				if(pixel.temp >= 100) {
@@ -17709,17 +18401,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 
 		elements.smog.stateLow = ["water","dirty_water"];
 
-		var wateroids = Object.keys(elements).filter(
-			function(name) {
-				return (
-					elements[name].stateHigh == "water" || 
-					elements[name].stateLow == "water" ||
-					elements[name].stateHigh == "heavy_water" || 
-					elements[name].stateLow == "heavy_water"
-				)
-			}
-		);
-
 		/*Object.keys(elements).filter(
 			function(elem) {
 				return (
@@ -17730,10 +18411,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				)
 			}
 		);*/
-
-		for(var i = 0; i < wateroids.length; i++) {
-			if(elements[wateroids[i]]) { elements[wateroids[i]].noViviteSlag = true };
-		};
 
 		function doViviteSlag(pixel,target) {
 			if(!target) { //No pixel
@@ -18457,13 +19134,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			tick: function(pixel) {
 				neighbors = [[-1,0],[0,-1],[1,0],[0,1]]
 				for(i = 0; i < neighbors.length; i++) {
-					if(isEmpty(pixel.x+neighbors[i][0],pixel.y+neighbors[i][1],true)) {
+					if(isEmpty(pixel.x+adjacentCoords[i][0],pixel.y+adjacentCoords[i][1],false)) {
 						if(Math.random() < 0.004) {
 							changePixel(pixel,"molten_polusium_oxide")
 						}
 					}
-					if(!isEmpty(pixel.x+neighbors[i][0],pixel.y+neighbors[i][1],true)) {
-						if(pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]].element == "salt_water") {
+					if(!isEmpty(pixel.x+adjacentCoords[i][0],pixel.y+adjacentCoords[i][1],true)) {
+						if(pixelMap[pixel.x+adjacentCoords[i][0]][pixel.y+adjacentCoords[i][1]].element == "salt_water") {
 							if(Math.random() < 0.024) {
 								changePixel(pixel,"molten_polusium_oxide")
 							}
@@ -18486,13 +19163,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			tick: function(pixel) {
 				neighbors = [[-1,0],[0,-1],[1,0],[0,1]]
 				for(i = 0; i < neighbors.length; i++) {
-					if(isEmpty(pixel.x+neighbors[i][0],pixel.y+neighbors[i][1],true)) {
+					if(isEmpty(pixel.x+adjacentCoords[i][0],pixel.y+adjacentCoords[i][1],false)) {
 						if(Math.random() < 0.015) {
 							changePixel(pixel,"vaporized_polusium_oxide")
 						}
 					}
-					if(!isEmpty(pixel.x+neighbors[i][0],pixel.y+neighbors[i][1],true)) {
-						if(pixelMap[pixel.x+neighbors[i][0]][pixel.y+neighbors[i][1]].element == "salt_water") {
+					if(!isEmpty(pixel.x+adjacentCoords[i][0],pixel.y+adjacentCoords[i][1],true)) {
+						if(pixelMap[pixel.x+adjacentCoords[i][0]][pixel.y+adjacentCoords[i][1]].element == "salt_water") {
 							if(Math.random() < 0.06) {
 								changePixel(pixel,"vaporized_polusium_oxide")
 							}
@@ -19161,7 +19838,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						//sedimentSandstoneTries++;
 						for(i = 0; i < adjacentCoords.length; i++) {
 							//sedimentSandstoneTryIterations++;
-							if(isEmpty(pixel.x+adjacentCoords[i][0],pixel.y+adjacentCoords[i][1],true)) {
+							if(isEmpty(pixel.x+adjacentCoords[i][0],pixel.y+adjacentCoords[i][1],false)) {
 								validNeighborArray[i] = false;
 								//sedimentSandstoneNoDetects++;
 							} else if(!isEmpty(pixel.x+adjacentCoords[i][0],pixel.y+adjacentCoords[i][1],true)) {
@@ -19214,7 +19891,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					};
 				};
 
-			//Previous function with adjacentPixels
+			//Previous function with adjacentCoords
 
 				function transformAdjacent(pixel,substitutionObject,reverse=false) {
 					for(k = 0; k < adjacentCoords.length; k++) {
@@ -21531,13 +22208,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						};
 
 						newPowder("sulfur_trioxide","#ededed",1995,16.9).reactions = {
-							water: { elem1: "acid", elem2: "acid" }, //no H2SO4, hydronium doesn't really seem to be its own substance
-							steam: { elem1: "acid", elem2: "acid" },
-							ice: { elem1: "acid", elem2: "acid" },
-							snow: { elem1: "acid", elem2: "acid" },
-							packed_snow: { elem1: "acid", elem2: "acid" },
-							slush: { elem1: "acid", elem2: "acid" },
-						};
+							water: { elem1: "sulfuric_acid", elem2: "sulfuric_acid" },
+							steam: { elem1: "sulfuric_acid", elem2: "acid" },
+							ice: { elem1: "sulfuric_acid", elem2: "sulfuric_acid" },
+							snow: { elem1: "sulfuric_acid", elem2: "sulfuric_acid" },
+							packed_snow: { elem1: "sulfuric_acid", elem2: "sulfuric_acid" },
+							slush: { elem1: "sulfuric_acid", elem2: "sulfuric_acid" },
+						}; elements.sulfur_trioxide.temp = 10;
 
 						elements.molten_sulfur_trioxide = {
 							color: "#c0c0c0",
@@ -21546,12 +22223,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							viscosity: 5, //idk idc
 							tempHigh: 45,
 							reactions: {
-								water: { elem1: "acid", elem2: "acid" }, //no H2SO4, hydronium doesn't really seem to be its own substance
-								steam: { elem1: "acid", elem2: "acid" },
-								ice: { elem1: "acid", elem2: "acid" },
-								snow: { elem1: "acid", elem2: "acid" },
-								packed_snow: { elem1: "acid", elem2: "acid" },
-								slush: { elem1: "acid", elem2: "acid" },
+								water: { elem1: "sulfuric_acid", elem2: "sulfuric_acid" }, //no H2SO4, hydronium doesn't really seem to be its own substance
+								steam: { elem1: "sulfuric_acid", elem2: "sulfuric_acid" },
+								ice: { elem1: "sulfuric_acid", elem2: "sulfuric_acid" },
+								snow: { elem1: "sulfuric_acid", elem2: "sulfuric_acid" },
+								packed_snow: { elem1: "sulfuric_acid", elem2: "sulfuric_acid" },
+								slush: { elem1: "sulfuric_acid", elem2: "sulfuric_acid" },
 							},
 						};
 
@@ -21559,12 +22236,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							color: "#c0c0c0",
 							density: 2.3, //idk idc
 							reactions: {
-								water: { elem1: "acid", elem2: "acid" }, //no H2SO4, hydronium doesn't really seem to be its own substance
-								steam: { elem1: "acid", elem2: "acid" },
-								ice: { elem1: "acid", elem2: "acid" },
-								snow: { elem1: "acid", elem2: "acid" },
-								packed_snow: { elem1: "acid", elem2: "acid" },
-								slush: { elem1: "acid", elem2: "acid" },
+								water: { elem1: "sulfuric_acid", elem2: "sulfuric_acid" }, //no H2SO4, hydronium doesn't really seem to be its own substance
+								steam: { elem1: "sulfuric_acid", elem2: "sulfuric_acid" },
+								ice: { elem1: "sulfuric_acid", elem2: "sulfuric_acid" },
+								snow: { elem1: "sulfuric_acid", elem2: "sulfuric_acid" },
+								packed_snow: { elem1: "sulfuric_acid", elem2: "sulfuric_acid" },
+								slush: { elem1: "sulfuric_acid", elem2: "sulfuric_acid" },
 							},
 						};
 
@@ -41711,7 +42388,30 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 					randomEventChoices.falling_pixel.splice(randomEventChoices.falling_pixel.indexOf(radElem),1)
 				}
 			};	
-		})
+
+			function editDistance(s1, s2) {s1 = s1.toLowerCase();s2 = s2.toLowerCase();var costs = new Array();for (var i = 0; i <= s1.length; i++) {var lastValue = i;for (var j = 0; j <= s2.length; j++) {if (i == 0)costs[j] = j;else {if (j > 0) {var newValue = costs[j - 1];if (s1.charAt(i - 1) != s2.charAt(j - 1))newValue = Math.min(Math.min(newValue, lastValue),costs[j]) + 1;costs[j - 1] = lastValue;lastValue = newValue;}}}if (i > 0)costs[s2.length] = lastValue;}return costs[s2.length];}
+
+			function similarity(s1, s2) {var longer = s1;var shorter = s2;if (s1.length < s2.length) {longer = s2;shorter = s1;}var longerLength = longer.length;if (longerLength == 0) {return 1.0;}return (longerLength - editDistance(longer, shorter)) / parseFloat(longerLength);}
+
+			function mostSimilarElement(s) {
+				delete elements;
+				var max = 0;
+				var maxElement = "";
+				for (var e in elements) {
+					var sim = similarity(e,s);
+					if (sim > max) {
+						max = sim;
+						maxElement = e;
+					}
+					if (elements[e].alias && elements[e].alias === s) {
+						max = 0.99;
+						maxElement = e;
+					}
+				}
+				if (max < 0.5) { return null }
+				return maxElement;
+			}
+		});
 
 	//END ##
 
