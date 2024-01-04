@@ -7986,7 +7986,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			behavior: behaviors.WALL,
 			state: "solid",
 			category: "rainbow variants",
-		};
+		}; //7989 yay soshi!
 
 		elements.lavashimmer = {
 			color: ["#ff3f00","#200800","#ff3f00","#200800"],
@@ -8216,7 +8216,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				}
 			},
 			reactions: {
-				dye: elements.rainbow.reactions.dye, //7989 yay soshi!
+				dye: elements.rainbow.reactions.dye,
 			},
 			behavior: behaviors.WALL,
 			state: "solid",
@@ -9648,7 +9648,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				for(y = bottomFortyPercent; y < height; y++) {
 					var chance = y > bottomTwentyPercent ? 0.03 : 0.01
 					var radius = y > bottomTwentyPercent ? 8 : 6
-					if(enabledMods.includes("velocity.js") && !isEmpty(x,y,true)) {
+					if(!isEmpty(x,y,true)) {
 						pixelMap[x][y].vy ??= 0;
 						pixelMap[x][y].vy -= 20;
 					};			
@@ -11275,10 +11275,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					pixelMap: structuredClone ? structuredClone(pixelMap) : JSON.parse(JSON.stringify(pixelMap)),
 					width: width,
 					height: height,
+					pixelTicks: pixelTicks,
 					pixelSize: pixelSize,
 					settings: settings,
 					version: 1,
-					enabledMods: localStorage.enabledMods,
+					enabledMods: localStorage.enabledMods
 				};
 				for(i = 0; i < simulationState.pixelMap.length; i++) {
 					var column = simulationState.pixelMap[i];
@@ -11529,6 +11530,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				width = json.width;
 				height = json.height;
 				pixelSize = json.pixelSize;
+				pixelTicks = (json.pixelTicks ?? 0);
 				//currentPixels = json.currentPixels;
 				for(i = 0; i < json.pixelMap.length; i++) {
 					json.pixelMap[i] = json.pixelMap[i].map(x => zeroToNull(x));
@@ -41507,25 +41509,25 @@ Make sure to save your command in a file if you want to add this preset again.`
 						}
 					}
 				};
-				if(enabledMods.includes("mods/paint_event.js")) {
-					randomEvents.paint = function() {
-						// set the color of a random circle to a random color
-						var x = Math.floor(Math.random()*(width-1))+1;
-						var y = Math.floor(Math.random()*(height-1))+1;
-						var randomR = Math.floor(Math.random() * 256);
-						var randomG = Math.floor(Math.random() * 256);
-						var randomB = Math.floor(Math.random() * 256);
-						var radius = Math.floor(Math.random()*19)+1;
-						var rColor = "rgb(" + randomR + "," + randomG + "," + randomB + ")";
-						var coords = circleCoords(x,y,radius);
-						for (var i = 0; i < coords.length; i++) {
-							var coord = coords[i];
-							if (!outOfBounds(coord.x,coord.y) && !isEmpty(coord.x,coord.y)) {
-								pixelMap[coord.x][coord.y].color = rColor;
-							};
+
+				randomEvents.paint = function() {
+					// set the color of a random circle to a random color
+					var x = Math.floor(Math.random()*(width-1))+1;
+					var y = Math.floor(Math.random()*(height-1))+1;
+					var randomR = Math.floor(Math.random() * 256);
+					var randomG = Math.floor(Math.random() * 256);
+					var randomB = Math.floor(Math.random() * 256);
+					var radius = Math.floor(Math.random()*19)+1;
+					var rColor = "rgb(" + randomR + "," + randomG + "," + randomB + ")";
+					var coords = circleCoords(x,y,radius);
+					for (var i = 0; i < coords.length; i++) {
+						var coord = coords[i];
+						if (!outOfBounds(coord.x,coord.y) && !isEmpty(coord.x,coord.y)) {
+							pixelMap[coord.x][coord.y].color = rColor;
 						};
 					};
 				};
+
 					//Buff mob events
 				if(typeof(maximumCreeperTries) !== "undefined") {
 					minimumCreeperTries = 10;
