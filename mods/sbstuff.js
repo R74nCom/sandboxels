@@ -146,3 +146,12 @@ elements.green_cherry = {
 	category: "food",
 	state: "solid",
 };
+
+elements.meth = {
+	tempHigh: 5000,
+	stateHigh: "steam",
+	color: "#0affef",
+	behavior: behaviors.POWDER,
+	category: "powders",
+	state: "solid",
+};
