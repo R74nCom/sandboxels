@@ -1,19 +1,21 @@
+// Gallium is the best element
 elements.caesium = {
-color: ["#917921", "#ebcb59", "#a48b2d", "#d6b84c"],
-behavior: behaviors.WALL,
-category: "solids",
-state: "solid",
-tempHigh: 28.44,
-stateHigh: "molten_caesium",
-density: 1873,
-reactions: {
-		"water": { "elem1":"pop", "elem2":"hydrogen" },
-		"sugar_water": { "elem1":"pop", "elem2":"hydrogen" },
-		"dirty_water": { "elem1":"pop", "elem2":"hydrogen" },
-		"pool_water": { "elem1":"pop", "elem2":"hydrogen" },
-		"salt_water": { "elem1":"pop", "elem2":"hydrogen" },
-		"seltzer":  { "elem1":"pop", "elem2":"hydrogen" },
-	}
+	color: ["#917921", "#ebcb59", "#a48b2d", "#d6b84c"],
+	behavior: behaviors.WALL,
+	category: "solids",
+	state: "solid",
+	tempHigh: 28.44,
+	stateHigh: "molten_caesium",
+	density: 1873,
+	conduct: 0.90,
+	reactions: {
+			"water": { "elem1":"pop", "elem2":"hydrogen" },
+			"sugar_water": { "elem1":"pop", "elem2":"hydrogen" },
+			"dirty_water": { "elem1":"pop", "elem2":"hydrogen" },
+			"pool_water": { "elem1":"pop", "elem2":"hydrogen" },
+			"salt_water": { "elem1":"pop", "elem2":"hydrogen" },
+			"seltzer":  { "elem1":"pop", "elem2":"hydrogen" },
+		}
 },
 elements.molten_caesium = {
 	color: ["#735c0a", "#a68e37", "#7e6715", "#9b832e"],
@@ -26,6 +28,7 @@ elements.molten_caesium = {
 	stateHigh: "caesium_vapor",
 	density: 1843,
 	temp: 29,
+	conduct: 0.90,
 	reactions: {
 		"water": { "elem1":"pop", "elem2":"hydrogen" },
 		"sugar_water": { "elem1":"pop", "elem2":"hydrogen" },
@@ -80,7 +83,8 @@ elements.technetium = {
 	state: "solid",
 	tempHigh: 2157,
 	stateHigh: "molten_technetium",
-	density: 11500
+	density: 11500,
+	conduct: 0.9
 },
  elements.molten_technetium = {
 	color: ["#d16b42", "#da904c", "#dfb360", "#e2d57f"],
@@ -303,7 +307,7 @@ elements.roomtemper = {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
-                if (!isEmpty(x,y)) {
+                if (!isEmpty(x,y, true)) {
 					if(pixelMap[x][y].temp < -230) {
                     pixelMap[x][y].temp = (pixelMap[x][y].temp + 7)
 					} else if(pixelMap[x][y].temp > 270) {
@@ -330,7 +334,7 @@ elements.destroyable_roomtemper = {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
-                if (!isEmpty(x,y)) {
+                if (!isEmpty(x,y, true)) {
 					if(pixelMap[x][y].temp < -230) {
                     pixelMap[x][y].temp = (pixelMap[x][y].temp + 7)
 					} else if(pixelMap[x][y].temp > 270) {
@@ -361,7 +365,7 @@ elements.customtemper = {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
-                if (!isEmpty(x,y)) {
+                if (!isEmpty(x,y, true)) {
 					if(pixelMap[x][y].temp < (pixel.temp - 250)) {
                     pixelMap[x][y].temp = (pixelMap[x][y].temp + 7)
 					} else if(pixelMap[x][y].temp > (pixel.temp + 250)) {
@@ -388,7 +392,7 @@ elements.destroyable_customtemper = {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
-                if (!isEmpty(x,y)) {
+                if (!isEmpty(x,y, true)) {
 					if(pixelMap[x][y].temp < (pixel.temp - 250)) {
                     pixelMap[x][y].temp = (pixelMap[x][y].temp + 7)
 					} else if(pixelMap[x][y].temp > (pixel.temp + 250)) {
@@ -1337,7 +1341,7 @@ elements.converter = {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
-                if (!isEmpty(x,y)) {
+                if (!isEmpty(x,y, true)) {
 					var otherPixel = pixelMap[x][y];
 					if ((otherPixel.element == pixel.specialturn || pixel.specialturn == "all") && !elements.converter.ignore.includes(otherPixel.element)){
 						changePixel(otherPixel, pixel.contype)
@@ -1370,7 +1374,7 @@ elements.blackhole_storage = {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
-                if (!isEmpty(x,y) && (!pixel.charge && !pixel.chargeCD)) {
+                if (!isEmpty(x,y, true) && (!pixel.charge && !pixel.chargeCD)) {
 					var otherPixel = pixelMap[x][y];
 					if (elements[otherPixel.element].movable == true){
 						pixel.bhcontents.push(otherPixel);
@@ -1407,7 +1411,6 @@ elements.plutonium = {
 	},
 	reactions: {
         "neutron": { elem1:"pn_explosion", tempMin:400, chance:0.1 },
-		"neutron": { temp1: 100, temp2: 100 },
     },
 	density: 19186,
 }
@@ -1430,10 +1433,8 @@ elements.molten_plutonium = {
     },
 	density: 16629,
 },
-elements.neutron.reactions = {
-	"uranium": { temp2:100 },
-	"plutonium": { temp2: 100 }
-},
+elements.neutron.reactions.plutonium = { temp2:100 };
+elements.neutron.reactions.molten_plutonium = { temp2:100 }
 elements.pn_explosion = {
     color: ["#ffb48f","#ffd991","#ffad91"],
     behavior: [
@@ -1459,7 +1460,7 @@ elements.smasher = {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
-                if (!isEmpty(x,y)) {
+                if (!isEmpty(x,y, true)) {
 					var otherPixel = pixelMap[x][y];
 					breakPixel(otherPixel);
 					}
@@ -1477,7 +1478,7 @@ elements.mixer = {
             var coord = squareCoords[i];
             var x = pixel.x+coord[0];
             var y = pixel.y+coord[1];
-            if (!isEmpty(x,y)) {
+            if (!isEmpty(x,y, true) && !elements[pixelMap[x][y].element].noMix) {
 				var otherPixel = pixelMap[x][y];
 				pixel.mixList.push(otherPixel);
 			}
@@ -1497,4 +1498,129 @@ elements.mixer = {
                 }
 	},
 	movable: false,
+},
+elements.invisiblesupport = {
+	color: "#000000",
+	behavior: behaviors.WALL,
+	tick: function(pixel){
+		var x = pixel.x
+		var y = pixel.y
+		if (currentElement == "invisiblesupport"){
+			pixel.color = "rgb(15, 15, 15)";
+		} else {
+			pixel.color = "rgba(0, 0, 0, -1)";
+		}
+		if ((isEmpty(x-1, y) || isEmpty(x+1,y)) && isEmpty(x,y+1)){
+			deletePixel(pixel.x, pixel.y);
+		}
+	},
+	category: "powders",
+},
+elements.invisiblewall = {
+	color: "#000000",
+	behavior: behaviors.WALL,
+	tick: function(pixel){
+		if (currentElement == "invisiblewall"){
+			pixel.color = "rgb(15, 15, 15)";
+		} else {
+			pixel.color = "rgba(0, 0, 0, -1)";
+		}
+	},
+	category: "solids",
+},
+elements.bismuth = {
+    color: ["#818181","#989898","#b0b0b0","#c9c9c9"],
+    behavior: behaviors.WALL,
+    category: "solids",
+    tempHigh: 271.4,
+    stateHigh: "molten_bismuth",
+    density: 9780,
+    state: "solid"
+}
+function RGBtoHSV(r, g, b) {
+    if (arguments.length === 1) {
+        g = r.g, b = r.b, r = r.r;
+    }
+    var max = Math.max(r, g, b), min = Math.min(r, g, b),
+        d = max - min,
+        h,
+        s = (max === 0 ? 0 : d / max),
+        v = max / 255;
+
+    switch (max) {
+        case min: h = 0; break;
+        case r: h = (g - b) + d * (g < b ? 6: 0); h /= 6 * d; break;
+        case g: h = (b - r) + d * 2; h /= 6 * d; break;
+        case b: h = (r - g) + d * 4; h /= 6 * d; break;
+    }
+
+    return {
+        h: h,
+        s: s,
+        v: v
+    };
+}
+function HSVtoRGB(h, s, v) {
+    var r, g, b, i, f, p, q, t;
+    if (arguments.length === 1) {
+        s = h.s, v = h.v, h = h.h;
+    }
+    i = Math.floor(h * 6);
+    f = h * 6 - i;
+    p = v * (1 - s);
+    q = v * (1 - f * s);
+    t = v * (1 - (1 - f) * s);
+    switch (i % 6) {
+        case 0: r = v, g = t, b = p; break;
+        case 1: r = q, g = v, b = p; break;
+        case 2: r = p, g = v, b = t; break;
+        case 3: r = p, g = q, b = v; break;
+        case 4: r = t, g = p, b = v; break;
+        case 5: r = v, g = p, b = q; break;
+    }
+    return {
+        r: Math.round(r * 255),
+        g: Math.round(g * 255),
+        b: Math.round(b * 255)
+    };
+}
+elements.molten_bismuth = {
+    color: ["#ee8d63", "#ef7e5e", "#f06e5c", "#f05c5c"],
+    behavior: behaviors.MOLTEN,
+    category: "states",
+    state: "liquid",
+    tick: function(pixel){
+        if (pixel.temp <= 261.4){
+            pixel.tHue = 0;
+            for (var i = 0; i < squareCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (!isEmpty(x, y, true)){
+                  if (pixelMap[x][y].element == "bismuth"){
+                      var otherPixel = pixelMap[x][y]
+                      var nR = parseInt(otherPixel.color.slice(4, otherPixel.color.indexOf(',')), 10)
+		              var nG = parseInt(otherPixel.color.slice(otherPixel.color.indexOf(',') + 1, otherPixel.color.lastIndexOf(',')), 10)
+		              var nB = parseInt(otherPixel.color.slice(otherPixel.color.lastIndexOf(',') + 1, -1), 10)
+                      var hsvResult = RGBtoHSV(nR, nG, nB)
+                           if ((pixel.tHue+1)%1 < hsvResult.h){
+                           pixel.tHue = hsvResult.h;
+                         }
+                     }
+              }
+            }
+            changePixel(pixel, "bismuth")
+            if (1 == 1){
+                var rgbResult = HSVtoRGB(pixel.tHue + 0.02, 0.8, 0.8);
+            } else {
+                var rgbResult = HSVtoRGB(pixel.tHue, 0.8, 0.8);
+            }
+            const hexR = rgbResult.r.toString(16).padStart(2, '0');
+            const hexG = rgbResult.g.toString(16).padStart(2, '0');
+            const hexB = rgbResult.b.toString(16).padStart(2, '0');
+            const hexCode = `#${hexR}${hexG}${hexB}`;
+            pixel.color = pixelColorPick(pixel, hexCode)
+        }
+    },
+    density: 10049,
 }
