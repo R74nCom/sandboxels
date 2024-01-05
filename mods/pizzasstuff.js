@@ -46,6 +46,42 @@ elements.fruit_ice_cream = {
 	hidden: "TRUE",
 };
 
+elements.chocolate_yogurt = {
+	color: "#825c4b",
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "solid",
+	hidden: "TRUE",
+	tempLow: 0,
+	stateLow: "frozen_chocolate_yogurt",
+};
+
+elements.fruit_yogurt = {
+	color: "#f587d0",
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "solid",
+	hidden: "TRUE",
+	tempLow: 0,
+	stateLow: "frozen_fruit_yogurt",
+};
+
+elements.frozen_fruit_yogurt = {
+	color: "#ffc2ea",
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "solid",
+	hidden: "TRUE",
+};
+
+elements.frozen_chocolate_yogurt = {
+	color: "#ad8776",
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "solid",
+	hidden: "TRUE",
+};
+
 elements.cooking_oil = {
 	color: "#c4ab4f",
 	behavior: behaviors.LIQUID,
@@ -81,6 +117,14 @@ elements.rose_sauce = {
 	hidden: "TRUE",
 };
 
+elements.rose_sauce = {
+	color: "#f0340e",
+	behavior: behaviors.LIQUID,
+	category: "food",
+	state: "solid",
+	hidden: "TRUE",
+};
+
 elements.smashed_ice = {
 	color: "#c3d4e6",
 	behavior: behaviors.LIQUID,
@@ -88,6 +132,8 @@ elements.smashed_ice = {
 	state: "solid",
 	 reactions: {
         "grape": { elem1: null, elem2: "fruit_slushy" },
+		"green_grape": { elem1: null, elem2: "fruit_slushy" },
+		"cherry": { elem1: null, elem2: "fruit_slushy" },
 		"chocolate": { elem1: null, elem2: "chocolate_slushy" },
 		"juice": { elem1: null, elem2: "fruit_slushy" },
 		"chocolate_sauce": { elem1: null, elem2: "chocolate_slushy" },
@@ -95,7 +141,7 @@ elements.smashed_ice = {
 	density: 100,
 	tempHigh: 25,
 	stateHigh: "water",
-	tempLow: -50,
+	tempLow: -100,
 	stateLow: "snow",
 };
 
@@ -134,11 +180,55 @@ elements.moth = {
 	stateLow: "dead_bug",
 };
 
+elements.cherry = {
+	color: "#c41428",
+	behavior: behaviors.POWDER,
+	category: "food",
+	state: "solid",
+	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	breakIntoColor: "#450008",
+};
+
+elements.orange = {
+	color: "#ff9100",
+	behavior: behaviors.POWDER,
+	category: "food",
+	state: "solid",
+	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	breakIntoColor: "#d69c4f",
+};
+
+elements.kiwi = {
+	color: "#34611a",
+	behavior: behaviors.POWDER,
+	category: "food",
+	state: "solid",
+	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	breakIntoColor: "#517a38",
+};
+
+elements.green_grape = {
+	color: "#b6eb7f",
+	behavior: behaviors.POWDER,
+	category: "food",
+	state: "solid",
+	breakInto: "juice",
+	breakIntoColor: "#5f8536",
+	tempHigh: 256,
+	stateHigh: "steam",
+};
+
 if (!elements.lettuce.reactions) elements.lettuce.reactions = {};
 elements.lettuce.reactions.ice_cream = { elem1: "moss", elem2: null }
 
 if (!elements.ketchup.reactions) elements.ketchup.reactions = {};
-elements.ketchup.reactions.mayonnaise = { elem1: "rose_sauce", elem2: null }
+elements.ketchup.reactions.yolk = { elem1: "rose_sauce", elem2: null }
 
 
 if (!elements.bread.reactions) elements.bread.reactions = {};
@@ -188,6 +278,21 @@ if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
 elements.ice_cream.reactions.grape = { elem1: "fruit_ice_cream", elem2: null }
 
 if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
+elements.ice_cream.reactions.jelly = { elem1: "fruit_ice_cream", elem2: null }
+
+if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
+elements.ice_cream.reactions.cherry = { elem1: "fruit_ice_cream", elem2: null }
+
+if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
+elements.ice_cream.reactions.orange = { elem1: "fruit_ice_cream", elem2: null }
+
+if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
+elements.ice_cream.reactions.kiwi = { elem1: "fruit_ice_cream", elem2: null }
+
+if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
+elements.ice_cream.reactions.green_grape = { elem1: "fruit_ice_cream", elem2: null }
+
+if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
 elements.ice_cream.reactions.chocolate = { elem1: "chocolate_ice_cream", elem2: null }
 
 if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
@@ -195,3 +300,33 @@ elements.ice_cream.reactions.chocolate_sauce = { elem1: "chocolate_ice_cream", e
 
 if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
 elements.ice_cream.reactions.melted_chocolate = { elem1: "chocolate_ice_cream", elem2: null }
+
+if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
+elements.yogurt.reactions.grape = { elem1: "fruit_yogurt", elem2: null }
+
+if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
+elements.yogurt.reactions.juice = { elem1: "fruit_yogurt", elem2: null }
+
+if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
+elements.yogurt.reactions.green_grape = { elem1: "fruit_yogurt", elem2: null }
+
+if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
+elements.yogurt.reactions.cherry = { elem1: "fruit_yogurt", elem2: null }
+
+if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
+elements.yogurt.reactions.kiwi = { elem1: "fruit_yogurt", elem2: null }
+
+if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
+elements.yogurt.reactions.orange = { elem1: "fruit_yogurt", elem2: null }
+
+if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
+elements.yogurt.reactions.jelly = { elem1: "fruit_yogurt", elem2: null }
+
+if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
+elements.yogurt.reactions.chocolate = { elem1: "chocolate_yogurt", elem2: null }
+
+if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
+elements.yogurt.reactions.chocolate_sauce = { elem1: "chocolate_yogurt", elem2: null }
+
+if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
+elements.yogurt.reactions.melted_chocolate = { elem1: "chocolate_yogurt", elem2: null }
