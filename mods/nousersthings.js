@@ -1589,6 +1589,7 @@ elements.molten_bismuth = {
     behavior: behaviors.MOLTEN,
     category: "states",
     state: "liquid",
+    temp: 280,
     tick: function(pixel){
         if (pixel.temp <= 261.4){
             pixel.tHue = 0;
