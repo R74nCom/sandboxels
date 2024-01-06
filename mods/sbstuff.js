@@ -229,3 +229,48 @@ elements.poop = {
 	category: "special",
 	state: "solid",
 };
+
+elements.marshmallow = {
+	tempHigh: 50,
+	stateHigh: "cooked_marshmallow",
+	color: "#ffe4e3",
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "solid",
+};
+
+elements.cooked_marshmallow = {
+	tempHigh: 150,
+	stateHigh: "burnt_marshmallow",
+	color: "#d49e9d",
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "liquid",
+};
+
+elements.burnt_marshmallow = {
+	tempHigh: 500,
+	stateHigh: "ash",
+	color: "#1c1212",
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "solid",
+};
+
+elements.ramen = {
+	tempHigh: 500,
+	stateHigh: "ash",
+	color: "#fae34d",
+	behavior: behaviors.POWDER,
+	category: "food",
+	state: "solid",
+};
+
+elements.cereal = {
+	tempHigh: 500,
+	stateHigh: "ash",
+	color: ["#ba3425", "#baa31e", "#26ba1e", "#1e9dba", "#6f1eba"],
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "liquid",
+};
