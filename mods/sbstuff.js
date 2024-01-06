@@ -1,4 +1,6 @@
 elements.burnt_rice = {
+	tempHigh: 999,
+	stateHigh: "ash",
 	density: 699,
 	color: "#242424",
 	behavior: behaviors.POWDER,
@@ -10,6 +12,7 @@ elements.burnt_rice = {
 };
 
 elements.rice = {
+	isFood: true,
 	burnInto: "burnt_rice",
 	density: 696,
 	tempHigh: 232,
@@ -21,6 +24,8 @@ elements.rice = {
 };
 
 elements.moth = {
+	tempHigh: 500,
+	stateHigh: "ash",
 	color: "#57381a",
 	behavior: behaviors.GAS,
 	category: "life",
@@ -28,6 +33,8 @@ elements.moth = {
 };
 
 elements.moss = {
+	tempHigh: 500,
+	stateHigh: "ash",
 	density: 1000,
 	color: "#2d571a",
 	behavior: behaviors.POWDER,
@@ -36,6 +43,8 @@ elements.moss = {
 };
 
 elements.mc_donalds = {
+	tempHigh: 6969,
+	stateHigh: "void",
 	density: 69,
 	color: "#ff0000",
 	behavior: behaviors.STURDYPOWDER,
@@ -44,6 +53,9 @@ elements.mc_donalds = {
 };
 
 elements.maple_syrup = {
+	isFood: true,
+	tempHigh: 500,
+	stateHigh: "steam",
 	density: 1333,
 	hardness: 1,
 	color: "#9c6000",
@@ -53,6 +65,7 @@ elements.maple_syrup = {
 };
 
 elements.boiled_egg = {
+	isFood: true,
 	density: 700,
 	breakInto: "yolk",
 	tempHigh: 500,
@@ -83,7 +96,8 @@ elements.dark_oak_wood = {
 };
 
 elements.avocado = {
-	tempHigh: 1000,
+	isFood: true,
+	tempHigh: 500,
 	breakInto: "guacamole",
 	stateHigh: "ash",
 	color: "#254a22",
@@ -93,7 +107,8 @@ elements.avocado = {
 };
 
 elements.guacamole = {
-	tempHigh: 1000,
+	isFood: true,
+	tempHigh: 500,
 	stateHigh: "ash",
 	color: "#a2e09d",
 	behavior: behaviors.POWDER,
@@ -102,7 +117,8 @@ elements.guacamole = {
 };
 
 elements.watermelon = {
-	tempHigh: 1000,
+	isFood: true,
+	tempHigh: 500,
 	stateHigh: "ash",
 	breakInto: "water_from_the_melon",
 	color: "#40993f",
@@ -112,7 +128,8 @@ elements.watermelon = {
 };
 
 elements.water_from_the_melon = {
-	tempHigh: 1000,
+	isFood: true,
+	tempHigh: 500,
 	stateHigh: "steam",
 	color: "#ff5d47",
 	behavior: behaviors.LIQUID,
@@ -121,16 +138,18 @@ elements.water_from_the_melon = {
 };
 
 elements.nachos = {
-	tempHigh: 1000,
+	isFood: true,
+	tempHigh: 500,
 	stateHigh: "ash",
-	color: "#ff5d47",
+	color: "#bd7b26",
 	behavior: behaviors.SUPPORTPOWDER,
 	category: "food",
 	state: "solid",
 };
 
 elements.cherry = {
-	tempHigh: 1000,
+	isFood: true,
+	tempHigh: 500,
 	stateHigh: "ash",
 	color: "#ff0f0f",
 	behavior: behaviors.STURDYPOWDER,
@@ -139,7 +158,8 @@ elements.cherry = {
 };
 
 elements.green_cherry = {
-	tempHigh: 1000,
+	isFood: true,
+	tempHigh: 500,
 	stateHigh: "ash",
 	color: "#5ce344",
 	behavior: behaviors.STURDYPOWDER,
@@ -148,10 +168,109 @@ elements.green_cherry = {
 };
 
 elements.meth = {
+	hardness: 1,
 	tempHigh: 5000,
 	stateHigh: "steam",
 	color: "#0affef",
 	behavior: behaviors.POWDER,
 	category: "powders",
 	state: "solid",
+};
+
+elements.garlic = {
+	isFood: true,
+	tempHigh: 500,
+	stateHigh: "ash",
+	color: "#ffebbd",
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "solid",
+	reactions: {
+		"bread": { elem1: null, elem2: "garlic_bread" },
+	}
+};
+
+elements.garlic_bread = {
+	isFood: true,
+	breakInto: "crumb",
+	tempHigh: 500,
+	stateHigh: "ash",
+	color: ["#db9b56", "#288a0c", "#db9b56", "#db9b56", "#db9b56", "#db9b56"],
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "solid",
+};
+
+elements.kiwi = {
+	isFood: true,
+	tempHigh: 500,
+	stateHigh: "ash",
+	color: ["#0f4700", "#0f4700", "#0f4700", "#0f4700", "#0f4700", "#0f4700", "#0f4700", "#0f4700", "#0f4700", "#210a00"],
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "solid",
+};
+
+elements.peanut_butter = {
+	isFood: true,
+	tempHigh: 500,
+	stateHigh: "ash",
+	color: "#d4903d",
+	behavior: behaviors.POWDER,
+	category: "food",
+	state: "solid",
+};
+
+elements.poop = {
+	tempHigh: 500,
+	stateHigh: "ash",
+	color: "#331600",
+	behavior: behaviors.STURDYPOWDER,
+	category: "special",
+	state: "solid",
+};
+
+elements.marshmallow = {
+	tempHigh: 50,
+	stateHigh: "cooked_marshmallow",
+	color: "#ffe4e3",
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "solid",
+};
+
+elements.cooked_marshmallow = {
+	tempHigh: 150,
+	stateHigh: "burnt_marshmallow",
+	color: "#d49e9d",
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "liquid",
+};
+
+elements.burnt_marshmallow = {
+	tempHigh: 500,
+	stateHigh: "ash",
+	color: "#1c1212",
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "solid",
+};
+
+elements.ramen = {
+	tempHigh: 500,
+	stateHigh: "ash",
+	color: "#fae34d",
+	behavior: behaviors.POWDER,
+	category: "food",
+	state: "solid",
+};
+
+elements.cereal = {
+	tempHigh: 500,
+	stateHigh: "ash",
+	color: ["#ba3425", "#baa31e", "#26ba1e", "#1e9dba", "#6f1eba"],
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "liquid",
 };
