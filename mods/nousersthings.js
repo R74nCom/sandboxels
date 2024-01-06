@@ -1527,4 +1527,101 @@ elements.invisiblewall = {
 		}
 	},
 	category: "solids",
+},
+elements.bismuth = {
+    color: ["#818181","#989898","#b0b0b0","#c9c9c9"],
+    behavior: behaviors.WALL,
+    category: "solids",
+    tempHigh: 271.4,
+    stateHigh: "molten_bismuth",
+    density: 9780,
+    state: "solid"
+}
+function RGBtoHSV(r, g, b) {
+    if (arguments.length === 1) {
+        g = r.g, b = r.b, r = r.r;
+    }
+    var max = Math.max(r, g, b), min = Math.min(r, g, b),
+        d = max - min,
+        h,
+        s = (max === 0 ? 0 : d / max),
+        v = max / 255;
+
+    switch (max) {
+        case min: h = 0; break;
+        case r: h = (g - b) + d * (g < b ? 6: 0); h /= 6 * d; break;
+        case g: h = (b - r) + d * 2; h /= 6 * d; break;
+        case b: h = (r - g) + d * 4; h /= 6 * d; break;
+    }
+
+    return {
+        h: h,
+        s: s,
+        v: v
+    };
+}
+function HSVtoRGB(h, s, v) {
+    var r, g, b, i, f, p, q, t;
+    if (arguments.length === 1) {
+        s = h.s, v = h.v, h = h.h;
+    }
+    i = Math.floor(h * 6);
+    f = h * 6 - i;
+    p = v * (1 - s);
+    q = v * (1 - f * s);
+    t = v * (1 - (1 - f) * s);
+    switch (i % 6) {
+        case 0: r = v, g = t, b = p; break;
+        case 1: r = q, g = v, b = p; break;
+        case 2: r = p, g = v, b = t; break;
+        case 3: r = p, g = q, b = v; break;
+        case 4: r = t, g = p, b = v; break;
+        case 5: r = v, g = p, b = q; break;
+    }
+    return {
+        r: Math.round(r * 255),
+        g: Math.round(g * 255),
+        b: Math.round(b * 255)
+    };
+}
+elements.molten_bismuth = {
+    color: ["#ee8d63", "#ef7e5e", "#f06e5c", "#f05c5c"],
+    behavior: behaviors.MOLTEN,
+    category: "states",
+    state: "liquid",
+    temp: 280,
+    tick: function(pixel){
+        if (pixel.temp <= 261.4){
+            pixel.tHue = 0;
+            for (var i = 0; i < squareCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (!isEmpty(x, y, true)){
+                  if (pixelMap[x][y].element == "bismuth"){
+                      var otherPixel = pixelMap[x][y]
+                      var nR = parseInt(otherPixel.color.slice(4, otherPixel.color.indexOf(',')), 10)
+		              var nG = parseInt(otherPixel.color.slice(otherPixel.color.indexOf(',') + 1, otherPixel.color.lastIndexOf(',')), 10)
+		              var nB = parseInt(otherPixel.color.slice(otherPixel.color.lastIndexOf(',') + 1, -1), 10)
+                      var hsvResult = RGBtoHSV(nR, nG, nB)
+                           if ((pixel.tHue+1)%1 < hsvResult.h){
+                           pixel.tHue = hsvResult.h;
+                         }
+                     }
+              }
+            }
+            changePixel(pixel, "bismuth")
+            if (1 == 1){
+                var rgbResult = HSVtoRGB(pixel.tHue + 0.02, 0.8, 0.8);
+            } else {
+                var rgbResult = HSVtoRGB(pixel.tHue, 0.8, 0.8);
+            }
+            const hexR = rgbResult.r.toString(16).padStart(2, '0');
+            const hexG = rgbResult.g.toString(16).padStart(2, '0');
+            const hexB = rgbResult.b.toString(16).padStart(2, '0');
+            const hexCode = `#${hexR}${hexG}${hexB}`;
+            pixel.color = pixelColorPick(pixel, hexCode)
+        }
+    },
+    density: 10049,
 }
