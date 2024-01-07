@@ -32,14 +32,17 @@ elements.moth = {
 	state: "solid",
 };
 
-elements.moss = {
+elements.cotton_candy = {
 	tempHigh: 500,
 	stateHigh: "ash",
 	density: 1000,
-	color: "#2d571a",
+	color: "#b6c7e3",
 	behavior: behaviors.POWDER,
-	category: "land",
-	state: "solid",
+	category: "food",
+	state: "liquid",
+	reactions: {
+		"water": { elem1: "sugar", elem2: null },
+	}
 };
 
 elements.mc_donalds = {
@@ -108,6 +111,7 @@ elements.avocado = {
 
 elements.guacamole = {
 	isFood: true,
+	hidden: true,
 	tempHigh: 500,
 	stateHigh: "ash",
 	color: "#a2e09d",
@@ -120,20 +124,21 @@ elements.watermelon = {
 	isFood: true,
 	tempHigh: 500,
 	stateHigh: "ash",
-	breakInto: "water_from_the_melon",
+	breakInto: "watermelon_flesh",
 	color: "#40993f",
 	behavior: behaviors.SUPPORT,
 	category: "food",
 	state: "solid",
 };
 
-elements.water_from_the_melon = {
+elements.watermelon_flesh = {
 	isFood: true,
+	hidden: true,
 	tempHigh: 500,
 	stateHigh: "steam",
 	color: "#ff5d47",
-	behavior: behaviors.LIQUID,
-	category: "liquids",
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
 	state: "liquid",
 };
 
@@ -157,7 +162,7 @@ elements.cherry = {
 	state: "solid",
 };
 
-elements.green_cherry = {
+elements.green_berries = {
 	isFood: true,
 	tempHigh: 500,
 	stateHigh: "ash",
@@ -168,9 +173,10 @@ elements.green_cherry = {
 };
 
 elements.meth = {
+	hidden: true,
 	hardness: 1,
-	tempHigh: 5000,
-	stateHigh: "steam",
+	tempHigh: 500,
+	stateHigh: "melted_meth",
 	color: "#0affef",
 	behavior: behaviors.POWDER,
 	category: "powders",
@@ -222,12 +228,16 @@ elements.peanut_butter = {
 };
 
 elements.poop = {
+	hardness: 1,
 	tempHigh: 500,
 	stateHigh: "ash",
 	color: "#331600",
 	behavior: behaviors.STURDYPOWDER,
 	category: "special",
 	state: "solid",
+	reactions: {
+		"piss": { elem1: null, elem2: "bless" },
+	}
 };
 
 elements.marshmallow = {
@@ -273,4 +283,165 @@ elements.cereal = {
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
 	state: "liquid",
+};
+
+elements.sushi = {
+	tempHigh: 500,
+	stateHigh: "ash",
+	color: ["#020802", "#fff0eb", "#ff6524", "#35ab26"],
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "liquid",
+};
+
+elements.indestructible_wall = {
+	color: "#7a7a7a",
+	behavior: behaviors.WALL,
+	category: "solids",
+	state: "solid",
+};
+
+elements.diamond_ore = {
+	tempHigh: 1000,
+	stateHigh: "ash",
+	breakInto: "diamond",
+	color: ["#525252", "#525252", "#525252", "#525252", "#525252", "#2ba3ff"],
+	behavior: behaviors.WALL,
+	category: "solids",
+	state: "solid",
+};
+
+elements.coca_cola = {
+	tempHigh: 500,
+	stateHigh: "steam",
+	color: "#381e13",
+	behavior: behaviors.LIQUID,
+	category: "liquids",
+	state: "liquid",
+};
+
+elements.piss = {
+	tempHigh: 500,
+	stateHigh: "steam",
+	color: "#ffff00",
+	behavior: behaviors.LIQUID,
+	category: "special",
+	state: "liquid",
+};
+
+elements.soup = {
+	temp: 50,
+	tempHigh: 500,
+	stateHigh: "steam",
+	color: "#945e00",
+	behavior: behaviors.LIQUID,
+	category: "liquids",
+	state: "liquid",
+};
+
+elements.pastry = {
+	tempHigh: 500,
+	stateHigh: "ash",
+	color: "#ba6727",
+	behavior: behaviors.SUPPORT,
+	category: "food",
+	state: "solid",
+};
+
+elements.melted_meth = {
+	hidden: true,
+	tempHigh: 100000,
+	stateHigh: "beans",
+	color: "#00a2ff",
+	behavior: behaviors.LIQUID,
+	category: "states",
+	state: "solid",
+};
+
+elements.expired_milk = {
+	hidden: true,
+	tempHigh: 500,
+	stateHigh: "ash",
+	color: "#b8c2b4",
+	behavior: behaviors.LIQUID,
+	category: "states",
+	state: "solid",
+};
+
+elements.kfc = {
+	tempHigh: 69420,
+	stateHigh: "void",
+	color: "#d16e11",
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "solid",
+};
+
+elements.wendys = {
+	tempHigh: 69420,
+	stateHigh: "void",
+	color: "#db1e0d",
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "solid",
+};
+
+elements.burger_king = {
+	tempHigh: 69420,
+	stateHigh: "void",
+	color: "#db660d",
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "solid",
+};
+
+elements.pizza_hut = {
+	tempHigh: 69420,
+	stateHigh: "void",
+	color: "#ed3b24",
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "solid",
+};
+
+elements.dominos = {
+	tempHigh: 69420,
+	stateHigh: "void",
+	color: ["#ed4934", "#3494ed"],
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "solid",
+};
+
+
+elements.vape = {
+	tempHigh: 500999,
+	hidden: true,
+	stateHigh: "beans",
+	color: "#999999",
+	behavior:  [
+        "XX|CR:smoke|XX",
+        "CR:smoke|XX|CR:smoke",
+        "XX|CR:smoke|XX",
+    ],
+	category: "special",
+	state: "solid",
+};
+
+elements.tendon = {
+	temp: 20000,
+	color: ["#1eff00", "#1eff00", "#1eff00", "#acffa1", "#1eff00", "#1eff00", "#1eff00"],
+	behavior: behaviors.DGAS,
+	category: "energy",
+	state: "gas",
+};
+
+elements.pea = {
+	breakInto: "mashed_pea",
+	tempHigh: 500,
+	stateHigh: "ash",
+	color: "#3cbf2a",
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "solid",
 };
