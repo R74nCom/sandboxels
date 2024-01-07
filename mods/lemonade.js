@@ -9,6 +9,8 @@ elements.head.reactions["lemonade"] = {elem2: null}
 
 elements.head.reactions["lemons"] = {elem2: null}
 
+elements.head.reactions["lemon_juice"] = {elem2: null}
+
 elements.lemon_juice = {
 color: "#FFFF00",
 behavior: behaviors.LIQUID,
