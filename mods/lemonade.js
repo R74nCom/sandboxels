@@ -4,21 +4,6 @@ behavior: behaviors.LIQUID,
 category: "liquids",
 isFood: true,
 state: "solid",
-tick: function(pixel) {
-    if (isEmpty(pixel.x, pixel.y+1)) {
-        createPixel("body", pixel.x, pixel.y+1);
-        pixel.element = "head";
-    }
-    else if (isEmpty(pixel.x, pixel.y-1)) {
-        createPixel("head", pixel.x, pixel.y-1);
-        pixelMap[pixel.x][pixel.y-1].color = pixel.color;
-        pixel.element = "body";
-        pixel.color = pixelColorPick(pixel)
-    }
-    else {
-        deletePixel(pixel.x, pixel.y);
-    }
-},
 };
 
 elements.lemon_juice = {
