@@ -13,7 +13,7 @@ behavior: behaviors.LIQUID,
 category: "liquids",
 state: "solid",
 reactions: {
-		"sugar_water": { elem1: "null", elem2: "lemonade" },
+		"sugar_water": { elem1: null, elem2: "lemonade" },
 	}
 };
 
