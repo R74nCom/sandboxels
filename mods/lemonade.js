@@ -4,7 +4,8 @@ behavior: behaviors.LIQUID,
 category: "liquids",
 isFood: true,
 state: "solid",
-};
+}
+elements.head.reactions["lemonade"] = {elem2: null}
 
 elements.lemon_juice = {
 color: "#FFFF00",
