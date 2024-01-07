@@ -106,7 +106,7 @@ const inject = () => {
 
 /**
  * 
- * @param {string} menu Menu do be opened 
+ * @param {string} menu Menu to be opened 
  * @param {boolean} [closeCurrent] Whether it should forcefully close the current screen
  */
 const openMenu = (menu, closeCurrent = false) => {
@@ -130,6 +130,7 @@ class MenuScreen {
         this.showCloseButton = true;
         this.closeButtonText = "-";
         this.closeButtonClass = "XButton";
+        this.titleId = null;
     }
 
     /**
@@ -138,6 +139,15 @@ class MenuScreen {
      */
     setTitle(title = "New Menu Screen") {
         this.title = title;
+        return this;
+    }
+
+    /**
+     * Sets screen title ID
+     * @param {string} [id] Screen title element ID
+     */
+    setTitleId(id) {
+        this.titleId = id;
         return this;
     }
 
@@ -253,7 +263,7 @@ class MenuScreen {
         const inner = document.createElement("div");
         inner.className = this.innerDivClass ?? "menuScreen";
         inner.innerHTML = `${this.showCloseButton ? `<button class="${this.closeButtonClass ?? "XButton"}" onclick="closeMenu();">${this.closeButtonText}` : ""}</button>
-        <span class="menuTitle">${this.title ?? "Menu Screen"}</span><br><br><div class="menuText">` + this.innerHtml + "</div>";
+        <span class="menuTitle"${this.titleId ? ` id="${this.titleId}"` : ""}>${this.title ?? "Menu Screen"}</span><br><br><div class="menuText">` + this.innerHtml + "</div>";
         this.nodes.forEach(n => inner.querySelector(".menuText").appendChild(n));
         parent.appendChild(inner);
         document.getElementById(id).appendChild(parent);
