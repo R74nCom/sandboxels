@@ -1970,4 +1970,37 @@ elements.gas_filter = {
     canContain: true,
 	noMix: true,
 }
-
+function weightedAverage(num1, num2, weight){
+    return ((weight * num1)+((1-weight)*num2))
+}
+elements.dyer = {
+    customColor: true,
+    color: ["#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"],
+    behavior: behaviors.wall,
+    movable: false,
+    state: "solid",
+    category: "machines",
+    tick: function(pixel){
+        for (var i = 0; i < squareCoordsShuffle.length; i++) {
+            var coord = squareCoordsShuffle[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (!isEmpty(x,y,true)) {
+                if (!(pixelMap[x][y].element == "dyer")){
+                    var newPixel = pixelMap[x][y];
+                    var rgb1 = pixel.color.match(/\d+/g);
+                    var rgb2 = newPixel.color.match(/\d+/g);
+                    // average the colors
+                    var rgb = [
+                        weightedAverage(parseInt(rgb1[0]), parseInt(rgb2[0]), 0.2),
+                        weightedAverage(parseInt(rgb1[1]), parseInt(rgb2[1]), 0.2),
+                        weightedAverage(parseInt(rgb1[2]), parseInt(rgb2[2]), 0.2),
+                    ];
+                    // convert rgb to hex
+                    var hex = RGBToHex(rgb);
+                    newPixel.color = pixelColorPick(newPixel, hex);
+                }
+            }
+        }
+    }
+}
