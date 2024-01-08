@@ -7,8 +7,8 @@ if(allDependenciesExist) {
 
 	//COMMON VARIABLES ##
 
-		const whiteColor = {r: 255, g: 255, b: 255}
-		const blackColor = {r: 0, g: 0, b: 0}
+		const whiteColor = {r: 255, g: 255, b: 255};
+		const blackColor = {r: 0, g: 0, b: 0};
 
 	//ESSENTIAL COMMON FUNCTIONS (CODE LIBRARY) ##
 
@@ -802,6 +802,10 @@ if(allDependenciesExist) {
 			};
 
 			function rgbHexCatcher(color) {
+				return convertColorFormats(color,"rgb");
+			};
+			
+			function _rgbHexCatcher(color) {
 				return convertColorFormats(color,"rgb");
 			};
 
@@ -4460,15 +4464,66 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						ctx.fillStyle = colorOut;
 					}
 					else if (view === 2) { // thermal view
-						// set the color to pixel.temp, from hottest at -66 (194) hue to coldest 225 hue, with the minimum being -273, max being 7755
+						// set the color to pixel.temp, from hottest at -66 (294.1875) hue to coldest 225 hue, with the minimum being -273, max being 7755
 						var temp = pixel.temp;
-						if (temp < -273) {temp = -273}
-						var hue = 225 - (Math.min(7755,temp)/6000)*225;
-						var lig = 50 + ((Math.max(0,temp - 7755)) * (50/1000));
-						if (temp > 9255) {temp = 8755}
-						if (hue < 0) {hue += (360 * Math.ceil(hue / -360))}
-						if (temp < 0 && hue > 225) {hue = 225}
-						ctx.fillStyle = "hsl("+hue+",100%,"+lig+"%)";
+						temp = Math.min(Math.max(temp,(settings.abszero ?? -273.15)),55530);
+						var hue,sat,lig;
+						sat = 100;
+						lig = 50;
+						if(temp <= 7755) {
+							hue = 225 - (Math.min(7755,temp)/6000)*225;
+							if (hue < 0) {hue += (360 * Math.ceil(hue / -360))}
+							if (temp < 0 && hue > 280) {hue = 280}
+						} else if(temp <= 9255) {
+							hue = 294.1875;
+							lig = 50 + (Math.max(0,temp - 7755) * (50/1500));
+						} else if(temp <= 11255) {
+							hue = 294.1875;
+							sat = 0;
+							lig = 100 - (Math.max(0,temp - 9255) * (100 / 2000));
+						} else if(temp <= 11755) {
+							hue = 225;
+							lig = (Math.max(0,temp - 11255) * (25 / 500));
+						} else if(temp <= 19510) {
+							hue = 225 - (Math.min(19510,Math.max(0,temp - 11755))/6000)*225;
+							if (hue < 0) {hue += (360 * Math.ceil(hue / -360))}
+							lig = 25;
+						} else if(temp <= 20510) {
+							hue = 294.1875
+							//lig = scale(temp,19510,20010,25,75);
+							//hue = scale(temp,19510,20010,294.1875,585) % 360;
+							sat = scale(temp,19510,20510,100,50);
+							lig = scale(temp,19510,20510,25,75);
+						} else if(temp <= 28265) {
+							hue = scale(temp,20510,28265,294.1875,585) % 360;
+							sat = 50;
+							lig = 75;
+						} else if(temp <= 29265) {
+							hue = 225;
+							sat = scale(temp,28265,29265,50,40);
+							lig = scale(temp,28265,29265,75,87.5);
+						} else if(temp <= 37020) {
+							hue = scale(temp,29265,37020,225,654.1875) % 360;
+							sat = 40;
+							lig = 87.5;
+						} else if(temp <= 39020) {
+							hue = 294.1875;
+							sat = 40;
+							lig = scale(temp,37020,39020,87.5,50);
+						} else if(temp <= 46775) { //46775
+							hue = scale(temp,39020,46775,294.1875,585) % 360;
+							sat = 40;
+							lig = 50;
+						} else if(temp <= 47775) {
+							hue = 225;
+							sat = scale(temp,46775,47775,40,20);
+							lig = 50;
+						} else { //55530
+							hue = scale(temp,47775,55530,225,654.1875) % 360;
+							sat = 20;
+							lig = 50;
+						};
+						ctx.fillStyle = "hsl("+hue+","+sat+"%,"+lig+"%)";
 					}
 					else if (view === 4) { // smooth view, average of surrounding pixels
 						// E/N: i'm too scared to do smooth view
@@ -4924,6 +4979,14 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		};*/
 		//warm is redundant due to vanilla room_temp
 		elements.room_temp.category = "tools";
+		elements.slow_cool = {
+			color: elements.cook.color.map(colorCode => Object.values(convertColorFormats(colorCode,"json"))).map(x => RGBToHex(x.map(y => 255 - y))),
+			tool: function(pixel) {
+					pixel.temp -= (0.5 * (1 + shiftDown));
+			},
+			category: "energy",
+			excludeRandom: true
+		};
 		elements.ultraheat = {
 			color: ["#ff0000", "#ffbf4f", "#ff0000", "#ffbf4f", "#ff0000", "#ffbf4f"],
 			tool: function(pixel) {
@@ -19800,7 +19863,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						coolingFactor = 0.99999
 					};
 					//console.log(coolingFactor);
-					pixel.temp = ((pixel.temp + 273.15) * coolingFactor) - 273.15;
+					pixel.temp = ((pixel.temp - (settings.abszero ?? -273.15)) * coolingFactor) + (settings.abszero ?? -273.15);
 
 					for (var i = 0; i < adjacentCoords.length; i++) {
 						var x = pixel.x+adjacentCoords[i][0];
@@ -24010,7 +24073,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					elements.molten_titanium ??= {}; elements.molten_titanium.tempHigh = 3287;
 					elements.molten_iron ??= {}; elements.molten_iron.tempHigh = 2861;
 					elements.molten_chromium ??= {}; elements.molten_chromium.tempHigh = 2671;
-					elements.molten_copper ??= {}; elements.molten_molten_copper.tempHigh = 4700;
+					elements.molten_copper ??= {}; elements.molten_copper.tempHigh = 4700;
 					elements.molten_alumina ??= {};
 					elements.molten_alumina.tempHigh = 5400;
 					elements.molten_alumina.reactions ??= {};
@@ -40796,7 +40859,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hardness: 1,
 			state: "solid",
 			density: 3000,
-			temp: -273.15,
+			temp: (settings.abszero ?? -273.15),
 			behavior: behaviors.WALL,
 			color: "#cf9f7f",
 			insulate: true,
@@ -40823,7 +40886,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 						//New pixel RV
 						var newPixel = pixelMap[newX][newY];
 						//More sugar
-						var newPixelTempKelvin = newPixel.temp + 273.15;
+						var newPixelTempKelvin = newPixel.temp - (settings.abszero ?? -273.15);
 						//Skip pixels at or below absolute zero
 						if(newPixelTempKelvin <= 0) {
 							continue;
@@ -40832,12 +40895,14 @@ Make sure to save your command in a file if you want to add this preset again.`
 						if(newPixelTempKelvin <= pixel.rate) {
 							//Special "draining" logic
 							pixel.temp += newPixelTempKelvin;
-							newPixel.temp = -273.15;
+							newPixel.temp = (settings.abszero ?? -273.15);
 						} else {
 							//If not, just move the temperature
 							pixel.temp += pixel.rate;
 							newPixel.temp -= pixel.rate;
 						};
+						pixelTempCheck(pixel);
+						pixelTempCheck(newPixel);
 					};
 				};
 
@@ -40857,7 +40922,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					};
 				};
 
-				var pixelTempKelvin = pixel.temp + 273.15;
+				var pixelTempKelvin = pixel.temp - (settings.abszero ?? -273.15);
 				var isDraining = (pixelTempKelvin <= pixel.rate);
 				var effectiveRate = (isDraining ? pixelTempKelvin : pixel.rate) / availableOutputs.length;
 				//Actual distribution
@@ -40866,7 +40931,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					var newPixel = pixelMap[coordPair[0]][coordPair[1]];
 					newPixel.temp += effectiveRate;
 				};
-				if(availableOutputs.length > 0) { isDraining ? pixel.temp = -273.15 : pixel.temp -= pixel.rate };
+				if(availableOutputs.length > 0) { isDraining ? pixel.temp = (settings.abszero ?? -273.15) : pixel.temp -= pixel.rate };
 			},
 		};
 
@@ -40885,7 +40950,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				hardness: 1,
 				state: "solid",
 				density: 3000,
-				temp: -273.15,
+				temp: (settings.abszero ?? -273.15),
 				behavior: behaviors.WALL,
 				color: "#cf9f7f",
 				insulate: true,
@@ -40941,6 +41006,11 @@ Make sure to save your command in a file if you want to add this preset again.`
 			right_and_down_to_left: {ins: [[1,0],[0,1]], outs: [[-1,0]]},
 			left_and_up_to_right: {ins: [[-1,0],[0,-1]], outs: [[1,0]]},
 			right_and_up_to_left: {ins: [[1,0],[0,-1]], outs: [[-1,0]]},
+
+			right_to_down_and_left: {ins: [[1,0]], outs: [[-1,0],[0,1]]},
+			right_to_up_and_left: {ins: [[1,0]], outs: [[-1,0],[0,-1]]},
+			left_to_down_and_right: {ins: [[-1,0]], outs: [[1,0],[0,1]]},
+			left_to_up_and_right: {ins: [[1,0]], outs: [[1,0],[0,-1]]},
 		};
 
 		for(direction in autoConduitTable) {
