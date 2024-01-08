@@ -1,5 +1,5 @@
 //This mod was made by Alex the transfem, https://discord.com/users/778753696804765696 on discord and https://www.tiktok.com/@alextheagenenby?_t=8hoCVI3NRhu&_r=1 on tiktok.
-//V1.4.1: added a mixer element and an improved sensor element.
+//version 1.4.2: added incinerator, E-incinerator and improved mixer to be compatible with nousersthings.js and to have a range of effect.
 function customExplosion(pixel1, pixel2, radius, list) {
   let x = pixel1.x;
   let y = pixel1.y;
@@ -40,8 +40,6 @@ function reactPixels(pixel1,pixel2) {
       if (r.radius !== undefined){
         let radius = r.radius;
         let list = r.explosion.split(",");
-        console.log(list);
-        console.log(pixel1, pixel2, radius, list);
         customExplosion(pixel1, pixel2, radius, list);
       }
     }
@@ -214,7 +212,7 @@ elements.magnesium = {
   reactions: {
     "acid": { "elem1": "hydrogen", "chance": 0.02, },
     "aqua_regia": { "elem1": "hydrogen", "chance": 0.2, "elem2": "pop", },
-    
+
   },
   behavior: behaviors.POWDER,
   fireColor: "#ffffff",
@@ -751,10 +749,11 @@ elements.rubidium = {
     chlorine: { elem1: "rubidiumsalt" },
     acid: { explosion: "fire,rubidiumsalt,water", radius: 7, },
     aqua_regia: { explosion: "fire,rubidiumsalt,fire,water", radius: 8, },
-    acidic_water: { explosion: "water,water,water,rubidiumsalt", radius: 3.5, },
+    acidic_water: { explosion: "water,water,water,rubidiumsalt", radius: 3, },
     nitric_acid: { explosion: "fire,fire,hydrogen", radius: 7 },
     chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
     liquid_chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
+    water: { explosion: "fire,rubidiumhydroxide", radius: 6 },
     },
   density: 1532,
   fireColor: "#d91e1e",
@@ -773,12 +772,14 @@ elements.moltenrubidium = {
     chlorine: { elem1: "rubidiumsalt" },
     acid: { explosion: "fire,rubidiumsalt,water", radius: 7, },
     aqua_regia: { explosion: "fire,rubidiumsalt,fire,water", radius: 8, },
-    acidic_water: { explosion: "water,water,water,rubidiumsalt", radius: 3.5, },
+    acidic_water: { explosion: "water,water,water,rubidiumsalt", radius: 3, },
     nitric_acid: { explosion: "fire,fire,hydrogen", radius: 7 },
     chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
     liquid_chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
-    fireColor: "#d91e1e",
+    water: { explosion: "fire,rubidiumhydroxide", radius: 6 },
+
     },
+  fireColor: "#d91e1e",
   tick: function(pixel) {
     pixel.burning = true;
   },
@@ -857,7 +858,7 @@ elements.rubidiumhydroxide = {
     chlorine: { elem1: "rubidiumsalt" },
     acid: { explosion: "fire,rubidiumsalt,water", radius: 7, },
     aqua_regia: { explosion: "fire,rubidiumsalt,fire,water", radius: 8, },
-    acidic_water: { explosion: "water,water,water,rubidiumsalt", radius: 3.5, },
+    acidic_water: { explosion: "water,water,water,rubidiumsalt", radius: 3, },
     nitric_acid: { explosion: "fire,fire,hydrogen", radius: 7 },
     chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
     liquid_chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
@@ -869,7 +870,7 @@ elements.rubidiumhydroxide = {
     state: "liquid",
     density: 2.12,
     name: "RubidiumHydroxide",
-    stateHigh: "potassiumhydroxidecrystals",
+    stateHigh: "rubidiumhydroxidecrystals",
     tempHigh: "1388",
 }
 elements.rubidiumhydroxidecrystals = {
@@ -881,7 +882,7 @@ elements.rubidiumhydroxidecrystals = {
     chlorine: { elem1: "rubidiumsalt" },
     acid: { explosion: "fire,rubidiumsalt,water", radius: 7, },
     aqua_regia: { explosion: "fire,rubidiumsalt,fire,water", radius: 8, },
-    acidic_water: { explosion: "water,water,water,rubidiumsalt", radius: 3.5, },
+    acidic_water: { explosion: "water,water,water,rubidiumsalt", radius: 3, },
     nitric_acid: { explosion: "fire,fire,hydrogen", radius: 7 },
     chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
     liquid_chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
@@ -891,8 +892,6 @@ elements.rubidiumhydroxidecrystals = {
   state: "powder",
   density: 2.12,
   name: "RubidiumHydroxideCrystals",
-  stateHigh: "potassiumhydroxidecrystals",
-  tempHigh: "1388",
 }
 elements.esuperheater = {
   conduct: 1,
@@ -951,28 +950,26 @@ elements.esuperheater = {
       ],
     category: "machines",
     name: "e-freezer",
-  },
-  elements.mixer = {
-    name: "Mixer",
-    behavior:[
-          [
-              "SW",
-              "SW",
-              "SW"
-          ],
-          [
-              "SW",
-              "XX",
-              "SW"
-          ],
-          [
-              "SW",
-              "SW",
-              "SW"
-          ]
-      ],
+}
+let num = 0;
+elements.morechemmixer = {
+    name: "MoreChemMixer",
+    behavior: behaviors.WALL,
     category: "machines",
     noMix: true,
+  onSelect: function(pixel) {
+    let item = prompt("enter range for mixing.");
+    if(/^\d+$/.test(item)){
+      num = parseInt(item);
+    } else {
+      alert("that is not an integer.");
+    }
+  },
+    tick: function(pixel) {
+      pixel.clone = `range: ${num}`;
+      let range = mouseRange(pixel.x, pixel.y, num);
+      mix(range);
+    }
   }
 let item = "";
 elements.improvedsensor = {
@@ -985,7 +982,7 @@ elements.improvedsensor = {
         if(pixel.start == pixelTicks){
           pixel.clone = item;
         }
-        
+
           for (var i = 0; i < adjacentCoords.length; i++) {
               var coords = adjacentCoords[i];
               var x = pixel.x + coords[0];
@@ -1005,5 +1002,91 @@ elements.improvedsensor = {
       category:"machines",
       darkText: true,
   hardness: 1,
-  
+
   };
+
+elements.eincinerator = {
+  conduct: 1,
+  color: 'rgb(255, 70, 0)',
+  colorObject: {
+        "r": 240,
+        "g": 10,
+        "b": 0
+    },
+  behavior: behaviors.WALL,
+  behaviorOn: [
+        [
+            "XX",
+            "HT:100000",
+            "XX"
+        ],
+        [
+            "HT:100000",
+            "XX",
+            "HT:100000"
+        ],
+        [
+            "XX",
+            "HT:100000",
+            "XX"
+        ]
+    ],
+  category: "machines",
+  name: "E-Incinerator",
+  noMix: true,
+}
+elements.incinerator = {
+
+  behavior: [
+        [
+            "XX",
+            "HT:100000",
+            "XX"
+        ],
+        [
+            "HT:100000",
+            "XX",
+            "HT:100000"
+        ],
+        [
+            "XX",
+            "HT:100000",
+            "XX"
+        ]
+    ],
+  name: "Incinerator",
+  category: "machines",
+  colorObject: {
+      "r": 255,
+      "g": 50,
+      "b": 0
+  },
+  color: 'rgb(255, 50, 0)',
+  noMix: true,
+}
+function mix(range){
+  let mixlist = [];
+  for (var i = 0; i < range.length; i++) {
+  var x = range[i][0];
+  var y = range[i][1];
+      if (!isEmpty(x,y,true)) {
+          var pixel = pixelMap[x][y];
+          if (elements[pixel.element].noMix !== true || shiftDown) {
+              mixlist.push(pixel);
+          }
+      }
+  }
+  for (var i = 0; i < mixlist.length; i++) {
+    var pixel1 = mixlist[Math.floor(Math.random()*mixlist.length)];
+    var pixel2 = mixlist[Math.floor(Math.random()*mixlist.length)];
+    swapPixels(pixel1,pixel2);
+    mixlist.splice(mixlist.indexOf(pixel1),1);
+    mixlist.splice(mixlist.indexOf(pixel2),1);
+    if (elements[pixel1.element].onMix) {
+      elements[pixel1.element].onMix(pixel1,pixel2);
+    }
+    if (elements[pixel2.element].onMix) {
+      elements[pixel2.element].onMix(pixel2,pixel1);
+    }
+  }
+}
