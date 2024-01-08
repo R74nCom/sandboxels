@@ -1,5 +1,5 @@
 elements.burnt_rice = {
-	tempHigh: 999,
+	tempHigh: 500,
 	stateHigh: "ash",
 	density: 699,
 	color: "#242424",
@@ -53,6 +53,7 @@ elements.mc_donalds = {
 	color: "#ff0000",
 	behavior: behaviors.STURDYPOWDER,
 	category: "joke",
+	hidden: true,
 	state: "solid",
 };
 
@@ -257,6 +258,7 @@ elements.poop = {
 	color: "#331600",
 	behavior: behaviors.STURDYPOWDER,
 	category: "joke",
+	hidden: true,
 	state: "solid",
 	reactions: {
 		"piss": { elem1: null, elem2: "bless" },
@@ -354,6 +356,7 @@ elements.diamond_ore = {
 	color: ["#525252", "#525252", "#525252", "#525252", "#525252", "#2ba3ff"],
 	behavior: behaviors.WALL,
 	category: "joke",
+	hidden: true,
 	state: "solid",
 };
 
@@ -373,6 +376,7 @@ elements.piss = {
 	color: "#ffff00",
 	behavior: behaviors.LIQUID,
 	category: "joke",
+	hidden: true,
 	state: "liquid",
 };
 
@@ -403,6 +407,7 @@ elements.melted_meth = {
 	color: "#00a2ff",
 	behavior: behaviors.LIQUID,
 	category: "joke",
+	hidden: true,
 	state: "solid",
 };
 
@@ -426,6 +431,7 @@ elements.kfc = {
 	color: "#d16e11",
 	behavior: behaviors.STURDYPOWDER,
 	category: "joke",
+	hidden: true,
 	state: "solid",
 };
 
@@ -435,6 +441,7 @@ elements.wendys = {
 	color: "#db1e0d",
 	behavior: behaviors.STURDYPOWDER,
 	category: "joke",
+	hidden: true,
 	state: "solid",
 };
 
@@ -444,6 +451,7 @@ elements.burger_king = {
 	color: "#db660d",
 	behavior: behaviors.STURDYPOWDER,
 	category: "joke",
+	hidden: true,
 	state: "solid",
 };
 
@@ -453,6 +461,7 @@ elements.pizza_hut = {
 	color: "#ed3b24",
 	behavior: behaviors.STURDYPOWDER,
 	category: "joke",
+	hidden: true,
 	state: "solid",
 };
 
@@ -462,6 +471,7 @@ elements.dominos = {
 	color: ["#ed4934", "#3494ed"],
 	behavior: behaviors.STURDYPOWDER,
 	category: "joke",
+	hidden: true,
 	state: "solid",
 };
 
@@ -476,6 +486,7 @@ elements.vape = {
         "XX|CR:smoke|XX",
     ],
 	category: "joke",
+	hidden: true,
 	state: "solid",
 };
 
@@ -649,11 +660,13 @@ elements.chantilly = {
 };
 
 elements.fart = {
-	tempHigh: 99999999999,
+	temp: 9999999999999999999999999999,
+	tempHigh: 999999999999999999999999999999999999999999999999999999999999999999,
 	stateHigh: "void",
 	color: "#2e4722",
 	behavior: behaviors.DGAS,
 	category: "joke",
+	hidden: true,
 	state: "gas",
 };
 
@@ -703,32 +716,231 @@ elements.barbecue_sauce = {
 
 elements.fried_water = {
 	temp: 50,
-	hidden: true,
 	tempHigh: 500,
 	stateHigh: "ash",
 	color: "#a3591c",
 	behavior: behaviors.POWDER,
 	category: "joke",
+	hidden: true,
 	state: "liquid",
 };
 
 elements.solid_water = {
-	hidden: true,
+	viscosity: 10000,
 	tempHigh: 100,
 	stateHigh: "fried_water",
 	color: "#dfe9f5",
-	behavior: behaviors.STURDYPOWDER,
+	behavior: behaviors.LIQUID,
 	category: "joke",
+	hidden: true,
+	state: "liquid",
+};
+
+elements.vanilla = {
+	hardness: 1,
+	tempHigh: 300,
+	stateHigh: "steam",
+	color: "#e3e3e3",
+	behavior: behaviors.FOAM,
+	category: "food",
+	state: "liquid",
+	reactions: {
+		"cream": { elem1: null, elem2: "vanilla_cream" },
+		"ice_cream": { elem1: null, elem2: "vanilla_ice_cream" },
+		"yolk": { elem1: null, elem2: "vanilla_pudding" },
+	}
+};
+
+elements.vanilla_cream = {
+	hardness: 1,
+	hidden: true,
+	tempHigh: 300,
+	stateHigh: "steam",
+	color: "#d6d6d6",
+	behavior: behaviors.FOAM,
+	category: "food",
+	state: "liquid",
+};
+
+elements.vanilla_ice_cream = {
+	hardness: 1,
+	hidden: true,
+	tempHigh: 200,
+	stateHigh: "steam",
+	color: "#f7f7f7",
+	behavior: behaviors.FOAM,
+	category: "food",
+	state: "liquid",
+	reactions: {
+		"chocolate": { elem1: null, elem2: "chocolate_vanilla_ice_cream" },
+		"melted_chocolate": { elem1: null, elem2: "chocolate_vanilla_ice_cream" },
+	}
+};
+
+elements.chocolate_vanilla_ice_cream = {
+	hardness: 1,
+	hidden: true,
+	tempHigh: 200,
+	stateHigh: "steam",
+	color: ["#dbdbdb", "#915936"],
+	behavior: behaviors.FOAM,
+	category: "food",
+	state: "liquid",
+};
+
+elements.vanilla_pudding = {
+	hardness: 1,
+	hidden: true,
+	tempHigh: 300,
+	stateHigh: "steam",
+	color: "#d4c4ba",
+	behavior: behaviors.FOAM,
+	category: "food",
+	state: "liquid",
+};
+
+elements.cinnamon = {
+	tempHigh: 500,
+	stateHigh: "ash",
+	color: "#3d1409",
+	behavior: behaviors.POWDER,
+	category: "powders",
+	state: "liquid",
+};
+
+elements.porridge = {
+	temp: 30,
+	viscosity: 3000,
+	density: 500,
+	tempHigh: 500,
+	stateHigh: "steam",
+	color: "#b8a254",
+	behavior: behaviors.LIQUID,
+	category: "food",
+	state: "liquid",
+};
+
+elements.beet = {
+	tempHigh: 400,
+	stateHigh: "ash",
+	color: "#5d0678",
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "liquid",
+};
+
+elements.chocolate_egg = {
+	hidden: true,
+	tempHigh: 300,
+	stateHigh: "steam",
+	color: "#805e2e",
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "liquid",
+};
+
+elements.chocolate_grape = {
+	hidden: true,
+	viscosity: 10000,
+	tempHigh: 300,
+	stateHigh: "steam",
+	color: ["#9e3475", "#6e4d36"],
+	behavior: behaviors.LIQUID,
+	category: "food",
+	state: "liquid",
+};
+
+elements.sprinkles = {
+	tempHigh: 200,
+	stateHigh: "ash",
+	cooldown: 0.2,
+	color: ["#ff5e5e", "#ffea5e", "#73ff5e", "#5efcff", "#995eff", "#ff5ed1"],
+	behavior: behaviors.STURDYPOWDER,
+	category: "powders",
+	state: "liquid",
+	maxSize: 1,
+};
+
+elements.incinerator = {
+	tempHigh: 99999999999999999999999999999999999999999999999999999999999999999999999999999999,
+	temp: 999999999999999999999999999999999999999999999999999999,
+	stateHigh: "void",
+	color: "#bf4b7d",
+	behavior: behaviors.WALL,
+	category: "machines",
+	state: "solid",
+};
+
+elements.cocoa = {
+	breakInto: "cocoa_seeds",
+	tempHigh: 300,
+	stateHigh: "ash",
+	color: "#912f1d",
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "liquid",
+};
+
+elements.cocoa_seeds = {
+	breakInto: "chocolate",
+	hidden: true,
+	tempHigh: 80,
+	stateHigh: "melted_chocolate",
+	color: "#cfc7ab",
+	behavior: behaviors.SUPPORT,
+	category: "food",
+	state: "liquid",
+};
+
+elements.pineapple = {
+	tempHigh: 200,
+	stateHigh: "steam",
+	color: "#ccbe3b",
+	behavior: behaviors.SUPPORT,
+	category: "food",
+	state: "liquid",
+};
+
+elements.broccoli = {
+	viscosity: 100000,
+	tempHigh: 300,
+	stateHigh: "ash",
+	color: "#073804",
+	behavior: behaviors.LIQUID,
+	category: "food",
+	state: "liquid",
+};
+
+elements.pepperoni = {
+	tempHigh: 300,
+	stateHigh: "ash",
+	color: "#8f2e11",
+	behavior: behaviors.SUPPORT,
+	category: "food",
+	state: "liquid",
+};
+
+elements.apple = {
+	breakInto: "juice",
+	tempHigh: 200,
+	stateHigh: "steam",
+	color: "#bd2d1a",
+	behavior: behaviors.SUPPORT,
+	category: "food",
 	state: "liquid",
 };
 
 elements.grape.reactions = {
-	"radiation": { elem1: null, elem2: "radioactive_grape" }
+	"radiation": { elem1: null, elem2: "radioactive_grape" },
+	"melted_chocolate": { elem1: null, elem2: "chocolate_grape" },
+	"chocolate": { elem1: null, elem2: "chocolate_grape", chance: 0.1 },
 };
 
 elements.egg.reactions = {
 	"water": { elem1: "boiled_egg", tempMin: 100 },
-	"steam": { elem1: "boiled_egg", tempMin: 100 }
+	"steam": { elem1: "boiled_egg", tempMin: 100 },
+	"melted_chocolate": { elem1: null, elem2: "chocolate_egg" },
+	"chocolate": { elem1: null, elem2: "chocolate_egg", chance: 0.1 },
 };
 
 elements.potato.reactions = {
@@ -739,5 +951,5 @@ elements.potato.reactions = {
 };
 
 elements.water.reactions = {
-	"cocaine": { elem1: null, elem2: "solid_water", chance: 1 }
-}
+	"cocaine": { elem1: null, elem2: "solid_water", chance: 0.1 }
+};
