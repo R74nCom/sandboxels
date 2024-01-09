@@ -7,6 +7,93 @@ See sneak peaks for upcoming updates on the Discord: https://discord.gg/ejUc6YPQ
 
 A fancier version of this changelog can be found here: https://sandboxels.R74n.com/changelog
 
+[Version 1.9.2 - January 9, 2024 - New Year New Use]
+    + Purple Gold, made from Gold + Aluminum
+    + Blue Gold, made from Gold + Gallium
+    + Pickle
+        + Some foods can be pickled with Vinegar
+    ~ Solids will no longer Mix unless Shift is held
+    ~ Revamped Rocket behavior
+   [Ants]
+    + Ants can create underground tunnels
+    + Ant Wall (Hidden)
+    + Ants can climb diagonally
+    + Ants can dig through Color Sand
+   [Bees]
+    + Bees can create, enter, and move inside Hives
+    + Hive (Hidden)
+    + Hives produce and drip Honey when Bees pollinate
+    + Bees can eat the Honey they produce
+    + Each hive has a Queen, which expands and makes more Bees
+   [Changes]
+    + Pipe Wall (Hidden)
+        + Heat-resistant but breakable
+    + Pipes remove non-solids when generating
+    + Sensors can detect pixels inside Pipes
+    + Malware hacks Cloners to create more of itself
+    + Malware damages and scrambles Pipes
+    + Malware causes Light Bulbs and Batteries to explode
+    + Fireworks can be triggered with electricity
+    + Shocking Gray Goo helps defeat it
+    + EMP Bombs destroy Gray Goo
+    + Broth can be made with Rotten Meat
+    + Broth made from Dirty Water will be colored
+    + Jelly can be made with Caramel
+    + Jelly can be frozen
+    + Flour and Melted Butter sauce recipe
+    + Nut Milk can be added to Coffee
+    ~ Milk now requires Shift to Mix into Butter
+    ~ Coffee stains more often
+    + Caramel can stain solids
+    + Melting Rotten Cheese creates Stench
+    + Stench can make Cheese rotten
+    + Beans are flammable
+    + Uranium can make Sugar Water and Seltzer dirty
+    + Worms can move through Color Sand
+    + Roots can grow through Color Sand
+    + Cacti break into milky Sap
+    + Poison can kill Homunculi
+    + Oil can kill Ants and Bees
+    + Chlorine, Dioxin, Fallout, and Neutrons can kill Humans
+    + Bleach and Acid reaction creates Poison Gas
+    ~ Acid no longer destroys Gold Coins or Silver
+    + Tin pest occurs at low temperatures
+    + Glass Shards change Light color
+    + Antigas turns to Antifire when hot
+    + Human shirts burn off before death
+    + Humans can eat Jelly, Mayo, and Mashed Potato
+    ~ Humans have a cooldown when on lowest cursor size
+    ~ Fiber no longer falls diagonally
+    ~ Nukes, H-Bombs, and Dirty Bombs no longer explode on upward contact
+    ~ Tweaked Acid Gas density
+    ~ Tweaked density for molten Calcium, Sodium, Aluminum, Nickel, Copper, Silver, Tin, Gold, Uranium
+    ~ Tweaked Cheese density so it floats on Sauce
+    ~ Moved Rocket to Weapons
+    ~ Recolored Rocket
+    ~ Recolored Rose Gold
+    ~ Hid Cancer
+    + Sauce Ice (Hidden)
+    + H key will prevent canvas rendering
+    ~ Social links are color-coded
+   [Bug Fixes]
+    ~ Fixed: More than a 1x1 of Lattice ruins the effect
+    ~ Fixed: Baked Batter can mix into Baked Batter
+    ~ Fixed: Prop tool sometimes doesn't allow null values
+    ~ Fixed: Pinecones glitch when growing through Water
+    ~ Fixed: Stained Glass doesn't retain color when breaking
+    ~ Fixed: Cursor flickers when stepping ticks
+    ~ Fixed: Pointer flickering appearance
+    ~ Fixed: Udder, Pointer, and Corn can be dragged
+    ~ Fixed: Erasing while dragging causes ghost pixels
+    ~ Fixed: Pixels behave strange when dragging through Pipe
+    ~ Fixed: Superheated Sawdust when smashing Torch
+    ~ Fixed: Bees create Flower Seeds from pollinating trees
+   [Technical]
+    ~ Hid Prop tool
+    ~ Optimizations
+    ~ Heat, Cool, and Lookup no longer hard-coded
+    + eListAdd(listName, itemList) function
+
 [Version 1.9.1 - December 1, 2023 - Cozy Solstice]
     + Pipe
         1. Draw a line with Pipe, maybe while paused

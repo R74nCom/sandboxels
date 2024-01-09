@@ -29,6 +29,7 @@ F or F11          =  Toggle Fullscreen
 2                 =  Thermal View
 3                 =  Basic View (No Effects)
 4                 =  Smooth View
+H                 =  Hide Canvas
 F1                =  Toggle GUI / HUD
 F2 or C           =  Capture Screenshot
 Drag & Drop       =  Insert an image or load save file

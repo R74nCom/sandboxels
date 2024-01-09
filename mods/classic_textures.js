@@ -144,3 +144,5 @@ if (elements.antibody) {elements.antibody.color = "#ff4040";}
 if (elements.infection) {elements.infection.color = "#cf005d";}
 if (elements.molten_solder) {delete elements.molten_solder.color;}
 if (elements.gold_coin) {elements.gold_coin.color = ["#fff0b5","#986a1a","#f0bb62"];}
+if (elements.rocket) {elements.rocket.color = "#ff0000";}
+if (elements.rose_gold) {elements.rose_gold.color = ["#b76e79","#a1334d","#f06283"];}
