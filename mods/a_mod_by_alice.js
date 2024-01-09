@@ -15212,6 +15212,38 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 
 		//}
 
+		// nitroglycerin {
+
+			elements.nitro_gas = {
+				color: "#89d162",
+				behavior: behaviors.GAS,
+				behaviorOn: [
+					"XX|XX|XX",
+					"XX|EX:10|XX",
+					"XX|XX|XX",
+				],
+				conduct: 1,
+				category: "weapons",
+				tempHigh: 218,
+				stateHigh: "explosion",
+				tempLow: 50,
+				stateLow: "nitro",
+				burn: 100,
+				burnTime: 1,
+				burnInto: "explosion",
+				breakInto: "explosion",
+				viscosity: 36,
+				state: "liquid",
+				density: 1600,
+				excludeRandom: true,
+				alias: "nitroglycerin gas"
+			};
+			
+			elements.nitro.tempHigh = 50;
+			elements.nitro.stateHigh = "nitro_gas";
+		
+		//}
+
 		// ash {
 
 			elements.ash.tempHigh = 1200		  //https://www.quora.com/Can-you-melt-ashes
