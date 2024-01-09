@@ -49,21 +49,7 @@ tick = function() {
 		}
 	}
 
-	if (currentElement == "pick" || currentElement == "lookup") {
-		var mouseOffset = 0;
-	}
-	else if (elements[currentElement].maxSize < mouseSize) {
-		var mouseOffset = Math.trunc(elements[currentElement].maxSize/2);
-	}
-	else {
-		var mouseOffset = Math.trunc(mouseSize/2);
-	}
-	var topLeft = [mousePos.x-mouseOffset,mousePos.y-mouseOffset];
-	var bottomRight = [mousePos.x+mouseOffset,mousePos.y+mouseOffset];
-	// Draw a rectangle around the mouse
-	ctx.strokeStyle = "white";
-	ctx.strokeRect(topLeft[0]*pixelSize,topLeft[1]*pixelSize,(bottomRight[0]-topLeft[0]+1)*pixelSize,(bottomRight[1]-topLeft[1]+1)*pixelSize);
-	updateStats();
+
 	//ticks ++;
 }
 
