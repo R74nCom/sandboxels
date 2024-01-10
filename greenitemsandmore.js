@@ -113,4 +113,5 @@ elements.frozen_coconut_milk = {
 	tempHigh: "-10",
 	stateHigh: "coconut_milk",
 	hidden: true,
+	temp: "-20",
 };
