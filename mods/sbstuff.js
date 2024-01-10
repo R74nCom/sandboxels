@@ -867,6 +867,9 @@ elements.incinerator = {
 	category: "machines",
 	state: "solid",
 	insulate: true,
+	reactions: {
+		"fart": { elem1: null, elem2: "ohio" },
+	}
 };
 
 elements.cocoa = {
@@ -1039,7 +1042,7 @@ elements.carrot = {
 elements.wine = {
 	tempHigh: 400,
     stateHigh: "steam",
-    color: "#000000",
+    color: "#2e0206",
     behavior: behaviors.LIQUID,
     category: "liquids",
     state: "liquid",
@@ -1073,6 +1076,7 @@ elements.dark_energy = {
 };
 
 elements.ohio = {
+	hidden: true,
 	hardness: 1,
 	hidden: true,
     color: "#40174d",
@@ -1085,6 +1089,52 @@ elements.ohio = {
 	category: "joke",
     state: "gas",
 	desc: "use at own risk",
+};
+
+elements.papaya = {
+	tempHigh: 300,
+	stateHigh: "steam",
+	color: "#e38934",
+	behavior: behaviors.STURDYPOWDER,
+    category: "food",
+    state: "liquid",
+};
+
+elements.caviar = {
+	viscosity: 10000,
+	tempHigh: 500,
+    stateHigh: "steam",
+    color: "#1f1b18",
+    behavior: behaviors.LIQUID,
+    category: "food",
+    state: "liquid",
+};
+
+elements.peeper = {
+	hidden: true,
+	density: 1000,
+	burn: 0.00001,
+	burnTime: 9999,
+	ignoreAir: true,
+	burning: true,
+	hardness: 1,
+	tempHigh: 5000000000000000000,
+	stateHigh: "ash",
+	color: "#9c1208",
+	behavior: behaviors.STURDYPOWDER,
+    category: "joke",
+    state: "solid",
+};
+
+elements.dollar = {
+	hidden: true,
+	viscosity: 10000,
+    tempHigh: 500,
+    stateHigh: "fire",
+    color: ["#4a8741", "#4bb53c"],
+    behavior: behaviors.LIQUID,
+    category: "joke",
+    state: "liquid",
 };
 
 elements.incinerate.category = "tools",
@@ -1116,4 +1166,8 @@ elements.potato.reactions = {
 
 elements.water.reactions = {
 	"cocaine": { elem1: null, elem2: "solid_water", chance: 0.1 }
+};
+
+elements.paper.reactions = {
+	"bless": { elem1: null, elem2: "dollar", chance: 0.1 },
 };
