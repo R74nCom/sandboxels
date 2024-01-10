@@ -56,7 +56,7 @@ elements.mixed_sweet_apples = {
 	desc: "Mixed sweet apples from the greenitemsandmore.js mod.",
 	reactions: {
 		"milk": {elem1: "fruit_milk", elem2: "fruit_milk", color1: "#f58989", color2: "#71a162"},
-		"flour": {elem1: "apple_pie", elem2: "apple_pie" },
+		"flour": {elem1: "apple_pie", tempMin: 15, elem2: "apple_pie" },
 	}
 };
 elements.apple_pie = {
