@@ -1,5 +1,5 @@
 elements.beer = {
-	color: "#ffc64a",
+	color: ["#ffc43d","#ffc43d","#ebc59f"],
 	behavior: behaviors.LIQUID,
 	category: "food",
 	state: "solid",
@@ -7,7 +7,7 @@ elements.beer = {
 };
 
 elements.root_beer = {
-	color: "#9e7723",
+	color: ["#8b2f02","#732803"],
 	behavior: behaviors.LIQUID,
 	category: "food",
 	state: "solid",
@@ -15,7 +15,7 @@ elements.root_beer = {
 };
 
 elements.fruit_slushy = {
-	color: "#b867cf",
+	color: ["#d43968","#ec5885","#f57ca1","#fba9c2","#ffe3eb"],
 	behavior: behaviors.LIQUID,
 	category: "food",
 	state: "solid",
@@ -23,7 +23,7 @@ elements.fruit_slushy = {
 };
 
 elements.mold = {
-	color: "#86ab29",
+	color: ["#b6d7a8","#6d9d5c","#ad8d6f"],
 	behavior: behaviors.POWDER,
 	category: "food",
 	state: "solid",
@@ -31,7 +31,7 @@ elements.mold = {
 };
 
 elements.chocolate_slushy = {
-	color: "#4f2e16",
+	color: ["#c3ae9a","#ae967f","#977b5f","#876b4f","#816346"],
 	behavior: behaviors.LIQUID,
 	category: "food",
 	state: "solid",
@@ -39,7 +39,7 @@ elements.chocolate_slushy = {
 };
 
 elements.chocolate_sauce = {
-	color: "#754828",
+	color: ["#491904","#54240b","#5e2d0b","#69371b","#764636"],
 	behavior: behaviors.LIQUID,
 	category: "food",
 	state: "solid",
@@ -47,7 +47,7 @@ elements.chocolate_sauce = {
 };
 
 elements.chocolate_ice_cream = {
-	color: "#704b3a",
+	color: ["#a47551","#523a28"],
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
 	state: "solid",
@@ -55,7 +55,7 @@ elements.chocolate_ice_cream = {
 };
 
 elements.fruit_ice_cream = {
-	color: "#de6ab7",
+	color: ["#f8d8d8","#f6c1c1","#e39898"],
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
 	state: "solid",
@@ -63,7 +63,7 @@ elements.fruit_ice_cream = {
 };
 
 elements.chocolate_yogurt = {
-	color: "#825c4b",
+	color: ["#654321","#71512b","#7e5f36","#8a6e42","#967d50"],
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
 	state: "solid",
@@ -73,7 +73,7 @@ elements.chocolate_yogurt = {
 };
 
 elements.fruit_yogurt = {
-	color: "#f587d0",
+	color: ["#ffc3d8","#ffabd6","#ff96c5","#ff84c2","#ff5daf"],
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
 	state: "solid",
@@ -83,7 +83,7 @@ elements.fruit_yogurt = {
 };
 
 elements.frozen_fruit_yogurt = {
-	color: "#ffc2ea",
+	color: ["#ffdfdf","#ffc0c0","#ff9b9b"],
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
 	state: "solid",
@@ -94,7 +94,7 @@ elements.frozen_fruit_yogurt = {
 };
 
 elements.frozen_chocolate_yogurt = {
-	color: "#ad8776",
+	color: ["#a87848","#a57e57","#c1a07f","#e2c5ac","#efd0b1"],
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
 	state: "solid",
@@ -118,7 +118,7 @@ elements.cooking_oil = {
 };
 
 elements.chicken_nuggets = {
-	color: "#967242",
+	color: ["#8f411c","#a35935"],
 	behavior: behaviors.POWDER,
 	category: "food",
 	state: "solid",
@@ -126,20 +126,18 @@ elements.chicken_nuggets = {
 };
 
 elements.advanced_dough = {
-	color: "#dbbc72",
+	color: ["#f3e6c6","#f9e8a2","#ebd27b","#dba94e","#c08932"],
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
 	state: "solid",
 	hidden: "TRUE",
 	tempHigh: 94,
 	stateHigh: "croissant",
-	reactions: {
-        "electric": { elem1: "steampunk_pancakes", elem2: null },
 	}
 };
 
 elements.fries = {
-	color: "#ebba34",
+	color: ["#f4c63e","#f6d165","#f8dd8b"],
 	behavior: behaviors.POWDER,
 	category: "food",
 	state: "solid",
@@ -147,23 +145,24 @@ elements.fries = {
 };
 
 elements.fried_snow = {
-	color: "#a16f37",
+	color: ["#f6c66a","#d29829","#905c1b"],
 	behavior: behaviors.POWDER,
 	category: "food",
 	state: "solid",
 	hidden: "TRUE",
 };
 
-elements.steampunk_pancakes = {
-	color: "#252a33",
-	behavior: behaviors.POWDER,
+elements.battery_acid = {
+	color: ["#8fff00","#1de446"],
+	behavior: behaviors.LIQUID,
 	category: "machines",
 	state: "solid",
 	hidden: "TRUE",
 };
 
+
 elements.churros = {
-	color: "#c29a3c",
+	color: ["#ce9958","#b8732d","#9f633b"],
 	behavior: behaviors.POWDER,
 	category: "food",
 	state: "solid",
@@ -175,7 +174,7 @@ elements.churros = {
 };
 
 elements.chocolate_churros = {
-	color: "#1c0c01",
+	color: ["#9f6204","#875200","#764100","#582c00","#492100"],
 	behavior: behaviors.POWDER,
 	category: "food",
 	state: "solid",
@@ -183,7 +182,7 @@ elements.chocolate_churros = {
 };
 
 elements.croissant = {
-	color: "#e0c46e",
+	color: ["#c68028","#ad7023","#905c1b","#794d16","#674112"],
 	behavior: behaviors.POWDER,
 	category: "food",
 	state: "solid",
@@ -195,7 +194,7 @@ elements.croissant = {
 };
 
 elements.eggy_dough = {
-	color: "#c4ad7c",
+	color: ["#df8c43","#e5a369","#ecba8e","#f2d1b4","#f9e8d9"],
 	behavior: behaviors.POWDER,
 	category: "food",
 	state: "solid",
@@ -205,7 +204,7 @@ elements.eggy_dough = {
 };
 
 elements.french_toast = {
-	color: "#ab8d4f",
+	color: ["#a77644","#af7b4b","#af7f57"],
 	behavior: behaviors.POWDER,
 	category: "food",
 	state: "solid",
@@ -216,7 +215,7 @@ elements.french_toast = {
 };
 
 elements.rose_sauce = {
-	color: "#f0340e",
+	color: ["#db2300","#e24f33"],
 	behavior: behaviors.LIQUID,
 	category: "food",
 	state: "solid",
@@ -224,7 +223,7 @@ elements.rose_sauce = {
 };
 
 elements.seasoning = {
-	color: "#734631",
+	color: ["#945239","#896251"],
 	behavior: behaviors.POWDER,
 	category: "food",
 	state: "solid",
@@ -232,7 +231,7 @@ elements.seasoning = {
 };
 
 elements.parmesan = {
-	color: "#e0c66e",
+	color: ["#ffffdd","#ffffe4","#ffffeb","#fffff1","#fffff8"],
 	behavior: behaviors.POWDER,
 	category: "food",
 	state: "solid",
@@ -249,7 +248,7 @@ elements.baking_powder = {
 };
 
 elements.smashed_ice = {
-	color: "#c3d4e6",
+	color: ["#e3fdff","#d1f7ff","#c0f7ff"],
 	behavior: behaviors.LIQUID,
 	category: "food",
 	state: "solid",
@@ -273,7 +272,7 @@ elements.smashed_ice = {
 };
 
 elements.moss = {
-	color: "#389639",
+	color: ["#355438","#416044","#4c7450","#68946c","#81a984"],
 	behavior: behaviors.STURDYPOWDER,
 	category: "life",
 	state: "solid",
@@ -294,7 +293,7 @@ elements.moss = {
 
 elements.moth = {
 	color: "#665233",
-	behavior: behaviors.BOUNCY,
+	behavior: behaviors.FLY,
 	category: "life",
 	state: "solid",
 	burn: 95,
@@ -308,7 +307,7 @@ elements.moth = {
 };
 
 elements.cherry = {
-	color: "#c41428",
+	color: ["#ff0000","#e30202","#c00000","#9c0101"],
 	behavior: behaviors.POWDER,
 	category: "food",
 	state: "solid",
@@ -320,57 +319,124 @@ elements.cherry = {
 };
 
 elements.strawberry = {
-	color: "#ff0033",
+	color: ["#fb2943","#ff0033"],
 	behavior: behaviors.POWDER,
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
 	tempHigh: 256,
 	stateHigh: "steam",
-	breakIntoColor: "#bd0f32",
+	breakIntoColor: ["#bf0147","#c61548","#cc2857","#c62354","#c11848"],
 };
 
 elements.apple = {
-	color: "#f21313",
+	color: ["#fc3434","#f91515","#d30404","#9f0606","#aa0404"],
 	behavior: behaviors.POWDER,
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
 	tempHigh: 256,
 	stateHigh: "steam",
-	breakIntoColor: "#ffd500",
+	breakIntoColor: ["#ffda69","#ffdb84"],
 };
 
-elements.orange = {
-	color: "#ff9100",
+elements.green_apple = {
+	color: ["#a8da61","#66cc00","#66cc33","#00cc00","#009900"],
 	behavior: behaviors.POWDER,
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	breakIntoColor: ["#ffda69","#ffdb84"],
+};
+
+elements.orange = {
+	color: ["#ff9a00","#ffc100","#ff8100"],
+	behavior: behaviors.POWDER,
+	category: "food",
+	state: "solid",
+	breakInto: "juice",
+	breakIntoColor: ["#ffc659","#ffb646","#ffa700","#ff8d00"],
 	tempHigh: 256,
 	stateHigh: "steam",
 };
 
 elements.kiwi = {
-	color: "#34611a",
+	color: ["#a9c77e","#61ab5a"],
 	behavior: behaviors.POWDER,
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
 	tempHigh: 256,
 	stateHigh: "steam",
-	breakIntoColor: "#517a38",
+	breakIntoColor: ["#a9c77e","#bad98f"],
 };
 
 elements.green_grape = {
-	color: "#b6eb7f",
+	color: ["#b6f271","#a1f02f","#97d60c","#65ba14","#8bc33a"],
 	behavior: behaviors.POWDER,
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
-	breakIntoColor: "#5f8536",
+	breakIntoColor: ["#5f8536","#7ba84a"],
 	tempHigh: 256,
 	stateHigh: "steam",
+};
+
+elements.banana = {
+	color: ["#ffb400","#ffc100","#ffdb00","#ffe700","#f0ff00"],
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "solid",
+	breakInto: "juice",
+	breakIntoColor: "#f0f060",
+	reactions: {
+        "steam": { elem1: "potassium", elem2: null },
+	}
+};
+
+elements.mint = {
+	color: ["#72e88d","#53bd6c"],
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "solid",
+	reactions: {
+        "cream": { elem1: null, elem2: "toorhpaste" },
+	}
+};
+
+elements.potassium = {
+	color: "#a3a333",
+	behavior: behaviors.POWDER,
+	category: "states",
+	state: "solid",
+	breakInto: "juice",
+};
+
+elements.onion = {
+	color: ["#62121b","#a92940","#c04b65","#d8699e"],
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "solid",
+	breakInto: ["stench", null, null, null, null],
+};
+
+
+elements.garlic = {
+	color: ["#f7f3e1","#f6f3c3","#f0e6bd"],
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "solid",
+	breakInto: "garlic_clove",
+};
+
+elements.garlic_clove = {
+	color: ["#b8b17f","#6b5628"],
+	behavior: behaviors.POWDER,
+	category: "food",
+	state: "solid",
+	hidden: "TRUE",
 };
 
 elements.oreo = {
@@ -378,13 +444,28 @@ elements.oreo = {
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
 	state: "solid",
+	reactions: {
+		"toorhpaste": { elem1: "poison_oreo", elem2: null },
+	}
 };
 
+elements.poison_oreo = {
+	color: "#001112",
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "solid",
+	hidden: "TRUE",
+};
+
+
 elements.toorhpaste = {
-	color: "#7dfff2",
+	color: ["#31ffe0","#65ffe8","#97ffef","#c9fff7","#f3fffd"],
 	behavior: behaviors.LIQUID,
 	category: "liquids",
 	state: "solid",
+	reactions: {
+		"juice": { elem1: "poison", elem2: null },
+	}
 };
 
 if (!elements.lettuce.reactions) elements.lettuce.reactions = {};
@@ -449,6 +530,8 @@ if (!elements.baked_batter.reactions) elements.baked_batter.reactions = {};
 elements.baked_batter.reactions.mud = { elem1: "mold", elem2: null }
 
 elements.sugar_ice.breakInto = "smashed_ice"
+
+elements.battery.breakInto = "battery_acid"
 
 elements.herb.breakInto = "seasoning"
 
