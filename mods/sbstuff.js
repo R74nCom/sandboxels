@@ -27,7 +27,7 @@ elements.moth = {
 	tempHigh: 500,
 	stateHigh: "ash",
 	color: "#57381a",
-	behavior: behaviors.GAS,
+	behavior: behaviors.FLY,
 	category: "life",
 	state: "solid",
 };
@@ -511,12 +511,14 @@ elements.mashed_pea = {
 	state: "liquid",
 };
 
-elements.beans = {
+elements.burnt_beans = {
+	tempHigh: 500,
+	stateHigh: "ash",
 	isFood: true,
-	viscosity: 1000,
+	viscosity: 10000,
 	density: 721,
 	hardness: 1,
-	color: ["#ff751f", "#ff411f"],
+	color: "#1a0d04",
 	category: "food",
 	behavior: behaviors.LIQUID,
 	state: "liquid",
@@ -552,15 +554,17 @@ elements.cocaine = {
 };
 
 elements.zombie = {
-	viscosity: 1000,
-	density: 1000,
-	hardness: 1,
 	tempHigh: 500,
 	stateHigh: "ash",
 	color: "#114700",
-	behavior: behaviors.LIQUID,
+	behavior: [
+	    "M1%2|M1%2 AND SW%1|M1%2",
+	    "M1%2 AND CH:zombie|XX|M1%2 AND CH:zombie",
+		"M1|M1 AND SW%1|M1"
+	],
 	category: "special",
 	state: "liquid",
+	ignore: ["fire","smoke","antimatter","strange_matter","filler","lattice","wall","ewall","plasma","void","border"]
 };
 
 elements.toothpaste = {
@@ -994,15 +998,6 @@ elements.cooked_bacon = {
 	state: "liquid",
 };
 
-elements.pickle = {
-	tempHigh: 200,
-	stateHigh: "steam",
-	color: "#12400c",
-	behavior: behaviors.STURDYPOWDER,
-	category: "food",
-	state: "liquid",
-};
-
 elements.strawberry = {
 	viscosity: 10000,
 	density: 754,
@@ -1013,6 +1008,91 @@ elements.strawberry = {
 	category: "food",
 	state: "liquid",
 };
+
+elements.beer = {
+    tempHigh: 300,
+    stateHigh: "steam",
+    color: "#b39329",
+    behavior: behaviors.LIQUID,
+    category: "liquids",
+    state: "liquid",
+};
+
+elements.cardboard = {
+	tempHigh: 500,
+    stateHigh: "ash",
+    color: "#7d4725",
+    behavior: behaviors.STURDYPOWDER,
+    category: "land",
+    state: "liquid",
+};
+
+elements.carrot = {
+	tempHigh: 500,
+    stateHigh: "ash",
+    color: "#f06c0e",
+    behavior: behaviors.STURDYPOWDER,
+    category: "food",
+    state: "liquid",
+};
+
+elements.wine = {
+	tempHigh: 400,
+    stateHigh: "steam",
+    color: "#000000",
+    behavior: behaviors.LIQUID,
+    category: "liquids",
+    state: "liquid",
+};
+
+elements.plasma_bomb = {
+	tempHigh: 1000,
+    stateHigh: "ash",
+    color: "#452f4a",
+    behavior: [
+	"XX|EX:20>plasma|XX",
+	"XX|XX|XX",
+	"M2|M1 AND EX:20>plasma|M2"
+	],
+    category: "weapons",
+    state: "liquid",
+},
+
+elements.dark_energy = {
+	hardness: 1,
+	tempHigh: 1000000,
+    stateHigh: "void",
+    color: "#1b161c",
+	behavior: [
+	    "M1%10|M1%10 AND SW%5|M1%10",
+	    "M1%10 AND CH:dark_energy|XX|M1%10 AND CH:dark_energy",
+		"M1|M1 AND SW%5|M1"
+	 ],
+    category: "special",
+    state: "gas",
+};
+
+elements.ohio = {
+	hardness: 1,
+	hidden: true,
+    color: "#40174d",
+    behavior: [
+        "XX|XX|XX",
+        "XX|EX:800>plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,molten_iron,molten_uranium,molten_lead,oxygen,molten_sodium,sulfur_gas,neon,chlorine,molten_calcium,molten_nickel,molten_copper,molten_zinc,gallium_gas AND CH:void|XX",
+        "XX|XX|XX",
+    ],
+    temp: 99999999700,
+	category: "joke",
+    state: "gas",
+	desc: "use at own risk",
+};
+
+elements.incinerate.category = "tools",
+elements.cook.category = "tools",
+elements.room_temp.category = "tools",
+
+elements.beans.tempHigh = 349,
+elements.beans.stateHigh = "burnt_beans",
 
 elements.grape.reactions = {
 	"radiation": { elem1: null, elem2: "radioactive_grape" },
