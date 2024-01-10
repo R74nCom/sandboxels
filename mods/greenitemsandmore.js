@@ -130,3 +130,17 @@ elements.frozen_coconut_milk = {
 	desc: "Frozen coconut milk from the greenitemsandmore.js mod.",
 	temp: -20,
 };
+elements.fruit_doughnut = {
+	color: "#de9802",
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "solid",
+	tempHigh: 95,
+	stateHigh: "ash",
+	desc: "Fruit doughnuts, or as dutch people call it: Olliebollen. A newyear snack. Made from flour, yeast and milk. From the greenitemsandmore.js mod.",
+	breakInto: "flour",
+	hidden: true,
+};
+elements.dough.reactions = {
+  "yeast": { elem1: "fruit_doughnut", elem2: "fruit_doughnut" }
+}
