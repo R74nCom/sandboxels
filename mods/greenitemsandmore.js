@@ -7,6 +7,7 @@ elements.green_apple = {
 	stateHigh: "ash",
 	breakInto: "juice",
 	breakIntoColor: "#5fba65",
+	desc: "Green apple from the greenitemsandmore.js mod.",
 	reactions: {
 		"milk": { elem1: "fruit_milk", elem2: "fruit_milk", color1: "#86b867", color2: "#70b867" },
 		"red_apple": { elem1: "mixed_apples", elem2: "mixed_apples" },
@@ -21,6 +22,7 @@ elements.red_apple = {
 	stateHigh: "ash",
 	breakInto: "juice",
 	breakIntoColor: "#c95555",
+	desc: "Red apple from the greenitemsandmore.js mod.",
 	reactions: {
 		"milk": { elem1: "fruit_milk", elem2: "fruit_milk", color1: "#d65151", color2: "#d65152" },
 		"green_apple": { elem1: "mixed_apples", elem2: "mixed_apples" },
@@ -35,6 +37,7 @@ elements.mixed_apples = {
 	stateHigh: "ash",
 	breakInto: "juice",
 	breakIntoColor: ["#ba6859", "#71a676"],
+	desc: "Mixed apples from the greenitemsandmore.js mod.",
 	reactions: {
 		"milk": { elem1: "fruit_milk", elem2: "fruit_milk", color1: "#c47264", color2: "#66bd57"},
 		"sugar": { elem1: "mixed_sweet_apples", elem2: "mixed_sweet_apples" },
@@ -50,9 +53,10 @@ elements.mixed_sweet_apples = {
 	breakInto: "juice",
 	breakIntoColor: ["#ad746a", "#82ba88"],
 	hidden: true,
+	desc: "Mixed sweet apples from the greenitemsandmore.js mod.",
 	reactions: {
 		"milk": {elem1: "fruit_milk", elem2: "fruit_milk", color1: "#f58989", color2: "#71a162"},
-		"flour": {elem1: "apple_pie", elem2: "apple_pie" },
+		"flour": {elem1: "apple_pie", tempMin: 15, elem2: "apple_pie" },
 	}
 };
 elements.apple_pie = {
@@ -62,6 +66,7 @@ elements.apple_pie = {
 	state: "solid",
 	tempHigh: 156,
 	stateHigh: "ash",
+	desc: "Apple pie from the greenitemsandmore.js mod.",
 	hidden: true,
 };
 elements.pear = {
@@ -73,6 +78,7 @@ elements.pear = {
 	stateHigh: "ash",
     breakInto: "juice",
 	breakIntoColor: "#5f8f50",
+	desc: "Pear from the greenitemsandmore.js mod.",
 	reactions: {
 		"milk": {elem1: "fruit_milk", elem2: "fruit_milk", color1: "#60c483", color2: "#60c483"},
 	}
@@ -84,6 +90,7 @@ elements.coconut = {
 	state: "solid",
 	tempHigh: 166,
 	stateHigh: "ash",
+	desc: "Coconut from the greenitemsandmore.js mod.",
 	breakInto: "coconut_flesh",
 };
 elements.coconut_flesh = {
@@ -94,6 +101,7 @@ elements.coconut_flesh = {
 	tempHigh: 134,
 	stateHigh: "ash",
 	hidden: true,
+	desc: "Coconut flesh from the greenitemsandmore.js mod.",
 	reactions: {
 		"water": {elem1: "coconut_milk", elem2: "coconut_milk" },
 	}
@@ -108,6 +116,7 @@ elements.coconut_milk = {
 	stateHigh: "steam",
 	tempLow: -10,
 	stateLow: "frozen_coconut_milk",
+	desc: "Coconut milk from the greenitemsandmore.js mod.",
 	hidden: true,
 };
 elements.frozen_coconut_milk = {
@@ -118,5 +127,6 @@ elements.frozen_coconut_milk = {
 	tempHigh: -10,
 	stateHigh: "coconut_milk",
 	hidden: true,
+	desc: "Frozen coconut milk from the greenitemsandmore.js mod.",
 	temp: -20,
 };
