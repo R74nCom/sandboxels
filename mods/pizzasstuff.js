@@ -133,8 +133,6 @@ elements.advanced_dough = {
 	hidden: "TRUE",
 	tempHigh: 94,
 	stateHigh: "croissant",
-	reactions: {
-        "electric": { elem1: "steampunk_pancakes", elem2: null },
 	}
 };
 
@@ -162,14 +160,6 @@ elements.battery_acid = {
 	hidden: "TRUE",
 };
 
-
-elements.steampunk_pancakes = {
-	color: "#252a33",
-	behavior: behaviors.POWDER,
-	category: "machines",
-	state: "solid",
-	hidden: "TRUE",
-};
 
 elements.churros = {
 	color: ["#ce9958","#b8732d","#9f633b"],
