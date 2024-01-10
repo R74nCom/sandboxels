@@ -3,11 +3,12 @@ elements.green_apple = {
 	behavior: behaviors.POWDER,
 	category: "food",
 	state: "solid",
-	tempHigh: "120",
+	tempHigh: 120,
 	stateHigh: "ash",
 	breakInto: "juice",
+	breakIntoColor: "#5fba65",
 	reactions: {
-		"milk": { elem1: "fruit_milk", elem2: "fruit_milk" },
+		"milk": { elem1: "fruit_milk", elem2: "fruit_milk", color1: "#86b867", color2: "#70b867" },
 		"red_apple": { elem1: "mixed_apples", elem2: "mixed_apples" },
 	}
 }; 
@@ -16,11 +17,12 @@ elements.red_apple = {
 	behavior: behaviors.POWDER,
 	category: "food",
 	state: "solid",
-	tempHigh: "120",
+	tempHigh: 120,
 	stateHigh: "ash",
 	breakInto: "juice",
+	breakIntoColor: "#c95555",
 	reactions: {
-		"milk": { elem1: "fruit_milk", elem2: "fruit_milk" },
+		"milk": { elem1: "fruit_milk", elem2: "fruit_milk", color1: "#d65151", color2: "#d65152" },
 		"green_apple": { elem1: "mixed_apples", elem2: "mixed_apples" },
 	}
 };
@@ -29,11 +31,12 @@ elements.mixed_apples = {
 	behavior: behaviors.POWDER,
 	category: "food",
 	state: "solid",
-	tempHigh: "120",
+	tempHigh: 120,
 	stateHigh: "ash",
 	breakInto: "juice",
+	breakIntoColor: ["#ba6859", "#71a676"],
 	reactions: {
-		"milk": { elem1: "fruit_milk", elem2: "fruit_milk" },
+		"milk": { elem1: "fruit_milk", elem2: "fruit_milk", color1: "#c47264", color2: "#66bd57"},
 		"sugar": { elem1: "mixed_sweet_apples", elem2: "mixed_sweet_apples" },
 	}
 };
@@ -42,12 +45,13 @@ elements.mixed_sweet_apples = {
 	behavior: behaviors.POWDER,
 	category: "states",
 	state: "solid",
-	tempHigh: "135",
+	tempHigh: 135,
 	stateHigh: "ash",
 	breakInto: "juice",
+	breakIntoColor: ["#ad746a", "#82ba88"],
 	hidden: true,
 	reactions: {
-		"milk": {elem1: "fruit_milk", elem2: "fruit_milk" },
+		"milk": {elem1: "fruit_milk", elem2: "fruit_milk", color1: "#f58989", color2: "#71a162"},
 		"flour": {elem1: "apple_pie", elem2: "apple_pie" },
 	}
 };
@@ -56,7 +60,7 @@ elements.apple_pie = {
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
 	state: "solid",
-	tempHigh: "156",
+	tempHigh: 156,
 	stateHigh: "ash",
 	hidden: true,
 };
@@ -65,11 +69,12 @@ elements.pear = {
 	behavior: behaviors.POWDER,
 	category: "food",
 	state: "solid",
-	tempHigh: "120",
+	tempHigh: 120,
 	stateHigh: "ash",
-	breakInto: "juice",
+    breakInto: "juice",
+	breakIntoColor: "#5f8f50",
 	reactions: {
-		"milk": {elem1: "fruit_milk", elem2: "fruit_milk" },
+		"milk": {elem1: "fruit_milk", elem2: "fruit_milk", color1: "#60c483", color2: "#60c483"},
 	}
 };
 elements.coconut = {
@@ -77,7 +82,7 @@ elements.coconut = {
 	behavior: behaviors.POWDER,
 	category: "food",
 	state: "solid",
-	tempHigh: "166",
+	tempHigh: 166,
 	stateHigh: "ash",
 	breakInto: "coconut_flesh",
 };
@@ -86,7 +91,7 @@ elements.coconut_flesh = {
 	behavior: behaviors.POWDER,
 	category: "food",
 	state: "solid",
-	tempHigh: "134",
+	tempHigh: 134,
 	stateHigh: "ash",
 	hidden: true,
 	reactions: {
@@ -99,9 +104,9 @@ elements.coconut_milk = {
 	behavior: behaviors.LIQUID,
 	category: "liquids",
 	state: "liquid",
-	tempHigh: "124",
+	tempHigh: 124,
 	stateHigh: "steam",
-	tempLow: "-10",
+	tempLow: -10,
 	stateLow: "frozen_coconut_milk",
 	hidden: true,
 };
@@ -110,8 +115,8 @@ elements.frozen_coconut_milk = {
 	behavior: behaviors.WALL,
 	category: "states",
 	state: "ice",
-	tempHigh: "-10",
+	tempHigh: -10,
 	stateHigh: "coconut_milk",
 	hidden: true,
-	temp: "-20",
+	temp: -20,
 };
