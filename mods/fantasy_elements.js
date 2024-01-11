@@ -579,3 +579,32 @@ elements.abyssberry_juice = {
         "shadowberry_juice": { elem1: "snow", elem2: "snow" },
     },
 };
+
+//1.3.1 minor update
+// below
+
+elements.cicium = {
+	color: "#4287f5",
+	behavior: behaviors.WALL,
+	category: "fantasy",
+	state: "solid",
+};
+
+elements.Verdantium = {
+	color: ["#00c8f0", "#00bcf0","#00d8f0","#27b4e3","#0aaaf5"],
+	behavior: behaviors.LIQUID,
+	category: "fantasy",
+	state: "solid",
+	isFood: false,
+};
+
+elements.nebulaflare_wall = {
+    color: ["#7500FF", "#00FFFB", "#FF00FC"],
+    behavior: behaviors.WALL,
+    state: "solid",
+    density: 0.1,
+    category: "fantasy",
+	reactions: {
+        "water": { elem1: "nebulaflare", elem2: "nebulaflare" },
+    },
+};
