@@ -237,7 +237,7 @@ elements.lemon = {
 
 elements.lemon.reactions = {
 	"juice": { elem1: null, elem2: "lemonade" }
-}
+};
 
 elements.lemonade = {
 	isFood: true,
@@ -580,12 +580,91 @@ elements.radioactive_grape = {
 	hidden: true,
 	tempHigh: 1000,
 	stateHigh: "ash",
-	color: "#7d00d1",
+	color: ["#7d00d1", "#8047d6"],
 	behavior: behaviors.RADPOWDER,
 	category: "food",
 	state: "liquid",
 };
 
+elements.radioactive_meat = {
+	hidden: true,
+	tempHigh: 1000,
+	stateHigh: "ash",
+    color: ["#4b5742", "#91564a"],
+    behavior: behaviors.RADPOWDER,
+    category: "food",
+    state: "liquid",
+};
+
+elements.radioactive_chocolate = {
+	hidden: true,
+    tempHigh: 1000,
+    stateHigh: "ash",
+    color: ["#404d29", "#4d3429"],
+    behavior: behaviors.RADPOWDER,
+    category: "food",
+    state: "liquid",
+};
+
+elements.radioactive_egg = {
+	hidden: true,
+	tempHigh: 1000,
+    stateHigh: "ash",
+    color: "#93cc87",
+    behavior: behaviors.RADPOWDER,
+    category: "food",
+    state: "liquid",
+};
+
+elements.radioactive_milk = {
+	hidden: true,
+	tempHigh: 1000,
+    stateHigh: "ash",
+    color: "#9bb895",
+    behavior: behaviors.RADLIQUID,
+    category: "liquids",
+    state: "liquid",
+};
+
+elements.radioactive_potato = {
+	hidden: true,
+	tempHigh: 1000,
+    stateHigh: "ash",
+    color: "#6e8544",
+    behavior: behaviors.RADPOWDER,
+    category: "food",
+    state: "liquid",
+};
+
+elements.radioactive_water = {
+	hidden: true,
+	tempHigh: 1000,
+    stateHigh: "steam",
+    color: "#baf0aa",
+    behavior: behaviors.RADLIQUID,
+    category: "liquids",
+    state: "liquid",
+};
+
+elements.radioactive_bread = {
+	hidden: true,
+	tempHigh: 1000,
+    stateHigh: "ash",
+    color: "#aec74c",
+    behavior: behaviors.RADPOWDER,
+    category: "food",
+    state: "liquid",
+};
+
+elements.radioactive_toast = {
+	hidden: true,
+    tempHigh: 1000,
+    stateHigh: "ash",
+    color: "#565e38",
+    behavior: behaviors.RADPOWDER,
+    category: "food",
+    state: "liquid",
+};
 
 elements.shampoo = {
 	viscosity: 1000,
@@ -1137,6 +1216,15 @@ elements.dollar = {
     state: "liquid",
 };
 
+elements.ruby = {
+	tempHigh: 2000,
+	stateHigh: "magma",
+	color: ["#d6091a", "#e83544"],
+	behavior: behaviors.WALL,
+	category: "solids",
+	state: "solid",
+};
+
 elements.incinerate.category = "tools",
 elements.cook.category = "tools",
 elements.room_temp.category = "tools",
@@ -1144,10 +1232,16 @@ elements.room_temp.category = "tools",
 elements.beans.tempHigh = 349,
 elements.beans.stateHigh = "burnt_beans",
 
-elements.grape.reactions = {
-	"radiation": { elem1: null, elem2: "radioactive_grape" },
-	"melted_chocolate": { elem1: null, elem2: "chocolate_grape" },
-	"chocolate": { elem1: null, elem2: "chocolate_grape", chance: 0.1 },
+elements.radiation.reactions = {
+	"meat": { elem1: null, elem2: "radioactive_meat" },
+	"grape": { elem1: null, elem2: "radioactive_grape" },
+	"egg": { elem1: null, elem2: "radioactive_egg" },
+    "potato": { elem1: null, elem2: "radioactive_potato" },
+    "water": { elem1: null, elem2: "radioactive_water" },
+	"chocolate": { elem1: null, elem2: "radioactive_chocolate" },
+	"milk": { elem1: null, elem2: "radioactive_milk" },
+	"bread": { elem1: null, elem2: "radioactive_bread" },
+	"toast": { elem1: null, elem2: "radioactive_toast" },
 };
 
 elements.egg.reactions = {
