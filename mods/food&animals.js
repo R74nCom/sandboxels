@@ -8,16 +8,16 @@ Created by @SquareScreamYT and @RealerRaddler
 
 v1.0
 
-Changelog (1.0)
+Changelog (v1.0)
     - added chickens
         - lays chicken eggs
     - added chicks
         - hatches from chicken eggs
         - grows into chickens
-    -added chicken eggs
-        -added frozen chicken eggs
-        -added hard boiled eggs
-            -made by putting chicken eggs in hot water
+    - added chicken eggs
+        - added frozen chicken eggs
+        - added hard boiled eggs
+            - made by putting chicken eggs in hot water
     - added soup
         - made from broth and water
     - added noodles
