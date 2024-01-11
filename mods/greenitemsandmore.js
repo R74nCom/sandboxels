@@ -156,3 +156,14 @@ elements.baked_beans = {
 	desc: "Baked beans from the greenitemsandmore.js mod.",
 	hidden: true,
 };
+elements.kiwi = {
+	color: ["#469e3e", "#9e813e"],
+	behavior: behaviors.POWDER,
+	category: "food",
+	state: "solid",
+	desc: "Kiwi from the greenitemsandmore.js mod.",
+	breakInto: "juice",
+	breakIntoColor: "#2e7533",
+	tempHigh: 120
+	stateHigh: "ash"
+};
