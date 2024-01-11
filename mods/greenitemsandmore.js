@@ -143,4 +143,27 @@ elements.fruit_doughnut = {
 };
 elements.dough.reactions = {
   "yeast": { elem1: "fruit_doughnut", elem2: "fruit_doughnut" }
-}
+};
+elements.beans.tempHigh = "40"
+elements.beans.stateHigh = "baked_beans"
+elements.baked_beans = {
+	color: ["#bf6211", "#c46b1d", "#b35d12", "#a65b19"],
+	behavior: behaviors.POWDER,
+	category: "food",
+	state: "solid",
+	tempLow: 40,
+	stateLow: "beans",
+	desc: "Baked beans from the greenitemsandmore.js mod.",
+	hidden: true,
+};
+elements.kiwi = {
+	color: ["#469e3e", "#9e813e"],
+	behavior: behaviors.POWDER,
+	category: "food",
+	state: "solid",
+	desc: "Kiwi from the greenitemsandmore.js mod.",
+	breakInto: "juice",
+	breakIntoColor: "#2e7533",
+	tempHigh: 120
+	stateHigh: "ash"
+};
