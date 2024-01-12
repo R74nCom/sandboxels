@@ -164,6 +164,20 @@ elements.kiwi = {
 	desc: "Kiwi from the greenitemsandmore.js mod.",
 	breakInto: "juice",
 	breakIntoColor: "#2e7533",
-	tempHigh: 120
-	stateHigh: "ash"
+	tempHigh: 120,
+	stateHigh: "ash",
+};
+
+behaviors.CUSTOMMOVEMENT = [
+"M3|XX|M3",
+"M2|XX|M2",
+"M3|M1|M2",
+],
+
+elements.movementtest = {
+	color: "#ccc3a9",
+	behavior: behaviors.CUSTOMMOVEMENT,
+	category: "special",
+	state: "solid",
+	desc: "movementtest. Used for testing movement. From the greenitemsandmore.js mod.",
 };
