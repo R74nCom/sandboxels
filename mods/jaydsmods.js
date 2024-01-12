@@ -16,7 +16,7 @@ elements.tsar_bomba = {
     ],
     category: "weapons",
     state: "solid",
-    density: 1300,
+    density: 1700,
     excludeRandom: true,
     cooldown: defaultCooldown
 }
@@ -28,4 +28,24 @@ elements.meese = {
         "XX|M1|XX",
     ],
      category: "life"
-    }
+    },
+elements.blackpowder = {
+    color: ["#555D50","#36454F"],
+    behavior: behaviors.STURDYPOWDER,
+    category: "powders",
+    burn: 100,
+    burnTime: 250,
+    tempHigh: 292,
+    state: "solid",
+    density: 5150,
+    },
+elements.rp1= {
+    color: "#db5968",
+    behavior: behaviors.LIQUID,
+    category: "liquids",
+    state: "liquid",
+    density: 1700,
+    alias: "rocket propellant 1",
+    burn: 100,
+    burnTime: 400,
+    };
