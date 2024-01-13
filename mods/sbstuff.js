@@ -12,13 +12,13 @@ elements.burnt_rice = {
 };
 
 elements.rice = {
+	viscosity: 10000,
 	isFood: true,
-	burnInto: "burnt_rice",
 	density: 696,
 	tempHigh: 232,
 	stateHigh: "burnt_rice",
 	color: "#d1d1d1",
-	behavior: behaviors.POWDER,
+	behavior: behaviors.LIQUID,
 	category: "food",
 	state: "liquid",
 };
@@ -666,6 +666,16 @@ elements.radioactive_toast = {
     state: "liquid",
 };
 
+elements.radioactive_beans = {
+	hidden: true,
+	tempHigh: 1000,
+	stateHigh: "ash",
+	color: ["#34541f", "#994926"],
+	behavior: behaviors.RADPOWDER,
+	category: "food",
+	state: "liquid",
+};
+
 elements.shampoo = {
 	viscosity: 1000,
 	density: 500,
@@ -847,8 +857,8 @@ elements.vanilla_ice_cream = {
 	category: "food",
 	state: "liquid",
 	reactions: {
-		"chocolate": { elem1: null, elem2: "chocolate_vanilla_ice_cream" },
-		"melted_chocolate": { elem1: null, elem2: "chocolate_vanilla_ice_cream" },
+		"chocolate": { elem1: null, elem2: "chocolate_vanilla_ice_cream", tempMin: 0 },
+		"melted_chocolate": { elem1: null, elem2: "chocolate_vanilla_ice_cream", tempMin: 0 },
 	}
 };
 
@@ -1225,6 +1235,99 @@ elements.ruby = {
 	state: "solid",
 };
 
+elements.mosquito = {
+	tempHigh: 2000,
+	stateHigh: "ash",
+	color: "#2b2421",
+	behavior: behaviors.FLY,
+	category: "life",
+	state: "liquid",
+};
+
+elements.bug_spray = {
+    tempHigh: 2000,
+    stateHigh: "steam",
+    color: "#c9d1cb",
+    behavior: behaviors.DGAS,
+    category: "gases",
+    state: "gas",
+	reactions: {
+		"mosquito": { elem1: null, elem2: null },
+		"ant": { elem1: null, elem2: null },
+		"fly": { elem1: null, elem2: null },
+		"stink_bug": { elem1: null, elem2: null },
+	}
+};
+
+elements.heavy_water = {
+	tempLow: 0,
+	stateLow: "ice",
+	tempHigh: 150,
+	stateHigh: "steam",
+	color: "#447ecf",
+	behavior: behaviors.LIQUID_OLD,
+	category: "liquids",
+    state: "liquid",
+};
+
+elements.blood_orange = {
+	hidden: true,
+	tempHigh: 300,
+	stateHigh: ["ash", "steam"],
+    color: ["#f06c0e", "#bd1000"],
+    behavior: behaviors.STURDYPOWDER,
+    category: "food",
+    state: "liquid",
+};
+
+elements.orange = {
+    tempHigh: 300,
+    stateHigh: "steam",
+    color: "#f06c0e",
+    behavior: behaviors.STURDYPOWDER,
+    category: "food",
+    state: "liquid",
+	reactions: {
+		"blood": { elem1: null, elem2: "blood_orange", chance: 0.01 },
+	}
+};
+
+elements.cranberry = {
+	viscosity: 10000,
+	hidden: true,
+    tempHigh: 300,
+    stateHigh: "steam",
+    color: "#ad2a1d",
+    behavior: behaviors.LIQUID,
+    category: "food",
+    state: "liquid",
+};
+
+elements.yoyleberries = {
+	desc: "who the fuck requested yoylecake?",
+	viscosity: 10000,
+    hidden: true,
+    tempHigh: 300,
+    stateHigh: "steam",
+    color: "#630094",
+    behavior: behaviors.LIQUID,
+    category: "food",
+    state: "liquid",
+	reactions: {
+		"batter": { elem1: null, elem2: "yoylecake" },
+	}
+};
+
+elements.yoylecake = {
+	hidden: true,
+	tempHigh: 500,
+	stateHigh: "steam",
+	color: ["#9404db", "#28b82b"],
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "liquid",
+};
+
 elements.incinerate.category = "tools",
 elements.cook.category = "tools",
 elements.room_temp.category = "tools",
@@ -1242,6 +1345,7 @@ elements.radiation.reactions = {
 	"milk": { elem1: null, elem2: "radioactive_milk" },
 	"bread": { elem1: null, elem2: "radioactive_bread" },
 	"toast": { elem1: null, elem2: "radioactive_toast" },
+	"beans": { elem1: null, elem2: "radioactive_beans" },
 };
 
 elements.egg.reactions = {
