@@ -1,9 +1,4 @@
 /*
-
-food&animals.js
-
-MORE FOODS AND ANIMALS!!
-
 Created by SquareScreamYT and RealerRaddler
 Thanks to Alice, nousernamefound and Fioushemastor for helping :)
 
