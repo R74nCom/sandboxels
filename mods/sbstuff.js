@@ -87,6 +87,8 @@ elements.dark_oak = {
 	behavior: behaviors.WALL,
 	category: "solids",
 	state: "solid",
+	burn: 5,
+	burnTime: 300,
 };
 
 elements.dark_oak_wood = {
@@ -96,6 +98,8 @@ elements.dark_oak_wood = {
 	behavior: behaviors.SUPPORT,
 	category: "land",
 	state: "solid",
+	burn: 5,
+	burnTime: 300,
 };
 
 elements.avocado = {
@@ -233,10 +237,9 @@ elements.lemon = {
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
 	state: "liquid",
-}
-
-elements.lemon.reactions = {
-	"juice": { elem1: null, elem2: "lemonade" }
+	reactions: {
+        "juice": {elem1: "lemonade", elem2: null},
+    }
 };
 
 elements.lemonade = {
@@ -312,7 +315,7 @@ elements.cooked_ramen = {
 	color: "#ada24e",
 	behavior: behaviors.SUPPORT,
 	category: "food",
-	state: "liquid",
+	state: "solid",
 }
 
 elements.cereal = {
@@ -333,17 +336,6 @@ elements.sushi = {
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
 	state: "liquid",
-};
-
-elements.indestructible_wall = {
-	noMix: true,
-	tempHigh: 99999999999999999999999999999999,
-	stateHigh: "void",
-	hardness: 1,
-	color: "#7a7a7a",
-	behavior: behaviors.WALL,
-	category: "solids",
-	state: "solid",
 };
 
 elements.diamond_ore = {
@@ -979,7 +971,7 @@ elements.cocoa_seeds = {
 	color: "#cfc7ab",
 	behavior: behaviors.SUPPORT,
 	category: "food",
-	state: "liquid",
+	state: "solid",
 };
 
 elements.pineapple = {
@@ -988,7 +980,7 @@ elements.pineapple = {
 	color: "#ccbe3b",
 	behavior: behaviors.SUPPORT,
 	category: "food",
-	state: "liquid",
+	state: "solid",
 };
 
 elements.broccoli = {
@@ -1007,7 +999,7 @@ elements.pepperoni = {
 	color: "#8f2e11",
 	behavior: behaviors.SUPPORT,
 	category: "food",
-	state: "liquid",
+	state: "solid",
 };
 
 elements.apple = {
@@ -1040,7 +1032,7 @@ elements.cucumber = {
 	color: "#235214",
 	behavior: behaviors.SUPPORT,
 	category: "food",
-	state: "liquid",
+	state: "solid",
 };
 
 elements.olive = {
@@ -1114,9 +1106,11 @@ elements.cardboard = {
 	tempHigh: 500,
     stateHigh: "ash",
     color: "#7d4725",
-    behavior: behaviors.STURDYPOWDER,
+    behavior: behaviors.SUPPORT,
     category: "land",
-    state: "liquid",
+    state: "solid",
+	burn: 5,
+	burnTime: 200,
 };
 
 elements.carrot = {
@@ -1215,7 +1209,7 @@ elements.peeper = {
     state: "solid",
 };
 
-elements.dollar = {
+elements.robux = {
 	hidden: true,
 	viscosity: 10000,
     tempHigh: 500,
@@ -1328,44 +1322,113 @@ elements.yoylecake = {
 	state: "liquid",
 };
 
+elements.banana = {
+	tempHigh: 300,
+	stateHigh: "ash",
+    color: "#f06c0e",
+    behavior: behaviors.STURDYPOWDER,
+    category: "food",
+    state: "liquid",
+};
+
+elements.cool_ray = {
+color: ["#0cdaed","#baf9ff"],
+    tick: function(pixel) {
+        var x = pixel.x;
+        for (var y = pixel.y; y < height; y++) {
+            if (outOfBounds(x, y)) {
+                break;
+            }
+            if (isEmpty(x, y)) {
+                if (Math.random() > 0.05) { continue }
+                createPixel("flash", x, y);
+                pixelMap[x][y].color = "#0cdaed";
+                pixelMap[x][y].temp = 0;
+            }
+            else {
+                if (elements[pixelMap[x][y].element].isGas) { continue }
+                if (elements[pixelMap[x][y].element].id === elements.heat_ray.id) { break }
+                pixelMap[x][y].temp += -10;
+                pixelTempCheck(pixelMap[x][y]);
+                break;
+            }
+        }
+        deletePixel(pixel.x, pixel.y);
+    },
+    temp: 0,
+    category: "energy",
+    state: "gas",
+    excludeRandom: true,
+    noMix: true
+};
+
+elements.flood_disaster = {
+	color: "#5397c2",
+    behavior: [
+        "XX|XX|XX",
+        "XX|EX:10>flood_disaster,water,water,water,water,water,water,water,water,water,water,water,water%25 AND DL%10|XX",
+        "XX|XX|XX",
+    ],
+    category: "weapons",
+    state: "solid",
+    density: 1300,
+    hidden: true,
+    excludeRandom: true,
+    maxSize: 1,
+    cooldown: defaultCooldown
+};
+
+elements.uranium_ice_cream = {
+	viscosity: 10000,
+	tempHigh: 150,
+	stateHigh: "steam",
+	color: ["#cee6cc", "#1bab11", "#305e2d", "#5a7059"],
+	behavior: [
+		"XX|CR:radiation%2|XX",
+        "M2|XX|M2",
+        "M2|M1|M2",
+	],
+    category: "food",
+    state: "liquid",
+};
+
 elements.incinerate.category = "tools",
 elements.cook.category = "tools",
 elements.room_temp.category = "tools",
 
 elements.beans.tempHigh = 349,
-elements.beans.stateHigh = "burnt_beans",
+elements.beans.stateHigh = "burnt_beans"
 
-elements.radiation.reactions = {
-	"meat": { elem1: null, elem2: "radioactive_meat" },
-	"grape": { elem1: null, elem2: "radioactive_grape" },
-	"egg": { elem1: null, elem2: "radioactive_egg" },
-    "potato": { elem1: null, elem2: "radioactive_potato" },
-    "water": { elem1: null, elem2: "radioactive_water" },
-	"chocolate": { elem1: null, elem2: "radioactive_chocolate" },
-	"milk": { elem1: null, elem2: "radioactive_milk" },
-	"bread": { elem1: null, elem2: "radioactive_bread" },
-	"toast": { elem1: null, elem2: "radioactive_toast" },
-	"beans": { elem1: null, elem2: "radioactive_beans" },
-};
+if (!elements.radiation.reactions) elements.egg.reactions = {};
+elements.radiation.reactions.meat = { elem1: null, elem2: "radioactive_meat" },
+elements.radiation.reactions.grape = { elem1: null, elem2: "radioactive_grape" },
+elements.radiation.reactions.egg = { elem1: null, elem2: "radioactive_egg" },
+elements.radiation.reactions.potato = { elem1: null, elem2: "radioactive_potato" },
+elements.radiation.reactions.water = { elem1: null, elem2: "radioactive_water" },
+elements.radiation.reactions.chocolate = { elem1: null, elem2: "radioactive_chocolate" },
+elements.radiation.reactions.milk = { elem1: null, elem2: "radioactive_milk" },
+elements.radiation.reactions.bread = { elem1: null, elem2: "radioactive_bread" },
+elements.radiation.reactions.toast = { elem1: null, elem2: "radioactive_toast" },
+elements.radiation.reactions.beans = { elem1: null, elem2: "radioactive_beans" }
 
-elements.egg.reactions = {
-	"water": { elem1: "boiled_egg", tempMin: 100 },
-	"steam": { elem1: "boiled_egg", tempMin: 100 },
-	"melted_chocolate": { elem1: null, elem2: "chocolate_egg" },
-	"chocolate": { elem1: null, elem2: "chocolate_egg", chance: 0.1 },
-};
+if (!elements.egg.reactions) elements.egg.reactions = {};
+elements.egg.reactions.water = {elem1: "boiled_egg", tempMin: 100},
+elements.egg.reactions.steam = {elem1: "boiled_egg", tempMin: 100},
+elements.egg.reactions.melted_chocolate = {elem1: "chocolate_egg"},
+elements.egg.reactions.chocolate = {elem1: "chocolate_egg", chance: 0.1}
 
-elements.potato.reactions = {
-	"water": { elem1: "fries", tempMin: 100, chance: 50 },
-	"water": { elem1: "chips", tempMin: 100, chance: 50 },
-	"steam": { elem1: "fries", tempMin: 100, chance: 50 },
-	"steam": { elem1: "fries", tempMin: 100, chance: 50 },
-};
+if (!elements.potato.reactions) elements.potato.reactions = {};
+elements.potato.reactions.water = {elem1: "fries", tempMin: 100, chance:50},
+elements.potato.reactions.steam = {elem1: "fries", tempMin: 100, chance:50},
+elements.potato.reactions.water = {elem1: "chips", tempMin: 100, chance:50},
+elements.potato.reactions.steam = {elem1: "fries", tempMin: 100, chance:50}
 
-elements.water.reactions = {
-	"cocaine": { elem1: null, elem2: "solid_water", chance: 0.1 }
-};
+if (!elements.water.reactions) elements.water.reactions = {};
+elements.water.reactions.cocaine = { elem1: "solid_water", elem2: null }
 
-elements.paper.reactions = {
-	"bless": { elem1: null, elem2: "dollar", chance: 0.1 },
-};
+if (!elements.paper.reactions) elements.paper.reactions = {};
+elements.paper.reactions.bless = { elem1: "robux", elem2: null, chance: 0.001 }
+
+if (!elements.uranium.reactions) elements.uranium.reactions = {};
+elements.uranium.reactions.ice_cream = {elem1: "uranium_ice_cream", elem2: null},
+elements.uranium.reactions.cream = {elem1: "uranium_ice_cream", elem2: null}
