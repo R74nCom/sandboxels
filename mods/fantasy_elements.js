@@ -137,6 +137,41 @@ elements.iced_pheonix = {
     },
 };
 
+// placed both sceptrium and sceptrium_dust here -part of 1.3 update-
+// -open-
+elements.sceptrium = {
+    color: "#add8e6",
+    behavior: behaviors.SOLID,
+    category: "fantasy",
+    state: "solid",
+    density: 1500,
+    weight: 100,
+    reactions: {
+        "water": { elem1: "sceptrium", elem2: "sceptrium_dust" },
+        "fire": { elem1: "sceptrium", elem2: "sceptrium_dust" },
+        "plasma": { elem1: "sceptrium", elem2: "sceptrium_dust" },
+        "laser": { elem1: "sceptrium", elem2: "sceptrium_dust" },
+        "explosion": { elem1: "sceptrium", elem2: "sceptrium_dust" },
+    },
+};
+
+elements.sceptrium_dust = {
+    color: ["#87ceeb", "#add8e6", "#b0e0e6"],
+    behavior: behaviors.POWDER,
+    category: "fantasy",
+    state: "solid",
+    density: 0.5,
+    weight: 1,
+    reactions: {
+        "water": { elem1: "sceptrium_dust", elem2: "sceptrium_dust" },
+        "fire": { elem1: "sceptrium_dust", elem2: "sceptrium_dust" },
+        "plasma": { elem1: "sceptrium_dust", elem2: "sceptrium_dust" },
+        "laser": { elem1: "sceptrium_dust", elem2: "sceptrium_dust" },
+        "explosion": { elem1: "sceptrium_dust", elem2: "sceptrium_dust" },
+    },
+};
+// -end-
+
 // New Fantasy Elements with Updated Reactions
 elements.dragon_scale = {
     color: "#8B4513",
@@ -333,6 +368,13 @@ elements.goblin = {
     "category":"fantasy",
 	reactions: {
         "goblins_delight": { elem2:null, chance:0.9 },
+        "plasma": { elem2: "goblin_soul", elem2: "goblin_soul" },
+        "fire": { elem2: "goblin_soul", elem2: "goblin_soul" },
+        "incinerate": { elem2: "goblin_soul", elem2: "goblin_soul" },
+        "heat_ray": { elem2: "goblin_soul", elem2: "goblin_soul" },
+
+
+
     },
 };
 
@@ -348,34 +390,221 @@ elements.fenzium = {
     }
 };
 
-elements.sceptrium = {
-    color: "#add8e6",
+elements.goblin_feeder = {
+    color: ["#307D7E", "#98FF98"],
     behavior: behaviors.SOLID,
     category: "fantasy",
-    state: "solid",
-    density: 1500,
-    weight: 100,
+    state: "soid",
+    density: 1000,
+    viscosity: 1,
+    weight: 300,
+    temperature: 20,
     reactions: {
-        "water": { elem1: "sceptrium", elem2: "sceptrium_dust" },
-        "fire": { elem1: "sceptrium", elem2: "sceptrium_dust" },
-        "plasma": { elem1: "sceptrium", elem2: "sceptrium_dust" },
-        "laser": { elem1: "sceptrium", elem2: "sceptrium_dust" },
-        "explosion": { elem1: "sceptrium", elem2: "sceptrium_dust" },
+        "fire": { elem1: "pulsium_bar", elem2: null },
+    },
+    tick: function(pixel) {
+        if (Math.random() < 0.05) {
+            createPixel("goblins_delight", pixel.x, pixel.y);
+        }
     },
 };
 
-elements.sceptrium_dust = {
-    color: ["#87ceeb", "#add8e6", "#b0e0e6"],
+// fantasy_elements.js version 1.3
+
+elements.thanosium = {
+    color: ["#8803fc", "#db03fc", "#ad03fc", "#cf03fc"],
+    behavior: behaviors.SOLID,
+    category: "fantasy",
+    state: "solid",
+    density: 1900,
+    breakInto: "thanosium_dust",
+    weight: 100,
+};
+
+elements.thanosium_dust = {
+    color: ["#8803fc", "#ad03fc", "#cf03fc", "#b12ee6", "#d62ee6", "#a8329d"],
+    behavior: behaviors.POWDER,
+    category: "fantasy",
+    state: "powder",
+    density: 1900,
+    weight: 100,
+    reactions: {
+  "diamond": { func: function(pixel1, pixel2){
+      autoResizeCanvas();
+    }
+  }
+}
+};
+
+elements.exterminator_bomb = {
+    color: ["#23969e", "#28aeb8", "#2ec6d1", "#34deeb"],
+    behavior: [
+        "XX|EX:90>uranium,plasma,H_bomb,nuke,fire|XX",
+        "XX|XX|XX",
+        "M2|M1 AND EX:90>plasma,plasma,ember,fire,fire|M2",
+    ],
+    category: "fantasyweapons",
+    state: "solid",
+    density: 2000,
+    excludeRandom: true,
+};
+
+elements.heat_bomb = {
+    color: ["#ff7700", "#ffbf00"],
+    behavior: [
+        "XX|EX:90>heat_ray,heat_ray,heat_ray,heat_ray,heat_ray|XX",
+        "XX|XX|XX",
+        "M2|M1 AND EX:90>heat_ray,heat_ray,heat_ray,heat_ray,heat_ray|M2",
+    ],
+    category: "fantasyweapons",
+    state: "solid",
+    density: 2000,
+    excludeRandom: true,
+};
+elements.goblin_soul = {
+	color: ["#9fff05","#92e807","#56fc03","#4fe007","#07e03a","#19e649","#19e6b6"],
+	behavior: behaviors.FLY,
+	category: "fantasy",
+	state: "gas",
+    density: 1000,
+};
+
+elements.rainbow_flash = {
+    color: ["#ff0800","#ffae00","#ffe100","#51ff00","#005eff","#a200ff"],
+    tick: function(pixel) {
+        if (Math.random() < 3 && pixelTicks - pixel.start > 4) {
+            deletePixel(pixel.x, pixel.y)
+        }
+    },
+    reactions: {
+        "fire": { elem1:"rainbow_bomb" },
+    },
+    category: "fantasy",
+    temp: 40,
+    state: "gas",
+    density: 1,
+    tempLow: -270,
+    stateLow: "light",
+};
+elements.rainbow_bomb = {
+    color: ["#ff0800","#ffae00","#ffe100","#51ff00","#005eff","#a200ff"],
+    behavior: [
+        "XX|EX:90>rainbow_flash,rainbow_flash,rainbow_flash,rainbow_flash,rainbow_flash|XX",
+        "XX|XX|XX",
+        "M2|M1 AND EX:90>rainbow_flash,rainbow_flash,rainbow_flash,rainbow_flash,rainbow_flash|M2",
+    ],
+    category: "fantasyweapons",
+    state: "solid",
+    density: 2500,
+    excludeRandom: true,
+};
+elements.cryptoberry = {
+    color: ["#34d8eb","#34e6fa","#24d9ed"],
     behavior: behaviors.POWDER,
     category: "fantasy",
     state: "solid",
-    density: 0.5,
-    weight: 1,
-    reactions: {
-        "water": { elem1: "sceptrium_dust", elem2: "sceptrium_dust" },
-        "fire": { elem1: "sceptrium_dust", elem2: "sceptrium_dust" },
-        "plasma": { elem1: "sceptrium_dust", elem2: "sceptrium_dust" },
-        "laser": { elem1: "sceptrium_dust", elem2: "sceptrium_dust" },
-        "explosion": { elem1: "sceptrium_dust", elem2: "sceptrium_dust" },
+    density: 800,
+	breakInto: "cryptoberry_juice",
+    isFood: true,
+};
+elements.cryptoberry_juice = {
+    color: ["#34c9eb","#34d5eb","#34b7eb"],
+    behavior: behaviors.LIQUID,
+    category: "fantasy",
+    state: "solid",
+    density: 800,
+    isFood: true,
+};
+
+// adds more reactions to existing elements -part if 1.3 update-
+// -open-
+elements.water.reactions.cryptoberry_juice = {elem2: "shadowberry_juice", tempMin: 80}
+// -close-
+elements.shadowberry = {
+    color: "#ab34eb",
+    behavior: behaviors.POWDER,
+    category: "fantasy",
+    state: "solid",
+    density: 800,
+	breakInto: "shadowberry_juice",
+    isFood: true,
+};
+elements.shadowberry_juice = {
+    color: "#a600ff",
+    behavior: behaviors.LIQUID,
+    category: "fantasy",
+    state: "solid",
+    density: 800,
+    isFood: true,
+	reactions: {
+        "human": { elem1: "radiation", elem2: "radiation" },
+    },
+};
+elements.Frostberry = {
+    color: "#25f5cf",
+    behavior: behaviors.POWDER,
+    category: "fantasy",
+    state: "solid",
+    density: 800,
+	breakInto: "Frostberry_juice",
+    isFood: true,
+};
+elements.Frostberry_juice = {
+    color: "#25f5e0",
+    behavior: behaviors.LIQUID,
+    category: "fantasy",
+    state: "solid",
+    density: 800,
+    isFood: true,
+	reactions: {
+        "human": { elem1: "snow", elem2: "snow" },
+    },
+};
+elements.abyssberry = {
+    color: "#676b68",
+    behavior: behaviors.POWDER,
+    category: "fantasy",
+    state: "solid",
+    density: 800,
+	breakInto: "abyssberry_juice",
+};
+elements.abyssberry_juice = {
+    color: "#818a84",
+    behavior: behaviors.LIQUID,
+    category: "fantasy",
+    state: "solid",
+    density: 800,
+    isFood: true,
+	reactions: {
+        "shadowberry_juice": { elem1: "snow", elem2: "snow" },
+    },
+};
+
+//1.3.1 minor update
+// below
+
+elements.cicium = {
+	color: "#4287f5",
+	behavior: behaviors.WALL,
+	category: "fantasy",
+	state: "solid",
+};
+
+elements.Verdantium = {
+	color: ["#00c8f0", "#00bcf0","#00d8f0","#27b4e3","#0aaaf5"],
+	behavior: behaviors.LIQUID,
+	category: "fantasy",
+	state: "solid",
+	isFood: false,
+};
+
+elements.nebulaflare_wall = {
+    color: ["#7500FF", "#00FFFB", "#FF00FC"],
+    behavior: behaviors.WALL,
+    state: "solid",
+    density: 0.1,
+    category: "fantasy",
+	reactions: {
+        "water": { elem1: "nebulaflare", elem2: "nebulaflare" },
     },
 };

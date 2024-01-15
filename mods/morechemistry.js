@@ -1,5 +1,19 @@
 //This mod was made by Alex the transfem, https://discord.com/users/778753696804765696 on discord and https://www.tiktok.com/@alextheagenenby?_t=8hoCVI3NRhu&_r=1 on tiktok.
-//version 1.4.2: added incinerator, E-incinerator and improved mixer to be compatible with nousersthings.js and to have a range of effect.
+function pixelInRange(pixel, range){
+  let i = 0;
+  while (i < range.length) {
+    if (pixel.x === range[i][0] && pixel.y === range[i][1]) {
+      i++;
+      return true;
+    } else {
+        i++;
+      }
+
+    }
+    return false;
+
+}
+
 function customExplosion(pixel1, pixel2, radius, list) {
   let x = pixel1.x;
   let y = pixel1.y;
@@ -966,9 +980,127 @@ elements.morechemmixer = {
     }
   },
     tick: function(pixel) {
-      pixel.clone = `range: ${num}`;
-      let range = mouseRange(pixel.x, pixel.y, num);
+      if(pixel.start == pixelTicks) {
+        pixel.range = num;
+      }
+      let range = mouseRange(pixel.x, pixel.y, pixel.range);
       mix(range);
+    }
+  }
+let num1 = 0;
+elements.morechemsmasher = {
+    name: "MoreChemSmasher",
+    behavior: behaviors.WALL,
+    category: "machines",
+    noMix: true,
+  onSelect: function(pixel) {
+    let item = prompt("enter range for smashing.");
+    if(/^\d+$/.test(item)){
+      num1 = parseInt(item);
+    } else {
+      alert("that is not an integer.");
+    }
+  },
+    tick: function(pixel) {
+      if(pixel.start == pixelTicks) {
+        pixel.range = num1;
+      }
+      let range = mouseRange(pixel.x, pixel.y, pixel.range);
+      smash(range);
+    }
+  }
+let num2 = 0;
+let exclude = [];
+elements.specialsmasher = {
+    name: "SpecialSmasher",
+    behavior: behaviors.WALL,
+    category: "machines",
+    noMix: true,
+  onSelect: function(pixel) {
+    let item = prompt("enter range for smashing.");
+    exclude = prompt("Enter elements to exclude, seperate them with commas.").replace(/\s/g, "").split(",");
+    if(/^\d+$/.test(item)){
+      num2 = parseInt(item);
+    } else {
+      alert("that is not an integer.");
+    }
+  },
+    tick: function(pixel) {
+      if(pixel.start == pixelTicks) {
+        pixel.range = num2;
+      }
+      let range = mouseRange(pixel.x, pixel.y, pixel.range);
+      smash(range, exclude);
+    }
+  }
+let num3 = 0;
+let exclude1 = [];
+elements.specialmixer = {
+    name: "SpecialMixer",
+    behavior: behaviors.WALL,
+    category: "machines",
+    noMix: true,
+  onSelect: function(pixel) {
+    let item = prompt("enter range for mixing.");
+    exclude = prompt("Enter elements to exclude, seperate them with commas.").replace(/\s/g, "").split(",");
+    if(/^\d+$/.test(item)){
+      num3 = parseInt(item);
+    } else {
+      alert("that is not an integer.");
+    }
+  },
+    tick: function(pixel) {
+      if(pixel.start == pixelTicks) {
+        pixel.range = num3;
+      }
+      let range = mouseRange(pixel.x, pixel.y, pixel.range);
+      mix(range, exclude);
+    }
+  }
+let num4 = 0;
+let exclude2 = [];
+let property1 = "";
+let value2 = "";
+elements.propmachine = {
+    name: "PropMachine",
+    behavior: behaviors.WALL,
+    category: "machines",
+    noMix: true,
+  onSelect: function(pixel) {
+    let item = prompt("enter range for prop changing.");
+    if(/^\d+$/.test(item)){
+      num4 = parseInt(item);
+    } else {
+      alert("that is not an integer.");
+    }
+    exclude2 = prompt("Enter elements to exclude, seperate them with commas.").replace(/\s/g, "").split(",");
+    exclude2.push("propmachine");
+    var answer1 = prompt("Warning - This tool may break the simulator if used incorrectly.\n\nEnter a pixel attribute to modify:",(currentProp||undefined));
+    if (!answer1) { return }
+    var answer2 = prompt("Now, enter a value for "+answer1+":",(currentPropValue||undefined));
+    if (!answer2) { return }
+    var valueL = answer2.toLowerCase();
+    if (valueL === "true") { answer2 = true }
+    else if (valueL === "false") { answer2 = false }
+    else if (valueL === "null") { answer2 = null }
+    else if (valueL === "undefined") { answer2 = undefined }
+    else if (answer1 === "color" && valueL[0] === "#") {
+        var rgb = hexToRGB(valueL);
+        answer2 = "rgb("+rgb.r+","+rgb.g+","+rgb.b+")";
+    }
+    currentProp = answer1;
+    var num = parseFloat(answer2);
+    if (!isNaN(num)) { answer2 = num }
+    currentPropValue = answer2;
+    logMessage("Prop: "+currentProp);
+    logMessage("Value: "+currentPropValue);
+  },
+    tick: function(pixel) {
+      if(pixel.start == pixelTicks) {
+        pixel.range = num4;
+      }
+      let range = mouseRange(pixel.x, pixel.y, pixel.range);
+      prop({ property: property1, value: value2 },range, exclude2);
     }
   }
 let item = "";
@@ -1064,14 +1196,42 @@ elements.incinerator = {
   color: 'rgb(255, 50, 0)',
   noMix: true,
 }
-function mix(range){
+function prop(obj, range, exclude = []){
+  for (var i = 0; i < range.length; i++) {
+  if (!isEmpty(range[i][0], range[i][1], true)) {
+    var pixel = pixelMap[range[i][0]][range[i][1]];
+    if (!exclude.includes(pixel.element)){
+      if(/^\d+$/.test(obj.value)){
+        obj.value = parseInt(obj.value);
+      }
+      if (!currentProp) { return }
+      if (pixel[currentProp] !== undefined && typeof pixel[currentProp] !== typeof currentPropValue) {
+          logMessage("Error: "+currentProp+" type is "+typeof pixel[currentProp]+", not "+typeof currentPropValue+".");
+          currentProp = null;
+          currentPropValue = null;
+          return;
+        }
+      if (currentProp === "element") {
+          changePixel(pixel, currentPropValue);
+          return;
+      }
+      if (currentProp === "burning" && currentPropValue === "true") {
+          pixel.burnStart = pixelTicks;
+          return;
+      }
+        pixel[currentProp] = currentPropValue;
+      }
+    }
+  }
+}
+function mix(range, exclude = []){
   let mixlist = [];
   for (var i = 0; i < range.length; i++) {
   var x = range[i][0];
   var y = range[i][1];
       if (!isEmpty(x,y,true)) {
           var pixel = pixelMap[x][y];
-          if (elements[pixel.element].noMix !== true || shiftDown) {
+          if (elements[pixel.element].noMix !== true) {
               mixlist.push(pixel);
           }
       }
@@ -1079,14 +1239,71 @@ function mix(range){
   for (var i = 0; i < mixlist.length; i++) {
     var pixel1 = mixlist[Math.floor(Math.random()*mixlist.length)];
     var pixel2 = mixlist[Math.floor(Math.random()*mixlist.length)];
-    swapPixels(pixel1,pixel2);
-    mixlist.splice(mixlist.indexOf(pixel1),1);
-    mixlist.splice(mixlist.indexOf(pixel2),1);
-    if (elements[pixel1.element].onMix) {
-      elements[pixel1.element].onMix(pixel1,pixel2);
-    }
-    if (elements[pixel2.element].onMix) {
-      elements[pixel2.element].onMix(pixel2,pixel1);
+    if (exclude.includes(pixel1.element) || exclude.includes(pixel2.element)){
+      mixlist.splice(mixlist.indexOf(pixel1),1);
+      mixlist.splice(mixlist.indexOf(pixel2),1);
+    } else {
+      swapPixels(pixel1,pixel2);
+      mixlist.splice(mixlist.indexOf(pixel1),1);
+      mixlist.splice(mixlist.indexOf(pixel2),1);
+      if (elements[pixel1.element].onMix) {
+        elements[pixel1.element].onMix(pixel1,pixel2);
+      }
+      if (elements[pixel2.element].onMix ) {
+        elements[pixel2.element].onMix(pixel2,pixel1);
+      }
     }
   }
 }
+function smash(range, exclude = []){
+  let smashlist = [];
+  for (var i = 0; i < range.length; i++) {
+  var x = range[i][0];
+  var y = range[i][1];
+      if (!isEmpty(x,y,true)) {
+          var pixel = pixelMap[x][y];
+          if (elements[pixel.element].noMix !== true) {
+              smashlist.push(pixel);
+          }
+      }
+  }
+  for (var i = 0; i < smashlist.length; i++) {
+    var pixel1 = smashlist[Math.floor(Math.random()*smashlist.length)];
+    smashlist.splice(smashlist.indexOf(pixel1),1);
+    if (elements[pixel1.element].breakInto && !exclude.includes(pixel1.element)) {
+      if (Array.isArray(elements[pixel1.element].breakInto)){
+        changePixel(pixelMap[pixel1.x][pixel1.y], elements[pixel1.element].breakInto[Math.floor(Math.random()*elements[pixel1.element].breakInto.length)])
+      } else {
+        changePixel(pixelMap[pixel1.x][pixel1.y], elements[pixel1.element].breakInto)
+      }
+    }
+  }
+}
+function pull(range, pixel1, include = []){
+  let pulllist = [];
+  for (var i = 0; i < range.length; i++) {
+  var x = range[i][0];
+  var y = range[i][1];
+      if (!isEmpty(x,y,true)) {
+          var pixel = pixelMap[x][y];
+          if (elements[pixel.element].noMix !== true) {
+              pulllist.push(pixel);
+          }
+      }
+  }
+  for (var i = 0; i < pulllist.length; i++) {
+    var pixel = pulllist[Math.floor(Math.random()*pulllist.length)];
+    pulllist.splice(pulllist.indexOf(pixel),1);
+    if (elements[pixel.element].movable != false && include.includes(pixel.element)) {
+        for (var i = 0; i < pulllist.length; i++) {
+            if (pixelInRange(pulllist[i], range)) {
+              let Xdistance = pixel1.x - pixel.x;
+              let Ydistance = pixel1.y - pixel.y;
+              let newX = (Xdistance > pixel.x ? pixel.x + 3 : pixel.x + 1);
+              let newY = (Ydistance > pixel.y ? pixel.y + 3 : pixel.y + 1);
+              tryMove(pixel, newX, newY, undefined, false);
+            }
+          }
+      }
+    }
+  }
