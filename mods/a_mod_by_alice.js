@@ -7612,9 +7612,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		elements.rainbow.reactions.coal = { elem1: "dark_rainbow" };
 		elements.rainbow.reactions.charcoal = { elem1: "dark_rainbow" };
 		elements.rainbow.reactions.coal_dust = { elem1: "dark_rainbow" };
+		elements.rainbow.reactions.malware = { elem1: "glitchy_rainbow" };
 		elements.rainbow.reactions.ruby = { elem1: "rubyshimmer" };
 		elements.rainbow.reactions.molten_ruby = { elem1: "rubyshimmer" };
 		elements.rainbow.reactions.topaz = { elem1: "topazshimmer" };
+		elements.rainbow.reactions.bee = { elem1: "beeshimmer" };
 		elements.rainbow.reactions.sap = { elem1: "ambershimmer" };
 		elements.rainbow.reactions.amber = { elem1: "ambershimmer" };
 		elements.rainbow.reactions.emerald = { elem1: "emeraldshimmer" };
@@ -7638,6 +7640,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		elements.rainbow.reactions.gold = { elem1: "goldshimmer" };
 		elements.rainbow.reactions.molten_gold = { elem1: "goldshimmer" };
 		elements.rainbow.reactions.onyx = { elem1: "onyxshimmer" };
+		elements.rainbow.reactions.opal = { elem1: "opalshimmer" };
+		elements.rainbow.reactions.jadeite = { elem1: "jadeshimmer" };
 		elements.rainbow.reactions.dirt = { elem1: "earthshimmer" };
 		elements.rainbow.reactions.lead_scrap = { elem1: "leadshimmer" };
 		elements.rainbow.reactions.lead = { elem1: "leadshimmer" };
@@ -7698,8 +7702,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		elements.rainbow.reactions.sand_sediment = { elem1: "sandshimmer" };
 		elements.rainbow.reactions.sandstone = { elem1: "sandshimmer" };
 		elements.rainbow.reactions.ichor = { elem1: "ichorshimmer" };
-		elements.rainbow.reactions.opal = { elem1: "opalshimmer" };
 		elements.rainbow.reactions.quark_matter = { elem1: "quarkshimmer" };
+		elements.rainbow.reactions.heejinite = { elem1: "heejinshimmer" };
+		elements.rainbow.reactions.heejinite_powder = { elem1: "heejinshimmer" };
+		elements.rainbow.reactions.molten_heejinite = { elem1: "heejinshimmer" };
+		elements.rainbow.reactions.heejinite_gas = { elem1: "heejinshimmer" };
 
 		/*elements.rainbow.reactions.dye = {
 			func: function(pixel,otherPixel) {
@@ -7795,7 +7802,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		};
 
 		elements.fireshimmer = {
-			color: ["#ff0000","#ff8800","#ffff00","#ff8800","ff0000"],
+			color: ["#ff0000","#ff8800","#ffff00","#ff8800","#ff0000"],
 			tick: function(pixel) {
 				var dyeColor = pixel.dyeColor ?? null;
 				var t = pixelTicks*3+pixel.x+pixel.y;
@@ -7811,6 +7818,45 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					var semiDyedColor = averageColorObjects(dyedColor,baseJSON,0.7);
 					//35% dye color, 65% result
 					var finalColor = averageColorObjects(semiDyedColor,dyeJSON,0.65);
+					pixel.color = convertColorFormats(finalColor,"rgb")
+				}
+			},
+			category: "special",
+			reactions: {
+				dye: elements.rainbow.reactions.dye
+			},
+			behavior: behaviors.WALL,
+			state: "solid",
+			category: "rainbow variants",
+			movable: false,
+		};
+
+		elements.glitchy_rainbow = {
+			color: ["#ff0000","#ff8800","#ffff00","#ff8800","#ff0000"],
+			tick: function(pixel) {
+				if(Math.random() < 0.25) { return };
+				var dyeColor = pixel.dyeColor ?? null;
+				var t = (
+					(Math.floor(pixelTicks / 3) * 3)
+					+ (Math.floor(pixel.x / 3) * 3)
+					+ pixel.y
+					+ (Math.floor(Math.random() * 5)-2)
+				);
+				var r = Math.floor(127*(1-Math.cos(t*Math.PI/90)));
+				var g = Math.floor(127*(1-Math.cos(t*Math.PI/90+2*Math.PI/3)));
+				var b = Math.floor(127*(1-Math.cos(t*Math.PI/90+4*Math.PI/3)));
+				var baseColor = Math.random() < 0.02 ? [g,r,b] : [r,g,b];
+				baseColor = "rgb("+baseColor.join(",")+")";
+				if(!dyeColor) {
+					pixel.color = baseColor
+				} else {
+					var baseJSON = convertColorFormats(baseColor,"json");
+					var dyeJSON = convertColorFormats(dyeColor,"json");
+					var dyedColor = multiplyColors(dyeJSON,baseJSON,"json");
+					//80% multiplied
+					var semiDyedColor = averageColorObjects(dyedColor,baseJSON,0.8);
+					//30% dye color, 70% result
+					var finalColor = averageColorObjects(semiDyedColor,dyeJSON,0.7);
 					pixel.color = convertColorFormats(finalColor,"rgb")
 				}
 			},
@@ -7902,6 +7948,20 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				var t = pixelTicks*2.5+pixel.x+pixel.y;
 				var r = Math.floor(255*(1-Math.cos(t*Math.PI/24)));
 				var value = Math.ceil((r*(7/8))+32);
+				pixel.color = "rgb("+value+","+value+",0)";
+				doHeat(pixel);
+			},
+			behavior: behaviors.WALL,
+			state: "solid",
+			category: "rainbow variants",
+		};
+
+		elements.beeshimmer = {
+			color: ["#ffff00","#202000","#ffff00","#202000","#ffff00","#202000","#ffff00","#202000"],
+			tick: function(pixel) {
+				var t = pixelTicks*1.5+pixel.x+pixel.y;
+				var r = Math.floor(255*(1-Math.cos(t*Math.PI/4)));
+				var value = Math.ceil(r/2);
 				pixel.color = "rgb("+value+","+value+",0)";
 				doHeat(pixel);
 			},
@@ -8075,6 +8135,58 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				var r = Math.floor(255*(1-Math.cos(t*Math.PI/24)));
 				var value = Math.ceil((r*(7/8))+16);
 				pixel.color = "rgb("+Math.round(value*0.125)+","+Math.round(value*0.125)+","+Math.round(value*0.125)+")";
+			},
+			behavior: behaviors.WALL,
+			state: "solid",
+			category: "rainbow variants",
+		};
+
+		elements.opalshimmer = {
+			color: function() { var rc = elements.rainbow.color; var rc2 = rc.map(x => lightenColor(x,127,"hex")); return rc2.concat(rc2) }(),
+			tick: function(pixel) {
+				var dyeColor = pixel.dyeColor ?? null;
+				var t1 = pixelTicks+pixel.x+pixel.y;
+				var t2 = pixelTicks+pixel.x-pixel.y;
+				var scale = 20;
+				var r1 = Math.floor(127*(1-Math.cos(t1*Math.PI/scale)));
+				var g1 = Math.floor(127*(1-Math.cos(t1*Math.PI/scale+2*Math.PI/3)));
+				var b1 = Math.floor(127*(1-Math.cos(t1*Math.PI/scale+4*Math.PI/3)));
+				var r2 = Math.floor(127*(1-Math.cos(t2*Math.PI/scale)));
+				var g2 = Math.floor(127*(1-Math.cos(t2*Math.PI/scale+2*Math.PI/3)));
+				var b2 = Math.floor(127*(1-Math.cos(t2*Math.PI/scale+4*Math.PI/3)));
+				var r3 = (r1+r2)*0.75;
+				var g3 = (g1+g2)*0.75;
+				var b3 = (b1+b2)*0.75;
+				var baseColor = {r: r3, g: g3, b: b3};
+				baseColor = averageColorObjects(baseColor,whiteColor,0.8);
+				baseColor = convertColorFormats(baseColor,"rgb");
+				if(!dyeColor) {
+					pixel.color = baseColor
+				} else {
+					var baseJSON = convertColorFormats(baseColor,"json");
+					var dyeJSON = convertColorFormats(dyeColor,"json");
+					var dyedColor = multiplyColors(dyeJSON,baseJSON,"json");
+					//80% multiplied
+					var semiDyedColor = averageColorObjects(dyedColor,baseJSON,0.8);
+					//30% dye color, 70% result
+					var finalColor = averageColorObjects(semiDyedColor,dyeJSON,0.7);
+					pixel.color = convertColorFormats(finalColor,"rgb")
+				}
+			},
+			reactions: {
+				dye: elements.rainbow.reactions.dye,
+			},
+			behavior: behaviors.WALL,
+			state: "solid",
+			category: "rainbow variants",
+		};
+
+		elements.jadeshimmer = {
+			color: ["#5f8f2f","#0c1206","#5f8f2f","#0c1206"],
+			tick: function(pixel) {
+				var t = pixelTicks*2.5+pixel.x+pixel.y;
+				var r = Math.floor(255*(1-Math.cos(t*Math.PI/24)));
+				pixel.color = "rgb("+Math.ceil((r*(4/16))+32)+","+Math.ceil((r*(8/16))+32)+","+Math.ceil((r*(1/8))+32)+")";
 			},
 			behavior: behaviors.WALL,
 			state: "solid",
@@ -8302,46 +8414,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "rainbow variants",
 		};
 
-		elements.opalshimmer = {
-			color: function() { var rc = elements.rainbow.color; var rc2 = rc.map(x => lightenColor(x,127,"hex")); return rc2.concat(rc2) }(),
-			tick: function(pixel) {
-				var dyeColor = pixel.dyeColor ?? null;
-				var t1 = pixelTicks+pixel.x+pixel.y;
-				var t2 = pixelTicks+pixel.x-pixel.y;
-				var scale = 20;
-				var r1 = Math.floor(127*(1-Math.cos(t1*Math.PI/scale)));
-				var g1 = Math.floor(127*(1-Math.cos(t1*Math.PI/scale+2*Math.PI/3)));
-				var b1 = Math.floor(127*(1-Math.cos(t1*Math.PI/scale+4*Math.PI/3)));
-				var r2 = Math.floor(127*(1-Math.cos(t2*Math.PI/scale)));
-				var g2 = Math.floor(127*(1-Math.cos(t2*Math.PI/scale+2*Math.PI/3)));
-				var b2 = Math.floor(127*(1-Math.cos(t2*Math.PI/scale+4*Math.PI/3)));
-				var r3 = (r1+r2)*0.75;
-				var g3 = (g1+g2)*0.75;
-				var b3 = (b1+b2)*0.75;
-				var baseColor = {r: r3, g: g3, b: b3};
-				baseColor = averageColorObjects(baseColor,whiteColor,0.8);
-				baseColor = convertColorFormats(baseColor,"rgb");
-				if(!dyeColor) {
-					pixel.color = baseColor
-				} else {
-					var baseJSON = convertColorFormats(baseColor,"json");
-					var dyeJSON = convertColorFormats(dyeColor,"json");
-					var dyedColor = multiplyColors(dyeJSON,baseJSON,"json");
-					//80% multiplied
-					var semiDyedColor = averageColorObjects(dyedColor,baseJSON,0.8);
-					//30% dye color, 70% result
-					var finalColor = averageColorObjects(semiDyedColor,dyeJSON,0.7);
-					pixel.color = convertColorFormats(finalColor,"rgb")
-				}
-			},
-			reactions: {
-				dye: elements.rainbow.reactions.dye,
-			},
-			behavior: behaviors.WALL,
-			state: "solid",
-			category: "rainbow variants",
-		};
-
 		elements.quarkshimmer = {
 			color: ["#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff"],
 			tick: function(pixel) {
@@ -8372,6 +8444,23 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 			movable: false,
+		};
+
+		elements.heejinshimmer = {
+			color: ["#ff007f","#200010","#ff007f","#200010"],
+			tick: function(pixel) {
+				var t = pixelTicks*2.5+pixel.x+pixel.y;
+				var t2 = pixelTicks/2;
+				//var r = Math.floor(255*(1-Math.cos(t*Math.PI/24)));
+				//var value = Math.ceil((r*(7/8))+32);
+				var l = Math.floor(40*(1-Math.cos(t*Math.PI/24)));
+				var h = (320 + Math.floor(30*(Math.cos(t2*Math.PI/24)))) % 360;
+				//pixel.color = "rgb("+value+",0,"+Math.round(value * 0.5)+")";
+				pixel.color = convertHslObjects({h:h,s:100,l:l},"rgb");
+			},
+			behavior: behaviors.WALL,
+			state: "solid",
+			category: "rainbow variants",
 		};
 
 		elements.pastel_rainbow_small = {
@@ -25138,6 +25227,18 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						hardness: 0.45,
 					};
 
+				//Jade
+
+					elements.jadeite = {
+						color: ["#3D7D31", "#2D6D1F", "#538A2F", "#6A9A37"],
+						tempHigh: 1000,
+						behavior: behaviors.POWDER,
+						category: "powders",
+						state: "solid",
+						density: 3400,
+						hardness: 0.65,
+					};
+
 			//Soil
 
 				//Dry dirt
@@ -34204,7 +34305,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 						if(directions.length > 0) {
 							tryMove(pixel,pixel.x+directions[Math.floor(Math.random() * directions.length)],pixel.y)
 						};
-					}
+					};
+					doHeat(pixel);
 				},
 				reactions: {
 					water: { elem1: ["plastic","cellulose","cellulose"], elem2: ["water","water","cellulose",null,null], chance: 0.8 }
