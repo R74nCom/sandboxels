@@ -16471,6 +16471,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			state: "solid",
 		};
 
+		//Makes thinner nichrome wires get hotter
 		nichromeDoNeighborCount = true;
 
 		function nichromeNeighborLogic(count) {
@@ -16530,6 +16531,48 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					pixel.temp += ((1.1 + nichromeNeighborLogic(neighbors)) * pixel.charge) * 1.1;
 				};
 			},
+		};
+
+		elements.gold.reactions ??= {};
+
+		elements.molten_gold.reactions.molten_nickel = {
+			elem1: "molten_white_gold",
+			elem2: new Array(9).fill("molten_nickel").concat("molten_white_gold"),
+			changeTemp: false
+		};
+
+		elements.molten_copper.reactions.molten_gold = {
+			elem1: ["molten_copper","molten_copper","molten_rose_gold"],
+			elem2: "molten_rose_gold",
+			changeTemp: false
+		};
+
+		elements.white_gold = {
+			color: ["#c2c2c2","#9e9e9e","#e8e8e8"],
+			behavior: behaviors.WALL,
+			tempHigh: 937,
+			category: "solids",
+			density: 15900,
+			conduct: 0.83, //Has never been measured x>:(
+			hardness: 0.48,
+		};
+		
+		elements.rose_gold.color = ["#f58eb1","#d06c7d","#f58eb1"];
+		
+		elements.molten_copper.reactions.molten_rose_gold = {
+			elem1: ["molten_copper","molten_red_gold"],
+			elem2: "molten_red_gold",
+			changeTemp: false
+		};
+
+		elements.red_gold = {
+			color: ["#d97b6a","#c95c49","#d97b6a"],
+			behavior: behaviors.WALL,
+			tempHigh: 975, //https://www.researchgate.net/figure/Gold-copper-phase-diagram-with-melting-points-of-gold-and-copper-adapted-from-AMS_fig51_233765846
+			category: "solids",
+			density: 12220, //https://www.handymath.com/cgi-bin/density.cgi?naym1=Gold&weight1=10&den1=19.3&naym2=Copper&weight2=10&den2=8.94&aloynaym=Red+Gold&submit=Calculate&numnum=2&moreless=1&decimal=5
+			conduct: 0.85, //Has never been measured x>:(
+			hardness: 0.5, //???
 		};
 
 		worldgentypes.test = {
@@ -19543,7 +19586,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		elements.frozen_ketchup.breakInto = "ketchup_snow"
 		elements.frozen_poisoned_ketchup.breakInto = "poisoned_ketchup_snow"
 
-		regularShinyThingArray = ["iron", "zinc", "tin", "nickel", "silver", "aluminum", "lead", "tungsten", "brass", "bronze", "sterling", "steel", "rose_gold", "solder", "gold", "pyrite", "mythril", "mithril_mythril_alloy", "titanium", "ilitium", "mithril", "beryllium", "boron", "ruthenium", "rhodium", "palladium", "rhenium", "osmium", "iridium", "platinum", "frozen_mercury", "lithium", "niobium", "ketchup_metal", "ketchup_gold", "tungstensteel", "densinium", "mithril", "signalum", "laetium"]
+		regularShinyThingArray = ["iron", "zinc", "tin", "nickel", "silver", "aluminum", "lead", "tungsten", "brass", "bronze", "sterling", "steel", "white_gold", "blue_gold", "rose_gold", "red_gold", "solder", "gold", "pyrite", "mythril", "mithril_mythril_alloy", "titanium", "ilitium", "mithril", "beryllium", "boron", "ruthenium", "rhodium", "palladium", "rhenium", "osmium", "iridium", "platinum", "frozen_mercury", "lithium", "niobium", "ketchup_metal", "ketchup_gold", "tungstensteel", "densinium", "mithril", "signalum", "laetium"]
 
 		elements.nitrogen_snow = {
 			color: "#efefef",
