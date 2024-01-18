@@ -27603,7 +27603,21 @@ Make sure to save your command in a file if you want to add this preset again.`
 		});
 		lightlikes = ["light","flash","laser","radiation","insulate_flash"];
 		grbBreakIntos = Object.keys(elements).filter(function(elemName) {
-			return elements[elemName].breakInto && elements[elemName].breakInto.includes("gamma_ray_burst");
+			var to = typeof(elements[elemName]);
+			if(to == "undefined") {
+				return false
+			} else {
+				var to2 = typeof(elements[elemName].breakInto);
+				if(to2 == "undefined") {
+					return false
+				} else {
+					if(elements[elemName].breakInto instanceof Array) {
+						return elements[elemName].breakInto.includes("gamma_ray_burst")
+					} else {
+						return elements[elemName].breakInto == "gamma_ray_burst"
+					}
+				}
+			}
 		});
 
 		elements.insulate_flash = {
