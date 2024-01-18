@@ -26687,9 +26687,10 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 		}
 
 		function rebuildWorldgenList() { //vanilla code
+			document.getElementById("worldgenselect").innerHTML = '<option value="off">Disabled</option>';
 			for (var key in worldgentypes) {
 				document.getElementById("worldgenselect").innerHTML += "<option value='" + key + "'>" + key.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase()) + "</option>";
-			}
+			};
 		};
 
 		function bareClear() {
