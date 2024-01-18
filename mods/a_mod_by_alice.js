@@ -43834,13 +43834,17 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 	
 	//END ##
 
+	Object.defineProperty(elements.pipe, "movable", {
+		value: false,
+		writable: false //**** you, you're not changing it to true.
+	});
+
 	elements.unknown = {
 		color: "#FFFFFF",
 		behavior: behaviors.WALL,
 		maxColorOffset: 0
 	};
 	
-	"sand"
 } else {
 	var nonexistentMods = dependencies.filter(function(modPath) { return !(enabledMods.includes(modPath)) });
 	nonexistentMods.forEach(function(modPath) {
