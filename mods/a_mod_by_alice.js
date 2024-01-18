@@ -1688,6 +1688,25 @@ if(allDependenciesExist) {
 				return neighbors
 			};
 
+			function clonePixel(pixel,newX,newY,replaceExistingPixel=false,returnPixel=false) {
+				if(!pixel) { return false };
+				if(outOfBounds(newX,newY)) { return false };
+				if(isEmpty(newX,newY)) {
+					//Do nothing
+				} else {
+					if(replaceExistingPixel) {
+						deletePixel(newX,newY) 
+					} else {
+						return false
+					}
+				};
+				var newPixel = structuredClone ? structuredClone(pixel) : JSON.parse(JSON.stringify(pixel));
+				newPixel.x = newX; newPixel.y = newY;
+				pixelMap[newX][newY] = newPixel;
+				currentPixels.push(newPixel);
+				return returnPixel ? newPixel : true
+			};
+
 			function breakCircle(x,y,radius,respectHardness=false,changeTemp=false,defaultBreakIntoDust=false) {
 				var coords = getCirclePixels(x,y,radius);
 				coords.forEach(pixel => respectHardness ? tryBreak(pixel,changeTemp,defaultBreakIntoDust) : breakPixel(pixel,changeTemp,defaultBreakIntoDust))
@@ -4484,6 +4503,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				for (var i = 0; i < pixelDrawList.length; i++) {
 					pixel = pixelDrawList[i];
 					if (pixelMap[pixel.x][pixel.y] == undefined) {continue}
+					if (pixel.con) { pixel = pixel.con }
 					if (view===null || view===3) {
 						var colorOut = pixel.color;
 						for(var imsorryaboutthelagthiswillcause in specialProperties) {
@@ -5901,6 +5921,35 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 1300,
 			excludeRandom: true,
 		},
+		
+		elements.turbine = {
+			color: "#75726a",
+			tempHigh: elements.copper.tempHigh,
+			stateHigh: ["steel","molten_copper"],
+			conduct: 1,
+			behavior: behaviors.WALL,
+			tick: function(pixel) {
+				var neighbors = adjacentCoords.map(offsetPair => pixelMap[pixel.x+offsetPair[0]]?.[pixel.y+offsetPair[1]]).filter(function(pixelOrUndefined) { return typeof(pixelOrUndefined) == "object" });
+				if(neighbors.length < 0) { return };
+				var neighboringElements = neighbors.filter(function(px) { return !!px }).map(x => x.element);
+				var neighboringStates = neighboringElements.map(elemName => elements[elemName].state ?? "solid");
+				var nonSolidNeighbors = neighboringStates.filter(function(string) { return (string !== "solid") }).length;
+				if(nonSolidNeighbors == 0) { return };
+				pixel.charge ??= 0;
+				pixel.charge += nonSolidNeighbors / 8;
+				pixel.temp += (nonSolidNeighbors / 500);
+			},
+			onTryMoveInto: function(pixel,otherPixel) {
+				pixel.charge ??= 0;
+				pixel.charge += 1/8;
+				pixel.temp += (1/500);
+			},
+			hardness: averageNumericArray([elements.copper.hardness,elements.steel.hardness,elements.steel.hardness]),
+			breakInto: ["metal_scrap", "steel_scrap", "steel_scrap", "copper_scrap", "copper_scrap", "steel_scrap"],
+			state: "solid",
+			category: "machines",
+			density: averageNumericArray([elements.steel.density, elements.copper.density, airDensity])
+		};
 
 		//hormones
 
@@ -7937,7 +7986,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				var r = Math.floor(255*(1-Math.cos(t*Math.PI/24)));
 				pixel.color = "rgb("+Math.ceil((r*(7/8))+32)+","+0+","+0+")";
 			},
-			behavior: behaviors.WALL,
+			behavior: behaviors.WALL, //7989 yay soshi!
 			state: "solid",
 			category: "rainbow variants",
 		};
@@ -8071,7 +8120,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			},
 			behavior: behaviors.WALL,
 			state: "solid",
-			category: "rainbow variants", //7989 yay soshi!
+			category: "rainbow variants",
 			nellfireImmune: true
 		};
 
@@ -28171,6 +28220,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hardness: 0.85,
 			conduct: 1,
 			state: "solid",
+			movable: false
 		}
 
 		elements.down_pusher = {
@@ -28201,6 +28251,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hardness: 0.85,
 			conduct: 1,
 			state: "solid",
+			movable: false
 		}
 
 		elements.left_pusher = {
@@ -28231,6 +28282,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hardness: 0.85,
 			conduct: 1,
 			state: "solid",
+			movable: false
 		}
 
 		elements.right_pusher = {
@@ -28261,6 +28313,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hardness: 0.85,
 			conduct: 1,
 			state: "solid",
+			movable: false
 		}
 
 		elements.up_e_pusher = {
@@ -28303,6 +28356,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hardness: 0.85,
 			conduct: 1,
 			state: "solid",
+			movable: false
 		}
 
 		elements.down_e_pusher = {
@@ -28345,6 +28399,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hardness: 0.85,
 			conduct: 1,
 			state: "solid",
+			movable: false
 		}
 
 		elements.left_e_pusher = {
@@ -28387,6 +28442,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hardness: 0.85,
 			conduct: 1,
 			state: "solid",
+			movable: false
 		}
 
 		elements.right_e_pusher = {
@@ -28429,6 +28485,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hardness: 0.85,
 			conduct: 1,
 			state: "solid",
+			movable: false
 		}
 
 	//PORTALS ##
@@ -40888,6 +40945,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 			density: 1052,
 			hidden: true,
 		};
+
+		elements.steel.movable = false;
 
 		elements.support_steel = {
 			color: "#71797E",
