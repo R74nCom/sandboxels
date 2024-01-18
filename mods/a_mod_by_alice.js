@@ -4710,7 +4710,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 							};
 						}
 					}
-					if (pixel.burning && view !== 2) { // Yellow glow on charge
+					if (pixel.burning && settings.burnOverlay && view !== 2) { // Red glow on burn
 						if (!elements[pixel.element].colorOn) {
 							ctx.fillStyle = "rgba(255,0,0,0.5)";
 							switch(mode) {
@@ -4855,6 +4855,28 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			lastSetting = settingNodes[settingNodes.length - 1];
 			//console.log(lastSetting);
 			lastSetting.setAttribute("style","padding-bottom:0"); //remove padding from last setting;
+
+			var redBurnSettingSpan = document.createElement("span");
+			redBurnSettingSpan.setAttribute("setting","burnOverlay");
+			redBurnSettingSpan.setAttribute("class","setting-span");
+			redBurnSettingSpan.textContent = "Red overlay on burning pixels ";
+				var settingDropdown = document.createElement("select");
+				settingDropdown.setAttribute("onchange","settings.burnOverlay = (this.value === 'true'); saveSettings();");
+				var options = {
+					"false": "Disabled",
+					"true": "Enabled"
+				};
+				for(value in options) {
+					var newOption = document.createElement("option");
+					if(value == "0") {
+						newOption.setAttribute("selected","");		
+					};
+					newOption.setAttribute("value",value);
+					newOption.innerText = options[value];
+					settingDropdown.appendChild(newOption);
+				};
+				redBurnSettingSpan.appendChild(settingDropdown);
+			settingsMenu.appendChild(redBurnSettingSpan);
 
 			console.log(everyTick(function() {
 				if(paused) { return };
@@ -15418,7 +15440,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				var lastSetting = settingNodes[settingNodes.length - 1];
 				//console.log(lastSetting);
 				//console.log(lastSetting.getAttribute("style"));
-				lastSetting.removeAttribute("style"); //restore padding for worldgen setting;
 				//console.log(lastSetting.getAttribute("style"));
 
 				//Shape setting
