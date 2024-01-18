@@ -4078,7 +4078,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			"category": "special",
 			"breakInto": ["molten_ash","carbon_dioxide","charcoal","electric","magic"],
 			"tempLow": 8000,
-			"stateLow": "plasma_torch",
+			"stateLow": new Array(99).fill("mystic_torch").concat("plasma_torch"), //1 in 100 chance to cool to a plasma torch, to mitigate inexplicable explosive cooling's tendency to cause the torch to spontaneously "downgrade"
 			"hardness": 0.999
 		};
 		elements.mystic_fire.state = "gas";
@@ -26263,6 +26263,16 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 
 	//PRIMITIVE IN-GAME CONSOLE ##
 	//featuring stars
+		customWorldTypes = {};
+		if(localStorage.getItem("customWorldTypes") == null) {
+			localStorage.setItem("customWorldTypes",JSON.stringify(customWorldTypes))	
+		} else {
+			customWorldTypes = JSON.parse(localStorage.getItem("customWorldTypes"));
+			for(var name in customWorldTypes) {
+				worldgentypes[name] = customWorldTypes[name]
+			};
+			rebuildWorldgenList()
+		};
 
 		var promptInputNullishes = ["null","none","","n/a"];
 		var eightSpaces = " ".repeat(8);
@@ -27445,6 +27455,8 @@ height: ${height}
 						};
 					};
 					worldgentypes[presetName] = newPreset;
+					customWorldTypes[presetName] = newPreset;
+					localStorage.setItem("customWorldTypes",JSON.stringify(customWorldTypes));
 					settings.worldgen = presetName;
 					rebuildWorldgenList();
 
