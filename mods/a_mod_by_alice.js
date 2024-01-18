@@ -13780,7 +13780,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					color: "#d3d9b4",
 					behavior: behaviors.LIQUID,
 					tick: function(pixel) {
-						if (pixel.temp > 210 && !pixel.burning) {
+						if (pixel.temp > 300 && !pixel.burning) {
 							pixel.burning = true;
 							pixel.burnStart = pixelTicks;
 						}
