@@ -1,6 +1,7 @@
 /*
 Created by SquareScreamYT and RealerRaddler
 Thanks to Alice, nousernamefound and Fioushemastor for helping :)
+Thanks to Moshieee for suggesting new items too :)
 
 v1.1
 
