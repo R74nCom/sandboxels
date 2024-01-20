@@ -47,7 +47,7 @@ elements.pumice = {
     stateHigh: "magma",
     hardness: 0.5,
     },
-elements.magma.stateLow = ["basalt","basalt","basalt","pumice","doritoite","basalt","rock","obsidian_shard","diorite","andesite"],
+elements.magma.stateLow = ["basalt","basalt","basalt","pumice","basalt","rock","obsidian_shard","diorite","andesite","basalt","basalt","basalt","pumice","basalt","rock","obsidian_shard","diorite","andesite","doritoite"],
     elements.eruption = {
     color:  ["#ff6f00","#ff8c00","#ff4d00"],
     behavior: [
@@ -62,7 +62,7 @@ elements.magma.stateLow = ["basalt","basalt","basalt","pumice","doritoite","basa
 },
 elements.andesite = {
     color: "#777C7C",
-    behavior: behaviors.SOLID,
+    behavior: behaviors.POWDER,
     category: "land",
     state: "solid",
     density: 2771,
@@ -71,7 +71,7 @@ elements.andesite = {
     },
     elements.diorite = {
     color: ["#d4d4d4","#2b2b2b"],
-    behavior: behaviors.SOLID,
+    behavior: behaviors.POWDER,
     category: "land",
     state: "solid",
     density: 2900,
@@ -89,5 +89,6 @@ elements.andesite = {
     reactions: {
             "head": { elem1: "null" },
             },
-    isFood: true
+    isFood: true,
+    hidden: true
     };
