@@ -1528,8 +1528,8 @@ elements.watermelon_seed = {
     cooldown: defaultCooldown,
     seed: true,
     behavior: [
-        "ST:watermelon_stem|ST:watermelon_stem|ST:watermelon_stem",
-        "ST:watermelon_stem|FX%20|ST:watermelon_stem",
+        "XX|XX|XX",
+        "XX|FX%20|XX",
         "XX|M1|XX",
     ],
 };
