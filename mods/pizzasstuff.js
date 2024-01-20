@@ -71,6 +71,18 @@ elements.fruit_ice_cream = {
 	temp: 0,
 };
 
+elements.snow_cone = {
+	color: ["#ebfeed","#f4fff5","#fefaff","#fff3fe","#fcf2fb"],
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "solid",
+	hidden: "TRUE",
+	density: 1096,
+	tempHigh: 15,
+	stateHigh: "smashed_ice",
+	temp: 0,
+};
+
 elements.mint_ice_cream = {
 
 	color: ["#ebfdff","#d5fff7","#ceffe9","#dfffde","#daffd5"],
@@ -350,7 +362,36 @@ elements.smashed_ice = {
 	tempHigh: 25,
 	stateHigh: "water",
 	tempLow: -100,
-	stateLow: "snow",
+	stateLow: "snow_cone",
+};
+
+elements.anti_torch = {
+	color: "#d68542",
+    behavior: [
+        "XX|CR:cold_fire|XX",
+        "XX|XX|XX",
+        "XX|XX|XX",
+    ],
+    reactions: {
+        "water": { elem1:"wood" },
+        "sugar_water": { elem1:"wood" },
+        "salt_water": { elem1:"wood" },
+        "seltzer": { elem1:"wood" },
+        "dirty_water": { elem1:"wood" },
+        "pool_water": { elem1:"wood" },
+        "steam": { elem1:"wood" },
+        "smog": { elem1:"wood" },
+        "rain_cloud": { elem1:"wood" },
+        "cloud": { elem1:"wood" },
+        "snow_cloud": { elem1:"wood" },
+        "hail_cloud": { elem1:"wood" },
+        "thunder_cloud": { elem1:"wood" },
+        "ice_nine": { elem1:"wood" }
+    },
+    temp:-250,
+    category: "special",
+    breakInto: "sawdust",
+	insulate: true,
 };
 
 elements.moss = {
@@ -451,7 +492,9 @@ elements.cherry = {
 	tempHigh: 256,
 	stateHigh: "steam",
 	breakIntoColor: "#450008",
-	reactionsColor: "#450008",
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#bf4545","#982828"] },
+	}
 };
 
 elements.strawberry = {
@@ -463,6 +506,9 @@ elements.strawberry = {
 	tempHigh: 256,
 	stateHigh: "steam",
 	breakIntoColor: ["#bf0147","#c61548","#cc2857","#c62354","#c11848"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#a82953","#941540"] },
+	}
 };
 
 elements.apple = {
@@ -474,6 +520,9 @@ elements.apple = {
 	tempHigh: 256,
 	stateHigh: "steam",
 	breakIntoColor: ["#ffda69","#ffdb84"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#f4ff49","#ffec2f"] },
+	}
 };
 
 elements.green_apple = {
@@ -485,6 +534,9 @@ elements.green_apple = {
 	tempHigh: 256,
 	stateHigh: "steam",
 	breakIntoColor: ["#ffda69","#ffdb84"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#f4ff49","#ffec2f"] },
+	}
 };
 
 elements.orange = {
@@ -496,6 +548,9 @@ elements.orange = {
 	breakIntoColor: ["#ffc659","#ffb646","#ffa700","#ff8d00"],
 	tempHigh: 256,
 	stateHigh: "steam",
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#fbd808","#ff9005"] },
+	}
 };
 
 elements.kiwi = {
@@ -507,6 +562,9 @@ elements.kiwi = {
 	tempHigh: 256,
 	stateHigh: "steam",
 	breakIntoColor: ["#a9c77e","#bad98f"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#a5d04c","#bbdc79"] },
+	}
 };
 
 elements.blueberry = {
@@ -518,6 +576,9 @@ elements.blueberry = {
 	tempHigh: 256,
 	stateHigh: "steam",
 	breakIntoColor: ["#8abeee","#8aacf4","#9591ee","#787fdb","#7c74ce"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#5086c1","#5076b0"] },
+	}
 };
 
 elements.plum = {
@@ -529,6 +590,9 @@ elements.plum = {
 	tempHigh: 256,
 	stateHigh: "steam",
 	breakIntoColor: ["#bf66c9","#d499db","#eacced"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#d8b2d8","#b266b2"] },
+	}
 };
 
 elements.blackberry = {
@@ -540,6 +604,9 @@ elements.blackberry = {
 	tempHigh: 256,
 	stateHigh: "steam",
 	breakIntoColor: ["#a941a1","#ba59b2","#c570bf"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#ba59b2","#c570bf"] },
+	}
 };
 
 elements.peach = {
@@ -551,6 +618,9 @@ elements.peach = {
 	tempHigh: 256,
 	stateHigh: "steam",
 	breakIntoColor: ["#fce5b8","#fcdab8","#fccfb8"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#ffe7dc","#ffdac8"] },
+	}
 };
 
 elements.lemon = {
@@ -562,6 +632,9 @@ elements.lemon = {
 	tempHigh: 256,
 	stateHigh: "steam",
 	breakIntoColor: ["#f8ff80","#f6ff6c","#f5ff57","#f3ff39","#f0ff00"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#ffffd8","#fffecf"] },
+	}
 };
 
 elements.green_grape = {
@@ -573,8 +646,10 @@ elements.green_grape = {
 	breakIntoColor: ["#5f8536","#7ba84a"],
 	tempHigh: 256,
 	stateHigh: "steam",
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#ecffdc","#c3ffa8"] },
+	}
 };
-
 elements.banana = {
 	color: ["#ffb400","#ffc100","#ffdb00","#ffe700","#f0ff00"],
 	behavior: behaviors.STURDYPOWDER,
@@ -584,6 +659,7 @@ elements.banana = {
 	breakIntoColor: "#f0f060",
 	reactions: {
         "steam": { elem1: "potassium", elem2: null },
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#fdf8d6","#f9efa6"] },
 	}
 };
 
@@ -594,6 +670,9 @@ elements.blood_orange = {
 	state: "solid",
 	breakInto: "juice",
 	breakIntoColor: ["#ff4600","#ff8353"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#ffc7b4","#ffa485"] },
+	}
 };
 
 elements.canary_melon = {
@@ -603,6 +682,9 @@ elements.canary_melon = {
 	state: "solid",
 	breakInto: "juice",
 	breakIntoColor: ["#ffff9e","#fffcaa"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#e5ffb3","#ecff9c"] },
+	}
 };
 
 elements.honeydew_melon = {
@@ -612,6 +694,9 @@ elements.honeydew_melon = {
 	state: "solid",
 	breakInto: "juice",
 	breakIntoColor: ["#e9ffa3","#f9ffa3"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#e8ffc9","#e8ffc8"] },
+	}
 };
 
 elements.cranberry = {
@@ -623,6 +708,7 @@ elements.cranberry = {
 	breakIntoColor: ["#ba4242","#7a1717"],
 	reactions: {
         "soda": { elem1: null, elem2: "sprite_cranberry" },
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#ffc0c5","#ff8f99"] },
 	}
 };
 
@@ -633,6 +719,9 @@ elements.pitaya = {
 	state: "solid",
 	breakInto: "juice",
 	breakIntoColor: ["#ff84ae","#ffafca"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#ffd4e3","#ffafca"] },
+	}
 };
 
 elements.coconut = {
@@ -642,6 +731,9 @@ elements.coconut = {
 	state: "solid",
 	breakInto: "milk",
 	breakIntoColor: ["#f7e5d8","#fdefe5","#fff7f1"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#fff2db","#ffefd4"] },
+	}
 };
 
 elements.cloudberry = {
@@ -651,6 +743,9 @@ elements.cloudberry = {
 	state: "solid",
 	breakInto: "juice",
 	breakIntoColor: ["#ffe1c7","#fff9f3"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#ffd7ab","#ffcb93"] },
+	}
 };
 
 elements.crabapple = {
@@ -660,6 +755,9 @@ elements.crabapple = {
 	state: "solid",
 	breakInto: "juice",
 	breakIntoColor: ["#ff8fcf","#ffb2de"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#ffd2ec","#ffb2de"] },
+	}
 };
 
 elements.cactus_fruit = {
@@ -669,6 +767,9 @@ elements.cactus_fruit = {
 	state: "solid",
 	breakInto: "juice",
 	breakIntoColor: ["#75d802","#72d202"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#bbffc1","#84ff90"] },
+	}
 };
 
 elements.pear = {
@@ -678,6 +779,9 @@ elements.pear = {
 	state: "solid",
 	breakInto: "juice",
 	breakIntoColor: ["#c8e39e","#99cc99"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#c3ff9c","#bcff92"] },
+	}
 };
 
 elements.purpleberry = {
@@ -687,6 +791,9 @@ elements.purpleberry = {
 	state: "solid",
 	breakInto: "juice",
 	breakIntoColor: ["#c08cc3","#e49cc2"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#fee6e4","#fbc3c4"] },
+	}
 };
 
 elements.yellowberry = {
@@ -696,6 +803,9 @@ elements.yellowberry = {
 	state: "solid",
 	breakInto: "juice",
 	breakIntoColor: ["#fffec8","#fffdaf"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#fffec8","#fffdaf"] },
+	}
 };
 
 elements.pomegranate = {
@@ -705,6 +815,9 @@ elements.pomegranate = {
 	state: "solid",
 	breakInto: "juice",
 	breakIntoColor: ["#ee717f","#e94254"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#f4a1a9","#ee717f"] },
+	}
 };
 
 elements.guava = {
@@ -714,6 +827,9 @@ elements.guava = {
 	state: "solid",
 	breakInto: "juice",
 	breakIntoColor: ["#ff5a76","#ff8fa2"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#f6c8cd","#f2acb5"] },
+	}
 };
 
 elements.raspberry = {
@@ -723,6 +839,9 @@ elements.raspberry = {
 	state: "solid",
 	breakInto: "juice",
 	breakIntoColor: ["#f23a72","#fb79a0"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#ffb1f4","#ff91ce"] },
+	}
 };
 
 elements.gooseberry = {
@@ -732,6 +851,9 @@ elements.gooseberry = {
 	state: "solid",
 	breakInto: "juice",
 	breakIntoColor: ["#8b0031","#920436"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#f1ffdb","#e3ffb7"] },
+	}
 };
 
 elements.fig = {
@@ -741,6 +863,9 @@ elements.fig = {
 	state: "solid",
 	breakInto: "juice",
 	breakIntoColor: ["#ff4a4a","#ea3838"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#ff8d8d","#ffabab"] },
+	}
 };
 
 elements.durian = {
@@ -750,6 +875,9 @@ elements.durian = {
 	state: "solid",
 	breakInto: "juice",
 	breakIntoColor: ["#faffaf","#fbffbf"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#feffe7","#f9ffb3"] },
+	}
 };
 
 elements.passionfruit = {
@@ -759,6 +887,9 @@ elements.passionfruit = {
 	state: "solid",
 	breakInto: "juice",
 	breakIntoColor: ["#ffdede","#ffe4e4"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#d8adce","#c485b6"] },
+	}
 };
 
 elements.starfruit = {
@@ -768,6 +899,9 @@ elements.starfruit = {
 	state: "solid",
 	breakInto: "juice",
 	breakIntoColor: ["#f2d553","#f5dd75"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#faeeba","#f7e698"] },
+	}
 };
 
 elements.rambutan = {
@@ -777,6 +911,9 @@ elements.rambutan = {
 	state: "solid",
 	breakInto: "juice",
 	breakIntoColor: ["#faffaf","#fbffbf"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#fde0e0","#f4c1c1"] },
+	}
 };
 
 elements.nance = {
@@ -786,6 +923,9 @@ elements.nance = {
 	state: "solid",
 	breakInto: "juice",
 	breakIntoColor: ["#ffff66","#ffff99"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#fffee0","#fffec8"] },
+	}
 };
 
 elements.nectarine = {
@@ -795,6 +935,9 @@ elements.nectarine = {
 	state: "solid",
 	breakInto: "juice",
 	breakIntoColor: ["#ffbd8b","#ffdbc0"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#ffc3ad","#ffa584"] },
+	}
 };
 
 elements.loganberry = {
@@ -804,6 +947,9 @@ elements.loganberry = {
 	state: "solid",
 	breakInto: "juice",
 	breakIntoColor: ["#ff8f8f","#ffb7b7"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#9c91a5","#bdb5c3"] },
+	}
 };
 
 elements.currant = {
@@ -813,6 +959,9 @@ elements.currant = {
 	state: "solid",
 	breakInto: "juice",
 	breakIntoColor: ["#ff878f","#ffbcc0"],
+	reactions: {
+		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#cc6b69","#bb3a37"] },
+	}
 };
 
 elements.sprite_cranberry = {
@@ -840,6 +989,24 @@ elements.broccoli = {
 	state: "solid",
 	breakInto: "juice",
 	breakIntoColor: ["#00b215","#0b8500"],
+};
+
+elements.hot_pepper = {
+	color: ["#ffd013","#fb8a24","#ff5c3a","#d61439","#81032d"],
+	behavior: behaviors.POWDER,
+	category: "food",
+	state: "solid",
+	reactions: {
+        "sauce": { elem1: null, elem2: "hot_sauce" },
+	}
+};
+
+elements.hot_sauce = {
+	color: ["#ff0000","#f00000","#d20000","#c50000","#b00000"],
+	behavior: behaviors.LIQUID,
+	density: 10,
+	category: "food",
+	state: "solid",
 };
 
 elements.squash = {
@@ -971,6 +1138,26 @@ elements.poison_oreo = {
 	hidden: "TRUE",
 };
 
+elements.sprinkles = {
+	color: ["#fbfa8f","#c5ecbd","#7ac7bf","#f29fa9","#e1848e"],
+	behavior: behaviors.POWDER,
+	category: "food",
+	state: "solid",
+};
+
+elements.whipped_cream = {
+	color: ["#fffff0","#fffff3","#fffff6","#fffff9","#fffffc"],
+	behavior: behaviors.POWDER,
+	category: "food",
+	state: "solid",
+	hidden: "TRUE",
+	tempHigh: 130,
+	stateHigh: "steam",
+	reactions: {
+		"coffee": { elem1: null, elem2: "cream_coffee" },
+	}
+};
+
 elements.cream_coffee = {
 	color: ["#dbc1ac","#967259","#634832"],
 	behavior: behaviors.LIQUID,
@@ -990,6 +1177,97 @@ elements.seafoam = {
 	state: "solid",
 };
 
+elements.pipis = {
+	color: ["#00BFFF","#0085B0"],
+	behavior: behaviors.POWDER,
+	category: "life",
+	state: "solid",
+};
+
+elements.pipe_bomb = {
+	color: "#5e5c57",
+    behavior: [
+        "XX|EX:18>metal_scrap,fire,fire,fire%1|XX",
+        "XX|XX|XX",
+        "M2|M1 AND EX:18>metal_scrap,fire,fire,fire%1|M2",
+    ],
+    behaviorOn: [
+        "XX|XX|XX",
+        "XX|EX:18>metal_scrap,fire,fire,fire%1|XX",
+        "XX|XX|XX",
+    ],
+    category: "weapons",
+    state: "solid",
+    density: 1300,
+    tempHigh: 1455.5,
+    stateHigh: "molten_steel",
+    excludeRandom: true,
+    conduct: 1,
+    cooldown: defaultCooldown,
+    nocheer: true
+},
+
+elements.frog_bomb = {	
+    color: "#0f2105",
+    behavior: [
+        "XX|EX:10>frog|XX",
+        "XX|XX|XX",
+        "M2|M1 AND EX:10>frog|M2",
+    ],
+    category: "weapons",
+    state: "solid",
+    density: 1300,
+    tempHigh: 1455.5,
+    stateHigh: "molten_steel",
+    excludeRandom: true,
+    cooldown: defaultCooldown
+},
+
+elements.cash_bomb = {	
+    color: "#665411",
+    behavior: [
+        "XX|EX:10>gold_coin|XX",
+        "XX|XX|XX",
+        "M2|M1 AND EX:10>gold_coin|M2",
+    ],
+    category: "weapons",
+    state: "solid",
+    density: 1300,
+    tempHigh: 1455.5,
+    stateHigh: "molten_steel",
+    excludeRandom: true,
+    cooldown: defaultCooldown
+},
+
+elements.pi_pis = {	
+    color: ["#007299","003849"],
+    behavior: [
+        "XX|EX:10>pipis|XX",
+        "XX|XX|XX",
+        "M2|M1 AND EX:10>pipis|M2",
+    ],
+    category: "weapons",
+    state: "solid",
+    density: 1300,
+    tempHigh: 1455.5,
+    stateHigh: "molten_steel",
+    excludeRandom: true,
+    cooldown: defaultCooldown
+},
+
+elements.chocolate_fountain = {
+    color: "#3e1d07",
+    behavior: [
+        "XX|CR:melted_chocolate|XX",
+        "XX|XX|XX",
+        "XX|XX|XX",
+    ],
+    category:"special",
+    tempHigh: 1455.5,
+    stateHigh: "molten_steel",
+    conduct: 0.42,
+	state: "solid",
+};
 
 elements.toorhpaste = {
 	color: ["#31ffe0","#65ffe8","#97ffef","#c9fff7","#f3fffd"],
@@ -1070,6 +1348,36 @@ elements.battery.breakInto = "battery_acid"
 elements.herb.breakInto = "seasoning"
 
 elements.chocolate.breakInto = "chocolate_sauce"
+
+if (!elements.vinegar.reactions) elements.vinegar.reactions = {};
+elements.vinegar.reactions.broccoli = { elem1: null, elem2: "pickle" }
+
+if (!elements.vinegar.reactions) elements.vinegar.reactions = {};
+elements.vinegar.reactions.squash = { elem1: null, elem2: "pickle" }
+
+if (!elements.vinegar.reactions) elements.vinegar.reactions = {};
+elements.vinegar.reactions.zuchinni = { elem1: null, elem2: "pickle" }
+
+if (!elements.vinegar.reactions) elements.vinegar.reactions = {};
+elements.vinegar.reactions.olive = { elem1: null, elem2: "pickle" }
+
+if (!elements.vinegar.reactions) elements.vinegar.reactions = {};
+elements.vinegar.reactions.eggplant = { elem1: null, elem2: "pickle" }
+
+if (!elements.vinegar.reactions) elements.vinegar.reactions = {};
+elements.vinegar.reactions.onion = { elem1: null, elem2: "pickle" }
+
+if (!elements.vinegar.reactions) elements.vinegar.reactions = {};
+elements.vinegar.reactions.garlic = { elem1: null, elem2: "pickle" }
+
+if (!elements.vinegar.reactions) elements.vinegar.reactions = {};
+elements.vinegar.reactions.garlic_clove = { elem1: null, elem2: "pickle" }
+
+if (!elements.vinegar.reactions) elements.vinegar.reactions = {};
+elements.vinegar.reactions.asparagus = { elem1: null, elem2: "pickle" }
+
+if (!elements.vinegar.reactions) elements.vinegar.reactions = {};
+elements.vinegar.reactions.asparagus = { elem1: null, elem2: "pickle" }
 
 if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
 elements.ice_cream.reactions.juice = { elem1: "fruit_ice_cream", elem2: null }
