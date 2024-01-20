@@ -1184,29 +1184,6 @@ elements.pipis = {
 	state: "solid",
 };
 
-elements.pipe_bomb = {
-	color: "#5e5c57",
-    behavior: [
-        "XX|EX:18>metal_scrap,fire,fire,fire%1|XX",
-        "XX|XX|XX",
-        "M2|M1 AND EX:18>metal_scrap,fire,fire,fire%1|M2",
-    ],
-    behaviorOn: [
-        "XX|XX|XX",
-        "XX|EX:18>metal_scrap,fire,fire,fire%1|XX",
-        "XX|XX|XX",
-    ],
-    category: "weapons",
-    state: "solid",
-    density: 1300,
-    tempHigh: 1455.5,
-    stateHigh: "molten_steel",
-    excludeRandom: true,
-    conduct: 1,
-    cooldown: defaultCooldown,
-    nocheer: true
-},
-
 elements.frog_bomb = {	
     color: "#0f2105",
     behavior: [
