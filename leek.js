@@ -27,5 +27,8 @@ elements.leek_soup = {
     viscosity: 35,
     state: "liquid",
     density: 800,
+	reactions: {
+        "water": { elem1: "leek_soup", elem2: "leek_soup" },
+    },
 };
 
