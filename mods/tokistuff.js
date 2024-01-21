@@ -156,16 +156,6 @@ elements.cherry = {
 		"cotton_candy": { elem1: null, elem2: "cherry_cotton_candy", tempMin: 0 },
 };
 
-elements.green_berries = {
-	isFood: true,
-	tempHigh: 500,
-	stateHigh: "ash",
-	color: "#5ce344",
-	behavior: behaviors.STURDYPOWDER,
-	category: "food",
-	state: "solid",
-};
-
 elements.garlic = {
 	isFood: true,
 	tempHigh: 500,
@@ -492,36 +482,6 @@ elements.porridge = {
 	state: "liquid",
 };
 
-elements.beet = {
-	tempHigh: 400,
-	stateHigh: "ash",
-	color: "#5d0678",
-	behavior: behaviors.STURDYPOWDER,
-	category: "food",
-	state: "liquid",
-};
-
-elements.chocolate_egg = {
-	hidden: true,
-	tempHigh: 300,
-	stateHigh: "steam",
-	color: "#805e2e",
-	behavior: behaviors.STURDYPOWDER,
-	category: "food",
-	state: "liquid",
-};
-
-elements.chocolate_grape = {
-	hidden: true,
-	viscosity: 10000,
-	tempHigh: 300,
-	stateHigh: "steam",
-	color: ["#9e3475", "#6e4d36"],
-	behavior: behaviors.LIQUID,
-	category: "food",
-	state: "liquid",
-};
-
 elements.sprinkles = {
 	tempHigh: 200,
 	stateHigh: "ash",
@@ -531,21 +491,6 @@ elements.sprinkles = {
 	category: "powders",
 	state: "liquid",
 	maxSize: 1,
-};
-
-elements.incinerator = {
-	color: "#bf4b7d",
-	behavior: [
-	"XX|HT:10000|XX",
-	"HT:10000|XX|HT:10000",
-	"XX|HT:10000|XX",
-	],
-	category: "machines",
-	state: "solid",
-	insulate: true,
-	reactions: {
-		"fart": { elem1: null, elem2: "ohio" },
-	}
 };
 
 elements.cocoa = {
@@ -743,15 +688,6 @@ elements.wine = {
     state: "liquid",
 };
 
-elements.papaya = {
-	tempHigh: 300,
-	stateHigh: "steam",
-	color: "#e38934",
-	behavior: behaviors.STURDYPOWDER,
-    category: "food",
-    state: "liquid",
-};
-
 elements.caviar = {
 	viscosity: 10000,
 	tempHigh: 500,
@@ -803,10 +739,6 @@ elements.banana = {
     category: "food",
     state: "liquid",
 };
-
-elements.incinerate.category = "tools",
-elements.cook.category = "tools",
-elements.room_temp.category = "tools",
 
 elements.beans.tempHigh = 349,
 elements.beans.stateHigh = "burnt_beans"
@@ -901,6 +833,135 @@ elements.season_water = {
 if (!elements.batter.reactions) elements.batter.reactions = {};
 elements.batter.reactions.water = {elem2: "noodles", tempMin: 70}
 elements.batter.reactions.sugar = {elem2: "pancake", tempMin: 70}
+elements.batter.reactions.cocoa = {elem2: "brownie", tempMin: 70}
+
+elements.brownie = {
+    color: "#301f00f",
+    behavior: behaviors.STURDYPOWDER,
+    category: "food",
+    state: "solid",
+    hidden: true,
+    isFood:true,
+};
+
+if (!elements.dough.reactions) elements.dough.reactions = {};
+elements.dough.reactions.chocolate = { elem2: "cookie_dough" }
+
+elements.cookie_dough = {
+    color: ["#5e420d","#ffe1a8"],
+    behavior: behaviors.LIQUID,
+    category: "food",
+    state: "solid",
+    hidden: true,
+    isFood:true,
+    reactions: {
+        "butter": {elem1: "cookie", tempMin: 70}
+    },
+};
+
+elements.cookie = {
+    color: ["#2b1e05","#fff0d4"],
+    behavior: behaviors.STURDYPOWDER,
+    category: "food",
+    state: "solid",
+    hidden: true,
+    isFood:true,
+
+};	
+
+elements.pasta = {
+    color: "#d1c06b",
+    behavior: behaviors.STURDYPOWDER,
+    category: "food",
+    state: "solid",
+    isFood:true,
+	
+};
+
+elements.saucy_cheese = {
+    color: ["#f7e172","#7a1c0b"],
+    behavior: behaviors.LIQUID,
+    category: "food",
+    state: "solid",
+    hidden: true,
+    isFood:true,
+    reactions: {
+        "pasta": { elem1: "lasanga", elem2: null },
+        "dough": { elem1: "pizza", elem2: null },
+
+    },
+};
+
+if (!elements.cheese.reactions) elements.cheese.reactions = {};
+elements.cheese.reactions.sauce = { elem2: "sauce_cheese" }
+
+elements.lasanga = {
+    color: ["#b39320","#f7e945"],
+    behavior: behaviors.LIQUID,
+    category: "food",
+    state: "solid",
+    hidden: true,
+    isFood:true,
+};
+
+elements.pizza = {
+    color: ["#f5d79f","#fafa87"],
+    behavior: behaviors.LIQUID,
+    category: "food",
+    state: "solid",
+    hidden: true,
+    isFood:true,
+};
+
+elements.chicken = {
+    color: ["#ffa6fb", "#fccfe4"],
+    behavior: [
+        "M2%1|M2%2|M2%1",
+        "M2%10|XX|M2%10",
+        "XX|M1%33|XX",
+    ],
+    category:"life",
+	state: "solid",
+    reactions: {
+        "meat": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "egg": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "grass": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
+        "fish": { elem2:null, chance:0.25, func:behaviors.FEEDPIXEL },
+        "rat": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
+        "snail": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
+        "frog": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
+        "slug": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
+        "grape": { elem2:null, chance:0.3, func:behaviors.FEEDPIXEL },
+        "wheat_seed": { elem2:null, chance:0.4, func:behaviors.FEEDPIXEL },
+        "flower_seed": { elem2:null, chance:0.32, func:behaviors.FEEDPIXEL },
+        "corn_seed": { elem2:null, chance:0.35, func:behaviors.FEEDPIXEL },
+        "corn": { elem2:null, chance:0.4, func:behaviors.FEEDPIXEL },
+        "crumb": { elem2:null, chance:0.25, func:behaviors.FEEDPIXEL },
+        "potato_seed": { elem2:null, chance:0.4, func:behaviors.FEEDPIXEL },
+        "grass_seed": { elem2:null, chance:0.3, func:behaviors.FEEDPIXEL },
+        "pumpkin_seed": { elem2:null, chance:0.3, func:behaviors.FEEDPIXEL },
+        "pumpkin": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
+        "nut": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "dead_bug": { elem2:null, chance:0.35, func:behaviors.FEEDPIXEL },
+        "bee": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "ant": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "flea": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "termite": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "lichen": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "oxygen": { elem2:"carbon_dioxide", chance:0.3 },
+    },
+    temp: 40,
+    tempHigh: 75,
+    stateHigh: "cooked_sausage",
+    tempLow: -18,
+    stateLow: "frozen_sausage",
+    breakInto: "sausage",
+    burn:85,
+    burnTime:450,
+    state: "solid",
+    density: 1117,
+    conduct: 0.3,
+};
 
 elements.battered_raw_chicken = {
     color: ["#eacfa9", "#ecd2af"],
@@ -966,7 +1027,7 @@ elements.raw_chicken = {
         "steam": {elem1: "steamed_chicken"},
         "water": {elem1: "boiled_chicken", tempMin: 70},
         "cooking_oil": {elem1: "fried_chicken", tempMin: 70}
-    }
+    },
 };
 
 elements.boiled_chicken = {
@@ -979,7 +1040,7 @@ elements.boiled_chicken = {
     tempHigh: 600,
     stateHigh: ["ash", "smoke"],
     hidden: true,
-}
+};
 
 elements.fried_chicken = {
     color: ["#E87D1A", "#E77106", "#E77106"],
@@ -991,7 +1052,7 @@ elements.fried_chicken = {
     tempHigh: 600,
     stateHigh: ["ash", "smoke"],
     hidden: true,
-}
+};
 
 elements.raw_chicken_nugget = {
     color: ["#d6bc7e", "#d2b47a", "#c7a969"],
@@ -1005,7 +1066,7 @@ elements.raw_chicken_nugget = {
     hidden: true,
     reactions: {
         "cooking_oil": {elem1: "chicken_nugget", tempMin: 70}
-    }
+    },
 };
 
 elements.chicken_nugget = {
@@ -1036,6 +1097,51 @@ elements.frozen_chicken_nugget = {
     hidden: true,
 };
 
+elements.cooked_sausage = {
+    color: ["#330a05", "#1c0b09"],
+    behavior: behaviors.STURDYPOWDER,
+    category: "food",
+    state: "solid",
+    temp: 40,
+    tempHigh: 600,
+    stateHigh: ["ash", "smoke"],
+    tempLow: -20,
+    stateLow: "frozen_sausage",
+    isFood: true,
+    density: 100,
+    hidden: true,
+};
+    
+};
+
+elements.sausage = {
+    color: ["#d14330", "#994a3c", "#a32f1a", "#c7341a"],
+    behavior: behaviors.STURDYPOWDER,
+    category: "food",
+    state: "solid",
+    burnInto: "cooked_sausage",
+    temp:25,
+    tempHigh: 600,
+    stateHigh: ["ash", "smoke"],
+    hidden: true,
+    reactions: {
+        "cooking_oil": {elem1: "chicken_nugget", tempMin: 70}
+    },   
+};
+
+elements.frozen_sausage = {
+    color: ["#67a9c7", "#994a3c"],
+    behavior: behaviors.STURDYPOWDER,
+    category: "food",
+    state: "solid",
+    temp: -20,
+    tempHigh: 40,
+    stateHigh: "sausage",
+    isFood: false,
+    density: 100,
+    hidden: true,
+};
+
 elements.olive = {
     color: ["#6e8b3d","#7c9d45"],
     behavior: behaviors.POWDER,
@@ -1058,7 +1164,7 @@ elements.olive = {
     state: "solid",
     density: 1050,
     isFood: false
-}
+};
 
 elements.cooking_oil = {
     color: "#ffc844",
@@ -1075,8 +1181,8 @@ elements.cooking_oil = {
     temp: 30,
     reactions: {
         "peeled_potato": {elem2: "fried_potato", tempMin: 70}
-    }
-},
+    },
+};
 
 elements.pepper = {
     color: ["#1f190a", "#2b200d", "#362712", "#3b2211"],
@@ -1088,7 +1194,7 @@ elements.pepper = {
     hidden: true,
     tempHigh: 250,
     stateHigh: ["ash", "smoke"],
-}
+};
 
 elements.potato.cutInto = ["peeled_potato","peeled_potato","peeled_potato","potato_skin"]//{elem1: ["potato_skin","peeled_potato"] }
 
@@ -1103,7 +1209,7 @@ elements.potato_skin = {
     density: 1100,
     tempHigh: 250,
     stateHigh: ["ash", "smoke"],
-}
+};
 
 elements.peeled_potato = {
     color: ["#D6C39F", "#D1C09D", "#D1C09D", "#CDBF9E"],
@@ -1119,8 +1225,8 @@ elements.peeled_potato = {
     density: 1100,
     reactions: {
         "cooking_oil": { elem1: "fried_potato", tempMin: 70 }
-    }
-}
+    },
+};
 
 elements.fried_potato = {
     color: ["#DD7908", "#D57206", "#CA6801", "#D68001"],
@@ -1133,7 +1239,7 @@ elements.fried_potato = {
     density: 1110,
     stateHigh: ["ash", "smoke"],
     isFood: true,
-}
+};
 
 elements.apple = {
     color: ["#eb1a1a","#f22c2c","#d62020"],
@@ -1156,7 +1262,7 @@ elements.apple = {
     cutInto: "apple_slice",
     state: "solid",
     density: 1050,
-}
+};
 
 elements.apple_slice = {
     color: "#f0af37",
@@ -1171,7 +1277,7 @@ elements.apple_slice = {
     state: "solid",
     density: 1050,
     hidden: true,
-}
+};
 
 elements.apple_seed = {
     color: "#854610",
@@ -1584,30 +1690,12 @@ elements.smashed_ice = {
 	 reactions: {
         "grape": { elem1: null, elem2: "fruit_slushy" },
         "blood_orange": { elem1: null, elem2: "fruit_slushy" },
-        "canary_melon": { elem1: null, elem2: "fruit_slushy" },
-        "honeydew_melon": { elem1: null, elem2: "fruit_slushy" },
-        "cranberry": { elem1: null, elem2: "fruit_slushy" },
         "pitaya": { elem1: null, elem2: "fruit_slushy" },
         "coconut": { elem1: null, elem2: "fruit_slushy" },
-        "cloudberry": { elem1: null, elem2: "fruit_slushy" },
-        "crabapple": { elem1: null, elem2: "fruit_slushy" },
-        "cactus_pear": { elem1: null, elem2: "fruit_slushy" },
         "pear": { elem1: null, elem2: "fruit_slushy" },
-        "purpleberry": { elem1: null, elem2: "fruit_slushy" },
-        "yellowberry": { elem1: null, elem2: "fruit_slushy" },
         "pomegranate": { elem1: null, elem2: "fruit_slushy" },
         "guava": { elem1: null, elem2: "fruit_slushy" },
         "raspberry": { elem1: null, elem2: "fruit_slushy" },
-        "gooseberry": { elem1: null, elem2: "fruit_slushy" },
-        "fig": { elem1: null, elem2: "fruit_slushy" },
-        "durian": { elem1: null, elem2: "fruit_slushy" },
-		"passionfruit": { elem1: null, elem2: "fruit_slushy" },
-		"starfruit": { elem1: null, elem2: "fruit_slushy" },
-		"rambutan": { elem1: null, elem2: "fruit_slushy" },
-		"nance": { elem1: null, elem2: "fruit_slushy" },
-		"nectarine": { elem1: null, elem2: "fruit_slushy" },
-		"loganberry": { elem1: null, elem2: "fruit_slushy" },
-		"currant": { elem1: null, elem2: "fruit_slushy" },
 		"banana": { elem1: null, elem2: "fruit_slushy" },
 		"blackberry": { elem1: null, elem2: "fruit_slushy" },
 		"blueberry": { elem1: null, elem2: "fruit_slushy" },
@@ -1685,24 +1773,6 @@ elements.green_grape = {
 	stateHigh: "steam",
 };
 
-elements.canary_melon = {
-	color: ["#e9ff0c","#e9ff0c","#ffed0c"],
-	behavior: behaviors.STURDYPOWDER,
-	category: "food",
-	state: "solid",
-	breakInto: "juice",
-	breakIntoColor: ["#ffff9e","#fffcaa"],
-};
-
-elements.honeydew_melon = {
-	color: ["#b9ffa3","#c9ffa3","#d9ffa3"],
-	behavior: behaviors.STURDYPOWDER,
-	category: "food",
-	state: "solid",
-	breakInto: "juice",
-	breakIntoColor: ["#e9ffa3","#f9ffa3"],
-};
-
 elements.cranberry = {
 	color: ["#471016","#7a1927","#69202f"],
 	behavior: behaviors.STURDYPOWDER,
@@ -1733,32 +1803,6 @@ elements.coconut = {
 	breakIntoColor: ["#f7e5d8","#fdefe5","#fff7f1"],
 };
 
-elements.cloudberry = {
-	color: ["#ff9636","#ffb169","#ffc896"],
-	behavior: behaviors.STURDYPOWDER,
-	category: "food",
-	state: "solid",
-	breakInto: "juice",
-	breakIntoColor: ["#ffe1c7","#fff9f3"],
-};
-
-elements.crabapple = {
-	color: ["#850b0b","#a32d2d","#ab4545"],
-	behavior: behaviors.STURDYPOWDER,
-	category: "food",
-	state: "solid",
-	breakInto: "juice",
-	breakIntoColor: ["#ff8fcf","#ffb2de"],
-};
-
-elements.cactus_fruit = {
-	color: ["#ff95b0","#ff80a0","#ff7489"],
-	behavior: behaviors.STURDYPOWDER,
-	category: "food",
-	state: "solid",
-	breakInto: "juice",
-	breakIntoColor: ["#75d802","#72d202"],
-};
 
 elements.pear = {
 	color: ["#669900","#669933","#9ec419"],
@@ -1767,24 +1811,6 @@ elements.pear = {
 	state: "solid",
 	breakInto: "juice",
 	breakIntoColor: ["#c8e39e","#99cc99"],
-};
-
-elements.purpleberry = {
-	color: ["#8b04a8","#a236b9","#b968cb"],
-	behavior: behaviors.STURDYPOWDER,
-	category: "food",
-	state: "solid",
-	breakInto: "juice",
-	breakIntoColor: ["#c08cc3","#e49cc2"],
-};
-
-elements.yellowberry = {
-	color: ["#ffe505","#fffb05","#fdfa72"],
-	behavior: behaviors.STURDYPOWDER,
-	category: "food",
-	state: "solid",
-	breakInto: "juice",
-	breakIntoColor: ["#fffec8","#fffdaf"],
 };
 
 elements.pomegranate = {
@@ -1814,96 +1840,6 @@ elements.raspberry = {
 	breakIntoColor: ["#f23a72","#fb79a0"],
 };
 
-elements.gooseberry = {
-	color: ["#63041c","#760024","#81052a"],
-	behavior: behaviors.STURDYPOWDER,
-	category: "food",
-	state: "solid",
-	breakInto: "juice",
-	breakIntoColor: ["#8b0031","#920436"],
-};
-
-elements.fig = {
-	color: ["#1d1d3b","#2a2854","#402459"],
-	behavior: behaviors.STURDYPOWDER,
-	category: "food",
-	state: "solid",
-	breakInto: "juice",
-	breakIntoColor: ["#ff4a4a","#ea3838"],
-};
-
-elements.durian = {
-	color: ["#b07939","#c09461","#d0af88"],
-	behavior: behaviors.STURDYPOWDER,
-	category: "food",
-	state: "solid",
-	breakInto: "juice",
-	breakIntoColor: ["#faffaf","#fbffbf"],
-};
-
-elements.passionfruit = {
-	color: ["#9d3385","#b15c9d","#c485b6"],
-	behavior: behaviors.STURDYPOWDER,
-	category: "food",
-	state: "solid",
-	breakInto: "juice",
-	breakIntoColor: ["#ffdede","#ffe4e4"],
-};
-
-elements.starfruit = {
-	color: ["#d5eb00","#ddef33","#e6f366"],
-	behavior: behaviors.STURDYPOWDER,
-	category: "food",
-	state: "solid",
-	breakInto: "juice",
-	breakIntoColor: ["#f2d553","#f5dd75"],
-};
-
-elements.rambutan = {
-	color: ["#ff4a4a","#ea3838"],
-	behavior: behaviors.STURDYPOWDER,
-	category: "food",
-	state: "solid",
-	breakInto: "juice",
-	breakIntoColor: ["#faffaf","#fbffbf"],
-};
-
-elements.nance = {
-	color: ["#ffff00","#ffff33"],
-	behavior: behaviors.STURDYPOWDER,
-	category: "food",
-	state: "solid",
-	breakInto: "juice",
-	breakIntoColor: ["#ffff66","#ffff99"],
-};
-
-elements.nectarine = {
-	color: ["#c92c0f","#cc4c58","#ea6161"],
-	behavior: behaviors.STURDYPOWDER,
-	category: "food",
-	state: "solid",
-	breakInto: "juice",
-	breakIntoColor: ["#ffbd8b","#ffdbc0"],
-};
-
-elements.loganberry = {
-	color: ["#db1515","#e53939","#fd5f5f"],
-	behavior: behaviors.STURDYPOWDER,
-	category: "food",
-	state: "solid",
-	breakInto: "juice",
-	breakIntoColor: ["#ff8f8f","#ffb7b7"],
-};
-
-elements.currant = {
-	color: ["#ff1828","#ff505c"],
-	behavior: behaviors.STURDYPOWDER,
-	category: "food",
-	state: "solid",
-	breakInto: "juice",
-	breakIntoColor: ["#ff878f","#ffbcc0"],
-};
-
 elements.sprite_cranberry = {
 	color: ["#65000f","#89001c","#b40024"],
 	behavior: behaviors.LIQUID,
@@ -1931,24 +1867,6 @@ elements.broccoli = {
 	breakIntoColor: ["#00b215","#0b8500"],
 };
 
-elements.squash = {
-	color: ["#f2ab15","#f5bc44","#f7cd73"],
-	behavior: behaviors.POWDER,
-	category: "food",
-	state: "solid",
-	breakInto: "juice",
-	breakIntoColor: ["#efbe79","#ffd599"],
-};
-
-elements.zuchinni = {
-	color: ["#375822","#58704a","#73816a"],
-	behavior: behaviors.POWDER,
-	category: "food",
-	state: "solid",
-	breakInto: "juice",
-	breakIntoColor: ["#80a568","#a3c88c"],
-};
-
 elements.olive = {
 	color: ["#445626","#52682d","#6e8b3d"],
 	behavior: behaviors.POWDER,
@@ -1956,15 +1874,6 @@ elements.olive = {
 	state: "solid",
 	breakInto: "juice",
 	breakIntoColor: ["#d1ef71","#c1d64d"],
-};
-
-elements.eggplant = {
-	color: ["#490b43","#30093a","#23033a"],
-	behavior: behaviors.POWDER,
-	category: "food",
-	state: "solid",
-	breakInto: "juice",
-	breakIntoColor: ["#674ea7","#351c75"],
 };
 
 elements.potassium = {
@@ -2011,44 +1920,13 @@ elements.garlic_clove = {
 	hidden: "TRUE",
 };
 
-elements.asparagus = {
-	color: ["#77ab56","#92bc78","#adcd9a"],
-	density: 675,
-	behavior: behaviors.POWDER,
-	category: "food",
-	state: "solid",
-	tempHigh: 173,
-	stateHigh: "roasted_asparagus",
-	burnInto: "ash",
-	burn: 10,
-	burnTime: 300,
-	breakInto: "juice",
-	breakIntoColor: "#c9ddbb",
-};
-
-elements.roasted_asparagus = {
-	color: ["#849273","#9aa58d","#c0cbb3"],
-	density: 675,
-	behavior: behaviors.STURDYPOWDER,
-	category: "food",
-	state: "solid",
-	hidden: "TRUE",
-	breakInto: "juice",
-	breakIntoColor: ["#849273","#9aa58d","#c0cbb3"],
-	tempHigh: 400,
-	stateHigh: "ash",
-	burnInto: "ash",
-	burn: 20,
-	burnTime: 300,
-};
-
 elements.oreo = {
 	color: "#120600",
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
 	state: "solid",
 	reactions: {
-		"toorhpaste": { elem1: "poison_oreo", elem2: null },
+		"toothpaste": { elem1: "poison_oreo", elem2: null },
 	}
 };
 
@@ -2080,7 +1958,7 @@ elements.seafoam = {
 };
 
 
-elements.toorhpaste = {
+elements.toothpaste = {
 	color: ["#31ffe0","#65ffe8","#97ffef","#c9fff7","#f3fffd"],
 	behavior: behaviors.LIQUID,
 	category: "liquids",
@@ -2153,102 +2031,6 @@ elements.herb.breakInto = "seasoning"
 elements.chocolate.breakInto = "chocolate_sauce"
 
 if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.juice = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.grape = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.jelly = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.cherry = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.orange = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.kiwi = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.green_grape = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.blood_orange = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.canary_melon = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.honeydew_melon = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.cranberry = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.pitaya = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.coconut = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.cloudberry = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.crabapple = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.cactus_fruit = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.pear = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.purpleberry = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.yellowberry = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.pomegranate = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.guava = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.raspberry = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.gooseberry = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.fig = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.durian = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.passionfruit = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.starfruit = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.rambutan = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.nance = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.nectarine = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.loganberry = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.currant = { elem1: "fruit_ice_cream", elem2: null }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
 elements.ice_cream.reactions.chocolate = { elem1: "chocolate_ice_cream", elem2: null }
 
 if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
@@ -2268,100 +2050,6 @@ elements.yogurt.reactions.green_grape = { elem1: "fruit_yogurt", elem2: null }
 
 if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
 elements.yogurt.reactions.cherry = { elem1: "fruit_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.kiwi = { elem1: "fruit_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.orange = { elem1: "fruit_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.jelly = { elem1: "fruit_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.chocolate = { elem1: "chocolate_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.chocolate_sauce = { elem1: "chocolate_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.melted_chocolate = { elem1: "chocolate_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.blood_orange = { elem1: "fruit_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.canary_melon = { elem1: "fruit_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.honeydew_melon = { elem1: "fruit_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.cranberry = { elem1: "fruit_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.pitaya = { elem1: "fruit_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.coconut = { elem1: "fruit_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.cloudberry = { elem1: "fruit_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.crabapple = { elem1: "fruit_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.cactus_fruit = { elem1: "fruit_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.pear = { elem1: "fruit_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.purpleberry = { elem1: "fruit_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.yellowberry = { elem1: "fruit_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.pomegranate = { elem1: "fruit_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.guava = { elem1: "fruit_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.raspberry = { elem1: "fruit_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.gooseberry = { elem1: "fruit_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.fig = { elem1: "fruit_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.durian = { elem1: "fruit_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.passionfruit = { elem1: "fruit_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.starfruit = { elem1: "fruit_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.rambutan = { elem1: "fruit_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.nance = { elem1: "fruit_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.nectarine = { elem1: "fruit_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.loganberry = { elem1: "fruit_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.currant = { elem1: "fruit_yogurt", elem2: null }
-
 
 //dev notes area below
 /*
