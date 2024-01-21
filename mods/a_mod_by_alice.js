@@ -1,5 +1,5 @@
 var modName = "mods/../a_mod_by_alice.js" //can't do "alice's mod" because the apostrophe will fuck up code, be too confusing, or both
-var dependencies = ["mods/libhooktick.js", "mods/chem.js", "mods/minecraft.js", "mods/Neutronium Mod.js", "mods/CrashTestDummy.js", "mods/fey_and_more.js", "mods/velocity.js", "mods/ketchup_mod.js", "mods/moretools.js", "mods/aChefsDream.js"];  //thanks to mollthecoder, PlanetN9ne, StellarX20 (3), MelecieDiancie, R74n, Nubo318, Sightnado, and sqeč
+var dependencies = ["mods/libhooktick.js", "mods/chem.js", "mods/minecraft.js", "mods/Neutronium Mod.js", "mods/CrashTestDummy.js", "mods/fey_and_more.js", "mods/velocity.js", "mods/ketchup_mod.js", "mods/moretools.js", "mods/aChefsDream.js", "mods/nousersthings.js"];  //thanks to mollthecoder, PlanetN9ne, StellarX20 (3), MelecieDiancie, R74n, Nubo318, Sightnado, sqeč, and NoUsernameFound
 var dependencyExistence = dependencies.map(x => enabledMods.includes(x));
 var allDependenciesExist = dependencyExistence.reduce(function(a,b) { return a && b });
 //console.log(allDependenciesExist);
@@ -1725,6 +1725,34 @@ try {
 				pixelMap[newX][newY] = newPixel;
 				currentPixels.push(newPixel);
 				return returnPixel ? newPixel : true
+			};
+
+			function getEmptyVonNeumannNeighbors(pixel) {
+				var neighbors = [];
+				var x = pixel.x;
+				var y = pixel.y;
+				for(var i = 0; i < adjacentCoords.length; i++) {
+					var finalX = pixel.x + adjacentCoords[i][0];
+					var finalY = pixel.y + adjacentCoords[i][1];
+					if(isEmpty(finalX,finalY,false)) {
+						neighbors.push([finalX,finalY])
+					};
+				};
+				return neighbors
+			};
+
+			function getEmptyMooreNeighbors(pixel) {
+				var neighbors = [];
+				var x = pixel.x;
+				var y = pixel.y;
+				for(var i = 0; i < mooreDonutCoords.length; i++) {
+					var finalX = pixel.x + mooreDonutCoords[i][0];
+					var finalY = pixel.y + mooreDonutCoords[i][1];
+					if(isEmpty(finalX,finalY,false)) {
+						neighbors.push([finalX,finalY])
+					};
+				};
+				return neighbors
 			};
 
 			function breakCircle(x,y,radius,respectHardness=false,changeTemp=false,defaultBreakIntoDust=false) {
@@ -7958,7 +7986,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					var baseJSON = convertColorFormats(baseColor,"json");
 					var dyeJSON = convertColorFormats(dyeColor,"json");
 					var dyedColor = multiplyColors(dyeJSON,baseJSON,"json");
-					//70% multiplied
+					//70% multiplied //7989 yay soshi!
 					var semiDyedColor = averageColorObjects(dyedColor,baseJSON,0.7);
 					//35% dye color, 65% result
 					var finalColor = averageColorObjects(semiDyedColor,dyeJSON,0.65);
@@ -8045,7 +8073,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			movable: false,
 		};
 
-		elements.rainbow.behavior = behaviors.WALL; //7989 yay soshi!
+		elements.rainbow.behavior = behaviors.WALL;
 
 		elements.dye.ignore ??= [];
 
@@ -38919,7 +38947,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		document.addEventListener("keydown", function(e) { //prop prompt listener
 			// , = propPrompt()
 			if (e.keyCode == 188) {
-				e.preventDefault();
+				//e.preventDefault();
 				shiftDown ? numberAdjusterPrompt() : propPrompt();
 			};
 		});
@@ -38998,6 +39026,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 
+			if(propProperty == null) { return };
 
 			if(defaultNumberTypeValues.includes(propProperty.toLowerCase())) {
 				propType = "number";
@@ -41063,6 +41092,10 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hidden: true,
 		};
 
+		elements.support_glass = structuredClone ? structuredClone(elements.glass) : JSON.parse(JSON.stringify(elements.glass));
+		elements.support_glass.stateHigh = "molten_glass";
+		elements.support_glass.behavior = behaviors.SUPPORT;
+
 		elements.support_bulb = {
 			color: "#a8a897",
 			behavior: behaviors.SUPPORTPOWDER,
@@ -41092,6 +41125,78 @@ Make sure to save your command in a file if you want to add this preset again.`
 			state: "solid",
 			density: 1052,
 			hidden: true,
+		};
+
+		newPowder("calcium_sulfate","#d1cec7",2960,1460).reactions = {
+			water: { elem1: ["gypsum","calcium_sulfate"], elem2: null }
+		};
+
+		newPowder("gypsum",["#e6e5e3","#d9dbdb"],2320,1460).tick = function(pixel) {
+			//thermal split
+			if(pixel.temp > 100) {
+				var emptySlots = getEmptyMooreNeighbors(pixel);
+				if(emptySlots.length > 1) {
+					shuffleArray(emptySlots);
+					emptySlots = emptySlots.slice(0,2);
+					for(var i = 0; i < emptySlots.length; i++) {
+						var coords = emptySlots[i];
+						createPixelReturn("steam",...coords).temp = pixel.temp
+					};
+					changePixel(pixel,"calcium_sulfate",false);
+					return
+				}
+			}
+		};
+		
+		elements.paper.reactions ??= {};
+		elements.paper.reactions.gypsum = { elem1: ["paper","paper","paper","paper","paper","paper",null], elem2: "drywall" };
+		
+		elements.molten_gypsum = {
+			tick: function(pixel) {
+				//thermal split
+				var emptySlots = getEmptyMooreNeighbors(pixel);
+				if(emptySlots.length > 1) {
+					shuffleArray(emptySlots);
+					emptySlots = emptySlots.slice(0,2);
+					for(var i = 0; i < emptySlots.length; i++) {
+						var coords = emptySlots[i];
+						createPixelReturn("steam",...coords).temp = pixel.temp
+					};
+					changePixel(pixel,"molten_calcium_sulfate",false);
+					return
+				}
+			}
+		};
+		
+		elements.drywall = {
+			color: "#dedcd9",
+			behavior: behaviors.SUPPORT,
+			tick: function(pixel) {
+				if(pixel.burning && pixel.temp < 80) {
+					delete pixel.burning;
+					delete pixel.burnStart
+				};
+				pixel.isWet ??= Math.random() < 0.085;
+				var chance = Math.max(0,scale(pixel.temp,59.9999,100,0,0.05));
+				if(pixel.isWet && Math.random() < chance) {
+					var emptySlots = getEmptyMooreNeighbors(pixel);
+					if(emptySlots.length > 0) {
+						var randomCoords = randomChoice(emptySlots);
+						if(isEmpty(...randomCoords)) {
+							createPixel(getStateAtTemp("water",pixel.temp),...randomCoords);
+							changePixel(pixel,"gypsum");
+							delete pixel.isWet;
+							return
+						}
+					}
+				}
+			},
+			burn: 1,
+			burnTime: 100,
+			burnInto: ["gypsum","gypsum","gypsum","gypsum","gypsum","gypsum","gypsum","gypsum","gypsum","gypsum","steam","ash"],
+			category: "solids",
+			state: "solid",
+			density: 609
 		};
 
 		elements.steel.movable = false;
@@ -43982,10 +44087,15 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 	
 	//END ##
 
-	Object.defineProperty(elements.pipe, "movable", {
-		value: false,
-		writable: false //**** you, you're not changing it to true.
-	});
+	var notActuallyMovable = ["pipe","e_pipe","steel","vivite"];
+
+	for(var i = 0; i < notActuallyMovable.length; i++) {
+		var name = notActuallyMovable[i];
+		Object.defineProperty(elements[name], "movable", {
+			value: false,
+			writable: false //**** you, you're not changing it to true.
+		});		
+	};
 
 	elements.unknown = {
 		color: "#FFFFFF",
