@@ -1,9 +1,12 @@
-elements.burnt_rice = {
+elements.cooked_rice = {
+	viscosity: 1000,
+	tempMin: 20,
+	stateMin: "rice",
 	tempHigh: 500,
-	stateHigh: "ash",
+	stateHigh: ["ash", "charcoal"],
 	density: 699,
-	color: "#242424",
-	behavior: behaviors.POWDER,
+	color: "#c2b6b6",
+	behavior: behaviors.LIQUID,
 	category: "food",
 	state: "liquid",
 	reactions: {
@@ -12,12 +15,13 @@ elements.burnt_rice = {
 };
 
 elements.rice = {
+	breakInto: "flour",
 	viscosity: 10000,
 	isFood: true,
 	density: 696,
 	tempHigh: 232,
-	stateHigh: "burnt_rice",
-	color: "#d1d1d1",
+	stateHigh: "cooked_rice",
+	color: "#c8c8c8",
 	behavior: behaviors.LIQUID,
 	category: "food",
 	state: "liquid",
@@ -296,17 +300,17 @@ elements.burnt_marshmallow = {
 	state: "solid",
 };
 
-elements.ramen = {
+elements.spaghetti = {
 	isFood: true,
 	tempHigh: 90,
 	stateHigh: "cooked_ramen",
 	color: "#fae34d",
-	behavior: behaviors.POWDER,
+	behavior: behaviors.SUPPORT,
 	category: "food",
 	state: "solid",
 };
 
-elements.cooked_ramen = {
+elements.cooked_spaghetti = {
 	hidden: true,
 	density: 800,
 	isFood: true,
@@ -316,7 +320,7 @@ elements.cooked_ramen = {
 	behavior: behaviors.SUPPORT,
 	category: "food",
 	state: "solid",
-}
+};
 
 elements.cereal = {
 	isFood: true,
@@ -369,11 +373,15 @@ elements.piss = {
 
 elements.soup = {
 	isFood: true,
-	temp: 50,
+	temp: 100,
 	tempHigh: 500,
 	stateHigh: "steam",
 	color: "#945e00",
-	behavior: behaviors.LIQUID,
+	behavior: [
+		"XX|CR:steam%0.1|XX",
+		"M2|XX|M2",
+		"M2|M1|M2"
+	],
 	category: "liquids",
 	state: "liquid",
 };
@@ -1392,6 +1400,34 @@ elements.uranium_ice_cream = {
     state: "liquid",
 };
 
+elements.silver_coin = {
+	tempHigh: 1000,
+	stateHigh: "molten_silver",
+	color: ["#ababab", "#dedede"],
+	behavior: behaviors.POWDER,
+	category: "powders",
+	state: "solid",
+};
+
+elements.max_graphics_in_roblox = {
+	color: "#238fe8",
+    behavior: [
+        "XX|XX|XX",
+        "XX|EX:800000000000>plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,molten_iron,molten_uranium,molten_lead,oxygen,molten_sodium,sulfur_gas,neon,chlorine,molten_calcium,molten_nickel,molten_copper,molten_zinc,gallium_gas AND CH:void|XX",
+        "XX|XX|XX",
+    ],
+    temp: 99999999700,
+    category: "joke",
+    state: "gas",
+    density: 1000,
+    hardness: 1,
+    hidden: true,
+    excludeRandom: true,
+    maxSize: 1,
+    noMix: true,
+	desc: "ok now ACTUALLY use it at your own risk IM NOT KIDDING! THIS CAN FUCKING CRASH YOUR GAME"
+};
+
 elements.incinerate.category = "tools",
 elements.cook.category = "tools",
 elements.room_temp.category = "tools",
@@ -1432,3 +1468,8 @@ elements.paper.reactions.bless = { elem1: "robux", elem2: null, chance: 0.001 }
 if (!elements.uranium.reactions) elements.uranium.reactions = {};
 elements.uranium.reactions.ice_cream = {elem1: "uranium_ice_cream", elem2: null},
 elements.uranium.reactions.cream = {elem1: "uranium_ice_cream", elem2: null}
+
+if (!elements.dough.reactions) elements.dough.reactions = {};
+elements.dough.reactions.yolk = {elem1: null, elem2: "spaghetti", tempMin: 25}
+
+elements.silver.breakInto = "silver_coin"
