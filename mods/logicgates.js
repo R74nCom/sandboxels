@@ -289,3 +289,45 @@ elements.E2L_button = {
         }
     }
 }
+elements.L2E_constant = {
+    color: "#b2ba75",
+    behavior: behaviors.WALL,
+    state: "solid",
+    category: "logic",
+    tick: function(pixel){
+        var foundOn = false;
+        for (var i = 0; i < adjacentCoords.length; i++) {
+            var coord = adjacentCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (!isEmpty(x,y,true)) {           
+                if (pixelMap[x][y].element == "logic_wire" && pixelMap[x][y].lstate){
+                    foundOn = true;
+                }
+            }
+        }
+        if (foundOn){
+            for (var i = 0; i < adjacentCoords.length; i++) {
+                var coord = adjacentCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (!isEmpty(x,y,true)) {           
+                    if (elements[pixelMap[x][y].element].conduct){
+                        pixelMap[x][y].charge = 1
+                    }
+                }
+            }
+        } else {
+            for (var i = 0; i < adjacentCoords.length; i++) {
+                var coord = adjacentCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (!isEmpty(x,y,true)) {           
+                    if (elements[pixelMap[x][y].element].conduct){
+                        pixelMap[x][y].charge = 0
+                    }
+                }
+            }
+        }
+    }
+}
