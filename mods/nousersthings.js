@@ -1527,6 +1527,8 @@ elements.invisiblewall = {
 		}
 	},
 	category: "solids",
+    movable: false,
+    noMix: true,
 },
 elements.bismuth = {
     color: ["#818181","#989898","#b0b0b0","#c9c9c9"],
@@ -2013,7 +2015,7 @@ elements.element_filler = {
     onSelect: function() {
         var answer6 = prompt("Please input the desired element of this filler. It will not work if you do multiple filter types while paused.",(elemfillerVar||undefined));
         if (!answer6) { return }
-		elemfillerVar = answer6;
+		elemfillerVar = mostSimilarElement(answer6);
     },
     tick: function(pixel){
         var neighbors = 0;
