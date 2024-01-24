@@ -301,7 +301,7 @@ elements.L2E_constant = {
             var x = pixel.x+coord[0];
             var y = pixel.y+coord[1];
             if (!isEmpty(x,y,true)) {           
-                if (pixelMap[x][y].element == "logic_wire" && pixelMap[x][y].lstate){
+                if (pixelMap[x][y].element == "logic_wire" && pixelMap[x][y].lstate > 0){
                     foundOn = true;
                 }
             }
