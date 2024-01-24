@@ -105,7 +105,7 @@ function countNeighbors(){
         if (!isEmpty(x,y, true)) {
             var otherPixel = pixelMap[x][y];
             if (otherPixel.element == "logic_wire"){
-                if (otherPixel.lstate){
+                if (otherPixel.lstate > 0){
                     results.charged = results.charged + 1;
                 } else {
                     results.uncharged = results.uncharged + 1;
@@ -301,7 +301,7 @@ elements.L2E_constant = {
             var x = pixel.x+coord[0];
             var y = pixel.y+coord[1];
             if (!isEmpty(x,y,true)) {           
-                if (pixelMap[x][y].element == "logic_wire" && pixelMap[x][y].lstate){
+                if (pixelMap[x][y].element == "logic_wire" && pixelMap[x][y].lstate > 0){
                     foundOn = true;
                 }
             }
@@ -329,5 +329,64 @@ elements.L2E_constant = {
                 }
             }
         }
+    }
+}
+var transmitterVar = 0;
+elements.logic_transmitter = {
+    onSelect: function() {
+        var answertransmitter = prompt("Please input the desired element of this filter. It will not work if you do multiple filter types while paused.",(transmitterVar||undefined));
+        if (!answertransmitter) { return }
+		transmitterVar = answertransmitter;
+    },
+    color: "#c26994",
+    state: "solid",
+    behavior: behaviors.WALL,
+    category: "logic",
+    tick: function(pixel){
+        var neighborResult = countNeighbors();
+        if (pixel.start === pixelTicks){
+			pixel.channel = transmitterVar;
+		}
+        var receivers = currentPixels.filter(function(pixelToCheck) {
+            return (
+                pixelToCheck !== pixel && //should work if this pixel is the same as the other one by reference
+                pixelToCheck.element == "logic_receiver" &&
+                pixelToCheck.channel == pixel.channel
+            );
+        }).map(pixel => [pixel.x,pixel.y]);
+        for(var i in receivers) {
+            i = parseInt(i);
+            var wifiCoords = receivers[i];
+            var newPixel = pixelMap[wifiCoords[0]]?.[wifiCoords[1]];
+            if(newPixel) {
+                if (neighborResult.charged){
+                    for(var j in adjacentCoords) {
+                        j = parseInt(j);
+                        var pixelAdjacentToWifi = pixelMap[newPixel.x+adjacentCoords[j][0]]?.[newPixel.y+adjacentCoords[j][1]];
+                        if(pixelAdjacentToWifi && pixelAdjacentToWifi.element == "logic_wire") { pixelAdjacentToWifi.lstate = 2 };
+                   };
+                } else {
+                    for(var j in adjacentCoords) {
+                        j = parseInt(j);
+                        var pixelAdjacentToWifi = pixelMap[newPixel.x+adjacentCoords[j][0]]?.[newPixel.y+adjacentCoords[j][1]];
+                        if(pixelAdjacentToWifi && pixelAdjacentToWifi.element == "logic_wire") { pixelAdjacentToWifi.lstate = -2 };
+                   };
+                }
+            }
+        };
+    }
+}
+elements.logic_receiver = {
+    onSelect: function() {
+        var answertransmitter = prompt("Please input the desired element of this filter. It will not work if you do multiple filter types while paused.",(transmitterVar||undefined));
+        if (!answertransmitter) { return }
+		transmitterVar = answertransmitter;
+    },
+    color: "#69c2ba",
+    behavior: behaviors.WALL,
+    state: "solid",
+    category: "logic",
+    tick: function(pixel){
+        if (pixel.start === pixelTicks){pixel.channel = transmitterVar}
     }
 }
