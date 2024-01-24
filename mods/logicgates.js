@@ -105,7 +105,7 @@ function countNeighbors(){
         if (!isEmpty(x,y, true)) {
             var otherPixel = pixelMap[x][y];
             if (otherPixel.element == "logic_wire"){
-                if (otherPixel.lstate){
+                if (otherPixel.lstate > 0){
                     results.charged = results.charged + 1;
                 } else {
                     results.uncharged = results.uncharged + 1;
