@@ -85,4 +85,15 @@ elements.right_missile = {
         "M2|M1 AND EX:10|M2",
     ],
     category:"weapons",
+},
+    elements.cluster_munition = {
+    color: "#444444",
+    behavior: [
+        "XX|EX:10>smoke,smoke,smoke,smoke,bomb,bomb|XX",
+        "XX|XX|XX",
+        "M2|M1 AND EX:10>smoke,smoke,smoke,smoke,bomb,cluster_munition|M2",
+    ],
+    category: "weapons",
+    state: "solid",
+    density: 1300,
 };
