@@ -2,7 +2,7 @@
 Created by SquareScreamYT and RealerRaddler
 Thanks to Alice, nousernamefound and Fioushemastor for helping :)
 
-v1.1
+v1.3
 
 Changelog (v1.0)
     - added chickens
