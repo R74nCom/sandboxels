@@ -4045,13 +4045,30 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			temp:6000,
 			tempLow:1000,
 			stateLow: ["bless","fire"],
+			burnInto: ["bless","fire"],
 			category: "energy",
 			burning: true,
+			burnTime: 500,
+			burnTempChange: 8,
 			fireElement: ["bless","plasma"],
 			ignore: ["ash","light","bless","plasma","wall"],
 			state: "gas",
 			density: 0.08,
 			ignoreAir: true
+		};
+
+		elements.plasma_explosion = {
+			color: ["#c78fff","#ea8fff","#be8fff"],
+			tick: function(pixel) {
+				explodeAtPlus(pixel.x,pixel.y,10,"plasma","fire");
+				return
+			},
+			temp: 6500,
+			category: "energy",
+			state: "gas",
+			density: 1000,
+			excludeRandom: true,
+			noMix: true
 		};
 
 		elements.god_slayer_fire = {
@@ -4117,10 +4134,13 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			},
 			temp:10000,
 			tempLow:1500,
-			stateLow: ["explosion","fire","fire","fire","fire","fire","fire","fire"],
+			stateLow: ["plasma_explosion","plasma","plasma","plasma","plasma","plasma","plasma","plasma"],
+			burnInto: ["plasma_explosion","plasma","plasma","plasma","plasma","plasma","plasma","plasma"],
 			category: "energy",
 			ignore: ["ash","slag","wall","plasma"],
 			burning: true,
+			burnTime: 500,
+			burnTempChange: 10,
 			fireElement: ["plasma"],
 			state: "gas",
 			density: 0.07,
@@ -4156,6 +4176,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			"stateHigh": "wood",
 		};
 
+		var GTDR = { "elem1": "torch", chance: 0.01 }; //grand torch degradation reaction
+
 		elements.grand_torch = {
 			"color": "#FFBF2F",
 			"tick": function(pixel) {
@@ -4171,31 +4193,41 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					if(!(isEmpty(coordPair.x,coordPair.y))) { continue };
 					var newPixel = tryCreatePixelReturn("fire",coordPair.x,coordPair.y);
 					if(typeof(newPixel) == "object") {
-						newPixel.temp = 1500
+						newPixel.temp = pixel.temp
 					}
 				};
 			},
 			"reactions": {
-				"water": { "elem1": "torch", chance: 0.01 },
-				"sugar_water": { "elem1": "torch", chance: 0.01 },
-				"salt_water": { "elem1": "torch", chance: 0.01 },
-				"seltzer": { "elem1": "torch", chance: 0.01 },
-				"dirty_water": { "elem1": "torch", chance: 0.01 },
-				"pool_water": { "elem1": "torch", chance: 0.01 },
-				"steam": { "elem1": "wood", chance: 0.01 },
-				"smog": { "elem1": "wood", chance: 0.01 },
-				"rain_cloud": { "elem1": "wood", chance: 0.01 },
-				"cloud": { "elem1": "wood", chance: 0.01 },
-				"snow_cloud": { "elem1": "wood", chance: 0.01 },
-				"hail_cloud": { "elem1": "wood", chance: 0.01 },
-				"black_damp": { "elem1": "wood", chance: 0.02 }
+				"water": GTDR,
+				"sugar_water": GTDR,
+				"salt_water": GTDR,
+				"seltzer": GTDR,
+				"dirty_water": GTDR,
+				"pool_water": GTDR,
+				"steam": GTDR,
+				"smog": GTDR,
+				"rain_cloud": GTDR,
+				"cloud": GTDR,
+				"snow_cloud": GTDR,
+				"hail_cloud": GTDR,
+				"black_damp": { "elem1": "wood", chance: 0.02 },
+				"magic": { "elem1": ["grand_torch","grand_torch","grand_plasma_torch"], "elem2": null, changeTemp: true }
 			},
 			"temp": 1500,
 			"category": "special",
 			"breakInto": "charcoal",
-			"tempLow": 900,
+			"tempHigh": 6000,
+			"stateHigh": "grand_plasma_torch",
+			"tempLow": 1000,
 			"stateLow": "torch",
 		};
+		
+		elements.torch.reactions ??= {};
+		elements.torch.reactions.magic = { elem1: ["torch","torch","grand_torch"], elem2: null, changeTemp: true };
+		elements.torch.tempHigh = 1500;
+		elements.torch.stateHigh = "grand_torch";
+
+		var PTDR = { "elem1": "wood", chance: 0.003 };
 
 		elements.plasma_torch = {
 			"color": "#86579c",
@@ -4252,25 +4284,68 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				}
 			},
 			"reactions": {
-				"water": { "elem1": "wood" },
-				"sugar_water": { "elem1": "wood" },
-				"salt_water": { "elem1": "wood" },
-				"seltzer": { "elem1": "wood" },
-				"dirty_water": { "elem1": "wood" },
-				"pool_water": { "elem1": "wood" },
-				"steam": { "elem1": "wood" },
-				"smog": { "elem1": "wood" },
-				"rain_cloud": { "elem1": "wood" },
-				"cloud": { "elem1": "wood" },
-				"snow_cloud": { "elem1": "wood" },
-				"hail_cloud": { "elem1": "wood" },
-				"black_damp": { "elem1": "wood" }
+				"water": PTDR,
+				"sugar_water": PTDR,
+				"salt_water": PTDR,
+				"seltzer": PTDR,
+				"dirty_water": PTDR,
+				"pool_water": PTDR,
+				"steam": PTDR,
+				"smog": PTDR,
+				"rain_cloud": PTDR,
+				"cloud": PTDR,
+				"snow_cloud": PTDR,
+				"hail_cloud": PTDR,
+				"black_damp": { "elem1": "wood", change: 0.02 }
 			},
 			"temp": 7000,
 			"category": "special",
 			"breakInto": "charcoal",
 			"tempLow": 4999,
-			"stateLow": "torch",
+			"stateLow": "grand_torch",
+		};
+
+		var GrPTDR = { "elem1": "plasma_torch", chance: 0.001 }; //grand plasma torch degradation reaction
+
+		elements.grand_plasma_torch = {
+			"color": "#b92eff",
+			"tick": function(pixel) {
+				var coords = circleCoords(pixel.x,pixel.y,4).concat([[4,4],[4,4],[3,3],[3,3],[1,1],[-1,-1],[-3,-3],[-4,-4],[-4,-4],[-3,-3],[-1,-1],[1,1],[0,0],[0,0],[0,0],[0,0],[1,1],[1,1],[2,2],[-1,-1],[-1,-1],[-2,-2]].map( //ae = filterCurrentPixels(function(pixel) { return pixel.element == "ivory_growth_crystal" }).map(px => [130-px.x,67-px.y])
+					function(offsets) {
+						return {x: offsets[0]+pixel.x, y: offsets[1]+pixel.y}
+					}
+				));
+				for(var i = 0; i < coords.length; i++) {
+					var coordPair = coords[i];
+					if(outOfBounds(coordPair.x,coordPair.y)) { continue };
+					if(coordPair.x == pixel.x && coordPair.y == pixel.y) { continue };
+					if(!(isEmpty(coordPair.x,coordPair.y))) { continue };
+					var newPixel = tryCreatePixelReturn("plasma",coordPair.x,coordPair.y);
+					if(typeof(newPixel) == "object") {
+						newPixel.temp = pixel.temp
+					}
+				};
+			},
+			"reactions": {
+				"water": GrPTDR,
+				"sugar_water": GrPTDR,
+				"salt_water": GrPTDR,
+				"seltzer": GrPTDR,
+				"dirty_water": GrPTDR,
+				"pool_water": GrPTDR,
+				"steam": GrPTDR,
+				"smog": GrPTDR,
+				"rain_cloud": GrPTDR,
+				"cloud": GrPTDR,
+				"snow_cloud": GrPTDR,
+				"hail_cloud": GrPTDR,
+				"black_damp": { "elem1": "wood", chance: 0.02 },
+			},
+			"temp": 8500,
+			"category": "special",
+			"breakInto": "charcoal",
+			"tempLow": 6000,
+			"stateLow": "plasma_torch",
 		};
 
 		elements.rad_torch = {
