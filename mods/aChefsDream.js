@@ -2,7 +2,7 @@
 Created by SquareScreamYT and RealerRaddler
 Thanks to Alice, nousernamefound and Fioushemastor for helping :)
 
-v1.3
+v1.1
 
 Changelog (v1.0)
     - added chickens
@@ -157,6 +157,11 @@ Changelog (v1.3)
     - added carrot seeds and leaves
     - added carrot juice
     - added dry icing
+
+
+
+Changelog (v1.3.1)
+    - added lemonade
 */
 
 /*
@@ -2161,6 +2166,26 @@ elements.lemon = {
 
 elements.lemon_juice = {
     color: "#e0d358",
+    behavior: behaviors.LIQUID,
+    category: "liquids",
+    tempHigh: 100,
+    stateHigh: ["steam","sugar"],
+    burn: 70,
+    burnTime: 300,
+    burnInto: ["steam", "smoke"],
+    state: "liquid",
+    density: 825,
+    hidden: true,
+    temp: 30,
+    hidden: true,
+    tempLow: 0,
+    reactions: {
+        "sugar": {elem1:"lemonade", elem2: "null", chance:0.35}
+    }
+};
+
+elements.lemonade = {
+    color: "#fff378",
     behavior: behaviors.LIQUID,
     category: "liquids",
     tempHigh: 100,
