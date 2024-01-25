@@ -3502,7 +3502,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					if(typeof(beforeFunction) === "function") {
 						beforeFunction(pixel,x,y,radius,fire,smoke,power,damage);
 					};
-					if(!pixel || pixel.del || typeof(pixel) == "undefined" || isEmpty(coords[i].x,coords[x].y)) {
+					if(!pixel || pixel.del || typeof(pixel) == "undefined" || isEmpty(coords[i].x,coords[i].y)) {
 						continue
 					};
 					if (info.hardness) { // lower damage depending on hardness(0-1)
@@ -38940,7 +38940,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 						case "bomb":
 							var number = prompt(`Enter a bomb number (default: 1)
 							1 corresponds to radius 10, 2 corresponds to radius 15, etc.`);
-							isNaN(parseFloat(number)) ? number = 0 : number = parseFloat(number);
+							isNaN(parseFloat(number)) ? number = 1 : number = parseFloat(number);
 							amount += generateBomb(elements,true,number).length;
 							break;
 						default:
