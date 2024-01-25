@@ -197,6 +197,48 @@ elements.or_gate = {
         }
     }
 }
+elements.nand_gate = {
+    color: "#eb4034",
+    category: "logic",
+    state: "solid",
+    behavior: behaviors.WALL,
+    tick: function(pixel){
+        var countNeighborsResult = countNeighbors()
+        if (countNeighborsResult.uncharged){
+            chargeOutputs();
+        } else {
+            unchargeOutputs();
+        }
+    }
+}
+elements.nor_gate = {
+    color: "#eb8c34",
+    category: "logic",
+    state: "solid",
+    behavior: behaviors.WALL,
+    tick: function(pixel){
+        var countNeighborsResult = countNeighbors()
+        if (!countNeighborsResult.charged){
+            chargeOutputs();
+        } else {
+            unchargeOutputs();
+        }
+    }
+}
+elements.nxor_gate = {
+    color: "#ebd834",
+    category: "logic",
+    state: "solid",
+    behavior: behaviors.WALL,
+    tick: function(pixel){
+        var countNeighborsResult = countNeighbors()
+        if (!(countNeighborsResult.charged == 1)){
+            chargeOutputs();
+        } else {
+            unchargeOutputs();
+        }
+    }
+}
 elements.E2L_lever = {
     color: "#b2ba75",
     behavior: behaviors.WALL,
