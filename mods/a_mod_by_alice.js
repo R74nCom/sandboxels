@@ -1151,7 +1151,7 @@ try {
 				};
 			}
 
-			function changeSaturation(color,saturationChange,operationType="add",outputType="rgb",arrayType=null) {
+			function changeSaturation(color,saturationChange,operationType="add",outputType="rgb",arrayType=null,doRounding=true) {
 				color = normalizeColorToHslObject(color,arrayType);
 				//only {h,s,l} should exist now
 
@@ -1194,14 +1194,14 @@ try {
 						throw new Error("Operation must be \"add\", \"subtract\", \"multiply\", \"divide\", \"set\", \"min\", or \"max\"");
 				};
 
-				color.h = Math.round(color.h % 360);
-				color.s = Math.round(bound(color.s,0,100));
-				color.l = Math.round(bound(color.l,0,100));
+				color.h = doRounding ? Math.round(color.h % 360) : color.h % 360;
+				color.s = doRounding ? Math.round(bound(color.s,0,100)) : color.s,0,100;
+				color.l = doRounding ? Math.round(bound(color.l,0,100)) : color.l,0,100;
 
 				return convertHslObjects(color,outputType)
 			};
 
-			function changeLuminance(color,luminanceChange,operationType="add",outputType="rgb",arrayType=null) {
+			function changeLuminance(color,luminanceChange,operationType="add",outputType="rgb",arrayType=null,doRounding=true) {
 				color = normalizeColorToHslObject(color,arrayType);
 				//only {h,s,l} should exist now
 
@@ -1244,14 +1244,14 @@ try {
 						throw new Error("Operation must be \"add\", \"subtract\", \"multiply\", \"divide\", \"set\", \"min\", or \"max\"");
 				};
 
-				color.h = Math.round(color.h % 360);
-				color.s = Math.round(bound(color.s,0,100));
-				color.l = Math.round(bound(color.l,0,100));
+				color.h = doRounding ? Math.round(color.h % 360) : color.h % 360;
+				color.s = doRounding ? Math.round(bound(color.s,0,100)) : color.s,0,100;
+				color.l = doRounding ? Math.round(bound(color.l,0,100)) : color.l,0,100;
 
 				return convertHslObjects(color,outputType);
 			};
 
-			function changeHue(color,hueChange,operationType="add",outputType="rgb",arrayType=null) {
+			function changeHue(color,hueChange,operationType="add",outputType="rgb",arrayType=null,doRounding=true) {
 				color = normalizeColorToHslObject(color,arrayType);
 				//only {h,s,l} should exist now
 
@@ -1294,9 +1294,9 @@ try {
 						throw new Error("Operation must be \"add\", \"subtract\", \"multiply\", \"divide\", \"set\", \"min\", or \"max\"");
 				};
 
-				color.h = Math.round(color.h % 360);
-				color.s = Math.round(bound(color.s,0,100));
-				color.l = Math.round(bound(color.l,0,100));
+				color.h = doRounding ? Math.round(color.h % 360) : color.h % 360;
+				color.s = doRounding ? Math.round(bound(color.s,0,100)) : color.s,0,100;
+				color.l = doRounding ? Math.round(bound(color.l,0,100)) : color.l,0,100;
 
 				return convertHslObjects(color,outputType);
 			};
@@ -1736,6 +1736,69 @@ try {
 				pixelMap[newX][newY] = newPixel;
 				currentPixels.push(newPixel);
 				return returnPixel ? newPixel : true
+			};
+
+			function cloneArea(topLeftX,topLeftY,bottomRightX,bottomRightY,newTopLeftX,newTopLeftY,oldPixelHandling_PreClear1_OnlyReplace2_Ignore3=1,errorOnOutOfBounds=false) {
+				var results = {"created": 0, "replaced": 0, "deleted": 0, "skipped": 0, "skipped_OOB": 0};
+				for(var x = topLeftX; x <= bottomRightX; x++) {
+					for(var y = topLeftY; y <= bottomRightY; y++) {
+						var relativeOffsetX = x - topLeftX;
+						var relativeOffsetY = y - topLeftY;
+						var newCoords = {"x": newTopLeftX+relativeOffsetX, "y": newTopLeftY+relativeOffsetY};
+						var oldCoords = {"x": x, "y": y};
+						var oldCoordsOOB = outOfBounds(oldCoords.x,oldCoords.y);
+						var newCoordsOOB = outOfBounds(newCoords.x,newCoords.y);
+						if(oldCoordsOOB || newCoordsOOB) {
+							if(errorOnOutOfBounds) {
+								var message;
+								if(oldCoordsOOB && !newCoordsOOB) {
+									message = "cloneArea: Source is or extends outside of the canvas."
+								} else if(!oldCoordsOOB && newCoordsOOB) {
+									message = "cloneArea: Destination is or extends outside of the canvas."
+								} else if(oldCoordsOOB && newCoordsOOB) {
+									message = "cloneArea: Source and destination are or extend outside of the canvas."
+								} else {
+									message = "cloneArea: ??? (Something has gone wrong with the OOB handling code.)"
+								};
+								throw new Error(message)
+							} else {
+								results.skipped_OOB++;
+								continue
+							}
+						};
+						if(isEmpty(newCoords.x,newCoords.y)) {
+							//Empty destination, full source
+							if(!(isEmpty(oldCoords.x,oldCoords.y))) {
+								clonePixel(pixelMap[oldCoords.x][oldCoords.y],newCoords.x,newCoords.y);
+								results.created++;
+							}
+						} else {
+							//Full destination, empty source
+							if(isEmpty(oldCoords.x,oldCoords.y)) {
+								//Delete the blocking pixel only if pre-clearing
+								if(oldPixelHandling_PreClear1_OnlyReplace2_Ignore3 == 1) {
+									deletePixel(newCoords.x,newCoords.y);
+									results.deleted++
+								} else {
+									results.skipped++
+								}
+							}
+							//Full destination, full source
+							else {
+								//Delete the blocking pixel if not ignoring (as for the above case, pre-clearing is not ignoring)
+								if(oldPixelHandling_PreClear1_OnlyReplace2_Ignore3 !== 3) {
+									deletePixel(newCoords.x,newCoords.y);
+									//Place the cloned pixel
+									clonePixel(pixelMap[oldCoords.x][oldCoords.y],newCoords.x,newCoords.y)
+									results.replaced++;
+								} else {
+									results.skipped++
+								};
+							}
+						}
+					}
+				};
+				return results
 			};
 
 			function getEmptyVonNeumannNeighbors(pixel) {
@@ -4804,9 +4867,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				})} // shuffle the pixels if not paused*/
 				for (var i = 0; i < newCurrentPixels.length; i++) {
 					pixel = newCurrentPixels[i];
+					if(typeof(elements[pixel.element]) == "undefined") { continue };
+					if(typeof(pixel) == "undefined") { continue };
 					//if (pixelMap[pixel.x][pixel.y] == undefined || currentPixels.indexOf(pixel) == -1) {continue}
 					if (pixel.del) {continue}
 					if (!paused || forceTick) {
+						if(typeof(elements[pixel.element]) == "undefined") { continue };
 						doVelocity(pixel);
 						if (elements[pixel.element].tick) { // Run tick function if it exists
 							elements[pixel.element].tick(pixel);
@@ -5272,6 +5338,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				// Reactions
 				newPixel = pixelMap[nx][ny];
 				var newInfo = elements[newPixel.element];
+				if(typeof(newInfo) == "undefined") { return false };
 				var returnVal = false;
 				if(newInfo.onTryMoveInto !== undefined) {
 					newInfo.onTryMoveInto(newPixel,pixel);
@@ -6206,6 +6273,24 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			conduct: 0.48,
 		},
 
+		elements.stainless_steel = {	
+			color: "#7d8181",
+			behavior: behaviors.WALL,
+			reactions: {
+				"pool_water": { elem1:"rust", chance:0.0009 },
+				"salt_water": { elem1:"rust", chance:0.0003 },
+				"salt": { elem1:"rust", chance:0.0003 },
+				"acid": { elem1:"rust" }
+			},
+			tempHigh: 1455.5,
+			category: "solids",
+			density: 7930,
+			conduct: 0.42,
+			hardness: 0.85
+		};
+		
+		elements.steel.reactions.acid = { elem1:"rust" };
+		
 		elements.molten_tungsten = {
 			density: 17600,
 			temp: 3500,
@@ -6257,11 +6342,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		},
 
-		elements.molten_steel = {
-			reactions: {
-				"molten_tungsten": { "elem1":"molten_tungstensteel", "elem2":"molten_tungstensteel" }
-			}
-		}
+		elements.molten_steel ??= {};
+		elements.molten_steel.reactions ??= {};
+		elements.molten_steel.reactions.molten_tungsten = { "elem1":"molten_tungstensteel", "elem2":"molten_tungstensteel" };
+		elements.molten_steel.reactions.molten_chromium = { "elem1":"molten_stainless_steel", "elem2":["molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_stainless_steel"] };
 
 		elements.unrealistically_flammable_substance_bomb = {
 			name: "unrealistically flammable bomb",
@@ -7902,7 +7986,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						}
 					} 
 				} else {
-					if(!settings.bg || settings.bg == "#fffff0") {
+					if(!settings.bg || settings.bg == "#fffff0") { //7989 yay soshi!
 						pixel.color = "rgb(255,255,247)"
 					} else {
 						pixel.color = "rgb(255,255,240)"
@@ -7986,7 +8070,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			color: ["#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#FF0000", "#FF7F00", "#FFFF00", "#00FF00", "#007FFF", "#0000FF", "#7F00FF"],
 			density: 1250,
 			breakInto: ["metal_scrap", "glass_shard"],
-			hardness: 0.7, //7989 yay soshi!
+			hardness: 0.7,
 		}
 
 		elements.brimstone_slag = {
@@ -8090,6 +8174,46 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			},
 		};
 
+	function newLegacyFnmDye(colorName,hexColor) {
+		if(!(hexColor.startsWith("#"))) { hexColor = "#" + hexColor };
+		colorName = colorName.toLowerCase();
+		var key = `${colorName}_dye`;
+		var name = `${colorName.replaceAll("_"," ")} dye`;
+		var pixelColor = changeLuminance(hexColor,0.73333333333333,"multiply","hex",null,false);
+		
+		elements[key] = {
+			"name": name,
+			"color": pixelColor,
+			"state": "solid",
+			"behavior": [
+				"XX|XX|XX",
+				`CC:${hexColor}|CC:${pixelColor}|CC:${hexColor}`,
+				`M2 AND CC:${hexColor}|M1 AND CC:${hexColor}|M2 AND CC:${hexColor}`
+			],
+			"density": 100,
+			"category": "dyes"
+		};
+		eLists.DYE.push(key);		
+		elements.concoction.reactions[key] = { "elem1": "mistake", "elem2": null };
+		return elements[key]
+	};
+
+	var dyeColors = [
+		["rose", "#FF0067"],
+		["orange", "#FF7F00"],
+		["pink", "#FF7FFF"],
+		["purple", "#C700CF"],
+		["burgundy", "#9F005F"],
+		["peach", "#ffbf7f"],
+		["mint", "#4df0a9"],
+		["gray", "#7F7F7F"],
+		["white", "#FFFFFF"],
+		["sky_blue", "#99d1f2"]
+	];
+	
+	for(var i = 0; i < dyeColors.length; i++) {
+		newLegacyFnmDye(dyeColors[i][0],dyeColors[i][1])
+	};
 
 	//ASSORTED RAINBOW VARIANTS ##
 
@@ -11740,7 +11864,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						var elemsAbove = [];
 						var pX = pixel.x; var pY = pixel.y;
 						for(var counter = pY - 1; counter > 0; counter--) {
-							console.log(pX,pY);
+							//console.log(pX,pY);
 							if(isEmpty(pX,counter,true)) {
 								break
 							};
@@ -11755,7 +11879,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 							return
 						} else {
 							pixel.target = elemsAbove
-							console.log(pixel.target);
+							//console.log(pixel.target);
 							pixel.charge = 0;
 						}
 					};
@@ -22674,7 +22798,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						elements.water.reactions[particulateName] = {
 							"elem1": suspensionName,
 							"elem2": [particulateName,particulateName,particulateName,suspensionName],
-							chance: 0.01
+							chance: 0.001
 						};
 
 					//Sediment suspension
@@ -29110,9 +29234,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 
 		elements.portal_out = {
 			color: "#2222ee",
-			properties: {
-				channel: 0
-			},
 			insulate: true,
 			tick: function(pixel) {
 				pixel._channel = Math.floor(pixel.temp / 100);
@@ -44647,7 +44768,36 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 		//console.log(currentElement);
 	});
 	
-	//END ##
+	//MISCELLANEOUS CHANGES ##
+
+	eLists.PIPE = ['pipe', 'destroyable_pipe', 'e_pipe', 'destroyable_e_pipe', 'channel_pipe', 'destroyable_channel_pipe', 'bridge_pipe'];
+
+	elements.pipe_stage_shifter = {
+		tool: function(pixel) {
+			if(!(eLists.PIPE.includes(pixel.element))) { return false };
+			if(typeof(pixel.stage) == "undefined" || !(pixel.stage) || pixel.stage < 2) { return false };
+			switch (pixel.stage) {
+				case 2: pixel.stage = 3; break;
+				case 3: pixel.stage = 4; break;
+				case 4: pixel.stage = 2; break;
+				default: pixel.stage = (((Math.max(2,Math.floor(pixel.stage)) - 2) % 3) + 2);
+			};
+			switch (pixel.stage) {
+				case 2: newColor = "#003600"; break;
+				case 3: newColor = "#360000"; break;
+				case 4: newColor = "#000036"; break;
+			};
+			pixel.color = pixelColorPick(pixel,newColor);
+		},
+		category: "tools",
+		color: ["#003600","#360000","#000036"], 
+		density: elements.steel.density,
+		hardness: elements.steel.hardness,
+		tempHigh: elements.steel.tempHigh,
+		stateHigh: "molten_steel",
+		state: "solid",
+		behavior: behaviors.POWDER
+	};
 
 	var notActuallyMovable = ["pipe","e_pipe","steel","vivite"];
 
@@ -44664,6 +44814,8 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 		behavior: behaviors.WALL,
 		maxColorOffset: 0
 	};
+	
+	//END ##
 } catch (error) {
 	alert(`Load failed (try reloading)\nError: ${error.stack}`);
 	console.error(error)
