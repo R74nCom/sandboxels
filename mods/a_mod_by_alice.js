@@ -4137,7 +4137,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			stateLow: ["plasma_explosion","plasma","plasma","plasma","plasma","plasma","plasma","plasma"],
 			burnInto: ["plasma_explosion","plasma","plasma","plasma","plasma","plasma","plasma","plasma"],
 			category: "energy",
-			ignore: ["ash","slag","wall","plasma"],
+			ignore: ["ash","slag","wall","plasma","fire","smoke"],
 			burning: true,
 			burnTime: 500,
 			burnTempChange: 10,
