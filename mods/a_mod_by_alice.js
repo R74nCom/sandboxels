@@ -2389,8 +2389,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		oldChangePixel = changePixel;
 		changePixel = function(pixel,element,changetemp=true) {
 			if(typeof(elements[element]) == "undefined") {
+				if(typeof(element) == "undefined" || element == "undefined") { return false };
 				if(doLog) { console.error(`Something tried to change a pixel of ${pixel.element} at (${pixel.x},${pixel.y}) to nonexistent element "${element}"`) };
-				return false;
+				return false
 			};
 			oldChangePixel(pixel,element,changetemp);
 		};
@@ -4056,6 +4057,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 0.08,
 			ignoreAir: true
 		};
+		
+		elements.bless.ignore ??= [];
+		elements.bless.ignore.push("holy_fire");
 
 		elements.plasma_explosion = {
 			color: ["#c78fff","#ea8fff","#be8fff"],
@@ -7982,7 +7986,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			color: ["#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#FF0000", "#FF7F00", "#FFFF00", "#00FF00", "#007FFF", "#0000FF", "#7F00FF"],
 			density: 1250,
 			breakInto: ["metal_scrap", "glass_shard"],
-			hardness: 0.7,
+			hardness: 0.7, //7989 yay soshi!
 		}
 
 		elements.brimstone_slag = {
@@ -8061,7 +8065,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					var oY = adjacentCoords[i][1];
 					var fX = pX+oX;
 					var fY = pY+oY;
-					if(!isEmpty(fX,fY,true)) { //7989 yay soshi!
+					if(!isEmpty(fX,fY,true)) {
 						var checkPixel = pixelMap[fX][fY];
 						var otherElement = elements[checkPixel.element];
 						if (typeof(otherElement.cutInto) !== "undefined") {
@@ -29312,15 +29316,16 @@ Make sure to save your command in a file if you want to add this preset again.`
 			if(Array.isArray(breakIntoElement)) {
 				breakIntoElement = breakIntoElement[Math.floor(Math.random() * breakIntoElement.length)]
 			};
-			if(typeof(breakIntoElement) === "undefined" || breakIntoElement === null) {
+			if(breakIntoElement === null) {
 				deletePixel(pixel.x,pixel.y);
 				return true;
 			};
+			if(typeof(breakIntoElement) === "undefined") { return false };
 			changePixel(pixel,breakIntoElement,changetemp)
 			return true;
 		};
 
-		defaultHardness = 0;
+		defaultHardness = 0.3;
 
 		function arrowAltTb(pixel,breakChanceMultiplier,changetemp=false,defaultBreakIntoDust=false) {
 			var info = elements[pixel.element];
@@ -35224,7 +35229,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 							};
 							createPixel(newfire,x,y); //add fire
 							var firePixel = pixelMap[x][y];
-							firePixel.temp = Math.max(elements[newfire].temp,firePixel.temp);
+							firePixel.temp = Math.max(elements[newfire].temp ?? 0,elements.fire.temp,firePixel.temp ?? 0);
 							firePixel.burning = true;
 						};
 					};
@@ -35287,6 +35292,164 @@ Make sure to save your command in a file if you want to add this preset again.`
 					excludeRandom: true,
 				};
 
+				elements.tsunami = {
+					color: ["#2449d1","#4b6adb","#8093d9"],
+					behavior: behaviors.WALL,
+					properties: {
+						active: true,
+					},
+					tick: function(pixel) {
+						//Iteration initial checks
+							if(!pixel) {
+								return;
+							};
+							if(!pixel.active) {
+								deletePixel(pixel.x,pixel.y);
+							};
+						
+						//Initial property-setting
+							var pixelIsOnLeft = (pixel.x < (width/2));
+							pixel.fromX ??= pixelIsOnLeft ? 1 : width - 1;
+							pixel.direction ??= pixelIsOnLeft ? 1 : -1;
+
+							var floorHeight = pixel.y + 1;
+							while(isEmpty(pixel.x,floorHeight,false)) {
+								floorHeight++
+							};
+							pixel.floorHeight ??= floorHeight;
+
+						//Actual doer code
+							var newX = pixel.fromX + pixel.direction;
+
+							if(outOfBounds(newX,1)) {
+								pixel.active = false;
+								return
+							};
+
+							var bottomY = (pixel.floorHeight + 3); //extend 4 pixels below
+							var topY = bottomY - 13; //topY < bottomY because in this game +Y is *downward*
+							for(var i = bottomY; i >= topY; i--) {
+								var waterToDo = randomChoice(["salt_water","dirty_water"]);
+								var fc = {x: newX, y: i};
+								if(outOfBounds(fc.x,fc.y)) {continue};
+								if(isEmpty(fc.x,fc.y,false)) {
+									//fill with water
+									createPixel(waterToDo,fc.x,fc.y)
+								} else {
+									var newPixel = pixelMap[fc.x]?.[fc.y];
+									if(!newPixel) { continue };
+									//break
+									tryBreak(newPixel,true,true);
+									if(!newPixel) { continue };
+									//water reaction steal
+									if(elements[newPixel.element].reactions?.water) {
+										var waterRxn = elements[newPixel.element].reactions.water;
+										var elem2 = waterRxn.elem2;
+										while(Array.isArray(elem2)) {
+											elem2 = randomChoice(elem2)
+										};
+										if(elem2 !== null) {
+											changePixel(newPixel,elem2,true)
+										}
+									};
+									if(!newPixel) { continue };
+									//add velocity;
+									newPixel.vx ??= 0;
+									newPixel.vy ??= 0;
+									newPixel.vx += (pixel.direction * 6)
+									newPixel.vy += 3;
+								};
+							};
+							pixel.fromX += pixel.direction
+					},
+					state: "solid",
+					category: "special",
+					density: elements.water.density
+				};
+
+				elements.lava_tsunami = {
+					color: ["#ff370a","#e84a23","#e67740"],
+					behavior: behaviors.WALL,
+					properties: {
+						active: true,
+					},
+					tick: function(pixel) {
+						//Iteration initial checks
+							if(!pixel) {
+								return;
+							};
+							if(!pixel.active) {
+								deletePixel(pixel.x,pixel.y);
+							};
+						
+						//Initial property-setting
+							var pixelIsOnLeft = (pixel.x < (width/2));
+							pixel.fromX ??= pixelIsOnLeft ? 1 : width - 1;
+							pixel.direction ??= pixelIsOnLeft ? 1 : -1;
+
+							var floorHeight = pixel.y + 1;
+							while(isEmpty(pixel.x,floorHeight,false)) {
+								floorHeight++
+							};
+							pixel.floorHeight ??= floorHeight;
+
+						//Actual doer code
+							var newX = pixel.fromX + pixel.direction;
+
+							if(outOfBounds(newX,1)) {
+								pixel.active = false;
+								return
+							};
+
+							var bottomY = (pixel.floorHeight + 3); //extend 4 pixels below
+							var topY = bottomY - 13; //topY < bottomY because in this game +Y is *downward*
+							for(var i = bottomY; i >= topY; i--) {
+								var fc = {x: newX, y: i};
+								if(outOfBounds(fc.x,fc.y)) {continue};
+								if(isEmpty(fc.x,fc.y,false)) {
+									//fill with lava
+									createPixelReturn("magma",fc.x,fc.y).temp = 1400;
+								} else {
+									var newPixel = pixelMap[fc.x]?.[fc.y];
+									if(!newPixel) { continue };
+									var data = elements[newPixel.element];
+									//break
+									for(var j = 0; j < 3; j++) {
+										tryBreak(newPixel,true,j == 0);
+										if(!newPixel) { break }
+									};
+									//water reaction steal
+									if(data.reactions?.magma) {
+										var magmaRxn = data.reactions.magma;
+										var elem2 = magmaRxn.elem2;
+										while(Array.isArray(elem2)) {
+											elem2 = randomChoice(elem2)
+										};
+										if(elem2 !== null) {
+											changePixel(newPixel,elem2,true)
+										}
+									};
+									if(!newPixel) { continue };
+									newPixel.temp = Math.max(newPixel.temp,1400); pixelTempCheck(newPixel);
+									if(!newPixel) { continue };
+									if(newPixel.element == "fire") { changePixelReturn(newPixel,"magma",true).temp = 1400 };
+									if(data.burn) { newPixel.burning = true; newPixel.burnStart = pixelTicks };
+									if(Math.random() < 0.1 && newPixel.burnInto) { finishBurn(newPixel) };
+									if(newPixel.element == "fire") { changePixelReturn(newPixel,"magma",true).temp = 1400 };
+									if(!newPixel) { continue };
+									//add velocity;
+									newPixel.vx ??= 0;
+									newPixel.vy ??= 0;
+									newPixel.vx += (pixel.direction * 6)
+									newPixel.vy += 3;
+								};
+							};
+							pixel.fromX += pixel.direction
+					},
+					state: "solid",
+					category: "special",
+					density: elements.magma.density
+				};
 
 				function empCharge(pixel,x,y,radius,fire,smoke,power,damage) {
 					var info = elements[pixel.element];
