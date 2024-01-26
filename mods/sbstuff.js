@@ -66,7 +66,7 @@ elements.maple_syrup = {
 	tempHigh: 500,
 	stateHigh: "steam",
 	color: "#9c6000",
-	behavior: behaviors.LIQUID,
+	behavior: behaviors.CRAWLER,
 	category: "liquids",
 	state: "liquid",
 };
@@ -360,6 +360,15 @@ elements.coca_cola = {
 	behavior: behaviors.LIQUID,
 	category: "liquids",
 	state: "liquid",
+};
+
+elements.pepsi = {
+	tempHigh: 500,
+	stateHigh: "steam",
+	color: "#2b1717",
+	behavior: behaviors.LIQUID,
+    category: "liquids",
+    state: "liquid",
 };
 
 elements.piss = {
@@ -1409,7 +1418,7 @@ elements.silver_coin = {
 	state: "solid",
 };
 
-elements.max_graphics_in_roblox = {
+elements.uraniumaniumaniumaniumanium_popcornicecream_plutoniumeptunium_238239 = {
 	color: "#238fe8",
     behavior: [
         "XX|XX|XX",
@@ -1425,7 +1434,199 @@ elements.max_graphics_in_roblox = {
     excludeRandom: true,
     maxSize: 1,
     noMix: true,
-	desc: "ok now ACTUALLY use it at your own risk IM NOT KIDDING! THIS CAN FUCKING CRASH YOUR GAME"
+	desc: "ok now ACTUALLY use it at your own risk IM NOT KIDDING! THIS CAN FUCKING CRASH YOUR GAME",
+	excludeRandom: true,
+};
+
+elements.coffee_milk = {
+	tempHigh: 300,
+    stateHigh: "steam",
+    color: "#5c4c42",
+    behavior: behaviors.LIQUID,
+    category: "liquids",
+    state: "liquid",
+};
+
+elements.mentos = {
+	tempHigh: 500,
+	stateHigh: "ash",
+	color: "#d0cbd6",
+	behavior: behaviors.STURDYPOWDER,
+	category: "food",
+	state: "liquid"
+};
+
+elements.oreo = {
+	tempHigh: 300,
+	stateHigh: "steam",
+	color: ["#211e1e","#fff6f5"],
+	singleColor: true,
+	behavior: behaviors.STURDYPOWDER,
+    category: "food",
+    state: "liquid"
+};
+
+elements.uranium_238 = {
+	tempHigh: 1200,
+	stateHigh: "molten_uranium",
+	color: ["#0f400b", "#30522d", "#4d6b4a", "#6f8f6d"],
+	behavior: [
+        "XX|CR:radiation%1|XX",
+        "CR:radiation%1|CH:lead%0.001|CR:radiation%1",
+        "M2|M1|M2",
+    ],
+	category: "powders",
+	state: "liquid",
+	density: 19100,
+    hardness: 0.6,
+    conduct: 0.235,
+    excludeRandom: true,
+	reactions: {
+		"neutron": {elem1: "uranium_239",},
+	}
+};
+
+elements.uranium_239 = {
+	tempHigh: 1300,
+	stateHigh: "molten_uranium",
+	color: ["#153816", "#135e14", "#379138", "#567556", "#7bb37b"],
+	behavior: [
+        "XX|CR:radiation%2|XX",
+        "CR:radiation%2|CH:lead%0.002|CR:radiation%2",
+        "M2|M1|M2",
+    ],
+	category: "powders",
+	state: "liquid",
+	hidden: true,
+	density: 19100,
+    hardness: 0.6,
+    conduct: 0.235,
+    excludeRandom: true,
+	reactions: {
+		"electron": {elem1: "neptunium_239"}
+	}
+};
+
+elements.neptunium_239 = {
+	tempHigh: 1500,
+	stateHigh: "molten_uranium",
+	color: ["#082e19", "#173b27", "#354a3f", "#4c635a", "#344a41"],
+	behavior: [
+        "XX|CR:radiation%3|XX",
+        "CR:radiation%3|CH:lead%0.003|CR:radiation%3",
+        "M2|M1|M2",
+    ],
+	category: "powders",
+	state: "liquid",
+	hidden: true,
+	density: 20000,
+    hardness: 0.7,
+    conduct: 0.3,
+    excludeRandom: true,
+	reactions: {
+		"electron": {elem1: "plutonium"},
+		"neutron": { elem1:"n_explosion", tempMin:500, chance:0.1 }
+	}
+};
+
+elements.plutonium = {
+	tempHigh: 2000,
+	stateHigh: "molten_uranium",
+	color: ["#0a4a17", "#194d23", "#263b2a", "#475449"],
+	behavior: [
+        "XX|CR:radiation%4|XX",
+        "CR:radiation%4|CH:lead%0.004|CR:radiation%4",
+        "M2|M1|M2",
+    ],
+	category: "powders",
+	state: "liquid",
+	hidden: true,
+	density: 22000,
+    hardness: 0.8,
+    conduct: 0.4,
+    excludeRandom: true,
+	reactions: {
+		"neutron": { elem1:"n_explosion", tempMin:500, chance:0.2 },
+    "electron": { elem1:"n_explosion", tempMin:500, chance:0.00000000000000000000001 }
+	}
+};
+
+elements.electron = {
+  color: "#c99d16",
+    behavior: behaviors.BOUNCY,
+    reactions: {
+        "uranium": { temp2:100 },
+    },
+    temp: 35,
+    category: "energy",
+    state: "gas",
+    density: 0.00002,
+    ignoreAir: true
+};
+
+elements.sned = {
+	color: "#dfe0d9",
+	behavior: [
+		"XX|XX AND CR:sned%1|XX",
+		"M2 AND CR:sned%1|XX|M2 AND CR:sned%1",
+		"M1|M1 AND CH:sned%1|M1",
+	],
+	category: "joke",
+	state: "liquid",
+	excludeRandom: true
+};
+
+elements.uranium_tea = {
+	temp: 60,
+	tempHigh: 400,
+	stateHigh: "molten_uranium",
+	color: ["#0f8b15", "#316624", "#59864b", "#502e0f"],
+	behavior: behaviors.RADLIQUID,
+	category: "liquids",
+	state: "liquid"
+};
+
+elements.powerlaser = {
+	color: ["#ed0ca9","#ff2b95"],
+    tick: function(pixel) {
+        var x = pixel.x;
+        for (var y = pixel.y; y < height; y++) {
+            if (outOfBounds(x, y)) {
+                break;
+            }
+            if (isEmpty(x, y)) {
+                if (Math.random() > 0.05) { continue }
+                createPixel("flash", x, y);
+                pixelMap[x][y].color = "#b80ced";
+                pixelMap[x][y].temp = 1001000;
+            }
+            else {
+                if (elements[pixelMap[x][y].element].isGas) { continue }
+                if (elements[pixelMap[x][y].element].id === elements.heat_ray.id) { break }
+                pixelMap[x][y].temp += 901000;
+                pixelTempCheck(pixelMap[x][y]);
+                break;
+            }
+        }
+        deletePixel(pixel.x, pixel.y);
+    },
+    temp: 1000000,
+    category: "energy",
+    state: "gas",
+    excludeRandom: true,
+    noMix: true
+};
+
+elements.magma_bomb = {
+	temp: 100,
+	color: "#b83109",
+	behavior: [
+		"XX|EX:6>magma|XX",
+		"XX|XX|XX",
+		"M2|M1 AND EX:6>magma|M2"
+	],
+	category: "weapons",
+	state: "liquid"
 };
 
 elements.incinerate.category = "tools",
@@ -1463,13 +1664,17 @@ if (!elements.water.reactions) elements.water.reactions = {};
 elements.water.reactions.cocaine = { elem1: "solid_water", elem2: null }
 
 if (!elements.paper.reactions) elements.paper.reactions = {};
-elements.paper.reactions.bless = { elem1: "robux", elem2: null, chance: 0.001 }
+elements.paper.reactions.bless = { elem1: "robux", elem2: null, chance: 0.0000001 }
 
 if (!elements.uranium.reactions) elements.uranium.reactions = {};
 elements.uranium.reactions.ice_cream = {elem1: "uranium_ice_cream", elem2: null},
-elements.uranium.reactions.cream = {elem1: "uranium_ice_cream", elem2: null}
+elements.uranium.reactions.cream = {elem1: "uranium_ice_cream", elem2: null},
+elements.uranium.reactions.tea = {elem1: "uranium_tea", elem2: null}
 
 if (!elements.dough.reactions) elements.dough.reactions = {};
 elements.dough.reactions.yolk = {elem1: null, elem2: "spaghetti", tempMin: 25}
+
+if (!elements.coffee.reactions) elements.coffee.reactions = {};
+elements.coffee.reactions.milk = {elem1: null, elem2: "coffee_milk",}
 
 elements.silver.breakInto = "silver_coin"
