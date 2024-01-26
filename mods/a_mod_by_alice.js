@@ -26,7 +26,7 @@ try {
 			  return Object.keys(object).find(key => object[key] === value);
 			};
 
-		//R.N.G.
+		//RNG
 
 			//Random integer from 0 to n
 			function randomIntegerFromZeroToValue(value) {
@@ -45,6 +45,11 @@ try {
 				var length = array.length;
 				var randomIndex = randomIntegerFromZeroToValue(length - 1);
 				return array[randomIndex];
+			};
+
+			//Random 1 or -1
+			function randomSign() {
+				return Math.random() < 0.5 ? 1 : -1
 			};
 
 			//Random integer from m to n
@@ -1146,7 +1151,7 @@ try {
 				};
 			}
 
-			function changeSaturation(color,saturationChange,operationType="add",outputType="rgb",arrayType=null) {
+			function changeSaturation(color,saturationChange,operationType="add",outputType="rgb",arrayType=null,doRounding=true) {
 				color = normalizeColorToHslObject(color,arrayType);
 				//only {h,s,l} should exist now
 
@@ -1189,14 +1194,14 @@ try {
 						throw new Error("Operation must be \"add\", \"subtract\", \"multiply\", \"divide\", \"set\", \"min\", or \"max\"");
 				};
 
-				color.h = Math.round(color.h % 360);
-				color.s = Math.round(bound(color.s,0,100));
-				color.l = Math.round(bound(color.l,0,100));
+				color.h = doRounding ? Math.round(color.h % 360) : color.h % 360;
+				color.s = doRounding ? Math.round(bound(color.s,0,100)) : color.s,0,100;
+				color.l = doRounding ? Math.round(bound(color.l,0,100)) : color.l,0,100;
 
 				return convertHslObjects(color,outputType)
 			};
 
-			function changeLuminance(color,luminanceChange,operationType="add",outputType="rgb",arrayType=null) {
+			function changeLuminance(color,luminanceChange,operationType="add",outputType="rgb",arrayType=null,doRounding=true) {
 				color = normalizeColorToHslObject(color,arrayType);
 				//only {h,s,l} should exist now
 
@@ -1239,14 +1244,14 @@ try {
 						throw new Error("Operation must be \"add\", \"subtract\", \"multiply\", \"divide\", \"set\", \"min\", or \"max\"");
 				};
 
-				color.h = Math.round(color.h % 360);
-				color.s = Math.round(bound(color.s,0,100));
-				color.l = Math.round(bound(color.l,0,100));
+				color.h = doRounding ? Math.round(color.h % 360) : color.h % 360;
+				color.s = doRounding ? Math.round(bound(color.s,0,100)) : color.s,0,100;
+				color.l = doRounding ? Math.round(bound(color.l,0,100)) : color.l,0,100;
 
 				return convertHslObjects(color,outputType);
 			};
 
-			function changeHue(color,hueChange,operationType="add",outputType="rgb",arrayType=null) {
+			function changeHue(color,hueChange,operationType="add",outputType="rgb",arrayType=null,doRounding=true) {
 				color = normalizeColorToHslObject(color,arrayType);
 				//only {h,s,l} should exist now
 
@@ -1289,9 +1294,9 @@ try {
 						throw new Error("Operation must be \"add\", \"subtract\", \"multiply\", \"divide\", \"set\", \"min\", or \"max\"");
 				};
 
-				color.h = Math.round(color.h % 360);
-				color.s = Math.round(bound(color.s,0,100));
-				color.l = Math.round(bound(color.l,0,100));
+				color.h = doRounding ? Math.round(color.h % 360) : color.h % 360;
+				color.s = doRounding ? Math.round(bound(color.s,0,100)) : color.s,0,100;
+				color.l = doRounding ? Math.round(bound(color.l,0,100)) : color.l,0,100;
 
 				return convertHslObjects(color,outputType);
 			};
@@ -1322,6 +1327,12 @@ try {
 			};
 
 		//Pixels
+		
+			function tryMoveAndReturnBlockingPixel(pixel,nx,ny,leaveBehind,force) {
+				if(outOfBounds(nx,ny)) { return false };
+				if(isEmpty(nx,ny,false)) { return tryMove(pixel,nx,ny,leaveBehind,force) };
+				return pixelMap[nx][ny]
+			};
 
 			function exposedToAir(pixel) {	
 				return (isEmpty(pixel.x+1,pixel.y) || isEmpty(pixel.x-1,pixel.y) || isEmpty(pixel.x,pixel.y+1) || isEmpty(pixel.x,pixel.y-1));
@@ -1727,6 +1738,69 @@ try {
 				return returnPixel ? newPixel : true
 			};
 
+			function cloneArea(topLeftX,topLeftY,bottomRightX,bottomRightY,newTopLeftX,newTopLeftY,oldPixelHandling_PreClear1_OnlyReplace2_Ignore3=1,errorOnOutOfBounds=false) {
+				var results = {"created": 0, "replaced": 0, "deleted": 0, "skipped": 0, "skipped_OOB": 0};
+				for(var x = topLeftX; x <= bottomRightX; x++) {
+					for(var y = topLeftY; y <= bottomRightY; y++) {
+						var relativeOffsetX = x - topLeftX;
+						var relativeOffsetY = y - topLeftY;
+						var newCoords = {"x": newTopLeftX+relativeOffsetX, "y": newTopLeftY+relativeOffsetY};
+						var oldCoords = {"x": x, "y": y};
+						var oldCoordsOOB = outOfBounds(oldCoords.x,oldCoords.y);
+						var newCoordsOOB = outOfBounds(newCoords.x,newCoords.y);
+						if(oldCoordsOOB || newCoordsOOB) {
+							if(errorOnOutOfBounds) {
+								var message;
+								if(oldCoordsOOB && !newCoordsOOB) {
+									message = "cloneArea: Source is or extends outside of the canvas."
+								} else if(!oldCoordsOOB && newCoordsOOB) {
+									message = "cloneArea: Destination is or extends outside of the canvas."
+								} else if(oldCoordsOOB && newCoordsOOB) {
+									message = "cloneArea: Source and destination are or extend outside of the canvas."
+								} else {
+									message = "cloneArea: ??? (Something has gone wrong with the OOB handling code.)"
+								};
+								throw new Error(message)
+							} else {
+								results.skipped_OOB++;
+								continue
+							}
+						};
+						if(isEmpty(newCoords.x,newCoords.y)) {
+							//Empty destination, full source
+							if(!(isEmpty(oldCoords.x,oldCoords.y))) {
+								clonePixel(pixelMap[oldCoords.x][oldCoords.y],newCoords.x,newCoords.y);
+								results.created++;
+							}
+						} else {
+							//Full destination, empty source
+							if(isEmpty(oldCoords.x,oldCoords.y)) {
+								//Delete the blocking pixel only if pre-clearing
+								if(oldPixelHandling_PreClear1_OnlyReplace2_Ignore3 == 1) {
+									deletePixel(newCoords.x,newCoords.y);
+									results.deleted++
+								} else {
+									results.skipped++
+								}
+							}
+							//Full destination, full source
+							else {
+								//Delete the blocking pixel if not ignoring (as for the above case, pre-clearing is not ignoring)
+								if(oldPixelHandling_PreClear1_OnlyReplace2_Ignore3 !== 3) {
+									deletePixel(newCoords.x,newCoords.y);
+									//Place the cloned pixel
+									clonePixel(pixelMap[oldCoords.x][oldCoords.y],newCoords.x,newCoords.y)
+									results.replaced++;
+								} else {
+									results.skipped++
+								};
+							}
+						}
+					}
+				};
+				return results
+			};
+
 			function getEmptyVonNeumannNeighbors(pixel) {
 				var neighbors = [];
 				var x = pixel.x;
@@ -1823,6 +1897,32 @@ try {
 			function freezePixel(pixel,changetemp=true) {
 				var info = elements[pixel.element];
 				var result = info.stateLow;
+				if (!result) {
+					return false
+				};
+				if(result instanceof Array) {
+					result = result.filter(elementExists);
+					if(result.length == 0) {
+						return false;
+					};
+				} else {
+					if(!(elementExists(result))) {
+						return false;
+					};
+				};
+
+				while(result instanceof Array) {
+					result = randomChoice(result);
+				};
+
+				changePixel(pixel,result,changetemp);
+				return true;
+			};
+
+			//Melt pixel
+			function meltPixel(pixel,changetemp=true) {
+				var info = elements[pixel.element];
+				var result = info.stateHigh;
 				if (!result) {
 					return false
 				};
@@ -2352,8 +2452,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		oldChangePixel = changePixel;
 		changePixel = function(pixel,element,changetemp=true) {
 			if(typeof(elements[element]) == "undefined") {
+				if(typeof(element) == "undefined" || element == "undefined") { return false };
 				if(doLog) { console.error(`Something tried to change a pixel of ${pixel.element} at (${pixel.x},${pixel.y}) to nonexistent element "${element}"`) };
-				return false;
+				return false
 			};
 			oldChangePixel(pixel,element,changetemp);
 		};
@@ -3465,6 +3566,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					if(typeof(beforeFunction) === "function") {
 						beforeFunction(pixel,x,y,radius,fire,smoke,power,damage);
 					};
+					if(!pixel || pixel.del || typeof(pixel) == "undefined" || isEmpty(coords[i].x,coords[i].y)) {
+						continue
+					};
 					if (info.hardness) { // lower damage depending on hardness(0-1)
 						if (info.hardness < 1) {
 							damage = damage * ((1 - info.hardness)*10);
@@ -3948,6 +4052,168 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			stain: 0.075,
 		};
 
+		elements.holy_fire = {
+			color: ["#FFFF96","#FFBF49","#CE743B"], //placeholder
+			tick: function(pixel) {
+
+				var moveResult = tryMoveAndReturnBlockingPixel(pixel,pixel.x + randomSign(),pixel.y - 1);
+				var blockingPixels = [];
+				var secondMoveResult = null;
+				
+				if(typeof(moveResult) == "object" && !(elements[pixel.element].ignore.concat(pixel.element).includes(moveResult.element))) {
+					blockingPixels.push(moveResult)
+				};
+				
+				//if move1Result = true then nothing else happens
+				
+				if(moveResult !== true) {
+					var coords = randomChoice([[-1,0],[0,1],[1,0]]).map(offsetPair => addArraysInPairs(offsetPair,[pixel.x,pixel.y]));
+					secondMoveResult = tryMoveAndReturnBlockingPixel(pixel,...coords);
+					
+					if(typeof(secondMoveResult) == "object" && !(elements[pixel.element].ignore.concat(pixel.element).includes(secondMoveResult.element))) {
+						blockingPixels.push(secondMoveResult)
+					};
+				};
+
+				if(blockingPixels.length > 0) {
+					blockingPixels.forEach(function(pixel) {
+						var blessRxn = elements.bless.reactions[pixel.element];
+						if(typeof(blessRxn) == "object") { 
+							var elem2 = blessRxn.elem2;
+							if(elem2 !== null) {
+								while(Array.isArray(elem2)) { elem2 = randomChoice(elem2) };
+								changePixel(pixel,elem2)
+							}
+						};
+						var value = Math.random();
+						if(value < 0.01) {
+							if(pixel.burnInto) {
+								finishBurn(pixel)
+							} else {
+								changePixel(pixel,randomChoice(["ash","ash","light"]))
+							}
+						} else if(value < 0.20) {
+							pixel.burning = true;
+							pixel.burnStart ??= pixelTicks;
+						} else if(value < 0.205) {
+							changePixel(pixel,randomChoice(["ash","ash","light"]))
+						} else {
+							pixel.temp += 10; pixelTempCheck(pixel)
+						};
+						return
+					})
+				};
+
+				doDefaults(pixel);
+			},
+			temp:6000,
+			tempLow:1000,
+			stateLow: ["bless","fire"],
+			burnInto: ["bless","fire"],
+			category: "energy",
+			burning: true,
+			burnTime: 500,
+			burnTempChange: 8,
+			fireElement: ["bless","plasma"],
+			ignore: ["ash","light","bless","plasma","wall"],
+			state: "gas",
+			density: 0.08,
+			ignoreAir: true
+		};
+		
+		elements.bless.ignore ??= [];
+		elements.bless.ignore.push("holy_fire");
+
+		elements.plasma_explosion = {
+			color: ["#c78fff","#ea8fff","#be8fff"],
+			tick: function(pixel) {
+				explodeAtPlus(pixel.x,pixel.y,10,"plasma","fire");
+				return
+			},
+			temp: 6500,
+			category: "energy",
+			state: "gas",
+			density: 1000,
+			excludeRandom: true,
+			noMix: true
+		};
+
+		elements.god_slayer_fire = {
+			color: ["#FFBACE","#FC6DCA","#9954B0"],
+			tick: function(pixel) {
+
+				var moveResult = tryMoveAndReturnBlockingPixel(pixel,pixel.x + randomSign(),pixel.y - 1);
+				var blockingPixels = [];
+				var secondMoveResult = null;
+				
+				if(typeof(moveResult) == "object" && !(elements[pixel.element].ignore.concat(pixel.element).includes(moveResult.element))) {
+					blockingPixels.push(moveResult)
+				};
+				
+				//if move1Result = true then nothing else happens
+				
+				if(moveResult !== true) {
+					var coords = randomChoice([[-1,0],[0,1],[1,0]]).map(offsetPair => addArraysInPairs(offsetPair,[pixel.x,pixel.y]));
+					secondMoveResult = tryMoveAndReturnBlockingPixel(pixel,...coords);
+					
+					if(typeof(secondMoveResult) == "object" && !(elements[pixel.element].ignore.concat(pixel.element).includes(secondMoveResult.element))) {
+						blockingPixels.push(secondMoveResult)
+					};
+				};
+
+				if(blockingPixels.length > 0) {
+					blockingPixels.forEach(function(pixel) {
+						var value = Math.random();
+						var randomDefaultResult = randomChoice(["ash","slag","plasma"]);
+						var oldTemp = pixel.temp;
+						if(value < 0.03) {
+							if(pixel.stateHigh) {
+								meltPixel(pixel);
+							}
+						} else if(value < 0.06) {
+							if(pixel.burnInto) {
+								finishBurn(pixel);
+							} else {
+								changePixel(pixel,randomDefaultResult)
+							}
+						} else if(value < 0.09) {
+							if(pixel.breakInto) {
+								breakPixel(pixel);
+							} else {
+								changePixel(pixel,randomDefaultResult)
+							}
+						} else if(value < 0.24) {
+							pixel.burning = true;
+							pixel.burnStart ??= pixelTicks;
+						} else if(value < 0.245) {
+							changePixel(pixel,randomDefaultResult)
+						} else {
+							pixel.temp += 25; pixelTempCheck(pixel)
+						};
+						if(pixel) {
+							pixel.temp = Math.max(oldTemp,pixel.temp)
+						};
+						return
+					})
+				};
+
+				doDefaults(pixel);
+			},
+			temp:10000,
+			tempLow:1500,
+			stateLow: ["plasma_explosion","plasma","plasma","plasma","plasma","plasma","plasma","plasma"],
+			burnInto: ["plasma_explosion","plasma","plasma","plasma","plasma","plasma","plasma","plasma"],
+			category: "energy",
+			ignore: ["ash","slag","wall","plasma","fire","smoke"],
+			burning: true,
+			burnTime: 500,
+			burnTempChange: 10,
+			fireElement: ["plasma"],
+			state: "gas",
+			density: 0.07,
+			ignoreAir: true
+		};
+
 		elements.cold_torch = {
 			"color": "#4394d6",
 			"behavior": [
@@ -3976,6 +4242,59 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			"tempHigh": 600,
 			"stateHigh": "wood",
 		};
+
+		var GTDR = { "elem1": "torch", chance: 0.01 }; //grand torch degradation reaction
+
+		elements.grand_torch = {
+			"color": "#FFBF2F",
+			"tick": function(pixel) {
+				var coords = circleCoords(pixel.x,pixel.y,2).concat([[-1,-2],[1,-2],[-1,2],[1,2],[-2,-1],[2,-1],[-2,1],[2,1],[-1,-3],[0,-3],[1,-3],[0,-4],[0,-5]].map(
+					function(offsets) {
+						return {x: offsets[0]+pixel.x, y: offsets[1]+pixel.y}
+					}
+				));
+				for(var i = 0; i < coords.length; i++) {
+					var coordPair = coords[i];
+					if(outOfBounds(coordPair.x,coordPair.y)) { continue };
+					if(coordPair.x == pixel.x && coordPair.y == pixel.y) { continue };
+					if(!(isEmpty(coordPair.x,coordPair.y))) { continue };
+					var newPixel = tryCreatePixelReturn("fire",coordPair.x,coordPair.y);
+					if(typeof(newPixel) == "object") {
+						newPixel.temp = pixel.temp
+					}
+				};
+			},
+			"reactions": {
+				"water": GTDR,
+				"sugar_water": GTDR,
+				"salt_water": GTDR,
+				"seltzer": GTDR,
+				"dirty_water": GTDR,
+				"pool_water": GTDR,
+				"steam": GTDR,
+				"smog": GTDR,
+				"rain_cloud": GTDR,
+				"cloud": GTDR,
+				"snow_cloud": GTDR,
+				"hail_cloud": GTDR,
+				"black_damp": { "elem1": "wood", chance: 0.02 },
+				"magic": { "elem1": ["grand_torch","grand_torch","grand_plasma_torch"], "elem2": null, changeTemp: true }
+			},
+			"temp": 1500,
+			"category": "special",
+			"breakInto": "charcoal",
+			"tempHigh": 6000,
+			"stateHigh": "grand_plasma_torch",
+			"tempLow": 1000,
+			"stateLow": "torch",
+		};
+		
+		elements.torch.reactions ??= {};
+		elements.torch.reactions.magic = { elem1: ["torch","torch","grand_torch"], elem2: null, changeTemp: true };
+		elements.torch.tempHigh = 1500;
+		elements.torch.stateHigh = "grand_torch";
+
+		var PTDR = { "elem1": "wood", chance: 0.003 };
 
 		elements.plasma_torch = {
 			"color": "#86579c",
@@ -4032,25 +4351,68 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				}
 			},
 			"reactions": {
-				"water": { "elem1": "wood" },
-				"sugar_water": { "elem1": "wood" },
-				"salt_water": { "elem1": "wood" },
-				"seltzer": { "elem1": "wood" },
-				"dirty_water": { "elem1": "wood" },
-				"pool_water": { "elem1": "wood" },
-				"steam": { "elem1": "wood" },
-				"smog": { "elem1": "wood" },
-				"rain_cloud": { "elem1": "wood" },
-				"cloud": { "elem1": "wood" },
-				"snow_cloud": { "elem1": "wood" },
-				"hail_cloud": { "elem1": "wood" },
-				"black_damp": { "elem1": "wood" }
+				"water": PTDR,
+				"sugar_water": PTDR,
+				"salt_water": PTDR,
+				"seltzer": PTDR,
+				"dirty_water": PTDR,
+				"pool_water": PTDR,
+				"steam": PTDR,
+				"smog": PTDR,
+				"rain_cloud": PTDR,
+				"cloud": PTDR,
+				"snow_cloud": PTDR,
+				"hail_cloud": PTDR,
+				"black_damp": { "elem1": "wood", change: 0.02 }
 			},
 			"temp": 7000,
 			"category": "special",
 			"breakInto": "charcoal",
 			"tempLow": 4999,
-			"stateLow": "torch",
+			"stateLow": "grand_torch",
+		};
+
+		var GrPTDR = { "elem1": "plasma_torch", chance: 0.001 }; //grand plasma torch degradation reaction
+
+		elements.grand_plasma_torch = {
+			"color": "#b92eff",
+			"tick": function(pixel) {
+				var coords = circleCoords(pixel.x,pixel.y,4).concat([[4,4],[4,4],[3,3],[3,3],[1,1],[-1,-1],[-3,-3],[-4,-4],[-4,-4],[-3,-3],[-1,-1],[1,1],[0,0],[0,0],[0,0],[0,0],[1,1],[1,1],[2,2],[-1,-1],[-1,-1],[-2,-2]].map( //ae = filterCurrentPixels(function(pixel) { return pixel.element == "ivory_growth_crystal" }).map(px => [130-px.x,67-px.y])
+					function(offsets) {
+						return {x: offsets[0]+pixel.x, y: offsets[1]+pixel.y}
+					}
+				));
+				for(var i = 0; i < coords.length; i++) {
+					var coordPair = coords[i];
+					if(outOfBounds(coordPair.x,coordPair.y)) { continue };
+					if(coordPair.x == pixel.x && coordPair.y == pixel.y) { continue };
+					if(!(isEmpty(coordPair.x,coordPair.y))) { continue };
+					var newPixel = tryCreatePixelReturn("plasma",coordPair.x,coordPair.y);
+					if(typeof(newPixel) == "object") {
+						newPixel.temp = pixel.temp
+					}
+				};
+			},
+			"reactions": {
+				"water": GrPTDR,
+				"sugar_water": GrPTDR,
+				"salt_water": GrPTDR,
+				"seltzer": GrPTDR,
+				"dirty_water": GrPTDR,
+				"pool_water": GrPTDR,
+				"steam": GrPTDR,
+				"smog": GrPTDR,
+				"rain_cloud": GrPTDR,
+				"cloud": GrPTDR,
+				"snow_cloud": GrPTDR,
+				"hail_cloud": GrPTDR,
+				"black_damp": { "elem1": "wood", chance: 0.02 },
+			},
+			"temp": 8500,
+			"category": "special",
+			"breakInto": "charcoal",
+			"tempLow": 6000,
+			"stateLow": "plasma_torch",
 		};
 
 		elements.rad_torch = {
@@ -4126,7 +4488,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			burn: 300,
 			burnTime: 500,
 			temp: airTemp,
-		},
+		};
 
 		elements.hypernapalm = {
 			name: "h y p e r n a p a l m", //HYPERNAPALM
@@ -4146,7 +4508,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			burnTempChange: 30,
 			burn: 300,
 			burnTime: 500,
-		},
+		};
 
 		elements.cold_napalm = {
 			color: "#3e87e0",
@@ -4164,7 +4526,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			fireElement: "cold_fire",
 			burnTempChange: -1,
 			burnInto: "cold_fire",
-		}
+		};
 
 		elements.rad_napalm = {
 			color: "#cdf760",
@@ -4183,8 +4545,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			fireElement: "rad_fire",
 			temp: airTemp,
 			burnInto: "rad_fire",
-		},
-
+		};
+		
 		runAfterLoad(function() {
 			if(eLists.spout) {
 				eLists.spout.push("cold_torch");
@@ -4505,9 +4867,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				})} // shuffle the pixels if not paused*/
 				for (var i = 0; i < newCurrentPixels.length; i++) {
 					pixel = newCurrentPixels[i];
+					if(typeof(elements[pixel.element]) == "undefined") { continue };
+					if(typeof(pixel) == "undefined") { continue };
 					//if (pixelMap[pixel.x][pixel.y] == undefined || currentPixels.indexOf(pixel) == -1) {continue}
 					if (pixel.del) {continue}
 					if (!paused || forceTick) {
+						if(typeof(elements[pixel.element]) == "undefined") { continue };
 						doVelocity(pixel);
 						if (elements[pixel.element].tick) { // Run tick function if it exists
 							elements[pixel.element].tick(pixel);
@@ -4973,6 +5338,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				// Reactions
 				newPixel = pixelMap[nx][ny];
 				var newInfo = elements[newPixel.element];
+				if(typeof(newInfo) == "undefined") { return false };
 				var returnVal = false;
 				if(newInfo.onTryMoveInto !== undefined) {
 					newInfo.onTryMoveInto(newPixel,pixel);
@@ -5907,6 +6273,24 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			conduct: 0.48,
 		},
 
+		elements.stainless_steel = {	
+			color: "#7d8181",
+			behavior: behaviors.WALL,
+			reactions: {
+				"pool_water": { elem1:"rust", chance:0.0009 },
+				"salt_water": { elem1:"rust", chance:0.0003 },
+				"salt": { elem1:"rust", chance:0.0003 },
+				"acid": { elem1:"rust" }
+			},
+			tempHigh: 1455.5,
+			category: "solids",
+			density: 7930,
+			conduct: 0.42,
+			hardness: 0.85
+		};
+		
+		elements.steel.reactions.acid = { elem1:"rust" };
+		
 		elements.molten_tungsten = {
 			density: 17600,
 			temp: 3500,
@@ -5958,11 +6342,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		},
 
-		elements.molten_steel = {
-			reactions: {
-				"molten_tungsten": { "elem1":"molten_tungstensteel", "elem2":"molten_tungstensteel" }
-			}
-		}
+		elements.molten_steel ??= {};
+		elements.molten_steel.reactions ??= {};
+		elements.molten_steel.reactions.molten_tungsten = { "elem1":"molten_tungstensteel", "elem2":"molten_tungstensteel" };
+		elements.molten_steel.reactions.molten_chromium = { "elem1":"molten_stainless_steel", "elem2":["molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_stainless_steel"] };
 
 		elements.unrealistically_flammable_substance_bomb = {
 			name: "unrealistically flammable bomb",
@@ -7603,7 +7986,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						}
 					} 
 				} else {
-					if(!settings.bg || settings.bg == "#fffff0") {
+					if(!settings.bg || settings.bg == "#fffff0") { //7989 yay soshi!
 						pixel.color = "rgb(255,255,247)"
 					} else {
 						pixel.color = "rgb(255,255,240)"
@@ -7690,6 +8073,56 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hardness: 0.7,
 		}
 
+		elements.brimstone_slag = {
+			color: ["#745B57","#534D4A","#463F53","#51113E","#6D283B","#BC4949","#EA9B4E"],
+			properties: {
+				needsOffset: true
+			},
+			colorPattern: [
+				"FGGFGFGGF",
+				"FFGFGFFGG",
+				"DEEDEEDEE",
+				"DEDEEEEED",
+				"BDCBACDCB",
+				"BCADCDDBB",
+				"ABBCAABCC"
+			],
+			colorKey: {
+				"A": "#745B57",
+				"B": "#534D4A",
+				"C": "#463F53",
+				"D": "#51113E",
+				"E": "#6D283B",
+				"F": "#BC4949",
+				"G": "#EA9B4E",
+			},
+			behavior: behaviors.POWDER,
+			hardness: 0.5,
+			enableOffsetsOnTextureColors: true,
+			breakInto: ["slag","sulfur"],
+			tempHigh: 1780,
+			state: "solid",
+			category: "solids",
+			tick: function(pixel) {
+				if(pixel.needsOffset) {
+					var offset = (elements[pixel.element].maxColorOffset ?? 15);
+					offset = randomIntegerFromZeroToValue(offset) * (Math.random() < 0.5 ? -1 : 1);
+					pixel.color = convertColorFormats(pixel.color,"json");
+					for(var k in pixel.color) { pixel.color[k] += offset };
+					pixel.color = convertColorFormats(pixel.color,"rgb");
+					delete pixel.needsOffset;
+					return
+				}
+			}
+		};
+
+		elements.molten_slag ??= {};
+		elements.molten_slag.reactions ??= {};
+
+		elements.molten_slag.reactions.sulfur = elements.molten_slag.reactions.molten_sulfur = elements.molten_slag.reactions.sulfur_gas = elements.molten_sulfur.reactions.slag = elements.sulfur.reactions.molten_slag = { elem1: "brimstone_slag", elem2: null };
+		
+		elements.slag.tempHigh = 1780;
+
 		var temp = "firesea,lektre,concoction,mistake,unstable_mistake,toxic_mistake".split(",");
 		for(var i = 0; i < temp.length; i++) {
 			temp[i].state = "liquid";
@@ -7741,6 +8174,46 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			},
 		};
 
+	function newLegacyFnmDye(colorName,hexColor) {
+		if(!(hexColor.startsWith("#"))) { hexColor = "#" + hexColor };
+		colorName = colorName.toLowerCase();
+		var key = `${colorName}_dye`;
+		var name = `${colorName.replaceAll("_"," ")} dye`;
+		var pixelColor = changeLuminance(hexColor,0.73333333333333,"multiply","hex",null,false);
+		
+		elements[key] = {
+			"name": name,
+			"color": pixelColor,
+			"state": "solid",
+			"behavior": [
+				"XX|XX|XX",
+				`CC:${hexColor}|CC:${pixelColor}|CC:${hexColor}`,
+				`M2 AND CC:${hexColor}|M1 AND CC:${hexColor}|M2 AND CC:${hexColor}`
+			],
+			"density": 100,
+			"category": "dyes"
+		};
+		eLists.DYE.push(key);		
+		elements.concoction.reactions[key] = { "elem1": "mistake", "elem2": null };
+		return elements[key]
+	};
+
+	var dyeColors = [
+		["rose", "#FF0067"],
+		["orange", "#FF7F00"],
+		["pink", "#FF7FFF"],
+		["purple", "#C700CF"],
+		["burgundy", "#9F005F"],
+		["peach", "#ffbf7f"],
+		["mint", "#4df0a9"],
+		["gray", "#7F7F7F"],
+		["white", "#FFFFFF"],
+		["sky_blue", "#99d1f2"]
+	];
+	
+	for(var i = 0; i < dyeColors.length; i++) {
+		newLegacyFnmDye(dyeColors[i][0],dyeColors[i][1])
+	};
 
 	//ASSORTED RAINBOW VARIANTS ##
 
@@ -7986,7 +8459,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					var baseJSON = convertColorFormats(baseColor,"json");
 					var dyeJSON = convertColorFormats(dyeColor,"json");
 					var dyedColor = multiplyColors(dyeJSON,baseJSON,"json");
-					//70% multiplied //7989 yay soshi!
+					//70% multiplied
 					var semiDyedColor = averageColorObjects(dyedColor,baseJSON,0.7);
 					//35% dye color, 65% result
 					var finalColor = averageColorObjects(semiDyedColor,dyeJSON,0.65);
@@ -11391,7 +11864,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						var elemsAbove = [];
 						var pX = pixel.x; var pY = pixel.y;
 						for(var counter = pY - 1; counter > 0; counter--) {
-							console.log(pX,pY);
+							//console.log(pX,pY);
 							if(isEmpty(pX,counter,true)) {
 								break
 							};
@@ -11406,7 +11879,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 							return
 						} else {
 							pixel.target = elemsAbove
-							console.log(pixel.target);
+							//console.log(pixel.target);
 							pixel.charge = 0;
 						}
 					};
@@ -22325,7 +22798,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						elements.water.reactions[particulateName] = {
 							"elem1": suspensionName,
 							"elem2": [particulateName,particulateName,particulateName,suspensionName],
-							chance: 0.01
+							chance: 0.001
 						};
 
 					//Sediment suspension
@@ -28761,9 +29234,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 
 		elements.portal_out = {
 			color: "#2222ee",
-			properties: {
-				channel: 0
-			},
 			insulate: true,
 			tick: function(pixel) {
 				pixel._channel = Math.floor(pixel.temp / 100);
@@ -28967,15 +29437,16 @@ Make sure to save your command in a file if you want to add this preset again.`
 			if(Array.isArray(breakIntoElement)) {
 				breakIntoElement = breakIntoElement[Math.floor(Math.random() * breakIntoElement.length)]
 			};
-			if(typeof(breakIntoElement) === "undefined" || breakIntoElement === null) {
+			if(breakIntoElement === null) {
 				deletePixel(pixel.x,pixel.y);
 				return true;
 			};
+			if(typeof(breakIntoElement) === "undefined") { return false };
 			changePixel(pixel,breakIntoElement,changetemp)
 			return true;
 		};
 
-		defaultHardness = 0;
+		defaultHardness = 0.3;
 
 		function arrowAltTb(pixel,breakChanceMultiplier,changetemp=false,defaultBreakIntoDust=false) {
 			var info = elements[pixel.element];
@@ -34879,7 +35350,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 							};
 							createPixel(newfire,x,y); //add fire
 							var firePixel = pixelMap[x][y];
-							firePixel.temp = Math.max(elements[newfire].temp,firePixel.temp);
+							firePixel.temp = Math.max(elements[newfire].temp ?? 0,elements.fire.temp,firePixel.temp ?? 0);
 							firePixel.burning = true;
 						};
 					};
@@ -34889,6 +35360,216 @@ Make sure to save your command in a file if you want to add this preset again.`
 					//console.log(`Radius: ${radius}\nPower: ${power}\nPixel: (${pixel.x},${pixel.y})\nDamage: ${damage}`);
 					//console.log(`Expected temperature increase for pixel at (${pixel.x},${pixel.y}): ${800 * ((1 + (7 * damage)) ** 2) * ((power ** 2) * 1.5)}`);
 					pixel.temp += (800 * ((1 + (7 * damage)) ** 2) * ((power ** 2) * 1.5));
+				};
+
+				//explodeAtPlus(x,y,radius,fire="fire",smoke="smoke",beforeFunction=null,afterFunction=null,changeTemp=true) {
+				//beforeFunction(pixel,x,y,radius,fire,smoke,power,damage)
+				function wallBombBeforeFunction(pixel,x,y,radius,fire,smoke,power,damage) {
+					var hardness = (elements[pixel.element].hardness ?? 0) / 2;
+					damage = damage * ((1 - hardness)*10);
+					//console.log(damage);
+					if(damage > 0.25) {
+						pixel.breakInto ? breakPixel(pixel) : deletePixel(pixel.x,pixel.y)
+					};
+					return
+				};
+				
+				elements.wall_bomb = {
+					color: "#af8f8f",
+					tick: function(pixel) {
+						doDefaults(pixel);
+						if(!isEmpty(pixel.x,pixel.y-1,true)) { //[0][1] EX (ignore bounds)
+							var newPixel = pixelMap[pixel.x][pixel.y-1];
+							var newElement = newPixel.element;
+							var newInfo = elements[newElement];
+							if(newInfo.state !== "gas" && newElement !== pixel.element) {
+								explodeAtPlus(pixel.x,pixel.y,10,"fire","smoke",wallBombBeforeFunction,null,false);
+								if(pixel) { deletePixel(pixel.x,pixel.y) };
+								return
+							};
+						};
+						if(!isEmpty(pixel.x,pixel.y+1,true)) { //[2][1] EX (don't ignore bounds, non-bound case)
+							var newPixel = pixelMap[pixel.x][pixel.y+1];
+							var newElement = newPixel.element;
+							var newInfo = elements[newElement];
+							if(newInfo.state !== "gas" && newElement !== pixel.element) {
+								explodeAtPlus(pixel.x,pixel.y,10,"fire","smoke",wallBombBeforeFunction,null,false);
+								if(pixel) { deletePixel(pixel.x,pixel.y) };
+								return
+							};
+						};
+						if(outOfBounds(pixel.x,pixel.y+1)) { //[2][1] EX (don't ignore bounds, bound case)
+							explodeAtPlus(pixel.x,pixel.y,10,"fire","smoke",wallBombBeforeFunction,null,false);
+							if(pixel) { deletePixel(pixel.x,pixel.y) };
+							return
+						};
+						if(!tryMove(pixel,pixel.x,pixel.y+1)) { //behaviors.POWDER
+							Math.random() < 0.5 ? tryMove(pixel,pixel.x-1,pixel.y+1) : tryMove(pixel,pixel.x+1,pixel.y+1);
+						};
+					},
+					category: "weapons",
+					state: "solid",
+					density: 3000,
+					excludeRandom: true,
+				};
+
+				elements.tsunami = {
+					color: ["#2449d1","#4b6adb","#8093d9"],
+					behavior: behaviors.WALL,
+					properties: {
+						active: true,
+					},
+					tick: function(pixel) {
+						//Iteration initial checks
+							if(!pixel) {
+								return;
+							};
+							if(!pixel.active) {
+								deletePixel(pixel.x,pixel.y);
+							};
+						
+						//Initial property-setting
+							var pixelIsOnLeft = (pixel.x < (width/2));
+							pixel.fromX ??= pixelIsOnLeft ? 1 : width - 1;
+							pixel.direction ??= pixelIsOnLeft ? 1 : -1;
+
+							var floorHeight = pixel.y + 1;
+							while(isEmpty(pixel.x,floorHeight,false)) {
+								floorHeight++
+							};
+							pixel.floorHeight ??= floorHeight;
+
+						//Actual doer code
+							var newX = pixel.fromX + pixel.direction;
+
+							if(outOfBounds(newX,1)) {
+								pixel.active = false;
+								return
+							};
+
+							var bottomY = (pixel.floorHeight + 3); //extend 4 pixels below
+							var topY = bottomY - 13; //topY < bottomY because in this game +Y is *downward*
+							for(var i = bottomY; i >= topY; i--) {
+								var waterToDo = randomChoice(["salt_water","dirty_water"]);
+								var fc = {x: newX, y: i};
+								if(outOfBounds(fc.x,fc.y)) {continue};
+								if(isEmpty(fc.x,fc.y,false)) {
+									//fill with water
+									createPixel(waterToDo,fc.x,fc.y)
+								} else {
+									var newPixel = pixelMap[fc.x]?.[fc.y];
+									if(!newPixel) { continue };
+									//break
+									tryBreak(newPixel,true,true);
+									if(!newPixel) { continue };
+									//water reaction steal
+									if(elements[newPixel.element].reactions?.water) {
+										var waterRxn = elements[newPixel.element].reactions.water;
+										var elem2 = waterRxn.elem2;
+										while(Array.isArray(elem2)) {
+											elem2 = randomChoice(elem2)
+										};
+										if(elem2 !== null) {
+											changePixel(newPixel,elem2,true)
+										}
+									};
+									if(!newPixel) { continue };
+									//add velocity;
+									newPixel.vx ??= 0;
+									newPixel.vy ??= 0;
+									newPixel.vx += (pixel.direction * 6)
+									newPixel.vy += 3;
+								};
+							};
+							pixel.fromX += pixel.direction
+					},
+					state: "solid",
+					category: "special",
+					density: elements.water.density
+				};
+
+				elements.lava_tsunami = {
+					color: ["#ff370a","#e84a23","#e67740"],
+					behavior: behaviors.WALL,
+					properties: {
+						active: true,
+					},
+					tick: function(pixel) {
+						//Iteration initial checks
+							if(!pixel) {
+								return;
+							};
+							if(!pixel.active) {
+								deletePixel(pixel.x,pixel.y);
+							};
+						
+						//Initial property-setting
+							var pixelIsOnLeft = (pixel.x < (width/2));
+							pixel.fromX ??= pixelIsOnLeft ? 1 : width - 1;
+							pixel.direction ??= pixelIsOnLeft ? 1 : -1;
+
+							var floorHeight = pixel.y + 1;
+							while(isEmpty(pixel.x,floorHeight,false)) {
+								floorHeight++
+							};
+							pixel.floorHeight ??= floorHeight;
+
+						//Actual doer code
+							var newX = pixel.fromX + pixel.direction;
+
+							if(outOfBounds(newX,1)) {
+								pixel.active = false;
+								return
+							};
+
+							var bottomY = (pixel.floorHeight + 3); //extend 4 pixels below
+							var topY = bottomY - 13; //topY < bottomY because in this game +Y is *downward*
+							for(var i = bottomY; i >= topY; i--) {
+								var fc = {x: newX, y: i};
+								if(outOfBounds(fc.x,fc.y)) {continue};
+								if(isEmpty(fc.x,fc.y,false)) {
+									//fill with lava
+									createPixelReturn("magma",fc.x,fc.y).temp = 1400;
+								} else {
+									var newPixel = pixelMap[fc.x]?.[fc.y];
+									if(!newPixel) { continue };
+									var data = elements[newPixel.element];
+									//break
+									for(var j = 0; j < 3; j++) {
+										tryBreak(newPixel,true,j == 0);
+										if(!newPixel) { break }
+									};
+									//water reaction steal
+									if(data.reactions?.magma) {
+										var magmaRxn = data.reactions.magma;
+										var elem2 = magmaRxn.elem2;
+										while(Array.isArray(elem2)) {
+											elem2 = randomChoice(elem2)
+										};
+										if(elem2 !== null) {
+											changePixel(newPixel,elem2,true)
+										}
+									};
+									if(!newPixel) { continue };
+									newPixel.temp = Math.max(newPixel.temp,1400); pixelTempCheck(newPixel);
+									if(!newPixel) { continue };
+									if(newPixel.element == "fire") { changePixelReturn(newPixel,"magma",true).temp = 1400 };
+									if(data.burn) { newPixel.burning = true; newPixel.burnStart = pixelTicks };
+									if(Math.random() < 0.1 && newPixel.burnInto) { finishBurn(newPixel) };
+									if(newPixel.element == "fire") { changePixelReturn(newPixel,"magma",true).temp = 1400 };
+									if(!newPixel) { continue };
+									//add velocity;
+									newPixel.vx ??= 0;
+									newPixel.vy ??= 0;
+									newPixel.vx += (pixel.direction * 6)
+									newPixel.vy += 3;
+								};
+							};
+							pixel.fromX += pixel.direction
+					},
+					state: "solid",
+					category: "special",
+					density: elements.magma.density
 				};
 
 				function empCharge(pixel,x,y,radius,fire,smoke,power,damage) {
@@ -35713,6 +36394,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 					excludeRandom: true,
 					hardness: 0.3,
 				};
+				
+				//Wall bomb
 
 				elements.electric_cluster_bomb = {
 					color: "#ffffff",
@@ -38541,7 +39224,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 						case "bomb":
 							var number = prompt(`Enter a bomb number (default: 1)
 							1 corresponds to radius 10, 2 corresponds to radius 15, etc.`);
-							isNaN(parseFloat(number)) ? number = 0 : number = parseFloat(number);
+							isNaN(parseFloat(number)) ? number = 1 : number = parseFloat(number);
 							amount += generateBomb(elements,true,number).length;
 							break;
 						default:
@@ -44085,7 +44768,36 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 		//console.log(currentElement);
 	});
 	
-	//END ##
+	//MISCELLANEOUS CHANGES ##
+
+	eLists.PIPE = ['pipe', 'destroyable_pipe', 'e_pipe', 'destroyable_e_pipe', 'channel_pipe', 'destroyable_channel_pipe', 'bridge_pipe'];
+
+	elements.pipe_stage_shifter = {
+		tool: function(pixel) {
+			if(!(eLists.PIPE.includes(pixel.element))) { return false };
+			if(typeof(pixel.stage) == "undefined" || !(pixel.stage) || pixel.stage < 2) { return false };
+			switch (pixel.stage) {
+				case 2: pixel.stage = 3; break;
+				case 3: pixel.stage = 4; break;
+				case 4: pixel.stage = 2; break;
+				default: pixel.stage = (((Math.max(2,Math.floor(pixel.stage)) - 2) % 3) + 2);
+			};
+			switch (pixel.stage) {
+				case 2: newColor = "#003600"; break;
+				case 3: newColor = "#360000"; break;
+				case 4: newColor = "#000036"; break;
+			};
+			pixel.color = pixelColorPick(pixel,newColor);
+		},
+		category: "tools",
+		color: ["#003600","#360000","#000036"], 
+		density: elements.steel.density,
+		hardness: elements.steel.hardness,
+		tempHigh: elements.steel.tempHigh,
+		stateHigh: "molten_steel",
+		state: "solid",
+		behavior: behaviors.POWDER
+	};
 
 	var notActuallyMovable = ["pipe","e_pipe","steel","vivite"];
 
@@ -44102,6 +44814,8 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 		behavior: behaviors.WALL,
 		maxColorOffset: 0
 	};
+	
+	//END ##
 } catch (error) {
 	alert(`Load failed (try reloading)\nError: ${error.stack}`);
 	console.error(error)
