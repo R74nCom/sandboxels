@@ -3875,8 +3875,41 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 
 		//No changeTemp for fire=>smoke
 		elements.fire.tick = function(pixel){
-			behaviors.UL_UR_OPTIMIZED(pixel);
-			if (!pixel.del && settings.burn===0 && (pixelTicks-pixel.start > 70) && Math.random() < 0.1 ) { changePixel(pixel,"smoke",false) }
+			if (pixel.start === pixelTicks) {return}
+			if (pixel.charge && elements[pixel.element].behaviorOn) {
+				pixelTick(pixel)
+			}
+			var move1Spots = [
+				[pixel.x, pixel.y-1],
+				[pixel.x+1, pixel.y-1],
+				[pixel.x-1, pixel.y-1],
+			]
+			var moved = false;
+			for (var i = 0; i < move1Spots.length; i++) {
+				var coords = move1Spots[Math.floor(Math.random()*move1Spots.length)];
+				coords = {x: coords[0], y: coords[1]};
+				if(!isEmpty(coords.x,coords.y,true) && pixelMap[coords.x]?.[coords.y]?.element == pixel.element && pixelMap[coords.x][coords.y].temp < pixel.temp) {
+					swapPixels(pixel,pixelMap[coords.x][coords.y]);
+					moved = true; break
+				} else {
+					if (tryMove(pixel, coords.x, coords.y)) { moved = true; break; }
+					else { move1Spots.splice(move1Spots.indexOf(coords), 1);}
+				}
+			}
+			if (!moved && !pixel.del) {
+				var move2Spots = [
+					[pixel.x, pixel.y+1],
+					[pixel.x+1, pixel.y],
+					[pixel.x-1, pixel.y],
+				]
+				for (var i = 0; i < move2Spots.length; i++) {
+					var coords = move2Spots[Math.floor(Math.random()*move2Spots.length)];
+					if (tryMove(pixel, coords[0], coords[1])) { break; }
+					else { move2Spots.splice(move2Spots.indexOf(coords), 1); }
+				}
+			}
+			if (!pixel.del) { doDefaults(pixel); }
+			if (!pixel.del && settings.burn===0 && (pixelTicks-pixel.start > 70) && Math.random() < 0.1 ) { changePixel(pixel,"smoke",false) };
 		};
 
 		//New elements
@@ -6827,7 +6860,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					for (let j = -1; j < 2; j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1
+								pixel.uwu++
 							}
 						}
 					}
@@ -6854,7 +6887,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					for (let j = -3; j < 4; j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1
+								pixel.uwu++
 							}
 						}
 					}
@@ -6882,7 +6915,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					for (let j = (-1*squadius); j < (squadius+1); j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1
+								pixel.uwu++
 							}
 						}
 					}
@@ -6910,7 +6943,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					for (let j = (-1*squadius); j < (squadius+1); j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1
+								pixel.uwu++
 							}
 						}
 					}
@@ -6938,7 +6971,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					for (let j = (-1*squadius); j < (squadius+1); j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1
+								pixel.uwu++
 							}
 						}
 					}
@@ -6966,7 +6999,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					for (let j = (-1*squadius); j < (squadius+1); j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1
+								pixel.uwu++
 							}
 						}
 					}
@@ -6994,7 +7027,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					for (let j = (-1*squadius); j < (squadius+1); j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1
+								pixel.uwu++
 							}
 						}
 					}
@@ -7022,7 +7055,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					for (let j = (-1*squadius); j < (squadius+1); j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1
+								pixel.uwu++
 							}
 						}
 					}
@@ -7050,7 +7083,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					for (let j = (-1*squadius); j < (squadius+1); j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1
+								pixel.uwu++
 							}
 						}
 					}
@@ -7078,7 +7111,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					for (let j = (-1*squadius); j < (squadius+1); j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1
+								pixel.uwu++
 							}
 						}
 					}
@@ -7106,7 +7139,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					for (let j = (-1*squadius); j < (squadius+1); j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1
+								pixel.uwu++
 							}
 						}
 					}
@@ -7136,9 +7169,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
 								if(pixel.uwu < 8) {
-									pixel.uwu += 1
+									pixel.uwu++
 								} else {
-									pixel.owo += 1
+									pixel.owo++
 								}
 							}
 						}
@@ -8207,12 +8240,70 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		["peach", "#ffbf7f"],
 		["mint", "#4df0a9"],
 		["gray", "#7F7F7F"],
+		["lime", "#7FFF00"],
+		["black", "#000000"],
 		["white", "#FFFFFF"],
 		["sky_blue", "#99d1f2"]
 	];
 	
 	for(var i = 0; i < dyeColors.length; i++) {
 		newLegacyFnmDye(dyeColors[i][0],dyeColors[i][1])
+	};
+
+	eLists.LED = ["led_r","led_g","led_b"];
+	
+	function newLED(abbrev,hexColor,baseColorOverrideHex=null) {
+		if(!(hexColor.startsWith("#"))) { hexColor = "#" + hexColor };
+		if(baseColorOverrideHex && !(baseColorOverrideHex.startsWith("#"))) { baseColorOverrideHex = "#" + baseColorOverrideHex };
+		abbrev = abbrev.toLowerCase();
+		var key = `led_${abbrev}`;
+		var pixelColor = baseColorOverrideHex ?? changeLuminance(hexColor,0x66/0xff,"multiply","hex",null,false);
+		
+		elements[key] = {
+			behavior: behaviors.WALL,
+			reactions: {
+				"light": {"charge1":1},
+				"liquid_light": {"charge1":1},
+			},
+			color: pixelColor,
+			colorOn: hexColor,
+			category: "machines",
+			tempHigh: 1500,
+			stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
+			conduct: 1,
+			breakInto: "glass_shard"
+		};
+		
+		eLists.LED.push(key)
+	};
+
+	var ledColors = [
+		["c", "#00FFFF"], //cyan
+		["y", "#FFFF00"], //yellow
+		["m", "#FF00FF"], //magenta (cursed)
+		["p", "#AB00C2"], //purple (cursed)
+		["v", "#7700FF"], //violet
+		["w", "#FFFFFF"], //white (cursed)
+		["gy", "#7F7F7F"], //gray (more cursed)
+		["bl", "#000000", "#2b2b2b"], //black (super cursed)
+		["o", "#FF7F00"], //orange
+		["a", "#FFBF00"], //amber
+		["l", "#7FFF00"], //lime
+		["rs", "#FF0067"], //rose (cursed)
+		["pk", "#FF7FFF"], //pink (cursed)
+		["bg", "#9F005F"], //burgundy (cursed)
+		["pc", "#ffbf7f"], //peach
+		["mg", "#4df0a9"], //mint green
+		["sb", "#99d1f2"] //sky blue (cursed)
+	];
+
+	for(var i = 0; i < ledColors.length; i++) {
+		newLED(...ledColors[i]);
+	};
+
+	for(var i = 0; i < eLists.LED.length; i++) {
+		var key = eLists.LED[i];
+		elements.malware.reactions[key] = { elem2:eLists.LED, chance:0.01 }
 	};
 
 	//ASSORTED RAINBOW VARIANTS ##
@@ -10275,7 +10366,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						for (let j = -1; j < 2; j++) {
 							if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 								if (pixelMap[pixel.x+j][pixel.y+i].element == "msmine") {
-									pixel.uwu += 1
+									pixel.uwu++
 								}
 							}
 						}
@@ -10627,7 +10718,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					for (let j = -1; j < 2; j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1;
+								pixel.uwu++;
 							};
 						};
 					};
@@ -10719,7 +10810,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					for (let j = -1; j < 2; j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1;
+								pixel.uwu++;
 							};
 						};
 					};
@@ -15537,9 +15628,14 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			viscosity: 3**4,
 		}
 
-		elements.redstone_dust.tempHigh = 2500
+		elements.redstone_dust.tempHigh = 2500;
 
-		elements.redstone_dust.stateHigh = "destabilized_redstone"
+		elements.redstone_dust.stateHigh = "destabilized_redstone";
+
+		elements.redstone_dust.conduct = 0.9;
+
+		elements.redstone_dust.colorOn = ["#FF2424","#FF0000","#FF1200"];
+		elements.redstone_dust.color = ["#7f0000","#5f0000","#5f0500"];
 
 		elements.destabilized_redstone = {
 			color: ["#9e0303", "#98061a", "#b80704", "#c4020c", "#f70008", "#9e0303", "#98061a", "#b80704", "#e3020a", "#8c0303", "#8c0303"],
@@ -16770,9 +16866,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				"fire": { elem2: null }
 			},
 			tick: function(pixel) {
-				backgroundColor = hexToRGB(settings.bg);
-				pixel.rgbValue = "rgb("+backgroundColor.r+","+backgroundColor.g+","+backgroundColor.b+")";
-				pixel.color = pixel.rgbValue;
+				/*var baseColor = settings.bg instanceof Array ? averageRgbPrefixedColorArray(settings.bg.map(x => convertColorFormats(x,"rgb"))) : convertColorFormats(settings.bg,"rgb");
+				baseColor = convertColorFormats(baseColor,"json");
+				pixel.color = "rgba(" + Object.values(baseColor).join(",") + ",0)"*/
+				pixel.color = "rgba(0,0,0,0)"
 			},
 			hardness: 0.6,
 			category: "gases",
@@ -19295,9 +19392,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				if(isNaN(pixel.temp)) { pixel.temp = 20 };
 				if(Math.random() < 0.013 && exposedToAir(pixel)) {
 					changePixel(pixel,"vivite_oxide",false);
-					pixel.temp += 0.1;
+					pixel.temp += 4;
 				};			
 			},
+			burnTime: 160,
+			burnTempChange: 10.65,
+			burnInto: "vivite_oxide_powder",
 			noResistance: true,
 			reactions: {
 				"ice": { elem1: "vivite_oxide", elem2: null, temp1: 0.2 },
@@ -19327,10 +19427,23 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			behavior: behaviors.POWDER,
 			tick: function(pixel) {
 				if(Math.random() < 0.027 && exposedToAir(pixel)) {
-					changePixel(pixel,"vivite_oxide_powder",false);
-					pixel.temp += 0.1;
+					if(getEmptyMooreNeighbors(pixel).length > 4) {
+						pixel.burning = true;
+						pixel.burnStart = pixelTicks;
+					} else {
+						pixel.temp += 18;
+						changePixel(pixel,getStateAtTemp("vivite_oxide_powder",pixel.temp),false);
+					};
+					
+					if(pixel.burning && ((pixel.temp + (2 * elements[pixel.element].burnTempChange)) > elements[pixel.element].tempHigh)) {
+						changePixel(pixel,elements[pixel.element].burnInto,false);
+						pixel.temp += 213;
+					};
 				};
 			},
+			burnTime: 8,
+			burnTempChange: 213,
+			burnInto: "vivite_oxide_powder",
 			reactions: {
 				"ice": { elem1: "vivite_oxide_powder", elem2: null, temp1: 0.2 },
 				"water": { elem1: "vivite_oxide_powder", elem2: null, temp1: 0.2 },
@@ -19345,7 +19458,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				"salt_ice": { elem1: "vivite_oxide_powder", elem2: "salt" }
 			},
 			noResistance: true,
-			tempHigh: 938,
+			tempHigh: 1725,
 			stateHigh: "molten_vivite",
 			category: "solids",
 			state: "solid",
@@ -19382,7 +19495,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				return false;
 			};
 
-			if(elements[newElement].noViviteSlag) { //Excluded
+			if(elements[newElement].noViviteSlag || elements[pixel.element].ignore?.includes(newPixel.element)) { //Excluded
 				return false;
 			};
 
@@ -19399,12 +19512,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			color: ["#f7a6e5", "#fa70d1", "#f0bbf2"],
 			colorOn: ["#ff63ac", "#ff21bd", "#e81af0"],
 			fireColor: ["#ff66ba", "#ff85ef", "#ff99f7"],
+			ignore: ["wall","heejinite","jinsoulite","haseulite","molten_heejinite","molten_jinsoulite","molten_haseulite","yvesite","molten_yvesite"],
 			tick: function(pixel) {
 				var info = elements[pixel.element];
 
 				if(Math.random() < 0.022 && exposedToAir(pixel)) {
 					changePixel(pixel,pixel.temp > 7315.27 ? "molten_vivite_oxide" : "vivite_oxide_powder",false)
-					pixel.temp += 0.1;
+					pixel.temp += 18;
 				};			
 
 				if(Math.random() < 0.025) {
@@ -19448,10 +19562,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			},
 			density: 8212,
 			state: "liquid",
+			burnTime: 160,
+			burnTempChange: 10.65,
+			burnInto: "vivite_oxide_powder",
 			hardness: 0.88,
 			viscosity: 10000,
 			breakInto: "vivite_gas",
-			temp: 1100,
+			temp: 2000,
 			tempHigh: 2256,
 			stateHigh: "vivite_gas",
 			tempLow: 938,
@@ -19582,13 +19699,22 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			fireColor: ["#ff66ba", "#ff85ef", "#ff99f7"],
 			tick: function(pixel) {
 				if(Math.random() < 0.032 && exposedToAir(pixel)) {
-					changePixel(pixel,pixel.temp > 15500 ? "vivite_oxide_gas" : pixel.temp > 7315.27 ? "molten_vivite_oxide" : "vivite_oxide_powder",false);
+					if(getEmptyMooreNeighbors(pixel).length > 4) {
+						pixel.burning = true;
+						pixel.burnStart = pixelTicks;
+					} else {
+						pixel.temp += 18;
+						changePixel(pixel,pixel.temp > 15500 ? "vivite_oxide_gas" : pixel.temp > 7315.27 ? "molten_vivite_oxide" : "vivite_oxide_powder",false);
+					};
 				};
 			},
 			behavior: behaviors.GAS,
 			state: "gas",
 			tempLow: 2256,
 			stateLow: "molten_vivite",
+			burnTime: 8,
+			burnTempChange: 213,
+			burnInto: "vivite_oxide_powder",
 			density: 18.02,
 			temp: 3300,
 			hardness: 1,
@@ -26059,7 +26185,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							};
 							for(var i in adjacentCoords) {
 								if(Math.random() < 0.005) {
-									pixel.temp+=1;
+									pixel.temp++;
 									var newCoords = [
 										pixel.x+adjacentCoords[i][0],
 										pixel.y+adjacentCoords[i][1]
@@ -40922,7 +41048,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				for (var i = 1; i < width; i++) {
 					for (var j = 1; j < height; j++) {
 						if (!isEmpty(i,j)) {
-							pixelMap[i][j].temp += 1
+							pixelMap[i][j].temp++
 						}
 					}
 				}
@@ -41001,7 +41127,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					for (let j = -8; j < 9; j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1
+								pixel.uwu++
 							}
 						}
 					}
@@ -41038,7 +41164,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					for (let j = -8; j < 9; j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1
+								pixel.uwu++
 							}
 						}
 					}
@@ -41074,7 +41200,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					for (let j = -8; j < 9; j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1
+								pixel.uwu++
 							}
 						}
 					}
