@@ -389,6 +389,7 @@ elements.logic_transmitter = {
         if (pixel.start === pixelTicks){
 			pixel.channel = transmitterVar;
 		}
+        pixel.clone = pixel.channel;
         var receivers = currentPixels.filter(function(pixelToCheck) {
             return (
                 pixelToCheck !== pixel && //should work if this pixel is the same as the other one by reference
@@ -430,5 +431,22 @@ elements.logic_receiver = {
     category: "logic",
     tick: function(pixel){
         if (pixel.start === pixelTicks){pixel.channel = transmitterVar}
+        pixel.clone = pixel.channel;
     }
+}
+elements.logic_shock = {
+    color: elements.shock.color,
+    category: "tools",
+    tool: function(pixel){
+        if (pixel.element == "logic_wire"){pixel.lstate = 2; pixel.color = pixelColorPick(pixel, "#ffe49c")}
+    },
+    excludeRandom: true,
+}
+elements.logic_unshock = {
+    color: elements.uncharge.color,
+    category: "tools",
+    tool: function(pixel){
+        if (pixel.element == "logic_wire"){pixel.lstate = -2; pixel.color = pixelColorPick(pixel, "#3d4d2c")}
+    },
+    excludeRandom: true,
 }
