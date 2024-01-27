@@ -3370,7 +3370,14 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					createCategoryDiv(category);
 					categoryDiv = document.getElementById("category-"+category);
 				}
-				createElementButton(element);
+				if(Array.isArray(elements[element].color) && elements[element].color.length == 1) {
+					//temporarily make the single-item array into a string just for button generation, and then turn it back into an array just in case
+					elements[element].color = elements[element].color[0];
+					createElementButton(element);
+					elements[element].color = [elements[element].color]
+				} else {
+					createElementButton(element);
+				}
 			}
 			// Set the first button in categoryControls div to be the current category
 			document.getElementById("categoryControls").children[0].click()
@@ -3537,6 +3544,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			var firstDiv = document.getElementsByClassName("category")[0];
 			var firstElementButton = firstDiv.getElementsByClassName("elementButton")[0];
 			selectElement(firstElementButton.getAttribute("element"));
+			
+			gameLoaded = true
 		};
 
 
@@ -7984,9 +7993,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			behavior: behaviors.GAS,
 			category: "gases",
 			state: "gas",
-			density: 550,
+			density: 550, //7989 yay soshi!
 			tick: function(pixel) {
-				if(pixel.y % 6 == 0) { //7989 yay soshi!
+				if(pixel.y % 6 == 0) {
 					if(pixel.x % 6 == 0) {
 						pixel.color = "rgb(255,255,255)"
 					} else {
@@ -18120,7 +18129,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			};
 		});
 
-		function newMetal(name,color,meltingPoint,boilingPoint,hardness,density,gasDensity,conduct) {
+		function newMetal(name,color,meltingPoint,boilingPoint,hardness,density,gasDensity,conduct,categoryOverride = null) {
 			var temp = {
 				"name": name,
 				"color": color,
@@ -18136,9 +18145,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				var errorMessage = capitalizeFirstLetter(englishFormatList(tempNulls));
 				throw new Error(`newMetal: ${errorMessage} {tempNulls.length == 1 ? "is" : "are"} required (generating "${name}")`);
 			};
+			
+			var scrapColor = gravelizeToHex(color);
 
 			elements[name] = {
-				"color": color,
+				"color": (window["gameLoaded"] ?? false) ? (Array.isArray(color) ? color.map(x => convertColorFormats(x,"rgb")) : convertColorFormats(color,"rgb")) : color,
+				"colorObject": (window["gameLoaded"] ?? false) ? (Array.isArray(color) ? color.map(x => convertColorFormats(x,"json")) : convertColorFormats(color,"json")) : undefined,
 				"behavior": behaviors.WALL,
 				"category": "solids",
 				"state": "solid",
@@ -18148,6 +18160,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				"breakInto": `${name}_scrap`,
 				"hardness": hardness
 			};
+			
+			if(categoryOverride) { elements[name].category = categoryOverride };
 
 			elements[`molten_${name}`] = {
 				"tempHigh": boilingPoint
@@ -18158,15 +18172,28 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			};
 
 			elements[`${name}_scrap`] = {
-				"color": gravelizeToHex(elements[name].color),
-				"behavior": behaviors.POWDER,
+				"color": (window["gameLoaded"] ?? false) ? (Array.isArray(scrapColor) ? scrapColor.map(x => convertColorFormats(x,"rgb")) : convertColorFormats(scrapColor,"rgb")) : scrapColor,
+				"colorObject": (window["gameLoaded"] ?? false) ? (Array.isArray(scrapColor) ? scrapColor.map(x => convertColorFormats(x,"json")) : convertColorFormats(scrapColor,"json")) : undefined,
+				"behavior": (window["gameLoaded"] ?? false) ? undefined : behaviors.POWDER,
+				"tick": (window["gameLoaded"] ?? false) ? behaviors.POWDER : undefined,
 				"tempHigh": meltingPoint,
-				"stateHigh": name,
+				"stateHigh": `molten_${name}`,
 				"category": "powders",
 				"hidden": true,
 				"density": density * 0.09,
 				"conduct": conduct * 0.4,
 				"movable": true,
+			};
+			
+			if(window["gameLoaded"] ?? false) {
+				delete elements[`${name}_scrap`].behavior;
+				createElementButton(name);
+				if(settings.unhide == 1) { createElementButton(`${name}_scrap`) }
+				autoGen(`molten_${name}`,name,"molten");
+				elements[`molten_${name}`].color = elements[`molten_${name}`].color.map(x => convertColorFormats(x,"rgb"));
+				elements[`molten_${name}`].colorObject = elements[`molten_${name}`].color.map(x => convertColorFormats(x,"json"));
+			} else {
+				delete elements[`${name}_scrap`].tick;
 			};
 
 			return [elements[name],elements[`${name}_scrap`]];
@@ -18174,7 +18201,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		
 		//newMetal( "exidmaden", ["#F8EDCF", "#EEAAAE", "#E5678D", "#A6659C", "#6763AD"], 2134, 6769, 0.8, 32333, 49.9, 0.88 );
 		//newMetal( "jisooium", "#9d0ac2", 8367, 10003, 0.63, 15024, 12.2, 0.9 );
-		newMetal( "twicium", ["#F9C596", "#FC5D9D"], 10240, 18018, 0.88, 29029, 24.3, 0.91 );
+		//newMetal( "twicium", ["#F9C596", "#FC5D9D"], 10240, 18018, 0.88, 29029, 24.3, 0.91 );
 
 	//ASSORTED LOONA-THEMED MATERIALS ##
 
@@ -35660,7 +35687,16 @@ Make sure to save your command in a file if you want to add this preset again.`
 									//water reaction steal
 									if(elements[newPixel.element].reactions?.water) {
 										var waterRxn = elements[newPixel.element].reactions.water;
-										var elem2 = waterRxn.elem2;
+										var elem1 = waterRxn.elem1;
+										while(Array.isArray(elem1)) {
+											elem1 = randomChoice(elem1)
+										};
+										if(elem1 !== null) {
+											changePixel(newPixel,elem1,true)
+										}
+									} else if(elements.water.reactions[newPixel.element]) {
+										var waterRxn2 = elements.water.reactions[newPixel.element];
+										elem2 = waterRxn2.elem2;
 										while(Array.isArray(elem2)) {
 											elem2 = randomChoice(elem2)
 										};
@@ -35672,11 +35708,97 @@ Make sure to save your command in a file if you want to add this preset again.`
 									//add velocity;
 									newPixel.vx ??= 0;
 									newPixel.vy ??= 0;
-									newPixel.vx += (pixel.direction * 6)
+									newPixel.vx += (pixel.direction * 5)
 									newPixel.vy += 3;
 								};
 							};
 							pixel.fromX += pixel.direction
+					},
+					state: "solid",
+					category: "special",
+					density: elements.water.density
+				};
+
+				elements.megatsunami = {
+					color: ["#1f2aa3","#2641c9","#3a57c9"],
+					behavior: behaviors.WALL,
+					properties: {
+						active: true,
+					},
+					tick: function(pixel) {
+						//Iteration initial checks
+							if(!pixel) {
+								return;
+							};
+							if(!pixel.active) {
+								deletePixel(pixel.x,pixel.y);
+							};
+						
+						//Initial property-setting
+							var pixelIsOnLeft = (pixel.x < (width/2));
+							pixel.fromX ??= pixelIsOnLeft ? 1 : width - 1;
+							pixel.direction ??= pixelIsOnLeft ? 1 : -1;
+
+							var floorHeight = pixel.y + 1;
+							while(isEmpty(pixel.x,floorHeight,false)) {
+								floorHeight++
+							};
+							pixel.floorHeight ??= floorHeight;
+
+						//Actual doer code
+							var bottomY = (pixel.floorHeight + 9); //extend 10 pixels below
+							var topY = bottomY - 43; //topY < bottomY because in this game +Y is *downward*
+							for(var h = 0; h < 2; h++) {
+								var newX = pixel.fromX + pixel.direction;
+
+								if(outOfBounds(newX,1)) {
+									pixel.active = false;
+									return
+								};
+
+								for(var i = bottomY; i >= topY; i--) {
+									var waterToDo = randomChoice(["salt_water","salt_water","salt_water","dirty_water","dirty_water"]);
+									var fc = {x: newX, y: i};
+									if(outOfBounds(fc.x,fc.y)) {continue};
+									if(isEmpty(fc.x,fc.y,false)) {
+										//fill with water
+										createPixel(waterToDo,fc.x,fc.y)
+									} else {
+										var newPixel = pixelMap[fc.x]?.[fc.y];
+										if(!newPixel) { continue };
+										//break
+										tryBreak(newPixel,true,true);
+										if(!newPixel) { continue };
+										//water reaction steal
+										if(elements[newPixel.element].reactions?.water) {
+											var waterRxn = elements[newPixel.element].reactions.water;
+											var elem1 = waterRxn.elem1;
+											while(Array.isArray(elem1)) {
+												elem1 = randomChoice(elem1)
+											};
+											if(elem1 !== null) {
+												changePixel(newPixel,elem1,true)
+											}
+										} else if(elements.water.reactions[newPixel.element]) {
+											var waterRxn2 = elements.water.reactions[newPixel.element];
+											elem2 = waterRxn2.elem2;
+											while(Array.isArray(elem2)) {
+												elem2 = randomChoice(elem2)
+											};
+											if(elem2 !== null) {
+												changePixel(newPixel,elem2,true)
+											}
+										};
+										if(!newPixel) { continue };
+										//add velocity;
+										newPixel.vx ??= 0;
+										newPixel.vy ??= 0;
+										newPixel.vx += (pixel.direction * 13)
+										newPixel.vy += 6;
+									};
+								};
+								pixel.fromX += pixel.direction
+							};
 					},
 					state: "solid",
 					category: "special",
