@@ -170,7 +170,7 @@ elements.plutonium = {
     onSelect: function() {
         logMessage("Mod made by mrapple, ilikepizza and stefanblox");
     },
-    color: "#ffffff",
+    color: ["#38a30e", "#0d662b", "#5d995d"],
     behavior: behaviors.RADPOWDER,
     category: "powders",
     state: "solid",
