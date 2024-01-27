@@ -25,7 +25,7 @@ elements.little_boy = {
     cooldown: defaultCooldown
 },
 elements.fat_man = {
-    color: ["#ffff00","#000000"],
+    color: ["#ffff00","#333333"],
     behavior: [
         "XX|EX:28>plasma|XX",
         "XX|XX|XX",
@@ -69,20 +69,31 @@ elements.fat_man = {
     category: "weapons"
 },
 elements.left_missile = {
-        color: "#4c4e42",
+    color: "#4c4e42",
     behavior: [
-        "XX|EX:10|XX",
-        "CR:left_missile AND EX:10|CH:fire|EX:10",
-        "M2|M1 AND EX:10|M2",
+        "M2|EX:10|XX",
+        "M1 AND EX:10|XX|EX:10",
+        "M2|EX:10|XX",
     ],
     category:"weapons",
 },
 elements.right_missile = {
-        color: "#4c4e42",
+    color: "#4c4e42",
     behavior: [
-        "XX|EX:10|XX",
-       "EX:10|CH:fire|EX:10 AND CR:right_missile",
-        "M2|M1 AND EX:10|M2",
+        "XX|EX:10|M2",
+       "EX:10|XX|M1 AND EX:10",
+        "XX|EX:10|M2",
     ],
     category:"weapons",
+},
+    elements.cluster_munition = {
+    color: "#444444",
+    behavior: [
+        "XX|EX:10>smoke,smoke,smoke,smoke,bomb,bomb|XX",
+        "XX|XX|XX",
+        "M2|M1 AND EX:10>smoke,smoke,smoke,smoke,bomb,cluster_munition|M2",
+    ],
+    category: "weapons",
+    state: "solid",
+    density: 1300,
 };

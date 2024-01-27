@@ -197,6 +197,48 @@ elements.or_gate = {
         }
     }
 }
+elements.nand_gate = {
+    color: "#eb4034",
+    category: "logic",
+    state: "solid",
+    behavior: behaviors.WALL,
+    tick: function(pixel){
+        var countNeighborsResult = countNeighbors()
+        if (countNeighborsResult.uncharged){
+            chargeOutputs();
+        } else {
+            unchargeOutputs();
+        }
+    }
+}
+elements.nor_gate = {
+    color: "#eb8c34",
+    category: "logic",
+    state: "solid",
+    behavior: behaviors.WALL,
+    tick: function(pixel){
+        var countNeighborsResult = countNeighbors()
+        if (!countNeighborsResult.charged){
+            chargeOutputs();
+        } else {
+            unchargeOutputs();
+        }
+    }
+}
+elements.nxor_gate = {
+    color: "#ebd834",
+    category: "logic",
+    state: "solid",
+    behavior: behaviors.WALL,
+    tick: function(pixel){
+        var countNeighborsResult = countNeighbors()
+        if (!(countNeighborsResult.charged == 1)){
+            chargeOutputs();
+        } else {
+            unchargeOutputs();
+        }
+    }
+}
 elements.E2L_lever = {
     color: "#b2ba75",
     behavior: behaviors.WALL,
@@ -347,6 +389,7 @@ elements.logic_transmitter = {
         if (pixel.start === pixelTicks){
 			pixel.channel = transmitterVar;
 		}
+        pixel.clone = pixel.channel;
         var receivers = currentPixels.filter(function(pixelToCheck) {
             return (
                 pixelToCheck !== pixel && //should work if this pixel is the same as the other one by reference
@@ -388,5 +431,22 @@ elements.logic_receiver = {
     category: "logic",
     tick: function(pixel){
         if (pixel.start === pixelTicks){pixel.channel = transmitterVar}
+        pixel.clone = pixel.channel;
     }
+}
+elements.logic_shock = {
+    color: elements.shock.color,
+    category: "tools",
+    tool: function(pixel){
+        if (pixel.element == "logic_wire"){pixel.lstate = 2; pixel.color = pixelColorPick(pixel, "#ffe49c")}
+    },
+    excludeRandom: true,
+}
+elements.logic_unshock = {
+    color: elements.uncharge.color,
+    category: "tools",
+    tool: function(pixel){
+        if (pixel.element == "logic_wire"){pixel.lstate = -2; pixel.color = pixelColorPick(pixel, "#3d4d2c")}
+    },
+    excludeRandom: true,
 }
