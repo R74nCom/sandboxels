@@ -69,3 +69,5 @@ elements.left_filler = {
         "plasma": { elem1:"armageddon", tempMin:500, charged:true },
     }
 }
+
+elements.filler.category = "fillers"
