@@ -5,7 +5,7 @@ elements.top_filler = {
         ["XX","XX","XX"],
         ["XX","XX","XX"]
     ],
-    category:"special",
+    category:"fillers",
     excludeRandom: true,
     reactions: {
         "neutron": { elem1:"lattice" },
@@ -23,7 +23,7 @@ elements.bottom_filler = {
         ["XX","XX","XX"],
         ["XX","CL","XX"]
     ],
-    category:"special",
+    category:"fillers",
     excludeRandom: true,
     reactions: {
         "neutron": { elem1:"lattice" },
@@ -41,7 +41,7 @@ elements.right_filler = {
         ["XX","XX","CL"],
         ["XX","XX","XX"]
     ],
-    category:"special",
+    category:"fillers",
     excludeRandom: true,
     reactions: {
         "neutron": { elem1:"lattice" },
@@ -59,7 +59,7 @@ elements.left_filler = {
         ["CL","XX","XX"],
         ["XX","XX","XX"]
     ],
-    category:"special",
+    category:"fillers",
     excludeRandom: true,
     reactions: {
         "neutron": { elem1:"lattice" },
