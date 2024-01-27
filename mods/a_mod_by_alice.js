@@ -14,7 +14,7 @@ try {
 
 	//ESSENTIAL COMMON FUNCTIONS (CODE LIBRARY) ##
 
-		//U.R.L.
+		//URL
 
 			urlParams = new URLSearchParams(window.location.search);
 
@@ -616,9 +616,10 @@ try {
 							throw new Error("Offset is NaN");
 						};
 
+						var oldColor = color; //for error display
 						color = hexToRGB(color);
 						if(color === null) {
-							throw new Error("hexToRGB(color) was null (maybe it's an invalid hex triplet?)");
+							throw new Error(`hexToRGB(color) was null (${oldColor}, maybe it's an invalid hex triplet?)`);
 						};
 
 					//console.log("converted color: " + JSON.stringify(color));
@@ -772,9 +773,10 @@ try {
 							};
 						//console.log(`octothorpe checked: ${color}`);
 
+						var oldColor = color;
 						color = hexToRGB(color);
 						if(color === null) {
-							throw new Error("hexToRGB(color) was null (maybe it's an invalid hex triplet?)");
+							throw new Error(`hexToRGB(color) was null (${oldColor}, maybe it's an invalid hex triplet?)`);
 						};
 
 						switch(outputType.toLowerCase()) {
@@ -1498,18 +1500,29 @@ try {
 				};
 			};
 
-			function breakPixel(pixel,changetemp=false) {
-				var info = elements[pixel.element];
-				if(typeof(info.breakInto) === "undefined") {
-					return false;
+			function breakPixel(pixel,changeTemp=false,defaultBreakIntoDust=false) {
+				var result = elements[pixel.element].breakInto;
+				if (result === undefined) {if(defaultBreakIntoDust) { result = "dust" } else { return }};
+				// if it is an array, choose a random item, else just use the value
+				while (Array.isArray(result)) {
+					result = randomChoice(result);
 				};
-				var breakIntoElement = info.breakInto;
-				if(Array.isArray(breakIntoElement)) {
-					breakIntoElement = breakIntoElement[Math.floor(Math.random() * breakIntoElement.length)]
+				// change the pixel to the result
+				if (result === null) {
+					deletePixel(pixel.x,pixel.y);
+					return
 				};
-				changePixel(pixel,breakIntoElement,changetemp)
-			};
+				if (elements[pixel.element].breakIntoColor) {
+					var oldelement = pixel.element;
+					changePixel(pixel,result);
+					pixel.color = pixelColorPick(pixel, elements[oldelement].breakIntoColor);
+				}
+				else {
+					changePixel(pixel,result);
+				}
+			}
 
+			defaultHardness = 0.3;
 			function tryBreak(pixel,changetemp=false,defaultBreakIntoDust=false) {
 				var info = elements[pixel.element];
 				var hardness = defaultHardness;
@@ -2051,6 +2064,26 @@ try {
 					}
 				}*/
 			};
+
+		//Language
+
+			function englishFormatList(thingsArrayIn) {
+				var thingsArray = thingsArrayIn;
+				var amount = thingsArray.length;
+				if(amount == 1) {
+					return thingsArray[0]
+				} else if(amount == 2) {
+					return thingsArray.join(" and ")
+				} else {
+					var lastItem = thingsArray[thingsArray.length - 1];
+					thingsArray[thingsArray.length - 1] = "and " + lastItem;
+					return thingsArray.join(", ")
+				};
+			};
+
+		function capitalizeFirstLetter(string,locale=null) {
+			return string[0][locale ? "toLocaleUpperCase" : "toUpperCase"](locale) + string.slice(1)
+		};
 
 	//COLOR MANIPULATION TOOLS ##
 
@@ -3592,18 +3625,17 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					else if (damage > 0.25) {
 						if (info.breakInto) {
 							// if it is an array, choose a random item, else just use the value
-							if (Array.isArray(info.breakInto)) {
-								var result = info.breakInto[Math.floor(Math.random() * info.breakInto.length)];
+							if (info.breakInto !== undefined) {
+								breakPixel(pixel);
+							} else {
+								if (Array.isArray(fire)) {
+									var newfire = fire[Math.floor(Math.random() * fire.length)];
+								}
+								else {
+									var newfire = fire;
+								}
+								changePixel(pixel,newfire);
 							}
-							else {
-								var result = info.breakInto;
-							}
-							if(typeof(breakIntoElement) === "undefined") {
-								deletePixel(pixel.x,pixel.y);
-								continue
-							};
-							// change the pixel to the result
-							changePixel(pixel,result,changeTemp);
 							if(info.onExplosionBreakOrSurvive) {
 								info.onExplosionBreakOrSurvive(pixel,x,y,radius,fire,smoke,power,damage);
 							};
@@ -4246,6 +4278,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 0.07,
 			ignoreAir: true
 		};
+
+		elements.cloner.burnTime = Infinity;
+		elements.cloner.burnInto = "cloner";
 
 		elements.cold_torch = {
 			"color": "#4394d6",
@@ -7951,7 +7986,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "gas",
 			density: 550,
 			tick: function(pixel) {
-				if(pixel.y % 6 == 0) {
+				if(pixel.y % 6 == 0) { //7989 yay soshi!
 					if(pixel.x % 6 == 0) {
 						pixel.color = "rgb(255,255,255)"
 					} else {
@@ -8019,7 +8054,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						}
 					} 
 				} else {
-					if(!settings.bg || settings.bg == "#fffff0") { //7989 yay soshi!
+					if(!settings.bg || settings.bg == "#fffff0") {
 						pixel.color = "rgb(255,255,247)"
 					} else {
 						pixel.color = "rgb(255,255,240)"
@@ -18083,7 +18118,63 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					elements[kesddfroged2[i]].reactions ??= {}; elements[kesddfroged2[i]].reactions[kesddfroged[j]] = {"elem1": "kurshuth_alloy", "elem2": "kurshuth_alloy"}
 				}
 			};
-		})
+		});
+
+		function newMetal(name,color,meltingPoint,boilingPoint,hardness,density,gasDensity,conduct) {
+			var temp = {
+				"name": name,
+				"color": color,
+				"meltingPoint": meltingPoint,
+				"boilingPoint": boilingPoint,
+				"hardness": hardness,
+				"density": density,
+				"gasDensity": gasDensity,
+				"conduct": conduct
+			};
+			var tempNulls = Object.keys(temp).filter(key => (typeof(temp[key]) == undefined || temp[key] == null));
+			if(tempNulls.length > 0) {
+				var errorMessage = capitalizeFirstLetter(englishFormatList(tempNulls));
+				throw new Error(`newMetal: ${errorMessage} {tempNulls.length == 1 ? "is" : "are"} required (generating "${name}")`);
+			};
+
+			elements[name] = {
+				"color": color,
+				"behavior": behaviors.WALL,
+				"category": "solids",
+				"state": "solid",
+				"density": density,
+				"conduct": conduct,
+				"tempHigh": meltingPoint,
+				"breakInto": `${name}_scrap`,
+				"hardness": hardness
+			};
+
+			elements[`molten_${name}`] = {
+				"tempHigh": boilingPoint
+			};
+
+			elements[`${name}_gas`] = {
+				"density": gasDensity
+			};
+
+			elements[`${name}_scrap`] = {
+				"color": gravelizeToHex(elements[name].color),
+				"behavior": behaviors.POWDER,
+				"tempHigh": meltingPoint,
+				"stateHigh": name,
+				"category": "powders",
+				"hidden": true,
+				"density": density * 0.09,
+				"conduct": conduct * 0.4,
+				"movable": true,
+			};
+
+			return [elements[name],elements[`${name}_scrap`]];
+		};
+		
+		//newMetal( "exidmaden", ["#F8EDCF", "#EEAAAE", "#E5678D", "#A6659C", "#6763AD"], 2134, 6769, 0.8, 32333, 49.9, 0.88 );
+		//newMetal( "jisooium", "#9d0ac2", 8367, 10003, 0.63, 15024, 12.2, 0.9 );
+		newMetal( "twicium", ["#F9C596", "#FC5D9D"], 10240, 18018, 0.88, 29029, 24.3, 0.91 );
 
 	//ASSORTED LOONA-THEMED MATERIALS ##
 
@@ -20401,7 +20492,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				if(typeof(elements[thing]) == "object") {
 					if(typeof(elements[thing]?.breakInto) == "undefined") {
 						elements[`${thing}_scrap`] = {
-							color: elements[thing].color,
+							color: gravelizeToHex(elements[thing].color),
 							behavior: behaviors.POWDER,
 							tempHigh: elements[thing].tempHigh,
 							stateHigh: thing,
@@ -21214,13 +21305,14 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					//Gravels
 
 						function gravelizeToHex(colorIn) {
-							//console.log("gravelizeToHex called",colorIn);
 							var colorInput = colorIn; //side effects?
+							//console.log(`gravelizeToHex: ${colorInput}`)
 
 							//make sure in is array
-							if(!colorInput instanceof Array) {
+							if(!(colorInput instanceof Array)) {
 								colorInput = [colorInput];
 							};
+							//console.log(`gravelizeToHex: ${colorInput}`)
 
 							//console.log(colorInput);
 
@@ -29550,29 +29642,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};		
 		};
-
-		function breakPixel(pixel,changetemp=false,defaultBreakIntoDust=false) {
-			var info = elements[pixel.element];
-			if(typeof(info.breakInto) === "undefined") {
-				if(defaultBreakIntoDust) {
-					if(Math.random() < defaultBreakIntoDust) { changePixel(pixel,"dust",changetemp) };
-				};
-				return defaultBreakIntoDust;
-			};
-			var breakIntoElement = info.breakInto;
-			if(Array.isArray(breakIntoElement)) {
-				breakIntoElement = breakIntoElement[Math.floor(Math.random() * breakIntoElement.length)]
-			};
-			if(breakIntoElement === null) {
-				deletePixel(pixel.x,pixel.y);
-				return true;
-			};
-			if(typeof(breakIntoElement) === "undefined") { return false };
-			changePixel(pixel,breakIntoElement,changetemp)
-			return true;
-		};
-
-		defaultHardness = 0.3;
 
 		function arrowAltTb(pixel,breakChanceMultiplier,changetemp=false,defaultBreakIntoDust=false) {
 			var info = elements[pixel.element];
