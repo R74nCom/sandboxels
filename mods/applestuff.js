@@ -1,15 +1,17 @@
 elements.cat = {
-	color: ["#ffffff","#000000", "#00ffff"],
+	color: ["#ffffff", "#494949", "#ffc505"],
 	behavior: [
         "XX|XX|XX",
         "M2%25|XX|M2%25",
         "XX|M1|XX",
     ],
-	category: "weapons",
+	category: "life",
 	state: "solid",
-    desc: "WHAT IS WRONG WITH YOU, WHY ARE YOU BLUE",
+    desc: "cat.",
     tempHigh: 100,
-    stateHigh: "meat"
+    stateHigh: "meat",
+    tempLow: 0,
+    stateLow: "frozen_meat"
 };
 
 elements.the_hot_destroyer = {
