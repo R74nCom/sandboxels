@@ -1,5 +1,5 @@
 elements.cat = {
-	color: "#ffffff,#000000, #00ffff",
+	color: ["#ffffff","#000000", "#00ffff"],
 	behavior: [
         "XX|XX|XX",
         "M2%25|XX|M2%25",
