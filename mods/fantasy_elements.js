@@ -1,3 +1,6 @@
+// 1.3.2 fantasy_elements.js mod
+// adds plode a bomb
+
 elements.dragon_breath = {
     color: "#f94e4e",
     behavior: behaviors.GAS,
@@ -607,4 +610,18 @@ elements.nebulaflare_wall = {
 	reactions: {
         "water": { elem1: "nebulaflare", elem2: "nebulaflare" },
     },
+};
+// end, chanelog moves to top
+
+elements.plode = {
+    color: "#7f03fc",
+    behavior: [
+        "XX|EX:90>plasma,heat_ray,plasma,fire,fire|XX",
+        "XX|XX|XX",
+        "M2|M1 AND EX:90>fire,plasma,fire,fire,heat_ray,fire|M2",
+    ],
+    category: "fantasyweapons",
+    state: "solid",
+    density: 2500,
+    excludeRandom: true,
 };
