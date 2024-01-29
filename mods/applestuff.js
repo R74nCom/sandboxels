@@ -52,7 +52,7 @@ elements.lipstick = {
 	category: "liquids",
 	state: "liquid",
     viscosity: 650,
-    stain: 100,
+    stain: 10,
     tempHigh: 100,
     stateHigh: "steam",
     desc: "this mod is meant to have a description to everything but i don't know what to put here... its lipstick i guess?"
