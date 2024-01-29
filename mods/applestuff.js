@@ -1,13 +1,17 @@
 elements.cat = {
-	color: "#b08b05",
+	color: ["#ffffff", "#494949", "#ffc505"],
 	behavior: [
         "XX|XX|XX",
         "M2%25|XX|M2%25",
         "XX|M1|XX",
     ],
-	category: "weapons",
+	category: "life",
 	state: "solid",
-    desc: "HOLY SHIT ITS GOING TO KILL M- oh wait its just a cute kitty"
+    desc: "cat.",
+    tempHigh: 100,
+    stateHigh: "meat",
+    tempLow: 0,
+    stateLow: "frozen_meat"
 };
 
 elements.the_hot_destroyer = {
@@ -48,7 +52,6 @@ elements.lipstick = {
 	category: "liquids",
 	state: "liquid",
     viscosity: 650,
-    stain: 30,
     tempHigh: 100,
     stateHigh: "steam",
     desc: "this mod is meant to have a description to everything but i don't know what to put here... its lipstick i guess?"
@@ -66,4 +69,12 @@ elements.very_hot_gold = {
     desc: "i'm running out of ideas, have this i guess"
 };
 
-// bro what else do i put here
+elements.sour_patch_kids = {
+	color:["#ff0000", "#00ff00", "#c8ff02", "#ff00c8"],
+	behavior: behaviors.POWDER,
+	category: "food",
+	state: "solid",
+    desc: "don't think their meant to be purple"
+};
+
+// this piece of text is gonna change every update
