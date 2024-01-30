@@ -1,46 +1,3 @@
-elements.cat = {
-	color: ["#ffffff", "#494949", "#ffc505"],
-	behavior: [
-        "XX|XX|XX",
-        "M2%25|EX:10>kitten,kitten,kitten%00.000000000000000000000000000000000000000000000000001|M2%25 AND CR:kitten%00.0001",
-        "XX|M1|XX",
-    ],
-	category: "life",
-	state: "solid",
-    desc: "cat.",
-    tempHigh: 100,
-    stateHigh: "meat",
-    tempLow: -10,
-    stateLow: "frozen_meat",
-    reactions: {
-        "water": {elem2: null},
-        "milk": {elem2: null},
-        "rat": {elem2: "blood"},
-    }
-};
-
-elements.kitten = {
-	color: ["#ffffff", "#494949", "#ffc505"],
-	behavior: [
-        "XX|XX|XX",
-        "M2%10|CH:cat%00.020|M2%10",
-        "XX|M1|XX",
-    ],
-	category: "life",
-	state: "solid",
-    desc: "was given birth to by cat, you either got this by looking up what a cat just spawned, or have unhide all elements on",
-    tempHigh: 100,
-    stateHigh: "meat",
-    tempLow: 10,
-    stateLow: "frozen_meat",
-    hidden: true,
-    reactions: {
-        "water": {elem2: null},
-        "milk": {elem2: null},
-        "bless": {elem2: "kitten"}
-    }
-}
-
 elements.the_hot_destroyer = {
     color: "#ff0000",
 	behavior: behaviors.POWDER,
@@ -104,4 +61,4 @@ elements.sour_patch_kids = {
     desc: "don't think their meant to be purple"
 };
 
-// wohoo yeah more stuff
+// R.I.P cats (use cat.js instead)
