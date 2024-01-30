@@ -4177,7 +4177,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						return
 					})
 				};
-
 				doDefaults(pixel);
 			},
 			temp:6000,
@@ -4195,6 +4194,39 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			ignoreAir: true
 		};
 		
+		elements.holy_bomb = {
+			color: ["#dbb260", "#94591e"],
+			tick: function(pixel) {
+				if(!isEmpty(pixel.x,pixel.y-1,true)) { //[0][1] EX (ignore bounds)
+					var newPixel = pixelMap[pixel.x][pixel.y-1];
+					var newElement = newPixel.element;
+					var newInfo = elements[newElement];
+					if(newInfo.state !== "gas" && newElement !== pixel.element) {
+						explodeAtPlus(pixel.x,pixel.y,13,"holy_fire","plasma",null,firebombFire);
+					};
+				};
+				if(!isEmpty(pixel.x,pixel.y+1,true)) { //[2][1] EX (don't ignore bounds, non-bound case)
+					var newPixel = pixelMap[pixel.x][pixel.y+1];
+					var newElement = newPixel.element;
+					var newInfo = elements[newElement];
+					if(newInfo.state !== "gas" && newElement !== pixel.element) {
+						explodeAtPlus(pixel.x,pixel.y,13,"holy_fire","plasma",null,firebombFire);
+					};
+				};
+				if(outOfBounds(pixel.x,pixel.y+1)) { //[2][1] EX (don't ignore bounds, bound case)
+					explodeAtPlus(pixel.x,pixel.y,13,"holy_fire","plasma",null,firebombFire);
+				};
+				if(!tryMove(pixel,pixel.x,pixel.y+1)) { //behaviors.POWDER
+					Math.random() < 0.5 ? tryMove(pixel,pixel.x-1,pixel.y+1) : tryMove(pixel,pixel.x+1,pixel.y+1);
+				};
+			},
+			category: "weapons",
+			state: "solid",
+			density: 4000,
+			excludeRandom: true,
+			desc: "A bomb that burns the world to pure ash. <br/>To enable automatic bomb generation, set the generateBombs query parameter.",
+		};
+
 		elements.bless.ignore ??= [];
 		elements.bless.ignore.push("holy_fire");
 
@@ -4286,6 +4318,39 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "gas",
 			density: 0.07,
 			ignoreAir: true
+		};
+
+		elements.god_slayer_bomb = {
+			color: ["#a43dcc", "#49b6d1"],
+			tick: function(pixel) {
+				if(!isEmpty(pixel.x,pixel.y-1,true)) { //[0][1] EX (ignore bounds)
+					var newPixel = pixelMap[pixel.x][pixel.y-1];
+					var newElement = newPixel.element;
+					var newInfo = elements[newElement];
+					if(newInfo.state !== "gas" && newElement !== pixel.element) {
+						explodeAtPlus(pixel.x,pixel.y,40,"god_slayer_fire","plasma");
+					};
+				};
+				if(!isEmpty(pixel.x,pixel.y+1,true)) { //[2][1] EX (don't ignore bounds, non-bound case)
+					var newPixel = pixelMap[pixel.x][pixel.y+1];
+					var newElement = newPixel.element;
+					var newInfo = elements[newElement];
+					if(newInfo.state !== "gas" && newElement !== pixel.element) {
+						explodeAtPlus(pixel.x,pixel.y,40,"god_slayer_fire","plasma");
+					};
+				};
+				if(outOfBounds(pixel.x,pixel.y+1)) { //[2][1] EX (don't ignore bounds, bound case)
+					explodeAtPlus(pixel.x,pixel.y,40,"god_slayer_fire","plasma");
+				};
+				if(!tryMove(pixel,pixel.x,pixel.y+1)) { //behaviors.POWDER
+					Math.random() < 0.5 ? tryMove(pixel,pixel.x-1,pixel.y+1) : tryMove(pixel,pixel.x+1,pixel.y+1);
+				};
+			},
+			category: "weapons",
+			state: "solid",
+			density: 4500,
+			excludeRandom: true,
+			desc: "A bomb that makes gods tremble. <br/>To enable automatic bomb generation, set the generateBombs query parameter.",
 		};
 
 		elements.cloner.burnTime = Infinity;
@@ -28481,6 +28546,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			})
 		});
 		lightlikes = ["light","flash","laser","radiation","insulate_flash"];
+		firelikes = ["fire","plasma","smoke","stellar_plasma","liquid_plasma","liquid_stellar_plasma"];
 		grbBreakIntos = Object.keys(elements).filter(function(elemName) {
 			var to = typeof(elements[elemName]);
 			if(to == "undefined") {
@@ -28655,6 +28721,75 @@ Make sure to save your command in a file if you want to add this preset again.`
 				deletePixel(pixel.x, pixel.y);
 			},
 			temp: -200,
+			category: "energy",
+			state: "gas",
+			excludeRandom: true,
+			noMix: true
+		};
+
+		elements.melt_ray = {
+			color: ["#ffbf7f","#ffffbf"],
+			tick: function(pixel) {
+				var x = pixel.x;
+				for (var y = pixel.y; y < height; y++) {
+					if (outOfBounds(x, y)) {
+						break;
+					}
+					if (isEmpty(x, y)) {
+						if (Math.random() > 0.02) { continue }
+						createPixel("insulate_flash", x, y);
+						pixelMap[x][y].color = "#e1f8fc";
+					}
+					else {
+						var otherPixel = pixelMap[x][y];
+						var otherInfo = elements[otherPixel.element];
+						//Gas: Heat, always penetrate
+						if (otherInfo.isGas) {
+							if(Math.random() < 0.05 && otherInfo.stateLow) {
+								meltPixel(otherPixel)
+							};
+							if(elements[otherPixel.element].isSun) {
+								otherPixel.temp += 0.5;
+							} else {
+								otherPixel.temp += 50;
+							};
+							continue;
+						};
+
+						//Self: Break
+						if (otherInfo.id === elements.melt_ray.id) { break }
+
+						//Non-gas, Melt chance, heat more, half penetrate
+						if(Math.random() < 0.05 && !otherInfo.isGas) {
+							meltPixel(otherPixel)
+						};
+						pixelMap[x][y].temp += 200;
+
+						if(Math.random() < 0.05) {
+
+							if(!isEmpty(x,y-1,false)) {
+								if(pixelMap[x]?.[y-1]?.element && lightlikes.includes(pixelMap[x][y-1].element)) {
+									deletePixel(x,y-1);
+								};
+							};
+							var newPlasma = tryCreatePixelReturn("liquid_plasma",x,y-1);
+							if(newPlasma) { newPlasma.temp += 500 };
+						};
+
+						//Penetrate snow and ice
+						if(firelikes && firelikes.includes(otherPixel.element)) {
+							continue;
+						};
+
+						if(Math.random() < 0.7) { //thanks, I hate random continue
+							continue;
+						};
+						break;
+					}
+				}
+				deletePixel(pixel.x, pixel.y);
+			},
+			temp: 4000,
 			category: "energy",
 			state: "gas",
 			excludeRandom: true,
