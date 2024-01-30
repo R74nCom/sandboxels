@@ -42227,7 +42227,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hidden: true,
 		};
 
-		elements.support_glass = structuredClone ? structuredClone(elements.glass) : JSON.parse(JSON.stringify(elements.glass));
+		elements.support_glass = JSON.parse(JSON.stringify(elements.glass));
 		elements.support_glass.stateHigh = "molten_glass";
 		elements.support_glass.behavior = behaviors.SUPPORT;
 
