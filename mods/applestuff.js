@@ -10,7 +10,7 @@ elements.cat = {
     desc: "cat.",
     tempHigh: 100,
     stateHigh: "meat",
-    tempLow: 0,
+    tempLow: -10,
     stateLow: "frozen_meat",
     reactions: {
         "water": {elem2: null},
@@ -31,7 +31,7 @@ elements.kitten = {
     desc: "was given birth to by cat, you either got this by looking up what a cat just spawned, or have unhide all elements on",
     tempHigh: 100,
     stateHigh: "meat",
-    tempLow: 0,
+    tempLow: 10,
     stateLow: "frozen_meat",
     hidden: true,
     reactions: {
