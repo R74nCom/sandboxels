@@ -45269,7 +45269,7 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 	
 	//END ##
 } catch (error) {
-	alert(`Load failed (try reloading)\nError: ${error.stack}`);
+	alert(`Load failed (try reloading).\nThis is likely a sporadic failure caused by inconsistencies in how mods are loaded, and will likely fix itself in a refresh or two. If it persists, then it's an issue.\nError: ${error.stack}`);
 	console.error(error)
 };
 } else {
