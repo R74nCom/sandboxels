@@ -37,6 +37,7 @@ elements.kitten = {
     reactions: {
         "water": {elem2: null},
         "milk": {elem2: null},
+        "bless": {elem2: "kitten"}
     }
 }
 
