@@ -15,7 +15,7 @@ elements.cat = {
     reactions: {
         "water": {elem2: null},
         "milk": {elem2: null},
-        "rat": {elem2: null},
+        "rat": {elem2: blood},
     }
 };
 
