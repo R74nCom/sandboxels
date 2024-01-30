@@ -1,3 +1,7 @@
+/*
+  -Made Chicken Broth 
+*\
+
 elements.chickenBroth = {
   color: #BEB071,
   behavior: behaviors.LIQUID,
