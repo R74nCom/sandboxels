@@ -1,23 +1,28 @@
-"water": {
+elements.suspicious_water = {
     color: "#2167ff",
-    behavior: behaviors.LIQUID,
+    behavior: [
+    "M1|M2|CL",
+    "CL|XX|CR: armageddon%10,suspicious_water,rainbow,static
+    "CR: armageddon%10,suspicious_water,rainbow,static|CL|XX",
     tempHigh: 100,
-    stateHigh: "steam",
+    stateHigh: "anal_sphincter",
     tempLow: 0,
-    stateLow: "ice",
+    stateLow: "anal_sphincter",
     category: "liquids",
     heatCapacity: 4.184,
     reactions: {
         "dirt": { // React with (water reacts with dirt to make mud)
-            elem1: null, // First element transforms into; in this case, water deletes itself
+            elem1: "armageddon", // First element transforms into; in this case, water deletes itself
             elem2: "mud", // Second element transforms into; in this case, dirt turns to mud
         },
         "sand": { elem1: null, elem2: "wet_sand" },
         "clay_soil": { elem1: null, elem2: "clay" },
+        "body": { elem1:"armageddon" },
         "salt": { elem1: "salt_water", elem2: null },
         "sugar": { elem1: "sugar_water", elem2: null },
         "dust": { elem1: "dirty_water", elem2: null },
         "ash": { elem1: "dirty_water", elem2: null },
+        "rock": { elem1: "armageddon",chance:0.5 },
         "cyanide": { elem1: "dirty_water", elem2: null },
         "cyanide_gas": { elem1: "dirty_water", elem2: null },
         "carbon_dioxide": { elem1: "seltzer", elem2: null, "oneway":true },
@@ -49,7 +54,7 @@
         "tin": { elem1:["hydrogen","hydrogen","oxygen"], charged:true, chance:0.01 },
         "lead": { elem1:["hydrogen","hydrogen","oxygen"], charged:true, chance:0.01 },
         "brass": { elem1:["hydrogen","hydrogen","oxygen"], charged:true, chance:0.001 },
-        "snow": { elem1: "armageddon", elem2: null, "oneway":false },
+        "snow": { elem1: "armageddon", elem2: "armageddon",  },
         "bronze": { elem1:["hydrogen","hydrogen","oxygen"], charged:true, chance:0.001 },
         "copper": { elem1:["hydrogen","hydrogen","oxygen"], charged:true, chance:0.0075 },
         "silver": { elem1:["hydrogen","hydrogen","oxygen"], charged:true, chance:0.0075 },
@@ -58,5 +63,36 @@
     state: "liquid",
     density: 997,
     conduct: 0.02,
-    stain: -0.5
-},
+    stain: 2
+};
+elements.plum = {
+    color: "#362352",
+    behavior: behaviors.SOLID,
+    tempHigh:80,
+    stateHigh: "molten_plum",
+    tempLow:4,
+    stateLow "frozen_plum",
+    category: "extra_food",
+    burn:30,
+    burnTime:50,
+    burnInto "plum_aroma",
+    state: "solid",
+    density: 5,
+};
+elements.molten_plum = {
+    color: "#c2385d",
+    behavior: behaviors.LIQUID,
+    tempHigh:140,
+    stateHigh: "plum_aroma",
+    tempLow:75,
+    stateLow: "plum",
+    category: "extra_food",
+    burn:30,
+    burnTime:50,
+    burnInto "plum_aroma",
+    state: "liquid",
+    density: 5,
+};
+elements.plum_aroma
+
+
