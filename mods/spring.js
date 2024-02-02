@@ -133,7 +133,7 @@ elements.sakura_seed = {
 };
 
 
-
+/* Beehive deprecated, Hive exists in base game
 elements.beehive = {
     color: ["#ab985e","#948454"],
     tick: function(pixel){
@@ -172,6 +172,7 @@ elements.bee.reactions.beehive = {
         bee.pollen = null;
     }
 }
+*/
 
 elements.dollar = {
     color: ["#324a26","#4e8732","#54803d","#698a58","#8aa87b"],
