@@ -4188,7 +4188,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			burnTime: 500,
 			burnTempChange: 8,
 			fireElement: ["bless","plasma"],
-			ignore: ["ash","light","bless","plasma","wall"],
+			ignore: ["ash","light","bless","plasma","fire","smoke","liquid_holy_fire"].concat(searchElements("haseulite")).concat("haseulite_singularity"),
 			state: "gas",
 			density: 0.08,
 			ignoreAir: true
@@ -4310,13 +4310,157 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			stateLow: ["plasma_explosion","plasma","plasma","plasma","plasma","plasma","plasma","plasma"],
 			burnInto: ["plasma_explosion","plasma","plasma","plasma","plasma","plasma","plasma","plasma"],
 			category: "energy",
-			ignore: ["ash","slag","wall","plasma","fire","smoke"],
+			ignore: ["ash","slag","wall","plasma","fire","smoke","liquid_god_slayer_fire"].concat(searchElements("haseulite")).concat("haseulite_singularity"),
 			burning: true,
 			burnTime: 500,
 			burnTempChange: 10,
 			fireElement: ["plasma"],
 			state: "gas",
 			density: 0.07,
+			ignoreAir: true
+		};
+
+		elements.liquid_holy_fire = {
+			color: ["#FFFF96","#FFBF49","#CE743B"], //placeholder
+			tick: function(pixel) {
+
+				var moveResult = tryMoveAndReturnBlockingPixel(pixel,pixel.x + randomIntegerBetweenTwoValues(-1,1),pixel.y + 1);
+				var blockingPixels = [];
+				var secondMoveResult = null;
+				
+				if(typeof(moveResult) == "object" && !(elements[pixel.element].ignore.concat(pixel.element).includes(moveResult.element))) {
+					blockingPixels.push(moveResult)
+				};
+				
+				//if move1Result = true then nothing else happens
+				
+				if(moveResult !== true) {
+					var coords = [randomSign(),0].map(offsetPair => addArraysInPairs(offsetPair,[pixel.x,pixel.y]));
+					secondMoveResult = tryMoveAndReturnBlockingPixel(pixel,...coords);
+					
+					if(typeof(secondMoveResult) == "object" && !(elements[pixel.element].ignore.concat(pixel.element).includes(secondMoveResult.element))) {
+						blockingPixels.push(secondMoveResult)
+					};
+				};
+
+				if(blockingPixels.length > 0) {
+					blockingPixels.forEach(function(pixel) {
+						var blessRxn = elements.bless.reactions[pixel.element];
+						if(typeof(blessRxn) == "object") { 
+							var elem2 = blessRxn.elem2;
+							if(elem2 !== null) {
+								while(Array.isArray(elem2)) { elem2 = randomChoice(elem2) };
+								changePixel(pixel,elem2)
+							}
+						};
+						var value = Math.random();
+						if(value < 0.01) {
+							if(pixel.burnInto) {
+								finishBurn(pixel)
+							} else {
+								changePixel(pixel,randomChoice(["ash","ash","light"]))
+							}
+						} else if(value < 0.20) {
+							pixel.burning = true;
+							pixel.burnStart ??= pixelTicks;
+						} else if(value < 0.205) {
+							changePixel(pixel,randomChoice(["ash","ash","light"]))
+						} else {
+							pixel.temp += 10; pixelTempCheck(pixel)
+						};
+						return
+					})
+				};
+				doDefaults(pixel);
+			},
+			temp:8000,
+			tempLow:2000,
+			stateLow: "holy_fire",
+			burnInto: ["bless","fire"],
+			category: "energy",
+			burning: true,
+			burnTime: 1000,
+			burnTempChange: 10,
+			fireElement: "holy_fire",
+			ignore: ["light","bless","wall","plasma","fire","smoke","holy_fire"].concat(searchElements("haseulite")).concat("haseulite_singularity"),
+			state: "liquid",
+			density: 270,
+			ignoreAir: true
+		};
+		
+		elements.liquid_god_slayer_fire = {
+			color: ["#FFBACE","#FC6DCA","#9954B0"],
+			tick: function(pixel) {
+
+				var moveResult = tryMoveAndReturnBlockingPixel(pixel,pixel.x + randomIntegerBetweenTwoValues(-1,1),pixel.y + 1);
+				var blockingPixels = [];
+				var secondMoveResult = null;
+				
+				if(typeof(moveResult) == "object" && !(elements[pixel.element].ignore.concat(pixel.element).includes(moveResult.element))) {
+					blockingPixels.push(moveResult)
+				};
+				
+				//if move1Result = true then nothing else happens
+				
+				if(moveResult !== true) {
+					var coords = [randomSign(),0].map(offsetPair => addArraysInPairs(offsetPair,[pixel.x,pixel.y]));
+					secondMoveResult = tryMoveAndReturnBlockingPixel(pixel,...coords);
+					
+					if(typeof(secondMoveResult) == "object" && !(elements[pixel.element].ignore.concat(pixel.element).includes(secondMoveResult.element))) {
+						blockingPixels.push(secondMoveResult)
+					};
+				};
+
+				if(blockingPixels.length > 0) {
+					blockingPixels.forEach(function(pixel) {
+						var value = Math.random();
+						var randomDefaultResult = randomChoice(["ash","slag","plasma"]);
+						var oldTemp = pixel.temp;
+						if(value < 0.03) {
+							if(pixel.stateHigh) {
+								meltPixel(pixel);
+							}
+						} else if(value < 0.06) {
+							if(pixel.burnInto) {
+								finishBurn(pixel);
+							} else {
+								changePixel(pixel,randomDefaultResult)
+							}
+						} else if(value < 0.09) {
+							if(pixel.breakInto) {
+								breakPixel(pixel);
+							} else {
+								changePixel(pixel,randomDefaultResult)
+							}
+						} else if(value < 0.24) {
+							pixel.burning = true;
+							pixel.burnStart ??= pixelTicks;
+						} else if(value < 0.245) {
+							changePixel(pixel,randomDefaultResult)
+						} else {
+							pixel.temp += 25; pixelTempCheck(pixel)
+						};
+						if(pixel) {
+							pixel.temp = Math.max(oldTemp,pixel.temp)
+						};
+						return
+					})
+				};
+
+				doDefaults(pixel);
+			},
+			temp:15000,
+			tempLow:2000,
+			stateLow: ["plasma_explosion","liquid_plasma","liquid_plasma","liquid_plasma","liquid_plasma","liquid_plasma","liquid_plasma","liquid_plasma"],
+			burnInto: "god_slayer_fire",
+			category: "energy",
+			ignore: ["ash","slag","wall","plasma","fire","smoke","god_slayer_fire"].concat(searchElements("haseulite")).concat("haseulite_singularity"),
+			burning: true,
+			burnTime: 1000,
+			burnTempChange: 14,
+			fireElement: "god_slayer_fire",
+			state: "liquid",
+			density: 380,
 			ignoreAir: true
 		};
 
@@ -4716,7 +4860,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				burnTempChange: 2,
 				fireSpawnChance: 5,
 				state: "liquid",
-				density: 21,
+				density: 200,
 			};
 
 			elements.liquid_cold_fire = {
@@ -4740,7 +4884,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				fireElement: "cold_fire",
 				category: "energy liquids",
 				state: "liquid",
-				density: 42,
+				density: 420,
 			};
 
 			elements.liquid_rad_fire = {
@@ -4807,7 +4951,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				fireSpawnChance: 5,
 				fireElement: "rad_fire",
 				state: "liquid",
-				density: 21,
+				density: 210,
 			};
 
 			elements.radiation.reactions.liquid_fire = { "elem2":"liquid_rad_fire", "chance":0.4 };
@@ -18696,8 +18840,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			rad_fire: {value: 10, remainder: "rad_smoke"},
 			liquid_fire: {value: 12, remainder: ["fire","liquid_smoke","smoke"]},
 			plasma: {value: 15, remainder: "fire"},
+			holy_fire: 25,
+			god_slayer_fire: 40,
 			liquid_rad_fire: {value: 20, remainder: [null,"rad_fire","rad_fire","rad_smoke","rad_smoke"]},
 			liquid_plasma: {value: 30, remainder: ["plasma","liquid_fire","fire"]},
+			liquid_holy_fire: {value: 50, remainder: ["holy_fire","bless","light"]},
+			liquid_god_slayer_fire: {value: 80, remainder: ["god_slayer_fire",null,null]},
 			liquid_irradium: {value: 4, remainder: 0}
 		};
 
@@ -18710,7 +18858,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			if(isNaN(pixel.value)) { pixel.value = 0 };
 			pixel.color = lightenColor(pixel.oldColor,pixel.value / 3);
 
-			var mVal = elements[pixel.element].haseulitoidMaxValue ?? 350;
+			var mVal = elements[pixel.element].haseulitoidMaxValue ?? 800;
 			if(pixel.value >= mVal) {
 				var coldBoomChance = Math.max(0.008 * ((pixel.value - mVal) / (mVal * 2/7)), 0.001);
 				if(Math.random() < coldBoomChance) {
