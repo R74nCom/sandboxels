@@ -4332,7 +4332,7 @@
     color: "#b3b38b",
     behavior: behaviors.LIQUID,
     tick: function(pixel) {
-        if (pixel.temp > 220 && !pixel.burning) {
+        if (pixel.temp > 500 && !pixel.burning) {
             pixel.burning = true;
             pixel.burnStart = pixelTicks;
         }
