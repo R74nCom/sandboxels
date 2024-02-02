@@ -67,7 +67,7 @@ elements.suspicious_water = {
 };
 elements.plum = {
     color: "#362352",
-    behavior: behaviors.SOLID,
+    behavior: behaviors.POWDER,
     tempHigh:80,
     stateHigh: "molten_plum",
     tempLow:4,
@@ -147,7 +147,7 @@ elements.expired_nair = {
 };
 elements.frozen_nair = {
     color: "#c7f7ff",
-    behavior: behaviors.SOLID,
+    behavior: behaviors.POWDER,
     category: "anal_sphincter",
     reactions: {
         "hair": {elem1:null, elem2:"supernova"}
