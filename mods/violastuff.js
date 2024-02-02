@@ -2,8 +2,8 @@ elements.suspicious_water = {
     color: "#2167ff",
     behavior: [
     "M1|M2|CL",
-    "CL|XX|CR: armageddon%10,suspicious_water,rainbow,static
-    "CR: armageddon%10,suspicious_water,rainbow,static|CL|XX",
+    "CL|XX|XX"
+    "XX|CL|XX"],
     tempHigh: 100,
     stateHigh: "anal_sphincter",
     tempLow: 0,
@@ -73,6 +73,10 @@ elements.plum = {
     tempLow:4,
     stateLow "frozen_plum",
     category: "extra_food",
+    reactions: {
+        "body": { elem1:null elem2:["anal_sphincter", "armageddon", "lattice"], }
+        "anal_sphincter": { elem1:null, elem2:null, }
+    },
     burn:30,
     burnTime:50,
     burnInto "plum_aroma",
@@ -85,14 +89,70 @@ elements.molten_plum = {
     tempHigh:140,
     stateHigh: "plum_aroma",
     tempLow:75,
-    stateLow: "plum",
-    category: "extra_food",
+    stateLow: "mush",
+    category: "states",
     burn:30,
     burnTime:50,
     burnInto "plum_aroma",
     state: "liquid",
-    density: 5,
+    density:1023,
+    viscosity:50,
+    stain: 1.5,
 };
-elements.plum_aroma
-
-
+elements.plum_aroma = {
+    color: "#3f2a75",
+    behavior: behaviors.GAS,
+    tempHigh:2763,
+    stateHigh: "anal_sphincter",
+    category: "extra_food",
+    state: "gas",
+    density:5,
+};
+elements.anal_sphincter = {
+    color: "#d94532",
+    behavior: [
+    "M1|M2|CL",
+    "CL|XX|CR: armageddon%10,suspicious_water,rainbow,static",
+    "CR: armageddon%10,suspicious_water,rainbow,static|CL|XX"],
+    category: "anal_sphincter",
+    state: "solid",
+    density:100,
+};
+elements.nair = {
+    color: "#c4c4c4",
+    behavior: behaviors.LIQUID,
+    tempLow:-10,
+    stateLow: "frozen_nair",
+    category: "anal_sphincter",
+    reactions: {
+        "hair": {elem1:null, elem2:null}
+        "head": {elem1:null, elem2: "supernova"}  
+    },
+    burn:20,
+    burnTime:300,
+    burnInto "expired_nair"
+    density: 50,
+    state: "liquid",
+};
+elements.expired_nair = {
+    color: "#c2baa5",
+    behavior: behaviors.LIQUID,
+    category: "anal_sphincter",
+    reactions: {
+        "hair": {elem1:null, elem2:"supernova"}
+        "head": {elem1:null, elem2: "supernova"}  
+    },
+    density: 50,
+    state: "liquid",
+};
+elements.frozen_nair = {
+    color: "#c7f7ff",
+    behavior: behaviors.SOLID,
+    category: "anal_sphincter",
+    reactions: {
+        "hair": {elem1:null, elem2:"supernova"}
+        "head": {elem1:null, elem2: "supernova"}  
+    },
+    density: 50,
+    state: "solid",
+};
