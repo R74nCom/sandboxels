@@ -7,6 +7,134 @@ See sneak peaks for upcoming updates on the Discord: https://discord.gg/ejUc6YPQ
 
 A fancier version of this changelog can be found here: https://sandboxels.R74n.com/changelog
 
+[Version 1.9.3 - February 2, 2024 - Mix & Munch]
+    + Potassium
+    + Magnesium
+    + Antibomb
+    + Nut Oil
+    + Cured Meat, from mixing with Salt
+    + Grease, from cooking Meat
+    + (BETA) Support for British, German, French, Hungarian, Polish, Portuguese, Vietnamese, Chinese
+   [Chemistry]
+    + Water and Foam can extinguish small fires (Outer pixels)
+    + Hydrogen is explosive when burning
+    ~ Improved Calcium-Water reaction
+    + Calcium reacts with Water variants
+    ~ Recolored Calcium
+    + Calcium-Acid reaction
+    + Calcium exposed to air turns to Quicklime
+    + Quicklime is an insecticide
+    + Limestone can break into Gravel
+    ~ Many things no longer turn to raw Calcium
+    ~ Tweaked Quicklime-Water rection
+    + Oil distills into Propane, Plastic, and Lamp Oil at certain temperatures
+    + Cells break down Oil into Methane
+    + Propane Ice (Hidden)
+    ~ Copper no longer oxidizes in Water
+    + Soap recipe
+    + Potassium Salt recipe
+    + Glue can be made from Bones
+    + Acid reacts with Zinc and Sugar
+    + Blue and Rose Gold can break
+    ~ Recolored Electrum for consistency with other Golds
+    ~ Anesthesia requires heat for production
+    ~ AlGa reaction creates proper amounts
+    ~ Aluminum flame color
+    ~ Foam deletes when frozen
+    + Caustic Potash (Hidden)
+   [Life]
+    + Evergreen breaks into Sap
+    + Sap is flammable
+    + Flowers have more color variety (Light & dark)
+    ~ Spawned Petals are multicolor again
+    + Pollen requires soil to germinate
+    + Pollen will sometimes fail to germinate
+    ~ Bees drop Pollen less often if plants are nearby
+    ~ Bees lose their Pollen when dropping it
+    + Bees warm Hive to at least 33°C
+    + Ant Walls can be damaged by Fire
+    + Rats can eat Worms, Ants, Frogs, Snails, and Slugs
+    + Worms, Fish, and Grass die in Alcohol
+    ~ Fish Eggs are colored black
+    ~ Fish no longer eat Meat
+    ~ Snails and Slugs no longer die in Salt Water
+    ~ Snails consume Limestone slower
+    + Humans eat Pickles and Sauce
+    ~ Humans won't rot while being defibrillated
+    + Cancer kills Grass
+    ~ Ocean worldgen uses Salt Water
+   [Cooking]
+    ~ Mixing Dough and Batter changes color without deleting ingredients
+    + Yeast, Cream, Baking Soda, and Quicklime help Dough and Batter rise
+    + Deep-fried color when cooking Dough or Batter in hot Nut Oil, Butter, or Grease
+    + Cooking Nut Meat makes some Nut Oil
+    + Dough can be made with Vinegar
+    + Cheese can be made with Yogurt
+    + Yeast can ferment Milk into Cheese
+    + Honey, Caramel, and Molasses can sweeten Water
+    + Mixing Honey and Sugar Water creates Wax
+    + Coffee Pumpkin Spice color variant
+    ~ Tea and Coffee spawn warm
+    ~ Moved Cream slightly
+    ~ Moved Rad Cloud and Rad Steam slightly
+    + Fat (Hidden)
+   [Other]
+    + Save menu includes Author and Description inputs
+    + Save menu remembers your name for later
+    + Save menu autofills info from current save
+    + Some elements will forcefully save with color
+    ~ Settings don't save when in a loaded save
+    + Image tool works with Replace Mode
+    + Image tool replaces pixels when holding Shift
+    + Hidden count goes down in real time when unlocking
+    + Clay Soil heats up into Brick
+    + Clay and Dirt or Gravel makes Clay Soil
+    + Clay freezes into Clay Soil
+    + Nitro and Clay or TNT makes Dynamite
+    ~ Dynamite must be broken or shocked to explode
+    ~ Gunpowder is less powerful than Dynamite
+    + Bubbles pop when broken
+    + Soap removes Glue
+    ~ Soap reactions are less instant
+    + Mercury dirties Seltzer
+    + Uranium dirties Slush
+    + Uranium slowly melts Snow
+    + Ozone pops Balloons
+    + Greek Fire ignites on contact with Plasma
+    + Bless removes Liquid Stench
+    + Virus-infected pixels can be restored with Soap or Bless
+    + Virus ignores Plasma
+    + Malware can interrupt Virus restoration
+    ~ Virus optimizations
+    + Vertical and Horizontal can swap when given opposite energies
+    + Heat Ray and God Ray have densities
+    + Pyrite, Electrum, and Yogurt aliases
+    ~ Hid Clay Shard
+    ~ Moved Ball to Special
+    ~ Updated Cheerful Mode description
+    - Removed Sticky Bomb, Cluster Bomb, Electro Bomb, and Water Bomb
+        - Instead available in new classic_explosives.js mod
+   [Bug Fixes]
+    ~ Fixed: Repairing with Glue duplicates material
+    ~ Fixed: Painted Plant turns Light green
+    ~ Fixed: Molten Sodium and Sodium Gas burn with too much Fire
+    ~ Fixed: Melted and Rotten Cheese densities inconsistent
+    ~ Fixed: Molasses boils into Sugar which immediately burns
+    ~ Fixed: Single Dirty Water pixel turns infinite Snow to Slush
+    ~ Fixed: Rad Steam doesn't form Rad Cloud when touching Cloud
+    ~ Fixed: TPS accepts negative values
+    ~ Fixed: Hive is draggable
+    ~ Fixed: Nut Milk can't be mixed into Batter/Dough
+   [Technical]
+    + Shift-Picking a pixel copies its properties
+    + Z key swaps to secondary element
+    + Backspace swaps to previous element
+    + Prop tool supports NaN and lowercase Infinity values
+    ~ Unhid Prop
+    + 'extinguish' element property (true/false)
+    + 'forceSaveColor' element property (true/false)
+    ~ Custom element names and spaces are normalized in buttons
+
 [Version 1.9.2 - January 9, 2024 - New Year New Use]
     + Purple Gold, made from Gold + Aluminum
     + Blue Gold, made from Gold + Gallium
@@ -835,7 +963,7 @@ A fancier version of this changelog can be found here: https://sandboxels.R74n.c
     ~ Snow more resilient to heat
     ~ Tweaked Ice color
     ~ Improved world gen for: Flower Field, Wheat Field, Forest, Jungle, Ocean
-    ~ Dyanmite must now be triggered to explode
+    ~ Dynamite must now be triggered to explode
     ~ Plague now dissipates over time
     ~ Plague now dies at high temperatures
     + Snails and Slugs can now eat Dead Plant

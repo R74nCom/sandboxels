@@ -1527,6 +1527,8 @@ elements.invisiblewall = {
 		}
 	},
 	category: "solids",
+    movable: false,
+    noMix: true,
 },
 elements.bismuth = {
     color: ["#818181","#989898","#b0b0b0","#c9c9c9"],
@@ -2004,3 +2006,37 @@ elements.dyer = {
         }
     }
 }
+elemfillerVar = 0;
+elements.element_filler = {
+    category: "special",
+    color: elements.filler.color,
+    state: "solid",
+    movable: "false",
+    onSelect: function() {
+        var answer6 = prompt("Please input the desired element of this filler. It will not work if you do multiple filter types while paused.",(elemfillerVar||undefined));
+        if (!answer6) { return }
+		elemfillerVar = mostSimilarElement(answer6);
+    },
+    tick: function(pixel){
+        var neighbors = 0;
+        if(!pixel.changeElem){
+            pixel.changeElem = elemfillerVar;
+        }
+		for (var i = 0; i < squareCoords.length; i++) {
+            var coord = squareCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (!isEmpty(x,y, true)) {
+				neighbors = neighbors + 1;
+			} else if (isEmpty(x, y)){
+                createPixel("element_filler", x, y)
+                pixelMap[x][y].changeElem = pixel.changeElem;
+            } else (
+                changePixel(pixel, pixel.changeElem)
+            )
+        }
+        if (neighbors >= 8){
+            changePixel(pixel, pixel.changeElem)
+        }
+    }
+} 

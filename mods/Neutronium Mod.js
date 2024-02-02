@@ -1139,6 +1139,7 @@ tempHigh: 1131,
 stateHigh: "molten_uranium238",
 density: 20,
 };
+/* Removed:
 elements.butter = {
 color: "#fcf1b1",
 category: "food",
@@ -1215,6 +1216,7 @@ state: "solid",
 behavior: behaviors.POWDER,
 density: 500,
 };
+*/
 /* Unfinished:
 magnesium
 hematite mixture
