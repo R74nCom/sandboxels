@@ -15623,7 +15623,7 @@ window.onload = function() {
                 <span class='infoLink noselect' id="infoBackButton" onclick='infoBack()' style='text-decoration:none!important;display:none'>←&nbsp;</span><span class="menuTitle" id="infoTitle">Title</span>
                 <div class="menuText" id="infoText">Text</div>
             </div>
-            <input type="text" id="infoSearch" placeholder="Element..." oninput="showInfo(this.value);"></input>
+            <input type="text" id="infoSearch" placeholder="Element..." oninput="showInfo(this.value);" enterkeyhint="done"></input>
         </div>
     
         <!--Mod Manager Page with the list of current mods and a url input box with a plus button to add it-->
@@ -15651,7 +15651,7 @@ window.onload = function() {
                 See the <a href="mod-list" target="_blank">Mod List</a> or <a href="https://github.com/R74nCom/sandboxels/" target="_blank">GitHub</a>.
                 <br><br><br><br>
             </div>
-            <input type="text" id="modManagerUrl" placeholder=".JS URL..." onkeydown="if (event.keyCode == 13) {addMod(this.value);this.value = '';};this.focus();"></input>
+            <input type="text" id="modManagerUrl" placeholder=".JS URL..." onkeydown="if (event.keyCode == 13) {addMod(this.value);this.value = '';};this.focus();" enterkeyhint="done"></input>
             <!-- <button id="modManagerAdd" onclick="addMod(document.getElementById('modManagerUrl').value); document.getElementById('modManagerUrl').value = '';">+</button> -->
         </div>
 
@@ -15681,7 +15681,7 @@ window.onload = function() {
                     </span>
                     <span id="saveWarning"></span>
                     <span class="setting-span">By: <input type="text" id="saveAuthor" placeholder="Your Name..."></span>
-                    <span class="setting-span">About: <input type="text" id="saveDesc" placeholder="Short Description..."></span>
+                    <span class="setting-span">About: <input type="text" id="saveDesc" placeholder="Short Description..." enterkeyhint="done"></span>
                 </div>
                 <span id="saveConfirm" onclick="confirmSave();">Save</span>
             </div>
