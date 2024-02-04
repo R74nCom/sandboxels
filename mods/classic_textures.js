@@ -146,3 +146,5 @@ if (elements.molten_solder) {delete elements.molten_solder.color;}
 if (elements.gold_coin) {elements.gold_coin.color = ["#fff0b5","#986a1a","#f0bb62"];}
 if (elements.rocket) {elements.rocket.color = "#ff0000";}
 if (elements.rose_gold) {elements.rose_gold.color = ["#b76e79","#a1334d","#f06283"];}
+if (elements.calcium) {elements.calcium.color = ["#515053","#7a787d","#748193","#fef9ff","#748193","#7a787d","#515053"];}
+if (elements.electrum) {elements.electrum.color = ["#ffdd63","#ad9532","#bda853","#bdb38e","#fff5d1"];}
