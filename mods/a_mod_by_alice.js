@@ -42396,6 +42396,27 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hidden: true,
 		};
 
+		elements.hanging_bulb = {
+			color: "#a8a897",
+			behavior: [
+				"XX|SP|XX",
+				"XX|XX|XX",
+				"M2|M1|M2"
+			],
+			behaviorOn: [
+				"XX|SP|XX",
+				"CR:light|XX|CR:light",
+				"M2|CR:light AND M1|M2"
+			],
+			colorOn: "#ebebc3",
+			category: "machines",
+			tempHigh: 1500,
+			stateHigh: ["molten_glass","molten_glass","molten_copper"],
+			conduct: 1,
+			breakInto: "glass_shard",
+			hidden: true,
+		};
+
 		elements.support_plastic = {
 			color: "#c5dede",
 			behavior: behaviors.SUPPORT,
@@ -42485,15 +42506,56 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.steel.movable = false;
 
 		elements.support_steel = {
-			color: "#71797E",
+			color: elements.steel.color,
 			behavior: behaviors.SUPPORT,
-			tempHigh: 1455.5,
+			tempHigh: elements.steel.tempHigh,
 			stateHigh: "molten_steel",
 			category: "solids",
-			density: 7850,
-			conduct: 0.42,
-			hardness: 0.8,
+			density: elements.steel.density,
+			conduct: elements.steel.conduct,
+			hardness: elements.steel.hardness,
 		};
+
+		elements.support_aluminum = {
+			color: elements.aluminum.color,
+			behavior: behaviors.SUPPORT,
+			tempHigh: elements.aluminum.tempHigh,
+			stateHigh: "molten_aluminum",
+			category: "solids",
+			density: elements.aluminum.density,
+			conduct: elements.aluminum.conduct,
+			hardness: elements.aluminum.hardness,
+		};
+		
+		elements.support_copper = {
+			color: elements.copper.color,
+			behavior: behaviors.SUPPORT,
+			tempHigh: elements.copper.tempHigh,
+			stateHigh: "molten_copper",
+			category: "solids",
+			density: elements.copper.density,
+			conduct: elements.copper.conduct,
+			hardness: elements.copper.hardness,
+		};
+		
+		runAfterAutogen(function() {
+			for(var name in elements) {
+				var rxns = elements[name].reactions;
+				if(!rxns) { continue };
+				if(typeof(rxns) == "object" && typeof(rxns["steel"]) === "object") {
+					rxns.support_steel = rxns.steel
+				};
+				if(typeof(rxns) == "object" && typeof(rxns["aluminum"]) === "object") {
+					rxns.support_aluminum = rxns.aluminum
+				}
+				if(typeof(rxns) == "object" && typeof(rxns["copper"]) === "object") {
+					rxns.support_copper = rxns.copper
+				}
+			};
+			elements.support_steel.reactions = elements.steel.reactions;
+			elements.support_aluminum.reactions = elements.aluminum.reactions;
+			elements.support_copper.reactions = elements.copper.reactions;
+		});
 
 		var newAcidIgnores = ["glass_pane", "rad_glass_pane", "rad_glass_shard", "hanging_plastic"];
 		for(i = 0; i < newAcidIgnores.length; i++) {
