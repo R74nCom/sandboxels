@@ -738,7 +738,7 @@ try {
 				};
 			};
 
-			function rgbObjectToString(color) {
+			function rgbObjectToString(color,stripAlpha=false) {
 				if(typeof(color) !== "object") {
 					throw new Error("Input color is not an object");
 				};
@@ -757,15 +757,20 @@ try {
 				return `rgb(${red},${green},${blue})`
 			};
 
-			function convertColorFormats(color,outputType="rgb") { //Hex triplet and object to rgb(), while rgb() is untouched
+			function convertColorFormats(color,outputType="rgb",stripAlpha=false) {
 				if(typeof(color) === "undefined") {
 					//console.log("Warning: An element has an undefined color. Unfortunately, due to how the code is structured, I can't say which one.");
 					//color = "#FF00FF";
 					throw new Error("Color is undefined!");
 				};
 				//console.log("Logged color for convertColorFormats: " + color);
+				var oldColor = color;
+				var bytes,r,g,b,a;
 				if(typeof(color) === "string") {
-					if(typeof(color) === "string" && color.length < 10) {
+					//Hex input case
+					
+					if(color.length < 10) {
+						//a proper hex quadruplet is still shorter than the shortest proper rgb() string
 						//console.log(`detected as hex: ${color}`);
 							//catch missing octothorpes
 							if(!color.startsWith("#")) {
@@ -773,71 +778,112 @@ try {
 							};
 						//console.log(`octothorpe checked: ${color}`);
 
-						var oldColor = color;
-						color = hexToRGB(color);
-						if(color === null) {
-							throw new Error(`hexToRGB(color) was null (${oldColor}, maybe it's an invalid hex triplet?)`);
-						};
-
-						switch(outputType.toLowerCase()) {
-							case "rgb":
-								return `rgb(${color.r},${color.g},${color.b})`;
-								break;
-							case "hex":
-								return rgbToHex(color);
-								break;
-							case "json":
-								return color;
-								break;
-							case "array":
-								return [color.r, color.g, color.b];
-								break;
-							default:
-								throw new Error("outputType must be \"rgb\", \"hex\", \"json\", or \"array\"");
-						};
-					} else {
-						if(typeof(color) === "string" && color.startsWith("rgb(")) {
-							//console.log(`convertColorFormats: calling rgbStringToObject on color ${color}`);
-							color = rgbStringToObject(color,true,false);
-							switch(outputType.toLowerCase()) {
-								case "rgb":
-									if(typeof(color) === "string") { color = rgbStringToObject(color) };
-									return `rgb(${color.r},${color.g},${color.b})`;
-									break;
-								case "hex":
-									return rgbToHex(color);
-									break;
-								case "json":
-									return color;
-									break;
-								case "array":
-									return [color.r, color.g, color.b];
-									break;
-								default:
-									throw new Error("outputType must be \"rgb\", \"hex\", \"json\", or \"array\"");
-							};
+						if(oldColor.length < 6) {
+							bytes = oldColor.toLowerCase().match(/[a-z0-9]/g).map(x => parseInt(x.concat(x),16));
 						} else {
-							throw new Error('Color must be of the type "rgb(red,green,blue)"');
+							bytes = oldColor.toLowerCase().match(/[a-z0-9]{2}/g).map(x => parseInt(x,16));
 						};
+						r = bytes[0];
+						g = bytes[1];
+						b = bytes[2];
+						if(bytes.length > 3) {
+							a = bytes[3] / 255;
+						} else {
+							a = null
+						};
+						if(stripAlpha) { a = null };
+						//to JSON for ease of use
+						color = {"r": r, "g": g, "b": b};
+						if(typeof(a) == "number") { color["a"] = a };
+					} else {					
+						//otherwise assume rgb() input
+						bytes = color.match(/[\d\.]+/g).map(x => Number(x));
+						r = bytes[0];
+						g = bytes[1];
+						b = bytes[2];
+						if(bytes.length > 3) {
+							a = bytes[3];
+							if(a > 1) {
+								a /= 255
+							}
+						} else {
+							a = null
+						};
+						if(stripAlpha) { a = null };
+						//to JSON for ease of use
+						color = {"r": r, "g": g, "b": b}
+						if(typeof(a) == "number") { color["a"] = a };
 					};
-				} else if(typeof(color) === "object") {
-					switch(outputType.toLowerCase()) {
-						case "rgb":
-							return `rgb(${color.r},${color.g},${color.b})`;
-							break;
-						case "hex":
-							return rgbToHex(color);
-							break;
-						case "json":
-							return color;
-							break;
-						case "array":
-							return [color.r, color.g, color.b];
-							break;
-						default:
-							throw new Error("outputType must be \"rgb\", \"hex\", \"json\", or \"array\"");
+				} else if(Array.isArray(color)) {
+					bytes = color;
+					r = bytes[0];
+					g = bytes[1];
+					b = bytes[2];
+					if(bytes.length > 3) {
+						a = bytes[3];
+						if(a > 1) {
+							a /= 255
+						}						
+					} else {
+						a = null
 					};
+					if(stripAlpha) { a = null };
+					//to JSON for ease of use
+					color = {"r": r, "g": g, "b": b}
+					if(typeof(a) == "number") { color["a"] = a };
+				} else if(typeof(color) == "object") {
+					//variable mappings only
+					r = color.r;
+					g = color.g;
+					b = color.b;
+					if(typeof(color.a) == "number") {
+						a = color.a;
+					} else {
+						a = null
+					};
+					if(stripAlpha) { a = null }
 				};
+				//Colors are now objects
+
+				switch(outputType.toLowerCase()) {
+					case "rgb":
+					case "rgba":
+						var _r,_g,_b,_a;
+						_r = r;
+						_g = g;
+						_b = b;
+						if(typeof(a) == "number") { _a = a } else { _a = null };
+						var values;
+						if(stripAlpha || _a == null) {
+							values = [_r,_g,_b];
+						} else {
+							values = [_r,_g,_b,_a];
+						};
+						for(var i = 0; i <= 2; i++) {
+							values[i] = Math.round(values[i])
+						};
+						return (typeof(a) == "number" ? "rgba" : "rgb") + `(${values.join(",")})`
+					case "hex":
+						var _r,_g,_b,_a;
+						_r = r;
+						_g = g;
+						_b = b;
+						if(typeof(a) == "number") { _a = Math.round(a * 255) } else { _a = null };
+						var bytesToBe;
+						if(stripAlpha || _a == null) {
+							bytesToBe = [_r,_g,_b];
+						} else {
+							bytesToBe = [_r,_g,_b,_a];
+						};
+						return "#" + bytesToBe.map(x => Math.round(x).toString(16).padStart(2,"0")).join("");
+					case "json":
+						return color;
+					case "array":
+						return Object.values(color);
+						break;
+					default:
+						throw new Error("outputType must be \"rgb\", \"hex\", \"json\", or \"array\"");
+				}
 			};
 
 			function rgbHexCatcher(color) {
@@ -3696,7 +3742,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 	//MORE CONFIGURABLE REACTION TEMPERATURE CHANGES ##
 
 		function reactPixels(pixel1,pixel2) {
-			var r = elements[pixel1.element].reactions[pixel2.element];
+			var r = elements[pixel1?.element]?.reactions?.[pixel2?.element];
 			if(!r) { return false };
 			if (r.setting && !(settings[r.setting])) {
 				return false;
@@ -29758,6 +29804,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 			},
 			category: "machines",
 			state: "solid",
+			breakInto: ["radiation","laser","iridium","essence","ionized_deuterium","electron","magic","steel","pop","unstable_mistake","explosion","magic","steel","proton","electron","radiation","laser","iridium"],
+			hardness: 0.999
 		},
 
 		elements.portal_out = {
@@ -29770,6 +29818,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "machines",
 			state: "solid",
 			insulate: true,
+			breakInto: ["radiation","laser","iridium","essence","ionized_deuterium","electron","magic","steel","pop","unstable_mistake","explosion","magic","steel","proton","electron","radiation","laser","iridium"],
+			hardness: 0.999
 		}
 
 	//MOBS ##
@@ -36139,7 +36189,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 										tryBreak(newPixel,true,j == 0);
 										if(!newPixel) { break }
 									};
-									//water reaction steal
+									//lava reaction steal
 									if(data.reactions?.magma) {
 										var magmaRxn = data.reactions.magma;
 										var elem2 = magmaRxn.elem2;
@@ -36148,6 +36198,18 @@ Make sure to save your command in a file if you want to add this preset again.`
 										};
 										if(elem2 !== null) {
 											changePixel(newPixel,elem2,true)
+										}
+									} else if(elements.magma.reactions[newPixel.element]) {
+										var magmaRxn2 = elements.magma.reactions?.[newPixel.element];
+										if(!magmaRxn2) {
+										} else {
+											elem2 = magmaRxn2.elem2;
+											while(Array.isArray(elem2)) {
+												elem2 = randomChoice(elem2)
+											};
+											if(elem2 !== null) {
+												changePixel(newPixel,elem2,true)
+											}
 										}
 									};
 									if(!newPixel) { continue };
@@ -36166,6 +36228,102 @@ Make sure to save your command in a file if you want to add this preset again.`
 								};
 							};
 							pixel.fromX += pixel.direction
+					},
+					state: "solid",
+					category: "special",
+					density: elements.magma.density
+				};
+
+				elements.lava_megatsunami = {
+					color: ["#b32b10","#c24d1f","#d66924"],
+					behavior: behaviors.WALL,
+					properties: {
+						active: true,
+					},
+					tick: function(pixel) {
+						//Iteration initial checks
+							if(!pixel) {
+								return;
+							};
+							if(!pixel.active) {
+								deletePixel(pixel.x,pixel.y);
+							};
+						
+						//Initial property-setting
+							var pixelIsOnLeft = (pixel.x < (width/2));
+							pixel.fromX ??= pixelIsOnLeft ? 1 : width - 1;
+							pixel.direction ??= pixelIsOnLeft ? 1 : -1;
+
+							var floorHeight = pixel.y + 1;
+							while(isEmpty(pixel.x,floorHeight,false)) {
+								floorHeight++
+							};
+							pixel.floorHeight ??= floorHeight;
+
+						//Actual doer code
+							var bottomY = (pixel.floorHeight + 9); //extend 10 pixels below
+							var topY = bottomY - 43; //topY < bottomY because in this game +Y is *downward*
+							for(var h = 0; h < 2; h++) {
+								var newX = pixel.fromX + pixel.direction;
+
+								if(outOfBounds(newX,1)) {
+									pixel.active = false;
+									return
+								};
+
+								for(var i = bottomY; i >= topY; i--) {
+									var fc = {x: newX, y: i};
+									if(outOfBounds(fc.x,fc.y)) {continue};
+									if(isEmpty(fc.x,fc.y,false)) {
+										//fill with lava
+										createPixelReturn("magma",fc.x,fc.y).temp = 1450;
+									} else {
+										var newPixel = pixelMap[fc.x]?.[fc.y];
+										if(!newPixel) { continue };
+										var data = elements[newPixel.element];
+										//break
+										for(var j = 0; j < 3; j++) {
+											tryBreak(newPixel,true,j == 0);
+											if(!newPixel) { break }
+										};
+										if(!newPixel) { continue };
+										//lave reaction steal
+										if(data.reactions?.magma) {
+											var magmaRxn = data.reactions.magma;
+											var elem2 = magmaRxn.elem2;
+											while(Array.isArray(elem2)) {
+												elem2 = randomChoice(elem2)
+											};
+											if(elem2 !== null) {
+												changePixel(newPixel,elem2,true)
+											}
+										} else if(elements.magma.reactions[newPixel.element]) {
+											var magmaRxn2 = elements.magma.reactions[newPixel.element];
+											elem2 = magmaRxn2.elem2;
+											while(Array.isArray(elem2)) {
+												elem2 = randomChoice(elem2)
+											};
+											if(elem2 !== null) {
+												changePixel(newPixel,elem2,true)
+											}
+										};
+										if(!newPixel) { continue };
+										newPixel.temp = Math.max(newPixel.temp,1450); pixelTempCheck(newPixel);
+										if(!newPixel) { continue };
+										if(newPixel.element == "fire") { changePixelReturn(newPixel,"magma",true).temp = 1400 };
+										if(data.burn) { newPixel.burning = true; newPixel.burnStart = pixelTicks };
+										if(Math.random() < 0.1 && newPixel.burnInto) { finishBurn(newPixel) };
+										if(newPixel.element == "fire") { changePixelReturn(newPixel,"magma",true).temp = 1400 };
+										if(!newPixel) { continue };
+										//add velocity;
+										newPixel.vx ??= 0;
+										newPixel.vy ??= 0;
+										newPixel.vx += (pixel.direction * 8)
+										newPixel.vy += 5;
+									};
+								};
+								pixel.fromX += pixel.direction
+							};
 					},
 					state: "solid",
 					category: "special",
@@ -42375,6 +42533,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hidden: true,
 		};
 
+		elements.paper.behavior = behaviors.SUPPORT;
+
 		elements.support_glass = JSON.parse(JSON.stringify(elements.glass));
 		elements.support_glass.stateHigh = "molten_glass";
 		elements.support_glass.behavior = behaviors.SUPPORT;
@@ -43834,7 +43994,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				pixel._correspondingWifi = currentPixels.filter(function(pixelToCheck) {
 					return (
 						pixelToCheck !== pixel && //should work if this pixel is the same as the other one by reference
-						["wifi","receiver"].includes(pixelToCheck.element) &&
+						["wifi","receiver","support_receiver"].includes(pixelToCheck.element) &&
 						pixelToCheck._channel == pixelChannel
 					);
 				},pixelChannel=pixel._channel).map(pixel => [pixel.x,pixel.y]);
@@ -43901,8 +44061,43 @@ Make sure to save your command in a file if you want to add this preset again.`
 			},
 			category: "machines",
 			state: "solid",
-		}
+		};
 
+		elements.support_receiver = {
+			color: "#bfff00",
+			behavior: behaviors.SUPPORT,
+			properties: {
+				_channel: 0
+			},
+			hardness: 0.8,
+			breakInto: ["plastic","steel","copper"],
+			conduct: 1,
+			insulate: true,
+			tick: function(pixel) {
+				pixel._channel = Math.floor(pixel.temp / 100);
+
+				var colorBase = (pixel._channel + 3);
+				if(colorBase < 0 || colorBase > 124) {
+					pixel.color = "rgb(212,185,222)";
+				} else {
+					colorBase = colorBase.toString(5).padStart(3,"0").split("").map(x => parseInt(x) * 64);
+					pixel.color = `rgb(${colorBase.join(",")})`
+				};
+
+				if(typeof(pixel.chargeCD) !== "undefined") {
+					pixel.chargeCD = Math.min(pixel.chargeCD,5);
+					pixel.chargeCD--;
+					if(pixel.chargeCD <= 0) { delete pixel.chargeCD };
+				};
+				if(pixel.charge) {
+					pixel.charge -= 0.25;
+					if(pixel.charge <= 0) { delete pixel.charge };
+				};
+			},
+			category: "machines",
+			state: "solid",
+		};
+		
 	// SPINEL'S INJECTOR ##
 
 		var injectorPoisonCategories = ["life","auto creepers","shit","cum","food","fantastic creatures","fey","auto_fey"];
