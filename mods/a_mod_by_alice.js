@@ -738,7 +738,7 @@ try {
 				};
 			};
 
-			function rgbObjectToString(color) {
+			function rgbObjectToString(color,stripAlpha=false) {
 				if(typeof(color) !== "object") {
 					throw new Error("Input color is not an object");
 				};
@@ -757,15 +757,20 @@ try {
 				return `rgb(${red},${green},${blue})`
 			};
 
-			function convertColorFormats(color,outputType="rgb") { //Hex triplet and object to rgb(), while rgb() is untouched
+			function convertColorFormats(color,outputType="rgb",stripAlpha=false) {
 				if(typeof(color) === "undefined") {
 					//console.log("Warning: An element has an undefined color. Unfortunately, due to how the code is structured, I can't say which one.");
 					//color = "#FF00FF";
 					throw new Error("Color is undefined!");
 				};
 				//console.log("Logged color for convertColorFormats: " + color);
+				var oldColor = color;
+				var bytes,r,g,b,a;
 				if(typeof(color) === "string") {
-					if(typeof(color) === "string" && color.length < 10) {
+					//Hex input case
+					
+					if(color.length < 10) {
+						//a proper hex quadruplet is still shorter than the shortest proper rgb() string
 						//console.log(`detected as hex: ${color}`);
 							//catch missing octothorpes
 							if(!color.startsWith("#")) {
@@ -773,71 +778,118 @@ try {
 							};
 						//console.log(`octothorpe checked: ${color}`);
 
-						var oldColor = color;
-						color = hexToRGB(color);
-						if(color === null) {
-							throw new Error(`hexToRGB(color) was null (${oldColor}, maybe it's an invalid hex triplet?)`);
-						};
-
-						switch(outputType.toLowerCase()) {
-							case "rgb":
-								return `rgb(${color.r},${color.g},${color.b})`;
-								break;
-							case "hex":
-								return rgbToHex(color);
-								break;
-							case "json":
-								return color;
-								break;
-							case "array":
-								return [color.r, color.g, color.b];
-								break;
-							default:
-								throw new Error("outputType must be \"rgb\", \"hex\", \"json\", or \"array\"");
-						};
-					} else {
-						if(typeof(color) === "string" && color.startsWith("rgb(")) {
-							//console.log(`convertColorFormats: calling rgbStringToObject on color ${color}`);
-							color = rgbStringToObject(color,true,false);
-							switch(outputType.toLowerCase()) {
-								case "rgb":
-									if(typeof(color) === "string") { color = rgbStringToObject(color) };
-									return `rgb(${color.r},${color.g},${color.b})`;
-									break;
-								case "hex":
-									return rgbToHex(color);
-									break;
-								case "json":
-									return color;
-									break;
-								case "array":
-									return [color.r, color.g, color.b];
-									break;
-								default:
-									throw new Error("outputType must be \"rgb\", \"hex\", \"json\", or \"array\"");
-							};
+						if(oldColor.length < 6) {
+							bytes = oldColor.toLowerCase().match(/[a-z0-9]/g).map(x => parseInt(x.concat(x),16));
 						} else {
-							throw new Error('Color must be of the type "rgb(red,green,blue)"');
+							bytes = oldColor.toLowerCase().match(/[a-z0-9]{2}/g).map(x => parseInt(x,16));
 						};
+						r = bytes[0];
+						g = bytes[1];
+						b = bytes[2];
+						if(bytes.length > 3) {
+							a = bytes[3] / 255;
+						} else {
+							a = null
+						};
+						if(stripAlpha) { a = null };
+						//to JSON for ease of use
+						color = {"r": r, "g": g, "b": b};
+						if(typeof(a) == "number") { color["a"] = a };
+					} else {					
+						//otherwise assume rgb() input
+						bytes = color.match(/[\d\.]+/g);
+						if(typeof(bytes?.map) == "undefined") {
+							console.log(bytes);
+							bytes = [255,0,255]
+						} else {
+							bytes = bytes.map(x => Number(x));
+						};
+						r = bytes[0];
+						g = bytes[1];
+						b = bytes[2];
+						if(bytes.length > 3) {
+							a = bytes[3];
+							if(a > 1) {
+								a /= 255
+							}
+						} else {
+							a = null
+						};
+						if(stripAlpha) { a = null };
+						//to JSON for ease of use
+						color = {"r": r, "g": g, "b": b}
+						if(typeof(a) == "number") { color["a"] = a };
 					};
-				} else if(typeof(color) === "object") {
-					switch(outputType.toLowerCase()) {
-						case "rgb":
-							return `rgb(${color.r},${color.g},${color.b})`;
-							break;
-						case "hex":
-							return rgbToHex(color);
-							break;
-						case "json":
-							return color;
-							break;
-						case "array":
-							return [color.r, color.g, color.b];
-							break;
-						default:
-							throw new Error("outputType must be \"rgb\", \"hex\", \"json\", or \"array\"");
+				} else if(Array.isArray(color)) {
+					bytes = color;
+					r = bytes[0];
+					g = bytes[1];
+					b = bytes[2];
+					if(bytes.length > 3) {
+						a = bytes[3];
+						if(a > 1) {
+							a /= 255
+						}						
+					} else {
+						a = null
 					};
+					if(stripAlpha) { a = null };
+					//to JSON for ease of use
+					color = {"r": r, "g": g, "b": b}
+					if(typeof(a) == "number") { color["a"] = a };
+				} else if(typeof(color) == "object") {
+					//variable mappings only
+					r = color.r;
+					g = color.g;
+					b = color.b;
+					if(typeof(color.a) == "number") {
+						a = color.a;
+					} else {
+						a = null
+					};
+					if(stripAlpha) { a = null }
 				};
+				//Colors are now objects
+
+				switch(outputType.toLowerCase()) {
+					case "rgb":
+					case "rgba":
+						var _r,_g,_b,_a;
+						_r = r;
+						_g = g;
+						_b = b;
+						if(typeof(a) == "number") { _a = a } else { _a = null };
+						var values;
+						if(stripAlpha || _a == null) {
+							values = [_r,_g,_b];
+						} else {
+							values = [_r,_g,_b,_a];
+						};
+						for(var i = 0; i <= 2; i++) {
+							values[i] = Math.round(values[i])
+						};
+						return (typeof(a) == "number" ? "rgba" : "rgb") + `(${values.join(",")})`
+					case "hex":
+						var _r,_g,_b,_a;
+						_r = r;
+						_g = g;
+						_b = b;
+						if(typeof(a) == "number") { _a = Math.round(a * 255) } else { _a = null };
+						var bytesToBe;
+						if(stripAlpha || _a == null) {
+							bytesToBe = [_r,_g,_b];
+						} else {
+							bytesToBe = [_r,_g,_b,_a];
+						};
+						return "#" + bytesToBe.map(x => Math.round(x).toString(16).padStart(2,"0")).join("");
+					case "json":
+						return color;
+					case "array":
+						return Object.values(color);
+						break;
+					default:
+						throw new Error("outputType must be \"rgb\", \"hex\", \"json\", or \"array\"");
+				}
 			};
 
 			function rgbHexCatcher(color) {
@@ -2590,6 +2642,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 								rgbos.push("rgb(255,255,255)")
 							} else if (c.startsWith("#")) {
 								var rgb = hexToRGB(c);
+								if(rgb == null) { console.log(key,c); rgb = {r: 255, g: 255, b: 255} };
 								rgbs.push("rgb("+rgb.r+","+rgb.g+","+rgb.b+")");
 								rgbos.push(rgb);
 							}
@@ -2622,7 +2675,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			if (!(newcolor instanceof Array)) { newcolor = [newcolor]; }
 			// for every color in the newcolor array, add a new color with the same value, but with the r and g values increased
 			for (var i = 0; i < newcolor.length; i++) {
-				var c = newcolor[i];
+				var c = newcolor[i] ?? "#ff00ff";
 				for (var j = 0; j < autoInfo.rgb.length; j++) {
 					var newc = autoInfo.rgb[j];
 					r = Math.floor(c.r * newc[0]);
@@ -3553,22 +3606,24 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 
 		velocityBlacklist = [];
 
-		function explodeAtPlus(x,y,radius,fire="fire",smoke="smoke",beforeFunction=null,afterFunction=null,changeTemp=true) {
+		function explodeAtPlus(x,y,radius,firee="fire",smokee="smoke",beforeFunction=null,afterFunction=null,changeTemp=true) {
 			// if fire contains , split it into an array
-			if(fire !== null) {
-				if (fire.indexOf(",") !== -1) {
-					fire = fire.split(",");
+			if(firee !== null) {
+				if (firee.indexOf(",") !== -1) {
+					firee = firee.split(",");
 				};
 			};
-			if(smoke !== null) {
-				if (smoke.indexOf(",") !== -1) {
-					smoke = smoke.split(",");
+			if(smokee !== null) {
+				if (smokee.indexOf(",") !== -1) {
+					smokee = smokee.split(",");
 				};
 			};
 			var coords = circleCoords(x,y,radius);
 			var power = radius/10;
 			//for (var p = 0; p < Math.round(radius/10+1); p++) {
 			for (var i = 0; i < coords.length; i++) {
+				var fire = firee;
+				var smoke = smokee;
 				// damage value is based on distance from x and y
 				var damage = Math.random() + (Math.floor(Math.sqrt(Math.pow(coords[i].x-x,2) + Math.pow(coords[i].y-y,2)))) / radius;
 				// invert
@@ -3581,24 +3636,17 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					else if (damage < 0.2) {
 						// if smoke is an array, choose a random item
 						if(smoke !== null) {
-							if (Array.isArray(smoke)) {
-								createPixel(smoke[Math.floor(Math.random() * smoke.length)],coords[i].x,coords[i].y);
-							}
-							else {
-								createPixel(smoke,coords[i].x,coords[i].y);
-							}
+							while (Array.isArray(smoke)) {
+								smoke = randomChoice(smoke);
+							};
+							if(smoke !== null) { createPixel(smoke,coords[i].x,coords[i].y) };
 						}
 					}
 					else {
-						if(fire !== null) {
-							// if fire is an array, choose a random item
-							if (Array.isArray(fire)) {
-								createPixel(fire[Math.floor(Math.random() * fire.length)],coords[i].x,coords[i].y);
-							}
-							else {
-								createPixel(fire,coords[i].x,coords[i].y);
-							}
-						}
+						while (Array.isArray(fire)) {
+							fire = randomChoice(fire);
+						};
+						if(fire !== null) { createPixel(fire,coords[i].x,coords[i].y) };
 					}
 				}
 				else if (!outOfBounds(coords[i].x,coords[i].y)) {
@@ -3619,13 +3667,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					}
 					if (damage > 0.9) {
 						if(fire !== null) {
-							if (Array.isArray(fire)) {
-								var newfire = fire[Math.floor(Math.random() * fire.length)];
-							}
-							else {
-								var newfire = fire;
-							}
-							changePixel(pixel,newfire,changeTemp);
+							while (Array.isArray(fire)) {
+								fire = randomChoice(fire);
+							};
+							if(fire !== null) { changePixel(pixel,fire,changeTemp) };
 						} else {
 							deletePixel(pixel.x,pixel.y);
 						}
@@ -3637,13 +3682,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 							if (info.breakInto !== undefined) {
 								breakPixel(pixel);
 							} else {
-								if (Array.isArray(fire)) {
-									var newfire = fire[Math.floor(Math.random() * fire.length)];
-								}
-								else {
-									var newfire = fire;
-								}
-								changePixel(pixel,newfire);
+								while (Array.isArray(fire)) {
+									fire = randomChoice(fire);
+								};
+								if(fire !== null) { changePixel(pixel,fire,changeTemp) };
 							}
 							if(info.onExplosionBreakOrSurvive) {
 								info.onExplosionBreakOrSurvive(pixel,x,y,radius,fire,smoke,power,damage);
@@ -3652,13 +3694,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						}
 						else {
 							if(fire !== null) {
-								if (Array.isArray(fire)) {
-									var newfire = fire[Math.floor(Math.random() * fire.length)];
-								}
-								else {
-									var newfire = fire;
-								}
-								changePixel(pixel,newfire,changeTemp);
+								while (Array.isArray(fire)) {
+									fire = randomChoice(fire);
+								};
+								if(fire !== null) { changePixel(pixel,fire,changeTemp) };
 							} else {
 								deletePixel(pixel.x,pixel.y);
 							}
@@ -3696,7 +3735,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 	//MORE CONFIGURABLE REACTION TEMPERATURE CHANGES ##
 
 		function reactPixels(pixel1,pixel2) {
-			var r = elements[pixel1.element].reactions[pixel2.element];
+			var r = elements[pixel1?.element]?.reactions?.[pixel2?.element];
 			if(!r) { return false };
 			if (r.setting && !(settings[r.setting])) {
 				return false;
@@ -4177,7 +4216,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						return
 					})
 				};
-
 				doDefaults(pixel);
 			},
 			temp:6000,
@@ -4189,12 +4227,45 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			burnTime: 500,
 			burnTempChange: 8,
 			fireElement: ["bless","plasma"],
-			ignore: ["ash","light","bless","plasma","wall"],
+			ignore: ["ash","light","bless","plasma","fire","smoke","liquid_holy_fire"].concat(searchElements("haseulite")).concat("haseulite_singularity"),
 			state: "gas",
 			density: 0.08,
 			ignoreAir: true
 		};
 		
+		elements.holy_bomb = {
+			color: ["#dbb260", "#94591e"],
+			tick: function(pixel) {
+				if(!isEmpty(pixel.x,pixel.y-1,true)) { //[0][1] EX (ignore bounds)
+					var newPixel = pixelMap[pixel.x][pixel.y-1];
+					var newElement = newPixel.element;
+					var newInfo = elements[newElement];
+					if(newInfo.state !== "gas" && newElement !== pixel.element) {
+						explodeAtPlus(pixel.x,pixel.y,13,"holy_fire","plasma",null,firebombFire);
+					};
+				};
+				if(!isEmpty(pixel.x,pixel.y+1,true)) { //[2][1] EX (don't ignore bounds, non-bound case)
+					var newPixel = pixelMap[pixel.x][pixel.y+1];
+					var newElement = newPixel.element;
+					var newInfo = elements[newElement];
+					if(newInfo.state !== "gas" && newElement !== pixel.element) {
+						explodeAtPlus(pixel.x,pixel.y,13,"holy_fire","plasma",null,firebombFire);
+					};
+				};
+				if(outOfBounds(pixel.x,pixel.y+1)) { //[2][1] EX (don't ignore bounds, bound case)
+					explodeAtPlus(pixel.x,pixel.y,13,"holy_fire","plasma",null,firebombFire);
+				};
+				if(!tryMove(pixel,pixel.x,pixel.y+1)) { //behaviors.POWDER
+					Math.random() < 0.5 ? tryMove(pixel,pixel.x-1,pixel.y+1) : tryMove(pixel,pixel.x+1,pixel.y+1);
+				};
+			},
+			category: "weapons",
+			state: "solid",
+			density: 4000,
+			excludeRandom: true,
+			desc: "A bomb that burns the world to pure ash. <br/>To enable automatic bomb generation, set the generateBombs query parameter.",
+		};
+
 		elements.bless.ignore ??= [];
 		elements.bless.ignore.push("holy_fire");
 
@@ -4278,7 +4349,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			stateLow: ["plasma_explosion","plasma","plasma","plasma","plasma","plasma","plasma","plasma"],
 			burnInto: ["plasma_explosion","plasma","plasma","plasma","plasma","plasma","plasma","plasma"],
 			category: "energy",
-			ignore: ["ash","slag","wall","plasma","fire","smoke"],
+			ignore: ["ash","slag","wall","plasma","fire","smoke","liquid_god_slayer_fire"].concat(searchElements("haseulite")).concat("haseulite_singularity"),
 			burning: true,
 			burnTime: 500,
 			burnTempChange: 10,
@@ -4286,6 +4357,183 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "gas",
 			density: 0.07,
 			ignoreAir: true
+		};
+
+		elements.liquid_holy_fire = {
+			color: ["#FFFF96","#FFBF49","#CE743B"], //placeholder
+			tick: function(pixel) {
+
+				var moveResult = tryMoveAndReturnBlockingPixel(pixel,pixel.x + randomIntegerBetweenTwoValues(-1,1),pixel.y + 1);
+				var blockingPixels = [];
+				var secondMoveResult = null;
+				
+				if(typeof(moveResult) == "object" && !(elements[pixel.element].ignore.concat(pixel.element).includes(moveResult.element))) {
+					blockingPixels.push(moveResult)
+				};
+				
+				//if move1Result = true then nothing else happens
+				
+				if(moveResult !== true) {
+					var coords = [randomSign(),0].map(offsetPair => addArraysInPairs(offsetPair,[pixel.x,pixel.y]));
+					secondMoveResult = tryMoveAndReturnBlockingPixel(pixel,...coords);
+					
+					if(typeof(secondMoveResult) == "object" && !(elements[pixel.element].ignore.concat(pixel.element).includes(secondMoveResult.element))) {
+						blockingPixels.push(secondMoveResult)
+					};
+				};
+
+				if(blockingPixels.length > 0) {
+					blockingPixels.forEach(function(pixel) {
+						var blessRxn = elements.bless.reactions[pixel.element];
+						if(typeof(blessRxn) == "object") { 
+							var elem2 = blessRxn.elem2;
+							if(elem2 !== null) {
+								while(Array.isArray(elem2)) { elem2 = randomChoice(elem2) };
+								changePixel(pixel,elem2)
+							}
+						};
+						var value = Math.random();
+						if(value < 0.01) {
+							if(pixel.burnInto) {
+								finishBurn(pixel)
+							} else {
+								changePixel(pixel,randomChoice(["ash","ash","light"]))
+							}
+						} else if(value < 0.20) {
+							pixel.burning = true;
+							pixel.burnStart ??= pixelTicks;
+						} else if(value < 0.205) {
+							changePixel(pixel,randomChoice(["ash","ash","light"]))
+						} else {
+							pixel.temp += 10; pixelTempCheck(pixel)
+						};
+						return
+					})
+				};
+				doDefaults(pixel);
+			},
+			temp:8000,
+			tempLow:2000,
+			stateLow: "holy_fire",
+			burnInto: ["bless","fire"],
+			category: "energy",
+			burning: true,
+			burnTime: 1000,
+			burnTempChange: 10,
+			fireElement: "holy_fire",
+			ignore: ["light","bless","wall","plasma","fire","smoke","holy_fire"].concat(searchElements("haseulite")).concat("haseulite_singularity"),
+			state: "liquid",
+			density: 270,
+			ignoreAir: true
+		};
+		
+		elements.liquid_god_slayer_fire = {
+			color: ["#FFBACE","#FC6DCA","#9954B0"],
+			tick: function(pixel) {
+
+				var moveResult = tryMoveAndReturnBlockingPixel(pixel,pixel.x + randomIntegerBetweenTwoValues(-1,1),pixel.y + 1);
+				var blockingPixels = [];
+				var secondMoveResult = null;
+				
+				if(typeof(moveResult) == "object" && !(elements[pixel.element].ignore.concat(pixel.element).includes(moveResult.element))) {
+					blockingPixels.push(moveResult)
+				};
+				
+				//if move1Result = true then nothing else happens
+				
+				if(moveResult !== true) {
+					var coords = [randomSign(),0].map(offsetPair => addArraysInPairs(offsetPair,[pixel.x,pixel.y]));
+					secondMoveResult = tryMoveAndReturnBlockingPixel(pixel,...coords);
+					
+					if(typeof(secondMoveResult) == "object" && !(elements[pixel.element].ignore.concat(pixel.element).includes(secondMoveResult.element))) {
+						blockingPixels.push(secondMoveResult)
+					};
+				};
+
+				if(blockingPixels.length > 0) {
+					blockingPixels.forEach(function(pixel) {
+						var value = Math.random();
+						var randomDefaultResult = randomChoice(["ash","slag","plasma"]);
+						var oldTemp = pixel.temp;
+						if(value < 0.03) {
+							if(pixel.stateHigh) {
+								meltPixel(pixel);
+							}
+						} else if(value < 0.06) {
+							if(pixel.burnInto) {
+								finishBurn(pixel);
+							} else {
+								changePixel(pixel,randomDefaultResult)
+							}
+						} else if(value < 0.09) {
+							if(pixel.breakInto) {
+								breakPixel(pixel);
+							} else {
+								changePixel(pixel,randomDefaultResult)
+							}
+						} else if(value < 0.24) {
+							pixel.burning = true;
+							pixel.burnStart ??= pixelTicks;
+						} else if(value < 0.245) {
+							changePixel(pixel,randomDefaultResult)
+						} else {
+							pixel.temp += 25; pixelTempCheck(pixel)
+						};
+						if(pixel) {
+							pixel.temp = Math.max(oldTemp,pixel.temp)
+						};
+						return
+					})
+				};
+
+				doDefaults(pixel);
+			},
+			temp:15000,
+			tempLow:2000,
+			stateLow: ["plasma_explosion","liquid_plasma","liquid_plasma","liquid_plasma","liquid_plasma","liquid_plasma","liquid_plasma","liquid_plasma"],
+			burnInto: "god_slayer_fire",
+			category: "energy",
+			ignore: ["ash","slag","wall","plasma","fire","smoke","god_slayer_fire"].concat(searchElements("haseulite")).concat("haseulite_singularity"),
+			burning: true,
+			burnTime: 1000,
+			burnTempChange: 14,
+			fireElement: "god_slayer_fire",
+			state: "liquid",
+			density: 380,
+			ignoreAir: true
+		};
+
+		elements.god_slayer_bomb = {
+			color: ["#a43dcc", "#49b6d1"],
+			tick: function(pixel) {
+				if(!isEmpty(pixel.x,pixel.y-1,true)) { //[0][1] EX (ignore bounds)
+					var newPixel = pixelMap[pixel.x][pixel.y-1];
+					var newElement = newPixel.element;
+					var newInfo = elements[newElement];
+					if(newInfo.state !== "gas" && newElement !== pixel.element) {
+						explodeAtPlus(pixel.x,pixel.y,40,"god_slayer_fire","plasma");
+					};
+				};
+				if(!isEmpty(pixel.x,pixel.y+1,true)) { //[2][1] EX (don't ignore bounds, non-bound case)
+					var newPixel = pixelMap[pixel.x][pixel.y+1];
+					var newElement = newPixel.element;
+					var newInfo = elements[newElement];
+					if(newInfo.state !== "gas" && newElement !== pixel.element) {
+						explodeAtPlus(pixel.x,pixel.y,40,"god_slayer_fire","plasma");
+					};
+				};
+				if(outOfBounds(pixel.x,pixel.y+1)) { //[2][1] EX (don't ignore bounds, bound case)
+					explodeAtPlus(pixel.x,pixel.y,40,"god_slayer_fire","plasma");
+				};
+				if(!tryMove(pixel,pixel.x,pixel.y+1)) { //behaviors.POWDER
+					Math.random() < 0.5 ? tryMove(pixel,pixel.x-1,pixel.y+1) : tryMove(pixel,pixel.x+1,pixel.y+1);
+				};
+			},
+			category: "weapons",
+			state: "solid",
+			density: 4500,
+			excludeRandom: true,
+			desc: "A bomb that makes gods tremble. <br/>To enable automatic bomb generation, set the generateBombs query parameter.",
 		};
 
 		elements.cloner.burnTime = Infinity;
@@ -4651,7 +4899,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				burnTempChange: 2,
 				fireSpawnChance: 5,
 				state: "liquid",
-				density: 21,
+				density: 200,
 			};
 
 			elements.liquid_cold_fire = {
@@ -4675,7 +4923,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				fireElement: "cold_fire",
 				category: "energy liquids",
 				state: "liquid",
-				density: 42,
+				density: 420,
 			};
 
 			elements.liquid_rad_fire = {
@@ -4742,7 +4990,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				fireSpawnChance: 5,
 				fireElement: "rad_fire",
 				state: "liquid",
-				density: 21,
+				density: 210,
 			};
 
 			elements.radiation.reactions.liquid_fire = { "elem2":"liquid_rad_fire", "chance":0.4 };
@@ -4925,6 +5173,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			none: function(number) { return number }
 		};
 
+		var tickBehaviorStringCache = {
+			POWDER: behaviors.POWDER.toString(),
+			LIQUID: behaviors.LIQUID.toString(),
+			UL_UR_OPTIMIZED: behaviors.UL_UR_OPTIMIZED.toString()
+		};
+
 		//I hate overwriting drawPixels
 		runAfterAutogen(function() {
 			//rAA because velocity.js already puts its redef in a rAL and rAA comes after that
@@ -5085,6 +5339,94 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 							ctx.fillStyle = averageRGB(colorlist);
 						}
 					}
+					else if (view === 5) { // velocity view
+						var data = elements[pixel.element];
+						
+						var vx = pixel.vx ?? 0;
+						var vy = pixel.vy ?? 0;
+						/*
+						var pseudoVelocity = 0;
+						var coordsToCheck;
+						var behaviorCoordsToCheck;
+
+						if(Array.isArray(data.behavior)) {
+							switch((pixel.r ?? 0) % 4) {
+								default:
+								case 0:
+									coordsToCheck = [0,1];
+									behaviorCoordsToCheckOffset = [2,1];
+									break;
+								case 1:
+									coordsToCheck = [-1,0];
+									behaviorCoordsToCheckOffset = [1,0];
+									break;
+								case 2:
+									coordsToCheck = [0,-1];
+									behaviorCoordsToCheckOffset = [0,1];
+									break;
+								case 3:
+									coordsToCheck = [1,0];
+									behaviorCoordsToCheckOffset = [1,2];
+									break;									
+							};
+							if(data.behavior[behaviorCoordsToCheckOffset[0]][behaviorCoordsToCheckOffset[1]] == "M1") {
+								if(isEmpty(pixel.x+coordsToCheck[0],pixel.y+coordsToCheck[1])) {
+									pseudoVelocity = 1;
+								} else {
+									if(!(isEmpty(pixel.x+behaviorCoordsToCheckOffset[0],pixel.y+behaviorCoordsToCheckOffset[1],true))) {
+										newPixel = pixelMap[pixel.x+behaviorCoordsToCheckOffset[0]][pixel.y+behaviorCoordsToCheckOffset[1]];
+										newData = elements[newPixel.element];
+										if(newData.id !== data.id && typeof(data.density) === "number" && typeof(newData.density) === "number") {
+											var chance = (data.density - newData.density)/(data.density + newData.density);
+											pseudoVelocity = chance
+										}
+									}
+								}
+							};
+							if(pseudoVelocity) {
+								switch((pixel.r ?? 0) % 4) {
+									default:
+									case 0:
+										vy += pseudoVelocity;
+										break;
+									case 1:
+										vx -= pseudoVelocity;
+										break;
+									case 2:
+										vy -= pseudoVelocity;
+										break;
+									case 3:
+										vx += pseudoVelocity;
+										break;
+								}
+							};
+						} else {
+							if(data.tick && [behaviors.POWDER,behaviors.LIQUID].includes(data.tick)) {
+								pseudoVelocity = 1;
+							} else if(data.tick == behaviors.UL_UR_OPTIMIZED) {
+								pseudoVelocity = -1;
+							} else if(pixel.element == "hail") {
+								pseudoVelocity = 2;
+							};
+							vy += pseudoVelocity;
+						};
+						*/
+
+						if(vx === 0 && vy === 0) {
+							ctx.fillStyle = "rgb(15,15,15)"
+						} else {
+							var magnitude = Math.sqrt ((vx ** 2) + (vy ** 2));
+
+							var direction = Math.atan2(pixel.vy ?? 0,pixel.vx ?? 0)*180/Math.PI;
+							if(direction < 0) { direction = scale(direction,-180,0,360,180) };
+							
+							hue = direction;
+							sat = 100;
+							lig = bound(scale(magnitude,0,100,10,100),0,100);
+
+							ctx.fillStyle = "hsl("+hue+","+sat+"%,"+lig+"%)";
+						}
+					}
 
 					if(find) { //if find and matching, override fill style with the find coloration
 						if(findElement instanceof Array ? findElement.includes(pixel.element) : pixel.element === findElement) {
@@ -5236,6 +5578,22 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			}
 		});
 		//I hate overwriting drawPixels
+
+        viewKey = {
+            2: "thermal",
+            3: "basic",
+            4: "smooth",
+            5: "velocity"
+        };
+
+        function setView(n) {
+            if (viewKey[n]) { // range of number keys with valid views
+                view = n;
+            }
+            else { // reset view
+                view = null;
+            }
+        };
 
 		runAfterLoad(function() {
 			//Setting
@@ -7711,7 +8069,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 								if(isEmpty(pixel.x+1,pixel.y-1) && isEmpty(pixel.x+1,pixel.y-2) && !outOfBounds(pixel.x+1,pixel.y-1) && !outOfBounds(pixel.x+1,pixel.y-2)) {
 									tryMove(pixelMap[pixel.x][pixel.y-1],pixel.x+1,pixel.y-1)
 									tryMove(pixelMap[pixel.x][pixel.y-2],pixel.x+1,pixel.y-2)
-								}
+								} //7989 yay soshi!
 							}
 						} else {
 							if(isEmpty(pixel.x+1,pixel.y-1) && !outOfBounds(pixel.x+1,pixel.y-1)) {
@@ -7993,7 +8351,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			behavior: behaviors.GAS,
 			category: "gases",
 			state: "gas",
-			density: 550, //7989 yay soshi!
+			density: 550,
 			tick: function(pixel) {
 				if(pixel.y % 6 == 0) {
 					if(pixel.x % 6 == 0) {
@@ -10484,7 +10842,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		var lifeEaterWhitelist = ["blood","poop","blood_ice","wood","wood_plank","sawdust","straw","paper","birthpool","dried_poop","gloomfly","meat_monster","rotten_ravager","bone_beast","withery","withery_plant","banana","apple","rotten_apple","apioform_player","apioform_bee","apioform","apiodiagoform","sugar_cactus","sugar_cactus_seed","flowering_sugar_cactus","tree_branch","sap","silk","red_velvet","silk_velvet","ketchup", "enchanted_ketchup", "frozen_ketchup", "poisoned_ketchup", "frozen_poisoned_ketchup", "ketchup_spout", "ketchup_cloud", "poisoned_ketchup_cloud", "ketchup_snow", "ketchup_snow_cloud", "poisoned_ketchup_snow", "poisoned_ketchup_snow_cloud", "ketchup_gas", "poisoned_ketchup_gas", "ketchup_powder", "poisoned_ketchup_powder", "eketchup_spout", "ketchup_metal", "antiketchup", "dirty_ketchup", "ketchup_gold", "molten_ketchup_metal", "ketchup_fairy", "ketchup_metal_scrap", "ketchup_gold_scrap", "molten_ketchup_gold", "mycelium","vaccine","antibody","infection","sap","caramel","molasses","melted_chocolate","soda","mustard","fry_sauce","tomato_sauce","sugary_tomato_sauce","bio_ooze","zombie_blood","feather","tooth","decayed_tooth","plaque","tartar","bacteria","replacer_bacteria","pop_rocks"];
 		var lifeEaterSubstitutions = {
 			"dirt": "life_eater_infected_dirt",
-			"crimsoil": "life_eater_infected_dirt"
+			"crimsoil": "life_eater_infected_dirt",
+			"rainbow_dirt": "life_eater_infected_dirt"
 		};
 
 
@@ -14334,35 +14693,37 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			//Hydrogen sulfide (in chem.js)
 				_h_2s = ["hydrogen_sulfide","liquid_hydrogen_sulfide","hydrogen_sulfide_ice"];
 
-				elements.hydrogen_sulfide.density = 1.19 * airDensity;
-				elements.hydrogen_sulfide.reactions ??= {};
-				elements.hydrogen_sulfide.reactions.head = { elem2: "rotten_meat", chance: 0.4};
-				elements.hydrogen_sulfide.fireColor = { elem2: "rotten_meat", chance: 0.4};
-				elements.hydrogen_sulfide.tempHigh = 1200;
-				elements.hydrogen_sulfide.stateHigh = ["sulfur_gas","steam"];				
-				delete elements.sulfur_dioxide.reactions.water;
-				delete elements.sulfur_dioxide.reactions.steam;
-				delete elements.water.reactions.sulfur;
-				elements.sulfur_dioxide.tick = function(pixel) {
-					var neighbors = adjacentCoords.map(offsetPair => pixelMap[pixel.x+offsetPair[0]]?.[pixel.y+offsetPair[1]]).filter(function(pixelOrUndefined) { return typeof(pixelOrUndefined) == "object" });
-					if(neighbors.length < 2) { return };
-					var neighboringElements = neighbors.filter(function(px) { return !!px }).map(x => x.element);
-					var waterNeighbor = null;
-					var sulfideNeighbor = null; 
-					for(var i = 0; i < neighboringElements.length; i++) {
-						if(_h_2s.includes(neighboringElements[i])) {
-							sulfideNeighbor = adjacentCoords[i];
-						};
-						if(wateroids.includes(neighboringElements[i])) {
-							waterNeighbor = adjacentCoords[i];
-						};
-						if(sulfideNeighbor && waterNeighbor) {
-							if(!sulfideNeighbor || isEmpty(sulfideNeighbor.x,sulfideNeighbor.y,true)) { return };
-							changePixel(sulfideNeighbor,getStateAtTemp("sulfur",pixel.temp));
-							changePixel(pixel,getStateAtTemp("water",pixel.temp));
+				runAfterLoad(function() {
+					elements.hydrogen_sulfide.density = 1.19 * airDensity;
+					elements.hydrogen_sulfide.reactions ??= {};
+					elements.hydrogen_sulfide.reactions.head = { elem2: "rotten_meat", chance: 0.4};
+					elements.hydrogen_sulfide.fireColor = { elem2: "rotten_meat", chance: 0.4};
+					elements.hydrogen_sulfide.tempHigh = 1200;
+					elements.hydrogen_sulfide.stateHigh = ["sulfur_gas","steam"];				
+					delete elements.sulfur_dioxide.reactions.water;
+					delete elements.sulfur_dioxide.reactions.steam;
+					delete elements.water.reactions.sulfur;
+					elements.sulfur_dioxide.tick = function(pixel) {
+						var neighbors = adjacentCoords.map(offsetPair => pixelMap[pixel.x+offsetPair[0]]?.[pixel.y+offsetPair[1]]).filter(function(pixelOrUndefined) { return typeof(pixelOrUndefined) == "object" });
+						if(neighbors.length < 2) { return };
+						var neighboringElements = neighbors.filter(function(px) { return !!px }).map(x => x.element);
+						var waterNeighbor = null;
+						var sulfideNeighbor = null; 
+						for(var i = 0; i < neighboringElements.length; i++) {
+							if(_h_2s.includes(neighboringElements[i])) {
+								sulfideNeighbor = adjacentCoords[i];
+							};
+							if(wateroids.includes(neighboringElements[i])) {
+								waterNeighbor = adjacentCoords[i];
+							};
+							if(sulfideNeighbor && waterNeighbor) {
+								if(!sulfideNeighbor || isEmpty(sulfideNeighbor.x,sulfideNeighbor.y,true)) { return };
+								changePixel(sulfideNeighbor,getStateAtTemp("sulfur",pixel.temp));
+								changePixel(pixel,getStateAtTemp("water",pixel.temp));
+							}
 						}
 					}
-				};
+				});
 
 			//Carbon monoxide
 
@@ -15519,7 +15880,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			behavior: [
 				"XX|XX|XX",
 				"M2|XX|M2",
-				"M1|M1|M1",
+				"M1|SW:dust AND M1|M1",
 			],
 			tick: function(pixel) { //Code from R74n/vanilla "smash" tool
 				var pX = pixel.x;
@@ -16750,7 +17111,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		//https://www.jamieswhiteshirt.com/minecraft/mods/gases/information/?Licensing
 
 		//Coal exists in NM
-		elements.coal.breakInto = "coal_dust";
+		runAfterLoad(function() {
+			elements.coal.breakInto = "coal_dust"
+		});
 
 		elements.coal_dust = {
 			color: "#363023",
@@ -18631,8 +18994,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			rad_fire: {value: 10, remainder: "rad_smoke"},
 			liquid_fire: {value: 12, remainder: ["fire","liquid_smoke","smoke"]},
 			plasma: {value: 15, remainder: "fire"},
+			holy_fire: 25,
+			god_slayer_fire: 40,
 			liquid_rad_fire: {value: 20, remainder: [null,"rad_fire","rad_fire","rad_smoke","rad_smoke"]},
 			liquid_plasma: {value: 30, remainder: ["plasma","liquid_fire","fire"]},
+			liquid_holy_fire: {value: 50, remainder: ["holy_fire","bless","light"]},
+			liquid_god_slayer_fire: {value: 80, remainder: ["god_slayer_fire",null,null]},
 			liquid_irradium: {value: 4, remainder: 0}
 		};
 
@@ -18645,7 +19012,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			if(isNaN(pixel.value)) { pixel.value = 0 };
 			pixel.color = lightenColor(pixel.oldColor,pixel.value / 3);
 
-			var mVal = elements[pixel.element].haseulitoidMaxValue ?? 350;
+			var mVal = elements[pixel.element].haseulitoidMaxValue ?? 800;
 			if(pixel.value >= mVal) {
 				var coldBoomChance = Math.max(0.008 * ((pixel.value - mVal) / (mVal * 2/7)), 0.001);
 				if(Math.random() < coldBoomChance) {
@@ -20647,7 +21014,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									if(crimsonObject[elementToCheck]) {
 										changePixel(destPixel,crimsonObject[elementToCheck]);
 									};
-									grassSpread(pixel,["dirt","crimsoil"],"crimson_grass",0.5);
+									grassSpread(pixel,["dirt","crimsoil","rainbow_dirt"],"crimson_grass",0.5);
 								};
 							};
 						};
@@ -21600,7 +21967,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					return color;
 				};
 
-				var sands = ["sand", "dirt", "crimsoil"]; //Some sources suggest the existence of topsoil sediment, so for the purposes of sedimentary rock generation, dirt is now a sand /hj
+				var sands = ["sand", "dirt", "crimsoil", "rainbow_dirt"]; //Some sources suggest the existence of topsoil sediment, so for the purposes of sedimentary rock generation, dirt is now a sand /hj
 				var wetSands = ["wet_sand", "mud"];
 				var sandSuspensions = [];
 				var sandSediments = ["radioactive_sand_sediment","clay_sediment"];
@@ -22823,11 +23190,18 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							sandstoneName = "soilstone"; //differentiated from mudstone, which is actually the *packed* dirt (analogously to sand's relationship to packed sand)
 							dustName = "dirt_dust";
 							break;
+						case "rainbow_dirt":
+							suspensionName = "rainbow_muddy_water";
+							wetSandName = "rainbow_mud";
+							sedimentName = "rainbow_soil_sediment";
+							sandstoneName = "rainbow_soilstone";
+							dustName = "rainbow_dirt_dust";
+							break;
 						case "crimsoil":
 							suspensionName = "crimmuddy_water";
-							wetSandName = "crimmud"; //needs special code to not generate a wet dirt and instead use vanilla mud as the wet "sand" here
+							wetSandName = "crimmud";
 							sedimentName = "crimsoil_sediment";
-							sandstoneName = "crimsoilstone"; //differentiated from mudstone, which is actually the *packed* dirt (analogously to sand's relationship to packed sand)
+							sandstoneName = "crimsoilstone";
 							dustName = "crimsoil_dust";
 							break;
 						case 143: //sorry, i had to
@@ -22913,7 +23287,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							density: 1000 + (sandInfo.density * 0.06),
 							conduct: 0.02,
 							stain: 0.01,
-							_data: [sandInfo._data[0], sandInfo._data[1], "suspension"],
+							_data: [sandInfo?._data?.[0] ?? "unknown", sandInfo?._data?.[1] ?? "unknown", "suspension"],
 						}
 
 						if(elements[dustName]) {
@@ -22980,7 +23354,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							state: "solid",
 							density: elements[wetSandName].density + 150,
 							breakInto: sandName,
-							_data: [sandInfo._data[0], sandInfo._data[1], "sediment"],
+							_data: [sandInfo?._data?.[0] ?? "unknown", sandInfo?._data?.[1] ?? "unknown", "sediment"]
 						};
 
 					//Final rock
@@ -22996,6 +23370,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										return elements.dry_dirt.tempHigh;
 									case "crimsoil":
 										return elements.crimsoil.tempHigh;
+									case "rainbow_dirt":
+										return elements.rainbow_dirt.tempHigh;
 									default:
 										return elements[sandName].tempHigh
 								}
@@ -23008,6 +23384,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										return "magma";
 									case "dirt":
 										return "hot_soilstone";
+									case "rainbow_dirt":
+										return "hot_rainbow_dirt";
 									case "crimsoil":
 										return "hot_crimsoilstone";
 									default:
@@ -23025,7 +23403,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							hardness: 0.5,
 							breakInto: sandName,
 							maxColorOffset: 30,
-							_data: [sandInfo._data[0], sandInfo._data[1]+"_sandstone", "sedimentary_rock"],
+							_data: [sandInfo?._data?.[0] ?? "unknown", (sandInfo?._data?.[1] ?? "unknown") + "_sandstone", "sedimentary_rock"],
 						};
 				};
 
@@ -23250,8 +23628,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								break;
 							case "crimsoil":
 								sandSuspensions.push("crimmuddy_water");
-								sandSediments.push("scrimoil_sediment");
+								sandSediments.push("crimsoil_sediment");
 								sandstones.push("crimsoilstone");
+								break;
+							case "rainbow_dirt":
+								sandSuspensions.push("rainbow_muddy_water");
+								sandSediments.push("rainbow_soil_sediment");
+								sandstones.push("rainbow_soilstone");
 								break;
 							default:
 								sandSuspensions.push(sands[i] + "y_water");
@@ -24016,6 +24399,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								if(Math.random() < 0.02) { breakPixel(pixel) };
 								var colorWasHSL = pixel.color.startsWith("hsl");
 								var oldColor = convertHslObjects(normalizeColorToHslObject(pixel.color),"rgbjson");
+								if(oldColor == null) { oldColor = pixelColorPick(pixel) };
 								oldColor.r += 81/2;
 								oldColor.g += 60/2;
 								oldColor.b += 56/2;
@@ -24025,6 +24409,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								if(Math.random() < 0.04) { breakPixel(pixel) };
 								var colorWasHSL = pixel.color.startsWith("hsl");
 								var oldColor = convertHslObjects(normalizeColorToHslObject(pixel.color),"rgbjson");
+								if(oldColor == null) { oldColor = pixelColorPick(pixel) };
 								oldColor.r += 81/4;
 								oldColor.g += 60/4;
 								oldColor.b += 56/4;
@@ -24034,6 +24419,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								if(Math.random() < 0.06) { breakPixel(pixel) };
 								var colorWasHSL = pixel.color.startsWith("hsl");
 								var oldColor = convertHslObjects(normalizeColorToHslObject(pixel.color),"rgbjson");
+								if(oldColor == null) { oldColor = pixelColorPick(pixel) };
 								oldColor.r += 81/7;
 								oldColor.g += 60/7;
 								oldColor.b += 56/7;
@@ -24043,6 +24429,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								if(Math.random() < 0.08) { breakPixel(pixel) };
 								var colorWasHSL = pixel.color.startsWith("hsl");
 								var oldColor = convertHslObjects(normalizeColorToHslObject(pixel.color),"rgbjson");
+								if(oldColor == null) { oldColor = pixelColorPick(pixel) };
 								oldColor.r += 81/8;
 								oldColor.g += 60/8;
 								oldColor.b += 56/8;
@@ -24577,13 +24964,21 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							function newDirtType(names,dirtColor,density,meltingPoint,frostingPoint) {
 								if(!(dirtColor instanceof Array)) { dirtColor = [dirtColor] };
 
-								var mudColor = dirtColor.map(x => colorToHsl(x,"json")); mudColor.forEach(function(x) { x.s *= (41/21); x.l *= (26/15) }); mudColor = mudColor.map(function(x) { return hslToHex(...Object.values(x)) });
+								var mudColor = dirtColor.map(x => colorToHsl(x,"json")); mudColor.forEach(function(x) { x.s *= (41/21); x.l *= (15/26) }); mudColor = mudColor.map(function(x) { return hslToHex(...Object.values(x)) });
 								if(mudColor.length == 1) { mudColor = mudColor[0] };
 
-								var mudstoneColor = dirtColor.map(x => colorToHsl(x,"json")); mudstoneColor.forEach(function(x) { x.h += 6; x.s *= (41/21); x.l *= (26/15); x.l += 5 }); mudstoneColor = mudstoneColor.map(function(x) { return hslToHex(...Object.values(x)) });
+								var mudstoneColor = dirtColor.map(x => colorToHsl(x,"json")); mudstoneColor.forEach(function(x) { x.h += 6; x.s *= (31/41); x.l *= (26/15); x.l += 5 }); mudstoneColor = mudstoneColor.map(function(x) { return hslToHex(...Object.values(x)) });
 								if(mudstoneColor.length == 1) { mudstoneColor = mudstoneColor[0] };
 
-								var dryDirtColor = dirtColor.map(x => colorToHsl(x,"json")); dryDirtColor.forEach(function(x) { x.h += 4; x.s *= (8/11); x.l *= (34/50); x.l += 5 }); dryDirtColor = dryDirtColor.map(function(x) { return hslToHex(...Object.values(x)) });
+								var dryDirtColor = dirtColor.map(x => colorToHsl(x,"json")); dryDirtColor.forEach(function(x) { x.h += 4; x.s *= (8/11); x.l *= (34/50); x.l += 5 }); dryDirtColor = dryDirtColor.map(function(x) {
+									x = convertHslObjects(x,"rgbjson");
+									x.r += 10;
+									x.g += 5; //XG??!?!??!?!?!??!?!!??!?!?!?!??!?!?!?!/1/1/1?!/!?!?1?1??!/!1//!
+									x.b -= 10;
+									x.g *= 0.94;
+									x.b *= 0.88;
+									return convertColorFormats(x,"hex");
+								});
 								if(dryDirtColor.length == 1) { dryDirtColor = dryDirtColor[0] };
 
 								var permafrostColor = dirtColor.map(x => colorToHsl(x,"json")); permafrostColor.forEach(function(x) { x.h -= 6; x.s *= (3/5); x.l -= 3 }); permafrostColor = permafrostColor.map(function(x) { return hslToHex(...Object.values(x)) });
@@ -24753,7 +25148,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 
 							elements.molten_crimsoil = {
 								tempLow: elements.dry_crimsoil.tempHigh,
-								stateLow: "dry_crimsoil"
+								stateLow: "dry_crimsoil",
+								stateHigh: "crimson_magma"
 							};
 							crimsonObject.dirt = "crimsoil";
 							crimsonObject.dry_dirt = "dry_crimsoil";
@@ -24763,6 +25159,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							crimsonObject.molten_dirt = "molten_crimsoil";
 							crimsonObject.dry_permafrost = "dry_crimson_permafrost";
 							runAfterLoad(function() {
+								elements.molten_crimsoil.tempHigh = elements.crimson_magma.tempHigh;
 								elements.crimsandy_water.color = ["#985460", "#a8606c", "#a05864", "#b46c74", "#84404c", "#985460", "#a8606c", "#a05864", "#b46c74", "#84404c", "#903844", "#b44450" ] //manual: use crimwater for the lerp in crimsand suspension's color
 								elements.crimmuddy_water.color = ["#ed4154", "#f25259", "#f2444c", "#f25a62", "#df428d" ]; //same for crimsoil (crimmud) susp.
 								elements.crimwater.reactions.crimsand = elements.water.reactions.crimsand;
@@ -24780,6 +25177,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									if(e2 == "water") { reactionObject.elem2 = "crimwater" };
 								};
 								elements.crimmuddy_water.reactions.crimmuddy_water.elem2 = "crimsoil_sediment";
+								elements.rainbow_muddy_water.reactions.rainbow_muddy_water.elem2 = "rainbow_soil_sediment"
 								elements.crimsoilstone.tempHigh = 800;
 							});
 
@@ -24899,6 +25297,31 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								_data: ["iridian","crystalline","packed_particulate"],
 								nellfireImmune: true,
 							};
+
+							
+
+							newDirtType(
+								{dirt: "rainbow_dirt", mud: "rainbow_mud", permafrost: "rainbow_permafrost", mudstone: "rainbow_mudstone"},
+								"#b09eac #b0bfa1 #d9c0b6 #b09eac #b0bfa1 #d9c0b6 #ed7777 #a7d975 #7bd4d4 #ab77e0 #e0cf77".split(" "),
+								1533, 942, -110
+							);
+
+							elements.rainbow_dirt._data = ["iridian","soil","particulate"];
+							elements.dry_rainbow_dirt._data = ["iridian","soil","particulate"];
+							elements.rainbow_mud._data = ["iridian","soil","wet_particulate"];
+							elements.rainbow_mudstone._data = ["iridian","soil","packed_particulate"];
+							elements.rainbow_permafrost._data = ["iridian","soil","icy_particulate"];
+							elements.dry_rainbow_permafrost._data = ["iridian","soil","particulate"];
+
+							elements.molten_rainbow_dirt = {
+								tempLow: elements.dry_rainbow_dirt.tempHigh,
+								stateLow: "dry_rainbow_dirt",
+								stateHigh: "rainbow_magma"
+							};
+							runAfterLoad(function() {
+								elements.rainbow_soilstone.tempHigh = 800;
+								elements.molten_rainbow_dirt.tempHigh = elements.rainbow_magma.tempHigh;
+							});
 
 						//Vanilla changes
 							elements.water.reactions.rainbow_sand = { elem1: null, elem2: "wet_rainbow_sand" };
@@ -25436,6 +25859,15 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 													break;
 											};
 											break;
+										case "crystalline_sandstone":
+										case "soil_sandstone":
+											nellburnObject[name] = "nell_ash"
+											break;
+										case "sedimentary":
+											if(info._data[0] == "calcium") {
+												nellburnObject[name] = "black_limestone";
+												break
+											};
 										default:
 											console.log("Nellburn assignment: Unknown _data[1] value for element",name,info._data);
 									};
@@ -25818,6 +26250,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										crimsonObject[name] = "crimsandstone"
 										break;
 									case "soil_sandstone":
+										crimsonObject[name] = "crimsoilstone"
+										break;
+									case "rainbow_soil_sandstone":
 										crimsonObject[name] = "crimsoilstone"
 										break;
 									case "magma":
@@ -26406,6 +26841,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						elements.hot_crimsoilstone.stateHigh = "molten_crimsoil";
 						elements.crimsoil.tempHigh = 100;
 						elements.crimsoil.stateHigh = "dry_crimsoil";
+						elements.hot_rainbow_soilstone.stateHigh = "molten_rainbow_dirt";
+						elements.rainbow_dirt.tempHigh = 100;
+						elements.rainbow_dirt.stateHigh = "dry_rainbow_dirt";
 					});
 
 		//Generation
@@ -27017,7 +27455,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			for(var name in customWorldTypes) {
 				worldgentypes[name] = customWorldTypes[name]
 			};
-			rebuildWorldgenList()
+			runAfterLoad(rebuildWorldgenList)
 		};
 
 		var promptInputNullishes = ["null","none","","n/a"];
@@ -28481,6 +28919,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			})
 		});
 		lightlikes = ["light","flash","laser","radiation","insulate_flash"];
+		firelikes = ["fire","plasma","smoke","stellar_plasma","liquid_plasma","liquid_stellar_plasma"];
 		grbBreakIntos = Object.keys(elements).filter(function(elemName) {
 			var to = typeof(elements[elemName]);
 			if(to == "undefined") {
@@ -28655,6 +29094,75 @@ Make sure to save your command in a file if you want to add this preset again.`
 				deletePixel(pixel.x, pixel.y);
 			},
 			temp: -200,
+			category: "energy",
+			state: "gas",
+			excludeRandom: true,
+			noMix: true
+		};
+
+		elements.melt_ray = {
+			color: ["#ffbf7f","#ffffbf"],
+			tick: function(pixel) {
+				var x = pixel.x;
+				for (var y = pixel.y; y < height; y++) {
+					if (outOfBounds(x, y)) {
+						break;
+					}
+					if (isEmpty(x, y)) {
+						if (Math.random() > 0.02) { continue }
+						createPixel("insulate_flash", x, y);
+						pixelMap[x][y].color = "#e1f8fc";
+					}
+					else {
+						var otherPixel = pixelMap[x][y];
+						var otherInfo = elements[otherPixel.element];
+						//Gas: Heat, always penetrate
+						if (otherInfo.isGas) {
+							if(Math.random() < 0.05 && otherInfo.stateLow) {
+								meltPixel(otherPixel)
+							};
+							if(elements[otherPixel.element].isSun) {
+								otherPixel.temp += 0.5;
+							} else {
+								otherPixel.temp += 50;
+							};
+							continue;
+						};
+
+						//Self: Break
+						if (otherInfo.id === elements.melt_ray.id) { break }
+
+						//Non-gas, Melt chance, heat more, half penetrate
+						if(Math.random() < 0.05 && !otherInfo.isGas) {
+							meltPixel(otherPixel)
+						};
+						pixelMap[x][y].temp += 200;
+
+						if(Math.random() < 0.05) {
+
+							if(!isEmpty(x,y-1,false)) {
+								if(pixelMap[x]?.[y-1]?.element && lightlikes.includes(pixelMap[x][y-1].element)) {
+									deletePixel(x,y-1);
+								};
+							};
+							var newPlasma = tryCreatePixelReturn("liquid_plasma",x,y-1);
+							if(newPlasma) { newPlasma.temp += 500 };
+						};
+
+						//Penetrate snow and ice
+						if(firelikes && firelikes.includes(otherPixel.element)) {
+							continue;
+						};
+
+						if(Math.random() < 0.7) { //thanks, I hate random continue
+							continue;
+						};
+						break;
+					}
+				}
+				deletePixel(pixel.x, pixel.y);
+			},
+			temp: 4000,
 			category: "energy",
 			state: "gas",
 			excludeRandom: true,
@@ -29397,6 +29905,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			},
 			insulate: true,
 			onTryMoveInto: function(pixel,otherPixel) {
+			  try {
 				if(pixel._correspondingPortals == null) {
 					return;
 				};
@@ -29456,6 +29965,13 @@ Make sure to save your command in a file if you want to add this preset again.`
 				} else {
 					tryMove(otherPixel,destination.x,destination.y);
 				};
+			  } catch(error) {
+				//ignore stack overflows
+			    if(error.toString().includes("call stack")) {
+				} else {
+					throw new Error("error")
+				}
+			  }
 			},
 			tick: function(pixel) {
 				pixel._channel = Math.floor(pixel.temp / 100);
@@ -29475,6 +29991,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 			},
 			category: "machines",
 			state: "solid",
+			breakInto: ["radiation","laser","iridium","essence","ionized_deuterium","electron","magic","steel","pop","unstable_mistake","explosion","magic","steel","proton","electron","radiation","laser","iridium"],
+			hardness: 0.999
 		},
 
 		elements.portal_out = {
@@ -29487,6 +30005,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "machines",
 			state: "solid",
 			insulate: true,
+			breakInto: ["radiation","laser","iridium","essence","ionized_deuterium","electron","magic","steel","pop","unstable_mistake","explosion","magic","steel","proton","electron","radiation","laser","iridium"],
+			hardness: 0.999
 		}
 
 	//MOBS ##
@@ -34686,7 +35206,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			bomb: { panicChange: 0.2, panicChangeChance: 0.4, moodChange: -0.3 },
 			tnt: { panicChange: 0.2, panicChangeChance: 0.4, moodChange: 0 },
 			dynamite: { panicChange: 0.2, panicChangeChance: 0.4, moodChange: -0.3 },
-			anti_bomb: { panicChange: 0.2, panicChangeChance: 0.4, moodChange: -0.3 },
+			upward_bomb: { panicChange: 0.2, panicChangeChance: 0.4, moodChange: -0.3 },
 			cluster_bomb: { panicChange: 0.2, panicChangeChance: 0.4, moodChange: -0.4 },
 			landmine: { panicChange: 0.25, panicChangeChance: 0.1, moodChange: -0.3 },
 			fireball: { panicChange: 0.25, panicChangeChance: 0.45, moodChange: -0.35 },
@@ -35578,6 +36098,39 @@ Make sure to save your command in a file if you want to add this preset again.`
 					};
 				};
 
+				elements.disappear = {
+					color: "#7f7f7f",
+					behavior: behaviors.SELFDELETE,
+					insulate: true,
+					temp: -273.15,
+					hardness: 0,
+					excludeRandom: true,
+					category: "other"
+				};
+
+				function forcebombVelocity(pixel,x,y,radius,fire,smoke,power,damage) {
+					var coords = circleCoords(pixel.x,pixel.y,radius);
+					for (var i = 0; i < coords.length; i++) {
+						var coordX = coords[i].x;
+						var coordY = coords[i].y;
+						if(!isEmpty(coordX,coordY,true)) {
+							let pixelle = pixelMap[coordX]?.[coordY];
+							if(typeof(pixelle) !== "object" || pixelle === null) { continue };
+							if(coordX === x && coordY === y) {
+								if(pixelle.element === "force_bomb") { fuckingDeletePixel(pixelle); continue }
+							};
+							// set the pixelle.vx and pixelle.vy depending on the angle and power
+							var angle = Math.atan2(pixelle.y-y,pixelle.x-x);
+							pixelle.vx = Math.round(4 * (pixelle.vx|0) + (5 * Math.cos(angle) * (radius * power/5)));
+							pixelle.vx += (3 * Math.sign(pixelle.vx));
+							pixelle.vx = Math.sign(pixelle.vx) == -1 ? bound(pixelle.vx,-100,0) : bound(pixelle.vx,0,100);
+							pixelle.vy = Math.round(4 * (pixelle.vy|0) + (5 * Math.sin(angle) * (radius * power/5)));
+							pixelle.vy += (3 * Math.sign(pixelle.vy));
+							pixelle.vy = Math.sign(pixelle.vx) == -1 ? bound(pixelle.vy,-100,0) : bound(pixelle.vy,0,100);
+						}
+					};
+				};
+
 				function hotterBomb(pixel,x,y,radius,fire,smoke,power,damage) {
 					//console.log(`Radius: ${radius}\nPower: ${power}\nPixel: (${pixel.x},${pixel.y})\nDamage: ${damage}`);
 					//console.log(`Expected temperature increase for pixel at (${pixel.x},${pixel.y}): ${800 * ((1 + (7 * damage)) ** 2) * ((power ** 2) * 1.5)}`);
@@ -35856,7 +36409,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 										tryBreak(newPixel,true,j == 0);
 										if(!newPixel) { break }
 									};
-									//water reaction steal
+									//lava reaction steal
 									if(data.reactions?.magma) {
 										var magmaRxn = data.reactions.magma;
 										var elem2 = magmaRxn.elem2;
@@ -35865,6 +36418,18 @@ Make sure to save your command in a file if you want to add this preset again.`
 										};
 										if(elem2 !== null) {
 											changePixel(newPixel,elem2,true)
+										}
+									} else if(elements.magma.reactions[newPixel.element]) {
+										var magmaRxn2 = elements.magma.reactions?.[newPixel.element];
+										if(!magmaRxn2) {
+										} else {
+											elem2 = magmaRxn2.elem2;
+											while(Array.isArray(elem2)) {
+												elem2 = randomChoice(elem2)
+											};
+											if(elem2 !== null) {
+												changePixel(newPixel,elem2,true)
+											}
 										}
 									};
 									if(!newPixel) { continue };
@@ -35883,6 +36448,102 @@ Make sure to save your command in a file if you want to add this preset again.`
 								};
 							};
 							pixel.fromX += pixel.direction
+					},
+					state: "solid",
+					category: "special",
+					density: elements.magma.density
+				};
+
+				elements.lava_megatsunami = {
+					color: ["#b32b10","#c24d1f","#d66924"],
+					behavior: behaviors.WALL,
+					properties: {
+						active: true,
+					},
+					tick: function(pixel) {
+						//Iteration initial checks
+							if(!pixel) {
+								return;
+							};
+							if(!pixel.active) {
+								deletePixel(pixel.x,pixel.y);
+							};
+						
+						//Initial property-setting
+							var pixelIsOnLeft = (pixel.x < (width/2));
+							pixel.fromX ??= pixelIsOnLeft ? 1 : width - 1;
+							pixel.direction ??= pixelIsOnLeft ? 1 : -1;
+
+							var floorHeight = pixel.y + 1;
+							while(isEmpty(pixel.x,floorHeight,false)) {
+								floorHeight++
+							};
+							pixel.floorHeight ??= floorHeight;
+
+						//Actual doer code
+							var bottomY = (pixel.floorHeight + 9); //extend 10 pixels below
+							var topY = bottomY - 43; //topY < bottomY because in this game +Y is *downward*
+							for(var h = 0; h < 2; h++) {
+								var newX = pixel.fromX + pixel.direction;
+
+								if(outOfBounds(newX,1)) {
+									pixel.active = false;
+									return
+								};
+
+								for(var i = bottomY; i >= topY; i--) {
+									var fc = {x: newX, y: i};
+									if(outOfBounds(fc.x,fc.y)) {continue};
+									if(isEmpty(fc.x,fc.y,false)) {
+										//fill with lava
+										createPixelReturn("magma",fc.x,fc.y).temp = 1450;
+									} else {
+										var newPixel = pixelMap[fc.x]?.[fc.y];
+										if(!newPixel) { continue };
+										var data = elements[newPixel.element];
+										//break
+										for(var j = 0; j < 3; j++) {
+											tryBreak(newPixel,true,j == 0);
+											if(!newPixel) { break }
+										};
+										if(!newPixel) { continue };
+										//lave reaction steal
+										if(data.reactions?.magma) {
+											var magmaRxn = data.reactions.magma;
+											var elem2 = magmaRxn.elem2;
+											while(Array.isArray(elem2)) {
+												elem2 = randomChoice(elem2)
+											};
+											if(elem2 !== null) {
+												changePixel(newPixel,elem2,true)
+											}
+										} else if(elements.magma.reactions[newPixel.element]) {
+											var magmaRxn2 = elements.magma.reactions[newPixel.element];
+											elem2 = magmaRxn2.elem2;
+											while(Array.isArray(elem2)) {
+												elem2 = randomChoice(elem2)
+											};
+											if(elem2 !== null) {
+												changePixel(newPixel,elem2,true)
+											}
+										};
+										if(!newPixel) { continue };
+										newPixel.temp = Math.max(newPixel.temp,1450); pixelTempCheck(newPixel);
+										if(!newPixel) { continue };
+										if(newPixel.element == "fire") { changePixelReturn(newPixel,"magma",true).temp = 1400 };
+										if(data.burn) { newPixel.burning = true; newPixel.burnStart = pixelTicks };
+										if(Math.random() < 0.1 && newPixel.burnInto) { finishBurn(newPixel) };
+										if(newPixel.element == "fire") { changePixelReturn(newPixel,"magma",true).temp = 1400 };
+										if(!newPixel) { continue };
+										//add velocity;
+										newPixel.vx ??= 0;
+										newPixel.vy ??= 0;
+										newPixel.vx += (pixel.direction * 8)
+										newPixel.vy += 5;
+									};
+								};
+								pixel.fromX += pixel.direction
+							};
 					},
 					state: "solid",
 					category: "special",
@@ -36623,7 +37284,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 
 			//Bombs
 
-				elements.anti_bomb = {
+				elements.upward_bomb = {
 					color: "#625c71",
 					behavior: [
 						"M2|M1 AND EX:10|M2",
@@ -36646,6 +37307,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 							var newInfo = elements[newElement];
 							if(newInfo.state !== "gas" && newElement !== pixel.element) {
 								explodeAtPlus(pixel.x,pixel.y,10,"fire,fire,fire,fire,fire,greek_fire","fire",null,firebombFire);
+								changePixel(pixel,"disappear");
 							};
 						};
 						if(!isEmpty(pixel.x,pixel.y+1,true)) { //[2][1] EX (don't ignore bounds, non-bound case)
@@ -36654,10 +37316,12 @@ Make sure to save your command in a file if you want to add this preset again.`
 							var newInfo = elements[newElement];
 							if(newInfo.state !== "gas" && newElement !== pixel.element) {
 								explodeAtPlus(pixel.x,pixel.y,10,"fire,fire,fire,fire,fire,greek_fire","fire",null,firebombFire);
+								changePixel(pixel,"disappear");
 							};
 						};
 						if(outOfBounds(pixel.x,pixel.y+1)) { //[2][1] EX (don't ignore bounds, bound case)
 							explodeAtPlus(pixel.x,pixel.y,10,"fire,fire,fire,fire,fire,greek_fire","fire",null,firebombFire);
+							changePixel(pixel,"disappear");
 						};
 						if(!tryMove(pixel,pixel.x,pixel.y+1)) { //behaviors.POWDER
 							Math.random() < 0.5 ? tryMove(pixel,pixel.x-1,pixel.y+1) : tryMove(pixel,pixel.x+1,pixel.y+1);
@@ -36668,6 +37332,69 @@ Make sure to save your command in a file if you want to add this preset again.`
 					density: 1500,
 					excludeRandom: true,
 					desc: "An advanced incendiary weapon. <br/>To enable automatic bomb generation, set the generateBombs query parameter.",
+				};
+
+				function fuckingDeletePixel(pixel) {
+					if(
+						typeof(pixel) === "object" &&
+						pixel !== null &&
+						typeof(pixel?.x) === "number" &&
+						typeof(pixel?.y) === "number"
+					) {
+						var pX = pixel.x;
+						var pY = pixel.y;
+						deletePixel(pX,pY);
+						if(typeof(pixel) === "object" && pixel !== null) {
+							var index = currentPixels.indexOf(pixel);
+							if(index > 0) {
+								currentPixels.splice(index)
+							};
+							pixelMap[pX][pY] = undefined
+							pixel = undefined
+							return
+						}
+						return
+					};
+					return
+				};
+
+				elements.force_bomb = {
+					color: ["#7a6749", "#828680", "#89a6b6", "#91c5ed"],
+					tick: function(pixel) {
+						var radius = 8;
+						var fire = ["light",null,null,null,null,null,null,null];
+						if(!isEmpty(pixel.x,pixel.y-1,true)) { //[0][1] EX (ignore bounds)
+							var newPixel = pixelMap[pixel.x][pixel.y-1];
+							var newElement = newPixel.element;
+							var newInfo = elements[newElement];
+							if(newInfo.state !== "gas" && newElement !== pixel.element) {
+								explodeAtPlus(pixel.x,pixel.y,radius+7,fire,null,null,forcebombVelocity);
+								fuckingDeletePixel(pixel); return
+							};
+						};
+						if(!isEmpty(pixel.x,pixel.y+1,true)) { //[2][1] EX (don't ignore bounds, non-bound case)
+							var newPixel = pixelMap[pixel.x][pixel.y+1];
+							var newElement = newPixel.element;
+							var newInfo = elements[newElement];
+							if(newInfo.state !== "gas" && newElement !== pixel.element) {
+								explodeAtPlus(pixel.x,pixel.y,radius+7,fire,null,null,forcebombVelocity);
+								fuckingDeletePixel(pixel); return
+							};
+						};
+						if(outOfBounds(pixel.x,pixel.y+1)) { //[2][1] EX (don't ignore bounds, bound case)
+							explodeAtPlus(pixel.x,pixel.y,radius+7,fire,null,null,forcebombVelocity);
+							fuckingDeletePixel(pixel); return
+						};
+						if(!tryMove(pixel,pixel.x,pixel.y+1)) { //behaviors.POWDER
+							Math.random() < 0.5 ? tryMove(pixel,pixel.x-1,pixel.y+1) : tryMove(pixel,pixel.x+1,pixel.y+1);
+						};
+						return
+					},
+					category: "weapons",
+					state: "solid",
+					density: 2000,
+					excludeRandom: true,
+					desc: "A bomb that sends pixels flying. <br/>To enable automatic bomb generation, set the generateBombs query parameter.",
 				};
 
 				elements.cluster_nuke = {
@@ -36684,7 +37411,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					desc: "It's a nuke that drops more nukes. <br/>To enable automatic bomb generation, set the generateBombs query parameter.",
 				};
 
-				elements.anti_bomb = {
+				elements.upward_bomb = {
 					color: "#525c61",
 					behavior: [
 						"M2|M1 AND EX:10|M2",
@@ -36963,7 +37690,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 
 				for (var i = 2; i <= bombAmount + 1; i++) {
-					elements[`anti_bomb_${i}`] = {
+					elements[`upward_bomb_${i}`] = {
 						color: "#625c71",
 						behavior: [
 							`M2|M1 AND EX:${5*(i+1)}>fire|M2`,
@@ -36977,7 +37704,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 						desc: `${5*(i+1)/10} times the radius of the regular anti-bomb`,
 						cooldown: defaultCooldown,
 					};
-					eLists.BOMB.push(`anti_bomb_${i}`);
+					eLists.BOMB.push(`upward_bomb_${i}`);
 				};
 
 			//Fairies
@@ -41236,13 +41963,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.global_heater = {
 			color: "#ff6666",
 			tick: function(pixel) {
-				for (var i = 1; i < width; i++) {
-					for (var j = 1; j < height; j++) {
-						if (!isEmpty(i,j)) {
-							pixelMap[i][j].temp++
-						}
-					}
-				}
+				currentPixels.forEach(function(newPixel) {newPixel.temp++; pixelTempCheck(newPixel)})
 			},
 			category:"machines",
 			insulate: true,
@@ -41254,13 +41975,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.global_cooler = {
 			color: "#6666ff",
 			tick: function(pixel) {
-				for (var i = 1; i < width; i++) {
-					for (var j = 1; j < height; j++) {
-						if (!isEmpty(i,j)) {
-							pixelMap[i][j].temp <= -272 ? pixelMap[i][j].temp = -273 : pixelMap[i][j].temp -= 1
-						}
-					}
-				}
+				currentPixels.forEach(function(newPixel) {newPixel.temp = Math.max(-273.15,newPixel.temp - 1); pixelTempCheck(newPixel)})
 			},
 			category:"machines",
 			insulate: true,
@@ -41272,13 +41987,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.global_warmer = {
 			color: "#66ff66",
 			tick: function(pixel) {
-				for (var i = 1; i < width; i++) {
-					for (var j = 1; j < height; j++) {
-						if (!isEmpty(i,j)) {
-							pixelMap[i][j].temp = 20
-						}
-					}
-				}
+				currentPixels.forEach(function(newPixel) {newPixel.temp = 20; pixelTempCheck(newPixel)})
 			},
 			category: "machines",
 			insulate: true,
@@ -41287,24 +41996,18 @@ Make sure to save your command in a file if you want to add this preset again.`
 			excludeRandom: true,
 		},
 
-		elements.agw = { //adjustable global warmer
-			name: "Adjustable Global Warmer",
+		elements.adjustable_global_heater = {
 			color: "#66ff66",
 			tick: function(pixel) {
-				for (var i = 1; i < width; i++) {
-					for (var j = 1; j < height; j++) {
-						if (!isEmpty(i,j)) {
-							pixelMap[i][j].temp = pixel.temp
-							doHeat(pixelMap[i][j])
-						}
-					}
-				}
+				var thisPixel = pixel;
+				currentPixels.forEach(function(newPixel) {if(newPixel.element !== thisPixel.element) {newPixel.temp += thisPixel.temp; pixelTempCheck(newPixel)}})
 			},
 			category: "machines",
 			insulate: true,
 			state: "solid",
 			hidden: true,
 			excludeRandom: true,
+			temp: 1
 		},
 
 		elements.super_heater_3 = {
@@ -42092,7 +42795,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hidden: true,
 		};
 
-		elements.support_glass = structuredClone ? structuredClone(elements.glass) : JSON.parse(JSON.stringify(elements.glass));
+		elements.paper.behavior = behaviors.SUPPORT;
+
+		elements.support_glass = JSON.parse(JSON.stringify(elements.glass));
 		elements.support_glass.stateHigh = "molten_glass";
 		elements.support_glass.behavior = behaviors.SUPPORT;
 
@@ -42102,6 +42807,27 @@ Make sure to save your command in a file if you want to add this preset again.`
 			behaviorOn: [
 				"XX|CR:light|XX",
 				"CR:light AND SP|XX|CR:light AND SP",
+				"M2|CR:light AND M1|M2"
+			],
+			colorOn: "#ebebc3",
+			category: "machines",
+			tempHigh: 1500,
+			stateHigh: ["molten_glass","molten_glass","molten_copper"],
+			conduct: 1,
+			breakInto: "glass_shard",
+			hidden: true,
+		};
+
+		elements.hanging_bulb = {
+			color: "#a8a897",
+			behavior: [
+				"XX|SP|XX",
+				"XX|XX|XX",
+				"M2|M1|M2"
+			],
+			behaviorOn: [
+				"XX|SP|XX",
+				"CR:light|XX|CR:light",
 				"M2|CR:light AND M1|M2"
 			],
 			colorOn: "#ebebc3",
@@ -42202,15 +42928,56 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.steel.movable = false;
 
 		elements.support_steel = {
-			color: "#71797E",
+			color: elements.steel.color,
 			behavior: behaviors.SUPPORT,
-			tempHigh: 1455.5,
+			tempHigh: elements.steel.tempHigh,
 			stateHigh: "molten_steel",
 			category: "solids",
-			density: 7850,
-			conduct: 0.42,
-			hardness: 0.8,
+			density: elements.steel.density,
+			conduct: elements.steel.conduct,
+			hardness: elements.steel.hardness,
 		};
+
+		elements.support_aluminum = {
+			color: elements.aluminum.color,
+			behavior: behaviors.SUPPORT,
+			tempHigh: elements.aluminum.tempHigh,
+			stateHigh: "molten_aluminum",
+			category: "solids",
+			density: elements.aluminum.density,
+			conduct: elements.aluminum.conduct,
+			hardness: elements.aluminum.hardness,
+		};
+		
+		elements.support_copper = {
+			color: elements.copper.color,
+			behavior: behaviors.SUPPORT,
+			tempHigh: elements.copper.tempHigh,
+			stateHigh: "molten_copper",
+			category: "solids",
+			density: elements.copper.density,
+			conduct: elements.copper.conduct,
+			hardness: elements.copper.hardness,
+		};
+		
+		runAfterAutogen(function() {
+			for(var name in elements) {
+				var rxns = elements[name].reactions;
+				if(!rxns) { continue };
+				if(typeof(rxns) == "object" && typeof(rxns["steel"]) === "object") {
+					rxns.support_steel = rxns.steel
+				};
+				if(typeof(rxns) == "object" && typeof(rxns["aluminum"]) === "object") {
+					rxns.support_aluminum = rxns.aluminum
+				}
+				if(typeof(rxns) == "object" && typeof(rxns["copper"]) === "object") {
+					rxns.support_copper = rxns.copper
+				}
+			};
+			elements.support_steel.reactions = elements.steel.reactions;
+			elements.support_aluminum.reactions = elements.aluminum.reactions;
+			elements.support_copper.reactions = elements.copper.reactions;
+		});
 
 		var newAcidIgnores = ["glass_pane", "rad_glass_pane", "rad_glass_shard", "hanging_plastic"];
 		for(i = 0; i < newAcidIgnores.length; i++) {
@@ -43489,7 +44256,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				pixel._correspondingWifi = currentPixels.filter(function(pixelToCheck) {
 					return (
 						pixelToCheck !== pixel && //should work if this pixel is the same as the other one by reference
-						["wifi","receiver"].includes(pixelToCheck.element) &&
+						["wifi","receiver","support_receiver"].includes(pixelToCheck.element) &&
 						pixelToCheck._channel == pixelChannel
 					);
 				},pixelChannel=pixel._channel).map(pixel => [pixel.x,pixel.y]);
@@ -43556,8 +44323,43 @@ Make sure to save your command in a file if you want to add this preset again.`
 			},
 			category: "machines",
 			state: "solid",
-		}
+		};
 
+		elements.support_receiver = {
+			color: "#bfff00",
+			behavior: behaviors.SUPPORT,
+			properties: {
+				_channel: 0
+			},
+			hardness: 0.8,
+			breakInto: ["plastic","steel","copper"],
+			conduct: 1,
+			insulate: true,
+			tick: function(pixel) {
+				pixel._channel = Math.floor(pixel.temp / 100);
+
+				var colorBase = (pixel._channel + 3);
+				if(colorBase < 0 || colorBase > 124) {
+					pixel.color = "rgb(212,185,222)";
+				} else {
+					colorBase = colorBase.toString(5).padStart(3,"0").split("").map(x => parseInt(x) * 64);
+					pixel.color = `rgb(${colorBase.join(",")})`
+				};
+
+				if(typeof(pixel.chargeCD) !== "undefined") {
+					pixel.chargeCD = Math.min(pixel.chargeCD,5);
+					pixel.chargeCD--;
+					if(pixel.chargeCD <= 0) { delete pixel.chargeCD };
+				};
+				if(pixel.charge) {
+					pixel.charge -= 0.25;
+					if(pixel.charge <= 0) { delete pixel.charge };
+				};
+			},
+			category: "machines",
+			state: "solid",
+		};
+		
 	// SPINEL'S INJECTOR ##
 
 		var injectorPoisonCategories = ["life","auto creepers","shit","cum","food","fantastic creatures","fey","auto_fey"];
@@ -43567,6 +44369,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			"dirt": "poisoned_dirt",
 			"dry_dirt": "poisoned_dirt",
 			"crimsoil": "poisoned_dirt",
+			"rainbow_dirt": "poisoned_dirt",
 			"sand": "poisoned_dirt",
 			"wet_sand": "poisoned_dirt",
 			"mud": "poisoned_dirt",
@@ -45118,13 +45921,15 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 
 	var notActuallyMovable = ["pipe","e_pipe","steel","vivite"];
 
-	for(var i = 0; i < notActuallyMovable.length; i++) {
-		var name = notActuallyMovable[i];
-		Object.defineProperty(elements[name], "movable", {
-			value: false,
-			writable: false //**** you, you're not changing it to true.
-		});		
-	};
+	runAfterLoad(function() {
+		for(var i = 0; i < notActuallyMovable.length; i++) {
+			var name = notActuallyMovable[i];
+			Object.defineProperty(elements[name], "movable", {
+				value: false,
+				writable: false //**** you, you're not changing it to true.
+			});		
+		}
+	});
 
 	elements.unknown = {
 		color: "#FFFFFF",
@@ -45134,7 +45939,7 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 	
 	//END ##
 } catch (error) {
-	alert(`Load failed (try reloading)\nError: ${error.stack}`);
+	alert(`Load failed (try reloading).\nThis is likely a sporadic failure caused by inconsistencies in how mods are loaded, and will likely fix itself in a refresh or two. If it persists, then it's an issue.\nError: ${error.stack}`);
 	console.error(error)
 };
 } else {
