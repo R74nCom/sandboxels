@@ -5409,7 +5409,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 							ctx.fillStyle = "rgb(15,15,15)"
 						} else {
 							var magnitude = Math.sqrt ((vx ** 2) + (vy ** 2));
-							magnitude *= (10 ** ((50 + magnitude)/50))
+							magnitude *= (4 ** ((50 + Math.abs(magnitude))/50))
 
 							var direction = Math.atan2(pixel.vy ?? 0,pixel.vx ?? 0)*180/Math.PI;
 							if(direction < 0) { direction = -direction + 180 };
@@ -15873,7 +15873,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			behavior: [
 				"XX|XX|XX",
 				"M2|XX|M2",
-				"M1|M1|M1",
+				"M1|SW:dust AND M1|M1",
 			],
 			tick: function(pixel) { //Code from R74n/vanilla "smash" tool
 				var pX = pixel.x;
@@ -24374,6 +24374,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								if(Math.random() < 0.02) { breakPixel(pixel) };
 								var colorWasHSL = pixel.color.startsWith("hsl");
 								var oldColor = convertHslObjects(normalizeColorToHslObject(pixel.color),"rgbjson");
+								if(oldColor == null) { oldColor = pixelColorPick(pixel) };
 								oldColor.r += 81/2;
 								oldColor.g += 60/2;
 								oldColor.b += 56/2;
@@ -24383,6 +24384,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								if(Math.random() < 0.04) { breakPixel(pixel) };
 								var colorWasHSL = pixel.color.startsWith("hsl");
 								var oldColor = convertHslObjects(normalizeColorToHslObject(pixel.color),"rgbjson");
+								if(oldColor == null) { oldColor = pixelColorPick(pixel) };
 								oldColor.r += 81/4;
 								oldColor.g += 60/4;
 								oldColor.b += 56/4;
@@ -24392,6 +24394,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								if(Math.random() < 0.06) { breakPixel(pixel) };
 								var colorWasHSL = pixel.color.startsWith("hsl");
 								var oldColor = convertHslObjects(normalizeColorToHslObject(pixel.color),"rgbjson");
+								if(oldColor == null) { oldColor = pixelColorPick(pixel) };
 								oldColor.r += 81/7;
 								oldColor.g += 60/7;
 								oldColor.b += 56/7;
@@ -24401,6 +24404,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								if(Math.random() < 0.08) { breakPixel(pixel) };
 								var colorWasHSL = pixel.color.startsWith("hsl");
 								var oldColor = convertHslObjects(normalizeColorToHslObject(pixel.color),"rgbjson");
+								if(oldColor == null) { oldColor = pixelColorPick(pixel) };
 								oldColor.r += 81/8;
 								oldColor.g += 60/8;
 								oldColor.b += 56/8;
@@ -29825,6 +29829,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			},
 			insulate: true,
 			onTryMoveInto: function(pixel,otherPixel) {
+			  try {
 				if(pixel._correspondingPortals == null) {
 					return;
 				};
@@ -29884,6 +29889,13 @@ Make sure to save your command in a file if you want to add this preset again.`
 				} else {
 					tryMove(otherPixel,destination.x,destination.y);
 				};
+			  } catch(error) {
+				//ignore stack overflows
+			    if(error.toString().includes("call stack")) {
+				} else {
+					throw new Error("error")
+				}
+			  }
 			},
 			tick: function(pixel) {
 				pixel._channel = Math.floor(pixel.temp / 100);
@@ -41875,13 +41887,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.global_heater = {
 			color: "#ff6666",
 			tick: function(pixel) {
-				for (var i = 1; i < width; i++) {
-					for (var j = 1; j < height; j++) {
-						if (!isEmpty(i,j)) {
-							pixelMap[i][j].temp++
-						}
-					}
-				}
+				currentPixels.forEach(function(newPixel) {newPixel.temp++; pixelTempCheck(newPixel)})
 			},
 			category:"machines",
 			insulate: true,
@@ -41893,13 +41899,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.global_cooler = {
 			color: "#6666ff",
 			tick: function(pixel) {
-				for (var i = 1; i < width; i++) {
-					for (var j = 1; j < height; j++) {
-						if (!isEmpty(i,j)) {
-							pixelMap[i][j].temp <= -272 ? pixelMap[i][j].temp = -273 : pixelMap[i][j].temp -= 1
-						}
-					}
-				}
+				currentPixels.forEach(function(newPixel) {newPixel.temp = Math.max(-273.15,newPixel.temp - 1); pixelTempCheck(newPixel)})
 			},
 			category:"machines",
 			insulate: true,
@@ -41911,13 +41911,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.global_warmer = {
 			color: "#66ff66",
 			tick: function(pixel) {
-				for (var i = 1; i < width; i++) {
-					for (var j = 1; j < height; j++) {
-						if (!isEmpty(i,j)) {
-							pixelMap[i][j].temp = 20
-						}
-					}
-				}
+				currentPixels.forEach(function(newPixel) {newPixel.temp = 20; pixelTempCheck(newPixel)})
 			},
 			category: "machines",
 			insulate: true,
@@ -41926,24 +41920,18 @@ Make sure to save your command in a file if you want to add this preset again.`
 			excludeRandom: true,
 		},
 
-		elements.agw = { //adjustable global warmer
-			name: "Adjustable Global Warmer",
+		elements.adjustable_global_heater = {
 			color: "#66ff66",
 			tick: function(pixel) {
-				for (var i = 1; i < width; i++) {
-					for (var j = 1; j < height; j++) {
-						if (!isEmpty(i,j)) {
-							pixelMap[i][j].temp = pixel.temp
-							doHeat(pixelMap[i][j])
-						}
-					}
-				}
+				var thisPixel = pixel;
+				currentPixels.forEach(function(newPixel) {if(newPixel.element !== thisPixel.element) {newPixel.temp += thisPixel.temp; pixelTempCheck(newPixel)}})
 			},
 			category: "machines",
 			insulate: true,
 			state: "solid",
 			hidden: true,
 			excludeRandom: true,
+			temp: 1
 		},
 
 		elements.super_heater_3 = {
