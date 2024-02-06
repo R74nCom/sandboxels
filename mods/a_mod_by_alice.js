@@ -5416,14 +5416,13 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 							ctx.fillStyle = "rgb(15,15,15)"
 						} else {
 							var magnitude = Math.sqrt ((vx ** 2) + (vy ** 2));
-							magnitude *= (4 ** ((50 + Math.abs(magnitude))/50))
 
 							var direction = Math.atan2(pixel.vy ?? 0,pixel.vx ?? 0)*180/Math.PI;
-							if(direction < 0) { direction = -direction + 180 };
+							if(direction < 0) { direction = scale(direction,-180,0,360,180) };
 							
 							hue = direction;
 							sat = 100;
-							lig = bound(magnitude,0,100);
+							lig = bound(scale(magnitude,0,100,10,100),0,100);
 
 							ctx.fillStyle = "hsl("+hue+","+sat+"%,"+lig+"%)";
 						}
