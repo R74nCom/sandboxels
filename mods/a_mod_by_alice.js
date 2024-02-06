@@ -3599,22 +3599,24 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 
 		velocityBlacklist = [];
 
-		function explodeAtPlus(x,y,radius,fire="fire",smoke="smoke",beforeFunction=null,afterFunction=null,changeTemp=true) {
+		function explodeAtPlus(x,y,radius,firee="fire",smokee="smoke",beforeFunction=null,afterFunction=null,changeTemp=true) {
 			// if fire contains , split it into an array
-			if(fire !== null) {
-				if (fire.indexOf(",") !== -1) {
-					fire = fire.split(",");
+			if(firee !== null) {
+				if (firee.indexOf(",") !== -1) {
+					firee = firee.split(",");
 				};
 			};
-			if(smoke !== null) {
-				if (smoke.indexOf(",") !== -1) {
-					smoke = smoke.split(",");
+			if(smokee !== null) {
+				if (smokee.indexOf(",") !== -1) {
+					smokee = smokee.split(",");
 				};
 			};
 			var coords = circleCoords(x,y,radius);
 			var power = radius/10;
 			//for (var p = 0; p < Math.round(radius/10+1); p++) {
 			for (var i = 0; i < coords.length; i++) {
+				var fire = firee;
+				var smoke = smokee;
 				// damage value is based on distance from x and y
 				var damage = Math.random() + (Math.floor(Math.sqrt(Math.pow(coords[i].x-x,2) + Math.pow(coords[i].y-y,2)))) / radius;
 				// invert
@@ -3627,24 +3629,17 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					else if (damage < 0.2) {
 						// if smoke is an array, choose a random item
 						if(smoke !== null) {
-							if (Array.isArray(smoke)) {
-								createPixel(smoke[Math.floor(Math.random() * smoke.length)],coords[i].x,coords[i].y);
-							}
-							else {
-								createPixel(smoke,coords[i].x,coords[i].y);
-							}
+							while (Array.isArray(smoke)) {
+								smoke = randomChoice(smoke);
+							};
+							if(smoke !== null) { createPixel(smoke,coords[i].x,coords[i].y) };
 						}
 					}
 					else {
-						if(fire !== null) {
-							// if fire is an array, choose a random item
-							if (Array.isArray(fire)) {
-								createPixel(fire[Math.floor(Math.random() * fire.length)],coords[i].x,coords[i].y);
-							}
-							else {
-								createPixel(fire,coords[i].x,coords[i].y);
-							}
-						}
+						while (Array.isArray(fire)) {
+							fire = randomChoice(fire);
+						};
+						if(fire !== null) { createPixel(fire,coords[i].x,coords[i].y) };
 					}
 				}
 				else if (!outOfBounds(coords[i].x,coords[i].y)) {
@@ -3665,13 +3660,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					}
 					if (damage > 0.9) {
 						if(fire !== null) {
-							if (Array.isArray(fire)) {
-								var newfire = fire[Math.floor(Math.random() * fire.length)];
-							}
-							else {
-								var newfire = fire;
-							}
-							changePixel(pixel,newfire,changeTemp);
+							while (Array.isArray(fire)) {
+								fire = randomChoice(fire);
+							};
+							if(fire !== null) { changePixel(pixel,fire,changeTemp) };
 						} else {
 							deletePixel(pixel.x,pixel.y);
 						}
@@ -3683,13 +3675,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 							if (info.breakInto !== undefined) {
 								breakPixel(pixel);
 							} else {
-								if (Array.isArray(fire)) {
-									var newfire = fire[Math.floor(Math.random() * fire.length)];
-								}
-								else {
-									var newfire = fire;
-								}
-								changePixel(pixel,newfire);
+								while (Array.isArray(fire)) {
+									fire = randomChoice(fire);
+								};
+								if(fire !== null) { changePixel(pixel,fire,changeTemp) };
 							}
 							if(info.onExplosionBreakOrSurvive) {
 								info.onExplosionBreakOrSurvive(pixel,x,y,radius,fire,smoke,power,damage);
@@ -3698,13 +3687,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						}
 						else {
 							if(fire !== null) {
-								if (Array.isArray(fire)) {
-									var newfire = fire[Math.floor(Math.random() * fire.length)];
-								}
-								else {
-									var newfire = fire;
-								}
-								changePixel(pixel,newfire,changeTemp);
+								while (Array.isArray(fire)) {
+									fire = randomChoice(fire);
+								};
+								if(fire !== null) { changePixel(pixel,fire,changeTemp) };
 							} else {
 								deletePixel(pixel.x,pixel.y);
 							}
@@ -5180,6 +5166,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			none: function(number) { return number }
 		};
 
+		var tickBehaviorStringCache = {
+			POWDER: behaviors.POWDER.toString(),
+			LIQUID: behaviors.LIQUID.toString(),
+			UL_UR_OPTIMIZED: behaviors.UL_UR_OPTIMIZED.toString()
+		};
+
 		//I hate overwriting drawPixels
 		runAfterAutogen(function() {
 			//rAA because velocity.js already puts its redef in a rAL and rAA comes after that
@@ -5340,6 +5332,95 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 							ctx.fillStyle = averageRGB(colorlist);
 						}
 					}
+					else if (view === 5) { // velocity view
+						var data = elements[pixel.element];
+						
+						var vx = pixel.vx ?? 0;
+						var vy = pixel.vy ?? 0;
+						/*
+						var pseudoVelocity = 0;
+						var coordsToCheck;
+						var behaviorCoordsToCheck;
+
+						if(Array.isArray(data.behavior)) {
+							switch((pixel.r ?? 0) % 4) {
+								default:
+								case 0:
+									coordsToCheck = [0,1];
+									behaviorCoordsToCheckOffset = [2,1];
+									break;
+								case 1:
+									coordsToCheck = [-1,0];
+									behaviorCoordsToCheckOffset = [1,0];
+									break;
+								case 2:
+									coordsToCheck = [0,-1];
+									behaviorCoordsToCheckOffset = [0,1];
+									break;
+								case 3:
+									coordsToCheck = [1,0];
+									behaviorCoordsToCheckOffset = [1,2];
+									break;									
+							};
+							if(data.behavior[behaviorCoordsToCheckOffset[0]][behaviorCoordsToCheckOffset[1]] == "M1") {
+								if(isEmpty(pixel.x+coordsToCheck[0],pixel.y+coordsToCheck[1])) {
+									pseudoVelocity = 1;
+								} else {
+									if(!(isEmpty(pixel.x+behaviorCoordsToCheckOffset[0],pixel.y+behaviorCoordsToCheckOffset[1],true))) {
+										newPixel = pixelMap[pixel.x+behaviorCoordsToCheckOffset[0]][pixel.y+behaviorCoordsToCheckOffset[1]];
+										newData = elements[newPixel.element];
+										if(newData.id !== data.id && typeof(data.density) === "number" && typeof(newData.density) === "number") {
+											var chance = (data.density - newData.density)/(data.density + newData.density);
+											pseudoVelocity = chance
+										}
+									}
+								}
+							};
+							if(pseudoVelocity) {
+								switch((pixel.r ?? 0) % 4) {
+									default:
+									case 0:
+										vy += pseudoVelocity;
+										break;
+									case 1:
+										vx -= pseudoVelocity;
+										break;
+									case 2:
+										vy -= pseudoVelocity;
+										break;
+									case 3:
+										vx += pseudoVelocity;
+										break;
+								}
+							};
+						} else {
+							if(data.tick && [behaviors.POWDER,behaviors.LIQUID].includes(data.tick)) {
+								pseudoVelocity = 1;
+							} else if(data.tick == behaviors.UL_UR_OPTIMIZED) {
+								pseudoVelocity = -1;
+							} else if(pixel.element == "hail") {
+								pseudoVelocity = 2;
+							};
+							vy += pseudoVelocity;
+						};
+						*/
+
+						if(vx === 0 && vy === 0) {
+							ctx.fillStyle = "rgb(15,15,15)"
+						} else {
+							var magnitude = Math.sqrt ((vx ** 2) + (vy ** 2));
+							magnitude *= (10 ** ((50 + magnitude)/50))
+
+							var direction = Math.atan2(pixel.vy ?? 0,pixel.vx ?? 0)*180/Math.PI;
+							if(direction < 0) { direction = -direction + 180 };
+							
+							hue = direction;
+							sat = 100;
+							lig = bound(magnitude,0,100);
+
+							ctx.fillStyle = "hsl("+hue+","+sat+"%,"+lig+"%)";
+						}
+					}
 
 					if(find) { //if find and matching, override fill style with the find coloration
 						if(findElement instanceof Array ? findElement.includes(pixel.element) : pixel.element === findElement) {
@@ -5491,6 +5572,22 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			}
 		});
 		//I hate overwriting drawPixels
+
+        viewKey = {
+            2: "thermal",
+            3: "basic",
+            4: "smooth",
+            5: "velocity"
+        };
+
+        function setView(n) {
+            if (viewKey[n]) { // range of number keys with valid views
+                view = n;
+            }
+            else { // reset view
+                view = null;
+            }
+        };
 
 		runAfterLoad(function() {
 			//Setting
@@ -7966,7 +8063,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 								if(isEmpty(pixel.x+1,pixel.y-1) && isEmpty(pixel.x+1,pixel.y-2) && !outOfBounds(pixel.x+1,pixel.y-1) && !outOfBounds(pixel.x+1,pixel.y-2)) {
 									tryMove(pixelMap[pixel.x][pixel.y-1],pixel.x+1,pixel.y-1)
 									tryMove(pixelMap[pixel.x][pixel.y-2],pixel.x+1,pixel.y-2)
-								}
+								} //7989 yay soshi!
 							}
 						} else {
 							if(isEmpty(pixel.x+1,pixel.y-1) && !outOfBounds(pixel.x+1,pixel.y-1)) {
@@ -8248,7 +8345,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			behavior: behaviors.GAS,
 			category: "gases",
 			state: "gas",
-			density: 550, //7989 yay soshi!
+			density: 550,
 			tick: function(pixel) {
 				if(pixel.y % 6 == 0) {
 					if(pixel.x % 6 == 0) {
@@ -14589,35 +14686,37 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			//Hydrogen sulfide (in chem.js)
 				_h_2s = ["hydrogen_sulfide","liquid_hydrogen_sulfide","hydrogen_sulfide_ice"];
 
-				elements.hydrogen_sulfide.density = 1.19 * airDensity;
-				elements.hydrogen_sulfide.reactions ??= {};
-				elements.hydrogen_sulfide.reactions.head = { elem2: "rotten_meat", chance: 0.4};
-				elements.hydrogen_sulfide.fireColor = { elem2: "rotten_meat", chance: 0.4};
-				elements.hydrogen_sulfide.tempHigh = 1200;
-				elements.hydrogen_sulfide.stateHigh = ["sulfur_gas","steam"];				
-				delete elements.sulfur_dioxide.reactions.water;
-				delete elements.sulfur_dioxide.reactions.steam;
-				delete elements.water.reactions.sulfur;
-				elements.sulfur_dioxide.tick = function(pixel) {
-					var neighbors = adjacentCoords.map(offsetPair => pixelMap[pixel.x+offsetPair[0]]?.[pixel.y+offsetPair[1]]).filter(function(pixelOrUndefined) { return typeof(pixelOrUndefined) == "object" });
-					if(neighbors.length < 2) { return };
-					var neighboringElements = neighbors.filter(function(px) { return !!px }).map(x => x.element);
-					var waterNeighbor = null;
-					var sulfideNeighbor = null; 
-					for(var i = 0; i < neighboringElements.length; i++) {
-						if(_h_2s.includes(neighboringElements[i])) {
-							sulfideNeighbor = adjacentCoords[i];
-						};
-						if(wateroids.includes(neighboringElements[i])) {
-							waterNeighbor = adjacentCoords[i];
-						};
-						if(sulfideNeighbor && waterNeighbor) {
-							if(!sulfideNeighbor || isEmpty(sulfideNeighbor.x,sulfideNeighbor.y,true)) { return };
-							changePixel(sulfideNeighbor,getStateAtTemp("sulfur",pixel.temp));
-							changePixel(pixel,getStateAtTemp("water",pixel.temp));
+				runAfterLoad(function() {
+					elements.hydrogen_sulfide.density = 1.19 * airDensity;
+					elements.hydrogen_sulfide.reactions ??= {};
+					elements.hydrogen_sulfide.reactions.head = { elem2: "rotten_meat", chance: 0.4};
+					elements.hydrogen_sulfide.fireColor = { elem2: "rotten_meat", chance: 0.4};
+					elements.hydrogen_sulfide.tempHigh = 1200;
+					elements.hydrogen_sulfide.stateHigh = ["sulfur_gas","steam"];				
+					delete elements.sulfur_dioxide.reactions.water;
+					delete elements.sulfur_dioxide.reactions.steam;
+					delete elements.water.reactions.sulfur;
+					elements.sulfur_dioxide.tick = function(pixel) {
+						var neighbors = adjacentCoords.map(offsetPair => pixelMap[pixel.x+offsetPair[0]]?.[pixel.y+offsetPair[1]]).filter(function(pixelOrUndefined) { return typeof(pixelOrUndefined) == "object" });
+						if(neighbors.length < 2) { return };
+						var neighboringElements = neighbors.filter(function(px) { return !!px }).map(x => x.element);
+						var waterNeighbor = null;
+						var sulfideNeighbor = null; 
+						for(var i = 0; i < neighboringElements.length; i++) {
+							if(_h_2s.includes(neighboringElements[i])) {
+								sulfideNeighbor = adjacentCoords[i];
+							};
+							if(wateroids.includes(neighboringElements[i])) {
+								waterNeighbor = adjacentCoords[i];
+							};
+							if(sulfideNeighbor && waterNeighbor) {
+								if(!sulfideNeighbor || isEmpty(sulfideNeighbor.x,sulfideNeighbor.y,true)) { return };
+								changePixel(sulfideNeighbor,getStateAtTemp("sulfur",pixel.temp));
+								changePixel(pixel,getStateAtTemp("water",pixel.temp));
+							}
 						}
 					}
-				};
+				});
 
 			//Carbon monoxide
 
@@ -27276,7 +27375,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			for(var name in customWorldTypes) {
 				worldgentypes[name] = customWorldTypes[name]
 			};
-			rebuildWorldgenList()
+			runAfterLoad(rebuildWorldgenList)
 		};
 
 		var promptInputNullishes = ["null","none","","n/a"];
@@ -35911,6 +36010,39 @@ Make sure to save your command in a file if you want to add this preset again.`
 					};
 				};
 
+				elements.disappear = {
+					color: "#7f7f7f",
+					behavior: behaviors.SELFDELETE,
+					insulate: true,
+					temp: -273.15,
+					hardness: 0,
+					excludeRandom: true,
+					category: "other"
+				};
+
+				function forcebombVelocity(pixel,x,y,radius,fire,smoke,power,damage) {
+					var coords = circleCoords(pixel.x,pixel.y,radius);
+					for (var i = 0; i < coords.length; i++) {
+						var coordX = coords[i].x;
+						var coordY = coords[i].y;
+						if(!isEmpty(coordX,coordY,true)) {
+							let pixelle = pixelMap[coordX]?.[coordY];
+							if(typeof(pixelle) !== "object" || pixelle === null) { continue };
+							if(coordX === x && coordY === y) {
+								if(pixelle.element === "force_bomb") { fuckingDeletePixel(pixelle); continue }
+							};
+							// set the pixelle.vx and pixelle.vy depending on the angle and power
+							var angle = Math.atan2(pixelle.y-y,pixelle.x-x);
+							pixelle.vx = Math.round(4 * (pixelle.vx|0) + (5 * Math.cos(angle) * (radius * power/5)));
+							pixelle.vx += (3 * Math.sign(pixelle.vx));
+							pixelle.vx = Math.sign(pixelle.vx) == -1 ? bound(pixelle.vx,-100,0) : bound(pixelle.vx,0,100);
+							pixelle.vy = Math.round(4 * (pixelle.vy|0) + (5 * Math.sin(angle) * (radius * power/5)));
+							pixelle.vy += (3 * Math.sign(pixelle.vy));
+							pixelle.vy = Math.sign(pixelle.vx) == -1 ? bound(pixelle.vy,-100,0) : bound(pixelle.vy,0,100);
+						}
+					};
+				};
+
 				function hotterBomb(pixel,x,y,radius,fire,smoke,power,damage) {
 					//console.log(`Radius: ${radius}\nPower: ${power}\nPixel: (${pixel.x},${pixel.y})\nDamage: ${damage}`);
 					//console.log(`Expected temperature increase for pixel at (${pixel.x},${pixel.y}): ${800 * ((1 + (7 * damage)) ** 2) * ((power ** 2) * 1.5)}`);
@@ -37087,6 +37219,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 							var newInfo = elements[newElement];
 							if(newInfo.state !== "gas" && newElement !== pixel.element) {
 								explodeAtPlus(pixel.x,pixel.y,10,"fire,fire,fire,fire,fire,greek_fire","fire",null,firebombFire);
+								changePixel(pixel,"disappear");
 							};
 						};
 						if(!isEmpty(pixel.x,pixel.y+1,true)) { //[2][1] EX (don't ignore bounds, non-bound case)
@@ -37095,10 +37228,12 @@ Make sure to save your command in a file if you want to add this preset again.`
 							var newInfo = elements[newElement];
 							if(newInfo.state !== "gas" && newElement !== pixel.element) {
 								explodeAtPlus(pixel.x,pixel.y,10,"fire,fire,fire,fire,fire,greek_fire","fire",null,firebombFire);
+								changePixel(pixel,"disappear");
 							};
 						};
 						if(outOfBounds(pixel.x,pixel.y+1)) { //[2][1] EX (don't ignore bounds, bound case)
 							explodeAtPlus(pixel.x,pixel.y,10,"fire,fire,fire,fire,fire,greek_fire","fire",null,firebombFire);
+							changePixel(pixel,"disappear");
 						};
 						if(!tryMove(pixel,pixel.x,pixel.y+1)) { //behaviors.POWDER
 							Math.random() < 0.5 ? tryMove(pixel,pixel.x-1,pixel.y+1) : tryMove(pixel,pixel.x+1,pixel.y+1);
@@ -37109,6 +37244,69 @@ Make sure to save your command in a file if you want to add this preset again.`
 					density: 1500,
 					excludeRandom: true,
 					desc: "An advanced incendiary weapon. <br/>To enable automatic bomb generation, set the generateBombs query parameter.",
+				};
+
+				function fuckingDeletePixel(pixel) {
+					if(
+						typeof(pixel) === "object" &&
+						pixel !== null &&
+						typeof(pixel?.x) === "number" &&
+						typeof(pixel?.y) === "number"
+					) {
+						var pX = pixel.x;
+						var pY = pixel.y;
+						deletePixel(pX,pY);
+						if(typeof(pixel) === "object" && pixel !== null) {
+							var index = currentPixels.indexOf(pixel);
+							if(index > 0) {
+								currentPixels.splice(index)
+							};
+							pixelMap[pX][pY] = undefined
+							pixel = undefined
+							return
+						}
+						return
+					};
+					return
+				};
+
+				elements.force_bomb = {
+					color: ["#7a6749", "#828680", "#89a6b6", "#91c5ed"],
+					tick: function(pixel) {
+						var radius = 8;
+						var fire = ["light",null,null,null,null,null,null,null];
+						if(!isEmpty(pixel.x,pixel.y-1,true)) { //[0][1] EX (ignore bounds)
+							var newPixel = pixelMap[pixel.x][pixel.y-1];
+							var newElement = newPixel.element;
+							var newInfo = elements[newElement];
+							if(newInfo.state !== "gas" && newElement !== pixel.element) {
+								explodeAtPlus(pixel.x,pixel.y,radius+7,fire,null,null,forcebombVelocity);
+								fuckingDeletePixel(pixel); return
+							};
+						};
+						if(!isEmpty(pixel.x,pixel.y+1,true)) { //[2][1] EX (don't ignore bounds, non-bound case)
+							var newPixel = pixelMap[pixel.x][pixel.y+1];
+							var newElement = newPixel.element;
+							var newInfo = elements[newElement];
+							if(newInfo.state !== "gas" && newElement !== pixel.element) {
+								explodeAtPlus(pixel.x,pixel.y,radius+7,fire,null,null,forcebombVelocity);
+								fuckingDeletePixel(pixel); return
+							};
+						};
+						if(outOfBounds(pixel.x,pixel.y+1)) { //[2][1] EX (don't ignore bounds, bound case)
+							explodeAtPlus(pixel.x,pixel.y,radius+7,fire,null,null,forcebombVelocity);
+							fuckingDeletePixel(pixel); return
+						};
+						if(!tryMove(pixel,pixel.x,pixel.y+1)) { //behaviors.POWDER
+							Math.random() < 0.5 ? tryMove(pixel,pixel.x-1,pixel.y+1) : tryMove(pixel,pixel.x+1,pixel.y+1);
+						};
+						return
+					},
+					category: "weapons",
+					state: "solid",
+					density: 2000,
+					excludeRandom: true,
+					desc: "A bomb that sends pixels flying. <br/>To enable automatic bomb generation, set the generateBombs query parameter.",
 				};
 
 				elements.cluster_nuke = {
@@ -45658,13 +45856,15 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 
 	var notActuallyMovable = ["pipe","e_pipe","steel","vivite"];
 
-	for(var i = 0; i < notActuallyMovable.length; i++) {
-		var name = notActuallyMovable[i];
-		Object.defineProperty(elements[name], "movable", {
-			value: false,
-			writable: false //**** you, you're not changing it to true.
-		});		
-	};
+	runAfterLoad(function() {
+		for(var i = 0; i < notActuallyMovable.length; i++) {
+			var name = notActuallyMovable[i];
+			Object.defineProperty(elements[name], "movable", {
+				value: false,
+				writable: false //**** you, you're not changing it to true.
+			});		
+		}
+	});
 
 	elements.unknown = {
 		color: "#FFFFFF",
