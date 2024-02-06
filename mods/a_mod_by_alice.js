@@ -797,7 +797,13 @@ try {
 						if(typeof(a) == "number") { color["a"] = a };
 					} else {					
 						//otherwise assume rgb() input
-						bytes = color.match(/[\d\.]+/g).map(x => Number(x));
+						bytes = color.match(/[\d\.]+/g);
+						if(typeof(bytes?.map) == "undefined") {
+							console.log(bytes);
+							bytes = [255,0,255]
+						} else {
+							bytes = bytes.map(x => Number(x));
+						};
 						r = bytes[0];
 						g = bytes[1];
 						b = bytes[2];
@@ -2636,6 +2642,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 								rgbos.push("rgb(255,255,255)")
 							} else if (c.startsWith("#")) {
 								var rgb = hexToRGB(c);
+								if(rgb == null) { console.log(key,c); rgb = {r: 255, g: 255, b: 255} };
 								rgbs.push("rgb("+rgb.r+","+rgb.g+","+rgb.b+")");
 								rgbos.push(rgb);
 							}
@@ -2668,7 +2675,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			if (!(newcolor instanceof Array)) { newcolor = [newcolor]; }
 			// for every color in the newcolor array, add a new color with the same value, but with the r and g values increased
 			for (var i = 0; i < newcolor.length; i++) {
-				var c = newcolor[i];
+				var c = newcolor[i] ?? "#ff00ff";
 				for (var j = 0; j < autoInfo.rgb.length; j++) {
 					var newc = autoInfo.rgb[j];
 					r = Math.floor(c.r * newc[0]);
@@ -10836,7 +10843,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		var lifeEaterWhitelist = ["blood","poop","blood_ice","wood","wood_plank","sawdust","straw","paper","birthpool","dried_poop","gloomfly","meat_monster","rotten_ravager","bone_beast","withery","withery_plant","banana","apple","rotten_apple","apioform_player","apioform_bee","apioform","apiodiagoform","sugar_cactus","sugar_cactus_seed","flowering_sugar_cactus","tree_branch","sap","silk","red_velvet","silk_velvet","ketchup", "enchanted_ketchup", "frozen_ketchup", "poisoned_ketchup", "frozen_poisoned_ketchup", "ketchup_spout", "ketchup_cloud", "poisoned_ketchup_cloud", "ketchup_snow", "ketchup_snow_cloud", "poisoned_ketchup_snow", "poisoned_ketchup_snow_cloud", "ketchup_gas", "poisoned_ketchup_gas", "ketchup_powder", "poisoned_ketchup_powder", "eketchup_spout", "ketchup_metal", "antiketchup", "dirty_ketchup", "ketchup_gold", "molten_ketchup_metal", "ketchup_fairy", "ketchup_metal_scrap", "ketchup_gold_scrap", "molten_ketchup_gold", "mycelium","vaccine","antibody","infection","sap","caramel","molasses","melted_chocolate","soda","mustard","fry_sauce","tomato_sauce","sugary_tomato_sauce","bio_ooze","zombie_blood","feather","tooth","decayed_tooth","plaque","tartar","bacteria","replacer_bacteria","pop_rocks"];
 		var lifeEaterSubstitutions = {
 			"dirt": "life_eater_infected_dirt",
-			"crimsoil": "life_eater_infected_dirt"
+			"crimsoil": "life_eater_infected_dirt",
+			"rainbow_dirt": "life_eater_infected_dirt"
 		};
 
 
@@ -17104,7 +17112,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		//https://www.jamieswhiteshirt.com/minecraft/mods/gases/information/?Licensing
 
 		//Coal exists in NM
-		elements.coal.breakInto = "coal_dust";
+		runAfterLoad(function() {
+			elements.coal.breakInto = "coal_dust"
+		});
 
 		elements.coal_dust = {
 			color: "#363023",
@@ -21005,7 +21015,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									if(crimsonObject[elementToCheck]) {
 										changePixel(destPixel,crimsonObject[elementToCheck]);
 									};
-									grassSpread(pixel,["dirt","crimsoil"],"crimson_grass",0.5);
+									grassSpread(pixel,["dirt","crimsoil","rainbow_dirt"],"crimson_grass",0.5);
 								};
 							};
 						};
@@ -21958,7 +21968,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					return color;
 				};
 
-				var sands = ["sand", "dirt", "crimsoil"]; //Some sources suggest the existence of topsoil sediment, so for the purposes of sedimentary rock generation, dirt is now a sand /hj
+				var sands = ["sand", "dirt", "crimsoil", "rainbow_dirt"]; //Some sources suggest the existence of topsoil sediment, so for the purposes of sedimentary rock generation, dirt is now a sand /hj
 				var wetSands = ["wet_sand", "mud"];
 				var sandSuspensions = [];
 				var sandSediments = ["radioactive_sand_sediment","clay_sediment"];
@@ -23181,11 +23191,18 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							sandstoneName = "soilstone"; //differentiated from mudstone, which is actually the *packed* dirt (analogously to sand's relationship to packed sand)
 							dustName = "dirt_dust";
 							break;
+						case "rainbow_dirt":
+							suspensionName = "rainbow_muddy_water";
+							wetSandName = "rainbow_mud";
+							sedimentName = "rainbow_soil_sediment";
+							sandstoneName = "rainbow_soilstone";
+							dustName = "rainbow_dirt_dust";
+							break;
 						case "crimsoil":
 							suspensionName = "crimmuddy_water";
-							wetSandName = "crimmud"; //needs special code to not generate a wet dirt and instead use vanilla mud as the wet "sand" here
+							wetSandName = "crimmud";
 							sedimentName = "crimsoil_sediment";
-							sandstoneName = "crimsoilstone"; //differentiated from mudstone, which is actually the *packed* dirt (analogously to sand's relationship to packed sand)
+							sandstoneName = "crimsoilstone";
 							dustName = "crimsoil_dust";
 							break;
 						case 143: //sorry, i had to
@@ -23271,7 +23288,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							density: 1000 + (sandInfo.density * 0.06),
 							conduct: 0.02,
 							stain: 0.01,
-							_data: [sandInfo._data[0], sandInfo._data[1], "suspension"],
+							_data: [sandInfo?._data?.[0] ?? "unknown", sandInfo?._data?.[1] ?? "unknown", "suspension"],
 						}
 
 						if(elements[dustName]) {
@@ -23338,7 +23355,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							state: "solid",
 							density: elements[wetSandName].density + 150,
 							breakInto: sandName,
-							_data: [sandInfo._data[0], sandInfo._data[1], "sediment"],
+							_data: [sandInfo?._data?.[0] ?? "unknown", sandInfo?._data?.[1] ?? "unknown", "sediment"]
 						};
 
 					//Final rock
@@ -23354,6 +23371,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										return elements.dry_dirt.tempHigh;
 									case "crimsoil":
 										return elements.crimsoil.tempHigh;
+									case "rainbow_dirt":
+										return elements.rainbow_dirt.tempHigh;
 									default:
 										return elements[sandName].tempHigh
 								}
@@ -23366,6 +23385,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										return "magma";
 									case "dirt":
 										return "hot_soilstone";
+									case "rainbow_dirt":
+										return "hot_rainbow_dirt";
 									case "crimsoil":
 										return "hot_crimsoilstone";
 									default:
@@ -23383,7 +23404,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							hardness: 0.5,
 							breakInto: sandName,
 							maxColorOffset: 30,
-							_data: [sandInfo._data[0], sandInfo._data[1]+"_sandstone", "sedimentary_rock"],
+							_data: [sandInfo?._data?.[0] ?? "unknown", (sandInfo?._data?.[1] ?? "unknown") + "_sandstone", "sedimentary_rock"],
 						};
 				};
 
@@ -23608,8 +23629,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								break;
 							case "crimsoil":
 								sandSuspensions.push("crimmuddy_water");
-								sandSediments.push("scrimoil_sediment");
+								sandSediments.push("crimsoil_sediment");
 								sandstones.push("crimsoilstone");
+								break;
+							case "rainbow_dirt":
+								sandSuspensions.push("rainbow_muddy_water");
+								sandSediments.push("rainbow_soil_sediment");
+								sandstones.push("rainbow_soilstone");
 								break;
 							default:
 								sandSuspensions.push(sands[i] + "y_water");
@@ -24939,13 +24965,21 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							function newDirtType(names,dirtColor,density,meltingPoint,frostingPoint) {
 								if(!(dirtColor instanceof Array)) { dirtColor = [dirtColor] };
 
-								var mudColor = dirtColor.map(x => colorToHsl(x,"json")); mudColor.forEach(function(x) { x.s *= (41/21); x.l *= (26/15) }); mudColor = mudColor.map(function(x) { return hslToHex(...Object.values(x)) });
+								var mudColor = dirtColor.map(x => colorToHsl(x,"json")); mudColor.forEach(function(x) { x.s *= (41/21); x.l *= (15/26) }); mudColor = mudColor.map(function(x) { return hslToHex(...Object.values(x)) });
 								if(mudColor.length == 1) { mudColor = mudColor[0] };
 
-								var mudstoneColor = dirtColor.map(x => colorToHsl(x,"json")); mudstoneColor.forEach(function(x) { x.h += 6; x.s *= (41/21); x.l *= (26/15); x.l += 5 }); mudstoneColor = mudstoneColor.map(function(x) { return hslToHex(...Object.values(x)) });
+								var mudstoneColor = dirtColor.map(x => colorToHsl(x,"json")); mudstoneColor.forEach(function(x) { x.h += 6; x.s *= (31/41); x.l *= (26/15); x.l += 5 }); mudstoneColor = mudstoneColor.map(function(x) { return hslToHex(...Object.values(x)) });
 								if(mudstoneColor.length == 1) { mudstoneColor = mudstoneColor[0] };
 
-								var dryDirtColor = dirtColor.map(x => colorToHsl(x,"json")); dryDirtColor.forEach(function(x) { x.h += 4; x.s *= (8/11); x.l *= (34/50); x.l += 5 }); dryDirtColor = dryDirtColor.map(function(x) { return hslToHex(...Object.values(x)) });
+								var dryDirtColor = dirtColor.map(x => colorToHsl(x,"json")); dryDirtColor.forEach(function(x) { x.h += 4; x.s *= (8/11); x.l *= (34/50); x.l += 5 }); dryDirtColor = dryDirtColor.map(function(x) {
+									x = convertHslObjects(x,"rgbjson");
+									x.r += 10;
+									x.g += 5; //XG??!?!??!?!?!??!?!!??!?!?!?!??!?!?!?!/1/1/1?!/!?!?1?1??!/!1//!
+									x.b -= 10;
+									x.g *= 0.94;
+									x.b *= 0.88;
+									return convertColorFormats(x,"hex");
+								});
 								if(dryDirtColor.length == 1) { dryDirtColor = dryDirtColor[0] };
 
 								var permafrostColor = dirtColor.map(x => colorToHsl(x,"json")); permafrostColor.forEach(function(x) { x.h -= 6; x.s *= (3/5); x.l -= 3 }); permafrostColor = permafrostColor.map(function(x) { return hslToHex(...Object.values(x)) });
@@ -25115,7 +25149,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 
 							elements.molten_crimsoil = {
 								tempLow: elements.dry_crimsoil.tempHigh,
-								stateLow: "dry_crimsoil"
+								stateLow: "dry_crimsoil",
+								stateHigh: "crimson_magma"
 							};
 							crimsonObject.dirt = "crimsoil";
 							crimsonObject.dry_dirt = "dry_crimsoil";
@@ -25125,6 +25160,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							crimsonObject.molten_dirt = "molten_crimsoil";
 							crimsonObject.dry_permafrost = "dry_crimson_permafrost";
 							runAfterLoad(function() {
+								elements.molten_crimsoil.tempHigh = elements.crimson_magma.tempHigh;
 								elements.crimsandy_water.color = ["#985460", "#a8606c", "#a05864", "#b46c74", "#84404c", "#985460", "#a8606c", "#a05864", "#b46c74", "#84404c", "#903844", "#b44450" ] //manual: use crimwater for the lerp in crimsand suspension's color
 								elements.crimmuddy_water.color = ["#ed4154", "#f25259", "#f2444c", "#f25a62", "#df428d" ]; //same for crimsoil (crimmud) susp.
 								elements.crimwater.reactions.crimsand = elements.water.reactions.crimsand;
@@ -25142,6 +25178,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									if(e2 == "water") { reactionObject.elem2 = "crimwater" };
 								};
 								elements.crimmuddy_water.reactions.crimmuddy_water.elem2 = "crimsoil_sediment";
+								elements.rainbow_muddy_water.reactions.rainbow_muddy_water.elem2 = "rainbow_soil_sediment"
 								elements.crimsoilstone.tempHigh = 800;
 							});
 
@@ -25261,6 +25298,31 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								_data: ["iridian","crystalline","packed_particulate"],
 								nellfireImmune: true,
 							};
+
+							
+
+							newDirtType(
+								{dirt: "rainbow_dirt", mud: "rainbow_mud", permafrost: "rainbow_permafrost", mudstone: "rainbow_mudstone"},
+								"#b09eac #b0bfa1 #d9c0b6 #b09eac #b0bfa1 #d9c0b6 #ed7777 #a7d975 #7bd4d4 #ab77e0 #e0cf77".split(" "),
+								1533, 942, -110
+							);
+
+							elements.rainbow_dirt._data = ["iridian","soil","particulate"];
+							elements.dry_rainbow_dirt._data = ["iridian","soil","particulate"];
+							elements.rainbow_mud._data = ["iridian","soil","wet_particulate"];
+							elements.rainbow_mudstone._data = ["iridian","soil","packed_particulate"];
+							elements.rainbow_permafrost._data = ["iridian","soil","icy_particulate"];
+							elements.dry_rainbow_permafrost._data = ["iridian","soil","particulate"];
+
+							elements.molten_rainbow_dirt = {
+								tempLow: elements.dry_rainbow_dirt.tempHigh,
+								stateLow: "dry_rainbow_dirt",
+								stateHigh: "rainbow_magma"
+							};
+							runAfterLoad(function() {
+								elements.rainbow_soilstone.tempHigh = 800;
+								elements.molten_rainbow_dirt.tempHigh = elements.rainbow_magma.tempHigh;
+							});
 
 						//Vanilla changes
 							elements.water.reactions.rainbow_sand = { elem1: null, elem2: "wet_rainbow_sand" };
@@ -25798,6 +25860,15 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 													break;
 											};
 											break;
+										case "crystalline_sandstone":
+										case "soil_sandstone":
+											nellburnObject[name] = "nell_ash"
+											break;
+										case "sedimentary":
+											if(info._data[0] == "calcium") {
+												nellburnObject[name] = "black_limestone";
+												break
+											};
 										default:
 											console.log("Nellburn assignment: Unknown _data[1] value for element",name,info._data);
 									};
@@ -26180,6 +26251,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										crimsonObject[name] = "crimsandstone"
 										break;
 									case "soil_sandstone":
+										crimsonObject[name] = "crimsoilstone"
+										break;
+									case "rainbow_soil_sandstone":
 										crimsonObject[name] = "crimsoilstone"
 										break;
 									case "magma":
@@ -26768,6 +26842,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						elements.hot_crimsoilstone.stateHigh = "molten_crimsoil";
 						elements.crimsoil.tempHigh = 100;
 						elements.crimsoil.stateHigh = "dry_crimsoil";
+						elements.hot_rainbow_soilstone.stateHigh = "molten_rainbow_dirt";
+						elements.rainbow_dirt.tempHigh = 100;
+						elements.rainbow_dirt.stateHigh = "dry_rainbow_dirt";
 					});
 
 		//Generation
@@ -35130,7 +35207,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			bomb: { panicChange: 0.2, panicChangeChance: 0.4, moodChange: -0.3 },
 			tnt: { panicChange: 0.2, panicChangeChance: 0.4, moodChange: 0 },
 			dynamite: { panicChange: 0.2, panicChangeChance: 0.4, moodChange: -0.3 },
-			anti_bomb: { panicChange: 0.2, panicChangeChance: 0.4, moodChange: -0.3 },
+			upward_bomb: { panicChange: 0.2, panicChangeChance: 0.4, moodChange: -0.3 },
 			cluster_bomb: { panicChange: 0.2, panicChangeChance: 0.4, moodChange: -0.4 },
 			landmine: { panicChange: 0.25, panicChangeChance: 0.1, moodChange: -0.3 },
 			fireball: { panicChange: 0.25, panicChangeChance: 0.45, moodChange: -0.35 },
@@ -37208,7 +37285,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 
 			//Bombs
 
-				elements.anti_bomb = {
+				elements.upward_bomb = {
 					color: "#625c71",
 					behavior: [
 						"M2|M1 AND EX:10|M2",
@@ -37335,7 +37412,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					desc: "It's a nuke that drops more nukes. <br/>To enable automatic bomb generation, set the generateBombs query parameter.",
 				};
 
-				elements.anti_bomb = {
+				elements.upward_bomb = {
 					color: "#525c61",
 					behavior: [
 						"M2|M1 AND EX:10|M2",
@@ -37614,7 +37691,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 
 				for (var i = 2; i <= bombAmount + 1; i++) {
-					elements[`anti_bomb_${i}`] = {
+					elements[`upward_bomb_${i}`] = {
 						color: "#625c71",
 						behavior: [
 							`M2|M1 AND EX:${5*(i+1)}>fire|M2`,
@@ -37628,7 +37705,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 						desc: `${5*(i+1)/10} times the radius of the regular anti-bomb`,
 						cooldown: defaultCooldown,
 					};
-					eLists.BOMB.push(`anti_bomb_${i}`);
+					eLists.BOMB.push(`upward_bomb_${i}`);
 				};
 
 			//Fairies
@@ -44293,6 +44370,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			"dirt": "poisoned_dirt",
 			"dry_dirt": "poisoned_dirt",
 			"crimsoil": "poisoned_dirt",
+			"rainbow_dirt": "poisoned_dirt",
 			"sand": "poisoned_dirt",
 			"wet_sand": "poisoned_dirt",
 			"mud": "poisoned_dirt",
