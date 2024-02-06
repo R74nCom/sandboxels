@@ -52,53 +52,57 @@ elements.color_baker = {
 	excludeRandom: true,
 	desc: "Use to bake a metals paint color into its 'true' color, for heating purposes.",
 }
-//const plantfunc = function(pixel){
-//	if (pixel.ogR == null || pixel.ogG == null || pixel.ogB == null){
-//			pixel.ogR = parseInt(pixel.color.slice(4, pixel.color.indexOf(',')), 10)
-//			pixel.ogG = parseInt(pixel.color.slice(pixel.color.indexOf(',') + 1, pixel.color.lastIndexOf(',')), 10)
-//			pixel.ogB = parseInt(pixel.color.slice(pixel.color.lastIndexOf(',') + 1, -1), 10)
-//			pixel.deadR = 130;
-//			pixel.deadG = 103;
-//			pixel.deadB = 40;
-//			pixel.burnR = 30;
-//			pixel.burnG = 30;
-//			pixel.burnB = 30;
-//		}else{
-//		pixel.gethigh = (elements[pixel.element].tempHigh)
-//		pixel.halftemp = ((20+pixel.gethigh)/2)
-//			if (pixel.temp <= (pixel.gethigh) - pixel.halftemp){
-//				pixel.ctemp = 0;
-//				pixel.twoctemp = 0,
-//				pixel.littlectemp = 1;
-//			} else if (pixel.temp > (pixel.gethigh)-pixel.halftemp && pixel.temp <= pixel.gethigh){
-//				pixel.ctemp = ((1/pixel.halftemp)*pixel.temp)-(((pixel.gethigh)-pixel.halftemp)/pixel.halftemp);
-//				pixel.twoctemp = pixel.ctemp*2;
-//				pixel.littlectemp = 2*(1-(pixel.ctemp));
-//			}
-//			if (pixel.ctemp <= 0.5){
-//			pixel.newR = ((pixel.twoctemp*pixel.deadR)+(pixel.littlectemp*pixel.ogR)/(pixel.twoctemp+pixel.littlectemp));
-//				pixel.newG = ((pixel.twoctemp*pixel.deadG)+(pixel.littlectemp*pixel.ogG)/(pixel.twoctemp+pixel.littlectemp));
-//				pixel.newB = ((pixel.twoctemp*pixel.deadB)+(pixel.littlectemp*pixel.ogB)/(pixel.twoctemp+pixel.littlectemp));
-//			}else if (pixel.ctemp > 0.5){
-//				pixel.newR = (((pixel.twoctemp*pixel.deadR)+(pixel.littlectemp*pixel.burnR))/(pixel.twoctemp*pixel.littlectemp));
-//				pixel.newG = (((pixel.twoctemp*pixel.deadG)+(pixel.littlectemp*pixel.burnG))/(pixel.twoctemp*pixel.littlectemp));
-//				pixel.newB= (((pixel.twoctemp*pixel.deadB)+(pixel.littlectemp*pixel.burnB))/(pixel.twoctemp*pixel.littlectemp));
-//			}
-//			pixel.color = "rgb(" + pixel.newR + "," + pixel.newG + "," + pixel.newB + ")";
-//		}
-//	};
-//	if (!eLists.burnplants) { eLists.burnplants = [] }
-//	eLists.burnplants = eLists.burnplants.concat(["plant","dead_plant","grass","algae","sapling","evergreen","cactus","seeds","grass_seed","wheat_seed","flower_seed","pistil","petal","tree_branch","bamboo_plant","mushroom_spore","mushroom_stalk","mushroom_gill","mushroom_cap","hyphae","pumpkin_seed","pumpkin","corn","corn_seed","potato","potato_seed","root"])
-//eLists.burnplants.forEach(plant => { 
-//	const prefunc = elements[plant].tick;
-//	if (!prefunc){
-//		elements[plant].tick = plantfunc;
-//	}else{
-//		const modfunc = function(pixel){
-//			prefunc(pixel);
-//			plantfunc(pixel);
-//		};
-//		elements[plant].tick = modfunc;
-//	}
-//});
-	
+/*
+function weightedAverage(num1, num2, weight){
+	return ((weight * num1)+((1-weight)*num2))
+}
+ const plantfunc = function(pixel){
+	if (pixel.ogR == null || pixel.ogG == null || pixel.ogB == null){
+			pixel.ogR = parseInt(pixel.color.slice(4, pixel.color.indexOf(',')), 10)
+			pixel.ogG = parseInt(pixel.color.slice(pixel.color.indexOf(',') + 1, pixel.color.lastIndexOf(',')), 10)
+			pixel.ogB = parseInt(pixel.color.slice(pixel.color.lastIndexOf(',') + 1, -1), 10)
+			var deadR = 130;
+			var deadG = 103;
+			var deadB = 40;
+			var burnR = 30;
+			var burnG = 30;
+			var burnB = 30;
+			var newR = pixel.ogR;
+			var newG = pixel.ogG;
+			var newB = pixel.ogB;
+		}else{
+		var gethigh = (elements[pixel.element].tempHigh)
+		var halftemp = ((20+gethigh)/2)
+		if (pixel.temp > halftemp){
+				var ctemp = ((1/halftemp)*pixel.temp)-(((gethigh)-halftemp)/halftemp);
+			} else (ctemp = 0)
+			if (ctemp <= 0.5 && ctemp > 0){
+				newR = weightedAverage(deadR, pixel.ogR, 2*ctemp);
+				newG = weightedAverage(deadG, pixel.ogG, 2*ctemp);
+				newB = weightedAverage(deadB, pixel.ogB, 2*ctemp);
+			}else if (ctemp > 0.5){
+				var modctemp = 2*(ctemp%0.5)
+				newR = weightedAverage(burnR, deadR, 2*modctemp);
+				newG = weightedAverage(burnG, deadG, 2*modctemp);
+				newB = weightedAverage(burnB, deadB, 2*modctemp);
+			}
+			if (!ctemp == 0){
+			pixel.color = "rgb(" + newR + "," + newG + "," + newB + ")";
+			} else {pixel.color = "rgb(" + pixel.ogR + "," + pixel.ogG + "," + pixel.ogB + ")"}
+		}
+	};
+	if (!eLists.burnplants) { eLists.burnplants = [] }
+	eLists.burnplants = eLists.burnplants.concat(["plant","dead_plant","grass","algae","sapling","evergreen","cactus","seeds","grass_seed","wheat_seed","flower_seed","pistil","petal","tree_branch","bamboo_plant","mushroom_spore","mushroom_stalk","mushroom_gill","mushroom_cap","hyphae","pumpkin_seed","pumpkin","corn","corn_seed","potato","potato_seed","root"])
+eLists.burnplants.forEach(plant => { 
+	const prefunc = elements[plant].tick;
+	if (!prefunc){
+		elements[plant].tick = plantfunc;
+	}else{
+		const modfunc = function(pixel){
+			prefunc(pixel);
+			plantfunc(pixel);
+		};
+		elements[plant].tick = modfunc;
+	}
+});
+ */
