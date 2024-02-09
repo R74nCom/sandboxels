@@ -2006,6 +2006,7 @@ elemfillerVar = 0;
 elements.element_filler = {
     category: "special",
     color: elements.filler.color,
+    excludeRandom: true,
     state: "solid",
     movable: "false",
     onSelect: function() {
@@ -2040,6 +2041,7 @@ var outlinerVar = 0
 elements.outliner = {
     color: elements.filler.color,
     category: elements.filler.category,
+    excludeRandom: true,
     onSelect: function() {
         var answerot = prompt("Please input the desired element of this outliner. It will not work if you do multiple filter types while paused.",(outlinerVar||undefined));
         if (!answerot) { return }
