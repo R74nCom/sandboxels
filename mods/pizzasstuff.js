@@ -113,7 +113,8 @@ elements.mint_chocolate_ice_cream = {
 
 
 elements.chocolate_yogurt = {
-	color: ["#654321","#71512b","#7e5f36","#8a6e42","#967d50"],
+	color: ["#a87848","#a57e57","#c1a07f","#e2c5ac","#efd0b1"],
+	stateLowColorMultiplier: 1.3,
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
 	state: "solid",
@@ -124,6 +125,7 @@ elements.chocolate_yogurt = {
 
 elements.fruit_yogurt = {
 	color: ["#ffc3d8","#ffabd6","#ff96c5","#ff84c2","#ff5daf"],
+	stateLowColorMultiplier: 1.3,
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
 	state: "solid",
@@ -134,6 +136,7 @@ elements.fruit_yogurt = {
 
 elements.frozen_fruit_yogurt = {
 	color: ["#ffdfdf","#ffc0c0","#ff9b9b"],
+	stateLowColorMultiplier: 0.7,
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
 	state: "solid",
@@ -146,6 +149,7 @@ elements.frozen_fruit_yogurt = {
 
 elements.frozen_chocolate_yogurt = {
 	color: ["#a87848","#a57e57","#c1a07f","#e2c5ac","#efd0b1"],
+	stateLowColorMultiplier: 0.7,
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
 	state: "solid",
@@ -355,7 +359,6 @@ elements.smashed_ice = {
 		"kiwi": { elem1: null, elem2: "fruit_slushy" },
 		"strawberry": { elem1: null, elem2: "fruit_slushy"},
 		"chocolate": { elem1: null, elem2: "chocolate_slushy" },
-		"juice": { elem1: null, elem2: "fruit_slushy" },
 		"chocolate_sauce": { elem1: null, elem2: "chocolate_slushy" },
     },
 	density: 100,
@@ -966,7 +969,11 @@ elements.currant = {
 
 elements.sprite_cranberry = {
 	color: ["#65000f","#89001c","#b40024"],
-	behavior: behaviors.LIQUID,
+	behavior: [
+        "XX|CR:foam%2|XX",
+        "M2|XX|M2",
+        "M2|M1|M2",
+    ],
 	category: "liquids",
 	state: "solid",
 };
@@ -989,6 +996,28 @@ elements.broccoli = {
 	state: "solid",
 	breakInto: "juice",
 	breakIntoColor: ["#00b215","#0b8500"],
+};
+
+elements.broccoli_seed = {
+    color: "#b6c981",
+    behavior: [
+        "XX|M2%0.25|XX",
+        "XX|L2:broccoli AND C2:broccoli%30|XX",
+        "XX|M1|XX",
+    ],
+    tempHigh: 400,
+    stateHigh: "fire",
+    tempLow: -2,
+    stateLow: "frozen_plant",
+    burn: 50,
+    burnTime: 20,
+    breakInto: null,
+    category: "life",
+    state: "solid",
+    density: 769,
+    hidden: true,
+    cooldown: defaultCooldown,
+    seed: true,
 };
 
 elements.hot_pepper = {
@@ -1246,6 +1275,83 @@ elements.chocolate_fountain = {
 	state: "solid",
 };
 
+elements.legacy_rocket = {
+	color: "#ff0000",
+    behavior: [
+        "XX|M1|XX",
+        "XX|DL%1|XX",
+        "CR:smoke|CR:fire|CR:smoke",
+    ],
+    category: "special",
+    hidden:true,
+    state: "solid",
+    temp:700,
+    density: 7300,
+    conduct: 0.73,
+    tempHigh: 1455.5,
+    stateHigh: "molten_steel"
+};
+
+elements.legacy_lattice = {
+	color: "#cb4cd9",
+    behavior: [
+        "CL|XX|CL",
+        "XX|XX|XX",
+        "CL|XX|CL",
+    ],
+    hidden: true,
+    category:"special",
+    excludeRandom: true
+};
+
+elements.top_lattice = {
+	color: "#cb4cd9",
+    behavior: [
+        "CL|XX|CL",
+        "XX|XX|XX",
+        "XX|XX|XX",
+    ],
+    hidden: true,
+    category:"special",
+    excludeRandom: true
+};
+
+elements.bottom_lattice = {
+	color: "#cb4cd9",
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "CL|XX|CL",
+    ],
+    hidden: true,
+    category:"special",
+    excludeRandom: true
+};
+
+elements.right_lattice = {
+	color: "#cb4cd9",
+    behavior: [
+        "XX|XX|CL",
+        "XX|XX|XX",
+        "XX|XX|CL",
+    ],
+    hidden: true,
+    category:"special",
+    excludeRandom: true
+};
+
+elements.left_lattice = {
+	color: "#cb4cd9",
+    behavior: [
+        "CL|XX|XX",
+        "XX|XX|XX",
+        "CL|XX|XX",
+    ],
+    hidden: true,
+    category:"special",
+    excludeRandom: true
+};
+
 elements.toorhpaste = {
 	color: ["#31ffe0","#65ffe8","#97ffef","#c9fff7","#f3fffd"],
 	behavior: behaviors.LIQUID,
@@ -1326,6 +1432,9 @@ elements.herb.breakInto = "seasoning"
 
 elements.chocolate.breakInto = "chocolate_sauce"
 
+if (!elements.bless.reactions) elements.bless.reactions = {};
+elements.bless.reactions.mold = { elem2: null }
+
 if (!elements.vinegar.reactions) elements.vinegar.reactions = {};
 elements.vinegar.reactions.broccoli = { elem1: null, elem2: "pickle" }
 
@@ -1355,9 +1464,6 @@ elements.vinegar.reactions.asparagus = { elem1: null, elem2: "pickle" }
 
 if (!elements.vinegar.reactions) elements.vinegar.reactions = {};
 elements.vinegar.reactions.asparagus = { elem1: null, elem2: "pickle" }
-
-if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
-elements.ice_cream.reactions.juice = { elem1: "fruit_ice_cream", elem2: null }
 
 if (!elements.ice_cream.reactions) elements.ice_cream.reactions = {};
 elements.ice_cream.reactions.grape = { elem1: "fruit_ice_cream", elem2: null }
@@ -1463,9 +1569,6 @@ elements.ice_cream.reactions.melted_chocolate = { elem1: "chocolate_ice_cream", 
 
 if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
 elements.yogurt.reactions.grape = { elem1: "fruit_yogurt", elem2: null }
-
-if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
-elements.yogurt.reactions.juice = { elem1: "fruit_yogurt", elem2: null }
 
 if (!elements.yogurt.reactions) elements.yogurt.reactions = {};
 elements.yogurt.reactions.green_grape = { elem1: "fruit_yogurt", elem2: null }

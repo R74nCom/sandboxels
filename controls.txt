@@ -36,6 +36,9 @@ Drag & Drop       =  Insert an image or load save file
 Paste             =  Insert an image or load save file
 Escape            =  Close Menu / Clear Logs
 ;                 =  Replace Mode
+Shift + Mid Click =  Pick Element (Copy Properties)
+Z                 =  Select Secondary Element
+Baskspace         =  Select Previous Element
 
 (Alt/Option can be used in place of Shift)
 
