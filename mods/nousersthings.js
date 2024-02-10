@@ -2082,7 +2082,7 @@ textures.transparency = [
     "gggwww"
 ]
 elements.transparency = {
-    color: ["#d9d9d9", "#828282"],
+    color: ["#d4d4d4", "#ffffff"],
     colorPattern: textures.transparency,
     colorKey: {
         "g": "#D4D4D4",
