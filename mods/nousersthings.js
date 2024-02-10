@@ -2073,3 +2073,22 @@ elements.outliner = {
         }
     }
 }
+textures.transparency = [
+    "wwwggg",
+    "wwwggg",
+    "wwwggg",
+    "gggwww",
+    "gggwww",
+    "gggwww"
+]
+elements.transparency = {
+    color: ["#d9d9d9", "#828282"],
+    colorPattern: textures.transparency,
+    colorKey: {
+        "g": "#D4D4D4",
+        "w": "#ffffff"
+    },
+    behavior: behaviors.WALL,
+    category: "special",
+    state: "solid"
+}
