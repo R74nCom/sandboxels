@@ -96,4 +96,67 @@ elements.right_missile = {
     category: "weapons",
     state: "solid",
     density: 1300,
+},
+    elements.RL_cluster_munition = {
+    color: "#444444",
+    behavior: [
+        "XX|XX|XX",
+        "CRcluster%20|XX|CR:cluster%20",
+        "M2|M1|M2",
+    ],
+    category: "weapons",
+    state: "solid",
+    density: 1300,
+},
+    elements.cluster = {
+    color: "#444444",
+    behavior: [
+        "XX|EX:10%10|XX",
+        "XX|XX|XX",
+        "M2|M1 AND EX:10%10|M2",
+    ],
+    category: "weapons",
+    state: "solid",
+    density: 1300,
+    hidden: true,
+},
+    elements.machine_gun_left = {
+    color: "#C0C0C0",
+    behavior: [
+        "XX|XX|XX",
+        "CR:left_bullet|XX|XX",
+        "XX|XX|XX",
+    ],
+    category: "weapons",
+    state: "solid",
+    density: 1300,
+},
+    elements.machine_gun_right = {
+    color: "#C0C0C0",
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|CR:right_bullet",
+        "XX|XX|XX",
+    ],
+    category: "weapons",
+    state: "solid",
+    density: 1300,
+},
+elements.left_bullet = {
+    color: "#4c4e42",
+    behavior: [
+        "M2|XX|XX",
+        "M1 AND EX:5|XX|XX",
+        "M2|XX|XX",
+    ],
+    category:"weapons",
+},
+    elements.right_bullet = {
+    color: "#4c4e42",
+    behavior: [
+        "XX|XX|M2",
+        "XX|XX|M1 AND EX:5",
+        "XX|XX|M2",
+    ],
+    category:"weapons",
 };
