@@ -1613,11 +1613,7 @@ elements.molten_bismuth = {
               }
             }
             changePixel(pixel, "bismuth")
-            if (1 == 1){
-                var rgbResult = HSVtoRGB(pixel.tHue + 0.02, 0.8, 0.8);
-            } else {
-                var rgbResult = HSVtoRGB(pixel.tHue, 0.8, 0.8);
-            }
+            var rgbResult = HSVtoRGB(pixel.tHue + 0.08, 0.5, 0.9);
             const hexR = rgbResult.r.toString(16).padStart(2, '0');
             const hexG = rgbResult.g.toString(16).padStart(2, '0');
             const hexB = rgbResult.b.toString(16).padStart(2, '0');
@@ -2010,6 +2006,7 @@ elemfillerVar = 0;
 elements.element_filler = {
     category: "special",
     color: elements.filler.color,
+    excludeRandom: true,
     state: "solid",
     movable: "false",
     onSelect: function() {
@@ -2040,3 +2037,58 @@ elements.element_filler = {
         }
     }
 } 
+var outlinerVar = 0
+elements.outliner = {
+    color: elements.filler.color,
+    category: elements.filler.category,
+    excludeRandom: true,
+    onSelect: function() {
+        var answerot = prompt("Please input the desired element of this outliner. It will not work if you do multiple filter types while paused.",(outlinerVar||undefined));
+        if (!answerot) { return }
+		outlinerVar = mostSimilarElement(answerot);
+    },
+    tick: function(pixel){
+        var neighbors = 0;
+        if(!pixel.changeElem){
+            pixel.changeElem = outlinerVar;
+            if (pixel.nDelete == undefined){
+                pixel.nDelete = false
+            }
+        }
+        if (pixel.nDelete){
+            deletePixel(pixel.x, pixel.y)
+        }
+		for (var i = 0; i < squareCoords.length; i++) {
+            var coord = squareCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (!isEmpty(x,y, true)) {
+				neighbors = neighbors + 1;
+			}
+        }
+        if (neighbors >= 8){
+            pixel.nDelete = true
+        } else {
+            changePixel(pixel, pixel.changeElem)
+        }
+    }
+}
+textures.transparency = [
+    "wwwggg",
+    "wwwggg",
+    "wwwggg",
+    "gggwww",
+    "gggwww",
+    "gggwww"
+]
+elements.transparency = {
+    color: ["#d4d4d4", "#ffffff"],
+    colorPattern: textures.transparency,
+    colorKey: {
+        "g": "#D4D4D4",
+        "w": "#ffffff"
+    },
+    behavior: behaviors.WALL,
+    category: "special",
+    state: "solid"
+}
