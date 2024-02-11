@@ -308,6 +308,18 @@ window.addEventListener("load",function(){
         shopDiv.appendChild(button);
     }
     shopDiv.insertAdjacentHTML("beforeend",`<p><button style="background-color:#dddd00" class="elementButton bright" title="Resets the cloner" onclick="survivalResetCloner()">ResetCloner<span style='font-family:Arial;font-size:1.15em'> ($1000)</span></button></p>`);
+
+    createCategoryDiv("prices");
+    var pricesDiv = document.getElementById("category-prices");
+    pricesDiv.style.display = "none";
+    for (var element in elementWorth) {
+        var name = (elements[element].name||element).replace(/_/g, " ").replace(".","   ").replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}).replace("   ",".");
+        // create text with the name of the element and its worth, separated by •
+        var text = name+"="+elementWorth[element] + " • ";
+        pricesDiv.insertAdjacentHTML("beforeend",`${text}`);
+    }
+    pricesDiv.innerHTML = pricesDiv.innerHTML.slice(0,-2);
+    pricesDiv.innerHTML = "<p style='font-family:Arial'>"+pricesDiv.innerHTML+"</p>";
 });
 runAfterLoad(function(){
     checkUnlock = function(element) {
