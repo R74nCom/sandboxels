@@ -178,6 +178,7 @@ elementWorth = {
     "mushroom_cap": 0.1,
     "mushroom_gill": 0.3,
     "vine": 0.1,
+    "cactus": 0.1,
     "cloner": 0,
     "wall": 0,
     "fire": 0,
