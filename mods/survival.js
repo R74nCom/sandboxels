@@ -20,6 +20,7 @@ function survivalSave() {
     },1000);
 }
 function survivalAdd(element,amount,skipSave) {
+    if (elements[element].category === "tools") { return }
     if (settings.survival[element]) {
         settings.survival[element] += amount;
     }
@@ -30,6 +31,7 @@ function survivalAdd(element,amount,skipSave) {
     if (!skipSave) {survivalSave()}
 }
 function survivalRemove(element,amount,skipSave) {
+    if (elements[element].category === "tools") { return }
     if (settings.survival[element]) {
         settings.survival[element] -= amount;
         survivalUpdate(element);
@@ -116,8 +118,8 @@ elements.smash.tool = function(pixel) {
         // times 0.25 if not shiftDown else 1
         if (Math.random() < (elements[pixel.element].hardness || 1) * (shiftDown ? 1 : 0.25)) {
             var breakInto = elements[pixel.element].breakInto;
-            if (!breakInto && elements[pixel.element].seed) {
-                if (Math.random() < 0.1) {
+            if (elements[pixel.element].seed) {
+                if (Math.random() < 0.2) {
                     breakInto = elements[pixel.element].seed;
                 }
                 else {
@@ -129,13 +131,8 @@ elements.smash.tool = function(pixel) {
                 breakInto = breakInto[Math.floor(Math.random() * breakInto.length)];
             }
             if (breakInto === null) {
-                if (elements[pixel.element].seed) {
-                    breakInto = elements[pixel.element].seed;
-                }
-                else {
-                    deletePixel(pixel.x,pixel.y);
-                    return;
-                }
+                deletePixel(pixel.x,pixel.y);
+                return;
             }
             var oldelement = pixel.element;
             changePixel(pixel,breakInto);
@@ -156,6 +153,7 @@ elementWorth = {
     "fire": 0,
     "smoke": 0,
     "plasma": 0,
+    "petal": -1,
 }
 elements.sell = {
     color: ["#fff0b5","#ffe680","#c48821","#986a1a","#eca832","#f0bb62"],
