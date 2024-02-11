@@ -72,6 +72,7 @@ runAfterAutogen(function(){
     }
     for (var element in settings.survival) {
         if (!elements[element]) { continue; }
+        if (elements[element].category === "tools") { continue; }
         createElementButton(element);
         document.getElementById("elementButton-"+element).innerHTML += "("+settings.survival[element]+")";
     }
