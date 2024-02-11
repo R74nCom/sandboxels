@@ -115,7 +115,7 @@ elements.cloner.tick = function(pixel) {
         }
     }
 };
-elements.cloner.ignore = elements.cloner.ignore.concat(["gold","gold_coin","molten_gold","sun","supernova"]);
+elements.cloner.ignore = elements.cloner.ignore.concat(["gold","gold_coin","molten_gold","sun","supernova","diamond"]);
 elements.cloner.desc = "You can only clone one element at a time!"
 
 elements.smash.tool = function(pixel) {
@@ -152,7 +152,7 @@ elements.smash.tool = function(pixel) {
 
 elementWorth = {
     "gold_coin": 1,
-    "diamond": 50,
+    "diamond": 100,
     "ketchup": 15,
     "jelly": 10,
     "soda": 10,
@@ -183,6 +183,9 @@ elementWorth = {
     "smoke": 0,
     "plasma": 0,
     "light": 0,
+    "laser": 0,
+    "liquid_light": 0.1,
+    "flash": 0,
     "petal": -1,
     "cell": -1,
     "cancer": -1,
