@@ -46,6 +46,7 @@ function survivalCount(element) {
 }
 function survivalUpdate(element) {
     var btn = document.getElementById("elementButton-"+element);
+    if (elements[element] && elements[element].category === "tools") { return }
     if (btn) {
         btn.innerHTML = btn.innerHTML.split("(")[0]+"("+settings.survival[element]+")";
     }
@@ -58,7 +59,9 @@ function survivalUpdate(element) {
 runAfterAutogen(function(){
     elements.erase.name = "pick_up";
     delete elements.paint.category;
+    delete elements.lookup.category;
     delete elements.pick;
+    elements.radiation.category = "tools";
     for (var element in elements) {
         if (elements[element].category !== "tools") {
             elements[element].hidden = true;
@@ -105,6 +108,44 @@ elements.cloner.tick = function(pixel) {
         }
     }
 };
+elements.cloner.ignore = elements.cloner.ignore.concat(["gold","gold_coin","molten_gold"]);
+
+elements.smash.tool = function(pixel) {
+    if (elements[pixel.element].seed === true) { return }
+    if (elements[pixel.element].breakInto !== undefined || (elements[pixel.element].seed !== undefined && elements[pixel.element].seed !== true)) {
+        // times 0.25 if not shiftDown else 1
+        if (Math.random() < (elements[pixel.element].hardness || 1) * (shiftDown ? 1 : 0.25)) {
+            var breakInto = elements[pixel.element].breakInto;
+            if (!breakInto && elements[pixel.element].seed) {
+                if (Math.random() < 0.1) {
+                    breakInto = elements[pixel.element].seed;
+                }
+                else {
+                    breakInto = null;
+                }
+            }
+            // if breakInto is an array, pick one
+            if (Array.isArray(breakInto)) {
+                breakInto = breakInto[Math.floor(Math.random() * breakInto.length)];
+            }
+            if (breakInto === null) {
+                if (elements[pixel.element].seed) {
+                    breakInto = elements[pixel.element].seed;
+                }
+                else {
+                    deletePixel(pixel.x,pixel.y);
+                    return;
+                }
+            }
+            var oldelement = pixel.element;
+            changePixel(pixel,breakInto);
+            pixelTempCheck(pixel);
+            if (elements[oldelement].breakIntoColor) {
+                pixel.color = pixelColorPick(pixel, elements[oldelement].breakIntoColor);
+            }
+        }
+    }
+};
 
 elementWorth = {
     "gold_coin": 1,
@@ -112,12 +153,16 @@ elementWorth = {
     "sap": 5,
     "cloner": 0,
     "wall": 0,
+    "fire": 0,
+    "smoke": 0,
+    "plasma": 0,
 }
 elements.sell = {
     color: ["#fff0b5","#ffe680","#c48821","#986a1a","#eca832","#f0bb62"],
     tool: function(pixel) {
         if (elementWorth[pixel.element] === 0) { return; }
         deletePixel(pixel.x,pixel.y);
+        if (elementWorth[pixel.element] === -1) { return; }
         survivalAdd("gold_coin",elementWorth[pixel.element]||1);
     },
     category: "tools",
@@ -240,10 +285,10 @@ runAfterLoad(function(){
                 }
             }
             else if (isEmpty(x, y)) {
-                if (survivalCount(currentElement) < 1) {
+                if (survivalCount(currentElement) < 1 && elements[currentElement].category !== "tools") {
                     return;
                 }
-                survivalRemove(currentElement,1);
+                if (elements[currentElement].category !== "tools") { survivalRemove(currentElement,1); }
                 currentPixels.push(new Pixel(x, y, currentElement));
                 if (elements[currentElement].customColor || elements[currentElement].singleColor) {
                     pixelMap[x][y].color = pixelColorPick(currentElement,currentColor);
