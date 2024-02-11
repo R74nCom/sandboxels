@@ -157,6 +157,7 @@ elementWorth = {
     "jelly": 10,
     "soda": 10,
     "toast": 10,
+    "oil": 10,
     "bread": 3,
     "glass": 5,
     "rad_glass": 6,
