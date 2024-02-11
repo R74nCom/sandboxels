@@ -313,6 +313,7 @@ window.addEventListener("load",function(){
     var pricesDiv = document.getElementById("category-prices");
     pricesDiv.style.display = "none";
     for (var element in elementWorth) {
+        if (elementWorth[element] <= 0) { continue }
         var name = (elements[element].name||element).replace(/_/g, " ").replace(".","   ").replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}).replace("   ",".");
         // create text with the name of the element and its worth, separated by •
         var text = name+"="+elementWorth[element] + " • ";
