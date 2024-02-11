@@ -1,3 +1,34 @@
+elements.freeze_ray = {
+	color: ["#9ae4f5","#84d6e8"],
+    tick: function(pixel) {
+        var x = pixel.x;
+        for (var y = pixel.y; y < height; y++) {
+            if (outOfBounds(x, y)) {
+                break;
+            }
+            if (isEmpty(x, y)) {
+                if (Math.random() > 0.05) { continue }
+                createPixel("flash", x, y);
+                pixelMap[x][y].color = "#aedbe6";
+                pixelMap[x][y].temp = -257;
+            }
+            else {
+                if (elements[pixelMap[x][y].element].isGas) { continue }
+                if (elements[pixelMap[x][y].element].id === elements.heat_ray.id) { break }
+                pixelMap[x][y].temp -= 100;
+                pixelTempCheck(pixelMap[x][y]);
+                break;
+            }
+        }
+        deletePixel(pixel.x, pixel.y);
+    },
+    temp: -257,
+    category: "energy",
+    state: "gas",
+    excludeRandom: true,
+    noMix: true
+};
+
 elements.beer = {
 	color: ["#ffc43d","#ffc43d"],
 	behavior: behaviors.LIQUID,
@@ -16,6 +47,9 @@ elements.root_beer = {
 
 elements.fruit_slushy = {
 	color: ["#d43968","#ec5885","#f57ca1","#fba9c2","#ffe3eb"],
+	stateLowColorMultiplier: 1.3,
+	stateLow: "slushy_ice",
+	tempLow: "-50",
 	behavior: behaviors.LIQUID,
 	category: "food",
 	state: "solid",
@@ -32,6 +66,9 @@ elements.mold = {
 
 elements.chocolate_slushy = {
 	color: ["#c3ae9a","#ae967f","#977b5f","#876b4f","#816346"],
+	stateLowColorMultiplier: 1.3,
+	tempLow: "-50",
+	stateLow: "slushy_ice",
 	behavior: behaviors.LIQUID,
 	category: "food",
 	state: "solid",
@@ -136,7 +173,7 @@ elements.fruit_yogurt = {
 
 elements.frozen_fruit_yogurt = {
 	color: ["#ffdfdf","#ffc0c0","#ff9b9b"],
-	stateLowColorMultiplier: 0.7,
+	stateHighColorMultiplier: 0.7,
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
 	state: "solid",
@@ -149,7 +186,7 @@ elements.frozen_fruit_yogurt = {
 
 elements.frozen_chocolate_yogurt = {
 	color: ["#a87848","#a57e57","#c1a07f","#e2c5ac","#efd0b1"],
-	stateLowColorMultiplier: 0.7,
+	stateHighColorMultiplier: 0.7,
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
 	state: "solid",
@@ -418,7 +455,7 @@ elements.moss = {
 };
 
 elements.moth = {
-	color: "#665233",
+	color: ["#df8830","#e9b477","#a1591a","#a87a46","#4e3212"],
 	behavior: behaviors.FLY,
 	category: "life",
 	state: "solid",
@@ -661,7 +698,6 @@ elements.banana = {
 	breakInto: "juice",
 	breakIntoColor: "#f0f060",
 	reactions: {
-        "steam": { elem1: "potassium", elem2: null },
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#fdf8d6","#f9efa6"] },
 	}
 };
@@ -1074,14 +1110,6 @@ elements.eggplant = {
 	breakIntoColor: ["#674ea7","#351c75"],
 };
 
-elements.potassium = {
-	color: "#a3a333",
-	behavior: behaviors.POWDER,
-	category: "states",
-	state: "solid",
-	breakInto: "juice",
-};
-
 elements.onion = {
 	color: ["#62121b","#a92940","#c04b65","#d8699e"],
 	behavior: 
@@ -1282,7 +1310,7 @@ elements.legacy_rocket = {
         "XX|DL%1|XX",
         "CR:smoke|CR:fire|CR:smoke",
     ],
-    category: "special",
+    category: "legacy",
     hidden:true,
     state: "solid",
     temp:700,
@@ -1290,6 +1318,84 @@ elements.legacy_rocket = {
     conduct: 0.73,
     tempHigh: 1455.5,
     stateHigh: "molten_steel"
+};
+
+elements.legacy_dough = {
+	color: "#bfac91",
+    behavior: behaviors.STURDYPOWDER,
+    onMix: function(dough,ingredient) {
+        if (elements[ingredient.element].isFood && elements[ingredient.element].id !== elements.dough.id && elements[ingredient.element].id !== elements.flour.id && elements[ingredient.element].id !== elements.batter.id && elements[ingredient.element].id !== elements.bread.id) {
+            var rgb1 = dough.color.match(/\d+/g);
+            var rgb2 = ingredient.color.match(/\d+/g);
+            // average the colors
+            var rgb = [
+                Math.round((parseInt(rgb1[0])+parseInt(rgb2[0]))/2),
+                Math.round((parseInt(rgb1[1])+parseInt(rgb2[1]))/2),
+                Math.round((parseInt(rgb1[2])+parseInt(rgb2[2]))/2)
+            ];
+            changePixel(ingredient, "dough")
+            // convert rgb to hex
+            var hex = RGBToHex(rgb);
+            dough.color = pixelColorPick(dough, hex);
+            // 50% change to delete ingredient
+            if (Math.random() < 0.5) { deletePixel(ingredient.x, ingredient.y); }
+            else {
+                ingredient.color = pixelColorPick(ingredient, hex);
+            }
+        }
+    },
+    reactions: {
+        "milk": { elem2:"broth", color2:"#ECC891", tempMin:70 },
+        "cream": { elem2:"broth", color2:"#ECC891", tempMin:70 },
+    },
+    category: "legacy",
+    tempHigh: 94,
+    stateHigh: "bread",
+    //stateHighColorMultiplier: 0.9,
+    burn:40,
+    burnTime:25,
+    burnInto:"ash",
+    state: "solid",
+    density: 526.9,
+    isFood: true
+};
+
+elements.legacy_batter = {
+	color: "#d4bc85",
+    behavior: behaviors.LIQUID,
+    onMix: function(batter,ingredient) {
+        if (elements[ingredient.element].isFood && elements[ingredient.element].id !== elements.batter.id && elements[ingredient.element].id !== elements.flour.id && elements[ingredient.element].id !== elements.yolk.id && elements[ingredient.element].id !== elements.dough.id && elements[ingredient.element].id !== elements.baked_batter.id) {
+            var rgb1 = batter.color.match(/\d+/g);
+            var rgb2 = ingredient.color.match(/\d+/g);
+            // average the colors
+            var rgb = [
+                Math.round((parseInt(rgb1[0])+parseInt(rgb2[0]))/2),
+                Math.round((parseInt(rgb1[1])+parseInt(rgb2[1]))/2),
+                Math.round((parseInt(rgb1[2])+parseInt(rgb2[2]))/2)
+            ];
+            changePixel(ingredient, "batter")
+            // convert rgb to hex
+            var hex = RGBToHex(rgb);
+            batter.color = pixelColorPick(batter, hex);
+            // 50% change to delete ingredient
+            if (Math.random() < 0.5) { deletePixel(ingredient.x, ingredient.y); }
+            else {
+                ingredient.color = pixelColorPick(ingredient, hex);
+            }
+        }
+    },
+    category: "legacy",
+    tempHigh: 94,
+    stateHigh: "baked_batter",
+    stateHighColorMultiplier: 0.9,
+    burn:40,
+    burnTime:25,
+    burnInto:"ash",
+    state: "liquid",
+    viscosity: 10000,
+    density: 1001,
+    hidden: true,
+    isFood: true
 };
 
 elements.legacy_lattice = {
@@ -1300,7 +1406,7 @@ elements.legacy_lattice = {
         "CL|XX|CL",
     ],
     hidden: true,
-    category:"special",
+    category:"legacy",
     excludeRandom: true
 };
 
@@ -1350,6 +1456,37 @@ elements.left_lattice = {
     hidden: true,
     category:"special",
     excludeRandom: true
+};
+
+elements.amethyst = {
+	color: ["#9868e0","#482888","#7848b8","#c898f0","#a878f0"],
+    behavior: behaviors.POWDER,
+    hidden: true,
+    category: "powders",
+};
+
+elements.quartz = {
+	color: ["#f6fff9","#f3f9f9","#f6fcf9","#fefefe","#fdfffe"],
+    behavior: behaviors.POWDER,
+    hidden: true,
+    category: "powders",
+	tempHigh: 1900,
+	stateHigh: "magma",
+	reactions: {
+		"molten_iron": { elem1: "amethyst", elem2: null },
+	}
+};
+
+elements.slushy_ice = {
+	color: ["#f6fff9","#f3f9f9","#f6fcf9","#fefefe","#fdfffe"],
+    behavior: behaviors.WALL,
+    temp: -5,
+    tempHigh: 5,
+    stateHigh: "smashed_ice",
+    category: "states",
+    state: "solid",
+    density: 917,
+    breakInto: "smashed_ice",
 };
 
 elements.toorhpaste = {
@@ -1428,9 +1565,16 @@ elements.algae.breakInto = "seafoam"
 
 elements.battery.breakInto = "battery_acid"
 
+elements.art.burn = 5
+elements.art.burnTime = 300
+elements.art.burnInto = ["ember","charcoal","fire"]
+
+
 elements.herb.breakInto = "seasoning"
 
 elements.chocolate.breakInto = "chocolate_sauce"
+
+elements.magma.stateLow = ["basalt","basalt","basalt","basalt","basalt","basalt","basalt","rock","quartz"]
 
 if (!elements.bless.reactions) elements.bless.reactions = {};
 elements.bless.reactions.mold = { elem2: null }
