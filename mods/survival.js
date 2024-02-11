@@ -235,7 +235,7 @@ survivalShop = {
 function survivalBuy(element) {
     var price = survivalShop[element];
     if (!price) { alert("The shop isn't selling "+element+"!"); return }
-    if (settings.survival.gold_coin < price) { alert("You can't afford that!"); return }
+    if (!settings.survival.gold_coin || settings.survival.gold_coin < price) { alert("You can't afford that!"); return }
     survivalRemove("gold_coin",price);
     var amount = 1;
     if (element.indexOf("*") !== -1) { amount = parseInt(element.split("*")[1]); element = element.split("*")[0]; }
@@ -243,7 +243,7 @@ function survivalBuy(element) {
     selectElement(element);
 }
 function survivalResetCloner() {
-    if (settings.survival.gold_coin < 1000) { alert("You can't afford that!"); return }
+    if (!settings.survival.gold_coin || settings.survival.gold_coin < 1000) { alert("You can't afford that!"); return }
     survivalRemove("gold_coin",1000);
     settings.survivalClone = null;
     survivalSave();
