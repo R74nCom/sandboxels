@@ -164,8 +164,9 @@ elementWorth = {
     "rad_shard": 3,
     "paper": 5,
     "broth": 5,
-    "sap": 5,
+    "honey": 5,
     "caramel": 5,
+    "sap": 4,
     "candy": 5,
     "popcorn": 2,
     "flour": 2,
@@ -189,6 +190,7 @@ elementWorth = {
     "petal": -1,
     "cell": -1,
     "cancer": -1,
+    "foam": -1,
 }
 elements.sell = {
     color: ["#fff0b5","#ffe680","#c48821","#986a1a","#eca832","#f0bb62"],
