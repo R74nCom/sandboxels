@@ -9,6 +9,7 @@ if (!settings.survival) {
     }
 }
 settings.survival.cloner = 1;
+settings.unhide = 0;
 // settings.survivalClone=null; settings.survival = null; saveSettings();
 
 survivalTimeout = null;
@@ -140,6 +141,7 @@ window.addEventListener("load",function(){
     showSaves = function() {}
     placeImage = function() {}
     chooseElementPrompt = function() {}
+    document.getElementById("toolControls").insertAdjacentHTML("beforeend",`<button class="controlButton" title="Erases all survival.js data" onclick="if (confirm('THIS WILL ERASE ALL survival.js DATA!!! ARE YOU SURE?')) {settings.survivalClone=null; settings.survival = null; saveSettings(); location.reload()}">StartOver</button>`);
 });
 runAfterLoad(function(){
     checkUnlock = function(element) {
