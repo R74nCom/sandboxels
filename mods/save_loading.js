@@ -69,6 +69,7 @@ try {
 			width: width,
 			height: height,
 			pixelSize: pixelSize,
+			pixelTicks: pixelTicks,
 			settings: settings,
 			version: 1,
 			enabledMods: localStorage.enabledMods,
@@ -322,6 +323,7 @@ try {
 		width = json.width;
 		height = json.height;
 		pixelSize = json.pixelSize;
+		pixelTicks = (json.pixelTicks ?? 0);
 		//currentPixels = json.currentPixels;
 		for(i = 0; i < json.pixelMap.length; i++) {
 			json.pixelMap[i] = json.pixelMap[i].map(x => zeroToNull(x));
