@@ -14445,7 +14445,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
         function loadFromFile() {
             var input = document.createElement("input");
             input.type = "file";
-            input.accept = ".sbxls,.json,.txt,text/*,application/json";
+            // input.accept = ".sbxls,.json,.txt,text/*,application/json";
             input.addEventListener("change", function(e) {
                 var file = e.target.files[0];
                 var reader = new FileReader();
