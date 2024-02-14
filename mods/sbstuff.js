@@ -192,11 +192,25 @@ elements.green_berries = {
 elements.meth = {
 	hardness: 1,
 	tempHigh: 500,
+	tempLow: -50,
+	stateLowColorMultiplier: 0.9,
 	stateHigh: "melted_meth",
 	color: "#0affef",
 	behavior: behaviors.POWDER,
 	category: "joke",
 	state: "liquid"
+};
+
+elements.melted_meth = {
+	viscosity: 1000,
+	tempHigh: 100000,
+	tempLow: -20,
+	stateHigh: "beans",
+	stateLow: "meth",
+	color: "#00a2ff",
+	behavior: behaviors.LIQUID,
+	category: "joke",
+	state: "solid",
 };
 
 elements.garlic = {
@@ -217,7 +231,7 @@ elements.garlic_bread = {
 	breakInto: "crumb",
 	tempHigh: 500,
 	stateHigh: "ash",
-	color: ["#db9b56", "#288a0c", "#db9b56", "#db9b56", "#db9b56", "#db9b56"],
+	color: ["#e9be90", "#288a0c", "#e0c6aa", "#b49e85", "#b6926b", "#ccac8b"],
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
 	state: "solid",
@@ -249,6 +263,8 @@ elements.lemon = {
 elements.lemonade = {
 	isFood: true,
 	tempHigh: 500,
+	tempLow: -15,
+	tempLowColor: "#f8eb35",
 	stateHigh: "steam",
 	color: "#fff41c",
 	behavior: behaviors.LIQUID,
@@ -267,6 +283,18 @@ elements.poop = {
 	reactions: {
 		"piss": { elem1: null, elem2: "bless" },
 	}
+};
+
+elements.diarrhea = {
+	hardness: 1,
+	viscosity: 10000,
+	tempHigh: 500,
+    stateHigh: ["ash", "ash", "ash", "ash", "ash", "ash", "ash", "steam",],
+    color: "#523718",
+    behavior: behaviors.LIQUID,
+    category: "joke",
+	state: "solid",
+	desc: "riddle me this, libshart, if theres liquid poop then wheres the solid piss?"
 };
 
 elements.marshmallow = {
@@ -355,6 +383,7 @@ elements.diamond_ore = {
 elements.coca_cola = {
 	isFood: true,
 	tempHigh: 500,
+	tempLow: -10,
 	stateHigh: "steam",
 	color: "#381e13",
 	behavior: behaviors.LIQUID,
@@ -365,6 +394,7 @@ elements.coca_cola = {
 elements.pepsi = {
 	tempHigh: 500,
 	stateHigh: "steam",
+	tempLow: -10,
 	color: "#2b1717",
 	behavior: behaviors.LIQUID,
     category: "liquids",
@@ -374,6 +404,7 @@ elements.pepsi = {
 elements.piss = {
 	tempHigh: 500,
 	stateHigh: "steam",
+	tempLow: -10,
 	color: "#ffff00",
 	behavior: behaviors.LIQUID,
 	category: "joke",
@@ -405,17 +436,10 @@ elements.pastry = {
 	state: "solid",
 };
 
-elements.melted_meth = {
-	tempHigh: 100000,
-	stateHigh: "beans",
-	color: "#00a2ff",
-	behavior: behaviors.LIQUID,
-	category: "joke",
-	state: "solid",
-};
 
-elements.expired_milk = {
+elements.spoiled_milk = {
 	tempHigh: 500,
+	tempLow: -20,
 	stateHigh: "ash",
 	color: "#b8c2b4",
 	behavior: behaviors.LIQUID,
@@ -523,6 +547,8 @@ elements.mashed_pea = {
 elements.burnt_beans = {
 	tempHigh: 500,
 	stateHigh: "ash",
+	tempLow: -0,
+	stateLow: "beans",
 	isFood: true,
 	viscosity: 10000,
 	density: 721,
@@ -801,6 +827,7 @@ elements.barbecue_sauce = {
 	viscosity: 3000,
 	density: 1800,
 	tempHigh: 500,
+	tempLow: 0,
 	stateHigh: "steam",
 	color: "#420400",
 	behavior: behaviors.LIQUID,
@@ -907,6 +934,7 @@ elements.porridge = {
 	viscosity: 3000,
 	density: 500,
 	tempHigh: 500,
+	tempLow: -10,
 	stateHigh: "steam",
 	color: "#b8a254",
 	behavior: behaviors.LIQUID,
@@ -938,7 +966,7 @@ elements.chocolate_grape = {
 	viscosity: 10000,
 	tempHigh: 300,
 	stateHigh: "steam",
-	color: ["#9e3475", "#6e4d36"],
+	color: ["#7e600d", "#6e4d36"],
 	behavior: behaviors.LIQUID,
 	category: "food",
 	state: "liquid",
@@ -949,7 +977,7 @@ elements.sprinkles = {
 	stateHigh: "ash",
 	cooldown: 0.2,
 	color: ["#ff5e5e", "#ffea5e", "#73ff5e", "#5efcff", "#995eff", "#ff5ed1"],
-	behavior: behaviors.STURDYPOWDER,
+	behavior: behaviors.POWDER,
 	category: "powders",
 	state: "liquid",
 	maxSize: 1,
@@ -965,6 +993,7 @@ elements.incinerator = {
 	category: "machines",
 	state: "solid",
 	insulate: true,
+	excludeRandom: true,
 	reactions: {
 		"fart": { elem1: null, elem2: "ohio" },
 	}
@@ -1113,6 +1142,7 @@ elements.strawberry = {
 elements.beer = {
     tempHigh: 300,
     stateHigh: "steam",
+	tempLow: -10,
     color: "#b39329",
     behavior: behaviors.LIQUID,
     category: "liquids",
@@ -1140,8 +1170,10 @@ elements.carrot = {
 };
 
 elements.wine = {
+	hidden: true,
 	tempHigh: 400,
     stateHigh: "steam",
+	tempLow: -10,
     color: "#2e0206",
     behavior: behaviors.LIQUID,
     category: "liquids",
@@ -1173,6 +1205,7 @@ elements.dark_energy = {
 	 ],
     category: "special",
     state: "gas",
+	excludeRandom: true
 };
 
 elements.ohio = {
@@ -1189,6 +1222,7 @@ elements.ohio = {
 	category: "joke",
     state: "gas",
 	desc: "use at own risk",
+	excludeRandom: true
 };
 
 elements.papaya = {
@@ -1279,6 +1313,9 @@ elements.heavy_water = {
 	behavior: behaviors.LIQUID_OLD,
 	category: "liquids",
     state: "liquid",
+	reactions: {
+		"sand": { elem1: null, elem2: "quicksand" },
+	}
 };
 
 elements.blood_orange = {
@@ -1308,6 +1345,7 @@ elements.cranberry = {
 	hidden: true,
     tempHigh: 300,
     stateHigh: "steam",
+	tempLow: -15,
     color: "#ad2a1d",
     behavior: behaviors.LIQUID,
     category: "food",
@@ -1441,6 +1479,7 @@ elements.uraniumaniumaniumaniumanium_popcornicecream_plutoniumeptunium_238239 = 
 elements.coffee_milk = {
 	tempHigh: 300,
     stateHigh: "steam",
+	tempLow: -30,
     color: "#5c4c42",
     behavior: behaviors.LIQUID,
     category: "liquids",
@@ -1565,6 +1604,7 @@ elements.electron = {
 };
 
 elements.sned = {
+	desc: "slowly expanding...",
 	color: "#dfe0d9",
 	behavior: [
 		"XX|XX AND CR:sned%1|XX",
@@ -1580,7 +1620,7 @@ elements.uranium_tea = {
 	temp: 60,
 	tempHigh: 400,
 	stateHigh: "molten_uranium",
-	color: ["#0f8b15", "#316624", "#59864b", "#502e0f"],
+	color: ["#526306", "#40530c", "#80320e", "#502e0f"],
 	behavior: behaviors.RADLIQUID,
 	category: "liquids",
 	state: "liquid"
@@ -1598,19 +1638,19 @@ elements.powerlaser = {
                 if (Math.random() > 0.05) { continue }
                 createPixel("flash", x, y);
                 pixelMap[x][y].color = "#b80ced";
-                pixelMap[x][y].temp = 1001000;
+                pixelMap[x][y].temp = 11000;
             }
             else {
                 if (elements[pixelMap[x][y].element].isGas) { continue }
                 if (elements[pixelMap[x][y].element].id === elements.heat_ray.id) { break }
-                pixelMap[x][y].temp += 901000;
+                pixelMap[x][y].temp += 9000;
                 pixelTempCheck(pixelMap[x][y]);
                 break;
             }
         }
         deletePixel(pixel.x, pixel.y);
     },
-    temp: 1000000,
+    temp: 10000,
     category: "energy",
     state: "gas",
     excludeRandom: true,
@@ -1627,6 +1667,29 @@ elements.magma_bomb = {
 	],
 	category: "weapons",
 	state: "liquid"
+};
+
+elements.quicksand = {
+	viscosity: 10000,
+	tempHigh: 1000,
+	stateHigh: ["molten_glass", "molten_glass", "molten_glass", "molten_glass", "steam"],
+	color: ["#b1873a", "#cea250"],
+	behavior: behaviors.LIQUID,
+    category: "land",
+    state: "liquid",
+	density: 1400,
+	stain: 0.02
+};
+
+elements.liquid_filler = {
+	color: "#ae00ff",
+	behavior: [
+		"XX|XX AND CR:liquid_filler%50|XX",
+		"M2 AND CR:liquid_filler%50|XX|M2 AND CR:liquid_filler%50",
+		"M1|M1 AND CH:liquid_filler%50|M1",
+	],
+	category: "special",
+    state: "liquid"
 };
 
 elements.incinerate.category = "tools",
@@ -1662,6 +1725,9 @@ elements.potato.reactions.steam = {elem1: "fries", tempMin: 100, chance:50}
 
 if (!elements.water.reactions) elements.water.reactions = {};
 elements.water.reactions.cocaine = { elem1: "solid_water", elem2: null }
+
+if (!elements.alcohol.reactions) elements.alcohol.reactions = {};
+elements.alcohol.reactions.juice = {elem1:"wine", elem2:null, chance:5}
 
 if (!elements.paper.reactions) elements.paper.reactions = {};
 elements.paper.reactions.bless = { elem1: "robux", elem2: null, chance: 0.0000001 }
