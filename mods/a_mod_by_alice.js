@@ -2136,9 +2136,9 @@ try {
 				};
 			};
 
-		function capitalizeFirstLetter(string,locale=null) {
-			return string[0][locale ? "toLocaleUpperCase" : "toUpperCase"](locale) + string.slice(1)
-		};
+			function capitalizeFirstLetter(string,locale=null) {
+				return string[0][locale ? "toLocaleUpperCase" : "toUpperCase"](locale) + string.slice(1)
+			};
 
 	//COLOR MANIPULATION TOOLS ##
 
@@ -36321,7 +36321,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 									newPixel.vx ??= 0;
 									newPixel.vy ??= 0;
 									newPixel.vx += (pixel.direction * 5)
-									newPixel.vy += 3;
+									newPixel.vy -= 3;
 								};
 							};
 							pixel.fromX += pixel.direction
@@ -36406,7 +36406,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 										newPixel.vx ??= 0;
 										newPixel.vy ??= 0;
 										newPixel.vx += (pixel.direction * 13)
-										newPixel.vy += 6;
+										newPixel.vy -= 6;
 									};
 								};
 								pixel.fromX += pixel.direction
@@ -36503,7 +36503,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 									newPixel.vx ??= 0;
 									newPixel.vy ??= 0;
 									newPixel.vx += (pixel.direction * 6)
-									newPixel.vy += 3;
+									newPixel.vy -= 3;
 								};
 							};
 							pixel.fromX += pixel.direction
@@ -36598,7 +36598,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 										newPixel.vx ??= 0;
 										newPixel.vy ??= 0;
 										newPixel.vx += (pixel.direction * 8)
-										newPixel.vy += 5;
+										newPixel.vy -= 5;
 									};
 								};
 								pixel.fromX += pixel.direction

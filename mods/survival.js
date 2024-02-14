@@ -157,6 +157,7 @@ elementWorth = {
     "jelly": 10,
     "soda": 10,
     "toast": 10,
+    "oil": 10,
     "bread": 3,
     "glass": 5,
     "rad_glass": 6,
@@ -258,6 +259,7 @@ function survivalResetCloner() {
     survivalSave();
 }
 
+worldgentypes = {}
 window.addEventListener("load",function(){
     // move to start of tools
     var erase = document.getElementById("elementButton-erase");
@@ -272,6 +274,7 @@ window.addEventListener("load",function(){
     document.getElementById("elemSelectButton").remove();
     doRandomEvents = function() {}
     worldGen = function() {}
+    worldgentypes = {}
     loadSave = function() {}
     showSaves = function() {}
     placeImage = function() {}
