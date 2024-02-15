@@ -4207,6 +4207,7 @@ eLists.JUICEMIXABLE.push("banana_juice");
 
 elements.banana_bread = {
     color: "#c2782f",
+    desc: "delicious banana bread",
     behavior: behaviors.STURDYPOWDER,
     tempHigh: 176,
     stateHigh: "toast",
