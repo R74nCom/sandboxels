@@ -3,7 +3,7 @@ elements.cooked_rice = {
 	tempMin: 20,
 	stateMin: "rice",
 	tempHigh: 500,
-	stateHigh: ["ash", "charcoal"],
+	stateHigh: "charcoal",
 	density: 699,
 	color: "#c2b6b6",
 	behavior: behaviors.LIQUID,
@@ -16,37 +16,39 @@ elements.cooked_rice = {
 
 elements.rice = {
 	breakInto: "flour",
-	viscosity: 10000,
 	isFood: true,
 	density: 696,
 	tempHigh: 232,
 	stateHigh: "cooked_rice",
 	color: "#c8c8c8",
-	behavior: behaviors.LIQUID,
+	behavior: behaviors.POWDER,
 	category: "food",
 	state: "liquid",
 };
 
 elements.moth = {
 	tempHigh: 500,
-	stateHigh: "ash",
+	stateHigh: "dead_bug",
+	breakInto: "dead_bug",
 	color: "#57381a",
 	behavior: behaviors.FLY,
 	category: "life",
-	state: "solid",
+	state: "liquid",
 };
 
 elements.cotton_candy = {
 	isFood: true,
-	tempHigh: 500,
-	stateHigh: "ash",
+	tempHigh: 200,
+	stateHigh: "sugar",
 	density: 1000,
-	color: "#b6c7e3",
+	color: ["#b6c7e3", "#c54b4b", "#e7769c"],
+	singleColor: true,
 	behavior: behaviors.POWDER,
 	category: "food",
 	state: "liquid",
 	reactions: {
-		"water": { elem1: "sugar", elem2: null },
+		"water": { elem1: "sugar", elem2: "water" },
+		"sugar_water": { elem1: "sugar", elem2:"sugar_water", chance: 10 }
 	}
 };
 
@@ -358,6 +360,7 @@ elements.cereal = {
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
 	state: "liquid",
+	stain: 0.005
 };
 
 elements.sushi = {
@@ -1690,6 +1693,47 @@ elements.liquid_filler = {
 	],
 	category: "special",
     state: "liquid"
+};
+
+elements.antimony = {
+	color: ["#4b90b8", "#a3bfd8", "#89a0b6", "#8798a7", "#738092"],
+	behavior: behaviors.WALL,
+	category: "solids",
+	state: "solid",
+	density: 6697,
+	tempHigh: 630,
+	stateHigh: "melted_antimony",
+	alias: "...sb?!"
+};
+
+elements.melted_antimony = {
+	color: ["#8fb2c7", "#7494b1", "#72a1cc", "#a3aaaf", "#a4aab3"],
+	behavior: behaviors.LIQUID,
+	category: "liquids",
+	state: "liquid",
+	density: 6697,
+	stain: 0.1,
+	tempLow: -270,
+	stateLowName: "antimony_ice"
+};
+
+elements.unstain = {
+	color: "#729fff",
+	behavior: [
+		"XX|XX|XX",
+		"XX|XX|XX",
+		"XX|XX|XX"
+	],
+	stain: -1,
+    tool: (pixel) => {
+        doStaining({
+            element: "unstain",
+            x: pixel.x,
+            y: pixel.y
+        })
+    },
+	category: "tools",
+	state: "solid",
 };
 
 elements.incinerate.category = "tools",
