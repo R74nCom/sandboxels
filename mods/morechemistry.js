@@ -1,4 +1,4 @@
-//This mod was made by Alex the transfem, https://discord.com/users/778753696804765696 on discord and https://www.tiktok.com/@alextheagenenby?_t=8hoCVI3NRhu&_r=1 on tiktok.
+//This mod was made by Adora the transfem, https://discord.com/users/778753696804765696 on discord and https://www.tiktok.com/@alextheagenenby?_t=8hoCVI3NRhu&_r=1 on tiktok.
 function pixelInRange(pixel, range){
   let i = 0;
   while (i < range.length) {
@@ -635,11 +635,6 @@ elements.potassiumhydroxidecrystals = {
     density: 2040,
     name: "PotassiumHydroxideCrystals",
 }
-elements.supercooler = {
-  name: "SuperCooler",
-  category: "machines"
-}
-elements.supercooler.behavior = [["XX","CO:10","XX"],["CO:10","XX","CO:10"],["XX","CO:10","XX"]]
 elements.iron_chloride = {
   color: ["#010014", "#a2ff94"],
   reactions: {
@@ -695,7 +690,7 @@ elements.kilonova = {
   temp: 100000000,
 }
 elements.supernova.behavior = [ ["XX", "XX", "XX"], [ "XX", "EX:80>plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,molten_iron,molten_uranium,oxygen,molten_sodium,sulfur_gas,neon,chlorine,molten_calcium,molten_nickel,molten_copper,molten_zinc,gallium_gas,hydrogen,hydrogen,hydrogen,hydrogen,helium,helium,helium AND CH:NeutronStar", "XX" ], ["XX", "XX", "XX"] ]
-elements.kilonova.behavior = [ ["XX", "XX", "XX"], [ "XX", "EX:200>plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,molten_iron,molten_uranium,molten_lead,oxygen,molten_sodium,molten_gold,molten_tungsten,sulfur_gas,neon,chlorine,molten_calcium,molten_nickel,molten_copper,molten_zinc,gallium_gas,hydrogen,hydrogen,hydrogen,hydrogen,hydrogen,helium,helium,helium,helium AND CH:void", "XX" ], ["XX", "XX", "XX"] ]
+elements.kilonova.behavior = [ ["XX", "XX", "XX"], [ "XX", "EX:200>plasma,plasma,plasma,plasma,plasma,plasma,molten_iron,molten_uranium,molten_lead,oxygen,molten_sodium,molten_gold,molten_tungsten,sulfur_gas,neon,chlorine,molten_calcium,molten_nickel,molten_copper,molten_zinc,gallium_gas,hydrogen,hydrogen,hydrogen,hydrogen,hydrogen,helium,helium,helium,helium AND CH:void", "XX" ], ["XX", "XX", "XX"] ]
 elements.NeutronStar = {
   behavior: [["XX", "XX", "XX"], ["CR:light", "XX", "CR:light"], ["XX", "XX", "XX"]],
   name: "NeutronStar",
@@ -1057,52 +1052,12 @@ elements.specialmixer = {
       mix(range, exclude);
     }
   }
+
 let num4 = 0;
 let exclude2 = [];
 let property1 = "";
 let value2 = "";
-elements.propmachine = {
-    name: "PropMachine",
-    behavior: behaviors.WALL,
-    category: "machines",
-    noMix: true,
-  onSelect: function(pixel) {
-    let item = prompt("enter range for prop changing.");
-    if(/^\d+$/.test(item)){
-      num4 = parseInt(item);
-    } else {
-      alert("that is not an integer.");
-    }
-    exclude2 = prompt("Enter elements to exclude, seperate them with commas.").replace(/\s/g, "").split(",");
-    exclude2.push("propmachine");
-    var answer1 = prompt("Warning - This tool may break the simulator if used incorrectly.\n\nEnter a pixel attribute to modify:",(currentProp||undefined));
-    if (!answer1) { return }
-    var answer2 = prompt("Now, enter a value for "+answer1+":",(currentPropValue||undefined));
-    if (!answer2) { return }
-    var valueL = answer2.toLowerCase();
-    if (valueL === "true") { answer2 = true }
-    else if (valueL === "false") { answer2 = false }
-    else if (valueL === "null") { answer2 = null }
-    else if (valueL === "undefined") { answer2 = undefined }
-    else if (answer1 === "color" && valueL[0] === "#") {
-        var rgb = hexToRGB(valueL);
-        answer2 = "rgb("+rgb.r+","+rgb.g+","+rgb.b+")";
-    }
-    currentProp = answer1;
-    var num = parseFloat(answer2);
-    if (!isNaN(num)) { answer2 = num }
-    currentPropValue = answer2;
-    logMessage("Prop: "+currentProp);
-    logMessage("Value: "+currentPropValue);
-  },
-    tick: function(pixel) {
-      if(pixel.start == pixelTicks) {
-        pixel.range = num4;
-      }
-      let range = mouseRange(pixel.x, pixel.y, pixel.range);
-      prop({ property: property1, value: value2 },range, exclude2);
-    }
-  }
+
 let item = "";
 elements.improvedsensor = {
   behavior: behaviors.WALL,
@@ -1196,30 +1151,111 @@ elements.incinerator = {
   color: 'rgb(255, 50, 0)',
   noMix: true,
 }
-function prop(obj, range, exclude = []){
+function conditionTrue(condition, pixel){
+  let p = pixel;
+  let string = "";
+  condition = condition.split("!OR").join("||").split("&AND").join("&&").split("\"").join("")
+
+  condition = eval(condition);
+  return condition;
+}
+let ifCondition = "";
+let currentProp = "";
+let currentPropValue = "";
+elements.propmachine = {
+  name: "PropMachine",
+  behavior: behaviors.WALL,
+  category: "machines",
+  noMix: true,
+onSelect: function(pixel) {
+
+  let item = prompt("enter range for prop changing.");
+  if(/^\d+$/.test(item)){
+    num4 = parseInt(item);
+  } else {
+    alert("that is not an integer.");
+  }
+  exclude2 = prompt("Enter elements to exclude, seperate them with commas. You can also enter !IF if you wish to enter conditions for it to change the property and add the exclude elements.").replace(/\s/g, "");
+  if(exclude2.includes("!IF")){
+    exclude2.split("!IF").join("");
+    ifCondition = prompt("Enter the condition for the property to change. A list of variables can be seen at the bottom of the page. you cannot use \"\" but you can use `` and ''.");
+  } else { ifCondition = '1 == 1'; }
+  exclude2.split(",");
+  if(exclude2.constructor == [].constructor){
+    exclude2.push("propmachine");
+  } else {
+    exclude2 += "propmachine";
+  }
+  var answer1 = prompt("Warning - This tool may break the simulator if used incorrectly.\n\nEnter a pixel attribute to modify:",(currentProp||undefined));
+  console.log(answer1)
+  if (!answer1) { return }
+  var answer2 = prompt("Now, enter a value for "+answer1+":",(currentPropValue||undefined));
+  if (!answer2) { return }
+  var valueL = answer2.toLowerCase();
+  if (valueL === "true") { answer2 = true }
+  else if (valueL === "false") { answer2 = false }
+  else if (valueL === "null") { answer2 = null }
+  else if (valueL === "undefined") { answer2 = undefined }
+  else if (answer1 === "color" && valueL[0] === "#") {
+      var rgb = hexToRGB(valueL);
+      answer2 = "rgb("+rgb.r+","+rgb.g+","+rgb.b+")";
+  }
+  currentProp = answer1;
+  currentPropValue = answer2;
+  console.log(answer1);
+  var num = parseFloat(answer2);
+  if (!isNaN(num)) { answer2 = num }
+  currentPropValue = answer2;
+  logMessage("Prop: "+currentProp);
+  logMessage("Value: "+currentPropValue);
+},
+  tick: function(pixel) {
+    if(pixel.start == pixelTicks) {
+      pixel.range = num4;
+      pixel.condition = ifCondition;
+      pixel.prop = currentProp;
+      pixel.val = currentPropValue;
+    }
+      let range = mouseRange(pixel.x, pixel.y, pixel.range);
+      prop({ property: pixel.prop, value: pixel.val },range, exclude2, pixel.condition);
+  }
+}
+function prop(obj, range, exclude = [], condition = ""){
+  let list = [];
   for (var i = 0; i < range.length; i++) {
-  if (!isEmpty(range[i][0], range[i][1], true)) {
-    var pixel = pixelMap[range[i][0]][range[i][1]];
-    if (!exclude.includes(pixel.element)){
+  var x = range[i][0];
+  var y = range[i][1];
+      if (!isEmpty(x,y,true)) {
+          var pixel = pixelMap[x][y];
+            list.push(pixel);
+      }
+  }
+  for (var i = 0; i < list.length; i++) {
+  if (!isEmpty(list[i].x, list[i].y, true)) {
+    var pixel = list[i];
+    if (!exclude.includes(pixel.element) && conditionTrue(condition, pixel)){
       if(/^\d+$/.test(obj.value)){
         obj.value = parseInt(obj.value);
       }
-      if (!currentProp) { return }
-      if (pixel[currentProp] !== undefined && typeof pixel[currentProp] !== typeof currentPropValue) {
-          logMessage("Error: "+currentProp+" type is "+typeof pixel[currentProp]+", not "+typeof currentPropValue+".");
-          currentProp = null;
-          currentPropValue = null;
+      if (!obj.property) { return }
+      if (pixel[obj.property] !== undefined && typeof pixel[obj.property] !== typeof obj.value) {
+          logMessage("Error: "+obj.property+" type is "+typeof pixel[obj.property]+", not "+typeof obj.value+".");
+          obj.property = null;
+          obj.value = null;
           return;
         }
-      if (currentProp === "element") {
-          changePixel(pixel, currentPropValue);
+      if (obj.property === "element") {
+          changePixel(pixel, obj.value);
+          list.splice(list.indexOf(pixel),1);
           return;
       }
-      if (currentProp === "burning" && currentPropValue === "true") {
+      if (obj.property === "burning" && obj.value === "true") {
           pixel.burnStart = pixelTicks;
+          list.splice(list.indexOf(pixel),1);
           return;
       }
-        pixel[currentProp] = currentPropValue;
+        pixel[obj.property] = obj.value;
+        list.splice(list.indexOf(pixel),1);
       }
     }
   }
@@ -1307,3 +1343,120 @@ function pull(range, pixel1, include = []){
       }
     }
   }
+
+let prevNum;
+elements.etemper = {
+  name: "E-Temper",
+  category: "machines",
+  conduct: 1,
+  insulate: true,
+  behavior: behaviors.WALL,
+  onSelect: function(pixel){
+    prevNum = parseInt(prompt("Enter the temperature you want it set to.", (prevNum || undefined)));
+  },
+  tick: function(pixel){
+    if(pixel.start === pixelTicks){
+        pixel.clone = `Temp: ${prevNum}`;
+        pixel.Temp = prevNum;
+    }
+      for (var i = 0; i < adjacentCoords.length; i++){
+      let x = pixel.x + adjacentCoords[i][0];
+      let y = pixel.y + adjacentCoords[i][1];
+      if(outOfBounds(x,y)){ continue; }
+      if(isEmpty(x,y)){ continue; }
+      let pixel2 = pixelMap[x][y];
+        
+      if (pixel2.temp < pixel.Temp && pixel.charge > 0 ){
+          pixel2.temp += pixel.Temp / 6;
+      }
+
+    }
+  },
+}
+let prevString;
+elements.sign = {
+  name: "Sign",
+  category: "machines",
+  onSelect: function(){
+    prevString = prompt("Enter the text you want it to say.", (prevString || undefined));
+  },
+  tick: function(pixel){
+    if(pixel.start == pixelTicks){
+      pixel.clone = prevString;
+    }
+  }
+}
+document.body.innerHTML += `
+these are all properties of the pixel. another way to find pixel properties is using debug on a pixel, it will tell you the property and the value, like x and y, or, in plants.js, fruit.
+<table id="variables">
+  <thead>
+    <tr class="bold">
+      <th>
+       Variable
+      </th>
+      <th>
+        Definition
+      </th>
+    </tr>
+  </thead>
+  <tbody><tr>
+    <th>
+      p.color
+    </th>
+    <th>
+      The color of the pixel. it is defined as an RGB value.
+    </th>
+  </tr>
+  <tr>
+    <th>
+      p.x and p.y
+    </th>
+    <th>
+      The x and y positions of the pixel.
+    </th>
+  </tr>
+  <tr>
+    <th>
+      p.element
+    </th>
+    <th>
+      The element of the pixel.
+    </th>
+  </tr>
+  <tr>
+    <th>
+      p.clone
+    </th>
+    <th>
+      Specific to cloners, specifies what the cloner clones.
+    </th>
+  </tr>
+  <tr>
+    <th>
+      wc and lc
+    </th>
+    <th>
+      Specific to saplings, specifies what colour the wood is (wc) and what colour the leaves are (lc).
+    </th>
+  </tr>
+  <tr>
+    <th>
+      p.start
+    </th>
+    <th>
+      The start tick of the pixel.
+    </th>
+  </tr>
+  <tr>
+    <th>
+      p.tick
+    </th>
+    <th>
+      the amount of ticks that have happened so far in the game.
+    </th>
+  </tr>
+</tbody></table>
+`
+document.getElementById("extraInfo").innerHTML = `
+<small><a href="https://sandboxels.r74n.com/changelog" id="changelogButton" target="_blank">Changelog<span style="color:red">(NEW)</span></a> • <a href="https://sandboxels.R74n.com/feedback" target="_blank" style="color:lime;">Feedback</a> • <a href="https://sandboxels.wiki.gg/" target="_blank" id="wikiButton" title="Official Sandboxels Wiki - wiki.gg" style="color:white;">Wiki</a> • <a id="moreSocial" href="https://reddit.com/r/Sandboxels" rel="me" target="_blank"><span style="color:#FF5700">Reddit</span></a> • <a href="https://discord.gg/ejUc6YPQuS" target="_blank" style="color:#2f60ff;">Discord</a><span id="install-button" style="display: inline-block;">&nbsp;• <a onclick="deferredPrompt.prompt(); return false" href="#" style="text-shadow: 0px 2px 10px #ff00ff; cursor:pointer">Install Offline</a> • <a href = "https://sandboxels.r74n.com/#variables">Variables</a></span><!--<br><br><a style="color:lime" target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSf8pVMSdC6oSnBSaTpzjPQa8Ef-vxG_eXL99UITnMSQtJFTJA/viewform?usp=sf_link">FILL OUT THE CENSUS<span style="color:red">(NEW)</span></a>--></small><small><p>v1.9.3 • 559 elements, with <span id="hiddenCount">0</span> hidden.</p><p>©2021-2024. <a href="https://sandboxels.R74n.com/license.txt" rel="license" target="_blank">All Rights Reserved</a>. <a style="color:#00ffff" rel="author" href="https://r74n.com">R74n</a></p></small>
+`
