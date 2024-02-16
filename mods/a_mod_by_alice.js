@@ -1163,10 +1163,11 @@ try {
 			};
 
 			function convertHslObjects(color,outputType="rgb") {
+				if(color == null) { console.error("convertHslObjects: Color is null"); color = {h: 300, s: 100, l: 50} };
 				switch(outputType.toLowerCase()) {
 					//RGB cases
 					case "rgb":
-						color = hexToRGB(hslToHex(...Object.values(color))); //hsl to hex, hex to rgb_json, and rgb_json to rgb()
+						color = convertColorFormats(hslToHex(...Object.values(color)),"json"); //hsl to hex, hex to rgb_json, and rgb_json to rgb()
 						return `rgb(${color.r},${color.g},${color.b})`;
 						break;
 					case "hex":
@@ -1202,8 +1203,8 @@ try {
 						break;
 					default:
 						throw new Error("outputType must be \"rgb\", \"hex\", \"rgb_json\", \"rgb_array\", \"hsl\", \"hsl_json\", or \"hsl_array\"");
-				};
-			}
+				}
+			};
 
 			function changeSaturation(color,saturationChange,operationType="add",outputType="rgb",arrayType=null,doRounding=true) {
 				color = normalizeColorToHslObject(color,arrayType);
@@ -2094,13 +2095,15 @@ try {
 
 			//fix -1-caused ghost pixels
 			function deletePixel(x,y) {
+				if(isEmpty(x,y,true)) { return false };
 				// remove pixelMap[x][y] from currentPixels
 				var pixelIndex = currentPixels.indexOf(pixelMap[x][y]);
 				if(pixelIndex !== -1) {
 					currentPixels.splice(pixelIndex,1)
+					if (pixelMap[x][y]) { delete pixelMap[x][y] };
 				};
-				if (pixelMap[x][y]) {pixelMap[x][y].del = true}
-				if (pixelMap[x][y]) { delete pixelMap[x][y] };
+				//if (pixelMap[x][y]) {pixelMap[x][y].del = true}
+				//if (pixelMap[x][y]) { delete pixelMap[x][y] };
 				/*for (var i = 0; i < currentPixels.length; i++) {
 					if (currentPixels[i].x == x && currentPixels[i].y == y) {
 						currentPixels.splice(i, 1);
@@ -2133,9 +2136,9 @@ try {
 				};
 			};
 
-		function capitalizeFirstLetter(string,locale=null) {
-			return string[0][locale ? "toLocaleUpperCase" : "toUpperCase"](locale) + string.slice(1)
-		};
+			function capitalizeFirstLetter(string,locale=null) {
+				return string[0][locale ? "toLocaleUpperCase" : "toUpperCase"](locale) + string.slice(1)
+			};
 
 	//COLOR MANIPULATION TOOLS ##
 
@@ -3217,6 +3220,32 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			}
 		};
 
+		//redefine mouseRange to support even sizes
+        function mouseRange(mouseX,mouseY,size) {
+            var coords = [];
+            size = size || mouseSize;
+            if (elements[currentElement].maxSize < mouseSize) {
+                var mouseOffset = Math.trunc(elements[currentElement].maxSize/2);
+            }
+            else {
+                var mouseOffset = Math.trunc(size/2);
+            }
+            var topLeft = [mouseX-mouseOffset,mouseY-mouseOffset];
+            var bottomRight = [mouseX+mouseOffset,mouseY+mouseOffset];
+			if(size % 2 == 0) {
+				bottomRight[0]--;
+				bottomRight[1]--;
+			};
+            // Starting at the top left, go through each pixel
+            for (var x = topLeft[0]; x <= bottomRight[0]; x++) {
+                for (var y = topLeft[1]; y <= bottomRight[1]; y++) {
+                    // If the pixel is empty, add it to coords
+                    coords.push([x,y]);
+                }
+            }
+            return coords;
+        };
+
 		//this part defines basically all of the keybinds
 		function addKeyboardListeners() {
 			document.addEventListener("keydown", function(e) {
@@ -3259,16 +3288,26 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					}
 					return;
 				}
+				// If the user presses [ or -, decrease the mouse size by 2
 				if (e.keyCode == 219 || e.keyCode == 189) {
-					if (shiftDown) {mouseSize = 1}
+					//If a shift key is pressed, set to 1
+					if (shiftDown && shiftDown % 2 == 1) {mouseSize = 1}
+					//If an alt key is pressed, decrease by 1
+					else if (shiftDown && shiftDown % 2 == 0) { 
+						mouseSize--;
+						if (mouseSize < 1) { mouseSize = 1 }
+					}
 					else {
 						mouseSize -= 2;
-						if (mouseSize < 1) { mouseSize = 1; }
+						if (mouseSize < 1) { mouseSize = 1 }
 					}
 				}
 				// If the user presses ] or =, increase the mouse size by 2
 				if (e.keyCode == 221 || e.keyCode == 187) {
-					if (shiftDown) {mouseSize = (mouseSize+15)-((mouseSize+15) % 15)}
+					//If a shift key is pressed, increase by 15
+					if (shiftDown && shiftDown % 2 == 1) {mouseSize = (mouseSize+15)-((mouseSize+15) % 15)}
+					//If an alt key is pressed, increase by 1
+					else if (shiftDown && shiftDown % 2 == 0) {mouseSize++}
 					else {mouseSize += 2;}
 					// if height>width and mouseSize>height, set mouseSize to height, if width>height and mouseSize>width, set mouseSize to width
 					if (mouseSize > (height > width ? height : width)) { mouseSize = (height > width ? height : width); }
@@ -3607,6 +3646,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		velocityBlacklist = [];
 
 		function explodeAtPlus(x,y,radius,firee="fire",smokee="smoke",beforeFunction=null,afterFunction=null,changeTemp=true) {
+			var message = "Explosion ";
+			var pixel = pixelMap[x]?.[y];
+			if(pixel) { message += `of ${pixel.element} ` };
+			message += `with radius ${radius} at (${x},${y})`;
+			
 			// if fire contains , split it into an array
 			if(firee !== null) {
 				if (firee.indexOf(",") !== -1) {
@@ -3730,6 +3774,15 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		};
 
 		oldExplodeAt = explodeAt;
+		/*explodeAt = function(x,y,radius,fire="fire") {
+			var message = "Explosion ";
+			var pixel = pixelMap[x]?.[y];
+			if(pixel) { message += `of ${pixel.element} ` };
+			message += `with radius ${radius} with "${fire}" at (${x},${y})`;
+			console.log(message);
+			
+			oldExplodeAt(x,y,radius,fire="fire")
+		};*/
 		explodeAt = explodeAtPlus;
 
 	//MORE CONFIGURABLE REACTION TEMPERATURE CHANGES ##
@@ -5029,11 +5082,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			if (pixel.charge && elementInfo.colorOn) {
 				customColor = elementInfo.colorOn;
 			}
-			if (customColor != null) {
+			if (customColor !== null) {
 				if (Array.isArray(customColor)) {
 					customColor = customColor[Math.floor(Math.random() * customColor.length)];
-				}
-				if (customColor.startsWith("#")) {
+				} else if (customColor.startsWith?.("#")) {
 					customColor = hexToRGB(customColor);
 				}
 				var rgb = customColor;
@@ -5224,7 +5276,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				if (!settings["bg"]) {ctx.clearRect(0, 0, canvas.width, canvas.height)}
 				else {
 					if(settings["bg"] instanceof Array) {
-						settings.bgAngle ??= 0;
+						settings.bgAngle ??= 90;
 						var angle = (settings.bgAngle) * Math.PI / 180;
 						ctx.fillStyle = ctx.createLinearGradient(
 							0,
@@ -5560,6 +5612,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				}
 				var topLeft = [mousePos.x-mouseOffset,mousePos.y-mouseOffset];
 				var bottomRight = [mousePos.x+mouseOffset,mousePos.y+mouseOffset];
+				if(mouseSize % 2 == 0) {
+					bottomRight[0]--;
+					bottomRight[1]--;
+				};
 				// Draw a square around the mouse
 				ctx.strokeStyle = "white";
 				ctx.strokeRect(topLeft[0]*pixelSize,topLeft[1]*pixelSize,(bottomRight[0]-topLeft[0]+1)*pixelSize,(bottomRight[1]-topLeft[1]+1)*pixelSize);
@@ -7930,7 +7986,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					}
 					//1010 and 0101
 					if(pixel.dc1 && !pixel.dc2 && pixel.dc3 && !pixel.dc4) {
-						if(!pixel.changeTo) {
+						if(!pixel.changeTo) { //7989 yay soshi!
 							if(ggg < 1/2) {
 								pixel.changeTo = pixel.dc1
 							} else {
@@ -8069,7 +8125,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 								if(isEmpty(pixel.x+1,pixel.y-1) && isEmpty(pixel.x+1,pixel.y-2) && !outOfBounds(pixel.x+1,pixel.y-1) && !outOfBounds(pixel.x+1,pixel.y-2)) {
 									tryMove(pixelMap[pixel.x][pixel.y-1],pixel.x+1,pixel.y-1)
 									tryMove(pixelMap[pixel.x][pixel.y-2],pixel.x+1,pixel.y-2)
-								} //7989 yay soshi!
+								}
 							}
 						} else {
 							if(isEmpty(pixel.x+1,pixel.y-1) && !outOfBounds(pixel.x+1,pixel.y-1)) {
@@ -10839,7 +10895,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 
 		var lifeEaterCategories = ["life","auto creepers","shit","cum","food","fantastic creatures","fey","auto_fey"];
 		var lifeEaterBlacklist = ["life_eater_virus","life_eater_slurry","life_eater_infected_dirt"];
-		var lifeEaterWhitelist = ["blood","poop","blood_ice","wood","wood_plank","sawdust","straw","paper","birthpool","dried_poop","gloomfly","meat_monster","rotten_ravager","bone_beast","withery","withery_plant","banana","apple","rotten_apple","apioform_player","apioform_bee","apioform","apiodiagoform","sugar_cactus","sugar_cactus_seed","flowering_sugar_cactus","tree_branch","sap","silk","red_velvet","silk_velvet","ketchup", "enchanted_ketchup", "frozen_ketchup", "poisoned_ketchup", "frozen_poisoned_ketchup", "ketchup_spout", "ketchup_cloud", "poisoned_ketchup_cloud", "ketchup_snow", "ketchup_snow_cloud", "poisoned_ketchup_snow", "poisoned_ketchup_snow_cloud", "ketchup_gas", "poisoned_ketchup_gas", "ketchup_powder", "poisoned_ketchup_powder", "eketchup_spout", "ketchup_metal", "antiketchup", "dirty_ketchup", "ketchup_gold", "molten_ketchup_metal", "ketchup_fairy", "ketchup_metal_scrap", "ketchup_gold_scrap", "molten_ketchup_gold", "mycelium","vaccine","antibody","infection","sap","caramel","molasses","melted_chocolate","soda","mustard","fry_sauce","tomato_sauce","sugary_tomato_sauce","bio_ooze","zombie_blood","feather","tooth","decayed_tooth","plaque","tartar","bacteria","replacer_bacteria","pop_rocks"];
+		var lifeEaterWhitelist = ["blood","skin","hair","poop","blood_ice","wood","wood_plank","sawdust","straw","paper","birthpool","dried_poop","gloomfly","meat_monster","rotten_ravager","bone_beast","withery","withery_plant","banana","apple","rotten_apple","apioform_player","apioform_bee","apioform","apiodiagoform","sugar_cactus","sugar_cactus_seed","flowering_sugar_cactus","tree_branch","sap","silk","red_velvet","silk_velvet","ketchup", "enchanted_ketchup", "frozen_ketchup", "poisoned_ketchup", "frozen_poisoned_ketchup", "ketchup_spout", "ketchup_cloud", "poisoned_ketchup_cloud", "ketchup_snow", "ketchup_snow_cloud", "poisoned_ketchup_snow", "poisoned_ketchup_snow_cloud", "ketchup_gas", "poisoned_ketchup_gas", "ketchup_powder", "poisoned_ketchup_powder", "eketchup_spout", "ketchup_metal", "antiketchup", "dirty_ketchup", "ketchup_gold", "molten_ketchup_metal", "ketchup_fairy", "ketchup_metal_scrap", "ketchup_gold_scrap", "molten_ketchup_gold", "mycelium","vaccine","antibody","infection","sap","caramel","molasses","melted_chocolate","soda","mustard","fry_sauce","tomato_sauce","sugary_tomato_sauce","bio_ooze","zombie_blood","feather","tooth","decayed_tooth","plaque","tartar","bacteria","replacer_bacteria","pop_rocks"];
 		var lifeEaterSubstitutions = {
 			"dirt": "life_eater_infected_dirt",
 			"crimsoil": "life_eater_infected_dirt",
@@ -17191,9 +17247,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		elements.electric_gas = {
 			color: ["#3693b3", "#246e64"],
 			behavior: [
-				"M2%33.3 AND CR:electric%1|M1%33.3 AND CR:electric%1|M2%33.3 AND CR:electric%1",
-				"M1%33.3 AND CR:electric%1|XX%0000000000000000000000|M1%33.3 AND CR:electric%1",
-				"M2%33.3 AND CR:electric%1|M1%33.3 AND CR:electric%1|M2%33.3 AND CR:electric%1",
+				"M2%33.3 AND CR:electric%1 AND CR:lightning%0.005|M1%33.3 AND CR:electric%1 AND CR:lightning%0.005|M2%33.3 AND CR:electric%1 AND CR:lightning%0.005",
+				"M1%33.3 AND CR:electric%1 AND CR:lightning%0.005|XX%000000000000000000000000000000000000000000000|M1%33.3 AND CR:electric%1 AND CR:lightning%0.005",
+				"M2%33.3 AND CR:electric%1 AND CR:lightning%0.005|M1%33.3 AND CR:electric%1 AND CR:lightning%0.005|M2%33.3 AND CR:electric%1 AND CR:lightning%0.005",
 			],
 			hardness: 0.8,
 			reactions: {
@@ -17202,7 +17258,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			},
 			category: "gases",
 			density: 1.225,
-			state: "gas",
+			state: "gas"
 		};
 
 		corrosiveGasMaxHardness = 0.6
@@ -19256,9 +19312,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		*/
 
 		function heejinitoidTick(pixel) {
+			pixel.color ??= pixelColorPick(pixel);
 			if(pixel.oldColor === null) { pixel.oldColor = pixel.color };
 			if(pixel.oldColor === undefined) { pixel.oldColor = pixelColorPick(pixel) };
-			var color = rgbStringToHSL(convertColorFormats(pixel.oldColor,"rgb"),"json");
+			var color = rgbStringToHSL((convertColorFormats(pixel.oldColor,"rgb") ?? pixelColorPick(pixel)),"json");
 			var heejiniteHueSpread = 30 + (pixel.temp/9.25)
 			var hueOffset = (Math.sin(pixelTicks / 11) * heejiniteHueSpread) + 15; color.h += hueOffset;
 			var color = convertHslObjects(color,"rgb");
@@ -26448,6 +26505,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					elements.molten_copper ??= {}; elements.molten_copper.tempHigh = 4700;
 					elements.molten_alumina ??= {};
 					elements.molten_alumina.tempHigh = 5400;
+					elements.molten_alumina.state = "liquid";
+					elements.molten_alumina.autoType = "gas";
 					elements.molten_alumina.reactions ??= {};
 					elements.molten_alumina.reactions.iron_scrap = {elem1: "molten_sapphire", elem2: ["molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron",null] };
 					elements.molten_alumina.reactions.molten_iron = {elem1: "molten_sapphire", elem2: ["molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron",null] };
@@ -35842,7 +35901,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		};
 
 		elements.sponge.onTryMoveInto = function(pixel,otherPixel) {
-			var absorbedElements = Object.keys(pixel.absorbed);
+			var absorbedElements = Object.keys(pixel.absorbed ?? {});
 			if(absorbedElements.length == 0) {
 				return false;
 			};
@@ -36262,7 +36321,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 									newPixel.vx ??= 0;
 									newPixel.vy ??= 0;
 									newPixel.vx += (pixel.direction * 5)
-									newPixel.vy += 3;
+									newPixel.vy -= 3;
 								};
 							};
 							pixel.fromX += pixel.direction
@@ -36347,7 +36406,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 										newPixel.vx ??= 0;
 										newPixel.vy ??= 0;
 										newPixel.vx += (pixel.direction * 13)
-										newPixel.vy += 6;
+										newPixel.vy -= 6;
 									};
 								};
 								pixel.fromX += pixel.direction
@@ -36444,7 +36503,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 									newPixel.vx ??= 0;
 									newPixel.vy ??= 0;
 									newPixel.vx += (pixel.direction * 6)
-									newPixel.vy += 3;
+									newPixel.vy -= 3;
 								};
 							};
 							pixel.fromX += pixel.direction
@@ -36539,7 +36598,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 										newPixel.vx ??= 0;
 										newPixel.vy ??= 0;
 										newPixel.vx += (pixel.direction * 8)
-										newPixel.vy += 5;
+										newPixel.vy -= 5;
 									};
 								};
 								pixel.fromX += pixel.direction
@@ -44364,7 +44423,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 
 		var injectorPoisonCategories = ["life","auto creepers","shit","cum","food","fantastic creatures","fey","auto_fey"];
 		var injectorPoisonBlacklist = ["injector_poison","dead_matter","poisoned_dirt"];
-		var injectorPoisonWhitelist = ["blood","poop","blood_ice","wood","wood_plank","sawdust","straw","paper","birthpool","dried_poop","gloomfly","meat_monster","rotten_ravager","bone_beast","withery","withery_plant","banana","apple","rotten_apple","apioform_player","apioform_bee","apioform","apiodiagoform","sugar_cactus","sugar_cactus_seed","flowering_sugar_cactus","tree_branch","sap","silk","red_velvet","silk_velvet","ketchup", "enchanted_ketchup", "frozen_ketchup", "poisoned_ketchup", "frozen_poisoned_ketchup", "ketchup_spout", "ketchup_cloud", "poisoned_ketchup_cloud", "ketchup_snow", "ketchup_snow_cloud", "poisoned_ketchup_snow", "poisoned_ketchup_snow_cloud", "ketchup_gas", "poisoned_ketchup_gas", "ketchup_powder", "poisoned_ketchup_powder", "eketchup_spout", "ketchup_metal", "antiketchup", "dirty_ketchup", "ketchup_gold", "molten_ketchup_metal", "ketchup_fairy", "ketchup_metal_scrap", "ketchup_gold_scrap", "molten_ketchup_gold", "mycelium","vaccine","antibody","infection","sap","caramel","molasses","melted_chocolate","soda","mustard","fry_sauce","tomato_sauce","sugary_tomato_sauce","bio_ooze","zombie_blood","feather","tooth","decayed_tooth","plaque","tartar","bacteria","replacer_bacteria","pop_rocks"];
+		var injectorPoisonWhitelist = ["blood","skin","hair","poop","blood_ice","wood","wood_plank","sawdust","straw","paper","birthpool","dried_poop","gloomfly","meat_monster","rotten_ravager","bone_beast","withery","withery_plant","banana","apple","rotten_apple","apioform_player","apioform_bee","apioform","apiodiagoform","sugar_cactus","sugar_cactus_seed","flowering_sugar_cactus","tree_branch","sap","silk","red_velvet","silk_velvet","ketchup", "enchanted_ketchup", "frozen_ketchup", "poisoned_ketchup", "frozen_poisoned_ketchup", "ketchup_spout", "ketchup_cloud", "poisoned_ketchup_cloud", "ketchup_snow", "ketchup_snow_cloud", "poisoned_ketchup_snow", "poisoned_ketchup_snow_cloud", "ketchup_gas", "poisoned_ketchup_gas", "ketchup_powder", "poisoned_ketchup_powder", "eketchup_spout", "ketchup_metal", "antiketchup", "dirty_ketchup", "ketchup_gold", "molten_ketchup_metal", "ketchup_fairy", "ketchup_metal_scrap", "ketchup_gold_scrap", "molten_ketchup_gold", "mycelium","vaccine","antibody","infection","sap","caramel","molasses","melted_chocolate","soda","mustard","fry_sauce","tomato_sauce","sugary_tomato_sauce","bio_ooze","zombie_blood","feather","tooth","decayed_tooth","plaque","tartar","bacteria","replacer_bacteria","pop_rocks"];
 		var injectorPoisonSubstitutions = {
 			"dirt": "poisoned_dirt",
 			"dry_dirt": "poisoned_dirt",
@@ -45937,6 +45996,67 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 		maxColorOffset: 0
 	};
 	
+	
+	runAfterLoad(function() {
+		//Emergency bug fix
+		elemfillerVar = null;
+		elements.element_filler = {
+			category: "special",
+			color: elements.filler.color,
+			state: "solid",
+			movable: "false",
+			onSelect: function() {
+				var answer6 = prompt("Please input the desired element of this filler. It will not work if you do multiple filter types while paused.",(elemfillerVar||undefined));
+				if (!answer6) { return }
+				elemfillerVar = answer6;
+			},
+			excludeRandom: true,
+			tick: function(pixel){
+				if(!(elementExists(elemfillerVar))) {
+					deletePixel(pixel.x,pixel.y);
+					return
+				};
+				var neighbors = 0;
+				if(!pixel.changeElem){
+					pixel.changeElem = elemfillerVar;
+				}
+				for (var i = 0; i < squareCoords.length; i++) {
+					var coord = squareCoords[i];
+					var x = pixel.x+coord[0];
+					var y = pixel.y+coord[1];
+					if (!isEmpty(x,y, true)) {
+						neighbors = neighbors + 1;
+					} else if (isEmpty(x, y)){
+						createPixel("element_filler", x, y)
+						pixelMap[x][y].changeElem = pixel.changeElem;
+					} else (
+						changePixel(pixel, pixel.changeElem)
+					)
+				}
+				if (neighbors >= 8){
+					changePixel(pixel, pixel.changeElem)
+				}
+			}
+		}
+
+		if(elementExists("ohio")) {
+			elements.ohio.excludeRandom = true
+		};
+		if(elementExists("rainbow_bomb")) {
+			elements.rainbow_bomb.excludeRandom = true
+		};
+		if(elementExists("fart")) {
+			elements.fart.excludeRandom = true
+		};
+		if(elementExists("dark_energy")) {
+			elements.dark_energy.excludeRandom = true
+		};
+		if(elementExists("rainbow_flash")) {
+			elements.rainbow_flash.excludeRandom = true;
+			delete elements.rainbow_flash.reactions.fire
+		};
+	})
+
 	//END ##
 } catch (error) {
 	alert(`Load failed (try reloading).\nThis is likely a sporadic failure caused by inconsistencies in how mods are loaded, and will likely fix itself in a refresh or two. If it persists, then it's an issue.\nError: ${error.stack}`);
