@@ -4,7 +4,7 @@ var structureMod = "mods/structure_test.js";
 var rbtMod = "mods/randomness_but_tick.js";
 
 if(enabledMods.includes(libraryMod) && enabledMods.includes(structureMod) && enabledMods.includes(rbtMod)) { 
-	var injectorPoisonCategories = ["life","auto creepers","shit","cum","food","fantastic creatures","fey","auto_fey"];
+	var injectorPoisonCategories = ["life","auto creepers","food","fantastic creatures","fey","auto_fey"];
 	var injectorPoisonBlacklist = ["injector_poison","dead_matter","poisoned_dirt"];
 	var injectorPoisonWhitelist = ["blood","poop","blood_ice","wood","wood_plank","sawdust","straw","paper","birthpool","dried_poop","gloomfly","meat_monster","rotten_ravager","bone_beast","withery","withery_plant","banana","apple","rotten_apple","apioform_player","apioform_bee","apioform","apiodiagoform","sugar_cactus","sugar_cactus_seed","flowering_sugar_cactus","tree_branch","sap","silk","red_velvet","silk_velvet","ketchup", "enchanted_ketchup", "frozen_ketchup", "poisoned_ketchup", "frozen_poisoned_ketchup", "ketchup_spout", "ketchup_cloud", "poisoned_ketchup_cloud", "ketchup_snow", "ketchup_snow_cloud", "poisoned_ketchup_snow", "poisoned_ketchup_snow_cloud", "ketchup_gas", "poisoned_ketchup_gas", "ketchup_powder", "poisoned_ketchup_powder", "eketchup_spout", "ketchup_metal", "antiketchup", "dirty_ketchup", "ketchup_gold", "molten_ketchup_metal", "ketchup_fairy", "ketchup_metal_scrap", "ketchup_gold_scrap", "molten_ketchup_gold", "mycelium","vaccine","antibody","infection","sap","caramel","molasses","melted_chocolate","soda","mustard","fry_sauce","tomato_sauce","sugary_tomato_sauce","bio_ooze","zombie_blood","feather","tooth","decayed_tooth","plaque","tartar","bacteria","replacer_bacteria","pop_rocks"];
 	var injectorPoisonSubstitutions = {
