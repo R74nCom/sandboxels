@@ -1386,77 +1386,79 @@ elements.sign = {
     }
   }
 }
-document.body.innerHTML += `
-these are all properties of the pixel. another way to find pixel properties is using debug on a pixel, it will tell you the property and the value, like x and y, or, in plants.js, fruit.
-<table id="variables">
-  <thead>
-    <tr class="bold">
+runAfterLoad(function(){
+  document.body.innerHTML += `
+  these are all properties of the pixel. another way to find pixel properties is using debug on a pixel, it will tell you the property and the value, like x and y, or, in plants.js, fruit.
+  <table id="variables">
+    <thead>
+      <tr class="bold">
+        <th>
+         Variable
+        </th>
+        <th>
+          Definition
+        </th>
+      </tr>
+    </thead>
+    <tbody><tr>
       <th>
-       Variable
+        p.color
       </th>
       <th>
-        Definition
+        The color of the pixel. it is defined as an RGB value.
       </th>
     </tr>
-  </thead>
-  <tbody><tr>
-    <th>
-      p.color
-    </th>
-    <th>
-      The color of the pixel. it is defined as an RGB value.
-    </th>
-  </tr>
-  <tr>
-    <th>
-      p.x and p.y
-    </th>
-    <th>
-      The x and y positions of the pixel.
-    </th>
-  </tr>
-  <tr>
-    <th>
-      p.element
-    </th>
-    <th>
-      The element of the pixel.
-    </th>
-  </tr>
-  <tr>
-    <th>
-      p.clone
-    </th>
-    <th>
-      Specific to cloners, specifies what the cloner clones.
-    </th>
-  </tr>
-  <tr>
-    <th>
-      wc and lc
-    </th>
-    <th>
-      Specific to saplings, specifies what colour the wood is (wc) and what colour the leaves are (lc).
-    </th>
-  </tr>
-  <tr>
-    <th>
-      p.start
-    </th>
-    <th>
-      The start tick of the pixel.
-    </th>
-  </tr>
-  <tr>
-    <th>
-      p.tick
-    </th>
-    <th>
-      the amount of ticks that have happened so far in the game.
-    </th>
-  </tr>
-</tbody></table>
-`
-document.getElementById("extraInfo").innerHTML = `
-<small><a href="https://sandboxels.r74n.com/changelog" id="changelogButton" target="_blank">Changelog<span style="color:red">(NEW)</span></a> • <a href="https://sandboxels.R74n.com/feedback" target="_blank" style="color:lime;">Feedback</a> • <a href="https://sandboxels.wiki.gg/" target="_blank" id="wikiButton" title="Official Sandboxels Wiki - wiki.gg" style="color:white;">Wiki</a> • <a id="moreSocial" href="https://reddit.com/r/Sandboxels" rel="me" target="_blank"><span style="color:#FF5700">Reddit</span></a> • <a href="https://discord.gg/ejUc6YPQuS" target="_blank" style="color:#2f60ff;">Discord</a><span id="install-button" style="display: inline-block;">&nbsp;• <a onclick="deferredPrompt.prompt(); return false" href="#" style="text-shadow: 0px 2px 10px #ff00ff; cursor:pointer">Install Offline</a> • <a href = "https://sandboxels.r74n.com/#variables">Variables</a></span><!--<br><br><a style="color:lime" target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSf8pVMSdC6oSnBSaTpzjPQa8Ef-vxG_eXL99UITnMSQtJFTJA/viewform?usp=sf_link">FILL OUT THE CENSUS<span style="color:red">(NEW)</span></a>--></small><small><p>v1.9.3 • 559 elements, with <span id="hiddenCount">0</span> hidden.</p><p>©2021-2024. <a href="https://sandboxels.R74n.com/license.txt" rel="license" target="_blank">All Rights Reserved</a>. <a style="color:#00ffff" rel="author" href="https://r74n.com">R74n</a></p></small>
-`
+    <tr>
+      <th>
+        p.x and p.y
+      </th>
+      <th>
+        The x and y positions of the pixel.
+      </th>
+    </tr>
+    <tr>
+      <th>
+        p.element
+      </th>
+      <th>
+        The element of the pixel.
+      </th>
+    </tr>
+    <tr>
+      <th>
+        p.clone
+      </th>
+      <th>
+        Specific to cloners, specifies what the cloner clones.
+      </th>
+    </tr>
+    <tr>
+      <th>
+        wc and lc
+      </th>
+      <th>
+        Specific to saplings, specifies what colour the wood is (wc) and what colour the leaves are (lc).
+      </th>
+    </tr>
+    <tr>
+      <th>
+        p.start
+      </th>
+      <th>
+        The start tick of the pixel.
+      </th>
+    </tr>
+    <tr>
+      <th>
+        p.tick
+      </th>
+      <th>
+        the amount of ticks that have happened so far in the game.
+      </th>
+    </tr>
+  </tbody></table>
+  `
+  document.getElementById("extraInfo").innerHTML = `
+  <small><a href="https://sandboxels.r74n.com/changelog" id="changelogButton" target="_blank">Changelog<span style="color:red">(NEW)</span></a> • <a href="https://sandboxels.R74n.com/feedback" target="_blank" style="color:lime;">Feedback</a> • <a href="https://sandboxels.wiki.gg/" target="_blank" id="wikiButton" title="Official Sandboxels Wiki - wiki.gg" style="color:white;">Wiki</a> • <a id="moreSocial" href="https://reddit.com/r/Sandboxels" rel="me" target="_blank"><span style="color:#FF5700">Reddit</span></a> • <a href="https://discord.gg/ejUc6YPQuS" target="_blank" style="color:#2f60ff;">Discord</a><span id="install-button" style="display: inline-block;">&nbsp;• <a onclick="deferredPrompt.prompt(); return false" href="#" style="text-shadow: 0px 2px 10px #ff00ff; cursor:pointer">Install Offline</a> • <a href = "https://sandboxels.r74n.com/#variables">Variables</a></span><!--<br><br><a style="color:lime" target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSf8pVMSdC6oSnBSaTpzjPQa8Ef-vxG_eXL99UITnMSQtJFTJA/viewform?usp=sf_link">FILL OUT THE CENSUS<span style="color:red">(NEW)</span></a>--></small><small><p>v1.9.3 • 559 elements, with <span id="hiddenCount">0</span> hidden.</p><p>©2021-2024. <a href="https://sandboxels.R74n.com/license.txt" rel="license" target="_blank">All Rights Reserved</a>. <a style="color:#00ffff" rel="author" href="https://r74n.com">R74n</a></p></small>
+  `
+}
