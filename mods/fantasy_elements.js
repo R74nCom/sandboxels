@@ -1,6 +1,17 @@
 // 1.3.2 fantasy_elements.js mod
 // adds plode a bomb
 
+// 1.4 the golem mod
+// frostbite turns pheonx into ice
+// adds plode maximus
+// adds fire golem
+// added snow golem
+// added slush golem
+// added water golem
+// added plasma golem
+// iced pheonix at 700 degrees becomes pheonix
+// added blood golem
+
 elements.dragon_breath = {
     color: "#f94e4e",
     behavior: behaviors.GAS,
@@ -30,6 +41,7 @@ elements.frostbite = {
     reactions: {
         "water": { elem1: "ice", elem2: "ice" },
 		"dragon_breath": { elem1: "pulsium", elem2: "pulsium" },
+        "pheonix": { elem1: "ice", elem2: "ice" },
     }
 };
 
@@ -130,6 +142,9 @@ elements.baby_pheonix = {
 elements.iced_pheonix = {
     color: "#34baeb",
     behavior: behaviors.SOLID,
+    temp: -999,
+    tempHigh: 700,
+    stateHigh: "pheonix",
     category: "fantasy",
     state: "solid",
 	breakInto: "ice",
@@ -624,4 +639,102 @@ elements.plode = {
     state: "solid",
     density: 2500,
     excludeRandom: true,
+};
+elements.plode_maximus = {
+    color: "#7f03fc",
+    behavior: [
+        "XX|EX:200>plasma,heat_ray,plasma,fire,fire,plasma,heat_ray,plasma,fire,fire,plasma,heat_ray,plasma,fire,fire,plasma,heat_ray,plasma,fire,fire,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,fire,fire,fire,fire,fire,fire|XX",
+        "XX|XX|XX",
+        "M2|M1 AND EX:200>fire,plasma,fire,fire,heat_ray,fire,fire,plasma,fire,fire,heat_ray,fire,fire,plasma,fire,fire,heat_ray,fire,fire,plasma,fire,fire,heat_ray,fire,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,fire,fire,fire,fire,fire|M2",
+    ],
+    category: "fantasyweapons",
+    state: "solid",
+    density: 2500,
+    excludeRandom: true,
+};
+
+elements.fire_golem= {
+    "color": "#fc5a03",
+    "state": "solid",
+    "behavior": [
+        "XX|CR:fire|DL",
+        "XX|FX%0.5|M2%3 AND DL",
+        "XX|M1|XX",
+    ],
+    "category":"fantasy",
+    "temp": 600,
+};
+
+elements.snow_golem= {
+    "color": "#b6ccd4",
+    "state": "solid",
+    "behavior": [
+        "XX|CR:snow|DL",
+        "XX|FX%0.5|M2%3 AND DL",
+        "XX|M1|XX",
+    ],
+    "category":"fantasy",
+    "temp": -70,
+};
+
+elements.water_golem= {
+    "color": "#4ad2ff",
+    "state": "solid",
+    "behavior": [
+        "XX|CR:water|DL",
+        "XX|FX%0.5|M2%3 AND DL",
+        "XX|M1|XX",
+    ],
+    "category":"fantasy",
+    "temp": 15,
+};
+
+elements.slush_golem= {
+    "color": "#a7dff2",
+    "state": "solid",
+    "behavior": [
+        "XX|CR:slush|DL",
+        "XX|FX%0.5|M2%3 AND DL",
+        "XX|M1|XX",
+    ],
+    "category":"fantasy",
+    "temp": 15,
+};
+
+elements.plasma_golem= {
+    "color": "#891af0",
+    "state": "solid",
+    "behavior": [
+        "XX|CR:plasma|DL",
+        "XX|FX%0.5|M2%3 AND DL",
+        "XX|M1|XX",
+    ],
+    "category":"fantasy",
+    "temp": Infinity,
+};
+
+elements.cold_golem= {
+    "color": ["#00ccff","#0091ff","#00a2ff"],
+    "state": "solid",
+    "behavior": [
+        "XX|CR:cold_fire|DL",
+        "XX|FX%0.5|M2%3 AND DL",
+        "XX|M1|XX",
+    ],
+    "category":"fantasy",
+    "temp": -999,
+    "templow": -999,
+    "alias": "don't put me out!",
+};
+
+elements.blood_golem= {
+    "color": "#ff0000",
+    "state": "solid",
+    "behavior": [
+        "XX|CR:blood|DL",
+        "XX|FX%0.5|M2%3 AND DL",
+        "XX|M1|XX",
+    ],
+    "category":"fantasy",
+    "temp": 10,
 };
