@@ -1498,6 +1498,7 @@ elements.mixer = {
                 }
 	},
 	movable: false,
+    noMix: true,
 },
 elements.invisiblesupport = {
 	color: "#000000",
