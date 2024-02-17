@@ -2117,6 +2117,17 @@ textures.gold = [
     "DDDbDDDDDDDDDDbDD",
     "BBBBBBBBBBBBBBBBB"
 ]
+textures.diamond = [
+    "llcccLbLl",
+    "lcccccbbC",
+    "CScccBbCC",
+    "SSScBBBLC",
+    "SSSSLBbLS",
+    "SSSCLbbbL",
+    "BSCCCnbBL",
+    "BBBCnnBBB",
+    "lBBcLnLbL"
+]
 elements.transparency = {
     color: ["#d4d4d4", "#ffffff"],
     colorPattern: textures.transparency,
@@ -2207,6 +2218,26 @@ elements.textured_gold = {
         pixel.element = "gold"
         }
     }
+}
+elements.solid_diamond = {
+    color: elements.diamond.color,
+    category: "solids",
+    colorPattern: textures.diamond,
+    colorKey: {
+        "c":"#36BDF3",
+        "C": "#7DD1F2",
+        "B": "#4B94ED",
+        "b": "#97BEED",
+        "L":"#C2D5ED",
+        "n": "#7BAEED",
+        "l": "#A2DBF2",
+        "S": "#BDF8FF"
+    },
+    tempHigh: elements.diamond.tempHigh,
+    stateHigh: elements.diamond.stateHigh,
+    state: "solid",
+    denisty: elements.diamond.density,
+    hardness: elements.diamond.hardness
 }
 elements.textured_rose_gold = {
     color: ["#FF5991", "#E4386F", "#7F1037", "#FFCCCD", "#671133"],
