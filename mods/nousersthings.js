@@ -1498,6 +1498,7 @@ elements.mixer = {
                 }
 	},
 	movable: false,
+    noMix: true,
 },
 elements.invisiblesupport = {
 	color: "#000000",
@@ -2204,6 +2205,27 @@ elements.textured_gold = {
     tick: function(pixel){
         if (pixelTicks - pixel.start == 1){
         pixel.element = "gold"
+        }
+    }
+}
+elements.textured_rose_gold = {
+    color: ["#FF5991", "#E4386F", "#7F1037", "#FFCCCD", "#671133"],
+    colorPattern: textures.gold,
+    colorKey: {
+        "h": "#FF5991",
+        "H": "#FFCCCD",
+        "n": "#E4386F",
+        "B": "#511230",
+        "b": "#671133",
+        "d": "#BF1850",
+        "D": "#7F1037"
+    },
+    behavior: behaviors.WALL,
+    category: "solids",
+    state: "solid",
+    tick: function(pixel){
+        if (pixelTicks - pixel.start == 1){
+        pixel.element = "rose_gold"
         }
     }
 }
