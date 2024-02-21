@@ -1736,12 +1736,28 @@ elements.unstain = {
 	state: "solid",
 };
 
+elements.antmatter = {
+	color: "#5f4a4a",
+	behavior: [
+        "M2|DB%50 AND M2 AND EX:8>ant%10|M2",
+        "M1|XX|M1",
+        "M1|DB%50 AND M1 AND EX:8>ant%10|M1",
+    ],
+	category: "others",
+    state: "gas",
+    density: 6.9,
+	desc: "first ever others category element i guess"
+};
+
 elements.incinerate.category = "tools",
 elements.cook.category = "tools",
 elements.room_temp.category = "tools",
 
 elements.beans.tempHigh = 349,
 elements.beans.stateHigh = "burnt_beans"
+elements.grass.onSelect = function() {
+        logMessage("go touch this");
+}
 
 if (!elements.radiation.reactions) elements.egg.reactions = {};
 elements.radiation.reactions.meat = { elem1: null, elem2: "radioactive_meat" },
