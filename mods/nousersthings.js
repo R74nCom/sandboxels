@@ -1498,6 +1498,7 @@ elements.mixer = {
                 }
 	},
 	movable: false,
+    noMix: true,
 },
 elements.invisiblesupport = {
 	color: "#000000",
@@ -2081,6 +2082,52 @@ textures.transparency = [
     "gggwww",
     "gggwww"
 ]
+textures.steel = [
+    "hHhhd",
+    "Hnnnd",
+    "hnnnd",
+    "hnnnD",
+    "dddDD"
+]
+textures.sponge = [
+    "hddddnnddd",
+    "Ddhddhnhdd",
+    "ddDdnNnNdd",
+    "dddhnnnnnh",
+    "dhdNnhnnnN",
+    "nNnhnNnddd",
+    "dhnNnnddhd",
+    "dDnnnhddDd",
+    "dhnnnNdhdd",
+    "ddddnddDdd"
+]
+textures.copper = [
+    "uuuuum",
+    "unhhnd",
+    "uhhnnD",
+    "uhnnHd",
+    "unnHnD",
+    "mdDdDD"
+]
+textures.gold = [
+    "hnnndbHHHhhnbHHHh",
+    "nnndbhnnnnndDbnnn",
+    "nnddbnnnnnddDbnnn",
+    "dddbnnnddddDDDbnd",
+    "DDDbDDDDDDDDDDbDD",
+    "BBBBBBBBBBBBBBBBB"
+]
+textures.diamond = [
+    "llcccLbLl",
+    "lcccccbbC",
+    "CScccBbCC",
+    "SSScBBBLC",
+    "SSSSLBbLS",
+    "SSSCLbbbL",
+    "BSCCCnbBL",
+    "BBBCnnBBB",
+    "lBBcLnLbL"
+]
 elements.transparency = {
     color: ["#d4d4d4", "#ffffff"],
     colorPattern: textures.transparency,
@@ -2091,4 +2138,125 @@ elements.transparency = {
     behavior: behaviors.WALL,
     category: "special",
     state: "solid"
+}
+elements.textured_steel = {
+    color: ["#708196", "#8895ad", "#596B77", "#525D6B", "#404954"],
+    colorPattern: textures.steel,
+    colorKey: {
+        "h": "#708196",
+        "H": "#8895ad",
+        "n": "#596B77",
+        "d": "#525D6B",
+        "D": "#404954"
+    },
+    behavior: behaviors.WALL,
+    category: "solids",
+    state: "solid",
+    tick: function(pixel){
+        if (pixelTicks - pixel.start == 1){
+        pixel.element = "steel"
+        }
+    }
+}
+elements.textured_sponge = {
+    color: ["#ccaa00", "#c1a100", "#967d00", "#b89a00", "#ae9100"],
+    colorPattern: textures.sponge,
+    colorKey: {
+        "n": "#ccaa00",
+        "N": "#c1a100",
+        "h": "#967d00",
+        "d": "#b89a00",
+        "D": "#ae9100"
+    },
+    behavior: behaviors.WALL,
+    category: "solids",
+    state: "solid",
+    tick: function(pixel){
+        if (pixelTicks - pixel.start == 1){
+        pixel.element = "sponge"
+        }
+    }
+}
+elements.textured_copper = {
+    color: ["#772F22", "#AB533F", "#9E3F2D", "#9E3F2D", "#4C1C11"],
+    colorPattern: textures.copper,
+    colorKey: {
+        "u": "#772F22",
+        "H": "#AB533F",
+        "h": "#C0725A",
+        "n": "#9E3F2D",
+        "D": "#4C1C11",
+        "d": "#622516",
+        "m": "#712C1E"
+    },
+    behavior: behaviors.WALL,
+    category: "solids",
+    state: "solid",
+    tick: function(pixel){
+        if (pixelTicks - pixel.start == 1){
+        pixel.element = "copper"
+        }
+    }
+}
+elements.textured_gold = {
+    color: ["#E4B038", "#FFCA59", "#BF8A18", "#7F5A10", "#674611"],
+    colorPattern: textures.gold,
+    colorKey: {
+        "h": "#FFCA59",
+        "H": "#FFFFCC",
+        "n": "#E4B038",
+        "B": "#513412",
+        "b": "#674611",
+        "d": "#BF8A18",
+        "D": "#7F5A10"
+    },
+    behavior: behaviors.WALL,
+    category: "solids",
+    state: "solid",
+    tick: function(pixel){
+        if (pixelTicks - pixel.start == 1){
+        pixel.element = "gold"
+        }
+    }
+}
+elements.solid_diamond = {
+    color: elements.diamond.color,
+    category: "solids",
+    colorPattern: textures.diamond,
+    colorKey: {
+        "c":"#36BDF3",
+        "C": "#7DD1F2",
+        "B": "#4B94ED",
+        "b": "#97BEED",
+        "L":"#C2D5ED",
+        "n": "#7BAEED",
+        "l": "#A2DBF2",
+        "S": "#BDF8FF"
+    },
+    tempHigh: elements.diamond.tempHigh,
+    stateHigh: elements.diamond.stateHigh,
+    state: "solid",
+    denisty: elements.diamond.density,
+    hardness: elements.diamond.hardness
+}
+elements.textured_rose_gold = {
+    color: ["#FF5991", "#E4386F", "#7F1037", "#FFCCCD", "#671133"],
+    colorPattern: textures.gold,
+    colorKey: {
+        "h": "#FF5991",
+        "H": "#FFCCCD",
+        "n": "#E4386F",
+        "B": "#511230",
+        "b": "#671133",
+        "d": "#BF1850",
+        "D": "#7F1037"
+    },
+    behavior: behaviors.WALL,
+    category: "solids",
+    state: "solid",
+    tick: function(pixel){
+        if (pixelTicks - pixel.start == 1){
+        pixel.element = "rose_gold"
+        }
+    }
 }

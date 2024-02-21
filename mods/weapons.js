@@ -159,4 +159,30 @@ elements.left_bullet = {
         "XX|XX|M2",
     ],
     category:"weapons",
+},
+    elements.e_gun_left = {
+    color: "#C0C0C0",
+    behavior: behaviors.WALL,
+    behaviorOn: [
+        "XX|XX|XX",
+        "CR:left_bullet|XX|XX",
+        "XX|XX|XX",
+    ],
+    category: "weapons",
+    state: "solid",
+    conduct: 1,
+    density: 1300,
+},
+    elements.e_gun_right = {
+    color: "#C0C0C0",
+    behavior: behaviors.WALL,
+    behaviorOn: [
+        "XX|XX|XX",
+        "XX|XX|CR:right_bullet",
+        "XX|XX|XX",
+    ],
+    category: "weapons",
+    state: "solid",
+    conduct: 1,
+    density: 1300,
 };
