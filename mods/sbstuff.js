@@ -592,6 +592,7 @@ elements.cocaine = {
 };
 
 elements.zombie = {
+	excludeRandom: true,
 	tempHigh: 500,
 	stateHigh: "ash",
 	color: "#114700",
@@ -784,6 +785,7 @@ elements.fart = {
 	behavior: behaviors.DGAS,
 	category: "joke",
 	state: "gas",
+	excludeRandom: true
 };
 
 elements.chips = {
@@ -998,7 +1000,7 @@ elements.incinerator = {
 	insulate: true,
 	excludeRandom: true,
 	reactions: {
-		"fart": { elem1: null, elem2: "ohio" },
+		"fart": { elem1: null, elem2: "kaboom" },
 	}
 };
 
@@ -1211,7 +1213,7 @@ elements.dark_energy = {
 	excludeRandom: true
 };
 
-elements.ohio = {
+elements.kaboom = {
 	hidden: true,
 	hardness: 1,
 	hidden: true,
@@ -1378,15 +1380,6 @@ elements.yoylecake = {
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
 	state: "liquid",
-};
-
-elements.banana = {
-	tempHigh: 300,
-	stateHigh: "ash",
-    color: "#f06c0e",
-    behavior: behaviors.STURDYPOWDER,
-    category: "food",
-    state: "liquid",
 };
 
 elements.cool_ray = {
@@ -1692,7 +1685,8 @@ elements.liquid_filler = {
 		"M1|M1 AND CH:liquid_filler%50|M1",
 	],
 	category: "special",
-    state: "liquid"
+    state: "liquid",
+	excludeRandom: true
 };
 
 elements.antimony = {
@@ -1747,6 +1741,42 @@ elements.antmatter = {
     state: "gas",
     density: 6.9,
 	desc: "first ever others category element i guess"
+};
+
+elements.thermal_paste = {
+	viscosity: 10000,
+	tempHigh: 200,
+	stateHigh: [null, "thermal_paste"],
+	color: "#c5cfd3",
+	behavior: [
+		"XX|CO:1|XX",
+		"CO:1 AND M2|XX|CO:1 AND M2",
+		"M1|CO:1 AND M1|M1",
+		],
+	category: "liquids",
+	state: "liquid",
+};
+
+elements.sam = {
+	name: "sam's sperm i think",
+	viscosity: 10000,
+	color: "#0e0e0e",
+	behavior: behaviors.LIQUID,
+	category: "joke",
+	state: "liquid",
+	desc: "begs the question; did he censor himself?"
+};
+
+elements.glitch = {
+	color: ["#ff0000", "#c300ff", "#bbff00", "#1100ff", "#00ffaa"],
+	behavior: [
+		"XX|XX|XX",
+        "XX|CC:ff0000,c300ff,bbff00,1100ff,00ffaa|XX",
+		"XX|XX|XX"
+	],
+	category: "special",
+	conduct: 0.5,
+	movable: false
 };
 
 elements.incinerate.category = "tools",
