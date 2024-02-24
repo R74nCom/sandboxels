@@ -1779,6 +1779,35 @@ elements.glitch = {
 	movable: false
 };
 
+elements.sound = {
+    color: ["#1464b4","#aeeb82"],
+    currentSound: null,
+    onSelect: function() {
+        var file = document.createElement("input");
+        file.type = "file";
+        file.accept = "audio/*";
+        file.onchange = function() {
+            setTimeout(function(){
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    if (elements.sound.currentSound) {
+                        elements.sound.currentSound.pause();
+                    }
+                    elements.sound.currentSound = new Audio();
+                    elements.sound.currentSound.src = e.target.result;
+                    elements.sound.currentSound.play();
+                    file.value = "";
+                }
+                reader.readAsDataURL(file.files[0]);
+            },500);
+        }
+        file.click();
+    },
+    onUnselect: function() {},
+    tool: function() {},
+    category: "special",
+};
+
 elements.incinerate.category = "tools",
 elements.cook.category = "tools",
 elements.room_temp.category = "tools",
