@@ -4,7 +4,7 @@ elements.lemon = {
   category: "food",
   state: "solid",
   breakInto: "Juice",
-  reactions = {
+  reactions: {
     "sugar": { elem1: null, elem2: "candy" }
   },
 };
