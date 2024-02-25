@@ -1,3 +1,10 @@
+elements.candypowder = {
+  color: "#cffaf1",
+  behavior: behaviors.POWDER,
+  category: null,
+  state: "solid",
+};
+
 elements.lemon = {
   color: "#fcc603",
   behavior: behaviors.POWDER,
@@ -8,12 +15,3 @@ elements.lemon = {
     "sugar": { elem1: null, elem2: "candypowder" }
   },
 };
-
-elements.candypowder = {
-  color: "#cffaf1",
-  behavior: behaviors.POWDER,
-  category: null,
-  state: "solid",
-};
-
-elements.candy.breakInto: "candypowder"
