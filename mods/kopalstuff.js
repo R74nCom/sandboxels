@@ -1,7 +1,7 @@
 elements.lemon = {
   color: "#fcc603",
   behavior: behaviors.POWDER,
-  category: "first",
+  category: "food",
   state: "solid",
   breakInto: "Juice",
   reactions = {
