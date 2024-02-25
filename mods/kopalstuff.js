@@ -1,4 +1,4 @@
-elements.candypowder = {
+elements.candy_powder = {
   color: "#cffaf1",
   behavior: behaviors.POWDER,
   category: null,
@@ -12,6 +12,6 @@ elements.lemon = {
   state: "solid",
   breakInto: "juice",
   reactions: {
-    "sugar": { elem1: null, elem2: "candypowder" }
+    "sugar": { elem1: null, elem2: "candy_powder" }
   },
 };
