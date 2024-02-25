@@ -5,6 +5,15 @@ elements.lemon = {
   state: "solid",
   breakInto: "juice",
   reactions: {
-    "sugar": { elem1: "candy", elem2: "candy" }
+    "sugar": { elem1: null, elem2: "candypowder" }
   },
 };
+
+elements.candypowder = {
+  color: "#cffaf1",
+  behavior: behaviors.POWDER,
+  category: null,
+  state: "solid",
+};
+
+elements.candy.breakInto: "candypowder"
