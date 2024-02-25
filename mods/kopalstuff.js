@@ -5,6 +5,6 @@ elements.lemon = {
   state: "solid",
   breakInto: "juice",
   reactions: {
-    "sugar": { elem1: null, elem2: "candy" }
+    "sugar": { elem1: "candy", elem2: null }
   },
 };
