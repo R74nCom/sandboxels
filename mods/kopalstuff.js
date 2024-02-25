@@ -3,7 +3,7 @@ elements.lemon = {
   behavior: behaviors.POWDER,
   category: "food",
   state: "solid",
-  breakInto: "Juice",
+  breakInto: "juice",
   reactions: {
     "sugar": { elem1: null, elem2: "candy" }
   },
