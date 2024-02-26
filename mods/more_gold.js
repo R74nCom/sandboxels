@@ -78,3 +78,6 @@ elements.gold_rust = {
 };
 
 elements.gold.reactions["fire"] = { elem1: null, elem2: "gold_rust" };
+elements.rose_gold.reactions["fire"] = { elem1: null, elem2: "gold_rust" };
+elements.purple_gold.reactions["fire"] = { elem1: null, elem2: "gold_rust" };
+elements.blue_gold.reactions["fire"] = { elem1: null, elem2: "gold_rust" };
