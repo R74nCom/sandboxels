@@ -5,17 +5,18 @@ Also checkout sbstuff.js by sb! Without it, this mod wouldn't be possible!
 Discords of people that helped me:
 usecit - UseCit.psd
 nousernamefound - nousernamefound
+pixelegend4 - pixelegend4
 
 Credits:
 Saschas - Waterpowder idea
-
+Fantasy Elements - Phoenix idea
 
 */
 
 elements.sweetwater = {
   color: "#8ae7eb",
   behavior: behaviors.LIQUID,
-  category: "liquids",
+  category: "kopal",
   state: "liquid",
   tempHigh: 100,
   stateHigh: "water",
@@ -27,7 +28,7 @@ elements.sweetwater = {
 elements.syrup = {
   color: "#d9d2c3",
   behavior: behaviors.LIQUID,
-  category: "food",
+  category: "kopal",
   state: "liquid",
   tempHigh: 100,
   stateHigh: "fire",
@@ -39,7 +40,7 @@ elements.syrup = {
 elements.orangesoda = {
   color: "#b8820d",
   behavior: behaviors.LIQUID,
-  category: "food",
+  category: "kopal",
   state: "liquid",
   tempHigh: 100,
   stateHigh: "water",
@@ -55,7 +56,7 @@ elements.orangesoda = {
 elements.dirty_orangesoda = {
   color: "#20991a",
   behavior: behaviors.LIQUID,
-  category: null,
+  category: "kopal",
   state: "liquid",
   tempHigh: 80,
   stateHigh: "orangesoda",
@@ -64,7 +65,7 @@ elements.dirty_orangesoda = {
 elements.orange = {
   color: "#eda813",
   behavior: behaviors.POWDER,
-  category: "food",
+  category: "kopal",
   state: "powder",
   breakInto: "juice",
   tempHigh: 100,
@@ -78,7 +79,7 @@ elements.orange = {
 elements.incubationjuice = {
   color: "#daf5ef",
   behavior: behaviors.LIQUID,
-  category: "life",
+  category: "kopal",
   state: "liquid",
   breakInto: "blood",
   reactions: {
@@ -92,7 +93,7 @@ elements.incubationjuice = {
 elements.creature = {
   color: "#d073d9",
   behavior: behaviors.CRAWLER,
-  category: "life",
+  category: "kopal",
   state: "crawler",
   tempHigh: 175,
   stateHigh: "deadcreature",
@@ -109,7 +110,7 @@ elements.creature = {
 elements.flyingcreature = {
   color: "#d073d9",
   behavior: behaviors.FLY,
-  category: "life",
+  category: "kopal",
   state: "fly",
   tempHigh: 175,
   stateHigh: "deadflyingcreature",
@@ -126,7 +127,7 @@ elements.flyingcreature = {
 elements.artificialphoenix = {
   color: "#c40052",
   behavior: behaviors.FLY,
-  category: "life",
+  category: "kopal",
   state: "fly",
   temp: 149,
   breakInto: "deadflyingcreature",
@@ -142,7 +143,7 @@ elements.artificialphoenix = {
 elements.phoenix = {
   color: "#ff0000",
   behavior: behaviors.FLY,
-  category: "life",
+  category: "kopal",
   state: "fly",
   temp: 999,
   breakInto: "phoenixdna",
@@ -156,7 +157,7 @@ elements.phoenix = {
 elements.deadcreature = {
   color: "#86428c",
   behavior: behaviors.POWDER,
-  category: null,
+  category: "kopal",
   state: "powder",
   tempHigh: 225,
   stateHigh: "smoke",
@@ -170,7 +171,7 @@ elements.deadcreature = {
 elements.deadflyingcreature = {
   color: "#86428c",
   behavior: behaviors.POWDER,
-  category: null,
+  category: "kopal",
   state: "powder",
   tempHigh: 225,
   stateHigh: "smoke",
@@ -184,7 +185,7 @@ elements.deadflyingcreature = {
 elements.artificialmeat = {
   color: "#b38a5f",
   behavior: behaviors.POWDER,
-  category: "food",
+  category: "kopal",
   state: "powder",
   tempHigh: 215,
   stateHigh: "smoke",
@@ -198,7 +199,7 @@ elements.artificialmeat = {
 elements.antiartificialjuice = {
   color: "#b38a5f",
   behavior: behaviors.LIQUID,
-  category: "life",
+  category: "kopal",
   state: "liquid",
   tempHigh: 215,
   stateHigh: "smoke",
@@ -212,7 +213,7 @@ elements.antiartificialjuice = {
 elements.antiartificialspray = {
   color: "#b38a5f",
   behavior: behaviors.DGAS,
-  category: "life",
+  category: "kopal",
   state: "gas",
   tempHigh: 215,
   density: 4000,
@@ -227,7 +228,7 @@ elements.antiartificialspray = {
 elements.antdna = {
   color: "#b38a5f",
   behavior: behaviors.POWDER,
-  category: "life",
+  category: "kopal",
   state: "powder",
   tempHigh: 215,
   stateHigh: "smoke",
@@ -236,14 +237,14 @@ elements.antdna = {
 elements.phoenixdna = {
   color: "#a82a2a",
   behavior: behaviors.POWDER,
-  category: "life",
+  category: "kopal",
   state: "powder",
 };
 
 elements.flydna = {
   color: "#b38a5f",
   behavior: behaviors.POWDER,
-  category: "life",
+  category: "kopal",
   state: "powder",
   tempHigh: 215,
   stateHigh: "smoke",
@@ -252,7 +253,7 @@ elements.flydna = {
 elements.waterpowder = {
   color: elements.water.color,
   behavior: behaviors.POWDER,
-  category: "powders",
+  category: "kopal",
   state: "powder",
   tempHigh: 40,
   stateHigh: "water",
@@ -261,7 +262,7 @@ elements.waterpowder = {
 elements.waterpowderer = {
   color: "#e3e1dc",
   behavior: behaviors.POWDER,
-  category: "powders",
+  category: "kopal",
   state: "powder",
   reactions: {
     "water": { elem1: null, elem2: "waterpowder" }
@@ -288,13 +289,13 @@ elements.antiartificialcancer = {
     stateLow: "syrup",
     state: "solid",
     density: 1000.2,
-    category: "life",
+    category: "kopal",
 };
 
 elements.anticancer = {
   color: "#e3e1dc",
   behavior: behaviors.LIQUID,
-  category: "liquids",
+  category: "kopal",
   state: "liquid",
   tempLow: -10,
   stateLow: "syrup",
@@ -302,6 +303,232 @@ elements.anticancer = {
     "cancer": { elem1: null, elem2: "anticancer" },
     "antiartificialcancer": { elem1: null, elem2: "anticancer" }
   }
+};
+
+elements.fire_spirit =  {
+  color: ["#fc5a03", "#fc2803", "#fc9d03"],
+  behavior: behaviors.FLY,
+  category: "spirits",
+  state: "solid",
+  temp: 50,
+
+  reactions: {
+    "air_spirit": { elem2: null},
+    "cursed_spirit": { elem1: null},
+    "earth_spirit": { elem1: null},
+    "water_spirit": { elem2: null},
+  }
+
+};
+
+elements.water_spirit =  {
+  color: ["#0390fc", "#035afc", "#0318fc"],
+  behavior: behaviors.FLY,
+  category: "spirits",
+  state: "solid",
+
+  reactions: {
+    "fire_spirit": { elem1: null},
+    "cursed_spirit": { elem1: null},
+    "earth_spirit": { elem2: null},
+  }
+
+};
+
+elements.earth_spirit =  {
+  color: ["#915a00", "#784b02", "#573602"],
+  behavior: behaviors.FLY,
+  category: "spirits",
+  state: "solid",
+
+  reactions: {
+    "fire_spirit": { elem2: null},
+    "cursed_spirit": { elem1: null},
+    "water_spirit": { elem1: null},
+  }
+
+};
+
+elements.air_spirit =  {
+  color: ["#c7eded", "#99bdbd", "#6a9494"],
+  behavior: behaviors.FLY,
+  category: "spirits",
+  state: "solid",
+
+  reactions: {
+    "fire_spirit": { elem1: null},
+    "cursed_spirit": { elem2: null},
+    "water_spirit": { elem1: null},
+    "earth_spirit": { elem1: null},
+  }
+
+};
+
+elements.cursed_spirit =  {
+  color: ["#c404ae", "#aa04c4", "#7e04c4"],
+  behavior: behaviors.FLY,
+  category: "spirits",
+  state: "solid",
+
+  reactions: {
+    "fire_spirit": { elem2: null},
+    "air_spirit": { elem1: null},
+    "water_spirit": { elem2: null},
+    "earth_spirit": { elem2: null},
+  }
+
+};
+
+elements.cursed_powder_lvl1 =  {
+  color: ["#c404ae", "#aa04c4", "#7e04c4"],
+  behavior: behaviors.POWDER,
+  category: "spirits",
+  state: "solid",
+
+  reactions: {
+    "cursed_spirit": { elem1: null},
+  }
+
+};
+
+elements.cursed_powder_lvl2 =  {
+  color: ["#c404ae", "#aa04c4", "#7e04c4"],
+  behavior: behaviors.POWDER,
+  category: "spirits",
+  state: "solid",
+
+  reactions: {
+    "cursed_spirit": { elem2: null},
+  }
+
+};
+
+elements.soul_spirit =  {
+  color: ["#0af7e0", "#0ac8f7", "#0a9cf7"],
+  behavior: behaviors.FLY,
+  category: "spirits",
+  state: "solid",
+
+  reactions: {
+    "fire_spirit": { elem2: null},
+    "cursed_spirit": { elem2: null},
+    "water_spirit": { elem2: null},
+    "earth_spirit": { elem2: null},
+    "air_spirit": { elem2: null},
+  }
+
+};
+
+elements.soul_powder =  {
+  color: "#2e363b",
+  behavior: behaviors.POWDER,
+  category: "spirits",
+  state: "solid",
+
+  reactions: {
+    "awakening_powder": { elem1: "soul_spirit", elem2: null},
+  }
+
+};
+
+elements.cursed_powder =  {
+  color: "#2e363b",
+  behavior: behaviors.POWDER,
+  category: "spirits",
+  state: "solid",
+
+  reactions: {
+    "awakening_powder": { elem1: "cursed_spirit", elem2: null},
+  }
+
+};
+
+elements.air_powder =  {
+  color: "#2e363b",
+  behavior: behaviors.POWDER,
+  category: "spirits",
+  state: "solid",
+  temp: -10,
+
+  reactions: {
+    "awakening_powder": { elem1: "air_spirit", elem2: null},
+  }
+
+};
+
+elements.water_powder =  {
+  color: "#2e363b",
+  behavior: behaviors.POWDER,
+  category: "spirits",
+  state: "solid",
+
+  reactions: {
+    "awakening_powder": { elem1: "water_spirit", elem2: null},
+  }
+
+};
+
+elements.fire_powder =  {
+  color: "#2e363b",
+  behavior: behaviors.POWDER,
+  category: "spirits",
+  state: "solid",
+
+  reactions: {
+    "awakening_powder": { elem1: "fire_spirit", elem2: null},
+  }
+
+};
+
+elements.wandering_spirit = {
+  color: "#b1b7ba",
+  behavior: behaviors.FLY,
+  category: "spirits",
+  state: "solid",
+
+  reactions: {
+    "fire_spirit": { elem1: null},
+    "cursed_spirit": { elem1: null},
+    "water_spirit": { elem1: null},
+    "earth_spirit": { elem1: null},
+    "air_spirit": { elem1: null},
+    "soul_spirit": { elem1: null},
+  }
+
+};
+
+elements.unawaken_powder =  {
+  color: "#696b6b",
+  behavior: behaviors.POWDER,
+  category: "spirits",
+  state: "solid",
+
+  reactions: {
+    "fire_spirit": { elem1: null, elem2: "fire_powder" },
+    "cursed_spirit": { elem1: null, elem2: "cursed_powder" },
+    "water_spirit": { elem1: null, elem2: "water_powder" },
+    "earth_spirit": { elem1: null, elem2: "earth_powder" },
+    "air_spirit": { elem1: null, elem2: "air_powder" },
+    "soul_spirit": { elem1: null, elem2: "soul_powder" },
+  }
+
+};
+
+elements.awakening_powder =  {
+  color: "#696b6b",
+  behavior: behaviors.POWDER,
+  category: "spirits",
+  state: "solid",
+
+  reactions: {
+    "fire_powder": { elem1: null, elem2: "fire_spirit" },
+    "cursed_powder": { elem1: null, elem2: "cursed_spirit" },
+    "water_powder": { elem1: null, elem2: "water_spirit" },
+    "earth_powder": { elem1: null, elem2: "earth_spirit" },
+    "air_powder": { elem1: null, elem2: "air_spirit" },
+    "soul_powder": { elem1: null, elem2: "soul_spirit" },
+  }
+
 };
 
 elements.ant.breakInto = "antdna"
