@@ -1,14 +1,17 @@
 /*
 
+1.0.1
+
 Also checkout sbstuff.js by sb! Without it, this mod wouldn't be possible!
 
 Discords of people that helped me:
 usecit - UseCit.psd
 nousernamefound - nousernamefound
+pixelegend4 - pixelegend4
 
 Credits:
 Saschas - Waterpowder idea
-
+Fantasy Elements - Phoenix idea
 
 */
 
@@ -84,6 +87,7 @@ elements.incubationjuice = {
   reactions: {
     "flydna": { elem1: "blood", elem2: "flyingcreature"},
     "antdna": { elem1: "blood", elem2: "creature"},
+    "phoenixdna": { elem1: "blood", elem2: "artificialphoenix"},
     "alcohol": { elem1: "cancer", elem2: "antiartificialjuice"}
   },
 };
@@ -114,12 +118,41 @@ elements.flyingcreature = {
   stateHigh: "deadflyingcreature",
   breakInto: "deadflyingcreature",
   reactions: {
-    "antiartificialjuice": { elem1: "deadflyingcreature", elem2: null },
     "fly": { elem2: "meat" },
     "meat": { elem2: "flyingcreature" },
     "artificialmeat": { elem2: "cell" },
     "syrup": { elem2: "flyingcreature" },
     "cell": { elem2: "flyingcreature" },
+  },
+};
+
+elements.artificialphoenix = {
+  color: "#c40052",
+  behavior: behaviors.FLY,
+  category: "life",
+  state: "fly",
+  temp: 149,
+  breakInto: "deadflyingcreature",
+  reactions: {
+    "fly": { elem2: "artificialphoenix" },
+    "flyingcreature": { elem2: "artificialphoenix" },
+    "meat": { elem2: "artificialphoenix" },
+    "artificialmeat": { elem2: "artificialphoenix" },
+    "syrup": { elem2: "artificialphoenix" },
+  },
+};
+
+elements.phoenix = {
+  color: "#ff0000",
+  behavior: behaviors.FLY,
+  category: "life",
+  state: "fly",
+  temp: 999,
+  breakInto: "phoenixdna",
+  reactions: {
+    "fly": { elem2: "meat" },
+    "meat": { elem2: "phoenix" },
+    "alcohol": { elem1: "blood" , elem2: "phoenixdna" },
   },
 };
 
@@ -175,6 +208,7 @@ elements.antiartificialjuice = {
   reactions: {
     "flyingcreature": { elem1: "alcohol", elem2: "deadflyingcreature" },
     "creature": { elem1: "alcohol", elem2: "deadcreature" },
+    "artificialphoenix": { elem1: "alcohol", elem2: "deadflyingcreature" },
   },
 };
 
@@ -189,6 +223,7 @@ elements.antiartificialspray = {
   reactions: {
     "flyingcreature": { elem1: "alcohol", elem2: "deadflyingcreature" },
     "creature": { elem1: "alcohol", elem2: "deadcreature" },
+    "artificialphoenix": { elem1: "alcohol", elem2: "deadflyingcreature" },
   },
 };
 
@@ -199,6 +234,13 @@ elements.antdna = {
   state: "powder",
   tempHigh: 215,
   stateHigh: "smoke",
+};
+
+elements.phoenixdna = {
+  color: "#a82a2a",
+  behavior: behaviors.POWDER,
+  category: "life",
+  state: "powder",
 };
 
 elements.flydna = {
@@ -229,9 +271,47 @@ elements.waterpowderer = {
   }
 };
 
+elements.antiartificialcancer = {
+    color: "#b38a5f",
+    behavior: [
+        "XX|CL%1|XX",
+        "CL%1|XX|CL%1",
+        "M2%2|M1|M2%2",
+    ],
+    reactions: {
+        "artificialmeat": { elem2:"antiartificialcancer", chance:0.05 },
+        "creature": { elem2:"antiartificialcancer", chance:0.05 },
+        "flyingcreature": { elem2:"antiartificialcancer", chance:0.05 },
+        "artificialphoenix": { elem2:"antiartificialcancer", chance:0.05 },
+        "cancer": { elem2:"antiartificialcancer", chance:0.5 },
+    },
+    tempHigh: 185,
+    stateHigh: "smoke",
+    tempLow: -10,
+    stateLow: "syrup",
+    state: "solid",
+    density: 1000.2,
+    category: "life",
+};
+
+elements.anticancer = {
+  color: "#e3e1dc",
+  behavior: behaviors.LIQUID,
+  category: "liquids",
+  state: "liquid",
+  tempLow: -10,
+  stateLow: "syrup",
+  reactions: {
+    "cancer": { elem1: null, elem2: "anticancer" },
+    "antiartificialcancer": { elem1: null, elem2: "anticancer" }
+  }
+};
+
 elements.ant.breakInto = "antdna"
 elements.fly.breakInto = "flydna"
 elements.water.reactions["sugar"] = { elem1: null, elem2: "sweetwater" };
 elements.water.reactions["deadflyingcreature"] = { elem1: "dirty_water"};
 elements.water.reactions["deadcreature"] = { elem1: "dirty_water"};
 elements.water.reactions["dirty_water"] = { elem1: "dirty_water"};
+elements.ant.reactions["alcohol"] = { elem1: "antdna", elem2: null };
+elements.fly.reactions["alcohol"] = { elem1: "flydna", elem2: null };
