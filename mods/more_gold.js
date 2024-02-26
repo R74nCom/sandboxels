@@ -76,3 +76,5 @@ elements.gold_rust = {
     conduct: 0.37,
     hardness: 0.3
 };
+
+elements.gold.reactions["fire"] = { elem1: null, elem2: "gold_rust" };
