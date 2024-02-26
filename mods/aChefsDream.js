@@ -2,7 +2,7 @@
 Created by SquareScreamYT <@918475812884344852> and RealerRaddler <@914371295561535508>
 Thanks to Alice <@697799964985786450>, nousernamefound <@316383921346707468>, Adora the Transfem <@778753696804765696> and Fioushemastor <@738828785482203189> for helping :)
 
-v1.7
+v1.8
 
 me trying to come up with stuff not in plants.js:
 
@@ -11,7 +11,7 @@ Upcoming Features:
 - spring onions
 - soy sauce
 - rice and porridge (white rice noodles)
-- seaweed and agar
+- seaweed and agar (makes juice into jelly)
 - pigs, ham and bacon
 - garlic
 - msg
@@ -26,6 +26,13 @@ Upcoming Features:
 - celery
 - marshmallows, normal, cooked and burnt
 - broccoli
+- lime
+- kiwi, guavas and lychees
+- dragonfuits
+- dates and figs
+- avocados
+- apricots and plums
+- curry/chicken tikka masala
 
 Changelog (v1.0)
     - added chickens
@@ -263,6 +270,13 @@ Changelog (v1.7)
 
 
 
+Changelog (v1.8)
+    - added lime and lime juice
+    - added lime zest and slices
+    - added escargot
+
+
+
 
 
 */
@@ -298,7 +312,17 @@ elements.knife = {
         //if cutInto is an array, randomly pick one of its elements
         if(cutInto instanceof Array) { cutInto = cutInto[Math.floor(Math.random() * cutInto.length)] };
         //change pixel into the (chosen) element      
-        changePixel(pixel, cutInto)
+        //changePixel(pixel, cutInto)
+        if (shiftDown) {
+            if (Math.random() < 0.5) {
+                changePixel(pixel, cutInto)
+            }
+        }
+        else if (!shiftDown) {
+            if (Math.random() < 0.1) {
+                changePixel(pixel, cutInto)
+            }
+        }
     },
     category:"tools",
     canPlace: false,
@@ -376,7 +400,7 @@ elements.chicken_egg = {
         "M2%30|M1|M2%30",
     ],
     tick: function(pixel) {
-        if (Math.random() < 0.1 && pixel.temp > 20) {
+        if (Math.random() < 0.1 && pixel.temp > 20 && pixel.temp < 35) {
             changePixel(pixel,"chick")
         }
     doDefaults(pixel);
@@ -1574,10 +1598,10 @@ elements.raw_salmon = {
     behavior: behaviors.STURDYPOWDER,
     category: "food",
     state: "solid",
-    burnInto: "cook_salmon",
+    burnInto: "cooked_salmon",
     temp:25,
-    tempHigh: 600,
-    stateHigh: ["ash", "smoke"],
+    tempHigh: 80,
+    stateHigh: "cooked_salmon",
     isFood: true,
     reactions: {
         "smoke": {elem1: "smoked_salmon"},
@@ -1654,8 +1678,8 @@ elements.raw_tuna = {
     state: "solid",
     temp:25,
     burnInto: "cooked_tuna",
-    tempHigh: 600,
-    stateHigh: ["ash", "smoke"],
+    tempHigh: 80,
+    stateHigh: "cooked_tuna",
     isFood: true,
     reactions: {
         "smoke": {elem1: "smoked_tuna"},
@@ -3183,6 +3207,7 @@ elements.strawberry_juice = {
     tempLow: 0,
     reactions: {
         "sugar": { elem1:"strawberry_jam", elem2:null, chance:0.35 },
+        "milk": { elem1:"fruit_milk", elem2:null, chance:0.35, color1:"#f78888"},
     },
 };
 eLists.JUICEMIXABLE.push("strawberry_juice");
@@ -4757,3 +4782,141 @@ elements.pineapple_juice = {
     tempLow: 0
 };
 eLists.JUICEMIXABLE.push("pineapple_juice");
+
+elements.lime = {
+    color: ["#549c2d","#4d9c22"],
+    behavior: behaviors.POWDER,
+    reactions: {
+        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 },
+    },
+    category:"food",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    burn:65,
+    burnTime:60,
+    burnInto: "dead_plant",
+    breakInto: "lime_juice",
+    state: "solid",
+    density: 1050,
+    isFood: true,
+    cutInto: ["lime_zest","lime_slice","lime_slice","lime_slice","lime_slice"],
+}
+
+elements.lime_juice = {
+    color: "#85d14b",
+    onMix: function(pixel) {
+        if (shiftDown) {
+            if (Math.random() < 0.2) {
+                changePixel(pixel,"juice")
+                pixel.color = pixelColorPick(pixel,"#85d14b")
+            }
+        }
+    },
+    behavior: behaviors.LIQUID,
+    category: "liquids",
+    tempHigh: 100,
+    stateHigh: ["steam","sugar"],
+    burn: 70,
+    burnTime: 300,
+    burnInto: ["steam", "smoke"],
+    state: "liquid",
+    density: 825,
+    hidden: true,
+    temp: 30,
+    hidden: true,
+    tempLow: 0,
+};
+eLists.JUICEMIXABLE.push("lime_juice");
+
+elements.lime_zest = {
+    color: "#4f9e13",
+    behavior: behaviors.POWDER,
+    category:"food",
+    tempHigh: 100,
+    stateHigh: ["sugar","steam"],
+    burn:65,
+    burnTime:60,
+    burnInto: "dead_plant",
+    state: "solid",
+    density: 1050,
+    hidden: true,
+}
+
+elements.lime_slice = {
+    color: "#8acc33",
+    behavior: behaviors.STURDYPOWDER,
+    category:"food",
+    tempHigh: 100,
+    stateHigh: ["sugar","steam"],
+    burn:65,
+    burnTime:60,
+    burnInto: "dead_plant",
+    breakInto: "lime_juice",
+    state: "solid",
+    density: 1050,
+    hidden: true,
+}
+
+elements.snail.reactions.nut_oil = { elem1: "escargot", chance:30, tempMin:50 }
+
+elements.escargot = {
+    color: "#ab924d",
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|",
+        "M2%10|M1|M2%10",
+    ],
+    tempHigh: 120,
+    stateHigh: "steam",
+    breakInto: "quicklime",
+    category: "food",
+    state: "solid",
+    density: 1500,
+    conduct: 0.16
+}
+
+elements.monosodium_glutamate = {
+    color: "#eeeeee",
+    behavior: behaviors.POWDER,
+    reactions: {
+        "ice": { elem1:null, elem2:"salt_water", chance:0.1 },
+        "rime": { elem1:null, elem2:"salt_water", chance:0.075 },
+        "snow": { elem1:null, elem2:"salt_water", chance:0.25 },
+        "packed_snow": { elem1:null, elem2:"salt_water", chance:0.05 },
+        "packed_ice": { elem1:null, elem2:"salt_water", chance:0.01 },
+        "water": { elem2: "salt_water", elem1: null, temp2:-20 },
+    },
+    category: "food",
+    tempHigh: 801,
+    state: "solid",
+    density: 2160,
+    alias: ["msg","C5H8NNaO4"],
+}/*
+made by Gnnadia123
+prob gonna add later but busy
+elements.avocado = {
+    color: "#D6F1AC",
+    behavior: behaviors.STURDYPOWDER,
+    category:"food",
+    state: "solid",
+    tempHigh: 170,
+    stateHigh: "nut_oil",
+    temp:20,
+    burnTime:80,
+    burnInto:"nut_oil",
+}
+
+elements.avocado_spread = {
+    color: "#C4E893",
+    behavior:behaviors.LIQUID,
+    category: "food",
+    state: "liquid",
+    tempHigh: 300,
+    stateHigh: "ash",
+    temp:20,
+    burnTime: 300,
+    burnInto: "ash",
+}*/
