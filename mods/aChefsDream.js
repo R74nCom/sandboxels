@@ -1,7 +1,7 @@
 /*
 Created by SquareScreamYT <@918475812884344852> and RealerRaddler <@914371295561535508>
 Thanks to Alice <@697799964985786450>, nousernamefound <@316383921346707468>, Adora the Transfem <@778753696804765696> and Fioushemastor <@738828785482203189> for helping :)
-
+Lots and lots and lots of thanks to Gnnadia123
 v1.7
 
 me trying to come up with stuff not in plants.js:
@@ -24,7 +24,6 @@ Upcoming Features:
 - normal cookies and cookie dough
 - cows and beef
 - celery
-- marshmallows, normal, cooked and burnt
 - broccoli
 
 Changelog (v1.0)
@@ -260,6 +259,13 @@ Changelog (v1.7)
     - added mango wood, branch, leaves and seeds
     - added pineapples
     - added pineapple leaves, seed and juice
+
+
+Changelog (v1.8)
+    - added meat skewers
+    - added marshmallows
+    - added candied apples
+    - added french froiz
 
 
 
@@ -4757,3 +4763,92 @@ elements.pineapple_juice = {
     tempLow: 0
 };
 eLists.JUICEMIXABLE.push("pineapple_juice");
+
+
+elements.raw_meat_skewer = {
+    color: "#B74E1E",
+    behavior:behaviors.SUPPORT,
+    category:"food",
+    state:"solid",
+    tempHigh: 145,
+    stateHigh: "meat_skewer",
+    temp:15,
+    burnTime: 210,
+    burnInto: "meat_skewer",
+    
+}
+
+elements.meat_skewer = {
+    color: "#AE6826",
+    behavior:behaviors.SUPPORT,
+    category:"food",
+    state:"solid",
+    tempHigh: 400,
+    stateHigh: "ash",
+    temp:20,
+    burnTime: 100,
+    burnInto: "ash",
+    
+}
+
+
+elements.marshmallow = {
+    color: "#FFFFE1",
+    behavior:behaviors.STURDYPOWDER,
+    category:"food",
+    state:"solid",
+    tempHigh: 65,
+    stateHigh: "the_perfectly_cooked_marshmallow_we_all_dream_of",
+    temp:20,
+    burnTime:80,
+    burnInto:"the_perfectly_cooked_marshmallow_we_all_dream_of",
+}
+
+elements.the_perfectly_cooked_marshmallow_we_all_dream_of = {
+    color: "#FFD99F",
+    behavior:behaviors.STURDYPOWDER,
+    category:"food",
+    state:"solid",
+    tempHigh: 200,
+    stateHigh: "ash",
+    temp:20,
+    burnTime:400,
+    burnInto:"ash",
+
+}
+
+
+elements.apple.reactions.caramel = {elem1:"candied_apple", tempMin: 50}
+
+
+elements.peeled_potato.cutInto = ["potato_strips"]
+
+
+elements.potato_strips = {
+    color: "#FFD99F",
+    behavior:behaviors.POWDER,
+    category:"food",
+    state:"solid",
+    tempHigh: 200,
+    stateHigh: "french_froiz",
+    temp:20,
+    burnTime:400,
+    burnInto:"french_froiz",
+    reactions: {
+        "nut_oil": { elem1: "french_froiz", tempMin: 70 }
+    },
+    density: 1500
+}
+
+elements.french_froiz = {
+    color: "#EBC792",
+    behavior:behaviors.POWDER,
+    category:"food",
+    state:"solid",
+    tempHigh: 350,
+    stateHigh: "ash",
+    temp:20,
+    burnTime:650,
+    burnInto:"ash",
+}
+
