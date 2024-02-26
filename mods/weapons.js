@@ -185,4 +185,70 @@ elements.left_bullet = {
     state: "solid",
     conduct: 1,
     density: 1300,
+},
+    elements.auto_rocket_launcher_left = {
+    color: "#C0C0C0",
+    behavior: [
+        "XX|XX|XX",
+        "CR:left_rocket|XX|XX",
+        "XX|XX|XX",
+    ],
+    category: "weapons",
+    state: "solid",
+    density: 1300,
+},
+    elements.auto_rocket_launcher_right = {
+    color: "#C0C0C0",
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|CR:right_rocket",
+        "XX|XX|XX",
+    ],
+    category: "weapons",
+    state: "solid",
+    density: 1300,
+},
+elements.left_rocket = {
+    color: "#4c4e42",
+    behavior: [
+        "XX|XX|XX",
+        "M1 AND EX:10|XX|XX",
+        "XX|XX|XX",
+    ],
+    category:"weapons",
+},
+    elements.right_rocket = {
+    color: "#4c4e42",
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|M1 AND EX:10",
+        "XX|XX|XX",
+    ],
+    category:"weapons",
+},
+    elements.e_rocket_launcher_left = {
+    color: "#C0C0C0",
+    behavior: behaviors.WALL,
+    behaviorOn: [
+        "XX|XX|XX",
+        "CR:left_rocket|XX|XX",
+        "XX|XX|XX",
+    ],
+    category: "weapons",
+    state: "solid",
+    conduct: 1,
+    density: 1300,
+},
+    elements.e_rocket_launcher_right = {
+    color: "#C0C0C0",
+    behavior: behaviors.WALL,
+    behaviorOn: [
+        "XX|XX|XX",
+        "XX|XX|CR:right_rocket",
+        "XX|XX|XX",
+    ],
+    category: "weapons",
+    state: "solid",
+    conduct: 1,
+    density: 1300,
 };
