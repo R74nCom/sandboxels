@@ -1,17 +1,14 @@
 /*
 
-1.0.1
-
 Also checkout sbstuff.js by sb! Without it, this mod wouldn't be possible!
 
 Discords of people that helped me:
 usecit - UseCit.psd
 nousernamefound - nousernamefound
-pixelegend4 - pixelegend4
 
 Credits:
 Saschas - Waterpowder idea
-Fantasy Elements - Phoenix idea
+
 
 */
 
