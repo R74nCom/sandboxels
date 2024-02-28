@@ -75,7 +75,7 @@ elements.left_missile = {
         "M1 AND EX:10|XX|EX:10",
         "M2|EX:10|XX",
     ],
-    category:"weapons",
+    category:"ammunition",
 },
 elements.right_missile = {
     color: "#4c4e42",
@@ -84,7 +84,7 @@ elements.right_missile = {
        "EX:10|XX|M1 AND EX:10",
         "XX|EX:10|M2",
     ],
-    category:"weapons",
+    category:"ammunition",
 },
     elements.cluster_munition = {
     color: "#444444",
@@ -115,7 +115,7 @@ elements.right_missile = {
         "XX|XX|XX",
         "M2|M1 AND EX:10%10|M2",
     ],
-    category: "weapons",
+    category: "ammunition",
     state: "solid",
     density: 1300,
     hidden: true,
@@ -149,7 +149,7 @@ elements.left_bullet = {
         "M1 AND EX:5|XX|XX",
         "M2|XX|XX",
     ],
-    category:"weapons",
+    category:"ammunition",
 },
     elements.right_bullet = {
     color: "#4c4e42",
@@ -158,7 +158,7 @@ elements.left_bullet = {
         "XX|XX|M1 AND EX:5",
         "XX|XX|M2",
     ],
-    category:"weapons",
+    category:"ammunition",
 },
     elements.e_gun_left = {
     color: "#C0C0C0",
@@ -215,7 +215,7 @@ elements.left_rocket = {
         "M1 AND EX:10|XX|XX",
         "XX|XX|XX",
     ],
-    category:"weapons",
+    category:"ammunition",
 },
     elements.right_rocket = {
     color: "#4c4e42",
@@ -224,7 +224,7 @@ elements.left_rocket = {
         "XX|XX|M1 AND EX:10",
         "XX|XX|XX",
     ],
-    category:"weapons",
+    category:"ammunition",
 },
     elements.e_rocket_launcher_left = {
     color: "#C0C0C0",
@@ -251,4 +251,140 @@ elements.left_rocket = {
     state: "solid",
     conduct: 1,
     density: 1300,
+},
+elements.gaster_blast_left = {
+    color: "#c5e9f0",
+    behavior: [
+        "DL|DL|XX",
+        "DL AND CR:gaster_blast_left%5|XX|XX",
+        "DL|DL|XX",
+    ],
+    tick: function(pixel) {
+        for (var i=0; i<3; i++) {
+            if (!tryMove(pixel, pixel.x-2, pixel.y)) {
+                if (!isEmpty(pixel.x-2, pixel.y,true)) {
+                    var newPixel = pixelMap[pixel.x-2][pixel.y];
+                    if (newPixel.element === "gaster_blast_left") { break; }
+                    if (elements[newPixel.element].state == "gas") {
+                        if (Math.random() > (elements[newPixel.element].hardness || 0)) {
+                            if (elements[newPixel.element].breakInto) {
+                                breakPixel(newPixel);
+                            }
+                            else {
+                                deletePixel(newPixel.x, newPixel.y);
+                            }}}}
+                deletePixel(pixel.x,pixel.y);
+                break;
+            }}},
+    category: "energy",
+    state: "gas",
+    insulate: true,
+},
+elements.gaster_blast_right = {
+    color: "#c5e9f0",
+    behavior: [
+        "XX|DL|DL",
+        "XX|XX|DL AND CR:gaster_blast_right%5",
+        "XX|DL|DL",
+    ],
+    tick: function(pixel) {
+        for (var i=0; i<3; i++) {
+            if (!tryMove(pixel, pixel.x+2, pixel.y)) {
+                if (!isEmpty(pixel.x+2, pixel.y,true)) {
+                    var newPixel = pixelMap[pixel.x+2][pixel.y];
+                    if (newPixel.element === "gaster_blast_right") { break; }
+                    if (elements[newPixel.element].state == "gas") {
+                        if (Math.random() > (elements[newPixel.element].hardness || 0)) {
+                            if (elements[newPixel.element].breakInto) {
+                                breakPixel(newPixel);
+                            }
+                            else {
+                                deletePixel(newPixel.x, newPixel.y);
+                            }}}}
+                deletePixel(pixel.x,pixel.y);
+                break;
+            }}},
+    category: "energy",
+    state: "gas",
+    insulate: true,
+},
+    elements.gaster_blaster_left = {
+    color: "#ffffff",
+    behavior: behaviors.WALL,
+    behaviorOn: [
+        "XX|XX|XX",
+        "CR:gaster_blast_left|XX|XX",
+        "XX|XX|XX",
+    ],
+    category: "weapons",
+    state: "solid",
+    conduct: 20,
+},
+    elements.gaster_blaster_right = {
+    color: "#ffffff",
+    behavior: behaviors.WALL,
+    behaviorOn: [
+        "XX|XX|XX",
+        "XX|XX|CR:gaster_blast_right",
+        "XX|XX|XX",
+    ],
+    category: "weapons",
+    state: "solid",
+    conduct: 20,
+},
+elements.fast_bullet_left = {
+    color: "#4c4e42",
+    behavior: [
+        "DL|DL|XX",
+        "DL|XX|XX",
+        "DL|DL|XX",
+    ],
+    tick: function(pixel) {
+        for (var i=0; i<3; i++) {
+            if (!tryMove(pixel, pixel.x-3, pixel.y)) {
+                if (!isEmpty(pixel.x-3, pixel.y,true)) {
+                    var newPixel = pixelMap[pixel.x-3][pixel.y];
+                    if (newPixel.element === "fast_bullet_left") { break; }
+                    if (elements[newPixel.element].state == "solid") {
+                        if (Math.random() > (elements[newPixel.element].hardness || 0)) {
+                            if (elements[newPixel.element].breakInto) {
+                                breakPixel(newPixel);
+                            }
+                            else {
+                                deletePixel(newPixel.x, newPixel.y);
+                            }}}}
+                deletePixel(pixel.x,pixel.y);
+                break;
+            }}},
+    category: "ammunition",
+    state: "solid",
+    insulate: true,
+},
+elements.fast_bullet_right = {
+    color: "#4c4e42",
+    behavior: [
+        "XX|DL|DL",
+        "XX|XX|DL",
+        "XX|DL|DL",
+    ],
+    tick: function(pixel) {
+        for (var i=0; i<3; i++) {
+            if (!tryMove(pixel, pixel.x+3, pixel.y)) {
+                if (!isEmpty(pixel.x+3, pixel.y,true)) {
+                    var newPixel = pixelMap[pixel.x+3][pixel.y];
+                    if (newPixel.element === "fast_bullet_right") { break; }
+                    if (elements[newPixel.element].state == "solid") {
+                        if (Math.random() > (elements[newPixel.element].hardness || 0)) {
+                            if (elements[newPixel.element].breakInto) {
+                                breakPixel(newPixel);
+                            }
+                            else {
+                                deletePixel(newPixel.x, newPixel.y);
+                            }}}}
+                deletePixel(pixel.x,pixel.y);
+                break;
+            }}},
+    category: "ammunition",
+    state: "solid",
+    insulate: true,
 };
