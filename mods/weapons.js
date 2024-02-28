@@ -255,9 +255,9 @@ elements.left_rocket = {
 elements.gaster_blast_left = {
     color: "#c5e9f0",
     behavior: [
-        "DL|DL|DL",
-        "DL|XX|XX",
-        "DL|DL|DL",
+        "DL|DL|XX",
+        "DL AND CR:gaster_blast_left%5|XX|XX",
+        "DL|DL|XX",
     ],
     tick: function(pixel) {
         for (var i=0; i<3; i++) {
@@ -265,7 +265,7 @@ elements.gaster_blast_left = {
                 if (!isEmpty(pixel.x-2, pixel.y,true)) {
                     var newPixel = pixelMap[pixel.x-2][pixel.y];
                     if (newPixel.element === "gaster_blast_left") { break; }
-                    if (elements[newPixel.element].state == "solid") {
+                    if (elements[newPixel.element].state == "gas") {
                         if (Math.random() > (elements[newPixel.element].hardness || 0)) {
                             if (elements[newPixel.element].breakInto) {
                                 breakPixel(newPixel);
@@ -277,15 +277,15 @@ elements.gaster_blast_left = {
                 break;
             }}},
     category: "energy",
-    state: "solid",
+    state: "gas",
     insulate: true,
 },
 elements.gaster_blast_right = {
     color: "#c5e9f0",
     behavior: [
-        "DL|DL|DL",
-        "XX|XX|DL",
-        "DL|DL|DL",
+        "XX|DL|DL",
+        "XX|XX|DL AND CR:gaster_blast_right%5",
+        "XX|DL|DL",
     ],
     tick: function(pixel) {
         for (var i=0; i<3; i++) {
@@ -293,7 +293,7 @@ elements.gaster_blast_right = {
                 if (!isEmpty(pixel.x+2, pixel.y,true)) {
                     var newPixel = pixelMap[pixel.x+2][pixel.y];
                     if (newPixel.element === "gaster_blast_right") { break; }
-                    if (elements[newPixel.element].state == "solid") {
+                    if (elements[newPixel.element].state == "gas") {
                         if (Math.random() > (elements[newPixel.element].hardness || 0)) {
                             if (elements[newPixel.element].breakInto) {
                                 breakPixel(newPixel);
@@ -305,7 +305,7 @@ elements.gaster_blast_right = {
                 break;
             }}},
     category: "energy",
-    state: "solid",
+    state: "gas",
     insulate: true,
 },
     elements.gaster_blaster_left = {
@@ -335,9 +335,9 @@ elements.gaster_blast_right = {
 elements.fast_bullet_left = {
     color: "#4c4e42",
     behavior: [
-        "DL|DL|DL",
+        "DL|DL|XX",
         "DL|XX|XX",
-        "DL|DL|DL",
+        "DL|DL|XX",
     ],
     tick: function(pixel) {
         for (var i=0; i<3; i++) {
@@ -363,9 +363,9 @@ elements.fast_bullet_left = {
 elements.fast_bullet_right = {
     color: "#4c4e42",
     behavior: [
-        "DL|DL|DL",
+        "XX|DL|DL",
         "XX|XX|DL",
-        "DL|DL|DL",
+        "XX|DL|DL",
     ],
     tick: function(pixel) {
         for (var i=0; i<3; i++) {
