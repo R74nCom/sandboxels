@@ -108,3 +108,8 @@ elements.uranium_gold = {
     hardness: 0.25,
     breakInto: "uranium"
 };
+
+elements.gold.reactions["fire"] = { elem1: null, elem2: "gold_rust" };
+elements.rose_gold.reactions["fire"] = { elem1: null, elem2: "gold_rust" };
+elements.purple_gold.reactions["fire"] = { elem1: null, elem2: "gold_rust" };
+elements.blue_gold.reactions["fire"] = { elem1: null, elem2: "gold_rust" };
