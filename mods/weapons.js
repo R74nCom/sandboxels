@@ -86,6 +86,15 @@ elements.right_missile = {
     ],
     category:"ammunition",
 },
+elements.up_missile = {
+    color: "#4c4e42",
+behavior: [
+    "XX|M1 AND EX:10|M2",
+   "EX:10|XX|EX:10",
+    "XX|EX:10|M2",
+],
+category:"ammunition",}
+
     elements.cluster_munition = {
     color: "#444444",
     behavior: [
