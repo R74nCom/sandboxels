@@ -14,7 +14,6 @@ Upcoming Features:
 - seaweed and agar (makes juice into jelly)
 - pigs, ham and bacon
 - garlic
-- msg
 - stainless steel
 - chili
 - pepper plants
