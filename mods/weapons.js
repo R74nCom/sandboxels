@@ -86,6 +86,16 @@ elements.right_missile = {
     ],
     category:"ammunition",
 },
+elements.up_missile = {
+    color: "#4c4e42",
+    behavior: [
+        "M2|M1 AND EX:10|M2",
+       "EX:10|XX|EX:10",
+        "XX|EX:10|XX",
+    ],
+    category:"ammunition",
+    alias: "the element that some guy try to add to my mod without my permission but when doing so fucked the behavior grid up",
+},
     elements.cluster_munition = {
     color: "#444444",
     behavior: [
@@ -387,4 +397,4 @@ elements.fast_bullet_right = {
     category: "ammunition",
     state: "solid",
     insulate: true,
-};
+}
