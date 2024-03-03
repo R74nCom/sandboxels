@@ -7,7 +7,7 @@
 elements.seasoning = {
     color: "#876461",
     behavior: behaviors.POWDER,
-    category: "powders",
+    category: "food",
     tempHigh: 900,
     stateHigh: "salt",
     state: "solid",
