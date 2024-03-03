@@ -10,8 +10,8 @@ elements.soul_fish = {
     category: "soul",
     behavior: [
        "XX|CR:flash|XX",
-        "CR:flash|XX|CR:flash",
-        "XX|CR:flash|XX",
+        "CR:flash AND M2|XX|CR:flash AND M2",
+        "M1|CR:flash AND M1|M1",
     ],
     reactions: {
         "algae": { elem2:null, chance:0.25, func:behaviors.FEEDPIXEL },
@@ -50,20 +50,19 @@ elements.soul_dirt = {
 		color: ["#999a98", "#e6e7e2", "#dddcda"],
 		behavior: behaviors.POWDER,
 		properties: {
-			methaned: false,
+			"methaned": false,
+			"age": 0
 		},
 		tick: function(pixel) {
-			spreadLifeEater(pixel).forEach(infectedPixel => spreadLifeEater(infectedPixel));
-			
-			if(pixelTicks - pixel.start > 6) {
+			if(pixel.age > 6) {
 				if(!pixel.methaned && Math.random() < 0.2) {
-					changePixel(pixel,Math.random() < 0.2 ? "ghost_particle" : "ghost_particle");
+					changePixel("ghost_particle",pixel.x,pixel.y);
 				} else {
 					pixel.methaned = true;
 				};
-				tryCreatePlus(["ghost_particle","ghost_particle"],pixel.x,pixel.y);
-				return;
+				createPixel("ghost_particle",pixel.x,pixel.y);
 			};
+			pixel.age++
 		},
 		category: "soul",
 		state: "powder",
