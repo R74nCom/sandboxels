@@ -397,4 +397,62 @@ elements.fast_bullet_right = {
     category: "ammunition",
     state: "solid",
     insulate: true,
+},
+elements.flak_cannon = {
+    color: "#C0C0C0",
+    behavior: behaviors.WALL,
+    behaviorOn: [
+        "XX|CR:flak|XX",
+        "XX|XX|XX",
+        "XX|XX|XX",
+    ],
+    category: "weapons",
+    state: "solid",
+    density: 1300,
+    conduct: 1,
+},
+    elements.flak = {
+    color: "#f0f0f0",
+    tick: function(pixel) {
+        if ((pixel.temp > 1000 || pixel.charge) && !pixel.burning) {
+            pixel.burning = true;
+            pixel.burnStart = pixelTicks;
+        }
+        if (pixel.burning) {
+            if (!tryMove(pixel, pixel.x, pixel.y-1)) {
+                // tryMove again to the top left or top right
+                tryMove(pixel, pixel.x+(Math.random() < 0.5 ? -1 : 1), pixel.y-1);
+            }
+            if (pixelTicks-pixel.burnStart > 50 && Math.random() < 0.005) {
+                explodeAt(pixel.x, pixel.y, 10, "flak_shrapnel");
+            }
+        }
+        else {
+            if (!tryMove(pixel, pixel.x, pixel.y+1)) {
+                // tryMove again to the bottom left or bottom right
+                tryMove(pixel, pixel.x+(Math.random() < 0.5 ? -1 : 1), pixel.y+1);
+            }
+        }
+        doDefaults(pixel);
+    },
+    burn: 90,
+    burnTime: 100,
+    density: 2000,
+    conduct: 1,
+    state: "solid",
+    category: "ammunition"
+},
+    elements.flak_shrapnel = {
+    color: "#71797E",
+       behavior: [
+        "XX|XX|XX",
+        "XX|EX:5 %10|XX",
+        "M2|M1|M2",
+    ],
+    burn: 90,
+    burnTime: 100,
+    density: 2000,
+    conduct: 1,
+    state: "solid",
+    category: "ammunition"
 }
