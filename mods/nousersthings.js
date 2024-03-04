@@ -1196,7 +1196,7 @@ elements.filter = {
                             break;
                         }
                     }
-                    else if (!pixel.con && elements[newPixel.element].movable && (newPixel.element == pixel.filterType) ) { //suck up pixel
+                    else if (!pixel.con && (newPixel.element == pixel.filterType) ) { //suck up pixel
                         pixel.con = newPixel;
                         deletePixel(newPixel.x,newPixel.y);
                         pixel.con.x = pixel.x;
@@ -2011,7 +2011,7 @@ elements.element_filler = {
     state: "solid",
     movable: "false",
     onSelect: function() {
-        var answer6 = prompt("Please input the desired element of this filler. It will not work if you do multiple filter types while paused.",(elemfillerVar||undefined));
+        var answer6 = prompt("Please input the desired element of this filler. It will not work if you do multiple filler types while paused.",(elemfillerVar||undefined));
         if (!answer6) { return }
 		elemfillerVar = mostSimilarElement(answer6);
     },
@@ -2044,7 +2044,7 @@ elements.outliner = {
     category: elements.filler.category,
     excludeRandom: true,
     onSelect: function() {
-        var answerot = prompt("Please input the desired element of this outliner. It will not work if you do multiple filter types while paused.",(outlinerVar||undefined));
+        var answerot = prompt("Please input the desired element of this outliner. It will not work if you do multiple outliner types while paused.",(outlinerVar||undefined));
         if (!answerot) { return }
 		outlinerVar = mostSimilarElement(answerot);
     },
