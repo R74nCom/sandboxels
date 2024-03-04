@@ -2,7 +2,7 @@
 Created by SquareScreamYT <@918475812884344852> and RealerRaddler <@914371295561535508>
 Thanks to Alice <@697799964985786450>, nousernamefound <@316383921346707468>, Adora the Transfem <@778753696804765696> and Fioushemastor <@738828785482203189> for helping :)
 
-v1.8
+v1.9
 
 me trying to come up with stuff not in plants.js:
 
@@ -282,6 +282,14 @@ Changelog (v1.8)
 
 
 
+Changelog (v1.9)
+    - added onion
+    - added cut onion
+    - added fried onion
+
+
+
+
 */
 
 /*
@@ -316,18 +324,26 @@ elements.knife = {
         if(cutInto instanceof Array) { cutInto = cutInto[Math.floor(Math.random() * cutInto.length)] };
         //change pixel into the (chosen) element      
         //changePixel(pixel, cutInto)
+
+        var cutIntoEmit = elements[pixel.element].cutIntoEmit;
+        if (!cutIntoEmit) { return };
+        if(cutIntoEmit instanceof Array) { cutIntoEmit = cutIntoEmit[Math.floor(Math.random() * cutIntoEmit.length)] };
+        var thiselement = pixel.element;
         if (shiftDown) {
             if (Math.random() < 0.5) {
+                changePixel(pixel, cutInto)
+                if (elements[thiselement].cutIntoEmit && Math.random() < 0.5 && isEmpty(pixel.x,pixel.y-1)) {
+                    createPixel(elements[thiselement].cutIntoEmit,pixel.x,pixel.y-1);
+                }
             }
         }
         else if (!shiftDown) {
             if (Math.random() < 0.1) {
                 changePixel(pixel, cutInto)
+                if (elements[thiselement].cutIntoEmit && Math.random() < 0.5 && isEmpty(pixel.x,pixel.y-1)) {
+                    createPixel(elements[thiselement].cutIntoEmit,pixel.x,pixel.y-1);
+                }
             }
-        }
-        var thiselement = pixel.element;
-        if (elements[thiselement].cutIntoEmit && Math.random() < 0.1 && isEmpty(pixel.x,pixel.y-1)) {
-            createPixel(pixel.x,pixel.y-1,elements[thiselement].cutIntoEmit);
         }
     },
     category:"tools",
@@ -3687,8 +3703,6 @@ elements.cookie = {
 
 elements.nut_oil.name = "cooking_oil"
 
-elements.fire.temp = 130
-
 elements.bread.behavior = behaviors.SUPPORT
 
 elements.toast.behavior = behaviors.SUPPORT
@@ -5019,3 +5033,97 @@ if ([pixel.element].stain < 0 && [pixel.element] != "soap" && [pixel.element] !=
     [pixel.element].stain = [pixel.element].stain/10
 }
 */
+elements.onion = {
+    color: "#731066",
+    behavior: behaviors.STURDYPOWDER,
+    category:"food",
+    tempHigh: 100,
+    stateHigh: "steam",
+    burn:65,
+    burnTime:60,
+    burnInto: "steam",
+    state: "solid",
+    density: 1050,
+    cutInto: "cut_onion",
+    cutIntoEmit: "stench",
+}
+elements.cut_onion = {
+    color: "#dcc5ed",
+    behavior: behaviors.STURDYPOWDER,
+    category:"food",
+    tempHigh: 100,
+    stateHigh: "steam",
+    burn:65,
+    burnTime:60,
+    burnInto: "steam",
+    state: "solid",
+    density: 1050,
+    hidden: true,
+    reactions:{ "nut_oil": {elem1:"fried_onion", tempMin: 70, chance:10}}
+}
+elements.fried_onion = {
+    color: "#cf9344",
+    behavior: behaviors.POWDER,
+    category:"food",
+    tempHigh: 500,
+    stateHigh: "ash",
+    burn:65,
+    burnTime:60,
+    burnInto: "ash",
+    state: "solid",
+    density: 1050,
+    hidden: true,
+}
+
+elements.onion_seed = {
+    color: "#1a0e02",
+    tick: function(pixel) {
+        if (isEmpty(pixel.x,pixel.y+1)) {
+            movePixel(pixel,pixel.x,pixel.y+1);
+        }
+        else {
+            if (Math.random() < 0.2 && pixel.age > 50 && pixel.temp < 100) {
+                if (!outOfBounds(pixel.x,pixel.y+1)) {
+                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
+                    if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
+                        changePixel(dirtPixel,"root");
+                    }
+                }
+                if (isEmpty(pixel.x,pixel.y-2) && isEmpty(pixel.x,pixel.y-1) && isEmpty(pixel.x+1,pixel.y-1) && isEmpty(pixel.x-1,pixel.y-1) && isEmpty(pixel.x+1,pixel.y) && isEmpty(pixel.x-1,pixel.y)) {
+                    createPixel("onion",pixel.x,pixel.y-1);
+                    createPixel("onion",pixel.x+1,pixel.y-1);
+                    createPixel("onion",pixel.x-1,pixel.y-1);
+                    createPixel("onion",pixel.x,pixel.y-2);
+                    createPixel("onion",pixel.x+1,pixel.y);
+                    createPixel("onion",pixel.x-1,pixel.y);
+                    if (isEmpty(pixel.x+1,pixel.y-3) && isEmpty(pixel.x-1,pixel.y-3)) {
+                        createPixel("plant",pixel.x-1,pixel.y-3);
+                        createPixel("plant",pixel.x+1,pixel.y-3);
+                        changePixel(pixel,"onion");
+                    }
+                }
+            }
+            pixel.age++;
+        }
+        doDefaults(pixel);
+    },
+    properties: {
+        "age":0
+    },
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -2,
+    stateLow: "frozen_plant",
+    burn: 65,
+    burnTime: 15,
+    category: "life",
+    state: "solid",
+    density: 1500,
+    cooldown: defaultCooldown,
+    seed: true,
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "XX|M1|XX",
+    ],
+}
