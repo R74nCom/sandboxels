@@ -7,10 +7,11 @@ v1.9
 me trying to come up with stuff not in plants.js:
 
 Upcoming Features:
-- onions
 - spring onions
 - soy sauce
-- rice and porridge (white rice noodles)
+- white rice noodles
+- glutinous rice and rice flour
+- mochi
 - seaweed and agar (makes juice into jelly)
 - pigs, ham and bacon
 - garlic
@@ -24,7 +25,6 @@ Upcoming Features:
 - cows and beef
 - celery
 - marshmallows, normal, cooked and burnt
-- lime
 - kiwi, guavas and lychees
 - dragonfuits
 - dates and figs
@@ -286,6 +286,11 @@ Changelog (v1.9)
     - added onion
     - added cut onion
     - added fried onion
+    - added rice
+    - added porridge
+    - added cooked and burnt rice
+    - added rice plants and rice panicles
+    - added rice seeds
 
 
 
@@ -5126,4 +5131,196 @@ elements.onion_seed = {
         "XX|XX|XX",
         "XX|M1|XX",
     ],
+}
+elements.unhusked_rice = {
+    color: ["#c99a42","#b08638","#deb15d"],
+    behavior: [
+        "XX|XX|XX",
+        "ST:rice_panicle|XX|ST:rice_panicle",
+        "ST:rice_plant AND M2|ST:rice_panicle AND M1|ST:rice_plant AND M2",
+    ],
+    reactions: {
+        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 }
+    },
+    category:"food",
+    tempHigh: 65,
+    stateHigh: "cooked_rice",
+    burn:65,
+    burnTime:60,
+    burnInto: "dead_plant",
+    breakInto: "flour",
+    breakIntoColor: "#f7f1df",
+    state: "solid",
+    isFood: true,
+    density: 1050,
+    cutInto: "rice",
+}
+elements.rice = {
+    color: "#eeeed2",
+    behavior: behaviors.POWDER,
+    category:"food",
+    tempHigh: 65,
+    stateHigh: "cooked_rice",
+    burn:65,
+    burnTime:60,
+    burnInto: "dead_plant",
+    breakInto: "flour",
+    breakIntoColor: "#f7f1df",
+    state: "solid",
+    isFood: true,
+    density: 1050,
+    reactions:{
+        "water":{elem1:"porridge",elem2:"porridge",chance:3,tempMin:70}
+    }
+}
+elements.cooked_rice = {
+    color: "#eddfb9",
+    behavior: behaviors.POWDER,
+    category:"food",
+    tempHigh: 200,
+    stateHigh: "burnt_rice",
+    burn:65,
+    burnTime:60,
+    burnInto: "dead_plant",
+    breakInto: "flour",
+    breakIntoColor: "#f7f1df",
+    state: "solid",
+    isFood: true,
+    density: 1050,
+}
+elements.porridge = {
+    color: "#f2ecdc",
+    behavior: behaviors.LIQUID,
+    category:"food",
+    tempHigh: 200,
+    stateHigh: "steam",
+    viscosity: 999,
+    burn:65,
+    burnTime:60,
+    burnInto: "dead_plant",
+    state: "solid",
+    isFood: true,
+    density: 1050,
+}
+elements.burnt_rice = {
+    color: "#262217",
+    behavior: behaviors.POWDER,
+    category:"food",
+    tempHigh: 500,
+    stateHigh: "ash",
+    burn:65,
+    burnTime:60,
+    burnInto: "dead_plant",
+    state: "solid",
+    isFood: true,
+    density: 1050,
+}
+elements.rice_plant = {
+    color: "#37a825",
+    behavior: behaviors.WALL,
+    category:"life",
+    tempHigh: 100,
+    stateHigh: "steam",
+    burn:65,
+    burnTime:60,
+    burnInto: "dead_plant",
+    state: "solid",
+    density: 1050,
+    hidden: true,
+    
+}
+elements.rice_seed = {
+    color: "#997a23",
+    tick: function(pixel) {
+        if (isEmpty(pixel.x,pixel.y+1)) {
+            movePixel(pixel,pixel.x,pixel.y+1);
+        }
+        else {
+            if (Math.random() < 0.2 && pixel.age > 50 && pixel.temp < 100) {
+                if (!outOfBounds(pixel.x,pixel.y+1)) {
+                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
+                    if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
+                        changePixel(dirtPixel,"root");
+                    }
+                }
+                if (Math.random() < 0.2 && pixel.age > 50 && pixel.temp < 100) {
+                    if (isEmpty(pixel.x+1,pixel.y-1) && isEmpty(pixel.x-1,pixel.y-1)&&isEmpty(pixel.x+2,pixel.y-2) && isEmpty(pixel.x-2,pixel.y-2)) {
+                        createPixel("rice_plant",pixel.x+1,pixel.y-1);
+                        createPixel("rice_plant",pixel.x-1,pixel.y-1);
+                        createPixel("rice_plant",pixel.x+2,pixel.y-2);
+                        createPixel("rice_plant",pixel.x-2,pixel.y-2);
+                        pixel.leafgrown = true
+                    }
+                }
+                if (Math.random() < 0.2 && pixel.age > 50 && pixel.temp < 100 && pixel.leafgrown == true) {
+                    if (isEmpty(pixel.x,pixel.y-1) && isEmpty(pixel.x,pixel.y-2)&&isEmpty(pixel.x,pixel.y-3) && isEmpty(pixel.x,pixel.y-4)) {
+                        movePixel(pixel,pixel.x,pixel.y-4)
+                        createPixel("rice_plant",pixel.x,pixel.y+1);
+                        createPixel("rice_plant",pixel.x,pixel.y+2);
+                        createPixel("rice_plant",pixel.x,pixel.y+3);
+                        createPixel("rice_plant",pixel.x,pixel.y+4);
+                        changePixel(pixel,"rice_panicle")
+                        pixel.grower = true
+                    }
+                }
+            }
+            else if (pixel.age > 1000) {
+                changePixel(pixel,"unhusked_rice");
+            }
+            pixel.age++;
+        }
+        doDefaults(pixel);
+    },
+    properties: {
+        "age":0,
+        "leafgrown":false,
+    },
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -2,
+    stateLow: "frozen_plant",
+    burn: 65,
+    burnTime: 15,
+    category: "life",
+    state: "solid",
+    density: 2500,
+    cooldown: defaultCooldown,
+    seed: true,
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "XX|M1|XX",
+    ],
+};
+elements.rice_panicle = {
+    color: "#37a825",
+    behavior: behaviors.WALL,
+    category:"life",
+    tempHigh: 100,
+    stateHigh: "steam",
+    burn:65,
+    burnTime:60,
+    burnInto: "dead_plant",
+    tick: function(pixel) {
+        if (Math.random() < 0.1) {
+            if (isEmpty(pixel.x+1,pixel.y) && isEmpty(pixel.x-1,pixel.y)) {
+                createPixel("unhusked_rice",pixel.x+1,pixel.y);
+                createPixel("unhusked_rice",pixel.x-1,pixel.y);
+            }
+            if (isEmpty(pixel.x+1,pixel.y+1) && isEmpty(pixel.x-1,pixel.y+1)) {
+                createPixel("unhusked_rice",pixel.x+1,pixel.y+1);
+                createPixel("unhusked_rice",pixel.x-1,pixel.y+1);
+            }
+            if (isEmpty(pixel.x,pixel.y-1)) {
+                createPixel("unhusked_rice",pixel.x,pixel.y-1);
+            }
+        }
+    },
+    state: "solid",
+    density: 1050,
+    hidden: true,
+    
 }
