@@ -5,6 +5,7 @@ elements.male_davler = {
 	state: "solid",
 	tempHigh: 125,
 	stateHigh: "dead_bug",
+	breakInto: "davler_remains",
 	reactions: {
 		"sugar": { elem2: null },
 		"meat": { elem2: null },
@@ -22,6 +23,7 @@ elements.female_davler = {
 	state: "solid",
 	tempHigh: 125,
 	stateHigh: "dead_bug",
+	breakInto: "davler_remains",
 	reactions: {
 		"sugar": { elem2: null },
 		"meat": { elem2: null },
@@ -39,6 +41,7 @@ elements.davler_queen = {
 	state: "solid",
 	tempHigh: 150,
 	stateHigh: "davler_remains",
+	breakInto: "davler_remains",
 	properties: {
 		"eaten": 0
 	},
@@ -65,6 +68,7 @@ elements.larvae = {
 	state: "solid",
 	tempHigh: 150,
 	stateHigh: "dead_bug",
+	breakInto: "yolk",
 	properties: {
 		"hatch": 300,
 		"fertilized": false
@@ -96,6 +100,8 @@ elements.davler_remains = {
 	color: elements.dead_bug.color,
 	behavior: behaviors.POWDER,
 	state: "solid",
+	tempHigh: 150,
+	stateHigh: ["ash", "fire"],
 	category: "davlers",
 	reactions: {
 		"yolk": { elem2: "artificial_larvae", elem1: null }
@@ -109,6 +115,7 @@ elements.artificial_larvae = {
 	state: "solid",
 	tempHigh: 150,
 	stateHigh: "dead_bug",
+	breakInto: "yolk",
 	properties: {
 		"hatch": 450,
 		"fertilized": false
