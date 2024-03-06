@@ -8,7 +8,7 @@ me trying to come up with stuff not in plants.js:
 
 Upcoming Features:
 - spring onions
-- soy sauce
+- soy sauce/wasabi
 - white rice noodles
 - glutinous rice and rice flour
 - mochi
