@@ -5189,7 +5189,9 @@ elements.cooked_rice = {
     breakIntoColor: "#f7f1df",
     state: "solid",
     isFood: true,
-    density: 1050,
+    density: 1050,reactions:{
+        "water":{elem1:"porridge",elem2:"porridge",chance:3,tempMin:70}
+    }
 }
 elements.porridge = {
     color: "#f2ecdc",
@@ -5246,7 +5248,23 @@ elements.rice_seed = {
                         changePixel(dirtPixel,"root");
                     }
                 }
-                if (Math.random() < 0.2 && pixel.age > 50 && pixel.temp < 100) {
+                if(!isEmpty(pixel.x-1,pixel.y) && !isEmpty(pixel.x+1,pixel.y)){
+                    if(pixelMap[pixel.x+1][pixel.y].element === "water" && pixelMap[pixel.x-1][pixel.y].element === "water"){
+                        if (isEmpty(pixel.x,pixel.y-1)){
+                            movePixel(pixel,pixel.x,pixel.y-1)
+                            createPixel("rice_plant",pixel.x,pixel.y+1)
+                            pixel.notinwater=true
+                        }
+                        else if (!isEmpty(pixel.x,pixel.y-1)){
+                            if (pixelMap[pixel.x][pixel.y-1].element === "water") {
+                                deletePixel(pixel.x,pixel.y-1)
+                                movePixel(pixel,pixel.x,pixel.y-1)
+                                createPixel("rice_plant",pixel.x,pixel.y+1)
+                            }
+                        }
+                    }
+                }
+                if (Math.random() < 0.2 && pixel.age > 50 && pixel.temp < 100 && pixel.notinwater == true) {
                     if (isEmpty(pixel.x+1,pixel.y-1) && isEmpty(pixel.x-1,pixel.y-1)&&isEmpty(pixel.x+2,pixel.y-2) && isEmpty(pixel.x-2,pixel.y-2)) {
                         createPixel("rice_plant",pixel.x+1,pixel.y-1);
                         createPixel("rice_plant",pixel.x-1,pixel.y-1);
@@ -5277,6 +5295,7 @@ elements.rice_seed = {
     properties: {
         "age":0,
         "leafgrown":false,
+        "notinwater":false,
     },
     tempHigh: 100,
     stateHigh: "dead_plant",
