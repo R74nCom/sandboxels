@@ -5410,7 +5410,7 @@ elements.mochi = {
     state: "solid",
     density: 233.96,
     isFood: true
-}
+},
 elements.monosodium_glutamate = {
     color: "#eeeeee",
     behavior: behaviors.POWDER,
@@ -5426,5 +5426,5 @@ elements.monosodium_glutamate = {
     tempHigh: 801,
     state: "solid",
     density: 2160,
-    alias: ["msg","C5H8NNaO4"],
-}
+    alias: "msg",
+},
