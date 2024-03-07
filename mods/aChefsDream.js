@@ -5346,7 +5346,7 @@ elements.rice_panicle = {
     
 }
 
-elements.rice_flour= {
+elements.rice_flour = {
     color: "#f7f1df",
     behavior: behaviors.POWDER,
     reactions: {
@@ -5368,7 +5368,7 @@ elements.rice_flour= {
     density: 600,
     isFood: true
 },
-elements.mochi_dough= {
+elements.mochi_dough = {
     color: "#ebddae",
     behavior: behaviors.STURDYPOWDER,
     onMix: function(dough,ingredient) {
