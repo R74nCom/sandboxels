@@ -4392,7 +4392,9 @@ elements.passion_fruit = {
     state: "solid",
     density: 1050,
     cutInto: "passion_fruit_flesh",
-    temp:20
+    temp:20,
+    freezeDryInto: "freeze_dried_fruits",
+    freezeDryIntoColor: "#412e6b"
 }
 elements.passion_fruit_flesh = {
     color: "#ffe205",
@@ -5167,8 +5169,7 @@ elements.rice = {
     burn:65,
     burnTime:60,
     burnInto: "dead_plant",
-    breakInto: "flour",
-    breakIntoColor: "#f7f1df",
+    breakInto: "rice_flour",
     state: "solid",
     isFood: true,
     density: 1050,
@@ -5185,8 +5186,7 @@ elements.cooked_rice = {
     burn:65,
     burnTime:60,
     burnInto: "dead_plant",
-    breakInto: "flour",
-    breakIntoColor: "#f7f1df",
+    breakInto: "rice_flour",
     state: "solid",
     isFood: true,
     density: 1050,reactions:{
@@ -5344,4 +5344,69 @@ elements.rice_panicle = {
     density: 1050,
     hidden: true,
     
+}
+
+elements.rice_flour= {
+    color: "#f7f1df",
+    behavior: behaviors.POWDER,
+    reactions: {
+        "water": { elem1: "mochi_dough", elem2: null },
+        "salt_water": { elem1: "mochi_dough", elem2: null },
+        "sugar_water": { elem1: "mochi_dough", elem2: null },
+        "seltzer": { elem1: "mochi_dough", elem2: null },
+        "yolk": { elem1: "batter", elem2: null },
+        "yogurt": { elem1: "batter", elem2: null },
+        "milk": { elem1:"dough", elem2:null },
+        "cream": { elem1:"dough", elem2:null },
+    },
+    category: "food",
+    tempHigh: 400,
+    stateHigh: "fire",
+    burn:40,
+    burnTime:25,
+    state: "solid",
+    density: 600,
+    isFood: true
+},
+elements.mochi_dough= {
+    color: "#ebddae",
+    behavior: behaviors.STURDYPOWDER,
+    onMix: function(dough,ingredient) {
+        if (elements[ingredient.element].isFood && elements[ingredient.element].id !== elements.dough.id && elements[ingredient.element].id !== elements.flour.id && elements[ingredient.element].id !== elements.batter.id && elements[ingredient.element].id !== elements.bread.id) {
+            var rgb1 = dough.color.match(/\d+/g);
+            var rgb2 = ingredient.color.match(/\d+/g);
+            // average the colors
+            var rgb = [
+                Math.round((parseInt(rgb1[0])*10+parseInt(rgb2[0]))/11),
+                Math.round((parseInt(rgb1[1])*10+parseInt(rgb2[1]))/11),
+                Math.round((parseInt(rgb1[2])*10+parseInt(rgb2[2]))/11)
+            ];
+            // convert rgb to hex
+            var hex = RGBToHex(rgb);
+            dough.color = pixelColorPick(dough, hex);
+        }
+    },
+    category: "food",
+    tempHigh: 94,
+    stateHigh: "mochi",
+    //stateHighColorMultiplier: 0.9,
+    burn:40,
+    burnTime:25,
+    burnInto:"ash",
+    state: "solid",
+    density: 526.9,
+    isFood: true
+},
+elements.mochi = {
+    color: "#f2e2a7",
+    behavior: behaviors.STURDYPOWDER,
+    tempHigh: 400,
+    stateHigh: ["ash","steam"],
+    category: "food",
+    burn: 30,
+    burnTime: 200,
+    burnInto: ["smoke","smoke","smoke","ash"],
+    state: "solid",
+    density: 233.96,
+    isFood: true
 }
