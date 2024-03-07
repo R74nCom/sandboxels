@@ -291,6 +291,7 @@ Changelog (v1.9)
     - added cooked and burnt rice
     - added rice plants and rice panicles
     - added rice seeds
+    - added msg
 
 
 
@@ -5409,4 +5410,21 @@ elements.mochi = {
     state: "solid",
     density: 233.96,
     isFood: true
+}
+elements.monosodium_glutamate = {
+    color: "#eeeeee",
+    behavior: behaviors.POWDER,
+    reactions: {
+        "ice": { elem1:null, elem2:"salt_water", chance:0.1 },
+        "rime": { elem1:null, elem2:"salt_water", chance:0.075 },
+        "snow": { elem1:null, elem2:"salt_water", chance:0.25 },
+        "packed_snow": { elem1:null, elem2:"salt_water", chance:0.05 },
+        "packed_ice": { elem1:null, elem2:"salt_water", chance:0.01 },
+        "water": { elem2: "salt_water", elem1: null, temp2:-20 },
+    },
+    category: "food",
+    tempHigh: 801,
+    state: "solid",
+    density: 2160,
+    alias: ["msg","C5H8NNaO4"],
 }
