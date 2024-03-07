@@ -5427,4 +5427,4 @@ elements.monosodium_glutamate = {
     state: "solid",
     density: 2160,
     alias: "msg",
-},
+}
