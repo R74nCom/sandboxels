@@ -5191,7 +5191,8 @@ elements.cooked_rice = {
     isFood: true,
     density: 1050,reactions:{
         "water":{elem1:"porridge",elem2:"porridge",chance:3,tempMin:70}
-    }
+    },
+    hidden:true
 }
 elements.porridge = {
     color: "#f2ecdc",
@@ -5219,6 +5220,7 @@ elements.burnt_rice = {
     state: "solid",
     isFood: true,
     density: 1050,
+    hidden: true
 }
 elements.rice_plant = {
     color: "#37a825",
