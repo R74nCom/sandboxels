@@ -10,8 +10,8 @@ Upcoming Features:
 - spring onions
 - soy sauce/wasabi
 - white rice noodles
-- glutinous rice and rice flour
-- mochi
+- matcha leaves, powder, tea
+- cacao pods
 - seaweed and agar (makes juice into jelly)
 - pigs, ham and bacon
 - garlic
