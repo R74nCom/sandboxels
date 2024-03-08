@@ -33,6 +33,7 @@ Upcoming Features:
 - curry/chicken tikka masala
 - raisins
 - peaches
+- cucumber and eggplant
 
 Changelog (v1.0)
     - added chickens
@@ -5546,7 +5547,7 @@ elements.seaweed = {
     density: 997,
 }
 elements.dried_seaweed = {
-    color: "#142e13",
+    color: ["#142e13","#041e03"],
     behavior: behaviors.STURDYPOWDER,
     category:"food",
     tempHigh: 400,
