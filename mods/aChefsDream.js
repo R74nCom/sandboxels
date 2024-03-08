@@ -5400,7 +5400,8 @@ elements.mochi_dough = {
     burnInto:"ash",
     state: "solid",
     density: 526.9,
-    isFood: true
+    isFood: true,
+    hidden:true
 },
 elements.mochi = {
     color: "#f2e2a7",
@@ -5523,7 +5524,7 @@ elements.seaweed_stem = {
     density: 1050,
 }
 elements.seaweed = {
-    color: "#2e8021",
+    color: ["#2e8021","#3e9031","#4ea041"],
     behavior: behaviors.STURDYPOWDER,
     reactions: {
         "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
