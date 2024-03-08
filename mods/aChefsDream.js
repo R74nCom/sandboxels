@@ -33,7 +33,7 @@ Upcoming Features:
 - curry/chicken tikka masala
 - raisins
 - peaches
-- cucumber and eggplant
+- cucumbers and eggplants
 
 Changelog (v1.0)
     - added chickens
