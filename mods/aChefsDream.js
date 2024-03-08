@@ -14,7 +14,6 @@ Upcoming Features:
 - seaweed and agar
 - pigs, ham and bacon
 - garlic
-- msg
 - stainless steel
 - chili
 - pepper plants
@@ -24,7 +23,6 @@ Upcoming Features:
 - normal cookies and cookie dough
 - cows and beef
 - celery
-- broccoli
 
 Changelog (v1.0)
     - added chickens
@@ -266,6 +264,23 @@ Changelog (v1.8)
     - added marshmallows
     - added candied apples
     - added french froiz
+
+
+Changelog (v1.9)
+    - added avocados
+    - added prawns
+        - raw
+        - grilled
+        - frozen
+    - added scallops
+        - raw
+        - grilled
+        - frozen
+    - added sausages made with meat and monosodium glutamate
+    - added chocolate candy
+    - added milk coffee
+    - added soy sauce and fermented beans
+    - added steak and fancy powder XD
 
 
 
@@ -4850,5 +4865,260 @@ elements.french_froiz = {
     temp:20,
     burnTime:650,
     burnInto:"ash",
+    density: 700
 }
+
+
+elements.avocado = {
+    color: "#D6F1AC",
+    behavior:behaviors.STURDYPOWDER,
+    category:"food",
+    state: "solid",
+    tempHigh: 170,
+    stateHigh: "nut_oil",
+    temp:20,
+    burnTime:80,
+    burnInto:"nut_oil",
+
+}
+
+elements.avocado_spread = {
+    color: "#C4E893",
+    behavior:behaviors.LIQUID,
+    category: "food",
+    state: "liquid",
+    tempHigh: 300,
+    stateHigh: "ash",
+    temp:20,
+    burnTime: 300,
+    burnInto: "ash",
+
+}
+
+elements.raw_prawn = {
+    color: "#F5D7C5",
+    behavior:behaviors.SUPPORT,
+    category: "food",
+    state: "solid",
+    tempHigh: 180,
+    stateHigh: "grilled_prawn",
+    temp:20,
+    tempLow: 10,
+    stateLow: "frozen prawn",
+    burnTime: 360,
+    burnInto: "grilled_prawn"
+    
+}
+
+elements.grilled_prawn = {
+    color: "#FFD8BB",
+    behavior:behaviors.SUPPORT,
+    category: "food", 
+    state: "solid", 
+    tempHigh: 400,
+    stateHigh: "ash",
+    temp: 20,
+    burnTime: 600,
+    burnInto: "ash"
+}
+
+elements.frozen_prawn = {
+    color: "#E0D5D3",
+    behavior:behaviors.SUPPORT,
+    category: "food",
+    state: "solid",
+    tempHigh: 25,
+    stateHigh: "raw_prawn",
+    temp: 10,
+    burnTime:60,
+    burnInto: "raw_prawn"
+}
+
+elements.raw_scallop = {
+    color: "#FFF7E0",
+    behavior:behaviors.POWDER,
+    category: "food",
+    state: "solid",
+    tempHigh: 180,
+    stateHigh: "grilled_scallop",
+    temp: 20,
+    burnTime: 120,
+    burnInto: "grilled_scallop"
+
+}
+
+elements.grilled_scallop = {
+    color: "#F3F5E9",
+    behavior:behaviors.POWDER,
+    category: "food",
+    state: "solid",
+    tempHigh: 400,
+    stateHigh: "ash",
+    temp: 20,
+    burnTime: 600,
+    burnInto: "ash",
+
+}
+
+elements.frozen_scallop = {
+    color: "#E9EBF1",
+    behavior:behaviors.STURDYPOWDER,
+    category: "food",
+    state: "solid",
+    tempHigh: 25,
+    stateHigh: "raw_scallop",
+    temp: 0,
+    burnTime: 30,
+    burnInto: "raw_scallop"
+
+}
+
+
+
+elements.meat.reactions.monosodium_glutamate = {
+    elem1:"sausage", elem2: null, chance:3
+}
+
+elements.sausage = {
+    color: "#E9BCA5",
+    behavior:behaviors.SUPPORT,
+    category: "food",
+    state: "solid",
+    tempHigh: 160,
+    stateHigh: "grilled_sausage",
+    temp: 20,
+    burnTime: 180,
+    burnInto: "grilled_sausage",
+
+}
+
+elements.grilled_sausage = {
+    color: "#F1C59A",
+    behavior:behaviors.SUPPORT,
+    category: "food",
+    state: "solid",
+    tempHigh: 600,
+    stateHigh: "ash",
+    temp: 20,
+    burnTime: 660,
+    burnInto: "ash",
+
+}
+
+elements.monosodium_glutamate = {
+    color: "#eeeeee",
+    behavior: behaviors.POWDER,
+    reactions: {
+        "ice": { elem1:null, elem2:"salt_water", chance:0.1 },
+        "rime": { elem1:null, elem2:"salt_water", chance:0.075 },
+        "snow": { elem1:null, elem2:"salt_water", chance:0.25 },
+        "packed_snow": { elem1:null, elem2:"salt_water", chance:0.05 },
+        "packed_ice": { elem1:null, elem2:"salt_water", chance:0.01 },
+        "water": { elem2: "salt_water", elem1: null, temp2:-20 },
+        "beans": {elem1: "fermented_beans", elem2: null, chance: 30}
+    },
+    category: "food",
+    tempHigh: 801,
+    state: "solid",
+    density: 2160,
+    alias: ["msg","C5H8NNaO4"],
+}
+
+elements.chocolate_candy = {
+    color: "#B3855F",
+    behavior:behaviors.STURDYPOWDER,
+    category: "food",
+    state: "solid",
+    tempHigh: 300,
+    stateHigh: ["caramel", "melted_chocolate"],
+    temp: 20,
+    burnTime: 300,
+    burnInto: ["caramel", "melted_chocolate"]
+}
+
+elements.melted_chocolate.reactions.caramel = {elem1:"chocolate_candy", tempMin: 50}
+
+elements.caramel_milk = {
+    color: "#D6B178",
+    behavior:behaviors.LIQUID,
+    category: "liquids",
+    state: "liquid",
+    tempHigh: 500,
+    stateHigh: ["steam", "ash"],
+    temp:25,
+    burnTime: 900,
+    burnInto: ["steam", "ash"]
+}
+
+elements.milk.reactions.caramel = {elem1:"caramel_milk", elem2: null}
+
+elements.sugar_water.reactions.carbon_dioxide = {elem1: "hundred_plus"}
+
+elements.hundred_plus = {
+    color: "#FFFFE9",
+    behavior:behaviors.LIQUID,
+    category: "liquids",
+    state:"liquid",
+    tempHigh: 180,
+    stateHigh: "steam",
+    temp:18,
+    burnTime: 300,
+    burnInto: "steam"
+}
+
+elements.fermented_beans = {
+    color: "#FFFFE1",
+    behavior:behaviors.POWDER,
+    category:"food",
+    state: "solid",
+    tempHigh: 400,
+    stateHigh: "ash",
+    temp: 20,
+    burnTime: 270,
+    burnInto: "ash",
+    breakInto: "soy_sauce"
+}
+
+elements.soy_sauce = {
+    color: "#AA7A38",
+    behavior:behaviors.LIQUID,
+    category:"liquids",
+    state: "liquid",
+    tempHigh: 300,
+    stateHigh: ["steam", "salt"],
+    temp:20,
+    burnTime: 300,
+    burnInto: ["steam", "salt"]
+}
+
+elements.fancy_powder = {
+    color: ["#FFD700", "#C0C0C0"],
+    behavior:behaviors.POWDER,
+    category: "special",
+    state: "liquid",
+    temp: 20,
+    reactions:{
+        "cooked_meat": {elem2: "steak"}
+    }
+}
+
+elements.steak = {
+    color: "#6B3505",
+    behavior:behaviors.STURDYPOWDER,
+    category: "food",
+    state: "solid",
+    tempHigh: 300,
+    stateHigh: "ash",
+    burnTime: 600,
+    burnInto: "ash",
+    hidden: true
+}
+
+
+
+
+
+
+
+
 
