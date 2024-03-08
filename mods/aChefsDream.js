@@ -4,7 +4,7 @@ Thanks to Alice <@697799964985786450>, nousernamefound <@316383921346707468>, Ad
 
 v1.9
 
-me trying to come up with stuff not in plants.js:
+you can support me at me youtube: https://youtube.com/@sqec
 
 Upcoming Features:
 - spring onions
