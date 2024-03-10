@@ -2,7 +2,7 @@
 Created by SquareScreamYT <@918475812884344852> and RealerRaddler <@914371295561535508>
 Thanks to Alice <@697799964985786450>, nousernamefound <@316383921346707468>, Adora the Transfem <@778753696804765696> and Fioushemastor <@738828785482203189> for helping :)
 
-v1.10
+v1.11
 
 you can support me at my youtube: https://youtube.com/@sqec
 
@@ -310,6 +310,17 @@ Changelog (v1.10)
     - added vanilla flower
     - added vanilla pod
     - added vanilla essence
+
+
+
+
+Changelog (v1.11)
+    - unhid vanilla essence
+    - added peppermint candy
+    - vanilla essence can now turn ice cream light yellow
+    - added peppermint candy
+    - added tapioca
+    - added tapioca stems, leaves, and seed
 
 
 
@@ -2916,6 +2927,7 @@ elements.corn.breakInto ="corn_starch"
 elements.corn_starch = {
     color: ["#fcf2e1","#f2e7d3","#fcf3de"],
     behavior: behaviors.POWDER,
+    name: "starch",
     reactions: {
         "water": { elem1: "dough", elem2: null },
         "salt_water": { elem1: "dough", elem2: null },
@@ -2942,7 +2954,8 @@ elements.corn_starch = {
     burnTime:25,
     state: "solid",
     density: 600,
-    isFood: true
+    isFood: true,
+    alias:"starch"
 }
 
 elements.baking_powder = {
@@ -6254,6 +6267,8 @@ elements.vanilla_pod = {
     state: "solid",
     density: 1050,
 }
+elements.ice_cream.reactions = {}
+elements.ice_cream.reactions.vanilla_essence = {color1:"#fff7b6", elem2:null, chance:0.35}
 elements.vanilla_essence = {
     color: "#9c7211",
     behavior: behaviors.LIQUID,
@@ -6262,6 +6277,143 @@ elements.vanilla_essence = {
     tempLow: 0,
     category:"liquids",
     state: "liquid",
+    density: 1400,
+}
+
+elements.candy.reactions = {}
+elements.candy.reactions.peppermint = {elem1:"peppermint_candy", elem2:null, chance:0.35}
+elements.peppermint_candy = {
+    color: ["#fa5e3e","#fff5f5"],
+    behavior: behaviors.WALL,
+    viscosity: 500,
+    tempHigh: 204.44,
+    stateHigh: "smoke",
+    category: "food",
+    state: "solid",
+    stain: 0.01,
+    density: 850,
+    isFood: true
+}
+elements.tapioca = {
+    color: "#ded58e",
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "M2 AND CH:dirt,mud,sand,wet_sand,clay_soil,clay,mycelium,grass,color_sand>tapioca,fiber%0.5|M1 AND CH:dirt,mud,sand,wet_sand,clay_soil,clay,mycelium,grass,color_sand>tapioca,fiber,fiber%0.5|M2 AND CH:dirt,mud,sand,wet_sand,clay_soil,clay,mycelium,grass,color_sand>tapioca,fiber%0.5",
+    ],
+    tempHigh: 275,
+    stateHigh: "dirt",
+    tempLow: -50,
+    stateLow: "fiber",
+    burn: 20,
+    burnTime: 60,
+    burnInto: "dirt",
+    breakInto: "corn_starch",
+    category: "food",
+    state: "solid",
+    density: 1250,
+    conduct: 0.1,
     hidden: true,
-    density: 1400
+    darkText: true,
+}
+
+elements.tapioca_seed = {
+    color: "#a78d38",
+    tick: function(pixel) {
+        if (isEmpty(pixel.x,pixel.y+1)) {
+            movePixel(pixel,pixel.x,pixel.y+1);
+        }
+        else {
+            if (Math.random() < 0.02 && pixel.age > 50 && pixel.temp < 100) {
+                if (!outOfBounds(pixel.x,pixel.y+1)) {
+                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
+                    if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
+                        changePixel(dirtPixel,"tapioca");
+                    }
+                }
+                if (isEmpty(pixel.x,pixel.y-1)) {
+                    movePixel(pixel,pixel.x,pixel.y-1);
+                    createPixel("tapioca_stem",pixel.x,pixel.y+1);
+                }
+                if (isEmpty(pixel.x+1,pixel.y) && Math.random() < 0.2) {
+                    createPixel("tapioca_leaves",pixel.x+1,pixel.y);
+                }
+                if (isEmpty(pixel.x-1,pixel.y) && Math.random() < 0.2) {
+                    createPixel("tapioca_leaves",pixel.x-1,pixel.y);
+                }
+            }
+            else if (pixel.age > 250) {
+                changePixel(pixel,"tapioca_leaves");
+            }
+            pixel.age++;
+        }
+        doDefaults(pixel);
+    },
+    properties: {
+        "age":0
+    },
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -2,
+    stateLow: "frozen_plant",
+    burn: 65,
+    burnTime: 15,
+    category: "life",
+    state: "solid",
+    density: 1500,
+    cooldown: defaultCooldown,
+    seed: true,
+    behavior: [
+        "XX|XX|XX",
+        "XX|FX%10|XX",
+        "XX|M1|XX",
+    ],
+};
+
+elements.tapioca_stem = {
+    color: "#358f35",
+    behavior: behaviors.STURDYPOWDER,
+    reactions: {
+        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "mercury": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "stench": { elem2:null, chance:0.25 },
+    },
+    category:"life",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -1.66,
+    stateLow: "frozen_plant",
+    burn:15,
+    burnTime:60,
+    burnInto: "dead_plant",
+    breakInto: "dead_plant",
+    state: "solid",
+    density: 1050
+}
+elements.tapioca_leaves = {
+    color: "#3e823e",
+    behavior: behaviors.WALL,
+    reactions: {
+        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "mercury": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "stench": { elem2:null, chance:0.25 },
+        "carbon_dioxide": { elem2:"oxygen", chance:0.25 },
+    },
+    category:"life",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -1.66,
+    stateLow: "frozen_plant",
+    burn:15,
+    burnTime:60,
+    burnInto: "dead_plant",
+    breakInto: "dead_plant",
+    state: "solid",
+    density: 1050
 }
