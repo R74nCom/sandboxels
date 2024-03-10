@@ -4,25 +4,31 @@
 // added seasoning
 // added seasoned_water
 
+// 1.1 update - soup update
+// adds soup
+// changed seasoning to a SUPPORT behaviour
+// seasoned water at high temp is soup
+// changed seasoning density
+
 elements.seasoning = {
     color: "#876461",
-    behavior: behaviors.POWDER,
+    behavior: behaviors.SUPPORT,
     category: "food",
-    tempHigh: 900,
-    stateHigh: "salt",
+    tempHigh: 9000,
+    stateHigh: "ash",
     state: "solid",
     reactions: {
-        "water": { elem1: "null", elem2: "seasoned_water" },
-        "salt_water": { elem1: "null", elem2: "seasoned_water" },
+        "water": { elem1: "seasoned_water", elem2: "null" },
+        "salt_water": { elem1: "seasoned_water", elem2: "null" },
     },
-    density: 2,
+    density: 3000,
 };
 
 elements.seasoned_water = {
     color: "#73d627",
     behavior: behaviors.LIQUID,
     tempHigh: 100,
-    stateHigh: "steam",
+    stateHigh: "soup",
     tempLow: 0,
     stateLow: "ice",
     category: "liquids",
@@ -87,4 +93,12 @@ elements.seasoned_water = {
     conduct: 0.02,
     stain: -0.9,
     extinguish: true
+};
+
+elements.soup = {
+	color: "#e8c238",
+	behavior: behaviors.LIQUID,
+	category: "food",
+	state: "solid",
+    density: 7000,
 };
