@@ -17,3 +17,16 @@ elements.unstable_coolant = { color: "#16c1db",
  category: "gases",
 	state: "gas",
 };
+elements.hello_world = {
+	color: "#ff0000",
+	behavior: behaviors.WALL,
+	category: "land",
+	state: "solid",
+};
+
+elements.hello_world = {
+	color: "#ff0000",
+	behavior: behaviors.WALL,
+	category: "land",
+	state: "solid",
+};
