@@ -2270,7 +2270,7 @@ elements.textured_rose_gold = {
 }
 elements.insulating_filler = {
     color: elements.filler.color,
-    behavior: behaviors.fill,
+    behavior: behaviors.FILL,
     category: elements.filler.category,
     state: elements.filler.state,
     insulate: true
