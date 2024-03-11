@@ -528,6 +528,7 @@ elements.e_pipe = {
     movable: false,
     canContain: true,
 	conduct: 1,
+    insulate: true,
 },
 elements.destroyable_e_pipe = {
     color: "#414c4f",
@@ -771,6 +772,7 @@ elements.channel_pipe = {
     category: "machines",
     movable: false,
     canContain: true,
+    insulate: true,
 },
 elements.destroyable_channel_pipe = {
     color: "#414c4f",
@@ -1010,6 +1012,7 @@ elements.bridge_pipe = {
     category: "machines",
     movable: false,
     canContain: true,
+    insulate: true,
 },
 elements.pipe.tick = function(pixel) {
         if (!pixel.stage && pixelTicks-pixel.start > 60) {
@@ -1118,6 +1121,7 @@ elements.pipe.tick = function(pixel) {
         }
         doDefaults(pixel);
     },
+    elements.pipe.insulate = true,
 	filterTypeVar = 0;
 elements.filter = {
     color: "#599fc2",
@@ -1240,6 +1244,7 @@ elements.filter = {
     movable: false,
     canContain: true,
 	noMix: true,
+    insulate: true,
 },
 elements.heat_test = {
 	onSelect: function() {
@@ -1740,6 +1745,7 @@ elements.powder_filter = {
     movable: false,
     canContain: true,
 	noMix: true,
+    insulate: true,
 }
 elements.liquid_filter = {
     color: "#599fc2",
@@ -1854,6 +1860,7 @@ elements.liquid_filter = {
     movable: false,
     canContain: true,
 	noMix: true,
+    insulate: true,
 }
 elements.gas_filter = {
     color: "#599fc2",
@@ -1968,6 +1975,7 @@ elements.gas_filter = {
     movable: false,
     canContain: true,
 	noMix: true,
+    insulate: true,
 }
 function weightedAverage(num1, num2, weight){
     return ((weight * num1)+((1-weight)*num2))
@@ -2259,4 +2267,11 @@ elements.textured_rose_gold = {
         pixel.element = "rose_gold"
         }
     }
+}
+elements.insulating_filler = {
+    color: elements.filler.color,
+    behavior: behaviors.fill,
+    category: elements.filler.category,
+    state: elements.filler.state,
+    insulate: true
 }
