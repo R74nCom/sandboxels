@@ -1,32 +1,158 @@
-console.log("run mod")
-elements.turbine = { color: "#524945",
-    behavior: behaviors.WALL
-    category: "solids",
-	state: "solid",
-    density: 720,
-};
-elements.coolant = { color: "#16c1db",
-    behavior: behaviors.WALL
-    category: "liquids",
-	state: "liquid",
-    density: 720,
-	tempHigh: 1000,
-};
-elements.unstable_coolant = { color: "#16c1db",
- behavior: behaviors.DGAS,
- category: "gases",
-	state: "gas",
-};
-elements.hello_world = {
+elements.heatSensor = {
 	color: "#ff0000",
-	behavior: behaviors.WALL,
+    conduct: 1,
+    category:"machines",
+	tick: function(pixel) {
+        if (pixel.temp > 430 ) {
+              pixel.charge = 5;
+        }
+    },
+	conduct: 1,
+};
+let itemA = "steam";
+elements.turbine = {
+  behavior: behaviors.WALL,
+  behavior: behaviors.DELETE,
+      color: "#826c6e",
+          tick: function(pixel) {
+        if(pixel.start == pixelTicks){
+          pixel.clone = itemA;
+        }
+
+          for (var i = 0; i < adjacentCoords.length; i++) {
+              var coords = adjacentCoords[i];
+              var x = pixel.x + coords[0];
+              var y = pixel.y + coords[1];
+              if (!isEmpty(x,y,true)) {
+                  var sensed = pixelMap[x][y];
+                  if (sensed.element == pixel.clone) {
+                      pixel.charge = 5;
+                      break;
+                  }
+              }
+          }
+          doDefaults(pixel);
+      },
+      conduct: 1,
+      movable: false,
+      category:"machines",
+      darkText: true,
+  hardness: 1,
+
+  };
+
+
+elements.coal  = {
+	color: "#3d3c39",
+	behavior: behaviors.POWDER,
 	category: "land",
 	state: "solid",
+	
+	tick: function(pixel) {
+        if (pixel.temp > 900 && !pixel.burning) {
+            pixel.burning = true;
+            pixel.burnStart = pixelTicks;
+        }
+    },
+	
+	tempHigh:2500,
+    stateHigh: "fire",
+    hardness: 0.85,
+    burn: 100,
+    burnTime: 3500,
 };
 
-elements.hello_world = {
-	color: "#ff0000",
+elements.solid_coal = {
+	color: "#3d3c39",
 	behavior: behaviors.WALL,
 	category: "land",
 	state: "solid",
+	breakInto: "coal_dust"
+	
+	tick: function(pixel) {
+        if (pixel.temp > 900 && !pixel.burning) {
+            pixel.burning = true;
+            pixel.burnStart = pixelTicks;
+        }
+    },
+	
+	tempHigh:3000,
+    stateHigh: "fire",
+    hardness: 0.85,
+    burn: 100,
+    burnTime: 3500,
 };
+
+ elements.coal_dust = {
+	color: "#3d3c39",
+	behavior: behaviors.POWDER,
+	category: "land",
+	state: "solid",
+	
+	tick: function(pixel) {
+        if (pixel.temp > 900 && !pixel.burning) {
+            pixel.burning = true;
+            pixel.burnStart = pixelTicks;
+        }
+    },
+	
+	tempHigh:2000,
+    stateHigh: "fire",
+    hardness: 0.85,
+    burn: 100,
+    burnTime: 3500,
+};
+
+
+elements.gas = {
+    color: "#c9c5b1",
+    behavior: behaviors.LIQUID,
+    tick: function(pixel) {
+        if (pixel.temp > 430 && !pixel.burning) {
+            pixel.burning = true;
+            pixel.burnStart = pixelTicks;
+        }
+    },
+	tempHigh:3000,
+    stateHigh: "fire",
+    viscosity: 0.56,
+    burn: 100,
+    burnTime: 10000,
+    fireColor: "#c9c5b1",
+    category: "liquids",
+    state: "liquid",
+    density: 792,
+    stain: -0.25,
+}
+
+let itemB = "light";
+elements.solar_panel = {
+  behavior: behaviors.WALL,
+ behavior: behaviors.DELETE,
+      color: "#bebfa3",
+          tick: function(pixel) {
+        if(pixel.start == pixelTicks){
+          pixel.clone = itemB;
+        }
+
+          for (var i = 0; i < adjacentCoords.length; i++) {
+              var coords = adjacentCoords[i];
+              var x = pixel.x + coords[0];
+              var y = pixel.y + coords[1];
+              if (!isEmpty(x,y,true)) {
+                  var sensed = pixelMap[x][y];
+                  if (sensed.element == pixel.clone) {
+                      pixel.charge = 5;
+                      break;
+                  }
+              }
+          }
+          doDefaults(pixel);
+      },
+      conduct: 1,
+      movable: false,
+      category:"machines",
+      darkText: true,
+  hardness: 1,
+
+  };
