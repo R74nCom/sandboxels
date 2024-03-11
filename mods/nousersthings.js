@@ -2275,3 +2275,32 @@ elements.insulating_filler = {
     state: elements.filler.state,
     insulate: true
 }
+selvoid = 0;
+elements.selective_void = {
+    category: "special",
+    color: elements.void.color,
+    excludeRandom: true,
+    state: "solid",
+    movable: "false",
+    onSelect: function() {
+        var selvoidans = prompt("Please input the desired element of this void. It will not work if you do multiple void types while paused.",(selvoid||undefined));
+        if (!selvoidans) { return }
+		selvoid = mostSimilarElement(selvoidans);
+    },
+    tick: function(pixel){
+        var neighbors = 0;
+        if(!pixel.changeElem){
+            pixel.changeElem = selvoid;
+        }
+		for (var i = 0; i < squareCoords.length; i++) {
+            var coord = squareCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (!isEmpty(x,y, true)) {
+				var otherPixel = pixelMap[x][y]
+                if (otherPixel.element == pixel.changeElem)
+                deletePixel(x, y)
+			}
+        }
+    }
+} 
