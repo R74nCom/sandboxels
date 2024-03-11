@@ -2,7 +2,7 @@
 Created by SquareScreamYT <@918475812884344852> and RealerRaddler <@914371295561535508>
 Thanks to Alice <@697799964985786450>, nousernamefound <@316383921346707468>, Adora the Transfem <@778753696804765696> and Fioushemastor <@738828785482203189> for helping :)
 
-v1.11
+v1.10.1
 
 you can support me at my youtube: https://youtube.com/@sqec
 
@@ -19,19 +19,22 @@ Upcoming Features:
 - chili
 - pepper plants
 - hot chocolate
-- normal cookies and cookie dough
 - cows and beef
 - celery
 - marshmallows, normal, cooked and burnt
-- kiwi, guavas and lychees
+- kiwis
+- guavas
+- lychees
 - dragonfuits
-- dates and figs
+- dates
+- figs
 - avocados
 - apricots and plums
 - curry/chicken tikka masala
 - raisins
 - peaches
-- cucumbers and eggplants
+- cucumbers
+- eggplants
 
 Changelog (v1.0)
     - added chickens
@@ -314,7 +317,7 @@ Changelog (v1.10)
 
 
 
-Changelog (v1.11)
+Changelog (v1.10.1)
     - unhid vanilla essence
     - added peppermint candy
     - vanilla essence can now turn ice cream light yellow
@@ -6285,12 +6288,10 @@ elements.candy.reactions.peppermint = {elem1:"peppermint_candy", elem2:null, cha
 elements.peppermint_candy = {
     color: ["#fa5e3e","#fff5f5"],
     behavior: behaviors.WALL,
-    viscosity: 500,
     tempHigh: 204.44,
     stateHigh: "smoke",
     category: "food",
     state: "solid",
-    stain: 0.01,
     density: 850,
     isFood: true
 }
@@ -6315,6 +6316,8 @@ elements.tapioca = {
     conduct: 0.1,
     hidden: true,
     darkText: true,
+    desc:'a wise icyking once said: \'state:"burn 100"\'',
+    alias:["element that i made before icyking","burn 100 element"]
 }
 
 elements.tapioca_seed = {
