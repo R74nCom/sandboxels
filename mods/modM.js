@@ -62,26 +62,6 @@ elements.coal  = {
     burnTime: 3500,
 };
 
-elements.solid_coal = {
-	color: "#3d3c39",
-	behavior: behaviors.WALL,
-	category: "land",
-	state: "solid",
-	breakInto: "coal_dust"
-	
-	tick: function(pixel) {
-        if (pixel.temp > 900 && !pixel.burning) {
-            pixel.burning = true;
-            pixel.burnStart = pixelTicks;
-        }
-    },
-	
-	tempHigh:3000,
-    stateHigh: "fire",
-    hardness: 0.85,
-    burn: 100,
-    burnTime: 3500,
-};
 
  elements.coal_dust = {
 	color: "#3d3c39",
@@ -156,3 +136,26 @@ elements.solar_panel = {
   hardness: 1,
 
   };
+
+elements.titanium = {
+	conduct: 1,
+	color: "#a1ada5",
+	tempHigh:3000,
+    stateHigh: "molten_titanium",
+    category: "solids",
+    state: "soild",
+	 hardness: 1,
+    density: 792,
+	behavior: behaviors.WALL,
+};
+
+elements.molten_titanium = {
+	conduct: 1,
+	color: "#d16e04",
+	tempLow:2999,
+    stateLow: "titanium",
+    category: "solids",
+    state: "soild",
+    density: 792,
+	behavior: behaviors.MOLTEN,
+};
