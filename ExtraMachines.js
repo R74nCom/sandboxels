@@ -12,7 +12,7 @@ elements.heatSensor = {
 let itemA = "steam";
 elements.turbine = {
   behavior: behaviors.WALL,
-  behavior: behaviors.DELETE,
+  
       color: "#826c6e",
           tick: function(pixel) {
         if(pixel.start == pixelTicks){
@@ -26,6 +26,7 @@ elements.turbine = {
               if (!isEmpty(x,y,true)) {
                   var sensed = pixelMap[x][y];
                   if (sensed.element == pixel.clone) {
+					  deletePixel(x,y);
                       pixel.charge = 5;
                       break;
                   }
@@ -45,8 +46,10 @@ elements.turbine = {
 elements.coal  = {
 	color: "#3d3c39",
 	behavior: behaviors.POWDER,
-	category: "land",
+	category: "powders",
 	state: "solid",
+	density: 208,
+    conduct: 0.001
 	
 	tick: function(pixel) {
         if (pixel.temp > 900 && !pixel.burning) {
@@ -68,6 +71,9 @@ elements.coal  = {
 	behavior: behaviors.POWDER,
 	category: "land",
 	state: "solid",
+	stain: 1,
+	density: 190,
+    conduct: 0.001
 	
 	tick: function(pixel) {
         if (pixel.temp > 900 && !pixel.burning) {
@@ -78,7 +84,7 @@ elements.coal  = {
 	
 	tempHigh:2000,
     stateHigh: "fire",
-    hardness: 0.85,
+    hardness: 0.3,
     burn: 100,
     burnTime: 3500,
 };
@@ -122,6 +128,7 @@ elements.solar_panel = {
               if (!isEmpty(x,y,true)) {
                   var sensed = pixelMap[x][y];
                   if (sensed.element == pixel.clone) {
+					  deletePixel(x,y);
                       pixel.charge = 5;
                       break;
                   }
@@ -138,7 +145,7 @@ elements.solar_panel = {
   };
 
 elements.titanium = {
-	conduct: 1,
+	conduct: 0,
 	color: "#a1ada5",
 	tempHigh:3000,
     stateHigh: "molten_titanium",
@@ -150,12 +157,35 @@ elements.titanium = {
 };
 
 elements.molten_titanium = {
-	conduct: 1,
+	conduct: 0,
 	color: "#d16e04",
 	tempLow:2999,
     stateLow: "titanium",
-    category: "solids",
+    category: "states",
     state: "soild",
     density: 792,
 	behavior: behaviors.MOLTEN,
+};
+
+elements.solid_coal = {
+	color: "#3d3c39",
+	behavior: behaviors.WALL,
+	category: "land",
+	state: "solid",
+	breakInto: "coal_dust",
+	density: 380,
+    conduct: 0.001
+	
+	tick: function(pixel) {
+        if (pixel.temp > 900 && !pixel.burning) {
+            pixel.burning = true;
+            pixel.burnStart = pixelTicks;
+        }
+    },
+	
+	tempHigh:3000,
+    stateHigh: "fire",
+    hardness: 0.85,
+    burn: 100,
+    burnTime: 3500,
 };
