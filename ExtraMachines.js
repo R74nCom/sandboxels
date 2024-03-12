@@ -114,7 +114,6 @@ elements.gas = {
 let itemB = "light";
 elements.solar_panel = {
   behavior: behaviors.WALL,
- behavior: behaviors.DELETE,
       color: "#bebfa3",
           tick: function(pixel) {
         if(pixel.start == pixelTicks){
