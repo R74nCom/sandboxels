@@ -49,7 +49,7 @@ elements.coal  = {
 	category: "powders",
 	state: "solid",
 	density: 208,
-    conduct: 0.001
+    conduct: 0.001,
 	
 	tick: function(pixel) {
         if (pixel.temp > 900 && !pixel.burning) {
@@ -73,7 +73,7 @@ elements.coal  = {
 	state: "solid",
 	stain: 1,
 	density: 190,
-    conduct: 0.001
+    conduct: 0.001,
 	
 	tick: function(pixel) {
         if (pixel.temp > 900 && !pixel.burning) {
@@ -174,7 +174,7 @@ elements.solid_coal = {
 	state: "solid",
 	breakInto: "coal_dust",
 	density: 380,
-    conduct: 0.001
+    conduct: 0.001,
 	
 	tick: function(pixel) {
         if (pixel.temp > 900 && !pixel.burning) {
