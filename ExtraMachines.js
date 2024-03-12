@@ -46,7 +46,7 @@ elements.turbine = {
 elements.coal  = {
 	color: "#3d3c39",
 	behavior: behaviors.POWDER,
-	category: "powders",
+	category: "energy",
 	state: "solid",
 	density: 208,
     conduct: 0.001,
@@ -69,7 +69,7 @@ elements.coal  = {
  elements.coal_dust = {
 	color: "#3d3c39",
 	behavior: behaviors.POWDER,
-	category: "land",
+	category: "powders",
 	state: "solid",
 	stain: 1,
 	density: 190,
@@ -145,7 +145,7 @@ elements.solar_panel = {
 
 elements.titanium = {
 	conduct: 0,
-	color: "#a1ada5",
+	color: ["#a1ada5","#ebf5ee","#bac2bc","#848a86","#505251"],
 	tempHigh:3000,
     stateHigh: "molten_titanium",
     category: "solids",
@@ -169,7 +169,7 @@ elements.molten_titanium = {
 elements.solid_coal = {
 	color: "#3d3c39",
 	behavior: behaviors.WALL,
-	category: "land",
+	category: "energy",
 	state: "solid",
 	breakInto: "coal_dust",
 	density: 380,
@@ -187,4 +187,14 @@ elements.solid_coal = {
     hardness: 0.85,
     burn: 100,
     burnTime: 3500,
+};
+
+elements.rubber = {
+	color: "#ffc0cb",
+	 hardness: 0.5,
+	 tempHigh:180,
+	 state: "solid",
+	 behavior: behaviors.WALL,
+	 conduct: 0,
+	 category: "solids",
 };
