@@ -2288,7 +2288,6 @@ elements.selective_void = {
 		selvoid = mostSimilarElement(selvoidans);
     },
     tick: function(pixel){
-        var neighbors = 0;
         if(!pixel.changeElem){
             pixel.changeElem = selvoid;
         }
