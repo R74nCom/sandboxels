@@ -7,6 +7,129 @@ See sneak peaks for upcoming updates on the Discord: https://discord.gg/ejUc6YPQ
 
 A fancier version of this changelog can be found here: https://sandboxels.R74n.com/changelog
 
+[Version 1.9.4 - March 17, 2024 - Natural Disasters]
+    + Tornado
+    + Earthquake
+    + Tsunami
+    + Blaster
+    + Sandstorm (Hidden)
+   [Changes]
+    + Scrolling resizes in correct direction on Windows
+    + Invert Scroll setting
+    ~ Humans no longer trample Grass
+    ~ Milk no longer turns to Yogurt when heated
+    + Milk turns to Yogurt in Primordial Soup
+    + Cells can ferment Milk into Yogurt
+    + Cells boil and freeze into some Sugar
+    + Cheese can be made from Nut Milk
+    + Hives show Bee count when hovered
+    + Flies, Fireflies, and Rats get trapped in Glue
+    + Worms can compost Charcoal and Straw
+    + Snails eat Pickles and Grapes
+    + Slugs eat Grapes
+    + Evergreen trees drop Pinecones when burned
+    ~ Pinecones can withstand high temperatures
+    + Wheat dries and freezes into Straw
+    + Straw breaks into Flour
+    + Potato can be deep-fried
+    + Water can explode in hot Nut Oil
+    + Soda can disolve Eggs
+    + Yeast ferments Mashed Potato
+    + Potatoes can charge Zinc or Copper
+    + Batteries explode when melted
+    + Ammonia can spawn Algae in Water
+    + Broth can extinguish small fires
+    + Salt slowly dissolves in Caramel
+    + Ketchup and Baking Soda reaction
+    + Acid kills Plant and Tree Branch before dissolving it
+    + Copper Sulfate kills Termites, Plant, Grass, Algae, and Mushrooms
+    + Caustic Potash and Acid reaction
+    + Nickel can resist Acid
+    + Aluminum breaks into Metal Scrap
+    + Thermite can be made from Metal Scrap
+    + Gallium stains solids
+    + Gold can alloy with AlGa
+    + Electrum breaks into Gold Coins
+    + Electrolysis on Salt Water produces Chlorine
+    + Alcohol can purify Infection
+    + Vaccine and Antibody can cure Rotten Meat and Cheese
+    + Soap releases Fragrance when burned
+    + Soap can be made from Milk
+    + Paper is yellowed by Light and Oxygen
+    + Plant is yellowed by Chlorine
+    + Skin is darkened and reddened by Light
+    + Skin will rash when exposed to irritants
+    + Neutrons can react with Plant, Gunpowder, Yeast, and Firework
+    + Positrons react violently with Electric
+    + Light can kill Plague and Virus
+    ~ Virus no longer eats Light or Loopy
+    ~ Loopy ignores Cloners
+    ~ Cancer is killed by Radiation faster
+    + Cancer can be killed by Laser
+    ~ Diamond is no longer indestructible, but still very strong
+    ~ Diamonds will no longer form if Charcoal is too hot
+    ~ Moved Bubble to Gases
+    + Bubbles pop when cooled or heated
+    ~ Tweaked Bleach and Vinegar reaction
+    ~ Randomized Egg hatching rate
+    ~ Cacti no longer grow arms at their base
+    + Bamboo burns into Embers
+    + Malware can hijack Loopy
+    + Malware can misalign Lattice
+    + Malware can break down Border
+    + Rainbow breaks into Static
+    + Bless revives Tree Branches from Saplings
+    + Bless purifies Pilk
+    + Bless removes Color Smoke and Spray Paint
+    + Packed Snow breaks into Snow
+    + Water can put out Antifire
+    ~ Antifire ignores air density
+    ~ Holding Shift can force mix dense ingredients into Batter
+    ~ Gave unique colors to Supernova, NExplosion, and Pop
+    ~ Recolored Molten Potassium and Molten Magnesium
+    ~ Tweaked charged Hydrogen and Helium colors
+    ~ Moved Ball to Special (For real this time)
+    ~ Moved Perfume to Liquids
+    ~ Moved Amber to Solids
+    ~ Save names are truncated in save menu
+    + Humans always save skin and shirt color in saves
+    + Shift can be held when pressing -/+ buttons
+    + Unpaint tool downgrades colorful element variants
+    + Earthquakes and Tornadoes in random events
+    + Magma alias 'Lava'
+    - Removed Smooth View (Try moreViews.js!)
+   [Bug Fixes]
+    ~ Fixed: Evergreen and Lattice can be dragged
+    ~ Fixed: Cellulose isn't considered a liquid
+    ~ Fixed: Cellulose density too low
+    ~ Fixed: Ketchup could result from recipes with Butter
+    ~ Fixed: Accented element names capitalize incorrectly
+    ~ Fixed: Virus can destroy invincible pixels
+    ~ Fixed: E-cloner doesn't copy temperature
+    ~ Fixed: Middle click begins scrolling on Windows
+    ~ Fixed: Swapping to secondary element doesn't focus category
+    ~ Fixed: Alcohol Gas has 110% flammability
+    ~ Fixed: Acid Gas can destroy some Acid-resistant elements
+    ~ Fixed: Certain Cactus pixel grows instantly
+    ~ Fixed: Typo in Hydrogen and Sulfur reaction
+    ~ Fixed: Antigas places at room temperature
+    ~ Fixed: Hot Antifire burns indefinitely
+    ~ Fixed: Melted Wax viscosity defined twice
+    ~ Fixed: Flash lower state defined twice
+    ~ Fixed: Ketchup boils into Vinegar, which immediately boils
+    ~ Fixed: F11 doesn't toggle fullscreen (May need Shift)
+    ~ Fixed: Water causes Ember to stop burning, etc.
+    ~ Fixed: Bless can create everlasting Fire
+    ~ Fixed: Spawning Liquid Propane causes pulse effect
+    ~ Fixed: Stained Glass and Color Sand can't be painted
+   [Technical]
+    + Prop tool accepts lowercase "-infinity"
+    ~ Prop tool deselects on invalid input
+    + onMouseDown() element property
+    + hoverStat(pixel) element property for hover info, return string
+    + stain1 and stain2 reaction property, accepts hex color code
+    + Shift + W?
+
 [Version 1.9.3 - February 2, 2024 - Mix & Munch]
     + Potassium
     + Magnesium
