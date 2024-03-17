@@ -8,24 +8,24 @@ const heatfunc = function(pixel){
 			pixel.ogB = parseInt(pixel.color.slice(pixel.color.lastIndexOf(',') + 1, -1), 10)
 			pixel.ogElement = pixel.element 
 		}else{
-		pixel.gethigh = (elements[pixel.element].tempHigh)
-		pixel.halftemp = ((20+pixel.gethigh)/2)
-			if (pixel.temp <= (pixel.gethigh) - pixel.halftemp){
-				pixel.ctemp = 0;
-			} else if (pixel.temp > (pixel.gethigh)-pixel.halftemp && pixel.temp <= pixel.gethigh){
-				pixel.ctemp = ((1/pixel.halftemp)*pixel.temp)-(((pixel.gethigh)-pixel.halftemp)/pixel.halftemp)
+		var gethigh = (elements[pixel.element].tempHigh)
+		var halftemp = ((20+gethigh)/2)
+			if (pixel.temp <= (gethigh) - halftemp){
+				var ctemp = 0;
+			} else if (pixel.temp > (gethigh)-halftemp && pixel.temp <= gethigh){
+				var ctemp = ((1/halftemp)*pixel.temp)-(((gethigh)-halftemp)/halftemp)
 			}
-			if (pixel.ctemp <= 0.5){
-				pixel.newR = (((510-(2*pixel.ogR))*pixel.ctemp)+pixel.ogR);
-				pixel.newG = ((0-((2*pixel.ogG)*pixel.ctemp))+pixel.ogG);
-				pixel.newB = ((0-((2*pixel.ogB)*pixel.ctemp))+pixel.ogB);
-			}else if (pixel.ctemp > 0.5){
-				pixel.newR = 255;
-				pixel.newG = ((510*pixel.ctemp)-255);
-				pixel.newB= ((280*pixel.ctemp)-140);
+			if (ctemp <= 0.5){
+				var newR = (((510-(2*pixel.ogR))*ctemp)+pixel.ogR);
+				var newG = ((0-((2*pixel.ogG)*ctemp))+pixel.ogG);
+				var newB = ((0-((2*pixel.ogB)*ctemp))+pixel.ogB);
+			}else if (ctemp > 0.5){
+				var newR = 255;
+				var newG = ((510*ctemp)-255);
+				var newB= ((280*ctemp)-140);
 			}
-			let weight = (1-(pixel.ctemp/1.3))
-			pixel.color = "rgb(" + weightedAverage(pixel.ogR, pixel.newR, weight) + "," + weightedAverage(pixel.ogG, pixel.newG, weight) + "," + weightedAverage(pixel.ogB, pixel.newB, weight) + ")";
+			let weight = (1-(ctemp/1.3))
+			pixel.color = "rgb(" + weightedAverage(pixel.ogR, newR, weight) + "," + weightedAverage(pixel.ogG, newG, weight) + "," + weightedAverage(pixel.ogB, newB, weight) + ")";
 		}
 	};
 	if (!eLists.metals) { eLists.metals = [] }
