@@ -1,3 +1,6 @@
+function weightedAverage(num1, num2, weight){
+	return ((weight * num1)+((1-weight)*num2))
+}
 const heatfunc = function(pixel){
 		if (pixel.ogR == null || pixel.ogG == null || pixel.ogB == null || !(pixel.element == pixel.ogElement)){
 			pixel.ogR = parseInt(pixel.color.slice(4, pixel.color.indexOf(',')), 10)
@@ -21,7 +24,8 @@ const heatfunc = function(pixel){
 				pixel.newG = ((510*pixel.ctemp)-255);
 				pixel.newB= ((280*pixel.ctemp)-140);
 			}
-			pixel.color = "rgb(" + pixel.newR + "," + pixel.newG + "," + pixel.newB + ")";
+			let weight = (1-(pixel.ctemp/1.3))
+			pixel.color = "rgb(" + weightedAverage(pixel.ogR, pixel.newR, weight) + "," + weightedAverage(pixel.ogG, pixel.newG, weight) + "," + weightedAverage(pixel.ogB, pixel.newB, weight) + ")";
 		}
 	};
 	if (!eLists.metals) { eLists.metals = [] }
@@ -53,9 +57,6 @@ elements.color_baker = {
 	desc: "Use to bake a metals paint color into its 'true' color, for heating purposes.",
 }
 /*
-function weightedAverage(num1, num2, weight){
-	return ((weight * num1)+((1-weight)*num2))
-}
  const plantfunc = function(pixel){
 	if (pixel.ogR == null || pixel.ogG == null || pixel.ogB == null){
 			pixel.ogR = parseInt(pixel.color.slice(4, pixel.color.indexOf(',')), 10)
