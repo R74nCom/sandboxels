@@ -4453,7 +4453,7 @@
     color: ["#6b2e2e","#6b4f2e","#6b6b2e","#2e6b2e","#2e6b6b","#2e2e6b","#6b2e6b"],
     behavior: behaviors.WALL,
     tick: function(pixel) {
-        if (pixel.start-1 == pixelTicks) {
+        if (pixel.start-1 <= pixelTicks) {
             pixel.color = "hsl(" + (pixel.colorstart || pixel.start) + ",40%,30%)";
             if (!pixel.colorstart) {
                 pixel.colorstart = pixel.start;
