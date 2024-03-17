@@ -73,6 +73,19 @@ elements.ecooler = {
     conduct: elements.wire.conduct,
     noMix: elements.wire.noMix
 };
+elements.eeraser = {
+    color: "#FFFF00",
+	behavior: behaviors.WALL,
+    behaviorON: [
+        "DL|DL|DL",
+        "DL|DL|DL",
+        "DL|DL|DL",
+    ],
+    category: "machines",
+    insulate: elements.wire.insulate,
+    conduct: elements.wire.conduct,
+    noMix: elements.wire.noMix
+};
 elements.efreezer = {
     color: "#E0FFFF",
 	behavior: behaviors.WALL,
