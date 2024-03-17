@@ -1225,8 +1225,11 @@ elements.e_grinder = {
     insulate: true,
 }
 
-
-
-// elements.cementMix = {
-	
-// }
+elements.quickSand = {
+	color: elements.sand.color,
+    category: "land",
+    state: "liquid",
+    behavior : behaviors.POWDER, //did this as a joke to see if it works lol
+    density: 500,
+    conduct: 0.02,
+}
