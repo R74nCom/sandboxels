@@ -509,4 +509,87 @@ tick: function(pixel) {
             }}},
     category: "aircrafts",
     breakInto: "metal_scrap"
- }
+ },
+elements.machine_for_throwing_bombs_at_you_left = {
+    color: "#524c41",
+    behavior: behaviors.WALL,
+    behaviorOn: [
+        "XX|XX|XX",
+        "CR:bombs_for_throwing_at_you_left|XX|XX",
+        "XXXX|XX",
+    ],
+    category: "weapons",
+    conduct: 1
+},
+elements.bombs_for_throwing_at_you_left = {
+    color: "#524c41",
+    category: "ammunition",
+    behavior: [
+        "XX|EX:10>bomb|XX",
+        "XX|XX|XX",
+        "M1|M1%10 AND EX:10>bomb|XX",
+    ],
+}
+elements.machine_for_throwing_bombs_at_right = {
+    color: "#524c41",
+    behavior: behaviors.WALL,
+    behaviorOn: [
+        "XX|XX|XX",
+        "XX|XX|CR:bombs_for_throwing_at_you_right",
+        "XXXX|XX",
+    ],
+    category: "weapons",
+    conduct: 1
+},
+elements.bombs_for_throwing_at_you_right = {
+    color: "#524c41",
+    category: "ammunition",
+    behavior: [
+        "XX|EX:10>bomb|XX",
+        "XX|XX|XX",
+        "XX|M1%10 AND EX:10>bomb|M1",
+    ],
+},
+elements.energized_orb_left = {
+    color: ["#e0e000","#f3f300"],
+    category: "energy",
+    behavior: [
+        "XX|EX:50>electric|XX",
+        "M1 AND EX:50>electric|XX|EX:50>electric",
+        "XX|EX:50>electric|XX"
+    ],
+    state: "gas",
+},
+elements.energized_orb_right = {
+    color: ["#e0e000","#f3f300"],
+    category: "energy",
+    behavior: [
+        "XX|EX:50>electric|XX",
+        "EX:50>electric|XX|M1 AND EX:50>electric",
+        "XX|EX:50>electric|XX"
+    ],
+    state: "gas",
+},
+elements.fast_bomb = {
+    color: "#524c41",
+    category: "weapons",
+    state: "solid",
+    behavior: [
+        "XX|EX:10>explosion|XX",
+        "XX|XX|XX",
+        "M2|M1 AND EX:10>explosion|M2",
+        ],
+    tick: function(pixel) {
+        for (var i=0; i<3; i++) {
+            if (!tryMove(pixel, pixel.x, pixel.y+1)) {
+                if (!isEmpty(pixel.x, pixel.y+1,true)) {
+                    var newPixel = pixelMap[pixel.x][pixel.y+1];
+                    if (newPixel.element === "fast_bomb") { break; }
+                    }
+                }
+            }
+        },
+    density: 1300,
+    excludeRandom: true,
+    cooldown: defaultCooldown
+}
