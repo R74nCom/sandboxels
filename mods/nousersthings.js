@@ -2288,7 +2288,6 @@ elements.selective_void = {
 		selvoid = mostSimilarElement(selvoidans);
     },
     tick: function(pixel){
-        var neighbors = 0;
         if(!pixel.changeElem){
             pixel.changeElem = selvoid;
         }
@@ -2304,3 +2303,43 @@ elements.selective_void = {
         }
     }
 } 
+let radiusVar = 0
+let circleElem = 0
+let circleRep = false
+elements.scuffed_circle_brush = {
+    category: "special",
+    color: elements.drag.color,
+    excludeRandom: true,
+    state: "solid",
+    movable: "false",
+    onSelect: function(){
+        var answerR = prompt("Radius of the brush.",(radiusVar||undefined));
+        if (!answerR) { return }
+		radiusVar = answerR;
+		var answerE = prompt("Element of the brush.",(circleElem||undefined));
+        if (!answerE) { return }
+		circleElem = answerE;
+        var answerH = prompt("Replace? y or n. May be laggy.",(circleRep||undefined));
+        if (!answerH) { return }
+		circleRep = answerH;
+    },
+    tick: function(pixel){
+        var circlec = circleCoords(pixel.x, pixel.y, radiusVar)
+        for (var i = 0; i < circlec.length; i++){
+            var coord = circlec[i]
+            var x = coord.x
+            var y = coord.y
+            if (isEmpty(x, y)){
+                createPixel(circleElem, x, y)
+            }
+            else if (!isEmpty(x, y, true) && !(circleRep == "n")){
+                deletePixel(x, y)
+                createPixel(circleElem, x, y)
+            }
+        }
+        var thisx = pixel.x
+        var thisy = pixel.y
+        deletePixel(thisx, thisy)
+        createPixel(circleElem, thisx, thisy)
+    }
+}
