@@ -35,7 +35,7 @@ setView = (n) => {
 }
 
 for (const i in views) {
-    if (i < 5) continue;
+    if (i < 4) continue;
     const option = document.createElement("option");
     option.setAttribute("value", i);
     option.innerText = views[i];
