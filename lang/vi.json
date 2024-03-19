@@ -527,5 +527,22 @@
 "molten_epsom_salt": "Muối Epsom nóng chảy",
 "molten_potassium_salt": "Muối kali nóng chảy",
 "molten_sodium_acetate": "Natri axetat nóng chảy",
-"frozen_nitro": "Nitro đóng băng"
+"frozen_nitro": "Nitro đóng băng",
+"cured_meat": "",
+"nut_oil": "",
+"grease": "",
+"fat": "",
+"potassium": "",
+"molten_potassium": "",
+"magnesium": "",
+"molten_magnesium": "",
+"sandstorm": "",
+"caustic_potash": "",
+"antibomb": "",
+"tornado": "",
+"earthquake": "",
+"tsunami": "",
+"blaster": "",
+"propane_ice": "",
+"molten_caustic_potash": ""
 }

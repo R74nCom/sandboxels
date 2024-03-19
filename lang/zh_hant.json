@@ -526,5 +526,22 @@
 "molten_epsom_salt":"熔瀉鹽",
 "molten_potassium_salt":"熔鉀鹽",
 "molten_sodium_acetate":"熔醋酸鈉",
-"frozen_nitro":"冰硝酸甘油"
+"frozen_nitro":"冰硝酸甘油",
+"cured_meat": "",
+"nut_oil": "",
+"grease": "",
+"fat": "",
+"potassium": "",
+"molten_potassium": "",
+"magnesium": "",
+"molten_magnesium": "",
+"sandstorm": "",
+"caustic_potash": "",
+"antibomb": "",
+"tornado": "",
+"earthquake": "",
+"tsunami": "",
+"blaster": "",
+"propane_ice": "",
+"molten_caustic_potash": ""
 }
