@@ -44,7 +44,7 @@ elements.wet_dirty_sand = {
 
 elements.reverse_gravity_liquid = { 
     color: "#cdd7e2",
-    behavior: behaviors.AGFLUID	,
+    behavior: behaviors.AGLIQUID	,
     category: "Purple Guy's Mod", 
     state: "liquid",
     density: 50
@@ -57,6 +57,7 @@ elements.reverse_soda = {
         "M2|XX|M2",
         "XX|CR:foam%3|XX",
     ],
+
     category: "Purple Guy's Mod", 
     state: "liquid",
     density: 1030
