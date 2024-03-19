@@ -526,5 +526,22 @@
 "molten_epsom_salt":"sal_epsom_fundido",
 "molten_potassium_salt":"sal_de_potassio_fundido",
 "molten_sodium_acetate":"acetato_de_sodio_fundido",
-"frozen_nitro":"nitroglicerina_congelada"
+"frozen_nitro":"nitroglicerina_congelada",
+"cured_meat": "",
+"nut_oil": "",
+"grease": "",
+"fat": "",
+"potassium": "",
+"molten_potassium": "",
+"magnesium": "",
+"molten_magnesium": "",
+"sandstorm": "",
+"caustic_potash": "",
+"antibomb": "",
+"tornado": "",
+"earthquake": "",
+"tsunami": "",
+"blaster": "",
+"propane_ice": "",
+"molten_caustic_potash": ""
 }

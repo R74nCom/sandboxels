@@ -526,5 +526,22 @@
 "molten_epsom_salt":"",
 "molten_potassium_salt":"",
 "molten_sodium_acetate":"",
-"frozen_nitro":""
+"frozen_nitro":"",
+"cured_meat": "",
+"nut_oil": "",
+"grease": "",
+"fat": "",
+"potassium": "",
+"molten_potassium": "",
+"magnesium": "",
+"molten_magnesium": "",
+"sandstorm": "",
+"caustic_potash": "",
+"antibomb": "",
+"tornado": "",
+"earthquake": "",
+"tsunami": "",
+"blaster": "",
+"propane_ice": "",
+"molten_caustic_potash": ""
 }
