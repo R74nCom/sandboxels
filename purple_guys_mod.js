@@ -52,7 +52,7 @@ elements.reverse_gravity_liquid = {
 
 elements.reverse_soda = { 
     color: ["#5f2706", "#48230d", "#52250a"],
-    behavior: behaviors.AGFLUID	,  behavior: [
+    behavior: behaviors.AGLIQUID	,  behavior: [
         "M2|M1|M2",
         "M2|XX|M2",
         "XX|CR:foam%3|XX",
