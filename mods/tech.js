@@ -47,7 +47,7 @@ elements.blue_wire = {
 
 elements.electrogalvanized = {
     color: "#6c6e70",
-    behavior: behaviors.SOLID,
+    behavior: behaviors.WALL,
     category: "Tech",
     state: "solid",
     conduct: 2,
