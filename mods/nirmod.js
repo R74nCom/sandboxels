@@ -97,6 +97,12 @@ function createPowders() {
 	Ni.reactions = {
 		"water": { elem1: "dull_nirme", elem2: null },
 		"salt_water": { elem1: "dull_nirme", elem2: null },
+		"sugar_water": { elem1: "dull_nirme", elem2: null },
+		"seltzer": { elem1: "dull_nirme", elem2: null },
+		"dirty_water": { elem1: "dull_nirme", elem2: null },
+		"pool_water": { elem1: "dull_nirme", elem2: null },
+		"slush": { elem1: "dull_nirme", elem2: null },
+		"diamond": { elem2: "emerald", chance: 0.002 },
 	}
 	Ni.Add();
 
