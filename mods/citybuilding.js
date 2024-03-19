@@ -1,3 +1,5 @@
+// created by sqec
+// coming soon: apartments, small houses
 
 function building_1_segment() {
     if (pixel.foundation = true && pixel.height < pixel.limit) {
