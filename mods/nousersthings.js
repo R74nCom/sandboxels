@@ -2311,16 +2311,17 @@ elements.scuffed_circle_brush = {
     color: elements.drag.color,
     excludeRandom: true,
     state: "solid",
-    movable: "false",
+    movable: false,
+    maxSize: 1,
     onSelect: function(){
-        var answerR = prompt("Radius of the brush.",(radiusVar||undefined));
+        var answerR = prompt("Radius of the brush. Things above 10 may be laggy.",(radiusVar||undefined));
         if (!answerR) { return }
 		radiusVar = answerR;
 		var answerE = prompt("Element of the brush.",(circleElem||undefined));
         if (!answerE) { return }
 		circleElem = answerE;
-        var answerH = prompt("Replace? y or n. May be laggy.",(circleRep||undefined));
-        if (!answerH) { return }
+        var answerH = prompt("Replace? True or false. May be laggy.",(circleRep||undefined));
+        if (!answerH) { answerH = false }
 		circleRep = answerH;
     },
     tick: function(pixel){
@@ -2332,7 +2333,7 @@ elements.scuffed_circle_brush = {
             if (isEmpty(x, y)){
                 createPixel(circleElem, x, y)
             }
-            else if (!isEmpty(x, y, true) && !(circleRep == "n")){
+            else if (circleRep && !outOfBounds(x, y)){
                 deletePixel(x, y)
                 createPixel(circleElem, x, y)
             }
