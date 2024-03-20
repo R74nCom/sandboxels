@@ -1,19 +1,3 @@
-elements.cat = {
-	color: ["#ffffff", "#494949", "#ffc505"],
-	behavior: [
-        "XX|XX|XX",
-        "M2%25|XX|M2%25",
-        "XX|M1|XX",
-    ],
-	category: "life",
-	state: "solid",
-    desc: "cat.",
-    tempHigh: 100,
-    stateHigh: "meat",
-    tempLow: 0,
-    stateLow: "frozen_meat"
-};
-
 elements.the_hot_destroyer = {
     color: "#ff0000",
 	behavior: behaviors.POWDER,
@@ -77,4 +61,4 @@ elements.sour_patch_kids = {
     desc: "don't think their meant to be purple"
 };
 
-// this piece of text is gonna change every update
+// R.I.P cats (use cat.js instead)
