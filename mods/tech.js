@@ -19,7 +19,7 @@ elements.pc_core = {
     reactions: {
         "poison": { elem1: "malfunctioned_wire", elem2: "null" },
         "salt_water": { elem1: "malfunctioned_wire", elem2: "null" },
-		"water": { elem1: "explosion", elem2: "null" },
+	"water": { elem1: "explosion", elem2: "null" },
         "malware": { elem1: "null", elem2: "null" },
 	},
 };
@@ -43,7 +43,7 @@ elements.red_wire = {
         "acid": { elem1: "malfunctioned_wire", elem2: "null" },
         "poison": { elem1: "malfunctioned_wire", elem2: "null" },
         "salt_water": { elem1: "malfunctioned_wire", elem2: "null" },
-		"water": { elem1: "malfunctioned_wire", elem2: "null" },
+	"water": { elem1: "malfunctioned_wire", elem2: "null" },
 	},
 };
 
@@ -58,7 +58,7 @@ elements.green_wire = {
         "acid": { elem1: "malfunctioned_wire", elem2: "null" },
         "poison": { elem1: "malfunctioned_wire", elem2: "null" },
         "salt_water": { elem1: "malfunctioned_wire", elem2: "null" },
-		"water": { elem1: "malfunctioned_wire", elem2: "null" },
+	"water": { elem1: "malfunctioned_wire", elem2: "null" },
 	},
 };
 
@@ -72,7 +72,7 @@ elements.blue_wire = {
     reactions: {
         "acid": { elem1: "malfunctioned_wire", elem2: "null" },
         "poison": { elem1: "malfunctioned_wire", elem2: "null" },
-		"water": { elem1: "malfunctioned_wire", elem2: "null" },
+	"water": { elem1: "malfunctioned_wire", elem2: "null" },
         "salt_water": { elem1: "malfunctioned_wire", elem2: "null" },
 	},
 };
