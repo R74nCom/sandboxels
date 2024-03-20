@@ -1,7 +1,7 @@
 elements.monitor_case = {
     color: "#4a4848",
     behavior: behaviors.SOLID,
-    category: "machines",
+    category: "tech",
     state: "solid",
     density: 500,
 };
@@ -13,43 +13,64 @@ elements.pc_core = {
         "SH|XX|SH",
         "XX|SH|XX",
     ],
-    category: "machines",
+    category: "tech",
     tempHigh: 8000,
     stateHigh: ["molten_steel","explosion","molten_iron"]
+    reactions: {
+		"water": { elem1: "explosion", elem2: "null" },
+        "malware": { elem1: "null", elem2: "null" },
+	}
+};
+
+elements.malfunctioned_wire = {
+    color: "#6d32a8",
+    behavior: behaviors.WALL,
+    category: "tech",
+    conduct: 999,
+    noMix: true
 };
 
 elements.red_wire = {
     color: "#ff3d1f",
     behavior: behaviors.WALL,
-    category: "machines",
+    category: "tech",
     insulate: true,
     conduct: 3,
     noMix: true
+    reactions: {
+		"water": { elem1: "malfunctioned_wire", elem2: "null" },
+	}
 };
 
 elements.green_wire = {
     color: "#66c22d",
     behavior: behaviors.WALL,
-    category: "machines",
+    category: "tech",
     insulate: true,
     conduct: 3,
     noMix: true
+    reactions: {
+		"water": { elem1: "malfunctioned_wire", elem2: "null" },
+	}
 };
 
 elements.blue_wire = {
     color: "#1f81cc",
     behavior: behaviors.WALL,
-    category: "machines",
+    category: "tech",
     insulate: true,
     conduct: 3,
     noMix: true
+    reactions: {
+		"water": { elem1: "malfunctioned_wire", elem2: "null" },
+	}
 };
 
 elements.electrogalvanized = {
     color: "#6c6e70",
     behavior: behaviors.WALL,
-    category: "machines",
+    category: "tech",
     state: "solid",
     conduct: 2,
     density: 7850,
-};
+};s
