@@ -35,7 +35,7 @@ elements.red_wire = {
     behavior: behaviors.WALL,
     category: "tech",
     insulate: true,
-    conduct: 3,
+    conduct: 1,
     noMix: true
     reactions: {
 		"water": { elem1: "malfunctioned_wire", elem2: "null" },
@@ -47,7 +47,7 @@ elements.green_wire = {
     behavior: behaviors.WALL,
     category: "tech",
     insulate: true,
-    conduct: 3,
+    conduct: 1,
     noMix: true
     reactions: {
 		"water": { elem1: "malfunctioned_wire", elem2: "null" },
@@ -59,7 +59,7 @@ elements.blue_wire = {
     behavior: behaviors.WALL,
     category: "tech",
     insulate: true,
-    conduct: 3,
+    conduct: 1,
     noMix: true
     reactions: {
 		"water": { elem1: "malfunctioned_wire", elem2: "null" },
