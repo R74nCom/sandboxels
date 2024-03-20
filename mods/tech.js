@@ -15,11 +15,13 @@ elements.pc_core = {
     ],
     category: "tech",
     tempHigh: 8000,
-    stateHigh: ["molten_steel","explosion","molten_iron"]
+    stateHigh: ["molten_steel","explosion","molten_iron"],
     reactions: {
+        "poison": { elem1: "malfunctioned_wire", elem2: "null" },
+        "salt_water": { elem1: "malfunctioned_wire", elem2: "null" },
 		"water": { elem1: "explosion", elem2: "null" },
         "malware": { elem1: "null", elem2: "null" },
-	}
+	},
 };
 
 elements.malfunctioned_wire = {
@@ -36,10 +38,13 @@ elements.red_wire = {
     category: "tech",
     insulate: true,
     conduct: 1,
-    noMix: true
+    noMix: true,
     reactions: {
+        "acid": { elem1: "malfunctioned_wire", elem2: "null" },
+        "poison": { elem1: "malfunctioned_wire", elem2: "null" },
+        "salt_water": { elem1: "malfunctioned_wire", elem2: "null" },
 		"water": { elem1: "malfunctioned_wire", elem2: "null" },
-	}
+	},
 };
 
 elements.green_wire = {
@@ -48,10 +53,13 @@ elements.green_wire = {
     category: "tech",
     insulate: true,
     conduct: 1,
-    noMix: true
+    noMix: true,
     reactions: {
+        "acid": { elem1: "malfunctioned_wire", elem2: "null" },
+        "poison": { elem1: "malfunctioned_wire", elem2: "null" },
+        "salt_water": { elem1: "malfunctioned_wire", elem2: "null" },
 		"water": { elem1: "malfunctioned_wire", elem2: "null" },
-	}
+	},
 };
 
 elements.blue_wire = {
@@ -60,10 +68,13 @@ elements.blue_wire = {
     category: "tech",
     insulate: true,
     conduct: 1,
-    noMix: true
+    noMix: true,
     reactions: {
+        "acid": { elem1: "malfunctioned_wire", elem2: "null" },
+        "poison": { elem1: "malfunctioned_wire", elem2: "null" },
 		"water": { elem1: "malfunctioned_wire", elem2: "null" },
-	}
+        "salt_water": { elem1: "malfunctioned_wire", elem2: "null" },
+	},
 };
 
 elements.electrogalvanized = {
