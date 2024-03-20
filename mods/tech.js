@@ -73,4 +73,4 @@ elements.electrogalvanized = {
     state: "solid",
     conduct: 2,
     density: 7850,
-};s
+};
