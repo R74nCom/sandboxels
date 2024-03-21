@@ -89,6 +89,7 @@ elements.video = {
                         }
                     };
 
+                    currentVideoFrames = [];
                     video.currentTime = 0;
 
                     video.onseeked = () => {

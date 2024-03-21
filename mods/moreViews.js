@@ -34,18 +34,19 @@ setView = (n) => {
     document.querySelector('span[setting="view"]').children[0].value = view ?? 0;
 }
 
-for (const i in views) {
-    if (i < 4) continue;
-    const option = document.createElement("option");
-    option.setAttribute("value", i);
-    option.innerText = views[i];
-    document.querySelector('.setting-span[setting="view"]').querySelector("select").appendChild(option);
-    viewKey[i] = views[i];
-}
+runAfterLoadList.push(() => {
+    for (const i in views) {
+        if (i < 4) continue;
+        const option = document.createElement("option");
+        option.setAttribute("value", i);
+        option.innerText = views[i];
+        document.querySelector('.setting-span[setting="view"]').querySelector("select").appendChild(option);
+        viewKey[i] = views[i];
+    }
+})
 
 const vcrFont = new FontFace("VCR", "url(mods/VCR_OSD_MONO.ttf)");
 vcrFont.load().then(font => {
-    console.log(font);
     document.fonts.add(font);
 })
 
