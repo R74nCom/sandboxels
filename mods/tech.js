@@ -22,6 +22,7 @@ elements.pc_core = {
 	"water": { elem1: "explosion", elem2: "null" },
         "malware": { elem1: "null", elem2: "null" },
 	},
+	breakInto: "rust",
 };
 
 elements.malfunctioned_wire = {
@@ -45,6 +46,7 @@ elements.red_wire = {
         "salt_water": { elem1: "malfunctioned_wire", elem2: "null" },
 	"water": { elem1: "malfunctioned_wire", elem2: "null" },
 	},
+	breakInto: "plastic",
 };
 
 elements.green_wire = {
@@ -60,6 +62,7 @@ elements.green_wire = {
         "salt_water": { elem1: "malfunctioned_wire", elem2: "null" },
 	"water": { elem1: "malfunctioned_wire", elem2: "null" },
 	},
+	breakInto: "plastic",
 };
 
 elements.blue_wire = {
@@ -75,6 +78,7 @@ elements.blue_wire = {
 	"water": { elem1: "malfunctioned_wire", elem2: "null" },
         "salt_water": { elem1: "malfunctioned_wire", elem2: "null" },
 	},
+	breakInto: "plastic",
 };
 
 elements.electrogalvanized = {
