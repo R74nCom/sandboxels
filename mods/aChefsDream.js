@@ -2,7 +2,7 @@
 Created by SquareScreamYT <@918475812884344852> and RealerRaddler <@914371295561535508>
 Thanks to Alice <@697799964985786450>, nousernamefound <@316383921346707468>, Adora the Transfem <@778753696804765696> and Fioushemastor <@738828785482203189> for helping :)
 
-v1.10.1
+v1.10.2
 
 you can support me at my youtube: https://youtube.com/@sqec
 
@@ -324,6 +324,12 @@ Changelog (v1.10.1)
     - added peppermint candy
     - added tapioca
     - added tapioca stems, leaves, and seed
+
+
+
+
+Changelog (v1.10.2)
+    - added chocolate chip, sprinkles and topping explosions
 
 
 
@@ -6419,4 +6425,17 @@ elements.tapioca_leaves = {
     breakInto: "dead_plant",
     state: "solid",
     density: 1050
+}
+elements.sprinkle_bomb = {
+    color: ["#eb726a", "#ebca6a", "#88eb6a", "#6aaceb", "#eb6ade"],
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "XX|M1 AND EX:10>sprinkles|XX",
+    ],
+    category: "food",
+    state: "solid",
+    density: 1300,
+    excludeRandom: true,
+    cooldown: defaultCooldown
 }
