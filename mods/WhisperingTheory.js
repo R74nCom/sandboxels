@@ -1,7 +1,7 @@
 /* TODO
 - [x] powder heater & coller
-- [ ] block roomtemp
-- [ ] no smoke from cold fire
+- [x] block roomtemp
+- [x] no smoke from cold fire
 */
 
 elements.powder_heater = {
@@ -13,7 +13,7 @@ elements.powder_heater = {
     ],
     color: "#881111",
     insulate: true,
-}
+};
 
 elements.powder_cooler = {
     category: "machines",
@@ -24,7 +24,7 @@ elements.powder_cooler = {
     ],
     color: "#111188",
     insulate: true,
-}
+};
 
 elements.powder_superheater = {
     category: "machines",
@@ -35,7 +35,7 @@ elements.powder_superheater = {
     ],
     color: "#dd1111",
     insulate: true,
-}
+};
 
 elements.powder_freeze = {
     category: "machines",
@@ -46,7 +46,35 @@ elements.powder_freeze = {
     ],
     color: "#1111dd",
     insulate: true,
-}
+};
+
+elements.roomtemper = {
+	color: "#29632f",
+	behavior: behaviors.WALL,
+	tick: function(pixel) {
+		for (var i = 0; i < squareCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (!isEmpty(x,y, true)) {
+					if(pixelMap[x][y].temp < -230) {
+                    pixelMap[x][y].temp = (pixelMap[x][y].temp + 7)
+					} else if(pixelMap[x][y].temp > 270) {
+						pixelMap[x][y].temp = (pixelMap[x][y].temp - 7)
+					} else if (pixelMap[x][y].temp < 20) {
+						pixelMap[x][y].temp = (pixelMap[x][y].temp + 2)
+					} else if (pixelMap[x][y].temp > 20) {
+						pixelMap[x][y].temp = (pixelMap[x][y].temp - 2)
+					}
+                }
+            }
+	},
+	category:"machines",
+	state:"solid",
+	insulate: true,
+	noMix: true,
+	movable: false,
+},
 
 elements.cold_fire.behavior = [
     "M1|M1|M1",
