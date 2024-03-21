@@ -9960,6 +9960,7 @@
                 else { changePixel(pixel, elem2); }
             }
             if (r.func) { r.func(pixel,pixel) }
+            if (r.color2) { pixel.color = pixelColorPick(pixel,r.color2) }
         }
     },
     ignore: ["sun"],
@@ -15520,7 +15521,7 @@ window.onload = function() {
         return elements[e].excludeRandom != true && elements[e].category != "tools" && !elements[e].tool;
     });
     gameCanvas.addEventListener("mousedown", mouseClick);
-    gameCanvas.addEventListener("mousedown", function(){
+    gameCanvas.addEventListener("mousedown", function(e){
         if (elements[currentElement] && elements[currentElement].onMouseDown) {
             elements[currentElement].onMouseDown(e);
         }
