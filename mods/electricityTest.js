@@ -18,7 +18,7 @@ doElectricity = function (pixel) {
                 }
                 else if (elements[newPixel.element].insulate != true) { // Otherwise heat the pixel (Resistance simulation)
                     newPixel.temp += pixel.charge/4;
-                    newPixel.chargeCD = 8;
+                    if (con < 0.8) { newPixel.chargeCD = 8; }
                     pixelTempCheck(newPixel);
                 }
             }
