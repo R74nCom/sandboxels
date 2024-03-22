@@ -2368,3 +2368,4 @@ elements.spacedust = {
 }
 elements.acid.ignore.push("spacedust")
 elements.acid.ignore.push("spacedust_cola")
+elements.sun.breakInto = "spacedust"
