@@ -6641,7 +6641,7 @@ elements.chilli = {
     behavior: [
         "XX|XX|XX",
         "XX|XX|XX",
-        "chilli_leaves|M1|chilli_leaves",
+        "ST:chilli_leaves|M1|ST:chilli_leaves",
     ],
     category:"food",
     tempHigh: 100,
