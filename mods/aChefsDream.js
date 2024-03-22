@@ -6652,6 +6652,9 @@ elements.chilli = {
     state: "solid",
     density: 1050,
     breakInto: "chilli_powder",
+    reactions: {
+	"sauce": {elem1:null, elem2:"hot_sauce", chance:2}
+    },
 }
 elements.chilli_powder = {
     color: "#a32121",
