@@ -153,7 +153,7 @@ class MenuScreen {
 
     /** 
      * Sets close button visibility. When false the close button will not be added to the menu screen
-     * @param {boolean} show Visibility of the close button
+     * @param {boolean} show Visibility of the close g button
      */
     setShowCloseButton(show) {
         this.showCloseButton = show;

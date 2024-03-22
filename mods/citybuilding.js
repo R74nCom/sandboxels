@@ -1,3 +1,6 @@
+// created by sqec
+// coming soon: apartments, small houses
+
 function building_1_segment() {
     if (pixel.foundation = true && pixel.height < pixel.limit) {
         if (isEmpty(pixel.x+1,pixel.y-pixel.height) &&
@@ -24,6 +27,25 @@ function building_1_segment() {
         }
     }
 }
+function clearbase3x5() {
+    if (pixel.clearbase = false && pixel.height < pixel.limit) {
+        pixel.clearbase = true
+        deletePixel(pixel.x-1,pixel.y)
+        deletePixel(pixel.x+1,pixel.y)
+        deletePixel(pixel.x-2,pixel.y)
+        deletePixel(pixel.x+2,pixel.y)
+        deletePixel(pixel.x,pixel.y-1)
+        deletePixel(pixel.x-1,pixel.y-1)
+        deletePixel(pixel.x+1,pixel.y-1)
+        deletePixel(pixel.x-2,pixel.y-1)
+        deletePixel(pixel.x+2,pixel.y-1)
+        deletePixel(pixel.x,pixel.y-2)
+        deletePixel(pixel.x-1,pixel.y-2)
+        deletePixel(pixel.x+1,pixel.y-2)
+        deletePixel(pixel.x-2,pixel.y-2)
+        deletePixel(pixel.x+2,pixel.y-2)
+    }
+}
 function filldirt2x5() {
     var dirtPixelElem = pixelMap[pixel.x][pixel.y+1];
     if (!isEmpty(pixel.x,pixel.y+1) && !outOfBounds(pixel.x,pixel.y+1)) {
@@ -47,11 +69,21 @@ function filldirt2x5() {
     if (isEmpty(pixel.x-2,pixel.y+2)) {
         createPixel(dirtPixelElem,pixel.x-2,pixel.y+2);
     }
+    if (isEmpty(pixel.x+1,pixel.y+2)) {
+        createPixel(dirtPixelElem,pixel.x+2,pixel.y+2);
+    }
+    if (isEmpty(pixel.x-1,pixel.y+2)) {
+        createPixel(dirtPixelElem,pixel.x-2,pixel.y+2);
+    }
+    if (isEmpty(pixel.x,pixel.y+2)) {
+        createPixel(dirtPixelElem,pixel.x-2,pixel.y+2);
+    }
 }
 elements.building_1 = {
-    color: "#a78d38",
+    color: "#ffc800",
     tick: function(pixel) {
         if (!isEmpty(pixel.x,pixel.y+1)) {
+            clearbase3x5();
             if (isEmpty(pixel.x+1,pixel.y) &&
             isEmpty(pixel.x-1,pixel.y) &&
             isEmpty(pixel.x+2,pixel.y) &&
@@ -73,7 +105,7 @@ elements.building_1 = {
                 createPixel("concrete",pixel.x+2,pixel.y+1);
                 createPixel("concrete",pixel.x-2,pixel.y+1);
                 createPixel("wood",pixel.x,pixel.y+1);
-                pixel.limit = 10 + Math.floor(Math.random() * 5)*2;
+                pixel.limit = 5 + Math.floor(Math.random() * 25)*2;
                 createPixel("concrete",pixel.x+1,pixel.y);
                 createPixel("concrete",pixel.x-1,pixel.y);
                 createPixel("concrete",pixel.x+2,pixel.y);
@@ -93,81 +125,19 @@ elements.building_1 = {
         else if (pixel.foundation == true && pixel.height >= pixel.limit) {
             pixel.built = true;
         }
-        if (pixel.built == true) {
+        if (pixel.built == true || pixel.age > 100) {
             changePixel(pixel,"wood");
         }
+        pixel.age++
         doDefaults(pixel);
     },
     properties: {
         height:0,
         limit:0,
         foundation:false,
-        built:false
-    },
-    category: "citybuilding",
-    state: "solid",
-    density: 1500,
-    cooldown: defaultCooldown,
-    seed: true,
-    maxSize: 1,
-    excludeRandom: true,
-    behavior: behaviors.STURDYPOWDER,
-};
-elements.building_1_tall = {
-    color: "#d9c243",
-    tick: function(pixel) {
-        if (!isEmpty(pixel.x,pixel.y+1)) {
-            if (isEmpty(pixel.x+1,pixel.y) &&
-            isEmpty(pixel.x-1,pixel.y) &&
-            isEmpty(pixel.x+2,pixel.y) &&
-            isEmpty(pixel.x-2,pixel.y) &&
-            isEmpty(pixel.x+2,pixel.y-1) &&
-            isEmpty(pixel.x-2,pixel.y-1) &&
-            isEmpty(pixel.x+1,pixel.y-1) &&
-            isEmpty(pixel.x-1,pixel.y-1) &&
-            isEmpty(pixel.x,pixel.y-1) &&
-            isEmpty(pixel.x+2,pixel.y-2) &&
-            isEmpty(pixel.x-2,pixel.y-2) &&
-            isEmpty(pixel.x+1,pixel.y-2) &&
-            isEmpty(pixel.x-1,pixel.y-2) &&
-            isEmpty(pixel.x,pixel.y-2)) {
-                filldirt2x5();
-                movePixel(pixel,pixel.x,pixel.y-1);
-                createPixel("concrete",pixel.x+1,pixel.y+1);
-                createPixel("concrete",pixel.x-1,pixel.y+1);
-                createPixel("concrete",pixel.x+2,pixel.y+1);
-                createPixel("concrete",pixel.x-2,pixel.y+1);
-                createPixel("wood",pixel.x,pixel.y+1);
-                pixel.limit = 15 + Math.floor(Math.random() * 10)*2;
-                createPixel("concrete",pixel.x+1,pixel.y);
-                createPixel("concrete",pixel.x-1,pixel.y);
-                createPixel("concrete",pixel.x+2,pixel.y);
-                createPixel("concrete",pixel.x-2,pixel.y);
-                createPixel("concrete",pixel.x+1,pixel.y-1);
-                createPixel("concrete",pixel.x-1,pixel.y-1);
-                createPixel("concrete",pixel.x+2,pixel.y-1);
-                createPixel("concrete",pixel.x-2,pixel.y-1);
-                createPixel("concrete",pixel.x,pixel.y-1);
-                pixel.foundation = true;
-                pixel.height = pixel.height+2
-            }
-        }
-        if (pixel.foundation == true && pixel.height < pixel.limit) {
-            building_1_segment();
-        }
-        else if (pixel.foundation == true && pixel.height >= pixel.limit) {
-            pixel.built = true;
-        }
-        if (pixel.built == true) {
-            changePixel(pixel,"wood");
-        }
-        doDefaults(pixel);
-    },
-    properties: {
-        height:0,
-        limit:0,
-        foundation:false,
-        built:false
+        built:false,
+        clearbase:false,
+        age:0
     },
     category: "citybuilding",
     state: "solid",
@@ -203,7 +173,14 @@ elements.small_tree_1 = {
                 changePixel(pixel,"wood");
             }
         }
+        if (pixel.age > 50) {
+            changePixel(pixel,"wood");
+        }
+        pixel.age++
         doDefaults(pixel);
+    },
+    properties: {
+        age:0
     },
     category: "citybuilding",
     state: "solid",
