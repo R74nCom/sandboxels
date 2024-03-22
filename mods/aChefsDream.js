@@ -6109,10 +6109,6 @@ elements.vanilla_stem = {
 elements.vanilla_leaves = {
     color: "#5d9c48",
     reactions: {
-        "water": { elem2:"vanilla_tea", tempMin:80 },
-        "salt_water": { elem2:"vanilla_tea", tempMin:80 },
-        "sugar_water": { elem2:"vanilla_tea", tempMin:80 },
-        "seltzer": { elem2:"vanilla_tea", tempMin:80 },
         "stench": { elem2:null, chance:0.25 },
         "steam": { elem2:"fragrance", chance:0.1 },
         "flea": { elem2:null, chance:0.01 },
@@ -6439,3 +6435,4 @@ elements.sprinkle_bomb = {
     excludeRandom: true,
     cooldown: defaultCooldown
 }
+
