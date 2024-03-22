@@ -2,7 +2,7 @@
 Created by SquareScreamYT <@918475812884344852> and RealerRaddler <@914371295561535508>
 Thanks to Alice <@697799964985786450>, nousernamefound <@316383921346707468>, Adora the Transfem <@778753696804765696> and Fioushemastor <@738828785482203189> for helping :)
 
-v1.10.2
+v1.10.5
 
 you can support me at my youtube: https://youtube.com/@sqec
 
@@ -16,7 +16,6 @@ Upcoming Features:
 - pigs, ham and bacon
 - garlic
 - stainless steel
-- chili
 - pepper plants
 - hot chocolate
 - cows and beef
@@ -329,7 +328,16 @@ Changelog (v1.10.1)
 
 
 Changelog (v1.10.2)
-    - added chocolate chip, sprinkles and topping explosions
+    - added sprinkle explosions
+
+
+
+
+Changelog (v1.10.5)
+    - added chilli
+    - added chilli seed, stem and leaves
+    - added chilli powder
+    - added hot sauce
 
 
 
