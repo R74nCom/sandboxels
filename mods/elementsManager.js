@@ -257,7 +257,7 @@ if (enabledMods.includes("mods/betterMenuScreens.js")) {
 
     // ugly way of doing it but probably works
     const checkType = (key, value) => {
-        if (key == "behavior" && (typeof value == "function" || (value instanceof Array && value.filter(e => e instanceof Array && e.filter(s => typeof s == "string").length == e.length).length == value.length))) return true;
+        if (key == "behavior" && (typeof value == "function" || (value instanceof Array && value.filter(e => typeof e == "string").length == value.length))) return true;
         else if (key == "behavior") return false;
         if (["darkText", "hidden", "insulate", "noMix", "isFood", "forceAutoGen", "customColor", "ignoreAir", "excludeRandom", "burning", "flipX", "flipY", "flippableX", "flippableY"].includes(key) && typeof value != "boolean") return false;
         if (["name", "category", "desc", "alias", "seed", "baby", "state", "stateHigh", "stateHighName", "stateHighColor", "stateLow", "stateLowNmae", "stateLowColor"].includes(key) && typeof value != "string") return false;
