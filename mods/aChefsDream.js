@@ -6643,4 +6643,44 @@ elements.chilli = {
     burnInto: "dead_plant",
     state: "solid",
     density: 1050,
+    breakInto: "chilli_powder",
+}
+elements.chilli_powder = {
+    color: "#a32121",
+    reactions: {
+        "stench": { elem2:null, chance:0.25 },
+        "steam": { elem2:"fragrance", chance:0.1 },
+        "flea": { elem2:null, chance:0.01 },
+        "termite": { elem2:null, chance:0.01 },
+        "fly": { elem2:null, chance:0.01 },
+        "ant": { elem2:null, chance:0.01 },
+        "stink_bug": { elem2:null, chance:0.01 },
+	"sauce": {elem1:null, elem2:"hot_sauce", chance:2}
+    },
+    behavior: behaviors.POWDER,
+    tempHigh: 300,
+    stateHigh: ["fire","smoke","smoke","smoke","ash"],
+    burn:10,
+    burnTime:300,
+    burnInto: ["fire","smoke","smoke","smoke","smoke","smoke","smoke","fragrance"],
+    category:"food",
+    state: "solid",
+    density: 1400,
+    isFood: true,
+}
+elements.hot_sauce = {
+    color: "#a31414",
+    behavior: behaviors.LIQUID,
+    reactions: {
+        "stench": { elem2:null },
+    },
+    viscosity: 2600,
+    tempHigh: 260,
+    stateHigh: ["steam","salt","fragrance"],
+    tempLow: -2,
+    category:"food",
+    state: "liquid",
+    density: 1031.33,
+    stain: 0.01,
+    isFood: true
 }
