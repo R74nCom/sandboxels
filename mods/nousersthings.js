@@ -2344,3 +2344,27 @@ elements.scuffed_circle_brush = {
         createPixel(circleElem, thisx, thisy)
     }
 }
+elements.spacedust_cola = {
+    color: ["#090033", "#0a0027", "#0a001b", "#0b000f"],
+    behavior: elements.soda.behavior,
+    tempHigh: 104,
+    stateHigh: ["steam", "carbon_dioxide", "spacedust", "spacedust"],
+    category: "liquids",
+    state: "liquid",
+    reactions: {head: {elem1: null, chance: 0.02}},
+    density: elements.tungsten.density,
+}
+elements.spacedust = {
+    color: ["#090033", "#0a0027", "#0a001b", "#0b000f", "#090033", "#0a0027", "#0a001b", "#0b000f", "#090033", "#0a0027", "#0a001b", "#0b000f", "#090033", "#0a0027", "#0a001b", "#0b000f", "#090033", "#0a0027", "#0a001b", "#0b000f", "#090033", "#0a0027", "#0a001b", "#0b000f", "#ffffff"],
+    behavior: behaviors.POWDER,
+    category: "special",
+    state: "solid",
+    reactions: {
+        "acid": {elem1: null, elem2: ["hydrogen", "helium", "hydrogen", "helium", "hydrogen", "helium", "hydrogen", "hydrogen", "hydrogen", "hydrogen", "metal_scrap"], chance: 0.02},
+        "seltzer": {elem1: null, elem2: "spacedust_cola"},
+        "soda": {elem1: null, elem2: "spacedust_cola"},
+    },
+    density: elements.tungsten.density,
+}
+elements.acid.ignore.push("spacedust")
+elements.acid.ignore.push("spacedust_cola")
