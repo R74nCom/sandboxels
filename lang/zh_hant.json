@@ -1,6 +1,7 @@
 {
 "#lang.name": "繁體中文",
 "#lang.credit": "guinea_of_pig, Feeshmaster, squarescreamyt",
+"#lang.font": "fusion-pixel-12px-monospaced-zh_hant",
 "land":"地",
 "liquids":"液",
 "life":"生活",
