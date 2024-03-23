@@ -1,8 +1,31 @@
-/* TODO
-- [x] powder heater & coller
-- [x] block roomtemp
-- [x] no smoke from cold fire
-*/
+elements.roomtemper = {
+	color: "#29632f",
+	behavior: behaviors.WALL,
+	tick: function(pixel) {
+        /* from nouserthings.js <3 */
+		for (var i = 0; i < squareCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (!isEmpty(x,y, true)) {
+					if(pixelMap[x][y].temp < -230) {
+                    pixelMap[x][y].temp = (pixelMap[x][y].temp + 7)
+					} else if(pixelMap[x][y].temp > 270) {
+						pixelMap[x][y].temp = (pixelMap[x][y].temp - 7)
+					} else if (pixelMap[x][y].temp < 20) {
+						pixelMap[x][y].temp = (pixelMap[x][y].temp + 2)
+					} else if (pixelMap[x][y].temp > 20) {
+						pixelMap[x][y].temp = (pixelMap[x][y].temp - 2)
+					}
+                }
+            }
+	},
+	category:"machines",
+	state:"solid",
+	insulate: true,
+	noMix: true,
+	movable: false,
+};
 
 elements.powder_heater = {
     category: "machines",
@@ -48,36 +71,59 @@ elements.powder_freeze = {
     insulate: true,
 };
 
-elements.roomtemper = {
-	color: "#29632f",
-	behavior: behaviors.WALL,
-	tick: function(pixel) {
-		for (var i = 0; i < squareCoords.length; i++) {
-                var coord = squareCoords[i];
-                var x = pixel.x+coord[0];
-                var y = pixel.y+coord[1];
-                if (!isEmpty(x,y, true)) {
-					if(pixelMap[x][y].temp < -230) {
-                    pixelMap[x][y].temp = (pixelMap[x][y].temp + 7)
-					} else if(pixelMap[x][y].temp > 270) {
-						pixelMap[x][y].temp = (pixelMap[x][y].temp - 7)
-					} else if (pixelMap[x][y].temp < 20) {
-						pixelMap[x][y].temp = (pixelMap[x][y].temp + 2)
-					} else if (pixelMap[x][y].temp > 20) {
-						pixelMap[x][y].temp = (pixelMap[x][y].temp - 2)
-					}
-                }
-            }
-	},
-	category:"machines",
-	state:"solid",
-	insulate: true,
-	noMix: true,
-	movable: false,
-},
-
 elements.cold_fire.behavior = [
     "M1|M1|M1",
     "M2|DL%8|M2",
     "XX|M2|XX",
-]
+];
+
+/* TODO
+- [x] powder heater & cooler
+- [x] block roomtemp
+- [x] no smoke from cold fire
+- [x] gas heater, superheater, cooler, freezer
+*/
+
+elements.gas_heater = {
+    color: "#881111",
+    behavior: [
+        "M2|M1 AND HT:2|M2",
+        "M1 AND HT:2|XX|M1 AND HT:2",
+        "M2|M1 AND HT:2 | M2",
+    ],
+    category: "machines",
+    insulate: true,
+};
+
+elements.gas_superheater = {
+    color: "#dd1111",
+    behavior: [
+        "M2|M1 AND HT:10|M2",
+        "M1 AND HT:10|XX|M1 AND HT:10",
+        "M2|M1 AND HT:10|M2",
+    ],
+    category: "machines",
+    insulate: true,
+};
+
+elements.gas_cooler = {
+    color: "#111188",
+    behavior: [
+        "M2|M1 AND CO:2|M2",
+        "M1 AND CO:2|XX|M1 AND CO:2",
+        "M2|M1 AND CO:2|M2",
+    ],
+    category: "machines",
+    insulate: true,
+};
+
+elements.gas_freezer = {
+    color: "#1111dd",
+    behavior: [
+        "M2|M1 AND CO:10|M2",
+        "M1 AND CO:10|XX|M1 AND CO:10",
+        "M2|M1 AND CO:10|M2",
+    ],
+    category: "machines",
+    insulate: true,
+};
