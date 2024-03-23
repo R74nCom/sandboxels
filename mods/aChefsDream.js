@@ -6695,4 +6695,4 @@ elements.hot_sauce = {
     stain: 0.01,
     isFood: true
 }
-elements.head.reactions.hot_sauce = {elem2:["fire",null,null,null,null,null,null,null,null,null], func:behaviors.FEEDPIXEL, chance:3}
+elements.head.reactions.hot_sauce = {elem2:["smoke","fire",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null], chance:3}
