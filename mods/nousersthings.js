@@ -2370,13 +2370,13 @@ elements.acid.ignore.push("spacedust")
 elements.acid.ignore.push("spacedust_cola")
 elements.sun.breakInto = "spacedust"
 var gridElem = 0
-elements.grid_maker = {
+elements.grid_brush = {
     color: elements.lattice.color,
     behavior: behaviors.WALL,
     category: "special",
     movable: false,
     onSelect: function() {
-        var gridans = prompt("Please input the desired element of this void. It will not work if you do multiple void types while paused.",(gridElem||undefined));
+        var gridans = prompt("Please input the desired element of this grid brush",(gridElem||undefined));
         if (!gridans) { return }
 		gridElem = mostSimilarElement(gridans);
     },
