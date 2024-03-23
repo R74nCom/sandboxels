@@ -1,6 +1,7 @@
 {
 "#lang.name": "简体中文",
 "#lang.credit": "squarescreamyt, pixelegend4",
+"#lang.font": "fusion-pixel-12px-monospaced-zh_hans",
 "land":"地",
 "liquids":"液体",
 "life":"生活",
