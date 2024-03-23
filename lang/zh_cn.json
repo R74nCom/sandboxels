@@ -1,6 +1,6 @@
 {
 "#lang.name": "简体中文",
-"#lang.credit": "squarescreamyt",
+"#lang.credit": "squarescreamyt, pixelegend4",
 "land":"地",
 "liquids":"液体",
 "life":"生活",
@@ -527,17 +527,17 @@
 "nut_oil": "花生油",
 "grease": "",
 "fat": "肥",
-"potassium": "",
-"molten_potassium": "",
-"magnesium": "",
-"molten_magnesium": "",
+"potassium": "钾",
+"molten_potassium": "熔融钾",
+"magnesium": "镁",
+"molten_magnesium": "熔融镁",
 "sandstorm": "",
-"caustic_potash": "",
+"caustic_potash": "氢氧化钾",
 "antibomb": "",
 "tornado": "龙卷风",
 "earthquake": "地震",
 "tsunami": "海啸",
 "blaster": "",
 "propane_ice": "",
-"molten_caustic_potash": ""
+"molten_caustic_potash": "熔融氢氧化钾"
 }
