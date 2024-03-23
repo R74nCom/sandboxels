@@ -528,6 +528,7 @@ elements.e_pipe = {
     movable: false,
     canContain: true,
 	conduct: 1,
+    insulate: true,
 },
 elements.destroyable_e_pipe = {
     color: "#414c4f",
@@ -771,6 +772,7 @@ elements.channel_pipe = {
     category: "machines",
     movable: false,
     canContain: true,
+    insulate: true,
 },
 elements.destroyable_channel_pipe = {
     color: "#414c4f",
@@ -1010,6 +1012,7 @@ elements.bridge_pipe = {
     category: "machines",
     movable: false,
     canContain: true,
+    insulate: true,
 },
 elements.pipe.tick = function(pixel) {
         if (!pixel.stage && pixelTicks-pixel.start > 60) {
@@ -1118,6 +1121,7 @@ elements.pipe.tick = function(pixel) {
         }
         doDefaults(pixel);
     },
+    elements.pipe.insulate = true,
 	filterTypeVar = 0;
 elements.filter = {
     color: "#599fc2",
@@ -1196,7 +1200,7 @@ elements.filter = {
                             break;
                         }
                     }
-                    else if (!pixel.con && elements[newPixel.element].movable && (newPixel.element == pixel.filterType) ) { //suck up pixel
+                    else if (!pixel.con && (newPixel.element == pixel.filterType) ) { //suck up pixel
                         pixel.con = newPixel;
                         deletePixel(newPixel.x,newPixel.y);
                         pixel.con.x = pixel.x;
@@ -1240,6 +1244,7 @@ elements.filter = {
     movable: false,
     canContain: true,
 	noMix: true,
+    insulate: true,
 },
 elements.heat_test = {
 	onSelect: function() {
@@ -1498,6 +1503,7 @@ elements.mixer = {
                 }
 	},
 	movable: false,
+    noMix: true,
 },
 elements.invisiblesupport = {
 	color: "#000000",
@@ -1739,6 +1745,7 @@ elements.powder_filter = {
     movable: false,
     canContain: true,
 	noMix: true,
+    insulate: true,
 }
 elements.liquid_filter = {
     color: "#599fc2",
@@ -1853,6 +1860,7 @@ elements.liquid_filter = {
     movable: false,
     canContain: true,
 	noMix: true,
+    insulate: true,
 }
 elements.gas_filter = {
     color: "#599fc2",
@@ -1967,6 +1975,7 @@ elements.gas_filter = {
     movable: false,
     canContain: true,
 	noMix: true,
+    insulate: true,
 }
 function weightedAverage(num1, num2, weight){
     return ((weight * num1)+((1-weight)*num2))
@@ -2010,7 +2019,7 @@ elements.element_filler = {
     state: "solid",
     movable: "false",
     onSelect: function() {
-        var answer6 = prompt("Please input the desired element of this filler. It will not work if you do multiple filter types while paused.",(elemfillerVar||undefined));
+        var answer6 = prompt("Please input the desired element of this filler. It will not work if you do multiple filler types while paused.",(elemfillerVar||undefined));
         if (!answer6) { return }
 		elemfillerVar = mostSimilarElement(answer6);
     },
@@ -2043,7 +2052,7 @@ elements.outliner = {
     category: elements.filler.category,
     excludeRandom: true,
     onSelect: function() {
-        var answerot = prompt("Please input the desired element of this outliner. It will not work if you do multiple filter types while paused.",(outlinerVar||undefined));
+        var answerot = prompt("Please input the desired element of this outliner. It will not work if you do multiple outliner types while paused.",(outlinerVar||undefined));
         if (!answerot) { return }
 		outlinerVar = mostSimilarElement(answerot);
     },
@@ -2115,6 +2124,17 @@ textures.gold = [
     "dddbnnnddddDDDbnd",
     "DDDbDDDDDDDDDDbDD",
     "BBBBBBBBBBBBBBBBB"
+]
+textures.diamond = [
+    "llcccLbLl",
+    "lcccccbbC",
+    "CScccBbCC",
+    "SSScBBBLC",
+    "SSSSLBbLS",
+    "SSSCLbbbL",
+    "BSCCCnbBL",
+    "BBBCnnBBB",
+    "lBBcLnLbL"
 ]
 elements.transparency = {
     color: ["#d4d4d4", "#ffffff"],
@@ -2207,3 +2227,145 @@ elements.textured_gold = {
         }
     }
 }
+elements.solid_diamond = {
+    color: elements.diamond.color,
+    category: "solids",
+    colorPattern: textures.diamond,
+    colorKey: {
+        "c":"#36BDF3",
+        "C": "#7DD1F2",
+        "B": "#4B94ED",
+        "b": "#97BEED",
+        "L":"#C2D5ED",
+        "n": "#7BAEED",
+        "l": "#A2DBF2",
+        "S": "#BDF8FF"
+    },
+    tempHigh: elements.diamond.tempHigh,
+    stateHigh: elements.diamond.stateHigh,
+    state: "solid",
+    denisty: elements.diamond.density,
+    hardness: elements.diamond.hardness
+}
+elements.textured_rose_gold = {
+    color: ["#FF5991", "#E4386F", "#7F1037", "#FFCCCD", "#671133"],
+    colorPattern: textures.gold,
+    colorKey: {
+        "h": "#FF5991",
+        "H": "#FFCCCD",
+        "n": "#E4386F",
+        "B": "#511230",
+        "b": "#671133",
+        "d": "#BF1850",
+        "D": "#7F1037"
+    },
+    behavior: behaviors.WALL,
+    category: "solids",
+    state: "solid",
+    tick: function(pixel){
+        if (pixelTicks - pixel.start == 1){
+        pixel.element = "rose_gold"
+        }
+    }
+}
+elements.insulating_filler = {
+    color: elements.filler.color,
+    behavior: behaviors.FILL,
+    category: elements.filler.category,
+    state: elements.filler.state,
+    insulate: true
+}
+selvoid = 0;
+elements.selective_void = {
+    category: "special",
+    color: elements.void.color,
+    excludeRandom: true,
+    state: "solid",
+    movable: "false",
+    onSelect: function() {
+        var selvoidans = prompt("Please input the desired element of this void. It will not work if you do multiple void types while paused.",(selvoid||undefined));
+        if (!selvoidans) { return }
+		selvoid = mostSimilarElement(selvoidans);
+    },
+    tick: function(pixel){
+        if(!pixel.changeElem){
+            pixel.changeElem = selvoid;
+        }
+		for (var i = 0; i < squareCoords.length; i++) {
+            var coord = squareCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (!isEmpty(x,y, true)) {
+				var otherPixel = pixelMap[x][y]
+                if (otherPixel.element == pixel.changeElem)
+                deletePixel(x, y)
+			}
+        }
+    }
+} 
+let radiusVar = 0
+let circleElem = 0
+let circleRep = false
+elements.scuffed_circle_brush = {
+    category: "special",
+    color: elements.drag.color,
+    excludeRandom: true,
+    state: "solid",
+    movable: false,
+    maxSize: 1,
+    onSelect: function(){
+        var answerR = prompt("Radius of the brush. Things above 10 may be laggy.",(radiusVar||undefined));
+        if (!answerR) { return }
+		radiusVar = answerR;
+		var answerE = prompt("Element of the brush.",(circleElem||undefined));
+        if (!answerE) { return }
+		circleElem = answerE;
+        var answerH = prompt("Replace? True or false. May be laggy.",(circleRep||undefined));
+        if (!answerH) { answerH = false }
+		circleRep = answerH;
+    },
+    tick: function(pixel){
+        var circlec = circleCoords(pixel.x, pixel.y, radiusVar)
+        for (var i = 0; i < circlec.length; i++){
+            var coord = circlec[i]
+            var x = coord.x
+            var y = coord.y
+            if (isEmpty(x, y)){
+                createPixel(circleElem, x, y)
+            }
+            else if (circleRep && !outOfBounds(x, y)){
+                deletePixel(x, y)
+                createPixel(circleElem, x, y)
+            }
+        }
+        var thisx = pixel.x
+        var thisy = pixel.y
+        deletePixel(thisx, thisy)
+        createPixel(circleElem, thisx, thisy)
+    }
+}
+elements.spacedust_cola = {
+    color: ["#090033", "#0a0027", "#0a001b", "#0b000f"],
+    behavior: elements.soda.behavior,
+    tempHigh: 104,
+    stateHigh: ["steam", "carbon_dioxide", "spacedust", "spacedust"],
+    category: "liquids",
+    state: "liquid",
+    reactions: {head: {elem1: null, chance: 0.02}},
+    density: elements.tungsten.density,
+}
+elements.spacedust = {
+    color: ["#090033", "#0a0027", "#0a001b", "#0b000f", "#090033", "#0a0027", "#0a001b", "#0b000f", "#090033", "#0a0027", "#0a001b", "#0b000f", "#090033", "#0a0027", "#0a001b", "#0b000f", "#090033", "#0a0027", "#0a001b", "#0b000f", "#090033", "#0a0027", "#0a001b", "#0b000f", "#ffffff"],
+    behavior: behaviors.POWDER,
+    category: "special",
+    state: "solid",
+    reactions: {
+        "acid": {elem1: null, elem2: ["hydrogen", "helium", "hydrogen", "helium", "hydrogen", "helium", "hydrogen", "hydrogen", "hydrogen", "hydrogen", "metal_scrap"], chance: 0.02},
+        "seltzer": {elem1: null, elem2: "spacedust_cola"},
+        "soda": {elem1: null, elem2: "spacedust_cola"},
+    },
+    density: elements.tungsten.density,
+}
+elements.acid.ignore.push("spacedust")
+elements.acid.ignore.push("spacedust_cola")
+elements.sun.breakInto = "spacedust"

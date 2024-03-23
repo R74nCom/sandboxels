@@ -1,9 +1,10 @@
-//This mod was made by Adora the transfem, https://discord.com/users/778753696804765696 on discord and https://www.tiktok.com/@alextheagenenby?_t=8hoCVI3NRhu&_r=1 on tiktok.
-let fruits = ["plum", "peach", "pear", "orange", "apple", "cherry", "mango"];
+//This mod was made by Adora the transfem, https://discord.com/users/778753696804765696 on discord and https://www.tiktok.com/@alextheagenenby?_t=8hoCVI3NRhu&_r=1 on tiktok. Current version: plans.js v1.1.0
+let fruits = ["plum", "peach", "pear", "orange", "apple", "cherry", "mango", "pineapple", "sugarcane"];
 let vineExclude = ["tomato", "grape", "fruit_vine", "kiwi"];
-let vines = ['tomato', 'grape', 'kiwi'];
+let vines = ['tomato', 'grape', 'kiwi', 'watermelon', 'strawberry', 'cucumber'];
 let bushes = ["blackberry", "blueberry", "raspberry"];
 let allFruits = fruits.concat(vines, bushes)
+let rosaceae = ["plum", "peach", "pear", "apple", "cherry", "blackberry", "raspberry", "strawberry"]
 function interpolateRgb(rgb1, rgb2, ratio) {
   const interpolatedRgb = {
     r: Math.round(rgb1.r + (rgb2.r - rgb1.r) * ratio),
@@ -89,7 +90,7 @@ elements.fruit_leaves = {
         let y = pixel.y+adjacentCoords[i][1];
         if(isEmpty(x, y) || outOfBounds(x, y)) { continue; }
         let pixel2 = pixelMap[x][y];
-        if(pixel2.element == "fruit_branch" || pixel2.element == "fruit_leaves" || pixel2.element == "wood" || (elements[pixel2.element].properties && elements[pixel2.element].properties.type == "fruit")){
+        if(pixel2.element == "fruit_branch" || pixel2.element == "fruit_leaves" || pixel2.element == "wood" || (elements[pixel2.element].properties && elements[pixel2.element].properties.type == "fruit") && pixel2.fruit != "pineapple"){
             if(pixel.fruit && !pixel2.fruit){
               pixel2.fruit = pixel.fruit;
             } else if (!pixel.fruit && pixel2.fruit){
@@ -110,6 +111,24 @@ elements.fruit_leaves = {
           }
         }
       }
+      if(pixel.fruit == "pineapple" && isEmpty(pixel.x, pixel.y-1) && !outOfBounds(pixel.x, pixel.y-1) && pixel.age < 300){
+        pixel.blooming = false;
+        pixel.color = elements.plant.color;
+        createPixel("unripe_fruit", pixel.x, pixel.y-1);
+        if(isEmpty(pixel.x, pixel.y-2)){
+          createPixel("unripe_fruit", pixel.x, pixel.y-2);
+        }
+        if(isEmpty(pixel.x, pixel.y-3)){
+          createPixel("fruit_leaves", pixel.x, pixel.y-3);
+        }
+        if(isEmpty(pixel.x-1, pixel.y-4)){
+          createPixel("fruit_leaves", pixel.x-1, pixel.y-4);
+        }
+        if(isEmpty(pixel.x+1, pixel.y-4)){
+          createPixel("fruit_leaves", pixel.x+1, pixel.y-4);
+        }
+    }
+      pixel.age++;
   }
 }
 
@@ -1066,6 +1085,8 @@ elements.mango_seed = {
 elements.seed_maker = {
   category: "machines",
   behavior: behaviors.WALL,
+  noMix: true,
+  movable: false,
   tick: function(pixel){
     for(var i = 0; i < adjacentCoords.length; i++){
       let x = pixel.x + adjacentCoords[i][0];
@@ -1074,8 +1095,478 @@ elements.seed_maker = {
         let pixel2 = pixelMap[x][y];
         if(allFruits.includes(pixel2.element)){
           changePixel(pixel2, `${pixel2.element}_seed`)
+        } else if (pixel2.element == "cocoa_pod"){
+          changePixel(pixel2, "cocoa_bean");
         }
       }
     }
   }
+}
+function xyInRange(x, y, range){
+  let i = 0;
+  while (i < range.length) {
+    if (x === range[i][0] && y === range[i][1]) {
+      i++;
+      return true;
+    } else {
+        i++;
+      }
+
+    }
+    return false;
+
+}
+elements.watermelon = {
+  behavior: behaviors.WALL,
+  color: "#007706",
+  category: "food",
+  breakInto: "juice",
+  breakIntoColor: "#C1674C",
+  isFood: true,
+  properties: {
+    type: "fruit",
+    age: 0,
+  },
+  tick: function(pixel){
+    if(pixel.grow && pixel.age > 400){
+      pixel.grow = false;
+    }
+    if(pixel.grow && pixel.range){
+      for(var i = 0; i < adjacentCoords.length; i++){
+        let x = pixel.x + adjacentCoords[i][0];
+        let y = pixel.y + adjacentCoords[i][1];
+        if(isEmpty(x,y) && xyInRange(x,y,pixel.range) && !outOfBounds(x,y)){
+          if(Math.floor(Math.random() * 300) == 1){
+            createPixel("watermelon", x, y);
+          }
+        }
+        
+      }
+      for(var i = 0; i < adjacentCoords.length; i++){
+        let x = pixel.x + adjacentCoords[i][0];
+        let y = pixel.y + adjacentCoords[i][1];
+        if(!isEmpty(x,y) && !outOfBounds(x,y)){
+          let pixel2 = pixelMap[x][y];
+          if(["wood","low_fruit_vine","watermelon"].includes(pixel.element)){
+            if(!pixel2.range || !pixel2.grow){
+              if(pixel.range && !pixel2.range){
+                pixel2.range = pixel.range;
+              }
+              if(pixel.grow && !pixel2.grow){
+                pixel2.grow = pixel.grow;
+              }  
+            }
+            if(pixel2.range || pixel2.grow){
+              if(!pixel.range && pixel2.range){
+                pixel.range = pixel2.range;
+              }
+              if(!pixel.grow && pixel2.grow){
+                pixel.grow = pixel2.grow;
+              }
+            }
+          }
+        }
+      }
+    }
+    pixel.age++;
+  }
+}
+let sizes = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 7, 7, 7, 9]
+elements.low_fruit_vine = {
+  color: elements.fruit_vine.color,
+  behavior: behaviors.WALL,
+  tick: function(pixel){
+    if(pixel.fruiting && pixel.fruit == "watermelon"){
+      pixel.fruiting = false;
+      let size = pixel.size;
+      let range = mouseRange(pixel.x, pixel.y + Math.floor(size / 2 + 1), size)
+      if(isEmpty(pixel.x, pixel.y + 1) && !outOfBounds(pixel.x, pixel.y + 1)){
+        createPixel("watermelon", pixel.x, pixel.y + 1);
+        let pixel2 = pixelMap[pixel.x][pixel.y + 1];
+        pixel2.range = range;
+        pixel2.grow = true;
+      }
+    } else {
+      if(isEmpty(pixel.x, pixel.y - 1) && !outOfBounds(pixel.x, pixel.y - 1) && Math.floor(Math.random() * 300) == 1 && pixel.fruit && ![undefined, "watermelon"].includes(pixel.fruit)){
+        createPixel(pixel.fruit, pixel.x, pixel.y - 1);
+      }
+    }
+    if(Math.floor(Math.random() * 100) == 1 && !["watermelon", undefined].includes(pixel.fruit)){
+      eval((Math.floor(Math.random() * 2) == 1) ? `
+      if(isEmpty(pixel.x + 1, pixel.y)){
+        createPixel("low_fruit_vine", pixel.x + 1, pixel.y);
+        pixelMap[pixel.x + 1][pixel.y].fruit = pixel.fruit;
+      }`
+       : `
+       if(isEmpty(pixel.x - 1, pixel.y)){
+        createPixel("low_fruit_vine", pixel.x - 1, pixel.y);
+        pixelMap[pixel.x - 1][pixel.y].fruit = pixel.fruit;
+        }`
+        )
+    }
+  }
+}
+let sizeObj = {
+  size3: [
+    [0,1],
+    [0,2],
+    [1,3],
+    [2,3]
+  ],
+  size5:[
+    [0,1],
+    [0,2],
+    [0,3],
+    [0,4],
+    [1,5],
+    [2,5],
+    [3,5],
+  ],
+  size7: [
+    [0,1],
+    [0,2],
+    [0,3],
+    [0,4],
+    [0,5],
+    [0,6],
+    [1,7],
+    [2,7],
+    [3,7],
+    [4,7],
+  ],
+  size9: [
+    [0,1],
+    [0,2],
+    [0,3],
+    [0,4],
+    [0,5],
+    [0,6],
+    [0,7],
+    [0,8],
+    [1,9],
+    [2,9],
+    [3,9],
+    [4,9],
+    [5,9],
+  ]
+}
+elements.watermelon_seed = {
+  color: "#231A00",
+  category: "life",
+  behavior: behaviors.STURDYPOWDER,
+  tick: function(pixel){
+    if(pixel.start == pixelTicks - 10){
+      pixel.size = sizes[Math.floor(Math.random() * sizes.length)];
+      pixel.direction = Math.floor(Math.random() * 2)
+      pixel.grow = true;
+    }
+    if(pixel.grow && !isEmpty(pixel.x,pixel.y+1) && !outOfBounds(pixel.x,pixel.y+1) && pixelMap[pixel.x][pixel.y + 1].element == "dirt" && pixel.age > 100){
+      pixel.fruit = "watermelon";
+      let sizeList = sizeObj[`size${pixel.size}`];
+      for(var i = 0; i < sizeList.length; i++){
+        let x = (pixel.direction == 1) ? pixel.x - sizeList[i][0] : pixel.x + sizeList[i][0];
+        let y = pixel.y - sizeList[i][1];
+        if(isEmpty(x, y) && !outOfBounds(x, y)){
+          createPixel("low_fruit_vine", x, y);
+          if(i == sizeList.length - 1){
+            pixelMap[x][y].fruiting = true;
+            pixelMap[x][y].size = pixel.size;
+            pixelMap[x][y].fruit = "watermelon";
+            changePixel(pixel,"low_fruit_vine");
+          }
+        }
+      }
+    }
+    pixel.age++;
+  },
+  properties: {
+    age: 0,
+  },
+}
+elements.strawberry = {
+  behavior: behaviors.POWDER,
+  color: "#e5080a",
+  category: "food",
+  breakInto: "juice",
+  breakIntoColor: "#f9c0af",
+  isFood: true,
+  properties: {
+    type: "fruit",
+    age: 0,
+  },
+}
+elements.strawberry_seed = {
+  color: "#ffa371",
+  behavior: behaviors.STURDYPOWDER,
+  category: "life",
+  properties: {
+    age: 0,
+  },
+  tick: function(pixel){
+    if(pixel.age > 40){
+      changePixel(pixel, "low_fruit_vine");
+      pixel.fruit = "strawberry";
+    }
+     pixel.age += 1;
+  }
+}
+elements.cucumber = {
+  behavior: behaviors.POWDER,
+  color: "#285a1b",
+  category: "food",
+  breakInto: "juice",
+  breakIntoColor: "#80b450",
+  isFood: true,
+  properties: {
+    type: "fruit",
+    age: 0,
+  },
+}
+let ages = {
+  pineapple: 140,
+}
+elements.cucumber_seed = {
+  color: "#e9f5b5",
+  behavior: behaviors.STURDYPOWDER,
+  category: "life",
+  properties: {
+    age: 0,
+  },
+  tick: function(pixel){
+    if(pixel.age > 40){
+      changePixel(pixel, "low_fruit_vine");
+      pixel.fruit = "cucumber";
+    }
+     pixel.age += 1;
+  }
+}
+elements.unripe_fruit = {
+  color: "#9eba32",
+  behavior: behaviors.WALL,
+  category: "life",
+  properties: {
+    age: 0,
+    fruit: "pineapple",
+  },
+  tick: function(pixel){
+    if(pixel.age >= ages[pixel.fruit] && Math.floor(Math.random() * 100) == 1){
+      changePixel(pixel, pixel.fruit);
+    }
+    pixel.age++;
+  },
+  breakInto: ["poison", "juice", "cyanide"],
+  breakIntoColor: "#9eba32",
+}
+elements.pineapple = {
+  behavior: [["XX", "ST:fruit_leaves", "XX"],["ST:fruit_leaves", "XX", "ST:fruit_leaves"],["M2", "ST:fruit_leaves AND M1", "M2"]],
+  color: ["#ffcc56", "#e69f05", "#ffc061", "#fad32b"],
+  category: "food",
+  breakInto: "juice",
+  breakIntoColor: "#ffd905",
+  isFood: true,
+  properties: {
+    type: "fruit",
+    age: 0,
+  },
+}
+elements.pineapple_seed = {
+  color: "#7b2700",
+  behavior: behaviors.STURDYPOWDER,
+  category: "life",
+  properties: {
+    age: 0,
+  },
+  tick: function(pixel){
+    if(pixel.age > 40){
+      changePixel(pixel, "fruit_leaves");
+      pixel.fruit = "pineapple";
+    }
+     pixel.age += 1;
+  }
+}
+elements.cocoa_pod = {
+  behavior: [["XX", "ST:fruit_leaves AND ST:fruit_branch", "XX"],["ST:fruit_leaves AND ST:fruit_branch", "XX", "ST:fruit_leaves AND ST:fruit_branch"],["M2", "ST:fruit_leaves AND ST:fruit_branch AND M1", "M2"]],
+  color: "#9e5648",
+  category: "food",
+  breakInto: ["cocoa_butter", "cocoa_bean"],
+  isFood: true,
+  properties: {
+    fruit: "cocoa_pod",
+    type: "fruit",
+  }
+}
+elements.cocoa_bean = {
+  behavior: behaviors.POWDER,
+  color: "#ebaf7b",
+  category: "food",
+  isFood: true,
+  properties: {
+    fruit: "cocoa_pod",
+    type: "fruit",
+    age: 0,
+  },
+  tempHigh: 122,
+  stateHigh: "roasted_cocoa_bean",
+  tick: function(pixel) {
+      if (isEmpty(pixel.x,pixel.y+1)) {
+          movePixel(pixel,pixel.x,pixel.y+1);
+      }
+      else {
+          if (Math.random() < 0.02 && pixel.age > 650 && pixel.temp < 120) {
+              if (!outOfBounds(pixel.x,pixel.y+1)) {
+                  var dirtPixel = pixelMap[pixel.x][pixel.y+1];
+                  if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
+                      changePixel(dirtPixel,"root");
+                  }
+              }
+              if (isEmpty(pixel.x,pixel.y-1)) {
+                  movePixel(pixel,pixel.x,pixel.y-1);
+                  createPixel(Math.random() > 0.5 ? "wood" : "fruit_branch",pixel.x,pixel.y+1);
+                  if (pixelMap[pixel.x][pixel.y+1].element == "fruit_branch" || pixelMap[pixel.x][pixel.y+1].element == "fruit_leaves"){
+                    pixelMap[pixel.x][pixel.y+1].fruit = "cocoa_pod";
+                  }
+              }
+          }
+          else if (pixel.age > 1650) {
+              changePixel(pixel,"wood");
+          }
+          pixel.age++;
+      }
+      doDefaults(pixel);
+  },
+}
+
+elements.cocoa_butter = {
+  behavior: behaviors.STURDYPOWDER,
+  color: "#ddc996",
+  category: "food",
+  isFood: true,
+  tempHigh: 30,
+  stateHigh: "melted_cocoa_butter",
+}
+elements.melted_cocoa_butter = {
+  behavior: behaviors.LIQUID,
+  color: "#c78b06",
+  category: "states",
+  isFood: true,
+  viscosity: 2000,
+  tempLow: 30,
+  stateLow: "cocoa_butter",
+  temp: 30,
+  reactions: {
+    sugar: { elem1: "melted_white_chocolate", elem2: "melted_white_chocolate" }
+  }
+}
+elements.roasted_cocoa_bean = {
+  behavior: behaviors.POWDER,
+  color: "#6b3b24",
+  category: "food",
+  isFood: true,
+  breakInto: "cocoa_powder",
+}
+elements.cocoa_powder = {
+  behavior: behaviors.POWDER,
+  color: "#451f16",
+  category: "food",
+  isFood: true,
+  reactions: {
+    melted_cocoa_butter: { elem1: "chocolate", elem2: "chocolate" }
+  }
+}
+elements.extractor = {
+  category: "machines",
+  noMix: true,
+  movable: false,
+  behavior: behaviors.WALL,
+  tick: function(pixel){
+    for(var i = 0; i < adjacentCoords.length; i++){
+      let x = pixel.x + adjacentCoords[i][0];
+      let y = pixel.y + adjacentCoords[i][1]
+      if(!isEmpty(x,y) && !outOfBounds(x,y)){
+        let pixel2 = pixelMap[x][y];
+        if (pixel2.element == "cocoa_pod"){
+          changePixel(pixel2, "cocoa_butter");
+        } else if (pixel2.element == "sugarcane"){
+          changePixel(pixel2, "sugar");
+        }
+      }
+    }
+  }
+}
+elements.white_chocolate = {
+      "color": "#f4e6cb",
+      "behavior": [
+          [
+              "XX",
+              "XX",
+              "XX"
+          ],
+          [
+              "XX",
+              "XX",
+              "XX"
+          ],
+          [
+              "XX",
+              "M1",
+              "XX"
+          ]
+      ],
+      "tempHigh": 31,
+      "stateHigh": "melted_white_chocolate",
+      "category": "food",
+      "state": "solid",
+      "density": 1325,
+      "isFood": true,
+      "movable": true
+  }
+elements.melted_white_chocolate = {
+  behavior: behaviors.LIQUID,
+      "color": "#f2d184",
+      "tempLow": 0,
+      "stateLow": "white_chocolate",
+      "tempHigh": 99,
+      "stateHigh": [
+          "steam",
+          "sugar"
+      ],
+      "category": "states",
+      "viscosity": 40,
+      "state": "liquid",
+      "density": 1325,
+      "hidden": true,
+      "stain": 0.05,
+      "isFood": true,
+      "movable": true
+  }
+elements.sugarcane_seed = {
+  color: "#c4ae7d",
+  behavior: behaviors.STURDYPOWDER,
+  category: "life",
+  properties: {
+    age: 0,
+  },
+  tick: function(pixel){
+    if(isEmpty(pixel.x, pixel.y-1) && !outOfBounds(pixel.x, pixel.y-1) && Math.floor(Math.random() * 100) == 1 && pixel.age > 40){
+      movePixel(pixel,pixel.x,pixel.y-1);
+      createPixel("sugarcane",pixel.x,pixel.y+1);
+    } else if (!isEmpty(pixel.x, pixel.y-1) && !outOfBounds(pixel.x, pixel.y-1) && pixelMap[pixel.x][pixel.y-1].element == "sugarcane_seed"){
+      deletePixel(pixel.x, pixel.y-1);
+    }
+    if(!pixel.age){
+      pixel.age = 1;
+    } else {
+      pixel.age++;
+    }
+    if(pixel.age == 550){
+      changePixel(pixel, "sugarcane")
+    }
+  }
+}
+elements.sugarcane = {
+  color: "#76881c",
+  breakInto: ["sugar_water", "dead_plant", "dead_plant", "dead_plant"],
+  isFood: true,
+  behavior: behaviors.WALL,
+  category: "food",
 }

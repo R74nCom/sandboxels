@@ -6,16 +6,19 @@ const settingType = {
     SELECT: [4, null]
 }
 class Setting {
-    constructor (name, storageName, type, disabled = false, defaultValue = null) {
+    constructor (name, storageName, type, disabled = false, defaultValue = null, description = "", customValidator = () => true) {
         this.tabName = null;
         this.name = name;
         this.storageName = storageName;
         this.type = type[0];
         this.disabled = disabled;
         this.defaultValue = defaultValue ?? type[1];
+        this.description = description;
+        this.validate = customValidator;
     }
 
     set(value) {
+        if (!this.validate(value)) return false;
         this.value = value;
         const settings = JSON.parse(localStorage.getItem(`${this.tabName}/settings`)) ?? {};
         settings[this.name] = value;
@@ -61,7 +64,7 @@ class Setting {
         const id = "betterSettings/" + this.modName + "/" + this.storageName;
         const span = document.createElement("span");
         span.className = "setting-span";
-        span.title = 'Default: "' + this.defaultValue + '"' + (this.disabled ? ". This setting is disabled." : "");
+        span.title = 'Default: "' + this.defaultValue + '"' + (this.disabled ? ". This setting is disabled" : "") + (this.description ? `. ${this.description}` : "");
         span.innerText = this.name + " ";
         const element = document.createElement("input");
         switch (this.type) {
@@ -162,12 +165,14 @@ class SettingsTab {
         if (this.categories.has(category)) this.categories.get(category).push(setting);
         else this.categories.set(category, [setting]);
         this.registry.set(setting.storageName, setting);
+        return this;
     }
 
     registerSettings(category = "General", ...settings) {
         for (const setting of settings) {
             this.registerSetting(setting, category);
         }
+        return this;
     }
 
     set(name, value) {

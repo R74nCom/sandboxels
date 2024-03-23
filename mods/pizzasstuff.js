@@ -1,5 +1,5 @@
 elements.freeze_ray = {
-	color: ["#9ae4f5","#84d6e8"],
+	color: ["#8cf9ff","#5c59ff"],
     tick: function(pixel) {
         var x = pixel.x;
         for (var y = pixel.y; y < height; y++) {
@@ -9,7 +9,7 @@ elements.freeze_ray = {
             if (isEmpty(x, y)) {
                 if (Math.random() > 0.05) { continue }
                 createPixel("flash", x, y);
-                pixelMap[x][y].color = "#aedbe6";
+                pixelMap[x][y].color = "#96b6ff";
                 pixelMap[x][y].temp = -257;
             }
             else {
@@ -25,6 +25,38 @@ elements.freeze_ray = {
     temp: -257,
     category: "energy",
     state: "gas",
+    excludeRandom: true,
+    noMix: true
+};
+
+elements.devil_ray = {
+	color: ["#ba0000","#8f0000"],
+    tick: function(pixel) {
+        var x = pixel.x;
+        for (var y = pixel.y+1; y < height; y++) {
+            if (outOfBounds(x, y)) {
+                break;
+            }
+            if (isEmpty(x, y)) {
+                if (Math.random() > 0.1) { continue }
+                createPixel("flash", x, y);
+				pixelMap[x][y].color = ["#990000"];
+            }
+            else {
+                if (elements[pixelMap[x][y].element].id === elements.flash.id) { continue }
+                if (elements[pixelMap[x][y].element].id === elements.god_ray.id) { break }
+                if (!elements[pixelMap[x][y].element].isGas && isEmpty(x, y-1)) {
+                    createPixel("curse", x, y-1);
+                }
+                if (Math.random() > 0.1) { continue }
+                elements.bless.tool(pixelMap[x][y])
+            }
+        }
+        deletePixel(pixel.x, pixel.y);
+    },
+    category: "energy",
+    state: "gas",
+    density: 1,
     excludeRandom: true,
     noMix: true
 };
@@ -197,7 +229,7 @@ elements.frozen_chocolate_yogurt = {
 	temp: 0,
 };
 
-elements.cooking_oil = {
+elements.frying_oil = {
 	color: "#c4ab4f",
 	behavior: behaviors.LIQUID,
 	category: "liquids",
@@ -447,7 +479,7 @@ elements.moss = {
 	stateHigh: "dead_plant",
 	tempLow: -4,
 	stateLow: "frozen_plant",
-	
+	alias: "mercedes benz",
 	reactions: {
         "dna": { elem1: "moth", elem2: null },
 	}
@@ -467,6 +499,126 @@ elements.moth = {
 	stateHigh: "ash",
 	tempLow: 0,
 	stateLow: "dead_bug",
+};
+
+elements.holy_fire = {
+	color: ["#FEFFF8","#FFF0CE","#FFE792"],
+    behavior: [
+        "M1|M1|M1",
+        "M2|CH:bless%8|M2",
+        "XX|M2|XX",
+    ],
+    reactions: {
+        "fire": { elem1: "bless", elem2: "bless" },
+        "plasma": { elem1: "light", elem2: "light" }
+    },
+    temp:750,
+    tempLow:200,
+	tempHigh:1200,
+	stateLow: "bless",
+    stateHigh: "bless",
+    category: "energy",
+    state: "gas",
+    density: 0.1,
+    ignoreAir: true
+};
+
+elements.curse = {
+	color: ["#d27979","#bf4040","#752727"],
+    tool: function(pixel) {
+        if (elements.bless.ignore.indexOf(pixel.element) !== -1) { return; }
+        if (pixel.burning) { // stop burning
+            delete pixel.burning;
+            delete pixel.burnStart;
+        }
+        if (pixel.temp > 100) {
+            pixel.temp = (pixel.temp+100)/2;
+            pixelTempCheck(pixel);
+            if (pixel.del) {return}
+        }
+        if (pixel.temp < -200) {
+            pixel.temp = (pixel.temp-200)/2;
+            pixelTempCheck(pixel);
+            if (pixel.del) {return}
+        }
+        if (pixel.origColor) {
+            pixel.color = "rgb("+pixel.origColor.join(",")+")";
+            delete pixel.origColor;
+        }
+        if (pixel.charge) {
+            delete pixel.charge;
+            pixel.chargeCD = 16;
+        }
+        if (elements.bless.reactions[pixel.element] && Math.random()<0.25) {
+            var r = elements.bless.reactions[pixel.element];
+            var elem2 = r.elem2;
+            if (elem2 !== undefined) {
+                if (Array.isArray(elem2)) { elem2 = elem2[Math.floor(Math.random()*elem2.length)]; }
+                if (elem2 === null) { deletePixel(pixel.x,pixel.y) }
+                else { changePixel(pixel, elem2); }
+            }
+            if (r.func) { r.func(pixel,pixel) }
+        }
+    },
+    ignore: ["sun"],
+    behavior: [
+        "M2|M1|M2",
+        "M1|DL%25|M1",
+        "M2|M1|M2",
+    ],
+    reactions: {
+        "cell": { elem2: "cancer" },
+        "iron": { elem2: "rust" },
+        "copper": { elem2: "oxidized_copper" },
+        "antibody": { elem2:["blood",null] },
+        "antibody_ice": { elem2:"blood_ice" },
+        "dirty_water": { elem2: "water" },
+        "dna": { elem2: "plague" },
+        "antibody": { elem2: ["infection",null] },
+        "infection": { elem2: ["infection",null] },
+        "antidote": { elem2: "poison" },
+        "meat": { elem2: "rotten_meat" },
+        "cheese": { elem2: "rotten_cheese" },
+        "oxygen": { elem2: "carbon_dioxide" },
+        "hydrogen": { elem2: "acid_gas" },
+        "cloud": { elem2: "fire_cloud" },
+        "perfume": { elem2: "liquid_stench" },
+        "fragrance": { elem2: "stench" },
+        "seltzer": { elem2: "soda" },
+        "cloud": { elem2: "smog" },
+        "water": { elem2: "broth" },
+        "bless": { elem2: "plasma" },
+        "metal_scrap": { elem2: "grenade" },
+        "smoke": { elem2: "greek_fire" },
+        "rock": { elem2: "uranium", chance: 0.01},
+        "magma": { elem2: "molten_uranium", chance: 0.01},
+        "ice": { elem2: "ice_nine", chance: 0.01},
+        "frog": { elem2: "frozen_frog" },
+        "worm": { elem2: "frozen_worm" },
+        "rock": { elem2: "molten_thermite", chance: 0.01},
+        "glass": { elem2: "rad_glass", chance: 0.2 },
+        "shard": { elem2: "rad_shard", chance: 0.2 },
+        "steam": { elem2: "rad_steam", chance: 0.2 },
+        "rain_cloud": { elem2: "rad_cloud", chance: 0.2 },
+        "ball": { elem2: "ball", chance: 0.2 },
+        "bone": { elem2: "bone_marrow", chance: 0.2 },
+        "plant": { elem2: "dead_plant" },
+        "rock": { elem2: "rock", chance: 0.01 },
+        "magma": { elem2: "molten_slag", chance: 0.01 },
+        "light": { elem2: "laser", chance: 0.2 },
+        "flash": { elem2: "light", chance: 0.2 },
+        "wood": { elem2: "torch", chance: 0.01 },
+        "gold": { elem2: "lead", chance: 0.2 },
+        "molten_gold": { elem2: "molten_lead", chance: 0.2 },
+        "grass": { elem2: null },
+        "rainbow": { elem2: "static" },
+    },
+    temp:20,
+    state: "gas",
+    density: 0.001,
+    canPlace: true,
+    category: "energy",
+    stain: -0.5
 };
 
 elements.parrot = {
@@ -1097,8 +1249,7 @@ elements.olive = {
 	behavior: behaviors.POWDER,
 	category: "food",
 	state: "solid",
-	breakInto: "juice",
-	breakIntoColor: ["#d1ef71","#c1d64d"],
+	breakInto: "olive_oil",
 };
 
 elements.eggplant = {
@@ -1144,6 +1295,19 @@ elements.garlic_clove = {
 	category: "food",
 	state: "solid",
 	hidden: "TRUE",
+};
+
+elements.carrot = {
+	color: ["#ea820b","#e89116","#e8a32b","#efb538"],
+	density: 675,
+	behavior: behaviors.POWDER,
+	category: "food",
+	state: "solid",
+	burnInto: "ash",
+	burn: 10,
+	burnTime: 300,
+	breakInto: "juice",
+	breakIntoColor: "#f1b956",
 };
 
 elements.asparagus = {
@@ -1215,6 +1379,16 @@ elements.whipped_cream = {
 	}
 };
 
+elements.olive_oil = {
+	color: ["#efcc3f","#efd672","#f1e09a"],
+	density: 675,
+	behavior: behaviors.LIQUID,
+	category: "liquids",
+	state: "liquid",
+	burn: 10,
+	burnTime: 300,
+};
+
 elements.cream_coffee = {
 	color: ["#dbc1ac","#967259","#634832"],
 	behavior: behaviors.LIQUID,
@@ -1242,7 +1416,7 @@ elements.pipis = {
 };
 
 elements.frog_bomb = {	
-    color: "#0f2105",
+    color: ["#0f2105","#274e13","#6aa84f"],
     behavior: [
         "XX|EX:10>frog|XX",
         "XX|XX|XX",
@@ -1258,7 +1432,7 @@ elements.frog_bomb = {
 },
 
 elements.cash_bomb = {	
-    color: "#665411",
+    color: ["#e69138","#f1c232","#f6b26b"],
     behavior: [
         "XX|EX:10>gold_coin|XX",
         "XX|XX|XX",
@@ -1274,17 +1448,40 @@ elements.cash_bomb = {
 },
 
 elements.pi_pis = {	
-    color: ["#007299","003849"],
+    color: ["#0b5394","#073763","#3d85c6"],
     behavior: [
         "XX|EX:10>pipis|XX",
         "XX|XX|XX",
         "M2|M1 AND EX:10>pipis|M2",
+    ],
+    behaviorOn: [
+        "XX|XX|XX",
+        "XX|EX:6>metal_scrap,fire,fire,fire%1|XX",
+        "XX|XX|XX",
     ],
     category: "weapons",
     state: "solid",
     density: 1300,
     tempHigh: 1455.5,
     stateHigh: "molten_steel",
+    excludeRandom: true,
+    conduct: 1,
+    cooldown: defaultCooldown,
+    nocheer: true
+},
+
+elements.holy_hand_grenade = {	
+    color: ["#ffd966","#ffc000","#fff2cc"],
+    behavior: [
+		"XX|EX:20>bless,holy_fire%1|XX",
+        "XX|XX|XX",
+        "M2|M1 AND EX:20>bless,holy_fire%1|M2",
+    ],
+    category: "weapons",
+    state: "solid",
+    density: 1300,
+    tempHigh: 1455.5,
+    stateHigh: "bless",
     excludeRandom: true,
     cooldown: defaultCooldown
 },
@@ -1475,6 +1672,18 @@ elements.quartz = {
 	reactions: {
 		"molten_iron": { elem1: "amethyst", elem2: null },
 	}
+};
+
+elements.ruby = {
+	color: ["#850014","#ae001a","#e10531","#a50727","#6b0015"],
+    behavior: behaviors.POWDER,
+    category: "powders",
+    tempHigh: 900,
+    stateHigh: "carbon_dioxide",
+    state: "solid",
+    density: 3515,
+    hardness: 1,
+	alias: "Lamp Oil, Rope, Bombs, you want it? It's yours my friend, as long as you have enough rubies.",
 };
 
 elements.slushy_ice = {

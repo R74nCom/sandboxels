@@ -34,18 +34,19 @@ setView = (n) => {
     document.querySelector('span[setting="view"]').children[0].value = view ?? 0;
 }
 
-for (const i in views) {
-    if (i < 5) continue;
-    const option = document.createElement("option");
-    option.setAttribute("value", i);
-    option.innerText = views[i];
-    document.querySelector('.setting-span[setting="view"]').querySelector("select").appendChild(option);
-    viewKey[i] = views[i];
-}
+runAfterLoadList.push(() => {
+    for (const i in views) {
+        if (i < 4) continue;
+        const option = document.createElement("option");
+        option.setAttribute("value", i);
+        option.innerText = views[i];
+        document.querySelector('.setting-span[setting="view"]').querySelector("select").appendChild(option);
+        viewKey[i] = views[i];
+    }
+})
 
 const vcrFont = new FontFace("VCR", "url(mods/VCR_OSD_MONO.ttf)");
 vcrFont.load().then(font => {
-    console.log(font);
     document.fonts.add(font);
 })
 
@@ -207,8 +208,8 @@ runAfterLoadList.push(() => drawPixels = (function() {
     const oldDrawPixels = drawPixels;
 
     return function(forceTick = false) {
-        if (view >= 5) {
-            if (maxDistance = -1) maxDistance = Math.sqrt((width / 2) ** 2 + (height / 2) ** 2) * 2;
+        if (view >= 4) {
+            if (maxDistance == -1) maxDistance = Math.sqrt((width / 2) ** 2 + (height / 2) ** 2) * 2;
             
             const canvas = document.getElementById("game");
             const ctx = canvas.getContext("2d");
@@ -276,8 +277,30 @@ runAfterLoadList.push(() => drawPixels = (function() {
                 if (pixelMap[pixel.x][pixel.y] == undefined) {continue}
                 if (pixel.con) { pixel = pixel.con };
                 ctx.fillStyle = getModeColor(pixel.color, view == 18 ? Math.sqrt((width / 2 - pixel.x) ** 2 + (height / 2 - pixel.y) ** 2) : 0);
+                if (view == 4) {
+                    let colorList = [];
+                    for (var j = 0; j < biCoords.length; j++) {
+                        const x = pixel.x + biCoords[j][0];
+                        const y = pixel.y + biCoords[j][1];
+                        if (isEmpty(x,y,true) || elements[pixelMap[x][y].element].state !== elements[pixel.element].state) {continue}
+                        const color = pixelMap[x][y].color;
+                        const [r, g, b] = color.replace(/[rgb()]/g, "").split(",").map(a => parseInt(a.trim()));
+                        const [r1, g1, b1] = pixel.color.replace(/[rgb()]/g, "").split(",").map(a => parseInt(a.trim()));
+                        if (Math.abs(r - r1) + Math.abs(g - g1) + Math.abs(b - b1) > 75 && pixelMap[x][y].element != pixel.element) continue;
+                        if (color.indexOf("rgb") !== -1) {
+                            colorList.push(color.match(/\d+/g));
+                        }
+                    }
+                    if (colorList.length === 0) {
+                        ctx.fillStyle = pixel.color;
+                    }
+                    else {
+                        ctx.fillStyle = averageRGB(colorList);
+                    }
+                    ctx.fillRect(pixel.x * pixelSize, pixel.y * pixelSize, pixelSize, pixelSize);
+                }
                 // 3D VIEW
-                if (view == 5) {
+                else if (view == 5) {
                     const neighborRight = !outOfBounds(pixel.x + 1, pixel.y) && !!pixelMap[pixel.x + 1][pixel.y];
                     const neighborUp = !outOfBounds(pixel.x, pixel.y - 1) && !!pixelMap[pixel.x][pixel.y - 1];
                     const neighborUpRight = !outOfBounds(pixel.x + 1, pixel.y - 1) && !!pixelMap[pixel.x + 1][pixel.y - 1];
