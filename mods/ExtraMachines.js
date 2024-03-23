@@ -1,6 +1,6 @@
 // this is a epic mod
 
-let heatSen = 0;
+let heatSen = null;
 elements.heatSensor = {
     
 	color: "#ff0000",
@@ -15,11 +15,9 @@ elements.heatSensor = {
   
 	
 	tick: function(pixel) {
-        if((pixel.start == pixelTicks) && !(heatSen == 0)){
-            pixel.clone.temp = heatSen
-          }
+      
 	
-	 if (pixel.temp > pixel.clone ) {
+	 if (pixel.temp >= heatSen ) {
               pixel.charge = 1;
         }
 
@@ -183,7 +181,7 @@ elements.molten_titanium = {
     desc: "Melted version of titanium",
     temp : 3000,
 	conduct: 0,
-	color: "#d16e04",
+	color: ["#d16e04","#FFCC99","#FF6600","#FF7F50","#DC143C","#800020"],
 	tempLow:2999,
     stateLow: "titanium",
     category: "states",
@@ -577,6 +575,7 @@ compactPi = "dead_plant";
 compactPi2 = "coal";
 elements.compacter = {
     color: "#4e524f",
+    conduct : 1,
     desc: "Turns dead plants into coal and needs power",
     tick: function(pixel) {
 		if (pixel.start === pixelTicks) {
@@ -650,17 +649,18 @@ elements.compacter = {
                         }
                     }
                     else if (!pixel.con ) { //suck up pixel
-					if  ((newPixel.element == pixel.CompactEl) || (newPixel.element == pixel.CompactEl2) && pixel.charge > 0  ) {
-						
-                        pixel.con = newPixel;
-						changePixel(newPixel, "coal")
-						newPixel.color = elements.coal.color
-                        deletePixel(newPixel.x,newPixel.y);
-                        pixel.con.x = pixel.x;
-                        pixel.con.y = pixel.y;
-                        pixel.con.del;
-                        moved = true;
-                        break;
+					if  ((newPixel.element == pixel.CompactEl) || (newPixel.element == pixel.CompactEl2) ) {
+						if (pixel.charge > 0) {
+                            pixel.con = newPixel;
+                            changePixel(newPixel, "coal")
+                            newPixel.color = elements.coal.color
+                            deletePixel(newPixel.x,newPixel.y);
+                            pixel.con.x = pixel.x;
+                            pixel.con.y = pixel.y;
+                            pixel.con.del;
+                            moved = true;
+                            break;
+                        }
 						}
                     }
                 }
@@ -1047,7 +1047,7 @@ elements.grinder = {
                             break;
                         }
                     }
-                    else if (!pixel.con  && !doNotEF.includes(newPixel.element) ) { //suck up pixel
+                    else if (!pixel.con  && !doNotEF.includes(newPixel.element)) { //suck up pixel
 				// (!pixel.con && !(newPixel.element === "e_grinder") && pixel.charge > 0 && !(newPixel.element.movable))
 				// (!pixel.con && !(newPixel.element === "grinder") && !(newPixel.element === "e_grinder") && !(newPixel.element === "filter") && (newPixel.element.movable))	
 				//!(newPixel.element === "grinder") && !(newPixel.element === "e_grinder")
@@ -1225,6 +1225,8 @@ elements.e_grinder = {
     insulate: true,
 }
 
+
+
 elements.quickSand = {
 	color: elements.sand.color,
     category: "land",
@@ -1233,3 +1235,498 @@ elements.quickSand = {
     density: 500,
     conduct: 0.02,
 }
+
+elements.Acid_Bomb = {    
+    color: "#524c41",
+    category: "weapons",
+    state: "solid",
+    density: 1300,
+    ignore: "Acid_Bomb",
+    excludeRandom: true,
+    behavior: behaviors.POWDER,
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "M2|M1 AND EX:15>acid,acid_gas,acid_gas|M2",
+    ],
+    
+        
+       
+    
+}
+
+elements.E_Spout = {
+    color: "#606378",
+    behavior: behaviors.WALL,
+    behaviorOn: [
+        "XX|CR:water|XX",
+        "CR:water|XX|CR:water",
+        "XX|CR:water|XX",
+    ],
+    category:"special",
+    tempHigh: 1455.5,
+    stateHigh: "molten_steel",
+    conduct: 1,
+}
+
+
+elements.DestroyableWire = {
+    color: "#4d0a03",
+    behavior: behaviors.WALL,
+    category: "machines",
+    insulate: true,
+    conduct: 1,
+    breakInto  : "metal_scrap",
+    noMix: true,
+}   
+
+
+elements.pusherRight = {
+  behavior: behaviors.WALL,
+    ignore: "pushTest",
+          tick: function(pixel) {
+           
+            for (var i = 0; i < adjacentCoords.length; i++) {
+                var coords = adjacentCoords[i];
+                var x = pixel.x + coords[0];
+                var y = pixel.y + coords[1];
+              if (!isEmpty(x,y,true)) {
+                  let sensed = pixelMap[x][y];
+                  if (!(sensed.element == "pusherRight") ) {
+
+
+					  var newX =  sensed.x + 1;
+                      var newY =  sensed.y ;
+                      
+                      tryMove(sensed,newX,newY);
+                      //break;
+                  }
+              }
+          }
+          doDefaults(pixel);
+      },
+      conduct: 1,
+      movable: true,
+      category:"machines",
+      darkText: true,
+  hardness: 1,
+
+
+  }
+
+  elements.pusherLeft = {
+    behavior: behaviors.WALL,
+      ignore: "pushTest",
+            tick: function(pixel) {
+             
+              for (var i = 0; i < adjacentCoords.length; i++) {
+                  var coords = adjacentCoords[i];
+                  var x = pixel.x + coords[0];
+                  var y = pixel.y + coords[1];
+                if (!isEmpty(x,y,true)) {
+                    let sensed = pixelMap[x][y];
+                    if (!(sensed.element == "pusherLeft") ) {
+  
+  
+                        var newX =  sensed.x - 1;
+                        var newY =  sensed.y ;
+                        
+                        tryMove(sensed,newX,newY);
+                        //break;
+                    }
+                }
+            }
+            doDefaults(pixel);
+        },
+        conduct: 1,
+        movable: true,
+        category:"machines",
+        darkText: true,
+    hardness: 1,
+  
+  
+    }
+
+  elements.de_leadifyer = {
+    color: "#ff0000",
+    tool: function(pixel) {
+        if (pixel.element == "lead") {
+            deletePixel(pixel.x,pixel.y);
+        }
+    },
+    category: "tools",
+};
+
+elements.missile = {
+    behavior: behaviors.WALL,
+    maxSize: 1,
+    
+    properties: {
+       luanched : false,
+    },
+      ignore: "pushTest",
+            tick: function(pixel) {
+            
+              for (var i = 0; i < adjacentCoords.length; i++) {
+                  var coords = adjacentCoords[i];
+                  var x = pixel.x + coords[0];
+                  var y = pixel.y + coords[1];
+                if (!isEmpty(x,y,true)) {
+                    let sensed = pixelMap[x][y];
+                    if (!(sensed.element == "missile") && sensed.element && !(sensed.element == "fire") && !(sensed.element == "smoke") && pixel.luanched == true || pixel.y ==1  ||outOfBounds(pixel.x,pixel.y) ) {
+                        explodeAt(x, y, 13, ["fire","fire","plasma","plasma","plasma","plasma"]);
+                        explodeAt(x, y, 5, "molten_metal_scrap");
+                        deletePixel(pixel.x,pixel.y);
+                    }
+                  
+                }   else if(pixel.temp >= 100) {
+                         
+                        pixel.luanched = true;
+                        pixel.clone = "fire";
+                        var newX =  pixel.x ;
+                        var newY =  pixel.y - 0.5;
+                        let test = createPixel("fire",pixel.x,pixel.y+2);
+                        tryMove(pixel,newX,newY,test);
+                       
+                        
+                    
+                }
+
+            }
+            doDefaults(pixel);
+        },
+        conduct: 1,
+        movable: true,
+        category:"weapons",
+        darkText: true,
+    hardness: 1,
+  
+  
+    }
+
+    elements.NewWater = {
+        color: elements.water.color,
+        behavior : behaviors.LIQUID,
+        category: "test",
+	     state: "liquid",
+      tick:function(pixel) {
+        if (pixel.temp < 20) {
+            pixel.color = "#317d7d";
+        }
+        else if (pixel.temp == 20 ) {
+            pixel.color = elements.water.color;
+        }
+        else if (pixel.temp > 20 && pixel.temp < 30) {
+            pixel.color = "#eb8634";
+        } 
+        else if (pixel.temp > 30) {
+            pixel.color = "#eb4034";
+        }
+
+      },
+      // make it work like normal water
+      tempHigh: 100,
+      stateHigh: "steam",
+      tempLow: 0,
+      stateLow: "ice",
+     
+      heatCapacity: 4.184,
+      reactions: {
+          "dirt": { // React with (water reacts with dirt to make mud)
+              elem1: null, // First element transforms into; in this case, water deletes itself
+              elem2: "mud", // Second element transforms into; in this case, dirt turns to mud
+          },
+          "sand": { elem1: null, elem2: "wet_sand" },
+          "clay_soil": { elem1: null, elem2: "clay" },
+          "salt": { elem1: "salt_water", elem2: null, temp1:-20 },
+          "sugar": { elem1: "sugar_water", elem2: null },
+          "honey": { elem1: "sugar_water" },
+          "caramel": { elem1: "sugar_water" },
+          "molasses": { elem1: "sugar_water" },
+          "dust": { elem1: "dirty_water", elem2: null },
+          "ash": { elem1: "dirty_water", elem2: null },
+          "cyanide": { elem1: "dirty_water", elem2: null },
+          "cyanide_gas": { elem1: "dirty_water", elem2: null },
+          "carbon_dioxide": { elem1: "seltzer", elem2: null, oneway:true },
+          "sulfur": { elem1: "dirty_water", elem2: null },
+          "rat": { elem1: "dirty_water", chance:0.005 },
+          "plague": { elem1: "dirty_water", elem2: null },
+          "rust": { elem1: "dirty_water", chance:0.005 },
+          "lead": { elem1: "dirty_water", chance:0.005 },
+          "solder": { elem1: "dirty_water", chance:0.005 },
+          "fallout": { elem1: "dirty_water", chance:0.25 },
+          "radiation": { elem1: "dirty_water", chance:0.25 },
+          "uranium": { elem1: "dirty_water", chance:0.25 },
+          "rotten_meat": { elem1: "dirty_water", chance:0.25 },
+          "rotten_cheese": { elem1: "dirty_water", chance:0.25 },
+          "cancer": { elem1: "dirty_water", chance:0.25 },
+          "oil": { elem1: "dirty_water", chance:0.005 },
+          "dioxin": { elem1: "dirty_water", chance:0.1 },
+          "quicklime": { elem1: "slaked_lime", elem2: "slaked_lime", temp2:100, temp1:100, chance:0.05 },
+          "rock": { elem2: "wet_sand", chance: 0.00035 },
+          "limestone": { elem2: "wet_sand", chance: 0.00035 },
+          "tuff": { elem2: "wet_sand", color2:"#7a6b5c", chance: 0.00035 },
+          "ruins": { elem2: "rock", chance: 0.00035 },
+          "mudstone": { elem2: "mud", chance: 0.00035 },
+          "methane": { elem1:"primordial_soup", elem2:"primordial_soup", tempMin:60, charged:true },
+          "ammonia": { elem1:"primordial_soup", elem2:"primordial_soup", tempMin:60, charged:true },
+          "fly": { elem2:"dead_bug", chance:0.1, oneway:true },
+          "firefly": { elem2:"dead_bug", chance:0.1, oneway:true },
+          "bee": { elem2:"dead_bug", chance:0.05, oneway:true },
+          "stink_bug": { elem2:"dead_bug", chance:0.1, oneway:true },
+          "cured_meat": { elem1:"salt_water", elem2:"meat" },
+          // electrolysis:
+          "aluminum": { elem1:["hydrogen","hydrogen","oxygen"], charged:true, chance:0.0025 },
+          "zinc": { elem1:["hydrogen","hydrogen","oxygen"], charged:true, chance:0.015 },
+          "steel": { elem1:["hydrogen","hydrogen","oxygen"], charged:true, chance:0.0125 },
+          "iron": { elem1:["hydrogen","hydrogen","oxygen"], charged:true, chance:0.0125 },
+          "tin": { elem1:["hydrogen","hydrogen","oxygen"], charged:true, chance:0.01 },
+          "brass": { elem1:["hydrogen","hydrogen","oxygen"], charged:true, chance:0.001 },
+          "bronze": { elem1:["hydrogen","hydrogen","oxygen"], charged:true, chance:0.001 },
+          "copper": { elem1:["hydrogen","hydrogen","oxygen"], charged:true, chance:0.0075 },
+          "silver": { elem1:["hydrogen","hydrogen","oxygen"], charged:true, chance:0.0075 },
+          "gold": { elem1:["hydrogen","hydrogen","oxygen"], charged:true, chance:0.0075 },
+      },
+      state: "liquid",
+      density: 997,
+      conduct: 0.02,
+      stain: -0.5,
+      extinguish: true
+  }
+
+  elements.test1 = {
+    //seed: true,
+    maxSize: 1,
+    behavior: behaviors.WALL,
+    properties : {
+        //min: 10,
+        //max: 40,
+        Curheight : 1,
+        height : 40, //Math.floor(Math.random() * (max - min + 1)) + min,
+        age: 0,
+
+    },
+    category:"test",
+    tick:function(pixel) {
+        if(isEmpty(pixel.x+1,pixel.y) && pixel.Curheight < pixel.height){
+            createPixel("steel",pixel.x+1,pixel.y, );
+            }
+            if(isEmpty(pixel.x-1,pixel.y) && pixel.Curheight < pixel.height){
+                createPixel("steel",pixel.x-1,pixel.y, );
+                }
+                if(isEmpty(pixel.x+2,pixel.y) && pixel.Curheight < pixel.height){
+                    createPixel("steel",pixel.x+2,pixel.y, );
+                    }
+                    if(isEmpty(pixel.x-2,pixel.y) && pixel.Curheight < pixel.height){
+                        createPixel("steel",pixel.x-2,pixel.y, );
+                        }
+
+                      
+ 
+
+                        if(isEmpty(pixel.x,pixel.y-39)  ) {
+                            //var built
+                            createPixel("concrete",pixel.x,pixel.y-40, );
+                        }
+                        if(isEmpty(pixel.x-1,pixel.y-39) ) {
+                            createPixel("concrete",pixel.x-1,pixel.y-40, );  
+                        }
+                        if(isEmpty(pixel.x+1,pixel.y-39 )) {
+                            createPixel("concrete",pixel.x+1,pixel.y-40, );  
+                        }
+            for (let i = pixel.Curheight; i < pixel.height; i++) {
+                if(isEmpty(pixel.x,pixel.y-i) && pixel.Curheight < pixel.height){
+                    
+                   
+                    if(isEmpty(pixel.x-2,pixel.y-i) ) {
+                        createPixel("concrete",pixel.x-2,pixel.y-i, );  
+                    }
+                    if(isEmpty(pixel.x+2,pixel.y-i) ) {
+                        createPixel("concrete",pixel.x+2,pixel.y-i, );  
+                    }
+                        i+1
+                        pixel.Curheight +1;
+                }
+            }
+            
+
+
+
+
+           
+      
+        if(pixel.age > 100) {
+            changePixel(pixel,"steel");
+        }
+        pixel.age++
+        doDefaults(pixel);
+        
+    }
+}
+
+
+elements.test2 = {
+   //seed: true,
+   maxSize: 1,
+   behavior: behaviors.WALL,
+   properties : {
+       //min: 10,
+       //max: 40,
+       baseLimit : 18,
+       base:1,
+
+       Curheight : 1,
+       height : 18, //Math.floor(Math.random() * (max - min + 1)) + min,
+       age: 0,
+
+   },
+   category:"test",
+   tick:function(pixel) {
+        //base
+        if(isEmpty(pixel.x-i,pixel.y) ) {
+            createPixel("steel",pixel.x-18,pixel.y, );  
+        }
+        for (let i = pixel.base; i < pixel.baseLimit; i++) {
+           
+                
+               
+                if(isEmpty(pixel.x-i,pixel.y) ) {
+                    createPixel("steel",pixel.x-i,pixel.y, );  
+                }
+               
+                    i+1
+                    pixel.base +1;
+            
+        }
+
+        for (let i = pixel.Curheight; i < pixel.height; i++) {
+           
+                
+               
+            if(isEmpty(pixel.x,pixel.y-i) ) {
+                createPixel("steel",pixel.x,pixel.y-i, );  
+            }
+            if(isEmpty(pixel.x-18,pixel.y-i) ) {
+                createPixel("steel",pixel.x-18,pixel.y-i, );  
+            }
+            if(isEmpty(pixel.x-i,pixel.y-17) ) {
+                createPixel("steel",pixel.x-i,pixel.y-17);  
+            }
+           
+                i+1
+                pixel.Curheight +1;
+        
+         }
+                     
+
+       if(pixel.age > 100) {
+           changePixel(pixel,"steel");
+       }
+       pixel.age++
+       doDefaults(pixel);
+       
+   } 
+}
+
+
+
+  tarY = null;
+  tarX = null;
+ 
+elements.guided_missile = {
+    maxSize: 1,
+    behavior: behaviors.WALL,
+    
+    onSelect: function(pixel){
+       
+        tarX = prompt("enter x");
+         tarY = prompt("enter y");
+        
+      },
+      properties: {
+        luanched : false,
+        speed :1,
+        AtY : false,
+     },
+      
+      
+            tick: function(pixel) {
+                if(pixel.start == pixelTicks){
+                    
+                }
+              for (var i = 0; i < adjacentCoords.length; i++) {
+                  var coords = adjacentCoords[i];
+                  var x = pixel.x + coords[0];
+                  var y = pixel.y + coords[1];
+                if (!isEmpty(x,y,true)) {
+                    let sensed = pixelMap[x][y];
+                    if (!(sensed.element == "missile") &&!(sensed.element == "guided_missile") && sensed.element && !(sensed.element == "fire") && !(sensed.element == "smoke") && pixel.luanched == true || pixel.y ==1  ||outOfBounds(pixel.x,pixel.y)) {
+                        explodeAt(x, y, 13, ["fire","fire","plasma","plasma","plasma","plasma"]);
+                        explodeAt(x, y, 5, "molten_metal_scrap");
+                        deletePixel(pixel.x,pixel.y);
+                    }
+                  
+                }   else if(pixel.temp >= 100) {
+                         
+                        pixel.luanched = true;
+                        pixel.clone = "fire";
+                        var newX =  pixel.x ;
+                        var newY =  pixel.y - pixel.speed;
+                        
+                       
+                            if (!(pixel.y == tarY) && pixel.y > tarY ) {
+                               let test = createPixel("fire",pixel.x,pixel.y+2); 
+                               tryMove(pixel,newX,newY,test);
+                                pixel.AtY = true;
+                                
+                            }
+                                else if(!(pixel.y == tarY) && pixel.y < tarY ){
+                                    let test = createPixel("fire",pixel.x,pixel.y-2);
+                                    tryMove(pixel,pixel.x,pixel.y + pixel.speed,test);
+                                     pixel.AtY = true;
+                                    
+                                } 
+                                else if(pixel.AtY = true) {
+                                    if(pixel.x > tarX) {
+                                        let test = createPixel("fire",pixel.x,pixel.y);
+                                        tryMove(pixel,pixel.x-pixel.speed,pixel.y,test);
+                                    }
+                                    else if(pixel.x < tarX) {
+                                        let test = createPixel("fire",pixel.x,pixel.y);
+                                        tryMove(pixel,pixel.x+pixel.speed,pixel.y,test);
+                                        
+                                    }
+                                    else if (pixel.x == tarX){
+                                        explodeAt(x, y, 13, ["fire","fire","plasma","plasma","plasma","plasma"]);
+                                         explodeAt(x, y, 5, "molten_metal_scrap");
+                                        deletePixel(pixel.x,pixel.y);
+                                    } 
+
+    
+                                }
+
+                                
+    
+                        
+                       
+                       
+                        
+                    
+                }
+
+            }
+            doDefaults(pixel);
+        },
+        conduct: 1,
+        movable: true,
+        category:"weapons",
+        darkText: true,
+    hardness: 1,
+  
+  
+    }
+
+   
+    elements.room_temp.category = "tools"
+    elements.uncharge.category = "tools"
+    elements.unburn.category = "tools"
