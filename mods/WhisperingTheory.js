@@ -2,7 +2,7 @@ elements.roomtemper = {
 	color: "#29632f",
 	behavior: behaviors.WALL,
 	tick: function(pixel) {
-        /* from nouserthings.js <3 */
+        // from nouserthings.js <3
 		for (var i = 0; i < squareCoords.length; i++) {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
@@ -77,13 +77,6 @@ elements.cold_fire.behavior = [
     "XX|M2|XX",
 ];
 
-/* TODO
-- [x] powder heater & cooler
-- [x] block roomtemp
-- [x] no smoke from cold fire
-- [x] gas heater, superheater, cooler, freezer
-*/
-
 elements.gas_heater = {
     color: "#881111",
     behavior: [
@@ -126,4 +119,16 @@ elements.gas_freezer = {
     ],
     category: "machines",
     insulate: true,
+};
+
+elements.moon = {
+    color: "#d5c7b4",
+    category: "jokes",
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "CR:cancer%0.05|CR:cancer%0.05|CR:cancer%0.05"
+    ],
+    breakInto: "cheese",
+    hardness: 0.95,
 };
