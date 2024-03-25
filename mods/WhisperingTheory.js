@@ -120,15 +120,3 @@ elements.gas_freezer = {
     category: "machines",
     insulate: true,
 };
-
-elements.moon = {
-    color: "#d5c7b4",
-    category: "jokes",
-    behavior: [
-        "XX|XX|XX",
-        "XX|XX|XX",
-        "CR:cancer%0.05|CR:cancer%0.05|CR:cancer%0.05"
-    ],
-    breakInto: "cheese",
-    hardness: 0.95,
-};
