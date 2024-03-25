@@ -2,7 +2,7 @@
 Created by SquareScreamYT <@918475812884344852> and RealerRaddler <@914371295561535508>
 Thanks to Alice <@697799964985786450>, nousernamefound <@316383921346707468>, Adora the Transfem <@778753696804765696> and Fioushemastor <@738828785482203189> for helping :)
 
-v1.10.2
+v1.10.5
 
 you can support me at my youtube: https://youtube.com/@sqec
 
@@ -16,7 +16,6 @@ Upcoming Features:
 - pigs, ham and bacon
 - garlic
 - stainless steel
-- chili
 - pepper plants
 - hot chocolate
 - cows and beef
@@ -329,7 +328,16 @@ Changelog (v1.10.1)
 
 
 Changelog (v1.10.2)
-    - added chocolate chip, sprinkles and topping explosions
+    - added sprinkle explosions
+
+
+
+
+Changelog (v1.10.5)
+    - added chilli
+    - added chilli seed, stem and leaves
+    - added chilli powder
+    - added hot sauce
 
 
 
@@ -6109,10 +6117,6 @@ elements.vanilla_stem = {
 elements.vanilla_leaves = {
     color: "#5d9c48",
     reactions: {
-        "water": { elem2:"vanilla_tea", tempMin:80 },
-        "salt_water": { elem2:"vanilla_tea", tempMin:80 },
-        "sugar_water": { elem2:"vanilla_tea", tempMin:80 },
-        "seltzer": { elem2:"vanilla_tea", tempMin:80 },
         "stench": { elem2:null, chance:0.25 },
         "steam": { elem2:"fragrance", chance:0.1 },
         "flea": { elem2:null, chance:0.01 },
@@ -6439,3 +6443,256 @@ elements.sprinkle_bomb = {
     excludeRandom: true,
     cooldown: defaultCooldown
 }
+
+elements.chilli_stem = {
+    color: "#5d9c48",
+    behavior: behaviors.WALL,
+    reactions: {
+        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "mercury": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "stench": { elem2:null, chance:0.25 },
+        "carbon_dioxide": { elem2:"oxygen", chance:0.25 },
+    },
+    category:"life",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -1.66,
+    stateLow: "frozen_plant",
+    burn:15,
+    burnTime:60,
+    burnInto: "dead_plant",
+    state: "solid",
+    density: 1050,
+    hidden: true,
+    breakInto: "herb",
+    breakIntoColor:"#245c1b",
+    tick: function(pixel) {
+        if (isEmpty(pixel.x,pixel.y+1) && pixel.grower == false && pixel.leafgrower == false) {
+            movePixel(pixel,pixel.x,pixel.y+1);
+        }
+        if (pixel.grower == true) {
+            // check if left side has stem if no set direction to right
+            if (!isEmpty(pixel.x-1,pixel.y) && pixel.direction == "undefined") {
+                if (pixelMap[pixel.x-1][pixel.y].element == "chilli_stem") {
+                    pixel.direction = "right";
+                }
+            }
+            // same thing to set direction the left
+            else if (!isEmpty(pixel.x+1,pixel.y) && pixel.direction == "undefined") {
+                if (pixelMap[pixel.x+1][pixel.y].element == "chilli_stem") {
+                    pixel.direction = "left";
+                }
+            }
+        }
+        if (pixel.grower == true) {
+            // left
+            if (pixel.direction == "left") {
+                if (isEmpty(pixel.x-1,pixel.y-1) && Math.random() < 0.1) {
+                    createPixel("chilli_leaves",pixel.x-1,pixel.y-1);
+                    if (isEmpty(pixel.x-2,pixel.y-2) && Math.random() < 0.2) {
+                        createPixel("chilli_leaves",pixel.x-2,pixel.y-2);
+                        if (isEmpty(pixel.x-3,pixel.y-3) && Math.random() < 0.4) {
+                            createPixel("chilli_leaves",pixel.x-3,pixel.y-3);
+                        }
+                    }
+                }
+            }
+            // right
+            else if (pixel.direction == "right") {
+                if (isEmpty(pixel.x+1,pixel.y-1) && Math.random() < 0.1) {
+                    createPixel("chilli_leaves",pixel.x+1,pixel.y-1);
+                    if (isEmpty(pixel.x+2,pixel.y-2) && Math.random() < 0.2) {
+                        createPixel("chilli_leaves",pixel.x+2,pixel.y-2);
+                        if (isEmpty(pixel.x+3,pixel.y-3) && Math.random() < 0.4) {
+                            createPixel("chilli_leaves",pixel.x+3,pixel.y-3);
+                        }
+                    }
+                }
+            }
+        }
+        pixel.age++;
+        doDefaults(pixel);
+    },
+    properties: {
+        "grower":false,
+        "age":0,
+        "direction":"undefined",
+    }
+}
+elements.chilli_leaves = {
+    color: "#5d9c48",
+    reactions: {
+        "water": { elem2:"chilli_tea", tempMin:80 },
+        "salt_water": { elem2:"chilli_tea", tempMin:80 },
+        "sugar_water": { elem2:"chilli_tea", tempMin:80 },
+        "seltzer": { elem2:"chilli_tea", tempMin:80 },
+        "stench": { elem2:null, chance:0.25 },
+        "steam": { elem2:"fragrance", chance:0.1 },
+        "flea": { elem2:null, chance:0.01 },
+        "termite": { elem2:null, chance:0.01 },
+        "fly": { elem2:null, chance:0.01 },
+        "ant": { elem2:null, chance:0.01 },
+        "stink_bug": { elem2:null, chance:0.01 },
+        "yeast": {elem1:"tea", chance:0.01},
+    },
+    tick: function(pixel) {
+        if (isEmpty(pixel.x-1,pixel.y-1) && !isEmpty(pixel.x+1,pixel.y+1) && Math.random() < 0.03) {
+            createPixel("chilli",pixel.x-1,pixel.y-1);
+        }
+        if (isEmpty(pixel.x+1,pixel.y-1) && !isEmpty(pixel.x-1,pixel.y+1) && Math.random() < 0.03) {
+            createPixel("chilli",pixel.x+1,pixel.y-1);
+        }
+        pixel.age++;
+        doDefaults(pixel);
+    },
+    behavior: behaviors.WALL,
+    tempHigh: 300,
+    stateHigh: ["fire","smoke","smoke","smoke","ash"],
+    tempLow: -2,
+    stateLow: "frozen_plant",
+    burn:10,
+    burnTime:300,
+    burnInto: ["fire","smoke","smoke","smoke","smoke","smoke","smoke","fragrance"],
+    category:"life",
+    state: "solid",
+    density: 1400,
+    isFood: true,
+    hidden:true,
+    breakInto: "herb",
+    breakIntoColor:"#245c1b",
+},
+elements.chilli_seed = {
+    color: "#806d3b",
+    tick: function(pixel) {
+        if (isEmpty(pixel.x,pixel.y+1)) {
+            movePixel(pixel,pixel.x,pixel.y+1);
+        }
+        else {
+            if (Math.random() < 0.1 && pixel.age > 50 && pixel.temp < 100) {
+                if (!outOfBounds(pixel.x,pixel.y+1)) {
+                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
+                    if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
+                        changePixel(dirtPixel,"root");
+                    }
+                }
+                if (isEmpty(pixel.x,pixel.y-1)) {
+                    movePixel(pixel,pixel.x,pixel.y-1);
+                    createPixel("chilli_stem",pixel.x,pixel.y+1);
+                    pixel.height++;
+                }
+                if (pixel.height < 12 && pixel.height > 2 && pixel.height == 3) {
+                    if (isEmpty(pixel.x+1,pixel.y)) {
+                        createPixel("chilli_stem",pixel.x+1,pixel.y);
+                        pixelMap[pixel.x+1][pixel.y].grower = true;
+                    }
+                }
+                if (pixel.height < 12 && pixel.height > 2 && pixel.height == 9) {
+                    if (isEmpty(pixel.x+1,pixel.y)) {
+                        createPixel("chilli_stem",pixel.x+1,pixel.y);
+                        pixelMap[pixel.x+1][pixel.y].grower = true;
+                    }
+                }
+                if (pixel.height < 12 && pixel.height > 2 && pixel.height == 6) {
+                    if (isEmpty(pixel.x-1,pixel.y)) {
+                        createPixel("chilli_stem",pixel.x-1,pixel.y);
+                        pixelMap[pixel.x-1][pixel.y].grower = true;
+                    }
+                }
+                if (pixel.height > 11) {
+                    if (isEmpty(pixel.x-1,pixel.y) && isEmpty(pixel.x+1,pixel.y)) {
+                        createPixel("chilli_stem",pixel.x-1,pixel.y);
+                        pixelMap[pixel.x-1][pixel.y].grower = true;
+                        createPixel("chilli_stem",pixel.x+1,pixel.y);
+                        pixelMap[pixel.x+1][pixel.y].grower = true;
+                        deletePixel(pixel.x,pixel.y);
+                    }
+                }
+            }
+            pixel.age++;
+        }
+        doDefaults(pixel);
+    },
+    properties: {
+        "age":0,
+        "height":0
+    },
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -2,
+    stateLow: "frozen_plant",
+    burn: 65,
+    burnTime: 15,
+    category: "life",
+    state: "solid",
+    density: 1500,
+    cooldown: defaultCooldown,
+    seed: true,
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "XX|M1|XX",
+    ],
+};
+elements.chilli = {
+    color: "#ba3030",
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "ST:chilli_leaves|M1|ST:chilli_leaves",
+    ],
+    category:"food",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    burn:15,
+    burnTime:60,
+    burnInto: "dead_plant",
+    state: "solid",
+    density: 1050,
+    breakInto: "chilli_powder",
+    reactions: {
+	"sauce": {elem1:null, elem2:"hot_sauce", chance:2}
+    },
+}
+elements.chilli_powder = {
+    color: "#a32121",
+    reactions: {
+        "stench": { elem2:null, chance:0.25 },
+        "steam": { elem2:"fragrance", chance:0.1 },
+        "flea": { elem2:null, chance:0.01 },
+        "termite": { elem2:null, chance:0.01 },
+        "fly": { elem2:null, chance:0.01 },
+        "ant": { elem2:null, chance:0.01 },
+        "stink_bug": { elem2:null, chance:0.01 },
+	"sauce": {elem1:null, elem2:"hot_sauce", chance:2}
+    },
+    behavior: behaviors.POWDER,
+    tempHigh: 300,
+    stateHigh: ["fire","smoke","smoke","smoke","ash"],
+    burn:10,
+    burnTime:300,
+    burnInto: ["fire","smoke","smoke","smoke","smoke","smoke","smoke","fragrance"],
+    category:"food",
+    state: "solid",
+    density: 1400,
+    isFood: true,
+}
+elements.hot_sauce = {
+    color: "#a31414",
+    behavior: behaviors.LIQUID,
+    reactions: {
+        "stench": { elem2:null },
+    },
+    viscosity: 2600,
+    tempHigh: 260,
+    stateHigh: ["steam","salt","fragrance"],
+    tempLow: -2,
+    category:"food",
+    state: "liquid",
+    density: 1031.33,
+    stain: 0.01,
+    isFood: true
+}
+elements.head.reactions.hot_sauce = {elem2:["smoke","fire",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null], chance:3}
