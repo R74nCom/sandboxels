@@ -107,7 +107,7 @@ Changelog (v1.1)
     - added knife tool
         - cuts, peels, etc. pixels
         - readded potato skin and peeled potato
-        - changed fried potato recipe from potato to skinned potato\
+        - changed fried potato recipe from potato to skinned potato
     - added pepper
     - added cake
         - made by mixing baked batter and cream
