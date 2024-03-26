@@ -15,10 +15,3 @@ elements.Molten_Reinforced_Steel = {
     density: 7200,
     stateLow: 9990,
 };
-elements. = Mercury {
-    color: "#807575",
-    behavior: behaviors.AGLIQUID,
-    category: "liquids",
-    state:  "liquid",
-    density: 7200,  
-};
