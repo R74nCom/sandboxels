@@ -4,8 +4,8 @@ elements.Reinforced_Steel = {
     category: "solids",
     state:  "solid",
     density: 720,
-    stateHigh: 10000,
-    burnInto: "Molten_Reinforced_Steel"
+    tempHighHigh: 10000,
+    stateHigh: "Molten_Reinforced_Steel",
 };
 elements.Molten_Reinforced_Steel = {
     color: "#e64e17",
@@ -13,7 +13,8 @@ elements.Molten_Reinforced_Steel = {
     category: "states",
     state:  "liquid",
     density: 7200,
-    stateLow: 9990,
+    stateLow: "Reinforced_Steel",
+    tempLow: 9980
 };
 elements.Atomic_Acid = {
     color: "#22ff00",
@@ -31,8 +32,8 @@ elements.Atomic_Acid = {
         "packed_sand": {elem1: "Atomic_Acid", elem2: null},
         "mudstone": {elem1: "Atomic_Acid", elem2: null},
         "snow": {elem1: "Atomic_Acid", elem2: null},
-        "packed_snow": {elem1: "Atomic_Acid", elem2: null},
+        "gravel": {elem1: "Atomic_Acid", elem2: null},
         "clay": {elem1: "Atomic_Acid", elem2: null},
-        "mud": {elem1: "Atomic_Acid", elem2: null},
+        "clay_soil": {elem1: "Atomic_Acid", elem2: null},
     },
 };
