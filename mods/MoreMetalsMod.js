@@ -10,8 +10,8 @@ elements.Reinforced_Steel = {
 elements.Molten_Reinforced_Steel = {
     color: "#807575",
     behavior: behaviors.LIQUID,
-    category: "solid",
-    state:  "solid",
-    density: 720,
+    category: "states",
+    state:  "liquid",
+    density: 7200,
     stateLow: 9990,
 };
