@@ -22,8 +22,8 @@ elements.Atomic_Acid = {
     state:  "liquid",
     density: 7200,
     reactions: {
-        "sand" {"elem1": "null"}
-        "dirt" {"elem1": "null"}
-        "wet_sand" {"elem1": "null"}
-    }
+        "sand" {"elem1": "null"},
+        "dirt" {"elem1": "null"},
+        "wet_sand" {"elem1": "null"},
+    },
 };
