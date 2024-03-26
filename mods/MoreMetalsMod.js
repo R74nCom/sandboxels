@@ -15,3 +15,15 @@ elements.Molten_Reinforced_Steel = {
     density: 7200,
     stateLow: 9990,
 };
+elements.Atomic_Acid = {
+    color: "#22ff00",
+    behavior: behaviors.LIQUID,
+    category: "special",
+    state:  "liquid",
+    density: 7200,
+    reactions: {
+        "sand" {"elem1": "null"}
+        "dirt" {"elem1": "null"}
+        "wet_sand" {"elem1": "null"}
+    }
+};
