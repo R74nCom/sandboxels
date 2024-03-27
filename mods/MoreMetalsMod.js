@@ -23,9 +23,9 @@ elements.Atomic_Acid = {
     category: "special",
     state:  "liquid",
     density: 7200,
-    stateHigh: "Supernova",
+    stateHigh: "supernova",
     tempHigh: 100,
-    stateLow: "Plasma",
+    stateLow: "plasma",
     tempLow: 1,
     reactions: {
         "sand": {elem1: "Atomic_Acid", elem2: null},
