@@ -50,3 +50,28 @@ elements.Atomic_Acid = {
         "sugar_water": {elem1: "Atomic_Acid", elem2: null},
     },
 };
+elements.Atomic_Acid_Powder = {
+    color: "#22ff00",
+    behavior: behaviors.POWDER,
+    category: "powders",
+    state:  "solid",
+    density: 7200,
+    tempHigh: 200,
+    stateHigh: "Burntpowder",
+    reactions:{
+        "water": {elem1: "Atomic_Acid", elem2: null}
+    },
+};
+elements.Burntpowder = {
+    color: "#7c838f",
+    behavior: behaviors.POWDER,
+    category: "powders",
+    state:  "solid",
+    density: 7200,
+    tempLow: 10,
+    stateLow: "Atomic_Acid_Powder",
+    hidden:true,
+    reactions:{
+        "water": {elem1: null, elem2: null}
+    },
+};
