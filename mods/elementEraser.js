@@ -15,5 +15,22 @@ elements.element_eraser = {
     },
     category: "tools",
     excludeRandom: true,
-    desc: "Input a element to erase only that element."
+    desc: "Use on pixels to delete specified element."
+}
+let finalEraseElement2 = null;
+elements.exclusive_element_eraser = {
+    color: "#eeeeee",
+    onSelect: function() {
+        var answer = prompt("Please input the element you do not wish to delete. It will not work if you enter multiple element types while paused.",(finalEraseElement2||undefined));
+        if (!answer2) { return }
+        finalEraseElement2 = mostSimilarElement(answer2);
+    },
+    tool: function(pixel) {
+        if (pixel.element != finalEraseElement2) {
+            deletePixel(pixel.x,pixel.y)
+        }
+    },
+    category: "tools",
+    excludeRandom: true,
+    desc: "Use on pixels to delete any element except the specified element."
 }
