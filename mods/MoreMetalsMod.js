@@ -19,7 +19,7 @@ elements.Molten_Reinforced_Steel = {
 };
 elements.Atomic_Acid = {
     color: "#22ff00",
-    behavior: behaviors.LIQUID,
+    behavior: behaviors.SUPERFLUID,
     category: "special",
     state:  "liquid",
     density: 7200,
@@ -45,7 +45,6 @@ elements.Atomic_Acid = {
         "limestone": {elem1: "Atomic_Acid", elem2: null},
         "Quicklime": {elem1: "Atomic_Acid", elem2: null},
         "slacked_lime": {elem1: "Atomic_Acid", elem2: null},
-        "water": {elem1: "Atomic_Acid", elem2: null},
         "salt_water": {elem1: "Atomic_Acid", elem2: null},
         "sugar_water": {elem1: "Atomic_Acid", elem2: null},
     },
@@ -59,7 +58,7 @@ elements.Atomic_Acid_Powder = {
     tempHigh: 200,
     stateHigh: "Burntpowder",
     reactions:{
-        "water": {elem1: "Atomic_Acid", elem2: null}
+        "water": {elem1: "Atomic_Acid", elem2: "water"}
     },
 };
 elements.Burntpowder = {
