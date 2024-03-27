@@ -51,7 +51,7 @@ elements.Atomic_Acid = {
     },
 };
 elements.Atomic_Acid_Powder = {
-    color: "#22ff00",
+    color: ["#22ff00", #5af542,]
     behavior: behaviors.POWDER,
     category: "powders",
     state:  "solid",
