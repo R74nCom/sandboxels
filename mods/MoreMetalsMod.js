@@ -20,11 +20,6 @@ elements.Molten_Reinforced_Steel = {
 elements.Atomic_Acid = {
     color: "#22ff00",
     behavior: behaviors.LIQUID,
-    behaviorOn: [
-        "XX|XX|XX",
-        "XX|XX|XX",
-        "XX|XX|XX"
-    ],
     category: "special",
     state:  "liquid",
     density: 7200,
