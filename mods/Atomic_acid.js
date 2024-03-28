@@ -33,7 +33,7 @@ elements.Atomic_Acid = {
     stateLow: "plasma",
     tempLow: -273,
 };
-elements.Atomic_acid_catalyst = {
+elements.Atomic_acidcatalyst = {
     color: ["#22ff00", "#5af542"],
     behavior: behaviors.POWDER,
     category: "powders",
@@ -52,9 +52,26 @@ elements.Burntpowder = {
     state:  "solid",
     density: 7200,
     tempLow: 10,
-    stateLow: "Atomic_Acid_Powder",
+    stateLow: "Atomic_acidcatalyst",
     hidden:true,
     reactions:{
         "water": {elem1: null, elem2: null}
     },
+};
+elements.Mithril = {
+    color: ["#66dede", "#78c4c4", "#6bbfa7", "#51fca9", "#6598b5", "#86a1db", "#61ad6e"],
+    behavior: behaviors.POWDER,
+    category: "powders",
+    state:  "solid",
+    density: 200,
+    reactions:{
+        "uranium": {elem1:"rad_mithril" , elem2: null ,}
+    },
+};
+elements.rad_mithril = {
+    color: ["#95e6a3", "#043b0e", "#47f565", "#6ef246", "#325c3e",],
+    behavior: behaviors.RADPOWDER,
+    category: "powders",
+    state:  "solid",
+    density: 200,
 };
