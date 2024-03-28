@@ -19,7 +19,7 @@ elements.Molten_Reinforced_Steel = {
 };
 elements.Atomic_Acid = {
     color: "#22ff00",
-    ignore: ["Atomic_Acid"],
+    ignore: ["Atomic_Acid", "Atomic_acidcatalyst"],
     behavior: [
 		"CH:Atomic_Acid|DL AND CH:Atomic_Acid|CH:Atomic_Acid",
 		"DL AND M2 AND CH:Atomic_Acid|XX|DL AND M2 AND CH:Atomic_Acid",
@@ -74,17 +74,22 @@ elements.rad_mithril = {
     category: "powders",
     state:  "solid",
     density: 200,
+    reactions: {
+        "rad_palladium": {elem1: "atomic_acidcatalyst"}
+    },
 };
 elements.Palladium = {
     color: ["#f55353", "#cf8888", "#470404", "#573030", "#e01212"],
     behavior: behaviors.POWDER,
-    category: "states",
+    category: "powders",
     state:  "solid",
     density: 200,
-    hidden:true,
+    reactions:{
+        "uranium": {elem1:"rad_pallaium" , elem2: null}
+    },  
 };
-elements.rad_Palladium = {
-    color: ["#4fe056", "#68a36b", "#07380a", "#0dba18", "#64cc6b",],
+elements.rad_palladium = {
+    color: ["#4fe056", "#68a36b", "#07380a", "#0dba18", "#64cc6b"],
     behavior: behaviors.RADPOWDER,
     category: "powders",
     state:  "solid",
