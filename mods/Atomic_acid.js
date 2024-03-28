@@ -33,7 +33,7 @@ elements.Atomic_Acid = {
     stateLow: "plasma",
     tempLow: -273,
 };
-elements.Atomic_Acid_Powder = {
+elements.Atomic_acid_catalyst = {
     color: ["#22ff00", "#5af542"],
     behavior: behaviors.POWDER,
     category: "powders",
@@ -42,7 +42,7 @@ elements.Atomic_Acid_Powder = {
     tempHigh: 200,
     stateHigh: "Burntpowder",
     reactions:{
-        "water": {elem1: "Atomic_Acid", elem2: "water"}
+        "water": {elem1: "Atomic_Acid", elem2: null}
     },
 };
 elements.Burntpowder = {
