@@ -58,23 +58,3 @@ elements.Burntpowder = {
         "water": {elem1: null, elem2: null}
     },
 };
-elements.Mithril = {
-    color: ["#66dede", "#78c4c4", "#6bbfa7", "#51fca9", "#6598b5", "#86a1db", "#61ad6e"],
-    behavior: behaviors.POWDER,
-    category: "powders",
-    state:  "solid",
-    density: 200,
-    reactions:{
-        "uranium": {elem1:"rad_mithril" , elem2: null ,}
-    },
-};
-elements.Palladium = {
-    color: ["#f55353", "#cf8888", "#470404", "#573030", "#e01212"],
-    behavior: behaviors.POWDER,
-    category: "powders",
-    state:  "solid",
-    density: 200,
-    reactions:{
-        "uranium": {elem1:"rad_pallaium" , elem2: null}
-    },  
-};
