@@ -75,3 +75,18 @@ elements.rad_mithril = {
     state:  "solid",
     density: 200,
 };
+elements.Palladium = {
+    color: ["#f55353", "#cf8888", "#470404", "#573030", "#e01212"],
+    behavior: behaviors.POWDER,
+    category: "states",
+    state:  "solid",
+    density: 200,
+    hidden:true,
+};
+elements.rad_Palladium = {
+    color: ["#4fe056", "#68a36b", "#07380a", "#0dba18", "#64cc6b",],
+    behavior: behaviors.RADPOWDER,
+    category: "powders",
+    state:  "solid",
+    density: 200,
+};
