@@ -68,16 +68,6 @@ elements.Mithril = {
         "uranium": {elem1:"rad_mithril" , elem2: null ,}
     },
 };
-elements.rad_mithril = {
-    color: ["#95e6a3", "#043b0e", "#47f565", "#6ef246", "#325c3e",],
-    behavior: behaviors.RADPOWDER,
-    category: "powders",
-    state:  "solid",
-    density: 200,
-    reactions: {
-        "rad_palladium": {elem1: "atomic_acidcatalyst"}
-    },
-};
 elements.Palladium = {
     color: ["#f55353", "#cf8888", "#470404", "#573030", "#e01212"],
     behavior: behaviors.POWDER,
@@ -87,11 +77,4 @@ elements.Palladium = {
     reactions:{
         "uranium": {elem1:"rad_pallaium" , elem2: null}
     },  
-};
-elements.rad_palladium = {
-    color: ["#4fe056", "#68a36b", "#07380a", "#0dba18", "#64cc6b"],
-    behavior: behaviors.RADPOWDER,
-    category: "powders",
-    state:  "solid",
-    density: 200,
 };
