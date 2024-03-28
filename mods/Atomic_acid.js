@@ -29,7 +29,7 @@ elements.Atomic_Acid = {
     state:  "liquid",
     density: 1,
     stateHigh: "supernova",
-    tempHigh: 1000,
+    tempHigh: 10000,
     stateLow: "plasma",
     tempLow: -273,
 };
