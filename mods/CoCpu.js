@@ -67,10 +67,24 @@ elements.computer = {
          density: 8908,
          tempHigh: 1414,
          stateHigh: "explosion",
-         conduct: 1,
  reactions: {
                     "virus": { elem1 : null , elem2:"malware", chance:0.9 },
                     "water": { elem1: null , elem2: "electric" },                    
                  }
 };
-
+elements.carbon_monoxide_detector = {
+      behavior: behaviors.WALL,
+      desc: "give red light and electric when found Carbon Monoxide touch",
+      color: "#ffffff",
+      reactions: {
+      "carbon_monoxide": {"charge1":1},   
+      },
+      conduct: 1,
+      tempHigh: 1550,
+      stateHigh: ["molten_metal_scrap","electric","molten_plastic"],
+      colorOn: "#ff0000",
+      movable: false,
+      category:"machines",
+      darkText: true,
+      hardness: 1,
+};
