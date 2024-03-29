@@ -50,3 +50,15 @@ elements.Darksteel = {
     state:  "solid",
     density: 200,
 };
+elements.Luminite = {
+    color: ["#77d0ed", "#2b3b40", "#01171f", "#02a0d9", "#bfe7f5"],
+    behavior: 
+    [
+        ["CR:light%0.05","CR:light%0.05","CR:light%0.05"],
+        ["CR:light%0.05","XX","CR:light%0.05"],
+        ["M2","M1","M2"]
+    ],
+    category: "powders",
+    state:  "solid",
+    density: 200,
+};
