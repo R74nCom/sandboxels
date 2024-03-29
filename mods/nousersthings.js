@@ -72,13 +72,46 @@ elements.subzero_grass = {
 	stateHigh: "dead_plant",
 	density:1400
 },
+elements.ruthenium = {
+    color: ["#ffffff","#c9c9c9","#b1b1b1","#9e9e9e","#888888"],
+    behavior: behaviors.STURDYPOWDER,
+    category: "powders",
+    state: "liquid",
+    tempHigh: 2334,
+    stateHigh: "molten_ruthenium",
+    density: 12370,
+}
+elements.molten_ruthenium = {
+    color: ["#ffc251", "#dd562c", "#e9a423", "#d8722e"],
+    behavior: behaviors.MOLTEN,
+    category: "states",
+    state: "liquid",
+    hidden: true,
+    density: 10650,
+    tempLow: 2330,
+    stateLow: "ruthenium"
+}
+elements.acid.ignore.push("ruthenium"),
+elements.acid.ignore.push("molten_ruthenium"),
+elements.acid_gas.ignore.push("ruthenium"),
+elements.acid_gas.ignore.push("molten_ruthenium")
 elements.technetium = {
 	color: ["#e7d9bb", "#bab195", "#8f8a70", "#66654e"],
-	behavior: [
-	"XX|XX|XX",
-	"XX|CH:neutron%0.07|XX",
-	"XX|XX|XX",
-	],
+	behavior: behaviors.WALL,
+    tick: function(pixel){
+        if(Math.random() < 0.0007){
+        for (var i = 0; i < squareCoords.length; i++) {
+            var coord = squareCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (isEmpty(x, y)){
+                createPixel("positron", x, y)
+                break;
+            }
+        }
+        changePixel(pixel, "ruthenium", false);
+    }
+    },
 	category: "solids",
 	state: "solid",
 	tempHigh: 2157,
@@ -88,14 +121,24 @@ elements.technetium = {
 },
  elements.molten_technetium = {
 	color: ["#d16b42", "#da904c", "#dfb360", "#e2d57f"],
-	behavior: behaviors.LIQUID,
-	tick: function(pixel) {
-		if (Math.random() < 0.0007) {
-			changePixel(pixel, "neutron", false);
-		}
-	},
+	behavior: behaviors.MOLTEN,
+	tick: function(pixel){
+        if(Math.random() < 0.0007){
+        for (var i = 0; i < squareCoords.length; i++) {
+            var coord = squareCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (isEmpty(x, y)){
+                createPixel("positron", x, y)
+                break;
+            }
+        }
+        changePixel(pixel, "ruthenium", false);
+    }
+    },
 	category: "states",
 	state: "liquid",
+    hidden: true,
 	tempLow: 2140,
 	temp: 2200,
 	stateLow: "technetium",
