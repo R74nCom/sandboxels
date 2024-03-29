@@ -80,3 +80,15 @@ elements.Voidmetal = {
     state:  "solid",
     density: 200,
 };
+elements.Cosmilite = {
+    color: ["#473d4f", "#381e4d", "#6c5b7a", "#baa3cc", "#7d0bd6"],
+    behavior: 
+    [
+        ["CR:light%0.005","CR:light%0.005","CR:light%0.005"],
+        ["CR:light%0.005","XX","CR:light%0.005"],
+        ["M2","M1","M2"]
+    ],
+    category: "powders",
+    state:  "solid",
+    density: 200,
+};
