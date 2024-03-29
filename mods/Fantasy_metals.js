@@ -62,3 +62,10 @@ elements.Luminite = {
     state:  "solid",
     density: 200,
 };
+elements.Etherium = {
+    color: ["#4b5f66", "#363d40", "#545b5e", "#2b363b", "#4a5559"],
+    behavior: behaviors.POWDER,
+    category: "powders",
+    state:  "solid",
+    density: 200,
+};
