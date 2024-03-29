@@ -69,3 +69,14 @@ elements.Etherium = {
     state:  "solid",
     density: 200,
 };
+elements.Voidmetal = {
+    color: ["#4b5f66", "#363d40", "#545b5e", "#2b363b", "#4a5559"],
+    behavior: [
+        ["DL%0.01","DL%0.01","DL%0.01"],
+        ["DL%0.01","XX","DL%0.01"],
+        ["M2 AND DL%0.01","M1 AND DL%0.01","M2 AND DL%0.01"]
+    ],
+    category: "powders",
+    state:  "solid",
+    density: 200,
+};
