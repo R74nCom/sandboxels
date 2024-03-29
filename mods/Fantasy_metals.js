@@ -92,3 +92,15 @@ elements.Cosmilite = {
     state:  "solid",
     density: 200,
 };
+elements.Diathrylium = {
+    color: ["#3d5c80", "#688fbd", "#b5bdc7", "#8aafde", "#2765b3", "#213c5c"],
+    behavior: 
+    [
+        ["CR:electric%0.005","CR:electric%0.005","CR:electric%0.005"],
+        ["CR:electric%0.005","XX","CR:electric%0.005"],
+        ["M2","M1","M2"]
+    ],
+    category: "powders",
+    state:  "solid",
+    density: 200,
+};
