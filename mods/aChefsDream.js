@@ -385,6 +385,8 @@ elements.test = {
 }
 */
 
+console.log("Thanks fro using aChefsDream.js! -sqec")
+
 function interpolateRgb(rgb1, rgb2, ratio) {
     const interpolatedRgb = {
       r: Math.round(rgb1.r + (rgb2.r - rgb1.r) * ratio),
