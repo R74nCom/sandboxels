@@ -385,7 +385,7 @@ elements.test = {
 }
 */
 
-console.log("Thanks fro using aChefsDream.js! -sqec")
+console.log("Thanks for using aChefsDream.js! -sqec")
 
 function interpolateRgb(rgb1, rgb2, ratio) {
     const interpolatedRgb = {
