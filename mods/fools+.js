@@ -3,6 +3,7 @@
 // i'm sorry, here's some poorly made ascii art bleach for your eyes
 // tbh most of it was copied from index.html or fools.js
 // moss inspired
+// code messy don't read
 /*
 _____
 |   |
@@ -34,7 +35,9 @@ funnysavenames = ["identity theft","the saveinator","Save 95","nuclear reactor",
         "untextured unrigged blender brick","rebar","the giant enemy spider",
         "statue of ryan","🟩","🟥","the temple of ryan","🌳 🌳 🌳","R74n ripoff",
         "the powder toy","tpt save","save from tpt","sand:box save","sandspiel save",
-        "cool plane","big mac with uranium"]
+        "cool plane","big mac with uranium","nyc","mountain thing","Slot NaN","Slot 1",
+        "Slot 1.5","Slot pi","Slot golden ratio","Slot Infinity","Computer thing","Pro Kitchen",
+        "Airport","Coconut Plantation","Eiffel Tower","car"]
 
 allproperties = {}
 
@@ -188,7 +191,7 @@ runAfterLoad(function() {
     // randomize background color
     document.body.style.backgroundColor = "rgb(" + Math.floor(Math.random() * 256) + "," + Math.floor(Math.random() * 256) + "," + Math.floor(Math.random() * 256) + ")"
     document.body.style.color = "rgb(" + Math.floor(Math.random() * 256) + "," + Math.floor(Math.random() * 256) + "," + Math.floor(Math.random() * 256) + ")"
-    document.body.style.textShadow = "35px 35px white";
+    document.body.style.textShadow = "20px 0px "+getRandomHexColor();
     // replace choose element so it's impossible to find any element
     chooseElementPrompt = function() {
         alert("This feature is disabled for April Fools Day :)")
@@ -240,6 +243,9 @@ runAfterLoad(function() {
     // Add elements to new object in shuffled order
     elementsList.forEach(key => {
         shuffledElements[key] = elements[key];
+
+    // blurs page
+    document.body.style.filter = "blur(0.8px)";
 });
 
 // Replace original with shuffled version
@@ -282,5 +288,12 @@ setInterval(function(){
     }
     if (Math.random() < 0.05) {
         tps = 30
+    }
+    // every once in a while, everythign randomises
+    if (Math.random() < 0.1) {
+        document.body.style.color = getRandomHexColor();
+        document.body.style.textShadow = "20px 0px "+getRandomHexColor();
+        document.body.style.backgroundColor = "rgb(" + Math.floor(Math.random() * 256) + "," + Math.floor(Math.random() * 256) + "," + Math.floor(Math.random() * 256) + ")"
+        setSetting('bg',getRandomHexColor());
     }
 }, 200);
