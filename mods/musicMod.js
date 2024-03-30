@@ -53,7 +53,7 @@ elements.note_block_very_high = {
 	color: “#dc1212",
 	behavior: behaviors.WALL,
 	state: "solid",
-	category: “music",
+	category: “machines",
 	density: 1200,
 	hardness: 0.2,
 	breakInto: ["plastic","metal_scrap","metal_scrap","metal_scrap"],
@@ -67,13 +67,13 @@ elements.note_block_very_high = {
 		delay: 0,
 		debounce: 0,
 		debounceLength: tps,
-	},
+},
 
 elements.note_block_high = {
 	color: "#e5359f",
 	behavior: behaviors.WALL,
 	state: "solid",
-	category: “music",
+	category: “machines",
 	density: 1200,
 	hardness: 0.2,
 	breakInto: ["plastic","metal_scrap","metal_scrap","metal_scrap"],
@@ -87,14 +87,14 @@ elements.note_block_high = {
 		delay: 0,
 		debounce: 0,
 		debounceLength: tps,
-	},
+},
 
 
 elements.note_block = {
 	color: "#ee33ee",
 	behavior: behaviors.WALL,
 	state: "solid",
-	category: “music",
+	category: “machines",
 	density: 1200,
 	hardness: 0.2,
 	breakInto: ["plastic","metal_scrap","metal_scrap","metal_scrap"],
@@ -108,7 +108,7 @@ elements.note_block = {
 		delay: 0,
 		debounce: 0,
 		debounceLength: tps,
-	},
+},
 
 
 elements.note_block_low = {
@@ -123,19 +123,19 @@ elements.note_block_low = {
 	properties: {
 		frequency: 300,
 		type: "sine",
-		endType: "music",
+		endType: "machines",
 		length: 0.5,
 		volume: 1,
 		delay: 0,
 		debounce: 0,
 		debounceLength: tps,
-	},
+},
 
 elements.note_block_very_low = {
 	color: "#3310d8",
 	behavior: behaviors.WALL,
 	state: "solid",
-	category: "music",
+	category: "machines",
 	density: 1200,
 	hardness: 0.2,
 	breakInto: ["plastic","metal_scrap","metal_scrap","metal_scrap"],
@@ -149,13 +149,13 @@ elements.note_block_very_low = {
 		delay: 0,
 		debounce: 0,
 		debounceLength: tps,
-	},
+},
 
 elements.note_block_super_low = {
 	color: “#12c6dc",
 	behavior: behaviors.WALL,
 	state: "solid",
-	category: “music",
+	category: “machines",
 	density: 1200,
 	hardness: 0.2,
 	breakInto: ["plastic","metal_scrap","metal_scrap","metal_scrap"],
@@ -169,13 +169,13 @@ elements.note_block_super_low = {
 		delay: 0,
 		debounce: 0,
 		debounceLength: tps,
-	},
+},
 
 elements.note_block_test = {
 	color: “#ffffff",
 	behavior: behaviors.WALL,
 	state: "solid",
-	category: “music",
+	category: “machines",
 	density: 1200,
 	hardness: 0.2,
 	breakInto: ["plastic","metal_scrap","metal_scrap","metal_scrap"],
@@ -189,13 +189,13 @@ elements.note_block_test = {
 		delay: 0,
 		debounce: 0,
 		debounceLength: tps,
-	},
+},
 
 elements.note_block_loud = {
 	color: "#000000",
 	behavior: behaviors.WALL,
 	state: "solid",
-	category: “music",
+	category: “machines",
 	density: 1200,
 	hardness: 0.2,
 	breakInto: ["plastic","metal_scrap","metal_scrap","metal_scrap"],
@@ -210,12 +210,13 @@ elements.note_block_loud = {
 		debounce: 0,
 		debounceLength: tps,
 	tick: function(pixel) {
+},
 
 elements.note_block_long = {
 	color: "#23ab0f",
 	behavior: behaviors.WALL,
 	state: "solid",
-	category: “music",
+	category: “machines",
 	density: 1200,
 	hardness: 0.2,
 	breakInto: ["plastic","metal_scrap","metal_scrap","metal_scrap"],
@@ -230,12 +231,14 @@ elements.note_block_long = {
 		debounce: 0,
 		debounceLength: tps,
 	tick: function(pixel) {
+		
+},
 
 elements.note_block_beep = {
 	color: "#f8e258",
 	behavior: behaviors.WALL,
 	state: "solid",
-	category: “music",
+	category: “machines",
 	density: 1200,
 	hardness: 0.2,
 	breakInto: ["plastic","metal_scrap","metal_scrap","metal_scrap"],
@@ -250,11 +253,12 @@ elements.note_block_beep = {
 		debounce: 0,
 		debounceLength: tps,
 	tick: function(pixel) {
+},
 
 elements.note_connecter_fast = {
     color: "#ac2b2b",
     behavior: behaviors.WALL,
-    category: "music",
+    category: "machines",
     insulate: true,
     conduct: 2,
     noMix: true,
@@ -263,7 +267,7 @@ elements.note_connecter_fast = {
 elements.note_connecter = {
     color: "#c8c22d",
     behavior: behaviors.WALL,
-    category: "music",
+    category: "machines",
     insulate: true,
     conduct: 1,
     noMix: true,
@@ -272,7 +276,7 @@ elements.note_connecter = {
 elements.note_connecter_slow = {
     color: "#2d6fc8",
     behavior: behaviors.WALL,
-    category: "music",
+    category: "machines",
     insulate: true,
     conduct: 0.5,
     noMix: true,
@@ -281,7 +285,7 @@ elements.note_connecter_slow = {
 elements.note_connecter_very_slow = {
     color: "#184584",
     behavior: behaviors.WALL,
-    category: "music",
+    category: "machines",
     insulate: true,
     conduct: 0.1,
     noMix: true,
