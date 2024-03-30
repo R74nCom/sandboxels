@@ -109,3 +109,27 @@ elements.molten_rutherfordium = {
     stateLow: "rutherfordium",
     density: 17000,
 }
+
+elements.dubnium = {
+    category: "solids",
+    state: "solid",
+    density: 21600,
+    color: ["#495057", "#dee2e6", "#ced4da", "#a61e4d"],
+    behavior: [
+        "XX|CR:radiation%1|XX",
+        "CR:radiation%1|XX|CR:radiation%1",
+        "XX|CR:radiation%1|XX",
+    ],
+}
+
+elements.seaborgium = {
+    category: "solids",
+    state: "solid",
+    density: 23500,
+    color: ["#ced4da", "#adb5bd", "#868e96", "#339af0", "#4dabf7", "#4263eb", "#3b5bdb", "#1864ab"],
+    behavior: [
+        "XX|CR:radiation%1|XX",
+        "CR:radiation%1|XX|CR:radiation%1",
+        "XX|CR:radiation%1|XX",
+    ],
+}
