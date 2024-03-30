@@ -2,7 +2,7 @@
 Created by SquareScreamYT/sqec <@918475812884344852>
 Thanks to RealerRaddler <@914371295561535508>, Alice <@697799964985786450>, nousernamefound <@316383921346707468>, Adora the Transfem <@778753696804765696> and Fioushemastor <@738828785482203189> for helping :)
 
-v1.10.8
+v1.11
 
 you can support me at my youtube: https://youtube.com/@sqec
 
@@ -43,6 +43,7 @@ Upcoming Features:
 - juice reaction with milk makes average color
 - juice reaction with other juices
 - jackfruit
+- food coloring
 
 Changelog (v1.0)
     - added chickens
@@ -364,6 +365,13 @@ Changelog (v1.10.8)
     - added durians
     - added cut durians
     - added durian seed, wood, leaves and branches
+
+
+
+
+Changelog (v1.11)
+    - unhid carrot
+    - unhid turnip
 
 
 
@@ -2773,7 +2781,6 @@ elements.carrot = {
     breakInto: "carrot_juice",
     state: "solid",
     density: 1050,
-    hidden: true,
     freezeDryInto: "freeze_dried_fruits",
     freezeDryIntoColor: "#ba8125",
 }
@@ -2942,7 +2949,6 @@ elements.turnip = {
     breakInto: "turnip_juice",
     state: "solid",
     density: 1050,
-    hidden: true,
     freezeDryInto: "freeze_dried_fruits",
     freezeDryIntoColor: "#79097d",
 }
