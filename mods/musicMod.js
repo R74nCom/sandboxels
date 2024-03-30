@@ -67,7 +67,7 @@ elements.note_block_very_high = {
 		delay: 0,
 		debounce: 0,
 		debounceLength: tps,
-	},
+},
 
 elements.note_block_high = {
 	color: "#e5359f",
@@ -87,7 +87,7 @@ elements.note_block_high = {
 		delay: 0,
 		debounce: 0,
 		debounceLength: tps,
-	},
+},
 
 
 elements.note_block = {
@@ -108,14 +108,14 @@ elements.note_block = {
 		delay: 0,
 		debounce: 0,
 		debounceLength: tps,
-	},
+},
 
 
 elements.note_block_low = {
 	color: "#7310a7",
 	behavior: behaviors.WALL,
 	state: "solid",
-	category: "machines",
+	category: "music",
 	density: 1200,
 	hardness: 0.2,
 	breakInto: ["plastic","metal_scrap","metal_scrap","metal_scrap"],
@@ -129,7 +129,7 @@ elements.note_block_low = {
 		delay: 0,
 		debounce: 0,
 		debounceLength: tps,
-	},
+},
 
 elements.note_block_very_low = {
 	color: "#3310d8",
@@ -149,7 +149,7 @@ elements.note_block_very_low = {
 		delay: 0,
 		debounce: 0,
 		debounceLength: tps,
-	},
+},
 
 elements.note_block_super_low = {
 	color: “#12c6dc",
@@ -169,7 +169,7 @@ elements.note_block_super_low = {
 		delay: 0,
 		debounce: 0,
 		debounceLength: tps,
-	},
+},
 
 elements.note_block_test = {
 	color: “#ffffff",
@@ -189,7 +189,7 @@ elements.note_block_test = {
 		delay: 0,
 		debounce: 0,
 		debounceLength: tps,
-	},
+},
 
 elements.note_block_loud = {
 	color: "#000000",
@@ -210,6 +210,7 @@ elements.note_block_loud = {
 		debounce: 0,
 		debounceLength: tps,
 	tick: function(pixel) {
+},
 
 elements.note_block_long = {
 	color: "#23ab0f",
@@ -230,7 +231,8 @@ elements.note_block_long = {
 		debounce: 0,
 		debounceLength: tps,
 	tick: function(pixel) {
-
+},
+		
 elements.note_block_beep = {
 	color: "#f8e258",
 	behavior: behaviors.WALL,
@@ -250,6 +252,7 @@ elements.note_block_beep = {
 		debounce: 0,
 		debounceLength: tps,
 	tick: function(pixel) {
+},
 
 elements.note_connecter_fast = {
     color: "#ac2b2b",
