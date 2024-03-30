@@ -105,3 +105,13 @@ elements.Diathrylium = {
     density: 200,
     temp: 0,
 };
+elements.Kiaxorite = {
+    color: ["#bac942", "#b8bf7c", "#738008", "#6a7035", "#6a7035"],
+    behavior: behaviors.POWDER,
+    category: "powders",
+    state:  "solid",
+    density: 200,
+    reactions: {
+        "Diathrylium": {elem1: "bomb", elem2: null}
+    },
+};
