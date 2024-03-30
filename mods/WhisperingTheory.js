@@ -27,6 +27,13 @@ elements.roomtemper = {
 	movable: false,
 };
 
+elements.cold_fire.behavior = [
+    "M1|M1|M1",
+    "M2|DL%8|M2",
+    "XX|M2|XX",
+];
+
+// powder
 elements.powder_heater = {
     category: "machines",
     behavior: [
@@ -60,7 +67,7 @@ elements.powder_superheater = {
     insulate: true,
 };
 
-elements.powder_freeze = {
+elements.powder_freezer = {
     category: "machines",
     behavior: [
         "XX|CO:10|XX",
@@ -71,29 +78,13 @@ elements.powder_freeze = {
     insulate: true,
 };
 
-elements.cold_fire.behavior = [
-    "M1|M1|M1",
-    "M2|DL%8|M2",
-    "XX|M2|XX",
-];
-
+// gas
 elements.gas_heater = {
     color: "#881111",
     behavior: [
         "M2|M1 AND HT:2|M2",
         "M1 AND HT:2|XX|M1 AND HT:2",
         "M2|M1 AND HT:2 | M2",
-    ],
-    category: "machines",
-    insulate: true,
-};
-
-elements.gas_superheater = {
-    color: "#dd1111",
-    behavior: [
-        "M2|M1 AND HT:10|M2",
-        "M1 AND HT:10|XX|M1 AND HT:10",
-        "M2|M1 AND HT:10|M2",
     ],
     category: "machines",
     insulate: true,
@@ -110,6 +101,17 @@ elements.gas_cooler = {
     insulate: true,
 };
 
+elements.gas_superheater = {
+    color: "#dd1111",
+    behavior: [
+        "M2|M1 AND HT:10|M2",
+        "M1 AND HT:10|XX|M1 AND HT:10",
+        "M2|M1 AND HT:10|M2",
+    ],
+    category: "machines",
+    insulate: true,
+};
+
 elements.gas_freezer = {
     color: "#1111dd",
     behavior: [
@@ -118,5 +120,50 @@ elements.gas_freezer = {
         "M2|M1 AND CO:10|M2",
     ],
     category: "machines",
+    insulate: true,
+};
+
+// antipowder
+elements.anti_heater = {
+    color: "#881111",
+    behavior: [
+        "M2|M1 AND HT:2|M2",
+        "HT:2|XX|HT:2",
+        "XX|HT:2|XX",
+    ],
+    category: "special",
+    insulate: true,
+};
+
+elements.anti_cooler = {
+    color: "#111188",
+    behavior: [
+        "M2|M1 AND CO:2|M2",
+        "CO:2|XX|CO:2",
+        "XX:CO:2|XX",
+    ],
+    category: "special",
+    insulate: true,
+};
+
+elements.anti_superheater = {
+    color: "#881111",
+    behavior: [
+        "M2|M1 AND HT:10|M2",
+        "HT:10|XX|HT:10",
+        "XX|HT:10|XX",
+    ],
+    category: "special",
+    insulate: true,
+};
+
+elements.anti_freezer = {
+    color: "#1111dd",
+    behavior: [
+        "M2|M1 AND CO:10|M2",
+        "CO:10|XX|CO:10",
+        "XX:CO:10|XX",
+    ],
+    category: "special",
     insulate: true,
 };
