@@ -103,4 +103,5 @@ elements.Diathrylium = {
     category: "powders",
     state:  "solid",
     density: 200,
+    temp: 0,
 };
