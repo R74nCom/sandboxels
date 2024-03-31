@@ -663,7 +663,7 @@ elements.liquid_oxygen_spout = {
     tempHigh: 1455.5,
     stateHigh: "molten_steel",
     conduct: 0.42,
-    temp: -190,
+    temp: -184,
     behavior: [
         "XX|CR:liquid_oxygen|XX",
         "CR:liquid_oxygen|XX|CR:liquid_oxygen",
@@ -678,7 +678,7 @@ elements.liquid_hydrogen_spout = {
     tempHigh: 1455.5,
     stateHigh: "molten_steel",
     conduct: 0.42,
-    temp: -190,
+    temp: -254,
     behavior: [
         "XX|CR:liquid_hydrogen|XX",
         "CR:liquid_hydrogen|XX|CR:liquid_hydrogen",
@@ -693,7 +693,6 @@ elements.perfume_spout = {
     tempHigh: 1455.5,
     stateHigh: "molten_steel",
     conduct: 0.42,
-    temp: -190,
     behavior: [
         "XX|CR:perfume|XX",
         "CR:perfume|XX|CR:perfume",
@@ -708,7 +707,6 @@ elements.cyanide_spout = {
     tempHigh: 1455.5,
     stateHigh: "molten_steel",
     conduct: 0.42,
-    temp: -190,
     behavior: [
         "XX|CR:cyanide|XX",
         "CR:cyanide|XX|CR:cyanide",
