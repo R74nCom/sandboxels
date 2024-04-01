@@ -1,6 +1,6 @@
 /*
 Created by SquareScreamYT/sqec <@918475812884344852>
-Thanks to RealerRaddler <@914371295561535508>, Alice <@697799964985786450>, nousernamefound <@316383921346707468>, Adora the Transfem <@778753696804765696> and Fioushemastor <@738828785482203189> for helping :)
+Thanks to RealerRaddler <@914371295561535508>, Alice <@697799964985786450>, nousernamefound <@316383921346707468>, Adora the Transfem <@778753696804765696>, ryan(R74n) <@101070932608561152> and Fioushemastor <@738828785482203189> for helping :)
 
 v1.12
 
@@ -42,7 +42,6 @@ Upcoming Features:
 - juice reaction with milk makes average color
 - juice reaction with other juices
 - jackfruit
-- food coloring
 - barbecueing meats
 - bbq sauce
 - mustard
