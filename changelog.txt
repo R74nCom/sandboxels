@@ -7,6 +7,74 @@ See sneak peaks for upcoming updates on the Discord: https://discord.gg/ejUc6YPQ
 
 A fancier version of this changelog can be found here: https://sandboxels.R74n.com/changelog
 
+[Version 5.9.1 - April 1, 2024 - Multiversal Update]
+    + Multiverse Time Travel
+        + Use Timeline controls to navigate multidimensional space
+        + Split off from your current timeline
+    + Eat tool
+    + Mirror Dimension
+        + Access by throwing a test subject into a Mirror Portal
+    + Moon
+    + Moon Rock (Hidden)
+    + Freeze tool
+    + Freeze Ray
+    + Air
+    + UFO
+    + Life Force
+    + Carbon
+    + Photon
+    + Electron
+    + BBQ Sauce
+    + Mustard
+    + Holy Grenade
+    + Ice Ten
+    + Love (Amends anuran ailments)
+    + Love Bomb
+    + Dirt Bomb
+    + Cluster Cluster Bomb
+    + Cherry
+    + Blueberry
+    + Olive
+    + Blue Cheese
+    + Toad
+    + Mouse
+    + Basketball
+    + Baseball
+    + Tennis Ball
+    + Quirky Paint
+    + Pen tool
+    + Cursor
+    + Powder
+    + Footprint
+    + Light Ice (Hidden)
+    + Big Bang (Hidden)
+   [Changes]
+    + 68% of Humans are lactose intolerant
+    + 1% of Humans are gluten intolerant
+    + Humans now drink Water
+    - Removed Gender Binary
+    + Fireflies have a distinct sound
+    + Bless converts Antimatter and Strange Matter to Normal Matter
+    + Bless removes money, the root of all evil
+    + Bless converts Plastic to eco-friendly Paper
+    + Bless converts Water to Wine
+    + Pb&J recipe
+    + Helium can freeze again
+    + Helium increases pitch of Human voice
+    - Removed Blood
+    ~ Birds have been recolored as tribute
+    ~ Udders produce many kinds of Milk
+    ~ Cheerful Mode now hides ALL weapons
+    ~ Moved Firework to Machines
+    ~ Moved Ball to Special
+    ~ Renamed Gray Goo to Grey Goo
+    ~ Renamed Molten Tin to Moltin
+    ~ Unhid Supernova
+    + Re-added Cluster Bomb
+   [Bug Fixes]
+    ~ Fixed: Water is not wet
+    ~ Fixed: Not foolish enough
+
 [Version 1.9.4 - March 17, 2024 - Natural Disasters]
     + Tornado
     + Earthquake
