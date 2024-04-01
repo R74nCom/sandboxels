@@ -43,6 +43,9 @@ Upcoming Features:
 - juice reaction with other juices
 - jackfruit
 - food coloring
+- barbecueing meats
+- bbq sauce
+- mustard
 
 Changelog (v1.0)
     - added chickens
@@ -385,6 +388,8 @@ Changelog (v1.12)
     - added burnt marshmallows
     - improved soup (from nousersthings.js)
     - added food coloring (color may fade)
+    - added eat tool
+    - added drink tool
 
 
 
@@ -503,6 +508,27 @@ elements.freeze_dry = {
     category: "tools",
     excludeRandom: true,
     desc: "Use on pixels to freeze dry them, if possible."
+}
+
+elements.eat = {
+    color: ["#ffba79","#efff79"],
+    tool: function(pixel) {
+        if (elements[pixel.element].isFood || elements[pixel.element].category === "food" || eLists.JUICEMIXABLE.includes(pixel.element) || elements[pixel.element].id === elements.uranium.id || elements[pixel.element].id === elements.mercury.id) {
+            deletePixel(pixel.x, pixel.y);
+        }
+    },
+    category: "tools",
+    desc: "Eats pixels."
+}
+elements.drink = {
+    color: ["#03c6fc","#03a1fc"],
+    tool: function(pixel) {
+        if (elements[pixel.element].state === "liquid") {
+            deletePixel(pixel.x, pixel.y);
+        }
+    },
+    category: "tools",
+    desc: "Drinks pixels."
 }
 
 eLists.JUICEMIXABLE = ["juice"];
@@ -723,10 +749,8 @@ elements.soup = {
 				    soup.elemlist.push(ingredient.element)
 				    soup.stateHigh = soup.elemlist;
                 changePixel(ingredient, "soup");
-                // convert rgb to hex
                 var hex = RGBToHex(rgb);
                 soup.color = pixelColorPick(soup, hex);
-                // 50% change to delete ingredient
                 if (Math.random() < 0.5) { deletePixel(ingredient.x, ingredient.y); }
                 else {
                     ingredient.color = pixelColorPick(ingredient, hex);
