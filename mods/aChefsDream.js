@@ -7053,16 +7053,8 @@ elements.burnt_marshmallow = {
 elements.food_coloring = {
     color: ["#ff0000", "#ff8800", "#ffff00", "#00ff00", "#00ffff", "#0000ff", "#ff00ff"],
     behavior: behaviors.LIQUID,
-    reactions: {
-        "water": { elem2: null, chance: 0.05 },
-        "salt_water": { elem1: null, chance: 0.05 },
-        "sugar_water": { elem1: null, chance: 0.05 },
-        "seltzer": { elem1: null, chance: 0.05 },
-        "dirty_water": { elem1: null, chance: 0.05 },
-        "pool_water": { elem1: null, chance: 0.05 }
-    },
     customColor: true,
-    stain: 1,
+    stain: 0.5,
     tempHigh: 100,
     stateHigh: "steam",
     category: "food",
