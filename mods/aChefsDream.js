@@ -7055,7 +7055,7 @@ elements.burnt_marshmallow = {
     density: 959.97,
     hidden:true
 }
-
+eLists.FOODCOLORINGIGNORE = ["glass", "porcelain", "wall","iron","steel","copper","silver","aluminum","tungsten","gold","plastic"];
 elements.food_coloring = {
     color: ["#ff0000", "#ff8800", "#ffff00", "#00ff00", "#00ffff", "#0000ff", "#ff00ff"],
     behavior: behaviors.LIQUID,
@@ -7083,10 +7083,12 @@ elements.food_coloring = {
                 }
 		    	else {
                     if (!outOfBounds(pixelMap[x][y])) {
-                        let newrgb2 = interpolateRgb(getRGB(pixel.color), getRGB(pixelMap[x][y].color), 0.9);
-                        pixelMap[x][y].color = `rgb(${parseInt(newrgb2.r)},${parseInt(newrgb2.g)},${parseInt(newrgb2.b)})`;
-                        if (Math.random() < 0.002) {
-                            deletePixel(pixel.x,pixel.y)
+                        if (!eLists.FOODCOLORINGIGNORE.includes(pixelMap[x][y].element)) {
+                            let newrgb2 = interpolateRgb(getRGB(pixel.color), getRGB(pixelMap[x][y].color), 0.9);
+                            pixelMap[x][y].color = `rgb(${parseInt(newrgb2.r)},${parseInt(newrgb2.g)},${parseInt(newrgb2.b)})`;
+                            if (Math.random() < 0.002) {
+                                deletePixel(pixel.x,pixel.y)
+                            }
                         }
                     }
                 }
