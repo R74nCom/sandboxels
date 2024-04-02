@@ -395,6 +395,7 @@ Changelog (v1.12)
 
 Changelog (v1.12.1)
 	- removed coral, can still be found in ocean.js
+ 	- updated food coloring
 
 
 
@@ -7078,11 +7079,10 @@ elements.food_coloring = {
             if (!isEmpty(x, y, true)) {
                 if (pixelMap[x][y].element === "water" || pixelMap[x][y].element === "salt_water" || pixelMap[x][y].element === "sugar_water" || pixelMap[x][y].element === "seltzer" || pixelMap[x][y].element === "dirty_water" || pixelMap[x][y].element === "pool_water") {
                     changePixel(pixelMap[x][y], "food_coloring");
-                    let newrgb = interpolateRgb(getRGB(pixel.color), getRGB(pixelMap[x][y].color), 0.5);
-                    pixel.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
-                    pixelMap[x][y].color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+                    pixelMap[x][y].color = pixel.color
                 }
                 else {
+					if (pixelMap[x][y].element !== "food_coloring" || pixelMap[x][y].element !== "water" || pixelMap[x][y].element !== "salt_water" || pixelMap[x][y].element !== "sugar_water" || pixelMap[x][y].element !== "seltzer" || pixelMap[x][y].element !== "dirty_water" || pixelMap[x][y].element !== "pool_water")
                     pixelMap[x][y].color = pixel.color;
                     if (Math.random < 0.02) {
                         deletePixel(pixel.x,pixel.y)
@@ -7092,7 +7092,7 @@ elements.food_coloring = {
         }
     },
     onSelect: function () {
-        logMessage("Food Coloring May Fade when diluted with water.");
+        logMessage("Tip: You can spread food coloring using water.");
     },
 }
 
