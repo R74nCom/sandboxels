@@ -7095,3 +7095,5 @@ elements.food_coloring = {
         logMessage("Food Coloring May Fade when diluted with water.");
     },
 }
+
+elements.cooked_meat.behavior = behaviors.STURDYPOWDER;
