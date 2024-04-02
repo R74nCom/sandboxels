@@ -7081,4 +7081,4 @@ elements.food_coloring = {
     },
 }
 
-elements.cooked_meat.behavior = behaviors.STURDYPOWDER;
+elements.cooked_meat.behavior = behaviors.SUPPORT;
