@@ -2,7 +2,7 @@
 Created by SquareScreamYT/sqec <@918475812884344852>
 Thanks to RealerRaddler <@914371295561535508>, Alice <@697799964985786450>, nousernamefound <@316383921346707468>, Adora the Transfem <@778753696804765696>, ryan(R74n) <@101070932608561152> and Fioushemastor <@738828785482203189> for helping :)
 
-v1.12
+v1.12.2
 
 you can support me at my youtube: https://youtube.com/@sqec
 
@@ -396,6 +396,12 @@ Changelog (v1.12)
 Changelog (v1.12.1)
 	- removed coral, can still be found in ocean.js
  	- updated food coloring
+
+
+
+
+Changelog (v1.12.2)
+    - updated cooked meat behavior
 
 
 
@@ -7049,27 +7055,19 @@ elements.burnt_marshmallow = {
     density: 959.97,
     hidden:true
 }
-
+eLists.FOODCOLORINGIGNORE = ["glass", "porcelain", "wall","iron","steel","copper","silver","aluminum","tungsten","gold","plastic"];
 elements.food_coloring = {
     color: ["#ff0000", "#ff8800", "#ffff00", "#00ff00", "#00ffff", "#0000ff", "#ff00ff"],
     behavior: behaviors.LIQUID,
-    reactions: {
-        "water": { elem2: null, chance: 0.05 },
-        "salt_water": { elem1: null, chance: 0.05 },
-        "sugar_water": { elem1: null, chance: 0.05 },
-        "seltzer": { elem1: null, chance: 0.05 },
-        "dirty_water": { elem1: null, chance: 0.05 },
-        "pool_water": { elem1: null, chance: 0.05 }
-    },
     customColor: true,
-    stain: 1,
+    stain: 0.5,
     tempHigh: 100,
     stateHigh: "steam",
     category: "food",
     state: "liquid",
     density: 998,
     stainSelf: true,
-    ignore: ["glass", "porcelain", "wall"],
+    ignore: ["glass", "porcelain", "wall","iron","steel","copper","silver","aluminum","tungsten","gold","plastic"],
     desc: "coloring for food. color may fade when diluting with water.",
     tick: function (pixel) {
         for (var i = 0; i < squareCoords.length; i++) {
@@ -7079,7 +7077,20 @@ elements.food_coloring = {
             if (!isEmpty(x, y, true)) {
                 if (pixelMap[x][y].element === "water" || pixelMap[x][y].element === "salt_water" || pixelMap[x][y].element === "sugar_water" || pixelMap[x][y].element === "seltzer" || pixelMap[x][y].element === "dirty_water" || pixelMap[x][y].element === "pool_water") {
                     changePixel(pixelMap[x][y], "food_coloring");
-                    pixelMap[x][y].color = pixel.color
+                    let newrgb = interpolateRgb(getRGB(pixel.color), getRGB(pixelMap[x][y].color), 0.5);
+                    pixel.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+                    pixelMap[x][y].color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+                }
+		    	else {
+                    if (!outOfBounds(pixelMap[x][y])) {
+                        if (!eLists.FOODCOLORINGIGNORE.includes(pixelMap[x][y].element)) {
+                            let newrgb2 = interpolateRgb(getRGB(pixel.color), getRGB(pixelMap[x][y].color), 0.9);
+                            pixelMap[x][y].color = `rgb(${parseInt(newrgb2.r)},${parseInt(newrgb2.g)},${parseInt(newrgb2.b)})`;
+                            if (Math.random() < 0.002) {
+                                deletePixel(pixel.x,pixel.y)
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -7089,4 +7100,4 @@ elements.food_coloring = {
     },
 }
 
-elements.cooked_meat.behavior = behaviors.STURDYPOWDER;
+elements.cooked_meat.behavior = behaviors.SUPPORT;
