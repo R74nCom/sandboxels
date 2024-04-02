@@ -7073,6 +7073,13 @@ elements.food_coloring = {
                     changePixel(pixelMap[x][y], "food_coloring");
                     pixelMap[x][y].color = pixel.color
                 }
+		    	else {
+					if (pixelMap[x][y].element !== "food_coloring" || pixelMap[x][y].element !== "water" || pixelMap[x][y].element !== "salt_water" || pixelMap[x][y].element !== "sugar_water" || pixelMap[x][y].element !== "seltzer" || pixelMap[x][y].element !== "dirty_water" || pixelMap[x][y].element !== "pool_water")
+                    pixelMap[x][y].color = pixel.color;
+                    if (Math.random < 0.02) {
+                        deletePixel(pixel.x,pixel.y)
+                    }
+                }
             }
         }
     },
