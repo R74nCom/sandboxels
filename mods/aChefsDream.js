@@ -7071,7 +7071,7 @@ elements.food_coloring = {
     stainSelf: true,
     ignore: ["glass", "porcelain", "wall"],
     desc: "coloring for food. color may fade when diluting with water.",
-    tick: function (pixel) {
+    /*tick: function (pixel) {
         for (var i = 0; i < squareCoords.length; i++) {
             var coord = squareCoords[i];
             var x = pixel.x + coord[0];
@@ -7086,7 +7086,7 @@ elements.food_coloring = {
     },
     onSelect: function () {
         logMessage("Tip: You can spread food coloring using water.");
-    },
+    },*/
 }
 
 elements.cooked_meat.behavior = behaviors.STURDYPOWDER;
