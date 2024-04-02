@@ -20,7 +20,12 @@ elements.carbon_monoxide = {
                     "head": { elem2:"rotten_meat", chance:0.5 },
                     "body": { elem2:"rotten_meat", chance:0.5 },
                     "human": { elem2:"rotten_meat", chance:0.5 },
-                 }
+                    "plant": { elem1: null },
+                    "bird": { elem2: "rotten_meat", },
+                    "frog": { elem2: "slime", },
+                    "grass": {elem1: null },
+                    "water": {elem1: null },
+    }
 };
 elements.liquid_carbon_monoxide = {
          color: "#b5b5b5",
@@ -67,7 +72,7 @@ elements.computer = {
          density: 8908,
          tempHigh: 1414,
          stateHigh: "explosion",
- reactions: {
+reactions: {
                     "virus": { elem1 : null , elem2:"malware", chance:0.9 },
                     "water": { elem1: null , elem2: "electric" },                    
                  }
@@ -88,3 +93,19 @@ elements.carbon_monoxide_detector = {
       darkText: true,
       hardness: 1,
 };
+
+elements.electrons = {
+    color: "#b80606",
+    behavior: [
+        "XX|SH|XX", // shocks (adds charge)
+        "SH|DL%0.25|SH",
+        "XX|SH|XX",
+    ],
+    tick: behaviors.BOUNCY,
+    reactions: {},
+    temp: 20,
+    category: "energy",
+    state: "gas",
+    density: 0.000003,
+    ignoreAir: true
+}
