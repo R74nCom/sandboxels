@@ -167,3 +167,47 @@ elements.anti_freezer = {
     category: "special",
     insulate: true,
 };
+
+elements.heater_gas = {
+    color: "#881111",
+    behavior: [
+        "M2|M1 AND HT:2|M2",
+        "M1 AND HT:2|XX|M1 AND HT:2",
+        "M2|M1 aND HT:2|M2",
+    ],
+    category: "special",
+    insulate: true,
+}
+
+elements.cooler_gas = {
+    color: "#111188",
+    behavior: [
+        "M2|M1 AND CO:2|M2",
+        "M1 AND CO:2|XX|M1 AND CO:2",
+        "M2|M1 A ND CO:2|M2",
+    ],
+    category: "special",
+    insulate: true,
+}
+
+elements.superheater_gas = {
+    color: "#881111",
+    behavior: [
+        "M2|M1 AND H1:10|M2",
+        "M1 AND HT:10|XX|M1 AND HT:10",
+        "M2|M1 AND HT:10|M2",
+    ],
+    category: "special",
+    insulate: true,
+}
+
+elements.freezer_gas = {
+    color: "#1111dd",
+    behavior: [
+        "M2|M1 AND CO:10|M2",
+        "M1 AND CO:10|XX|M1 AND CO:10",
+        "M2|M1 AND CO:10|M2",
+    ],
+    category: "special",
+    insulate: true,
+}
