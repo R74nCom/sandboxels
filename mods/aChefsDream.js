@@ -1,8 +1,8 @@
 /*
 Created by SquareScreamYT/sqec <@918475812884344852>
-Thanks to RealerRaddler <@914371295561535508>, Alice <@697799964985786450>, nousernamefound <@316383921346707468>, Adora the Transfem <@778753696804765696> and Fioushemastor <@738828785482203189> for helping :)
+Thanks to RealerRaddler <@914371295561535508>, Alice <@697799964985786450>, nousernamefound <@316383921346707468>, Adora the Transfem <@778753696804765696>, ryan(R74n) <@101070932608561152> and Fioushemastor <@738828785482203189> for helping :)
 
-v1.11
+v1.12
 
 you can support me at my youtube: https://youtube.com/@sqec
 
@@ -21,7 +21,6 @@ Upcoming Features:
 - hot chocolate
 - cows and beef
 - celery
-- marshmallows, normal, cooked and burnt
 - kiwis
 - guavas
 - lychees
@@ -43,7 +42,9 @@ Upcoming Features:
 - juice reaction with milk makes average color
 - juice reaction with other juices
 - jackfruit
-- food coloring
+- barbecueing meats
+- bbq sauce
+- mustard
 
 Changelog (v1.0)
     - added chickens
@@ -376,6 +377,22 @@ Changelog (v1.11)
 
 
 
+Changelog (v1.12)
+    - added whisk
+    - added egg white
+    - added hard egg white
+    - added whisked egg white
+    - added marshmallows
+    - added cooked marshmallows
+    - added burnt marshmallows
+    - improved soup (from nousersthings.js)
+    - added food coloring (color may fade)
+    - added eat tool
+    - added drink tool
+
+
+
+
 */
 
 /*
@@ -438,7 +455,33 @@ elements.knife = {
     canPlace: false,
     desc: "Use on pixels to cut them, if possible."
 }
-
+elements.whisk = {
+    color: ["#a4a7b0","#a4a7b0","#a4a7b0","#bfc2c9","#e9eaf0","#bfc2c9","#a4a7b0"],
+    // other needed properties
+    tool: (pixel) => {
+        //store whiskInto as a variable for legibility
+        var whiskInto = elements[pixel.element].whiskInto;
+        //if there’s no whiskInto, it should equal undefined, which is falsey and !undefined = true
+        if (!whiskInto) { return };
+        //if whiskInto is an array, randomly pick one of its elements
+        if(whiskInto instanceof Array) {whiskInto = whiskInto[Math.floor(Math.random() * whiskInto.length)] };
+        //change pixel into the (chosen) element      
+        //changePixel(pixel, whiskInto)
+        if (shiftDown) {
+            if (Math.random() < 0.5) {
+                changePixel(pixel, whiskInto)
+            }
+        }
+        else if (!shiftDown) {
+            if (Math.random() < 0.1) {
+                changePixel(pixel, whiskInto)
+            }
+        }
+    },
+    category:"tools",
+    canPlace: false,
+    desc: "Use on pixels to whisk them, if possible."
+}
 elements.freeze_dry = {
     color: "#3a65b5",
     tool: function(pixel) {
@@ -464,6 +507,27 @@ elements.freeze_dry = {
     category: "tools",
     excludeRandom: true,
     desc: "Use on pixels to freeze dry them, if possible."
+}
+
+elements.eat = {
+    color: ["#ffba79","#efff79"],
+    tool: function(pixel) {
+        if (elements[pixel.element].isFood || elements[pixel.element].category === "food" || eLists.JUICEMIXABLE.includes(pixel.element) || elements[pixel.element].id === elements.uranium.id || elements[pixel.element].id === elements.mercury.id) {
+            deletePixel(pixel.x, pixel.y);
+        }
+    },
+    category: "tools",
+    desc: "Eats pixels."
+}
+elements.drink = {
+    color: ["#03c6fc","#03a1fc"],
+    tool: function(pixel) {
+        if (elements[pixel.element].state === "liquid") {
+            deletePixel(pixel.x, pixel.y);
+        }
+    },
+    category: "tools",
+    desc: "Drinks pixels."
 }
 
 eLists.JUICEMIXABLE = ["juice"];
@@ -665,7 +729,47 @@ elements.soup = {
     conduct: 0.03,
     stain: -0.01,
     isFood: true,
-    hidden: true,
+    //thanks to nouser
+    onMix: function(soup,ingredient) {
+        if (elements[ingredient.element].id !== elements.soup.id && elements[ingredient.element].id !== elements.broth.id) {
+            if (elements[ingredient.element].isFood || elements[ingredient.element].category === "food" || elements[ingredient.element].category === "liquids") {
+                var rgb1 = soup.color.match(/\d+/g);
+                var rgb2 = ingredient.color.match(/\d+/g);
+                // average the colors
+                var rgb = [
+                    Math.round((parseInt(rgb1[0])+parseInt(rgb2[0]))/2),
+                    Math.round((parseInt(rgb1[1])+parseInt(rgb2[1]))/2),
+                    Math.round((parseInt(rgb1[2])+parseInt(rgb2[2]))/2)
+                ];
+				if (!soup.elemlist){
+				    soup.elemlist = [];
+				}
+				    soup.decidedHigh = soup.elemlist[Math.floor(Math.random()*soup.elemlist.length)];
+				    soup.elemlist.push(ingredient.element)
+				    soup.stateHigh = soup.elemlist;
+                changePixel(ingredient, "soup");
+                var hex = RGBToHex(rgb);
+                soup.color = pixelColorPick(soup, hex);
+                if (Math.random() < 0.5) { deletePixel(ingredient.x, ingredient.y); }
+                else {
+                    ingredient.color = pixelColorPick(ingredient, hex);
+                }
+            }
+		}
+	},
+    tick: function(pixel) {
+		if (!pixel.decidedHigh){
+			pixel.decidedHigh = "steam";
+		}
+		if (pixel.temp > 100){
+			if (Math.random() < 0.5) {
+				changePixel(pixel, "steam");
+		    }
+            else {
+			    changePixel(pixel, pixel.decidedHigh)
+		    }
+		}
+	},
 }
 
 if (!elements.broth.reactions) elements.broth.reactions = {};
@@ -6917,3 +7021,142 @@ elements.durian_seed = {
         "XX|M1|XX",
     ],
 };
+elements.egg_white = {
+    color: "#edece8",
+    behavior: behaviors.LIQUID,
+    tempHigh: 100,
+    stateHigh: "hard_egg_white",
+    tempLow: 0,
+    stateLow: "hard_egg_white",
+    category: "food",
+    state: "liquid",
+    density: 1027.5,
+    viscosity: 270,
+    isFood: true,
+    whiskInto: "whisked_egg_white",
+}
+elements.hard_egg_white = {
+    color: "#dedddc",
+    behavior: behaviors.STURDYPOWDER,
+    tempHigh: 400,
+    stateHigh: "smoke",
+    category: "food",
+    hidden: true,
+    isFood: true,
+    state: "solid",
+    density: 1031
+}
+elements.milk.whiskInto = "cream";
+elements.cream.whiskInto = "whipped_cream";
+elements.egg.breakInto = ["egg_white","egg_white","yolk"]
+
+elements.whisked_egg_white ={
+    color: "#fefefe",
+    behavior: behaviors.LIQUID,
+    reactions: {
+        "corn_syrup": { elem1: "marshmallow", elem2: null, chance: 2 },
+        "sugar": { elem1: "marshmallow", elem2: null, chance: 2 },
+    },
+    viscosity: 1.5,
+    tempHigh: 1000,
+    stateHigh: ["smoke","steam"],
+    category: "food",
+    hidden: true,
+    isFood: true,
+    state: "liquid",
+    density: 959.97,
+}
+elements.marshmallow = {
+    color: "#fafafa",
+    behavior: [
+        "XX|XX|XX",
+        "ST:wood|XX|ST:wood",
+        "XX|M1|XX",
+    ],
+    viscosity: 1.5,
+    tempHigh: 70,
+    stateHigh: "cooked_marshmallow",
+    category: "food",
+    isFood: true,
+    state: "solid",
+    density: 959.97,
+}
+elements.cooked_marshmallow = {
+    color: "#f0dbb6",
+    behavior: [
+        "XX|XX|XX",
+        "ST:wood|XX|ST:wood",
+        "XX|M1|XX",
+    ],
+    viscosity: 1.5,
+    tempHigh: 150,
+    stateHigh: "burnt_marshmallow",
+    category: "food",
+    isFood: true,
+    state: "solid",
+    density: 959.97,
+    hidden:true
+}
+elements.burnt_marshmallow = {
+    color: "#29231a",
+    behavior: [
+        "XX|XX|XX",
+        "ST:wood|XX|ST:wood",
+        "XX|M1|XX",
+    ],
+    viscosity: 1.5,
+    tempHigh: 1000,
+    stateHigh: ["steam","caramel"],
+    category: "food",
+    isFood: true,
+    state: "solid",
+    density: 959.97,
+    hidden:true
+}
+
+elements.food_coloring = {
+    color: ["#ff0000", "#ff8800", "#ffff00", "#00ff00", "#00ffff", "#0000ff", "#ff00ff"],
+    behavior: behaviors.LIQUID,
+    reactions: {
+        "water": { elem2: null, chance: 0.05 },
+        "salt_water": { elem1: null, chance: 0.05 },
+        "sugar_water": { elem1: null, chance: 0.05 },
+        "seltzer": { elem1: null, chance: 0.05 },
+        "dirty_water": { elem1: null, chance: 0.05 },
+        "pool_water": { elem1: null, chance: 0.05 }
+    },
+    customColor: true,
+    stain: 1,
+    tempHigh: 100,
+    stateHigh: "steam",
+    category: "food",
+    state: "liquid",
+    density: 998,
+    stainSelf: true,
+    ignore: ["glass", "porcelain", "wall"],
+    desc: "coloring for food. color may fade when diluting with water.",
+    tick: function (pixel) {
+        for (var i = 0; i < squareCoords.length; i++) {
+            var coord = squareCoords[i];
+            var x = pixel.x + coord[0];
+            var y = pixel.y + coord[1];
+            if (!isEmpty(x, y, true)) {
+                if (pixelMap[x][y].element === "water" || pixelMap[x][y].element === "salt_water" || pixelMap[x][y].element === "sugar_water" || pixelMap[x][y].element === "seltzer" || pixelMap[x][y].element === "dirty_water" || pixelMap[x][y].element === "pool_water") {
+                    changePixel(pixelMap[x][y], "food_coloring");
+                    let newrgb = interpolateRgb(getRGB(pixel.color), getRGB(pixelMap[x][y].color), 0.5);
+                    pixel.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+                    pixelMap[x][y].color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+                }
+                else {
+                    pixelMap[x][y].color = pixel.color;
+                    if (Math.random < 0.02) {
+                        deletePixel(pixel.x,pixel.y)
+                    }
+                }
+            }
+        }
+    },
+    onSelect: function () {
+        logMessage("Food Coloring May Fade when diluted with water.");
+    },
+}
