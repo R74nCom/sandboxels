@@ -36,6 +36,9 @@ for (var i = 1; i <= 10000; i++){
         elements["element_"+i].reactions[elementslist[Math.floor(Math.random()*elementslist.length)]] = { elem1: elementslist[Math.floor(Math.random()*elementslist.length)], elem2: elementslist[Math.floor(Math.random()*elementslist.length)]}
     }
   //  console.log(i + " is done!")
+  //  console.log(i)
+  //  console.log(elements["element_"+i].behavior)
+  if (elements["element_" + i].density == i){
     console.log(i)
-    console.log(elements["element_"+i].behavior)
+  }
 }
