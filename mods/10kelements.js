@@ -39,6 +39,12 @@ for (var i = 1; i <= 10000; i++){
   //  console.log(i)
   //  console.log(elements["element_"+i].behavior)
   if (elements["element_" + i].density == i){
-    console.log(i)
+    console.log(i + "is unique because its density is the same as its id!")
+  }
+  for (var reaction in elements["element_" + i].reactions){
+    if (elements["element_" + i].reactions[reaction].elem1 == "supernova" || elements["element_" + i].reactions[reaction].elem2 == "supernova"){
+        console.log(i + " is scary due to its reaction with " + reaction)
+        elements["element_" + i].desc = "This is scary! Don't let it touch " + reaction
+    }
   }
 }
