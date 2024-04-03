@@ -15667,6 +15667,10 @@ window.onload = function() {
                 }
             }
         }
+        // if the user is in an input, return
+        if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") {
+            return;
+        }
         // [ or - = decrease the mouse size by 2
         if (e.keyCode == 219 || e.keyCode == 189) {
             if (shiftDown) {mouseSize = 1}
@@ -16219,7 +16223,21 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span> <input type="button" value="O
             </optgroup>
         </select></p>
         <p>Email us at <a href="mailto:contact@R74n.com">contact@R74n.com</a> for advertising, help, or education!</p>
-        <iframe id="newsletteriframe" width="450" height="250" style="border:1px solid #EEE; background:black; max-width:90%" frameborder="0" scrolling="no"></iframe>
+        <div id="newsletterFrame">Be notified when Sandboxels and other R74n projects are updated, along with ramblings from the developer!<br><br>
+            <form action="https://news.r74n.com/api/v1/free?nojs=true" method="post" class="form _form_1mxvn_6" novalidate="" target="_blank"><input type="hidden" name="first_url" value="https://news.r74n.com/embed"><input type="hidden" name="first_referrer"><input type="hidden" name="current_url" value="https://news.r74n.com/embed"><input type="hidden" name="current_referrer"><input type="hidden" name="referral_code"><input type="hidden" name="source" value="embed"><input type="hidden" name="referring_pub_id"><input type="hidden" name="additional_referring_pub_ids">
+            <input type="email" placeholder="Type your email..." name="email" style="padding:15px"><input type="submit" value="Subscribe" style="background: rgb(23, 166, 255); padding:15px; border-radius: 20px"></input>
+            </div>
+        <style>
+            #newsletterFrame {
+                max-width: 600px;
+                margin: auto;
+                padding: 5px;
+                padding-top: 15px;
+                padding-bottom: 15px;
+                border: white solid 2px;
+            }
+        </style>
+        <!-- <iframe id="newsletteriframe" width="450" height="250" style="border:1px solid #EEE; background:black; max-width:90%" frameborder="0" scrolling="no"></iframe>
         <script>
             window.addEventListener('load', function() {
                 document.getElementById("newsletteriframe").src = "https://news.r74n.com/embed";
@@ -16231,7 +16249,7 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span> <input type="button" value="O
                     document.getElementById("langCredit").style.display = "block";
                 }
             })
-        </script>
+        </script> -->
         <p>Support development by subscribing on <a href="https://www.patreon.com/R74n" rel="me" target="_blank">our Patreon</a>! Many benefits!!</p>
     </div>
 
