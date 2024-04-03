@@ -7083,7 +7083,7 @@ elements.food_coloring = {
                 }
 		    	else {
                     if (!outOfBounds(pixelMap[x][y])) {
-                        if (!eLists.FOODCOLORINGIGNORE.includes(pixelMap[x][y].element)) {
+                        if (!eLists.FOODCOLORINGIGNORE.includes(pixelMap[x][y].element) && pixelMap[x][y].element !== "glass" && pixelMap[x][y].element !== "porcelain" && pixelMap[x][y].element !== "wall" && pixelMap[x][y].element !== "plastic") {
                             let newrgb2 = interpolateRgb(getRGB(pixel.color), getRGB(pixelMap[x][y].color), 0.9);
                             pixelMap[x][y].color = `rgb(${parseInt(newrgb2.r)},${parseInt(newrgb2.g)},${parseInt(newrgb2.b)})`;
                             if (Math.random() < 0.002) {
