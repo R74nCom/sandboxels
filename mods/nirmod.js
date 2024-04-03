@@ -74,6 +74,14 @@ class Type {
 		this.temp = undefined;
 		this.reactions = undefined;
 		this.viscosity = undefined;
+		this.conduct = undefined;
+		this.burn = undefined;
+		this.burning = undefined;
+		this.burnTime = undefined;
+		this.burnInto = undefined;
+		this.breakInto = undefined;
+		this.properties = undefined;
+		this.maxSize = undefined;
 	}
 
 	setColor(color) {
@@ -87,38 +95,80 @@ class Type {
 	}
 }
 
-function createPowders() {
+function createNirmics() {
 	const Ni = new Type("nirme");
-	Ni.setColor("22b14c");
+	Ni.setColor(["#5fcf80", "#22b14c", "#157330"]);
 	Ni.behavior = bb.POWDER;
 	Ni.category = cat.POWDERS;
 	Ni.state = state.SOLID;
 	Ni.density = 1752;
+	Ni.tempHigh = 365;
+	Ni.stateHigh = "nirliquid";
 	Ni.reactions = {
 		"water": { elem1: "dull_nirme", elem2: null },
 		"salt_water": { elem1: "dull_nirme", elem2: null },
+		"sugar_water": { elem1: "dull_nirme", elem2: null },
+		"seltzer": { elem1: "dull_nirme", elem2: null },
+		"dirty_water": { elem1: "dull_nirme", elem2: null },
+		"pool_water": { elem1: "dull_nirme", elem2: null },
+		"slush": { elem1: "dull_nirme", elem2: null },
+		"diamond": { elem2: "emerald", chance: 0.002 },
+		"sulfur": { elem1: "pop", elem2: null },
 	}
 	Ni.Add();
 
 	const DNi = new Type("dull_nirme");
-	DNi.setColor("5c916c");
+	DNi.setColor(["#518a62", "#487355"]);
 	DNi.behavior = bb.STURDYPOWDER;
 	DNi.category = cat.STATES;
 	DNi.state = state.SOLID;
 	DNi.density = 1752;
+	DNi.tempHigh = 365;
+	DNi.stateHigh = "nirliquid";
 	DNi.hidden = true;
 	DNi.Add();
 
-	const Em = new Type("emerald");
-	Em.setColor(["#00f49f", "#2fe094", "#b3ffd6", "#5fd9c5"]);
-	Em.behavior = bb.POWDER;
-	Em.category = cat.POWDERS;
-	Em.state = state.SOLID;
-	Em.density = 2750;
-	Em.Add();
+	const Nl = new Type("nirliquid");
+	Nl.setColor(["#68cc86", "#60b378", "#579c6b"]);
+	Nl.behavior = bb.LIQUID;
+	Nl.category = cat.LIQUIDS;
+	Nl.state = state.LIQUID;
+	Nl.density = 1711;
+	Nl.tempLow = -17;
+	Nl.stateLow = "nirme";
+	Nl.Add();
+
+	const Nr = new Type("nirmoll");
+	Nr.setColor("22b14c");
+	Nr.behavior = [
+		"M2%2 |XX|M2%2 ",
+		"M2%10|XX|M2%10",
+		"M1%25|M1|M1%25",
+	]
+	Nr.category = cat.LIFE;
+	Nr.state = state.SOLID;
+	Nr.density = 40;
+	Nr.tempHigh = 50;
+	Nr.stateHigh = "nirme";
+	Nr.tempHigh = 0;
+	Nr.stateHigh = "nirme";
+	Nr.breakInto = ["nirme", "nirme", "blood"];
+	Nr.reactions = {
+		"water": { elem1: "nirme" },
+		"salt_water": { elem1: "nirme" },
+		"sugar_water": { elem1: "nirme" },
+		"seltzer": { elem1: "nirme" },
+		"dirty_water": { elem1: "nirme" },
+		"pool_water": { elem1: "nirme" },
+		"slush": { elem1: "nirme" },
+		"acid": { elem1: "nirme" },
+		"poison": { elem1: "nirme" },
+		"egg": { elem2: "nirmoll", chance: 0.001 },
+	}
+	Nr.Add();
 }
 
-function createMetals() {
+function createMinerals() {
 	const Tg = new Type("thingite");
 	Tg.setColor("4f5263");
 	Tg.behavior = bb.WALL;
@@ -127,6 +177,7 @@ function createMetals() {
 	Tg.density = 9408;
 	Tg.tempHigh = 700;
 	Tg.stateHigh = "molten_thingite";
+	Tg.conduct = 0.41;
 	Tg.Add();
 
 	const MTg = new Type("molten_thingite");
@@ -149,6 +200,7 @@ function createMetals() {
 	Or.density = 12403;
 	Or.tempHigh = 1600;
 	Or.stateHigh = "molten_orangium";
+	Or.conduct = 0.26;
 	Or.Add();
 
 	const MOr = new Type("molten_orangium");
@@ -162,7 +214,59 @@ function createMetals() {
 	MOr.stateLow = "orangium";
 	MOr.hidden = true;
 	MOr.Add();
+
+	const Em = new Type("emerald");
+	Em.setColor(["#30e389", "#3ac98c", "#b3ffd6", "#5fd9c5"]);
+	Em.behavior = bb.POWDER;
+	Em.category = cat.POWDERS;
+	Em.state = state.SOLID;
+	Em.density = 2750;
+	Em.Add();
 }
 
-createPowders();
-createMetals();
+function createOther() {
+	const Fw = new Type("firewall");
+	Fw.setColor(["#ff6b21","#ffa600","#ff4000"]);
+	Fw.behavior = bb.WALL;
+	Fw.category = cat.SOLIDS;
+	Fw.state = state.SOLID;
+	Fw.density = 100;
+	Fw.temp = 600;
+	Fw.tempLow = 100;
+	Fw.stateLow = "wall";
+	Fw.tempHigh = 7000;
+	Fw.stateHigh = "plasma";
+	Fw.breakInto = "fire";
+	Fw.reactions = {
+        "water": { elem1: "wall", chance: 0.2 },
+        "steam": { elem1: "wall", chance: 0.2 },
+        "carbon_dioxide": { elem1: "wall", chance: 0.2 },
+        "foam": { elem1: "wall", chance: 0.2 },
+        "dirty_water": { elem1: "wall", chance: 0.2 },
+        "salt_water": { elem1: "wall", chance: 0.2 },
+        "sugar_water": { elem1: "wall", chance: 0.2 },
+        "seltzer": { elem1: "wall", chance: 0.2 },
+        "pool_water": { elem1: "wall", chance: 0.2 },
+    },
+	Fw.Add();
+
+	const Nz = new Type("nirmizer");
+	Nz.setColor("425949");
+	Nz.behavior = [
+		"XX                 |CH:nirme>nirmoll%10|XX                 ",
+		"CH:nirme>nirmoll%10|XX                 |CH:nirme>nirmoll%10",
+		"XX                 |CH:nirme>nirmoll%10|XX                 ",
+	]
+	Nz.category = cat.MACHINES;
+	Nz.state = state.SOLID;
+	Nz.density = 1220;
+	Nz.tempLow = -273;
+	Nz.stateLow = "nirme";
+	Nz.tempHigh = 3000;
+	Nz.stateHigh = "nirliquid";
+	Nz.Add();
+}
+
+createNirmics();
+createMinerals();
+createOther();
