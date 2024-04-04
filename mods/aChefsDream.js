@@ -5001,11 +5001,7 @@ elements.snail.reactions.nut_oil = { elem1: "escargot", chance:30, tempMin:50 }
 
 elements.escargot = {
     color: "#ab924d",
-    behavior: [
-        "XX|XX|XX",
-        "XX|XX|",
-        "M2%10|M1|M2%10",
-    ],
+    behavior: behaviors.STURDYPOWDER2,
     tempHigh: 120,
     stateHigh: "steam",
     breakInto: "quicklime",
