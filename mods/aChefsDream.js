@@ -1,14 +1,15 @@
 /*
 Created by SquareScreamYT/sqec <@918475812884344852>
 Thanks to RealerRaddler <@914371295561535508>, Alice <@697799964985786450>, nousernamefound <@316383921346707468>, Adora the Transfem <@778753696804765696>, ryan(R74n) <@101070932608561152> and Fioushemastor <@738828785482203189> for helping :)
+Compatibility with other mods coming soon! s
 
-v1.12.2
+v1.12.4
 
 you can support me at my youtube: https://youtube.com/@sqec
 
 Upcoming Features:
+- cinnamon
 - spring onions
-- soy sauce/wasabi
 - white rice noodles
 - matcha leaves, powder, tea
 - cacao pods
@@ -406,6 +407,18 @@ Changelog (v1.12.2)
 
 
 
+Changelog (v1.12.4)
+    - added cake batter
+    - added condensed milk
+    - added wasabi
+    - added beans
+    - added baked beans
+    - added fermented beans/natto
+    - added soy sauce
+
+
+
+
 */
 
 /*
@@ -428,7 +441,13 @@ function interpolateRgb(rgb1, rgb2, ratio) {
 function getRGB(rgb){
     let rgb2 = rgb.replace(")", "").replace("rgb(", "").replace(/,/g, "r").split("r")
     return { r: parseInt(rgb2[0]), g: parseInt(rgb2[1]), b: parseInt(rgb2[2]) };
-  }
+}
+
+behaviors.STURDYPOWDER2 = [
+    "XX|XX|XX",
+    "XX|XX|XX",
+    "M2%30|M1|M2%30",
+],
 
 elements.knife = {
     color: "#adb5bd",
@@ -609,11 +628,7 @@ elements.chicken = {
 
 elements.chicken_egg = {
     color: ["#e0d3ab","#d9cdb5"],
-    behavior: [
-        "XX|XX|XX",
-        "XX|FX%5|XX",
-        "M2%30|M1|M2%30",
-    ],
+    behavior: behaviors.STURDYPOWDER2,
     tick: function(pixel) {
         if (Math.random() < 0.1 && pixel.temp > 20 && pixel.temp < 35) {
             changePixel(pixel,"chick")
@@ -7101,3 +7116,140 @@ elements.food_coloring = {
 }
 
 elements.cooked_meat.behavior = behaviors.SUPPORT;
+
+elements.cake_batter = {
+    color: "#d4bc85",
+    behavior: behaviors.LIQUID,
+    onMix: function(batter,ingredient) {
+        if (elements[ingredient.element].isFood && elements[ingredient.element].id !== elements.batter.id && elements[ingredient.element].id !== elements.flour.id && elements[ingredient.element].id !== elements.yolk.id && elements[ingredient.element].id !== elements.dough.id && elements[ingredient.element].id !== elements.baked_batter.id && elements[ingredient.element].id !== elements.cake.id && elements[ingredient.element].id !== elements.cake_batter.id) {
+            var rgb1 = batter.color.match(/\d+/g);
+            var rgb2 = ingredient.color.match(/\d+/g);
+            // average the colors
+            var rgb = [
+                Math.round((parseInt(rgb1[0])*10+parseInt(rgb2[0]))/11),
+                Math.round((parseInt(rgb1[1])*10+parseInt(rgb2[1]))/11),
+                Math.round((parseInt(rgb1[2])*10+parseInt(rgb2[2]))/11)
+            ];
+            // convert rgb to hex
+            var hex = RGBToHex(rgb);
+            batter.color = pixelColorPick(batter, hex);
+            if ((elements[ingredient.element].density > elements.batter.density || shiftDown) && Math.random() < 0.05) {
+                // 50% change to delete ingredient
+                if (Math.random() < 0.5) { deletePixel(ingredient.x, ingredient.y); }
+                else {
+                    ingredient.color = pixelColorPick(ingredient, hex);
+                }
+            }
+        }
+    },
+    reactions: {
+        "cream": { elem2:"cake_batter", tempMin:40, chance:0.01 },
+    },
+    category: "food",
+    tempHigh: 94,
+    stateHigh: "cake",
+    stateHighColorMultiplier: 0.9,
+    burn:40,
+    burnTime:25,
+    burnInto:"ash",
+    state: "liquid",
+    viscosity: 10000,
+    density: 1001,
+    hidden: true,
+    isFood: true
+}
+elements.batter.whiskInto = "cake_batter";
+elements.milk.stateHigh = ["steam","steam","condensed_milk"];
+elements.condensed_milk = {
+    color: "#f2f0df",
+    behavior: behaviors.LIQUID,
+    reactions: {
+        "cell": { elem1:"yogurt", chance:0.1 },
+        "dirt": { elem1: null, elem2: "mud" },
+        "sand": { elem1: null, elem2: "wet_sand" },
+        "clay_soil": { elem1: null, elem2: "clay" },
+        "caramel": { color1:"#C8B39A", elem2:null, chance:0.05 },
+        "sugar": { color1:"#fffbf0", elem2:null, chance:0.5},
+    },
+    tempLow: 0,
+    stateLow: "ice_cream",
+    stateLowColorMultiplier: [0.97,0.93,0.87],
+    tempHigh: 500,
+    stateHigh: ["smoke","smoke","smoke","quicklime"],
+    viscosity: 1500,
+    category: "food",
+    state: "liquid",
+    density: 1036.86,
+    isFood: true,
+    alias: "evaporated_milk"
+}
+elements.wasabi = {
+    color: ["#82b55b","#6cad50","#7dcc5c"],
+    behavior: behaviors.STURDYPOWDER2,
+    reactions: {
+        "dirt": { elem1: null, elem2: "mud" },
+        "sand": { elem1: null, elem2: "wet_sand" },
+        "clay_soil": { elem1: null, elem2: "clay" },
+        "melted_chocolate": { color1:"#664934", elem2:null },
+        "chocolate": { color1:"#664934", elem2:"melted_chocolate", chance:0.05 },
+        "juice": { elem1:"fruit_milk", elem2:null, chance:0.05 },
+        "soda": { elem1:"pilk", elem2:null, chance:0.1 },
+        "yolk": { elem1:"#eggnog", elem2:null, chance:0.1 },
+        "caramel": { color1:"#C8B39A", chance:0.05 },
+        "sugar": { elem2:null, chance:0.005},
+    },
+    viscosity: 1.5,
+    tempHigh: 1000,
+    stateHigh: ["smoke","smoke","smoke","steam","steam"],
+    category: "food",
+    isFood: true,
+    state: "solid",
+    density: 959.97,
+}
+// extremely confused part
+elements.beans.name = "baked_beans";
+elements.real_beans = {
+    name: "beans",
+    color: ["#e8dfc5","#d1c7ab"],
+    behavior: behaviors.POWDER,
+    category: "food",
+    tempHigh: 350,
+    stateHigh: ["fire","fire","ash"],
+    burn:3,
+    burnTime:500,
+    burnInto: ["fire","smoke","smoke","steam","ash"],
+    reactions: {
+        "sauce": { elem1: "beans", elem2: "beans" },
+        "yeast": { elem1: "fermented_beans", elem2: null, chance:0.5 }
+    },
+    state: "solid",
+    density: 721,
+    isFood: true,
+    alias: "soy_beans"
+}
+elements.fermented_beans = {
+    color:"#ada386",
+    behavior: behaviors.POWDER,
+    category: "food",
+    tempHigh: 350,
+    stateHigh: ["fire","fire","ash"],
+    burn:3,
+    burnTime:500,
+    burnInto: ["fire","smoke","smoke","steam","ash"],
+    state: "solid",
+    density: 721,
+    breakInto: "soy_sauce",
+    isFood: true,
+    alias: "natto"
+}
+elements.soy_sauce = {
+    color: "#480601",
+    behavior: behaviors.LIQUID,
+    tempLow: -5,
+    tempHigh: 105,
+    stateHigh: ["steam","steam","salt"],
+    state: "liquid",
+    category:"food",
+    density: 1200,
+};
+// end of confused part
