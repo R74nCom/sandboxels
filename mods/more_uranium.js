@@ -5,8 +5,8 @@ elements.uranium_235 = {
         "CR:radiation%2|CH:lead%0.002|CR:radiation%2",
         "M2|M1|M2"
     ],,
-        category: liquids,
-        state: LIQUID,
+        category: powders,
+        state: powder,
         density: 2400,
         tempHigh: 1355,
         burnTime: 30,
