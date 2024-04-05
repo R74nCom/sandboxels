@@ -7099,12 +7099,14 @@ elements.food_coloring = {
                             pixelMap[x][y].color = `rgb(${parseInt(newrgb2.r)},${parseInt(newrgb2.g)},${parseInt(newrgb2.b)})`;
                             if (Math.random() < 0.002) {
                                 deletePixel(pixel.x,pixel.y)
+				break
                             }
                         }
                     }
                 }
             }
         }
+	doDefaults(pixel)
     },
     onSelect: function () {
         logMessage("Tip: You can spread food coloring using water.");
