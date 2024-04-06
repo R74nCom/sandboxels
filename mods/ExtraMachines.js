@@ -1,24 +1,25 @@
 // this is a epic mod
 
-let heatSen = null;
+heatSen = null;
 elements.heatSensor = {
-    
+   
 	color: "#ff0000",
-    conduct: 1,
+    conduct: 0.1,
     category:"test",
 	behavior: behaviors.WALL,
 	
 	onSelect: function(pixel){
-    setTemp = parseInt(prompt("Enter the temperature you want it to sense. zero will not work", (heatSen || undefined)));
+        heatSen = prompt("Enter the temperature you want it to sense" );
 	        
   },
   
 	
 	tick: function(pixel) {
-      
+    
 	
 	 if (pixel.temp >= heatSen ) {
               pixel.charge = 1;
+              
         }
 
 		
@@ -26,15 +27,13 @@ elements.heatSensor = {
         
 };
 
-let itemA = "steam";
+
 elements.SteamTurbine = {
   behavior: behaviors.WALL,
     desc: "When steam touches it, it conducts electricity and the steam pixel is deleted",
-      color: "#826c6e",
+      color: "#826c6e",   
           tick: function(pixel) {
-        if(pixel.start == pixelTicks){
-          pixel.clone = itemA;
-        }
+        
 
           for (var i = 0; i < adjacentCoords.length; i++) {
               var coords = adjacentCoords[i];
@@ -42,7 +41,7 @@ elements.SteamTurbine = {
               var y = pixel.y + coords[1];
               if (!isEmpty(x,y,true)) {
                   var sensed = pixelMap[x][y];
-                  if (sensed.element == pixel.clone) {
+                  if (sensed.element == 'steam' ||sensed.element == 'rad_steam' ) {
 					  deletePixel(x,y);
                       pixel.charge = 5;
                       break;
@@ -131,15 +130,13 @@ elements.gasoline = {
     stain: -0.25,
 }
 
-let itemB = "light";
+
 elements.solar_panel = {
   behavior: behaviors.WALL,
   desc: "When light touches it, it conducts electricity and the light pixel is deleted",
       color: "#bebfa3",
           tick: function(pixel) {
-        if(pixel.start == pixelTicks){
-          pixel.clone = itemB;
-        }
+       
 
           for (var i = 0; i < adjacentCoords.length; i++) {
               var coords = adjacentCoords[i];
@@ -147,7 +144,7 @@ elements.solar_panel = {
               var y = pixel.y + coords[1];
               if (!isEmpty(x,y,true)) {
                   var sensed = pixelMap[x][y];
-                  if (sensed.element == pixel.clone) {
+                  if (sensed.element == 'light') {
 					  deletePixel(x,y);
                       pixel.charge = 5;
                       break;
@@ -367,9 +364,10 @@ elements.Android = {
 
 
 elements.AndroidBody = {
+    
 	color: ["#a1ada5","#ebf5ee","#bac2bc","#848a86","#505251"],
     category: "life",
-	 breakInto: ["oil","metal_scrap","explosion"],
+    breakInto: ["oil","metal_scrap","pop"],
 	 properties: {
         dead: false,
         dir: 1,
@@ -395,7 +393,7 @@ elements.AndroidBody = {
         if (pixel.dead) {
             // Turn into rotten_meat if pixelTicks-dead > 500
             if (pixelTicks-pixel.dead > 200 && Math.random() < 0.1) {
-                changePixel(pixel,"rotten_meat");
+                changePixel(pixel,"rust");
             }
             return
         }
@@ -465,7 +463,7 @@ elements.AndroidHead = {
     state: "solid",
     conduct: .05,
     temp: 69,
-    breakInto: ["oil","metal_scrap","explosion"],
+    breakInto: ["oil","metal_scrap","pop"],
 };
 
 listPipes = "pipe"
@@ -506,71 +504,10 @@ elements.ajustableHeater = {
 	 insulate:true
 };
 
-//old grinder
-// elements.grinder = {
-	// color: ["#a1ada5","#ebf5ee","#bac2bc","#848a86","#505251"],
-    // category: "machines",
-	// density: 1080,
-    // state: "solid",
-    // conduct: 1,
-	// movable: false,
-	
-	// ignore: "grinder",
-	
-		// tick: function(pixel) {
-        // for (var i = 0; i < adjacentCoords.length; i++) {
-            // var coords = adjacentCoords[i];
-            // var x = pixel.x + coords[0];
-            // var y = pixel.y + coords[1];
-            // if (!isEmpty(x,y,true)) {
-                // var sensed = pixelMap[x][y];
-                // if (sensed.con || elements[sensed.element].movable && pixel.charge > 0) {
-                    // breakPixel(sensed);
-                // }
-            // }
-        // }
-        // doDefaults(pixel);
-    // },
-	 // insulate:true
-     
-	
-	
-// };
-
 
 
 elements.dead_plant.conduct = 1;
-// let compact = "dead_plant";
-// elements.compacter = {
-	// behavior: behaviors.WALL,
-      // color: "#bebfa3",
-          // tick: function(pixel) {
-        // if(pixel.start == pixelTicks){
-          // pixel.clone = compact;
-        // }
-		
 
-          // for (var i = 0; i < adjacentCoords.length; i++) {
-              // var coords = adjacentCoords[i];
-              // var x = pixel.x + coords[0];
-              // var y = pixel.y + coords[1];
-              // if (!isEmpty(x,y,true)) {
-                  // var sensed = pixelMap[x][y];
-                  // if (sensed.element == pixel.clone && pixel.charge > 0) {
-					 // sensed.element = "coal"
-					 // sensed.color = elements.coal.color
-                      // break;
-                  // }
-              // }
-          // }
-          // doDefaults(pixel);
-      // },
-      // conduct: 1,
-      // movable: false,
-      // category:"machines",
-      // darkText: true,
-  // hardness: 1,
-// }
 compactPi = "dead_plant";
 compactPi2 = "coal";
 elements.compacter = {
@@ -703,60 +640,66 @@ elements.compacter = {
 
 // thx to nousersthings mod for the filter
 // only adding this bc my freind told me so 
-// im not good at javascript and coding so yeah
+// new and improved version which is not 100% copied from nouser but only about 5-10%
 
 filterTypeVar = 0;
 elements.filter = {
-    color: "#599fc2",
+    
     desc: "A filter made by nouser",
     onSelect: function() {
+        logMessage("Needs to be 1 pixel thick");
         var answer4 = prompt("Please input the desired element of this filter. It is case senstive.",(filterTypeVar||undefined));
         if (!answer4) { return }
 		filterTypeVar = answer4;
     },
+    color: "#414c4f",
+   
     tick: function(pixel) {
-		if (pixel.start === pixelTicks) {
-			pixel.filterType = filterTypeVar
-		}
-        if (1 === 2) {
-           for (var i = 0; i < squareCoords.length; i++) {
-                var coord = squareCoords[i];
-                var x = pixel.x+coord[0];
-                var y = pixel.y+coord[1];
-                if (!isEmpty(x,y,true)) {
-//                    createPixel("brick",x,y);
-//                    pixelMap[x][y].color = pixelColorPick(pixel,"#808080");
-                }
-            }
- //           pixel.stage = 1;
-        }
-        else if (1 === 2) { //uninitialized
-            for (var i = 0; i < adjacentCoords.length; i++) {
-                var coord = adjacentCoords[i];
-                var x = pixel.x+coord[0];
-                var y = pixel.y+coord[1];
-                if (isEmpty(x,y)) {
- //                   pixel.stage = 2; //blue
- //                   pixel.color = pixelColorPick(pixel,"#000036");
-                    break;
-                }
-            }
-        }
-        else if (1 === 1) { //initialized
+    
+        if (!pixel.stage && pixelTicks-pixel.start > 60) {
             for (var i = 0; i < squareCoords.length; i++) {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
-                if (!isEmpty(x,y,true) && listPipes.includes(pixelMap[x][y].element)) {
+                // delete this bc it makes the pipe walls
+                // if (!isEmpty(x,y,true) && elements[pixelMap[x][y].element].movable) {
+                //     deletePixel(x,y)
+                // }
+                // if (isEmpty(x,y)) {
+                //     createPixel("pipe_wall",x,y);
+                // }
+            }
+            pixel.stage = 2;
+        }
+        else if (pixel.stage === 1 && pixelTicks-pixel.start > 70) { //uninitialized
+            for (var i = 0; i < adjacentCoords.length; i++) {
+                var coord = adjacentCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                pixel.stage = 2;
+                // this makes the thing blue and keep pixel.stage = 2 cuz without it it breaks the code
+                // if (isEmpty(x,y)) {
+                //     pixel.stage = 2; //blue
+                //     pixel.color = pixelColorPick(pixel,"#000036");
+                //     break;
+                // }
+            }
+        }
+        else if (pixel.stage > 1 && pixelTicks % 3 === pixel.stage-2) { //initialized
+            for (var i = 0; i < squareCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (!isEmpty(x,y,true) && pixelMap[x][y].element === "pipe") {
                     var newPixel = pixelMap[x][y];
                     if (newPixel.stage === 1) {
                         var newColor;
                         switch (pixel.stage) {
-//                            case 2: newPixel.stage = 3; newColor = "#003600"; break; //green
- //                           case 3: newPixel.stage = 4; newColor = "#360000"; break; //red
-//                            case 4: newPixel.stage = 2; newColor = "#000036"; break; //blue
+                        case 2: newPixel.stage = 3; newColor = "#003600"; break; //green
+                        case 3: newPixel.stage = 4; newColor = "#360000"; break; //red
+                        case 4: newPixel.stage = 2; newColor = "#000036"; break; //blue
                         }
- //                       newPixel.color = pixelColorPick(newPixel,newColor);
+                        newPixel.color = pixelColorPick(newPixel,newColor);
                     }
                 }
             }
@@ -768,14 +711,12 @@ elements.filter = {
                 var y = pixel.y+coord[1];
                 if (!isEmpty(x,y,true)) {
                     var newPixel = pixelMap[x][y];
-                    if (listPipes.includes(newPixel.element)) {
+                    if (newPixel.element === "pipe") {
                         var nextStage;
                         switch (pixel.stage) {
- //                           case 2: nextStage = 4; break; //green
-//                            case 3: nextStage = 2; break; //red
- //                           case 4: nextStage = 3; break; //blue
+                        
                         }
-                        if (pixel.con && !newPixel.con) { //transfer to adjacent pipe
+                        if (pixel.con && !newPixel.con && newPixel.stage === nextStage) { //transfer to jacent pipe
                             newPixel.con = pixel.con;
                             newPixel.con.x = newPixel.x;
                             newPixel.con.y = newPixel.y;
@@ -784,18 +725,14 @@ elements.filter = {
                             break;
                         }
                     }
-                    else if (!pixel.con ) { //suck up pixel
-					if  (newPixel.element == pixel.filterType ) {
-						
+                    else if (!pixel.con && elements[newPixel.element].movable  && newPixel.element == filterTypeVar) { //suck up pixel
                         pixel.con = newPixel;
-		
                         deletePixel(newPixel.x,newPixel.y);
                         pixel.con.x = pixel.x;
                         pixel.con.y = pixel.y;
                         pixel.con.del;
                         moved = true;
                         break;
-						}
                     }
                 }
             }
@@ -804,7 +741,7 @@ elements.filter = {
                     var coord = squareCoordsShuffle[i];
                     var x = pixel.x+coord[0];
                     var y = pixel.y+coord[1];
-                    if (isEmpty(x,y)) {
+                    if (isEmpty(x,y)) { 
                         delete pixel.con.del;
                         pixel.con.x = x;
                         pixel.con.y = y;
@@ -813,9 +750,9 @@ elements.filter = {
                         pixel.con = null;
                         break;
                     }
-                    if (!isEmpty(x,y,true) && listPipes.includes(pixelMap[x][y].element)) {
+                    if (!isEmpty(x,y,true) && pixelMap[x][y].element === "pipe") {
                         var newPixel = pixelMap[x][y];
-                        if (pixel.con && !newPixel.con) {
+                        if (pixel.con && !newPixel.con && newPixel.stage === pixel.stage) {
                             newPixel.con = pixel.con;
                             newPixel.con.x = newPixel.x;
                             newPixel.con.y = newPixel.y;
@@ -831,8 +768,6 @@ elements.filter = {
     category: "machines",
     movable: false,
     canContain: true,
-	noMix: true,
-    insulate: true,
 }
 
 filterTypeVar2 = 0;
@@ -926,11 +861,7 @@ elements.Destructive_Filter = {
                         moved = true;
                         break;
 						}
-						else if(!(newPixel.element == "filter") && !(newPixel.element == "Destructive_Filter") && !doNotEF.includes(newPixel.element) ) {
-							deletePixel(newPixel.x, newPixel.y);
-							break;
-							
-						}
+						
                     }
                 }
             }
@@ -1256,6 +1187,7 @@ elements.Acid_Bomb = {
 }
 
 elements.E_Spout = {
+    name: "E-Spout",
     color: "#606378",
     behavior: behaviors.WALL,
     behaviorOn: [
@@ -1268,7 +1200,6 @@ elements.E_Spout = {
     stateHigh: "molten_steel",
     conduct: 1,
 }
-
 
 elements.DestroyableWire = {
     color: "#4d0a03",
@@ -1356,54 +1287,6 @@ elements.pusherRight = {
     },
     category: "tools",
 };
-
-elements.missile = {
-    behavior: behaviors.WALL,
-    maxSize: 1,
-    
-    properties: {
-       luanched : false,
-    },
-      ignore: "pushTest",
-            tick: function(pixel) {
-            
-              for (var i = 0; i < adjacentCoords.length; i++) {
-                  var coords = adjacentCoords[i];
-                  var x = pixel.x + coords[0];
-                  var y = pixel.y + coords[1];
-                if (!isEmpty(x,y,true)) {
-                    let sensed = pixelMap[x][y];
-                    if (!(sensed.element == "missile") && sensed.element && !(sensed.element == "fire") && !(sensed.element == "smoke") && pixel.luanched == true || pixel.y ==1  ||outOfBounds(pixel.x,pixel.y) ) {
-                        explodeAt(x, y, 13, ["fire","fire","plasma","plasma","plasma","plasma"]);
-                        explodeAt(x, y, 5, "molten_metal_scrap");
-                        deletePixel(pixel.x,pixel.y);
-                    }
-                  
-                }   else if(pixel.temp >= 100) {
-                         
-                        pixel.luanched = true;
-                        pixel.clone = "fire";
-                        var newX =  pixel.x ;
-                        var newY =  pixel.y - 0.5;
-                        let test = createPixel("fire",pixel.x,pixel.y+2);
-                        tryMove(pixel,newX,newY,test);
-                       
-                        
-                    
-                }
-
-            }
-            doDefaults(pixel);
-        },
-        conduct: 1,
-        movable: true,
-        category:"weapons",
-        darkText: true,
-    hardness: 1,
-  
-  
-    }
-
     elements.NewWater = {
         color: elements.water.color,
         behavior : behaviors.LIQUID,
@@ -1645,78 +1528,209 @@ elements.guided_missile = {
       },
       properties: {
         luanched : false,
-        speed :1,
+        speed :2,
         AtY : false,
      },
       
       
             tick: function(pixel) {
-                if(pixel.start == pixelTicks){
+                
+                        if(pixel.temp >= 100) {
+                     
+                    pixel.luanched = true;
+                    pixel.clone = "fire";
+                    var newX =  pixel.x ;
+                    var newY =  pixel.y - pixel.speed;
                     
-                }
-              for (var i = 0; i < adjacentCoords.length; i++) {
-                  var coords = adjacentCoords[i];
-                  var x = pixel.x + coords[0];
-                  var y = pixel.y + coords[1];
-                if (!isEmpty(x,y,true)) {
-                    let sensed = pixelMap[x][y];
-                    if (!(sensed.element == "missile") &&!(sensed.element == "guided_missile") && sensed.element && !(sensed.element == "fire") && !(sensed.element == "smoke") && pixel.luanched == true || pixel.y ==1  ||outOfBounds(pixel.x,pixel.y)) {
-                        explodeAt(x, y, 13, ["fire","fire","plasma","plasma","plasma","plasma"]);
-                        explodeAt(x, y, 5, "molten_metal_scrap");
-                        deletePixel(pixel.x,pixel.y);
-                    }
-                  
-                }   else if(pixel.temp >= 100) {
-                         
-                        pixel.luanched = true;
-                        pixel.clone = "fire";
-                        var newX =  pixel.x ;
-                        var newY =  pixel.y - pixel.speed;
-                        
-                       
-                            if (!(pixel.y == tarY) && pixel.y > tarY ) {
-                               let test = createPixel("fire",pixel.x,pixel.y+2); 
-                               tryMove(pixel,newX,newY,test);
-                                pixel.AtY = true;
-                                
-                            }
-                                else if(!(pixel.y == tarY) && pixel.y < tarY ){
-                                    let test = createPixel("fire",pixel.x,pixel.y-2);
-                                    tryMove(pixel,pixel.x,pixel.y + pixel.speed,test);
-                                     pixel.AtY = true;
+                   
+                        if (!(pixel.y == tarY) && pixel.y > tarY ) {
+                            if((!tarY-pixel.y === 1) || (!tarY-pixel.y === -1)) {
+                                let test = createPixel("fire",pixel.x,pixel.y+3); 
+                                if(isEmpty(newX,newY)) {
+                                       tryMove(pixel,newX,newY,);
+                                } else {
+                                    explodeAt(pixel.x, pixel.y, 13, ["fire","fire","plasma","plasma","plasma","plasma"]);
                                     
-                                } 
-                                else if(pixel.AtY = true) {
-                                    if(pixel.x > tarX) {
-                                        let test = createPixel("fire",pixel.x,pixel.y);
-                                        tryMove(pixel,pixel.x-pixel.speed,pixel.y,test);
+                                    deletePixel(pixel.x,pixel.y);
+                                }
+                                
+                                 pixel.AtY = true;
+                            } else {
+                                pixel.speed = 1;
+                                let test = createPixel("fire",pixel.x,pixel.y+3); 
+                                if(isEmpty(newX,newY)) {
+                                        tryMove(pixel,newX,newY,);
+                                } else {
+                                    explodeAt(pixel.x, pixel.y, 13, ["fire","fire","plasma","plasma","plasma","plasma"]);
+                                    
+                                    deletePixel(pixel.x,pixel.y);
+                                }
+                               
+                                 //pixel.AtY = true;
+                            }
+                            
+                        }
+                            else if(!(pixel.y == tarY) && pixel.y < tarY ){
+                                if((!tarY-pixel.y === 1) || (!tarY-pixel.y ===   -1)) {
+                                    let test = createPixel("fire",pixel.x,pixel.y-3);
+                                    if(isEmpty(pixel.x,pixel.y+pixel.speed)) {
+                                       tryMove(pixel,pixel.x,pixel.y + pixel.speed,);
+                                    } else {
+                                        explodeAt(pixel.x, pixel.y, 13, ["fire","fire","plasma","plasma","plasma","plasma"]);
+                                    
+                                         deletePixel(pixel.x,pixel.y);
                                     }
-                                    else if(pixel.x < tarX) {
-                                        let test = createPixel("fire",pixel.x,pixel.y);
-                                        tryMove(pixel,pixel.x+pixel.speed,pixel.y,test);
-                                        
+                                   
+                                     pixel.AtY = true;
+                                } else {
+                                    pixel.speed = 1;
+                                    let test = createPixel("fire",pixel.x,pixel.y-3);
+                                    if(isEmpty(pixel.x,pixel.y+pixel.speed)) {
+                                       tryMove(pixel,pixel.x,pixel.y - pixel.speed,);
+                                    } else {
+                                        explodeAt(pixel.x, pixel.y, 13, ["fire","fire","plasma","plasma","plasma","plasma"]);
+                                    
+                                    deletePixel(pixel.x,pixel.y);
                                     }
-                                    else if (pixel.x == tarX){
-                                        explodeAt(x, y, 13, ["fire","fire","plasma","plasma","plasma","plasma"]);
-                                         explodeAt(x, y, 5, "molten_metal_scrap");
-                                        deletePixel(pixel.x,pixel.y);
-                                    } 
-
-    
+                                   
+                                     //pixel.AtY = true;
                                 }
 
                                 
-    
-                        
-                       
-                       
-                        
-                    
-                }
+                            } 
+                            else if(pixel.AtY = true) {
+                                if(pixel.x > tarX) {
+                                    pixel.speed = 2;
+                                    let test = createPixel("fire",pixel.x,pixel.y);
+                                    if(isEmpty(pixel.x-1,pixel.y)) {
+                                        tryMove(pixel,pixel.x-pixel.speed,pixel.y,test);
+                                    } else {
+                                        explodeAt(pixel.x, pixel.y, 13, ["fire","fire","plasma","plasma","plasma","plasma"]);
+                                    
+                                    deletePixel(pixel.x,pixel.y);
+                                    }
+                            
+                                }
+                                else if(pixel.x < tarX) {
+                                    pixel.speed = 2;
+                                    let test = createPixel("fire",pixel.x,pixel.y);
+                                    if(isEmpty(pixel.x+2,pixel.y)) {
+                                        tryMove(pixel,pixel.x+pixel.speed,pixel.y,test  );
+                                     } else {
+                                        explodeAt(pixel.x, pixel.y, 13, ["fire","fire","plasma","plasma","plasma","plasma"]);
+                                    
+                                    deletePixel(pixel.x,pixel.y);
+                                     }
+                                   
+                                    
+                                }
+                                else if (pixel.x == tarX){
+                                    explodeAt(pixel.x, pixel.y, 13, ["fire","fire","plasma","plasma","plasma","plasma"]);
+                                    
+                                    deletePixel(pixel.x,pixel.y);
+                                } 
+                                if(tarX-pixel.x == 1 || tarX-pixel.x == -1) {
+                                    explodeAt(pixel.x, pixel.y, 13, ["fire","fire","plasma","plasma","plasma","plasma"]);  
+                                    deletePixel(pixel.x,pixel.y);
+                                }
+                               
+                            }
 
-            }
-            doDefaults(pixel);
+                            
+
+                    
+                   
+                   
+                    
+                
+            
+
+        }
         },
+        conduct: 1,
+        movable: true,
+        category:"test",
+        darkText: true,
+    hardness: 1,
+  
+    
+    }
+
+   
+    elements.room_temp.category = "tools"
+    elements.uncharge.category = "tools"
+    elements.unburn.category = "tools"
+    
+
+textures.Reniforced_Titanuim = {
+    REINFORCEDTITANIUM: [
+        "GiGgggGiGGg",
+        "gggGGGGgggg",
+        "iiiiiiiiiii",
+        "GgGGggggGGg",
+        "GggGGgggGGg",
+        "igGGGgggggi",
+        "GggggggGGGG",
+        "GggGGgggggg",
+        "Ggggggggggg",
+        "ggggggGGggg",
+        "Ggggggggggg",
+        "iiiiiiiiiii",],
+  
+   
+}                                                                                                                 
+
+elements.Reniforced_Titanuim = {
+    color: "#787878",
+    colorPattern: textures.Reniforced_Titanuim.REINFORCEDTITANIUM,
+    colorKey: {
+        "g": "#787878",
+        "G": "#606060",
+        "i": "#332f2f"},
+    behavior: behaviors.WALL,
+    
+    tempHigh: 4000,
+    stateHigh : "molten_titanium",
+    category: "solids",
+    state: "solid",
+    density: 5000,
+    hardness:1,
+    noMix: true
+}
+
+
+
+elements.Missile_Up = {
+    
+    maxSize: 1,
+    
+    properties: {
+       luanched : false,
+    },
+    
+      
+            
+    tick: function(pixel) {
+        if(pixel.temp >= 100) {
+            pixel.luanched = true;
+            if(isEmpty(pixel.x,pixel.y-1) ) {
+                let exguast = createPixel("fire",pixel.x,pixel.y + 3)
+                tryMove(pixel,pixel.x,pixel.y-2,);
+            } else if(!isEmpty(pixel.x, pixel.y-1)) {
+                
+                explodeAt(pixel.x,pixel.y, 13 ,["fire","plasma","plasma","plasma"]); 
+                    deletePixel(pixel.x,pixel.y)
+                if(!(pixelMap[pixel.x][pixel.y-1] ==  "Missile_Down") || !(pixelMap[pixel.x][pixel.y-1] ==  "fire") ) {
+               
+                    explodeAt(pixel.x,pixel.y, 13 ,["fire","plasma","plasma","plasma"]); 
+                    deletePixel(pixel.x,pixel.y)
+                    
+                  } 
+              }
+          }
+          
+    
+},
         conduct: 1,
         movable: true,
         category:"weapons",
@@ -1726,7 +1740,286 @@ elements.guided_missile = {
   
     }
 
-   
-    elements.room_temp.category = "tools"
-    elements.uncharge.category = "tools"
-    elements.unburn.category = "tools"
+    elements.Missile_Down = {
+    
+        maxSize: 1,
+        
+        properties: {
+           luanched : false,
+        },
+        
+          
+                tick: function(pixel) {
+                    if(pixel.temp >= 100) {
+                        pixel.luanched = true;
+                        if(isEmpty(pixel.x,pixel.y+2) ) {
+                            let exguast = createPixel("fire",pixel.x,pixel.y - 3)
+                            tryMove(pixel,pixel.x,pixel.y+2,);
+                        } else if(!isEmpty(pixel.x, pixel.y+1)) {
+                            
+                            explodeAt(pixel.x,pixel.y, 13 ,["fire","plasma","plasma","plasma"]); 
+                                deletePixel(pixel.x,pixel.y)
+                            if(!(pixelMap[pixel.x][pixel.y+1] ==  "Missile_Down") || !(pixelMap[pixel.x][pixel.y-1] ==  "fire") ) {
+                           
+                                explodeAt(pixel.x,pixel.y, 13 ,["fire","plasma","plasma","plasma"]); 
+                                deletePixel(pixel.x,pixel.y)
+                                
+                              } 
+                          }
+                      }
+                      
+                
+            },
+            conduct: 1,
+            movable: true,
+            category:"weapons",
+            darkText: true,
+        hardness: 1,
+      
+      
+        }
+        elements.Missile_Left = {
+    
+            maxSize: 1,
+            
+            properties: {
+               luanched : false,
+            },
+            
+              
+                    
+            tick: function(pixel) { 
+                if(pixel.temp >= 100) {
+                    pixel.luanched = true;
+                    if(isEmpty(pixel.x-1,pixel.y) ) {
+                        let exguast = createPixel("fire",pixel.x+3,pixel.y)
+                        tryMove(pixel,pixel.x-2,pixel.y);
+                    } else if( !isEmpty(pixel.x-1, pixel.y) && !isEmpty(pixel.x-2, pixel.y) && !outOfBounds(pixel.x-1,pixel.y) && !outOfBounds(pixel.x-2,pixel.y) ) {
+                        
+                        explodeAt(pixel.x,pixel.y, 13 ,["fire","plasma","plasma","plasma"]); 
+                            deletePixel(pixel.x,pixel.y)
+                        if(!(pixelMap[pixel.x-1][pixel.y] ==  "Missile_Down") || !(pixelMap[pixel.x][pixel.y-1] ==  "fire") ) {
+                       
+                            explodeAt(pixel.x,pixel.y, 13 ,["fire","plasma","plasma","plasma"]); 
+                            deletePixel(pixel.x,pixel.y)
+                            
+                          } 
+                      }
+                  }
+                  
+            
+        },
+                conduct: 1,
+                movable: true,
+                category:"weapons",
+                darkText: true,
+            hardness: 1,
+          
+          
+            }
+
+
+            elements.Missile_Right = {
+    
+                maxSize: 1,
+                
+                properties: {
+                   luanched : false,
+                },
+                
+                  
+                        
+                tick: function(pixel) { 
+                    if(pixel.temp >= 100) {
+                        pixel.luanched = true;
+                        if(isEmpty(pixel.x+1,pixel.y) ) {
+                            let exguast = createPixel("fire",pixel.x-3,pixel.y)
+                            tryMove(pixel,pixel.x+2,pixel.y);
+                        } else if( !isEmpty(pixel.x+1, pixel.y) && !isEmpty(pixel.x+2, pixel.y) && !outOfBounds(pixel.x+1,pixel.y) && !outOfBounds(pixel.x+2,pixel.y) ) {
+                            
+                            explodeAt(pixel.x,pixel.y, 13 ,["fire","plasma","plasma","plasma"]); 
+                                deletePixel(pixel.x,pixel.y)
+                            if(!(pixelMap[pixel.x+1][pixel.y] ==  "Missile_Down") || !(pixelMap[pixel.x][pixel.y+1] ==  "fire") ) {
+                           
+                                explodeAt(pixel.x,pixel.y, 13 ,["fire","plasma","plasma","plasma"]); 
+                                deletePixel(pixel.x,pixel.y)
+                                
+                              } 
+                          }
+                      }
+                      
+                
+            },
+                    conduct: 1,
+                    movable: true,
+                    category:"weapons",
+                    darkText: true,
+                hardness: 1,
+              
+              
+                }
+    
+        elements.pancho = {
+            tempHigh: 300,
+            stateHigh: "steam",
+            color: ["#bd8e0d","#0ec930","#ff0000","#fcf800"],
+            singleColor: true,
+            behavior: behaviors.STURDYPOWDER,
+            category: "food",
+            state: "liquid"
+        };
+
+
+//imma finnish rest later
+    elements.pesticide = {
+        category: "test",
+        state: "liquid",
+        color: elements.plant.color,
+        behavior:behaviors.LIQUID,
+        reactions : {
+            "plant": { elem1: "dead_plant" },
+            "algae": { elem1: "dead_plant" },
+            "cactus": { elem1: "dead_plant" },
+            "hive": { elem1: "dead_plant" },
+            "sapling": { elem1: "dead_plant" },
+            "pinecone": { elem1: "dead_plant" },
+            "evergreen": { elem1: "dead_plant" },
+            "hyphae": { elem1: "dead_plant" },
+            "petal": { elem1: "dead_plant" },
+            "pistil": { elem1: "dead_plant" },
+            "tree_branch": { elem1: "wood" },
+        }
+
+    }
+
+    elements.uranium_particles = {
+        color: ["#599e61","#364d3c","#494d4a","#6c8a42","#798d65","#b5e089"],
+        tick: behaviors.BOUNCY,
+        reactions: {
+            "uranium_particles": { elem1:null, elem2:"supernova", chance:0.000001}
+        },
+        category: "???????",
+    }
+
+    elements.air_filter = {
+            
+           
+            color: "#414c4f",
+           
+            tick: function(pixel) {
+            
+                if (!pixel.stage && pixelTicks-pixel.start > 60) {
+                    for (var i = 0; i < squareCoords.length; i++) {
+                        var coord = squareCoords[i];
+                        var x = pixel.x+coord[0];
+                        var y = pixel.y+coord[1];
+                        // delete this bc it makes the pipe walls
+                        // if (!isEmpty(x,y,true) && elements[pixelMap[x][y].element].movable) {
+                        //     deletePixel(x,y)
+                        // }
+                        // if (isEmpty(x,y)) {
+                        //     createPixel("pipe_wall",x,y);
+                        // }
+                    }
+                    pixel.stage = 2;
+                }
+                else if (pixel.stage === 1 && pixelTicks-pixel.start > 70) { //uninitialized
+                    for (var i = 0; i < adjacentCoords.length; i++) {
+                        var coord = adjacentCoords[i];
+                        var x = pixel.x+coord[0];
+                        var y = pixel.y+coord[1];
+                        pixel.stage = 2;
+                        // this makes the thing blue and keep pixel.stage = 2 cuz without it it breaks the code
+                        // if (isEmpty(x,y)) {
+                        //     pixel.stage = 2; //blue
+                        //     pixel.color = pixelColorPick(pixel,"#000036");
+                        //     break;
+                        // }
+                    }
+                }
+                else if (pixel.stage > 1 && pixelTicks % 3 === pixel.stage-2) { //initialized
+                    for (var i = 0; i < squareCoords.length; i++) {
+                        var coord = squareCoords[i];
+                        var x = pixel.x+coord[0];
+                        var y = pixel.y+coord[1];
+                        if (!isEmpty(x,y,true) && pixelMap[x][y].element === "pipe") {
+                            var newPixel = pixelMap[x][y];
+                            if (newPixel.stage === 1) {
+                                var newColor;
+                                switch (pixel.stage) {
+                                case 2: newPixel.stage = 3; newColor = "#003600"; break; //green
+                                case 3: newPixel.stage = 4; newColor = "#360000"; break; //red
+                                case 4: newPixel.stage = 2; newColor = "#000036"; break; //blue
+                                }
+                                newPixel.color = pixelColorPick(newPixel,newColor);
+                            }
+                        }
+                    }
+                    var moved = false;
+                    shuffleArray(squareCoordsShuffle);
+                    for (var i = 0; i < squareCoordsShuffle.length; i++) {
+                        var coord = squareCoordsShuffle[i];
+                        var x = pixel.x+coord[0];
+                        var y = pixel.y+coord[1];
+                        if (!isEmpty(x,y,true)) {
+                            var newPixel = pixelMap[x][y];
+                            if (newPixel.element === "pipe") {
+                                var nextStage;
+                                switch (pixel.stage) {
+                                
+                                }
+                                if (pixel.con && !newPixel.con && newPixel.stage === nextStage) { //transfer to jacent pipe
+                                    newPixel.con = pixel.con;
+                                    newPixel.con.x = newPixel.x;
+                                    newPixel.con.y = newPixel.y;
+                                    pixel.con = null;
+                                    moved = true;
+                                    break;
+                                }
+                            }
+                            else if (!pixel.con && (newPixel.element == "smoke" || newPixel.element == "carbon_dioxide" || newPixel.element == "smog"  || newPixel.element == "rad_steam" || newPixel.element == "oxygen" )) { //suck up pixel
+                                changePixel(newPixel,"oxygen");
+                                pixel.con = newPixel;
+                                deletePixel(newPixel.x,newPixel.y);
+                                pixel.con.x = pixel.x;
+                                pixel.con.y = pixel.y;
+                                pixel.con.del;
+                                moved = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (pixel.con && !moved) { // move to same stage if none other
+                        for (var i = 0; i < squareCoordsShuffle.length; i++) {
+                            var coord = squareCoordsShuffle[i];
+                            var x = pixel.x+coord[0];
+                            var y = pixel.y+coord[1];
+                            if (isEmpty(x,y)) { 
+                                delete pixel.con.del;
+                                pixel.con.x = x;
+                                pixel.con.y = y;
+                                pixelMap[x][y] = pixel.con;
+                                currentPixels.push(pixel.con);
+                                pixel.con = null;
+                                break;
+                            }
+                            if (!isEmpty(x,y,true) && pixelMap[x][y].element === "pipe") {
+                                var newPixel = pixelMap[x][y];
+                                if (pixel.con && !newPixel.con && newPixel.stage === pixel.stage) {
+                                    newPixel.con = pixel.con;
+                                    newPixel.con.x = newPixel.x;
+                                    newPixel.con.y = newPixel.y;
+                                    pixel.con = null;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                doDefaults(pixel);
+            },
+            category: "machines",
+            movable: false,
+            canContain: true,
+        
+    }

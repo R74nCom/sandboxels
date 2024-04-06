@@ -256,9 +256,13 @@ if (enabledMods.includes("mods/betterMenuScreens.js")) {
     }
 
     // ugly way of doing it but probably works
+    // it didnt - me 8 months later
     const checkType = (key, value) => {
-        if (key == "behavior" && (typeof value == "function" || (value instanceof Array && value.filter(e => typeof e == "string").length == value.length))) return true;
-        else if (key == "behavior") return false;
+        if (key == "behavior") {
+            const constructed = constructBehavior(value);
+            if (constructed == undefined || (Array.isArray(constructed) && constructed.some(a => typeof a != "string"))) return false;
+            return true;
+        }
         if (["darkText", "hidden", "insulate", "noMix", "isFood", "forceAutoGen", "customColor", "ignoreAir", "excludeRandom", "burning", "flipX", "flipY", "flippableX", "flippableY"].includes(key) && typeof value != "boolean") return false;
         if (["name", "category", "desc", "alias", "seed", "baby", "state", "stateHigh", "stateHighName", "stateHighColor", "stateLow", "stateLowNmae", "stateLowColor"].includes(key) && typeof value != "string") return false;
         if (["id", "burn", "burnTime", "stateHighColorMultiplier", "stateLowColorMutliplier", "temp", "tempHigh", "extraTempHigh", "tempLow", "extraTempLow"].includes(key) && typeof value != "number") return false;
@@ -269,24 +273,29 @@ if (enabledMods.includes("mods/betterMenuScreens.js")) {
         return true;
     }
 
+    const constructBehavior = (behavior) => {
+        if (typeof behavior == "function" || Array.isArray(behavior)) return behavior;
+        if (typeof behavior != "string") return undefined;
+        return behavior.split(";");
+    }
+
     const loadChanges = () => {
         const newElements = Storage.get("elements", []);
         for (const element of newElements) {
-            const element_ = element;
-            if (Object.keys(behaviors).includes(element_["behavior"])) element_["behavior"] = behaviors[element_["behavior"]];
+            if (Object.keys(behaviors).includes(element["behavior"])) element["behavior"] = behaviors[element["behavior"]];
             elements[element.name] = {};
-            // elements[element.name] = element_;
-            for (const key of Object.keys(element_)) {
-                const val = element_[key];
-                if (checkType(key, val)) elements[element.name][key] = val;
+            for (const key of Object.keys(element)) {
+                const val = element[key];
+                if (checkType(key, val)) elements[element.name][key] = key == "behavior" ? constructBehavior(val) : val;
                 else if (["name", "category"].includes(key)) elements[element.name][key] = key == "name" ? "NewElement" : "other"; 
             }
         }
         const changes = Storage.get("changes", []);
         for (const change of changes) {
             for (const key of Object.keys(change.changes)) {
-                const c = change.changes[key];
-                if (checkType(key, c)) elements[change.element][key] = c;
+                let c = change.changes[key];
+                if (key == "behavior" && Object.keys(behaviors).includes(c)) c = behaviors[c];
+                if (checkType(key, c)) elements[change.element][key] = key == "behavior" ? constructBehavior(c) : c;
             }
         }
         const deleted = Storage.get("deletedElements", []);
@@ -547,7 +556,7 @@ if (enabledMods.includes("mods/betterMenuScreens.js")) {
                         el.style.display = "none";
                         el.onchange = (ev) => {
                             if (document.getElementById(id).value == "CUSTOM") {
-                                applyChange(prop.name, ev.target.value.split(";").map(e => e.split(",")));
+                                applyChange(prop.name, ev.target.value);
                             } else {
                                 ev.target.style.display = "none";
                             }
@@ -658,7 +667,7 @@ if (enabledMods.includes("mods/betterMenuScreens.js")) {
                     el.onchange = (ev) => {
                         if (document.getElementById(id).value == "CUSTOM") {
                             const elementData = Storage.get("newElement", {});
-                            elementData[prop.name] = ev.target.value.split(";").map(e => e.split(","));
+                            elementData[prop.name] = ev.target.value.split(";");
                             Storage.set("newElement", elementData);
                         } else {
                             ev.target.style.display = "none";
@@ -961,22 +970,33 @@ if (enabledMods.includes("mods/betterMenuScreens.js")) {
                             else el.setAttribute("value", "none");
                         }
                     } else {
-                        if (element[prop.name]) {
+                        if (element[prop.name] || prop.name == "behavior") {
                             if (prop.type == "boolean") {
                                 el.setAttribute("value", element[prop.name] ? "ON" : "OFF");
                                 el.setAttribute("state", element[prop.name] ? "1" : "0");
                             } else if (prop.type == "color") {
                                 el.setAttribute("value", parseColor(element[prop.name]));
                             } else if (prop.name == "behavior") {
-                                const behavior = element[prop.name];
-                                const index = Object.keys(behaviors).map(b => `${behaviors[b] instanceof Array ? behaviors[b].join(";") : behaviors[b]}`).indexOf(behavior instanceof Array ? behavior.join(";") : behavior);
-                                if (index == -1) {
-                                    document.getElementById(id + "/option/custom").selected = true;
-                                    document.getElementById(id + "/textInput").style.display = "";
-                                    document.getElementById(id + "/textInput").setAttribute("value", behavior.join(";"))
-                                } else {
+                                let behavior = element[prop.name];
+                                if (!behavior && element.tick) behavior = element.tick;
+                                if (typeof behavior == "function" && behavior.name) {
+                                    const name = behavior.name;
+                                    const index = Object.keys(behaviors).indexOf(name);
                                     document.getElementById(id + "/textInput").style.display = "none";
-                                    document.getElementById(id + "/option/" + index).selected = true;
+                                    document.getElementById(id + "/option/" + (index == -1 ? "none" : index)).selected = true;
+                                } else if (typeof behavior == "function") {
+                                    document.getElementById(id + "/textInput").style.display = "none";
+                                    document.getElementById(id + "/option/none").selected = true;
+                                } else {
+                                    const index = Object.keys(behaviors).map(b => `${behaviors[b] instanceof Array ? behaviors[b].join(";") : behaviors[b]}`).indexOf(behavior instanceof Array ? behavior.join(";") : behavior);
+                                    if (index == -1) {
+                                        document.getElementById(id + "/option/custom").selected = true;
+                                        document.getElementById(id + "/textInput").style.display = "";
+                                        document.getElementById(id + "/textInput").setAttribute("value", behavior.map(b => b.join("|")).join(";"))
+                                    } else {
+                                        document.getElementById(id + "/textInput").style.display = "none";
+                                        document.getElementById(id + "/option/" + index).selected = true;
+                                    }
                                 }
                             } else {
                                 el.setAttribute("value", element[prop.name] instanceof Function ? element[prop.name].toString() : element[prop.name]);
