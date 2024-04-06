@@ -71,13 +71,14 @@ if (Math.abs(settings.randomcount) == settings.randomcount){
   }
 } else {
   window.addEventListener('load', function() {
+    for (elementi in elements){
+      elementslist.push(elementi)
+  }
+  var eLen = elementslist.length
     const p = document.createElement("p");
-p.innerText = `v${currentversion} • ` +(elementslist.length - Math.abs(settings.randomcount)) +` elements, with 0 hidden`;
+p.innerText = `v${currentversion} • ` +(eLen - Math.abs(settings.randomcount)) +` elements, with 0 hidden`;
 document.getElementById("extraInfo").querySelectorAll("small")[1].replaceChildren(p);
 elementslist = []
-for (elementi in elements){
-    elementslist.push(elementi)
-}
   if (Math.abs(settings.randomcount) > elementslist.length){
     console.log("mode 1")
     for (var elementi in elements){
