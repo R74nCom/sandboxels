@@ -1,3 +1,16 @@
+elements.change_count = {
+  color: "#34eb86",
+  canPlace: false,
+  behavior: behaviors.SELFDELETE,
+  onSelect: function() {
+    var cans = prompt("Please input how many elements you would like to be generared each time.", 10000);
+    if (!cans) { return }
+    settings.randomcount = parseInt(cans)
+    saveSettings()
+  }, 
+  category: "random"
+}
+if (!settings.randomcount){settings.randomcount = 10000; saveSettings()}
 var color = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "a", "b", "c", "d", "e","f"]
 var states = ["solid", "liquid", "gas"]
 var total = 0
@@ -13,7 +26,7 @@ var randomProperty = function (obj) {
     var keys = Object.keys(obj);
     return obj[keys[ keys.length* Math.random() << 0]];
 };
-for (var i = 1; i <= 10000; i++){
+for (var i = 1; i <= settings.randomcount; i++){
     var f = Math.random() < 0.2
     var co = Math.random() < 0.2
     elements["element_"+i] = {
