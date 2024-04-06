@@ -71,6 +71,7 @@ if (Math.abs(settings.randomcount) == settings.randomcount){
   }
 } else {
   window.addEventListener('load', function() {
+    elementslist = []
     for (elementi in elements){
       elementslist.push(elementi)
   }
@@ -78,7 +79,6 @@ if (Math.abs(settings.randomcount) == settings.randomcount){
     const p = document.createElement("p");
 p.innerText = `v${currentversion} • ` +(eLen - Math.abs(settings.randomcount)) +` elements, with 0 hidden`;
 document.getElementById("extraInfo").querySelectorAll("small")[1].replaceChildren(p);
-elementslist = []
   if (Math.abs(settings.randomcount) > elementslist.length){
     console.log("mode 1")
     for (var elementi in elements){
