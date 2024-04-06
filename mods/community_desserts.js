@@ -4,125 +4,185 @@
  * Don't see your favorite dessert? Let me know!
  * 
  * Got questions? Contact tisqbisque on Discord!
+ * 
+ * This version: 1.1
  */
-// Dulce de leche items - BASE COMPLETE
+
+// Dulce de leche items
 elements.dulce_de_leche = {
+    alias: "manjar",
     color: ["#c56600","#f7a204","#ca6400","#893604"],
     category: "Community",
-    behavior: behaviors.STURDYPOWDER,
+    state: "liquid",
+    behavior: behaviors.LIQUID,
+    reactions: {
+        "cream_cheese": { elem1:"dulce_de_leche", elem2:null, color1:["#DFAB73","#fbcc75","#e2aa73","#be9075"], oneway:true }, // for recipe accuracy :3
+    },
+    tempLow: -20,
+    stateLow: "candy",
     tempHigh: 250,
     stateHigh: ["fragrance","smoke","smoke"],
+    viscosity: 500,
+    stain: 0.02,
+    density: 1284.93,
     hidden: true,
-    desc: "Added in the first version of the mod. From undexconocidox_26419.\n"
+    isFood: true,
+    desc: "Added in the first version of the mod.\nMade by heating Sweetened Condensed Milk at 175°C+.\nFrom undexconocidox_26419.\n"
 }
 elements.sweetened_condensed_milk = {
     color: ["#ffe9ba","#fbd396","#fde2a9"],
     category: "Community",
+    state: "liquid",
     behavior: behaviors.LIQUID,
+    tempLow: 0,
+    stateLow: ["ice_cream","sugar"],
     tempHigh: 175,
     stateHigh: "dulce_de_leche",
+    viscosity: 5,
+    stain: 0.015,
+    density: 1050.83,
     hidden: true,
-    desc: "Added in the first version of the mod. Made by mixing Milk and Sugar at 85°C+.\n",
+    isFood: true,
+    desc: "Added in the first version of the mod.\nMade by mixing Milk and Sugar at 85°C+.\n",
 }
 
-// Chocotorta items - BASE COMPLETE
+// Chocotorta items
 elements.cream_cheese = {
     color: ["#ebe9ea","#e4dfdd","#eeeeee"],
     category: "Community",
-    behavior: behaviors.SUPPORTPOWDER,
+    state: "solid",
+    behavior: behaviors.STURDYPOWDER,
+    //reactions: {
+        // For future use
+    //},
+    tempHigh: 65,
+    stateHigh: "melted_cheese",
+    stateHighColor: ["#fbffff","#f6f6f6"],
+    hardness: 0.01,
+    density: 980.61,
     hidden: true,
-    desc: "Added in the first version of the mod. Made by mixing Acid with Milk or Cream.\n",
+    isFood: true,
+    desc: "Added in the first version of the mod.\nMade by mixing Acid with Milk or Cream.\n",
 }
 elements.cocoa_bean = {
     color: ["#e16f51","#e28e67","#e18550","#84574d"],
     category: "Community",
-    behavior: behaviors.STURDYPOWDER,
+    state: "solid",
+    behavior: behaviors.POWDER,
+    // Has no reactions
     breakInto: "cocoa_powder",
+    density: 593,
+    tempHigh: 179.4,
+    stateHigh: "dead_plant",
+    tempLow: -2,
+    stateLow: "frozen_plant",
+    // not hidden by default
+    // not food don't eat it
     desc: "Added in the first version of the mod.\n",
 }
 elements.cocoa_powder = {
     color: ["#855344","#6d4c41","#40271d"],
+    category: "Community",
+    state: "solid",
     behavior: behaviors.POWDER,
     onMix: function(powder, doughcheck) {
-        if (doughcheck.name == "dough" && shiftDown && Math.random() < 0.01) {
-            changePixel(powder,"chocolate_biscuit_dough");
+        if (elements[doughcheck.element].id == elements.dough.id && shiftDown && Math.random() < 0.25) {
+            deletePixel(powder.x,powder.y);
             changePixel(doughcheck,"chocolate_biscuit_dough");
         }
     },
-    reactions: {
-        "dough": { elem1:null, elem2:"chocolate_biscuit_dough" },
-    },
-    category: "Community",
+    density: 363.5,
+    tempHigh: 50,
+    stateHigh: "smoke",
     hidden: true,
-    desc: "Added in the first version of the mod. Made by Smashing Cocoa Bean.\n",
+    isFood: true,
+    desc: "Added in the first version of the mod.\nMade by Smashing Cocoa Bean.\n",
 }
 elements.chocolate_biscuit_dough = {
-    name: "choco_Biscuit_Dough",
     color: "#623727",
     category: "Community",
+    state: "solid",
     behavior: behaviors.STURDYPOWDER,
     tempHigh: 94,
     stateHigh: "chocolate_biscuit",
     burn: 40,
     burnTime: 25,
     burnInto: "ash",
-    state: "solid",
     density: 526.9,
     isFood: true,
     hidden: true,
-    desc: "Added in the first version of the mod. Made by mixing Cocoa Powder with Dough.\n",
+    desc: "Added in the first version of the mod.\nMade by hard mixing Cocoa Powder with Dough.\n",
 }
 elements.chocolate_biscuit = {
-    name: "choco_Biscuit",
     color: "#864B36",
-    behavior: behaviors.STURDYPOWDER,
-    tempHigh: 550,
-    stateHigh: ["smoke","smoke","smoke","ash"],
-    breakInto: "crumb",
+    category: "Community",
     state: "solid",
+    behavior: behaviors.STURDYPOWDER,
+    breakInto: "crumb",
+    breakIntoColor: ["#af8264","#b28461","#aa7852","#a8744b"],
+    tempHigh: 232.2,
+    stateHigh: ["smoke","smoke","smoke","ash"],
     density: 233.96,
     isFood: true,
-    category: "Community",
     hidden: true,
-    desc: "Added in the first version of the mod. Made by cooking Choco Biscuit Dough at 94°C+. Can be layered with other items to make chocotorta, from undexconocidox_26419.\n",
+    desc: "Added in the first version of the mod.\nMade by cooking Choco Biscuit Dough at 94°C+.\nCan be layered with other items to make chocotorta, from undexconocidox_26419.\n",
 }
 
-// Haupia items - BASE COMPLETE
+// Haupia items
 elements.coconut = {
     color: ["#793b1e","#995c31","#5f3015"],
+    category: "Community",
+    state: "solid",
     behavior: behaviors.POWDER,
     breakInto: ["coconut_milk","tinder"],
-    category: "Community",
+    tempHigh: 225,
+    stateHigh: ["steam","ash","smoke"],
+    density: 822,
     desc: "Added in the first version of the mod.\n",
 }
 elements.coconut_milk = {
     color: ["#f3f3f3","#e4ddcb","#f8f8f8"],
-    behavior: behaviors.LIQUID,
     category: "Community",
+    state: "liquid",
+    behavior: behaviors.LIQUID,
     reactions: {
         "sugar": { elem1:null, elem2:"haupia_mix", tempMin:90 },
     },
+    tempHigh: 102,
+    stateHigh: "steam",
+    tempLow: -0.5,
+    stateLowName: "coconut_ice",
+    viscosity: 1.8,
     density: 1031.33,
     hidden: true,
-    desc: "Added in the first version of the mod. Made by smashing Coconut.\n",
+    isFood: true,
+    desc: "Added in the first version of the mod.\nMade by smashing Coconut.\n",
 }
 elements.haupia_mix = {
     color: ["#f3f3f3","#e4ddcb","#f8f8f8"],
-    behavior: behaviors.LIQUID,
-    tempLow: 3,
     category: "Community",
+    state: "liquid",
+    behavior: behaviors.LIQUID,
+    tempHigh: 105,
+    stateHigh: "steam",
+    tempLow: 3,
     stateLow: "haupia",
+    viscosity: 2.3,
     density: 1242.67,
     hidden: true,
-    desc: "Added in the first version of the mod. Made by mixing Coconut Milk and Sugar at 90°C+.\n",
+    desc: "Added in the first version of the mod.\nMade by mixing Coconut Milk and Sugar at 90°C+.\n",
 }
 elements.haupia = {
     color: ["#ffffff","#f8f8f8","#f7f9f8"],
-    behavior: behaviors.SUPPORT,
-    density: 1300,
     category: "Community",
+    state: "solid",
+    behavior: behaviors.SUPPORT,
+    tempHigh: 105,
+    stateHigh: ["steam","fragrance"],
+    density: 1300,
     hidden: true,
-    desc: "Added in the first version of the mod. Made by cooling Haupia Mix at 3°C-. From tisqbisque.\n"
+    isFood: true,
+    desc: "Added in the first version of the mod.\nMade by cooling Haupia Mix at 3°C-.\nFrom tisqbisque.\n"
 }
 
 // Adjusting existing elements here
