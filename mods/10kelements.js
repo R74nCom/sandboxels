@@ -5,6 +5,9 @@ elements.change_count = {
   onSelect: function() {
     var cans = prompt("Please input how many elements you would like to be generared each time.", 10000);
     if (!cans) { return }
+    if (cans > 2000000){alert("You have put too big of a number! This would surely crash your browser or eat up all your RAM! Element count will remain unchanged."); return}
+    if (cans < 1){alert("You have either put a decimal, zero, or a negative number. Why? Element count will remain unchanged."); return}
+    if (parseInt(cans) == NaN){alert("Apparently your input isnt even a number. Try again. Element count will remain unchanged."); return}
     settings.randomcount = parseInt(cans)
     saveSettings()
   }, 
