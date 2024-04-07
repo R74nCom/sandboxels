@@ -6,7 +6,9 @@
 // - Try to get the mod to work by making different ways to craft all the (116) elements in the mod
 // - Make new substances that you can get after mixing different elements
 // - Make a way to get the different substances by mixing different elements and different substances
-// - Make a custom message for when you reset your savefile like in survival.js
+// - Create different proporties for the substances
+
+// How much of the elements you're gonna have when you start:
 
 if (!settings.Science_mod) {
     settings.Science_mod = {
@@ -128,4 +130,965 @@ if (!settings.Science_mod) {
         "Tennessine": 9.223372036854776e+18,
         "Oganesson": 9.223372036854776e+18,
     }
+}
+
+// Element proporties (all proporties have hidden:false as these are what you start with
+// and you don't have to craft them):
+
+// All of these are before the reaction when you add different stuff to these elements/substances
+// happens (same with the substances)
+
+element.Hydrogen = {
+    behavior: behaviors.GAS,
+    color:"D3D3D3",
+    category:"gases",
+    state:"gas",
+    hidden:false
+}
+
+element.Helium = {
+    behavior: behaviors.GAS,
+    color:"C0C0C0",
+    category:"gases",
+    state:"gas",
+    hidden:false
+}
+
+element.Lithium = {
+    behavior: behaviors.WALL,
+    color:"DADBDD",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Beryllium = {
+    behavior: behaviors.WALL,
+    color:"DADBDD",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Boron = {
+    behavior: behaviors.WALL,
+    color:"964B00",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Carbon = {
+    behavior: behaviors.GAS,
+    color:"000000",
+    category:"gases",
+    state:"gas",
+    hidden:false
+}
+
+element.Nitrogen = {
+    behavior: behaviors.GAS,
+    color:"0000FF",
+    category:"gases",
+    state:"gas",
+    hidden:false
+}
+
+element.Oxygen = {
+    behavior: behaviors.GAS,
+    color:"000000",
+    category:"gases",
+    state:"gas",
+    hidden:false
+}
+
+element.Fluorine = {
+    behavior: behaviors.WALL,
+    color:"FFFF00",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Neon = {
+    behavior: behaviors.GAS,
+    color:"FFFFFF",
+    category:"gases",
+    state:"gas",
+    hidden:false
+}
+
+element.Sodium = {
+    behavior: behaviors.WALL,
+    color:"A0522D",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Magnesium = {
+    behavior: behaviors.WALL,
+    color:"F0C8A0",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Aluminum = {
+    behavior: behaviors.WALL,
+    color:"C0C0C0",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Silicon = {
+    behavior: behaviors.WALL,
+    color:"C0C0C0",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Phosphorus = {
+    behavior: behaviors.WALL,
+    color:"FF0000",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Sulfur = {
+    behavior: behaviors.WALL,
+    color:"FFFF00",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Chlorine = {
+    behavior: behaviors.GAS,
+    color:"FFFFFF",
+    category:"gases",
+    state:"gas",
+    hidden:false
+}
+
+element.Argon = {
+    behavior: behaviors.GAS,
+    color:"FFFFFF",
+    category:"gases",
+    state:"gas",
+    hidden:false
+}
+
+element.Potassium = {
+    behavior: behaviors.WALL,
+    color:"00FF00",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Calcium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Scandium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Titanium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Vanadium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Chromium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Manganese = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Iron = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Cobalt = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Nickel = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Copper = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Zinc = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Gallium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Germanium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Arsenic = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Selenium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Bromine = {
+    behavior: behaviors.GAS,
+    color:"FFFFFF",
+    category:"gases",
+    state:"gas",
+    hidden:false
+}
+
+element.Krypton = {
+    behavior: behaviors.GAS,
+    color:"FFFFFF",
+    category:"gases",
+    state:"gas",
+    hidden:false
+}
+
+element.Rubidium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Strontium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Yttrium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Zirconium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Niobium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Molybdenum = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Technetium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Ruthenium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Rhodium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Palladium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Silver = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Cadmium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Indium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Tin = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Antimony = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Tellurium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Iodine = {
+    behavior: behaviors.GAS,
+    color:"FFFFFF",
+    category:"gases",
+    state:"gas",
+    hidden:false
+}
+
+element.Xenon = {
+    behavior: behaviors.GAS,
+    color:"FFFFFF",
+    category:"gases",
+    state:"gas",
+    hidden:false
+}
+
+element.Caesium = {
+    behavior: behaviors.GAS,
+    color:"FFFFFF",
+    category:"gases",
+    state:"gas",
+    hidden:false
+}
+
+element.Barium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Lanthanum = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Cerium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Praseodymium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Neodymium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Promethium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Samarium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Europium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Gadolinium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Terbium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Dysprosium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Holmium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Erbium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Thulium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Ytterbium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Lutetium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Hafnium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Tantalum = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Tungsten = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Rhenium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Osmium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Iridium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Platinum = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Gold = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Mercury = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Thallium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Lead = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Bismuth = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Polonium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Astatine = {
+    behavior: behaviors.GAS,
+    color:"FFFFFF",
+    category:"gases",
+    state:"gas",
+    hidden:false
+}
+
+element.Radon = {
+    behavior: behaviors.GAS,
+    color:"FFFFFF",
+    category:"gases",
+    state:"gas",
+    hidden:false
+}
+
+element.Francium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Radium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Actinium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Thorium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Protactinium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Uranium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Neptunium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Plutonium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Americium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Curium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Berkelium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Californium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Einsteinium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Fermium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Mendelevium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Nobelium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Lawrencium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Rutherfordium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Dubnium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Seaborgium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Bohrium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Hassium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Meitnerium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Darmstadtium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Roentgenium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Copernicium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Nihonium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Flerovium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Moscovium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Livermorium = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Tennessine = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+element.Oganesson = {
+    behavior: behaviors.WALL,
+    color:"00FFFF",
+    category:"land",
+    state:"solid",
+    hidden:false
+}
+
+// Substance proporties (These are the properties of the substances, not the elements These properties 
+// use hidden:true as you don't start with these but instead have to craft them):
+
+substance.Polystyrene = {
+    behavior: behaviors.WALL,
+    color:"00FF00",
+    category:"land",
+    state:"solid",
+    hidden:true
 }
