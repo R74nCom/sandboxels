@@ -26,7 +26,7 @@ elements.molten_caesium = {
 	stateLow: "caesium",
 	tempHigh: 671,
 	stateHigh: "caesium_vapor",
-	density: 1843,
+	density: 1842,
 	temp: 29,
 	conduct: 0.90,
 	reactions: {
