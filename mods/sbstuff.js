@@ -1657,15 +1657,7 @@ elements.thermal_paste = {
 	state: "liquid",
 };
 
-elements.sam = {
-	name: "sam's sperm i think",
-	viscosity: 10000,
-	color: "#0e0e0e",
-	behavior: behaviors.LIQUID,
-	category: "joke",
-	state: "liquid",
-	desc: "begs the question; did he censor himself?"
-};
+// die
 
 elements.glitch = {
 	color: ["#ff0000", "#c300ff", "#bbff00", "#1100ff", "#00ffaa"],
