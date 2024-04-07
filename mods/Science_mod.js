@@ -6,7 +6,7 @@
 // - Try to get the mod to work by making different ways to craft all the (116) elements in the mod
 // - Make new substances that you can get after mixing different elements
 // - Make a way to get the different substances by mixing different elements and different substances
-// - Create different proporties for the substances
+// - Create different proporties for the substances (doing now)
 
 // How much of the elements you're gonna have when you start:
 
@@ -1087,7 +1087,7 @@ element.Oganesson = {
 
 substance.Polystyrene = {
     behavior: behaviors.WALL,
-    color:"00FF00",
+    color:"FFFFFF",
     category:"land",
     state:"solid",
     hidden:true
@@ -1095,8 +1095,18 @@ substance.Polystyrene = {
 
 substance.Styrene = {
     behavior: behaviors.LIQUID,
-    color:"00FF00",
+    color:"FFFFED",
     category:"liquids",
     state:"liquid",
     hidden:true
 }
+
+substance.Cinnamaldehyde = {
+    behavior: behaviors.LIQUID,
+    color:"FDFD96",
+    category:"liquids",
+    state:"liquid",
+    hidden:true
+}
+
+// Doing more tmrw
