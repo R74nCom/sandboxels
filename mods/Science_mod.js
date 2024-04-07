@@ -411,10 +411,10 @@ element.Selenium = {
 }
 
 element.Bromine = {
-    behavior: behaviors.GAS,
+    behavior: behaviors.LIQUID,
     color:"FFFFFF",
-    category:"gases",
-    state:"gas",
+    category:"liquids",
+    state:"liquid",
     hidden:false
 }
 
@@ -771,10 +771,10 @@ element.Gold = {
 }
 
 element.Mercury = {
-    behavior: behaviors.WALL,
+    behavior: behaviors.LIQUID,
     color:"00FFFF",
-    category:"land",
-    state:"solid",
+    category:"liquids",
+    state:"liquid",
     hidden:false
 }
 
@@ -1090,5 +1090,13 @@ substance.Polystyrene = {
     color:"00FF00",
     category:"land",
     state:"solid",
+    hidden:true
+}
+
+substance.Styrene = {
+    behavior: behaviors.LIQUID,
+    color:"00FF00",
+    category:"liquids",
+    state:"liquid",
     hidden:true
 }
