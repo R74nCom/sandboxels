@@ -26,6 +26,7 @@ Upcoming Features:
 - kiwis
 - guavas
 - lychees
+- cherries (and the plasticky maraschino cherries 🤮🤮🤮)
 - dragonfuits
 - dates
 - figs
