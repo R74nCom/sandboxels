@@ -26,7 +26,7 @@ elements.molten_caesium = {
 	stateLow: "caesium",
 	tempHigh: 671,
 	stateHigh: "caesium_vapor",
-	density: 1843,
+	density: 1842,
 	temp: 29,
 	conduct: 0.90,
 	reactions: {
@@ -1444,19 +1444,48 @@ elements.blackhole_storage = {
 	conduct: 1,
 },
 elements.plutonium = {
-	color: ["#616161", "#4b4949", "#353232", "#211c1c"],
+	color: ["#212121", "#2b1c1c", "#371616", "#430e0e", "#510606", "#212121", "#1e1e1e", "#1b1b1b", "#171717", "#141414", "#212121", "#1e1e1e", "#1b1b1b", "#171717", "#141414"],
 	behavior: behaviors.STURDYPOWDER,
 	category: "powders",
 	tempHigh: 640,
 	stateHigh: "molten_plutonium",
 	state: "solid",
 	tick: function(pixel){
-		if (Math.random() < 0.0007) {
-			changePixel(pixel, "neutron", false);
-		} else if (Math.random() < 0.0007) {
-			changePixel(pixel, "uranium", false);
-		}
-	},
+        if(Math.random() < 0.0007){
+        for (var i = 0; i < squareCoords.length; i++) {
+            var coord = squareCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (isEmpty(x, y)){
+                createPixel("helium", x, y)
+                pixelMap[x][y].temp = pixel.temp + 200
+                break;
+            }
+        }
+        if(Math.random() < 0.5){
+        for (var i = 0; i < squareCoords.length; i++) {
+            var coord = squareCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (isEmpty(x, y)){
+                createPixel("neutron", x, y)
+                pixelMap[x][y].temp = pixel.temp + 200
+                break;
+            }
+        }
+    }
+        changePixel(pixel, "uranium", false);
+        pixelMap[x][y].temp += 200
+            for (var i = 0; i < adjacentCoords.length; i++) {
+                var coord = adjacentCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (!isEmpty(x, y, true)){
+                    pixelMap[x][y].temp += 175
+                }
+            }
+       }
+    },
 	reactions: {
         "neutron": { elem1:"pn_explosion", tempMin:400, chance:0.1 },
     },
@@ -1470,19 +1499,48 @@ elements.molten_plutonium = {
 	tempLow: 620,
 	stateLow: "plutonium",
 	tick: function(pixel){
-		if (Math.random() < 0.0007) {
-			changePixel(pixel, "neutron", false);
-		} else if (Math.random() < 0.0007) {
-			changePixel(pixel, "uranium", false);
-		}
-	},
+        if(Math.random() < 0.0007){
+            for (var i = 0; i < squareCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (isEmpty(x, y)){
+                    createPixel("helium", x, y)
+                    pixelMap[x][y].temp = pixel.temp + 200
+                    break;
+                }
+            }
+        if(Math.random() < 0.5){
+            for (var i = 0; i < squareCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (isEmpty(x, y)){
+                    createPixel("neutron", x, y)
+                    pixelMap[x][y].temp = pixel.temp + 200
+                    break;
+                }
+            }
+        }
+            changePixel(pixel, "uranium", false);
+            pixelMap[x][y].temp += 200
+            for (var i = 0; i < adjacentCoords.length; i++) {
+                var coord = adjacentCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (!isEmpty(x, y, true)){
+                    pixelMap[x][y].temp += 175
+                }
+            }
+        }
+    },
 	reactions: {
         "neutron": { elem1:"pn_explosion", tempMin:400, chance:0.1 },
     },
 	density: 16629,
 },
-elements.neutron.reactions.plutonium = { temp2:100 };
-elements.neutron.reactions.molten_plutonium = { temp2:100 }
+elements.neutron.reactions.plutonium = { temp2:200 };
+elements.neutron.reactions.molten_plutonium = { temp2:200 }
 elements.pn_explosion = {
     color: ["#ffb48f","#ffd991","#ffad91"],
     behavior: [
