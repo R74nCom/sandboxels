@@ -1,5 +1,6 @@
 // Science mod for Sandboxels
 // (Inspired by survival.js)
+// Build 10
 // By: Lucifer (@a_british_proto (Discord))
 // If there is anything you want to suggest or there's a bug then just dm me on discord
 // Todo:
@@ -1109,4 +1110,20 @@ substance.Cinnamaldehyde = {
     hidden:true
 }
 
-// Doing more tmrw
+substance.Acetone = {
+    behavior: behaviors.LIQUID,
+    color:"DADEDF",
+    category:"liquids",
+    state:"liquid",
+    hidden:true
+}
+
+substance.Methane = {
+    behavior: behaviors.GAS,
+    color:"C1C7C9",
+    category:"gases",
+    state:"gas",
+    hidden:true
+}
+
+// Doing more later
