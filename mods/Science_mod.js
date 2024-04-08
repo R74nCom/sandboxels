@@ -1,6 +1,6 @@
 // Science mod for Sandboxels
 // (Inspired by survival.js)
-// Build 10
+// Build 11
 // By: Lucifer (@a_british_proto (Discord))
 // If there is anything you want to suggest or there's a bug then just dm me on discord
 // Todo:
@@ -1126,4 +1126,12 @@ substance.Methane = {
     hidden:true
 }
 
-// Doing more later
+substance.Ethane = {
+    behavior: behaviors.GAS,
+    color:"C1C7C9",
+    category:"gases",
+    state:"gas",
+    hidden:true
+}
+
+// Doing more tmrw
