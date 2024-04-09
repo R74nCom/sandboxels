@@ -129,9 +129,9 @@ elements.molten_caesium_137 = {
         }
     }
 },
-elements.caesium_vapor_137 = {
+elements.caesium_137_vapor = {
 	color: ["#d89e77", "#cd9064", "#af6f34", "#a26320"],
-	behavior: behaviors.GAS,
+	behavior: behaviors.RADSOLID,
 	category: "states",
 	state: "gas",
 	tempLow: 660,
@@ -140,7 +140,7 @@ elements.caesium_vapor_137 = {
 	temp: 700,
     hidden: true,
     tick: function(pixel){
-        behaviors.RADSOLID
+        behaviors.GAS(pixel)
         if (Math.random()<0.0002){
             changePixel(pixel, "barium", false)
             if (Math.random() >= 0.946){
