@@ -48,7 +48,7 @@
     <meta name="twitter:creator:id" content="1436857621827530753">
 
     <script> // versioning info
-        currentversion = "1.9.4";
+        currentversion = "1.9.4.1";
         saveVersion = 2;
     </script>
     <style>
@@ -1159,6 +1159,17 @@
 "rock_wall": {
     color: ["#666666","#363636","#7a7a7a"],
     behavior: behaviors.WALL,
+    tool: function(pixel) {
+        if (pixel.element === "sun") {
+            pixel.eclipse = true;
+            if (Math.random() < 0.1) {
+                changePixel(pixel,"rock_wall");
+                pixel.temp = 20;
+                pixel.color = pixelColorPick(pixel,"#301B16")
+            }
+        }
+    },
+    canPlace: true,
     tempHigh: 950,
     stateHigh: "magma",
     category: "land",
@@ -2177,7 +2188,8 @@
     tick: function(pixel) {
         // minimum 1726
         // maximum 7726
-        if (pixel.temp < 1500) { pixel.color = pixelColorPick(pixel,"#7a4e43"); var c=0 }
+        if (pixel.eclipse) { pixel.color = pixelColorPick(pixel,"#FD8C03"); var c=0.01}
+        else if (pixel.temp < 1500) { pixel.color = pixelColorPick(pixel,"#7a4e43"); var c=0 }
         else if (pixel.temp < 3600) { pixel.color = pixelColorPick(pixel,"#ffbdbd"); var c=0.015 }
         else if (pixel.temp < 5000) { pixel.color = pixelColorPick(pixel,"#ffd5bd"); var c=0.025 }
         else if (pixel.temp < 7000) { pixel.color = pixelColorPick(pixel,"#ffffbd"); var c=0.05 }
@@ -2194,16 +2206,25 @@
             }
             else if (!outOfBounds(x,y)) {
                 var newPixel = pixelMap[x][y];
-                if (pixel.temp!==newPixel.temp && elements[newPixel.element].id === elements.sun.id) {
-                    var avg = (pixel.temp + newPixel.temp)/2;
-                    pixel.temp = avg;
-                    newPixel.temp = avg;
-                    pixelTempCheck(pixel);
-                    pixelTempCheck(newPixel);
+                if (elements[newPixel.element].id === elements.sun.id) {
+                    if (pixel.eclipse) { newPixel.eclipse = true }
+                    if (pixel.temp!==newPixel.temp) {
+                        var avg = (pixel.temp + newPixel.temp)/2;
+                        pixel.temp = avg;
+                        newPixel.temp = avg;
+                        pixelTempCheck(pixel);
+                        pixelTempCheck(newPixel);
+                    }
                 }
             }
         }
     },
+    tool: function(pixel) {
+        if (pixel.element === "light") {
+            deletePixel(pixel.x,pixel.y);
+        }
+    },
+    canPlace: true,
     reactions: {
         "hydrogen": { elem2:"helium", temp1:5 },
         "helium": { elem2:"carbon_dioxide", temp1:5, tempMax:3600 },

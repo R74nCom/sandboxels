@@ -15,6 +15,7 @@ elements.carbon_monoxide = {
       tempLow: -192,
       stateLow: "liquid_carbon_monoxide",
       burntime: 5,
+      darkText: true,
       fireColor: "#ebba34",
       reactions: {
                     "head": { elem1:"rotten_meat", chance:0.5 },
@@ -31,6 +32,7 @@ elements.liquid_carbon_monoxide = {
          tempHigh: -190,
          temp: -192,
          tempLow: -199,
+         hidden: true,
          stateLow: "ice_carbon_monoxide",
          stateHigh: "carbon_monoxide", 
 };
@@ -200,13 +202,17 @@ elements.radiated_water = {
    density :1300,
    color: ["#23d959","#29d65d"],
    hidden: true,
+   tempHigh: 140,
+   stateHigh: "polluted_air",
+   tempLow: -6,
+   stateLow: "rad_ice",
    reactions: {
    "human": { elem2:"rotten_meat" },
    "body": { elem2:"rotten_meat" },
    "head": { elem2:"ash" },
    "bird": { elem2:"rotten_meat"},
-   "cell": { elem2:"cancer"},
- }
+   "cell": { elem2:"cancer"},  
+  }
 };
 
 elements.polluted_air = {
@@ -221,7 +227,8 @@ elements.polluted_air = {
         "human": { elem2:"rotten_meat" },
         "bird": { elem2:"rotten_meat" },
         "cell": { elem2:"cancer"},
-    }
+        "water": { elem1: null, elem2: "radiated_water" },
+   }
 };
 
 elements.siren = {
@@ -236,4 +243,28 @@ elements.siren = {
         "radiated_water": {"charge1":1},
         "polluted_air": {"charge1":1},
     }
+};
+
+elements.radiated_metal = {
+   behavior: behaviors.WALL,
+   category: "radiated",
+   state:"solid",
+   density :2045,
+   color: ["#5e705a","#83ab7b","#474747"],
+   tempHigh: 1440,
+   stateHigh: ["molten_nickel","molten_iron","molten_tin","fallout"],
+   reactions: {
+       "water": { elem2:"radiated_water", chance:0.7 }, 
+       "foam": { elem1:["tin","nickel","iron"] },
+    }
+};
+
+elements.rad_ice = {
+    behavior: behaviors.WALL,
+    category: "radiated",
+    state:"solid",
+    density: 1905,
+    color: ["#81d79c","#68b899","#68abb8"],
+    hidden: true,
+    temp: -6,
 }
