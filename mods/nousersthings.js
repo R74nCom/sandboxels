@@ -1,4 +1,9 @@
 // Gallium is the best element
+behaviors.RADSOLID = [
+    "XX|CR:radiation%1|XX",
+    "CR:radiation%1|XX|CR:radiation%1",
+    "XX|CR:radiation%1|XX"
+]
 elements.caesium = {
 	color: ["#917921", "#ebcb59", "#a48b2d", "#d6b84c"],
 	behavior: behaviors.WALL,
@@ -24,6 +29,7 @@ elements.molten_caesium = {
 	state: "liquid",
 	tempLow: 27.44,
 	stateLow: "caesium",
+    hidden: true,
 	tempHigh: 671,
 	stateHigh: "caesium_vapor",
 	density: 1842,
@@ -44,10 +50,165 @@ elements.caesium_vapor = {
 	category: "states",
 	state: "gas",
 	tempLow: 660,
+    hidden: true,
 	stateLow: "molten_caesium",
 	density: 1.7,
 	temp: 700
+}
+elements.caesium_137 = {
+	color: ["#917921", "#ebcb59", "#a48b2d", "#d6b84c"],
+	behavior: behaviors.RADSOLID,
+	category: "solids",
+	state: "solid",
+	tempHigh: 28.44,
+	stateHigh: "molten_caesium_137",
+	density: 1873,
+	conduct: 0.90,
+	reactions: {
+			"water": { "elem1":"pop", "elem2":"hydrogen" },
+			"sugar_water": { "elem1":"pop", "elem2":"hydrogen" },
+			"dirty_water": { "elem1":"pop", "elem2":"hydrogen" },
+			"pool_water": { "elem1":"pop", "elem2":"hydrogen" },
+			"salt_water": { "elem1":"pop", "elem2":"hydrogen" },
+			"seltzer":  { "elem1":"pop", "elem2":"hydrogen" },
+		},
+    tick: function(pixel){
+        if (Math.random()<0.0002){
+            changePixel(pixel, "barium", false)
+            if (Math.random() >= 0.946){
+                pixelMap[pixel.x][pixel.y].excited = true
+            }
+            for (var i = 0; i < squareCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (isEmpty(x, y)){
+                    createPixel("electric", x, y)
+                    break;
+                }
+            }
+        }
+    }
 },
+elements.molten_caesium_137 = {
+	color: ["#735c0a", "#a68e37", "#7e6715", "#9b832e"],
+	behavior: behaviors.RADLIQUID,
+	category: "states",
+	state: "liquid",
+	tempLow: 27.44,
+	stateLow: "caesium_137",
+	tempHigh: 671,
+    hidden: true,
+	stateHigh: "caesium_vapor_137",
+	density: 1842,
+	temp: 29,
+	conduct: 0.90,
+	reactions: {
+		"water": { "elem1":"pop", "elem2":"hydrogen" },
+		"sugar_water": { "elem1":"pop", "elem2":"hydrogen" },
+		"dirty_water": { "elem1":"pop", "elem2":"hydrogen" },
+		"pool_water": { "elem1":"pop", "elem2":"hydrogen" },
+		"salt_water": { "elem1":"pop", "elem2":"hydrogen" },
+		"seltzer":  { "elem1":"pop", "elem2":"hydrogen" },
+	},
+    tick: function(pixel){
+        if (Math.random()<0.0002){
+            changePixel(pixel, "barium", false)
+            if (Math.random() >= 0.946){
+                pixelMap[pixel.x][pixel.y].excited = true
+            }
+            for (var i = 0; i < squareCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (isEmpty(x, y)){
+                    createPixel("electric", x, y)
+                    break;
+                }
+            }
+        }
+    }
+},
+elements.caesium_vapor_137 = {
+	color: ["#d89e77", "#cd9064", "#af6f34", "#a26320"],
+	behavior: behaviors.GAS,
+	category: "states",
+	state: "gas",
+	tempLow: 660,
+	stateLow: "molten_caesium_137",
+	density: 1.7,
+	temp: 700,
+    hidden: true,
+    tick: function(pixel){
+        behaviors.RADSOLID
+        if (Math.random()<0.0002){
+            changePixel(pixel, "barium", false)
+            if (Math.random() >= 0.946){
+                pixelMap[pixel.x][pixel.y].excited = true
+            }
+            for (var i = 0; i < squareCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (isEmpty(x, y)){
+                    createPixel("electric", x, y)
+                    break;
+                }
+            }
+        }
+    }
+}
+elements.barium = {
+    color: ["#191f19", "#2c332c", "#3f483f", "#545e54", "#6a756a"],
+    behavior: behaviors.STURDYPOWDER,
+    reactions: elements.caesium.reactions,
+    category: "powders",
+    state: "solid",
+    tempHigh: 730,
+    stateHigh: "molten_barium",
+    density: 3594,
+    tick: function(pixel){
+        if(pixel.excited && Math.random() < 0.005){
+            for (var i = 0; i < squareCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (isEmpty(x, y)){
+                    createPixel("laser", x, y)
+                    pixelMap[x][y].temp = pixel.temp + 120
+                    delete pixel.excited
+                    break;
+                }
+            }
+        }
+    }
+}
+elements.molten_barium = {
+    color: ["#c26d24", "#cf8225", "#da9727", "#e4ad2b", "#ecc432"],
+    behavior: behaviors.MOLTEN,
+    reactions: elements.caesium.reactions,
+    category: "states",
+    state: "liquid",
+    tempLow: 728,
+    hidden: true,
+    stateLow: "barium",
+    density: 3338,
+    tick: function(pixel){
+        if(pixel.excited && Math.random() < 0.005){
+            for (var i = 0; i < squareCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (isEmpty(x, y)){
+                    createPixel("laser", x, y)
+                    pixelMap[x][y].temp = pixel.temp + 120
+                    delete pixel.excited
+                    break;
+                }
+            }
+        }
+    }
+}
 elements.subzero_grass_seed = {
 	color: ["#022c14", "#032911", "#032205", "#021f00"],
 	behavior: [
@@ -97,7 +258,7 @@ elements.acid_gas.ignore.push("ruthenium"),
 elements.acid_gas.ignore.push("molten_ruthenium")
 elements.technetium = {
 	color: ["#e7d9bb", "#bab195", "#8f8a70", "#66654e"],
-	behavior: behaviors.WALL,
+	behavior: behaviors.RADSOLID,
     tick: function(pixel){
         if(Math.random() < 0.0007){
         for (var i = 0; i < squareCoords.length; i++) {
@@ -121,7 +282,7 @@ elements.technetium = {
 },
  elements.molten_technetium = {
 	color: ["#d16b42", "#da904c", "#dfb360", "#e2d57f"],
-	behavior: behaviors.MOLTEN,
+	behavior: behaviors.RADMOLTEN,
 	tick: function(pixel){
         if(Math.random() < 0.0007){
         for (var i = 0; i < squareCoords.length; i++) {
@@ -1485,6 +1646,7 @@ elements.plutonium = {
                 }
             }
        }
+       behaviors.RADSOLID
     },
 	reactions: {
         "neutron": { elem1:"pn_explosion", tempMin:400, chance:0.1 },
@@ -1493,7 +1655,7 @@ elements.plutonium = {
 }
 elements.molten_plutonium = {
 	color: ["#6b5133", "#743f26", "#7c2727"],
-	behavior: behaviors.LIQUID,
+	behavior: behaviors.RADMOLTEN,
 	category: "states",
 	state: "liquid",
 	tempLow: 620,
@@ -2445,6 +2607,9 @@ elements.scuffed_circle_brush = {
         createPixel(circleElem, thisx, thisy)
     }
 }
+function randomIntFromInterval(min, max) { // min and max included 
+    return Math.floor(Math.random() * (max - min + 1) + min)
+  }
 elements.spacedust_cola = {
     color: ["#090033", "#0a0027", "#0a001b", "#0b000f"],
     behavior: elements.soda.behavior,
