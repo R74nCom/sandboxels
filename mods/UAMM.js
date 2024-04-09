@@ -126,7 +126,7 @@ elements.radiocesium = {
 		"water": {func: (pixel1) => {pixel1.burning=true;pixel1.burnStart=pixelTicks},
 		elem1: ["rad_steam", "fallout"], elem2: "explosion"}
 	}
-}
+};
 
 elements.liquid_radiocesium = {
 	color: ["#e8dcc1", "#d4c6a5", "#bfbaae", "#f5f1e9"],
@@ -140,17 +140,113 @@ elements.liquid_radiocesium = {
 		"water": {func: (pixel1) => {pixel1.burning=true;pixel1.burnStart=pixelTicks},
 		elem1: ["rad_steam", "fallout"], elem2: "explosion"}
 	}
-}
+};
 
 elements.lithium = {
-	color: ["#e3a814", "#dbab32", "#e8bc4f", "#fabf2d"],
+	color: ["#e8e8e8", "#f5f5f5", "#c9c9c9", "#d4d4d4"],
 	behavior: behaviors.POWDER,
 	category: "powders",
 	state: "solid",
-	fireColor: "#8c21de",
-	burn: 1,
-	burnTime: 500,
-	tempHigh: 29,
-	stateHigh: "liquid_cesium",
+	tempHigh: 180.5,
+	stateHigh: "liquid_lithium",
 	density: 534,
+	tick: function (pixel){
+        var otherPixel;
+        for (var i = 0; i < squareCoords.length; i++) {
+            var coord = squareCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (isEmpty(x, y, true)){
+                if(Math.random()<0.003) {
+                    changePixel(pixel, "dull_lithium")
+                }
+            }
+            if (!isEmpty(x, y, true)) {
+                otherPixel = pixelMap[x][y];
+                if (otherPixel.element != "mineral_oil") {
+					if (otherPixel.element != "lithium" && otherPixel.element != "dull_lithium" && otherPixel.element != "tarnished_lithium") {
+						if(Math.random()<0.0007) {
+							changePixel(pixel, "dull_lithium")
+						}
+					}
+                }
+            }
+        }
+    },
+	reactions: {
+		"water": {elem1: "lithium_hydroxide", elem2: "hydrogen", temp2: 400}
+	}
+};
+
+elements.dull_lithium = {
+	color: ["#d4d4d4", "#e3e3e3", "#b3b3b3", "#bfbfbf"],
+	behavior: behaviors.POWDER,
+	hidden: true,
+	state: "solid",
+	tempHigh: 180.5,
+	stateHigh: "liquid_lithium",
+	density: 534,
+	tick: function (pixel){
+        var otherPixel;
+        for (var i = 0; i < squareCoords.length; i++) {
+            var coord = squareCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (isEmpty(x, y, true)){
+                if(Math.random()<0.003) {
+                    changePixel(pixel, "dull_lithium")
+                }
+            }
+            if (!isEmpty(x, y, true)) {
+                otherPixel = pixelMap[x][y];
+                if (otherPixel.element != "mineral_oil") {
+					if (otherPixel.element != "lithium" && otherPixel.element != "dull_lithium" && otherPixel.element != "tarnished_lithium") {
+						if(Math.random()<0.0007) {
+							changePixel(pixel, "dull_lithium")
+						}
+					}
+                }
+            }
+        }
+    },
+	reactions: {
+		"water": {elem1: "lithium_hydroxide", elem2: "hydrogen", temp2: 400}
+	}
+};
+
+elements.tarnished_lithium = {
+	color: ["#212121", "#303030", "#0d0d0d", "#404040"],
+	behavior: behaviors.POWDER,
+	state: "solid",
+	hidden: true,
+	tempHigh: 180.5,
+	stateHigh: "liquid_lithium"
+};
+
+elements.liquid_lithium = {
+	color: ["#e8e8e8", "#f5f5f5", "#c9c9c9", "#d4d4d4"],
+	behavior: behaviors.LIQUID,
+	hidden: true,
+	state: "liquid",
+	tempLow: 179.5,
+	stateLow: "lithium",
+	density: 511.7
+}
+
+elements.lithium_hydroxide = {
+	color: ["#ffffff", "#f1f1f1", "#e7e7e7", "#ededed"],
+	behavior: behaviors.POWDER,
+	hidden: true,
+	state: "solid",
+	tempHigh: 180.5,
+	stateHigh: "liquid_lithium",
+	density: 1540,
+}
+
+elements.mineral_oil = {
+	color: ["#cdf6fa", "#e6fdff", "#bff9ff", "#f5feff"],
+	behavior: behaviors.LIQUID,
+	state: "liquid",
+	category: "liquids",
+	density: 870
 }
