@@ -469,7 +469,7 @@ button, input { /*Disable double tap zoom on mobile devices*/
     touch-action: manipulation;
     color-scheme: dark;
 }
-select, .toggleInput, #settingsMenu input[type="number"], #settingsMenu input[type="text"], #savePromptMenu input {
+select, .toggleInput, #settingsMenu input[type="number"], #settingsMenu input[type="text"], #savePromptMenu input, input[type="email"] {
     background-color: black;
     vertical-align: middle;
     margin-left: 5px;

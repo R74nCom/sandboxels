@@ -1,7 +1,5 @@
 elements.cooked_rice = {
 	viscosity: 1000,
-	tempMin: 20,
-	stateMin: "rice",
 	tempHigh: 500,
 	stateHigh: "charcoal",
 	density: 699,
@@ -1452,7 +1450,7 @@ elements.silver_coin = {
 	state: "solid",
 };
 
-elements.uraniumaniumaniumaniumanium_popcornicecream_plutoniumeptunium_238239 = {
+elements.lololol_this_crashes_ur_game_lololol_why_would_you_want_to_use_this_lololol_it_crashes = {
 	color: "#238fe8",
     behavior: [
         "XX|XX|XX",
@@ -1499,104 +1497,6 @@ elements.oreo = {
 	behavior: behaviors.STURDYPOWDER,
     category: "food",
     state: "liquid"
-};
-
-elements.uranium_238 = {
-	tempHigh: 1200,
-	stateHigh: "molten_uranium",
-	color: ["#0f400b", "#30522d", "#4d6b4a", "#6f8f6d"],
-	behavior: [
-        "XX|CR:radiation%1|XX",
-        "CR:radiation%1|CH:lead%0.001|CR:radiation%1",
-        "M2|M1|M2",
-    ],
-	category: "powders",
-	state: "liquid",
-	density: 19100,
-    hardness: 0.6,
-    conduct: 0.235,
-    excludeRandom: true,
-	reactions: {
-		"neutron": {elem1: "uranium_239",},
-	}
-};
-
-elements.uranium_239 = {
-	tempHigh: 1300,
-	stateHigh: "molten_uranium",
-	color: ["#153816", "#135e14", "#379138", "#567556", "#7bb37b"],
-	behavior: [
-        "XX|CR:radiation%2|XX",
-        "CR:radiation%2|CH:lead%0.002|CR:radiation%2",
-        "M2|M1|M2",
-    ],
-	category: "powders",
-	state: "liquid",
-	hidden: true,
-	density: 19100,
-    hardness: 0.6,
-    conduct: 0.235,
-    excludeRandom: true,
-	reactions: {
-		"electron": {elem1: "neptunium_239"}
-	}
-};
-
-elements.neptunium_239 = {
-	tempHigh: 1500,
-	stateHigh: "molten_uranium",
-	color: ["#082e19", "#173b27", "#354a3f", "#4c635a", "#344a41"],
-	behavior: [
-        "XX|CR:radiation%3|XX",
-        "CR:radiation%3|CH:lead%0.003|CR:radiation%3",
-        "M2|M1|M2",
-    ],
-	category: "powders",
-	state: "liquid",
-	hidden: true,
-	density: 20000,
-    hardness: 0.7,
-    conduct: 0.3,
-    excludeRandom: true,
-	reactions: {
-		"electron": {elem1: "plutonium"},
-		"neutron": { elem1:"n_explosion", tempMin:500, chance:0.1 }
-	}
-};
-
-elements.plutonium = {
-	tempHigh: 2000,
-	stateHigh: "molten_uranium",
-	color: ["#0a4a17", "#194d23", "#263b2a", "#475449"],
-	behavior: [
-        "XX|CR:radiation%4|XX",
-        "CR:radiation%4|CH:lead%0.004|CR:radiation%4",
-        "M2|M1|M2",
-    ],
-	category: "powders",
-	state: "liquid",
-	hidden: true,
-	density: 22000,
-    hardness: 0.8,
-    conduct: 0.4,
-    excludeRandom: true,
-	reactions: {
-		"neutron": { elem1:"n_explosion", tempMin:500, chance:0.2 },
-    "electron": { elem1:"n_explosion", tempMin:500, chance:0.00000000000000000000001 }
-	}
-};
-
-elements.electron = {
-  color: "#c99d16",
-    behavior: behaviors.BOUNCY,
-    reactions: {
-        "uranium": { temp2:100 },
-    },
-    temp: 35,
-    category: "energy",
-    state: "gas",
-    density: 0.00002,
-    ignoreAir: true
 };
 
 elements.sned = {
@@ -1757,15 +1657,7 @@ elements.thermal_paste = {
 	state: "liquid",
 };
 
-elements.sam = {
-	name: "sam's sperm i think",
-	viscosity: 10000,
-	color: "#0e0e0e",
-	behavior: behaviors.LIQUID,
-	category: "joke",
-	state: "liquid",
-	desc: "begs the question; did he censor himself?"
-};
+// die
 
 elements.glitch = {
 	color: ["#ff0000", "#c300ff", "#bbff00", "#1100ff", "#00ffaa"],
@@ -1803,9 +1695,18 @@ elements.sound = {
         }
         file.click();
     },
-    onUnselect: function() {},
     tool: function() {},
     category: "special",
+};
+
+elements.vomit = {
+	viscosity: 170,
+	tempHigh: 100,
+	stateHigh: ["dirty_water", "stench"],
+	behavior: behaviors.LIQUID,
+	category: "liquids",
+	state: "liquid",
+	stain: 0.1
 };
 
 elements.incinerate.category = "tools",
@@ -1863,3 +1764,102 @@ if (!elements.coffee.reactions) elements.coffee.reactions = {};
 elements.coffee.reactions.milk = {elem1: null, elem2: "coffee_milk",}
 
 elements.silver.breakInto = "silver_coin"
+
+// sb is an idiot and he has alzheimer so here is a property list
+/*
+== METADATA ==
+name
+alias
+category
+desc
+extraInfo
+related
+hidden
+darkText
+canPlace
+nocheer
+forceAutoGen
+
+== COLOR ==
+color
+innerColor (dead property)
+colorOn
+customColor
+forceSaveColor
+colorPattern
+colorKey
+
+== BEHAVIOR ==
+behavior
+behaviorOn
+tool (func)
+onMouseUp (func)
+onSelect (func)
+onUnselect (func)
+onMix (func)
+tick (func)
+perTick (func)
+reactions
+
+== TEMP ==
+temp
+tempLow
+stateLow
+stateLowName
+stateLowColor
+stateLowColorMultiplier
+tempHigh
+stateHigh
+stateHighName
+stateHighColor
+stateHighColorMultiplier
+extraTempLow
+extraTempHigh
+heatCapacity (dead property)
+
+== PROPERTIES ==
+state
+density
+insulate
+viscosity
+conduct
+stain
+stainSelf
+charge
+movable
+hardness
+foodNeed
+properties
+maxSize
+baby
+egg
+eggColor
+seed
+noMix
+ignoreAir
+excludeRandom
+cooldown
+isFood
+ignore
+canContain
+
+== BURN ==
+burn
+burning
+burnTime
+burnInto
+extinguish
+fireColor
+fireElement
+
+== FLIP ==
+rotatable
+flipX
+flippableX
+flipY
+flippableY
+
+== BREAK ==
+breakInto
+breakIntoColor
+*/

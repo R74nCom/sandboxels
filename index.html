@@ -48,7 +48,7 @@
     <meta name="twitter:creator:id" content="1436857621827530753">
 
     <script> // versioning info
-        currentversion = "1.9.4";
+        currentversion = "1.9.4.1";
         saveVersion = 2;
     </script>
     <style>
@@ -1159,6 +1159,17 @@
 "rock_wall": {
     color: ["#666666","#363636","#7a7a7a"],
     behavior: behaviors.WALL,
+    tool: function(pixel) {
+        if (pixel.element === "sun") {
+            pixel.eclipse = true;
+            if (Math.random() < 0.1) {
+                changePixel(pixel,"rock_wall");
+                pixel.temp = 20;
+                pixel.color = pixelColorPick(pixel,"#301B16")
+            }
+        }
+    },
+    canPlace: true,
     tempHigh: 950,
     stateHigh: "magma",
     category: "land",
@@ -2177,7 +2188,8 @@
     tick: function(pixel) {
         // minimum 1726
         // maximum 7726
-        if (pixel.temp < 1500) { pixel.color = pixelColorPick(pixel,"#7a4e43"); var c=0 }
+        if (pixel.eclipse) { pixel.color = pixelColorPick(pixel,"#FD8C03"); var c=0.01}
+        else if (pixel.temp < 1500) { pixel.color = pixelColorPick(pixel,"#7a4e43"); var c=0 }
         else if (pixel.temp < 3600) { pixel.color = pixelColorPick(pixel,"#ffbdbd"); var c=0.015 }
         else if (pixel.temp < 5000) { pixel.color = pixelColorPick(pixel,"#ffd5bd"); var c=0.025 }
         else if (pixel.temp < 7000) { pixel.color = pixelColorPick(pixel,"#ffffbd"); var c=0.05 }
@@ -2194,16 +2206,25 @@
             }
             else if (!outOfBounds(x,y)) {
                 var newPixel = pixelMap[x][y];
-                if (pixel.temp!==newPixel.temp && elements[newPixel.element].id === elements.sun.id) {
-                    var avg = (pixel.temp + newPixel.temp)/2;
-                    pixel.temp = avg;
-                    newPixel.temp = avg;
-                    pixelTempCheck(pixel);
-                    pixelTempCheck(newPixel);
+                if (elements[newPixel.element].id === elements.sun.id) {
+                    if (pixel.eclipse) { newPixel.eclipse = true }
+                    if (pixel.temp!==newPixel.temp) {
+                        var avg = (pixel.temp + newPixel.temp)/2;
+                        pixel.temp = avg;
+                        newPixel.temp = avg;
+                        pixelTempCheck(pixel);
+                        pixelTempCheck(newPixel);
+                    }
                 }
             }
         }
     },
+    tool: function(pixel) {
+        if (pixel.element === "light") {
+            deletePixel(pixel.x,pixel.y);
+        }
+    },
+    canPlace: true,
     reactions: {
         "hydrogen": { elem2:"helium", temp1:5 },
         "helium": { elem2:"carbon_dioxide", temp1:5, tempMax:3600 },
@@ -15667,6 +15688,10 @@ window.onload = function() {
                 }
             }
         }
+        // if the user is in an input, return
+        if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") {
+            return;
+        }
         // [ or - = decrease the mouse size by 2
         if (e.keyCode == 219 || e.keyCode == 189) {
             if (shiftDown) {mouseSize = 1}
@@ -16219,7 +16244,21 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span> <input type="button" value="O
             </optgroup>
         </select></p>
         <p>Email us at <a href="mailto:contact@R74n.com">contact@R74n.com</a> for advertising, help, or education!</p>
-        <iframe id="newsletteriframe" width="450" height="250" style="border:1px solid #EEE; background:black; max-width:90%" frameborder="0" scrolling="no"></iframe>
+        <div id="newsletterFrame">Be notified when Sandboxels and other R74n projects are updated, along with ramblings from the developer!<br><br>
+            <form action="https://news.r74n.com/api/v1/free?nojs=true" method="post" class="form _form_1mxvn_6" novalidate="" target="_blank"><input type="hidden" name="first_url" value="https://news.r74n.com/embed"><input type="hidden" name="first_referrer"><input type="hidden" name="current_url" value="https://news.r74n.com/embed"><input type="hidden" name="current_referrer"><input type="hidden" name="referral_code"><input type="hidden" name="source" value="embed"><input type="hidden" name="referring_pub_id"><input type="hidden" name="additional_referring_pub_ids">
+            <input type="email" placeholder="Type your email..." name="email" style="padding:15px"><input type="submit" value="Subscribe" style="background: rgb(23, 166, 255); padding:15px; border-radius: 20px"></input>
+            </div>
+        <style>
+            #newsletterFrame {
+                max-width: 600px;
+                margin: auto;
+                padding: 5px;
+                padding-top: 15px;
+                padding-bottom: 15px;
+                border: white solid 2px;
+            }
+        </style>
+        <!-- <iframe id="newsletteriframe" width="450" height="250" style="border:1px solid #EEE; background:black; max-width:90%" frameborder="0" scrolling="no"></iframe>
         <script>
             window.addEventListener('load', function() {
                 document.getElementById("newsletteriframe").src = "https://news.r74n.com/embed";
@@ -16231,7 +16270,7 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span> <input type="button" value="O
                     document.getElementById("langCredit").style.display = "block";
                 }
             })
-        </script>
+        </script> -->
         <p>Support development by subscribing on <a href="https://www.patreon.com/R74n" rel="me" target="_blank">our Patreon</a>! Many benefits!!</p>
     </div>
 
@@ -16247,7 +16286,7 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span> <input type="button" value="O
         <!-- <p>If you'd like to support us, consider donating on <a href="https://www.paypal.com/donate/?hosted_button_id=GCX4VHQ7SZWTN" target="_blank">PayPal</a> or <a href="https://cash.app/$emojiartist" target="_blank" title="$emojiartist">CashApp</a>, or subscribing on Discord.</p> -->
         <p>Business inquiries? Education stories? Help needed? Email us at <a href="mailto:contact@r74n.com">contact@R74n.com</a>!</p>
         <p>More links: <a href="https://sandboxels.R74n.com/help" rel="help">Help</a> • <a href="https://sandboxels.R74n.com/tips">Tips</a> • <a href="https://sandboxels.R74n.com/mod-list">Mods</a> • <a href="https://sandboxels.R74n.com/mobile-use">Mobile</a> • <a href="https://sandboxels.R74n.com/offline-use">Offline</a> • <a href="https://R74n.com/privacy">Privacy</a></p>
-        <p>Thanks to: Serioustar, WeiChei, Midi_png, ggod, personman, fnl4y, PitsPower, kaeud, Trent, u2ce</p>
+        <p>Thanks to: Serioustar, ggod, Midi_png, personman, fnl4y, PitsPower, swagg boi, kaeud, WeiChei, Trent, u2ce</p>
         <p style="display:none" id="langCredit">Translation by R74n</p>
         <p>Sandboxels is developed by R74n. Check out <a href="https://R74n.com" rel="author" target="_blank">our other projects</a>!</p>
         <script>

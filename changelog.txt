@@ -7,6 +7,10 @@ See sneak peaks for upcoming updates on the Discord: https://discord.gg/ejUc6YPQ
 
 A fancier version of this changelog can be found here: https://sandboxels.R74n.com/changelog
 
+[Version 1.9.4.1 - April 8, 2024 - Eclipse Special]
+    + Attempting to place Rock Wall on top of Sun begins a solar eclipse
+    + Sun can draw over Light pixels
+
 [Version 1.9.4 - March 17, 2024 - Natural Disasters]
     + Tornado
     + Earthquake
