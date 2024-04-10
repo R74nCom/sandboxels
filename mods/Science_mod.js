@@ -1,6 +1,6 @@
 // Science mod for Sandboxels
 // (Inspired by survival.js)
-// Build 12
+// Build 13
 // By: Lucifer (@a_british_proto (Discord))
 // If there is anything you want to suggest or there's a bug then just dm me on discord
 // Todo:
@@ -1292,4 +1292,69 @@ subtance.Silver_Azide = {
     hidden:true
 }
 
-// I'll leave the rest for tmrw as I need to go to bed, I tired ok!
+// This one is powder and crystals
+substance.Silver_Oxzide_01 = {
+    behavior: behaviors.POWDER,
+    color: "000001",
+    category: "lands",
+    state: "powder",
+    hidden:true
+}
+
+substance.Silver_Oxzide_02 = {
+    behavior: behaviors.WALL,
+    color: "000001",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Metaphospahte = {
+    behavior: behaviors.WALL,
+    color: "FFFF00",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Perrhenate = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Acetylide = {
+    behavior: behaviors.WALL,
+    color: "C0C0C0",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Chromate = {
+    behavior: behaviors.POWDER,
+    color: "A52A2A",
+    category: "lands",
+    state: "powder",
+    hidden:true
+}
+
+substance.Silver_Dichromate = {
+    behavior: behaviors.WALL,
+    color: "A52A2A",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Subfluoride = {
+    behavior: behaviors.WALL,
+    color: "CD7F32",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+// Doing more later (let's hope my phone is charged in the morning :skull:)
