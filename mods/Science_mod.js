@@ -1,6 +1,6 @@
 // Science mod for Sandboxels
 // (Inspired by survival.js)
-// Build 14
+// Build 15
 // By: Lucifer (@a_british_proto (Discord))
 // If there is anything you want to suggest or there's a bug then just dm me on discord
 // Todo:
@@ -1357,5 +1357,30 @@ substance.Silver_Subfluoride = {
     hidden:true
 }
 
-// Doing more later (let's hope my phone is charged in the morning :skull:)
-// Yep it's charged! :) (I can't multitask on my phone than on my computer :/)
+substance.Silver_Sulfide = {
+    behavior: behaviors.WALL,
+    color: "3f3f3f",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Oxzide = {
+    behavior: behaviors.POWDER,
+    color: "000002",
+    category: "lands",
+    state: "powder",
+    hidden:true
+}
+
+// Editing this later on when I get back home
+substance.Silver_Sulfate = {
+    behavior: behaviors.POWDER,
+    color: (Unsure),
+    category: "lands"
+    state: "powder",
+    hidden:true
+}
+
+// I done this on my school computers :skull:
+// doing more later
