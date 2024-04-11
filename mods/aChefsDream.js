@@ -4,11 +4,12 @@ Thanks to RealerRaddler <@914371295561535508>, Alice <@697799964985786450>, nous
 Compatibility with plants.js coming soon
 Works well with community_desserts.js
 
-v1.13
+v1.13.5
 
 you can support me at my youtube: https://youtube.com/@sqec
 
 Upcoming Features:
+- pudding/cream
 - extract tool
 - cinnamon
 - spring onions
@@ -21,7 +22,6 @@ Upcoming Features:
 - stainless steel
 - pepper plants
 - hot chocolate
-- cows and beef
 - celery
 - kiwis
 - guavas
@@ -41,9 +41,11 @@ Upcoming Features:
 - squids
 - tofu
 - miso
-- juice reaction with milk makes average color
 - juice reaction with other juices
 - jackfruit
+- fruit soda (any juice + co2 or seltzer)
+- rambutan
+- shrimp/prawn meat
 
 Changelog (v1.0)
     - added chickens
@@ -437,6 +439,15 @@ Changelog (v1.13)
     - added calves
     - added steak and beef
     - added smoked steak and barbecued steak
+
+
+
+
+Changelog (v1.13.5)
+    - added hard jelly
+    - soda can mix colors
+    - added soda jelly
+    - added fanta (orange juice + carbon dioxide)
 
 
 
@@ -7756,3 +7767,58 @@ elements.raw_beef = {
         "fire": {elem1: "barbecued_beef"}
     }
 };
+
+elements.juice.reactions.milk = { elem1:"fruit_milk", elem2:null, chance:0.05, func: function(pixel1, pixel2){
+    let newrgb = interpolateRgb(getRGB('rgb(250,250,250)'), getRGB(pixel2.color), 0.25);
+    pixel1.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+}}
+elements.juice.reactions.cream = { elem1:"fruit_milk", elem2:null, chance:0.05, func: function(pixel1, pixel2){
+    let newrgb = interpolateRgb(getRGB('rgb(250,250,250)'), getRGB(pixel2.color), 0.25);
+    pixel1.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+}}
+elements.soda.reactions.soda = {
+    func: function(pixel1, pixel2){
+      if(pixel1.color != pixel2.color){
+        if(Math.floor(Math.random() * 1000) == 1){
+        let newrgb = interpolateRgb(getRGB(pixel1.color), getRGB(pixel2.color), 0.5);
+        pixel1.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+        pixel2.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+        }
+      }
+    }
+  }
+elements.juice.reactions.soda = {
+    chance:70,
+    func: function(pixel1, pixel2){
+        if(pixel1.color != pixel2.color){
+            if(Math.floor(Math.random() * 1000) == 1){
+                let newrgb = interpolateRgb(getRGB(pixel1.color), getRGB(pixel2.color), 0.5);
+                changePixel(pixelMap[pixel1.x][pixel1.y],"soda")
+                pixel1.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+                pixel2.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+            }
+        }
+    }
+}
+if (!elements.orange_juice.reactions) { elements.orange_juice.reactions = {} }
+elements.orange_juice.reactions.seltzer = { elem1:"soda", elem2:"foam", color1:"#ffb319"}
+elements.orange_juice.reactions.carbon_dioxide = { elem1:"soda", elem2:"foam", color1:"#ffb319"}
+elements.agar.reactions.soda = { elem1:"jelly", elem2:null, chance:0.05, func: function(pixel1, pixel2){
+    let newrgb = interpolateRgb(getRGB('rgb(250,250,250)'), getRGB(pixel2.color), 0.7);
+    pixel1.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+}}
+elements.hard_jelly = {
+    color: "#c372b8",
+    behavior: behaviors.STURDYPOWDER,
+    tempHigh: 200,
+    stateHigh: ["smoke","sugar"],
+    category: "food",
+    state: "solid",
+    density: 1245,
+    isFood: true,
+    hidden: true,
+    temp: 0
+}
+elements.jelly.stateLow = "hard_jelly"
+elements.jelly.stateLowColorMultiplier = 1.2
+elements.jelly.temp = 0
