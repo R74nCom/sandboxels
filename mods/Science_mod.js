@@ -1,6 +1,6 @@
 // Science mod for Sandboxels
 // (Inspired by survival.js)
-// Build 13
+// Build 14
 // By: Lucifer (@a_british_proto (Discord))
 // If there is anything you want to suggest or there's a bug then just dm me on discord
 // Todo:
@@ -1358,3 +1358,4 @@ substance.Silver_Subfluoride = {
 }
 
 // Doing more later (let's hope my phone is charged in the morning :skull:)
+// Yep it's charged! :) (I can't multitask on my phone than on my computer :/)
