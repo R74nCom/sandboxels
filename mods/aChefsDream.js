@@ -4,7 +4,7 @@ Thanks to RealerRaddler <@914371295561535508>, Alice <@697799964985786450>, nous
 Compatibility with plants.js coming soon
 Works well with community_desserts.js
 
-v1.13.5
+v1.13.7
 
 you can support me at my youtube: https://youtube.com/@sqec
 
@@ -31,7 +31,9 @@ Upcoming Features:
 - dates
 - figs
 - avocados
-- apricots and plums
+- apricots and almonds (roasted)
+- hazelnuts
+- plums
 - curry/chicken tikka masala
 - raisins
 - peaches
@@ -448,6 +450,16 @@ Changelog (v1.13.5)
     - soda can mix colors
     - added soda jelly
     - added fanta (orange juice + carbon dioxide)
+
+
+
+
+Changelog (v1.13.7)
+    - rename nut to peanut
+
+
+
+
 
 
 
@@ -7822,3 +7834,7 @@ elements.hard_jelly = {
 elements.jelly.stateLow = "hard_jelly"
 elements.jelly.stateLowColorMultiplier = 1.2
 elements.jelly.temp = 0
+
+elements.nut.name = "peanut";
+elements.nut_meat.name = "peanut_meat";
+elements.nut_butter.name = "peanut_butter";
