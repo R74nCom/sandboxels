@@ -1376,10 +1376,10 @@ substance.Silver_Oxzide = {
 
 // Editing this later on when I get back home
 substance.Silver_Sulfate = {
-    behavior: behaviors.POWDER,
-    color: (Unsure),
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
     category: "lands"
-    state: "powder",
+    state: "solid",
     hidden:true
 }
 
