@@ -1,6 +1,6 @@
 // Science mod for Sandboxels
 // (Inspired by survival.js)
-// Build 13
+// Build 17
 // By: Lucifer (@a_british_proto (Discord))
 // If there is anything you want to suggest or there's a bug then just dm me on discord
 // Todo:
@@ -19,6 +19,7 @@ if (!settings.Science_mod) {
         "Beryllium": 9.223372036854776e+18,
         "Boron": 9.223372036854776e+18,
         "Carbon": 9.223372036854776e+18,
+        "Nitrogen": 9.223372036854776e+18,
         "Oxygen": 9.223372036854776e+18,
         "Flourine": 9.223372036854776e+18,
         "Neon": 9.223372036854776e+18,
@@ -1357,4 +1358,32 @@ substance.Silver_Subfluoride = {
     hidden:true
 }
 
-// Doing more later (let's hope my phone is charged in the morning :skull:)
+substance.Silver_Sulfide = {
+    behavior: behaviors.WALL,
+    color: "3f3f3f",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Oxzide = {
+    behavior: behaviors.POWDER,
+    color: "000002",
+    category: "lands",
+    state: "powder",
+    hidden:true
+}
+
+// Editing this later on when I get back home
+substance.Silver_Sulfate = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands"
+    state: "solid",
+    hidden:true
+}
+
+// I done this on my school computers :skull:
+// doing more later
+
+// I accidentally pressed Ctrl+V instead of Ctrl+C so it deleted my work D:
