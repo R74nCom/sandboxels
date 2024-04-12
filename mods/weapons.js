@@ -76,6 +76,9 @@ elements.left_missile = {
         "M2|EX:10|XX",
     ],
     category:"ammunition",
+    density: 1300,
+    excludeRandom: true,
+    cooldown: defaultCooldown
 },
 elements.right_missile = {
     color: "#4c4e42",
@@ -85,6 +88,9 @@ elements.right_missile = {
         "XX|EX:10|M2",
     ],
     category:"ammunition",
+    density: 1300,
+    excludeRandom: true,
+    cooldown: defaultCooldown
 },
 elements.up_missile = {
     color: "#4c4e42",
@@ -94,7 +100,9 @@ elements.up_missile = {
         "XX|EX:10|XX",
     ],
     category:"ammunition",
-    alias: "the element that some guy try to add to my mod without my permission but when doing so fucked the behavior grid up",
+    density: 1300,
+    excludeRandom: true,
+    cooldown: defaultCooldown
 },
     elements.cluster_munition = {
     color: "#444444",
@@ -160,6 +168,9 @@ elements.left_bullet = {
         "M2|XX|XX",
     ],
     category:"ammunition",
+    density: 1300,
+    excludeRandom: true,
+    cooldown: defaultCooldown
 },
     elements.right_bullet = {
     color: "#4c4e42",
@@ -169,6 +180,9 @@ elements.left_bullet = {
         "XX|XX|M2",
     ],
     category:"ammunition",
+    density: 1300,
+    excludeRandom: true,
+    cooldown: defaultCooldown
 },
     elements.e_gun_left = {
     color: "#C0C0C0",
@@ -226,6 +240,9 @@ elements.left_rocket = {
         "XX|XX|XX",
     ],
     category:"ammunition",
+    density: 1300,
+    excludeRandom: true,
+    cooldown: defaultCooldown
 },
     elements.right_rocket = {
     color: "#4c4e42",
@@ -235,6 +252,9 @@ elements.left_rocket = {
         "XX|XX|XX",
     ],
     category:"ammunition",
+    density: 1300,
+    excludeRandom: true,
+    cooldown: defaultCooldown
 },
     elements.e_rocket_launcher_left = {
     color: "#C0C0C0",
@@ -529,6 +549,9 @@ elements.bombs_for_throwing_at_you_left = {
         "XX|XX|XX",
         "M1|M1%10 AND EX:10>bomb|XX",
     ],
+    density: 1300,
+    excludeRandom: true,
+    cooldown: defaultCooldown
 }
 elements.machine_for_throwing_bombs_at_right = {
     color: "#524c41",
@@ -549,6 +572,9 @@ elements.bombs_for_throwing_at_you_right = {
         "XX|XX|XX",
         "XX|M1%10 AND EX:10>bomb|M1",
     ],
+    density: 1300,
+    excludeRandom: true,
+    cooldown: defaultCooldown
 },
 elements.energized_orb_left = {
     color: ["#e0e000","#f3f300"],
@@ -592,4 +618,120 @@ elements.fast_bomb = {
     density: 1300,
     excludeRandom: true,
     cooldown: defaultCooldown
+},
+elements.liquid_bomb = {
+    color: "#524c41",
+    tick: function(pixel) {
+                if (pixel.start === pixelTicks) {return}
+                if (pixel.charge && elements[pixel.element].behaviorOn) {
+                    pixelTick(pixel)
+                }
+                if (elements[pixel.element].viscosity && (!((Math.random()*100) < 100 / Math.pow(elements[pixel.element].viscosity, 0.25)))) {
+                    var move1Spots = [
+                        [pixel.x, pixel.y+1]
+                    ]
+                }
+                else {
+                    var move1Spots = [
+                        [pixel.x+1, pixel.y+1],
+                        [pixel.x, pixel.y+1],
+                        [pixel.x-1, pixel.y+1],
+                    ]
+                }
+                var moved = false;
+                for (var i = 0; i < move1Spots.length; i++) {
+                    var coords = move1Spots[Math.floor(Math.random()*move1Spots.length)];
+                    if (tryMove(pixel, coords[0], coords[1])) { moved = true; break; }
+                    else { move1Spots.splice(move1Spots.indexOf(coords), 1); }
+                }
+                if (!moved) {
+                    if (elements[pixel.element].viscosity===undefined || !(!((Math.random()*100) < 100 / Math.pow(elements[pixel.element].viscosity, 0.25)))) {
+                        if (Math.random() < 0.5) {
+                            if (!tryMove(pixel, pixel.x+1, pixel.y)) {
+                                tryMove(pixel, pixel.x-1, pixel.y);
+                            }
+                        } else {
+                            if (!tryMove(pixel, pixel.x-1, pixel.y)) {
+                                tryMove(pixel, pixel.x+1, pixel.y);
+                            }
+                        }
+                    }
+                }
+                doDefaults(pixel);
+            },
+    category: "weapons",
+    state: "liquid",
+    behavior: [
+        "XX|EX:10>explosion|XX",
+        "XX|XX|XX",
+        "XX|EX:10>explosion|XX",
+        ],
+    density: 1300,
+    excludeRandom: true,
+    ignore: "gas_bomb",
+    cooldown: defaultCooldown
+},
+elements.gas_bomb = {
+    color: "#524c41",
+    tick: function(pixel) {
+                if (pixel.start === pixelTicks) {return}
+                if (pixel.charge && elements[pixel.element].behaviorOn) {
+                    pixelTick(pixel)
+                }
+                var move1Spots = [
+                    [pixel.x, pixel.y+1],
+                    [pixel.x, pixel.y-1],
+                    [pixel.x+1, pixel.y],
+                    [pixel.x-1, pixel.y],
+                ]
+                var moved = false;
+                for (var i = 0; i < move1Spots.length; i++) {
+                    var coords = move1Spots[Math.floor(Math.random()*move1Spots.length)];
+                    if (tryMove(pixel, coords[0], coords[1])) { moved = true; break; }
+                    else { move1Spots.splice(move1Spots.indexOf(coords), 1);}
+                }
+                if (!moved) {
+                    var move2Spots = [
+                        [pixel.x+1, pixel.y+1],
+                        [pixel.x-1, pixel.y+1],
+                        [pixel.x+1, pixel.y-1],
+                        [pixel.x-1, pixel.y-1],
+                    ]
+                    for (var i = 0; i < move2Spots.length; i++) {
+                        var coords = move2Spots[Math.floor(Math.random()*move2Spots.length)];
+                        if (tryMove(pixel, coords[0], coords[1])) { break; }
+                        else { move2Spots.splice(move2Spots.indexOf(coords), 1); }
+                    }
+                }
+                doDefaults(pixel);
+            },
+    category: "weapons",
+    state: "gas",
+    behavior: [
+        "XX|EX:10>explosion|XX",
+        "XX|XX|XX",
+        "XX|EX:10>explosion|XX",
+        ],
+    density: 1300,
+    excludeRandom: true,
+    ignore: "liquid_bomb",
+    cooldown: defaultCooldown
+}
+elements.tank_left = {
+    color: "#bcc6cc",
+    category: "vehicles",
+    behavior: [
+        "M2 AND CR:fast_bullet_left|XX|XX",
+        "M1|XX|XX",
+        "M1|M1|XX",
+    ],
+},
+elements.tank_right = {
+    color: "#bcc6cc",
+    category: "vehicles",
+    behavior: [
+        "XX|XX|M2 AND CR:fast_bullet_right",
+        "XX|XX|M1",
+        "XX|M1|M1",
+    ],
 }
