@@ -52,12 +52,12 @@ elements.paint.tool = function(pixel) {
     delete pixel.origColor;
 }
 elements.milk.onMix = function(milk1, milk2) {
-    if (shiftDown && Math.random() < 0.01) {
+    if (shiftDown && Math.random() < 0.01 || mobileshift == "shift" && Math.random() < 0.01) {
         changePixel(milk1,"butter")
     }
 }
 elements.cream.onMix = function(milk1, milk2) {
-    if ((shiftDown && Math.random() < 0.01) || (elements[milk2.element].id === elements.milk.id && Math.random() < 0.00025)) {
+    if ((shiftDown && Math.random() < 0.01 || mobileshift == "shift" && Math.random() < 0.01) || (elements[milk2.element].id === elements.milk.id && Math.random() < 0.00025)) {
         changePixel(milk1,"butter")
     }
 }
