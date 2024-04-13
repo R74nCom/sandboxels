@@ -20,6 +20,11 @@ elements.low_battery= {
         "SH%10|CH:dead_battery%0.05|SH%10",
         "XX|SH%10|XX",
     ],
+    behaviorOn:  [
+        "XX|SH%10|XX", // shocks (adds charge)
+        "SH%10|CH:charged_battery%0.05|SH%10",
+        "XX|SH%10|XX",
+    ],
     colorOn: "#4fb613",
     category: "machines",
     tempHigh: 1455.5,
@@ -30,9 +35,14 @@ elements.low_battery= {
 elements.dead_battery= {
     color: "#9c6c25",
     behavior: [
-        "XX|SH%0.005|XX", // shocks (adds charge)
-        "SH%0.005|XX|SH%0.005",
-        "XX|SH%0.005|XX",
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "XX|XX|XX",
+    ],
+    behaviorOn:  [
+        "XX|XX|XX",
+        "XX|CH:low_battery%0.05|XX",
+        "XX|XX|XX",
     ],
     colorOn: "#699e19",
     category: "machines",
