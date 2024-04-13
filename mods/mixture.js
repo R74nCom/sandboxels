@@ -20,7 +20,6 @@ function whenAvailable(names, callback) {
         }
     }, interval);
 }
-var runAfterAutogenMod = "mods/runAfterAutogen2.js";
 
 function getName(elementList)
 {
@@ -274,11 +273,14 @@ function mixture(elementList)
             reactions: {},
         };
         
-        elementCount++;
-        elements[name].hidden = true;
-        hiddenCount++;
-        elements[name].id = nextid++;
-        document.getElementById("extraInfo").innerHTML = "<small><p>There are " + elementCount + " elements, including " + hiddenCount + " hidden ones.</p><p>©2021-" + new Date().getFullYear() + ". All Rights Reserved. <a href='https://r74n.com'>R74n</a></p></small>"; //update extra info counts (and the copyright year, due to the method used)
+        if(typeof elementCount !== 'undefined')
+        {
+            elementCount++;
+            elements[name].hidden = true;
+            hiddenCount++;
+            elements[name].id = nextid++;
+            document.getElementById("extraInfo").innerHTML = "<small><p>There are " + elementCount + " elements, including " + hiddenCount + " hidden ones.</p><p>©2021-" + new Date().getFullYear() + ". All Rights Reserved. <a href='https://r74n.com'>R74n</a></p></small>"; //update extra info counts (and the copyright year, due to the method used)
+        }
     }
     else if(!elements[name].mixture)
     {
@@ -498,15 +500,11 @@ function isValidMixture(elementList)
     return true;
 }
 
-if(enabledMods.includes(runAfterAutogenMod)){
-whenAvailable(["runAfterAutogen"], function() {
-    runAfterAutogen(function() {
-        mixture2(["water","blood"]);
-        mixture2(["water","cough_drugs","cellulose_gum","carbon_dioxide","sugar","milk"]);
-        
-    });
+runAfterAutogen(function() {
+    mixture2(["water","blood"]);
+    mixture2(["water","cough_drugs","cellulose_gum","carbon_dioxide","sugar","milk"]);
+    
 });
-}
 
 
 predefinedColors = [
