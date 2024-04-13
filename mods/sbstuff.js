@@ -1,9 +1,7 @@
 elements.cooked_rice = {
 	viscosity: 1000,
-	tempMin: 20,
-	stateMin: "rice",
 	tempHigh: 500,
-	stateHigh: ["ash", "charcoal"],
+	stateHigh: "charcoal",
 	density: 699,
 	color: "#c2b6b6",
 	behavior: behaviors.LIQUID,
@@ -16,37 +14,39 @@ elements.cooked_rice = {
 
 elements.rice = {
 	breakInto: "flour",
-	viscosity: 10000,
 	isFood: true,
 	density: 696,
 	tempHigh: 232,
 	stateHigh: "cooked_rice",
 	color: "#c8c8c8",
-	behavior: behaviors.LIQUID,
+	behavior: behaviors.POWDER,
 	category: "food",
 	state: "liquid",
 };
 
 elements.moth = {
 	tempHigh: 500,
-	stateHigh: "ash",
+	stateHigh: "dead_bug",
+	breakInto: "dead_bug",
 	color: "#57381a",
 	behavior: behaviors.FLY,
 	category: "life",
-	state: "solid",
+	state: "liquid",
 };
 
 elements.cotton_candy = {
 	isFood: true,
-	tempHigh: 500,
-	stateHigh: "ash",
+	tempHigh: 200,
+	stateHigh: "sugar",
 	density: 1000,
-	color: "#b6c7e3",
+	color: ["#b6c7e3", "#c54b4b", "#e7769c"],
+	singleColor: true,
 	behavior: behaviors.POWDER,
 	category: "food",
 	state: "liquid",
 	reactions: {
-		"water": { elem1: "sugar", elem2: null },
+		"water": { elem1: "sugar", elem2: "water" },
+		"sugar_water": { elem1: "sugar", elem2:"sugar_water", chance: 10 }
 	}
 };
 
@@ -192,11 +192,25 @@ elements.green_berries = {
 elements.meth = {
 	hardness: 1,
 	tempHigh: 500,
+	tempLow: -50,
+	stateLowColorMultiplier: 0.9,
 	stateHigh: "melted_meth",
 	color: "#0affef",
 	behavior: behaviors.POWDER,
 	category: "joke",
 	state: "liquid"
+};
+
+elements.melted_meth = {
+	viscosity: 1000,
+	tempHigh: 100000,
+	tempLow: -20,
+	stateHigh: "beans",
+	stateLow: "meth",
+	color: "#00a2ff",
+	behavior: behaviors.LIQUID,
+	category: "joke",
+	state: "solid",
 };
 
 elements.garlic = {
@@ -217,7 +231,7 @@ elements.garlic_bread = {
 	breakInto: "crumb",
 	tempHigh: 500,
 	stateHigh: "ash",
-	color: ["#db9b56", "#288a0c", "#db9b56", "#db9b56", "#db9b56", "#db9b56"],
+	color: ["#e9be90", "#288a0c", "#e0c6aa", "#b49e85", "#b6926b", "#ccac8b"],
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
 	state: "solid",
@@ -249,6 +263,8 @@ elements.lemon = {
 elements.lemonade = {
 	isFood: true,
 	tempHigh: 500,
+	tempLow: -15,
+	tempLowColor: "#f8eb35",
 	stateHigh: "steam",
 	color: "#fff41c",
 	behavior: behaviors.LIQUID,
@@ -267,6 +283,18 @@ elements.poop = {
 	reactions: {
 		"piss": { elem1: null, elem2: "bless" },
 	}
+};
+
+elements.diarrhea = {
+	hardness: 1,
+	viscosity: 10000,
+	tempHigh: 500,
+    stateHigh: ["ash", "ash", "ash", "ash", "ash", "ash", "ash", "steam",],
+    color: "#523718",
+    behavior: behaviors.LIQUID,
+    category: "joke",
+	state: "solid",
+	desc: "riddle me this, libshart, if theres liquid poop then wheres the solid piss?"
 };
 
 elements.marshmallow = {
@@ -330,6 +358,7 @@ elements.cereal = {
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
 	state: "liquid",
+	stain: 0.005
 };
 
 elements.sushi = {
@@ -355,6 +384,7 @@ elements.diamond_ore = {
 elements.coca_cola = {
 	isFood: true,
 	tempHigh: 500,
+	tempLow: -10,
 	stateHigh: "steam",
 	color: "#381e13",
 	behavior: behaviors.LIQUID,
@@ -365,6 +395,7 @@ elements.coca_cola = {
 elements.pepsi = {
 	tempHigh: 500,
 	stateHigh: "steam",
+	tempLow: -10,
 	color: "#2b1717",
 	behavior: behaviors.LIQUID,
     category: "liquids",
@@ -374,6 +405,7 @@ elements.pepsi = {
 elements.piss = {
 	tempHigh: 500,
 	stateHigh: "steam",
+	tempLow: -10,
 	color: "#ffff00",
 	behavior: behaviors.LIQUID,
 	category: "joke",
@@ -405,17 +437,10 @@ elements.pastry = {
 	state: "solid",
 };
 
-elements.melted_meth = {
-	tempHigh: 100000,
-	stateHigh: "beans",
-	color: "#00a2ff",
-	behavior: behaviors.LIQUID,
-	category: "joke",
-	state: "solid",
-};
 
-elements.expired_milk = {
+elements.spoiled_milk = {
 	tempHigh: 500,
+	tempLow: -20,
 	stateHigh: "ash",
 	color: "#b8c2b4",
 	behavior: behaviors.LIQUID,
@@ -523,6 +548,8 @@ elements.mashed_pea = {
 elements.burnt_beans = {
 	tempHigh: 500,
 	stateHigh: "ash",
+	tempLow: -0,
+	stateLow: "beans",
 	isFood: true,
 	viscosity: 10000,
 	density: 721,
@@ -563,6 +590,7 @@ elements.cocaine = {
 };
 
 elements.zombie = {
+	excludeRandom: true,
 	tempHigh: 500,
 	stateHigh: "ash",
 	color: "#114700",
@@ -755,6 +783,7 @@ elements.fart = {
 	behavior: behaviors.DGAS,
 	category: "joke",
 	state: "gas",
+	excludeRandom: true
 };
 
 elements.chips = {
@@ -801,6 +830,7 @@ elements.barbecue_sauce = {
 	viscosity: 3000,
 	density: 1800,
 	tempHigh: 500,
+	tempLow: 0,
 	stateHigh: "steam",
 	color: "#420400",
 	behavior: behaviors.LIQUID,
@@ -907,6 +937,7 @@ elements.porridge = {
 	viscosity: 3000,
 	density: 500,
 	tempHigh: 500,
+	tempLow: -10,
 	stateHigh: "steam",
 	color: "#b8a254",
 	behavior: behaviors.LIQUID,
@@ -938,7 +969,7 @@ elements.chocolate_grape = {
 	viscosity: 10000,
 	tempHigh: 300,
 	stateHigh: "steam",
-	color: ["#9e3475", "#6e4d36"],
+	color: ["#7e600d", "#6e4d36"],
 	behavior: behaviors.LIQUID,
 	category: "food",
 	state: "liquid",
@@ -949,7 +980,7 @@ elements.sprinkles = {
 	stateHigh: "ash",
 	cooldown: 0.2,
 	color: ["#ff5e5e", "#ffea5e", "#73ff5e", "#5efcff", "#995eff", "#ff5ed1"],
-	behavior: behaviors.STURDYPOWDER,
+	behavior: behaviors.POWDER,
 	category: "powders",
 	state: "liquid",
 	maxSize: 1,
@@ -965,8 +996,9 @@ elements.incinerator = {
 	category: "machines",
 	state: "solid",
 	insulate: true,
+	excludeRandom: true,
 	reactions: {
-		"fart": { elem1: null, elem2: "ohio" },
+		"fart": { elem1: null, elem2: "kaboom" },
 	}
 };
 
@@ -1113,6 +1145,7 @@ elements.strawberry = {
 elements.beer = {
     tempHigh: 300,
     stateHigh: "steam",
+	tempLow: -10,
     color: "#b39329",
     behavior: behaviors.LIQUID,
     category: "liquids",
@@ -1140,8 +1173,10 @@ elements.carrot = {
 };
 
 elements.wine = {
+	hidden: true,
 	tempHigh: 400,
     stateHigh: "steam",
+	tempLow: -10,
     color: "#2e0206",
     behavior: behaviors.LIQUID,
     category: "liquids",
@@ -1173,9 +1208,10 @@ elements.dark_energy = {
 	 ],
     category: "special",
     state: "gas",
+	excludeRandom: true
 };
 
-elements.ohio = {
+elements.kaboom = {
 	hidden: true,
 	hardness: 1,
 	hidden: true,
@@ -1189,6 +1225,7 @@ elements.ohio = {
 	category: "joke",
     state: "gas",
 	desc: "use at own risk",
+	excludeRandom: true
 };
 
 elements.papaya = {
@@ -1279,6 +1316,9 @@ elements.heavy_water = {
 	behavior: behaviors.LIQUID_OLD,
 	category: "liquids",
     state: "liquid",
+	reactions: {
+		"sand": { elem1: null, elem2: "quicksand" },
+	}
 };
 
 elements.blood_orange = {
@@ -1308,6 +1348,7 @@ elements.cranberry = {
 	hidden: true,
     tempHigh: 300,
     stateHigh: "steam",
+	tempLow: -15,
     color: "#ad2a1d",
     behavior: behaviors.LIQUID,
     category: "food",
@@ -1337,15 +1378,6 @@ elements.yoylecake = {
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
 	state: "liquid",
-};
-
-elements.banana = {
-	tempHigh: 300,
-	stateHigh: "ash",
-    color: "#f06c0e",
-    behavior: behaviors.STURDYPOWDER,
-    category: "food",
-    state: "liquid",
 };
 
 elements.cool_ray = {
@@ -1418,7 +1450,7 @@ elements.silver_coin = {
 	state: "solid",
 };
 
-elements.uraniumaniumaniumaniumanium_popcornicecream_plutoniumeptunium_238239 = {
+elements.lololol_this_crashes_ur_game_lololol_why_would_you_want_to_use_this_lololol_it_crashes = {
 	color: "#238fe8",
     behavior: [
         "XX|XX|XX",
@@ -1441,6 +1473,7 @@ elements.uraniumaniumaniumaniumanium_popcornicecream_plutoniumeptunium_238239 = 
 elements.coffee_milk = {
 	tempHigh: 300,
     stateHigh: "steam",
+	tempLow: -30,
     color: "#5c4c42",
     behavior: behaviors.LIQUID,
     category: "liquids",
@@ -1466,105 +1499,8 @@ elements.oreo = {
     state: "liquid"
 };
 
-elements.uranium_238 = {
-	tempHigh: 1200,
-	stateHigh: "molten_uranium",
-	color: ["#0f400b", "#30522d", "#4d6b4a", "#6f8f6d"],
-	behavior: [
-        "XX|CR:radiation%1|XX",
-        "CR:radiation%1|CH:lead%0.001|CR:radiation%1",
-        "M2|M1|M2",
-    ],
-	category: "powders",
-	state: "liquid",
-	density: 19100,
-    hardness: 0.6,
-    conduct: 0.235,
-    excludeRandom: true,
-	reactions: {
-		"neutron": {elem1: "uranium_239",},
-	}
-};
-
-elements.uranium_239 = {
-	tempHigh: 1300,
-	stateHigh: "molten_uranium",
-	color: ["#153816", "#135e14", "#379138", "#567556", "#7bb37b"],
-	behavior: [
-        "XX|CR:radiation%2|XX",
-        "CR:radiation%2|CH:lead%0.002|CR:radiation%2",
-        "M2|M1|M2",
-    ],
-	category: "powders",
-	state: "liquid",
-	hidden: true,
-	density: 19100,
-    hardness: 0.6,
-    conduct: 0.235,
-    excludeRandom: true,
-	reactions: {
-		"electron": {elem1: "neptunium_239"}
-	}
-};
-
-elements.neptunium_239 = {
-	tempHigh: 1500,
-	stateHigh: "molten_uranium",
-	color: ["#082e19", "#173b27", "#354a3f", "#4c635a", "#344a41"],
-	behavior: [
-        "XX|CR:radiation%3|XX",
-        "CR:radiation%3|CH:lead%0.003|CR:radiation%3",
-        "M2|M1|M2",
-    ],
-	category: "powders",
-	state: "liquid",
-	hidden: true,
-	density: 20000,
-    hardness: 0.7,
-    conduct: 0.3,
-    excludeRandom: true,
-	reactions: {
-		"electron": {elem1: "plutonium"},
-		"neutron": { elem1:"n_explosion", tempMin:500, chance:0.1 }
-	}
-};
-
-elements.plutonium = {
-	tempHigh: 2000,
-	stateHigh: "molten_uranium",
-	color: ["#0a4a17", "#194d23", "#263b2a", "#475449"],
-	behavior: [
-        "XX|CR:radiation%4|XX",
-        "CR:radiation%4|CH:lead%0.004|CR:radiation%4",
-        "M2|M1|M2",
-    ],
-	category: "powders",
-	state: "liquid",
-	hidden: true,
-	density: 22000,
-    hardness: 0.8,
-    conduct: 0.4,
-    excludeRandom: true,
-	reactions: {
-		"neutron": { elem1:"n_explosion", tempMin:500, chance:0.2 },
-    "electron": { elem1:"n_explosion", tempMin:500, chance:0.00000000000000000000001 }
-	}
-};
-
-elements.electron = {
-  color: "#c99d16",
-    behavior: behaviors.BOUNCY,
-    reactions: {
-        "uranium": { temp2:100 },
-    },
-    temp: 35,
-    category: "energy",
-    state: "gas",
-    density: 0.00002,
-    ignoreAir: true
-};
-
 elements.sned = {
+	desc: "slowly expanding...",
 	color: "#dfe0d9",
 	behavior: [
 		"XX|XX AND CR:sned%1|XX",
@@ -1580,7 +1516,7 @@ elements.uranium_tea = {
 	temp: 60,
 	tempHigh: 400,
 	stateHigh: "molten_uranium",
-	color: ["#0f8b15", "#316624", "#59864b", "#502e0f"],
+	color: ["#526306", "#40530c", "#80320e", "#502e0f"],
 	behavior: behaviors.RADLIQUID,
 	category: "liquids",
 	state: "liquid"
@@ -1598,19 +1534,19 @@ elements.powerlaser = {
                 if (Math.random() > 0.05) { continue }
                 createPixel("flash", x, y);
                 pixelMap[x][y].color = "#b80ced";
-                pixelMap[x][y].temp = 1001000;
+                pixelMap[x][y].temp = 11000;
             }
             else {
                 if (elements[pixelMap[x][y].element].isGas) { continue }
                 if (elements[pixelMap[x][y].element].id === elements.heat_ray.id) { break }
-                pixelMap[x][y].temp += 901000;
+                pixelMap[x][y].temp += 9000;
                 pixelTempCheck(pixelMap[x][y]);
                 break;
             }
         }
         deletePixel(pixel.x, pixel.y);
     },
-    temp: 1000000,
+    temp: 10000,
     category: "energy",
     state: "gas",
     excludeRandom: true,
@@ -1629,12 +1565,159 @@ elements.magma_bomb = {
 	state: "liquid"
 };
 
+elements.quicksand = {
+	viscosity: 10000,
+	tempHigh: 1000,
+	stateHigh: ["molten_glass", "molten_glass", "molten_glass", "molten_glass", "steam"],
+	color: ["#b1873a", "#cea250"],
+	behavior: behaviors.LIQUID,
+    category: "land",
+    state: "liquid",
+	density: 1400,
+	stain: 0.02
+};
+
+elements.liquid_filler = {
+	color: "#ae00ff",
+	behavior: [
+		"XX|XX AND CR:liquid_filler%50|XX",
+		"M2 AND CR:liquid_filler%50|XX|M2 AND CR:liquid_filler%50",
+		"M1|M1 AND CH:liquid_filler%50|M1",
+	],
+	category: "special",
+    state: "liquid",
+	excludeRandom: true
+};
+
+elements.antimony = {
+	color: ["#4b90b8", "#a3bfd8", "#89a0b6", "#8798a7", "#738092"],
+	behavior: behaviors.WALL,
+	category: "solids",
+	state: "solid",
+	density: 6697,
+	tempHigh: 630,
+	stateHigh: "melted_antimony",
+	alias: "...sb?!"
+};
+
+elements.melted_antimony = {
+	color: ["#8fb2c7", "#7494b1", "#72a1cc", "#a3aaaf", "#a4aab3"],
+	behavior: behaviors.LIQUID,
+	category: "liquids",
+	state: "liquid",
+	density: 6697,
+	stain: 0.1,
+	tempLow: -270,
+	stateLowName: "antimony_ice"
+};
+
+elements.unstain = {
+	color: "#729fff",
+	behavior: [
+		"XX|XX|XX",
+		"XX|XX|XX",
+		"XX|XX|XX"
+	],
+	stain: -1,
+    tool: (pixel) => {
+        doStaining({
+            element: "unstain",
+            x: pixel.x,
+            y: pixel.y
+        })
+    },
+	category: "tools",
+	state: "solid",
+};
+
+elements.antmatter = {
+	color: "#5f4a4a",
+	behavior: [
+        "M2|DB%50 AND M2 AND EX:8>ant%10|M2",
+        "M1|XX|M1",
+        "M1|DB%50 AND M1 AND EX:8>ant%10|M1",
+    ],
+	category: "others",
+    state: "gas",
+    density: 6.9,
+	desc: "first ever others category element i guess"
+};
+
+elements.thermal_paste = {
+	viscosity: 10000,
+	tempHigh: 200,
+	stateHigh: [null, "thermal_paste"],
+	color: "#c5cfd3",
+	behavior: [
+		"XX|CO:1|XX",
+		"CO:1 AND M2|XX|CO:1 AND M2",
+		"M1|CO:1 AND M1|M1",
+		],
+	category: "liquids",
+	state: "liquid",
+};
+
+// die
+
+elements.glitch = {
+	color: ["#ff0000", "#c300ff", "#bbff00", "#1100ff", "#00ffaa"],
+	behavior: [
+		"XX|XX|XX",
+        "XX|CC:ff0000,c300ff,bbff00,1100ff,00ffaa|XX",
+		"XX|XX|XX"
+	],
+	category: "special",
+	conduct: 0.5,
+	movable: false
+};
+
+elements.sound = {
+    color: ["#1464b4","#aeeb82"],
+    currentSound: null,
+    onSelect: function() {
+        var file = document.createElement("input");
+        file.type = "file";
+        file.accept = "audio/*";
+        file.onchange = function() {
+            setTimeout(function(){
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    if (elements.sound.currentSound) {
+                        elements.sound.currentSound.pause();
+                    }
+                    elements.sound.currentSound = new Audio();
+                    elements.sound.currentSound.src = e.target.result;
+                    elements.sound.currentSound.play();
+                    file.value = "";
+                }
+                reader.readAsDataURL(file.files[0]);
+            },500);
+        }
+        file.click();
+    },
+    tool: function() {},
+    category: "special",
+};
+
+elements.vomit = {
+	viscosity: 170,
+	tempHigh: 100,
+	stateHigh: ["dirty_water", "stench"],
+	behavior: behaviors.LIQUID,
+	category: "liquids",
+	state: "liquid",
+	stain: 0.1
+};
+
 elements.incinerate.category = "tools",
 elements.cook.category = "tools",
 elements.room_temp.category = "tools",
 
 elements.beans.tempHigh = 349,
 elements.beans.stateHigh = "burnt_beans"
+elements.grass.onSelect = function() {
+        logMessage("go touch this");
+}
 
 if (!elements.radiation.reactions) elements.egg.reactions = {};
 elements.radiation.reactions.meat = { elem1: null, elem2: "radioactive_meat" },
@@ -1663,6 +1746,9 @@ elements.potato.reactions.steam = {elem1: "fries", tempMin: 100, chance:50}
 if (!elements.water.reactions) elements.water.reactions = {};
 elements.water.reactions.cocaine = { elem1: "solid_water", elem2: null }
 
+if (!elements.alcohol.reactions) elements.alcohol.reactions = {};
+elements.alcohol.reactions.juice = {elem1:"wine", elem2:null, chance:5}
+
 if (!elements.paper.reactions) elements.paper.reactions = {};
 elements.paper.reactions.bless = { elem1: "robux", elem2: null, chance: 0.0000001 }
 
@@ -1678,3 +1764,102 @@ if (!elements.coffee.reactions) elements.coffee.reactions = {};
 elements.coffee.reactions.milk = {elem1: null, elem2: "coffee_milk",}
 
 elements.silver.breakInto = "silver_coin"
+
+// sb is an idiot and he has alzheimer so here is a property list
+/*
+== METADATA ==
+name
+alias
+category
+desc
+extraInfo
+related
+hidden
+darkText
+canPlace
+nocheer
+forceAutoGen
+
+== COLOR ==
+color
+innerColor (dead property)
+colorOn
+customColor
+forceSaveColor
+colorPattern
+colorKey
+
+== BEHAVIOR ==
+behavior
+behaviorOn
+tool (func)
+onMouseUp (func)
+onSelect (func)
+onUnselect (func)
+onMix (func)
+tick (func)
+perTick (func)
+reactions
+
+== TEMP ==
+temp
+tempLow
+stateLow
+stateLowName
+stateLowColor
+stateLowColorMultiplier
+tempHigh
+stateHigh
+stateHighName
+stateHighColor
+stateHighColorMultiplier
+extraTempLow
+extraTempHigh
+heatCapacity (dead property)
+
+== PROPERTIES ==
+state
+density
+insulate
+viscosity
+conduct
+stain
+stainSelf
+charge
+movable
+hardness
+foodNeed
+properties
+maxSize
+baby
+egg
+eggColor
+seed
+noMix
+ignoreAir
+excludeRandom
+cooldown
+isFood
+ignore
+canContain
+
+== BURN ==
+burn
+burning
+burnTime
+burnInto
+extinguish
+fireColor
+fireElement
+
+== FLIP ==
+rotatable
+flipX
+flippableX
+flipY
+flippableY
+
+== BREAK ==
+breakInto
+breakIntoColor
+*/

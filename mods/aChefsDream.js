@@ -1,8 +1,56 @@
 /*
-Created by SquareScreamYT and RealerRaddler
-Thanks to Alice, nousernamefound and Fioushemastor for helping :)
+Created by SquareScreamYT/sqec <@918475812884344852>
+Thanks to RealerRaddler <@914371295561535508>, Alice <@697799964985786450>, nousernamefound <@316383921346707468>, Adora the Transfem <@778753696804765696>, ryan(R74n) <@101070932608561152> and Fioushemastor <@738828785482203189> for helping :)
+Compatibility with plants.js coming soon
+Works well with community_desserts.js
+Beta testing at aChefsDream_beta.js or SquareScreamYT/aChefsDream.js on github
 
-v1.4
+v1.13.7
+
+you can support me at my youtube: https://youtube.com/@sqec
+
+Upcoming Features:
+- pudding/cream
+- extract tool
+- cinnamon
+- spring onions
+- white rice noodles
+- matcha leaves, powder, tea
+- cacao pods
+- more chocolate, cocoa powder, white chocolate, cocoa butter
+- pigs, ham and bacon
+- garlic
+- stainless steel
+- pepper plants
+- hot chocolate
+- celery
+- kiwis
+- guavas
+- lychees
+- cherries (and the plasticky maraschino cherries 🤮🤮🤮)
+- dragonfuits
+- dates
+- figs
+- avocados
+- apricots and almonds (roasted)
+- hazelnuts
+- plums
+- curry/chicken tikka masala
+- raisins
+- peaches
+- cucumbers
+- eggplants
+- crabs (they eat coconuts)
+- squids
+- tofu
+- miso
+- juice reaction with other juices
+- jackfruit
+- fruit soda (any juice + co2 or seltzer)
+- rambutan
+- shrimp/prawn meat
+- sheep, goats, mutton, wool/fabric, filter
+- filter (like in nousersthing.js)
 
 Changelog (v1.0)
     - added chickens
@@ -67,7 +115,7 @@ Changelog (v1.1)
     - added knife tool
         - cuts, peels, etc. pixels
         - readded potato skin and peeled potato
-        - changed fried potato recipe from potato to skinned potato\
+        - changed fried potato recipe from potato to skinned potato
     - added pepper
     - added cake
         - made by mixing baked batter and cream
@@ -192,6 +240,233 @@ Changelog (v1.4)
     - added ginger
     - added ginger juice
     - added ginger rhizomes, pseudostems and leaves
+
+
+
+Changelog (v1.5)
+    - added blueberries
+        - added blueberries
+        - added blueberry seeds, stem, and leaves
+        - added blueberry juice
+    - added strawberry and blueberry jam
+    - added cut blueberries
+    - added advanced dough
+    - added carbonic acid
+    - added cookies and cookie dough
+    - replaced cooking oil with nut oil
+    - added boba and boba dough
+
+
+
+Changelog (v1.6)
+    - added freeze and warm tool
+    - added olive seeds
+    - juice mixing functionality
+    - wine can now be made by mixing grape juice and alcohol
+    - added bananas and related stuff
+        - bananas
+        - hanging banana peduncle and banana peduncle
+        - banana stem and banana stem top
+        - banana leaves
+        - cut banana
+        - banana juice
+        - banana bread
+
+
+
+Changelog (v1.7)
+    - added chocolate chips
+    - added sprinkles
+    - added banana milk (yellow fruit milk)
+    - added passion fruits
+    - added passion fruit vines and seeds (new climbing vines feature!)
+    - added mangoes
+    - added mango juice
+    - added mango wood, branch, leaves and seeds
+    - added pineapples
+    - added pineapple leaves, seed and juice
+
+
+
+Changelog (v1.8)
+    - added lime and lime juice
+    - added lime zest and slices
+    - added escargot
+    - added broccoli
+    - added broccoli stem, cut broccoli and broccoli seed
+    - added freeze drying and freeze dried fruits
+    - added soapy water
+
+
+
+
+Changelog (v1.9)
+    - added onion
+    - added cut onion
+    - added fried onion
+    - added rice
+    - added porridge
+    - added cooked and burnt rice
+    - added rice plants and rice panicles
+    - added rice seeds
+    - added msg
+    - added seaweed
+    - added dried seaweed
+    - added seaweed stem and seeds
+    - fix egg and noodle bug
+
+
+
+
+Changelog (v1.10)
+    - tweaked seaweed behavior
+    - tweaked tomato and grape vines
+    - added peppermint
+    - added peppermint leaves and stems
+    - added peppermint seeds
+    - added vanilla
+    - added vanilla seeds, stem, leaves
+    - added vanilla flower
+    - added vanilla pod
+    - added vanilla essence
+
+
+
+
+Changelog (v1.10.1)
+    - unhid vanilla essence
+    - added peppermint candy
+    - vanilla essence can now turn ice cream light yellow
+    - added peppermint candy
+    - added tapioca
+    - added tapioca stems, leaves, and seed
+
+
+
+
+Changelog (v1.10.2)
+    - added sprinkle explosions
+
+
+
+
+Changelog (v1.10.5)
+    - added chilli
+    - added chilli seed, stem and leaves
+    - added chilli powder
+    - added hot sauce
+
+
+
+
+Changelog (v1.10.7)
+    - added mango milk
+
+
+
+
+Changelog (v1.10.8)
+    - added onion powder
+    - fix carrot plant bug
+    - added fried rice
+    - added durians
+    - added cut durians
+    - added durian seed, wood, leaves and branches
+
+
+
+
+Changelog (v1.11)
+    - unhid carrot
+    - unhid turnip
+
+
+
+
+Changelog (v1.12)
+    - added whisk
+    - added egg white
+    - added hard egg white
+    - added whisked egg white
+    - added marshmallows
+    - added cooked marshmallows
+    - added burnt marshmallows
+    - improved soup (from nousersthings.js)
+    - added food coloring (color may fade)
+    - added eat tool
+    - added drink tool
+
+
+
+
+Changelog (v1.12.1)
+	- removed coral, can still be found in ocean.js
+ 	- updated food coloring
+
+
+
+
+Changelog (v1.12.2)
+    - updated cooked meat behavior
+
+
+
+
+Changelog (v1.12.4)
+    - added cake batter
+    - added condensed milk
+    - added wasabi
+    - added beans
+    - added baked beans
+    - added fermented beans/natto
+    - added soy sauce
+
+
+
+
+Changelog (v1.13)
+    - added cracker and cracker dough
+    - added barbecue sauce
+    - added mustard
+    - added agar
+    - added barbecued chicken
+    - tweaked grape juice color
+    - added duck
+    - added duckling
+    - added duck eggs and frozen duck eggs
+    - added raw duck and cooked duck
+    - added fried duck
+    - added boiled duck
+    - added barbecued duck
+    - added smoked duck
+    - added steamed duck
+    - added cows
+    - added calves
+    - added steak and beef
+    - added smoked steak and barbecued steak
+
+
+
+
+Changelog (v1.13.5)
+    - added hard jelly
+    - soda can mix colors
+    - added soda jelly
+    - added fanta (orange juice + carbon dioxide)
+
+
+
+
+Changelog (v1.13.7)
+    - rename nut to peanut
+
+
+
+
+
+
+
+
 */
 
 /*
@@ -200,6 +475,27 @@ elements.test = {
     cutInto: "elem"
 }
 */
+
+console.log("Thanks for using aChefsDream.js! -sqec")
+
+function interpolateRgb(rgb1, rgb2, ratio) {
+    const interpolatedRgb = {
+      r: Math.round(rgb1.r + (rgb2.r - rgb1.r) * ratio),
+      g: Math.round(rgb1.g + (rgb2.g - rgb1.g) * ratio),
+      b: Math.round(rgb1.b + (rgb2.b - rgb1.b) * ratio),
+    };
+    return interpolatedRgb;
+}
+function getRGB(rgb){
+    let rgb2 = rgb.replace(")", "").replace("rgb(", "").replace(/,/g, "r").split("r")
+    return { r: parseInt(rgb2[0]), g: parseInt(rgb2[1]), b: parseInt(rgb2[2]) };
+}
+
+behaviors.STURDYPOWDER2 = [
+    "XX|XX|XX",
+    "XX|XX|XX",
+    "M2%30|M1|M2%30",
+],
 
 elements.knife = {
     color: "#adb5bd",
@@ -212,12 +508,112 @@ elements.knife = {
         //if cutInto is an array, randomly pick one of its elements
         if(cutInto instanceof Array) { cutInto = cutInto[Math.floor(Math.random() * cutInto.length)] };
         //change pixel into the (chosen) element      
-        changePixel(pixel, cutInto)
+        //changePixel(pixel, cutInto)
+        if (shiftDown) {
+            if (Math.random() < 0.5) {
+                changePixel(pixel, cutInto)
+                var cutIntoEmit = elements[pixel.element].cutIntoEmit;
+                if (!cutIntoEmit) { return };
+                if(cutIntoEmit instanceof Array) { cutIntoEmit = cutIntoEmit[Math.floor(Math.random() * cutIntoEmit.length)] };
+                var thiselement = pixel.element;
+                if (elements[thiselement].cutIntoEmit && Math.random() < 0.7 && isEmpty(pixel.x,pixel.y-1)) {
+                    createPixel(elements[thiselement].cutIntoEmit,pixel.x,pixel.y-1);
+                }
+            }
+        }
+        else if (!shiftDown) {
+            if (Math.random() < 0.1) {
+                changePixel(pixel, cutInto)
+                var cutIntoEmit = elements[pixel.element].cutIntoEmit;
+                if (!cutIntoEmit) { return };
+                if(cutIntoEmit instanceof Array) { cutIntoEmit = cutIntoEmit[Math.floor(Math.random() * cutIntoEmit.length)] };
+                var thiselement = pixel.element;
+                if (elements[thiselement].cutIntoEmit && Math.random() < 0.4 && isEmpty(pixel.x,pixel.y-1)) {
+                    createPixel(elements[thiselement].cutIntoEmit,pixel.x,pixel.y-1);
+                }
+            }
+        }
     },
     category:"tools",
     canPlace: false,
     desc: "Use on pixels to cut them, if possible."
 }
+elements.whisk = {
+    color: ["#a4a7b0","#a4a7b0","#a4a7b0","#bfc2c9","#e9eaf0","#bfc2c9","#a4a7b0"],
+    // other needed properties
+    tool: (pixel) => {
+        //store whiskInto as a variable for legibility
+        var whiskInto = elements[pixel.element].whiskInto;
+        //if there’s no whiskInto, it should equal undefined, which is falsey and !undefined = true
+        if (!whiskInto) { return };
+        //if whiskInto is an array, randomly pick one of its elements
+        if(whiskInto instanceof Array) {whiskInto = whiskInto[Math.floor(Math.random() * whiskInto.length)] };
+        //change pixel into the (chosen) element      
+        //changePixel(pixel, whiskInto)
+        if (shiftDown) {
+            if (Math.random() < 0.5) {
+                changePixel(pixel, whiskInto)
+            }
+        }
+        else if (!shiftDown) {
+            if (Math.random() < 0.1) {
+                changePixel(pixel, whiskInto)
+            }
+        }
+    },
+    category:"tools",
+    canPlace: false,
+    desc: "Use on pixels to whisk them, if possible."
+}
+elements.freeze_dry = {
+    color: "#3a65b5",
+    tool: function(pixel) {
+        if (elements[pixel.element].freezeDryInto !== undefined) {
+            if (Math.random() < 0.2) {
+                var freezeDryInto = elements[pixel.element].freezeDryInto;
+                if (Array.isArray(freezeDryInto)) {
+                    freezeDryInto = freezeDryInto[Math.floor(Math.random() * freezeDryInto.length)];
+                }
+                if (freezeDryInto === null) {
+                    deletePixel(pixel.x,pixel.y);
+                    return;
+                }
+                var previouselement = pixel.element;
+                changePixel(pixel,freezeDryInto);
+                pixelTempCheck(pixel);
+                if (elements[previouselement].freezeDryIntoColor) {
+                    pixel.color = pixelColorPick(pixel, elements[previouselement].freezeDryIntoColor);
+                }
+            }
+        }
+    },
+    category: "tools",
+    excludeRandom: true,
+    desc: "Use on pixels to freeze dry them, if possible."
+}
+
+elements.eat = {
+    color: ["#ffba79","#efff79"],
+    tool: function(pixel) {
+        if (elements[pixel.element].isFood || elements[pixel.element].category === "food" || eLists.JUICEMIXABLE.includes(pixel.element) || elements[pixel.element].id === elements.uranium.id || elements[pixel.element].id === elements.mercury.id) {
+            deletePixel(pixel.x, pixel.y);
+        }
+    },
+    category: "tools",
+    desc: "Eats pixels."
+}
+elements.drink = {
+    color: ["#03c6fc","#03a1fc"],
+    tool: function(pixel) {
+        if (elements[pixel.element].state === "liquid") {
+            deletePixel(pixel.x, pixel.y);
+        }
+    },
+    category: "tools",
+    desc: "Drinks pixels."
+}
+
+eLists.JUICEMIXABLE = ["juice"];
 
 elements.chicken = {
     color: ["#c29046", "#f5d271", "#d4bd7d"],
@@ -272,23 +668,20 @@ elements.chicken = {
     stateHigh: "cooked_chicken",
     tempLow: -18,
     stateLow: "frozen_meat",
-    breakInto: ["feather", "raw_chicken"],
+    breakInto: "raw_chicken",
     burn:85,
     burnTime:450,
     state: "solid",
     density: 1117,
     conduct: 0.3,
+    cutInto: "raw_chicken",
 };
 
 elements.chicken_egg = {
     color: ["#e0d3ab","#d9cdb5"],
-    behavior: [
-        "XX|XX|XX",
-        "XX|FX%5|XX",
-        "M2%30|M1|M2%30",
-    ],
+    behavior: behaviors.STURDYPOWDER2,
     tick: function(pixel) {
-        if (Math.random() < 0.1 && pixel.temp > 20) {
+        if (Math.random() < 0.1 && pixel.temp > 20 && pixel.temp < 35) {
             changePixel(pixel,"chick")
         }
     doDefaults(pixel);
@@ -307,10 +700,10 @@ elements.chicken_egg = {
     density: 900,
     conduct: 0.1,
     reactions: {
-        "water": { elem1:null, elem2:"hard_boiled_egg", chance:10, tempMin:80 }
+        "water": { elem2:null, elem1:"hard_boiled_egg", chance:10, tempMin:80 }
     }
 };
-
+elements.water.reactions.egg = { elem1:null, elem2:"hard_boiled_egg", chance:10, tempMin:80 }
 elements.frozen_chicken_egg = {
     color: ["#e0d3cf","#d9cdd3"],
     behavior: behaviors.POWDER,
@@ -403,6 +796,45 @@ elements.chick = {
     }
 };
 
+elements.barbecued_chicken = {
+    color:["#bf743b", "#b57026","#8f5e29","#a87b11"],
+    behavior: behaviors.STURDYPOWDER,
+    category: "food",
+    state: "solid",
+    temp:55,
+    tempHigh: 600,
+    stateHigh: ["ash","smoke"],
+    isFood: true,
+    hidden: true,
+}
+elements.barbecue_sauce = {
+    color: "#571e1A",
+    behavior: behaviors.LIQUID,
+    viscosity: 50000,
+    tempHigh: 260,
+    stateHigh: ["carbon_dioxide","methane","steam","salt","sugar"],
+    category:"food",
+    state: "liquid",
+    density: 1235,
+    stain: 0.05,
+    isFood: true,
+}
+if (!elements.ketchup.reactions) { elements.ketchup.reactions = {}; }
+elements.ketchup.reactions.molasses = { elem1:"barbecue_sauce", elem2:"barbecue_sauce" }
+
+elements.mustard = {
+    color: "#e1ad01",
+    behavior: behaviors.LIQUID,
+    viscosity: 50000,
+    tempHigh: 260,
+    stateHigh: ["carbon_dioxide","methane","steam","sugar"],
+    category:"food",
+    state: "liquid",
+    density: 1235,
+    stain: 0.05,
+    isFood: true
+}
+
 elements.soup = {
     color: "#fbd189",
     behavior: behaviors.LIQUID,
@@ -415,7 +847,47 @@ elements.soup = {
     conduct: 0.03,
     stain: -0.01,
     isFood: true,
-    hidden: true,
+    //thanks to nouser
+    onMix: function(soup,ingredient) {
+        if (elements[ingredient.element].id !== elements.soup.id && elements[ingredient.element].id !== elements.broth.id) {
+            if (elements[ingredient.element].isFood || elements[ingredient.element].category === "food" || elements[ingredient.element].category === "liquids") {
+                var rgb1 = soup.color.match(/\d+/g);
+                var rgb2 = ingredient.color.match(/\d+/g);
+                // average the colors
+                var rgb = [
+                    Math.round((parseInt(rgb1[0])+parseInt(rgb2[0]))/2),
+                    Math.round((parseInt(rgb1[1])+parseInt(rgb2[1]))/2),
+                    Math.round((parseInt(rgb1[2])+parseInt(rgb2[2]))/2)
+                ];
+				if (!soup.elemlist){
+				    soup.elemlist = [];
+				}
+				    soup.decidedHigh = soup.elemlist[Math.floor(Math.random()*soup.elemlist.length)];
+				    soup.elemlist.push(ingredient.element)
+				    soup.stateHigh = soup.elemlist;
+                changePixel(ingredient, "soup");
+                var hex = RGBToHex(rgb);
+                soup.color = pixelColorPick(soup, hex);
+                if (Math.random() < 0.5) { deletePixel(ingredient.x, ingredient.y); }
+                else {
+                    ingredient.color = pixelColorPick(ingredient, hex);
+                }
+            }
+		}
+	},
+    tick: function(pixel) {
+		if (!pixel.decidedHigh){
+			pixel.decidedHigh = "steam";
+		}
+		if (pixel.temp > 100){
+			if (Math.random() < 0.5) {
+				changePixel(pixel, "steam");
+		    }
+            else {
+			    changePixel(pixel, pixel.decidedHigh)
+		    }
+		}
+	},
 }
 
 if (!elements.broth.reactions) elements.broth.reactions = {};
@@ -440,7 +912,7 @@ elements.noodles = {
 };
 
 if (!elements.batter.reactions) elements.batter.reactions = {};
-elements.batter.reactions.water = {elem2: "noodles", tempMin: 70}
+elements.batter.reactions.water = {elem1: "noodles", tempMin: 70}
 
 elements.battered_raw_chicken = {
     color: ["#eacfa9", "#ecd2af"],
@@ -448,8 +920,8 @@ elements.battered_raw_chicken = {
     category: "food",
     state: "solid",
     temp:25,
-    tempHigh: 600,
-    stateHigh: ["ash","smoke"],
+    tempHigh: 125,
+    stateHigh: "cooked_chicken",
     reactions: {
         "crumb": { elem1: "raw_chicken_nugget", elem2: null },
     },
@@ -527,16 +999,18 @@ elements.raw_chicken = {
     behavior: behaviors.STURDYPOWDER,
     category: "food",
     state: "solid",
-    burnInto: "cook_chicken",
+    burnInto: "cooked_chicken",
     temp:25,
     tempHigh: 600,
-    stateHigh: ["ash", "smoke"],
+    stateHigh: ["cooked_chicken"],
     reactions: {
         "batter": { elem1: "battered_raw_chicken", elem2: null },
         "smoke": {elem1: "smoked_chicken"},
         "steam": {elem1: "steamed_chicken"},
         "water": {elem1: "boiled_chicken", tempMin: 70},
-        "cooking_oil": {elem1: "fried_chicken", tempMin: 70}
+        "nut_oil": {elem1: "fried_chicken", tempMin: 70},
+        "charcoal": {elem1: "barbecued_chicken", tempMin: 70},
+        "fire": {elem1: "barbecued_chicken"}
     }
 };
 
@@ -575,7 +1049,7 @@ elements.raw_chicken_nugget = {
     stateHigh: ["ash", "smoke"],
     hidden: true,
     reactions: {
-        "cooking_oil": {elem1: "chicken_nugget", tempMin: 70}
+        "nut_oil": {elem1: "chicken_nugget", tempMin: 70}
     }
 };
 
@@ -678,22 +1152,67 @@ elements.olive = {
         "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
         "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
         "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 },
-        "rock": { elem1:"cooking_oil", elem2:"rock", chance:0.035 },
+        "rock": { elem1:"nut_oil", elem2:"rock", chance:0.035, color1: "#ffc844" },
     },
     category:"food",
     tempHigh: 100,
     stateHigh: "dead_plant",
-    tempLow: -1.66,
-    stateLow: "frozen_plant",
     burn:65,
     burnTime:60,
     burnInto: "dead_plant",
-    breakInto: "cooking_oil",
-    state: "solid",
+    breakInto: "nut_oil",
+    breakIntoColor: "#ffc844",
     density: 1050,
     isFood: false
 }
 
+elements.olive_seed = {
+    color: "#854610",
+    tick: function(pixel) {
+        if (isEmpty(pixel.x,pixel.y+1)) {
+            movePixel(pixel,pixel.x,pixel.y+1);
+        }
+        else {
+            if (Math.random() < 0.02 && pixel.age > 50 && pixel.temp < 100) {
+                if (!outOfBounds(pixel.x,pixel.y+1)) {
+                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
+                    if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
+                        changePixel(dirtPixel,"root");
+                    }
+                }
+                if (isEmpty(pixel.x,pixel.y-1)) {
+                    movePixel(pixel,pixel.x,pixel.y-1);
+                    createPixel(Math.random() > 0.5 ? "olive_wood" : "olive_branch",pixel.x,pixel.y+1);
+                }
+            }
+            else if (pixel.age > 1000) {
+                changePixel(pixel,"olive_wood");
+            }
+            pixel.age++;
+        }
+        doDefaults(pixel);
+    },
+    properties: {
+        "age":0
+    },
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -2,
+    stateLow: "frozen_plant",
+    burn: 65,
+    burnTime: 15,
+    category: "life",
+    state: "solid",
+    density: 1500,
+    cooldown: defaultCooldown,
+    seed: true,
+    behavior: [
+        "XX|XX|XX",
+        "XX|FX%10|XX",
+        "XX|M1|XX",
+    ],
+};
+/*
 elements.cooking_oil = {
     color: "#ffc844",
     behavior: behaviors.LIQUID,
@@ -711,7 +1230,7 @@ elements.cooking_oil = {
         "peeled_potato": {elem2: "fried_potato", tempMin: 70}
     }
 },
-
+*/
 elements.pepper = {
     color: ["#1f190a", "#2b200d", "#362712", "#3b2211"],
     behavior: behaviors.POWDER,
@@ -752,7 +1271,7 @@ elements.peeled_potato = {
     stateHigh: "baked_potato",
     density: 1100,
     reactions: {
-        "cooking_oil": { elem1: "fried_potato", tempMin: 70 }
+        "nut_oil": { elem1: "fried_potato", tempMin: 70 }
     }
 }
 
@@ -843,8 +1362,6 @@ elements.apple = {
     category:"food",
     tempHigh: 100,
     stateHigh: "dead_plant",
-    tempLow: -1.66,
-    stateLow: "frozen_plant",
     burn:65,
     burnTime:60,
     burnInto: "dead_plant",
@@ -852,6 +1369,8 @@ elements.apple = {
     cutInto: "apple_slice",
     state: "solid",
     density: 1050,
+    freezeDryInto: "freeze_dried_fruits",
+    freezeDryIntoColor: "#cfc540",
 }
 
 elements.apple_slice = {
@@ -929,12 +1448,21 @@ elements.apple_juice = {
     density: 825,
     hidden: true,
     temp: 30,
+    onMix: function(pixel) {
+        if (shiftDown) {
+            if (Math.random() < 0.2) {
+                changePixel(pixel,"juice")
+                pixel.color = pixelColorPick(pixel,"#ffde55")
+            }
+        }
+    },
     reactions: {
         "sugar": { elem1:"apple_jam", elem2:null, chance:0.35 },
         "yeast": { elem1:"apple_cider_vinegar", elem2:null, chance:0.35 }
     },
     tempLow: 0
 };
+eLists.JUICEMIXABLE.push("apple_juice");
 
 elements.apple_jam = {
     color: "#ebc034",
@@ -1153,8 +1681,6 @@ elements.orange = {
     category:"food",
     tempHigh: 100,
     stateHigh: "dead_plant",
-    tempLow: -1.66,
-    stateLow: "frozen_plant",
     burn:65,
     burnTime:60,
     burnInto: "dead_plant",
@@ -1162,6 +1688,8 @@ elements.orange = {
     cutInto: ["orange_slice","orange_slice","orange_slice","orange_slice","orange_peels"],
     state: "solid",
     density: 1050,
+    freezeDryInto: "freeze_dried_fruits",
+    freezeDryIntoColor: "#cf9f40",
 }
 
 elements.orange_slice = {
@@ -1231,6 +1759,14 @@ elements.orange_seed = {
 
 elements.orange_juice = {
     color: "#ffb326",
+    onMix: function(pixel) {
+        if (shiftDown) {
+            if (Math.random() < 0.2) {
+                changePixel(pixel,"juice")
+                pixel.color = pixelColorPick(pixel,"#ffde55")
+            }
+        }
+    },
     behavior: behaviors.LIQUID,
     category: "liquids",
     tempHigh: 100,
@@ -1244,6 +1780,7 @@ elements.orange_juice = {
     temp: 30,
     tempLow: 0
 };
+eLists.JUICEMIXABLE.push("orange_juice");
 
 elements.orange_peels = {
     color: "#d69c31",
@@ -1351,92 +1888,21 @@ elements.salmon = {
     cutInto: "raw_salmon"
 }
 
-elements.coral_stem = {
-    color: "#4a5e49",
-    behavior: [
-        "CR:coral_stem,coral%2|CR:coral,coral_stem,coral,coral%2|CR:coral_stem,coral%2",
-        "XX|XX|XX",
-        "XX|XX|XX",
-    ],
-    tick: function(pixel) {
-        if (!pixel.fColor) {
-            pixel.fColor = "hsl(" + Math.floor(Math.random()*360) + ",100%,50%)";
-        }
-        var coordsToCheck = [
-            [pixel.x-1,pixel.y],
-            [pixel.x+1,pixel.y],
-            [pixel.x,pixel.y-1],
-            [pixel.x,pixel.y+1],
-        ]
-        for (var i = 0; i < coordsToCheck.length; i++) {
-            var coord = coordsToCheck[i];
-            if (isEmpty(coord[0],coord[1])) {
-                createPixel("coral",coord[0],coord[1]);
-                pixelMap[coord[0]][coord[1]].color = pixel.fColor;
-            }
-        }
-        doDefaults(pixel)
-    },
-    tempHigh: 100,
-    stateHigh: "dead_coral",
-    tempLow: -30,
-    stateLow: "dead_coral",
-    category: "life",
-    burn: 40,
-    burnTime: 50,
-    burnInto: [,"ember","charcoal"],
-    hidden: true,
-    state: "solid",
-    density: 1500,
-    hardness: 0.15,
-    hidden: true,
-}
-
-elements.coral = {
-    color: ["#ff0000","#ff8800","#ffff00","#88ff00","#00ff00","#00ff88","#00ffff","#0088ff","#0000ff","#8800ff","#ff00ff"],
-    behavior: [
-        "XX|XX|XX",
-        "XX|XX|XX",
-        "XX|XX|XX",
-    ],
-    reactions: {
-        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
-        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
-        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
-        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035}
-    },
-    category:"life",
-    tempHigh: 100,
-    stateHigh: "dead_plant",
-    tempLow: -1.66,
-    stateLow: "frozen_plant",
-    burn:65,
-    burnTime:60,
-    burnInto: "dead_plant",
-    breakInto: "dead_plant",
-    state: "solid",
-    density: 1050,
-    hidden: true,
-    properties:{
-        "colored": false
-    }
-}
-
 elements.raw_salmon = {
     color: ["#FD7E19", "#FE842F", "#FD8F45"],
     behavior: behaviors.STURDYPOWDER,
     category: "food",
     state: "solid",
-    burnInto: "cook_salmon",
+    burnInto: "cooked_salmon",
     temp:25,
-    tempHigh: 600,
-    stateHigh: ["ash", "smoke"],
+    tempHigh: 80,
+    stateHigh: "cooked_salmon",
     isFood: true,
     reactions: {
         "smoke": {elem1: "smoked_salmon"},
         "steam": {elem1: "steamed_salmon"},
         "water": {elem1: "boiled_salmon", tempMin: 70},
-        "cooking_oil": {elem1: "fried_salmon", tempMin: 70}
+        "nut_oil": {elem1: "fried_salmon", tempMin: 70}
     }
 }
 
@@ -1449,6 +1915,7 @@ elements.cooked_salmon = {
     tempHigh: 600,
     stateHigh: ["ash", "smoke"],
     isFood: true,
+    hidden: true,
 }
 
 elements.smoked_salmon = {
@@ -1459,6 +1926,7 @@ elements.smoked_salmon = {
     temp:55,
     tempHigh: 600,
     stateHigh: ["ash", "smoke"],
+    hidden: true,
     isFood: true,
 }
 
@@ -1469,6 +1937,7 @@ elements.steamed_salmon = {
     state: "solid",
     temp:60,
     tempHigh: 600,
+    hidden: true,
     stateHigh: ["ash", "smoke"],
     isFood: true,
 }
@@ -1480,6 +1949,7 @@ elements.boiled_salmon = {
     state: "solid",
     temp:70,
     tempHigh: 600,
+    hidden: true,
     stateHigh: ["ash", "smoke"],
     isFood: true,
 }
@@ -1491,6 +1961,7 @@ elements.fried_salmon = {
     state: "solid",
     temp:70,
     tempHigh: 600,
+    hidden: true,
     stateHigh: ["ash", "smoke"],
     isFood: true,
 }
@@ -1502,14 +1973,14 @@ elements.raw_tuna = {
     state: "solid",
     temp:25,
     burnInto: "cooked_tuna",
-    tempHigh: 600,
-    stateHigh: ["ash", "smoke"],
+    tempHigh: 80,
+    stateHigh: "cooked_tuna",
     isFood: true,
     reactions: {
         "smoke": {elem1: "smoked_tuna"},
         "steam": {elem1: "steamed_tuna"},
         "water": {elem1: "boiled_tuna", tempMin: 70},
-        "cooking_oil": {elem1: "fried_tuna", tempMin: 70}
+        "nut_oil": {elem1: "fried_tuna", tempMin: 70}
     }
 }
 
@@ -1518,6 +1989,7 @@ elements.cooked_tuna = {
     behavior: behaviors.STURDYPOWDER,
     category: "food",
     state: "solid",
+    hidden: true,
     temp:50,
     tempHigh: 600,
     stateHigh: ["ash", "smoke"],
@@ -1531,6 +2003,7 @@ elements.smoked_tuna = {
     state: "solid",
     temp:55,
     tempHigh: 600,
+    hidden: true,
     stateHigh: ["ash", "smoke"],
     isFood: true,
 }
@@ -1542,6 +2015,7 @@ elements.steamed_tuna = {
     state: "solid",
     temp:60,
     tempHigh: 600,
+    hidden: true,
     stateHigh: ["ash", "smoke"],
     isFood: true,
 }
@@ -1551,6 +2025,7 @@ elements.boiled_tuna = {
     behavior: behaviors.STURDYPOWDER,
     category: "food",
     state: "solid",
+    hidden: true,
     temp:70,
     tempHigh: 600,
     stateHigh: ["ash", "smoke"],
@@ -1562,6 +2037,7 @@ elements.fried_tuna = {
     behavior: behaviors.STURDYPOWDER,
     category: "food",
     state: "solid",
+    hidden: true,
     temp:70,
     tempHigh: 600,
     stateHigh: ["ash", "smoke"],
@@ -1662,8 +2138,6 @@ elements.watermelon = {
     category:"food",
     tempHigh: 100,
     stateHigh: "dead_plant",
-    tempLow: -1.66,
-    stateLow: "frozen_plant",
     burn:65,
     burnTime:60,
     burnInto: "dead_plant",
@@ -1686,10 +2160,20 @@ elements.watermelon_flesh = {
     state: "solid",
     density: 1050,
     hidden: true,
+    freezeDryInto: "freeze_dried_fruits",
+    freezeDryIntoColor: "#c43f33",
 }
 
 elements.watermelon_juice = {
     color: "#eb4034",
+    onMix: function(pixel) {
+        if (shiftDown) {
+            if (Math.random() < 0.2) {
+                changePixel(pixel,"juice")
+                pixel.color = pixelColorPick(pixel,"#eb4034")
+            }
+        }
+    },
     behavior: behaviors.LIQUID,
     category: "liquids",
     tempHigh: 100,
@@ -1703,40 +2187,21 @@ elements.watermelon_juice = {
     temp: 30,
     tempLow: 0
 };
+eLists.JUICEMIXABLE.push("watermelon_juice");
 
-elements.grape = {
-    color: ["#b84b65","#a10e69","#a10e95","#8a3eab"],
-    behavior: [
-        "XX|ST:vine|XX",
-        "ST:vine|XX|ST:vine",
-        "M2|M1|M2",
-    ],
-    reactions: {
-        "radiation": { elem1:"explosion", chance:0.1, color1:"#291824" },
-        "rock": { elem1:"juice", chance:0.1, color1:"#291824" },
-        "concrete": { elem1:"juice", chance:0.1, color1:"#291824" },
-        "basalt": { elem1:"juice", chance:0.1, color1:"#291824" },
-        "limestone": { elem1:"juice", chance:0.1, color1:"#291824" },
-        "tuff": { elem1:"juice", chance:0.1, color1:"#291824" },
-        "water": { elem2:"juice", chance:0.005, color2:"#291824" },
-        "sugar_water": { elem2:"juice", chance:0.025, color2:"#291824" },
-        "acid": { elem1:"juice", color1:"#291824" },
-        "acid_gas": { elem1:"juice", color1:"#291824" },
-    },
-    innerColor: "#cc7492",
-    tempHigh: 256,
-    stateHigh: ["steam","sugar"],
-    category: "food",
-    state: "solid",
-    density: 825,
-    breakInto: "grape_juice",
-    ignoreAir: true,
-    isFood: true
-},
+elements.grape.breakInto = "grape_juice",
 
 elements.grape_juice = {
-    color: "#6d2282",
+    color: "#291824",
     behavior: behaviors.LIQUID,
+    onMix: function(pixel) {
+        if (shiftDown) {
+            if (Math.random() < 0.2) {
+                changePixel(pixel,"juice")
+                pixel.color = pixelColorPick(pixel, "#291824")
+            }
+        }
+    },
     reactions: {
         "dirt": { elem1: null, elem2: "mud" },
         "sand": { elem1: null, elem2: "wet_sand" },
@@ -1744,6 +2209,7 @@ elements.grape_juice = {
         "seltzer": { elem1: "soda", elem2: "foam" },
         "carbon_dioxide": { elem1: "soda", elem2: "foam" },
         "milk": { elem1: "fruit_milk", elem2: "fruit_milk" },
+        "alcohol": { elem1: "wine", elem2: "wine" },
         "yeast": { elem1: ["wine","wine","wine","wine","wine","wine","wine","wine","wine","wine","wine","wine","wine","wine","wine","wine","wine","wine","wine","cream_of_tartar"], elem2: null, chance:80 },
     },
     tempHigh: 160,
@@ -1756,33 +2222,20 @@ elements.grape_juice = {
     hidden: true,
     isFood: true
 };
+eLists.JUICEMIXABLE.push("grape_juice");
 
 elements.cream_of_tartar = {
     color: ["#EFEFEF", "#EBEBEB", "#D8D8D6"],
     behavior: behaviors.POWDER,
     category: "food",
     state: "solid",
-    tempHigh: 200,
-    stateHigh: "caramel",
     density: 1500,
     isFood: true,
     hidden: true,
-    reaction: {
-        "sugar_water": {elem2: "corn_syrup", elem1: null, tempMin: 110}
+    reactions: {
+        "sugar_water": {elem2: "corn_syrup", elem1: null, tempMin: 80},
+        "carbonic_acid": {elem1: null, elem2: "carbon_dioxide"}
     }
-}
-
-elements.wine = {
-    color: ["#6F0013", "#6D0112"],
-    behavior: behaviors.LIQUID,
-    category: "liquids",
-    state: "liquid",
-    tempHigh: 100,
-    stateHigh: "steam",
-    isFood: true,
-    density: 1000,
-    hidden: true,
-    tempLow: 0
 }
 
 elements.corn_syrup = {
@@ -1796,6 +2249,39 @@ elements.corn_syrup = {
     hidden: true,
     viscosity: 10000
 }
+
+if (!elements.baking_soda.reactions) elements.baking_soda.reactions = {};
+elements.baking_soda.reactions.water = { elem1: "carbonic_acid", elem2: "carbonic_acid" }
+
+elements.carbonic_acid = {
+    color: ["#E0DEA5", "#DFDB9C", "#EBE8BC"],
+    behavior: behaviors.LIQUID,
+    category: "liquids",
+    state: "liquid",
+    hidden: true,
+}
+
+elements.wine = {
+    color: ["#6F0013", "#6D0112"],
+    behavior: behaviors.LIQUID,
+    category: "liquids",
+    state: "liquid",
+    /*onMix: function(pixel) {
+        if (shiftDown) {
+            if (Math.random() < 0.2) {
+                changePixel(pixel,"juice")
+                pixel.color = pixelColorPick(pixel, "#6D0112")
+            }
+        }
+    },*/
+    tempHigh: 100,
+    stateHigh: "steam",
+    isFood: true,
+    density: 1000,
+    hidden: true,
+    tempLow: 0
+}
+//eLists.JUICEMIXABLE.push("wine");
 
 elements.shrimp = {
     color: ["#EE5422", "#E9683C", "#F3583F", "#EDA270"],
@@ -2024,8 +2510,6 @@ elements.coconut = {
     category:"food",
     tempHigh: 100,
     stateHigh: "dead_plant",
-    tempLow: -1.66,
-    stateLow: "frozen_plant",
     burn:65,
     burnTime:60,
     burnInto: "dead_plant",
@@ -2058,7 +2542,7 @@ elements.coconut_milk = {
     viscosity: 1.5,
     category: "liquids",
     state: "liquid",
-    density: 1036.86,
+    density: 825,
     isFood: true
 }
 
@@ -2081,8 +2565,6 @@ elements.cut_coconut = {
     category:"food",
     tempHigh: 100,
     stateHigh: "dead_plant",
-    tempLow: -1.66,
-    stateLow: "frozen_plant",
     burn:65,
     burnTime:60,
     burnInto: "dead_plant",
@@ -2090,10 +2572,20 @@ elements.cut_coconut = {
     state: "solid",
     density: 1050,
     hidden: true,
+    freezeDryInto: "freeze_dried_fruits",
+    freezeDryIntoColor: "#ede9b9",
 }
 
 elements.coconut_juice = {
     color: "#e9ebe4",
+    onMix: function(pixel) {
+        if (shiftDown) {
+            if (Math.random() < 0.2) {
+                changePixel(pixel,"juice")
+                pixel.color = pixelColorPick(pixel,"#e9ebe4")
+            }
+        }
+    },
     behavior: behaviors.LIQUID,
     reactions: {
         "dirt": { elem1: null, elem2: "mud" },
@@ -2111,6 +2603,7 @@ elements.coconut_juice = {
     hidden: true,
     isFood: true
 }
+eLists.JUICEMIXABLE.push("coconut_juice");
 
 elements.lemon_wood = {
     color: "#786531",
@@ -2188,8 +2681,6 @@ elements.lemon = {
     category:"food",
     tempHigh: 100,
     stateHigh: "dead_plant",
-    tempLow: -1.66,
-    stateLow: "frozen_plant",
     burn:65,
     burnTime:60,
     burnInto: "dead_plant",
@@ -2198,10 +2689,20 @@ elements.lemon = {
     density: 1050,
     isFood: true,
     cutInto: ["lemon_zest","lemon_slice","lemon_slice","lemon_slice","lemon_slice"],
+    freezeDryInto: "freeze_dried_fruits",
+    freezeDryIntoColor: "#b8af4b",
 }
 
 elements.lemon_juice = {
     color: "#e0d358",
+    onMix: function(pixel) {
+        if (shiftDown) {
+            if (Math.random() < 0.2) {
+                changePixel(pixel,"juice")
+                pixel.color = pixelColorPick(pixel,"#e0d358")
+            }
+        }
+    },
     behavior: behaviors.LIQUID,
     category: "liquids",
     tempHigh: 100,
@@ -2219,9 +2720,18 @@ elements.lemon_juice = {
         "sugar": {elem1:"lemonade", elem2: "null", chance:0.35}
     }
 };
+eLists.JUICEMIXABLE.push("lemon_juice");
 
 elements.lemonade = {
     color: "#fff378",
+    onMix: function(pixel) {
+        if (shiftDown) {
+            if (Math.random() < 0.2) {
+                changePixel(pixel,"juice")
+                pixel.color = pixelColorPick(pixel,"#fff378")
+            }
+        }
+    },
     behavior: behaviors.LIQUID,
     category: "liquids",
     tempHigh: 100,
@@ -2236,6 +2746,8 @@ elements.lemonade = {
     hidden: true,
     tempLow: 0
 };
+
+eLists.JUICEMIXABLE.push("lemonade");
 
 elements.lemon_zest = {
     color: "#dbc535",
@@ -2322,46 +2834,52 @@ elements.lemon_seed = {
 
 elements.carrot_seed = {
     color: "#b08d35",
-    tick: function(pixel) {
+    tick: function (pixel) {
+        if (isEmpty(pixel.x, pixel.y + 1)) {
+            movePixel(pixel, pixel.x, pixel.y + 1);
+        }
+        else {
             if (Math.random() < 0.1 && pixel.age > 100 && pixel.temp < 100 && pixel.leafgrown == true && pixel.growthpixel == 0) {
-                if (!outOfBounds(pixel.x,pixel.y+1)) {
-                    var randomNumber1 = Math.round(Math.random())
-                    pixel.growthpixel = pixel.growthpixel+randomNumber1
-                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
+                if (!outOfBounds(pixel.x, pixel.y + 1)) {
+                    var randomNumber1 = Math.round(Math.random());
+                    pixel.growthpixel = pixel.growthpixel + randomNumber1;
+                    var dirtPixel = pixelMap[pixel.x][pixel.y + 1];
                     if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
-                        deletePixel(pixel.x,pixel.y+1);
-                        movePixel(pixel,pixel.x,pixel.y+1);
-                        createPixel("carrot_leaves",pixel.x,pixel.y-1);
+                        deletePixel(pixel.x, pixel.y + 1);
+                        movePixel(pixel, pixel.x, pixel.y + 1);
+                        createPixel("carrot_leaves", pixel.x, pixel.y - 1);
                         pixel.growthpixel++;
                     }
                 }
             }
             if (Math.random() < 0.1 && pixel.age > 100 && pixel.temp < 100 && pixel.leafgrown == true && pixel.growthpixel > 0 && pixel.growthpixel < 4) {
-                if (!outOfBounds(pixel.x,pixel.y+1)) {
-                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
+                if (!outOfBounds(pixel.x, pixel.y + 1)) {
+                    var dirtPixel = pixelMap[pixel.x][pixel.y + 1];
                     if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
-                        deletePixel(pixel.x,pixel.y+1);
-                        movePixel(pixel,pixel.x,pixel.y+1);
-                        createPixel("carrot",pixel.x,pixel.y-1);
+                        deletePixel(pixel.x, pixel.y + 1);
+                        movePixel(pixel, pixel.x, pixel.y + 1);
+                        createPixel("carrot", pixel.x, pixel.y - 1);
                         pixel.growthpixel++;
                     }
                 }
             }
-            if (!isEmpty(pixel.x,pixel.y+1) && Math.random() > 0.95 && isEmpty(pixel.x-1,pixel.y-1) && isEmpty(pixel.x+1,pixel.y-1) && pixel.leafgrown == false) {
+            if (!isEmpty(pixel.x, pixel.y + 1) && Math.random() > 0.95 && isEmpty(pixel.x - 1, pixel.y - 1) && isEmpty(pixel.x + 1, pixel.y - 1) && pixel.leafgrown == false) {
+                var dirtPixel = pixelMap[pixel.x][pixel.y + 1];
                 if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
-                    createPixel("carrot_leaves",pixel.x-1,pixel.y-1);
-                    createPixel("carrot_leaves",pixel.x+1,pixel.y-1);
-                    pixel.leafgrown++
+                    createPixel("carrot_leaves", pixel.x - 1, pixel.y - 1);
+                    createPixel("carrot_leaves", pixel.x + 1, pixel.y - 1);
+                    pixel.leafgrown = true;
                 }
             }
             else if (pixel.age > 150 && pixel.growthpixel == 4 && Math.random() < 0.1) {
-                changePixel(pixel,"carrot");
+                changePixel(pixel, "carrot");
             }
             pixel.age++;
+        }
         doDefaults(pixel);
     },
     properties: {
-        "age":0,
+        "age": 0,
         "growthpixel": 0,
         "leafgrown": false
     },
@@ -2382,6 +2900,7 @@ elements.carrot_seed = {
         "XX|M1|XX",
     ],
 };
+
 elements.carrot_leaves = {
     color: ["#61cc3d","#58c234"],
     behavior: behaviors.WALL,
@@ -2417,11 +2936,20 @@ elements.carrot = {
     breakInto: "carrot_juice",
     state: "solid",
     density: 1050,
-    hidden: true,
+    freezeDryInto: "freeze_dried_fruits",
+    freezeDryIntoColor: "#ba8125",
 }
 
 elements.carrot_juice = {
     color: "#f5a742",
+    onMix: function(pixel) {
+        if (shiftDown) {
+            if (Math.random() < 0.2) {
+                changePixel(pixel,"juice")
+                pixel.color = pixelColorPick(pixel,"#f5a742")
+            }
+        }
+    },
     behavior: behaviors.LIQUID,
     category: "liquids",
     tempHigh: 100,
@@ -2435,9 +2963,18 @@ elements.carrot_juice = {
     hidden: true,
     temp: 30,
 };
+eLists.JUICEMIXABLE.push("carrot_juice");
 
 elements.apple_cider_vinegar = {
     color: "#fffe75",
+    onMix: function(pixel) {
+        if (shiftDown) {
+            if (Math.random() < 0.2) {
+                changePixel(pixel,"juice")
+                pixel.color = pixelColorPick(pixel,"#fffe75")
+            }
+        }
+    },
     behavior: behaviors.LIQUID,
     category: "liquids",
     tempHigh: 100,
@@ -2451,6 +2988,7 @@ elements.apple_cider_vinegar = {
     temp: 30,
     tempLow: 0
 };
+eLists.JUICEMIXABLE.push("apple_cider_vinegar");
 
 elements.turnip_seed = {
     color: "#994828",
@@ -2566,11 +3104,20 @@ elements.turnip = {
     breakInto: "turnip_juice",
     state: "solid",
     density: 1050,
-    hidden: true,
+    freezeDryInto: "freeze_dried_fruits",
+    freezeDryIntoColor: "#79097d",
 }
 
 elements.turnip_juice = {
     color: "#700f5d",
+    onMix: function(pixel) {
+        if (shiftDown) {
+            if (Math.random() < 0.2) {
+                changePixel(pixel,"juice")
+                pixel.color = pixelColorPick(pixel,"#700f5d")
+            }
+        }
+    },
     behavior: behaviors.LIQUID,
     category: "liquids",
     tempHigh: 100,
@@ -2584,37 +3131,14 @@ elements.turnip_juice = {
     hidden: true,
     temp: 30,
 };
+eLists.JUICEMIXABLE.push("turnip_juice");
 
-elements.corn = {
-    color: ["#f8d223","#d6ba2a","#f7f5ba","#dbd281","#cdb12d"],
-    tick: function(pixel) {
-        if (pixel.temp >= 180) {
-            changePixel(pixel,"popcorn");
-            if (isEmpty(pixel.x,pixel.y-1)) {
-                tryMove(pixel,pixel.x,pixel.y-1);
-                if (isEmpty(pixel.x-1,pixel.y)) { createPixel("pop",pixel.x-1,pixel.y) }
-                if (isEmpty(pixel.x+1,pixel.y)) { createPixel("pop",pixel.x+1,pixel.y) }
-                if (isEmpty(pixel.x,pixel.y-1)) { createPixel("pop",pixel.x,pixel.y-1) }
-                if (isEmpty(pixel.x,pixel.y+1)) { createPixel("pop",pixel.x,pixel.y+1) }
-            }
-        }
-        doDefaults(pixel)
-    },
-    category: "food",
-    burn: 10,
-    burnTime: 200,
-    breakInto: "corn_starch",
-    breakIntoColor: ["#ffe9a8","#ffecb3","#ffe28a"],
-    state: "solid",
-    density: 721,
-    seed: "corn_seed",
-    isFood: true,
-    movable: false,
-}
+elements.corn.breakInto ="corn_starch"
 
 elements.corn_starch = {
     color: ["#fcf2e1","#f2e7d3","#fcf3de"],
     behavior: behaviors.POWDER,
+    name: "starch",
     reactions: {
         "water": { elem1: "dough", elem2: null },
         "salt_water": { elem1: "dough", elem2: null },
@@ -2622,12 +3146,8 @@ elements.corn_starch = {
         "seltzer": { elem1: "dough", elem2: null },
         "pool_water": { elem1: "dough", elem2: null },
         "juice": { elem1: "dough", elem2: null },
-        "yolk": { elem1: "batter", elem2: null },
-        "yogurt": { elem1: "batter", elem2: null },
-        "honey": { elem1:"gingerbread", elem2:null },
-        "molasses": { elem1:"gingerbread", elem2:null },
-        "sap": { elem1:"gingerbread", elem2:null },
-        "caramel": { elem1:"gingerbread", elem2:null },
+        "yolk": { elem1: "cracker_dough", elem2: null, color1:"#dbd19a" },
+        "yogurt": { elem1: "cracker_dough", elem2: null, color1:"#dbd19a" },
         "broth": { elem1:"dough", elem2:null },
         "soda": { elem1:"dough", elem2:null },
         "tea": { elem1:"dough", elem2:null },
@@ -2645,7 +3165,8 @@ elements.corn_starch = {
     burnTime:25,
     state: "solid",
     density: 600,
-    isFood: true
+    isFood: true,
+    alias:"starch"
 }
 
 elements.baking_powder = {
@@ -2699,31 +3220,8 @@ elements.pancake_batter = {
     hidden: true,
     isFood: true
 }
-elements.sap = {
-    color: ["#b67f18","#c86305","#cf7a19","#e4ae3a"],
-    behavior: behaviors.LIQUID,
-    reactions: {
-        "dead_bug": { elem1:"amber", elem2:null, chance:0.1 },
-        "ant": { elem1:"amber", elem2:null, chance:0.1 },
-        "fly": { elem1:"amber", elem2:null, chance:0.1 },
-        "flea": { elem1:"amber", elem2:null, chance:0.1 },
-        "termite": { elem1:"amber", elem2:null, chance:0.1 },
-        "worm": { elem1:"amber", elem2:null, chance:0.1 },
-        "bee": { elem1:"amber", elem2:null, chance:0.1 },
-        "firefly": { elem1:"amber", elem2:null, chance:0.1 },
-        "stinkbug": { elem1:"amber", elem2:null, chance:0.1 },
-        "slug": { elem1:"amber", elem2:null, chance:0.1 },
-        "snail": { elem1:"amber", elem2:null, chance:0.1 },
-    },
-    tempHigh: 104,
-    stateHigh: ["maple_syrup","maple_syrup","maple_syrup","sap"],
-    tempLow: 0,
-    stateLowName: "amber",
-    category:"liquids",
-    state: "liquid",
-    viscosity: 15,
-    density: 1400
-}
+elements.sap.tempHigh = 104,
+elements.sap.stateHigh = ["maple_syrup","maple_syrup","maple_syrup","sap"],
 elements.maple_syrup = {
     color: ["#fabb34","#facc34","#fabb34"],
     behavior: behaviors.LIQUID,
@@ -2919,10 +3417,19 @@ elements.strawberry = {
     burnInto: "dead_plant",
     breakInto: "strawberry_juice",
     state: "solid",
-    density: 1050
+    density: 1050,
+    freezeDryInto: "freeze_dried_fruits",
 }
 elements.strawberry_juice = {
     color: "#e03a3a",
+    onMix: function(pixel) {
+        if (shiftDown) {
+            if (Math.random() < 0.2) {
+                changePixel(pixel,"juice")
+                pixel.color = pixelColorPick(pixel,"#e03a3a")
+            }
+        }
+    },
     behavior: behaviors.LIQUID,
     category: "liquids",
     tempHigh: 100,
@@ -2934,41 +3441,19 @@ elements.strawberry_juice = {
     density: 825,
     hidden: true,
     temp: 30,
-    tempLow: 0
+    tempLow: 0,
+    reactions: {
+        "sugar": { elem1:"strawberry_jam", elem2:null, chance:0.35 },
+        "milk": { elem1:"fruit_milk", elem2:null, chance:0.35, color1:"#f78888"},
+    },
 };
+eLists.JUICEMIXABLE.push("strawberry_juice");
 
-elements.cream = {
-    color: "#f7f7f7",
-    behavior: behaviors.LIQUID,
-    onMix: function(cream1, cream2) {
+elements.cream.onMix = function(cream1, cream2) {
         if ((shiftDown && Math.random() < 0.01) || (elements[cream2.element].id === elements.cream.id && Math.random() < 0.1)) {
             changePixel(cream1,"whipped_cream")
         }
-    },
-    reactions: {
-        "dirt": { elem1: null, elem2: "mud" },
-        "sand": { elem1: null, elem2: "wet_sand" },
-        "clay_soil": { elem1: null, elem2: "clay" },
-        "melted_chocolate": { color1:"#664934", elem2:null },
-        "chocolate": { color1:"#664934", elem2:"melted_chocolate", chance:0.05 },
-        "juice": { elem1:"fruit_milk", elem2:null, chance:0.05 },
-        "soda": { elem1:"pilk", elem2:null, chance:0.1 },
-        "yolk": { elem1:"#eggnog", elem2:null, chance:0.1 },
-        "caramel": { color1:"#C8B39A", chance:0.05 },
-        "sugar": { elem2:null, chance:0.005},
-    },
-    viscosity: 1.5,
-    tempHigh: 1000,
-    stateHigh: ["smoke","smoke","smoke","steam","steam","calcium"],
-    tempLow: 0,
-    stateLow: "ice_cream",
-    stateLowColorMultiplier: 0.97,
-    category: "liquids",
-    hidden: true,
-    isFood: true,
-    state: "liquid",
-    density: 959.97,
-}
+    }
 elements.whipped_cream = {
     color: "#fafafa",
     behavior: behaviors.LIQUID,
@@ -3131,6 +3616,14 @@ elements.ginger_leaves = {
 }
 elements.ginger_juice = {
     color: "#ccc056",
+    onMix: function(pixel) {
+        if (shiftDown) {
+            if (Math.random() < 0.2) {
+                changePixel(pixel,"juice")
+                pixel.color = pixelColorPick(pixel,"#ccc056")
+            }
+        }
+    },
     behavior: behaviors.LIQUID,
     category: "liquids",
     tempHigh: 100,
@@ -3148,3 +3641,4206 @@ elements.ginger_juice = {
         "bread": { elem1:"gingerbread", elem2:null },
     },
 };
+eLists.JUICEMIXABLE.push("ginger_juice");
+
+
+elements.blueberry_seed = {
+    color: "#7a7133",
+    behavior: behaviors.STURDYPOWDER,
+    reactions: {
+        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "mercury": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "stench": { elem2:null, chance:0.25 },
+    },
+    tick: function(pixel) {
+        if (isEmpty(pixel.x,pixel.y+1)) {
+            movePixel(pixel,pixel.x,pixel.y+1);
+        }
+        else {
+            if (Math.random() < 0.02 && pixel.temp < 100) {
+                if (!outOfBounds(pixel.x,pixel.y+1)) {
+                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
+                    if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
+                        changePixel(pixel,"blueberry_stem");
+                    }
+                }
+            }
+            pixel.age++;
+        }
+        doDefaults(pixel);
+    },
+    category:"life",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -1.66,
+    stateLow: "frozen_plant",
+    burn:15,
+    burnTime:60,
+    burnInto: "dead_plant",
+    breakInto: "dead_plant",
+    state: "solid",
+    density: 1050,
+    cooldown: defaultCooldown
+}
+elements.blueberry_stem = {
+    color: "#419c2f",
+    behavior: [
+        "CR:blueberry_stem,blueberry_leaves,blueberry_leaves,blueberry_leaves,blueberry_leaves%3|CR:blueberry_stem,blueberry_leaves,blueberry_leaves,blueberry_leaves,blueberry_leaves%3|CR:blueberry_stem,blueberry_leaves,blueberry_leaves,blueberry_leaves,blueberry_leaves%3",
+        "CR:blueberry_stem,blueberry_leaves,blueberry_leaves,blueberry_leaves,blueberry_leaves%3|XX|CR:blueberry_stem,blueberry_leaves,blueberry_leaves,blueberry_leaves,blueberry_leaves%3",
+        "XX|M1|XX",
+    ],
+    tick: function(pixel) {
+        if (isEmpty(pixel.x,pixel.y+1)) {
+            movePixel(pixel,pixel.x,pixel.y+1);
+        }
+        else {
+            if (Math.random() < 0.02 && pixel.age > 50 && pixel.temp < 100) {
+                if (!outOfBounds(pixel.x,pixel.y+1)) {
+                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
+                    if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
+                        changePixel(dirtPixel,"root");
+                    }
+                }
+            }
+            pixel.age++;
+        }
+        doDefaults(pixel);
+    },
+    reactions: {
+        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "mercury": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "stench": { elem2:null, chance:0.25 },
+    },
+    properties: {
+        "age":0
+    },
+    category:"life",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -1.66,
+    stateLow: "frozen_plant",
+    burn:15,
+    burnTime:60,
+    burnInto: "dead_plant",
+    breakInto: "dead_plant",
+    state: "solid",
+    density: 1050,
+}
+elements.blueberry_leaves = {
+    color: "#4bad37",
+    behavior: [
+        "XX|CR:blueberry%2|XX",
+        "CR:blueberry%2|XX|CR:blueberry%2",
+        "M2|M1|M2",
+    ],
+    reactions: {
+        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "mercury": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "stench": { elem2:null, chance:0.25 },
+    },
+    category:"life",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -1.66,
+    stateLow: "frozen_plant",
+    burn:15,
+    burnTime:60,
+    burnInto: "dead_plant",
+    breakInto: "dead_plant",
+    state: "solid",
+    density: 1050
+}
+elements.blueberry = {
+    color: "#5d4bc4",
+    behavior: [
+        "XX|ST:blueberry_stem,blueberry_leaves|XX",
+        "ST:blueberry_stem,blueberry_leaves|XX|ST:blueberry_stem,blueberry_leaves",
+        "M2|M1|M2",
+    ],
+    reactions: {
+        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "mercury": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "stench": { elem2:null, chance:0.25 },
+    },
+    category:"food",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    burn:15,
+    burnTime:60,
+    burnInto: "dead_plant",
+    breakInto: "blueberry_juice",
+    state: "solid",
+    density: 1050,
+    cutInto: "cut_blueberry",
+    freezeDryInto: "freeze_dried_fruits",
+    freezeDryIntoColor: "#33146e",
+}
+elements.blueberry_juice = {
+    color: "#5030a1",
+    onMix: function(pixel) {
+        if (shiftDown) {
+            if (Math.random() < 0.2) {
+                changePixel(pixel,"juice")
+                pixel.color = pixelColorPick(pixel,"#5030a1")
+            }
+        }
+    },
+    behavior: behaviors.LIQUID,
+    category: "liquids",
+    tempHigh: 100,
+    stateHigh: ["steam","sugar"],
+    burn: 70,
+    burnTime: 300,
+    burnInto: ["steam", "smoke"],
+    state: "liquid",
+    density: 825,
+    hidden: true,
+    temp: 30,
+    tempLow: 0,
+    reactions: {
+        "sugar": { elem1:"blueberry_jam", elem2:null, chance:0.35 },
+        "milk": { elem1:"fruit_milk", elem2:null, chance:0.35, color1: "#995fb3" },
+    },
+};
+
+eLists.JUICEMIXABLE.push("blueberry_juice");
+/*
+elements.fruit_slushie = {
+    color: "#ffcc54",
+    behavior: behaviors.LIQUID,
+    reactions: {
+        "dirt": { elem1: null, elem2: "mud" },
+        "sand": { elem1: null, elem2: "wet_sand" }
+    },
+    temp: -5,
+    tempHigh: 18,
+    tempLow: -20,
+    stateLow: "ice",
+    stateHigh: "water",
+    category: "food",
+    state: "liquid",
+    density: 95,
+    viscosity: 100,
+    hidden: true
+}
+*/
+
+elements.strawberry_jam = {
+    color: "#c73c3e",
+    behavior: behaviors.LIQUID,
+    category: "food",
+    tempHigh: 400,
+    stateHigh: ["sugar","smoke"],
+    burn: 70,
+    burnTime: 300,
+    viscosity: 750,
+    state: "liquid",
+    density: 825,
+    hidden: true
+};
+elements.blueberry_jam = {
+    color: "#281C4B",
+    behavior: behaviors.LIQUID,
+    category: "food",
+    tempHigh: 400,
+    stateHigh: ["sugar","smoke"],
+    burn: 70,
+    burnTime: 300,
+    viscosity: 750,
+    state: "liquid",
+    density: 825,
+    hidden: true
+};
+elements.cut_blueberry = {
+    color: "#d4ed8a",
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "M2|M1|M2",
+    ],
+    reactions: {
+        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "mercury": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "stench": { elem2:null, chance:0.25 },
+    },
+    category:"food",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    burn:15,
+    burnTime:60,
+    burnInto: "dead_plant",
+    breakInto: "juice",
+    breakIntoColor:"#add69a",
+    state: "solid",
+    density: 1050,
+    hidden: true
+}
+
+if (!elements.yeast.reactions) elements.yeast.reactions = {};
+elements.yeast.reactions.flour = { elem1: "advanced_dough", elem2: null }
+
+elements.advanced_dough = {
+    color: "#c49f58",
+    behavior: behaviors.STURDYPOWDER,
+    reactions: {
+        "milk": { elem2:"broth", color2:"#ECC891", tempMin:70 },
+        "cream": { elem2:"broth", color2:"#ECC891", tempMin:70 },
+    },
+    category: "food",
+    tempHigh: 94,
+    stateHigh: "bread",
+    stateHighColorMultiplier: 0.9,
+    burn:40,
+    burnTime:25,
+    burnInto:"ash",
+    state: "solid",
+    density: 526.9,
+    isFood: true,
+    hidden: true
+}
+
+if (!elements.melted_chocolate.reactions) elements.melted_chocolate.reactions = {};
+elements.melted_chocolate.reactions.flour = { elem1: "cookie_dough", elem2: null }
+
+elements.cookie_dough = {
+    color: ["#946826","#9e783f","#8a6d41","#614925"],
+    behavior: behaviors.STURDYPOWDER,
+    category: "food",
+    tempHigh: 94,
+    stateHigh: "cookie",
+    stateHighColorMultiplier: 1.1,
+    burn:40,
+    burnTime:25,
+    burnInto:"ash",
+    state: "solid",
+    density: 526.9,
+    isFood: true,
+    hidden: true
+}
+
+elements.cookie = {
+    color: "#7d5f2e",
+    behavior: behaviors.STURDYPOWDER,
+    tempHigh: 605,
+    stateHigh: "ash",
+    category: "food",
+    burn: 30,
+    burnTime: 200,
+    burnInto: ["smoke","smoke","smoke","ash"],
+    breakInto: "crumb",
+    breakIntoColor: "#7d6216",
+    state: "solid",
+    density: 233.96,
+    isFood: true
+}
+
+elements.nut_oil.name = "cooking_oil"
+
+elements.bread.behavior = behaviors.SUPPORT
+
+elements.toast.behavior = behaviors.SUPPORT
+
+if (!elements.caramel.reactions) elements.caramel.reactions = {};
+elements.caramel.reactions.corn_starch = { elem1: "boba_dough", elem2: null, chance: 0.35, tempMin: 70}
+
+elements.boba_dough = {
+    color: ["#4a2007","#2b1304"],
+    behavior: behaviors.STURDYPOWDER,
+    category: "food",
+    tempHigh: 400,
+    stateHigh: "ash",
+    stateHighColorMultiplier: 0.8,
+    burn:40,
+    burnTime:25,
+    burnInto:"ash",
+    state: "solid",
+    density: 526.9,
+    reactions: {
+        "water": { elem1:"boba", tempMin:60},
+    },
+    isFood: true,
+    hidden: true
+}
+
+elements.boba = {
+    color: "#59290c",
+    behavior: behaviors.POWDER,
+    tempHigh: 300,
+    stateHigh: "fire",
+    category: "food",
+    burn: 30,
+    burnTime: 200,
+    burnInto: ["smoke","smoke","smoke","ash"],
+    breakIntoColor: "#7d6216",
+    state: "solid",
+    density: 1500,
+    isFood: true
+}
+elements.caramel.density = 1500
+elements.freeze = {
+    color: ["#42cbf5", "#42cbf5", "#42cbf5", "#75d3f0", "#42cbf5"],
+    tool: function (pixel) {
+        if (!shiftDown) {
+            pixel.temp -= 0.2;
+            pixelTempCheck(pixel);
+        } else {
+            pixel.temp -= 200;
+            pixelTempCheck(pixel);
+        }
+    },
+    category: "energy",
+    canPlace: false,
+    excludeRandom: true,
+    desc: "Use on pixels to freeze them."
+};
+elements.warm = {
+    color: ["#c7634a", "#c7634a", "#c7634a", "#e38f7b", "#c7634a"],
+    tool: function (pixel) {
+        if (!shiftDown) {
+            pixel.temp += 0.2;
+            pixelTempCheck(pixel);
+        } else {
+            pixel.temp += 200;
+            pixelTempCheck(pixel);
+        }
+    },
+    category: "energy",
+    canPlace: false,
+    excludeRandom: true,
+    desc: "Use on pixels to warm them."
+};
+/*
+elements.pineapple_seed = {
+    color: "#695531",
+    tick: function(pixel) {
+        if (isEmpty(pixel.x,pixel.y+1)) {
+            movePixel(pixel,pixel.x,pixel.y+1);
+        }
+        else {
+            if (pixel.temp < 100 && pixel.temp > 20) {
+                if (Math.random() < 0.02 && pixel.age > 50) {
+                    if (!outOfBounds(pixel.x,pixel.y+1)) {
+                        var dirtPixel = pixelMap[pixel.x][pixel.y+1];
+                        if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
+                            changePixel(dirtPixel,"root");
+                            pixel.leaflength = pixel.leaflength+Math.round(Math.random())
+                        }
+                    }
+                    if (isEmpty(pixel.x,pixel.y-1) && pixel.leafgrown==false) {
+                        movePixel(pixel,pixel.x,pixel.y-1);
+                        createPixel("pineapple_leaves",pixel.x,pixel.y+1);
+                        if (isEmpty(pixel.x,pixel.y-1)) {
+                            createPixel("pineapple",pixel.x,pixel.y-1);
+                        }
+                        if (isEmpty(pixel.x+1,pixel.y) && Math.random() < 0.5) {
+                            createPixel("pineapple_leaves",pixel.x+1,pixel.y);
+                            if (isEmpty(pixel.x+2,pixel.y-1) && Math.random() < 0.5) {
+                                createPixel("pineapple_leaves",pixel.x+2,pixel.y-1);
+                                if (pixel.leaflength == 4 && isEmpty(pixel.x+3,pixel.y-2) && Math.random() < 0.5) {
+                                    createPixel("pineapple_leaves",pixel.x+3,pixel.y-2);
+                                    pixel.leafgrown = true
+                                }
+                            }
+                        }
+                        if (isEmpty(pixel.x-1,pixel.y) && Math.random() < 0.5) {
+                            createPixel("pineapple_leaves",pixel.x-1,pixel.y);
+                            if (isEmpty(pixel.x-2,pixel.y-1) && Math.random() < 0.5) {
+                                createPixel("pineapple_leaves",pixel.x-2,pixel.y-1);
+                                if (pixel.leaflength = 3) {
+                                    pixel.leafgrown = true
+                                }
+                                if (pixel.leaflength = 4 && isEmpty(pixel.x-3,pixel.y-2) && isEmpty(pixel.x+3,pixel.y-2) && Math.random() < 0.5) {
+                                    createPixel("pineapple_leaves",pixel.x-3,pixel.y-2);
+                                    createPixel("pineapple_leaves",pixel.x+3,pixel.y-2);
+                                    pixel.leafgrown = true
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (pixel.age > 500 && leafgrown == true && Math.random() < 0.1) {
+                    changePixel(pixel,"pineapple_leaves");
+                }
+            }
+            pixel.age++;
+        }
+        doDefaults(pixel);
+    },
+    properties: {
+        "age":0,
+        "leaflength":3,
+        "leafgrown":false,
+    },
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -2,
+    stateLow: "frozen_plant",
+    burn: 65,
+    burnTime: 15,
+    category: "life",
+    state: "solid",
+    density: 1500,
+    cooldown: defaultCooldown,
+    seed: true,
+    temp:25,
+    behavior: [
+        "XX|XX|XX",
+        "XX|FX%10|XX",
+        "XX|M1|XX",
+    ],
+};
+*//*
+function averageHexColor(color1, color2) {
+    const rgb1 = hexToRgb(color1);
+    const rgb2 = hexToRgb(color2);
+    const avgRed = Math.floor((rgb1[0] + rgb2[0]) / 2);
+    const avgGreen = Math.floor((rgb1[1] + rgb2[1]) / 2);
+    const avgBlue = Math.floor((rgb1[2] + rgb2[2]) / 2);
+    const avgHex = rgbToHex(avgRed, avgGreen, avgBlue);
+    return avgHex;
+}
+
+function hexToRgb(hex) {
+    hex = hex.replace(/^#/, '');
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    return [r, g, b];
+}
+
+function rgbToHex(r, g, b) {
+    const rHex = r.toString(16).padStart(2, '0');
+    const gHex = g.toString(16).padStart(2, '0');
+    const bHex = b.toString(16).padStart(2, '0');
+    return `${rHex}${gHex}${bHex}`;
+}
+*/
+// test
+//var color1 = "#FF0000";
+//var color2 = "#0000FF";
+//var averageColor = averageHexColor(color1, color2);
+//console.log(averageColor)
+/*
+eLists.JUICEMIXABLE.forEach(function(element){
+    elements[element].onMix = function(pixel1,pixel2) {
+    if (shiftDown && eLists.JUICEMIXABLE.indexOf(pixel2.element) !== -1) {
+        if (Math.random() < 0.2) {
+            var hex1 = pixel1.color
+            var hex2 = pixel2.color
+            let rgb = pixel.color.replace("rgb(", "").replace(")", "").split(",");
+            let rgbObj = { r: parseInt(rgb[0]), g: parseInt(rgb[1]), b: parseInt(rgb[2]) } //use this as one of the rgb objects
+            var finalJuiceColor = interpolatedRgb(hex1,hex2,0.5)
+            changePixel(pixel1,"juice")
+            //pixel1.color = pixelColorPick(pixel,finalJuiceColor)
+            pixel1.color = rgb(rgbObj)
+        }
+    }
+}
+})*/
+elements.juice.onMix = function(pixel){
+    let num = Math.floor(Math.random() * 4);
+    let x = pixel.x + adjacentCoords[num][0];
+    let y = pixel.y + adjacentCoords[num][1];
+    if(!isEmpty(x,y) && !outOfBounds(x,y)){
+      let pixel2 = pixelMap[x][y];
+      if(pixel.color != pixel2.color && pixel2.element == "juice"){
+        let condition;
+        if(shiftDown == 0){
+          condition = (Math.floor(Math.random() * 2) == 1); 
+        } else {
+          condition = true; 
+        }
+        if(condition){
+          let newrgb = interpolateRgb(getRGB(pixel.color), getRGB(pixel2.color), 0.5);
+          pixel.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+          pixel2.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+        }
+      }
+    }
+  }
+
+elements.juice.stain = 0
+
+elements.banana_seed = {
+    color: "#594129",
+    tick: function(pixel) {
+            if (Math.random() < 0.1 && pixel.age > 50 && pixel.temp < 100) {
+                if (!outOfBounds(pixel.x,pixel.y+1)) {
+                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
+                    if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
+                        changePixel(dirtPixel,"root");
+                    }
+                }
+                if (isEmpty(pixel.x,pixel.y-1) && pixel.height < 7) {
+                    movePixel(pixel,pixel.x,pixel.y-1);
+                    createPixel("banana_stem",pixel.x,pixel.y+1);
+                    
+                    pixel.height++
+                }
+            }
+            else if (pixel.age > 150 && pixel.height > 6 && Math.random() < 0.1) {
+                changePixel(pixel,"banana_tree_top");
+            }
+            pixel.age++;
+        doDefaults(pixel);
+    },
+    properties: {
+        "age":0,
+        "height": 0
+    },
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -2,
+    stateLow: "frozen_plant",
+    burn: 65,
+    burnTime: 15,
+    category: "life",
+    state: "solid",
+    density: 1500,
+    cooldown: defaultCooldown,
+    seed: true,
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "XX|M1|XX",
+    ],
+};
+elements.banana_stem = {
+    color: "#698215",
+    behavior: behaviors.WALL,
+    tempHigh: 400,
+    stateHigh: ["ember","charcoal","fire","fire","fire"],
+    category: "life",
+    burn: 5,
+    burnTime: 300,
+    burnInto: ["ember","charcoal","fire"],
+    state: "solid",
+    hardness: 0.15,
+    breakInto: "sawdust",
+    breakIntoColor: ["#dba66e","#cc8a64"],
+    hidden: true
+}
+elements.banana_tree_top = {
+    color: "#718a21",
+    behavior: behaviors.WALL,
+    tempHigh: 400,
+    stateHigh: ["ember","charcoal","fire","fire","fire"],
+    category: "life",
+    burn: 5,
+    burnTime: 300,
+    burnInto: ["ember","charcoal","fire"],
+    state: "solid",
+    hardness: 0.15,
+    breakInto: "sawdust",
+    breakIntoColor: ["#dba66e","#cc8a64"],
+    properties:{
+        "leftleaves": 0,
+        "rightleaves": 0,
+    },
+    hidden: true,
+    tick: function(pixel) {
+        if (Math.random() < 0.1 && pixel.age > 50 && pixel.temp < 100 && pixel.rightleaves == 0) {
+            if (isEmpty(pixel.x+1,pixel.y)) {
+                createPixel("banana_leaves",pixel.x+1,pixel.y);
+
+                pixel.rightleaves++
+            }
+        }
+        if (Math.random() < 0.1 && pixel.age > 50 && pixel.temp < 100 && pixel.rightleaves == 1) {
+            if (isEmpty(pixel.x+2,pixel.y)) {
+                createPixel("banana_leaves",pixel.x+2,pixel.y);
+
+                pixel.rightleaves++
+            }
+        }
+        if (Math.random() < 0.1 && pixel.age > 50 && pixel.temp < 100 && pixel.rightleaves == 2) {
+            if (isEmpty(pixel.x+3,pixel.y)) {
+                createPixel("banana_leaves",pixel.x+3,pixel.y);
+
+                pixel.rightleaves++
+            }
+        }
+        if (Math.random() < 0.1 && pixel.age > 50 && pixel.temp < 100 && pixel.rightleaves == 3) {
+            if (isEmpty(pixel.x+4,pixel.y+1)) {
+                createPixel("banana_leaves",pixel.x+4,pixel.y+1);
+
+                pixel.rightleaves++
+            }
+        }
+
+
+        if (Math.random() < 0.1 && pixel.age > 50 && pixel.temp < 100 && pixel.leftleaves == 0) {
+            if (isEmpty(pixel.x-1,pixel.y)) {
+                createPixel("banana_leaves",pixel.x-1,pixel.y);
+
+                pixel.leftleaves++
+            }
+        }
+        if (Math.random() < 0.1 && pixel.age > 50 && pixel.temp < 100 && pixel.leftleaves == 1) {
+            if (isEmpty(pixel.x-2,pixel.y)) {
+                createPixel("banana_leaves",pixel.x-2,pixel.y);
+
+                pixel.leftleaves++
+            }
+        }
+        if (Math.random() < 0.1 && pixel.age > 50 && pixel.temp < 100 && pixel.leftleaves == 2) {
+            if (isEmpty(pixel.x-3,pixel.y)) {
+                createPixel("banana_leaves",pixel.x-3,pixel.y);
+
+                pixel.leftleaves++
+            }
+        }
+        if (Math.random() < 0.1 && pixel.age > 50 && pixel.temp < 100 && pixel.leftleaves == 3) {
+            if (isEmpty(pixel.x-4,pixel.y+1)) {
+                createPixel("banana_leaves",pixel.x-4,pixel.y+1);
+
+                pixel.leftleaves++
+            }
+        }
+
+
+        if (Math.random() < 0.1 && pixel.age > 70 && pixel.temp < 100 && pixel.leftleaves > 0 && pixel.rightleaves > 0) {
+            if (isEmpty(pixel.x+1,pixel.y+2)) {
+                createPixel("banana_peduncle",pixel.x+1,pixel.y+2);
+            }
+        }
+        if (Math.random() < 0.1 && pixel.age > 70 && pixel.temp < 100 && pixel.leftleaves > 0 && pixel.rightleaves > 0) {
+            if (isEmpty(pixel.x-1,pixel.y+2)) {
+                createPixel("banana_peduncle",pixel.x-1,pixel.y+2);
+            }
+        }
+        pixel.age++;
+    doDefaults(pixel);
+    },
+}
+elements.banana_leaves = {
+    color: ["#3da324","#3cbd1c"],
+    reactions: {
+        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 }
+    },
+    category:"life",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -1.66,
+    stateLow: "frozen_plant",
+    burn:65,
+    burnTime:60,
+    burnInto: "dead_plant",
+    breakInto: "dead_plant",
+    state: "solid",
+    density: 1050,
+    hidden: true
+}
+elements.banana_peduncle = {
+    color: "#8bb81a",
+    behavior: behaviors.WALL,
+    tempHigh: 400,
+    stateHigh: ["ember","charcoal","fire","fire","fire"],
+    category: "life",
+    burn: 5,
+    burnTime: 300,
+    burnInto: ["ember","charcoal","fire"],
+    state: "solid",
+    hardness: 0.15,
+    breakInto: "sawdust",
+    hidden: true,
+    tick: function(pixel) {
+        if (Math.random() < 0.1 && pixel.temp < 100) {
+            if (isEmpty(pixel.x+1,pixel.y+1)) {
+                createPixel("hanging_banana_peduncle",pixel.x+1,pixel.y+1);
+            }
+            if (isEmpty(pixel.x-1,pixel.y+1)) {
+                createPixel("hanging_banana_peduncle",pixel.x-1,pixel.y+1);
+            }
+            if (isEmpty(pixel.x+1,pixel.y+2)) {
+                createPixel("hanging_banana_peduncle",pixel.x+1,pixel.y+2);
+            }
+            if (isEmpty(pixel.x-1,pixel.y+2)) {
+                createPixel("hanging_banana_peduncle",pixel.x-1,pixel.y+2);
+            }
+        }
+        pixel.age++;
+    doDefaults(pixel);
+    },
+}
+elements.hanging_banana_peduncle = {
+    color: "#8bb81a",
+    behavior: [
+        "XX|XX|XX",
+        "CR:banana%0.2|XX|CR:banana%0.2",
+        "XX|XX|XX",
+    ],
+    tempHigh: 400,
+    stateHigh: ["ember","charcoal","fire","fire","fire"],
+    category: "life",
+    burn: 5,
+    burnTime: 300,
+    burnInto: ["ember","charcoal","fire"],
+    state: "solid",
+    hardness: 0.15,
+    breakInto: "sawdust",
+    hidden: true,
+}
+elements.banana = {
+    color: "#ebd834",
+    behavior: [
+        "XX|XX|XX",
+        "ST:hanging_banana_peduncle|XX|ST:hanging_banana_peduncle",
+        "XX|M1|XX",
+    ],
+    category:"food",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    burn:15,
+    burnTime:60,
+    burnInto: "dead_plant",
+    breakInto: "banana_juice",
+    state: "solid",
+    density: 1050,
+    cutInto: "cut_banana",
+    freezeDryInto: "freeze_dried_fruits",
+    freezeDryIntoColor: "#c4b939",
+}
+elements.cut_banana = {
+    color: "#f2e56b",
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "M2|M1|M2",
+    ],
+    category:"food",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    burn:15,
+    burnTime:60,
+    burnInto: "dead_plant",
+    breakInto: "banana_juice",
+    state: "solid",
+    density: 1050,
+    hidden: true,
+    freezeDryInto: "freeze_dried_fruits",
+    freezeDryIntoColor: "#c4b939",
+}
+elements.banana_juice = {
+    color: "#dbc440",
+    behavior: behaviors.LIQUID,
+    category: "liquids",
+    tempHigh: 100,
+    stateHigh: ["steam","sugar"],
+    burn: 70,
+    burnTime: 300,
+    burnInto: ["steam", "smoke"],
+    state: "liquid",
+    density: 825,
+    hidden: true,
+    temp: 30,
+    onMix: function(pixel) {
+        if (shiftDown) {
+            if (Math.random() < 0.2) {
+                changePixel(pixel,"juice")
+                pixel.color = pixelColorPick(pixel,"#dbc440")
+            }
+        }
+    },
+    reactions: {
+        "bread": { elem1:"banana_bread", elem2:null, chance:0.35 },
+        "milk": { elem1: "fruit_milk", elem2: "fruit_milk", chance: 0.35, color1:"#ede59a", color2:"#ede59a"},
+        "coconut_milk": { elem1: "fruit_milk", elem2: "fruit_milk", chance: 0.35, color1:"#ede59a", color2:"#ede59a"},
+        "nut_milk": { elem1: "fruit_milk", elem2: "fruit_milk", chance: 0.35, color1:"#ede59a", color2:"#ede59a"}
+    },
+    tempLow: 0
+};
+eLists.JUICEMIXABLE.push("banana_juice");
+
+elements.banana_bread = {
+    color: "#c2782f",
+    desc: "delicious banana bread",
+    behavior: behaviors.STURDYPOWDER,
+    tempHigh: 176,
+    stateHigh: "toast",
+    category: "food",
+    burn: 30,
+    burnTime: 200,
+    burnInto: ["smoke","smoke","smoke","ash"],
+    breakInto: "crumb",
+    state: "solid",
+    density: 233.96,
+    isFood: true
+}
+elements.sprinkles = {
+    color: ["#eb726a", "#ebca6a", "#88eb6a", "#6aaceb", "#eb6ade"],
+    behavior: behaviors.POWDER,
+    category: "food",
+    state: "solid",
+    desc: "colorful edible sand",
+    hidden: false,
+    isFood: true,
+    burn: 30,
+    burnTime: 200,
+    burnInto: ["smoke","smoke","smoke","ash"],
+    breakInto: "sugar",
+    breakIntoColor: ["#fb827a", "#fbda7a", "#98fb7a", "#7abcfb", "#fb7aee"],
+    tempHigh: 176,
+    stateHigh: "caramel",
+    density: 277,
+    cooldown: 2
+}
+elements.chocolate_chips = {
+    color: "#6e4c1d",
+    behavior: behaviors.POWDER,
+    tempHigh: 31,
+    stateHigh: "melted_chocolate",
+    category: "food",
+    state: "solid",
+    density: 1325,
+    isFood: true,
+    desc: "chocolate chips yum",
+    cooldown: 2
+}
+elements.chocolate.breakInto = "chocolate_chips"
+//elements.fruit_milk.stateLowColorMultiplier = 0.9
+
+elements.passion_fruit_vine = {
+    color: "#00df00",
+    behavior: [
+        "ST:wood|ST:wood|ST:wood",
+        "ST:wood AND CR:passion_fruit%0.02|XX|ST:wood AND CR:passion_fruit%0.02",
+        "ST:wood|ST:wood AND M1|ST:wood",
+    ],
+    reactions: {
+        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "mercury": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "stench": { elem2:null, chance:0.25 },
+        "carbon_dioxide": { elem2:"oxygen", chance:0.25 },
+    },
+    category:"life",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -1.66,
+    stateLow: "frozen_plant",
+    burn:15,
+    burnTime:60,
+    burnInto: "dead_plant",
+    state: "solid",
+    density: 1050,
+    breakInto: "dead_plant"
+}
+elements.passion_fruit_seed = {
+    color: "#6b4f36",
+    tick: function(pixel) {
+            if (Math.random() < 0.1 && pixel.age > 50 && pixel.temp < 100) {
+                if (!outOfBounds(pixel.x,pixel.y+1)) {
+                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
+                    if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
+                        changePixel(dirtPixel,"root");
+                    }
+                }
+                if (isEmpty(pixel.x,pixel.y-1)) {
+                    if (!isEmpty(pixel.x+1,pixel.y-1) || !isEmpty(pixel.x-1,pixel.y-1)) {
+                        movePixel(pixel,pixel.x,pixel.y-1);
+                        createPixel("passion_fruit_vine",pixel.x,pixel.y+1);
+                    }
+                }
+                if (!isEmpty(pixel.x+2,pixel.y-1) && isEmpty(pixel.x+1,pixel.y-1)) {
+                    movePixel(pixel,pixel.x+1,pixel.y-1);
+                    createPixel("passion_fruit_vine",pixel.x-1,pixel.y+1);
+                }
+                if (!isEmpty(pixel.x-2,pixel.y-1) && isEmpty(pixel.x-1,pixel.y-1)) {
+                    movePixel(pixel,pixel.x-1,pixel.y-1);
+                    createPixel("passion_fruit_vine",pixel.x+1,pixel.y+1);
+                }
+                if (!isEmpty(pixel.x,pixel.y-1) && !isEmpty(pixel.x+1,pixel.y) && isEmpty(pixel.x+1,pixel.y-1)) {
+                    movePixel(pixel,pixel.x+1,pixel.y-1);
+                    createPixel("passion_fruit_vine",pixel.x-1,pixel.y+1);
+                }
+                if (!isEmpty(pixel.x,pixel.y-1) && !isEmpty(pixel.x-1,pixel.y) && isEmpty(pixel.x-1,pixel.y-1)) {
+                    movePixel(pixel,pixel.x-1,pixel.y-1);
+                    createPixel("passion_fruit_vine",pixel.x+1,pixel.y+1);
+                }
+                /*if (pixelMap[pixel.x+1][pixel.y-1].element !== "wood" && pixelMap[pixel.x-1][pixel.y-1].element !== "wood") {
+                    movePixel(pixel,pixel.x,pixel.y-1);
+                    createPixel("passion_fruit_vine",pixel.x,pixel.y+1);
+                    if (isEmpty(pixel.x+1,pixel.y-1) && pixelMap[pixel.x+2][pixel.y-1].element === "wood") {
+                        movePixel(pixel,pixel.x+1,pixel.y-1);
+                        createPixel("passion_fruit_vine",pixel.x-1,pixel.y+1);
+                    }
+                    if (isEmpty(pixel.x-1,pixel.y-1) && pixelMap[pixel.x-2][pixel.y-1].element === "wood") {
+                        movePixel(pixel,pixel.x-1,pixel.y-1);
+                        createPixel("passion_fruit_vine",pixel.x+1,pixel.y+1);
+                    }
+                }*/
+            }
+            else if (pixel.age > 400 && Math.random() < 0.1) {
+                changePixel(pixel,"passion_fruit_vine");
+            }
+            pixel.age++;
+        doDefaults(pixel);
+    },
+    properties: {
+        "age":0,
+    },
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -2,
+    stateLow: "frozen_plant",
+    burn: 65,
+    burnTime: 15,
+    category: "life",
+    state: "solid",
+    density: 1500,
+    cooldown: defaultCooldown,
+    seed: true,
+    behavior: [
+        "ST:wood,passion_fruit_vine|ST:wood,passion_fruit_vine|ST:wood,passion_fruit_vine",
+        "ST:wood,passion_fruit_vine|XX|ST:wood,passion_fruit_vine",
+        "ST:wood,passion_fruit_vine|M1|ST:wood,passion_fruit_vine",
+    ],
+};
+
+elements.passion_fruit = {
+    color: "#78236f",
+    behavior: [
+        "ST:passion_fruit_vine%95|ST:passion_fruit_vine%95|ST:passion_fruit_vine%95",
+        "ST:passion_fruit_vine%95|XX|ST:passion_fruit_vine%95",
+        "ST:passion_fruit_vine%95|M1|ST:passion_fruit_vine%95",
+    ],
+    category:"food",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    burn:65,
+    burnTime:60,
+    burnInto: "dead_plant",
+    breakInto: ["passion_fruit_juice","passion_fruit_juice",/*"passion_fruit_seed"*/],
+    state: "solid",
+    density: 1050,
+    cutInto: "passion_fruit_flesh",
+    temp:20,
+    freezeDryInto: "freeze_dried_fruits",
+    freezeDryIntoColor: "#412e6b"
+}
+elements.passion_fruit_flesh = {
+    color: "#ffe205",
+    behavior: behaviors.LIQUID,
+    category:"food",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    burn:65,
+    burnTime:60,
+    viscosity: 999,
+    burnInto: "dead_plant",
+    breakInto: ["passion_fruit_juice","passion_fruit_juice",/*"passion_fruit_seed"*/],
+    state: "solid",
+    density: 1050,
+    hidden: true,
+    temp: 20
+}
+elements.passion_fruit_juice = {
+    color: "#d6bf2b",
+    behavior: behaviors.LIQUID,
+    category: "liquids",
+    tempHigh: 100,
+    stateHigh: ["steam","sugar"],
+    burn: 70,
+    burnTime: 300,
+    burnInto: ["steam", "smoke"],
+    state: "liquid",
+    density: 825,
+    hidden: true,
+    temp: 20,
+    onMix: function(pixel) {
+        if (shiftDown) {
+            if (Math.random() < 0.2) {
+                changePixel(pixel,"juice")
+                pixel.color = pixelColorPick(pixel,"#d6bf2b")
+            }
+        }
+    },
+    tempLow: 0
+};
+eLists.JUICEMIXABLE.push("passion_fruit_juice");
+
+elements.mango_wood = {
+    color: "#966435",
+    behavior: behaviors.WALL,
+    tempHigh: 400,
+    stateHigh: ["ember","charcoal","fire","fire","fire"],
+    category: "solids",
+    burn: 5,
+    burnTime: 300,
+    burnInto: ["ember","charcoal","fire"],
+    state: "solid",
+    hardness: 0.15,
+    breakInto: "sawdust",
+    breakIntoColor: ["#dba66e","#cc8a64"],
+    hidden: true
+}
+elements.mango_branch = {
+    color: "#966435",
+    behavior: [
+        "CR:mango_leaves,mango_branch%2|CR:mango_leaves,mango_branch%2|CR:mango_leaves,mango_branch%2",
+        "XX|XX|XX",
+        "XX|XX|XX",
+    ],
+    tempHigh: 100,
+    stateHigh: "mango_wood",
+    tempLow: -30,
+    stateLow: "mango_wood",
+    category: "life",
+    burn: 40,
+    burnTime: 50,
+    burnInto: ["sap","ember","charcoal"],
+    hidden: true,
+    state: "solid",
+    density: 1500,
+    hardness: 0.15,
+    breakInto: ["sap","sawdust"],
+}
+elements.mango_leaves = {
+    color: ["#61b535","#5fba2f"],
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "XX|CR:mango%0.1|XX",
+    ],
+    reactions: {
+        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 }
+    },
+    category:"life",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -1.66,
+    stateLow: "frozen_plant",
+    burn:65,
+    burnTime:60,
+    burnInto: "dead_plant",
+    breakInto: "dead_plant",
+    state: "solid",
+    density: 1050,
+    hidden: true
+}
+elements.mango = {
+    color: ["#cc5b3f","#cc8a3f","#ccb93f","#abcc3f"],
+    behavior: behaviors.POWDER,
+    reactions: {
+        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 }
+    },
+    category:"food",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    burn:65,
+    burnTime:60,
+    burnInto: "dead_plant",
+    breakInto: "mango_juice",
+    cutInto: "cut_mango",
+    state: "solid",
+    density: 1050,
+    freezeDryInto: "freeze_dried_fruits",
+    freezeDryIntoColor: "#ccb50a",
+}
+
+elements.cut_mango = {
+    color: "#ebcb2d",
+    behavior: behaviors.STURDYPOWDER,
+    category:"food",
+    tempHigh: 100,
+    stateHigh: ["sugar","steam"],
+    burn:65,
+    burnTime:60,
+    burnInto: "dead_plant",
+    breakInto: "mango_juice",
+    state: "solid",
+    density: 1050,
+    hidden: true,
+    freezeDryInto: "freeze_dried_fruits",
+    freezeDryIntoColor: "#ccb50a",
+}
+
+elements.mango_seed = {
+    color: "#9e8951",
+    tick: function(pixel) {
+        if (isEmpty(pixel.x,pixel.y+1)) {
+            movePixel(pixel,pixel.x,pixel.y+1);
+        }
+        else {
+            if (Math.random() < 0.02 && pixel.age > 50 && pixel.temp < 100) {
+                if (!outOfBounds(pixel.x,pixel.y+1)) {
+                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
+                    if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
+                        changePixel(dirtPixel,"root");
+                    }
+                }
+                if (isEmpty(pixel.x,pixel.y-1)) {
+                    movePixel(pixel,pixel.x,pixel.y-1);
+                    createPixel(Math.random() > 0.5 ? "mango_wood" : "mango_branch",pixel.x,pixel.y+1);
+                }
+            }
+            else if (pixel.age > 1000) {
+                changePixel(pixel,"mango_wood");
+            }
+            pixel.age++;
+        }
+        doDefaults(pixel);
+    },
+    properties: {
+        "age":0
+    },
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -2,
+    stateLow: "frozen_plant",
+    burn: 65,
+    burnTime: 15,
+    category: "life",
+    state: "solid",
+    density: 1500,
+    cooldown: defaultCooldown,
+    seed: true,
+    behavior: [
+        "XX|XX|XX",
+        "XX|FX%10|XX",
+        "XX|M1|XX",
+    ],
+};
+
+elements.mango_juice = {
+    color: "#f0c348",
+    onMix: function(pixel) {
+        if (shiftDown) {
+            if (Math.random() < 0.2) {
+                changePixel(pixel,"juice")
+                pixel.color = pixelColorPick(pixel,"#f0c348")
+            }
+        }
+    },
+    reactions: {
+        "milk": { elem1: "fruit_milk", elem2: "fruit_milk", chance: 0.35, color1:"#fada70", color2:"#fada70"},
+        "coconut_milk": { elem1: "fruit_milk", elem2: "fruit_milk", chance: 0.35, color1:"#fada70", color2:"#fada70"},
+        "nut_milk": { elem1: "fruit_milk", elem2: "fruit_milk", chance: 0.35, color1:"#fada70", color2:"#fada70"}
+    },
+    behavior: behaviors.LIQUID,
+    category: "liquids",
+    tempHigh: 100,
+    stateHigh: ["steam","sugar"],
+    burn: 70,
+    burnTime: 300,
+    burnInto: ["steam", "smoke"],
+    state: "liquid",
+    density: 825,
+    hidden: true,
+    temp: 30,
+    tempLow: 0
+};
+eLists.JUICEMIXABLE.push("mango_juice");
+
+elements.pineapple_leaves = {
+    color: "#3aab11",
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "XX|XX|XX",
+    ],
+    reactions: {
+        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 }
+    },
+    category:"life",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -1.66,
+    stateLow: "frozen_plant",
+    burn:65,
+    burnTime:60,
+    burnInto: "dead_plant",
+    breakInto: "dead_plant",
+    state: "solid",
+    density: 1050,
+    hidden: true
+}
+elements.pineapple = {
+    color: "#e8bc38",
+    behavior: behaviors.STURDYPOWDER,
+    category:"food",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    burn:65,
+    burnTime:60,
+    burnInto: "dead_plant",
+    breakInto: "pineapple_juice",
+    state: "solid",
+    density: 1050,
+    temp:20,
+    freezeDryInto: "freeze_dried_fruits",
+    freezeDryIntoColor: "#ccb90a",
+}
+elements.pineapple_seed = {
+    color: "#695531",
+    tick: function(pixel) {
+        if (isEmpty(pixel.x,pixel.y+1)) {
+            movePixel(pixel,pixel.x,pixel.y+1);
+        }
+        else {
+            if (pixel.temp < 100 && pixel.temp > 20) {
+                if (Math.random() < 0.02 && pixel.age > 50) {
+                    if (!outOfBounds(pixel.x,pixel.y+1)) {
+                        var dirtPixel = pixelMap[pixel.x][pixel.y+1];
+                        if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
+                            changePixel(dirtPixel,"root");
+                            if (isEmpty(pixel.x,pixel.y-1) && pixel.leafgrown==false) {
+                                movePixel(pixel,pixel.x,pixel.y-1);
+                                createPixel("pineapple_leaves",pixel.x,pixel.y+1);
+                                if (isEmpty(pixel.x+1,pixel.y) && isEmpty(pixel.x-1,pixel.y)) {
+                                    createPixel("pineapple_leaves",pixel.x+1,pixel.y);
+                                    createPixel("pineapple_leaves",pixel.x-1,pixel.y);
+                                    if (isEmpty(pixel.x-2,pixel.y-1) && isEmpty(pixel.x+2,pixel.y-1)) {
+                                        createPixel("pineapple_leaves",pixel.x+2,pixel.y-1);
+                                        createPixel("pineapple_leaves",pixel.x-2,pixel.y-1);
+                                        if (isEmpty(pixel.x,pixel.y-1) && isEmpty(pixel.x+1,pixel.y-1) && isEmpty(pixel.x-1,pixel.y-1)) {
+                                            createPixel("pineapple",pixel.x,pixel.y-1);
+                                            createPixel("pineapple",pixel.x+1,pixel.y-1);
+                                            createPixel("pineapple",pixel.x-1,pixel.y-1);
+                                            if (isEmpty(pixel.x,pixel.y-2) && isEmpty(pixel.x+1,pixel.y-2) && isEmpty(pixel.x-1,pixel.y-2)) {
+                                                createPixel("pineapple",pixel.x,pixel.y-2);
+                                                createPixel("pineapple",pixel.x+1,pixel.y-2);
+                                                createPixel("pineapple",pixel.x-1,pixel.y-2);
+                                                if (isEmpty(pixel.x,pixel.y-3) && isEmpty(pixel.x+1,pixel.y-3) && isEmpty(pixel.x-1,pixel.y-3)) {
+                                                    createPixel("pineapple",pixel.x,pixel.y-3);
+                                                    createPixel("pineapple",pixel.x+1,pixel.y-3);
+                                                    createPixel("pineapple",pixel.x-1,pixel.y-3);
+                                                    if (isEmpty(pixel.x,pixel.y-4) && isEmpty(pixel.x+1,pixel.y-4) && isEmpty(pixel.x-1,pixel.y-4)) {
+                                                        createPixel("pineapple",pixel.x,pixel.y-4);
+                                                        createPixel("pineapple",pixel.x+1,pixel.y-4);
+                                                        createPixel("pineapple",pixel.x-1,pixel.y-4);
+                                                        if (isEmpty(pixel.x,pixel.y-5) && isEmpty(pixel.x+1,pixel.y-6) && isEmpty(pixel.x-1,pixel.y-6)) {
+                                                            createPixel("pineapple_leaves",pixel.x,pixel.y-5);
+                                                            createPixel("pineapple_leaves",pixel.x+1,pixel.y-6);
+                                                            createPixel("pineapple_leaves",pixel.x-1,pixel.y-6);
+                                                            pixel.leafgrown = true
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (pixel.age > 500 && pixel.leafgrown == true && Math.random() < 0.1) {
+                    changePixel(pixel,"pineapple_leaves");
+                }
+            }
+            pixel.age++;
+        }
+        doDefaults(pixel);
+    },
+    properties: {
+        "age":0,
+        "leafgrown":false,
+    },
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -2,
+    stateLow: "frozen_plant",
+    burn: 65,
+    burnTime: 15,
+    category: "life",
+    state: "solid",
+    density: 1500,
+    cooldown: defaultCooldown,
+    seed: true,
+    temp:25,
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "XX|M1|XX",
+    ],
+};
+elements.pineapple_juice = {
+    color: "#d9ba32",
+    onMix: function(pixel) {
+        if (shiftDown) {
+            if (Math.random() < 0.2) {
+                changePixel(pixel,"juice")
+                pixel.color = pixelColorPick(pixel,"#d9ba32")
+            }
+        }
+    },
+    behavior: behaviors.LIQUID,
+    category: "liquids",
+    tempHigh: 100,
+    stateHigh: ["steam","sugar"],
+    burn: 70,
+    burnTime: 300,
+    burnInto: ["steam", "smoke"],
+    state: "liquid",
+    density: 825,
+    hidden: true,
+    temp: 30,
+    tempLow: 0
+};
+eLists.JUICEMIXABLE.push("pineapple_juice");
+
+elements.lime = {
+    color: ["#549c2d","#4d9c22"],
+    behavior: behaviors.POWDER,
+    reactions: {
+        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 },
+    },
+    category:"food",
+    freezeDryInto: "freeze_dried_fruits",
+    freezeDryIntoColor: "#5eab24",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    burn:65,
+    burnTime:60,
+    burnInto: "dead_plant",
+    breakInto: "lime_juice",
+    state: "solid",
+    density: 1050,
+    isFood: true,
+    cutInto: ["lime_zest","lime_slice","lime_slice","lime_slice","lime_slice"],
+}
+
+elements.lime_juice = {
+    color: "#85d14b",
+    onMix: function(pixel) {
+        if (shiftDown) {
+            if (Math.random() < 0.2) {
+                changePixel(pixel,"juice")
+                pixel.color = pixelColorPick(pixel,"#85d14b")
+            }
+        }
+    },
+    behavior: behaviors.LIQUID,
+    category: "liquids",
+    tempHigh: 100,
+    stateHigh: ["steam","sugar"],
+    burn: 70,
+    burnTime: 300,
+    burnInto: ["steam", "smoke"],
+    state: "liquid",
+    density: 825,
+    hidden: true,
+    temp: 30,
+    hidden: true,
+    tempLow: 0,
+};
+eLists.JUICEMIXABLE.push("lime_juice");
+
+elements.lime_zest = {
+    color: "#4f9e13",
+    behavior: behaviors.POWDER,
+    category:"food",
+    tempHigh: 100,
+    stateHigh: ["sugar","steam"],
+    burn:65,
+    burnTime:60,
+    burnInto: "dead_plant",
+    state: "solid",
+    density: 1050,
+    hidden: true,
+}
+
+elements.lime_slice = {
+    color: "#8acc33",
+    behavior: behaviors.STURDYPOWDER,
+    category:"food",
+    tempHigh: 100,
+    stateHigh: ["sugar","steam"],
+    burn:65,
+    burnTime:60,
+    burnInto: "dead_plant",
+    breakInto: "lime_juice",
+    state: "solid",
+    density: 1050,
+    hidden: true,
+}
+
+elements.snail.reactions.nut_oil = { elem1: "escargot", chance:30, tempMin:50 }
+
+elements.escargot = {
+    color: "#ab924d",
+    behavior: behaviors.STURDYPOWDER2,
+    tempHigh: 120,
+    stateHigh: "steam",
+    breakInto: "quicklime",
+    category: "food",
+    state: "solid",
+    density: 1500,
+    conduct: 0.16
+}
+
+elements.broccoli = {
+    color: ["#49a82f","#429929"],
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "ST:broccoli_stem AND M2|ST:broccoli_stem AND M1|ST:broccoli_stem AND M2",
+    ],
+    reactions: {
+        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 }
+    },
+    category:"food",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    burn:65,
+    burnTime:60,
+    burnInto: "dead_plant",
+    breakInto: "dead_plant",
+    state: "solid",
+    isFood: true,
+    density: 1050,
+    cutInto: "cut_broccoli",
+}
+elements.broccoli_stem = {
+    color: ["#51c431","#45ba25"],
+    behavior: behaviors.STURDYPOWDER,
+    reactions: {
+        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 }
+    },
+    category:"food",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    burn:65,
+    burnTime:60,
+    burnInto: "dead_plant",
+    cutInto: "cut_broccoli",
+    state: "solid",
+    density: 1050,
+    hidden: true,
+}
+
+elements.cut_broccoli = {
+    color: "#75d65a",
+    behavior: behaviors.POWDER,
+    category:"food",
+    tempHigh: 100,
+    stateHigh: "steam",
+    burn:65,
+    burnTime:60,
+    burnInto: "dead_plant",
+    state: "solid",
+    density: 1050,
+    hidden: true,
+}
+
+elements.broccoli_seed = {
+    color: "#9e8951",
+    tick: function(pixel) {
+        if (isEmpty(pixel.x,pixel.y+1)) {
+            movePixel(pixel,pixel.x,pixel.y+1);
+        }
+        else {
+            if (Math.random() < 0.2 && pixel.age > 50 && pixel.temp < 100) {
+                if (!outOfBounds(pixel.x,pixel.y+1)) {
+                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
+                    if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
+                        changePixel(dirtPixel,"root");
+                    }
+                }
+                if (isEmpty(pixel.x,pixel.y-1) && isEmpty(pixel.x+1,pixel.y-1) && isEmpty(pixel.x-1,pixel.y-1)) {
+                    changePixel(pixel,"broccoli_stem");
+                    createPixel("broccoli",pixel.x,pixel.y-1);
+                    createPixel("broccoli",pixel.x+1,pixel.y-1);
+                    createPixel("broccoli",pixel.x-1,pixel.y-1);
+                }
+            }
+            else if (pixel.age > 1000) {
+                changePixel(pixel,"broccoli");
+            }
+            pixel.age++;
+        }
+        doDefaults(pixel);
+    },
+    properties: {
+        "age":0
+    },
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -2,
+    stateLow: "frozen_plant",
+    burn: 65,
+    burnTime: 15,
+    category: "life",
+    state: "solid",
+    density: 1500,
+    cooldown: defaultCooldown,
+    seed: true,
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "XX|M1|XX",
+    ],
+};
+elements.freeze_dried_fruits = {
+    color: "#ab1f31",
+    behavior: behaviors.POWDER,
+    tempHigh: 550,
+    stateHigh: "ash",
+    category: "food",
+    burn: 15,
+    burnTime: 200,
+    burnInto: ["smoke","smoke","smoke","ash"],
+    state: "solid",
+    density: 233.96,
+    isFood: true,
+}
+
+elements.grape.freezeDryInto = "freeze_dried_fruits"
+elements.grape.freezeDryIntoColor = "#5d156b"
+
+elements.soapy_water = {
+    color: "#72b8f2",
+    behavior: [
+        "XX|CR:bubble%0.25|XX",
+        "M2%50|XX|M2%50",
+        "M2%50|M1|M2%50",
+    ],
+    tempHigh: 100,
+    stateHigh: "steam",
+    tempLow: 0,
+    category: "liquids",
+    heatCapacity: 4.184,
+    reactions: {
+        "dirt": {elem1: null,elem2: "mud"},
+        "sand": { elem1: null, elem2: "wet_sand" },
+        "clay_soil": { elem1: null, elem2: "clay" },
+        "salt": { elem1: "salt_water", elem2: null, temp1:-20 },
+        "dust": { elem2: null, elem2: null },
+        "plague": { elem2: null, elem2: null },
+        "rust": { elem1: "iron", chance:0.005 },
+        "fallout": {elem2: null, chance:0.25 },
+        "radiation": { elem2: null, chance:0.25 },
+        "uranium": { elem2: null, chance:0.25 },
+        "rotten_meat": { elem2: "meat", chance:0.25 },
+        "rotten_cheese": { elem2: "cheese", chance:0.25 },
+        "cancer": { elem2: null, chance:0.25 },
+        "oil": { elem2: null, chance:0.005 },
+        "dioxin": { elem1: "dirty_water", chance:0.1 },
+        "quicklime": { elem1: "slaked_lime", elem2: "slaked_lime", temp2:100, temp1:100, chance:0.05 },
+        "rock": { elem2: "wet_sand", chance: 0.00035 },
+        "limestone": { elem2: "wet_sand", chance: 0.00035 },
+        "tuff": { elem2: "wet_sand", color2:"#7a6b5c", chance: 0.00035 },
+        "mudstone": { elem2: "mud", chance: 0.00035 },
+        "fly": { elem2:"dead_bug", chance:0.1, oneway:true },
+        "firefly": { elem2:"dead_bug", chance:0.1, oneway:true },
+        "bee": { elem2:"dead_bug", chance:0.05, oneway:true },
+        "stink_bug": { elem2:"dead_bug", chance:0.1, oneway:true },
+        "cured_meat": {elem2:"meat" },
+    },
+    state: "liquid",
+    density: 997,
+    conduct: 0.02,
+    stain: -1,
+    extinguish: true
+}
+
+elements.soap.behavior = behaviors.STURDYPOWDER
+elements.soap.state = "solid"
+elements.soap.category = "powders"
+
+elements.soap.reactions.water = {elem2: "soapy_water", elem1: null, chance: 10}
+/*
+if ([pixel.element].stain < 0 && [pixel.element] != "soap" && [pixel.element] != "soapy_water") {
+    [pixel.element].stain = [pixel.element].stain/10
+}
+*/
+elements.onion = {
+    color: "#731066",
+    behavior: behaviors.STURDYPOWDER,
+    category:"food",
+    tempHigh: 100,
+    stateHigh: "steam",
+    burn:65,
+    burnTime:60,
+    burnInto: "steam",
+    state: "solid",
+    density: 1050,
+    cutInto: "cut_onion",
+    breakInto:"onion_powder",
+    cutIntoEmit: "stench",
+}
+elements.cut_onion = {
+    color: "#dcc5ed",
+    behavior: behaviors.STURDYPOWDER,
+    category:"food",
+    tempHigh: 100,
+    stateHigh: "steam",
+    burn:65,
+    burnTime:60,
+    burnInto: "steam",
+    state: "solid",
+    density: 1050,
+    breakInto:"onion_powder",
+    hidden: true,
+    reactions:{ "nut_oil": {elem1:"fried_onion", tempMin: 70, chance:10}}
+}
+elements.fried_onion = {
+    color: "#cf9344",
+    behavior: behaviors.POWDER,
+    category:"food",
+    tempHigh: 500,
+    stateHigh: "ash",
+    burn:65,
+    burnTime:60,
+    burnInto: "ash",
+    state: "solid",
+    density: 1050,
+    hidden: true,
+}
+
+elements.onion_seed = {
+    color: "#1a0e02",
+    tick: function(pixel) {
+        if (isEmpty(pixel.x,pixel.y+1)) {
+            movePixel(pixel,pixel.x,pixel.y+1);
+        }
+        else {
+            if (Math.random() < 0.2 && pixel.age > 50 && pixel.temp < 100) {
+                if (!outOfBounds(pixel.x,pixel.y+1)) {
+                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
+                    if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
+                        changePixel(dirtPixel,"root");
+                    }
+                }
+                if (isEmpty(pixel.x,pixel.y-2) && isEmpty(pixel.x,pixel.y-1) && isEmpty(pixel.x+1,pixel.y-1) && isEmpty(pixel.x-1,pixel.y-1) && isEmpty(pixel.x+1,pixel.y) && isEmpty(pixel.x-1,pixel.y)) {
+                    createPixel("onion",pixel.x,pixel.y-1);
+                    createPixel("onion",pixel.x+1,pixel.y-1);
+                    createPixel("onion",pixel.x-1,pixel.y-1);
+                    createPixel("onion",pixel.x,pixel.y-2);
+                    createPixel("onion",pixel.x+1,pixel.y);
+                    createPixel("onion",pixel.x-1,pixel.y);
+                    if (isEmpty(pixel.x+1,pixel.y-3) && isEmpty(pixel.x-1,pixel.y-3)) {
+                        createPixel("plant",pixel.x-1,pixel.y-3);
+                        createPixel("plant",pixel.x+1,pixel.y-3);
+                        changePixel(pixel,"onion");
+                    }
+                }
+            }
+            pixel.age++;
+        }
+        doDefaults(pixel);
+    },
+    properties: {
+        "age":0
+    },
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -2,
+    stateLow: "frozen_plant",
+    burn: 65,
+    burnTime: 15,
+    category: "life",
+    state: "solid",
+    density: 1500,
+    cooldown: defaultCooldown,
+    seed: true,
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "XX|M1|XX",
+    ],
+}
+elements.onion_powder = {
+    color: "#e6d8b8",
+    reactions: {
+        "stench": { elem2:null, chance:0.25 },
+        "steam": { elem2:"fragrance", chance:0.1 },
+        "flea": { elem2:null, chance:0.01 },
+        "termite": { elem2:null, chance:0.01 },
+        "fly": { elem2:null, chance:0.01 },
+        "ant": { elem2:null, chance:0.01 },
+        "stink_bug": { elem2:null, chance:0.01 },
+    },
+    behavior: behaviors.POWDER,
+    tempHigh: 300,
+    stateHigh: ["fire","smoke","smoke","smoke","ash"],
+    burn:10,
+    burnTime:300,
+    burnInto: ["fire","smoke","smoke","smoke","smoke","smoke","smoke","fragrance"],
+    category:"food",
+    state: "solid",
+    density: 1400,
+    isFood: true,
+}
+elements.unhusked_rice = {
+    color: ["#c99a42","#b08638","#deb15d"],
+    behavior: [
+        "XX|XX|XX",
+        "ST:rice_panicle|XX|ST:rice_panicle",
+        "ST:rice_plant AND M2|ST:rice_panicle AND M1|ST:rice_plant AND M2",
+    ],
+    reactions: {
+        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 }
+    },
+    category:"food",
+    tempHigh: 65,
+    stateHigh: "cooked_rice",
+    burn:65,
+    burnTime:60,
+    burnInto: "dead_plant",
+    breakInto: "flour",
+    breakIntoColor: "#f7f1df",
+    state: "solid",
+    isFood: true,
+    density: 1050,
+    cutInto: "rice",
+}
+elements.rice = {
+    color: "#eeeed2",
+    behavior: behaviors.POWDER,
+    category:"food",
+    tempHigh: 65,
+    stateHigh: "cooked_rice",
+    burn:65,
+    burnTime:60,
+    burnInto: "dead_plant",
+    breakInto: "rice_flour",
+    state: "solid",
+    isFood: true,
+    density: 1050,
+    reactions:{
+        "water":{elem1:"porridge",elem2:"porridge",chance:3,tempMin:70},
+        "nut_oil":{elem1:"fried_rice",elem2:null,chance:3,tempMin:60}
+    }
+}
+elements.cooked_rice = {
+    color: "#eddfb9",
+    behavior: behaviors.POWDER,
+    category:"food",
+    tempHigh: 200,
+    stateHigh: "burnt_rice",
+    burn:65,
+    breakInto: "rice_flour",
+    state: "solid",
+    isFood: true,
+    density: 1050,reactions:{
+        "water":{elem1:"porridge",elem2:"porridge",chance:3,tempMin:70},
+        "nut_oil":{elem1:"fried_rice",elem2:null,chance:3,tempMin:60}
+    },
+    hidden:true
+}
+elements.porridge = {
+    color: "#f2ecdc",
+    behavior: behaviors.LIQUID,
+    category:"food",
+    tempHigh: 200,
+    stateHigh: "steam",
+    viscosity: 999,
+    burn:65,
+    state: "solid",
+    isFood: true,
+    density: 1050,
+}
+elements.fried_rice = {
+    color: "#e8dda0",
+    behavior: behaviors.POWDER,
+    category:"food",
+    tempHigh: 200,
+    stateHigh: "burnt_rice",
+    burn:65,
+    burnTime:60,
+    state: "solid",
+    isFood: true,
+    density: 1050,reactions:{
+        "salt":{color1:"#ede5b9",elem2:null,chance:3},
+        "monosodium_glutamate":{color1:"#ede5b9",elem2:null,chance:3}
+    },
+    hidden:true
+}
+elements.burnt_rice = {
+    color: "#262217",
+    behavior: behaviors.POWDER,
+    category:"food",
+    tempHigh: 500,
+    stateHigh: "ash",
+    burn:65,
+    burnTime:60,
+    state: "solid",
+    isFood: true,
+    density: 1050,
+    hidden: true
+}
+elements.rice_plant = {
+    color: "#37a825",
+    behavior: behaviors.WALL,
+    category:"life",
+    tempHigh: 100,
+    stateHigh: "steam",
+    burn:65,
+    burnTime:60,
+    burnInto: "dead_plant",
+    state: "solid",
+    density: 1050,
+    hidden: true,
+    
+}
+elements.rice_seed = {
+    color: "#997a23",
+    tick: function(pixel) {
+        if (isEmpty(pixel.x,pixel.y+1)) {
+            movePixel(pixel,pixel.x,pixel.y+1);
+        }
+        else {
+            if (Math.random() < 0.2 && pixel.age > 50 && pixel.temp < 100) {
+                if (!outOfBounds(pixel.x,pixel.y+1)) {
+                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
+                    if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
+                        changePixel(dirtPixel,"root");
+                    }
+                }
+                if(!isEmpty(pixel.x-1,pixel.y) && !isEmpty(pixel.x+1,pixel.y)){
+                    if(pixelMap[pixel.x+1][pixel.y].element === "water" && pixelMap[pixel.x-1][pixel.y].element === "water"){
+                        if (isEmpty(pixel.x,pixel.y-1)){
+                            movePixel(pixel,pixel.x,pixel.y-1)
+                            createPixel("rice_plant",pixel.x,pixel.y+1)
+                            pixel.notinwater=true
+                        }
+                        else if (!isEmpty(pixel.x,pixel.y-1)){
+                            if (pixelMap[pixel.x][pixel.y-1].element === "water") {
+                                deletePixel(pixel.x,pixel.y-1)
+                                movePixel(pixel,pixel.x,pixel.y-1)
+                                createPixel("rice_plant",pixel.x,pixel.y+1)
+                            }
+                        }
+                    }
+                }
+                if (Math.random() < 0.2 && pixel.age > 50 && pixel.temp < 100 && pixel.notinwater == true) {
+                    if (isEmpty(pixel.x+1,pixel.y-1) && isEmpty(pixel.x-1,pixel.y-1)&&isEmpty(pixel.x+2,pixel.y-2) && isEmpty(pixel.x-2,pixel.y-2)) {
+                        createPixel("rice_plant",pixel.x+1,pixel.y-1);
+                        createPixel("rice_plant",pixel.x-1,pixel.y-1);
+                        createPixel("rice_plant",pixel.x+2,pixel.y-2);
+                        createPixel("rice_plant",pixel.x-2,pixel.y-2);
+                        pixel.leafgrown = true
+                    }
+                }
+                if (Math.random() < 0.2 && pixel.age > 50 && pixel.temp < 100 && pixel.leafgrown == true) {
+                    if (isEmpty(pixel.x,pixel.y-1) && isEmpty(pixel.x,pixel.y-2)&&isEmpty(pixel.x,pixel.y-3) && isEmpty(pixel.x,pixel.y-4)) {
+                        movePixel(pixel,pixel.x,pixel.y-4)
+                        createPixel("rice_plant",pixel.x,pixel.y+1);
+                        createPixel("rice_plant",pixel.x,pixel.y+2);
+                        createPixel("rice_plant",pixel.x,pixel.y+3);
+                        createPixel("rice_plant",pixel.x,pixel.y+4);
+                        changePixel(pixel,"rice_panicle")
+                        pixel.grower = true
+                    }
+                }
+            }
+            else if (pixel.age > 1000) {
+                changePixel(pixel,"unhusked_rice");
+            }
+            pixel.age++;
+        }
+        doDefaults(pixel);
+    },
+    properties: {
+        "age":0,
+        "leafgrown":false,
+        "notinwater":false,
+    },
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -2,
+    stateLow: "frozen_plant",
+    burn: 65,
+    burnTime: 15,
+    category: "life",
+    state: "solid",
+    density: 2500,
+    cooldown: defaultCooldown,
+    seed: true,
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "XX|M1|XX",
+    ],
+};
+elements.rice_panicle = {
+    color: "#37a825",
+    behavior: behaviors.WALL,
+    category:"life",
+    tempHigh: 100,
+    stateHigh: "steam",
+    burn:65,
+    burnTime:60,
+    burnInto: "dead_plant",
+    tick: function(pixel) {
+        if (Math.random() < 0.1) {
+            if (isEmpty(pixel.x+1,pixel.y) && isEmpty(pixel.x-1,pixel.y)) {
+                createPixel("unhusked_rice",pixel.x+1,pixel.y);
+                createPixel("unhusked_rice",pixel.x-1,pixel.y);
+            }
+            if (isEmpty(pixel.x+1,pixel.y+1) && isEmpty(pixel.x-1,pixel.y+1)) {
+                createPixel("unhusked_rice",pixel.x+1,pixel.y+1);
+                createPixel("unhusked_rice",pixel.x-1,pixel.y+1);
+            }
+            if (isEmpty(pixel.x,pixel.y-1)) {
+                createPixel("unhusked_rice",pixel.x,pixel.y-1);
+            }
+        }
+    },
+    state: "solid",
+    density: 1050,
+    hidden: true,
+    
+}
+
+elements.rice_flour = {
+    color: "#f7f1df",
+    behavior: behaviors.POWDER,
+    reactions: {
+        "water": { elem1: "mochi_dough", elem2: null },
+        "salt_water": { elem1: "mochi_dough", elem2: null },
+        "sugar_water": { elem1: "mochi_dough", elem2: null },
+        "seltzer": { elem1: "mochi_dough", elem2: null },
+        "yolk": { elem1: "batter", elem2: null },
+        "yogurt": { elem1: "batter", elem2: null },
+        "milk": { elem1:"dough", elem2:null },
+        "cream": { elem1:"dough", elem2:null },
+    },
+    category: "food",
+    tempHigh: 400,
+    stateHigh: "fire",
+    burn:40,
+    burnTime:25,
+    state: "solid",
+    density: 600,
+    isFood: true
+},
+elements.mochi_dough = {
+    color: "#ebddae",
+    behavior: behaviors.STURDYPOWDER,
+    onMix: function(dough,ingredient) {
+        if (elements[ingredient.element].isFood && elements[ingredient.element].id !== elements.dough.id && elements[ingredient.element].id !== elements.flour.id && elements[ingredient.element].id !== elements.batter.id && elements[ingredient.element].id !== elements.bread.id) {
+            var rgb1 = dough.color.match(/\d+/g);
+            var rgb2 = ingredient.color.match(/\d+/g);
+            // average the colors
+            var rgb = [
+                Math.round((parseInt(rgb1[0])*10+parseInt(rgb2[0]))/11),
+                Math.round((parseInt(rgb1[1])*10+parseInt(rgb2[1]))/11),
+                Math.round((parseInt(rgb1[2])*10+parseInt(rgb2[2]))/11)
+            ];
+            // convert rgb to hex
+            var hex = RGBToHex(rgb);
+            dough.color = pixelColorPick(dough, hex);
+        }
+    },
+    category: "food",
+    tempHigh: 94,
+    stateHigh: "mochi",
+    //stateHighColorMultiplier: 0.9,
+    burn:40,
+    burnTime:25,
+    burnInto:"ash",
+    state: "solid",
+    density: 526.9,
+    isFood: true,
+    hidden:true
+},
+elements.mochi = {
+    color: "#f2e2a7",
+    behavior: behaviors.STURDYPOWDER,
+    tempHigh: 400,
+    stateHigh: ["ash","steam"],
+    category: "food",
+    burn: 30,
+    burnTime: 200,
+    burnInto: ["smoke","smoke","smoke","ash"],
+    state: "solid",
+    density: 233.96,
+    isFood: true
+},
+elements.monosodium_glutamate = {
+    color: "#eeeeee",
+    behavior: behaviors.POWDER,
+    reactions: {
+        "ice": { elem1:null, elem2:"salt_water", chance:0.1 },
+        "rime": { elem1:null, elem2:"salt_water", chance:0.075 },
+        "snow": { elem1:null, elem2:"salt_water", chance:0.25 },
+        "packed_snow": { elem1:null, elem2:"salt_water", chance:0.05 },
+        "packed_ice": { elem1:null, elem2:"salt_water", chance:0.01 },
+        "water": { elem2: "salt_water", elem1: null, temp2:-20 },
+    },
+    category: "food",
+    tempHigh: 801,
+    state: "solid",
+    density: 2160,
+    alias: "msg",
+}
+elements.seaweed_spore = {
+    color: "#291f13",
+    tick: function(pixel) {
+        pixel.age++;
+        if (isEmpty(pixel.x,pixel.y+1)) {
+            movePixel(pixel,pixel.x,pixel.y+1);
+        }
+        else if (!isEmpty(pixel.x,pixel.y+1)){
+            if (!outOfBounds(pixel.x,pixel.y+1)) {
+                if (pixelMap[pixel.x][pixel.y+1].element === "water"){
+                    swapPixels(pixel,pixelMap[pixel.x][pixel.y+1])
+                }
+            }
+        }
+        if (!outOfBounds(pixel.x,pixel.y+1)) {
+            if (!isEmpty(pixel.x,pixel.y+1)){
+                var dirtPixel = pixelMap[pixel.x][pixel.y+1];
+                if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
+                    changePixel(dirtPixel,"root");
+                    pixel.rooted = true
+                }
+            }
+        }
+        if (Math.random() < 0.1 && pixel.age > 50 && pixel.temp < 100 && pixel.rooted == true) {
+            if(!isEmpty(pixel.x,pixel.y-1)){
+                if(pixelMap[pixel.x][pixel.y-1].element === "water"){
+                    //swapPixels(pixel,pixelMap[pixel.x][pixel.y-1])
+                    //changePixel("seaweed_stem",pixel.x,pixel.y+1)
+                    deletePixel(pixel.x,pixel.y-1)
+                    movePixel(pixel,pixel.x,pixel.y-1)
+                    createPixel("seaweed_stem",pixel.x,pixel.y+1)
+                    if (!isEmpty(pixel.x-1,pixel.y+1) && !isEmpty(pixel.x-1,pixel.y) && !isEmpty(pixel.x+1,pixel.y) && Math.random() < 0.5){
+                        if (pixelMap[pixel.x-1][pixel.y].element === "water" && pixelMap[pixel.x+1][pixel.y].element === "water" && pixelMap[pixel.x-1][pixel.y+1].element != "seaweed") {
+                            deletePixel(pixel.x-1,pixel.y)
+                            createPixel("seaweed",pixel.x-1,pixel.y)
+                            deletePixel(pixel.x+1,pixel.y)
+                            createPixel("seaweed",pixel.x+1,pixel.y)
+                        }
+                    }
+                }
+            }
+            if (pixel.age > 500 || isEmpty(pixel.x,pixel.y-1)) {
+                changePixel(pixel,"seaweed");
+            }
+        }
+        doDefaults(pixel);
+    },
+    properties: {
+        "age":0,
+        "rooted":false,
+    },
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -2,
+    stateLow: "frozen_plant",
+    burn: 65,
+    burnTime: 15,
+    category: "life",
+    state: "solid",
+    density: 2500,
+    cooldown: defaultCooldown,
+    seed: true,
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "XX|M1|XX",
+    ],
+};
+elements.seaweed_stem = {
+    color: "#35702c",
+    behavior: behaviors.STURDYPOWDER,
+    reactions: {
+        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "mercury": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "stench": { elem2:null, chance:0.25 },
+        "alcohol": { elem1:"agar", elem2:null, chance:0.035 },
+    },
+    category:"life",
+    tempHigh: 100,
+    stateHigh: "dried_seaweed",
+    tempLow: -1.66,
+    stateLow: "frozen_plant",
+    burn:15,
+    burnTime:60,
+    burnInto: "dead_plant",
+    state: "solid",
+    density: 1050,
+}
+elements.seaweed = {
+    color: ["#2e8021","#3e9031","#4ea041"],
+    behavior: [
+        "XX|XX|XX",
+        "ST:seaweed_stem|XX|ST:seaweed_stem",
+        "XX|M1|XX",
+    ],
+    reactions: {
+        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "mercury": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "stench": { elem2:null, chance:0.25 },
+        "alcohol": { elem1:"agar", elem2:null, chance:0.035 },
+    },
+    category:"food",
+    tempHigh: 100,
+    stateHigh: "dried_seaweed",
+    tempLow: -1.66,
+    stateLow: "frozen_plant",
+    burn:15,
+    burnTime:60,
+    burnInto: "dead_plant",
+    state: "solid",
+    density: 997,
+}
+elements.dried_seaweed = {
+    color: ["#142e13","#041e03"],
+    behavior: behaviors.STURDYPOWDER,
+    category:"food",
+    tempHigh: 400,
+    stateHigh: "fire",
+    burn:15,
+    burnTime:60,
+    burnInto: "dead_plant",
+    state: "solid",
+    density: 1050,
+}
+elements.grape_vine = {
+    color: "#427a33",
+    behavior: [
+        "ST:wood|ST:wood|ST:wood",
+        "ST:wood AND CR:grape%0.02|XX|ST:wood AND CR:grape%0.02",
+        "ST:wood|ST:wood AND M1|ST:wood",
+    ],
+    reactions: {
+        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "mercury": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "stench": { elem2:null, chance:0.25 },
+        "carbon_dioxide": { elem2:"oxygen", chance:0.25 },
+    },
+    category:"life",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -1.66,
+    stateLow: "frozen_plant",
+    burn:15,
+    burnTime:60,
+    burnInto: "dead_plant",
+    state: "solid",
+    density: 1050,
+    breakInto: "dead_plant"
+}
+elements.grape_seed = {
+    color: "#7a6033",
+    tick: function(pixel) {
+            if (Math.random() < 0.1 && pixel.age > 50 && pixel.temp < 100) {
+                if (!outOfBounds(pixel.x,pixel.y+1)) {
+                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
+                    if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
+                        changePixel(dirtPixel,"root");
+                    }
+                }
+                if (isEmpty(pixel.x,pixel.y-1)) {
+                    if (!isEmpty(pixel.x+1,pixel.y-1) || !isEmpty(pixel.x-1,pixel.y-1)) {
+                        movePixel(pixel,pixel.x,pixel.y-1);
+                        createPixel("grape_vine",pixel.x,pixel.y+1);
+                    }
+                }
+                if (!isEmpty(pixel.x+2,pixel.y-1) && isEmpty(pixel.x+1,pixel.y-1)) {
+                    movePixel(pixel,pixel.x+1,pixel.y-1);
+                    createPixel("grape_vine",pixel.x-1,pixel.y+1);
+                }
+                if (!isEmpty(pixel.x-2,pixel.y-1) && isEmpty(pixel.x-1,pixel.y-1)) {
+                    movePixel(pixel,pixel.x-1,pixel.y-1);
+                    createPixel("grape_vine",pixel.x+1,pixel.y+1);
+                }
+                if (!isEmpty(pixel.x,pixel.y-1) && !isEmpty(pixel.x+1,pixel.y) && isEmpty(pixel.x+1,pixel.y-1)) {
+                    movePixel(pixel,pixel.x+1,pixel.y-1);
+                    createPixel("grape_vine",pixel.x-1,pixel.y+1);
+                }
+                if (!isEmpty(pixel.x,pixel.y-1) && !isEmpty(pixel.x-1,pixel.y) && isEmpty(pixel.x-1,pixel.y-1)) {
+                    movePixel(pixel,pixel.x-1,pixel.y-1);
+                    createPixel("grape_vine",pixel.x+1,pixel.y+1);
+                }
+            }
+            else if (pixel.age > 400 && Math.random() < 0.1) {
+                changePixel(pixel,"grape_vine");
+            }
+            pixel.age++;
+        doDefaults(pixel);
+    },
+    properties: {
+        "age":0,
+    },
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -2,
+    stateLow: "frozen_plant",
+    burn: 65,
+    burnTime: 15,
+    category: "life",
+    state: "solid",
+    density: 1500,
+    cooldown: defaultCooldown,
+    seed: true,
+    behavior: [
+        "ST:wood,grape_vine|ST:wood,grape_vine|ST:wood,grape_vine",
+        "ST:wood,grape_vine|XX|ST:wood,grape_vine",
+        "ST:wood,grape_vine|M1|ST:wood,grape_vine",
+    ],
+};
+elements.grape.behavior = [
+    "ST:grape_vine%95|ST:grape_vine%95|ST:grape_vine%95",
+    "ST:grape_vine%95|XX|ST:grape_vine%95",
+    "M2 AND ST:grape_vine%95|M1|M2 AND ST:grape_vine%95",
+]
+elements.tomato_vine = {
+    color: "#2e7d1d",
+    behavior: [
+        "ST:wood|ST:wood|ST:wood",
+        "ST:wood AND CR:tomato%0.02|XX|ST:wood AND CR:tomato%0.02",
+        "ST:wood|ST:wood AND M1|ST:wood",
+    ],
+    reactions: {
+        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "mercury": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "stench": { elem2:null, chance:0.25 },
+        "carbon_dioxide": { elem2:"oxygen", chance:0.25 },
+    },
+    category:"life",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -1.66,
+    stateLow: "frozen_plant",
+    burn:15,
+    burnTime:60,
+    burnInto: "dead_plant",
+    state: "solid",
+    density: 1050,
+    breakInto: "dead_plant"
+}
+elements.tomato_seed = {
+    color: "#945d26",
+    tick: function(pixel) {
+            if (Math.random() < 0.1 && pixel.age > 50 && pixel.temp < 100) {
+                if (!outOfBounds(pixel.x,pixel.y+1)) {
+                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
+                    if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
+                        changePixel(dirtPixel,"root");
+                    }
+                }
+                if (isEmpty(pixel.x,pixel.y-1)) {
+                    if (!isEmpty(pixel.x+1,pixel.y-1) || !isEmpty(pixel.x-1,pixel.y-1)) {
+                        movePixel(pixel,pixel.x,pixel.y-1);
+                        createPixel("tomato_vine",pixel.x,pixel.y+1);
+                    }
+                }
+                if (!isEmpty(pixel.x+2,pixel.y-1) && isEmpty(pixel.x+1,pixel.y-1)) {
+                    movePixel(pixel,pixel.x+1,pixel.y-1);
+                    createPixel("tomato_vine",pixel.x-1,pixel.y+1);
+                }
+                if (!isEmpty(pixel.x-2,pixel.y-1) && isEmpty(pixel.x-1,pixel.y-1)) {
+                    movePixel(pixel,pixel.x-1,pixel.y-1);
+                    createPixel("tomato_vine",pixel.x+1,pixel.y+1);
+                }
+                if (!isEmpty(pixel.x,pixel.y-1) && !isEmpty(pixel.x+1,pixel.y) && isEmpty(pixel.x+1,pixel.y-1)) {
+                    movePixel(pixel,pixel.x+1,pixel.y-1);
+                    createPixel("tomato_vine",pixel.x-1,pixel.y+1);
+                }
+                if (!isEmpty(pixel.x,pixel.y-1) && !isEmpty(pixel.x-1,pixel.y) && isEmpty(pixel.x-1,pixel.y-1)) {
+                    movePixel(pixel,pixel.x-1,pixel.y-1);
+                    createPixel("tomato_vine",pixel.x+1,pixel.y+1);
+                }
+            }
+            else if (pixel.age > 400 && Math.random() < 0.1) {
+                changePixel(pixel,"tomato_vine");
+            }
+            pixel.age++;
+        doDefaults(pixel);
+    },
+    properties: {
+        "age":0,
+    },
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -2,
+    stateLow: "frozen_plant",
+    burn: 65,
+    burnTime: 15,
+    category: "life",
+    state: "solid",
+    density: 1500,
+    cooldown: defaultCooldown,
+    seed: true,
+    behavior: [
+        "ST:wood,tomato_vine|ST:wood,tomato_vine|ST:wood,tomato_vine",
+        "ST:wood,tomato_vine|XX|ST:wood,tomato_vine",
+        "ST:wood,tomato_vine|M1|ST:wood,tomato_vine",
+    ],
+};
+elements.tomato.behavior = [
+    "ST:tomato_vine%95|ST:tomato_vine%95|ST:tomato_vine%95",
+    "ST:tomato_vine%95|XX|ST:tomato_vine%95",
+    "ST:tomato_vine%95|M1|ST:tomato_vine%95",
+]
+elements.peppermint_stem = {
+    color: "#2c9c3a",
+    behavior: behaviors.WALL,
+    reactions: {
+        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "mercury": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "stench": { elem2:null, chance:0.25 },
+        "carbon_dioxide": { elem2:"oxygen", chance:0.25 },
+    },
+    category:"life",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -1.66,
+    stateLow: "frozen_plant",
+    burn:15,
+    burnTime:60,
+    cutInto:"peppermint",
+    burnInto: "dead_plant",
+    state: "solid",
+    density: 1050,
+    breakInto: "dead_plant",
+    tick: function(pixel) {
+        if (isEmpty(pixel.x,pixel.y+1) && pixel.grower == false && pixel.leafgrower == false) {
+            movePixel(pixel,pixel.x,pixel.y+1);
+        }
+        if (pixel.grower == true) {
+            // set limit to 3 + rounded math.random inside the function
+            // check if left side has stem if no set direction to right
+            if (!isEmpty(pixel.x-1,pixel.y) && pixel.direction == "undefined") {
+                if (pixelMap[pixel.x-1][pixel.y].element == "peppermint_stem") {
+                    pixel.direction = "right";
+                    pixel.limit = 3+Math.round(Math.random());
+                }
+            }
+            // same thing to set direction the left
+            else if (!isEmpty(pixel.x+1,pixel.y) && pixel.direction == "undefined") {
+                if (pixelMap[pixel.x+1][pixel.y].element == "peppermint_stem") {
+                    pixel.direction = "left";
+                    pixel.limit = 3+Math.round(Math.random());
+                }
+            }
+        }
+        if (pixel.grower == true && pixel.limit > 0) {
+            // left
+            if (pixel.direction == "left") {
+                if (isEmpty(pixel.x-1,pixel.y-1) && Math.random() < 0.1) {
+                    createPixel("peppermint_leaves",pixel.x-1,pixel.y-1);
+                    if (isEmpty(pixel.x-2,pixel.y-2) && Math.random() < 0.2) {
+                        createPixel("peppermint_leaves",pixel.x-2,pixel.y-2);
+                        if (isEmpty(pixel.x-3,pixel.y-3) && Math.random() < 0.4) {
+                            createPixel("peppermint_leaves",pixel.x-3,pixel.y-3);
+                            if (isEmpty(pixel.x-4,pixel.y-4) && Math.random() < 0.75 && pixel.limit == 4) {
+                                createPixel("peppermint_leaves",pixel.x-4,pixel.y-4);
+                            }
+                        }
+                    }
+                }
+            }
+            // right
+            else if (pixel.direction == "right") {
+                if (isEmpty(pixel.x+1,pixel.y-1) && Math.random() < 0.1) {
+                    createPixel("peppermint_leaves",pixel.x+1,pixel.y-1);
+                    if (isEmpty(pixel.x+2,pixel.y-2) && Math.random() < 0.2) {
+                        createPixel("peppermint_leaves",pixel.x+2,pixel.y-2);
+                        if (isEmpty(pixel.x+3,pixel.y-3) && Math.random() < 0.4) {
+                            createPixel("peppermint_leaves",pixel.x+3,pixel.y-3);
+                            if (isEmpty(pixel.x+4,pixel.y-4) && Math.random() < 0.75 && pixel.limit == 4) {
+                                createPixel("peppermint_leaves",pixel.x+4,pixel.y-4);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        pixel.age++;
+        doDefaults(pixel);
+    },
+    properties: {
+        "grower":false,
+        "age":0,
+        "direction":"undefined",
+        "limit":0
+    }
+}
+elements.peppermint_leaves = {
+    color: "#36a845",
+    reactions: {
+        "water": { elem2:"peppermint_tea", tempMin:80 },
+        "salt_water": { elem2:"peppermint_tea", tempMin:80 },
+        "sugar_water": { elem2:"peppermint_tea", tempMin:80 },
+        "seltzer": { elem2:"peppermint_tea", tempMin:80 },
+        "stench": { elem2:null, chance:0.25 },
+        "steam": { elem2:"fragrance", chance:0.1 },
+        "flea": { elem2:null, chance:0.01 },
+        "termite": { elem2:null, chance:0.01 },
+        "fly": { elem2:null, chance:0.01 },
+        "ant": { elem2:null, chance:0.01 },
+        "stink_bug": { elem2:null, chance:0.01 },
+        "yeast": {elem1:"tea", chance:0.01},
+        "ice_cream": {elem1:null,color2:"#94e067",chance:0.3}
+    },
+    behavior: behaviors.WALL,
+    tempHigh: 300,
+    stateHigh: ["fire","smoke","smoke","smoke","ash"],
+    tempLow: -2,
+    stateLow: "frozen_plant",
+    burn:10,
+    burnTime:300,
+    burnInto: ["fire","smoke","smoke","smoke","smoke","smoke","smoke","fragrance"],
+    category:"food",
+    state: "solid",
+    density: 1400,
+    isFood: true,
+    cutInto: "peppermint"
+},
+elements.peppermint_seed = {
+    color: "#6b5f4c",
+    tick: function(pixel) {
+        if (isEmpty(pixel.x,pixel.y+1)) {
+            movePixel(pixel,pixel.x,pixel.y+1);
+        }
+        else {
+            if (Math.random() < 0.1 && pixel.age > 50 && pixel.temp < 100) {
+                if (!outOfBounds(pixel.x,pixel.y+1)) {
+                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
+                    if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
+                        changePixel(dirtPixel,"root");
+                    }
+                }
+                if (isEmpty(pixel.x,pixel.y-1)) {
+                    movePixel(pixel,pixel.x,pixel.y-1);
+                    createPixel("peppermint_stem",pixel.x,pixel.y+1);
+                    pixel.height++;
+                }
+                if (pixel.height < 12 && pixel.height > 2 && pixel.height == 3) {
+                    if (isEmpty(pixel.x+1,pixel.y)) {
+                        createPixel("peppermint_stem",pixel.x+1,pixel.y);
+                        pixelMap[pixel.x+1][pixel.y].grower = true;
+                    }
+                }
+                if (pixel.height < 12 && pixel.height > 2 && pixel.height == 9) {
+                    if (isEmpty(pixel.x+1,pixel.y)) {
+                        createPixel("peppermint_stem",pixel.x+1,pixel.y);
+                        pixelMap[pixel.x+1][pixel.y].grower = true;
+                    }
+                }
+                if (pixel.height < 12 && pixel.height > 2 && pixel.height == 6) {
+                    if (isEmpty(pixel.x-1,pixel.y)) {
+                        createPixel("peppermint_stem",pixel.x-1,pixel.y);
+                        pixelMap[pixel.x-1][pixel.y].grower = true;
+                    }
+                }
+                if (pixel.height > 11) {
+                    if (isEmpty(pixel.x-1,pixel.y) && isEmpty(pixel.x+1,pixel.y)) {
+                        createPixel("peppermint_stem",pixel.x-1,pixel.y);
+                        pixelMap[pixel.x-1][pixel.y].grower = true;
+                        createPixel("peppermint_stem",pixel.x+1,pixel.y);
+                        pixelMap[pixel.x+1][pixel.y].grower = true;
+                        deletePixel(pixel.x,pixel.y);
+                    }
+                }
+            }
+            pixel.age++;
+        }
+        doDefaults(pixel);
+    },
+    properties: {
+        "age":0,
+        "height":0
+    },
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -2,
+    stateLow: "frozen_plant",
+    burn: 65,
+    burnTime: 15,
+    category: "life",
+    state: "solid",
+    density: 1500,
+    cooldown: defaultCooldown,
+    seed: true,
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "XX|M1|XX",
+    ],
+};
+elements.peppermint_tea = {
+    color: "#687d1d",
+    behavior: behaviors.LIQUID,
+    reactions: {
+        "stench": { elem2:null },
+        "flea": { elem2:null, chance:0.01 },
+        "oxygen": { elem2:"fragrance", chance:0.01 },
+        "infection": { elem2:"blood", chance:0.005 },
+        "plague": { elem2:null, chance:0.004 },
+        "sugar": { elem2:null, color1:"#8f5a21", chance:0.005},
+        "honey": { elem2:null, color1:"#8f5a21", chance:0.005},
+        "milk": { elem2:null, color1:"#9c6c38", chance:0.005},
+        "cream": { elem2:null, color1:"#9c6c38", chance:0.005},
+        "ice_cream": { elem2:null, color1:"#9c6c38", chance:0.005},
+        "honey": {color1:"#8d8f27",elem2:null,chance:0.3},
+        "lemon_juice": {color1:"#8d8f27",elem2:null,chance:0.3},
+        "lemonade": {color1:"#8d8f27",elem2:null,chance:0.3},
+        "sugar": {color1:"#83963e",elem2:null,chance:0.3}
+    },
+    tempHigh: 125,
+    stateHigh: ["steam","fragrance",null],
+    temp: 50,
+    tempLow: 0,
+    category:"liquids",
+    state: "liquid",
+    density: 1001,
+    stain: -0.1,
+    hidden: true,
+    isFood: true
+}
+elements.peppermint = {
+    color: ["#64a135","#559425"],
+    reactions: {
+        "water": { elem2:"peppermint_tea", tempMin:80 },
+        "salt_water": { elem2:"peppermint_tea", tempMin:80 },
+        "sugar_water": { elem2:"peppermint_tea", tempMin:80 },
+        "seltzer": { elem2:"peppermint_tea", tempMin:80 },
+        "stench": { elem2:null, chance:0.25 },
+        "steam": { elem2:"fragrance", chance:0.1 },
+        "flea": { elem2:null, chance:0.01 },
+        "termite": { elem2:null, chance:0.01 },
+        "fly": { elem2:null, chance:0.01 },
+        "ant": { elem2:null, chance:0.01 },
+        "stink_bug": { elem2:null, chance:0.01 },
+        "ice_cream": {elem1:null,color2:"#94e067",chance:0.3},
+    },
+    behavior: behaviors.POWDER,
+    tempHigh: 300,
+    stateHigh: ["fire","smoke","smoke","smoke","ash"],
+    burn:10,
+    burnTime:300,
+    burnInto: ["fire","smoke","smoke","smoke","smoke","smoke","smoke","fragrance"],
+    category:"food",
+    state: "solid",
+    density: 1400,
+    isFood: true,
+}
+//elements.candy.reactions.peppermint = {color1:["eeeddc","f5f267"],elem2:null,chance:3}
+elements.vanilla_stem = {
+    color: "#5d9c48",
+    behavior: behaviors.WALL,
+    reactions: {
+        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "mercury": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "stench": { elem2:null, chance:0.25 },
+        "carbon_dioxide": { elem2:"oxygen", chance:0.25 },
+    },
+    category:"life",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -1.66,
+    stateLow: "frozen_plant",
+    burn:15,
+    burnTime:60,
+    burnInto: "dead_plant",
+    state: "solid",
+    density: 1050,
+    hidden: true,
+    breakInto: "dead_plant",
+    tick: function(pixel) {
+        if (isEmpty(pixel.x,pixel.y+1) && pixel.grower == false && pixel.leafgrower == false) {
+            movePixel(pixel,pixel.x,pixel.y+1);
+        }
+        if (pixel.grower == true) {
+            // check if left side has stem if no set direction to right
+            if (!isEmpty(pixel.x-1,pixel.y) && pixel.direction == "undefined") {
+                if (pixelMap[pixel.x-1][pixel.y].element == "vanilla_stem") {
+                    pixel.direction = "right";
+                }
+            }
+            // same thing to set direction the left
+            else if (!isEmpty(pixel.x+1,pixel.y) && pixel.direction == "undefined") {
+                if (pixelMap[pixel.x+1][pixel.y].element == "vanilla_stem") {
+                    pixel.direction = "left";
+                }
+            }
+        }
+        if (pixel.grower == true) {
+            // left
+            if (pixel.direction == "left") {
+                if (isEmpty(pixel.x-1,pixel.y-1) && Math.random() < 0.1) {
+                    createPixel("vanilla_leaves",pixel.x-1,pixel.y-1);
+                    if (isEmpty(pixel.x-2,pixel.y-2) && Math.random() < 0.2) {
+                        createPixel("vanilla_leaves",pixel.x-2,pixel.y-2);
+                        if (isEmpty(pixel.x-3,pixel.y-3) && Math.random() < 0.4) {
+                            createPixel("vanilla_leaves",pixel.x-3,pixel.y-3);
+                        }
+                    }
+                }
+            }
+            // right
+            else if (pixel.direction == "right") {
+                if (isEmpty(pixel.x+1,pixel.y-1) && Math.random() < 0.1) {
+                    createPixel("vanilla_leaves",pixel.x+1,pixel.y-1);
+                    if (isEmpty(pixel.x+2,pixel.y-2) && Math.random() < 0.2) {
+                        createPixel("vanilla_leaves",pixel.x+2,pixel.y-2);
+                        if (isEmpty(pixel.x+3,pixel.y-3) && Math.random() < 0.4) {
+                            createPixel("vanilla_leaves",pixel.x+3,pixel.y-3);
+                        }
+                    }
+                }
+            }
+        }
+        pixel.age++;
+        doDefaults(pixel);
+    },
+    properties: {
+        "grower":false,
+        "age":0,
+        "direction":"undefined",
+    }
+}
+elements.vanilla_leaves = {
+    color: "#5d9c48",
+    reactions: {
+        "stench": { elem2:null, chance:0.25 },
+        "steam": { elem2:"fragrance", chance:0.1 },
+        "flea": { elem2:null, chance:0.01 },
+        "termite": { elem2:null, chance:0.01 },
+        "fly": { elem2:null, chance:0.01 },
+        "ant": { elem2:null, chance:0.01 },
+        "stink_bug": { elem2:null, chance:0.01 },
+        "yeast": {elem1:"tea", chance:0.01},
+    },
+    tick: function(pixel) {
+        if (isEmpty(pixel.x-1,pixel.y-1) && !isEmpty(pixel.x+1,pixel.y+1) && Math.random() < 0.03) {
+            createPixel("vanilla_flower",pixel.x-1,pixel.y-1);
+        }
+        if (isEmpty(pixel.x+1,pixel.y-1) && !isEmpty(pixel.x-1,pixel.y+1) && Math.random() < 0.03) {
+            createPixel("vanilla_flower",pixel.x+1,pixel.y-1);
+        }
+        pixel.age++;
+        doDefaults(pixel);
+    },
+    behavior: behaviors.WALL,
+    tempHigh: 300,
+    stateHigh: ["fire","smoke","smoke","smoke","ash"],
+    tempLow: -2,
+    stateLow: "frozen_plant",
+    burn:10,
+    burnTime:300,
+    burnInto: ["fire","smoke","smoke","smoke","smoke","smoke","smoke","fragrance"],
+    category:"life",
+    state: "solid",
+    density: 1400,
+    isFood: true,
+    hidden:true
+},
+elements.vanilla_seed = {
+    color: "#806d3b",
+    tick: function(pixel) {
+        if (isEmpty(pixel.x,pixel.y+1)) {
+            movePixel(pixel,pixel.x,pixel.y+1);
+        }
+        else {
+            if (Math.random() < 0.1 && pixel.age > 50 && pixel.temp < 100) {
+                if (!outOfBounds(pixel.x,pixel.y+1)) {
+                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
+                    if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
+                        changePixel(dirtPixel,"root");
+                    }
+                }
+                if (isEmpty(pixel.x,pixel.y-1)) {
+                    movePixel(pixel,pixel.x,pixel.y-1);
+                    createPixel("vanilla_stem",pixel.x,pixel.y+1);
+                    pixel.height++;
+                }
+                if (pixel.height < 12 && pixel.height > 2 && pixel.height == 3) {
+                    if (isEmpty(pixel.x+1,pixel.y)) {
+                        createPixel("vanilla_stem",pixel.x+1,pixel.y);
+                        pixelMap[pixel.x+1][pixel.y].grower = true;
+                    }
+                }
+                if (pixel.height < 12 && pixel.height > 2 && pixel.height == 9) {
+                    if (isEmpty(pixel.x+1,pixel.y)) {
+                        createPixel("vanilla_stem",pixel.x+1,pixel.y);
+                        pixelMap[pixel.x+1][pixel.y].grower = true;
+                    }
+                }
+                if (pixel.height < 12 && pixel.height > 2 && pixel.height == 6) {
+                    if (isEmpty(pixel.x-1,pixel.y)) {
+                        createPixel("vanilla_stem",pixel.x-1,pixel.y);
+                        pixelMap[pixel.x-1][pixel.y].grower = true;
+                    }
+                }
+                if (pixel.height > 11) {
+                    if (isEmpty(pixel.x-1,pixel.y) && isEmpty(pixel.x+1,pixel.y)) {
+                        createPixel("vanilla_stem",pixel.x-1,pixel.y);
+                        pixelMap[pixel.x-1][pixel.y].grower = true;
+                        createPixel("vanilla_stem",pixel.x+1,pixel.y);
+                        pixelMap[pixel.x+1][pixel.y].grower = true;
+                        deletePixel(pixel.x,pixel.y);
+                    }
+                }
+            }
+            pixel.age++;
+        }
+        doDefaults(pixel);
+    },
+    properties: {
+        "age":0,
+        "height":0
+    },
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -2,
+    stateLow: "frozen_plant",
+    burn: 65,
+    burnTime: 15,
+    category: "life",
+    state: "solid",
+    density: 1500,
+    cooldown: defaultCooldown,
+    seed: true,
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "XX|M1|XX",
+    ],
+};
+elements.vanilla_flower = {
+    color: "#f7f4e1",
+    behavior: behaviors.WALL,
+    reactions: {
+        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "mercury": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "stench": { elem2:null, chance:0.25 },
+    },
+    tick: function(pixel) {
+        if (pixel.age > 175 && pixel.pod == true) {
+            changePixel(pixel,"vanilla_pod")
+        }
+        if (isEmpty(pixel.x,pixel.y+1) && Math.random() < 0.03 && pixel.pod == false && pixel.harvested == false) {
+            createPixel("vanilla_flower",pixel.x,pixel.y+1);
+            pixelMap[pixel.x][pixel.y+1].pod = true;
+            if (Math.random < 0.5) {
+                pixel.harvested = true;
+            }
+        }
+        pixel.age++
+    },
+    category:"life",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    burn:15,
+    burnTime:60,
+    burnInto: "dead_plant",
+    state: "solid",
+    density: 1050,
+    properties: {
+        "age":0,
+        "pod":false,
+        "harvested":false,
+    }
+}
+
+elements.vanilla_pod = {
+    color: "#36281d",
+    behavior: [
+        "XX|ST:vanilla_flower|XX",
+        "XX|XX|XX",
+        "XX|M1|XX",
+    ],
+    reactions: {
+        "alcohol": { elem1:"vanilla_essence", elem2:null, chance:0.035 },
+    },
+    category:"food",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    burn:15,
+    burnTime:60,
+    burnInto: "dead_plant",
+    state: "solid",
+    density: 1050,
+}
+elements.ice_cream.reactions = {}
+elements.ice_cream.reactions.vanilla_essence = {color1:"#fff7b6", elem2:null, chance:0.35}
+elements.vanilla_essence = {
+    color: "#9c7211",
+    behavior: behaviors.LIQUID,
+    tempHigh: 170,
+    stateHigh: ["sugar","smoke","smoke"],
+    tempLow: 0,
+    category:"liquids",
+    state: "liquid",
+    density: 1400,
+}
+
+elements.candy.reactions = {}
+elements.candy.reactions.peppermint = {elem1:"peppermint_candy", elem2:null, chance:0.35}
+elements.peppermint_candy = {
+    color: ["#fa5e3e","#fff5f5"],
+    behavior: behaviors.WALL,
+    tempHigh: 204.44,
+    stateHigh: "smoke",
+    category: "food",
+    state: "solid",
+    density: 850,
+    isFood: true
+}
+elements.tapioca = {
+    color: "#ded58e",
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "M2 AND CH:dirt,mud,sand,wet_sand,clay_soil,clay,mycelium,grass,color_sand>tapioca,fiber%0.5|M1 AND CH:dirt,mud,sand,wet_sand,clay_soil,clay,mycelium,grass,color_sand>tapioca,fiber,fiber%0.5|M2 AND CH:dirt,mud,sand,wet_sand,clay_soil,clay,mycelium,grass,color_sand>tapioca,fiber%0.5",
+    ],
+    tempHigh: 275,
+    stateHigh: "dirt",
+    tempLow: -50,
+    stateLow: "fiber",
+    burn: 20,
+    burnTime: 60,
+    burnInto: "dirt",
+    breakInto: "corn_starch",
+    category: "food",
+    state: "solid",
+    density: 1250,
+    conduct: 0.1,
+    hidden: true,
+    darkText: true,
+    desc:'a wise icyking once said: \'state:"burn 100"\'',
+    alias:["element that i made before icyking","burn 100 element"]
+}
+
+elements.tapioca_seed = {
+    color: "#a78d38",
+    tick: function(pixel) {
+        if (isEmpty(pixel.x,pixel.y+1)) {
+            movePixel(pixel,pixel.x,pixel.y+1);
+        }
+        else {
+            if (Math.random() < 0.02 && pixel.age > 50 && pixel.temp < 100) {
+                if (!outOfBounds(pixel.x,pixel.y+1)) {
+                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
+                    if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
+                        changePixel(dirtPixel,"tapioca");
+                    }
+                }
+                if (isEmpty(pixel.x,pixel.y-1)) {
+                    movePixel(pixel,pixel.x,pixel.y-1);
+                    createPixel("tapioca_stem",pixel.x,pixel.y+1);
+                }
+                if (isEmpty(pixel.x+1,pixel.y) && Math.random() < 0.2) {
+                    createPixel("tapioca_leaves",pixel.x+1,pixel.y);
+                }
+                if (isEmpty(pixel.x-1,pixel.y) && Math.random() < 0.2) {
+                    createPixel("tapioca_leaves",pixel.x-1,pixel.y);
+                }
+            }
+            else if (pixel.age > 250) {
+                changePixel(pixel,"tapioca_leaves");
+            }
+            pixel.age++;
+        }
+        doDefaults(pixel);
+    },
+    properties: {
+        "age":0
+    },
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -2,
+    stateLow: "frozen_plant",
+    burn: 65,
+    burnTime: 15,
+    category: "life",
+    state: "solid",
+    density: 1500,
+    cooldown: defaultCooldown,
+    seed: true,
+    behavior: [
+        "XX|XX|XX",
+        "XX|FX%10|XX",
+        "XX|M1|XX",
+    ],
+};
+
+elements.tapioca_stem = {
+    color: "#358f35",
+    behavior: behaviors.STURDYPOWDER,
+    reactions: {
+        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "mercury": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "stench": { elem2:null, chance:0.25 },
+    },
+    category:"life",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -1.66,
+    stateLow: "frozen_plant",
+    burn:15,
+    burnTime:60,
+    burnInto: "dead_plant",
+    breakInto: "dead_plant",
+    state: "solid",
+    density: 1050
+}
+elements.tapioca_leaves = {
+    color: "#3e823e",
+    behavior: behaviors.WALL,
+    reactions: {
+        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "mercury": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "stench": { elem2:null, chance:0.25 },
+        "carbon_dioxide": { elem2:"oxygen", chance:0.25 },
+    },
+    category:"life",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -1.66,
+    stateLow: "frozen_plant",
+    burn:15,
+    burnTime:60,
+    burnInto: "dead_plant",
+    breakInto: "dead_plant",
+    state: "solid",
+    density: 1050
+}
+elements.sprinkle_bomb = {
+    color: ["#eb726a", "#ebca6a", "#88eb6a", "#6aaceb", "#eb6ade"],
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "XX|M1 AND EX:10>sprinkles|XX",
+    ],
+    category: "food",
+    state: "solid",
+    density: 1300,
+    excludeRandom: true,
+    cooldown: defaultCooldown
+}
+
+elements.chilli_stem = {
+    color: "#5d9c48",
+    behavior: behaviors.WALL,
+    reactions: {
+        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "mercury": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "stench": { elem2:null, chance:0.25 },
+        "carbon_dioxide": { elem2:"oxygen", chance:0.25 },
+    },
+    category:"life",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -1.66,
+    stateLow: "frozen_plant",
+    burn:15,
+    burnTime:60,
+    burnInto: "dead_plant",
+    state: "solid",
+    density: 1050,
+    hidden: true,
+    breakInto: "herb",
+    breakIntoColor:"#245c1b",
+    tick: function(pixel) {
+        if (isEmpty(pixel.x,pixel.y+1) && pixel.grower == false && pixel.leafgrower == false) {
+            movePixel(pixel,pixel.x,pixel.y+1);
+        }
+        if (pixel.grower == true) {
+            // check if left side has stem if no set direction to right
+            if (!isEmpty(pixel.x-1,pixel.y) && pixel.direction == "undefined") {
+                if (pixelMap[pixel.x-1][pixel.y].element == "chilli_stem") {
+                    pixel.direction = "right";
+                }
+            }
+            // same thing to set direction the left
+            else if (!isEmpty(pixel.x+1,pixel.y) && pixel.direction == "undefined") {
+                if (pixelMap[pixel.x+1][pixel.y].element == "chilli_stem") {
+                    pixel.direction = "left";
+                }
+            }
+        }
+        if (pixel.grower == true) {
+            // left
+            if (pixel.direction == "left") {
+                if (isEmpty(pixel.x-1,pixel.y-1) && Math.random() < 0.1) {
+                    createPixel("chilli_leaves",pixel.x-1,pixel.y-1);
+                    if (isEmpty(pixel.x-2,pixel.y-2) && Math.random() < 0.2) {
+                        createPixel("chilli_leaves",pixel.x-2,pixel.y-2);
+                        if (isEmpty(pixel.x-3,pixel.y-3) && Math.random() < 0.4) {
+                            createPixel("chilli_leaves",pixel.x-3,pixel.y-3);
+                        }
+                    }
+                }
+            }
+            // right
+            else if (pixel.direction == "right") {
+                if (isEmpty(pixel.x+1,pixel.y-1) && Math.random() < 0.1) {
+                    createPixel("chilli_leaves",pixel.x+1,pixel.y-1);
+                    if (isEmpty(pixel.x+2,pixel.y-2) && Math.random() < 0.2) {
+                        createPixel("chilli_leaves",pixel.x+2,pixel.y-2);
+                        if (isEmpty(pixel.x+3,pixel.y-3) && Math.random() < 0.4) {
+                            createPixel("chilli_leaves",pixel.x+3,pixel.y-3);
+                        }
+                    }
+                }
+            }
+        }
+        pixel.age++;
+        doDefaults(pixel);
+    },
+    properties: {
+        "grower":false,
+        "age":0,
+        "direction":"undefined",
+    }
+}
+elements.chilli_leaves = {
+    color: "#5d9c48",
+    reactions: {
+        "water": { elem2:"chilli_tea", tempMin:80 },
+        "salt_water": { elem2:"chilli_tea", tempMin:80 },
+        "sugar_water": { elem2:"chilli_tea", tempMin:80 },
+        "seltzer": { elem2:"chilli_tea", tempMin:80 },
+        "stench": { elem2:null, chance:0.25 },
+        "steam": { elem2:"fragrance", chance:0.1 },
+        "flea": { elem2:null, chance:0.01 },
+        "termite": { elem2:null, chance:0.01 },
+        "fly": { elem2:null, chance:0.01 },
+        "ant": { elem2:null, chance:0.01 },
+        "stink_bug": { elem2:null, chance:0.01 },
+        "yeast": {elem1:"tea", chance:0.01},
+    },
+    tick: function(pixel) {
+        if (isEmpty(pixel.x-1,pixel.y-1) && !isEmpty(pixel.x+1,pixel.y+1) && Math.random() < 0.03) {
+            createPixel("chilli",pixel.x-1,pixel.y-1);
+        }
+        if (isEmpty(pixel.x+1,pixel.y-1) && !isEmpty(pixel.x-1,pixel.y+1) && Math.random() < 0.03) {
+            createPixel("chilli",pixel.x+1,pixel.y-1);
+        }
+        pixel.age++;
+        doDefaults(pixel);
+    },
+    behavior: behaviors.WALL,
+    tempHigh: 300,
+    stateHigh: ["fire","smoke","smoke","smoke","ash"],
+    tempLow: -2,
+    stateLow: "frozen_plant",
+    burn:10,
+    burnTime:300,
+    burnInto: ["fire","smoke","smoke","smoke","smoke","smoke","smoke","fragrance"],
+    category:"life",
+    state: "solid",
+    density: 1400,
+    isFood: true,
+    hidden:true,
+    breakInto: "herb",
+    breakIntoColor:"#245c1b",
+},
+elements.chilli_seed = {
+    color: "#806d3b",
+    tick: function(pixel) {
+        if (isEmpty(pixel.x,pixel.y+1)) {
+            movePixel(pixel,pixel.x,pixel.y+1);
+        }
+        else {
+            if (Math.random() < 0.1 && pixel.age > 50 && pixel.temp < 100) {
+                if (!outOfBounds(pixel.x,pixel.y+1)) {
+                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
+                    if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
+                        changePixel(dirtPixel,"root");
+                    }
+                }
+                if (isEmpty(pixel.x,pixel.y-1)) {
+                    movePixel(pixel,pixel.x,pixel.y-1);
+                    createPixel("chilli_stem",pixel.x,pixel.y+1);
+                    pixel.height++;
+                }
+                if (pixel.height < 12 && pixel.height > 2 && pixel.height == 3) {
+                    if (isEmpty(pixel.x+1,pixel.y)) {
+                        createPixel("chilli_stem",pixel.x+1,pixel.y);
+                        pixelMap[pixel.x+1][pixel.y].grower = true;
+                    }
+                }
+                if (pixel.height < 12 && pixel.height > 2 && pixel.height == 9) {
+                    if (isEmpty(pixel.x+1,pixel.y)) {
+                        createPixel("chilli_stem",pixel.x+1,pixel.y);
+                        pixelMap[pixel.x+1][pixel.y].grower = true;
+                    }
+                }
+                if (pixel.height < 12 && pixel.height > 2 && pixel.height == 6) {
+                    if (isEmpty(pixel.x-1,pixel.y)) {
+                        createPixel("chilli_stem",pixel.x-1,pixel.y);
+                        pixelMap[pixel.x-1][pixel.y].grower = true;
+                    }
+                }
+                if (pixel.height > 11) {
+                    if (isEmpty(pixel.x-1,pixel.y) && isEmpty(pixel.x+1,pixel.y)) {
+                        createPixel("chilli_stem",pixel.x-1,pixel.y);
+                        pixelMap[pixel.x-1][pixel.y].grower = true;
+                        createPixel("chilli_stem",pixel.x+1,pixel.y);
+                        pixelMap[pixel.x+1][pixel.y].grower = true;
+                        deletePixel(pixel.x,pixel.y);
+                    }
+                }
+            }
+            pixel.age++;
+        }
+        doDefaults(pixel);
+    },
+    properties: {
+        "age":0,
+        "height":0
+    },
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -2,
+    stateLow: "frozen_plant",
+    burn: 65,
+    burnTime: 15,
+    category: "life",
+    state: "solid",
+    density: 1500,
+    cooldown: defaultCooldown,
+    seed: true,
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "XX|M1|XX",
+    ],
+};
+elements.chilli = {
+    color: "#ba3030",
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "ST:chilli_leaves|M1|ST:chilli_leaves",
+    ],
+    category:"food",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    burn:15,
+    burnTime:60,
+    burnInto: "dead_plant",
+    state: "solid",
+    density: 1050,
+    breakInto: "chilli_powder",
+    reactions: {
+	"sauce": {elem1:null, elem2:"hot_sauce", chance:2}
+    },
+}
+elements.chilli_powder = {
+    color: "#a32121",
+    reactions: {
+        "stench": { elem2:null, chance:0.25 },
+        "steam": { elem2:"fragrance", chance:0.1 },
+        "flea": { elem2:null, chance:0.01 },
+        "termite": { elem2:null, chance:0.01 },
+        "fly": { elem2:null, chance:0.01 },
+        "ant": { elem2:null, chance:0.01 },
+        "stink_bug": { elem2:null, chance:0.01 },
+	"sauce": {elem1:null, elem2:"hot_sauce", chance:2}
+    },
+    behavior: behaviors.POWDER,
+    tempHigh: 300,
+    stateHigh: ["fire","smoke","smoke","smoke","ash"],
+    burn:10,
+    burnTime:300,
+    burnInto: ["fire","smoke","smoke","smoke","smoke","smoke","smoke","fragrance"],
+    category:"food",
+    state: "solid",
+    density: 1400,
+    isFood: true,
+}
+elements.hot_sauce = {
+    color: "#a31414",
+    behavior: behaviors.LIQUID,
+    reactions: {
+        "stench": { elem2:null },
+    },
+    viscosity: 2600,
+    tempHigh: 260,
+    stateHigh: ["steam","salt","fragrance"],
+    tempLow: -2,
+    category:"food",
+    state: "liquid",
+    density: 1031.33,
+    stain: 0.01,
+    isFood: true
+}
+elements.head.reactions.hot_sauce = {elem2:["smoke","fire",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null], chance:3}
+
+
+elements.durian_wood = {
+    color: "#5e4b23",
+    behavior: behaviors.WALL,
+    tempHigh: 400,
+    stateHigh: ["ember","charcoal","fire","fire","fire"],
+    category: "solids",
+    burn: 5,
+    burnTime: 300,
+    burnInto: ["ember","charcoal","fire"],
+    state: "solid",
+    hardness: 0.15,
+    breakInto: "sawdust",
+    breakIntoColor: ["#dba66e","#cc8a64"],
+    hidden: true
+}
+elements.durian_branch = {
+    color: "#5e4b23",
+    behavior: [
+        "CR:durian_leaves,durian_branch%2|CR:durian_leaves,durian_branch%2|CR:durian_leaves,durian_branch%2",
+        "XX|XX|XX",
+        "XX|XX|XX",
+    ],
+    tempHigh: 100,
+    stateHigh: "durian_wood",
+    tempLow: -30,
+    stateLow: "durian_wood",
+    category: "life",
+    burn: 40,
+    burnTime: 50,
+    burnInto: ["sap","ember","charcoal"],
+    hidden: true,
+    state: "solid",
+    density: 1500,
+    hardness: 0.15,
+    breakInto: ["sap","sawdust"],
+}
+elements.durian_leaves = {
+    color: ["#326b25","#2e751e"],
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "XX|CR:durian%0.1|XX",
+    ],
+    reactions: {
+        "vinegar": { elem1:"dead_plant", elem2:null, chance:0.035 },
+        "baking_soda": { elem1:"dead_plant", elem2:null, chance:0.01 },
+        "bleach": { elem1:"dead_plant", elem2:null, chance:0.05 },
+        "alcohol": { elem1:"dead_plant", elem2:null, chance:0.035 }
+    },
+    category:"life",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -1.66,
+    stateLow: "frozen_plant",
+    burn:65,
+    burnTime:60,
+    burnInto: "dead_plant",
+    breakInto: "dead_plant",
+    state: "solid",
+    density: 1050,
+    hidden: true
+}
+elements.durian = {
+    color: ["#578524","#5b8f1f"],
+    behavior: behaviors.POWDER,
+    category:"food",
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    burn:65,
+    burnTime:60,
+    cutInto: "cut_durian",
+    state: "solid",
+    density: 1050,
+}
+
+elements.cut_durian = {
+    color: ["#e3e04b","#d1cf36"],
+    behavior: behaviors.STURDYPOWDER,
+    category:"food",
+    tempHigh: 100,
+    stateHigh: ["sugar","steam"],
+    burn:65,
+    burnTime:60,
+    state: "solid",
+    density: 1050,
+    hidden: true,
+    freezeDryInto: "freeze_dried_fruits",
+    freezeDryIntoColor: "#a19f3b",
+}
+
+elements.durian_seed = {
+    color: "#a17d3b",
+    tick: function(pixel) {
+        if (isEmpty(pixel.x,pixel.y+1)) {
+            movePixel(pixel,pixel.x,pixel.y+1);
+        }
+        else {
+            if (Math.random() < 0.02 && pixel.age > 50 && pixel.temp < 100) {
+                if (!outOfBounds(pixel.x,pixel.y+1)) {
+                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
+                    if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
+                        changePixel(dirtPixel,"root");
+                    }
+                }
+                if (isEmpty(pixel.x,pixel.y-1)) {
+                    movePixel(pixel,pixel.x,pixel.y-1);
+                    createPixel(Math.random() > 0.5 ? "durian_wood" : "durian_branch",pixel.x,pixel.y+1);
+                }
+            }
+            else if (pixel.age > 1000) {
+                changePixel(pixel,"durian_wood");
+            }
+            pixel.age++;
+        }
+        doDefaults(pixel);
+    },
+    properties: {
+        "age":0
+    },
+    tempHigh: 100,
+    stateHigh: "dead_plant",
+    tempLow: -2,
+    stateLow: "frozen_plant",
+    burn: 65,
+    burnTime: 15,
+    category: "life",
+    state: "solid",
+    density: 1500,
+    cooldown: defaultCooldown,
+    seed: true,
+    behavior: [
+        "XX|XX|XX",
+        "XX|FX%10|XX",
+        "XX|M1|XX",
+    ],
+};
+elements.egg_white = {
+    color: "#edece8",
+    behavior: behaviors.LIQUID,
+    tempHigh: 100,
+    stateHigh: "hard_egg_white",
+    tempLow: 0,
+    stateLow: "hard_egg_white",
+    category: "food",
+    state: "liquid",
+    density: 1027.5,
+    viscosity: 270,
+    isFood: true,
+    whiskInto: "whisked_egg_white",
+}
+elements.hard_egg_white = {
+    color: "#dedddc",
+    behavior: behaviors.STURDYPOWDER,
+    tempHigh: 400,
+    stateHigh: "smoke",
+    category: "food",
+    hidden: true,
+    isFood: true,
+    state: "solid",
+    density: 1031
+}
+elements.milk.whiskInto = "cream";
+elements.cream.whiskInto = "whipped_cream";
+elements.egg.breakInto = ["egg_white","egg_white","yolk"]
+
+elements.whisked_egg_white ={
+    color: "#fefefe",
+    behavior: behaviors.LIQUID,
+    reactions: {
+        "corn_syrup": { elem1: "marshmallow", elem2: null, chance: 2 },
+        "sugar": { elem1: "marshmallow", elem2: null, chance: 2 },
+    },
+    viscosity: 1.5,
+    tempHigh: 1000,
+    stateHigh: ["smoke","steam"],
+    category: "food",
+    hidden: true,
+    isFood: true,
+    state: "liquid",
+    density: 959.97,
+}
+elements.marshmallow = {
+    color: "#fafafa",
+    behavior: [
+        "XX|XX|XX",
+        "ST:wood|XX|ST:wood",
+        "XX|M1|XX",
+    ],
+    viscosity: 1.5,
+    tempHigh: 70,
+    stateHigh: "cooked_marshmallow",
+    category: "food",
+    isFood: true,
+    state: "solid",
+    density: 959.97,
+}
+elements.cooked_marshmallow = {
+    color: "#f0dbb6",
+    behavior: [
+        "XX|XX|XX",
+        "ST:wood|XX|ST:wood",
+        "XX|M1|XX",
+    ],
+    viscosity: 1.5,
+    tempHigh: 150,
+    stateHigh: "burnt_marshmallow",
+    category: "food",
+    isFood: true,
+    state: "solid",
+    density: 959.97,
+    hidden:true
+}
+elements.burnt_marshmallow = {
+    color: "#29231a",
+    behavior: [
+        "XX|XX|XX",
+        "ST:wood|XX|ST:wood",
+        "XX|M1|XX",
+    ],
+    viscosity: 1.5,
+    tempHigh: 1000,
+    stateHigh: ["steam","caramel"],
+    category: "food",
+    isFood: true,
+    state: "solid",
+    density: 959.97,
+    hidden:true
+}
+eLists.FOODCOLORINGIGNORE = ["glass", "porcelain", "wall","iron","steel","copper","silver","aluminum","tungsten","gold","plastic"];
+elements.food_coloring = {
+    color: ["#ff0000", "#ff8800", "#ffff00", "#00ff00", "#00ffff", "#0000ff", "#ff00ff"],
+    behavior: behaviors.LIQUID,
+    customColor: true,
+    stain: 0.5,
+    tempHigh: 100,
+    stateHigh: "steam",
+    category: "food",
+    state: "liquid",
+    density: 998,
+    stainSelf: true,
+    ignore: ["glass", "porcelain", "wall","iron","steel","copper","silver","aluminum","tungsten","gold","plastic"],
+    desc: "coloring for food. color may fade when diluting with water.",
+    onMix: function (pixel) {
+        for (var i = 0; i < squareCoords.length; i++) {
+            var coord = squareCoords[i];
+            var x = pixel.x + coord[0];
+            var y = pixel.y + coord[1];
+            if (!isEmpty(x, y, true)) {
+                if (pixelMap[x][y].element === "water" || pixelMap[x][y].element === "salt_water" || pixelMap[x][y].element === "sugar_water" || pixelMap[x][y].element === "seltzer" || pixelMap[x][y].element === "dirty_water" || pixelMap[x][y].element === "pool_water") {
+                    changePixel(pixelMap[x][y], "food_coloring");
+                    let newrgb = interpolateRgb(getRGB(pixel.color), getRGB(pixelMap[x][y].color), 0.5);
+                    pixel.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+                    pixelMap[x][y].color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+                }
+		    	else {
+                    if (!outOfBounds(pixelMap[x][y])) {
+                        if (!eLists.FOODCOLORINGIGNORE.includes(pixelMap[x][y].element) && pixelMap[x][y].element !== "glass" && pixelMap[x][y].element !== "porcelain" && pixelMap[x][y].element !== "wall" && pixelMap[x][y].element !== "plastic") {
+                            let newrgb2 = interpolateRgb(getRGB(pixel.color), getRGB(pixelMap[x][y].color), 0.9);
+                            pixelMap[x][y].color = `rgb(${parseInt(newrgb2.r)},${parseInt(newrgb2.g)},${parseInt(newrgb2.b)})`;
+                            if (Math.random() < 0.002) {
+                                deletePixel(pixel.x,pixel.y)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    onSelect: function () {
+        logMessage("Tip: You can spread food coloring using water.");
+    },
+}
+
+elements.cooked_meat.behavior = behaviors.SUPPORT;
+
+elements.cake_batter = {
+    color: "#d4bc85",
+    behavior: behaviors.LIQUID,
+    onMix: function(batter,ingredient) {
+        if (elements[ingredient.element].isFood && elements[ingredient.element].id !== elements.batter.id && elements[ingredient.element].id !== elements.flour.id && elements[ingredient.element].id !== elements.yolk.id && elements[ingredient.element].id !== elements.dough.id && elements[ingredient.element].id !== elements.baked_batter.id && elements[ingredient.element].id !== elements.cake.id && elements[ingredient.element].id !== elements.cake_batter.id) {
+            var rgb1 = batter.color.match(/\d+/g);
+            var rgb2 = ingredient.color.match(/\d+/g);
+            // average the colors
+            var rgb = [
+                Math.round((parseInt(rgb1[0])*10+parseInt(rgb2[0]))/11),
+                Math.round((parseInt(rgb1[1])*10+parseInt(rgb2[1]))/11),
+                Math.round((parseInt(rgb1[2])*10+parseInt(rgb2[2]))/11)
+            ];
+            // convert rgb to hex
+            var hex = RGBToHex(rgb);
+            batter.color = pixelColorPick(batter, hex);
+            if ((elements[ingredient.element].density > elements.batter.density || shiftDown) && Math.random() < 0.05) {
+                // 50% change to delete ingredient
+                if (Math.random() < 0.5) { deletePixel(ingredient.x, ingredient.y); }
+                else {
+                    ingredient.color = pixelColorPick(ingredient, hex);
+                }
+            }
+        }
+    },
+    reactions: {
+        "cream": { elem2:"cake_batter", tempMin:40, chance:0.01 },
+    },
+    category: "food",
+    tempHigh: 94,
+    stateHigh: "cake",
+    stateHighColorMultiplier: 0.9,
+    burn:40,
+    burnTime:25,
+    burnInto:"ash",
+    state: "liquid",
+    viscosity: 10000,
+    density: 1001,
+    hidden: true,
+    isFood: true
+}
+elements.batter.whiskInto = "cake_batter";
+elements.milk.stateHigh = ["steam","steam","condensed_milk"];
+elements.condensed_milk = {
+    color: "#f2f0df",
+    behavior: behaviors.LIQUID,
+    reactions: {
+        "cell": { elem1:"yogurt", chance:0.1 },
+        "dirt": { elem1: null, elem2: "mud" },
+        "sand": { elem1: null, elem2: "wet_sand" },
+        "clay_soil": { elem1: null, elem2: "clay" },
+        "caramel": { color1:"#C8B39A", elem2:null, chance:0.05 },
+        "sugar": { color1:"#fffbf0", elem2:null, chance:0.5},
+    },
+    tempLow: 0,
+    stateLow: "ice_cream",
+    stateLowColorMultiplier: [0.97,0.93,0.87],
+    tempHigh: 500,
+    stateHigh: ["smoke","smoke","smoke","quicklime"],
+    viscosity: 1500,
+    category: "food",
+    state: "liquid",
+    density: 1036.86,
+    isFood: true,
+    alias: "evaporated_milk"
+}
+elements.wasabi = {
+    color: ["#82b55b","#6cad50","#7dcc5c"],
+    behavior: behaviors.STURDYPOWDER2,
+    reactions: {
+        "dirt": { elem1: null, elem2: "mud" },
+        "sand": { elem1: null, elem2: "wet_sand" },
+        "clay_soil": { elem1: null, elem2: "clay" },
+        "melted_chocolate": { color1:"#664934", elem2:null },
+        "chocolate": { color1:"#664934", elem2:"melted_chocolate", chance:0.05 },
+        "juice": { elem1:"fruit_milk", elem2:null, chance:0.05 },
+        "soda": { elem1:"pilk", elem2:null, chance:0.1 },
+        "yolk": { elem1:"#eggnog", elem2:null, chance:0.1 },
+        "caramel": { color1:"#C8B39A", chance:0.05 },
+        "sugar": { elem2:null, chance:0.005},
+    },
+    viscosity: 1.5,
+    tempHigh: 1000,
+    stateHigh: ["smoke","smoke","smoke","steam","steam"],
+    category: "food",
+    isFood: true,
+    state: "solid",
+    density: 959.97,
+}
+// extremely confused part
+elements.beans.name = "baked_beans";
+elements.real_beans = {
+    name: "beans",
+    color: ["#e8dfc5","#d1c7ab"],
+    behavior: behaviors.POWDER,
+    category: "food",
+    tempHigh: 350,
+    stateHigh: ["fire","fire","ash"],
+    burn:3,
+    burnTime:500,
+    burnInto: ["fire","smoke","smoke","steam","ash"],
+    reactions: {
+        "sauce": { elem1: "beans", elem2: "beans" },
+        "yeast": { elem1: "fermented_beans", elem2: null, chance:0.5 }
+    },
+    state: "solid",
+    density: 721,
+    isFood: true,
+    alias: "soy_beans"
+}
+elements.fermented_beans = {
+    color:"#ada386",
+    behavior: behaviors.POWDER,
+    category: "food",
+    tempHigh: 350,
+    stateHigh: ["fire","fire","ash"],
+    burn:3,
+    burnTime:500,
+    burnInto: ["fire","smoke","smoke","steam","ash"],
+    state: "solid",
+    density: 721,
+    breakInto: "soy_sauce",
+    isFood: true,
+    alias: "natto"
+}
+elements.soy_sauce = {
+    color: "#480601",
+    behavior: behaviors.LIQUID,
+    tempLow: -5,
+    tempHigh: 105,
+    stateHigh: ["steam","steam","salt"],
+    state: "liquid",
+    category:"food",
+    density: 1200,
+};
+// end of confused part
+
+elements.ice.breakInto = "slush";
+
+elements.cracker_dough = {
+    color: "#dbd19a",
+    behavior: behaviors.STURDYPOWDER,
+    category: "food",
+    tempHigh: 94,
+    stateHigh: "cracker",
+    stateHighColorMultiplier: 1.1,
+    burn:40,
+    burnTime:25,
+    burnInto:"ash",
+    state: "solid",
+    density: 526.9,
+    isFood: true,
+    hidden: true
+}
+
+elements.cracker = {
+    color: "#e0ddb8",
+    behavior: behaviors.STURDYPOWDER,
+    tempHigh: 605,
+    stateHigh: "ash",
+    category: "food",
+    burn: 30,
+    burnTime: 200,
+    burnInto: ["smoke","smoke","smoke","ash"],
+    breakInto: "crumb",
+    state: "solid",
+    density: 233.96,
+    isFood: true
+}
+
+elements.agar = {
+    color: "#e0e0e0",
+    behavior: behaviors.POWDER,
+    reactions: {
+        "ice": { elem1:null, elem2:"salt_water", chance:0.1 },
+        "rime": { elem1:null, elem2:"salt_water", chance:0.075 },
+        "snow": { elem1:null, elem2:"salt_water", chance:0.25 },
+        "packed_snow": { elem1:null, elem2:"salt_water", chance:0.05 },
+        "packed_ice": { elem1:null, elem2:"salt_water", chance:0.01 }
+    },
+    category: "food",
+    tempHigh: 801,
+    state: "solid",
+    density: 2160,
+    alias: "gelatin"
+}
+// thanks to adora
+elements.agar.reactions.juice = { elem1:"jelly", elem2:null, chance:0.05, func: function(pixel1, pixel2){
+    let newrgb = interpolateRgb(getRGB('rgb(250,250,250)'), getRGB(pixel2.color), 0.7);
+    pixel1.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+}}
+elements.agar.reactions.water = {elem1:"jelly",elem2:null,color1:"#e0e0e0",chance:0.05}
+
+elements.duck = {
+    color: ["#826c4e", "#2b5927", "#d6d6d6", "#7d4a2c"],
+    behavior: [
+        "M2%1 AND SW:water,salt_water,sugar_water,dirty_water,seltzer,pool_water,primordial_soup%1|M2%2 AND SW:water,salt_water,sugar_water,dirty_water,seltzer,pool_water,primordial_soup%50|M2%1 AND SW:water,salt_water,sugar_water,dirty_water,seltzer,pool_water,primordial_soup%1",
+        "M2%10|XX|M2%10",
+        "XX|M1%33|XX",
+    ],
+    category:"life",
+	state: "solid",
+    reactions: {
+        "meat": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "chicken_nugget": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "grass": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
+        "worm": { elem2: "crushed_worm", chance:0.3},
+        "cooked_meat": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "fish": { elem2:null, chance:0.25, func:behaviors.FEEDPIXEL },
+        "rat": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
+        "snail": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
+        "frog": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
+        "slug": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
+        "grape": { elem2:null, chance:0.3, func:behaviors.FEEDPIXEL },
+        "wheat_seed": { elem2:null, chance:0.4, func:behaviors.FEEDPIXEL },
+        "flower_seed": { elem2:null, chance:0.32, func:behaviors.FEEDPIXEL },
+        "corn_seed": { elem2:null, chance:0.35, func:behaviors.FEEDPIXEL },
+        "corn": { elem2:null, chance:0.4, func:behaviors.FEEDPIXEL },
+        "crumb": { elem2:null, chance:0.25, func:behaviors.FEEDPIXEL },
+        "potato_seed": { elem2:null, chance:0.4, func:behaviors.FEEDPIXEL },
+        "grass_seed": { elem2:null, chance:0.3, func:behaviors.FEEDPIXEL },
+        "pumpkin_seed": { elem2:null, chance:0.3, func:behaviors.FEEDPIXEL },
+        "pumpkin": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
+        "nut": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "dead_bug": { elem2:null, chance:0.35, func:behaviors.FEEDPIXEL },
+        "bee": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "ant": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "flea": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "termite": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "lichen": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "oxygen": { elem2:"carbon_dioxide", chance:0.3 },
+        "mercury": { elem1:"rotten_meat", chance:0.1 },
+        "bleach": { elem1:"rotten_meat", chance:0.1 },
+        "infection": { elem1:"rotten_meat", chance:0.025 },
+        "uranium": { elem1:"rotten_meat", chance:0.1 },
+        "cyanide": { elem1:"rotten_meat", chance:0.1 },
+        "chlorine": { elem1:"meat", chance:0.1 },
+        "dirty_water": { elem1:"rotten_meat", chance:0.0001 },
+    },
+    egg: "duck_egg",
+    foodNeed: 10,
+    temp: 40,
+    tempHigh: 75,
+    stateHigh: "cooked_duck",
+    tempLow: -18,
+    stateLow: "frozen_meat",
+    breakInto: "raw_duck",
+    burn:85,
+    burnTime:450,
+    state: "solid",
+    density: 1117,
+    conduct: 0.3,
+    cutInto: "raw_duck",
+};
+
+elements.duck_egg = {
+    color: "#e0d3ab",
+    behavior: behaviors.STURDYPOWDER2,
+    tick: function(pixel) {
+        if (Math.random() < 0.1 && pixel.temp > 20 && pixel.temp < 35) {
+            changePixel(pixel,"duckling")
+        }
+    doDefaults(pixel);
+    },
+    category: "food",
+    state: "solid",
+    temp: 20,
+    tempLow: -18,
+    stateLow: "frozen_duck_egg",
+    breakInto: ["yolk"],
+    tempHigh: 400,
+    stateHigh: ["calcium", "ash"],
+    burn:50,
+    burnTime:450,
+    state: "solid",
+    density: 900,
+    conduct: 0.1,
+    reactions: {
+        "water": { elem2:null, elem1:"hard_boiled_egg", chance:10, tempMin:80 }
+    }
+};
+elements.frozen_duck_egg = {
+    color: "#e0d3cf",
+    behavior: behaviors.POWDER,
+    category: "food",
+    state: "solid",
+    temp: -20,
+    tempHigh: 10,
+    stateHigh: "duck_egg",
+    breakInto: ["calcium", "hard_yolk"],
+    burn:50,
+    burnTime:450,
+    state: "solid",
+    density: 900,
+    conduct: 0.1,
+    hidden: true,
+};
+elements.duckling = {
+    color: ["#f0eba8", "#f0eba8"],
+    behavior: [
+        "M2%1|M2%2|M2%1",
+        "M2%10|FX%5 AND CH:duck%0.1|M2%10",
+        "XX|M1%33|XX",
+    ],
+    category: "life",
+    state: "solid",
+    egg: "duck_egg",
+    foodNeed: 20,
+    temp: 40,
+    tempHigh: 75,
+    stateHigh: "cooked_meat",
+    tempLow: -18,
+    stateLow: "frozen_meat",
+    breakInto: "blood",
+    burn:85,
+    burnTime:450,
+    state: "solid",
+    density: 900,
+    conduct: 0.1,
+    reactions: {
+        "crushed_worm": { elem2:null, chance:0.4, func:behaviors.FEEDPIXEL},
+        "meat": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "chicken_nugget": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "grass": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
+        "worm": { elem2: "crushed_worm", chance:0.3},
+        "cooked_meat": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "fish": { elem2:null, chance:0.25, func:behaviors.FEEDPIXEL },
+        "rat": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
+        "snail": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
+        "frog": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
+        "slug": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
+        "grape": { elem2:null, chance:0.3, func:behaviors.FEEDPIXEL },
+        "wheat_seed": { elem2:null, chance:0.4, func:behaviors.FEEDPIXEL },
+        "flower_seed": { elem2:null, chance:0.32, func:behaviors.FEEDPIXEL },
+        "corn_seed": { elem2:null, chance:0.35, func:behaviors.FEEDPIXEL },
+        "corn": { elem2:null, chance:0.4, func:behaviors.FEEDPIXEL },
+        "crumb": { elem2:null, chance:0.25, func:behaviors.FEEDPIXEL },
+        "potato_seed": { elem2:null, chance:0.4, func:behaviors.FEEDPIXEL },
+        "grass_seed": { elem2:null, chance:0.3, func:behaviors.FEEDPIXEL },
+        "pumpkin_seed": { elem2:null, chance:0.3, func:behaviors.FEEDPIXEL },
+        "pumpkin": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
+        "nut": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "dead_bug": { elem2:null, chance:0.35, func:behaviors.FEEDPIXEL },
+        "bee": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "ant": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "flea": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "termite": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "lichen": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "oxygen": { elem2:"carbon_dioxide", chance:0.3 },
+        "mercury": { elem1:"rotten_meat", chance:0.1 },
+        "bleach": { elem1:"rotten_meat", chance:0.1 },
+        "infection": { elem1:"rotten_meat", chance:0.025 },
+        "uranium": { elem1:"rotten_meat", chance:0.1 },
+        "cyanide": { elem1:"rotten_meat", chance:0.1 },
+        "chlorine": { elem1:"meat", chance:0.1 },
+        "dirty_water": { elem1:"rotten_meat", chance:0.0001 },
+    }
+};
+
+elements.barbecued_duck = {
+    color:["#a67d2d","#9c721f"],
+    behavior: behaviors.STURDYPOWDER,
+    category: "food",
+    state: "solid",
+    temp:55,
+    tempHigh: 600,
+    stateHigh: ["ash","smoke"],
+    isFood: true,
+    hidden: true,
+}
+elements.steamed_duck = {
+    color:["#e8cb7b", "#d6bf7e"],
+    behavior: behaviors.STURDYPOWDER,
+    category: "food",
+    state: "solid",
+    temp:50,
+    tempHigh: 600,
+    stateHigh: ["ash","smoke"],
+    isFood: true,
+    hidden: true,
+}
+
+elements.smoked_duck = {
+    color:["#6b470e", "#8f5b09"],
+    behavior: behaviors.STURDYPOWDER,
+    category: "food",
+    state: "solid",
+    temp:55,
+    tempHigh: 600,
+    stateHigh: ["ash","smoke"],
+    isFood: true,
+    hidden: true,
+}
+elements.cooked_duck = {
+    color: ["#a38046", "#b39652"],
+    behavior: behaviors.STURDYPOWDER,
+    category: "food",
+    state: "solid",
+    temp: 40,
+    tempHigh: 600,
+    stateHigh: ["ash", "smoke"],
+    hidden: true,
+};
+
+elements.raw_duck = {
+    color: ["#d6a587", "#c99873"],
+    behavior: behaviors.STURDYPOWDER,
+    category: "food",
+    state: "solid",
+    burnInto: "cooked_duck",
+    temp:25,
+    tempHigh: 600,
+    stateHigh: ["cooked_duck"],
+    reactions: {
+        "smoke": {elem1: "smoked_duck"},
+        "steam": {elem1: "steamed_duck"},
+        "water": {elem1: "boiled_duck", tempMin: 70},
+        "nut_oil": {elem1: "fried_duck", tempMin: 70},
+        "charcoal": {elem1: "barbecued_duck", tempMin: 70},
+        "fire": {elem1: "barbecued_duck"}
+    }
+};
+
+elements.boiled_duck = {
+    color: ["#e0d4a4", "#e0d4a4"],
+    behavior: behaviors.STURDYPOWDER,
+    category: "food",
+    state: "solid",
+    isFood: true,
+    temp: 65,
+    tempHigh: 600,
+    stateHigh: ["ash", "smoke"],
+    hidden: true,
+}
+
+elements.fried_duck = {
+    color: ["#c49543", "#b88835", "#b07b20", "#996e23"],
+    behavior: behaviors.STURDYPOWDER,
+    category: "food",
+    state: "solid",
+    isFood: true,
+    temp: 90,
+    tempHigh: 600,
+    stateHigh: ["ash", "smoke"],
+    hidden: true,
+}
+// side note: i don't eat beef
+elements.cow = {
+    color: ["#292928", "#332b23", "#e0dfde", "#f0edeb"],
+    behavior: [
+        "M2%1|XX|M2%1",
+        "M2%10|XX|M2%10",
+        "XX|M1|XX",
+    ],
+    category:"life",
+	state: "solid",
+    reactions: {
+        "petal": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "grass": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
+        "grape": { elem2:null, chance:0.3, func:behaviors.FEEDPIXEL },
+        "pumpkin_seed": { elem2:null, chance:0.3, func:behaviors.FEEDPIXEL },
+        "pumpkin": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
+        "nut": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "lichen": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "oxygen": { elem2:"carbon_dioxide", chance:0.3 },
+        "mercury": { elem1:"rotten_meat", chance:0.1 },
+        "bleach": { elem1:"rotten_meat", chance:0.1 },
+        "infection": { elem1:"rotten_meat", chance:0.025 },
+        "uranium": { elem1:"rotten_meat", chance:0.1 },
+        "cyanide": { elem1:"rotten_meat", chance:0.1 },
+        "chlorine": { elem1:"meat", chance:0.1 },
+        "dirty_water": { elem1:"rotten_meat", chance:0.0001 },
+    },
+    egg: "calf",
+    foodNeed: 10,
+    temp: 40,
+    tempHigh: 75,
+    stateHigh: "steak",
+    tempLow: -18,
+    stateLow: "frozen_meat",
+    breakInto: "raw_beef",
+    burn:85,
+    burnTime:450,
+    state: "solid",
+    density: 1117,
+    conduct: 0.3,
+    cutInto: "raw_beef",
+};
+elements.calf = {
+    color: ["#363535", "#bdbdbd"],
+    behavior: [
+        "M2%1|XX|M2%1",
+        "M2%10|FX%5 AND CH:cow%0.1|M2%10",
+        "XX|M1|XX",
+    ],
+    category: "life",
+    state: "solid",
+    foodNeed: 20,
+    temp: 40,
+    tempHigh: 75,
+    stateHigh: "steak",
+    tempLow: -18,
+    stateLow: "frozen_meat",
+    breakInto: "blood",
+    burn:85,
+    burnTime:450,
+    state: "solid",
+    density: 900,
+    conduct: 0.1,
+    reactions: {
+        "petal": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "grass": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
+        "grape": { elem2:null, chance:0.3, func:behaviors.FEEDPIXEL },
+        "pumpkin_seed": { elem2:null, chance:0.3, func:behaviors.FEEDPIXEL },
+        "pumpkin": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
+        "nut": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "lichen": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "oxygen": { elem2:"carbon_dioxide", chance:0.3 },
+        "mercury": { elem1:"rotten_meat", chance:0.1 },
+        "bleach": { elem1:"rotten_meat", chance:0.1 },
+        "infection": { elem1:"rotten_meat", chance:0.025 },
+        "uranium": { elem1:"rotten_meat", chance:0.1 },
+        "cyanide": { elem1:"rotten_meat", chance:0.1 },
+        "chlorine": { elem1:"meat", chance:0.1 },
+        "dirty_water": { elem1:"rotten_meat", chance:0.0001 },
+    },
+};
+
+elements.barbecued_steak = {
+    color:["#3b271a","#29180d"],
+    behavior: behaviors.STURDYPOWDER,
+    category: "food",
+    state: "solid",
+    temp:55,
+    tempHigh: 600,
+    stateHigh: ["ash","smoke"],
+    isFood: true,
+    hidden: true,
+}
+
+elements.smoked_beef = {
+    color:["#3b1911", "#3b2719"],
+    behavior: behaviors.STURDYPOWDER,
+    category: "food",
+    state: "solid",
+    temp:55,
+    tempHigh: 600,
+    stateHigh: ["ash","smoke"],
+    isFood: true,
+    hidden: true,
+}
+elements.steak = {
+    color: ["#a38046", "#b39652"],
+    behavior: behaviors.STURDYPOWDER,
+    category: "food",
+    state: "solid",
+    temp: 40,
+    tempHigh: 600,
+    stateHigh: ["ash", "smoke"],
+    hidden: true,
+    alias: "cooked_beef"
+};
+
+elements.raw_beef = {
+    color: ["#ab5841", "#ab322e"],
+    behavior: behaviors.STURDYPOWDER,
+    category: "food",
+    state: "solid",
+    burnInto: "steak",
+    temp:25,
+    tempHigh: 600,
+    stateHigh: ["steak"],
+    reactions: {
+        "smoke": {elem1: "smoked_beef"},
+        "charcoal": {elem1: "barbecued_beef", tempMin: 70},
+        "fire": {elem1: "barbecued_beef"}
+    }
+};
+
+elements.juice.reactions.milk = { elem1:"fruit_milk", elem2:null, chance:0.05, func: function(pixel1, pixel2){
+    let newrgb = interpolateRgb(getRGB('rgb(250,250,250)'), getRGB(pixel2.color), 0.25);
+    pixel1.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+}}
+elements.juice.reactions.cream = { elem1:"fruit_milk", elem2:null, chance:0.05, func: function(pixel1, pixel2){
+    let newrgb = interpolateRgb(getRGB('rgb(250,250,250)'), getRGB(pixel2.color), 0.25);
+    pixel1.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+}}
+elements.soda.reactions.soda = {
+    func: function(pixel1, pixel2){
+      if(pixel1.color != pixel2.color){
+        if(Math.floor(Math.random() * 1000) == 1){
+        let newrgb = interpolateRgb(getRGB(pixel1.color), getRGB(pixel2.color), 0.5);
+        pixel1.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+        pixel2.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+        }
+      }
+    }
+  }
+elements.juice.reactions.soda = {
+    chance:70,
+    func: function(pixel1, pixel2){
+        if(pixel1.color != pixel2.color){
+            if(Math.floor(Math.random() * 1000) == 1){
+                let newrgb = interpolateRgb(getRGB(pixel1.color), getRGB(pixel2.color), 0.5);
+                changePixel(pixelMap[pixel1.x][pixel1.y],"soda")
+                pixel1.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+                pixel2.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+            }
+        }
+    }
+}
+if (!elements.orange_juice.reactions) { elements.orange_juice.reactions = {} }
+elements.orange_juice.reactions.seltzer = { elem1:"soda", elem2:"foam", color1:"#ffb319"}
+elements.orange_juice.reactions.carbon_dioxide = { elem1:"soda", elem2:"foam", color1:"#ffb319"}
+elements.agar.reactions.soda = { elem1:"jelly", elem2:null, chance:0.05, func: function(pixel1, pixel2){
+    let newrgb = interpolateRgb(getRGB('rgb(250,250,250)'), getRGB(pixel2.color), 0.7);
+    pixel1.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+}}
+elements.hard_jelly = {
+    color: "#c372b8",
+    behavior: behaviors.STURDYPOWDER,
+    tempHigh: 200,
+    stateHigh: ["smoke","sugar"],
+    category: "food",
+    state: "solid",
+    density: 1245,
+    isFood: true,
+    hidden: true,
+    temp: 0
+}
+elements.jelly.stateLow = "hard_jelly"
+elements.jelly.stateLowColorMultiplier = 1.2
+elements.jelly.temp = 0
+
+elements.nut.name = "peanut";
+elements.nut_meat.name = "peanut_meat";
+elements.nut_butter.name = "peanut_butter";
