@@ -1387,3 +1387,6 @@ substance.Silver_Sulfate = {
 // doing more later
 
 // I accidentally pressed Ctrl+V instead of Ctrl+C so it deleted my work D:
+
+// I don't know if I want to continue because I keep on forgetting to do it due to motivational issues :/
+// I'll update this later if I'm going to continue today (or I'll just play rdr2)
