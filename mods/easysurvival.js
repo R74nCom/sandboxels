@@ -1,3 +1,401 @@
+behaviors = {
+    POWDER_OLD: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "M2|M1|M2",
+    ],
+    POWDER: function(pixel) {
+        if (pixel.start === pixelTicks) {return}
+        if (pixel.charge && elements[pixel.element].behaviorOn) {
+            pixelTick(pixel)
+        }
+        if (!tryMove(pixel, pixel.x, pixel.y+1)) {
+            if (Math.random() < 0.5) {
+                if (!tryMove(pixel, pixel.x+1, pixel.y+1)) {
+                    tryMove(pixel, pixel.x-1, pixel.y+1);
+                }
+            } else {
+                if (!tryMove(pixel, pixel.x-1, pixel.y+1)) {
+                    tryMove(pixel, pixel.x+1, pixel.y+1);
+                }
+            }
+        }
+        doDefaults(pixel);
+    },
+    AGPOWDER: [
+        "M2|M1|M2",
+        "XX|XX|XX",
+        "XX|XX|XX",
+    ],
+    LIQUID_OLD: [
+        "XX|XX|XX",
+        "M2|XX|M2",
+        "M1|M1|M1",
+    ],
+    LIQUID: function(pixel) {
+        if (pixel.start === pixelTicks) {return}
+        if (pixel.charge && elements[pixel.element].behaviorOn) {
+            pixelTick(pixel)
+        }
+        if (elements[pixel.element].viscosity && (!((Math.random()*100) < 100 / Math.pow(elements[pixel.element].viscosity, 0.25)))) {
+            var move1Spots = [
+                [pixel.x, pixel.y+1]
+            ]
+        }
+        else {
+            var move1Spots = [
+                [pixel.x+1, pixel.y+1],
+                [pixel.x, pixel.y+1],
+                [pixel.x-1, pixel.y+1],
+            ]
+        }
+        var moved = false;
+        for (var i = 0; i < move1Spots.length; i++) {
+            var coords = move1Spots[Math.floor(Math.random()*move1Spots.length)];
+            if (tryMove(pixel, coords[0], coords[1])) { moved = true; break; }
+            else { move1Spots.splice(move1Spots.indexOf(coords), 1); }
+        }
+        if (!moved) {
+            if (elements[pixel.element].viscosity===undefined || !(!((Math.random()*100) < 100 / Math.pow(elements[pixel.element].viscosity, 0.25)))) {
+                if (Math.random() < 0.5) {
+                    if (!tryMove(pixel, pixel.x+1, pixel.y)) {
+                        tryMove(pixel, pixel.x-1, pixel.y);
+                    }
+                } else {
+                    if (!tryMove(pixel, pixel.x-1, pixel.y)) {
+                        tryMove(pixel, pixel.x+1, pixel.y);
+                    }
+                }
+            }
+        }
+        doDefaults(pixel);
+    },
+    SUPERFLUID_OLD: [
+        "XX|XX|XX",
+        "XX|XX|M2 AND BO",
+        "XX|M1|M2",
+    ],
+    SUPERFLUID: function(pixel) {
+        if (pixel.start === pixelTicks) {return}
+        if (pixel.charge && elements[pixel.element].behaviorOn) {
+            pixelTick(pixel)
+        }
+        if (!tryMove(pixel, pixel.x, pixel.y+1)) {
+            // go either left or right depending on pixel.flipX
+            var newx = pixel.flipX ? pixel.x-1 : pixel.x+1;
+            if (Math.random() < 0.5) {
+                if (!tryMove(pixel, newx, pixel.y)) {
+                    pixel.flipX = !pixel.flipX;
+                    tryMove(pixel, newx, pixel.y+1);
+                }
+            }
+            else {
+                if (!tryMove(pixel, newx, pixel.y+1)) {
+                    if (!tryMove(pixel, newx, pixel.y)) { pixel.flipX = !pixel.flipX; }
+                }
+            }
+        }
+        doDefaults(pixel);
+    },
+    LIGHTWEIGHT: [
+        "XX|XX|XX",
+        "XX|FX%0.25|XX",
+        "M2%10|M1%10|M1%10",
+    ],
+    SLIDE: [
+        "XX|XX|XX",
+        "XX|XX|M2 AND BO",
+        "XX|M1|M1",
+    ],
+    AGLIQUID: [
+        "M1|M1|M1",
+        "M2|XX|M2",
+        "XX|XX|XX",
+    ],
+    WALL: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "XX|XX|XX",
+    ],
+    UL_UR: [
+        "M1|M1|M1",
+        "M2|XX|M2",
+        "XX|M2|XX",
+    ],
+    UL_UR_OPTIMIZED: function(pixel) {
+        if (pixel.start === pixelTicks) {return}
+        if (pixel.charge && elements[pixel.element].behaviorOn) {
+            pixelTick(pixel)
+        }
+        var move1Spots = [
+            [pixel.x, pixel.y-1],
+            [pixel.x+1, pixel.y-1],
+            [pixel.x-1, pixel.y-1],
+        ]
+        var moved = false;
+        for (var i = 0; i < move1Spots.length; i++) {
+            var coords = move1Spots[Math.floor(Math.random()*move1Spots.length)];
+            if (tryMove(pixel, coords[0], coords[1])) { moved = true; break; }
+            else { move1Spots.splice(move1Spots.indexOf(coords), 1);}
+        }
+        if (!moved && !pixel.del) {
+            var move2Spots = [
+                [pixel.x, pixel.y+1],
+                [pixel.x+1, pixel.y],
+                [pixel.x-1, pixel.y],
+            ]
+            for (var i = 0; i < move2Spots.length; i++) {
+                var coords = move2Spots[Math.floor(Math.random()*move2Spots.length)];
+                if (tryMove(pixel, coords[0], coords[1])) { break; }
+                else { move2Spots.splice(move2Spots.indexOf(coords), 1); }
+            }
+        }
+        if (!pixel.del) { doDefaults(pixel); }
+    },
+    GAS_OLD: [
+        "M2|M1|M2",
+        "M1|XX|M1",
+        "M2|M1|M2",
+    ],
+    GAS: function(pixel) {
+        if (pixel.start === pixelTicks) {return}
+        if (pixel.charge && elements[pixel.element].behaviorOn) {
+            pixelTick(pixel)
+        }
+        var move1Spots = [
+            [pixel.x, pixel.y+1],
+            [pixel.x, pixel.y-1],
+            [pixel.x+1, pixel.y],
+            [pixel.x-1, pixel.y],
+        ]
+        var moved = false;
+        for (var i = 0; i < move1Spots.length; i++) {
+            var coords = move1Spots[Math.floor(Math.random()*move1Spots.length)];
+            if (tryMove(pixel, coords[0], coords[1])) { moved = true; break; }
+            else { move1Spots.splice(move1Spots.indexOf(coords), 1);}
+        }
+        if (!moved) {
+            var move2Spots = [
+                [pixel.x+1, pixel.y+1],
+                [pixel.x-1, pixel.y+1],
+                [pixel.x+1, pixel.y-1],
+                [pixel.x-1, pixel.y-1],
+            ]
+            for (var i = 0; i < move2Spots.length; i++) {
+                var coords = move2Spots[Math.floor(Math.random()*move2Spots.length)];
+                if (tryMove(pixel, coords[0], coords[1])) { break; }
+                else { move2Spots.splice(move2Spots.indexOf(coords), 1); }
+            }
+        }
+        doDefaults(pixel);
+    },
+    DGAS: [
+        "M2|M1|M2",
+        "M1|DL%5|M1",
+        "M2|M1|M2",
+    ],
+    SUPPORT: [
+        "XX|XX|XX",
+        "SP|XX|SP",
+        "XX|M1|XX",
+    ],
+    SUPPORTPOWDER: [
+        "XX|XX|XX",
+        "SP|XX|SP",
+        "M2|M1|M2",
+    ],
+    DELETE: [
+        "XX|DL|XX",
+        "DL|XX|DL",
+        "XX|DL|XX",
+    ],
+    FILL: [
+        "XX|CL|XX",
+        "CL|XX|CL",
+        "XX|CL|XX",
+    ],
+    CLONER: [
+        "XX|CF|XX",
+        "CF|XX|CF",
+        "XX|CF|XX",
+    ],
+    SUPERCLONER: [
+        "CF|CF|CF",
+        "CF|CF|CF",
+        "CF|CF|CF",
+    ],
+    STURDYPOWDER: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "XX|M1|XX",
+    ],
+    SELFDELETE: [
+        "XX|XX|XX",
+        "XX|DL|XX",
+        "XX|XX|XX",
+    ],
+    FOAM: [
+        "XX|XX|XX",
+        "XX|DL%5|XX",
+        "M2%25|M1%25|M2%25",
+    ],
+    BUBBLE: [
+        "XX|XX|XX",
+        "XX|DL%0.25 AND FX%1|M1%5",
+        "XX|M1%1|M1%2",
+    ],
+    STICKY: [
+        "XX|ST|XX",
+        "ST|XX|ST",
+        "XX|ST AND M1|XX",
+    ],
+    MOLTEN: [
+        "XX|CR:fire%2.5|XX",
+        "M2|XX|M2",
+        "M1|M1|M1",
+    ],
+    RADPOWDER: [
+        "XX|CR:radiation%1|XX",
+        "CR:radiation%1|XX|CR:radiation%1",
+        "M2|M1|M2",
+    ],
+    RADMOLTEN: [
+        "XX|CR:fire,fire,fire,radiation%4.5|XX",
+        "M2 AND CR:radiation%1|XX|M2 AND CR:radiation%1",
+        "M1|M1|M1",
+    ],
+    RADLIQUID: [
+        "XX|CR:radiation%2|XX",
+        "M2 AND CR:radiation%2|XX|M2 AND CR:radiation%2",
+        "M1|M1|M1",
+    ],
+    BOUNCY: function(pixel) {
+        if (pixel.bx===undefined) {
+            // choose 1, 0, or -1
+            pixel.bx = Math.random() < 0.5 ? 1 : Math.random() < 0.5 ? 0 : -1;
+            pixel.by = Math.random() < 0.5 ? 1 : Math.random() < 0.5 ? 0 : -1;
+            // if both are 0, make one of them 1 or -1
+            if (pixel.bx===0 && pixel.by===0) {
+                if (Math.random() < 0.5) { pixel.bx = Math.random() < 0.5 ? 1 : -1; }
+                else { pixel.by = Math.random() < 0.5 ? 1 : -1; }
+            }
+        }
+        // move and invert direction if hit
+        if (!pixel.del && pixel.bx && !tryMove(pixel, pixel.x+pixel.bx, pixel.y)) { pixel.bx = -pixel.bx; }
+        if (!pixel.del && pixel.by && !tryMove(pixel, pixel.x, pixel.y+pixel.by)) { pixel.by = -pixel.by; }
+    },
+    FEEDPIXEL: function(pixel) {
+        if (!pixel.food) { pixel.food = 1 }
+        else { pixel.food ++ }
+        if (pixel.food > (elements[pixel.element].foodNeed||30)) {
+            // loop through adjacentCoords and check each pixel to lay an egg
+            for (var i = 0; i < adjacentCoords.length; i++) {
+                var x = pixel.x+adjacentCoords[i][0];
+                var y = pixel.y+adjacentCoords[i][1];
+                if (isEmpty(x, y)) {
+                    if (elements[pixel.element].egg) {
+                        createPixel(elements[pixel.element].egg,x,y)
+                    }
+                    else {
+                        createPixel("egg",x,y)
+                        pixelMap[x][y].animal = elements[pixel.element].baby || pixel.element;
+                        if (elements[pixel.element].eggColor) {
+                            pixelMap[x][y].color = pixelColorPick(pixelMap[x][y],elements[pixel.element].eggColor)
+                        }
+                    }
+                    pixel.food = 0;
+                    break;
+                }
+            }
+        }
+    },
+    KILLPIXEL1: function(pixel) {
+        pixel.dead = true;
+    },
+    KILLPIXEL2: function(pixel1,pixel2) {
+        pixel2.dead = true;
+    },
+    FLY: function(pixel, onHit) {
+        var nx = pixel.flipX ? -1 : 1;
+        var ny = Math.random() < 0.5 ? -1 : 1;
+        var hit = false;
+        if (!tryMove(pixel, pixel.x+nx, pixel.y+ny)) {
+            if (!tryMove(pixel, pixel.x+nx, pixel.y-ny)) {
+                if (!tryMove(pixel, pixel.x, pixel.y+ny)) {
+                    if (!tryMove(pixel, pixel.x, pixel.y-ny)) {hit=[pixel.x, pixel.y-ny]}
+                }else {hit=[pixel.x, pixel.y+ny]}
+            }else {hit=[pixel.x+nx, pixel.y-ny]}
+        }else {hit=[pixel.x+nx, pixel.y+ny]}
+        if (hit && onHit) {
+            if (!isEmpty(hit[0], hit[1], true)) {
+                onHit(pixel, pixelMap[hit[0]][hit[1]]);
+            }
+            else {onHit(pixel);}
+        }
+        if (pixel.del) {return}
+        if (!isEmpty(pixel.x+nx,pixel.y) || Math.random() < 0.02) {
+            pixel.flipX = !pixel.flipX;
+        }
+        if (pixel.charge && elements[pixel.element].behaviorOn) {
+            pixelTick(pixel)
+        }
+        doDefaults(pixel);
+    },
+    CRAWLER: function(pixel) {
+        if (Math.random() < 0.08) { // flip
+            pixel.flipX = !pixel.flipX;
+        }
+        var dir = pixel.flipX ? -1 : 1;
+        var dirY = pixel.flipY ? -1 : 1;
+        if (!tryMove(pixel,pixel.x,pixel.y+dirY)) { // fall or climb
+            if (!tryMove(pixel,pixel.x+dir,pixel.y)) { // hits wall
+                if (!pixel.hilled && !isEmpty(pixel.x+dir,pixel.y,true) && pixelMap[pixel.x+dir][pixel.y].element === "ant_wall") {
+                    pixel.hilled = true;
+                }
+                tryMove(pixel,pixel.x+dir,pixel.y + (Math.random() < 0.25 ? 1 : -1));
+            }
+            if (Math.random() < 0.01 && !isEmpty(pixel.x+dir,pixel.y+1,true) && eLists.CRAWLTHRU.indexOf(pixelMap[pixel.x+dir][pixel.y+1].element) !== -1) {
+                if (!pixel.hilled || !isEmpty(pixel.x+dir,pixel.y,true) && pixelMap[pixel.x+dir][pixel.y].element === "ant_wall") {
+                    var wallCoords = [
+                        [-1,-1],[1,-1],
+                        [-1,0],[1,0],
+                        [0,1]
+                    ];
+                    if (!isEmpty(pixel.x,pixel.y-2)) {
+                        wallCoords.push([0,-1])
+                    }
+                    if (Math.random() < 0.15) { wallCoords.push([-1,1]) }
+                    if (Math.random() < 0.15) { wallCoords.push([1,1]) }
+                    // loop through wallCoords, change pixel to ant_wall if in crawlthru
+                    for (var i = 0; i < wallCoords.length; i++) {
+                        var x = pixel.x+dir+wallCoords[i][0];
+                        var y = pixel.y+1+wallCoords[i][1];
+                        if (!isEmpty(x,y,true) && eLists.CRAWLTHRU.indexOf(pixelMap[x][y].element) !== -1) {
+                            changePixel(pixelMap[x][y],"ant_wall");
+                        }
+                    }
+                    deletePixel(pixel.x+dir,pixel.y+1);
+                    tryMove(pixel,pixel.x+dir,pixel.y+1);
+                }
+            }
+            else if (Math.random() < 0.08 && !isEmpty(pixel.x+dir,pixel.y-1,true) && eLists.CRAWLTHRU.indexOf(pixelMap[pixel.x+dir][pixel.y-1].element) !== -1) {
+                swapPixels(pixel,pixelMap[pixel.x+dir][pixel.y-1]);
+            }
+        }
+        doDefaults(pixel);
+    }
+}
+
+elements.supercloner = {
+    color: "#dddd00",
+    behavior: behaviors.SUPERCLONER,
+    ignore: ["ecloner","slow_cloner","clone_powder","floating_cloner","wall","ewall", "cloner"],
+    category:"inventory",
+    insulate:true,
+    hardness: 1,
+    darkText: true,
+}
+
 if (!settings.survival) {
     settings.survival = {
         "wall": 9999,
@@ -6,6 +404,7 @@ if (!settings.survival) {
         "seeds": 50,
         "ice": 250,
         "cloner": 10,
+        "supercloner": 10
     }
 }
 settings.survival.cloner = 1;
