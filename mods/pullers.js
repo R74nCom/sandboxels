@@ -2,19 +2,23 @@
 // a sandboxels mod that adds pullers
 /*
 ==CHANGELOG==
-  Version 1.1.1#
+  Version 1.1.2
 @voidapex11
-~initial comit
+~fixed spelling mistake's
+
+  Version 1.1.1
+@voidapex11
+~initial commit
 +pullersDesc
 +imovable_inator& movable_inator
 +imovable wall, steel & insulation
 +L, R, U & D pullers
 +void light&dark
-~don't comit without permision as you may disrupt other dev's hard work
+~don't commit without permission as you may disrupt other dev's hard work
 ~update changelog with newer updates first
 ~Version format is:
- rewrites.major updates.paches&minor feechers 
- put a '#' at end of version format if it has not been pushed to the github
+ rewrites.major updates.paches&minor features 
+ put a '#' at the end of the version format if it has not been pushed to the github
 ~for change-log 
 '~' means notes/changes '+' means aditions and '-' is removals 
 */
@@ -41,10 +45,10 @@ elements.pullersDesc = {
 };
 
 // for the inator reference: if you know you know
-elements.imovable_inator = {
+elements.immovable_inator = {
   color: "#525252",
   tool: function(pixel) {
-    pixel.imovable = true
+    pixel.immovable = true
   },
   category: "tools",
 }
@@ -52,14 +56,14 @@ elements.imovable_inator = {
 elements.movable_inator = {
   color: "#a8a8a8",
   tool: function(pixel) {
-    pixel.imovable = false
+    pixel.immovable = false
   },
   category: 'tools',
 }
 
 
 
-elements.imovable_wall = {
+elements.immovable_wall = {
   color: "#808080",
   behavior: behaviors.WALL,
   category: "solids",
@@ -67,11 +71,11 @@ elements.imovable_wall = {
   hardness: 1,
   noMix: true,
   properties: {
-    imovable: true
+    immovable: true
   }
 }
 
-elements.imovable_steel = {
+elements.immovable_steel = {
   color: "#71797e",
   behavior: behaviors.WALL,
   reactions: {
@@ -92,11 +96,11 @@ elements.imovable_steel = {
   conduct: 0.42,
   hardness: 0.8,
   properties: {
-    imovable: true
+    immovable: true
   }
 }
 
-elements.imovable_insulation = {
+elements.immovable_insulation = {
   color: "#b8aea5",
   behavior: behaviors.WALL,
   category: "solids",
@@ -104,7 +108,7 @@ elements.imovable_insulation = {
   state: "solid",
   noMix: true,
   properties: {
-    imovable: true
+    immovable: true
   }
 }
 
@@ -123,7 +127,7 @@ elements.left_puller = {
 			for (i = 1; i <= pixel.range; i++) {
 
         if (!isEmpty(pixel.x + i, pixel.y, true)) { 
-          if (pixelMap[pixel.x+i][pixel.y]['imovable']) {break}
+          if (pixelMap[pixel.x+i][pixel.y]['immovable']) {break}
           else {
             tryMove(pixelMap[pixel.x + i][pixel.y], pixel.x + i - 1, pixel.y); 
           }
@@ -157,7 +161,7 @@ elements.right_puller = {
     for(h = pixel.pushStrength; h >= pixel.pushStrength; h--) {
 			for (i = 1; i <= pixel.range; i++) {
         if (!isEmpty(pixel.x - i, pixel.y, true)) {
-          if (pixelMap[pixel.x-i][pixel.y]['imovable']) {break}
+          if (pixelMap[pixel.x-i][pixel.y]['immovable']) {break}
           else {
             tryMove(pixelMap[pixel.x - i][pixel.y], pixel.x - i + 1, pixel.y); 
           }
@@ -190,7 +194,7 @@ elements.down_puller = {
 			for (i = 1; i <= pixel.range; i++) { 
         
         if (!isEmpty(pixel.x, pixel.y - i, true)) {
-          if (pixelMap[pixel.x][pixel.y - i]['imovable']) {break}
+          if (pixelMap[pixel.x][pixel.y - i]['immovable]) {break}
           else {
             tryMove(pixelMap[pixel.x][pixel.y - i], pixel.x, pixel.y - i + 1); 
           }
@@ -223,7 +227,7 @@ elements.up_puller = {
 			for (i = 1; i <= pixel.range; i++) { 
         if (!isEmpty(pixel.x, pixel.y + i, true)) {          
           
-          if (pixelMap[pixel.x][pixel.y + i]['imovable']){
+          if (pixelMap[pixel.x][pixel.y + i]['immovable']){
             break
           }
           else {
@@ -246,5 +250,5 @@ elements.up_puller = {
 }
 
 if (enabledMods.includes("pushers.js")) {
-  console.info('compatibility with pushers.js and imovable objects coming in a later update of the pullers.js')
+  console.log('compatibility with pushers.js and imovable objects coming in a later update of the pullers.js\neventualy...')
 }
