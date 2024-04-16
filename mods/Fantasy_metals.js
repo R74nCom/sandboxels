@@ -49,6 +49,9 @@ elements.Darksteel = {
     category: "powders",
     state:  "solid",
     density: 200,
+    reactions: {
+        "Brightsteel": {elem1: "It_Go_Boom", elem2: null}
+    },
 };
 elements.Luminite = {
     color: ["#77d0ed", "#2b3b40", "#01171f", "#02a0d9", "#bfe7f5"],
@@ -114,4 +117,17 @@ elements.Kiaxorite = {
     reactions: {
         "Diathrylium": {elem1: "h_bomb", elem2: null}
     },
+};
+elements.It_Go_Boom = {
+    color: "#000000",
+    behavior:    [
+        ["XX","XX","XX"],
+        ["XX","XX","XX"],
+        ["M2 AND EX:50","M1 AND EX:50","M2 AND EX:50"]
+    ],
+    category: "weapons",
+    state: "soild",
+    density: 90,
+    hidden:true,
+};
 };
