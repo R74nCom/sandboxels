@@ -1882,7 +1882,7 @@ elements.molten_bismuth = {
               }
             }
             changePixel(pixel, "bismuth")
-            var rgbResult = HSVtoRGB(pixel.tHue + 0.08, 0.5, 0.9);
+            var rgbResult = HSVtoRGB(pixel.tHue + 0.02, 0.5, 0.9);
             const hexR = rgbResult.r.toString(16).padStart(2, '0');
             const hexG = rgbResult.g.toString(16).padStart(2, '0');
             const hexB = rgbResult.b.toString(16).padStart(2, '0');
