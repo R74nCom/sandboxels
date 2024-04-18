@@ -1,7 +1,9 @@
 // to do list:
-// Add ingots
-// More reactions
-// More metals?
+// Give the powders more vibrant colors (I do not want to do this)
+// Add ingots (this is giong to be hell for me)
+// More reactions (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)
+// More metals? (why am I doing this again?)
+// Finish molten elements (yay)
 // Give the molten elements more unique colors (I do not want to do this)
 
 elements.Mithril = {
