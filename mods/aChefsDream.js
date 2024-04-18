@@ -3,12 +3,14 @@ Created by SquareScreamYT/sqec <@918475812884344852>
 Thanks to RealerRaddler <@914371295561535508>, Alice <@697799964985786450>, nousernamefound <@316383921346707468>, Adora the Transfem <@778753696804765696>, ryan(R74n) <@101070932608561152> and Fioushemastor <@738828785482203189> for helping :)
 Compatibility with plants.js coming soon
 Works well with community_desserts.js
+Beta testing at aChefsDream_beta.js or SquareScreamYT/aChefsDream.js on github
 
-v1.13
+v1.13.7
 
 you can support me at my youtube: https://youtube.com/@sqec
 
 Upcoming Features:
+- pudding/cream
 - extract tool
 - cinnamon
 - spring onions
@@ -21,7 +23,6 @@ Upcoming Features:
 - stainless steel
 - pepper plants
 - hot chocolate
-- cows and beef
 - celery
 - kiwis
 - guavas
@@ -31,7 +32,9 @@ Upcoming Features:
 - dates
 - figs
 - avocados
-- apricots and plums
+- apricots and almonds (roasted)
+- hazelnuts
+- plums
 - curry/chicken tikka masala
 - raisins
 - peaches
@@ -41,9 +44,13 @@ Upcoming Features:
 - squids
 - tofu
 - miso
-- juice reaction with milk makes average color
 - juice reaction with other juices
 - jackfruit
+- fruit soda (any juice + co2 or seltzer)
+- rambutan
+- shrimp/prawn meat
+- sheep, goats, mutton, wool/fabric, filter
+- filter (like in nousersthing.js)
 
 Changelog (v1.0)
     - added chickens
@@ -441,6 +448,25 @@ Changelog (v1.13)
 
 
 
+Changelog (v1.13.5)
+    - added hard jelly
+    - soda can mix colors
+    - added soda jelly
+    - added fanta (orange juice + carbon dioxide)
+
+
+
+
+Changelog (v1.13.7)
+    - rename nut to peanut
+
+
+
+
+
+
+
+
 */
 
 /*
@@ -483,25 +509,28 @@ elements.knife = {
         if(cutInto instanceof Array) { cutInto = cutInto[Math.floor(Math.random() * cutInto.length)] };
         //change pixel into the (chosen) element      
         //changePixel(pixel, cutInto)
-
-        //var cutIntoEmit = elements[pixel.element].cutIntoEmit;
-        //if (!cutIntoEmit) { return };
-        //if(cutIntoEmit instanceof Array) { cutIntoEmit = cutIntoEmit[Math.floor(Math.random() * cutIntoEmit.length)] };
-        //var thiselement = pixel.element;
         if (shiftDown) {
             if (Math.random() < 0.5) {
                 changePixel(pixel, cutInto)
-                //if (elements[thiselement].cutIntoEmit && Math.random() < 0.5 && isEmpty(pixel.x,pixel.y-1)) {
-                //    createPixel(elements[thiselement].cutIntoEmit,pixel.x,pixel.y-1);
-                //}
+                var cutIntoEmit = elements[pixel.element].cutIntoEmit;
+                if (!cutIntoEmit) { return };
+                if(cutIntoEmit instanceof Array) { cutIntoEmit = cutIntoEmit[Math.floor(Math.random() * cutIntoEmit.length)] };
+                var thiselement = pixel.element;
+                if (elements[thiselement].cutIntoEmit && Math.random() < 0.7 && isEmpty(pixel.x,pixel.y-1)) {
+                    createPixel(elements[thiselement].cutIntoEmit,pixel.x,pixel.y-1);
+                }
             }
         }
         else if (!shiftDown) {
             if (Math.random() < 0.1) {
                 changePixel(pixel, cutInto)
-                //if (elements[thiselement].cutIntoEmit && Math.random() < 0.5 && isEmpty(pixel.x,pixel.y-1)) {
-                //    createPixel(elements[thiselement].cutIntoEmit,pixel.x,pixel.y-1);
-                //}
+                var cutIntoEmit = elements[pixel.element].cutIntoEmit;
+                if (!cutIntoEmit) { return };
+                if(cutIntoEmit instanceof Array) { cutIntoEmit = cutIntoEmit[Math.floor(Math.random() * cutIntoEmit.length)] };
+                var thiselement = pixel.element;
+                if (elements[thiselement].cutIntoEmit && Math.random() < 0.4 && isEmpty(pixel.x,pixel.y-1)) {
+                    createPixel(elements[thiselement].cutIntoEmit,pixel.x,pixel.y-1);
+                }
             }
         }
     },
@@ -5268,7 +5297,7 @@ elements.onion = {
     density: 1050,
     cutInto: "cut_onion",
     breakInto:"onion_powder",
-    //cutIntoEmit: "stench",
+    cutIntoEmit: "stench",
 }
 elements.cut_onion = {
     color: "#dcc5ed",
@@ -7756,3 +7785,62 @@ elements.raw_beef = {
         "fire": {elem1: "barbecued_beef"}
     }
 };
+
+elements.juice.reactions.milk = { elem1:"fruit_milk", elem2:null, chance:0.05, func: function(pixel1, pixel2){
+    let newrgb = interpolateRgb(getRGB('rgb(250,250,250)'), getRGB(pixel2.color), 0.25);
+    pixel1.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+}}
+elements.juice.reactions.cream = { elem1:"fruit_milk", elem2:null, chance:0.05, func: function(pixel1, pixel2){
+    let newrgb = interpolateRgb(getRGB('rgb(250,250,250)'), getRGB(pixel2.color), 0.25);
+    pixel1.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+}}
+elements.soda.reactions.soda = {
+    func: function(pixel1, pixel2){
+      if(pixel1.color != pixel2.color){
+        if(Math.floor(Math.random() * 1000) == 1){
+        let newrgb = interpolateRgb(getRGB(pixel1.color), getRGB(pixel2.color), 0.5);
+        pixel1.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+        pixel2.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+        }
+      }
+    }
+  }
+elements.juice.reactions.soda = {
+    chance:70,
+    func: function(pixel1, pixel2){
+        if(pixel1.color != pixel2.color){
+            if(Math.floor(Math.random() * 1000) == 1){
+                let newrgb = interpolateRgb(getRGB(pixel1.color), getRGB(pixel2.color), 0.5);
+                changePixel(pixelMap[pixel1.x][pixel1.y],"soda")
+                pixel1.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+                pixel2.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+            }
+        }
+    }
+}
+if (!elements.orange_juice.reactions) { elements.orange_juice.reactions = {} }
+elements.orange_juice.reactions.seltzer = { elem1:"soda", elem2:"foam", color1:"#ffb319"}
+elements.orange_juice.reactions.carbon_dioxide = { elem1:"soda", elem2:"foam", color1:"#ffb319"}
+elements.agar.reactions.soda = { elem1:"jelly", elem2:null, chance:0.05, func: function(pixel1, pixel2){
+    let newrgb = interpolateRgb(getRGB('rgb(250,250,250)'), getRGB(pixel2.color), 0.7);
+    pixel1.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
+}}
+elements.hard_jelly = {
+    color: "#c372b8",
+    behavior: behaviors.STURDYPOWDER,
+    tempHigh: 200,
+    stateHigh: ["smoke","sugar"],
+    category: "food",
+    state: "solid",
+    density: 1245,
+    isFood: true,
+    hidden: true,
+    temp: 0
+}
+elements.jelly.stateLow = "hard_jelly"
+elements.jelly.stateLowColorMultiplier = 1.2
+elements.jelly.temp = 0
+
+elements.nut.name = "peanut";
+elements.nut_meat.name = "peanut_meat";
+elements.nut_butter.name = "peanut_butter";
