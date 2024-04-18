@@ -87,6 +87,8 @@ elements.Luminite = {
     category: "powders",
     state:  "solid",
     density: 200,
+    stateHigh: "Molten_Luminite",
+    tempHigh: 8500,
 };
 elements.Etherium = {
     color: ["#4b5f66", "#363d40", "#545b5e", "#2b363b", "#4a5559"],
@@ -94,6 +96,8 @@ elements.Etherium = {
     category: "powders",
     state:  "solid",
     density: 200,
+    stateHigh: "Molten_Etherium",
+    tempHigh: 13000,
 };
 elements.Voidmetal = {
     color: ["#4b5f66", "#363d40", "#545b5e", "#2b363b", "#4a5559"],
@@ -105,6 +109,8 @@ elements.Voidmetal = {
     category: "powders",
     state:  "solid",
     density: 200,
+    stateHigh: "Molten_Voidmetal",
+    tempHigh: 10000,
 };
 elements.Cosmilite = {
     color: ["#473d4f", "#381e4d", "#6c5b7a", "#baa3cc", "#7d0bd6"],
@@ -117,19 +123,23 @@ elements.Cosmilite = {
     category: "powders",
     state:  "solid",
     density: 200,
+    stateHigh: "Molten_Cosmilite",
+    tempHigh: 11000,
 };
 elements.Diathrylium = {
     color: ["#3d5c80", "#688fbd", "#b5bdc7", "#8aafde", "#2765b3", "#213c5c"],
     behavior: 
     [
-        ["CR:electric%0.005 AND CR:lightning%0.000005","CR:electric%0.005 AND CR:lightning%0.000005","CR:electric%0.005 AND CR:lightning%0.000005"],
-        ["CR:electric%0.005 AND CR:lightning%0.000005","XX","CR:electric%0.005 AND CR:lightning%0.000005"],
+        ["CR:electric%0.005 AND CR:lightning%0.00005","CR:electric%0.005 AND CR:lightning%0.00005","CR:electric%0.005 AND CR:lightning%0.00005"],
+        ["CR:electric%0.005 AND CR:lightning%0.00005","XX","CR:electric%0.005 AND CR:lightning%0.00005"],
         ["M2","M1","M2"]
     ],
     category: "powders",
     state:  "solid",
     density: 200,
     temp: 0,
+    stateHigh: "Molten_Diathrylium",
+    tempHigh: 18000,
 };
 elements.Kiaxorite = {
     color: ["#bac942", "#b8bf7c", "#738008", "#6a7035", "#6a7035"],
@@ -137,6 +147,8 @@ elements.Kiaxorite = {
     category: "powders",
     state:  "solid",
     density: 200,
+    stateHigh: "Molten_Kiaxorite",
+    tempHigh: 4000,
     reactions: {
         "Diathrylium": {elem1: "h_bomb", elem2: null}
     },
@@ -165,6 +177,7 @@ elements.Molten_Mithril = {
     temp: 2000,
     stateLow: "Mithril",
     tempLow: 1990,
+    hidden:true,
 };
 elements.Molten_Adamantium = {
     color: ["#d49a4e", "#8a530a", "#dea862", "#e37124", "#6e3108"],
@@ -175,6 +188,7 @@ elements.Molten_Adamantium = {
     temp: 9000,
     stateLow: "Adamantium",
     tempLow: 8800,
+    hidden:true,
 };
 elements.Molten_Palladium = {
     color: ["#d49a4e", "#8a530a", "#dea862", "#e37124", "#6e3108"],
@@ -185,6 +199,7 @@ elements.Molten_Palladium = {
     temp: 11000,
     stateLow: "Palladium",
     tempLow: 10090,
+    hidden:true,
 };
 elements.Molten_Orichalcum = {
     color: ["#d49a4e", "#8a530a", "#dea862", "#e37124", "#6e3108"],
@@ -195,6 +210,7 @@ elements.Molten_Orichalcum = {
     temp: 10500,
     stateLow: "Orichalcum",
     tempLow: 10000,
+    hidden:true,
 };
 elements.Molten_Brightsteel = {
     color: ["#d49a4e", "#8a530a", "#dea862", "#e37124", "#6e3108"],
@@ -205,6 +221,7 @@ elements.Molten_Brightsteel = {
     temp: 5000,
     stateLow: "Brightsteel",
     tempLow: 4090,
+    hidden:true,
 };
 elements.Molten_Darksteel = {
     color: ["#d49a4e", "#8a530a", "#dea862", "#e37124", "#6e3108"],
@@ -215,7 +232,74 @@ elements.Molten_Darksteel = {
     temp: 10500,
     stateLow: "Darksteel",
     tempLow: 10000,
+    hidden:true,
     reactions: {
         "Molten_Brightsteel": {elem1: "h_bomb"},
     },
+};
+elements.Molten_Luminite = {
+    color: ["#d49a4e", "#8a530a", "#dea862", "#e37124", "#6e3108"],
+    behavior: behaviors.MOLTEN,
+    category: "states",
+    state: "liquid",
+    density: "2000",
+    temp: 8500,
+    stateLow: "Luminite",
+    tempLow: 8400,
+    hidden:true,
+};
+elements.Molten_Etherium = {
+    color: ["#d49a4e", "#8a530a", "#dea862", "#e37124", "#6e3108"],
+    behavior: behaviors.MOLTEN,
+    category: "states",
+    state: "liquid",
+    density: "2000",
+    temp: 13000,
+    stateLow: "Etherium",
+    tempLow: 12500,
+    hidden:true,
+};
+elements.Molten_Voidmetal = {
+    color: ["#d49a4e", "#8a530a", "#dea862", "#e37124", "#6e3108"],
+    behavior: behaviors.MOLTEN,
+    category: "states",
+    state: "liquid",
+    density: "2000",
+    temp: 10000,
+    stateLow: "Voidmetal",
+    tempLow: 9500,
+    hidden:true,
+};
+elements.Molten_Cosmilite = {
+    color: ["#d49a4e", "#8a530a", "#dea862", "#e37124", "#6e3108"],
+    behavior: behaviors.MOLTEN,
+    category: "states",
+    state: "liquid",
+    density: "2000",
+    temp: 5000,
+    stateLow: "Cosmilite",
+    hidden:true,
+    tempLow: 10500,
+};
+elements.Molten_Diathrylium = {
+    color: ["#d49a4e", "#8a530a", "#dea862", "#e37124", "#6e3108"],
+    behavior: behaviors.MOLTEN,
+    category: "states",
+    state: "liquid",
+    density: "2000",
+    temp: 18000,
+    stateLow: "Diathrylium",
+    tempLow: 17500,
+    hidden:true,
+};
+elements.Molten_Kiaxorite = {
+    color: ["#d49a4e", "#8a530a", "#dea862", "#e37124", "#6e3108"],
+    behavior: behaviors.MOLTEN,
+    category: "states",
+    state: "liquid",
+    density: "2000",
+    temp: 4000,
+    stateLow: "Kiaxorite",
+    tempLow: 3500,
+    hidden:true,
 };
