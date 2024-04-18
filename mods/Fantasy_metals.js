@@ -3,7 +3,7 @@
 // Add ingots (this is giong to be hell for me)
 // More reactions (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)
 // More metals? (why am I doing this again?)
-// Finish molten elements (yay)
+// Finish molten elements (How many elements did I make again?)
 // Give the molten elements more unique colors (I do not want to do this)
 
 elements.Mithril = {
