@@ -12,6 +12,7 @@ elements.Atomic_Acid = {
     tempHigh: 1000,
     stateLow: "plasma",
     tempLow: -273,
+};
 elements.YES = {
     color: "#e88d38",
     behavior: behaviors.POWDER,
