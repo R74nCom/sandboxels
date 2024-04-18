@@ -4,6 +4,8 @@ elements.Mithril = {
     category: "powders",
     state:  "solid",
     density: 200,
+    stateHigh: "Molten_Mithril",
+    tempHigh: 2000,
 };
 elements.Palladium = {
     color: ["#e67c47", "#61280c", "#9c3402", "#f57231", "#fc9662"],
@@ -11,6 +13,8 @@ elements.Palladium = {
     category: "powders",
     state:  "solid",
     density: 200,
+    tempHigh: 9000,
+    stateHigh: "Molten_Palladium",
 };
 elements.Adamantium = {
     color: ["#a30303", "#5e1111", "#400303", "#451a1a", "#805454"],
@@ -18,6 +22,8 @@ elements.Adamantium = {
     category: "powders",
     state:  "solid",
     density: 200,
+    tempHigh: 11000,
+    stateHigh: "Molten_Adamantium",
 };
 elements.Orichalcum = {
     color: ["#de55ed", "#bc13cf", "#8c3396", "#a952b3", "#bc08d1"],
@@ -130,4 +136,33 @@ elements.It_Go_Boom = {
     density: 90,
     hidden:true,
 };
+elements.Molten_Mithril = {
+    color: ["#d49a4e", "#8a530a", "#dea862", "#e37124", "#6e3108"],
+    behavior: behaviors.MOLTEN,
+    category: "states",
+    state: "liquid",
+    density: "2000",
+    temp: 2000,
+    stateLow: "Mithril",
+    tempLow: 1990,
+};
+elements.Molten_Adamantium = {
+    color: ["#d49a4e", "#8a530a", "#dea862", "#e37124", "#6e3108"],
+    behavior: behaviors.MOLTEN,
+    category: "states",
+    state: "liquid",
+    density: "2000",
+    temp: 9000,
+    stateLow: "Adamantium",
+    tempLow: 8800,
+};
+elements.Molten_Palladium = {
+    color: ["#d49a4e", "#8a530a", "#dea862", "#e37124", "#6e3108"],
+    behavior: behaviors.MOLTEN,
+    category: "states",
+    state: "liquid",
+    density: "2000",
+    temp: 11000,
+    stateLow: "Palladium",
+    tempLow: 10090,
 };
