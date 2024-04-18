@@ -12,6 +12,9 @@ elements.Atomic_Acid = {
     tempHigh: 1000,
     stateLow: "plasma",
     tempLow: -273,
+    reactions: {
+        "wall": {elem2: null},
+    },
 };
 elements.YES = {
     color: "#e88d38",
