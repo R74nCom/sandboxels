@@ -103,3 +103,127 @@ elements.frozen_xenon = {
     density: 3410,
     conduct: 0.8
 }
+elements.radon = {
+    color: elements.neon.color,
+    behavior: behaviors.GAS,
+    colorOn: ["#d33d7c","#f73273","#c03190"],
+    category: "gases",
+    state: "gas",
+    conduct: 0.8,
+    tempLow: -61,
+    stateLow: "liquid_radon",
+    density: 9.73,
+    tick: function(pixel){
+        if(elements.polonium){
+            if(Math.random()<0.00038){
+                for (var i = 0; i < adjacentCoords.length; i++){
+                    var coord = adjacentCoords[i];
+                    var x = pixel.x+coord[0];
+                    var y = pixel.y+coord[1];
+                    if (isEmpty(x, y) && Math.random()<0.01){
+                        createPixel(x, y, "helium")
+                        pixelMap[x][y].temp += 75
+                        break;
+                    }
+                }
+                changePixel(pixel, "polonium", false)
+                pixel.temp += 100
+            }
+        }else{
+            if(Math.random()<0.00038){
+                for (var i = 0; i < adjacentCoords.length; i++){
+                    var coord = adjacentCoords[i];
+                    var x = pixel.x+coord[0];
+                    var y = pixel.y+coord[1];
+                    if (!isEmpty(x, y, true) && Math.random()<0.01){
+                        pixel.temp += 50
+                    }
+                }
+                changePixel(pixel, "helium", false)
+                pixel.temp += 100
+            }
+        }
+        for (var i = 0; i < adjacentCoords.length; i++){
+            var coord = adjacentCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (isEmpty(x, y) && Math.random() < 0.001){
+                createPixel("radiation", x, y);
+            }
+        }
+    }
+}
+elements.liquid_radon = {
+    color: elements.neon.color,
+    behavior: behaviors.LIQUID,
+    colorOn: ["#d33d7c","#f73273","#c03190"],
+    category: "states",
+    state: "liquid",
+    tempHigh: -58,
+    stateHigh: "radon",
+    density: 13,
+    tempLow: -71,
+    stateLow: "frozen_radon",
+    conduct: 0.8,
+    tick: elements.radon.tick
+}
+elements.frozen_radon = {
+    color: elements.neon.color,
+    behavior: behaviors.WALL,
+    colorOn: ["#d33d7c","#f73273","#c03190"],
+    category: "states",
+    state: "solid",
+    tempHigh: -68,
+    stateHigh: "liquid_radon",
+    density: 16,
+    conduct: 0.8,
+    tick: elements.radon.tick
+}
+elements.oganesson = {
+    color: elements.neon.color,
+    behavior: behaviors.GAS,
+    colorOn: ["#5bdce6","#56a9f7","#56b0e4"],
+    category: "gases",
+    state: "gas",
+    conduct: 0.8,
+    density: 9.73,
+    tick: function(pixel){
+        if(elements.livermorium){
+            if(Math.random()<0.038){
+                for (var i = 0; i < adjacentCoords.length; i++){
+                    var coord = adjacentCoords[i];
+                    var x = pixel.x+coord[0];
+                    var y = pixel.y+coord[1];
+                    if (isEmpty(x, y) && Math.random()<0.01){
+                        createPixel(x, y, "helium")
+                        pixelMap[x][y].temp += 250
+                        break;
+                    }
+                }
+                changePixel(pixel, "livermorium", false)
+                pixel.temp += 100
+            }
+        }else{
+            if(Math.random()<0.038){
+                for (var i = 0; i < adjacentCoords.length; i++){
+                    var coord = adjacentCoords[i];
+                    var x = pixel.x+coord[0];
+                    var y = pixel.y+coord[1];
+                    if (!isEmpty(x, y, true) && Math.random()<0.01){
+                        pixel.temp += 100
+                    }
+                }
+                changePixel(pixel, "helium", false)
+                pixel.temp += 250
+            }
+        }
+        for (var i = 0; i < adjacentCoords.length; i++){
+            var coord = adjacentCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (isEmpty(x, y) && Math.random() < 0.01){
+                createPixel("radiation", x, y);
+            }
+        }
+    }
+}

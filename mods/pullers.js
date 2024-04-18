@@ -2,6 +2,11 @@
 // a sandboxels mod that adds pullers
 /*
 ==CHANGELOG==
+  Version 1.2.1
+@voidapex11
+~fixed error
++e pullers
+
   Version 1.1.2
 @voidapex11
 ~fixed spelling mistake's
@@ -194,7 +199,7 @@ elements.down_puller = {
 			for (i = 1; i <= pixel.range; i++) { 
         
         if (!isEmpty(pixel.x, pixel.y - i, true)) {
-          if (pixelMap[pixel.x][pixel.y - i]['immovable]) {break}
+          if (pixelMap[pixel.x][pixel.y - i]['immovable']) {break}
           else {
             tryMove(pixelMap[pixel.x][pixel.y - i], pixel.x, pixel.y - i + 1); 
           }
@@ -251,4 +256,98 @@ elements.up_puller = {
 
 if (enabledMods.includes("pushers.js")) {
   console.log('compatibility with pushers.js and imovable objects coming in a later update of the pullers.js\neventualy...')
+}
+
+e_pullerColour='#c3a5d6'
+
+elements.left_e_puller = {
+	color: e_pullerColour,
+	properties: {
+		range: 10,
+		pushStrength: 1,
+	},
+	tick: function(pixel) {
+    if (pixel.charge) {
+      elements.left_puller.tick(pixel)
+    }
+		doDefaults(pixel);
+	},
+	category: "machines",
+	breakInto: ["metal_scrap", "steel", "iron", "glass", "uranium", "tin"],
+	tempHigh: 2400,
+	stateHigh: ["molten_aluminum", "molten_steel", "molten_iron", "molten_glass", "molten_uranium", "molten_tin"],
+	density: 10000,
+	hardness: 0.85,
+	conduct: 1,
+	state: "solid",
+}
+
+
+
+elements.right_e_puller = {
+	color: e_pullerColour,
+	properties: {
+		range: 10,
+		pushStrength: 1,
+	},
+	tick: function(pixel) { 
+		if (pixel.charge) {
+      elements.right_puller.tick(pixel)
+    }
+
+		doDefaults(pixel);
+	},
+	category: "machines",
+	breakInto: ["metal_scrap", "steel", "iron", "glass", "uranium", "tin"],
+	tempHigh: 2400,
+	stateHigh: ["molten_aluminum", "molten_steel", "molten_iron", "molten_glass", "molten_uranium", "molten_tin"],
+	density: 10000,
+	hardness: 0.85,
+	conduct: 1,
+	state: "solid",
+}
+
+elements.down_e_puller = {
+	color: e_pullerColour,
+	properties: {
+		range: 10,
+		pushStrength: 1,
+	},
+	tick: function(pixel) { 
+		if (pixel.charge) {
+      elements.down_puller.tick(pixel)
+    }
+
+		doDefaults(pixel);
+	},
+	category: "machines",
+	breakInto: ["metal_scrap", "steel", "iron", "glass", "uranium", "tin"],
+	tempHigh: 2400,
+	stateHigh: ["molten_aluminum", "molten_steel", "molten_iron", "molten_glass", "molten_uranium", "molten_tin"],
+	density: 10000,
+	hardness: 0.85,
+	conduct: 1,
+	state: "solid",
+}
+
+elements.up_e_puller = {
+	color: e_pullerColour,
+	properties: {
+		range: 10,
+		pushStrength: 1,
+	},
+	tick: function(pixel) { 
+    if (pixel.charge) {
+      elements.up_puller.tick(pixel)
+    }
+		doDefaults(pixel);
+	},
+	category: "machines",
+	breakInto: ["metal_scrap", "steel", "iron", "glass", "uranium", "tin"],
+	tempHigh: 2400,
+	stateHigh: ["molten_aluminum", "molten_steel", "molten_iron", "molten_glass", "molten_uranium", "molten_tin"],
+	density: 10000,
+	hardness: 0.85,
+	conduct: 1,
+	state: "solid",
 }
