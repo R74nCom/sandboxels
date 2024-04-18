@@ -5,6 +5,8 @@
 // More metals? (why am I doing this again?)
 // Finish molten elements (How many elements did I make again?)
 // Give the molten elements more unique colors (I do not want to do this)
+// Ores? (please no)
+// Suggstions?: (not open)
 
 elements.Mithril = {
     color: ["#66dede", "#78c4c4", "#6bbfa7", "#51fca9", "#6598b5", "#86a1db", "#61ad6e"],
