@@ -19,6 +19,7 @@ elements.YES = {
     category: "weapons",
     state: "solid",
     density: 3,
+    hidden:true,
     reactions: {
         "steel": {elem1: "h_bomb", elem2: null},
     },
