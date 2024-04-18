@@ -6,6 +6,7 @@
 // Finish molten elements (How many elements did I make again?)
 // Give the molten elements more unique colors (I do not want to do this)
 // Ores? (please no)
+// World gen? (SHIT)
 // Suggstions?: (not open)
 
 elements.Mithril = {
