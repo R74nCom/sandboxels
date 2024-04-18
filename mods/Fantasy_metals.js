@@ -3,10 +3,11 @@
 // Add ingots (this is giong to be hell for me)
 // More reactions (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)
 // More metals? (why am I doing this again?)
-// Finish molten elements (How many elements did I make again?)
+// Finish molten elements (Done!)
 // Give the molten elements more unique colors (I do not want to do this)
 // Ores? (please no)
 // World gen? (SHIT)
+// Weapons? (Somebody help me)
 // Suggstions?: (not open)
 
 elements.Mithril = {
