@@ -1,3 +1,9 @@
+// to do list:
+// Add ingots
+// More reactions
+// More metals?
+// Give the molten elements more unique colors (I do not want to do this)
+
 elements.Mithril = {
     color: ["#66dede", "#78c4c4", "#6bbfa7", "#51fca9", "#6598b5", "#86a1db", "#61ad6e"],
     behavior: behaviors.POWDER,
@@ -31,6 +37,8 @@ elements.Orichalcum = {
     category: "powders",
     state:  "solid",
     density: 200,
+    tempHigh: 10500,
+    stateHigh: "Molten_Orichalcum",
 };
 elements.Brightsteel = {
     color: ["#c4d10f", "#c2cc35", "#dde386", "#778003", "#dff005"],
@@ -43,6 +51,8 @@ elements.Brightsteel = {
     category: "powders",
     state:  "solid",
     density: 200,
+    stateHigh: "Molten_Brightsteel",
+    tempHigh: 5000,
 };
 elements.Darksteel = {
     color: ["#8f8786", "#2e2625", "#120b0b", "#000000", "#000000"],
@@ -55,6 +65,8 @@ elements.Darksteel = {
     category: "powders",
     state:  "solid",
     density: 200,
+    tempHigh: 10500,
+    stateHigh: "Molten_Darksteel",
     reactions: {
         "Brightsteel": {elem1: "It_Go_Boom", elem2: null}
     },
@@ -136,6 +148,9 @@ elements.It_Go_Boom = {
     density: 90,
     hidden:true,
 };
+
+// Molten elements
+
 elements.Molten_Mithril = {
     color: ["#d49a4e", "#8a530a", "#dea862", "#e37124", "#6e3108"],
     behavior: behaviors.MOLTEN,
@@ -165,4 +180,37 @@ elements.Molten_Palladium = {
     temp: 11000,
     stateLow: "Palladium",
     tempLow: 10090,
+};
+elements.Molten_Orichalcum = {
+    color: ["#d49a4e", "#8a530a", "#dea862", "#e37124", "#6e3108"],
+    behavior: behaviors.MOLTEN,
+    category: "states",
+    state: "liquid",
+    density: "2000",
+    temp: 10500,
+    stateLow: "Orichalcum",
+    tempLow: 10000,
+};
+elements.Molten_Brightsteel = {
+    color: ["#d49a4e", "#8a530a", "#dea862", "#e37124", "#6e3108"],
+    behavior: behaviors.MOLTEN,
+    category: "states",
+    state: "liquid",
+    density: "2000",
+    temp: 5000,
+    stateLow: "Brightsteel",
+    tempLow: 4090,
+};
+elements.Molten_Darksteel = {
+    color: ["#d49a4e", "#8a530a", "#dea862", "#e37124", "#6e3108"],
+    behavior: behaviors.MOLTEN,
+    category: "states",
+    state: "liquid",
+    density: "2000",
+    temp: 10500,
+    stateLow: "Darksteel",
+    tempLow: 10000,
+    reactions: {
+        "Molten_Brightsteel": {elem1: "h_bomb"},
+    },
 };
