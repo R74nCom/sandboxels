@@ -1,3 +1,6 @@
+// i was bored when i made this
+// made by ncmq wow
+
 elements.poop = {
     behavior: behaviors.POWDER,
     category: "food",
