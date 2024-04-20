@@ -1,6 +1,6 @@
 {
 "#lang.name": "Polski",
-"#lang.credit": "ggod, _ilikepizza_, ChoinkaXD",
+"#lang.credit": "ggod, _ilikepizza_, ChoinkaXD, ncmq",
 "land":"teren",
 "liquids":"płyny",
 "life":"życie",
@@ -532,12 +532,12 @@
 "magnesium": "magnez",
 "molten_magnesium": "stopiony_magnez",
 "sandstorm": "burza_piaskowa",
-"caustic_potash": "",
+"caustic_potash": "potaż_kaustyczny",
 "antibomb": "antybomba",
 "tornado": "tornado",
 "earthquake": "trzęsienie_ziemi",
 "tsunami": "tsunami",
 "blaster": "promień",
 "propane_ice": "lód_propanowy",
-"molten_caustic_potash": ""
+"molten_caustic_potash": "topiony_potaż_kaustyczny"
 }
