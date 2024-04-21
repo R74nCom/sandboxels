@@ -9,6 +9,12 @@ for (let elementi in elements){
 biologicaltocorrode.splice(biologicaltocorrode.indexOf("salt"), 1)
 biologicaltocorrode.splice(biologicaltocorrode.indexOf("sugar"), 1)
 biologicaltocorrode.push("wood")
+if (enabledMods.includes("mods/bettermetalscrap.js")){
+    for (let metal in metalstocorrode){
+        if (!elements[metalstocorrode[metal]].properties){elements[metalstocorrode[metal]].properties = {}}
+        elements[metalstocorrode[metal]].properties.scrapType = metalstocorrode[metal]
+    }
+}
 function basicHalogen(pixel){
     for (var i = 0; i < adjacentCoords.length; i++) {
         var coord = adjacentCoords[i];
