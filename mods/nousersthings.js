@@ -2655,3 +2655,44 @@ elements.grid_brush = {
         }
     }
 }
+elements.healing_serum = {
+    color: ["#79d2c5", "#77d8c0", "#78ddb9", "#7de1b0", "#85e6a6", "#91e99a", "#9fec8e"],
+    behavior: behaviors.LIQUID,
+    category: "liquids",
+    state: "liquid",
+    properties: {
+        wait: 15,
+        waitReduce: false,
+    },
+    tick: function(pixel){
+        if (pixel.waitReduce){pixel.wait -= 1}
+        if (pixel.wait == 0){
+            pixel.elementsSeen = {}
+        }
+        for (var i = 0; i < adjacentCoords.length; i++) {
+            var coord = adjacentCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (!isEmpty(x,y, true)){
+                if (!pixel.waitReduce){
+                    pixel.waitReduce = true
+                }
+                if (pixel.wait == 0){
+                    if (!pixel.elementsSeen[pixelMap[x][y].element] && pixelMap[x][y].element != "healing_serum"){
+                        pixel.elementsSeen[pixelMap[x][y].element] = 1
+                    } else if (pixelMap[x][y].element != "healing_serum") {
+                        pixel.elementsSeen[pixelMap[x][y].element] += 1
+                    }
+                }
+            }
+            if (pixel.wait == 0){
+                if (Object.keys(pixel.elementsSeen).length == 0){
+                    deletePixel(pixel.x, pixel.y)
+                    return;
+                } else{
+                    changePixel(pixel, Object.keys(pixel.elementsSeen).reduce((a, b) => pixel.elementsSeen[a] > pixel.elementsSeen[b] ? a : b))
+                }
+            }
+        }
+    }
+}
