@@ -1,6 +1,6 @@
 // Science mod for Sandboxels
 // (Inspired by survival.js)
-// Build 17
+// Build 18
 // By: Lucifer (@a_british_proto (Discord))
 // If there is anything you want to suggest or there's a bug then just dm me on discord
 // Todo:
@@ -1383,7 +1383,59 @@ substance.Silver_Sulfate = {
     hidden:true
 }
 
-// I done this on my school computers :skull:
-// doing more later
+// I have finally gotten my motivation back! :D
 
-// I accidentally pressed Ctrl+V instead of Ctrl+C so it deleted my work D:
+substance.Silver_Selenide = {
+    behavior: behaviors.WALL,
+    color: "333333",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+// Why am listening to a random playlist? I swear I'm going fully insane
+
+substance.Silver_Selenate = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Telluride = {
+    behavior: behaviors.WALL,
+    color: "333333",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Arsenate = {
+    behavior: behaviors.WALL,
+    color: "E3E35F",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Phosphate = {
+    behavior: behaviors.WALL,
+    color: "FFFF00",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+// FINALLY WE ARE OUT OF THE SILVER COMPOUNDS!!!11!!1111! :DDDDD
+// Now time to go onto the aluminum compounds
+
+substance.Aluminum_Arsenide = {
+    behavior: behaviors.WALL,
+    color: "FF6600",
+    category: "lands", // Might just change this after I'm done with the substances (as well as the other one(s))
+    state: "solid",
+    hidden:true
+}
+
+// Doing more tmrw I guess, I'm tired
