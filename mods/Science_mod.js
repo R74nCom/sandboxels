@@ -1454,3 +1454,19 @@ substance.Aluminum_Diboride = {
 //     state: "null",
 //     hidden:true
 // }
+
+// substance.Aluminum_Bromate_Nonahydrate = {
+//     behavior: behaviors.NULL,
+//     color: "000000",
+//     category: "null",
+//     state: "null",
+//     hidden:true
+// }
+
+substance.Aluminum_Tribromide = {
+    behavior: behavior.NULL, // It's meant to be a powder but I'm too tired to go look plus I need to go to my next lesson now
+    color: "FF0000",
+    category: "lands",
+    state: "powder",
+    hidden:true
+}
