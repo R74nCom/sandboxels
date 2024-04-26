@@ -1,6 +1,6 @@
 // Science mod for Sandboxels
 // (Inspired by survival.js)
-// Build 18
+// Build 19
 // By: Lucifer (@a_british_proto (Discord))
 // If there is anything you want to suggest or there's a bug then just dm me on discord
 // Todo:
@@ -1438,4 +1438,19 @@ substance.Aluminum_Arsenide = {
     hidden:true
 }
 
-// Doing more tmrw I guess, I'm tired
+substance.Aluminum_Diboride = {
+    behavior: behaviors.WALL,
+    color: "CB6D51",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+// Doing this later as my schools blocked chatgpt and the definition is not on Ptable.com :/
+// substance.Aluminum_Dodecaboride = {
+//     behavior: behaviors.NULL,
+//     color: "000000",
+//     category: "null",
+//     state: "null",
+//     hidden:true
+// }
