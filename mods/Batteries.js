@@ -22,7 +22,7 @@ elements.low_battery= {
     ],
     behaviorOn:  [
         "XX|SH%10|XX", // shocks (adds charge)
-        "SH%10|CH:charged_battery%0.05|SH%10",
+        "SH%10|CH:charged_battery%0.045|SH%10",
         "XX|SH%10|XX",
     ],
     colorOn: "#4fb613",
@@ -41,7 +41,7 @@ elements.dead_battery= {
     ],
     behaviorOn:  [
         "XX|XX|XX",
-        "XX|CH:low_battery%0.05|XX",
+        "XX|CH:low_battery%0.045|XX",
         "XX|XX|XX",
     ],
     colorOn: "#699e19",
@@ -93,6 +93,7 @@ elements.radio_wave= {
 		}
 	},
     category: "energy",
+    reactions: {electric: {elem1: null, elem2: null, chance: 0.5}},
     density: 1,
     //charge: 0.5,
     conduct: 0.01
