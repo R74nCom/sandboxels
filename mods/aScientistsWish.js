@@ -15,6 +15,7 @@ elements.carbon_monoxide = {
       tempLow: -192,
       stateLow: "liquid_carbon_monoxide",
       burntime: 5,
+      darkText: true,
       fireColor: "#ebba34",
       reactions: {
                     "head": { elem1:"rotten_meat", chance:0.5 },
@@ -28,9 +29,11 @@ elements.liquid_carbon_monoxide = {
          category: "liquids",
          state: "liquid",
          density: 1.14,
+         darkText: true,
          tempHigh: -190,
          temp: -192,
          tempLow: -199,
+         hidden: true,
          stateLow: "ice_carbon_monoxide",
          stateHigh: "carbon_monoxide", 
 };
@@ -42,6 +45,7 @@ elements.ice_carbon_monoxide = {
          temp: -199,
          density: 1.14,
          tempHigh: -192,
+         darkText: true,
          stateHigh: "liquid_carbon_monoxide", 
 };
 elements.carbon_monoxide_detector = {
@@ -187,6 +191,8 @@ elements.fallout_drum = {
  state: "solid",
  density: 9000,
  color: "#e3cc34",
+ tempHigh: 2500,
+ stateHigh: ["aluminum","radiated_water","radiated_water","fallout"],
  breakInto: ["fallout","fallout"],
  reactions: { 
  "water": { elem1:"fallout_drum", elem2:"radiated_water" },
@@ -200,13 +206,17 @@ elements.radiated_water = {
    density :1300,
    color: ["#23d959","#29d65d"],
    hidden: true,
+   tempHigh: 140,
+   stateHigh: "polluted_air",
+   tempLow: -6,
+   stateLow: "rad_ice",
    reactions: {
    "human": { elem2:"rotten_meat" },
    "body": { elem2:"rotten_meat" },
    "head": { elem2:"ash" },
    "bird": { elem2:"rotten_meat"},
-   "cell": { elem2:"cancer"},
- }
+   "cell": { elem2:"cancer"},  
+  }
 };
 
 elements.polluted_air = {
@@ -220,8 +230,13 @@ elements.polluted_air = {
         "head": { elem2:"rotten_meat" },
         "human": { elem2:"rotten_meat" },
         "bird": { elem2:"rotten_meat" },
-        "cell": { elem2:"cancer"},
-    }
+        "cell": { elem2:"cancer" },
+        "water": { elem1: null, elem2: "radiated_water" },
+        "worm": { elem2: ["ash","cancer"] },
+        "flea": { elem2: "ash" },
+        "seed": {elem2: "dead_plant" },
+        "plant": {elem1: null, chance:0.5, elem2: "dead_plant", chance:0.5 },
+    },
 };
 
 elements.siren = {
@@ -235,5 +250,90 @@ elements.siren = {
         "fallout": {"charge1":1},
         "radiated_water": {"charge1":1},
         "polluted_air": {"charge1":1},
+    }
+};
+
+elements.radiated_metal = {
+   behavior: behaviors.WALL,
+   category: "radiated",
+   state:"solid",
+   density :2045,
+   color: ["#5e705a","#83ab7b","#474747"],
+   tempHigh: 1440,
+   stateHigh: ["molten_nickel","molten_iron","molten_tin","fallout"],
+   reactions: {
+       "water": { elem2:"radiated_water", chance:0.7 }, 
+       "foam": { elem1:["tin","nickel","iron"] },
+    }
+};
+
+elements.rad_ice = {
+    behavior: behaviors.WALL,
+    category: "radiated",
+    state:"solid",
+    density: 1905,
+    color: ["#81d79c","#68b899","#68abb8"],
+    hidden: true,
+    temp: -6,
+    tempHigh: 5,
+    stateHigh: ["radiated_water","water"],
+    reactions: {
+        "snow": { elem2:"dirty_water" },
+        "water": { elem2:"radiated_water" },
+ }
+}
+
+elements.rad_snow = {
+    behavior: behaviors.POWDER,
+    category: "radiated",
+    state:"powder",
+    density: 1500,
+    color: ["#9effe4","#b5fffd","#d4fff1"],
+    temp: -2,
+    tempHigh: 21,
+    stateHigh: "radiated_water",
+};
+
+elements.rad_rock = {
+    behavior: behaviors.POWDER,
+    category: "land",
+    state: "powder",
+    density: 2790,
+    color: ["#34382d","#3f4633","#595a4d"],
+    tempHigh: 1200,
+    stateHigh: ["magma","fallout"],
+    reactions: {
+        "water": { elem2:"dirty_water" },
+        "salt_water": { elem2:"dirty_water" },
+        "sugar_water": { elem2:"dirty_water" },
+        "seltzer": { elem2:"dirty_water" },
+        "bleach": {elem2: "rock", chance:0.1 },
+        "rad_cleaner": { elem1:"rock" },
+        "foam": { elem1:"rock" },
+        "juice": { elem2: null },
+        "blood": { elem2:"infection" },
+        "grass": { elem2:"dead_plant" },
+        "plant": { elem2:"dead_plant" },
+        "cell": { elem2:"cancer" },
+        "worm": { elem2:"ash" },
+        "glass": { elem2:"rad_glass"},
+        "glass_shard": { elem2:"rad_shard" },
+    }
+};
+
+elements.rad_cleaner = {
+    behavior: behaviors.WALL,
+    category: "machines",
+    state: "solid",
+    density: 2500,
+    color: ["#383838","#212220"],
+    desc: "clean radiated elements",
+    tempHigh: 1250,
+    stateHigh: ["fallout","molten_plastic","steam"],
+    reactions: {
+        "radiated_water": {elem2:"water" },
+        "polluted_air": {elem2: "oxygen"},
+        "rad_snow": {elem2: "snow"},
+        "rad_rock": {elem2: "rock"},
     }
 }

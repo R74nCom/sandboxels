@@ -1,5 +1,6 @@
 // Science mod for Sandboxels
 // (Inspired by survival.js)
+// Build 19
 // By: Lucifer (@a_british_proto (Discord))
 // If there is anything you want to suggest or there's a bug then just dm me on discord
 // Todo:
@@ -18,6 +19,7 @@ if (!settings.Science_mod) {
         "Beryllium": 9.223372036854776e+18,
         "Boron": 9.223372036854776e+18,
         "Carbon": 9.223372036854776e+18,
+        "Nitrogen": 9.223372036854776e+18,
         "Oxygen": 9.223372036854776e+18,
         "Flourine": 9.223372036854776e+18,
         "Neon": 9.223372036854776e+18,
@@ -1085,28 +1087,386 @@ element.Oganesson = {
 // Substance proporties (These are the properties of the substances, not the elements These properties 
 // use hidden:true as you don't start with these but instead have to craft them):
 
-substance.Polystyrene = {
-    behavior: behaviors.WALL,
-    color:"FFFFFF",
-    category:"land",
+// I replaced all of it with this because it might get in the way in future updates
+
+substance.Silver_Hexafluoroarsenate = {
+    behavior: behaviours.WALL,
+    color:"FFFFFE",
+    category:"lands",
     state:"solid",
     hidden:true
 }
 
-substance.Styrene = {
-    behavior: behaviors.LIQUID,
-    color:"FFFFED",
-    category:"liquids",
-    state:"liquid",
+substance.Silver_Tetrafluoroborate = {
+    behavior: behaviors.POWDER,
+    color: "FAF9F6",
+    category: "lands",
+    state: "powder",
     hidden:true
 }
 
-substance.Cinnamaldehyde = {
-    behavior: behaviors.LIQUID,
-    color:"FDFD96",
-    category:"liquids",
-    state:"liquid",
+substance.Silver_Bromide = {
+    behavior: behaviors.WALL,
+    color: "FDFD96",
+    category: "lands",
+    state: "solid",
+    hidden: true
+}
+
+substance.Silver_Bromate = {
+    behavior: behaviors.POWDER,
+    colour: "FFFFFF",
+    category: "lands",
+    state: "powder",
     hidden:true
 }
 
-// Doing more tmrw
+substance.Silver_Picrate_Monohydrate = {
+    behavior: behaviors.WALL,
+    color: "E4D99F",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Chloride = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Perchlorate_Hydrate = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+// I can't believe i almost forgor about the "."
+subtance.Silver_Perchlorate_Monohydrate = {
+    behavior: behaviors.POWDER,
+    color: "FFFFFF",
+    category: "lands",
+    state: "powder",
+    hidden:true
+}
+
+substance.Silver_Chlorite = {
+    behavior: behaviors.WALL,
+    colour: "FFFF00",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Chlorate ={
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Perchlorate = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Fluoride = {
+    behavior: behaviors.WALL,
+    color: "9B7A01",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+// Basically the same as Silver_Floride but instead the second version
+subtance.Silver_Difluoride = {
+    behavior: behaviors.WALL,
+    color: "9B7A01",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+// Only just realised that this had spaces :skull:
+substance.Silver_Hydrogen_Sluoride = {
+    // I'm guessing that this is a liquid
+    behavior: behaviors.LIQUID,
+    color: "FFFFFF",
+    category: "liquid",
+    state: "liquid",
+    hidden:true
+}
+
+// Why are a bunch of these just silver compounds? Really weird :/
+subtance.Silver_Hexafluorophosphate = {
+    behavior: behaviors.POWDER,
+    color: "FFFFFF",
+    category: "lands",
+    state: "powder",
+    hidden:true
+}
+
+substance.Silver_Hexafluoroantimonate = {
+    behavior: behaviors.WALL,
+    color: "FFFDD0",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+// There's a purple crystal version and a brown powder version
+// Why does this sound like something you'd get at a posh (maybe Italian) restruant (without the "01" and the "_")
+subtance.Silver_permanganate_01 = {
+    behavior: behaviours.WALL,
+    color: "800080",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+subtance.Silver_permanganate_02 = {
+    behavior: behaviors.POWDER,
+    color: "964B00",
+    category: "lands",
+    state: "powder",
+    hidden:true
+}
+
+substance.Silver_Vandium_Trioxide = {
+    behavior: behaviors.WALL,
+    color: "FFFF00",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+// Why is this fun? How is this not torture? This is line 1247! (at the time I am making this comment)
+
+// I think there's two silver iodides I'm just not so sure (and I ain't editing this after)
+// Nvm it's only one , I got silver iodide and silver iodate mixed up :skull:
+subtance.Silver_Iodide = {
+    behavior: behaviors.POWDER,
+    color: "E4D99F",
+    category: "lands",
+    state: "powder",
+    hidden:true
+}
+
+substance.Silver_Iodate = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden: true
+}
+
+// I was confused at first on why there were two silver nitrates, but now I understand
+substance.Silver_Nitrate_01 = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Nitrate_02 = {
+    behavior: behaviors.POWDER,
+    color: "FFFFFF",
+    category: "lands",
+    state: "powder",
+    hidden:true
+}
+
+subtance.Silver_Azide = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+// This one is powder and crystals
+substance.Silver_Oxzide_01 = {
+    behavior: behaviors.POWDER,
+    color: "000001",
+    category: "lands",
+    state: "powder",
+    hidden:true
+}
+
+substance.Silver_Oxzide_02 = {
+    behavior: behaviors.WALL,
+    color: "000001",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Metaphospahte = {
+    behavior: behaviors.WALL,
+    color: "FFFF00",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Perrhenate = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Acetylide = {
+    behavior: behaviors.WALL,
+    color: "C0C0C0",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Chromate = {
+    behavior: behaviors.POWDER,
+    color: "A52A2A",
+    category: "lands",
+    state: "powder",
+    hidden:true
+}
+
+substance.Silver_Dichromate = {
+    behavior: behaviors.WALL,
+    color: "A52A2A",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Subfluoride = {
+    behavior: behaviors.WALL,
+    color: "CD7F32",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Sulfide = {
+    behavior: behaviors.WALL,
+    color: "3f3f3f",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Oxzide = {
+    behavior: behaviors.POWDER,
+    color: "000002",
+    category: "lands",
+    state: "powder",
+    hidden:true
+}
+
+// Editing this later on when I get back home
+substance.Silver_Sulfate = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands"
+    state: "solid",
+    hidden:true
+}
+
+// I have finally gotten my motivation back! :D
+
+substance.Silver_Selenide = {
+    behavior: behaviors.WALL,
+    color: "333333",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+// Why am listening to a random playlist? I swear I'm going fully insane
+
+substance.Silver_Selenate = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Telluride = {
+    behavior: behaviors.WALL,
+    color: "333333",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Arsenate = {
+    behavior: behaviors.WALL,
+    color: "E3E35F",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Phosphate = {
+    behavior: behaviors.WALL,
+    color: "FFFF00",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+// FINALLY WE ARE OUT OF THE SILVER COMPOUNDS!!!11!!1111! :DDDDD
+// Now time to go onto the aluminum compounds
+
+substance.Aluminum_Arsenide = {
+    behavior: behaviors.WALL,
+    color: "FF6600",
+    category: "lands", // Might just change this after I'm done with the substances (as well as the other one(s))
+    state: "solid",
+    hidden:true
+}
+
+substance.Aluminum_Diboride = {
+    behavior: behaviors.WALL,
+    color: "CB6D51",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+// Doing this later as my schools blocked chatgpt and the definition is not on Ptable.com :/
+// substance.Aluminum_Dodecaboride = {
+//     behavior: behaviors.NULL,
+//     color: "000000",
+//     category: "null",
+//     state: "null",
+//     hidden:true
+// }
+
+// substance.Aluminum_Bromate_Nonahydrate = {
+//     behavior: behaviors.NULL,
+//     color: "000000",
+//     category: "null",
+//     state: "null",
+//     hidden:true
+// }
+
+substance.Aluminum_Tribromide = {
+    behavior: behavior.NULL, // It's meant to be a powder but I'm too tired to go look plus I need to go to my next lesson now
+    color: "FF0000",
+    category: "lands",
+    state: "powder",
+    hidden:true
+}
