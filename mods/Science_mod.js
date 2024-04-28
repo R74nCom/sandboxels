@@ -1,6 +1,6 @@
 // Science mod for Sandboxels
 // (Inspired by survival.js)
-// Build 17
+// Build 19
 // By: Lucifer (@a_british_proto (Discord))
 // If there is anything you want to suggest or there's a bug then just dm me on discord
 // Todo:
@@ -1383,7 +1383,90 @@ substance.Silver_Sulfate = {
     hidden:true
 }
 
-// I done this on my school computers :skull:
-// doing more later
+// I have finally gotten my motivation back! :D
 
-// I accidentally pressed Ctrl+V instead of Ctrl+C so it deleted my work D:
+substance.Silver_Selenide = {
+    behavior: behaviors.WALL,
+    color: "333333",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+// Why am listening to a random playlist? I swear I'm going fully insane
+
+substance.Silver_Selenate = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Telluride = {
+    behavior: behaviors.WALL,
+    color: "333333",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Arsenate = {
+    behavior: behaviors.WALL,
+    color: "E3E35F",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Phosphate = {
+    behavior: behaviors.WALL,
+    color: "FFFF00",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+// FINALLY WE ARE OUT OF THE SILVER COMPOUNDS!!!11!!1111! :DDDDD
+// Now time to go onto the aluminum compounds
+
+substance.Aluminum_Arsenide = {
+    behavior: behaviors.WALL,
+    color: "FF6600",
+    category: "lands", // Might just change this after I'm done with the substances (as well as the other one(s))
+    state: "solid",
+    hidden:true
+}
+
+substance.Aluminum_Diboride = {
+    behavior: behaviors.WALL,
+    color: "CB6D51",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+// Doing this later as my schools blocked chatgpt and the definition is not on Ptable.com :/
+// substance.Aluminum_Dodecaboride = {
+//     behavior: behaviors.NULL,
+//     color: "000000",
+//     category: "null",
+//     state: "null",
+//     hidden:true
+// }
+
+// substance.Aluminum_Bromate_Nonahydrate = {
+//     behavior: behaviors.NULL,
+//     color: "000000",
+//     category: "null",
+//     state: "null",
+//     hidden:true
+// }
+
+substance.Aluminum_Tribromide = {
+    behavior: behavior.NULL, // It's meant to be a powder but I'm too tired to go look plus I need to go to my next lesson now
+    color: "FF0000",
+    category: "lands",
+    state: "powder",
+    hidden:true
+}
