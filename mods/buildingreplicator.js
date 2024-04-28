@@ -132,7 +132,7 @@ elements.submitted_blueprint_2_creator = {
     }
   }
 }
-elements.custombp_creator = {
+elements.custom_bp_spawner = {
   color: "#64abfd",
   behavior: behaviors.WALL,
   state: "solid",
@@ -166,13 +166,13 @@ let bpsizeH = 15;
 let bpsizeW = 15;
 let generatedBP = [];
 let seenElements = {};
-elements.bp_generator = {
+elements.bp_scanner = {
   color: "#64abfd",
   behavior: behaviors.SOLID,
   state: "solid",
   category: "special",
   onSelect: function(pixel){
-    bpsizeH = prompt("Enter the height of the blueprint", 15);
+    bpsizeH = prompt("Enter the height of the blueprint. It will be scanned from the TOP LEFT corner.", 15);
     bpsizeW = prompt("Enter the width of the blueprint", 15);
     generatedBP = [];
     for (let y = 1; y <= bpsizeH; y++){
