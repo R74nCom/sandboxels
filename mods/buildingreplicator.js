@@ -174,26 +174,23 @@ elements.bp_scanner = {
   onSelect: function(pixel){
     bpsizeH = prompt("Enter the height of the blueprint. It will be scanned from the TOP LEFT corner.", 15);
     bpsizeW = prompt("Enter the width of the blueprint", 15);
-    generatedBP = [];
-    for (let y = 1; y <= bpsizeH; y++){
-      generatedBP.push([]);
-    }
   },
   tick: function(pixel){
     if(pixelTicks == pixel.start){
+      generatedBP = [];
+      for (let y = 1; y <= bpsizeH; y++){
+        generatedBP.push([]);
+      }
       let elementCounter = 1;
       seenElements = {};
       for (let y = 0; y < bpsizeH; y++){
-        for (let x = 1; x <= bpsizeW; x++){
-          if (!isEmpty(pixel.x + x, pixel.y + y, true)){
-            var opElement = pixelMap[pixel.x + x][pixel.y + y].element;
+        for (let x = 0; x < bpsizeW; x++){
+          if (!isEmpty(pixel.x + x + 1, pixel.y + y + 1, true)){
+            var opElement = pixelMap[pixel.x + x+1][pixel.y + y+1].element;
             if (!seenElements[opElement]){
               generatedBP[y].push(elementCounter);
               seenElements[opElement] = elementCounter;
               elementCounter++;
-              //console.log(elementCounter)
-              //console.log(seenElements)
-              //console.log(opElement)
             } else {
               generatedBP[y].push(seenElements[opElement]);
             }
@@ -202,12 +199,12 @@ elements.bp_scanner = {
           }
         }
       }
-      console.log(generatedBP)
-      console.log(seenElements)
-      generatedBP.shift();
+      console.log(generatedBP);
+      console.log(seenElements);
       deletePixel(pixel.x, pixel.y);
       customBP = generatedBP;
       customBPKey = reverseObject(seenElements);
     }
   }
 }
+
