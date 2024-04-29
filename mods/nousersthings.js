@@ -1798,6 +1798,7 @@ elements.invisiblewall = {
 	category: "solids",
     movable: false,
     noMix: true,
+    hardness: 1,
 },
 elements.bismuth = {
     color: ["#818181","#989898","#b0b0b0","#c9c9c9"],
