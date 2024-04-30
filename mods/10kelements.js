@@ -38,8 +38,8 @@ var randomProperty = function (obj) {
 if (Math.abs(settings.randomcount) == settings.randomcount){
   if (!settings.skineasteregg){
   for (var i = 1; i <= settings.randomcount; i++){
-      var f = Math.random() < 0.2
-      var co = Math.random() < 0.2
+      var canHeat = Math.random() < 0.2
+      var canCold = Math.random() < 0.2
       elements["element_"+i] = {
           color:  "#" + color[Math.floor(Math.random()*color.length)] + color[Math.floor(Math.random()*color.length)] + color[Math.floor(Math.random()*color.length)] + color[Math.floor(Math.random()*color.length)] + color[Math.floor(Math.random()*color.length)] + color[Math.floor(Math.random()*color.length)],
           category: "random",
@@ -49,11 +49,11 @@ if (Math.abs(settings.randomcount) == settings.randomcount){
           density: randomIntFromInterval(1, 10000)
       }
       total = i
-      if (f){
+      if (canHeat){
           elements["element_"+i].tempHigh = 20 + randomIntFromInterval(10, 6000)
           elements["element_"+i].stateHigh = elementslist[Math.floor(Math.random()*elementslist.length)]
       }
-      if (co){
+      if (canCold){
           elements["element_"+i].tempLow = 20 - randomIntFromInterval(10, 270)
           elements["element_"+i].stateLow = elementslist[Math.floor(Math.random()*elementslist.length)]
       }

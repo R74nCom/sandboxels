@@ -1,10 +1,8 @@
 // Science mod for Sandboxels
 // (Inspired by survival.js)
-// Build 19
-// By: Lucifer (@a_british_proto (Discord))
-// If there is anything you want to suggest or there's a bug then just dm me on discord
+// Build 20
+// If there is anything you want to suggest or there's a bug then just dm me on discord (@a_british_proto)
 // Todo:
-// - Try to get the mod to work by making different ways to craft all the (116) elements in the mod
 // - Make new substances that you can get after mixing different elements
 // - Make a way to get the different substances by mixing different elements and different substances
 // - Create different proporties for the substances (doing now)
@@ -1383,7 +1381,7 @@ substance.Silver_Sulfate = {
     hidden:true
 }
 
-// I have finally gotten my motivation back! :D
+// Decided to just change the console.log to a comment because it got me confused between the github page and VSC
 
 substance.Silver_Selenide = {
     behavior: behaviors.WALL,
@@ -1446,25 +1444,24 @@ substance.Aluminum_Diboride = {
     hidden:true
 }
 
-// Doing this later as my schools blocked chatgpt and the definition is not on Ptable.com :/
-// substance.Aluminum_Dodecaboride = {
-//     behavior: behaviors.NULL,
-//     color: "000000",
-//     category: "null",
-//     state: "null",
-//     hidden:true
-// }
+substance.Aluminum_Dodecaboride = {
+    behavior: behaviors.WALL,
+    color: "000000",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
 
-// substance.Aluminum_Bromate_Nonahydrate = {
-//     behavior: behaviors.NULL,
-//     color: "000000",
-//     category: "null",
-//     state: "null",
-//     hidden:true
-// }
+substance.Aluminum_Bromate_Nonahydrate = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
 
 substance.Aluminum_Tribromide = {
-    behavior: behavior.NULL, // It's meant to be a powder but I'm too tired to go look plus I need to go to my next lesson now
+    behavior: behavior.POWDER,
     color: "FF0000",
     category: "lands",
     state: "powder",
