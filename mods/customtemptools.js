@@ -19,7 +19,7 @@ elements.customtemp = {
 elements.customheat = {
     color: ["#FF0000", "#FFFFFF", "#FF0000"],
     onSelect: function() {
-        var answer4 = parseInt(prompt("Please input the desired temperature increase per tick. (In celsius)",(ct|undefined)));
+        var answer4 = parseInt(prompt("Please input the desired temperature increase per tick. (In celsius)",(ct||undefined)));
         if (!answer4) { return }
         ct = answer4;
         if (isNaN(answer4)) {
@@ -35,7 +35,7 @@ elements.customheat = {
 elements.customcool = {
     color: ["#0000FF", "#FFFFFF", "#0000FF"],
     onSelect: function() {
-        var answer4 = parseInt(prompt("Please input the desired temperature decrease per tick. (In celsius)",(cc|undefined)));
+        var answer4 = parseInt(prompt("Please input the desired temperature decrease per tick. (In celsius)",(ct||undefined)));
         if (!answer4) { return }
         ct = answer4;
         if (isNaN(answer4)) {
