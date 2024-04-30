@@ -4,7 +4,7 @@ elements.potato_chip = {
     density: 1350,
     color: ["#F7DD93", "#D8A44B"],
     category: "food",
-    desc: "Potato chip. Turns potato next to it into potato chip if temp is >= 104.",
+    desc: "Potato chip. Turns potato next to it into potato chip if temp is >= 104 - 180.",
 
     tick: function(pixel) {
         if(pixelTicks - pixel.start >= 15) {
