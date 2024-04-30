@@ -29,7 +29,8 @@ elements.tolulene = {
     burnInto: ["steam", "smoke", "fire", "fire",],
     reactions: {
     "potassiumpermanganate": {elem1: "benzaldehyde", elem2: "benzaldehyde"},
-    }
+    },
+    tempHigh: 111,
 }
 elements.benzaldehyde = {
     color: "#F5F5F5",
@@ -40,7 +41,7 @@ elements.benzaldehyde = {
     desc: "Benzaldehyde is cherry flavor. It is also clear like tolulene.",
     reactions: {
         "seltzer": {elem1: "cherrysoda", elem2: "cherrysoda"},
-    }
+    },
 }
 elements.cherrysoda = {
     color: "#D2042D",
@@ -48,5 +49,29 @@ elements.cherrysoda = {
     category: "food",
     state: "liquid",
     density: 1045,
-    desc: "Cherry soda."
+    desc: "Cherry soda.",
+    tempHigh: 150,
+    stateHigh: "cherrysoda_gas",
+}
+elements.cherrysoda_gas = {
+    color: "#D20459",
+    behavior: behaviors.GAS,
+    category: "gases",
+    state: "gas",
+    density: 1025,
+    desc: "Cherry soda gas.",
+    tempLow: 149,
+    stateLow: "cherrysoda",
+    temp: 169,
+}
+elements.cherrysoda_ice = {
+    color: "BF4F9C",
+    behavior: behaviors.wALL,
+    category: "solids",
+    state: "solid",
+    density: 1065,
+    desc: "Cherry soda gas.",
+    tempHigh: -27,
+    stateHigh: "cherrysoda",
+    temp: -47,
 }
