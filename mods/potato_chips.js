@@ -7,7 +7,7 @@ elements.potato_chip = {
     desc: "Potato chip. Turns potato next to it into potato chip if temp is >= 104 - 180.",
 
     tick: function(pixel) {
-        if(pixelTicks - pixel.start >= 15) {
+        if(pixelTicks - pixel.start >= 10) {
     if (!isEmpty(pixel.x, pixel.y - 1, true)) {
         if (pixel.temp >= 104 && pixelMap[pixel.x][pixel.y - 1].element === "potato") {
             changePixel(pixelMap[pixel.x][pixel.y - 1], "potato_chip");  
