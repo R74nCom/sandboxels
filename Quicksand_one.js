@@ -505,7 +505,7 @@ elements.sandy_mud = {
 };
 elements.sticky_quicksand = {
     color: "#DAA520",
-    behavior: behaviors.LIQUID,
+    behavior:elements.sap.behavior,
     viscosity: 1700,
     tempHigh: 65,
     stateHigh: "liquid",
