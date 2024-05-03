@@ -1,6 +1,6 @@
 // Science mod for Sandboxels
 // (Inspired by survival.js)
-// Build 20
+// Build 21
 // If there is anything you want to suggest or there's a bug then just dm me on discord (@a_british_proto)
 // Todo:
 // - Make new substances that you can get after mixing different elements
@@ -1376,7 +1376,7 @@ substance.Silver_Oxzide = {
 substance.Silver_Sulfate = {
     behavior: behaviors.WALL,
     color: "FFFFFF",
-    category: "lands"
+    category: "lands",
     state: "solid",
     hidden:true
 }
@@ -1465,5 +1465,45 @@ substance.Aluminum_Tribromide = {
     color: "FF0000",
     category: "lands",
     state: "powder",
+    hidden:true
+}
+
+substance.Aluminum_Bromide_Hexahydrate = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Aluminum_Cerium_Oxide = {
+    behavior: behaviors.WALL,
+    color: "FF5E00",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Aluminum_Chloride = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Aluminum_Chlorohydrate = {
+    behavior: behaviors.POWDER,
+    color: "FFFFFF",
+    category: "lands",
+    state: "powder",
+    hidden:true
+}
+
+substance.Aluminum_Chloride_Hydrate = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
     hidden:true
 }
