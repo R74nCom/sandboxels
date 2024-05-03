@@ -425,10 +425,10 @@ elements.plague_doctor = {
             pixel.element = "doc_head";
         }
         else if (isEmpty(pixel.x, pixel.y-1)) {
-            createPixel("doc_head", pixel.x, pixel.y-1);
+            createPixel("head", pixel.x, pixel.y-1);
             pixelMap[pixel.x][pixel.y-1].color = pixel.color;
             pixel.element = "doc_body";
-	    pixelMap[pixel.x][pixel.y].color = ["#11111f","#242424"];
+            pixel.color = pixelColorPick(pixel);
         }   
         else {
             deletePixel(pixel.x, pixel.y);
