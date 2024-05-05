@@ -4,6 +4,27 @@ elements.cash = {
     category: "powders",
 };
 
+delete elements.paper;
+delete elements.sponge;
+
+elements.sponge = {
+    color: "#ffff1a",
+    behavior: behaviors.SOLID,
+    category: "solids",
+    tool: function(pixel) {
+        if (pixel.element == "water") {
+            pixel.element = "wet_sponge"
+        }
+    },
+};
+
+elements.wet_sponge = {
+    color: "#cccc00",
+    behavior: behaviors.SOLID,
+    category: "solids",
+};
+
+
 elements.paper = {
     color: "#ffffff",
     behavior: behaviors.SOLID,
