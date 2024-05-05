@@ -70,7 +70,7 @@ elements.cherrysoda_ice = {
     category: "solids",
     state: "solid",
     density: 1065,
-    desc: "Cherry soda gas.",
+    desc: "Cherry soda ice.",
     tempHigh: -27,
     stateHigh: "cherrysoda",
     temp: -47,
