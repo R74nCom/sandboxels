@@ -74,6 +74,14 @@ if (Math.abs(settings.randomcount) == settings.randomcount){
           }else(elements["element_"+i].desc += (" or " + reaction))
       }
     }
+    for (var reaction in elements["element_" + i].reactions){
+      if (elements[elements["element_"+i].reactions[reaction].elem1].category == "tools" || elements[elements["element_"+i].reactions[reaction].elem2].category == "tools"){
+          console.log(i + " makes a tool...? when it touches " + reaction)
+          if (!elements["element_"+i].desc){
+          elements["element_" + i].desc = "This breaks the laws of physics if it touches " + reaction
+          }else(elements["element_"+i].desc += (" or " + reaction))
+      }
+    }
   }
 } else {
   for (var i = 1; i <= settings.randomcount; i++){
