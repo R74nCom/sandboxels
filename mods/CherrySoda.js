@@ -66,7 +66,7 @@ elements.cherrysoda_gas = {
 }
 elements.cherrysoda_ice = {
     color: "#BF4F9C",
-    behavior: behaviors.wALL,
+    behavior: behaviors.WALL,
     category: "solids",
     state: "solid",
     density: 1065,
