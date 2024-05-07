@@ -1061,7 +1061,7 @@ elements.SCP_682 = {
     color: ["#424242","#75816B","#4D6B53"],
     behavior: [
         "M2%0.5|M2%0.3|M2%0.5",
-        "M1%10|XX|M1%10",
+        "M2%10|XX|M2%10",
         "XX|M1|XX",
     ],
     category: "scp",
@@ -1124,7 +1124,7 @@ elements.mad_682 = {
     color: ["#424242","#75816B","#4D6B53"],
     behavior: [
         "M2%0.5|M2%0.3|M2%0.5",
-        "M1%10 AND CH:concrete>dust AND DL:dust|CH:SCP_682%0.3|M1%10 AND CH:concrete>dust AND DL:dust",
+        "M2%10|CH:SCP_682%0.3|M2%10",
         "XX|M1|XX",
     ],
     category: "scp",
@@ -1150,8 +1150,8 @@ elements.mad_682 = {
         "lead": { elem2 : ["metal_scrap","metal_scrap","radiation"] , chance:0.3 },
         "glass": { elem2 : "glass_shard" },
         "wood": { elem2 : "sawdust" },
-        "concrete": { elem2 : "dust" , chance:0.1 },
-        "dust": { elem2 : null , chance:0.1 },
+        "concrete": { elem2 : "dust" , chance:10 },
+        "dust": { elem2 : null , chance:10 },
     },
     hidden: true,
     state: "solid",
