@@ -913,19 +913,6 @@ elements.shy_head = {
                 }
             }
 	}
-	if (!isEmpty(pixel.x+2, pixel.y, true) && pixelMap[pixel.x+2][pixel.y].element == "head") {
-            var target = pixelMap[pixel.x+2][pixel.y];
-            if (target.dead) { // If target is dead, ignore
-                var target = null;
-            }
-	    else { body.panic += 0.1; }
-	}
-	else { var target = null }
-	if (target.dead) { // If target is dead, ignore
-                var target = null;
-		body.panic -= 0.1;
-            }
-	
         // homeostasis
         if (pixel.temp > 37) { pixel.temp -= 1; }
         else if (pixel.temp < 37) { pixel.temp += 1; }
