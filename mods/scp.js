@@ -253,7 +253,6 @@ elements.mask_head = {
     burnTime: 250,
     burnInto: "possessive_mask",
     breakInto: "possessive_mask",
-    forceSaveColor: true,
     reactions: {
         "cancer": { elem1: "possessive_mask", chance:0.05 },
         "tea": { elem2:null, chance:0.2 },
@@ -429,6 +428,7 @@ elements.plague_doctor = {
             createPixel("doc_head", pixel.x, pixel.y-1);
             pixelMap[pixel.x][pixel.y-1].color = pixel.color;
             pixel.element = "doc_body";
+            pixel.color = pixelColorPick(pixel)
         }   
         else {
             deletePixel(pixel.x, pixel.y);
@@ -593,7 +593,6 @@ elements.doc_body = {
     burn: .01,
     burnTime: 300,
     burnInto: "rotten_meat",
-    forceSaveColor: true,
     reactions: {
 		"head": { elem2 : "z_head" , chance:0.3},
         "body": { elem2 : "z_body" , chance:0.3},
@@ -869,9 +868,11 @@ elements.shy_head = {
     burnTime: 3000,
     burnInto: "bone",
     reactions: {
-		"homunculus": { elem2 : ["blood","slime","blood","slime","rotten_meat",null] },
-		"head": { elem2 : ["blood","blood","blood","bone",null] },
-		"body": { elem2: ["blood","blood","meat","bone",null] },
+	"homunculus": { elem2 : ["blood","slime","blood","slime","rotten_meat",null] },
+	"head": { elem2 : ["blood","blood","blood","bone",null] },
+	"body": { elem2: ["blood","blood","meat","bone",null] },
+	"z_head": { elem2 : ["infection","infection","infection","bone",null] },
+	"z_body": { elem2: ["infection","infection","rotten_meat","bone",null] },
         "rat": { elem2: ["infection","rotten_meat",null]},
         "frog": { elem2: ["slime",null] },
         "cell": { elem2: ["dna","water",null] },
@@ -986,10 +987,12 @@ elements.shy_body = {
     burnInto: "bone",
     forceSaveColor: true,
     reactions: {
-		"homunculus": { elem2 : ["blood","slime","blood","slime","rotten_meat",null] },
-		"head": { elem2 : ["blood","blood","blood","meat","bone",null] },
-		"body": { elem2: ["blood","blood","meat","bone",null] },
-        "rat": { elem2: ["infection","rotten_meat"]},
+	"homunculus": { elem2 : ["blood","slime","blood","slime","rotten_meat",null] },
+	"head": { elem2 : ["blood","blood","blood","bone",null] },
+	"body": { elem2: ["blood","blood","meat","bone",null] },
+	"z_head": { elem2 : ["infection","infection","infection","bone",null] },
+	"z_body": { elem2: ["infection","infection","rotten_meat","bone",null] },
+	"rat": { elem2: ["infection","infection","plague"] },
         "frog": { elem2: "slime" },
         "cell": { elem2: ["dna","water",null] },
         "cancer": { elem2: ["dna","dirty_water"] },
@@ -1007,11 +1010,12 @@ elements.SCP_682 = {
     category: "scp",
     density: 7500,
     reactions: {
-        "head": { elem2 : ["bone","blood",null] , chance:10 },
-        "body": { elem1 : "mad_682" , elem2 : ["meat","blood",null] , chance:10 },
-        "z_head": { elem2 : ["bone","infection",null] , chance:10 },
-        "z_body": { elem1 : "mad_682" , elem2 : ["rotten_meat","infection",null] , chance:10 },
-        "homunculus": { elem2 : ["slime","blood",null] , chance:10 },
+        "head": { elem2 : ["bone","blood",null] , chance:50 },
+        "body": { elem1 : "mad_682" , elem2 : ["meat","blood",null] , chance:50 },
+        "z_head": { elem2 : ["infection","infection","infection","bone",null] , chance:50 },
+	"z_body": { elem1 : "mad_682" , elem2: ["infection","infection","rotten_meat","bone",null] , chance:50 },  
+	"homunculus": { elem2 : ["slime","blood",null] , chance:10 },
+	"rat": { elem2: ["infection","infection","plague"] },
         "frog": { elem2 : ["slime","blood",null] , chance:10 },
         "bird": { elem2 : ["feather","blood",null] , chance:10 },
         "meat": { elem2 : null , chance:0.2 },
@@ -1072,6 +1076,8 @@ elements.mad_682 = {
     reactions: {
         "head": { elem2 : ["bone","blood",null] },
         "body": { elem2 : ["meat","blood",null] },
+	"z_head": { elem2 : ["bone","infection",null] },
+        "z_body": { elem2 : ["meat","infection",null] },
         "homunculus": { elem2 : ["slime","blood",null] },
         "frog": { elem2 : ["slime","blood",null] },
         "bird": { elem2 : ["feather","blood",null] },

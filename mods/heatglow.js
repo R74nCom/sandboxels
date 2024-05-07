@@ -3,7 +3,7 @@ function weightedAverage(num1, num2, weight){
 }
 const heatfunc = function(pixel){
 	if (pixel.element != "metal_scrap" || eLists.metals.includes(pixel.scrapType) || !pixel.scrapType){{
-		if (pixel.ogR == null || pixel.ogG == null || pixel.ogB == null || (pixel.element != pixel.ogElement && pixel.element == "metal_scrap") || (pixel.element != "metal_scrap" && pixel.ogElement == "metal_scrap")){
+		if (pixel.ogR == null || pixel.ogG == null || pixel.ogB == null || (pixel.element != pixel.ogElement && pixel.element == "metal_scrap") || (pixel.element != "metal_scrap" && pixel.ogElement == "metal_scrap") || (pixel.element == "oxidized_copper" && pixel.ogElement == "copper")){
 			pixel.ogR = parseInt(pixel.color.slice(4, pixel.color.indexOf(',')), 10)
 			pixel.ogG = parseInt(pixel.color.slice(pixel.color.indexOf(',') + 1, pixel.color.lastIndexOf(',')), 10)
 			pixel.ogB = parseInt(pixel.color.slice(pixel.color.lastIndexOf(',') + 1, -1), 10)
