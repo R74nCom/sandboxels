@@ -5,10 +5,10 @@ window.addEventListener("load", () => {
     document.getElementById("elementButton-mask_body")?.remove()
 })
 window.addEventListener("load", () => { 
-    document.getElementById("elementButton-008_meat")?.remove()
+    document.getElementById("elementButton-infected_meat")?.remove()
 })
 window.addEventListener("load", () => { 
-    document.getElementById("elementButton-frozen_008_meat")?.remove()
+    document.getElementById("elementButton-frozen_infected_meat")?.remove()
 })
 window.addEventListener("load", () => { 
     document.getElementById("elementButton-zombie")?.remove()
@@ -55,9 +55,9 @@ elements.SCP_008 = {
     reactions: {
         "head": { elem1:null, elem2:"z_head" , chance:0.5 },
         "body": { elem1:null, elem2:"z_body" , chance:0.5 },
-	"meat": { elem1:null, elem2:"008_meat" , chance:0.4 },
-	"rotten_meat": { elem1:null, elem2:"008_meat" , chance:0.5 },
-	"frozen_meat": { elem1:null, elem2:"frozen_008_meat" , chance:0.3 },
+	"meat": { elem1:null, elem2:"infected_meat" , chance:0.4 },
+	"rotten_meat": { elem1:null, elem2:"infected_meat" , chance:0.5 },
+	"frozen_meat": { elem1:null, elem2:"frozen_infected_meat" , chance:0.3 },
         "frog": { elem2:"SCP_008" , chance:0.5 },
         "ant": { elem2:"SCP_008" , chance:0.5 },
         "bee": { elem2:"SCP_008" , chance:0.5 },
@@ -86,9 +86,9 @@ elements.frozen_008 = {
     reactions: {
         "head": { elem1:null, elem2:"z_head" , chance:0.4 },
         "body": { elem1:null, elem2:"z_body" , chance:0.4 },
-	"meat": { elem1:null, elem2:"frozen_008_meat" , chance:0.4 },
-	"rotten_meat": { elem1:null, elem2:"frozen_008_meat" , chance:0.5 },
-	"frozen_meat": { elem1:null, elem2:"frozen_008_meat" , chance:0.4 },
+	"meat": { elem1:null, elem2:"frozen_infected_meat" , chance:0.4 },
+	"rotten_meat": { elem1:null, elem2:"frozen_infected_meat" , chance:0.5 },
+	"frozen_meat": { elem1:null, elem2:"frozen_infected_meat" , chance:0.4 },
         "chlorine": { elem1: [null,null,null,null,null,null,null,null,"anomalous_essence"] , chance:0.01 },
         "liquid_chlorine": { elem1: [null,null,null,null,null,null,null,null,"anomalous_essence"] , chance:0.01 },
         "light": { elem1: [null,null,null,null,null,null,null,null,"anomalous_essence"] , chance:0.01 },
@@ -101,12 +101,12 @@ elements.frozen_008 = {
     density: 95,
 },
 
-elements.008_meat = {
+elements.infected_meat = {
     color: ["#b8b165","#b89765"],
     behavior: [
-        "XX|CR:plague,stench,stench,SCP_008,fly%0.25 AND CH:rotten_meat,meat>008_meat%1|XX",
-        "SP%99 AND CH:rotten_meat,meat>008_meat%1|XX|SP%99 AND CH:rotten_meat,meat>008_meat%1",
-        "XX|M1 AND CH:rotten_meat,meat>008_meat%1|XX",
+        "XX|CR:plague,stench,stench,SCP_008,fly%0.25 AND CH:rotten_meat,meat>infected_meat%1|XX",
+        "SP%99 AND CH:rotten_meat,meat>infected_meat%1|XX|SP%99 AND CH:rotten_meat,meat>infected_meat%1",
+        "XX|M1 AND CH:rotten_meat,meat>infected_meat%1|XX",
     ],
     reactions: {
         "water": { elem2:"dirty_water" },
@@ -119,7 +119,7 @@ elements.008_meat = {
     tempHigh: 300,
     stateHigh: ["SCP_008","ash","ammonia"],
     tempLow: -20,
-    stateLow: "frozen_008_meat",
+    stateLow: "frozen_infected_meat",
     category:"scp",
     hidden: true,
     burn:12,
@@ -131,23 +131,23 @@ elements.008_meat = {
     isFood: true
 },
 
-elements.frozen_008_meat = {
+elements.frozen_infected_meat = {
     color: "#242424",
     behavior: [
-        "XX|CH:rotten_meat,frozen_meat>frozen_008_meat%1|XX",
-        "SP%99 AND CH:rotten_meat,frozen_meat>frozen_008_meat%1|XX|SP%99 AND CH:rotten_meat,frozen_meat>frozen_008_meat%1",
-        "XX|M1 AND CH:rotten_meat,frozen_meat>frozen_008_meat%1|XX",
+        "XX|CH:rotten_meat,frozen_meat>frozen_infected_meat%1|XX",
+        "SP%99 AND CH:rotten_meat,frozen_meat>frozen_infected_meat%1|XX|SP%99 AND CH:rotten_meat,frozen_meat>frozen_infected_meat%1",
+        "XX|M1 AND CH:rotten_meat,frozen_meat>frozen_infected_meat%1|XX",
     ],
     reactions: {
         "water": { elem2:"dirty_water" },
-        "salt_water": { elem1:"008_meat",elem2:"dirty_water" , chance:0.5 },
+        "salt_water": { elem1:"infected_meat",elem2:"dirty_water" , chance:0.5 },
         "sugar_water": { elem2:"dirty_water" },
         "seltzer": { elem2:"dirty_water" },
 	"fly": { elem2: ["dead_bug","dead_bug","SCP_008"] , chance:0.2},
     },
     temp: -20,
     tempHigh: 10,
-    stateHigh: "008_meat",
+    stateHigh: "infected_meat",
     category:"scp",
     hidden: true,
     state: "solid",
