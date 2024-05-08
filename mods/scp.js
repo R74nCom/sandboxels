@@ -5,6 +5,9 @@ window.addEventListener("load", () => {
     document.getElementById("elementButton-mask_body")?.remove()
 })
 window.addEventListener("load", () => { 
+    document.getElementById("elementButton-infected_skin")?.remove()
+})
+window.addEventListener("load", () => { 
     document.getElementById("elementButton-infected_meat")?.remove()
 })
 window.addEventListener("load", () => { 
@@ -100,11 +103,73 @@ elements.frozen_008 = {
     state: "solid",
     density: 95,
 },
-
+	
+elements.infected_skin = {
+    color: ["#11111f","#75816B","#4D6B53"],
+    singleColor: true,
+    behavior: [
+        "XX|CR:stench,stench,stench,SCP_008,fly%0.15 AND CH:skin,meat>infected_skin,infected_meat%1|XX",
+        "CH:skin,meat>infected_skin,infected_meat%1|XX|CH:skin,meat>infected_skin,infected_meat%1",
+        "XX|CH:skin,meat>infected_skin,infected_meat%1|XX",
+    ],
+    tick: function(pixel) {
+        if (pixel.temp > 40 && Math.random() < 0.003) {
+            for (var i = 0; i < adjacentCoords.length; i++) {
+                var coords = adjacentCoords[i];
+                var x = pixel.x + coords[0];
+                var y = pixel.y + coords[1];
+                if (isEmpty(x,y)) {
+                    pixel.temp -= 20;
+                    createPixel("infection",x,y)
+                    break;
+                }
+            }
+        }
+        if (pixel.temp < 36 && Math.random() < 0.1) {
+            pixel.temp += 1;
+        }
+        doDefaults(pixel);
+    },
+    reactions: {
+        "cell": { chance:0.01, func:function(pixel1,pixel2){
+            changePixel(pixel2,"infected_skin");
+            pixel2.color = pixelColorPick(pixel2,RGBToHex(pixel1.color.match(/\d+/g)))
+            if (pixel1.origColor) { pixel2.origColor = pixel1.origColor }
+        } },
+        "acid": { elem1:"infection" },
+        "soap": { elem1:null, elem2:null, chance:0.005 },
+        "light": { stain1:"#825043" },
+        "poison": { stain1:"#cc564b" },
+        "poison_gas": { stain1:"#cc564b" },
+        "infection": { stain1:"#cc564b" },
+        "pollen": { stain1:"#cc564b" },
+        "dust": { stain1:"#cc564b" },
+        "flea": { stain1:"#cc564b" },
+        "mushroom_spore": { stain1:"#cc564b" },
+        "mushroom_stalk": { stain1:"#cc564b" },
+        "chlorine": { stain1:"#cc564b" },
+        "quicklime": { stain1:"#cc564b" },
+    },
+    category:"solids",
+    breakInto: [null,null,"SCP_008","infection","dust"],
+    temp: 37,
+    tempHigh: 200,
+    stateHigh: ["cooked_meat","cooked_meat","cooked_meat","SCP_008"],
+    tempLow: -18,
+    stateLow: "frozen_008_meat",
+    burn:5,
+    burnTime:400,
+    burnInto: ["cooked_meat","cooked_meat","SCP_008"],
+    state: "solid",
+    density: 1010,
+    conduct: 0.04,
+    movable: false,
+},
+	    
 elements.infected_meat = {
     color: ["#b8b165","#b89765"],
     behavior: [
-        "XX|CR:plague,stench,stench,SCP_008,fly%0.25 AND CH:rotten_meat,meat>infected_meat%1|XX",
+        "XX|CR:stench,stench,stench,SCP_008,fly%0.25 AND CH:rotten_meat,meat>infected_meat%1|XX",
         "SP%99 AND CH:rotten_meat,meat>infected_meat%1|XX|SP%99 AND CH:rotten_meat,meat>infected_meat%1",
         "XX|M1 AND CH:rotten_meat,meat>infected_meat%1|XX",
     ],
@@ -466,6 +531,7 @@ elements.REDACTED = {
     ],
     category: "scp",
     state: "solid",
+    movable: false,
 },
 
 elements.plague_doctor = {
