@@ -1,3 +1,4 @@
+// CreateTree function made by nousernamefound.
 function createTree(treeName, leafColor, woodName){
     let woodColor = elements[woodName].color
     elements[treeName + "_sapling"] = {
