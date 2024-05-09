@@ -1,5 +1,5 @@
 var modName = "mods/../a_mod_by_alice.js" //can't do "alice's mod" because the apostrophe will fuck up code, be too confusing, or both
-var dependencies = ["mods/libhooktick.js", "mods/chem.js", "mods/minecraft.js", "mods/Neutronium Mod.js", "mods/CrashTestDummy.js", "mods/fey_and_more.js", "mods/velocity.js", "mods/ketchup_mod.js", "mods/moretools.js", "mods/aChefsDream.js", "mods/nousersthings.js"];  //thanks to mollthecoder, PlanetN9ne, StellarX20 (3), MelecieDiancie, R74n, Nubo318, Sightnado, sqeč, and NoUsernameFound
+var dependencies = ["mods/libhooktick.js", "mods/chem.js", "mods/minecraft.js", "mods/Neutronium Mod.js", "mods/CrashTestDummy.js", "mods/fey_and_more.js", "mods/velocity.js", "mods/ketchup_mod.js", "mods/moretools.js", "mods/aChefsDream.js", "mods/nousersthings.js"];  //thanks to mollthecoder, PlanetN9ne, StellarX20 (3), MelecieDiancie, R74n, Nubo318, Sightnado, SquareScreamYT, and NoUsernameFound
 var dependencyExistence = dependencies.map(x => enabledMods.includes(x));
 var allDependenciesExist = dependencyExistence.reduce(function(a,b) { return a && b });
 //console.log(allDependenciesExist);
@@ -13,6 +13,13 @@ try {
 		ctx = canvas.getContext("2d");
 
 	//ESSENTIAL COMMON FUNCTIONS (CODE LIBRARY) ##
+
+		//DEBUGGING
+		
+			function logAndReturn(thing) {
+				console.log(thing);
+				return thing
+			};
 
 		//URL
 
@@ -493,7 +500,7 @@ try {
 				if(!color.startsWith("hsl(") || !color.endsWith(")")) {
 					throw new Error(`The color ${color} is not a valid hsl() color`)
 				};
-				var colorTempArray = color.split(",")
+				var colorTempArray = color.split(",").map(x => x.trim())
 				if(colorTempArray.length !== 3) {
 					throw new Error(`The color ${color} is not a valid hsl() color`)
 				};
@@ -2101,6 +2108,8 @@ try {
 				if(pixelIndex !== -1) {
 					currentPixels.splice(pixelIndex,1)
 					if (pixelMap[x][y]) { delete pixelMap[x][y] };
+				} else {
+					return false
 				};
 				//if (pixelMap[x][y]) {pixelMap[x][y].del = true}
 				//if (pixelMap[x][y]) { delete pixelMap[x][y] };
@@ -21260,9 +21269,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							tempLow: Math.min(rockInfo.tempHigh - 100,800),
 							stateLow: rockName,
 							density: rockInfo.density * 0.9,
-							hardness: rockInfo.density * 0.85,
 							//breakInto: newName + "_gravel",
 							_data: [rockData[0], rockData[1], hotData2Switch(rockData[2])],
+						};
+						
+						if(rockInfo.hardness) {
+							elements[newName].hardness = rockInfo.hardness * 0.85
 						};
 
 						//console.log([elements[rockName].tempHigh,elements[rockName].stateHigh]);
@@ -45937,14 +45949,15 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 	//SPECIFY CURRENT ELEMENT ON LOAD ##
 	
 	window.addEventListener("load",function() {
-		//console.log(currentElement);
 		currentElement = urlParams.get("currentElement") ?? "sand";
-		//console.log(currentElement);
 		if(!elementExists(currentElement)) {
-			//console.log(false);
 			currentElement = "sand"
-		}// else { console.log(true) };
-		//console.log(currentElement);
+		}
+		var size = urlParams.get("mouseSize") ?? 5;
+		if(isNaN(size)) {
+			size = 5;
+		};
+		mouseSize = size
 	});
 	
 	//MISCELLANEOUS CHANGES ##

@@ -1,29 +1,42 @@
+function weightedAverage(num1, num2, weight){
+	return ((weight * num1)+((1-weight)*num2))
+}
 const heatfunc = function(pixel){
-		if (pixel.ogR == null || pixel.ogG == null || pixel.ogB == null || !(pixel.element == pixel.ogElement)){
+	if (pixel.element != "metal_scrap" || eLists.metals.includes(pixel.scrapType) || !pixel.scrapType){{
+		if (pixel.ogR == null || pixel.ogG == null || pixel.ogB == null || (pixel.element != pixel.ogElement && pixel.element == "metal_scrap") || (pixel.element != "metal_scrap" && pixel.ogElement == "metal_scrap") || (pixel.element == "oxidized_copper" && pixel.ogElement == "copper")){
 			pixel.ogR = parseInt(pixel.color.slice(4, pixel.color.indexOf(',')), 10)
 			pixel.ogG = parseInt(pixel.color.slice(pixel.color.indexOf(',') + 1, pixel.color.lastIndexOf(',')), 10)
 			pixel.ogB = parseInt(pixel.color.slice(pixel.color.lastIndexOf(',') + 1, -1), 10)
 			pixel.ogElement = pixel.element 
-		}else{
-		pixel.gethigh = (elements[pixel.element].tempHigh)
-		pixel.halftemp = ((20+pixel.gethigh)/2)
-			if (pixel.temp <= (pixel.gethigh) - pixel.halftemp){
-				pixel.ctemp = 0;
-			} else if (pixel.temp > (pixel.gethigh)-pixel.halftemp && pixel.temp <= pixel.gethigh){
-				pixel.ctemp = ((1/pixel.halftemp)*pixel.temp)-(((pixel.gethigh)-pixel.halftemp)/pixel.halftemp)
-			}
-			if (pixel.ctemp <= 0.5){
-				pixel.newR = (((510-(2*pixel.ogR))*pixel.ctemp)+pixel.ogR);
-				pixel.newG = ((0-((2*pixel.ogG)*pixel.ctemp))+pixel.ogG);
-				pixel.newB = ((0-((2*pixel.ogB)*pixel.ctemp))+pixel.ogB);
-			}else if (pixel.ctemp > 0.5){
-				pixel.newR = 255;
-				pixel.newG = ((510*pixel.ctemp)-255);
-				pixel.newB= ((280*pixel.ctemp)-140);
-			}
-			pixel.color = "rgb(" + pixel.newR + "," + pixel.newG + "," + pixel.newB + ")";
 		}
-	};
+			var gethigh = 1000
+			var ctemp = 0
+			var ogR = 0
+			var ogG = 0
+			var ogB = 0
+			if (elements[pixel.element].tempHigh){
+				gethigh = elements[pixel.element].tempHigh
+			} else if (pixel.scrapType) {
+				gethigh = elements[pixel.scrapType].tempHigh
+			}
+		var halftemp = ((20+gethigh)/2)
+			if (pixel.temp <= (gethigh) - halftemp){
+				ctemp = 0;
+			} else if (pixel.temp > (gethigh)-halftemp && pixel.temp <= gethigh){
+				ctemp = ((1/halftemp)*pixel.temp)-(((gethigh)-halftemp)/halftemp)
+			}
+			if (ctemp <= 0.5){
+				newR = (((510-(2*pixel.ogR))*ctemp)+pixel.ogR);
+				newG = ((0-((2*pixel.ogG)*ctemp))+pixel.ogG);
+				newB = ((0-((2*pixel.ogB)*ctemp))+pixel.ogB);
+			}else if (ctemp > 0.5){
+				newR = 255;
+				newG = ((510*ctemp)-255);
+				newB= ((280*ctemp)-140);
+			}
+			let weight = (1-(ctemp/1.3))
+			pixel.color = "rgb(" + weightedAverage(pixel.ogR, newR, weight) + "," + weightedAverage(pixel.ogG, newG, weight) + "," + weightedAverage(pixel.ogB, newB, weight) + ")";
+	}}};
 	if (!eLists.metals) { eLists.metals = [] }
 	eLists.metals = eLists.metals.concat(["iron", "glass", "copper", "gold", "brass","steel","nickel","zinc","silver","aluminum","bronze","metal_scrap","oxidized_copper","tin","lead", "rose_gold"])
 eLists.metals.forEach(metal => { 
@@ -32,8 +45,8 @@ eLists.metals.forEach(metal => {
 		elements[metal].tick = heatfunc;
 	}else{
 		const modfunc = function(pixel){
-			prefunc(pixel);
 			heatfunc(pixel);
+			prefunc(pixel);
 		};
 		elements[metal].tick = modfunc;
 	}
@@ -53,9 +66,6 @@ elements.color_baker = {
 	desc: "Use to bake a metals paint color into its 'true' color, for heating purposes.",
 }
 /*
-function weightedAverage(num1, num2, weight){
-	return ((weight * num1)+((1-weight)*num2))
-}
  const plantfunc = function(pixel){
 	if (pixel.ogR == null || pixel.ogG == null || pixel.ogB == null){
 			pixel.ogR = parseInt(pixel.color.slice(4, pixel.color.indexOf(',')), 10)

@@ -1,4 +1,37 @@
+// 1.0 update
+// adds dragon breath
+// adds frostbite
+// adds pulsium
+// adds pulsium bar
+// adds goblins delight
+// adds pheonix
+// adds pheonix ash
+// adds baby pheonix
+// adds ice pheonix
+
+// 1.1 update
+// adds dragon scale
+// adds mystic runes
+// adds enchanted wood
+// adds quartzium
+// adds quartz
+// adds moonite
+
+// 1.2 update
+// fixed visibility bug and some errors
+// adds faustium
+// adds nebulaflare
+// adds flaro
+// adds aurorium
+// adds glimmerium
+// adds ozmoz
+// adds goblin
+// adds fenzium
+// adds sceptrium
+// adds sceptrium dust
+
 // 1.3.2 fantasy_elements.js mod
+// added changelog
 // adds plode a bomb
 
 // 1.4 the golem mod
@@ -11,6 +44,11 @@
 // added plasma golem
 // iced pheonix at 700 degrees becomes pheonix
 // added blood golem
+
+// 1.5 update
+// corrected the 'phoenix' wrong spelling mistake to pheonix
+// added grethe
+// added grothea
 
 elements.dragon_breath = {
     color: "#f94e4e",
@@ -110,7 +148,7 @@ elements.pheonix = {
     baby: "baby_pheonix",
 };
 
-elements.phoenix_ash = {
+elements.pheonix_ash = {
     color: "#a8a8a5",
     behavior: behaviors.POWDER,
     category: "fantasy",
@@ -134,7 +172,7 @@ elements.baby_pheonix = {
     burnTime:19,
     state: "solid",
 	stateLow: "iced_pheonix",
-    breakInto: "phoenix_ash",
+    breakInto: "pheonix_ash",
     density: 850,
     conduct: 1,
 };
@@ -737,4 +775,26 @@ elements.blood_golem= {
     ],
     "category":"fantasy",
     "temp": 10,
+};
+
+elements.grethe = {
+	color: "#51f542",
+	"behavior": [
+        "XX|XX|DL",
+        "SA|XX|M2",
+        "XX|M1|XX",
+    ],
+	category: "fantasy",
+	state: "solid",
+};
+
+elements.grothea = {
+	color: ["#d742f5","#c246db","#772987"],
+	"behavior": [
+        "M2|XX|XX",
+        "SA|M1|XX",
+        "XX|XX|DL",
+    ],
+	category: "fantasy",
+	state: "solid",
 };
