@@ -145,6 +145,8 @@ elements.lamb = {
     density: 1450,
     conduct: 0.2
 };
+converter1Var = 0;
+converter2Var = 0;
 elements.loom = {
 	color: "#296127",
 	behavior: behaviors.WALL,
