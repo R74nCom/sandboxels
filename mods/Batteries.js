@@ -98,3 +98,21 @@ elements.radio_wave= {
     //charge: 0.5,
     conduct: 0.01
 };
+elements.e_nuke = {
+    desc: "Works like the nuke but needs power to explode",
+	color: ["#534636"],
+	 hardness: elements.nuke.hardness,
+	 state: "solid",
+	 behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "M2|M1|M2",
+    ],
+	 conduct: 1,
+	 category: "machines",
+	 behaviorOn:[
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "M2|M1 AND EX:60>plasma,plasma,plasma,plasma,radiation,rad_steam|M2",
+    ],
+};
