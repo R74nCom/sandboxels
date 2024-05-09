@@ -58,6 +58,8 @@ elements.SCP_008 = {
     reactions: {
         "head": { elem1:null, elem2:"z_head" , chance:0.5 },
         "body": { elem1:null, elem2:"z_body" , chance:0.5 },
+	"skin": { elem1:null, elem2: ["infected_skin","infected_skin","infected_meat"] , chance:0.3 },
+	"blood": { elem1:null, elem2:"infection" , chance:0.6 },
 	"meat": { elem1:null, elem2:"infected_meat" , chance:0.4 },
 	"rotten_meat": { elem1:null, elem2:"infected_meat" , chance:0.5 },
 	"frozen_meat": { elem1:null, elem2:"frozen_infected_meat" , chance:0.3 },
@@ -89,6 +91,8 @@ elements.frozen_008 = {
     reactions: {
         "head": { elem1:null, elem2:"z_head" , chance:0.4 },
         "body": { elem1:null, elem2:"z_body" , chance:0.4 },
+	"skin": { elem1:null, elem2:"frozen_infected_meat" , chance:0.4 },
+	"blood": { elem1:null, elem2:"infection" , chance:0.6 },
 	"meat": { elem1:null, elem2:"frozen_infected_meat" , chance:0.4 },
 	"rotten_meat": { elem1:null, elem2:"frozen_infected_meat" , chance:0.5 },
 	"frozen_meat": { elem1:null, elem2:"frozen_infected_meat" , chance:0.4 },
@@ -108,9 +112,9 @@ elements.infected_skin = {
     color: ["#11111f","#75816B","#4D6B53"],
     singleColor: true,
     behavior: [
-        "XX|CR:stench,stench,stench,SCP_008,fly%0.15 AND CH:skin,meat>infected_skin,infected_meat%1|XX",
-        "CH:skin,meat>infected_skin,infected_meat%1|XX|CH:skin,meat>infected_skin,infected_meat%1",
-        "XX|CH:skin,meat>infected_skin,infected_meat%1|XX",
+        "XX|CR:stench,stench,stench,SCP_008,fly%0.05 AND CH:meat>infected_meat%1|XX",
+        "CH:meat>infected_meat%1|XX|CH:meat>infected_meat%1",
+        "XX|CH:meat>infected_meat%1|XX",
     ],
     tick: function(pixel) {
         if (pixel.temp > 40 && Math.random() < 0.003) {
@@ -136,6 +140,12 @@ elements.infected_skin = {
             pixel2.color = pixelColorPick(pixel2,RGBToHex(pixel1.color.match(/\d+/g)))
             if (pixel1.origColor) { pixel2.origColor = pixel1.origColor }
         } },
+	"skin": { chance:0.01, func:function(pixel1,pixel2){
+            changePixel(pixel2,"infected_skin");
+            pixel2.color = pixelColorPick(pixel2,RGBToHex(pixel1.color.match(/\d+/g)))
+            if (pixel1.origColor) { pixel2.origColor = pixel1.origColor }
+	} },
+	"blood": { elem2:"infection" , chance:0.6 },
         "acid": { elem1:"infection" },
         "soap": { elem1:null, elem2:null, chance:0.005 },
         "light": { stain1:"#825043" },
@@ -180,6 +190,8 @@ elements.infected_meat = {
         "dirty_water": { elem2:"broth", tempMin:70, color2:"#d7db69" },
         "seltzer": { elem2:"dirty_water" },
 	"fly": { elem1: [null,null,"SCP_008"] , elem2: ["dead_bug","dead_bug","SCP_008"] , chance:0.2},
+	"blood": { elem2:"infection" , chance:0.6 },
+	"skin": { elem2:"infected_skin" , chance:0.6 },
     },
     tempHigh: 300,
     stateHigh: ["SCP_008","ash","ammonia"],
@@ -209,6 +221,7 @@ elements.frozen_infected_meat = {
         "sugar_water": { elem2:"dirty_water" },
         "seltzer": { elem2:"dirty_water" },
 	"fly": { elem2: ["dead_bug","dead_bug","SCP_008"] , chance:0.2},
+	"blood": { elem2:"infection" , chance:0.6 },
     },
     temp: -20,
     tempHigh: 10,
