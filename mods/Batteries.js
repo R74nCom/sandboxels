@@ -100,7 +100,7 @@ elements.radio_wave= {
 };
 elements.e_nuke = {
 	desc: "Works like the nuke but needs power to explode",
-	color: ["#534636"],
+	color: "#534636",
 	hardness: elements.nuke.hardness,
 	state: "solid",
 	behavior: [
