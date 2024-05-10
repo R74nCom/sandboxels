@@ -86,7 +86,7 @@ elements.frozen_008 = {
     behavior: [
         "XX|XX|XX",
         "XX|DL%0.001|X",
-        "M2%1.0|M1%1.0|M2%1.0",
+        "XX|M1%1.0|XX",
     ],
     reactions: {
         "head": { elem1:null, elem2:"z_head" , chance:0.4 },
@@ -114,7 +114,7 @@ elements.infected_skin = {
     behavior: [
         "XX|CR:stench,stench,stench,SCP_008,fly%0.05 AND CH:meat>infected_meat%1|XX",
         "CH:meat>infected_meat%1|XX|CH:meat>infected_meat%1",
-        "XX|CH:meat>infected_meat%1|XX",
+        "M2%1.0|M1%1.0 AND CH:meat>infected_meat%1|M2%1.0",
     ],
     tick: function(pixel) {
         if (pixel.temp > 40 && Math.random() < 0.003) {
