@@ -109,10 +109,65 @@ elements.e_nuke = {
         "M2|M1|M2",
     ],
 	conduct: 1,
-	category: "machines",
+	category: "weapons",
 	behaviorOn:[
         "XX|XX|XX",
         "XX|XX|XX",
         "M2|M1 AND EX:60>plasma,plasma,plasma,plasma,radiation,rad_steam|M2",
     ],
+};
+elements.10_timer= {
+    color: ["#000000"],
+    behavior: behaviors.WALL,
+    colorOn: "#000000",
+    tick: elements.gasoline_engine = {
+  color: "#6d5f5d",
+  behavior: behaviors.WALL,
+  state: "solid",
+  density: 1000,
+  category: "testing",
+  properties: {
+    time: 10
+  },
+  tick: function(pixel){
+    if (pixel.timer <= 40){
+          if(!pixel.timer){pixel.timer = 0}
+          pixel.timer -= 10
+        }
+        else if (otherPixel.element == "gasoline_engine"){
+          var otherPixel = pixelMap[x][y]
+          var otherShock = otherPixel.timer || 0
+          var currentShock = pixel.timer || 0
+          if (otherShock == currentShock){break;}
+          if (otherShock > currentShock){
+            otherPixel.timer --
+            pixel.timer ++
+          } else {
+            otherPixel.timer ++
+            pixel.timer --
+          }
+        }
+      }
+    }}
+    if (!pixel.charge && !pixel.chargeCD && pixel.timer){
+      for (var i = 0; i < adjacentCoords.length; i++){
+        var coord = adjacentCoords[i]
+        var x = pixel.x + coord[0]
+        var y = pixel.y + coord[1]
+        if (!isEmpty(x, y, true)){
+          if (elements[pixelMap[x][y]].conduct > 0){
+            pixel.charge = 1
+            pixel.timer --
+            break;
+          }
+        }
+      }
+    }
+  }
+}
+    category: "energy",
+    reactions: {electric: {elem1: null, elem2: null, chance: 0.5}},
+    density: 1,
+    //charge: 0.5,
+    conduct: 0
 };
