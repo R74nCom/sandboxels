@@ -1,18 +1,27 @@
 var modName = "mods/../a_mod_by_alice.js" //can't do "alice's mod" because the apostrophe will fuck up code, be too confusing, or both
-var dependencies = ["mods/libhooktick.js", "mods/chem.js", "mods/minecraft.js", "mods/Neutronium Mod.js", "mods/CrashTestDummy.js", "mods/fey_and_more.js", "mods/velocity.js", "mods/ketchup_mod.js", "mods/moretools.js"];  //thanks to mollthecoder, PlanetN9ne, StellarX20 (3), MelecieDiancie, R74n, Nubo318, and Sightnado
+var dependencies = ["mods/libhooktick.js", "mods/chem.js", "mods/minecraft.js", "mods/Neutronium Mod.js", "mods/CrashTestDummy.js", "mods/fey_and_more.js", "mods/velocity.js", "mods/ketchup_mod.js", "mods/moretools.js", "mods/aChefsDream.js", "mods/nousersthings.js"];  //thanks to mollthecoder, PlanetN9ne, StellarX20 (3), MelecieDiancie, R74n, Nubo318, Sightnado, SquareScreamYT, and NoUsernameFound
 var dependencyExistence = dependencies.map(x => enabledMods.includes(x));
 var allDependenciesExist = dependencyExistence.reduce(function(a,b) { return a && b });
 //console.log(allDependenciesExist);
 if(allDependenciesExist) {
-
+try {
 	//COMMON VARIABLES ##
 
-		const whiteColor = {r: 255, g: 255, b: 255}
-		const blackColor = {r: 0, g: 0, b: 0}
+		const whiteColor = {r: 255, g: 255, b: 255};
+		const blackColor = {r: 0, g: 0, b: 0};
+		canvas = document.getElementsByTagName("canvas")[0];
+		ctx = canvas.getContext("2d");
 
 	//ESSENTIAL COMMON FUNCTIONS (CODE LIBRARY) ##
 
-		//U.R.L.
+		//DEBUGGING
+		
+			function logAndReturn(thing) {
+				console.log(thing);
+				return thing
+			};
+
+		//URL
 
 			urlParams = new URLSearchParams(window.location.search);
 
@@ -24,7 +33,7 @@ if(allDependenciesExist) {
 			  return Object.keys(object).find(key => object[key] === value);
 			};
 
-		//R.N.G.
+		//RNG
 
 			//Random integer from 0 to n
 			function randomIntegerFromZeroToValue(value) {
@@ -43,6 +52,11 @@ if(allDependenciesExist) {
 				var length = array.length;
 				var randomIndex = randomIntegerFromZeroToValue(length - 1);
 				return array[randomIndex];
+			};
+
+			//Random 1 or -1
+			function randomSign() {
+				return Math.random() < 0.5 ? 1 : -1
 			};
 
 			//Random integer from m to n
@@ -274,7 +288,7 @@ if(allDependenciesExist) {
 				};
 				return false;
 			};
-			
+
 			//Element name search
 				window.searchQuery = {};
 
@@ -284,6 +298,36 @@ if(allDependenciesExist) {
 					var elemNames = Object.keys(elements);
 					var matches = elemNames.filter(function(name) {
 						return !!(name.match(window.searchQuery))
+					});
+					return matches
+				};
+
+				function elementsWith(keyQuery) {
+					if(typeof(window.keyQuery) == "undefined") { window.keyQuery = "" }; //necessary because of filter's idiotic no-argument policy
+					window.keyQuery = keyQuery;
+					var elemNames = Object.keys(elements);
+					var matches = elemNames.filter(function(name) {
+						return typeof(elements[name]?.[window.keyQuery]) !== "undefined"
+					});
+					return matches
+				};
+
+				function elementsWithout(keyInverseQuery) {
+					if(typeof(window.keyInverseQuery) == "undefined") { window.keyInverseQuery = "" }; //necessary because of filter's idiotic no-argument policy
+					window.keyInverseQuery = keyInverseQuery;
+					var elemNames = Object.keys(elements);
+					var matches = elemNames.filter(function(name) {
+						return typeof(elements[name]?.[window.keyInverseQuery]) === "undefined"
+					});
+					return matches
+				};
+
+				function getElementsInCategory(categoryName) {
+					if(["",null,undefined].includes(categoryName)) { categoryName = "other" };
+					window.categoryQuery = categoryName;
+					var elemNames = Object.keys(elements);
+					var matches = elemNames.filter(function(name) {
+						return (elements[name].category ?? "other") == window.categoryQuery
 					});
 					return matches
 				};
@@ -456,7 +500,7 @@ if(allDependenciesExist) {
 				if(!color.startsWith("hsl(") || !color.endsWith(")")) {
 					throw new Error(`The color ${color} is not a valid hsl() color`)
 				};
-				var colorTempArray = color.split(",")
+				var colorTempArray = color.split(",").map(x => x.trim())
 				if(colorTempArray.length !== 3) {
 					throw new Error(`The color ${color} is not a valid hsl() color`)
 				};
@@ -579,9 +623,10 @@ if(allDependenciesExist) {
 							throw new Error("Offset is NaN");
 						};
 
+						var oldColor = color; //for error display
 						color = hexToRGB(color);
 						if(color === null) {
-							throw new Error("hexToRGB(color) was null (maybe it's an invalid hex triplet?)");
+							throw new Error(`hexToRGB(color) was null (${oldColor}, maybe it's an invalid hex triplet?)`);
 						};
 
 					//console.log("converted color: " + JSON.stringify(color));
@@ -700,7 +745,7 @@ if(allDependenciesExist) {
 				};
 			};
 
-			function rgbObjectToString(color) {
+			function rgbObjectToString(color,stripAlpha=false) {
 				if(typeof(color) !== "object") {
 					throw new Error("Input color is not an object");
 				};
@@ -719,15 +764,20 @@ if(allDependenciesExist) {
 				return `rgb(${red},${green},${blue})`
 			};
 
-			function convertColorFormats(color,outputType="rgb") { //Hex triplet and object to rgb(), while rgb() is untouched
+			function convertColorFormats(color,outputType="rgb",stripAlpha=false) {
 				if(typeof(color) === "undefined") {
 					//console.log("Warning: An element has an undefined color. Unfortunately, due to how the code is structured, I can't say which one.");
 					//color = "#FF00FF";
 					throw new Error("Color is undefined!");
 				};
 				//console.log("Logged color for convertColorFormats: " + color);
+				var oldColor = color;
+				var bytes,r,g,b,a;
 				if(typeof(color) === "string") {
-					if(typeof(color) === "string" && color.length < 10) {
+					//Hex input case
+					
+					if(color.length < 10) {
+						//a proper hex quadruplet is still shorter than the shortest proper rgb() string
 						//console.log(`detected as hex: ${color}`);
 							//catch missing octothorpes
 							if(!color.startsWith("#")) {
@@ -735,73 +785,125 @@ if(allDependenciesExist) {
 							};
 						//console.log(`octothorpe checked: ${color}`);
 
-						color = hexToRGB(color);
-						if(color === null) {
-							throw new Error("hexToRGB(color) was null (maybe it's an invalid hex triplet?)");
-						};
-
-						switch(outputType.toLowerCase()) {
-							case "rgb":
-								return `rgb(${color.r},${color.g},${color.b})`;
-								break;
-							case "hex":
-								return rgbToHex(color);
-								break;
-							case "json":
-								return color;
-								break;
-							case "array":
-								return [color.r, color.g, color.b];
-								break;
-							default:
-								throw new Error("outputType must be \"rgb\", \"hex\", \"json\", or \"array\"");
-						};
-					} else {
-						if(typeof(color) === "string" && color.startsWith("rgb(")) {
-							//console.log(`convertColorFormats: calling rgbStringToObject on color ${color}`);
-							color = rgbStringToObject(color,true,false);
-							switch(outputType.toLowerCase()) {
-								case "rgb":
-									if(typeof(color) === "string") { color = rgbStringToObject(color) };
-									return `rgb(${color.r},${color.g},${color.b})`;
-									break;
-								case "hex":
-									return rgbToHex(color);
-									break;
-								case "json":
-									return color;
-									break;
-								case "array":
-									return [color.r, color.g, color.b];
-									break;
-								default:
-									throw new Error("outputType must be \"rgb\", \"hex\", \"json\", or \"array\"");
-							};
+						if(oldColor.length < 6) {
+							bytes = oldColor.toLowerCase().match(/[a-z0-9]/g).map(x => parseInt(x.concat(x),16));
 						} else {
-							throw new Error('Color must be of the type "rgb(red,green,blue)"');
+							bytes = oldColor.toLowerCase().match(/[a-z0-9]{2}/g).map(x => parseInt(x,16));
 						};
+						r = bytes[0];
+						g = bytes[1];
+						b = bytes[2];
+						if(bytes.length > 3) {
+							a = bytes[3] / 255;
+						} else {
+							a = null
+						};
+						if(stripAlpha) { a = null };
+						//to JSON for ease of use
+						color = {"r": r, "g": g, "b": b};
+						if(typeof(a) == "number") { color["a"] = a };
+					} else {					
+						//otherwise assume rgb() input
+						bytes = color.match(/[\d\.]+/g);
+						if(typeof(bytes?.map) == "undefined") {
+							console.log(bytes);
+							bytes = [255,0,255]
+						} else {
+							bytes = bytes.map(x => Number(x));
+						};
+						r = bytes[0];
+						g = bytes[1];
+						b = bytes[2];
+						if(bytes.length > 3) {
+							a = bytes[3];
+							if(a > 1) {
+								a /= 255
+							}
+						} else {
+							a = null
+						};
+						if(stripAlpha) { a = null };
+						//to JSON for ease of use
+						color = {"r": r, "g": g, "b": b}
+						if(typeof(a) == "number") { color["a"] = a };
 					};
-				} else if(typeof(color) === "object") {
-					switch(outputType.toLowerCase()) {
-						case "rgb":
-							return `rgb(${color.r},${color.g},${color.b})`;
-							break;
-						case "hex":
-							return rgbToHex(color);
-							break;
-						case "json":
-							return color;
-							break;
-						case "array":
-							return [color.r, color.g, color.b];
-							break;
-						default:
-							throw new Error("outputType must be \"rgb\", \"hex\", \"json\", or \"array\"");
+				} else if(Array.isArray(color)) {
+					bytes = color;
+					r = bytes[0];
+					g = bytes[1];
+					b = bytes[2];
+					if(bytes.length > 3) {
+						a = bytes[3];
+						if(a > 1) {
+							a /= 255
+						}						
+					} else {
+						a = null
 					};
+					if(stripAlpha) { a = null };
+					//to JSON for ease of use
+					color = {"r": r, "g": g, "b": b}
+					if(typeof(a) == "number") { color["a"] = a };
+				} else if(typeof(color) == "object") {
+					//variable mappings only
+					r = color.r;
+					g = color.g;
+					b = color.b;
+					if(typeof(color.a) == "number") {
+						a = color.a;
+					} else {
+						a = null
+					};
+					if(stripAlpha) { a = null }
 				};
+				//Colors are now objects
+
+				switch(outputType.toLowerCase()) {
+					case "rgb":
+					case "rgba":
+						var _r,_g,_b,_a;
+						_r = r;
+						_g = g;
+						_b = b;
+						if(typeof(a) == "number") { _a = a } else { _a = null };
+						var values;
+						if(stripAlpha || _a == null) {
+							values = [_r,_g,_b];
+						} else {
+							values = [_r,_g,_b,_a];
+						};
+						for(var i = 0; i <= 2; i++) {
+							values[i] = Math.round(values[i])
+						};
+						return (typeof(a) == "number" ? "rgba" : "rgb") + `(${values.join(",")})`
+					case "hex":
+						var _r,_g,_b,_a;
+						_r = r;
+						_g = g;
+						_b = b;
+						if(typeof(a) == "number") { _a = Math.round(a * 255) } else { _a = null };
+						var bytesToBe;
+						if(stripAlpha || _a == null) {
+							bytesToBe = [_r,_g,_b];
+						} else {
+							bytesToBe = [_r,_g,_b,_a];
+						};
+						return "#" + bytesToBe.map(x => Math.round(x).toString(16).padStart(2,"0")).join("");
+					case "json":
+						return color;
+					case "array":
+						return Object.values(color);
+						break;
+					default:
+						throw new Error("outputType must be \"rgb\", \"hex\", \"json\", or \"array\"");
+				}
 			};
 
 			function rgbHexCatcher(color) {
+				return convertColorFormats(color,"rgb");
+			};
+
+			function _rgbHexCatcher(color) {
 				return convertColorFormats(color,"rgb");
 			};
 
@@ -1068,10 +1170,11 @@ if(allDependenciesExist) {
 			};
 
 			function convertHslObjects(color,outputType="rgb") {
+				if(color == null) { console.error("convertHslObjects: Color is null"); color = {h: 300, s: 100, l: 50} };
 				switch(outputType.toLowerCase()) {
 					//RGB cases
 					case "rgb":
-						color = hexToRGB(hslToHex(...Object.values(color))); //hsl to hex, hex to rgb_json, and rgb_json to rgb()
+						color = convertColorFormats(hslToHex(...Object.values(color)),"json"); //hsl to hex, hex to rgb_json, and rgb_json to rgb()
 						return `rgb(${color.r},${color.g},${color.b})`;
 						break;
 					case "hex":
@@ -1107,10 +1210,10 @@ if(allDependenciesExist) {
 						break;
 					default:
 						throw new Error("outputType must be \"rgb\", \"hex\", \"rgb_json\", \"rgb_array\", \"hsl\", \"hsl_json\", or \"hsl_array\"");
-				};
-			}
+				}
+			};
 
-			function changeSaturation(color,saturationChange,operationType="add",outputType="rgb",arrayType=null) {
+			function changeSaturation(color,saturationChange,operationType="add",outputType="rgb",arrayType=null,doRounding=true) {
 				color = normalizeColorToHslObject(color,arrayType);
 				//only {h,s,l} should exist now
 
@@ -1153,14 +1256,14 @@ if(allDependenciesExist) {
 						throw new Error("Operation must be \"add\", \"subtract\", \"multiply\", \"divide\", \"set\", \"min\", or \"max\"");
 				};
 
-				color.h = Math.round(color.h % 360);
-				color.s = Math.round(bound(color.s,0,100));
-				color.l = Math.round(bound(color.l,0,100));
+				color.h = doRounding ? Math.round(color.h % 360) : color.h % 360;
+				color.s = doRounding ? Math.round(bound(color.s,0,100)) : color.s,0,100;
+				color.l = doRounding ? Math.round(bound(color.l,0,100)) : color.l,0,100;
 
 				return convertHslObjects(color,outputType)
 			};
 
-			function changeLuminance(color,luminanceChange,operationType="add",outputType="rgb",arrayType=null) {
+			function changeLuminance(color,luminanceChange,operationType="add",outputType="rgb",arrayType=null,doRounding=true) {
 				color = normalizeColorToHslObject(color,arrayType);
 				//only {h,s,l} should exist now
 
@@ -1203,14 +1306,14 @@ if(allDependenciesExist) {
 						throw new Error("Operation must be \"add\", \"subtract\", \"multiply\", \"divide\", \"set\", \"min\", or \"max\"");
 				};
 
-				color.h = Math.round(color.h % 360);
-				color.s = Math.round(bound(color.s,0,100));
-				color.l = Math.round(bound(color.l,0,100));
+				color.h = doRounding ? Math.round(color.h % 360) : color.h % 360;
+				color.s = doRounding ? Math.round(bound(color.s,0,100)) : color.s,0,100;
+				color.l = doRounding ? Math.round(bound(color.l,0,100)) : color.l,0,100;
 
 				return convertHslObjects(color,outputType);
 			};
 
-			function changeHue(color,hueChange,operationType="add",outputType="rgb",arrayType=null) {
+			function changeHue(color,hueChange,operationType="add",outputType="rgb",arrayType=null,doRounding=true) {
 				color = normalizeColorToHslObject(color,arrayType);
 				//only {h,s,l} should exist now
 
@@ -1253,9 +1356,9 @@ if(allDependenciesExist) {
 						throw new Error("Operation must be \"add\", \"subtract\", \"multiply\", \"divide\", \"set\", \"min\", or \"max\"");
 				};
 
-				color.h = Math.round(color.h % 360);
-				color.s = Math.round(bound(color.s,0,100));
-				color.l = Math.round(bound(color.l,0,100));
+				color.h = doRounding ? Math.round(color.h % 360) : color.h % 360;
+				color.s = doRounding ? Math.round(bound(color.s,0,100)) : color.s,0,100;
+				color.l = doRounding ? Math.round(bound(color.l,0,100)) : color.l,0,100;
 
 				return convertHslObjects(color,outputType);
 			};
@@ -1286,6 +1389,12 @@ if(allDependenciesExist) {
 			};
 
 		//Pixels
+		
+			function tryMoveAndReturnBlockingPixel(pixel,nx,ny,leaveBehind,force) {
+				if(outOfBounds(nx,ny)) { return false };
+				if(isEmpty(nx,ny,false)) { return tryMove(pixel,nx,ny,leaveBehind,force) };
+				return pixelMap[nx][ny]
+			};
 
 			function exposedToAir(pixel) {	
 				return (isEmpty(pixel.x+1,pixel.y) || isEmpty(pixel.x-1,pixel.y) || isEmpty(pixel.x,pixel.y+1) || isEmpty(pixel.x,pixel.y-1));
@@ -1451,18 +1560,29 @@ if(allDependenciesExist) {
 				};
 			};
 
-			function breakPixel(pixel,changetemp=false) {
-				var info = elements[pixel.element];
-				if(typeof(info.breakInto) === "undefined") {
-					return false;
+			function breakPixel(pixel,changeTemp=false,defaultBreakIntoDust=false) {
+				var result = elements[pixel.element].breakInto;
+				if (result === undefined) {if(defaultBreakIntoDust) { result = "dust" } else { return }};
+				// if it is an array, choose a random item, else just use the value
+				while (Array.isArray(result)) {
+					result = randomChoice(result);
 				};
-				var breakIntoElement = info.breakInto;
-				if(Array.isArray(breakIntoElement)) {
-					breakIntoElement = breakIntoElement[Math.floor(Math.random() * breakIntoElement.length)]
+				// change the pixel to the result
+				if (result === null) {
+					deletePixel(pixel.x,pixel.y);
+					return
 				};
-				changePixel(pixel,breakIntoElement,changetemp)
-			};
+				if (elements[pixel.element].breakIntoColor) {
+					var oldelement = pixel.element;
+					changePixel(pixel,result);
+					pixel.color = pixelColorPick(pixel, elements[oldelement].breakIntoColor);
+				}
+				else {
+					changePixel(pixel,result);
+				}
+			}
 
+			defaultHardness = 0.3;
 			function tryBreak(pixel,changetemp=false,defaultBreakIntoDust=false) {
 				var info = elements[pixel.element];
 				var hardness = defaultHardness;
@@ -1649,16 +1769,142 @@ if(allDependenciesExist) {
 
 		//World
 
-			function breakCircle(x,y,radius,respectHardness=false,changeTemp=false,defaultBreakIntoDust=false) {
-				var coords = circleCoords(x,y,radius);
-				for(i = 0; i < coords.length; i++) {
-					coordX = coords[i].x;
-					coordY = coords[i].y;
-					if(!isEmpty(coordX,coordY,true)) {
-						var pixel = pixelMap[coordX][coordY];
-						respectHardness ? tryBreak(pixel,changeTemp,defaultBreakIntoDust) : breakPixel(pixel,changeTemp,defaultBreakIntoDust);
+			function getCirclePixels(x,y,radius) {
+				return circleCoords(x,y,radius).map(coordinates => pixelMap[coordinates.x]?.[coordinates.y]).filter(function(pixelOrUndefined) { return typeof(pixelOrUndefined) == "object" })
+			};
+
+			function getPixelMooreNeighbors(pixel) {
+				var coordsToCheck = mooreDonutCoords.map(function(offsets) { return {x: offsets[0]+pixel.x, y: offsets[1]+pixel.y} } );
+				var neighbors = [];
+				for(var i = 0; i < coordsToCheck.length; i++) {
+					var coords = coordsToCheck[i];
+					if(outOfBounds(coords.x,coords.y)) {
+						continue
+					};
+					if(isEmpty(coords.x,coords.y,true)) {
+						continue
+					};
+					if(!pixelMap[coords.x]?.[coords.y]) {
+						continue
+					};
+					neighbors.push(pixelMap[coords.x][coords.y])
+				};
+				return neighbors
+			};
+
+			function clonePixel(pixel,newX,newY,replaceExistingPixel=false,returnPixel=false) {
+				if(!pixel) { return false };
+				if(outOfBounds(newX,newY)) { return false };
+				if(isEmpty(newX,newY)) {
+					//Do nothing
+				} else {
+					if(replaceExistingPixel) {
+						deletePixel(newX,newY) 
+					} else {
+						return false
+					}
+				};
+				var newPixel = structuredClone ? structuredClone(pixel) : JSON.parse(JSON.stringify(pixel));
+				newPixel.x = newX; newPixel.y = newY;
+				pixelMap[newX][newY] = newPixel;
+				currentPixels.push(newPixel);
+				return returnPixel ? newPixel : true
+			};
+
+			function cloneArea(topLeftX,topLeftY,bottomRightX,bottomRightY,newTopLeftX,newTopLeftY,oldPixelHandling_PreClear1_OnlyReplace2_Ignore3=1,errorOnOutOfBounds=false) {
+				var results = {"created": 0, "replaced": 0, "deleted": 0, "skipped": 0, "skipped_OOB": 0};
+				for(var x = topLeftX; x <= bottomRightX; x++) {
+					for(var y = topLeftY; y <= bottomRightY; y++) {
+						var relativeOffsetX = x - topLeftX;
+						var relativeOffsetY = y - topLeftY;
+						var newCoords = {"x": newTopLeftX+relativeOffsetX, "y": newTopLeftY+relativeOffsetY};
+						var oldCoords = {"x": x, "y": y};
+						var oldCoordsOOB = outOfBounds(oldCoords.x,oldCoords.y);
+						var newCoordsOOB = outOfBounds(newCoords.x,newCoords.y);
+						if(oldCoordsOOB || newCoordsOOB) {
+							if(errorOnOutOfBounds) {
+								var message;
+								if(oldCoordsOOB && !newCoordsOOB) {
+									message = "cloneArea: Source is or extends outside of the canvas."
+								} else if(!oldCoordsOOB && newCoordsOOB) {
+									message = "cloneArea: Destination is or extends outside of the canvas."
+								} else if(oldCoordsOOB && newCoordsOOB) {
+									message = "cloneArea: Source and destination are or extend outside of the canvas."
+								} else {
+									message = "cloneArea: ??? (Something has gone wrong with the OOB handling code.)"
+								};
+								throw new Error(message)
+							} else {
+								results.skipped_OOB++;
+								continue
+							}
+						};
+						if(isEmpty(newCoords.x,newCoords.y)) {
+							//Empty destination, full source
+							if(!(isEmpty(oldCoords.x,oldCoords.y))) {
+								clonePixel(pixelMap[oldCoords.x][oldCoords.y],newCoords.x,newCoords.y);
+								results.created++;
+							}
+						} else {
+							//Full destination, empty source
+							if(isEmpty(oldCoords.x,oldCoords.y)) {
+								//Delete the blocking pixel only if pre-clearing
+								if(oldPixelHandling_PreClear1_OnlyReplace2_Ignore3 == 1) {
+									deletePixel(newCoords.x,newCoords.y);
+									results.deleted++
+								} else {
+									results.skipped++
+								}
+							}
+							//Full destination, full source
+							else {
+								//Delete the blocking pixel if not ignoring (as for the above case, pre-clearing is not ignoring)
+								if(oldPixelHandling_PreClear1_OnlyReplace2_Ignore3 !== 3) {
+									deletePixel(newCoords.x,newCoords.y);
+									//Place the cloned pixel
+									clonePixel(pixelMap[oldCoords.x][oldCoords.y],newCoords.x,newCoords.y)
+									results.replaced++;
+								} else {
+									results.skipped++
+								};
+							}
+						}
+					}
+				};
+				return results
+			};
+
+			function getEmptyVonNeumannNeighbors(pixel) {
+				var neighbors = [];
+				var x = pixel.x;
+				var y = pixel.y;
+				for(var i = 0; i < adjacentCoords.length; i++) {
+					var finalX = pixel.x + adjacentCoords[i][0];
+					var finalY = pixel.y + adjacentCoords[i][1];
+					if(isEmpty(finalX,finalY,false)) {
+						neighbors.push([finalX,finalY])
 					};
 				};
+				return neighbors
+			};
+
+			function getEmptyMooreNeighbors(pixel) {
+				var neighbors = [];
+				var x = pixel.x;
+				var y = pixel.y;
+				for(var i = 0; i < mooreDonutCoords.length; i++) {
+					var finalX = pixel.x + mooreDonutCoords[i][0];
+					var finalY = pixel.y + mooreDonutCoords[i][1];
+					if(isEmpty(finalX,finalY,false)) {
+						neighbors.push([finalX,finalY])
+					};
+				};
+				return neighbors
+			};
+
+			function breakCircle(x,y,radius,respectHardness=false,changeTemp=false,defaultBreakIntoDust=false) {
+				var coords = getCirclePixels(x,y,radius);
+				coords.forEach(pixel => respectHardness ? tryBreak(pixel,changeTemp,defaultBreakIntoDust) : breakPixel(pixel,changeTemp,defaultBreakIntoDust))
 			};
 
 			function fillCircle(element,x,y,radius,overwrite=false) {
@@ -1724,6 +1970,32 @@ if(allDependenciesExist) {
 			function freezePixel(pixel,changetemp=true) {
 				var info = elements[pixel.element];
 				var result = info.stateLow;
+				if (!result) {
+					return false
+				};
+				if(result instanceof Array) {
+					result = result.filter(elementExists);
+					if(result.length == 0) {
+						return false;
+					};
+				} else {
+					if(!(elementExists(result))) {
+						return false;
+					};
+				};
+
+				while(result instanceof Array) {
+					result = randomChoice(result);
+				};
+
+				changePixel(pixel,result,changetemp);
+				return true;
+			};
+
+			//Melt pixel
+			function meltPixel(pixel,changetemp=true) {
+				var info = elements[pixel.element];
+				var result = info.stateHigh;
 				if (!result) {
 					return false
 				};
@@ -1830,13 +2102,17 @@ if(allDependenciesExist) {
 
 			//fix -1-caused ghost pixels
 			function deletePixel(x,y) {
+				if(isEmpty(x,y,true)) { return false };
 				// remove pixelMap[x][y] from currentPixels
 				var pixelIndex = currentPixels.indexOf(pixelMap[x][y]);
 				if(pixelIndex !== -1) {
 					currentPixels.splice(pixelIndex,1)
+					if (pixelMap[x][y]) { delete pixelMap[x][y] };
+				} else {
+					return false
 				};
-				if (pixelMap[x][y]) {pixelMap[x][y].del = true}
-				if (pixelMap[x][y]) { delete pixelMap[x][y] };
+				//if (pixelMap[x][y]) {pixelMap[x][y].del = true}
+				//if (pixelMap[x][y]) { delete pixelMap[x][y] };
 				/*for (var i = 0; i < currentPixels.length; i++) {
 					if (currentPixels[i].x == x && currentPixels[i].y == y) {
 						currentPixels.splice(i, 1);
@@ -1851,6 +2127,26 @@ if(allDependenciesExist) {
 						}
 					}
 				}*/
+			};
+
+		//Language
+
+			function englishFormatList(thingsArrayIn) {
+				var thingsArray = thingsArrayIn;
+				var amount = thingsArray.length;
+				if(amount == 1) {
+					return thingsArray[0]
+				} else if(amount == 2) {
+					return thingsArray.join(" and ")
+				} else {
+					var lastItem = thingsArray[thingsArray.length - 1];
+					thingsArray[thingsArray.length - 1] = "and " + lastItem;
+					return thingsArray.join(", ")
+				};
+			};
+
+			function capitalizeFirstLetter(string,locale=null) {
+				return string[0][locale ? "toLocaleUpperCase" : "toUpperCase"](locale) + string.slice(1)
 			};
 
 	//COLOR MANIPULATION TOOLS ##
@@ -2253,8 +2549,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		oldChangePixel = changePixel;
 		changePixel = function(pixel,element,changetemp=true) {
 			if(typeof(elements[element]) == "undefined") {
+				if(typeof(element) == "undefined" || element == "undefined") { return false };
 				if(doLog) { console.error(`Something tried to change a pixel of ${pixel.element} at (${pixel.x},${pixel.y}) to nonexistent element "${element}"`) };
-				return false;
+				return false
 			};
 			oldChangePixel(pixel,element,changetemp);
 		};
@@ -2357,6 +2654,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 								rgbos.push("rgb(255,255,255)")
 							} else if (c.startsWith("#")) {
 								var rgb = hexToRGB(c);
+								if(rgb == null) { console.log(key,c); rgb = {r: 255, g: 255, b: 255} };
 								rgbs.push("rgb("+rgb.r+","+rgb.g+","+rgb.b+")");
 								rgbos.push(rgb);
 							}
@@ -2389,7 +2687,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			if (!(newcolor instanceof Array)) { newcolor = [newcolor]; }
 			// for every color in the newcolor array, add a new color with the same value, but with the r and g values increased
 			for (var i = 0; i < newcolor.length; i++) {
-				var c = newcolor[i];
+				var c = newcolor[i] ?? "#ff00ff";
 				for (var j = 0; j < autoInfo.rgb.length; j++) {
 					var newc = autoInfo.rgb[j];
 					r = Math.floor(c.r * newc[0]);
@@ -2931,6 +3229,32 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			}
 		};
 
+		//redefine mouseRange to support even sizes
+        function mouseRange(mouseX,mouseY,size) {
+            var coords = [];
+            size = size || mouseSize;
+            if (elements[currentElement].maxSize < mouseSize) {
+                var mouseOffset = Math.trunc(elements[currentElement].maxSize/2);
+            }
+            else {
+                var mouseOffset = Math.trunc(size/2);
+            }
+            var topLeft = [mouseX-mouseOffset,mouseY-mouseOffset];
+            var bottomRight = [mouseX+mouseOffset,mouseY+mouseOffset];
+			if(size % 2 == 0) {
+				bottomRight[0]--;
+				bottomRight[1]--;
+			};
+            // Starting at the top left, go through each pixel
+            for (var x = topLeft[0]; x <= bottomRight[0]; x++) {
+                for (var y = topLeft[1]; y <= bottomRight[1]; y++) {
+                    // If the pixel is empty, add it to coords
+                    coords.push([x,y]);
+                }
+            }
+            return coords;
+        };
+
 		//this part defines basically all of the keybinds
 		function addKeyboardListeners() {
 			document.addEventListener("keydown", function(e) {
@@ -2973,16 +3297,26 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					}
 					return;
 				}
+				// If the user presses [ or -, decrease the mouse size by 2
 				if (e.keyCode == 219 || e.keyCode == 189) {
-					if (shiftDown) {mouseSize = 1}
+					//If a shift key is pressed, set to 1
+					if (shiftDown && shiftDown % 2 == 1) {mouseSize = 1}
+					//If an alt key is pressed, decrease by 1
+					else if (shiftDown && shiftDown % 2 == 0) { 
+						mouseSize--;
+						if (mouseSize < 1) { mouseSize = 1 }
+					}
 					else {
 						mouseSize -= 2;
-						if (mouseSize < 1) { mouseSize = 1; }
+						if (mouseSize < 1) { mouseSize = 1 }
 					}
 				}
 				// If the user presses ] or =, increase the mouse size by 2
 				if (e.keyCode == 221 || e.keyCode == 187) {
-					if (shiftDown) {mouseSize = (mouseSize+15)-((mouseSize+15) % 15)}
+					//If a shift key is pressed, increase by 15
+					if (shiftDown && shiftDown % 2 == 1) {mouseSize = (mouseSize+15)-((mouseSize+15) % 15)}
+					//If an alt key is pressed, increase by 1
+					else if (shiftDown && shiftDown % 2 == 0) {mouseSize++}
 					else {mouseSize += 2;}
 					// if height>width and mouseSize>height, set mouseSize to height, if width>height and mouseSize>width, set mouseSize to width
 					if (mouseSize > (height > width ? height : width)) { mouseSize = (height > width ? height : width); }
@@ -3137,7 +3471,14 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					createCategoryDiv(category);
 					categoryDiv = document.getElementById("category-"+category);
 				}
-				createElementButton(element);
+				if(Array.isArray(elements[element].color) && elements[element].color.length == 1) {
+					//temporarily make the single-item array into a string just for button generation, and then turn it back into an array just in case
+					elements[element].color = elements[element].color[0];
+					createElementButton(element);
+					elements[element].color = [elements[element].color]
+				} else {
+					createElementButton(element);
+				}
 			}
 			// Set the first button in categoryControls div to be the current category
 			document.getElementById("categoryControls").children[0].click()
@@ -3304,6 +3645,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			var firstDiv = document.getElementsByClassName("category")[0];
 			var firstElementButton = firstDiv.getElementsByClassName("elementButton")[0];
 			selectElement(firstElementButton.getAttribute("element"));
+			
+			gameLoaded = true
 		};
 
 
@@ -3311,22 +3654,29 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 
 		velocityBlacklist = [];
 
-		function explodeAtPlus(x,y,radius,fire="fire",smoke="smoke",beforeFunction=null,afterFunction=null,changeTemp=true) {
+		function explodeAtPlus(x,y,radius,firee="fire",smokee="smoke",beforeFunction=null,afterFunction=null,changeTemp=true) {
+			var message = "Explosion ";
+			var pixel = pixelMap[x]?.[y];
+			if(pixel) { message += `of ${pixel.element} ` };
+			message += `with radius ${radius} at (${x},${y})`;
+			
 			// if fire contains , split it into an array
-			if(fire !== null) {
-				if (fire.indexOf(",") !== -1) {
-					fire = fire.split(",");
+			if(firee !== null) {
+				if (firee.indexOf(",") !== -1) {
+					firee = firee.split(",");
 				};
 			};
-			if(smoke !== null) {
-				if (smoke.indexOf(",") !== -1) {
-					smoke = smoke.split(",");
+			if(smokee !== null) {
+				if (smokee.indexOf(",") !== -1) {
+					smokee = smokee.split(",");
 				};
 			};
 			var coords = circleCoords(x,y,radius);
 			var power = radius/10;
 			//for (var p = 0; p < Math.round(radius/10+1); p++) {
 			for (var i = 0; i < coords.length; i++) {
+				var fire = firee;
+				var smoke = smokee;
 				// damage value is based on distance from x and y
 				var damage = Math.random() + (Math.floor(Math.sqrt(Math.pow(coords[i].x-x,2) + Math.pow(coords[i].y-y,2)))) / radius;
 				// invert
@@ -3339,24 +3689,17 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					else if (damage < 0.2) {
 						// if smoke is an array, choose a random item
 						if(smoke !== null) {
-							if (Array.isArray(smoke)) {
-								createPixel(smoke[Math.floor(Math.random() * smoke.length)],coords[i].x,coords[i].y);
-							}
-							else {
-								createPixel(smoke,coords[i].x,coords[i].y);
-							}
+							while (Array.isArray(smoke)) {
+								smoke = randomChoice(smoke);
+							};
+							if(smoke !== null) { createPixel(smoke,coords[i].x,coords[i].y) };
 						}
 					}
 					else {
-						if(fire !== null) {
-							// if fire is an array, choose a random item
-							if (Array.isArray(fire)) {
-								createPixel(fire[Math.floor(Math.random() * fire.length)],coords[i].x,coords[i].y);
-							}
-							else {
-								createPixel(fire,coords[i].x,coords[i].y);
-							}
-						}
+						while (Array.isArray(fire)) {
+							fire = randomChoice(fire);
+						};
+						if(fire !== null) { createPixel(fire,coords[i].x,coords[i].y) };
 					}
 				}
 				else if (!outOfBounds(coords[i].x,coords[i].y)) {
@@ -3366,6 +3709,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					if(typeof(beforeFunction) === "function") {
 						beforeFunction(pixel,x,y,radius,fire,smoke,power,damage);
 					};
+					if(!pixel || pixel.del || typeof(pixel) == "undefined" || isEmpty(coords[i].x,coords[i].y)) {
+						continue
+					};
 					if (info.hardness) { // lower damage depending on hardness(0-1)
 						if (info.hardness < 1) {
 							damage = damage * ((1 - info.hardness)*10);
@@ -3374,13 +3720,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					}
 					if (damage > 0.9) {
 						if(fire !== null) {
-							if (Array.isArray(fire)) {
-								var newfire = fire[Math.floor(Math.random() * fire.length)];
-							}
-							else {
-								var newfire = fire;
-							}
-							changePixel(pixel,newfire,changeTemp);
+							while (Array.isArray(fire)) {
+								fire = randomChoice(fire);
+							};
+							if(fire !== null) { changePixel(pixel,fire,changeTemp) };
 						} else {
 							deletePixel(pixel.x,pixel.y);
 						}
@@ -3389,18 +3732,14 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					else if (damage > 0.25) {
 						if (info.breakInto) {
 							// if it is an array, choose a random item, else just use the value
-							if (Array.isArray(info.breakInto)) {
-								var result = info.breakInto[Math.floor(Math.random() * info.breakInto.length)];
+							if (info.breakInto !== undefined) {
+								breakPixel(pixel);
+							} else {
+								while (Array.isArray(fire)) {
+									fire = randomChoice(fire);
+								};
+								if(fire !== null) { changePixel(pixel,fire,changeTemp) };
 							}
-							else {
-								var result = info.breakInto;
-							}
-							if(typeof(breakIntoElement) === "undefined") {
-								deletePixel(pixel.x,pixel.y);
-								continue
-							};
-							// change the pixel to the result
-							changePixel(pixel,result,changeTemp);
 							if(info.onExplosionBreakOrSurvive) {
 								info.onExplosionBreakOrSurvive(pixel,x,y,radius,fire,smoke,power,damage);
 							};
@@ -3408,13 +3747,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						}
 						else {
 							if(fire !== null) {
-								if (Array.isArray(fire)) {
-									var newfire = fire[Math.floor(Math.random() * fire.length)];
-								}
-								else {
-									var newfire = fire;
-								}
-								changePixel(pixel,newfire,changeTemp);
+								while (Array.isArray(fire)) {
+									fire = randomChoice(fire);
+								};
+								if(fire !== null) { changePixel(pixel,fire,changeTemp) };
 							} else {
 								deletePixel(pixel.x,pixel.y);
 							}
@@ -3447,13 +3783,23 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		};
 
 		oldExplodeAt = explodeAt;
+		/*explodeAt = function(x,y,radius,fire="fire") {
+			var message = "Explosion ";
+			var pixel = pixelMap[x]?.[y];
+			if(pixel) { message += `of ${pixel.element} ` };
+			message += `with radius ${radius} with "${fire}" at (${x},${y})`;
+			console.log(message);
+			
+			oldExplodeAt(x,y,radius,fire="fire")
+		};*/
 		explodeAt = explodeAtPlus;
 
 	//MORE CONFIGURABLE REACTION TEMPERATURE CHANGES ##
 
 		function reactPixels(pixel1,pixel2) {
-			var r = elements[pixel1.element].reactions[pixel2.element];
-			if (r.setting && settings[r.setting]===0) {
+			var r = elements[pixel1?.element]?.reactions?.[pixel2?.element];
+			if(!r) { return false };
+			if (r.setting && !(settings[r.setting])) {
 				return false;
 			}
 			var changeTemp = r.changeTemp ?? true
@@ -3671,8 +4017,41 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 
 		//No changeTemp for fire=>smoke
 		elements.fire.tick = function(pixel){
-			behaviors.UL_UR_OPTIMIZED(pixel);
-			if (!pixel.del && settings.burn===0 && (pixelTicks-pixel.start > 70) && Math.random() < 0.1 ) { changePixel(pixel,"smoke",false) }
+			if (pixel.start === pixelTicks) {return}
+			if (pixel.charge && elements[pixel.element].behaviorOn) {
+				pixelTick(pixel)
+			}
+			var move1Spots = [
+				[pixel.x, pixel.y-1],
+				[pixel.x+1, pixel.y-1],
+				[pixel.x-1, pixel.y-1],
+			]
+			var moved = false;
+			for (var i = 0; i < move1Spots.length; i++) {
+				var coords = move1Spots[Math.floor(Math.random()*move1Spots.length)];
+				coords = {x: coords[0], y: coords[1]};
+				if(!isEmpty(coords.x,coords.y,true) && pixelMap[coords.x]?.[coords.y]?.element == pixel.element && pixelMap[coords.x][coords.y].temp < pixel.temp) {
+					swapPixels(pixel,pixelMap[coords.x][coords.y]);
+					moved = true; break
+				} else {
+					if (tryMove(pixel, coords.x, coords.y)) { moved = true; break; }
+					else { move1Spots.splice(move1Spots.indexOf(coords), 1);}
+				}
+			}
+			if (!moved && !pixel.del) {
+				var move2Spots = [
+					[pixel.x, pixel.y+1],
+					[pixel.x+1, pixel.y],
+					[pixel.x-1, pixel.y],
+				]
+				for (var i = 0; i < move2Spots.length; i++) {
+					var coords = move2Spots[Math.floor(Math.random()*move2Spots.length)];
+					if (tryMove(pixel, coords[0], coords[1])) { break; }
+					else { move2Spots.splice(move2Spots.indexOf(coords), 1); }
+				}
+			}
+			if (!pixel.del) { doDefaults(pixel); }
+			if (!pixel.del && settings.burn===0 && (pixelTicks-pixel.start > 70) && Math.random() < 0.1 ) { changePixel(pixel,"smoke",false) };
 		};
 
 		//New elements
@@ -3848,6 +4227,380 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			stain: 0.075,
 		};
 
+		elements.holy_fire = {
+			color: ["#FFFF96","#FFBF49","#CE743B"], //placeholder
+			tick: function(pixel) {
+
+				var moveResult = tryMoveAndReturnBlockingPixel(pixel,pixel.x + randomSign(),pixel.y - 1);
+				var blockingPixels = [];
+				var secondMoveResult = null;
+				
+				if(typeof(moveResult) == "object" && !(elements[pixel.element].ignore.concat(pixel.element).includes(moveResult.element))) {
+					blockingPixels.push(moveResult)
+				};
+				
+				//if move1Result = true then nothing else happens
+				
+				if(moveResult !== true) {
+					var coords = randomChoice([[-1,0],[0,1],[1,0]]).map(offsetPair => addArraysInPairs(offsetPair,[pixel.x,pixel.y]));
+					secondMoveResult = tryMoveAndReturnBlockingPixel(pixel,...coords);
+					
+					if(typeof(secondMoveResult) == "object" && !(elements[pixel.element].ignore.concat(pixel.element).includes(secondMoveResult.element))) {
+						blockingPixels.push(secondMoveResult)
+					};
+				};
+
+				if(blockingPixels.length > 0) {
+					blockingPixels.forEach(function(pixel) {
+						var blessRxn = elements.bless.reactions[pixel.element];
+						if(typeof(blessRxn) == "object") { 
+							var elem2 = blessRxn.elem2;
+							if(elem2 !== null) {
+								while(Array.isArray(elem2)) { elem2 = randomChoice(elem2) };
+								changePixel(pixel,elem2)
+							}
+						};
+						var value = Math.random();
+						if(value < 0.01) {
+							if(pixel.burnInto) {
+								finishBurn(pixel)
+							} else {
+								changePixel(pixel,randomChoice(["ash","ash","light"]))
+							}
+						} else if(value < 0.20) {
+							pixel.burning = true;
+							pixel.burnStart ??= pixelTicks;
+						} else if(value < 0.205) {
+							changePixel(pixel,randomChoice(["ash","ash","light"]))
+						} else {
+							pixel.temp += 10; pixelTempCheck(pixel)
+						};
+						return
+					})
+				};
+				doDefaults(pixel);
+			},
+			temp:6000,
+			tempLow:1000,
+			stateLow: ["bless","fire"],
+			burnInto: ["bless","fire"],
+			category: "energy",
+			burning: true,
+			burnTime: 500,
+			burnTempChange: 8,
+			fireElement: ["bless","plasma"],
+			ignore: ["ash","light","bless","plasma","fire","smoke","liquid_holy_fire"].concat(searchElements("haseulite")).concat("haseulite_singularity"),
+			state: "gas",
+			density: 0.08,
+			ignoreAir: true
+		};
+		
+		elements.holy_bomb = {
+			color: ["#dbb260", "#94591e"],
+			tick: function(pixel) {
+				if(!isEmpty(pixel.x,pixel.y-1,true)) { //[0][1] EX (ignore bounds)
+					var newPixel = pixelMap[pixel.x][pixel.y-1];
+					var newElement = newPixel.element;
+					var newInfo = elements[newElement];
+					if(newInfo.state !== "gas" && newElement !== pixel.element) {
+						explodeAtPlus(pixel.x,pixel.y,13,"holy_fire","plasma",null,firebombFire);
+					};
+				};
+				if(!isEmpty(pixel.x,pixel.y+1,true)) { //[2][1] EX (don't ignore bounds, non-bound case)
+					var newPixel = pixelMap[pixel.x][pixel.y+1];
+					var newElement = newPixel.element;
+					var newInfo = elements[newElement];
+					if(newInfo.state !== "gas" && newElement !== pixel.element) {
+						explodeAtPlus(pixel.x,pixel.y,13,"holy_fire","plasma",null,firebombFire);
+					};
+				};
+				if(outOfBounds(pixel.x,pixel.y+1)) { //[2][1] EX (don't ignore bounds, bound case)
+					explodeAtPlus(pixel.x,pixel.y,13,"holy_fire","plasma",null,firebombFire);
+				};
+				if(!tryMove(pixel,pixel.x,pixel.y+1)) { //behaviors.POWDER
+					Math.random() < 0.5 ? tryMove(pixel,pixel.x-1,pixel.y+1) : tryMove(pixel,pixel.x+1,pixel.y+1);
+				};
+			},
+			category: "weapons",
+			state: "solid",
+			density: 4000,
+			excludeRandom: true,
+			desc: "A bomb that burns the world to pure ash. <br/>To enable automatic bomb generation, set the generateBombs query parameter.",
+		};
+
+		elements.bless.ignore ??= [];
+		elements.bless.ignore.push("holy_fire");
+
+		elements.plasma_explosion = {
+			color: ["#c78fff","#ea8fff","#be8fff"],
+			tick: function(pixel) {
+				explodeAtPlus(pixel.x,pixel.y,10,"plasma","fire");
+				return
+			},
+			temp: 6500,
+			category: "energy",
+			state: "gas",
+			density: 1000,
+			excludeRandom: true,
+			noMix: true
+		};
+
+		elements.god_slayer_fire = {
+			color: ["#FFBACE","#FC6DCA","#9954B0"],
+			tick: function(pixel) {
+
+				var moveResult = tryMoveAndReturnBlockingPixel(pixel,pixel.x + randomSign(),pixel.y - 1);
+				var blockingPixels = [];
+				var secondMoveResult = null;
+				
+				if(typeof(moveResult) == "object" && !(elements[pixel.element].ignore.concat(pixel.element).includes(moveResult.element))) {
+					blockingPixels.push(moveResult)
+				};
+				
+				//if move1Result = true then nothing else happens
+				
+				if(moveResult !== true) {
+					var coords = randomChoice([[-1,0],[0,1],[1,0]]).map(offsetPair => addArraysInPairs(offsetPair,[pixel.x,pixel.y]));
+					secondMoveResult = tryMoveAndReturnBlockingPixel(pixel,...coords);
+					
+					if(typeof(secondMoveResult) == "object" && !(elements[pixel.element].ignore.concat(pixel.element).includes(secondMoveResult.element))) {
+						blockingPixels.push(secondMoveResult)
+					};
+				};
+
+				if(blockingPixels.length > 0) {
+					blockingPixels.forEach(function(pixel) {
+						var value = Math.random();
+						var randomDefaultResult = randomChoice(["ash","slag","plasma"]);
+						var oldTemp = pixel.temp;
+						if(value < 0.03) {
+							if(pixel.stateHigh) {
+								meltPixel(pixel);
+							}
+						} else if(value < 0.06) {
+							if(pixel.burnInto) {
+								finishBurn(pixel);
+							} else {
+								changePixel(pixel,randomDefaultResult)
+							}
+						} else if(value < 0.09) {
+							if(pixel.breakInto) {
+								breakPixel(pixel);
+							} else {
+								changePixel(pixel,randomDefaultResult)
+							}
+						} else if(value < 0.24) {
+							pixel.burning = true;
+							pixel.burnStart ??= pixelTicks;
+						} else if(value < 0.245) {
+							changePixel(pixel,randomDefaultResult)
+						} else {
+							pixel.temp += 25; pixelTempCheck(pixel)
+						};
+						if(pixel) {
+							pixel.temp = Math.max(oldTemp,pixel.temp)
+						};
+						return
+					})
+				};
+
+				doDefaults(pixel);
+			},
+			temp:10000,
+			tempLow:1500,
+			stateLow: ["plasma_explosion","plasma","plasma","plasma","plasma","plasma","plasma","plasma"],
+			burnInto: ["plasma_explosion","plasma","plasma","plasma","plasma","plasma","plasma","plasma"],
+			category: "energy",
+			ignore: ["ash","slag","wall","plasma","fire","smoke","liquid_god_slayer_fire"].concat(searchElements("haseulite")).concat("haseulite_singularity"),
+			burning: true,
+			burnTime: 500,
+			burnTempChange: 10,
+			fireElement: ["plasma"],
+			state: "gas",
+			density: 0.07,
+			ignoreAir: true
+		};
+
+		elements.liquid_holy_fire = {
+			color: ["#FFFF96","#FFBF49","#CE743B"], //placeholder
+			tick: function(pixel) {
+
+				var moveResult = tryMoveAndReturnBlockingPixel(pixel,pixel.x + randomIntegerBetweenTwoValues(-1,1),pixel.y + 1);
+				var blockingPixels = [];
+				var secondMoveResult = null;
+				
+				if(typeof(moveResult) == "object" && !(elements[pixel.element].ignore.concat(pixel.element).includes(moveResult.element))) {
+					blockingPixels.push(moveResult)
+				};
+				
+				//if move1Result = true then nothing else happens
+				
+				if(moveResult !== true) {
+					var coords = [randomSign(),0].map(offsetPair => addArraysInPairs(offsetPair,[pixel.x,pixel.y]));
+					secondMoveResult = tryMoveAndReturnBlockingPixel(pixel,...coords);
+					
+					if(typeof(secondMoveResult) == "object" && !(elements[pixel.element].ignore.concat(pixel.element).includes(secondMoveResult.element))) {
+						blockingPixels.push(secondMoveResult)
+					};
+				};
+
+				if(blockingPixels.length > 0) {
+					blockingPixels.forEach(function(pixel) {
+						var blessRxn = elements.bless.reactions[pixel.element];
+						if(typeof(blessRxn) == "object") { 
+							var elem2 = blessRxn.elem2;
+							if(elem2 !== null) {
+								while(Array.isArray(elem2)) { elem2 = randomChoice(elem2) };
+								changePixel(pixel,elem2)
+							}
+						};
+						var value = Math.random();
+						if(value < 0.01) {
+							if(pixel.burnInto) {
+								finishBurn(pixel)
+							} else {
+								changePixel(pixel,randomChoice(["ash","ash","light"]))
+							}
+						} else if(value < 0.20) {
+							pixel.burning = true;
+							pixel.burnStart ??= pixelTicks;
+						} else if(value < 0.205) {
+							changePixel(pixel,randomChoice(["ash","ash","light"]))
+						} else {
+							pixel.temp += 10; pixelTempCheck(pixel)
+						};
+						return
+					})
+				};
+				doDefaults(pixel);
+			},
+			temp:8000,
+			tempLow:2000,
+			stateLow: "holy_fire",
+			burnInto: ["bless","fire"],
+			category: "energy",
+			burning: true,
+			burnTime: 1000,
+			burnTempChange: 10,
+			fireElement: "holy_fire",
+			ignore: ["light","bless","wall","plasma","fire","smoke","holy_fire"].concat(searchElements("haseulite")).concat("haseulite_singularity"),
+			state: "liquid",
+			density: 270,
+			ignoreAir: true
+		};
+		
+		elements.liquid_god_slayer_fire = {
+			color: ["#FFBACE","#FC6DCA","#9954B0"],
+			tick: function(pixel) {
+
+				var moveResult = tryMoveAndReturnBlockingPixel(pixel,pixel.x + randomIntegerBetweenTwoValues(-1,1),pixel.y + 1);
+				var blockingPixels = [];
+				var secondMoveResult = null;
+				
+				if(typeof(moveResult) == "object" && !(elements[pixel.element].ignore.concat(pixel.element).includes(moveResult.element))) {
+					blockingPixels.push(moveResult)
+				};
+				
+				//if move1Result = true then nothing else happens
+				
+				if(moveResult !== true) {
+					var coords = [randomSign(),0].map(offsetPair => addArraysInPairs(offsetPair,[pixel.x,pixel.y]));
+					secondMoveResult = tryMoveAndReturnBlockingPixel(pixel,...coords);
+					
+					if(typeof(secondMoveResult) == "object" && !(elements[pixel.element].ignore.concat(pixel.element).includes(secondMoveResult.element))) {
+						blockingPixels.push(secondMoveResult)
+					};
+				};
+
+				if(blockingPixels.length > 0) {
+					blockingPixels.forEach(function(pixel) {
+						var value = Math.random();
+						var randomDefaultResult = randomChoice(["ash","slag","plasma"]);
+						var oldTemp = pixel.temp;
+						if(value < 0.03) {
+							if(pixel.stateHigh) {
+								meltPixel(pixel);
+							}
+						} else if(value < 0.06) {
+							if(pixel.burnInto) {
+								finishBurn(pixel);
+							} else {
+								changePixel(pixel,randomDefaultResult)
+							}
+						} else if(value < 0.09) {
+							if(pixel.breakInto) {
+								breakPixel(pixel);
+							} else {
+								changePixel(pixel,randomDefaultResult)
+							}
+						} else if(value < 0.24) {
+							pixel.burning = true;
+							pixel.burnStart ??= pixelTicks;
+						} else if(value < 0.245) {
+							changePixel(pixel,randomDefaultResult)
+						} else {
+							pixel.temp += 25; pixelTempCheck(pixel)
+						};
+						if(pixel) {
+							pixel.temp = Math.max(oldTemp,pixel.temp)
+						};
+						return
+					})
+				};
+
+				doDefaults(pixel);
+			},
+			temp:15000,
+			tempLow:2000,
+			stateLow: ["plasma_explosion","liquid_plasma","liquid_plasma","liquid_plasma","liquid_plasma","liquid_plasma","liquid_plasma","liquid_plasma"],
+			burnInto: "god_slayer_fire",
+			category: "energy",
+			ignore: ["ash","slag","wall","plasma","fire","smoke","god_slayer_fire"].concat(searchElements("haseulite")).concat("haseulite_singularity"),
+			burning: true,
+			burnTime: 1000,
+			burnTempChange: 14,
+			fireElement: "god_slayer_fire",
+			state: "liquid",
+			density: 380,
+			ignoreAir: true
+		};
+
+		elements.god_slayer_bomb = {
+			color: ["#a43dcc", "#49b6d1"],
+			tick: function(pixel) {
+				if(!isEmpty(pixel.x,pixel.y-1,true)) { //[0][1] EX (ignore bounds)
+					var newPixel = pixelMap[pixel.x][pixel.y-1];
+					var newElement = newPixel.element;
+					var newInfo = elements[newElement];
+					if(newInfo.state !== "gas" && newElement !== pixel.element) {
+						explodeAtPlus(pixel.x,pixel.y,40,"god_slayer_fire","plasma");
+					};
+				};
+				if(!isEmpty(pixel.x,pixel.y+1,true)) { //[2][1] EX (don't ignore bounds, non-bound case)
+					var newPixel = pixelMap[pixel.x][pixel.y+1];
+					var newElement = newPixel.element;
+					var newInfo = elements[newElement];
+					if(newInfo.state !== "gas" && newElement !== pixel.element) {
+						explodeAtPlus(pixel.x,pixel.y,40,"god_slayer_fire","plasma");
+					};
+				};
+				if(outOfBounds(pixel.x,pixel.y+1)) { //[2][1] EX (don't ignore bounds, bound case)
+					explodeAtPlus(pixel.x,pixel.y,40,"god_slayer_fire","plasma");
+				};
+				if(!tryMove(pixel,pixel.x,pixel.y+1)) { //behaviors.POWDER
+					Math.random() < 0.5 ? tryMove(pixel,pixel.x-1,pixel.y+1) : tryMove(pixel,pixel.x+1,pixel.y+1);
+				};
+			},
+			category: "weapons",
+			state: "solid",
+			density: 4500,
+			excludeRandom: true,
+			desc: "A bomb that makes gods tremble. <br/>To enable automatic bomb generation, set the generateBombs query parameter.",
+		};
+
+		elements.cloner.burnTime = Infinity;
+		elements.cloner.burnInto = "cloner";
+
 		elements.cold_torch = {
 			"color": "#4394d6",
 			"behavior": [
@@ -3876,6 +4629,59 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			"tempHigh": 600,
 			"stateHigh": "wood",
 		};
+
+		var GTDR = { "elem1": "torch", chance: 0.01 }; //grand torch degradation reaction
+
+		elements.grand_torch = {
+			"color": "#FFBF2F",
+			"tick": function(pixel) {
+				var coords = circleCoords(pixel.x,pixel.y,2).concat([[-1,-2],[1,-2],[-1,2],[1,2],[-2,-1],[2,-1],[-2,1],[2,1],[-1,-3],[0,-3],[1,-3],[0,-4],[0,-5]].map(
+					function(offsets) {
+						return {x: offsets[0]+pixel.x, y: offsets[1]+pixel.y}
+					}
+				));
+				for(var i = 0; i < coords.length; i++) {
+					var coordPair = coords[i];
+					if(outOfBounds(coordPair.x,coordPair.y)) { continue };
+					if(coordPair.x == pixel.x && coordPair.y == pixel.y) { continue };
+					if(!(isEmpty(coordPair.x,coordPair.y))) { continue };
+					var newPixel = tryCreatePixelReturn("fire",coordPair.x,coordPair.y);
+					if(typeof(newPixel) == "object") {
+						newPixel.temp = pixel.temp
+					}
+				};
+			},
+			"reactions": {
+				"water": GTDR,
+				"sugar_water": GTDR,
+				"salt_water": GTDR,
+				"seltzer": GTDR,
+				"dirty_water": GTDR,
+				"pool_water": GTDR,
+				"steam": GTDR,
+				"smog": GTDR,
+				"rain_cloud": GTDR,
+				"cloud": GTDR,
+				"snow_cloud": GTDR,
+				"hail_cloud": GTDR,
+				"black_damp": { "elem1": "wood", chance: 0.02 },
+				"magic": { "elem1": ["grand_torch","grand_torch","grand_plasma_torch"], "elem2": null, changeTemp: true }
+			},
+			"temp": 1500,
+			"category": "special",
+			"breakInto": "charcoal",
+			"tempHigh": 6000,
+			"stateHigh": "grand_plasma_torch",
+			"tempLow": 1000,
+			"stateLow": "torch",
+		};
+		
+		elements.torch.reactions ??= {};
+		elements.torch.reactions.magic = { elem1: ["torch","torch","grand_torch"], elem2: null, changeTemp: true };
+		elements.torch.tempHigh = 1500;
+		elements.torch.stateHigh = "grand_torch";
+
+		var PTDR = { "elem1": "wood", chance: 0.003 };
 
 		elements.plasma_torch = {
 			"color": "#86579c",
@@ -3932,25 +4738,68 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				}
 			},
 			"reactions": {
-				"water": { "elem1": "wood" },
-				"sugar_water": { "elem1": "wood" },
-				"salt_water": { "elem1": "wood" },
-				"seltzer": { "elem1": "wood" },
-				"dirty_water": { "elem1": "wood" },
-				"pool_water": { "elem1": "wood" },
-				"steam": { "elem1": "wood" },
-				"smog": { "elem1": "wood" },
-				"rain_cloud": { "elem1": "wood" },
-				"cloud": { "elem1": "wood" },
-				"snow_cloud": { "elem1": "wood" },
-				"hail_cloud": { "elem1": "wood" },
-				"black_damp": { "elem1": "wood" }
+				"water": PTDR,
+				"sugar_water": PTDR,
+				"salt_water": PTDR,
+				"seltzer": PTDR,
+				"dirty_water": PTDR,
+				"pool_water": PTDR,
+				"steam": PTDR,
+				"smog": PTDR,
+				"rain_cloud": PTDR,
+				"cloud": PTDR,
+				"snow_cloud": PTDR,
+				"hail_cloud": PTDR,
+				"black_damp": { "elem1": "wood", change: 0.02 }
 			},
 			"temp": 7000,
 			"category": "special",
 			"breakInto": "charcoal",
 			"tempLow": 4999,
-			"stateLow": "torch",
+			"stateLow": "grand_torch",
+		};
+
+		var GrPTDR = { "elem1": "plasma_torch", chance: 0.001 }; //grand plasma torch degradation reaction
+
+		elements.grand_plasma_torch = {
+			"color": "#b92eff",
+			"tick": function(pixel) {
+				var coords = circleCoords(pixel.x,pixel.y,4).concat([[4,4],[4,4],[3,3],[3,3],[1,1],[-1,-1],[-3,-3],[-4,-4],[-4,-4],[-3,-3],[-1,-1],[1,1],[0,0],[0,0],[0,0],[0,0],[1,1],[1,1],[2,2],[-1,-1],[-1,-1],[-2,-2]].map( //ae = filterCurrentPixels(function(pixel) { return pixel.element == "ivory_growth_crystal" }).map(px => [130-px.x,67-px.y])
+					function(offsets) {
+						return {x: offsets[0]+pixel.x, y: offsets[1]+pixel.y}
+					}
+				));
+				for(var i = 0; i < coords.length; i++) {
+					var coordPair = coords[i];
+					if(outOfBounds(coordPair.x,coordPair.y)) { continue };
+					if(coordPair.x == pixel.x && coordPair.y == pixel.y) { continue };
+					if(!(isEmpty(coordPair.x,coordPair.y))) { continue };
+					var newPixel = tryCreatePixelReturn("plasma",coordPair.x,coordPair.y);
+					if(typeof(newPixel) == "object") {
+						newPixel.temp = pixel.temp
+					}
+				};
+			},
+			"reactions": {
+				"water": GrPTDR,
+				"sugar_water": GrPTDR,
+				"salt_water": GrPTDR,
+				"seltzer": GrPTDR,
+				"dirty_water": GrPTDR,
+				"pool_water": GrPTDR,
+				"steam": GrPTDR,
+				"smog": GrPTDR,
+				"rain_cloud": GrPTDR,
+				"cloud": GrPTDR,
+				"snow_cloud": GrPTDR,
+				"hail_cloud": GrPTDR,
+				"black_damp": { "elem1": "wood", chance: 0.02 },
+			},
+			"temp": 8500,
+			"category": "special",
+			"breakInto": "charcoal",
+			"tempLow": 6000,
+			"stateLow": "plasma_torch",
 		};
 
 		elements.rad_torch = {
@@ -4006,7 +4855,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			"category": "special",
 			"breakInto": ["molten_ash","carbon_dioxide","charcoal","electric","magic"],
 			"tempLow": 8000,
-			"stateLow": "plasma_torch",
+			"stateLow": new Array(99).fill("mystic_torch").concat("plasma_torch"), //1 in 100 chance to cool to a plasma torch, to mitigate inexplicable explosive cooling's tendency to cause the torch to spontaneously "downgrade"
 			"hardness": 0.999
 		};
 		elements.mystic_fire.state = "gas";
@@ -4026,7 +4875,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			burn: 300,
 			burnTime: 500,
 			temp: airTemp,
-		},
+		};
 
 		elements.hypernapalm = {
 			name: "h y p e r n a p a l m", //HYPERNAPALM
@@ -4046,7 +4895,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			burnTempChange: 30,
 			burn: 300,
 			burnTime: 500,
-		},
+		};
 
 		elements.cold_napalm = {
 			color: "#3e87e0",
@@ -4064,7 +4913,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			fireElement: "cold_fire",
 			burnTempChange: -1,
 			burnInto: "cold_fire",
-		}
+		};
 
 		elements.rad_napalm = {
 			color: "#cdf760",
@@ -4083,8 +4932,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			fireElement: "rad_fire",
 			temp: airTemp,
 			burnInto: "rad_fire",
-		},
-
+		};
+		
 		runAfterLoad(function() {
 			if(eLists.spout) {
 				eLists.spout.push("cold_torch");
@@ -4112,7 +4961,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				burnTempChange: 2,
 				fireSpawnChance: 5,
 				state: "liquid",
-				density: 21,
+				density: 200,
 			};
 
 			elements.liquid_cold_fire = {
@@ -4136,7 +4985,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				fireElement: "cold_fire",
 				category: "energy liquids",
 				state: "liquid",
-				density: 42,
+				density: 420,
 			};
 
 			elements.liquid_rad_fire = {
@@ -4203,7 +5052,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				fireSpawnChance: 5,
 				fireElement: "rad_fire",
 				state: "liquid",
-				density: 21,
+				density: 210,
 			};
 
 			elements.radiation.reactions.liquid_fire = { "elem2":"liquid_rad_fire", "chance":0.4 };
@@ -4242,11 +5091,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			if (pixel.charge && elementInfo.colorOn) {
 				customColor = elementInfo.colorOn;
 			}
-			if (customColor != null) {
+			if (customColor !== null) {
 				if (Array.isArray(customColor)) {
 					customColor = customColor[Math.floor(Math.random() * customColor.length)];
-				}
-				if (customColor.startsWith("#")) {
+				} else if (customColor.startsWith?.("#")) {
 					customColor = hexToRGB(customColor);
 				}
 				var rgb = customColor;
@@ -4386,10 +5234,19 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			none: function(number) { return number }
 		};
 
+		var tickBehaviorStringCache = {
+			POWDER: behaviors.POWDER.toString(),
+			LIQUID: behaviors.LIQUID.toString(),
+			UL_UR_OPTIMIZED: behaviors.UL_UR_OPTIMIZED.toString()
+		};
+
 		//I hate overwriting drawPixels
 		runAfterAutogen(function() {
 			//rAA because velocity.js already puts its redef in a rAL and rAA comes after that
 			drawPixels = function(forceTick=false) {
+				// Draw the current pixels
+				var canvas = document.getElementById("game");
+				var ctx = canvas.getContext("2d");
 				// newCurrentPixels = shuffled currentPixels
 				var newCurrentPixels = currentPixels.slice();
 				var pixelsFirst = [];
@@ -4402,9 +5259,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				})} // shuffle the pixels if not paused*/
 				for (var i = 0; i < newCurrentPixels.length; i++) {
 					pixel = newCurrentPixels[i];
+					if(typeof(elements[pixel.element]) == "undefined") { continue };
+					if(typeof(pixel) == "undefined") { continue };
 					//if (pixelMap[pixel.x][pixel.y] == undefined || currentPixels.indexOf(pixel) == -1) {continue}
 					if (pixel.del) {continue}
 					if (!paused || forceTick) {
+						if(typeof(elements[pixel.element]) == "undefined") { continue };
 						doVelocity(pixel);
 						if (elements[pixel.element].tick) { // Run tick function if it exists
 							elements[pixel.element].tick(pixel);
@@ -4421,13 +5281,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						pixelsFirst.push(pixel);
 					}
 				}
-				// Draw the current pixels
-				var canvas = document.getElementById("game");
-				var ctx = canvas.getContext("2d");
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
-				if(settings["bg"]) {
+				if (!settings["bg"]) {ctx.clearRect(0, 0, canvas.width, canvas.height)}
+				else {
 					if(settings["bg"] instanceof Array) {
-						settings.bgAngle ??= 0;
+						settings.bgAngle ??= 90;
 						var angle = (settings.bgAngle) * Math.PI / 180;
 						ctx.fillStyle = ctx.createLinearGradient(
 							0,
@@ -4450,6 +5308,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				for (var i = 0; i < pixelDrawList.length; i++) {
 					pixel = pixelDrawList[i];
 					if (pixelMap[pixel.x][pixel.y] == undefined) {continue}
+					if (pixel.con) { pixel = pixel.con }
 					if (view===null || view===3) {
 						var colorOut = pixel.color;
 						for(var imsorryaboutthelagthiswillcause in specialProperties) {
@@ -4460,15 +5319,66 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						ctx.fillStyle = colorOut;
 					}
 					else if (view === 2) { // thermal view
-						// set the color to pixel.temp, from hottest at -66 (194) hue to coldest 225 hue, with the minimum being -273, max being 7755
+						// set the color to pixel.temp, from hottest at -66 (294.1875) hue to coldest 225 hue, with the minimum being -273, max being 7755
 						var temp = pixel.temp;
-						if (temp < -273) {temp = -273}
-						var hue = 225 - (Math.min(7755,temp)/6000)*225;
-						var lig = 50 + ((Math.max(0,temp - 7755)) * (50/1000));
-						if (temp > 9255) {temp = 8755}
-						if (hue < 0) {hue += (360 * Math.ceil(hue / -360))}
-						if (temp < 0 && hue > 225) {hue = 225}
-						ctx.fillStyle = "hsl("+hue+",100%,"+lig+"%)";
+						temp = Math.min(Math.max(temp,(settings.abszero ?? -273.15)),55530);
+						var hue,sat,lig;
+						sat = 100;
+						lig = 50;
+						if(temp <= 7755) {
+							hue = 225 - (Math.min(7755,temp)/6000)*225;
+							if (hue < 0) {hue += (360 * Math.ceil(hue / -360))}
+							if (temp < 0 && hue > 280) {hue = 280}
+						} else if(temp <= 9255) {
+							hue = 294.1875;
+							lig = 50 + (Math.max(0,temp - 7755) * (50/1500));
+						} else if(temp <= 11255) {
+							hue = 294.1875;
+							sat = 0;
+							lig = 100 - (Math.max(0,temp - 9255) * (100 / 2000));
+						} else if(temp <= 11755) {
+							hue = 225;
+							lig = (Math.max(0,temp - 11255) * (25 / 500));
+						} else if(temp <= 19510) {
+							hue = 225 - (Math.min(19510,Math.max(0,temp - 11755))/6000)*225;
+							if (hue < 0) {hue += (360 * Math.ceil(hue / -360))}
+							lig = 25;
+						} else if(temp <= 20510) {
+							hue = 294.1875
+							//lig = scale(temp,19510,20010,25,75);
+							//hue = scale(temp,19510,20010,294.1875,585) % 360;
+							sat = scale(temp,19510,20510,100,50);
+							lig = scale(temp,19510,20510,25,75);
+						} else if(temp <= 28265) {
+							hue = scale(temp,20510,28265,294.1875,585) % 360;
+							sat = 50;
+							lig = 75;
+						} else if(temp <= 29265) {
+							hue = 225;
+							sat = scale(temp,28265,29265,50,40);
+							lig = scale(temp,28265,29265,75,87.5);
+						} else if(temp <= 37020) {
+							hue = scale(temp,29265,37020,225,654.1875) % 360;
+							sat = 40;
+							lig = 87.5;
+						} else if(temp <= 39020) {
+							hue = 294.1875;
+							sat = 40;
+							lig = scale(temp,37020,39020,87.5,50);
+						} else if(temp <= 46775) { //46775
+							hue = scale(temp,39020,46775,294.1875,585) % 360;
+							sat = 40;
+							lig = 50;
+						} else if(temp <= 47775) {
+							hue = 225;
+							sat = scale(temp,46775,47775,40,20);
+							lig = 50;
+						} else { //55530
+							hue = scale(temp,47775,55530,225,654.1875) % 360;
+							sat = 20;
+							lig = 50;
+						};
+						ctx.fillStyle = "hsl("+hue+","+sat+"%,"+lig+"%)";
 					}
 					else if (view === 4) { // smooth view, average of surrounding pixels
 						// E/N: i'm too scared to do smooth view
@@ -4488,6 +5398,94 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						}
 						else {
 							ctx.fillStyle = averageRGB(colorlist);
+						}
+					}
+					else if (view === 5) { // velocity view
+						var data = elements[pixel.element];
+						
+						var vx = pixel.vx ?? 0;
+						var vy = pixel.vy ?? 0;
+						/*
+						var pseudoVelocity = 0;
+						var coordsToCheck;
+						var behaviorCoordsToCheck;
+
+						if(Array.isArray(data.behavior)) {
+							switch((pixel.r ?? 0) % 4) {
+								default:
+								case 0:
+									coordsToCheck = [0,1];
+									behaviorCoordsToCheckOffset = [2,1];
+									break;
+								case 1:
+									coordsToCheck = [-1,0];
+									behaviorCoordsToCheckOffset = [1,0];
+									break;
+								case 2:
+									coordsToCheck = [0,-1];
+									behaviorCoordsToCheckOffset = [0,1];
+									break;
+								case 3:
+									coordsToCheck = [1,0];
+									behaviorCoordsToCheckOffset = [1,2];
+									break;									
+							};
+							if(data.behavior[behaviorCoordsToCheckOffset[0]][behaviorCoordsToCheckOffset[1]] == "M1") {
+								if(isEmpty(pixel.x+coordsToCheck[0],pixel.y+coordsToCheck[1])) {
+									pseudoVelocity = 1;
+								} else {
+									if(!(isEmpty(pixel.x+behaviorCoordsToCheckOffset[0],pixel.y+behaviorCoordsToCheckOffset[1],true))) {
+										newPixel = pixelMap[pixel.x+behaviorCoordsToCheckOffset[0]][pixel.y+behaviorCoordsToCheckOffset[1]];
+										newData = elements[newPixel.element];
+										if(newData.id !== data.id && typeof(data.density) === "number" && typeof(newData.density) === "number") {
+											var chance = (data.density - newData.density)/(data.density + newData.density);
+											pseudoVelocity = chance
+										}
+									}
+								}
+							};
+							if(pseudoVelocity) {
+								switch((pixel.r ?? 0) % 4) {
+									default:
+									case 0:
+										vy += pseudoVelocity;
+										break;
+									case 1:
+										vx -= pseudoVelocity;
+										break;
+									case 2:
+										vy -= pseudoVelocity;
+										break;
+									case 3:
+										vx += pseudoVelocity;
+										break;
+								}
+							};
+						} else {
+							if(data.tick && [behaviors.POWDER,behaviors.LIQUID].includes(data.tick)) {
+								pseudoVelocity = 1;
+							} else if(data.tick == behaviors.UL_UR_OPTIMIZED) {
+								pseudoVelocity = -1;
+							} else if(pixel.element == "hail") {
+								pseudoVelocity = 2;
+							};
+							vy += pseudoVelocity;
+						};
+						*/
+
+						if(vx === 0 && vy === 0) {
+							ctx.fillStyle = "rgb(15,15,15)"
+						} else {
+							var magnitude = Math.sqrt ((vx ** 2) + (vy ** 2));
+
+							var direction = Math.atan2(pixel.vy ?? 0,pixel.vx ?? 0)*180/Math.PI;
+							if(direction < 0) { direction = scale(direction,-180,0,360,180) };
+							
+							hue = direction;
+							sat = 100;
+							lig = bound(scale(magnitude,0,100,10,100),0,100);
+
+							ctx.fillStyle = "hsl("+hue+","+sat+"%,"+lig+"%)";
 						}
 					}
 
@@ -4585,7 +5583,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 							};
 						}
 					}
-					if (pixel.burning && view !== 2) { // Yellow glow on charge
+					if (pixel.burning && settings.burnOverlay && view !== 2) { // Red glow on burn
 						if (!elements[pixel.element].colorOn) {
 							ctx.fillStyle = "rgba(255,0,0,0.5)";
 							switch(mode) {
@@ -4609,6 +5607,31 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 							};
 						}
 					}
+				};
+
+				if (ctx.globalAlpha < 1) {
+					ctx.globalAlpha = 1;
+				};
+
+				if (elements[currentElement].maxSize < mouseSize) {
+					var mouseOffset = Math.trunc(elements[currentElement].maxSize/2);
+				}
+				else {
+					var mouseOffset = Math.trunc(mouseSize/2);
+				}
+				var topLeft = [mousePos.x-mouseOffset,mousePos.y-mouseOffset];
+				var bottomRight = [mousePos.x+mouseOffset,mousePos.y+mouseOffset];
+				if(mouseSize % 2 == 0) {
+					bottomRight[0]--;
+					bottomRight[1]--;
+				};
+				// Draw a square around the mouse
+				ctx.strokeStyle = "white";
+				ctx.strokeRect(topLeft[0]*pixelSize,topLeft[1]*pixelSize,(bottomRight[0]-topLeft[0]+1)*pixelSize,(bottomRight[1]-topLeft[1]+1)*pixelSize);
+				// draw one transparent pixel in the center
+				if (settings.precision) {
+					ctx.fillStyle = "rgba(255,255,255,0.5)";
+					ctx.fillRect(mousePos.x*pixelSize,mousePos.y*pixelSize,pixelSize,pixelSize);
 				}
 				if ((!paused) || forceTick) {pixelTicks++};
 
@@ -4620,6 +5643,22 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			}
 		});
 		//I hate overwriting drawPixels
+
+        viewKey = {
+            2: "thermal",
+            3: "basic",
+            4: "smooth",
+            5: "velocity"
+        };
+
+        function setView(n) {
+            if (viewKey[n]) { // range of number keys with valid views
+                view = n;
+            }
+            else { // reset view
+                view = null;
+            }
+        };
 
 		runAfterLoad(function() {
 			//Setting
@@ -4710,6 +5749,28 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			//console.log(lastSetting);
 			lastSetting.setAttribute("style","padding-bottom:0"); //remove padding from last setting;
 
+			var redBurnSettingSpan = document.createElement("span");
+			redBurnSettingSpan.setAttribute("setting","burnOverlay");
+			redBurnSettingSpan.setAttribute("class","setting-span");
+			redBurnSettingSpan.textContent = "Red overlay on burning pixels ";
+				var settingDropdown = document.createElement("select");
+				settingDropdown.setAttribute("onchange","settings.burnOverlay = (this.value === 'true'); saveSettings();");
+				var options = {
+					"false": "Disabled",
+					"true": "Enabled"
+				};
+				for(value in options) {
+					var newOption = document.createElement("option");
+					if(value == "0") {
+						newOption.setAttribute("selected","");		
+					};
+					newOption.setAttribute("value",value);
+					newOption.innerText = options[value];
+					settingDropdown.appendChild(newOption);
+				};
+				redBurnSettingSpan.appendChild(settingDropdown);
+			settingsMenu.appendChild(redBurnSettingSpan);
+
 			console.log(everyTick(function() {
 				if(paused) { return };
 				for(var propName in specialProperties) {
@@ -4777,14 +5838,15 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				// Reactions
 				newPixel = pixelMap[nx][ny];
 				var newInfo = elements[newPixel.element];
+				if(typeof(newInfo) == "undefined") { return false };
 				var returnVal = false;
 				if(newInfo.onTryMoveInto !== undefined) {
 					newInfo.onTryMoveInto(newPixel,pixel);
 					if(!pixel || pixel.del) {
 						return "deleted";
 					};
-					returnVal = true;
-				}
+					returnVal = false;
+				};
 				var rr1 = false;
 				if (info.reactions !== undefined && info.reactions[newPixel.element] !== undefined) {
 					rr1 = reactPixels(pixel,newPixel)
@@ -4924,6 +5986,14 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		};*/
 		//warm is redundant due to vanilla room_temp
 		elements.room_temp.category = "tools";
+		elements.slow_cool = {
+			color: elements.cook.color.map(colorCode => Object.values(convertColorFormats(colorCode,"json"))).map(x => RGBToHex(x.map(y => 255 - y))),
+			tool: function(pixel) {
+					pixel.temp -= (0.5 * (1 + shiftDown));
+			},
+			category: "energy",
+			excludeRandom: true
+		};
 		elements.ultraheat = {
 			color: ["#ff0000", "#ffbf4f", "#ff0000", "#ffbf4f", "#ff0000", "#ffbf4f"],
 			tool: function(pixel) {
@@ -5703,6 +6773,24 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			conduct: 0.48,
 		},
 
+		elements.stainless_steel = {	
+			color: "#7d8181",
+			behavior: behaviors.WALL,
+			reactions: {
+				"pool_water": { elem1:"rust", chance:0.0009 },
+				"salt_water": { elem1:"rust", chance:0.0003 },
+				"salt": { elem1:"rust", chance:0.0003 },
+				"acid": { elem1:"rust" }
+			},
+			tempHigh: 1455.5,
+			category: "solids",
+			density: 7930,
+			conduct: 0.42,
+			hardness: 0.85
+		};
+		
+		elements.steel.reactions.acid = { elem1:"rust" };
+		
 		elements.molten_tungsten = {
 			density: 17600,
 			temp: 3500,
@@ -5754,11 +6842,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		},
 
-		elements.molten_steel = {
-			reactions: {
-				"molten_tungsten": { "elem1":"molten_tungstensteel", "elem2":"molten_tungstensteel" }
-			}
-		}
+		elements.molten_steel ??= {};
+		elements.molten_steel.reactions ??= {};
+		elements.molten_steel.reactions.molten_tungsten = { "elem1":"molten_tungstensteel", "elem2":"molten_tungstensteel" };
+		elements.molten_steel.reactions.molten_chromium = { "elem1":"molten_stainless_steel", "elem2":["molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_stainless_steel"] };
 
 		elements.unrealistically_flammable_substance_bomb = {
 			name: "unrealistically flammable bomb",
@@ -5787,6 +6874,35 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 1300,
 			excludeRandom: true,
 		},
+		
+		elements.turbine = {
+			color: "#75726a",
+			tempHigh: elements.copper.tempHigh,
+			stateHigh: ["steel","molten_copper"],
+			conduct: 1,
+			behavior: behaviors.WALL,
+			tick: function(pixel) {
+				var neighbors = adjacentCoords.map(offsetPair => pixelMap[pixel.x+offsetPair[0]]?.[pixel.y+offsetPair[1]]).filter(function(pixelOrUndefined) { return typeof(pixelOrUndefined) == "object" });
+				if(neighbors.length < 0) { return };
+				var neighboringElements = neighbors.filter(function(px) { return !!px }).map(x => x.element);
+				var neighboringStates = neighboringElements.map(elemName => elements[elemName].state ?? "solid");
+				var nonSolidNeighbors = neighboringStates.filter(function(string) { return (string !== "solid") }).length;
+				if(nonSolidNeighbors == 0) { return };
+				pixel.charge ??= 0;
+				pixel.charge += nonSolidNeighbors / 8;
+				pixel.temp += (nonSolidNeighbors / 500);
+			},
+			onTryMoveInto: function(pixel,otherPixel) {
+				pixel.charge ??= 0;
+				pixel.charge += 1/8;
+				pixel.temp += (1/500);
+			},
+			hardness: averageNumericArray([elements.copper.hardness,elements.steel.hardness,elements.steel.hardness]),
+			breakInto: ["metal_scrap", "steel_scrap", "steel_scrap", "copper_scrap", "copper_scrap", "steel_scrap"],
+			state: "solid",
+			category: "machines",
+			density: averageNumericArray([elements.steel.density, elements.copper.density, airDensity])
+		};
 
 		//hormones
 
@@ -6211,7 +7327,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					for (let j = -1; j < 2; j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1
+								pixel.uwu++
 							}
 						}
 					}
@@ -6238,7 +7354,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					for (let j = -3; j < 4; j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1
+								pixel.uwu++
 							}
 						}
 					}
@@ -6266,7 +7382,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					for (let j = (-1*squadius); j < (squadius+1); j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1
+								pixel.uwu++
 							}
 						}
 					}
@@ -6294,7 +7410,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					for (let j = (-1*squadius); j < (squadius+1); j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1
+								pixel.uwu++
 							}
 						}
 					}
@@ -6322,7 +7438,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					for (let j = (-1*squadius); j < (squadius+1); j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1
+								pixel.uwu++
 							}
 						}
 					}
@@ -6350,7 +7466,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					for (let j = (-1*squadius); j < (squadius+1); j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1
+								pixel.uwu++
 							}
 						}
 					}
@@ -6378,7 +7494,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					for (let j = (-1*squadius); j < (squadius+1); j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1
+								pixel.uwu++
 							}
 						}
 					}
@@ -6406,7 +7522,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					for (let j = (-1*squadius); j < (squadius+1); j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1
+								pixel.uwu++
 							}
 						}
 					}
@@ -6434,7 +7550,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					for (let j = (-1*squadius); j < (squadius+1); j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1
+								pixel.uwu++
 							}
 						}
 					}
@@ -6462,7 +7578,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					for (let j = (-1*squadius); j < (squadius+1); j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1
+								pixel.uwu++
 							}
 						}
 					}
@@ -6490,7 +7606,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					for (let j = (-1*squadius); j < (squadius+1); j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1
+								pixel.uwu++
 							}
 						}
 					}
@@ -6520,9 +7636,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
 								if(pixel.uwu < 8) {
-									pixel.uwu += 1
+									pixel.uwu++
 								} else {
-									pixel.owo += 1
+									pixel.owo++
 								}
 							}
 						}
@@ -6879,7 +7995,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					}
 					//1010 and 0101
 					if(pixel.dc1 && !pixel.dc2 && pixel.dc3 && !pixel.dc4) {
-						if(!pixel.changeTo) {
+						if(!pixel.changeTo) { //7989 yay soshi!
 							if(ggg < 1/2) {
 								pixel.changeTo = pixel.dc1
 							} else {
@@ -7457,6 +8573,206 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hardness: 0.7,
 		}
 
+		elements.brimstone_slag = {
+			color: ["#745B57","#534D4A","#463F53","#51113E","#6D283B","#BC4949","#EA9B4E"],
+			properties: {
+				needsOffset: true
+			},
+			colorPattern: [
+				"FGGFGFGGF",
+				"FFGFGFFGG",
+				"DEEDEEDEE",
+				"DEDEEEEED",
+				"BDCBACDCB",
+				"BCADCDDBB",
+				"ABBCAABCC"
+			],
+			colorKey: {
+				"A": "#745B57",
+				"B": "#534D4A",
+				"C": "#463F53",
+				"D": "#51113E",
+				"E": "#6D283B",
+				"F": "#BC4949",
+				"G": "#EA9B4E",
+			},
+			behavior: behaviors.POWDER,
+			hardness: 0.5,
+			enableOffsetsOnTextureColors: true,
+			breakInto: ["slag","sulfur"],
+			tempHigh: 1780,
+			state: "solid",
+			category: "solids",
+			tick: function(pixel) {
+				if(pixel.needsOffset) {
+					var offset = (elements[pixel.element].maxColorOffset ?? 15);
+					offset = randomIntegerFromZeroToValue(offset) * (Math.random() < 0.5 ? -1 : 1);
+					pixel.color = convertColorFormats(pixel.color,"json");
+					for(var k in pixel.color) { pixel.color[k] += offset };
+					pixel.color = convertColorFormats(pixel.color,"rgb");
+					delete pixel.needsOffset;
+					return
+				}
+			}
+		};
+
+		elements.molten_slag ??= {};
+		elements.molten_slag.reactions ??= {};
+
+		elements.molten_slag.reactions.sulfur = elements.molten_slag.reactions.molten_sulfur = elements.molten_slag.reactions.sulfur_gas = elements.molten_sulfur.reactions.slag = elements.sulfur.reactions.molten_slag = { elem1: "brimstone_slag", elem2: null };
+		
+		elements.slag.tempHigh = 1780;
+
+		var temp = "firesea,lektre,concoction,mistake,unstable_mistake,toxic_mistake".split(",");
+		for(var i = 0; i < temp.length; i++) {
+			temp[i].state = "liquid";
+			temp[i].category = "liquids"
+		};
+
+		
+		elements.head.cutInto = ["bone","meat","blood"];
+		elements.body.cutInto = ["bone","meat","meat","blood","blood"];
+		elements.wood.cutInto = ["wood_plank","wood_plank","wood_plank","wood_plank","wood_plank","wood_plank","wood_plank","wood_plank","sawdust"];
+		elements.fish.breakInto = ["meat","meat","bone","blood"];
+		elements.fish.cutInto = ["meat","meat","bone","blood"];
+
+		elements.bladesea = {
+			color: ["#959696", "#b1b3b3", "#d4d4d4", "#bfbdbd"],
+			state: "liquid",
+			viscosity: 5,
+			behavior: behaviors.LIQUID,
+			tick: function(pixel) { //Code from R74n/vanilla "smash" tool
+				var pX = pixel.x;
+				var pY = pixel.y;
+				for(i = 0; i < adjacentCoords.length; i++) {
+					var oX = adjacentCoords[i][0];
+					var oY = adjacentCoords[i][1];
+					var fX = pX+oX;
+					var fY = pY+oY;
+					if(!isEmpty(fX,fY,true)) {
+						var checkPixel = pixelMap[fX][fY];
+						var otherElement = elements[checkPixel.element];
+						if (typeof(otherElement.cutInto) !== "undefined") {
+							var hardness = otherElement.hardness ?? 0;
+							if (Math.random() < (1 - hardness)) {
+								var cutInto = otherElement.cutInto;
+								// if breakInto is an array, pick one
+								if (Array.isArray(cutInto)) {
+									cutInto = randomChoice(cutInto);
+								};
+								changePixel(checkPixel,cutInto);
+							}
+						}
+					};
+				};
+			},
+			density: 200,
+			category: "liquids",
+			hidden: true,
+			reactions: {
+				"concoction": { "elem1": "bladesea", "elem2": "bladesea", "chance":0.005},
+			},
+		};
+
+	function newLegacyFnmDye(colorName,hexColor) {
+		if(!(hexColor.startsWith("#"))) { hexColor = "#" + hexColor };
+		colorName = colorName.toLowerCase();
+		var key = `${colorName}_dye`;
+		var name = `${colorName.replaceAll("_"," ")} dye`;
+		var pixelColor = changeLuminance(hexColor,0.73333333333333,"multiply","hex",null,false);
+		
+		elements[key] = {
+			"name": name,
+			"color": pixelColor,
+			"state": "solid",
+			"behavior": [
+				"XX|XX|XX",
+				`CC:${hexColor}|CC:${pixelColor}|CC:${hexColor}`,
+				`M2 AND CC:${hexColor}|M1 AND CC:${hexColor}|M2 AND CC:${hexColor}`
+			],
+			"density": 100,
+			"category": "dyes"
+		};
+		eLists.DYE.push(key);		
+		elements.concoction.reactions[key] = { "elem1": "mistake", "elem2": null };
+		return elements[key]
+	};
+
+	var dyeColors = [
+		["rose", "#FF0067"],
+		["orange", "#FF7F00"],
+		["pink", "#FF7FFF"],
+		["purple", "#C700CF"],
+		["burgundy", "#9F005F"],
+		["peach", "#ffbf7f"],
+		["mint", "#4df0a9"],
+		["gray", "#7F7F7F"],
+		["lime", "#7FFF00"],
+		["black", "#000000"],
+		["white", "#FFFFFF"],
+		["sky_blue", "#99d1f2"]
+	];
+	
+	for(var i = 0; i < dyeColors.length; i++) {
+		newLegacyFnmDye(dyeColors[i][0],dyeColors[i][1])
+	};
+
+	eLists.LED = ["led_r","led_g","led_b"];
+	
+	function newLED(abbrev,hexColor,baseColorOverrideHex=null) {
+		if(!(hexColor.startsWith("#"))) { hexColor = "#" + hexColor };
+		if(baseColorOverrideHex && !(baseColorOverrideHex.startsWith("#"))) { baseColorOverrideHex = "#" + baseColorOverrideHex };
+		abbrev = abbrev.toLowerCase();
+		var key = `led_${abbrev}`;
+		var pixelColor = baseColorOverrideHex ?? changeLuminance(hexColor,0x66/0xff,"multiply","hex",null,false);
+		
+		elements[key] = {
+			behavior: behaviors.WALL,
+			reactions: {
+				"light": {"charge1":1},
+				"liquid_light": {"charge1":1},
+			},
+			color: pixelColor,
+			colorOn: hexColor,
+			category: "machines",
+			tempHigh: 1500,
+			stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
+			conduct: 1,
+			breakInto: "glass_shard"
+		};
+		
+		eLists.LED.push(key)
+	};
+
+	var ledColors = [
+		["c", "#00FFFF"], //cyan
+		["y", "#FFFF00"], //yellow
+		["m", "#FF00FF"], //magenta (cursed)
+		["p", "#AB00C2"], //purple (cursed)
+		["v", "#7700FF"], //violet
+		["w", "#FFFFFF"], //white (cursed)
+		["gy", "#7F7F7F"], //gray (more cursed)
+		["bl", "#000000", "#2b2b2b"], //black (super cursed)
+		["o", "#FF7F00"], //orange
+		["a", "#FFBF00"], //amber
+		["l", "#7FFF00"], //lime
+		["rs", "#FF0067"], //rose (cursed)
+		["pk", "#FF7FFF"], //pink (cursed)
+		["bg", "#9F005F"], //burgundy (cursed)
+		["pc", "#ffbf7f"], //peach
+		["mg", "#4df0a9"], //mint green
+		["sb", "#99d1f2"] //sky blue (cursed)
+	];
+
+	for(var i = 0; i < ledColors.length; i++) {
+		newLED(...ledColors[i]);
+	};
+
+	for(var i = 0; i < eLists.LED.length; i++) {
+		var key = eLists.LED[i];
+		elements.malware.reactions[key] = { elem2:eLists.LED, chance:0.01 }
+	};
+
 	//ASSORTED RAINBOW VARIANTS ##
 
 		elements.concoction.reactions.diorite_gravel = {
@@ -7468,7 +8784,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		};
 
 		elements.concoction.state = "liquid";
-		
+
 		elements.static.reactions ??= {}; elements.static.reactions.concoction = { "elem1": "static", "elem2": "static", "chance":0.005},
 
 
@@ -7488,6 +8804,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 
 		elements.rainbow.reactions ??= {};
 		elements.rainbow.reactions.fire = { elem1: "fireshimmer", chance: 0.1 };
+		elements.rainbow.reactions.plasma = { elem1: "plasmashimmer", chance: 0.1 };
 		elements.rainbow.insulate = false;
 		elements.rainbow.burnInto = "fireshimmer";
 		elements.rainbow.burn = 0.1;
@@ -7498,9 +8815,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		elements.rainbow.reactions.coal = { elem1: "dark_rainbow" };
 		elements.rainbow.reactions.charcoal = { elem1: "dark_rainbow" };
 		elements.rainbow.reactions.coal_dust = { elem1: "dark_rainbow" };
+		elements.rainbow.reactions.malware = { elem1: "glitchy_rainbow" };
 		elements.rainbow.reactions.ruby = { elem1: "rubyshimmer" };
 		elements.rainbow.reactions.molten_ruby = { elem1: "rubyshimmer" };
 		elements.rainbow.reactions.topaz = { elem1: "topazshimmer" };
+		elements.rainbow.reactions.bee = { elem1: "beeshimmer" };
 		elements.rainbow.reactions.sap = { elem1: "ambershimmer" };
 		elements.rainbow.reactions.amber = { elem1: "ambershimmer" };
 		elements.rainbow.reactions.emerald = { elem1: "emeraldshimmer" };
@@ -7524,6 +8843,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		elements.rainbow.reactions.gold = { elem1: "goldshimmer" };
 		elements.rainbow.reactions.molten_gold = { elem1: "goldshimmer" };
 		elements.rainbow.reactions.onyx = { elem1: "onyxshimmer" };
+		elements.rainbow.reactions.opal = { elem1: "opalshimmer" };
+		elements.rainbow.reactions.jadeite = { elem1: "jadeshimmer" };
 		elements.rainbow.reactions.dirt = { elem1: "earthshimmer" };
 		elements.rainbow.reactions.lead_scrap = { elem1: "leadshimmer" };
 		elements.rainbow.reactions.lead = { elem1: "leadshimmer" };
@@ -7568,7 +8889,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		elements.rainbow.reactions.iodine = { elem1: "iodoshimmer" };
 		elements.rainbow.reactions.molten_iodine = { elem1: "iodoshimmer" };
 		elements.rainbow.reactions.iodine_gas = { elem1: "iodoshimmer" };
-		elements.astatine.tempHigh = 302;
+		runAfterLoad(function() { elements.astatine.tempHigh = 302 });
 		elements.molten_astatine ??= {}; elements.molten_astatine.tempHigh = 337;
 		elements.rainbow.reactions.astatine = { elem1: "astatoshimmer" };
 		elements.rainbow.reactions.molten_astatine = { elem1: "astatoshimmer" };
@@ -7584,8 +8905,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		elements.rainbow.reactions.sand_sediment = { elem1: "sandshimmer" };
 		elements.rainbow.reactions.sandstone = { elem1: "sandshimmer" };
 		elements.rainbow.reactions.ichor = { elem1: "ichorshimmer" };
-		elements.rainbow.reactions.opal = { elem1: "opalshimmer" };
 		elements.rainbow.reactions.quark_matter = { elem1: "quarkshimmer" };
+		elements.rainbow.reactions.heejinite = { elem1: "heejinshimmer" };
+		elements.rainbow.reactions.heejinite_powder = { elem1: "heejinshimmer" };
+		elements.rainbow.reactions.molten_heejinite = { elem1: "heejinshimmer" };
+		elements.rainbow.reactions.heejinite_gas = { elem1: "heejinshimmer" };
 
 		/*elements.rainbow.reactions.dye = {
 			func: function(pixel,otherPixel) {
@@ -7681,7 +9005,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		};
 
 		elements.fireshimmer = {
-			color: ["#ff0000","#ff8800","#ffff00","#ff8800","ff0000"],
+			color: ["#ff0000","#ff8800","#ffff00","#ff8800","#ff0000"],
 			tick: function(pixel) {
 				var dyeColor = pixel.dyeColor ?? null;
 				var t = pixelTicks*3+pixel.x+pixel.y;
@@ -7697,6 +9021,76 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					var semiDyedColor = averageColorObjects(dyedColor,baseJSON,0.7);
 					//35% dye color, 65% result
 					var finalColor = averageColorObjects(semiDyedColor,dyeJSON,0.65);
+					pixel.color = convertColorFormats(finalColor,"rgb")
+				}
+			},
+			category: "special",
+			reactions: {
+				dye: elements.rainbow.reactions.dye,
+				plasma: {elem1: "plasmashimmer", tempMin: 10000}
+			},
+			behavior: behaviors.WALL,
+			state: "solid",
+			category: "rainbow variants",
+			movable: false,
+		};
+
+		elements.plasmashimmer = {
+			color: ["#8800ff","#f2f2f2","#8800ff","#f2f2f2"],
+			tick: function(pixel) {
+				var dyeColor = pixel.dyeColor ?? null;
+				var t = pixelTicks*3+pixel.x+pixel.y;
+				var value = Math.floor(127*((Math.max(0,1-(rainbowMathlet(t,25,0)))) ** 1.1));
+				baseColor = "rgb(" + [Math.round(127 + (value/2)), value, 255].join(",") + ")";
+				if(!dyeColor) { 
+					pixel.color = baseColor
+				} else {
+					var baseJSON = convertColorFormats(baseColor,"json");
+					var dyeJSON = convertColorFormats(dyeColor,"json");
+					var dyedColor = multiplyColors(dyeJSON,baseJSON,"json");
+					//70% multiplied
+					var semiDyedColor = averageColorObjects(dyedColor,baseJSON,0.7);
+					//35% dye color, 65% result
+					var finalColor = averageColorObjects(semiDyedColor,dyeJSON,0.65);
+					pixel.color = convertColorFormats(finalColor,"rgb")
+				}
+			},
+			category: "special",
+			reactions: {
+				dye: elements.rainbow.reactions.dye
+			},
+			behavior: behaviors.WALL,
+			state: "solid",
+			category: "rainbow variants",
+			movable: false,
+		};
+
+		elements.glitchy_rainbow = {
+			color: ["#ff0000","#ff8800","#ffff00","#ff8800","#ff0000"],
+			tick: function(pixel) {
+				if(Math.random() < 0.25) { return };
+				var dyeColor = pixel.dyeColor ?? null;
+				var t = (
+					(Math.floor(pixelTicks / 3) * 3)
+					+ (Math.floor(pixel.x / 3) * 3)
+					+ pixel.y
+					+ (Math.floor(Math.random() * 5)-2)
+				);
+				var r = Math.floor(127*(1-Math.cos(t*Math.PI/90)));
+				var g = Math.floor(127*(1-Math.cos(t*Math.PI/90+2*Math.PI/3)));
+				var b = Math.floor(127*(1-Math.cos(t*Math.PI/90+4*Math.PI/3)));
+				var baseColor = Math.random() < 0.02 ? [g,r,b] : [r,g,b];
+				baseColor = "rgb("+baseColor.join(",")+")";
+				if(!dyeColor) {
+					pixel.color = baseColor
+				} else {
+					var baseJSON = convertColorFormats(baseColor,"json");
+					var dyeJSON = convertColorFormats(dyeColor,"json");
+					var dyedColor = multiplyColors(dyeJSON,baseJSON,"json");
+					//80% multiplied
+					var semiDyedColor = averageColorObjects(dyedColor,baseJSON,0.8);
+					//30% dye color, 70% result
+					var finalColor = averageColorObjects(semiDyedColor,dyeJSON,0.7);
 					pixel.color = convertColorFormats(finalColor,"rgb")
 				}
 			},
@@ -7788,6 +9182,20 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				var t = pixelTicks*2.5+pixel.x+pixel.y;
 				var r = Math.floor(255*(1-Math.cos(t*Math.PI/24)));
 				var value = Math.ceil((r*(7/8))+32);
+				pixel.color = "rgb("+value+","+value+",0)";
+				doHeat(pixel);
+			},
+			behavior: behaviors.WALL,
+			state: "solid",
+			category: "rainbow variants",
+		};
+
+		elements.beeshimmer = {
+			color: ["#ffff00","#202000","#ffff00","#202000","#ffff00","#202000","#ffff00","#202000"],
+			tick: function(pixel) {
+				var t = pixelTicks*1.5+pixel.x+pixel.y;
+				var r = Math.floor(255*(1-Math.cos(t*Math.PI/4)));
+				var value = Math.ceil(r/2);
 				pixel.color = "rgb("+value+","+value+",0)";
 				doHeat(pixel);
 			},
@@ -7967,6 +9375,58 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "rainbow variants",
 		};
 
+		elements.opalshimmer = {
+			color: function() { var rc = elements.rainbow.color; var rc2 = rc.map(x => lightenColor(x,127,"hex")); return rc2.concat(rc2) }(),
+			tick: function(pixel) {
+				var dyeColor = pixel.dyeColor ?? null;
+				var t1 = pixelTicks+pixel.x+pixel.y;
+				var t2 = pixelTicks+pixel.x-pixel.y;
+				var scale = 20;
+				var r1 = Math.floor(127*(1-Math.cos(t1*Math.PI/scale)));
+				var g1 = Math.floor(127*(1-Math.cos(t1*Math.PI/scale+2*Math.PI/3)));
+				var b1 = Math.floor(127*(1-Math.cos(t1*Math.PI/scale+4*Math.PI/3)));
+				var r2 = Math.floor(127*(1-Math.cos(t2*Math.PI/scale)));
+				var g2 = Math.floor(127*(1-Math.cos(t2*Math.PI/scale+2*Math.PI/3)));
+				var b2 = Math.floor(127*(1-Math.cos(t2*Math.PI/scale+4*Math.PI/3)));
+				var r3 = (r1+r2)*0.75;
+				var g3 = (g1+g2)*0.75;
+				var b3 = (b1+b2)*0.75;
+				var baseColor = {r: r3, g: g3, b: b3};
+				baseColor = averageColorObjects(baseColor,whiteColor,0.8);
+				baseColor = convertColorFormats(baseColor,"rgb");
+				if(!dyeColor) {
+					pixel.color = baseColor
+				} else {
+					var baseJSON = convertColorFormats(baseColor,"json");
+					var dyeJSON = convertColorFormats(dyeColor,"json");
+					var dyedColor = multiplyColors(dyeJSON,baseJSON,"json");
+					//80% multiplied
+					var semiDyedColor = averageColorObjects(dyedColor,baseJSON,0.8);
+					//30% dye color, 70% result
+					var finalColor = averageColorObjects(semiDyedColor,dyeJSON,0.7);
+					pixel.color = convertColorFormats(finalColor,"rgb")
+				}
+			},
+			reactions: {
+				dye: elements.rainbow.reactions.dye,
+			},
+			behavior: behaviors.WALL,
+			state: "solid",
+			category: "rainbow variants",
+		};
+
+		elements.jadeshimmer = {
+			color: ["#5f8f2f","#0c1206","#5f8f2f","#0c1206"],
+			tick: function(pixel) {
+				var t = pixelTicks*2.5+pixel.x+pixel.y;
+				var r = Math.floor(255*(1-Math.cos(t*Math.PI/24)));
+				pixel.color = "rgb("+Math.ceil((r*(4/16))+32)+","+Math.ceil((r*(8/16))+32)+","+Math.ceil((r*(1/8))+32)+")";
+			},
+			behavior: behaviors.WALL,
+			state: "solid",
+			category: "rainbow variants",
+		};
+
 		elements.earthshimmer = {
 			color: ["#5f3f00","#0c0800","#5f3f00","#0c0800"],
 			tick: function(pixel) {
@@ -7991,7 +9451,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			behavior: behaviors.WALL,
 			state: "solid",
 			category: "rainbow variants",
-		}; //7989 yay soshi!
+		};
 
 		elements.lavashimmer = {
 			color: ["#ff3f00","#200800","#ff3f00","#200800"],
@@ -8188,46 +9648,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "rainbow variants",
 		};
 
-		elements.opalshimmer = {
-			color: function() { var rc = elements.rainbow.color; var rc2 = rc.map(x => lightenColor(x,127,"hex")); return rc2.concat(rc2) }(),
-			tick: function(pixel) {
-				var dyeColor = pixel.dyeColor ?? null;
-				var t1 = pixelTicks+pixel.x+pixel.y;
-				var t2 = pixelTicks+pixel.x-pixel.y;
-				var scale = 20;
-				var r1 = Math.floor(127*(1-Math.cos(t1*Math.PI/scale)));
-				var g1 = Math.floor(127*(1-Math.cos(t1*Math.PI/scale+2*Math.PI/3)));
-				var b1 = Math.floor(127*(1-Math.cos(t1*Math.PI/scale+4*Math.PI/3)));
-				var r2 = Math.floor(127*(1-Math.cos(t2*Math.PI/scale)));
-				var g2 = Math.floor(127*(1-Math.cos(t2*Math.PI/scale+2*Math.PI/3)));
-				var b2 = Math.floor(127*(1-Math.cos(t2*Math.PI/scale+4*Math.PI/3)));
-				var r3 = (r1+r2)*0.75;
-				var g3 = (g1+g2)*0.75;
-				var b3 = (b1+b2)*0.75;
-				var baseColor = {r: r3, g: g3, b: b3};
-				baseColor = averageColorObjects(baseColor,whiteColor,0.8);
-				baseColor = convertColorFormats(baseColor,"rgb");
-				if(!dyeColor) {
-					pixel.color = baseColor
-				} else {
-					var baseJSON = convertColorFormats(baseColor,"json");
-					var dyeJSON = convertColorFormats(dyeColor,"json");
-					var dyedColor = multiplyColors(dyeJSON,baseJSON,"json");
-					//80% multiplied
-					var semiDyedColor = averageColorObjects(dyedColor,baseJSON,0.8);
-					//30% dye color, 70% result
-					var finalColor = averageColorObjects(semiDyedColor,dyeJSON,0.7);
-					pixel.color = convertColorFormats(finalColor,"rgb")
-				}
-			},
-			reactions: {
-				dye: elements.rainbow.reactions.dye,
-			},
-			behavior: behaviors.WALL,
-			state: "solid",
-			category: "rainbow variants",
-		};
-
 		elements.quarkshimmer = {
 			color: ["#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff"],
 			tick: function(pixel) {
@@ -8258,6 +9678,23 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 			movable: false,
+		};
+
+		elements.heejinshimmer = {
+			color: ["#ff007f","#200010","#ff007f","#200010"],
+			tick: function(pixel) {
+				var t = pixelTicks*2.5+pixel.x+pixel.y;
+				var t2 = pixelTicks/2;
+				//var r = Math.floor(255*(1-Math.cos(t*Math.PI/24)));
+				//var value = Math.ceil((r*(7/8))+32);
+				var l = Math.floor(40*(1-Math.cos(t*Math.PI/24)));
+				var h = (320 + Math.floor(30*(Math.cos(t2*Math.PI/24)))) % 360;
+				//pixel.color = "rgb("+value+",0,"+Math.round(value * 0.5)+")";
+				pixel.color = convertHslObjects({h:h,s:100,l:l},"rgb");
+			},
+			behavior: behaviors.WALL,
+			state: "solid",
+			category: "rainbow variants",
 		};
 
 		elements.pastel_rainbow_small = {
@@ -9379,17 +10816,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				revealedAround: false
 			},
 			tick: function(pixel) {
-				if(typeof(pixel.revealed) === 'undefined') {
-					pixel.revealed = false
-				}
-				if(typeof(pixel.uwu) === 'undefined') {
-					pixel.uwu = 0
-				}
-				if(typeof(pixel.revealedAround) === 'undefined') {
-					pixel.revealedAround = false
-				}
+				pixel.revealed ??= false;
+				pixel.uwu ??= 0;
+				pixel.revealedAround ??= false;
 				if(pixel.charge) {
-					pixel.revealed = true
+					if(!pixel.revealed) { pixel.revealed = true };
 					delete pixel.charge
 					if(pixel.chargeCD) {
 						delete pixel.chargeCD
@@ -9402,14 +10833,15 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						for (let j = -1; j < 2; j++) {
 							if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 								if (pixelMap[pixel.x+j][pixel.y+i].element == "msmine") {
-									pixel.uwu += 1
+									pixel.uwu++
 								}
 							}
 						}
 					}
 					if(typeof(pixel.uwu) === 'number' && isFinite(pixel.uwu) && !isNaN(pixel.uwu)) {
 						if(pixel.uwu >= 0 && pixel.uwu <= 8) {
-							pixel.color = msColorArray[pixel.uwu]
+							pixel.color = msColorArray[pixel.uwu];
+							pixel.displayText = pixel.uwu.toString()
 						}
 					} else {
 						pixel.color = "#ff00ff"
@@ -9418,6 +10850,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					pixel.color = "#c0c0c0" //I feel bad suppressing the sand effect.
 				}
 			},
+			maxColorOffset: 0,
 			category: "special",
 			state: "solid",
 			hidden: true,
@@ -9471,10 +10904,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 
 		var lifeEaterCategories = ["life","auto creepers","shit","cum","food","fantastic creatures","fey","auto_fey"];
 		var lifeEaterBlacklist = ["life_eater_virus","life_eater_slurry","life_eater_infected_dirt"];
-		var lifeEaterWhitelist = ["blood","poop","blood_ice","wood","wood_plank","sawdust","straw","paper","birthpool","dried_poop","gloomfly","meat_monster","rotten_ravager","bone_beast","withery","withery_plant","banana","apple","rotten_apple","apioform_player","apioform_bee","apioform","apiodiagoform","sugar_cactus","sugar_cactus_seed","flowering_sugar_cactus","tree_branch","sap","silk","red_velvet","silk_velvet","ketchup", "enchanted_ketchup", "frozen_ketchup", "poisoned_ketchup", "frozen_poisoned_ketchup", "ketchup_spout", "ketchup_cloud", "poisoned_ketchup_cloud", "ketchup_snow", "ketchup_snow_cloud", "poisoned_ketchup_snow", "poisoned_ketchup_snow_cloud", "ketchup_gas", "poisoned_ketchup_gas", "ketchup_powder", "poisoned_ketchup_powder", "eketchup_spout", "ketchup_metal", "antiketchup", "dirty_ketchup", "ketchup_gold", "molten_ketchup_metal", "ketchup_fairy", "ketchup_metal_scrap", "ketchup_gold_scrap", "molten_ketchup_gold", "mycelium","vaccine","antibody","infection","sap","caramel","molasses","melted_chocolate","soda","mustard","fry_sauce","tomato_sauce","sugary_tomato_sauce","bio_ooze","zombie_blood","feather","tooth","decayed_tooth","plaque","tartar","bacteria","replacer_bacteria","pop_rocks"];
+		var lifeEaterWhitelist = ["blood","skin","hair","poop","blood_ice","wood","wood_plank","sawdust","straw","paper","birthpool","dried_poop","gloomfly","meat_monster","rotten_ravager","bone_beast","withery","withery_plant","banana","apple","rotten_apple","apioform_player","apioform_bee","apioform","apiodiagoform","sugar_cactus","sugar_cactus_seed","flowering_sugar_cactus","tree_branch","sap","silk","red_velvet","silk_velvet","ketchup", "enchanted_ketchup", "frozen_ketchup", "poisoned_ketchup", "frozen_poisoned_ketchup", "ketchup_spout", "ketchup_cloud", "poisoned_ketchup_cloud", "ketchup_snow", "ketchup_snow_cloud", "poisoned_ketchup_snow", "poisoned_ketchup_snow_cloud", "ketchup_gas", "poisoned_ketchup_gas", "ketchup_powder", "poisoned_ketchup_powder", "eketchup_spout", "ketchup_metal", "antiketchup", "dirty_ketchup", "ketchup_gold", "molten_ketchup_metal", "ketchup_fairy", "ketchup_metal_scrap", "ketchup_gold_scrap", "molten_ketchup_gold", "mycelium","vaccine","antibody","infection","sap","caramel","molasses","melted_chocolate","soda","mustard","fry_sauce","tomato_sauce","sugary_tomato_sauce","bio_ooze","zombie_blood","feather","tooth","decayed_tooth","plaque","tartar","bacteria","replacer_bacteria","pop_rocks"];
 		var lifeEaterSubstitutions = {
 			"dirt": "life_eater_infected_dirt",
-			"crimsoil": "life_eater_infected_dirt"
+			"crimsoil": "life_eater_infected_dirt",
+			"rainbow_dirt": "life_eater_infected_dirt"
 		};
 
 
@@ -9752,7 +11186,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					for (let j = -1; j < 2; j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1;
+								pixel.uwu++;
 							};
 						};
 					};
@@ -9844,7 +11278,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					for (let j = -1; j < 2; j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1;
+								pixel.uwu++;
 							};
 						};
 					};
@@ -10989,7 +12423,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						var elemsAbove = [];
 						var pX = pixel.x; var pY = pixel.y;
 						for(var counter = pY - 1; counter > 0; counter--) {
-							console.log(pX,pY);
+							//console.log(pX,pY);
 							if(isEmpty(pX,counter,true)) {
 								break
 							};
@@ -11004,7 +12438,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 							return
 						} else {
 							pixel.target = elemsAbove
-							console.log(pixel.target);
+							//console.log(pixel.target);
 							pixel.charge = 0;
 						}
 					};
@@ -11648,7 +13082,14 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				if (pixelMap[mousePos.x] !== undefined) {
 					var currentPixel = pixelMap[mousePos.x][mousePos.y];
 					if (typeof(currentPixel) !== "undefined" && currentPixel && currentPixel !== undefined && currentPixel.element) {
-						stats += "<span id='stat-element' class='stat'>Elem:"+(elements[currentPixel?.element]?.name || currentPixel?.element)+"</span>";
+						var displayName;
+						var displayElement = (elements[currentPixel?.element]?.name || currentPixel?.element);
+						if(currentPixel?.displayText) {
+							displayName = displayElement + ` (${currentPixel?.displayText})`
+						} else {
+							displayName = displayElement
+						};
+						stats += "<span id='stat-element' class='stat'>Elem:"+displayName+"</span>";
 						stats += "<span id='stat-temperature' class='stat'>Temp:"+formatTemp(currentPixel.temp)+"</span>";
 						if (currentPixel.charge) {
 							stats += "<span id='stat-charge' class='stat'>C"+currentPixel.charge+"</span>";
@@ -13316,36 +14757,38 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 
 			//Hydrogen sulfide (in chem.js)
 				_h_2s = ["hydrogen_sulfide","liquid_hydrogen_sulfide","hydrogen_sulfide_ice"];
-			
-				elements.hydrogen_sulfide.density = 1.19 * airDensity;
-				elements.hydrogen_sulfide.reactions ??= {};
-				elements.hydrogen_sulfide.reactions.head = { elem2: "rotten_meat", chance: 0.4};
-				elements.hydrogen_sulfide.fireColor = { elem2: "rotten_meat", chance: 0.4};
-				elements.hydrogen_sulfide.tempHigh = 1200;
-				elements.hydrogen_sulfide.stateHigh = ["sulfur_gas","steam"];				
-				delete elements.sulfur_dioxide.reactions.water;
-				delete elements.sulfur_dioxide.reactions.steam;
-				delete elements.water.reactions.sulfur;
-				elements.sulfur_dioxide.tick = function(pixel) {
-					var neighbors = adjacentCoords.map(offsetPair => pixelMap[pixel.x+offsetPair[0]]?.[pixel.y+offsetPair[1]]).filter(function(pixelOrUndefined) { return typeof(pixelOrUndefined) == "object" });
-					if(neighbors.length < 2) { return };
-					var neighboringElements = neighbors.filter(function(px) { return !!px }).map(x => x.element);
-					var waterNeighbor = null;
-					var sulfideNeighbor = null; 
-					for(var i = 0; i < neighboringElements.length; i++) {
-						if(_h_2s.includes(neighboringElements[i])) {
-							sulfideNeighbor = adjacentCoords[i];
-						};
-						if(wateroids.includes(neighboringElements[i])) {
-							waterNeighbor = adjacentCoords[i];
-						};
-						if(sulfideNeighbor && waterNeighbor) {
-							if(!sulfideNeighbor || isEmpty(sulfideNeighbor.x,sulfideNeighbor.y,true)) { return };
-							changePixel(sulfideNeighbor,getStateAtTemp("sulfur",pixel.temp));
-							changePixel(pixel,getStateAtTemp("water",pixel.temp));
+
+				runAfterLoad(function() {
+					elements.hydrogen_sulfide.density = 1.19 * airDensity;
+					elements.hydrogen_sulfide.reactions ??= {};
+					elements.hydrogen_sulfide.reactions.head = { elem2: "rotten_meat", chance: 0.4};
+					elements.hydrogen_sulfide.fireColor = { elem2: "rotten_meat", chance: 0.4};
+					elements.hydrogen_sulfide.tempHigh = 1200;
+					elements.hydrogen_sulfide.stateHigh = ["sulfur_gas","steam"];				
+					delete elements.sulfur_dioxide.reactions.water;
+					delete elements.sulfur_dioxide.reactions.steam;
+					delete elements.water.reactions.sulfur;
+					elements.sulfur_dioxide.tick = function(pixel) {
+						var neighbors = adjacentCoords.map(offsetPair => pixelMap[pixel.x+offsetPair[0]]?.[pixel.y+offsetPair[1]]).filter(function(pixelOrUndefined) { return typeof(pixelOrUndefined) == "object" });
+						if(neighbors.length < 2) { return };
+						var neighboringElements = neighbors.filter(function(px) { return !!px }).map(x => x.element);
+						var waterNeighbor = null;
+						var sulfideNeighbor = null; 
+						for(var i = 0; i < neighboringElements.length; i++) {
+							if(_h_2s.includes(neighboringElements[i])) {
+								sulfideNeighbor = adjacentCoords[i];
+							};
+							if(wateroids.includes(neighboringElements[i])) {
+								waterNeighbor = adjacentCoords[i];
+							};
+							if(sulfideNeighbor && waterNeighbor) {
+								if(!sulfideNeighbor || isEmpty(sulfideNeighbor.x,sulfideNeighbor.y,true)) { return };
+								changePixel(sulfideNeighbor,getStateAtTemp("sulfur",pixel.temp));
+								changePixel(pixel,getStateAtTemp("water",pixel.temp));
+							}
 						}
 					}
-				};
+				});
 
 			//Carbon monoxide
 
@@ -13525,7 +14968,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					color: "#d3d9b4",
 					behavior: behaviors.LIQUID,
 					tick: function(pixel) {
-						if (pixel.temp > 210 && !pixel.burning) {
+						if (pixel.temp > 300 && !pixel.burning) {
 							pixel.burning = true;
 							pixel.burnStart = pixelTicks;
 						}
@@ -13854,7 +15297,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			stain: elements.spray_paint.stain,
 		};
 
-		var temp = {
+		temp = {
 			invisible_wall: "asdfg",
 			invisible_dye: 2,
 			invisible_dye_gas: false
@@ -13929,7 +15372,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			},
 			properties: {
 				"age": 0,
-				//"bananaRange": null, //apparently this is suddenly, in an illogical, never-before-seen, completely new, unprecedented incident of bad behavior, evaluated before being put into the property database, so RNG has to be done in tick
 				"bananaRange": null
 			},
 			tempHigh: 100,
@@ -14503,7 +15945,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			behavior: [
 				"XX|XX|XX",
 				"M2|XX|M2",
-				"M1|M1|M1",
+				"M1|SW:dust AND M1|M1",
 			],
 			tick: function(pixel) { //Code from R74n/vanilla "smash" tool
 				var pX = pixel.x;
@@ -14515,18 +15957,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					var fY = pY+oY;
 					if(!isEmpty(fX,fY,true)) {
 						var checkPixel = pixelMap[fX][fY];
-						var thisElementName = pixel.element;
-						var otherElementName = checkPixel.element;
-						var thisElement = elements[pixel.element];
 						var otherElement = elements[checkPixel.element];
 						if (typeof(otherElement.breakInto) !== "undefined") {
-							var hardness = null;
-							if (typeof(otherElement.hardness) === "number") {
-								hardness = otherElement.hardness;
-							} else {
-								hardness = 1;
-							};
-							if (Math.random() < hardness) {
+							var hardness = otherElement.hardness ?? 0;
+							if (Math.random() < (1 - hardness)) {
 								var breakInto = otherElement.breakInto;
 								// if breakInto is an array, pick one
 								if (Array.isArray(breakInto)) {
@@ -14664,9 +16098,14 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			viscosity: 3**4,
 		}
 
-		elements.redstone_dust.tempHigh = 2500
+		elements.redstone_dust.tempHigh = 2500;
 
-		elements.redstone_dust.stateHigh = "destabilized_redstone"
+		elements.redstone_dust.stateHigh = "destabilized_redstone";
+
+		elements.redstone_dust.conduct = 0.9;
+
+		elements.redstone_dust.colorOn = ["#FF2424","#FF0000","#FF1200"];
+		elements.redstone_dust.color = ["#7f0000","#5f0000","#5f0500"];
 
 		elements.destabilized_redstone = {
 			color: ["#9e0303", "#98061a", "#b80704", "#c4020c", "#f70008", "#9e0303", "#98061a", "#b80704", "#e3020a", "#8c0303", "#8c0303"],
@@ -15068,7 +16507,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				var lastSetting = settingNodes[settingNodes.length - 1];
 				//console.log(lastSetting);
 				//console.log(lastSetting.getAttribute("style"));
-				lastSetting.removeAttribute("style"); //restore padding for worldgen setting;
 				//console.log(lastSetting.getAttribute("style"));
 
 				//Shape setting
@@ -15146,6 +16584,38 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				category: "gases",
 				state: "gas"
 			},
+
+		//}
+
+		// nitroglycerin {
+
+			elements.nitro_gas = {
+				color: "#89d162",
+				behavior: behaviors.GAS,
+				behaviorOn: [
+					"XX|XX|XX",
+					"XX|EX:10|XX",
+					"XX|XX|XX",
+				],
+				conduct: 1,
+				category: "weapons",
+				tempHigh: 218,
+				stateHigh: "explosion",
+				tempLow: 50,
+				stateLow: "nitro",
+				burn: 100,
+				burnTime: 1,
+				burnInto: "explosion",
+				breakInto: "explosion",
+				viscosity: 36,
+				state: "liquid",
+				density: 1600,
+				excludeRandom: true,
+				alias: "nitroglycerin gas"
+			};
+
+			elements.nitro.tempHigh = 50;
+			elements.nitro.stateHigh = "nitro_gas";
 
 		//}
 
@@ -15706,7 +17176,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		//https://www.jamieswhiteshirt.com/minecraft/mods/gases/information/?Licensing
 
 		//Coal exists in NM
-		elements.coal.breakInto = "coal_dust";
+		runAfterLoad(function() {
+			elements.coal.breakInto = "coal_dust"
+		});
 
 		elements.coal_dust = {
 			color: "#363023",
@@ -15784,9 +17256,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		elements.electric_gas = {
 			color: ["#3693b3", "#246e64"],
 			behavior: [
-				"M2%33.3 AND CR:electric%1|M1%33.3 AND CR:electric%1|M2%33.3 AND CR:electric%1",
-				"M1%33.3 AND CR:electric%1|XX%0000000000000000000000|M1%33.3 AND CR:electric%1",
-				"M2%33.3 AND CR:electric%1|M1%33.3 AND CR:electric%1|M2%33.3 AND CR:electric%1",
+				"M2%33.3 AND CR:electric%1 AND CR:lightning%0.005|M1%33.3 AND CR:electric%1 AND CR:lightning%0.005|M2%33.3 AND CR:electric%1 AND CR:lightning%0.005",
+				"M1%33.3 AND CR:electric%1 AND CR:lightning%0.005|XX%000000000000000000000000000000000000000000000|M1%33.3 AND CR:electric%1 AND CR:lightning%0.005",
+				"M2%33.3 AND CR:electric%1 AND CR:lightning%0.005|M1%33.3 AND CR:electric%1 AND CR:lightning%0.005|M2%33.3 AND CR:electric%1 AND CR:lightning%0.005",
 			],
 			hardness: 0.8,
 			reactions: {
@@ -15795,7 +17267,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			},
 			category: "gases",
 			density: 1.225,
-			state: "gas",
+			state: "gas"
 		};
 
 		corrosiveGasMaxHardness = 0.6
@@ -15866,9 +17338,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				"fire": { elem2: null }
 			},
 			tick: function(pixel) {
-				backgroundColor = hexToRGB(settings.bg);
-				pixel.rgbValue = "rgb("+backgroundColor.r+","+backgroundColor.g+","+backgroundColor.b+")";
-				pixel.color = pixel.rgbValue;
+				/*var baseColor = settings.bg instanceof Array ? averageRgbPrefixedColorArray(settings.bg.map(x => convertColorFormats(x,"rgb"))) : convertColorFormats(settings.bg,"rgb");
+				baseColor = convertColorFormats(baseColor,"json");
+				pixel.color = "rgba(" + Object.values(baseColor).join(",") + ",0)"*/
+				pixel.color = "rgba(0,0,0,0)"
 			},
 			hardness: 0.6,
 			category: "gases",
@@ -16234,6 +17707,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			state: "solid",
 		};
 
+		//Makes thinner nichrome wires get hotter
 		nichromeDoNeighborCount = true;
 
 		function nichromeNeighborLogic(count) {
@@ -16293,6 +17767,48 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					pixel.temp += ((1.1 + nichromeNeighborLogic(neighbors)) * pixel.charge) * 1.1;
 				};
 			},
+		};
+
+		elements.gold.reactions ??= {};
+
+		elements.molten_gold.reactions.molten_nickel = {
+			elem1: "molten_white_gold",
+			elem2: new Array(9).fill("molten_nickel").concat("molten_white_gold"),
+			changeTemp: false
+		};
+
+		elements.molten_copper.reactions.molten_gold = {
+			elem1: ["molten_copper","molten_copper","molten_rose_gold"],
+			elem2: "molten_rose_gold",
+			changeTemp: false
+		};
+
+		elements.white_gold = {
+			color: ["#c2c2c2","#9e9e9e","#e8e8e8"],
+			behavior: behaviors.WALL,
+			tempHigh: 937,
+			category: "solids",
+			density: 15900,
+			conduct: 0.83, //Has never been measured x>:(
+			hardness: 0.48,
+		};
+		
+		elements.rose_gold.color = ["#f58eb1","#d06c7d","#f58eb1"];
+		
+		elements.molten_copper.reactions.molten_rose_gold = {
+			elem1: ["molten_copper","molten_red_gold"],
+			elem2: "molten_red_gold",
+			changeTemp: false
+		};
+
+		elements.red_gold = {
+			color: ["#d97b6a","#c95c49","#d97b6a"],
+			behavior: behaviors.WALL,
+			tempHigh: 975, //https://www.researchgate.net/figure/Gold-copper-phase-diagram-with-melting-points-of-gold-and-copper-adapted-from-AMS_fig51_233765846
+			category: "solids",
+			density: 12220, //https://www.handymath.com/cgi-bin/density.cgi?naym1=Gold&weight1=10&den1=19.3&naym2=Copper&weight2=10&den2=8.94&aloynaym=Red+Gold&submit=Calculate&numnum=2&moreless=1&decimal=5
+			conduct: 0.85, //Has never been measured x>:(
+			hardness: 0.5, //???
 		};
 
 		worldgentypes.test = {
@@ -17039,7 +18555,81 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					elements[kesddfroged2[i]].reactions ??= {}; elements[kesddfroged2[i]].reactions[kesddfroged[j]] = {"elem1": "kurshuth_alloy", "elem2": "kurshuth_alloy"}
 				}
 			};
-		})
+		});
+
+		function newMetal(name,color,meltingPoint,boilingPoint,hardness,density,gasDensity,conduct,categoryOverride = null) {
+			var temp = {
+				"name": name,
+				"color": color,
+				"meltingPoint": meltingPoint,
+				"boilingPoint": boilingPoint,
+				"hardness": hardness,
+				"density": density,
+				"gasDensity": gasDensity,
+				"conduct": conduct
+			};
+			var tempNulls = Object.keys(temp).filter(key => (typeof(temp[key]) == undefined || temp[key] == null));
+			if(tempNulls.length > 0) {
+				var errorMessage = capitalizeFirstLetter(englishFormatList(tempNulls));
+				throw new Error(`newMetal: ${errorMessage} {tempNulls.length == 1 ? "is" : "are"} required (generating "${name}")`);
+			};
+			
+			var scrapColor = gravelizeToHex(color);
+
+			elements[name] = {
+				"color": (window["gameLoaded"] ?? false) ? (Array.isArray(color) ? color.map(x => convertColorFormats(x,"rgb")) : convertColorFormats(color,"rgb")) : color,
+				"colorObject": (window["gameLoaded"] ?? false) ? (Array.isArray(color) ? color.map(x => convertColorFormats(x,"json")) : convertColorFormats(color,"json")) : undefined,
+				"behavior": behaviors.WALL,
+				"category": "solids",
+				"state": "solid",
+				"density": density,
+				"conduct": conduct,
+				"tempHigh": meltingPoint,
+				"breakInto": `${name}_scrap`,
+				"hardness": hardness
+			};
+			
+			if(categoryOverride) { elements[name].category = categoryOverride };
+
+			elements[`molten_${name}`] = {
+				"tempHigh": boilingPoint
+			};
+
+			elements[`${name}_gas`] = {
+				"density": gasDensity
+			};
+
+			elements[`${name}_scrap`] = {
+				"color": (window["gameLoaded"] ?? false) ? (Array.isArray(scrapColor) ? scrapColor.map(x => convertColorFormats(x,"rgb")) : convertColorFormats(scrapColor,"rgb")) : scrapColor,
+				"colorObject": (window["gameLoaded"] ?? false) ? (Array.isArray(scrapColor) ? scrapColor.map(x => convertColorFormats(x,"json")) : convertColorFormats(scrapColor,"json")) : undefined,
+				"behavior": (window["gameLoaded"] ?? false) ? undefined : behaviors.POWDER,
+				"tick": (window["gameLoaded"] ?? false) ? behaviors.POWDER : undefined,
+				"tempHigh": meltingPoint,
+				"stateHigh": `molten_${name}`,
+				"category": "powders",
+				"hidden": true,
+				"density": density * 0.09,
+				"conduct": conduct * 0.4,
+				"movable": true,
+			};
+			
+			if(window["gameLoaded"] ?? false) {
+				delete elements[`${name}_scrap`].behavior;
+				createElementButton(name);
+				if(settings.unhide == 1) { createElementButton(`${name}_scrap`) }
+				autoGen(`molten_${name}`,name,"molten");
+				elements[`molten_${name}`].color = elements[`molten_${name}`].color.map(x => convertColorFormats(x,"rgb"));
+				elements[`molten_${name}`].colorObject = elements[`molten_${name}`].color.map(x => convertColorFormats(x,"json"));
+			} else {
+				delete elements[`${name}_scrap`].tick;
+			};
+
+			return [elements[name],elements[`${name}_scrap`]];
+		};
+		
+		//newMetal( "exidmaden", ["#F8EDCF", "#EEAAAE", "#E5678D", "#A6659C", "#6763AD"], 2134, 6769, 0.8, 32333, 49.9, 0.88 );
+		//newMetal( "jisooium", "#9d0ac2", 8367, 10003, 0.63, 15024, 12.2, 0.9 );
+		//newMetal( "twicium", ["#F9C596", "#FC5D9D"], 10240, 18018, 0.88, 29029, 24.3, 0.91 );
 
 	//ASSORTED LOONA-THEMED MATERIALS ##
 
@@ -17469,8 +19059,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			rad_fire: {value: 10, remainder: "rad_smoke"},
 			liquid_fire: {value: 12, remainder: ["fire","liquid_smoke","smoke"]},
 			plasma: {value: 15, remainder: "fire"},
+			holy_fire: 25,
+			god_slayer_fire: 40,
 			liquid_rad_fire: {value: 20, remainder: [null,"rad_fire","rad_fire","rad_smoke","rad_smoke"]},
 			liquid_plasma: {value: 30, remainder: ["plasma","liquid_fire","fire"]},
+			liquid_holy_fire: {value: 50, remainder: ["holy_fire","bless","light"]},
+			liquid_god_slayer_fire: {value: 80, remainder: ["god_slayer_fire",null,null]},
 			liquid_irradium: {value: 4, remainder: 0}
 		};
 
@@ -17483,7 +19077,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			if(isNaN(pixel.value)) { pixel.value = 0 };
 			pixel.color = lightenColor(pixel.oldColor,pixel.value / 3);
 
-			var mVal = elements[pixel.element].haseulitoidMaxValue ?? 350;
+			var mVal = elements[pixel.element].haseulitoidMaxValue ?? 800;
 			if(pixel.value >= mVal) {
 				var coldBoomChance = Math.max(0.008 * ((pixel.value - mVal) / (mVal * 2/7)), 0.001);
 				if(Math.random() < coldBoomChance) {
@@ -17727,9 +19321,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		*/
 
 		function heejinitoidTick(pixel) {
+			pixel.color ??= pixelColorPick(pixel);
 			if(pixel.oldColor === null) { pixel.oldColor = pixel.color };
 			if(pixel.oldColor === undefined) { pixel.oldColor = pixelColorPick(pixel) };
-			var color = rgbStringToHSL(convertColorFormats(pixel.oldColor,"rgb"),"json");
+			var color = rgbStringToHSL((convertColorFormats(pixel.oldColor,"rgb") ?? pixelColorPick(pixel)),"json");
 			var heejiniteHueSpread = 30 + (pixel.temp/9.25)
 			var hueOffset = (Math.sin(pixelTicks / 11) * heejiniteHueSpread) + 15; color.h += hueOffset;
 			var color = convertHslObjects(color,"rgb");
@@ -18348,9 +19943,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				if(isNaN(pixel.temp)) { pixel.temp = 20 };
 				if(Math.random() < 0.013 && exposedToAir(pixel)) {
 					changePixel(pixel,"vivite_oxide",false);
-					pixel.temp += 0.1;
+					pixel.temp += 4;
 				};			
 			},
+			burnTime: 160,
+			burnTempChange: 10.65,
+			burnInto: "vivite_oxide_powder",
 			noResistance: true,
 			reactions: {
 				"ice": { elem1: "vivite_oxide", elem2: null, temp1: 0.2 },
@@ -18380,10 +19978,23 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			behavior: behaviors.POWDER,
 			tick: function(pixel) {
 				if(Math.random() < 0.027 && exposedToAir(pixel)) {
-					changePixel(pixel,"vivite_oxide_powder",false);
-					pixel.temp += 0.1;
+					if(getEmptyMooreNeighbors(pixel).length > 4) {
+						pixel.burning = true;
+						pixel.burnStart = pixelTicks;
+					} else {
+						pixel.temp += 18;
+						changePixel(pixel,getStateAtTemp("vivite_oxide_powder",pixel.temp),false);
+					};
+					
+					if(pixel.burning && ((pixel.temp + (2 * elements[pixel.element].burnTempChange)) > elements[pixel.element].tempHigh)) {
+						changePixel(pixel,elements[pixel.element].burnInto,false);
+						pixel.temp += 213;
+					};
 				};
 			},
+			burnTime: 8,
+			burnTempChange: 213,
+			burnInto: "vivite_oxide_powder",
 			reactions: {
 				"ice": { elem1: "vivite_oxide_powder", elem2: null, temp1: 0.2 },
 				"water": { elem1: "vivite_oxide_powder", elem2: null, temp1: 0.2 },
@@ -18398,7 +20009,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				"salt_ice": { elem1: "vivite_oxide_powder", elem2: "salt" }
 			},
 			noResistance: true,
-			tempHigh: 938,
+			tempHigh: 1725,
 			stateHigh: "molten_vivite",
 			category: "solids",
 			state: "solid",
@@ -18435,7 +20046,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				return false;
 			};
 
-			if(elements[newElement].noViviteSlag) { //Excluded
+			if(elements[newElement].noViviteSlag || elements[pixel.element].ignore?.includes(newPixel.element)) { //Excluded
 				return false;
 			};
 
@@ -18452,12 +20063,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			color: ["#f7a6e5", "#fa70d1", "#f0bbf2"],
 			colorOn: ["#ff63ac", "#ff21bd", "#e81af0"],
 			fireColor: ["#ff66ba", "#ff85ef", "#ff99f7"],
+			ignore: ["wall","heejinite","jinsoulite","haseulite","molten_heejinite","molten_jinsoulite","molten_haseulite","yvesite","molten_yvesite"],
 			tick: function(pixel) {
 				var info = elements[pixel.element];
 
 				if(Math.random() < 0.022 && exposedToAir(pixel)) {
 					changePixel(pixel,pixel.temp > 7315.27 ? "molten_vivite_oxide" : "vivite_oxide_powder",false)
-					pixel.temp += 0.1;
+					pixel.temp += 18;
 				};			
 
 				if(Math.random() < 0.025) {
@@ -18501,10 +20113,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			},
 			density: 8212,
 			state: "liquid",
+			burnTime: 160,
+			burnTempChange: 10.65,
+			burnInto: "vivite_oxide_powder",
 			hardness: 0.88,
 			viscosity: 10000,
 			breakInto: "vivite_gas",
-			temp: 1100,
+			temp: 2000,
 			tempHigh: 2256,
 			stateHigh: "vivite_gas",
 			tempLow: 938,
@@ -18635,13 +20250,22 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			fireColor: ["#ff66ba", "#ff85ef", "#ff99f7"],
 			tick: function(pixel) {
 				if(Math.random() < 0.032 && exposedToAir(pixel)) {
-					changePixel(pixel,pixel.temp > 15500 ? "vivite_oxide_gas" : pixel.temp > 7315.27 ? "molten_vivite_oxide" : "vivite_oxide_powder",false);
+					if(getEmptyMooreNeighbors(pixel).length > 4) {
+						pixel.burning = true;
+						pixel.burnStart = pixelTicks;
+					} else {
+						pixel.temp += 18;
+						changePixel(pixel,pixel.temp > 15500 ? "vivite_oxide_gas" : pixel.temp > 7315.27 ? "molten_vivite_oxide" : "vivite_oxide_powder",false);
+					};
 				};
 			},
 			behavior: behaviors.GAS,
 			state: "gas",
 			tempLow: 2256,
 			stateLow: "molten_vivite",
+			burnTime: 8,
+			burnTempChange: 213,
+			burnInto: "vivite_oxide_powder",
 			density: 18.02,
 			temp: 3300,
 			hardness: 1,
@@ -19306,7 +20930,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		elements.frozen_ketchup.breakInto = "ketchup_snow"
 		elements.frozen_poisoned_ketchup.breakInto = "poisoned_ketchup_snow"
 
-		regularShinyThingArray = ["iron", "zinc", "tin", "nickel", "silver", "aluminum", "lead", "tungsten", "brass", "bronze", "sterling", "steel", "rose_gold", "solder", "gold", "pyrite", "mythril", "mithril_mythril_alloy", "titanium", "ilitium", "mithril", "beryllium", "boron", "ruthenium", "rhodium", "palladium", "rhenium", "osmium", "iridium", "platinum", "frozen_mercury", "lithium", "niobium", "ketchup_metal", "ketchup_gold", "tungstensteel", "densinium", "mithril", "signalum", "laetium"]
+		regularShinyThingArray = ["iron", "zinc", "tin", "nickel", "silver", "aluminum", "lead", "tungsten", "brass", "bronze", "sterling", "steel", "white_gold", "blue_gold", "rose_gold", "red_gold", "solder", "gold", "pyrite", "mythril", "mithril_mythril_alloy", "titanium", "ilitium", "mithril", "beryllium", "boron", "ruthenium", "rhodium", "palladium", "rhenium", "osmium", "iridium", "platinum", "frozen_mercury", "lithium", "niobium", "ketchup_metal", "ketchup_gold", "tungstensteel", "densinium", "mithril", "signalum", "laetium", "kurshunjukium", "zirconium", "jinsoulite"];
 
 		elements.nitrogen_snow = {
 			color: "#efefef",
@@ -19325,23 +20949,26 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		runAfterLoad(function() {
 			for(i = 0; i < regularShinyThingArray.length; i++) {
 				var thing = regularShinyThingArray[i];
-				if(elements[thing]) {
-					elements[`${thing}_scrap`] = {
-						color: elements[thing].color,
-						behavior: behaviors.POWDER,
-						tempHigh: elements[thing].tempHigh,
-						stateHigh: thing,
-						category: "powders",
-						hidden: true,
-						density: elements[thing].density * 0.09,
-						conduct: elements[thing].conduct * 0.4,
-						movable: true,
+				if(typeof(elements[thing]) == "object") {
+					if(typeof(elements[thing]?.breakInto) == "undefined") {
+						elements[`${thing}_scrap`] = {
+							color: gravelizeToHex(elements[thing].color),
+							behavior: behaviors.POWDER,
+							tempHigh: elements[thing].tempHigh,
+							stateHigh: thing,
+							category: "powders",
+							hidden: true,
+							density: elements[thing].density * 0.09,
+							conduct: elements[thing].conduct * 0.4,
+							movable: true,
+						};
+						if(elements[thing].reactions) {
+							elements[`${thing}_scrap`].reactions = elements[thing].reactions;
+						};
+						elements[thing].breakInto = `${thing}_scrap`;
 					};
-					if(elements[thing].reactions) {
-						elements[`${thing}_scrap`].reactions = elements[thing].reactions;
-					};
-					elements[thing].breakInto = `${thing}_scrap`;
-				};
+					elements[thing].cutInto = elements[thing].breakInto
+				}
 			};
 
 			elements.acid.ignore.push("densinium_scrap")
@@ -19453,7 +21080,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									if(crimsonObject[elementToCheck]) {
 										changePixel(destPixel,crimsonObject[elementToCheck]);
 									};
-									grassSpread(pixel,["dirt","crimsoil"],"crimson_grass",0.5);
+									grassSpread(pixel,["dirt","crimsoil","rainbow_dirt"],"crimson_grass",0.5);
 								};
 							};
 						};
@@ -19582,22 +21209,28 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						};
 					};
 
-					hotRockBehavior = [
+					behaviors.HOT_POWDER = [
 						"XX|CR:fire%0.5|XX",
 						"XX|XX|XX",
 						"M2|M1|M2"
 					];
 
-					sturdyHotRockBehavior = [
+					behaviors.HOT_STURDYPOWDER = [
 						"XX|CR:fire%0.5|XX",
 						"XX|XX|XX",
 						"XX|M1|XX"
 					];
 
-					solidHotRockBehavior = [
+					behaviors.HOT_WALL = [
 						"XX|CR:fire%0.1|XX",
 						"CR:fire%0.1|XX|CR:fire%0.1",
 						"XX|CR:fire%0.1|XX"
+					];
+
+					behaviors.HOT_SUPPORT = [
+						"XX|CR:fire%0.1|XX",
+						"SP AND CR:fire%0.1|XX|SP AND CR:fire%0.1",
+						"XX|M1|XX"
 					];
 
 					//console.log(rocksSandsAndSoilsToGiveHotForms)
@@ -19616,14 +21249,16 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							behavior: function() {
 								switch((rockInfo.behavior ?? "undefined").toString()) {
 									case (behaviors.WALL.toString()):
-										return solidHotRockBehavior;
+										return behaviors.HOT_WALL;
 									case (behaviors.STURDYPOWDER.toString()):
-										return sturdyHotRockBehavior;
+										return behaviors.HOT_STURDYPOWDER;
 									case (behaviors.POWDER.toString()):
-										return hotRockBehavior;
+										return behaviors.HOT_POWDER;
+									case (behaviors.SUPPORT.toString()):
+										return behaviors.HOT_SUPPORT;
 									default:
-										console.log(rockName);
-										return hotRockBehavior
+										console.log(`Hot rock generation: Unknown base behavior for ${rockName}, defaulting to hot powder`);
+										return behaviors.HOT_POWDER
 								}
 							}(),
 							category: "hot rock",
@@ -19634,9 +21269,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							tempLow: Math.min(rockInfo.tempHigh - 100,800),
 							stateLow: rockName,
 							density: rockInfo.density * 0.9,
-							hardness: rockInfo.density * 0.85,
 							//breakInto: newName + "_gravel",
 							_data: [rockData[0], rockData[1], hotData2Switch(rockData[2])],
+						};
+						
+						if(rockInfo.hardness) {
+							elements[newName].hardness = rockInfo.hardness * 0.85
 						};
 
 						//console.log([elements[rockName].tempHigh,elements[rockName].stateHigh]);
@@ -19800,7 +21438,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						coolingFactor = 0.99999
 					};
 					//console.log(coolingFactor);
-					pixel.temp = ((pixel.temp + 273.15) * coolingFactor) - 273.15;
+					pixel.temp = ((pixel.temp - (settings.abszero ?? -273.15)) * coolingFactor) + (settings.abszero ?? -273.15);
 
 					for (var i = 0; i < adjacentCoords.length; i++) {
 						var x = pixel.x+adjacentCoords[i][0];
@@ -20130,13 +21768,14 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					//Gravels
 
 						function gravelizeToHex(colorIn) {
-							//console.log("gravelizeToHex called",colorIn);
 							var colorInput = colorIn; //side effects?
+							//console.log(`gravelizeToHex: ${colorInput}`)
 
 							//make sure in is array
-							if(!colorInput instanceof Array) {
+							if(!(colorInput instanceof Array)) {
 								colorInput = [colorInput];
 							};
+							//console.log(`gravelizeToHex: ${colorInput}`)
 
 							//console.log(colorInput);
 
@@ -20397,7 +22036,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					return color;
 				};
 
-				var sands = ["sand", "dirt", "crimsoil"]; //Some sources suggest the existence of topsoil sediment, so for the purposes of sedimentary rock generation, dirt is now a sand /hj
+				var sands = ["sand", "dirt", "crimsoil", "rainbow_dirt"]; //Some sources suggest the existence of topsoil sediment, so for the purposes of sedimentary rock generation, dirt is now a sand /hj
 				var wetSands = ["wet_sand", "mud"];
 				var sandSuspensions = [];
 				var sandSediments = ["radioactive_sand_sediment","clay_sediment"];
@@ -20421,604 +22060,1136 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					};
 				};
 
+				function simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) {
+					if(pixel.exposedToAir) { return };
+					if(pixel.temp > 200 && Math.random () < 0.0001) {
+						changePixel(pixel,elements[pixel.element].metamorphite)
+					};
+					return
+				};
+
 				function newIgneousCompositionFamily(
 					compositionFamilyName,
-					magmaViscosity,
-					magmaDensity,
-					vitriteCoolingRateThreshold,
-					aphaniteCoolingRateThreshold,
-					magmaBoilingPoint,
 
-					phaneriteName,
-					phaneriteColor,
-					phaneriteMeltingPoint,
-					phaneriteDensity,
+					magmaViscosity, magmaDensity, vitriteCoolingRateThreshold, aphaniteCoolingRateThreshold, magmaBoilingPoint,
 
-					aphaniteName,
-					aphaniteColor,
-					aphaniteMeltingPoint,
-					aphaniteDensity,
+					phaneriteName, phaneriteColor, phaneriteMeltingPoint, phaneriteDensity,
+					metaphaneriteName, metaphaneriteColor, metaphaneriteMeltingPoint, metaphaneriteDensity,
 
-					vesiculiteName,
-					vesiculiteColor,
-					vesiculiteMeltingPoint,
-					vesiculiteDensity,
+					aphaniteName, aphaniteColor, aphaniteMeltingPoint, aphaniteDensity,
+					metaaphaniteName, metaaphaniteColor, metaaphaniteMeltingPoint, metaaphaniteDensity,
 
-					vitriteName,
-					vitriteColor,
-					vitriteMeltingPoint,
-					vitriteDensity,
+					vesiculiteName, vesiculiteColor, vesiculiteMeltingPoint, vesiculiteDensity,
+					metavesiculiteName, metavesiculiteColor, metavesiculiteMeltingPoint, metavesiculiteDensity,
 
-					sandFormationReactionRegularSandCount,
-					sandFormationReactionSpecificSandCount,
+					vitriteName, vitriteColor, vitriteMeltingPoint, vitriteDensity,
+					metavitriteName, metavitriteColor, metavitriteMeltingPoint, metavitriteDensity,
+
+					sandFormationReactionRegularSandCount, sandFormationReactionSpecificSandCount,
 				) {
 					//console.log(compositionFamilyName,vesiculiteMeltingPoint,vitriteMeltingPoint);
 
-					//gabbro_sand instead of rock_sand for rock's unique sand
-					var phaneriteSandName = compositionFamilyName == "mafic" ? "gabbro_sand" : phaneriteName + "_sand";
-					var aphaniteSandName = aphaniteName + "_sand";
-					var vesiculiteSandName = vesiculiteName + "_sand";
-					var vitriteSandName = vitriteName + "_sand";
+					//Auto names
+						//Sand
+							//gabbro_sand instead of rock_sand for rock's unique sand
+							var phaneriteSandName = compositionFamilyName == "mafic" ? "gabbro_sand" : phaneriteName + "_sand"; 
+							var aphaniteSandName = aphaniteName + "_sand";
+							var vesiculiteSandName = vesiculiteName + "_sand";
+							var vitriteSandName = vitriteName + "_sand";
+							var metaphaneriteSandName = metaphaneriteName + "_sand"; 
+							var metaaphaniteSandName = metaaphaniteName + "_sand";
+							var metavesiculiteSandName = metavesiculiteName + "_sand";
+							var metavitriteSandName = metavitriteName + "_sand";
 
-					//keep rock_wall to replace vanilla rock wall
-					var phaneriteWallName = phaneriteName + "_wall";
-					var aphaniteWallName = aphaniteName + "_wall";
-					var vesiculiteWallName = vesiculiteName + "_wall";
-					var vitriteWallName = vitriteName + "_wall";
+						//Solid rocks (rock walls)
+							//keep rock_wall to replace vanilla rock wall
+							var phaneriteWallName = compositionFamilyName == "mafic" ? "rock_wall" : phaneriteName + "_wall";
+							var aphaniteWallName = aphaniteName + "_wall";
+							var vesiculiteWallName = vesiculiteName + "_wall";
+							var vitriteWallName = vitriteName + "_wall";
+							var metaphaneriteWallName = metaphaneriteName + "_wall";
+							var metaaphaniteWallName = metaaphaniteName + "_wall";
+							var metavesiculiteWallName = metavesiculiteName + "_wall";
+							var metavitriteWallName = metavitriteName + "_wall";
 
-					//gravel instead of rock_gravel for normal gravel (as rock's unique gravel)
-					var phaneriteGravelName = compositionFamilyName == "mafic" ? "gravel" : phaneriteName + "_gravel";
-					var aphaniteGravelName = aphaniteName + "_gravel";
-					var vesiculiteGravelName = vesiculiteName + "_gravel";
-					var vitriteGravelName = vitriteName + "_shard";
+						//Gravel
+							//gravel instead of rock_gravel for normal gravel (as rock's unique gravel)
+							var phaneriteGravelName = compositionFamilyName == "mafic" ? "gravel" : phaneriteName + "_gravel";
+							var aphaniteGravelName = aphaniteName + "_gravel";
+							var vesiculiteGravelName = vesiculiteName + "_gravel";
+							var vitriteGravelName = vitriteName + "_shard";
+							var metaphaneriteGravelName = metaphaneriteName + "_gravel";
+							var metaaphaniteGravelName = metaaphaniteName + "_gravel";
+							var metavesiculiteGravelName = metavesiculiteName + "_gravel";
+							var metavitriteGravelName = metavitriteName + "_shard";
 
-					//gabbro_dust instead of rock_dust for rock's unique dust
-					var phaneriteDustName = compositionFamilyName == "mafic" ? "gabbro_dust" : phaneriteName + "_dust";		
-					var aphaniteDustName = aphaniteName + "_dust";
-					var vesiculiteDustName = vesiculiteName + "_dust";
-					var vitriteDustName = vitriteName + "_dust";
+						//Dust
+							//gabbro_dust instead of rock_dust for rock's unique dust
+							var phaneriteDustName = compositionFamilyName == "mafic" ? "gabbro_dust" : phaneriteName + "_dust";		
+							var aphaniteDustName = aphaniteName + "_dust";
+							var vesiculiteDustName = vesiculiteName + "_dust";
+							var vitriteDustName = vitriteName + "_dust";
+							var metaphaneriteDustName = metaphaneriteName + "_dust";		
+							var metaaphaniteDustName = metaaphaniteName + "_dust";
+							var metavesiculiteDustName = metavesiculiteName + "_dust";
+							var metavitriteDustName = metavitriteName + "_dust";
 
-					//push future sand names and wet sand names to sand list for sandstone system generation
-					sands.push(phaneriteSandName);
-					sands.push(aphaniteSandName);
-					sands.push(vesiculiteSandName);
-					sands.push(vitriteSandName);
-					wetSands.push("wet_" + phaneriteSandName);
-					wetSands.push("wet_" + aphaniteSandName);
-					wetSands.push("wet_" + vesiculiteSandName);
-					wetSands.push("wet_" + vitriteSandName);
+						//Push future sand names and wet sand names to sand list for sandstone system generation
+							sands.push(phaneriteSandName);
+							sands.push(aphaniteSandName);
+							sands.push(vesiculiteSandName);
+							sands.push(vitriteSandName);
+							sands.push(metaphaneriteSandName);
+							sands.push(metaaphaniteSandName);
+							sands.push(metavesiculiteSandName);
+							sands.push(metavitriteSandName);
+							wetSands.push("wet_" + phaneriteSandName);
+							wetSands.push("wet_" + aphaniteSandName);
+							wetSands.push("wet_" + vesiculiteSandName);
+							wetSands.push("wet_" + vitriteSandName);
+							wetSands.push("wet_" + metaphaneriteSandName);
+							wetSands.push("wet_" + metaaphaniteSandName);
+							wetSands.push("wet_" + metavesiculiteSandName);
+							wetSands.push("wet_" + metavitriteSandName);
 
-					//generate magma name for whole igneous family
-					var magmaName = compositionFamilyName == "mafic" ? "magma" : compositionFamilyName + "_magma";
-					var magmaCloudName = magmaName + "_cloud"
-					var rockCloudName = compositionFamilyName + "_rock_cloud"
+						//Magma and magma derivative names
+							var magmaName = compositionFamilyName == "mafic" ? "magma" : compositionFamilyName + "_magma";
+							var magmaCloudName = magmaName + "_cloud"
+							var rockCloudName = compositionFamilyName + "_rock_cloud"
 
-					//create phanerite and transplant existing reactions if they exist
-					var phaneriteOldReactions = nicffunc_getReactions(phaneriteName);
-					elements[phaneriteName] = {
-						color: phaneriteColor,
-						behavior: behaviors.POWDER,
-						category: "rock",
-						state: "solid",
-						tempHigh: phaneriteMeltingPoint,
-						stateHigh: magmaName,
-						density: phaneriteDensity,
-						hardness: 0.75,
-						breakInto: phaneriteGravelName,
-						_data: [compositionFamilyName,"phanerite","igneous_rock"],
-					};
-					if(phaneriteOldReactions) {
-						elements[phaneriteName].reactions = phaneriteOldReactions;
-					};
+						//Create rocks, transplant existing reactions if they exist, add/change erosion reactions to match, and create corresponding physical variants
+							//Phanerite
+								var phaneriteOldReactions = nicffunc_getReactions(phaneriteName);
 
-					//replace water rock-erosion reaction
-					elements.water.reactions[phaneriteName] = { "elem2": phaneriteGravelName, "chance": 0.00035 }
+								elements[phaneriteName] = {
+									color: phaneriteColor,
+									behavior: behaviors.POWDER,
+									category: "rock",
+									state: "solid",
+									tempHigh: phaneriteMeltingPoint,
+									stateHigh: magmaName,
+									density: phaneriteDensity,
+									hardness: 0.75,
+									breakInto: phaneriteGravelName,
+									_data: [compositionFamilyName,"phanerite","igneous_rock"],
+									metamorphite: metaphaneriteName,
+									onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
+								};
+								if(phaneriteOldReactions) {
+									elements[phaneriteName].reactions = phaneriteOldReactions;
+								};
 
-					//create unique gravel
-					elements[phaneriteGravelName] = {
-						color: gravelizeToHex(phaneriteColor),
-						behavior: behaviors.POWDER,
-						category: "gravel",
-						state: "solid",
-						tempHigh: phaneriteMeltingPoint,
-						stateHigh: magmaName,
-						breakInto: phaneriteDustName,
-						density: phaneriteDensity * 0.55,
-						_data: [compositionFamilyName,"phanerite","igneous_gravel"],
-					};
+								//replace water rock-erosion reaction
+								elements.water.reactions[phaneriteName] = { "elem2": phaneriteGravelName, "chance": 0.00035 }
 
-					//generate water gravel-erosion reaction using rock family's sand ratio
-					elements.water.reactions[phaneriteGravelName] = { "elem2": twoPartRepeatedArray(phaneriteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
+								//create unique gravel
+								elements[phaneriteGravelName] = {
+									color: gravelizeToHex(phaneriteColor),
+									behavior: behaviors.POWDER,
+									category: "gravel",
+									state: "solid",
+									tempHigh: phaneriteMeltingPoint,
+									stateHigh: magmaName,
+									breakInto: phaneriteDustName,
+									density: phaneriteDensity * 0.55,
+									_data: [compositionFamilyName,"phanerite","igneous_gravel"],
+									metamorphite: metaphaneriteName,
+									onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
+								};
 
-					//generate unique solid version
-					elements[phaneriteWallName] = {
-						color: phaneriteColor,
-						behavior: behaviors.WALL,
-						category: "solid rock",
-						state: "solid",
-						tempHigh: phaneriteMeltingPoint,
-						stateHigh: magmaName,
-						density: phaneriteDensity,
-						hardness: 0.8,
-						breakInto: phaneriteName,
-						_data: [compositionFamilyName,"phanerite","solid_igneous_rock"],
-					};
+								elements[phaneriteDustName] = {
+									color: dustizeToHex(phaneriteName),
+									behavior: behaviors.GAS,
+									category: "rock dust",
+									state: "gas",
+									tempHigh: phaneriteMeltingPoint,
+									stateHigh: ["fire",magmaName],
+									reactions: {
+										[phaneriteDustName]: {elem1: phaneriteSandName, elem2: null, chance: 0.003},
+									},
+									density: airDensity + (phaneriteDensity / 1000), //unmeasured value
+									_data: [compositionFamilyName,"phanerite","dust"],
+								};
 
-					var aphaniteOldReactions = nicffunc_getReactions(aphaniteName);
-					elements[aphaniteName] = {
-						color: aphaniteColor,
-						behavior: behaviors.POWDER,
-						category: "rock",
-						state: "solid",
-						tempHigh: aphaniteMeltingPoint,
-						stateHigh: magmaName,
-						density: aphaniteDensity,
-						hardness: 0.75,
-						breakInto: aphaniteGravelName,
-						_data: [compositionFamilyName,"aphanite","igneous_rock"],
-					};
-					if(aphaniteOldReactions) {
-						elements[aphaniteName].reactions = aphaniteOldReactions;
-					};
+								//generate water gravel-erosion reaction using rock family's sand ratio
+								elements.water.reactions[phaneriteGravelName] = { "elem2": twoPartRepeatedArray(phaneriteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
 
-					elements[aphaniteWallName] = {
-						color: aphaniteColor,
-						behavior: behaviors.WALL,
-						category: "solid rock",
-						state: "solid",
-						tempHigh: aphaniteMeltingPoint,
-						stateHigh: magmaName,
-						density: aphaniteDensity,
-						hardness: 0.8,
-						breakInto: aphaniteName,
-						_data: [compositionFamilyName,"aphanite","solid_igneous_rock"],
-					};
+								//generate unique solid version
+								elements[phaneriteWallName] = {
+									color: phaneriteColor,
+									behavior: behaviors.WALL,
+									category: "solid rock",
+									state: "solid",
+									tempHigh: phaneriteMeltingPoint,
+									stateHigh: magmaName,
+									density: phaneriteDensity,
+									hardness: 0.8,
+									breakInto: phaneriteName,
+									_data: [compositionFamilyName,"phanerite","solid_igneous_rock"],
+									metamorphite: metaphaneriteWallName,
+									onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
+								};
 
-					elements.water.reactions[phaneriteWallName] = { "elem2": phaneriteName, "chance": 0.00035 }
-					elements.water.reactions[aphaniteWallName] = { "elem2": aphaniteName, "chance": 0.00035 }
-					elements.water.reactions[vesiculiteWallName] = { "elem2": vesiculiteName, "chance": 0.00035 }
-					elements.water.reactions[vitriteWallName] = { "elem2": vitriteName, "chance": 0.00035 }
+								elements.water.reactions[phaneriteWallName] = { "elem2": phaneriteName, "chance": 0.00035 }
 
-					elements.water.reactions[aphaniteName] = { "elem2": aphaniteGravelName, "chance": 0.00035 }
+								//Sand and sand variants
+									elements[phaneriteSandName] = {
+										color: sandizeToHex(phaneriteName,"normal"),
+										behavior: behaviors.POWDER,
+										category: "sand",
+										state: "solid",
+										tempHigh: phaneriteMeltingPoint,
+										stateHigh: vitriteName,
+										density: phaneriteDensity * 0.595,
+										_data: [compositionFamilyName,"phanerite","particulate"],
+										metamorphite: metaphaneriteName,
+										onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
+									};
 
-					elements[phaneriteSandName] = {
-						color: sandizeToHex(phaneriteName,"normal"),
-						behavior: behaviors.POWDER,
-						category: "sand",
-						state: "solid",
-						tempHigh: phaneriteMeltingPoint,
-						stateHigh: vitriteName,
-						density: phaneriteDensity * 0.595,
-						_data: [compositionFamilyName,"phanerite","particulate"],
-					};
+									//console.log(phaneriteSandName, elements[phaneriteSandName].color);
 
-					elements[phaneriteDustName] = {
-						color: dustizeToHex(phaneriteName),
-						behavior: behaviors.GAS,
-						category: "rock dust",
-						state: "gas",
-						tempHigh: phaneriteMeltingPoint,
-						stateHigh: ["fire",magmaName],
-						reactions: {
-							[phaneriteDustName]: {elem1: phaneriteSandName, elem2: null, chance: 0.003},
-						},
-						density: airDensity + (phaneriteDensity / 1000), //unmeasured value
-						_data: [compositionFamilyName,"phanerite","dust"],
-					};
+									elements["wet_" + phaneriteSandName] = {
+										color: sandizeToHex(phaneriteName,"wet"),
+										behavior: behaviors.STURDYPOWDER,
+										category: "wet sand",
+										reactions: {
+											"dirt": { "elem1":"sand", "elem2":"mud", "chance":0.0005, "oneway":true },
+										},
+										state: "solid",
+										tempHigh: 100,
+										stateHigh: "packed_" + phaneriteSandName,
+										tempLow: -50,
+										stateLow:"packed_" + phaneriteSandName,
+										density: phaneriteDensity * 0.595 + 150,
+										_data: [compositionFamilyName,"phanerite","wet_particulate"],
+										metamorphite: metaphaneriteName,
+										onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
+									};
 
-					//console.log(phaneriteSandName, elements[phaneriteSandName].color);
+									elements["packed_" + phaneriteSandName] = {
+										color: sandizeToHex(phaneriteName,"packed"),
+										behavior: behaviors.SUPPORT,
+										category: "packed sand",
+										state: "solid",
+										tempHigh: phaneriteMeltingPoint,
+										stateHigh: vitriteName,
+										density: phaneriteDensity * 0.59,
+										breakInto: phaneriteSandName,
+										_data: [compositionFamilyName,"phanerite","packed_particulate"],
+										metamorphite: metaphaneriteName,
+										onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
+									};
 
-					elements["wet_" + phaneriteSandName] = {
-						color: sandizeToHex(phaneriteName,"wet"),
-						behavior: behaviors.STURDYPOWDER,
-						category: "wet sand",
-						reactions: {
-							"dirt": { "elem1":"sand", "elem2":"mud", "chance":0.0005, "oneway":true },
-						},
-						state: "solid",
-						tempHigh: 100,
-						stateHigh: "packed_" + phaneriteSandName,
-						tempLow: -50,
-						stateLow:"packed_" + phaneriteSandName,
-						density: phaneriteDensity * 0.595 + 150,
-						_data: [compositionFamilyName,"phanerite","wet_particulate"],
-					};
+									elements.water.reactions[phaneriteSandName] = {
+										"elem1": null, "elem2": "wet_" + phaneriteSandName,
+									};
 
-					elements["packed_" + phaneriteSandName] = {
-						color: sandizeToHex(phaneriteName,"packed"),
-						behavior: behaviors.SUPPORT,
-						category: "packed sand",
-						state: "solid",
-						tempHigh: phaneriteMeltingPoint,
-						stateHigh: vitriteName,
-						density: phaneriteDensity * 0.59,
-						breakInto: phaneriteSandName,
-						_data: [compositionFamilyName,"phanerite","packed_particulate"],
-					};
+							//Metaphanerite
+								var metaphaneriteOldReactions = nicffunc_getReactions(phaneriteName);
 
-					elements.water.reactions[phaneriteSandName] = {
-						"elem1": null, "elem2": "wet_" + phaneriteSandName,
-					};
+								elements[metaphaneriteName] = {
+									color: metaphaneriteColor,
+									behavior: behaviors.POWDER,
+									category: "rock",
+									state: "solid",
+									tempHigh: metaphaneriteMeltingPoint,
+									stateHigh: magmaName,
+									density: metaphaneriteDensity,
+									hardness: 0.75,
+									breakInto: metaphaneriteGravelName,
+									_data: [compositionFamilyName,"metaphanerite","metamorphic_rock"],
+								};
+								if(metaphaneriteOldReactions) {
+									elements[metaphaneriteName].reactions = metaphaneriteOldReactions;
+								};
 
-					elements[aphaniteGravelName] = {
-						color: gravelizeToHex(aphaniteColor),
-						behavior: behaviors.POWDER,
-						category: "gravel",
-						state: "solid",
-						tempHigh: aphaniteMeltingPoint,
-						stateHigh: magmaName,
-						breakInto: aphaniteDustName,
-						density: aphaniteDensity * 0.55,
-						_data: [compositionFamilyName,"aphanite","igneous_gravel"],
-					};
+								//replace water rock-erosion reaction
+								elements.water.reactions[metaphaneriteName] = { "elem2": metaphaneriteGravelName, "chance": 0.00035 }
 
-					elements.water.reactions[aphaniteGravelName] = { "elem2": twoPartRepeatedArray(aphaniteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
+								//create unique gravel
+								elements[metaphaneriteGravelName] = {
+									color: gravelizeToHex(metaphaneriteColor),
+									behavior: behaviors.POWDER,
+									category: "gravel",
+									state: "solid",
+									tempHigh: metaphaneriteMeltingPoint,
+									stateHigh: magmaName,
+									breakInto: metaphaneriteDustName,
+									density: metaphaneriteDensity * 0.55,
+									_data: [compositionFamilyName,"metaphanerite","metamorphic_gravel"],
+								};
 
-					elements[aphaniteSandName] = {
-						color: sandizeToHex(aphaniteName,"normal"),
-						behavior: behaviors.POWDER,
-						category: "sand",
-						state: "solid",
-						tempHigh: aphaniteMeltingPoint,
-						stateHigh: vitriteName,
-						density: aphaniteDensity * 0.595,
-						_data: [compositionFamilyName,"aphanite","particulate"],
-					};
+								elements[metaphaneriteDustName] = {
+									color: dustizeToHex(metaphaneriteName),
+									behavior: behaviors.GAS,
+									category: "rock dust",
+									state: "gas",
+									tempHigh: metaphaneriteMeltingPoint,
+									stateHigh: ["fire",magmaName],
+									reactions: {
+										[metaphaneriteDustName]: {elem1: metaphaneriteSandName, elem2: null, chance: 0.003},
+									},
+									density: airDensity + (metaphaneriteDensity / 1000), //unmeasured value
+									_data: [compositionFamilyName,"metaphanerite","dust"],
+								};
 
-					elements[aphaniteDustName] = {
-						color: dustizeToHex(aphaniteName),
-						behavior: behaviors.GAS,
-						category: "rock dust",
-						state: "gas",
-						tempHigh: aphaniteMeltingPoint,
-						stateHigh: ["fire",magmaName],
-						reactions: {
-							[aphaniteDustName]: {elem1: aphaniteSandName, elem2: null, chance: 0.003},
-						},
-						density: airDensity + (aphaniteDensity / 1000), //unmeasured value
-						_data: [compositionFamilyName,"aphanite","dust"],
-					};
+								//generate water gravel-erosion reaction using rock family's sand ratio
+								elements.water.reactions[metaphaneriteGravelName] = { "elem2": twoPartRepeatedArray(metaphaneriteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
 
-					elements["wet_" + aphaniteSandName] = {
-						color: sandizeToHex(aphaniteName,"wet"),
-						behavior: behaviors.STURDYPOWDER,
-						category: "wet sand",
-						reactions: {
-							"dirt": { "elem1":"sand", "elem2":"mud", "chance":0.0005, "oneway":true },
-						},
-						state: "solid",
-						tempHigh: 100,
-						stateHigh: "packed_" + aphaniteSandName,
-						tempLow: -50,
-						stateLow:"packed_" + aphaniteSandName,
-						density: aphaniteDensity * 0.595 + 150,
-						_data: [compositionFamilyName,"aphanite","wet_particulate"],
-					};
+								//generate unique solid version
+								elements[metaphaneriteWallName] = {
+									color: metaphaneriteColor,
+									behavior: behaviors.WALL,
+									category: "solid rock",
+									state: "solid",
+									tempHigh: metaphaneriteMeltingPoint,
+									stateHigh: magmaName,
+									density: metaphaneriteDensity,
+									hardness: 0.8,
+									breakInto: metaphaneriteName,
+									_data: [compositionFamilyName,"metaphanerite","solid_metamorphic_rock"],
+								};
 
-					elements["packed_" + aphaniteSandName] = {
-						color: sandizeToHex(aphaniteName,"packed"),
-						behavior: behaviors.SUPPORT,
-						category: "packed sand",
-						state: "solid",
-						tempHigh: aphaniteMeltingPoint,
-						stateHigh: vitriteName,
-						density: aphaniteDensity * 0.59,
-						breakInto: aphaniteSandName,
-						_data: [compositionFamilyName,"aphanite","packed_particulate"],
-					};
+								elements.water.reactions[metaphaneriteWallName] = { "elem2": metaphaneriteName, "chance": 0.00035 }
 
-					elements.water.reactions[aphaniteSandName] = {
-						"elem1": null, "elem2": "wet_" + aphaniteSandName,
-					};
+								//Sand and sand variants
+									elements[metaphaneriteSandName] = {
+										color: sandizeToHex(metaphaneriteName,"normal"),
+										behavior: behaviors.POWDER,
+										category: "sand",
+										state: "solid",
+										tempHigh: metaphaneriteMeltingPoint,
+										stateHigh: vitriteName,
+										density: metaphaneriteDensity * 0.595,
+										_data: [compositionFamilyName,"metaphanerite","particulate"],
+									};
 
-					elements[vesiculiteName] = {
-						color: vesiculiteColor,
-						behavior: behaviors.POWDER,
-						category: "rock",
-						state: "solid",
-						tempHigh: vesiculiteMeltingPoint,
-						stateHigh: magmaName,
-						density: vesiculiteDensity,
-						hardness: 0.75,
-						breakInto: vesiculiteGravelName,
-						_data: [compositionFamilyName,"vesiculite","igneous_rock"],
-					};
+									//console.log(metaphaneriteSandName, elements[metaphaneriteSandName].color);
 
-					elements[vesiculiteWallName] = {
-						color: vesiculiteColor,
-						behavior: behaviors.WALL,
-						category: "solid rock",
-						state: "solid",
-						tempHigh: vesiculiteMeltingPoint,
-						stateHigh: magmaName,
-						density: vesiculiteDensity,
-						hardness: 0.8,
-						breakInto: vesiculiteName,
-						_data: [compositionFamilyName,"vesiculite","solid_igneous_rock"],
-					};
+									elements["wet_" + metaphaneriteSandName] = {
+										color: sandizeToHex(metaphaneriteName,"wet"),
+										behavior: behaviors.STURDYPOWDER,
+										category: "wet sand",
+										reactions: {
+											"dirt": { "elem1":"sand", "elem2":"mud", "chance":0.0005, "oneway":true },
+										},
+										state: "solid",
+										tempHigh: 100,
+										stateHigh: "packed_" + metaphaneriteSandName,
+										tempLow: -50,
+										stateLow:"packed_" + metaphaneriteSandName,
+										density: metaphaneriteDensity * 0.595 + 150,
+										_data: [compositionFamilyName,"metaphanerite","wet_particulate"],
+									};
 
-					elements.water.reactions[vesiculiteName] = { "elem2": vesiculiteGravelName, "chance": 0.00035 }
+									elements["packed_" + metaphaneriteSandName] = {
+										color: sandizeToHex(metaphaneriteName,"packed"),
+										behavior: behaviors.SUPPORT,
+										category: "packed sand",
+										state: "solid",
+										tempHigh: metaphaneriteMeltingPoint,
+										stateHigh: vitriteName,
+										density: metaphaneriteDensity * 0.59,
+										breakInto: metaphaneriteSandName,
+										_data: [compositionFamilyName,"metaphanerite","packed_particulate"],
+									};
 
-					elements[vesiculiteGravelName] = {
-						color: gravelizeToHex(vesiculiteColor),
-						behavior: behaviors.POWDER,
-						category: "gravel",
-						state: "solid",
-						tempHigh: vesiculiteMeltingPoint,
-						stateHigh: magmaName,
-						breakInto: vesiculiteDustName,
-						density: vesiculiteDensity * 3.2,
-						_data: [compositionFamilyName,"vesiculite","igneous_gravel"],
-					};
+									elements.water.reactions[metaphaneriteSandName] = {
+										"elem1": null, "elem2": "wet_" + metaphaneriteSandName,
+									};
 
-					elements.water.reactions[vesiculiteGravelName] = { "elem2": twoPartRepeatedArray(vesiculiteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
+							//Aphanite
+								var aphaniteOldReactions = nicffunc_getReactions(aphaniteName);
 
-					elements[vesiculiteSandName] = {
-						color: sandizeToHex(vesiculiteName,"normal"),
-						behavior: behaviors.POWDER,
-						category: "sand",
-						state: "solid",
-						tempHigh: vesiculiteMeltingPoint,
-						stateHigh: vitriteName,
-						density: vesiculiteDensity * 1.9,
-						_data: [compositionFamilyName,"vesiculite","particulate"],
-					};
+								elements[aphaniteName] = {
+									color: aphaniteColor,
+									behavior: behaviors.POWDER,
+									category: "rock",
+									state: "solid",
+									tempHigh: aphaniteMeltingPoint,
+									stateHigh: magmaName,
+									density: aphaniteDensity,
+									hardness: 0.75,
+									breakInto: aphaniteGravelName,
+									_data: [compositionFamilyName,"aphanite","igneous_rock"],
+									metamorphite: metaaphaniteName,
+									onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
+								};
+								if(aphaniteOldReactions) {
+									elements[aphaniteName].reactions = aphaniteOldReactions;
+								};
 
-					elements[vesiculiteDustName] = {
-						color: dustizeToHex(vesiculiteName),
-						behavior: behaviors.GAS,
-						category: "rock dust",
-						state: "gas",
-						tempHigh: vesiculiteMeltingPoint,
-						stateHigh: ["fire",magmaName],
-						reactions: {
-							[vesiculiteDustName]: {elem1: vesiculiteSandName, elem2: null, chance: 0.003},
-						},
-						density: airDensity + (vesiculiteDensity / 800), //unmeasured value
-						_data: [compositionFamilyName,"vesiculite","dust"],
-					};
+								elements.water.reactions[aphaniteName] = { "elem2": aphaniteGravelName, "chance": 0.00035 }
 
-					elements["wet_" + vesiculiteSandName] = {
-						color: sandizeToHex(vesiculiteName,"wet"),
-						behavior: behaviors.STURDYPOWDER,
-						category: "wet sand",
-						reactions: {
-							"dirt": { "elem1":"sand", "elem2":"mud", "chance":0.0005, "oneway":true },
-						},
-						state: "solid",
-						tempHigh: 100,
-						stateHigh: "packed_" + vesiculiteSandName,
-						tempLow: -50,
-						stateLow:"packed_" + vesiculiteSandName,
-						density: vesiculiteDensity * 1.9 + 150,
-						_data: [compositionFamilyName,"vesiculite","wet_particulate"],
-					};
+								elements[aphaniteGravelName] = {
+									color: gravelizeToHex(aphaniteColor),
+									behavior: behaviors.POWDER,
+									category: "gravel",
+									state: "solid",
+									tempHigh: aphaniteMeltingPoint,
+									stateHigh: magmaName,
+									breakInto: aphaniteDustName,
+									density: aphaniteDensity * 0.55,
+									_data: [compositionFamilyName,"aphanite","igneous_gravel"],
+									metamorphite: metaaphaniteName,
+									onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
+								};
 
-					elements["packed_" + vesiculiteSandName] = {
-						color: sandizeToHex(vesiculiteName,"packed"),
-						behavior: behaviors.SUPPORT,
-						category: "packed sand",
-						state: "solid",
-						tempHigh: vesiculiteMeltingPoint,
-						stateHigh: vitriteName,
-						density: vesiculiteDensity * 1.888,
-						breakInto: vesiculiteSandName,
-						_data: [compositionFamilyName,"vesiculite","packed_particulate"],
-					};
+								elements[aphaniteDustName] = {
+									color: dustizeToHex(aphaniteName),
+									behavior: behaviors.GAS,
+									category: "rock dust",
+									state: "gas",
+									tempHigh: aphaniteMeltingPoint,
+									stateHigh: ["fire",magmaName],
+									reactions: {
+										[aphaniteDustName]: {elem1: aphaniteSandName, elem2: null, chance: 0.003},
+									},
+									density: airDensity + (aphaniteDensity / 1000), //unmeasured value
+									_data: [compositionFamilyName,"aphanite","dust"],
+								};
 
-					elements.water.reactions[vesiculiteSandName] = {
-						"elem1": null, "elem2": "wet_" + vesiculiteSandName,
-					};
+								elements.water.reactions[aphaniteGravelName] = { "elem2": twoPartRepeatedArray(aphaniteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
 
-					elements[vitriteName] = {
-						color: vitriteColor,
-						behavior: behaviors.POWDER,
-						category: "rock",
-						state: "solid",
-						tempHigh: vitriteMeltingPoint,
-						stateHigh: magmaName,
-						density: vitriteDensity,
-						hardness: 0.75,
-						breakInto: vitriteGravelName,
-						_data: [compositionFamilyName,"vitrite","igneous_rock"],
-					};
+								elements[aphaniteWallName] = {
+									color: aphaniteColor,
+									behavior: behaviors.WALL,
+									category: "solid rock",
+									state: "solid",
+									tempHigh: aphaniteMeltingPoint,
+									stateHigh: magmaName,
+									density: aphaniteDensity,
+									hardness: 0.8,
+									breakInto: aphaniteName,
+									_data: [compositionFamilyName,"aphanite","solid_igneous_rock"],
+									metamorphite: metaaphaniteWallName,
+									onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
+								};
 
-					elements[vitriteWallName] = {
-						color: vitriteColor,
-						behavior: behaviors.WALL,
-						category: "solid rock",
-						state: "solid",
-						tempHigh: vitriteMeltingPoint,
-						stateHigh: magmaName,
-						density: vitriteDensity,
-						hardness: 0.8,
-						breakInto: vitriteName,
-						_data: [compositionFamilyName,"vitrite","solid_igneous_rock"],
-					};
+								elements.water.reactions[aphaniteWallName] = { "elem2": aphaniteName, "chance": 0.00035 }
 
-					elements.water.reactions[vitriteName] = { "elem2": vitriteGravelName, "chance": 0.00035 }
+								//Sand and sand variants
+									elements[aphaniteSandName] = {
+										color: sandizeToHex(aphaniteName,"normal"),
+										behavior: behaviors.POWDER,
+										category: "sand",
+										state: "solid",
+										tempHigh: aphaniteMeltingPoint,
+										stateHigh: vitriteName,
+										density: aphaniteDensity * 0.595,
+										_data: [compositionFamilyName,"aphanite","particulate"],
+										metamorphite: metaaphaniteName,
+										onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
+									};
 
-					elements[vitriteGravelName] = {
-						color: gravelizeToHex(vitriteColor),
-						behavior: behaviors.POWDER,
-						category: "gravel",
-						state: "solid",
-						tempHigh: vitriteMeltingPoint,
-						stateHigh: magmaName,
-						breakInto: vitriteDustName,
-						density: vitriteDensity * 0.55,
-						_data: [compositionFamilyName,"vitrite","glass_shard"],
-					};
+									elements["wet_" + aphaniteSandName] = {
+										color: sandizeToHex(aphaniteName,"wet"),
+										behavior: behaviors.STURDYPOWDER,
+										category: "wet sand",
+										reactions: {
+											"dirt": { "elem1":"sand", "elem2":"mud", "chance":0.0005, "oneway":true },
+										},
+										state: "solid",
+										tempHigh: 100,
+										stateHigh: "packed_" + aphaniteSandName,
+										tempLow: -50,
+										stateLow:"packed_" + aphaniteSandName,
+										density: aphaniteDensity * 0.595 + 150,
+										_data: [compositionFamilyName,"aphanite","wet_particulate"],
+										metamorphite: metaaphaniteName,
+										onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
+									};
 
-					elements.water.reactions[vitriteGravelName] = { "elem2": twoPartRepeatedArray(vitriteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
+									elements["packed_" + aphaniteSandName] = {
+										color: sandizeToHex(aphaniteName,"packed"),
+										behavior: behaviors.SUPPORT,
+										category: "packed sand",
+										state: "solid",
+										tempHigh: aphaniteMeltingPoint,
+										stateHigh: vitriteName,
+										density: aphaniteDensity * 0.59,
+										breakInto: aphaniteSandName,
+										_data: [compositionFamilyName,"aphanite","packed_particulate"],
+										metamorphite: metaaphaniteName,
+										onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
+									};
 
-					elements[vitriteSandName] = {
-						color: sandizeToHex(vitriteName,"normal"),
-						behavior: behaviors.POWDER,
-						category: "sand",
-						state: "solid",
-						tempHigh: vitriteMeltingPoint,
-						stateHigh: vitriteName,
-						density: vitriteDensity * 0.595,
-						_data: [compositionFamilyName,"vitrite","particulate"],
-					};
+									elements.water.reactions[aphaniteSandName] = {
+										"elem1": null, "elem2": "wet_" + aphaniteSandName,
+									};
 
-					elements[vitriteDustName] = {
-						color: dustizeToHex(vitriteName),
-						behavior: behaviors.GAS,
-						category: "rock dust",
-						state: "gas",
-						tempHigh: vitriteMeltingPoint,
-						stateHigh: ["fire",magmaName],
-						reactions: {
-							[vitriteDustName]: {elem1: vitriteSandName, elem2: null, chance: 0.003},
-						},
-						density: airDensity + (vitriteDensity / 1000), //unmeasured value
-						_data: [compositionFamilyName,"vitrite","dust"],
-					};
+							//Metaaphanite
+								var metaaphaniteOldReactions = nicffunc_getReactions(phaneriteName);
 
-					elements["wet_" + vitriteSandName] = {
-						color: sandizeToHex(vitriteName,"wet"),
-						behavior: behaviors.STURDYPOWDER,
-						category: "wet sand",
-						reactions: {
-							"dirt": { "elem1":"sand", "elem2":"mud", "chance":0.0005, "oneway":true },
-						},
-						state: "solid",
-						tempHigh: 100,
-						stateHigh: "packed_" + vitriteSandName,
-						tempLow: -50,
-						stateLow:"packed_" + vitriteSandName,
-						density: vitriteDensity * 0.595 + 150,
-						_data: [compositionFamilyName,"vitrite","wet_particulate"],
-					};
+								elements[metaaphaniteName] = {
+									color: metaaphaniteColor,
+									behavior: behaviors.POWDER,
+									category: "rock",
+									state: "solid",
+									tempHigh: metaaphaniteMeltingPoint,
+									stateHigh: magmaName,
+									density: metaaphaniteDensity,
+									hardness: 0.75,
+									breakInto: metaaphaniteGravelName,
+									_data: [compositionFamilyName,"metaaphanite","metamorphic_rock"],
+								};
+								if(metaaphaniteOldReactions) {
+									elements[metaaphaniteName].reactions = metaaphaniteOldReactions;
+								};
 
-					elements["packed_" + vitriteSandName] = {
-						color: sandizeToHex(vitriteName,"packed"),
-						behavior: behaviors.SUPPORT,
-						category: "packed sand",
-						state: "solid",
-						tempHigh: vitriteMeltingPoint,
-						stateHigh: vitriteName,
-						density: vitriteDensity * 0.59,
-						breakInto: vitriteSandName,
-						_data: [compositionFamilyName,"vitrite","packed_particulate"],
-					};
+								//replace water rock-erosion reaction
+								elements.water.reactions[metaaphaniteName] = { "elem2": metaaphaniteGravelName, "chance": 0.00035 }
 
-					elements.water.reactions[vitriteSandName] = {
-						"elem1": null, "elem2": "wet_" + vitriteSandName,
-					};
+								//create unique gravel
+								elements[metaaphaniteGravelName] = {
+									color: gravelizeToHex(metaaphaniteColor),
+									behavior: behaviors.POWDER,
+									category: "gravel",
+									state: "solid",
+									tempHigh: metaaphaniteMeltingPoint,
+									stateHigh: magmaName,
+									breakInto: metaaphaniteDustName,
+									density: metaaphaniteDensity * 0.55,
+									_data: [compositionFamilyName,"metaaphanite","metamorphic_gravel"],
+								};
 
-					var magmaOldReactions = nicffunc_getReactions(magmaName);
-					var magmaOldColor = elements.magma.color;
-					elements[magmaName] = {
-						reactions: {
-							"ash": { "elem1": null, "elem2": "molten_slag" },
-							"dust": { "elem1": null, "elem2": "molten_slag" },
-						},
-						_magmaCoolingPassToElement: {
-							vitreous: [vitriteCoolingRateThreshold,vitriteName],
-							aphanitic: [aphaniteCoolingRateThreshold,aphaniteName],
-							phaneritic: [Infinity,phaneriteName],
-							meltingPoints: {
-								vitreous: vitriteMeltingPoint,
-								vesicular: vesiculiteMeltingPoint,
-								aphanitic: aphaniteMeltingPoint,
-								phaneritic: phaneriteMeltingPoint,
+								elements[metaaphaniteDustName] = {
+									color: dustizeToHex(metaaphaniteName),
+									behavior: behaviors.GAS,
+									category: "rock dust",
+									state: "gas",
+									tempHigh: metaaphaniteMeltingPoint,
+									stateHigh: ["fire",magmaName],
+									reactions: {
+										[metaaphaniteDustName]: {elem1: metaaphaniteSandName, elem2: null, chance: 0.003},
+									},
+									density: airDensity + (metaaphaniteDensity / 1000), //unmeasured value
+									_data: [compositionFamilyName,"metaaphanite","dust"],
+								};
+
+								//generate water gravel-erosion reaction using rock family's sand ratio
+								elements.water.reactions[metaaphaniteGravelName] = { "elem2": twoPartRepeatedArray(metaaphaniteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
+
+								//generate unique solid version
+								elements[metaaphaniteWallName] = {
+									color: metaaphaniteColor,
+									behavior: behaviors.WALL,
+									category: "solid rock",
+									state: "solid",
+									tempHigh: metaaphaniteMeltingPoint,
+									stateHigh: magmaName,
+									density: metaaphaniteDensity,
+									hardness: 0.8,
+									breakInto: metaaphaniteName,
+									_data: [compositionFamilyName,"metaaphanite","solid_metamorphic_rock"],
+								};
+
+								elements.water.reactions[metaaphaniteWallName] = { "elem2": metaaphaniteName, "chance": 0.00035 }
+
+								//Sand and sand variants
+									elements[metaaphaniteSandName] = {
+										color: sandizeToHex(metaaphaniteName,"normal"),
+										behavior: behaviors.POWDER,
+										category: "sand",
+										state: "solid",
+										tempHigh: metaaphaniteMeltingPoint,
+										stateHigh: vitriteName,
+										density: metaaphaniteDensity * 0.595,
+										_data: [compositionFamilyName,"metaaphanite","particulate"],
+									};
+
+									//console.log(metaaphaniteSandName, elements[metaaphaniteSandName].color);
+
+									elements["wet_" + metaaphaniteSandName] = {
+										color: sandizeToHex(metaaphaniteName,"wet"),
+										behavior: behaviors.STURDYPOWDER,
+										category: "wet sand",
+										reactions: {
+											"dirt": { "elem1":"sand", "elem2":"mud", "chance":0.0005, "oneway":true },
+										},
+										state: "solid",
+										tempHigh: 100,
+										stateHigh: "packed_" + metaaphaniteSandName,
+										tempLow: -50,
+										stateLow:"packed_" + metaaphaniteSandName,
+										density: metaaphaniteDensity * 0.595 + 150,
+										_data: [compositionFamilyName,"metaaphanite","wet_particulate"],
+									};
+
+									elements["packed_" + metaaphaniteSandName] = {
+										color: sandizeToHex(metaaphaniteName,"packed"),
+										behavior: behaviors.SUPPORT,
+										category: "packed sand",
+										state: "solid",
+										tempHigh: metaaphaniteMeltingPoint,
+										stateHigh: vitriteName,
+										density: metaaphaniteDensity * 0.59,
+										breakInto: metaaphaniteSandName,
+										_data: [compositionFamilyName,"metaaphanite","packed_particulate"],
+									};
+
+									elements.water.reactions[metaaphaniteSandName] = {
+										"elem1": null, "elem2": "wet_" + metaaphaniteSandName,
+									};
+
+							//Vesiculite
+								elements[vesiculiteName] = {
+									color: vesiculiteColor,
+									behavior: behaviors.POWDER,
+									category: "rock",
+									state: "solid",
+									tempHigh: vesiculiteMeltingPoint,
+									stateHigh: magmaName,
+									density: vesiculiteDensity,
+									hardness: 0.75,
+									breakInto: vesiculiteGravelName,
+									_data: [compositionFamilyName,"vesiculite","igneous_rock"],
+									maxColorOffset: 40,
+									metamorphite: metavesiculiteName,
+									onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
+								};
+
+								elements.water.reactions[vesiculiteName] = { "elem2": vesiculiteGravelName, "chance": 0.00035 }
+
+								elements[vesiculiteGravelName] = {
+									color: gravelizeToHex(vesiculiteColor),
+									behavior: behaviors.POWDER,
+									category: "gravel",
+									state: "solid",
+									tempHigh: vesiculiteMeltingPoint,
+									stateHigh: magmaName,
+									breakInto: vesiculiteDustName,
+									density: vesiculiteDensity * 3.2,
+									_data: [compositionFamilyName,"vesiculite","igneous_gravel"],
+									maxColorOffset: 40,
+									metamorphite: metavesiculiteName,
+									onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
+								};
+
+								elements[vesiculiteDustName] = {
+									color: dustizeToHex(vesiculiteName),
+									behavior: behaviors.GAS,
+									category: "rock dust",
+									state: "gas",
+									tempHigh: vesiculiteMeltingPoint,
+									stateHigh: ["fire",magmaName],
+									reactions: {
+										[vesiculiteDustName]: {elem1: vesiculiteSandName, elem2: null, chance: 0.003},
+									},
+									density: airDensity + (vesiculiteDensity / 800), //unmeasured value
+									_data: [compositionFamilyName,"vesiculite","dust"],
+								};
+
+								elements.water.reactions[vesiculiteGravelName] = { "elem2": twoPartRepeatedArray(vesiculiteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
+
+								elements[vesiculiteWallName] = {
+									color: vesiculiteColor,
+									behavior: behaviors.WALL,
+									category: "solid rock",
+									state: "solid",
+									tempHigh: vesiculiteMeltingPoint,
+									stateHigh: magmaName,
+									density: vesiculiteDensity,
+									hardness: 0.8,
+									breakInto: vesiculiteName,
+									_data: [compositionFamilyName,"vesiculite","solid_igneous_rock"],
+									maxColorOffset: 40,
+									metamorphite: metavesiculiteWallName,
+									onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
+
+								};
+
+								elements.water.reactions[vesiculiteWallName] = { "elem2": vesiculiteName, "chance": 0.00035 }
+
+								//Sand and sand variants
+									elements[vesiculiteSandName] = {
+										color: sandizeToHex(vesiculiteName,"normal"),
+										behavior: behaviors.POWDER,
+										category: "sand",
+										state: "solid",
+										tempHigh: vesiculiteMeltingPoint,
+										stateHigh: vitriteName,
+										density: vesiculiteDensity * 1.9,
+										_data: [compositionFamilyName,"vesiculite","particulate"],
+										metamorphite: metavesiculiteName,
+										onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
+									};
+
+									elements["wet_" + vesiculiteSandName] = {
+										color: sandizeToHex(vesiculiteName,"wet"),
+										behavior: behaviors.STURDYPOWDER,
+										category: "wet sand",
+										reactions: {
+											"dirt": { "elem1":"sand", "elem2":"mud", "chance":0.0005, "oneway":true },
+										},
+										state: "solid",
+										tempHigh: 100,
+										stateHigh: "packed_" + vesiculiteSandName,
+										tempLow: -50,
+										stateLow:"packed_" + vesiculiteSandName,
+										density: vesiculiteDensity * 1.9 + 150,
+										_data: [compositionFamilyName,"vesiculite","wet_particulate"],
+										metamorphite: metavesiculiteName,
+										onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
+									};
+
+									elements["packed_" + vesiculiteSandName] = {
+										color: sandizeToHex(vesiculiteName,"packed"),
+										behavior: behaviors.SUPPORT,
+										category: "packed sand",
+										state: "solid",
+										tempHigh: vesiculiteMeltingPoint,
+										stateHigh: vitriteName,
+										density: vesiculiteDensity * 1.888,
+										breakInto: vesiculiteSandName,
+										_data: [compositionFamilyName,"vesiculite","packed_particulate"],
+										metamorphite: metavesiculiteName,
+										onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
+									};
+
+									elements.water.reactions[vesiculiteSandName] = {
+										"elem1": null, "elem2": "wet_" + vesiculiteSandName,
+									};
+
+							//Metavesiculite
+								elements[metavesiculiteName] = {
+									color: metavesiculiteColor,
+									behavior: behaviors.POWDER,
+									category: "rock",
+									state: "solid",
+									tempHigh: metavesiculiteMeltingPoint,
+									stateHigh: magmaName,
+									density: metavesiculiteDensity,
+									hardness: 0.75,
+									breakInto: metavesiculiteGravelName,
+									_data: [compositionFamilyName,"metavesiculite","igneous_rock"],
+									maxColorOffset: 35
+								};
+
+								elements.water.reactions[metavesiculiteName] = { "elem2": metavesiculiteGravelName, "chance": 0.00035 }
+
+								elements[metavesiculiteGravelName] = {
+									color: gravelizeToHex(metavesiculiteColor),
+									behavior: behaviors.POWDER,
+									category: "gravel",
+									state: "solid",
+									tempHigh: metavesiculiteMeltingPoint,
+									stateHigh: magmaName,
+									breakInto: metavesiculiteDustName,
+									density: metavesiculiteDensity * 3.2,
+									_data: [compositionFamilyName,"metavesiculite","metamorphic_gravel"],
+									maxColorOffset: 35
+								};
+
+								elements[metavesiculiteDustName] = {
+									color: dustizeToHex(metavesiculiteName),
+									behavior: behaviors.GAS,
+									category: "rock dust",
+									state: "gas",
+									tempHigh: metavesiculiteMeltingPoint,
+									stateHigh: ["fire",magmaName],
+									reactions: {
+										[metavesiculiteDustName]: {elem1: metavesiculiteSandName, elem2: null, chance: 0.003},
+									},
+									density: airDensity + (metavesiculiteDensity / 800), //unmeasured value
+									_data: [compositionFamilyName,"metavesiculite","dust"],
+								};
+
+								elements.water.reactions[metavesiculiteGravelName] = { "elem2": twoPartRepeatedArray(metavesiculiteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
+
+								elements[metavesiculiteWallName] = {
+									color: metavesiculiteColor,
+									behavior: behaviors.WALL,
+									category: "solid rock",
+									state: "solid",
+									tempHigh: metavesiculiteMeltingPoint,
+									stateHigh: magmaName,
+									density: metavesiculiteDensity,
+									hardness: 0.8,
+									breakInto: metavesiculiteName,
+									_data: [compositionFamilyName,"metavesiculite","solid_metamorphic_rock"],
+									maxColorOffset: 35
+								};
+
+								elements.water.reactions[metavesiculiteWallName] = { "elem2": metavesiculiteName, "chance": 0.00035 }
+
+								//Sand and sand variants
+									elements[metavesiculiteSandName] = {
+										color: sandizeToHex(metavesiculiteName,"normal"),
+										behavior: behaviors.POWDER,
+										category: "sand",
+										state: "solid",
+										tempHigh: metavesiculiteMeltingPoint,
+										stateHigh: vitriteName,
+										density: metavesiculiteDensity * 1.9,
+										_data: [compositionFamilyName,"metavesiculite","particulate"],
+									};
+
+									elements["wet_" + metavesiculiteSandName] = {
+										color: sandizeToHex(metavesiculiteName,"wet"),
+										behavior: behaviors.STURDYPOWDER,
+										category: "wet sand",
+										reactions: {
+											"dirt": { "elem1":"sand", "elem2":"mud", "chance":0.0005, "oneway":true },
+										},
+										state: "solid",
+										tempHigh: 100,
+										stateHigh: "packed_" + metavesiculiteSandName,
+										tempLow: -50,
+										stateLow:"packed_" + metavesiculiteSandName,
+										density: metavesiculiteDensity * 1.9 + 150,
+										_data: [compositionFamilyName,"metavesiculite","wet_particulate"],
+									};
+
+									elements["packed_" + metavesiculiteSandName] = {
+										color: sandizeToHex(metavesiculiteName,"packed"),
+										behavior: behaviors.SUPPORT,
+										category: "packed sand",
+										state: "solid",
+										tempHigh: metavesiculiteMeltingPoint,
+										stateHigh: vitriteName,
+										density: metavesiculiteDensity * 1.888,
+										breakInto: metavesiculiteSandName,
+										_data: [compositionFamilyName,"metavesiculite","packed_particulate"],
+									};
+
+									elements.water.reactions[metavesiculiteSandName] = {
+										"elem1": null, "elem2": "wet_" + metavesiculiteSandName,
+									};
+
+							//Vitrite
+								elements[vitriteName] = {
+									color: vitriteColor,
+									behavior: behaviors.POWDER,
+									category: "rock",
+									state: "solid",
+									tempHigh: vitriteMeltingPoint,
+									stateHigh: magmaName,
+									density: vitriteDensity,
+									hardness: 0.75,
+									breakInto: vitriteGravelName,
+									_data: [compositionFamilyName,"vitrite","igneous_rock"],
+									metamorphite: metavitriteName,
+									onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
+								};
+
+								elements.water.reactions[vitriteName] = { "elem2": vitriteGravelName, "chance": 0.00035 }
+
+								elements[vitriteGravelName] = {
+									color: gravelizeToHex(vitriteColor),
+									behavior: behaviors.POWDER,
+									category: "gravel",
+									state: "solid",
+									tempHigh: vitriteMeltingPoint,
+									stateHigh: magmaName,
+									breakInto: vitriteDustName,
+									density: vitriteDensity * 0.55,
+									_data: [compositionFamilyName,"vitrite","glass_shard"],
+									metamorphite: metavitriteName,
+									onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
+								};
+
+								elements[vitriteDustName] = {
+									color: dustizeToHex(vitriteName),
+									behavior: behaviors.GAS,
+									category: "rock dust",
+									state: "gas",
+									tempHigh: vitriteMeltingPoint,
+									stateHigh: ["fire",magmaName],
+									reactions: {
+										[vitriteDustName]: {elem1: vitriteSandName, elem2: null, chance: 0.003},
+									},
+									density: airDensity + (vitriteDensity / 1000), //unmeasured value
+									_data: [compositionFamilyName,"vitrite","dust"],
+								};
+
+								elements.water.reactions[vitriteGravelName] = { "elem2": twoPartRepeatedArray(vitriteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
+
+								elements[vitriteWallName] = {
+									color: vitriteColor,
+									behavior: behaviors.WALL,
+									category: "solid rock",
+									state: "solid",
+									tempHigh: vitriteMeltingPoint,
+									stateHigh: magmaName,
+									density: vitriteDensity,
+									hardness: 0.8,
+									breakInto: vitriteName,
+									_data: [compositionFamilyName,"vitrite","solid_igneous_rock"],
+									metamorphite: metavitriteWallName,
+									onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
+								};
+
+								elements.water.reactions[vitriteWallName] = { "elem2": vitriteName, "chance": 0.00035 }
+								
+								//Sand and sand variants
+									elements[vitriteSandName] = {
+										color: sandizeToHex(vitriteName,"normal"),
+										behavior: behaviors.POWDER,
+										category: "sand",
+										state: "solid",
+										tempHigh: vitriteMeltingPoint,
+										stateHigh: vitriteName,
+										density: vitriteDensity * 0.595,
+										_data: [compositionFamilyName,"vitrite","particulate"],
+										metamorphite: metavitriteName,
+										onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
+									};
+
+									elements["wet_" + vitriteSandName] = {
+										color: sandizeToHex(vitriteName,"wet"),
+										behavior: behaviors.STURDYPOWDER,
+										category: "wet sand",
+										reactions: {
+											"dirt": { "elem1":"sand", "elem2":"mud", "chance":0.0005, "oneway":true },
+										},
+										state: "solid",
+										tempHigh: 100,
+										stateHigh: "packed_" + vitriteSandName,
+										tempLow: -50,
+										stateLow:"packed_" + vitriteSandName,
+										density: vitriteDensity * 0.595 + 150,
+										_data: [compositionFamilyName,"vitrite","wet_particulate"],
+										metamorphite: metavitriteName,
+										onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
+									};
+
+									elements["packed_" + vitriteSandName] = {
+										color: sandizeToHex(vitriteName,"packed"),
+										behavior: behaviors.SUPPORT,
+										category: "packed sand",
+										state: "solid",
+										tempHigh: vitriteMeltingPoint,
+										stateHigh: vitriteName,
+										density: vitriteDensity * 0.59,
+										breakInto: vitriteSandName,
+										_data: [compositionFamilyName,"vitrite","packed_particulate"],
+										metamorphite: metavitriteName,
+										onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
+									};
+
+									elements.water.reactions[vitriteSandName] = {
+										"elem1": null, "elem2": "wet_" + vitriteSandName,
+									};
+							
+							//Metavitrite
+								elements[metavitriteName] = {
+									color: metavitriteColor,
+									behavior: behaviors.POWDER,
+									category: "rock",
+									state: "solid",
+									tempHigh: metavitriteMeltingPoint,
+									stateHigh: magmaName,
+									density: metavitriteDensity,
+									hardness: 0.75,
+									breakInto: metavitriteGravelName,
+									_data: [compositionFamilyName,"metavitrite","metamorphic_rock"],
+								};
+
+								elements.water.reactions[metavitriteName] = { "elem2": metavitriteGravelName, "chance": 0.00035 }
+
+								elements[metavitriteGravelName] = {
+									color: gravelizeToHex(metavitriteColor),
+									behavior: behaviors.POWDER,
+									category: "gravel",
+									state: "solid",
+									tempHigh: metavitriteMeltingPoint,
+									stateHigh: magmaName,
+									breakInto: metavitriteDustName,
+									density: metavitriteDensity * 0.55,
+									_data: [compositionFamilyName,"metavitrite","glass_shard"],
+								};
+
+								elements[metavitriteDustName] = {
+									color: dustizeToHex(metavitriteName),
+									behavior: behaviors.GAS,
+									category: "rock dust",
+									state: "gas",
+									tempHigh: metavitriteMeltingPoint,
+									stateHigh: ["fire",magmaName],
+									reactions: {
+										[metavitriteDustName]: {elem1: metavitriteSandName, elem2: null, chance: 0.003},
+									},
+									density: airDensity + (metavitriteDensity / 1000), //unmeasured value
+									_data: [compositionFamilyName,"metavitrite","dust"],
+								};
+
+								elements.water.reactions[metavitriteGravelName] = { "elem2": twoPartRepeatedArray(metavitriteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
+
+								elements[metavitriteWallName] = {
+									color: metavitriteColor,
+									behavior: behaviors.WALL,
+									category: "solid rock",
+									state: "solid",
+									tempHigh: metavitriteMeltingPoint,
+									stateHigh: magmaName,
+									density: metavitriteDensity,
+									hardness: 0.8,
+									breakInto: metavitriteName,
+									_data: [compositionFamilyName,"metavitrite","solid_metamorphic_rock"],
+								};
+
+								elements.water.reactions[metavitriteWallName] = { "elem2": metavitriteName, "chance": 0.00035 }
+								
+								//Sand and sand variants
+									elements[metavitriteSandName] = {
+										color: sandizeToHex(metavitriteName,"normal"),
+										behavior: behaviors.POWDER,
+										category: "sand",
+										state: "solid",
+										tempHigh: metavitriteMeltingPoint,
+										stateHigh: metavitriteName,
+										density: metavitriteDensity * 0.595,
+										_data: [compositionFamilyName,"metavitrite","particulate"],
+									};
+
+									elements["wet_" + metavitriteSandName] = {
+										color: sandizeToHex(metavitriteName,"wet"),
+										behavior: behaviors.STURDYPOWDER,
+										category: "wet sand",
+										reactions: {
+											"dirt": { "elem1":"sand", "elem2":"mud", "chance":0.0005, "oneway":true },
+										},
+										state: "solid",
+										tempHigh: 100,
+										stateHigh: "packed_" + metavitriteSandName,
+										tempLow: -50,
+										stateLow:"packed_" + metavitriteSandName,
+										density: metavitriteDensity * 0.595 + 150,
+										_data: [compositionFamilyName,"metavitrite","wet_particulate"],
+									};
+
+									elements["packed_" + metavitriteSandName] = {
+										color: sandizeToHex(metavitriteName,"packed"),
+										behavior: behaviors.SUPPORT,
+										category: "packed sand",
+										state: "solid",
+										tempHigh: metavitriteMeltingPoint,
+										stateHigh: metavitriteName,
+										density: metavitriteDensity * 0.59,
+										breakInto: metavitriteSandName,
+										_data: [compositionFamilyName,"metavitrite","packed_particulate"],
+									};
+
+									elements.water.reactions[metavitriteSandName] = {
+										"elem1": null, "elem2": "wet_" + metavitriteSandName,
+									};
+							
+							//Magma
+						var magmaOldReactions = nicffunc_getReactions(magmaName);
+
+						var magmaOldColor = elements.magma.color;
+
+						elements[magmaName] = {
+							reactions: {
+								"ash": { "elem1": "molten_slag", "elem2": null },
+								"dust": { "elem1": "molten_slag", "elem2": null },
 							},
-						},
-						tick: function(pixel) {
-							var coolingInfo = elements[pixel.element]._magmaCoolingPassToElement;
-							magmaRateBasedCooling(
-								pixel,
-								Math.min(
-									coolingInfo.meltingPoints.vitreous,
-									coolingInfo.meltingPoints.vesicular,
-									coolingInfo.meltingPoints.aphanitic,
-									coolingInfo.meltingPoints.phaneritic
-								) - 20,
-								coolingInfo.vitreous[1],
-								coolingInfo.vitreous[0],
-								coolingInfo.aphanitic[1],
-								coolingInfo.aphanitic[0],
-								coolingInfo.phaneritic[1]
-							);
-						},
-						"color": makeMoltenColor(phaneriteColor),
-						"behavior": behaviors.MOLTEN,
-						"temp": Math.max(phaneriteMeltingPoint,aphaniteMeltingPoint,vesiculiteMeltingPoint,vitriteMeltingPoint) + 100,
-						"tempLow": -Infinity, //cosmetic info
-						"stateLow": [aphaniteName,phaneriteName,vitriteName],
-						"tempHigh": magmaBoilingPoint,
-						"stateHigh": "vaporized_" + magmaName,
-						"viscosity": magmaViscosity,
-						"hidden": true,
-						"state": "liquid",
-						"category": "magma",
-						"density": magmaDensity,
-						"_data": [compositionFamilyName,"magma","liquid"],
-					};
-					if(magmaOldReactions) {
-						elements[magmaName].reactions = magmaOldReactions;
-					};
-					if(magmaName == "magma") {
-						elements.magma.color = magmaOldColor;
-					};
-					elements[magmaName].reactions.foam = { "elem1": vesiculiteName, "elem2": vesiculiteName };
+							_magmaCoolingPassToElement: {
+								vitreous: [vitriteCoolingRateThreshold,vitriteName],
+								aphanitic: [aphaniteCoolingRateThreshold,aphaniteName],
+								phaneritic: [Infinity,phaneriteName],
+								meltingPoints: {
+									vitreous: vitriteMeltingPoint,
+									vesicular: vesiculiteMeltingPoint,
+									aphanitic: aphaniteMeltingPoint,
+									phaneritic: phaneriteMeltingPoint,
+								},
+							},
+							tick: function(pixel) {
+								var coolingInfo = elements[pixel.element]._magmaCoolingPassToElement;
+								magmaRateBasedCooling(
+									pixel,
+									Math.min(
+										coolingInfo.meltingPoints.vitreous,
+										coolingInfo.meltingPoints.vesicular,
+										coolingInfo.meltingPoints.aphanitic,
+										coolingInfo.meltingPoints.phaneritic
+									) - 20,
+									coolingInfo.vitreous[1],
+									coolingInfo.vitreous[0],
+									coolingInfo.aphanitic[1],
+									coolingInfo.aphanitic[0],
+									coolingInfo.phaneritic[1]
+								);
+							},
+							"color": makeMoltenColor(phaneriteColor),
+							"behavior": behaviors.MOLTEN,
+							"temp": Math.max(phaneriteMeltingPoint,metaphaneriteMeltingPoint,aphaniteMeltingPoint,metaaphaniteMeltingPoint,vesiculiteMeltingPoint,metavesiculiteMeltingPoint,vitriteMeltingPoint,metavitriteMeltingPoint) + 100,
+							"tempLow": -Infinity, //cosmetic info
+							"stateLow": [aphaniteName,phaneriteName,vitriteName],
+							"tempHigh": magmaBoilingPoint,
+							"stateHigh": "vaporized_" + magmaName,
+							"viscosity": magmaViscosity,
+							"hidden": true,
+							"state": "liquid",
+							"category": "magmas",
+							"density": magmaDensity,
+							"_data": [compositionFamilyName,"magma","liquid"],
+						};
+						if(magmaOldReactions) {
+							elements[magmaName].reactions = magmaOldReactions;
+						};
 
-					elements["vaporized_" + magmaName] = {
-						color: magmavaporizeToHex(elements[magmaName].color),
-						behavior: behaviors.GAS,
-						reactions: {
-							["vaporized_" + magmaName]: { elem1: null, elem2: magmaCloudName, chance:0.3, "y":[0,15], "setting":"clouds" }
-						},
-						density: magmaDensity * 0.0028,
-						temp: magmaBoilingPoint + 100,
-						tempLow: magmaBoilingPoint,
-						stateLow: magmaName,
-						category: "magma vapor",
-						state: "gas",
-						hidden: true,
-						_data: [compositionFamilyName,"magma","vaporized"],
-					};
+						if(magmaName == "magma") {
+							elements.magma.color = magmaOldColor;
+						};
 
-					vaporizedMagmas.push("vaporized_" + magmaName);
+						elements[magmaName].reactions.foam = { "elem1": vesiculiteName, "elem2": vesiculiteName };
 
-					elements[magmaCloudName] = {
-						color: magmacloudizeToHex(elements[magmaName].color),
-						behavior: [
-							"XX|XX|XX",
-							"M1%7|CH:" + magmaName + "%0.05|M1%7",
-							"XX|XX|XX",
-						],
-						density: magmaDensity * 0.0021,
-						temp: magmaBoilingPoint + 100,
-						tempLow: Math.min(phaneriteMeltingPoint,aphaniteMeltingPoint,vesiculiteMeltingPoint,vitriteMeltingPoint) - 50,
-						stateLow: rockCloudName,
-						category: "magma cloud",
-						state: "gas",
-						_data: [compositionFamilyName,"magma","cloud"],
-					};
+						elements["vaporized_" + magmaName] = {
+							color: magmavaporizeToHex(elements[magmaName].color),
+							behavior: behaviors.GAS,
+							reactions: {
+								["vaporized_" + magmaName]: { elem1: null, elem2: magmaCloudName, chance:0.3, "y":[0,15], "setting":"clouds" }
+							},
+							density: magmaDensity * 0.0028,
+							temp: magmaBoilingPoint + 100,
+							tempLow: magmaBoilingPoint,
+							stateLow: magmaName,
+							category: "magma vapor",
+							state: "gas",
+							hidden: true,
+							_data: [compositionFamilyName,"magma","vaporized"],
+						};
 
-					magmaClouds.push(magmaName + "_cloud");
+						vaporizedMagmas.push("vaporized_" + magmaName);
 
-					elements[rockCloudName] = {
-						color: rockcloudizeToHex(elements[magmaName].color),
-						behavior: [
-							"XX|XX|XX",
-							"M1%7|CH:" + [aphaniteName,aphaniteGravelName,aphaniteDustName].join(",") + "%0.05|M1%7",
-							"XX|XX|XX",
-						],
-						density: magmaDensity * 0.0024,
-						temp: Math.min(phaneriteMeltingPoint,aphaniteMeltingPoint,vesiculiteMeltingPoint,vitriteMeltingPoint) - 300,
-						tempHigh: Math.min(phaneriteMeltingPoint,aphaniteMeltingPoint,vesiculiteMeltingPoint,vitriteMeltingPoint) - 50,
-						stateHigh: magmaCloudName,
-						category: "rock cloud",
-						state: "gas",
-						_data: [compositionFamilyName,"magma","cloud"],
-					};
+						elements[magmaCloudName] = {
+							color: magmacloudizeToHex(elements[magmaName].color),
+							behavior: [
+								"XX|XX|XX",
+								"M1%7|CH:" + magmaName + "%0.05|M1%7",
+								"XX|XX|XX",
+							],
+							density: magmaDensity * 0.0021,
+							temp: magmaBoilingPoint + 100,
+							tempLow: Math.min(phaneriteMeltingPoint,metaphaneriteMeltingPoint,aphaniteMeltingPoint,metaaphaniteMeltingPoint,vesiculiteMeltingPoint,metavesiculiteMeltingPoint,vitriteMeltingPoint,metavitriteMeltingPoint) - 50,
+							stateLow: rockCloudName,
+							category: "magma cloud",
+							state: "gas",
+							_data: [compositionFamilyName,"magma","cloud"],
+						};
 
-					rockClouds.push(rockCloudName);
+						magmaClouds.push(magmaName + "_cloud");
+
+						elements[rockCloudName] = {
+							color: rockcloudizeToHex(elements[magmaName].color),
+							behavior: [
+								"XX|XX|XX",
+								"M1%7|CH:" + [aphaniteName,aphaniteGravelName,aphaniteDustName].join(",") + "%0.05|M1%7",
+								"XX|XX|XX",
+							],
+							density: magmaDensity * 0.0024,
+							temp: Math.min(phaneriteMeltingPoint,metaphaneriteMeltingPoint,aphaniteMeltingPoint,metaaphaniteMeltingPoint,vesiculiteMeltingPoint,metavesiculiteMeltingPoint,vitriteMeltingPoint,metavitriteMeltingPoint) - 300,
+							tempHigh: Math.min(phaneriteMeltingPoint,metaphaneriteMeltingPoint,aphaniteMeltingPoint,metaaphaniteMeltingPoint,vesiculiteMeltingPoint,metavesiculiteMeltingPoint,vitriteMeltingPoint,metavitriteMeltingPoint) - 50,
+							stateHigh: magmaCloudName,
+							category: "rock cloud",
+							state: "gas",
+							_data: [compositionFamilyName,"magma","cloud"],
+						};
+
+						rockClouds.push(rockCloudName);
 
 				};
 
@@ -21088,11 +23259,18 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							sandstoneName = "soilstone"; //differentiated from mudstone, which is actually the *packed* dirt (analogously to sand's relationship to packed sand)
 							dustName = "dirt_dust";
 							break;
+						case "rainbow_dirt":
+							suspensionName = "rainbow_muddy_water";
+							wetSandName = "rainbow_mud";
+							sedimentName = "rainbow_soil_sediment";
+							sandstoneName = "rainbow_soilstone";
+							dustName = "rainbow_dirt_dust";
+							break;
 						case "crimsoil":
 							suspensionName = "crimmuddy_water";
-							wetSandName = "crimmud"; //needs special code to not generate a wet dirt and instead use vanilla mud as the wet "sand" here
+							wetSandName = "crimmud";
 							sedimentName = "crimsoil_sediment";
-							sandstoneName = "crimsoilstone"; //differentiated from mudstone, which is actually the *packed* dirt (analogously to sand's relationship to packed sand)
+							sandstoneName = "crimsoilstone";
 							dustName = "crimsoil_dust";
 							break;
 						case 143: //sorry, i had to
@@ -21178,7 +23356,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							density: 1000 + (sandInfo.density * 0.06),
 							conduct: 0.02,
 							stain: 0.01,
-							_data: [sandInfo._data[0], sandInfo._data[1], "suspension"],
+							_data: [sandInfo?._data?.[0] ?? "unknown", sandInfo?._data?.[1] ?? "unknown", "suspension"],
 						}
 
 						if(elements[dustName]) {
@@ -21245,7 +23423,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							state: "solid",
 							density: elements[wetSandName].density + 150,
 							breakInto: sandName,
-							_data: [sandInfo._data[0], sandInfo._data[1], "sediment"],
+							_data: [sandInfo?._data?.[0] ?? "unknown", sandInfo?._data?.[1] ?? "unknown", "sediment"]
 						};
 
 					//Final rock
@@ -21261,6 +23439,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										return elements.dry_dirt.tempHigh;
 									case "crimsoil":
 										return elements.crimsoil.tempHigh;
+									case "rainbow_dirt":
+										return elements.rainbow_dirt.tempHigh;
 									default:
 										return elements[sandName].tempHigh
 								}
@@ -21273,6 +23453,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										return "magma";
 									case "dirt":
 										return "hot_soilstone";
+									case "rainbow_dirt":
+										return "hot_rainbow_dirt";
 									case "crimsoil":
 										return "hot_crimsoilstone";
 									default:
@@ -21290,7 +23472,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							hardness: 0.5,
 							breakInto: sandName,
 							maxColorOffset: 30,
-							_data: [sandInfo._data[0], sandInfo._data[1]+"_sandstone", "sedimentary_rock"],
+							_data: [sandInfo?._data?.[0] ?? "unknown", (sandInfo?._data?.[1] ?? "unknown") + "_sandstone", "sedimentary_rock"],
 						};
 				};
 
@@ -21308,7 +23490,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						elements.water.reactions[particulateName] = {
 							"elem1": suspensionName,
 							"elem2": [particulateName,particulateName,particulateName,suspensionName],
-							chance: 0.01
+							chance: 0.001
 						};
 
 					//Sediment suspension
@@ -21515,8 +23697,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								break;
 							case "crimsoil":
 								sandSuspensions.push("crimmuddy_water");
-								sandSediments.push("scrimoil_sediment");
+								sandSediments.push("crimsoil_sediment");
 								sandstones.push("crimsoilstone");
+								break;
+							case "rainbow_dirt":
+								sandSuspensions.push("rainbow_muddy_water");
+								sandSediments.push("rainbow_soil_sediment");
+								sandstones.push("rainbow_soilstone");
 								break;
 							default:
 								sandSuspensions.push(sands[i] + "y_water");
@@ -21642,7 +23829,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 
 					elements.molten_dirt.tempHigh = 3313;
 					var rockStateHigh = JSON.parse(JSON.stringify(vaporizedMagmas));
-					//no nellish or rainbow magma in dirt
+					//only real magmas in dirt
 					if(rockStateHigh.includes("vaporized_nellish_magma")) { 
 						rockStateHigh.splice(rockStateHigh.indexOf("vaporized_nellish_magma"));
 					};
@@ -21651,6 +23838,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					};
 					if(rockStateHigh.includes("vaporized_crimson_magma")) { 
 						rockStateHigh.splice(rockStateHigh.indexOf("vaporized_crimson_magma"));
+					};
+					if(rockStateHigh.includes("vaporized_blackpinkinitic_magma")) { 
+						rockStateHigh.splice(rockStateHigh.indexOf("vaporized_blackpinkinitic_magma"));
 					};
 					elements.molten_dirt.stateHigh = rockStateHigh; //assuming mixture
 
@@ -21975,68 +24165,49 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 
 						newIgneousCompositionFamily(
 							"felsic",
-							1e12,
-							2200,
-							-85,
-							-20,
-							2850,
 
-							"granite",
-							["#F3C3AD", "#F0AB75", "#DDA888", "#BD927E", "#998473", "#5C5E53", "#BD8366"],
-							1215,
-							2691,
+							1e12, 2200, -85, -20, 2850,
 
-							"rhyolite",
-							["#A67153","#BF967E","#D9B5A0","#8C533E","#C99F86","#C5997E","#BB8A69"],
-							800,
-							1254,
+							//Not much data on metamorphites besides gneiss
+							"granite", ["#F3C3AD", "#F0AB75", "#DDA888", "#BD927E", "#998473", "#5C5E53", "#BD8366"], 1215, 2691,
+							"gneiss", ["#C5C1B4", "#605A5E", "#424449", "#EDECE9", "#73503A", "#92866F"], 1215, 2750,
 
-							"pumice",
-							["#ebe1c3", "#ada386", "#f0bd9e", "#ab846c", "#bfbebd", "#75726f", "#f5e595", "#ab9e60", "#ad683d", "#633d25", "#6e6d6d", "#3b3a39"],
-							1350,
-							641,
+							"rhyolite", ["#A67153","#BF967E","#D9B5A0","#8C533E","#C99F86","#C5997E","#BB8A69"], 800, 1254,
+							"metarhyolite", ["#C0C7D3","#CAD0D9","#AEB7B7","#728189","#798B96","#B09F98","#515155"], 800, 2584, //https://www.researchgate.net/figure/Physical-properties-of-the-metarhyolites_tbl2_245002845 also there are pictures yay
 
-							"obsidian",
-							["#252422", "#171616", "#161915", "#161018"],
-							1000,
-							2488,
+							"pumice", ["#ebe1c3", "#ada386", "#f0bd9e", "#ab846c", "#bfbebd", "#75726f", "#f5e595", "#ab9e60", "#ad683d", "#633d25", "#6e6d6d", "#3b3a39"], 1350, 641,
+							//it is said to flatten out and have smaller vesicles but the color is pulled out of my ass
+							"metapumice", ["#a6a295", "#787a6f", "#8f847e", "#917c6e", "#858382", "#696460", "#8a6d5c", "#6e5749", "#5c5b55", "#53594f"], 1350, 2328,
+
+							vitreousFelsicName, ["#252422", "#171616", "#161915", "#161018"], 1000, 2488,
+							//if metamorphism sometimes involves recrystallization and obsidian is the way it is due to being amorphous and lacking a crystal structure then perhaps obsidian might be somewhat like granite with its new crystals
+							"meta" + vitreousFelsicName, ["#453f3c", "#1f1a18", "#36342b", "#1c1519", "#3d3133", "#1f1b1a", "#453a32"], 1000, 2513,
 
 							7,3
 						);
 
 						elements.water.reactions.obsidian_shard.elem2 = ["obsidian_sand","obsidian_sand","obsidian_sand","sand","sand"]
 						elements.obsidian_sand.color = ["#3b3730", "#211e1e", "#293321", "#31133b"];
-						elements.obsidian_shard.desc = "crushed obsidian my beloved";
+						elements.obsidian_shard.desc = '<a href="https://ftbwiki.org/Crushed_Obsidian">crushed obsidian</a> my beloved';
 
 					//Intermediate felsic
 
 						newIgneousCompositionFamily(
 							"intermediate_felsic",
-							1e10,
-							2320,
-							-95,
-							-23,
-							2900,
 
-							"granodiorite",
-							["#B1AB9D", "#262001", "#A6A292", "#D6C5BC", "#F2F2F2", "#DED8C2", "#978871", "#A8AAA7"], //From image: By Rudolf Pohl - Own work, CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=7788350
-							1277, //made-up/interpolated from granite and diorite
-							2644, //last 2 digits made up again
+							1e10, 2320, -95, -23, 2900,
 
-							"dacite",
-							["#D9CCC5", "#F2E9E4", "#877670", "#A69B97"],
-							1050,
-							2654, //https://books.google.ca/books?id=ObUPAAAAIAAJ&pg=PA181&lpg=PA181&dq=dacite+specific+gravity&source=bl&ots=qn8B4sirWi&sig=Wp_MHqPuUGPNQobcuNP5c5wqkpU&hl=en&sa=X&ei=cimtUaH8Eab7yAH8joDABQ#v=onepage&q=dacite%20specific%20gravity&f=false
+							"granodiorite", ["#B1AB9D", "#262001", "#A6A292", "#D6C5BC", "#F2F2F2", "#DED8C2", "#978871", "#A8AAA7"], 1277, 2644, //Color from image: By Rudolf Pohl - Own work, CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=7788350; melting point made-up/interpolated from granite and diorite; last 2 digits of density are made up again
+							"metagranodiorite", ["#F3EDDC","#F0ECD8","#EDECDC","#D0C9A9","#BDB192","#BBA27A","#86744E","#323026","#262417","#202012"], 1277, 2711,
 
-							"intermediate_pumice",
-							["#dbd4bd", "#b5ad94", "#e3ceb6", "#bda891", "#c2c2c2", "#a1a1a1", "#e6c8a1", "#b8a48c"],
-							1190,
-							991,
+							"dacite", ["#D9CCC5", "#F2E9E4", "#877670", "#A69B97"], 1050, 2654, //https://books.google.ca/books?id=ObUPAAAAIAAJ&pg=PA181&lpg=PA181&dq=dacite+specific+gravity&source=bl&ots=qn8B4sirWi&sig=Wp_MHqPuUGPNQobcuNP5c5wqkpU&hl=en&sa=X&ei=cimtUaH8Eab7yAH8joDABQ#v=onepage&q=dacite%20specific%20gravity&f=false
+							"metadacite", ["#91847d", "#e0c9bc", "#735a56", "#bfa59b", "#696563"], 1050, 2727,
 
-							vitreousInterfelsicName,
-							["#4f4b42", "#474646", "#4a4d49", "#342f36"],
-							1040,
-							2640,
+							"intermediate_pumice", ["#dbd4bd", "#b5ad94", "#e3ceb6", "#bda891", "#c2c2c2", "#a1a1a1", "#e6c8a1", "#b8a48c"], 1190, 991,
+							"intermediate_metapumice", ["#777868", "#5a5c51", "#82756f", "#6e6057", "#96918f", "#70665e"], 1190, 2623,
+
+							vitreousInterfelsicName, ["#4f4b42", "#474646", "#4a4d49", "#342f36"], 1040, 2640,
+							"meta" + vitreousInterfelsicName, ["#3d3c39", "#696262", "#313630", "#625966"], 1040, 2772,
 
 							6,4
 						);
@@ -22045,31 +24216,20 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 
 						newIgneousCompositionFamily(
 							"intermediate",
-							1e8,
-							2450,
-							-105,
-							-26,
-							2950,
 
-							"diorite",
-							["#E1E1E1","#B0A696","#707271","#434459","#242424"], //Extracted from image and blended; Michael C. Rygel - Own work, CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=31124755 https://commons.wikimedia.org/w/index.php?curid=7788350
-							1300,
-							2822, //last 2 digits made up again
+							1e8, 2450, -105, -26, 2950,
 
-							"andesite",
-							["#6F7575", "#C5C9CB", "#818787", "#797F7F", "#B5B9BA", "#6D7371", "#909696"],
-							1215,
-							2474, //https://books.google.ca/books?id=ObUPAAAAIAAJ&pg=PA181&lpg=PA181&dq=dacite+specific+gravity&source=bl&ots=qn8B4sirWi&sig=Wp_MHqPuUGPNQobcuNP5c5wqkpU&hl=en&sa=X&ei=cimtUaH8Eab7yAH8joDABQ#v=onepage&q=dacite%20specific%20gravity&f=false
+							"diorite", ["#E1E1E1","#B0A696","#707271","#434459","#242424"], 1300, 2822, //Extracted from image and blended; Michael C. Rygel - Own work, CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=31124755 https://commons.wikimedia.org/w/index.php?curid=7788350; last 2 digits made up again
+							"metadiorite", ["#D1D2D7","#C3C2AF","#AEACB1","#A1A29D","#C3C4BC","#C3C9CA","#B5AEA4","#B6AC91","#AEA582","#5A6992"], 1300, 2929,
 
-							"scoria",
-							["#594545", "#573b31", "#522e28"],
-							1085,
-							2550,
+							"andesite", ["#6F7575", "#C5C9CB", "#818787", "#797F7F", "#B5B9BA", "#6D7371", "#909696"], 1215, 2474, //https://books.google.ca/books?id=ObUPAAAAIAAJ&pg=PA181&lpg=PA181&dq=dacite+specific+gravity&source=bl&ots=qn8B4sirWi&sig=Wp_MHqPuUGPNQobcuNP5c5wqkpU&hl=en&sa=X&ei=cimtUaH8Eab7yAH8joDABQ#v=onepage&q=dacite%20specific%20gravity&f=false
+							"metaandesite", ["#5b5c5b", "#a3a6a2", "#6e665e", "#b39b92", "#756763", "#91817d", "#73524d"], 1215, 2553,
 
-							vitreousIntermediateName,
-							["#636059", "#707070", "#5f615f", "#504b52"],
-							1085,
-							2710,
+							"scoria", ["#594545", "#573b31", "#522e28"], 1085, 2550,
+							"metascoria", ["#403835","#75574c","#4f302b","#8a7c75"], 1085, 2670,
+
+							vitreousIntermediateName, ["#636059", "#707070", "#5f615f", "#504b52"], 1085, 2710,
+							"meta" + vitreousIntermediateName, ["#4a4845", "#75716e", "#43453f", "#5e4b53", "#66554d"], 1085, 2744,
 
 							5,5
 						);
@@ -22089,7 +24249,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 
 						elements.magma.name = "mafic magma";
 						elements.magma.density = 2650;
-						elements.magma.category = "magma";
+						elements.magma.category = "magmas";
 						elements.magma._magmaCoolingPassToElement = {
 							vitreous: [-115,vitreousMaficName],
 							aphanitic: [-29,"basalt"],
@@ -22124,31 +24284,20 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 
 						newIgneousCompositionFamily(
 							"mafic",
-							10000,
-							2200,
-							-115,
-							-29,
-							3000,
+							
+							10000, 2200, -115, -29, 3000,
 
-							"rock",
-							["#808080","#4f4f4f","#949494"],
-							1474,
-							3300,
+							"rock", ["#808080","#4f4f4f","#949494"], 1474, 3300,
+							"metagabbro", ["#F6F6F5", "#EEEFEC", "#E7E6DD","#C0BBA3","#A9ABA7", "#8A8C8C", "#727271", "#61635F", "#595A59", "#454641", "#4E514A"], 1474, 3350,
 
-							"basalt",
-							["#2e2e2e","#333333","#3d3d3d"],
-							1122,
-							2949,
+							"basalt", ["#2e2e2e","#333333","#3d3d3d"], 1122, 2949,
+							"metabasalt", ["#292e26","#474d3d","#2e2e29","#4a574f"], 1122, 3070,
 
-							"mafic_scoria",
-							["#756666", "#695751", "#737272"],
-							1298,
-							2717,
+							"mafic_scoria", ["#756666", "#695751", "#737272"], 1298, 2717,
+							"mafic_metascoria", ["#856d6d","#4f4139","#8c8373","#494a39"], 1298, 2773,
 
-							vitreousMaficName,
-							["#6e615d", "#706767", "#6a6b63", "#6e5e68"],
-							1200,
-							2900,
+							vitreousMaficName, ["#6e615d", "#706767", "#6a6b63", "#6e5e68"], 1200, 2900,
+							"meta" + vitreousMaficName, ["#7a685d", "#3c4235", "#7c7869", "#3f3138"], 1200, 2991,
 
 							3,7
 						);
@@ -22156,36 +24305,27 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						elements.mafic_scoria.tempHigh = 1298;
 						elements.mafic_scoria.stateHigh = "magma";
 						elements.mafic_scoria_gravel.density = 2993;
+						elements.basalt.behavior = behaviors.STURDYPOWDER;
+						elements.metabasalt.behavior = behaviors.STURDYPOWDER;
 
 					//Ultramafic
 
 						newIgneousCompositionFamily(
 							"ultramafic",
-							800,
-							2800,
-							-125,
-							-32,
-							3050,
 
-							"peridotite",
-							["#908557","#A29E78","#7F8044","#C6BC87","#8C8656","#7C7C40","#837840","#8B8B69"],
-							1400,
-							3347, //appr from https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/GL003i009p00509#:~:text=Abstract,and%20the%20bulk%20rock%20analyses.
+							800, 2800, -125, -32, 3050,
 
-							"komatiite",
-							["#AEB5AE","#A9B8B5","#7B8881","#858B87","#949F97","#505B55"],
-							1600,
-							3100, 
+							"peridotite", ["#848a5e","#68785b","#8a9967","#3f403d","#33312e","#4c4f45"], 1400, 3347, //appr from https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/GL003i009p00509#:~:text=Abstract,and%20the%20bulk%20rock%20analyses.
+							"metaperidotite", ["#7d604f","#959c98","#454443","#363432","#5e4840"], 1400, 3404,
 
-							"ultramafic_scoria",
-							["#737565", "#7a7761", "#727372"],
-							1400,
-							2924,
+							"komatiite", ["#6e7d6e","#858c8a","#768270","#767a77"], 1600, 3100, 
+							"metakomatiite", ["#AEB5AE","#A9B8B5","#7B8881","#858B87","#949F97","#66655d","#5e4d48"], 1600, 3066,
 
-							vitreousUltramaficName,
-							["#6e6d5e", "#626659", "#54574b", "#665d55"],
-							1300,
-							3200,
+							"ultramafic_scoria", ["#636555", "#6a6751", "#828382"], 1400, 2924,
+							"ultramafic_metascoria", ["#574e47", "#6a7357", "#3b3430", "#4d4939"], 1400, 3003,
+
+							vitreousUltramaficName, ["#6e6d5e", "#5f6659", "#54574b", "#665d55"], 1300, 3200,
+							"meta" + vitreousUltramaficName, ["#4a443d", "#5e5e4a", "#3a4036", "#4d524f"], 1300, 3266,
 
 							2,8
 						);
@@ -22328,6 +24468,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								if(Math.random() < 0.02) { breakPixel(pixel) };
 								var colorWasHSL = pixel.color.startsWith("hsl");
 								var oldColor = convertHslObjects(normalizeColorToHslObject(pixel.color),"rgbjson");
+								if(oldColor == null) { oldColor = pixelColorPick(pixel) };
 								oldColor.r += 81/2;
 								oldColor.g += 60/2;
 								oldColor.b += 56/2;
@@ -22337,6 +24478,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								if(Math.random() < 0.04) { breakPixel(pixel) };
 								var colorWasHSL = pixel.color.startsWith("hsl");
 								var oldColor = convertHslObjects(normalizeColorToHslObject(pixel.color),"rgbjson");
+								if(oldColor == null) { oldColor = pixelColorPick(pixel) };
 								oldColor.r += 81/4;
 								oldColor.g += 60/4;
 								oldColor.b += 56/4;
@@ -22346,6 +24488,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								if(Math.random() < 0.06) { breakPixel(pixel) };
 								var colorWasHSL = pixel.color.startsWith("hsl");
 								var oldColor = convertHslObjects(normalizeColorToHslObject(pixel.color),"rgbjson");
+								if(oldColor == null) { oldColor = pixelColorPick(pixel) };
 								oldColor.r += 81/7;
 								oldColor.g += 60/7;
 								oldColor.b += 56/7;
@@ -22355,6 +24498,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								if(Math.random() < 0.08) { breakPixel(pixel) };
 								var colorWasHSL = pixel.color.startsWith("hsl");
 								var oldColor = convertHslObjects(normalizeColorToHslObject(pixel.color),"rgbjson");
+								if(oldColor == null) { oldColor = pixelColorPick(pixel) };
 								oldColor.r += 81/8;
 								oldColor.g += 60/8;
 								oldColor.b += 56/8;
@@ -22889,13 +25033,21 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							function newDirtType(names,dirtColor,density,meltingPoint,frostingPoint) {
 								if(!(dirtColor instanceof Array)) { dirtColor = [dirtColor] };
 
-								var mudColor = dirtColor.map(x => colorToHsl(x,"json")); mudColor.forEach(function(x) { x.s *= (41/21); x.l *= (26/15) }); mudColor = mudColor.map(function(x) { return hslToHex(...Object.values(x)) });
+								var mudColor = dirtColor.map(x => colorToHsl(x,"json")); mudColor.forEach(function(x) { x.s *= (41/21); x.l *= (15/26) }); mudColor = mudColor.map(function(x) { return hslToHex(...Object.values(x)) });
 								if(mudColor.length == 1) { mudColor = mudColor[0] };
 
-								var mudstoneColor = dirtColor.map(x => colorToHsl(x,"json")); mudstoneColor.forEach(function(x) { x.h += 6; x.s *= (41/21); x.l *= (26/15); x.l += 5 }); mudstoneColor = mudstoneColor.map(function(x) { return hslToHex(...Object.values(x)) });
+								var mudstoneColor = dirtColor.map(x => colorToHsl(x,"json")); mudstoneColor.forEach(function(x) { x.h += 6; x.s *= (31/41); x.l *= (26/15); x.l += 5 }); mudstoneColor = mudstoneColor.map(function(x) { return hslToHex(...Object.values(x)) });
 								if(mudstoneColor.length == 1) { mudstoneColor = mudstoneColor[0] };
 
-								var dryDirtColor = dirtColor.map(x => colorToHsl(x,"json")); dryDirtColor.forEach(function(x) { x.h += 4; x.s *= (8/11); x.l *= (34/50); x.l += 5 }); dryDirtColor = dryDirtColor.map(function(x) { return hslToHex(...Object.values(x)) });
+								var dryDirtColor = dirtColor.map(x => colorToHsl(x,"json")); dryDirtColor.forEach(function(x) { x.h += 4; x.s *= (8/11); x.l *= (34/50); x.l += 5 }); dryDirtColor = dryDirtColor.map(function(x) {
+									x = convertHslObjects(x,"rgbjson");
+									x.r += 10;
+									x.g += 5; //XG??!?!??!?!?!??!?!!??!?!?!?!??!?!?!?!/1/1/1?!/!?!?1?1??!/!1//!
+									x.b -= 10;
+									x.g *= 0.94;
+									x.b *= 0.88;
+									return convertColorFormats(x,"hex");
+								});
 								if(dryDirtColor.length == 1) { dryDirtColor = dryDirtColor[0] };
 
 								var permafrostColor = dirtColor.map(x => colorToHsl(x,"json")); permafrostColor.forEach(function(x) { x.h -= 6; x.s *= (3/5); x.l -= 3 }); permafrostColor = permafrostColor.map(function(x) { return hslToHex(...Object.values(x)) });
@@ -23008,311 +25160,143 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							elements.crimson_permafrost._data = ["crimson","soil","icy_particulate"];
 							elements.dry_crimson_permafrost._data = ["crimson","soil","particulate"];
 
-					//var elems1 = Object.keys(elements);
-						makeNonSandSedimentationElements("crimsand","crimsandy_water","crimsandstone");
+							makeNonSandSedimentationElements("crimsand","crimsandy_water","crimsandstone");
+
+							newIgneousCompositionFamily(
+								"crimson",
+
+								13000, 2420, -76, -17, 2877,
+
+								"crimstone", ["#cb4444", "#953333", "#611c1c", "#b43434", "#752424"], 1223, 4234,
+								"metacrimstone", ["#b31010","#8f1111","#80282a","#b31010","#8f1111","#80282a","#bb4e45"], 1223, 4544,
+
+								"crimsalt", ["#9e5041", "#a33345"], 1151, 3226,
+								"metacrimsalt", ["#ab5c4f","#c25c4c","#cf4452"], 1151, 3044,
+
+								"crimscoria", ["#914c57", "#ba7b85", "#6b2e38", "#b3626f"], 1032, 2903,
+								"metacrimscoria", ["#bf2636","#961b12","#b84040"], 1032, 3534,
+
+								"crimidian", ["#5a1b1c", "#622b33", "#762733", "#76322c"], 1122, 3050,
+								"metacrimidian", ["#701b1c","#783628","#802419","#872323"], 1122, 3169,
+
+								3,7
+							);
+							
+							elements.crimsalt.behavior = behaviors.STURDYPOWDER;
+							elements.metacrimsalt.behavior = behaviors.STURDYPOWDER;
+
+							elements.crimson_magma.temp = elements.crimson_magma.tempHigh * 0.8;
+
+							//var elems2 = Object.keys(elements);
+							//var deltaElems = elems2.filter(function(name) { return !(elems1.includes(name)) });
+							runAfterLoad(function() { runAfterAutogen(function() { runAfterAutogen(function() { //i need this to happen last
+								var rockCrimmies = Object.keys(elements).filter(function(name) {return (name.match(/((wet|packed|hot|vaporized)_|meta|)crim/) && !(name.match(/crimtane/)))});
+								lifeEaterWhitelist = lifeEaterWhitelist.concat(rockCrimmies); //crimson is alive, so LEV should eat it
+								rockCrimmies.forEach(function(name) {
+									var data = elements[name];
+									if(data.tick) {
+										var oldTick = data.tick;
+										data.tick = function(pixel) {
+											oldTick(pixel);
+											if(pixel && !isEmpty(pixel.x,pixel.y)) {
+												crimSpread(pixel);
+											}
+										}
+									} else {
+										data.tick = function(pixel) { crimSpread(pixel) }
+									};
+								});
+								for(var key in elements) {
+									var data = elements[key];
+									if(!(elements[key].tick)) { continue };
+									if(elements[key].tick.toString().includes("crimSpread")) {
+										data.excludeRandom = true
+									}
+								};
+							})})});
+
+							elements.molten_crimsoil = {
+								tempLow: elements.dry_crimsoil.tempHigh,
+								stateLow: "dry_crimsoil",
+								stateHigh: "crimson_magma"
+							};
+							crimsonObject.dirt = "crimsoil";
+							crimsonObject.dry_dirt = "dry_crimsoil";
+							crimsonObject.mud = "crimmud";
+							crimsonObject.mudstone = "crimmudstone";
+							crimsonObject.permafrost = "crimson_permafrost";
+							crimsonObject.molten_dirt = "molten_crimsoil";
+							crimsonObject.dry_permafrost = "dry_crimson_permafrost";
+							runAfterLoad(function() {
+								elements.molten_crimsoil.tempHigh = elements.crimson_magma.tempHigh;
+								elements.crimsandy_water.color = ["#985460", "#a8606c", "#a05864", "#b46c74", "#84404c", "#985460", "#a8606c", "#a05864", "#b46c74", "#84404c", "#903844", "#b44450" ] //manual: use crimwater for the lerp in crimsand suspension's color
+								elements.crimmuddy_water.color = ["#ed4154", "#f25259", "#f2444c", "#f25a62", "#df428d" ]; //same for crimsoil (crimmud) susp.
+								elements.crimwater.reactions.crimsand = elements.water.reactions.crimsand;
+								elements.crimwater.reactions.crimmud = elements.water.reactions.crimmud;
+								for(var k in elements.crimsandy_water.reactions) {
+									var reactionObject = elements.crimsandy_water.reactions[k];
+									var e1 = reactionObject.elem1; var e2 = reactionObject.elem2;
+									if(e1 == "water") { reactionObject.elem1 = "crimwater" };
+									if(e2 == "water") { reactionObject.elem2 = "crimwater" };
+								};
+								for(var k in elements.crimmuddy_water.reactions) {
+									var reactionObject = elements.crimmuddy_water.reactions[k];
+									var e1 = reactionObject.elem1; var e2 = reactionObject.elem2;
+									if(e1 == "water") { reactionObject.elem1 = "crimwater" };
+									if(e2 == "water") { reactionObject.elem2 = "crimwater" };
+								};
+								elements.crimmuddy_water.reactions.crimmuddy_water.elem2 = "crimsoil_sediment";
+								elements.rainbow_muddy_water.reactions.rainbow_muddy_water.elem2 = "rainbow_soil_sediment"
+								elements.crimsoilstone.tempHigh = 800;
+							});
+
+					//Blackpinkinitic (why? because FU. that's why. jk lol it's because i want to test metamorphism but there's so little data on the melting of metamorphic rocks--especially clay-based ones--that it's proving to be a real PITA.
 
 						newIgneousCompositionFamily(
-							"crimson",
-							13000,
-							2420,
-							-76,
-							-17,
-							2877,
+							"blackpinkinitic",
 
-							"crimstone",
-							["#cb4444", "#953333", "#611c1c", "#b43434", "#752424"],
-							4120,
-							1223,
+							403, 2602, -95, -30, 4007,
 
-							"crimsalt",
-							["#9e5041", "#a33345"],
-							3326,
-							1151,
+							"blinkinite", ["#e39dc6", "#e378b7", "#d1589f", "#a1306e", "#6e274e", "#170e13", "#121212"], 1821, 3291,
+							"lisaslate", ["#f26fbc", "#f26fbc", "#e344a1", "#d42686", "#b52daa", "#8a3683", "#5c324f", "#572c6e", "#421530", "#120c10", "#120c10"], 1821, 3333,
 
-							"crimscoria",
-							["#914c57", "#ba7b85", "#6b2e38", "#b3626f"],
-							3003,
-							991,
+							"roselite", ["#eda4c6","#de90ae","#cf9db0","#cf9db0","#d97ca0"], 1715, 2551,
+							"rosephyllite", ["#e895bb", "#c46286", "#a34b73", "#6e2e4b", "#301921", "#1a1315"], 1715, 3021,
 
-							"crimidian",
-							["#5a1b1c", "#622b33", "#762733", "#76322c"],
-							1040,
-							3050,
+							"jisoovesite", ["#bf56af", "#a15495", "#70416f", "#e87de6", "#381a47"], 1977, 719,
+							"vesimelite", ["#a35097", "#854e72", "#8a5789", "#d47dd2", "#462452"], 1977, 1132,
+
+							"jennitrite", ["#8a2966", "#801357", "#75074c", "#4a012f", "#360e27", "#1a0e15"], 2111, 2603,
+							"harmonitrite", ["#9e3979", "#9e186c", "#a3146e", "#380324", "#2e1028", "#361a2a"], 2111, 2663,
 
 							3,7
 						);
 
-						elements.crimson_magma.temp = elements.crimson_magma.tempHigh * 0.8;
-
-						//var elems2 = Object.keys(elements);
-						//var deltaElems = elems2.filter(function(name) { return !(elems1.includes(name)) });
-						runAfterLoad(function() { runAfterAutogen(function() { runAfterAutogen(function() { //i need this to happen last
-							var rockCrimmies = Object.keys(elements).filter(function(name) {return (name.match(/((wet|packed|hot|vaporized)_|)crim/) && !(name.match(/crimtane/)))});
-							lifeEaterWhitelist = lifeEaterWhitelist.concat(rockCrimmies); //crimson is alive, so LEV should eat it
-							rockCrimmies.forEach(function(name) {
-								var data = elements[name];
-								if(data.tick) {
-									var oldTick = data.tick;
-									data.tick = function(pixel) {
-										oldTick(pixel);
-										if(pixel && !isEmpty(pixel.x,pixel.y)) {
-											crimSpread(pixel);
-										}
-									}
-								} else {
-									data.tick = function(pixel) { crimSpread(pixel) }
-								};
-							});
-							for(var key in elements) {
-								var data = elements[key];
-								if(!(elements[key].tick)) { continue };
-								if(elements[key].tick.toString().includes("crimSpread")) {
-									data.excludeRandom = true
-								}
-							};
-						})})});
-
-						//Nellish-style transformation assigner
-						var rockdataElements = Object.keys(elements).filter(function(name) {
-							return (
-								elements[name]._data && 
-								!["crimson"].includes(elements[name]._data[0])
-							)
-						});
-
-						for(i = 0; i < rockdataElements.length; i++) {
-							var name = rockdataElements[i];
-							var info = elements[name];
-							switch(info._data[1]) {
-								case "phanerite":
-									switch(info._data[2]) {
-										case "igneous_rock":
-											crimsonObject[name] = "crimstone"
-											break;
-										case "solid_igneous_rock":
-											crimsonObject[name] = "crimstone_wall"
-											break;
-										case "igneous_gravel":
-											crimsonObject[name] = "crimstone_gravel"
-											break;
-										case "particulate":
-											crimsonObject[name] = "crimstone_sand"
-											break;
-										case "dust":
-											crimsonObject[name] = "crimstone_dust"
-											break;
-										case "wet_particulate":
-											crimsonObject[name] = "wet_crimstone_sand"
-											break;
-										case "packed_particulate":
-											crimsonObject[name] = "packed_crimstone_sand"
-											break;
-										case "sediment":
-											crimsonObject[name] = "crimstone_sand_sediment"
-											break;
-										case "suspension":
-											crimsonObject[name] = "crimstone_sandy_water"
-											break;
-									};
-									break;
-								case "aphanite":
-									//console.log(info._data[2]);
-									switch(info._data[2]) {
-										case "igneous_rock":
-											crimsonObject[name] = "crimsalt"
-											break;
-										case "solid_igneous_rock":
-											crimsonObject[name] = "crimsalt_wall"
-											break;
-										case "igneous_gravel":
-											crimsonObject[name] = "crimsalt_gravel"
-											break;
-										case "particulate":
-											crimsonObject[name] = "crimsalt_sand"
-											break;
-										case "dust":
-											crimsonObject[name] = "crimsalt_dust"
-											break;
-										case "wet_particulate":
-											crimsonObject[name] = "wet_crimsalt_sand"
-											break;
-										case "packed_particulate":
-											crimsonObject[name] = "packed_crimsalt_sand"
-											break;
-										case "sediment":
-											crimsonObject[name] = "crimsalt_sand_sediment"
-											break;
-										case "suspension":
-											crimsonObject[name] = "crimsalt_sandy_water"
-											break;
-									};
-									break;
-								case "vesiculite":
-									//console.log(info._data[2]);
-									switch(info._data[2]) {
-										case "igneous_rock":
-											crimsonObject[name] = "crimscoria"
-											break;
-										case "solid_igneous_rock":
-											crimsonObject[name] = "crimscoria_wall"
-											break;
-										case "igneous_gravel":
-											crimsonObject[name] = "crimscoria_gravel"
-											break;
-										case "particulate":
-											crimsonObject[name] = "crimscoria_sand"
-											break;
-										case "dust":
-											crimsonObject[name] = "crimscoria_dust"
-											break;
-										case "wet_particulate":
-											crimsonObject[name] = "wet_crimscoria_sand"
-											break;
-										case "packed_particulate":
-											crimsonObject[name] = "packed_crimscoria_sand"
-											break;
-										case "sediment":
-											crimsonObject[name] = "crimscoria_sand_sediment"
-											break;
-										case "suspension":
-											crimsonObject[name] = "crimscoria_sandy_water"
-											break;
-									};
-									break;
-								case "vitrite":
-									//console.log(info._data[2]);
-									switch(info._data[2]) {
-										case "igneous_rock":
-											crimsonObject[name] = "crimidian"
-											break;
-										case "solid_igneous_rock":
-											crimsonObject[name] = "crimidian_wall"
-											break;
-										case "igneous_gravel":
-											crimsonObject[name] = "crimidian_gravel"
-											break;
-										case "particulate":
-											crimsonObject[name] = "crimidian_sand"
-											break;
-										case "dust":
-											crimsonObject[name] = "crimidian_dust"
-											break;
-										case "wet_particulate":
-											crimsonObject[name] = "wet_crimidian_sand"
-											break;
-										case "packed_particulate":
-											crimsonObject[name] = "packed_crimidian_sand"
-											break;
-										case "sediment":
-											crimsonObject[name] = "crimidian_sand_sediment"
-											break;
-										case "suspension":
-											crimsonObject[name] = "crimidian_sandy_water"
-											break;
-									};
-									break;
-								case "phanerite_sandstone":
-									crimsonObject[name] = "crimstone_sandstone"
-									break;
-								case "aphanite_sandstone":
-									crimsonObject[name] = "crimsalt_sandstone"
-									break;
-								case "vesiculite_sandstone":
-									crimsonObject[name] = "crimscoria_sandstone"
-									break;
-								case "vitrite_sandstone":
-									crimsonObject[name] = "crimidian_sandstone"
-									break;
-								case "sandstone":
-									crimsonObject[name] = "crimsandstone"
-									break;
-								case "silica":
-									crimsonObject[name] = "crimsandstone"
-									break;
-								case "magma":
-									switch(info._data[2]) {
-										case "liquid":
-											crimsonObject[name] = "crimson_magma"
-											break;
-										case "vaporized":
-											crimsonObject[name] = "vaporized_crimson_magma"
-											break;
-										case "cloud":
-											crimsonObject[name] = "crimson_magma_cloud"
-											break;
-									};
-									break;
-								case "crystalline":
-									switch(info._data[2]) {
-										case "particulate":
-											crimsonObject[name] = "crimsand"
-											break;
-										case "wet_particulate":
-											crimsonObject[name] = "wet_crimsand"
-											break;
-										case "packed_particulate":
-											crimsonObject[name] = "packed_crimsand"
-											break;
-										case "suspension":
-											crimsonObject[name] = "crimsand_water"
-											break;
-										case "sediment":
-											crimsonObject[name] = "crimsand_sediment"
-											break;
-									};
-									break;
-								case "soil":
-								case "dry_soil":
-								case "clay":
-									switch(info._data[2]) {
-										case "particulate":
-											crimsonObject[name] = "crimsand"
-											break;
-										case "suspension":
-											crimsonObject[name] = "crimsand_water"
-											break;
-										case "sediment":
-											crimsonObject[name] = "crimsand_sediment"
-											break;
-									};
-									break;
-								default:
-									console.log("Crimson assignment: Unknown _data[1] value for element",name,info._data);
-							};
+						elements.roselite.name = elements.roselite.alias = "rosélite";
+						elements.rosephyllite.colorPattern = [ // diagonal foliation
+							"PPppDDddBBbbBBddDDpp",
+							"ppDDddBBbbBBddDDppPP",
+							"DDddBBbbBBddDDppPPpp",
+							"ddBBbbBBddDDppPPppDD",
+							"BBbbBBddDDppPPppDDdd",
+							"bbBBddDDppPPppDDddBB",
+							"BBddDDppPPppDDddBBbb",
+							"ddDDppPPppDDddBBbbBB",
+							"DDppPPppDDddBBbbBBdd",
+							"ppPPppDDddBBbbBBddDD"
+						];
+						elements.rosephyllite.colorKey = {
+							"P": "#e895bb",
+							"p": "#c46286",
+							"D": "#a34b73",
+							"d": "#6e2e4b",
+							"B": "#301921",
+							"b": "#1a1315"
 						};
-						//Assigner end
 
-						elements.molten_crimsoil = {
-							tempLow: elements.dry_crimsoil.tempHigh,
-							stateLow: "dry_crimsoil"
-						};
-						crimsonObject.dirt = "crimsoil";
-						crimsonObject.dry_dirt = "dry_crimsoil";
-						crimsonObject.mud = "crimmud";
-						crimsonObject.mudstone = "crimmudstone";
-						crimsonObject.permafrost = "crimson_permafrost";
-						crimsonObject.molten_dirt = "molten_crimsoil";
-						crimsonObject.dry_permafrost = "dry_crimson_permafrost";
-						runAfterLoad(function() {
-							elements.crimsandy_water.color = ["#985460", "#a8606c", "#a05864", "#b46c74", "#84404c", "#985460", "#a8606c", "#a05864", "#b46c74", "#84404c", "#903844", "#b44450" ] //manual: use crimwater for the lerp in crimsand suspension's color
-							elements.crimmuddy_water.color = ["#ed4154", "#f25259", "#f2444c", "#f25a62", "#df428d" ]; //same for crimsoil (crimmud) susp.
-							elements.crimwater.reactions.crimsand = elements.water.reactions.crimsand;
-							elements.crimwater.reactions.crimmud = elements.water.reactions.crimmud;
-							for(var k in elements.crimsandy_water.reactions) {
-								var reactionObject = elements.crimsandy_water.reactions[k];
-								var e1 = reactionObject.elem1; var e2 = reactionObject.elem2;
-								if(e1 == "water") { reactionObject.elem1 = "crimwater" };
-								if(e2 == "water") { reactionObject.elem2 = "crimwater" };
-							};
-							for(var k in elements.crimmuddy_water.reactions) {
-								var reactionObject = elements.crimmuddy_water.reactions[k];
-								var e1 = reactionObject.elem1; var e2 = reactionObject.elem2;
-								if(e1 == "water") { reactionObject.elem1 = "crimwater" };
-								if(e2 == "water") { reactionObject.elem2 = "crimwater" };
-							};
-							elements.crimmuddy_water.reactions.crimmuddy_water.elem2 = "crimsoil_sediment";
-							elements.crimsoilstone.tempHigh = 800;
-						});
+						elements.blinkinite.behavior = behaviors.POWDER;
+						elements.rosephyllite.name = elements.rosephyllite.alias = "roséphyllite";
+						elements.jisoovesite.maxColorOffset = 30;
 
 					//Rainbow (actually let's call them Iridian)
 
@@ -23383,6 +25367,31 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								nellfireImmune: true,
 							};
 
+							
+
+							newDirtType(
+								{dirt: "rainbow_dirt", mud: "rainbow_mud", permafrost: "rainbow_permafrost", mudstone: "rainbow_mudstone"},
+								"#b09eac #b0bfa1 #d9c0b6 #b09eac #b0bfa1 #d9c0b6 #ed7777 #a7d975 #7bd4d4 #ab77e0 #e0cf77".split(" "),
+								1533, 942, -110
+							);
+
+							elements.rainbow_dirt._data = ["iridian","soil","particulate"];
+							elements.dry_rainbow_dirt._data = ["iridian","soil","particulate"];
+							elements.rainbow_mud._data = ["iridian","soil","wet_particulate"];
+							elements.rainbow_mudstone._data = ["iridian","soil","packed_particulate"];
+							elements.rainbow_permafrost._data = ["iridian","soil","icy_particulate"];
+							elements.dry_rainbow_permafrost._data = ["iridian","soil","particulate"];
+
+							elements.molten_rainbow_dirt = {
+								tempLow: elements.dry_rainbow_dirt.tempHigh,
+								stateLow: "dry_rainbow_dirt",
+								stateHigh: "rainbow_magma"
+							};
+							runAfterLoad(function() {
+								elements.rainbow_soilstone.tempHigh = 800;
+								elements.molten_rainbow_dirt.tempHigh = elements.rainbow_magma.tempHigh;
+							});
+
 						//Vanilla changes
 							elements.water.reactions.rainbow_sand = { elem1: null, elem2: "wet_rainbow_sand" };
 							elements.water.reactions.wet_rainbow_sand = { "elem1": "rainbow_sand_water", "elem2": [ "rainbow_sand", "rainbow_sand", "rainbow_sand", "rainbow_sand_water" ], "chance": 0.01 };
@@ -23398,31 +25407,20 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 
 								newIgneousCompositionFamily(
 									"rainbow",
-									133487,
-									5512,
-									-71,
-									-17,
-									4555,
 
-									"phirite",
-									makeRegularRainbow(6,70,45,"hex"),
-									1671,
-									4004,
+									133487, 5512, -71, -17, 4555,
 
-									"aphirite",
-									makeRegularRainbow(24,63,75,"hex").concat("#bfbfbf"),
-									1685,
-									3951,
+									"phirite", makeRegularRainbow(6,70,45,"hex"), 1671, 4004,
+									"metaphirite", makeRegularRainbow(7,60,35,"hex"), 1671, 4244,
 
-									"vesirite",
-									makeRegularRainbow(13,55,80,"hex").concat(makeRegularRainbow(13,45,50,"hex")),
-									1712,
-									2918,
+									"aphirite", makeRegularRainbow(24,63,75,"hex").concat("#bfbfbf"), 1685, 3951,
+									"metaaphirite", makeRegularRainbow(23,83,65,"hex").concat("#afafaf"), 1685, 4191,
 
-									"vitirite",
-									makeRegularRainbow(30,70,35,"hex").concat("#595959"),
-									2054,
-									3741,
+									"vesirite", makeRegularRainbow(7,55,30,"hex").concat(makeRegularRainbow(7,75,70,"hex")), 1712, 2918,
+									"metavesirite", makeRegularRainbow(5,66,80,"hex").concat(makeRegularRainbow(5,56,60,"hex")), 1712, 3118,
+
+									"vitirite", makeRegularRainbow(30,70,35,"hex").concat("#595959"), 2054, 3741,
+									"metavitirite", makeRegularRainbow(15,60,45,"hex").concat("#494949").concat(makeRegularRainbow(15,60,55,"hex")).concat("#797979"), 2054, 3941,
 
 									3,7
 								);
@@ -23704,6 +25702,133 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 													break;
 											};
 											break;
+										case "metaphanerite":
+											switch(info._data[2]) {
+												case "igneous_rock":
+													nellburnObject[name] = "sheolite"
+													break;
+												case "solid_igneous_rock":
+													nellburnObject[name] = "sheolite_wall"
+													break;
+												case "igneous_gravel":
+													nellburnObject[name] = "sheolite_gravel"
+													break;
+												case "particulate":
+													nellburnObject[name] = "sheolite_sand"
+													break;
+												case "dust":
+													nellburnObject[name] = "sheolite_dust"
+													break;
+												case "wet_particulate":
+													nellburnObject[name] = "wet_sheolite_sand"
+													break;
+												case "packed_particulate":
+													nellburnObject[name] = "packed_sheolite_sand"
+													break;
+												case "sediment":
+													nellburnObject[name] = "sheolite_sand_sediment"
+													break;
+												case "suspension":
+													nellburnObject[name] = "sheolite_sandy_water"
+													break;
+											};
+											break;
+										case "metaaphanite":
+											//console.log(info._data[2]);
+											switch(info._data[2]) {
+												case "igneous_rock":
+													nellburnObject[name] = "nellbolite"
+													break;
+												case "solid_igneous_rock":
+													nellburnObject[name] = "nellbolite_wall"
+													break;
+												case "igneous_gravel":
+													nellburnObject[name] = "nellbolite_gravel"
+													break;
+												case "particulate":
+													nellburnObject[name] = "nellbolite_sand"
+													break;
+												case "dust":
+													nellburnObject[name] = "nellbolite_dust"
+													break;
+												case "wet_particulate":
+													nellburnObject[name] = "wet_nellbolite_sand"
+													break;
+												case "packed_particulate":
+													nellburnObject[name] = "packed_nellbolite_sand"
+													break;
+												case "sediment":
+													nellburnObject[name] = "nellbolite_sand_sediment"
+													break;
+												case "suspension":
+													nellburnObject[name] = "nellbolite_sandy_water"
+													break;
+											};
+											break;
+										case "metavesiculite":
+											//console.log(info._data[2]);
+											switch(info._data[2]) {
+												case "igneous_rock":
+													nellburnObject[name] = "metahadiculite"
+													break;
+												case "solid_igneous_rock":
+													nellburnObject[name] = "metahadiculite_wall"
+													break;
+												case "igneous_gravel":
+													nellburnObject[name] = "metahadiculite_gravel"
+													break;
+												case "particulate":
+													nellburnObject[name] = "metahadiculite_sand"
+													break;
+												case "dust":
+													nellburnObject[name] = "metahadiculite_dust"
+													break;
+												case "wet_particulate":
+													nellburnObject[name] = "wet_metahadiculite_sand"
+													break;
+												case "packed_particulate":
+													nellburnObject[name] = "packed_metahadiculite_sand"
+													break;
+												case "sediment":
+													nellburnObject[name] = "metahadiculite_sand_sediment"
+													break;
+												case "suspension":
+													nellburnObject[name] = "metahadiculite_sandy_water"
+													break;
+											};
+											break;
+										case "metavitrite":
+											//console.log(info._data[2]);
+											switch(info._data[2]) {
+												case "igneous_rock":
+													nellburnObject[name] = "metagehitrite"
+													break;
+												case "solid_igneous_rock":
+													nellburnObject[name] = "metagehitrite_wall"
+													break;
+												case "igneous_gravel":
+													nellburnObject[name] = "metagehitrite_gravel"
+													break;
+												case "particulate":
+													nellburnObject[name] = "metagehitrite_sand"
+													break;
+												case "dust":
+													nellburnObject[name] = "metagehitrite_dust"
+													break;
+												case "wet_particulate":
+													nellburnObject[name] = "wet_metagehitrite_sand"
+													break;
+												case "packed_particulate":
+													nellburnObject[name] = "packed_metagehitrite_sand"
+													break;
+												case "sediment":
+													nellburnObject[name] = "metagehitrite_sand_sediment"
+													break;
+												case "suspension":
+													nellburnObject[name] = "metagehitrite_sandy_water"
+													break;
+											};
+											break;
 										case "phanerite_sandstone":
 											nellburnObject[name] = "gehennite_sandstone"
 											break;
@@ -23715,6 +25840,18 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 											break;
 										case "vitrite_sandstone":
 											nellburnObject[name] = "gehidian_sandstone"
+											break;
+										case "metaphanerite_sandstone":
+											nellburnObject[name] = "sheolite_sandstone"
+											break;
+										case "metaaphanite_sandstone":
+											nellburnObject[name] = "nellbolite_sandstone"
+											break;
+										case "metavesiculite_sandstone":
+											nellburnObject[name] = "metahadiculite_sandstone"
+											break;
+										case "metavitrite_sandstone":
+											nellburnObject[name] = "metagehitrite_sandstone"
 											break;
 										case "silica_sandstone":
 											nellburnObject[name] = "nellsandstone"
@@ -23791,6 +25928,15 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 													break;
 											};
 											break;
+										case "crystalline_sandstone":
+										case "soil_sandstone":
+											nellburnObject[name] = "nell_ash"
+											break;
+										case "sedimentary":
+											if(info._data[0] == "calcium") {
+												nellburnObject[name] = "black_limestone";
+												break
+											};
 										default:
 											console.log("Nellburn assignment: Unknown _data[1] value for element",name,info._data);
 									};
@@ -23806,31 +25952,20 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 
 							newIgneousCompositionFamily(
 								"nellish",
-								10,
-								3012,
-								-96,
-								-12,
-								3812,
 
-								"gehennite",
-								["#857c71", "#b5a98d", "#91847c", "#948b68", "#8a834a", "#adad34"],
-								2011,
-								3432,
+								10, 3012, -96, -12, 3812,
 
-								"nellrock",
-								["#a15a42","#997849","#946043","#8c533e","#a66658"],
-								2036,
-								3371,
+								"gehennite", ["#857c71", "#b5a98d", "#91847c", "#948b68", "#8a834a", "#adad34"], 2011, 3432,
+								"sheolite", ["#785848","#8c7e5b","#9c745c","#80463b"], 2011, 3852,
 
-								"hadean_sponge",
-								["#e66785", "#b54761", "#cc8156", "#dbc760", "#ab9a44"],
-								2213,
-								1012,
+								"nellrock", ["#a15a42","#997849","#946043","#8c533e","#a66658"], 2036, 3371,
+								"nellbolite", ["#7a3017","#693d21","#8a673a"], 2036, 3671,
 
-								"gehidian",
-								["#754c2f", "#855d3a", "#702a1c", "#691a41"],
-								2054,
-								3112,
+								"hadean_sponge", ["#e66785", "#b54761", "#cc8156", "#dbc760", "#ab9a44"], 2213, 1012,
+								"metahadiculite", ["#a0a35d","#665d37", "#7b804d", "#869151", "#6e443f"], 2213, 1412,
+
+								"gehidian", ["#754c2f", "#855d3a", "#702a1c", "#691a41"], 2054, 3112,
+								"metagehitrite", ["#5e4f2a","#53544e", "#68787a", "#454f46", "#5e584b"], 2054, 3312,
 
 								1,9
 							);
@@ -23881,6 +26016,375 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									elements[resultingAutoElems[i]].nellfireImmune = true;
 								};
 							});
+					
+					//Crimson transformation assigner
+						runAfterAutogen(function() {
+							crimsonAssignmentUnknownData1Errors = {};
+							
+							var rockdataElements = Object.keys(elements).filter(function(name) {
+								return (
+									elements[name]._data && 
+									!["crimson"].includes(elements[name]._data[0])
+								)
+							});
+
+							for(i = 0; i < rockdataElements.length; i++) {
+								var name = rockdataElements[i];
+								var info = elements[name];
+								switch(info._data[1]) {
+									case "phanerite":
+										switch(info._data[2]) {
+											case "igneous_rock":
+												crimsonObject[name] = "crimstone"
+												break;
+											case "solid_igneous_rock":
+												crimsonObject[name] = "crimstone_wall"
+												break;
+											case "igneous_gravel":
+												crimsonObject[name] = "crimstone_gravel"
+												break;
+											case "particulate":
+												crimsonObject[name] = "crimstone_sand"
+												break;
+											case "dust":
+												crimsonObject[name] = "crimstone_dust"
+												break;
+											case "wet_particulate":
+												crimsonObject[name] = "wet_crimstone_sand"
+												break;
+											case "packed_particulate":
+												crimsonObject[name] = "packed_crimstone_sand"
+												break;
+											case "sediment":
+												crimsonObject[name] = "crimstone_sand_sediment"
+												break;
+											case "suspension":
+												crimsonObject[name] = "crimstone_sandy_water"
+												break;
+										};
+										break;
+									case "aphanite":
+										//console.log(info._data[2]);
+										switch(info._data[2]) {
+											case "igneous_rock":
+												crimsonObject[name] = "crimsalt"
+												break;
+											case "solid_igneous_rock":
+												crimsonObject[name] = "crimsalt_wall"
+												break;
+											case "igneous_gravel":
+												crimsonObject[name] = "crimsalt_gravel"
+												break;
+											case "particulate":
+												crimsonObject[name] = "crimsalt_sand"
+												break;
+											case "dust":
+												crimsonObject[name] = "crimsalt_dust"
+												break;
+											case "wet_particulate":
+												crimsonObject[name] = "wet_crimsalt_sand"
+												break;
+											case "packed_particulate":
+												crimsonObject[name] = "packed_crimsalt_sand"
+												break;
+											case "sediment":
+												crimsonObject[name] = "crimsalt_sand_sediment"
+												break;
+											case "suspension":
+												crimsonObject[name] = "crimsalt_sandy_water"
+												break;
+										};
+										break;
+									case "vesiculite":
+										//console.log(info._data[2]);
+										switch(info._data[2]) {
+											case "igneous_rock":
+												crimsonObject[name] = "crimscoria"
+												break;
+											case "solid_igneous_rock":
+												crimsonObject[name] = "crimscoria_wall"
+												break;
+											case "igneous_gravel":
+												crimsonObject[name] = "crimscoria_gravel"
+												break;
+											case "particulate":
+												crimsonObject[name] = "crimscoria_sand"
+												break;
+											case "dust":
+												crimsonObject[name] = "crimscoria_dust"
+												break;
+											case "wet_particulate":
+												crimsonObject[name] = "wet_crimscoria_sand"
+												break;
+											case "packed_particulate":
+												crimsonObject[name] = "packed_crimscoria_sand"
+												break;
+											case "sediment":
+												crimsonObject[name] = "crimscoria_sand_sediment"
+												break;
+											case "suspension":
+												crimsonObject[name] = "crimscoria_sandy_water"
+												break;
+										};
+										break;
+									case "vitrite":
+										//console.log(info._data[2]);
+										switch(info._data[2]) {
+											case "igneous_rock":
+												crimsonObject[name] = "crimidian"
+												break;
+											case "solid_igneous_rock":
+												crimsonObject[name] = "crimidian_wall"
+												break;
+											case "igneous_gravel":
+												crimsonObject[name] = "crimidian_gravel"
+												break;
+											case "particulate":
+												crimsonObject[name] = "crimidian_sand"
+												break;
+											case "dust":
+												crimsonObject[name] = "crimidian_dust"
+												break;
+											case "wet_particulate":
+												crimsonObject[name] = "wet_crimidian_sand"
+												break;
+											case "packed_particulate":
+												crimsonObject[name] = "packed_crimidian_sand"
+												break;
+											case "sediment":
+												crimsonObject[name] = "crimidian_sand_sediment"
+												break;
+											case "suspension":
+												crimsonObject[name] = "crimidian_sandy_water"
+												break;
+										};
+										break;
+									case "metaphanerite":
+										switch(info._data[2]) {
+											case "igneous_rock":
+												crimsonObject[name] = "metacrimstone"
+												break;
+											case "solid_igneous_rock":
+												crimsonObject[name] = "metacrimstone_wall"
+												break;
+											case "igneous_gravel":
+												crimsonObject[name] = "metacrimstone_gravel"
+												break;
+											case "particulate":
+												crimsonObject[name] = "metacrimstone_sand"
+												break;
+											case "dust":
+												crimsonObject[name] = "metacrimstone_dust"
+												break;
+											case "wet_particulate":
+												crimsonObject[name] = "wet_metacrimstone_sand"
+												break;
+											case "packed_particulate":
+												crimsonObject[name] = "packed_metacrimstone_sand"
+												break;
+											case "sediment":
+												crimsonObject[name] = "metacrimstone_sand_sediment"
+												break;
+											case "suspension":
+												crimsonObject[name] = "metacrimstone_sandy_water"
+												break;
+										};
+										break;
+									case "metaaphanite":
+										//console.log(info._data[2]);
+										switch(info._data[2]) {
+											case "igneous_rock":
+												crimsonObject[name] = "metacrimsalt"
+												break;
+											case "solid_igneous_rock":
+												crimsonObject[name] = "metacrimsalt_wall"
+												break;
+											case "igneous_gravel":
+												crimsonObject[name] = "metacrimsalt_gravel"
+												break;
+											case "particulate":
+												crimsonObject[name] = "metacrimsalt_sand"
+												break;
+											case "dust":
+												crimsonObject[name] = "metacrimsalt_dust"
+												break;
+											case "wet_particulate":
+												crimsonObject[name] = "wet_metacrimsalt_sand"
+												break;
+											case "packed_particulate":
+												crimsonObject[name] = "packed_metacrimsalt_sand"
+												break;
+											case "sediment":
+												crimsonObject[name] = "metacrimsalt_sand_sediment"
+												break;
+											case "suspension":
+												crimsonObject[name] = "metacrimsalt_sandy_water"
+												break;
+										};
+										break;
+									case "metavesiculite":
+										//console.log(info._data[2]);
+										switch(info._data[2]) {
+											case "igneous_rock":
+												crimsonObject[name] = "metacrimscoria"
+												break;
+											case "solid_igneous_rock":
+												crimsonObject[name] = "metacrimscoria_wall"
+												break;
+											case "igneous_gravel":
+												crimsonObject[name] = "metacrimscoria_gravel"
+												break;
+											case "particulate":
+												crimsonObject[name] = "metacrimscoria_sand"
+												break;
+											case "dust":
+												crimsonObject[name] = "metacrimscoria_dust"
+												break;
+											case "wet_particulate":
+												crimsonObject[name] = "wet_metacrimscoria_sand"
+												break;
+											case "packed_particulate":
+												crimsonObject[name] = "packed_metacrimscoria_sand"
+												break;
+											case "sediment":
+												crimsonObject[name] = "metacrimscoria_sand_sediment"
+												break;
+											case "suspension":
+												crimsonObject[name] = "metacrimscoria_sandy_water"
+												break;
+										};
+										break;
+									case "metavitrite":
+										//console.log(info._data[2]);
+										switch(info._data[2]) {
+											case "igneous_rock":
+												crimsonObject[name] = "metacrimidian"
+												break;
+											case "solid_igneous_rock":
+												crimsonObject[name] = "metacrimidian_wall"
+												break;
+											case "igneous_gravel":
+												crimsonObject[name] = "metacrimidian_gravel"
+												break;
+											case "particulate":
+												crimsonObject[name] = "metacrimidian_sand"
+												break;
+											case "dust":
+												crimsonObject[name] = "metacrimidian_dust"
+												break;
+											case "wet_particulate":
+												crimsonObject[name] = "wet_metacrimidian_sand"
+												break;
+											case "packed_particulate":
+												crimsonObject[name] = "packed_metacrimidian_sand"
+												break;
+											case "sediment":
+												crimsonObject[name] = "metacrimidian_sand_sediment"
+												break;
+											case "suspension":
+												crimsonObject[name] = "metacrimidian_sandy_water"
+												break;
+										};
+										break;
+									case "phanerite_sandstone":
+										crimsonObject[name] = "crimstone_sandstone"
+										break;
+									case "aphanite_sandstone":
+										crimsonObject[name] = "crimsalt_sandstone"
+										break;
+									case "vesiculite_sandstone":
+										crimsonObject[name] = "crimscoria_sandstone"
+										break;
+									case "vitrite_sandstone":
+										crimsonObject[name] = "crimidian_sandstone"
+										break;
+									case "phanerite_sandstone":
+										crimsonObject[name] = "metacrimstone_sandstone"
+										break;
+									case "aphanite_sandstone":
+										crimsonObject[name] = "metacrimsalt_sandstone"
+										break;
+									case "vesiculite_sandstone":
+										crimsonObject[name] = "metacrimscoria_sandstone"
+										break;
+									case "vitrite_sandstone":
+										crimsonObject[name] = "metacrimidian_sandstone"
+										break;
+									case "crystalline_sandstone":
+									case "silica_sandstone":
+									case "sedimentary":
+									case "rock":
+									case "sandstone":
+									case "silica":
+										crimsonObject[name] = "crimsandstone"
+										break;
+									case "soil_sandstone":
+										crimsonObject[name] = "crimsoilstone"
+										break;
+									case "rainbow_soil_sandstone":
+										crimsonObject[name] = "crimsoilstone"
+										break;
+									case "magma":
+										switch(info._data[2]) {
+											case "liquid":
+												crimsonObject[name] = "crimson_magma"
+												break;
+											case "vaporized":
+												crimsonObject[name] = "vaporized_crimson_magma"
+												break;
+											case "cloud":
+												crimsonObject[name] = "crimson_magma_cloud"
+												break;
+										};
+										break;
+									case "crystalline":
+										switch(info._data[2]) {
+											case "particulate":
+												crimsonObject[name] = "crimsand"
+												break;
+											case "wet_particulate":
+												crimsonObject[name] = "wet_crimsand"
+												break;
+											case "packed_particulate":
+												crimsonObject[name] = "packed_crimsand"
+												break;
+											case "suspension":
+												crimsonObject[name] = "crimsand_water"
+												break;
+											case "sediment":
+												crimsonObject[name] = "crimsand_sediment"
+												break;
+										};
+										break;
+									case "soil":
+									case "dry_soil":
+									case "clay":
+										switch(info._data[2]) {
+											case "particulate":
+												crimsonObject[name] = "crimsand"
+												break;
+											case "suspension":
+												crimsonObject[name] = "crimsand_water"
+												break;
+											case "sediment":
+												crimsonObject[name] = "crimsand_sediment"
+												break;
+										};
+										break;
+									default:
+										crimsonAssignmentUnknownData1Errors[name] = info._data;
+								};
+							};
+							
+							
+							//Manual overrides because JavaScript sees the cases and pretends it doesn't know what they mean
+							crimsonObject.soilstone = "crimsoilstone";
+							crimsonObject.sandstone = "crimsandstone";
+							crimsonObject.rosephyllite = "metacrimsalt";
+						});
+					//Assigner end
+
+
 
 		/*	//Rocks
 
@@ -24010,9 +26514,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					elements.molten_titanium ??= {}; elements.molten_titanium.tempHigh = 3287;
 					elements.molten_iron ??= {}; elements.molten_iron.tempHigh = 2861;
 					elements.molten_chromium ??= {}; elements.molten_chromium.tempHigh = 2671;
-					elements.molten_copper ??= {}; elements.molten_molten_copper.tempHigh = 4700;
+					elements.molten_copper ??= {}; elements.molten_copper.tempHigh = 4700;
 					elements.molten_alumina ??= {};
 					elements.molten_alumina.tempHigh = 5400;
+					elements.molten_alumina.state = "liquid";
+					elements.molten_alumina.autoType = "gas";
 					elements.molten_alumina.reactions ??= {};
 					elements.molten_alumina.reactions.iron_scrap = {elem1: "molten_sapphire", elem2: ["molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron",null] };
 					elements.molten_alumina.reactions.molten_iron = {elem1: "molten_sapphire", elem2: ["molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron",null] };
@@ -24185,6 +26691,18 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						hardness: 0.45,
 					};
 
+				//Jade
+
+					elements.jadeite = {
+						color: ["#3D7D31", "#2D6D1F", "#538A2F", "#6A9A37"],
+						tempHigh: 1000,
+						behavior: behaviors.POWDER,
+						category: "powders",
+						state: "solid",
+						density: 3400,
+						hardness: 0.65,
+					};
+
 			//Soil
 
 				//Dry dirt
@@ -24292,7 +26810,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							};
 							for(var i in adjacentCoords) {
 								if(Math.random() < 0.005) {
-									pixel.temp+=1;
+									pixel.temp++;
 									var newCoords = [
 										pixel.x+adjacentCoords[i][0],
 										pixel.y+adjacentCoords[i][1]
@@ -24345,11 +26863,48 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						viscosity: 80.1,	//probably misinterpreting tickDelta, and w/o the game assets, I can't compare against water, so this is in relation to H2SO4 scaled to its density in cP and under the assumption that water visc = 1
 					}
 
+					/*
+						//Metamorphism will be driven using solely temperature. 
+						//Pressure simulation, due to how the game is coded, will be limited to requiring the rock to be surrounded.
+
+					elements.slate = {
+						color: ["#787B80", "#535557", "#695E58", "#696969", "#6B5D5B"],
+						tempHigh: 200,
+						stateHigh: "felsic_magma",
+						category: "solid rock",
+						state: "solid",
+						density: 2640,
+						hardness: 0.7,
+						maxColorOffset: 15,
+						hardness: 0.3,
+						_data: ["clay", "rock", "sedimentary_rock"]
+					};
+
+					elements.shale.onTryMoveInto = function(pixel,otherPixel) {
+						var otherData = elements[otherPixel.element];
+						if(otherData.category == "magmas" && Math.random() < 0.005 && pixel.temp > 650) {
+							var around = getCirclePixels(pixel.x,pixel.y,2);
+							around.forEach(pixel => changePixel(pixel,"hornfels"));
+							return
+						};
+						if(pixel.exposedToAir) { return };
+						if(pixel.temp > 800 && Math.random () < 0.0007) {
+							changePixel(pixel,"migmatite")
+						} else if(pixel.temp > 600 && Math.random () < 0.001) {
+							changePixel(pixel,"gneiss")
+						} else if(pixel.temp > 400 && Math.random () < 0.001) {
+							changePixel(pixel,"schist")
+						} else if(pixel.temp > 200 && Math.random () < 0.001) {
+							changePixel(pixel,"slate")
+						};
+						return
+					};*/
+
 					runAfterLoad(function() {
 						rocksSandsAndSoilsToGiveHotForms = Object.keys(elements).filter(
 							function(elemName) {
 								//console.log(elemName,elements[elemName]._data?.[2]);
-								return (!("clay","limestone","black_limestone","shale".includes(elemName)) && ["igneous_rock","solid_igneous_rock","igneous_gravel","sedimentary_rock","particulate"].includes(elements[elemName]._data?.[2]))
+								return (!(["clay","limestone","black_limestone"].includes(elemName)) && ["igneous_rock","solid_igneous_rock","igneous_gravel","sedimentary_rock","particulate","packed_particulate","metamorphic_rock","solid_metamorphic_rock","metamorphic_gravel"].includes(elements[elemName]._data?.[2]))
 							}
 						);
 						if(rocksSandsAndSoilsToGiveHotForms.includes("clay")) { rocksSandsAndSoilsToGiveHotForms.splice(rocksSandsAndSoilsToGiveHotForms.indexOf("clay"),1) };
@@ -24357,6 +26912,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						elements.hot_crimsoilstone.stateHigh = "molten_crimsoil";
 						elements.crimsoil.tempHigh = 100;
 						elements.crimsoil.stateHigh = "dry_crimsoil";
+						elements.hot_rainbow_soilstone.stateHigh = "molten_rainbow_dirt";
+						elements.rainbow_dirt.tempHigh = 100;
+						elements.rainbow_dirt.stateHigh = "dry_rainbow_dirt";
 					});
 
 		//Generation
@@ -24960,6 +27518,16 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 
 	//PRIMITIVE IN-GAME CONSOLE ##
 	//featuring stars
+		customWorldTypes = {};
+		if(localStorage.getItem("customWorldTypes") == null) {
+			localStorage.setItem("customWorldTypes",JSON.stringify(customWorldTypes))	
+		} else {
+			customWorldTypes = JSON.parse(localStorage.getItem("customWorldTypes"));
+			for(var name in customWorldTypes) {
+				worldgentypes[name] = customWorldTypes[name]
+			};
+			runAfterLoad(rebuildWorldgenList)
+		};
 
 		var promptInputNullishes = ["null","none","","n/a"];
 		var eightSpaces = " ".repeat(8);
@@ -25374,9 +27942,10 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 		}
 
 		function rebuildWorldgenList() { //vanilla code
+			document.getElementById("worldgenselect").innerHTML = '<option value="off">Disabled</option>';
 			for (var key in worldgentypes) {
 				document.getElementById("worldgenselect").innerHTML += "<option value='" + key + "'>" + key.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase()) + "</option>";
-			}
+			};
 		};
 
 		function bareClear() {
@@ -26142,6 +28711,8 @@ height: ${height}
 						};
 					};
 					worldgentypes[presetName] = newPreset;
+					customWorldTypes[presetName] = newPreset;
+					localStorage.setItem("customWorldTypes",JSON.stringify(customWorldTypes));
 					settings.worldgen = presetName;
 					rebuildWorldgenList();
 
@@ -26419,8 +28990,23 @@ Make sure to save your command in a file if you want to add this preset again.`
 			})
 		});
 		lightlikes = ["light","flash","laser","radiation","insulate_flash"];
+		firelikes = ["fire","plasma","smoke","stellar_plasma","liquid_plasma","liquid_stellar_plasma"];
 		grbBreakIntos = Object.keys(elements).filter(function(elemName) {
-			return elements[elemName].breakInto && elements[elemName].breakInto.includes("gamma_ray_burst");
+			var to = typeof(elements[elemName]);
+			if(to == "undefined") {
+				return false
+			} else {
+				var to2 = typeof(elements[elemName].breakInto);
+				if(to2 == "undefined") {
+					return false
+				} else {
+					if(elements[elemName].breakInto instanceof Array) {
+						return elements[elemName].breakInto.includes("gamma_ray_burst")
+					} else {
+						return elements[elemName].breakInto == "gamma_ray_burst"
+					}
+				}
+			}
 		});
 
 		elements.insulate_flash = {
@@ -26579,6 +29165,75 @@ Make sure to save your command in a file if you want to add this preset again.`
 				deletePixel(pixel.x, pixel.y);
 			},
 			temp: -200,
+			category: "energy",
+			state: "gas",
+			excludeRandom: true,
+			noMix: true
+		};
+
+		elements.melt_ray = {
+			color: ["#ffbf7f","#ffffbf"],
+			tick: function(pixel) {
+				var x = pixel.x;
+				for (var y = pixel.y; y < height; y++) {
+					if (outOfBounds(x, y)) {
+						break;
+					}
+					if (isEmpty(x, y)) {
+						if (Math.random() > 0.02) { continue }
+						createPixel("insulate_flash", x, y);
+						pixelMap[x][y].color = "#e1f8fc";
+					}
+					else {
+						var otherPixel = pixelMap[x][y];
+						var otherInfo = elements[otherPixel.element];
+						//Gas: Heat, always penetrate
+						if (otherInfo.isGas) {
+							if(Math.random() < 0.05 && otherInfo.stateLow) {
+								meltPixel(otherPixel)
+							};
+							if(elements[otherPixel.element].isSun) {
+								otherPixel.temp += 0.5;
+							} else {
+								otherPixel.temp += 50;
+							};
+							continue;
+						};
+
+						//Self: Break
+						if (otherInfo.id === elements.melt_ray.id) { break }
+
+						//Non-gas, Melt chance, heat more, half penetrate
+						if(Math.random() < 0.05 && !otherInfo.isGas) {
+							meltPixel(otherPixel)
+						};
+						pixelMap[x][y].temp += 200;
+
+						if(Math.random() < 0.05) {
+
+							if(!isEmpty(x,y-1,false)) {
+								if(pixelMap[x]?.[y-1]?.element && lightlikes.includes(pixelMap[x][y-1].element)) {
+									deletePixel(x,y-1);
+								};
+							};
+							var newPlasma = tryCreatePixelReturn("liquid_plasma",x,y-1);
+							if(newPlasma) { newPlasma.temp += 500 };
+						};
+
+						//Penetrate snow and ice
+						if(firelikes && firelikes.includes(otherPixel.element)) {
+							continue;
+						};
+
+						if(Math.random() < 0.7) { //thanks, I hate random continue
+							continue;
+						};
+						break;
+					}
+				}
+				deletePixel(pixel.x, pixel.y);
+			},
+			temp: 4000,
 			category: "energy",
 			state: "gas",
 			excludeRandom: true,
@@ -26843,10 +29498,10 @@ Make sure to save your command in a file if you want to add this preset again.`
 				}
 			}
 		};
-		
+
 		rayAbsorbElements = [];
 		rayPassElements = [];
-		
+
 		function summonRay(element,xIn,intensity,radius) {
 			var forMin = 0 - radius;
 			var forMax = radius + 1;
@@ -27037,6 +29692,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hardness: 0.85,
 			conduct: 1,
 			state: "solid",
+			movable: false
 		}
 
 		elements.down_pusher = {
@@ -27067,6 +29723,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hardness: 0.85,
 			conduct: 1,
 			state: "solid",
+			movable: false
 		}
 
 		elements.left_pusher = {
@@ -27097,6 +29754,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hardness: 0.85,
 			conduct: 1,
 			state: "solid",
+			movable: false
 		}
 
 		elements.right_pusher = {
@@ -27127,6 +29785,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hardness: 0.85,
 			conduct: 1,
 			state: "solid",
+			movable: false
 		}
 
 		elements.up_e_pusher = {
@@ -27169,6 +29828,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hardness: 0.85,
 			conduct: 1,
 			state: "solid",
+			movable: false
 		}
 
 		elements.down_e_pusher = {
@@ -27211,6 +29871,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hardness: 0.85,
 			conduct: 1,
 			state: "solid",
+			movable: false
 		}
 
 		elements.left_e_pusher = {
@@ -27253,6 +29914,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hardness: 0.85,
 			conduct: 1,
 			state: "solid",
+			movable: false
 		}
 
 		elements.right_e_pusher = {
@@ -27295,6 +29957,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hardness: 0.85,
 			conduct: 1,
 			state: "solid",
+			movable: false
 		}
 
 	//PORTALS ##
@@ -27313,6 +29976,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			},
 			insulate: true,
 			onTryMoveInto: function(pixel,otherPixel) {
+			  try {
 				if(pixel._correspondingPortals == null) {
 					return;
 				};
@@ -27372,6 +30036,13 @@ Make sure to save your command in a file if you want to add this preset again.`
 				} else {
 					tryMove(otherPixel,destination.x,destination.y);
 				};
+			  } catch(error) {
+				//ignore stack overflows
+			    if(error.toString().includes("call stack")) {
+				} else {
+					throw new Error("error")
+				}
+			  }
 			},
 			tick: function(pixel) {
 				pixel._channel = Math.floor(pixel.temp / 100);
@@ -27391,13 +30062,12 @@ Make sure to save your command in a file if you want to add this preset again.`
 			},
 			category: "machines",
 			state: "solid",
+			breakInto: ["radiation","laser","iridium","essence","ionized_deuterium","electron","magic","steel","pop","unstable_mistake","explosion","magic","steel","proton","electron","radiation","laser","iridium"],
+			hardness: 0.999
 		},
 
 		elements.portal_out = {
 			color: "#2222ee",
-			properties: {
-				channel: 0
-			},
 			insulate: true,
 			tick: function(pixel) {
 				pixel._channel = Math.floor(pixel.temp / 100);
@@ -27406,6 +30076,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "machines",
 			state: "solid",
 			insulate: true,
+			breakInto: ["radiation","laser","iridium","essence","ionized_deuterium","electron","magic","steel","pop","unstable_mistake","explosion","magic","steel","proton","electron","radiation","laser","iridium"],
+			hardness: 0.999
 		}
 
 	//MOBS ##
@@ -27588,28 +30260,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};		
 		};
-
-		function breakPixel(pixel,changetemp=false,defaultBreakIntoDust=false) {
-			var info = elements[pixel.element];
-			if(typeof(info.breakInto) === "undefined") {
-				if(defaultBreakIntoDust) {
-					if(Math.random() < defaultBreakIntoDust) { changePixel(pixel,"dust",changetemp) };
-				};
-				return defaultBreakIntoDust;
-			};
-			var breakIntoElement = info.breakInto;
-			if(Array.isArray(breakIntoElement)) {
-				breakIntoElement = breakIntoElement[Math.floor(Math.random() * breakIntoElement.length)]
-			};
-			if(typeof(breakIntoElement) === "undefined" || breakIntoElement === null) {
-				deletePixel(pixel.x,pixel.y);
-				return true;
-			};
-			changePixel(pixel,breakIntoElement,changetemp)
-			return true;
-		};
-
-		defaultHardness = 0;
 
 		function arrowAltTb(pixel,breakChanceMultiplier,changetemp=false,defaultBreakIntoDust=false) {
 			var info = elements[pixel.element];
@@ -32627,7 +35277,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			bomb: { panicChange: 0.2, panicChangeChance: 0.4, moodChange: -0.3 },
 			tnt: { panicChange: 0.2, panicChangeChance: 0.4, moodChange: 0 },
 			dynamite: { panicChange: 0.2, panicChangeChance: 0.4, moodChange: -0.3 },
-			anti_bomb: { panicChange: 0.2, panicChangeChance: 0.4, moodChange: -0.3 },
+			upward_bomb: { panicChange: 0.2, panicChangeChance: 0.4, moodChange: -0.3 },
 			cluster_bomb: { panicChange: 0.2, panicChangeChance: 0.4, moodChange: -0.4 },
 			landmine: { panicChange: 0.25, panicChangeChance: 0.1, moodChange: -0.3 },
 			fireball: { panicChange: 0.25, panicChangeChance: 0.45, moodChange: -0.35 },
@@ -33176,7 +35826,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 
 		kep1er = [
 								//Conn. 0	Conn. -	  Conn. 1
-			["first_impact",	["#B4294A","#CB7431","#6134B5"]],
+			["first_impact",	["#E34B6E","#FE9F19","#8E5ECE"]],
 								//Lemon Bl.	B1ue Bl.
 			["doublast",		["#FFFB1D","#2B8FFF"]],
 								//not edition colors because i'm not doing all of those and they're all really similar anyway (the kep1ian editions are too similar amongst themselves)
@@ -33214,7 +35864,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 						if(directions.length > 0) {
 							tryMove(pixel,pixel.x+directions[Math.floor(Math.random() * directions.length)],pixel.y)
 						};
-					}
+					};
+					doHeat(pixel);
 				},
 				reactions: {
 					water: { elem1: ["plastic","cellulose","cellulose"], elem2: ["water","water","cellulose",null,null], chance: 0.8 }
@@ -33262,7 +35913,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		};
 
 		elements.sponge.onTryMoveInto = function(pixel,otherPixel) {
-			var absorbedElements = Object.keys(pixel.absorbed);
+			var absorbedElements = Object.keys(pixel.absorbed ?? {});
 			if(absorbedElements.length == 0) {
 				return false;
 			};
@@ -33512,9 +36163,42 @@ Make sure to save your command in a file if you want to add this preset again.`
 							};
 							createPixel(newfire,x,y); //add fire
 							var firePixel = pixelMap[x][y];
-							firePixel.temp = Math.max(elements[newfire].temp,firePixel.temp);
+							firePixel.temp = Math.max(elements[newfire].temp ?? 0,elements.fire.temp,firePixel.temp ?? 0);
 							firePixel.burning = true;
 						};
+					};
+				};
+
+				elements.disappear = {
+					color: "#7f7f7f",
+					behavior: behaviors.SELFDELETE,
+					insulate: true,
+					temp: -273.15,
+					hardness: 0,
+					excludeRandom: true,
+					category: "other"
+				};
+
+				function forcebombVelocity(pixel,x,y,radius,fire,smoke,power,damage) {
+					var coords = circleCoords(pixel.x,pixel.y,radius);
+					for (var i = 0; i < coords.length; i++) {
+						var coordX = coords[i].x;
+						var coordY = coords[i].y;
+						if(!isEmpty(coordX,coordY,true)) {
+							let pixelle = pixelMap[coordX]?.[coordY];
+							if(typeof(pixelle) !== "object" || pixelle === null) { continue };
+							if(coordX === x && coordY === y) {
+								if(pixelle.element === "force_bomb") { fuckingDeletePixel(pixelle); continue }
+							};
+							// set the pixelle.vx and pixelle.vy depending on the angle and power
+							var angle = Math.atan2(pixelle.y-y,pixelle.x-x);
+							pixelle.vx = Math.round(4 * (pixelle.vx|0) + (5 * Math.cos(angle) * (radius * power/5)));
+							pixelle.vx += (3 * Math.sign(pixelle.vx));
+							pixelle.vx = Math.sign(pixelle.vx) == -1 ? bound(pixelle.vx,-100,0) : bound(pixelle.vx,0,100);
+							pixelle.vy = Math.round(4 * (pixelle.vy|0) + (5 * Math.sin(angle) * (radius * power/5)));
+							pixelle.vy += (3 * Math.sign(pixelle.vy));
+							pixelle.vy = Math.sign(pixelle.vx) == -1 ? bound(pixelle.vy,-100,0) : bound(pixelle.vy,0,100);
+						}
 					};
 				};
 
@@ -33522,6 +36206,419 @@ Make sure to save your command in a file if you want to add this preset again.`
 					//console.log(`Radius: ${radius}\nPower: ${power}\nPixel: (${pixel.x},${pixel.y})\nDamage: ${damage}`);
 					//console.log(`Expected temperature increase for pixel at (${pixel.x},${pixel.y}): ${800 * ((1 + (7 * damage)) ** 2) * ((power ** 2) * 1.5)}`);
 					pixel.temp += (800 * ((1 + (7 * damage)) ** 2) * ((power ** 2) * 1.5));
+				};
+
+				//explodeAtPlus(x,y,radius,fire="fire",smoke="smoke",beforeFunction=null,afterFunction=null,changeTemp=true) {
+				//beforeFunction(pixel,x,y,radius,fire,smoke,power,damage)
+				function wallBombBeforeFunction(pixel,x,y,radius,fire,smoke,power,damage) {
+					var hardness = (elements[pixel.element].hardness ?? 0) / 2;
+					damage = damage * ((1 - hardness)*10);
+					//console.log(damage);
+					if(damage > 0.25) {
+						pixel.breakInto ? breakPixel(pixel) : deletePixel(pixel.x,pixel.y)
+					};
+					return
+				};
+				
+				elements.wall_bomb = {
+					color: "#af8f8f",
+					tick: function(pixel) {
+						doDefaults(pixel);
+						if(!isEmpty(pixel.x,pixel.y-1,true)) { //[0][1] EX (ignore bounds)
+							var newPixel = pixelMap[pixel.x][pixel.y-1];
+							var newElement = newPixel.element;
+							var newInfo = elements[newElement];
+							if(newInfo.state !== "gas" && newElement !== pixel.element) {
+								explodeAtPlus(pixel.x,pixel.y,10,"fire","smoke",wallBombBeforeFunction,null,false);
+								if(pixel) { deletePixel(pixel.x,pixel.y) };
+								return
+							};
+						};
+						if(!isEmpty(pixel.x,pixel.y+1,true)) { //[2][1] EX (don't ignore bounds, non-bound case)
+							var newPixel = pixelMap[pixel.x][pixel.y+1];
+							var newElement = newPixel.element;
+							var newInfo = elements[newElement];
+							if(newInfo.state !== "gas" && newElement !== pixel.element) {
+								explodeAtPlus(pixel.x,pixel.y,10,"fire","smoke",wallBombBeforeFunction,null,false);
+								if(pixel) { deletePixel(pixel.x,pixel.y) };
+								return
+							};
+						};
+						if(outOfBounds(pixel.x,pixel.y+1)) { //[2][1] EX (don't ignore bounds, bound case)
+							explodeAtPlus(pixel.x,pixel.y,10,"fire","smoke",wallBombBeforeFunction,null,false);
+							if(pixel) { deletePixel(pixel.x,pixel.y) };
+							return
+						};
+						if(!tryMove(pixel,pixel.x,pixel.y+1)) { //behaviors.POWDER
+							Math.random() < 0.5 ? tryMove(pixel,pixel.x-1,pixel.y+1) : tryMove(pixel,pixel.x+1,pixel.y+1);
+						};
+					},
+					category: "weapons",
+					state: "solid",
+					density: 3000,
+					excludeRandom: true,
+				};
+
+				elements.tsunami = {
+					color: ["#2449d1","#4b6adb","#8093d9"],
+					behavior: behaviors.WALL,
+					properties: {
+						active: true,
+					},
+					tick: function(pixel) {
+						//Iteration initial checks
+							if(!pixel) {
+								return;
+							};
+							if(!pixel.active) {
+								deletePixel(pixel.x,pixel.y);
+							};
+						
+						//Initial property-setting
+							var pixelIsOnLeft = (pixel.x < (width/2));
+							pixel.fromX ??= pixelIsOnLeft ? 1 : width - 1;
+							pixel.direction ??= pixelIsOnLeft ? 1 : -1;
+
+							var floorHeight = pixel.y + 1;
+							while(isEmpty(pixel.x,floorHeight,false)) {
+								floorHeight++
+							};
+							pixel.floorHeight ??= floorHeight;
+
+						//Actual doer code
+							var newX = pixel.fromX + pixel.direction;
+
+							if(outOfBounds(newX,1)) {
+								pixel.active = false;
+								return
+							};
+
+							var bottomY = (pixel.floorHeight + 3); //extend 4 pixels below
+							var topY = bottomY - 13; //topY < bottomY because in this game +Y is *downward*
+							for(var i = bottomY; i >= topY; i--) {
+								var waterToDo = randomChoice(["salt_water","dirty_water"]);
+								var fc = {x: newX, y: i};
+								if(outOfBounds(fc.x,fc.y)) {continue};
+								if(isEmpty(fc.x,fc.y,false)) {
+									//fill with water
+									createPixel(waterToDo,fc.x,fc.y)
+								} else {
+									var newPixel = pixelMap[fc.x]?.[fc.y];
+									if(!newPixel) { continue };
+									//break
+									tryBreak(newPixel,true,true);
+									if(!newPixel) { continue };
+									//water reaction steal
+									if(elements[newPixel.element].reactions?.water) {
+										var waterRxn = elements[newPixel.element].reactions.water;
+										var elem1 = waterRxn.elem1;
+										while(Array.isArray(elem1)) {
+											elem1 = randomChoice(elem1)
+										};
+										if(elem1 !== null) {
+											changePixel(newPixel,elem1,true)
+										}
+									} else if(elements.water.reactions[newPixel.element]) {
+										var waterRxn2 = elements.water.reactions[newPixel.element];
+										elem2 = waterRxn2.elem2;
+										while(Array.isArray(elem2)) {
+											elem2 = randomChoice(elem2)
+										};
+										if(elem2 !== null) {
+											changePixel(newPixel,elem2,true)
+										}
+									};
+									if(!newPixel) { continue };
+									//add velocity;
+									newPixel.vx ??= 0;
+									newPixel.vy ??= 0;
+									newPixel.vx += (pixel.direction * 5)
+									newPixel.vy -= 3;
+								};
+							};
+							pixel.fromX += pixel.direction
+					},
+					state: "solid",
+					category: "special",
+					density: elements.water.density
+				};
+
+				elements.megatsunami = {
+					color: ["#1f2aa3","#2641c9","#3a57c9"],
+					behavior: behaviors.WALL,
+					properties: {
+						active: true,
+					},
+					tick: function(pixel) {
+						//Iteration initial checks
+							if(!pixel) {
+								return;
+							};
+							if(!pixel.active) {
+								deletePixel(pixel.x,pixel.y);
+							};
+						
+						//Initial property-setting
+							var pixelIsOnLeft = (pixel.x < (width/2));
+							pixel.fromX ??= pixelIsOnLeft ? 1 : width - 1;
+							pixel.direction ??= pixelIsOnLeft ? 1 : -1;
+
+							var floorHeight = pixel.y + 1;
+							while(isEmpty(pixel.x,floorHeight,false)) {
+								floorHeight++
+							};
+							pixel.floorHeight ??= floorHeight;
+
+						//Actual doer code
+							var bottomY = (pixel.floorHeight + 9); //extend 10 pixels below
+							var topY = bottomY - 43; //topY < bottomY because in this game +Y is *downward*
+							for(var h = 0; h < 2; h++) {
+								var newX = pixel.fromX + pixel.direction;
+
+								if(outOfBounds(newX,1)) {
+									pixel.active = false;
+									return
+								};
+
+								for(var i = bottomY; i >= topY; i--) {
+									var waterToDo = randomChoice(["salt_water","salt_water","salt_water","dirty_water","dirty_water"]);
+									var fc = {x: newX, y: i};
+									if(outOfBounds(fc.x,fc.y)) {continue};
+									if(isEmpty(fc.x,fc.y,false)) {
+										//fill with water
+										createPixel(waterToDo,fc.x,fc.y)
+									} else {
+										var newPixel = pixelMap[fc.x]?.[fc.y];
+										if(!newPixel) { continue };
+										//break
+										tryBreak(newPixel,true,true);
+										if(!newPixel) { continue };
+										//water reaction steal
+										if(elements[newPixel.element].reactions?.water) {
+											var waterRxn = elements[newPixel.element].reactions.water;
+											var elem1 = waterRxn.elem1;
+											while(Array.isArray(elem1)) {
+												elem1 = randomChoice(elem1)
+											};
+											if(elem1 !== null) {
+												changePixel(newPixel,elem1,true)
+											}
+										} else if(elements.water.reactions[newPixel.element]) {
+											var waterRxn2 = elements.water.reactions[newPixel.element];
+											elem2 = waterRxn2.elem2;
+											while(Array.isArray(elem2)) {
+												elem2 = randomChoice(elem2)
+											};
+											if(elem2 !== null) {
+												changePixel(newPixel,elem2,true)
+											}
+										};
+										if(!newPixel) { continue };
+										//add velocity;
+										newPixel.vx ??= 0;
+										newPixel.vy ??= 0;
+										newPixel.vx += (pixel.direction * 13)
+										newPixel.vy -= 6;
+									};
+								};
+								pixel.fromX += pixel.direction
+							};
+					},
+					state: "solid",
+					category: "special",
+					density: elements.water.density
+				};
+
+				elements.lava_tsunami = {
+					color: ["#ff370a","#e84a23","#e67740"],
+					behavior: behaviors.WALL,
+					properties: {
+						active: true,
+					},
+					tick: function(pixel) {
+						//Iteration initial checks
+							if(!pixel) {
+								return;
+							};
+							if(!pixel.active) {
+								deletePixel(pixel.x,pixel.y);
+							};
+						
+						//Initial property-setting
+							var pixelIsOnLeft = (pixel.x < (width/2));
+							pixel.fromX ??= pixelIsOnLeft ? 1 : width - 1;
+							pixel.direction ??= pixelIsOnLeft ? 1 : -1;
+
+							var floorHeight = pixel.y + 1;
+							while(isEmpty(pixel.x,floorHeight,false)) {
+								floorHeight++
+							};
+							pixel.floorHeight ??= floorHeight;
+
+						//Actual doer code
+							var newX = pixel.fromX + pixel.direction;
+
+							if(outOfBounds(newX,1)) {
+								pixel.active = false;
+								return
+							};
+
+							var bottomY = (pixel.floorHeight + 3); //extend 4 pixels below
+							var topY = bottomY - 13; //topY < bottomY because in this game +Y is *downward*
+							for(var i = bottomY; i >= topY; i--) {
+								var fc = {x: newX, y: i};
+								if(outOfBounds(fc.x,fc.y)) {continue};
+								if(isEmpty(fc.x,fc.y,false)) {
+									//fill with lava
+									createPixelReturn("magma",fc.x,fc.y).temp = 1400;
+								} else {
+									var newPixel = pixelMap[fc.x]?.[fc.y];
+									if(!newPixel) { continue };
+									var data = elements[newPixel.element];
+									//break
+									for(var j = 0; j < 3; j++) {
+										tryBreak(newPixel,true,j == 0);
+										if(!newPixel) { break }
+									};
+									//lava reaction steal
+									if(data.reactions?.magma) {
+										var magmaRxn = data.reactions.magma;
+										var elem2 = magmaRxn.elem2;
+										while(Array.isArray(elem2)) {
+											elem2 = randomChoice(elem2)
+										};
+										if(elem2 !== null) {
+											changePixel(newPixel,elem2,true)
+										}
+									} else if(elements.magma.reactions[newPixel.element]) {
+										var magmaRxn2 = elements.magma.reactions?.[newPixel.element];
+										if(!magmaRxn2) {
+										} else {
+											elem2 = magmaRxn2.elem2;
+											while(Array.isArray(elem2)) {
+												elem2 = randomChoice(elem2)
+											};
+											if(elem2 !== null) {
+												changePixel(newPixel,elem2,true)
+											}
+										}
+									};
+									if(!newPixel) { continue };
+									newPixel.temp = Math.max(newPixel.temp,1400); pixelTempCheck(newPixel);
+									if(!newPixel) { continue };
+									if(newPixel.element == "fire") { changePixelReturn(newPixel,"magma",true).temp = 1400 };
+									if(data.burn) { newPixel.burning = true; newPixel.burnStart = pixelTicks };
+									if(Math.random() < 0.1 && newPixel.burnInto) { finishBurn(newPixel) };
+									if(newPixel.element == "fire") { changePixelReturn(newPixel,"magma",true).temp = 1400 };
+									if(!newPixel) { continue };
+									//add velocity;
+									newPixel.vx ??= 0;
+									newPixel.vy ??= 0;
+									newPixel.vx += (pixel.direction * 6)
+									newPixel.vy -= 3;
+								};
+							};
+							pixel.fromX += pixel.direction
+					},
+					state: "solid",
+					category: "special",
+					density: elements.magma.density
+				};
+
+				elements.lava_megatsunami = {
+					color: ["#b32b10","#c24d1f","#d66924"],
+					behavior: behaviors.WALL,
+					properties: {
+						active: true,
+					},
+					tick: function(pixel) {
+						//Iteration initial checks
+							if(!pixel) {
+								return;
+							};
+							if(!pixel.active) {
+								deletePixel(pixel.x,pixel.y);
+							};
+						
+						//Initial property-setting
+							var pixelIsOnLeft = (pixel.x < (width/2));
+							pixel.fromX ??= pixelIsOnLeft ? 1 : width - 1;
+							pixel.direction ??= pixelIsOnLeft ? 1 : -1;
+
+							var floorHeight = pixel.y + 1;
+							while(isEmpty(pixel.x,floorHeight,false)) {
+								floorHeight++
+							};
+							pixel.floorHeight ??= floorHeight;
+
+						//Actual doer code
+							var bottomY = (pixel.floorHeight + 9); //extend 10 pixels below
+							var topY = bottomY - 43; //topY < bottomY because in this game +Y is *downward*
+							for(var h = 0; h < 2; h++) {
+								var newX = pixel.fromX + pixel.direction;
+
+								if(outOfBounds(newX,1)) {
+									pixel.active = false;
+									return
+								};
+
+								for(var i = bottomY; i >= topY; i--) {
+									var fc = {x: newX, y: i};
+									if(outOfBounds(fc.x,fc.y)) {continue};
+									if(isEmpty(fc.x,fc.y,false)) {
+										//fill with lava
+										createPixelReturn("magma",fc.x,fc.y).temp = 1450;
+									} else {
+										var newPixel = pixelMap[fc.x]?.[fc.y];
+										if(!newPixel) { continue };
+										var data = elements[newPixel.element];
+										//break
+										for(var j = 0; j < 3; j++) {
+											tryBreak(newPixel,true,j == 0);
+											if(!newPixel) { break }
+										};
+										if(!newPixel) { continue };
+										//lave reaction steal
+										if(data.reactions?.magma) {
+											var magmaRxn = data.reactions.magma;
+											var elem2 = magmaRxn.elem2;
+											while(Array.isArray(elem2)) {
+												elem2 = randomChoice(elem2)
+											};
+											if(elem2 !== null) {
+												changePixel(newPixel,elem2,true)
+											}
+										} else if(elements.magma.reactions[newPixel.element]) {
+											var magmaRxn2 = elements.magma.reactions[newPixel.element];
+											elem2 = magmaRxn2.elem2;
+											while(Array.isArray(elem2)) {
+												elem2 = randomChoice(elem2)
+											};
+											if(elem2 !== null) {
+												changePixel(newPixel,elem2,true)
+											}
+										};
+										if(!newPixel) { continue };
+										newPixel.temp = Math.max(newPixel.temp,1450); pixelTempCheck(newPixel);
+										if(!newPixel) { continue };
+										if(newPixel.element == "fire") { changePixelReturn(newPixel,"magma",true).temp = 1400 };
+										if(data.burn) { newPixel.burning = true; newPixel.burnStart = pixelTicks };
+										if(Math.random() < 0.1 && newPixel.burnInto) { finishBurn(newPixel) };
+										if(newPixel.element == "fire") { changePixelReturn(newPixel,"magma",true).temp = 1400 };
+										if(!newPixel) { continue };
+										//add velocity;
+										newPixel.vx ??= 0;
+										newPixel.vy ??= 0;
+										newPixel.vx += (pixel.direction * 8)
+										newPixel.vy -= 5;
+									};
+								};
+								pixel.fromX += pixel.direction
+							};
+					},
+					state: "solid",
+					category: "special",
+					density: elements.magma.density
 				};
 
 				function empCharge(pixel,x,y,radius,fire,smoke,power,damage) {
@@ -34258,7 +37355,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 
 			//Bombs
 
-				elements.anti_bomb = {
+				elements.upward_bomb = {
 					color: "#625c71",
 					behavior: [
 						"M2|M1 AND EX:10|M2",
@@ -34281,6 +37378,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 							var newInfo = elements[newElement];
 							if(newInfo.state !== "gas" && newElement !== pixel.element) {
 								explodeAtPlus(pixel.x,pixel.y,10,"fire,fire,fire,fire,fire,greek_fire","fire",null,firebombFire);
+								changePixel(pixel,"disappear");
 							};
 						};
 						if(!isEmpty(pixel.x,pixel.y+1,true)) { //[2][1] EX (don't ignore bounds, non-bound case)
@@ -34289,10 +37387,12 @@ Make sure to save your command in a file if you want to add this preset again.`
 							var newInfo = elements[newElement];
 							if(newInfo.state !== "gas" && newElement !== pixel.element) {
 								explodeAtPlus(pixel.x,pixel.y,10,"fire,fire,fire,fire,fire,greek_fire","fire",null,firebombFire);
+								changePixel(pixel,"disappear");
 							};
 						};
 						if(outOfBounds(pixel.x,pixel.y+1)) { //[2][1] EX (don't ignore bounds, bound case)
 							explodeAtPlus(pixel.x,pixel.y,10,"fire,fire,fire,fire,fire,greek_fire","fire",null,firebombFire);
+							changePixel(pixel,"disappear");
 						};
 						if(!tryMove(pixel,pixel.x,pixel.y+1)) { //behaviors.POWDER
 							Math.random() < 0.5 ? tryMove(pixel,pixel.x-1,pixel.y+1) : tryMove(pixel,pixel.x+1,pixel.y+1);
@@ -34303,6 +37403,69 @@ Make sure to save your command in a file if you want to add this preset again.`
 					density: 1500,
 					excludeRandom: true,
 					desc: "An advanced incendiary weapon. <br/>To enable automatic bomb generation, set the generateBombs query parameter.",
+				};
+
+				function fuckingDeletePixel(pixel) {
+					if(
+						typeof(pixel) === "object" &&
+						pixel !== null &&
+						typeof(pixel?.x) === "number" &&
+						typeof(pixel?.y) === "number"
+					) {
+						var pX = pixel.x;
+						var pY = pixel.y;
+						deletePixel(pX,pY);
+						if(typeof(pixel) === "object" && pixel !== null) {
+							var index = currentPixels.indexOf(pixel);
+							if(index > 0) {
+								currentPixels.splice(index)
+							};
+							pixelMap[pX][pY] = undefined
+							pixel = undefined
+							return
+						}
+						return
+					};
+					return
+				};
+
+				elements.force_bomb = {
+					color: ["#7a6749", "#828680", "#89a6b6", "#91c5ed"],
+					tick: function(pixel) {
+						var radius = 8;
+						var fire = ["light",null,null,null,null,null,null,null];
+						if(!isEmpty(pixel.x,pixel.y-1,true)) { //[0][1] EX (ignore bounds)
+							var newPixel = pixelMap[pixel.x][pixel.y-1];
+							var newElement = newPixel.element;
+							var newInfo = elements[newElement];
+							if(newInfo.state !== "gas" && newElement !== pixel.element) {
+								explodeAtPlus(pixel.x,pixel.y,radius+7,fire,null,null,forcebombVelocity);
+								fuckingDeletePixel(pixel); return
+							};
+						};
+						if(!isEmpty(pixel.x,pixel.y+1,true)) { //[2][1] EX (don't ignore bounds, non-bound case)
+							var newPixel = pixelMap[pixel.x][pixel.y+1];
+							var newElement = newPixel.element;
+							var newInfo = elements[newElement];
+							if(newInfo.state !== "gas" && newElement !== pixel.element) {
+								explodeAtPlus(pixel.x,pixel.y,radius+7,fire,null,null,forcebombVelocity);
+								fuckingDeletePixel(pixel); return
+							};
+						};
+						if(outOfBounds(pixel.x,pixel.y+1)) { //[2][1] EX (don't ignore bounds, bound case)
+							explodeAtPlus(pixel.x,pixel.y,radius+7,fire,null,null,forcebombVelocity);
+							fuckingDeletePixel(pixel); return
+						};
+						if(!tryMove(pixel,pixel.x,pixel.y+1)) { //behaviors.POWDER
+							Math.random() < 0.5 ? tryMove(pixel,pixel.x-1,pixel.y+1) : tryMove(pixel,pixel.x+1,pixel.y+1);
+						};
+						return
+					},
+					category: "weapons",
+					state: "solid",
+					density: 2000,
+					excludeRandom: true,
+					desc: "A bomb that sends pixels flying. <br/>To enable automatic bomb generation, set the generateBombs query parameter.",
 				};
 
 				elements.cluster_nuke = {
@@ -34319,7 +37482,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					desc: "It's a nuke that drops more nukes. <br/>To enable automatic bomb generation, set the generateBombs query parameter.",
 				};
 
-				elements.anti_bomb = {
+				elements.upward_bomb = {
 					color: "#525c61",
 					behavior: [
 						"M2|M1 AND EX:10|M2",
@@ -34346,6 +37509,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 					excludeRandom: true,
 					hardness: 0.3,
 				};
+				
+				//Wall bomb
 
 				elements.electric_cluster_bomb = {
 					color: "#ffffff",
@@ -34596,7 +37761,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 
 				for (var i = 2; i <= bombAmount + 1; i++) {
-					elements[`anti_bomb_${i}`] = {
+					elements[`upward_bomb_${i}`] = {
 						color: "#625c71",
 						behavior: [
 							`M2|M1 AND EX:${5*(i+1)}>fire|M2`,
@@ -34610,7 +37775,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 						desc: `${5*(i+1)/10} times the radius of the regular anti-bomb`,
 						cooldown: defaultCooldown,
 					};
-					eLists.BOMB.push(`anti_bomb_${i}`);
+					eLists.BOMB.push(`upward_bomb_${i}`);
 				};
 
 			//Fairies
@@ -34948,7 +38113,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 							cloudName = cloudPrefix + cloudName;
 
 							if(elementExists(cloudName)) {
-								cloudName = "auto_" + cloudName;
+								if(elements[cloudName].autoType) { continue } else { cloudName = "auto_" + cloudName }
 							};
 
 							elements[cloudName] = {
@@ -34964,6 +38129,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 								ignoreAir: true,
 								conduct: 0.01 * (2**cloudType),
 								autoType: "cloud",
+								isGas: true
 							};
 
 							if(cloudType === 4) { //column tick for heaviester clouds
@@ -37173,7 +40339,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 						case "bomb":
 							var number = prompt(`Enter a bomb number (default: 1)
 							1 corresponds to radius 10, 2 corresponds to radius 15, etc.`);
-							isNaN(parseFloat(number)) ? number = 0 : number = parseFloat(number);
+							isNaN(parseFloat(number)) ? number = 1 : number = parseFloat(number);
 							amount += generateBomb(elements,true,number).length;
 							break;
 						default:
@@ -37201,6 +40367,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		};
 
 		function parseForLateGenerationParameter(input) {
+			if(input == null) { return };
 			if(input.startsWith("*")) {
 				var elemList = Object.keys(elements);
 				input = input.toLowerCase().substring(1);
@@ -37578,7 +40745,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		document.addEventListener("keydown", function(e) { //prop prompt listener
 			// , = propPrompt()
 			if (e.keyCode == 188) {
-				e.preventDefault();
+				//e.preventDefault();
 				shiftDown ? numberAdjusterPrompt() : propPrompt();
 			};
 		});
@@ -37657,6 +40824,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 
+			if(propProperty == null) { return };
 
 			if(defaultNumberTypeValues.includes(propProperty.toLowerCase())) {
 				propType = "number";
@@ -38866,13 +42034,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.global_heater = {
 			color: "#ff6666",
 			tick: function(pixel) {
-				for (var i = 1; i < width; i++) {
-					for (var j = 1; j < height; j++) {
-						if (!isEmpty(i,j)) {
-							pixelMap[i][j].temp += 1
-						}
-					}
-				}
+				currentPixels.forEach(function(newPixel) {newPixel.temp++; pixelTempCheck(newPixel)})
 			},
 			category:"machines",
 			insulate: true,
@@ -38884,13 +42046,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.global_cooler = {
 			color: "#6666ff",
 			tick: function(pixel) {
-				for (var i = 1; i < width; i++) {
-					for (var j = 1; j < height; j++) {
-						if (!isEmpty(i,j)) {
-							pixelMap[i][j].temp <= -272 ? pixelMap[i][j].temp = -273 : pixelMap[i][j].temp -= 1
-						}
-					}
-				}
+				currentPixels.forEach(function(newPixel) {newPixel.temp = Math.max(-273.15,newPixel.temp - 1); pixelTempCheck(newPixel)})
 			},
 			category:"machines",
 			insulate: true,
@@ -38902,13 +42058,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.global_warmer = {
 			color: "#66ff66",
 			tick: function(pixel) {
-				for (var i = 1; i < width; i++) {
-					for (var j = 1; j < height; j++) {
-						if (!isEmpty(i,j)) {
-							pixelMap[i][j].temp = 20
-						}
-					}
-				}
+				currentPixels.forEach(function(newPixel) {newPixel.temp = 20; pixelTempCheck(newPixel)})
 			},
 			category: "machines",
 			insulate: true,
@@ -38917,24 +42067,18 @@ Make sure to save your command in a file if you want to add this preset again.`
 			excludeRandom: true,
 		},
 
-		elements.agw = { //adjustable global warmer
-			name: "Adjustable Global Warmer",
+		elements.adjustable_global_heater = {
 			color: "#66ff66",
 			tick: function(pixel) {
-				for (var i = 1; i < width; i++) {
-					for (var j = 1; j < height; j++) {
-						if (!isEmpty(i,j)) {
-							pixelMap[i][j].temp = pixel.temp
-							doHeat(pixelMap[i][j])
-						}
-					}
-				}
+				var thisPixel = pixel;
+				currentPixels.forEach(function(newPixel) {if(newPixel.element !== thisPixel.element) {newPixel.temp += thisPixel.temp; pixelTempCheck(newPixel)}})
 			},
 			category: "machines",
 			insulate: true,
 			state: "solid",
 			hidden: true,
 			excludeRandom: true,
+			temp: 1
 		},
 
 		elements.super_heater_3 = {
@@ -38948,7 +42092,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					for (let j = -8; j < 9; j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1
+								pixel.uwu++
 							}
 						}
 					}
@@ -38985,7 +42129,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					for (let j = -8; j < 9; j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1
+								pixel.uwu++
 							}
 						}
 					}
@@ -39021,7 +42165,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					for (let j = -8; j < 9; j++) {
 						if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)) {
 							if (pixelMap[pixel.x+j][pixel.y+i].element == pixel.element) {
-								pixel.uwu += 1
+								pixel.uwu++
 							}
 						}
 					}
@@ -39589,7 +42733,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				if(!supports) {
 					behaviors.POWDER(pixel);
 				};
-				
+
 				elements.concrete.tick
 
 				doDefaults(pixel);
@@ -39683,6 +42827,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			state: "solid",
 			hardness: 0.2,
 			breakInto: "sawdust",
+			cutInto: ["wood_plank","wood_plank","wood_plank","wood_plank","wood_plank","wood_plank","sawdust"]
 		};
 
 		elements.hanging_concrete = {
@@ -39721,12 +42866,39 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hidden: true,
 		};
 
+		elements.paper.behavior = behaviors.SUPPORT;
+
+		elements.support_glass = JSON.parse(JSON.stringify(elements.glass));
+		elements.support_glass.stateHigh = "molten_glass";
+		elements.support_glass.behavior = behaviors.SUPPORT;
+
 		elements.support_bulb = {
 			color: "#a8a897",
 			behavior: behaviors.SUPPORTPOWDER,
 			behaviorOn: [
 				"XX|CR:light|XX",
 				"CR:light AND SP|XX|CR:light AND SP",
+				"M2|CR:light AND M1|M2"
+			],
+			colorOn: "#ebebc3",
+			category: "machines",
+			tempHigh: 1500,
+			stateHigh: ["molten_glass","molten_glass","molten_copper"],
+			conduct: 1,
+			breakInto: "glass_shard",
+			hidden: true,
+		};
+
+		elements.hanging_bulb = {
+			color: "#a8a897",
+			behavior: [
+				"XX|SP|XX",
+				"XX|XX|XX",
+				"M2|M1|M2"
+			],
+			behaviorOn: [
+				"XX|SP|XX",
+				"CR:light|XX|CR:light",
 				"M2|CR:light AND M1|M2"
 			],
 			colorOn: "#ebebc3",
@@ -39752,16 +42924,131 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hidden: true,
 		};
 
-		elements.support_steel = {
-			color: "#71797E",
+		newPowder("calcium_sulfate","#d1cec7",2960,1460).reactions = {
+			water: { elem1: ["gypsum","calcium_sulfate"], elem2: null }
+		};
+
+		newPowder("gypsum",["#e6e5e3","#d9dbdb"],2320,1460).tick = function(pixel) {
+			//thermal split
+			if(pixel.temp > 100) {
+				var emptySlots = getEmptyMooreNeighbors(pixel);
+				if(emptySlots.length > 1) {
+					shuffleArray(emptySlots);
+					emptySlots = emptySlots.slice(0,2);
+					for(var i = 0; i < emptySlots.length; i++) {
+						var coords = emptySlots[i];
+						createPixelReturn("steam",...coords).temp = pixel.temp
+					};
+					changePixel(pixel,"calcium_sulfate",false);
+					return
+				}
+			}
+		};
+		
+		elements.paper.reactions ??= {};
+		elements.paper.reactions.gypsum = { elem1: ["paper","paper","paper","paper","paper","paper",null], elem2: "drywall" };
+		
+		elements.molten_gypsum = {
+			tick: function(pixel) {
+				//thermal split
+				var emptySlots = getEmptyMooreNeighbors(pixel);
+				if(emptySlots.length > 1) {
+					shuffleArray(emptySlots);
+					emptySlots = emptySlots.slice(0,2);
+					for(var i = 0; i < emptySlots.length; i++) {
+						var coords = emptySlots[i];
+						createPixelReturn("steam",...coords).temp = pixel.temp
+					};
+					changePixel(pixel,"molten_calcium_sulfate",false);
+					return
+				}
+			}
+		};
+		
+		elements.drywall = {
+			color: "#dedcd9",
 			behavior: behaviors.SUPPORT,
-			tempHigh: 1455.5,
+			tick: function(pixel) {
+				if(pixel.burning && pixel.temp < 80) {
+					delete pixel.burning;
+					delete pixel.burnStart
+				};
+				pixel.isWet ??= Math.random() < 0.085;
+				var chance = Math.max(0,scale(pixel.temp,59.9999,100,0,0.05));
+				if(pixel.isWet && Math.random() < chance) {
+					var emptySlots = getEmptyMooreNeighbors(pixel);
+					if(emptySlots.length > 0) {
+						var randomCoords = randomChoice(emptySlots);
+						if(isEmpty(...randomCoords)) {
+							createPixel(getStateAtTemp("water",pixel.temp),...randomCoords);
+							changePixel(pixel,"gypsum");
+							delete pixel.isWet;
+							return
+						}
+					}
+				}
+			},
+			burn: 1,
+			burnTime: 100,
+			burnInto: ["gypsum","gypsum","gypsum","gypsum","gypsum","gypsum","gypsum","gypsum","gypsum","gypsum","steam","ash"],
+			category: "solids",
+			state: "solid",
+			density: 609
+		};
+
+		elements.steel.movable = false;
+
+		elements.support_steel = {
+			color: elements.steel.color,
+			behavior: behaviors.SUPPORT,
+			tempHigh: elements.steel.tempHigh,
 			stateHigh: "molten_steel",
 			category: "solids",
-			density: 7850,
-			conduct: 0.42,
-			hardness: 0.8,
+			density: elements.steel.density,
+			conduct: elements.steel.conduct,
+			hardness: elements.steel.hardness,
 		};
+
+		elements.support_aluminum = {
+			color: elements.aluminum.color,
+			behavior: behaviors.SUPPORT,
+			tempHigh: elements.aluminum.tempHigh,
+			stateHigh: "molten_aluminum",
+			category: "solids",
+			density: elements.aluminum.density,
+			conduct: elements.aluminum.conduct,
+			hardness: elements.aluminum.hardness,
+		};
+		
+		elements.support_copper = {
+			color: elements.copper.color,
+			behavior: behaviors.SUPPORT,
+			tempHigh: elements.copper.tempHigh,
+			stateHigh: "molten_copper",
+			category: "solids",
+			density: elements.copper.density,
+			conduct: elements.copper.conduct,
+			hardness: elements.copper.hardness,
+		};
+		
+		runAfterAutogen(function() {
+			for(var name in elements) {
+				var rxns = elements[name].reactions;
+				if(!rxns) { continue };
+				if(typeof(rxns) == "object" && typeof(rxns["steel"]) === "object") {
+					rxns.support_steel = rxns.steel
+				};
+				if(typeof(rxns) == "object" && typeof(rxns["aluminum"]) === "object") {
+					rxns.support_aluminum = rxns.aluminum
+				}
+				if(typeof(rxns) == "object" && typeof(rxns["copper"]) === "object") {
+					rxns.support_copper = rxns.copper
+				}
+			};
+			elements.support_steel.reactions = elements.steel.reactions;
+			elements.support_aluminum.reactions = elements.aluminum.reactions;
+			elements.support_copper.reactions = elements.copper.reactions;
+		});
 
 		var newAcidIgnores = ["glass_pane", "rad_glass_pane", "rad_glass_shard", "hanging_plastic"];
 		for(i = 0; i < newAcidIgnores.length; i++) {
@@ -40796,7 +44083,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hardness: 1,
 			state: "solid",
 			density: 3000,
-			temp: -273.15,
+			temp: (settings.abszero ?? -273.15),
 			behavior: behaviors.WALL,
 			color: "#cf9f7f",
 			insulate: true,
@@ -40823,7 +44110,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 						//New pixel RV
 						var newPixel = pixelMap[newX][newY];
 						//More sugar
-						var newPixelTempKelvin = newPixel.temp + 273.15;
+						var newPixelTempKelvin = newPixel.temp - (settings.abszero ?? -273.15);
 						//Skip pixels at or below absolute zero
 						if(newPixelTempKelvin <= 0) {
 							continue;
@@ -40832,12 +44119,14 @@ Make sure to save your command in a file if you want to add this preset again.`
 						if(newPixelTempKelvin <= pixel.rate) {
 							//Special "draining" logic
 							pixel.temp += newPixelTempKelvin;
-							newPixel.temp = -273.15;
+							newPixel.temp = (settings.abszero ?? -273.15);
 						} else {
 							//If not, just move the temperature
 							pixel.temp += pixel.rate;
 							newPixel.temp -= pixel.rate;
 						};
+						pixelTempCheck(pixel);
+						pixelTempCheck(newPixel);
 					};
 				};
 
@@ -40857,7 +44146,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					};
 				};
 
-				var pixelTempKelvin = pixel.temp + 273.15;
+				var pixelTempKelvin = pixel.temp - (settings.abszero ?? -273.15);
 				var isDraining = (pixelTempKelvin <= pixel.rate);
 				var effectiveRate = (isDraining ? pixelTempKelvin : pixel.rate) / availableOutputs.length;
 				//Actual distribution
@@ -40866,7 +44155,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					var newPixel = pixelMap[coordPair[0]][coordPair[1]];
 					newPixel.temp += effectiveRate;
 				};
-				if(availableOutputs.length > 0) { isDraining ? pixel.temp = -273.15 : pixel.temp -= pixel.rate };
+				if(availableOutputs.length > 0) { isDraining ? pixel.temp = (settings.abszero ?? -273.15) : pixel.temp -= pixel.rate };
 			},
 		};
 
@@ -40885,7 +44174,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				hardness: 1,
 				state: "solid",
 				density: 3000,
-				temp: -273.15,
+				temp: (settings.abszero ?? -273.15),
 				behavior: behaviors.WALL,
 				color: "#cf9f7f",
 				insulate: true,
@@ -40941,6 +44230,11 @@ Make sure to save your command in a file if you want to add this preset again.`
 			right_and_down_to_left: {ins: [[1,0],[0,1]], outs: [[-1,0]]},
 			left_and_up_to_right: {ins: [[-1,0],[0,-1]], outs: [[1,0]]},
 			right_and_up_to_left: {ins: [[1,0],[0,-1]], outs: [[-1,0]]},
+
+			right_to_down_and_left: {ins: [[1,0]], outs: [[-1,0],[0,1]]},
+			right_to_up_and_left: {ins: [[1,0]], outs: [[-1,0],[0,-1]]},
+			left_to_down_and_right: {ins: [[-1,0]], outs: [[1,0],[0,1]]},
+			left_to_up_and_right: {ins: [[1,0]], outs: [[1,0],[0,-1]]},
 		};
 
 		for(direction in autoConduitTable) {
@@ -41033,7 +44327,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				pixel._correspondingWifi = currentPixels.filter(function(pixelToCheck) {
 					return (
 						pixelToCheck !== pixel && //should work if this pixel is the same as the other one by reference
-						["wifi","receiver"].includes(pixelToCheck.element) &&
+						["wifi","receiver","support_receiver"].includes(pixelToCheck.element) &&
 						pixelToCheck._channel == pixelChannel
 					);
 				},pixelChannel=pixel._channel).map(pixel => [pixel.x,pixel.y]);
@@ -41100,17 +44394,53 @@ Make sure to save your command in a file if you want to add this preset again.`
 			},
 			category: "machines",
 			state: "solid",
-		}
+		};
 
+		elements.support_receiver = {
+			color: "#bfff00",
+			behavior: behaviors.SUPPORT,
+			properties: {
+				_channel: 0
+			},
+			hardness: 0.8,
+			breakInto: ["plastic","steel","copper"],
+			conduct: 1,
+			insulate: true,
+			tick: function(pixel) {
+				pixel._channel = Math.floor(pixel.temp / 100);
+
+				var colorBase = (pixel._channel + 3);
+				if(colorBase < 0 || colorBase > 124) {
+					pixel.color = "rgb(212,185,222)";
+				} else {
+					colorBase = colorBase.toString(5).padStart(3,"0").split("").map(x => parseInt(x) * 64);
+					pixel.color = `rgb(${colorBase.join(",")})`
+				};
+
+				if(typeof(pixel.chargeCD) !== "undefined") {
+					pixel.chargeCD = Math.min(pixel.chargeCD,5);
+					pixel.chargeCD--;
+					if(pixel.chargeCD <= 0) { delete pixel.chargeCD };
+				};
+				if(pixel.charge) {
+					pixel.charge -= 0.25;
+					if(pixel.charge <= 0) { delete pixel.charge };
+				};
+			},
+			category: "machines",
+			state: "solid",
+		};
+		
 	// SPINEL'S INJECTOR ##
 
 		var injectorPoisonCategories = ["life","auto creepers","shit","cum","food","fantastic creatures","fey","auto_fey"];
 		var injectorPoisonBlacklist = ["injector_poison","dead_matter","poisoned_dirt"];
-		var injectorPoisonWhitelist = ["blood","poop","blood_ice","wood","wood_plank","sawdust","straw","paper","birthpool","dried_poop","gloomfly","meat_monster","rotten_ravager","bone_beast","withery","withery_plant","banana","apple","rotten_apple","apioform_player","apioform_bee","apioform","apiodiagoform","sugar_cactus","sugar_cactus_seed","flowering_sugar_cactus","tree_branch","sap","silk","red_velvet","silk_velvet","ketchup", "enchanted_ketchup", "frozen_ketchup", "poisoned_ketchup", "frozen_poisoned_ketchup", "ketchup_spout", "ketchup_cloud", "poisoned_ketchup_cloud", "ketchup_snow", "ketchup_snow_cloud", "poisoned_ketchup_snow", "poisoned_ketchup_snow_cloud", "ketchup_gas", "poisoned_ketchup_gas", "ketchup_powder", "poisoned_ketchup_powder", "eketchup_spout", "ketchup_metal", "antiketchup", "dirty_ketchup", "ketchup_gold", "molten_ketchup_metal", "ketchup_fairy", "ketchup_metal_scrap", "ketchup_gold_scrap", "molten_ketchup_gold", "mycelium","vaccine","antibody","infection","sap","caramel","molasses","melted_chocolate","soda","mustard","fry_sauce","tomato_sauce","sugary_tomato_sauce","bio_ooze","zombie_blood","feather","tooth","decayed_tooth","plaque","tartar","bacteria","replacer_bacteria","pop_rocks"];
+		var injectorPoisonWhitelist = ["blood","skin","hair","poop","blood_ice","wood","wood_plank","sawdust","straw","paper","birthpool","dried_poop","gloomfly","meat_monster","rotten_ravager","bone_beast","withery","withery_plant","banana","apple","rotten_apple","apioform_player","apioform_bee","apioform","apiodiagoform","sugar_cactus","sugar_cactus_seed","flowering_sugar_cactus","tree_branch","sap","silk","red_velvet","silk_velvet","ketchup", "enchanted_ketchup", "frozen_ketchup", "poisoned_ketchup", "frozen_poisoned_ketchup", "ketchup_spout", "ketchup_cloud", "poisoned_ketchup_cloud", "ketchup_snow", "ketchup_snow_cloud", "poisoned_ketchup_snow", "poisoned_ketchup_snow_cloud", "ketchup_gas", "poisoned_ketchup_gas", "ketchup_powder", "poisoned_ketchup_powder", "eketchup_spout", "ketchup_metal", "antiketchup", "dirty_ketchup", "ketchup_gold", "molten_ketchup_metal", "ketchup_fairy", "ketchup_metal_scrap", "ketchup_gold_scrap", "molten_ketchup_gold", "mycelium","vaccine","antibody","infection","sap","caramel","molasses","melted_chocolate","soda","mustard","fry_sauce","tomato_sauce","sugary_tomato_sauce","bio_ooze","zombie_blood","feather","tooth","decayed_tooth","plaque","tartar","bacteria","replacer_bacteria","pop_rocks"];
 		var injectorPoisonSubstitutions = {
 			"dirt": "poisoned_dirt",
 			"dry_dirt": "poisoned_dirt",
 			"crimsoil": "poisoned_dirt",
+			"rainbow_dirt": "poisoned_dirt",
 			"sand": "poisoned_dirt",
 			"wet_sand": "poisoned_dirt",
 			"mud": "poisoned_dirt",
@@ -42616,13 +45946,135 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 			}
 		});
 
-	//END ##
+	//SPECIFY CURRENT ELEMENT ON LOAD ##
+	
+	window.addEventListener("load",function() {
+		currentElement = urlParams.get("currentElement") ?? "sand";
+		if(!elementExists(currentElement)) {
+			currentElement = "sand"
+		}
+		var size = urlParams.get("mouseSize") ?? 5;
+		if(isNaN(size)) {
+			size = 5;
+		};
+		mouseSize = size
+	});
+	
+	//MISCELLANEOUS CHANGES ##
+
+	eLists.PIPE = ['pipe', 'destroyable_pipe', 'e_pipe', 'destroyable_e_pipe', 'channel_pipe', 'destroyable_channel_pipe', 'bridge_pipe'];
+
+	elements.pipe_stage_shifter = {
+		tool: function(pixel) {
+			if(!(eLists.PIPE.includes(pixel.element))) { return false };
+			if(typeof(pixel.stage) == "undefined" || !(pixel.stage) || pixel.stage < 2) { return false };
+			switch (pixel.stage) {
+				case 2: pixel.stage = 3; break;
+				case 3: pixel.stage = 4; break;
+				case 4: pixel.stage = 2; break;
+				default: pixel.stage = (((Math.max(2,Math.floor(pixel.stage)) - 2) % 3) + 2);
+			};
+			switch (pixel.stage) {
+				case 2: newColor = "#003600"; break;
+				case 3: newColor = "#360000"; break;
+				case 4: newColor = "#000036"; break;
+			};
+			pixel.color = pixelColorPick(pixel,newColor);
+		},
+		category: "tools",
+		color: ["#003600","#360000","#000036"], 
+		density: elements.steel.density,
+		hardness: elements.steel.hardness,
+		tempHigh: elements.steel.tempHigh,
+		stateHigh: "molten_steel",
+		state: "solid",
+		behavior: behaviors.POWDER
+	};
+
+	var notActuallyMovable = ["pipe","e_pipe","steel","vivite"];
+
+	runAfterLoad(function() {
+		for(var i = 0; i < notActuallyMovable.length; i++) {
+			var name = notActuallyMovable[i];
+			Object.defineProperty(elements[name], "movable", {
+				value: false,
+				writable: false //**** you, you're not changing it to true.
+			});		
+		}
+	});
 
 	elements.unknown = {
 		color: "#FFFFFF",
 		behavior: behaviors.WALL,
 		maxColorOffset: 0
-	}
+	};
+	
+	
+	runAfterLoad(function() {
+		//Emergency bug fix
+		elemfillerVar = null;
+		elements.element_filler = {
+			category: "special",
+			color: elements.filler.color,
+			state: "solid",
+			movable: "false",
+			onSelect: function() {
+				var answer6 = prompt("Please input the desired element of this filler. It will not work if you do multiple filter types while paused.",(elemfillerVar||undefined));
+				if (!answer6) { return }
+				elemfillerVar = answer6;
+			},
+			excludeRandom: true,
+			tick: function(pixel){
+				if(!(elementExists(elemfillerVar))) {
+					deletePixel(pixel.x,pixel.y);
+					return
+				};
+				var neighbors = 0;
+				if(!pixel.changeElem){
+					pixel.changeElem = elemfillerVar;
+				}
+				for (var i = 0; i < squareCoords.length; i++) {
+					var coord = squareCoords[i];
+					var x = pixel.x+coord[0];
+					var y = pixel.y+coord[1];
+					if (!isEmpty(x,y, true)) {
+						neighbors = neighbors + 1;
+					} else if (isEmpty(x, y)){
+						createPixel("element_filler", x, y)
+						pixelMap[x][y].changeElem = pixel.changeElem;
+					} else (
+						changePixel(pixel, pixel.changeElem)
+					)
+				}
+				if (neighbors >= 8){
+					changePixel(pixel, pixel.changeElem)
+				}
+			}
+		}
+
+		if(elementExists("ohio")) {
+			elements.ohio.excludeRandom = true
+		};
+		if(elementExists("rainbow_bomb")) {
+			elements.rainbow_bomb.excludeRandom = true
+		};
+		if(elementExists("fart")) {
+			elements.fart.excludeRandom = true
+		};
+		if(elementExists("dark_energy")) {
+			elements.dark_energy.excludeRandom = true
+		};
+		if(elementExists("rainbow_flash")) {
+			elements.rainbow_flash.excludeRandom = true;
+			delete elements.rainbow_flash.reactions.fire
+		};
+	})
+
+	//END ##
+} catch (error) {
+	alert(`Load failed (try reloading).\nThis is likely a sporadic failure caused by inconsistencies in how mods are loaded, and will likely fix itself in a refresh or two. If it persists, then it's an issue.\nError: ${error.stack}`);
+	console.error(error)
+};
 } else {
 	var nonexistentMods = dependencies.filter(function(modPath) { return !(enabledMods.includes(modPath)) });
 	nonexistentMods.forEach(function(modPath) {

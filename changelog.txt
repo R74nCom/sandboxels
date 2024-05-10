@@ -7,6 +7,348 @@ See sneak peaks for upcoming updates on the Discord: https://discord.gg/ejUc6YPQ
 
 A fancier version of this changelog can be found here: https://sandboxels.R74n.com/changelog
 
+[Version 1.9.4.1 - April 8, 2024 - Eclipse Special]
+    + Attempting to place Rock Wall on top of Sun begins a solar eclipse
+    + Sun can draw over Light pixels
+
+[Version 1.9.4 - March 17, 2024 - Natural Disasters]
+    + Tornado
+    + Earthquake
+    + Tsunami
+    + Blaster
+    + Sandstorm (Hidden)
+   [Changes]
+    + Scrolling resizes in correct direction on Windows
+    + Invert Scroll setting
+    ~ Humans no longer trample Grass
+    ~ Milk no longer turns to Yogurt when heated
+    + Milk turns to Yogurt in Primordial Soup
+    + Cells can ferment Milk into Yogurt
+    + Cells boil and freeze into some Sugar
+    + Cheese can be made from Nut Milk
+    + Hives show Bee count when hovered
+    + Flies, Fireflies, and Rats get trapped in Glue
+    + Worms can compost Charcoal and Straw
+    + Snails eat Pickles and Grapes
+    + Slugs eat Grapes
+    + Evergreen trees drop Pinecones when burned
+    ~ Pinecones can withstand high temperatures
+    + Wheat dries and freezes into Straw
+    + Straw breaks into Flour
+    + Potato can be deep-fried
+    + Water can explode in hot Nut Oil
+    + Soda can disolve Eggs
+    + Yeast ferments Mashed Potato
+    + Potatoes can charge Zinc or Copper
+    + Batteries explode when melted
+    + Ammonia can spawn Algae in Water
+    + Broth can extinguish small fires
+    + Salt slowly dissolves in Caramel
+    + Ketchup and Baking Soda reaction
+    + Acid kills Plant and Tree Branch before dissolving it
+    + Copper Sulfate kills Termites, Plant, Grass, Algae, and Mushrooms
+    + Caustic Potash and Acid reaction
+    + Nickel can resist Acid
+    + Aluminum breaks into Metal Scrap
+    + Thermite can be made from Metal Scrap
+    + Gallium stains solids
+    + Gold can alloy with AlGa
+    + Electrum breaks into Gold Coins
+    + Electrolysis on Salt Water produces Chlorine
+    + Alcohol can purify Infection
+    + Vaccine and Antibody can cure Rotten Meat and Cheese
+    + Soap releases Fragrance when burned
+    + Soap can be made from Milk
+    + Paper is yellowed by Light and Oxygen
+    + Plant is yellowed by Chlorine
+    + Skin is darkened and reddened by Light
+    + Skin will rash when exposed to irritants
+    + Neutrons can react with Plant, Gunpowder, Yeast, and Firework
+    + Positrons react violently with Electric
+    + Light can kill Plague and Virus
+    ~ Virus no longer eats Light or Loopy
+    ~ Loopy ignores Cloners
+    ~ Cancer is killed by Radiation faster
+    + Cancer can be killed by Laser
+    ~ Diamond is no longer indestructible, but still very strong
+    ~ Diamonds will no longer form if Charcoal is too hot
+    ~ Moved Bubble to Gases
+    + Bubbles pop when cooled or heated
+    ~ Tweaked Bleach and Vinegar reaction
+    ~ Randomized Egg hatching rate
+    ~ Cacti no longer grow arms at their base
+    + Bamboo burns into Embers
+    + Malware can hijack Loopy
+    + Malware can misalign Lattice
+    + Malware can break down Border
+    + Rainbow breaks into Static
+    + Bless revives Tree Branches from Saplings
+    + Bless purifies Pilk
+    + Bless removes Color Smoke and Spray Paint
+    + Packed Snow breaks into Snow
+    + Water can put out Antifire
+    ~ Antifire ignores air density
+    ~ Holding Shift can force mix dense ingredients into Batter
+    ~ Gave unique colors to Supernova, NExplosion, and Pop
+    ~ Recolored Molten Potassium and Molten Magnesium
+    ~ Tweaked charged Hydrogen and Helium colors
+    ~ Moved Ball to Special (For real this time)
+    ~ Moved Perfume to Liquids
+    ~ Moved Amber to Solids
+    ~ Save names are truncated in save menu
+    + Humans always save skin and shirt color in saves
+    + Shift can be held when pressing -/+ buttons
+    + Unpaint tool downgrades colorful element variants
+    + Earthquakes and Tornadoes in random events
+    + Magma alias 'Lava'
+    - Removed Smooth View (Try moreViews.js!)
+   [Bug Fixes]
+    ~ Fixed: Evergreen and Lattice can be dragged
+    ~ Fixed: Cellulose isn't considered a liquid
+    ~ Fixed: Cellulose density too low
+    ~ Fixed: Ketchup could result from recipes with Butter
+    ~ Fixed: Accented element names capitalize incorrectly
+    ~ Fixed: Virus can destroy invincible pixels
+    ~ Fixed: E-cloner doesn't copy temperature
+    ~ Fixed: Middle click begins scrolling on Windows
+    ~ Fixed: Swapping to secondary element doesn't focus category
+    ~ Fixed: Alcohol Gas has 110% flammability
+    ~ Fixed: Acid Gas can destroy some Acid-resistant elements
+    ~ Fixed: Certain Cactus pixel grows instantly
+    ~ Fixed: Typo in Hydrogen and Sulfur reaction
+    ~ Fixed: Antigas places at room temperature
+    ~ Fixed: Hot Antifire burns indefinitely
+    ~ Fixed: Melted Wax viscosity defined twice
+    ~ Fixed: Flash lower state defined twice
+    ~ Fixed: Ketchup boils into Vinegar, which immediately boils
+    ~ Fixed: F11 doesn't toggle fullscreen (May need Shift)
+    ~ Fixed: Water causes Ember to stop burning, etc.
+    ~ Fixed: Bless can create everlasting Fire
+    ~ Fixed: Spawning Liquid Propane causes pulse effect
+    ~ Fixed: Stained Glass and Color Sand can't be painted
+   [Technical]
+    + Prop tool accepts lowercase "-infinity"
+    ~ Prop tool deselects on invalid input
+    + onMouseDown() element property
+    + hoverStat(pixel) element property for hover info, return string
+    + stain1 and stain2 reaction property, accepts hex color code
+    + Shift + W?
+
+[Version 1.9.3 - February 2, 2024 - Mix & Munch]
+    + Potassium
+    + Magnesium
+    + Antibomb
+    + Nut Oil
+    + Cured Meat, from mixing with Salt
+    + Grease, from cooking Meat
+    + (BETA) Support for British, German, French, Hungarian, Polish, Portuguese, Vietnamese, Chinese
+   [Chemistry]
+    + Water and Foam can extinguish small fires (Outer pixels)
+    + Hydrogen is explosive when burning
+    ~ Improved Calcium-Water reaction
+    + Calcium reacts with Water variants
+    ~ Recolored Calcium
+    + Calcium-Acid reaction
+    + Calcium exposed to air turns to Quicklime
+    + Quicklime is an insecticide
+    + Limestone can break into Gravel
+    ~ Many things no longer turn to raw Calcium
+    ~ Tweaked Quicklime-Water rection
+    + Oil distills into Propane, Plastic, and Lamp Oil at certain temperatures
+    + Cells break down Oil into Methane
+    + Propane Ice (Hidden)
+    ~ Copper no longer oxidizes in Water
+    + Soap recipe
+    + Potassium Salt recipe
+    + Glue can be made from Bones
+    + Acid reacts with Zinc and Sugar
+    + Blue and Rose Gold can break
+    ~ Recolored Electrum for consistency with other Golds
+    ~ Anesthesia requires heat for production
+    ~ AlGa reaction creates proper amounts
+    ~ Aluminum flame color
+    ~ Foam deletes when frozen
+    + Caustic Potash (Hidden)
+   [Life]
+    + Evergreen breaks into Sap
+    + Sap is flammable
+    + Flowers have more color variety (Light & dark)
+    ~ Spawned Petals are multicolor again
+    + Pollen requires soil to germinate
+    + Pollen will sometimes fail to germinate
+    ~ Bees drop Pollen less often if plants are nearby
+    ~ Bees lose their Pollen when dropping it
+    + Bees warm Hive to at least 33°C
+    + Ant Walls can be damaged by Fire
+    + Rats can eat Worms, Ants, Frogs, Snails, and Slugs
+    + Worms, Fish, and Grass die in Alcohol
+    ~ Fish Eggs are colored black
+    ~ Fish no longer eat Meat
+    ~ Snails and Slugs no longer die in Salt Water
+    ~ Snails consume Limestone slower
+    + Humans eat Pickles and Sauce
+    ~ Humans won't rot while being defibrillated
+    + Cancer kills Grass
+    ~ Ocean worldgen uses Salt Water
+   [Cooking]
+    ~ Mixing Dough and Batter changes color without deleting ingredients
+    + Yeast, Cream, Baking Soda, and Quicklime help Dough and Batter rise
+    + Deep-fried color when cooking Dough or Batter in hot Nut Oil, Butter, or Grease
+    + Cooking Nut Meat makes some Nut Oil
+    + Dough can be made with Vinegar
+    + Cheese can be made with Yogurt
+    + Yeast can ferment Milk into Cheese
+    + Honey, Caramel, and Molasses can sweeten Water
+    + Mixing Honey and Sugar Water creates Wax
+    + Coffee Pumpkin Spice color variant
+    ~ Tea and Coffee spawn warm
+    ~ Moved Cream slightly
+    ~ Moved Rad Cloud and Rad Steam slightly
+    + Fat (Hidden)
+   [Other]
+    + Save menu includes Author and Description inputs
+    + Save menu remembers your name for later
+    + Save menu autofills info from current save
+    + Some elements will forcefully save with color
+    ~ Settings don't save when in a loaded save
+    + Image tool works with Replace Mode
+    + Image tool replaces pixels when holding Shift
+    + Hidden count goes down in real time when unlocking
+    + Clay Soil heats up into Brick
+    + Clay and Dirt or Gravel makes Clay Soil
+    + Clay freezes into Clay Soil
+    + Nitro and Clay or TNT makes Dynamite
+    ~ Dynamite must be broken or shocked to explode
+    ~ Gunpowder is less powerful than Dynamite
+    + Bubbles pop when broken
+    + Soap removes Glue
+    ~ Soap reactions are less instant
+    + Mercury dirties Seltzer
+    + Uranium dirties Slush
+    + Uranium slowly melts Snow
+    + Ozone pops Balloons
+    + Greek Fire ignites on contact with Plasma
+    + Bless removes Liquid Stench
+    + Virus-infected pixels can be restored with Soap or Bless
+    + Virus ignores Plasma
+    + Malware can interrupt Virus restoration
+    ~ Virus optimizations
+    + Vertical and Horizontal can swap when given opposite energies
+    + Heat Ray and God Ray have densities
+    + Pyrite, Electrum, and Yogurt aliases
+    ~ Hid Clay Shard
+    ~ Moved Ball to Special
+    ~ Updated Cheerful Mode description
+    - Removed Sticky Bomb, Cluster Bomb, Electro Bomb, and Water Bomb
+        - Instead available in new classic_explosives.js mod
+   [Bug Fixes]
+    ~ Fixed: Repairing with Glue duplicates material
+    ~ Fixed: Painted Plant turns Light green
+    ~ Fixed: Molten Sodium and Sodium Gas burn with too much Fire
+    ~ Fixed: Melted and Rotten Cheese densities inconsistent
+    ~ Fixed: Molasses boils into Sugar which immediately burns
+    ~ Fixed: Single Dirty Water pixel turns infinite Snow to Slush
+    ~ Fixed: Rad Steam doesn't form Rad Cloud when touching Cloud
+    ~ Fixed: TPS accepts negative values
+    ~ Fixed: Hive is draggable
+    ~ Fixed: Nut Milk can't be mixed into Batter/Dough
+   [Technical]
+    + Shift-Picking a pixel copies its properties
+    + Z key swaps to secondary element
+    + Backspace swaps to previous element
+    + Prop tool supports NaN and lowercase Infinity values
+    ~ Unhid Prop
+    + 'extinguish' element property (true/false)
+    + 'forceSaveColor' element property (true/false)
+    ~ Custom element names and spaces are normalized in buttons
+
+[Version 1.9.2 - January 9, 2024 - New Year New Use]
+    + Purple Gold, made from Gold + Aluminum
+    + Blue Gold, made from Gold + Gallium
+    + Pickle
+        + Some foods can be pickled with Vinegar
+    ~ Solids will no longer Mix unless Shift is held
+    ~ Revamped Rocket behavior
+   [Ants]
+    + Ants can create underground tunnels
+    + Ant Wall (Hidden)
+    + Ants can climb diagonally
+    + Ants can dig through Color Sand
+   [Bees]
+    + Bees can create, enter, and move inside Hives
+    + Hive (Hidden)
+    + Hives produce and drip Honey when Bees pollinate
+    + Bees can eat the Honey they produce
+    + Each hive has a Queen, which expands and makes more Bees
+   [Changes]
+    + Pipe Wall (Hidden)
+        + Heat-resistant but breakable
+    + Pipes remove non-solids when generating
+    + Sensors can detect pixels inside Pipes
+    + Malware hacks Cloners to create more of itself
+    + Malware damages and scrambles Pipes
+    + Malware causes Light Bulbs and Batteries to explode
+    + Fireworks can be triggered with electricity
+    + Shocking Gray Goo helps defeat it
+    + EMP Bombs destroy Gray Goo
+    + Broth can be made with Rotten Meat
+    + Broth made from Dirty Water will be colored
+    + Jelly can be made with Caramel
+    + Jelly can be frozen
+    + Flour and Melted Butter sauce recipe
+    + Nut Milk can be added to Coffee
+    ~ Milk now requires Shift to Mix into Butter
+    ~ Coffee stains more often
+    + Caramel can stain solids
+    + Melting Rotten Cheese creates Stench
+    + Stench can make Cheese rotten
+    + Beans are flammable
+    + Uranium can make Sugar Water and Seltzer dirty
+    + Worms can move through Color Sand
+    + Roots can grow through Color Sand
+    + Cacti break into milky Sap
+    + Poison can kill Homunculi
+    + Oil can kill Ants and Bees
+    + Chlorine, Dioxin, Fallout, and Neutrons can kill Humans
+    + Bleach and Acid reaction creates Poison Gas
+    ~ Acid no longer destroys Gold Coins or Silver
+    + Tin pest occurs at low temperatures
+    + Glass Shards change Light color
+    + Antigas turns to Antifire when hot
+    + Human shirts burn off before death
+    + Humans can eat Jelly, Mayo, and Mashed Potato
+    ~ Humans have a cooldown when on lowest cursor size
+    ~ Fiber no longer falls diagonally
+    ~ Nukes, H-Bombs, and Dirty Bombs no longer explode on upward contact
+    ~ Tweaked Acid Gas density
+    ~ Tweaked density for molten Calcium, Sodium, Aluminum, Nickel, Copper, Silver, Tin, Gold, Uranium
+    ~ Tweaked Cheese density so it floats on Sauce
+    ~ Moved Rocket to Weapons
+    ~ Recolored Rocket
+    ~ Recolored Rose Gold
+    ~ Hid Cancer
+    + Sauce Ice (Hidden)
+    + H key will prevent canvas rendering
+    ~ Social links are color-coded
+   [Bug Fixes]
+    ~ Fixed: More than a 1x1 of Lattice ruins the effect
+    ~ Fixed: Baked Batter can mix into Baked Batter
+    ~ Fixed: Prop tool sometimes doesn't allow null values
+    ~ Fixed: Pinecones glitch when growing through Water
+    ~ Fixed: Stained Glass doesn't retain color when breaking
+    ~ Fixed: Cursor flickers when stepping ticks
+    ~ Fixed: Pointer flickering appearance
+    ~ Fixed: Udder, Pointer, and Corn can be dragged
+    ~ Fixed: Erasing while dragging causes ghost pixels
+    ~ Fixed: Pixels behave strange when dragging through Pipe
+    ~ Fixed: Superheated Sawdust when smashing Torch
+    ~ Fixed: Bees create Flower Seeds from pollinating trees
+   [Technical]
+    ~ Hid Prop tool
+    ~ Optimizations
+    ~ Heat, Cool, and Lookup no longer hard-coded
+    + eListAdd(listName, itemList) function
+
 [Version 1.9.1 - December 1, 2023 - Cozy Solstice]
     + Pipe
         1. Draw a line with Pipe, maybe while paused
@@ -748,7 +1090,7 @@ A fancier version of this changelog can be found here: https://sandboxels.R74n.c
     ~ Snow more resilient to heat
     ~ Tweaked Ice color
     ~ Improved world gen for: Flower Field, Wheat Field, Forest, Jungle, Ocean
-    ~ Dyanmite must now be triggered to explode
+    ~ Dynamite must now be triggered to explode
     ~ Plague now dissipates over time
     ~ Plague now dies at high temperatures
     + Snails and Slugs can now eat Dead Plant

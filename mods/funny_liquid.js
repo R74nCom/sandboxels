@@ -1,3 +1,8 @@
+/*
+This mod has been moved.
+*/
+
+/*
 elements.cum = { 
 	name: "cum",
 	color: "#e6e1d5",
@@ -610,3 +615,4 @@ runAfterLoad(function() {
 		]
 	};
 });
+*/

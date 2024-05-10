@@ -1,5 +1,20 @@
-//This mod was made by Alex the transfem, https://discord.com/users/778753696804765696 on discord and https://www.tiktok.com/@alextheagenenby?_t=8hoCVI3NRhu&_r=1 on tiktok.
-//V1.4.1: added a mixer element and an improved sensor element.
+//This mod was made by Adora the transfem, https://discord.com/users/778753696804765696 on discord and https://www.tiktok.com/@alextheagenenby?_t=8hoCVI3NRhu&_r=1 on tiktok.
+let version = "1.5.2";
+function pixelInRange(pixel, range){
+  let i = 0;
+  while (i < range.length) {
+    if (pixel.x === range[i][0] && pixel.y === range[i][1]) {
+      i++;
+      return true;
+    } else {
+        i++;
+      }
+
+    }
+    return false;
+
+}
+
 function customExplosion(pixel1, pixel2, radius, list) {
   let x = pixel1.x;
   let y = pixel1.y;
@@ -40,8 +55,6 @@ function reactPixels(pixel1,pixel2) {
       if (r.radius !== undefined){
         let radius = r.radius;
         let list = r.explosion.split(",");
-        console.log(list);
-        console.log(pixel1, pixel2, radius, list);
         customExplosion(pixel1, pixel2, radius, list);
       }
     }
@@ -214,7 +227,7 @@ elements.magnesium = {
   reactions: {
     "acid": { "elem1": "hydrogen", "chance": 0.02, },
     "aqua_regia": { "elem1": "hydrogen", "chance": 0.2, "elem2": "pop", },
-    
+
   },
   behavior: behaviors.POWDER,
   fireColor: "#ffffff",
@@ -623,11 +636,6 @@ elements.potassiumhydroxidecrystals = {
     density: 2040,
     name: "PotassiumHydroxideCrystals",
 }
-elements.supercooler = {
-  name: "SuperCooler",
-  category: "machines"
-}
-elements.supercooler.behavior = [["XX","CO:10","XX"],["CO:10","XX","CO:10"],["XX","CO:10","XX"]]
 elements.iron_chloride = {
   color: ["#010014", "#a2ff94"],
   reactions: {
@@ -683,7 +691,7 @@ elements.kilonova = {
   temp: 100000000,
 }
 elements.supernova.behavior = [ ["XX", "XX", "XX"], [ "XX", "EX:80>plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,molten_iron,molten_uranium,oxygen,molten_sodium,sulfur_gas,neon,chlorine,molten_calcium,molten_nickel,molten_copper,molten_zinc,gallium_gas,hydrogen,hydrogen,hydrogen,hydrogen,helium,helium,helium AND CH:NeutronStar", "XX" ], ["XX", "XX", "XX"] ]
-elements.kilonova.behavior = [ ["XX", "XX", "XX"], [ "XX", "EX:200>plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,molten_iron,molten_uranium,molten_lead,oxygen,molten_sodium,molten_gold,molten_tungsten,sulfur_gas,neon,chlorine,molten_calcium,molten_nickel,molten_copper,molten_zinc,gallium_gas,hydrogen,hydrogen,hydrogen,hydrogen,hydrogen,helium,helium,helium,helium AND CH:void", "XX" ], ["XX", "XX", "XX"] ]
+elements.kilonova.behavior = [ ["XX", "XX", "XX"], [ "XX", "EX:200>plasma,plasma,plasma,plasma,plasma,plasma,molten_iron,molten_uranium,molten_lead,oxygen,molten_sodium,molten_gold,molten_tungsten,sulfur_gas,neon,chlorine,molten_calcium,molten_nickel,molten_copper,molten_zinc,gallium_gas,hydrogen,hydrogen,hydrogen,hydrogen,hydrogen,helium,helium,helium,helium AND CH:void", "XX" ], ["XX", "XX", "XX"] ]
 elements.NeutronStar = {
   behavior: [["XX", "XX", "XX"], ["CR:light", "XX", "CR:light"], ["XX", "XX", "XX"]],
   name: "NeutronStar",
@@ -751,10 +759,11 @@ elements.rubidium = {
     chlorine: { elem1: "rubidiumsalt" },
     acid: { explosion: "fire,rubidiumsalt,water", radius: 7, },
     aqua_regia: { explosion: "fire,rubidiumsalt,fire,water", radius: 8, },
-    acidic_water: { explosion: "water,water,water,rubidiumsalt", radius: 3.5, },
+    acidic_water: { explosion: "water,water,water,rubidiumsalt", radius: 3, },
     nitric_acid: { explosion: "fire,fire,hydrogen", radius: 7 },
     chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
     liquid_chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
+    water: { explosion: "fire,rubidiumhydroxide", radius: 6 },
     },
   density: 1532,
   fireColor: "#d91e1e",
@@ -773,12 +782,14 @@ elements.moltenrubidium = {
     chlorine: { elem1: "rubidiumsalt" },
     acid: { explosion: "fire,rubidiumsalt,water", radius: 7, },
     aqua_regia: { explosion: "fire,rubidiumsalt,fire,water", radius: 8, },
-    acidic_water: { explosion: "water,water,water,rubidiumsalt", radius: 3.5, },
+    acidic_water: { explosion: "water,water,water,rubidiumsalt", radius: 3, },
     nitric_acid: { explosion: "fire,fire,hydrogen", radius: 7 },
     chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
     liquid_chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
-    fireColor: "#d91e1e",
+    water: { explosion: "fire,rubidiumhydroxide", radius: 6 },
+
     },
+  fireColor: "#d91e1e",
   tick: function(pixel) {
     pixel.burning = true;
   },
@@ -857,7 +868,7 @@ elements.rubidiumhydroxide = {
     chlorine: { elem1: "rubidiumsalt" },
     acid: { explosion: "fire,rubidiumsalt,water", radius: 7, },
     aqua_regia: { explosion: "fire,rubidiumsalt,fire,water", radius: 8, },
-    acidic_water: { explosion: "water,water,water,rubidiumsalt", radius: 3.5, },
+    acidic_water: { explosion: "water,water,water,rubidiumsalt", radius: 3, },
     nitric_acid: { explosion: "fire,fire,hydrogen", radius: 7 },
     chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
     liquid_chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
@@ -869,7 +880,7 @@ elements.rubidiumhydroxide = {
     state: "liquid",
     density: 2.12,
     name: "RubidiumHydroxide",
-    stateHigh: "potassiumhydroxidecrystals",
+    stateHigh: "rubidiumhydroxidecrystals",
     tempHigh: "1388",
 }
 elements.rubidiumhydroxidecrystals = {
@@ -881,7 +892,7 @@ elements.rubidiumhydroxidecrystals = {
     chlorine: { elem1: "rubidiumsalt" },
     acid: { explosion: "fire,rubidiumsalt,water", radius: 7, },
     aqua_regia: { explosion: "fire,rubidiumsalt,fire,water", radius: 8, },
-    acidic_water: { explosion: "water,water,water,rubidiumsalt", radius: 3.5, },
+    acidic_water: { explosion: "water,water,water,rubidiumsalt", radius: 3, },
     nitric_acid: { explosion: "fire,fire,hydrogen", radius: 7 },
     chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
     liquid_chloroauric_acid: { explosion: "fire,fire,hydrogen,gold_coin", radius: 7, },
@@ -891,8 +902,6 @@ elements.rubidiumhydroxidecrystals = {
   state: "powder",
   density: 2.12,
   name: "RubidiumHydroxideCrystals",
-  stateHigh: "potassiumhydroxidecrystals",
-  tempHigh: "1388",
 }
 elements.esuperheater = {
   conduct: 1,
@@ -951,29 +960,105 @@ elements.esuperheater = {
       ],
     category: "machines",
     name: "e-freezer",
-  },
-  elements.mixer = {
-    name: "Mixer",
-    behavior:[
-          [
-              "SW",
-              "SW",
-              "SW"
-          ],
-          [
-              "SW",
-              "XX",
-              "SW"
-          ],
-          [
-              "SW",
-              "SW",
-              "SW"
-          ]
-      ],
+}
+let num = 0;
+elements.morechemmixer = {
+    name: "MoreChemMixer",
+    behavior: behaviors.WALL,
     category: "machines",
     noMix: true,
+  onSelect: function(pixel) {
+    let item = prompt("enter range for mixing.");
+    if(/^\d+$/.test(item)){
+      num = parseInt(item);
+    } else {
+      alert("that is not an integer.");
+    }
+  },
+    tick: function(pixel) {
+      if(pixel.start == pixelTicks) {
+        pixel.range = num;
+      }
+      let range = mouseRange(pixel.x, pixel.y, pixel.range);
+      mix(range);
+    }
   }
+let num1 = 0;
+elements.morechemsmasher = {
+    name: "MoreChemSmasher",
+    behavior: behaviors.WALL,
+    category: "machines",
+    noMix: true,
+  onSelect: function(pixel) {
+    let item = prompt("enter range for smashing.");
+    if(/^\d+$/.test(item)){
+      num1 = parseInt(item);
+    } else {
+      alert("that is not an integer.");
+    }
+  },
+    tick: function(pixel) {
+      if(pixel.start == pixelTicks) {
+        pixel.range = num1;
+      }
+      let range = mouseRange(pixel.x, pixel.y, pixel.range);
+      smash(range);
+    }
+  }
+let num2 = 0;
+let exclude = [];
+elements.specialsmasher = {
+    name: "SpecialSmasher",
+    behavior: behaviors.WALL,
+    category: "machines",
+    noMix: true,
+  onSelect: function(pixel) {
+    let item = prompt("enter range for smashing.");
+    exclude = prompt("Enter elements to exclude, seperate them with commas.").replace(/\s/g, "").split(",");
+    if(/^\d+$/.test(item)){
+      num2 = parseInt(item);
+    } else {
+      alert("that is not an integer.");
+    }
+  },
+    tick: function(pixel) {
+      if(pixel.start == pixelTicks) {
+        pixel.range = num2;
+      }
+      let range = mouseRange(pixel.x, pixel.y, pixel.range);
+      smash(range, exclude);
+    }
+  }
+let num3 = 0;
+let exclude1 = [];
+elements.specialmixer = {
+    name: "SpecialMixer",
+    behavior: behaviors.WALL,
+    category: "machines",
+    noMix: true,
+  onSelect: function(pixel) {
+    let item = prompt("enter range for mixing.");
+    exclude = prompt("Enter elements to exclude, seperate them with commas.").replace(/\s/g, "").split(",");
+    if(/^\d+$/.test(item)){
+      num3 = parseInt(item);
+    } else {
+      alert("that is not an integer.");
+    }
+  },
+    tick: function(pixel) {
+      if(pixel.start == pixelTicks) {
+        pixel.range = num3;
+      }
+      let range = mouseRange(pixel.x, pixel.y, pixel.range);
+      mix(range, exclude);
+    }
+  }
+
+let num4 = 0;
+let exclude2 = [];
+let property1 = "";
+let value2 = "";
+
 let item = "";
 elements.improvedsensor = {
   behavior: behaviors.WALL,
@@ -985,7 +1070,7 @@ elements.improvedsensor = {
         if(pixel.start == pixelTicks){
           pixel.clone = item;
         }
-        
+
           for (var i = 0; i < adjacentCoords.length; i++) {
               var coords = adjacentCoords[i];
               var x = pixel.x + coords[0];
@@ -1005,5 +1090,578 @@ elements.improvedsensor = {
       category:"machines",
       darkText: true,
   hardness: 1,
-  
+
   };
+
+elements.eincinerator = {
+  conduct: 1,
+  color: 'rgb(255, 70, 0)',
+  colorObject: {
+        "r": 240,
+        "g": 10,
+        "b": 0
+    },
+  behavior: behaviors.WALL,
+  behaviorOn: [
+        [
+            "XX",
+            "HT:100000",
+            "XX"
+        ],
+        [
+            "HT:100000",
+            "XX",
+            "HT:100000"
+        ],
+        [
+            "XX",
+            "HT:100000",
+            "XX"
+        ]
+    ],
+  category: "machines",
+  name: "E-Incinerator",
+  noMix: true,
+}
+elements.incinerator = {
+
+  behavior: [
+        [
+            "XX",
+            "HT:100000",
+            "XX"
+        ],
+        [
+            "HT:100000",
+            "XX",
+            "HT:100000"
+        ],
+        [
+            "XX",
+            "HT:100000",
+            "XX"
+        ]
+    ],
+  name: "Incinerator",
+  category: "machines",
+  colorObject: {
+      "r": 255,
+      "g": 50,
+      "b": 0
+  },
+  color: 'rgb(255, 50, 0)',
+  noMix: true,
+}
+function conditionTrue(condition, pixel){
+  let p = pixel;
+  let string = "";
+  condition = condition.split("!OR").join("||").split("&AND").join("&&").split("\"").join("")
+
+  condition = eval(condition);
+  return condition;
+}
+let ifCondition = "";
+let currentProp = "";
+let currentPropValue = "";
+let Func = "";
+elements.propmachine = {
+  name: "PropMachine",
+  behavior: behaviors.WALL,
+  category: "machines",
+  noMix: true,
+onSelect: function(pixel) {
+
+  let item = prompt("enter range for prop changing.");
+  if(/^\d+$/.test(item)){
+    num4 = parseInt(item);
+  } else {
+    alert("that is not an integer.");
+  }
+  exclude2 = prompt("Enter elements to exclude, seperate them with commas. You can also enter !IF if you wish to enter conditions for it to change the property and add the exclude elements.").replace(/\s/g, "");
+  if(exclude2.includes("!IF")){
+    exclude2.split("!IF").join("");
+    ifCondition = prompt("Enter the condition for the property to change. A list of variables can be seen at the bottom of the page. you cannot use \"\" but you can use `` and ''.");
+  } else { ifCondition = '1 == 1'; }
+  exclude2.split(",");
+  if(exclude2.constructor == [].constructor){
+    exclude2.push("propmachine");
+  } else {
+    exclude2 += "propmachine";
+  }
+  var answer1 = prompt("Warning - This tool may break the simulator if used incorrectly.\n\nEnter a pixel attribute to modify or enter !FUNC to execute a function on pixels.",(currentProp||undefined));
+  if(answer1.includes("!FUNC")){
+    alert("enter the function you wish to execute in the function textbox at the bottom of the page. if you have not before you get this alert, nothing will happen. make sure the function has \"function(){\" before it and \"}\" after it. an example is: \"function(){console.log(\"Hello World!\")}\"");
+    var answer2 = Func;
+  }
+  console.log(answer1)
+  if (!answer1) { return }
+  if(!answer2){
+      var answer2 = prompt("Now, enter a value for "+answer1+":",(currentPropValue||undefined));
+      if (!answer2) { return }
+      var valueL = answer2.toLowerCase();
+      if (valueL === "true") { answer2 = true }
+      else if (valueL === "false") { answer2 = false }
+      else if (valueL === "null") { answer2 = null }
+      else if (valueL === "undefined") { answer2 = undefined }
+      else if (answer1 === "color" && valueL[0] === "#") {
+          var rgb = hexToRGB(valueL);
+          answer2 = "rgb("+rgb.r+","+rgb.g+","+rgb.b+")";
+      }
+      currentProp = answer1;
+      currentPropValue = answer2;
+      console.log(answer1);
+      var num = parseFloat(answer2);
+      if (!isNaN(num)) { answer2 = num }
+      currentPropValue = answer2;
+      logMessage("Prop: "+currentProp);
+      logMessage("Value: "+currentPropValue);
+    }
+  },
+  tick: function(pixel) {
+    if(pixel.start == pixelTicks) {
+      pixel.range = num4;
+      pixel.condition = ifCondition;
+      pixel.prop = currentProp;
+      pixel.val = currentPropValue;
+      pixel.func = Func;
+    }
+      let range = mouseRange(pixel.x, pixel.y, pixel.range);
+      prop({ property: pixel.prop, value: pixel.val },range, exclude2, pixel.condition, pixel.func);
+   }
+}
+function prop(obj, range, exclude = [], condition = "", func = undefined){
+  let list = [];
+  for (var i = 0; i < range.length; i++) {
+  var x = range[i][0];
+  var y = range[i][1];
+      if (!isEmpty(x,y,true)) {
+          var pixel = pixelMap[x][y];
+            list.push(pixel);
+      }
+  }
+  for (var i = 0; i < list.length; i++) {
+  if (!isEmpty(list[i].x, list[i].y, true)) {
+    var pixel = list[i];
+    if(func){
+      eval(func);
+    }
+    if (!exclude.includes(pixel.element) && conditionTrue(condition, pixel)){
+      if(/^\d+$/.test(obj.value)){
+        obj.value = parseInt(obj.value);
+      }
+      if (!obj.property) { return }
+      if (pixel[obj.property] !== undefined && typeof pixel[obj.property] !== typeof obj.value) {
+          logMessage("Error: "+obj.property+" type is "+typeof pixel[obj.property]+", not "+typeof obj.value+".");
+          obj.property = null;
+          obj.value = null;
+          return;
+        }
+      if (obj.property === "element") {
+          changePixel(pixel, obj.value);
+          list.splice(list.indexOf(pixel),1);
+          return;
+      }
+      if (obj.property === "burning" && obj.value === "true") {
+          pixel.burnStart = pixelTicks;
+          list.splice(list.indexOf(pixel),1);
+          return;
+      }
+        pixel[obj.property] = obj.value;
+        list.splice(list.indexOf(pixel),1);
+      }
+    }
+  }
+}
+function mix(range, exclude = []){
+  let mixlist = [];
+  for (var i = 0; i < range.length; i++) {
+  var x = range[i][0];
+  var y = range[i][1];
+      if (!isEmpty(x,y,true)) {
+          var pixel = pixelMap[x][y];
+          if (elements[pixel.element].noMix !== true) {
+              mixlist.push(pixel);
+          }
+      }
+  }
+  for (var i = 0; i < mixlist.length; i++) {
+    var pixel1 = mixlist[Math.floor(Math.random()*mixlist.length)];
+    var pixel2 = mixlist[Math.floor(Math.random()*mixlist.length)];
+    if (exclude.includes(pixel1.element) || exclude.includes(pixel2.element)){
+      mixlist.splice(mixlist.indexOf(pixel1),1);
+      mixlist.splice(mixlist.indexOf(pixel2),1);
+    } else {
+      swapPixels(pixel1,pixel2);
+      mixlist.splice(mixlist.indexOf(pixel1),1);
+      mixlist.splice(mixlist.indexOf(pixel2),1);
+      if (elements[pixel1.element].onMix) {
+        elements[pixel1.element].onMix(pixel1,pixel2);
+      }
+      if (elements[pixel2.element].onMix ) {
+        elements[pixel2.element].onMix(pixel2,pixel1);
+      }
+    }
+  }
+}
+function smash(range, exclude = []){
+  let smashlist = [];
+  for (var i = 0; i < range.length; i++) {
+  var x = range[i][0];
+  var y = range[i][1];
+      if (!isEmpty(x,y,true)) {
+          var pixel = pixelMap[x][y];
+          if (elements[pixel.element].noMix !== true) {
+              smashlist.push(pixel);
+          }
+      }
+  }
+  for (var i = 0; i < smashlist.length; i++) {
+    var pixel1 = smashlist[Math.floor(Math.random()*smashlist.length)];
+    smashlist.splice(smashlist.indexOf(pixel1),1);
+    if (elements[pixel1.element].breakInto && !exclude.includes(pixel1.element)) {
+      if (Array.isArray(elements[pixel1.element].breakInto)){
+        changePixel(pixelMap[pixel1.x][pixel1.y], elements[pixel1.element].breakInto[Math.floor(Math.random()*elements[pixel1.element].breakInto.length)])
+      } else {
+        changePixel(pixelMap[pixel1.x][pixel1.y], elements[pixel1.element].breakInto)
+      }
+    }
+  }
+}
+function pull(range, pixel1, include = []){
+  let pulllist = [];
+  for (var i = 0; i < range.length; i++) {
+  var x = range[i][0];
+  var y = range[i][1];
+      if (!isEmpty(x,y,true)) {
+          var pixel = pixelMap[x][y];
+          if (elements[pixel.element].noMix !== true) {
+              pulllist.push(pixel);
+          }
+      }
+  }
+  for (var i = 0; i < pulllist.length; i++) {
+    var pixel = pulllist[Math.floor(Math.random()*pulllist.length)];
+    pulllist.splice(pulllist.indexOf(pixel),1);
+    if (elements[pixel.element].movable != false && include.includes(pixel.element)) {
+        for (var i = 0; i < pulllist.length; i++) {
+            if (pixelInRange(pulllist[i], range)) {
+              let Xdistance = pixel1.x - pixel.x;
+              let Ydistance = pixel1.y - pixel.y;
+              let newX = (Xdistance > pixel.x ? pixel.x + 3 : pixel.x + 1);
+              let newY = (Ydistance > pixel.y ? pixel.y + 3 : pixel.y + 1);
+              tryMove(pixel, newX, newY, undefined, false);
+            }
+          }
+      }
+    }
+  }
+
+let prevNum;
+elements.etemper = {
+  name: "E-Temper",
+  category: "machines",
+  conduct: 1,
+  insulate: true,
+  behavior: behaviors.WALL,
+  onSelect: function(pixel){
+    prevNum = parseInt(prompt("Enter the temperature you want it set to.", (prevNum || undefined)));
+  },
+  tick: function(pixel){
+    if(pixel.start === pixelTicks){
+        pixel.clone = `Temp: ${prevNum}`;
+        pixel.Temp = prevNum;
+    }
+      for (var i = 0; i < adjacentCoords.length; i++){
+      let x = pixel.x + adjacentCoords[i][0];
+      let y = pixel.y + adjacentCoords[i][1];
+      if(outOfBounds(x,y)){ continue; }
+      if(isEmpty(x,y)){ continue; }
+      let pixel2 = pixelMap[x][y];
+        
+      if (pixel2.temp < pixel.Temp && pixel.charge > 0 ){
+          pixel2.temp += pixel.Temp / 6;
+      }
+
+    }
+  },
+}
+let prevString;
+elements.sign = {
+  name: "Sign",
+  category: "machines",
+  onSelect: function(){
+    prevString = prompt("Enter the text you want it to say.", (prevString || undefined));
+  },
+  tick: function(pixel){
+    if(pixel.start == pixelTicks){
+      pixel.clone = prevString;
+    }
+  }
+}
+let attrElem = "";
+let magnetRange = 0;
+let magnetElems = [];
+elements.magnet = {
+  category: "machines",
+  tick:function(pixel){
+    if(pixelTicks == pixel.start){
+      if(attrElem.includes(" ")){attrElem.replace(/s/g, "")}
+      pixel.elem = (attrElem.includes(",")) ? attrElem.split(",") : attrElem;
+      pixel.range = magnetRange;
+    }
+    let range = mouseRange(pixel.x, pixel.y, pixel.range)
+    for (var i = 0; i < currentPixels.length; i++){
+      if(pixelInRange(currentPixels[i], range)){
+        let pixel2 = currentPixels[i]
+        if(!pixel2.drag && pixel.elem.includes(pixel2.element)){pixel2.drag = true}
+        if(pixel2.drag && !pixel.elem.includes(pixel2.element) && !beamPixels.includes(pixel2) && ((draggingPixels && draggingPixels.includes(pixel2)) || !draggingPixels)){pixel2.drag = false;}
+          if(!magnetElems.includes(pixel2) && pixel.elem.includes(pixel2.element)){magnetElems.push(pixel2)}
+        if(pixel.elem.includes(pixel2.element)){
+          (pixel2.x > pixel.x) ? tryMove(pixel2, pixel2.x - 1, pixel2.y, undefined, true) : tryMove(pixel2, pixel2.x + 1, pixel2.y, undefined, true);
+          (pixel2.y > pixel.y) ? tryMove(pixel2, pixel2.x, pixel2.y - 1, undefined, true) : tryMove(pixel2, pixel2.x, pixel2.y + 1, undefined, true);
+        }
+      } else if (draggingPixels && !draggingPixels.includes(currentPixels[i])){
+        currentPixels[i].drag = false; 
+      }
+    }
+  },
+  onSelect: function(){
+    attrElem = prompt("Enter the element you want to attract.", (attrElem || undefined));
+    magnetRange = parseInt(prompt("Enter the range you want to attract " + attrElem + " to.", (magnetRange || undefined)));
+  }
+}
+let move = false;
+let moves = {
+  a: [-1,0],
+  d: [1,0],
+  s: [0,1],
+  w: [0,-1]
+}
+let UFOs = [];
+let beamPixels = [];
+let a = adjacentCoords;
+function randomString(length){
+  let str = "";
+  let chars = "abcdefghijklmnopqrstuvwxyz";
+  let charArr = chars.split("");
+  for(var i = 0; i < length; i++){
+    str += charrArr[Math.floor(Math.random() * charArr.length)];
+  }
+  return str;
+}
+elements.ufo = {
+  category: "machines",
+  behavior: behaviors.WALL,
+  properties: {
+    cooldown: 0,
+  },
+  tick: function(pixel){
+    if(!UFOs.includes(pixel)){ UFOs = []; UFOs.push(pixel); }
+    if(move){
+      tryMove(pixel, pixel.x + move[0], pixel.y + move[1])
+    }
+  },
+  hardness: 1,
+  insulate: true,
+}
+let keysDown = {};
+document.addEventListener("keydown", function(event){
+  if(moves[event.key.toLowerCase()]){
+    move = moves[event.key.toLowerCase()];
+  }
+  keysDown[event.key.toLowerCase()] = true;
+  if(event.key.toLowerCase() == "b"){
+    for(var i = 0; i < UFOs.length; i++){
+      if(isEmpty(UFOs[i].x, UFOs[i].y+1) && !outOfBounds(UFOs[i].x, UFOs[i].y+1)){
+        createPixel("heat_ray", UFOs[i].x, UFOs[i].y+1);
+      }
+    }
+  }
+  if(event.key.toLowerCase() == "q"){
+    for(var i = 0; i < UFOs.length; i++){
+      if(isEmpty(UFOs[i].x, UFOs[i].y+1) && !outOfBounds(UFOs[i].x, UFOs[i].y+1)){
+        for(var ii = 0; ii < adjacentCoords.length; ii++){
+          let x = UFOs[i].x + adjacentCoords[ii][0];
+          let y = UFOs[i].y + adjacentCoords[ii][1];
+          if(event.shiftKey){
+            explodeAt(x, y, 10)
+          } else {
+            explodeAt(x, y, 4);
+          }
+        }
+      }    
+    }
+  }
+  if(event.key.toLowerCase() == "x"){
+    for(var i = 0; i < UFOs.length; i++){
+        for(var ii = 0; ii < currentPixels.length; ii++){
+          if([UFOs[i].x].includes(currentPixels[ii].x) && currentPixels[ii].y > UFOs[i].y){
+            if(isEmpty(currentPixels[ii].x, currentPixels[ii].y - 1) && !outOfBounds(currentPixels[ii].x, currentPixels[ii].y - 1)){
+              beamPixels.push(currentPixels[ii]);
+              currentPixels[ii].drag = true;
+              movePixel(currentPixels[ii], currentPixels[ii].x, currentPixels[ii].y - 1);
+            }
+          }
+
+        }
+      }
+  } 
+  if(event.key.toLowerCase() == "g"){
+    for(var i = 0; i < UFOs.length; i++){
+      pixel = UFOs[i];
+      for (var ii = 0; i < adjacentCoords.length; ii++){
+        let x = pixel.x + a[ii][0];
+        let y = pixel.y + a[ii][1];
+        if(!isEmpty(x, y) && !outOfBounds(x, y)){
+          let pixel2 = pixelMap[x][y];
+          if(elements[pixel2.element].breakInto){
+            if(typeof elements[pixel2.element].breakInto == "object"){
+              changePixel(pixel2, elements[pixel2.element].breakInto[Math.floor(Math.random() * elements[pixel2.element].breakInto.length)]);
+            } else {
+              changePixel(pixel2, elements[pixel2.element].breakInto);
+            }
+          }
+        }
+      }
+    }
+  }
+  if(event.key.toLowerCase() == "j"){
+    for(var i = 0; i < UFOs.length; i++){
+      pixel = UFOs[i];
+      for (var ii = 0; i < adjacentCoords.length; ii++){
+        let x = pixel.x + a[ii][0];
+        let y = pixel.y + a[ii][1];
+        if(!isEmpty(x, y) && !outOfBounds(x, y) && elements[pixelMap[x][y].element].conduct > 0){
+          pixelMap[x][y].charge = 1;
+        }
+      }
+    }
+  }
+})
+function isArray(item) {
+  return Object.prototype.toString.call(item) === '[object Array]';
+}
+
+document.addEventListener("keyup", function(event){
+  keysDown[event.key.toLowerCase()] = false;
+  if(moves[event.key.toLowerCase()] && move){
+    move = false;
+  }
+  if(event.key.toLowerCase() == "x"){
+    for(var i = 0; i < beamPixels.length; i++){
+      beamPixels[i].drag = false;
+    }
+    beamPixels = [];
+  }
+})
+function deletePixel(x,y) {
+    // remove pixelMap[x][y] from currentPixels
+    currentPixels.splice(currentPixels.indexOf(pixelMap[x][y]),1);
+  if(UFOs.includes(pixelMap[x][y])){
+    UFOs.splice(UFOs.indexOf(pixelMap[x][y]),1)
+  }
+    if (pixelMap[x][y]) {pixelMap[x][y].del = true;}
+    delete pixelMap[x][y];
+}
+setInterval(function(){
+  for(var i = 0; i < currentPixels.length; i++){
+    for(var ii = 0; ii < UFOs.length; ii++){
+      if(beamPixels.includes(currentPixels[i]) && currentPixels[i].x != UFOs[ii].x && !keysDown.x){
+        beamPixels.splice(beamPixels.indexOf(currentPixels[i]), 1);
+        currentPixels[i].drag = false;
+      }
+      else if (currentPixels[i].x != UFOs[ii].x && beamPixels.includes(currentPixels[i])){
+        (currentPixels[i].x > UFOs[ii].x) ? null : null;
+      }
+    }
+    if(currentPixels[i].drag && !beamPixels.includes(currentPixels[i])){
+      if(draggingPixels && !draggingPixels.includes(currentPixels[i])){
+        if(!magnetElems.includes(currentPixels[i])){
+          currentPixels.drag = false;
+        }
+      } else if(!draggingPixels){
+        if(!magnetElems.includes(currentPixels[i])){
+          currentPixels[i].drag = false;
+        }
+      } else if (draggingPixels && draggingPixels.includes(currentPixels[i])){
+        continue;
+      }
+    }
+  }
+}, 1000/tps)
+runAfterLoad(function(){
+  document.body.insertAdjacentHTML("beforeend",`
+  these are all properties of the pixel. another way to find pixel properties is using debug on a pixel, it will tell you the property and the value, like x and y, or, in plants.js, fruit.
+  <table id="variables">
+    <thead>
+      <tr class="bold">
+        <th>
+         Variable
+        </th>
+        <th>
+          Definition
+        </th>
+      </tr>
+    </thead>
+    <tbody><tr>
+      <th>
+        p.color
+      </th>
+      <th>
+        The color of the pixel. it is defined as an RGB value.
+      </th>
+    </tr>
+    <tr>
+      <th>
+        p.x and p.y
+      </th>
+      <th>
+        The x and y positions of the pixel.
+      </th>
+    </tr>
+    <tr>
+      <th>
+        p.element
+      </th>
+      <th>
+        The element of the pixel.
+      </th>
+    </tr>
+    <tr>
+      <th>
+        p.clone
+      </th>
+      <th>
+        Specific to cloners, specifies what the cloner clones.
+      </th>
+    </tr>
+    <tr>
+      <th>
+        wc and lc
+      </th>
+      <th>
+        Specific to saplings, specifies what colour the wood is (wc) and what colour the leaves are (lc).
+      </th>
+    </tr>
+    <tr>
+      <th>
+        p.start
+      </th>
+      <th>
+        The start tick of the pixel.
+      </th>
+    </tr>
+    <tr>
+      <th>
+        p.tick                                               
+      </th>
+      <th>
+        the amount of ticks that have happened so far in the game.
+      </th>
+    </tr>
+  </tbody></table>
+  <p>Paste function code for the prop machine in the text area below, typing doesnt work well.</p>
+  <textarea id="func"></textarea>
+  <button onClick = "Func = document.getElementById('func').value;">Use as function</button>
+  `);
+});

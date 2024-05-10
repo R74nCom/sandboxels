@@ -28,13 +28,16 @@ F or F11          =  Toggle Fullscreen
 1 or 0            =  Normal View
 2                 =  Thermal View
 3                 =  Basic View (No Effects)
-4                 =  Smooth View
+H                 =  Hide Canvas
 F1                =  Toggle GUI / HUD
 F2 or C           =  Capture Screenshot
 Drag & Drop       =  Insert an image or load save file
 Paste             =  Insert an image or load save file
 Escape            =  Close Menu / Clear Logs
 ;                 =  Replace Mode
+Shift + Mid Click =  Pick Element (Copy Properties)
+Z                 =  Select Secondary Element
+Baskspace         =  Select Previous Element
 
 (Alt/Option can be used in place of Shift)
 

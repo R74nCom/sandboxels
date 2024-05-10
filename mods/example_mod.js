@@ -68,7 +68,7 @@ runAfterLoad(function() {
 });
 
 // Run if another mod is active
-if (enabledMods.includes("test.js")) {
+if (enabledMods.includes("mods/test.js")) {
     runAfterLoad(function() {
         // Your code here
         console.log("Hello World!");

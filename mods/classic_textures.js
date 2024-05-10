@@ -144,3 +144,12 @@ if (elements.antibody) {elements.antibody.color = "#ff4040";}
 if (elements.infection) {elements.infection.color = "#cf005d";}
 if (elements.molten_solder) {delete elements.molten_solder.color;}
 if (elements.gold_coin) {elements.gold_coin.color = ["#fff0b5","#986a1a","#f0bb62"];}
+if (elements.rocket) {elements.rocket.color = "#ff0000";}
+if (elements.rose_gold) {elements.rose_gold.color = ["#b76e79","#a1334d","#f06283"];}
+if (elements.calcium) {elements.calcium.color = ["#515053","#7a787d","#748193","#fef9ff","#748193","#7a787d","#515053"];}
+if (elements.electrum) {elements.electrum.color = ["#ffdd63","#ad9532","#bda853","#bdb38e","#fff5d1"];}
+if (elements.molten_potassium) {delete elements.molten_potassium.color;}
+if (elements.molten_magnesium) {delete elements.molten_magnesium.color;}
+if (elements.n_explosion) {elements.n_explosion.color = ["#ffb48f","#ffd991","#ffad91"];}
+if (elements.supernova) {elements.supernova.color = ["#ffb48f","#ffd991","#ffad91"];}
+if (elements.pop) {elements.pop.color = ["#ffb48f","#ffd991","#ffad91"];}
