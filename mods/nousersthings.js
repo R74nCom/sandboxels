@@ -2709,7 +2709,8 @@ elements.ray_emitter = {
         if (!rayans) { return }
 		rayElement = mostSimilarElement(rayans);
         var rayans2 = prompt("Should the ray stop by walls? Write true or false.",(rayStoppedByWalls||false));
-        if (!rayans2 || rayans2 !== "true" || rayans2 !== "false") { return }
+        if (!rayans2) { rayans2 = false } else { rayans2 = true }
+        rayStoppedByWalls = rayans2
     },
     hoverStat: function(pixel){
         return pixel.rayElement.toUpperCase() || "unset"
@@ -2743,9 +2744,17 @@ elements.ray_emitter = {
                         if (isEmpty(lx,ly)){
                             createPixel(pixel.rayElement, lx, ly)
                             pixelMap[lx][ly].temp = pixelMap[x][y].temp
+                            if (pixel.rayElement == "ray"){
+                                pixelMap[lx][ly].rColor = pixel.color
+                                pixelMap[lx][ly].color = pixel.color
+                            }
                         } else if (!isEmpty(lx, ly, true)){
                             if (pixelMap[lx][ly].element != pixel.rayElement && pixel.rayStoppedByWalls){
                                 break;
+                            } else if (pixelMap[lx][ly].element == "ray" && pixel.rayElement == "ray"){
+                                pixelMap[lx][ly].rColor = pixel.color
+                                pixelMap[lx][ly].life = 30
+                                pixelMap[lx][ly].color = pixel.color
                             }
                         }
                     }
@@ -2763,6 +2772,7 @@ elements.indestructible_battery = {
 elements.ray = {
     color: "#ffffff",
     behavior: behaviors.WALL,
+    movable: true,
     category: "special",
     hoverStat: function(pixel){
         return pixel.life || "unset"
@@ -2771,8 +2781,15 @@ elements.ray = {
         life: 30
     },
     tick: function(pixel){
+        if (pixel.rColor){
+            pixel.rgb = pixel.rColor.match(/\d+/g);
+        } else {
+            pixel.rgb = [255,255,255]
+        }
         pixel.life -= 1
-        pixel.color = "rgba(255,255,255,"+(pixel.life/30)+")"
+        if (pixel.life < 30){
+            pixel.color = "rgba("+pixel.rgb[0]+","+pixel.rgb[1]+","+pixel.rgb[2]+","+(pixel.life/30)+")"
+        } else {pixel.color = "rgba("+pixel.rgb[0]+","+pixel.rgb[1]+","+pixel.rgb[2]+",1)"}
         if (pixel.life <= 0){
             deletePixel(pixel.x, pixel.y)
         }
