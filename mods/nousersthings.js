@@ -2697,7 +2697,7 @@ elements.healing_serum = {
         }
     }
 }
-var rayElement = "pointer"
+var rayElement = "ray"
 var rayStoppedByWalls = false
 elements.ray_emitter = {
     color: "#ff9c07",
