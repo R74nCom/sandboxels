@@ -2746,6 +2746,7 @@ elements.ray_emitter = {
                             pixelMap[lx][ly].temp = pixelMap[x][y].temp
                             if (pixel.rayElement == "ray"){
                                 pixelMap[lx][ly].rColor = pixel.color
+                                pixelMap[lx][ly].color = pixel.color
                             }
                         } else if (!isEmpty(lx, ly, true)){
                             if (pixelMap[lx][ly].element != pixel.rayElement && pixel.rayStoppedByWalls){
@@ -2753,6 +2754,7 @@ elements.ray_emitter = {
                             } else if (pixelMap[lx][ly].element == "ray" && pixel.rayElement == "ray"){
                                 pixelMap[lx][ly].rColor = pixel.color
                                 pixelMap[lx][ly].life = 30
+                                pixelMap[lx][ly].color = pixel.color
                             }
                         }
                     }
