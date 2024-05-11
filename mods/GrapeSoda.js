@@ -45,7 +45,6 @@ elements.anthranilicacid = {
     tempLow: -98,
     burn: 100,
     burnTime: 100,
-    burnInto: "carbondioxide"
   }
   
   elements.methanolice = {
@@ -68,6 +67,8 @@ elements.anthranilicacid = {
     stateLow: "methanol",
     tempLow: 64,
     temp: 84,  
+    burn: 100,
+    burnTime: 100,
   }
   elements.methylanthranilate = {
     color: "#FFFBBA",
