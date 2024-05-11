@@ -2697,3 +2697,84 @@ elements.healing_serum = {
         }
     }
 }
+var rayElement = "ray"
+var rayStoppedByWalls = false
+elements.ray_emitter = {
+    color: "#ff9c07",
+    behavior: behaviors.WALL,
+    category: "machines",
+    movable: false,
+    onSelect: function(pixel){
+        var rayans = prompt("Please input the desired element of this ray emitter",(rayElement||undefined));
+        if (!rayans) { return }
+		rayElement = mostSimilarElement(rayans);
+        var rayans2 = prompt("Should the ray stop by walls? Write true or false.",(rayStoppedByWalls||false));
+        if (!rayans2 || rayans2 !== "true" || rayans2 !== "false") { return }
+    },
+    hoverStat: function(pixel){
+        return pixel.rayElement.toUpperCase() || "unset"
+    },
+    tick: function(pixel){
+        if (pixelTicks == pixel.start){
+            pixel.rayElement = rayElement
+            pixel.rayStoppedByWalls = rayStoppedByWalls
+        }
+        for (var i = 0; i < squareCoords.length; i++) {
+            var coord = squareCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (!isEmpty(x,y, true)){
+                if (pixelMap[x][y].charge && pixelMap[x][y].element == "wire"){
+                    var dir = [0-squareCoords[i][0], 0-squareCoords[i][1]]
+                    var startx = pixel.x+dir[0]
+                    var starty = pixel.y+dir[1]
+                    var magnitude = 0
+                    if (width > height){magnitude = width} else {magnitude = height}
+                    var endx = startx+(magnitude*dir[0])
+                    var endy = starty+(magnitude*dir[1])
+                 //   console.log("Direction seems to be " + dir)
+                    var jcoords = lineCoords(startx, starty, endx, endy, 1)
+                 //   console.log(startx + " is the starting x, " + starty + " is the starting y, " + endx + " is the ending x, " + endy + " is the ending y. Result is " + jcoords)
+                    for (var j = 0; j < jcoords.length; j++) {
+                        var lcoord = jcoords[j];
+                        var lx = lcoord[0];
+                        var ly = lcoord[1];
+                      //  console.log(lcoord)
+                        if (isEmpty(lx,ly)){
+                            createPixel(pixel.rayElement, lx, ly)
+                            pixelMap[lx][ly].temp = pixelMap[x][y].temp
+                        } else if (!isEmpty(lx, ly, true)){
+                            if (pixelMap[lx][ly].element != pixel.rayElement && pixel.rayStoppedByWalls){
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    insulate: true,
+}
+elements.indestructible_battery = {
+    color: elements.battery.color,
+    behavior: elements.battery.behavior,
+    category: elements.battery.category
+}
+elements.ray = {
+    color: "#ffffff",
+    behavior: behaviors.WALL,
+    category: "special",
+    hoverStat: function(pixel){
+        return pixel.life || "unset"
+    },
+    properties: {
+        life: 30
+    },
+    tick: function(pixel){
+        pixel.life -= 1
+        pixel.color = "rgba(255,255,255,"+(pixel.life/30)+")"
+        if (pixel.life <= 0){
+            deletePixel(pixel.x, pixel.y)
+        }
+    }
+}
