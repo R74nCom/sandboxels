@@ -2709,8 +2709,7 @@ elements.ray_emitter = {
         if (!rayans) { return }
 		rayElement = mostSimilarElement(rayans);
         var rayans2 = prompt("Should the ray stop by walls? Write true or false.",(rayStoppedByWalls||false));
-        if (!rayans2) { rayans2 = false } else { rayans2 = true }
-        rayStoppedByWalls = rayans2
+        if (rayans2 == "false"){rayStoppedByWalls = false} else {rayStoppedByWalls = true}
     },
     hoverStat: function(pixel){
         return pixel.rayElement.toUpperCase() || "unset"
