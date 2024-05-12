@@ -2708,11 +2708,11 @@ elements.ray_emitter = {
         var rayans = prompt("Please input the desired element of this ray emitter",(rayElement||undefined));
         if (!rayans) { return }
 		rayElement = mostSimilarElement(rayans);
-        var rayans2 = prompt("Should the ray stop by walls? Write true or false.",(rayStoppedByWalls||false));
+        var rayans2 = prompt("Should the ray be stopped by walls? Write true or false.",(rayStoppedByWalls||false));
         if (rayans2 == "false"){rayStoppedByWalls = false} else {rayStoppedByWalls = true}
     },
     hoverStat: function(pixel){
-        return pixel.rayElement.toUpperCase() || "unset"
+        return (pixel.rayElement.toUpperCase() || "unset") + ", " + (pixel.rayStoppedByWalls.toString().toUpperCase() || "unset")
     },
     tick: function(pixel){
         if (pixelTicks == pixel.start){
@@ -2752,7 +2752,7 @@ elements.ray_emitter = {
                                 break;
                             } else if (pixelMap[lx][ly].element == "ray" && pixel.rayElement == "ray"){
                                 pixelMap[lx][ly].rColor = pixel.color
-                                pixelMap[lx][ly].life = 30
+                                pixelMap[lx][ly].life = 10
                                 pixelMap[lx][ly].color = pixel.color
                             }
                         }
@@ -2777,7 +2777,7 @@ elements.ray = {
         return pixel.life || "unset"
     },
     properties: {
-        life: 30
+        life: 10
     },
     tick: function(pixel){
         if (pixel.rColor){
@@ -2786,11 +2786,18 @@ elements.ray = {
             pixel.rgb = [255,255,255]
         }
         pixel.life -= 1
-        if (pixel.life < 30){
-            pixel.color = "rgba("+pixel.rgb[0]+","+pixel.rgb[1]+","+pixel.rgb[2]+","+(pixel.life/30)+")"
+        if (pixel.life < 10){
+            pixel.color = "rgba("+pixel.rgb[0]+","+pixel.rgb[1]+","+pixel.rgb[2]+","+(pixel.life/10)+")"
         } else {pixel.color = "rgba("+pixel.rgb[0]+","+pixel.rgb[1]+","+pixel.rgb[2]+",1)"}
         if (pixel.life <= 0){
             deletePixel(pixel.x, pixel.y)
+        }
+    },
+    canPlace: true,
+    tool: function(pixel){
+        if (pixel.element == "ray"){
+            pixel.life = 10
+            pixel.color = pixel.rColor
         }
     }
 }
