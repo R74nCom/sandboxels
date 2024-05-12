@@ -377,7 +377,7 @@ elements.destroyable_pipe = {
                             break;
                         }
                     }
-                    else if (!pixel.con && elements[newPixel.element].movable) { //suck up pixel
+                    else if (!pixel.con && elements[newPixel.element].movable && newPixel.element != "ray") { //suck up pixel
                         pixel.con = newPixel;
                         deletePixel(newPixel.x,newPixel.y);
                         pixel.con.x = pixel.x;
@@ -688,7 +688,7 @@ elements.e_pipe = {
                             break;
                         }
                     }
-                    else if (!pixel.con && elements[newPixel.element].movable && (pixel.charge || pixel.chargeCD)) { //suck up pixel
+                    else if (!pixel.con && elements[newPixel.element].movable && (pixel.charge || pixel.chargeCD) && newPixel.element != "ray") { //suck up pixel
                         pixel.con = newPixel;
                         deletePixel(newPixel.x,newPixel.y);
                         pixel.con.x = pixel.x;
@@ -806,7 +806,7 @@ elements.destroyable_e_pipe = {
                             break;
                         }
                     }
-                    else if (!pixel.con && elements[newPixel.element].movable && (pixel.charge || pixel.chargeCD)) { //suck up pixel
+                    else if (!pixel.con && elements[newPixel.element].movable && (pixel.charge || pixel.chargeCD)  && newPixel.element != "ray" ) { //suck up pixel
                         pixel.con = newPixel;
                         deletePixel(newPixel.x,newPixel.y);
                         pixel.con.x = pixel.x;
@@ -933,7 +933,7 @@ elements.channel_pipe = {
                             break;
                         }
                     }
-                    else if (!pixel.con && elements[newPixel.element].movable) { //suck up pixel
+                    else if (!pixel.con && elements[newPixel.element].movable && newPixel.element != "ray") { //suck up pixel
                         pixel.con = newPixel;
                         deletePixel(newPixel.x,newPixel.y);
                         pixel.con.x = pixel.x;
@@ -1056,7 +1056,7 @@ elements.destroyable_channel_pipe = {
                             break;
                         }
                     }
-                    else if (!pixel.con && elements[newPixel.element].movable) { //suck up pixel
+                    else if (!pixel.con && elements[newPixel.element].movable && newPixel.element != "ray") { //suck up pixel
                         pixel.con = newPixel;
                         deletePixel(newPixel.x,newPixel.y);
                         pixel.con.x = pixel.x;
@@ -1173,7 +1173,7 @@ elements.bridge_pipe = {
                             break;
                         }
                     }
-                    else if (!pixel.con && elements[newPixel.element].movable) { //suck up pixel
+                    else if (!pixel.con && elements[newPixel.element].movable && newPixel.element != "ray") { //suck up pixel
                         pixel.con = newPixel;
                         deletePixel(newPixel.x,newPixel.y);
                         pixel.con.x = pixel.x;
@@ -1285,7 +1285,7 @@ elements.pipe.tick = function(pixel) {
                             break;
                         }
                     }
-                    else if (!pixel.con && elements[newPixel.element].movable) { //suck up pixel
+                    else if (!pixel.con && elements[newPixel.element].movable && newPixel.element != "ray") { //suck up pixel
                         pixel.con = newPixel;
                         deletePixel(newPixel.x,newPixel.y);
                         pixel.con.x = pixel.x;
