@@ -163,6 +163,8 @@ elements.head.breakInto = ["blood","meat","skull"]
 
 elements.dead_bug.breakInto = ["calcium","calcium","calcium","quicklime"]
 
+elements.amber.breakInto = ["dna","dna","sap","sap","sap","sap","sap","dead_bug"]
+
 if (!elements.bone.reactions) { elements.bone.reactions = {} }
     elements.bone.reactions.rock = { "elem1": "fossil", chance:0.00005 };
     elements.bone.reactions.sand = { "elem1": "fossil", chance:0.000035 };
