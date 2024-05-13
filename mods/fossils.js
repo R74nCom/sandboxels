@@ -165,6 +165,10 @@ elements.dead_bug.breakInto = ["calcium","calcium","calcium","quicklime"]
 
 elements.amber.breakInto = ["dna","dna","sap","sap","sap","sap","sap","dead_bug"]
 
+elements.amber.tempHigh = 185
+
+elements.amber.stateHigh = ["sap","sap","sap","calcium","sugar"]
+
 if (!elements.bone.reactions) { elements.bone.reactions = {} }
     elements.bone.reactions.rock = { "elem1": "fossil", chance:0.00005 };
     elements.bone.reactions.sand = { "elem1": "fossil", chance:0.000035 };
