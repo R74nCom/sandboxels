@@ -121,7 +121,6 @@ elements.petrified_wood = {
     category: "life",
     state: "solid",
     density: 2600,
-    hardness: 0.55,
     breakInto: ["rock","rock","gravel","gravel","gravel","gravel","gravel","sawdust"],
 };
 
@@ -161,6 +160,8 @@ elements.skull = {
 },
 
 elements.head.breakInto = ["blood","meat","skull"]
+
+elements.dead_bug.breakInto = ["calcium","calcium","calcium","quicklime"]
 
 if (!elements.bone.reactions) { elements.bone.reactions = {} }
     elements.bone.reactions.rock = { "elem1": "fossil", chance:0.00005 };
