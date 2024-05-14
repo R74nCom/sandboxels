@@ -120,7 +120,8 @@ elements.10_timer= {
     color: ["#000000"],
     behavior: behaviors.WALL,
     colorOn: "#000000",
-    tick: elements.gasoline_engine = {
+    tick: ,
+elements.gasoline_engine = {
   color: "#6d5f5d",
   behavior: behaviors.WALL,
   state: "solid",
