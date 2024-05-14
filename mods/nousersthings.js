@@ -2742,7 +2742,7 @@ elements.ray_emitter = {
                       //  console.log(lcoord)
                         if (isEmpty(lx,ly)){
                             createPixel(pixel.rayElement, lx, ly)
-                            pixelMap[lx][ly].temp = pixelMap[x][y].temp
+                            pixelMap[lx][ly].temp = pixel.temp
                             if (pixel.rayElement == "ray"){
                                 pixelMap[lx][ly].rColor = pixel.color
                                 pixelMap[lx][ly].color = pixel.color
@@ -2878,7 +2878,7 @@ elements.specific_ray_emitter = {
                       //  console.log(lcoord)
                         if (isEmpty(lx,ly)){
                             createPixel(pixel.rayElement, lx, ly)
-                            pixelMap[lx][ly].temp = pixelMap[x][y].temp
+                            pixelMap[lx][ly].temp = pixel.temp
                             if (pixel.rayElement == "ray"){
                                 pixelMap[lx][ly].rColor = pixel.color
                                 pixelMap[lx][ly].color = pixel.color
