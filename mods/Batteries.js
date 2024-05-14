@@ -120,7 +120,44 @@ elements.10_timer= {
     color: ["#000000"],
     behavior: behaviors.WALL,
     colorOn: "#000000",
-    tick: ,
+    conduct: 0,
+    category: "machines",
+    properties: {
+        wait: 15,
+        waitReduce: false,
+    },
+    tick: function(pixel){
+        if (pixel.waitReduce){pixel.wait -= 1}
+        if (pixel.wait == 0){
+            pixel.elementsSeen = {}
+        }
+        for (var i = 0; i < adjacentCoords.length; i++) {
+            var coord = adjacentCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (!isEmpty(x,y, true)){
+                if (!pixel.waitReduce){
+                    pixel.waitReduce = true
+                },
+		                    if (pixel.wait == 0){
+                    if (!pixel.elementsSeen[pixelMap[x][y].element] && pixelMap[x][y].element != "healing_serum"){
+                        pixel.elementsSeen[pixelMap[x][y].element] = 1
+                    } else if (pixelMap[x][y].element != "healing_serum") {
+                        pixel.elementsSeen[pixelMap[x][y].element] += 1
+                    }
+                }
+            }
+            if (pixel.wait == 0){
+                if (Object.keys(pixel.elementsSeen).length == 0){
+                    deletePixel(pixel.x, pixel.y)
+                    return;
+                } else{
+                    changePixel(pixel, Object.keys(pixel.elementsSeen).reduce((a, b) => pixel.elementsSeen[a] > pixel.elementsSeen[b] ? a : b))
+                }
+            }
+        }
+    }
+}
 elements.gasoline_engine = {
   color: "#6d5f5d",
   behavior: behaviors.WALL,
@@ -128,7 +165,7 @@ elements.gasoline_engine = {
   density: 1000,
   category: "testing",
   properties: {
-    time: 10
+    timer: 10
   },
   tick: function(pixel){
     if (pixel.timer <= 40){
