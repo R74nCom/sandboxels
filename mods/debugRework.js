@@ -69,15 +69,15 @@ let cssForDebug = `
 }
 `,
   head = document.head || document.getElementsByTagName('head')[0],
-  style = document.createElement('style');
+  styleElem = document.createElement('style');
 
-head.appendChild(style);
+head.appendChild(styleElem);
 
-style.type = 'text/css';
-if (style.styleSheet) {
-  style.styleSheet.cssText = cssForDebug;
+styleElem.type = 'text/css';
+if (styleElem.styleSheet) {
+  styleElem.styleSheet.cssText = cssForDebug;
 } else {
-  style.appendChild(document.createTextNode(cssForDebug));
+  styleElem.appendChild(document.createTextNode(cssForDebug));
 };
 let debugMenu = document.createElement("div");
 debugMenu.innerHTML = `

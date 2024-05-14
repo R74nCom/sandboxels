@@ -377,7 +377,7 @@ elements.destroyable_pipe = {
                             break;
                         }
                     }
-                    else if (!pixel.con && elements[newPixel.element].movable) { //suck up pixel
+                    else if (!pixel.con && elements[newPixel.element].movable && newPixel.element != "ray") { //suck up pixel
                         pixel.con = newPixel;
                         deletePixel(newPixel.x,newPixel.y);
                         pixel.con.x = pixel.x;
@@ -688,7 +688,7 @@ elements.e_pipe = {
                             break;
                         }
                     }
-                    else if (!pixel.con && elements[newPixel.element].movable && (pixel.charge || pixel.chargeCD)) { //suck up pixel
+                    else if (!pixel.con && elements[newPixel.element].movable && (pixel.charge || pixel.chargeCD) && newPixel.element != "ray") { //suck up pixel
                         pixel.con = newPixel;
                         deletePixel(newPixel.x,newPixel.y);
                         pixel.con.x = pixel.x;
@@ -806,7 +806,7 @@ elements.destroyable_e_pipe = {
                             break;
                         }
                     }
-                    else if (!pixel.con && elements[newPixel.element].movable && (pixel.charge || pixel.chargeCD)) { //suck up pixel
+                    else if (!pixel.con && elements[newPixel.element].movable && (pixel.charge || pixel.chargeCD)  && newPixel.element != "ray" ) { //suck up pixel
                         pixel.con = newPixel;
                         deletePixel(newPixel.x,newPixel.y);
                         pixel.con.x = pixel.x;
@@ -933,7 +933,7 @@ elements.channel_pipe = {
                             break;
                         }
                     }
-                    else if (!pixel.con && elements[newPixel.element].movable) { //suck up pixel
+                    else if (!pixel.con && elements[newPixel.element].movable && newPixel.element != "ray") { //suck up pixel
                         pixel.con = newPixel;
                         deletePixel(newPixel.x,newPixel.y);
                         pixel.con.x = pixel.x;
@@ -1056,7 +1056,7 @@ elements.destroyable_channel_pipe = {
                             break;
                         }
                     }
-                    else if (!pixel.con && elements[newPixel.element].movable) { //suck up pixel
+                    else if (!pixel.con && elements[newPixel.element].movable && newPixel.element != "ray") { //suck up pixel
                         pixel.con = newPixel;
                         deletePixel(newPixel.x,newPixel.y);
                         pixel.con.x = pixel.x;
@@ -1173,7 +1173,7 @@ elements.bridge_pipe = {
                             break;
                         }
                     }
-                    else if (!pixel.con && elements[newPixel.element].movable) { //suck up pixel
+                    else if (!pixel.con && elements[newPixel.element].movable && newPixel.element != "ray") { //suck up pixel
                         pixel.con = newPixel;
                         deletePixel(newPixel.x,newPixel.y);
                         pixel.con.x = pixel.x;
@@ -1285,7 +1285,7 @@ elements.pipe.tick = function(pixel) {
                             break;
                         }
                     }
-                    else if (!pixel.con && elements[newPixel.element].movable) { //suck up pixel
+                    else if (!pixel.con && elements[newPixel.element].movable && newPixel.element != "ray") { //suck up pixel
                         pixel.con = newPixel;
                         deletePixel(newPixel.x,newPixel.y);
                         pixel.con.x = pixel.x;
@@ -2696,4 +2696,206 @@ elements.healing_serum = {
             }
         }
     }
+}
+var rayElement = "ray"
+var rayStoppedByWalls = false
+elements.ray_emitter = {
+    color: "#ff9c07",
+    behavior: behaviors.WALL,
+    category: "machines",
+    movable: false,
+    onSelect: function(pixel){
+        var rayans = prompt("Please input the desired element of this ray emitter",(rayElement||undefined));
+        if (!rayans) { return }
+		rayElement = mostSimilarElement(rayans);
+        var rayans2 = prompt("Should the ray be stopped by walls? Write true or false.",(rayStoppedByWalls||false));
+        if (rayans2 == "false"){rayStoppedByWalls = false} else {rayStoppedByWalls = true}
+    },
+    hoverStat: function(pixel){
+        return (pixel.rayElement.toUpperCase() || "unset") + ", " + (pixel.rayStoppedByWalls.toString().toUpperCase() || "unset")
+    },
+    tick: function(pixel){
+        if (pixelTicks == pixel.start){
+            pixel.rayElement = rayElement
+            pixel.rayStoppedByWalls = rayStoppedByWalls
+        }
+        for (var i = 0; i < squareCoords.length; i++) {
+            var coord = squareCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (!isEmpty(x,y, true)){
+                if (pixelMap[x][y].charge && pixelMap[x][y].element == "wire"){
+                    var dir = [0-squareCoords[i][0], 0-squareCoords[i][1]]
+                    var startx = pixel.x+dir[0]
+                    var starty = pixel.y+dir[1]
+                    var magnitude = 0
+                    if (width > height){magnitude = width} else {magnitude = height}
+                    var endx = startx+(magnitude*dir[0])
+                    var endy = starty+(magnitude*dir[1])
+                 //   console.log("Direction seems to be " + dir)
+                    var jcoords = lineCoords(startx, starty, endx, endy, 1)
+                 //   console.log(startx + " is the starting x, " + starty + " is the starting y, " + endx + " is the ending x, " + endy + " is the ending y. Result is " + jcoords)
+                    for (var j = 0; j < jcoords.length; j++) {
+                        var lcoord = jcoords[j];
+                        var lx = lcoord[0];
+                        var ly = lcoord[1];
+                      //  console.log(lcoord)
+                        if (isEmpty(lx,ly)){
+                            createPixel(pixel.rayElement, lx, ly)
+                            pixelMap[lx][ly].temp = pixelMap[x][y].temp
+                            if (pixel.rayElement == "ray"){
+                                pixelMap[lx][ly].rColor = pixel.color
+                                pixelMap[lx][ly].color = pixel.color
+                            }
+                        } else if (!isEmpty(lx, ly, true)){
+                            if (pixelMap[lx][ly].element != pixel.rayElement && pixel.rayStoppedByWalls){
+                                break;
+                            } else if (pixelMap[lx][ly].element == "ray" && pixel.rayElement == "ray"){
+                                pixelMap[lx][ly].rColor = pixel.color
+                                pixelMap[lx][ly].life = 10
+                                pixelMap[lx][ly].color = pixel.color
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    insulate: true,
+}
+elements.indestructible_battery = {
+    color: elements.battery.color,
+    behavior: elements.battery.behavior,
+    category: elements.battery.category
+}
+elements.ray = {
+    color: "#ffffff",
+    behavior: behaviors.WALL,
+    movable: true,
+    category: "special",
+    hoverStat: function(pixel){
+        return pixel.life || "unset"
+    },
+    properties: {
+        life: 10
+    },
+    tick: function(pixel){
+        if (pixel.rColor){
+            pixel.rgb = pixel.rColor.match(/\d+/g);
+        } else {
+            pixel.rgb = [255,255,255]
+        }
+        pixel.life -= 1
+        if (pixel.life < 10){
+            pixel.color = "rgba("+pixel.rgb[0]+","+pixel.rgb[1]+","+pixel.rgb[2]+","+(pixel.life/10)+")"
+        } else {pixel.color = "rgba("+pixel.rgb[0]+","+pixel.rgb[1]+","+pixel.rgb[2]+",1)"}
+        if (pixel.life <= 0){
+            deletePixel(pixel.x, pixel.y)
+        }
+    },
+    canPlace: true,
+    tool: function(pixel){
+        if (pixel.element == "ray"){
+            pixel.life = 10
+            pixel.color = pixel.rColor
+        }
+    }
+}
+var specificRayStart = 0
+var specificRayEnd = 20
+var specificRayAngle = 0
+var stopAtElement = "wall"
+elements.specific_ray_emitter = {
+    color: "#e73e63",
+    behavior: behaviors.WALL,
+    category: "machines",
+    movable: false,
+    onSelect: function(pixel){
+        var rayans = prompt("Please input the desired element of this ray emitter",(rayElement||undefined));
+        if (!rayans) { return }
+		rayElement = mostSimilarElement(rayans);
+        var rayans2 = prompt("Should the ray be stopped by walls? Write true or false.",(rayStoppedByWalls||false));
+        if (rayans2 == "false"){rayStoppedByWalls = false} else {rayStoppedByWalls = true}
+        var rayans3 = prompt("How much should the beginning of the ray be offset from the emitter?", (specificRayStart||0));
+        if (!rayans3) { return }
+        specificRayStart = rayans3
+        var rayans4 = prompt("How much should the end of the ray be offset from the emitter?", (specificRayEnd||0));
+        if (!rayans4) { return }
+        specificRayEnd = rayans4
+        var rayans5 = prompt("What angle should the ray be emitted at? Type anything that isnt a number to use default angle logic.", (specificRayAngle||0));
+        if (!rayans5) { return }
+        specificRayAngle = rayans5
+        if (isNaN(parseFloat(specificRayAngle))){
+            specificRayAngle = "nah"
+        }
+        var rayans6 = prompt("What element should the ray stop at?", (stopAtElement||"wall"));
+        if (!rayans6) { return }
+        stopAtElement = mostSimilarElement(rayans6)
+    },
+    hoverStat: function(pixel){
+        return (pixel.rayElement.toUpperCase() || "unset") + ", " + (pixel.rayStoppedByWalls.toString().toUpperCase() || "unset") + ", " + (pixel.specificRayStart || "unset") + ", " + (pixel.specificRayEnd || "unset") + ", " + (pixel.specificRayAngle || "unset")
+    },
+    tick: function(pixel){
+        if (pixelTicks == pixel.start){
+            pixel.rayElement = rayElement
+            pixel.rayStoppedByWalls = rayStoppedByWalls
+            pixel.specificRayStart = specificRayStart
+            pixel.specificRayEnd = specificRayEnd
+            pixel.specificRayAngle = specificRayAngle
+            pixel.stopAtElement = stopAtElement
+        }
+        for (var i = 0; i < squareCoords.length; i++) {
+            var coord = squareCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (!isEmpty(x,y, true)){
+                if (pixelMap[x][y].charge && pixelMap[x][y].element == "wire"){
+                    var dir = [0-squareCoords[i][0], 0-squareCoords[i][1]]
+                    let startx, starty, endx, endy, magnitude
+                    if (pixel.specificRayAngle == "nah"){
+                        startx = pixel.x+(dir[0]*specificRayStart)
+                        starty = pixel.y+(dir[1]*specificRayStart)
+                        magnitude = specificRayEnd
+                        endx = startx+(magnitude*dir[0])
+                        endy = starty+(magnitude*dir[1])
+                    } else {
+                        let angleInRadians = pixel.specificRayAngle * Math.PI / 180;
+                        console.log("Angle in radians is " + angleInRadians)
+                        dir = [(Math.cos(angleInRadians)), (Math.sin(angleInRadians))]
+                        startx = pixel.x+Math.round((dir[0]*specificRayStart))
+                        starty = pixel.y+Math.round((dir[1]*specificRayStart))
+                        magnitude = specificRayEnd
+                        endx = startx+Math.round((magnitude*dir[0]))
+                        endy = starty+Math.round((magnitude*dir[1]))
+                    }
+                 console.log("Direction seems to be " + dir)
+                    var jcoords = lineCoords(startx, starty, endx, endy, 1)
+                 //console.log(startx + " is the starting x, " + starty + " is the starting y, " + endx + " is the ending x, " + endy + " is the ending y. Result is " + jcoords)
+                    for (var j = 0; j < jcoords.length; j++) {
+                        var lcoord = jcoords[j];
+                        var lx = lcoord[0];
+                        var ly = lcoord[1];
+                      //  console.log(lcoord)
+                        if (isEmpty(lx,ly)){
+                            createPixel(pixel.rayElement, lx, ly)
+                            pixelMap[lx][ly].temp = pixelMap[x][y].temp
+                            if (pixel.rayElement == "ray"){
+                                pixelMap[lx][ly].rColor = pixel.color
+                                pixelMap[lx][ly].color = pixel.color
+                            }
+                        } else if (!isEmpty(lx, ly, true)){
+                            if ((pixelMap[lx][ly].element != pixel.rayElement && pixel.rayStoppedByWalls) || pixelMap[lx][ly].element == pixel.stopAtElement){
+                                break;
+                            } else if (pixelMap[lx][ly].element == "ray" && pixel.rayElement == "ray"){
+                                pixelMap[lx][ly].rColor = pixel.color
+                                pixelMap[lx][ly].life = 10
+                                pixelMap[lx][ly].color = pixel.color
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    insulate: true,
 }
