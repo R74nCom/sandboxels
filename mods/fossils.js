@@ -159,15 +159,30 @@ elements.skull = {
     breakInto: ["quicklime","bone","bone","bone_marrow"]
 },
 
+elements.bug_amber = {
+    temp: 20,
+    tempHigh: 345,
+    stateHigh: ["smoke","sap","sap","calcium","sugar"],
+    breakInto: [null,null,null,"dna","dna","sap","sap","sap","sap","sap","dead_bug"],
+    category: "solids"
+},
+
 elements.head.breakInto = ["blood","meat","skull"]
 
 elements.dead_bug.breakInto = ["calcium","calcium","calcium","quicklime"]
 
-elements.amber.breakInto = ["dna","dna","sap","sap","sap","sap","sap","dead_bug"]
-
-elements.amber.tempHigh = 185
-
-elements.amber.stateHigh = ["sap","sap","sap","calcium","sugar"]
+if (!elements.sap.reactions) { elements.sap.reactions = {} }
+    elements.sap.reactions.dead_bug = { elem1:"bug_amber", elem2:null, chance:0.1 };
+    elements.sap.reactions.ant = { elem1:"bug_amber", elem2:null, chance:0.1 };
+    elements.sap.reactions.fly = { elem1:"bug_amber", elem2:null, chance:0.1 };
+    elements.sap.reactions.flea = { elem1:"bug_amber", elem2:null, chance:0.1 };
+    elements.sap.reactions.termite = { elem1:"bug_amber", elem2:null, chance:0.1 };
+    elements.sap.reactions.worm = { elem1:"bug_amber", elem2:null, chance:0.1 };
+    elements.sap.reactions.bee = { elem1:"bug_amber", elem2:null, chance:0.1 };
+    elements.sap.reactions.firefly = { elem1:"bug_amber", elem2:null, chance:0.1 };
+    elements.sap.reactions.stinkbug = { elem1:"bug_amber", elem2:null, chance:0.1 };
+    elements.sap.reactions.slug = { elem1:"bug_amber", elem2:null, chance:0.1 };
+    elements.sap.reactions.snail = { elem1:"bug_amber", elem2:null, chance:0.1 };
 
 if (!elements.bone.reactions) { elements.bone.reactions = {} }
     elements.bone.reactions.rock = { "elem1": "fossil", chance:0.00005 };
