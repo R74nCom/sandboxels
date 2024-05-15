@@ -2903,3 +2903,14 @@ elements.specific_ray_emitter = {
     },
     insulate: true,
 }
+elements.run_some_code = {
+    color: "#68b2cf",
+    category: "tools",
+    canPlace: false,
+    onSelect: function(){
+        let code = prompt("Enter code to run")
+        if (code){
+            eval(code)
+        }
+    }
+}
