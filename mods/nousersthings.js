@@ -1737,7 +1737,8 @@ elements.smasher = {
 	movable: false,
     hidden: true
 },
-elements.mixer_ = {
+/*
+elements.mixer = {
 	color: "#F0F0F0",
 	behavior: behaviors.WALL,
 	category: "deprecated",
@@ -1769,8 +1770,8 @@ elements.mixer_ = {
 	movable: false,
     noMix: true,
     hidden: true,
-    name: "mixer"
 },
+*/
 elements.invisiblesupport = {
 	color: "#000000",
 	behavior: behaviors.WALL,
