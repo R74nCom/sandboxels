@@ -419,6 +419,7 @@ elements.black_hole = {
   maxSize: 1,
   properties: {
     range: 10,
+    immovable: true,
   },
   tick: function(pixel) {
     
@@ -467,5 +468,8 @@ elements.black_hole = {
   temp: -273.15,
   insulate:true,
   conduct: 0,
+  excludeRandom: true,
+  noMix: true,
   state: "solid",  
+  movable: false
 }
