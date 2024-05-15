@@ -42,6 +42,7 @@ Baskspace         =  Select Previous Element
 (Alt/Option can be used in place of Shift)
 
 [Button Info]
+↑               =  Toggle Shift for line drawing and intensified tools (Mobile only)
 Pause           =  Pause/play the simulation
 >               =  Run a single frame of simulation
 Minus           =  Decrease the cursor size
