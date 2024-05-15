@@ -4,7 +4,7 @@
 ==CHANGELOG==
   Version 2.0.0
 @voidapex11
-~set max size of the mod description to 1
+~set the max size of the mod description to 1
 +gravity cells
 +black hole
  it acts like void but it has gravity
@@ -12,17 +12,17 @@
 
   Version 1.1.1
 @voidapex11
-~initial comit
+~initial commit
 +pullersDesc
 +imovable_inator& movable_inator
 +imovable wall, steel & insulation
 +L, R, U & D pullers
 +void light&dark
-~don't comit without permision as you may disrupt other dev's hard work
+~don't commit without permission as you may disrupt other dev's hard work
 ~update changelog with newer updates first
 ~Version format is:
- rewrites.major updates.paches&minor feechers 
- put a '#' at end of version format if it has not been pushed to the github
+ rewrites. major updates.paches&minor changes
+ put a '#' at the end of the version format if it has not been pushed to the GitHub
 ~for change-log 
 '~' means notes/changes '+' means aditions and '-' is removals 
 */
