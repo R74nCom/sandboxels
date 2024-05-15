@@ -260,17 +260,17 @@ if(enabledMods.includes(libraryMod)) {
 
     document.addEventListener("keyup", function(sussyListener) {
         switch (sussyListener.keyCode) {
-            case 84:
-                sussyKey = "T";
+            case 73:
+                sussyKey = "I";
                 break;
-            case 70:
-                sussyKey = "F";
+            case 74:
+                sussyKey = "J";
                 break;
-            case 72:
-                sussyKey = "H";
+            case 75:
+                sussyKey = "K";
                 break;
-            case 71:
-                sussyKey = "G";
+            case 76:
+                sussyKey = "L";
                 break;
             case 81:
                 sussyKey = "Q";
@@ -329,25 +329,25 @@ if(enabledMods.includes(libraryMod)) {
             }
             if(sussyKey !== null) {
                 switch (sussyKey) {
-                    case "T":
+                    case "I":
                         isAlt ? controllablePixelTryCreatePixelNullCheck(userElement,xx,yy-1) : tryMove(pixel,xx,yy-1);
                         if(!isShift) {
                             sussyKey = null;
                         }
                         break;
-                    case "F":
+                    case "J":
                         isAlt ? controllablePixelTryCreatePixelNullCheck(userElement,xx-1,yy) : tryMove(pixel,xx-1,yy);
                         if(!isShift) {
                             sussyKey = null;
                         }
                         break;
-                    case "G":
+                    case "K":
                         isAlt ? controllablePixelTryCreatePixelNullCheck(userElement,xx,yy+1) : tryMove(pixel,xx,yy+1);
                         if(!isShift) {
                             sussyKey = null;
                         }
                         break;
-                    case "H":
+                    case "L":
                         tryMove(pixel,xx+1,yy);
                         if(!isShift) {
                             sussyKey = null;

@@ -7,10 +7,13 @@ html, body {
 @font-face {
     font-family: 'Press Start 2P';
     src: url('fonts/PressStart2P-Regular.ttf');
-    font-display: swap;
+}
+@font-face {
+    font-family: 'VT323';
+    src: url('fonts/VT323-Regular.ttf');
 }
 body {
-    font-family: 'Press Start 2P', Arial;
+    font-family: 'Press Start 2P', 'VT323', Arial;
     background-color: #000000;
     color: #ffffff;
 }
@@ -374,6 +377,9 @@ button, input[type="submit"], input[type="reset"] {
 #stat-view, #stat-element {
     text-transform: uppercase;
 }
+.redText {
+    color: red;
+}
 .categoryName {
     font-size: 0.75em;
     text-transform: uppercase;
@@ -469,39 +475,45 @@ button, input { /*Disable double tap zoom on mobile devices*/
     touch-action: manipulation;
     color-scheme: dark;
 }
-select, .toggleInput, #settingsMenu input[type="number"], #settingsMenu input[type="text"], #savePromptMenu input, input[type="email"] {
+.settingsButton, select, .toggleInput, #settingsMenu input[type="number"], #settingsMenu input[type="text"], #savePromptMenu input, input[type="email"] {
     background-color: black;
     vertical-align: middle;
     margin-left: 5px;
     margin-right: 5px;
     border: rgb(150, 150, 150) 1px solid;
-    border-radius: 20px;
     padding: 0.5em;
     color: white;
     font-size: 1em;
     font-family: Arial, Helvetica, sans-serif;
 }
-#settingsMenu .toggleInput {
+#settingsMenu .menuText {
+    font-family: 'VT323';
+    font-size:1.5em
+}
+#settingsMenu .toggleInput, #settingsMenu .menuText button, #settingsMenu input[type], #settingsMenu select {
     display: inline-block;
-    width: 4em;
     text-align: center;
+    font-family: 'VT323';
+    padding-left:13px;
+    padding-right:13px;
+    margin:0
+}
+#settingsMenu input[type=color] {
+    padding:0
+}
+#settingsMenu select, #settingsMenu input[type=text] {
+    font-size: 1em;
+    padding:5px;
 }
 .toggleInput { cursor: pointer; }
 .toggleInput[state="1"] {color: lime!important;}
 .toggleInput[state="0"] {color: red!important;}
 #settingsMenu input[type="number"] {
     width: 3em;
+    text-align: left;
 }
-.settingsButton {
-    background-color: black;
-    vertical-align: middle;
-    margin-left: 5px;
-    margin-right: 5px;
-    border: rgb(150, 150, 150) 1px solid;
-    border-radius: 20px;
-    padding: 0.5em;
-    color: white;
-    font-family: Arial, Helvetica, sans-serif;
+#settingsMenu input[type="text"] {
+    text-align: left;
 }
 .settingsButton:active, .toggleInput:active {
     filter: brightness(75%);
