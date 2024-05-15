@@ -1722,7 +1722,7 @@ elements.pn_explosion = {
 elements.smasher = {
 	color: "#606060",
 	behavior: behaviors.WALL,
-	category: "machines",
+	category: "deprecated",
 	tick: function(pixel){
 		for (var i = 0; i < squareCoords.length; i++) {
                 var coord = squareCoords[i];
@@ -1735,11 +1735,12 @@ elements.smasher = {
         }
     },
 	movable: false,
+    hidden: true
 },
-elements.mixer = {
+elements.mixer_ = {
 	color: "#F0F0F0",
 	behavior: behaviors.WALL,
-	category: "machines",
+	category: "deprecated",
 	tick: function(pixel){
 		pixel.mixList = [];
 		for (var i = 0; i < squareCoords.length; i++) {
@@ -1767,6 +1768,8 @@ elements.mixer = {
 	},
 	movable: false,
     noMix: true,
+    hidden: true,
+    name: "mixer"
 },
 elements.invisiblesupport = {
 	color: "#000000",
