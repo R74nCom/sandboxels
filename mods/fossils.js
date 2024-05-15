@@ -127,7 +127,7 @@ elements.petrified_wood = {
 elements.skull = {
     color: "#d9d9d9",
     hidden:true,
-    behavior: behaviors.SUPPORT,
+    behavior: behaviors.SUPPORTPOWDER,
     reactions: {
         "water": { elem2:"broth", tempMin:70, color2:"#d7db69" },
         "salt_water": { elem2:"broth", tempMin:70, color2:"#d7db69" },
@@ -160,6 +160,7 @@ elements.skull = {
 },
 
 elements.bug_amber = {
+    color: "#ffc000",
     temp: 20,
     tempHigh: 345,
     stateHigh: ["smoke","sap","sap","calcium","sugar"],
