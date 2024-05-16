@@ -13087,7 +13087,7 @@ behaviorRules = {
         function circleCoords(x,y,radius) {
             var coords = [];
             for (let i = Math.max(0, x - radius); i <= Math.min(width, x + radius); i++) {
-				for (let j = Math.max(0, y - radius); j <= Math.min(width, y + radius); j++) {
+				for (let j = Math.max(0, y - radius); j <= Math.min(height, y + radius); j++) {
 					if (Math.pow(i - x, 2) + Math.pow(j - y, 2) <= Math.pow(radius, 2)) {
 						coords.push({x: i,y: j});
 					}
