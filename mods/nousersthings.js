@@ -2728,7 +2728,8 @@ elements.ray_emitter = {
             var x = pixel.x+coord[0];
             var y = pixel.y+coord[1];
             if (!isEmpty(x,y, true)){
-                if (pixelMap[x][y].charge && pixelMap[x][y].element == "wire"){
+                if (pixelMap[x][y].charge && (pixelMap[x][y].element == "wire" || pixelMap[x][y].element == "insulated_wire")){
+                    if ((Math.abs(coord[0]) + Math.abs(coord[1]) == 2) && pixelMap[x][y].element == "insulated_wire"){return}
                     var dir = [0-squareCoords[i][0], 0-squareCoords[i][1]]
                     var startx = pixel.x+dir[0]
                     var starty = pixel.y+dir[1]
@@ -2853,7 +2854,8 @@ elements.specific_ray_emitter = {
             var x = pixel.x+coord[0];
             var y = pixel.y+coord[1];
             if (!isEmpty(x,y, true)){
-                if (pixelMap[x][y].charge && pixelMap[x][y].element == "wire"){
+                if (pixelMap[x][y].charge && (pixelMap[x][y].element == "wire" || pixelMap[x][y].element == "insulated_wire")){
+                    if ((Math.abs(coord[0]) + Math.abs(coord[1]) == 2) && pixelMap[x][y].element == "insulated_wire"){return}
                     var dir = [0-squareCoords[i][0], 0-squareCoords[i][1]]
                     let startx, starty, endx, endy, magnitude
                     if (pixel.specificRayAngle == "nah"){
@@ -2914,3 +2916,55 @@ elements.run_some_code = {
         }
     }
 }
+elements.insulated_wire = {
+    color: "#5e2d2c",
+    category: "machines",
+    conduct: 1,
+    tick: function(pixel){
+        {
+            if (pixel.charge) {
+                // Check each adjacent pixel, if that pixel's charge is false, set it to the same charge
+                for (var i = 0; i < adjacentCoords.length; i++) {
+                    var x = pixel.x+adjacentCoords[i][0];
+                    var y = pixel.y+adjacentCoords[i][1];
+                    if (!isEmpty(x,y,true)) {
+                        var newPixel = pixelMap[x][y];
+                        var con = newPixel.element;
+                        if (con == "insulated_wire") {
+                        if (1 == 1) { // If random number is less than conductivity
+                            if (!newPixel.charge && !newPixel.chargeCD) {
+                                newPixel.charge = 1;
+                            }
+                        }
+                    }
+                }
+                }
+                pixel.charge -= 0.25;
+                if (pixel.charge <= 0) {
+                    delete pixel.charge;
+                    // pixel.chargeCD = 4;
+                    pixel.chargeCD = Math.round(4 + (4*(1-elements[pixel.element].conduct))) || 4;
+                }
+            }
+            // Lower charge cooldown
+            else if (pixel.chargeCD) {
+                pixel.chargeCD -= 1;
+                if (pixel.chargeCD <= 0) {
+                    delete pixel.chargeCD;
+                    if (elements[pixel.element].colorOn) {
+                        pixel.color = pixelColorPick(pixel);
+                    }
+                }
+            }
+        }
+        doHeat(pixel)
+    }
+}
+elements.insulated_wire.desc = "Insulated wire. Only conducts to other insulated wires. Pairs with ray emitters to not make diagonal rays."
+elements.e_pipe.desc = "Electric pipe. Only passes elements while charged."
+elements.destructible_e_pipe.desc = elements.e_pipe.desc
+elements.channel_pipe.desc = "Channel pipe. Only passes elements to pipes of the same channel."
+elements.bridge_pipe.desc = "Bridge pipe. Can pass and receive from any other type of pipe."
+elements.ray_emitter.desc = "Emits a ray of the specified element in the opposite direction it was shocked from."
+elements.specific_ray_emitter.desc = "Emits a ray of the specified element in a specific direction and a specific length."
+elements.blackhole_storage.desc = "Stores elements inside of itself. Can be released by shocking it."
