@@ -37,6 +37,7 @@ function swapObjectValues(obj) {
     }
     return result;
   }  
+  let customName = "c"
 if (!settings.funnyname){settings.funnyname = {}; saveSettings()}
 elements.name_settings = {
     color: elements.image.color,
@@ -57,6 +58,18 @@ elements.name_settings = {
             settings.funnyname.doLetterSwapping = false
         } else {settings.funnyname.doNameRates = false}
         saveSettings()
+        var allNamesString = prompt("Would you like to set all names to a custom string? This will set all others to no. Type yes or no.", "no")
+        if (allNamesString == "yes"){
+            settings.funnyname.doNameRates = false
+            settings.funnyname.doNameSwapping = false
+            settings.funnyname.doVowelSwapping = false
+            settings.funnyname.doLetterSwapping = false
+            settings.funnyname.doNameRates = false
+            customName = prompt("What would you like to set the names to?", "")
+            settings.funnyname.customName = true
+            settings.funnyname.customNameString = customName
+            saveSettings()
+        }
     }
 }
 runAfterAutogen(
@@ -114,6 +127,13 @@ runAfterAutogen(
                         case 9: elements[elementname].name = "absolutely_great"; break
                         case 10: elements[elementname].name = "one_of_the_best"; break
                     }
+                }
+            }
+        }
+        if (settings.funnyname.customName){
+            for (let elementname in elements){
+                if (elementname != "name_settings"){
+                    elements[elementname].name = settings.funnyname.customNameString
                 }
             }
         }
