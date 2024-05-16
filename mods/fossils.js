@@ -168,12 +168,22 @@ elements.bug_amber = {
     category: "solids"
 },
 
+elements.hive_amber = {
+    color: "#ffc000",
+    temp: 20,
+    tempHigh: 345,
+    stateHigh: ["smoke","honey","honey","calcium","sugar"],
+    breakInto: [null,"dna","dna","honey","honey","honey","honey","honey","sap","dead_bug",null,"dna","dna","honey","honey","honey","honey","honey","sap","dead_bug","bee"],
+    category: "solids"
+},
+
 elements.head.breakInto = ["blood","meat","skull"]
 
 elements.dead_bug.breakInto = ["calcium","calcium","calcium","quicklime"]
 
 if (!elements.sap.reactions) { elements.sap.reactions = {} }
     elements.sap.reactions.dead_bug = { elem1:"bug_amber", elem2:null, chance:0.1 };
+    elements.sap.reactions.hive = { elem1:null, elem2:"hive_amber", chance:0.01 };
     elements.sap.reactions.ant = { elem1:"bug_amber", elem2:null, chance:0.1 };
     elements.sap.reactions.fly = { elem1:"bug_amber", elem2:null, chance:0.1 };
     elements.sap.reactions.flea = { elem1:"bug_amber", elem2:null, chance:0.1 };
@@ -182,8 +192,8 @@ if (!elements.sap.reactions) { elements.sap.reactions = {} }
     elements.sap.reactions.bee = { elem1:"bug_amber", elem2:null, chance:0.1 };
     elements.sap.reactions.firefly = { elem1:"bug_amber", elem2:null, chance:0.1 };
     elements.sap.reactions.stinkbug = { elem1:"bug_amber", elem2:null, chance:0.1 };
-    elements.sap.reactions.slug = { elem1:"bug_amber", elem2:null, chance:0.1 };
-    elements.sap.reactions.snail = { elem1:"bug_amber", elem2:null, chance:0.1 };
+    elements.sap.reactions.slug = { elem1:"bug_amber", elem2:null, chance:0.08 };
+    elements.sap.reactions.snail = { elem1:"bug_amber", elem2:null, chance:0.05 };
 
 
 if (!elements.bone.reactions) { elements.bone.reactions = {} }
@@ -207,8 +217,8 @@ if (!elements.bone.reactions) { elements.bone.reactions = {} }
 
 if (!elements.bone_marrow.reactions) { elements.bone_marrow.reactions = {} }
 elements.bone_marrow.reactions.rock = { "elem1": "marrow_fossil", chance:0.00005 };
-elements.bone_marrow.reactions.sand = { "elem1": "marrow_fossil", chance:0.000035 };
-elements.bone_marrow.reactions.dirt = { "elem1": "marrow_fossil", chance:0.00003 };
+elements.bone_marrow.reactions.sand = { "elem1": "petrified_wood", chance:0.000035 };
+elements.bone_marrow.reactions.dirt = { "elem1": "petrified_wood", chance:0.0003 };
 elements.bone_marrow.reactions.tuff = { "elem1": "marrow_fossil", chance:0.00005 };
 elements.bone_marrow.reactions.basalt = { "elem1": "marrow_fossil", chance:0.00004 };
 elements.bone_marrow.reactions.mudstone = { "elem1": "marrow_fossil", chance:0.00004 };
@@ -226,8 +236,6 @@ elements.bone_marrow.reactions.slaked_lime = { "elem1": "marrow_fossil", chance:
 
 if (!elements.wood.reactions) { elements.wood.reactions = {} }
 elements.wood.reactions.rock = { "elem1": "petrified_wood", chance:0.000045 };
-elements.wood.reactions.sand = { "elem1": "petrified_wood", chance:0.00003 };
-elements.wood.reactions.dirt = { "elem1": "petrified_wood", chance:0.000025 };
 elements.wood.reactions.tuff = { "elem1": "petrified_wood", chance:0.000045 };
 elements.wood.reactions.basalt = { "elem1": "petrified_wood", chance:0.000035 };
 elements.wood.reactions.mudstone = { "elem1": "petrified_wood", chance:0.000035 };
@@ -245,8 +253,6 @@ elements.wood.reactions.slaked_lime = { "elem1": "petrified_wood", chance:0.0000
 
 if (!elements.tree_branch.reactions) { elements.tree_branch.reactions = {} }
 elements.tree_branch.reactions.rock = { "elem1": "petrified_wood", chance:0.00005 };
-elements.tree_branch.reactions.sand = { "elem1": "petrified_wood", chance:0.000035 };
-elements.tree_branch.reactions.dirt = { "elem1": "petrified_wood", chance:0.00003 };
 elements.tree_branch.reactions.tuff = { "elem1": "petrified_wood", chance:0.00005 };
 elements.tree_branch.reactions.basalt = { "elem1": "petrified_wood", chance:0.00004 };
 elements.tree_branch.reactions.mudstone = { "elem1": "petrified_wood", chance:0.00004 };
