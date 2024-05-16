@@ -154,6 +154,41 @@ elements.skull = {
     tempHigh: 760,
     stateHigh: "quicklime",
     state: "solid",
+    density: 1000,
+    hardness: 0.5,
+    breakInto: ["quicklime","bone","bone","bone_marrow"]
+},
+
+elements.dino_bones = {
+    color: "#d9d9d9",
+    hidden:true,
+    behavior: behaviors.SUPPORT,
+    reactions: {
+        "water": { elem2:"broth", tempMin:70 },
+        "salt_water": { elem2:"broth", tempMin:70 },
+        "sugar_water": { elem2:"broth", tempMin:70 },
+        "seltzer": { elem2:"broth", tempMin:70 },
+        "rock": { "elem1": "fossil", chance:0.00005 },
+        "sand": { "elem1": "fossil", chance:0.000035 },
+        "dirt": { "elem1": "fossil", chance:0.00003 },
+        "tuff": { "elem1": "fossil", chance:0.00005 },
+        "basalt": { "elem1": "fossil", chance:0.00004 },
+        "mudstone": { "elem1": "fossil", chance:0.00004 },
+        "packed_sand": { "elem1": "fossil", chance:0.00004 },
+        "gravel": { "elem1": "fossil", chance:0.000035 },
+        "clay": { "elem1": "fossil", chance:0.00003 },
+        "clay_soil": { "elem1": "fossil", chance:0.00003 },
+        "permafrost": { "elem1": "fossil", chance:0.000035 },
+        "mulch": { "elem1": "fossil", chance:0.00003 },
+        "ant_wall": { "elem1": "fossil", chance:0.00002 },
+        "limestone": { "elem1": "fossil", chance:0.00005 },
+        "quicklime": { "elem1": "fossil", chance:0.000045 },
+        "slaked_lime": { "elem1": "fossil", chance:0.000035 },
+    },
+    category:"life",
+    tempHigh: 760,
+    stateHigh: "quicklime",
+    state: "solid",
     density: 1500,
     hardness: 0.5,
     breakInto: ["quicklime","bone","bone","bone_marrow"]
@@ -173,7 +208,7 @@ elements.coal = {
         "charcoal": { elem2:"coal", tempMin:200, chance:0.005, oneway:true },
     },
     burn: 28,
-    burnTime: 1500,
+    burnTime: 1000,
     burnInto: ["fire","fire","fire","fire","ash","carbon_dioxide"],
     tempHigh: 6000,
     stateHigh: "fire",
@@ -201,6 +236,41 @@ elements.hive_amber = {
     breakInto: [null,"dna","dna","honey","honey","honey","honey","honey","sap","dead_bug",null,"dna","dna","honey","honey","honey","honey","honey","sap","dead_bug","bee"],
     category: "solids"
 },
+
+elements.dinosaur = {
+    color: "#107a17",
+    behavior: [
+        "XX|M2%5|XX",
+        "M2%10|XX|M2%20 AND BO",
+        "M2%5|M1|M2%15",
+    ],
+    tempHigh: 100,
+    stateHigh: "ash",
+    tempLow: -180,
+    stateLow: ["frozen_meat","frozen_meat","dino_bones","dino_bones"],
+    breakInto: ["blood","blood","meat","meat","dino_bones","blood","blood","meat","meat","dino_bones","feather"],
+    category: "life",
+    burn: 95,
+    burnTime: 25,
+    burnInto: ["cooked_meat","cooked_meat","ash","dino_bones"],
+    state: "solid",
+    density: 1500,
+    conduct: 0.25,
+    reactions: {
+        "bird": { elem2: [null,null,null,null,null,"feather"], chance: 0.3, func: behaviors.FEEDPIXEL },
+        "head": { elem2: [null,null,null,null,null,null,"blood","blood","skull"], chance: 0.5, func: behaviors.FEEDPIXEL },
+        "body": { elem2: [null,null,null,null,null,null,"blood","blood","bone"], chance: 0.5, func: behaviors.FEEDPIXEL },
+        "plant": { elem2: null, chance: 0.5, func: behaviors.FEEDPIXEL },
+        "bone": { elem2: ["bone_marrow","blood",null], chance: 0.3, },
+        "bone_marrow": { elem2: ["blood","blood",null], chance: 0.3, func: behaviors.FEEDPIXEL },
+        "blood": { elem2: null, chance: 0.1, func: behaviors.FEEDPIXEL },
+        "meat": { elem2: null, chance: 0.5, func: behaviors.FEEDPIXEL },
+        "cooked_meat": { elem2: null, chance: 0.4, func: behaviors.FEEDPIXEL },
+        "cured_meat": { elem2: null, chance: 0.4, func: behaviors.FEEDPIXEL },
+        "fly": { elem2: null, chance: 0.05, func: behaviors.FEEDPIXEL },
+        "ant": { elem2: null, chance: 0.05, func: behaviors.FEEDPIXEL },
+    }
+};
 
 elements.head.breakInto = ["blood","meat","skull"]
 
