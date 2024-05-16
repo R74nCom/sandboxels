@@ -1722,7 +1722,7 @@ elements.pn_explosion = {
 elements.smasher = {
 	color: "#606060",
 	behavior: behaviors.WALL,
-	category: "machines",
+	category: "deprecated",
 	tick: function(pixel){
 		for (var i = 0; i < squareCoords.length; i++) {
                 var coord = squareCoords[i];
@@ -1735,11 +1735,13 @@ elements.smasher = {
         }
     },
 	movable: false,
+    hidden: true
 },
+/*
 elements.mixer = {
 	color: "#F0F0F0",
 	behavior: behaviors.WALL,
-	category: "machines",
+	category: "deprecated",
 	tick: function(pixel){
 		pixel.mixList = [];
 		for (var i = 0; i < squareCoords.length; i++) {
@@ -1767,7 +1769,9 @@ elements.mixer = {
 	},
 	movable: false,
     noMix: true,
+    hidden: true,
 },
+*/
 elements.invisiblesupport = {
 	color: "#000000",
 	behavior: behaviors.WALL,
@@ -2898,4 +2902,15 @@ elements.specific_ray_emitter = {
         }
     },
     insulate: true,
+}
+elements.run_some_code = {
+    color: "#68b2cf",
+    category: "tools",
+    canPlace: false,
+    onSelect: function(){
+        let code = prompt("Enter code to run")
+        if (code){
+            eval(code)
+        }
+    }
 }
