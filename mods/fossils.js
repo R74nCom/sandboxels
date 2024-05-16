@@ -339,3 +339,5 @@ elements.algae.reactions.ant_wall = { "elem1": ["oil","methane","methane","coal"
 elements.algae.reactions.limestone = { "elem1": ["oil","methane","methane","coal"], tempMin:280, chance:0.000035 };
 elements.algae.reactions.quicklime = { "elem1": ["oil","methane","methane","coal"], tempMin:280, chance:0.000025 };
 elements.algae.reactions.slaked_lime = { "elem1": ["oil","methane","methane","coal"], tempMin:280, chance:0.000025 };
+
+delete elements.dirt.reactions.bone
