@@ -2859,18 +2859,18 @@ elements.specific_ray_emitter = {
                     var dir = [0-squareCoords[i][0], 0-squareCoords[i][1]]
                     let startx, starty, endx, endy, magnitude
                     if (pixel.specificRayAngle == "nah"){
-                        startx = pixel.x+(dir[0]*specificRayStart)
-                        starty = pixel.y+(dir[1]*specificRayStart)
-                        magnitude = specificRayEnd
+                        startx = pixel.x+(dir[0]*pixel.specificRayStart)
+                        starty = pixel.y+(dir[1]*pixel.specificRayStart)
+                        magnitude = pixel.specificRayEnd
                         endx = startx+(magnitude*dir[0])
                         endy = starty+(magnitude*dir[1])
                     } else {
                         let angleInRadians = pixel.specificRayAngle * Math.PI / 180;
                         console.log("Angle in radians is " + angleInRadians)
                         dir = [(Math.cos(angleInRadians)), (Math.sin(angleInRadians))]
-                        startx = pixel.x+Math.round((dir[0]*specificRayStart))
-                        starty = pixel.y+Math.round((dir[1]*specificRayStart))
-                        magnitude = specificRayEnd
+                        startx = pixel.x+Math.round((dir[0]*pixel.specificRayStart))
+                        starty = pixel.y+Math.round((dir[1]*pixel.specificRayStart))
+                        magnitude = pixel.specificRayEnd
                         endx = startx+Math.round((magnitude*dir[0]))
                         endy = starty+Math.round((magnitude*dir[1]))
                     }
