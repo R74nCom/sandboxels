@@ -776,29 +776,42 @@ try {
 				if(typeof(color) === "string") {
 					//Hex input case
 					
-					if(color.length < 10) {
-						//a proper hex quadruplet is still shorter than the shortest proper rgb() string
-						//console.log(`detected as hex: ${color}`);
-							//catch missing octothorpes
-							if(!color.startsWith("#")) {
-								color = "#" + color;
-							};
-						//console.log(`octothorpe checked: ${color}`);
-
-						if(oldColor.length < 6) {
-							bytes = oldColor.toLowerCase().match(/[a-z0-9]/g).map(x => parseInt(x.concat(x),16));
-						} else {
-							bytes = oldColor.toLowerCase().match(/[a-z0-9]{2}/g).map(x => parseInt(x,16));
+					if(/^#?[A-Za-z0-9]{1,8}$/.test(oldColor)) {
+						if(color.startsWith("#")) {
+							oldColor = oldColor.match(/[A-Za-z0-9]{1,8}/)[0];
 						};
+
+						switch(oldColor.length) {
+							case 0:
+								throw new Error("convertColorFormats: hexadecimal input but color bytes are somehow missing?");
+							case 1: //A => AAAAAA (bs)
+								oldColor = oldColor.repeat(6);
+								break
+							case 2: //AB => AAAAAABB (bs)
+								oldColor = (oldColor[0].repeat(6)) + (oldColor[1].repeat(2));
+								break
+							case 3: //ABC => AABBCC, ABCD => AABBCCDD (real)
+							case 4: 
+								oldColor = oldColor.match(/[A-Za-z0-9]/g).map(x => x.repeat(2)).join("")
+								break
+							case 5: //ABCDE => AABBCCDE (bs)
+								var _rgb = oldColor.slice(0,3);
+								var _alpha = oldColor.slice(3,5);
+								oldColor = (_rgb.match(/[A-Za-z0-9]/g).map(x => x.repeat(2)).join("")) + alpha
+							case 7: //9ABCDEF => 9ABCDEFF (bs)
+								var _rgb = oldColor.slice(0,6);
+								var _alpha = oldColor.slice(6,7);
+								oldColor = _rgb + (_alpha.repeat(2))								
+							case 6: //no change
+							case 8: //no change
+								break
+						};
+						bytes = oldColor.toLowerCase().match(/[a-z0-9]{2}/g).map(x => parseInt(x,16));
+
 						r = bytes[0];
 						g = bytes[1];
 						b = bytes[2];
-						if(bytes.length > 3) {
-							a = bytes[3] / 255;
-						} else {
-							a = null
-						};
-						if(stripAlpha) { a = null };
+						a = stripAlpha ? null : (bytes[3] ?? null);
 						//to JSON for ease of use
 						color = {"r": r, "g": g, "b": b};
 						if(typeof(a) == "number") { color["a"] = a };
@@ -814,15 +827,7 @@ try {
 						r = bytes[0];
 						g = bytes[1];
 						b = bytes[2];
-						if(bytes.length > 3) {
-							a = bytes[3];
-							if(a > 1) {
-								a /= 255
-							}
-						} else {
-							a = null
-						};
-						if(stripAlpha) { a = null };
+						a = stripAlpha ? null : (bytes[3] ?? null);
 						//to JSON for ease of use
 						color = {"r": r, "g": g, "b": b}
 						if(typeof(a) == "number") { color["a"] = a };
@@ -832,15 +837,7 @@ try {
 					r = bytes[0];
 					g = bytes[1];
 					b = bytes[2];
-					if(bytes.length > 3) {
-						a = bytes[3];
-						if(a > 1) {
-							a /= 255
-						}						
-					} else {
-						a = null
-					};
-					if(stripAlpha) { a = null };
+					a = stripAlpha ? null : (bytes[3] ?? null);
 					//to JSON for ease of use
 					color = {"r": r, "g": g, "b": b}
 					if(typeof(a) == "number") { color["a"] = a };
@@ -849,14 +846,11 @@ try {
 					r = color.r;
 					g = color.g;
 					b = color.b;
-					if(typeof(color.a) == "number") {
-						a = color.a;
-					} else {
-						a = null
-					};
-					if(stripAlpha) { a = null }
+					a = stripAlpha ? null : (color.a ?? null);
 				};
 				//Colors are now objects
+				
+				if(a !== null) { a /= 255 };
 
 				switch(outputType.toLowerCase()) {
 					case "rgb":
@@ -1077,8 +1071,9 @@ try {
 				var r = result.r;
 				var g = result.g;
 				var b = result.b;
+				var a = result.a ?? null;
 
-				r /= 255, g /= 255, b /= 255;
+				r /= 255, g /= 255, b /= 255; if(a) { a /= 255 };
 				var max = Math.max(r, g, b), min = Math.min(r, g, b);
 				var h, s, l = (max + min) / 2;
 
@@ -1101,17 +1096,19 @@ try {
 				l = Math.round(l);
 				h = Math.round(360*h);
 
+				if(a !== null && a > 1) { a /= 255 };
+
 				//var colorInHSL = 'hsl(' + h + ', ' + s + '%, ' + l + '%)';
 				//Edit to return an array
 				switch(outputType.toLowerCase()) {
 					case "array":
-						return [h,s,l];
+						return a == null ? [h,s,l] : [h,s,l,a];
 						break;
 					case "hsl":
-						return `hsl(${h},${s}%,${l}%)`;
+						return a == null ? `hsl(${h},${s}%,${l}%)` : `hsla(${h},${s}%,${l}%,${a})`;
 						break;
 					case "json":
-						return {h: h, s: s, l: l};
+						return a == null ? {h: h, s: s, l: l} : {h: h, s: s, l: l, a: a};
 					default:
 						throw new Error("outputType must be \"array\", \"hsl\", or \"json\"");
 						break;				
@@ -1127,26 +1124,26 @@ try {
 					if(arrayType === null) {
 						throw new Error(ambiguousArrayError);
 					} else if(arrayType === "rgb") {
-						color = `rgb(${color[0]},${color[1]},${color[2]})`;
+						color = color.length > 3 ? `rgba(${color[0]},${color[1]},${color[2]},${color[3]})` : `rgb(${color[0]},${color[1]},${color[2]})`;
 						color = rgbStringToHSL(color,"json"); //rgb arr to hsl obj
 					} else if(arrayType === "hsl") {
-						color = {h: color[0], s: color[1], l: color[2]}; //hsl arr to hsl obj
+						color = color.length > 3 ? {h: color[0], s: color[1], l: color[2], a: color[3]} : {h: color[0], s: color[1], l: color[2]}; //hsl arr to hsl obj
 					} else {
 						throw new Error(ambiguousArrayError);
 					};
 				} else {
 					//by this point, any array cases would have been handled, leaving just hex (rgb), json rgb, json hsl, string rgb, and string hsl 
 					if(typeof(color) === "string") {
-						if(color.length < 10) { //detect hex: assume hex triplet if too short to be a well-formed rgb()
+						if(/^#?[A-Za-z0-9]{1,8}$/.test(color)) { //detect hex
 							if(!color.startsWith("#")) {
 								color = "#" + color; //catch missing #
 							};
 							isHsl = false;
 						};
-						if(color.startsWith("rgb(")) { //detect rgb(): self-explanatory
+						if(color.startsWith("rgb")) { //detect rgba?(): self-explanatory
 							isHsl = false;
 						};
-						if(color.startsWith("hsl(")) { //detect hsl(): self-explanatory
+						if(color.startsWith("hsl")) { //detect hsla?(): self-explanatory
 							isHsl = true;
 						};
 					} else if(typeof(color) === "object") {
@@ -2068,7 +2065,7 @@ try {
 				return isRed && isVivid && isBright;
 			};
 
-			//Ghost pixel repair function
+			//Ghost pixel repair functions
 			function rebuildCurrentPixels() {
 				var currPix = []; //rebuild currentPixels from pixelMap to try to fix bug
 				for(pmi = 0; pmi < pixelMap.length; pmi++) {
@@ -2083,8 +2080,25 @@ try {
 					};
 				};
 				currentPixels = currPix;
+			}; //Take each item from pixelMap into currentPixels
+
+			function removePixelsFromPixelmapThatAreNotInCurrentpixels() {
+				pixelMap = pixelMap.map(col => col.map(function(pixel) {
+					if(pixel == undefined) {
+						return undefined
+					} else if(currentPixels.includes(pixel)) {
+						return pixel
+					} else {
+						return undefined
+					}
+				}))
 			};
 
+			function removePixelsFromCurrentpixelsThatAreNotInPixelmap() {
+				var flatPixelMap = pixelMap.flat();
+				currentPixels = currentPixels.filter(pixel => flatPixelMap.includes(pixel));
+				flatPixelMap = null
+			};
 
 		//Sugar functions
 
@@ -3800,12 +3814,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 	//MORE CONFIGURABLE REACTION TEMPERATURE CHANGES ##
 
 		function reactPixels(pixel1,pixel2) {
+			if((!(pixel1)) || (!(pixel2))) { return false };
 			var r = elements[pixel1?.element]?.reactions?.[pixel2?.element];
 			if(!r) { return false };
 			if (r.setting && !(settings[r.setting])) {
 				return false;
 			}
-			var changeTemp = r.changeTemp ?? true
 			// r has the attribute "y" which is a range between two y values
 			// r.y example: [10,30]
 			// return false if y is defined and pixel1's y is not in the range
@@ -3815,7 +3829,13 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			if (r.tempMax !== undefined && pixel1.temp > r.tempMax) {
 				return false;
 			}
-			if (r.charged && !pixel.charge) {
+            if (r.burning1 !== undefined && Boolean(pixel1.burning) !== r.burning1) {
+                return false;
+            }
+            if (r.burning2 !== undefined && Boolean(pixel2.burning) !== r.burning2) {
+                return false;
+            }
+			if (r.charged && !pixel1.charge) {
 				return false;
 			}
 			if (r.chance !== undefined && Math.random() > r.chance) {
@@ -3825,22 +3845,27 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				return false;
 			}
 			if (r.elem1 !== undefined) {
+				var elem1 = r.elem1;
 				// if r.elem1 is an array, set elem1 to a random element from the array, otherwise set it to r.elem1
-				if (Array.isArray(r.elem1)) {
-					var elem1 = r.elem1[Math.floor(Math.random() * r.elem1.length)];
-				} else { var elem1 = r.elem1; }
+				while (Array.isArray(elem1)) {
+					elem1 = randomChoice(elem1)
+				}
 
 				if (elem1 == null) {
 					deletePixel(pixel1.x,pixel1.y);
 				}
 				else {
-					changePixel(pixel1,elem1,changeTemp);
+					changePixel(pixel1,elem1,r.changeTemp1 ?? r.changeTemp ?? true);
 				}
 			}
 			if (r.charge1) { pixel1.charge = r.charge1; }
 			if (r.temp1) { pixel1.temp += r.temp1; pixelTempCheck(pixel1); }
 			if (r.color1) { // if it's a list, use a random color from the list, else use the color1 attribute
-				pixel1.color = pixelColorPick(pixel1, Array.isArray(r.color1) ? r.color1[Math.floor(Math.random() * r.color1.length)] : r.color1);
+				var color1 = r.color1;
+				while(Array.isArray(color1)) {
+					color1 = randomChoice(color1)
+				};
+				pixel1.color = pixelColorPick(pixel1, color1);
 			}
 			if (r.attr1) { // add each attribute to pixel1
 				for (var key in r.attr1) {
@@ -3848,22 +3873,27 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				}
 			}
 			if (r.elem2 !== undefined) {
-				// if r.elem2 is an array, set elem2 to a random element from the array, otherwise set it to r.elem2
-				if (Array.isArray(r.elem2)) {
-					var elem2 = r.elem2[Math.floor(Math.random() * r.elem2.length)];
-				} else { var elem2 = r.elem2; }
+				var elem2 = r.elem2;
+				// if r.elem2 is an array, set elem2 to a random element from the array, otherwise set it to r.elem1
+				while (Array.isArray(elem2)) {
+					elem2 = randomChoice(elem2)
+				}
 
 				if (elem2 == null) {
 					deletePixel(pixel2.x,pixel2.y);
 				}
 				else {
-					changePixel(pixel2,elem2,changeTemp);
+					changePixel(pixel2,elem2,r.changeTemp2 ?? r.changeTemp ?? true);
 				}
 			}
 			if (r.charge2) { pixel2.charge = r.charge2; }
 			if (r.temp2) { pixel2.temp += r.temp2; pixelTempCheck(pixel2); }
 			if (r.color2) { // if it's a list, use a random color from the list, else use the color2 attribute
-				pixel2.color = pixelColorPick(pixel2, Array.isArray(r.color2) ? r.color2[Math.floor(Math.random() * r.color2.length)] : r.color2);
+				var color2 = r.color2;
+				while(Array.isArray(color2)) {
+					color2 = randomChoice(color2)
+				};
+				pixel2.color = pixelColorPick(pixel2, color2);
 			}
 			if (r.attr2) { // add each attribute to pixel2
 				for (var key in r.attr2) {
@@ -4689,40 +4719,14 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		elements.plasma_torch = {
 			"color": "#86579c",
 			"tick": function(pixel) {
-				var offset;
-				switch((pixel.r ?? 0) % 4) {
-					case 0.5:
-						offset = [-1,-1];
-						break;
-					case 1:
-						offset = [-1,0];
-						break;
-					case 1.5:
-						offset = [-1,1];
-						break;
-					case 2:
-						offset = [0,1];
-						break;
-					case 2.5:
-						offset = [1,1];
-						break;
-					case 3:
-						offset = [1,0];
-						break;
-					case 3.5:
-						offset = [1,-1];
-						break;
-					case 4:
-					case 0:
-					default:
-						offset = [0,-1];
-						break;
-				};
+				var rotation = -(((pixel.r ?? 0) % 4) + 1); //preserving the original behavior of 0 = up, 1 = left
+				var rotationInRadians = scale(rotation,0,4,0,Math.PI * 2);
+				var vector = [Math.cos(rotationInRadians), Math.sin(rotationInRadians)];
 				//base strength (distance) 2, plus 1 for each 500*C above 7K*C; when charged, increase by 10% for each full or partial unit of charge (0.25 yields 10%, 1 yields 10%, 1.55 yields 20%, 2 yields 20%...)
 				var strength = Math.max(2,Math.min(300, ((2 + Math.floor((pixel.temp - 7000) / 500)) * (1 + (Math.ceil(pixel.charge ?? 0) * 0.1))))); //bound to 2-300, in part for performance reasons
 				//console.log(strength);
 				for(var i = 1; i <= strength; i++) {
-					var newOffsets = offset.map(x => x * i);
+					var newOffsets = vector.map(coord => Math.round(coord * i));
 					var finalPos = {x: pixel.x + newOffsets[0], y: pixel.y + newOffsets[1]};
 					//console.log({x:pixel.x,y:pixel.y},finalPos);
 					if(!(isEmpty(finalPos.x,finalPos.y))) {
@@ -5312,29 +5316,29 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				}
 				var pixelDrawList = pixelsFirst.concat(pixelsLast);
 				for (var i = 0; i < pixelDrawList.length; i++) {
-					pixel = pixelDrawList[i];
+					var pixel = pixelDrawList[i];
 					if (pixelMap[pixel.x][pixel.y] == undefined) {continue}
 					if (pixel.con) { pixel = pixel.con }
 					if (view===null || view===3) {
 						var colorOut = pixel.color;
-						for(var imsorryaboutthelagthiswillcause in specialProperties) {
-							if(pixel[imsorryaboutthelagthiswillcause] !== undefined && specialProperties[imsorryaboutthelagthiswillcause].specialColorFunction) {
-								colorOut = specialProperties[imsorryaboutthelagthiswillcause].specialColorFunction(pixel,oldColor=colorOut)
+						for(var sry4thelag in specialProperties) {
+							if(pixel[sry4thelag] !== undefined && specialProperties[sry4thelag].specialColorFunction) {
+								colorOut = specialProperties[sry4thelag].specialColorFunction(pixel,oldColor=colorOut)
 							}
 						}
 						ctx.fillStyle = colorOut;
 					}
 					else if (view === 2) { // thermal view
-						// set the color to pixel.temp, from hottest at -66 (294.1875) hue to coldest 225 hue, with the minimum being -273, max being 7755
+						// set the color to pixel.temp, from hottest at -66 (294.1875) hue to coldest 265 hue, with the minimum being -273, max being 7755
 						var temp = pixel.temp;
-						temp = Math.min(Math.max(temp,(settings.abszero ?? -273.15)),55530);
+						temp = Math.min(Math.max(temp + 900,(settings.abszero ?? -273.15)),55530);
 						var hue,sat,lig;
 						sat = 100;
 						lig = 50;
 						if(temp <= 7755) {
-							hue = 225 - (Math.min(7755,temp)/6000)*225;
+							hue = 265 - (Math.min(7755,temp)/6000)*265;
 							if (hue < 0) {hue += (360 * Math.ceil(hue / -360))}
-							if (temp < 0 && hue > 280) {hue = 280}
+							if (temp < 0 && hue > 285) {hue = 285}
 						} else if(temp <= 9255) {
 							hue = 294.1875;
 							lig = 50 + (Math.max(0,temp - 7755) * (50/1500));
@@ -5343,10 +5347,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 							sat = 0;
 							lig = 100 - (Math.max(0,temp - 9255) * (100 / 2000));
 						} else if(temp <= 11755) {
-							hue = 225;
+							hue = 265;
 							lig = (Math.max(0,temp - 11255) * (25 / 500));
 						} else if(temp <= 19510) {
-							hue = 225 - (Math.min(19510,Math.max(0,temp - 11755))/6000)*225;
+							hue = 265 - (Math.min(19510,Math.max(0,temp - 11755))/6000)*265;
 							if (hue < 0) {hue += (360 * Math.ceil(hue / -360))}
 							lig = 25;
 						} else if(temp <= 20510) {
@@ -5360,11 +5364,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 							sat = 50;
 							lig = 75;
 						} else if(temp <= 29265) {
-							hue = 225;
+							hue = 265;
 							sat = scale(temp,28265,29265,50,40);
 							lig = scale(temp,28265,29265,75,87.5);
 						} else if(temp <= 37020) {
-							hue = scale(temp,29265,37020,225,654.1875) % 360;
+							hue = scale(temp,29265,37020,265,654.1875) % 360;
 							sat = 40;
 							lig = 87.5;
 						} else if(temp <= 39020) {
@@ -5376,11 +5380,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 							sat = 40;
 							lig = 50;
 						} else if(temp <= 47775) {
-							hue = 225;
+							hue = 265;
 							sat = scale(temp,46775,47775,40,20);
 							lig = 50;
 						} else { //55530
-							hue = scale(temp,47775,55530,225,654.1875) % 360;
+							hue = scale(temp,47775,55530,265,654.1875) % 360;
 							sat = 20;
 							lig = 50;
 						};
@@ -6973,6 +6977,93 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "machines",
 			density: averageNumericArray([elements.steel.density, elements.copper.density, airDensity])
+		};
+
+		elements.test_fader = { //basically an aray clone
+			color: "#FFFFFF",
+			properties: {
+				"life": 100,
+				"fadeRate": 1
+			},
+			hardness: 0.8,
+			density: 0,
+			state: "solid",
+			tick: function(pixel) {
+				pixel.life ??= 100;
+				var alpha = isNaN(pixel.life) ? Math.floor(Math.random() * 256) : (pixel.life * 2.55); //CL REFERENCE??!?!?!?!?!?!?!?!??!?
+				//console.log("tick");
+				var splitColor = convertColorFormats(pixel.color,"json");
+				//console.log(pixel.color,splitColor);
+				splitColor.a = alpha;
+				pixel.color = convertColorFormats(splitColor,"hex");
+				//console.log(pixel.color);
+				if(pixel.fadeRate == 0 || (pixel.fadeRate && isNaN(pixel.fadeRate))) {
+				} else {
+					pixel.life -= (pixel.fadeRate ?? 1);
+				};
+				if(pixel.life < 0) {
+					deletePixel(pixel.x,pixel.y);
+					return
+				}
+			}
+		};
+
+		sweepingLaserTransparencyWhitelist = ["glass","glass_shard","rad_glass","rad_glass_shard","glass_pane","rad_glass_pane","water","salt_water","sugar_water","pool_water"];
+		sweepingLaserTransparencyBlacklist = [];
+
+		//Sweeping laser
+		elements.sweeping_laser = {
+			"color": "#905050",
+			"tick": function(pixel) {
+				pixel.r ??= 0;
+				if(isNaN(pixel.r)) { return false };
+				pixel.rSpeed ??= -0.03;
+				pixel.beamLength ??= 10;
+				pixel.beamTemp ??= 2000;
+				pixel.brevity ??= 5;
+				pixel.beamColor ??= "#FF0000";
+				var beamElement = "test_fader";
+				var rotation = -(((pixel.r ?? 0) % 4) + 1); //preserving the original behavior of 0 = up, 1 = left
+				var rotationInRadians = scale(rotation,0,4,0,Math.PI * 2);
+				var vector = [Math.cos(rotationInRadians), Math.sin(rotationInRadians)];
+				var distance = Math.min(300,Math.max(2,(pixel.beamLength + 1) ?? 10));
+				for(var i = 1; i <= distance; i += 0.5) { //twice the tries to try to reduce gaps in the beam
+					var newOffsets = vector.map(coord => Math.round(coord * i));
+					var finalPos = {x: pixel.x + newOffsets[0], y: pixel.y + newOffsets[1]};
+					//console.log(finalPos);
+					//console.log({x:pixel.x,y:pixel.y},finalPos);
+					if(!(isEmpty(finalPos.x,finalPos.y))) {
+						var otherPixel = pixelMap[finalPos.x]?.[finalPos.y];
+						if(otherPixel && (
+							[beamElement,pixel.element].concat(sweepingLaserTransparencyWhitelist).includes(otherPixel.element) ||
+							elements[otherPixel.element].state === "gas"
+						) && !(sweepingLaserTransparencyBlacklist.includes(otherPixel.element))) {
+							if(otherPixel.element == "test_fader") { //intentionally hard-coded
+								otherPixel.life = 100
+							};
+							continue
+						} else {
+							break
+						}
+					};
+					var newBeamPixel = tryCreatePixelReturn(beamElement,finalPos.x,finalPos.y);
+					if(!newBeamPixel) {
+						break
+					} else {
+						newBeamPixel.temp = pixel.beamTemp ?? 2000;
+						newBeamPixel.fadeRate = pixel.brevity ??= 5;
+						newBeamPixel.color = (pixel.beamColor ?? "#FF0000");
+					}
+				};
+				pixel.r += pixel.rSpeed ?? 0.03;
+			},
+			"reactions": {
+				"water": { elem1: "steel", charge1: 1 },
+			},
+			"category": "special",
+			"breakInto": "charcoal",
+			"tempHigh": 2700,
+			"stateHigh": "molten_steel",
 		};
 
 		//hormones
@@ -23465,7 +23556,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										return;
 									};
 									if(Math.random() < 0.001 && elements[newElement]._data?.[2] == "particulate") { //0.1% chance to give water away
-										var newWetParticulateName = elements.water.reactions[newElement].elem2;
+										var newWetParticulateName = elements.water.reactions[newElement]?.elem2;
+										if(!newWetParticulateName) { return };
 										if(elements[thisWetSandName] && elements[newWetParticulateName]) {
 											//console.log(thisSandName);
 											//console.log(newWetSandName);
@@ -28001,20 +28093,30 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 		};
 
 		function rgbStringToUnvalidatedObject(string) {
-			string = string.split(",");
-			var red = parseFloat(string[0].substring(4));
-			var green = parseFloat(string[1]);
-			var blue = parseFloat(string[2].slice(0,-1));
-			return {r: red, g: green, b: blue};
-		}
+			var numbers = string.match(/[\d\.]+/g);
+			var red = numbers[0];
+			var green = numbers[1];
+			var blue = numbers[2];
+			var alpha = null;
+			if(numbers.length > 3) {alpha = numbers[3]};
+			var result = {r: red, g: green, b: blue};
+			if(alpha !== null) { result.a = alpha };
+			numbers = numbers.map(x => parseFloat(x));
+			return result
+		};
 
 		function hslStringToUnvalidatedObject(string) {
-			string = string.split(",");
-			var hue = parseFloat(string[0].substring(4));
-			var saturation = parseFloat(string[1].slice(0,-1));
-			var lightness = parseFloat(string[2].slice(0,-2));
-			return {h: hue, s: saturation, l: lightness};
-		}
+			var numbers = string.match(/[\d\.]+/g);
+			var hue = numbers[0];
+			var saturation = numbers[1];
+			var whateverL_StandsFor = numbers[2];
+			var alpha = null;
+			if(numbers.length > 3) {alpha = numbers[3]};
+			var result = {h: hue, s: saturation, l: whateverL_StandsFor};
+			if(alpha !== null) { result.a = alpha };
+			numbers = numbers.map(x => parseFloat(x));
+			return result
+		};
 
 		function rebuildWorldgenList() { //vanilla code
 			document.getElementById("worldgenselect").innerHTML = '<option value="off">Disabled</option>';
