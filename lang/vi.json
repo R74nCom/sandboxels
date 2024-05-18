@@ -454,7 +454,7 @@
 "h_bomb": "Bom nhiệt",
 "dirty_bomb": "Bom bẩn",
 "emp_bomb": "Bom điện từ",
-"nitro": "Nitro",
+"nitro": "Nitroglixerin",
 "greek_fire": "Lửa Hi Lạp",
 "fireball": "Cầu lửa",
 "rocket": "Tên lửa",
@@ -523,7 +523,7 @@
 "molten_epsom_salt": "Muối Epsom nóng chảy",
 "molten_potassium_salt": "Muối kali nóng chảy",
 "molten_sodium_acetate": "Natri axetat nóng chảy",
-"frozen_nitro": "Nitro đóng băng",
+"frozen_nitro": "Nitroglixerin đóng băng",
 "cured_meat": "Thịt muối",
 "nut_oil": "Dầu hạt",
 "grease": "Mỡ dầu",
@@ -541,4 +541,9 @@
 "blaster": "Tia nổ",
 "propane_ice": "Propan đóng băng",
 "molten_caustic_potash": "Kali hiđroxit nóng chảy"
+"cloth": "Vải"
+"kelp": "Tảo bẹ"
+"grinder": "Máy nghiền"
+"mixer": "Máy trộn"  
+"freeze_ray": "Tia làm lạnh"
 }
