@@ -2587,15 +2587,14 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			pixelSizeHalf = newPixelSize/2;
 			height = Math.round(newHeight/newPixelSize)-1;
 			width = Math.round(newWidth/newPixelSize)-1;
-			mousePos = {x:width/2,y:height/2};
+			mousePos = {x:Math.round(width/2),y:Math.round(height/2)};
 			if (clear!==false) { clearAll(); }
-		};
+		}
 
 		autoResizeCanvas = function(clear) {
+			pixelSize = settings.pixelsize || 6;
 			if (window.innerWidth < 700) {
-				pixelSize = 5;
-			} else {
-				pixelSize = 6;
+				pixelSize--;
 			}
 			if (window.innerWidth < 700) {
 				var newWidth = Math.ceil(window.innerWidth / pixelSize) * pixelSize;
@@ -2849,20 +2848,29 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					elements[key].color = "rgb(255,255,255)";
 					elements[key].colorObject = {r:255,g:255,b:255};
 				}
-				// If the element's behavior is an array and contains M1 or M2, set its movable to true
-				if (elements[key].behavior && typeof elements[key].behavior[0] === "object") {
-					var bstring = JSON.stringify(elements[key].behavior);
-					if (bstring.indexOf("M1")!==-1 || bstring.indexOf("M2")!==-1) { elements[key].movable = true; }
+				if (elements[key].movable === undefined) {
+					// If the element's behavior is an array and contains M1 or M2, set its movable to true
+					if (elements[key].behavior && typeof elements[key].behavior[0] === "object") {
+						var bstring = JSON.stringify(elements[key].behavior);
+						if (bstring.indexOf("M1")!==-1 || bstring.indexOf("M2")!==-1) { elements[key].movable = true; }
+					}
+					if (elements[key].tick) { elements[key].movable = true; }
 				}
-				if (elements[key].tick) { elements[key].movable = true; }
 				if (elements[key].behavior) {
+					var behavior = elements[key].behavior;
+					var behaviorCenterY = behavior[Math.floor(behavior.length/2)]
+					var behaviorCenter = behaviorCenterY[Math.floor(behaviorCenterY.length/2)]
 					// If the element's behavior[1][1] includes "FX", set it's flippableX to true
-					if (elements[key].behavior[1][1].indexOf("FX") !== -1) {
+					if (behaviorCenter.indexOf("FX") !== -1) {
 						elements[key].flippableX = true;
 					}
 					// If the element's behavior[1][1] includes "FY", set it's flippableY to true
-					if (elements[key].behavior[1][1].indexOf("FY") !== -1) {
+					if (behaviorCenter.indexOf("FY") !== -1) {
 						elements[key].flippableY = true;
+					}
+					// If the element's behavior[1][1] includes "RT", set it's rotatable to "true"
+					if (behaviorCenter.indexOf("RT") !== -1) {
+						elements[key].rotatable = true;
 					}
 
 					// If the element's behavior stringified includes "BO", loop through the behavior
@@ -2885,11 +2893,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 								}
 							}
 						}
-					}
-
-					// If the element's behavior[1][1] includes "RT", set it's rotatable to "true"
-					if (elements[key].behavior[1][1].indexOf("RT") !== -1) {
-						elements[key].rotatable = true;
 					}
 
 				}
@@ -3482,7 +3485,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			}
 			// Set the first button in categoryControls div to be the current category
 			document.getElementById("categoryControls").children[0].click()
-			document.getElementById("extraInfo").innerHTML += "<small><p>There are " + elementCount + " elements, including " + hiddenCount + " hidden ones.</p><p>©2021-" + new Date().getFullYear() + ". All Rights Reserved. <a href='https://r74n.com'>R74n</a></p></small>";
+			document.getElementById("extraInfo").insertAdjacentHTML("beforeend", "<small><p>v" + currentversion + " • " + elementCount + " elements, with <span id='hiddenCount'>" + hiddenCount + "</span> hidden.</p><p>©2021-" + new Date().getFullYear() + ". <a href='https://sandboxels.R74n.com/license.txt' rel='license' target='_blank'>All Rights Reserved</a>. <a style='color:#00ffff' rel='author' href='https://r74n.com'>R74n</a></p></small>");
 			selectElement(currentElement);
 			focusGame();
 		};
@@ -5215,7 +5218,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 
 		shapeModes = ["normal","circles","triangles"];
 		settings.shapeMode ??= 0;
-		settings.doAcid ??= false;
+		settings.doacid ??= false;
 		settings.acidFunction ??= "none";
 
 		function getShapeMode() { 
@@ -5239,6 +5242,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			LIQUID: behaviors.LIQUID.toString(),
 			UL_UR_OPTIMIZED: behaviors.UL_UR_OPTIMIZED.toString()
 		};
+
+		settings ??= {};
+		settings.shockoverlay ??= true;
 
 		//I hate overwriting drawPixels
 		runAfterAutogen(function() {
@@ -5498,15 +5504,15 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					var mode = getShapeMode();
 					settings.acidFunction ??= "none";
 					var acidFunction;
-					if([false,"false"].includes(settings.doAcid)) {
+					if([false,"false"].includes(settings.doacid)) {
 						acidFunction = acidFunctions.none
 					} else {
 						acidFunction = acidFunctions[settings.acidFunction ?? "none"]
 					};
 					var acidOffset1,acidOffset2;
-					if(settings.doAcid && settings.acidFunction != "none" && !!acidFunction) {
-						acidOffset1 = (settings.doAcid ?? false) * (18*acidFunction((pixel.y+incrementt)/4.4));
-						acidOffset2 = (settings.doAcid ?? false) * (18*acidFunction((pixel.x+incrementt)/4.4))
+					if(settings.doacid && settings.acidFunction != "none" && !!acidFunction) {
+						acidOffset1 = (settings.doacid ?? false) * (18*acidFunction((pixel.y+incrementt)/4.4));
+						acidOffset2 = (settings.doacid ?? false) * (18*acidFunction((pixel.x+incrementt)/4.4))
 					} else {
 						acidOffset1 = 0;
 						acidOffset2 = 0
@@ -5559,7 +5565,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 								break;
 						};
 					}
-					if (pixel.charge && view !== 2) { // Yellow glow on charge
+					if (pixel.charge && settings.shockoverlay && view !== 2) { // Yellow glow on charge
 						if (!elements[pixel.element].colorOn) {
 							ctx.fillStyle = "rgba(255,255,0,0.5)";
 							switch(mode) {
@@ -5583,7 +5589,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 							};
 						}
 					}
-					if (pixel.burning && settings.burnOverlay && view !== 2) { // Red glow on burn
+					if (pixel.burning && settings.burnoverlay && view !== 2) { // Red glow on burn
 						if (!elements[pixel.element].colorOn) {
 							ctx.fillStyle = "rgba(255,0,0,0.5)";
 							switch(mode) {
@@ -5695,36 +5701,13 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				shapeSettingSpan.appendChild(settingDropdown);
 			settingsMenu.appendChild(shapeSettingSpan);
 
-			//Acid setting
-			var acidSettingSpan = document.createElement("span");
-			acidSettingSpan.setAttribute("setting","doAcid");
-			acidSettingSpan.setAttribute("class","setting-span");
-			acidSettingSpan.textContent = "\"Acid\" distortion ";
-				var settingDropdown = document.createElement("select");
-				settingDropdown.setAttribute("onchange","settings.doAcid = (this.value === 'true'); saveSettings();");
-				var options = {
-					"false": "Disabled",
-					"true": "Enabled"
-				};
-				for(value in options) {
-					var newOption = document.createElement("option");
-					if(value == "0") {
-						newOption.setAttribute("selected","");		
-					};
-					newOption.setAttribute("value",value);
-					newOption.innerText = options[value];
-					settingDropdown.appendChild(newOption);
-				};
-				acidSettingSpan.appendChild(settingDropdown);
-			settingsMenu.appendChild(acidSettingSpan);
-
 			//Acid function setting
 			var acidFuncSpan = document.createElement("span");
 			acidFuncSpan.setAttribute("setting","acidFunction");
 			acidFuncSpan.setAttribute("class","setting-span");
 			acidFuncSpan.textContent = "\"Acid\" distortion function";
 				var settingDropdown = document.createElement("select");
-				settingDropdown.setAttribute("onchange","settings.acidFunction = this.value; console.log(settings.acidFunction,this.value); saveSettings();");
+				settingDropdown.setAttribute("onchange","settings.acidFunction = this.value; saveSettings();");
 				var options = {
 					"none": "None",
 					"sin": "Sine",
@@ -5749,27 +5732,114 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			//console.log(lastSetting);
 			lastSetting.setAttribute("style","padding-bottom:0"); //remove padding from last setting;
 
+			settings ??= {};
+			settings.burnoverlay ??= false;
 			var redBurnSettingSpan = document.createElement("span");
-			redBurnSettingSpan.setAttribute("setting","burnOverlay");
-			redBurnSettingSpan.setAttribute("class","setting-span");
-			redBurnSettingSpan.textContent = "Red overlay on burning pixels ";
-				var settingDropdown = document.createElement("select");
-				settingDropdown.setAttribute("onchange","settings.burnOverlay = (this.value === 'true'); saveSettings();");
+			redBurnSettingSpan.setAttribute("setting","burnoverlay");
+			redBurnSettingSpan.setAttribute("title","Default: OFF");
+			redBurnSettingSpan.classList.add("setting-span","multisetting");
+				var settingInput = document.createElement("input");
+				settingInput.setAttribute("type","button");
+				settingInput.setAttribute("value","Burning Overlay");
+				settingInput.setAttribute("state","0");
+				settingInput.classList.add("toggleInput");
+				settingInput.setAttribute("onclick","toggleInput(this,'burnoverlay',false)");
 				var options = {
 					"false": "Disabled",
 					"true": "Enabled"
 				};
-				for(value in options) {
-					var newOption = document.createElement("option");
-					if(value == "0") {
-						newOption.setAttribute("selected","");		
-					};
-					newOption.setAttribute("value",value);
-					newOption.innerText = options[value];
-					settingDropdown.appendChild(newOption);
+				var newHelpMark = document.createElement("span");
+				newHelpMark.setAttribute("title","This adds a red overlay to burning pixels, like the yellow overlay for charged pixels.");
+				newHelpMark.classList.add("helpMark");
+				newHelpMark.innerText = "?";
+				redBurnSettingSpan.appendChild(settingInput);
+				redBurnSettingSpan.appendChild(newHelpMark);
+			var cheerfulSetting = document.querySelector('span[setting="cheerful"]');
+			cheerfulSetting.after(redBurnSettingSpan);
+
+			settings.shockoverlay ??= true;
+			var yellowShockSettingSpan = document.createElement("span");
+			yellowShockSettingSpan.setAttribute("setting","shockoverlay");
+			yellowShockSettingSpan.setAttribute("title","Default: ON");
+			yellowShockSettingSpan.classList.add("setting-span","multisetting");
+				var settingInput = document.createElement("input");
+				settingInput.setAttribute("type","button");
+				settingInput.setAttribute("value","Charge Overlay");
+				settingInput.setAttribute("state","1");
+				settingInput.classList.add("toggleInput");
+				settingInput.setAttribute("onclick","toggleInput(this,'shockoverlay',false)");
+				var options = {
+					"false": "Disabled",
+					"true": "Enabled"
 				};
-				redBurnSettingSpan.appendChild(settingDropdown);
-			settingsMenu.appendChild(redBurnSettingSpan);
+				var newHelpMark = document.createElement("span");
+				newHelpMark.setAttribute("title","This adds a yellow overlay for charged pixels (vanilla feature).");
+				newHelpMark.classList.add("helpMark");
+				newHelpMark.innerText = "?";
+				yellowShockSettingSpan.appendChild(settingInput);
+				yellowShockSettingSpan.appendChild(newHelpMark);
+			redBurnSettingSpan.after(yellowShockSettingSpan);
+
+			settings.doacid ??= false;
+			var acidSettingSpan = document.createElement("span");
+			acidSettingSpan.setAttribute("setting","doacid");
+			acidSettingSpan.setAttribute("title","Default: OFF");
+			acidSettingSpan.classList.add("setting-span","multisetting");
+				var settingInput = document.createElement("input");
+				settingInput.setAttribute("type","button");
+				settingInput.setAttribute("value",'"Acid" distortion');
+				settingInput.setAttribute("state","0");
+				settingInput.classList.add("toggleInput");
+				settingInput.setAttribute("onclick","toggleInput(this,'doacid',false)");
+				var options = {
+					"false": "Disabled",
+					"true": "Enabled"
+				};
+				var newHelpMark = document.createElement("span");
+				newHelpMark.setAttribute("title","This adds a yellow overlay for charged pixels (vanilla feature).");
+				newHelpMark.classList.add("helpMark");
+				newHelpMark.innerText = "?";
+				acidSettingSpan.appendChild(settingInput);
+				acidSettingSpan.appendChild(newHelpMark);
+			yellowShockSettingSpan.after(acidSettingSpan);
+
+			var sizeSetting = document.querySelector('span[setting="pixelsize"]');
+			var sizeDropdown = sizeSetting.querySelector("select");
+			sizeDropdown.setAttribute("onchange","var size = (this.value === 'null' ? null : parseFloat(this.value)); console.log(size); if((size >= 0.05) && (size <= 194.73749999999999) && (size !== null) && (size !== false) && !(isNaN(size))) { console.log(size); setSetting('pixelsize',size);this.nextElementSibling.innerText='Reset Scene' }");
+				var tinyOption = document.createElement("option");
+				tinyOption.setAttribute("value","12");
+				tinyOption.innerText = "Tiny";
+				sizeDropdown.insertAdjacentElement("afterbegin",tinyOption);
+				var hugeOption = document.createElement("option");
+				hugeOption.setAttribute("value","2");
+				hugeOption.innerText = "Huge";
+				sizeDropdown.insertAdjacentElement("beforeend",hugeOption);
+				var otherOption = document.createElement("option");
+				otherOption.setAttribute("value","null");
+				otherOption.innerText = "Other";
+				sizeDropdown.insertAdjacentElement("beforeend",otherOption);
+				pixelSizeSettingDropdownOtherOptionIndex = (sizeDropdown.children.length) - 1;
+
+			//Append code to showSettings to set every setting toggle button's state according to its setting's value on page load (so if you turned the setting on, the button is already green when you load the page)
+			function showSettingsButtonAutoUpdateAppendFunction() {
+				var toggleButtonSettings = document.querySelectorAll('span.setting-span.multisetting[setting]:has(input[type="button"])');
+				if(!(toggleButtonSettings?.forEach)) { return false };
+				toggleButtonSettings.forEach(function(node) {
+					var setting = node.getAttribute("setting");
+					if(!setting) { return false };
+					var button = node.querySelector('input[type="button"]');
+					if(!button) { return false };
+					var settingValue = !!(settings?.[setting]);
+					var newState = settingValue ? "1" : "0";
+					button.setAttribute("state",newState);
+					return true
+				})
+			};
+			oldShowSettings = showSettings;
+			showSettings = function() {
+				oldShowSettings();
+				showSettingsButtonAutoUpdateAppendFunction()
+			};
 
 			console.log(everyTick(function() {
 				if(paused) { return };
@@ -5828,6 +5898,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			if (pixel.drag && !force) { return true; }
 			var info = elements[pixel.element];
 			var oob = outOfBounds(nx,ny);
+			if(pixelMap[nx] === undefined) { return false }; //safety
 			if (isEmpty(nx,ny,false,oob)) { // If coords is empty, move to coords
 				//console.log(`Moving ${pixel.element} (${pixel.x},${pixel.y}) to (${nx},${ny})`);
 				movePixel(pixel,nx,ny,leaveBehind);
@@ -12624,22 +12695,18 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			pixelSize = urlParams.get('pixelSize')
 			if(isNaN(pixelSize) || pixelSize === "" || pixelSize === null) { //NaN check
 				//Vanilla code
-				//[Vanilla comment] If the screen size is under 768px, set pixelSize to 5, otherwise 6
+				pixelSize = settings.pixelsize || 6;
 				if (window.innerWidth < 700) {
-					pixelSize = 5;
-				} else {
-					pixelSize = 6;
+					pixelSize--;
 				}
 			}
 			pixelSize = parseFloat(pixelSize)
 			pixelSize = Math.min(194.73749999999999,Math.max(pixelSize,0.05))
 		} else {
 			//Vanilla code
-			//[Vanilla comment] If the screen size is under 768px, set pixelSize to 5, otherwise 6
+			pixelSize = settings.pixelsize || 6;
 			if (window.innerWidth < 700) {
-				pixelSize = 5;
-			} else {
-				pixelSize = 6;
+				pixelSize--;
 			}
 		}
 
@@ -13075,19 +13142,18 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			function updateStats() {
 				var statsDiv = document.getElementById("stats");
 				var stats = "<span id='stat-pos' class='stat'>x"+mousePos.x+",y"+mousePos.y+"</span>";
-				stats += "<span id='stat-pixels' class='stat'>Pxls:" + currentPixels.length+"</span>";
+				stats += "<span id='stat-pixels' class='stat"+ (currentPixels.length >= maxPixelCount ? " redText" : "") +"'>Pxls:" + currentPixels.length+"</span>";
 				stats += "<span id='stat-tps' class='stat'>" + tps+"tps</span>";
+				if(enabledMods.includes("mods/betterStats.js") && typeof(realTps) !== "undefined") { stats += "<span id='stat-realtps' class='stat'>" + realTps + "tps</span>" }; //i'm sorry but there's no other way to add compatibility
+				//THAT CODE WAS MADE BY MOLLTHECODER FROM THEIR betterStats.js MOD
 				stats += "<span id='stat-ticks' class='stat'>" + pixelTicks+"</span>";
 				if ((typeof pixelMap).length === 9) { return; }
 				if (pixelMap[mousePos.x] !== undefined) {
 					var currentPixel = pixelMap[mousePos.x][mousePos.y];
 					if (typeof(currentPixel) !== "undefined" && currentPixel && currentPixel !== undefined && currentPixel.element) {
-						var displayName;
-						var displayElement = (elements[currentPixel?.element]?.name || currentPixel?.element);
-						if(currentPixel?.displayText) {
-							displayName = displayElement + ` (${currentPixel?.displayText})`
-						} else {
-							displayName = displayElement
+						var displayName = ((elements[currentPixel?.element]?.name || currentPixel?.element) ?? "undefined").toUpperCase();
+						if(currentPixel?.displayText) { //old way that might have predated vanilla hoverText but now I'm not sure... kept for compatibility just in case
+							displayName += ` (${currentPixel?.displayText})`
 						};
 						stats += "<span id='stat-element' class='stat'>Elem:"+displayName+"</span>";
 						stats += "<span id='stat-temperature' class='stat'>Temp:"+formatTemp(currentPixel.temp)+"</span>";
@@ -13096,6 +13162,15 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						}
 						if (currentPixel.burning) {
 							stats += "<span id='stat-burning' class='stat'>Burning</span>";
+						}
+						if (elements[currentPixel.element].hoverStat) {
+							stats += "<span id='stat-hover' class='stat'>"+elements[currentPixel.element].hoverStat(currentPixel)+"</span>";
+						}
+						else if (currentPixel.clone) {
+							stats += "<span id='stat-clone' class='stat'>"+currentPixel.clone.toUpperCase()+"</span>";
+						}
+						else if (currentPixel.con && currentPixel.con.element) {
+							stats += "<span id='stat-clone' class='stat'>"+currentPixel.con.element.toUpperCase()+"</span>";
 						}
 					}
 				}
@@ -28394,7 +28469,7 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 						argPixelSize = parseFloat(argPixelSize);
 						if(isNaN(argPixelSize)) {
 							alert("Error: size was NaN");
-							console.error("setpixelsize: supplied pixel size was NaN");
+							console.error("pixelsize: supplied pixel size was NaN");
 							return false;
 						};
 					};
@@ -28402,10 +28477,12 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 					if(typeof(argPixelSize) === "number" && argPixelSize !== null && !isNaN(argPixelSize)) {
 						if(argPixelSize <= 0) {
 							alert("Pixel size must be greater than 0");
-							console.error("setpixelsize: supplied pixel size was zero or negative");
+							console.error("pixelsize: supplied pixel size was zero or negative");
 							return false;
 						} else {
-							pixelSize = argPixelSize;
+							document.querySelector('span[setting="pixelsize"]').querySelector("select").selectedIndex = pixelSizeSettingDropdownOtherOptionIndex;
+							settings.pixelsize = argPixelSize;
+							resizeCanvas(ctx.canvas.height,ctx.canvas.width,settings.pixelsize,false)
 						};
 					} else {
 						alert(pixelSize);
@@ -35996,6 +36073,12 @@ Make sure to save your command in a file if you want to add this preset again.`
 
 	//AUTOGENERATED CONTENT ##
 
+		//Required secondary function
+		
+		function canvasfooterTemplate() { //CURSED AF
+			return `<small><a href="https://sandboxels.r74n.com/changelog" id="changelogButton" target="_blank">Changelog<span style="color:red">(NEW)</span></a> • <a href="https://sandboxels.R74n.com/feedback" target="_blank" style="color:lime;">Feedback</a> • <a href="https://sandboxels.wiki.gg/" target="_blank" id="wikiButton" title="Official Sandboxels Wiki - wiki.gg" style="color:white;">Wiki</a> • <a id="moreSocial" href="https://www.youtube.com/@R74n/shorts" rel="me" target="_blank"><span style="color:#FFFFFF">You</span><span style="background-color:#FF0000;color:#FFFFFF">Tube</span></a> • <a href="https://discord.gg/ejUc6YPQuS" target="_blank" style="color:#2f60ff;">Discord</a><span id="install-button" style="display: inline-block;">&nbsp;• <a onclick="deferredPrompt.prompt(); return false" href="#" style="text-shadow: 0px 2px 10px #ff00ff; cursor:pointer">Install Offline</a></span><!--<br><br><a style="color:lime" target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSf8pVMSdC6oSnBSaTpzjPQa8Ef-vxG_eXL99UITnMSQtJFTJA/viewform?usp=sf_link">FILL OUT THE CENSUS<span style="color:red">(NEW)</span></a>--></small><small><p>v${currentversion} • ${elementCount} elements, with <span id="hiddenCount">${hiddenCount}</span> hidden.</p><p>©2021-${new Date().getFullYear()}. <a href="https://sandboxels.R74n.com/license.txt" rel="license" target="_blank">All Rights Reserved</a>. <a style="color:#00ffff" rel="author" href="https://r74n.com">R74n</a></p></small>`
+		};
+		
 		//urlParams reads
 
 			//Bombs
@@ -37958,7 +38041,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 								elementCount++; //increment for new bomb element
 								createElementButton(bombName);
 								elements[bombName].id = nextid++;
-								document.getElementById("extraInfo").innerHTML = "<small><p>There are " + elementCount + " elements, including " + hiddenCount + " hidden ones.</p><p>©2021-" + new Date().getFullYear() + ". All Rights Reserved. <a href='https://r74n.com'>R74n</a></p></small>"; //update extra info counts (and the copyright year, due to the method used)
+								document.getElementById("extraInfo").innerHTML = canvasfooterTemplate()
 							};
 						};
 						returns.push(bombName);
@@ -38163,7 +38246,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 								elementCount++; //increment for new cloud element
 								createElementButton(cloudName);
 								elements[cloudName].id = nextid++;
-								document.getElementById("extraInfo").innerHTML = "<small><p>There are " + elementCount + " elements, including " + hiddenCount + " hidden ones.</p><p>©2021-" + new Date().getFullYear() + ". All Rights Reserved. <a href='https://r74n.com'>R74n</a></p></small>"; //update extra info counts (and the copyright year, due to the method used)
+								document.getElementById("extraInfo").innerHTML = canvasfooterTemplate()
 							};
 							returns.push(cloudName);
 						};
@@ -38390,7 +38473,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 							elements[bodyName].id = nextid++; //repeat with body and head
 							elements[headName].id = nextid++;
 							headBodyObject[headName] = bodyName;
-							document.getElementById("extraInfo").innerHTML = "<small><p>There are " + elementCount + " elements, including " + hiddenCount + " hidden ones.</p><p>©2021-" + new Date().getFullYear() + ". All Rights Reserved. <a href='https://r74n.com'>R74n</a></p></small>"; //update extra info counts (and the copyright year, due to the method used)
+							document.getElementById("extraInfo").innerHTML = canvasfooterTemplate()
 						};
 						if(creeperIncludeRandom) {
 							randomExcl ? elements[placerName].excludeRandom = true : elements[placerName].excludeRandom = false;
@@ -38589,7 +38672,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 									createElementButton(fairyName);
 								};
 								elements[fairyName].id = nextid++;
-								document.getElementById("extraInfo").innerHTML = "<small><p>There are " + elementCount + " elements, including " + hiddenCount + " hidden ones.</p><p>©2021-" + new Date().getFullYear() + ". All Rights Reserved. <a href='https://r74n.com'>R74n</a></p></small>"; //update extra info counts (and the copyright year, due to the method used)
+								document.getElementById("extraInfo").innerHTML = canvasfooterTemplate()
 							};
 						};
 						returns.push(fairyName);
@@ -38758,7 +38841,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 								createElementButton(spoutName);
 							};
 							elements[spoutName].id = nextid++;
-							document.getElementById("extraInfo").innerHTML = "<small><p>There are " + elementCount + " elements, including " + hiddenCount + " hidden ones.</p><p>©2021-" + new Date().getFullYear() + ". All Rights Reserved. <a href='https://r74n.com'>R74n</a></p></small>"; //update extra info counts (and the copyright year, due to the method used)
+							document.getElementById("extraInfo").innerHTML = canvasfooterTemplate()
 						};
 
 						eLists.SPOUT.push(spoutName);
@@ -40142,7 +40225,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 							createElementButton(singularityName);
 						};
 						elements[singularityName].id = nextid++;
-						document.getElementById("extraInfo").innerHTML = "<small><p>There are " + elementCount + " elements, including " + hiddenCount + " hidden ones.</p><p>©2021-" + new Date().getFullYear() + ". All Rights Reserved. <a href='https://r74n.com'>R74n</a></p></small>"; //update extra info counts (and the copyright year, due to the method used)
+						document.getElementById("extraInfo").innerHTML = canvasfooterTemplate()
 					};
 				};
 				count++;
@@ -45948,128 +46031,135 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 
 	//SPECIFY CURRENT ELEMENT ON LOAD ##
 	
-	window.addEventListener("load",function() {
-		currentElement = urlParams.get("currentElement") ?? "sand";
-		if(!elementExists(currentElement)) {
-			currentElement = "sand"
-		}
-		var size = urlParams.get("mouseSize") ?? 5;
-		if(isNaN(size)) {
-			size = 5;
-		};
-		mouseSize = size
-	});
+		window.addEventListener("load",function() {
+			currentElement = urlParams.get("currentElement") ?? "sand";
+			if(!elementExists(currentElement)) {
+				currentElement = "sand"
+			}
+			var size = urlParams.get("mouseSize") ?? 5;
+			if(isNaN(size)) {
+				size = 5;
+			};
+			mouseSize = size
+		});
+	
+	//FIX ##
+	
+		//fsr it's pausing silently on load now so this should fix that by silently unpausing it on load
+		window.addEventListener("load",function() {
+			paused = false
+		});
 	
 	//MISCELLANEOUS CHANGES ##
 
-	eLists.PIPE = ['pipe', 'destroyable_pipe', 'e_pipe', 'destroyable_e_pipe', 'channel_pipe', 'destroyable_channel_pipe', 'bridge_pipe'];
+		eLists.PIPE = ['pipe', 'destroyable_pipe', 'e_pipe', 'destroyable_e_pipe', 'channel_pipe', 'destroyable_channel_pipe', 'bridge_pipe'];
 
-	elements.pipe_stage_shifter = {
-		tool: function(pixel) {
-			if(!(eLists.PIPE.includes(pixel.element))) { return false };
-			if(typeof(pixel.stage) == "undefined" || !(pixel.stage) || pixel.stage < 2) { return false };
-			switch (pixel.stage) {
-				case 2: pixel.stage = 3; break;
-				case 3: pixel.stage = 4; break;
-				case 4: pixel.stage = 2; break;
-				default: pixel.stage = (((Math.max(2,Math.floor(pixel.stage)) - 2) % 3) + 2);
-			};
-			switch (pixel.stage) {
-				case 2: newColor = "#003600"; break;
-				case 3: newColor = "#360000"; break;
-				case 4: newColor = "#000036"; break;
-			};
-			pixel.color = pixelColorPick(pixel,newColor);
-		},
-		category: "tools",
-		color: ["#003600","#360000","#000036"], 
-		density: elements.steel.density,
-		hardness: elements.steel.hardness,
-		tempHigh: elements.steel.tempHigh,
-		stateHigh: "molten_steel",
-		state: "solid",
-		behavior: behaviors.POWDER
-	};
-
-	var notActuallyMovable = ["pipe","e_pipe","steel","vivite"];
-
-	runAfterLoad(function() {
-		for(var i = 0; i < notActuallyMovable.length; i++) {
-			var name = notActuallyMovable[i];
-			Object.defineProperty(elements[name], "movable", {
-				value: false,
-				writable: false //**** you, you're not changing it to true.
-			});		
-		}
-	});
-
-	elements.unknown = {
-		color: "#FFFFFF",
-		behavior: behaviors.WALL,
-		maxColorOffset: 0
-	};
-	
-	
-	runAfterLoad(function() {
-		//Emergency bug fix
-		elemfillerVar = null;
-		elements.element_filler = {
-			category: "special",
-			color: elements.filler.color,
-			state: "solid",
-			movable: "false",
-			onSelect: function() {
-				var answer6 = prompt("Please input the desired element of this filler. It will not work if you do multiple filter types while paused.",(elemfillerVar||undefined));
-				if (!answer6) { return }
-				elemfillerVar = answer6;
-			},
-			excludeRandom: true,
-			tick: function(pixel){
-				if(!(elementExists(elemfillerVar))) {
-					deletePixel(pixel.x,pixel.y);
-					return
+		elements.pipe_stage_shifter = {
+			tool: function(pixel) {
+				if(!(eLists.PIPE.includes(pixel.element))) { return false };
+				if(typeof(pixel.stage) == "undefined" || !(pixel.stage) || pixel.stage < 2) { return false };
+				switch (pixel.stage) {
+					case 2: pixel.stage = 3; break;
+					case 3: pixel.stage = 4; break;
+					case 4: pixel.stage = 2; break;
+					default: pixel.stage = (((Math.max(2,Math.floor(pixel.stage)) - 2) % 3) + 2);
 				};
-				var neighbors = 0;
-				if(!pixel.changeElem){
-					pixel.changeElem = elemfillerVar;
-				}
-				for (var i = 0; i < squareCoords.length; i++) {
-					var coord = squareCoords[i];
-					var x = pixel.x+coord[0];
-					var y = pixel.y+coord[1];
-					if (!isEmpty(x,y, true)) {
-						neighbors = neighbors + 1;
-					} else if (isEmpty(x, y)){
-						createPixel("element_filler", x, y)
-						pixelMap[x][y].changeElem = pixel.changeElem;
-					} else (
+				switch (pixel.stage) {
+					case 2: newColor = "#003600"; break;
+					case 3: newColor = "#360000"; break;
+					case 4: newColor = "#000036"; break;
+				};
+				pixel.color = pixelColorPick(pixel,newColor);
+			},
+			category: "tools",
+			color: ["#003600","#360000","#000036"], 
+			density: elements.steel.density,
+			hardness: elements.steel.hardness,
+			tempHigh: elements.steel.tempHigh,
+			stateHigh: "molten_steel",
+			state: "solid",
+			behavior: behaviors.POWDER
+		};
+
+		var notActuallyMovable = ["pipe","e_pipe","steel","vivite"];
+
+		runAfterLoad(function() {
+			for(var i = 0; i < notActuallyMovable.length; i++) {
+				var name = notActuallyMovable[i];
+				Object.defineProperty(elements[name], "movable", {
+					value: false,
+					writable: false //**** you, you're not changing it to true.
+				});		
+			}
+		});
+
+		elements.unknown = {
+			color: "#FFFFFF",
+			behavior: behaviors.WALL,
+			maxColorOffset: 0
+		};
+		
+		
+		runAfterLoad(function() {
+			//Emergency bug fix
+			elemfillerVar = null;
+			elements.element_filler = {
+				category: "special",
+				color: elements.filler.color,
+				state: "solid",
+				movable: "false",
+				onSelect: function() {
+					var answer6 = prompt("Please input the desired element of this filler. It will not work if you do multiple filter types while paused.",(elemfillerVar||undefined));
+					if (!answer6) { return }
+					elemfillerVar = answer6;
+				},
+				excludeRandom: true,
+				tick: function(pixel){
+					if(!(elementExists(elemfillerVar))) {
+						deletePixel(pixel.x,pixel.y);
+						return
+					};
+					var neighbors = 0;
+					if(!pixel.changeElem){
+						pixel.changeElem = elemfillerVar;
+					}
+					for (var i = 0; i < squareCoords.length; i++) {
+						var coord = squareCoords[i];
+						var x = pixel.x+coord[0];
+						var y = pixel.y+coord[1];
+						if (!isEmpty(x,y, true)) {
+							neighbors = neighbors + 1;
+						} else if (isEmpty(x, y)){
+							createPixel("element_filler", x, y)
+							pixelMap[x][y].changeElem = pixel.changeElem;
+						} else (
+							changePixel(pixel, pixel.changeElem)
+						)
+					}
+					if (neighbors >= 8){
 						changePixel(pixel, pixel.changeElem)
-					)
-				}
-				if (neighbors >= 8){
-					changePixel(pixel, pixel.changeElem)
+					}
 				}
 			}
-		}
 
-		if(elementExists("ohio")) {
-			elements.ohio.excludeRandom = true
-		};
-		if(elementExists("rainbow_bomb")) {
-			elements.rainbow_bomb.excludeRandom = true
-		};
-		if(elementExists("fart")) {
-			elements.fart.excludeRandom = true
-		};
-		if(elementExists("dark_energy")) {
-			elements.dark_energy.excludeRandom = true
-		};
-		if(elementExists("rainbow_flash")) {
-			elements.rainbow_flash.excludeRandom = true;
-			delete elements.rainbow_flash.reactions.fire
-		};
-	})
-
+			if(elementExists("ohio")) {
+				elements.ohio.excludeRandom = true
+			};
+			if(elementExists("rainbow_bomb")) {
+				elements.rainbow_bomb.excludeRandom = true
+			};
+			if(elementExists("fart")) {
+				elements.fart.excludeRandom = true
+			};
+			if(elementExists("dark_energy")) {
+				elements.dark_energy.excludeRandom = true
+			};
+			if(elementExists("rainbow_flash")) {
+				elements.rainbow_flash.excludeRandom = true;
+				delete elements.rainbow_flash.reactions.fire
+			};
+		})
+		
 	//END ##
 } catch (error) {
 	alert(`Load failed (try reloading).\nThis is likely a sporadic failure caused by inconsistencies in how mods are loaded, and will likely fix itself in a refresh or two. If it persists, then it's an issue.\nError: ${error.stack}`);
