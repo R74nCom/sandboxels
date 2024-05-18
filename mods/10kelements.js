@@ -16,6 +16,7 @@ elements.change_count = {
     if (isNaN(parseInt(cans))){alert("Apparently your input isnt even a number. Try again. Element count will remain unchanged."); return}
     settings.randomcount = parseInt(cans)
     settings.skineasteregg = false;
+    settings.sandeasteregg = false;
     saveSettings()
   }, 
   category: "random"
