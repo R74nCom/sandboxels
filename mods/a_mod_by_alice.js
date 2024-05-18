@@ -1808,6 +1808,60 @@ try {
 				return returnPixel ? newPixel : true
 			};
 
+			clonedPixel = null;
+
+			elements.clone_painter_picker = {
+				color: "#ffffff",
+				tool: function(pixel) {
+					var newPixel = structuredClone ? structuredClone(pixel) : JSON.parse(JSON.stringify(pixel));
+					delete newPixel.x;
+					delete newPixel.y;
+					clonedPixel = newPixel;
+					logMessage(`Selected the pixel of ${pixel.element} from (${pixel.x},${pixel.y})`);
+					selectElement("clone_painter")
+				},
+				tick: function(pixel) {
+					if(clonedPixel) {
+						adjacentCoords.forEach(function(offsetPair) {
+							var finalCoords = [offsetPair[0] + pixel.x,offsetPair[1] + pixel.y];
+							clonePixel(clonedPixel,...finalCoords)
+						});
+					}
+				},
+				onSelect: function() {
+					if(!clonedPixel) {
+						logMessage("Select the pixel you want to duplicate");
+					}
+				},
+				maxSize: 1,
+				category: "special",
+				state: "solid",
+				density: 150000,
+				desc: "This selects the pixel that the clone_painter element will duplicate."
+			};
+
+			elements.clone_painter = {
+				color: "#ffffff",
+				tick: function(pixel) {
+					var x = pixel.x; //they need to be used after the pixel is removed
+					var y = pixel.y;
+					deletePixel(x,y);
+					if(clonedPixel) {
+						clonePixel(clonedPixel,x,y)
+					};
+					return
+				},
+				category: "tools",
+				density: 150000,
+				onSelect: function() {
+					if(!clonedPixel) {
+						logMessage("Please select a pixel to clone using the clone painter picker");
+						selectElement("clone_painter_picker")
+					}
+				},
+				desc: `This places (or due to how elements work, changes itself into) duplicates of a previously selected pixel.<br/><br/><u style="color: #ff00ff;" onclick="selectElement('clone_painter_picker')">Click here</u> to select the clone painter picker to choose which pixel to clone`
+			};
+
 			function cloneArea(topLeftX,topLeftY,bottomRightX,bottomRightY,newTopLeftX,newTopLeftY,oldPixelHandling_PreClear1_OnlyReplace2_Ignore3=1,errorOnOutOfBounds=false) {
 				var results = {"created": 0, "replaced": 0, "deleted": 0, "skipped": 0, "skipped_OOB": 0};
 				for(var x = topLeftX; x <= bottomRightX; x++) {
@@ -3665,7 +3719,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			
 			gameLoaded = true
 		};
-
 
 	//MORE CONFIGURABLE EXPLOSIONS (explodeAtPlus) ##
 
@@ -27448,7 +27501,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					elements.color_smoke.tempHigh = 610;
 					elements.color_smoke.stateHigh = "rainbow_fire";
 
-					//I guess other worlds do still fall under the purview of TGJS
+					//I guess other worlds do still fall under the purview of TGJS (future alice: i forgot what tgjs stands for)
 					function nellsunColor(pixel) {
 						if (pixel.temp < 0) { pixel.color = pixelColorPick(pixel,"#615e5e"); var c=0 }
 						else if (pixel.temp < 300) { pixel.color = pixelColorPick(pixel,"#664962"); var c=0 }
@@ -45068,7 +45121,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		document.getElementsByTagName('head')[0].appendChild(style2);
 
 		runAfterButtons(function() {
-			//try to make the category buttons look nicer
+			//try to make the category buttons look smaller
 			var cc = document.getElementById("categoryControls");
 			var cccw = parseFloat(window.getComputedStyle(cc).width.match(/[\d\.]+/));
 			cc.style.width = (cccw * 2).toString() + "px";
