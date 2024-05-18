@@ -6421,6 +6421,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 								};
 								pixel[newElement]++;
 								deletePixel(checkPosX,checkPosY);
+								continue
 							};
 						};
 					};
@@ -37549,7 +37550,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					amalgamatedBombFire += ",lektre".repeat(6);
 					amalgamatedBombFire += ",flamer".repeat(3);
 					amalgamatedBombFire += ",flamebomb".repeat(3);
-					amalgamatedBombFire += ",toxin".repeat(3);
+					//amalgamatedBombFire += ",toxin".repeat(3);
 					amalgamatedBombFire += ",burning_unrealistically_flammable_gas".repeat(4);
 					amalgamatedBombFire += ",warp".repeat(6);
 					amalgamatedBombFire += ",bomb_3".repeat(3);
