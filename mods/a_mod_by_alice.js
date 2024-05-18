@@ -7504,7 +7504,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				"XX|XX|XX",
 				"XX|M1|XX",
 			],
-			tick: function() { //alias for velvet that is red
+			tick: function(pixel) { //alias for velvet that is red
 				pixel.element = "silk_velvet";
 			},
 			burnInto: "ash",
