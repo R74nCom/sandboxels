@@ -13,7 +13,7 @@ function reactPixels(pixel1,pixel2) {
 	if (r.tempMax !== undefined && pixel1.temp > r.tempMax) {
 		return false;
 	}
-	if (r.charged && !pixel.charge) {
+	if (r.charged && !pixel1.charge) {
 		return false;
 	}
 	if (r.chance !== undefined && Math.random() > r.chance) {
