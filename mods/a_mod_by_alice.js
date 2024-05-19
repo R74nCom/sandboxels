@@ -1647,16 +1647,18 @@ try {
 						changePixel(pixel1,elem1);
 					}
 				}
-				if (r.charge1) { pixel1.charge = r.charge1; }
-				if (r.temp1) { pixel1.temp += r.temp1; pixelTempCheck(pixel1); }
-				if (r.color1) { // if it's a list, use a random color from the list, else use the color1 attribute
-					pixel1.color = pixelColorPick(pixel1, Array.isArray(r.color1) ? r.color1[Math.floor(Math.random() * r.color1.length)] : r.color1);
-				}
-				if (r.attr1) { // add each attribute to pixel1
-					for (var key in r.attr1) {
-						pixel1[key] = r.attr1[key];
+				if(pixel1) {
+					if (r.charge1) { pixel1.charge = r.charge1; }
+					if (r.temp1) { pixel1.temp += r.temp1; pixelTempCheck(pixel1); }
+					if (r.color1) { // if it's a list, use a random color from the list, else use the color1 attribute
+						pixel1.color = pixelColorPick(pixel1, Array.isArray(r.color1) ? r.color1[Math.floor(Math.random() * r.color1.length)] : r.color1);
 					}
-				}
+					if (r.attr1) { // add each attribute to pixel1
+						for (var key in r.attr1) {
+							pixel1[key] = r.attr1[key];
+						}
+					}
+				};
 				if (r.elem2 !== undefined) {
 					// if r.elem2 is an array, set elem2 to a random element from the array, otherwise set it to r.elem2
 					if (Array.isArray(r.elem2)) {
@@ -1670,17 +1672,21 @@ try {
 						changePixel(pixel2,elem2);
 					}
 				}
-				if (r.charge2) { pixel2.charge = r.charge2; }
-				if (r.temp2) { pixel2.temp += r.temp2; pixelTempCheck(pixel2); }
-				if (r.color2) { // if it's a list, use a random color from the list, else use the color2 attribute
-					pixel2.color = pixelColorPick(pixel2, Array.isArray(r.color2) ? r.color2[Math.floor(Math.random() * r.color2.length)] : r.color2);
-				}
-				if (r.attr2) { // add each attribute to pixel2
-					for (var key in r.attr2) {
-						pixel2[key] = r.attr2[key];
+				if(pixel2) {
+					if (r.charge2) { pixel2.charge = r.charge2; }
+					if (r.temp2) { pixel2.temp += r.temp2; pixelTempCheck(pixel2); }
+					if (r.color2) { // if it's a list, use a random color from the list, else use the color2 attribute
+						pixel2.color = pixelColorPick(pixel2, Array.isArray(r.color2) ? r.color2[Math.floor(Math.random() * r.color2.length)] : r.color2);
 					}
+					if (r.attr2) { // add each attribute to pixel2
+						for (var key in r.attr2) {
+							pixel2[key] = r.attr2[key];
+						}
+					}
+				};
+				if(pixel1 && pixel2) {
+					if (r.func) { r.func(pixel1,pixel2); }
 				}
-				if (r.func) { r.func(pixel1,pixel2); }
 				return r.elem1!==undefined || r.elem2!==undefined;
 			};
 
@@ -1953,6 +1959,34 @@ try {
 				return neighbors
 			};
 
+			function getVonNeumannNeighbors(pixel) {
+				var neighbors = [];
+				var x = pixel.x;
+				var y = pixel.y;
+				for(var i = 0; i < adjacentCoords.length; i++) {
+					var finalX = pixel.x + adjacentCoords[i][0];
+					var finalY = pixel.y + adjacentCoords[i][1];
+					if(!isEmpty(finalX,finalY,true)) {
+						neighbors.push(pixelMap[finalX][finalY])
+					};
+				};
+				return neighbors
+			};
+
+			function getMooreNeighbors(pixel) {
+				var neighbors = [];
+				var x = pixel.x;
+				var y = pixel.y;
+				for(var i = 0; i < mooreDonutCoords.length; i++) {
+					var finalX = pixel.x + mooreDonutCoords[i][0];
+					var finalY = pixel.y + mooreDonutCoords[i][1];
+					if(!isEmpty(finalX,finalY,true)) {
+						neighbors.push(pixelMap[finalX][finalY])
+					};
+				};
+				return neighbors
+			};
+
 			function breakCircle(x,y,radius,respectHardness=false,changeTemp=false,defaultBreakIntoDust=false) {
 				var coords = getCirclePixels(x,y,radius);
 				coords.forEach(pixel => respectHardness ? tryBreak(pixel,changeTemp,defaultBreakIntoDust) : breakPixel(pixel,changeTemp,defaultBreakIntoDust))
@@ -2135,6 +2169,12 @@ try {
 				};
 				currentPixels = currPix;
 			}; //Take each item from pixelMap into currentPixels
+			
+			afterEveryTick(function() {
+				if(typeof(rebuildCurrentPixels) !== "undefined") {
+					rebuildCurrentPixels()
+				}
+			}); //nuclear option: rebuild current pixels every tick (this is kind of cursed but desyncs are bad)
 
 			function removePixelsFromPixelmapThatAreNotInCurrentpixels() {
 				pixelMap = pixelMap.map(col => col.map(function(pixel) {
@@ -3911,20 +3951,23 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					changePixel(pixel1,elem1,r.changeTemp1 ?? r.changeTemp ?? true);
 				}
 			}
-			if (r.charge1) { pixel1.charge = r.charge1; }
-			if (r.temp1) { pixel1.temp += r.temp1; pixelTempCheck(pixel1); }
-			if (r.color1) { // if it's a list, use a random color from the list, else use the color1 attribute
-				var color1 = r.color1;
-				while(Array.isArray(color1)) {
-					color1 = randomChoice(color1)
-				};
-				pixel1.color = pixelColorPick(pixel1, color1);
-			}
-			if (r.attr1) { // add each attribute to pixel1
-				for (var key in r.attr1) {
-					pixel1[key] = r.attr1[key];
+			if(pixel1) {
+				if (r.charge1) { pixel1.charge = r.charge1; }
+				if (r.temp1) { pixel1.temp += r.temp1; pixelTempCheck(pixel1); }
+				if (r.color1) { // if it's a list, use a random color from the list, else use the color1 attribute
+					var color1 = r.color1;
+					while(Array.isArray(color1)) {
+						color1 = randomChoice(color1)
+					};
+					pixel1.color = pixelColorPick(pixel1, color1);
+				}
+				if (r.attr1) { // add each attribute to pixel1
+					for (var key in r.attr1) {
+						pixel1[key] = r.attr1[key];
+					}
 				}
 			}
+			
 			if (r.elem2 !== undefined) {
 				var elem2 = r.elem2;
 				// if r.elem2 is an array, set elem2 to a random element from the array, otherwise set it to r.elem1
@@ -3939,21 +3982,25 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					changePixel(pixel2,elem2,r.changeTemp2 ?? r.changeTemp ?? true);
 				}
 			}
-			if (r.charge2) { pixel2.charge = r.charge2; }
-			if (r.temp2) { pixel2.temp += r.temp2; pixelTempCheck(pixel2); }
-			if (r.color2) { // if it's a list, use a random color from the list, else use the color2 attribute
-				var color2 = r.color2;
-				while(Array.isArray(color2)) {
-					color2 = randomChoice(color2)
-				};
-				pixel2.color = pixelColorPick(pixel2, color2);
-			}
-			if (r.attr2) { // add each attribute to pixel2
-				for (var key in r.attr2) {
-					pixel2[key] = r.attr2[key];
+			if(pixel2) {
+				if (r.charge2) { pixel2.charge = r.charge2; }
+				if (r.temp2) { pixel2.temp += r.temp2; pixelTempCheck(pixel2); }
+				if (r.color2) { // if it's a list, use a random color from the list, else use the color2 attribute
+					var color2 = r.color2;
+					while(Array.isArray(color2)) {
+						color2 = randomChoice(color2)
+					};
+					pixel2.color = pixelColorPick(pixel2, color2);
+				}
+				if (r.attr2) { // add each attribute to pixel2
+					for (var key in r.attr2) {
+						pixel2[key] = r.attr2[key];
+					}
 				}
 			}
-			if (r.func) { r.func(pixel1,pixel2); }
+			if(pixel1 && pixel2) {
+				if (r.func) { r.func(pixel1,pixel2); }
+			}
 			return r.elem1!==undefined || r.elem2!==undefined;
 		}
 
@@ -5898,7 +5945,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				showSettingsButtonAutoUpdateAppendFunction()
 			};
 
-			console.log(everyTick(function() {
+			everyTick(function() {
 				if(paused) { return };
 				for(var propName in specialProperties) {
 					//thanks, I hate not being able to pass arguments to filter functions
@@ -5913,7 +5960,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						specialProperties[propName]?.specialFunction?.(propPixel);
 					};
 				}
-			}),"Property handler tick callback set")
+			})
 		});
 
 	//FUNCTION EXECUTION WHEN A PIXEL TRIES TO MOVE INTO ANOTHER (onTryMoveInto) ##
@@ -14863,8 +14910,21 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					state: "solid",
 					category: "solids",
 					density: 50,
+					breakInto: ["packing_peanuts","polystyrene","foam","foam"],
+					cutInto: "packing_peanuts",
 					tempHigh: 160, //reaction grace period
 					stateHigh: [null,null,null,"molten_polystyrene"],
+				};
+
+				elements.packing_peanuts = {
+					color: "#f1f1f1",
+					behavior: behaviors.POWDER,
+					state: "solid",
+					category: "solids",
+					breakInto: ["polystyrene","foam","foam"],
+					density: 40,
+					tempHigh: 160, //reaction grace period
+					stateHigh: [null,null,null,null,"molten_polystyrene"],
 				};
 
 			//Benzoyl peroxide
@@ -15097,6 +15157,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 
 				elements.lamp_oil.tempHigh = 170;
+				elements.lamp_oil.stateHigh = "lamp_oil_gas";
 				elements.lamp_oil.density = 810;
 				elements.lamp_oil.name = "kerosene";
 				elements.lamp_oil.forceAutoGen = true;
@@ -15106,6 +15167,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					burn: 100,
 					density: 4.5,
 					tick: elements.lamp_oil.tick,
+					tempLow: 170,
+					stateLow: "lamp_oil",
 					burnInto: "explosion,smoke,smoke,fire,fire,fire,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(",")
 				};
 
@@ -15119,7 +15182,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						}
 					},
 					reactions: {
-						"styrofoam": { elem1: ["gasoline","gasoline","gasoline","gasoline","napalm"], elem2: null }, //the joke
+						"styrofoam": { elem1: ["gasoline","gasoline","gasoline","gasoline","napalm"], elem2: null }, //behold, the joke
+						"packing_peanuts": { elem1: ["gasoline","gasoline","gasoline","gasoline","napalm"], elem2: null },
 						"polystyrene": { elem1: "napalm", elem2: ["polystyrene","polystyrene",null] },
 						"molten_polystyrene": { elem1: "napalm", elem2: ["molten_polystyrene","molten_polystyrene",null] },
 						"glue": {elem2:null, chance:0.05},
@@ -15131,6 +15195,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					tempHigh: 70,
 					tempLow: -60,
 					burn: 20,
+					temp: 20,
 					burnTime: 500,
 					burnInto: "fire,fire,fire,fire,ash,ash,carbon_monoxide,carbon_monoxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(","),
 					viscosity: 7.04,
@@ -15347,6 +15412,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					}
 				};
 
+				elements.oil.temp = 20;
+
 				elements.oil.tick = function(pixel) {
 					if(!pixel.role) {
 						var value = Math.random()
@@ -15369,19 +15436,19 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						};
 					};
 
-					if(pixel.temp > 30 && pixel.role == "lpg") { //https://www.crownoil.co.uk/guides/crude-oil-fractional-distillation/: Butane and propane and other petroleum gases are formed right at the top of the distillation tower, where it is coolest, a very mild 25°C: the temperature range that forms these gases is between 25°C and 50°C. These gases are the lightest products formed in crude oil distillation and are flammable gases.
+					if(pixel.temp > 35 && pixel.role == "lpg" && Math.random() < ((pixel.temp - 34) / 210)) { //https://www.crownoil.co.uk/guides/crude-oil-fractional-distillation/: Butane and propane and other petroleum gases are formed right at the top of the distillation tower, where it is coolest, a very mild 25°C: the temperature range that forms these gases is between 25°C and 50°C. These gases are the lightest products formed in crude oil distillation and are flammable gases.
 						changePixel(pixel,"light_petroleum_fuel_gas")
-					} else if(pixel.temp > 70 && pixel.role == "gasoline") { //https://www.crownoil.co.uk/guides/crude-oil-fractional-distillation/: Butane and propane and other petroleum gases are formed right at the top of the distillation tower, where it is coolest, a very mild 25°C: the temperature range that forms these gases is between 25°C and 50°C. These gases are the lightest products formed in crude oil distillation and are flammable gases.
+					} else if(pixel.temp > 70 && pixel.role == "gasoline" && Math.random() < ((pixel.temp - 69) / 420)) { //The numbers in the equation are mathematical coincidence.
 						changePixel(pixel,"gasoline_gas")
-					} else if(pixel.temp > 120 && pixel.role == "naphtha") { //https://www.crownoil.co.uk/guides/crude-oil-fractional-distillation/: Butane and propane and other petroleum gases are formed right at the top of the distillation tower, where it is coolest, a very mild 25°C: the temperature range that forms these gases is between 25°C and 50°C. These gases are the lightest products formed in crude oil distillation and are flammable gases.
+					} else if(pixel.temp > 120 && pixel.role == "naphtha" && Math.random() < ((pixel.temp - 119) / 720)) { 
 						changePixel(pixel,"naphtha_gas")
-					} else if(pixel.temp > 170 && pixel.role == "kerosene") { //https://www.crownoil.co.uk/guides/crude-oil-fractional-distillation/: Butane and propane and other petroleum gases are formed right at the top of the distillation tower, where it is coolest, a very mild 25°C: the temperature range that forms these gases is between 25°C and 50°C. These gases are the lightest products formed in crude oil distillation and are flammable gases.
+					} else if(pixel.temp > 170 && pixel.role == "kerosene" && Math.random() < ((pixel.temp - 169) / 770)) { 
 						changePixel(pixel,"lamp_oil_gas")
-					} else if(pixel.temp > 270 && pixel.role == "diesel") { //https://www.crownoil.co.uk/guides/crude-oil-fractional-distillation/: Butane and propane and other petroleum gases are formed right at the top of the distillation tower, where it is coolest, a very mild 25°C: the temperature range that forms these gases is between 25°C and 50°C. These gases are the lightest products formed in crude oil distillation and are flammable gases.
+					} else if(pixel.temp > 270 && pixel.role == "diesel" && Math.random() < ((pixel.temp - 269) / 870)) {
 						changePixel(pixel,"diesel_gas")
-					} else if(pixel.temp > 300 && pixel.role == "heavy_fuel_oil") { //https://www.crownoil.co.uk/guides/crude-oil-fractional-distillation/: Butane and propane and other petroleum gases are formed right at the top of the distillation tower, where it is coolest, a very mild 25°C: the temperature range that forms these gases is between 25°C and 50°C. These gases are the lightest products formed in crude oil distillation and are flammable gases.
+					} else if(pixel.temp > 300 && pixel.role == "heavy_fuel_oil" && Math.random() < ((pixel.temp - 299) / 1200)) { 
 						changePixel(pixel,"heavy_fuel_oil_gas")
-					} else if(pixel.temp > 350 && pixel.role == "lubricant") { //https://www.crownoil.co.uk/guides/crude-oil-fractional-distillation/: Butane and propane and other petroleum gases are formed right at the top of the distillation tower, where it is coolest, a very mild 25°C: the temperature range that forms these gases is between 25°C and 50°C. These gases are the lightest products formed in crude oil distillation and are flammable gases.
+					} else if(pixel.temp > 350 && pixel.role == "lubricant" && Math.random() < ((pixel.temp - 349) / 1350)) {
 						if(pixel.role == "lubricant") {
 							changePixel(pixel,"lubricating_oil_gas")
 						} else {
@@ -15517,13 +15584,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			stain: elements.spray_paint.stain,
 		};
 
-		temp = {
+		var _temporary = {
 			invisible_wall: "asdfg",
 			invisible_dye: 2,
 			invisible_dye_gas: false
 		};
 
-		for(var elemName in temp) {
+		for(var elemName in _temporary) {
 			elements[elemName].desc = "Note: Invisible dyes do not work (and are not supported) with gradient backgrouds";
 		};
 
@@ -18921,27 +18988,29 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					changePixel(pixel1,elem1);
 				}
 			}
-			if (r.charge1) { pixel1.charge = r.charge1; }
-			if (r.temp1) { pixel1.temp += r.temp1; pixelTempCheck(pixel1); }
-			if (r.color1) { // if it's a list, use a random color from the list, else use the color1 attribute
-				pixel1.color = pixelColorPick(pixel1, Array.isArray(r.color1) ? r.color1[Math.floor(Math.random() * r.color1.length)] : r.color1);
-			}
-			if (r.attr1) { // add each attribute to pixel1
-				for (var key in r.attr1) {
-					pixel1[key] = r.attr1[key];
+			if(pixel1) {
+				if (r.charge1) { pixel1.charge = r.charge1; }
+				if (r.temp1) { pixel1.temp += r.temp1; pixelTempCheck(pixel1); }
+				if (r.color1) { // if it's a list, use a random color from the list, else use the color1 attribute
+					pixel1.color = pixelColorPick(pixel1, Array.isArray(r.color1) ? r.color1[Math.floor(Math.random() * r.color1.length)] : r.color1);
 				}
-			}
-			if (r.charge2) { pixel2.charge = r.charge2; }
-			if (r.temp2) { pixel2.temp += r.temp2; pixelTempCheck(pixel2); }
-			if (r.color2) { // if it's a list, use a random color from the list, else use the color2 attribute
-				pixel2.color = pixelColorPick(pixel2, Array.isArray(r.color2) ? r.color2[Math.floor(Math.random() * r.color2.length)] : r.color2);
-			}
-			if (r.attr2) { // add each attribute to pixel2
-				for (var key in r.attr2) {
-					pixel2[key] = r.attr2[key];
+				if (r.attr1) { // add each attribute to pixel1
+					for (var key in r.attr1) {
+						pixel1[key] = r.attr1[key];
+					}
 				}
+				if (r.charge2) { pixel2.charge = r.charge2; }
+				if (r.temp2) { pixel2.temp += r.temp2; pixelTempCheck(pixel2); }
+				if (r.color2) { // if it's a list, use a random color from the list, else use the color2 attribute
+					pixel2.color = pixelColorPick(pixel2, Array.isArray(r.color2) ? r.color2[Math.floor(Math.random() * r.color2.length)] : r.color2);
+				}
+				if (r.attr2) { // add each attribute to pixel2
+					for (var key in r.attr2) {
+						pixel2[key] = r.attr2[key];
+					}
+				}
+				if (r.func) { r.func(pixel1,pixel2); }
 			}
-			if (r.func) { r.func(pixel1,pixel2); }
 			return r.elem1!==undefined;
 		};
 
@@ -20531,73 +20600,202 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		fakeDate = urlParams.get('fakeDate');
 		shortenedTest = (urlParams.get('shortenedTest') !== null);
 
+		//Current iteration copied from the updated version used in https://orbit-loona.github.io/index.html
+
+		//Colors may not be official for all groups, and even in groups with official colors, the exact color may vary.
+		//Sometimes hex codes are given and sometimes it's only generic color words.
+
+		//LOONA colors are official but exact shades vary
+		//Kep1er member colors are fan-made colors taken from https://www.reddit.com/r/kep1er/comments/qomf2x/giving_kep1er_member_colours_with_reasoning/
+			//Dayeon's color is directly from the sample, as hex code => rgb(188,188,226) doesn't match and is too similar to Yeseo
+		//BLACKPINK colors are taken from a random blackpink.fandom forum post, and probably made up but whatever
+		//Everglow, STAYC, IZ*ONE, and IVE colors are from Fandom
+		//TWICE colors are official but may vary; the specific shades were compiled at https://aminoapps.com/c/once/page/blog/twice-hex-codes-revamped/WJxj_DxnSXuRRgkoavejJjm7b7zokrnBRBb
+		//Dreamcatcher colors are from //https://www.reddit.com/r/dreamcatcher/comments/lxs6bv/member_colors/
+		//SNSD colors are from //https://colorcodedstuff.fandom.com/wiki/Girls%27_Generation
+		//NewJeans (tends to shuffle)
+		//(G)I-DLE colors are from kprofiles
+		//2NE1 colors are color-picked from https://aminoapps.com/c/2ne1/page/blog/2ne1s-microphone-infos-facts-meaning-and-etc/vDQj_bDfnu6P0MdQ0XWnKaB07xN4BG2mLG
+		//aespa colors are influenced by https://kprofiles.com/poll-which-colours-do-you-think-fits-each-aespa-member-personality/ but ultimately picked arbitrarily
+		//Apink colors color-picked (but altered) from microphones from https://twitter.com/LegendaryApink/status/1606153363606880256 and https://www.pinterest.com/pin/705587466610023284/ (https://i.pinimg.com/736x/70/dc/60/70dc602675f5bcd86f635b77a5d2e938.jpg)
+		//Billlie colors from kprofiles
+		//ALICE, APRIL, Cherry Bullet, Cignature, CLC, CSR, DIA, DreamNote, and fromis_9 colors taken from colorcodedlyrics because their color assignments seem to be consistent
+		//ALICE group color color-picked arbitrarily from the new header image: https://www.reddit.com/gallery/u0jeqq
+		//cignature group color color-picked arbitrarily from the fanclub name announcement image
+		//CSR group color arbitrarily color-picked from the subreddit icon
+		//fromis_9 group colors are fan-made: https://twitter.com/fromis_9pic/status/1478175338089705472/photo/1
+		//DreamNote colors are official: https://aminoapps.com/c/imedreamnoteofficial/page/blog/dreamnote-offical-colors/aVNW_ewVu0uaxWgV7V33Z6pmpXD7md0owwb
+		//tripleS colors are taken from the wiki and corrected by color-picking from Welcome To The Haus, but birthdays were compiled by infichandesu on tripleS Discord https://discord.com/channels/968385909730971668/990903693140434964/1231563006731882518
+
+		//1 Seoyeon, 2 Hyerin, 3 Jiwoo, 4 Chaeyeon, 5 Yooyeon, 6 Soomin, 7 Nakyoung, 8 Yubin, 9 Kaede, 10 Seo Dahyun, 11 Kotone, 12 Yeonji, 13 Nien, 14 Sohyun, 15 Xinyu, 16 Mayu, 17 Lynn, 18 Joobin, 19 Hayeon, 20 Shion, 21 Kim Chaewon, 22 Sullin, 23 Seoah, 24 Jiyeon
+		//Seoyeon: 2003, Hyerin: 2007, Jiwoo: 2005, Chaeyeon: 2004, Yooyeon: 2001, Soomin: 2007, Nakyoung: 2002, Yubin: 2005, Kaede: 2005, Seo Dahyun: 2003, Kotone: 2004, Yeonji: 2008, Nien: 2003, Sohyun: 2002, Xinyu: 2002, Mayu: 2002, Lynn: 2006, Joobin: 2009, Hayeon: 2007, Shion: 2006, Kim Chaewon: 2007, Sullin: 2006, Seoah: 2010, Jiyeon: 2004
+		//Yunah 2004, Park Minju 2004, Moka 2004, Wonhee 2007, Iroha 2008
+
 		idolData = {
-			"08-01": [
-				{member: "Seo Dahyun", color: "rgb(251,160,227)", group: "tripleS"},
-				{member: "Kwak Yeonji", color: "rgb(89,116,255)", group: "tripleS"},
-			],
-			"23-01": {member: "Isa", color: "rgb(0,0,0)", group: "STAYC"},
-			"01-02": {member: "Jihyo", color: "rgb(250,200,87)", group: "Twice"},
-			"03-02": [
-				{member: "Rei", color: "rgba(105,195,45)", group: "IVE"},
-				{member: "Gong Yubin", color: "rgb(255,227,226)", group: "tripleS"},
-			],
-			"09-02": {member: "Kim Yooyeon", color: "rgb(205,102,171)", group: "tripleS"},
-			"21-02": {member: "Leeseo", color: "rgb(255,240,1)", group: "IVE"},
-			"10-02": {member: "Kim Lip", color: "rgb(234,2,1)", group: "Loona"},
-			"02-03": {member: "Dayeon", color: "rgb", group: "Kep1er"},
-			"10-03": {member: "Kotone", color: "rgb(255,246,84)", group: "tripleS"},
-			"12-03": {member: "Hikaru", color:"rgb", group: "Kep1er"},
-			"13-03": {member: "Sumin", color: "rgb(255,192,203)", group: "STAYC"},
-			"24-03": {member: "Mina", color: "rgb(111,197,194)", group: "Twice"},
-			"12-04": {member: "Jeong Hyerin", color: "rgb(142,108,255)", group: "tripleS"},
-			"14-04": {member: "Yoon", color: "rgb(50,205,50)", group: "STAYC"},
-			"23-04": {member: "Chaeyoung", color: "rgb(255,23,68)", group: "Twice"},
-			"26-04": {member: "Chaehyun", color:"rgb", group: "Kep1er"},
-			"24-05": {member: "Yves", color: "rgb(125,0,30)", group: "Loona"},
-			"28-05": {member: "Dahyun", color: "rgb(255,255,255)", group: "Twice"},
-			"02-06": {member: "Nien", color: "rgb(255,149,64)", group: "tripleS"},
-			"04-06": {member: "Choerry", color: "rgb(92,44,146)", group: "Loona"},
-			"13-06": {member: "JinSoul", color: "rgb(20,36,176)", group: "Loona"},
-			"14-06": [
-				{member: "Seeun", color: "rgb(135,206,235)", group: "STAYC"},
-				{member: "Tzuyu", color: "rgb(2,119,189)", group: "Twice"}
-			],
-			"27-07": {member: "Huening Bahiyyih", color:"rgb", group: "Kep1er"},
-			"01-08": {member: "Sieun", color: "rgb(255,255,255)", group: "STAYC"},
-			"06-08": {member: "Yoon Seoyeon", color: "rgb(34,174,255)", group: "tripleS"},
-			"12-08": {member: "Choi Yujin", color:"rgb", group: "Kep1er"},
-			"18-08": {member: "HaSeul", color: "rgb(0,166,81)", group: "Loona"},
-			"22-08": {member: "Yeseo", color:"rgb", group: "Kep1er"},
-			"31-08": {member: "Wonyoung", color: "rgb(255,0,30)", group: "IVE"},//stay mad
-			"01-09": {member: "Yujin", color: "rgb(255,57,154)", group: "IVE"},
-			"22-09": {member: "Nayeon", color: "rgb(129,212,250)", group: "Twice"},
-			"24-09": {member: "Gaeul", color: "rgb(0,85,168)", group: "IVE"},
-			"03-10": {member: "Kim Soomin", color: "rgb(236,138,165)", group: "tripleS"},
-			"13-10": [
-				{member: "Kim Nakyoung", color: "rgb(101,153,164)", group: "tripleS"},
-				{member: "Park Sohyun", color: "rgb(19,34,182)", group: "tripleS"},
-			],
-			"19-10": {member: "HeeJin", color: "rgb(255,0,146)", group: "Loona"},
-			"20-10": {member: "Chuu", color: "rgb(246,144,126)", group: "Loona"},
-			"24-10": {member: "Lee Jiwoo", color: "rgb(255,249,36)", group: "tripleS"},
-			"01-11": {member: "Jeongyeon", color: "rgb(188,215,118)", group: "Twice"},
-			"09-11": {member: "Momo", color: "rgb(248,207,215)", group: "Twice"},
-			"11-11": {member: "YeoJin", color: "rgb(244,111,31)", group: "Loona"},
-			"12-11": {member: "Xiaoting", color:"rgb", group: "Kep1er"},
-			"13-11": {member: "Hyeju", color: "rgb(143,143,143)", group: "Loona"},
-			"15-11": {member: "HyunJin", color: "rgb(255,204,0)", group: "Loona"},
-			"19-11": {member: "Go Won", color: "rgb(48,195,156)", group: "Loona"},
-			"21-11": {member: "Liz", color: "rgb(0,195,245)", group: "IVE"},
-			"04-12": {member: "Kim Chaeyeon", color: "rgb(141,191,65)", group: "tripleS"},
-			"09-12": [
-				{member: "ViVi", color: "rgb(255,152,180)", group: "Loona"},
-				{member: "J", color: "rgb(255,0,0)", group: "STAYC"}
-			],
-			"16-12": {member: "Mashiro", color:"rgb", group: "Kep1er"},
-			"20-12": {member: "Kaede", color: "rgb(255,201,53)", group: "tripleS"},
-			"27-12": {member: "Youngeun", color:"rgb", group: "Kep1er"},
-			"29-12": {member: "Sana", color: "rgb(159,168,218)", group: "Twice"}
+			"01-01": { member: "Winter", color: "rgb(209,221,236)", group: "aespa"},
+			"03-01": { member: "Jisoo", color: "rgb(159,0,191)", group: "BlackPink" },
+			"05-01": { member: "Karin", color: "rgb(238,18,137)", group: "ALICE"},
+			"06-01": [ { member: "Shuhua", color: "rgb(255,255,153)", group: "(G)I-DLE"}, { member: "Chloe", color: "rgb(219,244,167)", group: "cignature" }, { member: "Eunbin", color: "rgb(255,215,0)", group: "CLC" } ],
+			"07-01": [ { member: "Yoohyeon", color: "rgb(31,237,21)", group: "Dreamcatcher"}, { member: "Saerom", color: "rgb(254,66,4)", group: "fromis_9" } ],
+			"08-01": [{ member: "Seo Dahyun", color: "rgb(255,154,214)", group: "tripleS" }, { member: "Yeonji", color: "rgb(89,116,255)", group: "tripleS" }],
+			"10-01": { member: "Haeyoon", color: "rgb(246,145,125)", group: "Cherry Bullet" },
+			"11-01": { member: "Lee Chaeyeon", color: "rgb(166,220,222)", group: "IZ*ONE"},
+			"13-01": [ {member: "Mia", color: "rgb(103,5,6)", group: "Everglow"}, { member: "Haram", color: "rgb(255,153,204)", group: "Billlie"} ],
+			"15-01": [{ member: "Suhyeon", color: "rgb(63,196,96)", group: "Billlie"}, { member: "Yunah", color: "rgb(255,207,112)", group: "ILLIT" }],
+			"16-01": [{ member: "Jennie", color: "rgb(204,108,169)", group: "BlackPink"}, { member: "Joobin", color: "rgb(183,245,76)", group: "tripleS" }],
+			"18-01": { member: "Minzy", color: "rgb(195,108,230)", group: "2NE1"},
+			"22-01": { member: "Lee Seoyeon", color: "rgb(0,83,133)", group: "fromis_9" },
+			"23-01": { member: "Isa", color: "rgb(0,0,0)", group: "STAYC"},
+			"26-01": { member: "Somyi", color: "rgb(199,56,164)", group: "DIA" },
+			"28-01": { member: "Sheon", color: "rgb(255,153,0)", group: "Billlie"},
+			"30-01": { member: "Haruna", color: "rgb(9,151,222)", group: "Billlie"},
+			"31-01": { member: "Miyeon", color: "rgb(0,0,0)", group: "(G)I-DLE"},
+			"01-02": { member: "Jihyo", color: "rgb(250,200,87)", group: "TWICE"},
+			"02-02": { member: "Do-A", color: "rgb(204,0,255)", group: "ALICE"},
+			"03-02": [ {member: "Gahyeon", color: "rgb(186,9,191)", group: "Dreamcatcher"}, {member: "Rei", color: "rgb(105,195,45)", group: "IVE"}, { member: "Yubin", color: "rgb(255,227,226)", group: "tripleS" } ],
+			"04-02": { member: "Iroha", color: "rgb(71,145,255)", group: "ILLIT" },
+			"05-02": [ { member: "Kim Minju", color: "rgb(255,255,255)", group: "IZ*ONE"}, { member: "Hyunjoo", color: "rgb(100,190,193)", group: "APRIL" } ],
+			"07-02": { member: "Sunn", color: "rgb(255,173,173)", group: "cignature" },
+			"09-02": { member: "Yooyeon", color: "rgb(219,12,116)", group: "tripleS" },
+			"10-02": [ {member: "Kim Lip", color: "rgb(234,2,1)", group: "LOONA"}, {member: "Sooyoung", color: "rgb(255,92,205)", group: "Girls' Generation"}, { member: "Son Naeun", color: "rgb(196,179,107)", group: "Apink" }, { member: "Irene", color: "rgb(255,251,0)", group: "Red Velvet"} ],
+			"11-02": { member: "Rose'", color: "rgb(0,94,255)", group: "BlackPink"},
+			"13-02": { member: "Jiyeon", color: "rgb(255,171,98)", group: "tripleS" },
+			"16-02": { member: "Siyoon", color: "rgb(255,255,0)", group: "Billlie"},
+			"21-02": [ { member: "Leeseo", color: "rgb(255,240,1)", group: "IVE"}, { member: "Wendy", color: "rgb(0,95,255)", group: "Red Velvet"} ],
+			"26-02": { member: "CL", color: "rgb(226,217,137)", group: "2NE1"},
+			"02-03": { member: "Dayeon", color: "rgb(100,150,235)", group: "Kep1er"},
+			"03-03": [ { member: "Chorong", color: "rgb(230,0,86)", group: "Apink" }, { member: "Bora", color: "rgb(122,205,233)", group: "Cherry Bullet" } ],
+			"04-03": { member: "Geumhee", color: "rgb(4,173,87)", group: "CSR" },
+			"05-03": [ { member: "Yuju", color: "rgb(134,4,148)", group: "Cherry Bullet" }, { member: "Yeri", color: "rgb(159,31,191)", group: "Red Velvet" } ],
+			"07-03": [ { member: "Dami", color: "rgb(255, 244, 15)", group: "Dreamcatcher"}, { member: "Eunjo", color: "rgb(86,255,89)", group: "DreamNote" } ],
+			"09-03": [ { member: "Taeyeon", color: "rgb(100,149,237)", group: "Girls' Generation"}, { member: "Soojin", color: "rgb(247,152,141)", group: "Girls' Generation"} ],
+			"10-03": [{ member: "HaBin", color: "rgb(86,255,204)", group: "DreamNote" }, { member: "Kotone", color: "rgb(253,224,0)", group: "tripleS" }],
+			"12-03": [ { member: "Hikaru", color: "rgb(251,234,140)", group: "Kep1er"}, { member: "Hwang Sihyeon", color: "rgb(4,182,243)", group: "CSR" } ],
+			"13-03": [ { member: "Bae Sumin", color: "rgb(255,192,203)", group: "STAYC"}, { member: "Chaerin", color: "rgb(93,52,195)", group: "Cherry Bullet" } ],
+			"19-03": { member: "Sakura", color: "rgb(241,210,231)", group: "IZ*ONE"},
+			"20-03": { member: "Park Jiwon", color: "rgb(134,171,17)", group: "fromis_9" },
+			"24-03": [ { member: "Mina", color: "rgb(111,197,194)", group: "TWICE"}, { member: "Bom", color: "rgb(118,212,174)", group: "2NE1"} ],
+			"26-03": [ { member: "Handong", color: "rgb(0,0,0)", group: "Dreamcatcher"}, { member: "Mirae", color: "rgb(185,74,214)", group: "Cherry Bullet" }, { member: "An Seoyeon", color: "rgb(246,98,15)", group: "CSR" } ],
+			"27-03": { member: "Lisa", color: "rgb(255,250,0)", group: "BlackPink"},
+			"29-03": { member: "Irene", color: "rgb(255,127,223)", group: "Red Velvet"},
+			"01-04": { member: "Jeewon", color: "rgb(0,153,148)", group: "cignature" },
+			"03-04": { member: "Shion", color: "rgb(255,66,138)", group: "tripleS" },
+			"10-04": { member: "Semi", color: "rgb(186,99,247)", group: "cignature" },
+			"11-04": [ { member: "Danielle", color: "rgb(0,238,0)", group: "NewJeans"}, { member: "Karina", color: "rgb(168,44,230)", group: "aespa"} ],
+			"12-04": [{ member: "Hyerin", color: "rgb(146,0,255)", group: "tripleS" }, { member: "Lynn", color: "rgb(172,98,183)", group: "tripleS" }],
+			"14-04": { member: "Yoon", color: "rgb(50,205,50)", group: "STAYC"},
+			"15-04": { member: "Namjoo", color: "rgb(203,108,176)", group: "Apink" },
+			"17-04": { member: "Jiheon", color: "rgb(249,234,77)", group: "fromis_9" },
+			"18-04": { member: "Jessica", color: "rgb(209,0,86)", group: "Girls' Generation"},
+			"21-04": { member: "Hyein", color: "rgb(31,95,255)", group: "NewJeans"},
+			"23-04": [ { member: "Son Chaeyoung", color: "rgb(232,25,51)", group: "TWICE"}, { member: "Yuna", color: "rgb(111,67,164)", group: "CSR" } ],
+			"24-04": { member: "YOUI", color: "rgb(255,86,86)", group: "DreamNote" },
+			"26-04": [ { member: "Chaehyun", color: "rgb(255,183,206)", group: "Kep1er"}, { member: "Remi", color: "rgb(179,249,107)", group: "Cherry Bullet" } ],
+			"28-04": { member: "Duna", color: "rgb(229,111,182)", group: "CSR" },
+			"02-05": { member: "Kim Chaewon", color: "rgb(199,163,224)", group: "tripleS" },
+			"05-05": { member: "Lee Naeun", color: "rgb(186,76,129)", group: "APRIL" },
+			"07-05": { member: "Minji", color: "rgb(255,248,31)", group: "NewJeans"},
+			"11-05": { member: "Park Minju", color: "rgb(186,69,69)", group: "ILLIT" },
+			"12-05": { member: "Mayu", color: "rgb(254,142,118)", group: "tripleS" },
+			"14-05": { member: "Lee Chaeyoung", color: "rgb(35,248,84)", group: "fromis_9" },
+			"15-05": [ {member: "Sunny", color: "rgb(107,142,35)", group: "Girls' Generation"}, {member: "Haerin", color: "rgb(255,255,255)", group: "NewJeans"} ],
+			"17-05": { member: "JiU", color: "rgb(255,255,255)", group: "Dreamcatcher"},
+			"18-05": { member: "Onda", color: "rgb(179,4,105)", group: "Everglow"},
+			"19-05": { member: "E:U", color: "rgb(107,86,163)", group: "Everglow"},
+			"22-05": { member: "Yang Yena", color: "rgb(255,178,79)", group: "APRIL" },
+			"24-05": { member: "Yves", color: "rgb(125,0,30)", group: "LOONA"},
+			"25-05": { member: "Xinyu", color: "rgb(213,19,19)", group: "tripleS" },
+			"26-05": { member: "Eunchae", color: "rgb(40,119,255)", group: "DIA" },
+			"28-05": { member: "Dahyun", color: "rgb(255,255,255)", group: "TWICE"},
+			"30-05": { member: "Yoona", color: "rgb(0,105,148)", group: "Girls' Generation"},
+			"01-06": { member: "Nagyung", color: "rgb(255,145,102)", group: "fromis_9" },
+			"02-06": { member: "Nien", color: "rgb(255,149,63)", group: "tripleS" },
+			"03-06": { member: "Seunghee", color: "rgb(250,55,137)", group: "DIA" },
+			"04-06": { member: "Choerry", color: "rgb(92,44,146)", group: "LOONA"},
+			"07-06": { member: "Jueun", color: "rgb(247,183,240)", group: "DIA" },
+			"11-06": { member: "Seoah", color: "rgb(207,243,255)", group: "tripleS" },
+			"13-06": { member: "JinSoul", color: "rgb(20,36,176)", group: "LOONA"},
+			"14-06": [ {member: "Seeun", color: "rgb(135,206,235)", group: "STAYC"}, {member: "Tzuyu", color: "rgb(1,108,186)", group: "TWICE"} ],
+			"16-06": { member: "Huihyeon", color: "rgb(103,78,167)", group: "DIA" },
+			"18-06": { member: "Nako", color: "rgb(183,211,233)", group: "IZ*ONE"},
+			"20-06": { member: "Seline", color: "rgb(247,99,215)", group: "cignature" },
+			"26-06": { member: "Wonhee", color: "rgb(198,255,217)", group: "ILLIT" },
+			"28-06": { member: "Seohyun", color: "rgb(251,206,177)", group: "Girls' Generation"},
+			"05-07": [ { member: "Hyewon", color: "rgb(219,112,108)", group: "IZ*ONE"}, { member: "Linlin", color: "rgb(191,27,43)", group: "Cherry Bullet" } ],
+			"07-07": { member: "Chaekyung", color: "rgb(255,183,197)", group: "APRIL" },
+			"13-07": { member: "Yebin", color: "rgb(211,0,0)", group: "DIA" },
+			"14-07": { member: "Chaesol", color: "rgb(100,207,255)", group: "cignature" },
+			"19-07": { member: "Oh Hayoung", color: "rgb(210,176,160)", group: "Apink" },
+			"21-07": { member: "Aisha", color: "rgb(0,0,0)", group: "Everglow"},
+			"23-07": { member: "Sua", color: "rgb(0,220,220)", group: "CSR" },
+			"27-07": { member: "Huening Bahiyyih", color: "rgb(255,177,109)", group: "Kep1er"},
+			"01-08": [ {member: "Sieun", color: "rgb(255,255,255)", group: "STAYC"}, {member: "Kim Chaewon", color: "rgb(206,229,213)", group: "IZ*ONE"}, {member: "Tiffany", color: "rgb(169,32,62)", group: "Girls' Generation"}, { member: "Dohee", color: "rgb(175,27,63)", group: "cignature" }, { member: "Hayeon", color: "rgb(83,217,190)", group: "tripleS" } ],
+			"05-08": { member: "Kim Sihyeon", color: "rgb(199,210,167)", group: "Everglow" },
+			"06-08": { member: "Seoyeon", color: "rgb(34,174,255)", group: "tripleS" },
+			"09-08": { member: "Lara", color: "rgb(145,86,255)", group: "DreamNote" },
+			"10-08": [ { member: "SuA", color: "rgb(255,0,0)", group: "Dreamcatcher"}, { member: "Yeeun", color: "rgb(194,0,130)", group: "CLC" } ],
+			"12-08": { member: "Choi Yujin", color: "rgb(249,123,144)", borderOverride: "rgb(247,127,14)", group: "CLC/Kep1er"},
+			"13-08": [ { member: "EJ", color: "rgb(255,170,66)", group: "ALICE"}, { member: "Bomi", color: "rgb(188,169,203)", group: "Apink" } ],
+			"18-08": [ { member: "Eunji", color: "rgb(230,171,71)", group: "Apink" }, { member: "HaSeul", color: "rgb(0,191,0)", group: "LOONA"} ],
+			"22-08": [ { member: "Yeseo", color: "rgb(162,207,254)", group: "Kep1er"}, { member: "Somin", color: "rgb(153,230,179)", group: "APRIL" } ],
+			"26-08": [ { member: "Soyeon", color: "rgb(245,176,190)", group: "(G)I-DLE"}, { member: "Chaejeong", color: "rgb(94,247,140)", group: "ALICE"} ],
+			"28-08": { member: "Rachel", color: "rgb(84,143,247)", group: "APRIL" },
+			"31-08": [ { member: "Wonyoung", color: "rgb(255,0,30)", borderOverride: "rgb(217,89,140)", group: "IZ*ONE/IVE"}, { member: "Eunjin", color: "rgb(255,79,27)", group: "DIA" } ],
+			"01-09": { member: "An Yujin", color: "rgb(255,57,154)", borderOverride: "rgb(86,122,206)", group: "IZ*ONE/IVE"},
+			"02-09": { member: "Eunice", color: "rgb(237,157,37)", group: "DIA" },
+			"03-09": { member: "Joy", color: "rgb(0,223,23)", group: "Red Velvet" },
+			"04-09": { member: "Huh Jiwon", color: "rgb(234,61,165)", group: "Cherry Bullet" },
+			"07-09": { member: "Park Sumin", color: "rgb(255,0,255)", group: "DreamNote" },
+			"09-09": { member: "Moon Sua", color: "rgb(204,153,255)", group: "Billlie"},
+			"14-09": { member: "Jenny", color: "rgb(0,171,219)", group: "DIA" },
+			"21-09": { member: "Tsuki", color: "rgb(255,153,161)", group: "Billlie"},
+			"22-09": [ {member: "Nayeon", color: "rgb(128,202,241)", group: "TWICE"}, {member: "Hyoyeon", color: "rgb(147,197,114)", group: "Girls' Generation"}, { member: "Hong Yukyung", color: "rgb(212,212,212)", group: "Apink" } ],
+			"23-09": { member: "Yuqi", color: "rgb(38,201,140)", group: "(G)I-DLE"},
+			"24-09": { member: "Gaeul", color: "rgb(0,85,168)", group: "IVE"},
+			"27-09": { member: "Eunbi", color: "rgb(187,176,220)", group: "IZ*ONE"},
+			"29-09": [ { member: "Choi Yena", color: "rgb(252,246,149)", group: "IZ*ONE"}, { member: "Song Hayoung", color: "rgb(120,94,253)", group: "fromis_9" } ],
+			"01-10": { member: "Siyeon", color: "rgb(15,47,255)", group: "Dreamcatcher"},
+			"03-10": { member: "Soomin", color: "rgb(252,131,164)", group: "tripleS" },
+			"06-10": [ { member: "Hitomi", color: "rgb(241,195,170)", group: "IZ*ONE"}, {member: "Hanni", color: "rgb(255,191,255)", group: "NewJeans"} ],
+			"07-10": { member: "Yeham", color: "rgb(220,0,147)", group: "CSR" },
+			"08-10": { member: "Moka", color: "rgb(216,109,157)", group: "ILLIT" },
+			"09-10": { member: "Ye Ah", color: "rgb(69,109,255)", group: "cignature" },
+			"10-10": { member: "Oh Seunghee", color: "rgb(161,107,250)", group: "CLC" },
+			"13-10": [{ member: "HanByeol", color: "rgb(255,238,86)", group: "DreamNote" }, { member: "Nakyoung", color: "rgb(101,153,164)", group: "tripleS" }, { member: "Sohyun", color: "rgb(20,35,180)", group: "tripleS" }],
+			"15-10": { member: "Yeonje", color: "rgb(255,227,3)", group: "ALICE" },
+			"19-10": { member: "HeeJin", color: "rgb(255,0,143)", group: "LOONA"},
+			"20-10": { member: "Chuu", color: "rgb(246,144,126)", group: "LOONA"},
+			"22-10": { member: "Jo Yuri", color: "rgb(243,170,81)", group: "IZ*ONE"},
+			"23-10": [ { member: "Minnie", color: "rgb(155,203,235)", group: "(G)I-DLE"}, { member: "Ningning", color: "rgb(238,23,43)", group: "aespa"} ],
+			"24-10": { member: "Jiwoo", color: "rgb(255,248,1)", group: "tripleS" },
+			"25-10": { member: "MISO", color: "rgb(86,168,255)", group: "DreamNote" },
+			"30-10": [ { member: "Giselle", color: "rgb(3,14,6)", group: "aespa"}, { member: "BoNi", color: "rgb(255,156,86)", group: "DreamNote" } ],
+			"01-11": [ { member: "Jeongyeon", color: "rgb(188,215,118)", group: "TWICE"}, { member: "Kokoro", color: "rgb(0,221,147)", group: "Cherry Bullet" } ],
+			"02-11": { member: "Elkie", color: "rgb(97,179,41)", group: "CLC" },
+			"03-11": { member: "Belle", color: "rgb(0,195,26)", group: "cignature" },
+			"05-11": { member: "Lee Yukyung", color: "rgb(55,253,252)", group: "ALICE"},
+			"06-11": { member: "Seungyeon", color: "rgb(199,3,30)", group: "CLC" },
+			"08-11": { member: "Kim Chaewon", color: "rgb(255,255,122)", group: "APRIL" },
+			"09-11": { member: "Momo", color: "rgb(248,207,215)", group: "TWICE"},
+			"11-11": { member: "YeoJin", color: "rgb(244,111,31)", group: "LOONA"},
+			"12-11": [ {member: "Xiaoting", color:"rgb(195,142,199)", group: "Kep1er"}, {member: "Dara", color:"rgb(244,135,105)", group: "2NE1"} ],
+			"13-11": { member: "Hyeju", color: "rgb(143,143,143)", group: "LOONA"},
+			"15-11": { member: "HyunJin", color: "rgb(255,234,0)", group: "LOONA"},
+			"16-11": { member: "May", color: "rgb(252,80,80)", group: "Cherry Bullet" },
+			"18-11": { member: "Sorn", color: "rgb(0,144,199)", group: "CLC" },
+			"19-11": { member: "Go Won", color: "rgb(48,225,146)", group: "LOONA"},
+			"21-11": { member: "Liz", color: "rgb(0,195,245)", group: "IVE"},
+			"23-11": { member: "Jisun", color: "rgb(238,83,146)", group: "fromis_9" },
+			"30-11": { member: "Sullin", color: "rgb(123,186,141)", group: "tripleS" },
+			"01-12": { member: "Jung Chaeyeon", color: "rgb(0,160,21)", group: "DIA" },
+			"04-12": [ { member: "Jinsol", color: "rgb(205,121,206)", group: "APRIL" }, { member: "Chaeyeon", color: "rgb(141,191,65)", group: "tripleS" }],
+			"05-12": { member: "Kwon Yuri", color: "rgb(0,51,102)", group: "Girls' Generation"},
+			"09-12": [ {member: "ViVi", color: "rgb(255,152,180)", group: "LOONA"}, {member: "J", color: "rgb(255,0,0)", group: "STAYC"} ],
+			"16-12": { member: "Mashiro", color: "rgb(253,238,244)", group: "Kep1er"},
+			"20-12": { member: "Kaede", color: "rgb(255,201,53)", group: "tripleS" },
+			"27-12": [ { member: "Youngeun", color: "rgb(147,197,114)", group: "Kep1er"}, { member: "Gyuri", color: "rgb(33,150,254)", group: "fromis_9" } ],
+			"29-12": [ { member: "Sana", color: "rgb(156,158,207)", group: "TWICE"}, {member: "Yiren", color: "rgb(255,255,255)", group: "Everglow"} ],
+			"31-12": { member: "Sohee", color: "rgb(246,110,186)", group: "ALICE"},
 		};
 
 		var chaos = [];
@@ -20779,7 +20977,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 
 						var normalDesc = baseArray.includes(elemName);
 
-						loonaTheHTML = normalDesc ? `<span style="${memberData.gradient ? ('background: ' + memberData.color + '; background-clip: text; -webkit-background-clip: text; text-fill-color: transparent; -webkit-text-fill-color: transparent;') : ('color:' + memberData.color)}">Happy birthday, ${memberData.member}!</span>` : `<em style="${memberData.gradient ? ('background: ' + memberData.color + '; background-clip: text; -webkit-background-clip: text; text-fill-color: transparent; -webkit-text-fill-color: transparent;') : ('color:' + memberData.color)}" onclick=registerElemClick("${elemName}",${memberIndex})>Happy birthday, ${memberData.member}!</em>`;
+						loonaTheHTML = normalDesc ? `<span style="${memberData.gradient ? ('background: ' + memberData.color + '; background-clip: text; -webkit-background-clip: text; text-fill-color: transparent; -webkit-text-fill-color: transparent;') : ('color:' + memberData.color)}">Happy birthday, ${memberData.group} ${memberData.member} (Local time)!</span>` : `<em style="${memberData.gradient ? ('background: ' + memberData.color + '; background-clip: text; -webkit-background-clip: text; text-fill-color: transparent; -webkit-text-fill-color: transparent;') : ('color:' + memberData.color)}" onclick=registerElemClick("${elemName}",${memberIndex})>Happy birthday, ${memberData.member}!</em>`;
 
 						info.desc += loonaTheHTML;
 					};
@@ -34117,12 +34315,75 @@ Make sure to save your command in a file if you want to add this preset again.`
 			},
 		};
 
+		//Lightning strikes charge creepers
+		elements.lightning.tick = function(pixel) {
+			if (!pixel.stage) { // create bolt
+				var y = pixel.y;
+				var xoffset = 0;
+				var last = [pixel.x,pixel.y]
+				for (var i = 0; i < 100; i++) {
+					y++;
+					// randomly go back and forth
+					if (Math.random() > 0.5) { xoffset++; }
+					else { xoffset--; }
+					var x = pixel.x + xoffset;
+					if (isEmpty(x, y)) {
+						createPixel("lightning",x,y);
+						pixelMap[x][y].stage = 1;
+						pixelMap[x][y].color = pixel.color;
+						last = [x,y];
+					}
+					else if (outOfBounds(x,y) || !elements[pixelMap[x][y].element].isGas) {
+						var newPixel = pixelMap[x]?.[y] ?? null;
+						if(newPixel && newPixel.element.includes("creeper") && newPixel.dir !== undefined && !(newPixel.charged) && !(newPixel.dead)) {
+							//Charge creeper
+							newPixel.charged = true;
+							getMooreNeighbors(newPixel).forEach(function(pixel) { if(pixel.element == "lightning") { deletePixel(pixel.x,pixel.y) } });
+							break;
+						} else {
+							//strike
+							if (Math.random() < 0.01) { // BALL LIGHTNING
+								pixelMap[last[0]][last[1]].stage = 9;
+							}
+							if (!outOfBounds(x,y)) { pixelMap[x][y].temp = 27760 }
+							explodeAt(x, y, 13, ["plasma","plasma","plasma","electric"]);
+							break;
+						}
+					}
+				}
+				doDefaults(pixel);
+				deletePixel(pixel.x, pixel.y);
+			}
+			else if (pixel.stage === 9) { // BALL LIGHTNING
+				// move either left or right randomly
+				if (Math.random() > 0.5) { tryMove(pixel, pixel.x + 1, pixel.y) }
+				else { tryMove(pixel, pixel.x - 1, pixel.y) }
+				// create electric in a 3x3 area around pixel
+				for (var x = pixel.x - 1; x <= pixel.x + 1; x++) {
+					for (var y = pixel.y - 1; y <= pixel.y + 1; y++) {
+						if (isEmpty(x, y)) {
+							createPixel("electric",x,y);
+							pixelMap[x][y].color = pixel.color;
+						}
+					}
+				}
+				doDefaults(pixel);
+				if (pixelTicks - pixel.start >= 250) { deletePixel(pixel.x, pixel.y); }
+			}
+			else if (pixelTicks - pixel.start >= 4) {
+				doDefaults(pixel);
+				//deletePixel(pixel.x, pixel.y);
+				changePixel(pixel, "electric")
+			}
+			else { doDefaults(pixel); }
+		};
+
 		/* +-----------------------------------+
-		   | Nothing There					 |
+		   | Nothing There					   |
 		   |								   |
-		   | amogus							|
+		   | amogus							   |
 		   |								   |
-		   | red imposter					  |
+		   | red imposter					   |
 		   |								   |
 		   |								   |
 		   |								   |
