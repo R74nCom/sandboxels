@@ -69,7 +69,7 @@ elements.name_settings = {
             settings.funnyname.customName = true
             settings.funnyname.customNameString = customName
             saveSettings()
-        }
+        } else {settings.funnyname.customName = false}
     }
 }
 runAfterAutogen(

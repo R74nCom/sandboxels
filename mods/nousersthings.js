@@ -308,7 +308,9 @@ elements.technetium = {
 elements.destroyable_pipe = {
     color: "#414c4f",
     onSelect: function() {
-        logMessage("Draw a pipe, wait for walls to appear, then erase the exit hole.");
+        if(!enabledMods.contains("mods/nousersthings.js")){
+            logMessage("credit to nousersthings.js for this element")
+        }
     },
     tick: function(pixel) {
         if (!pixel.stage && pixelTicks-pixel.start > 60) {
@@ -2782,7 +2784,8 @@ elements.ray = {
         return pixel.life || "unset"
     },
     properties: {
-        life: 10
+        life: 10,
+        maxLife: 10,
     },
     tick: function(pixel){
         if (pixel.rColor){
@@ -2791,8 +2794,8 @@ elements.ray = {
             pixel.rgb = [255,255,255]
         }
         pixel.life -= 1
-        if (pixel.life < 10){
-            pixel.color = "rgba("+pixel.rgb[0]+","+pixel.rgb[1]+","+pixel.rgb[2]+","+(pixel.life/10)+")"
+        if (pixel.life < pixel.maxLife){
+            pixel.color = "rgba("+pixel.rgb[0]+","+pixel.rgb[1]+","+pixel.rgb[2]+","+(pixel.life/pixel.maxLife)+")"
         } else {pixel.color = "rgba("+pixel.rgb[0]+","+pixel.rgb[1]+","+pixel.rgb[2]+",1)"}
         if (pixel.life <= 0){
             deletePixel(pixel.x, pixel.y)
@@ -2810,6 +2813,8 @@ var specificRayStart = 0
 var specificRayEnd = 20
 var specificRayAngle = 0
 var stopAtElement = "wall"
+var rayLife = 10
+var rainbowMode = "no"
 elements.specific_ray_emitter = {
     color: "#e73e63",
     behavior: behaviors.WALL,
@@ -2836,6 +2841,16 @@ elements.specific_ray_emitter = {
         var rayans6 = prompt("What element should the ray stop at?", (stopAtElement||"wall"));
         if (!rayans6) { return }
         stopAtElement = mostSimilarElement(rayans6)
+        let rayans7
+        if (rayans == "ray"){ rayans7 = prompt("How long should the ray stay on screen in ticks?", (rayLife||10));}
+        if (!rayans7) { return }
+        if (isNaN(parseFloat(rayans7))){
+            rayLife = 10
+        } else {
+            rayLife = rayans7
+        }
+        var rayans8 = prompt("Would you like rainbow mode to be enabled? Type yes or no.", (rainbowMode||"no"));
+        if (rayans8 == "yes"){rainbowMode = true} else {rainbowMode = false}
     },
     hoverStat: function(pixel){
         return (pixel.rayElement.toUpperCase() || "unset") + ", " + (pixel.rayStoppedByWalls.toString().toUpperCase() || "unset") + ", " + (pixel.specificRayStart || "unset") + ", " + (pixel.specificRayEnd || "unset") + ", " + (pixel.specificRayAngle || "unset")
@@ -2848,7 +2863,26 @@ elements.specific_ray_emitter = {
             pixel.specificRayEnd = specificRayEnd
             pixel.specificRayAngle = specificRayAngle
             pixel.stopAtElement = stopAtElement
+            pixel.life = rayLife
+            pixel.rainbowMode = rainbowMode
         }
+        if (pixel.rainbowMode){
+        pixel.specificRayAngle ++
+        pixel.rgb = pixel.color.match(/\d+/g);
+        pixel.rgb[0] = parseInt(pixel.rgb[0])
+        pixel.rgb[1] = parseInt(pixel.rgb[1])
+        pixel.rgb[2] = parseInt(pixel.rgb[2])
+        console.log(pixel.rgb)
+        var hsvResult = RGBtoHSV(pixel.rgb[0], pixel.rgb[1], pixel.rgb[2]);
+            pixel.tHue = hsvResult.h;
+            var rgbResult = HSVtoRGB(pixel.tHue + (1/360), 1, 1);
+            console.log(rgbResult)
+            const hexR = rgbResult.r.toString(16).padStart(2, '0');
+            const hexG = rgbResult.g.toString(16).padStart(2, '0');
+            const hexB = rgbResult.b.toString(16).padStart(2, '0');
+            const hexCode = `#${hexR}${hexG}${hexB}`;
+            console.log(hexCode)
+            pixel.color = pixelColorPick(pixel, hexCode)}
         for (var i = 0; i < squareCoords.length; i++) {
             var coord = squareCoords[i];
             var x = pixel.x+coord[0];
@@ -2859,22 +2893,22 @@ elements.specific_ray_emitter = {
                     var dir = [0-squareCoords[i][0], 0-squareCoords[i][1]]
                     let startx, starty, endx, endy, magnitude
                     if (pixel.specificRayAngle == "nah"){
-                        startx = pixel.x+(dir[0]*specificRayStart)
-                        starty = pixel.y+(dir[1]*specificRayStart)
-                        magnitude = specificRayEnd
+                        startx = pixel.x+(dir[0]*pixel.specificRayStart)
+                        starty = pixel.y+(dir[1]*pixel.specificRayStart)
+                        magnitude = pixel.specificRayEnd
                         endx = startx+(magnitude*dir[0])
                         endy = starty+(magnitude*dir[1])
                     } else {
                         let angleInRadians = pixel.specificRayAngle * Math.PI / 180;
-                        console.log("Angle in radians is " + angleInRadians)
+                        //console.log("Angle in radians is " + angleInRadians)
                         dir = [(Math.cos(angleInRadians)), (Math.sin(angleInRadians))]
-                        startx = pixel.x+Math.round((dir[0]*specificRayStart))
-                        starty = pixel.y+Math.round((dir[1]*specificRayStart))
-                        magnitude = specificRayEnd
+                        startx = pixel.x+Math.round((dir[0]*pixel.specificRayStart))
+                        starty = pixel.y+Math.round((dir[1]*pixel.specificRayStart))
+                        magnitude = pixel.specificRayEnd
                         endx = startx+Math.round((magnitude*dir[0]))
                         endy = starty+Math.round((magnitude*dir[1]))
                     }
-                 console.log("Direction seems to be " + dir)
+                 //console.log("Direction seems to be " + dir)
                     var jcoords = lineCoords(startx, starty, endx, endy, 1)
                  //console.log(startx + " is the starting x, " + starty + " is the starting y, " + endx + " is the ending x, " + endy + " is the ending y. Result is " + jcoords)
                     for (var j = 0; j < jcoords.length; j++) {
@@ -2888,13 +2922,16 @@ elements.specific_ray_emitter = {
                             if (pixel.rayElement == "ray"){
                                 pixelMap[lx][ly].rColor = pixel.color
                                 pixelMap[lx][ly].color = pixel.color
+                                pixelMap[lx][ly].life = pixel.life
+                                pixelMap[lx][ly].maxLife = pixel.life
                             }
                         } else if (!isEmpty(lx, ly, true)){
                             if ((pixelMap[lx][ly].element != pixel.rayElement && pixel.rayStoppedByWalls) || pixelMap[lx][ly].element == pixel.stopAtElement){
                                 break;
                             } else if (pixelMap[lx][ly].element == "ray" && pixel.rayElement == "ray"){
                                 pixelMap[lx][ly].rColor = pixel.color
-                                pixelMap[lx][ly].life = 10
+                                pixelMap[lx][ly].life = pixel.life
+                                pixelMap[lx][ly].maxLife = pixel.life
                                 pixelMap[lx][ly].color = pixel.color
                             }
                         }
