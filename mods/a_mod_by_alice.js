@@ -19979,6 +19979,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					grass: "crimson_grass",
 					ice: "red_ice",
 					water: "crimwater",
+					salt_water: "crimwater",
+					sugar_water: "crimwater",
+					dirty_water: "crimwater",
+					pool_water: "pool_water,pool_water,water",
 					snow: "crimsnow",
 					packed_snow: "crimsnow",
 					vine: "crimson_vine",
@@ -20023,10 +20027,22 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						for (let j = -2; j < 3; j++) {
 							if (!isEmpty(pixel.x+j,pixel.y+i,true)) {
 								var destPixel = pixelMap[pixel.x+j][pixel.y+i];
+								if(!destPixel) { continue };
 								var elementToCheck = destPixel.element;
 								if(Math.random() < crimRate) {
 									if(crimsonObject[elementToCheck]) {
-										changePixel(destPixel,crimsonObject[elementToCheck]);
+										var result = crimsonObject[elementToCheck];
+										if((typeof(result) == "string") && result.indexOf(",") !== -1 && !(elementExists(result))) {
+											result = result.split(",")
+										};
+										while(Array.isArray(result)) {
+											result = randomChoice(result)
+										};
+										if(result == "null") { //fsr null gets ignored
+											deletePixel(destPixel.x,destPixel.y);
+										} else {
+											changePixel(destPixel,result);
+										}
 									};
 									grassSpread(pixel,["dirt","crimsoil","rainbow_dirt"],"crimson_grass",0.5);
 								};
@@ -23205,7 +23221,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								burnTime: 65,
 								state: "solid",
 								density: 90.445,
-							}
+							};
 							elements.crimtane_ore = {
 								color: ["#d83a3b", "#85242c", "#5d5d5d", "#540c14"],
 								behavior: behaviors.POWDER,
@@ -23214,7 +23230,22 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								stateHigh: ["molten_slag","molten_slag","molten_crimtane"], //:sunglasses: can't turn things into slag if you're already slag
 								state: "solid",
 								density: 5854, //arbitrarily chosen, average of ((average of gold and palladium densities) + (crimstone density) + (crimstone density))
-							}
+							};
+							elements.crimson = {
+								color: ["#e82535","#cc471f", "#782b2e", "#8c2e26", "#86241d", "#9d2b20"],
+								tool: crimSpread,
+								tick: function(pixel) {
+									getMooreNeighbors(pixel).forEach(crimSpread)
+								},
+								hardness: 0.8,
+								density: 2500,
+								state: "solid",
+								tempHigh: 1200,
+								stateHigh: "ash",
+								category: "special",
+								desc: "Spreads the Crimson",
+								excludeRandom: true
+							};
 							elements.crimtane = {
 								color: ["#fc141e", "#C62A2F", "#903f3f", "#752E2E", "#5a1c1c", "#5B3C3C", "#5c5c5c"],
 								behavior: behaviors.SOLID,
