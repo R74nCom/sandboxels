@@ -42903,8 +42903,10 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 	//FIX ##
 		//fsr it's pausing silently on load now so this should fix that by silently unpausing it on load
 		window.addEventListener("load",function() {
-			paused = false
+			paused = false;
+			crimsonObject.dirt = "crimsoil"; //something is changing it to sand
 		});
+
 	//MISCELLANEOUS CHANGES ##
 		eLists.PIPE = ['pipe', 'destroyable_pipe', 'e_pipe', 'destroyable_e_pipe', 'channel_pipe', 'destroyable_channel_pipe', 'bridge_pipe'];
 		elements.pipe_stage_shifter = {
