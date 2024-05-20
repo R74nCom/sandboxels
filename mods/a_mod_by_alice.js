@@ -6,35 +6,25 @@ var allDependenciesExist = dependencyExistence.reduce(function(a,b) { return a &
 if(allDependenciesExist) {
 try {
 	//COMMON VARIABLES ##
-
 		const whiteColor = {r: 255, g: 255, b: 255};
 		const blackColor = {r: 0, g: 0, b: 0};
 		canvas = document.getElementsByTagName("canvas")[0];
 		ctx = canvas.getContext("2d");
-
 	//ESSENTIAL COMMON FUNCTIONS (CODE LIBRARY) ##
-
 		//DEBUGGING
-		
 			function logAndReturn(thing) {
 				console.log(thing);
 				return thing
 			};
-
 		//URL
-
 			urlParams = new URLSearchParams(window.location.search);
-
 		//Objects
-
 			//getKeyByValue code by SO UncleLaz: https://stackoverflow.com/questions/9907419/how-to-get-a-key-in-a-javascript-object-by-its-value
 			//CC-BY-SA-4.0
 			function getKeyByValue(object, value) {
 			  return Object.keys(object).find(key => object[key] === value);
 			};
-
 		//RNG
-
 			//Random integer from 0 to n
 			function randomIntegerFromZeroToValue(value) {
 				var absoluteValuePlusOne = Math.abs(value) + 1;
@@ -44,7 +34,6 @@ try {
 					return 0 - Math.floor(Math.random() * absoluteValuePlusOne)
 				};
 			};
-
 			//Random thing from array
 			function randomChoice(array) {
 				if(!array) { throw new Error("randomChoice: Array is undefined or missing!") }
@@ -53,12 +42,10 @@ try {
 				var randomIndex = randomIntegerFromZeroToValue(length - 1);
 				return array[randomIndex];
 			};
-
 			//Random 1 or -1
 			function randomSign() {
 				return Math.random() < 0.5 ? 1 : -1
 			};
-
 			//Random integer from m to n
 			function randomIntegerBetweenTwoValues(min,max) {
 				if(min > max) {
@@ -68,7 +55,6 @@ try {
 				};
 				return Math.floor(Math.random() * (max - min + 1)) + min
 			};
-
 			//cyrb128 idk where this comes from but it was in the same thread
 			function cyrb128(str) {
 				let h1 = 1779033703, h2 = 3144134277,
@@ -86,7 +72,6 @@ try {
 				h4 = Math.imul(h2 ^ (h4 >>> 19), 2716044179);
 				return [(h1^h2^h3^h4)>>>0, (h2^h1)>>>0, (h3^h1)>>>0, (h4^h1)>>>0];
 			}
-
 			function mulberry32(a) { //Mulberry32 implemented in JS from StackOverflow, https://gist.github.com/tommyettinger/46a874533244883189143505d203312c
 				return function() {
 				  var t = a += 0x6D2B79F5;
@@ -95,7 +80,6 @@ try {
 				  return ((t ^ t >>> 14) >>> 0) / 4294967296;
 				}
 			} //returns random function seeded with a
-
 			//Seeded randbetween
 			function seededRandBetween(min,max,randomFunction) {
 				if(min > max) {
@@ -105,9 +89,7 @@ try {
 				};
 				return Math.floor(randomFunction() * (max - min + 1)) + min
 			};
-
 		//Arrays
-
 			//Shallow array comparer by SO Tim Down: https://stackoverflow.com/a/10260204
 			//CC-BY-SA-3.0
 			function arraysIdentical(arr1, arr2) {
@@ -122,7 +104,6 @@ try {
 				};
 				return true;
 			};
-
 			function indexOf(arr, val, comparer) {
 				for (var i = 0, len = arr.length; i < len; ++i) {
 					if ( i in arr && comparer(arr[i], val) ) {
@@ -131,21 +112,17 @@ try {
 				};
 				return -1;
 			};
-
 			function averageNumericArray(array) {
 				var total = array.reduce(addTwoNumbers,0)
 				return total / array.length
 			};
-
 			function sumNumericArray(array) { //Sum of array numbers
 				return array.reduce((partialSum, a) => partialSum + a, 0);
 			};
-
 			function pad_array(arr,len,fill) { //https://stackoverflow.com/a/38851957
 				//console.log("Padding array");
 				return arr.concat(Array(len).fill(fill)).slice(0,len);
 			}
-
 			//Function to check if an array includes a given array by SO Johnny Tisdale: https://stackoverflow.com/a/60922255
 			//CC-BY-SA-4.0
 			function includesArray(parentArray, testArray) {
@@ -156,7 +133,6 @@ try {
 				};
 				return false;
 			};
-
 			function addArraysInPairs(array1,array2,fill=0) { //e.g. [1,2,3] + [10,0,-1] = [11,2,2]
 				//console.log("Adding in pairs: " + array1 + " and " + array2 + ".");
 				if(array1.length > array2.length) { //zero-padding
@@ -173,7 +149,6 @@ try {
 				//console.log("Added into " + tempArray + ".");
 				return tempArray;
 			};
-
 			function tryJoin(stringOrArray,joiner) {
 				//console.log(`tryJoin: ${stringOrArray}`);
 				if(typeof(stringOrArray) === "string") {
@@ -186,24 +161,18 @@ try {
 					throw new TypeError(`Unexpected type: ${typeof(stringOrArray)}`);
 				};
 			};
-
 		//Checks
-
 			//Element exists in the elements object
 			function elementExists(elementName) {
 				return typeof(elements[elementName]) === "object";
 			};
-
 			//Has a given state
 			function isState(elementName,inputState) {
 				if(!elementExists(elementName)) {
 					throw new Error(`Element ${elementName} doesn't exist`);
 				};
-
 				var infoState = elements[elementName].state;
-
 				if(infoState == undefined) { infoState = "undefined" };
-
 				if(inputState == undefined) { inputState = "undefined" };
 				if(inputState instanceof Array) {
 					var limit = 0;
@@ -212,14 +181,11 @@ try {
 						limit++;
 					};
 				};
-
 				if(inputState instanceof Array) {
 					return inputState.includes(infoState);
 				};
-
 				return infoState == inputState;
 			};
-
 			//Check if pixel of given element exists at given location
 			function hasPixel(x,y,elementInput) {
 				if(isEmpty(x,y,true)) { //if empty, it can't have a pixel
@@ -235,13 +201,11 @@ try {
 						if(!elementExists(elementInput)) { console.log(`hasPixel: Element "${elementInput}" doesn't exist`) };
 						return pixelMap[x][y].element === elementInput;
 					};
-				};		
+				};
 			};
-
 			//Is movable
 			var backupCategoryWhitelist = ["land","powders","weapons","food","life","corruption","states","fey","Fantastic Creatures","dyes","energy liquids","random liquids","random gases","random rocks"];
 			var backupElementWhitelist = ["mercury", "chalcopyrite_ore", "chalcopyrite_dust", "copper_concentrate", "fluxed_copper_concentrate", "unignited_pyrestone", "ignited_pyrestone", "everfire_dust", "extinguished_everfire_dust", "mistake", "polusium_oxide", "vaporized_polusium_oxide", "glowstone_dust", "redstone_dust", "soul_mud", "wet_soul_sand", "nitrogen_snow", "fusion_catalyst", "coal", "coal_coke", "blast_furnace_fuel", "molten_mythril"];
-
 			function commonMovableCriteria(name,shallowBlacklist=null) {
 				if(typeof(elements[name]) !== "object") {
 					throw new Error(`Nonexistent element ${name}`);
@@ -288,10 +252,8 @@ try {
 				};
 				return false;
 			};
-
 			//Element name search
 				window.searchQuery = {};
-
 				function searchElements(query) {
 					if(typeof(window.searchQuery) == "undefined") { window.searchQuery = "" }; //necessary because of filter's idiotic no-argument policy
 					window.searchQuery = query;
@@ -301,7 +263,6 @@ try {
 					});
 					return matches
 				};
-
 				function elementsWith(keyQuery) {
 					if(typeof(window.keyQuery) == "undefined") { window.keyQuery = "" }; //necessary because of filter's idiotic no-argument policy
 					window.keyQuery = keyQuery;
@@ -311,7 +272,6 @@ try {
 					});
 					return matches
 				};
-
 				function elementsWithout(keyInverseQuery) {
 					if(typeof(window.keyInverseQuery) == "undefined") { window.keyInverseQuery = "" }; //necessary because of filter's idiotic no-argument policy
 					window.keyInverseQuery = keyInverseQuery;
@@ -321,7 +281,6 @@ try {
 					});
 					return matches
 				};
-
 				function getElementsInCategory(categoryName) {
 					if(["",null,undefined].includes(categoryName)) { categoryName = "other" };
 					window.categoryQuery = categoryName;
@@ -331,7 +290,6 @@ try {
 					});
 					return matches
 				};
-
 				function getStateHigh(element,forceArray=false) {
 					if(!(element instanceof Array)) { element = [element] };
 					var existantElements = element.filter(function(name) { return elementExists(name) });
@@ -346,7 +304,6 @@ try {
 							return results
 					}
 				};
-
 				function getState(element,forceArray=false) {
 					if(!(element instanceof Array)) { element = [element] };
 					var existantElements = element.filter(function(name) { return elementExists(name) });
@@ -361,7 +318,6 @@ try {
 							return results
 					}
 				};
-
 				function getStateLow(element,forceArray=false) {
 					if(!(element instanceof Array)) { element = [element] };
 					var existantElements = element.filter(function(name) { return elementExists(name) });
@@ -376,7 +332,6 @@ try {
 							return results
 					}
 				};
-
 				function getStateAtTemp(element,temp) {
 					var data = elements[element];
 					var tl = data.tempLow;
@@ -389,7 +344,6 @@ try {
 						return element
 					}
 				};
-
 				function getBreakInto(element,forceArray=false) {
 					if(!(element instanceof Array)) { element = [element] };
 					var existantElements = element.filter(function(name) { return elementExists(name) });
@@ -404,14 +358,11 @@ try {
 							return results
 					}
 				};
-
 		//Math(s)
-
 			//Base n logarithm from https://stackoverflow.com/a/3019290
 			function logN(number,base) { //Vulnerable to float issues
 				return Math.log(number) / Math.log(base);
 			};
-
 			//Distance between points
 			function pyth(xA,yA,xB,yB) {
 				var a = Math.abs(xB - xA);
@@ -419,21 +370,17 @@ try {
 				var c = Math.sqrt(a**2 + b**2);
 				return c;
 			};
-
 			//Limit number to [min, max]
 			function bound(number,lowerBound,upperBound) {
 				return Math.min(upperBound,Math.max(lowerBound,number));
 			};
-
 			//Emergency color wrapper
 			rgbColorBound = function(color) {
 				return bound(color,0,255);
 			};
-
 			function addTwoNumbers(number1,number2) { //reducer
 				return number1 + number2
 			}
-
 			//Logistic curve
 				//x = real number
 				//L = maximum value
@@ -442,16 +389,13 @@ try {
 			function logisticCurve(x,L,k,x0) {
 				return L/(   1 + (  Math.E ** ( -k * (x - x0) )  )   );
 			};
-
 			// https://stackoverflow.com/questions/10756313/javascript-jquery-map-a-range-of-numbers-to-another-range-of-numbers
 			// Function from August Miller
 			//Map a range of numbers to another range of numbers
 			function scale (number, inMin, inMax, outMin, outMax) {
 				return (number - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
 			}
-
 		//Color
-
 			function rgbStringToUnvalidatedObject(string) { //turns rgb() to {r,g,b} with no bounds checking
 				//console.log("Splitting string into object");
 				string = string.split(",");
@@ -461,7 +405,6 @@ try {
 				//console.log("String split: outputs " + red + ", " + green + ", " + blue + ".");
 				return {r: red, g: green, b: blue};
 			};
-
 			function rgbStringToObject(string,doRounding=true,doBounding=true) { //turns rgb() to {r,g,b}
 				//console.log(`rgbStringToObject: ${string}`);
 					//console.log("Splitting string into object");
@@ -495,7 +438,6 @@ try {
 					//console.log("String split: outputs " + red + ", " + green + ", " + blue + ".");
 				return {r: red, g: green, b: blue};
 			};
-
 			function hslColorStringToObject(color) {
 				if(!color.startsWith("hsl(") || !color.endsWith(")")) {
 					throw new Error(`The color ${color} is not a valid hsl() color`)
@@ -521,7 +463,6 @@ try {
 					if(hueNaN || saturationNaN || lightnessNaN) { throw new Error(NanErrorString) };
 				return {h: hue, s: saturation, l: lightness};
 			};
-
 			function rgbToHex(color) {
 				//console.log(`rgbToHex called on ${typeof(color) === "object" ? JSON.stringify(color) : color}`);
 				if(typeof(color) == "object") { //Expects object like "{r: 172, g: 11, b: 34}"
@@ -592,7 +533,6 @@ try {
 					throw new Error(`Received invalid color: ${color}`);
 				};
 			};
-
 			function linearBlendTwoColorObjects(color1,color2,weight1=0.5) { /*third argument is for color1 and expects a float from 0
 																		  to 1, where 0 means "all color2" and 1 means "all color1"*/
 				var w1 = Math.min(Math.max(weight1,0),1);
@@ -607,7 +547,6 @@ try {
 				var blue3 = (blue1 * w1) + (blue2 * (1 - w1));
 				return {r: red3, g: green3, b: blue3};
 			};
-
 			function lightenColor(color,offset,outputType="rgb") {
 				if(typeof(color) === "string") {
 					if(color.length < 10) {
@@ -617,24 +556,20 @@ try {
 							color = "#" + color;
 						};
 					//console.log(`octothorpe checked: ${color}`);
-
 						offset = parseFloat(offset);
 						if(isNaN(offset)) {
 							throw new Error("Offset is NaN");
 						};
-
 						var oldColor = color; //for error display
 						color = hexToRGB(color);
 						if(color === null) {
 							throw new Error(`hexToRGB(color) was null (${oldColor}, maybe it's an invalid hex triplet?)`);
 						};
-
 					//console.log("converted color: " + JSON.stringify(color));
 						var red = color.r + offset;
 						var green = color.g + offset;
 						var blue = color.b + offset;
 					//console.log(`altered color: rgb(${red},${green},${blue})`);
-
 						//rounding and bounding
 						red = Math.round(red);
 						green = Math.round(green);
@@ -644,9 +579,7 @@ try {
 						green = bound(green,0,255)
 						blue = bound(blue,0,255)
 					//console.log(`bounded color: rgb(${red},${green},${blue})`);
-
 						color = {r: red, g: green, b: blue};
-
 						switch(outputType.toLowerCase()) {
 							case "rgb":
 								return `rgb(${red},${green},${blue})`;
@@ -664,17 +597,14 @@ try {
 						if(color.startsWith("rgb(")) {
 							color = convertColorFormats(color,"json"); //object conversion
 						//console.log(`color converted to object: ${JSON.stringify(color)}`);
-
 							offset = parseFloat(offset);
 							if(isNaN(offset)) {
 								throw new Error("Offset is NaN");
 							};
-
 							var red = color.r + offset;
 							var green = color.g + offset;
 							var blue = color.b + offset;
 						//console.log(`altered color: rgb(${red},${green},${blue})`);
-
 							//rounding and bounding
 							red = Math.round(red);
 							green = Math.round(green);
@@ -684,9 +614,7 @@ try {
 							green = bound(green,0,255)
 							blue = bound(blue,0,255)
 						//console.log(`bounded color: rgb(${red},${green},${blue})`);
-
 							color = {r: red, g: green, b: blue};
-
 							switch(outputType.toLowerCase()) {
 								case "rgb":
 									return `rgb(${red},${green},${blue})`;
@@ -710,13 +638,11 @@ try {
 					if(typeof(color.r) === "undefined" || typeof(color.g) === "undefined" || typeof(color.b) === "undefined") {
 						throw new Error("Color must be of the form {r: red, g: green, b: blue}");
 					};
-
 				//console.log("received color: " + JSON.stringify(color));
 					var red = color.r + offset;
 					var green = color.g + offset;
 					var blue = color.b + offset;
 				//console.log(`altered color: rgb(${red},${green},${blue})`);
-
 					//rounding and bounding
 					red = Math.round(red);
 					green = Math.round(green);
@@ -726,9 +652,7 @@ try {
 					green = bound(green,0,255)
 					blue = bound(blue,0,255)
 				//console.log(`bounded color: rgb(${red},${green},${blue})`);
-
 					color = {r: red, g: green, b: blue};
-
 					switch(outputType.toLowerCase()) {
 						case "rgb":
 							return `rgb(${red},${green},${blue})`;
@@ -744,7 +668,6 @@ try {
 					};
 				};
 			};
-
 			function rgbObjectToString(color,stripAlpha=false) {
 				if(typeof(color) !== "object") {
 					throw new Error("Input color is not an object");
@@ -763,7 +686,6 @@ try {
 					//console.log(`Colors bounded to (${red}, ${green}, ${blue})`);
 				return `rgb(${red},${green},${blue})`
 			};
-
 			function convertColorFormats(color,outputType="rgb",stripAlpha=false) {
 				if(typeof(color) === "undefined") {
 					//console.log("Warning: An element has an undefined color. Unfortunately, due to how the code is structured, I can't say which one.");
@@ -775,12 +697,10 @@ try {
 				var bytes,r,g,b,a;
 				if(typeof(color) === "string") {
 					//Hex input case
-					
 					if(/^#?[A-Za-z0-9]{1,8}$/.test(oldColor)) {
 						if(color.startsWith("#")) {
 							oldColor = oldColor.match(/[A-Za-z0-9]{1,8}/)[0];
 						};
-
 						switch(oldColor.length) {
 							case 0:
 								throw new Error("convertColorFormats: hexadecimal input but color bytes are somehow missing?");
@@ -791,7 +711,7 @@ try {
 								oldColor = (oldColor[0].repeat(6)) + (oldColor[1].repeat(2));
 								break
 							case 3: //ABC => AABBCC, ABCD => AABBCCDD (real)
-							case 4: 
+							case 4:
 								oldColor = oldColor.match(/[A-Za-z0-9]/g).map(x => x.repeat(2)).join("")
 								break
 							case 5: //ABCDE => AABBCCDE (bs)
@@ -801,13 +721,12 @@ try {
 							case 7: //9ABCDEF => 9ABCDEFF (bs)
 								var _rgb = oldColor.slice(0,6);
 								var _alpha = oldColor.slice(6,7);
-								oldColor = _rgb + (_alpha.repeat(2))								
+								oldColor = _rgb + (_alpha.repeat(2))
 							case 6: //no change
 							case 8: //no change
 								break
 						};
 						bytes = oldColor.toLowerCase().match(/[a-z0-9]{2}/g).map(x => parseInt(x,16));
-
 						r = bytes[0];
 						g = bytes[1];
 						b = bytes[2];
@@ -815,7 +734,7 @@ try {
 						//to JSON for ease of use
 						color = {"r": r, "g": g, "b": b};
 						if(typeof(a) == "number") { color["a"] = a };
-					} else {					
+					} else {
 						//otherwise assume rgb() input
 						bytes = color.match(/[\d\.]+/g);
 						if(typeof(bytes?.map) == "undefined") {
@@ -849,9 +768,7 @@ try {
 					a = stripAlpha ? null : (color.a ?? null);
 				};
 				//Colors are now objects
-				
 				if(a !== null) { a /= 255 };
-
 				switch(outputType.toLowerCase()) {
 					case "rgb":
 					case "rgba":
@@ -892,16 +809,12 @@ try {
 						throw new Error("outputType must be \"rgb\", \"hex\", \"json\", or \"array\"");
 				}
 			};
-
 			function rgbHexCatcher(color) {
 				return convertColorFormats(color,"rgb");
 			};
-
 			function _rgbHexCatcher(color) {
 				return convertColorFormats(color,"rgb");
 			};
-
-
 			function averageColorObjects(color1,color2,weight1=0.5) { //misnomer, actually a linear interpolation but it's too late to rename that
 				//third argument is for color1 and expects a float from 0 to 1, where 0 means "all color2" and 1 means "all color1"
 				//(backwards from how it should work)
@@ -917,14 +830,12 @@ try {
 				var blue3 = (blue1 * w1) + (blue2 * (1 - w1))
 				return {r: red3, g: green3, b: blue3}
 			};
-
 			function lerpColors(color1,color2,outputType="rgb",weight1=0.5) {
 				color1 = convertColorFormats(color1,"json");
 				color2 = convertColorFormats(color2,"json");
 				theColor = averageColorObjects(color1,color2,weight1);
 				return convertColorFormats(theColor,outputType);
 			};
-
 			function multiplyColors(color1,color2,outputType="rgb") {
 				//normalize rgb()/hex by turning any hex into rgb() and then rgb()s to {r,g,b}
 				if(typeof(color1) !== "object") {
@@ -951,7 +862,6 @@ try {
 						throw new Error("outputType must be \"rgb\", \"hex\", \"json\"");
 				};
 			};
-
 			function divideColors(color1,color2,outputType="rgb") { //color2 is the divisor and color1 the dividend (base/original color)
 				//normalize rgb()/hex by turning any hex into rgb() and then rgb()s to {r,g,b}
 				if(typeof(color1) !== "object") {
@@ -981,7 +891,6 @@ try {
 						throw new Error("outputType must be \"rgb\", \"hex\", \"json\"");
 				};
 			};
-
 			function addColors(color1,color2,outputType="rgb") {
 				//normalize rgb()/hex by turning any hex into rgb() and then rgb()s to {r,g,b}
 				if(typeof(color1) !== "object") {
@@ -1008,7 +917,6 @@ try {
 						throw new Error("outputType must be \"rgb\", \"hex\", \"json\"");
 				};
 			};
-
 			function subtractColors(color1,color2,outputType="rgb") {
 				//normalize rgb()/hex by turning any hex into rgb() and then rgb()s to {r,g,b}
 				if(typeof(color1) !== "object") {
@@ -1035,7 +943,6 @@ try {
 						throw new Error("outputType must be \"rgb\", \"hex\", \"json\"");
 				};
 			};
-
 			function averageRgbPrefixedColorArray(colorArray,returnObject=false) { //array of rgb()s to single rgb() of average color
 				//averageRgbPrefixedColorArray(["rgb(255,0,0)", "rgb(0,0,0)", "rgb(0,0,255)"]);
 				//console.log("Averaging started");
@@ -1046,7 +953,7 @@ try {
 					//console.log("Average function: Executing catcher on " + colorArray);
 					var color = convertColorFormats(colorArray[k]);
 					//console.log("Logged color for aRPCA: " + color);
-					color = color.split(","); 
+					color = color.split(",");
 					var red = parseFloat(color[0].substring(4));
 					reds.push(red)
 					var green = parseFloat(color[1]);
@@ -1057,26 +964,22 @@ try {
 				redAverage = Math.round(averageNumericArray(reds));
 				greenAverage = Math.round(averageNumericArray(greens));
 				blueAverage = Math.round(averageNumericArray(blues));
-				var output; 
+				var output;
 				returnObject ? output = {r: redAverage, g: greenAverage, b: blueAverage} : output = `rgb(${redAverage},${greenAverage},${blueAverage})`;
 				//console.log("Averaging finished, product: " + output);
 				return output;
 			};
-
 			//https://stackoverflow.com/questions/46432335/hex-to-hsl-convert-javascript
 			function rgbStringToHSL(rgb,outputType="array") { //Originally a hex-to-HSL function, edited to take RGB and spit out an array
 				//console.log("HSLing some RGBs");
 				var result = rgbStringToUnvalidatedObject(rgb);
-
 				var r = result.r;
 				var g = result.g;
 				var b = result.b;
 				var a = result.a ?? null;
-
 				r /= 255, g /= 255, b /= 255; if(a) { a /= 255 };
 				var max = Math.max(r, g, b), min = Math.min(r, g, b);
 				var h, s, l = (max + min) / 2;
-
 				if(max == min){
 					h = s = 0; // achromatic
 				} else {
@@ -1089,15 +992,12 @@ try {
 					}
 					h /= 6;
 				};
-
 				s = s*100;
 				s = Math.round(s);
 				l = l*100;
 				l = Math.round(l);
 				h = Math.round(360*h);
-
 				if(a !== null && a > 1) { a /= 255 };
-
 				//var colorInHSL = 'hsl(' + h + ', ' + s + '%, ' + l + '%)';
 				//Edit to return an array
 				switch(outputType.toLowerCase()) {
@@ -1111,12 +1011,10 @@ try {
 						return a == null ? {h: h, s: s, l: l} : {h: h, s: s, l: l, a: a};
 					default:
 						throw new Error("outputType must be \"array\", \"hsl\", or \"json\"");
-						break;				
+						break;
 				};
 				//console.log("HSL output "+ colorInHSL + ".");
-
 			};
-
 			function normalizeColorToHslObject(color,arrayType=null) {
 				var ambiguousArrayError = "changeSaturation can't tell if the array input is supposed to be RGB or HSL. Please use an \"arrayType\" argument of \"rgb\" or \"hsl\".";
 				var isHsl = false;
@@ -1132,7 +1030,7 @@ try {
 						throw new Error(ambiguousArrayError);
 					};
 				} else {
-					//by this point, any array cases would have been handled, leaving just hex (rgb), json rgb, json hsl, string rgb, and string hsl 
+					//by this point, any array cases would have been handled, leaving just hex (rgb), json rgb, json hsl, string rgb, and string hsl
 					if(typeof(color) === "string") {
 						if(/^#?[A-Za-z0-9]{1,8}$/.test(color)) { //detect hex
 							if(!color.startsWith("#")) {
@@ -1163,9 +1061,8 @@ try {
 						};
 					};
 				};
-				return color;		
+				return color;
 			};
-
 			function convertHslObjects(color,outputType="rgb") {
 				if(color == null) { console.error("convertHslObjects: Color is null"); color = {h: 300, s: 100, l: 50} };
 				switch(outputType.toLowerCase()) {
@@ -1182,13 +1079,13 @@ try {
 					case "rgb-json":
 					case "rgb_json":
 						color = hexToRGB(hslToHex(...Object.values(color))); //hsl to hex and hex to rgb_json
-						return color; 
+						return color;
 						break;
 					case "rgbarray":
 					case "rgb-array":
 					case "rgb_array":
 						color = hexToRGB(hslToHex(...Object.values(color))); //hsl to hex, hex to rgb_json, and rgb_json to rgb_array
-						return [color.r, color.g, color.b]; 
+						return [color.r, color.g, color.b];
 						break;
 					//HSL cases
 					case "hsl":
@@ -1198,22 +1095,20 @@ try {
 					case "hsljson":
 					case "hsl-json":
 					case "hsl_json":
-						return color; 
+						return color;
 						break;
 					case "hslarray":
 					case "hsl-array":
 					case "hsl_array":
-						return [color.h, color.s, color.l]; 
+						return [color.h, color.s, color.l];
 						break;
 					default:
 						throw new Error("outputType must be \"rgb\", \"hex\", \"rgb_json\", \"rgb_array\", \"hsl\", \"hsl_json\", or \"hsl_array\"");
 				}
 			};
-
 			function changeSaturation(color,saturationChange,operationType="add",outputType="rgb",arrayType=null,doRounding=true) {
 				color = normalizeColorToHslObject(color,arrayType);
 				//only {h,s,l} should exist now
-
 				//Math
 				switch(operationType.toLowerCase()) {
 					case "+":
@@ -1252,18 +1147,14 @@ try {
 					default:
 						throw new Error("Operation must be \"add\", \"subtract\", \"multiply\", \"divide\", \"set\", \"min\", or \"max\"");
 				};
-
 				color.h = doRounding ? Math.round(color.h % 360) : color.h % 360;
 				color.s = doRounding ? Math.round(bound(color.s,0,100)) : color.s,0,100;
 				color.l = doRounding ? Math.round(bound(color.l,0,100)) : color.l,0,100;
-
 				return convertHslObjects(color,outputType)
 			};
-
 			function changeLuminance(color,luminanceChange,operationType="add",outputType="rgb",arrayType=null,doRounding=true) {
 				color = normalizeColorToHslObject(color,arrayType);
 				//only {h,s,l} should exist now
-
 				//Math
 				switch(operationType.toLowerCase()) {
 					case "+":
@@ -1302,18 +1193,14 @@ try {
 					default:
 						throw new Error("Operation must be \"add\", \"subtract\", \"multiply\", \"divide\", \"set\", \"min\", or \"max\"");
 				};
-
 				color.h = doRounding ? Math.round(color.h % 360) : color.h % 360;
 				color.s = doRounding ? Math.round(bound(color.s,0,100)) : color.s,0,100;
 				color.l = doRounding ? Math.round(bound(color.l,0,100)) : color.l,0,100;
-
 				return convertHslObjects(color,outputType);
 			};
-
 			function changeHue(color,hueChange,operationType="add",outputType="rgb",arrayType=null,doRounding=true) {
 				color = normalizeColorToHslObject(color,arrayType);
 				//only {h,s,l} should exist now
-
 				//Math
 				switch(operationType.toLowerCase()) {
 					case "+":
@@ -1352,14 +1239,11 @@ try {
 					default:
 						throw new Error("Operation must be \"add\", \"subtract\", \"multiply\", \"divide\", \"set\", \"min\", or \"max\"");
 				};
-
 				color.h = doRounding ? Math.round(color.h % 360) : color.h % 360;
 				color.s = doRounding ? Math.round(bound(color.s,0,100)) : color.s,0,100;
 				color.l = doRounding ? Math.round(bound(color.l,0,100)) : color.l,0,100;
-
 				return convertHslObjects(color,outputType);
 			};
-
 			function colorToHsl(color,outputType="json") {
 				if(typeof(color.h) == "number" && typeof(color.s) == "number" && typeof(color.l) == "number") {
 					return color
@@ -1368,7 +1252,6 @@ try {
 				color = rgbStringToHSL(color,outputType);
 				return color;
 			};
-
 			//https://stackoverflow.com/questions/36721830/convert-hsl-to-rgb-and-hex
 			function hslToHex(h, s, l) { //h, s, l params to hex triplet
 			  //console.log(`Hexing some HSLs (the HSLs are ${h},${s},${l})`)
@@ -1384,19 +1267,15 @@ try {
 			  //console.log(`Hexed to #${f(0)}${f(8)}${f(4)}`)
 			  return `#${f(0)}${f(8)}${f(4)}`;
 			};
-
 		//Pixels
-		
 			function tryMoveAndReturnBlockingPixel(pixel,nx,ny,leaveBehind,force) {
 				if(outOfBounds(nx,ny)) { return false };
 				if(isEmpty(nx,ny,false)) { return tryMove(pixel,nx,ny,leaveBehind,force) };
 				return pixelMap[nx][ny]
 			};
-
-			function exposedToAir(pixel) {	
+			function exposedToAir(pixel) {
 				return (isEmpty(pixel.x+1,pixel.y) || isEmpty(pixel.x-1,pixel.y) || isEmpty(pixel.x,pixel.y+1) || isEmpty(pixel.x,pixel.y-1));
 			};
-
 			function tryTarnish(pixel,element,chance) {
 				if(exposedToAir(pixel)) {
 					if(Array.isArray(element)) {
@@ -1410,7 +1289,6 @@ try {
 					};
 				};
 			};
-
 			//Try to create a pixel, return true if it could be created and false if it couldn't
 			function tryCreatePixel(elementInput,x,y) {
 				//array handling
@@ -1424,12 +1302,10 @@ try {
 					if(elementInput.length === 0) { throw new Error("elementInput has no existing elements") };
 					elementInput = randomChoice(elementInput);
 				};
-
 				//existence check
 				if(!elementExists(elementInput)) {
 					throw new Error("Element " + elementInput + " doesn't exist!");
 				};
-
 				//actual creation check
 				if(isEmpty(x,y)) {
 					createPixel(elementInput,x,y);
@@ -1438,7 +1314,6 @@ try {
 					return false;
 				};
 			};
-
 			function tryCreatePixelReturn(elementInput,x,y) {
 				//array handling
 				if(elementInput.includes(",")) { //CSTA
@@ -1451,12 +1326,10 @@ try {
 					if(elementInput.length === 0) { throw new Error("elementInput has no existing elements") };
 					elementInput = randomChoice(elementInput);
 				};
-
 				//existence check
 				if(!elementExists(elementInput)) {
 					throw new Error("Element " + elementInput + " doesn't exist!");
 				};
-
 				//actual creation check
 				if(isEmpty(x,y)) {
 					return createPixelReturn(elementInput,x,y);
@@ -1464,7 +1337,6 @@ try {
 					return false;
 				};
 			};
-
 			function createPixelReturn(elementIn,x,y) { //sugar
 				var element = elementIn; while(element instanceof Array) { element = randomChoice(element) };
 				var newPixel = new Pixel(x, y, element);
@@ -1472,7 +1344,6 @@ try {
 				checkUnlock(element);
 				return newPixel;
 			};
-
 			function changePixelReturn(pixel,element,changetemp=true) {
 				if(typeof(elements[element]) == "undefined") {
 					if(doLog) { console.error(`Something tried to change a pixel of ${pixel.element} at (${pixel.x},${pixel.y}) to nonexistent element "${element}"`) };
@@ -1529,7 +1400,6 @@ try {
 				checkUnlock(element);
 				return pixel;
 			};
-
 			function storeFirstTouchingElement(pixel,propertyName,copyTemp=true,spread=true) {
 				var info = elements[pixel.element];
 				if(pixel[propertyName]) {
@@ -1537,7 +1407,6 @@ try {
 				};
 				for(i = 0; i < adjacentCoords.length; i++) {
 					var newCoords = {x: pixel.x+adjacentCoords[i][0], y: pixel.y+adjacentCoords[i][1]};
-
 					if (!isEmpty(newCoords.x,newCoords.y,true)) {
 						newPixel = pixelMap[newCoords.x][newCoords.y];
 						if (info.ignore && info.ignore.indexOf(newPixel.element) !== -1) {
@@ -1556,7 +1425,6 @@ try {
 					}
 				};
 			};
-
 			function breakPixel(pixel,changeTemp=false,defaultBreakIntoDust=false) {
 				var result = elements[pixel.element].breakInto;
 				if (result === undefined) {if(defaultBreakIntoDust) { result = "dust" } else { return }};
@@ -1578,7 +1446,6 @@ try {
 					changePixel(pixel,result);
 				}
 			}
-
 			defaultHardness = 0.3;
 			function tryBreak(pixel,changetemp=false,defaultBreakIntoDust=false) {
 				var info = elements[pixel.element];
@@ -1593,7 +1460,6 @@ try {
 					return false;
 				};
 			};
-
 			function reactionStealer(pixel,newPixel,reactionTarget) {
 				if(!elements[reactionTarget]) {
 					throw new Error(`No such element ${reactionTarget}!`);
@@ -1612,7 +1478,6 @@ try {
 				var pixel2 = pixel;
 				var pixel1 = newPixel;
 				var r = newInfo.reactions[reactionTarget];
-
 				if (r.setting && settings[r.setting]===0) {
 					return false;
 				}
@@ -1639,7 +1504,6 @@ try {
 					if (Array.isArray(r.elem1)) {
 						var elem1 = r.elem1[Math.floor(Math.random() * r.elem1.length)];
 					} else { var elem1 = r.elem1; }
-
 					if (elem1 == null) {
 						deletePixel(pixel1.x,pixel1.y);
 					}
@@ -1664,7 +1528,6 @@ try {
 					if (Array.isArray(r.elem2)) {
 						var elem2 = r.elem2[Math.floor(Math.random() * r.elem2.length)];
 					} else { var elem2 = r.elem2; }
-
 					if (elem2 == null) {
 						deletePixel(pixel2.x,pixel2.y);
 					}
@@ -1689,7 +1552,6 @@ try {
 				}
 				return r.elem1!==undefined || r.elem2!==undefined;
 			};
-
 			function spreadingProperty(pixel,propertyName,whitelist=null) {
 				if(isNaN(pixel[propertyName])) {
 					pixel[propertyName] = 0;
@@ -1719,7 +1581,6 @@ try {
 				};
 				return true;
 			};
-
 			function spreadingPropertyReturn(pixel,propertyName,whitelist=null) {
 				if(isNaN(pixel[propertyName])) {
 					pixel[propertyName] = 0;
@@ -1751,7 +1612,6 @@ try {
 				};
 				return recipients;
 			};
-
 			function swapNumericPropertyValues(pixel1,pixel2,propertyName,whitelist=null) {
 				if(!pixel1 || !pixel2) {
 					return false;
@@ -1769,13 +1629,10 @@ try {
 				};
 				return true;
 			};
-
 		//World
-
 			function getCirclePixels(x,y,radius) {
 				return circleCoords(x,y,radius).map(coordinates => pixelMap[coordinates.x]?.[coordinates.y]).filter(function(pixelOrUndefined) { return typeof(pixelOrUndefined) == "object" })
 			};
-
 			function getPixelMooreNeighbors(pixel) {
 				var coordsToCheck = mooreDonutCoords.map(function(offsets) { return {x: offsets[0]+pixel.x, y: offsets[1]+pixel.y} } );
 				var neighbors = [];
@@ -1794,7 +1651,6 @@ try {
 				};
 				return neighbors
 			};
-
 			function clonePixel(pixel,newX,newY,replaceExistingPixel=false,returnPixel=false) {
 				if(!pixel) { return false };
 				if(outOfBounds(newX,newY)) { return false };
@@ -1802,7 +1658,7 @@ try {
 					//Do nothing
 				} else {
 					if(replaceExistingPixel) {
-						deletePixel(newX,newY) 
+						deletePixel(newX,newY)
 					} else {
 						return false
 					}
@@ -1813,9 +1669,7 @@ try {
 				currentPixels.push(newPixel);
 				return returnPixel ? newPixel : true
 			};
-
 			clonedPixel = null;
-
 			elements.clone_painter_picker = {
 				color: "#ffffff",
 				tool: function(pixel) {
@@ -1845,7 +1699,6 @@ try {
 				density: 150000,
 				desc: "This selects the pixel that the clone_painter element will duplicate."
 			};
-
 			elements.clone_painter = {
 				color: "#ffffff",
 				tick: function(pixel) {
@@ -1867,7 +1720,6 @@ try {
 				},
 				desc: `This places (or due to how elements work, changes itself into) duplicates of a previously selected pixel.<br/><br/><u style="color: #ff00ff;" onclick="selectElement('clone_painter_picker')">Click here</u> to select the clone painter picker to choose which pixel to clone`
 			};
-
 			function cloneArea(topLeftX,topLeftY,bottomRightX,bottomRightY,newTopLeftX,newTopLeftY,oldPixelHandling_PreClear1_OnlyReplace2_Ignore3=1,errorOnOutOfBounds=false) {
 				var results = {"created": 0, "replaced": 0, "deleted": 0, "skipped": 0, "skipped_OOB": 0};
 				for(var x = topLeftX; x <= bottomRightX; x++) {
@@ -1930,7 +1782,6 @@ try {
 				};
 				return results
 			};
-
 			function getEmptyVonNeumannNeighbors(pixel) {
 				var neighbors = [];
 				var x = pixel.x;
@@ -1944,7 +1795,6 @@ try {
 				};
 				return neighbors
 			};
-
 			function getEmptyMooreNeighbors(pixel) {
 				var neighbors = [];
 				var x = pixel.x;
@@ -1958,7 +1808,6 @@ try {
 				};
 				return neighbors
 			};
-
 			function getVonNeumannNeighbors(pixel) {
 				var neighbors = [];
 				var x = pixel.x;
@@ -1972,7 +1821,6 @@ try {
 				};
 				return neighbors
 			};
-
 			function getMooreNeighbors(pixel) {
 				var neighbors = [];
 				var x = pixel.x;
@@ -1986,12 +1834,10 @@ try {
 				};
 				return neighbors
 			};
-
 			function breakCircle(x,y,radius,respectHardness=false,changeTemp=false,defaultBreakIntoDust=false) {
 				var coords = getCirclePixels(x,y,radius);
 				coords.forEach(pixel => respectHardness ? tryBreak(pixel,changeTemp,defaultBreakIntoDust) : breakPixel(pixel,changeTemp,defaultBreakIntoDust))
 			};
-
 			function fillCircle(element,x,y,radius,overwrite=false) {
 				var coords = circleCoords(x,y,radius);
 				var newElement = element;
@@ -2009,7 +1855,6 @@ try {
 					};
 				};
 			};
-
 			function fillCircleReturn(element,x,y,radius,overwrite=false) {
 				//console.log("fcr");
 				var pixels = [];
@@ -2040,7 +1885,6 @@ try {
 				//console.log(pixels.map(x => x.element));
 				return pixels;
 			};
-
 			function isOpenAndOnSurface(x,y,includeBottomBound=true) {
 				if(!isEmpty(x,y,false)) {
 					return false;
@@ -2050,7 +1894,6 @@ try {
 				};
 				return !isEmpty(x,y+1,true);
 			};
-
 			//Freeze pixel
 			function freezePixel(pixel,changetemp=true) {
 				var info = elements[pixel.element];
@@ -2068,15 +1911,12 @@ try {
 						return false;
 					};
 				};
-
 				while(result instanceof Array) {
 					result = randomChoice(result);
 				};
-
 				changePixel(pixel,result,changetemp);
 				return true;
 			};
-
 			//Melt pixel
 			function meltPixel(pixel,changetemp=true) {
 				var info = elements[pixel.element];
@@ -2094,17 +1934,13 @@ try {
 						return false;
 					};
 				};
-
 				while(result instanceof Array) {
 					result = randomChoice(result);
 				};
-
 				changePixel(pixel,result,changetemp);
 				return true;
 			};
-
 		//Logic
-
 			function xor(c1,c2) {
 				if(!!c1 && !c2) {
 					return true;
@@ -2114,9 +1950,7 @@ try {
 					return false;
 				};
 			};
-
 		//currentPixels operations
-
 			function findInCurrentPixels(x,y) {
 				var pixel = currentPixels.filter(function(pixelObject) {
 					return pixelObject.x == x && pixelObject.y == y;
@@ -2130,21 +1964,16 @@ try {
 				pixel = pixel[0];
 				return pixel;
 			};
-
 			function filterCurrentPixels(filterFunction) {
 				return currentPixels.filter(filterFunction);
 			};
-
 			//Filter test functions
-
 			function _filterTest_xIsTwenty(pixel) {
 				return pixel.x == 20;
 			};
-
 			function _filterTest_tempIsOdd(pixel) {
 				return Math.trunc(pixel.temp) % 2 == 1;
 			};
-
 			function _filterTest_redRock(pixel) {
 				var color = rgbStringToHSL(convertColorFormats(pixel.color,"rgb"),"json");
 				var isRed = ((color.h % 360) >= 350) || ((color.h % 360) <= 10);
@@ -2152,7 +1981,6 @@ try {
 				var isBright = (color.l > 20);
 				return isRed && isVivid && isBright;
 			};
-
 			//Ghost pixel repair functions
 			function rebuildCurrentPixels() {
 				var currPix = []; //rebuild currentPixels from pixelMap to try to fix bug
@@ -2169,13 +1997,11 @@ try {
 				};
 				currentPixels = currPix;
 			}; //Take each item from pixelMap into currentPixels
-			
 			afterEveryTick(function() {
 				if(typeof(rebuildCurrentPixels) !== "undefined") {
 					rebuildCurrentPixels()
 				}
 			}); //nuclear option: rebuild current pixels every tick (this is kind of cursed but desyncs are bad)
-
 			function removePixelsFromPixelmapThatAreNotInCurrentpixels() {
 				pixelMap = pixelMap.map(col => col.map(function(pixel) {
 					if(pixel == undefined) {
@@ -2187,15 +2013,12 @@ try {
 					}
 				}))
 			};
-
 			function removePixelsFromCurrentpixelsThatAreNotInPixelmap() {
 				var flatPixelMap = pixelMap.flat();
 				currentPixels = currentPixels.filter(pixel => flatPixelMap.includes(pixel));
 				flatPixelMap = null
 			};
-
 		//Sugar functions
-
 			function newElement(name="element_name",color="#FF00FF",otherProps={}) {
 				elements[name] = {
 					color: color,
@@ -2205,9 +2028,7 @@ try {
 				};
 				return elements[name];
 			};
-
 		//Fixes
-
 			//fix -1-caused ghost pixels
 			function deletePixel(x,y) {
 				if(isEmpty(x,y,true)) { return false };
@@ -2236,9 +2057,7 @@ try {
 					}
 				}*/
 			};
-
 		//Language
-
 			function englishFormatList(thingsArrayIn) {
 				var thingsArray = thingsArrayIn;
 				var amount = thingsArray.length;
@@ -2252,13 +2071,10 @@ try {
 					return thingsArray.join(", ")
 				};
 			};
-
 			function capitalizeFirstLetter(string,locale=null) {
 				return string[0][locale ? "toLocaleUpperCase" : "toUpperCase"](locale) + string.slice(1)
 			};
-
 	//COLOR MANIPULATION TOOLS ##
-
 		var colorToolCounter = 0;
 		saturationAmount = 1;
 		saturationOp = "add";
@@ -2267,9 +2083,7 @@ try {
 		hueAmount = 1;
 		hueOp = "add";
 		colorToolElementFilter = "none";
-
 		var ops = ["add","subtract","multiply","divide","set","min","max","+","-","*","x","×","/","÷","=",">",">=","<","<="];
-
 		function colorToolFilterPrompt() {
 			var preElement = prompt("Enter the elements you want to limit it to\nSeparate multiple elements with commas\nType \"none\" for no filter");
 			if(preElement === null) {
@@ -2283,11 +2097,9 @@ try {
 			colorToolElementFilter = preElement;
 			return colorToolElementFilter;
 		};
-
 		function saturationPrompt() {
 			var preSaturation = prompt("Enter the value you want to use");
 			var preSatOp = prompt(`Enter the operation ("add", "subtract", "multiply", or "divide", or "set")`);
-
 			//value check
 			if(isNaN(parseFloat(preSaturation))) {
 				if(preSaturation === "" || preSaturation === null) {
@@ -2299,27 +2111,23 @@ try {
 				};
 			};
 			preSaturation = parseFloat(preSaturation);
-
 			//operation check
 			if(!ops.includes(preSatOp.toLowerCase())) {
 				if(preSatOp === "" || preSatOp === null) {
 					alert(`No operation was specified! Defaulting to "add".`);
 					preSatOp = "add";
 				} else {
-					alert(`Invalid operation! Only "add", "subract", "multiply", "divide", "set", "min", and "max" are accepted (defaulting to "add").`);			
+					alert(`Invalid operation! Only "add", "subract", "multiply", "divide", "set", "min", and "max" are accepted (defaulting to "add").`);
 					preSatOp = "add";
 				};
 			};
-
 			saturationAmount = preSaturation;
 			saturationOp = preSatOp;
 			return [preSaturation, preSatOp];
 		};
-
 		function luminancePrompt() {
 			var preLuminance = prompt("Enter the value you want to use");
 			var preLumOp = prompt(`Enter the operation ("add", "subtract", "multiply", or "divide", or "set")`);
-
 			//value check
 			if(isNaN(parseFloat(preLuminance))) {
 				if(preLuminance === "" || preLuminance === null) {
@@ -2330,28 +2138,24 @@ try {
 					preLuminance = 1;
 				};
 			};
-
 			//operation check
 			if(!ops.includes(preLumOp.toLowerCase())) {
 				if(preLumOp === "" || preLumOp === null) {
 					alert(`No operation was specified! Defaulting to "add".`);
 					preLumOp = "add";
 				} else {
-					alert(`Invalid operation! Only "add", "subract", "multiply", "divide", "set", "min", and "max" are accepted (defaulting to "add").`);			
+					alert(`Invalid operation! Only "add", "subract", "multiply", "divide", "set", "min", and "max" are accepted (defaulting to "add").`);
 					preLumOp = "add";
 				};
 			};
 			preLuminance = parseFloat(preLuminance)
-
 			luminanceAmount = preLuminance;
 			luminanceOp = preLumOp;
 			return [preLuminance, preLumOp];
 		};
-
 		function huePrompt() {
 			var preHue = prompt("Enter the value you want to use");
 			var preHueOp = prompt(`Enter the operation ("add", "subtract", "multiply", or "divide", or "set")`);
-
 			//value check
 			if(isNaN(parseFloat(preHue))) {
 				if(preHue === "" || preHue === null) {
@@ -2362,25 +2166,21 @@ try {
 					preHue = 1;
 				};
 			};
-
 			preHue = parseFloat(preHue);
-
 			//operation check
 			if(!ops.includes(preHueOp.toLowerCase())) {
 				if(preHueOp === "" || preHueOp === null) {
 					alert(`No operation was specified! Defaulting to "add".`);
 					preHueOp = "add";
 				} else {
-					alert(`Invalid operation! Only "add", "subract", "multiply", "divide", "set", "min", and "max" are accepted (defaulting to "add").`);			
+					alert(`Invalid operation! Only "add", "subract", "multiply", "divide", "set", "min", and "max" are accepted (defaulting to "add").`);
 					preHueOp = "add";
 				};
 			};
-
 			hueAmount = preHue;
 			hueOp = preHueOp;
 			return [preHue, preHueOp];
 		};
-
 		elements.multiply_color = {
 			color: ["#c27070","#c29c70","#c2c270","#70c270","#70c2c2","#7070c2","#c270c2"],
 			tool: function(pixel) {
@@ -2395,7 +2195,6 @@ try {
 			excludeRandom: true, //the toolbar is getting cluttered
 			desc: "<span style='color:#FF00FF' onClick=colorToolFilterPrompt()>Click here to configure the element filter (applies to all color tools).</span>",
 		}
-
 		elements.divide_color = {
 			color: ["#c27070","#c29c70","#c2c270","#70c270","#70c2c2","#7070c2","#c270c2"],
 			tool: function(pixel) {
@@ -2410,7 +2209,6 @@ try {
 			excludeRandom: true,
 			desc: "<span style='color:#FF00FF' onClick=colorToolFilterPrompt()>Click here to configure the element filter (applies to all color tools).</span>",
 		}
-
 		elements.add_color = {
 			color: ["#c27070","#c29c70","#c2c270","#70c270","#70c2c2","#7070c2","#c270c2"],
 			tool: function(pixel) {
@@ -2425,7 +2223,6 @@ try {
 			excludeRandom: true,
 			desc: "<span style='color:#FF00FF' onClick=colorToolFilterPrompt()>Click here to configure the element filter (applies to all color tools).</span>",
 		}
-
 		elements.subtract_color = {
 			color: ["#c27070","#c29c70","#c2c270","#70c270","#70c2c2","#7070c2","#c270c2"],
 			tool: function(pixel) {
@@ -2440,7 +2237,6 @@ try {
 			excludeRandom: true,
 			desc: "<span style='color:#FF00FF' onClick=colorToolFilterPrompt()>Click here to configure the element filter (applies to all color tools).</span>",
 		}
-
 		elements.hue = {
 			color: ["#ff0000","#ccff00","#00ff66","#0066ff","#cc00ff","#ff0000"],
 			tool: function(pixel) {
@@ -2454,7 +2250,6 @@ try {
 			excludeRandom: true,
 			desc: "<span style='color:#FF00FF' onClick=huePrompt()>Click here to configure the tool.</span><br/><span style='color:#FF00FF' onClick=colorToolFilterPrompt()>Click here to configure the element filter (applies to all color tools).</span>",
 		};
-
 		elements.saturation = {
 			color: ["#808080","#996666","#b34d4d","#cc3333","#e61919","#ff0000"],
 			tool: function(pixel) {
@@ -2468,7 +2263,6 @@ try {
 			excludeRandom: true,
 			desc: "<span style='color:#FF00FF' onClick=saturationPrompt()>Click here to configure the tool.</span><br/><span style='color:#FF00FF' onClick=colorToolFilterPrompt()>Click here to configure the element filter (applies to all color tools).</span>"
 		}
-
 		elements.luminance = {
 			color: ["#000000","#333333","#666666","#999999","#cccccc","#ffffff"],
 			tool: function(pixel) {
@@ -2482,7 +2276,6 @@ try {
 			excludeRandom: true,
 			desc: "<span style='color:#FF00FF' onClick=luminancePrompt()>Click here to configure the tool.</span><br/><span style='color:#FF00FF' onClick=colorToolFilterPrompt()>Click here to configure the element filter (applies to all color tools).</span>"
 		}
-
 		elements.grayscale = {
 			color: ["#7f7f7f"],
 			tool: function(pixel) {
@@ -2499,7 +2292,6 @@ try {
 			excludeRandom: true,
 			desc: "<span style='color:#FF00FF' onClick=colorToolFilterPrompt()>Click here to configure the element filter (applies to all color tools).</span>",
 		}
-
 		elements.invert = {
 			color: ["#ff0000", "#00ffff"],
 			tool: function(pixel) {
@@ -2515,7 +2307,6 @@ try {
 			excludeRandom: true,
 			desc: "<span style='color:#FF00FF' onClick=colorToolFilterPrompt()>Click here to configure the element filter (applies to all color tools).</span>",
 		}
-
 		elements.reverse_R_G_B = {
 			color: ["#7f7f7f"],
 			tool: function(pixel) {
@@ -2531,7 +2322,6 @@ try {
 			excludeRandom: true,
 			desc: "<span style='color:#FF00FF' onClick=colorToolFilterPrompt()>Click here to configure the element filter (applies to all color tools).</span>",
 		}
-
 		elements.shift_R_G_B = {
 			color: ["#7f7f7f"],
 			tool: function(pixel) {
@@ -2547,7 +2337,6 @@ try {
 			excludeRandom: true,
 			desc: "<span style='color:#FF00FF' onClick=colorToolFilterPrompt()>Click here to configure the element filter (applies to all color tools).</span>",
 		}
-
 	//STRIPED PAINT ##
 		stripeFixedDefaultProperties = {
 			color2: "rgb(0,0,0)",
@@ -2555,18 +2344,15 @@ try {
 			scale: 1,
 			angle: 0
 		};
-
 		stripeSpreadingProperties = {
 			color1: "It doesn't matter what I put here; I'm just sick of writing for loops.",
 			color2: "stan loona",
 		};
-
 		/*stripeSpreadingProperties2 = {
 			phase: 0,
 			scale: 1, :eggTF:
 			angle: 0
 		};*/
-
 		function stripeFunction(pixel) {
 			if(pixel.color1 == undefined || pixel.color1 == null) {
 				pixel.color1 = pixel.color;
@@ -2576,7 +2362,6 @@ try {
 					pixel[prop] = stripeFixedDefaultProperties[prop];
 				};
 			};
-
 			//color1 and color2 self staining
 			for (var i = 0; i < adjacentCoords.length; i++) {
 				var x = pixel.x+adjacentCoords[i][0];
@@ -2596,20 +2381,15 @@ try {
 					}; :eggTF:
 				};*/
 			};
-
 			var radians = pixel.angle * (Math.PI / 180);
-
 			var colorNumber = (pixel.x*Math.cos(radians))+(pixel.y*Math.sin(radians));
-
 			var sineWeight = (1+Math.sin(pixel.phase + colorNumber / pixel.scale))/2;
-
 			var preColor = lerpColors(pixel.color1,pixel.color2,"json",sineWeight);
 			for(colorlet in preColor) {
 				preColor[colorlet] = Math.round(preColor[colorlet]);
 			};
 			pixel.color = convertColorFormats(preColor,"rgb");
 		};
-
 		stripePaintDesc = `Exactly what it says on the button.
 <br/>
 Properties: <ol>
@@ -2623,11 +2403,8 @@ Properties: <ol>
 	<li>90 = horizontal line</li>
 	<li>135 = top left to bottom right...</li>
 </ul></li></ol>
-
 color1 and color2 spread through striped paint like dye does with itself. <u>color1</u> can be set <em>on initial placement</em> through the color picker, but otherwise, properties must be changed through the console or with prop.js's tools.
-
 	<small><em style="color: #ff5555;">This does not work with HSL color and the game will black screen if one is somehow used.</em> The color conversion functions are a clusterf***.</small>`
-
 		elements.stripe_paint = {
 			behavior: behaviors.LIQUID,
 			state: "liquid",
@@ -2650,9 +2427,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			},
 			desc: stripePaintDesc
 		};
-
 	//CHANGEPIXEL LOG UNDEFINED-ELEMENT FAILURES ##
-
 		doLog = true;
 		oldChangePixel = changePixel;
 		changePixel = function(pixel,element,changetemp=true) {
@@ -2663,14 +2438,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			};
 			oldChangePixel(pixel,element,changetemp);
 		};
-
 	//VARIABLES FOR IN-GAME CONSOLE ##
-
 		colorInvalidError = "Color must be in the form \"rgb(red,green,blue)\" or \"hsl(hue,saturation%,lightness%)\" (without quotes)!";
 		stringSynonyms = [ "string", "str", "st", "s" ];
 		numberSynonyms = [ "number", "num", "nm", "nu", "nb", "integer", "int", "i", "it", "float",
 						   "flt", "ft", "fl", "f", "wholenumber", "decimalnumber", "wn", "dn", "w",
-						   "d", "deeznuts" ]; /*The purpose of these blatant lies is, through a 
+						   "d", "deeznuts" ]; /*The purpose of these blatant lies is, through a
 						   reference to the Alice series of software, have an excuse to include deez
 						   nuts. (p.s. this was before i picked that name)*/
 		objectSynonyms = [ "object", "oj", "obj", "ob", "o", "json" ];
@@ -2682,9 +2455,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		defaultArrayTypeValues = ["attachOffsets"];
 		synonymsOfTrue = ["true", "t", "1", "yes"];
 		synonymsOfFalse = ["false", "f", "0", "no"];
-
 	//ENABLE RUNNING CODE AFTER STATE ELEMENT AUTOGENERATION (runAfterAutogen) ##
-
 		resizeCanvas = function(newHeight,newWidth,newPixelSize,clear) {
 			var gameCanvas = document.getElementById("game");
 			var ctx = gameCanvas.getContext("2d");
@@ -2698,7 +2469,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			mousePos = {x:Math.round(width/2),y:Math.round(height/2)};
 			if (clear!==false) { clearAll(); }
 		}
-
 		autoResizeCanvas = function(clear) {
 			pixelSize = settings.pixelsize || 6;
 			if (window.innerWidth < 700) {
@@ -2718,19 +2488,14 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			if (window.innerWidth > 1000 && newHeight > 500) { newHeight = 500; }
 			resizeCanvas(newHeight,newWidth,pixelSize,clear);
 		};
-
 		function runAfterAutogen(func) {
 			runAfterAutogenList.push(func);
 		};
-
 		function runAfterButtons(func) {
 			runAfterButtonsList.push(func);
 		};
-
 		runAfterAutogenList = [];
-
 		runAfterButtonsList = [];
-
 		function behaviorStringsToArrays() {
 			for (var behavior in behaviors) {
 				if (typeof behaviors[behavior][0] === "string") {
@@ -2742,7 +2507,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				}
 			}
 		}
-
 		function tripletsToRgbAndGenerateColorObjects() {
 			for (var key in elements) {
 				if (elements.hasOwnProperty(key)) {
@@ -2782,7 +2546,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				}
 			}
 		}
-
 		// Automatic molten element generation
 		// Moved above the exposed autoGenAllElements for ReferenceError purposes
 		function autoGen(newname,element,autoType) {
@@ -2853,7 +2616,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					if (elements[newname][key] == undefined) { elements[newname][key] = newelem[key]; }
 				}
 			}
-
 			/*if (autoType === "molten" && (elements.molten_slag && elements.molten_slag.ignore && elements.molten_slag.ignore.indexOf(element) === -1)) { // Slag reactions
 				if (newname !== "molten_slag") {
 					if (!elements[newname].reactions) { elements[newname].reactions = {}; }
@@ -2863,7 +2625,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				};
 			}*/
 		}
-
 		function autoGenAllElements() {
 			for (element in elements) {
 				if (elements[element].tempHigh!==undefined && (elements[element].stateHigh===undefined||elements[element].forceAutoGen)) {
@@ -2918,7 +2679,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				}
 			}
 		}
-
 		function doFinalChecks() {
 			nextid = 1;
 			for (key in elements) {
@@ -2980,7 +2740,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					if (behaviorCenter.indexOf("RT") !== -1) {
 						elements[key].rotatable = true;
 					}
-
 					// If the element's behavior stringified includes "BO", loop through the behavior
 					if (elements[key].behavior.toString().indexOf("BO") !== -1 && !elements[key].rotatable) {
 						for (var i = 0; i < elements[key].behavior.length; i++) {
@@ -3002,9 +2761,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 							}
 						}
 					}
-
 				}
-
 				// If the element's state is "gas", isGas = true
 				if (elements[key].state === "gas") {
 					elements[key].isGas = true;
@@ -3013,7 +2770,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				else if (elements[key].state !== "solid" && elements[key].state !== "liquid") {
 					delete elements[key].state;
 				}
-
 				// If the element has reactions, loop through each one (it is an object), if the value for elem1 or elem2 is not an element and is not null, remove that key
 				if (elements[key].reactions) {
 					for (var reaction in elements[key].reactions) {
@@ -3051,7 +2807,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						}
 					}
 				}
-
 				// If the element's stateHigh or stateLow is not an element, remove it and tempHigh/Low
 				if (elements[key].stateHigh) {
 					// If it's an array, do it for each item, otherwise, just do it once
@@ -3122,7 +2877,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						if (elements[key].breakInto[i]!==null && !elements[elements[key].breakInto]) { delete elements[key].breakInto; }
 					}
 				}
-
 				if (elements[key].colorPattern) {
 					if (!elements[key].colorKey) {
 						delete elements[key].colorPattern;
@@ -3153,19 +2907,16 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				}
 			}
 		};
-
 		function createWorldGenOptions() {
 			for (var key in worldgentypes) {
 				document.getElementById("worldgenselect").innerHTML += "<option value='" + key + "'>" + key.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase()) + "</option>";
 			}
 		};
-
 		function validateWorldGenSelection() {
 			if (settings["worldgen"] && !worldgentypes[settings["worldgen"]]) {
 				settings["worldgen"] = "off";
 			}
 		};
-
 		function validateRandomEventChoices() {
 			for (var key in randomEventChoices) {
 				for (var i = 0; i < randomEventChoices[key].length; i++) {
@@ -3175,7 +2926,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				}
 			}
 		};
-
 		function setEqualReactions(fromElement,toElement) {
 			if (elements[fromElement] && elements[toElement]) {
 				if (elements[fromElement].reactions) {
@@ -3185,7 +2935,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			};
 			return false;
 		};
-
 		function loadSettings() {
 			var settingSpans = document.getElementsByClassName("setting-span");
 			for (var i = 0; i < settingSpans.length; i++) {
@@ -3199,7 +2948,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				}
 			}
 		};
-
 		function setCanvasWidthAndHeight(ctx) {
 			var newWidth  = Math.ceil(window.innerWidth*0.9 / pixelSize) * pixelSize;
 			var newHeight = Math.ceil(window.innerHeight*0.675 / pixelSize) * pixelSize;
@@ -3212,11 +2960,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			document.getElementById("gameDiv").style.width = newWidth + "px";
 			document.getElementById("loadingP").style.display = "none";
 			document.getElementById("canvasDiv").style.display = "block";
-
 			width = Math.round(newWidth/pixelSize)-1;
 			height = Math.round(newHeight/pixelSize)-1;
 		};
-
 		function definePixelMap() {
 			if (settings["worldgen"]) {
 				clearAll();
@@ -3229,13 +2975,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				}
 			}
 		};
-
 		function setRandomChoices() {
 			randomChoices = Object.keys(elements).filter(function(e) {
 				return elements[e].excludeRandom != true && elements[e].category != "tools" && !elements[e].tool;
 			});
 		};
-
 		function addCanvasAndWindowListeners(gameCanvas) {
 			gameCanvas.addEventListener("mousedown", mouseClick);
 			gameCanvas.addEventListener("touchstart", mouseClick, { passive: false });
@@ -3276,7 +3020,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 								}
 								// e.target.result is a dataURL for the image
 								aImg.src = e.target.result;
-							}; 
+							};
 						})(img);
 						reader.readAsDataURL(file);
 					}
@@ -3324,7 +3068,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				}
 			};
 		};
-
 		function generateModManagerList() {
 			if (enabledMods.length > 0) {
 				modManagerList = document.getElementById("modManagerList");
@@ -3340,8 +3083,14 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			}
 		};
 
+		currentShape = "square";
+		shapeOrder = ["square","circle","triangle","inverted triangle","rhombus","squircle","twinkle"];
+
+		//supplementary functions for below
+
 		//redefine mouseRange to support even sizes
-        function mouseRange(mouseX,mouseY,size) {
+        function mouseRange(mouseX,mouseY,size,shapeOverride=null) {
+			var shape = shapeOverride ?? currentShape ?? "square";
             var coords = [];
             size = size || mouseSize;
             if (elements[currentElement].maxSize < mouseSize) {
@@ -3350,22 +3099,112 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
             else {
                 var mouseOffset = Math.trunc(size/2);
             }
-            var topLeft = [mouseX-mouseOffset,mouseY-mouseOffset];
-            var bottomRight = [mouseX+mouseOffset,mouseY+mouseOffset];
-			if(size % 2 == 0) {
-				bottomRight[0]--;
-				bottomRight[1]--;
-			};
-            // Starting at the top left, go through each pixel
-            for (var x = topLeft[0]; x <= bottomRight[0]; x++) {
-                for (var y = topLeft[1]; y <= bottomRight[1]; y++) {
-                    // If the pixel is empty, add it to coords
-                    coords.push([x,y]);
-                }
-            }
-            return coords;
-        };
+			switch(shape) {
+				case "square":
+					var topLeft = [mouseX-mouseOffset,mouseY-mouseOffset];
+					var bottomRight = [mouseX+mouseOffset,mouseY+mouseOffset];
+					if(size % 2 == 0) {
+						bottomRight[0]--;
+						bottomRight[1]--;
+					};
+					// Starting at the top left, go through each pixel
+					for (var x = topLeft[0]; x <= bottomRight[0]; x++) {
+						for (var y = topLeft[1]; y <= bottomRight[1]; y++) {
+							// If the pixel is empty, add it to coords
+							coords.push([x,y]);
+						}
+					};
+					break
+				case "triangle":
+				case "inverted triangle":
+					var isInverted = (shape == "inverted triangle");
+					var topLeft = [mouseX-mouseOffset,mouseY-mouseOffset];
+					var bottomRight = [mouseX+mouseOffset,mouseY+mouseOffset];
+					if(size % 2 == 0) {
+						bottomRight[0]--;
+						bottomRight[1]--;
+					};
+					// Starting at the top left, go through each pixel
+					for (var x = topLeft[0]; x <= bottomRight[0]; x++) {
+						for (var y = topLeft[1]; y <= bottomRight[1]; y++) {
+							var xOffset = (x - topLeft[0]);
+							var yOffset = (y - topLeft[1]);
+							// If the pixel is empty, add it to coords
+							var distanceFromCenterLine;
+							if(size % 2 == 0) {
+								distanceFromCenterLine = Math.abs((size / 2) - (xOffset + 0.5))
+							} else {
+								distanceFromCenterLine = Math.abs(mouseX - x);
+							};
+							//if(y == topLeft[1]) { console.log(pixelTicks,distanceFromCenterLine) };
+							var distanceProportion = distanceFromCenterLine / size;
+							var hpovppc = isInverted ? (1 - ((yOffset + (size % 2 !== 0)) / size)) / 2 : ((yOffset + (size % 2 == 0)) / size) / 2; //halvedPossiblyOffsetVerticalProportionPossiblyComplement
+							//console.log(pixelTicks,distanceProportion,y,hpovp)
+							if(distanceProportion > (hpovppc + 0.01)) { continue };
+							coords.push([x,y]);
+						}
+					};
+					break
+				case "rhombus":
+				case "squircle":
+				case "circle":
+				case "twinkle":
+					var topLeft = [mouseX-mouseOffset,mouseY-mouseOffset];
+					var bottomRight = [mouseX+mouseOffset,mouseY+mouseOffset];
+					if(size % 2 == 0) {
+						bottomRight[0]--;
+						bottomRight[1]--;
+					};
+					// Starting at the top left, go through each pixel
+					for (var x = topLeft[0]; x <= bottomRight[0]; x++) {
+						for (var y = topLeft[1]; y <= bottomRight[1]; y++) {
+							var xOffset = (x - topLeft[0]);
 
+							var yOffset = (y - topLeft[1]);
+
+							var xDistanceFromCenterLine;
+							if(size % 2 == 0) {
+								xDistanceFromCenterLine = Math.abs((size / 2) - (xOffset + 0.5))
+							} else {
+								xDistanceFromCenterLine = Math.abs(mouseX - x);
+							};
+
+							var yDistanceFromCenterLine;
+							if(size % 2 == 0) {
+								yDistanceFromCenterLine = Math.abs((size / 2) - (yOffset + 0.5))
+							} else {
+								yDistanceFromCenterLine = Math.abs(mouseY - y);
+							};
+
+							if(shape == "rhombus") {
+								if((xDistanceFromCenterLine + yDistanceFromCenterLine) > (size / 2)) { continue } //i was just messing around, i didn't expect this to actually be the right condition :sob:
+							} else if(shape == "squircle") {
+								if( (((xDistanceFromCenterLine ** 3) + (yDistanceFromCenterLine ** 3)) ** (1/3)) > (size / 2)) { continue }; //a proper squircle has n=4 but that's even closer to a square
+								if((size > 2) && (size <= 6) && ((xDistanceFromCenterLine + yDistanceFromCenterLine) == (size - 1))) { continue }
+							} else if(shape == "twinkle") {
+								if( ((((xDistanceFromCenterLine ** (1/2)) + (yDistanceFromCenterLine ** (1/2))) ** (2)) > ((size / (size % 2 ? 2 : 1.7)))) && (xDistanceFromCenterLine > 0.5) && (yDistanceFromCenterLine > 0.5) ) { continue };
+							} else if(shape == "circle") {
+								if( (((xDistanceFromCenterLine ** 2) + (yDistanceFromCenterLine ** 2)) ** (1/2)) > (size / 2)) { continue };
+								if( ((xDistanceFromCenterLine + yDistanceFromCenterLine) == 2) && (size == 3)) { continue };
+								if( ((xDistanceFromCenterLine + yDistanceFromCenterLine) >= 3.5) && (size == 6)) { continue };
+								if( ((xDistanceFromCenterLine + yDistanceFromCenterLine) >= 4.5) && (size == 8) && !(Math.abs(xDistanceFromCenterLine) === Math.abs(yDistanceFromCenterLine))) { continue };
+								if( //i can't explain how these rules work, but they just do
+									(size % 2 == 1) &&
+									(size > 5) &&
+									((xDistanceFromCenterLine + yDistanceFromCenterLine) >= (size - 3)) &&
+									!(Math.abs(xDistanceFromCenterLine) === Math.abs(yDistanceFromCenterLine))
+								) { continue }
+							}
+							coords.push([x,y]);
+						}
+					};
+					break
+				default:
+					logMessage(`Shape ${shape} not recognized!`)
+					coords = []
+			};
+            return coords
+        };
 		//this part defines basically all of the keybinds
 		function addKeyboardListeners() {
 			document.addEventListener("keydown", function(e) {
@@ -3413,7 +3252,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					//If a shift key is pressed, set to 1
 					if (shiftDown && shiftDown % 2 == 1) {mouseSize = 1}
 					//If an alt key is pressed, decrease by 1
-					else if (shiftDown && shiftDown % 2 == 0) { 
+					else if (shiftDown && shiftDown % 2 == 0) {
 						mouseSize--;
 						if (mouseSize < 1) { mouseSize = 1 }
 					}
@@ -3537,17 +3376,21 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					link.click();
 					document.body.removeChild(link);
 				}
-
-
+				//mod: shift+8 to change cursor shape
+				if (e.keyCode == 56 && shiftDown) {
+					var currentShapeIndex = shapeOrder.indexOf(currentShape);
+					if(currentShapeIndex < 0) { currentShapeIndex = 0 };
+					currentShape = shapeOrder[(currentShapeIndex + 1) % shapeOrder.length];
+					logMessage(`Current shape: ${currentShape}`)
+				}
+				
 				// x = explodeAt()
 				/*else if (e.keyCode == 88) {
 					e.preventDefault();
 					explodeAt(mousePos.x, mousePos.y, Math.round(mouseSize/2));
 				}*/
-
 			});
 		};
-
 		function addUnshiftListeners() {
 			document.addEventListener("keyup", function(e) {
 				if (e.keyCode == 16 || e.keyCode == 18) {
@@ -3559,7 +3402,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				}
 			});
 		};
-
 		function createButtonsAndCountElements() {
 			elementCount = 0;
 			hiddenCount = 0;
@@ -3597,24 +3439,19 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			selectElement(currentElement);
 			focusGame();
 		};
-
 		window.onload = function() {
 			// If the browser is Firefox, set #categoryControls padding-bottom:11px;
 			if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
 				document.getElementById("categoryControls").style.paddingBottom = "11px";
 			}
-
 			// Loop through runAfterLoadList and run each function
 			for (var i = 0; i < runAfterLoadList.length; i++) {
 				runAfterLoadList[i]();
 			}
-
 			// Loop through behaviors and each behavior, if it is a string, split the items and replace the value with the array
 			behaviorStringsToArrays();
-
 			// convert every color in the elements object to rgb
 			tripletsToRgbAndGenerateColorObjects()
-
 			autoElements = {
 				"molten": { // Solid -> Liquid
 					rgb: [ [2,1.25,0.5], [2,1,0.5], [2,0.75,0] ],
@@ -3647,48 +3484,35 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					state: "gas",
 				}
 			}
-
 			// Loop through each element. If it has a tempHigh, but not a stateHigh, create a new molten element
 			autoGenAllElements();
-
 			// Loop through runAfterAutogenList and run each function
 			for (var i = 0; i < runAfterAutogenList.length; i++) {
 				runAfterAutogenList[i]();
 			};
-
 			// Loop through each element, final checks
 			doFinalChecks();
-
 			// Generate worldgen options
 			// Loop through the worldgentypes object, add the key to the #worldgenselect select as an option with the value of the key and the name of the key capitalized and underscores replaced with spaces
 			createWorldGenOptions();
 			validateWorldGenSelection();
-
 			// Loop through randomEventChoices, and loop through the array of each. If the element doesn't exist, remove it from the array.
 			validateRandomEventChoices();
-
 			// Poison == poison gas reactions
 			setEqualReactions("poison","poison_gas");
-
 			// Load settings
 			// Loop through all the elements with setting-span class.
 			// If the span's setting attribute is in settings, set the first select or input to the value of the setting.
 			loadSettings();
-
 				//scared to touch this because ctx is pretty important
 			var gameCanvas = document.getElementById("game");
 			// Get context
 			var ctx = gameCanvas.getContext("2d");
-
 			setCanvasWidthAndHeight(ctx);
-
 			mousePos = {x:width/2,y:height/2};
-
 			definePixelMap();
-
 			// randomChoices = the keys of "elements" with any element with the category "tools" or the property excludeRandom set to true removed
 			setRandomChoices();
-
 			addCanvasAndWindowListeners(gameCanvas);
 			gameCanvas.ontouchstart = function(e) {
 				if (e.touches) e = e.touches[0];
@@ -3699,26 +3523,20 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					return 'Are you sure you want to leave?';
 				}
 			};
-
 			// If enabledMods has items, add an li to modManagerList for each item with the href to the item, target blank, and the item's name, with "<span class="removeModX" onclick='removeMod('>X</span>" after the link
 			generateModManagerList();
-
 			document.getElementById("game").oncontextmenu = function(e) { e.preventDefault(); return false; }
 			// If the user presses [ or -, decrease the mouse size by 2
 			addKeyboardListeners();
-
 			// If the user releases either shift
 			addUnshiftListeners();
-
 			// Create buttons for elements
 			// For each element type in elements, create a button in controls that sets the current element to that type
 			// Alphabetically sort and loop through dictionary named "elements"
 			createButtonsAndCountElements();
-
 			for (var i = 0; i < runAfterButtonsList.length; i++) {
 				runAfterButtonsList[i]();
 			};
-
 			selectElement(currentElement);
 			focusGame();
 			// For every button element, onkeyup="event.preventDefault()"
@@ -3728,7 +3546,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					e.preventDefault();
 				}
 			}
-
 			if (window.self !== window.top && !location.ancestorOrigins[0].includes("itch.io")) {
 				// Open a message that tells the user they aren't on the real website
 				var menuParent = document.createElement("div");
@@ -3751,25 +3568,19 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				document.body.appendChild(menuParent);
 				showingMenu = "alert";
 			}
-
 			//get the first .elementButton in the first .category, and selectElement(button.element)
 			var firstDiv = document.getElementsByClassName("category")[0];
 			var firstElementButton = firstDiv.getElementsByClassName("elementButton")[0];
 			selectElement(firstElementButton.getAttribute("element"));
-			
 			gameLoaded = true
 		};
-
 	//MORE CONFIGURABLE EXPLOSIONS (explodeAtPlus) ##
-
 		velocityBlacklist = [];
-
 		function explodeAtPlus(x,y,radius,firee="fire",smokee="smoke",beforeFunction=null,afterFunction=null,changeTemp=true) {
 			var message = "Explosion ";
 			var pixel = pixelMap[x]?.[y];
 			if(pixel) { message += `of ${pixel.element} ` };
 			message += `with radius ${radius} at (${x},${y})`;
-			
 			// if fire contains , split it into an array
 			if(firee !== null) {
 				if (firee.indexOf(",") !== -1) {
@@ -3891,7 +3702,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				};
 			};
 		};
-
 		oldExplodeAt = explodeAt;
 		/*explodeAt = function(x,y,radius,fire="fire") {
 			var message = "Explosion ";
@@ -3899,13 +3709,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			if(pixel) { message += `of ${pixel.element} ` };
 			message += `with radius ${radius} with "${fire}" at (${x},${y})`;
 			console.log(message);
-			
 			oldExplodeAt(x,y,radius,fire="fire")
 		};*/
 		explodeAt = explodeAtPlus;
-
 	//MORE CONFIGURABLE REACTION TEMPERATURE CHANGES ##
-
 		function reactPixels(pixel1,pixel2) {
 			if((!(pixel1)) || (!(pixel2))) { return false };
 			var r = elements[pixel1?.element]?.reactions?.[pixel2?.element];
@@ -3943,7 +3750,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				while (Array.isArray(elem1)) {
 					elem1 = randomChoice(elem1)
 				}
-
 				if (elem1 == null) {
 					deletePixel(pixel1.x,pixel1.y);
 				}
@@ -3967,14 +3773,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					}
 				}
 			}
-			
 			if (r.elem2 !== undefined) {
 				var elem2 = r.elem2;
 				// if r.elem2 is an array, set elem2 to a random element from the array, otherwise set it to r.elem1
 				while (Array.isArray(elem2)) {
 					elem2 = randomChoice(elem2)
 				}
-
 				if (elem2 == null) {
 					deletePixel(pixel2.x,pixel2.y);
 				}
@@ -4003,9 +3807,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			}
 			return r.elem1!==undefined || r.elem2!==undefined;
 		}
-
 	//CHANGES TO ELECTRICITY CODE (doElectricity changes) ##
-
 		function doElectricity(pixel) {
 			if(isNaN(pixel.charge)) {
 				pixel.charge = 0;
@@ -4058,12 +3860,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				}
 			}
 		}
-
 	//MORE CONFIGURABLE FIRE (fireMod changes) ##
-
 		//Variable
 		fireSpawnBlacklist = ["fire","cold_fire","rad_fire"];
-
 		//doBurning
 		function doBurning(pixel) {
 			if (pixel.burning) { // Burning
@@ -4080,10 +3879,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				var fireChance = info.fireSpawnChance ?? 10;
 				var fireIsCold = (fire === "cold_fire");
 				//var fireInfo = fire === null ? null : elements[fire];
-
 				pixel.temp += burnTempChange;
 				pixelTempCheck(pixel);
-
 				for (var i = 0; i < adjacentCoords.length; i++) { // Burn adjacent pixels
 					var x = pixel.x+adjacentCoords[i][0];
 					var y = pixel.y+adjacentCoords[i][1];
@@ -4107,7 +3904,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						}
 					}
 				}
-
 				if ((pixelTicks - pixel.burnStart > (info.burnTime || 200)) && Math.floor(Math.random()*100)<(info.burn || 10)) {
 					var burnInto = info.burnInto ?? "fire";
 					while(burnInto instanceof Array) {
@@ -4147,7 +3943,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				}
 			}
 		}
-
 		//No changeTemp for fire=>smoke
 		elements.fire.tick = function(pixel){
 			if (pixel.start === pixelTicks) {return}
@@ -4186,7 +3981,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			if (!pixel.del) { doDefaults(pixel); }
 			if (!pixel.del && settings.burn===0 && (pixelTicks-pixel.start > 70) && Math.random() < 0.1 ) { changePixel(pixel,"smoke",false) };
 		};
-
 		//New elements
 		elements.cold_fire.burning = true;
 		elements.cold_fire.burnTempChange = -1;
@@ -4198,7 +3992,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			"M2|XX|M2",
 			"XX|M2|XX"
 		],
-
 		elements.cold_smoke = {
 			color: "#282848",
 			behavior: behaviors.DGAS,
@@ -4222,7 +4015,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 1280,
 			stain: 0.075,
 		};
-
 		elements.rad_fire = { //this is BBB
 			color: ["#daff21","#a6ff00","#ffff00"],
 			behavior: [
@@ -4234,18 +4026,14 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				if(Math.random() < 0.4) {
 					pixel.temp++;
 				};
-
 				if(Math.random() < 0.05) { //5%/t to radify
 					if(typeof(transformAdjacent) === "function" && typeof(radioactiveObject) === "object") {
 						transformAdjacent(pixel,radioactiveObject);
 					};
 				};
-
 				var move1Spots = [[-1,-1],[0,-1],[1,-1]];
 				var move2Spots = [[-1,0],[0,1],[1,0]];
-
 				var randomMove1 = move1Spots[Math.floor(Math.random() * move1Spots.length)];
-
 				if(!tryMove(pixel, pixel.x+randomMove1[0], pixel.y+randomMove1[1])) {
 					//console.log((pixel.x+randomMove1[0]) + " " + (pixel.y+randomMove1[1]))
 					var newPixel = null;
@@ -4288,7 +4076,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 0.1,
 			ignoreAir: true,
 		};
-
 		elements.rad_smoke = {
 			color: "#415c25",
 			behavior: behaviors.DGAS,
@@ -4302,20 +4089,16 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					deletePixel(pixel.x,pixel.y);
 					return;
 				};
-
 				if(Math.random() < 0.2) {
 					pixel.temp++;
 				};
-
 				if(Math.random() < 0.04) { //4%/t to radify
 					if(typeof(transformAdjacent) === "function" && typeof(radioactiveObject) === "object") {
 						transformAdjacent(pixel,radioactiveObject);
 					};
 				};
-
 				var move1Spots = [[0,-1],[1,0],[0,1],[-1,0]];
 				var move2Spots = [[-1,-1],[1,-1],[1,1],[-1,1]];
-
 				var randomMove1 = move1Spots[Math.floor(Math.random() * move1Spots.length)];
 				if(!tryMove(pixel, pixel.x+randomMove1[0], pixel.y+randomMove1[1])) {
 					//console.log((pixel.x+randomMove1[0]) + " " + (pixel.y+randomMove1[1]))
@@ -4359,34 +4142,27 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 1340,
 			stain: 0.075,
 		};
-
 		elements.holy_fire = {
 			color: ["#FFFF96","#FFBF49","#CE743B"], //placeholder
 			tick: function(pixel) {
-
 				var moveResult = tryMoveAndReturnBlockingPixel(pixel,pixel.x + randomSign(),pixel.y - 1);
 				var blockingPixels = [];
 				var secondMoveResult = null;
-				
 				if(typeof(moveResult) == "object" && !(elements[pixel.element].ignore.concat(pixel.element).includes(moveResult.element))) {
 					blockingPixels.push(moveResult)
 				};
-				
 				//if move1Result = true then nothing else happens
-				
 				if(moveResult !== true) {
 					var coords = randomChoice([[-1,0],[0,1],[1,0]]).map(offsetPair => addArraysInPairs(offsetPair,[pixel.x,pixel.y]));
 					secondMoveResult = tryMoveAndReturnBlockingPixel(pixel,...coords);
-					
 					if(typeof(secondMoveResult) == "object" && !(elements[pixel.element].ignore.concat(pixel.element).includes(secondMoveResult.element))) {
 						blockingPixels.push(secondMoveResult)
 					};
 				};
-
 				if(blockingPixels.length > 0) {
 					blockingPixels.forEach(function(pixel) {
 						var blessRxn = elements.bless.reactions[pixel.element];
-						if(typeof(blessRxn) == "object") { 
+						if(typeof(blessRxn) == "object") {
 							var elem2 = blessRxn.elem2;
 							if(elem2 !== null) {
 								while(Array.isArray(elem2)) { elem2 = randomChoice(elem2) };
@@ -4427,7 +4203,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 0.08,
 			ignoreAir: true
 		};
-		
 		elements.holy_bomb = {
 			color: ["#dbb260", "#94591e"],
 			tick: function(pixel) {
@@ -4460,10 +4235,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			excludeRandom: true,
 			desc: "A bomb that burns the world to pure ash. <br/>To enable automatic bomb generation, set the generateBombs query parameter.",
 		};
-
 		elements.bless.ignore ??= [];
 		elements.bless.ignore.push("holy_fire");
-
 		elements.plasma_explosion = {
 			color: ["#c78fff","#ea8fff","#be8fff"],
 			tick: function(pixel) {
@@ -4477,30 +4250,23 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			excludeRandom: true,
 			noMix: true
 		};
-
 		elements.god_slayer_fire = {
 			color: ["#FFBACE","#FC6DCA","#9954B0"],
 			tick: function(pixel) {
-
 				var moveResult = tryMoveAndReturnBlockingPixel(pixel,pixel.x + randomSign(),pixel.y - 1);
 				var blockingPixels = [];
 				var secondMoveResult = null;
-				
 				if(typeof(moveResult) == "object" && !(elements[pixel.element].ignore.concat(pixel.element).includes(moveResult.element))) {
 					blockingPixels.push(moveResult)
 				};
-				
 				//if move1Result = true then nothing else happens
-				
 				if(moveResult !== true) {
 					var coords = randomChoice([[-1,0],[0,1],[1,0]]).map(offsetPair => addArraysInPairs(offsetPair,[pixel.x,pixel.y]));
 					secondMoveResult = tryMoveAndReturnBlockingPixel(pixel,...coords);
-					
 					if(typeof(secondMoveResult) == "object" && !(elements[pixel.element].ignore.concat(pixel.element).includes(secondMoveResult.element))) {
 						blockingPixels.push(secondMoveResult)
 					};
 				};
-
 				if(blockingPixels.length > 0) {
 					blockingPixels.forEach(function(pixel) {
 						var value = Math.random();
@@ -4536,7 +4302,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						return
 					})
 				};
-
 				doDefaults(pixel);
 			},
 			temp:10000,
@@ -4553,34 +4318,27 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 0.07,
 			ignoreAir: true
 		};
-
 		elements.liquid_holy_fire = {
 			color: ["#FFFF96","#FFBF49","#CE743B"], //placeholder
 			tick: function(pixel) {
-
 				var moveResult = tryMoveAndReturnBlockingPixel(pixel,pixel.x + randomIntegerBetweenTwoValues(-1,1),pixel.y + 1);
 				var blockingPixels = [];
 				var secondMoveResult = null;
-				
 				if(typeof(moveResult) == "object" && !(elements[pixel.element].ignore.concat(pixel.element).includes(moveResult.element))) {
 					blockingPixels.push(moveResult)
 				};
-				
 				//if move1Result = true then nothing else happens
-				
 				if(moveResult !== true) {
 					var coords = [randomSign(),0].map(offsetPair => addArraysInPairs(offsetPair,[pixel.x,pixel.y]));
 					secondMoveResult = tryMoveAndReturnBlockingPixel(pixel,...coords);
-					
 					if(typeof(secondMoveResult) == "object" && !(elements[pixel.element].ignore.concat(pixel.element).includes(secondMoveResult.element))) {
 						blockingPixels.push(secondMoveResult)
 					};
 				};
-
 				if(blockingPixels.length > 0) {
 					blockingPixels.forEach(function(pixel) {
 						var blessRxn = elements.bless.reactions[pixel.element];
-						if(typeof(blessRxn) == "object") { 
+						if(typeof(blessRxn) == "object") {
 							var elem2 = blessRxn.elem2;
 							if(elem2 !== null) {
 								while(Array.isArray(elem2)) { elem2 = randomChoice(elem2) };
@@ -4621,30 +4379,23 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 270,
 			ignoreAir: true
 		};
-		
 		elements.liquid_god_slayer_fire = {
 			color: ["#FFBACE","#FC6DCA","#9954B0"],
 			tick: function(pixel) {
-
 				var moveResult = tryMoveAndReturnBlockingPixel(pixel,pixel.x + randomIntegerBetweenTwoValues(-1,1),pixel.y + 1);
 				var blockingPixels = [];
 				var secondMoveResult = null;
-				
 				if(typeof(moveResult) == "object" && !(elements[pixel.element].ignore.concat(pixel.element).includes(moveResult.element))) {
 					blockingPixels.push(moveResult)
 				};
-				
 				//if move1Result = true then nothing else happens
-				
 				if(moveResult !== true) {
 					var coords = [randomSign(),0].map(offsetPair => addArraysInPairs(offsetPair,[pixel.x,pixel.y]));
 					secondMoveResult = tryMoveAndReturnBlockingPixel(pixel,...coords);
-					
 					if(typeof(secondMoveResult) == "object" && !(elements[pixel.element].ignore.concat(pixel.element).includes(secondMoveResult.element))) {
 						blockingPixels.push(secondMoveResult)
 					};
 				};
-
 				if(blockingPixels.length > 0) {
 					blockingPixels.forEach(function(pixel) {
 						var value = Math.random();
@@ -4680,7 +4431,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						return
 					})
 				};
-
 				doDefaults(pixel);
 			},
 			temp:15000,
@@ -4697,7 +4447,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 380,
 			ignoreAir: true
 		};
-
 		elements.god_slayer_bomb = {
 			color: ["#a43dcc", "#49b6d1"],
 			tick: function(pixel) {
@@ -4730,10 +4479,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			excludeRandom: true,
 			desc: "A bomb that makes gods tremble. <br/>To enable automatic bomb generation, set the generateBombs query parameter.",
 		};
-
 		elements.cloner.burnTime = Infinity;
 		elements.cloner.burnInto = "cloner";
-
 		elements.cold_torch = {
 			"color": "#4394d6",
 			"behavior": [
@@ -4762,9 +4509,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			"tempHigh": 600,
 			"stateHigh": "wood",
 		};
-
 		var GTDR = { "elem1": "torch", chance: 0.01 }; //grand torch degradation reaction
-
 		elements.grand_torch = {
 			"color": "#FFBF2F",
 			"tick": function(pixel) {
@@ -4808,14 +4553,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			"tempLow": 1000,
 			"stateLow": "torch",
 		};
-		
 		elements.torch.reactions ??= {};
 		elements.torch.reactions.magic = { elem1: ["torch","torch","grand_torch"], elem2: null, changeTemp: true };
 		elements.torch.tempHigh = 1500;
 		elements.torch.stateHigh = "grand_torch";
-
 		var PTDR = { "elem1": "wood", chance: 0.003 };
-
 		elements.plasma_torch = {
 			"color": "#86579c",
 			"tick": function(pixel) {
@@ -4865,9 +4607,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			"tempLow": 4999,
 			"stateLow": "grand_torch",
 		};
-
 		var GrPTDR = { "elem1": "plasma_torch", chance: 0.001 }; //grand plasma torch degradation reaction
-
 		elements.grand_plasma_torch = {
 			"color": "#b92eff",
 			"tick": function(pixel) {
@@ -4908,7 +4648,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			"tempLow": 6000,
 			"stateLow": "plasma_torch",
 		};
-
 		elements.rad_torch = {
 			"color": "#85d643",
 			"behavior": [
@@ -4937,7 +4676,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			"tempLow": -273,
 			"stateHigh": "wood",
 		};
-
 		elements.mystic_torch = {
 			"color": ["#8e27ba", "#b3297e"],
 			"behavior": [
@@ -4966,7 +4704,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			"hardness": 0.999
 		};
 		elements.mystic_fire.state = "gas";
-
 		elements.napalm = {
 			color: "#e0873e",
 			behavior: [
@@ -4983,7 +4720,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			burnTime: 500,
 			temp: airTemp,
 		};
-
 		elements.hypernapalm = {
 			name: "h y p e r n a p a l m", //HYPERNAPALM
 			color: "#bd34eb",
@@ -5003,7 +4739,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			burn: 300,
 			burnTime: 500,
 		};
-
 		elements.cold_napalm = {
 			color: "#3e87e0",
 			behavior: [
@@ -5021,7 +4756,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			burnTempChange: -1,
 			burnInto: "cold_fire",
 		};
-
 		elements.rad_napalm = {
 			color: "#cdf760",
 			behavior: [
@@ -5040,13 +4774,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			temp: airTemp,
 			burnInto: "rad_fire",
 		};
-		
 		runAfterLoad(function() {
 			if(eLists.spout) {
 				eLists.spout.push("cold_torch");
 				eLists.spout.push("rad_torch");
 			};
-
 			elements.liquid_fire = {
 				color: ["#ff6b21","#ffa600","#ff4000"],
 				behavior: [
@@ -5070,7 +4802,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				state: "liquid",
 				density: 200,
 			};
-
 			elements.liquid_cold_fire = {
 				color: ["#21cbff","#006aff","#00ffff"],
 				behavior: [
@@ -5094,7 +4825,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				state: "liquid",
 				density: 420,
 			};
-
 			elements.liquid_rad_fire = {
 				color: ["#daff21","#a6ff00","#ffff00"],
 				behavior: [
@@ -5106,16 +4836,13 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					if(Math.random() < 0.4) {
 						pixel.temp++;
 					};
-
 					if(Math.random() < 0.06) { //6%/t to radify
 						if(typeof(transformAdjacent) === "function" && typeof(radioactiveObject) === "object") {
 							transformAdjacent(pixel,radioactiveObject);
 						};
 					};
-
 					var move1Spots = [[-1,1],[0,1],[1,1]];
 					var move2Spots = [[-1,0],[0,-1],[1,0]];
-
 					var randomMove1 = move1Spots[Math.floor(Math.random() * move1Spots.length)];
 					if(!tryMove(pixel, pixel.x+randomMove1[0], pixel.y+randomMove1[1])) {
 						//console.log((pixel.x+randomMove1[0]) + " " + (pixel.y+randomMove1[1]))
@@ -5161,21 +4888,17 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				state: "liquid",
 				density: 210,
 			};
-
 			elements.radiation.reactions.liquid_fire = { "elem2":"liquid_rad_fire", "chance":0.4 };
 			elements.radiation.reactions.fire = { "elem2":"rad_fire", "chance":0.4 };
 			elements.radiation.reactions.smoke = { "elem2":"rad_smoke", "chance":0.4 };
-
 			runAfterLoad(function() {
 				for(key in elements.radiation.reactions) {
 					var value = elements.radiation.reactions[key];
-
 					if(typeof(elements.rad_fire.reactions[key]) === "undefined") {
 						elements.rad_fire.reactions[key] = value;
 					};
 				};
 			});
-
 			elements.unrealistically_flammable_gas.burnTempChange = 10;
 			elements.unrealistically_flammable_gas.fireElement = "plasma";
 			elements.unrealistically_flammable_powder.burnTempChange = 20;
@@ -5185,16 +4908,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			elements.burning_unrealistically_flammable_powder.burnTempChange = 30;
 			elements.burning_unrealistically_flammable_powder.fireElement = "plasma";
 		});
-
 	//CONFIGURABLE MAXIMUM COLOR OFFSET (maxColorOffset) ##
-
 		defaultColorOffset = 15;
-
 		pixelColorPick = function(pixel,customColor=null,maxOffset=null) {
 			var element = pixel.element;
 			var elementInfo = elements[element];
 			//if (elementInfo.behavior instanceof Array) {
-
 			if (pixel.charge && elementInfo.colorOn) {
 				customColor = elementInfo.colorOn;
 			}
@@ -5215,13 +4934,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			}
 			// Randomly darken or lighten the RGB color
 				//try maxOffset parameter, then info maxColorOffset, then default 15
-			var offsetAmount; 
+			var offsetAmount;
 			if(maxOffset !== null) {
 				offsetAmount = maxOffset;
 			} else {
 				offsetAmount = elementInfo?.maxColorOffset ?? defaultColorOffset;
 			};
-
 			var maxColorOffset = Math.floor(Math.random() * (Math.random() > 0.5 ? -1 : 1) * Math.random() * offsetAmount);
 			var r = rgb.r + maxColorOffset;
 			var g = rgb.g + maxColorOffset;
@@ -5231,7 +4949,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			g = Math.max(0, Math.min(255, g));
 			b = Math.max(0, Math.min(255, b));
 			var color = "rgb("+r+","+g+","+b+")";
-
 			/*}
 			else {
 				var color = elementInfo.color;
@@ -5241,7 +4958,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			}*/
 			return color;
 		}
-
 	//FIND MODE, PIXEL PROPERTIES LINKED TO SPECIAL CODE, CONFIGURABLE VISUAL DISTORTION AND VISUAL PIXEL SHAPE SETTINGS (acid_and_shapes.js) ##
 	//two separate things i.e. not "pixel properties linked to special code, configurable visual distortion, and visual pixel shape settings" though there's basically no semantic difference
 		var style = document.createElement('style');
@@ -5249,28 +4965,23 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		style.id = 'findStatusStylesheet';
 		style.innerHTML = '.findStatus { color: #E11; text-decoration: none; }';
 		document.getElementsByTagName('head')[0].appendChild(style);
-
 		find = false;
 		findElement = "sand";
 		findColorPulseTimer = 0;
 		findColorPulseTimerSubTimer = 0;
-
 		function marasi(number) {
 			return Math.min(255,Math.round(Math.abs(Math.sin(number) * 255)));
 		};
-
 		function updateFindDescription() {
 			var elems = findElement;
 			if(elems instanceof Array) {
 				elems = elems.join(", ");
 			};
 			elements.find_toggle.desc = `<em>I'm running out of keybinds</em>
-
 <span class="findStatus">If this text is green or underlined, find mode is on.</span> Currently finding: ${elems} <small style="font-size:80%;">(this display does not update automatically)</small>.
 <span onclick=toggleFind() style="color: #ff00ff;";>Click here</span> to toggle find mode. This highlights the currently selected element.<br/>
 <span style='color:#FF00FF' onClick=findFilterPrompt()>Click here to configure the find filter.</span>`;
 		};
-
 		function toggleFind() {
 			if(find != true) {
 				find = true;
@@ -5281,7 +4992,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			};
 			updateFindDescription();
 		};
-
 		elements.find_toggle = {
 			color: ["#000000", "#000000", "#000000", "#000000", "#ff0000", "#ff0000", "#ff0000", "#ff0000"],
 			name: "find toggle (look at info)",
@@ -5290,13 +5000,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			excludeRandom: true,
 			desc: `
 <em>I'm running out of keybinds</em>
-
-
 <span class="findStatus">If this text is green or underlined, find mode is on.</span> Currently finding: sand <small style="font-size:80%;">(this display does not update automatically)</small>.
 <span onclick=toggleFind() style="color: #ff00ff;";>Click here</span> to toggle find mode. This highlights the currently selected element.<br/>
 <span style='color:#FF00FF' onClick=findFilterPrompt()>Click here to configure the find filter.</span>`,
 		};
-
 		function findFilterPrompt() {
 			var preElement = prompt("Enter the elements you want to highlight\nSeparate multiple elements with commas");
 			if(preElement === null || preElement === "") {
@@ -5313,43 +5020,34 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			return findElement;
 		};
 		var incrementt = 0;
-
 		var interval = setInterval( increment, 500/30);
-
 		function increment(){
 			incrementt = incrementt % (Math.PI*8.8) + (Math.PI/30);
 		}
-
 		shapeModes = ["normal","circles","triangles"];
 		settings.shapeMode ??= 0;
 		settings.doacid ??= false;
 		settings.acidFunction ??= "none";
-
-		function getShapeMode() { 
+		function getShapeMode() {
 			return shapeModes[settings.shapeMode] ?? "normal";
 		};
-
 		specialProperties = {
 			/*red: {
 				specialFunction: function(pixel) { pixel.color = "rgb(255,0,0)" }
 			},*/
 		};
-
 		acidFunctions = {
 			sin: Math.sin,
 			tan: Math.tan,
 			none: function(number) { return number }
 		};
-
 		var tickBehaviorStringCache = {
 			POWDER: behaviors.POWDER.toString(),
 			LIQUID: behaviors.LIQUID.toString(),
 			UL_UR_OPTIMIZED: behaviors.UL_UR_OPTIMIZED.toString()
 		};
-
 		settings ??= {};
 		settings.shockoverlay ??= true;
-
 		//I hate overwriting drawPixels
 		runAfterAutogen(function() {
 			//rAA because velocity.js already puts its redef in a rAL and rAA comes after that
@@ -5512,14 +5210,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					}
 					else if (view === 5) { // velocity view
 						var data = elements[pixel.element];
-						
 						var vx = pixel.vx ?? 0;
 						var vy = pixel.vy ?? 0;
 						/*
 						var pseudoVelocity = 0;
 						var coordsToCheck;
 						var behaviorCoordsToCheck;
-
 						if(Array.isArray(data.behavior)) {
 							switch((pixel.r ?? 0) % 4) {
 								default:
@@ -5538,7 +5234,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 								case 3:
 									coordsToCheck = [1,0];
 									behaviorCoordsToCheckOffset = [1,2];
-									break;									
+									break;
 							};
 							if(data.behavior[behaviorCoordsToCheckOffset[0]][behaviorCoordsToCheckOffset[1]] == "M1") {
 								if(isEmpty(pixel.x+coordsToCheck[0],pixel.y+coordsToCheck[1])) {
@@ -5582,29 +5278,23 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 							vy += pseudoVelocity;
 						};
 						*/
-
 						if(vx === 0 && vy === 0) {
 							ctx.fillStyle = "rgb(15,15,15)"
 						} else {
 							var magnitude = Math.sqrt ((vx ** 2) + (vy ** 2));
-
 							var direction = Math.atan2(pixel.vy ?? 0,pixel.vx ?? 0)*180/Math.PI;
 							if(direction < 0) { direction = scale(direction,-180,0,360,180) };
-							
 							hue = direction;
 							sat = 100;
 							lig = bound(scale(magnitude,0,100,10,100),0,100);
-
 							ctx.fillStyle = "hsl("+hue+","+sat+"%,"+lig+"%)";
 						}
 					}
-
 					if(find) { //if find and matching, override fill style with the find coloration
 						if(findElement instanceof Array ? findElement.includes(pixel.element) : pixel.element === findElement) {
 							ctx.fillStyle = "rgb(255," + marasi(findColorPulseTimer / 10) + ",0)";
 						}
 					};
-
 					var mode = getShapeMode();
 					settings.acidFunction ??= "none";
 					var acidFunction;
@@ -5718,11 +5408,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						}
 					}
 				};
-
 				if (ctx.globalAlpha < 1) {
 					ctx.globalAlpha = 1;
 				};
-
 				if (elements[currentElement].maxSize < mouseSize) {
 					var mouseOffset = Math.trunc(elements[currentElement].maxSize/2);
 				}
@@ -5744,7 +5432,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					ctx.fillRect(mousePos.x*pixelSize,mousePos.y*pixelSize,pixelSize,pixelSize);
 				}
 				if ((!paused) || forceTick) {pixelTicks++};
-
 				findColorPulseTimerSubTimer++;
 				if(findColorPulseTimerSubTimer >= 2) {
 					findColorPulseTimer++;
@@ -5753,14 +5440,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			}
 		});
 		//I hate overwriting drawPixels
-
         viewKey = {
             2: "thermal",
             3: "basic",
             4: "smooth",
             5: "velocity"
         };
-
         function setView(n) {
             if (viewKey[n]) { // range of number keys with valid views
                 view = n;
@@ -5769,18 +5454,15 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
                 view = null;
             }
         };
-
 		runAfterLoad(function() {
 			//Setting
 			var settingsMenu = document.getElementById("settingsMenu").getElementsByClassName("menuText")[0];
-
 			var settingNodes = [...settingsMenu.childNodes].filter(function(node) { return node.nodeType == 1 });
 			var lastSetting = settingNodes[settingNodes.length - 1];
 			//console.log(lastSetting);
 			//console.log(lastSetting.getAttribute("style"));
 			lastSetting.removeAttribute("style"); //restore padding for worldgen setting;
 			//console.log(lastSetting.getAttribute("style"));
-
 			//Shape setting
 			var shapeSettingSpan = document.createElement("span");
 			shapeSettingSpan.setAttribute("setting","shapeMode");
@@ -5796,7 +5478,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				for(value in options) {
 					var newOption = document.createElement("option");
 					if(value == "0") {
-						newOption.setAttribute("selected","");		
+						newOption.setAttribute("selected","");
 					};
 					newOption.setAttribute("value",value);
 					newOption.innerText = options[value];
@@ -5804,7 +5486,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				};
 				shapeSettingSpan.appendChild(settingDropdown);
 			settingsMenu.appendChild(shapeSettingSpan);
-
 			//Acid function setting
 			var acidFuncSpan = document.createElement("span");
 			acidFuncSpan.setAttribute("setting","acidFunction");
@@ -5829,13 +5510,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				};
 				acidFuncSpan.appendChild(settingDropdown);
 			settingsMenu.appendChild(acidFuncSpan);
-
 			//Handle the styling of the last setting
 			settingNodes = [...settingsMenu.childNodes].filter(function(node) { return node.nodeType == 1 });
 			lastSetting = settingNodes[settingNodes.length - 1];
 			//console.log(lastSetting);
 			lastSetting.setAttribute("style","padding-bottom:0"); //remove padding from last setting;
-
 			settings ??= {};
 			settings.burnoverlay ??= false;
 			var redBurnSettingSpan = document.createElement("span");
@@ -5860,7 +5539,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				redBurnSettingSpan.appendChild(newHelpMark);
 			var cheerfulSetting = document.querySelector('span[setting="cheerful"]');
 			cheerfulSetting.after(redBurnSettingSpan);
-
 			settings.shockoverlay ??= true;
 			var yellowShockSettingSpan = document.createElement("span");
 			yellowShockSettingSpan.setAttribute("setting","shockoverlay");
@@ -5883,7 +5561,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				yellowShockSettingSpan.appendChild(settingInput);
 				yellowShockSettingSpan.appendChild(newHelpMark);
 			redBurnSettingSpan.after(yellowShockSettingSpan);
-
 			settings.doacid ??= false;
 			var acidSettingSpan = document.createElement("span");
 			acidSettingSpan.setAttribute("setting","doacid");
@@ -5906,7 +5583,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				acidSettingSpan.appendChild(settingInput);
 				acidSettingSpan.appendChild(newHelpMark);
 			yellowShockSettingSpan.after(acidSettingSpan);
-
 			var sizeSetting = document.querySelector('span[setting="pixelsize"]');
 			var sizeDropdown = sizeSetting.querySelector("select");
 			sizeDropdown.setAttribute("onchange","var size = (this.value === 'null' ? null : parseFloat(this.value)); console.log(size); if((size >= 0.05) && (size <= 194.73749999999999) && (size !== null) && (size !== false) && !(isNaN(size))) { console.log(size); setSetting('pixelsize',size);this.nextElementSibling.innerText='Reset Scene' }");
@@ -5923,7 +5599,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				otherOption.innerText = "Other";
 				sizeDropdown.insertAdjacentElement("beforeend",otherOption);
 				pixelSizeSettingDropdownOtherOptionIndex = (sizeDropdown.children.length) - 1;
-
 			//Append code to showSettings to set every setting toggle button's state according to its setting's value on page load (so if you turned the setting on, the button is already green when you load the page)
 			function showSettingsButtonAutoUpdateAppendFunction() {
 				var toggleButtonSettings = document.querySelectorAll('span.setting-span.multisetting[setting]:has(input[type="button"])');
@@ -5944,7 +5619,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				oldShowSettings();
 				showSettingsButtonAutoUpdateAppendFunction()
 			};
-
 			everyTick(function() {
 				if(paused) { return };
 				for(var propName in specialProperties) {
@@ -5962,15 +5636,13 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				}
 			})
 		});
-
 	//FUNCTION EXECUTION WHEN A PIXEL TRIES TO MOVE INTO ANOTHER (onTryMoveInto) ##
-
 		elements.on_try_move_into_test = {
 			color: "#ffffff",
 			properties: {
 				ticks: 0,
 				attemptedMovesIntoPixel: 0
-			},	
+			},
 			behavior: behaviors.POWDER,
 			reactions: {
 				"dirt": { elem1: "diamond" }
@@ -5996,7 +5668,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			desc: "Try burying this pixel and see what happens. (Use Debug)\n\nonTryMoveInto is run as part of tryMove, <em>before reactions</em>, while tick functions are run as part of pixelDraw.\n<span style='color:red;'>In some circumstances, such as a pixel being buried under a pile of anything that isn't a sturdy powder, this function may run multiple times per tick.</span> For example, bury this pixel in ash and look in the console.\n\nTo use this function, include in your element definition the \"onTryMoveInto\" key with a function value, similarly to tick functions. This function takes two arguments; \"otherPixel\" is the pixel that is trying to move and \"pixel\" is the pixel whose position otherPixel is trying to move into.",
 			related: ["debug", "ash"],
 		}
-
 		function tryMove(pixel,nx,ny,leaveBehind,force) {
 			if(!pixel) { return false };
 			if (pixel.drag && !force) { return true; }
@@ -6053,9 +5724,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			}
 			return false;
 		}
-
 	//PIXEL MOVER TOOLS ##
-
 		elements.move_up = {
 			color: "#1C0000",
 			tool: function(pixel) {
@@ -6064,7 +5733,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "movement tools",
 			excludeRandom: true,
 		},
-
 		elements.move_down = {
 			color: "#000038",
 			tool: function(pixel) {
@@ -6073,7 +5741,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "movement tools",
 			excludeRandom: true,
 		},
-
 		elements.move_left = {
 			color: "#007000",
 			tool: function(pixel) {
@@ -6082,7 +5749,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "movement tools",
 			excludeRandom: true,
 		},
-
 		elements.move_right = {
 			color: "#000E00",
 			tool: function(pixel) {
@@ -6091,7 +5757,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "movement tools",
 			excludeRandom: true,
 		},
-
 		elements.move_up_left = {
 			color: "#E00000",
 			tool: function(pixel) {
@@ -6100,7 +5765,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "movement tools",
 			excludeRandom: true,
 		},
-
 		elements.move_down_left = {
 			color: "#0001C0",
 			tool: function(pixel) {
@@ -6109,7 +5773,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "movement tools",
 			excludeRandom: true,
 		},
-
 		elements.move_up_right = {
 			color: "#038000",
 			tool: function(pixel) {
@@ -6118,7 +5781,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "movement tools",
 			excludeRandom: true,
 		},
-
 		elements.move_down_right = {
 			color: "#000007",
 			tool: function(pixel) {
@@ -6127,9 +5789,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "movement tools",
 			excludeRandom: true,
 		}
-
 	//TOOL THAT DELETES EVERY ELEMENT OF THE CLICKED TYPE(S) ##
-
 		elements.delete_all_of_element = {
 			name: "delete all of element",
 			color: ["#a7a7a7", "#a7a7a7", "#a7a7a7", "#a7a7a7", "#000000", "#000000", "#000000", "#000000"],
@@ -6147,9 +5807,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "tools",
 			excludeRandom: true,
 		};
-
 	//TEMPERATURE TOOLS ##
-
 		//base syntax by sightnado
 		/*elements.warm = {
 			color: "#7fff7f",
@@ -6194,7 +5852,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			},
 			category: "cursed tools",
 		};
-
 		elements.inf_temp = {
 			color: ["#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff"],
 			tool: function(pixel) {
@@ -6203,9 +5860,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			},
 			category: "cursed tools",
 		};
-
 	//OTHER TOOLS ##
-
 		elements.burn = {
 			color: ["#FF6B21", "#FFA600", "#FF4000"],
 			tool: function(pixel) {
@@ -6215,7 +5870,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "tools",
 			excludeRandom: true,
 		};
-
 		elements.cursed_shock = {
 			color: ["#ffff00", "#00ff00", "#ffff00", "#00ff00", "#ffff00", "#00ff00", "#ffff00", "#00ff00"],
 			tool: function(pixel) {
@@ -6232,9 +5886,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "cursed tools",
 			excludeRandom: true,
 		};
-
 	//TROLL PIXELS ##
-
 		elements.troll_1 = {
 			color: "#eeeeee",
 			tick: function(pixel) {
@@ -6249,7 +5901,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			excludeRandom: true,
 			desc: "Deletes random pixels"
 		},
-
 		elements.troll_2 = {
 			color: "#eeeeee",
 			tick: function(pixel) {
@@ -6262,7 +5913,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			excludeRandom: true,
 			desc: "Paints random pixels black"
 		},
-
 		elements.troll_3 = {
 			color: "#eeeeee",
 			tick: function(pixel) {
@@ -6277,7 +5927,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			excludeRandom: true,
 			desc: "Swaps with random pixels"
 		},
-
 		elements.troll_4 = {
 			color: "#eeeeee",
 			tick: function(pixel) {
@@ -6297,7 +5946,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			excludeRandom: true,
 			desc: "Causes random explosions"
 		},
-
 		elements.offset_fourth_y = {
 			color: ["#000000", "#ff00ff", "#000000", "#ff00ff", "#000000", "#ff00ff", "#000000", "#ff00ff"],
 			tool: function(pixel) {
@@ -6306,7 +5954,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			},
 			category: "cursed tools",
 		},
-
 		elements.offset_half_y = {
 			color: ["#000000", "#ff00ff", "#000000", "#ff00ff", "#000000", "#ff00ff", "#000000", "#ff00ff"],
 			tool: function(pixel) {
@@ -6315,7 +5962,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			},
 			category: "cursed tools",
 		},
-
 		elements.offset_three_fourth_y = {
 			color: ["#000000", "#ff00ff", "#000000", "#ff00ff", "#000000", "#ff00ff", "#000000", "#ff00ff"],
 			tool: function(pixel) {
@@ -6324,7 +5970,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			},
 			category: "cursed tools",
 		},
-
 		elements.troll_5 = {
 			color: "#eeeeee",
 			tick: function() {
@@ -6340,7 +5985,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			excludeRandom: true,
 			desc: "Randomly rotates pixels"
 		}
-
 		elements.troll_6 = {
 			color: "#eeeeee",
 			tick: function() {
@@ -6368,7 +6012,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			temp: -1,
 			desc: "Advances the simulation timer (not time travel) by its temperature"
 		},
-
 		elements.troll_7 = {
 			color: "#eeeeee",
 			tick: function(pixel) {
@@ -6383,11 +6026,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			excludeRandom: true,
 			desc: "Randomly heats and cools random pixels"
 		}
-
 	//TRIGGERABLE RANDOM-TOOL POWDERS ##
-
 		if(typeof(randomChoices) == "undefined") {randomChoices = []}; //this is generated after mod load, but JS will probably die if I don't have it defined in the code
-
 		elements.heat_random = {
 			name: "heat-randomized powder",
 			color: ["#4e5f8a","#b334ec","#fa96f9","#b6ecf6","#80ebc8","#e9286b","#8eed91","#b18b30"], //"random"'s colors plus 0x100000
@@ -6403,7 +6043,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			temp: 20,
 			desc: "Turns to a random element when heated to 50&deg;C",
 		};
-
 		elements.cold_random = {
 			name: "cold-randomized powder",
 			color: ["#3e5f9a","#a334fc","#e490ff","#9de3ff","#70ebd8","#d9287b","#7eeda1","#a18b40"], //"random"'s colors plus 0x000010 except where the last byte was above 0xef, where substraction was done to the first two bytes to compensate
@@ -6419,7 +6058,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "special",
 			desc: "Turns to a random element when cooled to -50&deg;C",
 		};
-
 		elements.shock_random = {
 			name: "shock-randomized powder",
 			color: ["#4e6f8a","#b344ec","#faa6f9","#b6fcf6","#80fbc8","#e9386b","#8efd91","#b19b30"], //"random"'s colors plus 0x101000
@@ -6438,11 +6076,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "special",
 			desc: "Turns to a random element when shocked",
 		};
-
 	//ALKAHEST ##
-
 		alkahestBlacklist = ["alkahest","alkahest_fairy","wall","alkahest_spout"]
-
 		elements.alkahest = {
 			color: "#33eeee",
 			behavior: behaviors.LIQUID_OLD,
@@ -6475,9 +6110,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				};
 			},
 		};
-
 	//LIQUID ENERGY ELEMENTS ##
-
 		elements.liquid_plasma = {
 			color: ["#8800ff","#b184d9","#8800ff"],
 			behavior: [
@@ -6499,7 +6132,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			charge: 0.5,
 			conduct: 1,
 		},
-
 		elements.liquid_fire = {
 			color: ["#ff6b21","#ffa600","#ff4000"],
 			behavior: [
@@ -6522,7 +6154,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "liquid",
 			density: 21,
 		},
-
 		elements.liquid_smoke = {
 			color: "#383838",
 			behavior: [
@@ -6546,7 +6177,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "liquid",
 			density: 2180,
 		},
-
 		elements.liquid_cold_fire = {
 			color: ["#21cbff","#006aff","#00ffff"],
 			behavior: [
@@ -6565,7 +6195,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "liquid",
 			density: 42,
 		},
-
 		elements.le_liquid_light = {
 			color: "#ffffa8",
 			behavior: [
@@ -6576,7 +6205,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			temp: 40,
 			category: "energy liquids",
 		},
-
 		elements.liquid_laser = {
 			color: "#ff0000",
 			behavior: [
@@ -6587,7 +6215,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			temp: 40,
 			category: "energy liquids",
 		},
-
 		elements.liquid_electric = {
 			color: "#dddd00",
 			behavior: [
@@ -6600,7 +6227,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			density: 44.1,
 		},
-
 		elements.liquid_radiation = {
 			color: ["#00ff00","#6fff00"],
 			behavior: [
@@ -6672,13 +6298,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				"antibody": { "elem2":"cancer", "chance":0.8 },
 				"infection": { "elem2":"cancer", "chance":0.8 },
 				"cancer": { "elem2":null, "chance":0.2 },
-
 			},
 			state: "liquid",
 			density: 4.2,
 			category: "energy liquids",
 		},
-
 		elements.liquid_explosion = {
 			color: ["#ffb48f","#ffd991","#ffad91"],
 			behavior: [
@@ -6692,7 +6316,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 2000,
 			excludeRandom: true,
 		}
-
 		elements.everfire_liquid = {
 			"name": "everfire liquid",
 			"color": "#06142b",
@@ -6705,7 +6328,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			"category": "energy liquids",
 			"fireColor": ["#0041a8","#8ab7ff"],
 		},
-
 		elements.extinguished_everfire_liquid = {
 			"name": "extinguished everfire liquid",
 			"color": "#242d3b",
@@ -6716,7 +6338,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			"category": "energy liquids",
 			"hidden": true,
 		},
-
 		elements.liquid_magic = {
 			"name": "liquid magic",
 			"color": ["#a270ff","#f2d9ff"],
@@ -6730,7 +6351,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			"category": "energy liquids",
 			"reactions": elements.magic.reactions,
 		},
-
 		elements.liquid_mystic_fire = {
 			"name": "liquid mystic fire",
 			"color": ["#5454ff","#2020d4","#5800c4"],
@@ -6746,9 +6366,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			"category": "energy liquids",
 			"burning": true,
 		},
-
 		//concoction and essence are already liquid
-
 		elements.liquid_frostbomb = {
 			color: "#72dfed",
 			behavior: [
@@ -6762,9 +6380,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 2000,
 			excludeRandom: true,
 		}
-
 	//LIQUID VOID ##
-
 		elements.liquid_void = {
 			color: "#262626",
 			behavior: [
@@ -6774,7 +6390,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			],
 			ignore: ["liquid_void", "void", "wall", "cloner", "ecloner", "slow_cloner", "clone_powder", "floating_cloner", "clone_liquid", "liquid_cloner", "fire_cloner", "antigravity_powder_cloner", "floating_cloner_spout", "clone_liquid_spout", "liquid_cloner_spout", "fire_cloner_spout", "converter", "liquid_void_spout"],
 			/*The hardcoded array of cloners is used because I don't know how to detect them.
-			Generation code: 
+			Generation code:
 				elementArray = Object.keys(elements);
 				for (let i = 0; i < elementArray.length; i++) {
 					var elementName = elementArray[i];
@@ -6788,15 +6404,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 6969,
 			excludeRandom: true,
 		}
-
 		if(!elements.void.ignore) {
 			elements.void.ignore = [];
 		};
-
 		elements.void.ignore.push("liquid_void");
-
 	//LIQUID CLONER ##
-
 		elements.clone_liquid = {
 			color: "#f0f000",
 			behavior: [
@@ -6811,13 +6423,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density:2710,
 			hardness: 1,
 		},
-
 		elements.floating_cloner.state = "gas";
-
 		elements.floating_cloner.ignore.push("floating_cloner_spout");
-
 	//ASSORTED RANDOM THINGS ##
-
 		//TPT reference
 		elements.warp = {
 			name: "warp",
@@ -6830,7 +6438,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "special",
 			state: "gases",
 		},
-
 		elements.unrealistically_flammable_gas = {
 			color: "#ddee11",
 			behavior: [
@@ -6852,8 +6459,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			tempHigh: 95,
 			stateHigh: "burning_unrealistically_flammable_gas",
 			conduct: 0.2
-			}, 
-
+			},
 		elements.burning_unrealistically_flammable_gas = {
 			color: "#eedd11",
 			behavior: [
@@ -6876,8 +6482,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			stateHigh: "plasma",
 			hidden: true,
 			excludeRandom: true,
-		}, 
-
+		},
 		elements.unrealistically_flammable_powder = {
 			color: "#cddd22",
 			behavior: [
@@ -6899,8 +6504,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			tempHigh: 95,
 			stateHigh: "burning_unrealistically_flammable_gas",
 			conduct: 0.4,
-		}, 
-
+		},
 		elements.burning_unrealistically_flammable_powder = {
 			color: "#ddcd22",
 			behavior: [
@@ -6925,7 +6529,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 			excludeRandom: true,
 		},
-
 		elements.black_decay = { //random mystcraft mod reference
 			name: "black decay",
 			color: "#222222",
@@ -6937,9 +6540,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "special",
 			excludeRandom: true,
 		},
-
 		elements.steel.behavior = behaviors.FAIRYKILL;
-
 		elements.tungstensteel = {
 			color: "#555589",
 			behavior: behaviors.FAIRYKILL,
@@ -6948,8 +6549,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 19000,
 			conduct: 0.48,
 		},
-
-		elements.stainless_steel = {	
+		elements.stainless_steel = {
 			color: "#7d8181",
 			behavior: behaviors.WALL,
 			reactions: {
@@ -6964,16 +6564,13 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			conduct: 0.42,
 			hardness: 0.85
 		};
-		
 		elements.steel.reactions.acid = { elem1:"rust" };
-		
 		elements.molten_tungsten = {
 			density: 17600,
 			temp: 3500,
 			tempHigh: 5555,
 			stateHigh: "tungsten_gas",
 		},
-
 		elements.pop_rock_pop = {
 			color: ["#ffb49f","#ffd9a1","#ffada1"],
 			behavior: [
@@ -6987,7 +6584,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			excludeRandom: true,
 			hidden: true,
 		},
-
 		elements.pop_rocks = {
 			color: ["#d4d4d4","#74d4d4","#d474d4","#7474d4","#d4d474","#74d474","#d47474","#747474","#2f2f2f","#8f2f2f","#2f8f2f","#8f8f2f","#2f2f8f","#8f2f8f","#2f8f8f","#8f8f8f","#606060","#c06060","#60c060","#c0c060","#6060c0","#c060c0","#60c0c0","#c0c0c0"],
 			behavior: behaviors.POWDER,
@@ -7002,7 +6598,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hardness: 0.2,
 			breakInto: ["sugar","pop_rock_pop"],
 		},
-
 		elements.tungsten_gas = {
 			color: "#FFEEE2",
 			behavior: [
@@ -7017,12 +6612,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "gases",
 			hidden: true,
 		},
-
 		elements.molten_steel ??= {};
 		elements.molten_steel.reactions ??= {};
 		elements.molten_steel.reactions.molten_tungsten = { "elem1":"molten_tungstensteel", "elem2":"molten_tungstensteel" };
 		elements.molten_steel.reactions.molten_chromium = { "elem1":"molten_stainless_steel", "elem2":["molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_stainless_steel"] };
-
 		elements.unrealistically_flammable_substance_bomb = {
 			name: "unrealistically flammable bomb",
 			color: "#cdad52",
@@ -7036,7 +6629,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 1300,
 			excludeRandom: true,
 		},
-
 		elements.warp_bomb = {
 			name: "warp bomb",
 			color: "#422e4a",
@@ -7050,7 +6642,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 1300,
 			excludeRandom: true,
 		},
-		
 		elements.turbine = {
 			color: "#75726a",
 			tempHigh: elements.copper.tempHigh,
@@ -7079,7 +6670,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "machines",
 			density: averageNumericArray([elements.steel.density, elements.copper.density, airDensity])
 		};
-
 		elements.test_fader = { //basically an aray clone
 			color: "#FFFFFF",
 			properties: {
@@ -7108,10 +6698,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				}
 			}
 		};
-
 		sweepingLaserTransparencyWhitelist = ["glass","glass_shard","rad_glass","rad_glass_shard","glass_pane","rad_glass_pane","water","salt_water","sugar_water","pool_water"];
 		sweepingLaserTransparencyBlacklist = [];
-
 		//Sweeping laser
 		elements.sweeping_laser = {
 			"color": "#905050",
@@ -7166,11 +6754,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			"tempHigh": 2700,
 			"stateHigh": "molten_steel",
 		};
-
 		//hormones
-
 			//estrogens
-
 		elements.estradiol = {
 			color: "#f2fcee", //it absorbs shorter wavelength UV than testosterone and I am treating this like absorbing violet for convenience
 				  //https://www.researchgate.net/publication/226065469_Optical_Properties_of_Two_Types_of_Sex_Hormones_of_the_Cyclopentenephenanthrene_Series
@@ -7182,12 +6767,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			tempHigh: 173,
 			category: "powders",
 		},
-
 		elements.molten_estradiol = {
 			tempHigh: 446,
 			stateHigh: "vaporized_estradiol",
 		},
-
 		elements.vaporized_estradiol = {
 			color: ["#ffbf60","#ffdc60","#ff9d60"], //hormone gas wouldn't glow that brightly at these temperatures but just ignore that
 			behavior: behaviors.GAS,
@@ -7199,9 +6782,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			tempLow: 446,
 			stateLow: "molten_estradiol",
 		},
-
 			//progestogens
-
 		elements.progesterone = {
 			color: "#f7eefc", //slightly different? from testosterone but exaggerated
 				  //https://downloads.hindawi.com/journals/ijps/2017/9603140.pdf
@@ -7213,12 +6794,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			tempHigh: 121,
 			category: "powders",
 		},
-
 		elements.molten_progesterone = {
 			tempHigh: 447,
 			stateHigh: "vaporized_progesterone",
 		},
-
 		elements.vaporized_progesterone = {
 			color: ["#ffbf60","#ffdc60","#ff9d60"],
 			behavior: behaviors.GAS,
@@ -7229,11 +6808,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			tempLow: 447,
 			stateLow: "molten_progesterone",
 		}
-
 			//androgens
-
 				//plain testosterone
-
 		elements.testosterone = {
 			color: "#f7eef7", //it absorbs longer wavelength UV than estradiol and I am treating this like absorbing green for convenience
 			behavior: behaviors.POWDER,
@@ -7243,13 +6819,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			tempHigh: 155,
 			category: "powders",
 		},
-
 		elements.molten_testosterone = {
 			tempHigh: 433,
 			temp: 400,
 			stateHigh: "vaporized_testosterone",
 		},
-
 		elements.vaporized_testosterone = {
 			color: ["#ffbf60","#ffdc60","#ff9d60"],
 			behavior: behaviors.GAS,
@@ -7261,9 +6835,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			tempLow: 433,
 			stateLow: "molten_testosterone",
 		},
-
 				//undecanoate (form actually used in HRT)
-
 		elements.testosterone_undecanoate = {
 			color: "#f8f2fc", //more creatively-interpreted UV data: https://spectrabase.com/spectrum/5Yc7XCCDkA7 plus http://depts.washington.edu/cmditr/modules/lum/color.html and a lot of eyeballing and loose approximation
 			behavior: behaviors.POWDER,
@@ -7273,13 +6845,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			tempHigh: 63,
 			category: "powders",
 		},
-
 		elements.molten_testosterone_undecanoate = {
 			tempHigh: 550,
 			stateHigh: "vaporized_testosterone_undecanoate",
 			hidden: true,
 		},
-
 		elements.vaporized_testosterone_undecanoate = {
 			color: ["#ffbf60","#ffdc60","#ff9d60"],
 			behavior: behaviors.GAS,
@@ -7291,13 +6861,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			tempLow: 63,
 			stateLow: "molten_testosterone_undecanoate",
 		},
-
 		//other
-
 			//anti-androgens
-
 				//CPA
-
 		elements.cyproterone_acetate = {
 			color: "#efeef8", //it absorbs far longer uv than the others, which i am rendering as red absorption
 				  //https://www.researchgate.net/figure/UV-spectrum-for-drospirenone-cyproterone-acetate-desogestrel-and-ethinyl-estradiol-at-1_fig1_315746083
@@ -7309,21 +6875,17 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			tempHigh: 200,
 			category: "powders",
 		},
-
 		/*	> Hazardous decomposition products:
 			> Hydrogen chloride (HCl)
 			> Carbon monoxide and carbon dioxide
 			> Hydrogen
-
 			> https://cdn.caymanchem.com/cdn/msds/16622m.pdf
-
 			so many interesting effects i can't add
 		*/
 		elements.molten_cyproterone_acetate = {
 			tempHigh: 569,
 			stateHigh: "vaporized_cyproterone_acetate",
 		},
-
 		elements.vaporized_cyproterone_acetate = {
 			color: ["#ffbf60","#ffdc60","#ff9d60"],
 			behavior: behaviors.GAS,
@@ -7334,9 +6896,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			tempLow: 569,
 			stateLow: "molten_cyproterone_acetate",
 		},
-
 				//spironolactone
-
 		elements.spironolactone = {
 			color: "#f7eef1", //UV absorbance peak wavelength is slightly shorter than that of testosterone
 				  //https://www.researchgate.net/publication/348592381_Quantification_of_Spironolactone_by_first_and_second_order_UV_Derivative_Spectrophotometry_in_bulk_and_tablet_dosage_form/link/6006b3cf299bf14088a649bd/download
@@ -7347,7 +6907,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			tempHigh: 207,
 			category: "powders",
 		},
-
 		elements.molten_spironolactone = {
 			tempHigh: 597,
 			stateHigh: "vaporized_spironolactone",
@@ -7355,7 +6914,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			https://sci-hub.se/https://link.springer.com/article/10.1007/BF01979243
 			> The TG-DTG curves of spironolactone in Fig. 7 demonstrate that the compound is thermally stable up to 200*C, and that its thermal decomposition occurs between 200 and 620*C. Four consecutive steps are observed in the TG-DTG curves. The first step, up to 260*C is ascribed to the elimination of the substituent group, SCOCH_{3} (TG= 19.59%, Calc. = 19.33%). The second step (260-370*C) and the third and fourth steps (370-700*C) involve losses of 42.93% and 37.48%, respectively, but do not permit a suggestion as to which parts of the compound are eliminated in each step. */
 		},
-
 		elements.vaporized_spironolactone = {
 			color: ["#ffbf60","#ffdc60","#ff9d60"],
 			behavior: behaviors.GAS,
@@ -7366,9 +6924,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			tempLow: 597,
 			stateLow: "molten_spironolactone",
 		},
-
 				//finasteride
-
 		elements.finasteride = {
 			color: "#fcfcf1", //UV absorbance peak wavelength is even shorter than that of estradiol
 				  //https://www.researchgate.net/publication/312317200
@@ -7379,12 +6935,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			tempHigh: 253,
 			category: "powders",
 		},
-
 		elements.molten_finasteride = {
 			tempHigh: 577,
 			stateHigh: "vaporized_finasteride",
 		},
-
 		elements.vaporized_finasteride = {
 			color: ["#ffbf60","#ffdc60","#ff9d60"],
 			behavior: behaviors.GAS,
@@ -7395,9 +6949,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			tempLow: 577,
 			stateLow: "molten_finasteride",
 		},
-
 				//dutasteride
-
 		elements.dutasteride = {
 			color: "#fbf6ee", //High UV absorbances around the peak wavelengths of both estradiol and testosterone
 				  //https://sphinxsai.com/sphinxsaivol_2no.1/pharmtech_vol_2no.1/PharmTech_Vol_2No.1PDF/PT=18%20(113-117).pdf
@@ -7408,12 +6960,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			tempHigh: 243,
 			category: "powders",
 		},
-
 		elements.molten_dutasteride = {
 			tempHigh: 620, //http://www.chemspider.com/Chemical-Structure.5293502.html
 			stateHigh: "vaporized_dutasteride",
 		},
-
 		elements.vaporized_dutasteride = {
 			color: ["#ffbf60","#ffdc60","#ff9d60"],
 			behavior: behaviors.GAS,
@@ -7424,9 +6974,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			tempLow: 620,
 			stateLow: "molten_dutasteride",
 		},
-
 				//bicalutamide
-
 		elements.bicalutamide = {
 			color: "#f4fcee", //peaks at 200-220 and at 270
 				  //i am probably mapping uv to visible wrong and misreading color.html
@@ -7438,12 +6986,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			tempHigh: 192,
 			category: "powders",
 		},
-
 		elements.molten_bicalutamide = {
 			tempHigh: 659,
 			stateHigh: "vaporized_bicalutamide",
 		},
-
 		elements.vaporized_bicalutamide = {
 			color: ["#ffbf60","#ffdc60","#ff9d60"],
 			behavior: behaviors.GAS,
@@ -7454,9 +7000,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			tempLow: 659,
 			stateLow: "molten_bicalutamide",
 		},
-
 			//puberty blockers
-
 		elements.leuprolide = {
 			color: "#f5eefb", //http://dspace.hmlibrary.ac.in:8080/jspui/bitstream/123456789/1143/11/11_Chapter%203.pdf
 			behavior: behaviors.POWDER,
@@ -7466,12 +7010,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			tempHigh: 150,
 			category: "powders",
 		},
-
 		elements.molten_leuprolide = {
 			tempHigh: 1720, //https://web.archive.org/web/20210512074205/http://www.shreejipharmainternational.com/leuprolide-acetate-1177796.html
 			stateHigh: "vaporized_leuprolide",
 		},
-
 		elements.vaporized_leuprolide = {
 			color: ["#ffbf60","#ffdc60","#ff9d60"],
 			behavior: behaviors.GAS,
@@ -7482,9 +7024,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			tempLow: 1720,
 			stateLow: "molten_leuprolide",
 		},
-
 			//histrelin
-
 		elements.histrelin = {
 			color: "#f8f5ee", //no spectrum available
 			behavior: behaviors.POWDER,
@@ -7495,7 +7035,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			stateHigh: "vaporized_histrelin",
 			category: "powders",
 		},
-
 		elements.vaporized_histrelin = {
 			color: ["#ffbf60","#ffdc60","#ff9d60"],
 			behavior: behaviors.GAS,
@@ -7505,9 +7044,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			tempLow: 1800,
 			stateLow: "histrelin",
 		},
-
 		//end of hrt section
-
 		elements.densinium = {
 			color: ["#565656","#575657","#565257","#554d57","#554659"],
 			tempHigh: 4712, //arbitrary
@@ -7518,13 +7055,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "solids",
 		} //this is effectively a mere interpretation of densinium
-
 		elements.molten_densinium = {
 			hardness: 0.9991,
 		}
-
 		elements.acid.ignore.push("densinium","molten_densinium")
-
 		//maxColorOffset will only be applied if maxColorOffset.js is enabled
 		elements.silk_velvet = {
 			color: ["#edece8", "#ede7e4"],
@@ -7541,7 +7075,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			burnTime:25,
 			density: 182,
 		};
-
 		elements.red_velvet = {
 			color: ["#a80508", "#b30b0e"],
 			maxColorOffset: 7,
@@ -7560,13 +7093,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			burnTime: 25,
 			density: 182,
 		};
-
 		elements.netherrack.hardness = 0.07;
 		elements.netherrack.breakInto = ["crushed_netherrack","crushed_netherrack","crushed_netherrack","crushed_netherrack","crushed_netherrack","crushed_netherrack","crushed_netherrack","sulfur"] // and some copper, gold, iron, nickel after processing //sulfur closer to 1/7 in-game
 		elements.netherrack.burn = 9
 		elements.netherrack.burnTime = 9007199254740995
 		elements.netherrack.burnInto = "netherrack"
-
 		elements.crushed_netherrack = {
 			color: ["#e34b46","#b04235","#73431f","#522510","#7a3326"],
 			behavior: behaviors.POWDER,
@@ -7580,7 +7111,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hardness: 0.02,
 			hidden: true,
 		};
-
 		elements.sencc = { //same element neighbor count check
 			color: "#000000",
 			uwu: 0,
@@ -7607,7 +7137,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			hidden: true,
 		},
-
 		elements.sencc2 = { //same element neighbor count check
 			color: "#000000",
 			uwu: 0,
@@ -7634,7 +7163,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			hidden: true,
 		},
-
 		elements.sencc3 = { //same element neighbor count check
 			color: "#000000",
 			uwu: 0,
@@ -7662,7 +7190,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			hidden: true,
 		},
-
 		elements.sencc4 = { //same element neighbor count check
 			color: "#000000",
 			uwu: 0,
@@ -7690,7 +7217,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			hidden: true,
 		},
-
 		elements.sencc5 = { //same element neighbor count check
 			color: "#000000",
 			uwu: 0,
@@ -7718,7 +7244,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			hidden: true,
 		},
-
 		elements.sencc6 = { //same element neighbor count check
 			color: "#000000",
 			uwu: 0,
@@ -7746,7 +7271,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			hidden: true,
 		},
-
 		elements.sencc7 = { //same element neighbor count check
 			color: "#000000",
 			uwu: 0,
@@ -7774,7 +7298,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			hidden: true,
 		},
-
 		elements.sencc8 = { //same element neighbor count check
 			color: "#000000",
 			uwu: 0,
@@ -7802,7 +7325,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			hidden: true,
 		},
-
 		elements.sencc9 = { //same element neighbor count check
 			color: "#000000",
 			uwu: 0,
@@ -7830,7 +7352,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			hidden: true,
 		},
-
 		elements.sencc10 = { //same element neighbor count check
 			color: "#000000",
 			uwu: 0,
@@ -7858,7 +7379,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			hidden: true,
 		},
-
 		elements.sencc11 = { //same element neighbor count check
 			color: "#000000",
 			uwu: 0,
@@ -7886,7 +7406,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			hidden: true,
 		},
-
 		elements.sencc2b = { //same element neighbor count check
 			color: "#000000",
 			uwu: 0,
@@ -7919,7 +7438,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			hidden: true,
 		},
-
 		elements.discharge = {
 			color: "#7f7f7f",
 			tick: function(pixel) {
@@ -7937,7 +7455,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			behavior: behaviors.SELFDELETE,
 		},
-
 		elements.troll_powder = {
 			color: ["#ffffff","#000000"],
 			tick: function(pixel) {
@@ -7958,14 +7475,13 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						if(fff < 5/5) { tryMove(pixel, pixel.x+2, pixel.y-1) }
 					}
 					if(Math.random() < 0.0003) { tryMove(pixel, pixel.y, pixel.y); }
-					if(Math.random() < 0.0003) { tryMove(pixel, pixel.x, pixel.x); }		
+					if(Math.random() < 0.0003) { tryMove(pixel, pixel.x, pixel.x); }
 					if(((Math.floor(pixel.x/2) % 2 == 0) && (Math.floor(pixel.y/2) % 2 == 0)) || ((Math.floor(pixel.x/2) % 2 == 1) && (Math.floor(pixel.y/2) % 2 == 1))) {
 						pixel.color = "rgb(32,32,32)"
 					} else {
 						pixel.color = "rgb(224,224,224)"
 					}
 				}
-
 				if(ddd >= 0.9) {
 					if(!tryMove(pixel, pixel.x, pixel.y-1)) {
 						if(eee < 1/2) { tryMove(pixel, pixel.x-1, pixel.y-1) } else tryMove(pixel, pixel.x+1, pixel.y-1)
@@ -7978,7 +7494,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						if(fff < 5/5) { tryMove(pixel, pixel.x+2, pixel.y+1) }
 					}
 					if(Math.random() < 0.0003) { tryMove(pixel, pixel.y, pixel.y); }
-					if(Math.random() < 0.0003) { tryMove(pixel, pixel.x, pixel.x); }		
+					if(Math.random() < 0.0003) { tryMove(pixel, pixel.x, pixel.x); }
 					if(((Math.floor(pixel.x/2) % 2 == 0) && (Math.floor(pixel.y/2) % 2 == 0)) || ((Math.floor(pixel.x/2) % 2 == 1) && (Math.floor(pixel.y/2) % 2 == 1))) {
 						pixel.color = "rgb(32,32,32)"
 					} else {
@@ -7991,7 +7507,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			density: 1602,
 		},
-
 		elements.void_first = {
 			color: "#262626",
 			tick: function(pixel) {
@@ -8171,7 +7686,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						delete pixel.dc4;
 					}
 				}
-
 				for(i = 0; i < adjacentCoords.length; i++) {
 					var pX = pixel.x; var pY = pixel.y; var oX = adjacentCoords[i][0]; var oY = adjacentCoords[i][1]; var nX = pX+oX; var nY = pY+oY;
 					if(!isEmpty(nX,nY,true)) {
@@ -8186,7 +7700,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category:"special",
 			hardness: 1,
 		},
-
 		elements.converter = {
 			color: "#2ec408",
 			tick: function(pixel) {
@@ -8366,7 +7879,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						delete pixel.dc4;
 					}
 				}
-
 				for(i = 0; i < adjacentCoords.length; i++) {
 					var pX = pixel.x; var pY = pixel.y; var oX = adjacentCoords[i][0]; var oY = adjacentCoords[i][1]; var nX = pX+oX; var nY = pY+oY;
 					if(!isEmpty(nX,nY,true)) {
@@ -8383,9 +7895,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			ignore: ["wall","cloner","liquid_cloner","slow_cloner","void","clone_powder","floating_cloner","void_first","converter"],
 			hardness: 1,
 		},
-
 		conveyorIgnoreList = ["conveyor_1","conveyor_2","wall"]
-
 		elements.conveyor_1 = {
 			color: "#7f7f7f",
 			tick: function(pixel) {
@@ -8470,7 +7980,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			insulate: true,
 			state: "solid",
 		},
-
 		elements.conveyor_2 = {
 			color: "#7f7f7f",
 			tick: function(pixel) {
@@ -8555,7 +8064,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			insulate: true,
 			state: "solid",
 		},
-
 		elements.vanishing_wall = {
 			behavior: behaviors.WALL,
 			color: "#8080b0",
@@ -8576,7 +8084,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			conduct: 1,
 			extraInfo: "It disappears when charged.",
 		},
-
 		elements.vanishing_steel = {
 			color: "#71797E",
 			behavior: behaviors.WALL,
@@ -8594,7 +8101,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			conduct: 1,
 			hardness: 0.8,
 		};
-
 		elements.polka_dotted_powder = {
 			color: ["#000000","#000000","#7f7f7f","#ffffff","#ffffff"],
 			behavior: behaviors.POWDER,
@@ -8611,7 +8117,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						} else {
 							pixel.color = "rgb(0,0,0)"
 						}
-					} 
+					}
 				} else if((pixel.y + 3) % 6 == 0) {
 					if((pixel.x + 3) % 6 == 0) {
 						pixel.color = "rgb(255,255,255)"
@@ -8621,7 +8127,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						} else {
 							pixel.color = "rgb(0,0,0)"
 						}
-					} 
+					}
 				} else {
 					if(!settings.bg || settings.bg == "#000000") {
 						pixel.color = "rgb(15,15,15)"
@@ -8632,7 +8138,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			},
 			tempHigh: 800,
 		},
-
 		elements.molten_polka_dotted_powder = {
 			color: ["#ff7f00","#ff7f00","#ff9f00","#ffbf00","#ffbf00"],
 			density: 1100,
@@ -8646,7 +8151,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						} else {
 							pixel.color = "rgb(255,127,16)"
 						}
-					} 
+					}
 				} else if((pixel.y + 3) % 6 == 0) {
 					if((pixel.x + 3) % 6 == 0) {
 						pixel.color = "rgb(255,191,0)"
@@ -8656,7 +8161,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						} else {
 							pixel.color = "rgb(255,127,16)"
 						}
-					} 
+					}
 				} else {
 					if(!settings.bg || settings.bg == "#ff7f00") {
 						pixel.color = "rgb(255,143,16)"
@@ -8673,7 +8178,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			viscosity: 6,
 			hidden: true,
 		},
-
 		elements.vaporized_polka_dotted_powder = {
 			color: ["#ffdf7f","#ffdf7f","#ffefbf","#ffffff","#ffffff"],
 			behavior: behaviors.GAS,
@@ -8690,7 +8194,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						} else {
 							pixel.color = "rgb(255,223,127)"
 						}
-					} 
+					}
 				} else if((pixel.y + 3) % 6 == 0) {
 					if((pixel.x + 3) % 6 == 0) {
 						pixel.color = "rgb(255,255,255)"
@@ -8700,7 +8204,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						} else {
 							pixel.color = "rgb(255,233,137)"
 						}
-					} 
+					}
 				} else {
 					if(!settings.bg || settings.bg == "#ffdf7f") {
 						pixel.color = "rgb(255,233,137)"
@@ -8716,7 +8220,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			stateHigh: "ionized_polka_dotted_powder",
 			hidden: true,
 		},
-
 		elements.ionized_polka_dotted_powder = {
 			color: ["#fffff0","#fffff0","#fffff7","#ffffff","#ffffff"],
 			behavior: [
@@ -8737,7 +8240,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						} else {
 							pixel.color = "rgb(255,255,240)"
 						}
-					} 
+					}
 				} else if((pixel.y + 3) % 6 == 0) {
 					if((pixel.x + 3) % 6 == 0) {
 						pixel.color = "rgb(255,255,255)"
@@ -8747,7 +8250,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						} else {
 							pixel.color = "rgb(255,255,240)"
 						}
-					} 
+					}
 				} else {
 					if(!settings.bg || settings.bg == "#fffff0") {
 						pixel.color = "rgb(255,255,247)"
@@ -8761,7 +8264,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			stateLow: "vaporized_polka_dotted_powder",
 			hidden: true,
 		},
-
 		elements.hdet = {
 			name: "heat- dependent explosion text",
 			color: "#33aa44",
@@ -8803,11 +8305,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "special"
 		},
-
 		function randInt(max) {
 		   return Math.floor(Math.random() * (max + 1))
 		}
-
 		function randIntR(min,max) {
 			if(min > max) {
 				var temp = max; //the need of a temporary space has always annoyed me
@@ -8816,7 +8316,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			};
 			return Math.floor(Math.random() * (max - min + 1)) + min
 		};
-
 		elements.lower_color_copy = {
 			behavior: behaviors.POWDER,
 			tick: function(pixel) {
@@ -8835,7 +8334,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			breakInto: ["metal_scrap", "glass_shard"],
 			hardness: 0.7,
 		}
-
 		elements.brimstone_slag = {
 			color: ["#745B57","#534D4A","#463F53","#51113E","#6D283B","#BC4949","#EA9B4E"],
 			properties: {
@@ -8878,27 +8376,20 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				}
 			}
 		};
-
 		elements.molten_slag ??= {};
 		elements.molten_slag.reactions ??= {};
-
 		elements.molten_slag.reactions.sulfur = elements.molten_slag.reactions.molten_sulfur = elements.molten_slag.reactions.sulfur_gas = elements.molten_sulfur.reactions.slag = elements.sulfur.reactions.molten_slag = { elem1: "brimstone_slag", elem2: null };
-		
 		elements.slag.tempHigh = 1780;
-
 		var temp = "firesea,lektre,concoction,mistake,unstable_mistake,toxic_mistake".split(",");
 		for(var i = 0; i < temp.length; i++) {
 			temp[i].state = "liquid";
 			temp[i].category = "liquids"
 		};
-
-		
 		elements.head.cutInto = ["bone","meat","blood"];
 		elements.body.cutInto = ["bone","meat","meat","blood","blood"];
 		elements.wood.cutInto = ["wood_plank","wood_plank","wood_plank","wood_plank","wood_plank","wood_plank","wood_plank","wood_plank","sawdust"];
 		elements.fish.breakInto = ["meat","meat","bone","blood"];
 		elements.fish.cutInto = ["meat","meat","bone","blood"];
-
 		elements.bladesea = {
 			color: ["#959696", "#b1b3b3", "#d4d4d4", "#bfbdbd"],
 			state: "liquid",
@@ -8936,14 +8427,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				"concoction": { "elem1": "bladesea", "elem2": "bladesea", "chance":0.005},
 			},
 		};
-
 	function newLegacyFnmDye(colorName,hexColor) {
 		if(!(hexColor.startsWith("#"))) { hexColor = "#" + hexColor };
 		colorName = colorName.toLowerCase();
 		var key = `${colorName}_dye`;
 		var name = `${colorName.replaceAll("_"," ")} dye`;
 		var pixelColor = changeLuminance(hexColor,0.73333333333333,"multiply","hex",null,false);
-		
 		elements[key] = {
 			"name": name,
 			"color": pixelColor,
@@ -8956,11 +8445,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			"density": 100,
 			"category": "dyes"
 		};
-		eLists.DYE.push(key);		
+		eLists.DYE.push(key);
 		elements.concoction.reactions[key] = { "elem1": "mistake", "elem2": null };
 		return elements[key]
 	};
-
 	var dyeColors = [
 		["rose", "#FF0067"],
 		["orange", "#FF7F00"],
@@ -8975,20 +8463,16 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		["white", "#FFFFFF"],
 		["sky_blue", "#99d1f2"]
 	];
-	
 	for(var i = 0; i < dyeColors.length; i++) {
 		newLegacyFnmDye(dyeColors[i][0],dyeColors[i][1])
 	};
-
 	eLists.LED = ["led_r","led_g","led_b"];
-	
 	function newLED(abbrev,hexColor,baseColorOverrideHex=null) {
 		if(!(hexColor.startsWith("#"))) { hexColor = "#" + hexColor };
 		if(baseColorOverrideHex && !(baseColorOverrideHex.startsWith("#"))) { baseColorOverrideHex = "#" + baseColorOverrideHex };
 		abbrev = abbrev.toLowerCase();
 		var key = `led_${abbrev}`;
 		var pixelColor = baseColorOverrideHex ?? changeLuminance(hexColor,0x66/0xff,"multiply","hex",null,false);
-		
 		elements[key] = {
 			behavior: behaviors.WALL,
 			reactions: {
@@ -9003,10 +8487,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			conduct: 1,
 			breakInto: "glass_shard"
 		};
-		
 		eLists.LED.push(key)
 	};
-
 	var ledColors = [
 		["c", "#00FFFF"], //cyan
 		["y", "#FFFF00"], //yellow
@@ -9026,31 +8508,22 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		["mg", "#4df0a9"], //mint green
 		["sb", "#99d1f2"] //sky blue (cursed)
 	];
-
 	for(var i = 0; i < ledColors.length; i++) {
 		newLED(...ledColors[i]);
 	};
-
 	for(var i = 0; i < eLists.LED.length; i++) {
 		var key = eLists.LED[i];
 		elements.malware.reactions[key] = { elem2:eLists.LED, chance:0.01 }
 	};
-
 	//ASSORTED RAINBOW VARIANTS ##
-
 		elements.concoction.reactions.diorite_gravel = {
 			elem1: "static", elem2: null
 		};
-
 		elements.concoction.reactions.static = { //spread
 			elem1: "static", elem2: "static"
 		};
-
 		elements.concoction.state = "liquid";
-
 		elements.static.reactions ??= {}; elements.static.reactions.concoction = { "elem1": "static", "elem2": "static", "chance":0.005},
-
-
 		/*function isRed(colorIn) {
 			var color = colorToHsl(colorIn,"json");
 			var modularHue = color.h % 360;
@@ -9059,12 +8532,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			if (color.l < 40 || color.l > 60) { return false };
 			return true
 		};
-
 		function isWhite(colorIn) {
 			var color = colorToHsl(colorIn,"json");
 			return color.s <= 15 && color.l >= 85
 		};*/
-
 		elements.rainbow.reactions ??= {};
 		elements.rainbow.reactions.fire = { elem1: "fireshimmer", chance: 0.1 };
 		elements.rainbow.reactions.plasma = { elem1: "plasmashimmer", chance: 0.1 };
@@ -9173,7 +8644,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		elements.rainbow.reactions.heejinite_powder = { elem1: "heejinshimmer" };
 		elements.rainbow.reactions.molten_heejinite = { elem1: "heejinshimmer" };
 		elements.rainbow.reactions.heejinite_gas = { elem1: "heejinshimmer" };
-
 		/*elements.rainbow.reactions.dye = {
 			func: function(pixel,otherPixel) {
 				//The dye reactant is the otherPixel
@@ -9193,7 +8663,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				return true
 			}
 		};*/
-
 		elements.rainbow.tick = function(pixel) {
 			var dyeColor = pixel.dyeColor ?? null;
 			var t = pixelTicks+pixel.x+pixel.y;
@@ -9214,7 +8683,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				pixel.color = convertColorFormats(finalColor,"rgb")
 			}
 		};
-
 		elements.rainbow.state = "solid";
 		elements.rainbow.reactions.dye = {
 			func: function(pixel,otherPixel) {
@@ -9234,9 +8702,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				}
 			}
 		};
-
 		rainbowMathlet = function(t,scale,offset) { return Math.cos(t*Math.PI/scale+offset*Math.PI/3) };
-
 		elements.dark_rainbow = {
 			color: ["#000000","#ff0000","#000000","#ff8800","#000000","#ffff00","#000000","#00ff00","#000000","#00ffff","#000000","#0000ff","#000000","#ff00ff"],
 			tick: function(pixel) {
@@ -9266,7 +8732,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.fireshimmer = {
 			color: ["#ff0000","#ff8800","#ffff00","#ff8800","#ff0000"],
 			tick: function(pixel) {
@@ -9274,7 +8739,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				var t = pixelTicks*3+pixel.x+pixel.y;
 				var g = Math.floor(127*((Math.max(0,1-(rainbowMathlet(t,25,0)))) ** 1.1));
 				baseColor = "rgb(255,"+g+",0)";
-				if(!dyeColor) { 
+				if(!dyeColor) {
 					pixel.color = baseColor
 				} else {
 					var baseJSON = convertColorFormats(baseColor,"json");
@@ -9297,7 +8762,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "rainbow variants",
 			movable: false,
 		};
-
 		elements.plasmashimmer = {
 			color: ["#8800ff","#f2f2f2","#8800ff","#f2f2f2"],
 			tick: function(pixel) {
@@ -9305,7 +8769,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				var t = pixelTicks*3+pixel.x+pixel.y;
 				var value = Math.floor(127*((Math.max(0,1-(rainbowMathlet(t,25,0)))) ** 1.1));
 				baseColor = "rgb(" + [Math.round(127 + (value/2)), value, 255].join(",") + ")";
-				if(!dyeColor) { 
+				if(!dyeColor) {
 					pixel.color = baseColor
 				} else {
 					var baseJSON = convertColorFormats(baseColor,"json");
@@ -9327,7 +8791,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "rainbow variants",
 			movable: false,
 		};
-
 		elements.glitchy_rainbow = {
 			color: ["#ff0000","#ff8800","#ffff00","#ff8800","#ff0000"],
 			tick: function(pixel) {
@@ -9366,11 +8829,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "rainbow variants",
 			movable: false,
 		};
-
 		elements.rainbow.behavior = behaviors.WALL;
-
 		elements.dye.ignore ??= [];
-
 		elements.pastel_rainbow = {
 			color: ["#ffaacc","#ffaacc","#aaccff","#aaccff","#ffffbb","#ffffbb"],
 			tick: function(pixel) {
@@ -9426,7 +8886,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.rubyshimmer = {
 			color: ["#ff0000","#200000","#ff0000","#200000"],
 			tick: function(pixel) {
@@ -9438,7 +8897,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.topazshimmer = {
 			color: ["#ffff00","#202000","#ffff00","#202000"],
 			tick: function(pixel) {
@@ -9452,7 +8910,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.beeshimmer = {
 			color: ["#ffff00","#202000","#ffff00","#202000","#ffff00","#202000","#ffff00","#202000"],
 			tick: function(pixel) {
@@ -9466,7 +8923,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.ambershimmer = {
 			color: ["#ff7f00","#201000","#ff7f00","#201000"],
 			tick: function(pixel) {
@@ -9479,7 +8935,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.emeraldshimmer = {
 			color: ["#00ff00","#002000","#00ff00","#002000"],
 			tick: function(pixel) {
@@ -9492,7 +8947,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.iceshimmer = {
 			color: ["#00ffff","#001520","#00ffff","#001520"],
 			tick: function(pixel) {
@@ -9505,7 +8959,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.sapphireshimmer = {
 			color: ["#0000ff","#000020","#0000ff","#000020"],
 			tick: function(pixel) {
@@ -9518,7 +8971,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.amethystshimmer = {
 			color: ["#7f00ff","#100020","#7f00ff","#100020"],
 			tick: function(pixel) {
@@ -9531,7 +8983,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.spinelshimmer = {
 			color: ["#ff00ff","#200020","#ff00ff","#200020"],
 			tick: function(pixel) {
@@ -9544,7 +8995,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.mulliteshimmer = {
 			color: ["#f8eeff","#151020","#f8eeff","#151020"],
 			tick: function(pixel) {
@@ -9557,7 +9007,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.dantiteshimmer = {
 			color: ["#00ff7f","#002010","#00ff7f","#002010"],
 			tick: function(pixel) {
@@ -9571,7 +9020,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "rainbow variants",
 			nellfireImmune: true
 		};
-
 		elements.turquoiseshimmer = {
 			color: ["#00ffff","#002020","#00ffff","#002020"],
 			tick: function(pixel) {
@@ -9585,7 +9033,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "rainbow variants",
 			nellfireImmune: true
 		};
-
 		elements.diabalineshimmer = {
 			color: ["#af7fcf","#141018","#af7fcf","#141018"],
 			tick: function(pixel) {
@@ -9598,7 +9045,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.goldshimmer = {
 			color: ["#ffcf00","#201800","#ffcf00","#201800"],
 			tick: function(pixel) {
@@ -9611,7 +9057,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.leadshimmer = {
 			color: ["#2f2f4f","#040410","#2f2f4f","#040410"],
 			tick: function(pixel) {
@@ -9624,7 +9069,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.onyxshimmer = {
 			color: ["#1f1f1f","#040404","#1f1f1f","#040404"],
 			tick: function(pixel) {
@@ -9637,7 +9081,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.opalshimmer = {
 			color: function() { var rc = elements.rainbow.color; var rc2 = rc.map(x => lightenColor(x,127,"hex")); return rc2.concat(rc2) }(),
 			tick: function(pixel) {
@@ -9677,7 +9120,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.jadeshimmer = {
 			color: ["#5f8f2f","#0c1206","#5f8f2f","#0c1206"],
 			tick: function(pixel) {
@@ -9689,7 +9131,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.earthshimmer = {
 			color: ["#5f3f00","#0c0800","#5f3f00","#0c0800"],
 			tick: function(pixel) {
@@ -9702,7 +9143,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.seashimmer = {
 			color: ["#007fff","#001020","#007fff","#001020"],
 			tick: function(pixel) {
@@ -9715,7 +9155,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.lavashimmer = {
 			color: ["#ff3f00","#200800","#ff3f00","#200800"],
 			tick: function(pixel) {
@@ -9728,7 +9167,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.radioshimmer = { //if it captures and renders harmless fire+crimmagma+lava then it can provide radiation shielding
 			color: ["#7fff00","#102000","#7fff00","#102000"],
 			tick: function(pixel) {
@@ -9741,7 +9179,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.ashenshimmer = {
 			color: ["#cfcfcf","#181818","#cfcfcf","#181818"],
 			tick: function(pixel) {
@@ -9754,7 +9191,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.steelshimmer = {
 			color: ["#7f7f7f","#101010","#7f7f7f","#101010"],
 			tick: function(pixel) {
@@ -9767,7 +9203,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.smokeshimmer = {
 			color: ["#3f3f3f","#050505","#3f3f3f","#050505"],
 			tick: function(pixel) {
@@ -9780,7 +9215,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.cloudshimmer = {
 			color: ["#dfefff","#1d1e20","#dfefff","#1d1e20"],
 			tick: function(pixel) {
@@ -9793,7 +9227,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.fluoroshimmer = {
 			color: ["#5f6f2f","#081000","#5f6f2f","#081000"],
 			tick: function(pixel) {
@@ -9806,7 +9239,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.chloroshimmer = {
 			color: ["#3f7f00","#081000","#3f7f00","#081000"],
 			tick: function(pixel) {
@@ -9819,7 +9251,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.bromoshimmer = {
 			color: ["#7f1f00","#100400","#7f1f00","#100400"],
 			tick: function(pixel) {
@@ -9832,7 +9263,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.iodoshimmer = {
 			color: ["#5f007f","#0c0010","#5f007f","#0c0010"],
 			tick: function(pixel) {
@@ -9845,7 +9275,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.astatoshimmer = {
 			color: ["#230f27","#050205","#230f27","#050205"],
 			tick: function(pixel) {
@@ -9858,7 +9287,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.bloodshimmer = {
 			color: ["#7f0000","#100000","#7f0000","#100000"],
 			tick: function(pixel) {
@@ -9871,7 +9299,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.saltshimmer = {
 			color: ["#ffffff","#202020","#ffffff","#202020"],
 			tick: function(pixel) {
@@ -9884,7 +9311,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.sandshimmer = {
 			color: ["#ffdf7f","#201d10","#ffdf7f","#201d10"],
 			tick: function(pixel) {
@@ -9897,7 +9323,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.ichorshimmer = {
 			color: ["#ffbf5f","#201804","#ffbf5f","#201804"],
 			tick: function(pixel) {
@@ -9910,7 +9335,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.quarkshimmer = {
 			color: ["#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff"],
 			tick: function(pixel) {
@@ -9920,7 +9344,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				var g = Math.floor(127*(((Math.max(0,1-(rainbowMathlet(t,20,2))) / 1.575) ** 5) * 1.575));
 				var b = Math.floor(127*(((Math.max(0,1-(rainbowMathlet(t,20,4))) / 1.575) ** 5) * 1.575));
 				baseColor = "rgb("+([r,g,b].join(","))+")";
-				if(!dyeColor) { 
+				if(!dyeColor) {
 					pixel.color = baseColor
 				} else {
 					var baseJSON = convertColorFormats(baseColor,"json");
@@ -9942,7 +9366,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "rainbow variants",
 			movable: false,
 		};
-
 		elements.heejinshimmer = {
 			color: ["#ff007f","#200010","#ff007f","#200010"],
 			tick: function(pixel) {
@@ -9959,7 +9382,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants",
 		};
-
 		elements.pastel_rainbow_small = {
 			color: ["#ffaacc","#ffaacc","#aaccff","#aaccff","#ffffbb","#ffffbb"],
 			tick: function(pixel) {
@@ -9989,7 +9411,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants"
 		};
-
 		elements.pastel_rainbow_t_d_x = {
 			color: ["#ffaacc","#ffaacc","#aaccff","#aaccff","#ffffbb","#ffffbb"],
 			name: "pastel rainbow (time/x)",
@@ -10020,7 +9441,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants"
 		};
-
 		elements.pastel_rainbow_t_d_y = {
 			color: ["#ffaacc","#ffaacc","#aaccff","#aaccff","#ffffbb","#ffffbb"],
 			name: "pastel rainbow (time/y)",
@@ -10051,7 +9471,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants"
 		};
-
 		elements.pastel_rainbow_x = {
 			color: ["#ffaacc","#ffaacc","#aaccff","#aaccff","#ffffbb","#ffffbb"],
 			name: "pastel rainbow (x distance)",
@@ -10082,7 +9501,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants"
 		};
-
 		elements.pastel_rainbow_y = {
 			color: ["#ffaacc","#ffaacc","#aaccff","#aaccff","#ffffbb","#ffffbb"],
 			name: "pastel rainbow (y distance)",
@@ -10113,7 +9531,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants"
 		};
-
 		elements.pastel_rainbow_d = {
 			name: "pastel rainbow (diagonal distance)",
 			color: ["#ffaacc","#ffaacc","#aaccff","#aaccff","#ffffbb","#ffffbb"],
@@ -10145,7 +9562,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants"
 		};
-
 		elements.pastel_rainbow_x_p_y = {
 			color: ["#ffaacc","#ffaacc","#aaccff","#aaccff","#ffffbb","#ffffbb"],
 			name: "pastel rainbow (x+y)",
@@ -10175,7 +9591,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants"
 		};
-
 		elements.pastel_rainbow_x_m_y = {
 			color: ["#ffaacc","#ffaacc","#aaccff","#aaccff","#ffffbb","#ffffbb"],
 			name: "pastel rainbow (x-y)",
@@ -10205,7 +9620,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants"
 		};
-
 		elements.pastel_rainbow_x_t_y = {
 			color: ["#ffaacc","#ffaacc","#aaccff","#aaccff","#ffffbb","#ffffbb"],
 			name: "pastel rainbow (x*y)",
@@ -10235,7 +9649,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants"
 		};
-
 		elements.pastel_rainbow_x_d_y = {
 			color: ["#ffaacc","#ffaacc","#aaccff","#aaccff","#ffffbb","#ffffbb"],
 			name: "pastel rainbow (x/y)",
@@ -10269,7 +9682,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants"
 		};
-
 		elements.pastel_rainbow_x_e_y = {
 			color: ["#ffaacc","#ffaacc","#aaccff","#aaccff","#ffffbb","#ffffbb"],
 			name: "pastel rainbow (x^y)",
@@ -10299,7 +9711,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants"
 		};
-
 		elements.pastel_rainbow_x_r_y = {
 			color: ["#ffaacc","#ffaacc","#aaccff","#aaccff","#ffffbb","#ffffbb"],
 			name: "pastel rainbow (ʸ√x)",
@@ -10329,7 +9740,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants"
 		};
-
 		elements.pastel_rainbow_x_l_y = {
 			color: ["#ffaacc","#ffaacc","#aaccff","#aaccff","#ffffbb","#ffffbb"],
 			name: "pastel rainbow (logᵧ(x))",
@@ -10359,7 +9769,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants"
 		};
-
 		elements.pastel_rainbow_s_x = {
 			color: ["#ffaacc","#ffaacc","#aaccff","#aaccff","#ffffbb","#ffffbb"],
 			name: "pastel rainbow (sin(x))",
@@ -10389,7 +9798,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants"
 		};
-
 		elements.pastel_rainbow_c_x = {
 			color: ["#ffaacc","#ffaacc","#aaccff","#aaccff","#ffffbb","#ffffbb"],
 			name: "pastel rainbow (cos(x))",
@@ -10419,7 +9827,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants"
 		};
-
 		elements.pastel_rainbow_t_x = {
 			color: ["#ffaacc","#ffaacc","#aaccff","#aaccff","#ffffbb","#ffffbb"],
 			name: "pastel rainbow (tan(x))",
@@ -10449,7 +9856,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants"
 		};
-
 		elements.pastel_rainbow_sh_x = {
 			color: ["#ffaacc","#ffaacc","#aaccff","#aaccff","#ffffbb","#ffffbb"],
 			name: "pastel rainbow (sinh(x))",
@@ -10479,7 +9885,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants"
 		};
-
 		elements.pastel_rainbow_ch_x = {
 			color: ["#ffaacc","#ffaacc","#aaccff","#aaccff","#ffffbb","#ffffbb"],
 			name: "pastel rainbow (cosh(x))",
@@ -10509,7 +9914,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants"
 		};
-
 		elements.pastel_rainbow_th_x = {
 			color: ["#ffaacc","#ffaacc","#aaccff","#aaccff","#ffffbb","#ffffbb"],
 			name: "pastel rainbow (tanh(x))",
@@ -10539,7 +9943,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants"
 		};
-
 		elements.pastel_rainbow_sr_x = {
 			name: "pastel rainbow (√x))",
 			color: ["#ffaacc","#ffaacc","#aaccff","#aaccff","#ffffbb","#ffffbb"],
@@ -10569,7 +9972,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants"
 		};
-
 		elements.pastel_rainbow_d_m_x = {
 			color: ["#ffaacc","#ffaacc","#aaccff","#aaccff","#ffffbb","#ffffbb"],
 			name: "pastel rainbow (diagonal distance - x))",
@@ -10599,7 +10001,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants"
 		};
-
 		elements.pastel_rainbow_d_t_x = {
 			color: ["#ffaacc","#ffaacc","#aaccff","#aaccff","#ffffbb","#ffffbb"],
 			name: "pastel rainbow (diagonal distance * x))",
@@ -10629,7 +10030,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants"
 		};
-
 		elements.pastel_rainbow_x_d_d = {
 			color: ["#ffaacc","#ffaacc","#aaccff","#aaccff","#ffffbb","#ffffbb"],
 			name: "pastel rainbow (x / diagonal distance))",
@@ -10659,7 +10059,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants"
 		};
-
 		elements.pastel_rainbow_x_mod_y = {
 			color: ["#ffaacc","#ffaacc","#aaccff","#aaccff","#ffffbb","#ffffbb"],
 			name: "pastel rainbow (x % y))",
@@ -10689,7 +10088,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants"
 		};
-
 		elements.pastel_rainbow_d_mod_x = {
 			color: ["#ffaacc","#ffaacc","#aaccff","#aaccff","#ffffbb","#ffffbb"],
 			name: "pastel rainbow (diagonal distance modulo x))",
@@ -10719,7 +10117,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants"
 		};
-
 		elements.pastel_rainbow_d_mod_y = {
 			color: ["#ffaacc","#ffaacc","#aaccff","#aaccff","#ffffbb","#ffffbb"],
 			name: "pastel rainbow (diagonal distance modulo y))",
@@ -10749,9 +10146,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			category: "rainbow variants"
 		};
-
 	//ASSORTED RANDOMLY GENERATED MATERIALS ##
-
 		elements.fowtim_ice = {
 			color: "#6c6dec",
 			behavior: behaviors.WALL,
@@ -10765,7 +10160,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			breakInto: "fowtim",
 			conduct: 0.14,
 		};
-
 		elements.fowtim = {
 			color: "#2324e2",
 			behavior: behaviors.LIQUID,
@@ -10782,7 +10176,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			breakInto: "fowtim_gas",
 			conduct: 0.078,
 		};
-
 		elements.fowtim_gas = {
 			color: "#b6b6f5",
 			behavior: behaviors.GAS,
@@ -10794,7 +10187,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 1.36,
 			hardness: 1,
 		};
-
 		elements.shit = {
 			color: ["#756674","#554754","#827381"],
 			behavior: behaviors.POWDER,
@@ -10806,7 +10198,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			breakInto: ["dust","shit_gravel"],
 			stateHigh: "molten_shit"
 		};
-
 		elements.shit_gravel = {
 			color: ["#b9a9b5","#97858d","#6e6068","#57454e"],
 			behavior: behaviors.POWDER,
@@ -10818,7 +10209,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hardness: 0.19,
 			breakInto: "dust",
 		};
-
 		elements.loona = {
 			color: ["#6f7d54","#4f5d34","#7c8a61"],
 			behavior: behaviors.POWDER,
@@ -10841,9 +10231,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hardness: 0.20,
 			breakInto: "dust",
 		};
-
 	//ROSEYIEDE ##
-
 		elements.roseyiede = {
 			color: "#686118",
 			behavior: behaviors.LIQUID,
@@ -10855,7 +10243,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "liquid",
 			density: 1000,
 		},
-
 		elements.gaseous_roseyiede = {
 			color: "#a49e4c",
 			behavior: behaviors.GAS,
@@ -10883,7 +10270,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 0.63,
 			temp: 120,
 		},
-
 		elements.solid_roseyiede = {
 			color: "#685e10",
 			behavior: behaviors.WALL,
@@ -10896,7 +10282,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			breakInto: "powdered_roseyiede",
 			temp: -20,
 		},
-
 		elements.powdered_roseyiede = {
 			color: "#6c641c",
 			behavior: behaviors.POWDER,
@@ -10907,9 +10292,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 182,
 			temp: -20,
 		}
-
 		//Volatile Roseyiede
-
 		elements.explosive_roseyiede = {
 			color: "#986118",
 			behavior: behaviors.LIQUID,
@@ -10941,7 +10324,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "liquid",
 			density: 1000,
 		},
-
 		elements.gaseous_explosive_roseyiede = {
 			color: "#c89e4c",
 			behavior: behaviors.GAS,
@@ -10972,7 +10354,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 0.63,
 			temp: 120,
 		},
-
 		elements.explosive_roseyiede_vapor = {
 			color: "#c89449",
 			behavior: behaviors.GAS,
@@ -11005,7 +10386,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 0.63,
 			temp: 40,
 		},
-
 		elements.solid_explosive_roseyiede = {
 			color: "#985e10",
 			behavior: behaviors.WALL,
@@ -11021,7 +10401,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			breakInto: "powdered_explosive_roseyiede",
 			temp: -20,
 		},
-
 		elements.powdered_explosive_roseyiede = {
 			color: "#98641c",
 			behavior: behaviors.POWDER,
@@ -11035,7 +10414,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 182,
 			temp: -20,
 		},
-
 		elements.boiling_roseyiede = {
 			name: "forever- boiling roseyiede",
 			color: "#9e942e",
@@ -11063,11 +10441,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 956,
 			temp: 120,
 		}
-
 	//MINESWEEPER ##
-
 		msColorArray = ["#a0a0a0", "#0000ff", "#008000", "#ff0000", "#000080", "#800000", "#008080", "#000000", "#808080"]
-
 		elements.msfield = {
 			name: "minefield",
 			color: "#c0c0c0",
@@ -11118,7 +10493,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			hidden: true,
 		};
-
 		elements.msmine = {
 			name: "minefield",
 			color: "#c0c0c0",
@@ -11151,7 +10525,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			hidden: true,
 		};
-
 		elements.ms = { //minesweeper = {
 			color: ["#c0c0c0", "#c0c0c0", "#ff0000", "#008000", "#ff0000", "#000080", "#800000", "#008080", "#000000", "#808080", "#808080"],
 			behavior: [
@@ -11162,9 +10535,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "special",
 			state: "solid",
 		};
-
 	//LIFE-EATER VIRUS ##
-
 		var lifeEaterCategories = ["life","auto creepers","shit","cum","food","fantastic creatures","fey","auto_fey"];
 		var lifeEaterBlacklist = ["life_eater_virus","life_eater_slurry","life_eater_infected_dirt"];
 		var lifeEaterWhitelist = ["blood","skin","hair","poop","blood_ice","wood","wood_plank","sawdust","straw","paper","birthpool","dried_poop","gloomfly","meat_monster","rotten_ravager","bone_beast","withery","withery_plant","banana","apple","rotten_apple","apioform_player","apioform_bee","apioform","apiodiagoform","sugar_cactus","sugar_cactus_seed","flowering_sugar_cactus","tree_branch","sap","silk","red_velvet","silk_velvet","ketchup", "enchanted_ketchup", "frozen_ketchup", "poisoned_ketchup", "frozen_poisoned_ketchup", "ketchup_spout", "ketchup_cloud", "poisoned_ketchup_cloud", "ketchup_snow", "ketchup_snow_cloud", "poisoned_ketchup_snow", "poisoned_ketchup_snow_cloud", "ketchup_gas", "poisoned_ketchup_gas", "ketchup_powder", "poisoned_ketchup_powder", "eketchup_spout", "ketchup_metal", "antiketchup", "dirty_ketchup", "ketchup_gold", "molten_ketchup_metal", "ketchup_fairy", "ketchup_metal_scrap", "ketchup_gold_scrap", "molten_ketchup_gold", "mycelium","vaccine","antibody","infection","sap","caramel","molasses","melted_chocolate","soda","mustard","fry_sauce","tomato_sauce","sugary_tomato_sauce","bio_ooze","zombie_blood","feather","tooth","decayed_tooth","plaque","tartar","bacteria","replacer_bacteria","pop_rocks"];
@@ -11173,8 +10544,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			"crimsoil": "life_eater_infected_dirt",
 			"rainbow_dirt": "life_eater_infected_dirt"
 		};
-
-
 		function tryCreatePlus(element,centerX,centerY) {
 			var plusCoords = adjacentCoords.concat([[0,0]]);
 			var pixels = 0;
@@ -11189,7 +10558,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			};
 			return pixels;
 		};
-
 		function spreadLifeEater(pixel) {
 			var convertedPixels = [];
 			for(i = 0; i < adjacentCoords.length; i++) { //iterate through neighbor spots
@@ -11198,7 +10566,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					var isLifeEaterFairy = (elements[newPixel.element].category == "auto_fey" && newPixel.element.includes("life_eater_"))
 					//console.log(newPixel.element,isLifeEaterFairy);
 					if(
-						(lifeEaterCategories.includes(elements[newPixel.element].category) || lifeEaterWhitelist.includes(newPixel.element) || Object.keys(lifeEaterSubstitutions).includes(newPixel.element)) && 
+						(lifeEaterCategories.includes(elements[newPixel.element].category) || lifeEaterWhitelist.includes(newPixel.element) || Object.keys(lifeEaterSubstitutions).includes(newPixel.element)) &&
 						!lifeEaterBlacklist.includes(newPixel.element) &&
 						!isLifeEaterFairy //exclude fairies which produce life eater
 					) {
@@ -11222,7 +10590,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			};
 			return convertedPixels;
 		};
-
 		elements.life_eater_explosion = {
 			color: ["#96c785","#f0d654","#ffb47a"],
 			behavior: [
@@ -11237,7 +10604,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			excludeRandom: true,
 			hidden: true,
 		},
-
 		elements.life_eater_virus = {
 			color: ["#7bb064", "#aabd60", "#9e9e29"],
 			behavior: behaviors.GAS,
@@ -11251,7 +10617,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			tempHigh: 300,
 			stateHigh: null,
 		};
-
 		elements.life_eater_slurry = {
 			color: ["#3d6e29", "#666617", "#7d5716"],
 			behavior: behaviors.LIQUID,
@@ -11260,7 +10625,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			},
 			tick: function(pixel) {
 				spreadLifeEater(pixel).forEach(infectedPixel => spreadLifeEater(infectedPixel));
-
 				if(pixelTicks - pixel.start > 6) {
 					if(!pixel.methaned && Math.random() < 0.2) {
 						changePixel(pixel,Math.random() < 0.2 ? "life_eater_virus" : "methane");
@@ -11281,10 +10645,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			burnInto: ["life_eater_virus","plasma","fire","life_eater_explosion"],
 			excludeRandom: true,
 		};
-
 		var crRule50 = "CR:life_eater_virus,methane,methane,methane%0.5";
 		var crRule100 = "CR:life_eater_virus,methane,methane,methane%1";
-
 		elements.life_eater_infected_dirt = {
 			behavior: [
 				"XX|"+crRule100+"|XX",
@@ -11305,11 +10667,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			burnInto: ["life_eater_virus","fire","plasma","life_eater_explosion"],
 			excludeRandom: true,
 		};
-
 		for(i = 0; i < 4; i++) {
 			elements.life_eater_infected_dirt.burnInto.push(elements.dry_dirt ? "dry_dirt" : "sand");
 		};
-
 		elements.virus_bomb = {
 			color: "#accc70",
 			behavior: [
@@ -11325,14 +10685,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			excludeRandom: true,
 			stateHigh: ["molten_iron","molten_aluminum","molten_tin","life_eater_virus","life_eater_virus","life_eater_virus"]
 		};
-
 	//PLANET CRACKER ##
-
 		function planetCrackerHeat(pixel,x,y,radius,fire,smoke,power,damage) {
 			//console.log(`Radius: ${radius}\nPower: ${power}\nPixel: (${pixel.x},${pixel.y})\nDamage: ${damage}`);
 			//console.log(`Expected temperature increase for pixel at (${pixel.x},${pixel.y}): ${800 * ((1 + (7 * damage)) ** 2) * ((power ** 2) * 1.5)}`);
 			var reversedCloseness = ((radius / 6) ** 0.5) - 1; //mathematically inaccurate but properly correlated
-
 			pixel.temp += 500 * ((reversedCloseness * 2) + 1);
 			if(pixel.vx) {
 				pixel.vx *= 2;
@@ -11341,7 +10698,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				pixel.vy *= 2;
 			};
 		};
-
 		function planetCrackerFinale(doColorChange=true) {
 			var bottomFortyPercent = Math.round(height * 0.6);
 			var bottomTwentyPercent = Math.round(height * 0.8);
@@ -11353,7 +10709,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					if(!isEmpty(x,y,true)) {
 						pixelMap[x][y].vy ??= 0;
 						pixelMap[x][y].vy -= 20;
-					};			
+					};
 					if(y > bottomTenPercent && !isEmpty(x,y,true)) {
 						pixelMap[x][y].temp += 2000;
 					};
@@ -11367,7 +10723,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				settings.bgAngle = 90;
 			};
 		};
-
 		elements.planet_cracker = {
 			color: "#ffc8ba",
 			behavior: behaviors.WALL,
@@ -11389,9 +10744,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					var counterDistanceFromBottom = height - (pixel.y + pixel.counter);
 					var closenessToBottom = 1 - (counterDistanceFromBottom / pixelDistanceFromBottom);
 					//console.log(closenessToBottom);
-
 					var finalRadius = Math.round(((1 + closenessToBottom) ** 2) * 6);
-
 					if(typeof(explodeAtPlus) === "function") {
 						explodeAtPlus(pixel.x,pixel.y+pixel.counter,finalRadius,"plasma","fire",null,planetCrackerHeat);
 					} else {
@@ -11405,17 +10758,13 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "weapons",
 			hardness: 1,
 		};
-
 	//ASSORTED CELL EDITS AND GOLDEN FAIRY CHAIN ##
-
 		goldObject = {
 			gold: 1,
 			gold_coin: 1,
 			gold_fairy: 3
 		};
-
 		goldObjectNameArray = Object.keys(goldObject);
-
 		if(urlParams.get('goldFairyAmount') != null) { //null check
 			goldFairyAmount = urlParams.get('goldFairyAmount')
 			if(isNaN(goldFairyAmount) || goldFairyAmount === "" || goldFairyAmount === null) { //NaN check
@@ -11431,7 +10780,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		} else {
 			goldFairyAmount = 10
 		}
-
 		elements.cell_1 = { //heats up
 			color: ["#bbee00","#eeee00","#cfee00"],
 			behavior: [
@@ -11455,7 +10803,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					};
 				};
 				pixel.uwu -= 1; //exclude self
-
 				var tempGrowthDecrease = null;
 				if(pixel.temp < 70) {
 					tempGrowthDecrease = 0;
@@ -11464,7 +10811,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				} else {
 					tempGrowthDecrease = pixel.temp - 70;
 				}
-
 				if(pixel.uwu == undefined || pixel.uwu == null || isNaN(pixel.uwu)) {
 					uwu = 0;
 				} else {
@@ -11495,7 +10841,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "life",
 			breakInto: ["water","dna","dna","dna"]
 		};
-
 		elements.cell_2 = { //Grows just a bit too fast
 			color: ["#32280b","#5a4711","#87660c"],
 			behavior: [
@@ -11523,7 +10868,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "life",
 			breakInto: ["dirty_water","dna","dna","dna","dna"]
 		};
-
 		elements.cell_3 = { //Likes gold
 			color: ["#bbee00","#eeee00","#cfee00"],
 			behavior: [
@@ -11547,7 +10891,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					};
 				};
 				pixel.uwu -= 1; //exclude self
-
 				var tempGrowthDecrease = null;
 				if(pixel.temp < 70) {
 					tempGrowthDecrease = 0;
@@ -11556,7 +10899,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				} else {
 					tempGrowthDecrease = pixel.temp - 70;
 				}
-
 				if(pixel.uwu == undefined || pixel.uwu == null || isNaN(pixel.uwu)) {
 					uwu = 0;
 				} else {
@@ -11587,7 +10929,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "life",
 			breakInto: ["water","dna","dna","dna"]
 		};
-
 		elements.cell_3 = {
 			color: ["#eeee00","#eecc00","#dddd00"],
 			behavior: [
@@ -11629,7 +10970,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					var oY = adjacentCoords[randomNeighborNumber][1];
 					var checkPosX = pX+oX;
 					var checkPosY = pY+oY;
-
 					if(!isEmpty(checkPosX,checkPosY,true)) {
 						if(goldObjectNameArray.includes(pixelMap[checkPosX][checkPosY].element)) {
 							pixel.gold += goldObject[pixelMap[checkPosX][checkPosY].element];
@@ -11637,10 +10977,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						};
 					};
 				};
-
 				var baseGrowthRate = 0.5;
 				var growthRate = baseGrowthRate + (pixel.gold * 0.025);
-
 				if(pixel.gold > 150) {
 					var chance = (pixel.gold - 150) / 20
 					var baseRadius = 10
@@ -11649,14 +10987,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						explodeAt(pX,pY,10,"gold_coin");
 					};
 				};
-
 				if(Math.random() < growthRate/100) {
 					var randomNeighborNumber = Math.floor(Math.random() * 4)
 					var oX = adjacentCoords[randomNeighborNumber][0];
 					var oY = adjacentCoords[randomNeighborNumber][1];
 					var checkPosX = pX+oX;
 					var checkPosY = pY+oY;
-
 					if(isEmpty(checkPosX,checkPosY,false)) {
 						var halfGold1 = pixel.gold / 2;
 						var halfGold2 = pixel.gold / 2;
@@ -11670,7 +11006,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						newPixel.gold = halfGold2;
 					};
 				};
-
 			},
 			reactions: {
 				"infection": { "elem1":"cancer", "chance":0.01 },
@@ -11692,7 +11027,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "life",
 			breakInto: ["water","dna","dna","dna"]
 		};
-
 		runAfterLoad(function() {
 			elements.gold_fairy = {
 				name: "gold fairy",
@@ -11705,7 +11039,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				state: "solid",
 				category: "fey"
 			};
-
 			elements.fairy.reactions.gold = { elem1: "gold_fairy", "elem2": null };
 			elements.fairy.reactions.gold_coin = { elem1: "gold_fairy", "elem2": null };
 			if(!elements.gold.reactions) {
@@ -11716,7 +11049,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			};
 			elements.gold.reactions.fairy = { elem1: null, elem2: "gold_fairy" };
 			elements.gold_coin.reactions.fairy = { elem1: null,  elem2: "gold_fairy" };
-
 			for (var i = 2; i <= goldFairyAmount + 1; i++) {
 			  nameVar = `gold_${i-1}-fairy`
 			  if(i === 2) {
@@ -11741,7 +11073,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			  goldObject[`gold_${i}-fairy`] = 3 * i;
 			  if (i == goldFairyAmount) { elements[`gold_${i}-fairy`]["reactions"] = {}; }
 			}
-
 			//eList rebuilding {
 				eLists.FAIRY.push("gold_fairy");
 				for (var i = 2; i <= goldFairyAmount + 1; i++) {
@@ -11769,14 +11100,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					"M1|DL:"+eLists.FAIRY+"|M1",
 				]
 			//}
-
 			goldObjectNameArray = Object.keys(goldObject);
-
 			elements.rainbow.reactions.gold_fairy = { "elem1": "gold_2-fairy", "elem2": null }
 		});
-
 	//FIRE SLIME ##
-
 		elements.fire_slime = {
 				color: ["#e6683e", "#e37636", "#e38f3b", "#e3b039"],
 				behavior: [
@@ -11814,7 +11141,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				density: 1400,
 				stain: 0.05
 		}
-
 		elements.suppressed_fire_slime = {
 				color: "#bf6a4e",
 				behavior: [
@@ -11845,9 +11171,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				stain: 0.04,
 				hidden: true
 		}
-
 	//FWIBBLENS ##
-
 		elements.fwibblen = {
 			color: ["#73F092", "#EB7373", "#EDBC7B"],
 			behavior: [
@@ -11866,7 +11190,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 1500,
 			conduct: 0.4,
 		}
-
 		elements.dead_fwibblen = {
 			color: ["#729E7D", "#B58484", "#C4B299"],
 			behavior: behaviors.POWDER,
@@ -11878,7 +11201,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 1400,
 			conduct: 0.4,
 		}
-
 		elements.meffwibblen = {
 			color: ["#5CE697", "#F05B60", "#EB9560"],
 			behavior: [
@@ -11897,7 +11219,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 1800,
 			conduct: 0.44,
 		}
-
 		elements.dead_meffwibblen = {
 			color: ["#659E7D", "#B37073", "#B08F7B"],
 			behavior: behaviors.POWDER,
@@ -11909,21 +11230,16 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 1800,
 			conduct: 0.44,
 		}
-
 		//Debug world
-
 		/*worldgentypes.nickel = {
 			layers: [
 				[0, "nickel"],
 			]
 		};*/
-
 	//EXPERIMENTAL CONTROLLABLE PIXEL ##
-
 		sussyKey = null;
 		isShift = false;
 		isAlt = false;
-
 		document.addEventListener("keydown", function(modifierDownListener) {
 			// User presses shift
 			if (modifierDownListener.keyCode == 16) {
@@ -11934,7 +11250,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				isAlt = true;
 			}
 		});
-
 		document.addEventListener("keyup", function(modifierUpListener) {
 			// User releases shift
 			if (modifierUpListener.keyCode == 16) {
@@ -11945,7 +11260,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				isAlt = false;
 			}
 		});
-
 		document.addEventListener("keyup", function(sussyListener) {
 			switch (sussyListener.keyCode) {
 				case 87:
@@ -11974,7 +11288,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					break;
 			};
 		});
-
 		function controllablePixelTryCreatePixelNullCheck(element,x,y) {
 			if(!elements[element]) { //catch the null
 				return false;
@@ -11986,7 +11299,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				return false;
 			}
 		}
-
 		elements.controllable_pixel = {
 			color: "#FFFFFF",
 			colorOn: "#FFFF00",
@@ -12072,9 +11384,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				}
 			},
 		}
-
 		actExcludedElements = ["wall","alt_controllable_pixel"];
-
 		function actTryMove(pixel,x,y) {
 			if(!tryMove(pixel,x,y)) {
 				if(outOfBounds(x,y)) {
@@ -12101,7 +11411,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				return true;
 			};
 		};
-
 		function cptaEapFunction(pixel,x,y,radius,fire,smoke,power,damage) {
 			var coords = circleCoords(pixel.x,pixel.y,radius);
 			for (var i = 0; i < coords.length; i++) {
@@ -12129,11 +11438,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				}
 			};
 		};
-
 		alt_sussyKey = null;
 		isShift = false;
 		isAlt = false;
-
 		document.addEventListener("keydown", function(modifierDownListener) {
 			// User presses shift
 			if (modifierDownListener.keyCode == 16) {
@@ -12144,7 +11451,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				isAlt = true;
 			}
 		});
-
 		document.addEventListener("keyup", function(modifierUpListener) {
 			// User releases shift
 			if (modifierUpListener.keyCode == 16) {
@@ -12155,7 +11461,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				isAlt = false;
 			}
 		});
-
 		document.addEventListener("keyup", function(alt_sussyListener) {
 			switch (alt_sussyListener.keyCode) {
 				case 87:
@@ -12187,7 +11492,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					break;
 			};
 		});
-
 		function controllablePixelTryCreatePixelNullCheck(element,x,y) {
 			if(!elements[element]) { //catch the null
 				return false;
@@ -12199,7 +11503,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				return false;
 			}
 		}
-
 		elements.alt_controllable_pixel = {
 			color: "#7F7F7F",
 			colorOn: "#FFFF00",
@@ -12270,7 +11573,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 								alt_sussyKey = null;
 							}
 							break;
-						case "X": 
+						case "X":
 							explodeAtPlus(pixel.x,pixel.y,pixel.explosionRadius,"plasma,fire,fire","fire,smoke,smoke",null,cptaEapFunction)
 							if(!isShift) {
 								alt_sussyKey = null;
@@ -12301,15 +11604,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				}
 			}
 		}
-
 	//PARTIAL APIOFORM GAME ##
-
 		playerKills = 0;
-
 		aplReceivedKey = null;
 		isShift = false;
 		isAlt = false;
-
 		document.addEventListener("keydown", function(modifierDownListener) {
 			// User presses shift
 			if (modifierDownListener.keyCode == 16) {
@@ -12320,7 +11619,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				isAlt = true;
 			}
 		});
-
 		document.addEventListener("keyup", function(modifierUpListener) {
 			// User releases shift
 			if (modifierUpListener.keyCode == 16) {
@@ -12331,9 +11629,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				isAlt = false;
 			}
 		});
-
 		entities = ["apioform_bee", "apioform", "apiodiagoform", "apiokinetoform", "apiopyroform", "cryoapioform", "apiopariform"]
-
 		function apioTryMove(pixel,nx,ny,leaveBehind=undefined) {
 			if(!isEmpty(nx,ny,true) && !outOfBounds(nx.ny)) {
 				otherPixel = pixelMap[nx][ny];
@@ -12355,7 +11651,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				tryMove(pixel,nx,ny,leaveBehind);
 			};
 		}
-
 		document.addEventListener("keyup", function(apioformPlayerListener) {
 			switch (apioformPlayerListener.keyCode) {
 				case 38: //arrow up, letter 87:
@@ -12375,7 +11670,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					break;
 			};
 		});
-
 		elements.apioform_player = {
 			color: "#7F7F7F",
 			behavior: behaviors.WALL,
@@ -12428,7 +11722,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				};
 			},
 		}
-
 		elements.apioform_bee = {
 			color: ["#808020", "#A0A050"],
 			properties: {
@@ -12446,16 +11739,13 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					pixel.stage = ((Math.random() < 0.5) ? 0 : 1);
 				};
 				pixel.stage = Math.min(1,Math.max(0,Math.round(pixel.stage)));	//stage validation
-
 				var moveCoords = (pixel.flipY ? [pixel.x, pixel.y+1] : [pixel.x, pixel.y-1]);
-
 																				//direction is randomized by flippableY
 				if(pixel.stage === 0) { //color
 					pixel.color = "rgb(128,128,32)";
 				} else if(pixel.stage === 1) {
 					pixel.color = "rgb(160,160,80)";
 				};
-
 				if(pixelTicks - pixel.start > 0) { //don't move on first tick, to allow color to normalize
 					if(pixel.stage === 0) { //if in still stage
 						pixel.stage = 1; //change to moving stage
@@ -12465,10 +11755,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						pixel.stage = 0; //change to still stage
 					};
 				};
-
 			},
 		}
-
 		elements.apioform = {
 			color: "#A08020",
 			behavior: behaviors.WALL,
@@ -12483,7 +11771,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					pixel.r = Math.floor(Math.random() * 4);
 				};
 				pixel.r = Math.round(pixel.r) % 4;	//rotation validation, probably redundant since rotation is from the base game
-
 				var moveCoords;
 				switch (pixel.r) {
 					case 0:
@@ -12500,14 +11787,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						break;
 				};
 				//rotation is randomized by rotatable
-
 				if(pixelTicks - pixel.start > 0) { //maintained for consistency
 					apioTryMove(pixel,moveCoords[0],moveCoords[1]); //move
 					pixel.r++; //increment rotation
 				};
 			},
 		}
-
 		elements.apiodiagoform = {
 			color: "#A080A0",
 			behavior: behaviors.WALL,
@@ -12522,7 +11807,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					pixel.r = Math.floor(Math.random() * 4);
 				};
 				pixel.r = Math.round(pixel.r) % 4;	//rotation validation, probably redundant since rotation is from the base game
-
 				var moveCoords;
 				switch (pixel.r) {
 					case 0:
@@ -12539,16 +11823,13 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						break;
 				};
 				//rotation is randomized by rotatable
-
 				if(pixelTicks - pixel.start > 0) { //maintained for consistency
 					apioTryMove(pixel,moveCoords[0],moveCoords[1]); //move
 					pixel.r++; //increment rotation
 				};
 			},
 		}
-
 	//AMOGUS ##
-
 		elements.amogus = {
 			name: "Amogus",
 			color: "#ffffff",
@@ -12562,7 +11843,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						[ "rgb(255,0,0)",	"rgb(0,255,255)",	"rgb(0,255,255)"],
 						[ "rgb(255,0,0)",	"rgb(255,0,0)",		"rgb(255,0,0)"	],
 						[ "rgb(255,0,0)",	"null",				"rgb(255,0,0)"	]];
-
 				aa = (0 - (Math.floor(pixel.arr[0].length / 2))) //Center align code
 				na = Math.abs(aa)
 				if(pixel.arr[0].length % 2 == 1) {
@@ -12570,7 +11850,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				} else if(pixel.arr[0].length % 2 == 0) {
 					bb = (Math.floor(pixel.arr[0].length / 2))
 				}
-
 				cc = (0 - (Math.floor(pixel.arr.length / 2)))
 				nc = Math.abs(cc)
 				if(pixel.arr.length % 2 == 1) {
@@ -12603,7 +11882,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			excludeRandom: true,
 		},
-
 		elements.amogus_seed = {
 			name: "Amogus Seed",
 			color: "#df2f47",
@@ -12618,9 +11896,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			density: 2018,
 		}
-
 	//BACTERIA ##
-
 		elements.must = {
 			color: ["#0C433B","#2C3E2E","#173E2B","#053D20"],
 			behavior: behaviors.SUPPORTPOWDER,
@@ -12629,19 +11905,15 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 1200,
 			conduct: 0.11
 		};
-
 		elements.water.reactions.bread = {
 			elem2: "must", chance: 0.005
 		};
-
 		elements.water.reactions.toast = {
 			elem2: "must", chance: 0.005
 		};
-
 		elements.water.reactions.must = {
 			elem2: "ripe_must", chance: 0.005
 		};
-
 		elements.ripe_must = {
 			color: ["#248f6d","#597a57","#3c8054","#1d8b40"],
 			behavior: behaviors.SUPPORTPOWDER,
@@ -12655,7 +11927,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			breakInto: "bacteria_glob", //"the original name "bunch of bacteria" doesn't fit the sandboxels context IMO
 			hardness: 0.1
 		};
-
 		elements.bacteria_glob = {
 			color: ["#e34634","#c24332", "#d1703f"],
 			behavior: [
@@ -12673,9 +11944,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			conduct: 0.15,
 			breakInto: "bacteria_glob" //"the original name "bunch of bacteria" doesn't fit the sandboxels context IMO
 		};
-
 		bacteriaBlacklist = ["bacteria","replacer_bacteria","jammer_block"];
-
 		elements.bacteria = {
 			color: ["#e6d3f2", "#c098d9", "#6e318f", "#6e318f"],
 			behavior: behaviors.WALL,
@@ -12711,7 +11980,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						}
 					}
 				};
-				if(pixel.active) { 
+				if(pixel.active) {
 					var pX = pixel.x; var pY = pixel.y;
 					if(pixel.target) { //safety
 						for(i = 0; i < adjacentCoords.length; i++) { //iterate through neighbor spots
@@ -12738,7 +12007,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 1200,
 			conduct: elements.water.conduct + 0.1,
 		},
-
 		elements.replacer_bacteria = {
 			color: ["#fcbbc0", "#f28089", "#f04f5c", "#f04f5c"],
 			behavior: behaviors.WALL,
@@ -12761,14 +12029,14 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 								pixel.replacement = pixelAboveElement;
 							}
 						}
-					};	
+					};
 					if(!isEmpty(pixel.x,pixel.y+1,true)) { //check if a pixel exists below to convert
 						if((!pixel.active) && pixel.target && pixel.replacement) { //only fire once
 							pixel.active = true
 						}
 					}
 				};
-				if(pixel.active) { 
+				if(pixel.active) {
 					var pX = pixel.x; var pY = pixel.y;
 					if(pixel.target) { //safety
 						for(i = 0; i < adjacentCoords.length; i++) { //iterate through neighbor spots
@@ -12796,7 +12064,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 1200,
 			conduct: elements.water.conduct + 0.1,
 		},
-
 		elements.jammer_block = {
 			color: "#c0cf7e",
 			behavior: behaviors.WALL,
@@ -12825,12 +12092,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 3000,
 			conduct: elements.water.conduct + 0.1,
 		}
-
 	//REPLACE ALL
-
 		elements.replacer_bacteria.tempHigh = 10000000000;
 		elements.replacer_bacteria.stateHigh = "replace_all";
-
 		elements.replace_all = {
 			color: "#ef7f3f",
 			behavior: behaviors.WALL,
@@ -12841,9 +12105,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						//console.log("elems stored")
 						if(pixelMap[pixel.x][pixel.y-1].element != pixel.element) { //exclude self and only fire once
 							//console.log("self excluded from replacement")
-							pixel.target = pixelMap[pixel.x][pixel.y+1].element 
+							pixel.target = pixelMap[pixel.x][pixel.y+1].element
 							//console.log("target set to " + pixel.target)
-							pixel.replacement = pixelMap[pixel.x][pixel.y-1].element 
+							pixel.replacement = pixelMap[pixel.x][pixel.y-1].element
 							//console.log("replacement set to " + pixel.replacement)
 							pixel.active = true
 							//console.log("replacer activated")
@@ -12876,13 +12140,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 1,
 			conduct: elements.water.conduct + 0.1,
 		};
-
 	//CONFIGURABLE PIXEL SIZE ##
-
 		//The "pixelSize" query parameter sets the size of the pixels; this is inversely proportional to the pixel "resolution", so bigger numbers mean less pixels fit on the screen and smaller numbers mean that more pixels will fit.
 		//Depending on your screen's size, the default pixelSize is either 5 or 6 (6 on larger screens).
 		//Making the pixels twice as big will decrease the pixel capacity by *slightly over* 4, and the reverse is also true. (I don't know why that is.)
-
 		if(urlParams.get('pixelSize') != null) { //null check
 			pixelSize = urlParams.get('pixelSize')
 			if(isNaN(pixelSize) || pixelSize === "" || pixelSize === null) { //NaN check
@@ -12901,9 +12162,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				pixelSize--;
 			}
 		}
-
 	//OLD SAVE SYSTEM MOD ##
-
 		//used for reasons unrelated to dependencies
 		try {
 			if(typeof(rebuildCurrentPixels) !== "function") {
@@ -12923,7 +12182,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				currentPixels = currPix;
 					};
 			};
-
 			//https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
 			function storageAvailable(type) {
 			  let storage;
@@ -12951,22 +12209,17 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				);
 			  }
 			}
-
 			function zeroToNull(val) {
 				if(val === 0) { return null };
 				return val;
 			};
-
 			if(!localStorage.slSaveSettings) {
 				localStorage.setItem("slSaveSettings", '{"roundTemps":true}');
 			};
-
 			slSaveSettings = JSON.parse(localStorage.slSaveSettings);
-
 			function epsilonRound(num,precision) {
 				return Math.round((num + Number.EPSILON) * (10 ** precision)) / (10 ** precision);
 			};
-
 			function getSimulationState() {
 				var simulationState = {
 					//currentPixels: currentPixels,
@@ -13000,7 +12253,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				};
 				return simulationState;
 			};
-
 			//https://stackoverflow.com/a/46118025
 			function copyToClipboard(text) {
 				var dummy = document.createElement("textarea");
@@ -13014,48 +12266,36 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				document.execCommand("copy");
 				document.body.removeChild(dummy);
 			}
-
 			const saveTemplateAsFile = (filename, dataObjToWrite) => { //from https://stackoverflow.com/a/65939108
 				const blob = new Blob([JSON.stringify(dataObjToWrite)], { type: "text/json" });
 				const link = document.createElement("a");
-
 				link.download = filename;
 				link.href = window.URL.createObjectURL(blob);
 				link.dataset.downloadurl = ["text/json", link.download, link.href].join(":");
-
 				const evt = new MouseEvent("click", {
 					view: window,
 					bubbles: true,
 					cancelable: true,
 				});
-
 				link.dispatchEvent(evt);
 				link.remove()
 			};
-
 			function formatCurrentDate() { //derived from https://gist.github.com/Ivlyth/c4921735812dd2c0217a
 				var d = new Date();
 				var year = d.getFullYear().toString();
-
 				var month = (d.getMonth()+1).toString();
 				if(month.length == 1) { month = "0" + month };
-
 				var day = d.getDate().toString();
 				if(day.length == 1) { day = "0" + day };
-
 				var hour = d.getHours().toString();
 				if(hour.length == 1) { hour = "0" + hour };
-
 				var minute = d.getMinutes().toString();
 				if(minute.length == 1) { minute = "0" + minute };
-
 				var second = d.getSeconds().toString();
 				if(second.length == 1) { second = "0" + second };
-
 				var date_format_str = `${year}-${month}-${day} ${hour}-${minute}-${second}`;
 				return date_format_str;
 			};
-
 			function savePrompt() {
 				var filename = prompt("Please enter the desired filename, without the .json (defaults to current date)");
 				if(filename === null) {
@@ -13067,14 +12307,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				filename += ".json";
 				downloadSave(filename)
 			};
-
 			function downloadSave(filename=null) {
 				if(filename === null) {
 					filename = `Sandboxels save ${formatCurrentDate()}.json`;
 				};
 				saveTemplateAsFile(filename, getSimulationState());
 			};
-
 			rebuildCurrentPixels ??= function() {
 				var currPix = []; //rebuild currentPixels from pixelMap to try to fix bug
 				for(pmi = 0; pmi < pixelMap.length; pmi++) {
@@ -13090,7 +12328,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				};
 				currentPixels = currPix;
 			};
-
 			function quicksave(doSuccessAlert=true,doFailAlert=true) {
 				if(storageAvailable("localStorage")) {
 					rebuildCurrentPixels();
@@ -13102,7 +12339,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					throw new Error("Could not save quicksave in localStorage");
 				};
 			};
-
 			function quickload(pause=true,doSuccessAlert=true,doFailAlert=true) {
 				clearAll();
 				rebuildCurrentPixels();
@@ -13124,16 +12360,13 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				};
 				rebuildCurrentPixels();
 			};
-
 			function copySaveJSON(doAlert=true) {
 				copyToClipboard(JSON.stringify(getSimulationState()));
 				if(doAlert) { alert("Save copied as JSON") };
 			};
-
 			function loadFile() {
 				//Initialize
 				var json;
-
 				//load JSON
 				var file = document.getElementById('myfile').files[0];
 				if(file === undefined) {
@@ -13148,7 +12381,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				//after loading
 				reader.onload = function(evt) {
 					json = evt.target.result;
-
 					//validate
 					try {
 						json = JSON.parse(json);
@@ -13159,21 +12391,17 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						};
 						throw error;
 					};
-
 					if(document.getElementById("fileFormStatus") !== null) {
 						document.getElementById("fileFormStatus").style.color = "yellow";
 						document.getElementById("fileFormStatus").innerHTML = "JSON was parsed successfully";
 					};
-
 					//return json;
 					return importJsonState(json);
 				};
 			};
-
 			function loadText() {
 				//Initialize
 				var json;
-
 				//load JSON
 				var json = document.getElementById('mytext').value;
 				if(json === "") {
@@ -13183,7 +12411,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					};
 					throw new Error("No text was present");
 				};
-
 				//validate
 				try {
 					json = JSON.parse(json);
@@ -13194,16 +12421,13 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					};
 					throw error;
 				};
-
 				if(document.getElementById("textFormStatus") !== null) {
 					document.getElementById("textFormStatus").style.color = "yellow";
 					document.getElementById("textFormStatus").innerHTML = "JSON was parsed successfully";
 				};
-
 				//return json;
 				return importJsonState(json);
 			};
-
 			function importJsonState(json) {
 				//check keys
 				var jsonKeys = Object.keys(json);
@@ -13223,7 +12447,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					};
 					throw new Error("JSON is missing required keys!");
 				};
-
 				//Set values
 				width = json.width;
 				height = json.height;
@@ -13237,7 +12460,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				if(json.settings) {
 					settings = json.settings;
 				};
-
 				//enabledMods handling {
 					var enMods = "[]";
 					if(typeof(json.enabledMods) !== "undefined") {
@@ -13245,7 +12467,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					};
 					enMods = JSON.parse(enMods);
 					//console.log(enMods);
-
 					var currentEnmods = JSON.parse(localStorage.enabledMods); //should already exist if you're using this mod in the first place
 					for(emi = 0; emi < enMods.length; emi++) { //load mods additively to prevent self-disabling and the inconvenience of having to readd your mod list when you get bored
 						var mod = enMods[emi];
@@ -13258,7 +12479,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						alert("Saves with other mods might require a reload (and then importing the save file again).\nIf you see a blank screen, try refreshing and loading the file again before you panic.");
 					};
 				//}
-
 				var currPix = []; //rebuild currentPixels from pixelMap to try to fix bug
 				for(pmi = 0; pmi < pixelMap.length; pmi++) {
 					var pixelMapPart = pixelMap[pmi];
@@ -13272,14 +12492,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					};
 				};
 				currentPixels = currPix;
-
 				if(document.getElementById("fileFormStatus") !== null) {
 					document.getElementById("fileFormStatus").style.color = "green";
 					document.getElementById("fileFormStatus").innerHTML = "JSON was loaded successfully.";
 				};
 				return true;
 			};
-
 			function setPixelSize(size=null) {
 				if(size === null) {
 					if(document.getElementById("pixelSize") !== null) {
@@ -13288,7 +12506,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						throw new Error("No size could be read");
 					};
 				};
-
 				size = parseFloat(size);
 				if(isNaN(size) || size <= 0) { //NaN check
 					if(document.getElementById("pixelSizeStatus") !== null) {
@@ -13297,7 +12514,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					};
 					throw new Error("NaN or negative size");
 				};
-
 				if(document.getElementById("pixelSizeStatus") !== null) {
 					document.getElementById("pixelSizeStatus").style.color = "green";
 					document.getElementById("pixelSizeStatus").innerHTML = "Pixel size set successfully";
@@ -13305,11 +12521,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				pixelSize = size;
 				return true;
 			};
-
 		var saveLoaderDescription = `<div>
 <span id="downloadButton" onclick=savePrompt() style="color: #FF00FF;">Download simulation</span>
 <span id="copyButton" onClick=copySaveJSON() style="color: #FF66FF;">Alternatively, copy simulation JSON</span>
-
 <span id="fileFormStatus">No file loader status</span>
 One file, please: <input type="file" name="Save upload button" id="myfile">
 <button id="loadButton" onclick=loadFile() style="color: #FF00FF;">Load File</button>
@@ -13317,19 +12531,16 @@ One file, please: <input type="file" name="Save upload button" id="myfile">
 <span id="textFormStatus">No text loader status</span>
 <input name="Text load field" id="mytext">
 <button id="textLoadButton" onclick=loadText() style="color: #FF66FF;">Load Text</button>
-
 <span id="pixelSizeStatus">No size setter status</span>
 Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut off)
 <button id="sizeButton" onclick=setPixelSize() style="color: #FF00FF;">Set pixel size</button>
 </div>`;
-
 			elements.save_loader = {
 				behavior: behaviors.SELFDELETE,
 				excludeRandom: true,
 				color: "#FFFFFF",
 				desc: saveLoaderDescription,
 			};
-
 			//Somehow, for some illogical reason, quicksaving causes updateStats to somehow disregard its if-statement and fucking TypeError when you mouse over an empty space; this is an attempt to fix it with overkill-level existence checks.
 			function updateStats() {
 				var statsDiv = document.getElementById("stats");
@@ -13375,7 +12586,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				}
 				statsDiv.innerHTML = stats;
 			}
-
 			quickloadIsPaused = true;
 			var qsb = document.createElement("button");
 			qsb.setAttribute("id","quicksaveButton");
@@ -13401,10 +12611,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			qpc.after(document.createTextNode(String.fromCharCode(160)));
 			document.getElementById("gameDiv").before(qpcd);
 			document.getElementById("gameDiv").before(document.createElement("br"));
-
 			quickSlDetectorLastKeys = [];
 			justPromptedQuickSL = false;
-
 			document.addEventListener("keydown", function(e) { //prop prompt listener
 				quickSlDetectorLastKeys.push(e.key);
 				if(quickSlDetectorLastKeys.length > 3) {
@@ -13412,7 +12620,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 				justPromptedQuickSL = false;
 			});
-
 			document.addEventListener("keydown", function(e) { //prop prompt listener
 				if (quickSlDetectorLastKeys.join(",") == "(,(,L") {
 					e.preventDefault();
@@ -13433,13 +12640,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					quickSlDetectorLastKeys = [];
 				};
 			});
-
 		} catch (error) {
 			alert(`save_loading error: ${error.toString()}`);
 		};
-
 	//ASSORTED EXPERIMENTS
-
 		function radialTest(centerX,centerY,integer,chosenElement,createPixels=true,replacePixels=true,radialColor=false) {
 			if(!elements[chosenElement]) {
 				alert("Element " + chosenElement + " doesn't exist!");
@@ -13460,7 +12664,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			};
 			return true;
 		};
-
 		function rctest(centerX,centerY,integer,chosenElement,createPixels=true,replacePixels=true,distanceScale=1,saturation=50,luminance=50) {
 			saturation = Math.max(0,Math.min(100,saturation))
 			luminance = Math.max(0,Math.min(100,luminance))
@@ -13487,7 +12690,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			};
 			return true;
 		};
-
 		var canSupportWithEdge = function(x,y) {
 			if(outOfBounds(x,y)) { //count edges
 				return true;
@@ -13501,7 +12703,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 			};
 		};
-
 		/*var csweCharacter = function(x,y) { //Debug function
 			if(canSupportWithEdge(x,y)) {
 				return "X";
@@ -13509,7 +12710,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				return ".";
 			};
 		};*/
-
 		var powderMovementSnippet = function(pixel) { //Unused
 			if (!tryMove(pixel, pixel.x, pixel.y+1)) {
 				if (Math.random() < 0.5) {
@@ -13523,11 +12723,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 			};
 		};
-
 		var sturdyMovementSnippet = function(pixel) { //readability wrapper
 			tryMove(pixel, pixel.x, pixel.y+1);
 		};
-
 		if(typeof(includesArray) === "undefined") {
 			function includesArray(parentArray, testArray) { //from portals.js
 				for (let i = 0; i < parentArray.length; i++) {
@@ -13538,11 +12736,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				return false;
 			};
 		};
-
 		ddAnchorArray = [];
-
 		distanceScale = 15;
-
 		elements.hsl_tool_test = { //with help from ryan
 			color: ["#cf3030","cf7f30","#cfcf30"],
 			tool: function(pixel) {
@@ -13552,7 +12747,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			category: "color tools", //the toolbar is getting cluttered
 			excludeRandom: true, //the toolbar is getting cluttered
 		};
-
 		elements.temporal_wall_test = {
 			color: ["#8f8f8f","3f3f3f"],
 			behavior: behaviors.WALL,
@@ -13582,13 +12776,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			density: 1000,
 			category: "special",
 		};
-
 		elements.steel_silk = {
 			color: ["#DCDEDF", "#C7C9CA", "#B9BBBC"],
 			tick: function(pixel) {
 				var px = pixel.x;
 				var py = pixel.y;
-
 				var supportCondition1 = (canSupportWithEdge(px-1,py-1) && canSupportWithEdge(px+1,py-1))	// V shape
 				var supportCondition2 = (canSupportWithEdge(px-1,py) && canSupportWithEdge(px+1,py)) 		// - shape
 				var supportCondition3 = (canSupportWithEdge(px-1,py+1) && canSupportWithEdge(px+1,py+1))	// Λ shape
@@ -13604,12 +12796,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					console.log(`Pixel at (${px},${py})`);
 					console.log(`> ${csweCharacter(px-1,py-1)} ${csweCharacter(px+1,py-1)}\n> ${csweCharacter(px-1,py*1)} ${csweCharacter(px+1,py*1)}\n> ${csweCharacter(px-1,py+1)} ${csweCharacter(px+1,py+1)}`);
 				};*/
-
 				if (pixel.start === pixelTicks) {return}
 				if (pixel.charge && elements[pixel.element].behaviorOn) {
 					pixelTick(pixel)
 				};
-
 				if(!supports) {
 					powderMovementSnippet(pixel);
 				};
@@ -13625,10 +12815,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			density: 6850,
 			breakInto: "metal_scrap",
 		};
-
 		function distanceScalePrompt() {
 			var _distanceScale = prompt("Enter the value you want to use");
-
 			//value check
 			if(isNaN(parseFloat(_distanceScale))) {
 				//empty string
@@ -13641,11 +12829,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 			};
 			_distanceScale = parseFloat(_distanceScale);
-
 			distanceScale = _distanceScale;
 			updateDistanceDisplayDescription();
 		};
-
 		elements.distance_display = {
 			color: "#00FFFF",
 			properties: {
@@ -13654,17 +12840,14 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			tick: function(pixel) {
 				var distance = Infinity;
 				var oldDistance = Infinity;
-
 				//if(!ddAnchorArray) { ddAnchorArray = [] }
 				/*if(!Array.isArray(ddAnchorArray)) { ddAnchorArray = [] }
 				for (var i = 1; i < width; i++) { //Find and store all anchor pixels
 					for (var j = 1; j < height; j++) {
 					};
 				};*/
-
 				var px = pixel.x;
 				var py = pixel.y;
-
 				if(ddAnchorArray.length > 0) {
 					for(i = 0; i < ddAnchorArray.length; i++) {
 						var newX = ddAnchorArray[i][0];
@@ -13686,9 +12869,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				} else {
 					distance = null;
 				};
-
 				pixel.distanceGetter = distance;
-
 				if(distance !== null) {
 					var processedDistance = Math.min(255,Math.max(0,Math.round(distance * distanceScale)));
 					pixel.color = `rgb(0,${processedDistance},255)`;
@@ -13700,7 +12881,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			state: "solid",
 			desc: `It gets more blue the closer it gets to a distance display anchor. The current scale factor is ${distanceScale} (bigger number = smaller blue radius). <span onclick=distanceScalePrompt() style=\"color: #ff00ff;\";>Click here</span> to open the scale prompt.<br/><em>Note: Info pages do not update automatically and must be closed and reopened to show the changed scale.</em>`,
 		};
-
 		elements.distance_display_anchor = {
 			color: "#0000FF",
 			behavior: behaviors.WALL,
@@ -13716,11 +12896,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			state: "solid",
 			desc: `Distance display pixels get blue in its distance.`,
 		};
-
 		/*
 		blackObject = {r: 0, g: 0, b: 0};
 		pinkObject = {r: 255, g: 148, b: 255};
-
 		elements.black_pink_test = {
 			color: ["#000000","#FF94FF"],
 			behavior: behaviors.WALL,
@@ -13731,13 +12909,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				if(typeof(pixel.offset) !== "number") {
 					pixel.offset = Math.floor(Math.random() * (Math.random() > 0.5 ? -1 : 1) * Math.random() * 15);
 				};
-
 				var fraction = Math.min(1.0,Math.max(0.0,scale(pixel.y,1,height-1,0.0,1.0)));
-
 				var color = averageColorObjects(pinkObject,blackObject,fraction);
-
 				var offsettedColor = lightenColor(color,pixel.offset,"rgb");
-
 				pixel.color = offsettedColor;
 			},
 			category: "machines",
@@ -13745,11 +12919,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			desc: "blackpink in your area",
 		};
 		*/
-
 		function updateDistanceDisplayDescription() {
 			elements.distance_display.desc = `It gets more blue the closer it gets to a distance display anchor. The current scale factor is ${distanceScale} (bigger number = smaller blue radius). <span onclick=distanceScalePrompt() style=\"color: #ff00ff;\";>Click here</span> to open the scale prompt.<br/><em>Note: Info pages do not update automatically and must be closed and reopened to show the changed scale.</em>`;
 		};
-
 		function createDownAtFirstAvailableSpace(element,x) {
 			//Get the Y of the first empty pixel on a row which is on a full pixel or the bottom of the canvas
 			//1. map(x => !x) coerces empty pixels' `undefined` values to !false = true, while full pixels are coerced to !true = false
@@ -13758,15 +12930,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			//4. indexOf(false) always shows the first matching item
 			//5. an offset I don't understand (probably from that slice) shifts the first match to the empty spot above the first full pixel
 			var firstEmptyY = [...pixelMap[x].map(obj => !obj),false].slice(1).indexOf(false);
-
 			if(firstEmptyY == -1) {
 				return false;
 			};
-
 			createPixel(element,x,firstEmptyY);
 			return true;
 		};
-
 		function createReplacingGases(element,x,y) {
 			if(isEmpty(x,y,false)) {
 				createPixel(element,x,y);
@@ -13781,7 +12950,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				return isGas;
 			};
 		};
-
 		function cdafasIgnoringGas(element,x) {
 			//Get the Y of the first empty pixel on a row which is on a full pixel or the bottom of the canvas
 			//1. map(x => !x) coerces empty pixels' `undefined` values to !false = true, while full pixels are coerced to !true = false
@@ -13790,15 +12958,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			//4. indexOf(false) always shows the first matching item
 			//5. an offset I don't understand (probably from that slice) shifts the first match to the empty spot above the first full pixel
 			var firstEmptyY = [...pixelMap[x].map(obj =>!obj || elements[obj.element].state == "gas"),false].slice(1).indexOf(false);
-
 			if(firstEmptyY == -1) {
 				return false;
 			};
-
 			createReplacingGases(element,x,firstEmptyY);
 			return true;
 		};
-
 		elements.temporal_fire_test = {
 			color: ["#8f8f8f","3f3f3f"],
 			behavior: behaviors.WALL,
@@ -13831,14 +12996,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			state: "gas",
 			category: "special",
 		};
-
 	//ASSORTED ORGANIC COMPOUNDS ##
-
 		/*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\
 		%TODO: Pentyl line physical properties%
 		\%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
-
-
 		//Most hydrocarbons are fantastically colored for convenience
 		//Benzene ring
 			//Benzene is actually yellowish
@@ -13865,9 +13026,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			//Alkenes are darker
 			//Alkynes are darkest
 			//Benzene is non-ternary with respect to single vs double bond
-
 		//Benzene
-
 			elements.benzene = {
 				color: "#edf099",
 				behavior: behaviors.LIQUID,
@@ -13884,28 +13043,20 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				tempLow: 5.53,
 				tempHigh: 80.1,
 			};
-
 			elements.benzene_gas = {
 				density: 2.77 * airDensity,
 			};
-
 			elements.benzene_ice = {
 				density: 1012,
 			};
-
 		//Alk*nes and their substituted benzenes
-
 			//Single carbon line
-
 				//Lowest bond order
 					//1 carbon = purple
 					elements.methane.color = "#bfabc9";
-
 					elements.liquid_methane ??= {};
 					elements.liquid_methane.density = 423;
-
 				//Methene and methyne don't make sense
-
 				//Methanol
 					elements.methanol = {
 						color: "#d5ced9",
@@ -13926,7 +13077,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						density: 792,
 						stain: -0.25,
 					}
-
 				//Benzene ver.
 					elements.toluene = {
 						//meth- purple + benzene hue up = pink
@@ -13946,13 +13096,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						tempHigh: 110.6,
 						tempLow: -95,
 					};
-
 					elements.toluene_gas = {
 						density: 3.1 * airDensity,
 					};
-
 			//Double carbon line
-
 				//Lowest bond order
 					//Rose
 					elements.ethane = {
@@ -13973,16 +13120,14 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						state: "gas",
 						density: 1.3562, //absolute density
 					};
-
 					elements.liquid_ethane = {
 						tempLow: -182.8,
 						density: 544,
 					};
-
 				//Double bonds
 					//ethylene = ethene
 					elements.ethylene = {
-						color: "#c991b0", 
+						color: "#c991b0",
 						behavior: behaviors.GAS,
 						state: "gas",
 						category: "gases",
@@ -13999,16 +13144,14 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						},
 						tempLow: -103.7
 					};
-
 					elements.liquid_ethylene = {
 						tempLow: -169.2,
 						density: 577, //unknown solid density
 					};
-
 				//Triple bonds
 					//acetylene = ethyne
 					elements.acetylene = {
-						color: "#b8819f", 
+						color: "#b8819f",
 						behavior: behaviors.GAS,
 						state: "gas",
 						category: "gases",
@@ -14031,7 +13174,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						tempLow: -84,
 						stateLow: "acetylene_ice",
 					};
-
 					elements.acetylene_ice = {
 						color: "#ffa8d8",
 						behavior: behaviors.POWDER,
@@ -14059,14 +13201,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						"stateHigh": "acetylene",
 						hidden: true,
 					};
-
 				//Ethanol (Vanilla)
 					elements.alcohol.name = "ethanol";
 					elements.alcohol.color = "#d4b9c8";
 					elements.alcohol.viscosity = 1.144;
 					elements.water.viscosity = 1; //define reference viscosity of 1
-
-
 				//Benzene ver.
 					elements.ethylbenzene = {
 						color: "#de7676",
@@ -14085,7 +13224,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						tempHigh: 136,
 						tempLow: -95,
 					};
-
 					elements.ethylbenzene_gas = {
 						density: 3.7 * airDensity,
 						reactions: {
@@ -14094,13 +13232,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							"steam": { tempMin: 600, elem1: ["styrene","hydrogen","styrene","hydrogen","styrene","hydrogen","styrene","hydrogen","styrene","hydrogen","styrene","hydrogen","styrene","hydrogen","styrene","hydrogen","toluene","benzene","methane","ethane"], elem2: "steam", temp1: -3, temp2: -3 },
 						},
 					};
-
 			//Triple carbon line
-
 				//Single bond
 					elements.propane.color = "#b8d4a5";
 					elements.propane.tempHigh = 493;
-
 				//Double bond
 					elements.propylene = { //propene
 						color: "#a4c48d",
@@ -14115,12 +13250,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						state: "gas",
 						density: 1.745, //abs. at 25*C
 					};
-
 					elements.liquid_propylene = {
 						tempLow: -185.2,
 						density: 613.9,
 					};
-
 				//Triple bond
 					elements.propyne = { //also methylacetylene
 						color: "#8bad72",
@@ -14135,12 +13268,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						state: "gas",
 						density: 1.6656, //abs. at 25*C
 					};
-
 					elements.liquid_propylene = {
 						tempLow: -102.7,
 						density: 671.963,
 					};
-
 				//Propanol
 					//Linear
 						elements.propanol = {
@@ -14160,7 +13291,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							density: 803,
 							stain: -0.25,
 						}
-
 					//Triangular
 						elements.isopropanol = {
 							color: "#d1e4c8",
@@ -14179,7 +13309,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							density: 786,
 							stain: -0.25,
 						}
-
 				//Benzene ver.
 					//more obscure organic compound
 					elements.propylbenzene = {
@@ -14199,7 +13328,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						tempHigh: 159.2,
 						tempLow: -99.5,
 					};
-
 					elements.propylbenzene_gas = {
 						density: 4.14 * airDensity,
 						reactions: {
@@ -14207,9 +13335,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							"body": { elem2: "cancer", chance: 0.0017 },
 						},
 					};
-
 			//Quadruple carbon line
-
 				//Single bond
 					elements.butane = {
 						color: "#a7dbd9",
@@ -14229,12 +13355,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						state: "gas",
 						density: 2.076 * airDensity,
 					};
-
 					elements.liquid_butane = {
 						tempLow: -134,
 						density: 604,
 					};
-
 					elements.isobutane = {
 						color: "#9cbddb",
 						behavior: behaviors.GAS,
@@ -14253,12 +13377,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						state: "gas",
 						density: 2.51,
 					};
-
 					elements.liquid_isobutane = {
 						tempLow: -159.42,
 						density: 563,
 					};
-
 				//Double bond
 					elements.butylene = { //butene
 						name: "1-butylene",
@@ -14275,7 +13397,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						state: "gas",
 						density: 1.93 * airDensity,
 					};
-
 					elements.liquid_butylene = {
 						tempLow: -185.3,
 						density: 625.63,
@@ -14283,8 +13404,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					elements.water.reactions.butylene = {
 						elem1: ["l_secbutanol","r_secbutanol"], elem2: ["l_secbutanol","r_secbutanol"]
 					}; elements.water.reactions.liquid_butylene = elements.water.reactions.butylene;
-
-
 					elements.trans_2_butylene = {
 						name: "t-butylene-2",
 						color: "#a1c9d4",
@@ -14299,16 +13418,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						state: "gas",
 						density: 2 * airDensity,
 					};
-
 					elements.liquid_trans_2_butylene = {
 						tempLow: -105.5,
 						density: 626,
 					};
-
 					elements.water.reactions.trans_2_butylene = {
 						elem1: ["l_secbutanol","r_secbutanol"], elem2: ["l_secbutanol","r_secbutanol"]
 					}; elements.water.reactions.liquid_trans_2_butylene = elements.water.reactions.trans_2_butylene;
-
 					elements.cis_2_butylene = {
 						name: "c-butylene-2",
 						color: "#8cbcca",
@@ -14323,21 +13439,18 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						state: "gas",
 						density: 2 * airDensity,
 					};
-
 					elements.liquid_cis_2_butylene = {
 						tempLow: -138.9,
 						density: 641,
 					};
-
 					elements.water.reactions.cis_2_butylene = {
 						elem1: ["l_secbutanol","r_secbutanol"], elem2: ["l_secbutanol","r_secbutanol"]
 					}; elements.water.reactions.liquid_cis_2_butylene = elements.water.reactions.cis_2_butylene;
-
 				//Triple bond
 					elements.butyne = {
 						color: "#81a2b3",
 						behavior: behaviors.GAS,
-						category: "gases",			
+						category: "gases",
 						tempHigh: 444, //Unknown autoignition
 						stateHigh: "fire",
 						tempLow: 8.08,
@@ -14347,12 +13460,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						state: "gas",
 						density: 2.12 * airDensity, //made-up due to also unknown vapor density
 					};
-
 					elements.liquid_butyne = {
 						tempLow: -125.7,
 						density: 678.3,
 					};
-
 				//Alcohol
 					//Line
 					elements.butanol = {
@@ -14372,7 +13483,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						density: 810,
 						stain: -0.25,
 					}
-
 					//Hydroxyl in internal carbon (like isopropanol)
 						//Left
 							elements.l_secbutanol = {
@@ -14392,7 +13502,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								density: 810,
 								stain: -0.25,
 							}
-
 						//Right
 							elements.r_secbutanol = {
 								color: "#def1f2",
@@ -14411,7 +13520,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								density: 810,
 								stain: -0.25,
 							};
-
 						//Racemic
 							elements.secbutanol = {
 								color: "#cce7ea",
@@ -14436,7 +13544,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								density: 810,
 								stain: -0.25,
 							};
-
 					//Branched chain
 					elements.isobutanol = {
 						color: "#c9e3ee",
@@ -14455,7 +13562,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						density: 810,
 						stain: -0.25,
 					}
-
 					//Branched with internal hydroxyl
 					elements.tertbutanol = {
 						color: "#c5def1",
@@ -14475,7 +13581,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						density: 810,
 						stain: -0.25,
 					}
-
 				//Benzene ver.
 					elements.butylbenzene = {
 						color: "#7b8ae0",
@@ -14493,7 +13598,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						tempHigh: 183.3,
 						tempLow: -87.9,
 					};
-
 					elements.butylbenzene_gas = {
 						density: 4.6 * airDensity,
 						reactions: {
@@ -14501,7 +13605,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							"body": { elem2: "cancer", chance: 0.0017 },
 						},
 					};
-
 					elements.cumene = {
 						color: "#8873e6",
 						behavior: behaviors.LIQUID,
@@ -14519,7 +13622,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						tempHigh: 152,
 						tempLow: -96,
 					};
-
 					elements.cumene_gas = {
 						density: 4.1 * airDensity,
 						reactions: {
@@ -14527,9 +13629,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							"body": { elem2: "cancer", chance: 0.0017 },
 						},
 					};
-
 			//Quintuple carbon line
-
 				//Single bond
 					elements.pentane = {
 						color: "#b5685b",
@@ -14549,13 +13649,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						state: "gas",
 						density: 2.48 * airDensity,
 					};
-
 					elements.liquid_pentane = {
 						color: "#a62711",
 						tempLow: -130.2,
 						density: 626,
 					};
-
 					elements.isopentane = {
 						color: "#bb6c54",
 						behavior: behaviors.GAS,
@@ -14574,13 +13672,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						state: "gas",
 						density: 2.48 * airDensity,
 					};
-
 					elements.liquid_isopentane = {
 						color: "#ab320d",
 						tempLow: -160,
 						density: 616,
 					};
-
 					elements.neopentane = {
 						color: "#c1724e",
 						behavior: behaviors.GAS,
@@ -14599,13 +13695,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						state: "gas",
 						density: 3.255,
 					};
-
 					elements.liquid_neopentane = {
 						color: "#af3d08",
 						tempLow: -16.5,
 						density: 601.172,
 					};
-
 				//Double bond
 					elements.pentylene = { //pentene
 						name: "1-pentylene",
@@ -14623,12 +13717,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						state: "gas",
 						density: 2.4 * airDensity,
 					};
-
 					elements.liquid_pentylene = {
 						tempLow: -165.2,
 						density: 640,
 					};
-
 					elements.trans_2_pentylene = {
 						name: "t-pentylene-2",
 						color: "#924b3f",
@@ -14644,12 +13736,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						state: "gas",
 						density: 2.4 * airDensity,
 					};
-
 					elements.liquid_trans_2_pentylene = {
 						tempLow: -140.2,
 						density: 643.1,
 					};
-
 					elements.cis_2_pentylene = {
 						name: "c-pentylene-2",
 						color: "#9d5143",
@@ -14665,18 +13755,16 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						state: "gas",
 						density: 2 * airDensity,
 					};
-
 					elements.liquid_cis_2_pentylene = {
 						tempLow: -151.4,
 						density: 655.6,
 					};
-
 				//Triple bond
 					elements.pentyne = {
 						name: "1-pentyne",
 						color: "#9d5143",
 						behavior: behaviors.GAS,
-						category: "gases",			
+						category: "gases",
 						tempHigh: 454, //Unknown
 						stateHigh: ["fire","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_dioxide","oxygen","oxygen","oxygen"],
 						tempLow: 40.2,
@@ -14688,17 +13776,15 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						state: "gas",
 						density: 2.6 * airDensity, //made-up due to also unknown vapor density
 					};
-
 					elements.liquid_1_pentyne = {
 						tempLow: -105.5,
 						density: 691,
 					};
-
 					elements.pentyne_2 = {
 						name: "2-pentyne",
 						color: "#9d5143",
 						behavior: behaviors.GAS,
-						category: "gases",			
+						category: "gases",
 						tempHigh: 454, //Unknown
 						stateHigh: ["fire","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_dioxide","oxygen","oxygen","oxygen"],
 						tempLow: 56.5,
@@ -14710,16 +13796,14 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						state: "gas",
 						density: 2.6 * airDensity, //made-up due to also unknown vapor density
 					};
-
 					elements.liquid_pentyne_2 = {
 						tempLow: -109,
 						density: 710,
 					};
-
 					elements.isopentyne = {
 						color: "#a6533a",
 						behavior: behaviors.GAS,
-						category: "gases",			
+						category: "gases",
 						tempHigh: 454, //Unknown
 						stateHigh: ["fire","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_dioxide","oxygen","oxygen","oxygen"],
 						tempLow: 29.5,
@@ -14731,25 +13815,19 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						state: "gas",
 						density: 2.6 * airDensity, //made-up due to also unknown vapor density
 					};
-
 					elements.liquid_isopentyne = {
 						tempLow: -89.7,
 						density: 666,
 					};
-
 				//Alcohol
 					//Fuck no I'm not doing 8 isomers
-
 				//Benzene ver.
 					//i'm tired
-
 			//Vodka
-
 				elements.alcohol.reactions.water = { //50% is close enough to the standard 40%
 					elem1: "vodka",
 					elem2: "vodka",
 				}
-
 				elements.vodka = {
 					color: "#9FAEC5",
 					behavior: behaviors.LIQUID,
@@ -14775,13 +13853,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					density: 914,
 					stain: -0.25,
 				}
-
 		//Other organic compounds
-
 			//Oxygen plus acetylene mixture
-
 					elements.oxy_fuel = {
-						color: "#ff5eb4", 
+						color: "#ff5eb4",
 						behavior: behaviors.GAS,
 						state: "gas",
 						category: "gases",
@@ -14803,9 +13878,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						stateLow: ["oxygen","oxygen","acetylene_ice"],
 						hidden: true,
 					};
-
 					elements.oxy_fuel_slush = {
-						color: "#d85fed", 
+						color: "#d85fed",
 						behavior: behaviors.LIQUID,
 						viscosity: 100,
 						state: "liquid",
@@ -14816,7 +13890,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							};
 						},
 						density: 873, //made-up
-						burn: 100, 
+						burn: 100,
 						burnTime: 10,
 						burnTempChange: 330,
 						fireSpawnTemp: 3100,
@@ -14831,9 +13905,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						stateHigh: ["oxygen","oxygen","acetylene_ice"],
 						hidden: true,
 					};
-
 					elements.oxy_fuel_snow = {
-						color: "#dd9afc", 
+						color: "#dd9afc",
 						behavior: behaviors.POWDER,
 						state: "solid",
 						category: "powders",
@@ -14843,7 +13916,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							};
 						},
 						density: 912, //made-up
-						burn: 100, 
+						burn: 100,
 						temp: -250,
 						burnTime: 10,
 						burnTempChange: 330,
@@ -14856,9 +13929,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						stateHigh: "oxy_fuel_slush",
 						hidden: true,
 					};
-
 			//Styrene and its polymer
-
 				elements.styrene = {
 					color: "#d9d6c3",
 					behavior: behaviors.LIQUID,
@@ -14879,11 +13950,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					tempLow: -30,
 					tempHigh: 145,
 				};
-
 				elements.styrene_gas = {
 					density: 3.6 * airDensity,
 				};
-
 				elements.polystyrene = {
 					color: "#f5f5f5",
 					behavior: behaviors.WALL,
@@ -14893,7 +13962,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					tempHigh: 100,
 					//above this it does thermoplastic things
 				};
-
 				elements.molten_polystyrene = {
 					color: "#e3e3e3",
 					tempLow: 100,
@@ -14903,7 +13971,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						"foam": { elem1: "styrofoam", elem2: ["styrofoam","molten_polystyrene","molten_polystyrene","molten_polystyrene"] },
 					},
 				};
-
 				elements.styrofoam = {
 					color: "#f5f5f5",
 					behavior: behaviors.WALL,
@@ -14915,7 +13982,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					tempHigh: 160, //reaction grace period
 					stateHigh: [null,null,null,"molten_polystyrene"],
 				};
-
 				elements.packing_peanuts = {
 					color: "#f1f1f1",
 					behavior: behaviors.POWDER,
@@ -14926,9 +13992,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					tempHigh: 160, //reaction grace period
 					stateHigh: [null,null,null,null,"molten_polystyrene"],
 				};
-
 			//Benzoyl peroxide
-
 				elements.benzoyl_peroxide = {
 					color: "#ededed",
 					behavior: behaviors.POWDER,
@@ -14938,18 +14002,15 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					tempHigh: 103,
 					stateHigh: ["benzoic_acid","benzoic_acid","benzoic_acid","fire","explosion"],
 				};
-
 			//Benzoic acid
-
 				elements.benzoic_acid = {
 					color: "#c9c9c9",
 					behavior: behaviors.POWDER,
 					state: "solid",
-					category: "powders",	
+					category: "powders",
 					density: 1.2659,
 					tempHigh: 122,
 				};
-
 				elements.molten_benzoic_acid = {
 					behavior: behaviors.LIQUID,
 					color: "#b5b2b0",
@@ -14959,7 +14020,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						"molten_copper_sulfate": { tempMin: 200, elem1: ["phenol","phenol","carbon_dioxide"] }, //using air oxygen
 					},
 				};
-
 				elements.benzoic_acid_gas = {
 					density: 4.21 * airDensity,
 					reactions: {
@@ -14967,9 +14027,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						"molten_copper_sulfate": { tempMin: 200, elem1: ["phenol","phenol","carbon_dioxide"] },
 					},
 				};
-
 			//Phenol
-
 				elements.phenol = {
 					color: "#dbd3d3",
 					behavior: behaviors.POWDER,
@@ -14986,7 +14044,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					tempHigh: 40.5,
 					tempLow: -95,
 				};
-
 				elements.molten_phenol = {
 					color: "#cfc2c2",
 					behavior: behaviors.LIQUID,
@@ -14997,7 +14054,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					},
 					tempHigh: 181.7,
 				};
-
 				elements.phenol_gas = {
 					reactions: {
 						"head": { elem2: "rotten_meat", chance: 0.003 },
@@ -15005,9 +14061,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					},
 					density: 3.24,
 				};
-
 		//Inorganic compounds
-
 			runAfterAutogen(function() {
 				var waters = searchElements("water").filter(function(name) { return getState(name) == "liquid" });
 				var whitelistWaters = ["hail","rime","cloud","rain_cloud","thunder_cloud","snow_cloud","hail_cloud","rain_cloud_cloud","snow_cloud_cloud","hail_cloud_cloud","cloud_cloud","heaviest_water_cloud","heaviest_snow_cloud","snow_cloud_floater","jinsoulite","jinsoulite_gas","jinsoulite_powder","molten_jinsoulite"];
@@ -15028,23 +14082,20 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					function(name) { return typeof(name) == "string" }
 				);
 				wateroids = [waters,coldWaters,colderWaters,hotWaters,brokenColdWaters,coldBrokenColdWaters,whitelistWaters,jvoWaters].flat()
-
 				//moved vivite-related code to where it happens
 				for(var i = 0; i < wateroids.length; i++) {
 					if(elements[wateroids[i]]) { elements[wateroids[i]].noViviteSlag = true };
 				};
 			});
-
 			//Hydrogen sulfide (in chem.js)
 				_h_2s = ["hydrogen_sulfide","liquid_hydrogen_sulfide","hydrogen_sulfide_ice"];
-
 				runAfterLoad(function() {
 					elements.hydrogen_sulfide.density = 1.19 * airDensity;
 					elements.hydrogen_sulfide.reactions ??= {};
 					elements.hydrogen_sulfide.reactions.head = { elem2: "rotten_meat", chance: 0.4};
 					elements.hydrogen_sulfide.fireColor = { elem2: "rotten_meat", chance: 0.4};
 					elements.hydrogen_sulfide.tempHigh = 1200;
-					elements.hydrogen_sulfide.stateHigh = ["sulfur_gas","steam"];				
+					elements.hydrogen_sulfide.stateHigh = ["sulfur_gas","steam"];
 					delete elements.sulfur_dioxide.reactions.water;
 					delete elements.sulfur_dioxide.reactions.steam;
 					delete elements.water.reactions.sulfur;
@@ -15053,7 +14104,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						if(neighbors.length < 2) { return };
 						var neighboringElements = neighbors.filter(function(px) { return !!px }).map(x => x.element);
 						var waterNeighbor = null;
-						var sulfideNeighbor = null; 
+						var sulfideNeighbor = null;
 						for(var i = 0; i < neighboringElements.length; i++) {
 							if(_h_2s.includes(neighboringElements[i])) {
 								sulfideNeighbor = adjacentCoords[i];
@@ -15069,9 +14120,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						}
 					}
 				});
-
 			//Carbon monoxide
-
 				elements.carbon_monoxide = {
 					color: "#8f8f8f",
 					behavior: behaviors.GAS,
@@ -15084,22 +14133,16 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					},
 					tempLow: -191.5,
 				};
-
 				elements.liquid_carbon_monoxide = {
 					tempLow: -205.02,
 					density: 789, //unknown solid density
 				};
-
 			//Water
-
 				elements.steam.reactions ??= {};
 				elements.steam.reactions.charcoal = { tempMin: 680, elem1: "hydrogen", elem2: "carbon_monoxide" };
 				elements.steam.reactions.diamond = { tempMin: 680, elem1: "hydrogen", elem2: "carbon_monoxide" };
-
 			//Oil refining
-
 				delete elements.oil.tempHigh;
-
 				function liquidMoveCustomViscosity(pixel,viscosity) {
 					if (pixel.start === pixelTicks) {return}
 					if (pixel.charge && elements[pixel.element].behaviorOn) {
@@ -15139,7 +14182,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					}
 					doDefaults(pixel);
 				};
-
 				elements.light_petroleum_fuel_gas = { //it's not liquified, and sandboxels doesn't even have a pressure system, and there is no generic name for uncompressed, gaseous "L"PG, so we need a different name
 					burn: 100,
 					color: "#b5b5b3",
@@ -15155,7 +14197,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					state: "gas",
 					behavior: behaviors.GAS,
 				};
-
 				elements.lamp_oil.tempHigh = 170;
 				elements.lamp_oil.stateHigh = "lamp_oil_gas";
 				elements.lamp_oil.density = 810;
@@ -15171,7 +14212,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					stateLow: "lamp_oil",
 					burnInto: "explosion,smoke,smoke,fire,fire,fire,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(",")
 				};
-
 				elements.gasoline = {
 					color: "#d1cf9d",
 					behavior: behaviors.LIQUID,
@@ -15203,7 +14243,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					density: 755,
 					alias: "petrol"
 				};
-
 				elements.gasoline_gas = {
 					burn: 100,
 					burnTime: 10,
@@ -15211,7 +14250,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					tick: elements.gasoline.tick,
 					burnInto: "explosion,fire,fire,fire,fire,ash,ash,carbon_monoxide,carbon_monoxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(",")
 				};
-
 				elements.naphtha = {
 					color: "#d1d1d1",
 					behavior: behaviors.LIQUID,
@@ -15240,7 +14278,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					state: "liquid",
 					density: 740
 				};
-
 				elements.naphtha_gas = {
 					burn: 100,
 					burnTime: 10,
@@ -15248,7 +14285,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					tick: elements.naphtha.tick,
 					burnInto: "explosion,fire,fire,fire,fire,ash,ash,carbon_monoxide,carbon_monoxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(",")
 				};
-
 				elements.diesel = {
 					color: "#d3d9b4",
 					behavior: behaviors.LIQUID,
@@ -15274,7 +14310,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					state: "liquid",
 					density: 755,
 				};
-
 				elements.diesel_gas = {
 					burn: 100,
 					burnTime: 12,
@@ -15282,7 +14317,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					tick: elements.diesel.tick,
 					burnInto: "explosion,fire,fire,fire,fire,ash,ash,carbon_monoxide,carbon_monoxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(",")
 				};
-
 				elements.lubricating_oil = {
 					color: "#d3d9b4",
 					behavior: behaviors.LIQUID,
@@ -15303,7 +14337,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					state: "liquid",
 					density: 800,
 				};
-
 				elements.lubricating_oil_gas = {
 					burn: 100,
 					burnTime: 13,
@@ -15311,7 +14344,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					tick: elements.lubricating_oil.tick,
 					burnInto: "explosion,fire,fire,fire,ash,ash,carbon_monoxide,carbon_monoxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(",")
 				};
-
 				elements.heavy_fuel_oil = {
 					color: "#1c1a18",
 					stain: 0.3,
@@ -15354,7 +14386,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					density: 755,
 					alias: "petrol"
 				};
-
 				elements.heavy_fuel_oil_gas = {
 					burn: 80,
 					burnTime: 60,
@@ -15363,7 +14394,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					fireElement: ["explosion","fire","fire","fire","smoke","smoke","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_monoxide","carbon_monoxide","carbon_monoxide","sulfur_dioxide","sulfur_trioxide_gas","poison_gas"],
 					burnInto: "fire,fire,fire,fire,fire,ash,ash,carbon_monoxide,carbon_monoxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(",")
 				};
-
 				elements.bitumen = {
 					color: "#0d0c0c",
 					maxColorOffset: 5,
@@ -15391,7 +14421,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						gravel: { elem1: "asphalt", elem2: "asphalt" }
 					}
 				};
-
 				elements.asphalt ={
 					color: "#191919",
 					behavior: behaviors.STURDYPOWDER,
@@ -15411,9 +14440,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						light: { temp1: 0.25, elem2: null }
 					}
 				};
-
 				elements.oil.temp = 20;
-
 				elements.oil.tick = function(pixel) {
 					if(!pixel.role) {
 						var value = Math.random()
@@ -15435,18 +14462,17 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							pixel.role = "bitumen";
 						};
 					};
-
 					if(pixel.temp > 35 && pixel.role == "lpg" && Math.random() < ((pixel.temp - 34) / 210)) { //https://www.crownoil.co.uk/guides/crude-oil-fractional-distillation/: Butane and propane and other petroleum gases are formed right at the top of the distillation tower, where it is coolest, a very mild 25°C: the temperature range that forms these gases is between 25°C and 50°C. These gases are the lightest products formed in crude oil distillation and are flammable gases.
 						changePixel(pixel,"light_petroleum_fuel_gas")
 					} else if(pixel.temp > 70 && pixel.role == "gasoline" && Math.random() < ((pixel.temp - 69) / 420)) { //The numbers in the equation are mathematical coincidence.
 						changePixel(pixel,"gasoline_gas")
-					} else if(pixel.temp > 120 && pixel.role == "naphtha" && Math.random() < ((pixel.temp - 119) / 720)) { 
+					} else if(pixel.temp > 120 && pixel.role == "naphtha" && Math.random() < ((pixel.temp - 119) / 720)) {
 						changePixel(pixel,"naphtha_gas")
-					} else if(pixel.temp > 170 && pixel.role == "kerosene" && Math.random() < ((pixel.temp - 169) / 770)) { 
+					} else if(pixel.temp > 170 && pixel.role == "kerosene" && Math.random() < ((pixel.temp - 169) / 770)) {
 						changePixel(pixel,"lamp_oil_gas")
 					} else if(pixel.temp > 270 && pixel.role == "diesel" && Math.random() < ((pixel.temp - 269) / 870)) {
 						changePixel(pixel,"diesel_gas")
-					} else if(pixel.temp > 300 && pixel.role == "heavy_fuel_oil" && Math.random() < ((pixel.temp - 299) / 1200)) { 
+					} else if(pixel.temp > 300 && pixel.role == "heavy_fuel_oil" && Math.random() < ((pixel.temp - 299) / 1200)) {
 						changePixel(pixel,"heavy_fuel_oil_gas")
 					} else if(pixel.temp > 350 && pixel.role == "lubricant" && Math.random() < ((pixel.temp - 349) / 1350)) {
 						if(pixel.role == "lubricant") {
@@ -15456,9 +14482,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						}
 					}
 				};
-
 	//UREA ##
-
 		elements.urea = {
 			color: "#fef7ee", //once again mapping UV absorbances to the visible range
 							  //https://www.researchgate.net/publication/266458879
@@ -15469,12 +14493,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			tempHigh: 133,
 			category: "powders",
 		},
-
 		elements.molten_urea = {
 			tempHigh: 350, //https://pubs.acs.org/doi/pdf/10.1021/ie034052j
 			stateHigh: ["ammonia","vaporized_isocyanic_acid"],
 		},
-
 		elements.liquid_isocyanic_acid = {
 			color: "#ffe5f0", //now it's an IR spectrum
 							  //https://www.researchgate.net/publication/231057584
@@ -15492,7 +14514,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			stateLow: "frozen_isocyanic_acid",
 			category: "liquids",
 		},
-
 		elements.frozen_isocyanic_acid = {
 			color: "#ffe5f0",
 			behavior: behaviors.WALL,
@@ -15507,7 +14528,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			stateHigh: "liquid_isocyanic_acid",
 			category: "powders",
 		},
-
 		elements.vaporized_isocyanic_acid = {
 			color: "#ffe5f0",
 			behavior: behaviors.GAS,
@@ -15522,15 +14542,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			stateLow: "liquid_isocyanic_acid",
 			category: "gases",
 		}
-
 	//INVISIBLE WALL AND DYE ##
-
 		if(!settings) {
 			settings = {}
 		}
-
 		settings.bg ??= "#000000";
-
 		function getBackgroundColorOrAverageAsJSON() {
 			if(!(settings?.bg)) {
 				return {r: 0, g: 0, b: 0};
@@ -15540,12 +14556,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				return convertColorFormats(averageRgbPrefixedColorArray(settings.bg.map(color => convertColorFormats(color,"rgb"))),"json");
 			};
 		};
-
 		function makePixelInvisible(pixel) {
 			var backgroundColor = getBackgroundColorOrAverageAsJSON();
 			pixel.color = `rgba(${backgroundColor.r},${backgroundColor.g},${backgroundColor.b},0)`;
 		};
-
 		elements.invisible_wall = {
 			color: settings.bg,
 			behavior: behaviors.WALL,
@@ -15555,7 +14569,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			category: "special",
 			state: "solid",
 		};
-
 		elements.invisible_dye = {
 			color: settings.bg,
 			behavior: behaviors.LIQUID,
@@ -15569,7 +14582,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			density: 1,
 			stain: elements.dye.stain,
 		};
-
 		elements.invisible_dye_gas = {
 			color: settings.bg,
 			behavior: behaviors.GAS,
@@ -15583,33 +14595,25 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			density: 1,
 			stain: elements.spray_paint.stain,
 		};
-
 		var _temporary = {
 			invisible_wall: "asdfg",
 			invisible_dye: 2,
 			invisible_dye_gas: false
 		};
-
 		for(var elemName in _temporary) {
 			elements[elemName].desc = "Note: Invisible dyes do not work (and are not supported) with gradient backgrouds";
 		};
-
 	//BANANAS AND BANANA PLANTS ##
-
 		randomNumberFromOneToThree = function() {
 			return 1 + Math.floor(Math.random() * 3)
 		};
-
 		bananaDebugSpeedGrowth = false;
 		logLeaves = false;
 		bananaAttachWhitelist = ["banana_pseudostem","banana_peduncle_1","banana_peduncle_2","petal","banana_leaf","banana_plant_top","banana"];
-
 		bananaDirtElements = ["dirt","mud","sand","wet_sand","clay_soil","mycelium","grass"];
-
 		function logPixelCoords(pixel) {
 			return `(${pixel.x}, ${pixel.y})`
 		};
-
 		function hasPixel(x,y,elementInput) {
 			if(isEmpty(x,y,true)) { //if empty, it can't have a pixel
 				return false;
@@ -15622,16 +14626,14 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				} else { //if single element
 					return pixelMap[x][y].element === elementInput;
 				};
-			};		
+			};
 		};
-
 		elements.banana_seed = {
 			color: "#3b3b2e",
 			tick: function(pixel) {
 				if(pixel.bananaRange === null) {
 					pixel.bananaRange = randomNumberFromOneToThree();
 				};
-
 				if (isEmpty(pixel.x,pixel.y+1)) {
 					movePixel(pixel,pixel.x,pixel.y+1);
 				} else {
@@ -15673,7 +14675,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			density: 1500,
 			cooldown: defaultCooldown,
 		};
-
 		elements.banana_pseudostem = {
 			hidden: true,
 			color: "#d5e39f",
@@ -15681,7 +14682,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				if(pixel.bananaRange === null) {
 					pixel.bananaRange = randomNumberFromOneToThree();
 				};
-
 				if (pixel.age > 60 && pixel.temp < 100 && !pixel.grewPeduncle) {
 					var peduncleOffsets = [-1, 1]; //placed to the left, placed to the right
 					for(i = 0; i < peduncleOffsets.length; i++) {
@@ -15714,7 +14714,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			state: "solid",
 			density: 1500,
 		};
-
 		elements.banana = {
 			color: "#ede84c",
 			isFood: true,
@@ -15757,7 +14756,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						pixel.spoilage += Math.max(Math.min(scale(pixel.temp,4,20,9,30),40),0)
 					};
 				};
-				if(pixel.spoilage > 14400) { //3600 = 120 ticks at 20C 
+				if(pixel.spoilage > 14400) { //3600 = 120 ticks at 20C
 					if(Math.random() < 0.05) {
 						changePixel(pixel,"spoiled_banana");
 					};
@@ -15780,7 +14779,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 			},
 		};
-
 		elements.banana_peduncle_1 = {
 			hidden: true,
 			name: "banana peduncle (offshoot)",
@@ -15789,11 +14787,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				if(pixel.bananaRange === null) {
 					pixel.bananaRange = randomNumberFromOneToThree();
 				};
-
 				if (pixel.age > 20 && pixel.temp < 100) {
 					var peduncleCoords1 = [pixel.x + pixel.dir, pixel.y];
 					var peduncleCoords2 = [pixel.x + pixel.dir, pixel.y + 1];
-					if(isEmpty(peduncleCoords1[0],peduncleCoords1[1],false) && isEmpty(peduncleCoords2[0],peduncleCoords2[1],false)) { 
+					if(isEmpty(peduncleCoords1[0],peduncleCoords1[1],false) && isEmpty(peduncleCoords2[0],peduncleCoords2[1],false)) {
 						if(Math.random() < 0.5) {
 							createPixel(pixel.element,peduncleCoords1[0],peduncleCoords1[1]);
 							pixelMap[peduncleCoords1[0]][peduncleCoords1[1]].dir = pixel.dir;
@@ -15824,7 +14821,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			state: "solid",
 			density: 1500,
 		};
-
 		elements.banana_peduncle_2 = {
 			hidden: true,
 			name: "banana peduncle (hanging)",
@@ -15833,11 +14829,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				if(pixel.bananaRange === null) {
 					pixel.bananaRange = randomNumberFromOneToThree();
 				};
-
 				// Grow/Flower
 				if (pixel.age > 20 && pixel.temp < 100) {
 					var growthCoords = [pixel.x, pixel.y + 1];
-					if(isEmpty(...growthCoords)) { 
+					if(isEmpty(...growthCoords)) {
 						if(Math.random() < 0.9) {
 							createPixel(pixel.element,...growthCoords);
 							pixelMap[growthCoords[0]][growthCoords[1]].bananaRange = pixel.bananaRange; //pass banana range down to next pixel of peduncle vertical
@@ -15846,7 +14841,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						};
 					};
 				};
-
 				//Make bananas
 				if (pixel.age > 40 && pixel.temp < 100) {
 					var bananaOffsets = [-1, 1]; //placed to the left, placed to the right
@@ -15871,7 +14865,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								continue; //if not empty, skip that pixel and move on the next distance
 							};
 							//console.log(`====End of side try====`);
-						};					
+						};
 						//console.log(`%%%%End of side iterator%%%%`);
 					};
 					//console.log(`>>>>End of banana iterator<<<<`);
@@ -15881,7 +14875,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				//console.log(`\nEnd of peduncle tick\n`);
 			},
 			properties: {
-				"age": 0, 
+				"age": 0,
 				//"bananaRange": (1 + (Math.floor(Math.random() * 3))), //1-3
 				"bananaRange": null
 			},
@@ -15896,7 +14890,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			state: "solid",
 			density: 1500,
 		};
-
 		elements.spoiled_banana = {
 			hidden: true,
 			color: "#594b29",
@@ -15912,9 +14905,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			tempHigh: 200,
 			stateHigh: ["steam", "ash"],
 		};
-
 		elements.fly.reactions.spoiled_banana = { "elem2":null, chance:0.15, func:behaviors.FEEDPIXEL };
-
 		elements.banana_leaf = {
 			hidden: true,
 			color: "#9df24e",
@@ -15922,7 +14913,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				if(pixel.bananaRange === null) {
 					pixel.bananaRange = randomNumberFromOneToThree();
 				};
-
 				if(pixel.attached) {
 					var attachCoords = [pixel.x + pixel.attachOffsets[0], pixel.y + pixel.attachOffsets[1]];
 					if(isEmpty(attachCoords[0],attachCoords[1],false)) { //consider OOB full
@@ -15959,26 +14949,21 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			stateHigh: ["steam", "ash"],
 			onTryMoveInto: function(pixel,otherPixel) { //Move through
 				var otherElement = otherPixel.element; //var element for readability
-
 				var otherInfo = elements[otherElement]; //var info
-
 				var otherState = "solid"; //consider things solid by default
 				if(typeof(otherInfo.state) === "string") {
 					otherState = otherInfo.state; //get actual state if it exists
 				};
-
 				var otherDensity = 1000; //consider density 1000 by default
 				if(typeof(otherInfo.density) === "number") {
 					otherDensity = otherInfo.density; //get actual density if it exists
 				};
-
 				var react = false; //default to no reaction
 				if(typeof(otherInfo.reactions) === "object") { //look for reactions
 					if(typeof(otherInfo.reactions[pixel.element]) === "object") { //look for reactions involving this element
 						react = true; //if there are any, set reaction flag to true
 					};
 				};
-
 				if(otherElement.endsWith("head") || otherElement.endsWith("body")) {
 					//i don't want to make general MPL handling so I'll just try to exclude them;
 					if(otherElement !== "antibody") {
@@ -15986,7 +14971,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						return false;
 					};
 				};
-
 				if(otherElement !== pixel.element) { //allow this element from piling on itself
 					if(logLeaves) { console.log("Other element is not banana leaves") }; //yes, this code is for banana leaves
 					if(react) { //if there was a reaction in that previous step
@@ -16018,13 +15002,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 			},
 		};
-
 		/*if(!elements.diamond.reactions) { //test reaction
 			elements.diamond.reactions = {};
 		};
-
 		elements.diamond.reactions.banana_leaf = { "elem2": "dead_plant" };*/
-
 		elements.banana_plant_top = {
 			hidden: true,
 			color: "#d5e39f",
@@ -16032,14 +15013,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				if(pixel.bananaRange === null) {
 					pixel.bananaRange = randomNumberFromOneToThree();
 				};
-
 				if (pixel.age > 30 && pixel.temp < 100) {
 					if(!pixel.grewLeftLeaves) {
 						for(i = (0 - pixel.leafRange); i < 0; i++) { //left half
 							if(i == 0) {
 								continue;
 							};
-
 							var leafOffset = i; //readability
 							var leafX = pixel.x + leafOffset; //set X to banana_plant_top pixel's X + offset/index
 							var leafAttachOffset = [1, 0]; //difference 1: attaches rightwards (+) for leaves left (-) of center
@@ -16048,11 +15027,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								leafY++; //place edge leaves 1 pixel downwards;
 								leafAttachOffset[1] = -1; //compensate by subtracting 1 from Y attach offset (less Y = higher position, so they attach diagonally up-right or up-left)
 							};
-
 							if(outOfBounds(leafX,leafY)) {
 								continue;
 							};
-
 							if (isEmpty(leafX,leafY,false)) {
 								createPixel("banana_leaf",leafX,leafY);
 								pixelMap[leafX][leafY].attached = true; //set leaf's attached to true
@@ -16064,13 +15041,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							};
 						};
 					};
-
 					if(!pixel.grewRightLeaves) {
 						for(i = 1; i < (pixel.leafRange + 1); i++) { //right half
 							if(i == 0) {
 								continue;
 							};
-
 							var leafOffset = i; //readability
 							var leafX = pixel.x + leafOffset; //set X to banana_plant_top pixel's X + offset/index
 							var leafAttachOffset = [-1, 0]; //difference 1: attaches leftwards (-) for leaves right (+) of center
@@ -16079,11 +15054,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								leafY++; //place edge leaves 1 pixel downwards;
 								leafAttachOffset[1] = -1; //compensate by subtracting 1 from Y attach offset (less Y = higher position, so they attach diagonally up-right or up-left)
 							};
-
 							if(outOfBounds(leafX,leafY)) {
 								continue;
 							};
-
 							if (isEmpty(leafX,leafY,false)) {
 								createPixel("banana_leaf",leafX,leafY);
 								pixelMap[leafX][leafY].attached = true; //set leaf's attached to true
@@ -16117,8 +15090,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			state: "solid",
 			density: 1500,
 		};
-
-
 		/*elements.cocoa_bean = {
 			color: ["#f2ede9", "#f0dfce", "#e8cfb5"],
 			behavior: behaviors.SOLID,
@@ -16126,20 +15097,16 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			viscosity: 100000,
 			state: "liquid",
 			density: 593,
-			tick: functi
+			tick: function
 		};*/
-
 	//THERMAL FOUNDATION LIQUIDS, FU BIO-OOZE, AND SOME PYROGENIC MATERIALS
-
 		nonAdjacentCoords = [
 			[1, 1],
 			[1, -1],
 			[-1, 1],
 			[-1, -1]
 		];
-
 		//pyrotheum
-
 		elements.blazing_pyrotheum = {
 			color: "#ffdd55",
 			behavior: behaviors.LIQUID,
@@ -16179,7 +15146,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			insulate:false,
 			temp: 3727,
 		},
-
 		elements.gelid_cryotheum = {
 			color: "#00ddff",
 			behavior: behaviors.LIQUID,
@@ -16226,7 +15192,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			insulate:false,
 			temp: -223,
 		},
-
 		elements.tectonic_petrotheum = {
 			color: ["#342414","#3C2414","#2C1C14","#543424","#643C28","#74442C"],
 			behavior: [
@@ -16266,7 +15231,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			density:3988,
 			insulate:false,
 		};
-
 		elements.zephyrean_aerotheum = {
 			color: ["#FFFCD9","#FEFFFC","#FDFFDB","#FFFFE8","#FBF6D3","#F1EDD0"],
 			behavior: behaviors.AGLIQUID,
@@ -16324,7 +15288,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										break;
 									default:
 										console.log("Uh-oh, i was somehow above 3!")
-								};						
+								};
 								if(otherElementName !== thisElementName) {
 									checkPixel.vx += randomVxChange;
 									checkPixel.vy += randomVyChange;
@@ -16335,7 +15299,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				}
 			}
 		};
-
 		elements.energized_glowstone = {
 			color: ["#fbb204", "#fcf605", "#fce704", "#f8c414", "#f8e814"],
 			behavior: [
@@ -16349,7 +15312,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			density:-500,
 			insulate:false, //TODO: > Energized glowstone source blocks will gradually float upwards if there are no blocks above them. If they float at high levels (layers 120 and above by default) they will condense back into solid glowstone. They will also condense at 80% of this height if the fluid has no space to flow.
 		},
-
 		elements.resonant_ender = {
 			color: ["#062c2c", "#062c2c", "#19a8a8", "#0a4646", "#1f8c8e", "#0c5c54", "#0c5c54"],
 			behavior: behaviors.LIQUID,
@@ -16368,7 +15330,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										tryMove(pixelMap[pixel.x+j][pixel.y+i+1],pixel.eeex,pixel.eeey+1)
 									}
 								} else if(pixelMap[pixel.x+j][pixel.y+i].element == "body") {
-
 								} else {
 									if(isEmpty(pixel.eeex,pixel.eeey) && !outOfBounds(pixel.eeex,pixel.eeey)) {
 										tryMove(pixelMap[pixel.x+j][pixel.y+i],pixel.eeex,pixel.eeey)
@@ -16384,16 +15345,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			state: "liquid",
 			viscosity: 3**4,
 		}
-
 		elements.redstone_dust.tempHigh = 2500;
-
 		elements.redstone_dust.stateHigh = "destabilized_redstone";
-
 		elements.redstone_dust.conduct = 0.9;
-
 		elements.redstone_dust.colorOn = ["#FF2424","#FF0000","#FF1200"];
 		elements.redstone_dust.color = ["#7f0000","#5f0000","#5f0500"];
-
 		elements.destabilized_redstone = {
 			color: ["#9e0303", "#98061a", "#b80704", "#c4020c", "#f70008", "#9e0303", "#98061a", "#b80704", "#e3020a", "#8c0303", "#8c0303"],
 			behavior: [
@@ -16406,7 +15362,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			state: "liquid",
 			density:1200,
 		}
-
 		elements.signalum = {
 			color: "#ff9321",
 			behavior: behaviors.WALL,
@@ -16417,11 +15372,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			stateHigh: "molten_signalum",
 			state: "solid",
 		}
-
 		elements.molten_sterling ??= {};
 		elements.molten_sterling.reactions ??= {};
 		elements.molten_sterling.reactions.destabilized_redstone = { "elem1": null, "elem2": "molten_signalum" }
-
 		elements.molten_signalum = {
 			color: "#f17414",
 			behavior: behaviors.MOLTEN,
@@ -16434,22 +15387,18 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			state: "liquid",
 			hidden: true,
 		}
-
 		elements.energized_glowstone.reactions ??= {};
 		elements.energized_glowstone.reactions.gelid_cryotheum = { "elem1":"glowstone_dust" };
-
 		elements.glowstone_dust.behavior = [ //it should emit light, right?
 			"CR:light%0.025|CR:light%0.025|CR:light%0.025",
 			"CR:light%0.025|XX|CR:light%0.025",
 			"CR:light%0.025|CR:light%0.025|CR:light%0.025"
 		];
-
 		runAfterLoad(function() {
 			lifeArray = Object.keys(elements).filter(function(e) {
 				return elements[e].category == "life";
 			})
 		});
-
 		elements.bioooze = {
 			color: ["#53FF4F", "#53FF4F", "#06DE00", "#04A600", "#036E00"],
 			behavior: behaviors.LIQUID,
@@ -16529,7 +15478,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			viscosity: 60,
 			description: "A particularly potent toxic sludge loaded with parasites and ickiness.",
 		};
-
 		function threshholdedPyrogen(pixel,threshholdTemp,baseHeat,divisor) {
 			if(pixel.temp < threshholdTemp) {
 				pixel.temp += Math.max(baseHeat,(threshholdTemp - pixel.temp) / divisor);
@@ -16537,7 +15485,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				pixel.temp += baseHeat;
 			};
 		};
-
 		function tpHeatCalc(startTemp,threshholdTemp,baseHeat,divisor) {
 			if(startTemp < threshholdTemp) {
 				return Math.max(baseHeat,(threshholdTemp - startTemp) / divisor);
@@ -16545,11 +15492,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				return baseHeat;
 			};
 		};
-
 		function itfChanceCalc(baseHeat,divisor,chanceLimit) {
 			return Math.min(chanceLimit,(baseHeat / divisor))
 		};
-
 		function inferniumTempFire(pixel,divisor,chanceLimit) {
 			if(Math.random() < Math.min(chanceLimit,(pixel.temp / divisor))) { //fire depending on temp
 				var randomCoord = adjacentCoords[Math.floor(Math.random() * adjacentCoords.length)]; //random place
@@ -16561,7 +15506,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 			};
 		};
-
 		elements.pyreite = {
 			color: ["#cc674b","#e06e41","#f77320","#f77320","#fa9b28","#fac228"],
 			behavior: behaviors.WALL,
@@ -16574,7 +15518,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				threshholdedPyrogen(pixel,1722,0.25,512);
 			},
 		};
-
 		elements.infernium = {
 			color: ["#bf4b39","#e68453","#f7994d","#f7994d","#ffa154","#ffe875"],
 			behavior: [
@@ -16592,7 +15535,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				inferniumTempFire(pixel,40000,0.2);
 			},
 		};
-
 		elements.molten_pyreite = {
 			tick: function(pixel) {
 				pixel.temp += 0.25;
@@ -16601,14 +15543,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				molten_infernium: { elem1: "molten_infernyrite", elem2: "molten_infernyrite", temp1: 304, temp2: 304 }
 			},
 		};
-
 		elements.molten_infernium = {
 			tick: function(pixel) {
 				pixel.temp += 0.32;
 				inferniumTempFire(pixel,40000,0.2);
 			},
 		};
-
 		elements.infernyrite = {
 			color: ["#d45f2c","#f59449","#f7994d","#fcaa4c","#fab973","#ffea8c"],
 			behavior: [
@@ -16626,7 +15566,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				inferniumTempFire(pixel,40000,0.2);
 			},
 		};
-
 		elements.molten_infernyrite = {
 			tick: function(pixel) {
 				pixel.temp += 0.79;
@@ -16641,7 +15580,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				}
 			},
 		};
-
 		elements.infernyreitheum = {
 			color: ["#f2a863","#faaf4d","#ffb547","#fcaa4c","#fcd64c","#fff6ba"],
 			behavior: [
@@ -16659,7 +15597,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				inferniumTempFire(pixel,25000,0.4); //pyrotheum makes a lot of fire
 			},
 		};
-
 		function pyrestoneInfernyreitheumReaction(pyrestoneName) {
 			return {
 				elem1: "molten_pyrinfernyreitheum",
@@ -16668,7 +15605,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				temp2: 3085
 			};
 		};
-
 		elements.molten_infernyreitheum = {
 			tick: function(pixel) {
 				pixel.temp += 2.03;
@@ -16683,7 +15619,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				fiery_pyrestone: pyrestoneInfernyreitheumReaction("fiery_pyrestone")
 			}
 		};
-
 		elements.pyrinfernyreitheum = {
 			color: ["#e6c087","#f7c76d","#ffd79c","#ffd79c","#ffe387","#ffffd9"],
 			behavior: [
@@ -16701,19 +15636,15 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				inferniumTempFire(pixel,15000,0.8); //pyrotheum makes a lot of fire
 			},
 		};
-
 		elements.molten_pyrinfernyreitheum = {
 			tick: function(pixel) {
 				pixel.temp += 7.01;
 				inferniumTempFire(pixel,15000,0.8); //pyrotheum makes a lot of fire
 			}
 		};
-
 	//MORE MORTAL PLANTS ##
-
 		var killerArray = ["radiation", "alcohol", "soap", "acid", "ammonia", "acid_gas", "bleach", "poison", "ice_nine", "methanol", "propanol", "butanol", "isopropanol", "phenol"]; //https://pubmed.ncbi.nlm.nih.gov/16986801/
 		var plantArray = ["plant", "frozen_plant", "grass", "algae", "sapling", "seeds", "grass_seed", "wheat_seed", "wheat", "flower_seed", "pistil", "petal", "vine", "bamboo", "bamboo_plant", "corn_seed", "potato_seed", "root", "berry_seed", "old_berry_leaf", "berry_leaf", "berry", "banana_pseudostem", "banana_peduncle_1", "banana_peduncle_2", "petal", "banana_leaf", "banana_plant_top"];
-
 		runAfterAutogen(function() {
 			//Try to detect radioactive elements (it's not perfect, but it's better than nothing)
 			var rads = Object.keys(elements).filter(function(name) {
@@ -16729,9 +15660,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 			};
 		});
-
 	//PAINT EVENT ##
-
 		randomEvents.paint = function() {
 			// set the color of a random circle to a random color
 			var x = Math.floor(Math.random()*(width-1))+1;
@@ -16749,11 +15678,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 			};
 		};
-
 	//CONFIGURABLE PAGE BACKGROUND COLOR ##
-
 		var backgroundUseStrings = ["bg","background","settings.bg"]
-
 		if(urlParams.get('pageColor') != null) { //null check
 			//Old method (as a query parameter)
 			color = urlParams.get('pageColor');
@@ -16764,38 +15690,31 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			!settings.bg ? color = "black" : color = settings.bg;
 				color = settings.bg;
 			};
-
 			color_Would_Be_A_Triplet_If_It_Started_With_An_Octothorpe = null;
 			color_Is_Supported_As_A_Background_By_The_Browser = null;
-
 			if( /^#([0-9A-F]{3}){1,2}$/i.test("#" + color) ) {
 				color_Would_Be_A_Triplet_If_It_Started_With_An_Octothorpe = true
 			} else {
 				color_Would_Be_A_Triplet_If_It_Started_With_An_Octothorpe = false
 			}
-
 			if( CSS.supports('background',color) ) {
 				color_Is_Supported_As_A_Background_By_The_Browser = true
 			} else {
 				color_Is_Supported_As_A_Background_By_The_Browser = false
 			}
-
 			if(color_Is_Supported_As_A_Background_By_The_Browser == false && color_Would_Be_A_Triplet_If_It_Started_With_An_Octothorpe == true) {
 				color = "#" + color
 			}
-
 			document.body.style.background = color;
 		} else {
 			//As a setting
 			runAfterLoad(function() {
 				var settingsMenu = document.getElementById("settingsMenu").getElementsByClassName("menuText")[0];
-
 				var settingNodes = [...settingsMenu.childNodes].filter(function(node) { return node.nodeType == 1 });
 				var lastSetting = settingNodes[settingNodes.length - 1];
 				//console.log(lastSetting);
 				//console.log(lastSetting.getAttribute("style"));
 				//console.log(lastSetting.getAttribute("style"));
-
 				//Shape setting
 				var bgSettingSpan = document.createElement("span");
 				bgSettingSpan.setAttribute("setting","pageBG");
@@ -16808,20 +15727,15 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					bgSettingSpan.appendChild(settingPicker);
 				settingsMenu.appendChild(bgSettingSpan);
 			});
-
 			settings.pageBG ??= "#000000"; saveSettings();
 			document.body.style["background-color"] = settings.pageBG;
 		};
-
 	//GASEOUS FORMS AND BOILING OF SOME ELEMENTS ##
-
 		//glass {
-
 			elements.molten_glass = {
 				tempHigh: 2200,
 				stateHigh: "vaporized_glass",
 			}
-
 			elements.vaporized_glass = {
 				color: ["#D6B049","#E8D957","#E8AE57"],
 				behavior: [
@@ -16841,7 +15755,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				state: "gas",
 				hidden: true
 			},
-
 			elements.hot_glass_cloud = {
 				color: ["#B69089","#C8B997","#C88E77"],
 				behavior: [
@@ -16856,7 +15769,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				category: "gases",
 				state: "gas"
 			},
-
 			elements.cold_glass_cloud = {
 				color: ["#967089","#A89997","#A86E77"],
 				behavior: [
@@ -16871,11 +15783,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				category: "gases",
 				state: "gas"
 			},
-
 		//}
-
 		// nitroglycerin {
-
 			elements.nitro_gas = {
 				color: "#89d162",
 				behavior: behaviors.GAS,
@@ -16900,17 +15809,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				excludeRandom: true,
 				alias: "nitroglycerin gas"
 			};
-
 			elements.nitro.tempHigh = 50;
 			elements.nitro.stateHigh = "nitro_gas";
-
 		//}
-
 		// ash {
-
 			elements.ash.tempHigh = 1200		  //https://www.quora.com/Can-you-melt-ashes
 			elements.ash.stateHigh = "molten_ash" //https://www.sciencedirect.com/science/article/pii/S1877705817326772
-
 			elements.molten_ash = {
 				color: ["#df6f30","#df8c30","#df4d30"],
 				behavior: behaviors.MOLTEN,
@@ -16925,7 +15829,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				state: "liquid",
 				density: 2725
 			},
-
 			elements.vaporized_ash = {
 				color: ["#df9f50","#dfbc50","#df7d50"],
 				behavior: [
@@ -16945,7 +15848,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				hidden: true,
 				density: 3
 			},
-
 			elements.hot_ash_cloud = {
 				color: ["#bf8f50","#bfac50","#bf7d50"],
 				behavior: [
@@ -16960,7 +15862,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				category: "gases",
 				state: "gas"
 			},
-
 			elements.cold_ash_cloud = {
 				color: ["#af8f50","#ab9c50","#af6d50"],
 				behavior: [
@@ -16975,18 +15876,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				category: "gases",
 				state: "gas"
 			},
-
 		//}
-
 		// charcoal {
-
 			elements.charcoal.tempHigh = 800
 			elements.charcoal.stateHigh = "carbon_dioxide"
-
 		//}
-
 		//carbon dioxide {
-
 			/*fuck this, i can't work out the offset-infested math
 			function carbonDioxideDecompRatio(temp) {
 				//
@@ -16996,7 +15891,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				//
 				return Math.E**(((1110190+(13.083*(temp-298)))-(temp*(149.498+(13.083*(Math.log(temp/298))))))/(-8.31446*temp))
 			}
-
 			function carbonDioxideDecompChance(temp) {
 				//Expected 0.5 at 6275.6434478747902
 				if(typeof(temp) === "undefined") {
@@ -17018,23 +15912,17 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				return 1-(1/(K+1));
 			};
 			*/
-
 			//Mass given is the molar mass of O_2 molecule (31.999 g)
 			//O_2 bond energy is 495 kJ/mol
 			//Heat capacity is 0.918 J/(g*K)
 			//in case the link goes down: c = Q/(m * delta-T); c = capacity, m = mass, delta-T = temp change, energy = Q
 			//https://www.calctool.org/thermodynamics/specific-heat
 			tupleAdverbs = ['Nullly', 'Singly', 'Doubly', 'Triply', 'Quadruply', 'Quintuply', 'Sextuply', 'Septuply', 'Octuply', 'Nonuply', 'Decuply', 'Undecuply', 'Duodecuply', 'Tredecuply', 'Quattuordecuply', 'Quindecuply', 'Sexdecuply', 'Septendecuply', 'Octodecuply', 'Novemdecuply', 'Vigintuply', 'Unvigintuply', 'Duovigintuply', 'Trevigintuply', 'Quattuorvigintuply', 'Quinvigintuply', 'Sexvigintuply', 'Septenvigintuply', 'Octovigintuply', 'Novemvigintuply', 'Trigintuply'].map(x => x.toLowerCase());
-
 		//}
-
 		// baking soda {
-
 			elements.baking_soda.tempHigh = 150,
 			elements.baking_soda.stateHigh = ["water","carbon_dioxide","calcined_soda"]
-
 			// decomposition result {
-
 				elements.calcined_soda = { //TODO: decomposition?
 					color: "#ededed",
 					behavior: behaviors.POWDER,
@@ -17047,16 +15935,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					density: 2540,
 					tempHigh: 851,
 				}
-
 				if(!elements.molten_calcined_soda) {
 					elements.molten_calcined_soda = {}
 				}
-
 				elements.molten_calcined_soda.temp = 1700
 				elements.molten_calcined_soda.tempHigh = 1600
 				elements.molten_calcined_soda.stateHigh = "vaporized_calcined_soda"
 				elements.molten_calcined_soda.density = 1920
-
 				elements.vaporized_calcined_soda = {
 					color: ["#ffbf60","#ffdc60","#ff9d60"],
 					behavior: [
@@ -17076,7 +15961,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					hidden: true,
 					density: 1.5, //bs
 				},
-
 				elements.hot_calcined_soda_cloud = {
 					color: ["#cfbf70","#cfcc70","#cf9d70"],
 					behavior: [
@@ -17091,7 +15975,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					category: "gases",
 					state: "gas",
 				},
-
 				elements.cold_calcined_soda_cloud = {
 					color: ["#afaf70","#afac70","#af8d70"],
 					behavior: [
@@ -17106,11 +15989,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					category: "gases",
 					state: "gas",
 				},
-
 			//}
-
 			// decomp hydrate {
-
 				elements.washing_soda = {
 					color: "#ededed",
 					behavior: behaviors.POWDER,
@@ -17121,26 +16001,18 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					tempHigh: 400,
 					stateHigh: ["water","calcined_soda"],
 				}
-
 			//}
-
 			//alkalinities {
-
 				elements.acid.reactions.baking_soda = { "elem1":"neutral_acid", "elem2":null }
 				elements.acid.reactions.calcined_soda = { "elem1":"neutral_acid", "elem2":null }
 				elements.acid.reactions.washing_soda = { "elem1":"neutral_acid", "elem2":null }
-
 			//}
-
 		//}
-
 		// calcium {
-
 			elements.molten_calcium = {
 				tempHigh: 2200,
 				stateHigh: "vaporized_calcium",
 			}
-
 			elements.vaporized_calcium = {
 				color: ["#ffc94a", "#fcd34c", "#ffae36", "#ff9c40","#ffcd90","#cf8d50"],
 				behavior: [
@@ -17160,7 +16032,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				state: "gas",
 				hidden: true
 			},
-
 			elements.hot_calcium_cloud = {
 				color: ["#dfa98a", "#dcb38c", "#df8e76", "#ef8c60","#efbdb0","#af8d70"],
 				behavior: [
@@ -17175,7 +16046,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				category: "gases",
 				state: "gas"
 			},
-
 			elements.cold_calcium_cloud = {
 				color: ["#bf998a", "#bca38c", "#bf8e76", "#cf8c60","#cfadb0","#9f8d70"],
 				behavior: [
@@ -17190,18 +16060,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				category: "gases",
 				state: "gas",
 			}
-
 		//}
-
 		// clay {
-
 			if(!elements.baked_clay) {
 				elements.baked_clay = {}
 			}
-
 			elements.baked_clay.tempHigh = 1600 //the range of melting points online is so fucking wide
 			elements.baked_clay.stateHigh = "molten_clay"
-
 			elements.molten_clay = {
 				color: ["#ff6d23","#ff5723","#ff4100"],
 				behavior: [
@@ -17220,7 +16085,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				stateHigh: "vaporized_clay",
 				category: "liquids",
 			}
-
 			elements.vaporized_clay = {
 				color: ["#ff8d43","#ff7743","#ff6120"],
 				behavior: [
@@ -17240,7 +16104,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				state: "gas",
 				hidden: true
 			},
-
 			elements.hot_clay_cloud = {
 				color: ["#ff9945", "#fca347", "#ff7e31"],
 				behavior: [
@@ -17255,7 +16118,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				category: "gases",
 				state: "gas"
 			},
-
 			elements.cold_clay_cloud = {
 				color: ["#ef7945", "#ec8347", "#ef5e31"],
 				behavior: [
@@ -17270,16 +16132,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				category: "gases",
 				state: "gas"
 			},
-
 		//}
-
 		// salt {
-
 			elements.molten_salt = {
 				tempHigh: 1465,
 				stateHigh: "vaporized_salt",
 			}
-
 			elements.vaporized_salt = {
 				color: ["#ff9f60","#ffbc60","#ff7d60"],
 				behavior: [
@@ -17299,7 +16157,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				state: "gas",
 				hidden: true
 			},
-
 			elements.hot_salt_cloud = {
 				color: ["#ef8f30","#efac60","#ef6d60"],
 				behavior: [
@@ -17314,7 +16171,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				category: "gases",
 				state: "gas"
 			},
-
 			elements.cold_salt_cloud = {
 				color: ["#cf7f60","#cf9c60","#cf7d60"],
 				behavior: [
@@ -17329,9 +16185,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				category: "gases",
 				state: "gas",
 			}
-
 		//}
-
 		runAfterLoad(function() {
 			if(elements.acid_gas.tempHigh) {
 				delete elements.acid_gas.tempHigh
@@ -17346,7 +16200,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			elements.yogurt.stateHigh = "ash"
 			elements.dust.tempHigh = 400
 			elements.dust.stateHigh = "fire"
-
 			elements.concoction.reactions.vaporized_glass = { "elem1": "mistake", "elem2": null }
 			elements.concoction.reactions.hot_glass_cloud = { "elem1": "mistake", "elem2": null }
 			elements.concoction.reactions.cold_glass_cloud = { "elem1": "mistake", "elem2": null }
@@ -17370,14 +16223,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			elements.concoction.reactions.vaporized_salt = { "elem1": "mistake", "elem2": null }
 			elements.concoction.reactions.hot_salt_cloud = { "elem1": "mistake", "elem2": null }
 			elements.concoction.reactions.cold_salt_cloud = { "elem1": "mistake", "elem2": null }
-
 		});
-
 	//CHLORINE TRIFLUORIDE ##
-
 		function finishBurn(pixel) {
 			var info = elements[pixel.element];
-
 			var burnInto = info.burnInto;
 			if (burnInto == undefined) {
 				burnInto = 'fire';
@@ -17396,7 +16245,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				pixel.color = pixelColorPick(pixel)
 			}
 		};
-
 		function clf3Tick(pixel) {
 			for(i = 0; i < adjacentCoords.length; i++) {
 				var oX = adjacentCoords[i][0];
@@ -17420,11 +16268,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 			};
 		};
-
 		var clf3IgnoreList = ["FOOF","solid_FOOF","oxygen","liquid_oxygen","oxygen_ice","chlorine","liquid_chlorine","liquid_hydrogen_fluoride","liquid_fluorine","fluorine","fluorine_ice","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_acid_gas","fire","acid_gas","neutral_acid","acid","acid_cloud","nitrogen","helium","liquid_helium","tralphium","liquid_tralphium","neon","liquid_neon","solid_neon","neon_ice","neon_snow","argon","liquid_argon","solid_argon","argon_ice","argon_snow", "krypton","liquid_krypton","solid_krypton","krypton_ice","krypton_snow", "xenon","liquid_xenon","solid_xenon","xenon_ice","xenon_snow", "radon","liquid_radon","solid_radon","radon_ice","radon_snow","ionized_helium","ionized_tralphium","wall","chlorine_trifluoride","chlorine_trifluoride_ice","chlorine_trifluoride_gas","quartz"];
-
 		//todo: PTFE, passivation
-
 		elements.chlorine_trifluoride = {
 			color: "#8aa65b",
 			behavior: behaviors.LIQUID,
@@ -17440,7 +16285,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			tempHigh: 11.75,
 			temp: 5,
 		};
-
 		elements.chlorine_trifluoride_gas = {
 			tick: function(pixel) {
 				clf3Tick(pixel);
@@ -17449,24 +16293,19 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			//tempHigh: 220, //variously or 180,
 			//stateHigh: ["chlorine_fluoride","fluorine"],
 		};
-
 		elements.chlorine_trifluoride_ice = {
 			tick: function(pixel) {
 				clf3Tick(pixel);
 			},
 		};
-
 	//GLENN'S GASES PARTIAL PORT ##
-
 		//Glenn's Gases is licensed under the GNU LGPL.
 		//http://www.gnu.org/licenses/lgpl.html
 		//https://www.jamieswhiteshirt.com/minecraft/mods/gases/information/?Licensing
-
 		//Coal exists in NM
 		runAfterLoad(function() {
 			elements.coal.breakInto = "coal_dust"
 		});
-
 		elements.coal_dust = {
 			color: "#363023",
 			behavior: behaviors.GAS,
@@ -17482,11 +16321,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			burnTime: 10,
 			burnInto: ["ash", "fire", "carbon_dioxide"],
 		};
-
 		//Chlorine exists.
-
 		//Natural gas is mostly ammonia, which exists.
-
 		elements.red_gas = {
 			color: "#c74c52",
 			behavior: behaviors.GAS,
@@ -17501,9 +16337,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			burn: 300,
 			burnTime: 10,
 			burnInto: ["fire", "explosion", "explosion"],
-
 		};
-
 		elements.nitrous_gas = {
 			color: "#854428",
 			behavior: behaviors.GAS,
@@ -17514,7 +16348,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			density: 1.5,
 			state: "gas",
 		};
-
 		elements.acidic_vapour = {
 			color: ["#5282d1", "#4e6fad"],
 			behavior: [
@@ -17527,7 +16360,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			density: 1.5,
 			state: "gas",
 		};
-
 		elements.void_gas = {
 			color: "#111111",
 			behavior: behaviors.GAS,
@@ -17539,7 +16371,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			density: 1.5,
 			state: "gas",
 		};
-
 		elements.electric_gas = {
 			color: ["#3693b3", "#246e64"],
 			behavior: [
@@ -17556,9 +16387,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			density: 1.225,
 			state: "gas"
 		};
-
 		corrosiveGasMaxHardness = 0.6
-
 		elements.corrosive_gas = {
 			color: ["#2929e6", "#151cad"],
 			behavior: [
@@ -17591,7 +16420,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			density: 1.225,
 			state: "gas",
 		};
-
 		elements.blue_dust = {
 			color: ["#063ca1", "#042d94", "#063ca1", "#042d94", "#1d66ff"],
 			behavior: behaviors.POWDER,
@@ -17600,7 +16428,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			state: "solid",
 			density: 1600,
 		}
-
 		elements.turquoise_dust = {
 			color: ["#12a6a6","#1aa3a3","#12a6a6","#1aa3a3","#00ffff"],
 			behavior: behaviors.POWDER,
@@ -17609,15 +16436,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			state: "solid",
 			density: 1600,
 		}
-
 		if(!settings) {
 			settings = {}
 		}
-
 		if(!settings.bg) {
 			settings.bg = "#000000"
 		}
-
 		elements.black_damp = {
 			color: settings.bg,
 			behavior: behaviors.GAS,
@@ -17635,13 +16459,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			density: 1.225,
 			state: "gas",
 		};
-
 		if(!elements.torch.reactions) {
 			elements.torch.reactions = {}
 		}
-
 		elements.torch.reactions.black_damp = { elem1: "wood" }
-
 		elements.rock_dust = {
 			color: "#878783",
 			behavior: behaviors.GAS,
@@ -17654,13 +16475,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			tempHigh: 950,
 			stateHigh: [null,null,null,null,"magma"],
 		}
-
 		elements.rock.breakInto.push("rock_dust")
-
 		lightArray = ["fire", "plasma", "cold_fire", "light", "laser", "electric", "radiation", "mystic_fire", "liquid_fire", "liquid_plasma", "liquid_cold_fire", "le_liquid_light", "liquid_laser", "liquid_electric", "liquid_radiation", "liquid_mystic_fire", "magma", "liquid_light", "solid_light"]
-
 		ledArray = ["led_r", "led_g", "led_b"]
-
 		elements.iocalfaeus_gas = {
 			color: ["#562173", "#481b61"],
 			behavior: behaviors.GAS,
@@ -17688,11 +16505,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			density: 0.97,
 			state: "gas",
 		}
-
 		//Helium exists.
-
 		finineRange = 6
-
 		elements.finine = {
 			color: ["#ffffec", "#fafade", "#ebebd5", "#c9c9b7", "#80806f"],
 			behavior: [
@@ -17733,9 +16547,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			density: 1.225,
 			state: "gas",
 		}
-
 		//Smoke exists.
-
 		elements.ignited_gas = {
 			color: ["#fc9a58", "#faae3c", "#ffef3d"],
 			behavior: [
@@ -17752,9 +16564,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			burnInto: ["fire","smoke"],
 			hidden: true,
 		}
-
 		//Diabaline
-
 		elements.diabaline = {
 			color: "#7e4e9c",
 			behavior: behaviors.POWDER,
@@ -17825,8 +16635,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			density: 1500,
 			state: "solid",
 		}
-
-
 		runAfterLoad(function() {
 			lifeArray = Object.keys(elements).filter(function(e) {
 				return elements[e].category == "life";
@@ -17854,7 +16662,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					tempHigh: 950,
 					stateHigh: [null,null,null,null,"radioactive_magma"],
 				}
-
 				elements.radioactive_rock.breakInto.push("radioactive_rock_dust")
 			*/
 			elements.rock_dust.tempHigh = 3000
@@ -17864,9 +16671,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				elements.radioactive_rock_dust.stateHigh = "vaporized_rock"
 			*/
 		});
-
 	//IOCALFAEUS CLONES
-
 		elements.iorefrius_gas = {
 			color: ["#217349", "#1b5f3c"],
 			behavior: behaviors.GAS,
@@ -17895,7 +16700,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			density: 0.97,
 			state: "gas",
 		};
-
 		elements.iolucius_gas = {
 			color: ["#e9c5ed", "#e2b0e8"],
 			behavior: behaviors.GAS,
@@ -17931,7 +16735,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			density: 0.97,
 			state: "gas",
 		};
-
 		elements.ioradius_gas = {
 			color: ["#a6a258", "#97944e"],
 			behavior: behaviors.GAS,
@@ -17967,9 +16770,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			density: 0.97,
 			state: "gas",
 		};
-
 	//SOME METALS AND OTHER ASSORTED SUBSTANCES ##
-
 		elements.iron.hardness = 0.74
 		//https://www.engineeringtoolbox.com/bhn-brinell-hardness-number-d_1365.html
 		//https://en.wikipedia.org/wiki/Hardnesses_of_the_elements_(data_page)
@@ -17979,12 +16780,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		//1-(0.26/(otherThingBHN/200))
 		//it doesn't matter much anyway but I'd like to have some semblance/veneer of accuracy
 		//Then I nerfed and buffed some of them with inconsistent rounding.
-
 		elements.chromium = {
 			color: ["#c8cccb", "#dce3e0", "#ebedeb"],
 			behavior: behaviors.WALL,
 			reactions: {
-
 			},
 			tempHigh: 1907,
 			category: "solids",
@@ -17993,15 +16792,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			hardness: 0.985,
 			state: "solid",
 		};
-
 		//Makes thinner nichrome wires get hotter
 		nichromeDoNeighborCount = true;
-
 		function nichromeNeighborLogic(count) {
 			if(count < 3) { return 2.5 };
 			return count == 3 ? 1.25 : 0;
 		};
-
 		elements.nichrome = {
 			color: ["#d1cfcb", "#dbd7ce", "#e8e2d5"],
 			behavior: behaviors.WALL,
@@ -18026,7 +16822,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 			},
 		};
-
 		elements.molten_chromium = {
 			density: 6300,
 			temp: 2000,
@@ -18034,7 +16829,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				molten_nichrome: { elem1: "molten_nichrome", elem2: "molten_chromium", chance: 0.4, changeTemp: false, oneway: true }
 			},
 		};
-
 		elements.molten_nichrome = {
 			reactions: { //(test.hello ??= {}).world
 				molten_nickel: { elem1: "molten_nickel", elem2: "molten_nichrome", chance: 0.4, changeTemp: false, oneway: true },
@@ -18055,21 +16849,17 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 			},
 		};
-
 		elements.gold.reactions ??= {};
-
 		elements.molten_gold.reactions.molten_nickel = {
 			elem1: "molten_white_gold",
 			elem2: new Array(9).fill("molten_nickel").concat("molten_white_gold"),
 			changeTemp: false
 		};
-
 		elements.molten_copper.reactions.molten_gold = {
 			elem1: ["molten_copper","molten_copper","molten_rose_gold"],
 			elem2: "molten_rose_gold",
 			changeTemp: false
 		};
-
 		elements.white_gold = {
 			color: ["#c2c2c2","#9e9e9e","#e8e8e8"],
 			behavior: behaviors.WALL,
@@ -18079,15 +16869,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			conduct: 0.83, //Has never been measured x>:(
 			hardness: 0.48,
 		};
-		
 		elements.rose_gold.color = ["#f58eb1","#d06c7d","#f58eb1"];
-		
 		elements.molten_copper.reactions.molten_rose_gold = {
 			elem1: ["molten_copper","molten_red_gold"],
 			elem2: "molten_red_gold",
 			changeTemp: false
 		};
-
 		elements.red_gold = {
 			color: ["#d97b6a","#c95c49","#d97b6a"],
 			behavior: behaviors.WALL,
@@ -18097,22 +16884,17 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			conduct: 0.85, //Has never been measured x>:(
 			hardness: 0.5, //???
 		};
-
 		worldgentypes.test = {
 			layers: [[0.3, "pointer"], [0, "molten_nickel"]],
 			temperature: 2000
 		};
-
 		runAfterAutogen(function() {
 			if(!elements.molten_nickel.reactions) {
 				elements.molten_nickel.reactions = {};
 			};
-
 			elements.molten_nickel.reactions.molten_chromium = { elem1: "molten_nichrome", elem2: ["molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_nichrome"], changeTemp: false };
 			});
-
 		//Copper exists
-
 		elements.ruthenium = {
 			color: ["#e8ebca","#eaebd5"], //color pulled from my ass because I don't want another gray metal
 			behavior: behaviors.WALL,
@@ -18123,11 +16905,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			conduct: 0.45,
 			hardness: 0.97,
 		},
-
 		elements.molten_ruthenium = {
 			density: 10650,
 		},
-
 		elements.rhodium = {
 			color: ["#f0e4df","#f7eae4"], //it looked slightly reddish on Wikipedia
 			behavior: behaviors.WALL,
@@ -18138,11 +16918,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			conduct: 0.59,
 			hardness: 0.95,
 		},
-
 		elements.molten_rhodium = {
 			density: 10700,
 		},
-
 		elements.palladium = {
 			color: ["#fff8ed","#f5e6ce","#faeccf"], //Terraria reference
 			behavior: behaviors.WALL,
@@ -18153,13 +16931,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			conduct: 0.38,
 			hardness: 0.83,
 		},
-
 		elements.molten_palladium = {
 			density: 10380,
 		},
-
 		//Silver exists
-
 		elements.rhenium = {
 			color: ["#e5f0d1","#e6edda"], //it looks like almost every other metal but in some pictures the lighting makes it look ever-so-slightly greenish
 			behavior: behaviors.WALL,
@@ -18170,11 +16945,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			conduct: 0.29,
 			hardness: 0.96,
 		},
-
 		elements.molten_rhenium = {
 			density: 18900,
 		},
-
 		elements.osmium = {
 			color: ["#d8e1eb","#cee1f0"], //it looks bluish
 			behavior: behaviors.WALL,
@@ -18185,11 +16958,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			conduct: 0.40,
 			hardness: 0.98,
 		},
-
 		elements.molten_osmium = {
 			density: 2e4,
 		},
-
 		elements.iridium = {
 			color: ["#dfb9f0","#d6a9eb","#dfd1ed","#eeeeee"], //Minecraft and Stardew Valley reference
 			behavior: behaviors.WALL,
@@ -18200,11 +16971,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			conduct: 0.54,
 			hardness: 0.97,
 		},
-
 		elements.molten_iridium = {
 			density: 19000,
 		},
-
 		elements.platinum = {
 			color: ["#dddddd","#d7d7d7"],
 			behavior: behaviors.WALL,
@@ -18215,13 +16984,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			conduct: 0.38,
 			hardness: 0.83226,
 		},
-
 		elements.molten_platinum = {
 			density: 19770,
 		},
-
 		//Gold exists
-
 		elements.mercury = {
 			color: ["#d1d1d1", "#bababa"],
 			behavior: behaviors.LIQUID,
@@ -18235,7 +17001,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			conduct: 0.13,
 			breakInto: "mercury_gas",
 		},
-
 		elements.frozen_mercury = {
 			color: ["#d1d1d1", "#bababa"],
 			density: 14184,
@@ -18250,7 +17015,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			hidden: true,
 			hardness: 0.2775, //(desperately scaled Mohs hardness)
 		},
-
 		elements.mercury_gas = { //hg d@bp extrapolated from density change with temperature: 12743
 			density: 8.477,
 			color: ["#d1d1d1", "#bababa"],
@@ -18264,9 +17028,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			state: "gas",
 			hidden: true,
 		}
-
 		var mooreNeighborhood = [[-1,-1],[0,-1],[1,1],[-1,0],[1,0],[-1,1],[0,1],[1,1]];
-
 		var bismuthCrystalColorArray = [
 			"#f58887",
 			"#fcd19a",
@@ -18277,11 +17039,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			"#dbb9f0",
 			"#f2acdb"
 		]
-
 		var bismuthCrystalElements = ["bismuth","molten_bismuth"];
-
 		quadriCoords = [[-1,1],[0,1],[1,1],[1,0]];
-
 		//i'm not replacing pixelTick for this shit
 		/*function mooreDoHeat(pixel) {
 			// Check right and bottom adjacent pixels
@@ -18303,13 +17062,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 			};
 		};*/
-
 		function bismuthCrystallization(pixel) {
 			if(pixel.temp < elements.bismuth.tempHigh) { //initial crystal on cool
 				//pixel.color = "rgb(255,0,0)";
 					//initialize CCC
 				pixel.crystalColorCounter ??= Math.floor(Math.random() * 8); //initialize CCC
-				//pixel.crystalColorCounter ??= 0; 
+				//pixel.crystalColorCounter ??= 0;
 				if(pixel.element !== "bismuth") {
 					pixel.temp -= 0.05; //incentivize cooling
 					pixel.element = "bismuth"
@@ -18317,12 +17075,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					pixel.color = pixelColorPick(pixel,bismuthCrystalColorArray[pixel.crystalColorCounter % 8]);
 				}; //solidify
 			};
-
 			if(pixel.crystalColorCounter !== undefined) {
 				for(i = 0; i < mooreNeighborhood.length; i++) {
 					var newX = pixel.x + mooreNeighborhood[i][0];
 					var newY = pixel.y + mooreNeighborhood[i][1];
-
 					if(isEmpty(newX,newY,true)) {
 						continue;
 					} else {
@@ -18338,10 +17094,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					};
 				};
 			};
-
 			//mooreDoHeat(pixel);
 		};
-
 		elements.molten_bismuth = {
 			color: "#d1c6b0", //not really hot enough to be red
 			behavior: behaviors.LIQUID,
@@ -18357,17 +17111,14 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			tempHigh: 1560,
 			fireColor: "#4275db",
 		};
-
 		runAfterAutogen(function() {
 			delete elements.molten_bismuth.tempLow;
 			delete elements.molten_bismuth.stateLow;
 		});
-
 		elements.bismuth = {
 			color: "#d1c6b0",
 			behavior: behaviors.WALL,
 			/*reactions: {
-
 			},*/
 			tempHigh: 271.5,
 			category: "solids",
@@ -18377,14 +17128,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			state: "solid",
 			fireColor: "#4275db",
 		};
-
 		elements.bismuth_gas = {
 			density: 9, //made-up number
 			fireColor: "#4275db",
 		};
-
 		zirconoids = ["zirconium","molten_zirconium","zirconium_gas"];
-
 		function zirconiumMoveContainedNeutron(pixelFrom,pixelTo) {
 			if(!pixelFrom || !pixelTo) {
 				return false
@@ -18397,7 +17145,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			pixelFrom.neutrons--;
 			pixelTo.neutrons++;
 		};
-
 		function neutronAbsorbency(pixel,otherPixel) {
 			if(isNaN(pixel.neutrons)) {
 				pixel.neutrons = 0;
@@ -18417,7 +17164,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				return false;
 			};
 		};
-
 		function neutronMovement(pixel,whitelist=null) {
 			if(!pixel.oldColor) {
 				pixel.oldColor = pixel.color;
@@ -18426,9 +17172,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				pixel.neutrons = 0;
 			};
 			pixel.neutrons ??= 0; //probably redundant with the above
-
 			if(pixel.oldColor === null) { pixel.oldColor = pixel.color };
-
 			var color = convertColorFormats(pixel.oldColor,"json");
 			//color.g += (pixel.neutrons * 4);
 			//color.b += (pixel.neutrons * 6);
@@ -18436,7 +17180,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			color.b += (pixel.neutrons * 48);
 			color = convertColorFormats(color,"rgb");
 			pixel.color = color;
-
 			for(i = 0; i < pixel.neutrons; i++) {
 				if(pixel.neutrons < 1) { break };
 				var vx = Math.floor(Math.random() * 3) - 1;
@@ -18445,13 +17188,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					if (Math.random() < 0.5)	{ vx = Math.random() < 0.5 ? 1 : -1; }
 					else						{ vy = Math.random() < 0.5 ? 1 : -1; }
 				};
-
 				var newPos = {x: pixel.x+vx, y: pixel.y+vy};
-
 				if(outOfBounds(newPos.x,newPos.y)) {
 					continue;
 				};
-
 				if(isEmpty(newPos.x,newPos.y,false)) {
 					createPixelReturn("neutron",newPos.x,newPos.y).temp = pixel.temp;
 					pixel.neutrons--;
@@ -18465,7 +17205,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 			};
 		};
-
 		elements.zirconium = {
 			color: ["#ccc59b", "#dbd3a4"],
 			behavior: behaviors.WALL,
@@ -18484,7 +17223,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			conduct: 0.19,
 			hardness: 0.5,
 		},
-
 		elements.molten_zirconium = {
 			density: 5803,
 			tempHigh: 4409,
@@ -18496,8 +17234,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				neutronMovement(pixel,zirconoids);
 			},
 		};
-
-
 		elements.zirconium_gas = {
 			density: 3, //Unknown/Unmeasured value
 			behavior: behaviors.GAS,
@@ -18508,12 +17244,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				neutronMovement(pixel,zirconoids);
 			},
 		};
-
 		elements.neutron.state = "gas";
 		elements.neutron.ignoreAir = "true";
-
 		neighbors = [[-1,0],[0,-1],[1,0],[0,1]]
-
 		function tryTarnish(pixel,element,chance) {
 			if(exposedToAir(pixel)) {
 				if(Array.isArray(element)) {
@@ -18527,7 +17260,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				}
 			}
 		}
-
 		//Non-element: Liquid ammonia
 		elements.liquid_ammonia = {
 			color: "#bab6a9",
@@ -18560,15 +17292,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			hidden: true,
 			density: 681.9,
 		}
-
 		elements.ammonia.tempLow = -78
 		elements.ammonia.stateLow = "liquid_ammonia"
-
 		//Hydrogen
 		//Hydrogen exists, but its solid form doesn't.
 		elements.liquid_hydrogen.tempLow = -259.16
 		elements.liquid_hydrogen.stateLow = "hydrogen_ice"
-
 		elements.hydrogen_ice = {
 			color: "#E6E6FF",
 			behavior: behaviors.WALL,
@@ -18579,26 +17308,25 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			tempHigh: -259,
 			stateHigh: "liquid_hydrogen",
 		}
-
 		//Lithium (incomplete/hiatus)
 		elements.lithium = {
 			color: "#b0ab9d",
 			behavior: behaviors.WALL,
 			tick: function(pixel) {
-				tryTarnish(pixel,"lithium_oxide",0.007) 
+				tryTarnish(pixel,"lithium_oxide",0.007)
 				if(pixel.temp >= 179) {
-					pixel.burning = true; 
-					pixel.burnStart = pixelTicks; 
+					pixel.burning = true;
+					pixel.burnStart = pixelTicks;
 				}
 			},
 			reactions: {
-				"steam": { "elem1": "hydrogen", "elem2": "lithium_hydroxide" }, 
-				"water": { "elem1": "hydrogen", "elem2": "lithium_hydroxide" }, 
-				"nitrogen": { "elem1": "lithium_nitride", "elem2": "lithium_nitride" }, 
-				"liquid_nitrogen": { "elem1": "lithium_nitride", "elem2": "lithium_nitride" }, 
-				"liquid_hydrogen": { "elem1": "lithium_hydride", "elem2": "lithium_hydride" }, 
-				"ammonia": { "elem1": ["hydrogen",null], "elem2": "lithium_amide" }, 
-				"liquid_ammonia": { "elem1": ["hydrogen",null], "elem2": "lithium_amide" }, 
+				"steam": { "elem1": "hydrogen", "elem2": "lithium_hydroxide" },
+				"water": { "elem1": "hydrogen", "elem2": "lithium_hydroxide" },
+				"nitrogen": { "elem1": "lithium_nitride", "elem2": "lithium_nitride" },
+				"liquid_nitrogen": { "elem1": "lithium_nitride", "elem2": "lithium_nitride" },
+				"liquid_hydrogen": { "elem1": "lithium_hydride", "elem2": "lithium_hydride" },
+				"ammonia": { "elem1": ["hydrogen",null], "elem2": "lithium_amide" },
+				"liquid_ammonia": { "elem1": ["hydrogen",null], "elem2": "lithium_amide" },
 			},
 			density: 534,
 			category: "solids",
@@ -18611,7 +17339,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			burnInto: "lithium_oxide",
 			fireColor: "#fc0a22",
 		}
-
 		elements.molten_lithium = { //too damn reactive
 			color: "#b0ab9d",
 			behavior: [
@@ -18620,30 +17347,29 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			"M1|M1 AND HT:1%1|M1"
 			],
 			tick: function(pixel) {
-				tryTarnish(pixel,"lithium_oxide",0.014) 
+				tryTarnish(pixel,"lithium_oxide",0.014)
 			},
 			reactions: {
-				"steam": { "elem1": "hydrogen", "elem2": "lithium_hydroxide" }, 
-				"water": { "elem1": "hydrogen", "elem2": "lithium_hydroxide" }, 
-				"nitrogen": { "elem1": "lithium_nitride", "elem2": "lithium_nitride" }, 
-				"liquid_nitrogen": { "elem1": "lithium_nitride", "elem2": "lithium_nitride" }, 
-				"hydrogen": { "elem1": "lithium_hydride", "elem2": "lithium_hydride" }, 
-				"liquid_hydrogen": { "elem1": "lithium_hydride", "elem2": "lithium_hydride" }, 
-				"ammonia": { "elem1": ["hydrogen",null], "elem2": "lithium_amide" }, 
-				"liquid_ammonia": { "elem1": ["hydrogen",null], "elem2": "lithium_amide" }, 
+				"steam": { "elem1": "hydrogen", "elem2": "lithium_hydroxide" },
+				"water": { "elem1": "hydrogen", "elem2": "lithium_hydroxide" },
+				"nitrogen": { "elem1": "lithium_nitride", "elem2": "lithium_nitride" },
+				"liquid_nitrogen": { "elem1": "lithium_nitride", "elem2": "lithium_nitride" },
+				"hydrogen": { "elem1": "lithium_hydride", "elem2": "lithium_hydride" },
+				"liquid_hydrogen": { "elem1": "lithium_hydride", "elem2": "lithium_hydride" },
+				"ammonia": { "elem1": ["hydrogen",null], "elem2": "lithium_amide" },
+				"liquid_ammonia": { "elem1": ["hydrogen",null], "elem2": "lithium_amide" },
 			},
 			burning: true,
 			burnInto: "lithium_oxide",
 			fireColor: "#fc0a22",
 			density: 512,
 		}
-
 		elements.lithium_oxide = {
 			color: "#eee9ec", //HRT UV-to-visible strategy again
 			behavior: behaviors.POWDER,
 			reactions: {
-				"steam": { "elem1": "lithium_hydroxide", "elem2": "lithium_hydroxide", chance: 0.03 }, 
-				"water": { "elem1": "lithium_hydroxide", "elem2": "lithium_hydroxide", chance: 0.03 }, 
+				"steam": { "elem1": "lithium_hydroxide", "elem2": "lithium_hydroxide", chance: 0.03 },
+				"water": { "elem1": "lithium_hydroxide", "elem2": "lithium_hydroxide", chance: 0.03 },
 				"carbon_dioxide": { "elem1": null, "elem2": "lithium_carbonate" }
 			},
 			density: 2013,
@@ -18652,14 +17378,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			hidden: true,
 			tempHigh: 1438,
 		}
-
 		elements.lithium_hydroxide = {
 			color: "#eeeeee",
 			behavior: behaviors.POWDER,
 			reactions: {
 				"steam": { "elem1": null, "elem2": "lithium_hydroxide_monohydrate" },
 				"water": { "elem1": null, "elem2": "lithium_hydroxide_monohydrate" },
-				"carbon_dioxide": { "elem1": "water", "elem2": [null,"lithium_carbonate"], chance: 0.5 }, 
+				"carbon_dioxide": { "elem1": "water", "elem2": [null,"lithium_carbonate"], chance: 0.5 },
 			},
 			density: 1460,
 			category: "powders",
@@ -18667,15 +17392,14 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			hidden: true,
 			tempHigh: 462,
 		}
-
 		elements.lithium_hydroxide_monohydrate = {
 			color: "#e0e4e7",
 			behavior: behaviors.POWDER,
 			reactions: {
-				"carbon_dioxide": { "elem1": "water", "elem2": [null,"lithium_carbonate"], chance: 0.5 }, 
+				"carbon_dioxide": { "elem1": "water", "elem2": [null,"lithium_carbonate"], chance: 0.5 },
 			},
 			tick: function(pixel) {
-				emptyNeighborArray = [] 
+				emptyNeighborArray = []
 				for(i=0;i<4;i++) {
 					if(isEmpty(pixel.x+adjacentCoords[i][0],pixel.y+adjacentCoords[i][1],false)) {
 						emptyNeighborArray.push(adjacentCoords[i])
@@ -18696,7 +17420,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			state: "solid",
 			hidden: true,
 		}
-
 		elements.lithium_carbonate = { //todo
 			color: "#eeeeee",
 			behavior: behaviors.POWDER,
@@ -18706,15 +17429,14 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			hidden: true,
 			tempHigh: 723,
 		}
-
 		elements.lithium_nitride = {
 			color: "#eeeeee",
 			behavior: behaviors.POWDER,
 			reactions: {
-				"steam": { "elem1": "lithium_hydroxide", "elem2": "ammonia" }, 
-				"water": { "elem1": "lithium_hydroxide", "elem2": "ammonia" }, 
-				"hydrogen": { "elem1": "lithium_hydride", "elem2": "lithium_amide" }, 
-				"liquid_hydrogen": { "elem1": "lithium_hydride", "elem2": "lithium_amide" }, 
+				"steam": { "elem1": "lithium_hydroxide", "elem2": "ammonia" },
+				"water": { "elem1": "lithium_hydroxide", "elem2": "ammonia" },
+				"hydrogen": { "elem1": "lithium_hydride", "elem2": "lithium_amide" },
+				"liquid_hydrogen": { "elem1": "lithium_hydride", "elem2": "lithium_amide" },
 			},
 			density: 1270,
 			category: "powders",
@@ -18722,7 +17444,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			hidden: true,
 			tempHigh: 813,
 		}
-
 		elements.lithium_hydride = {
 			color: "#eeeeee",
 			behavior: behaviors.POWDER,
@@ -18736,7 +17457,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			hidden: true,
 			tempHigh: 689,
 		}
-
 		elements.lithium_amide = {
 			color: "#eeeeee",
 			behavior: behaviors.POWDER,
@@ -18750,13 +17470,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			hidden: true,
 			tempHigh: 375,
 		}
-
 		//Sodium exists
-
 		//...
-
 		//at request of Serioustar#1337
-
 		elements.niobium = {
 			color: ["#dedede","#edead8","#e8e9ed"],
 			behavior: behaviors.WALL,
@@ -18766,9 +17482,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			conduct: 0.35,
 			hardness: 0.7, //idk lol
 		};
-
 		//Random bullshit go
-
 		elements.kurshunjukium = {
 			color: ["#435564","#536371"],
 			behavior: behaviors.WALL,
@@ -18780,17 +17494,14 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			hardness: 0.12,
 			desc: '<em>Fictional</em><br/>Kurshunjukium, whose name comes from the Turkish "kurşuncuk", meaning "little lead", is a blue-gray metal that is soft and dense, similarly to its namesake.'
 		};
-
 		elements.molten_kurshunjukium = {
 			density: 7989,
 			tempHigh: 1411,
 			desc: "<em>Fictional</em>"
 		};
-
 		elements.kurshunjukium_gas = {
 			density: 18
 		};
-
 		elements.kurshuth_alloy = {
 			color: "#7d806f",
 			behavior: behaviors.LIQUID,
@@ -18805,7 +17516,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			hardness: 0.02,
 			desc: '<em>Fictional</em><br/>Kurshuth alloy is a highly eutectic alloy composed of bismuth and kurshunjukium. It has an extremely low melting point, and isn\'t very useful.'
 		};
-
 		elements.kurshuth_alloy_vapor = {
 			density: 23,
 			behavior: behaviors.GAS,
@@ -18817,7 +17527,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			color: elements.magma.color.map(x => changeSaturation(changeHue(multiplyColors(x,"#DD4444","json"),10,"add","hsl_json"),0.7,"multiply","hex")), //metals.js already uses code_library
 			desc: "<em>Fictional</em>"
 		};
-
 		elements.solid_kurshuth_alloy = {
 			color: "#5d604f",
 			behavior: behaviors.WALL,
@@ -18828,7 +17537,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			density: 6006,
 			desc: "<em>Fictional</em>"
 		};
-
 		runAfterAutogen(function() {
 			var kesddfroged = ["kurshunjukium","molten_kurshunjukium"];
 			var kesddfroged2 = ["bismuth","molten_bismuth"];
@@ -18843,7 +17551,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				}
 			};
 		});
-
 		function newMetal(name,color,meltingPoint,boilingPoint,hardness,density,gasDensity,conduct,categoryOverride = null) {
 			var temp = {
 				"name": name,
@@ -18860,9 +17567,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				var errorMessage = capitalizeFirstLetter(englishFormatList(tempNulls));
 				throw new Error(`newMetal: ${errorMessage} {tempNulls.length == 1 ? "is" : "are"} required (generating "${name}")`);
 			};
-			
 			var scrapColor = gravelizeToHex(color);
-
 			elements[name] = {
 				"color": (window["gameLoaded"] ?? false) ? (Array.isArray(color) ? color.map(x => convertColorFormats(x,"rgb")) : convertColorFormats(color,"rgb")) : color,
 				"colorObject": (window["gameLoaded"] ?? false) ? (Array.isArray(color) ? color.map(x => convertColorFormats(x,"json")) : convertColorFormats(color,"json")) : undefined,
@@ -18875,17 +17580,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				"breakInto": `${name}_scrap`,
 				"hardness": hardness
 			};
-			
 			if(categoryOverride) { elements[name].category = categoryOverride };
-
 			elements[`molten_${name}`] = {
 				"tempHigh": boilingPoint
 			};
-
 			elements[`${name}_gas`] = {
 				"density": gasDensity
 			};
-
 			elements[`${name}_scrap`] = {
 				"color": (window["gameLoaded"] ?? false) ? (Array.isArray(scrapColor) ? scrapColor.map(x => convertColorFormats(x,"rgb")) : convertColorFormats(scrapColor,"rgb")) : scrapColor,
 				"colorObject": (window["gameLoaded"] ?? false) ? (Array.isArray(scrapColor) ? scrapColor.map(x => convertColorFormats(x,"json")) : convertColorFormats(scrapColor,"json")) : undefined,
@@ -18899,7 +17600,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				"conduct": conduct * 0.4,
 				"movable": true,
 			};
-			
 			if(window["gameLoaded"] ?? false) {
 				delete elements[`${name}_scrap`].behavior;
 				createElementButton(name);
@@ -18910,23 +17610,17 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			} else {
 				delete elements[`${name}_scrap`].tick;
 			};
-
 			return [elements[name],elements[`${name}_scrap`]];
 		};
-		
 		//newMetal( "exidmaden", ["#F8EDCF", "#EEAAAE", "#E5678D", "#A6659C", "#6763AD"], 2134, 6769, 0.8, 32333, 49.9, 0.88 );
 		//newMetal( "jisooium", "#9d0ac2", 8367, 10003, 0.63, 15024, 12.2, 0.9 );
 		//newMetal( "twicium", ["#F9C596", "#FC5D9D"], 10240, 18018, 0.88, 29029, 24.3, 0.91 );
-
 	//ASSORTED LOONA-THEMED MATERIALS ##
-
 		haseuliteSpreadWhitelist = ["haseulite","haseulite_powder","molten_haseulite","haseulite_gas"];
 		jinsouliteSpreadWhitelist = ["jinsoulite","jinsoulite_powder","molten_jinsoulite","jinsoulite_gas"];
-
 		function coldExplosionAfterCooling(pixel,x,y,radius,fire,smoke,power,damage) {
 			pixel.temp -= 2*damage*radius*power;
 		};
-
 		function reactionStealerImmutableElem2(pixel,newPixel,reactionTarget,ignoreSelf=true,_chanceMultMeantForJinsoulites=1) {
 			if(!elements[reactionTarget]) {
 				throw new Error(`No such element ${reactionTarget}!`);
@@ -18948,7 +17642,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			var pixel2 = pixel;
 			var pixel1 = newPixel;
 			var r = JSON.parse(JSON.stringify(newInfo.reactions[reactionTarget]));
-
 			if (r.setting && settings[r.setting]===0) {
 				return false;
 			}
@@ -18980,7 +17673,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				if (Array.isArray(r.elem1)) {
 					var elem1 = r.elem1[Math.floor(Math.random() * r.elem1.length)];
 				} else { var elem1 = r.elem1; }
-
 				if (elem1 == null) {
 					deletePixel(pixel1.x,pixel1.y);
 				}
@@ -19013,7 +17705,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			}
 			return r.elem1!==undefined;
 		};
-
 		elements.loona = {
 			color: ["#6f7d54","#4f5d34","#7c8a61"],
 			behavior: behaviors.POWDER,
@@ -19024,10 +17715,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			hardness: 0.56,
 			breakInto: ["rock","sulfur","loona_gravel","loona_gravel","loona_gravel","haseulite_powder", "rock","sulfur","loona_gravel","loona_gravel","loona_gravel","jinsoulite_powder", "rock","sulfur","loona_gravel","loona_gravel","loona_gravel","heejinite_powder"],
 		};
-
 		var backupCategoryWhitelist = ["land","powders","weapons","food","life","corruption","states","fey","Fantastic Creatures","dyes","energy liquids","random liquids","random gases","random rocks"];
 		var backupElementWhitelist = ["mercury", "chalcopyrite_ore", "chalcopyrite_dust", "copper_concentrate", "fluxed_copper_concentrate", "unignited_pyrestone", "ignited_pyrestone", "everfire_dust", "extinguished_everfire_dust", "mistake", "polusium_oxide", "vaporized_polusium_oxide", "glowstone_dust", "redstone_dust", "soul_mud", "wet_soul_sand", "nitrogen_snow", "fusion_catalyst", "coal", "coal_coke", "blast_furnace_fuel", "molten_mythril"];
-
 		function spoutCriteria(name) {
 			if(typeof(elements[name]) !== "object") {
 				throw new Error(`Nonexistent element ${name}`);
@@ -19066,7 +17755,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			//console.log(include);
 			return include;
 		};
-
 		function heejiniteHeatCriteria(name) {
 			if(typeof(elements[name]) !== "object") {
 				throw new Error(`Nonexistent element ${name}`);
@@ -19081,7 +17769,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			};
 			return (info.tempLow < elements.heejinite.tempHigh) || ((typeof(info.state) !== "undefined") && (info.state === "gas"));
 		};
-
 		spoutCriteria = function(name) {
 			if(typeof(elements[name]) !== "object") {
 				throw new Error(`Nonexistent element ${name}`);
@@ -19117,16 +17804,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			//console.log(include);
 			return include;
 		};
-
 		//it doesn't want to acknowledge spoutCriteria, so...
-
 		runAfterAutogen(function() {
 			elements.loona.stateHigh = ["molten_loona","rock","rock","rock","sulfur_gas","sulfur_gas","molten_haseulite","molten_loona","rock","rock","rock","sulfur_gas","sulfur_gas","molten_jinsoulite","molten_loona","rock","rock","rock","sulfur_gas","sulfur_gas","molten_heejinite"];
 			hotHeejiniteElements = Object.keys(elements).filter(function(e) {
 				return spoutCriteria(e) && heejiniteHeatCriteria(e) && !elements[e].excludeRandom && !e.startsWith("rad");
 			});
 		});
-
 		elements.loona_gravel = {
 			color: ["#b3be98","#919a6f","#68744b","#515931"],
 			behavior: behaviors.POWDER,
@@ -19138,7 +17822,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			hardness: 0.97,
 			breakInto: ["rock","sulfur","rock","haseulite_powder","rock","sulfur","rock","jinsoulite_powder","rock","sulfur","rock","heejinite_powder"],
 		};
-
 		jinsouliteValueObject = {
 			cloud: 0.5,
 			cloud_cloud: {value: 0.5, remainder: "cloud"},
@@ -19198,7 +17881,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			water_bomb_10_bomb_10: 2898*2898,  //skipping to the funny
 			water_bomb_cloud: 30,
 		};
-
 		/*function customStaining(pixel,customColorRgb,stainOverride=null) {
 			if (settings["stainoff"]) { return }
 			var stain = (stainOverride !== null ? stainOverride : elements[pixel.element].stain);
@@ -19208,7 +17890,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			else {
 				var newColor = null;
 			}
-
 			for (var i = 0; i < adjacentCoords.length; i++) {
 				var x = pixel.x+adjacentCoords[i][0];
 				var y = pixel.y+adjacentCoords[i][1];
@@ -19241,7 +17922,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								}
 							}
 							else {
-								// get the average of rgb and newColor, more intense as stain reaches 1 
+								// get the average of rgb and newColor, more intense as stain reaches 1
 								var avg = [];
 								for (var j = 0; j < rgb.length; j++) {
 									avg[j] = Math.floor((rgb[j]*(1-Math.abs(stain))) + (newColor[j]*Math.abs(stain)));
@@ -19254,7 +17935,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				}
 			}
 		}*/
-
 		function valueSpreading(pixel,whitelist=null) {
 			var randomNeighborOffset = adjacentCoords[Math.floor(Math.random() * adjacentCoords.length)];
 			var rX = randomNeighborOffset[0];
@@ -19278,7 +17958,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			};
 			return true;
 		};
-
 		function valueAbsorbency(pixel,valueObject) {
 			for(i = 0; i < adjacentCoords.length; i++) {
 				var oX = adjacentCoords[i][0];
@@ -19323,23 +18002,19 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			};
 			return true;
 		};
-
 		function valueFunction(pixel,valueObject,elementWhitelist=null) {
 			if(typeof(pixel.value) === "undefined") {
 				pixel.value = 0;
 			};
-
 			var oldValue = pixel.value;
 			if(!valueAbsorbency(pixel,valueObject) || isNaN(pixel.value)) {
 				pixel.value = oldValue;
 			};
-
 			var oldValue = pixel.value;
 			if(!valueSpreading(pixel,elementWhitelist) || isNaN(pixel.value)) {
 				pixel.value = oldValue;
 			};
 		}
-
 		//this important thing somehow disappeared
 		haseuliteValueObject = {
 			light: 1,
@@ -19356,7 +18031,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			liquid_god_slayer_fire: {value: 80, remainder: ["god_slayer_fire",null,null]},
 			liquid_irradium: {value: 4, remainder: 0}
 		};
-
 		function haseulitoidTick(pixel) {
 			if(pixel.value == undefined) { pixel.value = 0 };
 			valueFunction(pixel,haseuliteValueObject,haseuliteSpreadWhitelist);
@@ -19365,7 +18039,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			if(pixel.oldColor === null) { pixel.oldColor = pixel.color };
 			if(isNaN(pixel.value)) { pixel.value = 0 };
 			pixel.color = lightenColor(pixel.oldColor,pixel.value / 3);
-
 			var mVal = elements[pixel.element].haseulitoidMaxValue ?? 800;
 			if(pixel.value >= mVal) {
 				var coldBoomChance = Math.max(0.008 * ((pixel.value - mVal) / (mVal * 2/7)), 0.001);
@@ -19375,7 +18048,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 			};
 		}
-
 		elements.haseulite = {
 			color: ["#3cb00e", "#25d119", "#79f553"],
 			fireColor: ["#08a953", "#2ea332", "#d1e0d3"],
@@ -19390,10 +18062,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				/*power is always radius/10
 					r 5: value 7
 					r 10: value 14
-					r 15: value 28 
-					r 20: value 56 
-					r 25: value 112 
-					r 30: value 224 
+					r 15: value 28
+					r 20: value 56
+					r 25: value 112
+					r 30: value 224
 				*/
 				pixel.value += (2**(((radius) / 5) - 1) * 7);
 			},
@@ -19404,37 +18076,31 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			breakInto: "haseulite_powder",
 			conduct: 0.84,
 		};
-
 		if(!elements.steel.reactions) {
 			elements.steel.reactions = {};
 		};
-
 		elements.steel.reactions.haseulite_powder = {
 			elem1: "haseulite_vent",
 			elem2: null,
 			chance: 0.01,
 			tempMin: 1200,
 		};
-
 		adjacentCoordsInverted = [[0,-1],[0,1],[-1,0],[1,0]];
-
 		elements.haseulite_vent = {
 			color: "#88b058",
 			fireColor: ["#08a953", "#2ea332", "#d1e0d3"],
 			behavior: behaviors.WALL,
 			rotatable: true,
 			desc: "This uses rotation, so just use debug to see the r value. r 0 means it vents haseulite below it upwards, r 1 means it vents haseulite above it downwards, r 2 means it vents left, and r 3 means it vents right.",
-			tick: function(pixel) { 
+			tick: function(pixel) {
 				if(isNaN(pixel.r)) {
 					pixel.r = 0;
 				};
 				pixel.r = pixel.r % 4;
 				var coord = adjacentCoords[pixel.r];
-				var invertCoord = adjacentCoordsInverted[pixel.r];	
-
+				var invertCoord = adjacentCoordsInverted[pixel.r];
 				var fX = pixel.x+coord[0];
 				var fY = pixel.y+coord[1];
-
 				if(!isEmpty(fX,fY,true)) {
 					var otherPixel = pixelMap[fX][fY];
 					var otherElement = otherPixel.element;
@@ -19480,7 +18146,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			breakInto: "haseulite_powder",
 			conduct: 0.84,
 		}
-
 		elements.haseulite_powder = {
 			color: ["#5fb33e", "#32ba29", "#63d141"],
 			properties: {
@@ -19495,10 +18160,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				/*power is always radius/10
 					r 5: value 7
 					r 10: value 14
-					r 15: value 28 
-					r 20: value 56 
-					r 25: value 112 
-					r 30: value 224 
+					r 15: value 28
+					r 20: value 56
+					r 25: value 112
+					r 30: value 224
 				*/
 				pixel.value += (2**(((radius) / 5) - 1) * 7);
 			},
@@ -19510,7 +18175,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			hardness: 0.7,
 			conduct: 0.43,
 		};
-
 		elements.molten_haseulite = {
 			color: ["#cbf569","#f1ffd6","#fdffb5", "#fffa99"],
 			fireColor: ["#08a953", "#2ea332", "#d1e0d3"],
@@ -19523,10 +18187,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				/*power is always radius/10
 					r 5: value 7
 					r 10: value 14
-					r 15: value 28 
-					r 20: value 56 
-					r 25: value 112 
-					r 30: value 224 
+					r 15: value 28
+					r 20: value 56
+					r 25: value 112
+					r 30: value 224
 				*/
 				pixel.value += (2**(((radius) / 5) - 1) * 7);
 			},
@@ -19537,7 +18201,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			tempHigh: 3100,
 			conduct: 0.23,
 		};
-
 		elements.haseulite_gas = {
 			color: ["#ffff9d", "#ffffff", "#e9ffe6", "#ffffe5"],
 			fireColor: ["#08a953", "#2ea332", "#d1e0d3"],
@@ -19549,10 +18212,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				/*power is always radius/10
 					r 5: value 7
 					r 10: value 14
-					r 15: value 28 
-					r 20: value 56 
-					r 25: value 112 
-					r 30: value 224 
+					r 15: value 28
+					r 20: value 56
+					r 25: value 112
+					r 30: value 224
 				*/
 				pixel.value += (2**(((radius) / 5) - 1) * 7);
 			},
@@ -19561,7 +18224,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			hardness: 1,
 			conduct: 0.13,
 		};
-
 		elements.hanichrite = { //the names nickel, chrome, and haseulite do not mix
 			color: ["#dde6bc", "#ebf2ef", "#e8fab1"],
 			behavior: behaviors.WALL,
@@ -19586,7 +18248,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 			},
 		};
-
 		elements.molten_hanichrite = {
 			tick: function(pixel) {
 				if(nichromeDoNeighborCount) {
@@ -19603,12 +18264,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 			},
 		};
-
 		/*
 		var shimmeringColor = convertHslObjects(hslColorStringToObject(`hsl(${(pixelTicks / 2) % 360},100%,50%)`,"rgb"));
 		customStaining(pixel,shimmeringColor,0.2);
 		*/
-
 		function heejinitoidTick(pixel) {
 			pixel.color ??= pixelColorPick(pixel);
 			if(pixel.oldColor === null) { pixel.oldColor = pixel.color };
@@ -19619,7 +18278,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			var color = convertHslObjects(color,"rgb");
 			pixel.color = color;
 		};
-
 		function hotHeejinitoidTick(pixel) {
 			if(pixel.oldColor === undefined) { pixel.oldColor = pixelColorPick(pixel) };
 			if(Math.random() < (pixel.temp >= 1500 ? 0.02 : 0.01)) {
@@ -19637,7 +18295,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 			};
 		}
-
 		elements.heejinite = {
 			color: ["#cf1172", "#fa1977", "#ff619e"],
 			fireColor: ["#a9085e", "#a32e61", "#fca7c6"],
@@ -19656,7 +18313,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			breakInto: "heejinite_powder",
 			conduct: 0.86,
 		};
-
 		elements.heejinite_powder = {
 			color: ["#d64790", "#e63e84", "#f054ac"],
 			fireColor: ["#a9085e", "#a32e61", "#fca7c6"],
@@ -19677,7 +18333,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			breakInto: "heejinite_powder",
 			conduct: 0.42,
 		};
-
 		elements.molten_heejinite = {
 			color: ["#ff0f77","#ff59c2","#ff405c", "#fa5a48"],
 			fireColor: ["#a9085e", "#a32e61", "#fca7c6"],
@@ -19695,7 +18350,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			tempHigh: 1501,
 			conduct: 0.22,
 		};
-
 		elements.heejinite_gas = {
 			color: ["#fffab8", "#ffdab3", "#ffd1d1", "#ffc4df", "#ffb0eb"],
 			fireColor: ["#a9085e", "#a32e61", "#fca7c6"],
@@ -19711,9 +18365,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			hardness: 1,
 			conduct: 0.12,
 		};
-
 		jinsouliteReducedSwapWhitelist = ["slime","glue","soda","milk","chocolate_milk","fruit_milk","ink","blood","vaccine","antibody","infection","sap","ketchup","spirit_tear","enchanted_ketchup","lean","poisoned_ketchup","dirty_ketchup","zombie_blood"];
-
 		function jinsouliteDissolution(pixel) {
 			var did = false;
 			for(i = 0; i < 2; i++) {
@@ -19732,8 +18384,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			};
 			return did;
 		};
-
-		function jinsouliteMovement(pixel,move1Spots,move2Spots) {		
+		function jinsouliteMovement(pixel,move1Spots,move2Spots) {
 			if(move1Spots.length > 0) {
 				var randomMove1 = move1Spots[Math.floor(Math.random() * move1Spots.length)];
 				if(!tryMove(pixel, pixel.x+randomMove1[0], pixel.y+randomMove1[1])) {
@@ -19758,7 +18409,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			};
 			doDefaults(pixel);
 		};
-
 		function jinsouliteSolidNonWaterSideReactions(pixel) {
 			var randomNeighborOffset = adjacentCoords[Math.floor(Math.random() * adjacentCoords.length)];
 			var rfX = pixel.x+randomNeighborOffset[0];
@@ -19772,7 +18422,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			};
 			return true;
 		};
-
 		function jinsouliteSolidWaterSideReactions(pixel) {
 			var randomNeighborOffset = adjacentCoords[Math.floor(Math.random() * adjacentCoords.length)];
 			var rfX = pixel.x+randomNeighborOffset[0];
@@ -19788,13 +18437,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 				var rOtherElement = pixel2.element;
 				var waterReactions = elements.water.reactions;
-
 				if(rOtherElement === pixel.element) {
 					return false;
 				};
 				if(waterReactions[rOtherElement]) {
 					var r = waterReactions[rOtherElement];
-
 					if (r.setting && settings[r.setting]===0) {
 						return false;
 					}
@@ -19830,13 +18477,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					if (elem1 !== undefined && elem1 instanceof Array) {
 						elem1 = elem1[Math.floor(Math.random() * elem1.length)];
 					};
-
 					if (r.elem2 !== undefined) {
 						// if r.elem2 is an array, set elem2 to a random element from the array, otherwise set it to r.elem2
 						if (Array.isArray(r.elem2)) {
 							var elem2 = r.elem2[Math.floor(Math.random() * r.elem2.length)];
 						} else { var elem2 = r.elem2; }
-
 						if (elem2 == null) {
 							if(elem1 !== undefined) { changePixel(pixel2,elem1) };
 						}
@@ -19860,13 +18505,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			};
 			return true;
 		};
-
 		function jinsouliteValue(pixel) {
 			valueFunction(pixel,jinsouliteValueObject,jinsouliteSpreadWhitelist);
 			if(pixel.oldColor === null) { pixel.oldColor = pixel.color };
 			if(isNaN(pixel.value)) { pixel.value = 0 };
 			pixel.color = changeSaturation(pixel.oldColor,pixel.value / 3,"subtract","rgb")
-
 			if(pixel.value > 1) {
 				if(Math.random() < Math.min((pixel.value / 200),0.5)) {
 					var randomNeighborOffset = adjacentCoords[Math.floor(Math.random() * adjacentCoords.length)];
@@ -19891,7 +18534,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};*/
 			};
 		}
-
 		function jinsoulitoidTick(pixel,move1Spots=[],move2Spots=[]) {
 			if(pixel.oldColor === undefined) { pixel.oldColor = pixelColorPick(pixel) };
 			if(pixel.value == undefined) { pixel.value = 0 };
@@ -19901,7 +18543,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			jinsouliteValue(pixel);
 			jinsouliteMovement(pixel,move1Spots,move2Spots);
 		};
-
 		elements.jinsoulite = {
 			color: ["#0e51b0", "#2129ff", "#3b3dbf"],
 			fireColor: ["#121978", "#6a9fe6", "#5963d9"],
@@ -19918,7 +18559,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			properties: {
 				oldColor: null
 			},
-			tick: function(pixel) { 
+			tick: function(pixel) {
 				if(pixel.value == undefined) { pixel.value = 0 };
 				if(pixel.oldColor === undefined) { pixel.oldColor = pixelColorPick(pixel) };
 				jinsouliteValue(pixel);
@@ -19933,7 +18574,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			breakInto: "jinsoulite_powder",
 			conduct: 0.93,
 		};
-
 		elements.jinsoulite_powder = {
 			color: ["#4580ba", "#355eb0", "#2d6fc4"],
 			fireColor: ["#121978", "#6a9fe6", "#5963d9"],
@@ -19961,7 +18601,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			hardness: 0.7,
 			conduct: 0.43,
 		};
-
 		elements.molten_jinsoulite = {
 			behavior: [
 				"XX|CR:fire,fire,steam%0.5|XX",
@@ -19987,7 +18626,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			tempHigh: 5532.8509,
 			conduct: 0.34,
 		};
-
 		elements.jinsoulite_gas = {
 			color: ["#c0f0ef", "#c2c1db", "#c0bff5", "#cdcce6"],
 			behavior: [
@@ -20010,11 +18648,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			hardness: 1,
 			conduct: 0.19,
 		};
-
 		//apples (used for yvesite)
-
 		appleAttachWhitelist = ["wood","tree_branch"];
-
 		elements.apple = {
 			color: ["#ad2333", "#b51616", "#d6782f", "#e3c634", "#99de31"],
 			isFood: true,
@@ -20078,7 +18713,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 			},
 		};
-
 		elements.rotten_apple = {
 			hidden: true,
 			color: ["#802e24", "#9c4227", "#a34b26"],
@@ -20094,12 +18728,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			tempHigh: 200,
 			stateHigh: ["steam", "ash"],
 		};
-
 		//Yvesite
-
 		var yvesiteAppleSpots = [[-1, 1], [0, 1], [1, 1]];
 		var yvesitePowderAppleSpots = [[-1, 0], [0, -1], [1, 0]];
-
 		function yvesiteApples(pixel,offsets) {
 			if(pixel.charge) {
 				var probAdd = Math.min(0,Math.max(pixel.temp,100)) / 2500;
@@ -20117,7 +18748,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			};
 			return false;
 		};
-
 		elements.yvesite = {
 			color: ["#850f2c", "#9c0e3d", "#911f3b", "#701625"],
 			fireColor: ["#b5103f", "#ab3254", "#cc2157", "#ba0936"],
@@ -20139,7 +18769,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			breakInto: "yvesite_powder",
 			conduct: 0.94,
 		};
-
 		elements.yvesite_powder = {
 			color: ["#8f1734", "#962638", "#b32749", "#911a3e"],
 			fireColor: ["#b5103f", "#ab3254", "#cc2157", "#ba0936"],
@@ -20162,7 +18791,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			breakInto: "yvesite_powder",
 			conduct: 0.84,
 		};
-
 		elements.molten_yvesite = {
 			color: ["#e81554", "#c90842", "#db4d70", "#cf2b54"],
 			fireColor: ["#b5103f", "#ab3254", "#cc2157", "#ba0936"],
@@ -20178,7 +18806,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			stateLow: "yvesite",
 			conduct: 0.22,
 		};
-
 		elements.yvesite_gas = {
 			color: ["#e34070", "#d13060", "#c2234a", "#db4866"],
 			fireColor: ["#b5103f", "#ab3254", "#cc2157", "#ba0936"],
@@ -20191,11 +18818,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			hardness: 1,
 			conduct: 0.11,
 		};
-
 		elements.fly.reactions.rotten_apple = { "elem2":null, chance:0.15, func:behaviors.FEEDPIXEL };
-
 		//Vivite
-
 		elements.vivite = {
 			color: ["#ffb5ee", "#fc9fe0", "#fcd9fb"],
 			colorOn: ["#ff8ca9", "#f76583", "#fcb8d5"],
@@ -20233,7 +18857,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				if(Math.random() < 0.013 && exposedToAir(pixel)) {
 					changePixel(pixel,"vivite_oxide",false);
 					pixel.temp += 4;
-				};			
+				};
 			},
 			burnTime: 160,
 			burnTempChange: 10.65,
@@ -20260,7 +18884,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			breakInto: "vivite_powder",
 			conduct: 1,
 		};
-
 		elements.vivite_powder = {
 			color: ["#f7a6e5", "#fa70d1", "#f0bbf2"],
 			fireColor: ["#ff66ba", "#ff85ef", "#ff99f7"],
@@ -20274,7 +18897,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						pixel.temp += 18;
 						changePixel(pixel,getStateAtTemp("vivite_oxide_powder",pixel.temp),false);
 					};
-					
 					if(pixel.burning && ((pixel.temp + (2 * elements[pixel.element].burnTempChange)) > elements[pixel.element].tempHigh)) {
 						changePixel(pixel,elements[pixel.element].burnInto,false);
 						pixel.temp += 213;
@@ -20307,9 +18929,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			breakInto: "vivite_powder",
 			conduct: 0.89,
 		};
-
 		elements.smog.stateLow = ["water","dirty_water"];
-
 		/*Object.keys(elements).filter(
 			function(elem) {
 				return (
@@ -20320,34 +18940,27 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				)
 			}
 		);*/
-
 		function doViviteSlag(pixel,target) {
 			if(!target) { //No pixel
 				return false;
 			};
-
 			var newElement = target.element;
 			if(newElement.includes("vivite")) { //Is vivite
 				return false;
 			};
-
 			if(elements[pixel.element].reactions?.[newElement]) { //Pre-existing reaction
 				return false;
 			};
-
 			if(elements[newElement].noViviteSlag || elements[pixel.element].ignore?.includes(newPixel.element)) { //Excluded
 				return false;
 			};
-
 			if(elements[newElement].state == "gas" && !elements[newElement].viviteSlag) {
 				return false;
 			};
-
 			changePixel(newPixel,"vivite_slag",false);
 			if(Math.random() < 1/3) { changePixel(pixel,"molten_vivite_slag",false) };
 			return true;
 		};
-
 		elements.molten_vivite = {
 			color: ["#f7a6e5", "#fa70d1", "#f0bbf2"],
 			colorOn: ["#ff63ac", "#ff21bd", "#e81af0"],
@@ -20355,12 +18968,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			ignore: ["wall","heejinite","jinsoulite","haseulite","molten_heejinite","molten_jinsoulite","molten_haseulite","yvesite","molten_yvesite"],
 			tick: function(pixel) {
 				var info = elements[pixel.element];
-
 				if(Math.random() < 0.022 && exposedToAir(pixel)) {
 					changePixel(pixel,pixel.temp > 7315.27 ? "molten_vivite_oxide" : "vivite_oxide_powder",false)
 					pixel.temp += 18;
-				};			
-
+				};
 				if(Math.random() < 0.025) {
 					var fireColor = info.fireColor;
 					while(fireColor instanceof Array) { fireColor = fireColor[Math.floor(Math.random() * fireColor.length)] };
@@ -20370,26 +18981,18 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						newFire.temp = pixel.temp;
 					};
 				};
-
 				var viscosityMoveChance = ((Math.random()*100) < 100 / ((info.viscosity ?? 1) ** 0.25)); //returns true if doing m2
-
 				var move1Spots = viscosityMoveChance ? [[-1,1],[0,1],[1,1]] : [[0,1]];
-
 				var move1Offset = move1Spots[Math.floor(Math.random() * move1Spots.length)];
-
 				if(!tryMove(pixel, pixel.x + move1Offset[0], pixel.y + move1Offset[1])) {
 					var newPixel = pixelMap[pixel.x + move1Offset[0]]?.[pixel.y + move1Offset[1]];
 					if(newPixel) {
 						doViviteSlag(pixel,newPixel);
 					};
 					var move2Spots = [[-1,0],[1,0]];
-
 					var move2Offset = move2Spots[Math.floor(Math.random() * move2Spots.length)];
-
 					//console.log(info.viscosity);
-
 					var viscosityMoveChance = ((Math.random()*100) < 100 / ((info.viscosity ?? 1) ** 0.25)); //returns true if doing m2
-
 					if(viscosityMoveChance) {
 						if(!tryMove(pixel, pixel.x + move2Offset[0], pixel.y + move2Offset[1])) {
 							var newPixel = pixelMap[pixel.x + move2Offset[0]]?.[pixel.y + move2Offset[1]];
@@ -20417,7 +19020,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			stain: 0.03,
 			behavior: behaviors.WALL, //placeholder to prevent an auto-behaviors.MOLTEN process
 		};
-
 		elements.vivite_slag = {
 			color: ["#d962b1", "#bf67b6", "#b57b9e"],
 			fireColor: ["#fa5584", "#e85a70", "#e05c69", "#ed8672"],
@@ -20434,7 +19036,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			tempHigh: 953,
 			conduct: 0.27,
 		};
-
 		elements.vivite_oxide = {
 			color: ["#f5b3c5", "#ffb0c6"],
 			fireColor: ["#ff1f69", "#ff0004", "#ff006a"],
@@ -20462,7 +19063,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			breakInto: "vivite_oxide_powder",
 			tempHigh: 7315.27,
 		};
-
 		elements.vivite_oxide_powder = {
 			color: ["#f5b3c5", "#ffb0c6"],
 			fireColor: ["#ff1f69", "#ff0004", "#ff006a"],
@@ -20491,7 +19091,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			tempHigh: 7315.27,
 			stateHigh: "molten_vivite_oxide",
 		};
-
 		elements.vivite_hydroxide = {
 			color: ["#f19cf7", "#d88aff"],
 			behavior: behaviors.POWDER,
@@ -20503,7 +19102,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			tempHigh: 733,
 			stateHigh: ["vivite_oxide_powder","water"],
 		};
-
 		elements.molten_vivite_oxide = {
 			fireColor: ["#ff1f69", "#ff0004", "#ff006a"],
 			reactions: {
@@ -20515,13 +19113,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			temp: 8000,
 			tempHigh: 15500,
 		};
-
 		elements.vivite_oxide_gas = {
 			reactions: {
 				"carbon_monoxide": { elem1: "vivite", elem2: "carbon_dioxide", tempMin: 543, chance: 0.03 }
 			},
 		};
-
 		elements.molten_vivite_slag = {
 			color: ["#d44e88", "#db7258", "#eda455"],
 			fireColor: ["#fa5584", "#e85a70", "#e05c69", "#ed8672"],
@@ -20532,7 +19128,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			conduct: 0.18,
 			stain: 0.04
 		};
-
 		elements.vivite_gas = {
 			color: ["#ffedfe", "#ffe0fd", "#ffd9f9", "#ffd1f0", "#ffccdf"],
 			colorOn: ["#eec7fc", "#f5b1fc", "#faa2f1", "#fa93c3", "#ff99b1"],
@@ -20560,7 +19155,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			hardness: 1,
 			conduct: 1,
 		};
-
 		runAfterLoad(function() {
 			if(elements.carbon_monoxide) {
 				elements.carbon_monoxide.reactions ??= {};
@@ -20570,18 +19164,16 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				elements.carbon_monoxide.reactions.vivite_oxide_gas = { elem1: "carbon_dioxide", elem2: "vivite_gas", tempMin: 543, chance: 0.03 };
 			}
 		});
-
 		runAfterLoad(function() {
 			for(key in elements.water.reactions) {
 				var value = JSON.parse(JSON.stringify(elements.water.reactions[key]));
 				if(typeof(value.chance) === "number") {
 					value.chance = Math.min(1,value.chance * 2);
 				};
-				if(value.elem2 === null && value.elem1 !== null) { 
+				if(value.elem2 === null && value.elem1 !== null) {
 					value.elem2 = value.elem1;
 				};
 				delete value.elem1;
-
 				var movableJinsoulitoids = ["jinsoulite_powder","molten_jinsoulite","jinsoulite_gas"];
 				for(j = 0; j < movableJinsoulitoids.length; j++) {
 					var jinsoulitoid = movableJinsoulitoids[j];
@@ -20594,17 +19186,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 			};
 		});
-
 	//IDOL BIRTHDAY STUFF
-
 		fakeDate = urlParams.get('fakeDate');
 		shortenedTest = (urlParams.get('shortenedTest') !== null);
-
 		//Current iteration copied from the updated version used in https://orbit-loona.github.io/index.html
-
 		//Colors may not be official for all groups, and even in groups with official colors, the exact color may vary.
 		//Sometimes hex codes are given and sometimes it's only generic color words.
-
 		//LOONA colors are official but exact shades vary
 		//Kep1er member colors are fan-made colors taken from https://www.reddit.com/r/kep1er/comments/qomf2x/giving_kep1er_member_colours_with_reasoning/
 			//Dayeon's color is directly from the sample, as hex code => rgb(188,188,226) doesn't match and is too similar to Yeseo
@@ -20626,11 +19213,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		//fromis_9 group colors are fan-made: https://twitter.com/fromis_9pic/status/1478175338089705472/photo/1
 		//DreamNote colors are official: https://aminoapps.com/c/imedreamnoteofficial/page/blog/dreamnote-offical-colors/aVNW_ewVu0uaxWgV7V33Z6pmpXD7md0owwb
 		//tripleS colors are taken from the wiki and corrected by color-picking from Welcome To The Haus, but birthdays were compiled by infichandesu on tripleS Discord https://discord.com/channels/968385909730971668/990903693140434964/1231563006731882518
-
 		//1 Seoyeon, 2 Hyerin, 3 Jiwoo, 4 Chaeyeon, 5 Yooyeon, 6 Soomin, 7 Nakyoung, 8 Yubin, 9 Kaede, 10 Seo Dahyun, 11 Kotone, 12 Yeonji, 13 Nien, 14 Sohyun, 15 Xinyu, 16 Mayu, 17 Lynn, 18 Joobin, 19 Hayeon, 20 Shion, 21 Kim Chaewon, 22 Sullin, 23 Seoah, 24 Jiyeon
 		//Seoyeon: 2003, Hyerin: 2007, Jiwoo: 2005, Chaeyeon: 2004, Yooyeon: 2001, Soomin: 2007, Nakyoung: 2002, Yubin: 2005, Kaede: 2005, Seo Dahyun: 2003, Kotone: 2004, Yeonji: 2008, Nien: 2003, Sohyun: 2002, Xinyu: 2002, Mayu: 2002, Lynn: 2006, Joobin: 2009, Hayeon: 2007, Shion: 2006, Kim Chaewon: 2007, Sullin: 2006, Seoah: 2010, Jiyeon: 2004
 		//Yunah 2004, Park Minju 2004, Moka 2004, Wonhee 2007, Iroha 2008
-
 		idolData = {
 			"01-01": { member: "Winter", color: "rgb(209,221,236)", group: "aespa"},
 			"03-01": { member: "Jisoo", color: "rgb(159,0,191)", group: "BlackPink" },
@@ -20797,18 +19382,14 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			"29-12": [ { member: "Sana", color: "rgb(156,158,207)", group: "TWICE"}, {member: "Yiren", color: "rgb(255,255,255)", group: "Everglow"} ],
 			"31-12": { member: "Sohee", color: "rgb(246,110,186)", group: "ALICE"},
 		};
-
 		var chaos = [];
 		for(date in idolData) {
 			if(date == "chaos") { continue };
 			if(!(idolData[date] instanceof Array)) { idolData[date] = [idolData[date]] }; //array wrap
-
 			chaos = chaos.concat(idolData[date]);
 		};
 		idolData.chaos = chaos;
-
 		var february10Override = false;
-
 		function getDayMonth() {
 			var d = february10Override ? new Date(1549800000000) : new Date();
 			var month = (d.getMonth()+1).toString();
@@ -20818,32 +19399,25 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			var dayMonth = day + "-" + month;
 			return (fakeDate === null ? dayMonth : fakeDate);
 		}
-
 		function registerElemClick(elementName,memberDataIndex) {
 			var dateData = idolData[getDayMonth()];
 			if(!dateData) {
 				alert("No birthday data here");
 				return false;
 			};
-
 			var memberData = dateData[memberDataIndex];
-
 			var fakeDateMessage = "";
 			if(fakeDate !== null) {
 				fakeDateMessage += "(Fake date) ";
 			};
-
 			var shortenedTestMessage = "";
 			if(shortenedTest) {
 				shortenedTestMessage += "(Shortened) ";
 			};
-
 			memberName = memberData.member;
-
 			if(clickedElements[memberName][elementName] === false) {
 				clickedElements[memberName][elementName] = true;
 			};
-
 			if(evaluateTheClickedElements(memberName)) {
 				alert(
 					`You have clicked on all ${Object.keys(clickedElements[memberName]).length} birthday messages spread throughout some of the elements.`
@@ -20851,10 +19425,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					`Member: ${fakeDateMessage}${shortenedTestMessage}${memberName}. Stan ${memberData.group}!`
 				);
 			};
-
 			return typeof(clickedElements[memberName][elementName]) === "boolean";
 		};
-
 		function evaluateTheClickedElements(memberName) {
 			var done = true;
 			for(element in clickedElements[memberName]) {
@@ -20862,7 +19434,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			};
 			return done;
 		};
-
 		function highlightButton(element,color,blurRadius="15px",spreadRadius="5px") {
 			var button = document.getElementById(`elementButton-${element}`);
 			if(button == null) {
@@ -20873,28 +19444,17 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			document.getElementById(`elementButton-${element}`).style["-webkit-box-shadow"] = `0px 0px ${blurRadius} ${spreadRadius} ${color}`;
 			document.getElementById(`elementButton-${element}`).style["box-shadow"] = `0px 0px ${blurRadius} ${spreadRadius} ${color}`;
 		};
-
 		clickedElements = {};
-
 		runAfterAutogen(function() {
-
 			var alreadyHighlightedElements = [];
-
 			var changingDescElements = ["distance_display","find_toggle","prop","number_adjuster","replace","alt_replace","alt_alt_replace","change","alt_change","alt_alt_change"];
-
 			var blacklist = ["toxin","poison","blood","cancer","rotten_meat","frozen_rotten_meat","zombie_blood","plague","stench","infection","acid","acid_gas","rot","shit","shit_gravel","poo","dioxin","lean","cyanide"];
-
 			var dayMonth = getDayMonth();
-
 			var baseArray = ["heejinite","heejinite_powder","molten_heejinite","heejinite_gas","haseulite","haseulite_powder","molten_haseulite","haseulite_gas","jinsoulite","jinsoulite_powder","molten_jinsoulite","jinsoulite_gas","haseulite_vent","loona","loona_gravel","molten_loona"];
-
 			var loonaTheHTML = "";
-
 			var randomElementSets = {};
-
 			if(idolData[dayMonth]) {
 				var data = idolData[dayMonth];
-
 				for(var memberIndex = 0; memberIndex < data.length; memberIndex++) {
 					var member = data[memberIndex].member;
 					randomElementSets[member] = Object.keys(elements).filter(function(e) {
@@ -20925,20 +19485,16 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							!changingDescElements.includes(e) &&
 							!blacklist.includes(e) &&
 							!alreadyHighlightedElements.includes(e) &&
-							!elements[e].hidden && 
+							!elements[e].hidden &&
 							!baseArray.includes(e)
 						);
 					}); shuffleArray(randomElementSets[member]); randomElementSets[member] = randomElementSets[member].slice(0,shortenedTest ? 2 : 12);
-
 					clickedElements[member] = {};
-
 					alreadyHighlightedElements = alreadyHighlightedElements.concat(randomElementSets[member]);
-
 					for(i = 0; i < randomElementSets[member].length; i++) {
 						var elemName = randomElementSets[member][i];
 						clickedElements[member][elemName] = false;
 					};
-
 					runAfterButtons(function() {
 						var data = idolData[getDayMonth()];
 						//console.log(data);
@@ -20959,11 +19515,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							};
 						};
 					});
-
 					var funnyElements = ["heejinite","heejinite_powder","molten_heejinite","heejinite_gas","haseulite","haseulite_powder","molten_haseulite","haseulite_gas","jinsoulite","jinsoulite_powder","molten_jinsoulite","jinsoulite_gas","haseulite_vent","loona","loona_gravel","molten_loona"].concat(randomElementSets[member]);
-
 					//console.log(member, funnyElements);
-
 					for(element in funnyElements) {
 						var elemName = funnyElements[element];
 						var info = elements[elemName];
@@ -20974,20 +19527,14 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						} else {
 							info.desc += "<br/>"
 						};
-
 						var normalDesc = baseArray.includes(elemName);
-
 						loonaTheHTML = normalDesc ? `<span style="${memberData.gradient ? ('background: ' + memberData.color + '; background-clip: text; -webkit-background-clip: text; text-fill-color: transparent; -webkit-text-fill-color: transparent;') : ('color:' + memberData.color)}">Happy birthday, ${memberData.group} ${memberData.member} (Local time)!</span>` : `<em style="${memberData.gradient ? ('background: ' + memberData.color + '; background-clip: text; -webkit-background-clip: text; text-fill-color: transparent; -webkit-text-fill-color: transparent;') : ('color:' + memberData.color)}" onclick=registerElemClick("${elemName}",${memberIndex})>Happy birthday, ${memberData.member}!</em>`;
-
 						info.desc += loonaTheHTML;
 					};
 				};
 			};
-
 		});
-
 	//OTHER FICTIONAL MATERIALS ##
-
 		function splitRgbColor(color) {
 			var colorTempArray = color.split(",")
 			var r = colorTempArray[0].split(",")[0].substring(4)
@@ -20995,7 +19542,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			var b = colorTempArray[2].slice(0,-1)
 			return [r,g,b]
 		}
-
 		elements.laetium = {
 			color: "#f57f87",
 			tempHigh: 2950,
@@ -21009,7 +19555,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				sand: {temp1: 5}
 			}
 		}
-
 		elements.molten_laetium = {
 			color: ['#ff9f44', '#ff7f44', '#ff5f00'],
 			behavior: behaviors.MOLTEN,
@@ -21030,7 +19575,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			state: "liquid",
 			category: "molten",
 		}
-
 		elements.vaporized_laetium = {
 			color: ['#efdf54', '#efbf54', '#efaf10'],
 			behavior: behaviors.GAS,
@@ -21046,7 +19590,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			state: "gas",
 			category: "gases",
 		}
-
 		elements.atisanium = {
 			color: "#8dadb8",
 			conduct: 0.87,
@@ -21062,7 +19605,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			state: "gas",
 			category: "gases"
 		}
-
 		elements.liquid_atisanium = {
 			color: "#3f878a",
 			conduct: 0.96,
@@ -21100,7 +19642,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				}
 			},
 		}
-
 		elements.alpha_atisanium = {
 			color: "#00382a",
 			conduct: 0.987,
@@ -21129,7 +19670,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				}
 			},
 		}
-
 		elements.beta_atisanium = {
 			color: "#750e35",
 			conduct: Infinity, //This is where I would make it a superconductor.
@@ -21149,7 +19689,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				}
 			},
 		}
-
 		elements.polusium = {
 			color: "#dedc9e",
 			tempHigh: 1213,
@@ -21180,7 +19719,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				bleach: { elem1: "polusium_oxide", chance: 0.02 }
 			},
 		}
-
 		elements.molten_polusium = {
 			tick: function(pixel) {
 				neighbors = [[-1,0],[0,-1],[1,0],[0,1]]
@@ -21207,7 +19745,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			stateHigh: "vaporized_polusium",
 			viscosity: 13,
 		}
-
 		elements.vaporized_polusium = {
 			color: ["#fdffd1", "#edf2cb", "#fcfac7"],
 			behavior: behaviors.GAS,
@@ -21237,7 +19774,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			state: "gas",
 			category: "gases",
 		}
-
 		elements.polusium_oxide = {
 			color: "#a9b594",
 			tempHigh: 1300,
@@ -21248,14 +19784,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			category: "solids",
 			viscosity: 13,
 		}
-
 		elements.molten_polusium_oxide = {
 			temp: 1350,
 			tempHigh: 1400,
 			stateHigh: "vaporized_polusium_oxide",
 			density: 2917,
 		}
-
 		elements.vaporized_polusium_oxide = {
 			color: "#faffc7",
 			temp: 1500,
@@ -21264,16 +19798,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			density: 10,
 			behavior: behaviors.GAS,
 		}
-
 		runAfterLoad(function() {
 			elements.laetium_slag = JSON.parse(JSON.stringify(elements.slag))
 			elements.laetium_slag.color = ['#a05c5a', '#af6967', '#b06d6d', '#ae6b6c', '#b67a7a']
 			elements.laetium_slag.tempHigh = 2950
 			elements.laetium_slag.stateHigh = ["molten_slag","molten_laetium"]
 		});
-
 	//MORE BROKEN FORMS ##
-
 		elements.loose_straw = {
 			color: ["#F9E3A1","#93734E","#C7AA83"],
 			behavior: behaviors.POWDER,
@@ -21287,9 +19818,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			density: 47.5,
 			hidden: true,
 		},
-
 		elements.straw.breakInto = "loose_straw"
-
 		elements.plastic_scrap = {
 			color: "#c3cccc",
 			behavior: behaviors.POWDER,
@@ -21303,11 +19832,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			density: 952,
 			hidden: true,
 		},
-
 		elements.plastic.breakInto = ["plastic_scrap","dioxin"]
-
 		elements.insulation.breakInto = ["plastic_scrap","dioxin","glass_shard"]
-
 		elements.copper_scrap = {
 			color: ["#B96242","#CE5332","#D77045","#994222","#AE3312","#B75025","#A95232","#BE4322","#C76035"],
 			behavior: [
@@ -21328,7 +19854,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			conduct: 0.90,
 			hidden: true,
 		},
-
 		elements.oxidized_copper_scrap = {
 			color: ["#507565","#52665A","#618374","#305545","#32463A","#416354","#406555","#42564A","#517364"],
 			behavior: behaviors.POWDER,
@@ -21340,16 +19865,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			conduct: 0.80,
 			hidden: true,
 		}
-
 		elements.copper.breakInto = ["copper_scrap","copper_scrap","copper_scrap","copper_scrap","copper_scrap","oxidized_copper_scrap"]
-
 		elements.dry_ice.breakInto = "carbon_dioxide"
-
 		elements.frozen_ketchup.breakInto = "ketchup_snow"
 		elements.frozen_poisoned_ketchup.breakInto = "poisoned_ketchup_snow"
-
 		regularShinyThingArray = ["iron", "zinc", "tin", "nickel", "silver", "aluminum", "lead", "tungsten", "brass", "bronze", "sterling", "steel", "white_gold", "blue_gold", "rose_gold", "red_gold", "solder", "gold", "pyrite", "mythril", "mithril_mythril_alloy", "titanium", "ilitium", "mithril", "beryllium", "boron", "ruthenium", "rhodium", "palladium", "rhenium", "osmium", "iridium", "platinum", "frozen_mercury", "lithium", "niobium", "ketchup_metal", "ketchup_gold", "tungstensteel", "densinium", "mithril", "signalum", "laetium", "kurshunjukium", "zirconium", "jinsoulite"];
-
 		elements.nitrogen_snow = {
 			color: "#efefef",
 			behavior: behaviors.POWDER,
@@ -21361,9 +19881,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			density: 850,
 			hidden: true,
 		}
-
 		elements.nitrogen_ice.breakInto = "nitrogen_snow"
-
 		runAfterLoad(function() {
 			for(i = 0; i < regularShinyThingArray.length; i++) {
 				var thing = regularShinyThingArray[i];
@@ -21388,20 +19906,17 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					elements[thing].cutInto = elements[thing].breakInto
 				}
 			};
-
 			elements.acid.ignore.push("densinium_scrap")
 			elements.lithium_scrap.tick = function(pixel) {
-				tryTarnish(pixel,"lithium_oxide",0.021) 
+				tryTarnish(pixel,"lithium_oxide",0.021)
 				if(pixel.temp >= 178) {
-					pixel.burning = true; 
-					pixel.burnStart = pixelTicks; 
+					pixel.burning = true;
+					pixel.burnStart = pixelTicks;
 				};
 			};
 			elements.laetium_scrap.reactions.sand = { temp1: 7 }
 		});
-
 	//SOIL AND ROCKS, WORLDGEN PRESETS, AND MINERALS (the_ground.js and friends) ##
-
 		/*
 			TODO:
 			Soils
@@ -21411,27 +19926,18 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			Merge crimson?
 			Proper classification of limestone within these code comments
 		*/
-
 		//Variables
-
 			eLists.WHL = "water,salt_water,sugar_water,dirty_water,swamp_water,heavy_water,radioactive_water,crimwater,pure_water,chilly_water,honey,magma"
-
 			var vitreousFelsicName = "obsidian";
 			var vitreousInterfelsicName = "dacidian";
 			var vitreousIntermediateName = "diodian";
 			var vitreousMaficName = "basidian";
 			var vitreousUltramaficName = "komatidian";
-
 			var sandSimplification = ["gravel","granite_gravel","granodiorite_gravel","diorite_gravel","basalt_gravel","peridotite_gravel","rhyolite_gravel","dacite_gravel","andesite_gravel","komatiite_gravel","pumice_gravel","intermediate_pumice_gravel","scoria_gravel","mafic_scoria_gravel","ultramafic_scoria_gravel", "dacidian_shard", "andesidian_shard", "basalidian_shard", "komatidian_shard"];
-
 			var rocks = [ "granite",  "granodiorite",  "diorite",  "rock",  "peridotite",   "rhyolite",  "dacite",  "andesite",  "basalt",  "komatiite",   "pumice",  "intermediate_pumice",  "scoria",  "mafic_scoria",  "ultramafic_scoria",   "obsidian",  vitreousInterfelsicName,  vitreousIntermediateName,  vitreousMaficName,  vitreousUltramaficName];
-
 			var gravels = [ "granite_gravel",  "granodiorite_gravel",  "diorite_gravel",  "gravel",  "peridotite_gravel",   "rhyolite_gravel",  "dacite_gravel",  "andesite_gravel",  "basalt_gravel",  "komatiite_gravel",   "pumice_gravel",  "intermediate_pumice_gravel",  "scoria_gravel",  "mafic_scoria_gravel",  "ultramafic_scoria_gravel",   "obsidian_shard",  "dacidian_shard",  "andesidian_shard",  "basalidian_shard",  "komatidian_shard" ];
-
 		//Functions
-
 			//Stepped rainbow colors (used for rainbow earth)
-
 				function makeRegularRainbow(steps,s,l,outputFormat="rgb") {
 					var hslArray = [];
 					var divisionSize = 360 / steps;
@@ -21440,7 +19946,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					};
 					return hslArray.map(x => convertHslObjects(x,outputFormat));
 				};
-
 				crimsonObject = {
 					grass: "crimson_grass",
 					ice: "red_ice",
@@ -21453,11 +19958,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					sandy_water: "crimsandy_water",
 					muddy_water: "crimmuddy_water"
 				};
-
 				crimRate = 0.001
-
 			//Crimson spreaders
-
 				function grassSpread(pixel,dirt,grass,chance) {
 					pixel.dirtArray = [] //initialize dirt neighbor list
 					for (i = -2; i < 3; i++) { //iterate around
@@ -21487,7 +19989,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						}
 					}
 				}
-
 				function crimSpread(pixel) {
 					for (let i = -2; i < 3; i++) {
 						for (let j = -2; j < 3; j++) {
@@ -21504,9 +20005,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						};
 					};
 				};
-
 			//Nellfire code (used for the obvious)
-
 				function doNellfire(pixel) {
 					var info = elements[pixel.element];
 					if((info.nellfireImmune && info.nellfireImmune !== "torch") && pixel.nellburn) {
@@ -21524,10 +20023,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						};
 						var nellFireTemp = info.nellFireSpawnTemp ?? pixel.temp;
 						var nellFireChance = info.nellFireSpawnChance ?? 20;
-
 						pixel.temp += nellburnTempChange ?? 4;
 						pixelTempCheck(pixel);
-
 						for (var i = 0; i < adjacentCoords.length; i++) { // Burn adjacent pixels
 							var x = pixel.x+adjacentCoords[i][0];
 							var y = pixel.y+adjacentCoords[i][1];
@@ -21543,7 +20040,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								}
 							}
 						}
-
 						if (info.nellfireImmune !== "torch" && (pixelTicks - pixel.nellburnStart > (info.nellburnTime || 150)) && Math.floor(Math.random()*100)<(info.nellburn || 25)) {
 							var burnInto = info.nellburnInto;
 							//console.log(burnInto);
@@ -21593,9 +20089,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						}
 					}
 				}
-
 				//Makes it run
-
 					everyTick(function() {
 						if(paused) { return };
 						var nellfirePixels = currentPixels.filter(function(pixel) { return pixel.nellburn });
@@ -21603,13 +20097,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							doNellfire(nellfirePixels[pixel]);
 						};
 					});
-
 			//Basically the entire hot_rocks.js code
-
 				var rocksSandsAndSoilsToGiveHotForms = [];
-
 				function hotRockFunction() {
-
 					function hotData2Switch(data2) {
 						switch(data2) {
 							case "igneous_rock":
@@ -21626,31 +20116,26 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								return "hot_" + data2;
 						};
 					};
-
 					behaviors.HOT_POWDER = [
 						"XX|CR:fire%0.5|XX",
 						"XX|XX|XX",
 						"M2|M1|M2"
 					];
-
 					behaviors.HOT_STURDYPOWDER = [
 						"XX|CR:fire%0.5|XX",
 						"XX|XX|XX",
 						"XX|M1|XX"
 					];
-
 					behaviors.HOT_WALL = [
 						"XX|CR:fire%0.1|XX",
 						"CR:fire%0.1|XX|CR:fire%0.1",
 						"XX|CR:fire%0.1|XX"
 					];
-
 					behaviors.HOT_SUPPORT = [
 						"XX|CR:fire%0.1|XX",
 						"SP AND CR:fire%0.1|XX|SP AND CR:fire%0.1",
 						"XX|M1|XX"
 					];
-
 					//console.log(rocksSandsAndSoilsToGiveHotForms)
 					for(j = 0; j < rocksSandsAndSoilsToGiveHotForms.length; j++) {
 						var rockName = rocksSandsAndSoilsToGiveHotForms[j];
@@ -21690,14 +20175,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							//breakInto: newName + "_gravel",
 							_data: [rockData[0], rockData[1], hotData2Switch(rockData[2])],
 						};
-						
 						if(rockInfo.hardness) {
 							elements[newName].hardness = rockInfo.hardness * 0.85
 						};
-
 						//console.log([elements[rockName].tempHigh,elements[rockName].stateHigh]);
 						//console.log([elements[newName].tempLow,elements[newName].stateLow])
-
 						if(rockName == "basalt") {
 							elements[newName].behavior = [
 								"XX|CR:fire%0.5|XX",
@@ -21705,28 +20187,21 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								"XX|M1|XX"
 							]
 						};
-
 						//console.log(j);
-
 						if(rockInfo.nellfireImmune) {
 							elements[newName].nellfireImmune = true;
 						};
-
 						elements[rockName].tempHigh = Math.min(rockInfo.tempHigh - 100,800);
 						elements[rockName].stateHigh = newName;
 						if(rockInfo._data[2] == "igneous_rock" && elements[newName + "_gravel"]) {
 							elements[newName].stateHigh = newName + "_gravel";
 						};
 					};
-
 					elements.dirt.tempHigh = 100;
 					elements.dirt.stateHigh = "dry_dirt";
 				};
-
 			//Star world matter function
-
 				var stellarPlasmaSpreadWhitelist = ["stellar_plasma","liquid_stellar_plasma","liquid_degenerate_neutronium","gaseous_degenerate_neutronium","neutron_star"];
-
 				function starColor(pixel) {
 					if (pixel.temp < 0) { pixel.color = pixelColorPick(pixel,"#615e5e"); var c=0 }
 					else if (pixel.temp < 200) { pixel.color = pixelColorPick(pixel,"#6e4c4b"); var c=0 }
@@ -21759,7 +20234,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					else { pixel.color = pixelColorPick(pixel,"#a26ffc"); var c=0.9 }
 					return c;
 				};
-
 				function rainbowSunColor(pixel) {
 					var age = pixelTicks - pixel.start;
 					var ss, ll;
@@ -21791,13 +20265,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					else if (pixel.temp < 68500) { ss = 100; ll = 98.5; var c=0.7 }
 					else if (pixel.temp < 73600) { ss = 100; ll = 98.5; var c=0.8 }
 					else { ss = 100; ll = 98.5; var c=0.9 }
-
 					var hslJson = {h: (age) % 360, s: ss, l: ll};
 					pixel.color = pixelColorPick(pixel,convertHslObjects(hslJson,"hex"));
-
 					return c;
 				};
-
 				function starLightAndConduction(pixel,c,whitelist=["sun"]) {
 					for (var i = 0; i < adjacentCoords.length; i++) {
 						var x = pixel.x+adjacentCoords[i][0];
@@ -21820,9 +20291,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						}
 					}
 				};
-
 				ferromagneticMaterials = ["iron", "cobalt", "nickel", "steel", "hematite"];
-
 				//x = real number
 				//L = maximum value
 				//x_0 = "the x value of the sigmoid midpoint" i.e. the x center of the bendy part
@@ -21830,13 +20299,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				function logisticCurve(x,L,k,x0) {
 					return L/(   1 + (  Math.E ** ( -k * (x - x0) )  )   );
 				};
-
 				// https://stackoverflow.com/questions/10756313/javascript-jquery-map-a-range-of-numbers-to-another-range-of-numbers
 				// Function from August Miller
 				function scale (number, inMin, inMax, outMin, outMax) {
 					return (number - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
 				};
-
 				function neutronStarLightAndConduction(pixel,c,whitelist=["neutron_star"]) {
 					var pixelAge = pixelTicks - pixel.start;
 					var coolingFactor;
@@ -21857,7 +20324,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					};
 					//console.log(coolingFactor);
 					pixel.temp = ((pixel.temp - (settings.abszero ?? -273.15)) * coolingFactor) + (settings.abszero ?? -273.15);
-
 					for (var i = 0; i < adjacentCoords.length; i++) {
 						var x = pixel.x+adjacentCoords[i][0];
 						var y = pixel.y+adjacentCoords[i][1];
@@ -21881,21 +20347,16 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						}
 					}
 				};
-
 				function almostSun(pixel,lightScale=1,whitelist=["sun"]) {
 					starLightAndConduction(pixel,starColor(pixel) * lightScale,whitelist);
 				};
-
 				function nsTick(pixel,lightScale=1,whitelist=["sun"]) {
 					neutronStarLightAndConduction(pixel,starColor(pixel) * lightScale,whitelist);
 				};
-
 				elements.sun.tick = function(pixel) {
 					almostSun(pixel);
 				};
-
 			//"Generalized" sedimentation function
-
 				function sedimentation(pixel,finalRock,chance=0.0003) {
 					if(finalRock == undefined) { return false };
 					if(Math.random() < chance) {
@@ -21927,9 +20388,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						}*/;
 					};
 				};
-
 			//Function for mass replacement according to an object
-
 				function transformAround(pixel,range,substitutionObject,reverse=false) {
 					var radius1 = (-1 * range);
 					var radius2 = (range + 1);
@@ -21955,9 +20414,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						};
 					};
 				};
-
 			//Previous function with adjacentCoords
-
 				function transformAdjacent(pixel,substitutionObject,reverse=false) {
 					for(k = 0; k < adjacentCoords.length; k++) {
 						var i = adjacentCoords[k][0]
@@ -21981,17 +20438,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						};
 					};
 				};
-
 			//Cooling rate-varied magma solidification
-
 			function magmaRateBasedCooling(pixel,freezingPoint,vitriteName,vitriteThreshold,aphaniteName,aphaniteThreshold,phaneriteName) {
 				pixel.lastTemperatures ??= [];
 				pixel.lastTemperatures.push(pixel.temp); //due to how it's structured, last temp will always equal pixel.temp;
-
 				while(pixel.lastTemperatures.length > 2) {
 					pixel.lastTemperatures.shift();
 				};
-
 				if(pixel.lastTemperatures.length > 1) {
 					var overallTemperatureChangeRate = (pixel.temp - pixel.lastTemperatures[0]) / (pixel.lastTemperatures.length - 1);
 					//console.log(overallTemperatureChangeRate);
@@ -22025,7 +20478,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					changePixel(pixel,changeToRockIsHot ? "hot_" + stateLow : stateLow,false);
 				};
 			};
-
 			//Gravel finder
 			function getGravelElementName(rockName) {
 				if(rockName == "rock") {
@@ -22039,9 +20491,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				if(elements[shardBasedName]) {
 					return shardBasedName;
 				};
-				return false;		
+				return false;
 			};
-
 			//Sand finder
 			function getSandElementName(sandName) {
 				var theName = sandName;
@@ -22060,29 +20511,22 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 				return false;
 			};
-
 			/*Metamorphism test
 			function metamorphosisPressureHandler(rockBeingSquished,rockDoingSquishing) {
 				pixel.lastPressures ??= [];
-
 				while(pixel.lastPressures.length > 2) {
 					pixel.lastPressures.shift();
 				};
-
 				var squisherInfo = elements[rockDoingSquishing.element];
 				var squisheeInfo = elements[rockBeingSquished.element];
-
 				rockBeingSquished._squishers ??= {};
 				rockBeingSquished._squishers[pixelTicks] ??= {};
 				rockBeingSquished._squishers[pixelTicks][`x${rockDoingSquishing.x}y${rockDoingSquishing.y}`] = (squisherInfo.density ?? 2500) + (rockDoingSquishing._receivedPressure ?? 0);
-
 				rockBeingSquished._receivedPressure = sumNumericArray(Object.values(rockBeingSquished._squishers[pixelTicks]));
-
 				if(squisheeInfo.metamorphismFunction) {
 					squisheeInfo.metamorphismFunction(rockBeingSquished)
 				};
-			};	
-
+			};
 			function removeLastSquishers(pixel) {
 				if(!pixel._squishers) {
 					return false;
@@ -22091,24 +20535,19 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					delete pixel._squishers[pixelTicks - 1];
 				};
 			};
-
 			elements.metal_scrap.onTryMoveInto = function(pixel,otherPixel) {
 				metamorphosisPressureHandler(pixel,otherPixel);
 			};
-
 			elements.metal_scrap.tick = function(pixel) {
 				removeLastSquishers(pixel);
 			};
-
 			elements.metal_scrap.metamorphismFunction = function(pixel) {
 				pixel.temp = pixel._receivedPressure;
 			};
-
 			elements.metal_scrap.insulate = true;
 			delete elements.metal_scrap.tempHigh;
 			delete elements.metal_scrap.stateHigh;
 			*/
-
 			/*Erosion
 			function toGravelErodeOtmi(pixel,otherPixel,erosionChanceDivisor=5500) {
 				var gravelName = getGravelElementName(pixel.element);
@@ -22126,7 +20565,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					//changePixelReturn(pixel,gravelName,false).color = "rgb(255,0,0)";
 				};
 			};
-
 			function toSandErodeOtmi(pixel,otherPixel,erosionChanceDivisor=5500) {
 				var sandName = getSandElementName(pixel.element);
 				//console.log(sandName);
@@ -22142,11 +20580,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					//changePixelReturn(pixel,sandName,false).color = "rgb(255,255,0)";
 				};
 			};*/
-
 			//I really hate boilerplate
-
 				//Array maker
-
 					function twoPartRepeatedArray(value1,amount1,value2,amount2) {
 						var array1 = Array(amount1).fill(value1);
 						var array2 = Array(amount2).fill(value2);
@@ -22157,7 +20592,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					if(tempHigh == null) {
 						stateHigh = null;
 					};
-
 					elements[name] = {
 						color: color,
 						behavior: behaviors.POWDER,
@@ -22165,73 +20599,53 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						state: "solid",
 						density: density ?? 1000,
 					};
-
 					if(tempHigh !== null) {
 						elements[name].tempHigh = tempHigh;
 					};
-
 					if(tempHigh !== null && stateHigh !== null) {
 						elements[name].stateHigh = stateHigh;
 					};
-
 					if(breakInto !== null) {
 						elements[name].breakInto = breakInto;
 					};
-
 					return elements[name];
 				};
-
 				//Color gen
-
 					//Gravels
-
 						function gravelizeToHex(colorIn) {
 							var colorInput = colorIn; //side effects?
 							//console.log(`gravelizeToHex: ${colorInput}`)
-
 							//make sure in is array
 							if(!(colorInput instanceof Array)) {
 								colorInput = [colorInput];
 							};
 							//console.log(`gravelizeToHex: ${colorInput}`)
-
 							//console.log(colorInput);
-
 							//prepare final color
 							var finalColor = [];
-
 							//console.log(colorInput);
 							for(var i = 0; i < colorInput.length; i++) {
 								finalColor.push(colorInput[i]);
 								finalColor.push(colorInput[i]);
 								finalColor.push(colorInput[i]);
 							};
-
-
 							//vary luminance
 							for(i = 0; i < finalColor.length; i+=3) {
 								finalColor[i] = changeLuminance(finalColor[i],1.25,"multiply","hsljson");
 							};
-
 							//leave offset-1 colors as-is
-
 							for(i = 2; i < finalColor.length; i+=3) {
 								finalColor[i] = changeLuminance(finalColor[i],0.85,"multiply","hsljson");
 							};
-
-
 							//desaturate
 							for(i = 0; i < finalColor.length; i++) {
 								finalColor[i] = changeSaturation(finalColor[i],0.9,"multiply","hex");
 							};
-
 							//finish
 							//console.log(finalColor);
 							return finalColor;
 						};
-
 					//Sands
-
 						function sandizeToHex(rockColor,type="normal",sBringTo=31,sBringFactor=0.4,lBringTo=70,lBringFactor=0.6) {
 							if(elements[rockColor]) {
 								//Assuming an element was given, for compatibility
@@ -22265,14 +20679,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										break;
 									default:
 										break;
-								};								
+								};
 								sandColor.push(convertHslObjects(colorAsHsl,"hex"));
 								//sandColorObject.push(convertHslObjects(colorAsHsl,"rgbjson"));
 							};
-
 							return sandColor;
 						};
-
 						function dustizeToHex(rockColor,sBringTo=25,sBringFactor=0.4,lBringTo=55,lBringFactor=0.6) {
 							if(elements[rockColor]) {
 								//Assuming an element was given, for compatibility
@@ -22291,12 +20703,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								dustColor.push(convertHslObjects(colorAsHsl,"hex"));
 								//dustColorObject.push(convertHslObjects(colorAsHsl,"rgbjson"));
 							};
-
 							return dustColor;
 						};
-
 					//Sandstones
-
 						function sandstonizeToHex(sandName,type="normal") {
 							//console.log(sandName);
 							var sandInfo = elements[sandName];
@@ -22321,19 +20730,14 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								finalColor.push(convertHslObjects(colorAsHsl,"hex"));
 								//sandColorObject.push(convertHslObjects(colorAsHsl,"rgbjson"));
 							};
-
 							return finalColor;
 						};
-
 						function sedimentHslOffset(hslJsonColor) {
 							return {h: hslJsonColor.h - 4, s: hslJsonColor.s - 20, l: hslJsonColor.l - 25};
 						};
-
 					//Magmas
-
 						function makeMoltenColor(colorIn) { //Edited vanilla code
 							//console.log(colorIn);
-
 							var newcolor = colorIn;
 							var moltenColorFactors = [ [2,1.25,0.5], [2,1,0.5], [2,0.75,0] ];
 							var colorList = [];
@@ -22360,70 +20764,50 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							}
 							return colorList;
 						}
-
 					//Magma vapors
 						function magmavaporizeToHex(colorIn) {
 							var color = colorIn;
-
 							if(!(color instanceof Array)) {
 								color = [color];
 							};
-
 							color = color.map(x => normalizeColorToHslObject(x));
-
 							for(i = 0; i < color.length; i++) {
 								color[i].h += 5;
 								color[i].s -= 5;
 								color[i].l += 20;
 							};
-
 							color = color.map(x => convertHslObjects(x,"hex"));
-
 							return color;
 						};
-
 						function magmacloudizeToHex(colorIn) {
 							var color = colorIn;
-
 							if(!(color instanceof Array)) {
 								color = [color];
 							};
-
 							color = color.map(x => normalizeColorToHslObject(x));
-
 							for(i = 0; i < color.length; i++) {
 								color[i].h += 5;
 								color[i].s -= 8;
 								color[i].l += 5;
 							};
-
 							color = color.map(x => convertHslObjects(x,"hex"));
-
 							return color;
 						};
-
 						function rockcloudizeToHex(colorIn) {
 							var color = colorIn;
-
 							if(!(color instanceof Array)) {
 								color = [color];
 							};
-
 							color = color.map(x => normalizeColorToHslObject(x));
-
 							for(i = 0; i < color.length; i++) {
 								color[i].h -= 12;
 								color[i].s *= 0.12;
 								color[i].l -= 6;
 							};
-
 							color = color.map(x => convertHslObjects(x,"hex"));
-
 							return color;
 						};
-
 				//Generate an entire composition family at once
-
 				function redHotColorgen(colorIn,outputFormat="rgb") {
 					var color = colorIn;
 					//console.log(color);
@@ -22453,7 +20837,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					if(color.length == 1) { color = color[0] };
 					return color;
 				};
-
 				var sands = ["sand", "dirt", "crimsoil", "rainbow_dirt"]; //Some sources suggest the existence of topsoil sediment, so for the purposes of sedimentary rock generation, dirt is now a sand /hj
 				var wetSands = ["wet_sand", "mud"];
 				var sandSuspensions = [];
@@ -22462,7 +20845,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				var vaporizedMagmas = [];
 				var magmaClouds = [];
 				var rockClouds = [];
-
 				function nicffunc_getReactions(elemName) {
 					if(!(elements[elemName])) {
 						return null;
@@ -22477,7 +20859,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						return !!reactions ? JSON.parse(JSON.stringify(reactions)) : null;
 					};
 				};
-
 				function simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) {
 					if(pixel.exposedToAir) { return };
 					if(pixel.temp > 200 && Math.random () < 0.0001) {
@@ -22485,40 +20866,31 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					};
 					return
 				};
-
 				function newIgneousCompositionFamily(
 					compositionFamilyName,
-
 					magmaViscosity, magmaDensity, vitriteCoolingRateThreshold, aphaniteCoolingRateThreshold, magmaBoilingPoint,
-
 					phaneriteName, phaneriteColor, phaneriteMeltingPoint, phaneriteDensity,
 					metaphaneriteName, metaphaneriteColor, metaphaneriteMeltingPoint, metaphaneriteDensity,
-
 					aphaniteName, aphaniteColor, aphaniteMeltingPoint, aphaniteDensity,
 					metaaphaniteName, metaaphaniteColor, metaaphaniteMeltingPoint, metaaphaniteDensity,
-
 					vesiculiteName, vesiculiteColor, vesiculiteMeltingPoint, vesiculiteDensity,
 					metavesiculiteName, metavesiculiteColor, metavesiculiteMeltingPoint, metavesiculiteDensity,
-
 					vitriteName, vitriteColor, vitriteMeltingPoint, vitriteDensity,
 					metavitriteName, metavitriteColor, metavitriteMeltingPoint, metavitriteDensity,
-
 					sandFormationReactionRegularSandCount, sandFormationReactionSpecificSandCount,
 				) {
 					//console.log(compositionFamilyName,vesiculiteMeltingPoint,vitriteMeltingPoint);
-
 					//Auto names
 						//Sand
 							//gabbro_sand instead of rock_sand for rock's unique sand
-							var phaneriteSandName = compositionFamilyName == "mafic" ? "gabbro_sand" : phaneriteName + "_sand"; 
+							var phaneriteSandName = compositionFamilyName == "mafic" ? "gabbro_sand" : phaneriteName + "_sand";
 							var aphaniteSandName = aphaniteName + "_sand";
 							var vesiculiteSandName = vesiculiteName + "_sand";
 							var vitriteSandName = vitriteName + "_sand";
-							var metaphaneriteSandName = metaphaneriteName + "_sand"; 
+							var metaphaneriteSandName = metaphaneriteName + "_sand";
 							var metaaphaniteSandName = metaaphaniteName + "_sand";
 							var metavesiculiteSandName = metavesiculiteName + "_sand";
 							var metavitriteSandName = metavitriteName + "_sand";
-
 						//Solid rocks (rock walls)
 							//keep rock_wall to replace vanilla rock wall
 							var phaneriteWallName = compositionFamilyName == "mafic" ? "rock_wall" : phaneriteName + "_wall";
@@ -22529,7 +20901,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							var metaaphaniteWallName = metaaphaniteName + "_wall";
 							var metavesiculiteWallName = metavesiculiteName + "_wall";
 							var metavitriteWallName = metavitriteName + "_wall";
-
 						//Gravel
 							//gravel instead of rock_gravel for normal gravel (as rock's unique gravel)
 							var phaneriteGravelName = compositionFamilyName == "mafic" ? "gravel" : phaneriteName + "_gravel";
@@ -22540,18 +20911,16 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							var metaaphaniteGravelName = metaaphaniteName + "_gravel";
 							var metavesiculiteGravelName = metavesiculiteName + "_gravel";
 							var metavitriteGravelName = metavitriteName + "_shard";
-
 						//Dust
 							//gabbro_dust instead of rock_dust for rock's unique dust
-							var phaneriteDustName = compositionFamilyName == "mafic" ? "gabbro_dust" : phaneriteName + "_dust";		
+							var phaneriteDustName = compositionFamilyName == "mafic" ? "gabbro_dust" : phaneriteName + "_dust";
 							var aphaniteDustName = aphaniteName + "_dust";
 							var vesiculiteDustName = vesiculiteName + "_dust";
 							var vitriteDustName = vitriteName + "_dust";
-							var metaphaneriteDustName = metaphaneriteName + "_dust";		
+							var metaphaneriteDustName = metaphaneriteName + "_dust";
 							var metaaphaniteDustName = metaaphaniteName + "_dust";
 							var metavesiculiteDustName = metavesiculiteName + "_dust";
 							var metavitriteDustName = metavitriteName + "_dust";
-
 						//Push future sand names and wet sand names to sand list for sandstone system generation
 							sands.push(phaneriteSandName);
 							sands.push(aphaniteSandName);
@@ -22569,16 +20938,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							wetSands.push("wet_" + metaaphaniteSandName);
 							wetSands.push("wet_" + metavesiculiteSandName);
 							wetSands.push("wet_" + metavitriteSandName);
-
 						//Magma and magma derivative names
 							var magmaName = compositionFamilyName == "mafic" ? "magma" : compositionFamilyName + "_magma";
 							var magmaCloudName = magmaName + "_cloud"
 							var rockCloudName = compositionFamilyName + "_rock_cloud"
-
 						//Create rocks, transplant existing reactions if they exist, add/change erosion reactions to match, and create corresponding physical variants
 							//Phanerite
 								var phaneriteOldReactions = nicffunc_getReactions(phaneriteName);
-
 								elements[phaneriteName] = {
 									color: phaneriteColor,
 									behavior: behaviors.POWDER,
@@ -22596,10 +20962,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								if(phaneriteOldReactions) {
 									elements[phaneriteName].reactions = phaneriteOldReactions;
 								};
-
 								//replace water rock-erosion reaction
 								elements.water.reactions[phaneriteName] = { "elem2": phaneriteGravelName, "chance": 0.00035 }
-
 								//create unique gravel
 								elements[phaneriteGravelName] = {
 									color: gravelizeToHex(phaneriteColor),
@@ -22614,7 +20978,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									metamorphite: metaphaneriteName,
 									onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
 								};
-
 								elements[phaneriteDustName] = {
 									color: dustizeToHex(phaneriteName),
 									behavior: behaviors.GAS,
@@ -22628,10 +20991,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									density: airDensity + (phaneriteDensity / 1000), //unmeasured value
 									_data: [compositionFamilyName,"phanerite","dust"],
 								};
-
 								//generate water gravel-erosion reaction using rock family's sand ratio
 								elements.water.reactions[phaneriteGravelName] = { "elem2": twoPartRepeatedArray(phaneriteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
-
 								//generate unique solid version
 								elements[phaneriteWallName] = {
 									color: phaneriteColor,
@@ -22647,9 +21008,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									metamorphite: metaphaneriteWallName,
 									onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
 								};
-
 								elements.water.reactions[phaneriteWallName] = { "elem2": phaneriteName, "chance": 0.00035 }
-
 								//Sand and sand variants
 									elements[phaneriteSandName] = {
 										color: sandizeToHex(phaneriteName,"normal"),
@@ -22663,9 +21022,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										metamorphite: metaphaneriteName,
 										onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
 									};
-
 									//console.log(phaneriteSandName, elements[phaneriteSandName].color);
-
 									elements["wet_" + phaneriteSandName] = {
 										color: sandizeToHex(phaneriteName,"wet"),
 										behavior: behaviors.STURDYPOWDER,
@@ -22683,7 +21040,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										metamorphite: metaphaneriteName,
 										onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
 									};
-
 									elements["packed_" + phaneriteSandName] = {
 										color: sandizeToHex(phaneriteName,"packed"),
 										behavior: behaviors.SUPPORT,
@@ -22697,14 +21053,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										metamorphite: metaphaneriteName,
 										onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
 									};
-
 									elements.water.reactions[phaneriteSandName] = {
 										"elem1": null, "elem2": "wet_" + phaneriteSandName,
 									};
-
 							//Metaphanerite
 								var metaphaneriteOldReactions = nicffunc_getReactions(phaneriteName);
-
 								elements[metaphaneriteName] = {
 									color: metaphaneriteColor,
 									behavior: behaviors.POWDER,
@@ -22720,10 +21073,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								if(metaphaneriteOldReactions) {
 									elements[metaphaneriteName].reactions = metaphaneriteOldReactions;
 								};
-
 								//replace water rock-erosion reaction
 								elements.water.reactions[metaphaneriteName] = { "elem2": metaphaneriteGravelName, "chance": 0.00035 }
-
 								//create unique gravel
 								elements[metaphaneriteGravelName] = {
 									color: gravelizeToHex(metaphaneriteColor),
@@ -22736,7 +21087,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									density: metaphaneriteDensity * 0.55,
 									_data: [compositionFamilyName,"metaphanerite","metamorphic_gravel"],
 								};
-
 								elements[metaphaneriteDustName] = {
 									color: dustizeToHex(metaphaneriteName),
 									behavior: behaviors.GAS,
@@ -22750,10 +21100,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									density: airDensity + (metaphaneriteDensity / 1000), //unmeasured value
 									_data: [compositionFamilyName,"metaphanerite","dust"],
 								};
-
 								//generate water gravel-erosion reaction using rock family's sand ratio
 								elements.water.reactions[metaphaneriteGravelName] = { "elem2": twoPartRepeatedArray(metaphaneriteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
-
 								//generate unique solid version
 								elements[metaphaneriteWallName] = {
 									color: metaphaneriteColor,
@@ -22767,9 +21115,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									breakInto: metaphaneriteName,
 									_data: [compositionFamilyName,"metaphanerite","solid_metamorphic_rock"],
 								};
-
 								elements.water.reactions[metaphaneriteWallName] = { "elem2": metaphaneriteName, "chance": 0.00035 }
-
 								//Sand and sand variants
 									elements[metaphaneriteSandName] = {
 										color: sandizeToHex(metaphaneriteName,"normal"),
@@ -22781,9 +21127,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										density: metaphaneriteDensity * 0.595,
 										_data: [compositionFamilyName,"metaphanerite","particulate"],
 									};
-
 									//console.log(metaphaneriteSandName, elements[metaphaneriteSandName].color);
-
 									elements["wet_" + metaphaneriteSandName] = {
 										color: sandizeToHex(metaphaneriteName,"wet"),
 										behavior: behaviors.STURDYPOWDER,
@@ -22799,7 +21143,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										density: metaphaneriteDensity * 0.595 + 150,
 										_data: [compositionFamilyName,"metaphanerite","wet_particulate"],
 									};
-
 									elements["packed_" + metaphaneriteSandName] = {
 										color: sandizeToHex(metaphaneriteName,"packed"),
 										behavior: behaviors.SUPPORT,
@@ -22811,14 +21154,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										breakInto: metaphaneriteSandName,
 										_data: [compositionFamilyName,"metaphanerite","packed_particulate"],
 									};
-
 									elements.water.reactions[metaphaneriteSandName] = {
 										"elem1": null, "elem2": "wet_" + metaphaneriteSandName,
 									};
-
 							//Aphanite
 								var aphaniteOldReactions = nicffunc_getReactions(aphaniteName);
-
 								elements[aphaniteName] = {
 									color: aphaniteColor,
 									behavior: behaviors.POWDER,
@@ -22836,9 +21176,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								if(aphaniteOldReactions) {
 									elements[aphaniteName].reactions = aphaniteOldReactions;
 								};
-
 								elements.water.reactions[aphaniteName] = { "elem2": aphaniteGravelName, "chance": 0.00035 }
-
 								elements[aphaniteGravelName] = {
 									color: gravelizeToHex(aphaniteColor),
 									behavior: behaviors.POWDER,
@@ -22852,7 +21190,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									metamorphite: metaaphaniteName,
 									onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
 								};
-
 								elements[aphaniteDustName] = {
 									color: dustizeToHex(aphaniteName),
 									behavior: behaviors.GAS,
@@ -22866,9 +21203,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									density: airDensity + (aphaniteDensity / 1000), //unmeasured value
 									_data: [compositionFamilyName,"aphanite","dust"],
 								};
-
 								elements.water.reactions[aphaniteGravelName] = { "elem2": twoPartRepeatedArray(aphaniteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
-
 								elements[aphaniteWallName] = {
 									color: aphaniteColor,
 									behavior: behaviors.WALL,
@@ -22883,9 +21218,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									metamorphite: metaaphaniteWallName,
 									onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
 								};
-
 								elements.water.reactions[aphaniteWallName] = { "elem2": aphaniteName, "chance": 0.00035 }
-
 								//Sand and sand variants
 									elements[aphaniteSandName] = {
 										color: sandizeToHex(aphaniteName,"normal"),
@@ -22899,7 +21232,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										metamorphite: metaaphaniteName,
 										onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
 									};
-
 									elements["wet_" + aphaniteSandName] = {
 										color: sandizeToHex(aphaniteName,"wet"),
 										behavior: behaviors.STURDYPOWDER,
@@ -22917,7 +21249,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										metamorphite: metaaphaniteName,
 										onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
 									};
-
 									elements["packed_" + aphaniteSandName] = {
 										color: sandizeToHex(aphaniteName,"packed"),
 										behavior: behaviors.SUPPORT,
@@ -22931,14 +21262,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										metamorphite: metaaphaniteName,
 										onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
 									};
-
 									elements.water.reactions[aphaniteSandName] = {
 										"elem1": null, "elem2": "wet_" + aphaniteSandName,
 									};
-
 							//Metaaphanite
 								var metaaphaniteOldReactions = nicffunc_getReactions(phaneriteName);
-
 								elements[metaaphaniteName] = {
 									color: metaaphaniteColor,
 									behavior: behaviors.POWDER,
@@ -22954,10 +21282,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								if(metaaphaniteOldReactions) {
 									elements[metaaphaniteName].reactions = metaaphaniteOldReactions;
 								};
-
 								//replace water rock-erosion reaction
 								elements.water.reactions[metaaphaniteName] = { "elem2": metaaphaniteGravelName, "chance": 0.00035 }
-
 								//create unique gravel
 								elements[metaaphaniteGravelName] = {
 									color: gravelizeToHex(metaaphaniteColor),
@@ -22970,7 +21296,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									density: metaaphaniteDensity * 0.55,
 									_data: [compositionFamilyName,"metaaphanite","metamorphic_gravel"],
 								};
-
 								elements[metaaphaniteDustName] = {
 									color: dustizeToHex(metaaphaniteName),
 									behavior: behaviors.GAS,
@@ -22984,10 +21309,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									density: airDensity + (metaaphaniteDensity / 1000), //unmeasured value
 									_data: [compositionFamilyName,"metaaphanite","dust"],
 								};
-
 								//generate water gravel-erosion reaction using rock family's sand ratio
 								elements.water.reactions[metaaphaniteGravelName] = { "elem2": twoPartRepeatedArray(metaaphaniteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
-
 								//generate unique solid version
 								elements[metaaphaniteWallName] = {
 									color: metaaphaniteColor,
@@ -23001,9 +21324,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									breakInto: metaaphaniteName,
 									_data: [compositionFamilyName,"metaaphanite","solid_metamorphic_rock"],
 								};
-
 								elements.water.reactions[metaaphaniteWallName] = { "elem2": metaaphaniteName, "chance": 0.00035 }
-
 								//Sand and sand variants
 									elements[metaaphaniteSandName] = {
 										color: sandizeToHex(metaaphaniteName,"normal"),
@@ -23015,9 +21336,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										density: metaaphaniteDensity * 0.595,
 										_data: [compositionFamilyName,"metaaphanite","particulate"],
 									};
-
 									//console.log(metaaphaniteSandName, elements[metaaphaniteSandName].color);
-
 									elements["wet_" + metaaphaniteSandName] = {
 										color: sandizeToHex(metaaphaniteName,"wet"),
 										behavior: behaviors.STURDYPOWDER,
@@ -23033,7 +21352,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										density: metaaphaniteDensity * 0.595 + 150,
 										_data: [compositionFamilyName,"metaaphanite","wet_particulate"],
 									};
-
 									elements["packed_" + metaaphaniteSandName] = {
 										color: sandizeToHex(metaaphaniteName,"packed"),
 										behavior: behaviors.SUPPORT,
@@ -23045,11 +21363,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										breakInto: metaaphaniteSandName,
 										_data: [compositionFamilyName,"metaaphanite","packed_particulate"],
 									};
-
 									elements.water.reactions[metaaphaniteSandName] = {
 										"elem1": null, "elem2": "wet_" + metaaphaniteSandName,
 									};
-
 							//Vesiculite
 								elements[vesiculiteName] = {
 									color: vesiculiteColor,
@@ -23066,9 +21382,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									metamorphite: metavesiculiteName,
 									onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
 								};
-
 								elements.water.reactions[vesiculiteName] = { "elem2": vesiculiteGravelName, "chance": 0.00035 }
-
 								elements[vesiculiteGravelName] = {
 									color: gravelizeToHex(vesiculiteColor),
 									behavior: behaviors.POWDER,
@@ -23083,7 +21397,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									metamorphite: metavesiculiteName,
 									onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
 								};
-
 								elements[vesiculiteDustName] = {
 									color: dustizeToHex(vesiculiteName),
 									behavior: behaviors.GAS,
@@ -23097,9 +21410,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									density: airDensity + (vesiculiteDensity / 800), //unmeasured value
 									_data: [compositionFamilyName,"vesiculite","dust"],
 								};
-
 								elements.water.reactions[vesiculiteGravelName] = { "elem2": twoPartRepeatedArray(vesiculiteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
-
 								elements[vesiculiteWallName] = {
 									color: vesiculiteColor,
 									behavior: behaviors.WALL,
@@ -23114,11 +21425,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									maxColorOffset: 40,
 									metamorphite: metavesiculiteWallName,
 									onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
-
 								};
-
 								elements.water.reactions[vesiculiteWallName] = { "elem2": vesiculiteName, "chance": 0.00035 }
-
 								//Sand and sand variants
 									elements[vesiculiteSandName] = {
 										color: sandizeToHex(vesiculiteName,"normal"),
@@ -23132,7 +21440,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										metamorphite: metavesiculiteName,
 										onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
 									};
-
 									elements["wet_" + vesiculiteSandName] = {
 										color: sandizeToHex(vesiculiteName,"wet"),
 										behavior: behaviors.STURDYPOWDER,
@@ -23150,7 +21457,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										metamorphite: metavesiculiteName,
 										onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
 									};
-
 									elements["packed_" + vesiculiteSandName] = {
 										color: sandizeToHex(vesiculiteName,"packed"),
 										behavior: behaviors.SUPPORT,
@@ -23164,11 +21470,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										metamorphite: metavesiculiteName,
 										onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
 									};
-
 									elements.water.reactions[vesiculiteSandName] = {
 										"elem1": null, "elem2": "wet_" + vesiculiteSandName,
 									};
-
 							//Metavesiculite
 								elements[metavesiculiteName] = {
 									color: metavesiculiteColor,
@@ -23183,9 +21487,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									_data: [compositionFamilyName,"metavesiculite","igneous_rock"],
 									maxColorOffset: 35
 								};
-
 								elements.water.reactions[metavesiculiteName] = { "elem2": metavesiculiteGravelName, "chance": 0.00035 }
-
 								elements[metavesiculiteGravelName] = {
 									color: gravelizeToHex(metavesiculiteColor),
 									behavior: behaviors.POWDER,
@@ -23198,7 +21500,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									_data: [compositionFamilyName,"metavesiculite","metamorphic_gravel"],
 									maxColorOffset: 35
 								};
-
 								elements[metavesiculiteDustName] = {
 									color: dustizeToHex(metavesiculiteName),
 									behavior: behaviors.GAS,
@@ -23212,9 +21513,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									density: airDensity + (metavesiculiteDensity / 800), //unmeasured value
 									_data: [compositionFamilyName,"metavesiculite","dust"],
 								};
-
 								elements.water.reactions[metavesiculiteGravelName] = { "elem2": twoPartRepeatedArray(metavesiculiteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
-
 								elements[metavesiculiteWallName] = {
 									color: metavesiculiteColor,
 									behavior: behaviors.WALL,
@@ -23228,9 +21527,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									_data: [compositionFamilyName,"metavesiculite","solid_metamorphic_rock"],
 									maxColorOffset: 35
 								};
-
 								elements.water.reactions[metavesiculiteWallName] = { "elem2": metavesiculiteName, "chance": 0.00035 }
-
 								//Sand and sand variants
 									elements[metavesiculiteSandName] = {
 										color: sandizeToHex(metavesiculiteName,"normal"),
@@ -23242,7 +21539,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										density: metavesiculiteDensity * 1.9,
 										_data: [compositionFamilyName,"metavesiculite","particulate"],
 									};
-
 									elements["wet_" + metavesiculiteSandName] = {
 										color: sandizeToHex(metavesiculiteName,"wet"),
 										behavior: behaviors.STURDYPOWDER,
@@ -23258,7 +21554,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										density: metavesiculiteDensity * 1.9 + 150,
 										_data: [compositionFamilyName,"metavesiculite","wet_particulate"],
 									};
-
 									elements["packed_" + metavesiculiteSandName] = {
 										color: sandizeToHex(metavesiculiteName,"packed"),
 										behavior: behaviors.SUPPORT,
@@ -23270,11 +21565,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										breakInto: metavesiculiteSandName,
 										_data: [compositionFamilyName,"metavesiculite","packed_particulate"],
 									};
-
 									elements.water.reactions[metavesiculiteSandName] = {
 										"elem1": null, "elem2": "wet_" + metavesiculiteSandName,
 									};
-
 							//Vitrite
 								elements[vitriteName] = {
 									color: vitriteColor,
@@ -23290,9 +21583,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									metamorphite: metavitriteName,
 									onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
 								};
-
 								elements.water.reactions[vitriteName] = { "elem2": vitriteGravelName, "chance": 0.00035 }
-
 								elements[vitriteGravelName] = {
 									color: gravelizeToHex(vitriteColor),
 									behavior: behaviors.POWDER,
@@ -23306,7 +21597,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									metamorphite: metavitriteName,
 									onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
 								};
-
 								elements[vitriteDustName] = {
 									color: dustizeToHex(vitriteName),
 									behavior: behaviors.GAS,
@@ -23320,9 +21610,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									density: airDensity + (vitriteDensity / 1000), //unmeasured value
 									_data: [compositionFamilyName,"vitrite","dust"],
 								};
-
 								elements.water.reactions[vitriteGravelName] = { "elem2": twoPartRepeatedArray(vitriteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
-
 								elements[vitriteWallName] = {
 									color: vitriteColor,
 									behavior: behaviors.WALL,
@@ -23337,9 +21625,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									metamorphite: metavitriteWallName,
 									onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
 								};
-
 								elements.water.reactions[vitriteWallName] = { "elem2": vitriteName, "chance": 0.00035 }
-								
 								//Sand and sand variants
 									elements[vitriteSandName] = {
 										color: sandizeToHex(vitriteName,"normal"),
@@ -23353,7 +21639,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										metamorphite: metavitriteName,
 										onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
 									};
-
 									elements["wet_" + vitriteSandName] = {
 										color: sandizeToHex(vitriteName,"wet"),
 										behavior: behaviors.STURDYPOWDER,
@@ -23371,7 +21656,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										metamorphite: metavitriteName,
 										onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
 									};
-
 									elements["packed_" + vitriteSandName] = {
 										color: sandizeToHex(vitriteName,"packed"),
 										behavior: behaviors.SUPPORT,
@@ -23385,11 +21669,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										metamorphite: metavitriteName,
 										onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
 									};
-
 									elements.water.reactions[vitriteSandName] = {
 										"elem1": null, "elem2": "wet_" + vitriteSandName,
 									};
-							
 							//Metavitrite
 								elements[metavitriteName] = {
 									color: metavitriteColor,
@@ -23403,9 +21685,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									breakInto: metavitriteGravelName,
 									_data: [compositionFamilyName,"metavitrite","metamorphic_rock"],
 								};
-
 								elements.water.reactions[metavitriteName] = { "elem2": metavitriteGravelName, "chance": 0.00035 }
-
 								elements[metavitriteGravelName] = {
 									color: gravelizeToHex(metavitriteColor),
 									behavior: behaviors.POWDER,
@@ -23417,7 +21697,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									density: metavitriteDensity * 0.55,
 									_data: [compositionFamilyName,"metavitrite","glass_shard"],
 								};
-
 								elements[metavitriteDustName] = {
 									color: dustizeToHex(metavitriteName),
 									behavior: behaviors.GAS,
@@ -23431,9 +21710,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									density: airDensity + (metavitriteDensity / 1000), //unmeasured value
 									_data: [compositionFamilyName,"metavitrite","dust"],
 								};
-
 								elements.water.reactions[metavitriteGravelName] = { "elem2": twoPartRepeatedArray(metavitriteSandName,sandFormationReactionSpecificSandCount,"sand",sandFormationReactionRegularSandCount), "chance": 0.0005 };
-
 								elements[metavitriteWallName] = {
 									color: metavitriteColor,
 									behavior: behaviors.WALL,
@@ -23446,9 +21723,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									breakInto: metavitriteName,
 									_data: [compositionFamilyName,"metavitrite","solid_metamorphic_rock"],
 								};
-
 								elements.water.reactions[metavitriteWallName] = { "elem2": metavitriteName, "chance": 0.00035 }
-								
 								//Sand and sand variants
 									elements[metavitriteSandName] = {
 										color: sandizeToHex(metavitriteName,"normal"),
@@ -23460,7 +21735,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										density: metavitriteDensity * 0.595,
 										_data: [compositionFamilyName,"metavitrite","particulate"],
 									};
-
 									elements["wet_" + metavitriteSandName] = {
 										color: sandizeToHex(metavitriteName,"wet"),
 										behavior: behaviors.STURDYPOWDER,
@@ -23476,7 +21750,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										density: metavitriteDensity * 0.595 + 150,
 										_data: [compositionFamilyName,"metavitrite","wet_particulate"],
 									};
-
 									elements["packed_" + metavitriteSandName] = {
 										color: sandizeToHex(metavitriteName,"packed"),
 										behavior: behaviors.SUPPORT,
@@ -23488,16 +21761,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										breakInto: metavitriteSandName,
 										_data: [compositionFamilyName,"metavitrite","packed_particulate"],
 									};
-
 									elements.water.reactions[metavitriteSandName] = {
 										"elem1": null, "elem2": "wet_" + metavitriteSandName,
 									};
-							
 							//Magma
 						var magmaOldReactions = nicffunc_getReactions(magmaName);
-
 						var magmaOldColor = elements.magma.color;
-
 						elements[magmaName] = {
 							reactions: {
 								"ash": { "elem1": "molten_slag", "elem2": null },
@@ -23548,13 +21817,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						if(magmaOldReactions) {
 							elements[magmaName].reactions = magmaOldReactions;
 						};
-
 						if(magmaName == "magma") {
 							elements.magma.color = magmaOldColor;
 						};
-
 						elements[magmaName].reactions.foam = { "elem1": vesiculiteName, "elem2": vesiculiteName };
-
 						elements["vaporized_" + magmaName] = {
 							color: magmavaporizeToHex(elements[magmaName].color),
 							behavior: behaviors.GAS,
@@ -23570,9 +21836,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							hidden: true,
 							_data: [compositionFamilyName,"magma","vaporized"],
 						};
-
 						vaporizedMagmas.push("vaporized_" + magmaName);
-
 						elements[magmaCloudName] = {
 							color: magmacloudizeToHex(elements[magmaName].color),
 							behavior: [
@@ -23588,9 +21852,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							state: "gas",
 							_data: [compositionFamilyName,"magma","cloud"],
 						};
-
 						magmaClouds.push(magmaName + "_cloud");
-
 						elements[rockCloudName] = {
 							color: rockcloudizeToHex(elements[magmaName].color),
 							behavior: [
@@ -23606,12 +21868,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							state: "gas",
 							_data: [compositionFamilyName,"magma","cloud"],
 						};
-
 						rockClouds.push(rockCloudName);
-
 				};
-
-				function standaloneBrokenFormMaker(elementName,suffixWithoutUnderscore,addBreakIntoToSourceElement=false,category=null,density=null,tempHigh=null,stateHigh=null,breakInto=null) {	
+				function standaloneBrokenFormMaker(elementName,suffixWithoutUnderscore,addBreakIntoToSourceElement=false,category=null,density=null,tempHigh=null,stateHigh=null,breakInto=null) {
 					var newName = elementName + "_" + suffixWithoutUnderscore;
 					elements[newName] = {
 						color: gravelizeToHex(elements[elementName].color),
@@ -23645,7 +21904,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					if(breakInto !== null) {
 						elements[newName].breakInto = breakInto;
 					};
-
 					if(addBreakIntoToSourceElement) {
 						if(!elements[elementName].breakInto) {
 							elements[elementName].breakInto = newName;
@@ -23656,19 +21914,14 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							elements[elementName].breakInto.push(newName);
 						};
 					};
-
 					return elements[newName];
 				};
-
 				function makeSandstoningElements(sandName) {
-
 					var sandInfo = elements[sandName];
 					if(!sandInfo) {
 						throw new Error("No such element '" + sandName + "'");
 					};
-
 					var suspensionName, wetSandName, sedimentName, sandstoneName, dustName;
-
 					switch(sandName) {
 						case "dirt":
 							suspensionName = "muddy_water";
@@ -23700,34 +21953,23 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							dustName = sandName.replace("_sand","_dust");
 					};
 					//console.log(sandName,suspensionName);
-
 					//Water reaction to pick up the fine material (this is very simplified)
-
 						elements.water.reactions[wetSandName] = {
 							"elem1": suspensionName,
 							"elem2": [wetSandName,wetSandName,wetSandName,suspensionName],
 							chance: 0.01
 						};
-
 					//Sediment suspension
-
 						//Color generation
-
 						var sandColor = sandInfo.color;
 						if(!(sandColor instanceof Array)) {
 							sandColor = [sandColor];
 						};
-
 						var waterColor = "#2167ff";
-
 						//console.log(sandColor);
-
 						suspensionColor = sandColor.map(sandSubcolor => lerpColors(waterColor,sandSubcolor,"hex",weight1=0.5)); //lerp all with half water
-
 						var sedimentColor = sandColor.map(sandSubcolor => convertHslObjects(sedimentHslOffset(normalizeColorToHslObject(sandSubcolor)),"hex"));
-
 						//console.log(sandInfo);
-
 						elements[suspensionName] = {
 							color: suspensionColor,
 							behavior: behaviors.LIQUID,
@@ -23742,8 +21984,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									"elem2": "mud", // Second element transforms into; in this case, dirt turns to mud
 								},
 								"water": { "elem1":"water", "elem2":suspensionName, "chance":0.025 }, //swap reaction
-								"sand": { "elem1": [null,null,wetSandName], "elem2": wetSandName, }, 
-								[suspensionName]: { "elem1":"water", "elem2":sedimentName, "chance": 0.001 }, 
+								"sand": { "elem1": [null,null,wetSandName], "elem2": wetSandName, },
+								[suspensionName]: { "elem1":"water", "elem2":sedimentName, "chance": 0.001 },
 								[wetSandName]: { "elem1": "water", "elem2":sedimentName, "chance": 0.0005 },
 								//"salt": { "elem1": "salt_water", "elem2": null },
 								//"sugar": { "elem1": "sugar_water", "elem2": null, },
@@ -23776,16 +22018,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							stain: 0.01,
 							_data: [sandInfo?._data?.[0] ?? "unknown", sandInfo?._data?.[1] ?? "unknown", "suspension"],
 						}
-
 						if(elements[dustName]) {
 							elements[dustName].reactions ??= {};
 							elements[dustName].reactions.water = {
 								elem1: null, elem2: suspensionName
 							};
 						};
-
 					//Sediment element where lithification code resides
-
 						elements[sedimentName] = {
 							hidden: true,
 							color: sedimentColor,
@@ -23800,9 +22039,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									var thisSandName = pixel.element.slice(0,-9); //ABCD_sand_sediment - _sediment
 									var thisWetSandName = "wet_" + thisSandName;
 									var thisSuspensionName = pixel.element.slice(0,-9) + "y_water";
-
 									var sandstoneName = thisSandName + "stone";
-
 									if(Math.random() < 0.005 && ["sediment","wet_particulate"].includes(elements[newElement]._data?.[2])) { //0.5% chance to swap with wet
 										swapPixels(pixel,newPixel);
 										return;
@@ -23832,7 +22069,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										};
 									};
 								};
-
 								//console.log(sandstoneName);
 								sedimentation(pixel,sandstoneName)
 							},
@@ -23844,11 +22080,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							breakInto: sandName,
 							_data: [sandInfo?._data?.[0] ?? "unknown", sandInfo?._data?.[1] ?? "unknown", "sediment"]
 						};
-
 					//Final rock
-
 						//console.log(sandName);
-
 						elements[sandstoneName] = {
 							color: sandstonizeToHex(sandName), //["#b27853", "#d1a784", "#d1a784", "#d4996e"]
 							behavior: behaviors.WALL,
@@ -23894,43 +22127,29 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							_data: [sandInfo?._data?.[0] ?? "unknown", (sandInfo?._data?.[1] ?? "unknown") + "_sandstone", "sedimentary_rock"],
 						};
 				};
-
 				function makeNonSandSedimentationElements(particulateName,suspensionName,rockName) {
-
 					var particulateInfo = elements[particulateName];
 					if(!particulateInfo) {
 						throw new Error("No such element '" + particulateName + "'");
 					};
-
 					var sedimentName = particulateName + "_sediment";
-
 					//Water reaction to pick up the fine material (this is very simplified)
-
 						elements.water.reactions[particulateName] = {
 							"elem1": suspensionName,
 							"elem2": [particulateName,particulateName,particulateName,suspensionName],
 							chance: 0.001
 						};
-
 					//Sediment suspension
-
 						//Color generation
-
 						var particulateColor = particulateInfo.color;
 						if(!(particulateColor instanceof Array)) {
 							particulateColor = [particulateColor];
 						};
-
 						var waterColor = "#2167ff";
-
 						//console.log(particulateColor);
-
 						suspensionColor = particulateColor.map(sandSubcolor => lerpColors(waterColor,sandSubcolor,"hex",weight1=0.5)); //lerp all with half water
-
 						var sedimentColor = particulateColor.map(sandSubcolor => convertHslObjects(sedimentHslOffset(normalizeColorToHslObject(sandSubcolor)),"hex"));
-
 						//console.log(particulateInfo);
-
 						elements[suspensionName] = {
 							color: suspensionColor,
 							behavior: behaviors.LIQUID,
@@ -23943,7 +22162,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									"elem2": "mud", // Second element transforms into; in this case, dirt turns to mud
 								},
 								"water": { "elem1":"water", "elem2":suspensionName, "chance":0.025 }, //swap reaction
-								"particulateName": { "elem1": [null,null,particulateName], "elem2": particulateName, }, 
+								"particulateName": { "elem1": [null,null,particulateName], "elem2": particulateName, },
 								//"salt": { "elem1": "salt_water", "elem2": null },
 								//"sugar": { "elem1": "sugar_water", "elem2": null, },
 								"dust": { "elem1": "dirty_water", "elem2": null, },
@@ -23975,12 +22194,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							stain: 0.01,
 							_data: [particulateInfo._data[0], particulateInfo._data[1], "suspension"],
 						}
-
-						elements[suspensionName].reactions[suspensionName] = { "elem1":"water", "elem2":sedimentName, "chance": 0.001 }, 
+						elements[suspensionName].reactions[suspensionName] = { "elem1":"water", "elem2":sedimentName, "chance": 0.001 },
 						elements[suspensionName].reactions[particulateName] = { "elem1": "water", "elem2":sedimentName, "chance": 0.0005 },
-
 					//Sediment element where lithification code resides
-
 						elements[sedimentName] = {
 							hidden: true,
 							color: sedimentColor,
@@ -23992,18 +22208,14 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										return;
 									};
 									var newElement = newPixel.element;
-
 									var particulateName = pixel.element.slice(0,-9); //ABCD_sand_sediment - _sediment
-
 									var thisSuspensionName = elements[pixel.element]._sedimentationPassToElement.correspondingSuspension
 									var rockName = elements[pixel.element]._sedimentationPassToElement.finalRock;
-
 									if(Math.random() < 0.005 && ["sediment","wet_particulate"].includes(elements[newElement]._data?.[2])) { //0.5% chance to swap with wet
 										swapPixels(pixel,newPixel);
 										return;
 									};
 									if(Math.random() < 0.001 && elements[newElement]._data?.[2] == "particulate") { //0.1% chance to give water away
-
 										var newWetParticulateName = elements.water.reactions[newElement].elem2;
 										if(elements[particulateName] && elements[newWetParticulateName]) {
 											changePixel(pixel,particulateName,false);
@@ -24026,7 +22238,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										};
 									};
 								};
-
 								//console.log(rockName);
 								sedimentation(pixel,rockName)
 							},
@@ -24042,17 +22253,14 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							breakInto: particulateName,
 							_data: [particulateInfo._data[0], particulateInfo._data[1], "sediment"],
 						};
-
 					//Final rock
-
 						//console.log(particulateName);
-
 						if(rockName !== "limestone") {
 							elements[rockName] = {
 								color: sandstonizeToHex(particulateName), //["#b27853", "#d1a784", "#d1a784", "#d4996e"]
 								behavior: behaviors.WALL,
 								tempHigh: particulateInfo.tempHigh,
-								stateHigh: particulateInfo.stateHigh, 
+								stateHigh: particulateInfo.stateHigh,
 								category: "solid rock",
 								state: "solid",
 								density: particulateInfo.density * 1.5, //wide range
@@ -24063,33 +22271,27 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							};
 						};
 				};
-
 				newPowder("calcite","#f5ecd0",2711,825,["carbon_dioxide","quicklime"],"calcium_carbonate_dust");
 				newPowder("aragonite","#e3c58d",2830,825,["carbon_dioxide","quicklime"],"calcium_carbonate_dust");
 				newPowder("vaterite","#e8ebd8",2540,825,["carbon_dioxide","quicklime"],"calcium_carbonate_dust");
 				newPowder("calcium_carbonate_dust","#f7f7f5",2930,825,["carbon_dioxide","quicklime"]);
-
 				//i forgot what data[1]s mean and at this point it doesn't really matter
 				elements.calcite._data = ["calcium","crystalline","mineral"];
 				elements.aragonite._data = ["calcium","crystalline","mineral"];
 				elements.vaterite._data = ["calcium","crystalline","mineral"];
 				elements.calcium_carbonate_dust._data = ["calcium","crystalline","particulate"];
 				elements.limestone._data = ["calcium", "sedimentary", "sedimentary_rock"];
-
 				elements.aragonite.tick = function(pixel) {
 					if(Math.random() < (0.001 + Math.max(0,(pixel.temp - 300) / 100))) {
 						changePixel(pixel,"calcite",false);
 					};
 				};
-
 				elements.vaterite.tick = function(pixel) {
 					if(Math.random() < (0.01 + Math.max(0,(pixel.temp - 30) / 10))) {
 						changePixel(pixel,"calcite",false);
 					};
 				};
-
 				makeNonSandSedimentationElements("calcium_carbonate_dust","calcium_carbonate_solution","limestone")
-
 				var calcitoids = ["calcite","aragonite","vaterite"];
 				for(i = 0; i < calcitoids.length; i++) {
 					var mineral = calcitoids[i];
@@ -24098,14 +22300,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						"elem2":[mineral,mineral,mineral,"calcium_carbonate_solution"],
 						"chance":0.004
 					};
-
 					elements.seltzer.reactions[mineral] = {
 						"elem1":"calcium_carbonate_solution",
 						"elem2":[mineral,mineral,mineral,"calcium_carbonate_solution"],
 						"chance":0.02
 					};
 				};
-
 				runAfterLoad(function() {
 					for(i = 0; i < sands.length; i++) {
 						switch(sands[i]) {
@@ -24129,20 +22329,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								sandSediments.push(sands[i] + "_sediment");
 								sandstones.push(sands[i] + "stone");
 						};
-
 						makeSandstoningElements(sands[i]);
 					};
-
 					elements.sand.category = "sand";
-
 					elements.gravel.category = "gravel";
-
 					elements.rock.category = "rock";
-
 					elements.wet_sand.category = "wet sand";
-
 					elements.packed_sand.category = "packed sand";
-
 					elements.clay._data = ["clay","clay","particulate"],
 					makeNonSandSedimentationElements("clay","clay_water","shale");
 					elements.shale.color = ["#787b80","#535557","#695e58", "#696969", "#6b5d5b"];
@@ -24150,7 +22343,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					elements.shale.tempHigh = 200; //shale does get baked (https://pubs.usgs.gov/pp/0108a/report.pdf), but it feels wrong for it to happen so soon
 					elements.shale.behavior = behaviors.POWDER;
 					elements.shale.category = "solid rock";
-
 					for(fei = 0; fei < sandSuspensions.length; fei++) {
 						var suspensionToAddReactionTo = sandSuspensions[fei];
 						//console.log(suspensionToAddReactionTo);
@@ -24164,10 +22356,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							var firstSedimentName = suspensionToAddReactionTo.replace("y_water","_sediment");
 							var secondSedimentName = suspensionToReactWith.replace("y_water","_sediment");
 							elements[suspensionToAddReactionTo].reactions[suspensionToReactWith] = {
-								elem1: "water", "elem2": [firstSedimentName,secondSedimentName], "chance": 0.001, 
+								elem1: "water", "elem2": [firstSedimentName,secondSedimentName], "chance": 0.001,
 							};
 						};
-
 						for(sej = 0; sej < wetSands.length; sej++) {
 							var wetSandToReactWith = wetSands[sej];
 							var firstSedimentName = suspensionToAddReactionTo.replace("y_water","_sediment");
@@ -24177,9 +22368,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							};
 						};
 					};
-
 					//lithificationElements = sandSediments.concat(sandstones);
-
 					for(fei = 0; fei < vaporizedMagmas.length; fei++) {
 						var vaporToAddReactionTo = vaporizedMagmas[fei];
 						//console.log(vaporToAddReactionTo);
@@ -24189,10 +22378,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							var firstCloudName = vaporToAddReactionTo.replace("vaporized_","") + "_cloud";
 							var secondCloudName = vaporToReactWith.replace("vaporized_","") + "_cloud";
 							elements[vaporToAddReactionTo].reactions[vaporToReactWith] = {
-								elem1: null, "elem2": [firstCloudName,secondCloudName], "chance": 0.3, y: [0,15] 
+								elem1: null, "elem2": [firstCloudName,secondCloudName], "chance": 0.3, y: [0,15]
 							};
 						};
-
 						for(sej = 0; sej < magmaClouds.length; sej++) {
 							var cloudToReactWith = magmaClouds[sej];
 							var firstCloudName = vaporToAddReactionTo.replace("vaporized_","") + "_cloud";
@@ -24201,7 +22389,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							};
 						};
 					};
-
 					newPowder("silica","#faf9f0",2196,1713).hardness = 0.7;
 					elements.silica.reactions = {
 						intermediate_felsic_magma: { elem1: "felsic_magma", elem2: "felsic_magma", chance: 0.9 },
@@ -24209,7 +22396,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						magma: { elem1: "intermediate_magma", elem2: "intermediate_felsic_magma", chance: 0.9 },
 						ultramafic_magma: { elem1: "magma", elem2: "magma", chance: 0.9 },
 					};
-
 					elements.molten_silica = {
 						tempHigh: 2950,
 						viscosity: 1e14, //idk lol
@@ -24220,49 +22406,42 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							ultramafic_magma: { elem1: "magma", elem2: "magma", chance: 0.9 },
 						},
 					};
-
 					elements.felsic_magma.reactions ??= {};
 					elements.felsic_magma.reactions.intermediate_magma = {
 						elem1: "intermediate_felsic_magma", elem2: "intermediate_felsic_magma", chance: 0.8,
 					};
-
 					elements.intermediate_felsic_magma.reactions ??= {};
 					elements.intermediate_felsic_magma.reactions.magma = {
 						elem1: "intermediate_magma", elem2: "intermediate_magma", chance: 0.7,
 					};
-
 					elements.felsic_magma.reactions ??= {};
 					elements.felsic_magma.reactions.magma = { //mafic magma
 						elem1: "intermediate_magma", elem2: "intermediate_magma", chance: 0.7,
 					};
-
 					elements.felsic_magma.reactions ??= {};
 					elements.felsic_magma.reactions.ultramafic_magma = { //mafic magma
 						elem1: "intermediate_magma", elem2: "magma", chance: 0.6,
 					};
-
 					elements.intermediate_magma.reactions ??= {};
 					elements.intermediate_magma.reactions.ultramafic_magma = { //mafic magma
 						elem1: "magma", elem2: "magma", chance: 0.6,
 					};
-
 					elements.molten_dirt.tempHigh = 3313;
 					var rockStateHigh = JSON.parse(JSON.stringify(vaporizedMagmas));
 					//only real magmas in dirt
-					if(rockStateHigh.includes("vaporized_nellish_magma")) { 
+					if(rockStateHigh.includes("vaporized_nellish_magma")) {
 						rockStateHigh.splice(rockStateHigh.indexOf("vaporized_nellish_magma"));
 					};
-					if(rockStateHigh.includes("vaporized_rainbow_magma")) { 
+					if(rockStateHigh.includes("vaporized_rainbow_magma")) {
 						rockStateHigh.splice(rockStateHigh.indexOf("vaporized_rainbow_magma"));
 					};
-					if(rockStateHigh.includes("vaporized_crimson_magma")) { 
+					if(rockStateHigh.includes("vaporized_crimson_magma")) {
 						rockStateHigh.splice(rockStateHigh.indexOf("vaporized_crimson_magma"));
 					};
-					if(rockStateHigh.includes("vaporized_blackpinkinitic_magma")) { 
+					if(rockStateHigh.includes("vaporized_blackpinkinitic_magma")) {
 						rockStateHigh.splice(rockStateHigh.indexOf("vaporized_blackpinkinitic_magma"));
 					};
 					elements.molten_dirt.stateHigh = rockStateHigh; //assuming mixture
-
 					for(var sandIndex in sands) {
 						sandIndex = parseInt(sandIndex);
 						var sandName = sands[sandIndex];
@@ -24270,9 +22449,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						if(!(usedSandColor instanceof Array)) {
 							usedSandColor = [usedSandColor];
 						};
-
 						var newSandyClayColor = usedSandColor.map(subcolor => lerpColors(subcolor,elements.clay.color,"hex",weight1=0.5));
-
 						var newSandyLoamColor = [];
 						for(var dirtSubcolorIndex in elements.dirt.color) {
 							dirtSubcolorIndex = parseInt(dirtSubcolorIndex);
@@ -24280,7 +22457,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							//for each dirt subcolor, to the final new color concatenate the result of mapping each of the sand color's subcolors to one of dirt's subcolors
 							newSandyLoamColor = newSandyLoamColor.concat(usedSandColor.map(subcolor => lerpColors(subcolor,dirtSubcolor,"hex",weight1=0.6)));
 						};
-
 						var newLoamySandColor = [];
 						for(var dirtSubcolorIndex in elements.dirt.color) {
 							dirtSubcolorIndex = parseInt(dirtSubcolorIndex);
@@ -24288,18 +22464,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							//for each dirt subcolor, to the final new color concatenate the result of mapping each of the sand color's subcolors to one of dirt's subcolors
 							newLoamySandColor = newLoamySandColor.concat(usedSandColor.map(subcolor => lerpColors(subcolor,dirtSubcolor,"hex",weight1=0.4)));
 						};
-
 						var newSandyClayLoamColor = newSandyLoamColor.map(subcolor => lerpColors(subcolor,elements.clay.color,"hex",weight1=2/3));
-
 						var newSandyLoamColor = elements.dirt.color.map(subcolor => lerpColors(subcolor,elements.clay.color,"hex",weight1=0.5));
 					}
-
 					var newClayLoamColor = elements.dirt.color.map(subcolor => changeHue(lerpColors(subcolor,elements.clay.color,"hex",weight1=0.5),0.9,"multiply","hex"));
 					var newDryClayLoamColor = newClayLoamColor.map(x => changeSaturation(changeLuminance(x,15,"add","hsljson"),0.9,"multiply","hex"));
 					newPowder("clay_loam",newClayLoamColor,1500,100,"dry_clay_loam",["dirt","clay_soil"]);
-
 					elements.clay_loam._data = ["clay_loam","soil","particulate"];
-
 					//manual addition due to autogen fuckery and i don't feel like calling in runAfterAutogen
 					elements.molten_clay_loam = {
 						"behavior": behaviors.MOLTEN,
@@ -24312,351 +22483,190 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						"density": 1350,
 						"viscosity": 10000
 					};
-
 					newPowder("dry_clay_loam",newDryClayLoamColor,1500,1250,"molten_clay_loam",["dry_dirt","clay_soil"]);
-
 					elements.dry_clay_loam.data = ["clay_loam","dry_soil","particulate"];
-
 					//newPowder(name,color,density=null,tempHigh=null,stateHigh=null,breakInto=null)
 				});
-
 		//Terrain
-
 			//Soils
-
 				//Wet
-
 					//Wet Clay
-
 						//TODO
-
 					//Wet Silty clay
-
 						//TODO
-
 					//Wet Silty Clay Loam
-
 						//TODO
-
 					//Wet Silty Loam
-
 						//TODO
-
 					//Wet Silt
-
 						//TODO
-
 					//Wet Clay Loam
-
 						//TODO
-
 					//Wet Medium Loam
-
 						//Mud exists
-
 					//Wet Sandy Clay
-
 						//TODO
-
 					//Wet Sandy Clay Loam
-
 						//TODO
-
 					//Wet Sandy Loam
-
 						//TODO
-
 					//Wet Loamy Sand
-
 						//TODO
-
 					//Wet Sand
-
 						//Wet Sand exists
-
 				//Permafrost
-
 					//Clay Permafrost
-
 						//TODO
-
 					//Silty clay Permafrost
-
 						//TODO
-
 					//Silty Clay Loam Permafrost
-
 						//TODO
-
 					//Silty Loam Permafrost
-
 						//TODO
-
 					//Silt Permafrost
-
 						//TODO
-
 					//Clay Loam Permafrost
-
 						//TODO
-
 					//Medium Loam Permafrost
-
 						//Permafrost exists
-
 					//Sandy Clay Permafrost
-
 						//TODO
-
 					//Sandy Clay Loam Permafrost
-
 						//TODO
-
 					//Sandy Loam Permafrost
-
 						//TODO
-
 					//Loamy Sand Permafrost
-
 						//TODO
-
 					//Sand Permafrost
-
 						//TODO
-
 				//Radioactive (unmoved/TODO)
-
 					//Dry
-
 						//Radioactive Clay
-
 							//Clay exists
-
 						//Radioactive Silty clay
-
 							//TODO
-
 						//Radioactive Silty Clay Loam
-
 							//TODO
-
 						//Radioactive Silty Loam
-
 							//TODO
-
 						//Radioactive Silt
-
 							//TODO
-
 						//Radioactive Clay Loam
-
 							//Clay Soil exists
-
 						//Radioactive Medium Loam
-
 							//Dirt exists
-
 						//Radioactive Sandy Clay
-
 							//TODO
-
 						//Radioactive Sandy Clay Loam
-
 							//TODO
-
 						//Radioactive Sandy Loam
-
 							//TODO
-
 						//Radioactive Loamy Sand
-
 							//TODO
-
 						//Radioactive Sand
-
 							//Sand exists
-
 					//Wet
-
 						//Radioactive Wet Clay
-
 							//TODO
-
 						//Radioactive Wet Silty clay
-
 							//TODO
-
 						//Radioactive Wet Silty Clay Loam
-
 							//TODO
-
 						//Radioactive Wet Silty Loam
-
 							//TODO
-
 						//Radioactive Wet Silt
-
 							//TODO
-
 						//Radioactive Wet Clay Loam
-
 							//TODO
-
 						//Radioactive Wet Medium Loam
-
 							//Mud exists
-
 						//Radioactive Wet Sandy Clay
-
 							//TODO
-
 						//Radioactive Wet Sandy Clay Loam
-
 							//TODO
-
 						//Radioactive Wet Sandy Loam
-
 							//TODO
-
 						//Radioactive Wet Loamy Sand
-
 							//TODO
-
 						//Radioactive Wet Sand
-
 							//Wet Sand exists
-
 					//Permafrost
-
 						//Radioactive Clay Permafrost
-
 							//TODO
-
 						//Radioactive Silty clay Permafrost
-
 							//TODO
-
 						//Radioactive Silty Clay Loam Permafrost
-
 							//TODO
-
 						//Radioactive Silty Loam Permafrost
-
 							//TODO
-
 						//Radioactive Silt Permafrost
-
 							//TODO
-
 						//Radioactive Clay Loam Permafrost
-
 							//TODO
-
 						//Radioactive Medium Loam Permafrost
-
 							//Permafrost exists
-
 						//Radioactive Sandy Clay Permafrost
-
 							//TODO
-
 						//Radioactive Sandy Clay Loam Permafrost
-
 							//TODO
-
 						//Radioactive Sandy Loam Permafrost
-
 							//TODO
-
 						//Radioactive Loamy Sand Permafrost
-
 							//TODO
-
 						//Radioactive Sand Permafrost
-
 							//TODO
-
 			//Rocks
-
 				//Igneous
-
 					//Felsic
-
 						newIgneousCompositionFamily(
 							"felsic",
-
 							1e12, 2200, -85, -20, 2850,
-
 							//Not much data on metamorphites besides gneiss
 							"granite", ["#F3C3AD", "#F0AB75", "#DDA888", "#BD927E", "#998473", "#5C5E53", "#BD8366"], 1215, 2691,
 							"gneiss", ["#C5C1B4", "#605A5E", "#424449", "#EDECE9", "#73503A", "#92866F"], 1215, 2750,
-
 							"rhyolite", ["#A67153","#BF967E","#D9B5A0","#8C533E","#C99F86","#C5997E","#BB8A69"], 800, 1254,
 							"metarhyolite", ["#C0C7D3","#CAD0D9","#AEB7B7","#728189","#798B96","#B09F98","#515155"], 800, 2584, //https://www.researchgate.net/figure/Physical-properties-of-the-metarhyolites_tbl2_245002845 also there are pictures yay
-
 							"pumice", ["#ebe1c3", "#ada386", "#f0bd9e", "#ab846c", "#bfbebd", "#75726f", "#f5e595", "#ab9e60", "#ad683d", "#633d25", "#6e6d6d", "#3b3a39"], 1350, 641,
 							//it is said to flatten out and have smaller vesicles but the color is pulled out of my ass
 							"metapumice", ["#a6a295", "#787a6f", "#8f847e", "#917c6e", "#858382", "#696460", "#8a6d5c", "#6e5749", "#5c5b55", "#53594f"], 1350, 2328,
-
 							vitreousFelsicName, ["#252422", "#171616", "#161915", "#161018"], 1000, 2488,
 							//if metamorphism sometimes involves recrystallization and obsidian is the way it is due to being amorphous and lacking a crystal structure then perhaps obsidian might be somewhat like granite with its new crystals
 							"meta" + vitreousFelsicName, ["#453f3c", "#1f1a18", "#36342b", "#1c1519", "#3d3133", "#1f1b1a", "#453a32"], 1000, 2513,
-
 							7,3
 						);
-
 						elements.water.reactions.obsidian_shard.elem2 = ["obsidian_sand","obsidian_sand","obsidian_sand","sand","sand"]
 						elements.obsidian_sand.color = ["#3b3730", "#211e1e", "#293321", "#31133b"];
 						elements.obsidian_shard.desc = '<a href="https://ftbwiki.org/Crushed_Obsidian">crushed obsidian</a> my beloved';
-
 					//Intermediate felsic
-
 						newIgneousCompositionFamily(
 							"intermediate_felsic",
-
 							1e10, 2320, -95, -23, 2900,
-
 							"granodiorite", ["#B1AB9D", "#262001", "#A6A292", "#D6C5BC", "#F2F2F2", "#DED8C2", "#978871", "#A8AAA7"], 1277, 2644, //Color from image: By Rudolf Pohl - Own work, CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=7788350; melting point made-up/interpolated from granite and diorite; last 2 digits of density are made up again
 							"metagranodiorite", ["#F3EDDC","#F0ECD8","#EDECDC","#D0C9A9","#BDB192","#BBA27A","#86744E","#323026","#262417","#202012"], 1277, 2711,
-
 							"dacite", ["#D9CCC5", "#F2E9E4", "#877670", "#A69B97"], 1050, 2654, //https://books.google.ca/books?id=ObUPAAAAIAAJ&pg=PA181&lpg=PA181&dq=dacite+specific+gravity&source=bl&ots=qn8B4sirWi&sig=Wp_MHqPuUGPNQobcuNP5c5wqkpU&hl=en&sa=X&ei=cimtUaH8Eab7yAH8joDABQ#v=onepage&q=dacite%20specific%20gravity&f=false
 							"metadacite", ["#91847d", "#e0c9bc", "#735a56", "#bfa59b", "#696563"], 1050, 2727,
-
 							"intermediate_pumice", ["#dbd4bd", "#b5ad94", "#e3ceb6", "#bda891", "#c2c2c2", "#a1a1a1", "#e6c8a1", "#b8a48c"], 1190, 991,
 							"intermediate_metapumice", ["#777868", "#5a5c51", "#82756f", "#6e6057", "#96918f", "#70665e"], 1190, 2623,
-
 							vitreousInterfelsicName, ["#4f4b42", "#474646", "#4a4d49", "#342f36"], 1040, 2640,
 							"meta" + vitreousInterfelsicName, ["#3d3c39", "#696262", "#313630", "#625966"], 1040, 2772,
-
 							6,4
 						);
-
 					//Intermediate
-
 						newIgneousCompositionFamily(
 							"intermediate",
-
 							1e8, 2450, -105, -26, 2950,
-
 							"diorite", ["#E1E1E1","#B0A696","#707271","#434459","#242424"], 1300, 2822, //Extracted from image and blended; Michael C. Rygel - Own work, CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=31124755 https://commons.wikimedia.org/w/index.php?curid=7788350; last 2 digits made up again
 							"metadiorite", ["#D1D2D7","#C3C2AF","#AEACB1","#A1A29D","#C3C4BC","#C3C9CA","#B5AEA4","#B6AC91","#AEA582","#5A6992"], 1300, 2929,
-
 							"andesite", ["#6F7575", "#C5C9CB", "#818787", "#797F7F", "#B5B9BA", "#6D7371", "#909696"], 1215, 2474, //https://books.google.ca/books?id=ObUPAAAAIAAJ&pg=PA181&lpg=PA181&dq=dacite+specific+gravity&source=bl&ots=qn8B4sirWi&sig=Wp_MHqPuUGPNQobcuNP5c5wqkpU&hl=en&sa=X&ei=cimtUaH8Eab7yAH8joDABQ#v=onepage&q=dacite%20specific%20gravity&f=false
 							"metaandesite", ["#5b5c5b", "#a3a6a2", "#6e665e", "#b39b92", "#756763", "#91817d", "#73524d"], 1215, 2553,
-
 							"scoria", ["#594545", "#573b31", "#522e28"], 1085, 2550,
 							"metascoria", ["#403835","#75574c","#4f302b","#8a7c75"], 1085, 2670,
-
 							vitreousIntermediateName, ["#636059", "#707070", "#5f615f", "#504b52"], 1085, 2710,
 							"meta" + vitreousIntermediateName, ["#4a4845", "#75716e", "#43453f", "#5e4b53", "#66554d"], 1085, 2744,
-
 							5,5
 						);
-
 						elements.scoria_gravel.density = 2790;
-
 					//Mafic
-
 						elements.rock.name = "Gabbro";
 						elements.rock.tempHigh = 1200;
 						elements.rock.density = 3300;
@@ -24665,7 +22675,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						elements.gravel.name = "Gabbro Gravel";
 						delete elements.wet_sand.reactions.gravel;
 						elements.rock._data = ["mafic","phanerite","igneous_rock"],
-
 						elements.magma.name = "mafic magma";
 						elements.magma.density = 2650;
 						elements.magma.category = "magmas";
@@ -24680,7 +22689,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								phaneritic: 1200,
 							},
 						},
-
 						elements.magma.tick = function(pixel) {
 							magmaRateBasedCooling(pixel,1180,vitreousMaficName,-115,"basalt",-29,"rock");
 						};
@@ -24690,7 +22698,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						elements.magma.reactions ??= {};
 						elements.magma.reactions.foam = { "elem1": "mafic_scoria", "elem2": "mafic_scoria" };
 						elements.magma._data = ["mafic","magma","liquid"],
-
 						elements.basalt.tempHigh = 1122;
 						elements.basalt.density = 2949;
 						elements.basalt.breakInto = "basalt_gravel",
@@ -24700,58 +22707,40 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						elements.sand._data = ["silica","crystalline","particulate"],
 						elements.wet_sand._data = ["silica","crystalline","wet_particulate"],
 						elements.packed_sand._data = ["silica","crystalline","packed_particulate"],
-
 						newIgneousCompositionFamily(
 							"mafic",
-							
 							10000, 2200, -115, -29, 3000,
-
 							"rock", ["#808080","#4f4f4f","#949494"], 1474, 3300,
 							"metagabbro", ["#F6F6F5", "#EEEFEC", "#E7E6DD","#C0BBA3","#A9ABA7", "#8A8C8C", "#727271", "#61635F", "#595A59", "#454641", "#4E514A"], 1474, 3350,
-
 							"basalt", ["#2e2e2e","#333333","#3d3d3d"], 1122, 2949,
 							"metabasalt", ["#292e26","#474d3d","#2e2e29","#4a574f"], 1122, 3070,
-
 							"mafic_scoria", ["#756666", "#695751", "#737272"], 1298, 2717,
 							"mafic_metascoria", ["#856d6d","#4f4139","#8c8373","#494a39"], 1298, 2773,
-
 							vitreousMaficName, ["#6e615d", "#706767", "#6a6b63", "#6e5e68"], 1200, 2900,
 							"meta" + vitreousMaficName, ["#7a685d", "#3c4235", "#7c7869", "#3f3138"], 1200, 2991,
-
 							3,7
 						);
-
 						elements.mafic_scoria.tempHigh = 1298;
 						elements.mafic_scoria.stateHigh = "magma";
 						elements.mafic_scoria_gravel.density = 2993;
 						elements.basalt.behavior = behaviors.STURDYPOWDER;
 						elements.metabasalt.behavior = behaviors.STURDYPOWDER;
-
 					//Ultramafic
-
 						newIgneousCompositionFamily(
 							"ultramafic",
-
 							800, 2800, -125, -32, 3050,
-
 							"peridotite", ["#848a5e","#68785b","#8a9967","#3f403d","#33312e","#4c4f45"], 1400, 3347, //appr from https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/GL003i009p00509#:~:text=Abstract,and%20the%20bulk%20rock%20analyses.
 							"metaperidotite", ["#7d604f","#959c98","#454443","#363432","#5e4840"], 1400, 3404,
-
-							"komatiite", ["#6e7d6e","#858c8a","#768270","#767a77"], 1600, 3100, 
+							"komatiite", ["#6e7d6e","#858c8a","#768270","#767a77"], 1600, 3100,
 							"metakomatiite", ["#AEB5AE","#A9B8B5","#7B8881","#858B87","#949F97","#66655d","#5e4d48"], 1600, 3066,
-
 							"ultramafic_scoria", ["#636555", "#6a6751", "#828382"], 1400, 2924,
 							"ultramafic_metascoria", ["#574e47", "#6a7357", "#3b3430", "#4d4939"], 1400, 3003,
-
 							vitreousUltramaficName, ["#6e6d5e", "#5f6659", "#54574b", "#665d55"], 1300, 3200,
 							"meta" + vitreousUltramaficName, ["#4a443d", "#5e5e4a", "#3a4036", "#4d524f"], 1300, 3266,
-
 							2,8
 						);
-
 						elements.ultramafic_scoria_gravel.density = 3132;
 						elements.basalt_gravel._data = ["mafic","aphanite","igneous_gravel"],
-
 						elements.limestone_gravel = {
 							color: ["#c7baa1", "#e8d8b7", "#fcf3d7", "#fffce6"],
 							behavior: behaviors.POWDER,
@@ -24763,18 +22752,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							hardness: 0.16,
 							breakInto: ["quicklime","calcium","dust"],
 						}
-
 						elements.limestone.breakInto = "limestone_gravel";
-
 						elements.worm.reactions.limestone_gravel = { "elem2":"calcium", "chance":0.1 },
 						elements.acid.reactions.limestone_gravel = { "elem1":"neutral_acid", "elem2":null },
-
 						newPowder("aluminum_oxide","#f2f2f2",3987,2072).hardness = 0.93;
-
 						elements.molten_aluminum_oxide = {
 							tempHigh: 2977,
 						};
-
 						newPowder("sulfur_trioxide","#ededed",1995,16.9).reactions = {
 							water: { elem1: "sulfuric_acid", elem2: "sulfuric_acid" },
 							steam: { elem1: "sulfuric_acid", elem2: "acid" },
@@ -24783,7 +22767,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							packed_snow: { elem1: "sulfuric_acid", elem2: "sulfuric_acid" },
 							slush: { elem1: "sulfuric_acid", elem2: "sulfuric_acid" },
 						}; elements.sulfur_trioxide.temp = 10;
-
 						elements.molten_sulfur_trioxide = {
 							color: "#c0c0c0",
 							behavior: behaviors.LIQUID,
@@ -24799,7 +22782,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								slush: { elem1: "sulfuric_acid", elem2: "sulfuric_acid" },
 							},
 						};
-
 						elements.sulfur_trioxide_gas = {
 							color: "#c0c0c0",
 							density: 2.3, //idk idc
@@ -24812,13 +22794,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								slush: { elem1: "sulfuric_acid", elem2: "sulfuric_acid" },
 							},
 						};
-
 						var tempaaa = {
 							sulfur_trioxide: "value doesn't matter",
 							molten_sulfur_trioxide: "stan loona",
 							sulfur_trioxide_gas: "aaaaaaa"
 						};
-
 						delete elements.concrete.tempHigh;
 						delete elements.concrete.stateHigh;
 						if(elements.hanging_concrete) {
@@ -24846,18 +22826,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							pixel.frozen ??= false;
 							pixel.didColorChange ??= 0;
 							pixel.lastTemperatures ??= [];
-
 							pixel.lastTemperatures.push(pixel.temp); //due to how it's structured, last temp will always equal pixel.temp;
-
 							while(pixel.lastTemperatures.length > 2) {
 								pixel.lastTemperatures.shift();
 							};
-
 							var overallTemperatureChangeRate = (pixel.temp - pixel.lastTemperatures[0]) / (pixel.lastTemperatures.length - 1);
-
 							var magmaName = (pixel.composition == "mafic") ? "magma" : pixel.composition + "_magma";
 							var magmaTempHigh = Math.max(...Object.values(elements[magmaName]._magmaCoolingPassToElement.meltingPoints));
-
 							if(pixel.wet && !pixel.frozen && pixel.temp < 0) {
 								if(Math.random() < (pixel.wet / 25)) { //if unfrozen, crack apart (freezing damage) with small chance, and then mark survivors as frozen
 									//console.log("freezing");
@@ -24877,11 +22852,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								//if unchanged and undeleted, mark as frozen
 								pixel.frozen = true;
 							};
-
 							if(pixel.frozen && pixel.temp > 0) {
 								pixel.frozen = false;
 							};
-
 							//console.log(pixel.temp,pixel.didColorChange);
 							if(pixel.temp > 300 && pixel.didColorChange < 1) {
 								if(Math.random() < 0.02) { breakPixel(pixel) };
@@ -24924,7 +22897,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								pixel.color = convertHslObjects(normalizeColorToHslObject(oldColor),colorWasHSL ? "hsl" : "rgb");
 								pixel.didColorChange = 4;
 							};
-
 							pixel.role ??= randomChoice(["aggregate","aggregate","aggregate","aggregate","sand","sand","cement"]);
 							if(pixel.role == "cement") {
 								var chooserValue = Math.random();
@@ -24940,7 +22912,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									pixel.role = "sulfurTrioxide";
 								};
 							};
-
 							if(pixel.wet && pixel.temp > 300) {
 								if(overallTemperatureChangeRate > 25) { //if temp change is fast enough, always spall
 									if(Math.random() < Math.max(0.1,0.35 - (pixel.wet/20))) { //decresingly less likely to spall as it gets wetter, for balance
@@ -24977,7 +22948,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								};
 								return;
 							};
-
 							if(Math.random() < 1/3) { //tick wetness behavior only 1/3 of the time, for performance
 								var randomCoords = JSON.parse(JSON.stringify(adjacentCoords)); //so we don't need both an adjacentCoords for *and* a random coord iterator
 								shuffleArray(randomCoords);
@@ -25028,7 +22998,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 													pixel.wet--;
 													var colorWasHSL = pixel.color.startsWith("hsl");
 													pixel.color = changeLuminance(pixel.color,6,"+",colorWasHSL ? "hsl" : "rgb");
-
 													newPixel.wet++;
 													var newColorWasHSL = newPixel.color.startsWith("hsl");
 													newPixel.color = changeLuminance(newPixel.color,6,"-",newColorWasHSL ? "hsl" : "rgb");
@@ -25038,63 +23007,51 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									};
 								};
 							};
-
 							if(pixel.role == "sand" && pixel.temp > elements.sand.tempHigh) {
 								changePixel(pixel,"molten_glass",false);
 								return;
 							};
-
 							if(pixel.role == "aggregate" && pixel.temp > magmaTempHigh) {
 								changePixel(pixel,magmaName,false);
 								return;
 							};
-
 							if(pixel.role == "alumina" && pixel.temp > elements.aluminum_oxide.tempHigh) {
 								changePixel(pixel,"molten_aluminum_oxide",false);
 								return;
 							};
-
 							if(pixel.role == "ferricOxide" && pixel.temp > elements.rust.tempHigh) {
 								changePixel(pixel,"molten_iron",false);
 								return;
 							};
-
 							if(pixel.role == "sulfurTrioxide" && pixel.temp > magmaTempHigh) { //arbitrary choice: leave when the aggregate leaves
 								changePixel(pixel,"sulfur_trioxide_gas",false);
 								return;
 							};
-
 							if(pixel.role == "lime" && pixel.temp > 550) {
 								changePixel(pixel,"slaked_lime",false);
 								return;
 							};
-
 							if(pixel.role == "silica") {
 								pixel.didQuartzThermalExpansion ??= false;
-
 								if(pixel.temp > 573 && !pixel.didQuartzThermalExpansion) {
 									if(Math.random() < 0.13) {
 										changePixel(pixel,"pop",false);
 									};
 									pixel.didQuartzThermalExpansion = true;
 								};
-
 								if(pixel.temp > elements.silica.tempHigh) {
 									changePixel(pixel,"molten_silica",false);
 									return;
 								};
 							};
 						};
-
 						newConcreteTick = elements.concrete.tick;
-
 						runAfterLoad(function() { //mamma mia that's some tasty spaghetti
 							if(elements.hanging_concrete) {
 								elements.hanging_concrete.tick = function(pixel) {
 									newConcreteTick(pixel);
 								};
 							};
-
 							if(elements.attach_concrete) {
 								oldAttachConcreteTick = elements.attach_concrete.tick ;
 								elements.attach_concrete.tick = function(pixel) {
@@ -25102,7 +23059,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									newConcreteTick(pixel);
 								};
 							};
-
 							if(elements.crumbling_concrete) {
 								oldCrumblingConcreteTick = elements.crumbling_concrete.tick ;
 								newConcreteTick = elements.concrete.tick ;
@@ -25112,10 +23068,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								}
 							}
 						});
-
 					//Crimson
 						//Made-up lore: Crimson naturally drives rocks towards a somewhat mafic comp.
-
 							elements.crimglass = {
 								color: ["#d1808d", "#b8a770", "#a4b386"],
 								behavior: behaviors.WALL,
@@ -25127,7 +23081,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								noMix: true,
 								tick: function(pixel) { crimSpread(pixel) }
 							};
-
 							elements.crimglass_shard = {
 								color: gravelizeToHex(["#d1808d", "#b8a770", "#a4b386"]),
 								behavior: behaviors.POWDER,
@@ -25138,11 +23091,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								density: 2711 * 0.5,
 								tick: function(pixel) { crimSpread(pixel) }
 							};
-
 							elements.molten_crimglass = {
 								tick: function(pixel) { crimSpread(pixel) }
 							};
-
 							elements.crimson_grass = {
 								color: ["#e82535","#cc471f","#d6153c","#c20e29","#b81a2c"],
 								behavior: [
@@ -25163,7 +23114,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								state: "solid",
 								density: 1400,
 							}
-
 							elements.red_ice = {
 								color: ["#f0ccc5", "#f7d8d2", "#eba39b"],
 								behavior: behaviors.WALL,
@@ -25178,7 +23128,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								density: 917,
 								breakInto: "crimsnow",
 							}
-
 							elements.crimwater = { //you shouldn't be able to purify ice by melting it
 								color: "#e45c7c",
 								behavior: behaviors.LIQUID,
@@ -25200,7 +23149,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								conduct: 0.02,
 								stain: 0.02,
 							}
-
 							elements.crimsnow = { //BIG break from canon but you shouldn't be able to purify ice by grinding it either
 								color: "#fce1e4",
 								behavior: behaviors.POWDER,
@@ -25214,7 +23162,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								state: "solid",
 								density: 100,
 							}
-
 							elements.vicious_mushroom = {
 								color: "#e36554",
 								behavior: behaviors.POWDER,
@@ -25230,7 +23177,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								state: "solid",
 								density: 90.445,
 							}
-
 							elements.crimtane_ore = {
 								color: ["#d83a3b", "#85242c", "#5d5d5d", "#540c14"],
 								behavior: behaviors.POWDER,
@@ -25240,7 +23186,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								state: "solid",
 								density: 5854, //arbitrarily chosen, average of ((average of gold and palladium densities) + (crimstone density) + (crimstone density))
 							}
-
 							elements.crimtane = {
 								color: ["#fc141e", "#C62A2F", "#903f3f", "#752E2E", "#5a1c1c", "#5B3C3C", "#5c5c5c"],
 								behavior: behaviors.SOLID,
@@ -25251,7 +23196,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								hidden: true,
 								density: 15661,
 							}
-
 							elements.shadewood_tree_branch = {
 								color: "#677a8f",
 								behavior: [
@@ -25294,7 +23238,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								state: "solid",
 								density: 1050,
 							}
-
 							elements.shadewood = {
 								color: "#677a8f",
 								behavior: behaviors.WALL,
@@ -25309,7 +23252,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								breakInto: "shadewood_sawdust",
 								density: 930, //used tigerwood
 							}
-
 							elements.shadewood_sapling = {
 								color: ["#e64029", "#d43b26"],
 								behavior: [
@@ -25327,7 +23269,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								state: "solid",
 								density: 1500,
 							}
-
 							elements.shadewood_sawdust = {
 								color: ["#95abcf","#8190a3"],
 								behavior: behaviors.POWDER,
@@ -25341,7 +23282,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								density: 493,
 								hidden: true,
 							}
-
 							elements.crimson_leaf = {
 								color: "#de3323",
 								behavior: behaviors.WALL,
@@ -25357,7 +23297,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								density: 500,
 								hidden: true,
 							}
-
 							elements.ichor = {
 								color: ["#ffec70", "#ffcb52"],
 								behavior: behaviors.LIQUID,
@@ -25371,7 +23310,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								density: 1010,
 								stain: 0.02,
 							}
-
 							elements.vicious_goldfish = {
 								color: "#e64230",
 								behavior: [
@@ -25404,7 +23342,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								density: 1080,
 								conduct: 0.2,
 							}
-
 							elements.crimsand = {
 								color: ["#4c4c44", "#6c645c", "#5c544c", "#847c6c", "#24241c", "#4c4c44", "#6c645c", "#5c544c", "#847c6c", "#24241c", "#3c140c", "#842c24"],
 								behavior: behaviors.POWDER,
@@ -25416,7 +23353,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								_data: ["crimson","crystalline","sand"],
 								tick: function(pixel) { crimSpread(pixel) }
 							}
-
 							elements.wet_crimsand = {
 								color: sandizeToHex("crimsand","w"),
 								behavior: behaviors.STURDYPOWDER,
@@ -25434,7 +23370,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								nellfireImmune: true,
 								tick: function(pixel) { crimSpread(pixel) }
 							};
-
 							elements.packed_crimsand = {
 								color: sandizeToHex("crimsand","p"),
 								behavior: behaviors.SUPPORT,
@@ -25448,16 +23383,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								nellfireImmune: true,
 								tick: function(pixel) { crimSpread(pixel) }
 							};
-
 							function newDirtType(names,dirtColor,density,meltingPoint,frostingPoint) {
 								if(!(dirtColor instanceof Array)) { dirtColor = [dirtColor] };
-
 								var mudColor = dirtColor.map(x => colorToHsl(x,"json")); mudColor.forEach(function(x) { x.s *= (41/21); x.l *= (15/26) }); mudColor = mudColor.map(function(x) { return hslToHex(...Object.values(x)) });
 								if(mudColor.length == 1) { mudColor = mudColor[0] };
-
 								var mudstoneColor = dirtColor.map(x => colorToHsl(x,"json")); mudstoneColor.forEach(function(x) { x.h += 6; x.s *= (31/41); x.l *= (26/15); x.l += 5 }); mudstoneColor = mudstoneColor.map(function(x) { return hslToHex(...Object.values(x)) });
 								if(mudstoneColor.length == 1) { mudstoneColor = mudstoneColor[0] };
-
 								var dryDirtColor = dirtColor.map(x => colorToHsl(x,"json")); dryDirtColor.forEach(function(x) { x.h += 4; x.s *= (8/11); x.l *= (34/50); x.l += 5 }); dryDirtColor = dryDirtColor.map(function(x) {
 									x = convertHslObjects(x,"rgbjson");
 									x.r += 10;
@@ -25468,13 +23399,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									return convertColorFormats(x,"hex");
 								});
 								if(dryDirtColor.length == 1) { dryDirtColor = dryDirtColor[0] };
-
 								var permafrostColor = dirtColor.map(x => colorToHsl(x,"json")); permafrostColor.forEach(function(x) { x.h -= 6; x.s *= (3/5); x.l -= 3 }); permafrostColor = permafrostColor.map(function(x) { return hslToHex(...Object.values(x)) });
 								if(permafrostColor.length == 1) { permafrostColor = permafrostColor[0] };
-
 								var dryPermafrostColor = dirtColor.map(x => colorToHsl(x,"json")); dryPermafrostColor.forEach(function(x) { x.h -= 6; x.s *= (3/5); x.s -= 5; x.l += 2 }); dryPermafrostColor = dryPermafrostColor.map(function(x) { return hslToHex(...Object.values(x)) });
 								if(dryPermafrostColor.length == 1) { dryPermafrostColor = permafrostColor[0] };
-
 								//names should b an obj w keys dirt,mud,mudstone,permafrost
 								elements[names.dirt] = {
 									color: dirtColor,
@@ -25488,7 +23416,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									state: "solid",
 									density: density
 								};
-
 								elements["dry_" + names.dirt] = {
 									color: dryDirtColor,
 									behavior: behaviors.POWDER,
@@ -25502,7 +23429,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									state: "solid",
 									density: density
 								};
-
 								elements[names.mud] = {
 									color: mudColor,
 									behavior: behaviors.STURDYPOWDER,
@@ -25522,7 +23448,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									density: density * (17/12),
 									stain: 0.02
 								};
-
 								elements[names.mudstone] = {
 									color: mudstoneColor,
 									behavior: behaviors.SUPPORT,
@@ -25535,7 +23460,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									density: density * 1.2,
 									breakInto: "dirt"
 								};
-
 								elements[names.permafrost] = {
 									color: permafrostColor,
 									behavior: behaviors.SUPPORT,
@@ -25546,7 +23470,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									state: "solid",
 									density: density / 1.7
 								};
-
 								elements["dry_" + names.permafrost] = {
 									color: dryPermafrostColor,
 									behavior: behaviors.POWDER,
@@ -25557,18 +23480,15 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									state: "solid",
 									density: density
 								};
-
 								elements.water.reactions[names.dirt] = { elem1: null, elem2: names.mud };
 								elements.water.reactions["dry_" + names.dirt] = { elem1: null, elem2: names.dirt, chance: 0.005 };
 								elements.mud.reactions["dry_" + names.dirt] = { elem1: "dirt", elem2: names.dirt, chance: 0.005 };
 							};
-
 							newDirtType(
 								{dirt: "crimsoil", mud: "crimmud", permafrost: "crimson_permafrost", mudstone: "crimmudstone"},
 								["#782b2e", "#8c2e26", "#86241d", "#9d2b20", "#632f52"],
 								1260, 903, -70
 							);
-
 							elements.mud._data = ["loam","soil","wet_particulate"];
 							elements.mudstone._data = ["loam","soil","packed_particulate"];
 							elements.permafrost._data = ["loam","soil","icy_particulate"];
@@ -25578,34 +23498,23 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							elements.crimmudstone._data = ["crimson","soil","packed_particulate"];
 							elements.crimson_permafrost._data = ["crimson","soil","icy_particulate"];
 							elements.dry_crimson_permafrost._data = ["crimson","soil","particulate"];
-
 							makeNonSandSedimentationElements("crimsand","crimsandy_water","crimsandstone");
-
 							newIgneousCompositionFamily(
 								"crimson",
-
 								13000, 2420, -76, -17, 2877,
-
 								"crimstone", ["#cb4444", "#953333", "#611c1c", "#b43434", "#752424"], 1223, 4234,
 								"metacrimstone", ["#b31010","#8f1111","#80282a","#b31010","#8f1111","#80282a","#bb4e45"], 1223, 4544,
-
 								"crimsalt", ["#9e5041", "#a33345"], 1151, 3226,
 								"metacrimsalt", ["#ab5c4f","#c25c4c","#cf4452"], 1151, 3044,
-
 								"crimscoria", ["#914c57", "#ba7b85", "#6b2e38", "#b3626f"], 1032, 2903,
 								"metacrimscoria", ["#bf2636","#961b12","#b84040"], 1032, 3534,
-
 								"crimidian", ["#5a1b1c", "#622b33", "#762733", "#76322c"], 1122, 3050,
 								"metacrimidian", ["#701b1c","#783628","#802419","#872323"], 1122, 3169,
-
 								3,7
 							);
-							
 							elements.crimsalt.behavior = behaviors.STURDYPOWDER;
 							elements.metacrimsalt.behavior = behaviors.STURDYPOWDER;
-
 							elements.crimson_magma.temp = elements.crimson_magma.tempHigh * 0.8;
-
 							//var elems2 = Object.keys(elements);
 							//var deltaElems = elems2.filter(function(name) { return !(elems1.includes(name)) });
 							runAfterLoad(function() { runAfterAutogen(function() { runAfterAutogen(function() { //i need this to happen last
@@ -25633,7 +23542,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									}
 								};
 							})})});
-
 							elements.molten_crimsoil = {
 								tempLow: elements.dry_crimsoil.tempHigh,
 								stateLow: "dry_crimsoil",
@@ -25668,29 +23576,20 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								elements.rainbow_muddy_water.reactions.rainbow_muddy_water.elem2 = "rainbow_soil_sediment"
 								elements.crimsoilstone.tempHigh = 800;
 							});
-
 					//Blackpinkinitic (why? because FU. that's why. jk lol it's because i want to test metamorphism but there's so little data on the melting of metamorphic rocks--especially clay-based ones--that it's proving to be a real PITA.
-
 						newIgneousCompositionFamily(
 							"blackpinkinitic",
-
 							403, 2602, -95, -30, 4007,
-
 							"blinkinite", ["#e39dc6", "#e378b7", "#d1589f", "#a1306e", "#6e274e", "#170e13", "#121212"], 1821, 3291,
 							"lisaslate", ["#f26fbc", "#f26fbc", "#e344a1", "#d42686", "#b52daa", "#8a3683", "#5c324f", "#572c6e", "#421530", "#120c10", "#120c10"], 1821, 3333,
-
 							"roselite", ["#eda4c6","#de90ae","#cf9db0","#cf9db0","#d97ca0"], 1715, 2551,
 							"rosephyllite", ["#e895bb", "#c46286", "#a34b73", "#6e2e4b", "#301921", "#1a1315"], 1715, 3021,
-
 							"jisoovesite", ["#bf56af", "#a15495", "#70416f", "#e87de6", "#381a47"], 1977, 719,
 							"vesimelite", ["#a35097", "#854e72", "#8a5789", "#d47dd2", "#462452"], 1977, 1132,
-
 							"jennitrite", ["#8a2966", "#801357", "#75074c", "#4a012f", "#360e27", "#1a0e15"], 2111, 2603,
 							"harmonitrite", ["#9e3979", "#9e186c", "#a3146e", "#380324", "#2e1028", "#361a2a"], 2111, 2663,
-
 							3,7
 						);
-
 						elements.roselite.name = elements.roselite.alias = "rosélite";
 						elements.rosephyllite.colorPattern = [ // diagonal foliation
 							"PPppDDddBBbbBBddDDpp",
@@ -25712,15 +23611,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							"B": "#301921",
 							"b": "#1a1315"
 						};
-
 						elements.blinkinite.behavior = behaviors.POWDER;
 						elements.rosephyllite.name = elements.rosephyllite.alias = "roséphyllite";
 						elements.jisoovesite.maxColorOffset = 30;
-
 					//Rainbow (actually let's call them Iridian)
-
 						//Required manual elements
-
 							elements.rainbow_glass = {
 								color: makeRegularRainbow(12,100,70,"hex"),
 								behavior: behaviors.WALL,
@@ -25732,7 +23627,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								noMix: true,
 								nellfireImmune: true,
 							};
-
 							elements.rainbow_glass_shard = {
 								color: makeRegularRainbow(18,70,65,"hex"),
 								behavior: behaviors.POWDER,
@@ -25743,7 +23637,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								density: 2213,
 								nellfireImmune: true,
 							};
-
 							elements.rainbow_sand = {
 								color: makeRegularRainbow(7,100,94,"hex").concat("#fbfbfb"),
 								behavior: behaviors.POWDER,
@@ -25755,7 +23648,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								_data: ["iridian","crystalline","particulate"],
 								nellfireImmune: true,
 							};
-
 							elements.wet_rainbow_sand = {
 								color: makeRegularRainbow(7,100,84,"hex").concat("#e0e0e0"),
 								behavior: behaviors.STURDYPOWDER,
@@ -25772,7 +23664,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								_data: ["iridian","crystalline","wet_particulate"],
 								nellfireImmune: true,
 							};
-
 							elements.packed_rainbow_sand = {
 								color: makeRegularRainbow(7,70,86,"hex").concat("#dbdbdb"),
 								behavior: behaviors.SUPPORT,
@@ -25785,22 +23676,17 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								_data: ["iridian","crystalline","packed_particulate"],
 								nellfireImmune: true,
 							};
-
-							
-
 							newDirtType(
 								{dirt: "rainbow_dirt", mud: "rainbow_mud", permafrost: "rainbow_permafrost", mudstone: "rainbow_mudstone"},
 								"#b09eac #b0bfa1 #d9c0b6 #b09eac #b0bfa1 #d9c0b6 #ed7777 #a7d975 #7bd4d4 #ab77e0 #e0cf77".split(" "),
 								1533, 942, -110
 							);
-
 							elements.rainbow_dirt._data = ["iridian","soil","particulate"];
 							elements.dry_rainbow_dirt._data = ["iridian","soil","particulate"];
 							elements.rainbow_mud._data = ["iridian","soil","wet_particulate"];
 							elements.rainbow_mudstone._data = ["iridian","soil","packed_particulate"];
 							elements.rainbow_permafrost._data = ["iridian","soil","icy_particulate"];
 							elements.dry_rainbow_permafrost._data = ["iridian","soil","particulate"];
-
 							elements.molten_rainbow_dirt = {
 								tempLow: elements.dry_rainbow_dirt.tempHigh,
 								stateLow: "dry_rainbow_dirt",
@@ -25810,43 +23696,29 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								elements.rainbow_soilstone.tempHigh = 800;
 								elements.molten_rainbow_dirt.tempHigh = elements.rainbow_magma.tempHigh;
 							});
-
 						//Vanilla changes
 							elements.water.reactions.rainbow_sand = { elem1: null, elem2: "wet_rainbow_sand" };
 							elements.water.reactions.wet_rainbow_sand = { "elem1": "rainbow_sand_water", "elem2": [ "rainbow_sand", "rainbow_sand", "rainbow_sand", "rainbow_sand_water" ], "chance": 0.01 };
-
 						//Actual rock generation
-
 							//Sedimentary
-
 								makeNonSandSedimentationElements("rainbow_sand","rainbow_sand_water","rainbow_sandstone");
 								elements.rainbow_sandstone.color = makeRegularRainbow(14,90,71,"hex").concat("#b5b5b5");
-
 							//Igneous
-
 								newIgneousCompositionFamily(
 									"rainbow",
-
 									133487, 5512, -71, -17, 4555,
-
 									"phirite", makeRegularRainbow(6,70,45,"hex"), 1671, 4004,
 									"metaphirite", makeRegularRainbow(7,60,35,"hex"), 1671, 4244,
-
 									"aphirite", makeRegularRainbow(24,63,75,"hex").concat("#bfbfbf"), 1685, 3951,
 									"metaaphirite", makeRegularRainbow(23,83,65,"hex").concat("#afafaf"), 1685, 4191,
-
 									"vesirite", makeRegularRainbow(7,55,30,"hex").concat(makeRegularRainbow(7,75,70,"hex")), 1712, 2918,
 									"metavesirite", makeRegularRainbow(5,66,80,"hex").concat(makeRegularRainbow(5,56,60,"hex")), 1712, 3118,
-
 									"vitirite", makeRegularRainbow(30,70,35,"hex").concat("#595959"), 2054, 3741,
 									"metavitirite", makeRegularRainbow(15,60,45,"hex").concat("#494949").concat(makeRegularRainbow(15,60,55,"hex")).concat("#797979"), 2054, 3941,
-
 									3,7
 								);
-
 							//Nellfire immunization
 								var immunes = ["rainbow_sand_water", "rainbow_sand_sediment", "rainbow_sandstone", "phirite", "phirite_wall", "phirite_gravel", "aphirite", "aphirite_wall", "phirite_sand", "wet_phirite_sand", "packed_phirite_sand", "aphirite_gravel", "aphirite_sand", "wet_aphirite_sand", "packed_aphirite_sand", "vesirite", "vesirite_wall", "vesirite_gravel", "vesirite_sand", "wet_vesirite_sand", "packed_vesirite_sand", "vitirite", "vitirite_wall", "vitirite_shard", "vitirite_sand", "wet_vitirite_sand", "packed_vitirite_sand", "rainbow_magma", "vaporized_rainbow_magma", "rainbow_magma_cloud", "phirite_sandy_water", "phirite_sand_sediment", "phirite_sandstone", "aphirite_sandy_water", "aphirite_sand_sediment", "aphirite_sandstone", "vesirite_sandy_water", "vesirite_sand_sediment", "vesirite_sandstone", "vitirite_sandy_water", "vitirite_sand_sediment", "vitirite_sandstone", "phirite_dust", "aphirite_dust", "vesirite_dust", "vitirite_dust" ];
-
 								runAfterLoad(function() {
 									for(i = 0; i < immunes.length; i++) {
 										if(!elements[immunes[i]]) {
@@ -25856,11 +23728,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										elements[immunes[i]].nellfireImmune = true;
 									};
 								});
-
 					//Nellish
-
 						//Manuals
-
 							elements.nellglass = {
 								color: ["#a161b0", "#b06177", "#b59159"],
 								behavior: behaviors.WALL,
@@ -25872,7 +23741,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								noMix: true,
 								nellfireImmune: true,
 							};
-
 							elements.nellglass_shard = {
 								color: ["#7d5f8c","#875966","#9e7b47"],
 								behavior: behaviors.POWDER,
@@ -25883,7 +23751,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								density: 4212,
 								nellfireImmune: true,
 							};
-
 							elements.nellsand = {
 								color: ["#906fa8", "#80747a", "#b08464"],
 								behavior: behaviors.POWDER,
@@ -25895,10 +23762,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								_data: ["nellish","crystalline","particulate"],
 								nellfireImmune: true,
 							};
-
 							elements.water.reactions.nellsand = { elem1: null, elem2: "wet_nellsand" };
 							elements.water.reactions.wet_nellsand = { "elem1": "nellsand_water", "elem2": [ "nellsand", "nellsand", "nellsand", "nellsand_water" ], "chance": 0.01 };
-
 							elements.wet_nellsand = {
 								color: sandizeToHex("nellsand","w"),
 								behavior: behaviors.STURDYPOWDER,
@@ -25915,7 +23780,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								_data: ["nellish","crystalline","wet_particulate"],
 								nellfireImmune: true,
 							};
-
 							elements.packed_nellsand = {
 								color: sandizeToHex("nellsand","p"),
 								behavior: behaviors.SUPPORT,
@@ -25928,7 +23792,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								_data: ["nellish","crystalline","packed_particulate"],
 								nellfireImmune: true,
 							};
-
 							nellburnObject = {
 								"dirt": "nellsand",
 								"dry_dirt": "nellsand",
@@ -25944,14 +23807,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								"molten_electrum": ["nell_ash","molten_gold"],
 								"sun": "nellsun",
 							};
-
 							var otherImmunes = ["fire","smoke","plasma","cold_fire","radiation","light","proton","neutron","electron","positron","antimatter","cold_smoke","rad_fire","rad_smoke","laser","liquid_fire","liquid_smoke","liquid_plasma","liquid_cold_fire","liquid_cold_smoke","liquid_rad_fire","liquid_rad_fire","liquid_rad_smoke","le_liquid_light","liquid_laser","pure_ice","pure_water","pure_steam","magic","gold","zinc","molten_gold","molten_zinc","pyreite","infernium","molten_pyreite","molten_infernium","infernyrite","molten_infernyrite","infernyreitheum","molten_infernyreitheum","pyrinfernyreitheum","molten_pyrinfernyreitheum","stellar_plasma","liquid_stellar_plasma","hydrogen","liquid_hydrogen","hydrogen_ice","neutronium","molten_neutronium","liquid_neutronium","neutronium_gas","liquid_degenerate_neutronium","gaseous_degenerate_neutronium"].concat(["water","ice","slush","snow","packed_snow","steam",   "heavy_steam","heavy_water","heavy_ice","heavy_snow",	"hydrogen_ice","liquid_hydrogen","hydrogen","ionized_hydrogen",   "liquid_helium","helium","ionized_helium",   "tralphium","liquid_tralphium","ionized_tralphium", "carbon","charcoal","diamond","molten_carbon",   "carbon_monoxide","liquid_carbon_monoxide","carbon_monoxide_ice",   "carbon_dioxide","dry_ice","seltzer","seltzer_ice","foam","cloud","rain_cloud","snow","snow_cloud","snow_cloud_floater","ice","thunder_cloud","hail_cloud"]);
-
 							for(let i = 0; i < otherImmunes.length; i++) {
 								var element = otherImmunes[i];
 								if(elements[element]) { elements[element].nellfireImmune = true };
 							};
-
 							elements.nell_ash = {
 								color: ["#ab9393","#947873"],
 								behavior: behaviors.POWDER,
@@ -25978,18 +23838,15 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								//forceAutoGen: true,
 								//stateHigh: ["molten_ash","smoke","smoke","smoke"]
 							};
-
 							elements.wall.nellfireImmune = true;
-
 							//Massive block of code that programatically assigns nellburn results to rocks based on their properties
 							runAfterLoad(function() {
 								var rockdataElements = Object.keys(elements).filter(function(name) {
 									return (
-										elements[name]._data && 
+										elements[name]._data &&
 										!["blackened_carbonate","nellish","nellsand_material"].includes(elements[name]._data[0])
 									)
 								});
-
 								for(i = 0; i < rockdataElements.length; i++) {
 									var name = rockdataElements[i];
 									var info = elements[name];
@@ -26360,72 +24217,51 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 											console.log("Nellburn assignment: Unknown _data[1] value for element",name,info._data);
 									};
 								};
-
 								nellfireSpawnBlacklist = ["nellfire"];
 							});
 							//Glad that's over
-
 						//Rocks
-
 							makeNonSandSedimentationElements("nellsand","nellsand_water","nellsandstone");
-
 							newIgneousCompositionFamily(
 								"nellish",
-
 								10, 3012, -96, -12, 3812,
-
 								"gehennite", ["#857c71", "#b5a98d", "#91847c", "#948b68", "#8a834a", "#adad34"], 2011, 3432,
 								"sheolite", ["#785848","#8c7e5b","#9c745c","#80463b"], 2011, 3852,
-
 								"nellrock", ["#a15a42","#997849","#946043","#8c533e","#a66658"], 2036, 3371,
 								"nellbolite", ["#7a3017","#693d21","#8a673a"], 2036, 3671,
-
 								"hadean_sponge", ["#e66785", "#b54761", "#cc8156", "#dbc760", "#ab9a44"], 2213, 1012,
 								"metahadiculite", ["#a0a35d","#665d37", "#7b804d", "#869151", "#6e443f"], 2213, 1412,
-
 								"gehidian", ["#754c2f", "#855d3a", "#702a1c", "#691a41"], 2054, 3112,
 								"metagehitrite", ["#5e4f2a","#53544e", "#68787a", "#454f46", "#5e584b"], 2054, 3312,
-
 								1,9
 							);
-
 							//More sedimentaries because nellfire also transforms limestone, and the associated baggage
 							var bccd = "blackened_calcium_carbonate_dust";
 							var bccs = "blackened_calcium_carbonate_solution";
-
 							elements.calcium_carbonate_dust.reactions ??= {};
 							elements.calcium_carbonate_dust.reactions.charcoal = {
 								elem1: bccd, elem2: [bccd, "charcoal", "charcoal"]
 							};
-
-
 							newPowder(bccd,"#948e87",2771,804,["carbon_dioxide","quicklime","charcoal","ash"]);
 							elements[bccd]._data = ["blackened_carbonate","blackened_carbonate","particulate"];
 							elements[bccd].nellfireImmune = true;
-
 							makeNonSandSedimentationElements(bccd,bccs,"black_limestone");
-
 							elements.blackened_calcium_carbonate_dust_sediment.color = "#756e64";
 							elements.blackened_calcium_carbonate_dust_sediment.nellfireImmune = true;
-
 							elements.black_limestone.color = "#575148";
 							elements.black_limestone.stateHigh = ["fire","smoke","charcoal","carbon_dioxide","quicklime","quicklime","quicklime","quicklime","quicklime","quicklime","quicklime","quicklime"];
 							elements[bccs].nellfireImmune = true;
-
 							elements.water.reactions[bccd] = {
 								"elem1":"calcium_carbonate_solution",
 								"elem2":[bccd,bccd,bccd,bccs],
 								"chance":0.004
 							};
-
 							elements.seltzer.reactions[bccd] = {
 								"elem1":bccs,
 								"elem2":[bccd,bccd,bccd,bccs],
 								"chance":0.02
 							};
-
 							var resultingAutoElems = [ "gehennite", "gehennite_wall", "gehennite_gravel", "nellrock", "nellrock_wall", "gehennite_sand", "gehennite_dust", "wet_gehennite_sand", "packed_gehennite_sand", "nellrock_gravel", "nellrock_sand", "nellrock_dust", "wet_nellrock_sand", "packed_nellrock_sand", "hadean_sponge", "hadean_sponge_wall", "hadean_sponge_gravel", "hadean_sponge_sand", "hadean_sponge_dust", "wet_hadean_sponge_sand", "packed_hadean_sponge_sand", "gehidian", "gehidian_wall", "gehidian_shard", "gehidian_sand", "gehidian_dust", "wet_gehidian_sand", "packed_gehidian_sand", "nellish_magma", "vaporized_nellish_magma", "nellish_magma_cloud", "gehennite_sandy_water", "gehennite_sand_sediment", "gehennite_sandstone", "nellrock_sandy_water", "nellrock_sand_sediment", "nellrock_sandstone", "hadean_sponge_sandy_water", "hadean_sponge_sand_sediment", "hadean_sponge_sandstone", "gehidian_sandy_water", "gehidian_sand_sediment", "gehidian_sandstone", bccd, bccs, "black_limestone" ] //hard-coded
-
 							runAfterLoad(function() {
 								for(i = 0; i < resultingAutoElems.length; i++) {
 									if(!elements[resultingAutoElems[i]]) {
@@ -26435,18 +24271,15 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									elements[resultingAutoElems[i]].nellfireImmune = true;
 								};
 							});
-					
 					//Crimson transformation assigner
 						runAfterAutogen(function() {
 							crimsonAssignmentUnknownData1Errors = {};
-							
 							var rockdataElements = Object.keys(elements).filter(function(name) {
 								return (
-									elements[name]._data && 
+									elements[name]._data &&
 									!["crimson"].includes(elements[name]._data[0])
 								)
 							});
-
 							for(i = 0; i < rockdataElements.length; i++) {
 								var name = rockdataElements[i];
 								var info = elements[name];
@@ -26794,27 +24627,17 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										crimsonAssignmentUnknownData1Errors[name] = info._data;
 								};
 							};
-							
-							
 							//Manual overrides because JavaScript sees the cases and pretends it doesn't know what they mean
 							crimsonObject.soilstone = "crimsoilstone";
 							crimsonObject.sandstone = "crimsandstone";
 							crimsonObject.rosephyllite = "metacrimsalt";
 						});
 					//Assigner end
-
-
-
 		/*	//Rocks
-
 				//Igneous
-
 					//Phaneritic
-
 						//Ultramafic: peridotite
-
 							var molten_olivine = ["molten_fayalite","molten_forsterite","molten_forsterite"];
-
 							//apparently olivine sand exists
 							elements.olivine_sand = {
 								color: ['#b5a773', '#b5af78', '#b2b471', '#bab07b', '#b4ae74', '#b4b471', '#b5a970', '#b4b476'],
@@ -26825,7 +24648,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								state: "solid",
 								density: 1720,
 							};
-
 							elements.wet_olivine_sand = {
 								color: ["#a08d4b","#918949","999c49","#aa9b50","#8f8743","#adad53","#9d8f48","#838f43"],
 								behavior: behaviors.STURDYPOWDER,
@@ -26842,7 +24664,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								state: "solid",
 								density: 2002,
 							};
-
 							elements.packed_olivine_sand = {
 								color: ["#968f64","#969669","#8d9362","#9d996c","#959465","#8f9362","#949061","#909366"],
 								behavior: behaviors.SUPPORT,
@@ -26853,19 +24674,14 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								density: 1811,
 								breakInto: "olivine_sand",
 							};
-
 							elements.water.reactions.olivine_sand = { "elem1": null, "elem2": "wet_olivine_sand" };
-
 							newPowder("fayalite",["#bf7432","#ad8e3e"],4390,1200,null,null);
-
 							newPowder("forsterite","#cccccc",3270,1890,null,null);
-
 							elements.molten_forsterite = {
 								reactions: {
 									"molten_fayalite": { elem1: "olivine", elem2: ["molten_fayalite","olivine"], tempMax: 1890 },
 								},
 							};
-
 							elements.olivine = {
 								color: ["#7fa14f","#7dba52"],
 								behavior: behaviors.POWDER,
@@ -26876,15 +24692,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								density: 2700,
 								breakInto: "olivine_shard",
 							},
-
-							newPowder("olivine_shard",["#97ba65","#7a994e","#99d96c","#7cb553"],2811,1890,molten_olivine,null);						
+							newPowder("olivine_shard",["#97ba65","#7a994e","#99d96c","#7cb553"],2811,1890,molten_olivine,null);
 		*/
 			//Gems
 			  //There is a mineral classification scheme, but it will take a while to implement if I ever get around to it.
 			  //We're assuming that the crystal structures reform properly because I don't want to have to research and implement refrozen amorphous forms.
-
 				//Emerald
-
 					elements.emerald = {
 						color: ["#31e31e", "#88fa5a", "#28d419", "#54e823", "#64f235"],
 						tempHigh: 1287,
@@ -26896,9 +24709,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						density: 2710, //within natural variation
 						hardness: 0.8, //Mohs scaled to diamond
 					};
-
 				//Amethyst
-
 					elements.amethyst = {
 						color: ["#c569e0", "#bd43e0", "#e37aeb", "#ab2fe0", "#b05bd4", "#9b2cdb"],
 						tempHigh: 1650,
@@ -26910,13 +24721,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						density: 2650,
 						hardness: 0.7,
 					};
-
 					standaloneBrokenFormMaker("iron","scrap",true,"powders","auto","auto","molten_iron",null).hidden = true;
 					standaloneBrokenFormMaker("chromium","scrap",true,"powders","auto","auto","molten_chromium",null).hidden = true;
 					standaloneBrokenFormMaker("amethyst","shard",true,"powders","auto","auto","molten_amethyst",["silica","silica","silica","silica","silica","silica","silica","silica","silica","iron_scrap"]).hidden = true;
-
 				//Corundum
-
 					elements.corundum = {
 						color: ["#e3e3e3", "#d9d9d9", "#cccccc", "#dbdbdb", "#f2f2f2"],
 						tempHigh: 2072,
@@ -26928,8 +24736,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						hardness: 0.9,
 						breakInto: "alumina",
 					};
-
-
 					elements.molten_titanium ??= {}; elements.molten_titanium.tempHigh = 3287;
 					elements.molten_iron ??= {}; elements.molten_iron.tempHigh = 2861;
 					elements.molten_chromium ??= {}; elements.molten_chromium.tempHigh = 2671;
@@ -26946,9 +24752,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					elements.molten_alumina.reactions.chromium_scrap = {elem1: "molten_ruby", elem2: ["molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium",null] };
 					elements.molten_alumina.reactions.molten_chromium = {elem1: "molten_ruby", elem2: ["molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium",null] };
 					elements.molten_alumina.stateLow = "corundum";
-
 				//Sapphire
-
 					elements.sapphire = {
 						color: ["#2d43e3", "#4d5fe3", "#1f30cc", "#375fdb", "#2d39e3"],
 						tempHigh: 2040,
@@ -26959,7 +24763,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						density: 3980,
 						hardness: 0.9,
 					};
-
 					elements.molten_sapphire ??= {}; elements.molten_sapphire.tick = function(pixel) {
 						if(pixel.temp >= 5040) {
 							if(Math.random() < 0.005) { //the real proportion of 0.01% is so low that you'd just melt sapphire and get back corundum
@@ -26969,11 +24772,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							}
 						};
 					};
-
 					standaloneBrokenFormMaker("sapphire","shard",true,"powders","auto","auto","molten_sapphire",["alumina","alumina","alumina","alumina","alumina","alumina","alumina","alumina","alumina","iron_scrap","titanium_scrap"]).hidden = true;
-
 				//Ruby
-
 					elements.ruby = {
 						//Corundum with different impurities, so I can copy/paste everything but the color
 						color: ["#ff1222", "#ff4545", "#e30b13", "#fa253b", "#f2120f"],
@@ -26984,7 +24784,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						density: 3980,
 						hardness: 0.9,
 					};
-
 					elements.molten_ruby ??= {}; elements.molten_ruby.tick = function(pixel) {
 						if(pixel.temp >= 5040) {
 							if(Math.random() < 0.02) { //1% also too low
@@ -26994,11 +24793,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							}
 						};
 					};
-
 					standaloneBrokenFormMaker("ruby","shard",true,"powders","auto","auto","molten_sapphire",["alumina","alumina","alumina","alumina","alumina","alumina","alumina","alumina","alumina","chromium_scrap"]).hidden = true;
-
 				//Spinel (kek)
-
 					elements.spinel = {
 						color: ["#ff1261", "#db2776", "#f20732", "#f71670", "#f7167f"],
 						tempHigh: 2130,
@@ -27008,9 +24804,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						density: 3600,
 						hardness: 0.85,
 					}
-
 				//Topaz
-
 					elements.topaz = {
 						color: ["#f7f431", "#ffff5c", "#f7e048", "#fae43e", "#fff86e", "#ede321"],
 						tempHigh: 1340,
@@ -27021,9 +24815,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						density: 3500,
 						hardness: 0.8,
 					};
-
 				//Mullite
-
 					elements.mullite = {
 						color: ["#f2d7bf", "#f5cbdc", "#f2dfd3"], //hardly a gemstone, but i will color it like the others regardless
 						tempHigh: 1840,
@@ -27033,9 +24825,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						density: 3110,
 						hardness: 0.7,
 					};
-
 				//Onyx
-
 					elements.onyx = {
 						color: ["#1a1919", "#070605", "#111313"],
 						tempHigh: 1650, //another  silicate  mineral
@@ -27045,9 +24835,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						density: 2650,
 						hardness: 0.7,
 					};
-
 				//Opal
-
 					elements.opal = {
 						color: ["#ffcfcf", "#fff0d9", "#fcf7c5", "#e4ffd4", "#d1fff5", "#dcecfa", "#dfdbff", "#f5e0ff", "#f7d0f1"],
 						tempHigh: 100,
@@ -27059,7 +24847,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						hardness: 0.6,
 						breakInto: ["quartz", "quartz", "quartz", "quartz", "quartz", "quartz", "quartz", "quartz", "quartz", "water"],
 					};
-
 					elements.broken_opal = {
 						color: ["#f5e6e6", "#ebe2d5", "#f7f6ed", "#e4eddf", "#d8ebe7", "#d8e0e8", "#e4e3e8", "#f4edf7", "#ebebeb"],
 						tempHigh: 1650,
@@ -27070,25 +24857,19 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						density: 2322,
 						hardness: 0.55, //it cracks
 					};
-
 				//Quartz
-
 					elements.quartz = { //silicates, silicates, and more silicates
 						color: ["#f0f0f0", "#e3e3e3", "#f7f7f7"],
-						tempHigh: 1650, 
+						tempHigh: 1650,
 						behavior: behaviors.POWDER,
 						category: "powders",
 						state: "solid",
 						density: 2650,
 						hardness: 0.7,
 					};
-
 					//Re-add molten quartz because it stopped auto-generating
-
 					elements.molten_quartz = {"behavior":behaviors.MOLTEN,"hidden":true,"state":"liquid","category":"states","color":['#ffff78', '#fff078', '#ffb400', '#ffff71', '#ffe371', '#ffaa00', '#ffff7b', '#fff77b', '#ffb900'],"temp":1650,"tempLow":1550,"stateLow":"quartz","density":2385,"viscosity":10000,"reactions":{"ash":{"elem1":null,"elem2":"molten_slag"},"dust":{"elem1":null,"elem2":"molten_slag"},"magma":{"elem1":null,"elem2":"molten_slag"}},"movable":true}
-
 					//Use in glass
-
 					elements.molten_quartz.reactions = {
 						quicklime: { elem1: "molten_glass", elem2: ["quicklime", "quicklime", "quicklime", "quicklime", "quicklime", "quicklime", "quicklime", "quicklime", "quicklime", null]} //lack of vanilla washing soda, lack of tripartite reactions
 					};
@@ -27097,9 +24878,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						elem2: { elem1: "elem1_becomes", elem2: "elem2_becomes"}
 					};
 					*/
-
 				//Pearl (not a mineral)
-
 					elements.pearl = {
 						color: ["#e3e3e3", "#e3e0d1", "#eddbce", "#eef2c9", "#d5f5dc", "#d8f2ec", "#fadcf9", "#e3d1c1", "#f2edc9", "#e0f5d7", "#e2beeb", "#e3e3e3", "#e3e0d1", "#eddbce", "#eef2c9", "#d5f5dc", "#d8f2ec", "#fadcf9", "#e3d1c1", "#f2edc9", "#e0f5d7", "#e2beeb", 	"#38332e"],
 						tempHigh: 1340, //yay, more thermal decomposition elements
@@ -27109,9 +24888,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						density: 772, //It is partly made of proteins and is said to burn, but I can't find an ignition point, so here it melts.
 						hardness: 0.45,
 					};
-
 				//Jade
-
 					elements.jadeite = {
 						color: ["#3D7D31", "#2D6D1F", "#538A2F", "#6A9A37"],
 						tempHigh: 1000,
@@ -27121,13 +24898,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						density: 3400,
 						hardness: 0.65,
 					};
-
 			//Soil
-
 				//Dry dirt
-
 					elements.dirt.forceAutoGen = true;
-
 					elements.dry_dirt = {
 						color: ["#a88e5e","#8f7950","#8a7045","#9e804c"],
 						behavior: [
@@ -27144,17 +24917,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						density: 1100,
 						_data: ["loam","dry_soil","particulate"]
 					},
-
 					elements.water.reactions.dry_dirt = {
 						elem1: null, elem2: "dirt", chance: 0.005
 					};
-
 					elements.mud.reactions.dry_dirt = {
 						elem1: "dirt", elem2: "dirt", chance: 0.005
 					};
-
 					elements.dirt._data = ["loam","soil","particulate"];
-
 					elements.molten_dirt = { //added manually because the change to dirt will prevent molten_dirt from being auto-generated
 						"behavior": behaviors.MOLTEN,
 						"name": "molten_loam",
@@ -27168,10 +24937,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						"density": 1098,
 						"viscosity": 10000
 					}
-
 					elements.molten_dirt.tempHigh = 3000;
 					elements.molten_dirt.stateHigh = "vaporized_rock";
-
 					elements.dry_permafrost = {
 						color: ["#5B7870","#535D51","#52746A","#5A7A6F"],
 						behavior: behaviors.POWDER, //not enough water for cementing
@@ -27184,29 +24951,22 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						density: 1200,
 						_data: ["loam","soil","particulate"]
 					}
-
 					elements.dirt.tempHigh = 110;
 					elements.dirt.stateHigh = "dry_dirt";
-
 			//Land Element Cults
 				/*
 				"Cult" is used similarly to its EoD sense; here, it signifies a set of elements that systematically replicates another set of elements except for a given modification.
 				In this case, they replicate some land elements; a "yellow" cult, for example, would have yellow_dirt, yellow_mud, yellow_mudstone, yellow_permafrost, yellow_sand...
 				*/
-
 				//Radiation
-
 					//System with new special_property_library.js to replace the old mass manual recreation
-
 					radioactiveTransforms = {
 						steam: "rad_steam",
 						glass: "rad_glass",
 						molten_glass: "molten_rad_glass"
 					};
-
 					radioactiveTransforms.fire = "rad_fire"
 					radioactiveTransforms.torch = "rad_torch"
-
 					specialProperties.radioactive = {
 						specialColorFunction: function(pixel,oldColor) {
 							var colorJSON = convertColorFormats(oldColor,"json");
@@ -27248,9 +25008,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						}
 					}
 					console.log("Radioactive property defined");
-
 				//Main elements
-
 					elements.liquid_irradium = {
 						color: "#5499FF",
 						behavior: behaviors.LIQUID,
@@ -27281,11 +25039,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 										//https://omniblog-of-starbound.tumblr.com/post/188424072728/starbound-element-headcannon-modded-metals
 						viscosity: 80.1,	//probably misinterpreting tickDelta, and w/o the game assets, I can't compare against water, so this is in relation to H2SO4 scaled to its density in cP and under the assumption that water visc = 1
 					}
-
 					/*
-						//Metamorphism will be driven using solely temperature. 
+						//Metamorphism will be driven using solely temperature.
 						//Pressure simulation, due to how the game is coded, will be limited to requiring the rock to be surrounded.
-
 					elements.slate = {
 						color: ["#787B80", "#535557", "#695E58", "#696969", "#6B5D5B"],
 						tempHigh: 200,
@@ -27298,7 +25054,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						hardness: 0.3,
 						_data: ["clay", "rock", "sedimentary_rock"]
 					};
-
 					elements.shale.onTryMoveInto = function(pixel,otherPixel) {
 						var otherData = elements[otherPixel.element];
 						if(otherData.category == "magmas" && Math.random() < 0.005 && pixel.temp > 650) {
@@ -27318,7 +25073,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						};
 						return
 					};*/
-
 					runAfterLoad(function() {
 						rocksSandsAndSoilsToGiveHotForms = Object.keys(elements).filter(
 							function(elemName) {
@@ -27335,13 +25089,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						elements.rainbow_dirt.tempHigh = 100;
 						elements.rainbow_dirt.stateHigh = "dry_rainbow_dirt";
 					});
-
 		//Generation
-
 			//TNT world
-
 				//Supplementary elements
-
 					elements.oil_cloud = {
 						color: "#8c4331",
 						behavior: [
@@ -27359,7 +25109,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						ignoreAir: true,
 						stain: 0.02,
 					};
-
 					elements.oil_cloud_floater = {
 						color: "#8c4331",
 						behavior: [
@@ -27380,9 +25129,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						burnInto: "explosion", //atomization moment
 						stain: 0.02,
 					};
-
 				//Main preset
-
 					worldgentypes.tnt_world = {
 						name: "TNT World", //unimplemented
 						layers: [
@@ -27399,11 +25146,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							[0.0, "lamp_oil"]
 						]
 					};
-
 			//Ice world
-
 				//Supplementary elements
-
 					elements.snow_cloud_floater = {
 						color: "#7e8691",
 						behavior: [
@@ -27427,9 +25171,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						movable:true,
 						isGas:true
 					};
-
 				//Main preset
-
 					worldgentypes.ice = {
 						layers: [
 							//[0.95, "snow_cloud_floater"], //le cutting room floor has arrived
@@ -27441,7 +25183,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						],
 						temperature: -20
 					};
-
 					/*worldgentypes.nuclear_wasteland = {
 						layers: [
 							[0.9, "smoke", 0.5],
@@ -27460,9 +25201,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						],
 						temperature: -5 //nuclear winter
 					};*/
-
 			//Dark world
-
 			worldgentypes.dark = {
 				layers: [
 					[0.8, "carbon_dioxide"],
@@ -27471,9 +25210,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					[0, "basalt"]
 				]
 			};
-
 			//Money world
-
 			worldgentypes.money = {
 				layers: [
 					[0.9, "emerald"],
@@ -27486,9 +25223,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					[-0.1, "onyx"]
 				]
 			};
-
 			//Concrete
-
 			worldgentypes.concrete = {
 				layers: [
 					[0.13, "concrete"],
@@ -27497,12 +25232,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				],
 				heightVariance: 0.00000000000000000000000000000001, //R74n didn't use the nullish ??, so 0 is disallowed.
 			};
-
 			//Star world
 			//If GWSN can have a decidedly Earth-y name and a space concept, then I should be able to do the same
-
 				//Supplementary elements
-
 					elements.liquid_stellar_plasma = {
 						color: "#ffffbd",
 						colorOn: "#ffffbd",
@@ -27528,7 +25260,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						density: 1000, //density actually depends on depth in the star: https://astronomy.stackexchange.com/a/32734
 						conduct: 0.5,
 					};
-
 					elements.stellar_plasma = {
 						color: "#ffffbd",
 						colorOn: "#ffffbd",
@@ -27553,7 +25284,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						density: 10,
 						conduct: 0.5,
 					};
-
 					elements.neutron_star = {
 						color: "#e9eaf7",
 						colorOn: "#ffffbd",
@@ -27572,7 +25302,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						insulate: true,
 						conduct: 1,
 					};
-
 					elements.liquid_degenerate_neutronium = {
 						color: "#e9eaf7",
 						behavior: [
@@ -27597,7 +25326,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						density: 100000, //i'm not doing any more research on these neutron stars because google is useless
 						conduct: 1,
 					};
-
 					elements.gaseous_degenerate_neutronium = {
 						color: "#e9eaf7",
 						behavior: [
@@ -27622,15 +25350,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						density: 10000, //i'm not doing any more research on these neutron stars because google is useless
 						conduct: 1,
 					};
-
 					elements.supernova.behavior = [
 						"XX|XX|XX",
 						"XX|EX:80>plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,molten_iron,molten_uranium,molten_lead AND CH:neutron_star,neutron_star,neutron_star,neutronium,quark_matter,void|XX",
 						"XX|XX|XX",
 					]
-
 					elements.plasma.noConduct = ["plasma_torch","stellar_plasma","liquid_stellar_plasma","liquid_degenerate_neutronium","gaseous_degenerate_neutronium","neutron_star"]; //I can't suppress the charge overlay and keep the tick color, only effective with noConduct.js but not strictly required
-
 					//Tangentially linked
 					elements.rainbow_sun = {
 						color: ["#ffbdbd", "#f2ffbd", "#bdffd7", "#bdd7ff", "#f2bdff"],
@@ -27647,11 +25372,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						stateLow: "supernova",
 						category: "special",
 						state: "gas",
-						//density: 1408, 
+						//density: 1408,
 						insulate: true,
 						nellfireImmune: true,
 					};
-
 					//Tangentially linked
 					elements.rainbow_fire = {
 						color: [
@@ -27696,10 +25420,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						ignoreAir: true,
 						noMix: true,
 					};
-
 					elements.color_smoke.tempHigh = 610;
 					elements.color_smoke.stateHigh = "rainbow_fire";
-
 					//I guess other worlds do still fall under the purview of TGJS (future alice: i forgot what tgjs stands for)
 					function nellsunColor(pixel) {
 						if (pixel.temp < 0) { pixel.color = pixelColorPick(pixel,"#615e5e"); var c=0 }
@@ -27732,7 +25454,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						else { pixel.color = pixelColorPick(pixel,"#0099ff"); var c=0.9 }
 						return c;
 					};
-
 					function nellSLAC(pixel,c,whitelist=["sun","nellsun"]) {
 						for (var i = 0; i < adjacentCoords.length; i++) {
 							var x = pixel.x+adjacentCoords[i][0];
@@ -27755,7 +25476,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							}
 						}
 					};
-
 					elements.nellsun = {
 						color: ["#ff26ac", "#ffb8e4", "#ffffff", "#b7ffa8", "#2df7b4"],
 						tick: function(pixel) {
@@ -27771,11 +25491,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						stateLow: "supernova",
 						category: "special",
 						state: "gas",
-						//density: 1408, 
+						//density: 1408,
 						insulate: true,
 						nellfireImmune: true,
 					};
-
 					elements.nellfire = {
 						excludeRandom: true,
 						color: ["#ff8929","#ffb429","#ffde0a"],
@@ -27816,7 +25535,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						noMix: true,
 						desc: "Researchers first came into this place and thought it was Hell&mdash; it wasn't, so they renamed it Nell (Not Hell). They still named the materials in it hell references, though.",
 					},
-
 					elements.dantite = {
 						color: ["#5effba", "#85edd1", "#62d9c7", "#3efa9c", "#21b9db"],
 						tempHigh: 2000,
@@ -27827,14 +25545,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						hardness: 0.47,
 						nellfireImmune: "torch",
 					};
-
 					elements.molten_dantite = {
 						color: ["#5eff6b", "#70faaa", "#31e08b", "#a1f051"],
 						density: 4012,
 						hardness: 0.84,
 						nellfireImmune: "torch",
 					};
-
 					elements.limtupyte = { //λίμνη τοῦ πυρός
 						color: ["#212121", "#212121", "#40221f", "#611d14"],
 						behavior: behaviors.WALL,
@@ -27846,7 +25562,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						tempHigh: 9011,
 						stateHigh: "alpha_limtupyte",
 					};
-
 					elements.alpha_limtupyte = {
 						name: "α-limtupyte",
 						color: ["#6e1414", "#8f210b", "#a34910", "#c27115"],
@@ -27863,7 +25578,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						tempLow: 9011,
 						stateLow: "limtupyte",
 					};
-
 					elements.beta_limtupyte = {
 						name: "β-limtupyte",
 						color: ["#e68917", "#ffbd24", "#ffe940", "#ffff61"],
@@ -27880,7 +25594,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						tempLow: 11022,
 						stateLow: "alpha_limtupyte",
 					};
-
 					elements.limtupyte_gas = {
 						color: ["#ffff80", "#ffe940", "#feffd1", "#ffffff"],
 						density: 17.12,
@@ -27894,9 +25607,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						tempLow: 14316,
 						stateLow: "beta_limtupyte",
 					};
-
 				//Main preset
-
 					worldgentypes.star = {
 						layers: [
 							[0.9, "stellar_plasma"],
@@ -27908,11 +25619,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						baseHeight: 0.3,
 						temperature: 6500,
 					};
-
 			//Radioactive Desert
-
 				//Main preset
-
 					/*worldgentypes.nuclear_wasteland_desert = {
 						layers: [
 							[0.97, "fallout", 0.4],
@@ -27929,17 +25637,15 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						],
 						temperature: -13
 					};*/
-
 		runAfterLoad(function() {
 			elements.muddy_water.reactions.mud.elem2 = "soil_sediment";
 			elements.muddy_water.reactions.muddy_water.elem2 = "soil_sediment"
 		});
-
 	//PRIMITIVE IN-GAME CONSOLE ##
 	//featuring stars
 		customWorldTypes = {};
 		if(localStorage.getItem("customWorldTypes") == null) {
-			localStorage.setItem("customWorldTypes",JSON.stringify(customWorldTypes))	
+			localStorage.setItem("customWorldTypes",JSON.stringify(customWorldTypes))
 		} else {
 			customWorldTypes = JSON.parse(localStorage.getItem("customWorldTypes"));
 			for(var name in customWorldTypes) {
@@ -27947,50 +25653,36 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			};
 			runAfterLoad(rebuildWorldgenList)
 		};
-
 		var promptInputNullishes = ["null","none","","n/a"];
 		var eightSpaces = " ".repeat(8);
-
 		commandHelpObject = {
 			"set": "Sets properties for every pixel of a given type.\nUsage: set [property] [element] [value] <type>\nDon't include framing characters []<>.\nThe element can be \"all\" to set the property for every pixel.\nNote: Strings can't have spaces because spaces are the separator used in the parsing split().\nArguments in [brackets] are required and ones in <angle brackets> are optional.",
-
 			"test": "Test.",
-
 			"setdimensions": "#This command clears the canvas#\nSets the width and height of the canvas and resets it to regenerate pixelMap.\nThis is offsetted so it doesn't count the OoB area on the top left; a 50x50 save will have a 50x50 usable area.\nUsage: setdimensions [width] [height] <pixel rendering size>.\nDon't include framing characters []<>.\nArguments in [brackets] are required and ones in <angle brackets> are optional.",
-
 			"pixelsize": "Sets the size of the pixels on screen. If no size is given, it instead alerts the current pixel size. Usage: pixelsize <pixel rendering size>.\nDon't include framing characters <>.\nArguments in <angle brackets> are optional.",
-
 			"dimensions": "Alerts the current dimensions. Usage: dimensions",
-
 			"fill": "Fills the screen with the given pixel(s). Usage: fill [Overwrite pixels? (bool)] [element] <additional elements>.\nDon't include framing characters []<>.\nArguments in [brackets] are required and ones in <angle brackets> are optional.\nAdditional elements are separated by spaces.",
-
 			"randomfill": "Fills the screen with pixels from randomChoices. Usage: randomfill <overwrite pixels? (bool, default: true)>\nDon't include framing characters []<>.\nArguments in <angle brackets> are optional.",
-
 			"count": "Tells you the amount of a specified pixel on the screen. Usage: count [element]\nDon't include framing characters []<>.\nArguments in [brackets] are required.",
-
 			"countall": "Logs to console a list of all elements on screen and their amounts. Usage: countall.",
-
-			"worldgen": 
+			"worldgen":
 `Names or sets the current world type, lists all world types, or generates a given world type.
 Usages:
 ${eightSpaces}Show the current worldgen setting: worldgen
 ${eightSpaces}List all available worldgen settings: worldgen list
 ${eightSpaces}Set the current worldgen setting: worldgen set [setting]
 ${eightSpaces}Generate a specified worldgen setting: worldgen generate [setting]`,
-
 			"defineworldgen":
 `Creates or replaces a worldgen preset.
 Usage (See below for formats):  [name] [layers] <baseHeight> <heightVariance> <complexity> <temperature> <decor>.
 Don't include framing characters []<>.
 Arguments in [brackets] are required and ones in <angle brackets> are optional.",
-
 (Required) name: String. Cannot have spaces. Example: grass
-(Required) layers: 
+(Required) layers:
 ${eightSpaces}Each layer is specified as [RelativeBottomStartPosition:ElementName]<:PixelProbability>
 ${eightSpaces}Layers are joined with the semicolon ;
 ${eightSpaces}Layer definitions must not have any spaces.
 ${eightSpaces}Example full layer definition: 0.85:grass;0.5:dirt;0.05:rock;-0.2:basalt`,
-
 			"defineworldgen2":
 `(Optional) baseHeight: Number (ideally between 0 and 1). Default: 0.5.
 (Optional) heightVariance: Number. Default: 0.5.
@@ -28001,10 +25693,8 @@ ${eightSpaces}Each decor layer is specified as [ElementName:PixelProbability]<:D
 ${eightSpaces}Distance from top, if not specified, defaults to 5.
 ${eightSpaces}The fourth part (optional) is a list of hex codes (like #FFFFFF) separated by commas.
 ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF00;diamond:0.3:5`,
-
 			"help": "Usage: help <command>\nDon't include framing characters []<>\nArguments in <angle brackets> are optional."
 		};
-
 		commandHelpObject.stars = "Clears the screen and replaces it with random stars. Usage: stars <density (number, default: 0.001)> <seed (string or number, no default value)>\nDon't include framing characters <>.\nArguments in <angle brackets> are optional."
 		commandHelpObject.starseed = "Alerts the last used seed for stars. Usage: starseed";
 		var lastStarSeed = "[None]";
@@ -28022,7 +25712,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			//console.log("finished");
 			return true;
 		};
-
 			//G
 		elements.red_giant = {
 			color: "#f19898",
@@ -28037,7 +25726,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			cooldown: defaultCooldown,
 			density: 1000,
 		};
-
 		elements.blue_giant = {
 			color: "#a085eb",
 			behavior: behaviors.WALL,
@@ -28051,7 +25739,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			cooldown: defaultCooldown,
 			density: 1000,
 		};
-
 		elements.yellow_giant = {
 			color: "#fafad4",
 			behavior: behaviors.WALL,
@@ -28065,7 +25752,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			cooldown: defaultCooldown,
 			density: 1000,
 		};
-
 			//SG
 		elements.red_supergiant = {
 			color: "#f48585",
@@ -28080,7 +25766,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			cooldown: defaultCooldown,
 			density: 1000,
 		};
-
 		elements.blue_supergiant = {
 			color: "#93b0ec",
 			behavior: behaviors.WALL,
@@ -28094,7 +25779,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			cooldown: defaultCooldown,
 			density: 1000,
 		};
-
 		elements.yellow_supergiant = {
 			color: "#f4f9ae",
 			behavior: behaviors.WALL,
@@ -28108,7 +25792,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			cooldown: defaultCooldown,
 			density: 1000,
 		};
-
 			//HG
 		elements.red_hypergiant = {
 			color: "#ee5d5d",
@@ -28123,7 +25806,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			cooldown: defaultCooldown,
 			density: 1000,
 		};
-
 		elements.blue_hypergiant = {
 			color: "#719df4",
 			behavior: behaviors.WALL,
@@ -28137,7 +25819,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			cooldown: defaultCooldown,
 			density: 1000,
 		};
-
 		elements.yellow_hypergiant = {
 			color: "#f7f990",
 			behavior: behaviors.WALL,
@@ -28151,7 +25832,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			cooldown: defaultCooldown,
 			density: 1000,
 		};
-
 		/*	//Commented debug code: Yellow ultragiant spawner definition but for after the game has already fully loaded
 			elements.yellow_ultragiant = {
 				color: convertColorFormats("#f7f990","rgb"),
@@ -28168,7 +25848,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			nextid++;
 			elementCount++;
 			createElementButton("yellow_ultragiant");*/
-
 		//luminosity class -I
 		elements.red_ultragiant = {
 			color: "#f04343",
@@ -28183,7 +25862,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			cooldown: defaultCooldown,
 			density: 1000,
 		};
-
 		elements.blue_ultragiant = {
 			color: "#5488f0",
 			behavior: behaviors.WALL,
@@ -28197,7 +25875,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			cooldown: defaultCooldown,
 			density: 1000,
 		};
-
 		elements.yellow_ultragiant = {
 			color: "#fafc7e",
 			behavior: behaviors.WALL,
@@ -28211,8 +25888,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			cooldown: defaultCooldown,
 			density: 1000,
 		};
-
-
 		//luminosity class -II
 		elements.red_super_ultragiant = {
 			color: "#f23329",
@@ -28227,7 +25902,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			cooldown: defaultCooldown,
 			density: 1000,
 		};
-
 		elements.blue_super_ultragiant = {
 			color: "#3b85ed",
 			behavior: behaviors.WALL,
@@ -28241,7 +25915,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			cooldown: defaultCooldown,
 			density: 1000,
 		};
-
 		elements.yellow_super_ultragiant = {
 			color: "#fcfc65",
 			behavior: behaviors.WALL,
@@ -28255,8 +25928,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			cooldown: defaultCooldown,
 			density: 1000,
 		};
-
-
 		//luminosity class -III
 		elements.red_hyper_ultragiant = {
 			color: "#f51a0f",
@@ -28271,7 +25942,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			cooldown: defaultCooldown,
 			density: 1000,
 		};
-
 		elements.blue_hyper_ultragiant = {
 			color: "#1b8bf2",
 			behavior: behaviors.WALL,
@@ -28285,7 +25955,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			cooldown: defaultCooldown,
 			density: 1000,
 		};
-
 		elements.yellow_hyper_ultragiant = {
 			color: "#faeb46",
 			behavior: behaviors.WALL,
@@ -28299,8 +25968,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			cooldown: defaultCooldown,
 			density: 1000,
 		};
-
-
 		//luminosity class -IV
 		elements.red_ultra_ultragiant = {
 			color: "#e01a00",
@@ -28315,7 +25982,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			cooldown: defaultCooldown,
 			density: 1000,
 		};
-
 		elements.blue_ultra_ultragiant = {
 			color: "#0782ed",
 			behavior: behaviors.WALL,
@@ -28329,7 +25995,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			cooldown: defaultCooldown,
 			density: 1000,
 		};
-
 		elements.yellow_ultra_ultragiant = {
 			color: "#f7d52a",
 			behavior: behaviors.WALL,
@@ -28343,7 +26008,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			cooldown: defaultCooldown,
 			density: 1000,
 		};
-
 		function rgbStringToUnvalidatedObject(string) {
 			var numbers = string.match(/[\d\.]+/g);
 			var red = numbers[0];
@@ -28356,7 +26020,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			numbers = numbers.map(x => parseFloat(x));
 			return result
 		};
-
 		function hslStringToUnvalidatedObject(string) {
 			var numbers = string.match(/[\d\.]+/g);
 			var hue = numbers[0];
@@ -28369,14 +26032,12 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			numbers = numbers.map(x => parseFloat(x));
 			return result
 		};
-
 		function rebuildWorldgenList() { //vanilla code
 			document.getElementById("worldgenselect").innerHTML = '<option value="off">Disabled</option>';
 			for (var key in worldgentypes) {
 				document.getElementById("worldgenselect").innerHTML += "<option value='" + key + "'>" + key.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase()) + "</option>";
 			};
 		};
-
 		function bareClear() {
 			currentPixels = [];
 			pixelMap = [];
@@ -28387,7 +26048,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 				}
 			}
 		};
-
 		function alertIfError(alertError,text) {
 			if(alertError) {
 				alert(text);
@@ -28396,25 +26056,21 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 				return(false);
 			}
 		}
-
 		function alertIfOutput(alertOutput,text) {
-			if(alertOutput) { 
+			if(alertOutput) {
 				alert(text);
 				return(true);
 			} else {
 				return(false);
 			}
 		}
-
 		function parsefloatFirst(arr) { var array = arr; array[0] = parseFloat(array[0]); return array };
 		function stringToLayers(string) {
 			return string.split(";").map(x => x.split(":")).map(y => parsefloatFirst(y));
 		};
-
 		function validateSingleHexCode(hexCode) {
 			return !!"#FFFFFF".match(/^#[0-9A-F]{6}$/);
 		};
-
 		function validateHexColorArray(colorsArray) {
 			if(!(colorsArray instanceof Array)) {
 				return false;
@@ -28428,7 +26084,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			};
 			return !!colorsIsValid;
 		};
-
 		function validateSingleLayer(layerArray) {
 			if(layerArray.length < 2) {
 				return false;
@@ -28449,7 +26104,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			};
 			return true;
 		};
-
 		function validateLayersStructure(layersArray) {
 			if(!(layersArray instanceof Array)) {
 				return false;
@@ -28463,7 +26117,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			};
 			return !!layersIsValid;
 		};
-
 		function stringToDecor(string) {
 			decorLayers = string.split(";").map(x => x.split(":"));
 			for(var q in decorLayers) {
@@ -28481,7 +26134,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			return decorLayers;
 		};
 		//console.log(stringToDecor("bird:0.025:10:#FF0000,#FFFF00,#00FF00"));
-
 		function validateSingleDecorLayer(decorLayer) {
 			if(decorLayer.length < 2) {
 				return false;
@@ -28504,7 +26156,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			};
 			return true;
 		};
-
 		function validateDecorStructure(decorArraysArray) {
 			if(!(decorArraysArray instanceof Array)) {
 				return false;
@@ -28518,7 +26169,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			};
 			return !!decorIsValid;
 		};
-
 		function funniPrompt(argument=null,alertOutput=true,alertError=true) {
 			argument === null ? inputText = prompt("Enter command") : inputText = argument;
 			// replace spaces with underscores
@@ -28543,7 +26193,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			};
 			inputAsArray = inputText.split(" ");
 			var firstItem = inputAsArray[0];
-
 			switch(firstItem.toLowerCase()) {
 				case "set":
 					if(inputAsArray.length < 4) {
@@ -28561,7 +26210,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 						type = inputAsArray[4];
 					};
 					//console.log("Type gotten: " + type);
-
 					if(type === null) {
 						type = null; //catch null type
 					} else if(numberSynonyms.includes(type.toLowerCase())) {
@@ -28575,13 +26223,11 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 					} else if(objectSynonyms.includes(type.toLowerCase())) {
 						type = "object";
 					};
-
 					var typeWhitelist = [null,"string","number","boolean","array","object"];
 					if(!typeWhitelist.includes(type)) {
 						alertIfError(alertError,"Unrecognized type: \"" + type + "\".");
 						return false;
 					};
-
 					if(type === null) {
 						if(defaultStringTypeValues.includes(property)) {
 							type = "string";
@@ -28596,7 +26242,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 							return false;
 						}
 					}
-
 					if(type === "number") {
 						value = parseFloat(value);
 						if(isNaN(value)) {
@@ -28657,9 +26302,7 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 						value = array;
 					}
 					//The values start out as strings when split from the array, so string is kind of the default form.
-
 					//Special validation
-
 					if(property === "element") {
 						var originalInput = value; //for error display
 						value = mostSimilarElement(value);
@@ -28709,7 +26352,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 							return false;
 						};
 					};
-
 					//Actual setting code;
 					var setCount = 0;
 					for (var i = 1; i < width; i++) {
@@ -28736,13 +26378,9 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 						alertIfError(alertError,commandHelpObject.setdimensions);
 						return false;
 					};
-
 					var argWidth = inputAsArray[1];
-
 					var argHeight = inputAsArray[2];
-
 					var argPixelSize = inputAsArray[3];
-
 					if(argWidth == undefined) {
 						alertIfError(alertError,commandHelpObject.setdimensions);
 						return false;
@@ -28760,7 +26398,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 							};
 						};
 					};
-
 					if(argHeight == undefined) {
 						alertIfError(alertError,commandHelpObject.setdimensions);
 						return false;
@@ -28778,7 +26415,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 							};
 						};
 					};
-
 					if(argPixelSize == undefined) {
 						argPixelSize = null;
 					} else {
@@ -28795,28 +26431,21 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 							};
 						};
 					};
-
 					width = argWidth + 1;
-
 					height = argHeight + 1;
-
 					if(typeof(argPixelSize) === "number" && argPixelSize !== null && !isNaN(argPixelSize)) {
 						if(argPixelSize > 0) {
 							pixelSize = argPixelSize;
 						};
 					};
-
 					clearAll();
-
 					return true;
 				case "pixelsize":
 					if(inputAsArray.length < 1) { //?
 						alertIfError(alertError,commandHelpObject.setpixelsize);
 						return false;
 					};
-
 					var argPixelSize = inputAsArray[1];
-
 					if(argPixelSize == undefined) {
 						argPixelSize = null;
 					} else {
@@ -28827,7 +26456,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 							return false;
 						};
 					};
-
 					if(typeof(argPixelSize) === "number" && argPixelSize !== null && !isNaN(argPixelSize)) {
 						if(argPixelSize <= 0) {
 							alert("Pixel size must be greater than 0");
@@ -28841,30 +26469,24 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 					} else {
 						alert(pixelSize);
 					};
-
 					return pixelSize;
 				case "dimensions":
 					if(inputAsArray.length < 1) { //?
 						alertIfError(alertError,commandHelpObject.dimensions);
 						return false;
 					};
-
 					alert(`width: ${width}
 height: ${height}
 (Usable area is 1 pixel less in both dimensions)`);
-
 					return [width,height];
 				case "fill":
 					if(inputAsArray.length < 3) {
 						alertIfError(alertError,commandHelpObject.fill);
 						return false;
 					};
-
 					var doOverwrite = inputAsArray[1];
-
 					var elementList = inputAsArray.slice(2);
 					//console.log(elementList);
-
 					for(i = 0; i < elementList.length; i++) {
 						var elementInConsideration = elementList[i]
 						var originalElement = elementInConsideration; //also for error display
@@ -28876,7 +26498,6 @@ height: ${height}
 						elementList[i] = elementInConsideration;
 					};
 					//console.log(elementList);
-
 					if(synonymsOfTrue.includes(doOverwrite.toLowerCase())) {
 						doOverwrite = true;
 					} else if(synonymsOfFalse.includes(doOverwrite.toLowerCase())) {
@@ -28887,7 +26508,6 @@ height: ${height}
 					}
 					//console.log(doOverwrite);
 					//console.log(elementList);
-
 					//Fill code
 					var fillCount = 0;
 					for (var i = 1; i < width; i++) {
@@ -28909,9 +26529,7 @@ height: ${height}
 						alertIfError(alertError,"Usage: randomfill <overwrite (should be a bool) (default: true)>\nDon't include framing characters []<>.\nArguments in <angle brackets> are optional.");
 						return false;
 					};
-
 					var doOverwrite = null;
-
 					if(inputAsArray.length > 1) {
 						var doOverwrite = inputAsArray[1];
 						if(synonymsOfTrue.includes(doOverwrite.toLowerCase())) {
@@ -28925,9 +26543,7 @@ height: ${height}
 					} else {
 						doOverwrite = true;
 					};
-
 					var elementList = randomChoices;
-
 					//Fill code
 					var fillCount = 0;
 					for (var i = 1; i < width; i++) {
@@ -28951,7 +26567,6 @@ height: ${height}
 					};
 					var inputElement = inputAsArray[1];
 					//console.log("Element gotten: " + inputElement);
-
 					var originalInput = inputElement; //for error display
 					inputElement = mostSimilarElement(inputElement);
 					//console.log("Element gotten: " + inputElement);
@@ -28959,7 +26574,6 @@ height: ${height}
 						alertIfError(alertError,"Element " + originalInput + " does not exist!");
 						return false;
 					}
-
 					//Actual counting code;
 					var count = 0;
 					for (var i = 1; i < width; i++) {
@@ -28977,7 +26591,6 @@ height: ${height}
 					return count;
 				case "countall":
 					var listObject = {};
-
 					//Listing code;
 					for (var i = 1; i < width; i++) {
 						for (var j = 1; j < height; j++) {
@@ -28992,7 +26605,6 @@ height: ${height}
 							};
 						};
 					};
-
 					var formattedList = "";
 					var zelements = Object.keys(listObject);
 					for(k = 0; k < zelements.length; k++) {
@@ -29000,7 +26612,6 @@ height: ${height}
 						var elementCount = listObject[elementName];
 						formattedList += `${elementName}: ${elementCount}\n`;
 					};
-
 					alertIfOutput(alertOutput,"Elements counts logged to console");
 					console.log(formattedList);
 					return listObject;
@@ -29010,13 +26621,11 @@ height: ${height}
 						alertIfError(alertError,commandHelpObject.worldgen);
 						return false;
 					};
-
 					var action = inputAsArray[1];
 					if(!action) {
 						alertIfOutput(`Current worldgen setting: ${settings.worldgen}`);
 						return settings.worldgen;
 					};
-
 					var worldgenTypesList = Object.keys(worldgentypes).concat(["off"]);
 					if(["list","lst","ls","l"].includes(action)) {
 						alertIfOutput(alertOutput,worldgenTypesList.join(",  "));
@@ -29061,16 +26670,13 @@ height: ${height}
 					};
 					var presetName = inputAsArray[1];
 					//overwrite confirm below
-
 					var newPreset = {};
-
 					var layers = stringToLayers(inputAsArray[2]);
 					if(!validateLayersStructure(layers)) {
 						alertIfError(alertError,"Layers definition is invalid or malformed!");
 						return false;
 					};
 					newPreset.layers = layers;
-
 					var baseHeight = inputAsArray[3];
 					if(typeof(baseHeight) !== "undefined") {
 						if(promptInputNullishes.includes(baseHeight)) {
@@ -29083,7 +26689,6 @@ height: ${height}
 						};
 						newPreset.baseHeight = baseHeight;
 					};
-
 					var heightVariance = inputAsArray[4];
 					if(typeof(heightVariance) !== "undefined") {
 						if(promptInputNullishes.includes(heightVariance)) {
@@ -29096,7 +26701,6 @@ height: ${height}
 						};
 						newPreset.heightVariance = heightVariance;
 					};
-
 					var complexity = inputAsArray[5];
 					if(typeof(complexity) !== "undefined") {
 						if(promptInputNullishes.includes(complexity)) {
@@ -29109,7 +26713,6 @@ height: ${height}
 						};
 						newPreset.complexity = complexity;
 					};
-
 					var temperature = inputAsArray[6];
 					if(typeof(temperature) !== "undefined") {
 						if(promptInputNullishes.includes(temperature.toLowerCase())) {
@@ -29123,7 +26726,6 @@ height: ${height}
 							newPreset.temperature = temperature;
 						};
 					};
-
 					var decor = inputAsArray[7];
 					if(typeof(decor) !== "undefined") {
 						decor = stringToDecor(decor);
@@ -29133,7 +26735,6 @@ height: ${height}
 						};
 						newPreset.decor = decor;
 					};
-
 					if(worldgentypes[presetName]) {
 						var doOverwrite = confirm(`Overwrite worldgen preset ${presetName}?`);
 						if(!doOverwrite) {
@@ -29146,7 +26747,6 @@ height: ${height}
 					localStorage.setItem("customWorldTypes",JSON.stringify(customWorldTypes));
 					settings.worldgen = presetName;
 					rebuildWorldgenList();
-
 					alertIfOutput(alertOutput, `Defined worldgen preset ${presetName}.
 Make sure to save your command in a file if you want to add this preset again.`
 	);
@@ -29154,9 +26754,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					return [presetName,newPreset];
 				case "stars":
 					var starDensity = inputAsArray[1];
-
 					var seed = inputAsArray[2]; //〜カクセイ〜
-
 					if(starDensity == undefined) {
 						starDensity = 0.001
 					} else {
@@ -29166,10 +26764,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 							starDensity = 0.001;
 						};
 					};
-
 					var stringSeed = false;
 					var seedString = null;
-
 					if(seed === undefined) {
 						seed = Math.random();
 						stringSeed = false;
@@ -29183,19 +26779,16 @@ Make sure to save your command in a file if you want to add this preset again.`
 							seed = parseFloat(seed);
 						};
 					};
-
 					lastStarSeed = stringSeed ? seedString : seed;
 					//console.log(stringSeed);
 					//console.log(lastStarSeed);
 					var randomFunction = mulberry32(seed);
-
 					clearAll();
 					for(j = 1; j < height; j++) {
 						for(i = 1; i < width; i++) {
 							if(randomFunction() < starDensity) {
 								if(isEmpty(i,j,false)) {
 									var value = randomFunction() ** 4;
-
 									if(value < 0.3) {
 										createPixelReturn("sun",i,j).temp = seededRandBetween(1800,3300,randomFunction);
 									} else if(value < 0.55) {
@@ -29308,7 +26901,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						alertOutput ? alertIfOutput(alertOutput,"Commands: " + commandsWithoutDwg2.join("\n")) : console.log("Commands: " + commandsWithoutDwg2.join(", "));
 					} else {
 						var command = inputAsArray[1];
-
 						if(typeof(commandHelpObject[command]) === "undefined" || command == "defineworldgen2") {
 							alertIfError(alertError,"Cound not find help for " + command + ".");
 							return false;
@@ -29336,25 +26928,20 @@ Make sure to save your command in a file if you want to add this preset again.`
 					return false;
 			};
 		};
-
 		document.addEventListener("keydown", function(e) { //prop prompt listener
 			// , = propPrompt()
 			if ([1,3].includes(shiftDown) && e.keyCode == 49) { //either shift + 1
 				funniPrompt();
 			};
 		});
-
 		elements.funni_prompt = {
 			color: ["#000000","#00ff00","#000000","#00ff00","#000000","#00ff00","#000000","#00ff00","#000000","#00ff00"],
 			behavior: behaviors.SELFDELETE,
 			desc: "<span style='color:#FF00FF;' onClick=funniPrompt()>Click here or press Shift+1 to open the command prompt.</span>",
 			category:"special",
 		};
-
 	//REPLACER TOOL ##
-
 		changeTo = "sand";
-
 		document.addEventListener("keydown", function(e) { //change prompt listener
 			// r = changeElementPrompt()
 			if (e.keyCode == 186) {
@@ -29362,7 +26949,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				changeElementPrompt();
 			}
 		});
-
 		function changeElementPrompt() {
 			var cmToElement = prompt("Enter what you want to change pixels to");
 			if(cmToElement == null) { return };
@@ -29374,15 +26960,13 @@ Make sure to save your command in a file if you want to add this preset again.`
 				cmToElementS = "sand";
 			};
 			changeTo = cmToElementS;
-			updateChangeDescriptions();	
+			updateChangeDescriptions();
 		}
-
 		function updateChangeDescriptions() {
 			elements.change.desc = "Changes any pixels it is used on to a specified type.<br/>Currently replacing pixels with \"" + changeTo + "\".<br/><span onclick=changeElementPrompt() style=\"color: #ff00ff;\";>Press [;] or click here</span> to open the change prompt.";
 			elements.alt_change.desc = "Changes any pixels it is used on to a specified type, but keeping their non-element-based properties.<br/>Currently replacing pixels with \"" + changeTo + "\".<br/><span onclick=changeElementPrompt() style=\"color: #ff00ff;\";>Press [;] or click here</span> to open the change prompt.";
 			elements.alt_alt_change.desc = "Changes any pixels it is used on to a specified type, but keeping their non-element-based properties except for color.<br/>Currently replacing pixels with \"" + changeTo + "\".<br/><span onclick=changeElementPrompt() style=\"color: #ff00ff;\";>Press [;] or click here</span> to open the change prompt.";
 		};
-
 		elements.change = {
 			color: ["#ff0000", "#ff0000", "#ff0000", "#7f00ff", "#0000ff", "#0000ff", "#0000ff"],
 			tool: function(pixel) {
@@ -29391,7 +26975,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "tools",
 			desc: "Changes any pixels it is used on to a specified type.<br/>Currently replacing pixels with \"" + changeTo + "\".<br/><span onclick=changeElementPrompt() style=\"color: #ff00ff;\";>Press [;] or click here</span> to open the change prompt.",
 		};
-
 		elements.alt_change = {
 			color: ["#ffff00", "#ffff00", "#ffff00", "#cf7f4f", "#ff00ff", "#ff00ff", "#ff00ff"],
 			tool: function(pixel) {
@@ -29401,7 +26984,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			desc: "Changes any pixels it is used on to a specified type, but keeping their non-element-based properties.<br/>Currently replacing pixels with \"" + changeTo + "\".<br/><span onclick=changeElementPrompt() style=\"color: #ff00ff;\";>Press [;] or click here</span> to open the change prompt.",
 			hidden: true,
 		};
-
 		elements.alt_alt_change = {
 			color: ["#00ff00", "#00ff00", "#00ff00", "#cfcf00", "#ff0000", "#ff0000", "#ff0000"],
 			tool: function(pixel) {
@@ -29412,9 +26994,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			desc: "Changes any pixels it is used on to a specified type, but keeping their non-element-based properties except for color.<br/>Currently replacing pixels with \"" + changeTo + "\".<br/><span onclick=changeElementPrompt() style=\"color: #ff00ff;\";>Press [;] or click here</span> to open the change prompt.",
 			hidden: true,
 		};
-
 	//ADDITIONAL RAYS ##
-
 		runAfterAutogen(function() {
 			snowAndIceCache = Object.keys(elements).filter(function(name) {
 				return name.endsWith("snow") || name.endsWith("ice") || name == "rime"
@@ -29439,7 +27019,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				}
 			}
 		});
-
 		elements.insulate_flash = {
 			hidden: true,
 			color: "#fffdcf",
@@ -29463,7 +27042,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			noMix: true,
 			insulate: true
 		};
-
 		elements.heat_ray.tick = function(pixel) {
 			var x = pixel.x;
 			for (var y = pixel.y; y < height; y++) {
@@ -29483,12 +27061,10 @@ Make sure to save your command in a file if you want to add this preset again.`
 				}
 			}
 			deletePixel(pixel.x, pixel.y);
-		};	
-
+		};
 		elements.sun.isSun = true;
 		if(elements.nellsun) { elements.nellsun.isSun = true };
 		if(elements.rainbow_sun) { elements.rainbow_sun.isSun = true };
-
 		elements.cold_ray = {
 			color: ["#00ffae","#00ffff"],
 			tick: function(pixel) {
@@ -29509,7 +27085,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 							} else {
 								pixelMap[x][y].temp -= 50;
 							};
-							continue; 
+							continue;
 						};
 						if (elements[pixelMap[x][y].element].id === elements.cold_ray.id) { break }
 						pixelMap[x][y].temp -= 150;
@@ -29524,7 +27100,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			excludeRandom: true,
 			noMix: true
 		};
-
 		elements.freeze_ray = {
 			color: ["#7fbfff","#bfffff"],
 			tick: function(pixel) {
@@ -29557,10 +27132,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 							};
 							continue;
 						};
-
 						//Self: Break
 						if (otherInfo.id === elements.freeze_ray.id) { break }
-
 						//Non-gas, Freeze chance, cool more, half penetrate
 						if(Math.random() < 0.05 && otherInfo.stateLow) {
 							if(otherInfo.stateLow.includes("supernova") || otherInfo.stateLow.includes("gamma_ray_burst")) {
@@ -29570,9 +27143,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 							};
 						};
 						pixelMap[x][y].temp -= 150;
-
 						if(Math.random() < 0.05) {
-
 							if(!isEmpty(x,y-1,false)) {
 								if(pixelMap[x]?.[y-1]?.element && lightlikes.includes(pixelMap[x][y-1].element)) {
 									deletePixel(x,y-1);
@@ -29581,12 +27152,10 @@ Make sure to save your command in a file if you want to add this preset again.`
 							var newSnow = tryCreatePixelReturn("snow",x,y-1);
 							if(newSnow) { newSnow.temp = -100 };
 						};
-
 						//Penetrate snow and ice
 						if(snowAndIceCache && snowAndIceCache.includes(otherPixel.element)) {
 							continue;
 						};
-
 						if(Math.random() < 0.7) { //thanks, I hate random continue
 							continue;
 						};
@@ -29601,7 +27170,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			excludeRandom: true,
 			noMix: true
 		};
-
 		elements.melt_ray = {
 			color: ["#ffbf7f","#ffffbf"],
 			tick: function(pixel) {
@@ -29630,18 +27198,14 @@ Make sure to save your command in a file if you want to add this preset again.`
 							};
 							continue;
 						};
-
 						//Self: Break
 						if (otherInfo.id === elements.melt_ray.id) { break }
-
 						//Non-gas, Melt chance, heat more, half penetrate
 						if(Math.random() < 0.05 && !otherInfo.isGas) {
 							meltPixel(otherPixel)
 						};
 						pixelMap[x][y].temp += 200;
-
 						if(Math.random() < 0.05) {
-
 							if(!isEmpty(x,y-1,false)) {
 								if(pixelMap[x]?.[y-1]?.element && lightlikes.includes(pixelMap[x][y-1].element)) {
 									deletePixel(x,y-1);
@@ -29650,12 +27214,10 @@ Make sure to save your command in a file if you want to add this preset again.`
 							var newPlasma = tryCreatePixelReturn("liquid_plasma",x,y-1);
 							if(newPlasma) { newPlasma.temp += 500 };
 						};
-
 						//Penetrate snow and ice
 						if(firelikes && firelikes.includes(otherPixel.element)) {
 							continue;
 						};
-
 						if(Math.random() < 0.7) { //thanks, I hate random continue
 							continue;
 						};
@@ -29670,7 +27232,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			excludeRandom: true,
 			noMix: true
 		};
-
 		elements.smash_ray = {
 			color: ["#ff9999", "#8c8279"],
 			tick: function(pixel) {
@@ -29696,7 +27257,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 									otherPixel.vy = vels[1];
 								};
 								continue;
-
 							};
 							if (otherInfo.id === elements.heat_ray.id) { break }
 							if(Math.random() > ((otherInfo.hardness ?? 0) ** 2)) { breakPixel(otherPixel,false,false) };
@@ -29720,7 +27280,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			excludeRandom: true,
 			noMix: true
 		};
-
 		//combines heat ray and smash ray
 		elements.death_ray = {
 			color: ["#a88d77", "#ff4a36"],
@@ -29749,7 +27308,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 									otherPixel.vy = vels[1];
 								};
 								continue;
-
 							};
 							if (otherInfo.id === elements[pixel.element].id) { break }
 							if(Math.random() > ((otherInfo.hardness ?? 0) ** (2 + shiftDown))) { breakPixel(otherPixel,false,false) };
@@ -29773,7 +27331,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			excludeRandom: true,
 			noMix: true
 		};
-
 		elements.annihilation_ray = {
 			color: ["#220c0c", "#c11515"],
 			tick: function(pixel) {
@@ -29790,11 +27347,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 					else {
 						var otherPixel = pixelMap[x][y];
 						var otherInfo = elements[otherPixel?.element];
-
 						if(otherPixel) {
 							otherPixel.temp += 2500 * (shiftDown + 1);
 							if(otherPixel.del || !otherPixel) { continue };
-
 							if (otherPixel && grbBreakIntos.includes(otherPixel.element)) {
 								if(Math.random() < 0.01 && otherPixel) {
 									deletePixel(otherPixel.x,otherPixel.y);
@@ -29805,18 +27360,15 @@ Make sure to save your command in a file if you want to add this preset again.`
 								if(otherPixel.del || !otherPixel) {
 									continue
 								};
-
 								if(otherPixel ) {
 									var vels = [randomIntegerBetweenTwoValues(-8,8),randomIntegerBetweenTwoValues(-6,0)];
 									otherPixel.vx = vels[0];
 									otherPixel.vy = vels[1];
 								};
-
 								if(otherPixel && Math.random() < (otherInfo.isGas ? 0.2 : 0.1)) {
 									deletePixel(otherPixel.x,otherPixel.y);
 									continue;
 								};
-
 								if(Math.random() > 0.8) {
 									continue;
 								};
@@ -29833,7 +27385,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			excludeRandom: true,
 			noMix: true
 		};
-
 		//bless falls within god ray
 		elements.bless.reactions.dry_dirt = { elem2: "dirt" };
 		elements.bless.reactions.dead_cum = { elem2: "cum" };
@@ -29929,10 +27480,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 				}
 			}
 		};
-
 		rayAbsorbElements = [];
 		rayPassElements = [];
-
 		function summonRay(element,xIn,intensity,radius) {
 			var forMin = 0 - radius;
 			var forMax = radius + 1;
@@ -29965,7 +27514,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				}
 			}
 		};
-
 		elements.orbital_ray_beacon = {
 			color: "#ebdf91",
 			behavior: [
@@ -30092,19 +27640,16 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "machines",
 			hardness: 0.6
 		};
-
 	//PUSHERS ##
-
 		elements.up_pusher = {
 			color: "#9fafdf",
 			properties: {
 				range: 10,
 				pushStrength: 1
 			},
-			tick: function(pixel) { 
+			tick: function(pixel) {
 				pixel.range ??= 10;
 				pixel.pushStrength ??= 1;
-
 				for(h = 0; h < pixel.pushStrength; h++) {
 					for(i=(pixel.range - 1); i>=0; i--) {
 						if (!isEmpty(pixel.x,pixel.y-1-i,true)) {
@@ -30112,7 +27657,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 					};
 				};
-
 				doDefaults(pixel);
 			},
 			category: "machines",
@@ -30125,17 +27669,15 @@ Make sure to save your command in a file if you want to add this preset again.`
 			state: "solid",
 			movable: false
 		}
-
 		elements.down_pusher = {
 			color: "#9fafdf",
 			properties: {
 				range: 10,
 				pushStrength: 1
 			},
-			tick: function(pixel) { 
+			tick: function(pixel) {
 				pixel.range ??= 10;
 				pixel.pushStrength ??= 1;
-
 					for(h = 0; h < pixel.pushStrength; h++) {
 						for(i=(pixel.range - 1); i>=0; i--) {
 							if (!isEmpty(pixel.x,pixel.y+1+i,true)) {
@@ -30143,7 +27685,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 							};
 						};
 					};
-
 				doDefaults(pixel);
 			},
 			category: "machines",
@@ -30156,17 +27697,15 @@ Make sure to save your command in a file if you want to add this preset again.`
 			state: "solid",
 			movable: false
 		}
-
 		elements.left_pusher = {
 			color: "#9fafdf",
 			properties: {
 				range: 10,
 				pushStrength: 1
 			},
-			tick: function(pixel) { 
+			tick: function(pixel) {
 				pixel.range ??= 10;
 				pixel.pushStrength ??= 1;
-
 				for(h = 0; h < pixel.pushStrength; h++) {
 					for(i=(pixel.range - 1); i>=0; i--) {
 						if (!isEmpty(pixel.x-1-i,pixel.y,true)) {
@@ -30174,7 +27713,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 					};
 				};
-
 				doDefaults(pixel);
 			},
 			category: "machines",
@@ -30187,17 +27725,15 @@ Make sure to save your command in a file if you want to add this preset again.`
 			state: "solid",
 			movable: false
 		}
-
 		elements.right_pusher = {
 			color: "#9fafdf",
 			properties: {
 				range: 10,
 				pushStrength: 1
 			},
-			tick: function(pixel) { 
+			tick: function(pixel) {
 				pixel.range ??= 10;
 				pixel.pushStrength ??= 1;
-
 				for(h = 0; h < pixel.pushStrength; h++) {
 					for(i=(pixel.range - 1); i>=0; i--) {
 						if (!isEmpty(pixel.x+1+i,pixel.y,true)) {
@@ -30205,7 +27741,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 					};
 				};
-
 				doDefaults(pixel);
 			},
 			category: "machines",
@@ -30218,7 +27753,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			state: "solid",
 			movable: false
 		}
-
 		elements.up_e_pusher = {
 			color: "#9f9f6f",
 			properties: {
@@ -30227,17 +27761,15 @@ Make sure to save your command in a file if you want to add this preset again.`
 				pushLength: 5,
 				pushStrength: 1
 			},
-			tick: function(pixel) { 
+			tick: function(pixel) {
 				pixel.range ??= 10;
 				pixel.pushTime ??= 0;
 				pixel.pushLength ??= 5;
 				pixel.pushStrength ??= 1;
 				if(isNaN(pixel.pushTime) || pixel.pushTime < 0) { pixel.pushTime = 0 };
-
 				if(pixel.charge) {
 					pixel.pushTime = pixel.pushLength;
 				};
-
 				if(pixel.pushTime > 0) {
 					for(h = 0; h < pixel.pushStrength; h++) {
 						for(i=(pixel.range - 1); i>=0; i--) {
@@ -30248,7 +27780,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					};
 					pixel.pushTime--;
 				};
-
 				doDefaults(pixel);
 			},
 			category: "machines",
@@ -30261,7 +27792,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			state: "solid",
 			movable: false
 		}
-
 		elements.down_e_pusher = {
 			color: "#9f9f6f",
 			properties: {
@@ -30270,17 +27800,15 @@ Make sure to save your command in a file if you want to add this preset again.`
 				pushLength: 5,
 				pushStrength: 1
 			},
-			tick: function(pixel) { 
+			tick: function(pixel) {
 				pixel.range ??= 10;
 				pixel.pushTime ??= 0;
 				pixel.pushLength ??= 5;
 				pixel.pushStrength ??= 1;
 				if(isNaN(pixel.pushTime) || pixel.pushTime < 0) { pixel.pushTime = 0 };
-
 				if(pixel.charge) {
 					pixel.pushTime = pixel.pushLength;
 				};
-
 				if(pixel.pushTime > 0) {
 					for(h = 0; h < pixel.pushStrength; h++) {
 						for(i=(pixel.range - 1); i>=0; i--) {
@@ -30291,7 +27819,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					};
 					pixel.pushTime--;
 				};
-
 				doDefaults(pixel);
 			},
 			category: "machines",
@@ -30304,7 +27831,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			state: "solid",
 			movable: false
 		}
-
 		elements.left_e_pusher = {
 			color: "#9f9f6f",
 			properties: {
@@ -30313,17 +27839,15 @@ Make sure to save your command in a file if you want to add this preset again.`
 				pushLength: 5,
 				pushStrength: 1
 			},
-			tick: function(pixel) { 
+			tick: function(pixel) {
 				pixel.range ??= 10;
 				pixel.pushTime ??= 0;
 				pixel.pushLength ??= 5;
 				pixel.pushStrength ??= 1;
 				if(isNaN(pixel.pushTime) || pixel.pushTime < 0) { pixel.pushTime = 0 };
-
 				if(pixel.charge) {
 					pixel.pushTime = pixel.pushLength;
 				};
-
 				if(pixel.pushTime > 0) {
 					for(h = 0; h < pixel.pushStrength; h++) {
 						for(i=(pixel.range - 1); i>=0; i--) {
@@ -30334,7 +27858,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					};
 					pixel.pushTime--;
 				};
-
 				doDefaults(pixel);
 			},
 			category: "machines",
@@ -30347,7 +27870,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			state: "solid",
 			movable: false
 		}
-
 		elements.right_e_pusher = {
 			color: "#9f9f6f",
 			properties: {
@@ -30356,17 +27878,15 @@ Make sure to save your command in a file if you want to add this preset again.`
 				pushLength: 5,
 				pushStrength: 1
 			},
-			tick: function(pixel) { 
+			tick: function(pixel) {
 				pixel.range ??= 10;
 				pixel.pushTime ??= 0;
 				pixel.pushLength ??= 5;
 				pixel.pushStrength ??= 1;
 				if(isNaN(pixel.pushTime) || pixel.pushTime < 0) { pixel.pushTime = 0 };
-
 				if(pixel.charge) {
 					pixel.pushTime = pixel.pushLength;
 				};
-
 				if(pixel.pushTime > 0) {
 					for(h = 0; h < pixel.pushStrength; h++) {
 						for(i=(pixel.range - 1); i>=0; i--) {
@@ -30377,7 +27897,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					};
 					pixel.pushTime--;
 				};
-
 				doDefaults(pixel);
 			},
 			category: "machines",
@@ -30390,15 +27909,12 @@ Make sure to save your command in a file if you want to add this preset again.`
 			state: "solid",
 			movable: false
 		}
-
 	//PORTALS ##
 	//heehee haha melanie martinez
-
 		//https://stackoverflow.com/a/60922255
 		headBodyObject = {
 			"head": "body",
 		};
-
 		elements.portal_in = {
 			color: "#ee7f00",
 			properties: {
@@ -30414,18 +27930,13 @@ Make sure to save your command in a file if you want to add this preset again.`
 				if(pixel._correspondingPortals.length <= 0) {
 					return;
 				};
-
 				var portal = randomChoice(pixel._correspondingPortals);
-
 				var offset = {x: pixel.x - otherPixel.x, y: pixel.y - otherPixel.y}; //teleport destination's offset, inverted by subtraction
-
 				var destination = {x: portal.x + offset.x, y: portal.y + offset.y};
-
 				var otherElement = otherPixel.element;
 				var isHead = (typeof(headBodyObject[otherElement]) !== "undefined");
 				var isBody = (typeof(getKeyByValue(headBodyObject,otherElement)) !== "undefined");
-				var isBipartite = xor(isHead,isBody); //a head being its own body will break the code	
-
+				var isBipartite = xor(isHead,isBody); //a head being its own body will break the code
 				if(isBipartite) {
 					if(isHead) {
 						var dead = otherPixel.dead;
@@ -30477,18 +27988,15 @@ Make sure to save your command in a file if you want to add this preset again.`
 			},
 			tick: function(pixel) {
 				pixel._channel = Math.floor(pixel.temp / 100);
-
 				pixel._correspondingPortals = currentPixels.filter(function(pixelToCheck) {
 					return (
 						pixelToCheck.element == "portal_out" &&
 						pixelToCheck._channel == pixelChannel
 					);
 				},pixelChannel=pixel._channel);
-
 				for(i = 0; i < pixel._correspondingPortals.length; i++) {
 					pixel._correspondingPortals[i] = {x: pixel._correspondingPortals[i].x, y: pixel._correspondingPortals[i].y};
 				};
-
 				//pixel.tempdebug = JSON.stringify(pixel._correspondingPortals);
 			},
 			category: "machines",
@@ -30496,7 +28004,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			breakInto: ["radiation","laser","iridium","essence","ionized_deuterium","electron","magic","steel","pop","unstable_mistake","explosion","magic","steel","proton","electron","radiation","laser","iridium"],
 			hardness: 0.999
 		},
-
 		elements.portal_out = {
 			color: "#2222ee",
 			insulate: true,
@@ -30510,22 +28017,15 @@ Make sure to save your command in a file if you want to add this preset again.`
 			breakInto: ["radiation","laser","iridium","essence","ionized_deuterium","electron","magic","steel","pop","unstable_mistake","explosion","magic","steel","proton","electron","radiation","laser","iridium"],
 			hardness: 0.999
 		}
-
 	//MOBS ##
-
 		//Prerequisite Functions and Variables
-
 		minimumCreeperTries = 3;
 		maximumCreeperTries = 3;
-
 		minimumZombieTries = 3;
 		maximumZombieTries = 3;
-
 		minimumSkeletonTries = 3;
 		maximumSkeletonTries = 3;
-
 		eLists.CREEPER = ["creeper", "angelic_creeper", "hell_creeper", "bombing_creeper", "baby_creeper"];
-
 		headBodyObject = {
 			"head": "body",
 			"creeper_head": "creeper_body",
@@ -30536,7 +28036,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			"skeleton_head": "skeleton_body",
 			"nothing_there_phase_3_head": "nothing_there_phase_3_body",
 		};
-
 		var style = document.createElement('style'); //Initialize CSS for creeper spawning's status indicator
 		style.type = 'text/css';
 		style.id = 'creeperStatusStylesheet';
@@ -30551,26 +28050,21 @@ Make sure to save your command in a file if you want to add this preset again.`
 			};
 		};
 		document.getElementsByTagName('head')[0].appendChild(style);
-
 		function coordPyth(xA,yA,xB,yB) { //Distance function, used for explosion trigger
 			var a = Math.abs(xB - xA);
 			var b = Math.abs(yB - yA);
 			var c = Math.sqrt(a**2 + b**2);
 			return c;
 		};
-
 		function pythSpeed(number1,number2) {
 			return Math.sqrt(number1**2 + number2**2);
 		};
-
 		function rgbColorBound(number) { //RGB bounding function, used for safety checking color changes
 			return Math.min(255,Math.max(0,number));
 		};
-
 		function slBound(number) { //SL bounding function (not hue), same use as above
 			return Math.min(100,Math.max(0,number));
 		};
-
 		function angelicUpwardVelocity(pixel,x,y,radius,fire,smoke,power) { //Angelic Creeper's effect, "compatible" with velocity.js by including the modified version of its code in itself
 			var info = elements[pixel.element]
 			//console.log("yeet");
@@ -30588,7 +28082,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			//console.log(`Velocities set`);
 			//console.log(`end`);
 		};
-
 		//afterFunction(pixel,x,y,radius,fire,smoke,power,damage);
 		function hellExplosionFire(pixel,x,y,radius,fire,smoke,power,damage) { //Angelic Creeper's effect, "compatible" with velocity.js by including the modified version of its code in itself
 			var coords = circleCoords(pixel.x,pixel.y,radius);
@@ -30620,13 +28113,10 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		//explodeAtPlus moved to separate file
-
 		if(typeof(settings.creeperSpawning) === "undefined") { //Default creeper setting
 			setSetting("creeperSpawning",false);
 		};
-
 		function updateCreeperPreferences() { //Creeper setting handler
 			if(settings.creeperSpawning) { //If the setting is on
 				if(typeof(randomEvents.creeper) !== "function") { //add the event if it's missing
@@ -30662,7 +28152,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				if(randomEvents.creeper) { delete randomEvents.creeper }; //delete it if it exists.
 			};
 		};
-
 		function toggleCreeperSpawning() { //Creeper toggle handler
 			if(settings.creeperSpawning != true) { //If it's false
 				setSetting("creeperSpawning",true); //make it true and update the status display CSS
@@ -30674,9 +28163,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				document.getElementById("creeperStatusStylesheet").innerHTML = '.creeperStatus { color: #E11; text-decoration: none; }';
 			};
 		};
-
 		//Functions used by Nothing There
-
 		function hasPixel(x,y,elementInput) {
 			if(isEmpty(x,y,true)) { //if empty, it can't have a pixel
 				return false;
@@ -30689,9 +28176,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 				} else { //if single element
 					return pixelMap[x][y].element === elementInput;
 				};
-			};		
+			};
 		};
-
 		function arrowAltTb(pixel,breakChanceMultiplier,changetemp=false,defaultBreakIntoDust=false) {
 			var info = elements[pixel.element];
 			var hardness = defaultHardness;
@@ -30706,7 +28192,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				return false;
 			};
 		};
-
 		function nothingThereBulletMovement(pixel,x,y) {
 			if(!tryMove(pixel,x,y)) {
 				if(!isEmpty(x,y,true)) {
@@ -30743,9 +28228,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 							var newDensity = 1000;
 							if(typeof(newInfo.density) === "number") {
 								newDensity = newInfo.density;
-								//console.log(`density ${newInfo.density} for ${newElement}`);   
+								//console.log(`density ${newInfo.density} for ${newElement}`);
 							//} else {
-								//console.log(`undef density for ${newElement}, 1000 default`);   
+								//console.log(`undef density for ${newElement}, 1000 default`);
 							};
 							//console.log(`thisDensity: ${thisDensity}`);
 							//console.log(`newDensity: ${newDensity}`);
@@ -30774,15 +28259,10 @@ Make sure to save your command in a file if you want to add this preset again.`
 				return true;
 			};
 		};
-
 		//End NT functions
-
 		nothingThereBulletExcludedElements = ["wall","nothing_there_phase_1","nothing_there_phase_2","nothing_there_phase_3_body","nothing_there_phase_3_head", "nothing_there_cleaver", "nothing_there_mace"];
-
 		enemyHumanoidArray = ["head","body"] //just in case
-
 		spawnCreepers = ["creeper","baby_creeper","angelic_creeper","bombing_creeper","hell_creeper"];
-
 		if(settings.creeperSpawning) { //creeper spawning option
 			randomEvents.creeper = function() {
 				var amount = Math.floor((Math.random() * maximumCreeperTries)+minimumCreeperTries); //1-3
@@ -30811,7 +28291,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		standaloneSpawnCreeper = function(amount=1) {
 			/*	The amount is the maximum amount of *attempts*. Often, less creepers will spawn due to things in the way.
 				In a generated world, which uses half of the space, you can expect about half of this number to spawn.	*/
@@ -30831,9 +28310,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		//Prerequisite Functions and Variables
-
 		function headHasBody(pixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -30853,7 +28330,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				return null;
 			};
 		};
-
 		function bodyHasHead(pixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -30873,7 +28349,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				return null;
 			};
 		};
-
 		function zombifyHuman(pixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -30904,7 +28379,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		function dezombifyHuman(pixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -30926,7 +28400,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		elements.spawner = {
 			color: "#1c3038",
 			breakInto: ["steel","steel","smoke","magic",null,null,null,null,null],
@@ -30956,17 +28429,14 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 				if(pixel.spawnCounter <= 0) {
 					//var pixelsOfSpawnElement = 0;
-
 					var newSpawn = pixel.spawn;
 					if(Array.isArray(newSpawn)) {
 						newSpawn = newSpawn[Math.floor(Math.random() * newSpawn.length)];
 					};
-
 					var xForMin = -1 * pixel.squadiusX;
 					var xForMax = pixel.squadiusX + 1;
 					var yForMin = -1 * pixel.squadiusY;
 					var yForMax = pixel.squadiusY + 1;
-
 					/*if(pixel.spawnRangeMax !== null) {
 						for(xOffset = xForMin; xOffset < xForMax; xOffset++) {
 							for(yOffset = yForMin; yOffset < yForMax; yOffset++) {
@@ -30985,7 +28455,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 							return false;
 						};
 					};*/
-
 					for(s = 0; s < pixel.spawnTries; s++) {
 						var randomX = pixel.x + randomIntegerBetweenTwoValues(0 - pixel.squadiusX, pixel.squadiusX);
 						var randomY = pixel.y + randomIntegerBetweenTwoValues(0	- pixel.squadiusY, pixel.squadiusY);
@@ -31001,7 +28470,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hardness: 0.7,
 			state: "solid",
 		}
-
 		elements.frozen_rotten_meat = {
 			color: ["#8FB588", "#8FA888"],
 			behavior: [
@@ -31017,10 +28485,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 			state: "solid",
 			density: 1037.5,
 		};
-
 		elements.rotten_meat.tempLow = -18;
 		elements.rotten_meat.stateLow = "frozen_rotten_meat";
-
 		elements.zombie_blood = {
 			color: ["#d18228", "#9a9e2f"],
 			behavior: behaviors.LIQUID,
@@ -31070,7 +28536,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		};
-
 		var style = document.createElement('style'); //Initialize CSS for zombie spawning's status indicator
 		style.type = 'text/css';
 		style.id = 'zombieStatusStylesheet';
@@ -31085,11 +28550,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 			};
 		};
 		document.getElementsByTagName('head')[0].appendChild(style);
-
 		if(typeof(settings.zombieSpawning) === "undefined") { //Default zombie setting
 			setSetting("zombieSpawning",false);
 		};
-
 		function updateZombiePreferences() { //Zombie setting handler
 			if(settings.zombieSpawning) { //If the setting is on
 				if(typeof(randomEvents.zombie) !== "function") { //add the event if it's missing
@@ -31125,7 +28588,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				if(randomEvents.zombie) { delete randomEvents.zombie }; //delete it if it exists.
 			};
 		};
-
 		function toggleZombieSpawning() { //Zombie toggle handler
 			if(settings.zombieSpawning != true) { //If it's false
 				setSetting("zombieSpawning",true); //make it true and update the status display CSS
@@ -31137,9 +28599,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				document.getElementById("zombieStatusStylesheet").innerHTML = '.zombieStatus { color: #E11; text-decoration: none; }';
 			};
 		};
-
 		spawnZombies = ["zombie","baby_zombie"];
-
 		if(settings.zombieSpawning) { //zombie spawning option
 			randomEvents.zombie = function() {
 				var amount = Math.floor((Math.random() * maximumZombieTries)+minimumZombieTries); //1-3
@@ -31168,7 +28628,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		standaloneSpawnZombie = function(amount=1) {
 			/*	The amount is the maximum amount of *attempts*. Often, less zombies will spawn due to things in the way.
 				In a generated world, which uses half of the space, you can expect about half of this number to spawn.	*/
@@ -31188,7 +28647,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		var style = document.createElement('style'); //Initialize CSS for skeleton spawning's status indicator
 		style.type = 'text/css';
 		style.id = 'skeletonStatusStylesheet';
@@ -31203,11 +28661,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 			};
 		};
 		document.getElementsByTagName('head')[0].appendChild(style);
-
 		if(typeof(settings.skeletonSpawning) === "undefined") { //Default skeleton setting
 			setSetting("skeletonSpawning",false);
 		};
-
 		function updateSkeletonPreferences() { //Skeleton setting handler
 			if(settings.skeletonSpawning) { //If the setting is on
 				if(typeof(randomEvents.skeleton) !== "function") { //add the event if it's missing
@@ -31243,7 +28699,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				if(randomEvents.skeleton) { delete randomEvents.skeleton }; //delete it if it exists.
 			};
 		};
-
 		function toggleSkeletonSpawning() { //Skeleton toggle handler
 			if(settings.skeletonSpawning != true) { //If it's false
 				setSetting("skeletonSpawning",true); //make it true and update the status display CSS
@@ -31255,9 +28710,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				document.getElementById("skeletonStatusStylesheet").innerHTML = '.skeletonStatus { color: #E11; text-decoration: none; }';
 			};
 		};
-
 		spawnSkeletons = ["skeleton"];
-
 		if(settings.skeletonSpawning) { //skeleton spawning option
 			randomEvents.skeleton = function() {
 				var amount = Math.floor((Math.random() * maximumSkeletonTries)+minimumSkeletonTries); //1-3
@@ -31286,7 +28739,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		standaloneSpawnSkeleton = function(amount=1) {
 			/*	The amount is the maximum amount of *attempts*. Often, less skeletons will spawn due to things in the way.
 				In a generated world, which uses half of the space, you can expect about half of this number to spawn.	*/
@@ -31306,7 +28758,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		/*Start Main Zombie
 			..................
 			........%%%%......
@@ -31323,7 +28774,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			.......%%...%%....
 			..................
 		*/
-
 		elements.zombie = {
 			color: ["#567C44","#199A9A","#41369B"],
 			category: "life",
@@ -31353,7 +28803,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			related: ["zombie_body","zombie_head"],
 			desc: "<em>I'd rather this be toggleable mid-game than require a reload.</em><br/><br/><span class=\"zombieStatus\">If this text is green or underlined, zombies (all types) can spawn.</span> <span onclick=toggleZombieSpawning() style=\"color: #ff00ff;\";>Click here</span> to toggle zombie spawning. If it's on, zombies can spawn through random events."
 		};
-
 		elements.zombie_body = {
 			color: "#27719D",
 			category: "life",
@@ -31404,7 +28853,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					};
 					return;
 				};
-
 				// Find the head
 				if (!isEmpty(pixel.x, pixel.y-1, true)) {
 					if(pixelMap[pixel.x][pixel.y-1].element == "head") {
@@ -31418,7 +28866,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						var head = null;
 					};
 				} else { var head = null };
-
 				if (isEmpty(pixel.x, pixel.y-1)) {
 					// create zombie blood if decapitated 10% chance
 					if (Math.random() < 0.1) {
@@ -31457,7 +28904,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		};
-
 		elements.zombie_head = {
 			color: "#567C44",
 			category: "life",
@@ -31496,7 +28942,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					};
 					return;
 				};
-
 				// Find the body
 				if (!isEmpty(pixel.x, pixel.y+1, true)) {
 					if(pixelMap[pixel.x][pixel.y+1].element == "body") {
@@ -31510,13 +28955,11 @@ Make sure to save your command in a file if you want to add this preset again.`
 						var body = null;
 					};
 				} else { var body = null };
-
 				if(body) {
 					if(body.dir !== pixel.dir) { //hacky workaround: lock head dir to body dir
 						pixel.dir = body.dir;
 					};
 				};
-
 				if (isEmpty(pixel.x, pixel.y+1)) {
 					tryMove(pixel, pixel.x, pixel.y+1);
 					// create zombie blood if severed 10% chance
@@ -31528,11 +28971,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 						}
 					}
 				}
-
 				//start of most new code
 				var pX = pixel.x;
 				var pY = pixel.y;
-
 				//Human detection loop (looks ahead according to direction and sets the "following" variable to true, telling the body to lock the direction)
 				if(pixelTicks % 2 == 0) { //reduce rate for performance
 					/*var directionAdverb = "left";
@@ -31642,16 +29083,13 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 					};
 				};
-
 				if(Math.random() < 0.01) { //1% chance each tick to lose interest
 					pixel.following = false;
 					//console.log("Meh.");
 				};
 			},
 		};
-
 			//Baby Zombie
-
 		elements.baby_zombie = {
 			color: "#199A9A",
 			category: "life",
@@ -31690,7 +29128,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					};
 					return;
 				};
-
 				if (Math.random() < 0.15) { // Move 10% chance
 					var movesToTry = [
 						[1*pixel.dir,0],	//dash move
@@ -31715,10 +29152,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 						//console.log("*chases cutely*");
 					};*/
 				};
-
 				var pX = pixel.x;
 				var pY = pixel.y;
-
 				//Human detection loop (looks ahead according to direction and sets the "following" variable to true, telling the body to lock the direction)
 				if(pixelTicks % 2 == 0) { //reduce rate for performance
 					/*var directionAdverb = "left";
@@ -31828,7 +29263,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 					};
 				};
-
 				if(Math.random() < 0.01) { //1% chance each tick to lose interest
 					pixel.following = false;
 					//console.log("Meh.");
@@ -31837,7 +29271,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			related: ["zombie"],
 			desc: "Baby zombies: smaller, faster, and more annoying.",
 		};
-
 		/*Start Main Creeper
 			%%%%%%%%%%%%%%%%%%
 			%%%%%%%%	%%%%%%
@@ -31854,7 +29287,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			%%%%%%%  %%%  %%%%
 			%%%%%%%%%%%%%%%%%%
 		*/
-
 		elements.creeper = {
 			color: ["#D2D2D2", "#BFDFB9", "#94CE89", "#78D965", "#5ED54C", "#58C546", "#50B143", "#479143", "#559552", "#3F8738", "#5B8B59"],
 			category: "life",
@@ -31884,7 +29316,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			related: ["creeper_body","creeper_head"],
 			desc: "<em>I'd rather this be toggleable mid-game than require a reload.</em><br/><br/><span class=\"creeperStatus\">If this text is green or underlined, creepers can spawn.</span> <span onclick=toggleCreeperSpawning() style=\"color: #ff00ff;\";>Click here</span> to toggle creeper spawning. If it's on, creepers (all types) can spawn through random events.<br/>To enable automatic creeper generation, set the generateCreepers query parameter."
 		};
-
 		elements.creeper_body = {
 			color: ["#D2D2D2", "#BFDFB9", "#94CE89", "#78D965", "#5ED54C", "#58C546", "#50B143", "#479143", "#559552", "#3F8738", "#5B8B59"],
 			category: "life",
@@ -31937,7 +29368,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					}
 					return
 				}
-
 				// Find the head
 				if (!isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "creeper_head") {
 					var head = pixelMap[pixel.x][pixel.y-1];
@@ -31946,7 +29376,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					}
 				}
 				else { var head = null }
-
 				if (isEmpty(pixel.x, pixel.y-1)) {
 					// create blood if decapitated 10% chance
 					if (Math.random() < 0.1) {
@@ -31983,11 +29412,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 						//console.log("*chases cutely*");
 					};*/
 				};
-
 				if(pixel.charge) {
 					pixel.charged = true;
 				};
-
 				if(head) {
 					if(typeof(head.charge) !== "undefined") {
 						if(head.charge) {
@@ -32000,11 +29427,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 					};
 				};
-
 				if(typeof(pixel.charged) === "undefined") {
 					pixel.charged = false;
 				};
-
 				if(pixel.charged) {
 					var explosionRadius = 7;
 					if(!pixel.didChargeBlueTinted) { //do once, on initial charge
@@ -32047,7 +29472,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				} else {
 					var explosionRadius = 5;
 				};
-
 				if(pixel.burning) {
 					pixel.hissing = true;
 					if(!pixel.hissStart) {
@@ -32062,7 +29486,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						//console.log("Yes, Rico, kaboom.");
 					};
 				};
-
 				//Head hissing color handler: keeps track of head's hissing for coloring purposes
 				for(i = 0; i < 1; i++) { //dummy for loop
 					if(pixel.dead || !head || head.dead) { //can't hiss without a head according to the classic creeper anatomy
@@ -32076,7 +29499,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 							//console.log("t-30 ticks or whatever it was");
 							head.hissStart = pixelTicks;
 						};
-
 						//Color code {
 							var ticksHissing = pixelTicks - head.hissStart;
 							var color = pixel.color; //do on each hissing tick
@@ -32110,7 +29532,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		};
-
 		elements.creeper_head = {
 			color: ["#5B8B59", "#3F8738", "#559552", "#479143", "#50B143", "#58C546"],
 			category: "life",
@@ -32151,7 +29572,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						return
 					}
 				}
-
 				// Find the body
 				if (!isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "creeper_body") {
 					var body = pixelMap[pixel.x][pixel.y+1];
@@ -32160,13 +29580,11 @@ Make sure to save your command in a file if you want to add this preset again.`
 					}
 				}
 				else { var body = null }
-
 				if(body) {
 					if(body.dir !== pixel.dir) { //hacky workaround: lock head dir to body dir
 						pixel.dir = body.dir;
 					};
 				};
-
 				if (isEmpty(pixel.x, pixel.y+1)) {
 					tryMove(pixel, pixel.x, pixel.y+1);
 					// create blood if severed 10% chance
@@ -32178,15 +29596,12 @@ Make sure to save your command in a file if you want to add this preset again.`
 						}
 					}
 				}
-
 				//start of most new code
 				var pX = pixel.x;
 				var pY = pixel.y;
-
 				if(pixel.charge) {
 					pixel.charged = true;
 				};
-
 				if(body) {
 					if(typeof(body.charge) !== "undefined") {
 						if(body.charge) {
@@ -32199,11 +29614,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 					};
 				};
-
 				if(typeof(pixel.charged) === "undefined") {
 					pixel.charged = false;
 				};
-
 				if(pixel.charged) {
 					var explosionRadius = 10;
 					if(!pixel.didChargeBlueTinted) { //do once, on initial charge
@@ -32246,7 +29659,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				} else {
 					var explosionRadius = 7;
 				};
-
 				//Human detection loop (looks ahead according to direction and sets the "following" variable to true, telling the body to lock the direction)
 				var directionAdverb = "left";
 				if(pixel.dir > 0) {
@@ -32333,7 +29745,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 					};
 				};
-
 				//Pre-explosion handler: keeps track of time before the kaboom
 				for(i = 0; i < 1; i++) { //dummy for loop
 					if(pixel.hissing) {
@@ -32374,7 +29785,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 								//console.log("color set");
 							};
 						//}
-
 						if(pixelTicks - pixel.hissStart > 30) {
 							//console.log("Kaboom?");
 							//console.log(`Exploding with radius ${explosionRadius} (charged: ${pixel.charged})`);
@@ -32383,14 +29793,12 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 					};
 				};
-
 				if(Math.random() < 0.01) { //1% chance each tick to lose interest
 					pixel.following = false;
 					//console.log("Meh.");
 				};
 			},
 		};
-
 		/*End Main Creeper
 			&&&&&&&&&&&&&&&&&&
 			&&&&&&&&&&&&&&&&&&
@@ -32407,9 +29815,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			&&&&&&&  &&&  &&&&
 			&&&&&&&&&&&&&&&&&&
 		*/
-
 																//Baby Creeper
-
 		elements.baby_creeper = {
 			color: ["#D2D2D2", "#BFDFB9", "#94CE89", "#78D965", "#5ED54C", "#58C546", "#50B143", "#479143", "#559552", "#3F8738", "#5B8B59"],
 			category: "life",
@@ -32449,7 +29855,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					}
 					return
 				}
-
 				if (Math.random() < 0.15) { // Move 15% chance (should be 12.5 but 15 looks better)
 					var movesToTry = [
 						[1*pixel.dir,0],	//dash move
@@ -32474,18 +29879,14 @@ Make sure to save your command in a file if you want to add this preset again.`
 						//console.log("*chases cutely*");
 					};*/
 				};
-
 				if(typeof(pixel.charged) === "undefined") {
 					pixel.charged = false;
 				};
-
 				if(pixel.charge) {
 					pixel.charged = true;
 				};
-
 				var pX = pixel.x;
 				var pY = pixel.y;
-
 				if(pixel.charged) {
 					var explosionRadius = 6;
 					if(!pixel.didChargeBlueTinted) { //do once, on initial charge
@@ -32528,7 +29929,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				} else {
 					var explosionRadius = 4; //should be half of the original creeper's radius
 				};
-
 				if(pixel.burning) {
 					pixel.hissing = true;
 					if(!pixel.hissStart) {
@@ -32543,7 +29943,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						//console.log("Yes, Rico, kaboom.");
 					};
 				};
-
 				//Pre-explosion handler: keeps track of time before the kaboom
 				for(i = 0; i < 1; i++) { //dummy for loop
 					if(pixel.hissing) {
@@ -32584,7 +29983,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 								//console.log("color set");
 							};
 						//}
-
 						if(pixelTicks - pixel.hissStart > 15) {
 							//console.log("Kaboom?");
 							//console.log(`Exploding with radius ${explosionRadius} (charged: ${pixel.charged})`);
@@ -32593,12 +29991,10 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 					};
 				};
-
 				if(Math.random() < 0.01) { //1% chance each tick to lose interest
 					pixel.following = false;
 					//console.log("Meh.");
 				};
-
 				//Human detection loop (looks ahead according to direction and sets the "following" variable to true, telling the body to lock the direction)
 				var directionAdverb = "left";
 				if(pixel.dir > 0) {
@@ -32688,9 +30084,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			},
 			related: ["creeper"],
 		};
-
 																//Angelic Creeper
-
 		elements.angelic_creeper = { //let's get this one out of the way first
 			color: ["#f5ef56", "#fcbddf", "#de8aa8", "#e35d95", "#eb4974", "#ed3ea7", "#d645a3", "#a84556", "#9e4f6c", "#91315b", "#8c4963"],
 			category: "life",
@@ -32720,7 +30114,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			related: ["angelic_creeper_body","angelic_creeper_head"],
 			desc: 'A creeper type from <em>Extra Creeper Types</em> <a href="https://www.curseforge.com/minecraft/mc-mods/extra-creeper-types">(CF)</a>. It sends things upward.'
 		};
-
 		elements.angelic_creeper_body = {
 			color: ["#d2d2d2", "#fcbddf", "#de8aa8", "#e35d95", "#eb4974", "#ed3ea7", "#d645a3", "#a84556", "#9e4f6c", "#91315b", "#8c4963"],
 			category: "life",
@@ -32791,7 +30184,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					}
 					return
 				}
-
 				// Find the head
 				if (!isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "angelic_creeper_head") {
 					var head = pixelMap[pixel.x][pixel.y-1];
@@ -32800,7 +30192,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					}
 				}
 				else { var head = null }
-
 				if (isEmpty(pixel.x, pixel.y-1)) {
 					// create blood if decapitated 10% chance
 					if (Math.random() < 0.1) {
@@ -32837,11 +30228,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 						//console.log("*chases cutely*");
 					};*/
 				};
-
 				if(pixel.charge) {
 					pixel.charged = true;
 				};
-
 				if(head) {
 					if(typeof(head.charge) !== "undefined") {
 						if(head.charge) {
@@ -32854,11 +30243,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 					};
 				};
-
 				if(typeof(pixel.charged) === "undefined") {
 					pixel.charged = false;
 				};
-
 				if(pixel.charged) {
 					var explosionRadius = 10;
 					if(!pixel.didChargeBlueTinted) { //do once, on initial charge
@@ -32901,7 +30288,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				} else {
 					var explosionRadius = 7;
 				};
-
 				if(pixel.burning) {
 					pixel.hissing = true;
 					if(!pixel.hissStart) {
@@ -32917,7 +30303,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						//console.log("Yes, Rico, kaboom.");
 					};
 				};
-
 				//Head hissing color handler: keeps track of head's hissing for coloring purposes
 				for(i = 0; i < 1; i++) { //dummy for loop
 					if(pixel.dead || !head || head.dead) { //can't hiss without a head according to the classic creeper anatomy
@@ -32931,7 +30316,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 							//console.log("t-30 ticks or whatever it was");
 							head.hissStart = pixelTicks;
 						};
-
 						//Color code {
 							var ticksHissing = pixelTicks - head.hissStart;
 							var color = pixel.color; //do on each hissing tick
@@ -32965,7 +30349,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		},
-
 		elements.angelic_creeper_head = {
 			color: ["#f5ef56", "#f0ea4f", "#f0ea60"],
 			category: "life",
@@ -33006,7 +30389,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						return
 					}
 				}
-
 				// Find the body
 				if (!isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "angelic_creeper_body") {
 					var body = pixelMap[pixel.x][pixel.y+1];
@@ -33015,13 +30397,11 @@ Make sure to save your command in a file if you want to add this preset again.`
 					}
 				}
 				else { var body = null }
-
 				if(body) {
 					if(body.dir !== pixel.dir) { //hacky workaround: lock head dir to body dir
 						pixel.dir = body.dir;
 					};
 				};
-
 				if (isEmpty(pixel.x, pixel.y+1)) {
 					tryMove(pixel, pixel.x, pixel.y+1);
 					// create blood if severed 10% chance
@@ -33033,15 +30413,12 @@ Make sure to save your command in a file if you want to add this preset again.`
 						}
 					}
 				}
-
 				//start of most new code
 				var pX = pixel.x;
 				var pY = pixel.y;
-
 				if(pixel.charge) {
 					pixel.charged = true;
 				};
-
 				if(body) {
 					if(typeof(body.charge) !== "undefined") {
 						if(body.charge) {
@@ -33054,11 +30431,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 					};
 				};
-
 				if(typeof(pixel.charged) === "undefined") {
 					pixel.charged = false;
 				};
-
 				if(pixel.charged) {
 					var explosionRadius = 10;
 					if(!pixel.didChargeBlueTinted) { //do once, on initial charge
@@ -33101,7 +30476,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				} else {
 					var explosionRadius = 7;
 				};
-
 				//Human detection loop (looks ahead according to direction and sets the "following" variable to true, telling the body to lock the direction)
 				var directionAdverb = "left";
 				if(pixel.dir > 0) {
@@ -33188,7 +30562,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 					};
 				};
-
 				//Pre-explosion handler: keeps track of time before the kaboom
 				for(i = 0; i < 1; i++) { //dummy for loop
 					if(pixel.hissing) {
@@ -33229,7 +30602,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 								//console.log("color set");
 							};
 						//}
-
 						if(pixelTicks - pixel.hissStart > 30) {
 							//console.log("GOTTA YEET YEET YEET!");
 							//console.log(`Exploding with radius ${explosionRadius} (charged: ${pixel.charged})`);
@@ -33238,16 +30610,13 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 					};
 				};
-
 				if(Math.random() < 0.01) { //1% chance each tick to lose interest
 					pixel.following = false;
 					//console.log("Meh.");
 				};
 			},
 		};
-
 																	//Bombing Creeper
-
 		elements.bombing_creeper = {
 			color: ["#5b8b59", "#3f8738", "#559552", "#479143", "#50b143", "#58c546", "#e83c3c", "#c92a2a", "#f53d3d", "#ad3131"],
 			category: "life",
@@ -33277,7 +30646,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			related: ["bombing_creeper_body","bombing_creeper_head"],
 			desc: 'A creeper type from <em>Extra Creeper Types</em> <a href="https://www.curseforge.com/minecraft/mc-mods/extra-creeper-types">(CF)</a>. It spawns more explosives when it explodes.'
 		};
-
 		elements.bombing_creeper_body = {
 			color: ["#e83c3c", "#c92a2a", "#f53d3d", "#ad3131"],
 			category: "life",
@@ -33330,7 +30698,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					}
 					return
 				}
-
 				// Find the head
 				if (!isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "bombing_creeper_head") {
 					var head = pixelMap[pixel.x][pixel.y-1];
@@ -33339,7 +30706,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					}
 				}
 				else { var head = null }
-
 				if (isEmpty(pixel.x, pixel.y-1)) {
 					// create blood if decapitated 10% chance
 					if (Math.random() < 0.1) {
@@ -33376,11 +30742,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 						//console.log("*chases cutely*");
 					};*/
 				};
-
 				if(pixel.charge) {
 					pixel.charged = true;
 				};
-
 				if(head) {
 					if(typeof(head.charge) !== "undefined") {
 						if(head.charge) {
@@ -33393,11 +30757,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 					};
 				};
-
 				if(typeof(pixel.charged) === "undefined") {
 					pixel.charged = false;
 				};
-
 				if(pixel.charged) {
 					var explosionRadius = 10;
 					if(!pixel.didChargeBlueTinted) { //do once, on initial charge
@@ -33440,7 +30802,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				} else {
 					var explosionRadius = 7;
 				};
-
 				if(pixel.burning) {
 					pixel.hissing = true;
 					if(!pixel.hissStart) {
@@ -33456,7 +30817,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						//console.log("Yes, Rico, kaboom.");
 					};
 				};
-
 				//Head hissing color handler: keeps track of head's hissing for coloring purposes
 				for(i = 0; i < 1; i++) { //dummy for loop
 					if(pixel.dead || !head || head.dead) { //can't hiss without a head according to the classic creeper anatomy
@@ -33470,7 +30830,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 							//console.log("t-30 ticks or whatever it was");
 							head.hissStart = pixelTicks;
 						};
-
 						//Color code {
 							var ticksHissing = pixelTicks - head.hissStart;
 							var color = pixel.color; //do on each hissing tick
@@ -33504,7 +30863,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		};
-
 		elements.bombing_creeper_head = {
 			color: ["#5B8B59", "#3F8738", "#559552", "#479143", "#50B143", "#58C546"],
 			category: "life",
@@ -33545,7 +30903,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						return
 					}
 				}
-
 				// Find the body
 				if (!isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "bombing_creeper_body") {
 					var body = pixelMap[pixel.x][pixel.y+1];
@@ -33554,13 +30911,11 @@ Make sure to save your command in a file if you want to add this preset again.`
 					}
 				}
 				else { var body = null }
-
 				if(body) {
 					if(body.dir !== pixel.dir) { //hacky workaround: lock head dir to body dir
 						pixel.dir = body.dir;
 					};
 				};
-
 				if (isEmpty(pixel.x, pixel.y+1)) {
 					tryMove(pixel, pixel.x, pixel.y+1);
 					// create blood if severed 10% chance
@@ -33572,15 +30927,12 @@ Make sure to save your command in a file if you want to add this preset again.`
 						}
 					}
 				}
-
 				//start of most new code
 				var pX = pixel.x;
 				var pY = pixel.y;
-
 				if(pixel.charge) {
 					pixel.charged = true;
 				};
-
 				if(body) {
 					if(typeof(body.charge) !== "undefined") {
 						if(body.charge) {
@@ -33593,11 +30945,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 					};
 				};
-
 				if(typeof(pixel.charged) === "undefined") {
 					pixel.charged = false;
 				};
-
 				if(pixel.charged) {
 					var explosionRadius = 10;
 					if(!pixel.didChargeBlueTinted) { //do once, on initial charge
@@ -33640,7 +30990,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				} else {
 					var explosionRadius = 7;
 				};
-
 				//Human detection loop (looks ahead according to direction and sets the "following" variable to true, telling the body to lock the direction)
 				var directionAdverb = "left";
 				if(pixel.dir > 0) {
@@ -33727,7 +31076,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 					};
 				};
-
 				//Pre-explosion handler: keeps track of time before the kaboom
 				for(i = 0; i < 1; i++) { //dummy for loop
 					if(pixel.hissing) {
@@ -33768,7 +31116,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 								//console.log("color set");
 							};
 						//}
-
 						if(pixelTicks - pixel.hissStart > 30) {
 							//console.log("Kaboom?");
 							//console.log(`Exploding with radius ${explosionRadius} (charged: ${pixel.charged})`);
@@ -33777,16 +31124,13 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 					};
 				};
-
 				if(Math.random() < 0.01) { //1% chance each tick to lose interest
 					pixel.following = false;
 					//console.log("Meh.");
 				};
 			},
 		};
-
 																	//Hell Creeper
-
 		elements.hell_creeper = {
 			color: ["#D2D2D2", "#ff141e", "#fc3232", "#DFAFAF", "#e84a4a", "#ce7979", "#d95555", "#d53c3c", "#c53636", "#b13333", "#913535", "#954242", "#872828", "#8b4949", "#2b0304"],
 			category: "life",
@@ -33816,7 +31160,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			related: ["hell_creeper_body","hell_creeper_head"],
 			desc: 'A creeper type from <em>Extra Creeper Types</em> <a href="https://www.curseforge.com/minecraft/mc-mods/extra-creeper-types">(CF)</a>. It has a small explosion radius, but spawns a lot of fire around its explosion.'
 		};
-
 		elements.hell_creeper_body = {
 			color: ["#D2D2D2", "#ff141e", "#fc3232", "#DFAFAF", "#e84a4a", "#ce7979", "#d95555", "#d53c3c", "#c53636", "#b13333", "#913535", "#954242", "#872828", "#8b4949", "#2b0304"],
 			category: "life",
@@ -33864,7 +31207,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					}
 					return
 				}
-
 				// Find the head
 				if (!isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "hell_creeper_head") {
 					var head = pixelMap[pixel.x][pixel.y-1];
@@ -33873,7 +31215,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					}
 				}
 				else { var head = null }
-
 				if (isEmpty(pixel.x, pixel.y-1)) {
 					// create blood if decapitated 10% chance
 					if (Math.random() < 0.1) {
@@ -33910,11 +31251,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 						//console.log("*chases cutely*");
 					};*/
 				};
-
 				if(pixel.charge) {
 					pixel.charged = true;
 				};
-
 				if(head) {
 					if(typeof(head.charge) !== "undefined") {
 						if(head.charge) {
@@ -33927,11 +31266,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 					};
 				};
-
 				if(typeof(pixel.charged) === "undefined") {
 					pixel.charged = false;
 				};
-
 				if(pixel.charged) {
 					var explosionRadius = 10;
 					if(!pixel.didChargeBlueTinted) { //do once, on initial charge
@@ -33974,7 +31311,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				} else {
 					var explosionRadius = 7;
 				};
-
 				if(pixel.burning) {
 					pixel.hissing = true;
 					if(!pixel.hissStart) {
@@ -33989,7 +31325,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						//console.log("Yes, Rico, kaboom.");
 					};
 				};
-
 				//Head hissing color handler: keeps track of head's hissing for coloring purposes
 				for(i = 0; i < 1; i++) { //dummy for loop
 					if(pixel.dead || !head || head.dead) { //can't hiss without a head according to the classic creeper anatomy
@@ -34003,7 +31338,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 							//console.log("t-30 ticks or whatever it was");
 							head.hissStart = pixelTicks;
 						};
-
 						//Color code {
 							var ticksHissing = pixelTicks - head.hissStart;
 							var color = pixel.color; //do on each hissing tick
@@ -34037,7 +31371,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		};
-
 		elements.hell_creeper_head = {
 			color: ["#D2D2D2", "#ff141e", "#fc3232", "#e84a4a", "#b13333", "#913535", "#954242", "#872828", "#8b4949", "#2b0304", "#111111", "#faae3c", "#f5e131"],
 			category: "life",
@@ -34075,7 +31408,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						return
 					}
 				}
-
 				// Find the body
 				if (!isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "hell_creeper_body") {
 					var body = pixelMap[pixel.x][pixel.y+1];
@@ -34084,13 +31416,11 @@ Make sure to save your command in a file if you want to add this preset again.`
 					}
 				}
 				else { var body = null }
-
 				if(body) {
 					if(body.dir !== pixel.dir) { //hacky workaround: lock head dir to body dir
 						pixel.dir = body.dir;
 					};
 				};
-
 				if (isEmpty(pixel.x, pixel.y+1)) {
 					tryMove(pixel, pixel.x, pixel.y+1);
 					// create blood if severed 10% chance
@@ -34102,15 +31432,12 @@ Make sure to save your command in a file if you want to add this preset again.`
 						}
 					}
 				}
-
 				//start of most new code
 				var pX = pixel.x;
 				var pY = pixel.y;
-
 				if(pixel.charge) {
 					pixel.charged = true;
 				};
-
 				if(body) {
 					if(typeof(body.charge) !== "undefined") {
 						if(body.charge) {
@@ -34123,11 +31450,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 					};
 				};
-
 				if(typeof(pixel.charged) === "undefined") {
 					pixel.charged = false;
 				};
-
 				if(pixel.charged) {
 					var explosionRadius = 10;
 					if(!pixel.didChargeBlueTinted) { //do once, on initial charge
@@ -34170,7 +31495,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				} else {
 					var explosionRadius = 7;
 				};
-
 				//Human detection loop (looks ahead according to direction and sets the "following" variable to true, telling the body to lock the direction)
 				var directionAdverb = "left";
 				if(pixel.dir > 0) {
@@ -34257,7 +31581,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 					};
 				};
-
 				//Pre-explosion handler: keeps track of time before the kaboom
 				for(i = 0; i < 1; i++) { //dummy for loop
 					if(pixel.hissing) {
@@ -34298,7 +31621,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 								//console.log("color set");
 							};
 						//}
-
 						if(pixelTicks - pixel.hissStart > 30) {
 							//console.log("Kaboom?");
 							//console.log(`Exploding with radius ${explosionRadius} (charged: ${pixel.charged})`);
@@ -34307,14 +31629,12 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 					};
 				};
-
 				if(Math.random() < 0.01) { //1% chance each tick to lose interest
 					pixel.following = false;
 					//console.log("Meh.");
 				};
 			},
 		};
-
 		//Lightning strikes charge creepers
 		elements.lightning.tick = function(pixel) {
 			if (!pixel.stage) { // create bolt
@@ -34377,7 +31697,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			}
 			else { doDefaults(pixel); }
 		};
-
 		/* +-----------------------------------+
 		   | Nothing There					   |
 		   |								   |
@@ -34392,7 +31711,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 		   |								   |
 		   |								   |
 		   +-----------------------------------+ */
-
 		elements.nothing_there_bullet = {
 			flippableX: true,
 			movable: true,
@@ -34417,7 +31735,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		};
-
 		elements.nothing_there_mace = {
 			movable: true,
 			density: 10000,
@@ -34453,7 +31770,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		};
-
 		elements.nothing_there_cleaver = {
 			movable: true,
 			density: 10000,
@@ -34489,9 +31805,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		};
-
 		testSwapArray = ["meat","cooked_meat","rotten_meat","blood","infection","antibody","plague","zombie_blood","frozen_meat","frozen_rotten_meat"];
-
 		elements.nothing_there_phase_1 = {
 			color: "#faacac",
 			category: "life",
@@ -34530,7 +31844,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					};
 					return;
 				};
-
 				if (Math.random() < 0.1) { // Move 10% chance
 					var movesToTry = [
 						[1*pixel.dir,0],	//dash move
@@ -34563,15 +31876,12 @@ Make sure to save your command in a file if you want to add this preset again.`
 						//console.log("*chases cutely*");
 					};*/
 				};
-
 				var pX = pixel.x;
 				var pY = pixel.y;
-
 				if(Math.random() < 0.01) { //1% chance each tick to lose interest
 					pixel.following = false;
 					//console.log("Meh.");
 				};
-
 				//Human detection loop (looks ahead according to direction and sets the "following" variable to true, telling the body to lock the direction)
 				if(pixelTicks % 2 == 0 && !pixel.dead) { //reduce rate for performance
 					/*var directionAdverb = "left";
@@ -34673,17 +31983,14 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 					};
 				};
-
 				if(pixelTicks - pixel.start > 300 && (Math.random() < 0.003)) {
 					var dir = pixel.dir;
 					changePixel(pixel,"nothing_there_phase_2",false);
 					pixel.dir = dir;
 				};
-
 				//End
 			},
 		};
-
 		elements.nothing_there_phase_2 = {
 			behavior: behaviors.POWDER_OLD,
 			color: "#d90b0b",
@@ -34722,7 +32029,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					};
 					return;
 				};
-
 				if(pixelTicks - pixel.start > 300) {
 					var dir = pixel.dir;
 					if (isEmpty(pixel.x, pixel.y+1)) {
@@ -34739,11 +32045,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 						pixel.dir = dir;
 					};
 				};
-
 				//End
 			},
 		};
-
 		elements.nothing_there_phase_3 = {
 			color: "#fc1e35",
 			category: "life",
@@ -34770,7 +32074,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			},
 			related: ["nothing_there_phase_3_body","nothing_there_phase_3_head"],
 		};
-
 		elements.nothing_there_phase_3_body = {
 			color: "#fc1e35",
 			category: "life",
@@ -34800,7 +32103,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			related: ["nothing_there_phase_1", "nothing_there_phase_2", "nothing_there_mace", "nothing_there_cleaver", "nothing_there_bullet"],
 			tick: function(pixel) {
 				var pixelBreakInto = elements[pixel.element].breakInto;
-
 				if (tryMove(pixel, pixel.x, pixel.y+1)) { // Fall
 					if (!isEmpty(pixel.x, pixel.y-2, true)) { // Drag head down
 						var headPixel = pixelMap[pixel.x][pixel.y-2];
@@ -34824,7 +32126,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					};
 					return;
 				};
-
 				// Find the head
 				if (!isEmpty(pixel.x, pixel.y-1, true)) {
 					if(pixelMap[pixel.x][pixel.y-1].element == "nothing_there_phase_3_head") {
@@ -34836,7 +32137,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						var head = null;
 					};
 				} else { var head = null };
-
 				if (isEmpty(pixel.x, pixel.y-1)) {
 					// create blood if decapitated 30% chance
 					if (Math.random() < 0.3) {
@@ -34875,7 +32175,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		};
-
 		elements.nothing_there_phase_3_head = {
 			color: "#ff3046",
 			category: "life",
@@ -34915,7 +32214,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					};
 					return;
 				};
-
 				// Find the body
 				if (!isEmpty(pixel.x, pixel.y+1, true)) {
 					if(pixelMap[pixel.x][pixel.y+1].element == "nothing_there_phase_3_body") {
@@ -34927,13 +32225,11 @@ Make sure to save your command in a file if you want to add this preset again.`
 						var body = null;
 					};
 				} else { var body = null };
-
 				if(body) {
 					if(body.dir !== pixel.dir) { //hacky workaround: lock head dir to body dir
 						pixel.dir = body.dir;
 					};
 				};
-
 				if (isEmpty(pixel.x, pixel.y+1)) {
 					tryMove(pixel, pixel.x, pixel.y+1);
 					// create blood if severed 30% chance
@@ -34945,11 +32241,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 						}
 					}
 				}
-
 				//start of most new code
 				var pX = pixel.x;
 				var pY = pixel.y;
-
 				//Human detection loop
 				if(pixelTicks % 2 == 0 && !pixel.dead) { //reduce rate for performance
 					/*var directionAdverb = "left";
@@ -34961,18 +32255,14 @@ Make sure to save your command in a file if you want to add this preset again.`
 						//do action every 40 ticks
 						var bulletPositions = [[-1, -1], [-1, 0]];
 						var bulletPosition = bulletPositions[Math.floor(Math.random() * 2)];
-
 						var smashPosition = [-1, -1];
-
 						var cleavePositions = [[-1, -1], [-2, -1], [-3, -1]];
-
 						var start = 2 * Math.floor(pixel.start/2);
 						if((pixelTicks - start) % 40 == 0) {
 							var action = Math.floor(Math.random() * 3);
 							if(action == 0) { //bullet
 								var bX = pX + bulletPosition[0];
 								var bY = pY + bulletPosition[1];
-
 								if(!outOfBounds(bX,bY)) {
 									if(isEmpty(bX,bY)) {
 										createPixel("nothing_there_bullet",bX,bY);
@@ -34988,7 +32278,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 							} else if(action == 1) { //smash
 								var sX = pX + smashPosition[0];
 								var sY = pY + smashPosition[1];
-
 								if(!outOfBounds(sX,sY)) {
 									if(isEmpty(sX,sY)) {
 										createPixel("nothing_there_mace",sX,sY);
@@ -35003,7 +32292,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 								for(cleaverIndex = 0; cleaverIndex < cleavePositions.length; cleaverIndex++) {
 									var cX = pX + cleavePositions[cleaverIndex][0];
 									var cY = pY + cleavePositions[cleaverIndex][1];
-
 									if(!outOfBounds(cX,cY)) {
 										if(isEmpty(cX,cY)) {
 											createPixel("nothing_there_cleaver",cX,cY);
@@ -35017,7 +32305,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 								};
 							};
 						};
-
 						for(i = -4; i < 4+1; i++) {
 							var oY = i;
 							//console.log(`Starting row look at row ${pY+oY}`)
@@ -35067,18 +32354,14 @@ Make sure to save your command in a file if you want to add this preset again.`
 						//do action every 40 ticks
 						var bulletPositions = [[1, -1], [1, 0]];
 						var bulletPosition = bulletPositions[Math.floor(Math.random() * 2)];
-
 						var smashPosition = [1, -1];
-
 						var cleavePositions = [[1, -1], [2, -1], [3, -1]];
-
 						var start = 2 * Math.floor(pixel.start/2);
 						if((pixelTicks - start) % 40 == 0) {
 							var action = Math.floor(Math.random() * 3);
 							if(action == 0) { //bullet
 								var bX = pX + bulletPosition[0];
 								var bY = pY + bulletPosition[1];
-
 								if(!outOfBounds(bX,bY)) {
 									if(isEmpty(bX,bY)) {
 										createPixel("nothing_there_bullet",bX,bY);
@@ -35094,7 +32377,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 							} else if(action == 1) { //smash
 								var sX = pX + smashPosition[0];
 								var sY = pY + smashPosition[1];
-
 								if(!outOfBounds(sX,sY)) {
 									if(isEmpty(sX,sY)) {
 										createPixel("nothing_there_mace",sX,sY);
@@ -35109,7 +32391,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 								for(cleaverIndex = 0; cleaverIndex < cleavePositions.length; cleaverIndex++) {
 									var cX = pX + cleavePositions[cleaverIndex][0];
 									var cY = pY + cleavePositions[cleaverIndex][1];
-
 									if(!outOfBounds(cX,cY)) {
 										if(isEmpty(cX,cY)) {
 											createPixel("nothing_there_cleaver",cX,cY);
@@ -35123,7 +32404,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 								};
 							};
 						};
-
 						for(i = -4; i < 4+1; i++) {
 							var oY = i;
 							//console.log(`Starting row look at row ${pY+oY}`)
@@ -35171,14 +32451,12 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 					};
 				};
-
 				if(Math.random() < 0.01) { //1% chance each tick to lose interest
 					pixel.following = false;
 					//console.log("Meh.");
 				};
 			},
 		};
-
 		runAfterLoad(function() {
 			if(typeof(badPixels) === "object") {
 				badPixels.nothing_there_phase_1 = { panicIncrease: 1, panicIncreaseChance: 1 } //insta-panic for "aleph" thing and "level 1" humans
@@ -35187,7 +32465,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				badPixels.nothing_there_phase_3_head = { panicIncrease: 1, panicIncreaseChance: 1 }
 			}
 		});
-
 		/* +-----------------------------------+
 		   | End Nothing There elements		|
 		   |								   |
@@ -35196,17 +32473,12 @@ Make sure to save your command in a file if you want to add this preset again.`
 		   |								   |
 		   |								   |
 		   +-----------------------------------+ */
-
 		/* +++++++++++++++++++++++++++
 		   + Start skeleton elements +
 		   +++++++++++++++++++++++++++ */
-
 		arrowExcludedElements = ["wall"];
-
 		arrowPlacementExcludedElements = ["skeleton_head", "skeleton_body", "arrow", "wall"];
-
 		elements.rock.hardness = 0.55;
-
 		elements.arrow = {
 			cooldown: 2,
 			flippableX: true,
@@ -35253,7 +32525,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				} else { //Move if not attached
 					var speedForBreakMult = pythSpeed(pixel.speed,pixel.y);
 					var breakMult = speedForBreakMult/5;
-
 					if(typeof(pixel.flipX) == undefined) {
 						pixel.flipX = !!Math.floor(Math.random() * 2);
 					};
@@ -35301,7 +32572,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					if(Math.random() < 0.1) {
 						pixel.speed = Math.max(0,--pixel.speed);
 					};
-
 					var dirY = 1;
 					//Vertical movement
 					if(typeof(pixel.flipY) !== "undefined") {
@@ -35309,7 +32579,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 							pixel.dirY = -1;
 						};
 					};
-
 					for(j = 0; j < pixel.fall; j++) {
 						if(outOfBounds(pixel.x,pixel.y+dirY)) {
 							deletePixel(pixel.x,pixel.y);
@@ -35346,12 +32615,10 @@ Make sure to save your command in a file if you want to add this preset again.`
 							tryMove(pixel,pixel.x,pixel.y+dirY);
 						};
 					};
-
 					//End
 				};
 			},
 		};
-
 		elements.skeleton = {
 			color: ["#ebebe6", "#cfcfc8"],
 			category: "life",
@@ -35381,7 +32648,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			related: ["skeleton_body","skeleton_head"],
 			desc: "<span class=\"skeletonStatus\">If this text is green or underlined, skeletons can spawn.</span> <span onclick=toggleSkeletonSpawning() style=\"color: #ff00ff;\";>Click here</span> to toggle skeleton spawning. If it's on, skeletons (all types) can spawn through random events."
 		};
-
 		elements.skeleton_body = {
 			color: "#ebebe6",
 			category: "life",
@@ -35433,7 +32699,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					}
 					return
 				}
-
 				// Find the head
 				if (!isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "skeleton_head") {
 					var head = pixelMap[pixel.x][pixel.y-1];
@@ -35442,7 +32707,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					}
 				}
 				else { var head = null }
-
 				if (isEmpty(pixel.x, pixel.y-1)) {
 					// create blood if decapitated 10% chance (bone marrow)
 					if (Math.random() < 0.1) {
@@ -35479,7 +32743,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						//console.log("*chases cutely*");
 					};*/
 				};
-
 				if(pixel.shooting) {
 					if(pixel.chargeCounter <= 0) {
 						var bX = pixel.x + pixel.dir;
@@ -35510,7 +32773,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		};
-
 		elements.skeleton_head = {
 			color: ["#ebebe6", "#cfcfc8"],
 			category: "life",
@@ -35547,7 +32809,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					}
 					return
 				}
-
 				// Find the body
 				if (!isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "skeleton_body") {
 					var body = pixelMap[pixel.x][pixel.y+1];
@@ -35556,13 +32817,11 @@ Make sure to save your command in a file if you want to add this preset again.`
 					}
 				}
 				else { var body = null }
-
 				if(body) {
 					if(body.dir !== pixel.dir) { //hacky workaround: lock head dir to body dir
 						pixel.dir = body.dir;
 					};
 				};
-
 				if (isEmpty(pixel.x, pixel.y+1)) {
 					tryMove(pixel, pixel.x, pixel.y+1);
 					// create blood if severed 10% chance
@@ -35574,11 +32833,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 						}
 					}
 				}
-
 				//start of most new code
 				var pX = pixel.x;
 				var pY = pixel.y;
-
 				//Human detection loop (looks ahead according to direction and sets the "following" variable to true, telling the body to lock the direction)
 				var directionAdverb = "left";
 				if(pixel.dir > 0) {
@@ -35650,21 +32907,17 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 					};
 				};
-
 				if(Math.random() < 0.01) { //1% chance each tick to lose interest
 					pixel.following = false;
 					//console.log("Meh.");
 				};
 			},
 		};
-
 		/* -------------------------
 		   - End skeleton elements -
 		   ------------------------- */
 		mobsLoaded = true;
-
 	//CHANGES TO HUMANS ##
-
 		function hasPixel(x,y,elementInput) {
 			if(isEmpty(x,y,true)) { //if empty, it can't have a pixel
 				return false;
@@ -35677,9 +32930,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 				} else { //if single element
 					return pixelMap[x][y].element === elementInput;
 				};
-			};		
+			};
 		};
-
 		elements.brain = {
 			color: ["#fce3e3","#deb6c5","#f5ced5","#e87b8f"],
 			behavior: [
@@ -35723,7 +32975,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			density: 1081,
 			conduct: 1,
 		};
-
 		elements.cerebrospinal_fluid = {
 			color: "#ced7db",
 			behavior: behaviors.LIQUID,
@@ -35733,7 +32984,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			breakInto: "steam",
 			reactions: JSON.parse(JSON.stringify(elements.water.reactions)),
 		};
-
 		function validatePanic(pixel) {
 			//console.log(`validatePanic: validatePanic called on pixel ${pixel.element} at (${pixel.x},${pixel.y}) with panic level ${pixel.panic || 0}`);
 			if(pixel.element.endsWith("body")) {
@@ -35746,7 +32996,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			//console.log(`Bounding code running from value of ${pixel.panic}`);
 			pixel.panic = Math.max(0,Math.min(1,pixel.panic));
 			//console.log(`Validation result: Panic set to ${pixel.panic}`);
-
 			if(Number.isNaN(pixel.mood)) {
 				//console.log("NaN case: panic set to 0");
 				pixel.mood = 0;
@@ -35755,7 +33004,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			pixel.mood = Math.max(-3,Math.min(3,pixel.mood));
 			//console.log(`Validation result: Panic set to ${pixel.panic}`);
 		};
-
 		goodPixels = {
 			silver: { panicChange: 0.01, panicChangeChance: 0.1, moodChange: 0.004 },
 			gold: { panicChange: 0.02, panicChangeChance: 0.15, moodChange: 0.01 },
@@ -35781,7 +33029,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			cluster_nuke: { panicChange: 1, panicChangeChance: 1, moodChange: -1 }, //insta-panic
 		}; //testing
 		otherPixels = ["head","body"]; //do custom code here
-
 		var initialTransparencyArray = ["glass","water","salt_water","sugar_water","steam","oxygen","nitrogen","neon","methane","propane","anesthesia","ammonia","carbon_dioxide","helium","hydrogen","ozone","radiation","pool_water"];
 		for(transparentElementIndex = 0; transparentElementIndex < initialTransparencyArray.length; transparentElementIndex++) {
 			var transparentElement = initialTransparencyArray[i];
@@ -35789,7 +33036,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				elements[transparentElement].transparent = true;
 			};
 		};
-
 		elements.body.properties = {
 			dead: false,
 			dir: 1,
@@ -35823,7 +33069,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				}
 				return
 			}
-
 			// Find the head
 			if (!isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "head") {
 				var head = pixelMap[pixel.x][pixel.y-1];
@@ -35832,7 +33077,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				}
 			}
 			else { var head = null }
-
 			if (isEmpty(pixel.x, pixel.y-1)) {
 				// create blood if decapitated 10% chance
 				if (Math.random() < 0.1) {
@@ -35844,7 +33088,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				}
 			}
 			if (head == null) { return };
-
 			if (Math.random() < (0.1 + head.panic)) { // Move 10% chance, varying depending on panic value
 				var movesToTry = [
 					[1*pixel.dir,0],
@@ -35878,8 +33121,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 						//console.log("*turns around cutely to face ${pixel.dir < 0 ? 'left' : 'right'}*");
 					};
 				};
-			};	
-
+			};
 			//if not flagged for extreme panic
 			//extreme panic will not be flagged in good moods, just to be nice
 			if(pixel.extremePanicStart == null && head.panic > 0.8 && head.mood <= 0) {
@@ -35901,9 +33143,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				//unflag
 				pixel.extremePanicStart = null;
 			};
-
 		};
-
 		elements.body.onTryMoveInto = function(pixel,otherPixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -35926,7 +33166,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 								head.panic += 0.08; //being hit by a /severed ******* head/ is terrifying
 							} else {
 								head.panic += 0.1; //being hit by a //******* severed head that's still alive// is even worse
-							};					
+							};
 						};
 					} else if(otherElement === "body") { //if the pixel hitting this body is a body
 						if(hasPixel(oX,oY-1,"head")) { //if the pixel hitting this pixel has a head on it
@@ -35947,13 +33187,11 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		elements.head.properties = {
 			dead: false,
 			dirLocked: false,
 			panic: 0,
 		};
-
 		elements.head.tick = function(pixel) {
 			doHeat(pixel);
 			doBurning(pixel);
@@ -35965,7 +33203,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					return
 				}
 			}
-
 			// Find the body
 			if (!isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "body") {
 				var body = pixelMap[pixel.x][pixel.y+1];
@@ -35974,7 +33211,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				}
 			}
 			else { var body = null }
-
 			if (isEmpty(pixel.x, pixel.y+1)) {
 				tryMove(pixel, pixel.x, pixel.y+1);
 				// create blood if severed 10% chance
@@ -35986,9 +33222,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					}
 				}
 			}
-
 			pixel.mood ??= 0;
-
 			if((pixelTicks-pixel.start) % 5 === 0) {
 				//Vision loop
 				var pX = pixel.x;
@@ -36052,7 +33286,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 													} else {
 														pixel.panic += 0.003;
 													};
-
 													//the vision loop is in the head, and this is in the "seeing head" case, then this will happen when the head sees another head, and heads store panic; this is in the "other head" is panicking case so this will ultimately be the code that runs when its human sees another human panicking
 													if(Math.random() < 0.5) {
 														//run in same direction as panicking person
@@ -36219,22 +33452,17 @@ Make sure to save your command in a file if you want to add this preset again.`
 					};
 				};
 			};
-
 			validatePanic(pixel);
-
 			if(Math.random() < 0.01) { //1% chance each tick to lose interest
 				pixel.dirLocked = false;
 				//console.log("Meh.");
 			};
-
 			if(Math.random() < ((pixel.panic) > 0.8 ? 0.04 : 0.02)) { //2% chance each tick to decrease panic (4% if the panic is extreme)
 				//console.log("Decreasing panic");
 				pixel.panic < 0.05 ? pixel.panic = 0 : pixel.panic -= 0.05;
 			};
-
 		};
 		elements.head.breakInto = ["bone","brain","brain","cerebrospinal_fluid","blood","blood","meat"];
-
 		elements.head.onTryMoveInto = function(pixel,otherPixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -36260,7 +33488,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 							} else {
 								pixel.panic += 0.1; //being hit by a //******* severed head that's still alive// is even worse
 								//console.log("head.onTryMoveInto: panic increase, case: head hit by living severed head");
-							};					
+							};
 						};
 					} else if(otherElement === "body") { //if the pixel hitting this head is a body
 						if(hasPixel(oX,oY-1,"head")) { //if the body hitting this pixel has a head on it
@@ -36308,16 +33536,13 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		//Worldgen preset for testing
-
 		worldgentypes.basalt_dirt = {
 			layers: [
 				[0, "basalt", 0.05],
 				[0, "dirt"]
 			]
 		};
-
 		kep1er = [
 								//Conn. 0	Conn. -	  Conn. 1
 			["first_impact",	["#E34B6E","#FE9F19","#8E5ECE"]],
@@ -36334,7 +33559,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 								//Beloved	S.kissed  Moonlighted
 			["magic_hour",		["#EDC1D2","#EFCBB1","#7585B6"]]
 		];
-
 		for(index in kep1er) {
 			index = parseInt(index);
 			var newName = kep1er[index][0];
@@ -36369,15 +33593,11 @@ Make sure to save your command in a file if you want to add this preset again.`
 				burnInto: ["ash","molten_plastic","carbon_dioxide","smoke"],
 				category: "other"
 			};
-
 			goodPixels[newName] = { panicChange: 0.01, panicChangeChance: 0.2, moodChange: 0.035 };
 		};
-
 	//CHANGES TO SPONGES ##
-
 		elements.sponge.properties ??= {};
 		elements.sponge.properties.maxAbsorb = 250;
-
 		elements.sponge.tick = function(pixel) {
 			pixel.absorbed ??= {};
 			var coordsToCheck = [
@@ -36405,7 +33625,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				doBurning(pixel);
 			};
 		};
-
 		elements.sponge.onTryMoveInto = function(pixel,otherPixel) {
 			var absorbedElements = Object.keys(pixel.absorbed ?? {});
 			if(absorbedElements.length == 0) {
@@ -36440,17 +33659,13 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 	//MIX OF PRIMORDIAL SOUP AND BIRTHPOOL (also primordial soup freezing, and state fixes) ##
-
 		elements.primordial_soup.tempLow = 0;
-
 		elements.birthpool.tempHigh = 100;
 		elements.birthpool.stateHigh = ["magic","steam"];
 		elements.birthpool.tempLow = 0;
 		elements.birthpool.state = "liquid";
 		elements.birthpool.forceAutoGen = true;
-
 		elements.primordial_birthpool = {
 			color:["#5E7453","#5E745D","#5E744B","#6C7C50","#6C7C59","#6C7C47"],
 			state: "liquid",
@@ -36481,31 +33696,22 @@ Make sure to save your command in a file if you want to add this preset again.`
 				concoction: { "elem1": ["primordial_soup", "birthpool", "primordial_birthpool"], "elem2": ["primordial_soup", "birthpool", "primordial_birthpool"], "chance":0.0045}
 			},
 		};
-
 		if(!elements.birthpool.reactions) {
 			elements.birthpool.reactions = {}
 		}
-
 		elements.birthpool.reactions.primordial_soup = { "elem1":"primordial_birthpool", "elem2":"primordial_birthpool" }
-
 	//AUTOGENERATED CONTENT ##
-
 		//Required secondary function
-		
 		function canvasfooterTemplate() { //CURSED AF
 			return `<small><a href="https://sandboxels.r74n.com/changelog" id="changelogButton" target="_blank">Changelog<span style="color:red">(NEW)</span></a> • <a href="https://sandboxels.R74n.com/feedback" target="_blank" style="color:lime;">Feedback</a> • <a href="https://sandboxels.wiki.gg/" target="_blank" id="wikiButton" title="Official Sandboxels Wiki - wiki.gg" style="color:white;">Wiki</a> • <a id="moreSocial" href="https://www.youtube.com/@R74n/shorts" rel="me" target="_blank"><span style="color:#FFFFFF">You</span><span style="background-color:#FF0000;color:#FFFFFF">Tube</span></a> • <a href="https://discord.gg/ejUc6YPQuS" target="_blank" style="color:#2f60ff;">Discord</a><span id="install-button" style="display: inline-block;">&nbsp;• <a onclick="deferredPrompt.prompt(); return false" href="#" style="text-shadow: 0px 2px 10px #ff00ff; cursor:pointer">Install Offline</a></span><!--<br><br><a style="color:lime" target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSf8pVMSdC6oSnBSaTpzjPQa8Ef-vxG_eXL99UITnMSQtJFTJA/viewform?usp=sf_link">FILL OUT THE CENSUS<span style="color:red">(NEW)</span></a>--></small><small><p>v${currentversion} • ${elementCount} elements, with <span id="hiddenCount">${hiddenCount}</span> hidden.</p><p>©2021-${new Date().getFullYear()}. <a href="https://sandboxels.R74n.com/license.txt" rel="license" target="_blank">All Rights Reserved</a>. <a style="color:#00ffff" rel="author" href="https://r74n.com">R74n</a></p></small>`
 		};
-		
 		//urlParams reads
-
 			//Bombs
-
 				if(urlParams.get('generateBombs') !== null) { //if the variable exists at all
 					generateBombs = true
 				} else { //if it doesn't (and it returns null)
 					generateBombs = false
 				}
-
 				if(urlParams.get('bombAmount') != null) { //null check
 					bombAmount = urlParams.get('bombAmount')
 					if(isNaN(bombAmount) || bombAmount === "" || bombAmount === null) { //NaN check
@@ -36521,52 +33727,42 @@ Make sure to save your command in a file if you want to add this preset again.`
 				} else {
 					bombAmount = 10
 				}
-
 			//Clouds
-
 				if(urlParams.get('generateClouds') !== null) { //if the variable exists at all
 					generateClouds = true
 				} else { //if it doesn't (and it returns null)
 					generateClouds = false
 				}
-
 				if(urlParams.get('cloudIncludeRandom') !== null) { //if the variable exists at all
 					cloudIncludeRandom = true
 				} else { //if it doesn't (and it returns null)
 					cloudIncludeRandom = false
 				}
-
 			//Creepers
-
 				//Include generated creepers in Random tool?
 				if(urlParams.get('creeperIncludeRandom') !== null) { //if the variable exists at all
 					creeperIncludeRandom = true
 				} else { //if it doesn't (and it returns null)
 					creeperIncludeRandom = false
 				}
-
 				//Generate creepers
 				if(urlParams.get('generateCreepers') !== null) { //if the variable exists at all
 					generateCreepers = true
 				} else { //if it doesn't (and it returns null)
 					generateCreepers = false
 				}
-
 			//Fairies
-
 				if(urlParams.get('fairyIncludeRandom') !== null) { //if the variable exists at all
 					fairyIncludeRandom = true
 				} else { //if it doesn't (and it returns null)
 					fairyIncludeRandom = false
 				}
-
 				//Generate fairies
 				if(urlParams.get('generateFairies') !== null) { //if the variable exists at all
 					generateFairies = true
 				} else { //if it doesn't (and it returns null)
 					generateFairies = false
 				}
-
 				if(urlParams.get('fairyAmount') != null) { //null check
 					fairyAmount = urlParams.get('fairyAmount')
 					if(isNaN(fairyAmount) || fairyAmount === "" || fairyAmount === null) { //NaN check
@@ -36582,61 +33778,44 @@ Make sure to save your command in a file if you want to add this preset again.`
 				} else {
 					fairyAmount = 10
 	}
-
 			//Spouts
-
 				//Generate spouts
 				if(urlParams.get('generateSpouts') !== null) { //if the variable exists at all
 					generateSpouts = true
 				} else { //if it doesn't (and it returns null)
 					generateSpouts = false
 				}
-
 				if(urlParams.get('spoutIncludeRandom') !== null) { //if the variable exists at all
 					spoutIncludeRandom = true
 				} else { //if it doesn't (and it returns null)
 					spoutIncludeRandom = false
 				}
-
 		//Requisite variables
-
 			//Bombs
-
 				amalgamatedBombFire = "plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,smoke,plasma,plasma,fire,smoke,fire,smoke,plasma,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,acid,acid,oil,oil,oil,oil,oil,oil,oil,plasma,plasma,plasma,plasma,plasma,smoke,plasma,plasma,fire,smoke,plasma,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,flash,flash,flash,flash,flash,acid_gas,acid_gas,acid_gas,acid,oil,oil,oil,oil,oil,oil,oil,oil,oil,oil,plasma,plasma,plasma,plasma,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,acid,acid,oil,oil,oil,oil,oil,oil,oil,plasma,plasma,plasma,plasma,plasma,smoke,plasma,plasma,fire,smoke,plasma,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,electric_cluster_bomb,electric_cluster_bomb,flash,flash,flash,flash,flash,acid_gas,acid_gas,acid_gas,acid,oil,oil,oil,oil,oil,oil,oil,oil,oil,oil,plasma,plasma,plasma,plasma,plague,plague,plague,plague,plague,plague,radiation,radiation,radiation,radiation,radiation,radiation,radiation,radiation,uranium,uranium,uranium,uranium,uranium,uranium,greek_fire,greek_fire,greek_fire,greek_fire,greek_fire,antimatter,antimatter,antimatter,antimatter,antimatter,smoke_grenade,antimatter,smoke_grenade,fireball,flash,acid_gas,acid_gas,acid_gas,plague,plague,plague,plague,plague,plague,radiation,radiation,radiation,radiation,radiation,radiation,radiation,radiation,uranium,uranium,uranium,uranium,uranium,uranium,greek_fire,greek_fire,greek_fire,greek_fire,greek_fire,antimatter,antimatter,antimatter,antimatter,antimatter,smoke_grenade,antimatter,flash,acid_gas,acid_gas,acid_gas,radiation,radiation,radiation,radiation,plague,acid_gas,acid_gas,acid_gas,chlorine,chlorine,chlorine"
 				eLists.BOMB = ["bomb", "tnt", "c4", "grenade", "dynamite", "gunpowder", "firework", "nuke", "h_bomb", "dirty_bomb", "emp_bomb", "sticky_bomb", "cold_bomb", "hot_bomb", "electro_bomb", "water_bomb", "antimatter_bomb", "flashbang", "smoke_grenade", "fireball", "landmine", "cluster_bomb", "cluster_nuke", "op_hottester_bomb", "anti-bomb", "electric_bomblet", "electric_cluster_bomb", "radioactive_popper", "acid_bomb", "amalgamated_bomb"]; bombChoices = eLists.BOMB;
 				var excludedBombElements = ["water", "antimatter", "acid"];
-
 			//Clouds
-
 				eLists.CLOUD = ["cloud", "rain_cloud", "snow_cloud", "fire_cloud", "hail_cloud", "acid_cloud", "pyrocumulus"]; cloudChoices = eLists.CLOUD;
 				var includedClouds = ["cloud", "rain_cloud", "snow_cloud", "fire_cloud", "hail_cloud", "acid_cloud", "pyrocumulus"];
 				var excludedCloudElements = ["snow", "fire", "hail", "acid"];
 				if(typeof(behaviorGenerators) === "undefined") { behaviorGenerators = {} };
-
 			//Creepers
-
 				var placeholderColor = "#FF00FF";
 				var hslOffsets = [[0, -5, 5], [0, -20, 10], [0, 0, 10], [0, -20, 10], [0, -35, 0], [0, -20, -30], [0, 10, -10], [0, 10, 20], [0, -20, 10], [0, -10, 5]];
 				var colorOfRandomCreeper = ["#7ba883", "#8aba8a", "#87b292", "#8aba8a", "#71a171", "#346434", "#4d6d72", "#a0caad", "#8aba8a", "#7dac7f"]
-
 			//Fairies
-
 				var excludedFairyElements = []
 				var backupCategoryWhitelist = ["land","powders","weapons","food","life","corruption","states","fey","Fantastic Creatures","dyes","energy liquids","random liquids","random gases","random rocks"];
 				var backupElementWhitelist = ["mercury", "chalcopyrite_ore", "chalcopyrite_dust", "copper_concentrate", "fluxed_copper_concentrate", "unignited_pyrestone", "ignited_pyrestone", "everfire_dust", "extinguished_everfire_dust", "mistake", "polusium_oxide", "vaporized_polusium_oxide", "glowstone_dust", "redstone_dust", "soul_mud", "wet_soul_sand", "nitrogen_snow", "fusion_catalyst", "coal", "coal_coke", "blast_furnace_fuel", "molten_mythril"];
-
 			//Spouts
 				eLists.SPOUT = ["spout", "udder", "torch"]; spoutChoices = eLists.SPOUT;
 				var excludedSpoutElements = ["ketchup", "liquid_cloner", "fire_cloner"]
 				var includedSpouts = ["ketchup_spout", "spout", "udder", "torch"]
 				var backupCategoryWhitelist = ["land","powders","weapons","food","life","corruption","states","fey","Fantastic Creatures","dyes","energy liquids","random liquids","random gases","random rocks"];
 				var backupElementWhitelist = ["mercury", "chalcopyrite_ore", "chalcopyrite_dust", "copper_concentrate", "fluxed_copper_concentrate", "unignited_pyrestone", "ignited_pyrestone", "everfire_dust", "extinguished_everfire_dust", "mistake", "polusium_oxide", "vaporized_polusium_oxide", "glowstone_dust", "redstone_dust", "soul_mud", "wet_soul_sand", "nitrogen_snow", "fusion_catalyst", "coal", "coal_coke", "blast_furnace_fuel", "molten_mythril"];
-
-
 		//Requisite non-generating functions
-
 			//Bombs
-
 				function firebombFire(pixel,x,y,radius,fire,smoke,power,damage) {
 					var coords = circleCoords(pixel.x,pixel.y,radius);
 					for (var i = 0; i < coords.length; i++) {
@@ -36668,7 +33847,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 					};
 				};
-
 				elements.disappear = {
 					color: "#7f7f7f",
 					behavior: behaviors.SELFDELETE,
@@ -36678,7 +33856,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					excludeRandom: true,
 					category: "other"
 				};
-
 				function forcebombVelocity(pixel,x,y,radius,fire,smoke,power,damage) {
 					var coords = circleCoords(pixel.x,pixel.y,radius);
 					for (var i = 0; i < coords.length; i++) {
@@ -36701,13 +33878,11 @@ Make sure to save your command in a file if you want to add this preset again.`
 						}
 					};
 				};
-
 				function hotterBomb(pixel,x,y,radius,fire,smoke,power,damage) {
 					//console.log(`Radius: ${radius}\nPower: ${power}\nPixel: (${pixel.x},${pixel.y})\nDamage: ${damage}`);
 					//console.log(`Expected temperature increase for pixel at (${pixel.x},${pixel.y}): ${800 * ((1 + (7 * damage)) ** 2) * ((power ** 2) * 1.5)}`);
 					pixel.temp += (800 * ((1 + (7 * damage)) ** 2) * ((power ** 2) * 1.5));
 				};
-
 				//explodeAtPlus(x,y,radius,fire="fire",smoke="smoke",beforeFunction=null,afterFunction=null,changeTemp=true) {
 				//beforeFunction(pixel,x,y,radius,fire,smoke,power,damage)
 				function wallBombBeforeFunction(pixel,x,y,radius,fire,smoke,power,damage) {
@@ -36719,7 +33894,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					};
 					return
 				};
-				
 				elements.wall_bomb = {
 					color: "#af8f8f",
 					tick: function(pixel) {
@@ -36758,7 +33932,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					density: 3000,
 					excludeRandom: true,
 				};
-
 				elements.tsunami = {
 					color: ["#2449d1","#4b6adb","#8093d9"],
 					behavior: behaviors.WALL,
@@ -36773,26 +33946,21 @@ Make sure to save your command in a file if you want to add this preset again.`
 							if(!pixel.active) {
 								deletePixel(pixel.x,pixel.y);
 							};
-						
 						//Initial property-setting
 							var pixelIsOnLeft = (pixel.x < (width/2));
 							pixel.fromX ??= pixelIsOnLeft ? 1 : width - 1;
 							pixel.direction ??= pixelIsOnLeft ? 1 : -1;
-
 							var floorHeight = pixel.y + 1;
 							while(isEmpty(pixel.x,floorHeight,false)) {
 								floorHeight++
 							};
 							pixel.floorHeight ??= floorHeight;
-
 						//Actual doer code
 							var newX = pixel.fromX + pixel.direction;
-
 							if(outOfBounds(newX,1)) {
 								pixel.active = false;
 								return
 							};
-
 							var bottomY = (pixel.floorHeight + 3); //extend 4 pixels below
 							var topY = bottomY - 13; //topY < bottomY because in this game +Y is *downward*
 							for(var i = bottomY; i >= topY; i--) {
@@ -36842,7 +34010,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					category: "special",
 					density: elements.water.density
 				};
-
 				elements.megatsunami = {
 					color: ["#1f2aa3","#2641c9","#3a57c9"],
 					behavior: behaviors.WALL,
@@ -36857,29 +34024,24 @@ Make sure to save your command in a file if you want to add this preset again.`
 							if(!pixel.active) {
 								deletePixel(pixel.x,pixel.y);
 							};
-						
 						//Initial property-setting
 							var pixelIsOnLeft = (pixel.x < (width/2));
 							pixel.fromX ??= pixelIsOnLeft ? 1 : width - 1;
 							pixel.direction ??= pixelIsOnLeft ? 1 : -1;
-
 							var floorHeight = pixel.y + 1;
 							while(isEmpty(pixel.x,floorHeight,false)) {
 								floorHeight++
 							};
 							pixel.floorHeight ??= floorHeight;
-
 						//Actual doer code
 							var bottomY = (pixel.floorHeight + 9); //extend 10 pixels below
 							var topY = bottomY - 43; //topY < bottomY because in this game +Y is *downward*
 							for(var h = 0; h < 2; h++) {
 								var newX = pixel.fromX + pixel.direction;
-
 								if(outOfBounds(newX,1)) {
 									pixel.active = false;
 									return
 								};
-
 								for(var i = bottomY; i >= topY; i--) {
 									var waterToDo = randomChoice(["salt_water","salt_water","salt_water","dirty_water","dirty_water"]);
 									var fc = {x: newX, y: i};
@@ -36928,7 +34090,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					category: "special",
 					density: elements.water.density
 				};
-
 				elements.lava_tsunami = {
 					color: ["#ff370a","#e84a23","#e67740"],
 					behavior: behaviors.WALL,
@@ -36943,26 +34104,21 @@ Make sure to save your command in a file if you want to add this preset again.`
 							if(!pixel.active) {
 								deletePixel(pixel.x,pixel.y);
 							};
-						
 						//Initial property-setting
 							var pixelIsOnLeft = (pixel.x < (width/2));
 							pixel.fromX ??= pixelIsOnLeft ? 1 : width - 1;
 							pixel.direction ??= pixelIsOnLeft ? 1 : -1;
-
 							var floorHeight = pixel.y + 1;
 							while(isEmpty(pixel.x,floorHeight,false)) {
 								floorHeight++
 							};
 							pixel.floorHeight ??= floorHeight;
-
 						//Actual doer code
 							var newX = pixel.fromX + pixel.direction;
-
 							if(outOfBounds(newX,1)) {
 								pixel.active = false;
 								return
 							};
-
 							var bottomY = (pixel.floorHeight + 3); //extend 4 pixels below
 							var topY = bottomY - 13; //topY < bottomY because in this game +Y is *downward*
 							for(var i = bottomY; i >= topY; i--) {
@@ -37024,7 +34180,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					category: "special",
 					density: elements.magma.density
 				};
-
 				elements.lava_megatsunami = {
 					color: ["#b32b10","#c24d1f","#d66924"],
 					behavior: behaviors.WALL,
@@ -37039,29 +34194,24 @@ Make sure to save your command in a file if you want to add this preset again.`
 							if(!pixel.active) {
 								deletePixel(pixel.x,pixel.y);
 							};
-						
 						//Initial property-setting
 							var pixelIsOnLeft = (pixel.x < (width/2));
 							pixel.fromX ??= pixelIsOnLeft ? 1 : width - 1;
 							pixel.direction ??= pixelIsOnLeft ? 1 : -1;
-
 							var floorHeight = pixel.y + 1;
 							while(isEmpty(pixel.x,floorHeight,false)) {
 								floorHeight++
 							};
 							pixel.floorHeight ??= floorHeight;
-
 						//Actual doer code
 							var bottomY = (pixel.floorHeight + 9); //extend 10 pixels below
 							var topY = bottomY - 43; //topY < bottomY because in this game +Y is *downward*
 							for(var h = 0; h < 2; h++) {
 								var newX = pixel.fromX + pixel.direction;
-
 								if(outOfBounds(newX,1)) {
 									pixel.active = false;
 									return
 								};
-
 								for(var i = bottomY; i >= topY; i--) {
 									var fc = {x: newX, y: i};
 									if(outOfBounds(fc.x,fc.y)) {continue};
@@ -37120,7 +34270,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					category: "special",
 					density: elements.magma.density
 				};
-
 				function empCharge(pixel,x,y,radius,fire,smoke,power,damage) {
 					var info = elements[pixel.element];
 					if(info.conduct) {
@@ -37131,16 +34280,13 @@ Make sure to save your command in a file if you want to add this preset again.`
 						pixel.temp += 700/bound(info.conduct,0.1,1);
 					};
 				};
-
 				function starbombHeat(pixel,x,y,radius,fire,smoke,power,damage) { //Massively heats depending on distance from explosion center
 					var distanceFromEdge = Math.max(0,radius - coordPyth(pixel.x,pixel.y,x,y));
 					var radiusRelatedIncrease = 10 ** logN(distanceFromEdge,5);
 					pixel.temp += (10000 * radiusRelatedIncrease);
 					pixelTempCheck(pixel);
 				};
-
 			//Clouds
-
 				behaviorGenerators.cloud = function(element) {
 					if(element instanceof Array) { element = element.join(",") };
 					return [
@@ -37149,7 +34295,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						["XX","XX","XX"]
 					];
 				};
-
 				behaviorGenerators.heavy_cloud = function(element) {
 					if(element instanceof Array) { element = element.join(",") };
 					return [
@@ -37158,7 +34303,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						["XX",`CR:${element}%0.05`,"XX"]
 					];
 				};
-
 				behaviorGenerators.heavier_cloud = function(element) {
 					if(element instanceof Array) { element = element.join(",") };
 					return [
@@ -37167,7 +34311,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						["XX",`CR:${element}%0.1`,"XX"]
 					];
 				};
-
 				behaviorGenerators.heaviest_cloud = function(element) {
 					if(element instanceof Array) { element = element.join(",") };
 					return [
@@ -37176,7 +34319,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						["XX",`CR:${element}%0.2`,"XX"]
 					];
 				};
-
 				behaviorGenerators.heaviester_cloud = function(element) {
 					if(element instanceof Array) { element = element.join(",") };
 					return [
@@ -37185,7 +34327,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						["XX",`CR:${element}%0.4`,"XX"]
 					];
 				};
-
 				behaviorGenerators.heaviestest_cloud = function(element) {
 					if(element instanceof Array) { element = element.join(",") };
 					return [
@@ -37194,7 +34335,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						["XX",`CR:${element}%0.8`,"XX"]
 					];
 				};
-
 				function placeDownwardColumn(element,xx,yy,creationChance) {
 					if(element.includes(",")) { element = element.split(",") };
 					var newElement = element;
@@ -37221,17 +34361,15 @@ Make sure to save your command in a file if you want to add this preset again.`
 								};
 							} else if(outOfBounds(xx,i)) {
 								break;
-							}; 
+							};
 						};
 					};
 				};
-
 				function singleColumn(pixel,element,chance,fillAmountDecimal) {
 					if(Math.random() < chance) {
 						placeDownwardColumn(element,pixel.x,pixel.y+1,fillAmountDecimal);
 					}
 				};
-
 				function multiColumn(pixel,element,chance,fillAmountDecimal,columnRadius) {
 					if(Math.random() < chance) {
 						for(j = 0 - columnRadius; j <= columnRadius; j++) {
@@ -37239,9 +34377,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 					}
 				};
-
 			//Creepers
-
 				autoCreeperPlacerTick = function(pixel) {
 					var creeperElement = elements[pixel.element].creeperType;
 					var headName,bodyName;
@@ -37272,7 +34408,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						deletePixel(pixel.x, pixel.y);
 					};
 				};
-
 				autoCreeperBodyTick = function(pixel) {
 					var creeperElement = elements[pixel.element].creeperType;
 					var headName,bodyName,explodeInto;
@@ -37316,7 +34451,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						}
 						return
 					}
-
 					// Find the head
 					if (!isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == headName) {
 						var head = pixelMap[pixel.x][pixel.y-1];
@@ -37325,7 +34459,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						}
 					}
 					else { var head = null }
-
 					if (isEmpty(pixel.x, pixel.y-1)) {
 						// create blood if decapitated 10% chance
 						if (Math.random() < 0.1) {
@@ -37362,11 +34495,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 							//console.log("*chases cutely*");
 						};*/
 					};
-
 					if(pixel.charge) {
 						pixel.charged = true;
 					};
-
 					if(head) {
 						if(typeof(head.charge) !== "undefined") {
 							if(head.charge) {
@@ -37379,11 +34510,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 							};
 						};
 					};
-
 					if(typeof(pixel.charged) === "undefined") {
 						pixel.charged = false;
 					};
-
 					if(pixel.charged) {
 						var explosionRadius = 7;
 						if(!pixel.didChargeBlueTinted) { //do once, on initial charge
@@ -37426,7 +34555,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					} else {
 						var explosionRadius = 5;
 					};
-
 					if(pixel.burning) {
 						pixel.hissing = true;
 						if(!pixel.hissStart) {
@@ -37441,7 +34569,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 							//console.log("Yes, Rico, kaboom.");
 						};
 					};
-
 					//Head hissing color handler: keeps track of head's hissing for coloring purposes
 					for(i = 0; i < 1; i++) { //dummy for loop
 						if(pixel.dead || !head || head.dead) { //can't hiss without a head according to the classic creeper anatomy
@@ -37455,7 +34582,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 								//console.log("t-30 ticks or whatever it was");
 								head.hissStart = pixelTicks;
 							};
-
 							//Color code {
 								var ticksHissing = pixelTicks - head.hissStart;
 								var color = pixel.color; //do on each hissing tick
@@ -37488,7 +34614,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 					};
 				};
-
 				autoCreeperHeadTick = function(pixel) {
 					var creeperElement = elements[pixel.element].creeperType;
 					var headName,bodyName,explodeInto;
@@ -37519,7 +34644,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 							return
 						}
 					}
-
 					// Find the body
 					if (!isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == bodyName) {
 						var body = pixelMap[pixel.x][pixel.y+1];
@@ -37528,13 +34652,11 @@ Make sure to save your command in a file if you want to add this preset again.`
 						}
 					}
 					else { var body = null }
-
 					if(body) {
 						if(body.dir !== pixel.dir) { //hacky workaround: lock head dir to body dir
 							pixel.dir = body.dir;
 						};
 					};
-
 					if (isEmpty(pixel.x, pixel.y+1)) {
 						tryMove(pixel, pixel.x, pixel.y+1);
 						// create blood if severed 10% chance
@@ -37546,15 +34668,12 @@ Make sure to save your command in a file if you want to add this preset again.`
 							}
 						}
 					}
-
 					//start of most new code
 					var pX = pixel.x;
 					var pY = pixel.y;
-
 					if(pixel.charge) {
 						pixel.charged = true;
 					};
-
 					if(body) {
 						if(typeof(body.charge) !== "undefined") {
 							if(body.charge) {
@@ -37567,11 +34686,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 							};
 						};
 					};
-
 					if(typeof(pixel.charged) === "undefined") {
 						pixel.charged = false;
 					};
-
 					if(pixel.charged) {
 						var explosionRadius = 10;
 						if(!pixel.didChargeBlueTinted) { //do once, on initial charge
@@ -37614,7 +34731,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					} else {
 						var explosionRadius = 7;
 					};
-
 					//Human detection loop (looks ahead according to direction and sets the "following" variable to true, telling the body to lock the direction)
 					var directionAdverb = "left";
 					if(pixel.dir > 0) {
@@ -37701,7 +34817,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 							};
 						};
 					};
-
 					//Pre-explosion handler: keeps track of time before the kaboom
 					for(i = 0; i < 1; i++) { //dummy for loop
 						if(pixel.hissing) {
@@ -37742,7 +34857,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 									//console.log("color set");
 								};
 							//}
-
 							if(pixelTicks - pixel.hissStart > 30) {
 								//console.log("Kaboom?");
 								//console.log(`Exploding with element ${creeperElement} and radius ${explosionRadius} (charged: ${pixel.charged})`);
@@ -37751,15 +34865,12 @@ Make sure to save your command in a file if you want to add this preset again.`
 							};
 						};
 					};
-
 					if(Math.random() < 0.01) { //1% chance each tick to lose interest
 						pixel.following = false;
 						//console.log("Meh.");
 					};
 				};
-
 			//Several
-
 				function commonMovableCriteria(name) {
 					if(typeof(elements[name]) !== "object") {
 						throw new Error(`Nonexistent element ${name}`);
@@ -37799,11 +34910,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 					};
 					return false;
 				};
-
 		//runAfterLoad calls
-
 			//Bombs
-
 				runAfterLoad(function() {
 					amalgamatedBombFire += ",poisonwater".repeat(8);
 					amalgamatedBombFire += ",mystic_fire".repeat(4);
@@ -37834,9 +34942,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					amalgamatedBombFire += ",liquid_irradium".repeat(7);
 					amalgamatedBombFire += ",bioooze".repeat(8);
 				});
-
 			//Fairies
-
 				runAfterLoad(function() {
 					if(typeof(eLists.FAIRY) === "undefined") { eLists.FAIRY = [] };
 					eLists.FAIRY.push("acid_fairy");
@@ -37850,11 +34956,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 					};
 				});
-
 		//Non-generated elements
-
 			//Bombs
-
 				elements.upward_bomb = {
 					color: "#625c71",
 					behavior: [
@@ -37868,7 +34971,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					excludeRandom: true,
 					cooldown: defaultCooldown,
 				};
-
 				elements.firebomb = {
 					color: "#ee7e3e",
 					tick: function(pixel) {
@@ -37904,7 +35006,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					excludeRandom: true,
 					desc: "An advanced incendiary weapon. <br/>To enable automatic bomb generation, set the generateBombs query parameter.",
 				};
-
 				function fuckingDeletePixel(pixel) {
 					if(
 						typeof(pixel) === "object" &&
@@ -37928,7 +35029,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					};
 					return
 				};
-
 				elements.force_bomb = {
 					color: ["#7a6749", "#828680", "#89a6b6", "#91c5ed"],
 					tick: function(pixel) {
@@ -37967,7 +35067,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					excludeRandom: true,
 					desc: "A bomb that sends pixels flying. <br/>To enable automatic bomb generation, set the generateBombs query parameter.",
 				};
-
 				elements.cluster_nuke = {
 					color: "#e3f636",
 					behavior: [
@@ -37981,7 +35080,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					excludeRandom: true,
 					desc: "It's a nuke that drops more nukes. <br/>To enable automatic bomb generation, set the generateBombs query parameter.",
 				};
-
 				elements.upward_bomb = {
 					color: "#525c61",
 					behavior: [
@@ -37994,7 +35092,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					density: 1300,
 					excludeRandom: true,
 				};
-
 				elements.electric_bomblet = {
 					color: "#ffffff",
 					behavior: [
@@ -38009,9 +35106,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					excludeRandom: true,
 					hardness: 0.3,
 				};
-				
 				//Wall bomb
-
 				elements.electric_cluster_bomb = {
 					color: "#ffffff",
 					behavior: [
@@ -38026,7 +35121,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					excludeRandom: true,
 					hardness: 0.3,
 				};
-
 				elements.radioactive_popper = {
 					color: "#d6ce72",
 					behavior: [
@@ -38042,7 +35136,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					hardness: 0.3,
 					cooldown: 3,
 				};
-
 				elements.acid_bomb = {
 					color: "#7d8a63",
 					behavior: [
@@ -38056,7 +35149,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					excludeRandom: true,
 					cooldown: defaultCooldown,
 				};
-
 				elements.amalgamated_bomb = {
 					color: ["#FF0000","#FF0000","#FFFF00","#FFFF00","#00FF00","#00FF00","#0000FF","#0000FF"],
 					tick: function(pixel) {
@@ -38090,7 +35182,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					density: 158000,
 					excludeRandom: true,
 				};
-
 				elements.op_hottester_bomb = {
 					color: "#cc436e",
 					properties: {
@@ -38127,8 +35218,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					density: 1900,
 					excludeRandom: true,
 				};
-
-				elements.op_electromagneticester_emp = {				
+				elements.op_electromagneticester_emp = {
 					color: "#818253",
 					tick: function(pixel) { //replace EMP
 						if (pixel.start===pixelTicks) {return}
@@ -38154,7 +35244,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					alias: "overpowered electromagnetic pulse bomb",
 					cooldown: defaultCooldown
 				};
-
 				elements.star_bomb = {
 					color: "#fffbb5",
 					properties: {
@@ -38195,9 +35284,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					excludeRandom: true,
 					cooldown: defaultCooldown
 				};
-
 			//Fairies
-
 				elements.acid_fairy = {
 					name: "acid fairy",
 					color: ["#e2f777","#d1ff94","#d8f7c1"],
@@ -38210,7 +35297,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					category: "fey",
 					desc: "Like the other fairies, but with acid. <br/>To enable automatic fairy generation, set the generateFairies query parameter.",
 				}
-
 				elements.oil_fairy = {
 					name: "oil fairy",
 					color: ["#636360","#a6956f","#a3816d","#cfc191"],
@@ -38223,7 +35309,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					category: "fey",
 					desc: "Like the other fairies, but with oil. <br/>To enable automatic fairy generation, set the generateFairies query parameter.",
 				}
-
 				elements.honey_fairy = {
 					name: "honey fairy",
 					color: ["#ffeaa6","#ffe987","#f2e7c2"],
@@ -38236,11 +35321,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 					category: "fey",
 					desc: "Like the other fairies, but with sweet honey. <br/>To enable automatic fairy generation, set the generateFairies query parameter.",
 				}
-
 		//Sequential generations
-
 			//Bombs
-
 				for (var i = 2; i <= bombAmount + 1; i++) {
 					elements[`bomb_${i}`] = {
 						name: `bomb ${i}`,
@@ -38259,7 +35341,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					};
 					eLists.BOMB.push(`bomb_${i}`);
 				};
-
 				for (var i = 2; i <= bombAmount + 1; i++) {
 					elements[`upward_bomb_${i}`] = {
 						color: "#625c71",
@@ -38277,9 +35358,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					};
 					eLists.BOMB.push(`upward_bomb_${i}`);
 				};
-
 			//Fairies
-
 				//For statement by charPointer
 				for (var i = 2; i <= fairyAmount + 1; i++) {
 				  elements[`${i}-fairy`] = {
@@ -38306,18 +35385,14 @@ Make sure to save your command in a file if you want to add this preset again.`
 				elements.rainbow.reactions.fairy = { "elem1": "2-fairy", "elem2": null }
 				//remove last fairy's reaction
 				delete elements[`${fairyAmount + 1}-fairy`].reactions
-
 		//Main generator functions
-
 			//Bombs
-
 				generateBomb = function(bombElements,isAfterScriptLoading=false,bombNumber=1) {//it can be a single element, though
 					bombNumber = Math.max(0,bombNumber);
-
 					//To specify an array bomb, have the array be inside another array.
 					/*For reasons related to how element colors are loaded, if this function is being run from a JS mod file, isAfterScriptLoading should be false.
 					Otherwise, you'll get TypeErrors for some reason when trying to place your bomb.  If this is being run after the game has loaded (e.g. in the console),
-					then isAfterScriptLoading should be true or you might also get TypeErrors (this latter case was a bit inconsistent when I tested it, but 
+					then isAfterScriptLoading should be true or you might also get TypeErrors (this latter case was a bit inconsistent when I tested it, but
 					the former case wasn't. **isAfterScriptLoading must be false when this function is run from a JS mod file**.*/
 					if(typeof(bombElements) === "string") { //it should be an array, so string check
 						//console.log("String detected");
@@ -38326,7 +35401,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 							bombElements = bombElements.split(","); //,SS to array
 						} else {
 							//console.log("Wrapping string in array");
-							bombElements = [bombElements]; //single string to array 
+							bombElements = [bombElements]; //single string to array
 						};
 					};
 					var returns = [];
@@ -38338,9 +35413,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 						var startColor;
 						var randomExcl = 0;
 						//console.log(elementOfBomb);
-
 						var bombName;
-
 						//console.log("2-1");
 						if(typeof(elementOfBomb === "string")) { //comma separated string check
 							if(elementOfBomb.includes(",")) { //if it is
@@ -38353,7 +35426,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 						if(Array.isArray(elementOfBomb)) {
 							bombName = `${elementOfBomb.join("_")}_bomb`; //auto placer element name
-
 							//array case color concatenator (bombs are always excludeRandom)
 							startColor = [];
 							//console.log(elementOfBomb);
@@ -38380,22 +35452,16 @@ Make sure to save your command in a file if you want to add this preset again.`
 							};
 						};
 						//console.log("e",bombName);
-
 							//Color gen
 						if(Array.isArray(startColor)) { //Average arrays, make colors rgb()
 							startColor = averageRgbPrefixedColorArray(startColor);
 						} else {
 							startColor = rgbHexCatcher(startColor);
 						};
-
 						startColor = addColors(changeLuminance(changeSaturation(startColor,0.6,"multiply","hsl_json"),0.5,"multiply","rgb"),"rgb(24,0,0)","rgb");
-
 						var newColorObject = rgbStringToObject(startColor);
-
 							//End color gen
-
 														//The bomb
-
 						//console.log(elementOfBomb);
 						var firstInfo, firstTemp;
 						if(Array.isArray(elementOfBomb)) {
@@ -38411,16 +35477,12 @@ Make sure to save your command in a file if you want to add this preset again.`
 								firstTemp = firstInfo.temp;
 							};
 						};
-
 						elementOfBomb = tryJoin(elementOfBomb,",");
 						descElement = tryJoin(elementOfBomb,", ");
-
 						//console.log(elementOfBomb);
-
 						if(bombNumber !== 1) {
 							bombName += `_${bombNumber}`;
 						};
-
 						if(!elementExists(bombName)) {
 							elements[bombName] = {
 								color: startColor,
@@ -38465,16 +35527,13 @@ Make sure to save your command in a file if you want to add this preset again.`
 					};
 					return returns;
 				};
-
 			//Clouds
-
 			//Clouds
-
 				generateCloud = function(cloudElements,cloudType=0,isAfterScriptLoading=false) {//it can be a single element, though
 					//To specify an array cloud, have the array be inside another array.
 					/*For reasons related to how element colors are loaded, if this function is being run from a JS mod file, isAfterScriptLoading should be false.
 					Otherwise, you'll get TypeErrors for some reason when trying to place your cloud.  If this is being run after the game has loaded (e.g. in the console),
-					then isAfterScriptLoading should be true or you might also get TypeErrors (this latter case was a bit inconsistent when I tested it, but 
+					then isAfterScriptLoading should be true or you might also get TypeErrors (this latter case was a bit inconsistent when I tested it, but
 					the former case wasn't. **isAfterScriptLoading must be false when this function is run from a JS mod file**.*/
 					if(cloudType !== "*") {
 						if(typeof(cloudElements) === "string") { //it should be an array, so string check
@@ -38484,7 +35543,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 								cloudElements = cloudElements.split(","); //,SS to array
 							} else {
 								//console.log("Wrapping string in array");
-								cloudElements = [cloudElements]; //single string to array 
+								cloudElements = [cloudElements]; //single string to array
 							};
 						};
 						var returns = [];
@@ -38496,9 +35555,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 							var randomExcl = 0;
 							//console.log("randomExcl set")
 							//console.log(elementOfCloud);
-
 							var cloudName, cloudPrefix, cloudBehavior;
-
 							switch(cloudType) {
 								case 0:
 									cloudPrefix = "";
@@ -38527,7 +35584,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 								default:
 									throw new RangeError("Cloud type must be between 0 and 5");
 							};
-
 							if(typeof(elementOfCloud === "string")) { //comma separated string check
 								if(elementOfCloud.includes(",")) { //if it is
 									elementOfCloud = elementOfCloud.split(","); //to array
@@ -38538,7 +35594,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 							};
 							if(Array.isArray(elementOfCloud)) {
 								cloudName = `${elementOfCloud.join("_")}_cloud`; //auto placer element name
-
 								//array case color concatenator and excludeRandom handler
 								startColor = [];
 								//console.log(elementOfCloud);
@@ -38571,7 +35626,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 							} else {
 								startColor = rgbHexCatcher(startColor);
 							};
-
 							startColor = changeLuminance(
 								changeSaturation(
 									startColor,
@@ -38583,13 +35637,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 								"multiply",
 								"rgb"
 							);
-
 							var newColorObject = rgbStringToObject(startColor);
-
 								//End color gen
-
 															//The cloud
-
 							//console.log(elementOfCloud);
 							var firstInfo, firstTemp;
 							if(Array.isArray(elementOfCloud)) {
@@ -38605,17 +35655,12 @@ Make sure to save your command in a file if you want to add this preset again.`
 									firstTemp = firstInfo.temp;
 								};
 							};
-
 							elementOfCloud = tryJoin(elementOfCloud,",");
-
 							//console.log(elementOfCloud);
-
 							cloudName = cloudPrefix + cloudName;
-
 							if(elementExists(cloudName)) {
 								if(elements[cloudName].autoType) { continue } else { cloudName = "auto_" + cloudName }
 							};
-
 							elements[cloudName] = {
 								color: startColor,
 								cloudType: elementOfCloud,
@@ -38631,21 +35676,17 @@ Make sure to save your command in a file if you want to add this preset again.`
 								autoType: "cloud",
 								isGas: true
 							};
-
 							if(cloudType === 4) { //column tick for heaviester clouds
 								elements[cloudName].tick = function(pixel) {
 									singleColumn(pixel,elements[pixel.element].cloudType,0.01,0.3);
 								};
 							};
-
 							if(cloudType === 5) { //three-column tick for heaviestest clouds
 								elements[cloudName].tick = function(pixel) {
 									multiColumn(pixel,elements[pixel.element].cloudType,0.02,0.4,1);
 								};
 							};
-
 							eLists.CLOUD.push(cloudName);
-
 							if(!randomExcl) {
 								if(typeof(cloudChoices) === "undefined") {
 									cloudChoices = []
@@ -38676,14 +35717,12 @@ Make sure to save your command in a file if you want to add this preset again.`
 						return trueReturns;
 					};
 				};
-
 			//Creepers
-
 				generateCreeper = function(creeperElements,isAfterScriptLoading=false) {//it can be a single element, though
 					//To specify an array creeper, have the array be inside another array.
 					/*For reasons related to how element colors are loaded, if this function is being run from a JS mod file, isAfterScriptLoading should be false.
 					Otherwise, you'll get TypeErrors for some reason when trying to place your creeper.  If this is being run after the game has loaded (e.g. in the console),
-					then isAfterScriptLoading should be true or you might also get TypeErrors (this latter case was a bit inconsistent when I tested it, but 
+					then isAfterScriptLoading should be true or you might also get TypeErrors (this latter case was a bit inconsistent when I tested it, but
 					the former case wasn't. **isAfterScriptLoading must be false when this function is run from a JS mod file**.
 					If isAfterScriptLoading is true, buttons (depending on the hiding setting) will be added to the auto creeper category, the 3 new elements per creeper will be assigned IDs, and the footer will be updated with the increased element counts.*/
 					if(typeof(creeperElements) === "string") { //it should be an array, so string check
@@ -38693,7 +35732,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 							creeperElements = creeperElements.split(","); //,SS to array
 						} else {
 							//console.log("Wrapping string in array");
-							creeperElements = [creeperElements]; //single string to array 
+							creeperElements = [creeperElements]; //single string to array
 						};
 					};
 					var returns = [];
@@ -38705,9 +35744,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 						var randomExcl = 0;
 						//console.log("randomExcl set")
 						//console.log(elementOfCreeper);
-
 						var headName,bodyName,placerName,descElement;
-
 						if(typeof(elementOfCreeper === "string")) { //comma separated string check
 							if(elementOfCreeper.includes(",")) { //if it is
 								elementOfCreeper = elementOfCreeper.split(","); //to array
@@ -38721,7 +35758,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 							bodyName = `${elementOfCreeper.join("_")}_creeper_body`; //auto body element name
 							placerName = `${elementOfCreeper.join("_")}_creeper`; //auto placer element name
 							descElement = elementOfCreeper.join(", "); //auto explosion element list
-
 							//array case color concatenator and excludeRandom handler
 							startColor = [];
 							//console.log(elementOfCreeper);
@@ -38770,11 +35806,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 								colorsArray[q] = `rgb(${coq.r},${coq.g},${coq.b})`; //and change to the RGB from its values
 							};
 						};
-
 							//End color gen
-
 						//console.log(`${headName}; ${bodyName}; ${placerName}; ${descElement}`)
-
 														//Placer
 						elements[placerName] = {
 							movable: true,
@@ -38795,9 +35828,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 							desc: `Auto-generated creeper.<br/>Explodes into ${descElement}.`,
 							autoType: "creeper",
 						};
-
 						eLists.CREEPER.push(placerName);
-
 														//Body
 						elements[bodyName] = {
 							movable: true,
@@ -38835,7 +35866,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 							},
 							autoType: "creeper",
 						};
-
 														//Head
 						elements[headName] = {
 							movable: true,
@@ -38886,7 +35916,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 								settings.unlocked[bodyName] ? createElementButton(bodyName) : hiddenCount++; //ternary: if headName is unlocked, create button, else increase hiddenCount
 								settings.unlocked[headName] ? createElementButton(headName) : hiddenCount++; //above with headName
 							};
-							elements[placerName].id = nextid++; //set placer's id to nextid and then increment nextid 
+							elements[placerName].id = nextid++; //set placer's id to nextid and then increment nextid
 							elements[bodyName].id = nextid++; //repeat with body and head
 							elements[headName].id = nextid++;
 							headBodyObject[headName] = bodyName;
@@ -38907,14 +35937,12 @@ Make sure to save your command in a file if you want to add this preset again.`
 					};
 					return returns;
 				};
-
 			//Fairies
-
 				generateFairy = function(fairyElements,isAfterScriptLoading=false) {//it can be a single element, though
 					//To specify an array fairy, have the array be inside another array.
 					/*For reasons related to how element colors are loaded, if this function is being run from a JS mod file, isAfterScriptLoading should be false.
 					Otherwise, you'll get TypeErrors for some reason when trying to place your fairy.  If this is being run after the game has loaded (e.g. in the console),
-					then isAfterScriptLoading should be true or you might also get TypeErrors (this latter case was a bit inconsistent when I tested it, but 
+					then isAfterScriptLoading should be true or you might also get TypeErrors (this latter case was a bit inconsistent when I tested it, but
 					the former case wasn't. **isAfterScriptLoading must be false when this function is run from a JS mod file**.*/
 					if(typeof(fairyElements) === "string") { //it should be an array, so string check
 						//console.log("String detected");
@@ -38923,7 +35951,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 							fairyElements = fairyElements.split(","); //,SS to array
 						} else {
 							//console.log("Wrapping string in array");
-							fairyElements = [fairyElements]; //single string to array 
+							fairyElements = [fairyElements]; //single string to array
 						};
 					};
 					var returns = [];
@@ -38936,9 +35964,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 						var isNocheer = 0;
 						//console.log("randomExcl set")
 						//console.log(elementOfFairy);
-
 						var fairyName;
-
 						if(typeof(elementOfFairy === "string")) { //comma separated string check
 							if(elementOfFairy.includes(",")) { //if it is
 								elementOfFairy = elementOfFairy.split(","); //to array
@@ -38949,7 +35975,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 						if(Array.isArray(elementOfFairy)) {
 							fairyName = `${elementOfFairy.join("_")}_fairy`; //auto placer element name
-
 							//array case color concatenator and excludeRandom handler
 							startColor = [];
 							//console.log(elementOfFairy);
@@ -38963,7 +35988,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 								//console.log(elementOfFairy[ll]);
 								startColor = startColor.concat(elements[elementOfFairy[ll]].color);
 							};
-
 							for(ll = 0; ll < elementOfFairy.length; ll++) {
 								if(typeof(elements[elementOfFairy[ll]].nocheer !== "undefined")) { //if nocheer exists (prevent TypeError)
 									if(elements[elementOfFairy[ll]].nocheer) { //it it's true
@@ -38986,7 +36010,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 									randomExcl = 0;
 								};
 							};
-
 							if(typeof(elements[elementOfFairy].nocheer !== "undefined")) { //if nocheer exists (prevent TypeError)
 								if(elements[elementOfFairy].nocheer) { //it it's true
 									//console.log("nyet " + elementOfFairy);
@@ -39003,11 +36026,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 						} else {
 							startColor = rgbHexCatcher(startColor);
 						};
-
 						//console.log(`rgbStringToObject(${startColor}) from more_fairies.js`)
-						var newColorObjectArray = [];			
+						var newColorObjectArray = [];
 						var newColorArray = [];
-
 						for(i = 0; i < elements.fairy.color.length; i++) {
 							var newFairyColorlet = elements.fairy.color[i];
 							var newColor = multiplyColors(startColor,newFairyColorlet);
@@ -39015,11 +36036,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 							newColorArray.push(newColor);
 							newColorObjectArray.push(newColorJSON);
 						};
-
 							//End color gen
-
 														//The fairy
-
 						//console.log(elementOfFairy);
 						var firstInfo, firstTemp;
 						if(Array.isArray(elementOfFairy)) {
@@ -39035,11 +36053,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 								firstTemp = firstInfo.temp;
 							};
 						};
-
 						elementOfFairy = tryJoin(elementOfFairy,",");
-
 						//console.log(elementOfFairy);
-
 						if(!elementExists(fairyName)) {
 							elements[fairyName] = {
 								color: newColorArray,
@@ -39085,7 +36100,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 								if (settings.cheerful && elements[fairyName].nocheer) {
 									elements[fairyName].hidden = true;
 									hiddenCount++;
-								} else {						
+								} else {
 									createElementButton(fairyName);
 								};
 								elements[fairyName].id = nextid++;
@@ -39096,14 +36111,12 @@ Make sure to save your command in a file if you want to add this preset again.`
 					};
 					return returns;
 				};
-
 			//Spouts
-
 				generateSpout = function(spoutElements,isAfterScriptLoading=false) {//it can be a single element, though
 					//To specify an array spout, have the array be inside another array.
 					/*For reasons related to how element colors are loaded, if this function is being run from a JS mod file, isAfterScriptLoading should be false.
 					Otherwise, you'll get TypeErrors for some reason when trying to place your spout.  If this is being run after the game has loaded (e.g. in the console),
-					then isAfterScriptLoading should be true or you might also get TypeErrors (this latter case was a bit inconsistent when I tested it, but 
+					then isAfterScriptLoading should be true or you might also get TypeErrors (this latter case was a bit inconsistent when I tested it, but
 					the former case wasn't. **isAfterScriptLoading must be false when this function is run from a JS mod file**.*/
 					if(typeof(spoutElements) === "string") { //it should be an array, so string check
 						//console.log("String detected");
@@ -39112,7 +36125,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 							spoutElements = spoutElements.split(","); //,SS to array
 						} else {
 							//console.log("Wrapping string in array");
-							spoutElements = [spoutElements]; //single string to array 
+							spoutElements = [spoutElements]; //single string to array
 						};
 					};
 					var returns = [];
@@ -39125,9 +36138,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 						var isNocheer = 0;
 						//console.log("randomExcl set")
 						//console.log(elementOfSpout);
-
 						var spoutName;
-
 						if(typeof(elementOfSpout === "string")) { //comma separated string check
 							if(elementOfSpout.includes(",")) { //if it is
 								elementOfSpout = elementOfSpout.split(","); //to array
@@ -39138,7 +36149,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 						if(Array.isArray(elementOfSpout)) {
 							spoutName = `${elementOfSpout.join("_")}_spout`; //auto placer element name
-
 							//array case color concatenator and excludeRandom handler
 							startColor = [];
 							//console.log(elementOfSpout);
@@ -39152,7 +36162,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 								//console.log(elementOfSpout[ll]);
 								startColor = startColor.concat(elements[elementOfSpout[ll]].color);
 							};
-
 							for(ll = 0; ll < elementOfSpout.length; ll++) {
 								if(typeof(elements[elementOfSpout[ll]].nocheer !== "undefined")) { //if nocheer exists (prevent TypeError)
 									if(elements[elementOfSpout[ll]].nocheer) { //it it's true
@@ -39175,7 +36184,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 									randomExcl = 0;
 								};
 							};
-
 							if(typeof(elements[elementOfSpout].nocheer !== "undefined")) { //if nocheer exists (prevent TypeError)
 								if(elements[elementOfSpout].nocheer) { //it it's true
 									//console.log("nyet " + elementOfSpout);
@@ -39192,13 +36200,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 						} else {
 							startColor = rgbHexCatcher(startColor);
 						};
-
 						var newColorObject = rgbStringToObject(startColor);
-
 							//End color gen
-
 														//The spout
-
 						//console.log(elementOfSpout);
 						var firstInfo, firstTemp;
 						if(Array.isArray(elementOfSpout)) {
@@ -39214,11 +36218,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 								firstTemp = firstInfo.temp;
 							};
 						};
-
 						elementOfSpout = tryJoin(elementOfSpout,",");
-
 						//console.log(elementOfSpout);
-
 						elements[spoutName] = {
 							color: startColor,
 							insulate: true,
@@ -39254,45 +36255,34 @@ Make sure to save your command in a file if you want to add this preset again.`
 							if (settings.cheerful && elements[spoutName].nocheer) {
 								elements[spoutName].hidden = true;
 								hiddenCount++;
-							} else {						
+							} else {
 								createElementButton(spoutName);
 							};
 							elements[spoutName].id = nextid++;
 							document.getElementById("extraInfo").innerHTML = canvasfooterTemplate()
 						};
-
 						eLists.SPOUT.push(spoutName);
 						returns.push(spoutName);
 					};
 					return returns;
 				};
-
 		//Other runAfterAutogen
-
 			//Bombs
-
 				elements.molten_dirt.tempHigh = 3000;
 				elements.molten_dirt.stateHigh = "vaporized_rock";
-
 			//Modless orphaned code that I don't want meeting La Maison
-
 				runAfterAutogen(function() {
 					var solidBlacklist = ["mistake", "birthpool", "firesea"]; //exclude these since they seem to be liquid
-
 					solids = Object.keys(elements).filter(function(e) {
 						return elements[e].category === "solids" && !solidBlacklist.includes(e);
 					});
-
 					for(i = 0; i < solids.length; i++) { //A lot of elements in solids, particularly metals, are missing a "state: solid".
 						var solidName = solids[i]
 						elements[solidName].state = "solid";
 					};
 				});
-
 		//Mass generation calls
-
 			//Bombs
-
 				runAfterAutogen(function() {
 					if(generateBombs) {
 						var tempArray = Object.keys(elements);
@@ -39300,9 +36290,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 						generateBomb(tempArray,false)
 					};
 				});
-
 			//Creepers
-
 				runAfterAutogen(function() {
 					if(generateCreepers) {
 						var tempArray = Object.keys(elements);
@@ -39310,9 +36298,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 						generateCreeper(tempArray,false)
 					};
 				});
-
 			//Several
-
 				runAfterAutogen(function() {
 					cloudElements = [...Object.keys(elements).filter(function(e) { //same criteria as spouts
 						return (commonMovableCriteria(e,excludedCloudElements));
@@ -39323,21 +36309,18 @@ Make sure to save your command in a file if you want to add this preset again.`
 					spoutElements = [...Object.keys(elements).filter(function(e) { //same criteria as spouts
 						return (commonMovableCriteria(e,excludedSpoutElements));
 					}),["rock","sand"]];
-					if(generateFairies) { 
+					if(generateFairies) {
 						generateFairy(fairyElements,false);
 					};
-					if(generateClouds) { 
+					if(generateClouds) {
 						generateCloud(cloudElements,"*",false);
 					};
-					if(generateSpouts) { 
+					if(generateSpouts) {
 						generateSpout(spoutElements,false);
 					};
 				});
-
 		//Random spawners
-
 			//Bombs
-
 				elements.spawn_random_bomb = {
 					color: ["#141c23","#340f3c","#4b2d3f","#35463f","#244633","#460c1b","#294725","#34290c"],
 					behavior: behaviors.WALL,
@@ -39351,9 +36334,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 						changePixel(pixel,bombChoices[Math.floor(Math.random() * bombChoices.length)])
 					},
 				};
-
 			//Clouds
-
 				elements.spawn_random_cloud = {
 					color: ["#3e5f8a","#a334ec","#ea96f9","#a6ecf6","#70ebc8","#d9286b","#7eed91","#a18b30"],
 					behavior: behaviors.WALL,
@@ -39367,9 +36348,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 						changePixel(pixel,cloudChoices[Math.floor(Math.random() * cloudChoices.length)])
 					},
 				};
-
 			//Creepers
-
 				elements.spawn_random_creeper = {
 					color: colorOfRandomCreeper,
 					behavior: behaviors.WALL,
@@ -39384,9 +36363,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 						changePixel(pixel,spawnCreepers[Math.floor(Math.random() * spawnCreepers.length)]) //spawnCreepers is already excludeRandom filtered
 					},
 				};
-
 			//Fairies
-
 				elements.spawn_random_fairy = {
 					color: ["#3e5f8a","#a334ec","#ea96f9","#a6ecf6","#70ebc8","#d9286b","#7eed91","#a18b30"],
 					behavior: behaviors.WALL,
@@ -39400,9 +36377,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 						changePixel(pixel,fairyChoices[Math.floor(Math.random() * fairyChoices.length)])
 					},
 				};
-
 			//Spouts
-
 				elements.spawn_random_spout = {
 					color: ["#3e5f8a","#a334ec","#ea96f9","#a6ecf6","#70ebc8","#d9286b","#7eed91","#a18b30"],
 					behavior: behaviors.WALL,
@@ -39416,11 +36391,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 						changePixel(pixel,spoutChoices[Math.floor(Math.random() * spoutChoices.length)])
 					},
 				};
-
 		//Other post-generation
-
 			//Fairies
-
 				//FAIRYKILL
 				behaviors.FAIRYKILL_OLD = behaviors.FAIRYKILL;
 				behaviors.FAIRYKILL = function(pixel) {
@@ -39446,7 +36418,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					};
 					doDefaults(pixel);
 				};
-
 				//Add ignores
 				var ignoreArray = ["acid", "iron", "silver", "steel", "tungstensteel", "void", "liquid_void", "chute", "vute", "drute", "drolute", "volute", "alkahest", "acid_gas"];
 				for(l = 0; l < ignoreArray.length; l++) {
@@ -39462,7 +36433,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						baseInfo.ignore.push(fairyName);
 					};
 				};
-
 				//Update FAIRYKILL elements
 				var fairykillElements = ["iron", "silver", "steel", "tungstensteel"];
 				for(q = 0; q < fairykillElements.length; q++) {
@@ -39471,9 +36441,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 						elements[name].behavior = behaviors.FAIRYKILL;
 					};
 				};
-
 	//AUTOGENERATED CLUSTER BOMBS
-
 		for (var i = 3; i <= 15; i++) {
 			elements[`cluster_bomb_${i}`] = {
 				name: `${i}- cluster bomb`,
@@ -39491,7 +36459,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				excludeRandom: true,
 			}
 		}
-
 		elements.cluster_bomb_2 = {
 			color: "#7d776d",
 			behavior: [
@@ -39506,9 +36473,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			stateHigh: "molten_steel",
 			excludeRandom: true,
 		}
-
 	//EXPERIMENTAL RANDOMLY GENERATED LIQUIDS AND ROCKS ##
-
 		if(urlParams.get('liquidAmount') != null) { //null check
 			liquidAmount = urlParams.get('liquidAmount')
 			if(isNaN(liquidAmount) || liquidAmount === "" || liquidAmount === null) { //NaN check
@@ -39524,13 +36489,11 @@ Make sure to save your command in a file if you want to add this preset again.`
 		} else {
 			liquidAmount = 10
 		}
-
 		if(urlParams.get('makeLiquidString') !== null) { //if the variable exists at all
 			makeLiquidString = true
 		} else { //if it doesn't (and it returns null)
 			makeLiquidString = false
 		}
-
 		//arbitrarily picked
 		randomNameGraphemes = {
 			initials: ["m","n","p","t","ch","k","b","d","j","g","f","th","s","sh","h","l","r","y","w","z","sp","st","sk","sl","spl","stl","skl","sr","spr","str","skr","sl","fl","fr","pl","pr","tl","tr","kl","kr","shr","fl","fr","thr"],
@@ -39538,13 +36501,10 @@ Make sure to save your command in a file if you want to add this preset again.`
 			medials: ["m","n","p","t","k","b","d","g","f","th","s","sh","h","l","r","y","z","sp","st","sk","sl","spl","stl","skl","sr","spr","str","skr","sl","fl","fr","pl","pr","tl","tr","kl","kr","shr","fl","fr","thr"],
 			finals: ["m","n","p","t","k","b","d","g","f","th","s","sh","l","r","y","z","sp","st","sk","sl","spl","stl","skl","sr","spr","str","skr","pl","pr","tl","tr","bl","vr"]
 		};
-
 		function generateName() {
 			//these are picked arbitrarily
-
 			//console.log("getting random type")
 			var randomInt1 = randomIntegerFromZeroToValue(6)
-
 			//console.log("generating type " + randomInt1)
 			if(randomInt1 == 0) {
 				var randomName = randomChoice(randomNameGraphemes.initials) + randomChoice(randomNameGraphemes.vowels) + randomChoice(randomNameGraphemes.finals)
@@ -39574,7 +36534,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			//console.log(randomName)
 			return randomName
 		}
-
 		function randomLiquidColorGen() {
 			var randomR = randomIntegerFromZeroToValue(255)
 			var randomG = randomIntegerFromZeroToValue(255)
@@ -39588,20 +36547,15 @@ Make sure to save your command in a file if you want to add this preset again.`
 			var newGasColor = rgbToHex(newGasColor)
 			return [newLiquidColor, newSolidColor, newGasColor]
 		}
-
 		function _generateAveragedRandoms() {
 			return averageNumericArray([Math.random(),Math.random(),Math.random()])
 		}
-
 		function avgRndToMult() {
 			return 1 + (0.55 - _generateAveragedRandoms())
 		}
-
-
 		if(makeLiquidString == true) {
 			liquidString = ""
 		}
-
 		for(i = 0; i < liquidAmount; i++) {
 			var name = generateName();
 			var meltingAdjustment = avgRndToMult();
@@ -39631,7 +36585,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				name = name + randomChoice(randomNameGraphemes.vowels) + randomChoice(randomNameGraphemes.finals);
 			};
 			liquidConductivityAdjust = 0.5 * Math.sqrt(avgRndToMult());
-
 			elements[name] = {
 				name: name,
 				color: colors[0],
@@ -39650,7 +36603,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				viscosity: viscosity,
 				breakInto: `${name}_gas`,
 			};
-
 			elements[`${name}_ice`] = {
 				name: `${name} ice`,
 				color: colors[1],
@@ -39666,7 +36618,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				hardness: 0.6 * hardnessAdjustment,
 				breakInto: name,
 			};
-
 			elements[`${name}_gas`] = {
 				name: `${name} gas`,
 				color: colors[2],
@@ -39680,7 +36631,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				//burn and burnTime go here
 				hardness: 1,
 			};
-
 			if(burns == true) {
 				elements[name].burn = burn
 				elements[name].burnTime = burnTime
@@ -39689,37 +36639,30 @@ Make sure to save your command in a file if you want to add this preset again.`
 				elements[`${name}_gas`].burn = burn
 				elements[`${name}_gas`].burnTime = burnTime
 			}
-
 			if(conducts == true) {
 				elements[name].conduct = conductivity * liquidConductivityAdjust
 				elements[`${name}_ice`].conduct = conductivity
 			}
-
 			if(makeLiquidString == true) {
 				//Append moddable code for the liquid state to liquidString
 				liquidString = liquidString + `elements.${name} = {\n	name: \"${name}\",\n	color: \"${colors[0]}\",\n	behavior: behaviors.LIQUID,\n	tempLow: ${freezingPoint},\n	temp: ${freezingPoint + 20},\n	tempHigh: ${boilingPoint},\n	stateLow: \"${name}_ice\",\n	stateHigh: \"${name}_gas\",\n	category: \"random liquids\",\n	state: \"liquid\",\n	density: ${1000 * densityAdjustment},\n	`
 				if(conducts == true) { liquidString = liquidString + `conduct: ${conductivity * liquidConductivityAdjust},\n	` }
 				if(burns == true) { liquidString = liquidString + `burn: ${burn},\n	burnTime: ${burnTime},\n	` }
 				liquidString = liquidString + `hardness: ${0.3 * hardnessAdjustment},\n	viscosity: ${viscosity},\n	breakInto: \"${name}_gas\",\n};\n\n`
-
 				//Append moddable code for the solid state to liquidString
 				liquidString = liquidString + `elements.${name}_ice = {\n	name: \"${name} ice\",\n	color: \"${colors[1]}\",\n	behavior: behaviors.WALL,\n	tempHigh: ${freezingPoint},\n	temp: ${freezingPoint - 20},\n	stateHigh: \"${name}\",\n	category: \"random solids\",\n	state: \"solid\",\n	density: ${solidDensity},\n	`
 				if(conducts == true) { liquidString = liquidString + `conduct: ${conductivity},\n	` }
 				if(burns == true) { liquidString = liquidString + `burn: ${burn},\n	burnTime: ${burnTime},\n	` }
 				liquidString = liquidString + `hardness: ${0.6 * hardnessAdjustment},\n	breakInto: \"${name}\",\n};\n\n`
-
 				//Append moddable code for the gaseous state to liquidString
 				liquidString = liquidString + `elements.${name}_gas = {\n	name: \"${name} gas\",\n	color: \"${colors[2]}\",\n	behavior: behaviors.GAS,\n	tempLow: ${boilingPoint},\n	temp: ${boilingPoint + 20},\n	stateLow: \"${name}\",\n	category: \"random gases\",\n	state: \"solid\",\n	density: ${gasDensity},\n	`
 				if(burns == true) { liquidString = liquidString + `burn: ${burn},\n	burnTime: ${burnTime},\n	` }
 				liquidString = liquidString + `hardness: 1,\n};\n\n`
 			}
-
 		}
-
 		if(makeLiquidString == true) {
 			console.log(`Liquids added to liquidString (length ${liquidString.length})`)
 		}
-
 		if(urlParams.get('rockAmount') != null) { //null check
 			rockAmount = urlParams.get('rockAmount')
 			if(isNaN(rockAmount) || rockAmount === "" || rockAmount === null) { //NaN check
@@ -39735,19 +36678,15 @@ Make sure to save your command in a file if you want to add this preset again.`
 		} else {
 			rockAmount = 10
 		}
-
 		if(urlParams.get('makeRockString') !== null) { //if the variable exists at all
 			makeRockString = true
 		} else { //if it doesn't (and it returns null)
 			makeRockString = false
 		}
-
 		function generateName() {
 			//these are picked arbitrarily
-
 			//console.log("getting random type")
 			var randomInt1 = randomIntegerFromZeroToValue(6)
-
 			//console.log("generating type " + randomInt1)
 			if(randomInt1 == 0) {
 				var randomName = randomChoice(randomNameGraphemes.initials) + randomChoice(randomNameGraphemes.vowels) + randomChoice(randomNameGraphemes.finals)
@@ -39777,7 +36716,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			//console.log(randomName)
 			return randomName
 		}
-
 		randomRockColorTemplateLuma = {
 			rock1: {r: 128, g: 128, b: 128},
 			rock2: {r: 79, g: 79, b: 79},
@@ -39787,7 +36725,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			gravel3: {r: 116, g: 115, b: 109},
 			gravel4: {r: 82, g: 75, b: 71}
 		};
-
 		function randomRockColorGen() {
 			var randomR = randomIntegerFromZeroToValue(255)
 			var randomG = randomIntegerFromZeroToValue(255)
@@ -39809,21 +36746,16 @@ Make sure to save your command in a file if you want to add this preset again.`
 			var newGravelColor4 = rgbToHex(newGravelColor4)
 			return [newRockColor1, newRockColor2, newRockColor3, newGravelColor1, newGravelColor2, newGravelColor3, newGravelColor4]
 		}
-
 		function _generateAveragedRandoms() {
 			return averageNumericArray([Math.random(),Math.random(),Math.random()])
 		}
-
 		function avgRndToMult() {
 			return 1 + (0.55 - _generateAveragedRandoms())
 		}
-
 		elements.gravel.breakInto = "dust"
-
 		if(makeRockString == true) {
 			rockString = ""
 		}
-
 		for(i = 0; i < rockAmount; i++) {
 			var name = generateName()
 			var meltingAdjustment = avgRndToMult()
@@ -39844,11 +36776,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 				hardness: 0.5 * hardnessAdjustment,
 				breakInto: ["dust",`${name}_gravel`],
 			}
-
 			if(makeRockString == true) {
 				rockString = rockString + `elements.${name} = {\n	name: \"${name}\",\n	color: [\"${colors[0]}\", \"${colors[1]}\", \"${colors[2]}\"],\n	behavior: behaviors.POWDER,\n	tempHigh: ${950 * meltingAdjustment},\n	category: \"random rocks\",\n	state: \"solid\",\n	density: ${2550 * densityAdjustment},\n	hardness: ${0.5 * hardnessAdjustment},\n	breakInto: [\"dust\",\"${name}_gravel\"],\n};\n\n`
 			}
-
 			elements[`${name}_gravel`] = {
 				name: `${name} gravel`,
 				color: [colors[3], colors[4], colors[5], colors[6]],
@@ -39861,19 +36791,14 @@ Make sure to save your command in a file if you want to add this preset again.`
 				hardness: 0.2 * (hardnessAdjustment ** (2/3)),
 				breakInto: "dust",
 			}
-
 			if(makeRockString == true) {
 				rockString = rockString + `elements.${name}_gravel = {\n	name: \"${name} gravel\",\n	color: [\"${colors[3]}\", \"${colors[4]}\", \"${colors[5]}\", \"${colors[6]}\"],\n	behavior: behaviors.POWDER,\n	tempHigh: ${950 * meltingAdjustment},\n	stateHigh: \"${name}\",\n	category: \"random rocks\",\n	state: \"solid\",\n	density: ${1680 * densityAdjustment},\n	hardness: ${0.2 * (hardnessAdjustment ** (2/3))},\n	breakInto: \"dust\",\n};\n\n`
 			}
-
 		}
-
 		if(makeRockString == true) {
 			console.log(`Rocks added to rockString (length ${rockString.length})`)
 		}
-
 	//PRIMITIVELY RANDOMLY GENERATED ELEMENTS ##
-
 		elements.ogqwwrko = {
 			name: "ogqWWRKo",
 			color: "#b5f134",
@@ -39888,7 +36813,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			tempHigh: 1055,
 			density: 6632.184014557264,
 		};
-
 		elements.kibifwpd = {
 			name: "KIBiFwpD",
 			color: "#b8a3a5",
@@ -39900,7 +36824,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "hyperrandom elements",
 			density: 1382.2019914825285,
 		};
-
 		elements.sezhorqq = {
 			name: "SEzhorqQ",
 			color: "#f8f19c",
@@ -39914,7 +36837,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			burnTime: 228,
 			density: 11054.763724436774,
 		};
-
 		elements.bgcelthv = {
 			name: "bGceLthV",
 			color: "#2a8885",
@@ -39933,7 +36855,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "hyperrandom elements",
 			density: 1446.9471325970142,
 		};
-
 		elements.hpwfukak = {
 			name: "hpWfukAK",
 			color: "#f22c87",
@@ -39947,7 +36868,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			burnTime: 449,
 			density: 10877.887548154851,
 		};
-
 		elements.ggysmbid = {
 			name: "GgYSMbID",
 			color: "#81ff73",
@@ -39966,7 +36886,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			tempHigh: 2956,
 			density: 6284.617729241624,
 		};
-
 		elements.fpnklukg = {
 			name: "FpNkluKG",
 			color: "#a68793",
@@ -39982,7 +36901,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			tempHigh: 1300,
 			density: 3828.9615486132043,
 		};
-
 		elements.efgtdvzx = {
 			name: "EfgTDvzx",
 			color: "#96ca55",
@@ -39994,7 +36912,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "hyperrandom elements",
 			density: 18274.111700368052,
 		};
-
 		elements.qacwivpp = {
 			name: "QACWIVPp",
 			color: "#8f57c0",
@@ -40006,7 +36923,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "hyperrandom elements",
 			density: 12926.310301027497,
 		};
-
 		elements.qfgdrsay = {
 			name: "qFgDRSAY",
 			color: "#c06b4e",
@@ -40020,7 +36936,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			burnTime: 376,
 			density: 17821.827734771083,
 		};
-
 		elements.qbesguoy = {
 			name: "QbeSGuOy",
 			color: "#4b9513",
@@ -40045,7 +36960,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			burnTime: 408,
 			density: 7097.343018249547,
 		};
-
 		elements.omsdvddh = {
 			name: "oMsDvDdH",
 			color: "#e2d948",
@@ -40061,7 +36975,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			tempHigh: 2767,
 			density: 10910.501840659097,
 		};
-
 		elements.izhsemyl = {
 			name: "IzhSEMYl",
 			color: "#7fafff",
@@ -40073,7 +36986,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "hyperrandom elements",
 			density: 2810.029487411252,
 		};
-
 		elements.ayvnmlrq = {
 			name: "AyvnmLRQ",
 			color: "#668a95",
@@ -40086,7 +36998,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			tempHigh: 893,
 			density: 11509.655636160245,
 		};
-
 		elements.pjrdtuta = {
 			name: "pJRDtuTA",
 			color: "#b12040",
@@ -40099,7 +37010,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			conduct: 0.33534106397322677,
 			density: 18826.565148369646,
 		};
-
 		elements.qodfmdfo = {
 			name: "QodfMdFo",
 			color: "#fe530b",
@@ -40112,7 +37022,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			conduct: 0.3465345689563781,
 			density: 11140.091847406393,
 		};
-
 		elements.rwwkmgjn = {
 			name: "rWWkMgJN",
 			color: "#2eeaa0",
@@ -40126,7 +37035,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			tempHigh: 2686,
 			density: 17409.619803480866,
 		};
-
 		/*elements.yckrmplh = {
 			name: "yckRMplh",
 			color: "#0807ad",
@@ -40148,7 +37056,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			tempHigh: 537,
 			density: 9215.024069840034,
 		}*/
-
 		elements.urhhhqjs = {
 			name: "urhhhqJS",
 			color: "#31a6bf",
@@ -40160,7 +37067,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "hyperrandom elements",
 			density: 373.9243313453792,
 		};
-
 		elements.budgkclj = {
 			name: "BUDGKClj",
 			color: "#ba657f",
@@ -40175,7 +37081,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			tempHigh: 2895,
 			density: 4123.593585708072,
 		};
-
 		elements.yzkluoho = {
 			name: "yzKluohO",
 			color: "#3e297d",
@@ -40190,7 +37095,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			tempHigh: 2838,
 			density: 16097.788434828502,
 		};
-
 		elements.pcqahdke = {
 			name: "PCQAHdkE",
 			color: "#425618",
@@ -40215,7 +37119,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			tempHigh: 2926,
 			density: 5349.2882949054265,
 		};
-
 		elements.acsjdbsp = {
 			name: "ACsjdBSP",
 			color: "#c25375",
@@ -40227,7 +37130,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "hyperrandom elements",
 			density: 19429.0198815719,
 		};
-
 		elements.bxxbbugd = {
 			name: "BXXBBUgd",
 			color: "#63fb15",
@@ -40239,7 +37141,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "hyperrandom elements",
 			density: 11933.76730202344,
 		};
-
 		/*
 		elements.kkhxgsiw = {
 			name: "KkHXGSiW",
@@ -40262,7 +37163,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			burnTime: 491,
 			density: 6333.626319914362,
 		}*/
-
 		elements.gqyhbmuq = {
 			name: "GQYHBMuQ",
 			color: "#3e3969",
@@ -40275,7 +37175,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			tempHigh: 2972,
 			density: 3881.977856937143,
 		};
-
 		elements.ookioobo = {
 			name: "OOKIoObo",
 			color: "#f072da",
@@ -40287,7 +37186,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "hyperrandom elements",
 			density: 34.228020163470646,
 		};
-
 		elements.qqnuejnt = {
 			name: "qQNuEjNT",
 			color: "#0a4f5d",
@@ -40302,7 +37200,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			tempHigh: 2096,
 			density: 9679.340844240462,
 		};
-
 		elements.hgshruqe = {
 			name: "HgSHruqE",
 			color: "#d59786",
@@ -40317,7 +37214,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			tempHigh: 346,
 			density: 11697.491509311361,
 		};
-
 		/*
 		elements.hyvrnxqq = {
 			name: "hyVrNXQQ",
@@ -40336,7 +37232,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			tempHigh: 1122,
 			density: 7158.798415310327,
 		}*/
-
 		elements.xxystxnm = {
 			name: "xxYsTXnM",
 			color: "#763817",
@@ -40349,7 +37244,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			tempHigh: 2187,
 			density: 15160.604263202209,
 		};
-
 		elements.sowljgtd = {
 			name: "SowljGtd",
 			color: "#c554eb",
@@ -40371,7 +37265,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			burnTime: 313,
 			density: 10531.689830022671,
 		};
-
 		elements.givrbdjd = {
 			name: "giVRBDjd",
 			color: "#c08adf",
@@ -40383,8 +37276,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "hyperrandom elements",
 			density: 8965.264917972576,
 		};
-
-
 		eLists.RANDOM = [ //commented-out names correspond to elements commented out because they reference cum
 			"ogqwwrko", "kibifwpd", "sezhorqq", "bgcelthv", "hpwfukak",
 			"ggysmbid", "fpnklukg", "efgtdvzx", "qacwivpp", "qfgdrsay",
@@ -40394,28 +37285,21 @@ Make sure to save your command in a file if you want to add this preset again.`
 			/*"kkhxgsiw",*/ "gqyhbmuq", "ookioobo", "qqnuejnt", "hgshruqe",
 			/*"hyvrnxqq",*/ "xxystxnm", "sowljgtd", "givrbdjd"
 		];
-
 		//To do: recipe;
-
 	//NEUTRONIUM COMPRESSOR ##
-
 		var singularityColorTemplate = ["#202020", "#505050", "#b0b0b0", "#c7c7c7"];
-
 		singularityNumber = 10000;
-
 		if(urlParams.get('singularityIncludeRandom') !== null) { //if the variable exists at all
 			singularityIncludeRandom = true
 		} else { //if it doesn't (and it returns null)
 			singularityIncludeRandom = false
 		}
-
 		//Generate singularities
 		if(urlParams.get('generateSingularities') !== null) { //if the variable exists at all
 			generateSingularities = true
 		} else { //if it doesn't (and it returns null)
 			generateSingularities = false
 		}
-
 		function haseulitoidSingularityTick(pixel) {
 			var s = 1;
 			if(elements[pixel.element].singularityNumber !== undefined) {
@@ -40426,7 +37310,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			if(pixel.oldColor === undefined) { pixel.oldColor = pixelColorPick(pixel) };
 			if(pixel.oldColor === null) { pixel.oldColor = pixel.color };
 			pixel.color = lightenColor(pixel.oldColor,pixel.value / 3);
-
 			var mVal = elements[pixel.element].haseulitoidMaxValue ?? 350;
 			if(pixel.value >= mVal) {
 				var coldBoomChance = Math.max(0.006 * ((pixel.value - mVal) / (400/3)), 0.000075);
@@ -40435,9 +37318,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					explodeAtPlus(pixel.x,pixel.y,coldBoomRadius,"cold_fire","cold_smoke",null,coldExplosionAfterCooling);
 				};
 			};
-
 		};
-
 		function generateSingularity(singularityElements,isAfterScriptLoading=false) {//it can be a single element, though
 			var count = 0;
 			if(typeof(singularityElements) === "string") { //it should be an array, so string check
@@ -40447,7 +37328,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					singularityElements = singularityElements.split(","); //,SS to array
 				} else {
 					//console.log("Wrapping string in array");
-					singularityElements = [singularityElements]; //single string to array 
+					singularityElements = [singularityElements]; //single string to array
 				};
 			};
 			for(aaf = 0; aaf < singularityElements.length; aaf++) {
@@ -40457,9 +37338,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				var isNocheer = 0;
 				//console.log("randomExcl set")
 				//console.log(elementOfSingularity);
-
 				var singularityName;
-
 				if(typeof(elementOfSingularity === "string")) { //comma separated string check
 					if(elementOfSingularity.includes(",")) { //if it is
 						elementOfSingularity = elementOfSingularity.split(","); //to array
@@ -40470,7 +37349,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 				if(Array.isArray(elementOfSingularity)) {
 					singularityName = `${elementOfSingularity.join("_")}_singularity`; //auto placer element name
-
 					//array case color concatenator and excludeRandom handler
 					startColor = [];
 					//console.log(elementOfSingularity);
@@ -40484,7 +37362,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						//console.log(elementOfSingularity[ll]);
 						startColor = startColor.concat(elements[elementOfSingularity[ll]].color);
 					};
-
 					for(ll = 0; ll < elementOfSingularity.length; ll++) {
 						if(typeof(elements[elementOfSingularity[ll]].nocheer !== "undefined")) { //if nocheer exists (prevent TypeError)
 							if(elements[elementOfSingularity[ll]].nocheer) { //it it's true
@@ -40507,7 +37384,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 							randomExcl = 0;
 						};
 					};
-
 					if(typeof(elements[elementOfSingularity].nocheer !== "undefined")) { //if nocheer exists (prevent TypeError)
 						if(elements[elementOfSingularity].nocheer) { //it it's true
 							//console.log("nyet " + elementOfSingularity);
@@ -40524,11 +37400,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 				} else {
 					startColor = rgbHexCatcher(startColor);
 				};
-
 				//console.log(`rgbStringToObject(${startColor}) from more_singularities.js`)
-				var newColorObjectArray = [];			
+				var newColorObjectArray = [];
 				var newColorArray = [];
-
 				for(i = 0; i < singularityColorTemplate.length; i++) {
 					var newSingularityColorlet = singularityColorTemplate[i];
 					var newColor = multiplyColors(startColor,newSingularityColorlet);
@@ -40536,11 +37410,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 					newColorArray.push(newColor);
 					newColorObjectArray.push(newColorJSON);
 				};
-
 					//End color gen
-
 												//The singularity
-
 				//console.log(elementOfSingularity);
 				var firstInfo, firstTemp;
 				if(Array.isArray(elementOfSingularity)) {
@@ -40556,7 +37427,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						firstTemp = firstInfo.temp;
 					};
 				};
-
 				var finalDensity = 0;
 				if(Array.isArray(elementOfSingularity)) {
 					for(i = 0; i < elementOfSingularity.length; i++) {
@@ -40568,13 +37438,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 					info = elements[elementOfSingularity];
 					finalDensity = (info.density || 1000) * singularityNumber;
 				};
-
 				elementOfSingularity = tryJoin(elementOfSingularity,",");
-
 				//console.log(elementOfSingularity);
-
 				var returns = [];
-
 				if(!elementExists(singularityName)) {
 					elements[singularityName] = {
 						color: newColorArray,
@@ -40638,7 +37504,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 						if (settings.cheerful && elements[singularityName].nocheer) {
 							elements[singularityName].hidden = true;
 							hiddenCount++;
-						} else {						
+						} else {
 							createElementButton(singularityName);
 						};
 						elements[singularityName].id = nextid++;
@@ -40650,7 +37516,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			};
 			return returns;
 		};
-
 		elements.neutronium_compressor = {
 			color: "#e7e7ee",
 			properties: {
@@ -40694,7 +37559,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 										};
 									};
 								};
-
 								//Alkahest handling
 								if(newPixel.element === "alkahest") {
 									//get properties that are actually elements
@@ -40713,7 +37577,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 										pixel.absorbed[key] += value;
 									};
 								};
-
 								if(typeof(pixel.absorbed[newElement]) === "undefined") {
 									pixel.absorbed[newElement] = 0;
 								};
@@ -40762,18 +37625,15 @@ Make sure to save your command in a file if you want to add this preset again.`
 				*/
 			},
 		};
-
 		runAfterAutogen(function() {
 			if(generateSingularities) {
 				singularityArray = Object.keys(elements);
 				generateSingularity(singularityArray,false);
 			};
 		});
-
 		if(typeof(singularityChoices) === "undefined") {
 			singularityChoices = [];
 		};
-
 		elements.spawn_random_singularity = {
 			color: ["#3e5f8a","#a334ec","#ea96f9","#a6ecf6","#70ebc8","#d9286b","#7eed91","#a18b30"],
 			behavior: behaviors.WALL,
@@ -40783,19 +37643,15 @@ Make sure to save your command in a file if you want to add this preset again.`
 				singularityChoices.length == 0 ? deletePixel(pixel.x,pixel.y) : changePixel(pixel,singularityChoices[Math.floor(Math.random() * singularityChoices.length)]);
 			},
 		};
-
 	//POST-LOADING ELEMENT GENERATION ##
-
 		var lategenOptions = ["creeper","spout","fairy","cloud","bomb","singularity"];
 		lgoDisplayString = lategenOptions.join(", ");
-
 		document.addEventListener("keydown", function(e) { //prop prompt listener
 			// , = propPrompt()
 			if (e.keyCode == 71) { //G
 				if(shiftDown) { generatorPrompt() };
 			};
 		});
-
 		function generatorPrompt() {
 			var type = prompt(`Enter what kind of thing you want to generate
 			Valid options: ${lgoDisplayString}`);
@@ -40858,14 +37714,12 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		elements.generator_prompt = {
 			color: ["#000000","#666666","#886622","#558800"],
 			behavior: behaviors.SELFDELETE,
 			desc: "<span style='color:#FF00FF;' onClick=generatorPrompt()>Click here or press Shift+G to open the generator prompt.</span>",
 			category:"special",
 		};
-
 		function parseForLateGenerationParameter(input) {
 			if(input == null) { return };
 			if(input.startsWith("*")) {
@@ -40879,10 +37733,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					if(input.includes("noauto")) {
 						return Object.keys(elements).filter(function(name) { return elements[name].autoType === undefined });
 					};
-
-
 					var filteredList = elemList;
-
 					//include only auto elements
 					if(input.includes("auto")) {
 						filteredList = filteredList.filter(function(name) { return elements[name].autoType !== undefined });
@@ -40913,7 +37764,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						filteredList = filteredList.filter(function(name) { return elements[name].autoType !== "bomb" });
 						//console.log("remove bombs", filteredList.length);
 					};
-
 					//console.log(input);
 					return filteredList;
 				};
@@ -40926,7 +37776,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					input = input.split(","); //,SS to array
 				} else {
 					//console.log("Wrapping string in array");
-					input = [input]; //single string to array 
+					input = [input]; //single string to array
 				};
 			};
 			for(i = 0; i < input.length; i++) {
@@ -40937,9 +37787,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			};
 			return input;
 		};
-
 	//WEATHER MACHINE ##
-
 		function pixelRain(element,density=0.1,rainRelativeBottom=0.35,rainRelativeTop=0) {
 			for(i = 1; i < width; i++) {
 				for(j = Math.round(height * rainRelativeTop); j < Math.round(height * rainRelativeBottom); j++) {
@@ -40950,14 +37798,11 @@ Make sure to save your command in a file if you want to add this preset again.`
 				}
 			}
 		};
-
 		generateCloud("water",3,false);
 		generateCloud("blood",0,false);
 		generateCloud("snow",3,false);
 		generateCloud("sand",1,false);
-
 		_weatherElems = ["cloud", "rain_cloud", "heaviest_water_cloud", "blood_cloud", "snow_cloud", "heaviest_snow_cloud", "hail_cloud", "hail_cloud", "fireball", "fire_cloud", "magma_cloud", "heavy_sand_cloud", "electric", "lightning"];
-
 		elements.weather_controller = {
 			color: "#ebdf91",
 			behavior: [
@@ -41045,7 +37890,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 						case "moonrock":
 							settings.bg = "#000000";
 							break;
-						case "oxygen":							
+						case "oxygen":
 							for(var i in "six  ") {
 								currentPixels.forEach(function(pixel) {
 									if(_weatherElems.includes(pixel.element)) {
@@ -41054,7 +37899,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 									}
 								});
 							};
-
 							currentPixels.forEach(function(pixel) {
 								var data = elements[pixel.element];
 								var tl = data.tempLow;
@@ -41094,9 +37938,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "machines",
 			hardness: 0.6
 		};
-
 	//KETCUP ##
-
 		elements.ketcup = {
 			color: "#ab2513",
 			behavior: behaviors.LIQUID,
@@ -41113,7 +37955,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			stain: 0.05,
 			isFood: true
 		};
-
 		elements.ruphire = {
 			color: ["#7C319B", "#BC4F80", "#692287", "#B13B77", "#772A94"],
 			tempHigh: 2040,
@@ -41123,9 +37964,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			density: 3980,
 			hardness: 0.9,
 		};
-
 		standaloneBrokenFormMaker("ruphire","shard",true,"powders","auto","auto","molten_ruphire",["alumina","alumina","alumina","alumina","alumina","alumina","alumina","alumina","alumina","iron_scrap","titanium_scrap","chromium_scrap","chromium_scrap"]).hidden = true;
-
 		elements.molten_ruby ??= {};
 		elements.molten_ruby.reactions ??= {};
 		elements.molten_sapphire ??= {};
@@ -41135,12 +37974,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 			elem2: "molten_ruphire"
 		}; //they don't make garnet :'(
 		elements.molten_sapphire.reactions.molten_ruby = elements.molten_ruby.reactions.molten_sapphire;
-
 	//REPLACER TOOL ##
-
 		replaceFrom = "rock";
 		replaceTo = "sand";
-
 		document.addEventListener("keydown", function(e) { //replace prompt listener
 			// r = replaceElementPrompt()
 			if (e.keyCode == 222) {
@@ -41148,7 +37984,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				replaceElementPrompt();
 			}
 		});
-
 		function replaceElementPrompt() {
 			var fromElement = prompt("Enter the element you want to change");
 			// replace spaces with underscores
@@ -41158,7 +37993,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				alert("Element \"" + fromElement + "\" not found! Defaulting to rock.");
 				fromElementS = "rock";
 			};
-
 			var toElement = prompt("Enter what you want to replace \"" + fromElementS + "\" with");
 			// replace spaces with underscores
 			toElement = toElement.replace(/ /g, "_");
@@ -41169,15 +38003,13 @@ Make sure to save your command in a file if you want to add this preset again.`
 			};
 			replaceFrom = fromElementS;
 			replaceTo = toElementS;
-			updateReplaceDescriptions();	
+			updateReplaceDescriptions();
 		}
-
 		function updateReplaceDescriptions() {
 			elements.replace.desc = "Changes pixels of a specified type to another specified type.<br/>Currently replacing \"" + replaceFrom + "\" with \"" + replaceTo + "\".<br/><span onclick=replaceElementPrompt() style=\"color: #ff00ff;\";>Press [\"] or click here</span> to open the replace prompt.";
 			elements.alt_replace.desc = "Changes pixels of a specified type to another specified type, but keeping their non-element-based properties.<br/>Currently replacing \"" + replaceFrom + "\" with \"" + replaceTo + "\".<br/><span onclick=replaceElementPrompt() style=\"color: #ff00ff;\";>Press [\"] or click here</span> to open the replace prompt.";
 			elements.alt_alt_replace.desc = "Changes pixels of a specified type to another specified type, but keeping their non-element-based properties except for color.<br/>Currently replacing \"" + replaceFrom + "\" with \"" + replaceTo + "\".<br/><span onclick=replaceElementPrompt() style=\"color: #ff00ff;\";>Press [\"] or click here</span> to open the replace prompt.";
 		};
-
 		elements.replace = {
 			color: ["#ff0000", "#ff0000", "#ff0000", "#7f00ff", "#0000ff", "#0000ff", "#0000ff"],
 			tool: function(pixel) {
@@ -41188,7 +38020,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "tools",
 			desc: "Changes pixels of a specified type to another specified type.<br/>Currently replacing \"" + replaceFrom + "\" with \"" + replaceTo + "\".<br/><span onclick=replaceElementPrompt() style=\"color: #ff00ff;\";>Press [\"] or click here</span> to open the replace prompt.",
 		};
-
 		elements.alt_replace = {
 			color: ["#ffff00", "#ffff00", "#ffff00", "#cf7f4f", "#ff00ff", "#ff00ff", "#ff00ff"],
 			tool: function(pixel) {
@@ -41200,7 +38031,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			desc: "Changes pixels of a specified type to another specified type, but keeping their non-element-based properties.<br/>Currently replacing \"" + replaceFrom + "\" with \"" + replaceTo + "\".<br/><span onclick=replaceElementPrompt() style=\"color: #ff00ff;\";>Press [\"] or click here</span> to open the replace prompt.",
 			hidden: true,
 		};
-
 		elements.alt_alt_replace = {
 			color: ["#00ff00", "#00ff00", "#00ff00", "#cfcf00", "#ff0000", "#ff0000", "#ff0000"],
 			tool: function(pixel) {
@@ -41213,9 +38043,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			desc: "Changes pixels of a specified type to another specified type, but keeping their non-element-based properties except for color.<br/>Currently replacing \"" + replaceFrom + "\" with \"" + replaceTo + "\".<br/><span onclick=replaceElementPrompt() style=\"color: #ff00ff;\";>Press [\"] or click here</span> to open the replace prompt.",
 			hidden: true,
 		};
-
 	//OLD PROP AND NUMBER CHANGER TOOLS ##
-
 		propProperty = "element";
 		propValue = "sand";
 		propType = "string";
@@ -41225,7 +38053,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 		numberAdjusterVerb = "adding";
 		numberAdjusterPreposition = "to";
 		numberAdjusterReverseOrder = false;
-
 		function rgbStringToUnvalidatedObject(string) {
 			string = string.split(",");
 			var red = parseFloat(string[0].substring(4));
@@ -41240,8 +38067,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			var lightness = parseFloat(string[2].slice(0,-2));
 			return {h: hue, s: saturation, l: lightness};
 		};
-
-
 		document.addEventListener("keydown", function(e) { //prop prompt listener
 			// , = propPrompt()
 			if (e.keyCode == 188) {
@@ -41249,12 +38074,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 				shiftDown ? numberAdjusterPrompt() : propPrompt();
 			};
 		});
-
 		function propPrompt() {
 			propProperty = prompt("Enter the property you want to set");
-
 			propValue = prompt("Enter the value you want to set to");
-
 			//special check: element
 			if(propProperty === "element") {
 				//empty string
@@ -41272,7 +38094,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					propValue = propValueS;
 				};
 			};
-
 			//special check: color
 			if(propProperty === "color") {
 				//empty string
@@ -41315,7 +38136,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					return false;
 				};
 			};
-
 			//special check: x
 			if(propProperty === "x") {
 				//empty string
@@ -41323,9 +38143,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					alert("X values must be integers!");
 				};
 			};
-
 			if(propProperty == null) { return };
-
 			if(defaultNumberTypeValues.includes(propProperty.toLowerCase())) {
 				propType = "number";
 			} else if(defaultBooleanTypeValues.includes(propProperty.toLowerCase())) {
@@ -41348,7 +38166,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					propType = "array"; //offset coords use arrays a lot
 				};
 			};
-
 			//Conversion
 			if(propType === "number") {
 				propValue = parseFloat(propValue);
@@ -41415,7 +38232,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			updatePropDescription();
 			currentElement = "old_prop";
 		};
-
 		elements.old_prop = {
 			color: "#ff7f00",
 			tool: function(pixel) {
@@ -41430,11 +38246,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "tools",
 			desc: `Sets properties of pixels.<br/>Currently setting ${propProperty} to ${propValue} (${propType}).<br/><span onclick=propPrompt() style=\"color: #ff00ff;\";>Press [,] or click here</span> to open the property tool prompt.`,
 		};
-
 		function updatePropDescription() {
 			elements.old_prop.desc = `Sets properties of pixels.<br/>Currently setting ${propProperty} to ${propValue} (${propType}).<br/><span onclick=propPrompt() style=\"color: #ff00ff;\";>Press [,] or click here</span> to open the property tool prompt.`;
 		};
-
 		function numberAdjusterPrompt() {
 			var oldProperty = numberAdjusterProperty;
 			if(oldProperty === null) {
@@ -41447,13 +38261,11 @@ Make sure to save your command in a file if you want to add this preset again.`
 			};
 			numberAdjusterValue = prompt("Enter the value you want to use");
 			numberAdjusterMode = prompt("Enter the operation you want to use");
-
 			//property check
 			if(numberAdjusterProperty === "") {
 				alert("No property was specified! Defaulting to temp.");
 				numberAdjusterProperty = "temp";
 			};
-
 			//value check
 			if(isNaN(parseFloat(numberAdjusterValue))) {
 				if(numberAdjusterValue === "" || numberAdjusterValue === null) {
@@ -41470,18 +38282,13 @@ Make sure to save your command in a file if you want to add this preset again.`
 			};
 			numberAdjusterValue = parseFloat(numberAdjusterValue);
 			//console.log("Value: " + numberAdjusterValue);
-
 			//mode check
-
 			if(numberAdjusterMode === null) {
 				alert("No operation was specified! Defaulting to add.");
 				numberAdjusterMode = "add";
 			};
-
 			numberAdjusterMode = numberAdjusterMode.toLowerCase();
-
 			var opNames = ["+", "add", "addition", "plus", "increase", "increment", "-", "subtract", "subtraction", "minus", "take away", "takeaway", "decrease", "decrement", "*", "x", "×", "multiply", "multiplication", "times", "by", "/", "÷", "divide", "division", "divided by", "%", "mod", "modulo", "modulus", "modulo by", "=", "set", "equals", "assign", "assignment", ">", ">=", "min", "minimum", "<", "<=", "max", "maximum", "^", "**", "exp", "exponent", "exponentiate", "raise", "raise to", "raised to"];
-
 			switch(numberAdjusterMode) {
 				case "+":
 				case "add":
@@ -41582,7 +38389,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			updateNumberAdjusterDescription();
 			currentElement = "number_adjuster";
 		};
-
 		elements.number_adjuster = {
 			color: "#7fff00",
 			tool: function(pixel) {
@@ -41670,15 +38476,11 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "tools",
 			desc: `Changes properties of pixels.<br/>Currently ${numberAdjusterVerb} ${numberAdjusterValue} ${numberAdjusterPreposition} ${numberAdjusterProperty}.<br/><span onclick=numberAdjusterPrompt() style=\"color: #ff00ff;\";>Press [Shift+,] or click here</span> to open the adjuster tool prompt.`,
 		};
-
 		function updateNumberAdjusterDescription() {
 			elements.number_adjuster.desc = numberAdjusterReverseOrder ? `Changes numeric properties of pixels.<br/>Currently ${numberAdjusterVerb} ${numberAdjusterProperty} ${numberAdjusterPreposition} ${numberAdjusterValue}.<br/><span onclick=numberAdjusterPrompt() style=\"color: #ff00ff;\";>Press [Shift+,] or click here</span> to open the adjuster tool prompt.` : `Changes numeric properties of pixels.<br/>Currently ${numberAdjusterVerb} ${numberAdjusterValue} ${numberAdjusterPreposition} ${numberAdjusterProperty}.<br/><span onclick=numberAdjusterPrompt() style=\"color: #ff00ff;\";>Press [Shift+,] or click here</span> to open the adjuster tool prompt.`;
 		};
-
 	//TOOL BEHAVIORS ##
-
 		mooreDonutCoords = [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]]; //Moore neighborhood (includes corners) minus center, as opposed to the von Neumann neighborhood which is the + shape.
-
 		elements.lookup.tick = function(pixel) {
 			//console.log(`%%% Tick ${pixelTicks} %%%`);
 			//console.log(`Storing coordinates`);
@@ -41721,7 +38523,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				changePixel(pixel,changeToElement);
 			};
 		};
-
 		elements.paint.tick = function(pixel) {
 			pixel.color = _rgbHexCatcher(currentColor);
 			var pX = pixel.x;
@@ -41743,7 +38544,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		elements.unpaint.tick = function(pixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -41768,13 +38568,11 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		elements.sandreplacer.behavior = [
 			"CH:sand|CH:sand|CH:sand",
 			"CH:sand|XX|CH:sand",
 			"CH:sand|CH:sand|CH:sand"
 		];
-
 		elements.delete_all_of_element.tick = function(pixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -41815,7 +38613,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		elements.room_temp.tick = function(pixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -41834,7 +38631,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			}
 		};
-
 		elements.uncharge.tick = function(pixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -41857,7 +38653,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				}
 			}
 		};
-
 		elements.unburn.tick = function(pixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -41884,7 +38679,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				}
 			}
 		};
-
 		elements.smash.tick = function(pixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -41910,31 +38704,26 @@ Make sure to save your command in a file if you want to add this preset again.`
 				}
 			}
 		};
-
 		elements.cook.behavior = [
 			"HT:0.5|HT:0.5|HT:0.5",
 			"HT:0.5|HT:0.5|HT:0.5",
 			"HT:0.5|HT:0.5|HT:0.5",
 		];
-
 		elements.ultraheat.behavior = [
 			"HT:350|HT:350|HT:350",
 			"HT:350|HT:350|HT:350",
 			"HT:350|HT:350|HT:350",
 		];
-
 		elements.ultracool.behavior = [
 			"CO:350|CO:350|CO:350",
 			"CO:350|CO:350|CO:350",
 			"CO:350|CO:350|CO:350",
 		];
-
 		elements.incinerate.behavior = [
 			"HT:10000|HT:10000|HT:10000",
 			"HT:10000|HT:10000|HT:10000",
 			"HT:10000|HT:10000|HT:10000",
 		];
-
 		elements.nan_temp.tick = function(pixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -41952,7 +38741,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		elements.inf_temp.tick = function(pixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -41970,31 +38758,26 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		elements.superheat.behavior = [
 			"HT:10|HT:10|HT:10",
 			"HT:10|HT:10|HT:10",
 			"HT:10|HT:10|HT:10",
 		];
-
 		elements.supercool.behavior = [
 			"CO:10|CO:10|CO:10",
 			"CO:10|CO:10|CO:10",
 			"CO:10|CO:10|CO:10",
 		];
-
 		elements.hyperheat.behavior = [
 			"HT:50|HT:50|HT:50",
 			"HT:50|HT:50|HT:50",
 			"HT:50|HT:50|HT:50",
 		];
-
 		elements.hypercool.behavior = [
 			"CO:50|CO:50|CO:50",
 			"CO:50|CO:50|CO:50",
 			"CO:50|CO:50|CO:50",
 		];
-
 		elements.absolutezero.tick = function(pixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -42012,7 +38795,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		elements.antigrav.tick = function(pixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -42030,7 +38812,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		elements.normalgrav.tick = function(pixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -42048,7 +38829,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		elements.leftgrav.tick = function(pixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -42066,7 +38846,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		elements.rightgrav.tick = function(pixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -42084,7 +38863,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		elements.burn.burnTime = Infinity;
 		elements.burn.burn = 100;
 		elements.burn.burnInto = "burn";
@@ -42109,7 +38887,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		elements.cursed_shock.tick = function(pixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -42130,7 +38907,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		elements.offset_fourth_y.tick = function(pixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -42151,7 +38927,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		elements.offset_half_y.tick = function(pixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -42172,7 +38947,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		elements.offset_three_fourth_y.tick = function(pixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -42193,12 +38967,10 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		elements.find_toggle.behavior = behaviors.WALL;
 		elements.find_toggle.tick = function(pixel) {
 			pixel.color = "rgb(255," + marasi(pixelTicks / 10) + ",0)";
 		};
-
 		elements.replace.tick = function(pixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -42219,7 +38991,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		elements.alt_replace.tick = function(pixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -42240,7 +39011,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		elements.alt_alt_replace.tick = function(pixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -42262,7 +39032,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		elements.change.tick = function(pixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -42283,7 +39052,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		elements.alt_change.tick = function(pixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -42304,7 +39072,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		elements.alt_alt_change.tick = function(pixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -42326,7 +39093,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		elements.prop.tick = function(pixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -42352,7 +39118,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		elements.number_adjuster.tick = function(pixel) {
 			var pX = pixel.x;
 			var pY = pixel.y;
@@ -42366,7 +39131,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					continue;
 				} else {
 					var newPixel = pixelMap[nX][nY];
-					if(numberAdjusterProperty !== "element") {			
+					if(numberAdjusterProperty !== "element") {
 						//console.log(numberAdjusterValue);
 						if(numberAdjusterMode === "set") {
 							newPixel[numberAdjusterProperty] = numberAdjusterValue;
@@ -42381,9 +39146,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 	//SWITCHES ##
-
 		elements.switch_off = {
 			name: "switch (off)",
 			color: "#7F3333",
@@ -42391,7 +39154,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			noConduct: ["switch_on_control","switch_off_control"],
 			category: "machines",
 		};
-
 		elements.switch_on = {
 			name: "switch (on)",
 			color: "#33CC33",
@@ -42400,7 +39162,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			noConduct: ["switch_on_control","switch_off_control"],
 			category: "machines",
 		};
-
 		elements.switch_off_control = {
 			color: "#FF3333",
 			behavior: behaviors.WALL,
@@ -42413,7 +39174,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			noConduct: ["switch_on","switch_off"],
 			category: "machines",
 		};
-
 		elements.switch_on_control = {
 			color: "#33FF33",
 			behavior: behaviors.WALL,
@@ -42426,9 +39186,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			noConduct: ["switch_on","switch_off"],
 			category: "machines",
 		};
-
 	//MORE HEATERS AND COOLERS (mostly) ##
-
 		elements.super_heater = {
 			color: "#ff0000",
 			tick: function(pixel) {
@@ -42444,7 +39202,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			insulate: true,
 			state: "solid",
 		},
-
 		elements.super_cooler = {
 			color: "#0000ff",
 			tick: function(pixel) {
@@ -42460,7 +39217,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			insulate: true,
 			state: "solid",
 		},
-
 		elements.super_warmer = {
 			color: "#00ff00",
 			tick: function(pixel) {
@@ -42476,7 +39232,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			insulate: true,
 			state: "solid",
 		},
-
 		elements.super_heater_2 = {
 			color: "#ff2200",
 			tick: function(pixel) {
@@ -42494,7 +39249,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hidden: true,
 			excludeRandom: true,
 		},
-
 		elements.super_cooler_2 = {
 			color: "#0022ff",
 			tick: function(pixel) {
@@ -42512,7 +39266,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hidden: true,
 			excludeRandom: true,
 		},
-
 		elements.super_warmer_2 = {
 			color: "#22ff22",
 			tick: function(pixel) {
@@ -42530,7 +39283,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hidden: true,
 			excludeRandom: true,
 		},
-
 		elements.global_heater = {
 			color: "#ff6666",
 			tick: function(pixel) {
@@ -42542,7 +39294,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hidden: true,
 			excludeRandom: true,
 		},
-
 		elements.global_cooler = {
 			color: "#6666ff",
 			tick: function(pixel) {
@@ -42554,7 +39305,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hidden: true,
 			excludeRandom: true,
 		},
-
 		elements.global_warmer = {
 			color: "#66ff66",
 			tick: function(pixel) {
@@ -42566,7 +39316,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hidden: true,
 			excludeRandom: true,
 		},
-
 		elements.adjustable_global_heater = {
 			color: "#66ff66",
 			tick: function(pixel) {
@@ -42580,7 +39329,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			excludeRandom: true,
 			temp: 1
 		},
-
 		elements.super_heater_3 = {
 			color: "#ff7f00",
 			uwu: 0,
@@ -42617,7 +39365,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			state: "solid",
 			excludeRandom: true,
 		},
-
 		elements.super_cooler_3 = {
 			color: "#007fff",
 			uwu: 0,
@@ -42654,7 +39401,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			state: "solid",
 			excludeRandom: true,
 		},
-
 		elements.super_warmer_3 = {
 			color: "#7fff7f",
 			uwu: 0,
@@ -42689,7 +39435,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			state: "solid",
 			excludeRandom: true,
 		},
-
 		elements.tc = { //temperature checker
 			name: "Temperature Checker",
 			color: ["#000000","#000000"],
@@ -42712,7 +39457,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			insulate: true,
 			state: "solid",
 		},
-
 		/**
 		*  color-temperature.js
 		*
@@ -42745,11 +39489,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 		* See http://github.com/neilbartlett/color-temperature for further details.
 		*
 		**/
-
 		//[Code licensed under the MIT License]
-
 		//[Tanner Helland version omitted]
-
 		/**
 		 * A more accurate version algorithm based on a different curve fit to the
 		 * original RGB to Kelvin data.
@@ -42757,10 +39498,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 		  * Output: json object of red, green and blue components of the Kelvin temperature
 		 */
 		 colorTemperature2rgb = function(kelvin) {
-
 		  var temperature = kelvin / 100.0;
 		  var red, green, blue;
-
 		  if (temperature < 66.0) {
 			red = 255;
 		  } else {
@@ -42774,11 +39513,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 			if (red < 0) red = 0;
 			if (red > 255) red = 255;
 		  }
-
 		  /* Calculate green */
-
 		  if (temperature < 66.0) {
-
 			// a + b x + c Log[x] /.
 			// {a -> -155.25485562709179`,
 			// b -> -0.44596950469579133`,
@@ -42789,9 +39525,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			if (green < 0) green = 0;
 			if (isNaN(green)) green = 0;
 			if (green > 255) green = 255;
-
 		  } else {
-
 			// a + b x + c Log[x] /.
 			// {a -> 325.4494125711974`,
 			// b -> 0.07943456536662342`,
@@ -42801,19 +39535,14 @@ Make sure to save your command in a file if you want to add this preset again.`
 			green = 325.4494125711974 + 0.07943456536662342 * green - 28.0852963507957 * Math.log(green);
 			if (green < 0) green = 0;
 			if (green > 255) green = 255;
-
 		  }
-
 		  /* Calculate blue */
-
 		  if (temperature >= 66.0) {
 			blue = 255;
 		  } else {
-
 			if (temperature <= 20.0) {
 			  blue = 0;
 			} else {
-
 			  // a + b x + c Log[x] /.
 			  // {a -> -254.76935184120902`,
 			  // b -> 0.8274096064007395`,
@@ -42825,13 +39554,10 @@ Make sure to save your command in a file if you want to add this preset again.`
 			  if (blue > 255) blue = 255;
 			}
 		  }
-
 		  //return {red: Math.round(red), blue: Math.round(blue), green: Math.round(green)};
 		  return "rgb("+Math.round(red)+","+Math.round(green)+","+Math.round(blue)+")"
 		}
-
 		//[reverse conversion omitted]
-
 		elements.color_temp_test = {
 			color: "#111111",
 			behavior: behaviors.POWDER,
@@ -42899,9 +39625,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			density: 1500,
 			temp: 20,
 		}
-
 	//TEETH AND PASTE ##
-
 		elements.tooth = {
 			color: "#d9d9d9",
 			behavior: behaviors.SUPPORT,
@@ -42918,7 +39642,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hardness: 0.5,
 			breakInto: ["meat","hydroxyapatite"],
 		},
-
 		elements.plaque = {
 			color: "#faf6dc",
 			behavior: [
@@ -42933,11 +39656,10 @@ Make sure to save your command in a file if you want to add this preset again.`
 			tempHigh: 100,
 			stateHigh: ["steam","plague"],
 			state: "solid",
-			density: 5.4, //https://physics.aps.org/articles/v5/s140#:~:text=They%20then%20use%20tabulated%20values,%2D12%20gram)%20per%20cell. 
+			density: 5.4, //https://physics.aps.org/articles/v5/s140#:~:text=They%20then%20use%20tabulated%20values,%2D12%20gram)%20per%20cell.
 						  //https://en.wikipedia.org/wiki/Calculus_(dental)#:~:text=Cell%20density%20within%20dental%20plaque,estimated%20200%2C000%2C000%20cells%20per%20milligram.
 			hidden: true,
 		},
-
 		elements.tartar = {
 			color: ["#e8d595", "#cfb27e", "#f0e989"],
 			behavior: [
@@ -42957,7 +39679,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			breakInto: ["calcium","calcium","calcium","calcium","rotten_meat","rotten_meat","plague"],
 			hidden: true,
 		},
-
 		elements.decayed_tooth = {
 			color: ["#aba89d","#85837b","#7a7972","#b8b5a5","#6b6a63"],
 			behavior: [
@@ -42977,7 +39698,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			breakInto: ["rotten_meat","hydroxyapatite"],
 			hidden: true,
 		},
-
 		elements.hydroxyapatite = {
 			color: ["#edecda", "#f5f5f5", "#e8e8e8"],
 			behavior: behaviors.POWDER,
@@ -42989,7 +39709,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			https://www.sciencedirect.com/science/article/abs/pii/S0142961299000769 */
 			category: "powders",
 		},
-
 		elements.toothpaste = {
 			color: ["#f8f8f8", "#6699ff", "#f8f8f8", "#ff5555"],
 			behavior: [
@@ -43013,7 +39732,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			https://www.sciencedirect.com/science/article/abs/pii/S0142961299000769 */
 			category: "powders",
 		}
-
 	runAfterLoad(function() {
 		foodArray = Object.keys(elements).filter(function(e) {
 			return elements[e].category == "food";
@@ -43051,14 +39769,11 @@ Make sure to save your command in a file if you want to add this preset again.`
 			elements.concoction.reactions.tartar = { "elem1": "mistake", "elem2": null };
 		//}
 	});
-
 	//EXPERIMENTAL STRUCTURE SPAWNERS ##
-
 		arrayLoaderVoids = ["air", "null", null];
 		buildingOneSegmentDoor = ["concrete","wood_plank","concrete","wood_plank","concrete"];
 		buildingOneSegmentWindows = ["concrete","glass_pane","concrete","glass_pane","concrete"];
 		buildingOneSegmentConcrete = ["concrete","concrete","concrete","concrete","concrete"];
-
 		buildingTwoSegments = [
 			["concrete","concrete","concrete","concrete","concrete"],
 			["concrete","concrete","concrete","concrete","concrete"],
@@ -43069,7 +39784,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			["wood_plank","wood_plank","wood_plank"],
 			["wood_plank"]
 		];
-
 		oldRoom= [["brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "glass",  "glass",  "glass",  "glass",  "glass",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick"],
 				  ["brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "glass",  "glass",  "glass",  "glass",  "glass",  "brick",  "battery","brick",  "brick",  "brick",  "brick",  "brick"],
 				  ["glass",  "glass",  "air",	"air",	"air",	"air",	"air",	"air",	"air",	"air",	"air",	"air",   "light","light_bulb","air",	"air",	"air",	"glass",  "glass"],
@@ -43082,7 +39796,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				  ["brick",  "brick",  "iron",   "straw",  "straw",  "straw",  "straw",  "straw",  "straw",  "straw",  "iron",   "air",	"air",	"light",  "air",	"air",	"air",	"wood",   "brass"],
 				  ["brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick"],
 				  ["brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick"]]
-
 		altRoom= [["brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick"],
 				  ["brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "battery","brick",  "brick",  "brick",  "brick",  "brick"],
 				  ["glass",  "glass",  "air",	"air",	"air",	"air",	"air",	"air",	"air",	"air",	"air",	"air",   "light","light_bulb","air",	"air",	"air",	"glass",  "glass"],
@@ -43095,11 +39808,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 				  ["brass",  "wood",   "air",	"air",	"iron",   "straw",  "straw",  "straw",  "straw",  "straw",  "straw",  "straw",  "iron",   "light",  "air",	"air",	"air",	"wood",   "brass"],
 				  ["brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick"],
 				  ["brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick", "battery", "brick",  "brick",  "brick",  "brick",  "brick"]]
-
 		/*function r0to255() {
 			return Math.floor(Math.random() * 256);
 		};*/
-
 		canSupportWithEdge = function(x,y) {
 			if(outOfBounds(x,y)) { //count edges
 				return true;
@@ -43113,7 +39824,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
-
 		function loadPixelRowFromArray(pixelArray,centerX,centerY,evenLengthBiasedLeft=true,doOverwrite=true) {
 			var arrayLength = pixelArray.length;
 			var leftmostOffset = (evenLengthBiasedLeft ? Math.floor(0 - ((arrayLength - 1) / 2)) : Math.ceil(0 - ((arrayLength - 1) / 2))) //floor and ceil have no effect on the integer values produced by odd lengths
@@ -43152,7 +39862,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				//pixelMap[x][y].color = randomColor;
 			};
 		};
-
 		function loadPixelRowFromArrayWithColorRowArray(pixelArray,colorArray,centerX,centerY,evenLengthBiasedLeft=true,doOverwrite=true,doColorOffset=false) {
 			var arrayLength = pixelArray.length;
 			var leftmostOffset = (evenLengthBiasedLeft ? Math.floor(0 - ((arrayLength - 1) / 2)) : Math.ceil(0 - ((arrayLength - 1) / 2))) //floor and ceil have no effect on the integer values produced by odd lengths
@@ -43203,21 +39912,16 @@ Make sure to save your command in a file if you want to add this preset again.`
 				//pixelMap[x][y].color = randomColor;
 			};
 		};
-
 		delete elements.rad_glass.stateHigh;
-
 		elements.glass.hardness = 0.25,
 		elements.rad_glass.hardness = 0.25,
-
 		//Prereq elements
 		elements.crumbling_concrete = {
 			color: "#ababab",
 			tick: function(pixel) {
 				var px = pixel.x;
 				var py = pixel.y;
-
 				if (pixel.start === pixelTicks) {return}
-
 				var supportCondition1 = (canSupportWithEdge(px-1,py-1) && canSupportWithEdge(px+1,py-1))	// V shape
 				var supportCondition2 = (canSupportWithEdge(px-1,py) && canSupportWithEdge(px+1,py)) 		// - shape
 				var supportCondition3 = (canSupportWithEdge(px-1,py+1) && canSupportWithEdge(px+1,py+1))	// Λ shape
@@ -43229,13 +39933,10 @@ Make sure to save your command in a file if you want to add this preset again.`
 				var supportCondition9 = (canSupportWithEdge(px+1,py+1) && canSupportWithEdge(px-1,py))		// -, shape
 				var supportCondition10 = (canSupportWithEdge(px,py+1) && canSupportWithEdge(px,py-1))		// | shape
 				var supports = (supportCondition1 || supportCondition2 || supportCondition3 || supportCondition4 || supportCondition5 || supportCondition6 || supportCondition7 || supportCondition8 || supportCondition9 || supportCondition10);
-
 				if(!supports) {
 					behaviors.POWDER(pixel);
 				};
-
 				elements.concrete.tick
-
 				doDefaults(pixel);
 			},
 			tempHigh: 1500,
@@ -43246,7 +39947,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hardness: 0.5,
 			breakInto: "dust",
 		};
-
 		elements.attach_powder_silk = {
 			color: ["#ebebeb", "#e6d9d1"],
 			properties: {
@@ -43279,7 +39979,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			density: 1000,
 			hidden: true
 		};
-
 		elements.glass_pane = {
 			color: ["#5e807d","#679e99"],
 			behavior: behaviors.SUPPORT,
@@ -43295,7 +39994,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			breakInto: "glass_shard",
 			hidden: true,
 		};
-
 		elements.rad_glass_pane = {
 			color: ["#648c64","#6aad83"],
 			behavior: [
@@ -43312,9 +40010,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			breakInto: "rad_glass_shard",
 			hidden: true,
 		};
-
 		elements.wood.hardness = 0.2;
-
 		elements.wood_plank = {
 			color: "#ab6c3f",
 			behavior: behaviors.SUPPORT,
@@ -43329,7 +40025,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			breakInto: "sawdust",
 			cutInto: ["wood_plank","wood_plank","wood_plank","wood_plank","wood_plank","wood_plank","sawdust"]
 		};
-
 		elements.hanging_concrete = {
 			color: "#ababab",
 			behavior: [
@@ -43346,7 +40041,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			breakInto: "dust",
 			hidden: true,
 		};
-
 		elements.support_copper = {
 			color: ["#A95232","#BE4322","#C76035"],
 			behavior: behaviors.SUPPORT,
@@ -43365,13 +40059,10 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hardness: 0.3,
 			hidden: true,
 		};
-
 		elements.paper.behavior = behaviors.SUPPORT;
-
 		elements.support_glass = JSON.parse(JSON.stringify(elements.glass));
 		elements.support_glass.stateHigh = "molten_glass";
 		elements.support_glass.behavior = behaviors.SUPPORT;
-
 		elements.support_bulb = {
 			color: "#a8a897",
 			behavior: behaviors.SUPPORTPOWDER,
@@ -43388,7 +40079,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			breakInto: "glass_shard",
 			hidden: true,
 		};
-
 		elements.hanging_bulb = {
 			color: "#a8a897",
 			behavior: [
@@ -43409,7 +40099,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			breakInto: "glass_shard",
 			hidden: true,
 		};
-
 		elements.support_plastic = {
 			color: "#c5dede",
 			behavior: behaviors.SUPPORT,
@@ -43423,11 +40112,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 			density: 1052,
 			hidden: true,
 		};
-
 		newPowder("calcium_sulfate","#d1cec7",2960,1460).reactions = {
 			water: { elem1: ["gypsum","calcium_sulfate"], elem2: null }
 		};
-
 		newPowder("gypsum",["#e6e5e3","#d9dbdb"],2320,1460).tick = function(pixel) {
 			//thermal split
 			if(pixel.temp > 100) {
@@ -43444,10 +40131,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 				}
 			}
 		};
-		
 		elements.paper.reactions ??= {};
 		elements.paper.reactions.gypsum = { elem1: ["paper","paper","paper","paper","paper","paper",null], elem2: "drywall" };
-		
 		elements.molten_gypsum = {
 			tick: function(pixel) {
 				//thermal split
@@ -43464,7 +40149,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				}
 			}
 		};
-		
 		elements.drywall = {
 			color: "#dedcd9",
 			behavior: behaviors.SUPPORT,
@@ -43495,9 +40179,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			state: "solid",
 			density: 609
 		};
-
 		elements.steel.movable = false;
-
 		elements.support_steel = {
 			color: elements.steel.color,
 			behavior: behaviors.SUPPORT,
@@ -43508,7 +40190,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			conduct: elements.steel.conduct,
 			hardness: elements.steel.hardness,
 		};
-
 		elements.support_aluminum = {
 			color: elements.aluminum.color,
 			behavior: behaviors.SUPPORT,
@@ -43519,7 +40200,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			conduct: elements.aluminum.conduct,
 			hardness: elements.aluminum.hardness,
 		};
-		
 		elements.support_copper = {
 			color: elements.copper.color,
 			behavior: behaviors.SUPPORT,
@@ -43530,7 +40210,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			conduct: elements.copper.conduct,
 			hardness: elements.copper.hardness,
 		};
-		
 		runAfterAutogen(function() {
 			for(var name in elements) {
 				var rxns = elements[name].reactions;
@@ -43549,25 +40228,20 @@ Make sure to save your command in a file if you want to add this preset again.`
 			elements.support_aluminum.reactions = elements.aluminum.reactions;
 			elements.support_copper.reactions = elements.copper.reactions;
 		});
-
 		var newAcidIgnores = ["glass_pane", "rad_glass_pane", "rad_glass_shard", "hanging_plastic"];
 		for(i = 0; i < newAcidIgnores.length; i++) {
 			elements.acid.ignore.push(newAcidIgnores[i]);
 			elements.acid_gas.ignore.push(newAcidIgnores[i]);
 		};
-
 		elements.rad_glass.breakInto = "rad_glass_shard";
-
 		if(!elements.glass_shard.reactions) {
 			elements.glass_shard.reactions = {};
 		};
 		elements.glass_shard.reactions.radiation = { "elem1":"rad_glass_shard", "chance":0.33 };
-
 		if(!elements.molten_glass.reactions) {
 			elements.molten_glass.reactions = {};
 		};
 		elements.molten_glass.reactions.radiation = { "elem1":"molten_rad_glass", "chance":0.33 };
-
 		elements.rad_glass_shard = {
 			color: ["#648c64","#6aad83","#6a9171"],
 			behavior: [
@@ -43581,7 +40255,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			state: "solid",
 			density: 2500,
 		};
-
 		elements.molten_rad_glass = {
 			behavior: [
 				"XX|CR:radiation%0.15 AND CR:fire%2.5|XX",
@@ -43589,7 +40262,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				"M1|M1 AND CR:radiation%0.15|M1",
 			],
 		};
-
 		elements.attach_concrete = {
 			color: "#ababab",
 			properties: {
@@ -43624,7 +40296,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hardness: 0.5,
 			breakInto: "dust",
 		};
-
 		elements.steel_plate_ledge = {
 			color: "#F2F2F2",
 			tick: function(pixel) {
@@ -43656,7 +40327,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hardness: 0.7,
 			breakInto: "metal_scrap",
 		};
-
 		//Seeds
 		elements.building_1_seed = {
 			tick: function(pixel) {
@@ -43716,7 +40386,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "structures",
 			color: ["#adadad", "#70b8ba", "#adadad", "#70b8ba", "#adadad"],
 		};
-
 		elements.building_2_seed = {
 			tick: function(pixel) {
 				for(cx = -4; cx <= 4; cx++) {
@@ -43757,7 +40426,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "structures",
 			color: ["#f05d43", "#f05d43", "#b06f33"],
 		};
-
 		elements.room_seed = {
 			color: "#ffffff",
 			tick: function(pixel) {
@@ -43775,7 +40443,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hardness: 1,
 			category: "structures",
 		};
-
 		elements.altered_room_seed = {
 			color: "#ffffff",
 			tick: function(pixel) {
@@ -43793,7 +40460,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hardness: 1,
 			category: "structures",
 		};
-
 		elements.altroom_compat = {
 			name: "Altered Room (Old)",
 			hidden: true,
@@ -43812,7 +40478,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					  ["brass",  "wood",   "air",	"air",	"iron",   "straw",  "straw",  "straw",  "straw",  "straw",  "straw",  "straw",  "iron",   "light",  "air",	"air",	"air",	"wood",   "brass"],
 					  ["brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick"],
 					  ["brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick", "battery", "brick",  "brick",  "brick",  "brick",  "brick"]]
-
 				aa = (0 - (Math.floor(pixel.arr[0].length / 2)))
 				na = Math.abs(aa)
 				if(pixel.arr[0].length % 2 == 1) {
@@ -43820,7 +40485,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				} else if(pixel.arr[0].length % 2 == 0) {
 					bb = (Math.floor(pixel.arr[0].length / 2))
 				}
-
 				cc = (0 - (Math.floor(pixel.arr.length / 2)))
 				nc = Math.abs(cc)
 				if(pixel.arr.length % 2 == 1) {
@@ -43848,7 +40512,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			state: "solid",
 			excludeRandom: true,
 		},
-
 		elements.nested_structure_test = {
 			name: "Nested Structure Test (Old)",
 			color: "#ffffff",
@@ -43901,7 +40564,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						   [  "air",	"air",	"air",	"air",	"air",	"air",	"air",	"air",	"air",	"air",	"air",	  "air"  ],
 						   [  "air",	"air",	"air",	"air",	"air",	"air",	"air",	"air",	"air",	"air",   "brick",	"brick" ],
 						   [  "air",	"air",	"air",	"air",	"air",	"air",	"air",	"air",	"air",	"air",   "brick",	"brick" ]]
-
 				aa = (0 - (Math.floor(pixel.arr[0].length / 2)))
 				na = Math.abs(aa)
 				if(pixel.arr[0].length % 2 == 1) {
@@ -43909,7 +40571,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				} else if(pixel.arr[0].length % 2 == 0) {
 					bb = (Math.floor(pixel.arr[0].length / 2))
 				}
-
 				cc = (0 - (Math.floor(pixel.arr.length / 2)))
 				nc = Math.abs(cc)
 				if(pixel.arr.length % 2 == 1) {
@@ -43937,7 +40598,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			state: "solid",
 			excludeRandom: true,
 		};
-
 		function _toggleDesertBuildings() {
 			var layer = worldgentypes.desert.layers[0];
 			if(layer[1] !== "building_1_seed") { //if the first layer isn't a building layer, add one
@@ -43946,184 +40606,103 @@ Make sure to save your command in a file if you want to add this preset again.`
 				worldgentypes.desert.layers.shift();
 			};
 		};
-
 	//OLD WORLDGEN TEST ##
-
 		elements.worldgen_test = {
 			color: ["#787674", "#787674", "#787674", "#8c5923", "#8c5923", "#54c942", "#f7f0b0", "#5280eb"],
 			tick: function(pixel) {
 				for (var i = 1; i < width; i++) {
-
 					for (var j = 1; j < height; j++) {
-
 						if (isEmpty(i,j)) {
-
 							if(j >= Math.floor(6*height/7) && j < Math.floor(7*height/7)) {
-
 								if(Math.random() < 0.95) {
-
 									createPixel("rock",i,j)
-
-
 								}
-
 							}
-
 							if(j >= Math.floor(5*height/7) && j < Math.floor(6*height/7)) {
-
 								if(Math.random() < 0.95) {
-
 									if(Math.random() < 1/2) {
-
 										if(i >= Math.floor(11*width/14) && i < Math.floor(14*width/14)) {
-
 											createPixel("sand",i,j)
-
 										} else {
-
 											createPixel("dirt",i,j)
-
 										}
-
 									} else {
-
 										createPixel("rock",i,j)
-
 									}
-
 								}
-
 							}
-
 							if(j >= Math.floor(4*height/7) && j < Math.floor(5*height/7)) {
-
 								if(Math.random() < 0.95) {
-
 									if(i >= Math.floor(11*width/14) && i < Math.floor(14*width/14)) {
-
 										createPixel("sand",i,j)
-
 									} else {
-
 										createPixel("dirt",i,j)
-
 									}
-
 								}
-
 							}
-
 							if(j >= Math.floor(15*height/28) && j < Math.floor(4*height/7)) {
-
 								if(Math.random() < 0.95) {
-
 									if(i < Math.floor(11*width/14)) {
-
 										createPixel("grass",i,j)
-
 									}
-
 								}
-
 							}
-
 						}
-
 					}
-
 				}
-
 				explodeAt(Math.floor(51*width/56),Math.floor(9*height/14),Math.floor(1.8*height/7),fire="water")
-
 				deletePixel(pixel.x,pixel.y)
-
 			},
 			category: "machines",
 			insulate: true,
 			state: "solid",
 			excludeRandom: true,
 		}
-
 		elements.nether_gen_test = {
 			color: ["#751318","#694a20","#f0771a"],
 			tick: function(pixel) {
 				for (var i = 1; i < width; i++) {
-
 					for (var j = 1; j < height; j++) {
-
 						if (isEmpty(i,j)) {
-
 							if(j >= Math.floor(5*height/7) && j < Math.floor(7*height/7)) {
-
 								if(Math.random() < 0.95) {
-
 									if(Math.random() < 2/3) {
-
 										if(i >= Math.floor(11*width/14) && i < Math.floor(14*width/14)) {
-
 											createPixel("soul_sand",i,j)
-
 										} else {
-
 											createPixel("netherrack",i,j)
-
 										}
-
 									} else {
-
 										createPixel("gravel",i,j)
-
 									}
-
 								}
-
 							}
-
 							if(j >= Math.floor(4*height/7) && j < Math.floor(5*height/7)) {
-
 								if(Math.random() < 0.95) {
-
 									if(i >= Math.floor(11*width/14) && i < Math.floor(14*width/14)) {
-
 										createPixel("soul_sand",i,j)
-
 									} else {
-
 										createPixel("netherrack",i,j)
-
 									}
-
 								}
-
 							}
-
 						}
-
 					}
-
 				}
-
 				explodeAt(Math.floor(51*width/56),Math.floor(10*height/14),Math.floor(1.8*height/7),fire="magma")
-
 				if(!isEmpty(Math.floor(51*width/56),Math.floor(10*height/14))) {
 					pixelMap[Math.floor(51*width/56)][Math.floor(10*height/14)].temp += 10**(3*(Math.floor(Math.log10(Math.sqrt((height**2)+(width**2))))))
 				}
-
 				deletePixel(pixel.x,pixel.y)
-
 			},
 			category: "machines",
 			insulate: true,
 			state: "solid",
 			excludeRandom: true,
 		}
-
 	//NOTE BLOCKS ##
-
 		audioContext = new AudioContext()
-
 		//Derived from marcgg's music.js
-
 		oscillatorDefaults = {
 			frequency: 440,
 			type: "sine",
@@ -44132,22 +40711,17 @@ Make sure to save your command in a file if you want to add this preset again.`
 			volume: 1,
 			delay: 0,
 		};
-
 		audioObject = {};
-
 		function oscillator(name="test",parameterObject=oscillatorDefaults){ //creates oscillator with gain node, has specifiable frequency and type, fades out over 1 second (hard-coded)
 			var defaultKeys = Object.keys(oscillatorDefaults); //readability variable
-
 			for(i = 0; i < defaultKeys.length; i++) {
 				var key = defaultKeys[i]; //the indexed keyname
 				if(typeof(parameterObject[key]) === "undefined") {
 					parameterObject[key] = oscillatorDefaults[key];
 				};
 			};
-
 			var oscillatorNodeName = `${name}Oscillator`;
 			var gainNodeName = `${name}Gain`;
-
 			audioObject[oscillatorNodeName] = audioContext.createOscillator()
 			audioObject[gainNodeName] = audioContext.createGain()
 			audioObject[gainNodeName].gain.value = parameterObject.volume;
@@ -44156,7 +40730,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			audioObject[oscillatorNodeName].frequency.value = parameterObject.frequency
 			audioObject[gainNodeName].connect(audioContext.destination)
 			audioObject[oscillatorNodeName].start(audioContext.currentTime + parameterObject.delay)
-
 			//stopping handler
 			if(parameterObject.endType === "exponential") { //starts fading immediately
 				audioObject[gainNodeName].gain.exponentialRampToValueAtTime(
@@ -44165,12 +40738,11 @@ Make sure to save your command in a file if you want to add this preset again.`
 			} else if(parameterObject.endType === "linear") { //starts fading immediately
 				audioObject[gainNodeName].gain.linearRampToValueAtTime(
 					0.00001, audioContext.currentTime + parameterObject.length
-				);	
+				);
 			} else { //waits to stop
 				audioObject[oscillatorNodeName].stop(audioContext.currentTime + parameterObject.delay + parameterObject.length);
 			};
 		};
-
 		elements.note_block = {
 			color: "#ee33ee",
 			behavior: behaviors.WALL,
@@ -44192,7 +40764,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			},
 			tick: function(pixel) {
 				var pixelSoundName = `x${pixel.x}y${pixel.y}`; //Generate unique-enough name
-
 				var pixelPropertyObject = { //Load sound properties from pixel as object;
 					frequency: pixel.frequency,
 					type: pixel.type,
@@ -44201,9 +40772,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					volume: pixel.volume,
 					delay: pixel.delay,
 				};
-
 				//console.log(pixelPropertyObject);
-
 				if(pixel.debounce < 1) {
 					//console.log(`${pixel.debounce} not debounced, play`);
 					if(pixel.charge) {
@@ -44217,21 +40786,16 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		};
-
 		runAfterLoad(function() {
 			elements.note_block.movable = false;
 		});
-
 		if(runAfterAutogen) {
 			runAfterAutogen(function() {
 				elements.note_block.movable = false;
 			});
 		};
-
 	//STATE-SPECIFIC VOIDS ##
-
 		//Deletion code mostly by R74n
-
 		elements.drain = {
 			color: "#888888",
 			behavior: behaviors.WALL,
@@ -44261,9 +40825,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			desc: "A drain that removes any liquid.",
 			hardness: 0.8,
 			insulate: true,
-
 		};
-
 		elements.vent = {
 			color: "#e6e6e6",
 			behavior: behaviors.WALL,
@@ -44294,7 +40856,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hardness: 0.8,
 			insulate: true,
 		}; elements.wall.movable = false; chuteExcludedElements = ["wall","drain","vent","chute","hole_of_miscellanea","drent","drute","vute","drolent","drolute","volute","void"]; elements.acid.ignore.push("drain"); elements.acid_gas.ignore.push("vent");
-
 		elements.chute = {
 			color: "#636363",
 			behavior: behaviors.WALL,
@@ -44325,9 +40886,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			movable: false,
 			hardness: 0.8,
 			insulate: true,
-
 		}; mainStateArray = ["solid","liquid","gas"];
-
 		elements.hole_of_miscellanea = {
 			color: "#69606b",
 			behavior: behaviors.WALL,
@@ -44358,7 +40917,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			movable: false,
 			insulate: true,
 		};
-
 		elements.drent = {
 			color: "#B7B7B7",
 			behavior: behaviors.WALL,
@@ -44388,9 +40946,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			desc: "A combined drain and vent that removes any liquid or gas. <span style=\"color: #ffcccc;\">Slightly sussy.<span>",
 			hardness: 0.8,
 			insulate: true,
-
 		};
-
 		elements.drute = {
 			color: "#767676",
 			behavior: behaviors.WALL,
@@ -44422,9 +40978,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			desc: "A combined drain and chute that removes any liquid or powder.",
 			hardness: 0.8,
 			insulate: true,
-
 		};
-
 		elements.vute = {
 			color: "#9d8aa1",
 			behavior: behaviors.WALL,
@@ -44457,7 +41011,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			hardness: 0.8,
 			insulate: true,
 		};
-
 		elements.drolent = {
 			color: "#b8afba",
 			behavior: behaviors.WALL,
@@ -44487,9 +41040,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			desc: "A combined drain, hole, and vent removes anything but powders. <span style=\"color: #ffd7d7;\">Slightly sussy.<span>",
 			hardness: 0.8,
 			insulate: true,
-
 		};
-
 		elements.drolute = {
 			color: "#786c7a",
 			behavior: behaviors.WALL,
@@ -44523,9 +41074,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			desc: "A combined drain, hole, and chute removes anything but gases.",
 			hardness: 0.8,
 			insulate: true,
-
 		};
-
 		elements.volute = {
 			color: "#b8afba",
 			behavior: behaviors.WALL,
@@ -44559,23 +41108,17 @@ Make sure to save your command in a file if you want to add this preset again.`
 			desc: "A combined vent, hole, and chute removes anything but liquids.",
 			hardness: 0.8,
 			insulate: true,
-
 		};
-
 		//The all-combination is called void.
-
 		elements.drain.breakInto = ["steel_scrap"];
 		elements.vent.breakInto = ["steel_scrap"];
 		elements.chute.breakInto = ["steel_scrap"];
 		elements.hole_of_miscellanea.breakInto = ["steel_scrap"];
-
 		elements.drain.breakInto.push("magic");
 		elements.vent.breakInto.push("magic");
 		elements.chute.breakInto.push("magic");
 		elements.hole_of_miscellanea.breakInto.push("magic");
-
 	//THERMAL CONDUITS ##
-
 		//Base element, uninitialized IO
 		elements.thermal_conduit = {
 			hidden: true,
@@ -44629,11 +41172,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 						pixelTempCheck(newPixel);
 					};
 				};
-
 				if(pixelTempKelvin <= 0 || pixel.outputs.length == 0) {
 					return false;
 				};
-
 				//Iterate through outputs
 				var availableOutputs = [];
 				//Adjust effective output count;
@@ -44645,7 +41186,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						availableOutputs.push([newX,newY]);
 					};
 				};
-
 				var pixelTempKelvin = pixel.temp - (settings.abszero ?? -273.15);
 				var isDraining = (pixelTempKelvin <= pixel.rate);
 				var effectiveRate = (isDraining ? pixelTempKelvin : pixel.rate) / availableOutputs.length;
@@ -44658,7 +41198,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				if(availableOutputs.length > 0) { isDraining ? pixel.temp = (settings.abszero ?? -273.15) : pixel.temp -= pixel.rate };
 			},
 		};
-
 		function defineConduitElement(nameDescriber,inputOffsetNestedArray,outputOffsetNestedArray) {
 			//There is no validation here. Please don't do anything stupid.
 			//Pretty please don't run after script loading, i don't feel like adding that code in.
@@ -44684,65 +41223,52 @@ Make sure to save your command in a file if you want to add this preset again.`
 			};
 			return autoName;
 		}
-
 		autoConduitTable = {
 			//up_to_up: useless,
 			up_to_down: {ins: [[0,-1]], outs: [[0,1]]},
 			up_to_left: {ins: [[0,-1]], outs: [[-1,0]]},
 			up_to_right: {ins: [[0,-1]], outs: [[1,0]]},
-
 			down_to_up: {ins: [[0,1]], outs: [[0,-1]]},
 			//down_to_down: useless,
 			down_to_left: {ins: [[0,1]], outs: [[-1,0]]},
 			down_to_right: {ins: [[0,1]], outs: [[1,0]]},
-
 			left_to_up: {ins: [[-1,0]], outs: [[0,-1]]},
 			left_to_down: {ins: [[-1,0]], outs: [[0,1]]},
 			//left_to_left: useless,
 			left_to_right: {ins: [[-1,0]], outs: [[1,0]]},
-
 			right_to_up: {ins: [[1,0]], outs: [[0,-1]]},
 			right_to_down: {ins: [[1,0]], outs: [[0,1]]},
 			right_to_left: {ins: [[1,0]], outs: [[-1,0]]},
 			//right_to_right: useless,
-
 			left_and_right_to_down: {ins: [[-1,0],[1,0]], outs: [[0,1]]},
 			up_and_down_to_left: {ins: [[0,-1],[0,1]], outs: [[-1,0]]},
 			left_and_right_to_up: {ins: [[-1,0],[1,0]], outs: [[0,-1]]},
 			up_and_down_to_right: {ins: [[0,-1],[0,1]], outs: [[1,0]]},
-
 			down_to_left_and_right: {outs: [[-1,0],[1,0]], ins: [[0,1]]},
 			left_to_up_and_down: {outs: [[0,-1],[0,1]], ins: [[-1,0]]},
 			up_to_left_and_right: {outs: [[-1,0],[1,0]], ins: [[0,-1]]},
 			right_to_up_and_down: {outs: [[0,-1],[0,1]], ins: [[1,0]]},
-
 			up_down_and_left_to_right: {ins: [[0,-1],[0,1],[-1,0]], outs: [[1,0]]},
 			up_left_and_right_to_down: {ins: [[0,-1],[-1,0],[1,0]], outs: [[0,1]]},
 			up_down_and_right_to_left: {ins: [[0,-1],[0,1],[1,0]], outs: [[-1,0]]},
 			down_left_and_right_to_up: {ins: [[0,1],[-1,0],[1,0]], outs: [[0,-1]]},
-
 			right_to_up_down_and_left: {outs: [[0,-1],[0,1],[-1,0]], ins: [[1,0]]},
 			down_to_up_left_and_right: {outs: [[0,-1],[-1,0],[1,0]], ins: [[0,1]]},
 			left_to_up_down_and_right: {outs: [[0,-1],[0,1],[1,0]], ins: [[-1,0]]},
 			up_to_down_left_and_right: {outs: [[0,1],[-1,0],[1,0]], ins: [[0,-1]]},
-
 			left_and_down_to_right: {ins: [[-1,0],[0,1]], outs: [[1,0]]},
 			right_and_down_to_left: {ins: [[1,0],[0,1]], outs: [[-1,0]]},
 			left_and_up_to_right: {ins: [[-1,0],[0,-1]], outs: [[1,0]]},
 			right_and_up_to_left: {ins: [[1,0],[0,-1]], outs: [[-1,0]]},
-
 			right_to_down_and_left: {ins: [[1,0]], outs: [[-1,0],[0,1]]},
 			right_to_up_and_left: {ins: [[1,0]], outs: [[-1,0],[0,-1]]},
 			left_to_down_and_right: {ins: [[-1,0]], outs: [[1,0],[0,1]]},
 			left_to_up_and_right: {ins: [[1,0]], outs: [[1,0],[0,-1]]},
 		};
-
 		for(direction in autoConduitTable) {
 			defineConduitElement(direction,autoConduitTable[direction].ins,autoConduitTable[direction].outs);
 		};
-
 	//WIRELESS TRANSMISSION ##
-
 		//https://stackoverflow.com/a/60922255
 		elements.wifi = {
 			color: "#bfff7f",
@@ -44756,7 +41282,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			insulate: true,
 			tick: function(pixel) {
 				pixel._channel = Math.floor(pixel.temp / 100);
-
 				var colorBase = (pixel._channel + 3);
 				if(colorBase < 0 || colorBase > 124) {
 					pixel.color == "rgb(212,185,222)";
@@ -44764,7 +41289,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					colorBase = colorBase.toString(5).padStart(3,"0").split("").map(x => parseInt(x) * 64);
 					pixel.color = `rgb(${colorBase.join(",")})`
 				};
-
 				pixel._correspondingWifi = currentPixels.filter(function(pixelToCheck) {
 					return (
 						pixelToCheck !== pixel && //should work if this pixel is the same as the other one by reference
@@ -44772,7 +41296,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						pixelToCheck._channel == pixelChannel
 					);
 				},pixelChannel=pixel._channel).map(pixel => [pixel.x,pixel.y]);
-
 				if(pixel.charge) {
 					for(var i in pixel._correspondingWifi) {
 						i = parseInt(i);
@@ -44793,7 +41316,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						pixel.chargeCD = 5
 					}
 				}
-
 				if(typeof(pixel.chargeCD) !== "undefined") {
 					pixel.chargeCD--;
 					if(pixel.chargeCD <= 0) { delete pixel.chargeCD };
@@ -44802,7 +41324,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "machines",
 			state: "solid",
 		};
-
 		elements.transmitter = {
 			color: "#00ff7f",
 			properties: {
@@ -44815,7 +41336,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			insulate: true,
 			tick: function(pixel) {
 				pixel._channel = Math.floor(pixel.temp / 100);
-
 				var colorBase = (pixel._channel + 3);
 				if(colorBase < 0 || colorBase > 124) {
 					pixel.color == "rgb(212,185,222)";
@@ -44823,7 +41343,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					colorBase = colorBase.toString(5).padStart(3,"0").split("").map(x => parseInt(x) * 64);
 					pixel.color = `rgb(${colorBase.join(",")})`
 				};
-
 				pixel._correspondingWifi = currentPixels.filter(function(pixelToCheck) {
 					return (
 						pixelToCheck !== pixel && //should work if this pixel is the same as the other one by reference
@@ -44831,7 +41350,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						pixelToCheck._channel == pixelChannel
 					);
 				},pixelChannel=pixel._channel).map(pixel => [pixel.x,pixel.y]);
-
 				if(pixel.charge) {
 					for(var i in pixel._correspondingWifi) {
 						i = parseInt(i);
@@ -44852,7 +41370,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						pixel.chargeCD = 5
 					}
 				}
-
 				if(typeof(pixel.chargeCD) !== "undefined") {
 					pixel.chargeCD--;
 					if(pixel.chargeCD <= 0) { delete pixel.chargeCD };
@@ -44861,7 +41378,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "machines",
 			state: "solid",
 		}
-
 		elements.receiver = {
 			color: "#bfff00",
 			properties: {
@@ -44873,7 +41389,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			insulate: true,
 			tick: function(pixel) {
 				pixel._channel = Math.floor(pixel.temp / 100);
-
 				var colorBase = (pixel._channel + 3);
 				if(colorBase < 0 || colorBase > 124) {
 					pixel.color = "rgb(212,185,222)";
@@ -44881,7 +41396,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					colorBase = colorBase.toString(5).padStart(3,"0").split("").map(x => parseInt(x) * 64);
 					pixel.color = `rgb(${colorBase.join(",")})`
 				};
-
 				if(typeof(pixel.chargeCD) !== "undefined") {
 					pixel.chargeCD = Math.min(pixel.chargeCD,5);
 					pixel.chargeCD--;
@@ -44895,7 +41409,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "machines",
 			state: "solid",
 		};
-
 		elements.support_receiver = {
 			color: "#bfff00",
 			behavior: behaviors.SUPPORT,
@@ -44908,7 +41421,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			insulate: true,
 			tick: function(pixel) {
 				pixel._channel = Math.floor(pixel.temp / 100);
-
 				var colorBase = (pixel._channel + 3);
 				if(colorBase < 0 || colorBase > 124) {
 					pixel.color = "rgb(212,185,222)";
@@ -44916,7 +41428,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					colorBase = colorBase.toString(5).padStart(3,"0").split("").map(x => parseInt(x) * 64);
 					pixel.color = `rgb(${colorBase.join(",")})`
 				};
-
 				if(typeof(pixel.chargeCD) !== "undefined") {
 					pixel.chargeCD = Math.min(pixel.chargeCD,5);
 					pixel.chargeCD--;
@@ -44930,9 +41441,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "machines",
 			state: "solid",
 		};
-		
 	// SPINEL'S INJECTOR ##
-
 		var injectorPoisonCategories = ["life","auto creepers","shit","cum","food","fantastic creatures","fey","auto_fey"];
 		var injectorPoisonBlacklist = ["injector_poison","dead_matter","poisoned_dirt"];
 		var injectorPoisonWhitelist = ["blood","skin","hair","poop","blood_ice","wood","wood_plank","sawdust","straw","paper","birthpool","dried_poop","gloomfly","meat_monster","rotten_ravager","bone_beast","withery","withery_plant","banana","apple","rotten_apple","apioform_player","apioform_bee","apioform","apiodiagoform","sugar_cactus","sugar_cactus_seed","flowering_sugar_cactus","tree_branch","sap","silk","red_velvet","silk_velvet","ketchup", "enchanted_ketchup", "frozen_ketchup", "poisoned_ketchup", "frozen_poisoned_ketchup", "ketchup_spout", "ketchup_cloud", "poisoned_ketchup_cloud", "ketchup_snow", "ketchup_snow_cloud", "poisoned_ketchup_snow", "poisoned_ketchup_snow_cloud", "ketchup_gas", "poisoned_ketchup_gas", "ketchup_powder", "poisoned_ketchup_powder", "eketchup_spout", "ketchup_metal", "antiketchup", "dirty_ketchup", "ketchup_gold", "molten_ketchup_metal", "ketchup_fairy", "ketchup_metal_scrap", "ketchup_gold_scrap", "molten_ketchup_gold", "mycelium","vaccine","antibody","infection","sap","caramel","molasses","melted_chocolate","soda","mustard","fry_sauce","tomato_sauce","sugary_tomato_sauce","bio_ooze","zombie_blood","feather","tooth","decayed_tooth","plaque","tartar","bacteria","replacer_bacteria","pop_rocks"];
@@ -44947,7 +41456,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			"sandy_water": "injector_poison",
 			"water": "injector_poison",
 		};
-
 		var blue = "rgb(0,0,255)";
 		var cyan = "rgb(0,255,255)";
 		var green = "rgb(0,255,0)";
@@ -44955,7 +41463,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 		var orange = "rgb(255,127,0)";
 		var red = "rgb(255,0,0)";
 		var gray = "rgb(127,127,127)";
-
 		function debugPoisonColor(pixel) {
 			pixel.poison ??= 0;
 			if(pixel.poison > 5) {
@@ -44974,7 +41481,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				pixel.color = gray;
 			};
 		};
-
 		function spreadInjectorPoison(pixel) {
 			var convertedPixels = [];
 			for(i = 0; i < adjacentCoords.length; i++) { //iterate through neighbor spots
@@ -44983,7 +41489,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					var isInjectorPoisonFairy = (elements[newPixel.element].category == "auto_fey" && newPixel.element.includes("life_eater_"))
 					//console.log(newPixel.element,isInjectorPoisonFairy);
 					if(
-						(injectorPoisonCategories.includes(elements[newPixel.element].category) || injectorPoisonWhitelist.includes(newPixel.element) || Object.keys(injectorPoisonSubstitutions).includes(newPixel.element)) && 
+						(injectorPoisonCategories.includes(elements[newPixel.element].category) || injectorPoisonWhitelist.includes(newPixel.element) || Object.keys(injectorPoisonSubstitutions).includes(newPixel.element)) &&
 						!injectorPoisonBlacklist.includes(newPixel.element) &&
 						!isInjectorPoisonFairy //exclude fairies which produce life eater
 					) {
@@ -45010,7 +41516,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			};
 			return convertedPixels.length == 0 ? false : convertedPixels;
 		};
-
 		elements.injector_poison = {
 			properties: {
 				didWeakColorChange: 0,
@@ -45032,7 +41537,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						convertedPixels[i].poison ??= Math.max(convertedPixels[i].element == "injector_poison" ? 0.9 : 0,pixel.poison - 1);
 					};
 					pixel.poison--;
-
 					if(pixel.poison <= -1) {
 						deletePixel(pixel.x,pixel.y);
 						return;
@@ -45050,7 +41554,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					pixel.color = changeSaturation(changeLuminance(pixel.color,0.7 ** (1/3),"multiply","hsljson"),0.7 ** (1/3),"multiply","rgb");
 					pixel.didWeakColorChange = 3;
 				};
-
 				if(pixel.poison >= 0.1 && pixel.didWeakColorChange == 3) {
 					pixel.color = changeSaturation(changeLuminance(pixel.color,1/(0.7 ** (1/3)),"multiply","hsljson"),1/(0.7 ** (1/3)),"multiply","rgb");
 					pixel.didWeakColorChange = 2;
@@ -45063,19 +41566,16 @@ Make sure to save your command in a file if you want to add this preset again.`
 					pixel.color = changeSaturation(changeLuminance(pixel.color,1/(0.7 ** (1/3)),"multiply","hsljson"),1/(0.7 ** (1/3)),"multiply","rgb");
 					pixel.didWeakColorChange = 0;
 				};
-
 				if(pixel.poison <= 0 && Math.random() < 0.1) {
 					deletePixel(pixel.x,pixel.y);
 					return;
 				};
-
 				if(isNaN(pixel.poison)) {
 					pixel.poison = 15;
 				};
 				for(z = 0; z < 3; z++) {
 					spreadingPropertyReturn(pixel,"poison",injectorPoisonBlacklist).forEach(x => spreadingPropertyReturn(x,"poison",injectorPoisonBlacklist));
 				};
-
 				//debugPoisonColor(pixel);
 			},
 			category: "weapons",
@@ -45086,7 +41586,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			stateHigh: null,*/
 			forceAutoGen: true
 		};
-
 		elements.dead_matter = {
 			color: ["#6b5869", "#99508c", "#b53c8b"],
 			behavior: behaviors.POWDER,
@@ -45107,15 +41606,12 @@ Make sure to save your command in a file if you want to add this preset again.`
 						pixel.poison--;
 					};
 				};
-
 				for(z = 0; z < 3; z++) {
 					spreadingPropertyReturn(pixel,"poison",injectorPoisonBlacklist).forEach(x => spreadingPropertyReturn(x,"poison",injectorPoisonBlacklist));
 				};
-
 				if(pixel.poison < 0) {
 					pixel.poison = 0
 				};
-
 				if(pixel.temp > 350 || (pixel.poison <= 1 && Math.random() < 0.04)) {
 					if(Math.random() < pixel.poison) {
 						changePixelReturn(pixel,"injector_poison").poison = pixel.poison * 0.85;
@@ -45125,7 +41621,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						return;
 					};
 				};
-
 				//debugPoisonColor(pixel);
 			},
 			category: "life",
@@ -45133,7 +41628,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			density: 1050,
 			excludeRandom: true,
 		};
-
 		elements.poisoned_dirt = {
 			behavior: behaviors.POWDER,
 			color: ["#665e66","#735370","#805265"],
@@ -45154,15 +41648,12 @@ Make sure to save your command in a file if you want to add this preset again.`
 						pixel.poison--;
 					};
 				};
-
 				for(z = 0; z < 3; z++) {
 					spreadingPropertyReturn(pixel,"poison",injectorPoisonBlacklist).forEach(x => spreadingPropertyReturn(x,"poison",injectorPoisonBlacklist));
 				};
-
 				if(pixel.poison < 0) {
 					pixel.poison = 0
 				};
-
 				//debugPoisonColor(pixel);
 			},
 			category: "life",
@@ -45170,8 +41661,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			density: 1220,
 			excludeRandom: true,
 		};
-
-
 		//Injector data and decoding
 		var injectorCrystalPinks = {
 			"0": "rgb(239,109,189)",
@@ -45189,27 +41678,21 @@ Make sure to save your command in a file if you want to add this preset again.`
 			"@": "rgb(136,12,60)",
 			"#": "rgb(221,26,132)"
 		}
-
 		var poisonPink = "rgb(253,54,196)";
-
 		var injectorMetalColors = {
 			"A": "rgb(82,95,136)",
 			"B": "rgb(35,57,94)",
 			"C": "rgb(60,79,120)",
-			"D": "rgb(74,100,148)", 
+			"D": "rgb(74,100,148)",
 			"E": "rgb(44,64,101)",
 			"F": "rgb(242,45,166)" //pink lines
 		};
-
 		var vanishingMetalColors = {
 			"X": "rgb(60,79,120)",
 			"Y": "rgb(242,45,166)" //pink lines
 		};
-
 		var glassColor = "rgb(168,206,217)"; //G
-
 		var red = "rgb(255,0,0)"; //for unknown item
-
 		injectorData = [
 			" : : : : : : : : : : : : : : : : : : : : : : : : ",
 			" : : : : : : :0:1:2:2:2:2:2:2:2:2:3: : : : : : : ",
@@ -45255,7 +41738,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			" : :C:C: : : : : : : : :X: : : : : : : : :C:C: : ",
 			" : : :C: : : : : : : : : : : : : : : : : :C: : : "
 		];
-
 		injectorColorData = [
 			" : : : : : : : : : : : : : : : : : : : : : : : : ",
 			" : : : : : : : : : : : : : : : : : : : : : : : : ",
@@ -45301,10 +41783,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 			" : : : : : : : : : : : : : : : : : : : : : : : : ",
 			" : : : : : : : : : : : : : : : : : : : : : : : : "
 		];
-
 		injectorData = injectorData.map(x => x.split(":"));
 		injectorColorData = injectorColorData.map(x => x.split(":"));
-
 		function injectorDataDecoder(character) {
 			var element, color;
 			if(injectorCrystalPinks[character]) {
@@ -45337,7 +41817,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			};
 			return [element,color];
 		};
-
 		for(x = 0; x < injectorData.length; x++) {
 			for(y = 0; y < injectorData[x].length; y++) {
 				var decodedData = injectorDataDecoder(injectorData[x][y]);
@@ -45345,7 +41824,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				injectorColorData[x][y] = decodedData[1];
 			};
 		};
-
 		function spawnInjectorAt(x,y) {
 			//var tries = 0;
 			for(q = 0; q < injectorData.length; q++) {
@@ -45355,9 +41833,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 					//break;
 				//};
 				loadPixelRowFromArrayWithColorRowArray(injectorData[q],injectorColorData[q],x,y+q,true,true)
-			};	
+			};
 		};
-
 		elements.injector_seed = {
 			tick: function(pixel) {
 				if(!tryMove(pixel,pixel.x,pixel.y+1)) {
@@ -45372,16 +41849,13 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "structures",
 			color: ["#586075", "#ff2b84"],
 		};
-
 	//CSS CHANGES ##
-
 		var style2 = document.createElement('style');
 		style2.type = 'text/css';
 		style2.id = 'categoryStylesheet';
 		//there are so many categories now that scrolling is cumbersome
 		style2.innerHTML = '#categoryControls, #category-tools { white-space: normal !important; }'
 		document.getElementsByTagName('head')[0].appendChild(style2);
-
 		runAfterButtons(function() {
 			//try to make the category buttons look smaller
 			var cc = document.getElementById("categoryControls");
@@ -45430,9 +41904,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				button.style.height = oldHeight;
 			}
 		});
-
 	//DEBUG: PLACE ALL ELEMENTS ##
-
 		function placeAll(limit=null,clear=true) {
 			if(clear) { bareClear() };
 			var elementArray = Object.keys(elements);
@@ -45464,9 +41936,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			};
 			paused = true;
 		};
-
 	//BUFFED EVENTS ##
-
 		if(urlParams.get("insaneRandomEvents") !== null) {
 			if(typeof(width) === "undefined") {
 				width = 20;
@@ -45474,20 +41944,17 @@ Make sure to save your command in a file if you want to add this preset again.`
 			if(typeof(height) === "undefined") {
 				height = 10;
 			}
-
 			runAfterAutogen(function() {
 				//Regenerate randomChoices
 				var randomChoices = Object.keys(elements).filter(function(e) {
 					return elements[e].excludeRandom != true && elements[e].category != "tools" && !elements[e].tool;
 				});
-
 				//Set all event choices to randomChoices
 				randomEventChoices = {
 					"falling_pixel": randomChoices.filter( function(elem) { return commonMovableCriteria(elem) } ),
 					"element_circle": randomChoices,
 					"explosion": randomChoices,
 				}
-
 				//Buff event functions
 				randomEvents.old_falling_pixel = randomEvents.falling_pixel;
 					//transform falling_pixel into a rain of pixels
@@ -45540,7 +42007,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						}
 					}
 				};
-
 				randomEvents.paint = function() {
 					// set the color of a random circle to a random color
 					var x = Math.floor(Math.random()*(width-1))+1;
@@ -45558,7 +42024,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						};
 					};
 				};
-
 					//Buff mob events
 				if(typeof(maximumCreeperTries) !== "undefined") {
 					minimumCreeperTries = 10;
@@ -45572,7 +42037,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 					minimumSkeletonTries = 10;
 					maximumSkeletonTries = 30;
 				};
-
 				//New event option
 				var eventOptions = document.querySelectorAll('span[setting="events"]')[0].children[0];
 				var newEventOption = document.createElement("option");
@@ -45581,9 +42045,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				eventOptions.appendChild(newEventOption);
 			});
 		};
-
 	//EXPERIMENTAL STRICTLY DIRECTIONAL WIRE ##
-
 		//The CMYK is symbolic
 		elements.start_test = {
 			color: "#dddddd",
@@ -45599,7 +42061,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 						var pY = pixel.y;
 						var nX = pixel.x + adjacentCoords[i][0];
 						var nY = pixel.y + adjacentCoords[i][1];
-
 						if(!isEmpty(nX,nY,true)) {
 							var newPixel = pixelMap[nX][nY];
 							var newInfo = elements[newPixel.element];
@@ -45612,7 +42073,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		};
-
 		elements.end_test = {
 			color: "#888888",
 			category: "test",
@@ -45630,14 +42090,12 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
 				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
-
 				if(pixel.value === 1) {
 					for(i = 0; i < adjacentCoords.length; i++) {
 						var pX = pixel.x;
 						var pY = pixel.y;
 						var nX = pixel.x + adjacentCoords[i][0];
 						var nY = pixel.y + adjacentCoords[i][1];
-
 						if(!isEmpty(nX,nY,true)) {
 							var newPixel = pixelMap[nX][nY];
 							var newInfo = elements[newPixel.element];
@@ -45662,7 +42120,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		};
-
 		elements.right_test = {
 			color: "#dddd22",
 			category: "test",
@@ -45680,13 +42137,11 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
 				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
-
 				var newPixelCoordOffset = [1, 0];
 				var pX = pixel.x;
 				var pY = pixel.y;
 				var nX = pixel.x+newPixelCoordOffset[0];
 				var nY = pixel.y+newPixelCoordOffset[1];
-
 				if(pixel.value === 1) {
 					if(!isEmpty(nX,nY,true)) {
 						var newPixel = pixelMap[nX][nY];
@@ -45700,7 +42155,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		};
-
 		elements.left_test = {
 			color: "#dd22dd",
 			category: "test",
@@ -45718,13 +42172,11 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
 				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
-
 				var newPixelCoordOffset = [-1, 0];
 				var pX = pixel.x;
 				var pY = pixel.y;
 				var nX = pixel.x+newPixelCoordOffset[0];
 				var nY = pixel.y+newPixelCoordOffset[1];
-
 				if(pixel.value === 1) {
 					if(!isEmpty(nX,nY,true)) {
 						var newPixel = pixelMap[nX][nY];
@@ -45738,7 +42190,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		};
-
 		elements.down_test = {
 			color: "#222222",
 			category: "test",
@@ -45756,13 +42207,11 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
 				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
-
 				var newPixelCoordOffset = [0, 1];
 				var pX = pixel.x;
 				var pY = pixel.y;
 				var nX = pixel.x+newPixelCoordOffset[0];
 				var nY = pixel.y+newPixelCoordOffset[1];
-
 				if(pixel.value === 1) {
 					if(!isEmpty(nX,nY,true)) {
 						var newPixel = pixelMap[nX][nY];
@@ -45776,7 +42225,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		};
-
 		elements.up_test = {
 			color: "#22dddd",
 			category: "test",
@@ -45794,13 +42242,11 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
 				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
-
 				var newPixelCoordOffset = [0, -1];
 				var pX = pixel.x;
 				var pY = pixel.y;
 				var nX = pixel.x+newPixelCoordOffset[0];
 				var nY = pixel.y+newPixelCoordOffset[1];
-
 				if(pixel.value === 1) {
 					if(!isEmpty(nX,nY,true)) {
 						var newPixel = pixelMap[nX][nY];
@@ -45814,7 +42260,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		};
-
 		elements.up_left_test = {
 			color: "#2222dd",
 			category: "test",
@@ -45832,9 +42277,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
 				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
-
 				var newPixelCoordOffsets = [[0, -1], [-1, 0]];
-
 				if(pixel.value === 1) {
 					for(i = 0; i < newPixelCoordOffsets.length; i++) {
 						var pX = pixel.x;
@@ -45854,7 +42297,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		};
-
 		elements.up_left_test = {
 			color: "#2222dd",
 			category: "test",
@@ -45872,9 +42314,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
 				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
-
 				var newPixelCoordOffsets = [[0, -1], [-1, 0]];
-
 				if(pixel.value === 1) {
 					for(i = 0; i < newPixelCoordOffsets.length; i++) {
 						var pX = pixel.x;
@@ -45894,7 +42334,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		};
-
 		elements.up_right_test = {
 			color: "#22dd22",
 			category: "test",
@@ -45912,9 +42351,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
 				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
-
 				var newPixelCoordOffsets = [[0, -1], [1, 0]];
-
 				if(pixel.value === 1) {
 					for(i = 0; i < newPixelCoordOffsets.length; i++) {
 						var pX = pixel.x;
@@ -45934,7 +42371,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		};
-
 		elements.up_down_test = {
 			color: "#228888",
 			category: "test",
@@ -45952,9 +42388,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
 				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
-
 				var newPixelCoordOffsets = [[0, -1], [0, 1]];
-
 				if(pixel.value === 1) {
 					for(i = 0; i < newPixelCoordOffsets.length; i++) {
 						var pX = pixel.x;
@@ -45974,8 +42408,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		};
-
-
 		elements.left_right_test = {
 			color: "#dd2222",
 			category: "test",
@@ -45993,9 +42425,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
 				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
-
 				var newPixelCoordOffsets = [[-1, 0], [1, 0]];
-
 				if(pixel.value === 1) {
 					for(i = 0; i < newPixelCoordOffsets.length; i++) {
 						var pX = pixel.x;
@@ -46015,7 +42445,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		};
-
 		elements.left_down_test = {
 			color: "#882288",
 			category: "test",
@@ -46033,9 +42462,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
 				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
-
 				var newPixelCoordOffsets = [[-1, 0], [0, 1]];
-
 				if(pixel.value === 1) {
 					for(i = 0; i < newPixelCoordOffsets.length; i++) {
 						var pX = pixel.x;
@@ -46055,8 +42482,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		};
-
-
 		elements.right_down_test = {
 			color: "#888822",
 			category: "test",
@@ -46074,9 +42499,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
 				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
-
 				var newPixelCoordOffsets = [[1, 0], [0, 1]];
-
 				if(pixel.value === 1) {
 					for(i = 0; i < newPixelCoordOffsets.length; i++) {
 						var pX = pixel.x;
@@ -46096,7 +42519,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		};
-
 		elements.up_left_right_test = {
 			color: "#454545",
 			category: "test",
@@ -46114,9 +42536,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
 				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
-
 				var newPixelCoordOffsets = [[0, -1], [-1, 0], [1, 0]];
-
 				if(pixel.value === 1) {
 					for(i = 0; i < newPixelCoordOffsets.length; i++) {
 						var pX = pixel.x;
@@ -46136,7 +42556,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		};
-
 		elements.left_right_down_test = {
 			color: "#882222",
 			category: "test",
@@ -46154,9 +42573,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
 				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
-
 				var newPixelCoordOffsets = [[-1, 0], [1, 0], [0, 1]];
-
 				if(pixel.value === 1) {
 					for(i = 0; i < newPixelCoordOffsets.length; i++) {
 						var pX = pixel.x;
@@ -46176,7 +42593,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		};
-
 		elements.up_right_down_test = {
 			color: "#228822",
 			category: "test",
@@ -46194,9 +42610,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
 				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
-
 				var newPixelCoordOffsets = [[0, -1], [1, 0], [0, 1]];
-
 				if(pixel.value === 1) {
 					for(i = 0; i < newPixelCoordOffsets.length; i++) {
 						var pX = pixel.x;
@@ -46216,7 +42630,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		};
-
 		elements.up_left_down_test = {
 			color: "#222288",
 			category: "test",
@@ -46234,9 +42647,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 				pixel.onColor = lightenColor(pixel.offColor,32,"rgb");
 				pixel.color = (pixel.value > 0 ? pixel.onColor : pixel.offColor);
-
 				var newPixelCoordOffsets = [[0, -1], [-1, 0], [0, 1]];
-
 				if(pixel.value === 1) {
 					for(i = 0; i < newPixelCoordOffsets.length; i++) {
 						var pX = pixel.x;
@@ -46256,9 +42667,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		};
-
 	//RAY CLONER (like TPT CRAY) ##
-
 		function placeRegularlySpacedPixels(element,startX,startY,xSpacing,ySpacing,overwrite=false,stopAt=null,rayIgnore=[],spawnTemp=null,limit=1000) {
 			if(element.includes(",")) { element = element.split(",") };
 			var newElement = element;
@@ -46271,7 +42680,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			};
 			if(outOfBounds(startX,startY) /*|| (!overwrite && !isEmpty(startX,startY,false))*/) {
 				return false;
-			};	
+			};
 			var posX = startX;
 			var posY = startY;
 			var pixelsPlaced = 0;
@@ -46343,7 +42752,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 			};
 			return true;
 		};
-
 		elements.ray_cloner = {
 			properties: {
 				xSpacing: 0,
@@ -46394,12 +42802,9 @@ overwrite (default false): Whether to replace pixels the line goes into.<br/>
 stopAt (default null): Elements the line to stop at if it hits. Also applies to overwrite, and has no effect if set to null. Can be a string or an array.<br/>
 spawnAtPixelTemp (default false): Whether to place new pixels at the same temperature as this pixel.<br/>
 maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpacing are both less than 2, this corresponds to the pixel length of the line).
-
 <em>prop or old_prop are highly recommended to set pixel properties</em>`,
 		};
-
 	//NO GAMMA RAY SPAWNERS IN RANDOM ##
-
 		runAfterLoad(function() {
 			randomBlacklist = ["quark_matter", "liquid_neutronium", "molten_neutronium", "neutronium", "neutronium_gas"];
 			for(i = 0; i < randomBlacklist.length; i++) {
@@ -46407,25 +42812,19 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 				elements[element].excludeRandom = true;
 			};
 		});
-
 	//NO RADIOACTIVE ELEMENTS IN FALLING PIXEL EVENTS ##
-
 		window.addEventListener("load",function(){
 			var rads = Object.keys(elements).filter(function(name) {
 				return !!((elements[name].behavior ?? "undefined").toString().match(/C[RH]:[A-Za-z0-9_,]*radiation/))
 			}).concat(["radiation"]);
-
 			for(var i = 0; i < rads.length; i++) {
 				var radElem = rads[i];
 				if(randomEventChoices.falling_pixel.includes(radElem)) {
 					randomEventChoices.falling_pixel.splice(randomEventChoices.falling_pixel.indexOf(radElem),1)
 				}
-			};	
-
+			};
 			function editDistance(s1, s2) {s1 = s1.toLowerCase();s2 = s2.toLowerCase();var costs = new Array();for (var i = 0; i <= s1.length; i++) {var lastValue = i;for (var j = 0; j <= s2.length; j++) {if (i == 0)costs[j] = j;else {if (j > 0) {var newValue = costs[j - 1];if (s1.charAt(i - 1) != s2.charAt(j - 1))newValue = Math.min(Math.min(newValue, lastValue),costs[j]) + 1;costs[j - 1] = lastValue;lastValue = newValue;}}}if (i > 0)costs[s2.length] = lastValue;}return costs[s2.length];}
-
 			function similarity(s1, s2) {var longer = s1;var shorter = s2;if (s1.length < s2.length) {longer = s2;shorter = s1;}var longerLength = longer.length;if (longerLength == 0) {return 1.0;}return (longerLength - editDistance(longer, shorter)) / parseFloat(longerLength);}
-
 			function mostSimilarElement(s) {
 				delete elements;
 				var max = 0;
@@ -46445,32 +42844,38 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 				return maxElement;
 			}
 		});
-
-	//SPECIFY CURRENT ELEMENT ON LOAD ##
-	
+	//SPECIFY CURRENT ELEMENT, MOUSE SIZE, AND TPS ON LOAD ##
 		window.addEventListener("load",function() {
 			currentElement = urlParams.get("currentElement") ?? "sand";
 			if(!elementExists(currentElement)) {
 				currentElement = "sand"
 			}
+
 			var size = urlParams.get("mouseSize") ?? 5;
 			if(isNaN(size)) {
 				size = 5;
 			};
 			mouseSize = size
+
+			var _tps = urlParams.get("tps") ?? 30;
+			if(isNaN(_tps)) {
+				_tps = 30;
+			};
+			tps = _tps
+
+			var shape = urlParams.get("shape") ?? "square";
+			if(shapeOrder.indexOf(shape) == -1) {
+				shape = "square"
+			};
+			currentShape = shape
 		});
-	
 	//FIX ##
-	
 		//fsr it's pausing silently on load now so this should fix that by silently unpausing it on load
 		window.addEventListener("load",function() {
 			paused = false
 		});
-	
 	//MISCELLANEOUS CHANGES ##
-
 		eLists.PIPE = ['pipe', 'destroyable_pipe', 'e_pipe', 'destroyable_e_pipe', 'channel_pipe', 'destroyable_channel_pipe', 'bridge_pipe'];
-
 		elements.pipe_stage_shifter = {
 			tool: function(pixel) {
 				if(!(eLists.PIPE.includes(pixel.element))) { return false };
@@ -46489,7 +42894,7 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 				pixel.color = pixelColorPick(pixel,newColor);
 			},
 			category: "tools",
-			color: ["#003600","#360000","#000036"], 
+			color: ["#003600","#360000","#000036"],
 			density: elements.steel.density,
 			hardness: elements.steel.hardness,
 			tempHigh: elements.steel.tempHigh,
@@ -46497,26 +42902,21 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 			state: "solid",
 			behavior: behaviors.POWDER
 		};
-
 		var notActuallyMovable = ["pipe","e_pipe","steel","vivite"];
-
 		runAfterLoad(function() {
 			for(var i = 0; i < notActuallyMovable.length; i++) {
 				var name = notActuallyMovable[i];
 				Object.defineProperty(elements[name], "movable", {
 					value: false,
 					writable: false //**** you, you're not changing it to true.
-				});		
+				});
 			}
 		});
-
 		elements.unknown = {
 			color: "#FFFFFF",
 			behavior: behaviors.WALL,
 			maxColorOffset: 0
 		};
-		
-		
 		runAfterLoad(function() {
 			//Emergency bug fix
 			elemfillerVar = null;
@@ -46558,7 +42958,6 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 					}
 				}
 			}
-
 			if(elementExists("ohio")) {
 				elements.ohio.excludeRandom = true
 			};
@@ -46576,7 +42975,6 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 				delete elements.rainbow_flash.reactions.fire
 			};
 		})
-		
 	//END ##
 } catch (error) {
 	alert(`Load failed (try reloading).\nThis is likely a sporadic failure caused by inconsistencies in how mods are loaded, and will likely fix itself in a refresh or two. If it persists, then it's an issue.\nError: ${error.stack}`);
