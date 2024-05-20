@@ -3084,7 +3084,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		};
 
 		currentShape = "square";
-		shapeOrder = ["square","circle","triangle","inverted triangle","rhombus","squircle","twinkle"];
+		shapeOrder = ["square","circle","triangle","inverted triangle","rhombus","squircle","twinkle","slash","backslash"];
 		shapeExclusionConditions = {
 			/*"square": function(x,y,size,mouseX,mouseY,topLeft,bottomRight) {
 				return false
@@ -3160,7 +3160,29 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					!(Math.abs(xDistanceFromCenterLine) === Math.abs(yDistanceFromCenterLine))
 				) { return true };
 				return false
-			}
+			},
+			"slash": function(x,y,size,mouseX,mouseY,topLeft,bottomRight) {
+				var xOffset = (x - topLeft[0]);
+				var yOffset = (y - topLeft[1]);
+				var yOffsetComplement = (size - 1) - yOffset;
+				if(xOffset == yOffsetComplement) { return false };
+				if(xOffset == yOffsetComplement + 1) { return false };
+				return true
+			},
+			"backslash": function(x,y,size,mouseX,mouseY,topLeft,bottomRight) {
+				var xOffset = (x - topLeft[0]);
+				var yOffset = (y - topLeft[1]);
+				if(xOffset == yOffset) { return false };
+				if(xOffset == yOffset + 1) { return false };
+				return true
+			},
+			/*"corners": function(x,y,size,mouseX,mouseY,topLeft,bottomRight) {
+				var tl = (x == topLeft[0] && y == topLeft[1]);
+				var tr = (x == bottomRight[0] && y == topLeft[1]);
+				var bl = (x == topLeft[0] && y == bottomRight[1]);
+				var br = (x == bottomRight[0] && y == bottomRight[1]);
+				return !(tl || tr || bl || br)
+			}*/
 		}
 
 			
