@@ -14410,7 +14410,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					burnTime: 800,
 					fireElement: ["fire","fire","fire","smoke","smoke","carbon_dioxide","carbon_dioxide","carbon_dioxide","carbon_monoxide","carbon_monoxide","carbon_monoxide","sulfur_dioxide","sulfur_trioxide_gas","poison_gas"],
 					burnInto: "fire,fire,fire,fire,fire,fire,ash,ash,ash,carbon_monoxide,carbon_monoxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,poison_gas".split(","),
-					viscosity: 7.04,
+					viscosity: 500,
 					state: "liquid",
 					density: 755,
 					alias: "petrol"
@@ -14470,9 +14470,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					}
 				};
 				elements.oil.temp = 20;
+				delete elements.oil.behavior;
 				elements.oil.tick = function(pixel) {
 					if(!pixel.role) {
-						var value = Math.random()
+						var value = Math.random();
 						if(value <= 0.03) {
 							pixel.role = "lpg";
 						} else if(value <= 0.45) { //42%
@@ -14491,6 +14492,42 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							pixel.role = "bitumen";
 						};
 					};
+					
+					var _viscosity;
+					switch(pixel.role) {
+						case "lpg":
+							_viscosity = 1;
+							break
+						case "gasoline":
+							_viscosity = 28.16;
+							break
+						case "naphtha":
+							_viscosity = 23.08;
+							break
+						case "kerosene":
+							_viscosity = 12;
+							break
+						case "diesel":
+							_viscosity = 24;
+							break
+						default:
+							_viscosity = 250;
+							break
+						case "lubricant":
+							_viscosity = 300;
+							break
+						case "heavy_fuel_oil":
+							_viscosity = 600;
+							break
+						case "bitumen":
+							_viscosity = 100000;
+							break
+					};
+					_viscosity /= (1.09 ** pixel.temp);
+
+					liquidMoveCustomViscosity(pixel,_viscosity);
+					doDefaults(pixel);
+
 					if(pixel.temp > 35 && pixel.role == "lpg" && Math.random() < ((pixel.temp - 34) / 210)) { //https://www.crownoil.co.uk/guides/crude-oil-fractional-distillation/: Butane and propane and other petroleum gases are formed right at the top of the distillation tower, where it is coolest, a very mild 25°C: the temperature range that forms these gases is between 25°C and 50°C. These gases are the lightest products formed in crude oil distillation and are flammable gases.
 						changePixel(pixel,"light_petroleum_fuel_gas")
 					} else if(pixel.temp > 70 && pixel.role == "gasoline" && Math.random() < ((pixel.temp - 69) / 420)) { //The numbers in the equation are mathematical coincidence.
@@ -14503,12 +14540,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						changePixel(pixel,"diesel_gas")
 					} else if(pixel.temp > 300 && pixel.role == "heavy_fuel_oil" && Math.random() < ((pixel.temp - 299) / 1200)) {
 						changePixel(pixel,"heavy_fuel_oil_gas")
-					} else if(pixel.temp > 350 && pixel.role == "lubricant" && Math.random() < ((pixel.temp - 349) / 1350)) {
-						if(pixel.role == "lubricant") {
-							changePixel(pixel,"lubricating_oil_gas")
-						} else {
-							changePixel(pixel,"bitumen")
-						}
+					} else if(pixel.temp > 350 && Math.random() < ((pixel.temp - 349) / 1350)) {
+						changePixel(pixel,pixel.role == "lubricant" ? "lubricating_oil_gas" : "bitumen")
 					}
 				};
 	//UREA ##
