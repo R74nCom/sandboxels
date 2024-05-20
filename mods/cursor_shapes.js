@@ -117,10 +117,21 @@ if(enabledMods.includes("mods/a_mod_by_alice.js")) {
 	};
 
 	document.addEventListener("keydown", function(e) {
-		//shift+8 to change cursor shape
-		if (e.keyCode == 56 && shiftDown) {
+		//shift+8 to change cursor shape, alt+8 to cycle backwards
+		if (e.keyCode == 56 && [1,2].includes(shiftDown)) {
 			var currentShapeIndex = shapeOrder.indexOf(currentShape);
-			currentShape = shapeOrder[(currentShapeIndex + 1) % shapeOrder.length];
+			var newIndex;
+			switch(shiftDown) {
+				default:
+				case 1:
+					newIndex = (currentShapeIndex + 1) % shapeOrder.length;
+					break
+				case 2:
+					newIndex = (currentShapeIndex - 1) % shapeOrder.length;
+					if(newIndex < 0) { newIndex = shapeOrder.length - 1 };
+					break
+			};
+			currentShape = shapeOrder[newIndex];
 			logMessage(`Current shape: ${currentShape}`)
 		}
 	})
