@@ -3261,7 +3261,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				// If the user presses ] or =, increase the mouse size by 2
 				if (e.keyCode == 221 || e.keyCode == 187) {
 					//If a shift key is pressed, increase by 16
-					if (shiftDown && shiftDown % 2 == 1) {mouseSize = (mouseSize+16)-((mouseSize+16) % 16)}
+					if (shiftDown && shiftDown % 2 == 1) {mouseSize = (mouseSize+15)-((mouseSize+15) % 15); if(mouseSize % 2 == 0) { mouseSize++ }}
 					//If an alt key is pressed, increase by 1
 					else if (shiftDown && shiftDown % 2 == 0) {mouseSize++}
 					else {mouseSize += 2;}
