@@ -12719,12 +12719,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			};
 			return true;
 		};
-		var canSupportWithEdge = function(x,y) {
+		function canSupportWithEdge(x,y) {
 			if(outOfBounds(x,y)) { //count edges
 				return true;
 			} else {
 				if(!isEmpty(x,y,true)) { //if there is a pixel
-					if(elements[pixelMap[x][y].element].state === "solid") {
+					if(elements[pixelMap[x][y].element]?.state === "solid") {
 						return true;
 					} else {
 						return false;
