@@ -3376,7 +3376,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				//mod: shift+8 to change cursor shape
 				if (e.keyCode == 56 && shiftDown) {
 					var currentShapeIndex = shapeOrder.indexOf(currentShape);
-					if(currentShapeIndex < 0) { currentShapeIndex = 0 };
 					currentShape = shapeOrder[(currentShapeIndex + 1) % shapeOrder.length];
 					logMessage(`Current shape: ${currentShape}`)
 				}
