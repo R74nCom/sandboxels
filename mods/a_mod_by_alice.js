@@ -3374,9 +3374,17 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					document.body.removeChild(link);
 				}
 				//mod: shift+8 to change cursor shape
-				if (e.keyCode == 56 && shiftDown) {
+				if (e.keyCode == 56 && shiftDown == 1) {
 					var currentShapeIndex = shapeOrder.indexOf(currentShape);
 					currentShape = shapeOrder[(currentShapeIndex + 1) % shapeOrder.length];
+					logMessage(`Current shape: ${currentShape}`)
+				}
+				//mod: alt+8 to change cursor shape
+				if (e.keyCode == 56 && shiftDown == 2) {
+					var currentShapeIndex = shapeOrder.indexOf(currentShape);
+					var newIndex = (currentShapeIndex - 1) % shapeOrder.length;
+					if(newIndex < 0) { newIndex = shapeOrder.length - 1 };
+					currentShape = shapeOrder[newIndex];
 					logMessage(`Current shape: ${currentShape}`)
 				}
 				
