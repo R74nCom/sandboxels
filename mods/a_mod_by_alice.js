@@ -5972,7 +5972,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		},
 		elements.troll_5 = {
 			color: "#eeeeee",
-			tick: function() {
+			tick: function(pixel) {
 				var target = randomChoice(currentPixels);
 				if(target && !(isEmpty(target.x,target.y))) {
 					target.r ??= 0;
@@ -5987,7 +5987,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		}
 		elements.troll_6 = {
 			color: "#eeeeee",
-			tick: function() {
+			tick: function(pixel) {
 				if(pixel.temp < -273) {
 					pixel.temp = -273;
 				};
