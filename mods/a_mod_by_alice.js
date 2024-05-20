@@ -37987,6 +37987,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		function replaceElementPrompt() {
 			var fromElement = prompt("Enter the element you want to change");
 			// replace spaces with underscores
+			if(fromElement == null) { return };
 			fromElement = fromElement.replace(/ /g, "_");
 			fromElementS = mostSimilarElement(fromElement);
 			if (fromElementS === null || fromElementS === undefined || fromElementS === "") {
