@@ -89,3 +89,63 @@ elements.electrogalvanized = {
     conduct: 2,
     density: 7850,
 };
+
+elements.nvidia_cpu = {
+    color: "#76B900", // Nvidia's signature green color
+    behavior: [
+        "XX|SH|XX",
+        "SH|XX|SH",
+        "XX|SH|XX",
+    ],
+    category: "tech",
+    tempHigh: 1000, // Melting point for realism
+    stateHigh: "molten_silicon", // Assuming it melts into molten silicon
+    reactions: {
+        "water": { elem1: "short_circuit", elem2: "steam" },
+        "salt_water": { elem1: "short_circuit", elem2: "null" },
+        "acid": { elem1: "corroded_cpu", elem2: "null" },
+        "poison": { elem1: "corroded_cpu", elem2: "null" },
+    },
+    breakInto: ["silicon", "metal_scrap"],
+    conduct: 10, // Moderate conductivity
+    density: 2330, // Density of silicon
+};
+
+elements.molten_silicon = {
+    color: "#ffcc99",
+    behavior: behaviors.LIQUID,
+    category: "states",
+    state: "liquid",
+    temp: 1414, // Melting point of silicon
+    tempLow: 1414,
+    stateLow: "silicon",
+    density: 2570,
+    viscosity: 100,
+};
+
+elements.short_circuit = {
+    color: "#ff0000",
+    behavior: behaviors.POWDER,
+    category: "energy",
+    temp: 100,
+    state: "solid",
+};
+
+elements.corroded_cpu = {
+    color: "#a0a0a0",
+    behavior: behaviors.POWDER,
+    category: "tech",
+    tempHigh: 800,
+    stateHigh: "ash",
+    conduct: 1,
+};
+
+elements.silicon = {
+    color: "#f0f0f0",
+    behavior: behaviors.SOLID,
+    category: "solids",
+    tempHigh: 1414,
+    stateHigh: "molten_silicon",
+    density: 2330,
+};
+
