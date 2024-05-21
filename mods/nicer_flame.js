@@ -4,7 +4,6 @@ let topColor = 'rgb(130, 0, 0)';
 let blending = 0.7;
 
 function cssColorToRGB(color) {
-	console.log(color);
 	let rgbMatch = color.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
 	return [parseInt(rgbMatch[1]), parseInt(rgbMatch[2]), parseInt(rgbMatch[3])];
 }

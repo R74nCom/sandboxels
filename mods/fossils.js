@@ -411,3 +411,4 @@ elements.algae.reactions.quicklime = { "elem1": ["oil","methane","methane","coal
 elements.algae.reactions.slaked_lime = { "elem1": ["oil","methane","methane","coal"], tempMin:280, chance:0.000025 };
 
 delete elements.dirt.reactions.bone
+delete elements.rock.reactions.dead_plant
