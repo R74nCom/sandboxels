@@ -39,15 +39,6 @@ window.addEventListener("load", () => {
 
 // also hi jonny ray 
 
-elements.anomalous_essence = {
-    hidden: true,
-    color: "#f7ead0",
-    behavior: behaviors.GAS,
-    category: "scp",
-    state: "gas",
-    density: 0.50,
-}; 
-
 elements.SCP_008 = {
     color: "#11111f",
     behavior: [
