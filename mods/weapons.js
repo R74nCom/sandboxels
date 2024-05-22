@@ -75,6 +75,7 @@ elements.left_missile = {
         "M1 AND EX:10|XX|EX:10",
         "M2|EX:10|XX",
     ],
+    state: "solid",
     category:"ammunition",
     density: 1300,
     excludeRandom: true,
@@ -87,6 +88,7 @@ elements.right_missile = {
        "EX:10|XX|M1 AND EX:10",
         "XX|EX:10|M2",
     ],
+    state: "solid",
     category:"ammunition",
     density: 1300,
     excludeRandom: true,
@@ -99,6 +101,7 @@ elements.up_missile = {
        "EX:10|XX|EX:10",
         "XX|EX:10|XX",
     ],
+    state: "solid",
     category:"ammunition",
     density: 1300,
     excludeRandom: true,
@@ -167,6 +170,7 @@ elements.left_bullet = {
         "M1 AND EX:5|XX|XX",
         "M2|XX|XX",
     ],
+    state: "solid",
     category:"ammunition",
     density: 1300,
     excludeRandom: true,
@@ -179,6 +183,7 @@ elements.left_bullet = {
         "XX|XX|M1 AND EX:5",
         "XX|XX|M2",
     ],
+    state: "solid",
     category:"ammunition",
     density: 1300,
     excludeRandom: true,
@@ -239,6 +244,7 @@ elements.left_rocket = {
         "M1 AND EX:10|XX|XX",
         "XX|XX|XX",
     ],
+    state: "solid",
     category:"ammunition",
     density: 1300,
     excludeRandom: true,
@@ -251,6 +257,7 @@ elements.left_rocket = {
         "XX|XX|M1 AND EX:10",
         "XX|XX|XX",
     ],
+    state: "solid",
     category:"ammunition",
     density: 1300,
     excludeRandom: true,
@@ -609,8 +616,6 @@ elements.fast_bomb = {
         for (var i=0; i<3; i++) {
             if (!tryMove(pixel, pixel.x, pixel.y+1)) {
                 if (!isEmpty(pixel.x, pixel.y+1,true)) {
-                    var newPixel = pixelMap[pixel.x][pixel.y+1];
-                    if (newPixel.element === "fast_bomb") { break; }
                     }
                 }
             }
@@ -734,4 +739,20 @@ elements.tank_right = {
         "XX|XX|M1",
         "XX|M1|M1",
     ],
-}
+},
+/*elements.realistic_missle_left = {
+    color: "#524c41",
+    category: "weapons",
+    state: "solid",
+    tick: function(pixel) {
+        for (var i=0; i<3; i++) {
+            if (!tryMove(pixel, pixel.x-1, pixel.y)) {
+                if (!isEmpty(pixel.x-1, pixel.y,true)) {
+                    }
+                }
+            }
+        },
+    density: 1300,
+    excludeRandom: true,
+    cooldown: defaultCooldown
+}*/
