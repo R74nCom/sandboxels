@@ -521,7 +521,7 @@ elements.black_acid = {
     tempLow: -58.88,
     burn: 30,
     burnTime: 10,
-    burnInto: ["fire","fire","fire","fire","fire","fire","fire","fire","ash","ash","fire","fire","fire","fire","ash","ash","anomalous_essence"],
+    burnInto: ["fire","fire","fire","fire","fire","fire","fire","fire","ash","ash","fire","fire","fire","fire","ash","ash"],
     fireColor: "#111111",
     state: "liquid",
     density: 1105,
@@ -539,7 +539,7 @@ elements.SCP_055 = {
     category: "scp",
     state: "solid",
     tempHigh: 55055055055,
-    stateHigh: ["metal_scrap","metal_scrap","smoke","smoke","smoke","smoke","smoke","smoke","smoke",null,"anomalous_essence"],
+    stateHigh: ["metal_scrap","metal_scrap","smoke","smoke","smoke","smoke","smoke","smoke","smoke",null],
 },
 
 elements.REDACTED = {
@@ -547,9 +547,9 @@ elements.REDACTED = {
     color: "#00000f",
     excludeRandom: true,
     behavior: [
-        "XX|CL|XX",
-        "CL|EX:10000000000>REDACTED|CL",
-        "XX|CL|XX",
+        "EX|CL|EX",
+        "CL|EX:99999999999999999999999>REDACTED|CL",
+        "EX|CL|EX",
     ],
     category: "scp",
     state: "solid",
@@ -588,7 +588,7 @@ elements.doc_head = {
     hidden: true,
 	color: ["#f7ead0","#faf9f6","#e9e6db"],
     category: "scp",
-	breakInto: ["rotten_meat","bone","bone","blood","anomalous_essence"],
+	breakInto: ["rotten_meat","bone","bone","blood"],
 	properties: {
         dead: false
     },
@@ -644,7 +644,7 @@ elements.doc_body = {
     hidden: true,
 	color: ["#11111f","#242424"],
     category: "scp",
-	 breakInto: ["rotten_meat","rotten_meat","bone","blood","anomalous_essence"],
+	 breakInto: ["rotten_meat","rotten_meat","bone","blood"],
 	 properties: {
         dead: false,
         dir: 1,
@@ -775,7 +775,7 @@ elements.z_head = {
     hidden: true,
 	color: ["#75816B","#4D6B53"],
     category: "scp",
-	breakInto: ["rotten_meat","bone","bone","blood","anomalous_essence"],
+	breakInto: ["rotten_meat","bone","bone","blood"],
 	properties: {
         dead: false
     },
@@ -832,7 +832,7 @@ elements.z_body = {
     hidden: true,
 	color: ["#11111f","#069469","#047e99","#7f5fb0"],
     category: "scp",
-	 breakInto: ["rotten_meat","rotten_meat","bone","blood","anomalous_essence"],
+	 breakInto: ["rotten_meat","rotten_meat","bone","blood"],
 	 properties: {
         dead: false,
         dir: 1,
@@ -929,7 +929,7 @@ elements.z_body = {
     burnInto: "rotten_meat",
     forceSaveColor: true,
     reactions: {
-		"head": { elem2 : "z_head" , chance:1.0 },
+        "head": { elem2 : "z_head" , chance:1.0 },
         "body": { elem2 : "z_body" , chance:1.0 },
     },
 },
@@ -966,7 +966,7 @@ elements.shy_head = {
     hidden: true,
 	color: ["#f7ead0","#faf9f6","#e9e6db"],
     category: "scp",
-	breakInto: ["bone","bone","blood","bone","bone","blood","bone","bone","blood","bone","bone","blood","anomalous_essence"],
+	breakInto: ["rotten_meat","bone","bone","blood","bone","bone","blood","bone","bone","blood","bone","bone","blood"],
 	properties: {
         dead: false
     },
@@ -1035,7 +1035,7 @@ elements.shy_body = {
     hidden: true,
 	color: ["#f7ead0","#faf9f6","#e9e6db"],
     category: "scp",
-	 breakInto: ["bone","bone","blood","bone","bone","blood","bone","bone","blood","bone","bone","blood","anomalous_essence"],
+	 breakInto: ["rotten_meat","bone","blood","bone","bone","blood","bone","bone","blood","bone","bone","blood"],
 	 properties: {
         dead: false,
         dir: 1,
