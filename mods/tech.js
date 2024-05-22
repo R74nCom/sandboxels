@@ -107,7 +107,7 @@ elements.nvidia_cpu = {
         "acid": { elem1: "corroded_cpu", elem2: "null" },
         "poison": { elem1: "corroded_cpu", elem2: "null" },
     },
-    breakInto: ["silicon", "metal_fragments"],
+    breakInto: ["silicon", "metal_scrap"],
     conduct: 10, // Moderate conductivity
     density: 2330, // Density of silicon
     tick: function(pixel) {
