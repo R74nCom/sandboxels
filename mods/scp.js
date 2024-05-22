@@ -966,6 +966,7 @@ elements.shy_head = {
     hidden: true,
 	color: ["#f7ead0","#faf9f6","#e9e6db"],
     category: "scp",
+	hardness: 1,
 	breakInto: ["rotten_meat","bone","bone","blood","bone","bone","blood","bone","bone","blood","bone","bone","blood"],
 	properties: {
         dead: false
@@ -1036,6 +1037,7 @@ elements.shy_body = {
 	color: ["#f7ead0","#faf9f6","#e9e6db"],
     category: "scp",
 	 breakInto: ["rotten_meat","bone","blood","bone","bone","blood","bone","bone","blood","bone","bone","blood"],
+	hardness: 1,
 	 properties: {
         dead: false,
         dir: 1,
@@ -1362,10 +1364,10 @@ elements.tickle_monster = {
     conduct: .5,
     temp: 20,
     tempHigh: 350,
-    stateHigh: ["smoke","smoke","smoke","slime","anomalous_essence"],
+    stateHigh: ["smoke","smoke","smoke","slime"],
     burn: .1,
     burnTime: 300,
-    burnInto: ["smoke","smoke","smoke","slime","anomalous_essence"],
+    burnInto: ["smoke","smoke","smoke","slime"],
     stain: 0.03,
 },
 
@@ -1419,10 +1421,10 @@ elements.hyper_tickle_monster = {
     conduct: .5,
     temp: 20,
     tempHigh: 350,
-    stateHigh: ["smoke","smoke","smoke","slime","anomalous_essence"],
+    stateHigh: ["smoke","smoke","smoke","slime"],
     burn: .1,
     burnTime: 300,
-    burnInto: ["smoke","smoke","smoke","slime","anomalous_essence"],
+    burnInto: ["smoke","smoke","smoke","slime"],
     stain: 0.08,
 };
 
