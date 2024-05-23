@@ -37,7 +37,7 @@ elements.fat_man = {
     excludeRandom: true,
     cooldown: defaultCooldown
 },
-    elements.self_propelled_bomb = {
+elements.self_propelled_bomb = {
     color: "#71797E",
     tick: function(pixel) {
         if ((pixel.temp > 1000 || pixel.charge) && !pixel.burning) {
@@ -803,4 +803,68 @@ elements.realistic_missle_right = {
     conduct: 1,
     state: "solid",
     category: "ammunition"
+},
+elements.vlms_left = {
+    color: "#71797E",
+    tick: function(pixel) {
+        if ((pixel.temp > 1000 || pixel.charge) && !pixel.burning) {
+            pixel.burning = true;
+            pixel.burnStart = pixelTicks;
+        }
+        if (pixel.burning) {
+            if (!tryMove(pixel, pixel.x, pixel.y-1)) {
+                // tryMove again to the top left or top right
+                tryMove(pixel, pixel.x+(Math.random() < 0.5 ? -1 : 1), pixel.y-1);
+            }
+            if (pixelTicks-pixel.burnStart > 50 && Math.random() < 0.1) {
+                explodeAt(pixel.x, 10, 4, "realistic_missle_left");
+                deletePixel(pixel.x,pixel.y)
+            }
+        }
+        else {
+            if (!tryMove(pixel, pixel.x, pixel.y+1)) {
+                // tryMove again to the bottom left or bottom right
+                tryMove(pixel, pixel.x+(Math.random() < 0.5 ? -1 : 1), pixel.y+1);
+            }
+        }
+        doDefaults(pixel);
+    },
+    burn: 90,
+    burnTime: 100,
+    density: 2000,
+    conduct: 1,
+    state: "solid",
+    category: "weapons"
+},
+elements.vlms_right = {
+    color: "#71797E",
+    tick: function(pixel) {
+        if ((pixel.temp > 1000 || pixel.charge) && !pixel.burning) {
+            pixel.burning = true;
+            pixel.burnStart = pixelTicks;
+        }
+        if (pixel.burning) {
+            if (!tryMove(pixel, pixel.x, pixel.y-1)) {
+                // tryMove again to the top left or top right
+                tryMove(pixel, pixel.x+(Math.random() < 0.5 ? -1 : 1), pixel.y-1);
+            }
+            if (pixelTicks-pixel.burnStart > 50 && Math.random() < 0.1) {
+                explodeAt(pixel.x, 10, 4, "realistic_missle_right");
+                deletePixel(pixel.x,pixel.y)
+            }
+        }
+        else {
+            if (!tryMove(pixel, pixel.x, pixel.y+1)) {
+                // tryMove again to the bottom left or bottom right
+                tryMove(pixel, pixel.x+(Math.random() < 0.5 ? -1 : 1), pixel.y+1);
+            }
+        }
+        doDefaults(pixel);
+    },
+    burn: 90,
+    burnTime: 100,
+    density: 2000,
+    conduct: 1,
+    state: "solid",
+    category: "weapons"
 }
