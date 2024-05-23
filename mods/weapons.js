@@ -740,10 +740,19 @@ elements.tank_right = {
         "XX|M1|M1",
     ],
 },
-/*elements.realistic_missle_left = {
+elements.realistic_missle_left = {
     color: "#524c41",
     category: "weapons",
     state: "solid",
+    behavior: [
+        "XX|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|XX",
+        "EX:20>missile_shrapnel|XX|XX|XX|XX|XX|EX:20>missile_shrapnel",
+        "EX:20>missile_shrapnel|XX|M2|XX|XX|XX|EX:20>missile_shrapnel",
+        "EX:20>missile_shrapnel|XX|M1|XX|XX|CR:smoke|EX:20>missile_shrapnel",
+        "EX:20>missile_shrapnel|XX|M2|XX|XX|XX|EX:20>missile_shrapnel",
+        "EX:20>missile_shrapnel|XX|XX|XX|XX|XX|EX:20>missile_shrapnel",
+        "XX|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|XX",
+    ],
     tick: function(pixel) {
         for (var i=0; i<3; i++) {
             if (!tryMove(pixel, pixel.x-1, pixel.y)) {
@@ -755,4 +764,43 @@ elements.tank_right = {
     density: 1300,
     excludeRandom: true,
     cooldown: defaultCooldown
-}*/
+},
+elements.realistic_missle_right = {
+    color: "#524c41",
+    category: "weapons",
+    state: "solid",
+    behavior: [
+        "XX|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|XX",
+        "EX:20>missile_shrapnel|XX|XX|XX|XX|XX|EX:20>missile_shrapnel",
+        "EX:20>missile_shrapnel|XX|XX|XX|M2|XX|EX:20>missile_shrapnel",
+        "EX:20>missile_shrapnel|CR:smoke|XX|XX|M1|XX|EX:20>missile_shrapnel",
+        "EX:20>missile_shrapnel|XX|XX|XX|M2|XX|EX:20>missile_shrapnel",
+        "EX:20>missile_shrapnel|XX|XX|XX|XX|XX|EX:20>missile_shrapnel",
+        "XX|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|XX",
+    ],
+    tick: function(pixel) {
+        for (var i=0; i<3; i++) {
+            if (!tryMove(pixel, pixel.x+1, pixel.y)) {
+                if (!isEmpty(pixel.x+1, pixel.y,true)) {
+                    }
+                }
+            }
+        },
+    density: 1300,
+    excludeRandom: true,
+    cooldown: defaultCooldown
+},
+    elements.missile_shrapnel = {
+    color: "#71797E",
+       behavior: [
+        "XX|XX|XX",
+        "XX|EX:5 %20|XX",
+        "M2%20|M1%20|M2%20",
+    ],
+    burn: 90,
+    burnTime: 100,
+    density: 2000,
+    conduct: 1,
+    state: "solid",
+    category: "ammunition"
+}
