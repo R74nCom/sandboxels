@@ -1,4 +1,5 @@
 //aircrafts
+elements.bomb.ignore = ["super_bomber_left","super_bomber_right"],
 elements.fast_bullet_left = {
     color: "#4c4e42",
     behavior: [
@@ -217,6 +218,40 @@ elements.bomber_right = {
         "XX|XX|M1 AND EX:7>fire,fire,fire,metal_scrap",
         "CR:smoke%10 AND CR:bomb|XX|M1%3 AND EX:7>fire,fire,fire,metal_scrap",
     ],
+    burnTime: 1000,
+    burn: 40,
+    burnInto: "metal_scrap",
+    breakInto: "metal_scrap",
+    conduct: 1
+},
+elements.super_bomber_left = {
+    color: "#000000",
+    category: "aircrafts",
+    behavior: [
+        "XX|XX|XX",
+        "M1%3 AND EX:7>fire,fire,fire,metal_scrap|XX|XX",
+        "M1 AND EX:7>fire,fire,fire,metal_scrap|XX|XX",
+        "M1%3 AND CR:bomb|CR:bomb|CR:smoke%10 AND CR:bomb",
+        "CR:bomb|CR:bomb|CR:bomb",  
+    ],
+    ignore: "bomb",
+    burnTime: 1000,
+    burn: 40,
+    burnInto: "metal_scrap",
+    breakInto: "metal_scrap",
+    conduct: 1
+},
+elements.super_bomber_right = {
+    color: "#000000",
+    category: "aircrafts",
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|M1%3 AND EX:7>fire,fire,fire,metal_scrap",
+        "XX|XX|M1 AND EX:7>fire,fire,fire,metal_scrap",
+        "CR:smoke%10 AND CR:bomb|CR:bomb|M1%3 AND CR:bomb",
+        "CR:bomb|CR:bomb|CR:bomb",  
+    ],
+    ignore: "bomb",
     burnTime: 1000,
     burn: 40,
     burnInto: "metal_scrap",
