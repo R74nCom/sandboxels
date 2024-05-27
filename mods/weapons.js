@@ -894,5 +894,106 @@ elements.element_spawner = {
     conduct: 1,
     state: "solid",
     category: "machines"
+},
+elements.railgun_beam_left = {
+    color: ["#ff0000","#ff5e00"],
+    tick: function(pixel) {
+        var y = pixel.y;
+        for (var x = pixel.x; x < width; x--) {
+            if (outOfBounds(x, y)) {
+                break;
+            }
+            if (isEmpty(x, y)) {
+                createPixel("railgun_ammo_left", x, y);
+                pixelMap[x][y].temp = 3500;
+            }
+            else {
+                if (elements[pixelMap[x][y].element].isGas) { continue }
+                if (elements[pixelMap[x][y].element].id === elements.railgun_beam_left.id) { break }
+                pixelMap[x][y].temp += 100;
+                pixelTempCheck(pixelMap[x][y]);
+                break;
+            }
+        }
+        deletePixel(pixel.x, pixel.y);
+    },
+    temp: 3500,
+    category: "ammunition",
+    state: "gas",
+    density: 1,
+    excludeRandom: true,
+    noMix: true
+},
+elements.railgun_beam_right = {
+    color: ["#ff0000","#ff5e00"],
+    tick: function(pixel) {
+        var y = pixel.y;
+        for (var x = pixel.x; x < width; x++) {
+            if (outOfBounds(x, y)) {
+                break;
+            }
+            if (isEmpty(x, y)) {
+                createPixel("railgun_ammo_right", x, y);
+                pixelMap[x][y].temp = 3500;
+            }
+            else {
+                if (elements[pixelMap[x][y].element].isGas) { continue }
+                if (elements[pixelMap[x][y].element].id === elements.railgun_beam_right.id) { break }
+                pixelMap[x][y].temp += 100;
+                pixelTempCheck(pixelMap[x][y]);
+                break;
+            }
+        }
+        deletePixel(pixel.x, pixel.y);
+    },
+    temp: 3500,
+    category: "ammunition",
+    state: "gas",
+    density: 1,
+    excludeRandom: true,
+    noMix: true
+},
+elements.railgun_ammo_left = {
+    color: ["#ff0000","#ff5e00"],
+    category: "ammunition",
+    state: "solid",
+    density: 1300,
+    tick: function(pixel) {
+        explodeAt(pixel.x, pixel.y, 10)
+        doHeat(pixel);
+    },
+},
+elements.railgun_ammo_right = {
+    color: ["#ff0000","#ff5e00"],
+    category: "ammunition",
+    state: "solid",
+    density: 1300,
+    tick: function(pixel) {
+        explodeAt(pixel.x, pixel.y, 10)
+        doHeat(pixel);
+    },
+},
+elements.railgun_left = {
+    category: "weapons",
+    behavior: behaviors.WALL,
+    behaviorOn: [
+        "XX|XX|XX",
+        "CR:railgun_beam_left|XX|XX",
+        "XX|XX|XX",
+    ],
+    color: "#71797E",
+    conduct: 1,
+    hardness: 1,
+},
+elements.railgun_right = {
+    category: "weapons",
+    behavior: behaviors.WALL,
+    behaviorOn: [
+        "XX|XX|XX",
+        "XX|XX|CR:railgun_beam_right",
+        "XX|XX|XX",
+    ],
+    color: "#71797E",
+    conduct: 1,
+    hardness: 1,
 }
-            
