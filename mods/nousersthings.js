@@ -2999,7 +2999,7 @@ elements.insulated_wire = {
 }
 elements.insulated_wire.desc = "Insulated wire. Only conducts to other insulated wires. Pairs with ray emitters to not make diagonal rays."
 elements.e_pipe.desc = "Electric pipe. Only passes elements while charged."
-elements.destructible_e_pipe.desc = elements.e_pipe.desc
+elements.destroyable_e_pipe.desc = elements.e_pipe.desc
 elements.channel_pipe.desc = "Channel pipe. Only passes elements to pipes of the same channel."
 elements.bridge_pipe.desc = "Bridge pipe. Can pass and receive from any other type of pipe."
 elements.ray_emitter.desc = "Emits a ray of the specified element in the opposite direction it was shocked from."

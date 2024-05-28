@@ -377,7 +377,6 @@ elements.left_push = {
                             breakPixel(p);
                         }
                     }
-                    if (p.del || !elements[p.element].movable) { return }
                     tryMove(p,p.x-1,p.y);
                 }
             })
@@ -413,7 +412,6 @@ elements.right_push = {
                             breakPixel(p);
                         }
                     }
-                    if (p.del || !elements[p.element].movable) { return }
                     tryMove(p,p.x+1,p.y);
                 }
             })
@@ -449,7 +447,6 @@ elements.up_push = {
                             breakPixel(p);
                         }
                     }
-                    if (p.del || !elements[p.element].movable) { return }
                     tryMove(p,p.x,p.y-1);
                 }
             })
@@ -485,7 +482,6 @@ elements.down_push = {
                             breakPixel(p);
                         }
                     }
-                    if (p.del || !elements[p.element].movable) { return }
                     tryMove(p,p.x,p.y+1);
                 }
             })
@@ -501,6 +497,168 @@ elements.down_push = {
     state: "solid",
     density: 100000000,
     excludeRandom: true,
+},
+elements.leftquake = {
+    color: ["#bda791","#997756","#613d19"],
+    tick: function(pixel) {
+        if (pixel.stage) {
+            var coords = circleCoords(pixel.x,pixel.y,pixel.stage);
+            if (pixel.stage >= pixel.mag) {
+                deletePixel(pixel.x,pixel.y);
+                return;
+            }
+            coords.forEach(function(coord){
+                var x = coord.x;
+                var y = coord.y;
+                if (!isEmpty(x,y,true)) {
+                    var p = pixelMap[x][y];
+                    if (p.element === "leftquake") {
+                        if (pixel !== p) {
+                            pixel.mag += 3;
+                            deletePixel(p.x,p.y);
+                        }
+                        return;
+                    }
+                    if (elements[p.element].breakInto) {
+                        if (Math.random() < (elements[p.element].hardness || 1) * 0.25) {
+                            breakPixel(p);
+                        }
+                    }
+                    if (p.del || !elements[p.element].movable) { return }
+                    tryMove(p,p.x+1,p.y);
+                }
+            })
+            pixel.stage++;
+        }
+        else if (!tryMove(pixel,pixel.x-1,pixel.y)) {
+            // random 10 to 20
+            pixel.mag = Math.floor(Math.random() * 10) + 20;
+            pixel.stage = 1;
+        }
+    },
+    category: "weapons",
+    state: "solid",
+    density: 100000000,
+    maxSize: 1,
+    cooldown: defaultCooldown,
+    excludeRandom: true,
+},
+elements.rightquake = {
+    color: ["#bda791","#997756","#613d19"],
+    tick: function(pixel) {
+        if (pixel.stage) {
+            var coords = circleCoords(pixel.x,pixel.y,pixel.stage);
+            if (pixel.stage >= pixel.mag) {
+                deletePixel(pixel.x,pixel.y);
+                return;
+            }
+            coords.forEach(function(coord){
+                var x = coord.x;
+                var y = coord.y;
+                if (!isEmpty(x,y,true)) {
+                    var p = pixelMap[x][y];
+                    if (p.element === "rightquake") {
+                        if (pixel !== p) {
+                            pixel.mag += 3;
+                            deletePixel(p.x,p.y);
+                        }
+                        return;
+                    }
+                    if (elements[p.element].breakInto) {
+                        if (Math.random() < (elements[p.element].hardness || 1) * 0.25) {
+                            breakPixel(p);
+                        }
+                    }
+                    if (p.del || !elements[p.element].movable) { return }
+                    tryMove(p,p.x-1,p.y);
+                }
+            })
+            pixel.stage++;
+        }
+        else if (!tryMove(pixel,pixel.x+1,pixel.y)) {
+            // random 10 to 20
+            pixel.mag = Math.floor(Math.random() * 10) + 20;
+            pixel.stage = 1;
+        }
+    },
+    category: "weapons",
+    state: "solid",
+    density: 100000000,
+    maxSize: 1,
+    cooldown: defaultCooldown,
+    excludeRandom: true,
+},
+elements.upquake = {
+    color: ["#bda791","#997756","#613d19"],
+    tick: function(pixel) {
+        if (pixel.stage) {
+            var coords = circleCoords(pixel.x,pixel.y,pixel.stage);
+            if (pixel.stage >= pixel.mag) {
+                deletePixel(pixel.x,pixel.y);
+                return;
+            }
+            coords.forEach(function(coord){
+                var x = coord.x;
+                var y = coord.y;
+                if (!isEmpty(x,y,true)) {
+                    var p = pixelMap[x][y];
+                    if (p.element === "upquake") {
+                        if (pixel !== p) {
+                            pixel.mag += 3;
+                            deletePixel(p.x,p.y);
+                        }
+                        return;
+                    }
+                    if (elements[p.element].breakInto) {
+                        if (Math.random() < (elements[p.element].hardness || 1) * 0.25) {
+                            breakPixel(p);
+                        }
+                    }
+                    if (p.del || !elements[p.element].movable) { return }
+                    tryMove(p,p.x,p.y+1);
+                }
+            })
+            pixel.stage++;
+        }
+        else if (!tryMove(pixel,pixel.x,pixel.y-1)) {
+            // random 10 to 20
+            pixel.mag = Math.floor(Math.random() * 10) + 20;
+            pixel.stage = 1;
+        }
+    },
+    category: "weapons",
+    state: "solid",
+    density: 100000000,
+    maxSize: 1,
+    cooldown: defaultCooldown,
+    excludeRandom: true,
+},
+createAtXvar = 0;
+createAtYvar = 0;
+create1var = "";
+elements.element_spawner = {
+    color: "#71797E",
+    onSelect: function() {
+        var answer1 = prompt("Please input the x value.",(createAtXvar||undefined));
+        if (!answer1) {return}
+        createAtXvar = parseInt(answer1);
+        var answer2 = prompt("Please input the y value.",(createAtYvar||undefined));
+        if (!answer2) {return}
+        createAtYvar = parseInt(answer2);
+        var answer3 = prompt("Please input what element should spawn.",(create1var||undefined));
+        if (!answer3) {return}
+        create1var = answer3;
+    },
+    tick: function(pixel) {
+        if (pixel.charge){
+            createPixel(create1var, createAtXvar, createAtYvar);
+        }
+        doDefaults(pixel);
+    },
+    density: 1,
+    conduct: 1,
+    state: "solid",
+    category: "machines"
 //hello nouser if you are reading this:
 };
 };
