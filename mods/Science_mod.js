@@ -1,10 +1,8 @@
 // Science mod for Sandboxels
 // (Inspired by survival.js)
-// Build 17
-// By: Lucifer (@a_british_proto (Discord))
-// If there is anything you want to suggest or there's a bug then just dm me on discord
+// Build 21
+// If there is anything you want to suggest or there's a bug then just dm me on discord (@a_british_proto)
 // Todo:
-// - Try to get the mod to work by making different ways to craft all the (116) elements in the mod
 // - Make new substances that you can get after mixing different elements
 // - Make a way to get the different substances by mixing different elements and different substances
 // - Create different proporties for the substances (doing now)
@@ -1378,12 +1376,134 @@ substance.Silver_Oxzide = {
 substance.Silver_Sulfate = {
     behavior: behaviors.WALL,
     color: "FFFFFF",
-    category: "lands"
+    category: "lands",
     state: "solid",
     hidden:true
 }
 
-// I done this on my school computers :skull:
-// doing more later
+// Decided to just change the console.log to a comment because it got me confused between the github page and VSC
 
-// I accidentally pressed Ctrl+V instead of Ctrl+C so it deleted my work D:
+substance.Silver_Selenide = {
+    behavior: behaviors.WALL,
+    color: "333333",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+// Why am listening to a random playlist? I swear I'm going fully insane
+
+substance.Silver_Selenate = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Telluride = {
+    behavior: behaviors.WALL,
+    color: "333333",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Arsenate = {
+    behavior: behaviors.WALL,
+    color: "E3E35F",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Phosphate = {
+    behavior: behaviors.WALL,
+    color: "FFFF00",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+// FINALLY WE ARE OUT OF THE SILVER COMPOUNDS!!!11!!1111! :DDDDD
+// Now time to go onto the aluminum compounds
+
+substance.Aluminum_Arsenide = {
+    behavior: behaviors.WALL,
+    color: "FF6600",
+    category: "lands", // Might just change this after I'm done with the substances (as well as the other one(s))
+    state: "solid",
+    hidden:true
+}
+
+substance.Aluminum_Diboride = {
+    behavior: behaviors.WALL,
+    color: "CB6D51",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Aluminum_Dodecaboride = {
+    behavior: behaviors.WALL,
+    color: "000000",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Aluminum_Bromate_Nonahydrate = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Aluminum_Tribromide = {
+    behavior: behavior.POWDER,
+    color: "FF0000",
+    category: "lands",
+    state: "powder",
+    hidden:true
+}
+
+substance.Aluminum_Bromide_Hexahydrate = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Aluminum_Cerium_Oxide = {
+    behavior: behaviors.WALL,
+    color: "FF5E00",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Aluminum_Chloride = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Aluminum_Chlorohydrate = {
+    behavior: behaviors.POWDER,
+    color: "FFFFFF",
+    category: "lands",
+    state: "powder",
+    hidden:true
+}
+
+substance.Aluminum_Chloride_Hydrate = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}

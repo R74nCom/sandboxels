@@ -93,7 +93,7 @@ elements.logic_wire = {
         }
     }
 }
-function countNeighbors(){
+function countNeighbors(pixel){
     var results = {
         "charged": 0,
         "uncharged": 0,
@@ -115,7 +115,7 @@ function countNeighbors(){
     }
     return results;
 }
-function chargeOutputs(){
+function chargeOutputs(pixel){
     for (var i = 0; i < squareCoords.length; i++) {
         var coord = squareCoords[i];
         var x = pixel.x+coord[0];
@@ -128,7 +128,7 @@ function chargeOutputs(){
         }
     }
 }
-function unchargeOutputs(){
+function unchargeOutputs(pixel){
     for (var i = 0; i < squareCoords.length; i++) {
         var coord = squareCoords[i];
         var x = pixel.x+coord[0];
@@ -147,11 +147,11 @@ elements.not_gate = {
     state: "solid",
     behavior: behaviors.WALL,
     tick: function(pixel){
-        var countNeighborsResult = countNeighbors()
+        var countNeighborsResult = countNeighbors(pixel)
         if (countNeighborsResult.charged == 0){
-            chargeOutputs();
+            chargeOutputs(pixel);
         } else {
-            unchargeOutputs();
+            unchargeOutputs(pixel);
         }
     }
 }
@@ -161,11 +161,11 @@ elements.and_gate = {
     state: "solid",
     behavior: behaviors.WALL,
     tick: function(pixel){
-        var countNeighborsResult = countNeighbors()
+        var countNeighborsResult = countNeighbors(pixel)
         if (countNeighborsResult.uncharged == 0){
-            chargeOutputs();
+            chargeOutputs(pixel);
         } else {
-            unchargeOutputs();
+            unchargeOutputs(pixel);
         }
     }
 }
@@ -175,11 +175,11 @@ elements.xor_gate = {
     state: "solid",
     behavior: behaviors.WALL,
     tick: function(pixel){
-        var countNeighborsResult = countNeighbors()
+        var countNeighborsResult = countNeighbors(pixel)
         if (countNeighborsResult.charged == 1){
-            chargeOutputs();
+            chargeOutputs(pixel);
         } else {
-            unchargeOutputs();
+            unchargeOutputs(pixel);
         }
     }
 }
@@ -189,11 +189,11 @@ elements.or_gate = {
     state: "solid",
     behavior: behaviors.WALL,
     tick: function(pixel){
-        var countNeighborsResult = countNeighbors()
+        var countNeighborsResult = countNeighbors(pixel)
         if (countNeighborsResult.charged >= 1){
-            chargeOutputs();
+            chargeOutputs(pixel);
         } else {
-            unchargeOutputs();
+            unchargeOutputs(pixel);
         }
     }
 }
@@ -203,11 +203,11 @@ elements.nand_gate = {
     state: "solid",
     behavior: behaviors.WALL,
     tick: function(pixel){
-        var countNeighborsResult = countNeighbors()
+        var countNeighborsResult = countNeighbors(pixel)
         if (countNeighborsResult.uncharged){
-            chargeOutputs();
+            chargeOutputs(pixel);
         } else {
-            unchargeOutputs();
+            unchargeOutputs(pixel);
         }
     }
 }
@@ -217,11 +217,11 @@ elements.nor_gate = {
     state: "solid",
     behavior: behaviors.WALL,
     tick: function(pixel){
-        var countNeighborsResult = countNeighbors()
+        var countNeighborsResult = countNeighbors(pixel)
         if (!countNeighborsResult.charged){
-            chargeOutputs();
+            chargeOutputs(pixel);
         } else {
-            unchargeOutputs();
+            unchargeOutputs(pixel);
         }
     }
 }
@@ -231,11 +231,11 @@ elements.nxor_gate = {
     state: "solid",
     behavior: behaviors.WALL,
     tick: function(pixel){
-        var countNeighborsResult = countNeighbors()
+        var countNeighborsResult = countNeighbors(pixel)
         if (!(countNeighborsResult.charged == 1)){
-            chargeOutputs();
+            chargeOutputs(pixel);
         } else {
-            unchargeOutputs();
+            unchargeOutputs(pixel);
         }
     }
 }
@@ -385,7 +385,7 @@ elements.logic_transmitter = {
     behavior: behaviors.WALL,
     category: "logic",
     tick: function(pixel){
-        var neighborResult = countNeighbors();
+        var neighborResult = countNeighbors(pixel);
         if (pixel.start === pixelTicks){
 			pixel.channel = transmitterVar;
 		}

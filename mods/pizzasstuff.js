@@ -1,3 +1,7 @@
+removeMod("pizzasstuff.js");
+addMod("mossstuff.js");
+reload(); 
+
 elements.freeze_ray = {
 	color: ["#8cf9ff","#5c59ff"],
     tick: function(pixel) {

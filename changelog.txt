@@ -7,6 +7,127 @@ See sneak peaks for upcoming updates on the Discord: https://discord.gg/ejUc6YPQ
 
 A fancier version of this changelog can be found here: https://sandboxels.R74n.com/changelog
 
+[Version 1.9.5 - May 15, 2024 - Update of the Summer]
+    + Mixer
+    + Grinder
+    + Kelp
+    + Freeze Ray
+    + Cloth, made from glueing Feathers
+    + Aurora Borealis, when Protons excite Oxygen high up
+   [Quality of Life]
+    + Mobile Shift button
+        + Intensified tools and line drawing on mobile
+    + Canvas Size setting
+    + Lookup tool can have a bigger radius
+   [Changes]
+    + Tornado Fire, Sand, and Water variant
+    + Tornaodes, Earthquakes, and Tsunamis can merge
+    ~ Tsunamis no longer clone molten and other dense liquids
+    + Sand and Ash in Tornadoes create Cloud variants
+    + Tornadoes are immune to explosions
+    + Disasters are immune to Acid
+    + Bless can remove disasters
+    + Bless turns Rotten Cheese to a blue variant
+    + Pipes retain color in saves
+    + Silver absorbs Neutrons (Nuclear control rods)
+    ~ Room Temp tool now uses air temperature in Settings
+    ~ Unhid Lattice
+    ~ Oil burns slower
+    + Rocks will trample Grass
+    + Glue can convert Cellulose to Paper
+    + Fleas will eat Plant
+    + Salt powder slowly kills Plant
+    + Alcohol Gas ignites at high temperatures
+    + Liquid Light is immune to Acid
+    + Cement neutralizes Acid
+    ~ Gallium reaction breaks down some Aluminum again
+    + Charcoal breaks down at extreme temperatures
+    ~ Hydrogen reaction now depletes Sulfur
+    ~ Water reaction now depletes Caramel
+    + Juice Ice breaks into Slush
+    + Ink mixes with Dye
+    + Sugar dissolves in Juice
+    + Fruit Milk dissolves in Tea
+    + Nut Milk can wet soil
+    + Humans burn on the Sun
+    + Humans steal Diamonds
+    + Bees and Cyanide irritate Skin
+    + Mycelium breaks down dead matter
+    + Mycelium and Hyphae will rot Meat
+    + Rats eat Cured Meat
+    + Ketchup-Baking Soda reaction is more fizzy
+    ~ Snails turn to Limestone instead of Quicklime
+    + Slaked Lime-Seltzer reaction
+    + Limestone-Acid reaction creates byproducts
+    ~ Cooled Quicklime forms a Limestone layer
+    ~ Quicklime-Water reaction produces more heat
+    ~ Lowered Quicklime melting point
+    + Hot Quicklime produces Flash
+    ~ Potassium-Chlorine reaction produces Fire
+    + Potassium Salt reacts with hot Sodium
+    + Potassium Gas (Hidden)
+    + Bless cleans stains left by reactions
+    + Bless cures Meat
+    + Bless removes Dust and Grease
+    ~ Improved Dead Plant coalification
+    ~ Rockets no longer expel Cloners
+    + Lattice reacts with Cold Fire
+    + Gray Goo can melt
+    + Virus is killed by Liquid Light
+    + Static mouseover effect
+    + Static breaks into Malware
+    ~ Moved Ball to Special
+    ~ Moved Pop when unhidden
+    ~ Border element button shows stripes
+    ~ Recolored Glitter
+    ~ Recolored fermented Grape
+    ~ Hid Clone Powder
+    + Potassium Salt alias 'Potassium Chloride'
+    ~ Tweaked electricity for low-conductivity elements
+    ~ Updated Settings menu
+    + Maximum pixel count, with red indicator
+    ~ Optimized very large explosions
+   [Bug Fixes]
+    ~ Fixed: Gaps when drawing fast on mobile
+    ~ Fixed: Middle clicking empty space causes freeze
+    ~ Fixed: Bless and Rock Wall can't be drawn in a line
+    ~ Fixed: Gaps when drawing Bless and Rock Wall fast
+    ~ Fixed: Bless and Rock Wall don't display info
+    ~ Fixed: Bless and Rock Wall can't use Replace Mode
+    ~ Fixed: Brown Dwarf Suns can emit Light when eclipsed
+    ~ Fixed: Language selector doesn't update on refresh
+    ~ Fixed: Mouse size continues increasing past max size
+    ~ Fixed: Uncharge tool doesn't put out LEDs
+    ~ Fixed: Water extinguishes Greek Fire and Firework over and over
+    ~ Fixed: Dragging at tick 0 freezes pixels in place
+    ~ Fixed: Evergreen info page displays NaN
+    ~ Fixed: Spawned Molten Magnesium behaves strange when heated
+    ~ Fixed: Copper Sulfate freezing point is too low
+    ~ Fixed: Stained Glass doesn't retain color when exploded
+    ~ Fixed: Stained Glass placed at tick 0 doesn't retain color
+    ~ Fixed: Antimatter and Antimatter Bomb trigger each other
+    ~ Fixed: Strange Matter destroys Cloners
+    ~ Fixed: Nothing can clone Wire
+    ~ Fixed: TPS prompt displays error after canceling
+    ~ Fixed: Decimal coordinates when resetting with odd canvas size
+    ~ Fixed: No double state change when spawning at high airTemp
+    ~ Fixed: Pixels retain clone property when changed
+    ~ Fixed: Crash when mod deletes Sand
+    ~ Fixed: Elements with single-color arrays have black buttons
+    ~ Fixed: 'perTick' error when loading page
+    ~ Fixed: 'fillStyle' error when loading page
+   [Technical]
+    + Behavior grids bigger than 3x3 are centered
+    + Behavior grids can be smaller than 3x3
+    + Moddable behavior rules
+    ~ Behavior rules are stored in new behaviorRules object
+    + SM (Smash) behavior rule
+    + MX (Mix) behavior rule (MX:true to mix solids)
+    + CC (Change Color) can now take a target, e.g. CC:sand>#00ffff
+    ~ CC (Change Color) no longer applies grain
+    + EX (Explode) follows element 'ignore' property
+    ~ Placed Paint and Shock tools are removed by Unpaint and Uncharge
+
 [Version 1.9.4.1 - April 8, 2024 - Eclipse Special]
     + Attempting to place Rock Wall on top of Sun begins a solar eclipse
     + Sun can draw over Light pixels
@@ -127,7 +248,7 @@ A fancier version of this changelog can be found here: https://sandboxels.R74n.c
     ~ Fixed: Spawning Liquid Propane causes pulse effect
     ~ Fixed: Stained Glass and Color Sand can't be painted
    [Technical]
-    + Prop tool accepts lowercase "-infinity"
+    + Prop tool accepts lowercase '-infinity'
     ~ Prop tool deselects on invalid input
     + onMouseDown() element property
     + hoverStat(pixel) element property for hover info, return string
