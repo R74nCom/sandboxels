@@ -91,7 +91,6 @@ function addElement(list, elem) {
         return result;
     }
     if(elem && !list.includes(elem)) {
-        if(elem === "CR") {console.log(elem)};
         list.push(elem);
         return true;
     }
@@ -308,7 +307,7 @@ window.addEventListener("load",function(){
     }
 })
     
-    runAfterAutogen(function(){
+    /*runAfterAutogen(function(){
         let reachable = findReachable(initialElements);
         console.log(reachable.join(","));
         let string = "";
@@ -359,7 +358,7 @@ window.addEventListener("load",function(){
             }
         }
         console.log(string);
-    });
+    });*/
 }
 if(chemMod) {
     chemMod.addEventListener("load",loadAlchem);
