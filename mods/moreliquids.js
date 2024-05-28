@@ -79,13 +79,21 @@ elements.paste = {
     color: "#C4AA98",
     behavior: behaviors.WALL,
     category: "solids",
-     stateHigh: ["liquid_paste"],
     state: "solid",
     density: 230
 };
 elements.husk = {
     color: ["#C4AA98", "#9E836B", "#A5876D", "#AE7D64", "#C87B67"],
     behavior: behaviors.WALL,
+    category: "solids",
+    reactions: {},
+    state: "solid"
+};
+elements.restored_husk = {
+    color: ["#E0CABB", "#CAB3A0", "#CAB3A0"],
+	behavior: [
+		"XX|CR:bless%0.03|XX",
+	],
     category: "solids",
     reactions: {},
     state: "solid"
@@ -104,7 +112,7 @@ elements.rot = {
 		"XX|XX|XX",
 		"XX|CR:rot%0.054|XX",
 	],
-    category: "liquids",
+    category: "life",
     viscosity: 1,
     state: "liquid",
     reactions: {},
@@ -124,5 +132,7 @@ elements.poop.reactions.water = { "elem1":"dried_poop", "elem2":"fly" };
 elements.tar.reactions.husk = { "elem1":"rot", "elem2":"fly" };
 elements.husk.reactions.molasses = { "elem1":"smoke", "elem2":"remnant" };
 elements.rot.reactions.fire = { "elem1":"smoke", "elem2":"cinder" };
+elements.bless.reactions.husk = { "elem1":"restored_husk", "elem2":"restored_husk" };
+elements.bless.reactions.rot = { "elem1":"restored_husk", "elem2":"restored_husk" };
 elements.water.reactions.rot = { "elem1":"blood", "elem2":"slag" };
 
