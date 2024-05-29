@@ -632,6 +632,33 @@ elements.upquake = {
     maxSize: 1,
     cooldown: defaultCooldown,
     excludeRandom: true,
+},
+createAtXvar = 0;
+createAtYvar = 0;
+create1var = "";
+elements.element_spawner = {
+    color: "#71797E",
+    onSelect: function() {
+        var answer1 = prompt("Please input the x value.",(createAtXvar||undefined));
+        if (!answer1) {return}
+        createAtXvar = parseInt(answer1);
+        var answer2 = prompt("Please input the y value.",(createAtYvar||undefined));
+        if (!answer2) {return}
+        createAtYvar = parseInt(answer2);
+        var answer3 = prompt("Please input what element should spawn.",(create1var||undefined));
+        if (!answer3) {return}
+        create1var = answer3;
+    },
+    tick: function(pixel) {
+        if (pixel.charge){
+            createPixel(create1var, createAtXvar, createAtYvar);
+        }
+        doDefaults(pixel);
+    },
+    density: 1,
+    conduct: 1,
+    state: "solid",
+    category: "machines"
 //hello nouser if you are reading this:
 };
 };
