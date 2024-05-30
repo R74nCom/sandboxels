@@ -3005,3 +3005,117 @@ elements.bridge_pipe.desc = "Bridge pipe. Can pass and receive from any other ty
 elements.ray_emitter.desc = "Emits a ray of the specified element in the opposite direction it was shocked from."
 elements.specific_ray_emitter.desc = "Emits a ray of the specified element in a specific direction and a specific length."
 elements.blackhole_storage.desc = "Stores elements inside of itself. Can be released by shocking it."
+let pullOrPush = 1
+elements.piston_ray_emitter = {
+    color: "#143b5f",
+    behavior: behaviors.WALL,
+    category: "machines",
+    movable: false,
+    onSelect: function(){
+        var ans1 = prompt("Would you like this piston to pull or push?", "pull").toLowerCase();
+        if (ans1 == "pull"){pullOrPush = 1}
+        else if (ans1 == "push"){pullOrPush = 2}
+    },
+    tick: function(pixel){
+        if (pixelTicks == pixel.start){
+            pixel.pullOrPush = pullOrPush
+        }
+        if (!pixel.cooldown){pixel.cooldown = 0}
+        if (pixel.cooldown < 1){
+        for (var i = 0; i < adjacentCoords.length; i++) {
+            var coord = squareCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (!isEmpty(x,y, true)){
+                if (pixelMap[x][y].charge && (pixelMap[x][y].element == "wire" || pixelMap[x][y].element == "insulated_wire")){
+                    pixel.cooldown = 6
+                    var dir = [0-squareCoords[i][0], 0-squareCoords[i][1]]
+                    var startx = pixel.x+dir[0]
+                    var starty = pixel.y+dir[1]
+                    var magnitude = 0
+                    if (width > height){magnitude = width} else {magnitude = height}
+                    var endx = startx+(magnitude*dir[0])
+                    var endy = starty+(magnitude*dir[1])
+                 //   console.log("Direction seems to be " + dir)
+                 var jcoords
+                 if (pixel.pullOrPush == 1){jcoords = lineCoords(startx, starty, endx, endy, 1)}
+                 else {jcoords = lineCoords(endx, endy, startx, starty, 1)}
+                 
+                 //   console.log(startx + " is the starting x, " + starty + " is the starting y, " + endx + " is the ending x, " + endy + " is the ending y. Result is " + jcoords)
+                    let pCoord = jcoords[0]
+                    for (var j = 0; j < jcoords.length; j++) {
+                        var lcoord = jcoords[j];
+                        var lx = lcoord[0];
+                        var ly = lcoord[1];
+                        if (!isEmpty(lx, ly, true)){
+                            tryMove(pixelMap[lx][ly], pCoord[0], pCoord[1])
+                        }
+                        pCoord[0] = lx;
+                        pCoord[1] = ly;
+                    }
+                }
+            }
+        }} else {pixel.cooldown -= 1}
+    },
+    insulate: true,
+}
+let pistonStart = 0
+let pistonEnd = 0
+elements.specific_piston_ray_emitter = {
+    color: "#517597",
+    behavior: behaviors.WALL,
+    category: "machines",
+    movable: false,
+    onSelect: function(){
+        var ans1 = prompt("Would you like this piston to pull or push?", "pull").toLowerCase();
+        if (ans1 == "pull"){pullOrPush = 1}
+        else if (ans1 == "push"){pullOrPush = 2}
+        var ans2 = parseInt(prompt("How offset should the start of the push/pulling be?", "0"))
+        pistonStart = ans2
+        var ans3 = parseInt(prompt("How offset should the end of the push/pulling be?", "20"))
+        pistonEnd = ans3
+    },
+    tick: function(pixel){
+        if (pixelTicks == pixel.start){
+            pixel.pullOrPush = pullOrPush
+            pixel.pistonStart = pistonStart
+            pixel.pistonEnd = pistonEnd
+        }
+        if (!pixel.cooldown){pixel.cooldown = 0}
+        if (pixel.cooldown < 1){
+        for (var i = 0; i < adjacentCoords.length; i++) {
+            var coord = squareCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (!isEmpty(x,y, true)){
+                if (pixelMap[x][y].charge && (pixelMap[x][y].element == "wire" || pixelMap[x][y].element == "insulated_wire")){
+                    pixel.cooldown = 6
+                    var dir = [0-squareCoords[i][0], 0-squareCoords[i][1]]
+                    var startx = pixel.x+(dir[0]*pixel.pistonStart)
+                    var starty = pixel.y+(dir[1]*pixel.pistonStart)
+                    var magnitude = pixel.pistonEnd
+                    var endx = startx+(magnitude*dir[0])
+                    var endy = starty+(magnitude*dir[1])
+                 //   console.log("Direction seems to be " + dir)
+                 var jcoords
+                 if (pixel.pullOrPush == 1){jcoords = lineCoords(startx, starty, endx, endy, 1)}
+                 else {jcoords = lineCoords(endx, endy, startx, starty, 1)}
+                 
+                 //   console.log(startx + " is the starting x, " + starty + " is the starting y, " + endx + " is the ending x, " + endy + " is the ending y. Result is " + jcoords)
+                    let pCoord = jcoords[0]
+                    for (var j = 0; j < jcoords.length; j++) {
+                        var lcoord = jcoords[j];
+                        var lx = lcoord[0];
+                        var ly = lcoord[1];
+                        if (!isEmpty(lx, ly, true)){
+                            tryMove(pixelMap[lx][ly], pCoord[0], pCoord[1])
+                        }
+                        pCoord[0] = lx;
+                        pCoord[1] = ly;
+                    }
+                }
+            }
+        }} else {pixel.cooldown -= 1}
+    },
+    insulate: true,
+}
