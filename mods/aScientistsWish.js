@@ -191,6 +191,7 @@ elements.fallout_drum = {
  state: "solid",
  density: 9000,
  color: "#e3cc34",
+ conduct:1,
  tempHigh: 2500,
  stateHigh: ["aluminum","radiated_water","radiated_water","fallout"],
  breakInto: ["fallout","fallout"],
@@ -206,6 +207,7 @@ elements.radiated_water = {
    density :1300,
    color: ["#23d959","#29d65d"],
    hidden: true,
+   conduct:1,
    tempHigh: 140,
    stateHigh: "polluted_air",
    tempLow: -6,
@@ -259,6 +261,7 @@ elements.radiated_metal = {
    state:"solid",
    density :2045,
    color: ["#5e705a","#83ab7b","#474747"],
+   conduct:1,
    tempHigh: 1440,
    stateHigh: ["molten_nickel","molten_iron","molten_tin","fallout"],
    reactions: {
@@ -281,7 +284,7 @@ elements.rad_ice = {
         "snow": { elem2:"dirty_water" },
         "water": { elem2:"radiated_water" },
  }
-}
+};
 
 elements.rad_snow = {
     behavior: behaviors.POWDER,
@@ -292,6 +295,9 @@ elements.rad_snow = {
     temp: -2,
     tempHigh: 21,
     stateHigh: "radiated_water",
+    reactions: {
+        "glass": { elem2:"rad_glass" },
+    }
 };
 
 elements.rad_rock = {
@@ -335,5 +341,24 @@ elements.rad_cleaner = {
         "polluted_air": {elem2: "oxygen"},
         "rad_snow": {elem2: "snow"},
         "rad_rock": {elem2: "rock"},
+        "rad_glass": {elem2: "glass_shard"},
+        "fallout": {elem2: "rock", chance:0.2},  
     }
-}
+};
+
+
+elements.rad_meat = {
+    behavior: behaviors.STURDYPOWDER,
+    category: "food",
+    state: "solid",
+    density: 1500,
+    color: ["#e8fc03","#f0b446","#92f046"],
+    tempHigh: 120,
+    stateHigh: ["rotten_meat","fallout"],
+    tempLow:-12,
+    stateLow: ["frozen_meat","radiation"],
+    reactions: {
+        "water": {elem2: "radiated_water", chance:0.4},
+        "salt_water": { elem2: "radiated_water" },
+    }
+};
