@@ -11871,7 +11871,7 @@ if (langCode) {
             if (r.burning2 !== undefined && Boolean(pixel2.burning) !== r.burning2) {
                 return false;
             }
-            if (r.charged && !pixel1.charge) {
+            if (r.charged && !(pixel1.charge || pixel2.charge)) {
                 return false;
             }
             if (r.chance !== undefined && Math.random() > r.chance) {
