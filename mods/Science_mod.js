@@ -1,8 +1,8 @@
 // Science mod for Sandboxels
 // (Inspired by survival.js)
-// Build 23 (version alpha 0.0.23)
-console.log("version alpha 0.0.23")
-console.log("build 23")
+// Build 24 (version alpha 0.0.24)
+console.log("version alpha 0.0.24")
+console.log("build 24")
 // If there is anything you want to suggest or there's a bug then just dm me on discord (@a_british_proto)
 // I'm unavailable to make updates due to my laptop being really laggy, so I'm currently doing this on my phone
 // Possible date I'll continue is after 26/06/2024 (uk date)
@@ -619,7 +619,7 @@ element.Neodymium = {
     color:"00FFFF",
     category:"land",
     state:"solid",
-    hidden:false9
+    hidden:false
 }
 
 element.Promethium = {
