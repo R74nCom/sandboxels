@@ -1,7 +1,11 @@
 // Science mod for Sandboxels
 // (Inspired by survival.js)
-// Build 21
+// Build 24 (version alpha 0.0.24)
+console.log("version alpha 0.0.24")
+console.log("build 24")
 // If there is anything you want to suggest or there's a bug then just dm me on discord (@a_british_proto)
+// I'm unavailable to make updates due to my laptop being really laggy, so I'm currently doing this on my phone
+// Possible date I'll continue is after 26/06/2024 (uk date)
 // Todo:
 // - Make new substances that you can get after mixing different elements
 // - Make a way to get the different substances by mixing different elements and different substances
@@ -1247,6 +1251,7 @@ substance.Silver_Vandium_Trioxide = {
 }
 
 // Why is this fun? How is this not torture? This is line 1247! (at the time I am making this comment)
+// Not changing this ever lol ^^^^
 
 // I think there's two silver iodides I'm just not so sure (and I ain't editing this after)
 // Nvm it's only one , I got silver iodide and silver iodate mixed up :skull:
