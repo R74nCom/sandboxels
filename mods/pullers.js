@@ -2,6 +2,10 @@
 // a sandboxels mod that adds pullers
 /*
 ==CHANGELOG==
+  Version 2.0.1
+@voidapex11
+~fixed name of mods category
+
   Version 2.0.0
 @voidapex11
 ~set max size of the mod description to 1
@@ -47,7 +51,7 @@ pullerColour = '#e0adb6'
 elements.pullersDesc = {
   color: pullerColour,
   name: 'pullers.js',
-  category: "mods",
+  category: "Mods",
   behavior: behaviors.SELFDELETE,
   tool: function(pixel) {},
   onSelect: function(pixel) {
