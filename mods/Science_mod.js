@@ -1,11 +1,10 @@
 // Science mod for Sandboxels
 // (Inspired by survival.js)
-// Build 24 (version alpha 0.0.24)
-console.log("version alpha 0.0.24")
-console.log("build 24")
+// Build 25 (version alpha 0.0.25)
+console.log("version alpha 0.0.25")
+console.log("build 25")
 // If there is anything you want to suggest or there's a bug then just dm me on discord (@a_british_proto)
-// I'm unavailable to make updates due to my laptop being really laggy, so I'm currently doing this on my phone
-// Possible date I'll continue is after 26/06/2024 (uk date)
+// I've decided to start doing this project on my schools computer's (because they don't crash all the time) so there will be long delays in updates, sorry!
 // Todo:
 // - Make new substances that you can get after mixing different elements
 // - Make a way to get the different substances by mixing different elements and different substances
