@@ -13,6 +13,7 @@ elements.yeast = {
 		'water': {elem2: 'beer', chance: 0.05},
 		'juice': {elem2: 'wine', chance: 0.05},
 		'sugar_water': {elem2: 'rum', chance: 0.05},
+		'white_juice': {elem2: 'white_wine', chance: 0.05},
 	}
 }
 
@@ -20,7 +21,10 @@ const drinks = [
 	'beer',
 	'wine',
 	'vodka',
-	'rum'
+	'rum',
+	'white_wine',
+	'white_juice',
+	'white_grape'
 ]
 
 const ings = [
@@ -57,13 +61,28 @@ elements.wine = {
 	state: 'solid',
 	tempHigh: 78,
 	density: 997,
+	stain: 0.1,
 	stateHigh: ['steam', 'alcohol'],
 	reactions: {
 		'juice': {elem2: 'wine', chance: 0.0125}
 	}
 }
 
-elements.vodka  = {
+elements.white_wine = {
+	color: ['#FAD689', '#F8E3A1'],
+	behavior: behaviors.LIQUID,
+	category: 'bar',
+	state: 'solid',
+	tempHigh: 78,
+	density: 997,
+	stain: 0.1,
+	stateHigh: ['steam', 'alcohol'],
+	reactions: {
+		'white_juice': {elem2: 'white_wine', chance: 0.0125}
+	}
+}
+
+elements.vodka = {
 	color: ['#FFFFFF', '#FFFACD'],
 	behavior: behaviors.LIQUID,
 	category: 'bar',
@@ -76,16 +95,51 @@ elements.vodka  = {
 	}
 }
 
-elements.rum  = {
+elements.rum = {
 	color: ['#A0522D', '#8B4513'],
 	behavior: behaviors.LIQUID,
 	category: 'bar',
 	state: 'solid',
 	tempHigh: 78,
+	stain: 0.05,
 	density: 997,
 	stateHigh: ['steam', 'alcohol'],
 	reactions: {
 		'sugar_water': {elem2: 'rum', chance: 0.0125}
+	}
+}
+
+elements.white_juice = {
+	color: ['#F8F0C6', '#F7E7A9'],
+	behavior: behaviors.LIQUID,
+	category: 'liquids',
+	state: 'solid',
+	tempHigh: 130,
+	density: elements.juice.density,
+	movable: true,
+	stateHigh: 'steam',
+}
+
+elements.white_grape = {
+	color: ['#D0F0C0', '#B2E68D'],
+	behavior: elements.grape.behavior,
+	category: 'food',
+	density: 1154,
+	state: 'solid',
+	stateHigh: ['steam', 'sugar'],
+	breakInto: 'white_juice',
+	tempHigh: 256,
+	reactions: {
+		'acid': {elem1: 'white_juice', chance: 0.1},
+		'acid_gas': {elem1: 'white_juice', chance: 0.1},
+		'basalt': {elem1: 'white_juice', chance: 0.1},
+		'concrete': {elem1: 'white_juice', chance: 0.1},
+		'limestone': {elem1: 'white_juice', chance: 0.1},
+		'radiation': {elem1: 'white_juice', chance: 0.1},
+		'rock': {elem1: 'white_juice', chance: 0.1},
+		'tuff': {elem1: 'white_juice', chance: 0.1},
+		'water': {elem1: 'white_juice', chance: 0.005},
+		'sugar_water': {elem1: 'white_juice', chance: 0.025},
 	}
 }
 
@@ -100,7 +154,7 @@ elements.ingredient_eater = {
     desc: "Removes ingredients."
 }
 
-elements.drinker = {
+elements.consumer = {
     color: ['#FFD700', '#F4E541', '#7B1113', '#8D021F'],
     tool: function(pixel) {
         if (drinks.includes(pixel.element)) {
@@ -108,7 +162,7 @@ elements.drinker = {
         }
     },
     category: "tools",
-    desc: "Drinks alcohol."
+    desc: "Consumes stuff like juice 'n beer."
 }
 
 for (const elem in drinks) {
@@ -117,3 +171,5 @@ for (const elem in drinks) {
 
 elements.mashed_potato.reactions = {}
 elements.mashed_potato.reactions['water'] = {elem2: 'vodka', chance: 0.05}
+elements.grape.color = ['#7D1538', '#6F2DA8']
+elements.grape.breakIntoColor = '#4B0082'
