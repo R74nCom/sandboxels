@@ -11871,7 +11871,7 @@ if (langCode) {
             if (r.burning2 !== undefined && Boolean(pixel2.burning) !== r.burning2) {
                 return false;
             }
-            if (r.charged && !pixel1.charge) {
+            if (r.charged && !(pixel1.charge || pixel2.charge)) {
                 return false;
             }
             if (r.chance !== undefined && Math.random() > r.chance) {
@@ -16704,10 +16704,10 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span>
             <option value="pt_br">Português (Brasil)</option>
             <option value="vi">Tiếng Việt</option>
             <option value="zh_hant">繁體中文</option>
+            <option value="zh_cn">简体中文</option>
             <optgroup label="Incomplete">
                 <option value="es">Español</option>
                 <option value="ru">Русский Язык</option>
-                <option value="zh_cn">简体中文</option>
             </optgroup>
         </select></p>
         <p>Try our NEW GAME: <a href="https://R74n.com/cook/" target="_blank">Infinite Chef</a></p>
