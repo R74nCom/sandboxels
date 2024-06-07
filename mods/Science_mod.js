@@ -1,8 +1,9 @@
 // Science mod for Sandboxels
 // (Inspired by survival.js)
-// Build 28 (version alpha 0.0.28)
-console.log("version alpha 0.0.28")
-console.log("build 28")
+// Build 29 (version alpha 0.0.29)
+console.log("version alpha 0.0.29")
+console.log("build 29")
+// I have granted access to this file on my school account (I think)
 // This used to be a full time thing, but now it's basically just half-time now. 
 // If there is anything you want to suggest or there's a bug then just dm me on discord (@a_british_proto)
 // I've decided to start doing this project on my schools computer's (because they don't crash all the time) so there will be long delays in updates, sorry!
@@ -1544,5 +1545,22 @@ substance.Aluminum_Perchlorate = {
     color: "000000",
     category: "null",
     state: "null",
+    hidden:true
+}
+
+substance.Potassium_Tetrachloroaluminate = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+// Finally one I can actually do!
+substance.Lithium_Tetrachloroaluminate = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
     hidden:true
 }
