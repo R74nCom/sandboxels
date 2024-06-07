@@ -1,8 +1,8 @@
 // Science mod for Sandboxels
 // (Inspired by survival.js)
-// Build 27 (version alpha 0.0.27)
-console.log("version alpha 0.0.27")
-console.log("build 27")
+// Build 28 (version alpha 0.0.28)
+console.log("version alpha 0.0.28")
+console.log("build 28")
 // This used to be a full time thing, but now it's basically just half-time now. 
 // If there is anything you want to suggest or there's a bug then just dm me on discord (@a_british_proto)
 // I've decided to start doing this project on my schools computer's (because they don't crash all the time) so there will be long delays in updates, sorry!
@@ -1532,6 +1532,14 @@ substance.Aluminum_Perchlorate_Nonahydrate = {
 }
 
 substance.Aluminum_Chlorate_Nonahydrate= {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+substance.Aluminum_Perchlorate = {
     behavior: behaviors.NULL,
     color: "000000",
     category: "null",
