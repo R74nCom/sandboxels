@@ -1,8 +1,9 @@
 // Science mod for Sandboxels
 // (Inspired by survival.js)
-// Build 26 (version alpha 0.0.26)
-console.log("version alpha 0.0.26")
-console.log("build 26")
+// Build 27 (version alpha 0.0.27)
+console.log("version alpha 0.0.27")
+console.log("build 27")
+// This used to be a full time thing, but now it's basically just half-time now. 
 // If there is anything you want to suggest or there's a bug then just dm me on discord (@a_british_proto)
 // I've decided to start doing this project on my schools computer's (because they don't crash all the time) so there will be long delays in updates, sorry!
 // Todo:
