@@ -1,8 +1,9 @@
 // Science mod for Sandboxels
 // (Inspired by survival.js)
-// Build 30 (version alpha 0.0.30)
-console.log("version alpha 0.0.30")
-console.log("build 30")
+// Build 31 (version alpha 0.0.31)
+console.log("Version alpha 0.0.31")
+console.log("Build 31")
+console.log("If you see something that is alumium and not aluminium, just dm me on discord (this is a british mod aight)")
 // This used to be a full time thing, but now it's basically just half-time now. 
 // If there is anything you want to suggest or there's a bug then just dm me on discord (@a_british_proto)
 // I've decided to start doing this project on my schools computer's (because they don't crash all the time) so there will be long delays in updates, sorry!
@@ -1568,5 +1569,48 @@ substance.Lithium_Tetrachloroaluminate = {
 substance.Sodium_Tetrachloroaluminate = {
     behavior: behaviors.NULL,
     color: "000000",
-    // finish it later 
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+substance.Titanium_Chloride_Aluminum_Chloride = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+substance.Cesium_Fluoroaluminate = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+substance.Aluminum_Cesium_Sulfate_Dodecahydrate = {
+    behavior:behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+// Tf is this, I'm probs going to delete it later as i have no idea what it is
+substance.Devarda’s_Alloy = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",#
+    hidden:true
+}
+
+substance.Lithium_Aluminum_Deuteride = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
 }
