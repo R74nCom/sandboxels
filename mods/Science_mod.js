@@ -1615,3 +1615,46 @@ substance.Lithium_Aluminum_Deuteride = {
     state: "null",
     hidden:true
 }
+
+// Finally another one! Thank the ptable.com gods! :skull:
+substance.Aluminum_Floride = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+// AAAAAAAAAAAAAAAAAAAAAAAAAAA
+substance.aluminum_Fluoride_Trihydrate = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+// aight, i give up on the comments now but this is one that I can actually do
+substance.Ammonium_Hexafluoroaluminate = {
+    behavior: behaviors.POWDER,
+    color: "FFFFFF",
+    category: "lands",
+    state: "powder",
+    hidden:true
+}
+
+substance.Potassium_Hexafluoroaluminate = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+substance.Sodium_Hexafluoroaluminate = {
+    behavior: behaviors.POWDER,
+    color: "FFFFFF",
+    category: "lands",
+    state: "powder",
+    hidden:true
+}
