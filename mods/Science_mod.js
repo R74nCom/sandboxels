@@ -1,10 +1,11 @@
 // Science mod for Sandboxels
 // (Inspired by survival.js)
-// Build 32 (version alpha 0.0.32)
-console.log("Version alpha 0.0.32")
-console.log("Build 32")
+// Build 33 (version alpha 0.0.33)
+console.log("Version alpha 0.0.33")
+console.log("Build 33")
 console.log("If you see something that is alumium and not aluminium, just dm me on discord (this is a british mod aight)")
 console.log("THIS IS NOT DONE")
+// Read comment at line 1521 for information on what I mean by null/NULL
 // This used to be a full time thing, but now it's basically just half-time now. 
 // It has been confirmed, I am getting a pc on 25/06/2024 :D (I'm also going to be animating for my friends movies that are coming out soon)
 // If there is anything you want to suggest or there's a bug then just dm me on discord (@a_british_proto)
