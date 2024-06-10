@@ -4,6 +4,7 @@
 console.log("Version alpha 0.0.31")
 console.log("Build 31")
 console.log("If you see something that is alumium and not aluminium, just dm me on discord (this is a british mod aight)")
+console.log("THIS IS NOT DONE")
 // This used to be a full time thing, but now it's basically just half-time now. 
 // If there is anything you want to suggest or there's a bug then just dm me on discord (@a_british_proto)
 // I've decided to start doing this project on my schools computer's (because they don't crash all the time) so there will be long delays in updates, sorry!
