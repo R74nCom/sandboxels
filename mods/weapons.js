@@ -37,7 +37,7 @@ elements.fat_man = {
     excludeRandom: true,
     cooldown: defaultCooldown
 },
-    elements.self_propelled_bomb = {
+elements.self_propelled_bomb = {
     color: "#71797E",
     tick: function(pixel) {
         if ((pixel.temp > 1000 || pixel.charge) && !pixel.burning) {
@@ -75,6 +75,7 @@ elements.left_missile = {
         "M1 AND EX:10|XX|EX:10",
         "M2|EX:10|XX",
     ],
+    state: "solid",
     category:"ammunition",
     density: 1300,
     excludeRandom: true,
@@ -87,6 +88,7 @@ elements.right_missile = {
        "EX:10|XX|M1 AND EX:10",
         "XX|EX:10|M2",
     ],
+    state: "solid",
     category:"ammunition",
     density: 1300,
     excludeRandom: true,
@@ -99,6 +101,7 @@ elements.up_missile = {
        "EX:10|XX|EX:10",
         "XX|EX:10|XX",
     ],
+    state: "solid",
     category:"ammunition",
     density: 1300,
     excludeRandom: true,
@@ -167,6 +170,7 @@ elements.left_bullet = {
         "M1 AND EX:5|XX|XX",
         "M2|XX|XX",
     ],
+    state: "solid",
     category:"ammunition",
     density: 1300,
     excludeRandom: true,
@@ -179,6 +183,7 @@ elements.left_bullet = {
         "XX|XX|M1 AND EX:5",
         "XX|XX|M2",
     ],
+    state: "solid",
     category:"ammunition",
     density: 1300,
     excludeRandom: true,
@@ -239,6 +244,7 @@ elements.left_rocket = {
         "M1 AND EX:10|XX|XX",
         "XX|XX|XX",
     ],
+    state: "solid",
     category:"ammunition",
     density: 1300,
     excludeRandom: true,
@@ -251,6 +257,7 @@ elements.left_rocket = {
         "XX|XX|M1 AND EX:10",
         "XX|XX|XX",
     ],
+    state: "solid",
     category:"ammunition",
     density: 1300,
     excludeRandom: true,
@@ -609,8 +616,6 @@ elements.fast_bomb = {
         for (var i=0; i<3; i++) {
             if (!tryMove(pixel, pixel.x, pixel.y+1)) {
                 if (!isEmpty(pixel.x, pixel.y+1,true)) {
-                    var newPixel = pixelMap[pixel.x][pixel.y+1];
-                    if (newPixel.element === "fast_bomb") { break; }
                     }
                 }
             }
@@ -734,4 +739,261 @@ elements.tank_right = {
         "XX|XX|M1",
         "XX|M1|M1",
     ],
+},
+elements.realistic_missile_left = {
+    color: "#524c41",
+    category: "weapons",
+    state: "solid",
+    behavior: [
+        "XX|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|XX",
+        "EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel",
+        "EX:20>missile_shrapnel|EX:20>missile_shrapnel|M2 AND EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel",
+        "EX:20>missile_shrapnel|EX:20>missile_shrapnel|M1 AND EX:20>missile_shrapnel|XX|EX:20>missile_shrapnel|CR:smoke AND EX:20>missile_shrapnel|EX:20>missile_shrapnel",
+        "EX:20>missile_shrapnel|EX:20>missile_shrapnel|M2 AND EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel",
+        "EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel",
+        "XX|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|XX",
+    ],
+    tick: function(pixel) {
+        for (var i=0; i<3; i++) {
+            if (!tryMove(pixel, pixel.x-1, pixel.y)) {
+                if (!isEmpty(pixel.x-1, pixel.y,true)) {
+                    }
+                }
+            }
+        },
+    density: 1300,
+    excludeRandom: true,
+    cooldown: defaultCooldown
+},
+elements.realistic_missile_right = {
+    color: "#524c41",
+    category: "weapons",
+    state: "solid",
+    behavior: [
+        "XX|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|XX",
+        "EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel",
+        "EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|M2 AND EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel",
+        "EX:20>missile_shrapnel|CR:smoke AND EX:20>missile_shrapnel|EX:20>missile_shrapnel|XX|M1|EX:20>missile_shrapnel|EX:20>missile_shrapnel",
+        "EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|M2 AND EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel",
+        "EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel",
+        "XX|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|XX",
+    ],
+    tick: function(pixel) {
+        for (var i=0; i<3; i++) {
+            if (!tryMove(pixel, pixel.x+1, pixel.y)) {
+                if (!isEmpty(pixel.x+1, pixel.y,true)) {
+                    }
+                }
+            }
+        },
+    density: 1300,
+    excludeRandom: true,
+    cooldown: defaultCooldown
+},
+    elements.missile_shrapnel = {
+    color: "#71797E",
+       behavior: [
+        "XX|XX|XX",
+        "XX|EX:5 %20|XX",
+        "M2%20|M1%20|M2%20",
+    ],
+    burn: 90,
+    burnTime: 100,
+    density: 2000,
+    conduct: 1,
+    state: "solid",
+    category: "ammunition"
+},
+elements.vlms_left = {
+    color: "#71797E",
+    tick: function(pixel) {
+        if ((pixel.temp > 1000 || pixel.charge) && !pixel.burning) {
+            pixel.burning = true;
+            pixel.burnStart = pixelTicks;
+        }
+        if (pixel.burning) {
+            if (!tryMove(pixel, pixel.x, pixel.y-1)) {
+                // tryMove again to the top left or top right
+                tryMove(pixel, pixel.x+(Math.random() < 0.5 ? -1 : 1), pixel.y-1);
+            }
+            if (pixelTicks-pixel.burnStart > 50 && Math.random() < 0.1) {
+                explodeAt(pixel.x, 10, 4, "realistic_missile_left");
+                deletePixel(pixel.x,pixel.y)
+            }
+        }
+        else {
+            if (!tryMove(pixel, pixel.x, pixel.y+1)) {
+                // tryMove again to the bottom left or bottom right
+                tryMove(pixel, pixel.x+(Math.random() < 0.5 ? -1 : 1), pixel.y+1);
+            }
+        }
+        doDefaults(pixel);
+    },
+    burn: 90,
+    burnTime: 100,
+    density: 2000,
+    conduct: 1,
+    state: "solid",
+    category: "weapons"
+},
+elements.vlms_right = {
+    color: "#71797E",
+    tick: function(pixel) {
+        if ((pixel.temp > 1000 || pixel.charge) && !pixel.burning) {
+            pixel.burning = true;
+            pixel.burnStart = pixelTicks;
+        }
+        if (pixel.burning) {
+            if (!tryMove(pixel, pixel.x, pixel.y-1)) {
+                // tryMove again to the top left or top right
+                tryMove(pixel, pixel.x+(Math.random() < 0.5 ? -1 : 1), pixel.y-1);
+            }
+            if (pixelTicks-pixel.burnStart > 50 && Math.random() < 0.1) {
+                explodeAt(pixel.x, 10, 4, "realistic_missile_right");
+                deletePixel(pixel.x,pixel.y)
+            }
+        }
+        else {
+            if (!tryMove(pixel, pixel.x, pixel.y+1)) {
+                // tryMove again to the bottom left or bottom right
+                tryMove(pixel, pixel.x+(Math.random() < 0.5 ? -1 : 1), pixel.y+1);
+            }
+        }
+        doDefaults(pixel);
+    },
+    burn: 90,
+    burnTime: 100,
+    density: 2000,
+    conduct: 1,
+    state: "solid",
+    category: "weapons"
+},
+createAtXvar = 0;
+createAtYvar = 0;
+create1var = "";
+elements.element_spawner = {
+    color: "#71797E",
+    onSelect: function() {
+        var answer1 = prompt("Please input the x value.",(createAtXvar||undefined));
+        if (!answer1) {return}
+        createAtXvar = parseInt(answer1);
+        var answer2 = prompt("Please input the y value.",(createAtYvar||undefined));
+        if (!answer2) {return}
+        createAtYvar = parseInt(answer2);
+        var answer3 = prompt("Please input what element should spawn.",(create1var||undefined));
+        if (!answer3) {return}
+        create1var = answer3;
+    },
+    tick: function(pixel) {
+        if (pixel.charge){
+            createPixel(create1var, createAtXvar, createAtYvar);
+        }
+        doDefaults(pixel);
+    },
+    density: 1,
+    conduct: 1,
+    state: "solid",
+    category: "machines"
+},
+elements.railgun_beam_left = {
+    color: ["#ff0000","#ff5e00"],
+    tick: function(pixel) {
+        var y = pixel.y;
+        for (var x = pixel.x; x < width; x--) {
+            if (outOfBounds(x, y)) {
+                break;
+            }
+            if (isEmpty(x, y)) {
+                createPixel("railgun_ammo_left", x, y);
+                pixelMap[x][y].temp = 3500;
+            }
+            else {
+                if (elements[pixelMap[x][y].element].isGas) { continue }
+                if (elements[pixelMap[x][y].element].id === elements.railgun_beam_left.id) { break }
+                pixelMap[x][y].temp += 100;
+                pixelTempCheck(pixelMap[x][y]);
+                break;
+            }
+        }
+        deletePixel(pixel.x, pixel.y);
+    },
+    temp: 3500,
+    category: "ammunition",
+    state: "gas",
+    density: 1,
+    excludeRandom: true,
+    noMix: true
+},
+elements.railgun_beam_right = {
+    color: ["#ff0000","#ff5e00"],
+    tick: function(pixel) {
+        var y = pixel.y;
+        for (var x = pixel.x; x < width; x++) {
+            if (outOfBounds(x, y)) {
+                break;
+            }
+            if (isEmpty(x, y)) {
+                createPixel("railgun_ammo_right", x, y);
+                pixelMap[x][y].temp = 3500;
+            }
+            else {
+                if (elements[pixelMap[x][y].element].isGas) { continue }
+                if (elements[pixelMap[x][y].element].id === elements.railgun_beam_right.id) { break }
+                pixelMap[x][y].temp += 100;
+                pixelTempCheck(pixelMap[x][y]);
+                break;
+            }
+        }
+        deletePixel(pixel.x, pixel.y);
+    },
+    temp: 3500,
+    category: "ammunition",
+    state: "gas",
+    density: 1,
+    excludeRandom: true,
+    noMix: true
+},
+elements.railgun_ammo_left = {
+    color: ["#ff0000","#ff5e00"],
+    category: "ammunition",
+    state: "solid",
+    density: 1300,
+    tick: function(pixel) {
+        explodeAt(pixel.x, pixel.y, 10)
+        doHeat(pixel);
+    },
+},
+elements.railgun_ammo_right = {
+    color: ["#ff0000","#ff5e00"],
+    category: "ammunition",
+    state: "solid",
+    density: 1300,
+    tick: function(pixel) {
+        explodeAt(pixel.x, pixel.y, 10)
+        doHeat(pixel);
+    },
+},
+elements.railgun_left = {
+    category: "weapons",
+    behavior: behaviors.WALL,
+    behaviorOn: [
+        "XX|XX|XX",
+        "CR:railgun_beam_left|XX|XX",
+        "XX|XX|XX",
+    ],
+    color: "#71797E",
+    conduct: 1,
+    hardness: 1,
+},
+elements.railgun_right = {
+    category: "weapons",
+    behavior: behaviors.WALL,
+    behaviorOn: [
+        "XX|XX|XX",
+        "XX|XX|CR:railgun_beam_right",
+        "XX|XX|XX",
+    ],
+    color: "#71797E",
+    conduct: 1,
+    hardness: 1,
 }

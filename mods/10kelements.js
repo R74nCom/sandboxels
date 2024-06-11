@@ -9,12 +9,14 @@ elements.change_count = {
   onSelect: function() {
     var cans = prompt("Please input how many elements you would like to be generared each time.", 10000);
     if (!cans) { return }
-    if (cans == "skin"){settings.randomcount = 10000; settings.skineasteregg = true; saveSettings(); alert("skin"); return}
+    if (cans == "skin"){settings.randomcount = 10000; settings.skineasteregg = true; settings.sandeasteregg = false; saveSettings(); alert("skin"); return}
+    if (cans == "sand"){settings.randomcount = 10000; settings.skineasteregg = false; settings.sandeasteregg = true; saveSettings(); alert("sand"); return}
     if (cans > 2000000){alert("You have put too big of a number! This would surely crash your browser or eat up all your RAM! Element count will remain unchanged."); return}
     if (cans < 1 && (parseInt(cans) > -1) ){alert("You have either put a decimal or zero. Why? Element count will remain unchanged."); return}
     if (isNaN(parseInt(cans))){alert("Apparently your input isnt even a number. Try again. Element count will remain unchanged."); return}
     settings.randomcount = parseInt(cans)
     settings.skineasteregg = false;
+    settings.sandeasteregg = false;
     saveSettings()
   }, 
   category: "random"
@@ -26,6 +28,7 @@ if (!settings.randomcount){settings.randomcount = 10000; saveSettings()}
 var color = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "a", "b", "c", "d", "e","f"]
 var states = ["solid", "liquid", "gas"]
 var essentialelements = ["molten_gallium", "gallium", "gallium_gas", "change_count"]
+var sandelements = ["erase", "sand", "change_count"]
 var total = 0
 var dangerouselements = ["supernova", "n_explosion", "pn_explosion", "armageddon", "nuke", "h_bomb"]
 function randomIntFromInterval(min, max) { // min and max included 
@@ -35,7 +38,7 @@ var randomProperty = function (obj) {
     var keys = Object.keys(obj);
     return obj[keys[ keys.length* Math.random() << 0]];
 };
-if (Math.abs(settings.randomcount) == settings.randomcount){
+if (Math.abs(settings.randomcount) == settings.randomcount && !settings.sandeasteregg){
   if (!settings.skineasteregg){
   for (var i = 1; i <= settings.randomcount; i++){
       var canHeat = Math.random() < 0.2
@@ -98,7 +101,7 @@ if (Math.abs(settings.randomcount) == settings.randomcount){
     }
   }
 }
-} else {
+} else if (!(settings.sandeasteregg)) {
   window.addEventListener('load', function() {
     elementslist = []
     for (elementi in elements){
@@ -119,6 +122,40 @@ document.getElementById("extraInfo").querySelectorAll("small")[1].replaceChildre
   } else for (var i = 1; i <= Math.abs(settings.randomcount); i++){
     var elementi = elementslist[Math.floor(Math.random()*elementslist.length)]
     if(!essentialelements.includes(elementi)){
+      elementslist.splice(elementslist.indexOf(elementi), 1)
+    document.getElementById("elementButton-" + elementi)?.remove()
+    console.log(elementi)
+    }
+  }
+})
+} else {
+  runAfterAutogen(
+    function(){
+      for (elementi in elements){
+        elements[elementi].category = "sand"
+      }
+    }
+  )
+    window.addEventListener('load', function() {
+    elementslist = []
+    for (elementi in elements){
+      elementslist.push(elementi)
+  }
+  var eLen = elementslist.length
+    const p = document.createElement("p");
+p.innerText = `v${currentversion} • ` +3 +` elements, with 0 hidden`;
+document.getElementById("extraInfo").querySelectorAll("small")[1].replaceChildren(p);
+  if (Math.abs(settings.randomcount) > elementslist.length){
+    console.log("mode 1")
+    for (var elementi in elements){
+      if(!sandelements.includes(elementi)){
+      document.getElementById("elementButton-" + elementi)?.remove()
+      console.log(elementi)
+      }
+    }
+  } else for (var i = 1; i <= eLen; i++){
+    var elementi = elementslist[Math.floor(Math.random()*elementslist.length)]
+    if(!(sandelements.includes(elementi))){
       elementslist.splice(elementslist.indexOf(elementi), 1)
     document.getElementById("elementButton-" + elementi)?.remove()
     console.log(elementi)

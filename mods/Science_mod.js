@@ -1,11 +1,15 @@
 // Science mod for Sandboxels
 // (Inspired by survival.js)
-// Build 21
+// Build 26 (version alpha 0.0.26)
+console.log("version alpha 0.0.26")
+console.log("build 26")
 // If there is anything you want to suggest or there's a bug then just dm me on discord (@a_british_proto)
+// I've decided to start doing this project on my schools computer's (because they don't crash all the time) so there will be long delays in updates, sorry!
 // Todo:
 // - Make new substances that you can get after mixing different elements
-// - Make a way to get the different substances by mixing different elements and different substances
+// - Make a way to get the different substances by mixing different elements and different substances (basically the same as the one above)
 // - Create different proporties for the substances (doing now)
+// - Actually update all the properties and make them have effects
 
 // How much of the elements you're gonna have when you start:
 
@@ -1247,6 +1251,7 @@ substance.Silver_Vandium_Trioxide = {
 }
 
 // Why is this fun? How is this not torture? This is line 1247! (at the time I am making this comment)
+// Not changing this ever lol ^^^^
 
 // I think there's two silver iodides I'm just not so sure (and I ain't editing this after)
 // Nvm it's only one , I got silver iodide and silver iodate mixed up :skull:
@@ -1505,5 +1510,30 @@ substance.Aluminum_Chloride_Hydrate = {
     color: "FFFFFF",
     category: "lands",
     state: "solid",
+    hidden:true
+}
+
+// NULL/null just means unknown
+substance.Aluminum_Chloride_Hexahydrate = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+substance.Aluminum_Perchlorate_Nonahydrate = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+substance.Aluminum_Chlorate_Nonahydrate= {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
     hidden:true
 }

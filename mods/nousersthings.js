@@ -308,7 +308,9 @@ elements.technetium = {
 elements.destroyable_pipe = {
     color: "#414c4f",
     onSelect: function() {
-        logMessage("Draw a pipe, wait for walls to appear, then erase the exit hole.");
+        if(!enabledMods.contains("mods/nousersthings.js")){
+            logMessage("credit to nousersthings.js for this element")
+        }
     },
     tick: function(pixel) {
         if (!pixel.stage && pixelTicks-pixel.start > 60) {
@@ -1722,7 +1724,7 @@ elements.pn_explosion = {
 elements.smasher = {
 	color: "#606060",
 	behavior: behaviors.WALL,
-	category: "machines",
+	category: "deprecated",
 	tick: function(pixel){
 		for (var i = 0; i < squareCoords.length; i++) {
                 var coord = squareCoords[i];
@@ -1735,11 +1737,13 @@ elements.smasher = {
         }
     },
 	movable: false,
+    hidden: true
 },
+/*
 elements.mixer = {
 	color: "#F0F0F0",
 	behavior: behaviors.WALL,
-	category: "machines",
+	category: "deprecated",
 	tick: function(pixel){
 		pixel.mixList = [];
 		for (var i = 0; i < squareCoords.length; i++) {
@@ -1767,7 +1771,9 @@ elements.mixer = {
 	},
 	movable: false,
     noMix: true,
+    hidden: true,
 },
+*/
 elements.invisiblesupport = {
 	color: "#000000",
 	behavior: behaviors.WALL,
@@ -2724,7 +2730,8 @@ elements.ray_emitter = {
             var x = pixel.x+coord[0];
             var y = pixel.y+coord[1];
             if (!isEmpty(x,y, true)){
-                if (pixelMap[x][y].charge && pixelMap[x][y].element == "wire"){
+                if (pixelMap[x][y].charge && (pixelMap[x][y].element == "wire" || pixelMap[x][y].element == "insulated_wire")){
+                    if ((Math.abs(coord[0]) + Math.abs(coord[1]) == 2) && pixelMap[x][y].element == "insulated_wire"){return}
                     var dir = [0-squareCoords[i][0], 0-squareCoords[i][1]]
                     var startx = pixel.x+dir[0]
                     var starty = pixel.y+dir[1]
@@ -2742,7 +2749,7 @@ elements.ray_emitter = {
                       //  console.log(lcoord)
                         if (isEmpty(lx,ly)){
                             createPixel(pixel.rayElement, lx, ly)
-                            pixelMap[lx][ly].temp = pixelMap[x][y].temp
+                            pixelMap[lx][ly].temp = pixel.temp
                             if (pixel.rayElement == "ray"){
                                 pixelMap[lx][ly].rColor = pixel.color
                                 pixelMap[lx][ly].color = pixel.color
@@ -2777,7 +2784,8 @@ elements.ray = {
         return pixel.life || "unset"
     },
     properties: {
-        life: 10
+        life: 10,
+        maxLife: 10,
     },
     tick: function(pixel){
         if (pixel.rColor){
@@ -2786,8 +2794,8 @@ elements.ray = {
             pixel.rgb = [255,255,255]
         }
         pixel.life -= 1
-        if (pixel.life < 10){
-            pixel.color = "rgba("+pixel.rgb[0]+","+pixel.rgb[1]+","+pixel.rgb[2]+","+(pixel.life/10)+")"
+        if (pixel.life < pixel.maxLife){
+            pixel.color = "rgba("+pixel.rgb[0]+","+pixel.rgb[1]+","+pixel.rgb[2]+","+(pixel.life/pixel.maxLife)+")"
         } else {pixel.color = "rgba("+pixel.rgb[0]+","+pixel.rgb[1]+","+pixel.rgb[2]+",1)"}
         if (pixel.life <= 0){
             deletePixel(pixel.x, pixel.y)
@@ -2805,6 +2813,8 @@ var specificRayStart = 0
 var specificRayEnd = 20
 var specificRayAngle = 0
 var stopAtElement = "wall"
+var rayLife = 10
+var rainbowMode = "no"
 elements.specific_ray_emitter = {
     color: "#e73e63",
     behavior: behaviors.WALL,
@@ -2831,6 +2841,16 @@ elements.specific_ray_emitter = {
         var rayans6 = prompt("What element should the ray stop at?", (stopAtElement||"wall"));
         if (!rayans6) { return }
         stopAtElement = mostSimilarElement(rayans6)
+        let rayans7
+        if (rayans == "ray"){ rayans7 = prompt("How long should the ray stay on screen in ticks?", (rayLife||10));}
+        if (!rayans7) { return }
+        if (isNaN(parseFloat(rayans7))){
+            rayLife = 10
+        } else {
+            rayLife = rayans7
+        }
+        var rayans8 = prompt("Would you like rainbow mode to be enabled? Type yes or no.", (rainbowMode||"no"));
+        if (rayans8 == "yes"){rainbowMode = true} else {rainbowMode = false}
     },
     hoverStat: function(pixel){
         return (pixel.rayElement.toUpperCase() || "unset") + ", " + (pixel.rayStoppedByWalls.toString().toUpperCase() || "unset") + ", " + (pixel.specificRayStart || "unset") + ", " + (pixel.specificRayEnd || "unset") + ", " + (pixel.specificRayAngle || "unset")
@@ -2843,32 +2863,52 @@ elements.specific_ray_emitter = {
             pixel.specificRayEnd = specificRayEnd
             pixel.specificRayAngle = specificRayAngle
             pixel.stopAtElement = stopAtElement
+            pixel.life = rayLife
+            pixel.rainbowMode = rainbowMode
         }
+        if (pixel.rainbowMode){
+        pixel.specificRayAngle ++
+        pixel.rgb = pixel.color.match(/\d+/g);
+        pixel.rgb[0] = parseInt(pixel.rgb[0])
+        pixel.rgb[1] = parseInt(pixel.rgb[1])
+        pixel.rgb[2] = parseInt(pixel.rgb[2])
+        console.log(pixel.rgb)
+        var hsvResult = RGBtoHSV(pixel.rgb[0], pixel.rgb[1], pixel.rgb[2]);
+            pixel.tHue = hsvResult.h;
+            var rgbResult = HSVtoRGB(pixel.tHue + (1/360), 1, 1);
+            console.log(rgbResult)
+            const hexR = rgbResult.r.toString(16).padStart(2, '0');
+            const hexG = rgbResult.g.toString(16).padStart(2, '0');
+            const hexB = rgbResult.b.toString(16).padStart(2, '0');
+            const hexCode = `#${hexR}${hexG}${hexB}`;
+            console.log(hexCode)
+            pixel.color = pixelColorPick(pixel, hexCode)}
         for (var i = 0; i < squareCoords.length; i++) {
             var coord = squareCoords[i];
             var x = pixel.x+coord[0];
             var y = pixel.y+coord[1];
             if (!isEmpty(x,y, true)){
-                if (pixelMap[x][y].charge && pixelMap[x][y].element == "wire"){
+                if (pixelMap[x][y].charge && (pixelMap[x][y].element == "wire" || pixelMap[x][y].element == "insulated_wire")){
+                    if ((Math.abs(coord[0]) + Math.abs(coord[1]) == 2) && pixelMap[x][y].element == "insulated_wire"){return}
                     var dir = [0-squareCoords[i][0], 0-squareCoords[i][1]]
                     let startx, starty, endx, endy, magnitude
                     if (pixel.specificRayAngle == "nah"){
-                        startx = pixel.x+(dir[0]*specificRayStart)
-                        starty = pixel.y+(dir[1]*specificRayStart)
-                        magnitude = specificRayEnd
+                        startx = pixel.x+(dir[0]*pixel.specificRayStart)
+                        starty = pixel.y+(dir[1]*pixel.specificRayStart)
+                        magnitude = pixel.specificRayEnd
                         endx = startx+(magnitude*dir[0])
                         endy = starty+(magnitude*dir[1])
                     } else {
                         let angleInRadians = pixel.specificRayAngle * Math.PI / 180;
-                        console.log("Angle in radians is " + angleInRadians)
+                        //console.log("Angle in radians is " + angleInRadians)
                         dir = [(Math.cos(angleInRadians)), (Math.sin(angleInRadians))]
-                        startx = pixel.x+Math.round((dir[0]*specificRayStart))
-                        starty = pixel.y+Math.round((dir[1]*specificRayStart))
-                        magnitude = specificRayEnd
+                        startx = pixel.x+Math.round((dir[0]*pixel.specificRayStart))
+                        starty = pixel.y+Math.round((dir[1]*pixel.specificRayStart))
+                        magnitude = pixel.specificRayEnd
                         endx = startx+Math.round((magnitude*dir[0]))
                         endy = starty+Math.round((magnitude*dir[1]))
                     }
-                 console.log("Direction seems to be " + dir)
+                 //console.log("Direction seems to be " + dir)
                     var jcoords = lineCoords(startx, starty, endx, endy, 1)
                  //console.log(startx + " is the starting x, " + starty + " is the starting y, " + endx + " is the ending x, " + endy + " is the ending y. Result is " + jcoords)
                     for (var j = 0; j < jcoords.length; j++) {
@@ -2878,17 +2918,20 @@ elements.specific_ray_emitter = {
                       //  console.log(lcoord)
                         if (isEmpty(lx,ly)){
                             createPixel(pixel.rayElement, lx, ly)
-                            pixelMap[lx][ly].temp = pixelMap[x][y].temp
+                            pixelMap[lx][ly].temp = pixel.temp
                             if (pixel.rayElement == "ray"){
                                 pixelMap[lx][ly].rColor = pixel.color
                                 pixelMap[lx][ly].color = pixel.color
+                                pixelMap[lx][ly].life = pixel.life
+                                pixelMap[lx][ly].maxLife = pixel.life
                             }
                         } else if (!isEmpty(lx, ly, true)){
                             if ((pixelMap[lx][ly].element != pixel.rayElement && pixel.rayStoppedByWalls) || pixelMap[lx][ly].element == pixel.stopAtElement){
                                 break;
                             } else if (pixelMap[lx][ly].element == "ray" && pixel.rayElement == "ray"){
                                 pixelMap[lx][ly].rColor = pixel.color
-                                pixelMap[lx][ly].life = 10
+                                pixelMap[lx][ly].life = pixel.life
+                                pixelMap[lx][ly].maxLife = pixel.life
                                 pixelMap[lx][ly].color = pixel.color
                             }
                         }
@@ -2896,6 +2939,183 @@ elements.specific_ray_emitter = {
                 }
             }
         }
+    },
+    insulate: true,
+}
+elements.run_some_code = {
+    color: "#68b2cf",
+    category: "tools",
+    canPlace: false,
+    onSelect: function(){
+        let code = prompt("Enter code to run")
+        if (code){
+            eval(code)
+        }
+    }
+}
+elements.insulated_wire = {
+    color: "#5e2d2c",
+    category: "machines",
+    conduct: 1,
+    tick: function(pixel){
+        {
+            if (pixel.charge) {
+                // Check each adjacent pixel, if that pixel's charge is false, set it to the same charge
+                for (var i = 0; i < adjacentCoords.length; i++) {
+                    var x = pixel.x+adjacentCoords[i][0];
+                    var y = pixel.y+adjacentCoords[i][1];
+                    if (!isEmpty(x,y,true)) {
+                        var newPixel = pixelMap[x][y];
+                        var con = newPixel.element;
+                        if (con == "insulated_wire") {
+                        if (1 == 1) { // If random number is less than conductivity
+                            if (!newPixel.charge && !newPixel.chargeCD) {
+                                newPixel.charge = 1;
+                            }
+                        }
+                    }
+                }
+                }
+                pixel.charge -= 0.25;
+                if (pixel.charge <= 0) {
+                    delete pixel.charge;
+                    // pixel.chargeCD = 4;
+                    pixel.chargeCD = Math.round(4 + (4*(1-elements[pixel.element].conduct))) || 4;
+                }
+            }
+            // Lower charge cooldown
+            else if (pixel.chargeCD) {
+                pixel.chargeCD -= 1;
+                if (pixel.chargeCD <= 0) {
+                    delete pixel.chargeCD;
+                    if (elements[pixel.element].colorOn) {
+                        pixel.color = pixelColorPick(pixel);
+                    }
+                }
+            }
+        }
+        doHeat(pixel)
+    }
+}
+elements.insulated_wire.desc = "Insulated wire. Only conducts to other insulated wires. Pairs with ray emitters to not make diagonal rays."
+elements.e_pipe.desc = "Electric pipe. Only passes elements while charged."
+elements.destroyable_e_pipe.desc = elements.e_pipe.desc
+elements.channel_pipe.desc = "Channel pipe. Only passes elements to pipes of the same channel."
+elements.bridge_pipe.desc = "Bridge pipe. Can pass and receive from any other type of pipe."
+elements.ray_emitter.desc = "Emits a ray of the specified element in the opposite direction it was shocked from."
+elements.specific_ray_emitter.desc = "Emits a ray of the specified element in a specific direction and a specific length."
+elements.blackhole_storage.desc = "Stores elements inside of itself. Can be released by shocking it."
+let pullOrPush = 1
+elements.piston_ray_emitter = {
+    color: "#143b5f",
+    behavior: behaviors.WALL,
+    category: "machines",
+    movable: false,
+    onSelect: function(){
+        var ans1 = prompt("Would you like this piston to pull or push?", "pull").toLowerCase();
+        if (ans1 == "pull"){pullOrPush = 1}
+        else if (ans1 == "push"){pullOrPush = 2}
+    },
+    tick: function(pixel){
+        if (pixelTicks == pixel.start){
+            pixel.pullOrPush = pullOrPush
+        }
+        if (!pixel.cooldown){pixel.cooldown = 0}
+        if (pixel.cooldown < 1){
+        for (var i = 0; i < adjacentCoords.length; i++) {
+            var coord = squareCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (!isEmpty(x,y, true)){
+                if (pixelMap[x][y].charge && (pixelMap[x][y].element == "wire" || pixelMap[x][y].element == "insulated_wire")){
+                    pixel.cooldown = 6
+                    var dir = [0-squareCoords[i][0], 0-squareCoords[i][1]]
+                    var startx = pixel.x+dir[0]
+                    var starty = pixel.y+dir[1]
+                    var magnitude = 0
+                    if (width > height){magnitude = width} else {magnitude = height}
+                    var endx = startx+(magnitude*dir[0])
+                    var endy = starty+(magnitude*dir[1])
+                 //   console.log("Direction seems to be " + dir)
+                 var jcoords
+                 if (pixel.pullOrPush == 1){jcoords = lineCoords(startx, starty, endx, endy, 1)}
+                 else {jcoords = lineCoords(endx, endy, startx, starty, 1)}
+                 
+                 //   console.log(startx + " is the starting x, " + starty + " is the starting y, " + endx + " is the ending x, " + endy + " is the ending y. Result is " + jcoords)
+                    let pCoord = jcoords[0]
+                    for (var j = 0; j < jcoords.length; j++) {
+                        var lcoord = jcoords[j];
+                        var lx = lcoord[0];
+                        var ly = lcoord[1];
+                        if (!isEmpty(lx, ly, true)){
+                            tryMove(pixelMap[lx][ly], pCoord[0], pCoord[1])
+                        }
+                        pCoord[0] = lx;
+                        pCoord[1] = ly;
+                    }
+                }
+            }
+        }} else {pixel.cooldown -= 1}
+    },
+    insulate: true,
+}
+let pistonStart = 0
+let pistonEnd = 0
+elements.specific_piston_ray_emitter = {
+    color: "#517597",
+    behavior: behaviors.WALL,
+    category: "machines",
+    movable: false,
+    onSelect: function(){
+        var ans1 = prompt("Would you like this piston to pull or push?", "pull").toLowerCase();
+        if (ans1 == "pull"){pullOrPush = 1}
+        else if (ans1 == "push"){pullOrPush = 2}
+        var ans2 = parseInt(prompt("How offset should the start of the push/pulling be?", "0"))
+        pistonStart = ans2
+        var ans3 = parseInt(prompt("How offset should the end of the push/pulling be?", "20"))
+        pistonEnd = ans3
+    },
+    tick: function(pixel){
+        if (pixelTicks == pixel.start){
+            pixel.pullOrPush = pullOrPush
+            pixel.pistonStart = pistonStart
+            pixel.pistonEnd = pistonEnd
+        }
+        if (!pixel.cooldown){pixel.cooldown = 0}
+        if (pixel.cooldown < 1){
+        for (var i = 0; i < adjacentCoords.length; i++) {
+            var coord = squareCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (!isEmpty(x,y, true)){
+                if (pixelMap[x][y].charge && (pixelMap[x][y].element == "wire" || pixelMap[x][y].element == "insulated_wire")){
+                    pixel.cooldown = 6
+                    var dir = [0-squareCoords[i][0], 0-squareCoords[i][1]]
+                    var startx = pixel.x+(dir[0]*pixel.pistonStart)
+                    var starty = pixel.y+(dir[1]*pixel.pistonStart)
+                    var magnitude = pixel.pistonEnd
+                    var endx = startx+(magnitude*dir[0])
+                    var endy = starty+(magnitude*dir[1])
+                 //   console.log("Direction seems to be " + dir)
+                 var jcoords
+                 if (pixel.pullOrPush == 1){jcoords = lineCoords(startx, starty, endx, endy, 1)}
+                 else {jcoords = lineCoords(endx, endy, startx, starty, 1)}
+                 
+                 //   console.log(startx + " is the starting x, " + starty + " is the starting y, " + endx + " is the ending x, " + endy + " is the ending y. Result is " + jcoords)
+                    let pCoord = jcoords[0]
+                    for (var j = 0; j < jcoords.length; j++) {
+                        var lcoord = jcoords[j];
+                        var lx = lcoord[0];
+                        var ly = lcoord[1];
+                        if (!isEmpty(lx, ly, true)){
+                            tryMove(pixelMap[lx][ly], pCoord[0], pCoord[1])
+                        }
+                        pCoord[0] = lx;
+                        pCoord[1] = ly;
+                    }
+                }
+            }
+        }} else {pixel.cooldown -= 1}
     },
     insulate: true,
 }

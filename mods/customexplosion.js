@@ -31,7 +31,7 @@ function reactPixels(pixel1,pixel2) {
     if (r.burning2 !== undefined && Boolean(pixel2.burning) !== r.burning2) {
         return false;
     }
-    if (r.charged && !pixel.charge) {
+    if (r.charged && !pixel1.charge) {
         return false;
     }
     if (r.chance !== undefined && Math.random() > r.chance) {
