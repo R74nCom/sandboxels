@@ -96,116 +96,193 @@ elements.radio_wave= {
     reactions: {electric: {elem1: null, elem2: null, chance: 0.5}},
     density: 1,
     //charge: 0.5,
-    conduct: 0.01
+    conduct: 0.01,
+    ignore: ["radio_wave"],
 };
+
 elements.e_nuke = {
-	desc: "Works like the nuke but needs power to explode",
-	color: "#534636",
-	hardness: elements.nuke.hardness,
+    desc: "Works like a nuke but needs power to explode",
+	color: elements.nuke.color,
+	hardness: 0.5,
 	state: "solid",
-	behavior: [
-        "XX|XX|XX",
-        "XX|XX|XX",
-        "M2|M1|M2",
-    ],
+	behavior: behaviors.POWDER,
 	conduct: 1,
 	category: "weapons",
-	behaviorOn:[
+	behaviorOn:  [
         "XX|XX|XX",
         "XX|XX|XX",
         "M2|M1 AND EX:60>plasma,plasma,plasma,plasma,radiation,rad_steam|M2",
     ],
+	name: "E-Nuke",
 };
-elements.10_timer= {
-    color: ["#000000"],
-    behavior: behaviors.WALL,
-    colorOn: "#000000",
-    conduct: 0,
-    category: "machines",
-    properties: {
-        wait: 15,
-        waitReduce: false,
-    },
-    tick: function(pixel){
-        if (pixel.waitReduce){pixel.wait -= 1}
-        if (pixel.wait == 0){
-            pixel.elementsSeen = {}
-        }
-        for (var i = 0; i < adjacentCoords.length; i++) {
-            var coord = adjacentCoords[i];
-            var x = pixel.x+coord[0];
-            var y = pixel.y+coord[1];
-            if (!isEmpty(x,y, true)){
-                if (!pixel.waitReduce){
-                    pixel.waitReduce = true
-                },
-		                    if (pixel.wait == 0){
-                    if (!pixel.elementsSeen[pixelMap[x][y].element] && pixelMap[x][y].element != "healing_serum"){
-                        pixel.elementsSeen[pixelMap[x][y].element] = 1
-                    } else if (pixelMap[x][y].element != "healing_serum") {
-                        pixel.elementsSeen[pixelMap[x][y].element] += 1
+elements.drill = {
+    color: ["#a7ab81","#a3a685", "#9ba252"],
+    tick: function(pixel) {
+        for (var i = 0; i < 3; i++) {
+            var skip = false;
+            if (!isEmpty(pixel.x,pixel.y+1,true)) {
+                var p = pixelMap[pixel.x][pixel.y+1];
+                if (p.element === "drill") { skip = true; }
+                if (Math.random() < 0.9 && elements[p.element].hardness !== 1) {
+                    deletePixel(p.x,p.y);
+                }
+            }
+            if (!tryMove(pixel,pixel.x,pixel.y+1,["flash","smoke"]) && !skip) {
+                explodeAt(pixel.x,pixel.y,5,"flash");
+                var coords = circleCoords(pixel.x,pixel.y,2);
+                coords.forEach(function(coord){
+                    var x = coord.x;
+                    var y = coord.y;
+                    if (!isEmpty(x,y,true)) {
+                        pixelMap[x][y].temp += 55;
+                        pixelTempCheck(pixelMap[x][y]);
                     }
-                }
-            }
-            if (pixel.wait == 0){
-                if (Object.keys(pixel.elementsSeen).length == 0){
-                    deletePixel(pixel.x, pixel.y)
-                    return;
-                } else{
-                    changePixel(pixel, Object.keys(pixel.elementsSeen).reduce((a, b) => pixel.elementsSeen[a] > pixel.elementsSeen[b] ? a : b))
-                }
+                })
+                deletePixel(pixel.x,pixel.y);
+                return;
             }
         }
-    }
-}
-elements.gasoline_engine = {
-  color: "#6d5f5d",
-  behavior: behaviors.WALL,
-  state: "solid",
-  density: 1000,
-  category: "testing",
-  properties: {
-    timer: 10
-  },
-  tick: function(pixel){
-    if (pixel.timer <= 40){
-          if(!pixel.timer){pixel.timer = 0}
-          pixel.timer -= 10
-        }
-        else if (otherPixel.element == "gasoline_engine"){
-          var otherPixel = pixelMap[x][y]
-          var otherShock = otherPixel.timer || 0
-          var currentShock = pixel.timer || 0
-          if (otherShock == currentShock){break;}
-          if (otherShock > currentShock){
-            otherPixel.timer --
-            pixel.timer ++
-          } else {
-            otherPixel.timer ++
-            pixel.timer --
-          }
-        }
-      }
-    }}
-    if (!pixel.charge && !pixel.chargeCD && pixel.timer){
-      for (var i = 0; i < adjacentCoords.length; i++){
-        var coord = adjacentCoords[i]
-        var x = pixel.x + coord[0]
-        var y = pixel.y + coord[1]
-        if (!isEmpty(x, y, true)){
-          if (elements[pixelMap[x][y]].conduct > 0){
-            pixel.charge = 1
-            pixel.timer --
-            break;
-          }
-        }
-      }
-    }
-  }
-}
-    category: "energy",
-    reactions: {electric: {elem1: null, elem2: null, chance: 0.5}},
-    density: 1,
-    //charge: 0.5,
-    conduct: 0
+    },
+    category: "weapons",
+    state: "solid",
+    density: 100000000,
+    temp: 55,
+    hardness: 1,
+    maxSize: 3,
+    cooldown: defaultCooldown,
+    excludeRandom: true,
 };
+elements.holy_hand_grenade = {
+    color: elements.gold.color,
+    behavior: [
+        "XX|EX:6>god_ray,bless,bless,bless%1|XX",
+        "XX|XX|XX",
+        "M2|M1 AND EX:6>god_ray,bless,bless,bless%1|M2",
+    ],
+    behaviorOn: [
+        "XX|XX|XX",
+        "XX|EX:6>god_ray,bless,bless,bless%1|XX",
+        "XX|XX|XX",
+    ],
+    category: "weapons",
+    state: "solid",
+    density: 1300,
+    tempHigh: 1455.5,
+    stateHigh: ["molten_steel", "god_ray"],
+    excludeRandom: true,
+    conduct: 1,
+    cooldown: defaultCooldown,
+};
+//Fioushemastor (Aparently needlessly complicated. IDK)
+elements.timer_input =  {
+    color: "#4d0a03",
+    behavior: behaviors.WALL,
+    category: "machines",
+    insulate: true,
+    conduct: 1,
+    noMix: true
+  }
+  
+  let TimerDelay = 100
+  elements.Timer = {
+      color: "#838cc2",
+      behavior: behaviors.WALL,
+      tick: function(pixel){
+        if (pixelTicks == pixel.start) {
+          pixel.delay = TimerDelay
+        }
+        //ceck all surroundings
+        for (let offset of adjacentCoords) {
+          if (isEmpty(pixel.x+offset[0], pixel.y+offset[1])) continue;
+          if (pixelMap[pixel.x+offset[0]][pixel.y+offset[1]].charge && pixelMap[pixel.x+offset[0]][pixel.y+offset[1]].element == "timer_input") {
+            let oppositeCoords = {x: pixel.x-offset[0], y: pixel.y-offset[1]}
+            pixel.timers.push({start: pixelTicks, coords: oppositeCoords, delay: pixel.delay})
+          }
+        }
+        //go through all timers
+        for (let index in pixel.timers) {
+          let timer = pixel.timers[index]
+          if (timer.start == pixelTicks-pixel.delay) {
+            if (isEmpty(timer.coords.x, timer.coords.y, true)) continue;
+            pixelMap[timer.coords.x][timer.coords.y].charge = 1
+            pixel.timers.splice(index, 1)
+          }
+        }
+  
+      },
+      onSelect: () => {
+        TimerDelay = prompt("what shall the delay be? (in ticks)", 100)
+      },
+      colorOn: "#ffff59",
+      category: "machines",
+      tempHigh: 1455.5,
+      stateHigh: "molten_steel",
+      conduct: 0,
+      properties: {
+        timers: [],
+        delay: 100
+      }
+  }; 
+
+//ExtraMachines
+elements.titanium = {
+    desc: "Another metal that does not erode nor conduct electricity",
+	conduct: 0,
+	color: ["#a1ada5","#ebf5ee","#bac2bc","#848a86","#505251"],
+	tempHigh:3000,
+    stateHigh: "molten_titanium",
+    category: "solids",
+    state: "soild",
+	 hardness: 1,
+    density: 792,
+	behavior: behaviors.WALL,
+};
+
+elements.molten_titanium = {
+    desc: "Melted version of titanium",
+    temp : 3000,
+	conduct: 0,
+	color: ["#d16e04","#FFCC99","#FF6600","#FF7F50","#DC143C","#800020"],
+	tempLow:2999,
+    stateLow: "titanium",
+    category: "states",
+    state: "soild",
+    density: 792,
+	behavior: behaviors.MOLTEN,
+};
+textures.Reniforced_Titanuim = {
+    REINFORCEDTITANIUM: [
+        "GiGgggGiGGg",
+        "gggGGGGgggg",
+        "iiiiiiiiiii",
+        "GgGGggggGGg",
+        "GggGGgggGGg",
+        "igGGGgggggi",
+        "GggggggGGGG",
+        "GggGGgggggg",
+        "Ggggggggggg",
+        "ggggggGGggg",
+        "Ggggggggggg",
+        "iiiiiiiiiii",],
+  
+   
+};                                                                                                                
+
+elements.Reniforced_Titanuim = {
+    color: "#787878",
+    colorPattern: textures.Reniforced_Titanuim.REINFORCEDTITANIUM,
+    colorKey: {
+        "g": "#787878",
+        "G": "#606060",
+        "i": "#332f2f"},
+    behavior: behaviors.WALL,
+    
+    tempHigh: 4000,
+    stateHigh : "molten_titanium",
+    category: "solids",
+    state: "solid",
+    density: 5000,
+    hardness:1,
+    noMix: true
+};
+
