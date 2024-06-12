@@ -1,11 +1,12 @@
 // Science mod for Sandboxels
 // (Inspired by survival.js)
-// Build 33 (version alpha 0.0.33)
-console.log("Version alpha 0.0.33")
-console.log("Build 33")
-console.log("If you see something that is alumium and not aluminium, just dm me on discord (this is a british mod aight)")
+// Build 34 (version alpha 0.0.34)
+console.log("Version alpha 0.0.34")
+console.log("Build 34")
+console.log("If you see something that is alumium and not aluminium, just dm me on discord (this is a british/welsh mod aight)")
 console.log("THIS IS NOT DONE")
-// Read comment at line 1521 for information on what I mean by null/NULL
+// You'll see a lot more of my school account
+// Read comment at line 1522 for information on what I mean by null/NULL
 // This used to be a full time thing, but now it's basically just half-time now. 
 // It has been confirmed, I am getting a pc on 25/06/2024 :D (I'm also going to be animating for my friends movies that are coming out soon)
 // If there is anything you want to suggest or there's a bug then just dm me on discord (@a_british_proto)
@@ -1658,5 +1659,21 @@ substance.Sodium_Hexafluoroaluminate = {
     color: "FFFFFF",
     category: "lands",
     state: "powder",
+    hidden:true
+}
+
+substance.Sodium_Phosphoaluminate = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true,
+}
+
+substance.Aluminum_Hypophosphite = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
     hidden:true
 }
