@@ -1,8 +1,8 @@
 // Science mod for Sandboxels
 // (Inspired by survival.js)
-// Build 34 (version alpha 0.0.34)
-console.log("Version alpha 0.0.34")
-console.log("Build 34")
+// Build 35 (version alpha 0.0.35)
+console.log("Version alpha 0.0.35")
+console.log("Build 35")
 console.log("If you see something that is alumium and not aluminium, just dm me on discord (this is a british/welsh mod aight)")
 console.log("THIS IS NOT DONE")
 // You'll see a lot more of my school account
@@ -1675,5 +1675,37 @@ substance.Aluminum_Hypophosphite = {
     color: "000000",
     category: "null",
     state: "null",
+    hidden:true
+}
+
+substance.Aluminum_Hydroxide = {
+    behavior: behaviors.POWDER,
+    color: "FFFFFF",
+    category: "lands",
+    state: "powder",
+    hidden:true
+}
+
+substance.Aluminum_Metasophate = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+substance.Lithium_Aluminium_Hydride = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Sodium_Aluminium_Hydride = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
     hidden:true
 }
