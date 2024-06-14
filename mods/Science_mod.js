@@ -1,8 +1,8 @@
 // Science mod for Sandboxels
 // (Inspired by survival.js)
-// Build 35 (version alpha 0.0.35)
-console.log("Version alpha 0.0.35")
-console.log("Build 35")
+// Build 36 (version alpha 0.0.36)
+console.log("Version alpha 0.0.36")
+console.log("Build 36")
 console.log("If you see something that is alumium and not aluminium, just dm me on discord (this is a british/welsh mod aight)")
 console.log("THIS IS NOT DONE")
 // You'll see a lot more of my school account
@@ -1707,5 +1707,69 @@ substance.Sodium_Aluminium_Hydride = {
     color: "FFFFFF",
     category: "lands",
     state: "solid",
+    hidden:true
+}
+
+substance.Strontium_Lanthanum_Aluminate = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+substance.Aluminum_Nitrate_Nonahydrate = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+substance.Aluminium_Nitrate = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Potassium_Aluminum_Sulfate_Dodecahydrate = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+substance.Alum = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Kalinite = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Potassium_Alum = {
+    behavior: behaviors.POWDER,
+    color: "FFFFFF",
+    category: "lands",
+    state: "powder",
+    hidden:true
+}
+
+substance.Sodium_Alum = {
+    behavior: behaviors.POWDER,
+    color: "FFFFFF",
+    category: "lands",
+    state: "powder",
     hidden:true
 }
