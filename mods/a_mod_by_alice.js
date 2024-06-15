@@ -1439,11 +1439,11 @@ try {
 				};
 				if (elements[pixel.element].breakIntoColor) {
 					var oldelement = pixel.element;
-					changePixel(pixel,result);
+					changePixel(pixel,result,changeTemp);
 					pixel.color = pixelColorPick(pixel, elements[oldelement].breakIntoColor);
 				}
 				else {
-					changePixel(pixel,result);
+					changePixel(pixel,result,changeTemp);
 				}
 			}
 			defaultHardness = 0.3;
