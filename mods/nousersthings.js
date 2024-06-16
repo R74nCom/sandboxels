@@ -2842,7 +2842,7 @@ elements.specific_ray_emitter = {
         if (!rayans6) { return }
         stopAtElement = mostSimilarElement(rayans6)
         let rayans7
-        if (rayans == "ray"){ rayans7 = prompt("How long should the ray stay on screen in ticks?", (rayLife||10));}
+        if (rayans == "ray"){ rayans7 = prompt("How long should the ray stay on screen in ticks?", (rayLife||10));
         if (!rayans7) { return }
         if (isNaN(parseFloat(rayans7))){
             rayLife = 10
@@ -2851,6 +2851,7 @@ elements.specific_ray_emitter = {
         }
         var rayans8 = prompt("Would you like rainbow mode to be enabled? Type yes or no.", (rainbowMode||"no"));
         if (rayans8 == "yes"){rainbowMode = true} else {rainbowMode = false}
+        }
     },
     hoverStat: function(pixel){
         return (pixel.rayElement.toUpperCase() || "unset") + ", " + (pixel.rayStoppedByWalls.toString().toUpperCase() || "unset") + ", " + (pixel.specificRayStart || "unset") + ", " + (pixel.specificRayEnd || "unset") + ", " + (pixel.specificRayAngle || "unset")
