@@ -3093,7 +3093,7 @@ elements.piston_ray_emitter = {
                         var lx = lcoord[0];
                         var ly = lcoord[1];
                         if (!isEmpty(lx, ly, true)){
-                            tryMove(pixelMap[lx][ly], pCoord[0], pCoord[1])
+                            tryMove(pixelMap[lx][ly], pCoord[0], pCoord[1], null, true)
                         }
                         pCoord[0] = lx;
                         pCoord[1] = ly;
@@ -3153,7 +3153,7 @@ elements.specific_piston_ray_emitter = {
                         var lx = lcoord[0];
                         var ly = lcoord[1];
                         if (!isEmpty(lx, ly, true)){
-                            tryMove(pixelMap[lx][ly], pCoord[0], pCoord[1])
+                            tryMove(pixelMap[lx][ly], pCoord[0], pCoord[1], null, true)
                         }
                         pCoord[0] = lx;
                         pCoord[1] = ly;
