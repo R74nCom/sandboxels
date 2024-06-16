@@ -265,9 +265,9 @@ elements.plasma.tick = function(pixel) {
     lightmap[y][x] = { color: plasmaColor };
 };
 
-// Wait for loading
-// if it loads too soon then width will be undefined
-setTimeout(() => { initializeLightmap(width, height); }, 700);
+window.addEventListener('load', function() {
+    initializeLightmap(width, height);
+});
 
 // Add code to functions instead of replacing them
 let originalTick = tick;

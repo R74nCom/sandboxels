@@ -265,20 +265,9 @@ elements.plasma.tick = function(pixel) {
     lightmap[y][x] = { color: plasmaColor };
 };
 
-// Wait for loading
-let i = 0;
-let interval = setInterval(() => {
-	if (typeof width !== 'undefined') {
-		clearInterval(interval);
-		initializeLightmap(width, height);
-	}
-	i += 1;
-	// if width is not defined for 3 seconds or longer, it's probably broken, so it will just try run the function anyways to see the error
-	if (i >= 30) {
-		clearInterval(interval);
-		initializeLightmap(width, height);
-	}
-}, 100);
+window.addEventListener('load', function() {
+    initializeLightmap(width, height);
+});
 
 // Add code to functions instead of replacing them
 let originalTick = tick;
