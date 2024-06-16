@@ -2514,8 +2514,9 @@ elements.solid_diamond = {
     tempHigh: elements.diamond.tempHigh,
     stateHigh: elements.diamond.stateHigh,
     state: "solid",
-    denisty: elements.diamond.density,
-    hardness: elements.diamond.hardness
+    density: elements.diamond.density,
+    hardness: elements.diamond.hardness,
+    behavior: behaviors.WALL,
 }
 elements.textured_rose_gold = {
     color: ["#FF5991", "#E4386F", "#7F1037", "#FFCCCD", "#671133"],
