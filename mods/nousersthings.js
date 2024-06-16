@@ -2967,7 +2967,51 @@ elements.insulated_wire = {
                     if (!isEmpty(x,y,true)) {
                         var newPixel = pixelMap[x][y];
                         var con = newPixel.element;
-                        if (con == "insulated_wire") {
+                        if (con == "insulated_wire" || con == "wire_bridge") {
+                        if (1 == 1) { // If random number is less than conductivity
+                            if (!newPixel.charge && !newPixel.chargeCD) {
+                                newPixel.charge = 1;
+                            }
+                        }
+                    }
+                }
+                }
+                pixel.charge -= 0.25;
+                if (pixel.charge <= 0) {
+                    delete pixel.charge;
+                    // pixel.chargeCD = 4;
+                    pixel.chargeCD = Math.round(4 + (4*(1-elements[pixel.element].conduct))) || 4;
+                }
+            }
+            // Lower charge cooldown
+            else if (pixel.chargeCD) {
+                pixel.chargeCD -= 1;
+                if (pixel.chargeCD <= 0) {
+                    delete pixel.chargeCD;
+                    if (elements[pixel.element].colorOn) {
+                        pixel.color = pixelColorPick(pixel);
+                    }
+                }
+            }
+        }
+        doHeat(pixel)
+    }
+}
+elements.wire_bridge = {
+    color: "#461716",
+    category: "machines",
+    conduct: 1,
+    tick: function(pixel){
+        {
+            if (pixel.charge) {
+                // Check each adjacent pixel, if that pixel's charge is false, set it to the same charge
+                for (var i = 0; i < adjacentCoords.length; i++) {
+                    var x = pixel.x+adjacentCoords[i][0];
+                    var y = pixel.y+adjacentCoords[i][1];
+                    if (!isEmpty(x,y,true)) {
+                        var newPixel = pixelMap[x][y];
+                        var con = newPixel.element;
+                        if (con == "insulated_wire" || con == "wire" || con == "wire_bridge") {
                         if (1 == 1) { // If random number is less than conductivity
                             if (!newPixel.charge && !newPixel.chargeCD) {
                                 newPixel.charge = 1;
@@ -3118,4 +3162,78 @@ elements.specific_piston_ray_emitter = {
         }} else {pixel.cooldown -= 1}
     },
     insulate: true,
+}
+if (!elements.molten_gallium.reactions){elements.gallium.reactions = {}}
+elements.molten_gallium.reactions.nitrogen = {elem1: "gallium_nitride", elem2: null, chance: 0.02, tempMin: 1200}
+elements.gallium_nitride = {
+    color: "#dedf9d",
+    behavior: behaviors.WALL,
+    colorOn: "#493ee9",
+    category: "solids",
+    tempHigh: 1650,
+    density: 6100,
+    stateHigh: "molten_gallium_nitride",
+    state: "solid",
+    conduct: 0.84,
+    tick: function(pixel){
+        if (pixel.charge){
+            for (var i = 0; i < adjacentCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (isEmpty(x,y, true)){
+                    if (Math.random() < 0.3){
+                        createPixel("light", x, y)
+                        pixelMap[x][y].color = pixelColorPick(pixelMap[x][y], "#493ee9")
+                    }
+                }
+            }
+        }
+    }
+}
+elements.molten_gallium_nitride = {
+    color: ["#d29d70", "#cf8e5e", "#cd7e4e", "#ca6d40", "#c75b33"],
+    behavior: behaviors.MOLTEN,
+    category: "states",
+    hidden: true,
+    state: "liquid",
+    tempLow: 1640,
+    stateLow: "gallium_nitride",
+    density: 6050,
+}
+elements.gallium_phosphide = {
+    color: "#be6008",
+    behavior: behaviors.WALL,
+    colorOn: "#00ff15",
+    category: "solids",
+    tempHigh: 1457,
+    density: 4138,
+    stateHigh: "molten_gallium_phosphide",
+    state: "solid",
+    conduct: 0.84,
+    tick: function(pixel){
+        if (pixel.charge){
+            for (var i = 0; i < adjacentCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (isEmpty(x,y, true)){
+                    if (Math.random() < 0.3){
+                        createPixel("light", x, y)
+                        pixelMap[x][y].color = pixelColorPick(pixelMap[x][y], "#00ff15")
+                    }
+                }
+            }
+        }
+    }
+}
+elements.molten_gallium_phosphide = {
+    color: ["#a36936", "#cf8e5e", "#9b4c1c", "#ca6d40", "#a13d19"],
+    behavior: behaviors.MOLTEN,
+    category: "states",
+    hidden: true,
+    state: "liquid",
+    tempLow: 1447,
+    stateLow: "gallium_phosphide",
+    density: 4100,
 }
