@@ -38,7 +38,7 @@ const heatfunc = function(pixel){
 			pixel.color = "rgb(" + weightedAverage(pixel.ogR, newR, weight) + "," + weightedAverage(pixel.ogG, newG, weight) + "," + weightedAverage(pixel.ogB, newB, weight) + ")";
 	}}};
 	if (!eLists.metals) { eLists.metals = [] }
-	eLists.metals = eLists.metals.concat(["iron", "glass", "copper", "gold", "brass","steel","nickel","zinc","silver","aluminum","bronze","metal_scrap","oxidized_copper","tin","lead", "rose_gold"])
+	eLists.metals = eLists.metals.concat(["iron", "glass", "copper", "gold", "brass","steel","nickel","zinc","silver","aluminum","bronze","metal_scrap","oxidized_copper","tin","lead", "rose_gold", "tungsten"])
 eLists.metals.forEach(metal => { 
 	const prefunc = elements[metal].tick;
 	if (!prefunc){
