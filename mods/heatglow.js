@@ -36,6 +36,26 @@ const heatfunc = function(pixel){
 			}
 			let weight = (1-(ctemp/1.3))
 			pixel.color = "rgb(" + weightedAverage(pixel.ogR, newR, weight) + "," + weightedAverage(pixel.ogG, newG, weight) + "," + weightedAverage(pixel.ogB, newB, weight) + ")";
+			// lightmap.js integration below
+			if (enabledMods.includes("mods/lightmap.js")){
+				if (pixel.temp <= (gethigh) - halftemp){
+					ctemp = 0;
+				} else if (pixel.temp > (gethigh)-halftemp && pixel.temp <= gethigh){
+					ctemp = ((1/halftemp)*pixel.temp)-(((gethigh)-halftemp)/halftemp)
+				}
+				if (ctemp <= 0.5){
+					LnewR = (((510-(2*0))*ctemp)+0);
+					LnewG = ((0-((2*0)*ctemp))+0);
+					LnewB = ((0-((2*0)*ctemp))+0);
+				}else if (ctemp > 0.5){
+					LnewR = 255;
+					LnewG = ((510*ctemp)-255);
+					LnewB= ((280*ctemp)-140);
+				}
+				let x = Math.floor(pixel.x / lightmapScale);
+    			let y = Math.floor(pixel.y / lightmapScale);
+   				lightmap[y][x] = { color: [LnewR/3, LnewG/3, LnewB/3]};
+			}
 	}}};
 	if (!eLists.metals) { eLists.metals = [] }
 	eLists.metals = eLists.metals.concat(["iron", "glass", "copper", "gold", "brass","steel","nickel","zinc","silver","aluminum","bronze","metal_scrap","oxidized_copper","tin","lead", "rose_gold", "tungsten"])
