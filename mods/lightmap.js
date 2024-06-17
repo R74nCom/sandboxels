@@ -336,6 +336,8 @@ elements.rad_steam.tick = function(pixel) {
     lightmap[y][x] = { color: radColor };
 };
 
+// #keepTheGap
+
 window.addEventListener('load', function() {
     initializeLightmap(width, height);
 });
@@ -349,8 +351,25 @@ tick = function() {
 // Even after updating tick(), setInterval still uses the old tick(), reset setInterval
 resetInterval(tps);
 
-let originalDrawPixels = drawPixels;
-drawPixels = function(forceTick = false) {
-    originalDrawPixels(forceTick);
-    renderLightmap();
+// Add code to functions instead of replacing them
+let originalDoFrame = doFrame;
+doFrame = function() {
+    originalDoFrame();
+    propagateLightmap();
 };
+
+if (enabledMods.includes("mods/velocity.js")) {
+    runAfterAutogen(()=>{
+        let originalDrawPixels = drawPixels;
+        drawPixels = function(forceTick = false) {
+            originalDrawPixels(forceTick);
+            renderLightmap();
+        };
+    });
+} else {
+    let originalDrawPixels = drawPixels;
+    drawPixels = function(forceTick = false) {
+        originalDrawPixels(forceTick);
+        renderLightmap();
+    };
+}
