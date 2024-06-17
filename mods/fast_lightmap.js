@@ -19,7 +19,13 @@ let fireColor = [255, 69, 0];
 let plasmaColor = [160, 69, 255];
 let coldFireColor = [0, 191, 255];
 let magmaColor = [255, 140, 0];
+let fireFlyColors = [[180, 255, 70], scaleList([180, 255, 70], 0.75), scaleList([180, 255, 70], 0.5), scaleList([180, 255, 70], 0.25)];
+let radColor = [75, 100, 30];
 let neonColor = [255*2, 60*2, 10*2];
+
+function scaleList(numbers, scale) {
+    return numbers.map(number => number * scale);
+}
 
 function initializeLightmap(width, height) {
     lightmapWidth = Math.ceil(width / lightmapScale);
@@ -263,6 +269,71 @@ elements.plasma.tick = function(pixel) {
     let x = Math.floor(pixel.x / lightmapScale);
     let y = Math.floor(pixel.y / lightmapScale);
     lightmap[y][x] = { color: plasmaColor };
+};
+
+let originalFireflyTick = elements.firefly.tick;
+elements.firefly.tick = function(pixel) {
+    originalFireflyTick(pixel);
+    let x = Math.floor(pixel.x / lightmapScale);
+    let y = Math.floor(pixel.y / lightmapScale);
+
+    let col = undefined;
+    if (pixelTicks % pixel.fff <= 5) { col = fireFlyColors[3]; }
+    if (pixelTicks % pixel.fff <= 4) { col = fireFlyColors[2]; }
+    if (pixelTicks % pixel.fff <= 3) { col = fireFlyColors[1]; }
+    if (pixelTicks % pixel.fff <= 2) { col = fireFlyColors[0]; }
+    if (col) {
+        lightmap[y][x] = { color: col };
+    }
+};
+
+// Radioactive elements
+elements.uranium.tick = function(pixel) {
+    let x = Math.floor(pixel.x / lightmapScale);
+    let y = Math.floor(pixel.y / lightmapScale);
+    lightmap[y][x] = { color: radColor };
+};
+
+elements.radiation.tick = function(pixel) {
+    let x = Math.floor(pixel.x / lightmapScale);
+    let y = Math.floor(pixel.y / lightmapScale);
+    lightmap[y][x] = { color: radColor };
+};
+
+elements.rad_glass.tick = function(pixel) {
+    let x = Math.floor(pixel.x / lightmapScale);
+    let y = Math.floor(pixel.y / lightmapScale);
+    lightmap[y][x] = { color: radColor };
+};
+
+elements.fallout.tick = function(pixel) {
+    let x = Math.floor(pixel.x / lightmapScale);
+    let y = Math.floor(pixel.y / lightmapScale);
+    lightmap[y][x] = { color: radColor };
+};
+
+elements.molten_uranium.tick = function(pixel) {
+    let x = Math.floor(pixel.x / lightmapScale);
+    let y = Math.floor(pixel.y / lightmapScale);
+    lightmap[y][x] = { color: radColor };
+};
+
+elements.rad_shard.tick = function(pixel) {
+    let x = Math.floor(pixel.x / lightmapScale);
+    let y = Math.floor(pixel.y / lightmapScale);
+    lightmap[y][x] = { color: radColor };
+};
+
+elements.rad_cloud.tick = function(pixel) {
+    let x = Math.floor(pixel.x / lightmapScale);
+    let y = Math.floor(pixel.y / lightmapScale);
+    lightmap[y][x] = { color: radColor };
+};
+
+elements.rad_steam.tick = function(pixel) {
+    let x = Math.floor(pixel.x / lightmapScale);
+    let y = Math.floor(pixel.y / lightmapScale);
+    lightmap[y][x] = { color: radColor };
 };
 
 window.addEventListener('load', function() {
