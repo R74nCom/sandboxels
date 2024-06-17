@@ -349,8 +349,29 @@ tick = function() {
 // Even after updating tick(), setInterval still uses the old tick(), reset setInterval
 resetInterval(tps);
 
-let originalDrawPixels = drawPixels;
-drawPixels = function(forceTick = false) {
-    originalDrawPixels(forceTick);
-    renderLightmap();
+// Add code to functions instead of replacing them
+let originalDoFrame = doFrame;
+doFrame = function() {
+    originalDoFrame();
+    propagateLightmap();
 };
+
+if (enabledMods.includes("mods/lightmap.js")) {
+    alert("Warning: both fast_lightmap.js and lightmap.js are active and it will not properly work");
+}
+
+if (enabledMods.includes("mods/velocity.js")) {
+    runAfterAutogen(()=>{
+        let originalDrawPixels = drawPixels;
+        drawPixels = function(forceTick = false) {
+            originalDrawPixels(forceTick);
+            renderLightmap();
+        };
+    });
+} else {
+    let originalDrawPixels = drawPixels;
+    drawPixels = function(forceTick = false) {
+        originalDrawPixels(forceTick);
+        renderLightmap();
+    };
+}
