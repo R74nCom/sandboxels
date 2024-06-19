@@ -2798,6 +2798,12 @@ elements.ray = {
         if (pixel.life < pixel.maxLife){
             pixel.color = "rgba("+pixel.rgb[0]+","+pixel.rgb[1]+","+pixel.rgb[2]+","+(pixel.life/pixel.maxLife)+")"
         } else {pixel.color = "rgba("+pixel.rgb[0]+","+pixel.rgb[1]+","+pixel.rgb[2]+",1)"}
+        // lightmap.js integration
+        if (enabledMods.includes("mods/lightmap.js")){
+            let x = Math.floor(pixel.x / lightmapScale);
+            let y = Math.floor(pixel.y / lightmapScale);
+            lightmap[y][x] = { color: [parseInt(pixel.rgb[0])*((pixel.life/pixel.maxLife)), parseInt(pixel.rgb[1])*((pixel.life/pixel.maxLife)), parseInt(pixel.rgb[2])*((pixel.life/pixel.maxLife))]};
+        }
         if (pixel.life <= 0){
             deletePixel(pixel.x, pixel.y)
         }
@@ -3238,4 +3244,44 @@ elements.molten_gallium_phosphide = {
     tempLow: 1447,
     stateLow: "gallium_phosphide",
     density: 4100,
+}
+let funcRadius = 10
+let functionScope = "pixel"
+let funcFunction = "function(){console.log('Hello World')}"
+let functionStorage = function(){}
+elements.function_machine = {
+    color: "#56999e",
+    behavior: behaviors.WALL,
+    category: "machines",
+    state: "solid",
+    onSelect: function(){
+        let ans1 = prompt("What radius should the function be executed at? (Ignore if you plan on making it a global one.", funcRadius||10)
+        funcRadius = parseInt(ans1)
+        let ans2 = prompt("What scope should the function be executed in? Type \"global\" or \"pixel\" (without the quotes of course.)", functionScope||"pixel")
+        if (ans2 == "global"){functionScope = "global"} else {functionScope = "pixel"}
+        let ans3 = prompt("Type the entire function. Example: function(pixel){pixel.temp = 1000}}", funcFunction||"function(){console.log('Hello World')}")
+        funcFunction = ans3
+    },
+    tick: function(pixel){
+        if (pixelTicks == pixel.start){
+            pixel.radius = funcRadius
+            pixel.scope = functionScope
+            pixel.function = funcFunction
+        }
+        if (pixel.scope == "global"){
+            eval("functionStorage = "+pixel.function)
+            functionStorage()
+        } else {
+            var circlec = circleCoords(pixel.x, pixel.y, pixel.radius)
+            for (var i = 0; i < circlec.length; i++){
+                var coord = circlec[i]
+                var x = coord.x
+                var y = coord.y
+                if (!isEmpty(x,y,true)){
+                    eval("functionStorage = "+pixel.function)
+                    functionStorage(pixelMap[x][y])
+                }
+            }
+        }
+    }
 }
