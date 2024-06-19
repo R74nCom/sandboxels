@@ -19,338 +19,391 @@ let fireColor = [255, 69, 0];
 let plasmaColor = [160, 69, 255];
 let coldFireColor = [0, 191, 255];
 let magmaColor = [255, 140, 0];
-let fireFlyColors = [[180, 255, 70], scaleList([180, 255, 70], 0.75), scaleList([180, 255, 70], 0.5), scaleList([180, 255, 70], 0.25)];
+let fireflyColor = [240, 255, 70];
 let radColor = [75, 100, 30];
 let neonColor = [255*2, 60*2, 10*2];
+let strangeMatterColor = [220*0.3, 255*0.3, 210*0.3];
+let sparkColors = [[255, 210, 120], [255, 140, 10]];
+
+function rgbToArray(rgbString) {
+	// Remove "rgb(" and ")" from the string and split by comma
+	let values = rgbString.slice(4, -1).split(',');
+
+	// Convert each value from string to number
+	let r = parseInt(values[0].trim());
+	let g = parseInt(values[1].trim());
+	let b = parseInt(values[2].trim());
+
+	// Return the array of RGB values
+	return [r, g, b];
+}
 
 function scaleList(numbers, scale) {
-    return numbers.map(number => number * scale);
+	return numbers.map(number => number * scale);
 }
 
 function initializeLightmap(width, height) {
-    lightmapWidth = Math.ceil(width / lightmapScale);
-    lightmapHeight = Math.ceil(height / lightmapScale);
-    
-    for (let y = 0; y < lightmapHeight; y++) {
-        lightmap[y] = [];
-        nextLightmap[y] = [];
-        for (let x = 0; x < lightmapWidth; x++) {
-            lightmap[y][x] = { color: [0, 0, 0] };
-            nextLightmap[y][x] = { color: [0, 0, 0] };
-        }
-    }
+	lightmapWidth = Math.ceil(width / lightmapScale);
+	lightmapHeight = Math.ceil(height / lightmapScale);
+	
+	for (let y = 0; y < lightmapHeight; y++) {
+		lightmap[y] = [];
+		nextLightmap[y] = [];
+		for (let x = 0; x < lightmapWidth; x++) {
+			lightmap[y][x] = { color: [0, 0, 0] };
+			nextLightmap[y][x] = { color: [0, 0, 0] };
+		}
+	}
 }
 
 function deepCopy(source, target) {
-    for (let y = 0; y < source.length; y++) {
-        target[y] = [];
-        for (let x = 0; x < source[y].length; x++) {
-            target[y][x] = { ...source[y][x] };
-        }
-    }
+	for (let y = 0; y < source.length; y++) {
+		target[y] = [];
+		for (let x = 0; x < source[y].length; x++) {
+			target[y][x] = { ...source[y][x] };
+		}
+	}
 }
 
 function propagateLightmap() {
-    if (!lightmap || !lightmap[0]) { return; }
-    let width = lightmap[0].length;
-    let height = lightmap.length;
+	if (!lightmap || !lightmap[0]) { return; }
+	let width = lightmap[0].length;
+	let height = lightmap.length;
 
-    let neighbors = [
-        { dx: 1, dy: 0 },
-        { dx: -1, dy: 0 },
-        { dx: 0, dy: 1 },
-        { dx: 0, dy: -1 },
-    ];
+	let neighbors = [
+		{ dx: 1, dy: 0 },
+		{ dx: -1, dy: 0 },
+		{ dx: 0, dy: 1 },
+		{ dx: 0, dy: -1 },
+	];
 
-    for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-            let totalColor = [0, 0, 0];
-            let neighborCount = 0;
-            neighbors.forEach(({ dx, dy }) => {
-                let nx = x + dx;
-                let ny = y + dy;
-                if (nx >= 0 && ny >= 0 && nx < width && ny < height) {
-                    totalColor[0] += lightmap[ny][nx].color[0];
-                    totalColor[1] += lightmap[ny][nx].color[1];
-                    totalColor[2] += lightmap[ny][nx].color[2];
-                    neighborCount++;
-                }
-            });
-            nextLightmap[y][x] = {
-                color: [
-                    Math.min(Math.max(0, totalColor[0] / neighborCount * 0.8), 255*8),
-                    Math.min(Math.max(0, totalColor[1] / neighborCount * 0.8), 255*8),
-                    Math.min(Math.max(0, totalColor[2] / neighborCount * 0.8), 255*8)
-                ]
-            };
-        }
-    }
+	for (let y = 0; y < height; y++) {
+		for (let x = 0; x < width; x++) {
+			let totalColor = [0, 0, 0];
+			let neighborCount = 0;
+			neighbors.forEach(({ dx, dy }) => {
+				let nx = x + dx;
+				let ny = y + dy;
+				if (nx >= 0 && ny >= 0 && nx < width && ny < height) {
+					totalColor[0] += lightmap[ny][nx].color[0];
+					totalColor[1] += lightmap[ny][nx].color[1];
+					totalColor[2] += lightmap[ny][nx].color[2];
+					neighborCount++;
+				}
+			});
+			nextLightmap[y][x] = {
+				color: [
+					Math.min(Math.max(0, totalColor[0] / neighborCount * 0.8), 255*8),
+					Math.min(Math.max(0, totalColor[1] / neighborCount * 0.8), 255*8),
+					Math.min(Math.max(0, totalColor[2] / neighborCount * 0.8), 255*8)
+				]
+			};
+		}
+	}
 
-    deepCopy(nextLightmap, lightmap);
+	deepCopy(nextLightmap, lightmap);
 }
 
 function rgbToHsv(r, g, b) {
-    r /= 255, g /= 255, b /= 255;
-    let max = Math.max(r, g, b), min = Math.min(r, g, b);
-    let h, s, v = max;
+	r /= 255, g /= 255, b /= 255;
+	let max = Math.max(r, g, b), min = Math.min(r, g, b);
+	let h, s, v = max;
 
-    let d = max - min;
-    s = max === 0 ? 0 : d / max;
+	let d = max - min;
+	s = max === 0 ? 0 : d / max;
 
-    if (max === min) {
-        h = 0;
-    } else {
-        switch (max) {
-            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-            case g: h = (b - r) / d + 2; break;
-            case b: h = (r - g) / d + 4; break;
-        }
-        h /= 6;
-    }
+	if (max === min) {
+		h = 0;
+	} else {
+		switch (max) {
+			case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+			case g: h = (b - r) / d + 2; break;
+			case b: h = (r - g) / d + 4; break;
+		}
+		h /= 6;
+	}
 
-    return [h, s, v];
+	return [h, s, v];
 }
 
 function hsvToRgb(h, s, v) {
-    let r, g, b;
+	let r, g, b;
 
-    let i = Math.floor(h * 6);
-    let f = h * 6 - i;
-    let p = v * (1 - s);
-    let q = v * (1 - f * s);
-    let t = v * (1 - (1 - f) * s);
+	let i = Math.floor(h * 6);
+	let f = h * 6 - i;
+	let p = v * (1 - s);
+	let q = v * (1 - f * s);
+	let t = v * (1 - (1 - f) * s);
 
-    switch (i % 6) {
-        case 0: r = v, g = t, b = p; break;
-        case 1: r = q, g = v, b = p; break;
-        case 2: r = p, g = v, b = t; break;
-        case 3: r = p, g = q, b = v; break;
-        case 4: r = t, g = p, b = v; break;
-        case 5: r = v, g = p, b = q; break;
-    }
+	switch (i % 6) {
+		case 0: r = v, g = t, b = p; break;
+		case 1: r = q, g = v, b = p; break;
+		case 2: r = p, g = v, b = t; break;
+		case 3: r = p, g = q, b = v; break;
+		case 4: r = t, g = p, b = v; break;
+		case 5: r = v, g = p, b = q; break;
+	}
 
-    return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+	return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
 }
 
 function renderLightmap() {
-    if (!canvas) { return; }
-    if (!lightmap || !lightmap[0]) { return; }
-    let context = canvas.getContext('2d');
-    let width = lightmap[0].length;
-    let height = lightmap.length;
+	if (!canvas) { return; }
+	if (!lightmap || !lightmap[0]) { return; }
+	let context = canvas.getContext('2d');
+	let width = lightmap[0].length;
+	let height = lightmap.length;
 
-    for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-            let { color } = lightmap[y][x];
-            let [r, g, b] = color;
-            if (r > 0 || g > 0 || b > 0) {
-                let [h, s, v] = rgbToHsv(r, g, b);
-                let newColor = hsvToRgb(h, s, 1);
-                let alpha = v;
+	for (let y = 0; y < height; y++) {
+		for (let x = 0; x < width; x++) {
+			let { color } = lightmap[y][x];
+			let [r, g, b] = color;
+			if (r > 0 || g > 0 || b > 0) {
+				let [h, s, v] = rgbToHsv(r, g, b);
+				let newColor = hsvToRgb(h, s, 1);
+				let alpha = v;
 
-                context.fillStyle = `rgba(${newColor[0]}, ${newColor[1]}, ${newColor[2]}, ${alpha*0.4})`;
-                context.fillRect(
-                    x * pixelSize * lightmapScale, 
-                    y * pixelSize * lightmapScale, 
-                    pixelSize * lightmapScale, 
-                    pixelSize * lightmapScale
-                );
-                context.fillStyle = `rgba(${newColor[0]}, ${newColor[1]}, ${newColor[2]}, ${alpha * 0.25})`;
-                context.fillRect(
-                    (x * pixelSize - pixelSizeHalf) * lightmapScale, 
-                    (y * pixelSize - pixelSizeHalf) * lightmapScale, 
-                    pixelSize * lightmapScale * 2, 
-                    pixelSize * lightmapScale * 2
-                );
-            }
-        }
-    }
+				context.fillStyle = `rgba(${newColor[0]}, ${newColor[1]}, ${newColor[2]}, ${alpha*0.4})`;
+				context.fillRect(
+					x * pixelSize * lightmapScale, 
+					y * pixelSize * lightmapScale, 
+					pixelSize * lightmapScale, 
+					pixelSize * lightmapScale
+				);
+				context.fillStyle = `rgba(${newColor[0]}, ${newColor[1]}, ${newColor[2]}, ${alpha * 0.25})`;
+				context.fillRect(
+					(x * pixelSize - pixelSizeHalf) * lightmapScale, 
+					(y * pixelSize - pixelSizeHalf) * lightmapScale, 
+					pixelSize * lightmapScale * 2, 
+					pixelSize * lightmapScale * 2
+				);
+			}
+		}
+	}
 }
 
 elements.sun.tick = function(pixel) {
-    let x = Math.floor(pixel.x / lightmapScale);
-    let y = Math.floor(pixel.y / lightmapScale);
-    lightmap[y][x] = { color: sunColor };
+	let x = Math.floor(pixel.x / lightmapScale);
+	let y = Math.floor(pixel.y / lightmapScale);
+	lightmap[y][x] = { color: rgbToArray(pixel.color) };
 };
 
 let originalLightTick = elements.light.tick;
 elements.light.tick = function(pixel) {
-    originalLightTick(pixel);
-    let x = Math.floor(pixel.x / lightmapScale);
-    let y = Math.floor(pixel.y / lightmapScale);
-    lightmap[y][x] = { color: lightColor };
+	originalLightTick(pixel);
+	let x = Math.floor(pixel.x / lightmapScale);
+	let y = Math.floor(pixel.y / lightmapScale);
+	lightmap[y][x] = { color: rgbToArray(pixel.color) };
 };
 
 let originalLiquidLightTick = elements.liquid_light.tick;
 elements.liquid_light.tick = function(pixel) {
-    originalLiquidLightTick(pixel);
-    let x = Math.floor(pixel.x / lightmapScale);
-    let y = Math.floor(pixel.y / lightmapScale);
-    lightmap[y][x] = { color: lightColor };
+	originalLiquidLightTick(pixel);
+	let x = Math.floor(pixel.x / lightmapScale);
+	let y = Math.floor(pixel.y / lightmapScale);
+	lightmap[y][x] = { color: rgbToArray(pixel.color) };
 };
 
 elements.magma.tick = function(pixel) {
-    let x = Math.floor(pixel.x / lightmapScale);
-    let y = Math.floor(pixel.y / lightmapScale);
-    lightmap[y][x] = { color: fireColor };
+	let x = Math.floor(pixel.x / lightmapScale);
+	let y = Math.floor(pixel.y / lightmapScale);
+	lightmap[y][x] = { color: fireColor };
 };
 
 elements.neon.tick = function(pixel) {
-    if (!pixel.charge || pixel.charge <= 0) {return;}
-    let x = Math.floor(pixel.x / lightmapScale);
-    let y = Math.floor(pixel.y / lightmapScale);
-    lightmap[y][x] = { color: neonColor };
+	if (!pixel.charge || pixel.charge <= 0) {return;}
+	let x = Math.floor(pixel.x / lightmapScale);
+	let y = Math.floor(pixel.y / lightmapScale);
+	lightmap[y][x] = { color: rgbToArray(pixel.color) };
 };
 
 elements.light_bulb.behaviorOn = null
 elements.light_bulb.tick = function(pixel) {
-    if (pixel.charge > 0) {pixel.lightIntensity = 10;}
-    if (pixel.lightIntensity > 0) {
-        let x = Math.floor(pixel.x / lightmapScale);
-        let y = Math.floor(pixel.y / lightmapScale);
-        lightmap[y][x] = { color: lampColor };
-    }
-    pixel.lightIntensity -= 1;
+	if (pixel.charge > 0) {pixel.lightIntensity = 10;}
+	if (pixel.lightIntensity > 0) {
+		let x = Math.floor(pixel.x / lightmapScale);
+		let y = Math.floor(pixel.y / lightmapScale);
+		lightmap[y][x] = { color: rgbToArray(pixel.color) };
+	}
+	pixel.lightIntensity -= 1;
 };
 
 elements.led_r.tick = function(pixel) {
-    if (pixel.charge > 0) {pixel.lightIntensity = 4;}
-    if (pixel.lightIntensity > 0) {
-        let x = Math.floor(pixel.x / lightmapScale);
-        let y = Math.floor(pixel.y / lightmapScale);
-        lightmap[y][x] = { color: ledRColor };
-    }
-    pixel.lightIntensity -= 1;
+	if (pixel.charge > 0) {pixel.lightIntensity = 4;}
+	if (pixel.lightIntensity > 0) {
+		let x = Math.floor(pixel.x / lightmapScale);
+		let y = Math.floor(pixel.y / lightmapScale);
+		lightmap[y][x] = { color: rgbToArray(pixel.color) };
+	}
+	pixel.lightIntensity -= 1;
 };
 
 elements.led_g.tick = function(pixel) {
-    if (pixel.charge > 0) {pixel.lightIntensity = 4;}
-    if (pixel.lightIntensity > 0) {
-        let x = Math.floor(pixel.x / lightmapScale);
-        let y = Math.floor(pixel.y / lightmapScale);
-        lightmap[y][x] = { color: ledGColor };
-    }
-    pixel.lightIntensity -= 1;
+	if (pixel.charge > 0) {pixel.lightIntensity = 4;}
+	if (pixel.lightIntensity > 0) {
+		let x = Math.floor(pixel.x / lightmapScale);
+		let y = Math.floor(pixel.y / lightmapScale);
+		lightmap[y][x] = { color: rgbToArray(pixel.color) };
+	}
+	pixel.lightIntensity -= 1;
 };
 
 elements.led_b.tick = function(pixel) {
-    if (pixel.charge > 0) {pixel.lightIntensity = 4;}
-    if (pixel.lightIntensity > 0) {
-        let x = Math.floor(pixel.x / lightmapScale);
-        let y = Math.floor(pixel.y / lightmapScale);
-        lightmap[y][x] = { color: ledBColor };
-    }
-    pixel.lightIntensity -= 1;
+	if (pixel.charge > 0) {pixel.lightIntensity = 4;}
+	if (pixel.lightIntensity > 0) {
+		let x = Math.floor(pixel.x / lightmapScale);
+		let y = Math.floor(pixel.y / lightmapScale);
+		lightmap[y][x] = { color: rgbToArray(pixel.color) };
+	}
+	pixel.lightIntensity -= 1;
 };
 
 let originalLaserTick = elements.laser.tick;
 elements.laser.tick = function(pixel) {
-    originalLaserTick(pixel);
-    let x = Math.floor(pixel.x / lightmapScale);
-    let y = Math.floor(pixel.y / lightmapScale);
-    lightmap[y][x] = { color: laserColor };
+	originalLaserTick(pixel);
+	let x = Math.floor(pixel.x / lightmapScale);
+	let y = Math.floor(pixel.y / lightmapScale);
+	lightmap[y][x] = { color: rgbToArray(pixel.color) };
 };
 
 let originalFireTick2 = elements.fire.tick;
 elements.fire.tick = function(pixel) {
-    originalFireTick2(pixel);
-    let x = Math.floor(pixel.x / lightmapScale);
-    let y = Math.floor(pixel.y / lightmapScale);
-    lightmap[y][x] = { color: fireColor };
+	originalFireTick2(pixel);
+	let x = Math.floor(pixel.x / lightmapScale);
+	let y = Math.floor(pixel.y / lightmapScale);
+	lightmap[y][x] = { color: fireColor };
 };
 
 elements.cold_fire.tick = function(pixel) {
-    let x = Math.floor(pixel.x / lightmapScale);
-    let y = Math.floor(pixel.y / lightmapScale);
-    lightmap[y][x] = { color: coldFireColor };
+	let x = Math.floor(pixel.x / lightmapScale);
+	let y = Math.floor(pixel.y / lightmapScale);
+	lightmap[y][x] = { color: coldFireColor };
+};
+
+let originalRainbowTick = elements.rainbow.tick;
+elements.rainbow.tick = function(pixel) {
+	originalRainbowTick(pixel);
+	let x = Math.floor(pixel.x / lightmapScale);
+	let y = Math.floor(pixel.y / lightmapScale);
+	lightmap[y][x] = { color: rgbToArray(pixel.color) };
 };
 
 elements.plasma.tick = function(pixel) {
-    let x = Math.floor(pixel.x / lightmapScale);
-    let y = Math.floor(pixel.y / lightmapScale);
-    lightmap[y][x] = { color: plasmaColor };
+	let x = Math.floor(pixel.x / lightmapScale);
+	let y = Math.floor(pixel.y / lightmapScale);
+	lightmap[y][x] = { color: rgbToArray(pixel.color) };
 };
 
 let originalFireflyTick = elements.firefly.tick;
+
 elements.firefly.tick = function(pixel) {
     originalFireflyTick(pixel);
+
     let x = Math.floor(pixel.x / lightmapScale);
     let y = Math.floor(pixel.y / lightmapScale);
 
-    let col = undefined;
-    if (pixelTicks % pixel.fff <= 5) { col = fireFlyColors[3]; }
-    if (pixelTicks % pixel.fff <= 4) { col = fireFlyColors[2]; }
-    if (pixelTicks % pixel.fff <= 3) { col = fireFlyColors[1]; }
-    if (pixelTicks % pixel.fff <= 2) { col = fireFlyColors[0]; }
-    if (col) {
-        lightmap[y][x] = { color: col };
+    let num;
+    let tickMod = pixelTicks % pixel.fff;
+
+    if (tickMod <= 2) {
+        num = 1;
+    } else if (tickMod <= 3) {
+        num = 0.75;
+    } else if (tickMod <= 4) {
+        num = 0.5;
+    } else if (tickMod <= 5) {
+        num = 0.25;
+    } else {
+        return;
     }
+
+    lightmap[y][x] = { color: scaleList(fireflyColor, num) };
 };
+
 
 // Radioactive elements
 elements.uranium.tick = function(pixel) {
-    let x = Math.floor(pixel.x / lightmapScale);
-    let y = Math.floor(pixel.y / lightmapScale);
-    lightmap[y][x] = { color: radColor };
+	let x = Math.floor(pixel.x / lightmapScale);
+	let y = Math.floor(pixel.y / lightmapScale);
+	lightmap[y][x] = { color: radColor };
 };
 
 elements.radiation.tick = function(pixel) {
-    let x = Math.floor(pixel.x / lightmapScale);
-    let y = Math.floor(pixel.y / lightmapScale);
-    lightmap[y][x] = { color: radColor };
+	let x = Math.floor(pixel.x / lightmapScale);
+	let y = Math.floor(pixel.y / lightmapScale);
+	lightmap[y][x] = { color: radColor };
 };
 
 elements.rad_glass.tick = function(pixel) {
-    let x = Math.floor(pixel.x / lightmapScale);
-    let y = Math.floor(pixel.y / lightmapScale);
-    lightmap[y][x] = { color: radColor };
+	let x = Math.floor(pixel.x / lightmapScale);
+	let y = Math.floor(pixel.y / lightmapScale);
+	lightmap[y][x] = { color: radColor };
 };
 
 elements.fallout.tick = function(pixel) {
-    let x = Math.floor(pixel.x / lightmapScale);
-    let y = Math.floor(pixel.y / lightmapScale);
-    lightmap[y][x] = { color: radColor };
+	let x = Math.floor(pixel.x / lightmapScale);
+	let y = Math.floor(pixel.y / lightmapScale);
+	lightmap[y][x] = { color: radColor };
 };
 
 elements.molten_uranium.tick = function(pixel) {
-    let x = Math.floor(pixel.x / lightmapScale);
-    let y = Math.floor(pixel.y / lightmapScale);
-    lightmap[y][x] = { color: radColor };
+	let x = Math.floor(pixel.x / lightmapScale);
+	let y = Math.floor(pixel.y / lightmapScale);
+	lightmap[y][x] = { color: radColor };
 };
 
 elements.rad_shard.tick = function(pixel) {
-    let x = Math.floor(pixel.x / lightmapScale);
-    let y = Math.floor(pixel.y / lightmapScale);
-    lightmap[y][x] = { color: radColor };
+	let x = Math.floor(pixel.x / lightmapScale);
+	let y = Math.floor(pixel.y / lightmapScale);
+	lightmap[y][x] = { color: radColor };
 };
 
 elements.rad_cloud.tick = function(pixel) {
-    let x = Math.floor(pixel.x / lightmapScale);
-    let y = Math.floor(pixel.y / lightmapScale);
-    lightmap[y][x] = { color: radColor };
+	let x = Math.floor(pixel.x / lightmapScale);
+	let y = Math.floor(pixel.y / lightmapScale);
+	lightmap[y][x] = { color: radColor };
 };
 
 elements.rad_steam.tick = function(pixel) {
-    let x = Math.floor(pixel.x / lightmapScale);
-    let y = Math.floor(pixel.y / lightmapScale);
-    lightmap[y][x] = { color: radColor };
+	let x = Math.floor(pixel.x / lightmapScale);
+	let y = Math.floor(pixel.y / lightmapScale);
+	lightmap[y][x] = { color: radColor };
 };
 
+// #keepTheGap
+
 window.addEventListener('load', function() {
-    initializeLightmap(width, height);
+	initializeLightmap(width, height);
 });
 
 // Add code to functions instead of replacing them
 let originalTick = tick;
 tick = function() {
-    originalTick();
-    if (!paused) {propagateLightmap();}
+	originalTick();
+	if (!paused) {propagateLightmap();}
 };
 // Even after updating tick(), setInterval still uses the old tick(), reset setInterval
 resetInterval(tps);
 
-let originalDrawPixels = drawPixels;
-drawPixels = function(forceTick = false) {
-    originalDrawPixels(forceTick);
-    renderLightmap();
+// Add code to functions instead of replacing them
+let originalDoFrame = doFrame;
+doFrame = function() {
+	originalDoFrame();
+	propagateLightmap();
 };
+
+if (enabledMods.includes("mods/velocity.js")) {
+	runAfterAutogen(()=>{
+		let originalDrawPixels = drawPixels;
+		drawPixels = function(forceTick = false) {
+			originalDrawPixels(forceTick);
+			renderLightmap();
+		};
+	});
+} else {
+	let originalDrawPixels = drawPixels;
+	drawPixels = function(forceTick = false) {
+		originalDrawPixels(forceTick);
+		renderLightmap();
+	};
+}
