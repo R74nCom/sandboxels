@@ -1661,6 +1661,7 @@ elements.molten_plutonium = {
 	category: "states",
 	state: "liquid",
 	tempLow: 620,
+    hidden: true,
 	stateLow: "plutonium",
 	tick: function(pixel){
         if(Math.random() < 0.0007){
@@ -1865,6 +1866,7 @@ function HSVtoRGB(h, s, v) {
 elements.molten_bismuth = {
     color: ["#ee8d63", "#ef7e5e", "#f06e5c", "#f05c5c"],
     behavior: behaviors.MOLTEN,
+    hidden: true,
     category: "states",
     state: "liquid",
     temp: 280,
