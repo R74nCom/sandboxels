@@ -181,7 +181,7 @@ function glowItsOwnColor(pixel) {
 }
 
 function glowItsOwnColorIfPowered(pixel) {
-	if (pixel.charge <= 0) {return;}
+    if (!pixel.charge || pixel.charge <= 0) {return;}
     if (!pixel.color) return;
     var x = Math.floor(pixel.x / lightmapScale);
     var y = Math.floor(pixel.y / lightmapScale);
