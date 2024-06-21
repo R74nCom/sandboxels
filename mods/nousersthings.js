@@ -1487,6 +1487,7 @@ elements.heat_test = {
 		}
 	},
 },
+/*
 elements.soup = {
 	color: "#3d2812",
 	behavior: behaviors.LIQUID,
@@ -1537,6 +1538,7 @@ elements.soup = {
 elements.broth.onMix = function(pixel){
 	changePixel(pixel, "soup")
 },
+*/
 converter1Var = 0;
 converter2Var = 0;
 elements.converter = {
@@ -1661,6 +1663,7 @@ elements.molten_plutonium = {
 	category: "states",
 	state: "liquid",
 	tempLow: 620,
+    hidden: true,
 	stateLow: "plutonium",
 	tick: function(pixel){
         if(Math.random() < 0.0007){
@@ -1865,6 +1868,7 @@ function HSVtoRGB(h, s, v) {
 elements.molten_bismuth = {
     color: ["#ee8d63", "#ef7e5e", "#f06e5c", "#f05c5c"],
     behavior: behaviors.MOLTEN,
+    hidden: true,
     category: "states",
     state: "liquid",
     temp: 280,
@@ -3285,3 +3289,47 @@ elements.function_machine = {
         }
     }
 }
+elements.galvanized_steel = {
+    color: "#4c585f",
+    behavior: behaviors.WALL,
+    tempHigh: 1455.5,
+    category: "solids",
+    density: 7850,
+    conduct: 0.42,
+    hardness: 0.8,
+    tick: function(pixel){
+        for (var i = 0; i < adjacentCoords.length; i++) {
+            var coord = squareCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (!isEmpty(x,y, true)){
+                let otherPixel = pixelMap[x][y]
+                if (otherPixel.element == "molten_zinc"){
+                    if (Math.random() < 0.005){
+                        deletePixel(x, y)
+                        if (!pixel.absorbedZinc){pixel.absorbedZinc = 0}
+                        pixel.absorbedZinc ++
+                    }
+                } else if (otherPixel.element == "steel"){
+                    if (pixel.absorbedZinc && Math.random() < 0.02){
+                        changePixel(otherPixel, "galvanized_steel")
+                        pixel.absorbedZinc --
+                    }
+                }
+                else if (otherPixel.element == "galvanized_steel"){
+                    if (!otherPixel.absorbedZinc){otherPixel.absorbedZinc = 0}
+                    if (pixel.absorbedZinc > otherPixel.absorbedZinc && Math.random() < 0.1){
+                        otherPixel.absorbedZinc ++
+                        pixel.absorbedZinc --
+                    }
+                }
+            }
+        }
+    }
+}
+if (!eLists.metals) { eLists.metals = [] }
+eLists.metals = eLists.metals.concat(["galvanized_steel"])
+if (!elements.steel.reactions){elements.steel.reactions = {}}
+elements.steel.reactions.molten_zinc = {elem1: "galvanized_steel", chance: 0.035}
+if (!elements.molten_zinc.reactions){elements.zinc.reactions = {}}
+elements.molten_zinc.reactions.steel = {elem1: "null", chance: 0.2}
