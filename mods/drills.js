@@ -22,40 +22,6 @@
 ~ committed
 */
 
-/* Future Plans (in approx order):
-~ find error/fix all types of drill_RIGHT crashing game a few seconds after hitting border
-+ reverse steel drill L, R, U & D
-+ reverse diamond drill L, R, U & D
-+ reverse void drill L, R, U & D
-+ random steel drill
-+ random steel drill missile
-+ random reverse steel drill
-+ random diamond drill
-+ random diamond drill missile
-+ random reverse diamond drill
-+ random void drill
-+ random void drill missile
-+ random reverse void drill
-+ programmable steel drill
-+ programmable steel drill missile
-+ programmable reverse steel drill
-+ programmable diamond drill
-+ programmable diamond drill missile
-+ programmable reverse diamond drill
-+ programmable void drill
-+ programmable void drill missile
-+ programmable reverse void drill
-+ seeking steel drill
-+ seeking steel drill missile
-+ seeking reverse steel drill
-+ seeking diamond drill
-+ seeking diamond drill missile
-+ seeking reverse diamond drill
-+ seeking void drill
-+ seeking void drill missile
-+ seeking reverse void drill
-+ ricochet drills??? */
-
 drills_mod_desc_Colour = "#000000"
 steel_drill_Colour = "#71797e"
 steel_drill_missile_Colour = ["#71797e", "#ff0000"];
