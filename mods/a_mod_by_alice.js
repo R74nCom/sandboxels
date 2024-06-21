@@ -8571,6 +8571,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 	elements.amba_black_hole = {
 		color: "#000000",
 		maxColorOffset: 0,
+		excludeRandom: true,
 		tick: function(pixel) {
 			pixel.lastTemps ??= [];
 			pixel.lastTemps.push(pixel.temp);
