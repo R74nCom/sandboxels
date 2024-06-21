@@ -8,8 +8,8 @@ try {
 	//COMMON VARIABLES ##
 		const whiteColor = {r: 255, g: 255, b: 255};
 		const blackColor = {r: 0, g: 0, b: 0};
-		canvas = document.getElementsByTagName("canvas")[0];
-		ctx = canvas.getContext("2d");
+		canvas = document.getElementsByTagName("canvas")?.[0];
+		ctx = canvas?.getContext?.("2d") ?? null;
 	//ESSENTIAL COMMON FUNCTIONS (CODE LIBRARY) ##
 		//DEBUGGING
 			function logAndReturn(thing) {
@@ -3471,6 +3471,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			focusGame();
 		};
 		window.onload = function() {
+			if(canvas == null || ctx == null) {
+				canvas = document.getElementsByTagName("canvas")[0];
+				ctx = canvas.getContext("2d") ?? null;
+			}
 			// If the browser is Firefox, set #categoryControls padding-bottom:11px;
 			if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
 				document.getElementById("categoryControls").style.paddingBottom = "11px";
