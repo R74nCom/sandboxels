@@ -3201,7 +3201,8 @@ elements.gallium_nitride = {
                 }
             }
         }
-    }
+    },
+    movable: false,
 }
 elements.molten_gallium_nitride = {
     color: ["#d29d70", "#cf8e5e", "#cd7e4e", "#ca6d40", "#c75b33"],
@@ -3237,7 +3238,8 @@ elements.gallium_phosphide = {
                 }
             }
         }
-    }
+    },
+    movable: false,
 }
 elements.molten_gallium_phosphide = {
     color: ["#a36936", "#cf8e5e", "#9b4c1c", "#ca6d40", "#a13d19"],
@@ -3325,7 +3327,8 @@ elements.galvanized_steel = {
                 }
             }
         }
-    }
+    },
+    movable: false
 }
 if (!eLists.metals) { eLists.metals = [] }
 eLists.metals = eLists.metals.concat(["galvanized_steel"])
