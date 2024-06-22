@@ -1,0 +1,5 @@
+elements.grey_goo.behavior =  [
+        "XX|CH:gray_goo%25|XX",
+        "M2%5 AND CH:gray_goo%25|XX|M2%5 AND CH:gray_goo%25",
+        "XX|CH:gray_goo%25 AND M1|XX",
+    ]
