@@ -2884,16 +2884,16 @@ elements.specific_ray_emitter = {
         pixel.rgb[0] = parseInt(pixel.rgb[0])
         pixel.rgb[1] = parseInt(pixel.rgb[1])
         pixel.rgb[2] = parseInt(pixel.rgb[2])
-        console.log(pixel.rgb)
+        //console.log(pixel.rgb)
         var hsvResult = RGBtoHSV(pixel.rgb[0], pixel.rgb[1], pixel.rgb[2]);
             pixel.tHue = hsvResult.h;
             var rgbResult = HSVtoRGB(pixel.tHue + (1/360), 1, 1);
-            console.log(rgbResult)
+            //console.log(rgbResult)
             const hexR = rgbResult.r.toString(16).padStart(2, '0');
             const hexG = rgbResult.g.toString(16).padStart(2, '0');
             const hexB = rgbResult.b.toString(16).padStart(2, '0');
             const hexCode = `#${hexR}${hexG}${hexB}`;
-            console.log(hexCode)
+            //console.log(hexCode)
             pixel.color = pixelColorPick(pixel, hexCode)}
         for (var i = 0; i < squareCoords.length; i++) {
             var coord = squareCoords[i];
@@ -3289,7 +3289,8 @@ elements.function_machine = {
                 }
             }
         }
-    }
+    },
+    excludeRandom: true,
 }
 elements.galvanized_steel = {
     color: "#4c585f",
