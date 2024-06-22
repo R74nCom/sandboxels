@@ -8,8 +8,8 @@ try {
 	//COMMON VARIABLES ##
 		const whiteColor = {r: 255, g: 255, b: 255};
 		const blackColor = {r: 0, g: 0, b: 0};
-		canvas = document.getElementsByTagName("canvas")[0];
-		ctx = canvas.getContext("2d");
+		canvas = document.getElementsByTagName("canvas")?.[0];
+		ctx = canvas?.getContext?.("2d") ?? null;
 	//ESSENTIAL COMMON FUNCTIONS (CODE LIBRARY) ##
 		//DEBUGGING
 			function logAndReturn(thing) {
@@ -3189,7 +3189,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		//supplementary functions for below
 
 		//redefine mouseRange to support even sizes
-        function mouseRange(mouseX,mouseY,size,shapeOverride=null) {
+        function mouseRange(mouseX,mouseY,size,shapeOverride=null,skipEmpties=false) {
 			var shape = shapeOverride ?? currentShape ?? "square";
             var coords = [];
             size = size || mouseSize;
@@ -3214,7 +3214,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			// Starting at the top left, go through each pixel
 			for (var x = topLeft[0]; x <= bottomRight[0]; x++) {
 				for (var y = topLeft[1]; y <= bottomRight[1]; y++) {
-					// If the pixel is empty, add it to coords
+					if(skipEmpties && isEmpty(x,y,true)) {
+						continue
+					};
 					if((shape !== "square") && exclusionFunction?.(x,y,size,mouseX,mouseY,topLeft,bottomRight)) {
 						continue
 					};
@@ -3469,6 +3471,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			focusGame();
 		};
 		window.onload = function() {
+			if(canvas == null || ctx == null) {
+				canvas = document.getElementsByTagName("canvas")[0];
+				ctx = canvas.getContext("2d") ?? null;
+			}
 			// If the browser is Firefox, set #categoryControls padding-bottom:11px;
 			if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
 				document.getElementById("categoryControls").style.paddingBottom = "11px";
@@ -5158,7 +5164,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					else if (view === 2) { // thermal view
 						// set the color to pixel.temp, from hottest at -66 (294.1875) hue to coldest 265 hue, with the minimum being -273, max being 7755
 						var temp = pixel.temp;
-						temp = Math.min(Math.max(temp + 900,(settings.abszero ?? -273.15)),55530);
+						temp = Math.min(Math.max(temp + 900,(settings.abszero ?? -273.15)),5553000000000);
 						var hue,sat,lig;
 						sat = 100;
 						lig = 50;
@@ -5210,10 +5216,14 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 							hue = 265;
 							sat = scale(temp,46775,47775,40,20);
 							lig = 50;
-						} else { //55530
+						} else if(temp <= 55530) {
 							hue = scale(temp,47775,55530,265,654.1875) % 360;
 							sat = 20;
 							lig = 50;
+						} else {
+							hue = 294;
+							sat = 20 + (12 * Math.log10(temp / 55530));
+							lig = 50 + (4 * Math.log10(temp / 55530));
 						};
 						ctx.fillStyle = "hsl("+hue+","+sat+"%,"+lig+"%)";
 					}
@@ -8544,6 +8554,81 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		var key = eLists.LED[i];
 		elements.malware.reactions[key] = { elem2:eLists.LED, chance:0.01 }
 	};
+
+	function heatNeighbors(pixel,temp,trueIfMooreFalseIfNeumann=false) {
+		var neighborOffsets = trueIfMooreFalseIfNeumann ? squareCoords : adjacentCoords;
+		var pX = pixel.x;
+		var pY = pixel.y;
+		for(var i = 0; i < neighborOffsets.length; i++) {
+			var offsets = neighborOffsets[i];
+			var newPixel = pixelMap[pX + offsets[0]]?.[pY + offsets[1]];
+			if(!newPixel) { continue };
+			newPixel["temp"] += temp;
+			pixelTempCheck(newPixel)
+		}
+	};
+
+	elements.amba_black_hole = {
+		color: "#000000",
+		maxColorOffset: 0,
+		excludeRandom: true,
+		tick: function(pixel) {
+			pixel.lastTemps ??= [];
+			pixel.lastTemps.push(pixel.temp);
+			if(pixel.lastTemps.length > 5) { pixel.lastTemps.shift() };
+			var biggestLastTemp = Math.max(...pixel.lastTemps);
+			if(pixel.temp < biggestLastTemp) { pixel.temp = biggestLastTemp };
+			pixel.color = "rgb(0,0,0)";
+			var range = (pixel.range ?? 30) * 2;
+			var targets = mouseRange(pixel.x,pixel.y,range,"circle",true);
+			for (var i = 0; i < targets.length; i++) {
+				var newPixel = pixelMap[targets[i][0]]?.[targets[i][1]];
+				if ((!newPixel) || newPixel.del) { continue };
+				if((newPixel.element == pixel.element) || ((newPixel.x == pixel.x) && (newPixel.y == pixel.y))) { continue };
+				newPixel.drag = true;
+				var [mX, mY] = [pixel.x, pixel.y];
+				var distanceComplement = (range / 2) - pyth(mX,mY,newPixel.x,newPixel.y);
+				var distanceProportion = 0.3 + (distanceComplement / (range / 2));
+				var distanceModifier = distanceProportion ** 2;
+				var pullCount = (4 * distanceModifier) * (commonMovableCriteria(pixel.element) ? 1 : 0.8);
+				var pullCountIntegerPart = Math.floor(pullCount);
+				var pullCountFractionalPart = pullCount % 1;
+				var truePullCount = Math.min(3,pullCountIntegerPart + (Math.random() < pullCountFractionalPart));
+				for(var j = 0; j < truePullCount; j++) {
+					var x = newPixel.x;
+					var y = newPixel.y;
+					var empty = checkForEmptyPixels(x, y);
+					let bestVal = Math.sqrt(Math.pow(mX - x, 2) + Math.pow(mY - y, 2));
+					let best = null;
+					for (const pixelPair of empty) {
+						const x_ = x + pixelPair[0];
+						const y_ = y + pixelPair[1];
+						const c = Math.sqrt(Math.pow(mX - x_, 2) + Math.pow(mY - y_, 2));
+						if (c < bestVal) {
+							bestVal = c;
+							best = pixelPair;
+						}
+					}
+					if (best) {
+						tryMove(newPixel, x + best[0], y + best[1], undefined, true);
+						heatNeighbors(newPixel,20);
+						pixel.temp += 20;
+					}
+				};
+				var taxicabDistance = Math.abs(newPixel.x - pixel.x) + Math.abs(newPixel.y - pixel.y);
+				if(taxicabDistance <= 3) {
+					pixel.temp += (newPixel.temp - (settings.abszero ?? 273.15));
+					deletePixel(newPixel.x,newPixel.y);
+					continue
+				}
+			}
+		},
+		state: undefined,
+		density: 1797.69313486e305, //about as close to Infinity as we can serializably get
+		category: "special",
+		hardness: 1
+	};
+
 	//ASSORTED RAINBOW VARIANTS ##
 		elements.concoction.reactions.diorite_gravel = {
 			elem1: "static", elem2: null
@@ -25388,7 +25473,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						tick: function(pixel) {
 							nsTick(pixel,0.7,stellarPlasmaSpreadWhitelist);
 						},
-						temp: 1e12,
+						temp: 1e8,
 						category: "special",
 						state: "gas",
 						density: 1e17,
@@ -25443,11 +25528,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						density: 10000, //i'm not doing any more research on these neutron stars because google is useless
 						conduct: 1,
 					};
-					elements.supernova.behavior = [
-						"XX|XX|XX",
-						"XX|EX:80>plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,molten_iron,molten_uranium,molten_lead AND CH:neutron_star,neutron_star,neutron_star,neutronium,quark_matter,void|XX",
-						"XX|XX|XX",
-					]
+					elements.supernova.behavior[1] = elements.supernova.behavior[1].split("|");
+					elements.supernova.behavior[1][1] = elements.supernova.behavior[1][1].replace("void","amba_black_hole") + ",neutron_star,neutron_star,amba_black_hole,amba_black_hole,amba_black_hole"
+					elements.supernova.behavior[1] = elements.supernova.behavior[1].join("|");
 					elements.plasma.noConduct = ["plasma_torch","stellar_plasma","liquid_stellar_plasma","liquid_degenerate_neutronium","gaseous_degenerate_neutronium","neutron_star"]; //I can't suppress the charge overlay and keep the tick color, only effective with noConduct.js but not strictly required
 					//Tangentially linked
 					elements.rainbow_sun = {
