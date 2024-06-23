@@ -66,7 +66,7 @@ elements.text = {
 		textToPlace = prompt("Input Text\n(Previous element = Text's element)", textToPlace);
 		textElement = previousValidTextElement;
 	},
-	tick: function() {
+	tick: function(pixel) {
 		if (pixel.start == pixelTicks) {
 			deletePixel(pixel.x, pixel.y);
 			drawText(font, textToPlace, {
