@@ -2467,7 +2467,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			height = Math.round(newHeight/newPixelSize)-1;
 			width = Math.round(newWidth/newPixelSize)-1;
 			mousePos = {x:Math.round(width/2),y:Math.round(height/2)};
-			if (clear!==false) { clearAll(); }
+			if (clear!==false) { //Edit: Resetting the scene clears the "Reset Scene" text that shows up when you change the canvas size
+				clearAll();
+				var resetAdvisory = document.querySelector('[setting="pixelsize"] span:nth-child(2)');
+				if(resetAdvisory && resetAdvisory.innerText.length > 0) { resetAdvisory.innerText = "" }
+			}
 		}
 		autoResizeCanvas = function(clear) {
 			pixelSize = settings.pixelsize || 6;
@@ -5164,7 +5168,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					else if (view === 2) { // thermal view
 						// set the color to pixel.temp, from hottest at -66 (294.1875) hue to coldest 265 hue, with the minimum being -273, max being 7755
 						var temp = pixel.temp;
-						temp = Math.min(Math.max(temp + 900,(settings.abszero ?? -273.15)),5553000000000);
+						temp = Math.min(Math.max(temp + 900,(settings.abszero ?? -273.15)),55530000000000);
 						var hue,sat,lig;
 						sat = 100;
 						lig = 50;
@@ -5622,6 +5626,27 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				acidSettingSpan.appendChild(settingInput);
 				acidSettingSpan.appendChild(newHelpMark);
 			yellowShockSettingSpan.after(acidSettingSpan);
+			var rankineSettingSpan = document.createElement("span");
+			rankineSettingSpan.setAttribute("setting","userankine");
+			rankineSettingSpan.setAttribute("title","Default: OFF");
+			rankineSettingSpan.classList.add("setting-span","multisetting");
+				var settingInput = document.createElement("input");
+				settingInput.setAttribute("type","button");
+				settingInput.setAttribute("value",'Use degrees Rankine');
+				settingInput.setAttribute("state","0");
+				settingInput.classList.add("toggleInput");
+				settingInput.setAttribute("onclick","toggleInput(this,'userankine',false)");
+				var options = {
+					"false": "Disabled",
+					"true": "Enabled"
+				};
+				var newHelpMark = document.createElement("span");
+				newHelpMark.setAttribute("title","Use degrees Rankine (Fahrenheit based around absolute zero) for temperature display. Only affects imperial units.");
+				newHelpMark.classList.add("helpMark");
+				newHelpMark.innerText = "?";
+				rankineSettingSpan.appendChild(settingInput);
+				rankineSettingSpan.appendChild(newHelpMark);
+			acidSettingSpan.after(rankineSettingSpan);
 			var sizeSetting = document.querySelector('span[setting="pixelsize"]');
 			var sizeDropdown = sizeSetting.querySelector("select");
 			sizeDropdown.setAttribute("onchange","var size = (this.value === 'null' ? null : parseFloat(this.value)); console.log(size); if((size >= 0.05) && (size <= 194.73749999999999) && (size !== null) && (size !== false) && !(isNaN(size))) { console.log(size); setSetting('pixelsize',size);this.nextElementSibling.innerText='Reset Scene' }");
@@ -5767,7 +5792,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		elements.move_up = {
 			color: "#1C0000",
 			tool: function(pixel) {
-				tryMove(pixel,pixel.x,pixel.y-1);
+				for(var i = 0; i < (shiftDown ? 3 : 1); i++) { tryMove(pixel,pixel.x,pixel.y-1,null,true) };
 			},
 			category: "movement tools",
 			excludeRandom: true,
@@ -5775,7 +5800,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		elements.move_down = {
 			color: "#000038",
 			tool: function(pixel) {
-				tryMove(pixel,pixel.x,pixel.y+1);
+				for(var i = 0; i < (shiftDown ? 3 : 1); i++) { tryMove(pixel,pixel.x,pixel.y+1,null,true) };
 			},
 			category: "movement tools",
 			excludeRandom: true,
@@ -5783,7 +5808,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		elements.move_left = {
 			color: "#007000",
 			tool: function(pixel) {
-				tryMove(pixel,pixel.x-1,pixel.y);
+				for(var i = 0; i < (shiftDown ? 3 : 1); i++) { tryMove(pixel,pixel.x-1,pixel.y,null,true) };
 			},
 			category: "movement tools",
 			excludeRandom: true,
@@ -5791,7 +5816,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		elements.move_right = {
 			color: "#000E00",
 			tool: function(pixel) {
-				tryMove(pixel,pixel.x+1,pixel.y);
+				for(var i = 0; i < (shiftDown ? 3 : 1); i++) { tryMove(pixel,pixel.x+1,pixel.y,null,true) };
 			},
 			category: "movement tools",
 			excludeRandom: true,
@@ -5799,7 +5824,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		elements.move_up_left = {
 			color: "#E00000",
 			tool: function(pixel) {
-				tryMove(pixel,pixel.x-1,pixel.y-1);
+				for(var i = 0; i < (shiftDown ? 3 : 1); i++) { tryMove(pixel,pixel.x-1,pixel.y-1,null,true) };
 			},
 			category: "movement tools",
 			excludeRandom: true,
@@ -5807,7 +5832,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		elements.move_down_left = {
 			color: "#0001C0",
 			tool: function(pixel) {
-				tryMove(pixel,pixel.x-1,pixel.y+1);
+				for(var i = 0; i < (shiftDown ? 3 : 1); i++) { tryMove(pixel,pixel.x-1,pixel.y+1,null,true) };
 			},
 			category: "movement tools",
 			excludeRandom: true,
@@ -5815,7 +5840,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		elements.move_up_right = {
 			color: "#038000",
 			tool: function(pixel) {
-				tryMove(pixel,pixel.x+1,pixel.y-1);
+				for(var i = 0; i < (shiftDown ? 3 : 1); i++) { tryMove(pixel,pixel.x+1,pixel.y-1,null,true) };
 			},
 			category: "movement tools",
 			excludeRandom: true,
@@ -5823,7 +5848,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		elements.move_down_right = {
 			color: "#000007",
 			tool: function(pixel) {
-				tryMove(pixel,pixel.x+1,pixel.y+1);
+				for(var i = 0; i < (shiftDown ? 3 : 1); i++) { tryMove(pixel,pixel.x+1,pixel.y+1,null,true) };
 			},
 			category: "movement tools",
 			excludeRandom: true,
@@ -8572,15 +8597,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		color: "#000000",
 		maxColorOffset: 0,
 		excludeRandom: true,
+		insulate: true,
 		tick: function(pixel) {
-			pixel.lastTemps ??= [];
-			pixel.lastTemps.push(pixel.temp);
-			if(pixel.lastTemps.length > 5) { pixel.lastTemps.shift() };
-			var biggestLastTemp = Math.max(...pixel.lastTemps);
-			if(pixel.temp < biggestLastTemp) { pixel.temp = biggestLastTemp };
 			pixel.color = "rgb(0,0,0)";
 			var range = (pixel.range ?? 30) * 2;
 			var targets = mouseRange(pixel.x,pixel.y,range,"circle",true);
+			shuffleArray(targets);
 			for (var i = 0; i < targets.length; i++) {
 				var newPixel = pixelMap[targets[i][0]]?.[targets[i][1]];
 				if ((!newPixel) || newPixel.del) { continue };
@@ -8588,13 +8610,14 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				newPixel.drag = true;
 				var [mX, mY] = [pixel.x, pixel.y];
 				var distanceComplement = (range / 2) - pyth(mX,mY,newPixel.x,newPixel.y);
-				var distanceProportion = 0.3 + (distanceComplement / (range / 2));
+				var distanceProportion = 0.2 + (distanceComplement / (range / 2));
 				var distanceModifier = distanceProportion ** 2;
 				var pullCount = (4 * distanceModifier) * (commonMovableCriteria(pixel.element) ? 1 : 0.8);
 				var pullCountIntegerPart = Math.floor(pullCount);
 				var pullCountFractionalPart = pullCount % 1;
 				var truePullCount = Math.min(3,pullCountIntegerPart + (Math.random() < pullCountFractionalPart));
 				for(var j = 0; j < truePullCount; j++) {
+					if((pullCountIntegerPart >= 1) && (Math.random() < pullCount / 3)) { tryBreak(newPixel) };
 					var x = newPixel.x;
 					var y = newPixel.y;
 					var empty = checkForEmptyPixels(x, y);
@@ -8628,7 +8651,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		category: "special",
 		hardness: 1
 	};
-
+	
 	//ASSORTED RAINBOW VARIANTS ##
 		elements.concoction.reactions.diorite_gravel = {
 			elem1: "static", elem2: null
@@ -12655,6 +12678,41 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				color: "#FFFFFF",
 				desc: saveLoaderDescription,
 			};
+
+			function formatTempWithAbbreviation(temp) { // temp is Celcius
+				var _temp;
+				var suffix;
+				var unitSetting = settings?.["units"] ?? "m";
+				switch(unitSetting) {
+					default:
+					case "m":
+						_temp = temp;
+						suffix = "°C";
+						break;
+					case "i":
+						if(settings.userankine == true) {
+							_temp = (temp*1.8)+491.67;
+							suffix = "°R";
+						} else {
+							_temp = temp*1.8+32;
+							suffix = "°F"
+						};
+						break;
+					case "s":
+						_temp = temp+273.15;
+						suffix = "°K";
+						break;					
+				};
+				var displayTemp = Math.round(_temp);
+				if(displayTemp > 999999999) {
+					var shrinkage = (10 ** (Math.floor(Math.log10(_temp)) - 4));
+					displayTemp = [Math.floor(_temp/shrinkage),"e",Math.log10(shrinkage),suffix].join("");
+				} else {
+					displayTemp = Math.round(_temp).toString() + suffix;
+				};
+				return displayTemp
+			};
+
 			//Somehow, for some illogical reason, quicksaving causes updateStats to somehow disregard its if-statement and fucking TypeError when you mouse over an empty space; this is an attempt to fix it with overkill-level existence checks.
 			function updateStats() {
 				var statsDiv = document.getElementById("stats");
@@ -12673,7 +12731,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							displayName += ` (${currentPixel?.displayText})`
 						};
 						stats += "<span id='stat-element' class='stat'>Elem:"+displayName+"</span>";
-						stats += "<span id='stat-temperature' class='stat'>Temp:"+formatTemp(currentPixel.temp)+"</span>";
+						stats += "<span id='stat-temperature' class='stat'>Temp:"+formatTempWithAbbreviation(currentPixel.temp)+"</span>";
 						if (currentPixel.charge) {
 							stats += "<span id='stat-charge' class='stat'>C"+currentPixel.charge+"</span>";
 						}
