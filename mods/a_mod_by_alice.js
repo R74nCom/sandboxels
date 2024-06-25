@@ -17536,6 +17536,81 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 			};
 		};
+		elements.neutron = {
+			color: "#a6ffff",
+			behavior: [
+					"XX|XX|XX",
+					"XX|CH:proton%0.25 AND DL%0.25|XX", //"b nnnnnnnnn" - the dog stepping on the keyboard
+					"XX|XX|XX"
+			],
+			tick: behaviors.BOUNCY,
+			rotatable: true,
+			reactions: {
+				uranium: {
+					temp2: 100
+				},
+				plant: {
+					elem2: "wood",
+					chance: 0.05
+				},
+				gunpowder: {
+					elem2: "dust",
+					chance: 0.05
+				},
+				yeast: {
+					elem2: "bread",
+					chance: 0.05
+				},
+				silver: {
+					elem1: null,
+					chance: 0.25
+				},
+				firework: {
+					chance: 0.01,
+					func: function(pixel1,pixel2) {
+						pixel2.burning=true;
+						pixel2.burnStart=pixelTicks
+					}
+				},
+				protium: {
+					elem1: null,
+					elem2: "deuterium"
+				},
+				deuterium: {
+					elem1: null,
+					elem2: "tritium"
+				},
+				heavy_water: {
+					elem1: null,
+					elem2: "heavy_water"
+				},
+				heavy_steam: {
+					elem1: null,
+					elem2: "heavy_steam"
+				},
+				heavy_ice: {
+					elem1: null,
+					elem2: "heavy_ice"
+				},
+				heavy_snow: {
+					elem1: null,
+					elem2: "heavy_snow"
+				},
+				plutonium: {
+					temp2: 100
+				},
+				molten_plutonium: {
+					temp2: 100
+				}
+			},
+			temp: 35,
+			category: "energy",
+			state: "gas",
+			density: 0.00003,
+			ignoreAir: true,		
+			nellfireImmune: true
+		};
+
 		elements.zirconium = {
 			color: ["#ccc59b", "#dbd3a4"],
 			behavior: behaviors.WALL,
