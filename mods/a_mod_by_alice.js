@@ -3088,7 +3088,14 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		};
 
 		currentShape = "square";
-		shapeOrder = ["square","circle","triangle","inverted triangle","rhombus","squircle","twinkle","slash","backslash"];
+		latticeScaleX = 1;
+		latticeScaleY = 1;
+		latticeOffsetX = 0;
+		latticeOffsetY = 0;
+		barScale = 1;
+		barOffset = 0;
+		barSpacing = 2;
+		shapeOrder = ["square","circle","triangle","inverted triangle","rhombus","squircle","twinkle","slash","backslash","lattice","verticalbars","horizontalbars"];
 		shapeExclusionConditions = {
 			/*"square": function(x,y,size,mouseX,mouseY,topLeft,bottomRight) {
 				return false
@@ -3180,6 +3187,15 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				if(xOffset == yOffset + 1) { return false };
 				return true
 			},
+			"lattice": function(x,y,size,mouseX,mouseY,topLeft,bottomRight) {
+				return ((Math.floor((x + (settings.latticeOffsetX ?? 0)) / (settings.latticeScaleX ?? 1)) % 2 == 0) && (Math.floor((y + (settings.latticeOffsetY ?? 0)) / (settings.latticeScaleY ?? 1)) % 2 == 0) || (Math.floor((x + (settings.latticeOffsetX ?? 0)) / (settings.latticeScaleX ?? 1)) % 2 == 1) && ((Math.floor((y + (settings.latticeOffsetY ?? 0)) / (settings.latticeScaleY ?? 1)) % 2 == 1)))
+			},
+			"verticalbars": function(x,y,size,mouseX,mouseY,topLeft,bottomRight) {
+				return (Math.floor((x + (settings.barOffset ?? 0)) / (settings.barScale ?? 1)) % ((settings.barSpacing  ?? 1) + 1) == 0)
+			},
+			"horizontalbars": function(x,y,size,mouseX,mouseY,topLeft,bottomRight) {
+				return (Math.floor((y + (settings.barOffset ?? 0)) / (settings.barScale ?? 1)) % ((settings.barSpacing  ?? 1) + 1) == 0)
+			},
 			/*"corners": function(x,y,size,mouseX,mouseY,topLeft,bottomRight) {
 				var tl = (x == topLeft[0] && y == topLeft[1]);
 				var tr = (x == bottomRight[0] && y == topLeft[1]);
@@ -3189,7 +3205,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			}*/
 		}
 
-			
+		barScale = 5;
+		barOffset = 1;
+		barSpacing = 3;
+
 		//supplementary functions for below
 
 		//redefine mouseRange to support even sizes
@@ -3543,6 +3562,17 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			// Loop through all the elements with setting-span class.
 			// If the span's setting attribute is in settings, set the first select or input to the value of the setting.
 			loadSettings();
+			settings.shapeMode ??= 0;
+			settings.doacid ??= false;
+			settings.acidFunction ??= "none";
+			settings.barOffset ??= 0;
+			settings.barScale ??= 1;
+			settings.barSpacing ??= 1;
+			settings.latticeOffsetX ??= 0;
+			settings.latticeOffsetY ??= 0;
+			settings.latticeScaleX ??= 1;
+			settings.latticeScaleY ??= 1;
+			saveSettings();
 				//scared to touch this because ctx is pretty important
 			var gameCanvas = document.getElementById("game");
 			// Get context
@@ -5064,9 +5094,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			incrementt = incrementt % (Math.PI*8.8) + (Math.PI/30);
 		}
 		shapeModes = ["normal","circles","triangles"];
-		settings.shapeMode ??= 0;
-		settings.doacid ??= false;
-		settings.acidFunction ??= "none";
 		function getShapeMode() {
 			return shapeModes[settings.shapeMode] ?? "normal";
 		};
@@ -5088,6 +5115,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		settings ??= {};
 		settings.shockoverlay ??= true;
 		//I hate overwriting drawPixels
+		tempScale = 1;
+		tempScaleOffset = 20;
 		runAfterAutogen(function() {
 			//rAA because velocity.js already puts its redef in a rAL and rAA comes after that
 			drawPixels = function(forceTick=false) {
@@ -5167,8 +5196,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					}
 					else if (view === 2) { // thermal view
 						// set the color to pixel.temp, from hottest at -66 (294.1875) hue to coldest 265 hue, with the minimum being -273, max being 7755
-						var temp = pixel.temp;
-						temp = Math.min(Math.max(temp + 900,(settings.abszero ?? -273.15)),55530000000000);
+						var a0 = (settings.abszero ?? -273.15);
+						var temp = ((pixel.temp - tempScaleOffset) * tempScale) - tempScaleOffset;
+						temp = Math.min(Math.max(temp + 900,a0),55530000000000);
 						var hue,sat,lig;
 						sat = 100;
 						lig = 50;
@@ -8607,13 +8637,15 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		insulate: true,
 		tick: function(pixel) {
 			pixel.color = "rgb(0,0,0)";
-			var range = (pixel.range ?? 30) * 2;
+			pixel.range ??= 15;
+			if(pixel.range <= 0) { deletePixel(pixel.x,pixel.y); return };
+			var range = (pixel.range ?? 15) * 2;
 			var targets = mouseRange(pixel.x,pixel.y,range,"circle",true);
 			shuffleArray(targets);
 			for (var i = 0; i < targets.length; i++) {
 				var newPixel = pixelMap[targets[i][0]]?.[targets[i][1]];
 				if ((!newPixel) || newPixel.del) { continue };
-				if(((newPixel.element == pixel.element) || (elements[pixel.element].ignore && elements[pixel.element].ignore.includes(newPixel.element))) || ((newPixel.x == pixel.x) && (newPixel.y == pixel.y))) { continue };
+				if(elements[pixel.element].ignore && elements[pixel.element].ignore.includes(newPixel.element)) { continue };
 				newPixel.tempDrag = pixelTicks + 1;
 				var [mX, mY] = [pixel.x, pixel.y];
 				var distanceComplement = (range / 2) - pyth(mX,mY,newPixel.x,newPixel.y);
@@ -8646,10 +8678,25 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					}
 				};
 				var taxicabDistance = Math.abs(newPixel.x - pixel.x) + Math.abs(newPixel.y - pixel.y);
-				if(taxicabDistance <= 3) {
+				if((taxicabDistance <= 3) && (taxicabDistance > 0)) {
 					pixel.temp += (newPixel.temp - (settings.abszero ?? 273.15));
-					deletePixel(newPixel.x,newPixel.y);
-					continue
+					if(["amba_black_hole","amba_white_hole"].includes(newPixel.element) && (newPixel.range ?? 15) > 0) {
+						//console.log("adding range on tick",pixelTicks);
+						pixel.range ??= 15;
+						switch(newPixel.element) {
+							case "amba_black_hole":
+								pixel.range += (newPixel.range ?? 15);
+								break;
+							case "amba_white_hole":
+								pixel.range -= (newPixel.range ?? 15);
+								break;
+						}
+						//console.log("new range:",pixel.range);
+						newPixel.range = 0;
+					} else {
+						deletePixel(newPixel.x,newPixel.y);
+						continue
+					}
 				}
 			}
 		},
@@ -8657,7 +8704,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		density: 1797.69313486e305, //about as close to Infinity as we can serializably get
 		category: "special",
 		hardness: 1,
-		ignore: ["amba_white_hole"]
+		maxSize: 1,
+		ignore: ["wall"].concat(eLists.CLONERS)
 	};
 	
 	elements.amba_white_hole = {
@@ -8667,6 +8715,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		insulate: true,
 		tick: function(pixel) {
 			pixel.color = "rgb(255,255,255)";
+			pixel.range ??= 15;
+			if(pixel.range <= 0) { deletePixel(pixel.x,pixel.y); return };
 			var range = (pixel.range ?? 30) * 2;
 			var targets = mouseRange(pixel.x,pixel.y,range,"circle",true);
 			shuffleArray(targets);
@@ -20457,7 +20507,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									case (behaviors.SUPPORT.toString()):
 										return behaviors.HOT_SUPPORT;
 									default:
-										console.log(`Hot rock generation: Unknown base behavior for ${rockName}, defaulting to hot powder`);
+										if(rockName !== "dry_dirt") { console.log(`Hot rock generation: Unknown base behavior for ${rockName}, defaulting to hot powder`) };
 										return behaviors.HOT_POWDER
 								}
 							}(),
@@ -43175,7 +43225,7 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 			tps = _tps;
 			resetInterval(tps);
 
-			var shape = urlParams.get("shape") ?? "square";
+			var shape = urlParams.get("currentShape") ?? "square";
 			if(shapeOrder.indexOf(shape) == -1) {
 				shape = "square"
 			};
