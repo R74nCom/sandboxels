@@ -17572,13 +17572,15 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						pixel2.burnStart=pixelTicks
 					}
 				},
-				protium: {
+				hydrogen: {
 					elem1: null,
-					elem2: "deuterium"
+					elem2: "deuterium",
+					chance: 0.02 //nerfs not in original NM
 				},
 				deuterium: {
 					elem1: null,
-					elem2: "tritium"
+					elem2: "tritium",
+					chance: 0.01
 				},
 				heavy_water: {
 					elem1: null,
