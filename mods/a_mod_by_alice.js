@@ -8789,6 +8789,25 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		}
 	};
 
+	function getNeighborCount(pixel,useVonNeumannGrid=false) {
+		var x = pixel.x;
+		var y = pixel.y;
+		return (
+			0 +
+			(!isEmpty(x-1,y,true)) +
+			(!isEmpty(x+1,y,true)) +
+			(!isEmpty(x,y-1,true)) +
+			(!isEmpty(x,y+1,true))
+		) + (
+			(!useVonNeumannGrid) && (
+				(!isEmpty(x-1,y-1,true)) +
+				(!isEmpty(x+1,y+1,true)) +
+				(!isEmpty(x+1,y-1,true)) +
+				(!isEmpty(x-1,y+1,true))
+			)
+		);
+	};
+
 	elements.amba_black_hole = {
 		color: _cc.b.h,
 		maxColorOffset: 0,
@@ -8811,7 +8830,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				var distanceComplement = (range / 2) - pyth(mX,mY,newPixel.x,newPixel.y);
 				var distanceProportion = 0.2 + (distanceComplement / (range / 2));
 				var distanceModifier = distanceProportion ** 2;
-				var pullCount = (4 * distanceModifier) * (commonMovableCriteria(newPixel.element) ? 1 : 0.8);
+				var pullCount = (4 * distanceModifier) * (commonMovableCriteria(newPixel.element) ? 1 : 0.8) * (1 - (((getNeighborCount(newPixel)) / (8.1 + ((elements[newPixel.element].hardness ?? 0) * 3)))));
 				var pullCountIntegerPart = Math.floor(pullCount);
 				var pullCountFractionalPart = pullCount % 1;
 				var truePullCount = Math.min(3,pullCountIntegerPart + (Math.random() < pullCountFractionalPart));
@@ -8840,8 +8859,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						newPixel.vy += _vy;
 						tryMove(newPixel, x + best[0], y + best[1], undefined, true);
 						if(haseuliteSpreadWhitelist.includes(newPixel.element)) { newPixel.value += ((15 + (distanceComplement / (distanceProportion ** 2))) * 3) };
-						heatNeighbors(newPixel,20);
-						pixel.temp += 20;
+						heatNeighbors(newPixel,5);
+						pixel.temp += 5 * getNeighborCount(pixel);
 					}
 				};
 				var taxicabDistance = Math.abs(newPixel.x - pixel.x) + Math.abs(newPixel.y - pixel.y);
@@ -13056,6 +13075,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					stats += "<span id='stat-view' class='stat'>"+viewKey[view]+"</span>";
 				}
 				statsDiv.innerHTML = stats;
+				var _width = getComputedStyle(statsDiv).width;
+				if(_width !== null) {
+					_width = parseFloat(_width.match(/[\d\/]+/));
+					if(_width <= 752) { statsDiv.style["font-size"] = "50%" }
+				}
 			}
 			//Moved to window.onload where gameDiv should be guaranteed to exist
 		} catch (error) {
