@@ -5099,54 +5099,61 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		});
 	//CONFIGURABLE MAXIMUM COLOR OFFSET (maxColorOffset) ##
 		defaultColorOffset = 15;
-		pixelColorPick = function(pixel,customColor=null,maxOffset=null) {
-			var element = pixel.element;
-			var elementInfo = elements[element];
-			//if (elementInfo.behavior instanceof Array) {
-			if (pixel.charge && elementInfo.colorOn) {
-				customColor = elementInfo.colorOn;
-			}
-			if (customColor !== null) {
-				if (Array.isArray(customColor)) {
-					customColor = customColor[Math.floor(Math.random() * customColor.length)];
-				} else if (customColor.startsWith?.("#")) {
-					customColor = hexToRGB(customColor);
+				pixelColorPick = function(pixel,customColor=null,maxOffset=null) {
+				var element = pixel.element;
+				var elementInfo = elements[element];
+				//if (elementInfo.behavior instanceof Array) {
+				if (pixel.charge && elementInfo.colorOn) {
+					customColor = elementInfo.colorOn;
 				}
-				var rgb = customColor;
-			}
-			else {
-				var rgb = elements[element].colorObject; // {r, g, b}
-				// If rgb is an array, choose a random item
-				if (Array.isArray(rgb)) {
-					rgb = rgb[Math.floor(Math.random() * rgb.length)];
+				if (customColor !== null) {
+					if (Array.isArray(customColor)) {
+						customColor = customColor[Math.floor(Math.random() * customColor.length)];
+					} else if (customColor.startsWith?.("#")) {
+						customColor = hexToRGB(customColor);
+					}
+					var rgb = customColor;
 				}
-			}
-			// Randomly darken or lighten the RGB color
-				//try maxOffset parameter, then info maxColorOffset, then default 15
-			var offsetAmount;
-			if(maxOffset !== null) {
-				offsetAmount = maxOffset;
-			} else {
-				offsetAmount = elementInfo?.maxColorOffset ?? defaultColorOffset;
-			};
-			var maxColorOffset = Math.floor(Math.random() * (Math.random() > 0.5 ? -1 : 1) * Math.random() * offsetAmount);
-			var r = rgb.r + maxColorOffset;
-			var g = rgb.g + maxColorOffset;
-			var b = rgb.b + maxColorOffset;
-			// Make sure the color is within the RGB range
-			r = Math.max(0, Math.min(255, r));
-			g = Math.max(0, Math.min(255, g));
-			b = Math.max(0, Math.min(255, b));
-			var color = "rgb("+r+","+g+","+b+")";
-			/*}
-			else {
-				var color = elementInfo.color;
-				if (Array.isArray(color)) {
-					color = color[Math.floor(Math.random() * color.length)];
+				else {
+					var rgb = elements[element].colorObject; // {r, g, b}
+					// If rgb is an array, choose a random item
+					while(Array.isArray(rgb)) {
+						rgb = rgb[Math.floor(Math.random() * rgb.length)];
+					}
 				}
-			}*/
-			return color;
-		}
+				// Randomly darken or lighten the RGB color
+					//try maxOffset parameter, then info maxColorOffset, then default 15
+				var offsetAmount;
+				if(maxOffset !== null) {
+					offsetAmount = maxOffset;
+				} else {
+					offsetAmount = elementInfo?.maxColorOffset ?? defaultColorOffset;
+				};
+				if(typeof(rgb) !== "object") { rgb = convertColorFormats(rgb,"json") }; //somehow rgb can be a hex triplet even though it's pulled from the f*cking JSON color object and there's no logical way that that should be able to happen
+				var maxColorOffset = Math.floor(Math.random() * (Math.random() > 0.5 ? -1 : 1) * Math.random() * offsetAmount);
+				if((typeof(rgb?.r) !== "number") || (typeof(rgb?.g) !== "number") || (typeof(rgb?.b) !== "number")) {
+					console.log(pixel.element,pixel.color,"\n",rgb,customColor);
+					//this SHOULDN'T be necessary but SOMEHOW IT IS
+					var color_also_fxck_you = elementInfo.colorObject;
+					while(Array.isarray(color_also_fxck_you)) { color_also_fxck_you = randomChoice(color_also_fxck_you) }
+				};
+				var r = rgb.r + maxColorOffset;
+				var g = rgb.g + maxColorOffset;
+				var b = rgb.b + maxColorOffset;
+				// Make sure the color is within the RGB range
+				r = Math.max(0, Math.min(255, r));
+				g = Math.max(0, Math.min(255, g));
+				b = Math.max(0, Math.min(255, b));
+				var color = "rgb("+r+","+g+","+b+")";
+				/*}
+				else {
+					var color = elementInfo.color;
+					if (Array.isArray(color)) {
+						color = color[Math.floor(Math.random() * color.length)];
+					}
+				}*/
+				return color;
+			}
 	//FIND MODE, PIXEL PROPERTIES LINKED TO SPECIAL CODE, CONFIGURABLE VISUAL DISTORTION AND VISUAL PIXEL SHAPE SETTINGS (acid_and_shapes.js) ##
 	//two separate things i.e. not "pixel properties linked to special code, configurable visual distortion, and visual pixel shape settings" though there's basically no semantic difference
 		var style = document.createElement('style');
@@ -5446,12 +5453,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				})} // shuffle the pixels if not paused*/
 				for (var i = 0; i < newCurrentPixels.length; i++) {
 					pixel = newCurrentPixels[i];
-					if(typeof(elements[pixel.element]) == "undefined") { continue };
+					if(typeof(elements[pixel.element]) !== "object") { pixel.originalElement = pixel.element; pixel.element = "unknown" };
 					if(typeof(pixel) == "undefined") { continue };
 					//if (pixelMap[pixel.x][pixel.y] == undefined || currentPixels.indexOf(pixel) == -1) {continue}
 					if (pixel.del) {continue}
 					if (!paused || forceTick) {
-						if(typeof(elements[pixel.element]) == "undefined") { continue };
+						if(typeof(elements[pixel.element]) !== "object") { pixel.originalElement = pixel.element; pixel.element = "unknown" };
 						doVelocity(pixel);
 						if (elements[pixel.element].tick) { // Run tick function if it exists
 							elements[pixel.element].tick(pixel);
@@ -5496,6 +5503,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					var pixel = pixelDrawList[i];
 					if (pixelMap[pixel.x][pixel.y] == undefined) {continue}
 					if (pixel.con) { pixel = pixel.con }
+					if((typeof(pixel.color) !== "string") || (pixel.color.indexOf("NaN") >= 0)) {
+						pixel.color = pixelColorPick(pixel)
+					};
 					var colorFunction = viewColorFunctions[view] ?? normalColorFunction;
 					ctx.fillStyle = colorFunction(pixel);
 					if(find) { //if find and matching, override fill style with the find coloration
@@ -43505,9 +43515,9 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 			if((typeof(ctx) == "object") && (ctx?.constructor?.name == "CanvasRenderingContext2D")) { return };
 			if((typeof(ctx) == "undefined") || (typeof(ctx) == "object" && ctx === null)) {
 				var canvases = document.getElementsByTagName("canvas");
-				if(canvases.length == 0) { return };
+				if(canvases.length == 0) { return } else { console.log(canvases) };
 				canvas = canvases[0];
-				ctx = canvas.getRenderingContext("2d");
+				if(typeof(canvas?.getRenderingContext) == "function") { ctx = logAndReturn(canvas.getRenderingContext("2d")) } else { console.log(canvas); return };
 				clearInterval(canvasGetterInterval)
 			} else {
 				return
