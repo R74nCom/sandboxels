@@ -43515,10 +43515,10 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 			if((typeof(ctx) == "object") && (ctx?.constructor?.name == "CanvasRenderingContext2D")) { return };
 			if((typeof(ctx) == "undefined") || (typeof(ctx) == "object" && ctx === null)) {
 				var canvases = document.getElementsByTagName("canvas");
-				if(canvases.length == 0) { return } else { console.log(canvases) };
+				if(canvases.length == 0) { return };
 				canvas = canvases[0];
-				if(typeof(canvas?.getRenderingContext) == "function") { ctx = logAndReturn(canvas.getRenderingContext("2d")) } else { console.log(canvas); return };
-				clearInterval(canvasGetterInterval)
+				if(typeof(canvas?.getContext) == "function") { ctx = canvas.getContext("2d") } else { return };
+				if(!!ctx) { clearInterval(canvasGetterInterval) }
 			} else {
 				return
 			}
