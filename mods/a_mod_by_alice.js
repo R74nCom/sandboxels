@@ -6,8 +6,18 @@ var allDependenciesExist = dependencyExistence.reduce(function(a,b) { return a &
 if(allDependenciesExist) {
 try {
 	//COMMON VARIABLES ##
-		const whiteColor = {r: 255, g: 255, b: 255};
-		const blackColor = {r: 0, g: 0, b: 0};
+		_cc = {
+			w: {
+				j: {r: 255, g: 255, b: 255},
+				r: "rgb(255,255,255)",
+				h: "#FFFFFF"
+			},
+			b: {
+				j: {r: 0, g: 0, b: 0},
+				r: "rgb(0,0,0)",
+				h: "#000000"
+			}
+		};
 		canvas = document.getElementsByTagName("canvas")?.[0];
 		ctx = canvas?.getContext?.("2d") ?? null;
 	//ESSENTIAL COMMON FUNCTIONS (CODE LIBRARY) ##
@@ -944,7 +954,7 @@ try {
 				};
 			};
 			function averageRgbPrefixedColorArray(colorArray,returnObject=false) { //array of rgb()s to single rgb() of average color
-				//averageRgbPrefixedColorArray(["rgb(255,0,0)", "rgb(0,0,0)", "rgb(0,0,255)"]);
+				//averageRgbPrefixedColorArray(["rgb(255,0,0)", _cc.b.r, "rgb(0,0,255)"]);
 				//console.log("Averaging started");
 				var reds = [];
 				var greens = [];
@@ -1671,7 +1681,7 @@ try {
 			};
 			clonedPixel = null;
 			elements.clone_painter_picker = {
-				color: "#ffffff",
+				color: _cc.w.h,
 				tool: function(pixel) {
 					var newPixel = structuredClone ? structuredClone(pixel) : JSON.parse(JSON.stringify(pixel));
 					delete newPixel.x;
@@ -1700,7 +1710,7 @@ try {
 				desc: "This selects the pixel that the clone_painter element will duplicate."
 			};
 			elements.clone_painter = {
-				color: "#ffffff",
+				color: "rgb(255,255,0)",
 				tick: function(pixel) {
 					var x = pixel.x; //they need to be used after the pixel is removed
 					var y = pixel.y;
@@ -2264,7 +2274,7 @@ try {
 			desc: "<span style='color:#FF00FF' onClick=saturationPrompt()>Click here to configure the tool.</span><br/><span style='color:#FF00FF' onClick=colorToolFilterPrompt()>Click here to configure the element filter (applies to all color tools).</span>"
 		}
 		elements.luminance = {
-			color: ["#000000","#333333","#666666","#999999","#cccccc","#ffffff"],
+			color: [_cc.b.h,"#333333","#666666","#999999","#cccccc",_cc.w.h],
 			tool: function(pixel) {
 				var element = pixel.element;
 				if(  colorToolElementFilter === "none" || ( (typeof(colorToolElementFilter) === "string" && element === colorToolElementFilter) || (Array.isArray(colorToolElementFilter) && colorToolElementFilter.includes(element)) )  ) {
@@ -2339,7 +2349,7 @@ try {
 		}
 	//STRIPED PAINT ##
 		stripeFixedDefaultProperties = {
-			color2: "rgb(0,0,0)",
+			color2: _cc.b.r,
 			phase: 0,
 			scale: 1,
 			angle: 0
@@ -2526,25 +2536,43 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 							var c = elements[key].color[i];
 							if(!c.startsWith) {
 								console.error(`element ${key} array color ${i} (${c}) isn't a string`);
-								rgbos.push("rgb(255,255,255)")
-							} else if (c.startsWith("#")) {
-								var rgb = hexToRGB(c);
-								if(rgb == null) { console.log(key,c); rgb = {r: 255, g: 255, b: 255} };
-								rgbs.push("rgb("+rgb.r+","+rgb.g+","+rgb.b+")");
-								rgbos.push(rgb);
-							}
-							else {
+								rgbs.push(_cc.w.r)
+								rgbos.push(_cc.w.j)
+							} else if (c.startsWith("#") || c.length <= 8 ) {
+								var rgb = null;
+								var rgbo = null;
+								try { rgb = convertColorFormats(c,"rgb") } catch(error) { console.error(key,error) };
+								try { rgbo = convertColorFormats(c,"json") } catch(error) { console.error(key,error) };
+								if(rgb == null) { console.log(key,c); rgb = _cc.w.r };
+								if(rgbo == null) { console.log(key,c); rgbo = _cc.w.j };
+								rgbs.push(rgb);
+								rgbos.push(rgbo);
+							} else {
 								rgbs.push(c);
+								rgbos.push(convertColorFormats(c,"json"));
+								console.log(key,rgbs,rgbos)
 							}
 						}
 						elements[key].color = rgbs;
 						elements[key].colorObject = rgbos;
 					} else {
-						// if elements[key].color starts with #
-						if (elements[key].color.startsWith("#")) {
-							var rgb = hexToRGB(elements[key].color);
-							elements[key].color = "rgb("+rgb.r+","+rgb.g+","+rgb.b+")";
-							elements[key].colorObject = rgb;
+						var c = elements[key].color;
+						if(!c.startsWith) {
+							console.error(`element ${key} array color ${i} (${c}) isn't a string`);
+							rgbs.push(_cc.w.r)
+							rgbos.push(_cc.w.j)
+						} else if (c.startsWith("#") || c.length <= 8 ) {
+							var rgb = null;
+							var rgbo = null;
+							try { rgb = convertColorFormats(c,"rgb") } catch(error) { console.error(key,error) };
+							try { rgbo = convertColorFormats(c,"json") } catch(error) { console.error(key,error) };
+							if(rgb == null) { console.log(key,c); rgb = _cc.w.r };
+							if(rgbo == null) { console.log(key,c); rgbo = _cc.w.j };
+							elements[key].color = rgb;
+							elements[key].colorObject = rgbo;
+						} else {
+							elements[key].color = convertColorFormats(c,"rgb");
+							elements[key].colorObject = convertColorFormats(c,"json");
 						}
 					}
 				}
@@ -2717,8 +2745,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				}
 				// If the element has no color, set it to white
 				if (elements[key].color === undefined) {
-					elements[key].color = "rgb(255,255,255)";
-					elements[key].colorObject = {r:255,g:255,b:255};
+					elements[key].color = _cc.w.r;
+					elements[key].colorObject = _cc.w.j;
 				}
 				if (elements[key].movable === undefined) {
 					// If the element's behavior is an array and contains M1 or M2, set its movable to true
@@ -2895,13 +2923,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 							var char = line[j];
 							if (elements[key].colorKey[char]) {
 								if (elements[key].colorKey[char].startsWith("#")) {
-									var rgb = hexToRGB(elements[key].colorKey[char]);
-									elements[key].colorKey[char] = "rgb("+rgb.r+","+rgb.g+","+rgb.b+")";
+									elements[key].colorKey[char] = convertColorFormats(elements[key].colorKey[char],"rgb");
 								}
 								newPattern[i].push(elements[key].colorKey[char]);
 							}
 							else {
-								newPattern[i].push("rgb(255,255,255)");
+								newPattern[i].push(_cc.w.r);
 							}
 						}
 					}
@@ -3508,13 +3535,22 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					createCategoryDiv(category);
 					categoryDiv = document.getElementById("category-"+category);
 				}
-				if(Array.isArray(elements[element].color) && elements[element].color.length == 1) {
-					//temporarily make the single-item array into a string just for button generation, and then turn it back into an array just in case
-					elements[element].color = elements[element].color[0];
-					createElementButton(element);
-					elements[element].color = [elements[element].color]
-				} else {
-					createElementButton(element);
+				try {
+					elements[element].colorObject ??= _cc.w.j;
+					if(Array.isArray(elements[element].color) && elements[element].color.length == 1) {
+						//temporarily make the single-item array into a string just for button generation, and then turn it back into an array just in case
+						var oldColor = elements[element].color;
+						elements[element].color = convertColorFormats(oldColor[0],"rgb");
+						createElementButton(element);
+						elements[element].color = oldColor
+					} else {
+						var oldColor = elements[element].color;
+						elements[element].color = Array.isArray(oldColor) ? oldColor.map(x => convertColorFormats(x,"rgb")) : convertColorFormats(oldColor,"rgb");
+						createElementButton(element);
+						elements[element].color = oldColor
+					}
+				} catch(error) { //temporary poke'mon
+					console.error(error)
 				}
 			}
 			// Set the first button in categoryControls div to be the current category
@@ -3671,7 +3707,61 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			var firstDiv = document.getElementsByClassName("category")[0];
 			var firstElementButton = firstDiv.getElementsByClassName("elementButton")[0];
 			selectElement(firstElementButton.getAttribute("element"));
-			gameLoaded = true
+			quickloadIsPaused = true;
+			var qsb = document.createElement("button");
+			qsb.setAttribute("id","quicksaveButton");
+			qsb.setAttribute("onclick","quicksave()");
+			qsb.innerText = "Quicksave";
+			document.getElementById("gameDiv").before(qsb);
+			qsb.after(document.createTextNode(String.fromCharCode(160)));
+			var qlb = document.createElement("button");
+			qlb.setAttribute("id","quickloadButton");
+			qlb.setAttribute("onclick","clearAll(); quickload(quickloadIsPaused ?? true)");
+			qlb.innerText = "Quickload";
+			document.getElementById("gameDiv").before(qlb);
+			qlb.after(document.createTextNode(String.fromCharCode(160,160)));
+			var qpc = document.createElement("input");
+			qpc.setAttribute("type","checkbox");
+			qpc.setAttribute("id","quickloadPausedInput");
+			qpc.setAttribute("onchange","quickloadIsPaused = this.checked;");
+			qpc.checked = true;
+			var qpcd = document.createElement("span");
+			qpcd.setAttribute("id","quickloadPausedInputLabel");
+			qpcd.innerText = "Pause after quickloading?";
+			document.getElementById("gameDiv").before(qpc);
+			qpc.after(document.createTextNode(String.fromCharCode(160)));
+			document.getElementById("gameDiv").before(qpcd);
+			document.getElementById("gameDiv").before(document.createElement("br"));
+			quickSlDetectorLastKeys = [];
+			justPromptedQuickSL = false;
+			document.addEventListener("keydown", function(e) {
+				quickSlDetectorLastKeys.push(e.key);
+				if(quickSlDetectorLastKeys.length > 3) {
+					quickSlDetectorLastKeys.shift();
+				};
+				justPromptedQuickSL = false;
+			});
+			document.addEventListener("keydown", function(e) {
+				if (quickSlDetectorLastKeys.join(",") == "(,(,L") {
+					e.preventDefault();
+					var confirm = prompt("Are you sure you want to quickLOAD? (Type 'yes' to confirm)");
+					if(confirm == "yes") {
+						clearAll();
+						quickload(true,false,true);
+					};
+					justPromptedQuickSL = true;
+					quickSlDetectorLastKeys = [];
+				} else if (quickSlDetectorLastKeys.join(",") == "(,(,S") {
+					e.preventDefault();
+					var confirm = prompt("Are you sure you want to quickSAVE? (Type 'yes' to confirm)");
+					if(confirm == "yes") {
+						quicksave(true,true);
+					};
+					justPromptedQuickSL = true;
+					quickSlDetectorLastKeys = [];
+				};
+			});
+			gameLoaded = true;
 		};
 	//MORE CONFIGURABLE EXPLOSIONS (explodeAtPlus) ##
 		velocityBlacklist = [];
@@ -5092,7 +5182,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			updateFindDescription();
 		};
 		elements.find_toggle = {
-			color: ["#000000", "#000000", "#000000", "#000000", "#ff0000", "#ff0000", "#ff0000", "#ff0000"],
+			color: [_cc.b.h, _cc.b.h, _cc.b.h, _cc.b.h, "#ff0000", "#ff0000", "#ff0000", "#ff0000"],
 			name: "find toggle (look at info)",
 			behavior: behaviors.SELFDELETE,
 			category: "special",
@@ -5778,7 +5868,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		});
 	//FUNCTION EXECUTION WHEN A PIXEL TRIES TO MOVE INTO ANOTHER (onTryMoveInto) ##
 		elements.on_try_move_into_test = {
-			color: "#ffffff",
+			color: _cc.w.h,
 			properties: {
 				ticks: 0,
 				attemptedMovesIntoPixel: 0
@@ -5939,7 +6029,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 	//TOOL THAT DELETES EVERY ELEMENT OF THE CLICKED TYPE(S) ##
 		elements.delete_all_of_element = {
 			name: "delete all of element",
-			color: ["#a7a7a7", "#a7a7a7", "#a7a7a7", "#a7a7a7", "#000000", "#000000", "#000000", "#000000"],
+			color: ["#a7a7a7", "#a7a7a7", "#a7a7a7", "#a7a7a7", _cc.b.h, _cc.b.h, _cc.b.h, _cc.b.h],
 			tool: function(pixel) {
 				for (var i = 1; i < width; i++) {
 					for (var j = 1; j < height; j++) {
@@ -5992,7 +6082,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		};
 		elements.nan_temp = {
 			name: "NaN temp",
-			color: ["#000000", "#ff00ff", "#000000", "#ff00ff"],
+			color: [_cc.b.h, "#ff00ff", _cc.b.h, "#ff00ff"],
 			tool: function(pixel) {
 				pixel.temp = NaN;
 				pixelTempCheck(pixel)
@@ -6000,7 +6090,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "cursed tools",
 		};
 		elements.inf_temp = {
-			color: ["#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff"],
+			color: ["#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h],
 			tool: function(pixel) {
 				pixel.temp = Infinity;
 				pixelTempCheck(pixel)
@@ -6052,7 +6142,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			color: "#eeeeee",
 			tick: function(pixel) {
 				var target = randomChoice(currentPixels);
-				target.color = "rgb(0,0,0)"
+				target.color = _cc.b.r
 			},
 			category: "troll machines",
 			insulate: true,
@@ -6094,7 +6184,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			desc: "Causes random explosions"
 		},
 		elements.offset_fourth_y = {
-			color: ["#000000", "#ff00ff", "#000000", "#ff00ff", "#000000", "#ff00ff", "#000000", "#ff00ff"],
+			color: [_cc.b.h, "#ff00ff", _cc.b.h, "#ff00ff", _cc.b.h, "#ff00ff", _cc.b.h, "#ff00ff"],
 			tool: function(pixel) {
 				tryMove(pixel,pixel.x,pixel.y+0.25);
 				pixelTempCheck(pixel)
@@ -6102,7 +6192,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "cursed tools",
 		},
 		elements.offset_half_y = {
-			color: ["#000000", "#ff00ff", "#000000", "#ff00ff", "#000000", "#ff00ff", "#000000", "#ff00ff"],
+			color: [_cc.b.h, "#ff00ff", _cc.b.h, "#ff00ff", _cc.b.h, "#ff00ff", _cc.b.h, "#ff00ff"],
 			tool: function(pixel) {
 				tryMove(pixel,pixel.x,pixel.y+0.5);
 				pixelTempCheck(pixel)
@@ -6110,7 +6200,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "cursed tools",
 		},
 		elements.offset_three_fourth_y = {
-			color: ["#000000", "#ff00ff", "#000000", "#ff00ff", "#000000", "#ff00ff", "#000000", "#ff00ff"],
+			color: [_cc.b.h, "#ff00ff", _cc.b.h, "#ff00ff", _cc.b.h, "#ff00ff", _cc.b.h, "#ff00ff"],
 			tool: function(pixel) {
 				tryMove(pixel,pixel.x,pixel.y+0.75);
 				pixelTempCheck(pixel)
@@ -6818,7 +6908,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: averageNumericArray([elements.steel.density, elements.copper.density, airDensity])
 		};
 		elements.test_fader = { //basically an aray clone
-			color: "#FFFFFF",
+			color: _cc.w.h,
 			properties: {
 				"life": 100,
 				"fadeRate": 1
@@ -7259,7 +7349,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		};
 		elements.sencc = { //same element neighbor count check
-			color: "#000000",
+			color: _cc.b.h,
 			uwu: 0,
 			tick: function(pixel) {
 				pixel.uwu = 0
@@ -7285,7 +7375,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		},
 		elements.sencc2 = { //same element neighbor count check
-			color: "#000000",
+			color: _cc.b.h,
 			uwu: 0,
 			tick: function(pixel) {
 				pixel.uwu = 0
@@ -7311,7 +7401,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		},
 		elements.sencc3 = { //same element neighbor count check
-			color: "#000000",
+			color: _cc.b.h,
 			uwu: 0,
 			tick: function(pixel) {
 				pixel.uwu = 0
@@ -7338,7 +7428,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		},
 		elements.sencc4 = { //same element neighbor count check
-			color: "#000000",
+			color: _cc.b.h,
 			uwu: 0,
 			tick: function(pixel) {
 				pixel.uwu = 0
@@ -7365,7 +7455,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		},
 		elements.sencc5 = { //same element neighbor count check
-			color: "#000000",
+			color: _cc.b.h,
 			uwu: 0,
 			tick: function(pixel) {
 				pixel.uwu = 0
@@ -7392,7 +7482,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		},
 		elements.sencc6 = { //same element neighbor count check
-			color: "#000000",
+			color: _cc.b.h,
 			uwu: 0,
 			tick: function(pixel) {
 				pixel.uwu = 0
@@ -7419,7 +7509,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		},
 		elements.sencc7 = { //same element neighbor count check
-			color: "#000000",
+			color: _cc.b.h,
 			uwu: 0,
 			tick: function(pixel) {
 				pixel.uwu = 0
@@ -7446,7 +7536,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		},
 		elements.sencc8 = { //same element neighbor count check
-			color: "#000000",
+			color: _cc.b.h,
 			uwu: 0,
 			tick: function(pixel) {
 				pixel.uwu = 0
@@ -7473,7 +7563,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		},
 		elements.sencc9 = { //same element neighbor count check
-			color: "#000000",
+			color: _cc.b.h,
 			uwu: 0,
 			tick: function(pixel) {
 				pixel.uwu = 0
@@ -7500,7 +7590,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		},
 		elements.sencc10 = { //same element neighbor count check
-			color: "#000000",
+			color: _cc.b.h,
 			uwu: 0,
 			tick: function(pixel) {
 				pixel.uwu = 0
@@ -7527,7 +7617,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		},
 		elements.sencc11 = { //same element neighbor count check
-			color: "#000000",
+			color: _cc.b.h,
 			uwu: 0,
 			tick: function(pixel) {
 				pixel.uwu = 0
@@ -7554,7 +7644,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		},
 		elements.sencc2b = { //same element neighbor count check
-			color: "#000000",
+			color: _cc.b.h,
 			uwu: 0,
 			owo: 0,
 			tick: function(pixel) {
@@ -7603,7 +7693,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			behavior: behaviors.SELFDELETE,
 		},
 		elements.troll_powder = {
-			color: ["#ffffff","#000000"],
+			color: [_cc.w.h,_cc.b.h],
 			tick: function(pixel) {
 				ddd = Math.random()
 				eee = Math.random()
@@ -8249,7 +8339,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hardness: 0.8,
 		};
 		elements.polka_dotted_powder = {
-			color: ["#000000","#000000","#7f7f7f","#ffffff","#ffffff"],
+			color: [_cc.b.h,_cc.b.h,"#7f7f7f",_cc.w.h,_cc.w.h],
 			behavior: behaviors.POWDER,
 			category: "powders",
 			state: "solid",
@@ -8257,29 +8347,29 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			tick: function(pixel) {
 				if(pixel.y % 6 == 0) {
 					if(pixel.x % 6 == 0) {
-						pixel.color = "rgb(255,255,255)"
+						pixel.color = _cc.w.r
 					} else {
-						if(!settings.bg || settings.bg == "#000000") {
+						if(!settings.bg || settings.bg == _cc.b.h) {
 							pixel.color = "rgb(15,15,15)"
 						} else {
-							pixel.color = "rgb(0,0,0)"
+							pixel.color = _cc.b.r
 						}
 					}
 				} else if((pixel.y + 3) % 6 == 0) {
 					if((pixel.x + 3) % 6 == 0) {
-						pixel.color = "rgb(255,255,255)"
+						pixel.color = _cc.w.r
 					} else {
-						if(!settings.bg || settings.bg == "#000000") {
+						if(!settings.bg || settings.bg == _cc.b.h) {
 							pixel.color = "rgb(15,15,15)"
 						} else {
-							pixel.color = "rgb(0,0,0)"
+							pixel.color = _cc.b.r
 						}
 					}
 				} else {
-					if(!settings.bg || settings.bg == "#000000") {
+					if(!settings.bg || settings.bg == _cc.b.h) {
 						pixel.color = "rgb(15,15,15)"
 					} else {
-						pixel.color = "rgb(0,0,0)"
+						pixel.color = _cc.b.r
 					}
 				}
 			},
@@ -8326,7 +8416,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		},
 		elements.vaporized_polka_dotted_powder = {
-			color: ["#ffdf7f","#ffdf7f","#ffefbf","#ffffff","#ffffff"],
+			color: ["#ffdf7f","#ffdf7f","#ffefbf",_cc.w.h,_cc.w.h],
 			behavior: behaviors.GAS,
 			category: "gases",
 			state: "gas",
@@ -8334,7 +8424,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			tick: function(pixel) {
 				if(pixel.y % 6 == 0) {
 					if(pixel.x % 6 == 0) {
-						pixel.color = "rgb(255,255,255)"
+						pixel.color = _cc.w.r
 					} else {
 						if(!settings.bg || settings.bg == "#ffdf7f") {
 							pixel.color = "rgb(255,233,137)"
@@ -8344,7 +8434,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					}
 				} else if((pixel.y + 3) % 6 == 0) {
 					if((pixel.x + 3) % 6 == 0) {
-						pixel.color = "rgb(255,255,255)"
+						pixel.color = _cc.w.r
 					} else {
 						if(!settings.bg || settings.bg == "#ffdf7f") {
 							pixel.color = "rgb(255,143,16)"
@@ -8368,7 +8458,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		},
 		elements.ionized_polka_dotted_powder = {
-			color: ["#fffff0","#fffff0","#fffff7","#ffffff","#ffffff"],
+			color: ["#fffff0","#fffff0","#fffff7",_cc.w.h,_cc.w.h],
 			behavior: [
 				"M2 AND CR:plasma%0.3|M1|M2 AND CR:plasma%0.3",
 				"M1|XX|M1",
@@ -8380,7 +8470,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			tick: function(pixel) {
 				if(pixel.y % 6 == 0) {
 					if(pixel.x % 6 == 0) {
-						pixel.color = "rgb(255,255,255)"
+						pixel.color = _cc.w.r
 					} else {
 						if(!settings.bg || settings.bg == "#fffff0") {
 							pixel.color = "rgb(255,255,247)"
@@ -8390,7 +8480,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					}
 				} else if((pixel.y + 3) % 6 == 0) {
 					if((pixel.x + 3) % 6 == 0) {
-						pixel.color = "rgb(255,255,255)"
+						pixel.color = _cc.w.r
 					} else {
 						if(!settings.bg || settings.bg == "#fffff0") {
 							pixel.color = "rgb(255,255,247)"
@@ -8472,11 +8562,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					if(settings.bg) {
 						pixel.color = settings.bg;
 					} else {
-						pixel.color = "#000000";
+						pixel.color = _cc.b.h;
 					}
 				}
 			},
-			color: ["#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#FF0000", "#FF7F00", "#FFFF00", "#00FF00", "#007FFF", "#0000FF", "#7F00FF"],
+			color: [_cc.b.h, _cc.b.h, _cc.b.h, _cc.b.h, _cc.b.h, _cc.b.h, _cc.b.h, "#FF0000", "#FF7F00", "#FFFF00", "#00FF00", "#007FFF", "#0000FF", "#7F00FF"],
 			density: 1250,
 			breakInto: ["metal_scrap", "glass_shard"],
 			hardness: 0.7,
@@ -8606,8 +8696,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		["mint", "#4df0a9"],
 		["gray", "#7F7F7F"],
 		["lime", "#7FFF00"],
-		["black", "#000000"],
-		["white", "#FFFFFF"],
+		["black", _cc.b.h],
+		["white", _cc.w.h],
 		["sky_blue", "#99d1f2"]
 	];
 	for(var i = 0; i < dyeColors.length; i++) {
@@ -8642,9 +8732,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		["m", "#FF00FF"], //magenta (cursed)
 		["p", "#AB00C2"], //purple (cursed)
 		["v", "#7700FF"], //violet
-		["w", "#FFFFFF"], //white (cursed)
+		["w", _cc.w.h], //white (cursed)
 		["gy", "#7F7F7F"], //gray (more cursed)
-		["bl", "#000000", "#2b2b2b"], //black (super cursed)
+		["bl", _cc.b.h, "#2b2b2b"], //black (super cursed)
 		["o", "#FF7F00"], //orange
 		["a", "#FFBF00"], //amber
 		["l", "#7FFF00"], //lime
@@ -8677,12 +8767,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 	};
 
 	elements.amba_black_hole = {
-		color: "#000000",
+		color: _cc.b.h,
 		maxColorOffset: 0,
 		excludeRandom: true,
 		insulate: true,
 		tick: function(pixel) {
-			pixel.color = "rgb(0,0,0)";
+			pixel.color = _cc.b.r;
 			pixel.range ??= 15;
 			if(pixel.range <= 0) { deletePixel(pixel.x,pixel.y); return };
 			var range = (pixel.range ?? 15) * 2;
@@ -8756,12 +8846,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 	};
 	
 	elements.amba_white_hole = {
-		color: "#ffffff",
+		color: _cc.w.h,
 		maxColorOffset: 0,
 		excludeRandom: true,
 		insulate: true,
 		tick: function(pixel) {
-			pixel.color = "rgb(255,255,255)";
+			pixel.color = _cc.w.r;
 			pixel.range ??= 15;
 			if(pixel.range <= 0) { deletePixel(pixel.x,pixel.y); return };
 			var range = (pixel.range ?? 30) * 2;
@@ -9014,7 +9104,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		};
 		rainbowMathlet = function(t,scale,offset) { return Math.cos(t*Math.PI/scale+offset*Math.PI/3) };
 		elements.dark_rainbow = {
-			color: ["#000000","#ff0000","#000000","#ff8800","#000000","#ffff00","#000000","#00ff00","#000000","#00ffff","#000000","#0000ff","#000000","#ff00ff"],
+			color: [_cc.b.h,"#ff0000",_cc.b.h,"#ff8800",_cc.b.h,"#ffff00",_cc.b.h,"#00ff00",_cc.b.h,"#00ffff",_cc.b.h,"#0000ff",_cc.b.h,"#ff00ff"],
 			tick: function(pixel) {
 				var dyeColor = pixel.dyeColor ?? null;
 				var t = pixelTicks+pixel.x+pixel.y;
@@ -9408,7 +9498,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				var g3 = (g1+g2)*0.75;
 				var b3 = (b1+b2)*0.75;
 				var baseColor = {r: r3, g: g3, b: b3};
-				baseColor = averageColorObjects(baseColor,whiteColor,0.8);
+				baseColor = averageColorObjects(baseColor,_cc.w.j,0.8);
 				baseColor = convertColorFormats(baseColor,"rgb");
 				if(!dyeColor) {
 					pixel.color = baseColor
@@ -9610,7 +9700,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "rainbow variants",
 		};
 		elements.saltshimmer = {
-			color: ["#ffffff","#202020","#ffffff","#202020"],
+			color: [_cc.w.h,"#202020",_cc.w.h,"#202020"],
 			tick: function(pixel) {
 				var t = pixelTicks*2.5+pixel.x+pixel.y;
 				var r = Math.floor(255*(1-Math.cos(t*Math.PI/24)));
@@ -10752,7 +10842,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			temp: 120,
 		}
 	//MINESWEEPER ##
-		msColorArray = ["#a0a0a0", "#0000ff", "#008000", "#ff0000", "#000080", "#800000", "#008080", "#000000", "#808080"]
+		msColorArray = ["#a0a0a0", "#0000ff", "#008000", "#ff0000", "#000080", "#800000", "#008080", _cc.b.h, "#808080"]
 		elements.msfield = {
 			name: "minefield",
 			color: "#c0c0c0",
@@ -10836,7 +10926,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		};
 		elements.ms = { //minesweeper = {
-			color: ["#c0c0c0", "#c0c0c0", "#ff0000", "#008000", "#ff0000", "#000080", "#800000", "#008080", "#000000", "#808080", "#808080"],
+			color: ["#c0c0c0", "#c0c0c0", "#ff0000", "#008000", "#ff0000", "#000080", "#800000", "#008080", _cc.b.h, "#808080", "#808080"],
 			behavior: [
 				"XX|XX|XX",
 				"XX|CH:msfield,msfield,msfield,msfield,msfield,msfield,msfield,msfield,msfield,msmine|XX",
@@ -11029,7 +11119,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				};
 			};
 			if(doColorChange) {
-				settings.bg = ["#000000","#000000","#000000","#000000","#29180e","#663814","#9e6f19","#f7af2a"];
+				settings.bg = [_cc.b.h,_cc.b.h,_cc.b.h,_cc.b.h,"#29180e","#663814","#9e6f19","#f7af2a"];
 				settings.bgAngle = 90;
 			};
 		};
@@ -11610,7 +11700,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			}
 		}
 		elements.controllable_pixel = {
-			color: "#FFFFFF",
+			color: _cc.w.h,
 			colorOn: "#FFFF00",
 			behavior: behaviors.WALL,
 			state: "solid",
@@ -11635,7 +11725,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					sussyKey === "Z" ? pixel.color = "rgb(255,255,0)" : pixel.color = "rgb(255,255,127)";
 				}
 				if(!isAlt && !isShift) {
-					sussyKey === "Z" ? pixel.color = "rgb(255,255,191)" : pixel.color = "rgb(255,255,255)";
+					sussyKey === "Z" ? pixel.color = "rgb(255,255,191)" : pixel.color = _cc.w.r;
 				}
 				if(sussyKey !== null) {
 					switch (sussyKey) {
@@ -11847,7 +11937,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					alt_sussyKey === "Z" ? pixel.color = "rgb(255,255,0)" : pixel.color = "rgb(255,255,127)";
 				}
 				if(!isAlt && !isShift) {
-					alt_sussyKey === "Z" ? pixel.color = "rgb(255,255,191)" : pixel.color = "rgb(255,255,255)";
+					alt_sussyKey === "Z" ? pixel.color = "rgb(255,255,191)" : pixel.color = _cc.w.r;
 				}
 				if(alt_sussyKey !== null) {
 					switch (alt_sussyKey) {
@@ -11996,7 +12086,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				if(isShift) {
 					pixel.color = "rgb(255,127,127)";
 				} else {
-					pixel.color = "rgb(255,255,255)";
+					pixel.color = _cc.w.r;
 				}
 				if(aplReceivedKey !== null) {
 					switch (aplReceivedKey) {
@@ -12142,7 +12232,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 	//AMOGUS ##
 		elements.amogus = {
 			name: "Amogus",
-			color: "#ffffff",
+			color: _cc.w.h,
 			cooldown: 6,
 			tick: function(pixel) {
 			pixel.arr=[["brick",  "brick",  "brick"],
@@ -12153,19 +12243,19 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						[ "rgb(255,0,0)",	"rgb(0,255,255)",	"rgb(0,255,255)"],
 						[ "rgb(255,0,0)",	"rgb(255,0,0)",		"rgb(255,0,0)"	],
 						[ "rgb(255,0,0)",	"null",				"rgb(255,0,0)"	]];
-				aa = (0 - (Math.floor(pixel.arr[0].length / 2))) //Center align code
-				na = Math.abs(aa)
+				var aa = (0 - (Math.floor(pixel.arr[0].length / 2))) //Center align code
+				var na = Math.abs(aa)
 				if(pixel.arr[0].length % 2 == 1) {
-					bb = ((Math.floor(pixel.arr[0].length / 2)) + 1)
+					var bb = ((Math.floor(pixel.arr[0].length / 2)) + 1)
 				} else if(pixel.arr[0].length % 2 == 0) {
-					bb = (Math.floor(pixel.arr[0].length / 2))
+					var bb = (Math.floor(pixel.arr[0].length / 2))
 				}
-				cc = (0 - (Math.floor(pixel.arr.length / 2)))
-				nc = Math.abs(cc)
+				var cc = (0 - (Math.floor(pixel.arr.length / 2)))
+				var nc = Math.abs(cc)
 				if(pixel.arr.length % 2 == 1) {
-					dd = ((Math.floor(pixel.arr.length / 2)) + 1)
+					var dd = ((Math.floor(pixel.arr.length / 2)) + 1)
 				} else if(pixel.arr.length % 2 == 0) {
-					dd = (Math.floor(pixel.arr.length / 2))
+					var dd = (Math.floor(pixel.arr.length / 2))
 				}
 				for (let j = cc; j < dd; j++) { //Iterative placing and coloring of pixels
 					for (let i = aa; i < bb; i++) {
@@ -12848,7 +12938,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			elements.save_loader = {
 				behavior: behaviors.SELFDELETE,
 				excludeRandom: true,
-				color: "#FFFFFF",
+				color: _cc.w.h,
 				desc: saveLoaderDescription,
 			};
 
@@ -12931,60 +13021,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				}
 				statsDiv.innerHTML = stats;
 			}
-			quickloadIsPaused = true;
-			var qsb = document.createElement("button");
-			qsb.setAttribute("id","quicksaveButton");
-			qsb.setAttribute("onclick","quicksave()");
-			qsb.innerText = "Quicksave";
-			document.getElementById("gameDiv").before(qsb);
-			qsb.after(document.createTextNode(String.fromCharCode(160)));
-			var qlb = document.createElement("button");
-			qlb.setAttribute("id","quickloadButton");
-			qlb.setAttribute("onclick","clearAll(); quickload(quickloadIsPaused ?? true)");
-			qlb.innerText = "Quickload";
-			document.getElementById("gameDiv").before(qlb);
-			qlb.after(document.createTextNode(String.fromCharCode(160,160)));
-			var qpc = document.createElement("input");
-			qpc.setAttribute("type","checkbox");
-			qpc.setAttribute("id","quickloadPausedInput");
-			qpc.setAttribute("onchange","quickloadIsPaused = this.checked;");
-			qpc.checked = true;
-			var qpcd = document.createElement("span");
-			qpcd.setAttribute("id","quickloadPausedInputLabel");
-			qpcd.innerText = "Pause after quickloading?";
-			document.getElementById("gameDiv").before(qpc);
-			qpc.after(document.createTextNode(String.fromCharCode(160)));
-			document.getElementById("gameDiv").before(qpcd);
-			document.getElementById("gameDiv").before(document.createElement("br"));
-			quickSlDetectorLastKeys = [];
-			justPromptedQuickSL = false;
-			document.addEventListener("keydown", function(e) { //prop prompt listener
-				quickSlDetectorLastKeys.push(e.key);
-				if(quickSlDetectorLastKeys.length > 3) {
-					quickSlDetectorLastKeys.shift();
-				};
-				justPromptedQuickSL = false;
-			});
-			document.addEventListener("keydown", function(e) { //prop prompt listener
-				if (quickSlDetectorLastKeys.join(",") == "(,(,L") {
-					e.preventDefault();
-					var confirm = prompt("Are you sure you want to quickLOAD? (Type 'yes' to confirm)");
-					if(confirm == "yes") {
-						clearAll();
-						quickload(true,false,true);
-					};
-					justPromptedQuickSL = true;
-					quickSlDetectorLastKeys = [];
-				} else if (quickSlDetectorLastKeys.join(",") == "(,(,S") {
-					e.preventDefault();
-					var confirm = prompt("Are you sure you want to quickSAVE? (Type 'yes' to confirm)");
-					if(confirm == "yes") {
-						quicksave(true,true);
-					};
-					justPromptedQuickSL = true;
-					quickSlDetectorLastKeys = [];
-				};
-			});
+			//Moved to window.onload where gameDiv should be guaranteed to exist
 		} catch (error) {
 			alert(`save_loading error: ${error.toString()}`);
 		};
@@ -13242,10 +13279,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			desc: `Distance display pixels get blue in its distance.`,
 		};
 		/*
-		blackObject = {r: 0, g: 0, b: 0};
+		blackObject = _cc.b.j;
 		pinkObject = {r: 255, g: 148, b: 255};
 		elements.black_pink_test = {
-			color: ["#000000","#FF94FF"],
+			color: [_cc.b.h,"#FF94FF"],
 			behavior: behaviors.WALL,
 			properties: {
 				offset: Math.floor(Math.random() * (Math.random() > 0.5 ? -1 : 1) * Math.random() * 15)
@@ -14924,10 +14961,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		if(!settings) {
 			settings = {}
 		}
-		settings.bg ??= "#000000";
+		settings.bg ??= _cc.b.h;
 		function getBackgroundColorOrAverageAsJSON() {
 			if(!(settings?.bg)) {
-				return {r: 0, g: 0, b: 0};
+				return _cc.b.j;
 			} else if(!(settings.bg instanceof Array)) {
 				return convertColorFormats(settings.bg,"json")
 			} else {
@@ -16100,12 +16137,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				bgSettingSpan.textContent = "Page Background ";
 					var settingPicker = document.createElement("input");
 					settingPicker.setAttribute("type","color");
-					settingPicker.setAttribute("value",settings.pageBG ?? "#000000");
+					settingPicker.setAttribute("value",settings.pageBG ?? _cc.b.h);
 					settingPicker.setAttribute("onchange","settings.pageBG = this.value; document.body.style.background = this.value; saveSettings();");
 					bgSettingSpan.appendChild(settingPicker);
 				settingsMenu.appendChild(bgSettingSpan);
 			});
-			settings.pageBG ??= "#000000"; saveSettings();
+			settings.pageBG ??= _cc.b.h; saveSettings();
 			document.body.style["background-color"] = settings.pageBG;
 		};
 	//GASEOUS FORMS AND BOILING OF SOME ELEMENTS ##
@@ -16818,7 +16855,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			settings = {}
 		}
 		if(!settings.bg) {
-			settings.bg = "#000000"
+			settings.bg = _cc.b.h
 		}
 		elements.black_damp = {
 			color: settings.bg,
@@ -18657,7 +18694,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			conduct: 0.23,
 		};
 		elements.haseulite_gas = {
-			color: ["#ffff9d", "#ffffff", "#e9ffe6", "#ffffe5"],
+			color: ["#ffff9d", _cc.w.h, "#e9ffe6", "#ffffe5"],
 			fireColor: ["#08a953", "#2ea332", "#d1e0d3"],
 			properties: {
 				oldColor: null
@@ -19685,16 +19722,16 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			"16-01": [{ member: "Jennie", color: "rgb(204,108,169)", group: "BlackPink"}, { member: "Joobin", color: "rgb(183,245,76)", group: "tripleS" }],
 			"18-01": { member: "Minzy", color: "rgb(195,108,230)", group: "2NE1"},
 			"22-01": { member: "Lee Seoyeon", color: "rgb(0,83,133)", group: "fromis_9" },
-			"23-01": { member: "Isa", color: "rgb(0,0,0)", group: "STAYC"},
+			"23-01": { member: "Isa", color: _cc.b.r, group: "STAYC"},
 			"26-01": { member: "Somyi", color: "rgb(199,56,164)", group: "DIA" },
 			"28-01": { member: "Sheon", color: "rgb(255,153,0)", group: "Billlie"},
 			"30-01": { member: "Haruna", color: "rgb(9,151,222)", group: "Billlie"},
-			"31-01": { member: "Miyeon", color: "rgb(0,0,0)", group: "(G)I-DLE"},
+			"31-01": { member: "Miyeon", color: _cc.b.r, group: "(G)I-DLE"},
 			"01-02": { member: "Jihyo", color: "rgb(250,200,87)", group: "TWICE"},
 			"02-02": { member: "Do-A", color: "rgb(204,0,255)", group: "ALICE"},
 			"03-02": [ {member: "Gahyeon", color: "rgb(186,9,191)", group: "Dreamcatcher"}, {member: "Rei", color: "rgb(105,195,45)", group: "IVE"}, { member: "Yubin", color: "rgb(255,227,226)", group: "tripleS" } ],
 			"04-02": { member: "Iroha", color: "rgb(71,145,255)", group: "ILLIT" },
-			"05-02": [ { member: "Kim Minju", color: "rgb(255,255,255)", group: "IZ*ONE"}, { member: "Hyunjoo", color: "rgb(100,190,193)", group: "APRIL" } ],
+			"05-02": [ { member: "Kim Minju", color: _cc.w.r, group: "IZ*ONE"}, { member: "Hyunjoo", color: "rgb(100,190,193)", group: "APRIL" } ],
 			"07-02": { member: "Sunn", color: "rgb(255,173,173)", group: "cignature" },
 			"09-02": { member: "Yooyeon", color: "rgb(219,12,116)", group: "tripleS" },
 			"10-02": [ {member: "Kim Lip", color: "rgb(234,2,1)", group: "LOONA"}, {member: "Sooyoung", color: "rgb(255,92,205)", group: "Girls' Generation"}, { member: "Son Naeun", color: "rgb(196,179,107)", group: "Apink" }, { member: "Irene", color: "rgb(255,251,0)", group: "Red Velvet"} ],
@@ -19715,7 +19752,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			"19-03": { member: "Sakura", color: "rgb(241,210,231)", group: "IZ*ONE"},
 			"20-03": { member: "Park Jiwon", color: "rgb(134,171,17)", group: "fromis_9" },
 			"24-03": [ { member: "Mina", color: "rgb(111,197,194)", group: "TWICE"}, { member: "Bom", color: "rgb(118,212,174)", group: "2NE1"} ],
-			"26-03": [ { member: "Handong", color: "rgb(0,0,0)", group: "Dreamcatcher"}, { member: "Mirae", color: "rgb(185,74,214)", group: "Cherry Bullet" }, { member: "An Seoyeon", color: "rgb(246,98,15)", group: "CSR" } ],
+			"26-03": [ { member: "Handong", color: _cc.b.r, group: "Dreamcatcher"}, { member: "Mirae", color: "rgb(185,74,214)", group: "Cherry Bullet" }, { member: "An Seoyeon", color: "rgb(246,98,15)", group: "CSR" } ],
 			"27-03": { member: "Lisa", color: "rgb(255,250,0)", group: "BlackPink"},
 			"29-03": { member: "Irene", color: "rgb(255,127,223)", group: "Red Velvet"},
 			"01-04": { member: "Jeewon", color: "rgb(0,153,148)", group: "cignature" },
@@ -19738,15 +19775,15 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			"11-05": { member: "Park Minju", color: "rgb(186,69,69)", group: "ILLIT" },
 			"12-05": { member: "Mayu", color: "rgb(254,142,118)", group: "tripleS" },
 			"14-05": { member: "Lee Chaeyoung", color: "rgb(35,248,84)", group: "fromis_9" },
-			"15-05": [ {member: "Sunny", color: "rgb(107,142,35)", group: "Girls' Generation"}, {member: "Haerin", color: "rgb(255,255,255)", group: "NewJeans"} ],
-			"17-05": { member: "JiU", color: "rgb(255,255,255)", group: "Dreamcatcher"},
+			"15-05": [ {member: "Sunny", color: "rgb(107,142,35)", group: "Girls' Generation"}, {member: "Haerin", color: _cc.w.r, group: "NewJeans"} ],
+			"17-05": { member: "JiU", color: _cc.w.r, group: "Dreamcatcher"},
 			"18-05": { member: "Onda", color: "rgb(179,4,105)", group: "Everglow"},
 			"19-05": { member: "E:U", color: "rgb(107,86,163)", group: "Everglow"},
 			"22-05": { member: "Yang Yena", color: "rgb(255,178,79)", group: "APRIL" },
 			"24-05": { member: "Yves", color: "rgb(125,0,30)", group: "LOONA"},
 			"25-05": { member: "Xinyu", color: "rgb(213,19,19)", group: "tripleS" },
 			"26-05": { member: "Eunchae", color: "rgb(40,119,255)", group: "DIA" },
-			"28-05": { member: "Dahyun", color: "rgb(255,255,255)", group: "TWICE"},
+			"28-05": { member: "Dahyun", color: _cc.w.r, group: "TWICE"},
 			"30-05": { member: "Yoona", color: "rgb(0,105,148)", group: "Girls' Generation"},
 			"01-06": { member: "Nagyung", color: "rgb(255,145,102)", group: "fromis_9" },
 			"02-06": { member: "Nien", color: "rgb(255,149,63)", group: "tripleS" },
@@ -19766,10 +19803,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			"13-07": { member: "Yebin", color: "rgb(211,0,0)", group: "DIA" },
 			"14-07": { member: "Chaesol", color: "rgb(100,207,255)", group: "cignature" },
 			"19-07": { member: "Oh Hayoung", color: "rgb(210,176,160)", group: "Apink" },
-			"21-07": { member: "Aisha", color: "rgb(0,0,0)", group: "Everglow"},
+			"21-07": { member: "Aisha", color: _cc.b.r, group: "Everglow"},
 			"23-07": { member: "Sua", color: "rgb(0,220,220)", group: "CSR" },
 			"27-07": { member: "Huening Bahiyyih", color: "rgb(255,177,109)", group: "Kep1er"},
-			"01-08": [ {member: "Sieun", color: "rgb(255,255,255)", group: "STAYC"}, {member: "Kim Chaewon", color: "rgb(206,229,213)", group: "IZ*ONE"}, {member: "Tiffany", color: "rgb(169,32,62)", group: "Girls' Generation"}, { member: "Dohee", color: "rgb(175,27,63)", group: "cignature" }, { member: "Hayeon", color: "rgb(83,217,190)", group: "tripleS" } ],
+			"01-08": [ {member: "Sieun", color: _cc.w.r, group: "STAYC"}, {member: "Kim Chaewon", color: "rgb(206,229,213)", group: "IZ*ONE"}, {member: "Tiffany", color: "rgb(169,32,62)", group: "Girls' Generation"}, { member: "Dohee", color: "rgb(175,27,63)", group: "cignature" }, { member: "Hayeon", color: "rgb(83,217,190)", group: "tripleS" } ],
 			"05-08": { member: "Kim Sihyeon", color: "rgb(199,210,167)", group: "Everglow" },
 			"06-08": { member: "Seoyeon", color: "rgb(34,174,255)", group: "tripleS" },
 			"09-08": { member: "Lara", color: "rgb(145,86,255)", group: "DreamNote" },
@@ -19834,7 +19871,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			"16-12": { member: "Mashiro", color: "rgb(253,238,244)", group: "Kep1er"},
 			"20-12": { member: "Kaede", color: "rgb(255,201,53)", group: "tripleS" },
 			"27-12": [ { member: "Youngeun", color: "rgb(147,197,114)", group: "Kep1er"}, { member: "Gyuri", color: "rgb(33,150,254)", group: "fromis_9" } ],
-			"29-12": [ { member: "Sana", color: "rgb(156,158,207)", group: "TWICE"}, {member: "Yiren", color: "rgb(255,255,255)", group: "Everglow"} ],
+			"29-12": [ { member: "Sana", color: "rgb(156,158,207)", group: "TWICE"}, {member: "Yiren", color: _cc.w.r, group: "Everglow"} ],
 			"31-12": { member: "Sohee", color: "rgb(246,110,186)", group: "ALICE"},
 		};
 		var chaos = [];
@@ -19962,11 +19999,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								var name = elems[j];
 								var color = data[memberIndex].color;
 								if(data.gradient) {
-									color = "rgb(255,255,255)";
+									color = _cc.w.r;
 								};
 								//console.log(name);
 								//console.log(color);
-								color == "rgb(0,0,0)" ? highlightButton(name,color,15,12) : highlightButton(name,color,7,2);
+								color == _cc.b.r ? highlightButton(name,color,15,12) : highlightButton(name,color,7,2);
 							};
 						};
 					});
@@ -23873,7 +23910,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								if(!(dirtColor instanceof Array)) { dirtColor = [dirtColor] };
 								var mudColor = dirtColor.map(x => colorToHsl(x,"json")); mudColor.forEach(function(x) { x.s *= (41/21); x.l *= (15/26) }); mudColor = mudColor.map(function(x) { return hslToHex(...Object.values(x)) });
 								if(mudColor.length == 1) { mudColor = mudColor[0] };
-								var mudstoneColor = dirtColor.map(x => colorToHsl(x,"json")); mudstoneColor.forEach(function(x) { x.h += 6; x.s *= (31/41); x.l *= (26/15); x.l += 5 }); mudstoneColor = mudstoneColor.map(function(x) { return hslToHex(...Object.values(x)) });
+								var mudstoneColor = dirtColor.map(x => colorToHsl(x,"json")); mudstoneColor.forEach(function(x) { x.h += 6; x.s *= (31/41); if(x.s > 0) { x.s += 5 }; x.l *= (22/15); x.l = bound(x.l + 5,0,60) }); mudstoneColor = mudstoneColor.map(function(x) { return hslToHex(...Object.values(x)) });
 								if(mudstoneColor.length == 1) { mudstoneColor = mudstoneColor[0] };
 								var dryDirtColor = dirtColor.map(x => colorToHsl(x,"json")); dryDirtColor.forEach(function(x) { x.h += 4; x.s *= (8/11); x.l *= (34/50); x.l += 5 }); dryDirtColor = dryDirtColor.map(function(x) {
 									x = convertHslObjects(x,"rgbjson");
@@ -25919,7 +25956,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						else if (pixel.temp < 3200) { pixel.color = pixelColorPick(pixel,"#ffd1d9"); var c=0.01 }
 						else if (pixel.temp < 3900) { pixel.color = pixelColorPick(pixel,"#fce1e1"); var c=0.02 }
 						else if (pixel.temp < 4600) { pixel.color = pixelColorPick(pixel,"#fff5f5"); var c=0.035 }
-						else if (pixel.temp < 6100) { pixel.color = pixelColorPick(pixel,"#ffffff"); var c=0.05 }
+						else if (pixel.temp < 6100) { pixel.color = pixelColorPick(pixel,_cc.w.h); var c=0.05 }
 						else if (pixel.temp < 7200) { pixel.color = pixelColorPick(pixel,"#f4fad9"); var c=0.075 }
 						else if (pixel.temp < 8300) { pixel.color = pixelColorPick(pixel,"#e4f2c2"); var c=0.1 }
 						else if (pixel.temp < 10400) { pixel.color = pixelColorPick(pixel,"#c6f2a2"); var c=0.125 }
@@ -25961,7 +25998,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						}
 					};
 					elements.nellsun = {
-						color: ["#ff26ac", "#ffb8e4", "#ffffff", "#b7ffa8", "#2df7b4"],
+						color: ["#ff26ac", "#ffb8e4", _cc.w.h, "#b7ffa8", "#2df7b4"],
 						tick: function(pixel) {
 							nellSLAC(pixel,nellsunColor(pixel));
 						},
@@ -26079,7 +26116,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						stateLow: "alpha_limtupyte",
 					};
 					elements.limtupyte_gas = {
-						color: ["#ffff80", "#ffe940", "#feffd1", "#ffffff"],
+						color: ["#ffff80", "#ffe940", "#feffd1", _cc.w.h],
 						density: 17.12,
 						behavior: behaviors.GAS,
 						category: "states",
@@ -26553,7 +26590,7 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			return string.split(";").map(x => x.split(":")).map(y => parsefloatFirst(y));
 		};
 		function validateSingleHexCode(hexCode) {
-			return !!"#FFFFFF".match(/^#[0-9A-F]{6}$/);
+			return !!_cc.w.h.match(/^#[0-9A-F]{6}$/);
 		};
 		function validateHexColorArray(colorsArray) {
 			if(!(colorsArray instanceof Array)) {
@@ -27419,7 +27456,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			};
 		});
 		elements.funni_prompt = {
-			color: ["#000000","#00ff00","#000000","#00ff00","#000000","#00ff00","#000000","#00ff00","#000000","#00ff00"],
+			color: [_cc.b.h,"#00ff00",_cc.b.h,"#00ff00",_cc.b.h,"#00ff00",_cc.b.h,"#00ff00",_cc.b.h,"#00ff00"],
 			behavior: behaviors.SELFDELETE,
 			desc: "<span style='color:#FF00FF;' onClick=funniPrompt()>Click here or press Shift+1 to open the command prompt.</span>",
 			category:"special",
@@ -35577,7 +35614,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					excludeRandom: true,
 				};
 				elements.electric_bomblet = {
-					color: "#ffffff",
+					color: _cc.w.h,
 					behavior: [
 						"SH%50|EX:8>electric AND SH%50|SH%50",
 						"SH%50|EX:9>electric%0.5|SH%50",
@@ -35592,7 +35629,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 				//Wall bomb
 				elements.electric_cluster_bomb = {
-					color: "#ffffff",
+					color: _cc.w.h,
 					behavior: [
 						"SH%50|EX:8>electric_bomblet AND SH%50|SH%50",
 						"SH%50|XX|SH%50",
@@ -37023,9 +37060,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 			var randomG = randomIntegerFromZeroToValue(255)
 			var randomB = randomIntegerFromZeroToValue(255)
 			var randomColor = {r: randomR, g: randomG, b: randomB}
-			var newLiquidColor = averageColorObjects(whiteColor,randomColor,weight1=0.1)
-			var newSolidColor = averageColorObjects(whiteColor,randomColor,weight1=0.4)
-			var newGasColor = averageColorObjects(whiteColor,randomColor,weight1=0.7)
+			var newLiquidColor = averageColorObjects(_cc.w.j,randomColor,weight1=0.1)
+			var newSolidColor = averageColorObjects(_cc.w.j,randomColor,weight1=0.4)
+			var newGasColor = averageColorObjects(_cc.w.j,randomColor,weight1=0.7)
 			var newLiquidColor = rgbToHex(newLiquidColor)
 			var newSolidColor = rgbToHex(newSolidColor)
 			var newGasColor = rgbToHex(newGasColor)
@@ -38199,7 +38236,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			};
 		};
 		elements.generator_prompt = {
-			color: ["#000000","#666666","#886622","#558800"],
+			color: [_cc.b.h,"#666666","#886622","#558800"],
 			behavior: behaviors.SELFDELETE,
 			desc: "<span style='color:#FF00FF;' onClick=generatorPrompt()>Click here or press Shift+G to open the generator prompt.</span>",
 			category:"special",
@@ -38372,7 +38409,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 							settings.bg = "#93c3e1"
 							break;
 						case "moonrock":
-							settings.bg = "#000000";
+							settings.bg = _cc.b.h;
 							break;
 						case "oxygen":
 							for(var i in "six  ") {
@@ -39922,7 +39959,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		},
 		elements.tc = { //temperature checker
 			name: "Temperature Checker",
-			color: ["#000000","#000000"],
+			color: [_cc.b.h,_cc.b.h],
 			tick: function(pixel) {
 				if(pixel.temp < -255) {
 					pixel.color = "rgb(0,0,255)"
@@ -39935,7 +39972,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				} else if(pixel.temp <= 16777215) {
 					pixel.color = "rgb(255,255," + Math.floor(pixel.temp / 65536) + ")"
 				} else {
-					pixel.color = "rgb(255,255,255)"
+					pixel.color = _cc.w.r
 				}
 			},
 			category:"machines",
@@ -40912,7 +40949,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			color: ["#f05d43", "#f05d43", "#b06f33"],
 		};
 		elements.room_seed = {
-			color: "#ffffff",
+			color: _cc.w.h,
 			tick: function(pixel) {
 				if(!tryMove(pixel,pixel.x,pixel.y+1)) {
 					var currentHeight = pixel.y;
@@ -40929,7 +40966,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "structures",
 		};
 		elements.altered_room_seed = {
-			color: "#ffffff",
+			color: _cc.w.h,
 			tick: function(pixel) {
 				if(!tryMove(pixel,pixel.x,pixel.y+1)) {
 					var currentHeight = pixel.y;
@@ -40948,7 +40985,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.altroom_compat = {
 			name: "Altered Room (Old)",
 			hidden: true,
-			color: "#ffffff",
+			color: _cc.w.h,
 			desc: "An old version of the variant room, kept for compatibility because I don't know how to rework the structure test.",
 			tick: function(pixel) {
 			pixel.arr=[["brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick"],
@@ -40999,7 +41036,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		},
 		elements.nested_structure_test = {
 			name: "Nested Structure Test (Old)",
-			color: "#ffffff",
+			color: _cc.w.h,
 			cooldown: 13,
 			desc: "An old test of structure spawners in structure spawners. Creates several rooms stacked on top of each other.",
 			tick: function(pixel) {
@@ -43401,7 +43438,7 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 			}
 		});
 		elements.unknown = {
-			color: "#FFFFFF",
+			color: _cc.w.h,
 			behavior: behaviors.WALL,
 			maxColorOffset: 0
 		};
@@ -43463,6 +43500,19 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 				delete elements.rainbow_flash.reactions.fire
 			};
 		})
+		canvasGetterInterval = null;
+		canvasGetterInterval = setInterval(function() {
+			if((typeof(ctx) == "object") && (ctx?.constructor?.name == "CanvasRenderingContext2D")) { return };
+			if((typeof(ctx) == "undefined") || (typeof(ctx) == "object" && ctx === null)) {
+				var canvases = document.getElementsByTagName("canvas");
+				if(canvases.length == 0) { return };
+				canvas = canvases[0];
+				ctx = canvas.getRenderingContext("2d");
+				clearInterval(canvasGetterInterval)
+			} else {
+				return
+			}
+		},50)
 	//END ##
 } catch (error) {
 	alert(`Load failed (try reloading).\nThis is likely a sporadic failure caused by inconsistencies in how mods are loaded, and will likely fix itself in a refresh or two. If it persists, then it's an issue.\nError: ${error.stack}`);
