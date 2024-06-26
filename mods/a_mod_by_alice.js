@@ -5099,7 +5099,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		});
 	//CONFIGURABLE MAXIMUM COLOR OFFSET (maxColorOffset) ##
 		defaultColorOffset = 15;
-				pixelColorPick = function(pixel,customColor=null,maxOffset=null) {
+				pixelColorPick = function(pixel,customColor=null,maxOffset=null,dontForceColorsToNulls=false) {
 				var element = pixel.element;
 				var elementInfo = elements[element];
 				//if (elementInfo.behavior instanceof Array) {
@@ -5131,11 +5131,18 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				};
 				if(typeof(rgb) !== "object") { rgb = convertColorFormats(rgb,"json") }; //somehow rgb can be a hex triplet even though it's pulled from the f*cking JSON color object and there's no logical way that that should be able to happen
 				var maxColorOffset = Math.floor(Math.random() * (Math.random() > 0.5 ? -1 : 1) * Math.random() * offsetAmount);
-				if((typeof(rgb?.r) !== "number") || (typeof(rgb?.g) !== "number") || (typeof(rgb?.b) !== "number")) {
-					console.log(pixel.element,pixel.color,"\n",rgb,customColor);
+				var maxRepickTries = 10;
+				var repickTries = 0;
+				var rgbWasNull = (rgb === null);
+				if(rgb == null || (typeof(rgb?.r) !== "number") || (typeof(rgb?.g) !== "number") || (typeof(rgb?.b) !== "number")) {
+					//console.log(pixel.element,pixel.color,"\n",rgb,customColor,Array.isArray(elementInfo.colorObject) ? elementInfo.colorObject.indexOf(rgb) : elementInfo.colorObject);
 					//this SHOULDN'T be necessary but SOMEHOW IT IS
-					var color_also_fxck_you = elementInfo.colorObject;
-					while(Array.isarray(color_also_fxck_you)) { color_also_fxck_you = randomChoice(color_also_fxck_you) }
+					while(rgb == null && repickTries < maxRepickTries) {
+						var color_also_fxck_you = elementInfo.colorObject;
+						while(Array.isArray(color_also_fxck_you)) { color_also_fxck_you = randomChoice(color_also_fxck_you) };
+						rgb = color_also_fxck_you
+					};
+					//console.log(pixel.element,pixel.color,rgb,customColor);
 				};
 				var r = rgb.r + maxColorOffset;
 				var g = rgb.g + maxColorOffset;
@@ -5152,6 +5159,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						color = color[Math.floor(Math.random() * color.length)];
 					}
 				}*/
+				if((!dontForceColorsToNulls) && rgbWasNull && rgb !== null) {
+					pixel.color = convertColorFormats(rgb,"rgb")
+				};
 				return color;
 			}
 	//FIND MODE, PIXEL PROPERTIES LINKED TO SPECIAL CODE, CONFIGURABLE VISUAL DISTORTION AND VISUAL PIXEL SHAPE SETTINGS (acid_and_shapes.js) ##
@@ -5505,6 +5515,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					if (pixel.con) { pixel = pixel.con }
 					if((typeof(pixel.color) !== "string") || (pixel.color.indexOf("NaN") >= 0)) {
 						pixel.color = pixelColorPick(pixel)
+					};
+					if(pixel.color.length <= 7) { //hex triplets as colors seem to break some mods and can't be allowed
+						pixel.color = convertColorFormats(pixel.color,"rgb")
 					};
 					var colorFunction = viewColorFunctions[view] ?? normalColorFunction;
 					ctx.fillStyle = colorFunction(pixel);
