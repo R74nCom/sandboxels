@@ -8794,6 +8794,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		maxColorOffset: 0,
 		excludeRandom: true,
 		insulate: true,
+		hoverStat: (pixel => `r = ${(pixel.range ?? 15).toString()}`),
 		tick: function(pixel) {
 			pixel.color = _cc.b.r;
 			pixel.range ??= 15;
@@ -8831,6 +8832,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						}
 					}
 					if (best) {
+						newPixel.vx ??= 0;
+						newPixel.vy ??= 0;
+						var _vx = (truePullCount * (best[0])); _vx += Math.sign(_vx);
+						var _vy = (truePullCount * (best[1])); _vy += Math.sign(_vy);
+						newPixel.vx += _vx;
+						newPixel.vy += _vy;
 						tryMove(newPixel, x + best[0], y + best[1], undefined, true);
 						if(haseuliteSpreadWhitelist.includes(newPixel.element)) { newPixel.value += ((15 + (distanceComplement / (distanceProportion ** 2))) * 3) };
 						heatNeighbors(newPixel,20);
@@ -8873,6 +8880,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		maxColorOffset: 0,
 		excludeRandom: true,
 		insulate: true,
+		hoverStat: (pixel => `r = ${(pixel.range ?? 15).toString()}`),
 		tick: function(pixel) {
 			pixel.color = _cc.w.r;
 			pixel.range ??= 15;
@@ -8911,8 +8919,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					}
 					if (best) {
 						var destCoords = [x - best[0], y - best[1]];
-						newPixel.vx = -(truePullCount * (best[0]));
-						newPixel.vy = -(truePullCount * (best[1]));
+						newPixel.vx ??= 0;
+						newPixel.vy ??= 0;
+						var _vx = -(truePullCount * (best[0])); _vx += Math.sign(_vx);
+						var _vy = -(truePullCount * (best[1])); _vy += Math.sign(_vy);
+						newPixel.vx += _vx;
+						newPixel.vy += _vy;
 						var moveResult = tryMoveAndReturnBlockingPixel(newPixel, destCoords[0], destCoords[1], undefined, true);
 						if((moveResult !== true) && !(outOfBounds(...destCoords))) {
 							swapPixels(newPixel,moveResult);
@@ -8935,6 +8947,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		density: -(1797.69313486e305), //about as close to -Infinity as we can serializably get
 		category: "special",
 		hardness: 1,
+		maxSize: 1,
 		ignore: ["amba_black_hole"]
 	};
 	
