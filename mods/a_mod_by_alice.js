@@ -3249,6 +3249,36 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
             return coords
         };
 
+        function mouseLikeRange(x,y,size,shape="square",skipEmpties=false) {
+            var coords = [];
+			var offset = Math.trunc(size/2);
+			var topLeft = [x-offset,y-offset];
+			var bottomRight = [x+offset,y+offset];
+			if(size % 2 == 0) {
+				bottomRight[0]--;
+				bottomRight[1]--;
+			};
+			var exclusionFunction = shapeExclusionConditions[shape] ?? null;
+			if((shape !== "square") && (exclusionFunction == null)) {
+				logMessage(`Shape ${shape} not recognized!`)
+				return []
+			};
+
+			// Starting at the top left, go through each pixel
+			for (var _x = topLeft[0]; _x <= bottomRight[0]; _x++) {
+				for (var _y = topLeft[1]; _y <= bottomRight[1]; _y++) {
+					if(skipEmpties && isEmpty(_x,_y,true)) {
+						continue
+					};
+					if((shape !== "square") && exclusionFunction?.(_x,_y,size,x,y,topLeft,bottomRight)) {
+						continue
+					};
+					coords.push([_x,_y]);
+				}
+			};
+            return coords
+        };
+		
 		//this part defines basically all of the keybinds
 		function addKeyboardListeners() {
 			document.addEventListener("keydown", function(e) {
@@ -5117,6 +5147,197 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		//I hate overwriting drawPixels
 		tempScale = 1;
 		tempScaleOffset = 20;
+		
+		normalColorFunction = function(pixel) {
+			var colorOut = pixel.color;
+			for(var sry4thelag in specialProperties) {
+				if(pixel[sry4thelag] !== undefined && specialProperties[sry4thelag].specialColorFunction) {
+					colorOut = specialProperties[sry4thelag].specialColorFunction(pixel,oldColor=colorOut)
+				}
+			}
+			return colorOut;
+		}
+		
+		viewColorFunctions = { //PENIS
+			2: function(pixel) {
+				// set the color to pixel.temp, from hottest at -66 (294.1875) hue to coldest 265 hue, with the minimum being -273, max being 7755
+				var a0 = (settings.abszero ?? -273.15);
+				var temp = ((pixel.temp - tempScaleOffset) * tempScale) - tempScaleOffset;
+				temp = Math.min(Math.max(temp + 900,a0),55530000000000);
+				var hue,sat,lig;
+				sat = 100;
+				lig = 50;
+				if(temp <= 7755) {
+					hue = 265 - (Math.min(7755,temp)/6000)*265;
+					if (hue < 0) {hue += (360 * Math.ceil(hue / -360))}
+					if (temp < 0 && hue > 285) {hue = 285}
+				} else if(temp <= 9255) {
+					hue = 294.1875;
+					lig = 50 + (Math.max(0,temp - 7755) * (50/1500));
+				} else if(temp <= 11255) {
+					hue = 294.1875;
+					sat = 0;
+					lig = 100 - (Math.max(0,temp - 9255) * (100 / 2000));
+				} else if(temp <= 11755) {
+					hue = 265;
+					lig = (Math.max(0,temp - 11255) * (25 / 500));
+				} else if(temp <= 19510) {
+					hue = 265 - (Math.min(19510,Math.max(0,temp - 11755))/6000)*265;
+					if (hue < 0) {hue += (360 * Math.ceil(hue / -360))}
+					lig = 25;
+				} else if(temp <= 20510) {
+					hue = 294.1875
+					//lig = scale(temp,19510,20010,25,75);
+					//hue = scale(temp,19510,20010,294.1875,585) % 360;
+					sat = scale(temp,19510,20510,100,50);
+					lig = scale(temp,19510,20510,25,75);
+				} else if(temp <= 28265) {
+					hue = scale(temp,20510,28265,294.1875,585) % 360;
+					sat = 50;
+					lig = 75;
+				} else if(temp <= 29265) {
+					hue = 265;
+					sat = scale(temp,28265,29265,50,40);
+					lig = scale(temp,28265,29265,75,87.5);
+				} else if(temp <= 37020) {
+					hue = scale(temp,29265,37020,265,654.1875) % 360;
+					sat = 40;
+					lig = 87.5;
+				} else if(temp <= 39020) {
+					hue = 294.1875;
+					sat = 40;
+					lig = scale(temp,37020,39020,87.5,50);
+				} else if(temp <= 46775) { //46775
+					hue = scale(temp,39020,46775,294.1875,585) % 360;
+					sat = 40;
+					lig = 50;
+				} else if(temp <= 47775) {
+					hue = 265;
+					sat = scale(temp,46775,47775,40,20);
+					lig = 50;
+				} else if(temp <= 55530) {
+					hue = scale(temp,47775,55530,265,654.1875) % 360;
+					sat = 20;
+					lig = 50;
+				} else {
+					hue = 294;
+					sat = 20 + (12 * Math.log10(temp / 55530));
+					lig = 50 + (4 * Math.log10(temp / 55530));
+				};
+				return "hsl("+hue+","+sat+"%,"+lig+"%)";
+			},
+			4: function(pixel) { // smooth view, average of surrounding pixels
+				// E/N: i'm too scared to do smooth view
+				var colorlist = [];
+				// check adjacent coords on the pixelMap, add the color to the list if the pixel is not empty and the color indexOf "rgb" is not -1
+				for (var j = 0; j < biCoords.length; j++) {
+					var x = pixel.x + biCoords[j][0];
+					var y = pixel.y + biCoords[j][1];
+					if (isEmpty(x,y,true) || elements[pixelMap[x][y].element].state !== elements[pixel.element].state) {continue}
+					var color = pixelMap[x][y].color;
+					if (color.indexOf("rgb") !== -1) {
+						colorlist.push(color.match(/\d+/g));
+					}
+				}
+				if (colorlist.length === 0) {
+					return pixel.color;
+				}
+				else {
+					return averageRGB(colorlist);
+				}
+			},
+			5: function(pixel) { // velocity view
+				var data = elements[pixel.element];
+				var vx = pixel.vx ?? 0;
+				var vy = pixel.vy ?? 0;
+				/*
+				var pseudoVelocity = 0;
+				var coordsToCheck;
+				var behaviorCoordsToCheck;
+				if(Array.isArray(data.behavior)) {
+					switch((pixel.r ?? 0) % 4) {
+						default:
+						case 0:
+							coordsToCheck = [0,1];
+							behaviorCoordsToCheckOffset = [2,1];
+							break;
+						case 1:
+							coordsToCheck = [-1,0];
+							behaviorCoordsToCheckOffset = [1,0];
+							break;
+						case 2:
+							coordsToCheck = [0,-1];
+							behaviorCoordsToCheckOffset = [0,1];
+							break;
+						case 3:
+							coordsToCheck = [1,0];
+							behaviorCoordsToCheckOffset = [1,2];
+							break;
+					};
+					if(data.behavior[behaviorCoordsToCheckOffset[0]][behaviorCoordsToCheckOffset[1]] == "M1") {
+						if(isEmpty(pixel.x+coordsToCheck[0],pixel.y+coordsToCheck[1])) {
+							pseudoVelocity = 1;
+						} else {
+							if(!(isEmpty(pixel.x+behaviorCoordsToCheckOffset[0],pixel.y+behaviorCoordsToCheckOffset[1],true))) {
+								newPixel = pixelMap[pixel.x+behaviorCoordsToCheckOffset[0]][pixel.y+behaviorCoordsToCheckOffset[1]];
+								newData = elements[newPixel.element];
+								if(newData.id !== data.id && typeof(data.density) === "number" && typeof(newData.density) === "number") {
+									var chance = (data.density - newData.density)/(data.density + newData.density);
+									pseudoVelocity = chance
+								}
+							}
+						}
+					};
+					if(pseudoVelocity) {
+						switch((pixel.r ?? 0) % 4) {
+							default:
+							case 0:
+								vy += pseudoVelocity;
+								break;
+							case 1:
+								vx -= pseudoVelocity;
+								break;
+							case 2:
+								vy -= pseudoVelocity;
+								break;
+							case 3:
+								vx += pseudoVelocity;
+								break;
+						}
+					};
+				} else {
+					if(data.tick && [behaviors.POWDER,behaviors.LIQUID].includes(data.tick)) {
+						pseudoVelocity = 1;
+					} else if(data.tick == behaviors.UL_UR_OPTIMIZED) {
+						pseudoVelocity = -1;
+					} else if(pixel.element == "hail") {
+						pseudoVelocity = 2;
+					};
+					vy += pseudoVelocity;
+				};
+				*/
+				if(vx === 0 && vy === 0) {
+					return "rgb(15,15,15)"
+				} else {
+					var magnitude = Math.sqrt ((vx ** 2) + (vy ** 2));
+					var direction = Math.atan2(pixel.vy ?? 0,pixel.vx ?? 0)*180/Math.PI;
+					if(direction < 0) { direction = scale(direction,-180,0,360,180) };
+					hue = direction;
+					sat = 100;
+					lig = bound(scale(magnitude,0,100,10,100),0,100);
+					return "hsl("+hue+","+sat+"%,"+lig+"%)";
+				}
+			},
+			6: function(pixel) {
+				var data = elements[pixel.element] ?? elements.unknown;
+				var originalColor = data.colorObject;
+				if(Array.isArray(originalColor)) {
+					originalColor = randomChoice(originalColor)
+				};
+				return convertColorFormats(originalColor,"rgb");
+			}
+		};	
+		
 		runAfterAutogen(function() {
 			//rAA because velocity.js already puts its redef in a rAL and rAA comes after that
 			drawPixels = function(forceTick=false) {
@@ -5185,184 +5406,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					var pixel = pixelDrawList[i];
 					if (pixelMap[pixel.x][pixel.y] == undefined) {continue}
 					if (pixel.con) { pixel = pixel.con }
-					if (view===null || view===3) {
-						var colorOut = pixel.color;
-						for(var sry4thelag in specialProperties) {
-							if(pixel[sry4thelag] !== undefined && specialProperties[sry4thelag].specialColorFunction) {
-								colorOut = specialProperties[sry4thelag].specialColorFunction(pixel,oldColor=colorOut)
-							}
-						}
-						ctx.fillStyle = colorOut;
-					}
-					else if (view === 2) { // thermal view
-						// set the color to pixel.temp, from hottest at -66 (294.1875) hue to coldest 265 hue, with the minimum being -273, max being 7755
-						var a0 = (settings.abszero ?? -273.15);
-						var temp = ((pixel.temp - tempScaleOffset) * tempScale) - tempScaleOffset;
-						temp = Math.min(Math.max(temp + 900,a0),55530000000000);
-						var hue,sat,lig;
-						sat = 100;
-						lig = 50;
-						if(temp <= 7755) {
-							hue = 265 - (Math.min(7755,temp)/6000)*265;
-							if (hue < 0) {hue += (360 * Math.ceil(hue / -360))}
-							if (temp < 0 && hue > 285) {hue = 285}
-						} else if(temp <= 9255) {
-							hue = 294.1875;
-							lig = 50 + (Math.max(0,temp - 7755) * (50/1500));
-						} else if(temp <= 11255) {
-							hue = 294.1875;
-							sat = 0;
-							lig = 100 - (Math.max(0,temp - 9255) * (100 / 2000));
-						} else if(temp <= 11755) {
-							hue = 265;
-							lig = (Math.max(0,temp - 11255) * (25 / 500));
-						} else if(temp <= 19510) {
-							hue = 265 - (Math.min(19510,Math.max(0,temp - 11755))/6000)*265;
-							if (hue < 0) {hue += (360 * Math.ceil(hue / -360))}
-							lig = 25;
-						} else if(temp <= 20510) {
-							hue = 294.1875
-							//lig = scale(temp,19510,20010,25,75);
-							//hue = scale(temp,19510,20010,294.1875,585) % 360;
-							sat = scale(temp,19510,20510,100,50);
-							lig = scale(temp,19510,20510,25,75);
-						} else if(temp <= 28265) {
-							hue = scale(temp,20510,28265,294.1875,585) % 360;
-							sat = 50;
-							lig = 75;
-						} else if(temp <= 29265) {
-							hue = 265;
-							sat = scale(temp,28265,29265,50,40);
-							lig = scale(temp,28265,29265,75,87.5);
-						} else if(temp <= 37020) {
-							hue = scale(temp,29265,37020,265,654.1875) % 360;
-							sat = 40;
-							lig = 87.5;
-						} else if(temp <= 39020) {
-							hue = 294.1875;
-							sat = 40;
-							lig = scale(temp,37020,39020,87.5,50);
-						} else if(temp <= 46775) { //46775
-							hue = scale(temp,39020,46775,294.1875,585) % 360;
-							sat = 40;
-							lig = 50;
-						} else if(temp <= 47775) {
-							hue = 265;
-							sat = scale(temp,46775,47775,40,20);
-							lig = 50;
-						} else if(temp <= 55530) {
-							hue = scale(temp,47775,55530,265,654.1875) % 360;
-							sat = 20;
-							lig = 50;
-						} else {
-							hue = 294;
-							sat = 20 + (12 * Math.log10(temp / 55530));
-							lig = 50 + (4 * Math.log10(temp / 55530));
-						};
-						ctx.fillStyle = "hsl("+hue+","+sat+"%,"+lig+"%)";
-					}
-					else if (view === 4) { // smooth view, average of surrounding pixels
-						// E/N: i'm too scared to do smooth view
-						var colorlist = [];
-						// check adjacent coords on the pixelMap, add the color to the list if the pixel is not empty and the color indexOf "rgb" is not -1
-						for (var j = 0; j < biCoords.length; j++) {
-							var x = pixel.x + biCoords[j][0];
-							var y = pixel.y + biCoords[j][1];
-							if (isEmpty(x,y,true) || elements[pixelMap[x][y].element].state !== elements[pixel.element].state) {continue}
-							var color = pixelMap[x][y].color;
-							if (color.indexOf("rgb") !== -1) {
-								colorlist.push(color.match(/\d+/g));
-							}
-						}
-						if (colorlist.length === 0) {
-							ctx.fillStyle = pixel.color;
-						}
-						else {
-							ctx.fillStyle = averageRGB(colorlist);
-						}
-					}
-					else if (view === 5) { // velocity view
-						var data = elements[pixel.element];
-						var vx = pixel.vx ?? 0;
-						var vy = pixel.vy ?? 0;
-						/*
-						var pseudoVelocity = 0;
-						var coordsToCheck;
-						var behaviorCoordsToCheck;
-						if(Array.isArray(data.behavior)) {
-							switch((pixel.r ?? 0) % 4) {
-								default:
-								case 0:
-									coordsToCheck = [0,1];
-									behaviorCoordsToCheckOffset = [2,1];
-									break;
-								case 1:
-									coordsToCheck = [-1,0];
-									behaviorCoordsToCheckOffset = [1,0];
-									break;
-								case 2:
-									coordsToCheck = [0,-1];
-									behaviorCoordsToCheckOffset = [0,1];
-									break;
-								case 3:
-									coordsToCheck = [1,0];
-									behaviorCoordsToCheckOffset = [1,2];
-									break;
-							};
-							if(data.behavior[behaviorCoordsToCheckOffset[0]][behaviorCoordsToCheckOffset[1]] == "M1") {
-								if(isEmpty(pixel.x+coordsToCheck[0],pixel.y+coordsToCheck[1])) {
-									pseudoVelocity = 1;
-								} else {
-									if(!(isEmpty(pixel.x+behaviorCoordsToCheckOffset[0],pixel.y+behaviorCoordsToCheckOffset[1],true))) {
-										newPixel = pixelMap[pixel.x+behaviorCoordsToCheckOffset[0]][pixel.y+behaviorCoordsToCheckOffset[1]];
-										newData = elements[newPixel.element];
-										if(newData.id !== data.id && typeof(data.density) === "number" && typeof(newData.density) === "number") {
-											var chance = (data.density - newData.density)/(data.density + newData.density);
-											pseudoVelocity = chance
-										}
-									}
-								}
-							};
-							if(pseudoVelocity) {
-								switch((pixel.r ?? 0) % 4) {
-									default:
-									case 0:
-										vy += pseudoVelocity;
-										break;
-									case 1:
-										vx -= pseudoVelocity;
-										break;
-									case 2:
-										vy -= pseudoVelocity;
-										break;
-									case 3:
-										vx += pseudoVelocity;
-										break;
-								}
-							};
-						} else {
-							if(data.tick && [behaviors.POWDER,behaviors.LIQUID].includes(data.tick)) {
-								pseudoVelocity = 1;
-							} else if(data.tick == behaviors.UL_UR_OPTIMIZED) {
-								pseudoVelocity = -1;
-							} else if(pixel.element == "hail") {
-								pseudoVelocity = 2;
-							};
-							vy += pseudoVelocity;
-						};
-						*/
-						if(vx === 0 && vy === 0) {
-							ctx.fillStyle = "rgb(15,15,15)"
-						} else {
-							var magnitude = Math.sqrt ((vx ** 2) + (vy ** 2));
-							var direction = Math.atan2(pixel.vy ?? 0,pixel.vx ?? 0)*180/Math.PI;
-							if(direction < 0) { direction = scale(direction,-180,0,360,180) };
-							hue = direction;
-							sat = 100;
-							lig = bound(scale(magnitude,0,100,10,100),0,100);
-							ctx.fillStyle = "hsl("+hue+","+sat+"%,"+lig+"%)";
-						}
-					}
+					var colorFunction = viewColorFunctions[view] ?? normalColorFunction;
+					ctx.fillStyle = colorFunction(pixel);
 					if(find) { //if find and matching, override fill style with the find coloration
 						if(findElement instanceof Array ? findElement.includes(pixel.element) : pixel.element === findElement) {
 							ctx.fillStyle = "rgb(255," + marasi(findColorPulseTimer / 10) + ",0)";
@@ -5385,7 +5430,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						acidOffset2 = 0
 					};
 					if ((view === null || view === 4) && elements[pixel.element].isGas) {
-						//gas rendering
+						//gas rendering //PENIS
 						switch(mode) {
 							case "circles":
 								ctx.globalAlpha = 0.66;
@@ -5517,7 +5562,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
             2: "thermal",
             3: "basic",
             4: "smooth",
-            5: "velocity"
+            5: "velocity",
+            6: "element"
         };
         function setView(n) {
             if (viewKey[n]) { // range of number keys with valid views
@@ -8640,7 +8686,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			pixel.range ??= 15;
 			if(pixel.range <= 0) { deletePixel(pixel.x,pixel.y); return };
 			var range = (pixel.range ?? 15) * 2;
-			var targets = mouseRange(pixel.x,pixel.y,range,"circle",true);
+			var targets = mouseLikeRange(pixel.x,pixel.y,range,"circle",true);
 			shuffleArray(targets);
 			for (var i = 0; i < targets.length; i++) {
 				var newPixel = pixelMap[targets[i][0]]?.[targets[i][1]];
@@ -8673,6 +8719,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					}
 					if (best) {
 						tryMove(newPixel, x + best[0], y + best[1], undefined, true);
+						if(haseuliteSpreadWhitelist.includes(newPixel.element)) { newPixel.value += ((15 + (distanceComplement / (distanceProportion ** 2))) * 3) };
 						heatNeighbors(newPixel,20);
 						pixel.temp += 20;
 					}
@@ -8718,7 +8765,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			pixel.range ??= 15;
 			if(pixel.range <= 0) { deletePixel(pixel.x,pixel.y); return };
 			var range = (pixel.range ?? 30) * 2;
-			var targets = mouseRange(pixel.x,pixel.y,range,"circle",true);
+			var targets = mouseLikeRange(pixel.x,pixel.y,range,"circle",true);
 			shuffleArray(targets);
 			for (var i = 0; i < targets.length; i++) {
 				var newPixel = pixelMap[targets[i][0]]?.[targets[i][1]];
@@ -18447,7 +18494,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			if(pixel.oldColor === null) { pixel.oldColor = pixel.color };
 			if(isNaN(pixel.value)) { pixel.value = 0 };
 			pixel.color = lightenColor(pixel.oldColor,pixel.value / 3);
-			var mVal = elements[pixel.element].haseulitoidMaxValue ?? 800;
+			var mVal = elements[pixel.element].haseulitoidMaxValue ?? 350;
 			if(pixel.value >= mVal) {
 				var coldBoomChance = Math.max(0.008 * ((pixel.value - mVal) / (mVal * 2/7)), 0.001);
 				if(Math.random() < coldBoomChance) {
@@ -37747,7 +37794,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			if(pixel.oldColor === undefined) { pixel.oldColor = pixelColorPick(pixel) };
 			if(pixel.oldColor === null) { pixel.oldColor = pixel.color };
 			pixel.color = lightenColor(pixel.oldColor,pixel.value / 3);
-			var mVal = elements[pixel.element].haseulitoidMaxValue ?? 350;
+			var mVal = elements[pixel.element].haseulitoidMaxValue ?? 800;
 			if(pixel.value >= mVal) {
 				var coldBoomChance = Math.max(0.006 * ((pixel.value - mVal) / (400/3)), 0.000075);
 				if(Math.random() < coldBoomChance) {
