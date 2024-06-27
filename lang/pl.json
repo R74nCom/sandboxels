@@ -120,7 +120,7 @@
 "freezer":"zamrażarka",
 "pipe":"rura",
 "pipe_wall":"ściana_rury",
-"ewall":"ściana_elektryczna",
+"ewall":"e-ściana",
 "torch":"pochodnia",
 "spout":"kran",
 "udder":"wymię",
@@ -532,12 +532,12 @@
 "magnesium": "magnez",
 "molten_magnesium": "stopiony_magnez",
 "sandstorm": "burza_piaskowa",
-"caustic_potash": "",
+"caustic_potash": "potaż_żrący",
 "antibomb": "antybomba",
 "tornado": "tornado",
 "earthquake": "trzęsienie_ziemi",
 "tsunami": "tsunami",
 "blaster": "promień",
 "propane_ice": "lód_propanowy",
-"molten_caustic_potash": ""
+"molten_caustic_potash": "stopiony_potaż_żrący"
 }
