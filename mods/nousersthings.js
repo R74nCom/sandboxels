@@ -1487,6 +1487,7 @@ elements.heat_test = {
 		}
 	},
 },
+/*
 elements.soup = {
 	color: "#3d2812",
 	behavior: behaviors.LIQUID,
@@ -1537,6 +1538,7 @@ elements.soup = {
 elements.broth.onMix = function(pixel){
 	changePixel(pixel, "soup")
 },
+*/
 converter1Var = 0;
 converter2Var = 0;
 elements.converter = {
@@ -1661,6 +1663,7 @@ elements.molten_plutonium = {
 	category: "states",
 	state: "liquid",
 	tempLow: 620,
+    hidden: true,
 	stateLow: "plutonium",
 	tick: function(pixel){
         if(Math.random() < 0.0007){
@@ -1865,6 +1868,7 @@ function HSVtoRGB(h, s, v) {
 elements.molten_bismuth = {
     color: ["#ee8d63", "#ef7e5e", "#f06e5c", "#f05c5c"],
     behavior: behaviors.MOLTEN,
+    hidden: true,
     category: "states",
     state: "liquid",
     temp: 280,
@@ -2514,8 +2518,9 @@ elements.solid_diamond = {
     tempHigh: elements.diamond.tempHigh,
     stateHigh: elements.diamond.stateHigh,
     state: "solid",
-    denisty: elements.diamond.density,
-    hardness: elements.diamond.hardness
+    density: elements.diamond.density,
+    hardness: elements.diamond.hardness,
+    behavior: behaviors.WALL,
 }
 elements.textured_rose_gold = {
     color: ["#FF5991", "#E4386F", "#7F1037", "#FFCCCD", "#671133"],
@@ -2797,6 +2802,12 @@ elements.ray = {
         if (pixel.life < pixel.maxLife){
             pixel.color = "rgba("+pixel.rgb[0]+","+pixel.rgb[1]+","+pixel.rgb[2]+","+(pixel.life/pixel.maxLife)+")"
         } else {pixel.color = "rgba("+pixel.rgb[0]+","+pixel.rgb[1]+","+pixel.rgb[2]+",1)"}
+        // lightmap.js integration
+        if (enabledMods.includes("mods/lightmap.js")){
+            let x = Math.floor(pixel.x / lightmapScale);
+            let y = Math.floor(pixel.y / lightmapScale);
+            lightmap[y][x] = { color: [parseInt(pixel.rgb[0])*((pixel.life/pixel.maxLife)), parseInt(pixel.rgb[1])*((pixel.life/pixel.maxLife)), parseInt(pixel.rgb[2])*((pixel.life/pixel.maxLife))]};
+        }
         if (pixel.life <= 0){
             deletePixel(pixel.x, pixel.y)
         }
@@ -2842,7 +2853,7 @@ elements.specific_ray_emitter = {
         if (!rayans6) { return }
         stopAtElement = mostSimilarElement(rayans6)
         let rayans7
-        if (rayans == "ray"){ rayans7 = prompt("How long should the ray stay on screen in ticks?", (rayLife||10));}
+        if (rayans == "ray"){ rayans7 = prompt("How long should the ray stay on screen in ticks?", (rayLife||10));
         if (!rayans7) { return }
         if (isNaN(parseFloat(rayans7))){
             rayLife = 10
@@ -2851,6 +2862,7 @@ elements.specific_ray_emitter = {
         }
         var rayans8 = prompt("Would you like rainbow mode to be enabled? Type yes or no.", (rainbowMode||"no"));
         if (rayans8 == "yes"){rainbowMode = true} else {rainbowMode = false}
+        }
     },
     hoverStat: function(pixel){
         return (pixel.rayElement.toUpperCase() || "unset") + ", " + (pixel.rayStoppedByWalls.toString().toUpperCase() || "unset") + ", " + (pixel.specificRayStart || "unset") + ", " + (pixel.specificRayEnd || "unset") + ", " + (pixel.specificRayAngle || "unset")
@@ -2872,16 +2884,16 @@ elements.specific_ray_emitter = {
         pixel.rgb[0] = parseInt(pixel.rgb[0])
         pixel.rgb[1] = parseInt(pixel.rgb[1])
         pixel.rgb[2] = parseInt(pixel.rgb[2])
-        console.log(pixel.rgb)
+        //console.log(pixel.rgb)
         var hsvResult = RGBtoHSV(pixel.rgb[0], pixel.rgb[1], pixel.rgb[2]);
             pixel.tHue = hsvResult.h;
             var rgbResult = HSVtoRGB(pixel.tHue + (1/360), 1, 1);
-            console.log(rgbResult)
+            //console.log(rgbResult)
             const hexR = rgbResult.r.toString(16).padStart(2, '0');
             const hexG = rgbResult.g.toString(16).padStart(2, '0');
             const hexB = rgbResult.b.toString(16).padStart(2, '0');
             const hexCode = `#${hexR}${hexG}${hexB}`;
-            console.log(hexCode)
+            //console.log(hexCode)
             pixel.color = pixelColorPick(pixel, hexCode)}
         for (var i = 0; i < squareCoords.length; i++) {
             var coord = squareCoords[i];
@@ -2967,7 +2979,51 @@ elements.insulated_wire = {
                     if (!isEmpty(x,y,true)) {
                         var newPixel = pixelMap[x][y];
                         var con = newPixel.element;
-                        if (con == "insulated_wire") {
+                        if (con == "insulated_wire" || con == "wire_bridge") {
+                        if (1 == 1) { // If random number is less than conductivity
+                            if (!newPixel.charge && !newPixel.chargeCD) {
+                                newPixel.charge = 1;
+                            }
+                        }
+                    }
+                }
+                }
+                pixel.charge -= 0.25;
+                if (pixel.charge <= 0) {
+                    delete pixel.charge;
+                    // pixel.chargeCD = 4;
+                    pixel.chargeCD = Math.round(4 + (4*(1-elements[pixel.element].conduct))) || 4;
+                }
+            }
+            // Lower charge cooldown
+            else if (pixel.chargeCD) {
+                pixel.chargeCD -= 1;
+                if (pixel.chargeCD <= 0) {
+                    delete pixel.chargeCD;
+                    if (elements[pixel.element].colorOn) {
+                        pixel.color = pixelColorPick(pixel);
+                    }
+                }
+            }
+        }
+        doHeat(pixel)
+    }
+}
+elements.wire_bridge = {
+    color: "#461716",
+    category: "machines",
+    conduct: 1,
+    tick: function(pixel){
+        {
+            if (pixel.charge) {
+                // Check each adjacent pixel, if that pixel's charge is false, set it to the same charge
+                for (var i = 0; i < adjacentCoords.length; i++) {
+                    var x = pixel.x+adjacentCoords[i][0];
+                    var y = pixel.y+adjacentCoords[i][1];
+                    if (!isEmpty(x,y,true)) {
+                        var newPixel = pixelMap[x][y];
+                        var con = newPixel.element;
+                        if (con == "insulated_wire" || con == "wire" || con == "wire_bridge") {
                         if (1 == 1) { // If random number is less than conductivity
                             if (!newPixel.charge && !newPixel.chargeCD) {
                                 newPixel.charge = 1;
@@ -3048,7 +3104,7 @@ elements.piston_ray_emitter = {
                         var lx = lcoord[0];
                         var ly = lcoord[1];
                         if (!isEmpty(lx, ly, true)){
-                            tryMove(pixelMap[lx][ly], pCoord[0], pCoord[1])
+                            tryMove(pixelMap[lx][ly], pCoord[0], pCoord[1], null, true)
                         }
                         pCoord[0] = lx;
                         pCoord[1] = ly;
@@ -3108,7 +3164,7 @@ elements.specific_piston_ray_emitter = {
                         var lx = lcoord[0];
                         var ly = lcoord[1];
                         if (!isEmpty(lx, ly, true)){
-                            tryMove(pixelMap[lx][ly], pCoord[0], pCoord[1])
+                            tryMove(pixelMap[lx][ly], pCoord[0], pCoord[1], null, true)
                         }
                         pCoord[0] = lx;
                         pCoord[1] = ly;
@@ -3119,3 +3175,167 @@ elements.specific_piston_ray_emitter = {
     },
     insulate: true,
 }
+if (!elements.molten_gallium.reactions){elements.gallium.reactions = {}}
+elements.molten_gallium.reactions.nitrogen = {elem1: "gallium_nitride", elem2: null, chance: 0.02, tempMin: 1200}
+elements.gallium_nitride = {
+    color: "#dedf9d",
+    behavior: behaviors.WALL,
+    colorOn: "#493ee9",
+    category: "solids",
+    tempHigh: 1650,
+    density: 6100,
+    stateHigh: "molten_gallium_nitride",
+    state: "solid",
+    conduct: 0.84,
+    tick: function(pixel){
+        if (pixel.charge){
+            for (var i = 0; i < adjacentCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (isEmpty(x,y, true)){
+                    if (Math.random() < 0.3){
+                        createPixel("light", x, y)
+                        pixelMap[x][y].color = pixelColorPick(pixelMap[x][y], "#493ee9")
+                    }
+                }
+            }
+        }
+    },
+    movable: false,
+}
+elements.molten_gallium_nitride = {
+    color: ["#d29d70", "#cf8e5e", "#cd7e4e", "#ca6d40", "#c75b33"],
+    behavior: behaviors.MOLTEN,
+    category: "states",
+    hidden: true,
+    state: "liquid",
+    tempLow: 1640,
+    stateLow: "gallium_nitride",
+    density: 6050,
+}
+elements.gallium_phosphide = {
+    color: "#be6008",
+    behavior: behaviors.WALL,
+    colorOn: "#00ff15",
+    category: "solids",
+    tempHigh: 1457,
+    density: 4138,
+    stateHigh: "molten_gallium_phosphide",
+    state: "solid",
+    conduct: 0.84,
+    tick: function(pixel){
+        if (pixel.charge){
+            for (var i = 0; i < adjacentCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (isEmpty(x,y, true)){
+                    if (Math.random() < 0.3){
+                        createPixel("light", x, y)
+                        pixelMap[x][y].color = pixelColorPick(pixelMap[x][y], "#00ff15")
+                    }
+                }
+            }
+        }
+    },
+    movable: false,
+}
+elements.molten_gallium_phosphide = {
+    color: ["#a36936", "#cf8e5e", "#9b4c1c", "#ca6d40", "#a13d19"],
+    behavior: behaviors.MOLTEN,
+    category: "states",
+    hidden: true,
+    state: "liquid",
+    tempLow: 1447,
+    stateLow: "gallium_phosphide",
+    density: 4100,
+}
+/*
+let funcRadius = 10
+let functionScope = "pixel"
+let funcFunction = "function(){console.log('Hello World')}"
+let functionStorage = function(){}
+elements.function_machine = {
+    color: "#56999e",
+    behavior: behaviors.WALL,
+    category: "machines",
+    state: "solid",
+    onSelect: function(){
+        let ans1 = prompt("What radius should the function be executed at? (Ignore if you plan on making it a global one.", funcRadius||10)
+        funcRadius = parseInt(ans1)
+        let ans2 = prompt("What scope should the function be executed in? Type \"global\" or \"pixel\" (without the quotes of course.)", functionScope||"pixel")
+        if (ans2 == "global"){functionScope = "global"} else {functionScope = "pixel"}
+        let ans3 = prompt("Type the entire function. Example: function(pixel){pixel.temp = 1000}}", funcFunction||"function(){console.log('Hello World')}")
+        funcFunction = ans3
+    },
+    tick: function(pixel){
+        if (pixelTicks == pixel.start){
+            pixel.radius = funcRadius
+            pixel.scope = functionScope
+            pixel.function = funcFunction
+        }
+        if (pixel.scope == "global"){
+            eval("functionStorage = "+pixel.function)
+            functionStorage()
+        } else {
+            var circlec = circleCoords(pixel.x, pixel.y, pixel.radius)
+            for (var i = 0; i < circlec.length; i++){
+                var coord = circlec[i]
+                var x = coord.x
+                var y = coord.y
+                if (!isEmpty(x,y,true)){
+                    eval("functionStorage = "+pixel.function)
+                    functionStorage(pixelMap[x][y])
+                }
+            }
+        }
+    },
+    excludeRandom: true,
+}
+    */
+elements.galvanized_steel = {
+    color: "#4c585f",
+    behavior: behaviors.WALL,
+    tempHigh: 1455.5,
+    category: "solids",
+    density: 7850,
+    conduct: 0.42,
+    hardness: 0.8,
+    tick: function(pixel){
+        for (var i = 0; i < adjacentCoords.length; i++) {
+            var coord = squareCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (!isEmpty(x,y, true)){
+                let otherPixel = pixelMap[x][y]
+                if (otherPixel.element == "molten_zinc"){
+                    if (Math.random() < 0.005){
+                        deletePixel(x, y)
+                        if (!pixel.absorbedZinc){pixel.absorbedZinc = 0}
+                        pixel.absorbedZinc ++
+                    }
+                } else if (otherPixel.element == "steel"){
+                    if (pixel.absorbedZinc && Math.random() < 0.02){
+                        changePixel(otherPixel, "galvanized_steel")
+                        pixel.absorbedZinc --
+                    }
+                }
+                else if (otherPixel.element == "galvanized_steel"){
+                    if (!otherPixel.absorbedZinc){otherPixel.absorbedZinc = 0}
+                    if (pixel.absorbedZinc > otherPixel.absorbedZinc && Math.random() < 0.1){
+                        otherPixel.absorbedZinc ++
+                        pixel.absorbedZinc --
+                    }
+                }
+            }
+        }
+    },
+    movable: false
+}
+if (!eLists.metals) { eLists.metals = [] }
+eLists.metals = eLists.metals.concat(["galvanized_steel"])
+if (!elements.steel.reactions){elements.steel.reactions = {}}
+elements.steel.reactions.molten_zinc = {elem1: "galvanized_steel", chance: 0.035}
+if (!elements.molten_zinc.reactions){elements.zinc.reactions = {}}
+elements.molten_zinc.reactions.steel = {elem1: "null", chance: 0.2}

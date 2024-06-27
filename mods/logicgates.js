@@ -46,6 +46,12 @@ elements.logic_wire = {
             }
         }
         if (pixel.lstate == 2){
+            // lightmap.js integration
+            if (enabledMods.includes("mods/lightmap.js")){
+                let x = Math.floor(pixel.x / lightmapScale);
+                let y = Math.floor(pixel.y / lightmapScale);
+                lightmap[y][x] = { color: [255/4, 228/4, 156/4]};
+            }
             for (var i = 0; i < adjacentCoords.length; i++) {
                 var coord = adjacentCoords[i];
                 var x = pixel.x+coord[0];
@@ -66,6 +72,12 @@ elements.logic_wire = {
             }
         }
         if (pixel.lstate == 1){
+            // lightmap.js integration
+            if (enabledMods.includes("mods/lightmap.js")){
+                let x = Math.floor(pixel.x / lightmapScale);
+                let y = Math.floor(pixel.y / lightmapScale);
+                lightmap[y][x] = { color: [255/4, 228/4, 156/4]};
+            }
             pixel.lstate = 2
             pixel.color = pixelColorPick(pixel, "#ffe49c");
         }
