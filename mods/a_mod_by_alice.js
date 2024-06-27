@@ -20713,6 +20713,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							continue;
 						};
 						var rockData = rockInfo._data ?? ["error","error","hot_unknown"];
+						if(rockData[2] == "icy_particulate") {
+							continue
+						};
 						var newName = rockName.startsWith("dry_") ? rockName.replace("dry_","hot_") : "hot_" + rockName;
 						//console.log(rockInfo.stateHigh);
 						elements[newName] = {
@@ -25660,7 +25663,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						rocksSandsAndSoilsToGiveHotForms = Object.keys(elements).filter(
 							function(elemName) {
 								//console.log(elemName,elements[elemName]._data?.[2]);
-								return (!(["clay","limestone","black_limestone"].includes(elemName)) && ["igneous_rock","solid_igneous_rock","igneous_gravel","sedimentary_rock","particulate","packed_particulate","metamorphic_rock","solid_metamorphic_rock","metamorphic_gravel"].includes(elements[elemName]._data?.[2]))
+								return (!(["clay","limestone","black_limestone"].includes(elemName)) && !(elemName.endsWith("permafrost")) && ["igneous_rock","solid_igneous_rock","igneous_gravel","sedimentary_rock","particulate","packed_particulate","metamorphic_rock","solid_metamorphic_rock","metamorphic_gravel"].includes(elements[elemName]._data?.[2]))
 							}
 						);
 						if(rocksSandsAndSoilsToGiveHotForms.includes("clay")) { rocksSandsAndSoilsToGiveHotForms.splice(rocksSandsAndSoilsToGiveHotForms.indexOf("clay"),1) };
