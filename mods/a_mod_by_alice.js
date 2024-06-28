@@ -12903,13 +12903,13 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				};
 			};
 			function quickload(pause=true,doSuccessAlert=true,doFailAlert=true) {
-				clearAll();
-				rebuildCurrentPixels();
 				var save = localStorage.getItem("quicksave");
 				if(!save) {
 					if(doFailAlert) { alert("No save exists") };
 					return false;
 				} else {
+					clearAll();
+					rebuildCurrentPixels();
 					importJsonState(JSON.parse(save));
 					if(doSuccessAlert) { alert("Quicksave loaded") };
 					if(pause) {
