@@ -3251,6 +3251,7 @@ elements.molten_gallium_phosphide = {
     stateLow: "gallium_phosphide",
     density: 4100,
 }
+/*
 let funcRadius = 10
 let functionScope = "pixel"
 let funcFunction = "function(){console.log('Hello World')}"
@@ -3292,6 +3293,7 @@ elements.function_machine = {
     },
     excludeRandom: true,
 }
+    */
 elements.galvanized_steel = {
     color: "#4c585f",
     behavior: behaviors.WALL,
