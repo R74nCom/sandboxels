@@ -5504,6 +5504,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			}
 		};	
 		
+		hiding = false
+		
 		runAfterAutogen(function() {
 			//rAA because velocity.js already puts its redef in a rAL and rAA comes after that
 			drawPixels = function(forceTick=false) {
@@ -5567,91 +5569,69 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					};
 					ctx.fillRect(0, 0, canvas.width, canvas.height);
 				}
-				var pixelDrawList = pixelsFirst.concat(pixelsLast);
-				for (var i = 0; i < pixelDrawList.length; i++) {
-					var pixel = pixelDrawList[i];
-					if (pixelMap[pixel.x][pixel.y] == undefined) {continue}
-					if (pixel.con) { pixel = pixel.con }
-					if((typeof(pixel.color) !== "string") || (pixel.color.indexOf("NaN") >= 0)) {
-						pixel.color = pixelColorPick(pixel)
-					};
-					if(pixel.color.length <= 7) { //hex triplets as colors seem to break some mods and can't be allowed
-						pixel.color = convertColorFormats(pixel.color,"rgb")
-					};
-					var colorFunction = viewColorFunctions[view] ?? normalColorFunction;
-					ctx.fillStyle = colorFunction(pixel);
-					if(find) { //if find and matching, override fill style with the find coloration
-						if(findElement instanceof Array ? findElement.includes(pixel.element) : pixel.element === findElement) {
-							ctx.fillStyle = "rgb(255," + marasi(findColorPulseTimer / 10) + ",0)";
+				if(!hiding) {
+					var pixelDrawList = pixelsFirst.concat(pixelsLast);
+					for (var i = 0; i < pixelDrawList.length; i++) {
+						var pixel = pixelDrawList[i];
+						if (pixelMap[pixel.x][pixel.y] == undefined) {continue}
+						if (pixel.con) { pixel = pixel.con }
+						if((typeof(pixel.color) !== "string") || (pixel.color.indexOf("NaN") >= 0)) {
+							pixel.color = pixelColorPick(pixel)
+						};
+						if(pixel.color.length <= 7) { //hex triplets as rgb colors seem to break some mods and can't be allowed
+							pixel.color = convertColorFormats(pixel.color,"rgb")
+						};
+						var colorFunction = viewColorFunctions[view] ?? normalColorFunction;
+						ctx.fillStyle = colorFunction(pixel);
+						if(find) { //if find and matching, override fill style with the find coloration
+							if(findElement instanceof Array ? findElement.includes(pixel.element) : pixel.element === findElement) {
+								ctx.fillStyle = "rgb(255," + marasi(findColorPulseTimer / 10) + ",0)";
+							}
+						};
+						var mode = getShapeMode();
+						settings.acidFunction ??= "none";
+						var acidFunction;
+						if([false,"false"].includes(settings.doacid)) {
+							acidFunction = acidFunctions.none
+						} else {
+							acidFunction = acidFunctions[settings.acidFunction ?? "none"]
+						};
+						var acidOffset1,acidOffset2;
+						if(settings.doacid && settings.acidFunction != "none" && !!acidFunction) {
+							acidOffset1 = (settings.doacid ?? false) * (18*acidFunction((pixel.y+incrementt)/4.4));
+							acidOffset2 = (settings.doacid ?? false) * (18*acidFunction((pixel.x+incrementt)/4.4))
+						} else {
+							acidOffset1 = 0;
+							acidOffset2 = 0
+						};
+						if ((view === null || view === 4) && elements[pixel.element].isGas) {
+							//gas rendering //PENIS
+							switch(mode) {
+								case "circles":
+									ctx.globalAlpha = 0.66;
+									ctx.beginPath();
+									ctx.arc((pixel.x+0.5)*pixelSize+acidOffset1, (pixel.y+0.5)*pixelSize+acidOffset2, pixelSize, 0, 2 * Math.PI, false);
+									ctx.fill();
+									ctx.globalAlpha = 1;
+									break;
+								case "triangles":
+									ctx.globalAlpha = 0.66;
+									ctx.beginPath();
+									ctx.moveTo((pixel.x-0.75)*pixelSize+acidOffset1,(pixel.y+1.5)*pixelSize+acidOffset2);
+									ctx.lineTo((pixel.x+0.5)*pixelSize+acidOffset1,(pixel.y-1)*pixelSize+acidOffset2);
+									ctx.lineTo((pixel.x+1.75)*pixelSize+acidOffset1,(pixel.y+1.5)*pixelSize+acidOffset2);
+									ctx.fill();
+									ctx.globalAlpha = 1;
+									break;
+								default:
+									ctx.globalAlpha = 0.5;
+									ctx.fillRect((pixel.x-1)*pixelSize+acidOffset1, (pixel.y)*pixelSize+acidOffset2, pixelSize*3, pixelSize);
+									ctx.fillRect((pixel.x)*pixelSize+acidOffset1, (pixel.y-1)*pixelSize+acidOffset2, pixelSize, pixelSize*3);
+									ctx.globalAlpha = 1;
+									break;
+							};
 						}
-					};
-					var mode = getShapeMode();
-					settings.acidFunction ??= "none";
-					var acidFunction;
-					if([false,"false"].includes(settings.doacid)) {
-						acidFunction = acidFunctions.none
-					} else {
-						acidFunction = acidFunctions[settings.acidFunction ?? "none"]
-					};
-					var acidOffset1,acidOffset2;
-					if(settings.doacid && settings.acidFunction != "none" && !!acidFunction) {
-						acidOffset1 = (settings.doacid ?? false) * (18*acidFunction((pixel.y+incrementt)/4.4));
-						acidOffset2 = (settings.doacid ?? false) * (18*acidFunction((pixel.x+incrementt)/4.4))
-					} else {
-						acidOffset1 = 0;
-						acidOffset2 = 0
-					};
-					if ((view === null || view === 4) && elements[pixel.element].isGas) {
-						//gas rendering //PENIS
-						switch(mode) {
-							case "circles":
-								ctx.globalAlpha = 0.66;
-								ctx.beginPath();
-								ctx.arc((pixel.x+0.5)*pixelSize+acidOffset1, (pixel.y+0.5)*pixelSize+acidOffset2, pixelSize, 0, 2 * Math.PI, false);
-								ctx.fill();
-								ctx.globalAlpha = 1;
-								break;
-							case "triangles":
-								ctx.globalAlpha = 0.66;
-								ctx.beginPath();
-								ctx.moveTo((pixel.x-0.75)*pixelSize+acidOffset1,(pixel.y+1.5)*pixelSize+acidOffset2);
-								ctx.lineTo((pixel.x+0.5)*pixelSize+acidOffset1,(pixel.y-1)*pixelSize+acidOffset2);
-								ctx.lineTo((pixel.x+1.75)*pixelSize+acidOffset1,(pixel.y+1.5)*pixelSize+acidOffset2);
-								ctx.fill();
-								ctx.globalAlpha = 1;
-								break;
-							default:
-								ctx.globalAlpha = 0.5;
-								ctx.fillRect((pixel.x-1)*pixelSize+acidOffset1, (pixel.y)*pixelSize+acidOffset2, pixelSize*3, pixelSize);
-								ctx.fillRect((pixel.x)*pixelSize+acidOffset1, (pixel.y-1)*pixelSize+acidOffset2, pixelSize, pixelSize*3);
-								ctx.globalAlpha = 1;
-								break;
-						};
-					}
-					else { // draw the pixel (default)
-						switch(mode) {
-							case "circles":
-								ctx.beginPath();
-								ctx.arc((pixel.x+0.5)*pixelSize+acidOffset1, (pixel.y+0.5)*pixelSize+acidOffset2, pixelSize/2, 0, 2 * Math.PI, false);
-								ctx.fill();
-								ctx.globalAlpha = 1;
-								break;
-							case "triangles":
-								ctx.beginPath();
-								ctx.moveTo(pixel.x*pixelSize+acidOffset1,(pixel.y+1)*pixelSize+acidOffset2);
-								ctx.lineTo((pixel.x+0.5)*pixelSize+acidOffset1,(pixel.y)*pixelSize+acidOffset2);
-								ctx.lineTo((pixel.x+1)*pixelSize+acidOffset1,(pixel.y+1)*pixelSize+acidOffset2);
-								ctx.fill();
-								ctx.globalAlpha = 1;
-								break;
-							default:
-								ctx.fillRect(pixel.x*pixelSize+acidOffset1, pixel.y*pixelSize+acidOffset2, pixelSize, pixelSize);
-								break;
-						};
-					}
-					if (pixel.charge && settings.shockoverlay && view !== 2) { // Yellow glow on charge
-						if (!elements[pixel.element].colorOn) {
-							ctx.fillStyle = "rgba(255,255,0,0.5)";
+						else { // draw the pixel (default)
 							switch(mode) {
 								case "circles":
 									ctx.beginPath();
@@ -5672,29 +5652,53 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 									break;
 							};
 						}
-					}
-					if (pixel.burning && settings.burnoverlay && view !== 2) { // Red glow on burn
-						if (!elements[pixel.element].colorOn) {
-							ctx.fillStyle = "rgba(255,0,0,0.5)";
-							switch(mode) {
-								case "circles":
-									ctx.beginPath();
-									ctx.arc((pixel.x+0.5)*pixelSize+acidOffset1, (pixel.y+0.5)*pixelSize+acidOffset2, pixelSize/2, 0, 2 * Math.PI, false);
-									ctx.fill();
-									ctx.globalAlpha = 1;
-									break;
-								case "triangles":
-									ctx.beginPath();
-									ctx.moveTo(pixel.x*pixelSize+acidOffset1,(pixel.y+1)*pixelSize+acidOffset2);
-									ctx.lineTo((pixel.x+0.5)*pixelSize+acidOffset1,(pixel.y)*pixelSize+acidOffset2);
-									ctx.lineTo((pixel.x+1)*pixelSize+acidOffset1,(pixel.y+1)*pixelSize+acidOffset2);
-									ctx.fill();
-									ctx.globalAlpha = 1;
-									break;
-								default:
-									ctx.fillRect(pixel.x*pixelSize+acidOffset1, pixel.y*pixelSize+acidOffset2, pixelSize, pixelSize);
-									break;
-							};
+						if (pixel.charge && settings.shockoverlay && view !== 2) { // Yellow glow on charge
+							if (!elements[pixel.element].colorOn) {
+								ctx.fillStyle = "rgba(255,255,0,0.5)";
+								switch(mode) {
+									case "circles":
+										ctx.beginPath();
+										ctx.arc((pixel.x+0.5)*pixelSize+acidOffset1, (pixel.y+0.5)*pixelSize+acidOffset2, pixelSize/2, 0, 2 * Math.PI, false);
+										ctx.fill();
+										ctx.globalAlpha = 1;
+										break;
+									case "triangles":
+										ctx.beginPath();
+										ctx.moveTo(pixel.x*pixelSize+acidOffset1,(pixel.y+1)*pixelSize+acidOffset2);
+										ctx.lineTo((pixel.x+0.5)*pixelSize+acidOffset1,(pixel.y)*pixelSize+acidOffset2);
+										ctx.lineTo((pixel.x+1)*pixelSize+acidOffset1,(pixel.y+1)*pixelSize+acidOffset2);
+										ctx.fill();
+										ctx.globalAlpha = 1;
+										break;
+									default:
+										ctx.fillRect(pixel.x*pixelSize+acidOffset1, pixel.y*pixelSize+acidOffset2, pixelSize, pixelSize);
+										break;
+								};
+							}
+						}
+						if (pixel.burning && settings.burnoverlay && view !== 2) { // Red glow on burn
+							if (!elements[pixel.element].colorOn) {
+								ctx.fillStyle = "rgba(255,0,0,0.5)";
+								switch(mode) {
+									case "circles":
+										ctx.beginPath();
+										ctx.arc((pixel.x+0.5)*pixelSize+acidOffset1, (pixel.y+0.5)*pixelSize+acidOffset2, pixelSize/2, 0, 2 * Math.PI, false);
+										ctx.fill();
+										ctx.globalAlpha = 1;
+										break;
+									case "triangles":
+										ctx.beginPath();
+										ctx.moveTo(pixel.x*pixelSize+acidOffset1,(pixel.y+1)*pixelSize+acidOffset2);
+										ctx.lineTo((pixel.x+0.5)*pixelSize+acidOffset1,(pixel.y)*pixelSize+acidOffset2);
+										ctx.lineTo((pixel.x+1)*pixelSize+acidOffset1,(pixel.y+1)*pixelSize+acidOffset2);
+										ctx.fill();
+										ctx.globalAlpha = 1;
+										break;
+									default:
+										ctx.fillRect(pixel.x*pixelSize+acidOffset1, pixel.y*pixelSize+acidOffset2, pixelSize, pixelSize);
+										break;
+								};
+							}
 						}
 					}
 				};
@@ -11214,23 +11218,41 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				pixel.vy *= 2;
 			};
 		};
-		function planetCrackerFinale(doColorChange=true) {
+		function planetCrackerFinale(doColorChange=true,spawnElements=null) {
 			var bottomFortyPercent = Math.round(height * 0.6);
 			var bottomTwentyPercent = Math.round(height * 0.8);
 			var bottomTenPercent = Math.round(height * 0.9);
+			if(typeof(spawnElements) == "string") {
+				if(spawnElements.indexOf(",") >= 0) {
+					spawnElements = spawnElements.split(",")
+				} else { spawnElements = [spawnElements] };
+			};
+			if(Array.isArray(spawnElements)) {
+				spawnElements = spawnElements.filter(n => elementExists(n));
+				if(spawnElements.length == 0) {
+					spawnElements = null
+				}
+			};
+			var doSpawning = (spawnElements !== null);
 			for(x = 1; x < width; x++) {
 				for(y = bottomFortyPercent; y < height; y++) {
 					var chance = y > bottomTwentyPercent ? 0.03 : 0.01
 					var radius = y > bottomTwentyPercent ? 8 : 6
-					if(!isEmpty(x,y,true)) {
-						pixelMap[x][y].vy ??= 0;
-						pixelMap[x][y].vy -= 20;
+					var newPixel = pixelMap[x]?.[y];
+					if(doSpawning && y > bottomTenPercent && isEmpty(x,y,false) && (Math.random() < 0.6)) {
+						var _np = tryCreatePixelReturn(randomChoice(spawnElements),x,y);
+						if(_np) { newPixel = _np }
 					};
-					if(y > bottomTenPercent && !isEmpty(x,y,true)) {
-						pixelMap[x][y].temp += 2000;
+					if(newPixel) {
+						newPixel.vy ??= 0;
+						newPixel.vy -= 20;
+					};
+					if(newPixel && y > bottomTenPercent) {
+						newPixel.temp += 2000;
+						pixelTempCheck(newPixel)
 					};
 					if(Math.random() < chance) {
-						explodeAt(x,y,radius,"plasma");
+						explodeAt(x,y,radius,spawnElements ? ((",plasma".repeat(spawnElements.length * 14).replace(",","")) + "," + spawnElements.join(",")) : "plasma");
 					};
 				};
 			};
@@ -11251,21 +11273,46 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					return;
 				};
 				if(outOfBounds(pixel.x,pixel.y+pixel.counter)) {
-					planetCrackerFinale();
+					planetCrackerFinale(true,pixel._bottomStateHighCache ?? null);
 					pixel.active = false;
 					changePixel(pixel,"metal_scrap");
 				};
 				if(pixel.active) {
+					pixel._bottomStateHighCache ??= [];
+					pixel._bottomStateHighCache = currentPixels.filter(p => p.y == height - 1).map(p => p.element);
+					var bshcUniques = Array.from(new Set(pixel._bottomStateHighCache));
+					pixel._bottomStateHighCache = bshcUniques.filter(elemNameToFilterBy => (pixel._bottomStateHighCache.filter(elemName => elemName == elemNameToFilterBy).length >= (pixel._bottomStateHighCache.length / 10)));
+					pixel._bottomStateHighCache = pixel._bottomStateHighCache.map(elemName => getStateHigh(elemName) ?? elemName);
 					var pixelDistanceFromBottom = height - pixel.y;
 					var counterDistanceFromBottom = height - (pixel.y + pixel.counter);
+					var yRisingFromBottomToHalfway = Math.round((height - 1) - (pixel.counter / 2));
+
 					var closenessToBottom = 1 - (counterDistanceFromBottom / pixelDistanceFromBottom);
-					//console.log(closenessToBottom);
 					var finalRadius = Math.round(((1 + closenessToBottom) ** 2) * 6);
-					if(typeof(explodeAtPlus) === "function") {
-						explodeAtPlus(pixel.x,pixel.y+pixel.counter,finalRadius,"plasma","fire",null,planetCrackerHeat);
-					} else {
-						explodeAt(pixel.x,pixel.y+pixel.counter,finalRadius,"plasma");
+
+					var earthquakeChance = ((closenessToBottom >= 0.5) && (0.1 + (0.05 * (1 + (Math.max(closenessToBottom - 0.5,0) * 25)))))
+					var earthquakeMaxTryCount = 2 + (Math.random() < (closenessToBottom - 0.5)) + (Math.random() < (closenessToBottom - 0.75)) + (Math.random() < earthquakeChance) + (Math.random() < (earthquakeChance ** 2));
+					for(var i = 0; i < earthquakeMaxTryCount; i++) {
+						if((closenessToBottom >= 0.5) && (Math.random() < earthquakeChance)) { //random earthquake
+							var rX = (Math.floor(Math.random() * (width - 1)) + 1);
+							var rY = Math.round(height / 2) + Math.floor(Math.random() * height / 2);
+							var eq = createOrChangePixelAndReturn("earthquake",rX,rY);
+							if(eq) {
+								eq.stage = 1;
+								eq.mag = Math.floor(Math.random() * ((5 * (1 + (Math.max(closenessToBottom - 0.5,0) * 2.5))) + 1)) + 15;
+							}
+						}
 					};
+					
+					for(var x = 1; x < width; x++) {
+						var y = yRisingFromBottomToHalfway;
+						if(isEmpty(x,y,true)) { continue };
+						var newPixel = pixelMap[x][y];
+						newPixel.temp += 400 + ((1 - closenessToBottom) * 100);
+						pixelTempCheck(newPixel)
+					};
+
+					explodeAtPlus(pixel.x,pixel.y+pixel.counter,finalRadius,"plasma","fire",null,planetCrackerHeat);
 					pixel.counter++;
 				};
 			},
