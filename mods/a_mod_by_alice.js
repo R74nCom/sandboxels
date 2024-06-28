@@ -16851,7 +16851,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 			};
 		};
-		var clf3IgnoreList = ["FOOF","solid_FOOF","oxygen","liquid_oxygen","oxygen_ice","chlorine","liquid_chlorine","liquid_hydrogen_fluoride","liquid_fluorine","fluorine","fluorine_ice","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_acid_gas","fire","acid_gas","neutral_acid","acid","acid_cloud","nitrogen","helium","liquid_helium","tralphium","liquid_tralphium","neon","liquid_neon","solid_neon","neon_ice","neon_snow","argon","liquid_argon","solid_argon","argon_ice","argon_snow", "krypton","liquid_krypton","solid_krypton","krypton_ice","krypton_snow", "xenon","liquid_xenon","solid_xenon","xenon_ice","xenon_snow", "radon","liquid_radon","solid_radon","radon_ice","radon_snow","ionized_helium","ionized_tralphium","wall","chlorine_trifluoride","chlorine_trifluoride_ice","chlorine_trifluoride_gas","quartz"];
+		var clf3IgnoreList = ["foof","solid_foof","oxygen","liquid_oxygen","oxygen_ice","chlorine","liquid_chlorine","liquid_hydrogen_fluoride","liquid_fluorine","fluorine","fluorine_ice","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_acid_gas","fire","acid_gas","neutral_acid","acid","acid_cloud","nitrogen","helium","liquid_helium","tralphium","liquid_tralphium","neon","liquid_neon","solid_neon","neon_ice","neon_snow","argon","liquid_argon","solid_argon","argon_ice","argon_snow", "krypton","liquid_krypton","solid_krypton","krypton_ice","krypton_snow", "xenon","liquid_xenon","solid_xenon","xenon_ice","xenon_snow", "radon","liquid_radon","solid_radon","radon_ice","radon_snow","ionized_helium","ionized_tralphium","wall","chlorine_trifluoride","chlorine_trifluoride_ice","chlorine_trifluoride_gas","quartz"];
 		//todo: PTFE, passivation
 		elements.chlorine_trifluoride = {
 			color: "#8aa65b",
@@ -35641,7 +35641,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					amalgamatedBombFire += ",blazing_pyrotheum".repeat(5);
 					amalgamatedBombFire += ",tectonic_petrotheum".repeat(7);
 					amalgamatedBombFire += ",resonant_ender".repeat(5);
-					amalgamatedBombFire += ",FOOF".repeat(8);
+					amalgamatedBombFire += ",foof".repeat(8);
 					amalgamatedBombFire += ",liquid_irradium".repeat(7);
 					amalgamatedBombFire += ",bioooze".repeat(8);
 				});
