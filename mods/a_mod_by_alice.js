@@ -27077,14 +27077,27 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 					inputElement === "all" ? alertIfOutput(alertOutput,`Set ${property} of ${setCount} pixels to ${value}.`) : alertIfOutput(alertOutput,`Set ${property} of ${setCount} ${inputElement} pixels to ${value}.`)
 					return true;
 				case "deleteall":
-				inputAsArray = inputAsArray.join(" ").replace("deleteall","delete all").split(" ");
+				var elementSpecified = false;
+				var attemptedCommaSplitOfPossibleElementSpecification = inputAsArray[1].split(","); //a comma-less string becomes a single-string array so it should still detect something like "deleteall fire"
+				var possibleElementsInACSOPES = attemptedCommaSplitOfPossibleElementSpecification.filter(elementExists);
+				elementSpecified = (possibleElementsInACSOPES.length > 0);
+				if(!elementSpecified) {
+					inputAsArray = inputAsArray.join(" ").replace("deleteall","delete all").split(" ")
+				};
 				//fall through to delete 
 				case "delete":
 					if(inputAsArray.length < 2) {
 						alertIfError(alertError,"Usage: delete [element] <probability> <type>\nDon't include framing characters []<>.\nThe element can be \"all\" to clear the canvas.\nNote: Strings can't have spaces because spaces are the separator used in the parsing split().\nArguments in [brackets] are required and ones in <angle brackets> are optional.");
 						return false;
 					};
+
 					var inputElement = inputAsArray[1];
+					if(inputElement.indexOf(",") >= 0) {
+						inputElement = Array.from(new Set(inputElement.split(",")));
+						if(inputElement.includes("all")) {
+							inputElement = "all"
+						}
+					};
 
 					var probability;
 					if(inputAsArray[2]) {
@@ -27164,7 +27177,8 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 						for (var j = 1; j < height; j++) {
 							if (!isEmpty(i,j)) {
 								//console.log("Pixel (" + i + "," + j + ") exists")
-								if(pixelMap[i][j].element === inputElement || inputElement === "all") {
+								var doDelete = inputElement === "all" || (Array.isArray(inputElement) ? inputElement.includes(pixelMap[i][j].element) : pixelMap[i][j].element == inputElement);
+								if(doDelete) {
 									if(Math.random() < probability) {
 										deletePixel(i,j);
 										deleteCount++
@@ -27173,7 +27187,8 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 							}
 						}
 					};
-					inputElement === "all" ? alertIfOutput(alertOutput,`Deleted ${deleteCount} pixels.`) : alertIfOutput(alertOutput,`Deleted ${deleteCount} ${inputElement} pixels.`)
+					var outputString = Array.isArray(inputElement) ? englishFormatList(inputElement) : inputElement;
+					inputElement === "all" ? alertIfOutput(alertOutput,`Deleted ${deleteCount} pixels.`) : alertIfOutput(alertOutput,`Deleted ${deleteCount} total ${outputString} pixels.`)
 					return true;
 				case "test":
 					alertIfOutput(alertOutput,"pong");
