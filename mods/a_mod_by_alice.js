@@ -1283,9 +1283,11 @@ try {
 				if(isEmpty(nx,ny,false)) { return tryMove(pixel,nx,ny,leaveBehind,force) };
 				return pixelMap[nx][ny]
 			};
+
 			function exposedToAir(pixel) {
 				return (isEmpty(pixel.x+1,pixel.y) || isEmpty(pixel.x-1,pixel.y) || isEmpty(pixel.x,pixel.y+1) || isEmpty(pixel.x,pixel.y-1));
 			};
+
 			function tryTarnish(pixel,element,chance) {
 				if(exposedToAir(pixel)) {
 					if(Array.isArray(element)) {
@@ -1299,6 +1301,7 @@ try {
 					};
 				};
 			};
+
 			//Try to create a pixel, return true if it could be created and false if it couldn't
 			function tryCreatePixel(elementInput,x,y) {
 				//array handling
@@ -1324,6 +1327,59 @@ try {
 					return false;
 				};
 			};
+
+			function createOrChangePixel(elementInput,x,y) {
+				//array handling
+				if(elementInput.includes(",")) { //CSTA
+					elementInput = elementInput.split(",");
+				};
+				if(Array.isArray(elementInput)) { //if element list
+					elementInput = elementInput.filter(function(e) {
+						return elementExists(e);
+					});
+					if(elementInput.length === 0) { throw new Error("elementInput has no existing elements") };
+					elementInput = randomChoice(elementInput);
+				};
+				//existence check
+				if(!elementExists(elementInput)) {
+					throw new Error("Element " + elementInput + " doesn't exist!");
+				};
+				//actual creation check
+				if(outOfBounds(x,y)) { return false };
+				if(isEmpty(x,y)) {
+					createPixel(elementInput,x,y);
+				} else {
+					changePixel(pixelMap[x][y],elementInput)
+				};
+				return true
+			};
+
+			function createOrChangePixelAndReturn(elementInput,x,y) {
+				//array handling
+				if(elementInput.includes(",")) { //CSTA
+					elementInput = elementInput.split(",");
+				};
+				if(Array.isArray(elementInput)) { //if element list
+					elementInput = elementInput.filter(function(e) {
+						return elementExists(e);
+					});
+					if(elementInput.length === 0) { throw new Error("elementInput has no existing elements") };
+					elementInput = randomChoice(elementInput);
+				};
+				//existence check
+				if(!elementExists(elementInput)) {
+					throw new Error("Element " + elementInput + " doesn't exist!");
+				};
+				//actual creation check
+				if(outOfBounds(x,y)) { return false };
+				if(isEmpty(x,y)) {
+					return createPixelReturn(elementInput,x,y);
+				} else {
+					return changePixelReturn(pixelMap[x][y],elementInput)
+				}
+				return true
+			};
+
 			function tryCreatePixelReturn(elementInput,x,y) {
 				//array handling
 				if(elementInput.includes(",")) { //CSTA
@@ -1347,6 +1403,7 @@ try {
 					return false;
 				};
 			};
+
 			function createPixelReturn(elementIn,x,y) { //sugar
 				var element = elementIn; while(element instanceof Array) { element = randomChoice(element) };
 				var newPixel = new Pixel(x, y, element);
@@ -1354,6 +1411,7 @@ try {
 				checkUnlock(element);
 				return newPixel;
 			};
+
 			function changePixelReturn(pixel,element,changetemp=true) {
 				if(typeof(elements[element]) == "undefined") {
 					if(doLog) { console.error(`Something tried to change a pixel of ${pixel.element} at (${pixel.x},${pixel.y}) to nonexistent element "${element}"`) };
@@ -34516,7 +34574,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					density: 3000,
 					excludeRandom: true,
 				};
-				elements.tsunami = {
+				elements.amba_tsunami = {
 					color: ["#2449d1","#4b6adb","#8093d9"],
 					behavior: behaviors.WALL,
 					properties: {
