@@ -13186,7 +13186,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				var _width = getComputedStyle(statsDiv).width;
 				if(_width !== null) {
 					_width = parseFloat(_width.match(/[\d\/]+/));
-					if(_width <= 752) { statsDiv.style["font-size"] = "50%" }
+					if(_width <= 752) {
+						statsDiv.style["font-size"] = "50%"
+					} else if(_width <= 940) {
+						statsDiv.style["font-size"] = "75%"
+					}
 				}
 			}
 			//Moved to window.onload where gameDiv should be guaranteed to exist
@@ -27071,6 +27075,105 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 						};
 					};
 					inputElement === "all" ? alertIfOutput(alertOutput,`Set ${property} of ${setCount} pixels to ${value}.`) : alertIfOutput(alertOutput,`Set ${property} of ${setCount} ${inputElement} pixels to ${value}.`)
+					return true;
+				case "deleteall":
+				inputAsArray = inputAsArray.join(" ").replace("deleteall","delete all").split(" ");
+				//fall through to delete 
+				case "delete":
+					if(inputAsArray.length < 2) {
+						alertIfError(alertError,"Usage: delete [element] <probability> <type>\nDon't include framing characters []<>.\nThe element can be \"all\" to clear the canvas.\nNote: Strings can't have spaces because spaces are the separator used in the parsing split().\nArguments in [brackets] are required and ones in <angle brackets> are optional.");
+						return false;
+					};
+					var inputElement = inputAsArray[1];
+
+					var probability;
+					if(inputAsArray[2]) {
+						probability = inputAsArray[2];
+						if(probability.match(/(%|cent|per_?hundred|ph)$/i)) {
+							probability = probability.match(/\d+(\.\d+|)/)?.[0];
+							if(!probability) {
+								probability = 1
+							} else {
+								probability = parseFloat(probability) / 100
+							}
+						} else if(probability.match(/(‰|mille|per_?thousand)$/i)) {
+							probability = probability.match(/\d+(\.\d+|)/)?.[0];
+							if(!probability) {
+								probability = 1
+							} else {
+								probability = parseFloat(probability) / 1000
+							}
+						} else if(probability.match(/(‱|myriad|per_?ten_?thousand|basis_?point|bp)$/i)) {
+							probability = probability.match(/\d+(\.\d+|)/)?.[0];
+							if(!probability) {
+								probability = 1
+							} else {
+								probability = parseFloat(probability) / 10000
+							}
+						} else if(probability.match(/(ppm|parts_?per_?million)$/i)) {
+							probability = probability.match(/\d+(\.\d+|)/)?.[0];
+							if(!probability) {
+								probability = 1
+							} else {
+								probability = parseFloat(probability) / 1e6
+							}
+						} else if(probability.match(/(ppb|parts_?per_?billion)$/i)) {
+							probability = probability.match(/\d+(\.\d+|)/)?.[0];
+							if(!probability) {
+								probability = 1
+							} else {
+								probability = parseFloat(probability) / 1e9
+							}
+						} else if(probability.match(/(ppt|parts_?per_?trillion)$/i)) {
+							probability = probability.match(/\d+(\.\d+|)/)?.[0];
+							if(!probability) {
+								probability = 1
+							} else {
+								probability = parseFloat(probability) / 1e12
+							}
+						} else if(probability.match(/(ppq|parts_?per_?quadrillion)$/i)) {
+							probability = probability.match(/\d+(\.\d+|)/)?.[0];
+							if(!probability) {
+								probability = 1
+							} else {
+								probability = parseFloat(probability) / 1e15
+							}
+						} else if(probability.match(/\d\.?[\/÷]\.?\d/)) {
+							probability = probability.split(/[\/÷]/).map(x => parseFloat(x));
+							if(isNaN(probability[0]) || isNaN(probability[1])) {
+								probability = 1
+							} else {
+								probability = probability[0] / probability[1]
+							}
+						} else {
+							var parsedProbability = parseFloat(probability);
+							if(isNaN(parsedProbability)) {
+								probability = 1
+							} else {
+								probability = parsedProbability;
+								if(probability > 1) { probability /= 100 }
+							}
+						}
+					} else {
+						probability = 1
+					};
+					
+					//Actual setting code;
+					var deleteCount = 0;
+					for (var i = 1; i < width; i++) {
+						for (var j = 1; j < height; j++) {
+							if (!isEmpty(i,j)) {
+								//console.log("Pixel (" + i + "," + j + ") exists")
+								if(pixelMap[i][j].element === inputElement || inputElement === "all") {
+									if(Math.random() < probability) {
+										deletePixel(i,j);
+										deleteCount++
+									}
+								}
+							}
+						}
+					};
+					inputElement === "all" ? alertIfOutput(alertOutput,`Deleted ${deleteCount} pixels.`) : alertIfOutput(alertOutput,`Deleted ${deleteCount} ${inputElement} pixels.`)
 					return true;
 				case "test":
 					alertIfOutput(alertOutput,"pong");
