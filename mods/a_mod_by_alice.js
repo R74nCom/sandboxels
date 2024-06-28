@@ -3297,16 +3297,16 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		//supplementary functions for below
 
 		//redefine mouseRange to support even sizes
-        function mouseRange(mouseX,mouseY,size,shapeOverride=null,skipEmpties=false) {
+		function mouseRange(mouseX,mouseY,size,shapeOverride=null,skipEmpties=false) {
 			var shape = shapeOverride ?? currentShape ?? "square";
-            var coords = [];
-            size = size || mouseSize;
-            if (elements[currentElement].maxSize < mouseSize) {
-                var mouseOffset = Math.trunc(elements[currentElement].maxSize/2);
-            }
-            else {
-                var mouseOffset = Math.trunc(size/2);
-            }
+			var coords = [];
+			size = size || mouseSize;
+			if (elements[currentElement].maxSize < mouseSize) {
+				var mouseOffset = Math.trunc(elements[currentElement].maxSize/2);
+			}
+			else {
+				var mouseOffset = Math.trunc(size/2);
+			}
 			var topLeft = [mouseX-mouseOffset,mouseY-mouseOffset];
 			var bottomRight = [mouseX+mouseOffset,mouseY+mouseOffset];
 			if(size % 2 == 0) {
@@ -3331,11 +3331,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					coords.push([x,y]);
 				}
 			};
-            return coords
-        };
+			return coords
+		};
 
-        function mouseLikeRange(x,y,size,shape="square",skipEmpties=false) {
-            var coords = [];
+		function mouseLikeRange(x,y,size,shape="square",skipEmpties=false) {
+			var coords = [];
 			var offset = Math.trunc(size/2);
 			var topLeft = [x-offset,y-offset];
 			var bottomRight = [x+offset,y+offset];
@@ -3361,8 +3361,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					coords.push([_x,_y]);
 				}
 			};
-            return coords
-        };
+			return coords
+		};
 		
 		//this part defines basically all of the keybinds
 		function addKeyboardListeners() {
@@ -3731,6 +3731,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				runAfterButtonsList[i]();
 			};
 			selectElement(currentElement);
+			if(urlParams.get("autoQuickload") !== null) { quickload(true,false,false) };
 			focusGame();
 			// For every button element, onkeyup="event.preventDefault()"
 			var buttonElements = document.getElementsByTagName("button");
@@ -3976,12 +3977,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			if (r.tempMax !== undefined && pixel1.temp > r.tempMax) {
 				return false;
 			}
-            if (r.burning1 !== undefined && Boolean(pixel1.burning) !== r.burning1) {
-                return false;
-            }
-            if (r.burning2 !== undefined && Boolean(pixel2.burning) !== r.burning2) {
-                return false;
-            }
+			if (r.burning1 !== undefined && Boolean(pixel1.burning) !== r.burning1) {
+				return false;
+			}
+			if (r.burning2 !== undefined && Boolean(pixel2.burning) !== r.burning2) {
+				return false;
+			}
 			if (r.charged && !pixel1.charge) {
 				return false;
 			}
@@ -5729,21 +5730,21 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			}
 		});
 		//I hate overwriting drawPixels
-        viewKey = {
-            2: "thermal",
-            3: "basic",
-            4: "smooth",
-            5: "velocity",
-            6: "element"
-        };
-        function setView(n) {
-            if (viewKey[n]) { // range of number keys with valid views
-                view = n;
-            }
-            else { // reset view
-                view = null;
-            }
-        };
+		viewKey = {
+			2: "thermal",
+			3: "basic",
+			4: "smooth",
+			5: "velocity",
+			6: "element"
+		};
+		function setView(n) {
+			if (viewKey[n]) { // range of number keys with valid views
+				view = n;
+			}
+			else { // reset view
+				view = null;
+			}
+		};
 		runAfterLoad(function() {
 			//Setting
 			var settingsMenu = document.getElementById("settingsMenu").getElementsByClassName("menuText")[0];
@@ -8893,7 +8894,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				var pullCountFractionalPart = pullCount % 1;
 				var truePullCount = Math.min(3,pullCountIntegerPart + (Math.random() < pullCountFractionalPart));
 				for(var j = 0; j < truePullCount; j++) {
-					if((pullCountIntegerPart >= 1) && (Math.random() < pullCount / 3)) { tryBreak(newPixel) };
+					if((pullCountIntegerPart >= 1) && (Math.random() < distanceProportion)) { tryBreak(newPixel) };
 					var x = newPixel.x;
 					var y = newPixel.y;
 					var empty = checkForEmptyPixels(x, y);
@@ -8917,8 +8918,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						newPixel.vy += _vy;
 						tryMove(newPixel, x + best[0], y + best[1], undefined, true);
 						if(haseuliteSpreadWhitelist.includes(newPixel.element)) { newPixel.value += ((15 + (distanceComplement / (distanceProportion ** 2))) * 3) };
-						heatNeighbors(newPixel,5);
-						pixel.temp += 5 * getNeighborCount(pixel);
+						var heat = (20 * pullCount) * getNeighborCount(newPixel);
+						heatNeighbors(newPixel,heat);
+						pixel.temp += heat;
+						pixelTempCheck(pixel);
 					}
 				};
 				var taxicabDistance = Math.abs(newPixel.x - pixel.x) + Math.abs(newPixel.y - pixel.y);
@@ -17440,6 +17443,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		},
 		elements.molten_ruthenium = {
 			density: 10650,
+			tempHigh: 4150
 		},
 		elements.rhodium = {
 			color: ["#f0e4df","#f7eae4"], //it looked slightly reddish on Wikipedia
@@ -17453,6 +17457,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		},
 		elements.molten_rhodium = {
 			density: 10700,
+			tempHigh: 3695
 		},
 		elements.palladium = {
 			color: ["#fff8ed","#f5e6ce","#faeccf"], //Terraria reference
@@ -17466,6 +17471,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		},
 		elements.molten_palladium = {
 			density: 10380,
+			tempHigh: 2963
 		},
 		//Silver exists
 		elements.rhenium = {
@@ -17480,6 +17486,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		},
 		elements.molten_rhenium = {
 			density: 18900,
+			tempHigh: 5630
 		},
 		elements.osmium = {
 			color: ["#d8e1eb","#cee1f0"], //it looks bluish
@@ -17493,6 +17500,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		},
 		elements.molten_osmium = {
 			density: 2e4,
+			tempHigh: 5008
 		},
 		elements.iridium = {
 			color: ["#dfb9f0","#d6a9eb","#dfd1ed","#eeeeee"], //Minecraft and Stardew Valley reference
@@ -17506,6 +17514,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		},
 		elements.molten_iridium = {
 			density: 19000,
+			tempHigh: 4130
 		},
 		elements.platinum = {
 			color: ["#dddddd","#d7d7d7"],
@@ -17519,8 +17528,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		},
 		elements.molten_platinum = {
 			density: 19770,
+			tempHigh: 3825
 		},
 		//Gold exists
+		elements.molten_gold ??= {};
+		elements.molten_gold.density = 17310;
+		elements.molten_gold.tempHigh = 2970;
+		
 		elements.mercury = {
 			color: ["#d1d1d1", "#bababa"],
 			behavior: behaviors.LIQUID,
@@ -28622,7 +28636,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			  } catch(error) {
 				//ignore stack overflows
-			    if(error.toString().includes("call stack")) {
+				if(error.toString().includes("call stack")) {
 				} else {
 					throw new Error("error")
 				}
@@ -40823,6 +40837,14 @@ Make sure to save your command in a file if you want to add this preset again.`
 			density: 609
 		};
 		elements.steel.movable = false;
+		elements.molten_steel ??= {};
+		elements.molten_steel.tempHigh = 2727;
+		elements.molten_steel.stateHigh = ["molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","carbon"]; //it may be FAR LESS than that irl; sus-304 steel has 0.08%
+		elements.carbon.reactions ??= {};
+		elements.carbon.reactions.molten_iron = {
+			elem1: ["carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon",null],
+			elem2: "molten_steel"
+		};
 		elements.support_steel = {
 			color: elements.steel.color,
 			behavior: behaviors.SUPPORT,
