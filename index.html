@@ -14726,13 +14726,13 @@ behaviorRules = {
                         stats += "<span id='stat-burning' class='stat'>Burning</span>";
                     }
                     if (elements[currentPixel.element].hoverStat) {
-                        stats += "<span id='stat-hover' class='stat'>"+elements[currentPixel.element].hoverStat(currentPixel)+"</span>";
+                        stats += "<span id='stat-hover' class='stat'>"+elements[currentPixel.element].hoverStat(currentPixel).replaceAll("<","&lt;")+"</span>";
                     }
                     else if (currentPixel.clone) {
-                        stats += "<span id='stat-clone' class='stat'>"+currentPixel.clone.toUpperCase()+"</span>";
+                        stats += "<span id='stat-clone' class='stat'>"+currentPixel.clone.toUpperCase().replaceAll("<","&lt;")+"</span>";
                     }
                     else if (currentPixel.con && currentPixel.con.element) {
-                        stats += "<span id='stat-clone' class='stat'>"+currentPixel.con.element.toUpperCase()+"</span>";
+                        stats += "<span id='stat-clone' class='stat'>"+currentPixel.con.element.toUpperCase().replaceAll("<","&lt;")+"</span>";
                     }
                 }
             }
