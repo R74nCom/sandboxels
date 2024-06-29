@@ -2835,6 +2835,7 @@ elements.specific_ray_emitter = {
         var rayans = prompt("Please input the desired element of this ray emitter",(rayElement||undefined));
         if (!rayans) { return }
 		rayElement = mostSimilarElement(rayans);
+        if (rayElement != "ray"){rainbowMode = false}
         var rayans2 = prompt("Should the ray be stopped by walls? Write true or false.",(rayStoppedByWalls||false));
         if (rayans2 == "false"){rayStoppedByWalls = false} else {rayStoppedByWalls = true}
         var rayans3 = prompt("How much should the beginning of the ray be offset from the emitter?", (specificRayStart||0));
