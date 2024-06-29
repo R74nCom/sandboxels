@@ -46,13 +46,13 @@ function getRandomPixelCoordinates(pixel, offsetx, offsety, bp, keyobject) {
       y = Math.floor(Math.random() * bp.length);
       r = bp[y][x];
       r = keyobject[r];
-      if (r !== undefined) {
+      //if (r !== undefined) {
           attempts++;
-      }
+      //}
       if (attempts >= maxAttempts) {
           return "terminated";
       }
-  } while (r === undefined || r === 0 || r === "0" || !isEmpty(pixel.x + x - offsetx, pixel.y + y - offsety, true));
+  } while (r === undefined || r === 0 || r === "0" || !isEmpty(pixel.x + x - offsetx, pixel.y + y - offsety));
   return { x, y, r };
 }
 
@@ -160,7 +160,7 @@ elements.custom_bp_spawner = {
     }
   }
 }
-var customBP = []
+var customBP = [[0]]
 var customBPKey = {}
 let bpsizeH = 15;
 let bpsizeW = 15;
