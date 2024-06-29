@@ -336,4 +336,245 @@ elements.rad_cleaner = {
         "rad_snow": {elem2: "snow"},
         "rad_rock": {elem2: "rock"},
     }
+ };
+
+
+elements.rad_meat = {
+  behavior: behaviors.STURDYPOWDER,
+  category: "food",
+  state: "solid",
+  density: 1500,
+  color: ["#e8fc03","#f0b446","#92f046"],
+  tempHigh: 120,
+  stateHigh: ["rotten_meat","fallout"],
+  tempLow:-12,
+  stateLow: ["frozen_meat","radiation"],
+  reactions: {
+      "water": {elem2: "radiated_water", chance:0.4},
+      "salt_water": { elem2: "radiated_water" },
+  }
+};
+
+elements.lemon = {
+  behavior: behaviors.POWDER,
+  category: "food",
+  state: "powder",
+  density: 800,
+  color: ["#f9f934", "#f1ee20",],
+  tempHigh: 90,
+  stateHigh: "hot_lemon",
+  tempLow: -2,
+  stateLow: "wrinkled_lemon",
+  burn: 120,
+  burntime: 600,
+  burnInto: "ash",
+  breakInto: [ "lemon_water", "lemon_zest", ],
+  reactions: {
+      "water": { elem2: "lemon_water", chance:0.2},
+      "salt_water": { elem2: [ "lemon_water", "water",] },
+      "dirty_water": { elem1: "rotten_lemon", },
+      "soda": { elem2: "lemon_soda", },
+      "head": { elem1: "saliva", chance:0.75}, 
+      "milk": { elem2: "lemon_milk", },
+      "tea": { elem2: "lemon_tea", },
+      "poison": { elem2: "rotten_lemon", },
+  }                                                      
+};
+
+elements.hot_lemon = {
+  behavior: behaviors.POWDER,
+  state: "powder",
+  category: "food",
+  hidden: true,
+  density: 820,
+  color: ["#8a6d1e","#70661a",],
+  hidden: true,
+  temp: 90,
+  tempHigh: 200,
+  stateHigh: "fire",
+  tempLow: 30,
+  stateLow: "wrinkled_lemon",
+  burn: 120,
+  burntime: 600,
+  burnInto: "ash",
+  reactions: {
+      "water": { elem2: "lemon_water", },
+  }
+};
+
+elements.leather = {
+    behavior: behaviors.SUPPORTPOWDER,
+    color: ["#3f261d","#664f40",],
+    state: "powder",
+    category: "powders",
+    tempHigh: 200,
+    stateHigh: "fire",
+    breakInto: "dust", 
+    burn: 20,
+    burntime: 200,
+    burnInto: "ash", 
+};
+
+elements.wrinkled_lemon = {
+  behavior: behaviors.POWDER,
+  color: ["#999543","#a6a03a",],
+  state: "powder",
+  category: "food",
+  tempHigh: 90,
+  stateHigh: "hot_lemon",
+  hidden: true,
+  burn: 120,
+  burntime: 600,
+  burnInto: "ash",
+  reactions: {
+    "water": { elem2: "lemon_water", chance: 0.2,
+  }
+ }
+};
+
+elements.coolant = {
+  color: "#0eebeb",
+  behavior: [
+        "XX|CO:4|XX",
+        "CO:4|HT:1|CO:4",
+        "XX|CO:4|XX",
+    ],
+  category: "liquids",
+  state: "liquid",
+  insulate: true,
+  density: 1000,
+  darkText: false,
+  tempHigh: 500,
+  hidden: true,
+  stateHigh: "steam", 
+};
+
+elements.arkycite = {
+  color: "#46ab63",
+  behavior: behaviors.LIQUID,
+  category: "liquids",
+  state: "liquid",
+  density: 997,
+  darkText: false,
+  tempHigh: 400,
+  hidden: true,
+  burn: 40,
+  stateHigh: "fire", 
+  burntime: 500,
+};
+
+elements.lemon_water = {
+  color: ["#faec52","#faee69",],
+  behavior: behaviors.LIQUID,
+  category: "liquids",
+  state: "liquid",
+  density: 900,
+  tempHigh: 100,
+  stateHigh: ["steam","fragrance",],
+  hidden: true,
+  tempLow: -10,
+  stateLow: "lemon_ice",
+  reactions: {
+    "balloon": { elem2: "helium", chance: 0.5, },
+    "head": { elem1: "saliva", chance: 0.2, },
+  }
+};
+
+elements.lemon_zest = {
+  color: ["#ded254","#ccc03d",],
+  behavior: behaviors.POWDER,
+  category: "trashes",
+  state: "powder",
+  density: 1000,
+  hidden: true,
+  tempHigh: 350,
+  stateHigh: "fire",
+  breakInto: "lemon_water",
+  burn: 60,
+  burntime: 200,
+  burnInto: "smoke"
+};
+
+elements.saliva = {
+  color: ["#a6f5f0","#b6f0ec",],
+  behavior: behaviors.LIQUID,
+  category: "liquids",
+  state: "liquid",
+  density: 1280,
+  tempHigh: 105,
+  stateHigh: ["steam","fragrance"],
+  tempLow: -5,
+  stateHigh: "saliva_ice",
+  reactions: {
+    "water": { elem1: null, chance: 0.5, elem2: "dirty_water", chance: 0.5,
+    }
+ }
+};
+
+elements.lemon_milk = {
+  color: ["#f5f2c4","#f7f4b2",],
+  behavior: behaviors.LIQUID,
+  category: "liquids",
+  state: "liquid",
+  density: 1002,
+  tempHigh: 500,
+  stateHigh: "smoke",
+  tempLow: -2,
+  stateLow: "frozen_yogurt",
+  stateLowColor: ["#f5f3cb","#f7f5bc"],
+  reactions: {
+    "bacteria": { elem1: "yogurt", },
+  }
+};
+
+elements.lemon_soda = {
+  color: ["#f5c842","#edcc68",],
+  behavior: behaviors.LIQUID,
+  category: "liquids",
+  state: "liquid",
+  density: 1240,
+  tempHigh: 140,
+  stateHigh: ["carbon_dioxide", "smoke",],
+  reactions: {
+    "poison": { elem1: null, }
+  }
+};
+
+elements.saliva_ice = {
+  color: ["#97fcfb","#bcf7f6",],
+  behavior: behaviors.SOLID,
+  category: "states",
+  state: "solid",
+  density: 1300,
+  tempHigh: 5,
+  stateHigh: "saliva",
+};
+
+elements.lemon_tea = {
+  color: ["#dec85b","#edd351",],
+  behavior: behaviors.LIQUID,
+  category: "liquids",
+  state: "liquid",
+  density: 1580,
+  tempHigh: 280,
+  stateHigh: ["fragrance","smoke","smoke",],
+  tempLow: -2,
+  stateLowColor: ["#e8cf8b","#f0dca5",],
+  stateLow: "tea_ice",
+  reactions: {
+    "sugar": { elem2: null, },
+  }
+};
+
+elements.rotten_lemon = {
+  color: ["#e3f283","#cdcf6b"],
+  behavior: behaviors.POWDER,
+  category: "food",
+  state: "powder",
+  density: 1890,
+  tempHigh: 200,
+  stateHigh: ["stench","ash",],
+  reactions: {
+    "water": { elem2: "dirty_water" },
+  }
 }
