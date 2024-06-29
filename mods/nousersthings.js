@@ -2835,6 +2835,7 @@ elements.specific_ray_emitter = {
         var rayans = prompt("Please input the desired element of this ray emitter",(rayElement||undefined));
         if (!rayans) { return }
 		rayElement = mostSimilarElement(rayans);
+        if (rayElement != "ray"){rainbowMode = false}
         var rayans2 = prompt("Should the ray be stopped by walls? Write true or false.",(rayStoppedByWalls||false));
         if (rayans2 == "false"){rayStoppedByWalls = false} else {rayStoppedByWalls = true}
         var rayans3 = prompt("How much should the beginning of the ray be offset from the emitter?", (specificRayStart||0));
@@ -3117,6 +3118,8 @@ elements.piston_ray_emitter = {
 }
 let pistonStart = 0
 let pistonEnd = 0
+let pistonDistance = 1
+let pistonCooldown = 10
 elements.specific_piston_ray_emitter = {
     color: "#517597",
     behavior: behaviors.WALL,
@@ -3130,12 +3133,18 @@ elements.specific_piston_ray_emitter = {
         pistonStart = ans2
         var ans3 = parseInt(prompt("How offset should the end of the push/pulling be?", "20"))
         pistonEnd = ans3
+        var ans4 = parseInt(prompt("How far should it push the pixels each charge?", "1"))
+        pistonDistance = ans4
+        var ans5 = parseInt(prompt("How many ticks should it wait to be charged again?", "6"))
+        pistonCooldown = ans5
     },
     tick: function(pixel){
         if (pixelTicks == pixel.start){
             pixel.pullOrPush = pullOrPush
             pixel.pistonStart = pistonStart
             pixel.pistonEnd = pistonEnd
+            pixel.pistonDistance = pistonDistance
+            pixel.pistonCooldown = pistonCooldown
         }
         if (!pixel.cooldown){pixel.cooldown = 0}
         if (pixel.cooldown < 1){
@@ -3145,10 +3154,11 @@ elements.specific_piston_ray_emitter = {
             var y = pixel.y+coord[1];
             if (!isEmpty(x,y, true)){
                 if (pixelMap[x][y].charge && (pixelMap[x][y].element == "wire" || pixelMap[x][y].element == "insulated_wire")){
-                    pixel.cooldown = 6
+                    for (let r = 0; r < pixel.pistonDistance; r++){
+                    pixel.cooldown = pixel.pistonCooldown
                     var dir = [0-squareCoords[i][0], 0-squareCoords[i][1]]
-                    var startx = pixel.x+(dir[0]*pixel.pistonStart)
-                    var starty = pixel.y+(dir[1]*pixel.pistonStart)
+                    var startx = pixel.x+(dir[0]*(pixel.pistonStart+1))
+                    var starty = pixel.y+(dir[1]*(pixel.pistonStart+1))
                     var magnitude = pixel.pistonEnd
                     var endx = startx+(magnitude*dir[0])
                     var endy = starty+(magnitude*dir[1])
@@ -3168,7 +3178,7 @@ elements.specific_piston_ray_emitter = {
                         }
                         pCoord[0] = lx;
                         pCoord[1] = ly;
-                    }
+                    }}
                 }
             }
         }} else {pixel.cooldown -= 1}
