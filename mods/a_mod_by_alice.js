@@ -406,14 +406,29 @@ try {
 				return (number - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
 			}
 		//Color
-			function rgbStringToUnvalidatedObject(string) { //turns rgb() to {r,g,b} with no bounds checking
-				//console.log("Splitting string into object");
-				string = string.split(",");
-				var red = parseFloat(string[0].substring(4));
-				var green = parseFloat(string[1]);
-				var blue = parseFloat(string[2].slice(0,-1));
-				//console.log("String split: outputs " + red + ", " + green + ", " + blue + ".");
-				return {r: red, g: green, b: blue};
+			function rgbStringToUnvalidatedObject(string,stripAlpha) {
+				var numbers = string.match(/[\d\.]+/g);
+				var red = numbers[0];
+				var green = numbers[1];
+				var blue = numbers[2];
+				var alpha = null;
+				if((numbers.length > 3) && !stripAlpha) {alpha = numbers[3]};
+				var result = {r: red, g: green, b: blue};
+				if(alpha !== null) { result.a = alpha };
+				numbers = numbers.map(x => parseFloat(x));
+				return result
+			};
+			function hslStringToUnvalidatedObject(string,stripAlpha) {
+				var numbers = string.match(/[\d\.]+/g);
+				var hue = numbers[0];
+				var saturation = numbers[1];
+				var whateverL_StandsFor = numbers[2];
+				var alpha = null;
+				if((numbers.length > 3) && !stripAlpha) {alpha = numbers[3]};
+				var result = {h: hue, s: saturation, l: whateverL_StandsFor};
+				if(alpha !== null) { result.a = alpha };
+				numbers = numbers.map(x => parseFloat(x));
+				return result
 			};
 			function rgbStringToObject(string,doRounding=true,doBounding=true) { //turns rgb() to {r,g,b}
 				//console.log(`rgbStringToObject: ${string}`);
@@ -448,37 +463,46 @@ try {
 					//console.log("String split: outputs " + red + ", " + green + ", " + blue + ".");
 				return {r: red, g: green, b: blue};
 			};
-			function hslColorStringToObject(color) {
+			function hslColorStringToObject(color,stripAlpha=false) {
 				if(!color.startsWith("hsl(") || !color.endsWith(")")) {
 					throw new Error(`The color ${color} is not a valid hsl() color`)
 				};
 				var colorTempArray = color.split(",").map(x => x.trim())
-				if(colorTempArray.length !== 3) {
+				if(colorTempArray.length < 3) {
 					throw new Error(`The color ${color} is not a valid hsl() color`)
 				};
 				if(!colorTempArray[1].endsWith("%")) { console.log(`hslColorStringToObject: Saturation in color ${color} was missing a %`); colorTempArray[1] += "%"; }
 				if(!colorTempArray[2].endsWith("%)")) { console.log(`hslColorStringToObject: Lightness in color ${color} was missing a %`); colorTempArray[2] = [colorTempArray[2].slice(0, colorTempArray[2].length - 1), "%", colorTempArray[2].slice(colorTempArray[2].length - 1)].join(''); }
 				var hue = parseFloat(colorTempArray[0].substring(4));
 				var saturation = parseFloat(colorTempArray[1].slice(0,-1))
-				var lightness = parseFloat(colorTempArray[2].slice(0,-2));
+				var lightness = parseFloat(colorTempArray[2].match(/\d+(\.\d+|)/)?.[0] ?? NaN);
+				var alpha = (colorTempArray.length < 3 || stripAlpha) ? null : parseFloat(colorTempArray[3].match(/\d+(\.\d+|)/)?.[0] ?? NaN);
 				//NaN checking
-					var hueNaN,saturationNaN,lightnessNaN;
-					isNaN(hue) ? hueNaN = true : hueNaN = false;
-					isNaN(saturation) ? saturationNaN = true : saturationNaN = false;
-					isNaN(lightness) ? lightnessNaN = true : lightnessNaN = false;
-					var NanErrorString = "One or more colors are NaN:"
-					if(hueNaN) { NanErrorString += " hue" };
-					if(saturationNaN) { NanErrorString += " saturation" };
-					if(lightnessNaN) { NanErrorString += " lightness" };
-					if(hueNaN || saturationNaN || lightnessNaN) { throw new Error(NanErrorString) };
-				return {h: hue, s: saturation, l: lightness};
+					var hueNaN,saturationNaN,lightnessNaN,alphaNaN;
+					var nanColors = [];
+					hueNaN = isNaN(hue);
+					saturationNaN = isNaN(saturation);
+					lightnessNaN = isNaN(lightness);
+					alphaNaN = (isNaN(alpha) && !stripAlpha);
+					if(hueNaN) { nanColors.push("hue") };
+					if(saturationNaN) { nanColors.push("saturation") };
+					if(lightnessNaN) { nanColors.push("lightness") };
+					if(alphaNaN) { nanColors.push("alpha") };
+					if(nanColors.length > 0) {
+						var NanErrorString = ["hslColorStringToObject:",capitalizeFirstLetter(englishFormatList(nanColors)),nanColors.length == 1 ? "is" : "are","NaN"].join(" ");
+						throw new Error(NanErrorString)
+					};
+				var result = {h: hue, s: saturation, l: lightness};
+				if(alpha !== null) { result.a = alpha };
+				return result
 			};
-			function rgbToHex(color) {
+			function rgbToHex(color,stripAlpha=false) {
 				//console.log(`rgbToHex called on ${typeof(color) === "object" ? JSON.stringify(color) : color}`);
 				if(typeof(color) == "object") { //Expects object like "{r: 172, g: 11, b: 34}"
 					var red = color.r;
 					var green = color.g;
 					var blue = color.b;
+					var alpha = stripAlpha ? null : (color.a ?? null);
 						//console.log(`Colors loaded (${red}, ${green}, ${blue})`);
 					red = Math.round(red);
 					green = Math.round(green);
@@ -487,10 +511,12 @@ try {
 					red = bound(red,0,255)
 					green = bound(green,0,255)
 					blue = bound(blue,0,255)
+					if(alpha !== null) { alpha = bound(alpha,0,1) }
 						//console.log(`Colors bounded to (${red}, ${green}, ${blue})`);
 					red = red.toString(16);
 					green = green.toString(16);
 					blue = blue.toString(16);
+					if(alpha !== null) { alpha = Math.round(alpha * 255).toString(16) }
 						//console.log(`Colors converted to (0x${red}, 0x${green}, 0x${blue})`);
 					//console.log("Padding R");
 					while(red.length < 2) {
@@ -504,26 +530,36 @@ try {
 					while(blue.length < 2) {
 						blue = "0" + blue;
 					};
+					//console.log("Padding A");
+					if(alpha !== null) {
+						while(alpha.length < 2) {
+							alpha = "0" + alpha;
+						}
+					};
 						//console.log(`Colors padded to (0x${red}, 0x${green}, 0x${blue}), concatenating...`);
-					return "#" + red + green + blue;
+					return "#" + red + green + blue + (stripAlpha ? "" : (alpha ?? ""));
 				} else if(typeof(color) == "string") { //Expects string like "rgb(20,137,4)". Also doesn't round properly for some reason...
 						//console.log("Splitting string")
-					color = rgbStringToUnvalidatedObject(color);
+					color = rgbStringToUnvalidatedObject(color,stripAlpha);
 					red = color.r;
 					green = color.g;
 					blue = color.b;
+					alpha = stripAlpha ? null : (color.a ?? null);
 						//console.log(`Colors loaded (${red}, ${green}, ${blue})`);
 					red = Math.round(red);
 					green = Math.round(green);
 					blue = Math.round(blue);
+					if(alpha !== null) { alpha = Math.round(alpha * 255) }; 
 						//console.log(`Colors rounded to (${red}, ${green}, ${blue})`);
 					red = bound(red,0,255)
 					green = bound(green,0,255)
 					blue = bound(blue,0,255)
+					if(alpha !== null) { alpha = bound(alpha,0,255) };
 						//console.log(`Colors bounded to (${red}, ${green}, ${blue})`);
 					red = red.toString(16);
 					green = green.toString(16);
 					blue = blue.toString(16);
+					if(alpha !== null) { alpha = alpha.toString(16) };
 						//console.log(`Colors converted to (0x${red}, 0x${green}, 0x${blue})`);
 					//console.log("Padding R");
 					while(red.length < 2) {
@@ -537,8 +573,14 @@ try {
 					while(blue.length < 2) {
 						blue = "0" + blue;
 					};
+					//console.log("Padding A");
+					if(alpha !== null) {
+						while(alpha.length < 2) {
+							alpha = "0" + alpha;
+						}
+					};
 						//console.log(`Colors padded to (0x${red}, 0x${green}, 0x${blue}), concatenating...`);
-					return "#" + red + green + blue;
+					return "#" + red + green + blue + (stripAlpha ? "" : (alpha ?? ""));
 					} else {
 					throw new Error(`Received invalid color: ${color}`);
 				};
@@ -741,6 +783,7 @@ try {
 						g = bytes[1];
 						b = bytes[2];
 						a = stripAlpha ? null : (bytes[3] ?? null);
+						if(a !== null) { a = bound(a,0,1) };
 						//to JSON for ease of use
 						color = {"r": r, "g": g, "b": b};
 						if(typeof(a) == "number") { color["a"] = a };
@@ -748,7 +791,7 @@ try {
 						//otherwise assume rgb() input
 						bytes = color.match(/[\d\.]+/g);
 						if(typeof(bytes?.map) == "undefined") {
-							console.log(bytes);
+							console.error(`convertColorFormats: Invalid color ${JSON.stringify(color)} producing null bytes ${bytes}`);
 							bytes = [255,0,255]
 						} else {
 							bytes = bytes.map(x => Number(x));
@@ -757,6 +800,7 @@ try {
 						g = bytes[1];
 						b = bytes[2];
 						a = stripAlpha ? null : (bytes[3] ?? null);
+						if(a !== null) { a = bound(a,0,1) };
 						//to JSON for ease of use
 						color = {"r": r, "g": g, "b": b}
 						if(typeof(a) == "number") { color["a"] = a };
@@ -902,6 +946,7 @@ try {
 				};
 			};
 			function addColors(color1,color2,outputType="rgb") {
+				//console.log("colors",color1,color2);
 				//normalize rgb()/hex by turning any hex into rgb() and then rgb()s to {r,g,b}
 				if(typeof(color1) !== "object") {
 					color1 = convertColorFormats(color1,"json");
@@ -909,6 +954,7 @@ try {
 				if(typeof(color2) !== "object") {
 					color2 = convertColorFormats(color2,"json");
 				};
+				//if(JSON.stringify([color1,color2]).indexOf("NaN") >= 0) { console.log(color1,color2) }
 				var finalR = bound(Math.round(color1.r + color2.r),0,255)
 				var finalG = bound(Math.round(color1.g + color2.g),0,255)
 				var finalB = bound(Math.round(color1.b + color2.b),0,255)
@@ -980,13 +1026,13 @@ try {
 				return output;
 			};
 			//https://stackoverflow.com/questions/46432335/hex-to-hsl-convert-javascript
-			function rgbStringToHSL(rgb,outputType="array") { //Originally a hex-to-HSL function, edited to take RGB and spit out an array
+			function rgbStringToHSL(rgb,outputType="array",stripAlpha=false) { //Originally a hex-to-HSL function, edited to take RGB and spit out an array
 				//console.log("HSLing some RGBs");
 				var result = rgbStringToUnvalidatedObject(rgb);
 				var r = result.r;
 				var g = result.g;
 				var b = result.b;
-				var a = result.a ?? null;
+				var a = stripAlpha ? null : (result.a ?? null);
 				r /= 255, g /= 255, b /= 255; if(a) { a /= 255 };
 				var max = Math.max(r, g, b), min = Math.min(r, g, b);
 				var h, s, l = (max + min) / 2;
@@ -1025,17 +1071,17 @@ try {
 				};
 				//console.log("HSL output "+ colorInHSL + ".");
 			};
-			function normalizeColorToHslObject(color,arrayType=null) {
+			function normalizeColorToHslObject(color,arrayType=null,stripAlpha=false) {
 				var ambiguousArrayError = "changeSaturation can't tell if the array input is supposed to be RGB or HSL. Please use an \"arrayType\" argument of \"rgb\" or \"hsl\".";
 				var isHsl = false;
 				if(Array.isArray(color)) {
 					if(arrayType === null) {
 						throw new Error(ambiguousArrayError);
 					} else if(arrayType === "rgb") {
-						color = color.length > 3 ? `rgba(${color[0]},${color[1]},${color[2]},${color[3]})` : `rgb(${color[0]},${color[1]},${color[2]})`;
+						color = ((color.length > 3) && !stripAlpha) ? `rgba(${color[0]},${color[1]},${color[2]},${color[3]})` : `rgb(${color[0]},${color[1]},${color[2]})`;
 						color = rgbStringToHSL(color,"json"); //rgb arr to hsl obj
 					} else if(arrayType === "hsl") {
-						color = color.length > 3 ? {h: color[0], s: color[1], l: color[2], a: color[3]} : {h: color[0], s: color[1], l: color[2]}; //hsl arr to hsl obj
+						color = ((color.length > 3) && !stripAlpha) > 3 ? {h: color[0], s: color[1], l: color[2], a: color[3]} : {h: color[0], s: color[1], l: color[2]}; //hsl arr to hsl obj
 					} else {
 						throw new Error(ambiguousArrayError);
 					};
@@ -1063,11 +1109,11 @@ try {
 						};
 					};
 					if(!isHsl) {
-						color = convertColorFormats(color,"rgb"); //make any RGBs rgb()
-						color = rgbStringToHSL(color,"json"); //make that rgb() an {h,s,l}
+						color = convertColorFormats(color,"rgb",stripAlpha); //make any RGBs rgb()
+						color = rgbStringToHSL(color,"json",stripAlpha); //make that rgb() an {h,s,l}
 					} else { //by this point, it would have to either be a string or an object
 						if(typeof(color) === "string") { //if it's a string
-							color = hslColorStringToObject(color) //now it's an object
+							color = hslColorStringToObject(color,stripAlpha) //now it's an object
 						};
 					};
 				};
@@ -2142,6 +2188,147 @@ try {
 			function capitalizeFirstLetter(string,locale=null) {
 				return string[0][locale ? "toLocaleUpperCase" : "toUpperCase"](locale) + string.slice(1)
 			};
+
+	//INTERFACE TO SET OTHER PIXEL PROPERTIES WHEN PLACING SPECIFIC ELEMENTS ##
+		var css =
+`.ps-number {
+	width: 35px;
+	line-height: 35px;
+	height: 35px;
+	display: table-cell;
+	text-align: center;
+	font-size: 80%;
+	vertical-align: baseline;
+}
+
+.ps-heading {
+	font-size: 90%;
+}
+
+td.inputCell {
+	text-align: center;
+}
+`;
+		head = document.head || document.getElementsByTagName('head')[0],
+		style = document.createElement('style');
+
+		head.appendChild(style);
+
+		style.type = 'text/css';
+		if (style.styleSheet){
+		  // This is required for IE8 and below.
+		  style.styleSheet.cssText = css;
+		} else {
+		  style.appendChild(document.createTextNode(css));
+		}
+
+		function showPropertySetter() {
+			var ps = document.getElementById("propertySetter");
+			if(ps) {
+				ps.style.display = "block"
+			}
+		};
+
+		function hidePropertySetter() {
+			var ps = document.getElementById("propertySetter");
+			if(ps) {
+				ps.style.display = "none"
+			}
+		};
+
+		function hideSetterColumn(type,index) {
+			//currently the only type is "numeric"
+			var heading = document.getElementById(`property${type}${index.toString()}headingcell`);
+			var input = document.getElementById(`property${type}${index.toString()}inputcell`);
+			heading.style.display = "none";
+			input.style.display = "none";
+		};
+
+		function showSetterColumn(type,index) {
+			var heading = document.getElementById(`property${type}${index.toString()}headingcell`);
+			var input = document.getElementById(`property${type}${index.toString()}inputcell`);
+			heading.style.display = "table-cell";
+			input.style.display = "table-cell";
+		};
+
+		function hideAllSetterColumnsOfType(type) {
+			var setter = document.getElementById("setterTable");
+			var headingsAndInputs = setter.querySelectorAll(`[id^="property${type}][id$="cell"]`);
+			headingsAndInputs.forEach(n => n.style.display = "none");
+		};
+
+		function hideAllSetterColumns() {
+			var setter = document.getElementById("setterTable");
+			var headingsAndInputs = setter.querySelectorAll(`[id^="property"][id$="cell"]`);
+			headingsAndInputs.forEach(n => n.style.display = "none");
+		};
+
+		howManySetters = 5;
+		var propertySetter = document.createElement("div");
+		propertySetter.setAttribute("id","propertySetter");
+		propertySetter.style.display = "none";
+			var newTable = document.createElement("table");
+			newTable.setAttribute("id","setterTable");
+			propertySetter.appendChild(newTable);
+				var labelRow = document.createElement("tr");
+				var inputRow = document.createElement("tr");
+				newTable.appendChild(labelRow);
+				newTable.appendChild(inputRow);
+				//NUMERIC SETTERS
+				for(var i = 0; i < howManySetters; i++) {
+					var newHeading = document.createElement("th");
+						newHeading.setAttribute("id",`propertynumeric${i.toString()}headingcell`);
+						var newHeadingText = document.createElement("span");
+							newHeadingText.classList.add("ps-heading");
+							newHeadingText.setAttribute("id",`propertynumeric${i.toString()}heading`);
+							newHeadingText.innerText = "None";
+							newHeading.appendChild(newHeadingText)
+							labelRow.appendChild(newHeading);
+					var newInputCell = document.createElement("td");
+						newInputCell.setAttribute("id",`propertynumeric${i.toString()}inputcell`);
+						newInputCell.classList.add("inputCell");
+						var newNumberField = document.createElement("input");
+							newNumberField.setAttribute("type","number");
+							newNumberField.value = "1";
+							newNumberField.setAttribute("set","none");
+							newNumberField.addEventListener("change", function() {
+								var property = this.getAttribute("set");
+								var parsedValue = parseFloat(this.value);
+								if(isNaN(parsedValue)) {
+									var newValue = (Math.max(parseFloat(this.getAttribute("min")),0));
+									this.value = newValue;
+									parsedValue = newValue
+								};
+								var value = parsedValue;
+								ambaPlaceProperties[property] = value
+							});
+							newNumberField.setAttribute("id",`propertynumeric${i.toString()}input`);
+							newNumberField.classList.add("ps-number");
+							newInputCell.appendChild(newNumberField)
+							inputRow.appendChild(newInputCell);
+				};
+		document.getElementById("colorSelector").after(propertySetter);
+
+		ambaPlaceProperties = {
+			blackHoleRange: 15,
+			whiteHoleRange: 15,
+			pusherRange: 10,
+			pusherStrength: 1,
+			ePusherLength: 5,
+			starBombRadius: 50,
+			ophbRadius: 15,
+			stripePaintScale: 1,
+			stripePaintPhase: 0,
+			stripePaintAngle: 0,
+			sweepingLaserRotationSpeed: -0.03,
+			sweepingLaserBeamLength: 10,
+			sweepingLaserBeamTemperature: 2000,
+			sweepingLaserBeamBrevity: 5
+		};
+		
+		hidePropertySetter();
+		hideAllSetterColumns();
+
 	//COLOR MANIPULATION TOOLS ##
 		var colorToolCounter = 0;
 		saturationAmount = 1;
@@ -2440,9 +2627,12 @@ try {
 				var otherPixel = pixelMap[x][y];
 				for(prop in stripeSpreadingProperties) {
 					if(otherPixel.element == pixel.element && pixel[prop] && otherPixel[prop]) {
-						otherPixel[prop] = lerpColors(pixel[prop],otherPixel[prop]);
-					};
-				};
+						if((otherPixel.color1 == pixel.color1) && (otherPixel.color2 == pixel.color2)) {
+						} else {
+							otherPixel[prop] = lerpColors(pixel[prop],otherPixel[prop]);
+						}
+					}
+				}
 				/*for(prop in stripeSpreadingProperties2) {
 					if(otherPixel.element == pixel.element && pixel[prop] !== undefined && otherPixel[prop] !== undefined) {
 						otherPixel[prop] = pixel[prop]/2 + otherPixel[prop]/2;
@@ -2484,14 +2674,57 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "special",
 			properties: {
 				color1: null,
-				color2: null,
-				scale: 1,
-				phase: 0,
-				angle: 0
+				color2: null
 			},
 			stain: elements.dye.stain,
+			onSelect: function() {
+				showPropertySetter();
+
+				showSetterColumn("numeric",0);
+				var p0 = document.getElementById("propertynumeric0input");
+				var p0h = document.getElementById("propertynumeric0heading");
+				if(p0) {
+					p0.setAttribute("set","stripePaintScale");
+					p0.setAttribute("min","0.00000001");
+					p0.value = ambaPlaceProperties.stripePaintScale;
+				};
+				if(p0h) {
+					p0h.innerText = "Scale";
+				};
+
+				showSetterColumn("numeric",1);
+				var p1 = document.getElementById("propertynumeric1input");
+				var p1h = document.getElementById("propertynumeric1heading");
+				if(p1) {
+					p1.setAttribute("set","stripePaintPhase");
+					p1.setAttribute("min","-99999999");
+					p1.value = ambaPlaceProperties.stripePaintPhase;
+				};
+				if(p1h) {
+					p1h.innerText = "Phase";
+				};
+
+				showSetterColumn("numeric",2);
+				var p2 = document.getElementById("propertynumeric2input");
+				var p2h = document.getElementById("propertynumeric2heading");
+				if(p2) {
+					p2.setAttribute("set","stripePaintAngle");
+					p2.setAttribute("min","-99999999");
+					p2.value = ambaPlaceProperties.stripePaintAngle;
+				};
+				if(p2h) {
+					p2h.innerText = "Angle";
+				};
+			},
+			onUnselect: function() {
+				hideAllSetterColumns();
+				hidePropertySetter()
+			},
 			tick: function(pixel) {
-				stripeFunction(pixel);
+				pixel.scale ??= (ambaPlaceProperties?.stripePaintScale ?? 1);
+				pixel.phase ??= (ambaPlaceProperties?.stripePaintPhase ?? 0);
+				pixel.angle ??= (ambaPlaceProperties?.stripePaintAngle ?? 0);
+				stripeFunction(pixel)
 			},
 			desc: stripePaintDesc
 		};
@@ -3367,6 +3600,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		//this part defines basically all of the keybinds
 		function addKeyboardListeners() {
 			document.addEventListener("keydown", function(e) {
+				if(document.activeElement?.tagName == "INPUT") {
+					return
+				};
 				if (e.ctrlKey || e.metaKey) {
 					return
 				}
@@ -5324,7 +5560,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			return colorOut;
 		}
 		
-		viewColorFunctions = { //PENIS
+		viewColorFunctions = {
 			2: function(pixel) {
 				// set the color to pixel.temp, from hottest at -66 (294.1875) hue to coldest 265 hue, with the minimum being -273, max being 7755
 				var a0 = (settings.abszero ?? -273.15);
@@ -5605,7 +5841,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 							acidOffset2 = 0
 						};
 						if ((view === null || view === 4) && elements[pixel.element].isGas) {
-							//gas rendering //PENIS
+							//gas rendering
 							switch(mode) {
 								case "circles":
 									ctx.globalAlpha = 0.66;
@@ -7004,7 +7240,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			tick: function(pixel) {
 				pixel.life ??= 100;
-				var alpha = isNaN(pixel.life) ? Math.floor(Math.random() * 256) : (pixel.life * 2.55); //CL REFERENCE??!?!?!?!?!?!?!?!??!?
+				var alpha = isNaN(pixel.life) ? Math.floor(Math.random() * 256) : (pixel.life * 2.55); //ALPHA/??!?!?!?!/1/ CL REFERENCE??!?!?!?!?!?!?!?!??!?
 				//console.log("tick");
 				var splitColor = convertColorFormats(pixel.color,"json");
 				//console.log(pixel.color,splitColor);
@@ -7026,20 +7262,80 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		//Sweeping laser
 		elements.sweeping_laser = {
 			"color": "#905050",
+			customColor: true,
+			onSelect: function() {
+				showPropertySetter();
+
+				showSetterColumn("numeric",0);
+				var p0 = document.getElementById("propertynumeric0input");
+				var p0h = document.getElementById("propertynumeric0heading");
+				if(p0) {
+					p0.setAttribute("set","sweepingLaserRotationSpeed");
+					p0.setAttribute("min","-4");
+					p0.value = ambaPlaceProperties.sweepingLaserRotationSpeed;
+				};
+				if(p0h) {
+					p0h.innerText = "Rotation Speed";
+				};
+
+				showSetterColumn("numeric",1);
+				var p1 = document.getElementById("propertynumeric1input");
+				var p1h = document.getElementById("propertynumeric1heading");
+				if(p1) {
+					p1.setAttribute("set","sweepingLaserBeamLength");
+					p1.setAttribute("min","1");
+					p1.value = ambaPlaceProperties.sweepingLaserBeamLength;
+				};
+				if(p1h) {
+					p1h.innerText = "Length";
+				};
+
+				showSetterColumn("numeric",2);
+				var p2 = document.getElementById("propertynumeric2input");
+				var p2h = document.getElementById("propertynumeric2heading");
+				if(p2) {
+					p2.setAttribute("set","sweepingLaserBeamTemperature");
+					p2.setAttribute("min","-99999999");
+					p2.value = ambaPlaceProperties.sweepingLaserBeamTemperature;
+				};
+				if(p2h) {
+					p2h.innerText = "Temperature";
+				};
+
+				showSetterColumn("numeric",3);
+				var p3 = document.getElementById("propertynumeric3input");
+				var p3h = document.getElementById("propertynumeric3heading");
+				if(p3) {
+					p3.setAttribute("set","sweepingLaserBeamBrevity");
+					p3.setAttribute("min","0");
+					p3.value = ambaPlaceProperties.sweepingLaserBeamBrevity;
+				};
+				if(p3h) {
+					p3h.innerText = "Brevity";
+				}
+			},
+			onUnselect: function() {
+				hideAllSetterColumns();
+				hidePropertySetter()
+			},
+			
 			"tick": function(pixel) {
 				pixel.r ??= 0;
 				if(isNaN(pixel.r)) { return false };
-				pixel.rSpeed ??= -0.03;
-				pixel.beamLength ??= 10;
-				pixel.beamTemp ??= 2000;
-				pixel.brevity ??= 5;
-				pixel.beamColor ??= "#FF0000";
+				pixel.rSpeed ??= -(ambaPlaceProperties?.sweepingLaserRotationSpeed ?? -0.03);
+				pixel.beamLength ??= (ambaPlaceProperties?.sweepingLaserBeamLength ?? 10);
+				pixel.beamTemp ??= (ambaPlaceProperties?.sweepingLaserBeamTemperature ?? 2000);
+				pixel.brevity ??= (ambaPlaceProperties?.sweepingLaserBeamBrevity ?? 5);
+				pixel.untssa ??= Math.floor(Math.random() * (Number.MAX_SAFE_INTEGER + 1)) * (Math.floor() < 0.5 ? -1 : 1); //unique number to stop self-addition
+				if(Object.is(pixel.untssa,-0)) { pixel.untssa = Number.MAX_SAFE_INTEGER + 3 };
+				pixel.beamColor ??= currentColor;
+
 				var beamElement = "test_fader";
 				var rotation = -(((pixel.r ?? 0) % 4) + 1); //preserving the original behavior of 0 = up, 1 = left
 				var rotationInRadians = scale(rotation,0,4,0,Math.PI * 2);
 				var vector = [Math.cos(rotationInRadians), Math.sin(rotationInRadians)];
 				var distance = Math.min(300,Math.max(2,(pixel.beamLength + 1) ?? 10));
-				for(var i = 1; i <= distance; i += 0.5) { //twice the tries to try to reduce gaps in the beam
+				for(var i = 1; i <= distance; i += (3 ** -(Math.ceil(Math.log2(distance / 10))))) { //increase the tries to try to reduce gaps in the beam, as distance goes up
 					var newOffsets = vector.map(coord => Math.round(coord * i));
 					var finalPos = {x: pixel.x + newOffsets[0], y: pixel.y + newOffsets[1]};
 					//console.log(finalPos);
@@ -7051,7 +7347,15 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 							elements[otherPixel.element].state === "gas"
 						) && !(sweepingLaserTransparencyBlacklist.includes(otherPixel.element))) {
 							if(otherPixel.element == "test_fader") { //intentionally hard-coded
-								otherPixel.life = 100
+								otherPixel.life = 100;
+								if(otherPixel.untssa !== pixel.untssa) {
+									var _pc = convertColorFormats(pixel.color,"hex",true).slice(0,7);
+									otherPixel.lastColors ??= [convertColorFormats(otherPixel.color,"hex",true).slice(0,7)];
+									if(otherPixel.lastColors.indexOf(_pc) === -1) {
+										otherPixel.lastColors.push(_pc);
+										otherPixel.color = otherPixel.lastColors.reduce((a,b) => addColors(a,b,"hex").slice(0,7)).padEnd(9,"F")
+									}
+								}
 							};
 							continue
 						} else {
@@ -7064,6 +7368,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					} else {
 						newBeamPixel.temp = pixel.beamTemp ?? 2000;
 						newBeamPixel.fadeRate = pixel.brevity ??= 5;
+						newBeamPixel.untssa = pixel.untssa;
 						newBeamPixel.color = (pixel.beamColor ?? "#FF0000");
 					}
 				};
@@ -8876,12 +9181,32 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		maxColorOffset: 0,
 		excludeRandom: true,
 		insulate: true,
-		hoverStat: (pixel => `r = ${(pixel.range ?? 15).toString()}`),
+		onSelect: function() {
+			showPropertySetter();
+			showSetterColumn("numeric",0);
+			var p0 = document.getElementById("propertynumeric0input");
+			var p0h = document.getElementById("propertynumeric0heading");
+			if(p0) {
+				p0.setAttribute("set","blackHoleRange");
+				p0.setAttribute("min","1");
+				p0.value = ambaPlaceProperties.blackHoleRange;
+			};
+			if(p0h) {
+				p0h.innerText = "Radius";
+			};
+		},
+		onUnselect: function() {
+			hideAllSetterColumns();
+			hidePropertySetter
+		},
+		hoverStat: (pixel => `r = ${(pixel.range?.toString() ?? "??")}`),
 		tick: function(pixel) {
 			pixel.color = _cc.b.r;
-			pixel.range ??= 15;
+			//if(pixelTicks == pixel.start) { console.log("spawn range",ambaPlaceProperties.blackHoleRange) };
+			pixel.range ??= ambaPlaceProperties?.blackHoleRange ?? 15;
+			//if(pixelTicks == pixel.start) { console.log("this range",pixel.range) };
 			if(pixel.range <= 0) { deletePixel(pixel.x,pixel.y); return };
-			var range = (pixel.range ?? 15) * 2;
+			var range = (pixel.range ?? (ambaPlaceProperties?.blackHoleRange ?? 15)) * 2;
 			var targets = mouseLikeRange(pixel.x,pixel.y,range,"circle",true);
 			shuffleArray(targets);
 			for (var i = 0; i < targets.length; i++) {
@@ -8933,13 +9258,18 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					pixel.temp += (newPixel.temp - (settings.abszero ?? 273.15));
 					if(["amba_black_hole","amba_white_hole"].includes(newPixel.element) && (newPixel.range ?? 15) > 0) {
 						//console.log("adding range on tick",pixelTicks);
-						pixel.range ??= 15;
+						pixel.range ??= (ambaPlaceProperties?.blackHoleRange ?? 15);
+						var rangeChange = (newPixel.range ?? (ambaPlaceProperties?.blackHoleRange ?? 15));
 						switch(newPixel.element) {
 							case "amba_black_hole":
-								pixel.range += (newPixel.range ?? 15);
+								//console.log("range add",rangeChange);
+								pixel.range += rangeChange;
+								//console.log("new range",pixel.range);
 								break;
 							case "amba_white_hole":
-								pixel.range -= (newPixel.range ?? 15);
+								//console.log("range remove",rangeChange);
+								pixel.range -= rangeChange;
+								//console.log("new range",pixel.range);
 								break;
 						}
 						//console.log("new range:",pixel.range);
@@ -8964,12 +9294,26 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		maxColorOffset: 0,
 		excludeRandom: true,
 		insulate: true,
-		hoverStat: (pixel => `r = ${(pixel.range ?? 15).toString()}`),
+		onSelect: function() {
+			showPropertySetter();
+			var p0 = document.getElementById("propertynumeric0input");
+			var p0h = document.getElementById("propertynumeric0heading");
+			if(p0) {
+				p0.setAttribute("set","whiteHoleRange");
+				p0.setAttribute("min","1");
+				p0.value = ambaPlaceProperties.whiteHoleRange;
+			};
+			if(p0h) {
+				p0h.innerText = "Radius";
+			};
+		},
+		onUnselect: hidePropertySetter,
+		hoverStat: (pixel => `r = ${(pixel.range?.toString() ?? "??")}`),
 		tick: function(pixel) {
 			pixel.color = _cc.w.r;
-			pixel.range ??= 15;
+			pixel.range ??= (ambaPlaceProperties?.whiteHoleRange ?? 15);
 			if(pixel.range <= 0) { deletePixel(pixel.x,pixel.y); return };
-			var range = (pixel.range ?? 30) * 2;
+			var range = (pixel.range ?? (ambaPlaceProperties?.whiteHoleRange ?? 15)) * 2;
 			var targets = mouseLikeRange(pixel.x,pixel.y,range,"circle",true);
 			shuffleArray(targets);
 			for (var i = 0; i < targets.length; i++) {
@@ -9031,8 +9375,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		density: -(1797.69313486e305), //about as close to -Infinity as we can serializably get
 		category: "special",
 		hardness: 1,
-		maxSize: 1,
-		ignore: ["amba_black_hole"]
+		maxSize: 1
 	};
 	
 	//ASSORTED RAINBOW VARIANTS ##
@@ -13020,8 +13363,13 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					json.pixelMap[i] = json.pixelMap[i].map(x => zeroToNull(x));
 				};
 				pixelMap = json.pixelMap;
+				var settingsExcludedKeys = ["unlocked","suppressModdedSaveLoadWarning"];
 				if(json.settings) {
-					settings = json.settings;
+					for(var key in json.settings) {
+						if(settingsExcludedKeys.includes(key)) { continue };
+						settings[key] = json.settings[key];
+					}
+					saveSettings
 				};
 				//enabledMods handling {
 					var enMods = "[]";
@@ -13039,7 +13387,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					};
 					localStorage.setItem("enabledMods",JSON.stringify(currentEnmods));
 					if((enMods.length > 0 && enMods[0] !== modName) || enMods.length > 1) {
-						alert("Saves with other mods might require a reload (and then importing the save file again).\nIf you see a blank screen, try refreshing and loading the file again before you panic.");
+						if(!(settings.suppressModdedSaveLoadWarning)) {
+							alert("Saves with other mods might require a reload (and then importing the save file again).\nIf you see a blank screen, try refreshing and loading the file again before you panic.")
+						}
 					};
 				//}
 				var currPix = []; //rebuild currentPixels from pixelMap to try to fix bug
@@ -17637,7 +17987,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			"#dbb9f0",
 			"#f2acdb"
 		]
-		var bismuthCrystalElements = ["bismuth","molten_bismuth"];
+		var bismuthCrystalElements = ["amba_bismuth","amba_molten_bismuth"];
 		quadriCoords = [[-1,1],[0,1],[1,1],[1,0]];
 		//i'm not replacing pixelTick for this shit
 		/*function mooreDoHeat(pixel) {
@@ -17661,14 +18011,14 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			};
 		};*/
 		function bismuthCrystallization(pixel) {
-			if(pixel.temp < elements.bismuth.tempHigh) { //initial crystal on cool
+			if(pixel.temp < elements.amba_bismuth.tempHigh) { //initial crystal on cool
 				//pixel.color = "rgb(255,0,0)";
 					//initialize CCC
 				pixel.crystalColorCounter ??= Math.floor(Math.random() * 8); //initialize CCC
 				//pixel.crystalColorCounter ??= 0;
-				if(pixel.element !== "bismuth") {
+				if(pixel.element !== "amba_bismuth") {
 					pixel.temp -= 0.05; //incentivize cooling
-					pixel.element = "bismuth"
+					pixel.element = "amba_bismuth"
 					//console.log(`pixel (${pixel.x},${pixel.y}) frozen by bismuthCrystallization`)
 					pixel.color = pixelColorPick(pixel,bismuthCrystalColorArray[pixel.crystalColorCounter % 8]);
 				}; //solidify
@@ -17682,9 +18032,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					} else {
 						var newPixel = pixelMap[newX][newY];
 						if(bismuthCrystalElements.includes(newPixel.element)) {
-							if(newPixel.temp < elements.bismuth.tempHigh) {
+							if(newPixel.temp < elements.amba_bismuth.tempHigh) {
 								newPixel.temp -= 0.05;
-								newPixel.element = "bismuth";
+								newPixel.element = "amba_bismuth";
 								newPixel.crystalColorCounter = (pixel.crystalColorCounter + 1) % 8;
 								newPixel.color = pixelColorPick(pixel,bismuthCrystalColorArray[pixel.crystalColorCounter % 8]);
 							};
@@ -17694,11 +18044,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			};
 			//mooreDoHeat(pixel);
 		};
-		elements.molten_bismuth = {
+		elements.amba_molten_bismuth = {
 			color: "#d1c6b0", //not really hot enough to be red
 			behavior: behaviors.LIQUID,
 			tempLow: -Infinity, //suppress normal freezing mechanism
-			stateLow: "molten_bismuth",
+			stateLow: "amba_molten_bismuth",
 			tick: function(pixel) {
 				bismuthCrystallization(pixel);
 			},
@@ -17710,10 +18060,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			fireColor: "#4275db",
 		};
 		runAfterAutogen(function() {
-			delete elements.molten_bismuth.tempLow;
-			delete elements.molten_bismuth.stateLow;
+			delete elements.amba_molten_bismuth.tempLow;
+			delete elements.amba_molten_bismuth.stateLow;
 		});
-		elements.bismuth = {
+		elements.amba_bismuth = {
 			color: "#d1c6b0",
 			behavior: behaviors.WALL,
 			/*reactions: {
@@ -17726,7 +18076,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			state: "solid",
 			fireColor: "#4275db",
 		};
-		elements.bismuth_gas = {
+		elements.amba_bismuth_gas = {
 			density: 9, //made-up number
 			fireColor: "#4275db",
 		};
@@ -18214,7 +18564,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		};
 		runAfterAutogen(function() {
 			var kesddfroged = ["kurshunjukium","molten_kurshunjukium"];
-			var kesddfroged2 = ["bismuth","molten_bismuth"];
+			var kesddfroged2 = ["amba_bismuth","amba_molten_bismuth"];
 			for(var i in kesddfroged) {
 				for(var j in kesddfroged2) {
 					elements[kesddfroged[i]].reactions ??= {}; elements[kesddfroged[i]].reactions[kesddfroged2[j]] = {"elem1": "kurshuth_alloy", "elem2": "kurshuth_alloy"}
@@ -26715,30 +27065,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			cooldown: defaultCooldown,
 			density: 1000,
 		};
-		function rgbStringToUnvalidatedObject(string) {
-			var numbers = string.match(/[\d\.]+/g);
-			var red = numbers[0];
-			var green = numbers[1];
-			var blue = numbers[2];
-			var alpha = null;
-			if(numbers.length > 3) {alpha = numbers[3]};
-			var result = {r: red, g: green, b: blue};
-			if(alpha !== null) { result.a = alpha };
-			numbers = numbers.map(x => parseFloat(x));
-			return result
-		};
-		function hslStringToUnvalidatedObject(string) {
-			var numbers = string.match(/[\d\.]+/g);
-			var hue = numbers[0];
-			var saturation = numbers[1];
-			var whateverL_StandsFor = numbers[2];
-			var alpha = null;
-			if(numbers.length > 3) {alpha = numbers[3]};
-			var result = {h: hue, s: saturation, l: whateverL_StandsFor};
-			if(alpha !== null) { result.a = alpha };
-			numbers = numbers.map(x => parseFloat(x));
-			return result
-		};
 		function rebuildWorldgenList() { //vanilla code
 			document.getElementById("worldgenselect").innerHTML = '<option value="off">Disabled</option>';
 			for (var key in worldgentypes) {
@@ -28464,13 +28790,40 @@ Make sure to save your command in a file if you want to add this preset again.`
 	//PUSHERS ##
 		elements.up_pusher = {
 			color: "#9fafdf",
-			properties: {
-				range: 10,
-				pushStrength: 1
+			onSelect: function() {
+				showPropertySetter();
+
+				showSetterColumn("numeric",0);
+				var p0 = document.getElementById("propertynumeric0input");
+				var p0h = document.getElementById("propertynumeric0heading");
+				if(p0) {
+					p0.setAttribute("set","pusherRange");
+					p0.setAttribute("min","1");
+					p0.value = ambaPlaceProperties.pusherRange;
+				};
+				if(p0h) {
+					p0h.innerText = "Range";
+				};
+
+				showSetterColumn("numeric",1);
+				var p1 = document.getElementById("propertynumeric1input");
+				var p1h = document.getElementById("propertynumeric1heading");
+				if(p1) {
+					p1.setAttribute("set","pusherStrength");
+					p1.setAttribute("min","1");
+					p1.value = ambaPlaceProperties.pusherStrength;
+				};
+				if(p1h) {
+					p1h.innerText = "Strength";
+				};
+			},
+			onUnselect: function() {
+				hideAllSetterColumns();
+				hidePropertySetter()
 			},
 			tick: function(pixel) {
-				pixel.range ??= 10;
-				pixel.pushStrength ??= 1;
+				pixel.range ??= (ambaPlaceProperties?.pusherRange ?? 10);
+				pixel.pushStrength ??= (ambaPlaceProperties?.pusherStrength ?? 1);
 				for(h = 0; h < pixel.pushStrength; h++) {
 					for(i=(pixel.range - 1); i>=0; i--) {
 						if (!isEmpty(pixel.x,pixel.y-1-i,true)) {
@@ -28492,13 +28845,40 @@ Make sure to save your command in a file if you want to add this preset again.`
 		}
 		elements.down_pusher = {
 			color: "#9fafdf",
-			properties: {
-				range: 10,
-				pushStrength: 1
+			onSelect: function() {
+				showPropertySetter();
+
+				showSetterColumn("numeric",0);
+				var p0 = document.getElementById("propertynumeric0input");
+				var p0h = document.getElementById("propertynumeric0heading");
+				if(p0) {
+					p0.setAttribute("set","pusherRange");
+					p0.setAttribute("min","1");
+					p0.value = ambaPlaceProperties.pusherRange;
+				};
+				if(p0h) {
+					p0h.innerText = "Range";
+				};
+
+				showSetterColumn("numeric",1);
+				var p1 = document.getElementById("propertynumeric1input");
+				var p1h = document.getElementById("propertynumeric1heading");
+				if(p1) {
+					p1.setAttribute("set","pusherStrength");
+					p1.setAttribute("min","1");
+					p1.value = ambaPlaceProperties.pusherStrength;
+				};
+				if(p1h) {
+					p1h.innerText = "Strength";
+				};
+			},
+			onUnselect: function() {
+				hideAllSetterColumns();
+				hidePropertySetter()
 			},
 			tick: function(pixel) {
-				pixel.range ??= 10;
-				pixel.pushStrength ??= 1;
+				pixel.range ??= (ambaPlaceProperties?.pusherRange ?? 10);
+				pixel.pushStrength ??= (ambaPlaceProperties?.pusherStrength ?? 1);
 					for(h = 0; h < pixel.pushStrength; h++) {
 						for(i=(pixel.range - 1); i>=0; i--) {
 							if (!isEmpty(pixel.x,pixel.y+1+i,true)) {
@@ -28520,13 +28900,40 @@ Make sure to save your command in a file if you want to add this preset again.`
 		}
 		elements.left_pusher = {
 			color: "#9fafdf",
-			properties: {
-				range: 10,
-				pushStrength: 1
+			onSelect: function() {
+				showPropertySetter();
+
+				showSetterColumn("numeric",0);
+				var p0 = document.getElementById("propertynumeric0input");
+				var p0h = document.getElementById("propertynumeric0heading");
+				if(p0) {
+					p0.setAttribute("set","pusherRange");
+					p0.setAttribute("min","1");
+					p0.value = ambaPlaceProperties.pusherRange;
+				};
+				if(p0h) {
+					p0h.innerText = "Range";
+				};
+
+				showSetterColumn("numeric",1);
+				var p1 = document.getElementById("propertynumeric1input");
+				var p1h = document.getElementById("propertynumeric1heading");
+				if(p1) {
+					p1.setAttribute("set","pusherStrength");
+					p1.setAttribute("min","1");
+					p1.value = ambaPlaceProperties.pusherStrength;
+				};
+				if(p1h) {
+					p1h.innerText = "Strength";
+				};
+			},
+			onUnselect: function() {
+				hideAllSetterColumns();
+				hidePropertySetter()
 			},
 			tick: function(pixel) {
-				pixel.range ??= 10;
-				pixel.pushStrength ??= 1;
+				pixel.range ??= (ambaPlaceProperties?.pusherRange ?? 10);
+				pixel.pushStrength ??= (ambaPlaceProperties?.pusherStrength ?? 1);
 				for(h = 0; h < pixel.pushStrength; h++) {
 					for(i=(pixel.range - 1); i>=0; i--) {
 						if (!isEmpty(pixel.x-1-i,pixel.y,true)) {
@@ -28548,13 +28955,40 @@ Make sure to save your command in a file if you want to add this preset again.`
 		}
 		elements.right_pusher = {
 			color: "#9fafdf",
-			properties: {
-				range: 10,
-				pushStrength: 1
+			onSelect: function() {
+				showPropertySetter();
+
+				showSetterColumn("numeric",0);
+				var p0 = document.getElementById("propertynumeric0input");
+				var p0h = document.getElementById("propertynumeric0heading");
+				if(p0) {
+					p0.setAttribute("set","pusherRange");
+					p0.setAttribute("min","1");
+					p0.value = ambaPlaceProperties.pusherRange;
+				};
+				if(p0h) {
+					p0h.innerText = "Range";
+				};
+
+				showSetterColumn("numeric",1);
+				var p1 = document.getElementById("propertynumeric1input");
+				var p1h = document.getElementById("propertynumeric1heading");
+				if(p1) {
+					p1.setAttribute("set","pusherStrength");
+					p1.setAttribute("min","1");
+					p1.value = ambaPlaceProperties.pusherStrength;
+				};
+				if(p1h) {
+					p1h.innerText = "Strength";
+				};
+			},
+			onUnselect: function() {
+				hideAllSetterColumns();
+				hidePropertySetter()
 			},
 			tick: function(pixel) {
-				pixel.range ??= 10;
-				pixel.pushStrength ??= 1;
+				pixel.range ??= (ambaPlaceProperties?.pusherRange ?? 10);
+				pixel.pushStrength ??= (ambaPlaceProperties?.pusherStrength ?? 1);
 				for(h = 0; h < pixel.pushStrength; h++) {
 					for(i=(pixel.range - 1); i>=0; i--) {
 						if (!isEmpty(pixel.x+1+i,pixel.y,true)) {
@@ -28577,16 +29011,56 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.up_e_pusher = {
 			color: "#9f9f6f",
 			properties: {
-				range: 10,
 				pushTime: 0,
-				pushLength: 5,
-				pushStrength: 1
+			},
+			onSelect: function() {
+				showPropertySetter();
+
+				showSetterColumn("numeric",0);
+				var p0 = document.getElementById("propertynumeric0input");
+				var p0h = document.getElementById("propertynumeric0heading");
+				if(p0) {
+					p0.setAttribute("set","pusherRange");
+					p0.setAttribute("min","1");
+					p0.value = ambaPlaceProperties.pusherRange;
+				};
+				if(p0h) {
+					p0h.innerText = "Range";
+				};
+
+				showSetterColumn("numeric",1);
+				var p1 = document.getElementById("propertynumeric1input");
+				var p1h = document.getElementById("propertynumeric1heading");
+				if(p1) {
+					p1.setAttribute("set","pusherStrength");
+					p1.setAttribute("min","1");
+					p1.value = ambaPlaceProperties.pusherStrength;
+				};
+				if(p1h) {
+					p1h.innerText = "Strength";
+				};
+
+				showSetterColumn("numeric",2);
+				var p2 = document.getElementById("propertynumeric2input");
+				var p2h = document.getElementById("propertynumeric2heading");
+				if(p2) {
+					p2.setAttribute("set","ePusherLength");
+					p2.setAttribute("min","1");
+					p2.value = ambaPlaceProperties.ePusherLength;
+				};
+				if(p2h) {
+					p2h.innerText = "Duration";
+				};
+			},
+			onUnselect: function() {
+				hideAllSetterColumns();
+				hidePropertySetter()
 			},
 			tick: function(pixel) {
-				pixel.range ??= 10;
+				pixel.range ??= (ambaPlaceProperties?.pusherRange ?? 10);
+				pixel.pushStrength ??= (ambaPlaceProperties?.pusherStrength ?? 1);
+				pixel.pushLength ??= (ambaPlaceProperties?.ePusherLength ?? 5);
 				pixel.pushTime ??= 0;
-				pixel.pushLength ??= 5;
-				pixel.pushStrength ??= 1;
 				if(isNaN(pixel.pushTime) || pixel.pushTime < 0) { pixel.pushTime = 0 };
 				if(pixel.charge) {
 					pixel.pushTime = pixel.pushLength;
@@ -28616,16 +29090,56 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.down_e_pusher = {
 			color: "#9f9f6f",
 			properties: {
-				range: 10,
 				pushTime: 0,
-				pushLength: 5,
-				pushStrength: 1
+			},
+			onSelect: function() {
+				showPropertySetter();
+
+				showSetterColumn("numeric",0);
+				var p0 = document.getElementById("propertynumeric0input");
+				var p0h = document.getElementById("propertynumeric0heading");
+				if(p0) {
+					p0.setAttribute("set","pusherRange");
+					p0.setAttribute("min","1");
+					p0.value = ambaPlaceProperties.pusherRange;
+				};
+				if(p0h) {
+					p0h.innerText = "Range";
+				};
+
+				showSetterColumn("numeric",1);
+				var p1 = document.getElementById("propertynumeric1input");
+				var p1h = document.getElementById("propertynumeric1heading");
+				if(p1) {
+					p1.setAttribute("set","pusherStrength");
+					p1.setAttribute("min","1");
+					p1.value = ambaPlaceProperties.pusherStrength;
+				};
+				if(p1h) {
+					p1h.innerText = "Strength";
+				};
+
+				showSetterColumn("numeric",2);
+				var p2 = document.getElementById("propertynumeric2input");
+				var p2h = document.getElementById("propertynumeric2heading");
+				if(p2) {
+					p2.setAttribute("set","ePusherLength");
+					p2.setAttribute("min","1");
+					p2.value = ambaPlaceProperties.ePusherLength;
+				};
+				if(p2h) {
+					p2h.innerText = "Duration";
+				};
+			},
+			onUnselect: function() {
+				hideAllSetterColumns();
+				hidePropertySetter()
 			},
 			tick: function(pixel) {
-				pixel.range ??= 10;
+				pixel.range ??= (ambaPlaceProperties?.pusherRange ?? 10);
+				pixel.pushStrength ??= (ambaPlaceProperties?.pusherStrength ?? 1);
+				pixel.pushLength ??= (ambaPlaceProperties?.ePusherLength ?? 5);
 				pixel.pushTime ??= 0;
-				pixel.pushLength ??= 5;
-				pixel.pushStrength ??= 1;
 				if(isNaN(pixel.pushTime) || pixel.pushTime < 0) { pixel.pushTime = 0 };
 				if(pixel.charge) {
 					pixel.pushTime = pixel.pushLength;
@@ -28655,16 +29169,56 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.left_e_pusher = {
 			color: "#9f9f6f",
 			properties: {
-				range: 10,
 				pushTime: 0,
-				pushLength: 5,
-				pushStrength: 1
+			},
+			onSelect: function() {
+				showPropertySetter();
+
+				showSetterColumn("numeric",0);
+				var p0 = document.getElementById("propertynumeric0input");
+				var p0h = document.getElementById("propertynumeric0heading");
+				if(p0) {
+					p0.setAttribute("set","pusherRange");
+					p0.setAttribute("min","1");
+					p0.value = ambaPlaceProperties.pusherRange;
+				};
+				if(p0h) {
+					p0h.innerText = "Range";
+				};
+
+				showSetterColumn("numeric",1);
+				var p1 = document.getElementById("propertynumeric1input");
+				var p1h = document.getElementById("propertynumeric1heading");
+				if(p1) {
+					p1.setAttribute("set","pusherStrength");
+					p1.setAttribute("min","1");
+					p1.value = ambaPlaceProperties.pusherStrength;
+				};
+				if(p1h) {
+					p1h.innerText = "Strength";
+				};
+
+				showSetterColumn("numeric",2);
+				var p2 = document.getElementById("propertynumeric2input");
+				var p2h = document.getElementById("propertynumeric2heading");
+				if(p2) {
+					p2.setAttribute("set","ePusherLength");
+					p2.setAttribute("min","1");
+					p2.value = ambaPlaceProperties.ePusherLength;
+				};
+				if(p2h) {
+					p2h.innerText = "Duration";
+				};
+			},
+			onUnselect: function() {
+				hideAllSetterColumns();
+				hidePropertySetter()
 			},
 			tick: function(pixel) {
-				pixel.range ??= 10;
+				pixel.range ??= (ambaPlaceProperties?.pusherRange ?? 10);
+				pixel.pushStrength ??= (ambaPlaceProperties?.pusherStrength ?? 1);
+				pixel.pushLength ??= (ambaPlaceProperties?.ePusherLength ?? 5);
 				pixel.pushTime ??= 0;
-				pixel.pushLength ??= 5;
-				pixel.pushStrength ??= 1;
 				if(isNaN(pixel.pushTime) || pixel.pushTime < 0) { pixel.pushTime = 0 };
 				if(pixel.charge) {
 					pixel.pushTime = pixel.pushLength;
@@ -28694,16 +29248,56 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.right_e_pusher = {
 			color: "#9f9f6f",
 			properties: {
-				range: 10,
 				pushTime: 0,
-				pushLength: 5,
-				pushStrength: 1
+			},
+			onSelect: function() {
+				showPropertySetter();
+
+				showSetterColumn("numeric",0);
+				var p0 = document.getElementById("propertynumeric0input");
+				var p0h = document.getElementById("propertynumeric0heading");
+				if(p0) {
+					p0.setAttribute("set","pusherRange");
+					p0.setAttribute("min","1");
+					p0.value = ambaPlaceProperties.pusherRange;
+				};
+				if(p0h) {
+					p0h.innerText = "Range";
+				};
+
+				showSetterColumn("numeric",1);
+				var p1 = document.getElementById("propertynumeric1input");
+				var p1h = document.getElementById("propertynumeric1heading");
+				if(p1) {
+					p1.setAttribute("set","pusherStrength");
+					p1.setAttribute("min","1");
+					p1.value = ambaPlaceProperties.pusherStrength;
+				};
+				if(p1h) {
+					p1h.innerText = "Strength";
+				};
+
+				showSetterColumn("numeric",2);
+				var p2 = document.getElementById("propertynumeric2input");
+				var p2h = document.getElementById("propertynumeric2heading");
+				if(p2) {
+					p2.setAttribute("set","ePusherLength");
+					p2.setAttribute("min","1");
+					p2.value = ambaPlaceProperties.ePusherLength;
+				};
+				if(p2h) {
+					p2h.innerText = "Duration";
+				};
+			},
+			onUnselect: function() {
+				hideAllSetterColumns();
+				hidePropertySetter()
 			},
 			tick: function(pixel) {
-				pixel.range ??= 10;
+				pixel.range ??= (ambaPlaceProperties?.pusherRange ?? 10);
+				pixel.pushStrength ??= (ambaPlaceProperties?.pusherStrength ?? 1);
+				pixel.pushLength ??= (ambaPlaceProperties?.ePusherLength ?? 5);
 				pixel.pushTime ??= 0;
-				pixel.pushLength ??= 5;
-				pixel.pushStrength ??= 1;
 				if(isNaN(pixel.pushTime) || pixel.pushTime < 0) { pixel.pushTime = 0 };
 				if(pixel.charge) {
 					pixel.pushTime = pixel.pushLength;
@@ -36005,12 +36599,28 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 				elements.op_hottester_bomb = {
 					color: "#cc436e",
-					properties: {
-						radius: 15, //just so people can edit it per pixel to be stupidly high
+					onSelect: function() {
+						showPropertySetter();
+						showSetterColumn("numeric",0);
+						var p0 = document.getElementById("propertynumeric0input");
+						var p0h = document.getElementById("propertynumeric0heading");
+						if(p0) {
+							p0.setAttribute("set","ophbRadius");
+							p0.setAttribute("min","1");
+							p0.value = ambaPlaceProperties.ophbRadius;
+						};
+						if(p0h) {
+							p0h.innerText = "Radius";
+						};
+					},
+					onUnselect: function() {
+						hideAllSetterColumns();
+						hidePropertySetter();
 					},
 					tick: function(pixel) {
-						doDefaults(pixel);
+						doDefaults(pixel); //actually we're just leaving the duplicate code in
 						if(!isEmpty(pixel.x,pixel.y-1,true)) { //[0][1] EX (ignore bounds)
+							pixel.radius ??= (ambaPlaceProperties?.ophbRadius ?? 15);
 							var newPixel = pixelMap[pixel.x][pixel.y-1];
 							var newElement = newPixel.element;
 							var newInfo = elements[newElement];
@@ -36067,33 +36677,54 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 				elements.star_bomb = {
 					color: "#fffbb5",
-					properties: {
-						radius: 50, //just so people can edit it per pixel to be stupidly high
+					onSelect: function() {
+						showPropertySetter();
+						showSetterColumn("numeric",0);
+						var p0 = document.getElementById("propertynumeric0input");
+						var p0h = document.getElementById("propertynumeric0heading");
+						if(p0) {
+							p0.setAttribute("set","starBombRadius");
+							p0.setAttribute("min","1");
+							p0.value = ambaPlaceProperties.starBombRadius;
+						};
+						if(p0h) {
+							p0h.innerText = "Radius";
+						};
 					},
+					onUnselect: function() {
+						hideAllSetterColumns();
+						hidePropertySetter();
+					},
+					pixelCollisionExplosion: function(pixel,offset) { //moved here to to duplicate the code
+						if(!pixel) { return };
+						var newPixel = pixelMap[pixel.x][pixel.y+offset];
+						if(newPixel)
+						newPixel.temp += 10000000; //[0][1] HT:10000000
+						//deliberately don't pixelTempCheck or it will tend to burrow down because that much heat will boil almost anything
+						var newElement = newPixel.element;
+						var newInfo = elements[newElement];
+						if(newInfo.state !== "gas" && newElement !== pixel.element) {
+							explodeAtPlus(pixel.x,pixel.y,pixel.radius,elements.star_bomb.explosionFire,elements.star_bomb.explosionSmoke,starbombHeat,starbombHeat,false);
+						};
+						if(pixel) { deletePixel(pixel.x,pixel.y) }
+					},
+					explosionFire: "stellar_plasma,stellar_plasma,stellar_plasma,liquid_stellar_plasma,liquid_stellar_plasma,plasma,plasma",
+					explosionSmoke: "light,light,radiation",					
 					tick: function(pixel) {
-						var starFire = "stellar_plasma,stellar_plasma,stellar_plasma,liquid_stellar_plasma,liquid_stellar_plasma,plasma,plasma";
-						var starSmoke = "light,light,radiation";
+						pixel.radius ??= (ambaPlaceProperties?.starBombRadius ?? 50);
 						doDefaults(pixel);
 						if(!isEmpty(pixel.x,pixel.y-1,true)) { //[0][1] EX (ignore bounds)
-							var newPixel = pixelMap[pixel.x][pixel.y-1];
-							newPixel.temp += 10000000; //[0][1] HT:10000000
-							var newElement = newPixel.element;
-							var newInfo = elements[newElement];
-							if(newInfo.state !== "gas" && newElement !== pixel.element) {
-								explodeAtPlus(pixel.x,pixel.y,pixel.radius,starFire,starSmoke,starbombHeat,starbombHeat,false);
-							};
+							elements.star_bomb.pixelCollisionExplosion(pixel,-1);
+							return
 						};
 						if(!isEmpty(pixel.x,pixel.y+1,true)) { //[2][1] EX (don't ignore bounds, non-bound case)
-							var newPixel = pixelMap[pixel.x][pixel.y+1];
-							newPixel.temp += 10000000;
-							var newElement = newPixel.element;
-							var newInfo = elements[newElement];
-							if(newInfo.state !== "gas" && newElement !== pixel.element) {
-								explodeAtPlus(pixel.x,pixel.y,pixel.radius,starFire,starSmoke,starbombHeat,starbombHeat,false);
-							};
+							elements.star_bomb.pixelCollisionExplosion(pixel,1);
+							return
 						};
 						if(outOfBounds(pixel.x,pixel.y+1)) { //[2][1] EX (don't ignore bounds, bound case)
-							explodeAtPlus(pixel.x,pixel.y,pixel.radius,starFire,starSmoke,starbombHeat,starbombHeat,false);
+							explodeAtPlus(pixel.x,pixel.y,pixel.radius,elements.star_bomb.explosionFire,elements.star_bomb.explosionSmoke,starbombHeat,starbombHeat,false);
+							if(pixel) { deletePixel(pixel.x,pixel.y) }
+							return
 						};
 						if(!tryMove(pixel,pixel.x,pixel.y+1)) { //behaviors.POWDER
 							Math.random() < 0.5 ? tryMove(pixel,pixel.x-1,pixel.y+1) : tryMove(pixel,pixel.x+1,pixel.y+1);
@@ -38875,20 +39506,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 		numberAdjusterVerb = "adding";
 		numberAdjusterPreposition = "to";
 		numberAdjusterReverseOrder = false;
-		function rgbStringToUnvalidatedObject(string) {
-			string = string.split(",");
-			var red = parseFloat(string[0].substring(4));
-			var green = parseFloat(string[1]);
-			var blue = parseFloat(string[2].slice(0,-1));
-			return {r: red, g: green, b: blue};
-		};
-		function hslStringToUnvalidatedObject(string) {
-			string = string.split(",");
-			var hue = parseFloat(string[0].substring(4));
-			var saturation = parseFloat(string[1].slice(0,-1));
-			var lightness = parseFloat(string[2].slice(0,-2));
-			return {h: hue, s: saturation, l: lightness};
-		};
 		document.addEventListener("keydown", function(e) { //prop prompt listener
 			// , = propPrompt()
 			if (e.keyCode == 188) {
@@ -43679,7 +44296,8 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 			currentElement = urlParams.get("currentElement") ?? "sand";
 			if(!elementExists(currentElement)) {
 				currentElement = "sand"
-			}
+			};
+			selectElement(currentElement);
 
 			var size = urlParams.get("mouseSize") ?? 5;
 			if(isNaN(size)) {
@@ -43823,6 +44441,20 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 		},50)
 		//aChefsDream fix: (re-)define juice reactions
 		elements.juice.reactions ??= {};
+		
+		gigadebugMode = false;
+		if(gigadebugMode) {
+			logLimit = 50;
+			logLimitCache = {};
+			oldLog = console.log;
+			console.log = function(...args) {
+				var argsKey = JSON.stringify(args);
+				logLimitCache[argsKey] ??= 0;
+				if(logLimitCache[argsKey] > logLimit) { return };
+				oldLog(...args);
+				logLimitCache[argsKey]++
+			}
+		}
 	//END ##
 } catch (error) {
 	alert(`Load failed (try reloading).\nThis is likely a sporadic failure caused by inconsistencies in how mods are loaded, and will likely fix itself in a refresh or two. If it persists, then it's an issue.\nError: ${error.stack}`);
