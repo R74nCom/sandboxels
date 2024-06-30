@@ -70,8 +70,8 @@ function drawLinks() {
 }
 
 var originalDrawPixels2 = drawPixels;
-drawPixels = function() {
-    originalDrawPixels2();
+drawPixels = function(forceTick=false) {
+    originalDrawPixels2(forceTick);
     updateLogicLists();
     drawLinks();
 };
