@@ -3349,3 +3349,53 @@ if (!elements.steel.reactions){elements.steel.reactions = {}}
 elements.steel.reactions.molten_zinc = {elem1: "galvanized_steel", chance: 0.035}
 if (!elements.molten_zinc.reactions){elements.zinc.reactions = {}}
 elements.molten_zinc.reactions.steel = {elem1: "null", chance: 0.2}
+elements.super_heat_conductor = {
+    color: "#b66b61",
+    behavior: behaviors.WALL,
+    category: "solids",
+    density: 10000,
+    tick: function(pixel){
+        for (let j = 0; j <= 10; j++){
+            for (var i = 0; i < adjacentCoords.length; i++) {
+                var x = pixel.x+adjacentCoords[i][0];
+                var y = pixel.y+adjacentCoords[i][1];
+                if (!isEmpty(x,y,true)) {
+                    var newPixel = pixelMap[x][y];
+                    // Skip if both temperatures are the same
+                    if (pixel.temp == newPixel.temp || elements[newPixel.element].insulate == true) {
+                        continue;
+                    }
+                    // Set both pixel temperatures to their average
+                    var avg = (pixel.temp + newPixel.temp)/2;
+                    pixel.temp = avg;
+                    newPixel.temp = avg;
+                    pixelTempCheck(pixel);
+                    pixelTempCheck(newPixel);
+                }
+            }
+        }
+    }
+}
+let ogdrawPixels = drawPixels
+drawPixels = function(forceTick=false){
+    if (!paused || forceTick){
+    var heatpixels = currentPixels.filter(function(pixelToCheck) {
+        if (pixelToCheck.element == "global_heat_conductor"){
+            return true;
+        }
+    })
+    for (var i = 0; i < heatpixels.length; i++) {
+        var newPixel = heatpixels[i];
+        var randomPixel = heatpixels[Math.floor(Math.random()*heatpixels.length)];
+        var avg = (randomPixel.temp + newPixel.temp)/2;
+        randomPixel.temp = avg;
+        newPixel.temp = avg;
+    }}
+    ogdrawPixels(forceTick)
+}
+elements.global_heat_conductor = {
+    color: "#55251e",
+    behavior: behaviors.WALL,
+    category: "solids",
+    density: 10000,
+}

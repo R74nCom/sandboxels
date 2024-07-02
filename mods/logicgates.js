@@ -39,7 +39,7 @@ elements.logic_wire = {
                 var y = pixel.y+coord[1];
                 if (!isEmpty(x,y,true)) {           
                     if (pixelMap[x][y].element == "output" && pixelMap[x][y].charge == 1){
-                        pixel.lstate == 2;
+                        pixel.lstate = 2;
                         pixel.color = pixelColorPick(pixel, "#ffe49c");
                     }
                 }
@@ -388,7 +388,7 @@ elements.L2E_constant = {
 var transmitterVar = 0;
 elements.logic_transmitter = {
     onSelect: function() {
-        var answertransmitter = prompt("Please input the desired element of this filter. It will not work if you do multiple filter types while paused.",(transmitterVar||undefined));
+        var answertransmitter = prompt("Please input the desired channel of this transmitter. Placing multiple ones with the same channel while paused may break.",(transmitterVar||undefined));
         if (!answertransmitter) { return }
 		transmitterVar = answertransmitter;
     },
@@ -433,7 +433,7 @@ elements.logic_transmitter = {
 }
 elements.logic_receiver = {
     onSelect: function() {
-        var answertransmitter = prompt("Please input the desired element of this filter. It will not work if you do multiple filter types while paused.",(transmitterVar||undefined));
+        var answertransmitter = prompt("Please input the desired channel of this receiver. It will break if you do multiple different channels while paused.",(transmitterVar||undefined));
         if (!answertransmitter) { return }
 		transmitterVar = answertransmitter;
     },
