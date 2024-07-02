@@ -14726,13 +14726,13 @@ behaviorRules = {
                         stats += "<span id='stat-burning' class='stat'>Burning</span>";
                     }
                     if (elements[currentPixel.element].hoverStat) {
-                        stats += "<span id='stat-hover' class='stat'>"+elements[currentPixel.element].hoverStat(currentPixel)+"</span>";
+                        stats += "<span id='stat-hover' class='stat'>"+elements[currentPixel.element].hoverStat(currentPixel).replaceAll("<","&lt;")+"</span>";
                     }
                     else if (currentPixel.clone) {
-                        stats += "<span id='stat-clone' class='stat'>"+currentPixel.clone.toUpperCase()+"</span>";
+                        stats += "<span id='stat-clone' class='stat'>"+currentPixel.clone.toUpperCase().replaceAll("<","&lt;")+"</span>";
                     }
                     else if (currentPixel.con && currentPixel.con.element) {
-                        stats += "<span id='stat-clone' class='stat'>"+currentPixel.con.element.toUpperCase()+"</span>";
+                        stats += "<span id='stat-clone' class='stat'>"+currentPixel.con.element.toUpperCase().replaceAll("<","&lt;")+"</span>";
                     }
                 }
             }
@@ -16459,7 +16459,7 @@ window.onload = function() {
                 <div id="categoryControls"></div>
                 <div id="elementControls"></div>
             </div>
-            <div id="extraInfo"><small><a href="https://sandboxels.r74n.com/changelog" id="changelogButton" target="_blank">Changelog</a> • <a href="https://sandboxels.R74n.com/feedback" target="_blank" style="color:lime;">Feedback</a> • <a href="https://sandboxels.wiki.gg/" target="_blank" id="wikiButton" title="Official Sandboxels Wiki - wiki.gg" style="color:white;">Wiki</a> • <a id="moreSocial" href="https://twitter.com/R74nCom" rel="me" target="_blank">Twitter</a> • <a href="https://discord.gg/ejUc6YPQuS" target="_blank" style="color:#2f60ff;">Discord</a><span id="install-button" style="display:none">&nbsp;• <a onclick="deferredPrompt.prompt(); return false" href="#" style="text-shadow: 0px 2px 10px #ff00ff; cursor:pointer">Install Offline</a></span><!--<br><br><a style="color:lime" target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSf8pVMSdC6oSnBSaTpzjPQa8Ef-vxG_eXL99UITnMSQtJFTJA/viewform?usp=sf_link">FILL OUT THE CENSUS<span style="color:red">(NEW)</span></a>--></small></div>
+            <div id="extraInfo"><small><a href="https://sandboxels.r74n.com/changelog" id="changelogButton" target="_blank">Changelog</a> • <a href="https://sandboxels.R74n.com/feedback" target="_blank" style="color:lime;">Feedback</a> • <a href="https://sandboxels.wiki.gg/" target="_blank" id="wikiButton" title="Official Sandboxels Wiki - wiki.gg" style="color:white;">Wiki</a> • <a id="moreSocial" href="https://twitter.com/R74nCom" rel="me" target="_blank">Twitter</a> • <a href="https://discord.gg/ejUc6YPQuS" target="_blank" style="color:#2f60ff;">Discord</a><span id="install-button" style="display:none">&nbsp;• <a onclick="deferredPrompt.prompt(); return false" href="#" style="text-shadow: 0px 2px 10px #ff00ff; cursor:pointer">Install Offline</a></span><br><br><a style="color:lime" target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSeYMbngtbBHZ7hkz8jpbHl7TiAItqukrhtntKgAHjH30fY08A/viewform?usp=sf_link">FILL OUT THE CENSUS<span style="color:red">(NEW)</span></a></small></div>
             <script>
                 // version check
                 if (!settings["lastversion"] || settings["lastversion"]!==currentversion) {
