@@ -5773,6 +5773,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			}
 		};	
 		
+		console.log("1/8 loaded") //True 1.8 is inside one viewColorFunctions[2]
+		
 		hiding = false
 		
 		runAfterAutogen(function() {
@@ -11283,6 +11285,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 182,
 			temp: -20,
 		}
+		console.log("1/4 loaded")
 		//Volatile Roseyiede
 		elements.explosive_roseyiede = {
 			color: "#986118",
@@ -13630,7 +13633,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				if(enabledMods.includes("mods/betterStats.js") && typeof(realTps) !== "undefined") { stats += "<span id='stat-realtps' class='stat'>" + realTps + "tps</span>" }; //i'm sorry but there's no other way to add compatibility
 				//THAT CODE WAS MADE BY MOLLTHECODER FROM THEIR betterStats.js MOD
 				stats += "<span id='stat-ticks' class='stat'>" + pixelTicks+"</span>";
-				if((typeof(width) == "number") && (!outOfBounds(mousePos.x,mousePos.y))) {
+				if((settings.dopressure) && (typeof(width) == "number") && (!(outOfBounds(mousePos.x,mousePos.y)))) {
 					stats += "<span id='stat-pressure' class='stat'>P:" + getPressureAtPixelCoords(mousePos.x,mousePos.y).toFixed(2).replace(/\.?0+$/,"")+"</span>";	
 				};
 				if ((typeof pixelMap).length === 9) { return; }
@@ -16934,6 +16937,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				category: "gases",
 				state: "gas"
 			},
+			console.log("3/8 loaded");
 			elements.cold_ash_cloud = {
 				color: ["#af8f50","#ab9c50","#af6d50"],
 				behavior: [
@@ -23049,6 +23053,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						};
 						rockClouds.push(rockCloudName);
 				};
+				console.log("1/2 loaded") //true halfway point is inside newIgneousCompositionFamily.
 				function standaloneBrokenFormMaker(elementName,suffixWithoutUnderscore,addBreakIntoToSourceElement=false,category=null,density=null,tempHigh=null,stateHigh=null,breakInto=null) {
 					var newName = elementName + "_" + suffixWithoutUnderscore;
 					elements[newName] = {
@@ -28222,6 +28227,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			desc: "<span style='color:#FF00FF;' onClick=funniPrompt()>Click here or press Shift+1 to open the command prompt.</span>",
 			category:"special",
 		};
+		console.log("5/8 loaded");
 	//REPLACER TOOL ##
 		changeTo = "sand";
 		document.addEventListener("keydown", function(e) { //change prompt listener
@@ -34007,6 +34013,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		};
+		console.log("3/4 loaded"); //the real 3/4 point was inside Nothing There's tick function
 		runAfterLoad(function() {
 			if(typeof(badPixels) === "object") {
 				badPixels.nothing_there_phase_1 = { panicIncrease: 1, panicIncreaseChance: 1 } //insta-panic for "aleph" thing and "level 1" humans
@@ -39525,6 +39532,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "machines",
 			hardness: 0.6
 		};
+		console.log("7/8 loaded"); //it was inside the weather controller code
 	//KETCUP ##
 		elements.ketcup = {
 			color: "#ab2513",
@@ -44560,6 +44568,7 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 		elements.wall.blockPressure = true;
 		elements.brick.pressurePermeability = 0.002; //given in L/s*m^2 //at 150Pa //per https://www.astm.org/stp157720130132.html //i don't know how to unit the pressure because it's not scaled to anything in reality
 		elements.brick.pressureHigh = 90; //arbitrary
+		elements.glass.pressureHigh = 70; //arbitrary
 		elements.wood.pressureHigh = 60; //arbitrary
 		runAfterLoad(function() {
 			var gravels = Object.keys(elements).filter(n => n.endsWith("gravel"));
@@ -45132,6 +45141,7 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 		}
 
 	//END ##
+		console.log("Mod loaded")
 } catch (error) {
 	alert(`Load failed (try reloading).\nThis is likely a sporadic failure caused by inconsistencies in how mods are loaded, and will likely fix itself in a refresh or two. If it persists, then it's an issue.\nError: ${error.stack}`);
 	console.error(error)
