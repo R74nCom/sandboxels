@@ -171,6 +171,15 @@ try {
 					throw new TypeError(`Unexpected type: ${typeof(stringOrArray)}`);
 				};
 			};
+			//Shuffle not-in-place
+			function arrayToShuffled(array) {
+				var _array = structuredClone ? structuredClone(array) : JSON.parse(JSON.stringify(array));
+				for (let i = _array.length - 1; i > 0; i--) {
+					const j = Math.floor(Math.random() * (i + 1));
+					[_array[i], _array[j]] = [_array[j], _array[i]];
+				};
+				return _array
+			};
 		//Checks
 			//Element exists in the elements object
 			function elementExists(elementName) {
@@ -391,6 +400,10 @@ try {
 			function addTwoNumbers(number1,number2) { //reducer
 				return number1 + number2
 			}
+			//Linear interpolation
+			function lerp(a,b,t) {
+				return (b * t) + (a * (1 - t))
+			};
 			//Logistic curve
 				//x = real number
 				//L = maximum value
@@ -1747,6 +1760,16 @@ try {
 			function getCirclePixels(x,y,radius) {
 				return circleCoords(x,y,radius).map(coordinates => pixelMap[coordinates.x]?.[coordinates.y]).filter(function(pixelOrUndefined) { return typeof(pixelOrUndefined) == "object" })
 			};
+			function getPixelsInRegion(x1,y1,x2,y2) {
+				var result = [];
+				for(var x = x1; x <= x2; x++) {
+					for(var y = y1; y <= y2; y++) {
+						var p = pixelMap[x]?.[y];
+						if(p && !(p.del)) { result.push(p) }
+					}
+				};
+				return result
+			};
 			function getPixelMooreNeighbors(pixel) {
 				var coordsToCheck = mooreDonutCoords.map(function(offsets) { return {x: offsets[0]+pixel.x, y: offsets[1]+pixel.y} } );
 				var neighbors = [];
@@ -2323,7 +2346,11 @@ td.inputCell {
 			sweepingLaserRotationSpeed: -0.03,
 			sweepingLaserBeamLength: 10,
 			sweepingLaserBeamTemperature: 2000,
-			sweepingLaserBeamBrevity: 5
+			sweepingLaserBeamBrevity: 5,
+			noteBlockFrequency: 440,
+			noteBlockLength: 1,
+			noteBlockVolume: 1,
+			noteBlockDelay: 0
 		};
 		
 		hidePropertySetter();
@@ -4056,15 +4083,19 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					quickSlDetectorLastKeys = [];
 				};
 			});
+			/*if(urlParams.get("pause") !== null) {
+				paused = true;
+				document.getElementById("pauseButton").setAttribute("on","true")
+			};*/
 			gameLoaded = true;
 		};
 	//MORE CONFIGURABLE EXPLOSIONS (explodeAtPlus) ##
 		velocityBlacklist = [];
 		function explodeAtPlus(x,y,radius,firee="fire",smokee="smoke",beforeFunction=null,afterFunction=null,changeTemp=true) {
-			var message = "Explosion ";
+			//var message = "Explosion ";
 			var pixel = pixelMap[x]?.[y];
-			if(pixel) { message += `of ${pixel.element} ` };
-			message += `with radius ${radius} at (${x},${y})`;
+			//if(pixel) { message += `of ${pixel.element} ` };
+			//message += `with radius ${radius} at (${x},${y})`;
 			// if fire contains , split it into an array
 			if(firee !== null) {
 				if (firee.indexOf(",") !== -1) {
@@ -4078,6 +4109,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			};
 			var coords = circleCoords(x,y,radius);
 			var power = radius/10;
+			changePressure(x,y,radius ** 2,operationType="+",true);
 			//for (var p = 0; p < Math.round(radius/10+1); p++) {
 			for (var i = 0; i < coords.length; i++) {
 				var fire = firee;
@@ -5461,6 +5493,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			}
 	//FIND MODE, PIXEL PROPERTIES LINKED TO SPECIAL CODE, CONFIGURABLE VISUAL DISTORTION AND VISUAL PIXEL SHAPE SETTINGS (acid_and_shapes.js) ##
 	//two separate things i.e. not "pixel properties linked to special code, configurable visual distortion, and visual pixel shape settings" though there's basically no semantic difference
+	//And also all other changes to drawPixels
 		var style = document.createElement('style');
 		style.type = 'text/css';
 		style.id = 'findStatusStylesheet';
@@ -5806,6 +5839,35 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					ctx.fillRect(0, 0, canvas.width, canvas.height);
 				}
 				if(!hiding) {
+					if(settings.dopressure && settings.drawpressure) {
+						for(var x = 0; x < pressureMap.length; x++) {
+							for(var y = 0; y < pressureMap[x].length; y++) {
+								var pressureValue = pressureMap[x][y];
+								if(typeof(pressureValue) == "number") {
+									var pressureSign = Math.sign(pressureValue);
+									pressureValue = bound(Math.abs(pressureValue),0,255) / 255;
+									switch(pressureSign) {
+										case -0:
+										case 0:
+											ctx.fillStyle = `rgb(0,0,0)`;
+											break
+										case 1:
+											ctx.fillStyle = `rgb(255,0,0)`;
+											break
+										case -1:
+											ctx.fillStyle = `rgb(0,0,255)`;
+											break
+										default: // covers NaN, since NaN != NaN
+											ctx.fillStyle = `rgb(255,255,0)`;
+											break
+									};
+									ctx.globalAlpha = isNaN(pressureSign) ? 0.5 : pressureValue;
+									ctx.fillRect(x*pixelSize*pressureCellSize, y*pixelSize*pressureCellSize, pixelSize*pressureCellSize, pixelSize*pressureCellSize)
+								}
+							}
+						}
+						ctx.globalAlpha = 1;
+					};
 					var pixelDrawList = pixelsFirst.concat(pixelsLast);
 					for (var i = 0; i < pixelDrawList.length; i++) {
 						var pixel = pixelDrawList[i];
@@ -6135,6 +6197,48 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				rankineSettingSpan.appendChild(settingInput);
 				rankineSettingSpan.appendChild(newHelpMark);
 			acidSettingSpan.after(rankineSettingSpan);
+			var pressureSettingSpan = document.createElement("span");
+			pressureSettingSpan.setAttribute("setting","dopressure");
+			pressureSettingSpan.setAttribute("title","Default: OFF");
+			pressureSettingSpan.classList.add("setting-span","multisetting");
+				var settingInput = document.createElement("input");
+				settingInput.setAttribute("type","button");
+				settingInput.setAttribute("value",'Pressure simulation');
+				settingInput.setAttribute("state","0");
+				settingInput.classList.add("toggleInput");
+				settingInput.setAttribute("onclick","toggleInput(this,'dopressure',false)");
+				var options = {
+					"false": "Disabled",
+					"true": "Enabled"
+				};
+				var newHelpMark = document.createElement("span");
+				newHelpMark.setAttribute("title","Simplified pressure simulation (which may lag).");
+				newHelpMark.classList.add("helpMark");
+				newHelpMark.innerText = "?";
+				pressureSettingSpan.appendChild(settingInput);
+				pressureSettingSpan.appendChild(newHelpMark);
+			rankineSettingSpan.after(pressureSettingSpan);
+			var showPressureSettingSpan = document.createElement("span");
+			showPressureSettingSpan.setAttribute("setting","drawpressure");
+			showPressureSettingSpan.setAttribute("title","Default: OFF");
+			showPressureSettingSpan.classList.add("setting-span","multisetting");
+				var settingInput = document.createElement("input");
+				settingInput.setAttribute("type","button");
+				settingInput.setAttribute("value",'Show pressure');
+				settingInput.setAttribute("state","0");
+				settingInput.classList.add("toggleInput");
+				settingInput.setAttribute("onclick","toggleInput(this,'drawpressure',false)");
+				var options = {
+					"false": "Disabled",
+					"true": "Enabled"
+				};
+				var newHelpMark = document.createElement("span");
+				newHelpMark.setAttribute("title","Draw pressure (only applies if pressure simulation is enabled).");
+				newHelpMark.classList.add("helpMark");
+				newHelpMark.innerText = "?";
+				showPressureSettingSpan.appendChild(settingInput);
+				showPressureSettingSpan.appendChild(newHelpMark);
+			pressureSettingSpan.after(showPressureSettingSpan);
 			var sizeSetting = document.querySelector('span[setting="pixelsize"]');
 			var sizeDropdown = sizeSetting.querySelector("select");
 			sizeDropdown.setAttribute("onchange","var size = (this.value === 'null' ? null : parseFloat(this.value)); console.log(size); if((size >= 0.05) && (size <= 194.73749999999999) && (size !== null) && (size !== false) && !(isNaN(size))) { console.log(size); setSetting('pixelsize',size);this.nextElementSibling.innerText='Reset Scene' }");
@@ -9207,6 +9311,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			//if(pixelTicks == pixel.start) { console.log("this range",pixel.range) };
 			if(pixel.range <= 0) { deletePixel(pixel.x,pixel.y); return };
 			var range = (pixel.range ?? (ambaPlaceProperties?.blackHoleRange ?? 15)) * 2;
+			if(settings.dopressure) { changePressure(pixel.x,pixel.y,10 + ((range / 2) ** 2),"-",true) };
 			var targets = mouseLikeRange(pixel.x,pixel.y,range,"circle",true);
 			shuffleArray(targets);
 			for (var i = 0; i < targets.length; i++) {
@@ -9256,7 +9361,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				var taxicabDistance = Math.abs(newPixel.x - pixel.x) + Math.abs(newPixel.y - pixel.y);
 				if((taxicabDistance <= 3) && (taxicabDistance > 0)) {
 					pixel.temp += (newPixel.temp - (settings.abszero ?? 273.15));
-					if(["amba_black_hole","amba_white_hole"].includes(newPixel.element) && (newPixel.range ?? 15) > 0) {
+					if(["amba_black_hole","amba_white_hole"].includes(newPixel.element) && ((newPixel.range ?? 15) > 0) && (newPixel !== pixel)) {
 						//console.log("adding range on tick",pixelTicks);
 						pixel.range ??= (ambaPlaceProperties?.blackHoleRange ?? 15);
 						var rangeChange = (newPixel.range ?? (ambaPlaceProperties?.blackHoleRange ?? 15));
@@ -9378,6 +9483,29 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		maxSize: 1
 	};
 	
+	elements.pus = {
+		color: "#bfba71",
+		behavior: behaviors.LIQUID,
+		reactions: {
+			"water": { elem1:["pus","pus","pus","pus","pus","pus","dirty_water"], elem2:"dirty_water", chance:0.01 },
+			"blood": { elem1:["pus","pus","pus","pus","pus","pus","infection"], elem2:"infection", chance:0.01 },
+			"poison": { elem1:"bio_ooze", elem2:"bio_ooze", chance:0.2 },
+			"bio_ooze": { elem1:"bio_ooze", chance:0.2 },
+			"frog": { elem2:"rotten_meat", chance:0.005 },
+			"fish": { elem2:"rotten_meat", chance:0.005 },
+			"meat": { elem2:"rotten_meat", chance:0.005 },
+			"alcohol": { elem1:"dirty_water", chance:0.2 }
+		},
+		viscosity: 30,
+		tempHigh: 124.55,
+		stateHigh: ["plague","stench","steam","steam","steam","salt"],
+		tempLow: -2,
+		category:"liquids",
+		hidden: true,
+		state: "liquid",
+		density: 1100,
+		stain: 0.08
+	};
 	//ASSORTED RAINBOW VARIANTS ##
 		elements.concoction.reactions.diorite_gravel = {
 			elem1: "static", elem2: null
@@ -13138,6 +13266,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					version: 1,
 					enabledMods: localStorage.enabledMods
 				};
+				if(settings.dopressure) {
+					simulationState.pressureMap = pressureMap
+				};
 				for(i = 0; i < simulationState.pixelMap.length; i++) {
 					var column = simulationState.pixelMap[i];
 					for(j = 0; j < column.length; j++) {
@@ -13371,6 +13502,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					}
 					saveSettings
 				};
+				if((settings.dopressure) && json.pressureMap) { pressureMap = json.pressureMap };
 				//enabledMods handling {
 					var enMods = "[]";
 					if(typeof(json.enabledMods) !== "undefined") {
@@ -13498,6 +13630,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				if(enabledMods.includes("mods/betterStats.js") && typeof(realTps) !== "undefined") { stats += "<span id='stat-realtps' class='stat'>" + realTps + "tps</span>" }; //i'm sorry but there's no other way to add compatibility
 				//THAT CODE WAS MADE BY MOLLTHECODER FROM THEIR betterStats.js MOD
 				stats += "<span id='stat-ticks' class='stat'>" + pixelTicks+"</span>";
+				if((typeof(width) == "number") && (!outOfBounds(mousePos.x,mousePos.y))) {
+					stats += "<span id='stat-pressure' class='stat'>P:" + getPressureAtPixelCoords(mousePos.x,mousePos.y).toFixed(2).replace(/\.?0+$/,"")+"</span>";	
+				};
 				if ((typeof pixelMap).length === 9) { return; }
 				if (pixelMap[mousePos.x] !== undefined) {
 					var currentPixel = pixelMap[mousePos.x][mousePos.y];
@@ -16336,13 +16471,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				return elements[e].category == "life";
 			})
 		});
-		elements.bioooze = {
+		elements.bio_ooze = { //a.k.a. the water in the River Thames during July and August of 1858
+			name: "Bio-Ooze",
 			color: ["#53FF4F", "#53FF4F", "#06DE00", "#04A600", "#036E00"],
 			behavior: behaviors.LIQUID,
 			tempHigh: 100,
 			stateHigh: ["plague","slime","steam","poison"],
-			//tempLow: -4,
-			//stateLow: "bioooze_ice",
+			tempLow: -4,
 			category: "liquids",
 			heatCapacity: 3.52, //unimplemented feature
 			name: "bio-ooze",
@@ -16353,34 +16488,34 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				//"elder_fluid": { "elem1":"corrupt_slime" }, //acid should be sulfuric acid and product should be wastestone
 				//"mercury": { "elem1":"liquid_protocite" }, //acid should be sulfuric acid and product should be wastestone
 				//"blue_grav_liquid": { "elem1":"blue_grav_liquid" }, //bgl would set gravity to upwards gravity
-				"blood": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "infection" },
+				"blood": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "infection" },
 				"soap": { "elem1": "slime", "chance": 0.02 },
-				"plant": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "dead_plant" },
-				"grass": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "dead_plant" },
-				"algae": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "dead_plant" },
-				"mushroom_spore": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "dead_plant" },
-				"lichen": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "dead_plant" },
-				"rat": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "rotten_meat" },
-				"frog": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "rotten_meat" },
-				"fish": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "rotten_meat" },
-				"bird": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "rotten_meat" },
-				"head": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "rotten_meat" },
-				"body": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "rotten_meat" },
-				"ant": { "elem1": ["bioooze","bioooze","bioooze","bioooze","poison","slime",null], "elem2": "dust" },
-				"worm": { "elem1": ["bioooze","bioooze","bioooze","bioooze","poison","slime",null], "elem2": "dust" },
-				"fly": { "elem1": ["bioooze","bioooze","bioooze","bioooze","poison","slime",null], "elem2": "dust" },
-				"firefly": { "elem1": ["bioooze","bioooze","bioooze","bioooze","poison","slime",null], "elem2": "dust" },
-				"bee": { "elem1": ["bioooze","bioooze","bioooze","bioooze","poison","slime",null], "elem2": "dust" },
-				"slug": { "elem1": ["bioooze","bioooze","bioooze","bioooze","poison","slime",null], "elem2": "dust" },
-				"snail": { "elem1": ["bioooze","bioooze","bioooze","bioooze","poison","slime",null], "elem2": "calcium" },
-				"sapling": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "dead_plant" },
-				"root": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "dead_plant" },
-				"flower_seed": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "dead_plant" },
-				"pistil": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "dead_plant" },
-				"petal": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "dead_plant" },
-				"grass_seed": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "dead_plant" },
-				"meat": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "rotten_meat" },
-				"wood": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "sawdust", "chance": 0.25 }
+				"plant": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "dead_plant" },
+				"grass": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "dead_plant" },
+				"algae": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "dead_plant" },
+				"mushroom_spore": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "dead_plant" },
+				"lichen": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "dead_plant" },
+				"rat": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "rotten_meat" },
+				"frog": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "rotten_meat" },
+				"fish": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "rotten_meat" },
+				"bird": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "rotten_meat" },
+				"head": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "rotten_meat" },
+				"body": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "rotten_meat" },
+				"ant": { "elem1": ["bio_ooze","bio_ooze","bio_ooze","bio_ooze","poison","slime",null], "elem2": "dust" },
+				"worm": { "elem1": ["bio_ooze","bio_ooze","bio_ooze","bio_ooze","poison","slime",null], "elem2": "dust" },
+				"fly": { "elem1": ["bio_ooze","bio_ooze","bio_ooze","bio_ooze","poison","slime",null], "elem2": "dust" },
+				"firefly": { "elem1": ["bio_ooze","bio_ooze","bio_ooze","bio_ooze","poison","slime",null], "elem2": "dust" },
+				"bee": { "elem1": ["bio_ooze","bio_ooze","bio_ooze","bio_ooze","poison","slime",null], "elem2": "dust" },
+				"slug": { "elem1": ["bio_ooze","bio_ooze","bio_ooze","bio_ooze","poison","slime",null], "elem2": "dust" },
+				"snail": { "elem1": ["bio_ooze","bio_ooze","bio_ooze","bio_ooze","poison","slime",null], "elem2": "calcium" },
+				"sapling": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "dead_plant" },
+				"root": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "dead_plant" },
+				"flower_seed": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "dead_plant" },
+				"pistil": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "dead_plant" },
+				"petal": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "dead_plant" },
+				"grass_seed": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "dead_plant" },
+				"meat": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "rotten_meat" },
+				"wood": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "sawdust", "chance": 0.25 }
 			},
 			/*reactions: {
 				"dirt": { // React with (water reacts with dirt to make mud)
@@ -19227,7 +19362,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			conduct: 0.23,
 		};
 		elements.haseulite_gas = {
-			color: ["#ffff9d", _cc.w.h, "#e9ffe6", "#ffffe5"],
+			color: ["#ffff9d", _cc.w.h, "#e9ffe6", "#ffffe5"],
 			fireColor: ["#08a953", "#2ea332", "#d1e0d3"],
 			properties: {
 				oldColor: null
@@ -19376,7 +19511,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			conduct: 0.22,
 		};
 		elements.heejinite_gas = {
-			color: ["#fffab8", "#ffdab3", "#ffd1d1", "#ffc4df", "#ffb0eb"],
+			color: ["#fffab8", "#ffdab3", "#ffd1d1", "#ffc4df", "#ffb0eb"],
 			fireColor: ["#a9085e", "#a32e61", "#fca7c6"],
 			properties: {
 				oldColor: null
@@ -19652,7 +19787,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			conduct: 0.34,
 		};
 		elements.jinsoulite_gas = {
-			color: ["#c0f0ef", "#c2c1db", "#c0bff5", "#cdcce6"],
+			color: ["#c0f0ef", "#c2c1db", "#c0bff5", "#cdcce6"],
 			behavior: [
 				"XX|CR:steam%0.5|XX",
 				"CR:steam%0.5|XX|CR:steam%0.5",
@@ -19832,7 +19967,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			conduct: 0.22,
 		};
 		elements.yvesite_gas = {
-			color: ["#e34070", "#d13060", "#c2234a", "#db4866"],
+			color: ["#e34070", "#d13060", "#c2234a", "#db4866"],
 			fireColor: ["#b5103f", "#ab3254", "#cc2157", "#ba0936"],
 			behavior: behaviors.GAS,
 			state: "gas",
@@ -20154,8 +20289,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			stain: 0.04
 		};
 		elements.vivite_gas = {
-			color: ["#ffedfe", "#ffe0fd", "#ffd9f9", "#ffd1f0", "#ffccdf"],
-			colorOn: ["#eec7fc", "#f5b1fc", "#faa2f1", "#fa93c3", "#ff99b1"],
+			color: ["#ffedfe", "#ffe0fd", "#ffd9f9", "#ffd1f0", "#ffccdf"],
+			colorOn: ["#eec7fc", "#f5b1fc", "#faa2f1", "#fa93c3", "#ff99b1"],
 			fireColor: ["#ff66ba", "#ff85ef", "#ff99f7"],
 			tick: function(pixel) {
 				if(Math.random() < 0.032 && exposedToAir(pixel)) {
@@ -26102,7 +26237,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						//Metamorphism will be driven using solely temperature.
 						//Pressure simulation, due to how the game is coded, will be limited to requiring the rock to be surrounded.
 					elements.slate = {
-						color: ["#787B80", "#535557", "#695E58", "#696969", "#6B5D5B"],
+						color: ["#787B80", "#535557", "#695E58", "#696969", "#6B5D5B"],
 						tempHigh: 200,
 						stateHigh: "felsic_magma",
 						category: "solid rock",
@@ -28593,7 +28728,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.bless.reactions.toxin = { elem2: "antidote" };
 		elements.bless.reactions.dead = { elem2: null };
 		elements.bless.reactions.brain = { elem2: null };
-		elements.bless.reactions.bioooze = { elem2: null };
+		elements.bless.reactions.bio_ooze = { elem2: null };
 		elements.bless.tool = function(pixel) {
 			if (elements.bless.ignore.indexOf(pixel.element) !== -1) { return; }
 			if (pixel.burning) { // stop burning
@@ -36355,7 +36490,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					amalgamatedBombFire += ",resonant_ender".repeat(5);
 					amalgamatedBombFire += ",foof".repeat(8);
 					amalgamatedBombFire += ",liquid_irradium".repeat(7);
-					amalgamatedBombFire += ",bioooze".repeat(8);
+					amalgamatedBombFire += ",bio_ooze".repeat(8);
 				});
 			//Fairies
 				runAfterLoad(function() {
@@ -41622,10 +41757,14 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.molten_steel ??= {};
 		elements.molten_steel.tempHigh = 2727;
 		elements.molten_steel.stateHigh = ["molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","carbon"]; //it may be FAR LESS than that irl; sus-304 steel has 0.08%
-		elements.carbon.reactions ??= {};
-		elements.carbon.reactions.molten_iron = {
-			elem1: ["carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon",null],
-			elem2: "molten_steel"
+		if(elements.carbon) {
+			elements.carbon.reactions ??= {};
+			elements.carbon.reactions.molten_iron = {
+				elem1: ["carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon",null],
+				elem2: "molten_steel"
+			}
+		} else {
+			logMessage("The mod that adds carbon failed to load in time. This is likely due to a race condition in the way Sandboxels applies mods, and not the fault of said mod's author, and will usually be fixed by reloading")
 		};
 		elements.support_steel = {
 			color: elements.steel.color,
@@ -42176,7 +42315,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			audioObject[oscillatorNodeName].connect(audioObject[gainNodeName])
 			audioObject[oscillatorNodeName].frequency.value = parameterObject.frequency
 			audioObject[gainNodeName].connect(audioContext.destination)
-			audioObject[oscillatorNodeName].start(audioContext.currentTime + parameterObject.delay)
+			audioObject[oscillatorNodeName].start(audioContext.currentTime + (parameterObject.delay))
 			//stopping handler
 			if(parameterObject.endType === "exponential") { //starts fading immediately
 				audioObject[gainNodeName].gain.exponentialRampToValueAtTime(
@@ -42200,16 +42339,71 @@ Make sure to save your command in a file if you want to add this preset again.`
 			breakInto: ["plastic","metal_scrap","metal_scrap","metal_scrap"],
 			conduct: 1,
 			properties: {
-				frequency: 440,
 				type: "sine",
 				endType: "none",
-				length: 1,
-				volume: 1,
-				delay: 0,
 				debounce: 0,
 				debounceLength: tps
 			},
+			onSelect: function() {
+				showPropertySetter();
+
+				showSetterColumn("numeric",0);
+				var p0 = document.getElementById("propertynumeric0input");
+				var p0h = document.getElementById("propertynumeric0heading");
+				if(p0) {
+					p0.setAttribute("set","noteBlockFrequency");
+					p0.setAttribute("min","1");
+					p0.value = ambaPlaceProperties.noteBlockFrequency;
+				};
+				if(p0h) {
+					p0h.innerText = "Frequency";
+				};
+
+				showSetterColumn("numeric",1);
+				var p1 = document.getElementById("propertynumeric1input");
+				var p1h = document.getElementById("propertynumeric1heading");
+				if(p1) {
+					p1.setAttribute("set","noteBlockLength");
+					p1.setAttribute("min","0");
+					p1.value = ambaPlaceProperties.noteBlockLength;
+				};
+				if(p1h) {
+					p1h.innerText = "Length";
+				};
+
+				showSetterColumn("numeric",2);
+				var p2 = document.getElementById("propertynumeric2input");
+				var p2h = document.getElementById("propertynumeric2heading");
+				if(p2) {
+					p2.setAttribute("set","noteBlockVolume");
+					p2.setAttribute("min","0");
+					p2.value = ambaPlaceProperties.noteBlockVolume;
+				};
+				if(p2h) {
+					p2h.innerText = "Volume";
+				};
+
+				showSetterColumn("numeric",3);
+				var p3 = document.getElementById("propertynumeric3input");
+				var p3h = document.getElementById("propertynumeric3heading");
+				if(p3) {
+					p3.setAttribute("set","noteBlockDelay");
+					p3.setAttribute("min","0");
+					p3.value = ambaPlaceProperties.noteBlockDelay;
+				};
+				if(p3h) {
+					p3h.innerText = "Delay";
+				};
+			},
+			onUnselect: function() {
+				hideAllSetterColumns();
+				hidePropertySetter()
+			},
 			tick: function(pixel) {
+				pixel.frequency ??= (ambaPlaceProperties?.noteBlockFrequency ?? 440);
+				pixel.length ??= (ambaPlaceProperties?.noteBlockLength ?? 1);
+				pixel.volume ??= (ambaPlaceProperties?.noteBlockVolume ?? 1);
+				pixel.delay ??= (ambaPlaceProperties?.noteBlockDelay ?? 0);
 				var pixelSoundName = `x${pixel.x}y${pixel.y}`; //Generate unique-enough name
 				var pixelPropertyObject = { //Load sound properties from pixel as object;
 					frequency: pixel.frequency,
@@ -44292,7 +44486,12 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 			}
 		});
 	//SPECIFY CURRENT ELEMENT, MOUSE SIZE, AND TPS ON LOAD ##
-		window.addEventListener("load",function() {
+			/*if(urlParams.get("pause") !== null) {
+				paused = true;
+				document.getElementById("pauseButton").setAttribute("on","true")
+			};*/
+
+			window.addEventListener("load",function() {
 			currentElement = urlParams.get("currentElement") ?? "sand";
 			if(!elementExists(currentElement)) {
 				currentElement = "sand"
@@ -44316,14 +44515,490 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 			if(shapeOrder.indexOf(shape) == -1) {
 				shape = "square"
 			};
-			currentShape = shape
+			currentShape = shape;
+
+			/*if(urlParams.get("pause") !== null) {
+				paused = true;
+				document.getElementById("pauseButton").setAttribute("on","true")
+			};*/
 		});
+	//PRESSURE SYSTEM ##
+		loadSettings();
+		settings.dopressure ??= false;
+		settings.drawpressure ??= false;
+		saveSettings();
+		pressureCellSize = 4;
+
+		function getPressureAtPixelCoords(pixelX,pixelY) {
+			var pressureCellX = Math.floor(pixelX / pressureCellSize);
+			var pressureCellY = Math.floor(pixelY / pressureCellSize);
+			return pressureMap?.[pressureCellX]?.[pressureCellY] ?? null
+		};
+
+		function regeneratePressureMap(_width,_height) {
+			pressureMap.forEach(function(x) {
+				x.forEach(y => y = null);
+				x.length = 0;
+				x = null
+			});
+			pressureMap.length = 0;
+			pressureMap = null;
+			pressureMap = new Array(_width);
+			for(var i = 0; i < pressureMap.length; i++) {
+				pressureMap[i] = new Array(height).fill(0)
+			};
+		};
+
+		pressureChangeDivisor = 2;
+		minimumPressure = -9999999;
+
+		elements.sand.pressurePermeability = 0.44;
+		elements.snow.pressurePermeability = 0.7;
+		elements.ice.pressureHigh = 800;
+		elements.gravel.pressurePermeability = 0.53;
+		elements.rock.pressurePermeability = 0.56,
+		elements.wall.blockPressure = true;
+		elements.brick.pressurePermeability = 0.002; //given in L/s*m^2 //at 150Pa //per https://www.astm.org/stp157720130132.html //i don't know how to unit the pressure because it's not scaled to anything in reality
+		elements.brick.pressureHigh = 90; //arbitrary
+		elements.wood.pressureHigh = 60; //arbitrary
+		runAfterLoad(function() {
+			var gravels = Object.keys(elements).filter(n => n.endsWith("gravel"));
+			for(var i = 0; i < gravels.length; i++) {
+				var gravelName = gravels[i];
+				elements[gravelName].pressureHigh ??= 400;
+			};
+			eLists.GRAVEL = gravels;
+
+			var shards = Object.keys(elements).filter(n => n.endsWith("shards"));
+			for(var i = 0; i < shards.length; i++) {
+				var shardName = shards[i];
+				var data = elements[shardName];
+				if(data.breakInto) {
+					data.pressureHigh ??= 400;
+				}
+			};
+			eLists.SHARD = shards;
+
+			var elementsThatBreakIntoScrap = Object.keys(elements).filter(n => elements[n].breakInto?.endsWith?.("scrap"));
+			for(var i = 0; i < elementsThatBreakIntoScrap.length; i++) {
+				var etbisName = elementsThatBreakIntoScrap[i];
+				var data = elements[etbisName]
+				var _hardness = data.hardness ?? 0.5;
+				data.pressureHigh ??= (_hardness * 625);
+			};
+
+			var rocks = Object.keys(elements).filter(n => elements[n]._data?.[2]?.endsWith?.("rock"));
+			for(var i = 0; i < rocks.length; i++) {
+				var rockName = rocks[i];
+				elements[rockName].pressureHigh ??= 250;
+			};
+			eLists.ROCK = rocks
+		});
+		
+
+		function pressureTick(forceTick=false) {
+			if(!(settings.dopressure)) {
+				return
+			};
+			if(paused && !(forceTick)) {
+				return
+			} else if((!paused) || forceTick) { //shouldn't be necessary				
+				var positions = [];
+				for(var x = 0; x < pressureMap.length; x++) {
+					for(var y = 0; y < pressureMap[x].length; y++) {
+						positions.push([x,y])
+					};
+				};
+				shuffleArray(positions);
+				for(var i = 0; i < positions.length; i++) {
+					var [x,y] = positions[i];
+					// yes i took this from doHeat lol
+					var v0 = pressureMap[x]?.[y];
+					if(typeof(v0) !== "undefined") {
+						var _ac = arrayToShuffled(mooreDonutCoords);
+						if(isNaN(v0) || (v0 < minimumPressure)) { pressureMap[x][y] = 0; v0 = 0 };
+						var cellLeftCoord = x * pressureCellSize;
+						var cellTopCoord = y * pressureCellSize;
+						var cellRightCoord = ((x + 1) * pressureCellSize) - 1;
+						var cellBottomCoord = ((y + 1) * pressureCellSize) - 1;
+						var pixels = getPixelsInRegion(cellLeftCoord,cellTopCoord,cellRightCoord,cellBottomCoord);
+						var howManyPixelsFitPerCell = (pressureCellSize ** 2);
+						var thisCellPermeability = 1;
+						if(pixels.length > 0) {
+							var pixelWasDeleted = false;
+							pixels.forEach(function(pixel) {
+								//var pressure = v0;
+								var data = elements[pixel.element];
+								if(!data) { return };
+								var highResult = data.highPressureTransition ?? data.breakInto
+								var lowResult = data.lowPressureTransition ?? data.breakInto
+								if((typeof(data.pressureHigh) == "number") && (typeof(highResult) !== "undefined")) {
+									//console.log(data.pressureHigh,highResult);
+									if(v0 >= data.pressureHigh) {
+										while(Array.isArray(highResult)) {
+											highResult = randomChoice(highResult)
+										};
+										if(highResult === null) {
+											deletePixel(pixel.x,pixel.y)
+											return
+										} else {
+											changePixel(pixel,highResult)
+										};
+										return
+									}
+								};
+								if((typeof(data.pressureLow) == "number") && (typeof(lowResult) !== "undefined")) {
+									if(v0 <= data.pressureLow) {
+										while(Array.isArray(lowResult)) {
+											lowResult = randomChoice(lowResult)
+										};
+										if(lowResult === null) {
+											deletePixel(pixel.x,pixel.y)
+											return
+										} else {
+											changePixel(pixel,lowResult)
+										};
+										return
+									}
+								}
+							});
+							if(pixelWasDeleted) {
+								pixels = getPixelsInRegion(cellLeftCoord,cellTopCoord,cellRightCoord,cellBottomCoord)
+							};
+							var emptySpaces = howManyPixelsFitPerCell - pixels.length;
+							var preThisCellPermeability = pixels.map(x => getElementPressurePermeability(x.element));
+							thisCellPermeability = (sumNumericArray(preThisCellPermeability) + emptySpaces) / howManyPixelsFitPerCell;
+						};
+						for (var j = 0; j < _ac.length; j++) {
+							var offsets = _ac[j];
+							var nx = x+(offsets[0]);
+							var ny = y+(offsets[1]);
+							var taxicabDistance = sumNumericArray(offsets.map(Math.abs));
+							var adjustment = 1/Math.sqrt(taxicabDistance);
+							var v1 = pressureMap[nx]?.[ny];
+							if(typeof(v1) === "number") {
+								if(isNaN(v1) || (v1 < minimumPressure)) { pressureMap[nx][ny] = 0; v1 = 0 };
+								if(v0 == v1) { continue }
+								//coords of new cell
+								var newCellLeftCoord = nx * pressureCellSize;
+								var newCellTopCoord = ny * pressureCellSize;
+								var newCellRightCoord = ((nx + 1) * pressureCellSize) - 1;
+								var newCellBottomCoord = ((ny + 1) * pressureCellSize) - 1;
+								var pixels = getPixelsInRegion(newCellLeftCoord,newCellTopCoord,newCellRightCoord,newCellBottomCoord);
+								var permeability = 1;
+								if(pixels.length > 0) {
+									var pixelWasDeleted = false;
+									pixels.forEach(function(pixel) {
+										//var pressure = v0;
+										var data = elements[pixel.element];
+										if(!data) { return };
+										var highResult = data.highPressureTransition ?? data.breakInto
+										var lowResult = data.lowPressureTransition ?? data.breakInto
+										if((typeof(data.pressureHigh) == "number") && (typeof(highResult) !== "undefined")) {
+											//console.log(data.pressureHigh,highResult);
+											if(v0 >= data.pressureHigh) {
+												while(Array.isArray(highResult)) {
+													highResult = randomChoice(highResult)
+												};
+												if(highResult === null) {
+													deletePixel(pixel.x,pixel.y);
+													pixelWasDeleted = true
+												} else {
+													changePixel(pixel,highResult)
+												};
+												return
+											}
+										};
+										if((typeof(data.pressureLow) == "number") && (typeof(lowResult) !== "undefined")) {
+											if(v0 <= data.pressureLow) {
+												while(Array.isArray(lowResult)) {
+													lowResult = randomChoice(lowResult)
+												};
+												if(lowResult === null) {
+													deletePixel(pixel.x,pixel.y);
+													pixelWasDeleted = true
+												} else {
+													changePixel(pixel,lowResult)
+												};
+												return
+											}
+										}
+									});
+									if(pixelWasDeleted) {
+										pixels = getPixelsInRegion(newCellLeftCoord,newCellTopCoord,newCellRightCoord,newCellBottomCoord)
+									};
+									var emptySpaces = howManyPixelsFitPerCell - pixels.length;
+									var prePermeability = pixels.map(x => getElementPressurePermeability(x.element));
+									permeability = (sumNumericArray(prePermeability) + emptySpaces) / howManyPixelsFitPerCell;
+									//console.log("   with pixels",permeability);
+								}/* else {
+									console.log("without pixels",permeability)
+								}*/;
+								
+								if((thisCellPermeability == 0) || (permeability == 0)) {
+									continue
+								} else {
+									permeability = (thisCellPermeability + permeability) / 2; //average of source and destination permeabilities because it's simpler
+									var avg = (v0 + v1)/2;
+									// Set both cell araes to their average, permeability permitting
+									//console.log(pixelTicks,"c",change);
+									pressureMap[x][y] = lerp(pressureMap[x][y],avg,permeability);
+									pressureMap[nx][ny] = lerp(pressureMap[nx][ny],avg,permeability);
+									//set again the variables to the cell values
+									v0 = pressureMap[x][y];
+									v1 = pressureMap[nx][ny];
+									var change = avg - v1;
+									var direction = _ac[j];
+									var intensity = ((Math.sqrt(Math.abs(change)) / pressureChangeDivisor) * adjustment) * Math.sign(change);
+									//console.log(intensity);
+									if(Math.abs(intensity) >= 0.01) {
+										var baseMovement = direction.map(x => x * intensity); //Will be turned into an int when it's added to the pixels' velocities
+										if(!((baseMovement[0] === 0) && (baseMovement[1] === 0))) {
+											pixels.forEach(function(pixel) {
+												var drag = Math.min(4,1000/(elements[pixel.element]?.density ?? 1000)); //no more than 4 times the effect
+												var trueMovementX = Math.trunc(baseMovement[0] * drag);
+												var trueMovementY = Math.trunc(baseMovement[1] * drag);
+												pixel.vx ??= 0;
+												pixel.vy ??= 0;
+												pixel.vx += trueMovementX;
+												pixel.vy += trueMovementY;
+											})
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		};
+
+		function getElementPressurePermeability(elementName) {
+			if(typeof(elementName) == "object" && elementName.element) {
+				elementName = elementName.element
+			};
+			if(!(elementExists(elementName))) {
+				return 0
+			};
+			var elementData = elements[elementName];
+			if(elementData.blockPressure) {
+				return 0
+			} else {
+				if(elementData.state == "gas") {
+					return 1
+				} else {
+					return elementData.pressurePermeability ?? 0
+				};
+			};
+		};
+
+		function changePressure(x,y,value,operationType="+",trueIfPixelCoordinates_FalseIfPressureGridCoordinates=false) {
+			if(trueIfPixelCoordinates_FalseIfPressureGridCoordinates) {
+				x = Math.floor(x / pressureCellSize);
+				y = Math.floor(y / pressureCellSize);
+			};
+			if(typeof(pressureMap?.[x]?.[y]) === "number") {
+				switch(operationType.toLowerCase()) {
+					default:
+					case "+":
+					case "add":
+					case "addition":
+					case "plus":
+					case "increase":
+					case "increment":
+						if(typeof(pressureMap?.[x]?.[y]) === "number") {
+							pressureMap[x][y] += value
+						};
+						break;
+					case "-":
+					case "subtract":
+					case "subtraction":
+					case "minus":
+					case "take away":
+					case "takeaway":
+					case "decrease":
+					case "decrement":
+						if(typeof(pressureMap?.[x]?.[y]) === "number") {
+							pressureMap[x][y] -= value
+						};
+						break;
+					case "*":
+					case "x":
+					case "×":
+					case "multiply":
+					case "multiplication":
+					case "times":
+					case "by":
+						if(typeof(pressureMap?.[x]?.[y]) === "number") {
+							pressureMap[x][y] *= value
+						};
+						break;
+					case "/":
+					case "÷":
+					case "divide":
+					case "division":
+					case "divided by":
+						if(typeof(pressureMap?.[x]?.[y]) === "number") {
+							pressureMap[x][y] /= value
+						};
+						break;
+					case "%":
+					case "mod":
+					case "modulo":
+					case "modulus":
+					case "modulo by":
+						if(typeof(pressureMap?.[x]?.[y]) === "number") {
+							pressureMap[x][y] %= value
+						};
+						break;
+					case "=":
+					case "set":
+					case "equals":
+					case "assign":
+					case "assignment":
+						if(typeof(pressureMap?.[x]?.[y]) === "number") {
+							pressureMap[x][y] = value
+						};
+						break;
+					case ">": //lower-bounds the color
+					case ">=":
+					case "min":
+					case "minimum":
+						if(typeof(pressureMap?.[x]?.[y]) === "number") {
+							pressureMap[x][y] = Math.max(value,pressureMap[x][y])
+						};
+						break;
+					case "<":
+					case "<=":
+					case "max": //upper-bounds the color
+					case "maximum":
+						if(typeof(pressureMap?.[x]?.[y]) === "number") {
+							pressureMap[x][y] = Math.min(value,pressureMap[x][y])
+						};
+						break;
+					case "^":
+					case "**":
+					case "exp":
+					case "exponent":
+					case "exponentiate":
+					case "raise":
+					case "raise to":
+					case "raised to":
+						if(typeof(pressureMap?.[x]?.[y]) === "number") {
+							var sign1 = Math.sign(pressureMap[x][y]);
+							var sign2 = Math.sign(value);
+							pressureMap[x][y] = (Math.abs(pressureMap[x][y]) ** Math.abs(value)) * sign1 * sign2;
+						};
+						break;
+					case "√":
+					case "n√":
+					case "root":
+					case "nth root":
+						if(typeof(pressureMap?.[x]?.[y]) === "number") {
+							var sign1 = Math.sign(pressureMap[x][y]);
+							var sign2 = Math.sign(value);
+							pressureMap[x][y] = (Math.abs(pressureMap[x][y]) ** Math.abs(1 / value)) * sign1 * sign2;
+						};
+				};
+				if(isNaN(pressureMap[x][y])) { pressureMap[x][y] = 0 };
+				return pressureMap[x][y];
+			} else {
+				return false
+			}
+		};
+		
+		function setGlobalPressure(value) {
+			for(var x = 0; x < pressureMap.length; x++) {
+				for(var y = 0; y < pressureMap[x].length; y++) {
+					pressureMap[x][y] = value
+				}
+			}
+		}
+
+		function alertIfPressureDisabled() {
+			if(!(settings.dopressure)) {
+				logMessage("Pressure simulation is disabled")
+			}
+		};
+
+		elements.add_pressure = {
+			color: "#FF0000",
+			behavior: behaviors.WALL,
+			category: "special",
+			tool: function(pixel) {
+				changePressure(pixel.x,pixel.y,3 ** (shiftDown + 1),"+",true);
+			}
+		};
+		
+		elements.subtract_pressure = {
+			color: "#0000FF",
+			behavior: behaviors.WALL,
+			category: "special",
+			tool: function(pixel) {
+				changePressure(pixel.x,pixel.y,3 ** (shiftDown + 1),"-",true);
+			}
+		};
+
+		elements.zero_pressure = {
+			color: "#000000",
+			behavior: behaviors.WALL,
+			category: "special",
+			tool: function(pixel) {
+				changePressure(pixel.x,pixel.y,0,"=",true);
+			}
+		};
+
+		elements.reset_pressure = {
+			color: "#000000",
+			maxSize: 1,
+			behavior: behaviors.WALL,
+			category: "special",
+			tool: function(pixel) {
+				setGlobalPressure(0)
+			}
+		};
+
+		function pressureTicker(forceTick=false) {
+			if(settings.dopressure && ((!paused) || forceTick)) {
+				pressureTick(forceTick)
+			}
+		};
+
+		oldDoFrame = doFrame;
+		doFrame = function() {
+			oldDoFrame();
+			pressureTicker(true)
+		};
+
+		runAfterButtons(function() {
+			//WIDTH AND HEIGHT AREN'T DEFINED UNTIL THEN FOR SOME FUCKING REASON
+			oldClearAll = clearAll;
+			clearAll = function() {
+				oldClearAll();
+				regeneratePressureMap(Math.ceil(width / pressureCellSize),Math.ceil(height / pressureCellSize)) // use the global width and height
+			};
+
+			pressureMap = new Array(Math.ceil(width / pressureCellSize));
+			for(var i = 0; i < pressureMap.length; i++) {
+				pressureMap[i] = new Array(Math.ceil(height / pressureCellSize)).fill(0)
+			};
+
+			afterEveryTick(pressureTicker)
+		})
 	//FIX ##
 		//fsr it's pausing silently on load now so this should fix that by silently unpausing it on load
 		window.addEventListener("load",function() {
-			paused = false;
+			if(urlParams.get("paused") !== null) {
+				paused = true;
+                document.getElementById("pauseButton").setAttribute("on","true");
+			} else {
+				paused = false;
+                document.getElementById("pauseButton").setAttribute("on","false");
+			}
 			crimsonObject.dirt = "crimsoil"; //something is changing it to sand
 		});
+
+	//
 
 	//MISCELLANEOUS CHANGES ##
 		eLists.PIPE = ['pipe', 'destroyable_pipe', 'e_pipe', 'destroyable_e_pipe', 'channel_pipe', 'destroyable_channel_pipe', 'bridge_pipe'];
@@ -44442,7 +45117,7 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 		//aChefsDream fix: (re-)define juice reactions
 		elements.juice.reactions ??= {};
 		
-		gigadebugMode = false;
+		gigadebugMode = false; //fights every-tick log spam by limiting each message to being logged 50 times
 		if(gigadebugMode) {
 			logLimit = 50;
 			logLimitCache = {};
@@ -44455,6 +45130,7 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 				logLimitCache[argsKey]++
 			}
 		}
+
 	//END ##
 } catch (error) {
 	alert(`Load failed (try reloading).\nThis is likely a sporadic failure caused by inconsistencies in how mods are loaded, and will likely fix itself in a refresh or two. If it persists, then it's an issue.\nError: ${error.stack}`);
