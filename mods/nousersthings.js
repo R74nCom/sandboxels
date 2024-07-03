@@ -2321,7 +2321,7 @@ elements.element_filler = {
     }
 } 
 var outlinerVar = 0
-elements.outliner = {
+elements.inner_outliner = {
     color: elements.filler.color,
     category: elements.filler.category,
     excludeRandom: true,
@@ -2578,45 +2578,27 @@ elements.selective_void = {
         }
     }
 } 
-let radiusVar = 0
-let circleElem = 0
-let circleRep = false
+let circleElem = "wood"
 elements.scuffed_circle_brush = {
     category: "special",
     color: elements.drag.color,
     excludeRandom: true,
     state: "solid",
     movable: false,
-    maxSize: 1,
     onSelect: function(){
-        var answerR = prompt("Radius of the brush. Things above 10 may be laggy.",(radiusVar||undefined));
-        if (!answerR) { return }
-		radiusVar = answerR;
 		var answerE = prompt("Element of the brush.",(circleElem||undefined));
         if (!answerE) { return }
-		circleElem = answerE;
-        var answerH = prompt("Replace? True or false. May be laggy.",(circleRep||undefined));
-        if (!answerH) { answerH = false }
-		circleRep = answerH;
+		circleElem = mostSimilarElement(answerE);
     },
     tick: function(pixel){
-        var circlec = circleCoords(pixel.x, pixel.y, radiusVar)
-        for (var i = 0; i < circlec.length; i++){
-            var coord = circlec[i]
-            var x = coord.x
-            var y = coord.y
-            if (isEmpty(x, y)){
-                createPixel(circleElem, x, y)
-            }
-            else if (circleRep && !outOfBounds(x, y)){
-                deletePixel(x, y)
-                createPixel(circleElem, x, y)
-            }
-        }
-        var thisx = pixel.x
-        var thisy = pixel.y
-        deletePixel(thisx, thisy)
-        createPixel(circleElem, thisx, thisy)
+        let radius = mouseSize/2
+        //pyhtagoreas time
+        if (Math.sqrt(Math.pow(pixel.x-mousePos.x,2)+Math.pow(pixel.y-mousePos.y,2)) < radius) {
+            deletePixel(pixel.x, pixel.y)
+            createPixel(circleElem, pixel.x, pixel.y)
+        } else {
+            deletePixel(pixel.x, pixel.y)
+        } 
     }
 }
 function randomIntFromInterval(min, max) { // min and max included 
@@ -3398,4 +3380,78 @@ elements.global_heat_conductor = {
     behavior: behaviors.WALL,
     category: "solids",
     density: 10000,
+}
+let latticeElem = "wood"
+elements.lattice_brush = {
+    color: elements.grid_brush.color,
+    behavior: behaviors.WALL,
+    category: "special",
+    onSelect: function(){
+        let ans1 = prompt("Enter the element you want to use for the lattice", latticeElem||"wood")
+        latticeElem = mostSimilarElement(ans1)
+    },
+    tick: function(pixel){
+        let modx = pixel.x%2
+        let mody = pixel.y%2
+        let valid = {
+            1: 0,
+            0: 1
+        }
+        if (valid[modx] == mody){
+            changePixel(pixel, latticeElem)
+        }else {
+            deletePixel(pixel.x, pixel.y)
+        }
+    }
+}
+elements.spaced_lattice_brush = {
+    color: elements.grid_brush.color,
+    behavior: behaviors.WALL,
+    category: "special",
+    onSelect: function(){
+        let ans1 = prompt("Enter the element you want to use for the lattice", latticeElem||"wood")
+        latticeElem = mostSimilarElement(ans1)
+    },
+    tick: function(pixel){
+        let modx = pixel.x%5
+        let mody = pixel.y%5
+        let valid = {
+            1: 3,
+            2: 0,
+            3: 2,
+            4: 4,
+            0: 1
+        }
+        if (valid[modx] == mody){
+            changePixel(pixel, latticeElem)
+        }else {
+            deletePixel(pixel.x, pixel.y)
+        }
+    }
+}
+let outlinerElem = "wood"
+elements.outer_outliner = {
+    color: elements.inner_outliner.color,
+    behavior: behaviors.WALL,
+    category: "special",
+    onSelect: function(){
+        let ans1 = prompt("Enter the element you want to use for the outliner. The outliner will ignore pixels of this type.", outlinerElem||"wood")
+        outlinerElem = mostSimilarElement(ans1)
+    },
+    tick: function(pixel){
+        // this just checks if theres any neighboring coord non-outliner elem pixels. yuh that simple
+        for (var i = 0; i < squareCoords.length; i++) {
+            var x = pixel.x+squareCoords[i][0];
+            var y = pixel.y+squareCoords[i][1];
+            if (!isEmpty(x,y,true)) {
+                var newPixel = pixelMap[x][y];
+                if (newPixel.element != outlinerElem && newPixel.element!= "outer_outliner") {
+                    deletePixel(pixel.x, pixel.y)
+                    createPixel(outlinerElem, pixel.x, pixel.y)
+                    return;
+                }
+            }
+        }
+        deletePixel(pixel.x, pixel.y)
+    }
 }
