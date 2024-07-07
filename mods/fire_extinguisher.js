@@ -117,7 +117,7 @@ elements.fire_extinguisher = {
                         if (fx >= 0 && fx < width && fy >= 0 && fy < height) {
                             let targetPixel = pixelMap[fx][fy];
                             if (!targetPixel || targetPixel.element === "air") {
-                                createPixel("fire_extinguisher_foam", fx, fy);
+                                createPixel("firefighting_foam", fx, fy);
                             }
                         }
                     }
