@@ -6,9 +6,9 @@ var nextLightmap = [];
 var lightmapWidth, lightmapHeight;
 var lightmapScale = 2;
 var pixelSizeQuarter = pixelSizeHalf / 2;
+var falloff = 0.8;
 
 // Define RGB colors
-var fireColor = [255, 69, 0];
 var coldFireColor = [0, 191, 255];
 var fireflyColor = [240, 255, 70];
 var radColor = [75, 100, 30];
@@ -27,10 +27,8 @@ if (!rgbToArray) {
 		}
 
 		if (colorString.startsWith('rgb')) {
-			// Handle RGB format
 			return colorString.slice(4, -1).split(',').map(val => parseInt(val.trim()));
 		} else if (colorString.startsWith('#')) {
-			// Handle HEX format
 			let hex = colorString.slice(1);
 
 			// Handle shorthand hex (e.g., #03F)
@@ -59,18 +57,20 @@ function scaleList(numbers, scale) {
 	return numbers.map(number => number * scale);
 }
 
-function initializeLightmap(width, height) {
-	lightmapWidth = Math.ceil(width / lightmapScale);
-	lightmapHeight = Math.ceil(height / lightmapScale);
+function initializeLightmap(_width, _height) {
+    const lightmapWidth = Math.ceil(_width / lightmapScale);
+    const lightmapHeight = Math.ceil(_height / lightmapScale);
 
-	for (var y = 0; y < lightmapHeight; y++) {
-		lightmap[y] = [];
-		nextLightmap[y] = [];
-		for (var x = 0; x < lightmapWidth; x++) {
-			lightmap[y][x] = { color: [0, 0, 0] };
-			nextLightmap[y][x] = { color: [0, 0, 0] };
-		}
-	}
+    const createLightmapArray = (width, height) =>
+        Array.from({ length: height }, () =>
+            Array.from({ length: width }, () => ({ color: [0, 0, 0] }))
+        );
+
+    const newLightmap = createLightmapArray(lightmapWidth, lightmapHeight);
+    const newNextLightmap = createLightmapArray(lightmapWidth, lightmapHeight);
+
+    lightmap = newLightmap;
+    nextLightmap = newNextLightmap;
 }
 
 function deepCopy(source, target) {
@@ -113,9 +113,9 @@ function propagateLightmap() {
 
 			nextLightmap[y][x] = {
 				color: [
-					Math.min(Math.max(0, totalColor[0] / neighborCount * 0.8), 255 * 8),
-					Math.min(Math.max(0, totalColor[1] / neighborCount * 0.8), 255 * 8),
-					Math.min(Math.max(0, totalColor[2] / neighborCount * 0.8), 255 * 8)
+					Math.min(Math.max(0, totalColor[0] / neighborCount * falloff), 255 * 8),
+					Math.min(Math.max(0, totalColor[1] / neighborCount * falloff), 255 * 8),
+					Math.min(Math.max(0, totalColor[2] / neighborCount * falloff), 255 * 8)
 				]
 			};
 		}
@@ -172,15 +172,15 @@ function renderLightmap() {
 	if (!lightmap || !lightmap[0]) return;
 
 	var context = canvas.getContext('2d');
-	var width = lightmap[0].length;
-	var height = lightmap.length;
+	var _width = lightmap[0].length;
+	var _height = lightmap.length;
 
-	for (var y = 0; y < height; y++) {
-		for (var x = 0; x < width; x++) {
+	for (var y = 0; y < _height; y++) {
+		for (var x = 0; x < _width; x++) {
 			var { color } = lightmap[y][x];
 			var [r, g, b] = color;
 
-			if (r > 0 || g > 0 || b > 0) {
+			if (r > 16 || g > 16 || b > 16) {
 				var [h, s, v] = rgbToHsv(r, g, b);
 				var newColor = hsvToRgb(h, s, 1);
 				var alpha = v;
@@ -262,7 +262,7 @@ elements.laser.tick = function(pixel) {
 var originalFireTick2 = elements.fire.tick;
 elements.fire.tick = function(pixel) {
 	originalFireTick2(pixel);
-	glowColor(pixel, fireColor);
+	glowItsOwnColor(pixel);
 };
 
 var originalFlashTick = elements.flash.tick;
@@ -326,7 +326,7 @@ window.addEventListener('load', () => {
 	var originalResizeCanvas = resizeCanvas;
 	resizeCanvas = function(newHeight, newWidth, newPixelSize, clear) {
 		originalResizeCanvas(newHeight, newWidth, newPixelSize, clear);
-		initializeLightmap(newHeight, newWidth);
+		initializeLightmap(width, height);
 	};
 });
 
