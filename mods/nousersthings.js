@@ -307,11 +307,6 @@ elements.technetium = {
 },
 elements.destroyable_pipe = {
     color: "#414c4f",
-    onSelect: function() {
-        if(!enabledMods.contains("mods/nousersthings.js")){
-            logMessage("credit to nousersthings.js for this element")
-        }
-    },
     tick: function(pixel) {
         if (!pixel.stage && pixelTicks-pixel.start > 60) {
             for (var i = 0; i < squareCoords.length; i++) {
@@ -2672,9 +2667,9 @@ elements.healing_serum = {
                     pixel.waitReduce = true
                 }
                 if (pixel.wait == 0){
-                    if (!pixel.elementsSeen[pixelMap[x][y].element] && pixelMap[x][y].element != "healing_serum"){
+                    if (!pixel.elementsSeen[pixelMap[x][y].element] && !(["healing_serum", "bless", "experience"].includes(pixelMap[x][y].element))){
                         pixel.elementsSeen[pixelMap[x][y].element] = 1
-                    } else if (pixelMap[x][y].element != "healing_serum") {
+                    } else if (!(["healing_serum", "bless", "experience"].includes(pixelMap[x][y].element))) {
                         pixel.elementsSeen[pixelMap[x][y].element] += 1
                     }
                 }
@@ -2941,6 +2936,7 @@ elements.run_some_code = {
     color: "#68b2cf",
     category: "tools",
     canPlace: false,
+    tool: function(){},
     onSelect: function(){
         let code = prompt("Enter code to run")
         if (code){

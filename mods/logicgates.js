@@ -462,3 +462,39 @@ elements.logic_unshock = {
     },
     excludeRandom: true,
 }
+elements.list_all_wifi = {
+    color: elements.lookup.color,
+    category: "tools",
+    tool: function(){},
+    excludeRandom: true,
+    onSelect: function(){
+        let results = {}
+        for (let i in currentPixels){
+            var otherPixel = currentPixels[i]
+            if (["logic_receiver", "logic_transmitter"].includes(otherPixel.element)){
+                if (otherPixel.channel){
+                    if (results[otherPixel.channel]){
+                        results[otherPixel.channel].push([otherPixel.x, otherPixel.y])
+                    } else {
+                        results[otherPixel.channel] = [[otherPixel.x, otherPixel.y]]
+                    }
+                }
+            }
+        }
+        console.log(results)
+        let keys = Object.keys(results)
+        let ans1 = prompt(keys.length + " unique channels have been found. Type 1 to list them all.", 1)
+        if(ans1 == "1"){
+            ans2 = prompt("["+keys +"]"+ " These are all the channels found. Type the name of one of them to see the positions of all pixels with that channel.", keys[0])
+            if (keys.includes(ans2)){
+                let finalString = ""
+                for (i in results[ans2]){
+                    finalString += ", ["
+                    finalString += results[ans2][i]
+                    finalString += "]"
+                }
+                alert(finalString)
+            }
+        }
+    }
+}
