@@ -4,7 +4,7 @@ var topColor = 'rgb(130, 0, 10)';
 var blending = 0.9;
 
 var topColdFireColor = 'rgb(30, 10, 110)';
-var ColdFireBlending = 0.9;
+var coldFireBlending = 0.9;
 
 function cssColorToRGB(color) {
 	let rgbMatch = color.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
@@ -40,7 +40,7 @@ elements.cold_fire.tick = function(pixel) {
 
 	if (Math.random()<0.4) {
 		let originalColor = pixel.color;
-		pixel.color = blendColors(originalColor, topColdFireColor, blending);
+		pixel.color = blendColors(originalColor, topColdFireColor, coldFireBlending);
 	}
 };
 
