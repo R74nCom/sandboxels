@@ -307,11 +307,6 @@ elements.technetium = {
 },
 elements.destroyable_pipe = {
     color: "#414c4f",
-    onSelect: function() {
-        if(!enabledMods.contains("mods/nousersthings.js")){
-            logMessage("credit to nousersthings.js for this element")
-        }
-    },
     tick: function(pixel) {
         if (!pixel.stage && pixelTicks-pixel.start > 60) {
             for (var i = 0; i < squareCoords.length; i++) {
@@ -1487,6 +1482,7 @@ elements.heat_test = {
 		}
 	},
 },
+/*
 elements.soup = {
 	color: "#3d2812",
 	behavior: behaviors.LIQUID,
@@ -1537,6 +1533,7 @@ elements.soup = {
 elements.broth.onMix = function(pixel){
 	changePixel(pixel, "soup")
 },
+*/
 converter1Var = 0;
 converter2Var = 0;
 elements.converter = {
@@ -1661,6 +1658,7 @@ elements.molten_plutonium = {
 	category: "states",
 	state: "liquid",
 	tempLow: 620,
+    hidden: true,
 	stateLow: "plutonium",
 	tick: function(pixel){
         if(Math.random() < 0.0007){
@@ -1865,6 +1863,7 @@ function HSVtoRGB(h, s, v) {
 elements.molten_bismuth = {
     color: ["#ee8d63", "#ef7e5e", "#f06e5c", "#f05c5c"],
     behavior: behaviors.MOLTEN,
+    hidden: true,
     category: "states",
     state: "liquid",
     temp: 280,
@@ -2317,7 +2316,7 @@ elements.element_filler = {
     }
 } 
 var outlinerVar = 0
-elements.outliner = {
+elements.inner_outliner = {
     color: elements.filler.color,
     category: elements.filler.category,
     excludeRandom: true,
@@ -2574,45 +2573,27 @@ elements.selective_void = {
         }
     }
 } 
-let radiusVar = 0
-let circleElem = 0
-let circleRep = false
+let circleElem = "wood"
 elements.scuffed_circle_brush = {
     category: "special",
     color: elements.drag.color,
     excludeRandom: true,
     state: "solid",
     movable: false,
-    maxSize: 1,
     onSelect: function(){
-        var answerR = prompt("Radius of the brush. Things above 10 may be laggy.",(radiusVar||undefined));
-        if (!answerR) { return }
-		radiusVar = answerR;
 		var answerE = prompt("Element of the brush.",(circleElem||undefined));
         if (!answerE) { return }
-		circleElem = answerE;
-        var answerH = prompt("Replace? True or false. May be laggy.",(circleRep||undefined));
-        if (!answerH) { answerH = false }
-		circleRep = answerH;
+		circleElem = mostSimilarElement(answerE);
     },
     tick: function(pixel){
-        var circlec = circleCoords(pixel.x, pixel.y, radiusVar)
-        for (var i = 0; i < circlec.length; i++){
-            var coord = circlec[i]
-            var x = coord.x
-            var y = coord.y
-            if (isEmpty(x, y)){
-                createPixel(circleElem, x, y)
-            }
-            else if (circleRep && !outOfBounds(x, y)){
-                deletePixel(x, y)
-                createPixel(circleElem, x, y)
-            }
-        }
-        var thisx = pixel.x
-        var thisy = pixel.y
-        deletePixel(thisx, thisy)
-        createPixel(circleElem, thisx, thisy)
+        let radius = mouseSize/2
+        //pyhtagoreas time
+        if (Math.sqrt(Math.pow(pixel.x-mousePos.x,2)+Math.pow(pixel.y-mousePos.y,2)) < radius) {
+            deletePixel(pixel.x, pixel.y)
+            createPixel(circleElem, pixel.x, pixel.y)
+        } else {
+            deletePixel(pixel.x, pixel.y)
+        } 
     }
 }
 function randomIntFromInterval(min, max) { // min and max included 
@@ -2686,9 +2667,9 @@ elements.healing_serum = {
                     pixel.waitReduce = true
                 }
                 if (pixel.wait == 0){
-                    if (!pixel.elementsSeen[pixelMap[x][y].element] && pixelMap[x][y].element != "healing_serum"){
+                    if (!pixel.elementsSeen[pixelMap[x][y].element] && !(["healing_serum", "bless", "experience"].includes(pixelMap[x][y].element))){
                         pixel.elementsSeen[pixelMap[x][y].element] = 1
-                    } else if (pixelMap[x][y].element != "healing_serum") {
+                    } else if (!(["healing_serum", "bless", "experience"].includes(pixelMap[x][y].element))) {
                         pixel.elementsSeen[pixelMap[x][y].element] += 1
                     }
                 }
@@ -2798,6 +2779,12 @@ elements.ray = {
         if (pixel.life < pixel.maxLife){
             pixel.color = "rgba("+pixel.rgb[0]+","+pixel.rgb[1]+","+pixel.rgb[2]+","+(pixel.life/pixel.maxLife)+")"
         } else {pixel.color = "rgba("+pixel.rgb[0]+","+pixel.rgb[1]+","+pixel.rgb[2]+",1)"}
+        // lightmap.js integration
+        if (enabledMods.includes("mods/lightmap.js")){
+            let x = Math.floor(pixel.x / lightmapScale);
+            let y = Math.floor(pixel.y / lightmapScale);
+            lightmap[y][x] = { color: [parseInt(pixel.rgb[0])*((pixel.life/pixel.maxLife)), parseInt(pixel.rgb[1])*((pixel.life/pixel.maxLife)), parseInt(pixel.rgb[2])*((pixel.life/pixel.maxLife))]};
+        }
         if (pixel.life <= 0){
             deletePixel(pixel.x, pixel.y)
         }
@@ -2825,6 +2812,7 @@ elements.specific_ray_emitter = {
         var rayans = prompt("Please input the desired element of this ray emitter",(rayElement||undefined));
         if (!rayans) { return }
 		rayElement = mostSimilarElement(rayans);
+        if (rayElement != "ray"){rainbowMode = false}
         var rayans2 = prompt("Should the ray be stopped by walls? Write true or false.",(rayStoppedByWalls||false));
         if (rayans2 == "false"){rayStoppedByWalls = false} else {rayStoppedByWalls = true}
         var rayans3 = prompt("How much should the beginning of the ray be offset from the emitter?", (specificRayStart||0));
@@ -2874,16 +2862,16 @@ elements.specific_ray_emitter = {
         pixel.rgb[0] = parseInt(pixel.rgb[0])
         pixel.rgb[1] = parseInt(pixel.rgb[1])
         pixel.rgb[2] = parseInt(pixel.rgb[2])
-        console.log(pixel.rgb)
+        //console.log(pixel.rgb)
         var hsvResult = RGBtoHSV(pixel.rgb[0], pixel.rgb[1], pixel.rgb[2]);
             pixel.tHue = hsvResult.h;
             var rgbResult = HSVtoRGB(pixel.tHue + (1/360), 1, 1);
-            console.log(rgbResult)
+            //console.log(rgbResult)
             const hexR = rgbResult.r.toString(16).padStart(2, '0');
             const hexG = rgbResult.g.toString(16).padStart(2, '0');
             const hexB = rgbResult.b.toString(16).padStart(2, '0');
             const hexCode = `#${hexR}${hexG}${hexB}`;
-            console.log(hexCode)
+            //console.log(hexCode)
             pixel.color = pixelColorPick(pixel, hexCode)}
         for (var i = 0; i < squareCoords.length; i++) {
             var coord = squareCoords[i];
@@ -2948,6 +2936,7 @@ elements.run_some_code = {
     color: "#68b2cf",
     category: "tools",
     canPlace: false,
+    tool: function(){},
     onSelect: function(){
         let code = prompt("Enter code to run")
         if (code){
@@ -3107,6 +3096,8 @@ elements.piston_ray_emitter = {
 }
 let pistonStart = 0
 let pistonEnd = 0
+let pistonDistance = 1
+let pistonCooldown = 10
 elements.specific_piston_ray_emitter = {
     color: "#517597",
     behavior: behaviors.WALL,
@@ -3120,12 +3111,18 @@ elements.specific_piston_ray_emitter = {
         pistonStart = ans2
         var ans3 = parseInt(prompt("How offset should the end of the push/pulling be?", "20"))
         pistonEnd = ans3
+        var ans4 = parseInt(prompt("How far should it push the pixels each charge?", "1"))
+        pistonDistance = ans4
+        var ans5 = parseInt(prompt("How many ticks should it wait to be charged again?", "6"))
+        pistonCooldown = ans5
     },
     tick: function(pixel){
         if (pixelTicks == pixel.start){
             pixel.pullOrPush = pullOrPush
             pixel.pistonStart = pistonStart
             pixel.pistonEnd = pistonEnd
+            pixel.pistonDistance = pistonDistance
+            pixel.pistonCooldown = pistonCooldown
         }
         if (!pixel.cooldown){pixel.cooldown = 0}
         if (pixel.cooldown < 1){
@@ -3135,10 +3132,11 @@ elements.specific_piston_ray_emitter = {
             var y = pixel.y+coord[1];
             if (!isEmpty(x,y, true)){
                 if (pixelMap[x][y].charge && (pixelMap[x][y].element == "wire" || pixelMap[x][y].element == "insulated_wire")){
-                    pixel.cooldown = 6
+                    for (let r = 0; r < pixel.pistonDistance; r++){
+                    pixel.cooldown = pixel.pistonCooldown
                     var dir = [0-squareCoords[i][0], 0-squareCoords[i][1]]
-                    var startx = pixel.x+(dir[0]*pixel.pistonStart)
-                    var starty = pixel.y+(dir[1]*pixel.pistonStart)
+                    var startx = pixel.x+(dir[0]*(pixel.pistonStart+1))
+                    var starty = pixel.y+(dir[1]*(pixel.pistonStart+1))
                     var magnitude = pixel.pistonEnd
                     var endx = startx+(magnitude*dir[0])
                     var endy = starty+(magnitude*dir[1])
@@ -3158,7 +3156,7 @@ elements.specific_piston_ray_emitter = {
                         }
                         pCoord[0] = lx;
                         pCoord[1] = ly;
-                    }
+                    }}
                 }
             }
         }} else {pixel.cooldown -= 1}
@@ -3191,7 +3189,8 @@ elements.gallium_nitride = {
                 }
             }
         }
-    }
+    },
+    movable: false,
 }
 elements.molten_gallium_nitride = {
     color: ["#d29d70", "#cf8e5e", "#cd7e4e", "#ca6d40", "#c75b33"],
@@ -3227,7 +3226,8 @@ elements.gallium_phosphide = {
                 }
             }
         }
-    }
+    },
+    movable: false,
 }
 elements.molten_gallium_phosphide = {
     color: ["#a36936", "#cf8e5e", "#9b4c1c", "#ca6d40", "#a13d19"],
@@ -3238,4 +3238,216 @@ elements.molten_gallium_phosphide = {
     tempLow: 1447,
     stateLow: "gallium_phosphide",
     density: 4100,
+}
+/*
+let funcRadius = 10
+let functionScope = "pixel"
+let funcFunction = "function(){console.log('Hello World')}"
+let functionStorage = function(){}
+elements.function_machine = {
+    color: "#56999e",
+    behavior: behaviors.WALL,
+    category: "machines",
+    state: "solid",
+    onSelect: function(){
+        let ans1 = prompt("What radius should the function be executed at? (Ignore if you plan on making it a global one.", funcRadius||10)
+        funcRadius = parseInt(ans1)
+        let ans2 = prompt("What scope should the function be executed in? Type \"global\" or \"pixel\" (without the quotes of course.)", functionScope||"pixel")
+        if (ans2 == "global"){functionScope = "global"} else {functionScope = "pixel"}
+        let ans3 = prompt("Type the entire function. Example: function(pixel){pixel.temp = 1000}}", funcFunction||"function(){console.log('Hello World')}")
+        funcFunction = ans3
+    },
+    tick: function(pixel){
+        if (pixelTicks == pixel.start){
+            pixel.radius = funcRadius
+            pixel.scope = functionScope
+            pixel.function = funcFunction
+        }
+        if (pixel.scope == "global"){
+            eval("functionStorage = "+pixel.function)
+            functionStorage()
+        } else {
+            var circlec = circleCoords(pixel.x, pixel.y, pixel.radius)
+            for (var i = 0; i < circlec.length; i++){
+                var coord = circlec[i]
+                var x = coord.x
+                var y = coord.y
+                if (!isEmpty(x,y,true)){
+                    eval("functionStorage = "+pixel.function)
+                    functionStorage(pixelMap[x][y])
+                }
+            }
+        }
+    },
+    excludeRandom: true,
+}
+    */
+elements.galvanized_steel = {
+    color: "#4c585f",
+    behavior: behaviors.WALL,
+    tempHigh: 1455.5,
+    category: "solids",
+    density: 7850,
+    conduct: 0.42,
+    hardness: 0.8,
+    tick: function(pixel){
+        for (var i = 0; i < adjacentCoords.length; i++) {
+            var coord = squareCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (!isEmpty(x,y, true)){
+                let otherPixel = pixelMap[x][y]
+                if (otherPixel.element == "molten_zinc"){
+                    if (Math.random() < 0.005){
+                        deletePixel(x, y)
+                        if (!pixel.absorbedZinc){pixel.absorbedZinc = 0}
+                        pixel.absorbedZinc ++
+                    }
+                } else if (otherPixel.element == "steel"){
+                    if (pixel.absorbedZinc && Math.random() < 0.02){
+                        changePixel(otherPixel, "galvanized_steel")
+                        pixel.absorbedZinc --
+                    }
+                }
+                else if (otherPixel.element == "galvanized_steel"){
+                    if (!otherPixel.absorbedZinc){otherPixel.absorbedZinc = 0}
+                    if (pixel.absorbedZinc > otherPixel.absorbedZinc && Math.random() < 0.1){
+                        otherPixel.absorbedZinc ++
+                        pixel.absorbedZinc --
+                    }
+                }
+            }
+        }
+    },
+    movable: false
+}
+if (!eLists.metals) { eLists.metals = [] }
+eLists.metals = eLists.metals.concat(["galvanized_steel"])
+if (!elements.steel.reactions){elements.steel.reactions = {}}
+elements.steel.reactions.molten_zinc = {elem1: "galvanized_steel", chance: 0.035}
+if (!elements.molten_zinc.reactions){elements.zinc.reactions = {}}
+elements.molten_zinc.reactions.steel = {elem1: "null", chance: 0.2}
+elements.super_heat_conductor = {
+    color: "#b66b61",
+    behavior: behaviors.WALL,
+    category: "solids",
+    density: 10000,
+    tick: function(pixel){
+        for (let j = 0; j <= 10; j++){
+            for (var i = 0; i < adjacentCoords.length; i++) {
+                var x = pixel.x+adjacentCoords[i][0];
+                var y = pixel.y+adjacentCoords[i][1];
+                if (!isEmpty(x,y,true)) {
+                    var newPixel = pixelMap[x][y];
+                    // Skip if both temperatures are the same
+                    if (pixel.temp == newPixel.temp || elements[newPixel.element].insulate == true) {
+                        continue;
+                    }
+                    // Set both pixel temperatures to their average
+                    var avg = (pixel.temp + newPixel.temp)/2;
+                    pixel.temp = avg;
+                    newPixel.temp = avg;
+                    pixelTempCheck(pixel);
+                    pixelTempCheck(newPixel);
+                }
+            }
+        }
+    }
+}
+let ogdrawPixels = drawPixels
+drawPixels = function(forceTick=false){
+    if (!paused || forceTick){
+    var heatpixels = currentPixels.filter(function(pixelToCheck) {
+        if (pixelToCheck.element == "global_heat_conductor"){
+            return true;
+        }
+    })
+    for (var i = 0; i < heatpixels.length; i++) {
+        var newPixel = heatpixels[i];
+        var randomPixel = heatpixels[Math.floor(Math.random()*heatpixels.length)];
+        var avg = (randomPixel.temp + newPixel.temp)/2;
+        randomPixel.temp = avg;
+        newPixel.temp = avg;
+    }}
+    ogdrawPixels(forceTick)
+}
+elements.global_heat_conductor = {
+    color: "#55251e",
+    behavior: behaviors.WALL,
+    category: "solids",
+    density: 10000,
+}
+let latticeElem = "wood"
+elements.lattice_brush = {
+    color: elements.grid_brush.color,
+    behavior: behaviors.WALL,
+    category: "special",
+    onSelect: function(){
+        let ans1 = prompt("Enter the element you want to use for the lattice", latticeElem||"wood")
+        latticeElem = mostSimilarElement(ans1)
+    },
+    tick: function(pixel){
+        let modx = pixel.x%2
+        let mody = pixel.y%2
+        let valid = {
+            1: 0,
+            0: 1
+        }
+        if (valid[modx] == mody){
+            changePixel(pixel, latticeElem)
+        }else {
+            deletePixel(pixel.x, pixel.y)
+        }
+    }
+}
+elements.spaced_lattice_brush = {
+    color: elements.grid_brush.color,
+    behavior: behaviors.WALL,
+    category: "special",
+    onSelect: function(){
+        let ans1 = prompt("Enter the element you want to use for the lattice", latticeElem||"wood")
+        latticeElem = mostSimilarElement(ans1)
+    },
+    tick: function(pixel){
+        let modx = pixel.x%5
+        let mody = pixel.y%5
+        let valid = {
+            1: 3,
+            2: 0,
+            3: 2,
+            4: 4,
+            0: 1
+        }
+        if (valid[modx] == mody){
+            changePixel(pixel, latticeElem)
+        }else {
+            deletePixel(pixel.x, pixel.y)
+        }
+    }
+}
+let outlinerElem = "wood"
+elements.outer_outliner = {
+    color: elements.inner_outliner.color,
+    behavior: behaviors.WALL,
+    category: "special",
+    onSelect: function(){
+        let ans1 = prompt("Enter the element you want to use for the outliner. The outliner will ignore pixels of this type.", outlinerElem||"wood")
+        outlinerElem = mostSimilarElement(ans1)
+    },
+    tick: function(pixel){
+        // this just checks if theres any neighboring coord non-outliner elem pixels. yuh that simple
+        for (var i = 0; i < squareCoords.length; i++) {
+            var x = pixel.x+squareCoords[i][0];
+            var y = pixel.y+squareCoords[i][1];
+            if (!isEmpty(x,y,true)) {
+                var newPixel = pixelMap[x][y];
+                if (newPixel.element != outlinerElem && newPixel.element!= "outer_outliner") {
+                    deletePixel(pixel.x, pixel.y)
+                    createPixel(outlinerElem, pixel.x, pixel.y)
+                    return;
+                }
+            }
+        }
+        deletePixel(pixel.x, pixel.y)
+    }
 }
