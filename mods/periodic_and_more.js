@@ -58,7 +58,7 @@ runAfterLoad(function() {
 });
 
 // Run if another mod is active
-if (enabledMods.includes("mods/test.js")) {
+if (enabledMods.includes["mods/chem.js", "mods/moreChemistry.js", "mods/metals.js", "mods/halogen.js", "mods/noblegas.js", "mods/radioactive.js", "mods/nousersthings.js"]) {
     runAfterLoad(function() {
         // Your code here
         console.log("Hello World!");
