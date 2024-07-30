@@ -1,0 +1,5 @@
+elements.test={
+color: "#FF00FF",
+category: "other",
+state:"solid"
+}
