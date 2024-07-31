@@ -48,7 +48,6 @@ elements.sand_exploder = {
     category: "tools",
 };
 
-// Add reactions to existing elements
 if (!elements.water.reactions) { // Include this block once
     elements.water.reactions = {} // This creates the property if it doesn't exist
 }
