@@ -2,19 +2,12 @@
 elements.beryllium = {
     color: "#b3b3b3",
     behavior: behaviors.WALL,
-    category: "periodic",
+    category: "solids",
     viscosity: 100000,
     state: "solid",
     density: 720,
+    reactions: {
 };
-
-// Changing existing elements:
-elements.water.color = "#ff0000";
-elements.water.behavior = behaviors.WALL;
-
-// Removing elements:
-// Be aware, things may break
-delete elements.ketchup;
 
 // Adding behavior presets:
 behaviors.SELFDELETE = [
@@ -57,15 +50,13 @@ runAfterLoad(function() {
     console.log("Hello World!");
 });
 
-// Run if another mod is active
 if (enabledMods.includes["mods/chem.js", "mods/moreChemistry.js", "mods/metals.js", "mods/halogen.js", "mods/noblegas.js", "mods/radioactive.js", "mods/nousersthings.js"]) {
     runAfterLoad(function() {
-        // Your code here
+        
         console.log("Hello World!");
     });
 }
 
 // Creating eLists:
 eLists.PERIODIC = ["beryllium", "scandium", "vanadium", "manganese", "cobalt"];
-// Adding elements to eLists:
-eLists.CONDIMENT.push("honey");
+// Adding elements to 
