@@ -7,7 +7,18 @@ elements.beryllium = {
     state: "solid",
     density: 720,
     reactions: {
+        water: {elem1: "dirty_water"}
 };
+
+ elements.galinstan = {
+     color: "#a9a9a9",
+     behavior: behaviors.LIQUID,
+     category: "liquids",
+     viscosity: 26,
+     state: "liquid",
+     density: 0.026
+ };
+     
 
 // Adding behavior presets:
 behaviors.SELFDELETE = [
