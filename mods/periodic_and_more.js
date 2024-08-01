@@ -7,7 +7,7 @@ elements.beryllium = {
     state: "solid",
     density: 720,
     reactions: {
-        water: {elem1: "dirty_water"}
+        water: {elem1: "beryllium", elem2: "dirty_water"}
 };
 
  elements.galinstan = {
@@ -37,7 +37,6 @@ behaviors.mud.tick = function(pixel) {
     }
 };
 
-// Create a new tool:
 elements.sand_exploder = {
     color: "#ff0000",
     tool: function(pixel) {
@@ -56,17 +55,15 @@ elements.water.reactions.soap = { "elem1":null, "elem2":"soapy_water" }
 
 // Run after all mods are loaded, for cross-mod compatibility
 runAfterLoad(function() {
-    // Your code here
+    
     console.log("Hello World!");
 });
 
 if (enabledMods.includes["mods/chem.js", "mods/moreChemistry.js", "mods/metals.js", "mods/halogen.js", "mods/noblegas.js", "mods/radioactive.js", "mods/nousersthings.js"]) {
-    runAfterLoad(function() {
-        
+    runAfterLoad(function() )
         console.log("Hello World!");
     });
 }
 
 // Creating eLists:
-eLists.PERIODIC = ["beryllium", "scandium", "vanadium", "manganese", "cobalt"];
-// Adding elements to 
+eLists.PERIODIC = ["beryllium", "scandium", "vanadium", "manganese", "cobalt"]
