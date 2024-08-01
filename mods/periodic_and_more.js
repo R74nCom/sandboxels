@@ -8,6 +8,7 @@ elements.beryllium = {
     density: 720,
     reactions: {
         water: {elem1: "beryllium", elem2: "dirty_water"}
+    }
 };
 
  elements.galinstan = {
@@ -60,10 +61,10 @@ runAfterLoad(function() {
 });
 
 if (enabledMods.includes["mods/chem.js", "mods/moreChemistry.js", "mods/metals.js", "mods/halogen.js", "mods/noblegas.js", "mods/radioactive.js", "mods/nousersthings.js"]) {
-    runAfterLoad(function() )
+    runAfterLoad(function() {
         console.log("Hello World!");
-    });
-}
+    })
+};
 
 // Creating eLists:
 eLists.PERIODIC = ["beryllium", "scandium", "vanadium", "manganese", "cobalt"]
