@@ -60,11 +60,5 @@ runAfterLoad(function() {
     console.log("Hello World!");
 });
 
-if (enabledMods.includes["mods/chem.js", "mods/moreChemistry.js", "mods/metals.js", "mods/halogen.js", "mods/noblegas.js", "mods/radioactive.js", "mods/nousersthings.js"]) {
-    runAfterLoad(function() {
-        console.log("Hello World!");
-    })
-};
-
 // Creating eLists:
 eLists.PERIODIC = ["beryllium", "scandium", "vanadium", "manganese", "cobalt"]
