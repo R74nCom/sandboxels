@@ -2,19 +2,23 @@
 elements.beryllium = {
     color: "#b3b3b3",
     behavior: behaviors.WALL,
-    category: "periodic",
+    category: "solids",
     viscosity: 100000,
     state: "solid",
     density: 720,
+    reactions: {
+        water: {elem1: "beryllium", elem2: "dirty_water"}
 };
 
-// Changing existing elements:
-elements.water.color = "#ff0000";
-elements.water.behavior = behaviors.WALL;
-
-// Removing elements:
-// Be aware, things may break
-delete elements.ketchup;
+ elements.galinstan = {
+     color: "#a9a9a9",
+     behavior: behaviors.LIQUID,
+     category: "liquids",
+     viscosity: 26,
+     state: "liquid",
+     density: 0.026
+ };
+     
 
 // Adding behavior presets:
 behaviors.SELFDELETE = [
@@ -33,7 +37,6 @@ behaviors.mud.tick = function(pixel) {
     }
 };
 
-// Create a new tool:
 elements.sand_exploder = {
     color: "#ff0000",
     tool: function(pixel) {
@@ -44,7 +47,6 @@ elements.sand_exploder = {
     category: "tools",
 };
 
-// Add reactions to existing elements
 if (!elements.water.reactions) { // Include this block once
     elements.water.reactions = {} // This creates the property if it doesn't exist
 }
@@ -53,19 +55,15 @@ elements.water.reactions.soap = { "elem1":null, "elem2":"soapy_water" }
 
 // Run after all mods are loaded, for cross-mod compatibility
 runAfterLoad(function() {
-    // Your code here
+    
     console.log("Hello World!");
 });
 
-// Run if another mod is active
 if (enabledMods.includes["mods/chem.js", "mods/moreChemistry.js", "mods/metals.js", "mods/halogen.js", "mods/noblegas.js", "mods/radioactive.js", "mods/nousersthings.js"]) {
-    runAfterLoad(function() {
-        // Your code here
+    runAfterLoad(function() )
         console.log("Hello World!");
     });
 }
 
 // Creating eLists:
-eLists.PERIODIC = ["beryllium", "scandium", "vanadium", "manganese", "cobalt"];
-// Adding elements to eLists:
-eLists.CONDIMENT.push("honey");
+eLists.PERIODIC = ["beryllium", "scandium", "vanadium", "manganese", "cobalt"]
