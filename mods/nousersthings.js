@@ -307,11 +307,6 @@ elements.technetium = {
 },
 elements.destroyable_pipe = {
     color: "#414c4f",
-    onSelect: function() {
-        if(!enabledMods.contains("mods/nousersthings.js")){
-            logMessage("credit to nousersthings.js for this element")
-        }
-    },
     tick: function(pixel) {
         if (!pixel.stage && pixelTicks-pixel.start > 60) {
             for (var i = 0; i < squareCoords.length; i++) {
@@ -2672,9 +2667,9 @@ elements.healing_serum = {
                     pixel.waitReduce = true
                 }
                 if (pixel.wait == 0){
-                    if (!pixel.elementsSeen[pixelMap[x][y].element] && pixelMap[x][y].element != "healing_serum"){
+                    if (!pixel.elementsSeen[pixelMap[x][y].element] && !(["healing_serum", "bless", "experience"].includes(pixelMap[x][y].element))){
                         pixel.elementsSeen[pixelMap[x][y].element] = 1
-                    } else if (pixelMap[x][y].element != "healing_serum") {
+                    } else if (!(["healing_serum", "bless", "experience"].includes(pixelMap[x][y].element))) {
                         pixel.elementsSeen[pixelMap[x][y].element] += 1
                     }
                 }
@@ -2941,6 +2936,7 @@ elements.run_some_code = {
     color: "#68b2cf",
     category: "tools",
     canPlace: false,
+    tool: function(){},
     onSelect: function(){
         let code = prompt("Enter code to run")
         if (code){
@@ -3358,9 +3354,8 @@ elements.super_heat_conductor = {
         }
     }
 }
-let ogdrawPixels = drawPixels
-drawPixels = function(forceTick=false){
-    if (!paused || forceTick){
+runEveryTick(function() {
+    // run any code after pixels are simulated per tick
     var heatpixels = currentPixels.filter(function(pixelToCheck) {
         if (pixelToCheck.element == "global_heat_conductor"){
             return true;
@@ -3372,9 +3367,8 @@ drawPixels = function(forceTick=false){
         var avg = (randomPixel.temp + newPixel.temp)/2;
         randomPixel.temp = avg;
         newPixel.temp = avg;
-    }}
-    ogdrawPixels(forceTick)
-}
+    }
+})
 elements.global_heat_conductor = {
     color: "#55251e",
     behavior: behaviors.WALL,
@@ -3453,5 +3447,88 @@ elements.outer_outliner = {
             }
         }
         deletePixel(pixel.x, pixel.y)
+    }
+}
+function highestValueObjectKey(object){
+    let max = -Infinity
+    for (var key in object){
+        if (object[key] > (object[max]||-Infinity)){
+            max = key
+        }
+    }
+    return max
+}
+function sumOfObjectValues(object){
+    let sum = 0
+    for (var key in object){
+        sum += object[key]
+    }
+    return sum
+}
+neighborRandomChance = {
+    1: 0.015,
+    2: 0.03,
+    3: 0.06,
+    4: 0.12,
+    5: 0.2,
+    6: 0.5,
+    7: 0.8,
+    8: 1
+}
+elements.colored_filler = {
+    color: elements.rainbow.color,
+    behavior: behaviors.WALL,
+    category: "special",
+    customColor: true,
+    properties: {
+        "initalized": false,
+    },
+    onSelect: function(pixel){
+        logMessage("It is reccomended to place this while paused.")
+    },
+    tick: function(pixel){
+        let fillerNeighbors = {}
+        for (var i = 0; i < adjacentCoords.length; i++) {
+            var x = pixel.x+adjacentCoords[i][0];
+            var y = pixel.y+adjacentCoords[i][1];
+            if (isEmpty(x,y)) {
+                createPixel("colored_filler", x, y)
+                pixelMap[x][y].color = pixel.color;
+                pixelMap[x][y].initalized = true
+            }
+        }
+        for (var i = 0; i < squareCoords.length; i++) {
+            var x = pixel.x+squareCoords[i][0];
+            var y = pixel.y+squareCoords[i][1];
+            if (!isEmpty(x, y, true)){
+                var otherPixel = pixelMap[x][y];
+                if (otherPixel.element == "colored_filler" && otherPixel.color != pixel.color){
+                    fillerNeighbors[otherPixel.color] = (fillerNeighbors[otherPixel.color]||0)+1;
+                }
+            }
+        }
+        if(Object.keys(fillerNeighbors).length > 0){
+            let mostSeenColor = highestValueObjectKey(fillerNeighbors)
+            let opposingCount = sumOfObjectValues(fillerNeighbors)
+            if (Math.random() < neighborRandomChance[opposingCount]){
+                pixel.color = mostSeenColor;
+            }
+        }
+    },
+    renderer: function(pixel, ctx){
+        if (!pixel.initalized){
+            var rgb = hexToRGB(currentColor);
+            pixel.color = "rgb("+rgb.r+","+rgb.g+","+rgb.b+")";
+            pixel.initalized = true;
+        }
+        if (pixel.color != "monochrome" && pixel.color != "rainbow"){
+            drawSquare(ctx, pixel.color, pixel.x, pixel.y);
+        } else {
+            if (pixel.color == "monochrome"){
+                drawSquare(ctx, "hsl(0, 0%, " + 100*Math.abs(Math.asin(Math.sin(pixelTicks/30)))/(0.5*Math.PI) + "%)", pixel.x, pixel.y);
+            } else if (pixel.color == "rainbow"){
+                drawSquare(ctx, "hsl(" + ((pixelTicks%60)/60)*360 + ", 100%, 50%)", pixel.x, pixel.y);
+            }
+        }
     }
 }

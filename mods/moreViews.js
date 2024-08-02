@@ -223,15 +223,6 @@ runAfterLoadList.push(() => drawPixels = (function() {
             for (var i = 0; i < newCurrentPixels.length; i++) {
                 pixel = newCurrentPixels[i];
                 if (pixel.del) {continue}
-                if (!paused || forceTick) {
-                    if (elements[pixel.element].tick) {
-                        elements[pixel.element].tick(pixel);
-                    }
-                    if (pixel.del) {continue}
-                    if (elements[pixel.element].behavior) {
-                        pixelTick(pixel);
-                    }
-                };
                 if (pixel.con) { pixel = pixel.con }
                 if (elements[pixel.element].isGas || elements[pixel.element].glow) {
                     pixelsLast.push(pixel);
@@ -266,11 +257,6 @@ runAfterLoadList.push(() => drawPixels = (function() {
                 return;
             }
             
-            if (!settings["bg"]) {ctx.clearRect(0, 0, canvas.width, canvas.height)}
-            else {
-                ctx.fillStyle = settings["bg"];
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-            }
             var pixelDrawList = pixelsFirst.concat(pixelsLast);
             for (var i = 0; i < pixelDrawList.length; i++) {
                 pixel = pixelDrawList[i];
@@ -480,25 +466,8 @@ runAfterLoadList.push(() => drawPixels = (function() {
             if (ctx.globalAlpha < 1) {
                 ctx.globalAlpha = 1;
             }
-
-            if (elements[currentElement].maxSize < mouseSize) {
-                var mouseOffset = Math.trunc(elements[currentElement].maxSize/2);
-            }
-            else {
-                var mouseOffset = Math.trunc(mouseSize/2);
-            }
-            var topLeft = [mousePos.x-mouseOffset,mousePos.y-mouseOffset];
-            var bottomRight = [mousePos.x+mouseOffset,mousePos.y+mouseOffset];
-            // Draw a square around the mouse
-            ctx.strokeStyle = "white";
-            ctx.strokeRect(topLeft[0]*pixelSize,topLeft[1]*pixelSize,(bottomRight[0]-topLeft[0]+1)*pixelSize,(bottomRight[1]-topLeft[1]+1)*pixelSize);
-            // draw one transparent pixel in the center
-            if (settings.precision) {
-                ctx.fillStyle = "rgba(255,255,255,0.5)";
-                ctx.fillRect(mousePos.x*pixelSize,mousePos.y*pixelSize,pixelSize,pixelSize);
-            }
-            if ((!paused) || forceTick) {pixelTicks++};
         } else oldDrawPixels.apply(this, arguments);
+        return true;
     }
 }()));
 }
