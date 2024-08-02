@@ -75,3 +75,4 @@ drawPixels = function(forceTick=false) {
     updateLogicLists();
     drawLinks();
 };
+resetInterval(tps);

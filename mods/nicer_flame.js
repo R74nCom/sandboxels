@@ -1,7 +1,10 @@
-// Mod that makes fire look better with dark red at the top of the flame
+// RedBirdly's mod that makes fire look better with dark red at the top of the flame
 
-let topColor = 'rgb(130, 0, 0)';
-let blending = 0.7;
+var topColor = 'rgb(130, 0, 10)';
+var blending = 0.9;
+
+var topColdFireColor = 'rgb(30, 10, 110)';
+var coldFireBlending = 0.9;
 
 function cssColorToRGB(color) {
 	let rgbMatch = color.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
@@ -24,8 +27,22 @@ elements.fire.tick = function(pixel) {
 	// Call the original tick function
 	originalFireTick(pixel);
 
-	if (Math.random()<0.1) {
+	if (Math.random()<0.4) {
 		let originalColor = pixel.color;
 		pixel.color = blendColors(originalColor, topColor, blending);
 	}
 };
+
+let originalColdFireTick = elements.cold_fire.tick;
+elements.cold_fire.tick = function(pixel) {
+	// Call the original tick function
+	originalColdFireTick(pixel);
+
+	if (Math.random()<0.4) {
+		let originalColor = pixel.color;
+		pixel.color = blendColors(originalColor, topColdFireColor, coldFireBlending);
+	}
+};
+
+elements.fire.color = ["#ffcb31","#ffab21","#ff9600"];
+elements.cold_fire.color = ["#11ddff","#2288dd"];
