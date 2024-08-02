@@ -100,7 +100,7 @@ A fancier version of this changelog can be found here: https://sandboxels.R74n.c
     + Skin will grow Hair when cold
     + Lead can infect Blood
     + Epsom Salt can cure Infection and kill Mushroom Spores
-    + Fallout makes Meat Rocket
+    + Fallout makes Meat rot
     ~ Seeds element changes immediately
     + Bless can heal Glass and Clay Shards
     + Bless and Glue can heal Ruins
