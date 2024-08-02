@@ -644,7 +644,7 @@
                 if (!pixel.origColor && pixel.color.match(/^rgb/)) {
                     pixel.origColor = pixel.color.match(/\d+/g);
                 }
-                if (!pixel.origColor || view === 3) {
+                if (!pixel.origColor || view) {
                     drawDefault(ctx,pixel);
                     return;
                 }
