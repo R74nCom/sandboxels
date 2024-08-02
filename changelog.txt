@@ -42,7 +42,6 @@ A fancier version of this changelog can be found here: https://sandboxels.R74n.c
     + Sensors ignore Flash
     + Sensors are immune to Acid
     ~ Moved Fuse to Machines
-    ~ E-cloners no longer conduct back into Wires
    [Ocean Changes]
     + Foam generates on sandy Salt Water shores
     + Foam generates when Salt Water wets Sand
