@@ -5,6 +5,7 @@ var lightmap = [];
 var nextLightmap = [];
 var lightmapWidth, lightmapHeight;
 var lightmapScale = 3;
+var lightSourceBoost = 2;
 var pixelSizeQuarter = pixelSizeHalf / 2;
 var falloff = 0.7;
 
@@ -167,49 +168,54 @@ function hsvToRgb(h, s, v) {
 	return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
 }
 
-function renderLightmap() {
-	if (!canvas) return;
-	if (!lightmap || !lightmap[0]) return;
+function renderLightmapPrePixel(ctx) {
+    if (!lightmap || !lightmap[0]) return;
 
-	var context = canvas.getContext('2d');
-	var _width = lightmap[0].length;
-	var _height = lightmap.length;
+    var _width = lightmap[0].length;
+    var _height = lightmap.length;
 
-	for (var y = 0; y < _height; y++) {
-		for (var x = 0; x < _width; x++) {
-			var { color } = lightmap[y][x];
-			var [r, g, b] = color;
+    for (var y = 0; y < _height; y++) {
+        for (var x = 0; x < _width; x++) {
+            var { color } = lightmap[y][x];
+            var [r, g, b] = color;
 
-			if (r > 16 || g > 16 || b > 16) {
-				var [h, s, v] = rgbToHsv(r, g, b);
-				var newColor = hsvToRgb(h, s, 1);
-				var alpha = v;
+            if (r > 16 || g > 16 || b > 16) {
+                var [h, s, v] = rgbToHsv(r, g, b);
+                var newColor = hsvToRgb(h, s, 1);
+                var alpha = v;
 
-				context.fillStyle = `rgba(${newColor[0]}, ${newColor[1]}, ${newColor[2]}, ${alpha * 0.4})`;
-				context.fillRect(
+                ctx.fillStyle = `rgba(${newColor[0]}, ${newColor[1]}, ${newColor[2]}, ${alpha * 0.4})`;
+				ctx.fillRect(
 					x * pixelSize * lightmapScale,
 					y * pixelSize * lightmapScale,
 					pixelSize * lightmapScale,
 					pixelSize * lightmapScale
 				);
 
-				context.fillStyle = `rgba(${newColor[0]}, ${newColor[1]}, ${newColor[2]}, ${alpha * 0.25})`;
-				context.fillRect(
+				ctx.fillStyle = `rgba(${newColor[0]}, ${newColor[1]}, ${newColor[2]}, ${alpha * 0.25})`;
+				ctx.fillRect(
 					(x * pixelSize - pixelSizeHalf) * lightmapScale,
 					(y * pixelSize - pixelSizeHalf) * lightmapScale,
 					pixelSize * lightmapScale * 2,
 					pixelSize * lightmapScale * 2
 				);
-			}
-		}
-	}
+            }
+        }
+    }
 }
+
+// Register the function to run before each pixel is rendered
+renderPrePixel(function(ctx) {
+	if (!paused) {propagateLightmap();}
+    renderLightmapPrePixel(ctx);
+});
+
 
 function glowItsOwnColor(pixel) {
 	if (!pixel.color) {return;}
 	var x = Math.floor(pixel.x / lightmapScale);
 	var y = Math.floor(pixel.y / lightmapScale);
-	lightmap[y][x] = { color: rgbToArray(pixel.color) };
+	lightmap[y][x] = { color: scaleList(rgbToArray(pixel.color), lightSourceBoost) };
 }
 
 function glowItsOwnColorIfPowered(pixel) {
@@ -217,22 +223,21 @@ function glowItsOwnColorIfPowered(pixel) {
 	if (!pixel.color) return;
 	var x = Math.floor(pixel.x / lightmapScale);
 	var y = Math.floor(pixel.y / lightmapScale);
-	lightmap[y][x] = { color: rgbToArray(pixel.color) };
+	lightmap[y][x] = { color: scaleList(rgbToArray(pixel.color), lightSourceBoost) };
 }
 
 function glowColor(pixel, color) {
 	if (!color) {return;}
 	var x = Math.floor(pixel.x / lightmapScale);
 	var y = Math.floor(pixel.y / lightmapScale);
-	lightmap[y][x] = { color: color };
+	lightmap[y][x] = { color: scaleList(color, lightSourceBoost) };
 }
 
 function glowRadiationColor(pixel) {
 	var x = Math.floor(pixel.x / lightmapScale);
 	var y = Math.floor(pixel.y / lightmapScale);
-	lightmap[y][x] = { color: radColor };
+	lightmap[y][x] = { color: scaleList(radColor, lightSourceBoost) };
 }
-
 
 // Define element tick functions
 var originalStrangeMatterTick = elements.strange_matter.tick;
@@ -309,7 +314,7 @@ elements.magma.tick = glowItsOwnColor;
 elements.plasma.tick = glowItsOwnColor;
 elements.fw_ember.tick = glowItsOwnColor;
 
-elements.cold_fire.tick = pixel => glowColor(pixel, coldFireColor);
+elements.cold_fire.tick = glowItsOwnColor;
 
 // Radioactive elements
 var radioactiveElements = [
@@ -329,32 +334,3 @@ window.addEventListener('load', () => {
 		initializeLightmap(width, height);
 	};
 });
-
-var originalTick = tick;
-tick = function() {
-	originalTick();
-	if (!paused) propagateLightmap();
-};
-resetInterval(tps);
-
-var originalDoFrame = doFrame;
-doFrame = function() {
-	originalDoFrame();
-	propagateLightmap();
-};
-
-if (enabledMods.includes("mods/velocity.js")) {
-	runAfterAutogen(() => {
-		var originalDrawPixels = drawPixels;
-		drawPixels = function(forceTick = false) {
-			originalDrawPixels(forceTick);
-			renderLightmap();
-		};
-	});
-} else {
-	var originalDrawPixels = drawPixels;
-	drawPixels = function(forceTick = false) {
-		originalDrawPixels(forceTick);
-		renderLightmap();
-	};
-}
