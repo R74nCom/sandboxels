@@ -1,8 +1,6 @@
 if (!settings.heatglowMode){settings.heatglowMode = 1; saveSettings();}
-if (!eLists.metals) { eLists.metals = [] }
-	eLists.metals = eLists.metals.concat(["iron", "glass", "copper", "gold", "brass","steel","nickel","zinc","silver","aluminum","bronze","metal_scrap","oxidized_copper","tin","lead", "rose_gold", "tungsten"])
 if (!eLists.heatBlacklist) {eLists.heatBlacklist = []}
-	eLists.heatBlacklist = eLists.heatBlacklist.concat(["void", "sun", "light", "plasma", "fire", "border", "heater", "superheater"])
+	eLists.heatBlacklist = eLists.heatBlacklist.concat(["void", "sun", "light", "plasma", "fire", "border", "heater", "superheater", "laser", "ray"])
 function tempToRGB(temp){
 	if (temp <= 6500){
 		return{
@@ -58,7 +56,7 @@ renderEachPixel(function(pixel,ctx) {
 	} else {
 		color = oldtempToRgb(pixel.temp, pixel)
 		opacity = color.opacity
-		if (!eLists.metals.includes(pixel.element)){
+		if (!((elements[pixel.element].tempHigh > 400 && elements[elements[pixel.element].stateHigh] && elements[elements[pixel.element].stateHigh].state === "liquid"))){
 			return;
 		}
 	}
