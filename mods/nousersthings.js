@@ -3282,6 +3282,7 @@ elements.function_machine = {
     excludeRandom: true,
 }
     */
+   /*
 elements.galvanized_steel = {
     color: "#4c585f",
     behavior: behaviors.WALL,
@@ -3327,6 +3328,7 @@ if (!elements.steel.reactions){elements.steel.reactions = {}}
 elements.steel.reactions.molten_zinc = {elem1: "galvanized_steel", chance: 0.035}
 if (!elements.molten_zinc.reactions){elements.zinc.reactions = {}}
 elements.molten_zinc.reactions.steel = {elem1: "null", chance: 0.2}
+*/
 elements.super_heat_conductor = {
     color: "#b66b61",
     behavior: behaviors.WALL,
@@ -3483,15 +3485,12 @@ elements.colored_filler = {
     properties: {
         "initalized": false,
     },
-    onSelect: function(pixel){
-        logMessage("It is reccomended to place this while paused.")
-    },
     tick: function(pixel){
         let fillerNeighbors = {}
         for (var i = 0; i < adjacentCoords.length; i++) {
             var x = pixel.x+adjacentCoords[i][0];
             var y = pixel.y+adjacentCoords[i][1];
-            if (isEmpty(x,y)) {
+            if (isEmpty(x,y) && pixel.initalized) {
                 createPixel("colored_filler", x, y)
                 pixelMap[x][y].color = pixel.color;
                 pixelMap[x][y].initalized = true
