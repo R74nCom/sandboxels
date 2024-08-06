@@ -227,3 +227,34 @@ elements.oganesson = {
         }
     }
 }
+// lightmap.js integration function
+if (enabledMods.includes("mods/lightmap.js")){
+    function nobleGasTick(pixel){
+        if (pixel.charge || pixel.chargeCD){
+            let color = elements[pixel.element].colorOn
+            let randcolor = color[Math.floor(Math.random()*color.length)]
+            let rgbcolor = hexToRGB(randcolor)
+            console.log(color)
+            console.log(randcolor)
+            console.log(rgbcolor)
+            let x = Math.floor(pixel.x / lightmapScale);
+            let y = Math.floor(pixel.y / lightmapScale);
+            lightmap[y][x] = { color: [rgbcolor.r, rgbcolor.g, rgbcolor.b] };
+        }
+    }
+    let nobleGases = ["argon", "liquid_argon", "frozen_argon", "krypton", "liquid_krypton", "frozen_krypton", "xenon", "liquid_xenon", "frozen_xenon", "radon", "liquid_radon", "frozen_radon", "oganesson"]
+    for (let i = 0; i < nobleGases.length; i++){
+        let nobleGas = nobleGases[i]
+        if (elements[nobleGas].tick){
+            oldTick = elements[nobleGas].tick
+            elements[nobleGas].tick = function(pixel){
+                nobleGasTick(pixel)
+                oldTick(pixel)
+            }
+        }else{
+        elements[nobleGas].tick = function(pixel){
+            nobleGasTick(pixel)
+        }
+    }
+    }
+}

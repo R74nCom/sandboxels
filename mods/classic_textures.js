@@ -1,3 +1,4 @@
+settings.textures = 0;
 if (elements.dirt) {elements.dirt.color = [
     "#9e6b4b",
     "#9e6b4b",
@@ -159,3 +160,10 @@ if (elements.yeast && elements.yeast.reactions) {
     if (elements.yeast.reactions.grape) {elements.yeast.reactions.grape.color2 = "#916851";}
     if (elements.yeast.reactions.juice) {elements.yeast.reactions.juice.color2 = "#916851";}
 }
+if (elements.freeze_ray) {elements.freeze_ray.color = ["#0000ff","#5500ff"];}
+if (elements.hydrogen) {delete elements.hydrogen.fireColor;}
+if (elements.steel) {delete elements.steel.colorPattern;}
+if (elements.galvanized_steel) {delete elements.galvanized_steel.colorPattern;}
+if (elements.bird) {delete elements.bird.stateHighColor;}
+if (elements.frog) {delete elements.frog.stateHighColor;}
+if (elements.fallout) {elements.fallout.color = ["#63b85a","#448044","#598044","#7bb85a"];}

@@ -145,3 +145,36 @@ elements.lamb = {
     density: 1450,
     conduct: 0.2
 };
+converter1Var = 0;
+converter2Var = 0;
+elements.loom = {
+	color: "#296127",
+	behavior: behaviors.WALL,
+	category: "machines",
+	tick: function(pixel) {
+		if (pixel.start === pixelTicks){
+			pixel.contype = converter2Var;
+			pixel.specialturn = converter1Var;
+		}
+		 for (var i = 0; i < squareCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (!isEmpty(x,y, true)) {
+					var otherPixel = pixelMap[x][y];
+					if ((otherPixel.element == pixel.specialturn || pixel.specialturn == "all") && !elements.converter.ignore.includes(otherPixel.element)){
+						changePixel(otherPixel, pixel.contype)
+					}
+                }
+            }
+	},
+	onSelect: function() {
+        var answer5 = prompt("Please input what type of element should be converted. Write \"all\" to include everything.",(converter1Var||undefined));
+        if (!answer5) { return }
+		converter1Var = answer5;
+		var answer6 = prompt("Please input what it should turn into.",(converter2Var||undefined));
+        if (!answer6) { return }
+		converter2Var = answer6;
+    },
+	movable: false,
+},

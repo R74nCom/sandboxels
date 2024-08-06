@@ -197,7 +197,7 @@ elements.astatine = {
 elements.molten_astatine = {
     color: ["#cdaf42", "#d09a2c", "#d38419", "#d66b10", "#d84e13"],
     behavior: behaviors.RADMOLTEN,
-    state: "solid",
+    state: "liquid",
     tempHigh: 337,
     stateHigh: "astatine_gas",
     stateLow: "astatine",

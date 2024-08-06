@@ -110,11 +110,6 @@ function findFilterPrompt() {
 	return findElement;
 };
 
-runAfterLoad(function() {
-	oldDrawPixels = drawPixels;
-	drawPixels = function(forceTick=false) {
-		oldDrawPixels(forceTick);
-		//console.log(find);
-		if(find) { findHighlighting() };
-	};
-});
+renderPostPixel(findHighlighting);
+
+

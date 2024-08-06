@@ -1,118 +1,74 @@
-function weightedAverage(num1, num2, weight){
-	return ((weight * num1)+((1-weight)*num2))
-}
-const heatfunc = function(pixel){
-	if (pixel.element != "metal_scrap" || eLists.metals.includes(pixel.scrapType) || !pixel.scrapType){{
-		if (pixel.ogR == null || pixel.ogG == null || pixel.ogB == null || (pixel.element != pixel.ogElement && pixel.element == "metal_scrap") || (pixel.element != "metal_scrap" && pixel.ogElement == "metal_scrap") || (pixel.element == "oxidized_copper" && pixel.ogElement == "copper")){
-			pixel.ogR = parseInt(pixel.color.slice(4, pixel.color.indexOf(',')), 10)
-			pixel.ogG = parseInt(pixel.color.slice(pixel.color.indexOf(',') + 1, pixel.color.lastIndexOf(',')), 10)
-			pixel.ogB = parseInt(pixel.color.slice(pixel.color.lastIndexOf(',') + 1, -1), 10)
-			pixel.ogElement = pixel.element 
+if (!settings.heatglowMode){settings.heatglowMode = 1; saveSettings();}
+if (!eLists.heatBlacklist) {eLists.heatBlacklist = []}
+	eLists.heatBlacklist = eLists.heatBlacklist.concat(["void", "sun", "light", "plasma", "fire", "border", "heater", "superheater", "laser", "ray"])
+function tempToRGB(temp){
+	if (temp <= 6500){
+		return{
+			r: 255,
+			g: Math.max(-325.757*Math.pow(0.999581, temp)+272.879, 0),
+			b: Math.max(-571.403*Math.pow(0.999675, temp)+321.955, 0)
+		} 
+	} else {
+		return {
+			r: Math.max(604.879*Math.pow(0.999697, temp)+169.618, 0),
+			g: Math.max(719.488*Math.pow(0.999599, temp)+201.788, 0),
+			b: 255
 		}
-			var gethigh = 1000
-			var ctemp = 0
-			var ogR = 0
-			var ogG = 0
-			var ogB = 0
-			if (elements[pixel.element].tempHigh){
-				gethigh = elements[pixel.element].tempHigh
-			} else if (pixel.scrapType) {
-				gethigh = elements[pixel.scrapType].tempHigh
-			}
-		var halftemp = ((20+gethigh)/2)
-			if (pixel.temp <= (gethigh) - halftemp){
-				ctemp = 0;
-			} else if (pixel.temp > (gethigh)-halftemp && pixel.temp <= gethigh){
-				ctemp = ((1/halftemp)*pixel.temp)-(((gethigh)-halftemp)/halftemp)
-			}
-			if (ctemp <= 0.5){
-				newR = (((510-(2*pixel.ogR))*ctemp)+pixel.ogR);
-				newG = ((0-((2*pixel.ogG)*ctemp))+pixel.ogG);
-				newB = ((0-((2*pixel.ogB)*ctemp))+pixel.ogB);
-			}else if (ctemp > 0.5){
-				newR = 255;
-				newG = ((510*ctemp)-255);
-				newB= ((280*ctemp)-140);
-			}
-			let weight = (1-(ctemp/1.3))
-			pixel.color = "rgb(" + weightedAverage(pixel.ogR, newR, weight) + "," + weightedAverage(pixel.ogG, newG, weight) + "," + weightedAverage(pixel.ogB, newB, weight) + ")";
-	}}};
-	if (!eLists.metals) { eLists.metals = [] }
-	eLists.metals = eLists.metals.concat(["iron", "glass", "copper", "gold", "brass","steel","nickel","zinc","silver","aluminum","bronze","metal_scrap","oxidized_copper","tin","lead", "rose_gold"])
-eLists.metals.forEach(metal => { 
-	const prefunc = elements[metal].tick;
-	if (!prefunc){
-		elements[metal].tick = heatfunc;
-	}else{
-		const modfunc = function(pixel){
-			heatfunc(pixel);
-			prefunc(pixel);
-		};
-		elements[metal].tick = modfunc;
 	}
-	if (elements[metal].behavior == behaviors.WALL){
-		elements[metal].movable = false;
-	}
-});
-elements.color_baker = {
-	color: "#F61212",
-	tool: function(pixel) {
-		pixel.ogR = parseInt(pixel.color.slice(4, pixel.color.indexOf(',')), 10)
-		pixel.ogG = parseInt(pixel.color.slice(pixel.color.indexOf(',') + 1, pixel.color.lastIndexOf(',')), 10)
-		pixel.ogB = parseInt(pixel.color.slice(pixel.color.lastIndexOf(',') + 1, -1), 10)
-	},
-	category: "tools",
-	excludeRandom: true,
-	desc: "Use to bake a metals paint color into its 'true' color, for heating purposes.",
 }
-/*
- const plantfunc = function(pixel){
-	if (pixel.ogR == null || pixel.ogG == null || pixel.ogB == null){
-			pixel.ogR = parseInt(pixel.color.slice(4, pixel.color.indexOf(',')), 10)
-			pixel.ogG = parseInt(pixel.color.slice(pixel.color.indexOf(',') + 1, pixel.color.lastIndexOf(',')), 10)
-			pixel.ogB = parseInt(pixel.color.slice(pixel.color.lastIndexOf(',') + 1, -1), 10)
-			var deadR = 130;
-			var deadG = 103;
-			var deadB = 40;
-			var burnR = 30;
-			var burnG = 30;
-			var burnB = 30;
-			var newR = pixel.ogR;
-			var newG = pixel.ogG;
-			var newB = pixel.ogB;
-		}else{
-		var gethigh = (elements[pixel.element].tempHigh)
-		var halftemp = ((20+gethigh)/2)
-		if (pixel.temp > halftemp){
-				var ctemp = ((1/halftemp)*pixel.temp)-(((gethigh)-halftemp)/halftemp);
-			} else (ctemp = 0)
-			if (ctemp <= 0.5 && ctemp > 0){
-				newR = weightedAverage(deadR, pixel.ogR, 2*ctemp);
-				newG = weightedAverage(deadG, pixel.ogG, 2*ctemp);
-				newB = weightedAverage(deadB, pixel.ogB, 2*ctemp);
-			}else if (ctemp > 0.5){
-				var modctemp = 2*(ctemp%0.5)
-				newR = weightedAverage(burnR, deadR, 2*modctemp);
-				newG = weightedAverage(burnG, deadG, 2*modctemp);
-				newB = weightedAverage(burnB, deadB, 2*modctemp);
-			}
-			if (!ctemp == 0){
-			pixel.color = "rgb(" + newR + "," + newG + "," + newB + ")";
-			} else {pixel.color = "rgb(" + pixel.ogR + "," + pixel.ogG + "," + pixel.ogB + ")"}
-		}
-	};
-	if (!eLists.burnplants) { eLists.burnplants = [] }
-	eLists.burnplants = eLists.burnplants.concat(["plant","dead_plant","grass","algae","sapling","evergreen","cactus","seeds","grass_seed","wheat_seed","flower_seed","pistil","petal","tree_branch","bamboo_plant","mushroom_spore","mushroom_stalk","mushroom_gill","mushroom_cap","hyphae","pumpkin_seed","pumpkin","corn","corn_seed","potato","potato_seed","root"])
-eLists.burnplants.forEach(plant => { 
-	const prefunc = elements[plant].tick;
-	if (!prefunc){
-		elements[plant].tick = plantfunc;
-	}else{
-		const modfunc = function(pixel){
-			prefunc(pixel);
-			plantfunc(pixel);
-		};
-		elements[plant].tick = modfunc;
+function oldtempToRgb(temp, pixel){
+	let halftemp = ((20+elements[pixel.element].tempHigh)/2)
+	let fulltemp = elements[pixel.element].tempHigh
+	let ctemp = 0;
+	if (pixel.temp <= fulltemp - halftemp){
+		ctemp = 0;
+	} else {
+		ctemp = temp/(fulltemp-halftemp)-halftemp/(fulltemp-halftemp);
 	}
-});
- */
+	if (ctemp <= 0.5){
+		return{
+			r: (510*ctemp),
+			g: 0,
+			b: 0,
+			opacity: (ctemp/1.3)
+		}
+	} else {
+		return {
+			r: 255,
+			g: ((510*ctemp)-255),
+			b: ((280*ctemp)-140),
+			opacity: (ctemp/1.3)
+		}
+	}
+}
+
+renderPresets.HEATGLOW = function(pixel,ctx) {
+	drawDefault(ctx,pixel)
+}
+
+renderEachPixel(function(pixel,ctx) {
+    // run any code when each individual pixel is rendered
+	if (!eLists.heatBlacklist.includes(pixel.element)){
+	let color, opacity;
+	if (settings.heatglowMode == 1){
+		color = tempToRGB(pixel.temp)
+		opacity = Math.max(0, Math.min(1, -3.5486801*Math.pow(0.9960659, pixel.temp)+0.73333))
+	} else {
+		color = oldtempToRgb(pixel.temp, pixel)
+		opacity = color.opacity
+		if (!((elements[pixel.element].tempHigh > 400 && elements[elements[pixel.element].stateHigh] && elements[elements[pixel.element].stateHigh].state === "liquid"))){
+			return;
+		}
+	}
+	if (elements[pixel.element].glow || elements[pixel.element].isGas){
+		drawPlus(ctx,"rgba(" + color.r + ", " + color.g + ", " + color.b + ", " + opacity +")",pixel.x,pixel.y)
+	} else {
+		drawSquare(ctx,"rgba(" + color.r + ", " + color.g + ", " + color.b + ", " + opacity +")",pixel.x,pixel.y)
+	}}
+})
+keybinds["KeyH"] = function(){
+	if (settings.heatglowMode == 1){settings.heatglowMode = 2}
+	else {settings.heatglowMode = 1}
+	saveSettings();
+	logMessage("Heat glow mode switched.")
+}

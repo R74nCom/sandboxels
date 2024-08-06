@@ -1,37 +1,5 @@
 
 
-
-elements.freeze_ray = {
-	color: ["#8cf9ff","#5c59ff"],
-    tick: function(pixel) {
-        var x = pixel.x;
-        for (var y = pixel.y; y < height; y++) {
-            if (outOfBounds(x, y)) {
-                break;
-            }
-            if (isEmpty(x, y)) {
-                if (Math.random() > 0.05) { continue }
-                createPixel("flash", x, y);
-                pixelMap[x][y].color = "#96b6ff";
-                pixelMap[x][y].temp = -257;
-            }
-            else {
-                if (elements[pixelMap[x][y].element].isGas) { continue }
-                if (elements[pixelMap[x][y].element].id === elements.heat_ray.id) { break }
-                pixelMap[x][y].temp -= 100;
-                pixelTempCheck(pixelMap[x][y]);
-                break;
-            }
-        }
-        deletePixel(pixel.x, pixel.y);
-    },
-    temp: -257,
-    category: "energy",
-    state: "gas",
-    excludeRandom: true,
-    noMix: true
-};
-
 elements.devil_ray = {
 	color: ["#ba0000","#8f0000"],
     tick: function(pixel) {

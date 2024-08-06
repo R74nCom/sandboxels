@@ -50,7 +50,7 @@ var Simple1DNoise = function() {
     };
 };
 
-function newHeightMap(pixelType, pixelType2, offset, amplitude1, amplitude2, scale1, scale2) {
+function newHeightMap(pixelType, pixelType2, offset, amplitudes, scales) {
     return {
         color: "#000000",
         behavior: behaviors.WALL,
@@ -61,22 +61,23 @@ function newHeightMap(pixelType, pixelType2, offset, amplitude1, amplitude2, sca
         pixelType: pixelType,
         pixelType2: pixelType2,
         offset: offset,
-        amplitude1: amplitude1,
-        amplitude2: amplitude2,
-        scale1: scale1,
-        scale2: scale2,
-        generator: new Simple1DNoise(),
-        generator2: new Simple1DNoise(),
+        amplitudes: amplitudes,
+        scales: scales,
+        generator: Array.from({length: amplitudes.length}, () => new Simple1DNoise()),
         excludeRandom: true,
+        heightMap: true,
         tick: function(pixel) {
-            generator = this.generator;
-            generator2 = this.generator2;
-            generator.setAmplitude(this.amplitude1);
-            generator.setScale(this.scale1);
-            generator2.setAmplitude(this.amplitude2);
-            generator2.setScale(this.scale2);
-            let value = generator.getVal(pixel.x/width) + generator2.getVal(pixel.x/width);
-            if(value + this.offset < pixel.y/height) {
+            let generator = this.generator;
+            for(let i = 0; i < generator.length; i++)
+            {
+                generator[i].setAmplitude(this.amplitudes[i]);
+                generator[i].setScale(this.scales[i]);
+            }
+            let value = generator.reduce((accumulator, val) => {
+                return accumulator + val.getVal(pixel.x/width);
+                console.log(accumulator);
+            },0);
+            if(value + this.offset + generateTerrainHeights() < pixel.y/height) {
                 let element = this.pixelType;
                 if(Array.isArray(element))
                 {
@@ -87,6 +88,10 @@ function newHeightMap(pixelType, pixelType2, offset, amplitude1, amplitude2, sca
                     deletePixel(pixel.x,pixel.y);
                 } else {
                     changePixel(pixel,element);
+                    if(elements[element].heightMap)
+                    {
+                        elements[element].tick(pixel);
+                    }
                 }
             } else {
                 let element = this.pixelType2;
@@ -99,15 +104,24 @@ function newHeightMap(pixelType, pixelType2, offset, amplitude1, amplitude2, sca
                     deletePixel(pixel.x,pixel.y);
                 } else {
                     changePixel(pixel,element);
+                    if(elements[element].heightMap)
+                    {
+                        elements[element].tick(pixel);
+                    }
                 }
             }
         }
     };
 }
 
-elements.dunes_height_map = newHeightMap("sand", null, 0, 0.75, 0.05, 2.5, 20);
-elements.oasis_height_map = newHeightMap("sand", "water_height", 0.25, 0.75, 0.05, 2.5, 20);
-elements.water_height = newHeightMap("water", null, 0.5, 0, 0, 1, 1);
+elements.dunes_height_map = newHeightMap("sand", null, 0.25, [0.75, 0.05, 0.02], [2.5, 20, 200]);
+
+elements.oasis = newHeightMap("water_height", "oasis_height_map", 0.5, [0.02], [200]);
+elements.oasis_height_map = newHeightMap("sand", null, 0.25, [0.75, 0.05, 0.02], [2.5, 20, 200]);
+elements.oasis_height_map2 = newHeightMap("sand", "packed_sand", 0.28, [0.75, 0.05, 0.02], [2.5, 20, 200]);
+elements.oasis_height_map2.generator = elements.oasis_height_map.generator;
+elements.water_height = newHeightMap("oasis_height_map2", "water", 0.25, [0.75, 0.05, 0.02], [2.5, 20, 200]);
+elements.water_height.generator = elements.oasis_height_map.generator;
 worldgentypes.dunes = {
                 fill: [
                     [0, "dunes_height_map"]
@@ -115,21 +129,21 @@ worldgentypes.dunes = {
             };
 worldgentypes.oasis = {
                 fill: [
-                    [0, "oasis_height_map"]
+                    [0, "oasis"]
                 ]
             };
 
 if (enabledMods.includes("mods/chem.js")) {
-    elements.ptfe_height_map = newHeightMap("polytetrafluoroethylene", "foof_height", 0.25, 0.75, 0.05, 2.5, 20);
-    elements.foof_height = newHeightMap("FOOF", Array(100).fill(null).concat(["oxygen","fluorine"]), 0.5, 0, 0, 1, 1);
+    elements.ptfe_height_map = newHeightMap("polytetrafluoroethylene", "foof_height", 0.5, [0.5, 0.05, 0.02], [2.5, 20, 200]);
+    elements.foof_height = newHeightMap("foof", Array(100).fill(null).concat(["oxygen","fluorine"]), 0.5, [], []);
     worldgentypes.FOOF_sea = {
                 fill: [
                     [0, "ptfe_height_map"]
                 ],
                 temperature: -120
             };
-    elements.francium_height_map = newHeightMap("tungsten", "francium_height", 0.125, 1, 0.2, 2.5, 20);
-    elements.francium_height = newHeightMap("molten_francium", Array(100).fill(null).concat(["radon","radiation","radiation","radiation"]), 0.5, 0, 0, 1, 1);
+    elements.francium_height_map = newHeightMap("tungsten", "francium_height", 0.375, [1, 0.2, 0.02], [2.5, 20, 200]);
+    elements.francium_height = newHeightMap("molten_francium", Array(100).fill(null).concat(["radon","radiation","radiation","radiation"]), 0.5, [], []);
     worldgentypes.francium_lake = {
                 fill: [
                     [0, "francium_height_map"]

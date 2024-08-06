@@ -6,10 +6,20 @@ var allDependenciesExist = dependencyExistence.reduce(function(a,b) { return a &
 if(allDependenciesExist) {
 try {
 	//COMMON VARIABLES ##
-		const whiteColor = {r: 255, g: 255, b: 255};
-		const blackColor = {r: 0, g: 0, b: 0};
-		canvas = document.getElementsByTagName("canvas")[0];
-		ctx = canvas.getContext("2d");
+		_cc = {
+			w: {
+				j: {r: 255, g: 255, b: 255},
+				r: "rgb(255,255,255)",
+				h: "#FFFFFF"
+			},
+			b: {
+				j: {r: 0, g: 0, b: 0},
+				r: "rgb(0,0,0)",
+				h: "#000000"
+			}
+		};
+		canvas = document.getElementsByTagName("canvas")?.[0];
+		ctx = canvas?.getContext?.("2d") ?? null;
 	//ESSENTIAL COMMON FUNCTIONS (CODE LIBRARY) ##
 		//DEBUGGING
 			function logAndReturn(thing) {
@@ -160,6 +170,15 @@ try {
 				} else {
 					throw new TypeError(`Unexpected type: ${typeof(stringOrArray)}`);
 				};
+			};
+			//Shuffle not-in-place
+			function arrayToShuffled(array) {
+				var _array = structuredClone ? structuredClone(array) : JSON.parse(JSON.stringify(array));
+				for (let i = _array.length - 1; i > 0; i--) {
+					const j = Math.floor(Math.random() * (i + 1));
+					[_array[i], _array[j]] = [_array[j], _array[i]];
+				};
+				return _array
 			};
 		//Checks
 			//Element exists in the elements object
@@ -381,6 +400,10 @@ try {
 			function addTwoNumbers(number1,number2) { //reducer
 				return number1 + number2
 			}
+			//Linear interpolation
+			function lerp(a,b,t) {
+				return (b * t) + (a * (1 - t))
+			};
 			//Logistic curve
 				//x = real number
 				//L = maximum value
@@ -396,14 +419,29 @@ try {
 				return (number - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
 			}
 		//Color
-			function rgbStringToUnvalidatedObject(string) { //turns rgb() to {r,g,b} with no bounds checking
-				//console.log("Splitting string into object");
-				string = string.split(",");
-				var red = parseFloat(string[0].substring(4));
-				var green = parseFloat(string[1]);
-				var blue = parseFloat(string[2].slice(0,-1));
-				//console.log("String split: outputs " + red + ", " + green + ", " + blue + ".");
-				return {r: red, g: green, b: blue};
+			function rgbStringToUnvalidatedObject(string,stripAlpha) {
+				var numbers = string.match(/[\d\.]+/g);
+				var red = numbers[0];
+				var green = numbers[1];
+				var blue = numbers[2];
+				var alpha = null;
+				if((numbers.length > 3) && !stripAlpha) {alpha = numbers[3]};
+				var result = {r: red, g: green, b: blue};
+				if(alpha !== null) { result.a = alpha };
+				numbers = numbers.map(x => parseFloat(x));
+				return result
+			};
+			function hslStringToUnvalidatedObject(string,stripAlpha) {
+				var numbers = string.match(/[\d\.]+/g);
+				var hue = numbers[0];
+				var saturation = numbers[1];
+				var whateverL_StandsFor = numbers[2];
+				var alpha = null;
+				if((numbers.length > 3) && !stripAlpha) {alpha = numbers[3]};
+				var result = {h: hue, s: saturation, l: whateverL_StandsFor};
+				if(alpha !== null) { result.a = alpha };
+				numbers = numbers.map(x => parseFloat(x));
+				return result
 			};
 			function rgbStringToObject(string,doRounding=true,doBounding=true) { //turns rgb() to {r,g,b}
 				//console.log(`rgbStringToObject: ${string}`);
@@ -438,37 +476,46 @@ try {
 					//console.log("String split: outputs " + red + ", " + green + ", " + blue + ".");
 				return {r: red, g: green, b: blue};
 			};
-			function hslColorStringToObject(color) {
+			function hslColorStringToObject(color,stripAlpha=false) {
 				if(!color.startsWith("hsl(") || !color.endsWith(")")) {
 					throw new Error(`The color ${color} is not a valid hsl() color`)
 				};
 				var colorTempArray = color.split(",").map(x => x.trim())
-				if(colorTempArray.length !== 3) {
+				if(colorTempArray.length < 3) {
 					throw new Error(`The color ${color} is not a valid hsl() color`)
 				};
 				if(!colorTempArray[1].endsWith("%")) { console.log(`hslColorStringToObject: Saturation in color ${color} was missing a %`); colorTempArray[1] += "%"; }
 				if(!colorTempArray[2].endsWith("%)")) { console.log(`hslColorStringToObject: Lightness in color ${color} was missing a %`); colorTempArray[2] = [colorTempArray[2].slice(0, colorTempArray[2].length - 1), "%", colorTempArray[2].slice(colorTempArray[2].length - 1)].join(''); }
 				var hue = parseFloat(colorTempArray[0].substring(4));
 				var saturation = parseFloat(colorTempArray[1].slice(0,-1))
-				var lightness = parseFloat(colorTempArray[2].slice(0,-2));
+				var lightness = parseFloat(colorTempArray[2].match(/\d+(\.\d+|)/)?.[0] ?? NaN);
+				var alpha = (colorTempArray.length < 3 || stripAlpha) ? null : parseFloat(colorTempArray[3].match(/\d+(\.\d+|)/)?.[0] ?? NaN);
 				//NaN checking
-					var hueNaN,saturationNaN,lightnessNaN;
-					isNaN(hue) ? hueNaN = true : hueNaN = false;
-					isNaN(saturation) ? saturationNaN = true : saturationNaN = false;
-					isNaN(lightness) ? lightnessNaN = true : lightnessNaN = false;
-					var NanErrorString = "One or more colors are NaN:"
-					if(hueNaN) { NanErrorString += " hue" };
-					if(saturationNaN) { NanErrorString += " saturation" };
-					if(lightnessNaN) { NanErrorString += " lightness" };
-					if(hueNaN || saturationNaN || lightnessNaN) { throw new Error(NanErrorString) };
-				return {h: hue, s: saturation, l: lightness};
+					var hueNaN,saturationNaN,lightnessNaN,alphaNaN;
+					var nanColors = [];
+					hueNaN = isNaN(hue);
+					saturationNaN = isNaN(saturation);
+					lightnessNaN = isNaN(lightness);
+					alphaNaN = (isNaN(alpha) && !stripAlpha);
+					if(hueNaN) { nanColors.push("hue") };
+					if(saturationNaN) { nanColors.push("saturation") };
+					if(lightnessNaN) { nanColors.push("lightness") };
+					if(alphaNaN) { nanColors.push("alpha") };
+					if(nanColors.length > 0) {
+						var NanErrorString = ["hslColorStringToObject:",capitalizeFirstLetter(englishFormatList(nanColors)),nanColors.length == 1 ? "is" : "are","NaN"].join(" ");
+						throw new Error(NanErrorString)
+					};
+				var result = {h: hue, s: saturation, l: lightness};
+				if(alpha !== null) { result.a = alpha };
+				return result
 			};
-			function rgbToHex(color) {
+			function rgbToHex(color,stripAlpha=false) {
 				//console.log(`rgbToHex called on ${typeof(color) === "object" ? JSON.stringify(color) : color}`);
 				if(typeof(color) == "object") { //Expects object like "{r: 172, g: 11, b: 34}"
 					var red = color.r;
 					var green = color.g;
 					var blue = color.b;
+					var alpha = stripAlpha ? null : (color.a ?? null);
 						//console.log(`Colors loaded (${red}, ${green}, ${blue})`);
 					red = Math.round(red);
 					green = Math.round(green);
@@ -477,10 +524,12 @@ try {
 					red = bound(red,0,255)
 					green = bound(green,0,255)
 					blue = bound(blue,0,255)
+					if(alpha !== null) { alpha = bound(alpha,0,1) }
 						//console.log(`Colors bounded to (${red}, ${green}, ${blue})`);
 					red = red.toString(16);
 					green = green.toString(16);
 					blue = blue.toString(16);
+					if(alpha !== null) { alpha = Math.round(alpha * 255).toString(16) }
 						//console.log(`Colors converted to (0x${red}, 0x${green}, 0x${blue})`);
 					//console.log("Padding R");
 					while(red.length < 2) {
@@ -494,26 +543,36 @@ try {
 					while(blue.length < 2) {
 						blue = "0" + blue;
 					};
+					//console.log("Padding A");
+					if(alpha !== null) {
+						while(alpha.length < 2) {
+							alpha = "0" + alpha;
+						}
+					};
 						//console.log(`Colors padded to (0x${red}, 0x${green}, 0x${blue}), concatenating...`);
-					return "#" + red + green + blue;
+					return "#" + red + green + blue + (stripAlpha ? "" : (alpha ?? ""));
 				} else if(typeof(color) == "string") { //Expects string like "rgb(20,137,4)". Also doesn't round properly for some reason...
 						//console.log("Splitting string")
-					color = rgbStringToUnvalidatedObject(color);
+					color = rgbStringToUnvalidatedObject(color,stripAlpha);
 					red = color.r;
 					green = color.g;
 					blue = color.b;
+					alpha = stripAlpha ? null : (color.a ?? null);
 						//console.log(`Colors loaded (${red}, ${green}, ${blue})`);
 					red = Math.round(red);
 					green = Math.round(green);
 					blue = Math.round(blue);
+					if(alpha !== null) { alpha = Math.round(alpha * 255) }; 
 						//console.log(`Colors rounded to (${red}, ${green}, ${blue})`);
 					red = bound(red,0,255)
 					green = bound(green,0,255)
 					blue = bound(blue,0,255)
+					if(alpha !== null) { alpha = bound(alpha,0,255) };
 						//console.log(`Colors bounded to (${red}, ${green}, ${blue})`);
 					red = red.toString(16);
 					green = green.toString(16);
 					blue = blue.toString(16);
+					if(alpha !== null) { alpha = alpha.toString(16) };
 						//console.log(`Colors converted to (0x${red}, 0x${green}, 0x${blue})`);
 					//console.log("Padding R");
 					while(red.length < 2) {
@@ -527,8 +586,14 @@ try {
 					while(blue.length < 2) {
 						blue = "0" + blue;
 					};
+					//console.log("Padding A");
+					if(alpha !== null) {
+						while(alpha.length < 2) {
+							alpha = "0" + alpha;
+						}
+					};
 						//console.log(`Colors padded to (0x${red}, 0x${green}, 0x${blue}), concatenating...`);
-					return "#" + red + green + blue;
+					return "#" + red + green + blue + (stripAlpha ? "" : (alpha ?? ""));
 					} else {
 					throw new Error(`Received invalid color: ${color}`);
 				};
@@ -731,6 +796,7 @@ try {
 						g = bytes[1];
 						b = bytes[2];
 						a = stripAlpha ? null : (bytes[3] ?? null);
+						if(a !== null) { a = bound(a,0,1) };
 						//to JSON for ease of use
 						color = {"r": r, "g": g, "b": b};
 						if(typeof(a) == "number") { color["a"] = a };
@@ -738,7 +804,7 @@ try {
 						//otherwise assume rgb() input
 						bytes = color.match(/[\d\.]+/g);
 						if(typeof(bytes?.map) == "undefined") {
-							console.log(bytes);
+							console.error(`convertColorFormats: Invalid color ${JSON.stringify(color)} producing null bytes ${bytes}`);
 							bytes = [255,0,255]
 						} else {
 							bytes = bytes.map(x => Number(x));
@@ -747,6 +813,7 @@ try {
 						g = bytes[1];
 						b = bytes[2];
 						a = stripAlpha ? null : (bytes[3] ?? null);
+						if(a !== null) { a = bound(a,0,1) };
 						//to JSON for ease of use
 						color = {"r": r, "g": g, "b": b}
 						if(typeof(a) == "number") { color["a"] = a };
@@ -892,6 +959,7 @@ try {
 				};
 			};
 			function addColors(color1,color2,outputType="rgb") {
+				//console.log("colors",color1,color2);
 				//normalize rgb()/hex by turning any hex into rgb() and then rgb()s to {r,g,b}
 				if(typeof(color1) !== "object") {
 					color1 = convertColorFormats(color1,"json");
@@ -899,6 +967,7 @@ try {
 				if(typeof(color2) !== "object") {
 					color2 = convertColorFormats(color2,"json");
 				};
+				//if(JSON.stringify([color1,color2]).indexOf("NaN") >= 0) { console.log(color1,color2) }
 				var finalR = bound(Math.round(color1.r + color2.r),0,255)
 				var finalG = bound(Math.round(color1.g + color2.g),0,255)
 				var finalB = bound(Math.round(color1.b + color2.b),0,255)
@@ -944,7 +1013,7 @@ try {
 				};
 			};
 			function averageRgbPrefixedColorArray(colorArray,returnObject=false) { //array of rgb()s to single rgb() of average color
-				//averageRgbPrefixedColorArray(["rgb(255,0,0)", "rgb(0,0,0)", "rgb(0,0,255)"]);
+				//averageRgbPrefixedColorArray(["rgb(255,0,0)", _cc.b.r, "rgb(0,0,255)"]);
 				//console.log("Averaging started");
 				var reds = [];
 				var greens = [];
@@ -970,13 +1039,13 @@ try {
 				return output;
 			};
 			//https://stackoverflow.com/questions/46432335/hex-to-hsl-convert-javascript
-			function rgbStringToHSL(rgb,outputType="array") { //Originally a hex-to-HSL function, edited to take RGB and spit out an array
+			function rgbStringToHSL(rgb,outputType="array",stripAlpha=false) { //Originally a hex-to-HSL function, edited to take RGB and spit out an array
 				//console.log("HSLing some RGBs");
 				var result = rgbStringToUnvalidatedObject(rgb);
 				var r = result.r;
 				var g = result.g;
 				var b = result.b;
-				var a = result.a ?? null;
+				var a = stripAlpha ? null : (result.a ?? null);
 				r /= 255, g /= 255, b /= 255; if(a) { a /= 255 };
 				var max = Math.max(r, g, b), min = Math.min(r, g, b);
 				var h, s, l = (max + min) / 2;
@@ -1015,17 +1084,17 @@ try {
 				};
 				//console.log("HSL output "+ colorInHSL + ".");
 			};
-			function normalizeColorToHslObject(color,arrayType=null) {
+			function normalizeColorToHslObject(color,arrayType=null,stripAlpha=false) {
 				var ambiguousArrayError = "changeSaturation can't tell if the array input is supposed to be RGB or HSL. Please use an \"arrayType\" argument of \"rgb\" or \"hsl\".";
 				var isHsl = false;
 				if(Array.isArray(color)) {
 					if(arrayType === null) {
 						throw new Error(ambiguousArrayError);
 					} else if(arrayType === "rgb") {
-						color = color.length > 3 ? `rgba(${color[0]},${color[1]},${color[2]},${color[3]})` : `rgb(${color[0]},${color[1]},${color[2]})`;
+						color = ((color.length > 3) && !stripAlpha) ? `rgba(${color[0]},${color[1]},${color[2]},${color[3]})` : `rgb(${color[0]},${color[1]},${color[2]})`;
 						color = rgbStringToHSL(color,"json"); //rgb arr to hsl obj
 					} else if(arrayType === "hsl") {
-						color = color.length > 3 ? {h: color[0], s: color[1], l: color[2], a: color[3]} : {h: color[0], s: color[1], l: color[2]}; //hsl arr to hsl obj
+						color = ((color.length > 3) && !stripAlpha) > 3 ? {h: color[0], s: color[1], l: color[2], a: color[3]} : {h: color[0], s: color[1], l: color[2]}; //hsl arr to hsl obj
 					} else {
 						throw new Error(ambiguousArrayError);
 					};
@@ -1053,11 +1122,11 @@ try {
 						};
 					};
 					if(!isHsl) {
-						color = convertColorFormats(color,"rgb"); //make any RGBs rgb()
-						color = rgbStringToHSL(color,"json"); //make that rgb() an {h,s,l}
+						color = convertColorFormats(color,"rgb",stripAlpha); //make any RGBs rgb()
+						color = rgbStringToHSL(color,"json",stripAlpha); //make that rgb() an {h,s,l}
 					} else { //by this point, it would have to either be a string or an object
 						if(typeof(color) === "string") { //if it's a string
-							color = hslColorStringToObject(color) //now it's an object
+							color = hslColorStringToObject(color,stripAlpha) //now it's an object
 						};
 					};
 				};
@@ -1273,9 +1342,11 @@ try {
 				if(isEmpty(nx,ny,false)) { return tryMove(pixel,nx,ny,leaveBehind,force) };
 				return pixelMap[nx][ny]
 			};
+
 			function exposedToAir(pixel) {
 				return (isEmpty(pixel.x+1,pixel.y) || isEmpty(pixel.x-1,pixel.y) || isEmpty(pixel.x,pixel.y+1) || isEmpty(pixel.x,pixel.y-1));
 			};
+
 			function tryTarnish(pixel,element,chance) {
 				if(exposedToAir(pixel)) {
 					if(Array.isArray(element)) {
@@ -1289,6 +1360,7 @@ try {
 					};
 				};
 			};
+
 			//Try to create a pixel, return true if it could be created and false if it couldn't
 			function tryCreatePixel(elementInput,x,y) {
 				//array handling
@@ -1314,6 +1386,59 @@ try {
 					return false;
 				};
 			};
+
+			function createOrChangePixel(elementInput,x,y) {
+				//array handling
+				if(elementInput.includes(",")) { //CSTA
+					elementInput = elementInput.split(",");
+				};
+				if(Array.isArray(elementInput)) { //if element list
+					elementInput = elementInput.filter(function(e) {
+						return elementExists(e);
+					});
+					if(elementInput.length === 0) { throw new Error("elementInput has no existing elements") };
+					elementInput = randomChoice(elementInput);
+				};
+				//existence check
+				if(!elementExists(elementInput)) {
+					throw new Error("Element " + elementInput + " doesn't exist!");
+				};
+				//actual creation check
+				if(outOfBounds(x,y)) { return false };
+				if(isEmpty(x,y)) {
+					createPixel(elementInput,x,y);
+				} else {
+					changePixel(pixelMap[x][y],elementInput)
+				};
+				return true
+			};
+
+			function createOrChangePixelAndReturn(elementInput,x,y) {
+				//array handling
+				if(elementInput.includes(",")) { //CSTA
+					elementInput = elementInput.split(",");
+				};
+				if(Array.isArray(elementInput)) { //if element list
+					elementInput = elementInput.filter(function(e) {
+						return elementExists(e);
+					});
+					if(elementInput.length === 0) { throw new Error("elementInput has no existing elements") };
+					elementInput = randomChoice(elementInput);
+				};
+				//existence check
+				if(!elementExists(elementInput)) {
+					throw new Error("Element " + elementInput + " doesn't exist!");
+				};
+				//actual creation check
+				if(outOfBounds(x,y)) { return false };
+				if(isEmpty(x,y)) {
+					return createPixelReturn(elementInput,x,y);
+				} else {
+					return changePixelReturn(pixelMap[x][y],elementInput)
+				}
+				return true
+			};
+
 			function tryCreatePixelReturn(elementInput,x,y) {
 				//array handling
 				if(elementInput.includes(",")) { //CSTA
@@ -1337,6 +1462,7 @@ try {
 					return false;
 				};
 			};
+
 			function createPixelReturn(elementIn,x,y) { //sugar
 				var element = elementIn; while(element instanceof Array) { element = randomChoice(element) };
 				var newPixel = new Pixel(x, y, element);
@@ -1344,6 +1470,7 @@ try {
 				checkUnlock(element);
 				return newPixel;
 			};
+
 			function changePixelReturn(pixel,element,changetemp=true) {
 				if(typeof(elements[element]) == "undefined") {
 					if(doLog) { console.error(`Something tried to change a pixel of ${pixel.element} at (${pixel.x},${pixel.y}) to nonexistent element "${element}"`) };
@@ -1439,11 +1566,11 @@ try {
 				};
 				if (elements[pixel.element].breakIntoColor) {
 					var oldelement = pixel.element;
-					changePixel(pixel,result);
+					changePixel(pixel,result,changeTemp);
 					pixel.color = pixelColorPick(pixel, elements[oldelement].breakIntoColor);
 				}
 				else {
-					changePixel(pixel,result);
+					changePixel(pixel,result,changeTemp);
 				}
 			}
 			defaultHardness = 0.3;
@@ -1633,6 +1760,16 @@ try {
 			function getCirclePixels(x,y,radius) {
 				return circleCoords(x,y,radius).map(coordinates => pixelMap[coordinates.x]?.[coordinates.y]).filter(function(pixelOrUndefined) { return typeof(pixelOrUndefined) == "object" })
 			};
+			function getPixelsInRegion(x1,y1,x2,y2) {
+				var result = [];
+				for(var x = x1; x <= x2; x++) {
+					for(var y = y1; y <= y2; y++) {
+						var p = pixelMap[x]?.[y];
+						if(p && !(p.del)) { result.push(p) }
+					}
+				};
+				return result
+			};
 			function getPixelMooreNeighbors(pixel) {
 				var coordsToCheck = mooreDonutCoords.map(function(offsets) { return {x: offsets[0]+pixel.x, y: offsets[1]+pixel.y} } );
 				var neighbors = [];
@@ -1671,7 +1808,7 @@ try {
 			};
 			clonedPixel = null;
 			elements.clone_painter_picker = {
-				color: "#ffffff",
+				color: _cc.w.h,
 				tool: function(pixel) {
 					var newPixel = structuredClone ? structuredClone(pixel) : JSON.parse(JSON.stringify(pixel));
 					delete newPixel.x;
@@ -1700,7 +1837,7 @@ try {
 				desc: "This selects the pixel that the clone_painter element will duplicate."
 			};
 			elements.clone_painter = {
-				color: "#ffffff",
+				color: "rgb(255,255,0)",
 				tick: function(pixel) {
 					var x = pixel.x; //they need to be used after the pixel is removed
 					var y = pixel.y;
@@ -2074,6 +2211,151 @@ try {
 			function capitalizeFirstLetter(string,locale=null) {
 				return string[0][locale ? "toLocaleUpperCase" : "toUpperCase"](locale) + string.slice(1)
 			};
+
+	//INTERFACE TO SET OTHER PIXEL PROPERTIES WHEN PLACING SPECIFIC ELEMENTS ##
+		var css =
+`.ps-number {
+	width: 35px;
+	line-height: 35px;
+	height: 35px;
+	display: table-cell;
+	text-align: center;
+	font-size: 80%;
+	vertical-align: baseline;
+}
+
+.ps-heading {
+	font-size: 90%;
+}
+
+td.inputCell {
+	text-align: center;
+}
+`;
+		head = document.head || document.getElementsByTagName('head')[0],
+		style = document.createElement('style');
+
+		head.appendChild(style);
+
+		style.type = 'text/css';
+		if (style.styleSheet){
+		  // This is required for IE8 and below.
+		  style.styleSheet.cssText = css;
+		} else {
+		  style.appendChild(document.createTextNode(css));
+		}
+
+		function showPropertySetter() {
+			var ps = document.getElementById("propertySetter");
+			if(ps) {
+				ps.style.display = "block"
+			}
+		};
+
+		function hidePropertySetter() {
+			var ps = document.getElementById("propertySetter");
+			if(ps) {
+				ps.style.display = "none"
+			}
+		};
+
+		function hideSetterColumn(type,index) {
+			//currently the only type is "numeric"
+			var heading = document.getElementById(`property${type}${index.toString()}headingcell`);
+			var input = document.getElementById(`property${type}${index.toString()}inputcell`);
+			heading.style.display = "none";
+			input.style.display = "none";
+		};
+
+		function showSetterColumn(type,index) {
+			var heading = document.getElementById(`property${type}${index.toString()}headingcell`);
+			var input = document.getElementById(`property${type}${index.toString()}inputcell`);
+			heading.style.display = "table-cell";
+			input.style.display = "table-cell";
+		};
+
+		function hideAllSetterColumnsOfType(type) {
+			var setter = document.getElementById("setterTable");
+			var headingsAndInputs = setter.querySelectorAll(`[id^="property${type}][id$="cell"]`);
+			headingsAndInputs.forEach(n => n.style.display = "none");
+		};
+
+		function hideAllSetterColumns() {
+			var setter = document.getElementById("setterTable");
+			var headingsAndInputs = setter.querySelectorAll(`[id^="property"][id$="cell"]`);
+			headingsAndInputs.forEach(n => n.style.display = "none");
+		};
+
+		howManySetters = 5;
+		var propertySetter = document.createElement("div");
+		propertySetter.setAttribute("id","propertySetter");
+		propertySetter.style.display = "none";
+			var newTable = document.createElement("table");
+			newTable.setAttribute("id","setterTable");
+			propertySetter.appendChild(newTable);
+				var labelRow = document.createElement("tr");
+				var inputRow = document.createElement("tr");
+				newTable.appendChild(labelRow);
+				newTable.appendChild(inputRow);
+				//NUMERIC SETTERS
+				for(var i = 0; i < howManySetters; i++) {
+					var newHeading = document.createElement("th");
+						newHeading.setAttribute("id",`propertynumeric${i.toString()}headingcell`);
+						var newHeadingText = document.createElement("span");
+							newHeadingText.classList.add("ps-heading");
+							newHeadingText.setAttribute("id",`propertynumeric${i.toString()}heading`);
+							newHeadingText.innerText = "None";
+							newHeading.appendChild(newHeadingText)
+							labelRow.appendChild(newHeading);
+					var newInputCell = document.createElement("td");
+						newInputCell.setAttribute("id",`propertynumeric${i.toString()}inputcell`);
+						newInputCell.classList.add("inputCell");
+						var newNumberField = document.createElement("input");
+							newNumberField.setAttribute("type","number");
+							newNumberField.value = "1";
+							newNumberField.setAttribute("set","none");
+							newNumberField.addEventListener("change", function() {
+								var property = this.getAttribute("set");
+								var parsedValue = parseFloat(this.value);
+								if(isNaN(parsedValue)) {
+									var newValue = (Math.max(parseFloat(this.getAttribute("min")),0));
+									this.value = newValue;
+									parsedValue = newValue
+								};
+								var value = parsedValue;
+								ambaPlaceProperties[property] = value
+							});
+							newNumberField.setAttribute("id",`propertynumeric${i.toString()}input`);
+							newNumberField.classList.add("ps-number");
+							newInputCell.appendChild(newNumberField)
+							inputRow.appendChild(newInputCell);
+				};
+		document.getElementById("colorSelector").after(propertySetter);
+
+		ambaPlaceProperties = {
+			blackHoleRange: 15,
+			whiteHoleRange: 15,
+			pusherRange: 10,
+			pusherStrength: 1,
+			ePusherLength: 5,
+			starBombRadius: 50,
+			ophbRadius: 15,
+			stripePaintScale: 1,
+			stripePaintPhase: 0,
+			stripePaintAngle: 0,
+			sweepingLaserRotationSpeed: -0.03,
+			sweepingLaserBeamLength: 10,
+			sweepingLaserBeamTemperature: 2000,
+			sweepingLaserBeamBrevity: 5,
+			noteBlockFrequency: 440,
+			noteBlockLength: 1,
+			noteBlockVolume: 1,
+			noteBlockDelay: 0
+		};
+		
+		hidePropertySetter();
+		hideAllSetterColumns();
+
 	//COLOR MANIPULATION TOOLS ##
 		var colorToolCounter = 0;
 		saturationAmount = 1;
@@ -2264,7 +2546,7 @@ try {
 			desc: "<span style='color:#FF00FF' onClick=saturationPrompt()>Click here to configure the tool.</span><br/><span style='color:#FF00FF' onClick=colorToolFilterPrompt()>Click here to configure the element filter (applies to all color tools).</span>"
 		}
 		elements.luminance = {
-			color: ["#000000","#333333","#666666","#999999","#cccccc","#ffffff"],
+			color: [_cc.b.h,"#333333","#666666","#999999","#cccccc",_cc.w.h],
 			tool: function(pixel) {
 				var element = pixel.element;
 				if(  colorToolElementFilter === "none" || ( (typeof(colorToolElementFilter) === "string" && element === colorToolElementFilter) || (Array.isArray(colorToolElementFilter) && colorToolElementFilter.includes(element)) )  ) {
@@ -2339,7 +2621,7 @@ try {
 		}
 	//STRIPED PAINT ##
 		stripeFixedDefaultProperties = {
-			color2: "rgb(0,0,0)",
+			color2: _cc.b.r,
 			phase: 0,
 			scale: 1,
 			angle: 0
@@ -2372,9 +2654,12 @@ try {
 				var otherPixel = pixelMap[x][y];
 				for(prop in stripeSpreadingProperties) {
 					if(otherPixel.element == pixel.element && pixel[prop] && otherPixel[prop]) {
-						otherPixel[prop] = lerpColors(pixel[prop],otherPixel[prop]);
-					};
-				};
+						if((otherPixel.color1 == pixel.color1) && (otherPixel.color2 == pixel.color2)) {
+						} else {
+							otherPixel[prop] = lerpColors(pixel[prop],otherPixel[prop]);
+						}
+					}
+				}
 				/*for(prop in stripeSpreadingProperties2) {
 					if(otherPixel.element == pixel.element && pixel[prop] !== undefined && otherPixel[prop] !== undefined) {
 						otherPixel[prop] = pixel[prop]/2 + otherPixel[prop]/2;
@@ -2416,14 +2701,57 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "special",
 			properties: {
 				color1: null,
-				color2: null,
-				scale: 1,
-				phase: 0,
-				angle: 0
+				color2: null
 			},
 			stain: elements.dye.stain,
+			onSelect: function() {
+				showPropertySetter();
+
+				showSetterColumn("numeric",0);
+				var p0 = document.getElementById("propertynumeric0input");
+				var p0h = document.getElementById("propertynumeric0heading");
+				if(p0) {
+					p0.setAttribute("set","stripePaintScale");
+					p0.setAttribute("min","0.00000001");
+					p0.value = ambaPlaceProperties.stripePaintScale;
+				};
+				if(p0h) {
+					p0h.innerText = "Scale";
+				};
+
+				showSetterColumn("numeric",1);
+				var p1 = document.getElementById("propertynumeric1input");
+				var p1h = document.getElementById("propertynumeric1heading");
+				if(p1) {
+					p1.setAttribute("set","stripePaintPhase");
+					p1.setAttribute("min","-99999999");
+					p1.value = ambaPlaceProperties.stripePaintPhase;
+				};
+				if(p1h) {
+					p1h.innerText = "Phase";
+				};
+
+				showSetterColumn("numeric",2);
+				var p2 = document.getElementById("propertynumeric2input");
+				var p2h = document.getElementById("propertynumeric2heading");
+				if(p2) {
+					p2.setAttribute("set","stripePaintAngle");
+					p2.setAttribute("min","-99999999");
+					p2.value = ambaPlaceProperties.stripePaintAngle;
+				};
+				if(p2h) {
+					p2h.innerText = "Angle";
+				};
+			},
+			onUnselect: function() {
+				hideAllSetterColumns();
+				hidePropertySetter()
+			},
 			tick: function(pixel) {
-				stripeFunction(pixel);
+				pixel.scale ??= (ambaPlaceProperties?.stripePaintScale ?? 1);
+				pixel.phase ??= (ambaPlaceProperties?.stripePaintPhase ?? 0);
+				pixel.angle ??= (ambaPlaceProperties?.stripePaintAngle ?? 0);
+				stripeFunction(pixel)
 			},
 			desc: stripePaintDesc
 		};
@@ -2467,7 +2795,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			height = Math.round(newHeight/newPixelSize)-1;
 			width = Math.round(newWidth/newPixelSize)-1;
 			mousePos = {x:Math.round(width/2),y:Math.round(height/2)};
-			if (clear!==false) { clearAll(); }
+			if (clear!==false) { //Edit: Resetting the scene clears the "Reset Scene" text that shows up when you change the canvas size
+				clearAll();
+				var resetAdvisory = document.querySelector('[setting="pixelsize"] span:nth-child(2)');
+				if(resetAdvisory && resetAdvisory.innerText.length > 0) { resetAdvisory.innerText = "" }
+			}
 		}
 		autoResizeCanvas = function(clear) {
 			pixelSize = settings.pixelsize || 6;
@@ -2522,25 +2854,43 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 							var c = elements[key].color[i];
 							if(!c.startsWith) {
 								console.error(`element ${key} array color ${i} (${c}) isn't a string`);
-								rgbos.push("rgb(255,255,255)")
-							} else if (c.startsWith("#")) {
-								var rgb = hexToRGB(c);
-								if(rgb == null) { console.log(key,c); rgb = {r: 255, g: 255, b: 255} };
-								rgbs.push("rgb("+rgb.r+","+rgb.g+","+rgb.b+")");
-								rgbos.push(rgb);
-							}
-							else {
+								rgbs.push(_cc.w.r)
+								rgbos.push(_cc.w.j)
+							} else if (c.startsWith("#") || c.length <= 8 ) {
+								var rgb = null;
+								var rgbo = null;
+								try { rgb = convertColorFormats(c,"rgb") } catch(error) { console.error(key,error) };
+								try { rgbo = convertColorFormats(c,"json") } catch(error) { console.error(key,error) };
+								if(rgb == null) { console.log(key,c); rgb = _cc.w.r };
+								if(rgbo == null) { console.log(key,c); rgbo = _cc.w.j };
+								rgbs.push(rgb);
+								rgbos.push(rgbo);
+							} else {
 								rgbs.push(c);
+								rgbos.push(convertColorFormats(c,"json"));
+								console.log(key,rgbs,rgbos)
 							}
 						}
 						elements[key].color = rgbs;
 						elements[key].colorObject = rgbos;
 					} else {
-						// if elements[key].color starts with #
-						if (elements[key].color.startsWith("#")) {
-							var rgb = hexToRGB(elements[key].color);
-							elements[key].color = "rgb("+rgb.r+","+rgb.g+","+rgb.b+")";
-							elements[key].colorObject = rgb;
+						var c = elements[key].color;
+						if(!c.startsWith) {
+							console.error(`element ${key} array color ${i} (${c}) isn't a string`);
+							rgbs.push(_cc.w.r)
+							rgbos.push(_cc.w.j)
+						} else if (c.startsWith("#") || c.length <= 8 ) {
+							var rgb = null;
+							var rgbo = null;
+							try { rgb = convertColorFormats(c,"rgb") } catch(error) { console.error(key,error) };
+							try { rgbo = convertColorFormats(c,"json") } catch(error) { console.error(key,error) };
+							if(rgb == null) { console.log(key,c); rgb = _cc.w.r };
+							if(rgbo == null) { console.log(key,c); rgbo = _cc.w.j };
+							elements[key].color = rgb;
+							elements[key].colorObject = rgbo;
+						} else {
+							elements[key].color = convertColorFormats(c,"rgb");
+							elements[key].colorObject = convertColorFormats(c,"json");
 						}
 					}
 				}
@@ -2713,8 +3063,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				}
 				// If the element has no color, set it to white
 				if (elements[key].color === undefined) {
-					elements[key].color = "rgb(255,255,255)";
-					elements[key].colorObject = {r:255,g:255,b:255};
+					elements[key].color = _cc.w.r;
+					elements[key].colorObject = _cc.w.j;
 				}
 				if (elements[key].movable === undefined) {
 					// If the element's behavior is an array and contains M1 or M2, set its movable to true
@@ -2891,13 +3241,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 							var char = line[j];
 							if (elements[key].colorKey[char]) {
 								if (elements[key].colorKey[char].startsWith("#")) {
-									var rgb = hexToRGB(elements[key].colorKey[char]);
-									elements[key].colorKey[char] = "rgb("+rgb.r+","+rgb.g+","+rgb.b+")";
+									elements[key].colorKey[char] = convertColorFormats(elements[key].colorKey[char],"rgb");
 								}
 								newPattern[i].push(elements[key].colorKey[char]);
 							}
 							else {
-								newPattern[i].push("rgb(255,255,255)");
+								newPattern[i].push(_cc.w.r);
 							}
 						}
 					}
@@ -3084,7 +3433,14 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		};
 
 		currentShape = "square";
-		shapeOrder = ["square","circle","triangle","inverted triangle","rhombus","squircle","twinkle","slash","backslash"];
+		latticeScaleX = 1;
+		latticeScaleY = 1;
+		latticeOffsetX = 0;
+		latticeOffsetY = 0;
+		barScale = 1;
+		barOffset = 0;
+		barSpacing = 2;
+		shapeOrder = ["square","circle","triangle","inverted triangle","rhombus","squircle","twinkle","slash","backslash","lattice","verticalbars","horizontalbars"];
 		shapeExclusionConditions = {
 			/*"square": function(x,y,size,mouseX,mouseY,topLeft,bottomRight) {
 				return false
@@ -3176,6 +3532,15 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				if(xOffset == yOffset + 1) { return false };
 				return true
 			},
+			"lattice": function(x,y,size,mouseX,mouseY,topLeft,bottomRight) {
+				return ((Math.floor((x + (settings.latticeOffsetX ?? 0)) / (settings.latticeScaleX ?? 1)) % 2 == 0) && (Math.floor((y + (settings.latticeOffsetY ?? 0)) / (settings.latticeScaleY ?? 1)) % 2 == 0) || (Math.floor((x + (settings.latticeOffsetX ?? 0)) / (settings.latticeScaleX ?? 1)) % 2 == 1) && ((Math.floor((y + (settings.latticeOffsetY ?? 0)) / (settings.latticeScaleY ?? 1)) % 2 == 1)))
+			},
+			"verticalbars": function(x,y,size,mouseX,mouseY,topLeft,bottomRight) {
+				return (Math.floor((x + (settings.barOffset ?? 0)) / (settings.barScale ?? 1)) % ((settings.barSpacing  ?? 1) + 1) == 0)
+			},
+			"horizontalbars": function(x,y,size,mouseX,mouseY,topLeft,bottomRight) {
+				return (Math.floor((y + (settings.barOffset ?? 0)) / (settings.barScale ?? 1)) % ((settings.barSpacing  ?? 1) + 1) == 0)
+			},
 			/*"corners": function(x,y,size,mouseX,mouseY,topLeft,bottomRight) {
 				var tl = (x == topLeft[0] && y == topLeft[1]);
 				var tr = (x == bottomRight[0] && y == topLeft[1]);
@@ -3185,20 +3550,23 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			}*/
 		}
 
-			
+		barScale = 5;
+		barOffset = 1;
+		barSpacing = 3;
+
 		//supplementary functions for below
 
 		//redefine mouseRange to support even sizes
-        function mouseRange(mouseX,mouseY,size,shapeOverride=null) {
+		function mouseRange(mouseX,mouseY,size,shapeOverride=null,skipEmpties=false) {
 			var shape = shapeOverride ?? currentShape ?? "square";
-            var coords = [];
-            size = size || mouseSize;
-            if (elements[currentElement].maxSize < mouseSize) {
-                var mouseOffset = Math.trunc(elements[currentElement].maxSize/2);
-            }
-            else {
-                var mouseOffset = Math.trunc(size/2);
-            }
+			var coords = [];
+			size = size || mouseSize;
+			if (elements[currentElement].maxSize < mouseSize) {
+				var mouseOffset = Math.trunc(elements[currentElement].maxSize/2);
+			}
+			else {
+				var mouseOffset = Math.trunc(size/2);
+			}
 			var topLeft = [mouseX-mouseOffset,mouseY-mouseOffset];
 			var bottomRight = [mouseX+mouseOffset,mouseY+mouseOffset];
 			if(size % 2 == 0) {
@@ -3214,19 +3582,54 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			// Starting at the top left, go through each pixel
 			for (var x = topLeft[0]; x <= bottomRight[0]; x++) {
 				for (var y = topLeft[1]; y <= bottomRight[1]; y++) {
-					// If the pixel is empty, add it to coords
+					if(skipEmpties && isEmpty(x,y,true)) {
+						continue
+					};
 					if((shape !== "square") && exclusionFunction?.(x,y,size,mouseX,mouseY,topLeft,bottomRight)) {
 						continue
 					};
 					coords.push([x,y]);
 				}
 			};
-            return coords
-        };
+			return coords
+		};
 
+		function mouseLikeRange(x,y,size,shape="square",skipEmpties=false) {
+			var coords = [];
+			var offset = Math.trunc(size/2);
+			var topLeft = [x-offset,y-offset];
+			var bottomRight = [x+offset,y+offset];
+			if(size % 2 == 0) {
+				bottomRight[0]--;
+				bottomRight[1]--;
+			};
+			var exclusionFunction = shapeExclusionConditions[shape] ?? null;
+			if((shape !== "square") && (exclusionFunction == null)) {
+				logMessage(`Shape ${shape} not recognized!`)
+				return []
+			};
+
+			// Starting at the top left, go through each pixel
+			for (var _x = topLeft[0]; _x <= bottomRight[0]; _x++) {
+				for (var _y = topLeft[1]; _y <= bottomRight[1]; _y++) {
+					if(skipEmpties && isEmpty(_x,_y,true)) {
+						continue
+					};
+					if((shape !== "square") && exclusionFunction?.(_x,_y,size,x,y,topLeft,bottomRight)) {
+						continue
+					};
+					coords.push([_x,_y]);
+				}
+			};
+			return coords
+		};
+		
 		//this part defines basically all of the keybinds
 		function addKeyboardListeners() {
 			document.addEventListener("keydown", function(e) {
+				if(document.activeElement?.tagName == "INPUT") {
+					return
+				};
 				if (e.ctrlKey || e.metaKey) {
 					return
 				}
@@ -3453,13 +3856,22 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					createCategoryDiv(category);
 					categoryDiv = document.getElementById("category-"+category);
 				}
-				if(Array.isArray(elements[element].color) && elements[element].color.length == 1) {
-					//temporarily make the single-item array into a string just for button generation, and then turn it back into an array just in case
-					elements[element].color = elements[element].color[0];
-					createElementButton(element);
-					elements[element].color = [elements[element].color]
-				} else {
-					createElementButton(element);
+				try {
+					elements[element].colorObject ??= _cc.w.j;
+					if(Array.isArray(elements[element].color) && elements[element].color.length == 1) {
+						//temporarily make the single-item array into a string just for button generation, and then turn it back into an array just in case
+						var oldColor = elements[element].color;
+						elements[element].color = convertColorFormats(oldColor[0],"rgb");
+						createElementButton(element);
+						elements[element].color = oldColor
+					} else {
+						var oldColor = elements[element].color;
+						elements[element].color = Array.isArray(oldColor) ? oldColor.map(x => convertColorFormats(x,"rgb")) : convertColorFormats(oldColor,"rgb");
+						createElementButton(element);
+						elements[element].color = oldColor
+					}
+				} catch(error) { //temporary poke'mon
+					console.error(error)
 				}
 			}
 			// Set the first button in categoryControls div to be the current category
@@ -3469,6 +3881,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			focusGame();
 		};
 		window.onload = function() {
+			if(canvas == null || ctx == null) {
+				canvas = document.getElementsByTagName("canvas")[0];
+				ctx = canvas.getContext("2d") ?? null;
+			}
 			// If the browser is Firefox, set #categoryControls padding-bottom:11px;
 			if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
 				document.getElementById("categoryControls").style.paddingBottom = "11px";
@@ -3533,6 +3949,17 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			// Loop through all the elements with setting-span class.
 			// If the span's setting attribute is in settings, set the first select or input to the value of the setting.
 			loadSettings();
+			settings.shapeMode ??= 0;
+			settings.doacid ??= false;
+			settings.acidFunction ??= "none";
+			settings.barOffset ??= 0;
+			settings.barScale ??= 1;
+			settings.barSpacing ??= 1;
+			settings.latticeOffsetX ??= 0;
+			settings.latticeOffsetY ??= 0;
+			settings.latticeScaleX ??= 1;
+			settings.latticeScaleY ??= 1;
+			saveSettings();
 				//scared to touch this because ctx is pretty important
 			var gameCanvas = document.getElementById("game");
 			// Get context
@@ -3567,6 +3994,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				runAfterButtonsList[i]();
 			};
 			selectElement(currentElement);
+			if(urlParams.get("autoQuickload") !== null) { quickload(true,false,false) };
 			focusGame();
 			// For every button element, onkeyup="event.preventDefault()"
 			var buttonElements = document.getElementsByTagName("button");
@@ -3601,15 +4029,73 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			var firstDiv = document.getElementsByClassName("category")[0];
 			var firstElementButton = firstDiv.getElementsByClassName("elementButton")[0];
 			selectElement(firstElementButton.getAttribute("element"));
-			gameLoaded = true
+			quickloadIsPaused = true;
+			var qsb = document.createElement("button");
+			qsb.setAttribute("id","quicksaveButton");
+			qsb.setAttribute("onclick","quicksave()");
+			qsb.innerText = "Quicksave";
+			document.getElementById("gameDiv").before(qsb);
+			qsb.after(document.createTextNode(String.fromCharCode(160)));
+			var qlb = document.createElement("button");
+			qlb.setAttribute("id","quickloadButton");
+			qlb.setAttribute("onclick","clearAll(); quickload(quickloadIsPaused ?? true)");
+			qlb.innerText = "Quickload";
+			document.getElementById("gameDiv").before(qlb);
+			qlb.after(document.createTextNode(String.fromCharCode(160,160)));
+			var qpc = document.createElement("input");
+			qpc.setAttribute("type","checkbox");
+			qpc.setAttribute("id","quickloadPausedInput");
+			qpc.setAttribute("onchange","quickloadIsPaused = this.checked;");
+			qpc.checked = true;
+			var qpcd = document.createElement("span");
+			qpcd.setAttribute("id","quickloadPausedInputLabel");
+			qpcd.innerText = "Pause after quickloading?";
+			document.getElementById("gameDiv").before(qpc);
+			qpc.after(document.createTextNode(String.fromCharCode(160)));
+			document.getElementById("gameDiv").before(qpcd);
+			document.getElementById("gameDiv").before(document.createElement("br"));
+			quickSlDetectorLastKeys = [];
+			justPromptedQuickSL = false;
+			document.addEventListener("keydown", function(e) {
+				quickSlDetectorLastKeys.push(e.key);
+				if(quickSlDetectorLastKeys.length > 3) {
+					quickSlDetectorLastKeys.shift();
+				};
+				justPromptedQuickSL = false;
+			});
+			document.addEventListener("keydown", function(e) {
+				if (quickSlDetectorLastKeys.join(",") == "(,(,L") {
+					e.preventDefault();
+					var confirm = prompt("Are you sure you want to quickLOAD? (Type 'yes' to confirm)");
+					if(confirm == "yes") {
+						clearAll();
+						quickload(true,false,true);
+					};
+					justPromptedQuickSL = true;
+					quickSlDetectorLastKeys = [];
+				} else if (quickSlDetectorLastKeys.join(",") == "(,(,S") {
+					e.preventDefault();
+					var confirm = prompt("Are you sure you want to quickSAVE? (Type 'yes' to confirm)");
+					if(confirm == "yes") {
+						quicksave(true,true);
+					};
+					justPromptedQuickSL = true;
+					quickSlDetectorLastKeys = [];
+				};
+			});
+			/*if(urlParams.get("pause") !== null) {
+				paused = true;
+				document.getElementById("pauseButton").setAttribute("on","true")
+			};*/
+			gameLoaded = true;
 		};
 	//MORE CONFIGURABLE EXPLOSIONS (explodeAtPlus) ##
 		velocityBlacklist = [];
 		function explodeAtPlus(x,y,radius,firee="fire",smokee="smoke",beforeFunction=null,afterFunction=null,changeTemp=true) {
-			var message = "Explosion ";
+			//var message = "Explosion ";
 			var pixel = pixelMap[x]?.[y];
-			if(pixel) { message += `of ${pixel.element} ` };
-			message += `with radius ${radius} at (${x},${y})`;
+			//if(pixel) { message += `of ${pixel.element} ` };
+			//message += `with radius ${radius} at (${x},${y})`;
 			// if fire contains , split it into an array
 			if(firee !== null) {
 				if (firee.indexOf(",") !== -1) {
@@ -3623,6 +4109,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			};
 			var coords = circleCoords(x,y,radius);
 			var power = radius/10;
+			changePressure(x,y,radius ** 2,operationType="+",true);
 			//for (var p = 0; p < Math.round(radius/10+1); p++) {
 			for (var i = 0; i < coords.length; i++) {
 				var fire = firee;
@@ -3758,12 +4245,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			if (r.tempMax !== undefined && pixel1.temp > r.tempMax) {
 				return false;
 			}
-            if (r.burning1 !== undefined && Boolean(pixel1.burning) !== r.burning1) {
-                return false;
-            }
-            if (r.burning2 !== undefined && Boolean(pixel2.burning) !== r.burning2) {
-                return false;
-            }
+			if (r.burning1 !== undefined && Boolean(pixel1.burning) !== r.burning1) {
+				return false;
+			}
+			if (r.burning2 !== undefined && Boolean(pixel2.burning) !== r.burning2) {
+				return false;
+			}
 			if (r.charged && !pixel1.charge) {
 				return false;
 			}
@@ -4939,56 +5426,74 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		});
 	//CONFIGURABLE MAXIMUM COLOR OFFSET (maxColorOffset) ##
 		defaultColorOffset = 15;
-		pixelColorPick = function(pixel,customColor=null,maxOffset=null) {
-			var element = pixel.element;
-			var elementInfo = elements[element];
-			//if (elementInfo.behavior instanceof Array) {
-			if (pixel.charge && elementInfo.colorOn) {
-				customColor = elementInfo.colorOn;
-			}
-			if (customColor !== null) {
-				if (Array.isArray(customColor)) {
-					customColor = customColor[Math.floor(Math.random() * customColor.length)];
-				} else if (customColor.startsWith?.("#")) {
-					customColor = hexToRGB(customColor);
+				pixelColorPick = function(pixel,customColor=null,maxOffset=null,dontForceColorsToNulls=false) {
+				var element = pixel.element;
+				var elementInfo = elements[element];
+				//if (elementInfo.behavior instanceof Array) {
+				if (pixel.charge && elementInfo.colorOn) {
+					customColor = elementInfo.colorOn;
 				}
-				var rgb = customColor;
-			}
-			else {
-				var rgb = elements[element].colorObject; // {r, g, b}
-				// If rgb is an array, choose a random item
-				if (Array.isArray(rgb)) {
-					rgb = rgb[Math.floor(Math.random() * rgb.length)];
+				if (customColor !== null) {
+					if (Array.isArray(customColor)) {
+						customColor = customColor[Math.floor(Math.random() * customColor.length)];
+					} else if (customColor.startsWith?.("#")) {
+						customColor = hexToRGB(customColor);
+					}
+					var rgb = customColor;
 				}
-			}
-			// Randomly darken or lighten the RGB color
-				//try maxOffset parameter, then info maxColorOffset, then default 15
-			var offsetAmount;
-			if(maxOffset !== null) {
-				offsetAmount = maxOffset;
-			} else {
-				offsetAmount = elementInfo?.maxColorOffset ?? defaultColorOffset;
-			};
-			var maxColorOffset = Math.floor(Math.random() * (Math.random() > 0.5 ? -1 : 1) * Math.random() * offsetAmount);
-			var r = rgb.r + maxColorOffset;
-			var g = rgb.g + maxColorOffset;
-			var b = rgb.b + maxColorOffset;
-			// Make sure the color is within the RGB range
-			r = Math.max(0, Math.min(255, r));
-			g = Math.max(0, Math.min(255, g));
-			b = Math.max(0, Math.min(255, b));
-			var color = "rgb("+r+","+g+","+b+")";
-			/*}
-			else {
-				var color = elementInfo.color;
-				if (Array.isArray(color)) {
-					color = color[Math.floor(Math.random() * color.length)];
+				else {
+					var rgb = elements[element].colorObject; // {r, g, b}
+					// If rgb is an array, choose a random item
+					while(Array.isArray(rgb)) {
+						rgb = rgb[Math.floor(Math.random() * rgb.length)];
+					}
 				}
-			}*/
-			return color;
-		}
+				// Randomly darken or lighten the RGB color
+					//try maxOffset parameter, then info maxColorOffset, then default 15
+				var offsetAmount;
+				if(maxOffset !== null) {
+					offsetAmount = maxOffset;
+				} else {
+					offsetAmount = elementInfo?.maxColorOffset ?? defaultColorOffset;
+				};
+				if(typeof(rgb) !== "object") { rgb = convertColorFormats(rgb,"json") }; //somehow rgb can be a hex triplet even though it's pulled from the f*cking JSON color object and there's no logical way that that should be able to happen
+				var maxColorOffset = Math.floor(Math.random() * (Math.random() > 0.5 ? -1 : 1) * Math.random() * offsetAmount);
+				var maxRepickTries = 10;
+				var repickTries = 0;
+				var rgbWasNull = (rgb === null);
+				if(rgb == null || (typeof(rgb?.r) !== "number") || (typeof(rgb?.g) !== "number") || (typeof(rgb?.b) !== "number")) {
+					//console.log(pixel.element,pixel.color,"\n",rgb,customColor,Array.isArray(elementInfo.colorObject) ? elementInfo.colorObject.indexOf(rgb) : elementInfo.colorObject);
+					//this SHOULDN'T be necessary but SOMEHOW IT IS
+					while(rgb == null && repickTries < maxRepickTries) {
+						var color_also_fxck_you = elementInfo.colorObject;
+						while(Array.isArray(color_also_fxck_you)) { color_also_fxck_you = randomChoice(color_also_fxck_you) };
+						rgb = color_also_fxck_you
+					};
+					//console.log(pixel.element,pixel.color,rgb,customColor);
+				};
+				var r = rgb.r + maxColorOffset;
+				var g = rgb.g + maxColorOffset;
+				var b = rgb.b + maxColorOffset;
+				// Make sure the color is within the RGB range
+				r = Math.max(0, Math.min(255, r));
+				g = Math.max(0, Math.min(255, g));
+				b = Math.max(0, Math.min(255, b));
+				var color = "rgb("+r+","+g+","+b+")";
+				/*}
+				else {
+					var color = elementInfo.color;
+					if (Array.isArray(color)) {
+						color = color[Math.floor(Math.random() * color.length)];
+					}
+				}*/
+				if((!dontForceColorsToNulls) && rgbWasNull && rgb !== null) {
+					pixel.color = convertColorFormats(rgb,"rgb")
+				};
+				return color;
+			}
 	//FIND MODE, PIXEL PROPERTIES LINKED TO SPECIAL CODE, CONFIGURABLE VISUAL DISTORTION AND VISUAL PIXEL SHAPE SETTINGS (acid_and_shapes.js) ##
 	//two separate things i.e. not "pixel properties linked to special code, configurable visual distortion, and visual pixel shape settings" though there's basically no semantic difference
+	//And also all other changes to drawPixels
 		var style = document.createElement('style');
 		style.type = 'text/css';
 		style.id = 'findStatusStylesheet';
@@ -5022,7 +5527,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			updateFindDescription();
 		};
 		elements.find_toggle = {
-			color: ["#000000", "#000000", "#000000", "#000000", "#ff0000", "#ff0000", "#ff0000", "#ff0000"],
+			color: [_cc.b.h, _cc.b.h, _cc.b.h, _cc.b.h, "#ff0000", "#ff0000", "#ff0000", "#ff0000"],
 			name: "find toggle (look at info)",
 			behavior: behaviors.SELFDELETE,
 			category: "special",
@@ -5054,9 +5559,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			incrementt = incrementt % (Math.PI*8.8) + (Math.PI/30);
 		}
 		shapeModes = ["normal","circles","triangles"];
-		settings.shapeMode ??= 0;
-		settings.doacid ??= false;
-		settings.acidFunction ??= "none";
 		function getShapeMode() {
 			return shapeModes[settings.shapeMode] ?? "normal";
 		};
@@ -5078,6 +5580,203 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		settings ??= {};
 		settings.shockoverlay ??= true;
 		//I hate overwriting drawPixels
+		tempScale = 1;
+		tempScaleOffset = 20;
+		
+		normalColorFunction = function(pixel) {
+			var colorOut = pixel.color;
+			for(var sry4thelag in specialProperties) {
+				if(pixel[sry4thelag] !== undefined && specialProperties[sry4thelag].specialColorFunction) {
+					colorOut = specialProperties[sry4thelag].specialColorFunction(pixel,oldColor=colorOut)
+				}
+			}
+			return colorOut;
+		}
+		
+		viewColorFunctions = {
+			2: function(pixel) {
+				// set the color to pixel.temp, from hottest at -66 (294.1875) hue to coldest 265 hue, with the minimum being -273, max being 7755
+				var a0 = (settings.abszero ?? -273.15);
+				var temp = ((pixel.temp - tempScaleOffset) * tempScale) - tempScaleOffset;
+				temp = Math.min(Math.max(temp + 900,a0),55530000000000);
+				var hue,sat,lig;
+				sat = 100;
+				lig = 50;
+				if(temp <= 7755) {
+					hue = 265 - (Math.min(7755,temp)/6000)*265;
+					if (hue < 0) {hue += (360 * Math.ceil(hue / -360))}
+					if (temp < 0 && hue > 285) {hue = 285}
+				} else if(temp <= 9255) {
+					hue = 294.1875;
+					lig = 50 + (Math.max(0,temp - 7755) * (50/1500));
+				} else if(temp <= 11255) {
+					hue = 294.1875;
+					sat = 0;
+					lig = 100 - (Math.max(0,temp - 9255) * (100 / 2000));
+				} else if(temp <= 11755) {
+					hue = 265;
+					lig = (Math.max(0,temp - 11255) * (25 / 500));
+				} else if(temp <= 19510) {
+					hue = 265 - (Math.min(19510,Math.max(0,temp - 11755))/6000)*265;
+					if (hue < 0) {hue += (360 * Math.ceil(hue / -360))}
+					lig = 25;
+				} else if(temp <= 20510) {
+					hue = 294.1875
+					//lig = scale(temp,19510,20010,25,75);
+					//hue = scale(temp,19510,20010,294.1875,585) % 360;
+					sat = scale(temp,19510,20510,100,50);
+					lig = scale(temp,19510,20510,25,75);
+				} else if(temp <= 28265) {
+					hue = scale(temp,20510,28265,294.1875,585) % 360;
+					sat = 50;
+					lig = 75;
+				} else if(temp <= 29265) {
+					hue = 265;
+					sat = scale(temp,28265,29265,50,40);
+					lig = scale(temp,28265,29265,75,87.5);
+				} else if(temp <= 37020) {
+					hue = scale(temp,29265,37020,265,654.1875) % 360;
+					sat = 40;
+					lig = 87.5;
+				} else if(temp <= 39020) {
+					hue = 294.1875;
+					sat = 40;
+					lig = scale(temp,37020,39020,87.5,50);
+				} else if(temp <= 46775) { //46775
+					hue = scale(temp,39020,46775,294.1875,585) % 360;
+					sat = 40;
+					lig = 50;
+				} else if(temp <= 47775) {
+					hue = 265;
+					sat = scale(temp,46775,47775,40,20);
+					lig = 50;
+				} else if(temp <= 55530) {
+					hue = scale(temp,47775,55530,265,654.1875) % 360;
+					sat = 20;
+					lig = 50;
+				} else {
+					hue = 294;
+					sat = 20 + (12 * Math.log10(temp / 55530));
+					lig = 50 + (4 * Math.log10(temp / 55530));
+				};
+				return "hsl("+hue+","+sat+"%,"+lig+"%)";
+			},
+			4: function(pixel) { // smooth view, average of surrounding pixels
+				// E/N: i'm too scared to do smooth view
+				var colorlist = [];
+				// check adjacent coords on the pixelMap, add the color to the list if the pixel is not empty and the color indexOf "rgb" is not -1
+				for (var j = 0; j < biCoords.length; j++) {
+					var x = pixel.x + biCoords[j][0];
+					var y = pixel.y + biCoords[j][1];
+					if (isEmpty(x,y,true) || elements[pixelMap[x][y].element].state !== elements[pixel.element].state) {continue}
+					var color = pixelMap[x][y].color;
+					if (color.indexOf("rgb") !== -1) {
+						colorlist.push(color.match(/\d+/g));
+					}
+				}
+				if (colorlist.length === 0) {
+					return pixel.color;
+				}
+				else {
+					return averageRGB(colorlist);
+				}
+			},
+			5: function(pixel) { // velocity view
+				var data = elements[pixel.element];
+				var vx = pixel.vx ?? 0;
+				var vy = pixel.vy ?? 0;
+				/*
+				var pseudoVelocity = 0;
+				var coordsToCheck;
+				var behaviorCoordsToCheck;
+				if(Array.isArray(data.behavior)) {
+					switch((pixel.r ?? 0) % 4) {
+						default:
+						case 0:
+							coordsToCheck = [0,1];
+							behaviorCoordsToCheckOffset = [2,1];
+							break;
+						case 1:
+							coordsToCheck = [-1,0];
+							behaviorCoordsToCheckOffset = [1,0];
+							break;
+						case 2:
+							coordsToCheck = [0,-1];
+							behaviorCoordsToCheckOffset = [0,1];
+							break;
+						case 3:
+							coordsToCheck = [1,0];
+							behaviorCoordsToCheckOffset = [1,2];
+							break;
+					};
+					if(data.behavior[behaviorCoordsToCheckOffset[0]][behaviorCoordsToCheckOffset[1]] == "M1") {
+						if(isEmpty(pixel.x+coordsToCheck[0],pixel.y+coordsToCheck[1])) {
+							pseudoVelocity = 1;
+						} else {
+							if(!(isEmpty(pixel.x+behaviorCoordsToCheckOffset[0],pixel.y+behaviorCoordsToCheckOffset[1],true))) {
+								newPixel = pixelMap[pixel.x+behaviorCoordsToCheckOffset[0]][pixel.y+behaviorCoordsToCheckOffset[1]];
+								newData = elements[newPixel.element];
+								if(newData.id !== data.id && typeof(data.density) === "number" && typeof(newData.density) === "number") {
+									var chance = (data.density - newData.density)/(data.density + newData.density);
+									pseudoVelocity = chance
+								}
+							}
+						}
+					};
+					if(pseudoVelocity) {
+						switch((pixel.r ?? 0) % 4) {
+							default:
+							case 0:
+								vy += pseudoVelocity;
+								break;
+							case 1:
+								vx -= pseudoVelocity;
+								break;
+							case 2:
+								vy -= pseudoVelocity;
+								break;
+							case 3:
+								vx += pseudoVelocity;
+								break;
+						}
+					};
+				} else {
+					if(data.tick && [behaviors.POWDER,behaviors.LIQUID].includes(data.tick)) {
+						pseudoVelocity = 1;
+					} else if(data.tick == behaviors.UL_UR_OPTIMIZED) {
+						pseudoVelocity = -1;
+					} else if(pixel.element == "hail") {
+						pseudoVelocity = 2;
+					};
+					vy += pseudoVelocity;
+				};
+				*/
+				if(vx === 0 && vy === 0) {
+					return "rgb(15,15,15)"
+				} else {
+					var magnitude = Math.sqrt ((vx ** 2) + (vy ** 2));
+					var direction = Math.atan2(pixel.vy ?? 0,pixel.vx ?? 0)*180/Math.PI;
+					if(direction < 0) { direction = scale(direction,-180,0,360,180) };
+					hue = direction;
+					sat = 100;
+					lig = bound(scale(magnitude,0,100,10,100),0,100);
+					return "hsl("+hue+","+sat+"%,"+lig+"%)";
+				}
+			},
+			6: function(pixel) {
+				var data = elements[pixel.element] ?? elements.unknown;
+				var originalColor = data.colorObject;
+				if(Array.isArray(originalColor)) {
+					originalColor = randomChoice(originalColor)
+				};
+				return convertColorFormats(originalColor,"rgb");
+			}
+		};	
+		
+		console.log("1/8 loaded") //True 1.8 is inside one viewColorFunctions[2]
+		
+		hiding = false
+		
 		runAfterAutogen(function() {
 			//rAA because velocity.js already puts its redef in a rAL and rAA comes after that
 			drawPixels = function(forceTick=false) {
@@ -5096,12 +5795,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				})} // shuffle the pixels if not paused*/
 				for (var i = 0; i < newCurrentPixels.length; i++) {
 					pixel = newCurrentPixels[i];
-					if(typeof(elements[pixel.element]) == "undefined") { continue };
+					if(typeof(elements[pixel.element]) !== "object") { pixel.originalElement = pixel.element; pixel.element = "unknown" };
 					if(typeof(pixel) == "undefined") { continue };
 					//if (pixelMap[pixel.x][pixel.y] == undefined || currentPixels.indexOf(pixel) == -1) {continue}
 					if (pixel.del) {continue}
 					if (!paused || forceTick) {
-						if(typeof(elements[pixel.element]) == "undefined") { continue };
+						if(typeof(elements[pixel.element]) !== "object") { pixel.originalElement = pixel.element; pixel.element = "unknown" };
 						doVelocity(pixel);
 						if (elements[pixel.element].tick) { // Run tick function if it exists
 							elements[pixel.element].tick(pixel);
@@ -5141,299 +5840,165 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					};
 					ctx.fillRect(0, 0, canvas.width, canvas.height);
 				}
-				var pixelDrawList = pixelsFirst.concat(pixelsLast);
-				for (var i = 0; i < pixelDrawList.length; i++) {
-					var pixel = pixelDrawList[i];
-					if (pixelMap[pixel.x][pixel.y] == undefined) {continue}
-					if (pixel.con) { pixel = pixel.con }
-					if (view===null || view===3) {
-						var colorOut = pixel.color;
-						for(var sry4thelag in specialProperties) {
-							if(pixel[sry4thelag] !== undefined && specialProperties[sry4thelag].specialColorFunction) {
-								colorOut = specialProperties[sry4thelag].specialColorFunction(pixel,oldColor=colorOut)
-							}
-						}
-						ctx.fillStyle = colorOut;
-					}
-					else if (view === 2) { // thermal view
-						// set the color to pixel.temp, from hottest at -66 (294.1875) hue to coldest 265 hue, with the minimum being -273, max being 7755
-						var temp = pixel.temp;
-						temp = Math.min(Math.max(temp + 900,(settings.abszero ?? -273.15)),55530);
-						var hue,sat,lig;
-						sat = 100;
-						lig = 50;
-						if(temp <= 7755) {
-							hue = 265 - (Math.min(7755,temp)/6000)*265;
-							if (hue < 0) {hue += (360 * Math.ceil(hue / -360))}
-							if (temp < 0 && hue > 285) {hue = 285}
-						} else if(temp <= 9255) {
-							hue = 294.1875;
-							lig = 50 + (Math.max(0,temp - 7755) * (50/1500));
-						} else if(temp <= 11255) {
-							hue = 294.1875;
-							sat = 0;
-							lig = 100 - (Math.max(0,temp - 9255) * (100 / 2000));
-						} else if(temp <= 11755) {
-							hue = 265;
-							lig = (Math.max(0,temp - 11255) * (25 / 500));
-						} else if(temp <= 19510) {
-							hue = 265 - (Math.min(19510,Math.max(0,temp - 11755))/6000)*265;
-							if (hue < 0) {hue += (360 * Math.ceil(hue / -360))}
-							lig = 25;
-						} else if(temp <= 20510) {
-							hue = 294.1875
-							//lig = scale(temp,19510,20010,25,75);
-							//hue = scale(temp,19510,20010,294.1875,585) % 360;
-							sat = scale(temp,19510,20510,100,50);
-							lig = scale(temp,19510,20510,25,75);
-						} else if(temp <= 28265) {
-							hue = scale(temp,20510,28265,294.1875,585) % 360;
-							sat = 50;
-							lig = 75;
-						} else if(temp <= 29265) {
-							hue = 265;
-							sat = scale(temp,28265,29265,50,40);
-							lig = scale(temp,28265,29265,75,87.5);
-						} else if(temp <= 37020) {
-							hue = scale(temp,29265,37020,265,654.1875) % 360;
-							sat = 40;
-							lig = 87.5;
-						} else if(temp <= 39020) {
-							hue = 294.1875;
-							sat = 40;
-							lig = scale(temp,37020,39020,87.5,50);
-						} else if(temp <= 46775) { //46775
-							hue = scale(temp,39020,46775,294.1875,585) % 360;
-							sat = 40;
-							lig = 50;
-						} else if(temp <= 47775) {
-							hue = 265;
-							sat = scale(temp,46775,47775,40,20);
-							lig = 50;
-						} else { //55530
-							hue = scale(temp,47775,55530,265,654.1875) % 360;
-							sat = 20;
-							lig = 50;
-						};
-						ctx.fillStyle = "hsl("+hue+","+sat+"%,"+lig+"%)";
-					}
-					else if (view === 4) { // smooth view, average of surrounding pixels
-						// E/N: i'm too scared to do smooth view
-						var colorlist = [];
-						// check adjacent coords on the pixelMap, add the color to the list if the pixel is not empty and the color indexOf "rgb" is not -1
-						for (var j = 0; j < biCoords.length; j++) {
-							var x = pixel.x + biCoords[j][0];
-							var y = pixel.y + biCoords[j][1];
-							if (isEmpty(x,y,true) || elements[pixelMap[x][y].element].state !== elements[pixel.element].state) {continue}
-							var color = pixelMap[x][y].color;
-							if (color.indexOf("rgb") !== -1) {
-								colorlist.push(color.match(/\d+/g));
-							}
-						}
-						if (colorlist.length === 0) {
-							ctx.fillStyle = pixel.color;
-						}
-						else {
-							ctx.fillStyle = averageRGB(colorlist);
-						}
-					}
-					else if (view === 5) { // velocity view
-						var data = elements[pixel.element];
-						var vx = pixel.vx ?? 0;
-						var vy = pixel.vy ?? 0;
-						/*
-						var pseudoVelocity = 0;
-						var coordsToCheck;
-						var behaviorCoordsToCheck;
-						if(Array.isArray(data.behavior)) {
-							switch((pixel.r ?? 0) % 4) {
-								default:
-								case 0:
-									coordsToCheck = [0,1];
-									behaviorCoordsToCheckOffset = [2,1];
-									break;
-								case 1:
-									coordsToCheck = [-1,0];
-									behaviorCoordsToCheckOffset = [1,0];
-									break;
-								case 2:
-									coordsToCheck = [0,-1];
-									behaviorCoordsToCheckOffset = [0,1];
-									break;
-								case 3:
-									coordsToCheck = [1,0];
-									behaviorCoordsToCheckOffset = [1,2];
-									break;
-							};
-							if(data.behavior[behaviorCoordsToCheckOffset[0]][behaviorCoordsToCheckOffset[1]] == "M1") {
-								if(isEmpty(pixel.x+coordsToCheck[0],pixel.y+coordsToCheck[1])) {
-									pseudoVelocity = 1;
-								} else {
-									if(!(isEmpty(pixel.x+behaviorCoordsToCheckOffset[0],pixel.y+behaviorCoordsToCheckOffset[1],true))) {
-										newPixel = pixelMap[pixel.x+behaviorCoordsToCheckOffset[0]][pixel.y+behaviorCoordsToCheckOffset[1]];
-										newData = elements[newPixel.element];
-										if(newData.id !== data.id && typeof(data.density) === "number" && typeof(newData.density) === "number") {
-											var chance = (data.density - newData.density)/(data.density + newData.density);
-											pseudoVelocity = chance
-										}
-									}
+				if(!hiding) {
+					if(settings.dopressure && settings.drawpressure) {
+						for(var x = 0; x < pressureMap.length; x++) {
+							for(var y = 0; y < pressureMap[x].length; y++) {
+								var pressureValue = pressureMap[x][y];
+								if(typeof(pressureValue) == "number") {
+									var pressureSign = Math.sign(pressureValue);
+									pressureValue = bound(Math.abs(pressureValue),0,255) / 255;
+									switch(pressureSign) {
+										case -0:
+										case 0:
+											ctx.fillStyle = `rgb(0,0,0)`;
+											break
+										case 1:
+											ctx.fillStyle = `rgb(255,0,0)`;
+											break
+										case -1:
+											ctx.fillStyle = `rgb(0,0,255)`;
+											break
+										default: // covers NaN, since NaN != NaN
+											ctx.fillStyle = `rgb(255,255,0)`;
+											break
+									};
+									ctx.globalAlpha = isNaN(pressureSign) ? 0.5 : pressureValue;
+									ctx.fillRect(x*pixelSize*pressureCellSize, y*pixelSize*pressureCellSize, pixelSize*pressureCellSize, pixelSize*pressureCellSize)
 								}
+							}
+						}
+						ctx.globalAlpha = 1;
+					};
+					var pixelDrawList = pixelsFirst.concat(pixelsLast);
+					for (var i = 0; i < pixelDrawList.length; i++) {
+						var pixel = pixelDrawList[i];
+						if (pixelMap[pixel.x][pixel.y] == undefined) {continue}
+						if (pixel.con) { pixel = pixel.con }
+						if((typeof(pixel.color) !== "string") || (pixel.color.indexOf("NaN") >= 0)) {
+							pixel.color = pixelColorPick(pixel)
+						};
+						if(pixel.color.length <= 7) { //hex triplets as rgb colors seem to break some mods and can't be allowed
+							pixel.color = convertColorFormats(pixel.color,"rgb")
+						};
+						var colorFunction = viewColorFunctions[view] ?? normalColorFunction;
+						ctx.fillStyle = colorFunction(pixel);
+						if(find) { //if find and matching, override fill style with the find coloration
+							if(findElement instanceof Array ? findElement.includes(pixel.element) : pixel.element === findElement) {
+								ctx.fillStyle = "rgb(255," + marasi(findColorPulseTimer / 10) + ",0)";
+							}
+						};
+						var mode = getShapeMode();
+						settings.acidFunction ??= "none";
+						var acidFunction;
+						if([false,"false"].includes(settings.doacid)) {
+							acidFunction = acidFunctions.none
+						} else {
+							acidFunction = acidFunctions[settings.acidFunction ?? "none"]
+						};
+						var acidOffset1,acidOffset2;
+						if(settings.doacid && settings.acidFunction != "none" && !!acidFunction) {
+							acidOffset1 = (settings.doacid ?? false) * (18*acidFunction((pixel.y+incrementt)/4.4));
+							acidOffset2 = (settings.doacid ?? false) * (18*acidFunction((pixel.x+incrementt)/4.4))
+						} else {
+							acidOffset1 = 0;
+							acidOffset2 = 0
+						};
+						if ((view === null || view === 4) && elements[pixel.element].isGas) {
+							//gas rendering
+							switch(mode) {
+								case "circles":
+									ctx.globalAlpha = 0.66;
+									ctx.beginPath();
+									ctx.arc((pixel.x+0.5)*pixelSize+acidOffset1, (pixel.y+0.5)*pixelSize+acidOffset2, pixelSize, 0, 2 * Math.PI, false);
+									ctx.fill();
+									ctx.globalAlpha = 1;
+									break;
+								case "triangles":
+									ctx.globalAlpha = 0.66;
+									ctx.beginPath();
+									ctx.moveTo((pixel.x-0.75)*pixelSize+acidOffset1,(pixel.y+1.5)*pixelSize+acidOffset2);
+									ctx.lineTo((pixel.x+0.5)*pixelSize+acidOffset1,(pixel.y-1)*pixelSize+acidOffset2);
+									ctx.lineTo((pixel.x+1.75)*pixelSize+acidOffset1,(pixel.y+1.5)*pixelSize+acidOffset2);
+									ctx.fill();
+									ctx.globalAlpha = 1;
+									break;
+								default:
+									ctx.globalAlpha = 0.5;
+									ctx.fillRect((pixel.x-1)*pixelSize+acidOffset1, (pixel.y)*pixelSize+acidOffset2, pixelSize*3, pixelSize);
+									ctx.fillRect((pixel.x)*pixelSize+acidOffset1, (pixel.y-1)*pixelSize+acidOffset2, pixelSize, pixelSize*3);
+									ctx.globalAlpha = 1;
+									break;
 							};
-							if(pseudoVelocity) {
-								switch((pixel.r ?? 0) % 4) {
+						}
+						else { // draw the pixel (default)
+							switch(mode) {
+								case "circles":
+									ctx.beginPath();
+									ctx.arc((pixel.x+0.5)*pixelSize+acidOffset1, (pixel.y+0.5)*pixelSize+acidOffset2, pixelSize/2, 0, 2 * Math.PI, false);
+									ctx.fill();
+									ctx.globalAlpha = 1;
+									break;
+								case "triangles":
+									ctx.beginPath();
+									ctx.moveTo(pixel.x*pixelSize+acidOffset1,(pixel.y+1)*pixelSize+acidOffset2);
+									ctx.lineTo((pixel.x+0.5)*pixelSize+acidOffset1,(pixel.y)*pixelSize+acidOffset2);
+									ctx.lineTo((pixel.x+1)*pixelSize+acidOffset1,(pixel.y+1)*pixelSize+acidOffset2);
+									ctx.fill();
+									ctx.globalAlpha = 1;
+									break;
+								default:
+									ctx.fillRect(pixel.x*pixelSize+acidOffset1, pixel.y*pixelSize+acidOffset2, pixelSize, pixelSize);
+									break;
+							};
+						}
+						if (pixel.charge && settings.shockoverlay && view !== 2) { // Yellow glow on charge
+							if (!elements[pixel.element].colorOn) {
+								ctx.fillStyle = "rgba(255,255,0,0.5)";
+								switch(mode) {
+									case "circles":
+										ctx.beginPath();
+										ctx.arc((pixel.x+0.5)*pixelSize+acidOffset1, (pixel.y+0.5)*pixelSize+acidOffset2, pixelSize/2, 0, 2 * Math.PI, false);
+										ctx.fill();
+										ctx.globalAlpha = 1;
+										break;
+									case "triangles":
+										ctx.beginPath();
+										ctx.moveTo(pixel.x*pixelSize+acidOffset1,(pixel.y+1)*pixelSize+acidOffset2);
+										ctx.lineTo((pixel.x+0.5)*pixelSize+acidOffset1,(pixel.y)*pixelSize+acidOffset2);
+										ctx.lineTo((pixel.x+1)*pixelSize+acidOffset1,(pixel.y+1)*pixelSize+acidOffset2);
+										ctx.fill();
+										ctx.globalAlpha = 1;
+										break;
 									default:
-									case 0:
-										vy += pseudoVelocity;
+										ctx.fillRect(pixel.x*pixelSize+acidOffset1, pixel.y*pixelSize+acidOffset2, pixelSize, pixelSize);
 										break;
-									case 1:
-										vx -= pseudoVelocity;
-										break;
-									case 2:
-										vy -= pseudoVelocity;
-										break;
-									case 3:
-										vx += pseudoVelocity;
-										break;
-								}
-							};
-						} else {
-							if(data.tick && [behaviors.POWDER,behaviors.LIQUID].includes(data.tick)) {
-								pseudoVelocity = 1;
-							} else if(data.tick == behaviors.UL_UR_OPTIMIZED) {
-								pseudoVelocity = -1;
-							} else if(pixel.element == "hail") {
-								pseudoVelocity = 2;
-							};
-							vy += pseudoVelocity;
-						};
-						*/
-						if(vx === 0 && vy === 0) {
-							ctx.fillStyle = "rgb(15,15,15)"
-						} else {
-							var magnitude = Math.sqrt ((vx ** 2) + (vy ** 2));
-							var direction = Math.atan2(pixel.vy ?? 0,pixel.vx ?? 0)*180/Math.PI;
-							if(direction < 0) { direction = scale(direction,-180,0,360,180) };
-							hue = direction;
-							sat = 100;
-							lig = bound(scale(magnitude,0,100,10,100),0,100);
-							ctx.fillStyle = "hsl("+hue+","+sat+"%,"+lig+"%)";
+								};
+							}
 						}
-					}
-					if(find) { //if find and matching, override fill style with the find coloration
-						if(findElement instanceof Array ? findElement.includes(pixel.element) : pixel.element === findElement) {
-							ctx.fillStyle = "rgb(255," + marasi(findColorPulseTimer / 10) + ",0)";
-						}
-					};
-					var mode = getShapeMode();
-					settings.acidFunction ??= "none";
-					var acidFunction;
-					if([false,"false"].includes(settings.doacid)) {
-						acidFunction = acidFunctions.none
-					} else {
-						acidFunction = acidFunctions[settings.acidFunction ?? "none"]
-					};
-					var acidOffset1,acidOffset2;
-					if(settings.doacid && settings.acidFunction != "none" && !!acidFunction) {
-						acidOffset1 = (settings.doacid ?? false) * (18*acidFunction((pixel.y+incrementt)/4.4));
-						acidOffset2 = (settings.doacid ?? false) * (18*acidFunction((pixel.x+incrementt)/4.4))
-					} else {
-						acidOffset1 = 0;
-						acidOffset2 = 0
-					};
-					if ((view === null || view === 4) && elements[pixel.element].isGas) {
-						//gas rendering
-						switch(mode) {
-							case "circles":
-								ctx.globalAlpha = 0.66;
-								ctx.beginPath();
-								ctx.arc((pixel.x+0.5)*pixelSize+acidOffset1, (pixel.y+0.5)*pixelSize+acidOffset2, pixelSize, 0, 2 * Math.PI, false);
-								ctx.fill();
-								ctx.globalAlpha = 1;
-								break;
-							case "triangles":
-								ctx.globalAlpha = 0.66;
-								ctx.beginPath();
-								ctx.moveTo((pixel.x-0.75)*pixelSize+acidOffset1,(pixel.y+1.5)*pixelSize+acidOffset2);
-								ctx.lineTo((pixel.x+0.5)*pixelSize+acidOffset1,(pixel.y-1)*pixelSize+acidOffset2);
-								ctx.lineTo((pixel.x+1.75)*pixelSize+acidOffset1,(pixel.y+1.5)*pixelSize+acidOffset2);
-								ctx.fill();
-								ctx.globalAlpha = 1;
-								break;
-							default:
-								ctx.globalAlpha = 0.5;
-								ctx.fillRect((pixel.x-1)*pixelSize+acidOffset1, (pixel.y)*pixelSize+acidOffset2, pixelSize*3, pixelSize);
-								ctx.fillRect((pixel.x)*pixelSize+acidOffset1, (pixel.y-1)*pixelSize+acidOffset2, pixelSize, pixelSize*3);
-								ctx.globalAlpha = 1;
-								break;
-						};
-					}
-					else { // draw the pixel (default)
-						switch(mode) {
-							case "circles":
-								ctx.beginPath();
-								ctx.arc((pixel.x+0.5)*pixelSize+acidOffset1, (pixel.y+0.5)*pixelSize+acidOffset2, pixelSize/2, 0, 2 * Math.PI, false);
-								ctx.fill();
-								ctx.globalAlpha = 1;
-								break;
-							case "triangles":
-								ctx.beginPath();
-								ctx.moveTo(pixel.x*pixelSize+acidOffset1,(pixel.y+1)*pixelSize+acidOffset2);
-								ctx.lineTo((pixel.x+0.5)*pixelSize+acidOffset1,(pixel.y)*pixelSize+acidOffset2);
-								ctx.lineTo((pixel.x+1)*pixelSize+acidOffset1,(pixel.y+1)*pixelSize+acidOffset2);
-								ctx.fill();
-								ctx.globalAlpha = 1;
-								break;
-							default:
-								ctx.fillRect(pixel.x*pixelSize+acidOffset1, pixel.y*pixelSize+acidOffset2, pixelSize, pixelSize);
-								break;
-						};
-					}
-					if (pixel.charge && settings.shockoverlay && view !== 2) { // Yellow glow on charge
-						if (!elements[pixel.element].colorOn) {
-							ctx.fillStyle = "rgba(255,255,0,0.5)";
-							switch(mode) {
-								case "circles":
-									ctx.beginPath();
-									ctx.arc((pixel.x+0.5)*pixelSize+acidOffset1, (pixel.y+0.5)*pixelSize+acidOffset2, pixelSize/2, 0, 2 * Math.PI, false);
-									ctx.fill();
-									ctx.globalAlpha = 1;
-									break;
-								case "triangles":
-									ctx.beginPath();
-									ctx.moveTo(pixel.x*pixelSize+acidOffset1,(pixel.y+1)*pixelSize+acidOffset2);
-									ctx.lineTo((pixel.x+0.5)*pixelSize+acidOffset1,(pixel.y)*pixelSize+acidOffset2);
-									ctx.lineTo((pixel.x+1)*pixelSize+acidOffset1,(pixel.y+1)*pixelSize+acidOffset2);
-									ctx.fill();
-									ctx.globalAlpha = 1;
-									break;
-								default:
-									ctx.fillRect(pixel.x*pixelSize+acidOffset1, pixel.y*pixelSize+acidOffset2, pixelSize, pixelSize);
-									break;
-							};
-						}
-					}
-					if (pixel.burning && settings.burnoverlay && view !== 2) { // Red glow on burn
-						if (!elements[pixel.element].colorOn) {
-							ctx.fillStyle = "rgba(255,0,0,0.5)";
-							switch(mode) {
-								case "circles":
-									ctx.beginPath();
-									ctx.arc((pixel.x+0.5)*pixelSize+acidOffset1, (pixel.y+0.5)*pixelSize+acidOffset2, pixelSize/2, 0, 2 * Math.PI, false);
-									ctx.fill();
-									ctx.globalAlpha = 1;
-									break;
-								case "triangles":
-									ctx.beginPath();
-									ctx.moveTo(pixel.x*pixelSize+acidOffset1,(pixel.y+1)*pixelSize+acidOffset2);
-									ctx.lineTo((pixel.x+0.5)*pixelSize+acidOffset1,(pixel.y)*pixelSize+acidOffset2);
-									ctx.lineTo((pixel.x+1)*pixelSize+acidOffset1,(pixel.y+1)*pixelSize+acidOffset2);
-									ctx.fill();
-									ctx.globalAlpha = 1;
-									break;
-								default:
-									ctx.fillRect(pixel.x*pixelSize+acidOffset1, pixel.y*pixelSize+acidOffset2, pixelSize, pixelSize);
-									break;
-							};
+						if (pixel.burning && settings.burnoverlay && view !== 2) { // Red glow on burn
+							if (!elements[pixel.element].colorOn) {
+								ctx.fillStyle = "rgba(255,0,0,0.5)";
+								switch(mode) {
+									case "circles":
+										ctx.beginPath();
+										ctx.arc((pixel.x+0.5)*pixelSize+acidOffset1, (pixel.y+0.5)*pixelSize+acidOffset2, pixelSize/2, 0, 2 * Math.PI, false);
+										ctx.fill();
+										ctx.globalAlpha = 1;
+										break;
+									case "triangles":
+										ctx.beginPath();
+										ctx.moveTo(pixel.x*pixelSize+acidOffset1,(pixel.y+1)*pixelSize+acidOffset2);
+										ctx.lineTo((pixel.x+0.5)*pixelSize+acidOffset1,(pixel.y)*pixelSize+acidOffset2);
+										ctx.lineTo((pixel.x+1)*pixelSize+acidOffset1,(pixel.y+1)*pixelSize+acidOffset2);
+										ctx.fill();
+										ctx.globalAlpha = 1;
+										break;
+									default:
+										ctx.fillRect(pixel.x*pixelSize+acidOffset1, pixel.y*pixelSize+acidOffset2, pixelSize, pixelSize);
+										break;
+								};
+							}
 						}
 					}
 				};
@@ -5469,20 +6034,21 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			}
 		});
 		//I hate overwriting drawPixels
-        viewKey = {
-            2: "thermal",
-            3: "basic",
-            4: "smooth",
-            5: "velocity"
-        };
-        function setView(n) {
-            if (viewKey[n]) { // range of number keys with valid views
-                view = n;
-            }
-            else { // reset view
-                view = null;
-            }
-        };
+		viewKey = {
+			2: "thermal",
+			3: "basic",
+			4: "smooth",
+			5: "velocity",
+			6: "element"
+		};
+		function setView(n) {
+			if (viewKey[n]) { // range of number keys with valid views
+				view = n;
+			}
+			else { // reset view
+				view = null;
+			}
+		};
 		runAfterLoad(function() {
 			//Setting
 			var settingsMenu = document.getElementById("settingsMenu").getElementsByClassName("menuText")[0];
@@ -5612,6 +6178,69 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				acidSettingSpan.appendChild(settingInput);
 				acidSettingSpan.appendChild(newHelpMark);
 			yellowShockSettingSpan.after(acidSettingSpan);
+			var rankineSettingSpan = document.createElement("span");
+			rankineSettingSpan.setAttribute("setting","userankine");
+			rankineSettingSpan.setAttribute("title","Default: OFF");
+			rankineSettingSpan.classList.add("setting-span","multisetting");
+				var settingInput = document.createElement("input");
+				settingInput.setAttribute("type","button");
+				settingInput.setAttribute("value",'Use degrees Rankine');
+				settingInput.setAttribute("state","0");
+				settingInput.classList.add("toggleInput");
+				settingInput.setAttribute("onclick","toggleInput(this,'userankine',false)");
+				var options = {
+					"false": "Disabled",
+					"true": "Enabled"
+				};
+				var newHelpMark = document.createElement("span");
+				newHelpMark.setAttribute("title","Use degrees Rankine (Fahrenheit based around absolute zero) for temperature display. Only affects imperial units.");
+				newHelpMark.classList.add("helpMark");
+				newHelpMark.innerText = "?";
+				rankineSettingSpan.appendChild(settingInput);
+				rankineSettingSpan.appendChild(newHelpMark);
+			acidSettingSpan.after(rankineSettingSpan);
+			var pressureSettingSpan = document.createElement("span");
+			pressureSettingSpan.setAttribute("setting","dopressure");
+			pressureSettingSpan.setAttribute("title","Default: OFF");
+			pressureSettingSpan.classList.add("setting-span","multisetting");
+				var settingInput = document.createElement("input");
+				settingInput.setAttribute("type","button");
+				settingInput.setAttribute("value",'Pressure simulation');
+				settingInput.setAttribute("state","0");
+				settingInput.classList.add("toggleInput");
+				settingInput.setAttribute("onclick","toggleInput(this,'dopressure',false)");
+				var options = {
+					"false": "Disabled",
+					"true": "Enabled"
+				};
+				var newHelpMark = document.createElement("span");
+				newHelpMark.setAttribute("title","Simplified pressure simulation (which may lag).");
+				newHelpMark.classList.add("helpMark");
+				newHelpMark.innerText = "?";
+				pressureSettingSpan.appendChild(settingInput);
+				pressureSettingSpan.appendChild(newHelpMark);
+			rankineSettingSpan.after(pressureSettingSpan);
+			var showPressureSettingSpan = document.createElement("span");
+			showPressureSettingSpan.setAttribute("setting","drawpressure");
+			showPressureSettingSpan.setAttribute("title","Default: OFF");
+			showPressureSettingSpan.classList.add("setting-span","multisetting");
+				var settingInput = document.createElement("input");
+				settingInput.setAttribute("type","button");
+				settingInput.setAttribute("value",'Show pressure');
+				settingInput.setAttribute("state","0");
+				settingInput.classList.add("toggleInput");
+				settingInput.setAttribute("onclick","toggleInput(this,'drawpressure',false)");
+				var options = {
+					"false": "Disabled",
+					"true": "Enabled"
+				};
+				var newHelpMark = document.createElement("span");
+				newHelpMark.setAttribute("title","Draw pressure (only applies if pressure simulation is enabled).");
+				newHelpMark.classList.add("helpMark");
+				newHelpMark.innerText = "?";
+				showPressureSettingSpan.appendChild(settingInput);
+				showPressureSettingSpan.appendChild(newHelpMark);
+			pressureSettingSpan.after(showPressureSettingSpan);
 			var sizeSetting = document.querySelector('span[setting="pixelsize"]');
 			var sizeDropdown = sizeSetting.querySelector("select");
 			sizeDropdown.setAttribute("onchange","var size = (this.value === 'null' ? null : parseFloat(this.value)); console.log(size); if((size >= 0.05) && (size <= 194.73749999999999) && (size !== null) && (size !== false) && !(isNaN(size))) { console.log(size); setSetting('pixelsize',size);this.nextElementSibling.innerText='Reset Scene' }");
@@ -5667,7 +6296,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		});
 	//FUNCTION EXECUTION WHEN A PIXEL TRIES TO MOVE INTO ANOTHER (onTryMoveInto) ##
 		elements.on_try_move_into_test = {
-			color: "#ffffff",
+			color: _cc.w.h,
 			properties: {
 				ticks: 0,
 				attemptedMovesIntoPixel: 0
@@ -5699,6 +6328,13 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		}
 		function tryMove(pixel,nx,ny,leaveBehind,force) {
 			if(!pixel) { return false };
+			if ((typeof(pixel.tempDrag) !== "undefined") && (!force)) {
+				if(typeof(pixel.tempDrag) === "number" && pixel.tempDrag >= pixelTicks) {
+					return true
+				} else {
+					delete pixel.tempDrag
+				}
+			};
 			if (pixel.drag && !force) { return true; }
 			var info = elements[pixel.element];
 			var oob = outOfBounds(nx,ny);
@@ -5757,7 +6393,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		elements.move_up = {
 			color: "#1C0000",
 			tool: function(pixel) {
-				tryMove(pixel,pixel.x,pixel.y-1);
+				for(var i = 0; i < (shiftDown ? 3 : 1); i++) { tryMove(pixel,pixel.x,pixel.y-1,null,true) };
 			},
 			category: "movement tools",
 			excludeRandom: true,
@@ -5765,7 +6401,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		elements.move_down = {
 			color: "#000038",
 			tool: function(pixel) {
-				tryMove(pixel,pixel.x,pixel.y+1);
+				for(var i = 0; i < (shiftDown ? 3 : 1); i++) { tryMove(pixel,pixel.x,pixel.y+1,null,true) };
 			},
 			category: "movement tools",
 			excludeRandom: true,
@@ -5773,7 +6409,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		elements.move_left = {
 			color: "#007000",
 			tool: function(pixel) {
-				tryMove(pixel,pixel.x-1,pixel.y);
+				for(var i = 0; i < (shiftDown ? 3 : 1); i++) { tryMove(pixel,pixel.x-1,pixel.y,null,true) };
 			},
 			category: "movement tools",
 			excludeRandom: true,
@@ -5781,7 +6417,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		elements.move_right = {
 			color: "#000E00",
 			tool: function(pixel) {
-				tryMove(pixel,pixel.x+1,pixel.y);
+				for(var i = 0; i < (shiftDown ? 3 : 1); i++) { tryMove(pixel,pixel.x+1,pixel.y,null,true) };
 			},
 			category: "movement tools",
 			excludeRandom: true,
@@ -5789,7 +6425,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		elements.move_up_left = {
 			color: "#E00000",
 			tool: function(pixel) {
-				tryMove(pixel,pixel.x-1,pixel.y-1);
+				for(var i = 0; i < (shiftDown ? 3 : 1); i++) { tryMove(pixel,pixel.x-1,pixel.y-1,null,true) };
 			},
 			category: "movement tools",
 			excludeRandom: true,
@@ -5797,7 +6433,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		elements.move_down_left = {
 			color: "#0001C0",
 			tool: function(pixel) {
-				tryMove(pixel,pixel.x-1,pixel.y+1);
+				for(var i = 0; i < (shiftDown ? 3 : 1); i++) { tryMove(pixel,pixel.x-1,pixel.y+1,null,true) };
 			},
 			category: "movement tools",
 			excludeRandom: true,
@@ -5805,7 +6441,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		elements.move_up_right = {
 			color: "#038000",
 			tool: function(pixel) {
-				tryMove(pixel,pixel.x+1,pixel.y-1);
+				for(var i = 0; i < (shiftDown ? 3 : 1); i++) { tryMove(pixel,pixel.x+1,pixel.y-1,null,true) };
 			},
 			category: "movement tools",
 			excludeRandom: true,
@@ -5813,7 +6449,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		elements.move_down_right = {
 			color: "#000007",
 			tool: function(pixel) {
-				tryMove(pixel,pixel.x+1,pixel.y+1);
+				for(var i = 0; i < (shiftDown ? 3 : 1); i++) { tryMove(pixel,pixel.x+1,pixel.y+1,null,true) };
 			},
 			category: "movement tools",
 			excludeRandom: true,
@@ -5821,7 +6457,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 	//TOOL THAT DELETES EVERY ELEMENT OF THE CLICKED TYPE(S) ##
 		elements.delete_all_of_element = {
 			name: "delete all of element",
-			color: ["#a7a7a7", "#a7a7a7", "#a7a7a7", "#a7a7a7", "#000000", "#000000", "#000000", "#000000"],
+			color: ["#a7a7a7", "#a7a7a7", "#a7a7a7", "#a7a7a7", _cc.b.h, _cc.b.h, _cc.b.h, _cc.b.h],
 			tool: function(pixel) {
 				for (var i = 1; i < width; i++) {
 					for (var j = 1; j < height; j++) {
@@ -5874,7 +6510,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		};
 		elements.nan_temp = {
 			name: "NaN temp",
-			color: ["#000000", "#ff00ff", "#000000", "#ff00ff"],
+			color: [_cc.b.h, "#ff00ff", _cc.b.h, "#ff00ff"],
 			tool: function(pixel) {
 				pixel.temp = NaN;
 				pixelTempCheck(pixel)
@@ -5882,7 +6518,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "cursed tools",
 		};
 		elements.inf_temp = {
-			color: ["#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff", "#ff0000", "#ffffff"],
+			color: ["#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h, "#ff0000", _cc.w.h],
 			tool: function(pixel) {
 				pixel.temp = Infinity;
 				pixelTempCheck(pixel)
@@ -5934,7 +6570,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			color: "#eeeeee",
 			tick: function(pixel) {
 				var target = randomChoice(currentPixels);
-				target.color = "rgb(0,0,0)"
+				target.color = _cc.b.r
 			},
 			category: "troll machines",
 			insulate: true,
@@ -5976,7 +6612,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			desc: "Causes random explosions"
 		},
 		elements.offset_fourth_y = {
-			color: ["#000000", "#ff00ff", "#000000", "#ff00ff", "#000000", "#ff00ff", "#000000", "#ff00ff"],
+			color: [_cc.b.h, "#ff00ff", _cc.b.h, "#ff00ff", _cc.b.h, "#ff00ff", _cc.b.h, "#ff00ff"],
 			tool: function(pixel) {
 				tryMove(pixel,pixel.x,pixel.y+0.25);
 				pixelTempCheck(pixel)
@@ -5984,7 +6620,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "cursed tools",
 		},
 		elements.offset_half_y = {
-			color: ["#000000", "#ff00ff", "#000000", "#ff00ff", "#000000", "#ff00ff", "#000000", "#ff00ff"],
+			color: [_cc.b.h, "#ff00ff", _cc.b.h, "#ff00ff", _cc.b.h, "#ff00ff", _cc.b.h, "#ff00ff"],
 			tool: function(pixel) {
 				tryMove(pixel,pixel.x,pixel.y+0.5);
 				pixelTempCheck(pixel)
@@ -5992,7 +6628,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "cursed tools",
 		},
 		elements.offset_three_fourth_y = {
-			color: ["#000000", "#ff00ff", "#000000", "#ff00ff", "#000000", "#ff00ff", "#000000", "#ff00ff"],
+			color: [_cc.b.h, "#ff00ff", _cc.b.h, "#ff00ff", _cc.b.h, "#ff00ff", _cc.b.h, "#ff00ff"],
 			tool: function(pixel) {
 				tryMove(pixel,pixel.x,pixel.y+0.75);
 				pixelTempCheck(pixel)
@@ -6700,7 +7336,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: averageNumericArray([elements.steel.density, elements.copper.density, airDensity])
 		};
 		elements.test_fader = { //basically an aray clone
-			color: "#FFFFFF",
+			color: _cc.w.h,
 			properties: {
 				"life": 100,
 				"fadeRate": 1
@@ -6710,7 +7346,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			state: "solid",
 			tick: function(pixel) {
 				pixel.life ??= 100;
-				var alpha = isNaN(pixel.life) ? Math.floor(Math.random() * 256) : (pixel.life * 2.55); //CL REFERENCE??!?!?!?!?!?!?!?!??!?
+				var alpha = isNaN(pixel.life) ? Math.floor(Math.random() * 256) : (pixel.life * 2.55); //ALPHA/??!?!?!?!/1/ CL REFERENCE??!?!?!?!?!?!?!?!??!?
 				//console.log("tick");
 				var splitColor = convertColorFormats(pixel.color,"json");
 				//console.log(pixel.color,splitColor);
@@ -6732,20 +7368,80 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		//Sweeping laser
 		elements.sweeping_laser = {
 			"color": "#905050",
+			customColor: true,
+			onSelect: function() {
+				showPropertySetter();
+
+				showSetterColumn("numeric",0);
+				var p0 = document.getElementById("propertynumeric0input");
+				var p0h = document.getElementById("propertynumeric0heading");
+				if(p0) {
+					p0.setAttribute("set","sweepingLaserRotationSpeed");
+					p0.setAttribute("min","-4");
+					p0.value = ambaPlaceProperties.sweepingLaserRotationSpeed;
+				};
+				if(p0h) {
+					p0h.innerText = "Rotation Speed";
+				};
+
+				showSetterColumn("numeric",1);
+				var p1 = document.getElementById("propertynumeric1input");
+				var p1h = document.getElementById("propertynumeric1heading");
+				if(p1) {
+					p1.setAttribute("set","sweepingLaserBeamLength");
+					p1.setAttribute("min","1");
+					p1.value = ambaPlaceProperties.sweepingLaserBeamLength;
+				};
+				if(p1h) {
+					p1h.innerText = "Length";
+				};
+
+				showSetterColumn("numeric",2);
+				var p2 = document.getElementById("propertynumeric2input");
+				var p2h = document.getElementById("propertynumeric2heading");
+				if(p2) {
+					p2.setAttribute("set","sweepingLaserBeamTemperature");
+					p2.setAttribute("min","-99999999");
+					p2.value = ambaPlaceProperties.sweepingLaserBeamTemperature;
+				};
+				if(p2h) {
+					p2h.innerText = "Temperature";
+				};
+
+				showSetterColumn("numeric",3);
+				var p3 = document.getElementById("propertynumeric3input");
+				var p3h = document.getElementById("propertynumeric3heading");
+				if(p3) {
+					p3.setAttribute("set","sweepingLaserBeamBrevity");
+					p3.setAttribute("min","0");
+					p3.value = ambaPlaceProperties.sweepingLaserBeamBrevity;
+				};
+				if(p3h) {
+					p3h.innerText = "Brevity";
+				}
+			},
+			onUnselect: function() {
+				hideAllSetterColumns();
+				hidePropertySetter()
+			},
+			
 			"tick": function(pixel) {
 				pixel.r ??= 0;
 				if(isNaN(pixel.r)) { return false };
-				pixel.rSpeed ??= -0.03;
-				pixel.beamLength ??= 10;
-				pixel.beamTemp ??= 2000;
-				pixel.brevity ??= 5;
-				pixel.beamColor ??= "#FF0000";
+				pixel.rSpeed ??= -(ambaPlaceProperties?.sweepingLaserRotationSpeed ?? -0.03);
+				pixel.beamLength ??= (ambaPlaceProperties?.sweepingLaserBeamLength ?? 10);
+				pixel.beamTemp ??= (ambaPlaceProperties?.sweepingLaserBeamTemperature ?? 2000);
+				pixel.brevity ??= (ambaPlaceProperties?.sweepingLaserBeamBrevity ?? 5);
+				pixel.untssa ??= Math.floor(Math.random() * (Number.MAX_SAFE_INTEGER + 1)) * (Math.floor() < 0.5 ? -1 : 1); //unique number to stop self-addition
+				if(Object.is(pixel.untssa,-0)) { pixel.untssa = Number.MAX_SAFE_INTEGER + 3 };
+				pixel.beamColor ??= currentColor;
+
 				var beamElement = "test_fader";
 				var rotation = -(((pixel.r ?? 0) % 4) + 1); //preserving the original behavior of 0 = up, 1 = left
 				var rotationInRadians = scale(rotation,0,4,0,Math.PI * 2);
 				var vector = [Math.cos(rotationInRadians), Math.sin(rotationInRadians)];
 				var distance = Math.min(300,Math.max(2,(pixel.beamLength + 1) ?? 10));
-				for(var i = 1; i <= distance; i += 0.5) { //twice the tries to try to reduce gaps in the beam
+				for(var i = 1; i <= distance; i += (3 ** -(Math.ceil(Math.log2(distance / 10))))) { //increase the tries to try to reduce gaps in the beam, as distance goes up
 					var newOffsets = vector.map(coord => Math.round(coord * i));
 					var finalPos = {x: pixel.x + newOffsets[0], y: pixel.y + newOffsets[1]};
 					//console.log(finalPos);
@@ -6757,7 +7453,15 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 							elements[otherPixel.element].state === "gas"
 						) && !(sweepingLaserTransparencyBlacklist.includes(otherPixel.element))) {
 							if(otherPixel.element == "test_fader") { //intentionally hard-coded
-								otherPixel.life = 100
+								otherPixel.life = 100;
+								if(otherPixel.untssa !== pixel.untssa) {
+									var _pc = convertColorFormats(pixel.color,"hex",true).slice(0,7);
+									otherPixel.lastColors ??= [convertColorFormats(otherPixel.color,"hex",true).slice(0,7)];
+									if(otherPixel.lastColors.indexOf(_pc) === -1) {
+										otherPixel.lastColors.push(_pc);
+										otherPixel.color = otherPixel.lastColors.reduce((a,b) => addColors(a,b,"hex").slice(0,7)).padEnd(9,"F")
+									}
+								}
 							};
 							continue
 						} else {
@@ -6770,6 +7474,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					} else {
 						newBeamPixel.temp = pixel.beamTemp ?? 2000;
 						newBeamPixel.fadeRate = pixel.brevity ??= 5;
+						newBeamPixel.untssa = pixel.untssa;
 						newBeamPixel.color = (pixel.beamColor ?? "#FF0000");
 					}
 				};
@@ -7141,7 +7846,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		};
 		elements.sencc = { //same element neighbor count check
-			color: "#000000",
+			color: _cc.b.h,
 			uwu: 0,
 			tick: function(pixel) {
 				pixel.uwu = 0
@@ -7167,7 +7872,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		},
 		elements.sencc2 = { //same element neighbor count check
-			color: "#000000",
+			color: _cc.b.h,
 			uwu: 0,
 			tick: function(pixel) {
 				pixel.uwu = 0
@@ -7193,7 +7898,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		},
 		elements.sencc3 = { //same element neighbor count check
-			color: "#000000",
+			color: _cc.b.h,
 			uwu: 0,
 			tick: function(pixel) {
 				pixel.uwu = 0
@@ -7220,7 +7925,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		},
 		elements.sencc4 = { //same element neighbor count check
-			color: "#000000",
+			color: _cc.b.h,
 			uwu: 0,
 			tick: function(pixel) {
 				pixel.uwu = 0
@@ -7247,7 +7952,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		},
 		elements.sencc5 = { //same element neighbor count check
-			color: "#000000",
+			color: _cc.b.h,
 			uwu: 0,
 			tick: function(pixel) {
 				pixel.uwu = 0
@@ -7274,7 +7979,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		},
 		elements.sencc6 = { //same element neighbor count check
-			color: "#000000",
+			color: _cc.b.h,
 			uwu: 0,
 			tick: function(pixel) {
 				pixel.uwu = 0
@@ -7301,7 +8006,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		},
 		elements.sencc7 = { //same element neighbor count check
-			color: "#000000",
+			color: _cc.b.h,
 			uwu: 0,
 			tick: function(pixel) {
 				pixel.uwu = 0
@@ -7328,7 +8033,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		},
 		elements.sencc8 = { //same element neighbor count check
-			color: "#000000",
+			color: _cc.b.h,
 			uwu: 0,
 			tick: function(pixel) {
 				pixel.uwu = 0
@@ -7355,7 +8060,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		},
 		elements.sencc9 = { //same element neighbor count check
-			color: "#000000",
+			color: _cc.b.h,
 			uwu: 0,
 			tick: function(pixel) {
 				pixel.uwu = 0
@@ -7382,7 +8087,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		},
 		elements.sencc10 = { //same element neighbor count check
-			color: "#000000",
+			color: _cc.b.h,
 			uwu: 0,
 			tick: function(pixel) {
 				pixel.uwu = 0
@@ -7409,7 +8114,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		},
 		elements.sencc11 = { //same element neighbor count check
-			color: "#000000",
+			color: _cc.b.h,
 			uwu: 0,
 			tick: function(pixel) {
 				pixel.uwu = 0
@@ -7436,7 +8141,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		},
 		elements.sencc2b = { //same element neighbor count check
-			color: "#000000",
+			color: _cc.b.h,
 			uwu: 0,
 			owo: 0,
 			tick: function(pixel) {
@@ -7485,7 +8190,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			behavior: behaviors.SELFDELETE,
 		},
 		elements.troll_powder = {
-			color: ["#ffffff","#000000"],
+			color: [_cc.w.h,_cc.b.h],
 			tick: function(pixel) {
 				ddd = Math.random()
 				eee = Math.random()
@@ -8131,7 +8836,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hardness: 0.8,
 		};
 		elements.polka_dotted_powder = {
-			color: ["#000000","#000000","#7f7f7f","#ffffff","#ffffff"],
+			color: [_cc.b.h,_cc.b.h,"#7f7f7f",_cc.w.h,_cc.w.h],
 			behavior: behaviors.POWDER,
 			category: "powders",
 			state: "solid",
@@ -8139,29 +8844,29 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			tick: function(pixel) {
 				if(pixel.y % 6 == 0) {
 					if(pixel.x % 6 == 0) {
-						pixel.color = "rgb(255,255,255)"
+						pixel.color = _cc.w.r
 					} else {
-						if(!settings.bg || settings.bg == "#000000") {
+						if(!settings.bg || settings.bg == _cc.b.h) {
 							pixel.color = "rgb(15,15,15)"
 						} else {
-							pixel.color = "rgb(0,0,0)"
+							pixel.color = _cc.b.r
 						}
 					}
 				} else if((pixel.y + 3) % 6 == 0) {
 					if((pixel.x + 3) % 6 == 0) {
-						pixel.color = "rgb(255,255,255)"
+						pixel.color = _cc.w.r
 					} else {
-						if(!settings.bg || settings.bg == "#000000") {
+						if(!settings.bg || settings.bg == _cc.b.h) {
 							pixel.color = "rgb(15,15,15)"
 						} else {
-							pixel.color = "rgb(0,0,0)"
+							pixel.color = _cc.b.r
 						}
 					}
 				} else {
-					if(!settings.bg || settings.bg == "#000000") {
+					if(!settings.bg || settings.bg == _cc.b.h) {
 						pixel.color = "rgb(15,15,15)"
 					} else {
-						pixel.color = "rgb(0,0,0)"
+						pixel.color = _cc.b.r
 					}
 				}
 			},
@@ -8208,7 +8913,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		},
 		elements.vaporized_polka_dotted_powder = {
-			color: ["#ffdf7f","#ffdf7f","#ffefbf","#ffffff","#ffffff"],
+			color: ["#ffdf7f","#ffdf7f","#ffefbf",_cc.w.h,_cc.w.h],
 			behavior: behaviors.GAS,
 			category: "gases",
 			state: "gas",
@@ -8216,7 +8921,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			tick: function(pixel) {
 				if(pixel.y % 6 == 0) {
 					if(pixel.x % 6 == 0) {
-						pixel.color = "rgb(255,255,255)"
+						pixel.color = _cc.w.r
 					} else {
 						if(!settings.bg || settings.bg == "#ffdf7f") {
 							pixel.color = "rgb(255,233,137)"
@@ -8226,7 +8931,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					}
 				} else if((pixel.y + 3) % 6 == 0) {
 					if((pixel.x + 3) % 6 == 0) {
-						pixel.color = "rgb(255,255,255)"
+						pixel.color = _cc.w.r
 					} else {
 						if(!settings.bg || settings.bg == "#ffdf7f") {
 							pixel.color = "rgb(255,143,16)"
@@ -8250,7 +8955,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		},
 		elements.ionized_polka_dotted_powder = {
-			color: ["#fffff0","#fffff0","#fffff7","#ffffff","#ffffff"],
+			color: ["#fffff0","#fffff0","#fffff7",_cc.w.h,_cc.w.h],
 			behavior: [
 				"M2 AND CR:plasma%0.3|M1|M2 AND CR:plasma%0.3",
 				"M1|XX|M1",
@@ -8262,7 +8967,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			tick: function(pixel) {
 				if(pixel.y % 6 == 0) {
 					if(pixel.x % 6 == 0) {
-						pixel.color = "rgb(255,255,255)"
+						pixel.color = _cc.w.r
 					} else {
 						if(!settings.bg || settings.bg == "#fffff0") {
 							pixel.color = "rgb(255,255,247)"
@@ -8272,7 +8977,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					}
 				} else if((pixel.y + 3) % 6 == 0) {
 					if((pixel.x + 3) % 6 == 0) {
-						pixel.color = "rgb(255,255,255)"
+						pixel.color = _cc.w.r
 					} else {
 						if(!settings.bg || settings.bg == "#fffff0") {
 							pixel.color = "rgb(255,255,247)"
@@ -8354,11 +9059,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					if(settings.bg) {
 						pixel.color = settings.bg;
 					} else {
-						pixel.color = "#000000";
+						pixel.color = _cc.b.h;
 					}
 				}
 			},
-			color: ["#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#FF0000", "#FF7F00", "#FFFF00", "#00FF00", "#007FFF", "#0000FF", "#7F00FF"],
+			color: [_cc.b.h, _cc.b.h, _cc.b.h, _cc.b.h, _cc.b.h, _cc.b.h, _cc.b.h, "#FF0000", "#FF7F00", "#FFFF00", "#00FF00", "#007FFF", "#0000FF", "#7F00FF"],
 			density: 1250,
 			breakInto: ["metal_scrap", "glass_shard"],
 			hardness: 0.7,
@@ -8488,8 +9193,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		["mint", "#4df0a9"],
 		["gray", "#7F7F7F"],
 		["lime", "#7FFF00"],
-		["black", "#000000"],
-		["white", "#FFFFFF"],
+		["black", _cc.b.h],
+		["white", _cc.w.h],
 		["sky_blue", "#99d1f2"]
 	];
 	for(var i = 0; i < dyeColors.length; i++) {
@@ -8524,9 +9229,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		["m", "#FF00FF"], //magenta (cursed)
 		["p", "#AB00C2"], //purple (cursed)
 		["v", "#7700FF"], //violet
-		["w", "#FFFFFF"], //white (cursed)
+		["w", _cc.w.h], //white (cursed)
 		["gy", "#7F7F7F"], //gray (more cursed)
-		["bl", "#000000", "#2b2b2b"], //black (super cursed)
+		["bl", _cc.b.h, "#2b2b2b"], //black (super cursed)
 		["o", "#FF7F00"], //orange
 		["a", "#FFBF00"], //amber
 		["l", "#7FFF00"], //lime
@@ -8543,6 +9248,265 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 	for(var i = 0; i < eLists.LED.length; i++) {
 		var key = eLists.LED[i];
 		elements.malware.reactions[key] = { elem2:eLists.LED, chance:0.01 }
+	};
+
+	function heatNeighbors(pixel,temp,trueIfMooreFalseIfNeumann=false) {
+		var neighborOffsets = trueIfMooreFalseIfNeumann ? squareCoords : adjacentCoords;
+		var pX = pixel.x;
+		var pY = pixel.y;
+		for(var i = 0; i < neighborOffsets.length; i++) {
+			var offsets = neighborOffsets[i];
+			var newPixel = pixelMap[pX + offsets[0]]?.[pY + offsets[1]];
+			if(!newPixel) { continue };
+			newPixel["temp"] += temp;
+			pixelTempCheck(newPixel)
+		}
+	};
+
+	function getNeighborCount(pixel,useVonNeumannGrid=false) {
+		var x = pixel.x;
+		var y = pixel.y;
+		return (
+			0 +
+			(!isEmpty(x-1,y,true)) +
+			(!isEmpty(x+1,y,true)) +
+			(!isEmpty(x,y-1,true)) +
+			(!isEmpty(x,y+1,true))
+		) + (
+			(!useVonNeumannGrid) && (
+				(!isEmpty(x-1,y-1,true)) +
+				(!isEmpty(x+1,y+1,true)) +
+				(!isEmpty(x+1,y-1,true)) +
+				(!isEmpty(x-1,y+1,true))
+			)
+		);
+	};
+
+	elements.amba_black_hole = {
+		color: _cc.b.h,
+		maxColorOffset: 0,
+		excludeRandom: true,
+		insulate: true,
+		onSelect: function() {
+			showPropertySetter();
+			showSetterColumn("numeric",0);
+			var p0 = document.getElementById("propertynumeric0input");
+			var p0h = document.getElementById("propertynumeric0heading");
+			if(p0) {
+				p0.setAttribute("set","blackHoleRange");
+				p0.setAttribute("min","1");
+				p0.value = ambaPlaceProperties.blackHoleRange;
+			};
+			if(p0h) {
+				p0h.innerText = "Radius";
+			};
+		},
+		onUnselect: function() {
+			hideAllSetterColumns();
+			hidePropertySetter
+		},
+		hoverStat: (pixel => `r = ${(pixel.range?.toString() ?? "??")}`),
+		tick: function(pixel) {
+			pixel.color = _cc.b.r;
+			//if(pixelTicks == pixel.start) { console.log("spawn range",ambaPlaceProperties.blackHoleRange) };
+			pixel.range ??= ambaPlaceProperties?.blackHoleRange ?? 15;
+			//if(pixelTicks == pixel.start) { console.log("this range",pixel.range) };
+			if(pixel.range <= 0) { deletePixel(pixel.x,pixel.y); return };
+			var range = (pixel.range ?? (ambaPlaceProperties?.blackHoleRange ?? 15)) * 2;
+			if(settings.dopressure) { changePressure(pixel.x,pixel.y,10 + ((range / 2) ** 2),"-",true) };
+			var targets = mouseLikeRange(pixel.x,pixel.y,range,"circle",true);
+			shuffleArray(targets);
+			for (var i = 0; i < targets.length; i++) {
+				var newPixel = pixelMap[targets[i][0]]?.[targets[i][1]];
+				if ((!newPixel) || newPixel.del) { continue };
+				if(elements[pixel.element].ignore && elements[pixel.element].ignore.includes(newPixel.element)) { continue };
+				newPixel.tempDrag = pixelTicks + 1;
+				var [mX, mY] = [pixel.x, pixel.y];
+				var distanceComplement = (range / 2) - pyth(mX,mY,newPixel.x,newPixel.y);
+				var distanceProportion = 0.2 + (distanceComplement / (range / 2));
+				var distanceModifier = distanceProportion ** 2;
+				var pullCount = (4 * distanceModifier) * (commonMovableCriteria(newPixel.element) ? 1 : 0.8) * (1 - (((getNeighborCount(newPixel)) / (8.1 + ((elements[newPixel.element].hardness ?? 0) * 3)))));
+				var pullCountIntegerPart = Math.floor(pullCount);
+				var pullCountFractionalPart = pullCount % 1;
+				var truePullCount = Math.min(3,pullCountIntegerPart + (Math.random() < pullCountFractionalPart));
+				for(var j = 0; j < truePullCount; j++) {
+					if((pullCountIntegerPart >= 1) && (Math.random() < distanceProportion)) { tryBreak(newPixel) };
+					var x = newPixel.x;
+					var y = newPixel.y;
+					var empty = checkForEmptyPixels(x, y);
+					let bestVal = Math.sqrt(Math.pow(mX - x, 2) + Math.pow(mY - y, 2));
+					let best = null;
+					for (const pixelPair of empty) {
+						const x_ = x + pixelPair[0];
+						const y_ = y + pixelPair[1];
+						const c = Math.sqrt(Math.pow(mX - x_, 2) + Math.pow(mY - y_, 2));
+						if (c < bestVal) {
+							bestVal = c;
+							best = pixelPair;
+						}
+					}
+					if (best) {
+						newPixel.vx ??= 0;
+						newPixel.vy ??= 0;
+						var _vx = (truePullCount * (best[0])); _vx += Math.sign(_vx);
+						var _vy = (truePullCount * (best[1])); _vy += Math.sign(_vy);
+						newPixel.vx += _vx;
+						newPixel.vy += _vy;
+						tryMove(newPixel, x + best[0], y + best[1], undefined, true);
+						if(haseuliteSpreadWhitelist.includes(newPixel.element)) { newPixel.value += ((15 + (distanceComplement / (distanceProportion ** 2))) * 3) };
+						var heat = (20 * pullCount) * getNeighborCount(newPixel);
+						heatNeighbors(newPixel,heat);
+						pixel.temp += heat;
+						pixelTempCheck(pixel);
+					}
+				};
+				var taxicabDistance = Math.abs(newPixel.x - pixel.x) + Math.abs(newPixel.y - pixel.y);
+				if((taxicabDistance <= 3) && (taxicabDistance > 0)) {
+					pixel.temp += (newPixel.temp - (settings.abszero ?? 273.15));
+					if(["amba_black_hole","amba_white_hole"].includes(newPixel.element) && ((newPixel.range ?? 15) > 0) && (newPixel !== pixel)) {
+						//console.log("adding range on tick",pixelTicks);
+						pixel.range ??= (ambaPlaceProperties?.blackHoleRange ?? 15);
+						var rangeChange = (newPixel.range ?? (ambaPlaceProperties?.blackHoleRange ?? 15));
+						switch(newPixel.element) {
+							case "amba_black_hole":
+								//console.log("range add",rangeChange);
+								pixel.range += rangeChange;
+								//console.log("new range",pixel.range);
+								break;
+							case "amba_white_hole":
+								//console.log("range remove",rangeChange);
+								pixel.range -= rangeChange;
+								//console.log("new range",pixel.range);
+								break;
+						}
+						//console.log("new range:",pixel.range);
+						newPixel.range = 0;
+					} else {
+						deletePixel(newPixel.x,newPixel.y);
+						continue
+					}
+				}
+			}
+		},
+		state: undefined,
+		density: 1797.69313486e305, //about as close to Infinity as we can serializably get
+		category: "special",
+		hardness: 1,
+		maxSize: 1,
+		ignore: ["wall"].concat(eLists.CLONERS)
+	};
+	
+	elements.amba_white_hole = {
+		color: _cc.w.h,
+		maxColorOffset: 0,
+		excludeRandom: true,
+		insulate: true,
+		onSelect: function() {
+			showPropertySetter();
+			var p0 = document.getElementById("propertynumeric0input");
+			var p0h = document.getElementById("propertynumeric0heading");
+			if(p0) {
+				p0.setAttribute("set","whiteHoleRange");
+				p0.setAttribute("min","1");
+				p0.value = ambaPlaceProperties.whiteHoleRange;
+			};
+			if(p0h) {
+				p0h.innerText = "Radius";
+			};
+		},
+		onUnselect: hidePropertySetter,
+		hoverStat: (pixel => `r = ${(pixel.range?.toString() ?? "??")}`),
+		tick: function(pixel) {
+			pixel.color = _cc.w.r;
+			pixel.range ??= (ambaPlaceProperties?.whiteHoleRange ?? 15);
+			if(pixel.range <= 0) { deletePixel(pixel.x,pixel.y); return };
+			var range = (pixel.range ?? (ambaPlaceProperties?.whiteHoleRange ?? 15)) * 2;
+			var targets = mouseLikeRange(pixel.x,pixel.y,range,"circle",true);
+			shuffleArray(targets);
+			for (var i = 0; i < targets.length; i++) {
+				var newPixel = pixelMap[targets[i][0]]?.[targets[i][1]];
+				if ((!newPixel) || newPixel.del) { continue };
+				if(((newPixel.element == pixel.element) || (elements[pixel.element].ignore && elements[pixel.element].ignore.includes(newPixel.element))) || ((newPixel.x == pixel.x) && (newPixel.y == pixel.y))) { continue };
+				newPixel.tempDrag = pixelTicks + 1;
+				var [mX, mY] = [pixel.x, pixel.y];
+				var distanceComplement = (range / 2) - pyth(mX,mY,newPixel.x,newPixel.y);
+				var distanceProportion = 0.2 + (distanceComplement / (range / 2));
+				var distanceModifier = distanceProportion ** 2;
+				var pullCount = (4 * distanceModifier) * (commonMovableCriteria(newPixel.element) ? 1 : 0.8);
+				var pullCountIntegerPart = Math.floor(pullCount);
+				var pullCountFractionalPart = pullCount % 1;
+				var truePullCount = Math.min(3,pullCountIntegerPart + (Math.random() < pullCountFractionalPart));
+				for(var j = 0; j < truePullCount; j++) {
+					if((pullCountIntegerPart >= 1) && (Math.random() < pullCount / 3)) { tryBreak(newPixel) };
+					var x = newPixel.x;
+					var y = newPixel.y;
+					var empty = checkForEmptyPixels(x, y);
+					let bestVal = Math.sqrt(Math.pow(mX - x, 2) + Math.pow(mY - y, 2));
+					let best = null;
+					for (const pixelPair of empty) {
+						const x_ = x + pixelPair[0];
+						const y_ = y + pixelPair[1];
+						const c = Math.sqrt(Math.pow(mX - x_, 2) + Math.pow(mY - y_, 2));
+						if (c < bestVal) {
+							bestVal = c;
+							best = pixelPair;
+						}
+					}
+					if (best) {
+						var destCoords = [x - best[0], y - best[1]];
+						newPixel.vx ??= 0;
+						newPixel.vy ??= 0;
+						var _vx = -(truePullCount * (best[0])); _vx += Math.sign(_vx);
+						var _vy = -(truePullCount * (best[1])); _vy += Math.sign(_vy);
+						newPixel.vx += _vx;
+						newPixel.vy += _vy;
+						var moveResult = tryMoveAndReturnBlockingPixel(newPixel, destCoords[0], destCoords[1], undefined, true);
+						if((moveResult !== true) && !(outOfBounds(...destCoords))) {
+							swapPixels(newPixel,moveResult);
+							tryMove(newPixel, destCoords[0] - best[0], destCoords[1] - best[1], undefined, true)
+						};
+						heatNeighbors(newPixel,20);
+						var a0 = settings.abszero ?? -273.15;
+						if(pixel.temp >= a0) {
+							if(pixel.temp <= (a0 + 20)) {
+								pixel.temp = a0
+							} else {
+								pixel.temp -= 20
+							}
+						}
+					}
+				}
+			}
+		},
+		state: undefined,
+		density: -(1797.69313486e305), //about as close to -Infinity as we can serializably get
+		category: "special",
+		hardness: 1,
+		maxSize: 1
+	};
+	
+	elements.pus = {
+		color: "#bfba71",
+		behavior: behaviors.LIQUID,
+		reactions: {
+			"water": { elem1:["pus","pus","pus","pus","pus","pus","dirty_water"], elem2:"dirty_water", chance:0.01 },
+			"blood": { elem1:["pus","pus","pus","pus","pus","pus","infection"], elem2:"infection", chance:0.01 },
+			"poison": { elem1:"bio_ooze", elem2:"bio_ooze", chance:0.2 },
+			"bio_ooze": { elem1:"bio_ooze", chance:0.2 },
+			"frog": { elem2:"rotten_meat", chance:0.005 },
+			"fish": { elem2:"rotten_meat", chance:0.005 },
+			"meat": { elem2:"rotten_meat", chance:0.005 },
+			"alcohol": { elem1:"dirty_water", chance:0.2 }
+		},
+		viscosity: 30,
+		tempHigh: 124.55,
+		stateHigh: ["plague","stench","steam","steam","steam","salt"],
+		tempLow: -2,
+		category:"liquids",
+		hidden: true,
+		state: "liquid",
+		density: 1100,
+		stain: 0.08
 	};
 	//ASSORTED RAINBOW VARIANTS ##
 		elements.concoction.reactions.diorite_gravel = {
@@ -8733,7 +9697,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		};
 		rainbowMathlet = function(t,scale,offset) { return Math.cos(t*Math.PI/scale+offset*Math.PI/3) };
 		elements.dark_rainbow = {
-			color: ["#000000","#ff0000","#000000","#ff8800","#000000","#ffff00","#000000","#00ff00","#000000","#00ffff","#000000","#0000ff","#000000","#ff00ff"],
+			color: [_cc.b.h,"#ff0000",_cc.b.h,"#ff8800",_cc.b.h,"#ffff00",_cc.b.h,"#00ff00",_cc.b.h,"#00ffff",_cc.b.h,"#0000ff",_cc.b.h,"#ff00ff"],
 			tick: function(pixel) {
 				var dyeColor = pixel.dyeColor ?? null;
 				var t = pixelTicks+pixel.x+pixel.y;
@@ -9127,7 +10091,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				var g3 = (g1+g2)*0.75;
 				var b3 = (b1+b2)*0.75;
 				var baseColor = {r: r3, g: g3, b: b3};
-				baseColor = averageColorObjects(baseColor,whiteColor,0.8);
+				baseColor = averageColorObjects(baseColor,_cc.w.j,0.8);
 				baseColor = convertColorFormats(baseColor,"rgb");
 				if(!dyeColor) {
 					pixel.color = baseColor
@@ -9329,7 +10293,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "rainbow variants",
 		};
 		elements.saltshimmer = {
-			color: ["#ffffff","#202020","#ffffff","#202020"],
+			color: [_cc.w.h,"#202020",_cc.w.h,"#202020"],
 			tick: function(pixel) {
 				var t = pixelTicks*2.5+pixel.x+pixel.y;
 				var r = Math.floor(255*(1-Math.cos(t*Math.PI/24)));
@@ -10321,6 +11285,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			density: 182,
 			temp: -20,
 		}
+		console.log("1/4 loaded")
 		//Volatile Roseyiede
 		elements.explosive_roseyiede = {
 			color: "#986118",
@@ -10471,7 +11436,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			temp: 120,
 		}
 	//MINESWEEPER ##
-		msColorArray = ["#a0a0a0", "#0000ff", "#008000", "#ff0000", "#000080", "#800000", "#008080", "#000000", "#808080"]
+		msColorArray = ["#a0a0a0", "#0000ff", "#008000", "#ff0000", "#000080", "#800000", "#008080", _cc.b.h, "#808080"]
 		elements.msfield = {
 			name: "minefield",
 			color: "#c0c0c0",
@@ -10555,7 +11520,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hidden: true,
 		};
 		elements.ms = { //minesweeper = {
-			color: ["#c0c0c0", "#c0c0c0", "#ff0000", "#008000", "#ff0000", "#000080", "#800000", "#008080", "#000000", "#808080", "#808080"],
+			color: ["#c0c0c0", "#c0c0c0", "#ff0000", "#008000", "#ff0000", "#000080", "#800000", "#008080", _cc.b.h, "#808080", "#808080"],
 			behavior: [
 				"XX|XX|XX",
 				"XX|CH:msfield,msfield,msfield,msfield,msfield,msfield,msfield,msfield,msfield,msmine|XX",
@@ -10727,28 +11692,46 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				pixel.vy *= 2;
 			};
 		};
-		function planetCrackerFinale(doColorChange=true) {
+		function planetCrackerFinale(doColorChange=true,spawnElements=null) {
 			var bottomFortyPercent = Math.round(height * 0.6);
 			var bottomTwentyPercent = Math.round(height * 0.8);
 			var bottomTenPercent = Math.round(height * 0.9);
+			if(typeof(spawnElements) == "string") {
+				if(spawnElements.indexOf(",") >= 0) {
+					spawnElements = spawnElements.split(",")
+				} else { spawnElements = [spawnElements] };
+			};
+			if(Array.isArray(spawnElements)) {
+				spawnElements = spawnElements.filter(n => elementExists(n));
+				if(spawnElements.length == 0) {
+					spawnElements = null
+				}
+			};
+			var doSpawning = (spawnElements !== null);
 			for(x = 1; x < width; x++) {
 				for(y = bottomFortyPercent; y < height; y++) {
 					var chance = y > bottomTwentyPercent ? 0.03 : 0.01
 					var radius = y > bottomTwentyPercent ? 8 : 6
-					if(!isEmpty(x,y,true)) {
-						pixelMap[x][y].vy ??= 0;
-						pixelMap[x][y].vy -= 20;
+					var newPixel = pixelMap[x]?.[y];
+					if(doSpawning && y > bottomTenPercent && isEmpty(x,y,false) && (Math.random() < 0.6)) {
+						var _np = tryCreatePixelReturn(randomChoice(spawnElements),x,y);
+						if(_np) { newPixel = _np }
 					};
-					if(y > bottomTenPercent && !isEmpty(x,y,true)) {
-						pixelMap[x][y].temp += 2000;
+					if(newPixel) {
+						newPixel.vy ??= 0;
+						newPixel.vy -= 20;
+					};
+					if(newPixel && y > bottomTenPercent) {
+						newPixel.temp += 2000;
+						pixelTempCheck(newPixel)
 					};
 					if(Math.random() < chance) {
-						explodeAt(x,y,radius,"plasma");
+						explodeAt(x,y,radius,spawnElements ? ((",plasma".repeat(spawnElements.length * 14).replace(",","")) + "," + spawnElements.join(",")) : "plasma");
 					};
 				};
 			};
 			if(doColorChange) {
-				settings.bg = ["#000000","#000000","#000000","#000000","#29180e","#663814","#9e6f19","#f7af2a"];
+				settings.bg = [_cc.b.h,_cc.b.h,_cc.b.h,_cc.b.h,"#29180e","#663814","#9e6f19","#f7af2a"];
 				settings.bgAngle = 90;
 			};
 		};
@@ -10764,21 +11747,46 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					return;
 				};
 				if(outOfBounds(pixel.x,pixel.y+pixel.counter)) {
-					planetCrackerFinale();
+					planetCrackerFinale(true,pixel._bottomStateHighCache ?? null);
 					pixel.active = false;
 					changePixel(pixel,"metal_scrap");
 				};
 				if(pixel.active) {
+					pixel._bottomStateHighCache ??= [];
+					pixel._bottomStateHighCache = currentPixels.filter(p => p.y == height - 1).map(p => p.element);
+					var bshcUniques = Array.from(new Set(pixel._bottomStateHighCache));
+					pixel._bottomStateHighCache = bshcUniques.filter(elemNameToFilterBy => (pixel._bottomStateHighCache.filter(elemName => elemName == elemNameToFilterBy).length >= (pixel._bottomStateHighCache.length / 10)));
+					pixel._bottomStateHighCache = pixel._bottomStateHighCache.map(elemName => getStateHigh(elemName) ?? elemName);
 					var pixelDistanceFromBottom = height - pixel.y;
 					var counterDistanceFromBottom = height - (pixel.y + pixel.counter);
+					var yRisingFromBottomToHalfway = Math.round((height - 1) - (pixel.counter / 2));
+
 					var closenessToBottom = 1 - (counterDistanceFromBottom / pixelDistanceFromBottom);
-					//console.log(closenessToBottom);
 					var finalRadius = Math.round(((1 + closenessToBottom) ** 2) * 6);
-					if(typeof(explodeAtPlus) === "function") {
-						explodeAtPlus(pixel.x,pixel.y+pixel.counter,finalRadius,"plasma","fire",null,planetCrackerHeat);
-					} else {
-						explodeAt(pixel.x,pixel.y+pixel.counter,finalRadius,"plasma");
+
+					var earthquakeChance = ((closenessToBottom >= 0.5) && (0.1 + (0.05 * (1 + (Math.max(closenessToBottom - 0.5,0) * 25)))))
+					var earthquakeMaxTryCount = 2 + (Math.random() < (closenessToBottom - 0.5)) + (Math.random() < (closenessToBottom - 0.75)) + (Math.random() < earthquakeChance) + (Math.random() < (earthquakeChance ** 2));
+					for(var i = 0; i < earthquakeMaxTryCount; i++) {
+						if((closenessToBottom >= 0.5) && (Math.random() < earthquakeChance)) { //random earthquake
+							var rX = (Math.floor(Math.random() * (width - 1)) + 1);
+							var rY = Math.round(height / 2) + Math.floor(Math.random() * height / 2);
+							var eq = createOrChangePixelAndReturn("earthquake",rX,rY);
+							if(eq) {
+								eq.stage = 1;
+								eq.mag = Math.floor(Math.random() * ((5 * (1 + (Math.max(closenessToBottom - 0.5,0) * 2.5))) + 1)) + 15;
+							}
+						}
 					};
+					
+					for(var x = 1; x < width; x++) {
+						var y = yRisingFromBottomToHalfway;
+						if(isEmpty(x,y,true)) { continue };
+						var newPixel = pixelMap[x][y];
+						newPixel.temp += 400 + ((1 - closenessToBottom) * 100);
+						pixelTempCheck(newPixel)
+					};
+
+					explodeAtPlus(pixel.x,pixel.y+pixel.counter,finalRadius,"plasma","fire",null,planetCrackerHeat);
 					pixel.counter++;
 				};
 			},
@@ -11329,7 +12337,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			}
 		}
 		elements.controllable_pixel = {
-			color: "#FFFFFF",
+			color: _cc.w.h,
 			colorOn: "#FFFF00",
 			behavior: behaviors.WALL,
 			state: "solid",
@@ -11354,7 +12362,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					sussyKey === "Z" ? pixel.color = "rgb(255,255,0)" : pixel.color = "rgb(255,255,127)";
 				}
 				if(!isAlt && !isShift) {
-					sussyKey === "Z" ? pixel.color = "rgb(255,255,191)" : pixel.color = "rgb(255,255,255)";
+					sussyKey === "Z" ? pixel.color = "rgb(255,255,191)" : pixel.color = _cc.w.r;
 				}
 				if(sussyKey !== null) {
 					switch (sussyKey) {
@@ -11566,7 +12574,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					alt_sussyKey === "Z" ? pixel.color = "rgb(255,255,0)" : pixel.color = "rgb(255,255,127)";
 				}
 				if(!isAlt && !isShift) {
-					alt_sussyKey === "Z" ? pixel.color = "rgb(255,255,191)" : pixel.color = "rgb(255,255,255)";
+					alt_sussyKey === "Z" ? pixel.color = "rgb(255,255,191)" : pixel.color = _cc.w.r;
 				}
 				if(alt_sussyKey !== null) {
 					switch (alt_sussyKey) {
@@ -11715,7 +12723,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				if(isShift) {
 					pixel.color = "rgb(255,127,127)";
 				} else {
-					pixel.color = "rgb(255,255,255)";
+					pixel.color = _cc.w.r;
 				}
 				if(aplReceivedKey !== null) {
 					switch (aplReceivedKey) {
@@ -11861,7 +12869,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 	//AMOGUS ##
 		elements.amogus = {
 			name: "Amogus",
-			color: "#ffffff",
+			color: _cc.w.h,
 			cooldown: 6,
 			tick: function(pixel) {
 			pixel.arr=[["brick",  "brick",  "brick"],
@@ -11872,19 +12880,19 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						[ "rgb(255,0,0)",	"rgb(0,255,255)",	"rgb(0,255,255)"],
 						[ "rgb(255,0,0)",	"rgb(255,0,0)",		"rgb(255,0,0)"	],
 						[ "rgb(255,0,0)",	"null",				"rgb(255,0,0)"	]];
-				aa = (0 - (Math.floor(pixel.arr[0].length / 2))) //Center align code
-				na = Math.abs(aa)
+				var aa = (0 - (Math.floor(pixel.arr[0].length / 2))) //Center align code
+				var na = Math.abs(aa)
 				if(pixel.arr[0].length % 2 == 1) {
-					bb = ((Math.floor(pixel.arr[0].length / 2)) + 1)
+					var bb = ((Math.floor(pixel.arr[0].length / 2)) + 1)
 				} else if(pixel.arr[0].length % 2 == 0) {
-					bb = (Math.floor(pixel.arr[0].length / 2))
+					var bb = (Math.floor(pixel.arr[0].length / 2))
 				}
-				cc = (0 - (Math.floor(pixel.arr.length / 2)))
-				nc = Math.abs(cc)
+				var cc = (0 - (Math.floor(pixel.arr.length / 2)))
+				var nc = Math.abs(cc)
 				if(pixel.arr.length % 2 == 1) {
-					dd = ((Math.floor(pixel.arr.length / 2)) + 1)
+					var dd = ((Math.floor(pixel.arr.length / 2)) + 1)
 				} else if(pixel.arr.length % 2 == 0) {
-					dd = (Math.floor(pixel.arr.length / 2))
+					var dd = (Math.floor(pixel.arr.length / 2))
 				}
 				for (let j = cc; j < dd; j++) { //Iterative placing and coloring of pixels
 					for (let i = aa; i < bb; i++) {
@@ -12261,6 +13269,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					version: 1,
 					enabledMods: localStorage.enabledMods
 				};
+				if(settings.dopressure) {
+					simulationState.pressureMap = pressureMap
+				};
 				for(i = 0; i < simulationState.pixelMap.length; i++) {
 					var column = simulationState.pixelMap[i];
 					for(j = 0; j < column.length; j++) {
@@ -12369,13 +13380,13 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				};
 			};
 			function quickload(pause=true,doSuccessAlert=true,doFailAlert=true) {
-				clearAll();
-				rebuildCurrentPixels();
 				var save = localStorage.getItem("quicksave");
 				if(!save) {
 					if(doFailAlert) { alert("No save exists") };
 					return false;
 				} else {
+					clearAll();
+					rebuildCurrentPixels();
 					importJsonState(JSON.parse(save));
 					if(doSuccessAlert) { alert("Quicksave loaded") };
 					if(pause) {
@@ -12486,9 +13497,15 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					json.pixelMap[i] = json.pixelMap[i].map(x => zeroToNull(x));
 				};
 				pixelMap = json.pixelMap;
+				var settingsExcludedKeys = ["unlocked","suppressModdedSaveLoadWarning"];
 				if(json.settings) {
-					settings = json.settings;
+					for(var key in json.settings) {
+						if(settingsExcludedKeys.includes(key)) { continue };
+						settings[key] = json.settings[key];
+					}
+					saveSettings
 				};
+				if((settings.dopressure) && json.pressureMap) { pressureMap = json.pressureMap };
 				//enabledMods handling {
 					var enMods = "[]";
 					if(typeof(json.enabledMods) !== "undefined") {
@@ -12505,7 +13522,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					};
 					localStorage.setItem("enabledMods",JSON.stringify(currentEnmods));
 					if((enMods.length > 0 && enMods[0] !== modName) || enMods.length > 1) {
-						alert("Saves with other mods might require a reload (and then importing the save file again).\nIf you see a blank screen, try refreshing and loading the file again before you panic.");
+						if(!(settings.suppressModdedSaveLoadWarning)) {
+							alert("Saves with other mods might require a reload (and then importing the save file again).\nIf you see a blank screen, try refreshing and loading the file again before you panic.")
+						}
 					};
 				//}
 				var currPix = []; //rebuild currentPixels from pixelMap to try to fix bug
@@ -12567,9 +13586,44 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			elements.save_loader = {
 				behavior: behaviors.SELFDELETE,
 				excludeRandom: true,
-				color: "#FFFFFF",
+				color: _cc.w.h,
 				desc: saveLoaderDescription,
 			};
+
+			function formatTempWithAbbreviation(temp) { // temp is Celcius
+				var _temp;
+				var suffix;
+				var unitSetting = settings?.["units"] ?? "m";
+				switch(unitSetting) {
+					default:
+					case "m":
+						_temp = temp;
+						suffix = "°C";
+						break;
+					case "i":
+						if(settings.userankine == true) {
+							_temp = (temp*1.8)+491.67;
+							suffix = "°R";
+						} else {
+							_temp = temp*1.8+32;
+							suffix = "°F"
+						};
+						break;
+					case "s":
+						_temp = temp+273.15;
+						suffix = "°K";
+						break;					
+				};
+				var displayTemp = Math.round(_temp);
+				if(displayTemp > 999999999) {
+					var shrinkage = (10 ** (Math.floor(Math.log10(_temp)) - 4));
+					displayTemp = [Math.floor(_temp/shrinkage),"e",Math.log10(shrinkage),suffix].join("");
+				} else {
+					displayTemp = Math.round(_temp).toString() + suffix;
+				};
+				return displayTemp
+			};
+
 			//Somehow, for some illogical reason, quicksaving causes updateStats to somehow disregard its if-statement and fucking TypeError when you mouse over an empty space; this is an attempt to fix it with overkill-level existence checks.
 			function updateStats() {
 				var statsDiv = document.getElementById("stats");
@@ -12579,6 +13633,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				if(enabledMods.includes("mods/betterStats.js") && typeof(realTps) !== "undefined") { stats += "<span id='stat-realtps' class='stat'>" + realTps + "tps</span>" }; //i'm sorry but there's no other way to add compatibility
 				//THAT CODE WAS MADE BY MOLLTHECODER FROM THEIR betterStats.js MOD
 				stats += "<span id='stat-ticks' class='stat'>" + pixelTicks+"</span>";
+				if((settings.dopressure) && (typeof(width) == "number") && (!(outOfBounds(mousePos.x,mousePos.y)))) {
+					stats += "<span id='stat-pressure' class='stat'>P:" + getPressureAtPixelCoords(mousePos.x,mousePos.y).toFixed(2).replace(/\.?0+$/,"")+"</span>";	
+				};
 				if ((typeof pixelMap).length === 9) { return; }
 				if (pixelMap[mousePos.x] !== undefined) {
 					var currentPixel = pixelMap[mousePos.x][mousePos.y];
@@ -12588,7 +13645,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							displayName += ` (${currentPixel?.displayText})`
 						};
 						stats += "<span id='stat-element' class='stat'>Elem:"+displayName+"</span>";
-						stats += "<span id='stat-temperature' class='stat'>Temp:"+formatTemp(currentPixel.temp)+"</span>";
+						stats += "<span id='stat-temperature' class='stat'>Temp:"+formatTempWithAbbreviation(currentPixel.temp)+"</span>";
 						if (currentPixel.charge) {
 							stats += "<span id='stat-charge' class='stat'>C"+currentPixel.charge+"</span>";
 						}
@@ -12614,61 +13671,17 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					stats += "<span id='stat-view' class='stat'>"+viewKey[view]+"</span>";
 				}
 				statsDiv.innerHTML = stats;
+				var _width = getComputedStyle(statsDiv).width;
+				if(_width !== null) {
+					_width = parseFloat(_width.match(/[\d\/]+/));
+					if(_width <= 752) {
+						statsDiv.style["font-size"] = "50%"
+					} else if(_width <= 940) {
+						statsDiv.style["font-size"] = "75%"
+					}
+				}
 			}
-			quickloadIsPaused = true;
-			var qsb = document.createElement("button");
-			qsb.setAttribute("id","quicksaveButton");
-			qsb.setAttribute("onclick","quicksave()");
-			qsb.innerText = "Quicksave";
-			document.getElementById("gameDiv").before(qsb);
-			qsb.after(document.createTextNode(String.fromCharCode(160)));
-			var qlb = document.createElement("button");
-			qlb.setAttribute("id","quickloadButton");
-			qlb.setAttribute("onclick","clearAll(); quickload(quickloadIsPaused ?? true)");
-			qlb.innerText = "Quickload";
-			document.getElementById("gameDiv").before(qlb);
-			qlb.after(document.createTextNode(String.fromCharCode(160,160)));
-			var qpc = document.createElement("input");
-			qpc.setAttribute("type","checkbox");
-			qpc.setAttribute("id","quickloadPausedInput");
-			qpc.setAttribute("onchange","quickloadIsPaused = this.checked;");
-			qpc.checked = true;
-			var qpcd = document.createElement("span");
-			qpcd.setAttribute("id","quickloadPausedInputLabel");
-			qpcd.innerText = "Pause after quickloading?";
-			document.getElementById("gameDiv").before(qpc);
-			qpc.after(document.createTextNode(String.fromCharCode(160)));
-			document.getElementById("gameDiv").before(qpcd);
-			document.getElementById("gameDiv").before(document.createElement("br"));
-			quickSlDetectorLastKeys = [];
-			justPromptedQuickSL = false;
-			document.addEventListener("keydown", function(e) { //prop prompt listener
-				quickSlDetectorLastKeys.push(e.key);
-				if(quickSlDetectorLastKeys.length > 3) {
-					quickSlDetectorLastKeys.shift();
-				};
-				justPromptedQuickSL = false;
-			});
-			document.addEventListener("keydown", function(e) { //prop prompt listener
-				if (quickSlDetectorLastKeys.join(",") == "(,(,L") {
-					e.preventDefault();
-					var confirm = prompt("Are you sure you want to quickLOAD? (Type 'yes' to confirm)");
-					if(confirm == "yes") {
-						clearAll();
-						quickload(true,false,true);
-					};
-					justPromptedQuickSL = true;
-					quickSlDetectorLastKeys = [];
-				} else if (quickSlDetectorLastKeys.join(",") == "(,(,S") {
-					e.preventDefault();
-					var confirm = prompt("Are you sure you want to quickSAVE? (Type 'yes' to confirm)");
-					if(confirm == "yes") {
-						quicksave(true,true);
-					};
-					justPromptedQuickSL = true;
-					quickSlDetectorLastKeys = [];
-				};
-			});
+			//Moved to window.onload where gameDiv should be guaranteed to exist
 		} catch (error) {
 			alert(`save_loading error: ${error.toString()}`);
 		};
@@ -12926,10 +13939,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			desc: `Distance display pixels get blue in its distance.`,
 		};
 		/*
-		blackObject = {r: 0, g: 0, b: 0};
+		blackObject = _cc.b.j;
 		pinkObject = {r: 255, g: 148, b: 255};
 		elements.black_pink_test = {
-			color: ["#000000","#FF94FF"],
+			color: [_cc.b.h,"#FF94FF"],
 			behavior: behaviors.WALL,
 			properties: {
 				offset: Math.floor(Math.random() * (Math.random() > 0.5 ? -1 : 1) * Math.random() * 15)
@@ -14608,10 +15621,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		if(!settings) {
 			settings = {}
 		}
-		settings.bg ??= "#000000";
+		settings.bg ??= _cc.b.h;
 		function getBackgroundColorOrAverageAsJSON() {
 			if(!(settings?.bg)) {
-				return {r: 0, g: 0, b: 0};
+				return _cc.b.j;
 			} else if(!(settings.bg instanceof Array)) {
 				return convertColorFormats(settings.bg,"json")
 			} else {
@@ -15461,13 +16474,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				return elements[e].category == "life";
 			})
 		});
-		elements.bioooze = {
+		elements.bio_ooze = { //a.k.a. the water in the River Thames during July and August of 1858
+			name: "Bio-Ooze",
 			color: ["#53FF4F", "#53FF4F", "#06DE00", "#04A600", "#036E00"],
 			behavior: behaviors.LIQUID,
 			tempHigh: 100,
 			stateHigh: ["plague","slime","steam","poison"],
-			//tempLow: -4,
-			//stateLow: "bioooze_ice",
+			tempLow: -4,
 			category: "liquids",
 			heatCapacity: 3.52, //unimplemented feature
 			name: "bio-ooze",
@@ -15478,34 +16491,34 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				//"elder_fluid": { "elem1":"corrupt_slime" }, //acid should be sulfuric acid and product should be wastestone
 				//"mercury": { "elem1":"liquid_protocite" }, //acid should be sulfuric acid and product should be wastestone
 				//"blue_grav_liquid": { "elem1":"blue_grav_liquid" }, //bgl would set gravity to upwards gravity
-				"blood": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "infection" },
+				"blood": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "infection" },
 				"soap": { "elem1": "slime", "chance": 0.02 },
-				"plant": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "dead_plant" },
-				"grass": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "dead_plant" },
-				"algae": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "dead_plant" },
-				"mushroom_spore": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "dead_plant" },
-				"lichen": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "dead_plant" },
-				"rat": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "rotten_meat" },
-				"frog": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "rotten_meat" },
-				"fish": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "rotten_meat" },
-				"bird": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "rotten_meat" },
-				"head": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "rotten_meat" },
-				"body": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "rotten_meat" },
-				"ant": { "elem1": ["bioooze","bioooze","bioooze","bioooze","poison","slime",null], "elem2": "dust" },
-				"worm": { "elem1": ["bioooze","bioooze","bioooze","bioooze","poison","slime",null], "elem2": "dust" },
-				"fly": { "elem1": ["bioooze","bioooze","bioooze","bioooze","poison","slime",null], "elem2": "dust" },
-				"firefly": { "elem1": ["bioooze","bioooze","bioooze","bioooze","poison","slime",null], "elem2": "dust" },
-				"bee": { "elem1": ["bioooze","bioooze","bioooze","bioooze","poison","slime",null], "elem2": "dust" },
-				"slug": { "elem1": ["bioooze","bioooze","bioooze","bioooze","poison","slime",null], "elem2": "dust" },
-				"snail": { "elem1": ["bioooze","bioooze","bioooze","bioooze","poison","slime",null], "elem2": "calcium" },
-				"sapling": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "dead_plant" },
-				"root": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "dead_plant" },
-				"flower_seed": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "dead_plant" },
-				"pistil": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "dead_plant" },
-				"petal": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "dead_plant" },
-				"grass_seed": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "dead_plant" },
-				"meat": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "rotten_meat" },
-				"wood": { "elem1": ["bioooze","bioooze","poison","slime",null], "elem2": "sawdust", "chance": 0.25 }
+				"plant": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "dead_plant" },
+				"grass": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "dead_plant" },
+				"algae": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "dead_plant" },
+				"mushroom_spore": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "dead_plant" },
+				"lichen": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "dead_plant" },
+				"rat": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "rotten_meat" },
+				"frog": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "rotten_meat" },
+				"fish": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "rotten_meat" },
+				"bird": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "rotten_meat" },
+				"head": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "rotten_meat" },
+				"body": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "rotten_meat" },
+				"ant": { "elem1": ["bio_ooze","bio_ooze","bio_ooze","bio_ooze","poison","slime",null], "elem2": "dust" },
+				"worm": { "elem1": ["bio_ooze","bio_ooze","bio_ooze","bio_ooze","poison","slime",null], "elem2": "dust" },
+				"fly": { "elem1": ["bio_ooze","bio_ooze","bio_ooze","bio_ooze","poison","slime",null], "elem2": "dust" },
+				"firefly": { "elem1": ["bio_ooze","bio_ooze","bio_ooze","bio_ooze","poison","slime",null], "elem2": "dust" },
+				"bee": { "elem1": ["bio_ooze","bio_ooze","bio_ooze","bio_ooze","poison","slime",null], "elem2": "dust" },
+				"slug": { "elem1": ["bio_ooze","bio_ooze","bio_ooze","bio_ooze","poison","slime",null], "elem2": "dust" },
+				"snail": { "elem1": ["bio_ooze","bio_ooze","bio_ooze","bio_ooze","poison","slime",null], "elem2": "calcium" },
+				"sapling": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "dead_plant" },
+				"root": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "dead_plant" },
+				"flower_seed": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "dead_plant" },
+				"pistil": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "dead_plant" },
+				"petal": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "dead_plant" },
+				"grass_seed": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "dead_plant" },
+				"meat": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "rotten_meat" },
+				"wood": { "elem1": ["bio_ooze","bio_ooze","poison","slime",null], "elem2": "sawdust", "chance": 0.25 }
 			},
 			/*reactions: {
 				"dirt": { // React with (water reacts with dirt to make mud)
@@ -15784,12 +16797,12 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				bgSettingSpan.textContent = "Page Background ";
 					var settingPicker = document.createElement("input");
 					settingPicker.setAttribute("type","color");
-					settingPicker.setAttribute("value",settings.pageBG ?? "#000000");
+					settingPicker.setAttribute("value",settings.pageBG ?? _cc.b.h);
 					settingPicker.setAttribute("onchange","settings.pageBG = this.value; document.body.style.background = this.value; saveSettings();");
 					bgSettingSpan.appendChild(settingPicker);
 				settingsMenu.appendChild(bgSettingSpan);
 			});
-			settings.pageBG ??= "#000000"; saveSettings();
+			settings.pageBG ??= _cc.b.h; saveSettings();
 			document.body.style["background-color"] = settings.pageBG;
 		};
 	//GASEOUS FORMS AND BOILING OF SOME ELEMENTS ##
@@ -15924,6 +16937,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				category: "gases",
 				state: "gas"
 			},
+			console.log("3/8 loaded");
 			elements.cold_ash_cloud = {
 				color: ["#af8f50","#ab9c50","#af6d50"],
 				behavior: [
@@ -16330,7 +17344,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 			};
 		};
-		var clf3IgnoreList = ["FOOF","solid_FOOF","oxygen","liquid_oxygen","oxygen_ice","chlorine","liquid_chlorine","liquid_hydrogen_fluoride","liquid_fluorine","fluorine","fluorine_ice","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_acid_gas","fire","acid_gas","neutral_acid","acid","acid_cloud","nitrogen","helium","liquid_helium","tralphium","liquid_tralphium","neon","liquid_neon","solid_neon","neon_ice","neon_snow","argon","liquid_argon","solid_argon","argon_ice","argon_snow", "krypton","liquid_krypton","solid_krypton","krypton_ice","krypton_snow", "xenon","liquid_xenon","solid_xenon","xenon_ice","xenon_snow", "radon","liquid_radon","solid_radon","radon_ice","radon_snow","ionized_helium","ionized_tralphium","wall","chlorine_trifluoride","chlorine_trifluoride_ice","chlorine_trifluoride_gas","quartz"];
+		var clf3IgnoreList = ["foof","solid_foof","oxygen","liquid_oxygen","oxygen_ice","chlorine","liquid_chlorine","liquid_hydrogen_fluoride","liquid_fluorine","fluorine","fluorine_ice","hydrogen_fluoride","hydrofluoric_acid","hydrofluoric_acid_gas","fire","acid_gas","neutral_acid","acid","acid_cloud","nitrogen","helium","liquid_helium","tralphium","liquid_tralphium","neon","liquid_neon","solid_neon","neon_ice","neon_snow","argon","liquid_argon","solid_argon","argon_ice","argon_snow", "krypton","liquid_krypton","solid_krypton","krypton_ice","krypton_snow", "xenon","liquid_xenon","solid_xenon","xenon_ice","xenon_snow", "radon","liquid_radon","solid_radon","radon_ice","radon_snow","ionized_helium","ionized_tralphium","wall","chlorine_trifluoride","chlorine_trifluoride_ice","chlorine_trifluoride_gas","quartz"];
 		//todo: PTFE, passivation
 		elements.chlorine_trifluoride = {
 			color: "#8aa65b",
@@ -16502,7 +17516,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			settings = {}
 		}
 		if(!settings.bg) {
-			settings.bg = "#000000"
+			settings.bg = _cc.b.h
 		}
 		elements.black_damp = {
 			color: settings.bg,
@@ -16969,6 +17983,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		},
 		elements.molten_ruthenium = {
 			density: 10650,
+			tempHigh: 4150
 		},
 		elements.rhodium = {
 			color: ["#f0e4df","#f7eae4"], //it looked slightly reddish on Wikipedia
@@ -16982,6 +17997,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		},
 		elements.molten_rhodium = {
 			density: 10700,
+			tempHigh: 3695
 		},
 		elements.palladium = {
 			color: ["#fff8ed","#f5e6ce","#faeccf"], //Terraria reference
@@ -16995,6 +18011,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		},
 		elements.molten_palladium = {
 			density: 10380,
+			tempHigh: 2963
 		},
 		//Silver exists
 		elements.rhenium = {
@@ -17009,6 +18026,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		},
 		elements.molten_rhenium = {
 			density: 18900,
+			tempHigh: 5630
 		},
 		elements.osmium = {
 			color: ["#d8e1eb","#cee1f0"], //it looks bluish
@@ -17022,6 +18040,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		},
 		elements.molten_osmium = {
 			density: 2e4,
+			tempHigh: 5008
 		},
 		elements.iridium = {
 			color: ["#dfb9f0","#d6a9eb","#dfd1ed","#eeeeee"], //Minecraft and Stardew Valley reference
@@ -17035,6 +18054,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		},
 		elements.molten_iridium = {
 			density: 19000,
+			tempHigh: 4130
 		},
 		elements.platinum = {
 			color: ["#dddddd","#d7d7d7"],
@@ -17048,8 +18068,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		},
 		elements.molten_platinum = {
 			density: 19770,
+			tempHigh: 3825
 		},
 		//Gold exists
+		elements.molten_gold ??= {};
+		elements.molten_gold.density = 17310;
+		elements.molten_gold.tempHigh = 2970;
+		
 		elements.mercury = {
 			color: ["#d1d1d1", "#bababa"],
 			behavior: behaviors.LIQUID,
@@ -17101,7 +18126,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			"#dbb9f0",
 			"#f2acdb"
 		]
-		var bismuthCrystalElements = ["bismuth","molten_bismuth"];
+		var bismuthCrystalElements = ["amba_bismuth","amba_molten_bismuth"];
 		quadriCoords = [[-1,1],[0,1],[1,1],[1,0]];
 		//i'm not replacing pixelTick for this shit
 		/*function mooreDoHeat(pixel) {
@@ -17125,14 +18150,14 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			};
 		};*/
 		function bismuthCrystallization(pixel) {
-			if(pixel.temp < elements.bismuth.tempHigh) { //initial crystal on cool
+			if(pixel.temp < elements.amba_bismuth.tempHigh) { //initial crystal on cool
 				//pixel.color = "rgb(255,0,0)";
 					//initialize CCC
 				pixel.crystalColorCounter ??= Math.floor(Math.random() * 8); //initialize CCC
 				//pixel.crystalColorCounter ??= 0;
-				if(pixel.element !== "bismuth") {
+				if(pixel.element !== "amba_bismuth") {
 					pixel.temp -= 0.05; //incentivize cooling
-					pixel.element = "bismuth"
+					pixel.element = "amba_bismuth"
 					//console.log(`pixel (${pixel.x},${pixel.y}) frozen by bismuthCrystallization`)
 					pixel.color = pixelColorPick(pixel,bismuthCrystalColorArray[pixel.crystalColorCounter % 8]);
 				}; //solidify
@@ -17146,9 +18171,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					} else {
 						var newPixel = pixelMap[newX][newY];
 						if(bismuthCrystalElements.includes(newPixel.element)) {
-							if(newPixel.temp < elements.bismuth.tempHigh) {
+							if(newPixel.temp < elements.amba_bismuth.tempHigh) {
 								newPixel.temp -= 0.05;
-								newPixel.element = "bismuth";
+								newPixel.element = "amba_bismuth";
 								newPixel.crystalColorCounter = (pixel.crystalColorCounter + 1) % 8;
 								newPixel.color = pixelColorPick(pixel,bismuthCrystalColorArray[pixel.crystalColorCounter % 8]);
 							};
@@ -17158,11 +18183,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			};
 			//mooreDoHeat(pixel);
 		};
-		elements.molten_bismuth = {
+		elements.amba_molten_bismuth = {
 			color: "#d1c6b0", //not really hot enough to be red
 			behavior: behaviors.LIQUID,
 			tempLow: -Infinity, //suppress normal freezing mechanism
-			stateLow: "molten_bismuth",
+			stateLow: "amba_molten_bismuth",
 			tick: function(pixel) {
 				bismuthCrystallization(pixel);
 			},
@@ -17174,10 +18199,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			fireColor: "#4275db",
 		};
 		runAfterAutogen(function() {
-			delete elements.molten_bismuth.tempLow;
-			delete elements.molten_bismuth.stateLow;
+			delete elements.amba_molten_bismuth.tempLow;
+			delete elements.amba_molten_bismuth.stateLow;
 		});
-		elements.bismuth = {
+		elements.amba_bismuth = {
 			color: "#d1c6b0",
 			behavior: behaviors.WALL,
 			/*reactions: {
@@ -17190,7 +18215,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			state: "solid",
 			fireColor: "#4275db",
 		};
-		elements.bismuth_gas = {
+		elements.amba_bismuth_gas = {
 			density: 9, //made-up number
 			fireColor: "#4275db",
 		};
@@ -17267,6 +18292,83 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 			};
 		};
+		elements.neutron = {
+			color: "#a6ffff",
+			behavior: [
+					"XX|XX|XX",
+					"XX|CH:proton%0.25 AND DL%0.25|XX", //"b nnnnnnnnn" - the dog stepping on the keyboard
+					"XX|XX|XX"
+			],
+			tick: behaviors.BOUNCY,
+			rotatable: true,
+			reactions: {
+				uranium: {
+					temp2: 100
+				},
+				plant: {
+					elem2: "wood",
+					chance: 0.05
+				},
+				gunpowder: {
+					elem2: "dust",
+					chance: 0.05
+				},
+				yeast: {
+					elem2: "bread",
+					chance: 0.05
+				},
+				silver: {
+					elem1: null,
+					chance: 0.25
+				},
+				firework: {
+					chance: 0.01,
+					func: function(pixel1,pixel2) {
+						pixel2.burning=true;
+						pixel2.burnStart=pixelTicks
+					}
+				},
+				hydrogen: {
+					elem1: null,
+					elem2: "deuterium",
+					chance: 0.02 //nerfs not in original NM
+				},
+				deuterium: {
+					elem1: null,
+					elem2: "tritium",
+					chance: 0.01
+				},
+				heavy_water: {
+					elem1: null,
+					elem2: "heavy_water"
+				},
+				heavy_steam: {
+					elem1: null,
+					elem2: "heavy_steam"
+				},
+				heavy_ice: {
+					elem1: null,
+					elem2: "heavy_ice"
+				},
+				heavy_snow: {
+					elem1: null,
+					elem2: "heavy_snow"
+				},
+				plutonium: {
+					temp2: 100
+				},
+				molten_plutonium: {
+					temp2: 100
+				}
+			},
+			temp: 35,
+			category: "energy",
+			state: "gas",
+			density: 0.00003,
+			ignoreAir: true,		
+			nellfireImmune: true
+		};
+
 		elements.zirconium = {
 			color: ["#ccc59b", "#dbd3a4"],
 			behavior: behaviors.WALL,
@@ -17601,7 +18703,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		};
 		runAfterAutogen(function() {
 			var kesddfroged = ["kurshunjukium","molten_kurshunjukium"];
-			var kesddfroged2 = ["bismuth","molten_bismuth"];
+			var kesddfroged2 = ["amba_bismuth","amba_molten_bismuth"];
 			for(var i in kesddfroged) {
 				for(var j in kesddfroged2) {
 					elements[kesddfroged[i]].reactions ??= {}; elements[kesddfroged[i]].reactions[kesddfroged2[j]] = {"elem1": "kurshuth_alloy", "elem2": "kurshuth_alloy"}
@@ -18101,7 +19203,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			if(pixel.oldColor === null) { pixel.oldColor = pixel.color };
 			if(isNaN(pixel.value)) { pixel.value = 0 };
 			pixel.color = lightenColor(pixel.oldColor,pixel.value / 3);
-			var mVal = elements[pixel.element].haseulitoidMaxValue ?? 800;
+			var mVal = elements[pixel.element].haseulitoidMaxValue ?? 350;
 			if(pixel.value >= mVal) {
 				var coldBoomChance = Math.max(0.008 * ((pixel.value - mVal) / (mVal * 2/7)), 0.001);
 				if(Math.random() < coldBoomChance) {
@@ -18264,7 +19366,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			conduct: 0.23,
 		};
 		elements.haseulite_gas = {
-			color: ["#ffff9d", "#ffffff", "#e9ffe6", "#ffffe5"],
+			color: ["#ffff9d", _cc.w.h, "#e9ffe6", "#ffffe5"],
 			fireColor: ["#08a953", "#2ea332", "#d1e0d3"],
 			properties: {
 				oldColor: null
@@ -18413,7 +19515,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			conduct: 0.22,
 		};
 		elements.heejinite_gas = {
-			color: ["#fffab8", "#ffdab3", "#ffd1d1", "#ffc4df", "#ffb0eb"],
+			color: ["#fffab8", "#ffdab3", "#ffd1d1", "#ffc4df", "#ffb0eb"],
 			fireColor: ["#a9085e", "#a32e61", "#fca7c6"],
 			properties: {
 				oldColor: null
@@ -18689,7 +19791,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			conduct: 0.34,
 		};
 		elements.jinsoulite_gas = {
-			color: ["#c0f0ef", "#c2c1db", "#c0bff5", "#cdcce6"],
+			color: ["#c0f0ef", "#c2c1db", "#c0bff5", "#cdcce6"],
 			behavior: [
 				"XX|CR:steam%0.5|XX",
 				"CR:steam%0.5|XX|CR:steam%0.5",
@@ -18869,7 +19971,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			conduct: 0.22,
 		};
 		elements.yvesite_gas = {
-			color: ["#e34070", "#d13060", "#c2234a", "#db4866"],
+			color: ["#e34070", "#d13060", "#c2234a", "#db4866"],
 			fireColor: ["#b5103f", "#ab3254", "#cc2157", "#ba0936"],
 			behavior: behaviors.GAS,
 			state: "gas",
@@ -19191,8 +20293,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			stain: 0.04
 		};
 		elements.vivite_gas = {
-			color: ["#ffedfe", "#ffe0fd", "#ffd9f9", "#ffd1f0", "#ffccdf"],
-			colorOn: ["#eec7fc", "#f5b1fc", "#faa2f1", "#fa93c3", "#ff99b1"],
+			color: ["#ffedfe", "#ffe0fd", "#ffd9f9", "#ffd1f0", "#ffccdf"],
+			colorOn: ["#eec7fc", "#f5b1fc", "#faa2f1", "#fa93c3", "#ff99b1"],
 			fireColor: ["#ff66ba", "#ff85ef", "#ff99f7"],
 			tick: function(pixel) {
 				if(Math.random() < 0.032 && exposedToAir(pixel)) {
@@ -19292,16 +20394,16 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			"16-01": [{ member: "Jennie", color: "rgb(204,108,169)", group: "BlackPink"}, { member: "Joobin", color: "rgb(183,245,76)", group: "tripleS" }],
 			"18-01": { member: "Minzy", color: "rgb(195,108,230)", group: "2NE1"},
 			"22-01": { member: "Lee Seoyeon", color: "rgb(0,83,133)", group: "fromis_9" },
-			"23-01": { member: "Isa", color: "rgb(0,0,0)", group: "STAYC"},
+			"23-01": { member: "Isa", color: _cc.b.r, group: "STAYC"},
 			"26-01": { member: "Somyi", color: "rgb(199,56,164)", group: "DIA" },
 			"28-01": { member: "Sheon", color: "rgb(255,153,0)", group: "Billlie"},
 			"30-01": { member: "Haruna", color: "rgb(9,151,222)", group: "Billlie"},
-			"31-01": { member: "Miyeon", color: "rgb(0,0,0)", group: "(G)I-DLE"},
+			"31-01": { member: "Miyeon", color: _cc.b.r, group: "(G)I-DLE"},
 			"01-02": { member: "Jihyo", color: "rgb(250,200,87)", group: "TWICE"},
 			"02-02": { member: "Do-A", color: "rgb(204,0,255)", group: "ALICE"},
 			"03-02": [ {member: "Gahyeon", color: "rgb(186,9,191)", group: "Dreamcatcher"}, {member: "Rei", color: "rgb(105,195,45)", group: "IVE"}, { member: "Yubin", color: "rgb(255,227,226)", group: "tripleS" } ],
 			"04-02": { member: "Iroha", color: "rgb(71,145,255)", group: "ILLIT" },
-			"05-02": [ { member: "Kim Minju", color: "rgb(255,255,255)", group: "IZ*ONE"}, { member: "Hyunjoo", color: "rgb(100,190,193)", group: "APRIL" } ],
+			"05-02": [ { member: "Kim Minju", color: _cc.w.r, group: "IZ*ONE"}, { member: "Hyunjoo", color: "rgb(100,190,193)", group: "APRIL" } ],
 			"07-02": { member: "Sunn", color: "rgb(255,173,173)", group: "cignature" },
 			"09-02": { member: "Yooyeon", color: "rgb(219,12,116)", group: "tripleS" },
 			"10-02": [ {member: "Kim Lip", color: "rgb(234,2,1)", group: "LOONA"}, {member: "Sooyoung", color: "rgb(255,92,205)", group: "Girls' Generation"}, { member: "Son Naeun", color: "rgb(196,179,107)", group: "Apink" }, { member: "Irene", color: "rgb(255,251,0)", group: "Red Velvet"} ],
@@ -19322,7 +20424,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			"19-03": { member: "Sakura", color: "rgb(241,210,231)", group: "IZ*ONE"},
 			"20-03": { member: "Park Jiwon", color: "rgb(134,171,17)", group: "fromis_9" },
 			"24-03": [ { member: "Mina", color: "rgb(111,197,194)", group: "TWICE"}, { member: "Bom", color: "rgb(118,212,174)", group: "2NE1"} ],
-			"26-03": [ { member: "Handong", color: "rgb(0,0,0)", group: "Dreamcatcher"}, { member: "Mirae", color: "rgb(185,74,214)", group: "Cherry Bullet" }, { member: "An Seoyeon", color: "rgb(246,98,15)", group: "CSR" } ],
+			"26-03": [ { member: "Handong", color: _cc.b.r, group: "Dreamcatcher"}, { member: "Mirae", color: "rgb(185,74,214)", group: "Cherry Bullet" }, { member: "An Seoyeon", color: "rgb(246,98,15)", group: "CSR" } ],
 			"27-03": { member: "Lisa", color: "rgb(255,250,0)", group: "BlackPink"},
 			"29-03": { member: "Irene", color: "rgb(255,127,223)", group: "Red Velvet"},
 			"01-04": { member: "Jeewon", color: "rgb(0,153,148)", group: "cignature" },
@@ -19345,15 +20447,15 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			"11-05": { member: "Park Minju", color: "rgb(186,69,69)", group: "ILLIT" },
 			"12-05": { member: "Mayu", color: "rgb(254,142,118)", group: "tripleS" },
 			"14-05": { member: "Lee Chaeyoung", color: "rgb(35,248,84)", group: "fromis_9" },
-			"15-05": [ {member: "Sunny", color: "rgb(107,142,35)", group: "Girls' Generation"}, {member: "Haerin", color: "rgb(255,255,255)", group: "NewJeans"} ],
-			"17-05": { member: "JiU", color: "rgb(255,255,255)", group: "Dreamcatcher"},
+			"15-05": [ {member: "Sunny", color: "rgb(107,142,35)", group: "Girls' Generation"}, {member: "Haerin", color: _cc.w.r, group: "NewJeans"} ],
+			"17-05": { member: "JiU", color: _cc.w.r, group: "Dreamcatcher"},
 			"18-05": { member: "Onda", color: "rgb(179,4,105)", group: "Everglow"},
 			"19-05": { member: "E:U", color: "rgb(107,86,163)", group: "Everglow"},
 			"22-05": { member: "Yang Yena", color: "rgb(255,178,79)", group: "APRIL" },
 			"24-05": { member: "Yves", color: "rgb(125,0,30)", group: "LOONA"},
 			"25-05": { member: "Xinyu", color: "rgb(213,19,19)", group: "tripleS" },
 			"26-05": { member: "Eunchae", color: "rgb(40,119,255)", group: "DIA" },
-			"28-05": { member: "Dahyun", color: "rgb(255,255,255)", group: "TWICE"},
+			"28-05": { member: "Dahyun", color: _cc.w.r, group: "TWICE"},
 			"30-05": { member: "Yoona", color: "rgb(0,105,148)", group: "Girls' Generation"},
 			"01-06": { member: "Nagyung", color: "rgb(255,145,102)", group: "fromis_9" },
 			"02-06": { member: "Nien", color: "rgb(255,149,63)", group: "tripleS" },
@@ -19373,10 +20475,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			"13-07": { member: "Yebin", color: "rgb(211,0,0)", group: "DIA" },
 			"14-07": { member: "Chaesol", color: "rgb(100,207,255)", group: "cignature" },
 			"19-07": { member: "Oh Hayoung", color: "rgb(210,176,160)", group: "Apink" },
-			"21-07": { member: "Aisha", color: "rgb(0,0,0)", group: "Everglow"},
+			"21-07": { member: "Aisha", color: _cc.b.r, group: "Everglow"},
 			"23-07": { member: "Sua", color: "rgb(0,220,220)", group: "CSR" },
 			"27-07": { member: "Huening Bahiyyih", color: "rgb(255,177,109)", group: "Kep1er"},
-			"01-08": [ {member: "Sieun", color: "rgb(255,255,255)", group: "STAYC"}, {member: "Kim Chaewon", color: "rgb(206,229,213)", group: "IZ*ONE"}, {member: "Tiffany", color: "rgb(169,32,62)", group: "Girls' Generation"}, { member: "Dohee", color: "rgb(175,27,63)", group: "cignature" }, { member: "Hayeon", color: "rgb(83,217,190)", group: "tripleS" } ],
+			"01-08": [ {member: "Sieun", color: _cc.w.r, group: "STAYC"}, {member: "Kim Chaewon", color: "rgb(206,229,213)", group: "IZ*ONE"}, {member: "Tiffany", color: "rgb(169,32,62)", group: "Girls' Generation"}, { member: "Dohee", color: "rgb(175,27,63)", group: "cignature" }, { member: "Hayeon", color: "rgb(83,217,190)", group: "tripleS" } ],
 			"05-08": { member: "Kim Sihyeon", color: "rgb(199,210,167)", group: "Everglow" },
 			"06-08": { member: "Seoyeon", color: "rgb(34,174,255)", group: "tripleS" },
 			"09-08": { member: "Lara", color: "rgb(145,86,255)", group: "DreamNote" },
@@ -19441,7 +20543,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			"16-12": { member: "Mashiro", color: "rgb(253,238,244)", group: "Kep1er"},
 			"20-12": { member: "Kaede", color: "rgb(255,201,53)", group: "tripleS" },
 			"27-12": [ { member: "Youngeun", color: "rgb(147,197,114)", group: "Kep1er"}, { member: "Gyuri", color: "rgb(33,150,254)", group: "fromis_9" } ],
-			"29-12": [ { member: "Sana", color: "rgb(156,158,207)", group: "TWICE"}, {member: "Yiren", color: "rgb(255,255,255)", group: "Everglow"} ],
+			"29-12": [ { member: "Sana", color: "rgb(156,158,207)", group: "TWICE"}, {member: "Yiren", color: _cc.w.r, group: "Everglow"} ],
 			"31-12": { member: "Sohee", color: "rgb(246,110,186)", group: "ALICE"},
 		};
 		var chaos = [];
@@ -19569,11 +20671,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								var name = elems[j];
 								var color = data[memberIndex].color;
 								if(data.gradient) {
-									color = "rgb(255,255,255)";
+									color = _cc.w.r;
 								};
 								//console.log(name);
 								//console.log(color);
-								color == "rgb(0,0,0)" ? highlightButton(name,color,15,12) : highlightButton(name,color,7,2);
+								color == _cc.b.r ? highlightButton(name,color,15,12) : highlightButton(name,color,7,2);
 							};
 						};
 					});
@@ -20223,6 +21325,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							continue;
 						};
 						var rockData = rockInfo._data ?? ["error","error","hot_unknown"];
+						if(rockData[2] == "icy_particulate") {
+							continue
+						};
 						var newName = rockName.startsWith("dry_") ? rockName.replace("dry_","hot_") : "hot_" + rockName;
 						//console.log(rockInfo.stateHigh);
 						elements[newName] = {
@@ -20238,7 +21343,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									case (behaviors.SUPPORT.toString()):
 										return behaviors.HOT_SUPPORT;
 									default:
-										console.log(`Hot rock generation: Unknown base behavior for ${rockName}, defaulting to hot powder`);
+										if(rockName !== "dry_dirt") { console.log(`Hot rock generation: Unknown base behavior for ${rockName}, defaulting to hot powder`) };
 										return behaviors.HOT_POWDER
 								}
 							}(),
@@ -21948,6 +23053,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						};
 						rockClouds.push(rockCloudName);
 				};
+				console.log("1/2 loaded") //true halfway point is inside newIgneousCompositionFamily.
 				function standaloneBrokenFormMaker(elementName,suffixWithoutUnderscore,addBreakIntoToSourceElement=false,category=null,density=null,tempHigh=null,stateHigh=null,breakInto=null) {
 					var newName = elementName + "_" + suffixWithoutUnderscore;
 					elements[newName] = {
@@ -23480,7 +24586,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								if(!(dirtColor instanceof Array)) { dirtColor = [dirtColor] };
 								var mudColor = dirtColor.map(x => colorToHsl(x,"json")); mudColor.forEach(function(x) { x.s *= (41/21); x.l *= (15/26) }); mudColor = mudColor.map(function(x) { return hslToHex(...Object.values(x)) });
 								if(mudColor.length == 1) { mudColor = mudColor[0] };
-								var mudstoneColor = dirtColor.map(x => colorToHsl(x,"json")); mudstoneColor.forEach(function(x) { x.h += 6; x.s *= (31/41); x.l *= (26/15); x.l += 5 }); mudstoneColor = mudstoneColor.map(function(x) { return hslToHex(...Object.values(x)) });
+								var mudstoneColor = dirtColor.map(x => colorToHsl(x,"json")); mudstoneColor.forEach(function(x) { x.h += 6; x.s *= (31/41); if(x.s > 0) { x.s += 5 }; x.l *= (22/15); x.l = bound(x.l + 5,0,60) }); mudstoneColor = mudstoneColor.map(function(x) { return hslToHex(...Object.values(x)) });
 								if(mudstoneColor.length == 1) { mudstoneColor = mudstoneColor[0] };
 								var dryDirtColor = dirtColor.map(x => colorToHsl(x,"json")); dryDirtColor.forEach(function(x) { x.h += 4; x.s *= (8/11); x.l *= (34/50); x.l += 5 }); dryDirtColor = dryDirtColor.map(function(x) {
 									x = convertHslObjects(x,"rgbjson");
@@ -25136,7 +26242,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						//Metamorphism will be driven using solely temperature.
 						//Pressure simulation, due to how the game is coded, will be limited to requiring the rock to be surrounded.
 					elements.slate = {
-						color: ["#787B80", "#535557", "#695E58", "#696969", "#6B5D5B"],
+						color: ["#787B80", "#535557", "#695E58", "#696969", "#6B5D5B"],
 						tempHigh: 200,
 						stateHigh: "felsic_magma",
 						category: "solid rock",
@@ -25170,7 +26276,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						rocksSandsAndSoilsToGiveHotForms = Object.keys(elements).filter(
 							function(elemName) {
 								//console.log(elemName,elements[elemName]._data?.[2]);
-								return (!(["clay","limestone","black_limestone"].includes(elemName)) && ["igneous_rock","solid_igneous_rock","igneous_gravel","sedimentary_rock","particulate","packed_particulate","metamorphic_rock","solid_metamorphic_rock","metamorphic_gravel"].includes(elements[elemName]._data?.[2]))
+								return (!(["clay","limestone","black_limestone"].includes(elemName)) && !(elemName.endsWith("permafrost")) && ["igneous_rock","solid_igneous_rock","igneous_gravel","sedimentary_rock","particulate","packed_particulate","metamorphic_rock","solid_metamorphic_rock","metamorphic_gravel"].includes(elements[elemName]._data?.[2]))
 							}
 						);
 						if(rocksSandsAndSoilsToGiveHotForms.includes("clay")) { rocksSandsAndSoilsToGiveHotForms.splice(rocksSandsAndSoilsToGiveHotForms.indexOf("clay"),1) };
@@ -25388,7 +26494,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						tick: function(pixel) {
 							nsTick(pixel,0.7,stellarPlasmaSpreadWhitelist);
 						},
-						temp: 1e12,
+						temp: 1e8,
 						category: "special",
 						state: "gas",
 						density: 1e17,
@@ -25443,11 +26549,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						density: 10000, //i'm not doing any more research on these neutron stars because google is useless
 						conduct: 1,
 					};
-					elements.supernova.behavior = [
-						"XX|XX|XX",
-						"XX|EX:80>plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,molten_iron,molten_uranium,molten_lead AND CH:neutron_star,neutron_star,neutron_star,neutronium,quark_matter,void|XX",
-						"XX|XX|XX",
-					]
+					elements.supernova.behavior[1] = elements.supernova.behavior[1].split("|");
+					elements.supernova.behavior[1][1] = elements.supernova.behavior[1][1].replace("void","amba_black_hole") + ",neutron_star,neutron_star,amba_black_hole,amba_black_hole,amba_black_hole"
+					elements.supernova.behavior[1] = elements.supernova.behavior[1].join("|");
 					elements.plasma.noConduct = ["plasma_torch","stellar_plasma","liquid_stellar_plasma","liquid_degenerate_neutronium","gaseous_degenerate_neutronium","neutron_star"]; //I can't suppress the charge overlay and keep the tick color, only effective with noConduct.js but not strictly required
 					//Tangentially linked
 					elements.rainbow_sun = {
@@ -25528,7 +26632,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						else if (pixel.temp < 3200) { pixel.color = pixelColorPick(pixel,"#ffd1d9"); var c=0.01 }
 						else if (pixel.temp < 3900) { pixel.color = pixelColorPick(pixel,"#fce1e1"); var c=0.02 }
 						else if (pixel.temp < 4600) { pixel.color = pixelColorPick(pixel,"#fff5f5"); var c=0.035 }
-						else if (pixel.temp < 6100) { pixel.color = pixelColorPick(pixel,"#ffffff"); var c=0.05 }
+						else if (pixel.temp < 6100) { pixel.color = pixelColorPick(pixel,_cc.w.h); var c=0.05 }
 						else if (pixel.temp < 7200) { pixel.color = pixelColorPick(pixel,"#f4fad9"); var c=0.075 }
 						else if (pixel.temp < 8300) { pixel.color = pixelColorPick(pixel,"#e4f2c2"); var c=0.1 }
 						else if (pixel.temp < 10400) { pixel.color = pixelColorPick(pixel,"#c6f2a2"); var c=0.125 }
@@ -25570,7 +26674,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						}
 					};
 					elements.nellsun = {
-						color: ["#ff26ac", "#ffb8e4", "#ffffff", "#b7ffa8", "#2df7b4"],
+						color: ["#ff26ac", "#ffb8e4", _cc.w.h, "#b7ffa8", "#2df7b4"],
 						tick: function(pixel) {
 							nellSLAC(pixel,nellsunColor(pixel));
 						},
@@ -25688,7 +26792,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						stateLow: "alpha_limtupyte",
 					};
 					elements.limtupyte_gas = {
-						color: ["#ffff80", "#ffe940", "#feffd1", "#ffffff"],
+						color: ["#ffff80", "#ffe940", "#feffd1", _cc.w.h],
 						density: 17.12,
 						behavior: behaviors.GAS,
 						category: "states",
@@ -26101,30 +27205,6 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			cooldown: defaultCooldown,
 			density: 1000,
 		};
-		function rgbStringToUnvalidatedObject(string) {
-			var numbers = string.match(/[\d\.]+/g);
-			var red = numbers[0];
-			var green = numbers[1];
-			var blue = numbers[2];
-			var alpha = null;
-			if(numbers.length > 3) {alpha = numbers[3]};
-			var result = {r: red, g: green, b: blue};
-			if(alpha !== null) { result.a = alpha };
-			numbers = numbers.map(x => parseFloat(x));
-			return result
-		};
-		function hslStringToUnvalidatedObject(string) {
-			var numbers = string.match(/[\d\.]+/g);
-			var hue = numbers[0];
-			var saturation = numbers[1];
-			var whateverL_StandsFor = numbers[2];
-			var alpha = null;
-			if(numbers.length > 3) {alpha = numbers[3]};
-			var result = {h: hue, s: saturation, l: whateverL_StandsFor};
-			if(alpha !== null) { result.a = alpha };
-			numbers = numbers.map(x => parseFloat(x));
-			return result
-		};
 		function rebuildWorldgenList() { //vanilla code
 			document.getElementById("worldgenselect").innerHTML = '<option value="off">Disabled</option>';
 			for (var key in worldgentypes) {
@@ -26162,7 +27242,7 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 			return string.split(";").map(x => x.split(":")).map(y => parsefloatFirst(y));
 		};
 		function validateSingleHexCode(hexCode) {
-			return !!"#FFFFFF".match(/^#[0-9A-F]{6}$/);
+			return !!_cc.w.h.match(/^#[0-9A-F]{6}$/);
 		};
 		function validateHexColorArray(colorsArray) {
 			if(!(colorsArray instanceof Array)) {
@@ -26461,6 +27541,120 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 						};
 					};
 					inputElement === "all" ? alertIfOutput(alertOutput,`Set ${property} of ${setCount} pixels to ${value}.`) : alertIfOutput(alertOutput,`Set ${property} of ${setCount} ${inputElement} pixels to ${value}.`)
+					return true;
+				case "deleteall":
+				var elementSpecified = false;
+				var attemptedCommaSplitOfPossibleElementSpecification = inputAsArray[1].split(","); //a comma-less string becomes a single-string array so it should still detect something like "deleteall fire"
+				var possibleElementsInACSOPES = attemptedCommaSplitOfPossibleElementSpecification.filter(elementExists);
+				elementSpecified = (possibleElementsInACSOPES.length > 0);
+				if(!elementSpecified) {
+					inputAsArray = inputAsArray.join(" ").replace("deleteall","delete all").split(" ")
+				};
+				//fall through to delete 
+				case "delete":
+					if(inputAsArray.length < 2) {
+						alertIfError(alertError,"Usage: delete [element] <probability> <type>\nDon't include framing characters []<>.\nThe element can be \"all\" to clear the canvas.\nNote: Strings can't have spaces because spaces are the separator used in the parsing split().\nArguments in [brackets] are required and ones in <angle brackets> are optional.");
+						return false;
+					};
+
+					var inputElement = inputAsArray[1];
+					if(inputElement.indexOf(",") >= 0) {
+						inputElement = Array.from(new Set(inputElement.split(",")));
+						if(inputElement.includes("all")) {
+							inputElement = "all"
+						}
+					};
+
+					var probability;
+					if(inputAsArray[2]) {
+						probability = inputAsArray[2];
+						if(probability.match(/(%|cent|per_?hundred|ph)$/i)) {
+							probability = probability.match(/\d+(\.\d+|)/)?.[0];
+							if(!probability) {
+								probability = 1
+							} else {
+								probability = parseFloat(probability) / 100
+							}
+						} else if(probability.match(/(‰|mille|per_?thousand)$/i)) {
+							probability = probability.match(/\d+(\.\d+|)/)?.[0];
+							if(!probability) {
+								probability = 1
+							} else {
+								probability = parseFloat(probability) / 1000
+							}
+						} else if(probability.match(/(‱|myriad|per_?ten_?thousand|basis_?point|bp)$/i)) {
+							probability = probability.match(/\d+(\.\d+|)/)?.[0];
+							if(!probability) {
+								probability = 1
+							} else {
+								probability = parseFloat(probability) / 10000
+							}
+						} else if(probability.match(/(ppm|parts_?per_?million)$/i)) {
+							probability = probability.match(/\d+(\.\d+|)/)?.[0];
+							if(!probability) {
+								probability = 1
+							} else {
+								probability = parseFloat(probability) / 1e6
+							}
+						} else if(probability.match(/(ppb|parts_?per_?billion)$/i)) {
+							probability = probability.match(/\d+(\.\d+|)/)?.[0];
+							if(!probability) {
+								probability = 1
+							} else {
+								probability = parseFloat(probability) / 1e9
+							}
+						} else if(probability.match(/(ppt|parts_?per_?trillion)$/i)) {
+							probability = probability.match(/\d+(\.\d+|)/)?.[0];
+							if(!probability) {
+								probability = 1
+							} else {
+								probability = parseFloat(probability) / 1e12
+							}
+						} else if(probability.match(/(ppq|parts_?per_?quadrillion)$/i)) {
+							probability = probability.match(/\d+(\.\d+|)/)?.[0];
+							if(!probability) {
+								probability = 1
+							} else {
+								probability = parseFloat(probability) / 1e15
+							}
+						} else if(probability.match(/\d\.?[\/÷]\.?\d/)) {
+							probability = probability.split(/[\/÷]/).map(x => parseFloat(x));
+							if(isNaN(probability[0]) || isNaN(probability[1])) {
+								probability = 1
+							} else {
+								probability = probability[0] / probability[1]
+							}
+						} else {
+							var parsedProbability = parseFloat(probability);
+							if(isNaN(parsedProbability)) {
+								probability = 1
+							} else {
+								probability = parsedProbability;
+								if(probability > 1) { probability /= 100 }
+							}
+						}
+					} else {
+						probability = 1
+					};
+					
+					//Actual setting code;
+					var deleteCount = 0;
+					for (var i = 1; i < width; i++) {
+						for (var j = 1; j < height; j++) {
+							if (!isEmpty(i,j)) {
+								//console.log("Pixel (" + i + "," + j + ") exists")
+								var doDelete = inputElement === "all" || (Array.isArray(inputElement) ? inputElement.includes(pixelMap[i][j].element) : pixelMap[i][j].element == inputElement);
+								if(doDelete) {
+									if(Math.random() < probability) {
+										deletePixel(i,j);
+										deleteCount++
+									}
+								}
+							}
+						}
+					};
+					var outputString = Array.isArray(inputElement) ? englishFormatList(inputElement) : inputElement;
+					inputElement === "all" ? alertIfOutput(alertOutput,`Deleted ${deleteCount} pixels.`) : alertIfOutput(alertOutput,`Deleted ${deleteCount} total ${outputString} pixels.`)
 					return true;
 				case "test":
 					alertIfOutput(alertOutput,"pong");
@@ -27028,11 +28222,12 @@ Make sure to save your command in a file if you want to add this preset again.`
 			};
 		});
 		elements.funni_prompt = {
-			color: ["#000000","#00ff00","#000000","#00ff00","#000000","#00ff00","#000000","#00ff00","#000000","#00ff00"],
+			color: [_cc.b.h,"#00ff00",_cc.b.h,"#00ff00",_cc.b.h,"#00ff00",_cc.b.h,"#00ff00",_cc.b.h,"#00ff00"],
 			behavior: behaviors.SELFDELETE,
 			desc: "<span style='color:#FF00FF;' onClick=funniPrompt()>Click here or press Shift+1 to open the command prompt.</span>",
 			category:"special",
 		};
+		console.log("5/8 loaded");
 	//REPLACER TOOL ##
 		changeTo = "sand";
 		document.addEventListener("keydown", function(e) { //change prompt listener
@@ -27539,7 +28734,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.bless.reactions.toxin = { elem2: "antidote" };
 		elements.bless.reactions.dead = { elem2: null };
 		elements.bless.reactions.brain = { elem2: null };
-		elements.bless.reactions.bioooze = { elem2: null };
+		elements.bless.reactions.bio_ooze = { elem2: null };
 		elements.bless.tool = function(pixel) {
 			if (elements.bless.ignore.indexOf(pixel.element) !== -1) { return; }
 			if (pixel.burning) { // stop burning
@@ -27736,13 +28931,40 @@ Make sure to save your command in a file if you want to add this preset again.`
 	//PUSHERS ##
 		elements.up_pusher = {
 			color: "#9fafdf",
-			properties: {
-				range: 10,
-				pushStrength: 1
+			onSelect: function() {
+				showPropertySetter();
+
+				showSetterColumn("numeric",0);
+				var p0 = document.getElementById("propertynumeric0input");
+				var p0h = document.getElementById("propertynumeric0heading");
+				if(p0) {
+					p0.setAttribute("set","pusherRange");
+					p0.setAttribute("min","1");
+					p0.value = ambaPlaceProperties.pusherRange;
+				};
+				if(p0h) {
+					p0h.innerText = "Range";
+				};
+
+				showSetterColumn("numeric",1);
+				var p1 = document.getElementById("propertynumeric1input");
+				var p1h = document.getElementById("propertynumeric1heading");
+				if(p1) {
+					p1.setAttribute("set","pusherStrength");
+					p1.setAttribute("min","1");
+					p1.value = ambaPlaceProperties.pusherStrength;
+				};
+				if(p1h) {
+					p1h.innerText = "Strength";
+				};
+			},
+			onUnselect: function() {
+				hideAllSetterColumns();
+				hidePropertySetter()
 			},
 			tick: function(pixel) {
-				pixel.range ??= 10;
-				pixel.pushStrength ??= 1;
+				pixel.range ??= (ambaPlaceProperties?.pusherRange ?? 10);
+				pixel.pushStrength ??= (ambaPlaceProperties?.pusherStrength ?? 1);
 				for(h = 0; h < pixel.pushStrength; h++) {
 					for(i=(pixel.range - 1); i>=0; i--) {
 						if (!isEmpty(pixel.x,pixel.y-1-i,true)) {
@@ -27764,13 +28986,40 @@ Make sure to save your command in a file if you want to add this preset again.`
 		}
 		elements.down_pusher = {
 			color: "#9fafdf",
-			properties: {
-				range: 10,
-				pushStrength: 1
+			onSelect: function() {
+				showPropertySetter();
+
+				showSetterColumn("numeric",0);
+				var p0 = document.getElementById("propertynumeric0input");
+				var p0h = document.getElementById("propertynumeric0heading");
+				if(p0) {
+					p0.setAttribute("set","pusherRange");
+					p0.setAttribute("min","1");
+					p0.value = ambaPlaceProperties.pusherRange;
+				};
+				if(p0h) {
+					p0h.innerText = "Range";
+				};
+
+				showSetterColumn("numeric",1);
+				var p1 = document.getElementById("propertynumeric1input");
+				var p1h = document.getElementById("propertynumeric1heading");
+				if(p1) {
+					p1.setAttribute("set","pusherStrength");
+					p1.setAttribute("min","1");
+					p1.value = ambaPlaceProperties.pusherStrength;
+				};
+				if(p1h) {
+					p1h.innerText = "Strength";
+				};
+			},
+			onUnselect: function() {
+				hideAllSetterColumns();
+				hidePropertySetter()
 			},
 			tick: function(pixel) {
-				pixel.range ??= 10;
-				pixel.pushStrength ??= 1;
+				pixel.range ??= (ambaPlaceProperties?.pusherRange ?? 10);
+				pixel.pushStrength ??= (ambaPlaceProperties?.pusherStrength ?? 1);
 					for(h = 0; h < pixel.pushStrength; h++) {
 						for(i=(pixel.range - 1); i>=0; i--) {
 							if (!isEmpty(pixel.x,pixel.y+1+i,true)) {
@@ -27792,13 +29041,40 @@ Make sure to save your command in a file if you want to add this preset again.`
 		}
 		elements.left_pusher = {
 			color: "#9fafdf",
-			properties: {
-				range: 10,
-				pushStrength: 1
+			onSelect: function() {
+				showPropertySetter();
+
+				showSetterColumn("numeric",0);
+				var p0 = document.getElementById("propertynumeric0input");
+				var p0h = document.getElementById("propertynumeric0heading");
+				if(p0) {
+					p0.setAttribute("set","pusherRange");
+					p0.setAttribute("min","1");
+					p0.value = ambaPlaceProperties.pusherRange;
+				};
+				if(p0h) {
+					p0h.innerText = "Range";
+				};
+
+				showSetterColumn("numeric",1);
+				var p1 = document.getElementById("propertynumeric1input");
+				var p1h = document.getElementById("propertynumeric1heading");
+				if(p1) {
+					p1.setAttribute("set","pusherStrength");
+					p1.setAttribute("min","1");
+					p1.value = ambaPlaceProperties.pusherStrength;
+				};
+				if(p1h) {
+					p1h.innerText = "Strength";
+				};
+			},
+			onUnselect: function() {
+				hideAllSetterColumns();
+				hidePropertySetter()
 			},
 			tick: function(pixel) {
-				pixel.range ??= 10;
-				pixel.pushStrength ??= 1;
+				pixel.range ??= (ambaPlaceProperties?.pusherRange ?? 10);
+				pixel.pushStrength ??= (ambaPlaceProperties?.pusherStrength ?? 1);
 				for(h = 0; h < pixel.pushStrength; h++) {
 					for(i=(pixel.range - 1); i>=0; i--) {
 						if (!isEmpty(pixel.x-1-i,pixel.y,true)) {
@@ -27820,13 +29096,40 @@ Make sure to save your command in a file if you want to add this preset again.`
 		}
 		elements.right_pusher = {
 			color: "#9fafdf",
-			properties: {
-				range: 10,
-				pushStrength: 1
+			onSelect: function() {
+				showPropertySetter();
+
+				showSetterColumn("numeric",0);
+				var p0 = document.getElementById("propertynumeric0input");
+				var p0h = document.getElementById("propertynumeric0heading");
+				if(p0) {
+					p0.setAttribute("set","pusherRange");
+					p0.setAttribute("min","1");
+					p0.value = ambaPlaceProperties.pusherRange;
+				};
+				if(p0h) {
+					p0h.innerText = "Range";
+				};
+
+				showSetterColumn("numeric",1);
+				var p1 = document.getElementById("propertynumeric1input");
+				var p1h = document.getElementById("propertynumeric1heading");
+				if(p1) {
+					p1.setAttribute("set","pusherStrength");
+					p1.setAttribute("min","1");
+					p1.value = ambaPlaceProperties.pusherStrength;
+				};
+				if(p1h) {
+					p1h.innerText = "Strength";
+				};
+			},
+			onUnselect: function() {
+				hideAllSetterColumns();
+				hidePropertySetter()
 			},
 			tick: function(pixel) {
-				pixel.range ??= 10;
-				pixel.pushStrength ??= 1;
+				pixel.range ??= (ambaPlaceProperties?.pusherRange ?? 10);
+				pixel.pushStrength ??= (ambaPlaceProperties?.pusherStrength ?? 1);
 				for(h = 0; h < pixel.pushStrength; h++) {
 					for(i=(pixel.range - 1); i>=0; i--) {
 						if (!isEmpty(pixel.x+1+i,pixel.y,true)) {
@@ -27849,16 +29152,56 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.up_e_pusher = {
 			color: "#9f9f6f",
 			properties: {
-				range: 10,
 				pushTime: 0,
-				pushLength: 5,
-				pushStrength: 1
+			},
+			onSelect: function() {
+				showPropertySetter();
+
+				showSetterColumn("numeric",0);
+				var p0 = document.getElementById("propertynumeric0input");
+				var p0h = document.getElementById("propertynumeric0heading");
+				if(p0) {
+					p0.setAttribute("set","pusherRange");
+					p0.setAttribute("min","1");
+					p0.value = ambaPlaceProperties.pusherRange;
+				};
+				if(p0h) {
+					p0h.innerText = "Range";
+				};
+
+				showSetterColumn("numeric",1);
+				var p1 = document.getElementById("propertynumeric1input");
+				var p1h = document.getElementById("propertynumeric1heading");
+				if(p1) {
+					p1.setAttribute("set","pusherStrength");
+					p1.setAttribute("min","1");
+					p1.value = ambaPlaceProperties.pusherStrength;
+				};
+				if(p1h) {
+					p1h.innerText = "Strength";
+				};
+
+				showSetterColumn("numeric",2);
+				var p2 = document.getElementById("propertynumeric2input");
+				var p2h = document.getElementById("propertynumeric2heading");
+				if(p2) {
+					p2.setAttribute("set","ePusherLength");
+					p2.setAttribute("min","1");
+					p2.value = ambaPlaceProperties.ePusherLength;
+				};
+				if(p2h) {
+					p2h.innerText = "Duration";
+				};
+			},
+			onUnselect: function() {
+				hideAllSetterColumns();
+				hidePropertySetter()
 			},
 			tick: function(pixel) {
-				pixel.range ??= 10;
+				pixel.range ??= (ambaPlaceProperties?.pusherRange ?? 10);
+				pixel.pushStrength ??= (ambaPlaceProperties?.pusherStrength ?? 1);
+				pixel.pushLength ??= (ambaPlaceProperties?.ePusherLength ?? 5);
 				pixel.pushTime ??= 0;
-				pixel.pushLength ??= 5;
-				pixel.pushStrength ??= 1;
 				if(isNaN(pixel.pushTime) || pixel.pushTime < 0) { pixel.pushTime = 0 };
 				if(pixel.charge) {
 					pixel.pushTime = pixel.pushLength;
@@ -27888,16 +29231,56 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.down_e_pusher = {
 			color: "#9f9f6f",
 			properties: {
-				range: 10,
 				pushTime: 0,
-				pushLength: 5,
-				pushStrength: 1
+			},
+			onSelect: function() {
+				showPropertySetter();
+
+				showSetterColumn("numeric",0);
+				var p0 = document.getElementById("propertynumeric0input");
+				var p0h = document.getElementById("propertynumeric0heading");
+				if(p0) {
+					p0.setAttribute("set","pusherRange");
+					p0.setAttribute("min","1");
+					p0.value = ambaPlaceProperties.pusherRange;
+				};
+				if(p0h) {
+					p0h.innerText = "Range";
+				};
+
+				showSetterColumn("numeric",1);
+				var p1 = document.getElementById("propertynumeric1input");
+				var p1h = document.getElementById("propertynumeric1heading");
+				if(p1) {
+					p1.setAttribute("set","pusherStrength");
+					p1.setAttribute("min","1");
+					p1.value = ambaPlaceProperties.pusherStrength;
+				};
+				if(p1h) {
+					p1h.innerText = "Strength";
+				};
+
+				showSetterColumn("numeric",2);
+				var p2 = document.getElementById("propertynumeric2input");
+				var p2h = document.getElementById("propertynumeric2heading");
+				if(p2) {
+					p2.setAttribute("set","ePusherLength");
+					p2.setAttribute("min","1");
+					p2.value = ambaPlaceProperties.ePusherLength;
+				};
+				if(p2h) {
+					p2h.innerText = "Duration";
+				};
+			},
+			onUnselect: function() {
+				hideAllSetterColumns();
+				hidePropertySetter()
 			},
 			tick: function(pixel) {
-				pixel.range ??= 10;
+				pixel.range ??= (ambaPlaceProperties?.pusherRange ?? 10);
+				pixel.pushStrength ??= (ambaPlaceProperties?.pusherStrength ?? 1);
+				pixel.pushLength ??= (ambaPlaceProperties?.ePusherLength ?? 5);
 				pixel.pushTime ??= 0;
-				pixel.pushLength ??= 5;
-				pixel.pushStrength ??= 1;
 				if(isNaN(pixel.pushTime) || pixel.pushTime < 0) { pixel.pushTime = 0 };
 				if(pixel.charge) {
 					pixel.pushTime = pixel.pushLength;
@@ -27927,16 +29310,56 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.left_e_pusher = {
 			color: "#9f9f6f",
 			properties: {
-				range: 10,
 				pushTime: 0,
-				pushLength: 5,
-				pushStrength: 1
+			},
+			onSelect: function() {
+				showPropertySetter();
+
+				showSetterColumn("numeric",0);
+				var p0 = document.getElementById("propertynumeric0input");
+				var p0h = document.getElementById("propertynumeric0heading");
+				if(p0) {
+					p0.setAttribute("set","pusherRange");
+					p0.setAttribute("min","1");
+					p0.value = ambaPlaceProperties.pusherRange;
+				};
+				if(p0h) {
+					p0h.innerText = "Range";
+				};
+
+				showSetterColumn("numeric",1);
+				var p1 = document.getElementById("propertynumeric1input");
+				var p1h = document.getElementById("propertynumeric1heading");
+				if(p1) {
+					p1.setAttribute("set","pusherStrength");
+					p1.setAttribute("min","1");
+					p1.value = ambaPlaceProperties.pusherStrength;
+				};
+				if(p1h) {
+					p1h.innerText = "Strength";
+				};
+
+				showSetterColumn("numeric",2);
+				var p2 = document.getElementById("propertynumeric2input");
+				var p2h = document.getElementById("propertynumeric2heading");
+				if(p2) {
+					p2.setAttribute("set","ePusherLength");
+					p2.setAttribute("min","1");
+					p2.value = ambaPlaceProperties.ePusherLength;
+				};
+				if(p2h) {
+					p2h.innerText = "Duration";
+				};
+			},
+			onUnselect: function() {
+				hideAllSetterColumns();
+				hidePropertySetter()
 			},
 			tick: function(pixel) {
-				pixel.range ??= 10;
+				pixel.range ??= (ambaPlaceProperties?.pusherRange ?? 10);
+				pixel.pushStrength ??= (ambaPlaceProperties?.pusherStrength ?? 1);
+				pixel.pushLength ??= (ambaPlaceProperties?.ePusherLength ?? 5);
 				pixel.pushTime ??= 0;
-				pixel.pushLength ??= 5;
-				pixel.pushStrength ??= 1;
 				if(isNaN(pixel.pushTime) || pixel.pushTime < 0) { pixel.pushTime = 0 };
 				if(pixel.charge) {
 					pixel.pushTime = pixel.pushLength;
@@ -27966,16 +29389,56 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.right_e_pusher = {
 			color: "#9f9f6f",
 			properties: {
-				range: 10,
 				pushTime: 0,
-				pushLength: 5,
-				pushStrength: 1
+			},
+			onSelect: function() {
+				showPropertySetter();
+
+				showSetterColumn("numeric",0);
+				var p0 = document.getElementById("propertynumeric0input");
+				var p0h = document.getElementById("propertynumeric0heading");
+				if(p0) {
+					p0.setAttribute("set","pusherRange");
+					p0.setAttribute("min","1");
+					p0.value = ambaPlaceProperties.pusherRange;
+				};
+				if(p0h) {
+					p0h.innerText = "Range";
+				};
+
+				showSetterColumn("numeric",1);
+				var p1 = document.getElementById("propertynumeric1input");
+				var p1h = document.getElementById("propertynumeric1heading");
+				if(p1) {
+					p1.setAttribute("set","pusherStrength");
+					p1.setAttribute("min","1");
+					p1.value = ambaPlaceProperties.pusherStrength;
+				};
+				if(p1h) {
+					p1h.innerText = "Strength";
+				};
+
+				showSetterColumn("numeric",2);
+				var p2 = document.getElementById("propertynumeric2input");
+				var p2h = document.getElementById("propertynumeric2heading");
+				if(p2) {
+					p2.setAttribute("set","ePusherLength");
+					p2.setAttribute("min","1");
+					p2.value = ambaPlaceProperties.ePusherLength;
+				};
+				if(p2h) {
+					p2h.innerText = "Duration";
+				};
+			},
+			onUnselect: function() {
+				hideAllSetterColumns();
+				hidePropertySetter()
 			},
 			tick: function(pixel) {
-				pixel.range ??= 10;
+				pixel.range ??= (ambaPlaceProperties?.pusherRange ?? 10);
+				pixel.pushStrength ??= (ambaPlaceProperties?.pusherStrength ?? 1);
+				pixel.pushLength ??= (ambaPlaceProperties?.ePusherLength ?? 5);
 				pixel.pushTime ??= 0;
-				pixel.pushLength ??= 5;
-				pixel.pushStrength ??= 1;
 				if(isNaN(pixel.pushTime) || pixel.pushTime < 0) { pixel.pushTime = 0 };
 				if(pixel.charge) {
 					pixel.pushTime = pixel.pushLength;
@@ -28073,7 +29536,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			  } catch(error) {
 				//ignore stack overflows
-			    if(error.toString().includes("call stack")) {
+				if(error.toString().includes("call stack")) {
 				} else {
 					throw new Error("error")
 				}
@@ -32550,6 +34013,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			},
 		};
+		console.log("3/4 loaded"); //the real 3/4 point was inside Nothing There's tick function
 		runAfterLoad(function() {
 			if(typeof(badPixels) === "object") {
 				badPixels.nothing_there_phase_1 = { panicIncrease: 1, panicIncreaseChance: 1 } //insta-panic for "aleph" thing and "level 1" humans
@@ -34025,7 +35489,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					density: 3000,
 					excludeRandom: true,
 				};
-				elements.tsunami = {
+				elements.amba_tsunami = {
 					color: ["#2449d1","#4b6adb","#8093d9"],
 					behavior: behaviors.WALL,
 					properties: {
@@ -35031,9 +36495,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 					amalgamatedBombFire += ",blazing_pyrotheum".repeat(5);
 					amalgamatedBombFire += ",tectonic_petrotheum".repeat(7);
 					amalgamatedBombFire += ",resonant_ender".repeat(5);
-					amalgamatedBombFire += ",FOOF".repeat(8);
+					amalgamatedBombFire += ",foof".repeat(8);
 					amalgamatedBombFire += ",liquid_irradium".repeat(7);
-					amalgamatedBombFire += ",bioooze".repeat(8);
+					amalgamatedBombFire += ",bio_ooze".repeat(8);
 				});
 			//Fairies
 				runAfterLoad(function() {
@@ -35186,7 +36650,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 					excludeRandom: true,
 				};
 				elements.electric_bomblet = {
-					color: "#ffffff",
+					color: _cc.w.h,
 					behavior: [
 						"SH%50|EX:8>electric AND SH%50|SH%50",
 						"SH%50|EX:9>electric%0.5|SH%50",
@@ -35201,7 +36665,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 				//Wall bomb
 				elements.electric_cluster_bomb = {
-					color: "#ffffff",
+					color: _cc.w.h,
 					behavior: [
 						"SH%50|EX:8>electric_bomblet AND SH%50|SH%50",
 						"SH%50|XX|SH%50",
@@ -35277,12 +36741,28 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 				elements.op_hottester_bomb = {
 					color: "#cc436e",
-					properties: {
-						radius: 15, //just so people can edit it per pixel to be stupidly high
+					onSelect: function() {
+						showPropertySetter();
+						showSetterColumn("numeric",0);
+						var p0 = document.getElementById("propertynumeric0input");
+						var p0h = document.getElementById("propertynumeric0heading");
+						if(p0) {
+							p0.setAttribute("set","ophbRadius");
+							p0.setAttribute("min","1");
+							p0.value = ambaPlaceProperties.ophbRadius;
+						};
+						if(p0h) {
+							p0h.innerText = "Radius";
+						};
+					},
+					onUnselect: function() {
+						hideAllSetterColumns();
+						hidePropertySetter();
 					},
 					tick: function(pixel) {
-						doDefaults(pixel);
+						doDefaults(pixel); //actually we're just leaving the duplicate code in
 						if(!isEmpty(pixel.x,pixel.y-1,true)) { //[0][1] EX (ignore bounds)
+							pixel.radius ??= (ambaPlaceProperties?.ophbRadius ?? 15);
 							var newPixel = pixelMap[pixel.x][pixel.y-1];
 							var newElement = newPixel.element;
 							var newInfo = elements[newElement];
@@ -35339,33 +36819,54 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 				elements.star_bomb = {
 					color: "#fffbb5",
-					properties: {
-						radius: 50, //just so people can edit it per pixel to be stupidly high
+					onSelect: function() {
+						showPropertySetter();
+						showSetterColumn("numeric",0);
+						var p0 = document.getElementById("propertynumeric0input");
+						var p0h = document.getElementById("propertynumeric0heading");
+						if(p0) {
+							p0.setAttribute("set","starBombRadius");
+							p0.setAttribute("min","1");
+							p0.value = ambaPlaceProperties.starBombRadius;
+						};
+						if(p0h) {
+							p0h.innerText = "Radius";
+						};
 					},
+					onUnselect: function() {
+						hideAllSetterColumns();
+						hidePropertySetter();
+					},
+					pixelCollisionExplosion: function(pixel,offset) { //moved here to to duplicate the code
+						if(!pixel) { return };
+						var newPixel = pixelMap[pixel.x][pixel.y+offset];
+						if(newPixel)
+						newPixel.temp += 10000000; //[0][1] HT:10000000
+						//deliberately don't pixelTempCheck or it will tend to burrow down because that much heat will boil almost anything
+						var newElement = newPixel.element;
+						var newInfo = elements[newElement];
+						if(newInfo.state !== "gas" && newElement !== pixel.element) {
+							explodeAtPlus(pixel.x,pixel.y,pixel.radius,elements.star_bomb.explosionFire,elements.star_bomb.explosionSmoke,starbombHeat,starbombHeat,false);
+						};
+						if(pixel) { deletePixel(pixel.x,pixel.y) }
+					},
+					explosionFire: "stellar_plasma,stellar_plasma,stellar_plasma,liquid_stellar_plasma,liquid_stellar_plasma,plasma,plasma",
+					explosionSmoke: "light,light,radiation",					
 					tick: function(pixel) {
-						var starFire = "stellar_plasma,stellar_plasma,stellar_plasma,liquid_stellar_plasma,liquid_stellar_plasma,plasma,plasma";
-						var starSmoke = "light,light,radiation";
+						pixel.radius ??= (ambaPlaceProperties?.starBombRadius ?? 50);
 						doDefaults(pixel);
 						if(!isEmpty(pixel.x,pixel.y-1,true)) { //[0][1] EX (ignore bounds)
-							var newPixel = pixelMap[pixel.x][pixel.y-1];
-							newPixel.temp += 10000000; //[0][1] HT:10000000
-							var newElement = newPixel.element;
-							var newInfo = elements[newElement];
-							if(newInfo.state !== "gas" && newElement !== pixel.element) {
-								explodeAtPlus(pixel.x,pixel.y,pixel.radius,starFire,starSmoke,starbombHeat,starbombHeat,false);
-							};
+							elements.star_bomb.pixelCollisionExplosion(pixel,-1);
+							return
 						};
 						if(!isEmpty(pixel.x,pixel.y+1,true)) { //[2][1] EX (don't ignore bounds, non-bound case)
-							var newPixel = pixelMap[pixel.x][pixel.y+1];
-							newPixel.temp += 10000000;
-							var newElement = newPixel.element;
-							var newInfo = elements[newElement];
-							if(newInfo.state !== "gas" && newElement !== pixel.element) {
-								explodeAtPlus(pixel.x,pixel.y,pixel.radius,starFire,starSmoke,starbombHeat,starbombHeat,false);
-							};
+							elements.star_bomb.pixelCollisionExplosion(pixel,1);
+							return
 						};
 						if(outOfBounds(pixel.x,pixel.y+1)) { //[2][1] EX (don't ignore bounds, bound case)
-							explodeAtPlus(pixel.x,pixel.y,pixel.radius,starFire,starSmoke,starbombHeat,starbombHeat,false);
+							explodeAtPlus(pixel.x,pixel.y,pixel.radius,elements.star_bomb.explosionFire,elements.star_bomb.explosionSmoke,starbombHeat,starbombHeat,false);
+							if(pixel) { deletePixel(pixel.x,pixel.y) }
+							return
 						};
 						if(!tryMove(pixel,pixel.x,pixel.y+1)) { //behaviors.POWDER
 							Math.random() < 0.5 ? tryMove(pixel,pixel.x-1,pixel.y+1) : tryMove(pixel,pixel.x+1,pixel.y+1);
@@ -36632,9 +38133,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 			var randomG = randomIntegerFromZeroToValue(255)
 			var randomB = randomIntegerFromZeroToValue(255)
 			var randomColor = {r: randomR, g: randomG, b: randomB}
-			var newLiquidColor = averageColorObjects(whiteColor,randomColor,weight1=0.1)
-			var newSolidColor = averageColorObjects(whiteColor,randomColor,weight1=0.4)
-			var newGasColor = averageColorObjects(whiteColor,randomColor,weight1=0.7)
+			var newLiquidColor = averageColorObjects(_cc.w.j,randomColor,weight1=0.1)
+			var newSolidColor = averageColorObjects(_cc.w.j,randomColor,weight1=0.4)
+			var newGasColor = averageColorObjects(_cc.w.j,randomColor,weight1=0.7)
 			var newLiquidColor = rgbToHex(newLiquidColor)
 			var newSolidColor = rgbToHex(newSolidColor)
 			var newGasColor = rgbToHex(newGasColor)
@@ -37403,7 +38904,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			if(pixel.oldColor === undefined) { pixel.oldColor = pixelColorPick(pixel) };
 			if(pixel.oldColor === null) { pixel.oldColor = pixel.color };
 			pixel.color = lightenColor(pixel.oldColor,pixel.value / 3);
-			var mVal = elements[pixel.element].haseulitoidMaxValue ?? 350;
+			var mVal = elements[pixel.element].haseulitoidMaxValue ?? 800;
 			if(pixel.value >= mVal) {
 				var coldBoomChance = Math.max(0.006 * ((pixel.value - mVal) / (400/3)), 0.000075);
 				if(Math.random() < coldBoomChance) {
@@ -37808,7 +39309,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			};
 		};
 		elements.generator_prompt = {
-			color: ["#000000","#666666","#886622","#558800"],
+			color: [_cc.b.h,"#666666","#886622","#558800"],
 			behavior: behaviors.SELFDELETE,
 			desc: "<span style='color:#FF00FF;' onClick=generatorPrompt()>Click here or press Shift+G to open the generator prompt.</span>",
 			category:"special",
@@ -37981,7 +39482,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 							settings.bg = "#93c3e1"
 							break;
 						case "moonrock":
-							settings.bg = "#000000";
+							settings.bg = _cc.b.h;
 							break;
 						case "oxygen":
 							for(var i in "six  ") {
@@ -38031,6 +39532,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "machines",
 			hardness: 0.6
 		};
+		console.log("7/8 loaded"); //it was inside the weather controller code
 	//KETCUP ##
 		elements.ketcup = {
 			color: "#ab2513",
@@ -38147,20 +39649,6 @@ Make sure to save your command in a file if you want to add this preset again.`
 		numberAdjusterVerb = "adding";
 		numberAdjusterPreposition = "to";
 		numberAdjusterReverseOrder = false;
-		function rgbStringToUnvalidatedObject(string) {
-			string = string.split(",");
-			var red = parseFloat(string[0].substring(4));
-			var green = parseFloat(string[1]);
-			var blue = parseFloat(string[2].slice(0,-1));
-			return {r: red, g: green, b: blue};
-		};
-		function hslStringToUnvalidatedObject(string) {
-			string = string.split(",");
-			var hue = parseFloat(string[0].substring(4));
-			var saturation = parseFloat(string[1].slice(0,-1));
-			var lightness = parseFloat(string[2].slice(0,-2));
-			return {h: hue, s: saturation, l: lightness};
-		};
 		document.addEventListener("keydown", function(e) { //prop prompt listener
 			// , = propPrompt()
 			if (e.keyCode == 188) {
@@ -39531,7 +41019,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		},
 		elements.tc = { //temperature checker
 			name: "Temperature Checker",
-			color: ["#000000","#000000"],
+			color: [_cc.b.h,_cc.b.h],
 			tick: function(pixel) {
 				if(pixel.temp < -255) {
 					pixel.color = "rgb(0,0,255)"
@@ -39544,7 +41032,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				} else if(pixel.temp <= 16777215) {
 					pixel.color = "rgb(255,255," + Math.floor(pixel.temp / 65536) + ")"
 				} else {
-					pixel.color = "rgb(255,255,255)"
+					pixel.color = _cc.w.r
 				}
 			},
 			category:"machines",
@@ -40274,6 +41762,18 @@ Make sure to save your command in a file if you want to add this preset again.`
 			density: 609
 		};
 		elements.steel.movable = false;
+		elements.molten_steel ??= {};
+		elements.molten_steel.tempHigh = 2727;
+		elements.molten_steel.stateHigh = ["molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","molten_iron","carbon"]; //it may be FAR LESS than that irl; sus-304 steel has 0.08%
+		if(elements.carbon) {
+			elements.carbon.reactions ??= {};
+			elements.carbon.reactions.molten_iron = {
+				elem1: ["carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon","carbon",null],
+				elem2: "molten_steel"
+			}
+		} else {
+			logMessage("The mod that adds carbon failed to load in time. This is likely due to a race condition in the way Sandboxels applies mods, and not the fault of said mod's author, and will usually be fixed by reloading")
+		};
 		elements.support_steel = {
 			color: elements.steel.color,
 			behavior: behaviors.SUPPORT,
@@ -40521,7 +42021,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			color: ["#f05d43", "#f05d43", "#b06f33"],
 		};
 		elements.room_seed = {
-			color: "#ffffff",
+			color: _cc.w.h,
 			tick: function(pixel) {
 				if(!tryMove(pixel,pixel.x,pixel.y+1)) {
 					var currentHeight = pixel.y;
@@ -40538,7 +42038,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "structures",
 		};
 		elements.altered_room_seed = {
-			color: "#ffffff",
+			color: _cc.w.h,
 			tick: function(pixel) {
 				if(!tryMove(pixel,pixel.x,pixel.y+1)) {
 					var currentHeight = pixel.y;
@@ -40557,7 +42057,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.altroom_compat = {
 			name: "Altered Room (Old)",
 			hidden: true,
-			color: "#ffffff",
+			color: _cc.w.h,
 			desc: "An old version of the variant room, kept for compatibility because I don't know how to rework the structure test.",
 			tick: function(pixel) {
 			pixel.arr=[["brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick",  "brick"],
@@ -40608,7 +42108,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		},
 		elements.nested_structure_test = {
 			name: "Nested Structure Test (Old)",
-			color: "#ffffff",
+			color: _cc.w.h,
 			cooldown: 13,
 			desc: "An old test of structure spawners in structure spawners. Creates several rooms stacked on top of each other.",
 			tick: function(pixel) {
@@ -40823,7 +42323,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			audioObject[oscillatorNodeName].connect(audioObject[gainNodeName])
 			audioObject[oscillatorNodeName].frequency.value = parameterObject.frequency
 			audioObject[gainNodeName].connect(audioContext.destination)
-			audioObject[oscillatorNodeName].start(audioContext.currentTime + parameterObject.delay)
+			audioObject[oscillatorNodeName].start(audioContext.currentTime + (parameterObject.delay))
 			//stopping handler
 			if(parameterObject.endType === "exponential") { //starts fading immediately
 				audioObject[gainNodeName].gain.exponentialRampToValueAtTime(
@@ -40847,16 +42347,71 @@ Make sure to save your command in a file if you want to add this preset again.`
 			breakInto: ["plastic","metal_scrap","metal_scrap","metal_scrap"],
 			conduct: 1,
 			properties: {
-				frequency: 440,
 				type: "sine",
 				endType: "none",
-				length: 1,
-				volume: 1,
-				delay: 0,
 				debounce: 0,
 				debounceLength: tps
 			},
+			onSelect: function() {
+				showPropertySetter();
+
+				showSetterColumn("numeric",0);
+				var p0 = document.getElementById("propertynumeric0input");
+				var p0h = document.getElementById("propertynumeric0heading");
+				if(p0) {
+					p0.setAttribute("set","noteBlockFrequency");
+					p0.setAttribute("min","1");
+					p0.value = ambaPlaceProperties.noteBlockFrequency;
+				};
+				if(p0h) {
+					p0h.innerText = "Frequency";
+				};
+
+				showSetterColumn("numeric",1);
+				var p1 = document.getElementById("propertynumeric1input");
+				var p1h = document.getElementById("propertynumeric1heading");
+				if(p1) {
+					p1.setAttribute("set","noteBlockLength");
+					p1.setAttribute("min","0");
+					p1.value = ambaPlaceProperties.noteBlockLength;
+				};
+				if(p1h) {
+					p1h.innerText = "Length";
+				};
+
+				showSetterColumn("numeric",2);
+				var p2 = document.getElementById("propertynumeric2input");
+				var p2h = document.getElementById("propertynumeric2heading");
+				if(p2) {
+					p2.setAttribute("set","noteBlockVolume");
+					p2.setAttribute("min","0");
+					p2.value = ambaPlaceProperties.noteBlockVolume;
+				};
+				if(p2h) {
+					p2h.innerText = "Volume";
+				};
+
+				showSetterColumn("numeric",3);
+				var p3 = document.getElementById("propertynumeric3input");
+				var p3h = document.getElementById("propertynumeric3heading");
+				if(p3) {
+					p3.setAttribute("set","noteBlockDelay");
+					p3.setAttribute("min","0");
+					p3.value = ambaPlaceProperties.noteBlockDelay;
+				};
+				if(p3h) {
+					p3h.innerText = "Delay";
+				};
+			},
+			onUnselect: function() {
+				hideAllSetterColumns();
+				hidePropertySetter()
+			},
 			tick: function(pixel) {
+				pixel.frequency ??= (ambaPlaceProperties?.noteBlockFrequency ?? 440);
+				pixel.length ??= (ambaPlaceProperties?.noteBlockLength ?? 1);
+				pixel.volume ??= (ambaPlaceProperties?.noteBlockVolume ?? 1);
+				pixel.delay ??= (ambaPlaceProperties?.noteBlockDelay ?? 0);
 				var pixelSoundName = `x${pixel.x}y${pixel.y}`; //Generate unique-enough name
 				var pixelPropertyObject = { //Load sound properties from pixel as object;
 					frequency: pixel.frequency,
@@ -42939,11 +44494,17 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 			}
 		});
 	//SPECIFY CURRENT ELEMENT, MOUSE SIZE, AND TPS ON LOAD ##
-		window.addEventListener("load",function() {
+			/*if(urlParams.get("pause") !== null) {
+				paused = true;
+				document.getElementById("pauseButton").setAttribute("on","true")
+			};*/
+
+			window.addEventListener("load",function() {
 			currentElement = urlParams.get("currentElement") ?? "sand";
 			if(!elementExists(currentElement)) {
 				currentElement = "sand"
-			}
+			};
+			selectElement(currentElement);
 
 			var size = urlParams.get("mouseSize") ?? 5;
 			if(isNaN(size)) {
@@ -42958,18 +44519,495 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 			tps = _tps;
 			resetInterval(tps);
 
-			var shape = urlParams.get("shape") ?? "square";
+			var shape = urlParams.get("currentShape") ?? "square";
 			if(shapeOrder.indexOf(shape) == -1) {
 				shape = "square"
 			};
-			currentShape = shape
+			currentShape = shape;
+
+			/*if(urlParams.get("pause") !== null) {
+				paused = true;
+				document.getElementById("pauseButton").setAttribute("on","true")
+			};*/
 		});
+	//PRESSURE SYSTEM ##
+		loadSettings();
+		settings.dopressure ??= false;
+		settings.drawpressure ??= false;
+		saveSettings();
+		pressureCellSize = 4;
+
+		function getPressureAtPixelCoords(pixelX,pixelY) {
+			var pressureCellX = Math.floor(pixelX / pressureCellSize);
+			var pressureCellY = Math.floor(pixelY / pressureCellSize);
+			return pressureMap?.[pressureCellX]?.[pressureCellY] ?? null
+		};
+
+		function regeneratePressureMap(_width,_height) {
+			pressureMap.forEach(function(x) {
+				x.forEach(y => y = null);
+				x.length = 0;
+				x = null
+			});
+			pressureMap.length = 0;
+			pressureMap = null;
+			pressureMap = new Array(_width);
+			for(var i = 0; i < pressureMap.length; i++) {
+				pressureMap[i] = new Array(height).fill(0)
+			};
+		};
+
+		pressureChangeDivisor = 2;
+		minimumPressure = -9999999;
+
+		elements.sand.pressurePermeability = 0.44;
+		elements.snow.pressurePermeability = 0.7;
+		elements.ice.pressureHigh = 800;
+		elements.gravel.pressurePermeability = 0.53;
+		elements.rock.pressurePermeability = 0.56,
+		elements.wall.blockPressure = true;
+		elements.brick.pressurePermeability = 0.002; //given in L/s*m^2 //at 150Pa //per https://www.astm.org/stp157720130132.html //i don't know how to unit the pressure because it's not scaled to anything in reality
+		elements.brick.pressureHigh = 90; //arbitrary
+		elements.glass.pressureHigh = 70; //arbitrary
+		elements.wood.pressureHigh = 60; //arbitrary
+		runAfterLoad(function() {
+			var gravels = Object.keys(elements).filter(n => n.endsWith("gravel"));
+			for(var i = 0; i < gravels.length; i++) {
+				var gravelName = gravels[i];
+				elements[gravelName].pressureHigh ??= 400;
+			};
+			eLists.GRAVEL = gravels;
+
+			var shards = Object.keys(elements).filter(n => n.endsWith("shards"));
+			for(var i = 0; i < shards.length; i++) {
+				var shardName = shards[i];
+				var data = elements[shardName];
+				if(data.breakInto) {
+					data.pressureHigh ??= 400;
+				}
+			};
+			eLists.SHARD = shards;
+
+			var elementsThatBreakIntoScrap = Object.keys(elements).filter(n => elements[n].breakInto?.endsWith?.("scrap"));
+			for(var i = 0; i < elementsThatBreakIntoScrap.length; i++) {
+				var etbisName = elementsThatBreakIntoScrap[i];
+				var data = elements[etbisName]
+				var _hardness = data.hardness ?? 0.5;
+				data.pressureHigh ??= (_hardness * 625);
+			};
+
+			var rocks = Object.keys(elements).filter(n => elements[n]._data?.[2]?.endsWith?.("rock"));
+			for(var i = 0; i < rocks.length; i++) {
+				var rockName = rocks[i];
+				elements[rockName].pressureHigh ??= 250;
+			};
+			eLists.ROCK = rocks
+		});
+		
+
+		function pressureTick(forceTick=false) {
+			if(!(settings.dopressure)) {
+				return
+			};
+			if(paused && !(forceTick)) {
+				return
+			} else if((!paused) || forceTick) { //shouldn't be necessary				
+				var positions = [];
+				for(var x = 0; x < pressureMap.length; x++) {
+					for(var y = 0; y < pressureMap[x].length; y++) {
+						positions.push([x,y])
+					};
+				};
+				shuffleArray(positions);
+				for(var i = 0; i < positions.length; i++) {
+					var [x,y] = positions[i];
+					// yes i took this from doHeat lol
+					var v0 = pressureMap[x]?.[y];
+					if(typeof(v0) !== "undefined") {
+						var _ac = arrayToShuffled(mooreDonutCoords);
+						if(isNaN(v0) || (v0 < minimumPressure)) { pressureMap[x][y] = 0; v0 = 0 };
+						var cellLeftCoord = x * pressureCellSize;
+						var cellTopCoord = y * pressureCellSize;
+						var cellRightCoord = ((x + 1) * pressureCellSize) - 1;
+						var cellBottomCoord = ((y + 1) * pressureCellSize) - 1;
+						var pixels = getPixelsInRegion(cellLeftCoord,cellTopCoord,cellRightCoord,cellBottomCoord);
+						var howManyPixelsFitPerCell = (pressureCellSize ** 2);
+						var thisCellPermeability = 1;
+						if(pixels.length > 0) {
+							var pixelWasDeleted = false;
+							pixels.forEach(function(pixel) {
+								//var pressure = v0;
+								var data = elements[pixel.element];
+								if(!data) { return };
+								var highResult = data.highPressureTransition ?? data.breakInto
+								var lowResult = data.lowPressureTransition ?? data.breakInto
+								if((typeof(data.pressureHigh) == "number") && (typeof(highResult) !== "undefined")) {
+									//console.log(data.pressureHigh,highResult);
+									if(v0 >= data.pressureHigh) {
+										while(Array.isArray(highResult)) {
+											highResult = randomChoice(highResult)
+										};
+										if(highResult === null) {
+											deletePixel(pixel.x,pixel.y)
+											return
+										} else {
+											changePixel(pixel,highResult)
+										};
+										return
+									}
+								};
+								if((typeof(data.pressureLow) == "number") && (typeof(lowResult) !== "undefined")) {
+									if(v0 <= data.pressureLow) {
+										while(Array.isArray(lowResult)) {
+											lowResult = randomChoice(lowResult)
+										};
+										if(lowResult === null) {
+											deletePixel(pixel.x,pixel.y)
+											return
+										} else {
+											changePixel(pixel,lowResult)
+										};
+										return
+									}
+								}
+							});
+							if(pixelWasDeleted) {
+								pixels = getPixelsInRegion(cellLeftCoord,cellTopCoord,cellRightCoord,cellBottomCoord)
+							};
+							var emptySpaces = howManyPixelsFitPerCell - pixels.length;
+							var preThisCellPermeability = pixels.map(x => getElementPressurePermeability(x.element));
+							thisCellPermeability = (sumNumericArray(preThisCellPermeability) + emptySpaces) / howManyPixelsFitPerCell;
+						};
+						for (var j = 0; j < _ac.length; j++) {
+							var offsets = _ac[j];
+							var nx = x+(offsets[0]);
+							var ny = y+(offsets[1]);
+							var taxicabDistance = sumNumericArray(offsets.map(Math.abs));
+							var adjustment = 1/Math.sqrt(taxicabDistance);
+							var v1 = pressureMap[nx]?.[ny];
+							if(typeof(v1) === "number") {
+								if(isNaN(v1) || (v1 < minimumPressure)) { pressureMap[nx][ny] = 0; v1 = 0 };
+								if(v0 == v1) { continue }
+								//coords of new cell
+								var newCellLeftCoord = nx * pressureCellSize;
+								var newCellTopCoord = ny * pressureCellSize;
+								var newCellRightCoord = ((nx + 1) * pressureCellSize) - 1;
+								var newCellBottomCoord = ((ny + 1) * pressureCellSize) - 1;
+								var pixels = getPixelsInRegion(newCellLeftCoord,newCellTopCoord,newCellRightCoord,newCellBottomCoord);
+								var permeability = 1;
+								if(pixels.length > 0) {
+									var pixelWasDeleted = false;
+									pixels.forEach(function(pixel) {
+										//var pressure = v0;
+										var data = elements[pixel.element];
+										if(!data) { return };
+										var highResult = data.highPressureTransition ?? data.breakInto
+										var lowResult = data.lowPressureTransition ?? data.breakInto
+										if((typeof(data.pressureHigh) == "number") && (typeof(highResult) !== "undefined")) {
+											//console.log(data.pressureHigh,highResult);
+											if(v0 >= data.pressureHigh) {
+												while(Array.isArray(highResult)) {
+													highResult = randomChoice(highResult)
+												};
+												if(highResult === null) {
+													deletePixel(pixel.x,pixel.y);
+													pixelWasDeleted = true
+												} else {
+													changePixel(pixel,highResult)
+												};
+												return
+											}
+										};
+										if((typeof(data.pressureLow) == "number") && (typeof(lowResult) !== "undefined")) {
+											if(v0 <= data.pressureLow) {
+												while(Array.isArray(lowResult)) {
+													lowResult = randomChoice(lowResult)
+												};
+												if(lowResult === null) {
+													deletePixel(pixel.x,pixel.y);
+													pixelWasDeleted = true
+												} else {
+													changePixel(pixel,lowResult)
+												};
+												return
+											}
+										}
+									});
+									if(pixelWasDeleted) {
+										pixels = getPixelsInRegion(newCellLeftCoord,newCellTopCoord,newCellRightCoord,newCellBottomCoord)
+									};
+									var emptySpaces = howManyPixelsFitPerCell - pixels.length;
+									var prePermeability = pixels.map(x => getElementPressurePermeability(x.element));
+									permeability = (sumNumericArray(prePermeability) + emptySpaces) / howManyPixelsFitPerCell;
+									//console.log("   with pixels",permeability);
+								}/* else {
+									console.log("without pixels",permeability)
+								}*/;
+								
+								if((thisCellPermeability == 0) || (permeability == 0)) {
+									continue
+								} else {
+									permeability = (thisCellPermeability + permeability) / 2; //average of source and destination permeabilities because it's simpler
+									var avg = (v0 + v1)/2;
+									// Set both cell araes to their average, permeability permitting
+									//console.log(pixelTicks,"c",change);
+									pressureMap[x][y] = lerp(pressureMap[x][y],avg,permeability);
+									pressureMap[nx][ny] = lerp(pressureMap[nx][ny],avg,permeability);
+									//set again the variables to the cell values
+									v0 = pressureMap[x][y];
+									v1 = pressureMap[nx][ny];
+									var change = avg - v1;
+									var direction = _ac[j];
+									var intensity = ((Math.sqrt(Math.abs(change)) / pressureChangeDivisor) * adjustment) * Math.sign(change);
+									//console.log(intensity);
+									if(Math.abs(intensity) >= 0.01) {
+										var baseMovement = direction.map(x => x * intensity); //Will be turned into an int when it's added to the pixels' velocities
+										if(!((baseMovement[0] === 0) && (baseMovement[1] === 0))) {
+											pixels.forEach(function(pixel) {
+												var drag = Math.min(4,1000/(elements[pixel.element]?.density ?? 1000)); //no more than 4 times the effect
+												var trueMovementX = Math.trunc(baseMovement[0] * drag);
+												var trueMovementY = Math.trunc(baseMovement[1] * drag);
+												pixel.vx ??= 0;
+												pixel.vy ??= 0;
+												pixel.vx += trueMovementX;
+												pixel.vy += trueMovementY;
+											})
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		};
+
+		function getElementPressurePermeability(elementName) {
+			if(typeof(elementName) == "object" && elementName.element) {
+				elementName = elementName.element
+			};
+			if(!(elementExists(elementName))) {
+				return 0
+			};
+			var elementData = elements[elementName];
+			if(elementData.blockPressure) {
+				return 0
+			} else {
+				if(elementData.state == "gas") {
+					return 1
+				} else {
+					return elementData.pressurePermeability ?? 0
+				};
+			};
+		};
+
+		function changePressure(x,y,value,operationType="+",trueIfPixelCoordinates_FalseIfPressureGridCoordinates=false) {
+			if(trueIfPixelCoordinates_FalseIfPressureGridCoordinates) {
+				x = Math.floor(x / pressureCellSize);
+				y = Math.floor(y / pressureCellSize);
+			};
+			if(typeof(pressureMap?.[x]?.[y]) === "number") {
+				switch(operationType.toLowerCase()) {
+					default:
+					case "+":
+					case "add":
+					case "addition":
+					case "plus":
+					case "increase":
+					case "increment":
+						if(typeof(pressureMap?.[x]?.[y]) === "number") {
+							pressureMap[x][y] += value
+						};
+						break;
+					case "-":
+					case "subtract":
+					case "subtraction":
+					case "minus":
+					case "take away":
+					case "takeaway":
+					case "decrease":
+					case "decrement":
+						if(typeof(pressureMap?.[x]?.[y]) === "number") {
+							pressureMap[x][y] -= value
+						};
+						break;
+					case "*":
+					case "x":
+					case "×":
+					case "multiply":
+					case "multiplication":
+					case "times":
+					case "by":
+						if(typeof(pressureMap?.[x]?.[y]) === "number") {
+							pressureMap[x][y] *= value
+						};
+						break;
+					case "/":
+					case "÷":
+					case "divide":
+					case "division":
+					case "divided by":
+						if(typeof(pressureMap?.[x]?.[y]) === "number") {
+							pressureMap[x][y] /= value
+						};
+						break;
+					case "%":
+					case "mod":
+					case "modulo":
+					case "modulus":
+					case "modulo by":
+						if(typeof(pressureMap?.[x]?.[y]) === "number") {
+							pressureMap[x][y] %= value
+						};
+						break;
+					case "=":
+					case "set":
+					case "equals":
+					case "assign":
+					case "assignment":
+						if(typeof(pressureMap?.[x]?.[y]) === "number") {
+							pressureMap[x][y] = value
+						};
+						break;
+					case ">": //lower-bounds the color
+					case ">=":
+					case "min":
+					case "minimum":
+						if(typeof(pressureMap?.[x]?.[y]) === "number") {
+							pressureMap[x][y] = Math.max(value,pressureMap[x][y])
+						};
+						break;
+					case "<":
+					case "<=":
+					case "max": //upper-bounds the color
+					case "maximum":
+						if(typeof(pressureMap?.[x]?.[y]) === "number") {
+							pressureMap[x][y] = Math.min(value,pressureMap[x][y])
+						};
+						break;
+					case "^":
+					case "**":
+					case "exp":
+					case "exponent":
+					case "exponentiate":
+					case "raise":
+					case "raise to":
+					case "raised to":
+						if(typeof(pressureMap?.[x]?.[y]) === "number") {
+							var sign1 = Math.sign(pressureMap[x][y]);
+							var sign2 = Math.sign(value);
+							pressureMap[x][y] = (Math.abs(pressureMap[x][y]) ** Math.abs(value)) * sign1 * sign2;
+						};
+						break;
+					case "√":
+					case "n√":
+					case "root":
+					case "nth root":
+						if(typeof(pressureMap?.[x]?.[y]) === "number") {
+							var sign1 = Math.sign(pressureMap[x][y]);
+							var sign2 = Math.sign(value);
+							pressureMap[x][y] = (Math.abs(pressureMap[x][y]) ** Math.abs(1 / value)) * sign1 * sign2;
+						};
+				};
+				if(isNaN(pressureMap[x][y])) { pressureMap[x][y] = 0 };
+				return pressureMap[x][y];
+			} else {
+				return false
+			}
+		};
+		
+		function setGlobalPressure(value) {
+			for(var x = 0; x < pressureMap.length; x++) {
+				for(var y = 0; y < pressureMap[x].length; y++) {
+					pressureMap[x][y] = value
+				}
+			}
+		}
+
+		function alertIfPressureDisabled() {
+			if(!(settings.dopressure)) {
+				logMessage("Pressure simulation is disabled")
+			}
+		};
+
+		elements.add_pressure = {
+			color: "#FF0000",
+			behavior: behaviors.WALL,
+			category: "special",
+			tool: function(pixel) {
+				changePressure(pixel.x,pixel.y,3 ** (shiftDown + 1),"+",true);
+			}
+		};
+		
+		elements.subtract_pressure = {
+			color: "#0000FF",
+			behavior: behaviors.WALL,
+			category: "special",
+			tool: function(pixel) {
+				changePressure(pixel.x,pixel.y,3 ** (shiftDown + 1),"-",true);
+			}
+		};
+
+		elements.zero_pressure = {
+			color: "#000000",
+			behavior: behaviors.WALL,
+			category: "special",
+			tool: function(pixel) {
+				changePressure(pixel.x,pixel.y,0,"=",true);
+			}
+		};
+
+		elements.reset_pressure = {
+			color: "#000000",
+			maxSize: 1,
+			behavior: behaviors.WALL,
+			category: "special",
+			tool: function(pixel) {
+				setGlobalPressure(0)
+			}
+		};
+
+		function pressureTicker(forceTick=false) {
+			if(settings.dopressure && ((!paused) || forceTick)) {
+				pressureTick(forceTick)
+			}
+		};
+
+		oldDoFrame = doFrame;
+		doFrame = function() {
+			oldDoFrame();
+			pressureTicker(true)
+		};
+
+		runAfterButtons(function() {
+			//WIDTH AND HEIGHT AREN'T DEFINED UNTIL THEN FOR SOME FUCKING REASON
+			oldClearAll = clearAll;
+			clearAll = function() {
+				oldClearAll();
+				regeneratePressureMap(Math.ceil(width / pressureCellSize),Math.ceil(height / pressureCellSize)) // use the global width and height
+			};
+
+			pressureMap = new Array(Math.ceil(width / pressureCellSize));
+			for(var i = 0; i < pressureMap.length; i++) {
+				pressureMap[i] = new Array(Math.ceil(height / pressureCellSize)).fill(0)
+			};
+
+			afterEveryTick(pressureTicker)
+		})
 	//FIX ##
 		//fsr it's pausing silently on load now so this should fix that by silently unpausing it on load
 		window.addEventListener("load",function() {
-			paused = false;
+			if(urlParams.get("paused") !== null) {
+				paused = true;
+                document.getElementById("pauseButton").setAttribute("on","true");
+			} else {
+				paused = false;
+                document.getElementById("pauseButton").setAttribute("on","false");
+			}
 			crimsonObject.dirt = "crimsoil"; //something is changing it to sand
 		});
+
+	//
 
 	//MISCELLANEOUS CHANGES ##
 		eLists.PIPE = ['pipe', 'destroyable_pipe', 'e_pipe', 'destroyable_e_pipe', 'channel_pipe', 'destroyable_channel_pipe', 'bridge_pipe'];
@@ -43010,7 +45048,7 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 			}
 		});
 		elements.unknown = {
-			color: "#FFFFFF",
+			color: _cc.w.h,
 			behavior: behaviors.WALL,
 			maxColorOffset: 0
 		};
@@ -43072,7 +45110,38 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 				delete elements.rainbow_flash.reactions.fire
 			};
 		})
+		canvasGetterInterval = null;
+		canvasGetterInterval = setInterval(function() {
+			if((typeof(ctx) == "object") && (ctx?.constructor?.name == "CanvasRenderingContext2D")) { return };
+			if((typeof(ctx) == "undefined") || (typeof(ctx) == "object" && ctx === null)) {
+				var canvases = document.getElementsByTagName("canvas");
+				if(canvases.length == 0) { return };
+				canvas = canvases[0];
+				if(typeof(canvas?.getContext) == "function") { ctx = canvas.getContext("2d") } else { return };
+				if(!!ctx) { clearInterval(canvasGetterInterval) }
+			} else {
+				return
+			}
+		},50)
+		//aChefsDream fix: (re-)define juice reactions
+		elements.juice.reactions ??= {};
+		
+		gigadebugMode = false; //fights every-tick log spam by limiting each message to being logged 50 times
+		if(gigadebugMode) {
+			logLimit = 50;
+			logLimitCache = {};
+			oldLog = console.log;
+			console.log = function(...args) {
+				var argsKey = JSON.stringify(args);
+				logLimitCache[argsKey] ??= 0;
+				if(logLimitCache[argsKey] > logLimit) { return };
+				oldLog(...args);
+				logLimitCache[argsKey]++
+			}
+		}
+
 	//END ##
+		console.log("Mod loaded")
 } catch (error) {
 	alert(`Load failed (try reloading).\nThis is likely a sporadic failure caused by inconsistencies in how mods are loaded, and will likely fix itself in a refresh or two. If it persists, then it's an issue.\nError: ${error.stack}`);
 	console.error(error)

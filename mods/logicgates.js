@@ -39,13 +39,19 @@ elements.logic_wire = {
                 var y = pixel.y+coord[1];
                 if (!isEmpty(x,y,true)) {           
                     if (pixelMap[x][y].element == "output" && pixelMap[x][y].charge == 1){
-                        pixel.lstate == 2;
+                        pixel.lstate = 2;
                         pixel.color = pixelColorPick(pixel, "#ffe49c");
                     }
                 }
             }
         }
         if (pixel.lstate == 2){
+            // lightmap.js integration
+            if (enabledMods.includes("mods/lightmap.js")){
+                let x = Math.floor(pixel.x / lightmapScale);
+                let y = Math.floor(pixel.y / lightmapScale);
+                lightmap[y][x] = { color: [255/4, 228/4, 156/4]};
+            }
             for (var i = 0; i < adjacentCoords.length; i++) {
                 var coord = adjacentCoords[i];
                 var x = pixel.x+coord[0];
@@ -66,6 +72,12 @@ elements.logic_wire = {
             }
         }
         if (pixel.lstate == 1){
+            // lightmap.js integration
+            if (enabledMods.includes("mods/lightmap.js")){
+                let x = Math.floor(pixel.x / lightmapScale);
+                let y = Math.floor(pixel.y / lightmapScale);
+                lightmap[y][x] = { color: [255/4, 228/4, 156/4]};
+            }
             pixel.lstate = 2
             pixel.color = pixelColorPick(pixel, "#ffe49c");
         }
@@ -376,7 +388,7 @@ elements.L2E_constant = {
 var transmitterVar = 0;
 elements.logic_transmitter = {
     onSelect: function() {
-        var answertransmitter = prompt("Please input the desired element of this filter. It will not work if you do multiple filter types while paused.",(transmitterVar||undefined));
+        var answertransmitter = prompt("Please input the desired channel of this transmitter. Placing multiple ones with the same channel while paused may break.",(transmitterVar||undefined));
         if (!answertransmitter) { return }
 		transmitterVar = answertransmitter;
     },
@@ -421,7 +433,7 @@ elements.logic_transmitter = {
 }
 elements.logic_receiver = {
     onSelect: function() {
-        var answertransmitter = prompt("Please input the desired element of this filter. It will not work if you do multiple filter types while paused.",(transmitterVar||undefined));
+        var answertransmitter = prompt("Please input the desired channel of this receiver. It will break if you do multiple different channels while paused.",(transmitterVar||undefined));
         if (!answertransmitter) { return }
 		transmitterVar = answertransmitter;
     },
@@ -449,4 +461,40 @@ elements.logic_unshock = {
         if (pixel.element == "logic_wire"){pixel.lstate = -2; pixel.color = pixelColorPick(pixel, "#3d4d2c")}
     },
     excludeRandom: true,
+}
+elements.list_all_wifi = {
+    color: elements.lookup.color,
+    category: "tools",
+    tool: function(){},
+    excludeRandom: true,
+    onSelect: function(){
+        let results = {}
+        for (let i in currentPixels){
+            var otherPixel = currentPixels[i]
+            if (["logic_receiver", "logic_transmitter"].includes(otherPixel.element)){
+                if (otherPixel.channel){
+                    if (results[otherPixel.channel]){
+                        results[otherPixel.channel].push([otherPixel.x, otherPixel.y])
+                    } else {
+                        results[otherPixel.channel] = [[otherPixel.x, otherPixel.y]]
+                    }
+                }
+            }
+        }
+        console.log(results)
+        let keys = Object.keys(results)
+        let ans1 = prompt(keys.length + " unique channels have been found. Type 1 to list them all.", 1)
+        if(ans1 == "1"){
+            ans2 = prompt("["+keys +"]"+ " These are all the channels found. Type the name of one of them to see the positions of all pixels with that channel.", keys[0])
+            if (keys.includes(ans2)){
+                let finalString = ""
+                for (i in results[ans2]){
+                    finalString += ", ["
+                    finalString += results[ans2][i]
+                    finalString += "]"
+                }
+                alert(finalString)
+            }
+        }
+    }
 }
