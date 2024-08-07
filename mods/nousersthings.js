@@ -3531,3 +3531,83 @@ elements.colored_filler = {
         }
     }
 }
+let copycatfillerElem = "sand"
+elements.copycat_filler = {
+    color: elements.random.color,
+    behavior:behaviors.WALL,
+    category: "special",
+    onSelect: function(){
+        let ans1 = prompt("Enter the element you want to use for the copycat filler", copycatfillerElem||"sand")
+        copycatfillerElem = mostSimilarElement(ans1)
+    },
+    tick: function(pixel){
+        let fillerNeighbors = {}
+        if (!pixel.copycatElement){
+            pixel.copycatElement = copycatfillerElem
+        }
+        if (!pixel.rSeed){
+            pixel.rSeed = [Math.random(), Math.random(), Math.random(), Math.random()]
+        }
+        for (var i = 0; i < adjacentCoords.length; i++) {
+            var x = pixel.x+adjacentCoords[i][0];
+            var y = pixel.y+adjacentCoords[i][1];
+            if (isEmpty(x,y)) {
+                createPixel("copycat_filler", x, y)
+                pixelMap[x][y].copycatElement = pixel.copycatElement
+            }
+        }
+        for (var i = 0; i < squareCoords.length; i++) {
+            var x = pixel.x+squareCoords[i][0];
+            var y = pixel.y+squareCoords[i][1];
+            if (!isEmpty(x, y, true)){
+                var otherPixel = pixelMap[x][y];
+                if (otherPixel.element == "copycat_filler" && otherPixel.copycatElement != pixel.copycatElement){
+                    fillerNeighbors[otherPixel.copycatElement] = (fillerNeighbors[otherPixel.copycatElement]||0)+1;
+                }
+            }
+        }
+        if(Object.keys(fillerNeighbors).length > 0){
+            let mostSeenColor = highestValueObjectKey(fillerNeighbors)
+            let opposingCount = sumOfObjectValues(fillerNeighbors)
+            if (Math.random() < neighborRandomChance[opposingCount]){
+                pixel.copycatElement = mostSeenColor;
+            }
+        }
+    },
+    renderer: function(pixel, ctx){
+        if (!pixel.copycatElement){pixel.copycatElement = copycatfillerElem}
+        if (!pixel.rSeed){pixel.rSeed = [Math.random(), Math.random(), Math.random(), Math.random()]}
+        if (typeof elements[pixel.copycatElement].color == "object"){
+            let selectedColor = elements[pixel.copycatElement].color[Math.floor(pixel.rSeed[1]*elements[pixel.copycatElement].color.length)]
+            let rgb = {
+                r: parseInt(selectedColor.match(/\d+/g)[0]),
+                g: parseInt(selectedColor.match(/\d+/g)[1]),
+                b: parseInt(selectedColor.match(/\d+/g)[2])
+            }
+            for (let c in rgb){
+                rgb[c] += Math.floor(pixel.rSeed[0] * (pixel.rSeed[2] > 0.5 ? -1 : 1) * pixel.rSeed[3] * 15);
+                rgb[c] = Math.max(0, Math.min(255, rgb[c]));
+            }
+            if (elements[pixel.copycatElement].glow || elements[pixel.copycatElement].isGas){
+                drawPlus(ctx, "rgb("+rgb.r+","+rgb.g+","+rgb.b+")", pixel.x, pixel.y, 1);
+            } else {
+                drawSquare(ctx, "rgb("+rgb.r+","+rgb.g+","+rgb.b+")", pixel.x, pixel.y);
+            }
+        } else {
+            let rgb = {
+                r: parseInt(elements[pixel.copycatElement].color.match(/\d+/g)[0]),
+                g: parseInt(elements[pixel.copycatElement].color.match(/\d+/g)[1]),
+                b: parseInt(elements[pixel.copycatElement].color.match(/\d+/g)[2])
+            }
+            for (let c in rgb){
+                rgb[c] += Math.floor(pixel.rSeed[0] * (pixel.rSeed[2] > 0.5 ? -1 : 1) * pixel.rSeed[3] * 15);
+                rgb[c] = Math.max(0, Math.min(255, rgb[c]));
+            }
+            if (elements[pixel.copycatElement].glow || elements[pixel.copycatElement].isGas){
+                drawPlus(ctx, "rgb("+rgb.r+","+rgb.g+","+rgb.b+")", pixel.x, pixel.y, 1);
+            } else {
+                drawSquare(ctx, "rgb("+rgb.r+","+rgb.g+","+rgb.b+")", pixel.x, pixel.y);
+            }
+        }
+    }
+}

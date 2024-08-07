@@ -15060,11 +15060,11 @@ behaviorRules = {
             categoryButton.setAttribute("current", true);
         }
         function setView(n) {
-            if (viewInfo[n]) {
-                view = n;
-            }
-            else { // reset view
+            if (!viewInfo[n] || n === 1) { // reset view
                 view = null;
+            }
+            else {
+                view = n;
             }
         }
         function centerMouse() {
