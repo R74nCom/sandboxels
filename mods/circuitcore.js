@@ -98,14 +98,22 @@ function createCircuitFrame(pixel, width_, height_, center=true, rotation=0) {
 			var [rx, ry] = rotateCoordinate(x, y, rotation);
 			var px = pixel.x + rx;
 			var py = pixel.y + ry;
+
 			if (!(0 <= px && px < width && 0 <= py && py < height)) {continue;}
 
+			// Create the pixel
 			if (!pixelMap[px] || pixelMap[px][py] === undefined) {
 				createPixel("circuit_material", px, py);
+			}
+
+			// Set the core position property
+			if (pixelMap[px] && pixelMap[px][py] && pixelMap[px][py].element === "circuit_material") {
+				pixelMap[px][py].corePosition = { x: pixel.x, y: pixel.y };
 			}
 		}
 	}
 }
+
 
 function createPins(pixel, pins, rotation=0) {
 	for (var i = 0; i < pins.length; i++) {
@@ -691,75 +699,75 @@ elements.four_bit_SIPO_shift_register_circuit = {
 };
 
 elements.four_bit_program_counter_circuit = {
-    tick: function(pixel) {
-        var pins = [
-            // Data inputs (D0-D3)
-            [-3, -3, true],  // D0
-            [-1, -3, true],  // D1
-            [1, -3, true],   // D2
-            [3, -3, true],   // D3
+	tick: function(pixel) {
+		var pins = [
+			// Data inputs (D0-D3)
+			[-3, -3, true],  // D0
+			[-1, -3, true],  // D1
+			[1, -3, true],   // D2
+			[3, -3, true],   // D3
 
-            // Control inputs (Increment, Write Enable)
-            [5, -1, true],   // Increment
-            [5, 1, true],    // Write Enable
+			// Control inputs (Increment, Write Enable)
+			[5, -1, true],   // Increment
+			[5, 1, true],	// Write Enable
 
-            // Outputs (Q0-Q3)
-            [-3, 3, false],  // Q0
-            [-1, 3, false],  // Q1
-            [1, 3, false],   // Q2
-            [3, 3, false],   // Q3
-        ];
+			// Outputs (Q0-Q3)
+			[-3, 3, false],  // Q0
+			[-1, 3, false],  // Q1
+			[1, 3, false],   // Q2
+			[3, 3, false],   // Q3
+		];
 
-        initializeCircuit(pixel, pins, 9, 5);
+		initializeCircuit(pixel, pins, 9, 5);
 
-        // Read data inputs
-        var D = [
-            checkPin(pixel, pins, 0),
-            checkPin(pixel, pins, 1),
-            checkPin(pixel, pins, 2),
-            checkPin(pixel, pins, 3)
-        ];
+		// Read data inputs
+		var D = [
+			checkPin(pixel, pins, 0),
+			checkPin(pixel, pins, 1),
+			checkPin(pixel, pins, 2),
+			checkPin(pixel, pins, 3)
+		];
 
-        // Read control inputs
-        var Increment = checkPin(pixel, pins, 4);
-        var WriteEnable = checkPin(pixel, pins, 5);
+		// Read control inputs
+		var Increment = checkPin(pixel, pins, 4);
+		var WriteEnable = checkPin(pixel, pins, 5);
 
-        // Initialize the state if not already done
-        if (pixel._state === undefined) {
-            pixel._state = [false, false, false, false];
-            pixel.prevIncrement = false; // Previous state of Increment pin
-        }
+		// Initialize the state if not already done
+		if (pixel._state === undefined) {
+			pixel._state = [false, false, false, false];
+			pixel.prevIncrement = false; // Previous state of Increment pin
+		}
 
-        // Convert the state to a 4-bit binary number
-        var stateValue = binaryArrayToNumber(pixel._state);
+		// Convert the state to a 4-bit binary number
+		var stateValue = binaryArrayToNumber(pixel._state);
 
-        // Detect the positive edge on the Increment pin
-        if (Increment && !pixel.prevIncrement) {
-            stateValue = (stateValue + 1) % 16;  // Ensure the value wraps around at 4 bits
-        }
+		// Detect the positive edge on the Increment pin
+		if (Increment && !pixel.prevIncrement) {
+			stateValue = (stateValue + 1) % 16;  // Ensure the value wraps around at 4 bits
+		}
 
-        // Update the register state if WriteEnable is active
-        if (WriteEnable) {
-            stateValue = binaryArrayToNumber(D); // Load data inputs into state
-        }
+		// Update the register state if WriteEnable is active
+		if (WriteEnable) {
+			stateValue = binaryArrayToNumber(D); // Load data inputs into state
+		}
 
-        // Update the state
-        pixel._state = [
-            (stateValue & 8) !== 0,
-            (stateValue & 4) !== 0,
-            (stateValue & 2) !== 0,
-            (stateValue & 1) !== 0
-        ];
+		// Update the state
+		pixel._state = [
+			(stateValue & 8) !== 0,
+			(stateValue & 4) !== 0,
+			(stateValue & 2) !== 0,
+			(stateValue & 1) !== 0
+		];
 
-        // Output the register state
-        setPin(pixel, pins, 6, pixel._state[0]); // Q0
-        setPin(pixel, pins, 7, pixel._state[1]); // Q1
-        setPin(pixel, pins, 8, pixel._state[2]); // Q2
-        setPin(pixel, pins, 9, pixel._state[3]); // Q3
+		// Output the register state
+		setPin(pixel, pins, 6, pixel._state[0]); // Q0
+		setPin(pixel, pins, 7, pixel._state[1]); // Q1
+		setPin(pixel, pins, 8, pixel._state[2]); // Q2
+		setPin(pixel, pins, 9, pixel._state[3]); // Q3
 
-        // Update previous state of Increment pin
-        pixel.prevIncrement = Increment;
-    }
+		// Update previous state of Increment pin
+		pixel.prevIncrement = Increment;
+	}
 };
 
 elements.four_bit_register_circuit = {
@@ -1200,6 +1208,11 @@ elements.very_fast_clock = {
 	tick: general_clock(8, 4),
 }
 
+elements.fast_clock = {
+	color: "#FFAAFF",
+	tick: general_clock(16, 8),
+}
+
 var addDisplayCallback = function(pixel, pins, w, h) {
 	for (var y = 1; y < h - 1; y++) {
 		for (var x = 1; x < w - 1; x++) {
@@ -1324,15 +1337,84 @@ elements.simple_double_seven_segment_display = {
 	}
 };
 
+function malfunction_chip(pixel) {
+	var emptySpaces = [];
+
+	// Search in a 5x5 neighborhood for empty spaces
+	for (var dy = -2; dy <= 2; dy++) {
+		for (var dx = -2; dx <= 2; dx++) {
+			var neighborX = pixel.x + dx;
+			var neighborY = pixel.y + dy;
+			if (pixelMap[neighborX] && pixelMap[neighborX][neighborY] === undefined) {
+				emptySpaces.push({ x: neighborX, y: neighborY });
+			}
+		}
+	}
+
+	if (emptySpaces.length > 0) {
+		// Randomly select one of the empty spaces
+		var randomSpace = emptySpaces[Math.floor(Math.random() * emptySpaces.length)];
+
+		// Determine what to spawn based on probability
+		var rand = Math.random();
+		if (rand < 0.7) {
+			createPixel("electric", randomSpace.x, randomSpace.y);
+		} else if (rand < 0.99) {
+			createPixel("fire", randomSpace.x, randomSpace.y);
+		} else {
+			createPixel("explosion", randomSpace.x, randomSpace.y);
+		}
+	}
+}
+
 elements.circuit_material = {
 	color: "#444444",
-	category: "logic"
+	category: "logic",
+	state: "solid",
+	behavior: behaviors.WALL,
+	hoverStat: function(pixel) {
+		return `Circuit: ${pixel.corePosition}`;
+	},
+	tick: function(pixel) {
+		// Make it that extreme temperatures can stop the chip from working (for realism)
+		if (Math.random() < 0.003) {  // Chance to check for temperature or nearby particles
+			// Check temperature
+			if (pixel.temp > 120) {
+				// Replace the circuit core with lead if overheating
+				if (pixel.corePosition && Math.random() < (0.00015) * (pixel.temp - 120)) {
+					var corePos = pixel.corePosition;
+					if (pixelMap[corePos.x] && pixelMap[corePos.x][corePos.y]) {
+						deletePixel(corePos.x, corePos.y);
+						createPixel("lead", corePos.x, corePos.y);
+					}
+				}
+
+				// Randomly trigger malfunction if overheating
+				if (Math.random() < 0.001 * (pixel.temp - 120)) {
+					malfunction_chip(pixel);
+				}
+
+				// Break the circuit material itself if overheating
+				if (Math.random() < 0.001 * (pixel.temp - 120)) {
+					var px = pixel.x;
+					var py = pixel.y;
+					deletePixel(px, py);
+					if (Math.random() < 0.5) {createPixel("lead", px, py);}
+				}
+			}
+		}
+	}
 };
+
 
 elements.input_pin = {
 	color: "#DDAA33",
 	category: "logic",
+	state: "solid",
 	active: false,
+	stateHigh: "lead",
+	tempHigh: 570,
+	behavior: behaviors.WALL,
 	tick: function(pixel) {
 		pixel.active = false;
 		var neighbors = getNeighbors(pixel);
@@ -1349,7 +1431,11 @@ elements.input_pin = {
 elements.output_pin = {
 	color: "#AAAAAA",
 	category: "logic",
+	state: "solid",
 	active: false,
+	stateHigh: "lead",
+	tempHigh: 570,
+	behavior: behaviors.WALL,
 	tick: function(pixel) {
 		var neighbors = getNeighbors(pixel);
 		for (var i = 0;i < neighbors.length;i++) {
@@ -1486,6 +1572,7 @@ var circuits = [
 	{ circuit: elements.medium_clock },
 	{ circuit: elements.fast_clock },
 	{ circuit: elements.very_fast_clock },
+	{ circuit: elements.very_fast_clock },
 	// Displays/visual circuits: white
 	{ circuit: elements.simple_seven_segment_display, color: cc_WHITE, size: [5, 9, false] },
 	{ circuit: elements.simple_double_seven_segment_display, color: cc_WHITE, size: [9, 9, false] },
@@ -1497,6 +1584,32 @@ circuits.forEach(circuitInfo => {
 	circuitInfo.circuit.maxSize = 1;
 	circuitInfo.circuit.isCircuitCore = true;
 	circuitInfo.circuit.previewSize = circuitInfo.size;
+
+	// Exclude circuits without a frame
+	if (circuitInfo.size) {
+		var previousCircuitTick = circuitInfo.circuit.tick;
+		circuitInfo.circuit.tick = function(pixel) {
+			previousCircuitTick(pixel);
+
+			// Don't constantly check
+			if (Math.random() < 0.1) {
+				// If there aren't 4 neighboring circuit_material elements then remove the circuit's core
+				var neighbors = getNeighbors(pixel);
+				var circuitMaterialCount = 0;
+				for (var i = 0;i < neighbors.length;i++) {
+					if (neighbors[i].element == "circuit_material") {
+						circuitMaterialCount++;
+					}
+				}
+
+				if (circuitMaterialCount < 2) {
+					deletePixel(pixel.x, pixel.y);
+				}
+
+				pixel.temp += Math.random(0, 5);
+			}
+		}
+	}
 });
 
 var circuitRotation = 0;
@@ -1508,41 +1621,41 @@ document.addEventListener('keydown', function(event) {
 });
 
 function drawCircuitExtras() {
-    if (elements[currentElement].isCircuitCore && elements[currentElement].previewSize) {
-        var circuitWidth = elements[currentElement].previewSize[0];
-        var circuitHeight = elements[currentElement].previewSize[1];
-        var centered = elements[currentElement].previewSize[2];
-        var rotation = circuitRotation;
+	if (elements[currentElement].isCircuitCore && elements[currentElement].previewSize) {
+		var circuitWidth = elements[currentElement].previewSize[0];
+		var circuitHeight = elements[currentElement].previewSize[1];
+		var centered = elements[currentElement].previewSize[2];
+		var rotation = circuitRotation;
 
-        var startX = 0;
-        var startY = 0;
-        var endX = circuitWidth - 1;
-        var endY = circuitHeight - 1;
+		var startX = 0;
+		var startY = 0;
+		var endX = circuitWidth - 1;
+		var endY = circuitHeight - 1;
 
-        if (centered) {
-            startX = -Math.floor(circuitWidth / 2);
-            startY = -Math.floor(circuitHeight / 2);
-            endX = Math.floor(circuitWidth / 2);
-            endY = Math.floor(circuitHeight / 2);
-        }
+		if (centered) {
+			startX = -Math.floor(circuitWidth / 2);
+			startY = -Math.floor(circuitHeight / 2);
+			endX = Math.floor(circuitWidth / 2);
+			endY = Math.floor(circuitHeight / 2);
+		}
 
-        for (var y = startY; y <= endY; y++) {
-            for (var x = startX; x <= endX; x++) {
-//            	if (!(0 <= x && x < width && 0 <= y && y < height)) {continue;}
+		for (var y = startY; y <= endY; y++) {
+			for (var x = startX; x <= endX; x++) {
+//				if (!(0 <= x && x < width && 0 <= y && y < height)) {continue;}
 
-                var [rx, ry] = rotateCoordinate(x, y, rotation);
-                var px = mousePos.x + rx;
-                var py = mousePos.y + ry;
+				var [rx, ry] = rotateCoordinate(x, y, rotation);
+				var px = mousePos.x + rx;
+				var py = mousePos.y + ry;
 
-                ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
+				ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
 				if ((rotation != 0 && !centered) || (0 <= px && px < width && 0 <= py && py < height) && pixelMap[px][py]) {
 					ctx.fillStyle = "rgba(255, 0, 0, 0.3)";
 				}
 
-                ctx.fillRect(px * pixelSize, py * pixelSize, pixelSize, pixelSize);
-            }
-        }
-    }
+				ctx.fillRect(px * pixelSize, py * pixelSize, pixelSize, pixelSize);
+			}
+		}
+	}
 }
 
 runAfterLoad(() => {
@@ -1550,6 +1663,7 @@ runAfterLoad(() => {
 	drawPixels = function(forceTick=false) {
 		originalDrawPixels3(forceTick);
 		drawCircuitExtras();
+		return true;
 	};
 });
 resetInterval(tps);
