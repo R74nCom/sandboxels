@@ -143,6 +143,9 @@ renderEachPixel(function(pixel, ctx) {
             }
         }
     }
+    if (oreMap.length < 2){
+        clearAll();
+    }
 });
 
 let validGroundElements = []
