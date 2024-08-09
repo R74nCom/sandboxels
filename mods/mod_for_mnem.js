@@ -1,0 +1,1 @@
+Object.keys(elements).forEach((element)=>{if (elements[element].category == "life") {delete elements[element]}})
