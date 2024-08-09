@@ -49,13 +49,14 @@ function scaledPerlinNoise(C, x, y){
 }
 if (!eLists.oreSpawnConditions){eLists.oreSpawnConditions = {}}
 eLists.oreSpawnConditions = {...eLists.oreSpawnConditions, ...{
-    uranium: 0.65,
-    diamond: 0.65,
-    gold: 0.55,
-    silver: 0.52,
-    iron: 0.45,
-    copper: 0.4,
-    charcoal: 0.4
+    uranium: 0.67,
+    diamond: 0.67,
+    gold: 0.57,
+    pyrite: 0.56,
+    silver: 0.54,
+    iron: 0.47,
+    copper: 0.42,
+    charcoal: 0.42
 }}
 if (!eLists.oreRgb){eLists.oreRgb = {}}
 eLists.oreRgb = {...eLists.oreRgb, ...{
@@ -64,12 +65,25 @@ eLists.oreRgb = {...eLists.oreRgb, ...{
     silver: "rgba(206, 206, 206, ",
     copper: "rgba(151, 80, 10, ",
     gold: "rgba(255, 215, 0, ",
+    pyrite: "rgba(134, 119, 31, ",
     diamond: "rgba(125, 214, 255, ",
     uranium: "rgba(0, 100, 8, "
 }}
+if (!eLists.idealOreHeight){eLists.idealOreHeight = {}}
+eLists.idealOreHeight = {...eLists.idealOreHeight, ...{
+    uranium: 0.2,
+    diamond: 0.06,
+    gold: 0.3,
+    pyrite: 0.34,
+    silver: 0.4,
+    iron: 0.7,
+    copper: 0.6,
+    charcoal: 0.4
+    }}
 let oldclearall = clearAll
 let oreMap = []
 clearAll = function(skipworldgen){
+    oreMap = []
     oldclearall(skipworldgen)
     oreMaps = {}
     for (let ore of Object.keys(eLists.oreSpawnConditions)){
@@ -81,7 +95,7 @@ clearAll = function(skipworldgen){
         for (let y in pixelMap){
             oreMap[x].push(false);
             for (let ore in eLists.oreSpawnConditions){
-                if (scaledPerlinNoise(oreMaps[ore], x, y) > eLists.oreSpawnConditions[ore]){
+                if ((scaledPerlinNoise(oreMaps[ore], x, y)-((Math.abs(y-((1-eLists.idealOreHeight[ore])*height)))/(1.33*height))+0.07) > eLists.oreSpawnConditions[ore]){
                     oreMap[x][y] = ore
                     //console.log(ore + " at " + x + ", " + y)
                     break;
@@ -111,7 +125,7 @@ renderEachPixel(function(pixel, ctx) {
             if (!oreMap[pixel.x][pixel.y]) {
                 drawSquare(ctx, "rgba(0, 0, 0, 0.7)", pixel.x, pixel.y, 1, 1);
             } else {
-                drawSquare(ctx, eLists.oreRgb[oreMap[pixel.x][pixel.y]] + "0.2)", pixel.x, pixel.y, 1, 1);
+                drawSquare(ctx, eLists.oreRgb[oreMap[pixel.x][pixel.y]] + "0.7)", pixel.x, pixel.y, 1, 1);
                 let differentAdjacent = [];
                 for (let i = 0; i < adjacentCoords.length; i++) {
                     let x = adjacentCoords[i][0] + pixel.x;
@@ -170,6 +184,7 @@ elements.pickaxe = {
                 oreMap[pixel.x][pixel.y] = false
             }
         }
+        if (settings.limitless){elements.pickaxe.maxSize = 10000} else {elements.pickaxe.maxSize = 5}
     }
 }
 elements.chisel = {
@@ -188,6 +203,22 @@ elements.chisel = {
                 oreMap[pixel.x][pixel.y] = false
             }
         }
+        if (settings.limitless){elements.chisel.maxSize = 10000} else {elements.chisel.maxSize = 3}
+    }
+}
+elements.brush = {
+    category: "tools",
+    color: "#805c2e",
+    canPlace: false,
+    maxSize: 1,
+    tool: function(pixel){
+        if (oreMap[pixel.x][pixel.y].length > 0 && validGroundElements.includes(pixel.element)){
+            if (Math.random()>0.985){
+                changePixel(pixel, oreMap[pixel.x][pixel.y], false)
+                oreMap[pixel.x][pixel.y] = false
+            }
+        }
+        if (settings.limitless){elements.brush.maxSize = 10000} else {elements.brush.maxSize = 1}
     }
 }
 elements.ore_xray = {
@@ -195,5 +226,7 @@ elements.ore_xray = {
     color: "#220f27",
     canPlace: false,
     maxSize: 15,
-    tool: function(pixel){}
+    tool: function(pixel){
+        if (settings.limitless){elements.ore_xray.maxSize = 10000} else {elements.ore_xray.maxSize = 15}
+    }
 }
