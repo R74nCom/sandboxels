@@ -9,7 +9,7 @@ elements.liquid_tnt = {
     conduct: 1,
     category: "weapons",
     tempLow: -50,
-    state: "solid",
+    state: "liquid",
     stateLow: "explosion",
     density: 1630,
     excludeRandom: true,
