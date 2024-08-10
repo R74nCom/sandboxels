@@ -1,3 +1,5 @@
+//Made by SuperASAX or SuperAAX
+
 elements.liquid_tnt = {
     color: "#c92a2a",
     behavior: behaviors.LIQUID,
