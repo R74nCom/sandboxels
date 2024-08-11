@@ -1,18 +1,59 @@
 // CircuitCore: adds circuits to sandboxels, logicgates.js is required
 
-/*if (!enabledMods.includes("mods/betterSettings.js")) { enabledMods.unshift("mods/betterSettings.js"); localStorage.setItem("enabledMods", JSON.stringify(enabledMods)); window.location.reload() };
+if (!enabledMods.includes("mods/betterSettings.js")) { enabledMods.unshift("mods/betterSettings.js"); localStorage.setItem("enabledMods", JSON.stringify(enabledMods)); window.location.reload() };
+var lightmapEnabled = enabledMods.includes("mods/lightmap.js") || enabledMods.includes("mods/fast_lightmap.js");
 
 var cc_settingsTab = new SettingsTab("CircuitCore");
-var cc_setting1 = new Setting("Default Memory Fill; 0=empty,1=random,2=fill custom,3=custom data", "mem_fill", settingType.NUMBER, false, "The default method used to initialize ROM/RAM memory devices");
-var cc_setting2 = new Setting("Example Setting 2", "element", settingType.TEXT, false, "2");
-cc_settingsTab.registerSettings("Default Memory Fill", cc_setting1);
-cc_settingsTab.registerSettings("Setting 2", cc_setting2);
-settingsManager.registerTab(cc_settingsTab);*/
+var cc_setting1 = new Setting("If true then circuits will emit heat", "mem_fill", settingType.BOOLEAN, false, defaultValue=true);
+//var cc_setting2 = new Setting("Example Setting 2", "element", settingType.TEXT, false, "2");
+cc_settingsTab.registerSettings("OverHeating", cc_setting1);
+//cc_settingsTab.registerSettings("Setting 2", cc_setting2);
+settingsManager.registerTab(cc_settingsTab);
 
 var dataVisualizationPalette16 = [
 	"#000000", "#ff0000", "#ff7700", "#ffff00", "#00ff00", "#00ffff", "#0000ff", "#ff00ff",
 	"#777777", "#770000", "#773300", "#777700", "#007700", "#007777", "#000077", "#770077",
 ];
+
+function cc_rgbToArray(colorString) {
+	if (typeof colorString !== 'string') {
+		console.error('Invalid colorString:', colorString);
+		return null;
+	}
+
+	if (colorString.startsWith('rgb')) {
+		return colorString.slice(4, -1).split(',').map(val => parseInt(val.trim()));
+	} else if (colorString.startsWith('#')) {
+		let hex = colorString.slice(1);
+
+		// Handle shorthand hex (e.g., #03F)
+		if (hex.length === 3) {
+			hex = hex.split('').map(char => char + char).join('');
+		}
+
+		if (hex.length !== 6) {
+			console.error('Invalid hex color:', colorString);
+			return null;
+		}
+
+		const r = parseInt(hex.slice(0, 2), 16);
+		const g = parseInt(hex.slice(2, 4), 16);
+		const b = parseInt(hex.slice(4, 6), 16);
+
+		return [r, g, b];
+	} else {
+		console.error('Invalid color format:', colorString);
+		return null;
+	}
+}
+
+function cc_arrayToRgbString(rgbArray) {
+    return `rgb(${rgbArray.join(', ')})`;
+}
+
+function cc_scaleList(numbers, scale) {
+	return numbers.map(number => number * scale);
+}
 
 function binaryArrayToNumber(binaryArray) {
 	return binaryArray.reduce((acc, bit, index) => acc + bit * Math.pow(2, (binaryArray.length - 1) - index), 0);
@@ -358,16 +399,17 @@ function general_encoder(inputBits) {
 
 		// Define input pins
 		for (var i = 0; i < inputBits; i++) {
-			pins.push([-Math.floor(circuitWidth / 2) + 1 + 2 * i, outputBits + 1, true]);
+			pins.push([Math.floor(circuitWidth / 2) - 1 - (2 * i), outputBits + 1, true]);
 		}
 
 		// Define output pins
 		for (var i = 0; i < outputBits; i++) {
-			pins.push([Math.floor(circuitWidth / 2) + 1, -outputBits + 1 + 2 * i, false]); // Right outputs
+			pins.push([Math.floor(circuitWidth / 2) + 1, outputBits - 1 - (2 * i), false]); // Right outputs
 		}
 
+		// Mirrored outputs
 		for (var i = 0; i < outputBits; i++) {
-			pins.push([-Math.floor(circuitWidth / 2) - 1, -outputBits + 1 + 2 * i, false]); // Left outputs
+			pins.push([-Math.floor(circuitWidth / 2) - 1, outputBits - 1 - (2 * i), false]); // Left outputs
 		}
 
 		initializeCircuit(pixel, pins, circuitWidth, circuitHeight);
@@ -427,7 +469,7 @@ function general_demultiplexer(selectorBits) {
 
 		// Define output pins
 		for (var i = 0; i < outputCount; i++) {
-			pins.push([Math.floor(circuitWidth / 2) + 1, -Math.floor(circuitHeight / 2) + 1 + 2 * i, false]);
+			pins.push([Math.floor(circuitWidth / 2) + 1, Math.floor(circuitHeight / 2) - 1 - (2 * i), false]);
 		}
 
 		initializeCircuit(pixel, pins, circuitWidth, circuitHeight);
@@ -477,16 +519,16 @@ function general_decoder(inputBits) {
 
 		// Define input pins
 		for (var i = 0; i < inputBits; i++) {
-			pins.push([-Math.floor(circuitWidth / 2) + 1 + 2 * i, outputCount + 1, true]);
+			pins.push([Math.floor(circuitWidth / 2) - 1 - (2 * i), outputCount + 1, true]);
 		}
 
 		// Define output pins
 		for (var i = 0; i < outputCount; i++) {
-			pins.push([Math.floor(circuitWidth / 2) + 1, -outputCount + 1 + 2 * i, false]); // Right outputs
+			pins.push([Math.floor(circuitWidth / 2) + 1, outputCount - 1 - (2 * i), false]); // Right outputs
 		}
 
 		for (var i = 0; i < outputCount; i++) {
-			pins.push([-Math.floor(circuitWidth / 2) - 1, -outputCount + 1 + 2 * i, false]); // Left outputs
+			pins.push([-Math.floor(circuitWidth / 2) - 1, outputCount - 1 - (2 * i), false]); // Left outputs
 		}
 
 		initializeCircuit(pixel, pins, circuitWidth, circuitHeight);
@@ -533,12 +575,12 @@ function general_multiplexer(inputLines) {
 
 		// Define selector pins
 		for (var i = 0; i < selectorBits; i++) {
-			pins.push([-Math.floor(circuitWidth / 2) + 1 + 2 * i, inputLines + 1, true]);
+			pins.push([Math.floor(circuitWidth / 2) - 1 - (2 * i), inputLines + 1, true]);
 		}
 
 		// Define input data pins
 		for (var i = 0; i < inputLines; i++) {
-			pins.push([-Math.floor(circuitWidth / 2) - 1, -inputLines + 1 + 2 * i, true]);
+			pins.push([-Math.floor(circuitWidth / 2) - 1, inputLines - 1 - (2 * i), true]);
 		}
 
 		// Define output pin
@@ -582,10 +624,10 @@ elements.four_bit_PISO_shift_register_circuit = {
 	tick: function(pixel) {
 		var pins = [
 			// Data inputs (D0-D3)
-			[-3, -3, true],  // D0
-			[-1, -3, true],  // D1
-			[1, -3, true],   // D2
 			[3, -3, true],   // D3
+			[1, -3, true],   // D2
+			[-1, -3, true],  // D1
+			[-3, -3, true],  // D0
 
 			// Control input (Load/Shift Enable)
 			[-5, -1, true],  // Load/Shift Enable
@@ -665,10 +707,10 @@ elements.four_bit_SIPO_shift_register_circuit = {
 			[-2, -1, true],   // Clock
 
 			// Parallel outputs (Q0-Q3)
-			[2, -3, false],  // Q0
-			[2, -1, false],  // Q1
+			[2, 3, false],	// Q3
 			[2, 1, false],   // Q2
-			[2, 3, false]	// Q3
+			[2, -1, false],  // Q1
+			[2, -3, false]  // Q0
 		];
 
 		initializeCircuit(pixel, pins, 3, 9);
@@ -1050,19 +1092,19 @@ elements.four_bit_incrementer_circuit = {
 	tick: function(pixel) {
 		var pins = [
 			// 4-bit number inputs (N0-N3)
-			[-3, -2, true],  // N0
-			[-1, -2, true],  // N1
-			[1, -2, true],   // N2
 			[3, -2, true],   // N3
+			[1, -2, true],   // N2
+			[-1, -2, true],  // N1
+			[-3, -2, true],  // N0
 
 			// Increment control input (INC)
 			[-5, 0, true],   // Increment (INC)
 
 			// Outputs (Q0-Q3)
-			[-3, 2, false],  // Q0
-			[-1, 2, false],  // Q1
-			[1, 2, false],   // Q2
 			[3, 2, false],   // Q3
+			[1, 2, false],   // Q2
+			[-1, 2, false],  // Q1
+			[-3, 2, false],  // Q0
 
 			// Carry out
 			[5, 0, false]	// Carry out (COUT)
@@ -1107,25 +1149,25 @@ elements.four_bit_adder_circuit = {
 	tick: function(pixel) {
 		var pins = [
 			// First 4-bit number (A)
-			[-7, -2, true],  // A0
-			[-5, -2, true],  // A1
-			[-3, -2, true],  // A2
 			[-1, -2, true],  // A3
+			[-3, -2, true],  // A2
+			[-5, -2, true],  // A1
+			[-7, -2, true],  // A0
 
 			// Second 4-bit number (B)
-			[1, -2, true],   // B0
-			[3, -2, true],   // B1
-			[5, -2, true],   // B2
 			[7, -2, true],   // B3
+			[5, -2, true],   // B2
+			[3, -2, true],   // B1
+			[1, -2, true],   // B0
 
 			// Carry-in (C_in)
 			[9, 0, true],   // Carry-in (C_in)
 
 			// Output sum (S)
-			[-7, 2, false],  // S0
-			[-5, 2, false],  // S1
-			[-3, 2, false],  // S2
 			[-1, 2, false],  // S3
+			[-3, 2, false],  // S2
+			[-5, 2, false],  // S1
+			[-7, 2, false],  // S0
 			[1, 2, false],   // Carry Out (C4)
 		];
 
@@ -1208,9 +1250,51 @@ elements.very_fast_clock = {
 	tick: general_clock(8, 4),
 }
 
-elements.fast_clock = {
-	color: "#FFAAFF",
-	tick: general_clock(16, 8),
+
+elements.custom_RGB_led = {
+	tick: function(pixel) {
+		var pins = [
+			// RGB values
+			[-2, -1, true],  // R0
+			[-2, 1, true],  // R1
+			[1, -2, true],  // G0
+			[-1, -2, true],  // G1
+			[2, -1, true],   // B0
+			[2, 1, true],   // B1
+		];
+
+		initializeCircuit(pixel, pins, 3, 3);
+
+		// Read inputs
+		var l = [
+			checkPin(pixel, pins, 0),
+			checkPin(pixel, pins, 1),
+			checkPin(pixel, pins, 2),
+			checkPin(pixel, pins, 3),
+			checkPin(pixel, pins, 4),
+			checkPin(pixel, pins, 5)
+		];
+
+		var color = { color: cc_scaleList([(l[0] * 2) + l[1], (l[2] * 2) + l[3], (l[4] * 2) + l[5]], (255 / 3) * 10) };
+
+		if (lightmapEnabled) {
+			lightmap[Math.floor(pixel.y / lightmapScale)][Math.floor(pixel.x / lightmapScale)] = color;
+		}
+		var scaledColor = cc_scaleList(color.color, 0.1);
+
+//		pixelMap[pixel.x][pixel.y].color = scaledColor;
+		for (let dx = -1; dx <= 1; dx++) {
+			for (let dy = -1; dy <= 1; dy++) {
+				var nx = pixel.x + dx;
+				var ny = pixel.y + dy;
+
+				if (pixelMap[nx] && pixelMap[nx][ny]) {
+					var n = ((2 - (Math.abs(dx) + Math.abs(dy))) + 4) / 6;
+					pixelMap[nx][ny].color = cc_arrayToRgbString(cc_scaleList(scaledColor, n));
+				}
+			}
+		}
+	}
 }
 
 var addDisplayCallback = function(pixel, pins, w, h) {
@@ -1231,10 +1315,10 @@ elements.simple_seven_segment_display = {
 	tick: function(pixel) {
 		var pins = [
 			// Data inputs (D0-D3)
-			[-1, 1, true],  // D0
-			[-1, 3, true],  // D1
-			[-1, 5, true],  // D2
-			[-1, 7, true],   // D3
+			[-1, 7, true],
+			[-1, 5, true],
+			[-1, 3, true],
+			[-1, 1, true],
 		];
 
 		initializeCircuit(pixel, pins, 5, 9, false, pixel.circuitRotation, addDisplayCallback);
@@ -1273,15 +1357,15 @@ elements.simple_double_seven_segment_display = {
 	tick: function(pixel) {
 		var pins = [
 			// Data inputs (D0-D3)
-			[-1, 1, true],  // D0
-			[-1, 3, true],  // D1
-			[-1, 5, true],  // D2
-			[-1, 7, true],   // D3
+			[-1, 7, true],
+			[-1, 5, true],
+			[-1, 3, true],
+			[-1, 1, true],
 
-			[1, -1, true],  // D2-0
-			[3, -1, true],  // D2-1
-			[5, -1, true],  // D2-2
-			[7, -1, true],   // D2-3
+			[7, -1, true],
+			[5, -1, true],
+			[3, -1, true],
+			[1, -1, true],
 		];
 
 		initializeCircuit(pixel, pins, 9, 9, false, pixel.circuitRotation, addDisplayCallback);
@@ -1377,7 +1461,7 @@ elements.circuit_material = {
 	},
 	tick: function(pixel) {
 		// Make it that extreme temperatures can stop the chip from working (for realism)
-		if (Math.random() < 0.003) {  // Chance to check for temperature or nearby particles
+		if (Math.random() < 0.003 && cc_setting1.value) {  // Chance to check for temperature or nearby particles
 			// Check temperature
 			if (pixel.temp > 120) {
 				// Replace the circuit core with lead if overheating
@@ -1576,12 +1660,15 @@ var circuits = [
 	// Displays/visual circuits: white
 	{ circuit: elements.simple_seven_segment_display, color: cc_WHITE, size: [5, 9, false] },
 	{ circuit: elements.simple_double_seven_segment_display, color: cc_WHITE, size: [9, 9, false] },
+	{ circuit: elements.custom_RGB_led, color: cc_WHITE, size: [3, 3, true] },
 ];
 
 circuits.forEach(circuitInfo => {
 	if (circuitInfo.color) {circuitInfo.circuit.color = circuitInfo.color;}
 	circuitInfo.circuit.category = "logic";
 	circuitInfo.circuit.maxSize = 1;
+	circuitInfo.circuit.behavior = behaviors.WALL;
+	circuitInfo.circuit.state = "solid";
 	circuitInfo.circuit.isCircuitCore = true;
 	circuitInfo.circuit.previewSize = circuitInfo.size;
 
@@ -1606,7 +1693,10 @@ circuits.forEach(circuitInfo => {
 					deletePixel(pixel.x, pixel.y);
 				}
 
-				pixel.temp += Math.random(0, 5);
+				// Check if circuit overheating is enabled
+				if (cc_setting1.value) {
+					pixel.temp += Math.random(0.5);
+				}
 			}
 		}
 	}
@@ -1658,12 +1748,4 @@ function drawCircuitExtras() {
 	}
 }
 
-runAfterLoad(() => {
-	var originalDrawPixels3 = drawPixels;
-	drawPixels = function(forceTick=false) {
-		originalDrawPixels3(forceTick);
-		drawCircuitExtras();
-		return true;
-	};
-});
-resetInterval(tps);
+renderPostPixel(drawCircuitExtras);
