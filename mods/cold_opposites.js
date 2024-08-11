@@ -1,3 +1,5 @@
+//Made by SuperASAX or SuperAAX
+
 elements.torch = {
     color: "#d68542",
     behavior: [
