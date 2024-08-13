@@ -1,3 +1,5 @@
+/* mod by nekonico aka doobienecoarc */
+
 window.addEventListener("load", () => { 
     document.getElementById("elementButton-mask_head")?.remove()
 })
@@ -36,8 +38,6 @@ window.addEventListener("load", () => {
 }) 
 
 // Coding junk above this point
-
-// also hi jonny ray 
 
 elements.SCP_008 = {
     color: "#11111f",
