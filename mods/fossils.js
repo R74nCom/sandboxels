@@ -1,5 +1,20 @@
 /* code by nekonico aka doobienecoarc */
 
+worldgentypes.prehistory = {
+                layers: [
+                    [1.00, "grass"],
+                    [0.10, "dirt"],
+                    [0.02, "rock"],
+                    [0, "basalt"],
+                ],
+                decor: [
+                    ["dinosaur", 0.1, 10],
+                    ["pinecone", 0.075],
+                    ["bird", 0.025, 5],
+                ],
+                baseHeight: 0.5
+},
+
 elements.fossil = {
     color: ["#bbb3ae","#b4b4b4","#c0c0c0"],
     behavior: [
@@ -89,6 +104,10 @@ elements.marrow_fossil = {
 };
 
 elements.human_fossil = {
+    properties: {
+        dna: "human",
+    },
+    name: "fossil",
     color: ["#bbb3ae","#b4b4b4","#c0c0c0"],
     hidden:true,
     behavior: [
@@ -123,6 +142,10 @@ elements.human_fossil = {
 };
 
 elements.dino_fossil = {
+    properties: {
+        dna: "dinosaur",
+    },
+    name: "fossil",
     color: ["#bbb3ae","#b4b4b4","#c0c0c0"],
     behavior: [
         "XX|XX|XX",
@@ -156,6 +179,9 @@ elements.dino_fossil = {
 };
 
 elements.petrified_wood = {
+    properties: {
+        dna: "sapling",
+    },
     color: ["#4e4e3e","#464646","#52533a"],
     hidden:true,
     behavior: behaviors.STURDYPOWDER,
@@ -185,6 +211,9 @@ elements.petrified_wood = {
 };
 
 elements.skull = {
+    properties: {
+        dna: "human",
+    },
     color: "#d9d9d9",
     hidden:true,
     behavior: behaviors.POWDER,
@@ -220,6 +249,9 @@ elements.skull = {
 },
 
 elements.human_bones = {
+    properties: {
+        dna: "human",
+    },
     name: "bone",
     color: "#d9d9d9",
     hidden:true,
@@ -256,6 +288,9 @@ elements.human_bones = {
 },
 
 elements.dino_bones = {
+    properties: {
+        dna: "dinosaur",
+    },
     name: "bone",
     color: "#d9d9d9",
     hidden:true,
@@ -329,6 +364,9 @@ elements.bug_amber = {
 
 elements.hive_amber = {
     hidden:true,
+    properties: {
+        dna: "bee",
+    },
     name: "amber",
     color: "#ffc000",
     temp: 20,
@@ -340,6 +378,9 @@ elements.hive_amber = {
 
 elements.dinosaur = {
     hidden:true,
+    properties: {
+        dna: "dinosaur",
+    },
     color: ["#7F2B0A","#808080","#006400"],
     behavior: [
         "XX|M2%5|XX",
@@ -365,22 +406,24 @@ elements.dinosaur = {
         "plant": { elem2: null, chance: 0.5, func: behaviors.FEEDPIXEL },
         "bone": { elem2: ["bone_marrow","blood","quicklime",null,null,null], chance: 0.3, },
         "skull": { elem2: ["bone_marrow","blood","quicklime",null,null,null], chance: 0.1, },
-        "bone_marrow": { elem2: ["blood","blood",null], chance: 0.3, func: behaviors.FEEDPIXEL },
-        "blood": { elem2: null, chance: 0.1, func: behaviors.FEEDPIXEL },
+        "bone_marrow": { elem2: ["blood","blood",null], chance: 0.3, func: behaviors.FEEDPIXEL },attr1:{"dna":"snail"},
+        "blood": { elem2: null, chance: 0.01, func: behaviors.FEEDPIXEL },
         "meat": { elem2: null, chance: 0.5, func: behaviors.FEEDPIXEL },
         "cooked_meat": { elem2: null, chance: 0.4, func: behaviors.FEEDPIXEL },
-        "cured_meat": { elem2: null, chance: 0.4, func: behaviors.FEEDPIXEL },
+        "cured_meat": { elem2: null, chance: 0.1, func: behaviors.FEEDPIXEL },
         "fly": { elem2: null, chance: 0.05, func: behaviors.FEEDPIXEL },
-        "ant": { elem2: null, chance: 0.05, func: behaviors.FEEDPIXEL },
-        "worm": { elem2: null, chance: 0.05, func: behaviors.FEEDPIXEL },
-        "wood": { elem2: "sawdust", chance: 0.04 },
+        "ant": { elem2: [null,null,null,null,null,null,"dead_bug"], chance: 0.05, func: behaviors.FEEDPIXEL },
+        "worm": { elem2: [null,null,null,null,null,null,"slime"], chance: 0.05, func: behaviors.FEEDPIXEL },
         "glass": { elem2: "glass_shard", chance: 0.05 },
         "concrete": { elem2: "dust", chance: 0.03 },
-    }
+    },
 },
 
 elements.trilobite = {
     hidden:true,
+    properties: {
+        dna: "trilobite",
+    },
     color: "#808080",
     behavior: [
         "XX|M2%5|SW:water,salt_water,sugar_water,dirty_water,seltzer,pool_water,primordial_soup%05",
@@ -408,7 +451,7 @@ elements.trilobite = {
         "yolk": { elem2:null, chance:0.15, func:behaviors.FEEDPIXEL },
         "cell": { elem2:null, chance:0.15, func:behaviors.FEEDPIXEL },
         "crumb": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
-        "alcohol": { elem1:"dead_bug", chance:0.001 },
+        "alcohol": { elem1:"dead_bug", attr1:{"dna":"trilobite"}, chance:0.001 },
         "water": { elem2:"bubble", attr2:{"clone":"water"}, chance:0.002, oneway:true },
         "salt_water": { elem2:"bubble", attr2:{"clone":"salt_water"}, chance:0.002, oneway:true },
         "pool_water": { elem1:"dead_bug", chance:0.001 },
@@ -434,7 +477,7 @@ elements.trilobite = {
 elements.extracted_dna = {
     hidden:true,
     name: "artificial_egg",
-    color: ["#211316","#2C1A1D","#503734","#e0d3ab","#d1c6be","#b5c0ad","#b9b8bc"],
+    color: ["#211316","#2C1A1D","#503734","#e0d3ab"],
     behavior: behaviors.POWDER,
     tick: function(pixel) {
         if (Math.random() < 0.00025 || (pixel.dna && pixel.temp > 40 && pixel.temp < 150)) {
@@ -457,12 +500,25 @@ elements.extractor = {
     color: ["#d1c6be","#b5c0ad","#b9b8bc"],
     behavior: behaviors.STURDYPOWDER,
     reactions: {
+        "fossil": { elem2:"extracted_dna", chance:0.05 },
+        "marrow_fossil": { elem2:"extracted_dna", chance:0.06 },
+        "petrified_wood": { elem2:"extracted_dna", attr2:{"dna":"sapling"}, chance:0.01 },
+        "wood": { elem2:"extracted_dna", attr2:{"dna":"sapling"}, chance:0.05 },
+        "bone_marrow": { elem2:"extracted_dna", chance:0.1 },
+        "bone": { elem2:"extracted_dna", chance:0.1 },
+        "meat": { elem2:"extracted_dna", chance:0.1 },
+        "frozen_meat": { elem2:"extracted_dna", chance:0.1 },
+        "cooked_meat": { elem2:"extracted_dna", chance:0.1 },
+        "rotten_meat": { elem2:"extracted_dna", chance:0.05 },
+        "blood": { elem2:"extracted_dna", chance:0.1 },
+        "slime": { elem2:"extracted_dna", chance:0.05 },
+        "dead_bug": { elem2:"extracted_dna", chance:0.2 },
         "hive_amber": { elem2:"extracted_dna", chance:0.2 },
         "bug_amber": { elem2:"extracted_dna", chance:0.2 },
-        "dino_bones": { elem2:"extracted_dna", attr1:{"dna":"dinosaur"}, chance:0.2 },
-        "skull": { elem2:"extracted_dna", attr1:{"dna":"human"}, chance:0.2 },
-        "dino_fossil": { elem2:"extracted_dna", attr1:{"dna":"dinosaur"}, chance:0.02 },
-        "human_fossil": { elem2:"extracted_dna", attr1:{"dna":"human"}, chance:0.02 },
+        "dino_bones": { elem2:"extracted_dna", attr2:{"dna":"dinosaur"}, chance:0.2 },
+        "skull": { elem2:"extracted_dna", attr2:{"dna":"human"}, chance:0.2 },
+        "dino_fossil": { elem2:"extracted_dna", attr2:{"dna":"dinosaur"}, chance:0.02 },
+        "human_fossil": { elem2:"extracted_dna", attr2:{"dna":"human"}, chance:0.02 },
     },
     category:"machines",
     conduct: 1,
