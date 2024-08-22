@@ -1,4 +1,4 @@
-/* mod by nekonico aka doobienecoarc */
+/* mod by nekonico, do not steal without credit */
 
 behaviors.BODY_DELETE = function(pixel) {
     if (pixel.willbuildhouse == true) {
@@ -312,7 +312,7 @@ elements.c_body = {
         doHeat(pixel);
         doBurning(pixel);
         doElectricity(pixel);
-        if (pixel.dead) {
+        if (pixel.dead) { // by nekonico
             // Turn into rotten_meat if pixelTicks-dead > 500
             if (pixelTicks-pixel.dead > 200 && Math.random() < 0.1) {
                 changePixel(pixel,"rotten_meat");
@@ -781,9 +781,9 @@ elements.workbench = {
         "loose_straw": { elem2:"basket", chance:0.25 },
         "rock": { elem2:"pickaxe", chance:0.1 },
         "oven": { elem1:"allpurposestation", elem2:null, chance:0.5 },
-    },
-    temp:40,
-    tempHigh: 1000,
+    },// by
+    temp:40, //neko
+    tempHigh: 1000, //nico
     stateHigh: "magma",
     category: "human",
     state: "solid",
@@ -951,3 +951,9 @@ elements.body.name = "dumb_body"
 elements.grass.properties.h = 1
 
 elements.rotten_meat.density = 1200
+
+/* yo, thanks for scrolling to the end. If you have any ideas to add to this mod, or wanna contact me in general, you can DM my discord account "nekonico" or just ping me in the r74n discord 
+peace 
+ ^ ^
+(*w*) /     
+*/ 
