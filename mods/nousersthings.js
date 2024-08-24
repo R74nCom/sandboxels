@@ -3183,6 +3183,10 @@ elements.specific_piston_ray_emitter = {
             pixel.pistonRepeat = pistonRepeat
             pixel.pistonRepeatCooldown = pistonRepeatCooldown
         }
+        if (!pixel.pistonRepeat){
+            pixel.pistonRepeat = pistonRepeat
+            pixel.pistonRepeatCooldown = pistonRepeatCooldown
+        }
         if (!pixel.cooldown){pixel.cooldown = 0}
         if (!pixel.rcooldown){pixel.rcooldown = 0}
         if (!pixel.repeatAmounts){pixel.repeatAmounts = 0}
