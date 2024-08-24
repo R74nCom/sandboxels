@@ -141,10 +141,10 @@ renderEachPixel(function(pixel, ctx) {
                 }
                 differentAdjacent.forEach(adj => {
                     let canvasadjacentCoords = adjacentToCanvas(adj[0], adj[1], pixel.x, pixel.y);
-                    if (!canvasadjacentCoords){
-                        console.log(adj)
-                        return;
-                    }
+                //    if (!canvasadjacentCoords){
+                //        console.log(adj)
+                //        return;
+               //     }
                     //console.log(canvasadjacentCoords);
                     ctx.beginPath();
                     ctx.moveTo(canvasadjacentCoords[0][0], canvasadjacentCoords[0][1]);

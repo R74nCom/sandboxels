@@ -591,7 +591,7 @@ let channelVar = "0"
 elements.sculk_wifi_transmitter = {
     color: "#142c47",
     category: "minecraft",
-    behaviors: behaviors.WALL,
+    behavior: behaviors.WALL,
     tempHigh: 250,
     stateHigh: "dirt",
     hoverStat: function(pixel){
@@ -643,4 +643,164 @@ elements.sculk_wifi_receiver = {
     tick: function(pixel){
         if (!pixel.channel){pixel.channel = channelVar}
     }
+}
+drawRectangle = function(ctx, color, x, y, width, height, xoffset, yoffset){
+    ctx.fillStyle = color;
+    ctx.fillRect(canvasCoord(x+xoffset), canvasCoord(y+yoffset), pixelSize*width, pixelSize*height)
+}
+autoFillDrawRectangle = function(ctx, pixel, width, height, xoffset, yoffset){
+    ctx.fillStyle = pixel.color;
+    ctx.fillRect(canvasCoord(pixel.x+xoffset), canvasCoord(pixel.y+yoffset), pixelSize*width, pixelSize*height)
+}
+autoFillColorRectangle = function(ctx, pixel, color, width, height, xoffset, yoffset){
+    ctx.fillStyle = color;
+    ctx.fillRect(canvasCoord(pixel.x+xoffset), canvasCoord(pixel.y+yoffset), pixelSize*width, pixelSize*height)
+}
+grabDistances = function(pixel){
+    let element = pixel.element
+    // first we find upper not the same
+    let results = {}
+    for (let i = 0; i < height; i++){
+        if (isEmpty(pixel.x, pixel.y-i, true) || pixelMap[pixel.x][pixel.y-i].element != element){
+            results.top = i
+            if (isEmpty(pixel.x, pixel.y-i, true)){
+                results.topelement = "air"
+            } else {
+                results.topelement = pixelMap[pixel.x][pixel.y-i].element
+            }
+            break;
+        }
+    }
+    // now bottom not same
+    for (let i = 0; i < height; i++){
+        if (isEmpty(pixel.x, pixel.y+i, true) || pixelMap[pixel.x][pixel.y + i].element != element){
+            results.bottom = i
+            if (isEmpty(pixel.x, pixel.y+i, true)){
+                results.bottomelement = "air"
+            } else {
+                results.bottomelement = pixelMap[pixel.x][pixel.y + i].element
+            }
+            break;
+        }
+    }
+    return results
+}
+elements.dripstone_spike = {
+    color: "#927965",
+    category: "minecraft",
+    behavior: behaviors.WALL,
+    tempHigh: 1810,
+    stateHigh: "molten_dripstone",
+    density: 2550,
+    renderer: function(pixel, ctx){
+        if (pixel.spikeType == 1){
+            autoFillDrawRectangle(ctx, pixel, 1, 1/3, 0, 0)
+            autoFillDrawRectangle(ctx, pixel, 2/3, 1, 1/6, 0)}
+        else if (pixel.spikeType == 2){
+            autoFillDrawRectangle(ctx, pixel, 2/3, 1, 1/6, 0)
+        }
+        else if (pixel.spikeType == 3){
+            autoFillDrawRectangle(ctx, pixel, 2/3, 5/6, 1/6, 0)
+            autoFillDrawRectangle(ctx, pixel, 0.5, 1/3, 1/3, 2/3)
+        }
+        else if (pixel.spikeType == 4){
+            autoFillDrawRectangle(ctx, pixel, 0.5, 1/3, 1/3, 0)
+            autoFillDrawRectangle(ctx, pixel, 1/3, 1/3, 1/3, 1/6)
+            autoFillDrawRectangle(ctx, pixel, 1/6, 0.5, 1/3, 1/3)
+        }
+        else{
+            drawSquare(ctx, pixel.color, pixel.x, pixel.y)
+        }
+    },
+    tick: function(pixel){
+        let distance = grabDistances(pixel);
+        if (distance.bottom == 1)
+            {pixel.spikeType = 4}
+        else if (distance.bottom == 2)
+            {pixel.spikeType = 3}
+        else if (distance.bottom >= 3 && distance.top > 1)
+            {pixel.spikeType = 2}
+        else 
+            {pixel.spikeType = 1}
+        if (!pixel.spikeType){console.log(distance)}
+        if (distance.topelement == "air" && distance.top == 1){
+            // make the entire spike fall
+            let fallList = []
+            for (let i = 0; i < height; i++){
+                if (!isEmpty(pixel.x, pixel.y+i, true) && pixelMap[pixel.x][pixel.y+i].element == "dripstone_spike"){
+                    fallList.push(pixelMap[pixel.x][pixel.y+i])
+                } else {break}
+            }
+            fallList = fallList.reverse();
+                for (let i = 0; i<fallList.length;i++){
+                    if (!tryMove(fallList[i], fallList[i].x, fallList[i].y+1)){
+                        deletePixel(fallList[i].x, fallList[i].y)
+                        if(!isEmpty(fallList[i].x, fallList[i].y+1, true)){
+                            breakPixel(pixelMap[fallList[i].x][fallList[i].y+1])
+                        }
+                        break;
+                    }
+                }
+        }
+    }
+}
+elements.dripstone = {
+    color: "#927965",
+    category: "minecraft",
+    behavior: behaviors.WALL,
+    tempHigh: 1810,
+    stateHigh: "molten_dripstone",
+    density: 2550
+}
+elements.molten_dripstone = {
+    color: ['#ff7b00', '#ff8d2d', '#ff9d4a', '#ffad65', '#ffbc80'],
+    category: "minecraft",
+    behavior: behaviors.MOLTEN,
+    tempLow: 1800,
+    stateLow: "dripstone",
+    temp: 1850,
+    density: 2500,
+    state: "liquid",
+    viscosity: 2000
+}
+elements.obsidian = { //subject to change
+    color: "#06030B",
+    category: "minecraft",
+    behavior: behaviors.WALL,
+    tempHigh: 1750,
+    stateHigh: "molten_obsidian",
+    density: 2400,
+    renderer: function(pixel, ctx){
+        autoFillColorRectangle(ctx, pixel, "#06030B", 1, 1, 0, 0)
+        autoFillColorRectangle(ctx, pixel, "#000001", 0.5, 1/6, 0, 0)
+        autoFillColorRectangle(ctx, pixel, "#000001", 1/6, 1/6, 1/6, 5/6)
+        autoFillColorRectangle(ctx, pixel, "#000001", 1/6, 1/6, 5/6, 2/3)
+        autoFillColorRectangle(ctx, pixel, "#100C1C", 1/6, 1/6, 0, 5/6)
+        autoFillColorRectangle(ctx, pixel, "#100C1C", 1/3, 1/5, 1/6, 0.5)
+        autoFillColorRectangle(ctx, pixel, "#100C1C", 1/6, 1/3, 1/3, 1/3)
+        autoFillColorRectangle(ctx, pixel, "#100C1C", 1/6, 1/6, 2/3, 0)
+        autoFillColorRectangle(ctx, pixel, "#100C1C", 1/6, 0.5, 2/3, 0.5)
+        autoFillColorRectangle(ctx, pixel, "#100C1C", 1/3, 1/6, 2/3, 0.5)
+        autoFillColorRectangle(ctx, pixel, "#100C1C", 1/3, 1/6, 0.5, 5/6)
+        autoFillColorRectangle(ctx, pixel, "#271E3D", 1/6, 1/6, 0, 2/3)
+        autoFillColorRectangle(ctx, pixel, "#271E3D", 1/6, 1/6, 1/6, 1/3)
+        autoFillColorRectangle(ctx, pixel, "#271E3D", 1/6, 1/6, 0.5, 0)
+        autoFillColorRectangle(ctx, pixel, "#271E3D", 1/6, 1/6, 5/6, 1/3)
+        autoFillColorRectangle(ctx, pixel, "#271E3D", 1/6, 1/6, 1/3, 5/6)
+        autoFillColorRectangle(ctx, pixel, "#3B2754", 1/6, 1/6, 0, 1/3)
+        autoFillColorRectangle(ctx, pixel, "#3B2754", 1/6, 1/6, 1/6, 1/6)
+        autoFillColorRectangle(ctx, pixel, "#3B2754", 1/3, 1/6, 1/3, 2/3)
+        autoFillColorRectangle(ctx, pixel, "#3B2754", 1/6, 1/6, 2/3, 1/3)
+        autoFillColorRectangle(ctx, pixel, "#3B2754", 1/6, 1/6, 5/6, 1/6)
+    }
+}
+elements.molten_obsidian = {
+    color: ['#ff7700', '#df6004', '#bf4905', '#9f3404', '#802000'],
+    category: "minecraft",
+    behavior: behaviors.MOLTEN,
+    tempLow: 1740,
+    stateLow: "obsidian",
+    temp: 1850,
+    density: 2300,
+    viscosity: 5000
 }
