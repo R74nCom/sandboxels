@@ -11,9 +11,11 @@ cc_settingsTab.registerSettings("OverHeating", cc_setting1);
 //cc_settingsTab.registerSettings("Setting 2", cc_setting2);
 settingsManager.registerTab(cc_settingsTab);
 
-var dataVisualizationPalette16 = [
-	"#000000", "#ff0000", "#ff7700", "#ffff00", "#00ff00", "#00ffff", "#0000ff", "#ff00ff",
-	"#777777", "#770000", "#773300", "#777700", "#007700", "#007777", "#000077", "#770077",
+var colorPalette_4bit = [
+    "#101820", "#37175F", "#5F1717", "#6F175F",
+    "#005F00", "#1563BF", "#7F401A", "#525252",
+    "#8F8F8F", "#EE8822", "#FF3027", "#FF47FF",
+    "#58E618", "#27FFDF", "#FFFF27", "#FFFFFF"
 ];
 
 function hueLerp(value) {
@@ -217,6 +219,61 @@ function setPin(pixel, pins, index, value, rotation=pixel.circuitRotation) {
 }
 
 // Circuits
+elements.four_bit_selector_circuit = {
+    cc_stableTick: function(pixel) {
+        var pins = [
+            // First 4-bit input (A)
+            [-1, -2, true],  // A0
+            [-3, -2, true],  // A1
+            [-5, -2, true],  // A2
+            [-7, -2, true],  // A3
+
+            // Second 4-bit input (B)
+            [7, -2, true],   // B0
+            [5, -2, true],   // B1
+            [3, -2, true],   // B2
+            [1, -2, true],   // B3
+
+            // Selection pin (Sel)
+            [9, 0, true],    // Selection (Sel)
+
+            // Output (O)
+            [-3, 2, false],  // O0 (centered)
+            [-1, 2, false],  // O1 (centered)
+            [1, 2, false],  // O2 (centered)
+            [3, 2, false],  // O3 (centered)
+        ];
+
+        initializeCircuit(pixel, pins, 17, 3);
+
+        // Read inputs
+        var A = [
+            checkPin(pixel, pins, 0),
+            checkPin(pixel, pins, 1),
+            checkPin(pixel, pins, 2),
+            checkPin(pixel, pins, 3)
+        ];
+
+        var B = [
+            checkPin(pixel, pins, 4),
+            checkPin(pixel, pins, 5),
+            checkPin(pixel, pins, 6),
+            checkPin(pixel, pins, 7)
+        ];
+
+        var Sel = checkPin(pixel, pins, 8); // Selection pin
+
+        // Select between A and B based on Sel
+        var output = Sel ? B : A;
+
+        // Output the selected 4-bit value
+        setPin(pixel, pins, 9, output[0]);   // O0
+        setPin(pixel, pins, 10, output[1]);  // O1
+        setPin(pixel, pins, 11, output[2]);  // O2
+        setPin(pixel, pins, 12, output[3]);  // O3
+    }
+};
+
 elements.four_bit_enabler_circuit = {
 	centered: true,
 	cc_stableTick: function(pixel) {
@@ -442,9 +499,9 @@ elements.temperature_sensor = {
 				var cellData = pixel.romData[cellAddress];
 				if (!(0 <= px && px < width && 0 <= py && py < height)) {continue;}
 
-				if (pixelMap[px][py] && pixelMap[px][py].element == "art") {
+				if (pixelMap[px][py] && pixelMap[px][py].element == "displayPixel") {
 //					if (address == cellAddress) {}
-					pixelMap[px][py].color = dataVisualizationPalette16[binaryArrayToNumber(cellData)];
+					pixelMap[px][py].color = colorPalette_4bit[binaryArrayToNumber(cellData)];
 				}
 			}
 		}
@@ -1277,6 +1334,70 @@ elements.four_bit_adder_circuit = {
 	}
 };
 
+elements.four_bit_subtractor_circuit = {
+    cc_stableTick: function(pixel) {
+        var pins = [
+            // First 4-bit number (A)
+            [-1, -2, true],  // A3
+            [-3, -2, true],  // A2
+            [-5, -2, true],  // A1
+            [-7, -2, true],  // A0
+
+            // Second 4-bit number (B)
+            [7, -2, true],   // B3
+            [5, -2, true],   // B2
+            [3, -2, true],   // B1
+            [1, -2, true],   // B0
+
+            // Borrow-in (B_in)
+            [9, 0, true],   // Borrow-in (B_in)
+
+            // Output difference (D)
+            [-1, 2, false],  // D3
+            [-3, 2, false],  // D2
+            [-5, 2, false],  // D1
+            [-7, 2, false],  // D0
+            [1, 2, false],   // Borrow Out (B4)
+        ];
+
+        initializeCircuit(pixel, pins, 17, 3);
+
+        // Read inputs
+        var A = [
+            checkPin(pixel, pins, 0),
+            checkPin(pixel, pins, 1),
+            checkPin(pixel, pins, 2),
+            checkPin(pixel, pins, 3)
+        ];
+
+        var B = [
+            checkPin(pixel, pins, 4),
+            checkPin(pixel, pins, 5),
+            checkPin(pixel, pins, 6),
+            checkPin(pixel, pins, 7)
+        ];
+
+        var B_in = checkPin(pixel, pins, 8); // Borrow-in
+
+        // Calculate the difference and borrow
+        var difference = [];
+        var borrow = B_in;
+
+        for (var i = 0; i < 4; i++) {
+            var bitDifference = A[i] - B[i] - borrow;
+            difference[i] = (bitDifference + 2) % 2; // Current bit difference
+            borrow = bitDifference < 0 ? 1 : 0; // Borrow for next bit
+        }
+
+        // Output the difference
+        setPin(pixel, pins, 9, difference[0]);   // D0
+        setPin(pixel, pins, 10, difference[1]);  // D1
+        setPin(pixel, pins, 11, difference[2]);  // D2
+        setPin(pixel, pins, 12, difference[3]);  // D3
+        setPin(pixel, pins, 13, borrow);         // Borrow Out (B4)
+    }
+};
+
 function general_clock(speed, s2) {
 	return function(pixel){
 		for (var i = 0; i < adjacentCoords.length; i++) {
@@ -1343,6 +1464,7 @@ elements.custom_RGB_led = {
 		];
 
 		var color = { color: cc_scaleList([(l[0] * 2) + l[1], (l[2] * 2) + l[3], (l[4] * 2) + l[5]], (255 / 3) * 10) };
+		if (color.color.some(value => isNaN(value))) {return;}
 
 		if (lightmapEnabled && color.color[0] && color.color[1], color.color[2]) {
 			lightmap[Math.floor(pixel.y / lightmapScale)][Math.floor(pixel.x / lightmapScale)] = color;
@@ -1372,7 +1494,7 @@ var addDisplayCallback = function(pixel, pins, w, h) {
 			if (!(0 <= px && px < width && 0 <= py && py < height)) {continue;}
 
 			deletePixel(px, py);
-			createPixel("art", px, py);
+			createPixel("displayPixel", px, py);
 			pixelMap[px][py].color = "rgb(16, 24, 32)";
 		}
 	}
@@ -1408,7 +1530,7 @@ elements.simple_seven_segment_display = {
 				var px = pixel.x + x;
 				var py = pixel.y + y;
 
-				if (pixelMap[px][py] && pixelMap[px][py].element == "art") {
+				if (pixelMap[px][py] && pixelMap[px][py].element == "displayPixel") {
 					if (hexGrid[y - 2][x - 1]) {
 						pixelMap[px][py].color = "rgb(16, 230, 120)";
 					} else {
@@ -1460,7 +1582,7 @@ elements.simple_double_seven_segment_display = {
 				var px = pixel.x + x;
 				var py = pixel.y + y;
 
-				if (pixelMap[px][py] && pixelMap[px][py].element == "art") {
+				if (pixelMap[px][py] && pixelMap[px][py].element == "displayPixel") {
 					if (hexGrid[y - 2][x - 1]) {
 						pixelMap[px][py].color = "rgb(16, 230, 120)";
 					} else {
@@ -1476,7 +1598,7 @@ elements.simple_double_seven_segment_display = {
 				var px = pixel.x + x;
 				var py = pixel.y + y;
 
-				if (pixelMap[px][py] && pixelMap[px][py].element == "art") {
+				if (pixelMap[px][py] && pixelMap[px][py].element == "displayPixel") {
 					if (hexGrid2[y - 2][x - 5]) {
 						pixelMap[px][py].color = "rgb(16, 230, 120)";
 					} else {
@@ -1487,117 +1609,6 @@ elements.simple_double_seven_segment_display = {
 		}
 	}
 };
-
-function general_display(w, h) {
-    return function(pixel) {
-        var pins = [];
-
-        // X input (X0-Xn)
-        for (var i = 0; i < Math.ceil(Math.log2(w)); i++) {
-            pins.push([-1, (Math.ceil(Math.log2(w)) - i) * 2 - 1, true]);
-        }
-
-        // Y input (Y0-Yn)
-        for (var i = 0; i < Math.ceil(Math.log2(h)); i++) {
-            pins.push([(Math.ceil(Math.log2(h)) - i) * 2 - 1, -1, true]);
-        }
-
-        // Color input
-        pins.push([11, -1, true]);
-
-        // Reset pin
-        pins.push([13, -1, true]);
-
-        // Clock input
-        pins.push([15, -1, true]);
-
-        // Initialize the circuit with the necessary pins
-        initializeCircuit(pixel, pins, w + 2, h + 2, false, pixel.circuitRotation, addDisplayCallback);
-
-        // Read inputs
-        var X = [];
-        for (var i = 0; i < Math.ceil(Math.log2(w)); i++) {
-            X.push(checkPin(pixel, pins, i));
-        }
-
-        var Y = [];
-        for (var i = 0; i < Math.ceil(Math.log2(h)); i++) {
-            Y.push(checkPin(pixel, pins, Math.ceil(Math.log2(w)) + i));
-        }
-
-        var color = checkPin(pixel, pins, pins.length - 3);
-        var reset = checkPin(pixel, pins, pins.length - 2);
-        var clock = checkPin(pixel, pins, pins.length - 1);
-
-        // Decode X and Y inputs to determine the pixel position
-        var x_pos = 0;
-        for (var i = 0; i < X.length; i++) {
-            x_pos += (X[i] ? 1 : 0) << i;
-        }
-
-        var y_pos = 0;
-        for (var i = 0; i < Y.length; i++) {
-            y_pos += (Y[i] ? 1 : 0) << i;
-        }
-
-        // Display dimension check
-        if (x_pos >= w || y_pos >= h) return;
-
-        var px = pixel.x + 1 + x_pos; // Adjust for the display position
-        var py = pixel.y + 1 + y_pos;
-
-        // Handle reset functionality
-        if (reset) {
-            for (var y = 1; y <= h; y++) {
-                for (var x = 1; x <= w; x++) {
-                    var reset_px = pixel.x + x;
-                    var reset_py = pixel.y + y;
-                    if (pixelMap[reset_px] && pixelMap[reset_px][reset_py] && pixelMap[reset_px][reset_py].element == "art") {
-                        pixelMap[reset_px][reset_py].color = "rgb(16, 230, 120)";
-                    }
-                }
-            }
-            return;
-        }
-
-        // Update display on clock pulse
-        if (clock) {
-            if (pixelMap[px] && pixelMap[px][py] && pixelMap[px][py].element == "art") {
-                // Set the pixel color
-                pixelMap[px][py].color = color ? "rgb(16, 230, 120)" : "rgb(16, 230, 120)";
-            }
-        }
-    };
-}
-
-elements.basic_mono_display_8x8 = {
-    cc_stableTick: general_display(8, 8),
-};
-
-elements.basic_mono_display_16x8 = {
-    cc_stableTick: general_display(16, 8),
-};
-
-elements.basic_mono_display_16x16 = {
-    cc_stableTick: general_display(16, 16),
-};
-
-elements.basic_mono_display_32x16 = {
-    cc_stableTick: general_display(32, 16),
-};
-
-elements.basic_mono_display_32x32 = {
-    cc_stableTick: general_display(32, 32),
-};
-
-elements.basic_mono_display_64x32 = {
-    cc_stableTick: general_display(64, 32),
-};
-
-elements.basic_mono_display_64x64 = {
-    cc_stableTick: general_display(64, 64),
-};
-
 
 function malfunction_chip(pixel) {
 	var emptySpaces = [];
@@ -1629,18 +1640,23 @@ function malfunction_chip(pixel) {
 	}
 }
 
-//elements.display = {
-//	color: "#444444",
-//	category: "logic",
-//	state: "solid",
-//	behavior: behaviors.WALL,
-//	hoverStat: function(pixel) {
-//		return `Circuit: ${pixel.corePosition}`;
-//	},
-//	cc_stableTick: function(pixel) {
-//
-//	}
-//};
+elements.displayPixel = {
+	color: "#000000",
+	category: "logic",
+	state: "solid",
+	behavior: behaviors.WALL,
+	tick: function(pixel) {
+		if (pixel.start == pixelTicks) {
+			pixel.color = "rgb(16, 24, 32)";
+		}
+
+		if (lightmapEnabled && pixel.color) {
+			var x = Math.floor(pixel.x / lightmapScale);
+			var y = Math.floor(pixel.y / lightmapScale);
+			lightmap[y][x] = { color: scaleList(rgbToArray(pixel.color), 0.2) };
+		}
+	}
+};
 
 elements.circuit_material = {
 	color: "#444444",
@@ -1777,13 +1793,24 @@ elements.logic_corrupter_machine = {
 	},
 }
 
-elements.circuitCoreTutorial = {
-	color: "#33FF66",
-	category: "logic",
-	onSelect: function() {
-		window.open("https://redbirdly.github.io/circuitcore_tutorial.html");
-	},
-}
+// Create a new anchor element
+var tutorialLink = document.createElement("a");
+
+// Set the link's text content
+tutorialLink.textContent = "CircuitCore Tutorial";
+
+// Set the link's href attribute to point to the tutorial
+tutorialLink.href = "https://redbirdly.github.io/circuitcore_tutorial.html";
+
+// Set the link to open in a new tab
+tutorialLink.target = "_blank";
+
+// Style the link (optional)
+tutorialLink.style.color = "#33FF66"; // Set the color of the link
+tutorialLink.style.fontSize = "14px"; // Set the font size
+
+// Append the link to the body of the webpage
+document.body.appendChild(tutorialLink);
 
 // cc_ is circuit core prefix
 const cc_BROWN = "#773317";
@@ -1800,6 +1827,7 @@ const cc_WHITE = "#DDDDDD";
 
 var circuits = [
 	// Misc and I/O: brown
+	{ circuit: elements.four_bit_selector_circuit, color: cc_BROWN, size: [17, 3, true] },
 	{ circuit: elements.four_bit_enabler_circuit, color: cc_BROWN, size: [9, 3, true] },
 	{ circuit: elements.randomizer, color: cc_BROWN },
 	{ circuit: elements.four_bit_randomizer_circuit, color: cc_BROWN, size: [9, 3, true] },
@@ -1841,6 +1869,7 @@ var circuits = [
 	{ circuit: elements.four_bit_D_flip_flop_circuit, color: cc_LIGHT_BLUE, size: [9, 3, true] },
 	// Addition/subtraction arithmetic: blue
 	{ circuit: elements.four_bit_adder_circuit, color: cc_BLUE, size: [17, 3, true] },
+	{ circuit: elements.four_bit_subtractor_circuit, color: cc_BLUE, size: [17, 3, true] },
 	{ circuit: elements.four_bit_incrementer_circuit, color: cc_BLUE, size: [9, 3, true] },
 	// Complex circuits: lavender
 	// Clocks: pink
@@ -1852,13 +1881,6 @@ var circuits = [
 	{ circuit: elements.simple_seven_segment_display, color: cc_WHITE, size: [5, 9, false] },
 	{ circuit: elements.simple_double_seven_segment_display, color: cc_WHITE, size: [9, 9, false] },
 	{ circuit: elements.custom_RGB_led, color: cc_WHITE, size: [3, 3, true] },
-	{ circuit: elements.basic_mono_display_8x8, color: cc_WHITE, size: [10, 10, false] },
-	{ circuit: elements.basic_mono_display_16x8, color: cc_WHITE, size: [18, 10, false] },
-	{ circuit: elements.basic_mono_display_16x16, color: cc_WHITE, size: [18, 18, false] },
-	{ circuit: elements.basic_mono_display_32x16, color: cc_WHITE, size: [34, 18, false] },
-	{ circuit: elements.basic_mono_display_32x32, color: cc_WHITE, size: [34, 34, false] },
-	{ circuit: elements.basic_mono_display_64x32, color: cc_WHITE, size: [66, 34, false] },
-	{ circuit: elements.basic_mono_display_64x64, color: cc_WHITE, size: [66, 66, false] },
 ];
 
 circuits.forEach(circuitInfo => {
@@ -1947,15 +1969,28 @@ function drawCircuitExtras() {
 }
 
 function runLogicTick() {
-	for (var i = 0;i < currentPixels.length;i++) {
-		var pixel = currentPixels[i];
-		if (elements[pixel.element].category == "logic") {
-			if (elements[pixel.element].cc_stableTick) {
-				elements[pixel.element].cc_stableTick(pixel);
+	if (paused) {return;}
+	for (var j = 0;j < 1;j++) {
+		for (var i = 0;i < currentPixels.length;i++) {
+			var pixel = currentPixels[i];
+			if (elements[pixel.element].category == "logic") {
+				if (elements[pixel.element].cc_stableTick) {
+					elements[pixel.element].cc_stableTick(pixel);
+				}
 			}
 		}
 	}
 }
 
+function stabilizeLogicGates() {
+	var logicgatesElements = ["output","logic_wire","not_gate","and_gate","xor_gate","or_gate","nand_gate","nor_gate","nxor_gate","E2L_lever","E2L_button","L2E_constant","logic_transmitter","logic_receiver","logic_shock","logic_unshock"]
+
+	for (var i = 0;i < logicgatesElements.length;i++) {
+		elements[logicgatesElements[i]].cc_stableTick = elements[logicgatesElements[i]].tick;
+		elements[logicgatesElements[i]].tick = null;
+	}
+}
+
 renderPostPixel(drawCircuitExtras);
 runEveryTick(runLogicTick);
+runAfterLoad(stabilizeLogicGates);
