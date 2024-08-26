@@ -431,7 +431,7 @@ elements.destroyable_superheater = {
     category:"machines",
 	stateLow:["iron","copper"],
 	tempLow: -7,
-	breakInto:["metal_scrap","oxidixed_copper"],
+	breakInto:["metal_scrap","oxidized_copper"],
 },
 elements.destroyable_heater = {
     color: "#881111",
@@ -443,7 +443,7 @@ elements.destroyable_heater = {
     category:"machines",
 	stateLow:["iron","copper"],
 	tempLow: -7,
-	breakInto:["metal_scrap","oxidixed_copper"],
+	breakInto:["metal_scrap","oxidized_copper"],
 },
 elements.destroyable_cooler = {
     color: "#111188",
@@ -455,7 +455,7 @@ elements.destroyable_cooler = {
     category:"machines",
 	stateHigh:["iron","copper"],
 	tempHigh: 49,
-	breakInto:["metal_scrap","oxidixed_copper"],
+	breakInto:["metal_scrap","oxidized_copper"],
 },
 elements.destroyable_freezer = {
     color: "#1111dd",
@@ -2596,6 +2596,27 @@ elements.scuffed_circle_brush = {
         } 
     }
 }
+elements.scuffed_triangle_brush = {
+    category: "special",
+    color: elements.drag.color,
+    excludeRandom: true,
+    state: "solid",
+    movable: false,
+    onSelect: function(){
+		var answerE = prompt("Element of the brush.",(circleElem||undefined));
+        if (!answerE) { return }
+		circleElem = mostSimilarElement(answerE);
+    },
+    tick: function(pixel){
+        let radius = mouseSize/2
+        if ((pixel.y - mousePos.y + mouseSize > 2 * (pixel.x - mousePos.x) + 0.5 * mouseSize) && (pixel.y - mousePos.y + mouseSize > -2 * (pixel.x - mousePos.x) + 0.5 * mouseSize)) {
+            deletePixel(pixel.x, pixel.y)
+            createPixel(circleElem, pixel.x, pixel.y)
+        } else {
+            deletePixel(pixel.x, pixel.y)
+        }
+    }
+}
 function randomIntFromInterval(min, max) { // min and max included 
     return Math.floor(Math.random() * (max - min + 1) + min)
   }
@@ -3098,6 +3119,36 @@ let pistonStart = 0
 let pistonEnd = 0
 let pistonDistance = 1
 let pistonCooldown = 10
+let pistonRepeat = 1
+let pistonRepeatCooldown = 1
+function pistonEmit(pixel, i){
+    pixel.cooldown = pixel.pistonCooldown
+    pixel.rcooldown = pixel.pistonRepeatCooldown
+                    var dir = [0-squareCoords[i][0], 0-squareCoords[i][1]]
+                    var startx = pixel.x+(dir[0]*(pixel.pistonStart+1))
+                    var starty = pixel.y+(dir[1]*(pixel.pistonStart+1))
+                    var magnitude = pixel.pistonEnd
+                    var endx = startx+(magnitude*dir[0])
+                    var endy = starty+(magnitude*dir[1])
+                 //   console.log("Direction seems to be " + dir)
+                 var jcoords
+                 if (pixel.pullOrPush == 1){jcoords = lineCoords(startx, starty, endx, endy, 1)}
+                 else {jcoords = lineCoords(endx, endy, startx, starty, 1)}
+                 
+                 
+                 //   console.log(startx + " is the starting x, " + starty + " is the starting y, " + endx + " is the ending x, " + endy + " is the ending y. Result is " + jcoords)
+                    let pCoord = jcoords[0]
+                    for (var j = 0; j < jcoords.length; j++) {
+                        var lcoord = jcoords[j];
+                        var lx = lcoord[0];
+                        var ly = lcoord[1];
+                        if (!isEmpty(lx, ly, true)){
+                            tryMove(pixelMap[lx][ly], pCoord[0], pCoord[1], null, true)
+                        }
+                        pCoord[0] = lx;
+                        pCoord[1] = ly;
+                    }
+}
 elements.specific_piston_ray_emitter = {
     color: "#517597",
     behavior: behaviors.WALL,
@@ -3115,6 +3166,12 @@ elements.specific_piston_ray_emitter = {
         pistonDistance = ans4
         var ans5 = parseInt(prompt("How many ticks should it wait to be charged again?", "6"))
         pistonCooldown = ans5
+        var ans6 = parseInt(prompt("How many times should it repeat the push/pulling?", "1"))
+        pistonRepeat = ans6
+        if (pistonRepeat != 1){
+            var ans7 = parseInt(prompt("How many ticks should it wait between repeats?", "1"))
+            pistonRepeatCooldown = ans7
+        }
     },
     tick: function(pixel){
         if (pixelTicks == pixel.start){
@@ -3123,8 +3180,17 @@ elements.specific_piston_ray_emitter = {
             pixel.pistonEnd = pistonEnd
             pixel.pistonDistance = pistonDistance
             pixel.pistonCooldown = pistonCooldown
+            pixel.pistonRepeat = pistonRepeat
+            pixel.pistonRepeatCooldown = pistonRepeatCooldown
+        }
+        if (!pixel.pistonRepeat){
+            pixel.pistonRepeat = pistonRepeat
+            pixel.pistonRepeatCooldown = pistonRepeatCooldown
         }
         if (!pixel.cooldown){pixel.cooldown = 0}
+        if (!pixel.rcooldown){pixel.rcooldown = 0}
+        if (!pixel.repeatAmounts){pixel.repeatAmounts = 0}
+        if (!pixel.fakei){pixel.fakei = 0}
         if (pixel.cooldown < 1){
         for (var i = 0; i < adjacentCoords.length; i++) {
             var coord = squareCoords[i];
@@ -3132,34 +3198,21 @@ elements.specific_piston_ray_emitter = {
             var y = pixel.y+coord[1];
             if (!isEmpty(x,y, true)){
                 if (pixelMap[x][y].charge && (pixelMap[x][y].element == "wire" || pixelMap[x][y].element == "insulated_wire")){
+                    pixel.repeatAmounts = pixel.pistonRepeat
+                    pixel.fakei = i
                     for (let r = 0; r < pixel.pistonDistance; r++){
-                    pixel.cooldown = pixel.pistonCooldown
-                    var dir = [0-squareCoords[i][0], 0-squareCoords[i][1]]
-                    var startx = pixel.x+(dir[0]*(pixel.pistonStart+1))
-                    var starty = pixel.y+(dir[1]*(pixel.pistonStart+1))
-                    var magnitude = pixel.pistonEnd
-                    var endx = startx+(magnitude*dir[0])
-                    var endy = starty+(magnitude*dir[1])
-                 //   console.log("Direction seems to be " + dir)
-                 var jcoords
-                 if (pixel.pullOrPush == 1){jcoords = lineCoords(startx, starty, endx, endy, 1)}
-                 else {jcoords = lineCoords(endx, endy, startx, starty, 1)}
-                 
-                 //   console.log(startx + " is the starting x, " + starty + " is the starting y, " + endx + " is the ending x, " + endy + " is the ending y. Result is " + jcoords)
-                    let pCoord = jcoords[0]
-                    for (var j = 0; j < jcoords.length; j++) {
-                        var lcoord = jcoords[j];
-                        var lx = lcoord[0];
-                        var ly = lcoord[1];
-                        if (!isEmpty(lx, ly, true)){
-                            tryMove(pixelMap[lx][ly], pCoord[0], pCoord[1], null, true)
-                        }
-                        pCoord[0] = lx;
-                        pCoord[1] = ly;
-                    }}
+                        pistonEmit(pixel, i);
+                    }
+                    pixel.repeatAmounts--
                 }
             }
-        }} else {pixel.cooldown -= 1}
+        }} else {pixel.cooldown --}
+        if (pixel.rcooldown < 1 && pixel.repeatAmounts > 0){
+            for (let r = 0; r < pixel.pistonDistance; r++){
+                pistonEmit(pixel, pixel.fakei);
+            }
+            pixel.repeatAmounts--
+        } else {pixel.rcooldown --}
     },
     insulate: true,
 }
@@ -3609,5 +3662,62 @@ elements.copycat_filler = {
                 drawSquare(ctx, "rgb("+rgb.r+","+rgb.g+","+rgb.b+")", pixel.x, pixel.y);
             }
         }
+    }
+}
+/*
+top left: canvasCoord(x), canvasCoord(y)
+top right: canvasCoord(x)+pixelSize, canvasCoord(y)
+bottom left: canvasCoord(x), canvasCoord(y)+pixelSize
+bottom right: canvasCoord(x)+pixelSize, canvasCoord(y)+pixelSize
+*/
+adjacentSidesToCanvas = function(x, y, px, py){
+    if (x == 0 && y == -1){
+        return [canvasCoord(px)+(0.5*pixelSize), canvasCoord(py)]
+    }
+    else if (x == 0 && y == 1){
+        return [canvasCoord(px)+(0.5*pixelSize), canvasCoord(py)+pixelSize]
+    }
+    else if  (x == -1 && y == 0){
+        return [canvasCoord(px), canvasCoord(py)+(0.5*pixelSize)]
+    }
+    else if  (x == 1 && y == 0){
+        return [canvasCoord(px)+pixelSize, canvasCoord(py)+(0.5*pixelSize)]
+    }
+}
+drawRectangle = function(ctx, color, x, y, width, height, xoffset, yoffset){
+    ctx.fillStyle = color;
+    ctx.fillRect(canvasCoord(x+xoffset), canvasCoord(y+yoffset), pixelSize*width, pixelSize*height)
+}
+elements.thin_pixel = {
+    color: "#747474",
+    behavior: behaviors.WALL,
+    category: "special",
+    renderer: function(pixel, ctx){
+        let differentAdjacent = [];
+                for (let i = 0; i < adjacentCoords.length; i++) {
+                    let x = adjacentCoords[i][0] + pixel.x;
+                    let y = adjacentCoords[i][1] + pixel.y;
+                    if (!isEmpty(x, y, true) && pixelMap[x][y].element == "thin_pixel") {
+                        differentAdjacent.push(adjacentCoords[i]);
+                    }
+                }
+                ctx.globalAlpha = 1
+                differentAdjacent.forEach(adj => {
+                    let canvasadjacentCoords = adjacentSidesToCanvas(adj[0], adj[1], pixel.x, pixel.y);
+                   // if (!canvasadjacentCoords){
+                  //      console.log(adj)
+                  //      return;
+                  //  }
+                    //console.log(canvasadjacentCoords);
+                    ctx.beginPath();
+                    ctx.moveTo(canvasCoord(pixel.x)+(0.5*pixelSize), canvasCoord(pixel.y)+(0.5*pixelSize));
+                    ctx.lineTo(canvasadjacentCoords[0], canvasadjacentCoords[1]);
+                    ctx.strokeStyle = pixel.color;
+                    if (pixelSize*0.24>=2){ctx.lineWidth = pixelSize*0.24}else{ctx.lineWidth = 2}
+                    ctx.stroke();
+                    //console.log("line")
+                });
+                ctx.fillStyle = pixel.color;
+                ctx.fillRect(canvasCoord(pixel.x+0.38), canvasCoord(pixel.y+0.38), pixelSize*0.24, pixelSize*0.24);
     }
 }
