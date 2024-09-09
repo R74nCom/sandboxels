@@ -1,0 +1,76 @@
+elements.infectious_coin = {
+    name: "gold_coin",
+    hidden: true,
+    color: ["#fff0b5","#986a1a","#f0bb62"],
+    behavior: behaviors.POWDER,
+    tick: function(pixel) {
+        var coords = rectCoords(pixel.x-1,pixel.y-1,pixel.x+1,pixel.y+3);
+        for (var i = 0; i < coords.length; i++) { // Burn adjacent pixels
+            var x = coords[i].x;
+            var y = coords[i].y;
+            if (!isEmpty(x,y,true)) {
+                elements.infectious_coin.tool(pixelMap[x][y]);
+            }
+        }
+    },
+    tool: function(pixel) {
+        if (elements[pixel.element].id === elements.midas_touch.id) { return; }
+        if (elements.midas_touch.reactions[pixel.element]) { return; }
+        if (Math.random() < (elements[pixel.element].hardness || 0.25)) { return; }
+        if (elements[pixel.element].state === "liquid") {
+            changePixel(pixel,"midas_touch");
+            }
+        }
+        else if (elements[pixel.element].state === "gas") {
+            changePixel(pixel,"spray_paint");
+            pixel.color = pixelColorPick(pixel,["#ffdf5e","#ffe682"]);
+        }
+        else if (elements[pixel.element].movable) {
+            if (elements[pixel.element].id === elements.midas_touch.id) { return; } 
+            else {
+            changePixel(pixel,"infectious_coin");
+        }
+        else {
+            changePixel(pixel,"gold");
+        }
+    },
+    canPlace: true,
+    reactions: {
+        "gold":{}, 
+        "gold_coin":{}, 
+        "infectious_coin":{}, 
+        "rose_gold":{}, 
+        "blue_gold":{}, 
+        "purple_gold":{}, 
+        "electrum":{},
+        "molten_gold":{}, 
+        "pipe":{}, 
+    };
+    density: 193,
+    state: "solid",
+    category:"special",
+},
+
+elements.midas_touch.tool = { 
+        function(pixel) {
+            if (elements[pixel.element].id === elements.midas_touch.id) { return; }
+            if (elements.midas_touch.reactions[pixel.element]) { return; }
+            if (Math.random() < (elements[pixel.element].hardness || 0.25)) { return; }
+            if (elements[pixel.element].state === "liquid") {
+                changePixel(pixel,"midas_touch");
+            }
+            else if (elements[pixel.element].state === "gas") {
+                changePixel(pixel,"spray_paint");
+                pixel.color = pixelColorPick(pixel,["#ffdf5e","#ffe682"]);
+            }
+            else if (elements[pixel.element].movable) {
+                if (elements[pixel.element].id === elements.midas_touch.id) { return; } 
+                else {
+                    changePixel(pixel,"infectious_coin");
+                }
+            }
+            else {
+                changePixel(pixel,"gold");
+            }
+    },
+},
