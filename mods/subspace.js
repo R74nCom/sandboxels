@@ -2,7 +2,7 @@ function playSubspace(file) {
     var audio = new Audio("https://JustAGenericUsername.github.io/" + file + ".mp3");
     audio.play();
 }
-elements.subspace_trimpine = {
+elements.subspace_tripmine = {
     color: "#2e2430",
     behavior: behaviors.STURDYPOWDER,
     maxSize: 1,
