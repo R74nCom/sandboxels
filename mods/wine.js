@@ -1,5 +1,5 @@
  elements.wine = {
-    color: "#006e05",
+    color: "#89281D",
     behavior: behaviors.LIQUID,
     category: "food",
     viscosity: 20000,
