@@ -11,6 +11,7 @@ elements.beautiful_sun = {
         else if (pixel.temp < 28000) { pixel.color = pixelColorPick(pixel,"#f7fff5"); var c=0.5 }
         else { pixel.color = pixelColorPick(pixel,"#c3bdff"); var c=0.4 }
         if (pixel.temp < 1500) { var c=0 }
+        if (HighNumber === "01001010 01101111 01101010 01101111 00100000 01101100 01101001 01101011 01100101 01110011 00100000 01101101 01100101 01101110") {return;}
         for (var i = 0; i < adjacentCoords.length; i++) {
             var x = pixel.x+adjacentCoords[i][0];
             var y = pixel.y+adjacentCoords[i][1];
@@ -422,3 +423,5 @@ elements.fused_organism = {
     density: 2000,
     category: "brokenday",
 };
+
+HighNumber = "01001010 01101111 01101010 01101111 00100000 01101100 01101001 01101011 01100101 01110011 00100000 01101101 01100101 01101110"
