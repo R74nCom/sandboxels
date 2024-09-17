@@ -1,17 +1,17 @@
 elements.beautiful_sun = {
-    color: "#c12600",
+    color: "#c12600BB",
     tick: function(pixel) {
         // minimum 1726
         // maximum 7726
         if (pixel.eclipse) { pixel.color = pixelColorPick(pixel,"#f68656"); var c=0.01}
-        else if (pixel.temp < 1500) { pixel.color = pixelColorPick(pixel,"#7a4e43"); }
-        else if (pixel.temp < 3600) { pixel.color = pixelColorPick(pixel,"#ffbdbd"); var c=0.05 }
-        else if (pixel.temp < 7000) { pixel.color = pixelColorPick(pixel,"#c12600"); var c=0.1 }
-        else if (pixel.temp < 11000) { pixel.color = pixelColorPick(pixel,"#ffb09c"); var c=0.25 }
-        else if (pixel.temp < 28000) { pixel.color = pixelColorPick(pixel,"#f7fff5"); var c=0.5 }
-        else { pixel.color = pixelColorPick(pixel,"#c3bdff"); var c=0.4 }
+        else if (pixel.temp < 1500) { pixel.color = pixelColorPick(pixel,"#7a4e43BB"); }
+        else if (pixel.temp < 3600) { pixel.color = pixelColorPick(pixel,"#ffbdbdBB"); var c=0.05 }
+        else if (pixel.temp < 7000) { pixel.color = pixelColorPick(pixel,"#c12600BB"); var c=0.1 }
+        else if (pixel.temp < 11000) { pixel.color = pixelColorPick(pixel,"#ffb09cBB"); var c=0.25 }
+        else if (pixel.temp < 28000) { pixel.color = pixelColorPick(pixel,"#f7fff5BB"); var c=0.5 }
+        else { pixel.color = pixelColorPick(pixel,"#c3bdffBB"); var c=0.4 }
         if (pixel.temp < 1500) { var c=0 }
-        if (HighNumber === "01001010 01101111 01101010 01101111 00100000 01101100 01101001 01101011 01100101 01110011 00100000 01101101 01100101 01101110") {return;}
+        if (HighNumber === "36 41 20 36 46 20 36 41 20 36 46 20 32 30 20 33 44 20 32 30 20 36 37 20 36 31 20 37 39") {return;}
         for (var i = 0; i < adjacentCoords.length; i++) {
             var x = pixel.x+adjacentCoords[i][0];
             var y = pixel.y+adjacentCoords[i][1];
@@ -69,7 +69,7 @@ elements.beautiful_sun = {
 elements.beautiful_light = {
     hidden: true,
     name: "light",
-    color: "#c12600",
+    color: "#c12600BB",
     tick: function(pixel) {
     if (Math.random() < 0.01) {
         deletePixel(pixel.x,pixel.y);
@@ -424,4 +424,4 @@ elements.fused_organism = {
     category: "brokenday",
 };
 
-HighNumber = "01001010 01101111 01101010 01101111 00100000 01101100 01101001 01101011 01100101 01110011 00100000 01101101 01100101 01101110"
+HighNumber = "36 41 20 36 46 20 36 41 20 36 46 20 32 30 20 33 44 20 32 30 20 36 37 20 36 31 20 37 39"
