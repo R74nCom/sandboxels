@@ -1,3 +1,4 @@
+settings.textures = 0;
 if (elements.dirt) {elements.dirt.color = [
     "#9e6b4b",
     "#9e6b4b",
@@ -153,3 +154,16 @@ if (elements.molten_magnesium) {delete elements.molten_magnesium.color;}
 if (elements.n_explosion) {elements.n_explosion.color = ["#ffb48f","#ffd991","#ffad91"];}
 if (elements.supernova) {elements.supernova.color = ["#ffb48f","#ffd991","#ffad91"];}
 if (elements.pop) {elements.pop.color = ["#ffb48f","#ffd991","#ffad91"];}
+if (elements.border) {elements.border.color = "#00ffff";}
+if (elements.glitter) {elements.glitter.color = ["#ace4fb","#d9fcff","#8f6eb2","#fdeafc","#180e1c","#6b2778"];}
+if (elements.yeast && elements.yeast.reactions) {
+    if (elements.yeast.reactions.grape) {elements.yeast.reactions.grape.color2 = "#916851";}
+    if (elements.yeast.reactions.juice) {elements.yeast.reactions.juice.color2 = "#916851";}
+}
+if (elements.freeze_ray) {elements.freeze_ray.color = ["#0000ff","#5500ff"];}
+if (elements.hydrogen) {delete elements.hydrogen.fireColor;}
+if (elements.steel) {delete elements.steel.colorPattern;}
+if (elements.galvanized_steel) {delete elements.galvanized_steel.colorPattern;}
+if (elements.bird) {delete elements.bird.stateHighColor;}
+if (elements.frog) {delete elements.frog.stateHighColor;}
+if (elements.fallout) {elements.fallout.color = ["#63b85a","#448044","#598044","#7bb85a"];}

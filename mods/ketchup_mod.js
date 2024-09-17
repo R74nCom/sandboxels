@@ -26,22 +26,20 @@ elements.ketchup.stateLow = "frozen_ketchup";
 elements.ketchup.tempHigh = 100;
 elements.ketchup.stateHigh = "ketchup_gas";
 elements.ketchup.density = 1092;
-elements.ketchup.reactions = {
-    "mayonnaise": { "elem1": null, "elem2": "fry_sauce" },
-    "plague": { "elem1": "poisoned_ketchup", "elem2": null},
-    "infection": { "elem1": "poisoned_ketchup", "elem2": null},
-    "fallout": { "elem1": "poisoned_ketchup", "chance":25},
-    "gloomwind": { "elem1": "poisoned_ketchup", "elem2": null},
-};
+elements.ketchup.reactions ??= {};
+elements.ketchup.reactions.mayonnaise = { "elem1": null, "elem2": "fry_sauce" };
+elements.ketchup.reactions.plague = { "elem1": "poisoned_ketchup", "elem2": null};
+elements.ketchup.reactions.infection = { "elem1": "poisoned_ketchup", "elem2": null};
+elements.ketchup.reactions.fallout = { "elem1": "poisoned_ketchup", "chance":25};
+elements.ketchup.reactions.gloomwind = { "elem1": "poisoned_ketchup", "elem2": null};
 
 // making ketchup dirty
-elements.dirt.reactions = {
-    "ketchup": { "elem1": null, "elem2": "dirty_ketchup", "oneway":true},
-};
-elements.ash.reactions.ketchup = { "elem1": null, "elem2": "dirty_ketchup", "oneway":true},
-elements.dust.reactions = {
-    "ketchup": { "elem1": null, "elem2": "dirty_ketchup", "oneway":true},
-};
+elements.dirt.reactions ??= {};
+elements.dirt.reactions.ketchup = { "elem1": null, "elem2": "dirty_ketchup", "oneway":true};
+elements.ash.reactions ??= {};
+elements.ash.reactions.ketchup = { "elem1": null, "elem2": "dirty_ketchup", "oneway":true};
+elements.dust.reactions ??= {};
+elements.dust.reactions.ketchup = { "elem1": null, "elem2": "dirty_ketchup", "oneway":true};
 
 // pyrocumulus reactions
 elements.smoke.reactions.ketchup_cloud = { "elem1": "pyrocumulus", "chance":0.08, "y":[0,15], "setting":"clouds" },
@@ -430,23 +428,8 @@ runAfterLoad(function() {
         ];
         
         // ketchup fairy reaction
-        elements.fairy.reactions = {
-            "fire": { "elem1": "fire_fairy"},
-            "magma": { "elem1": "fire_fairy"},
-            "snow": { "elem1": "ice_fairy"},
-            "ice": { "elem1": "ice_fairy"},
-            "petal": { "elem1": "nature_fairy"},
-            "dirt": { "elem1": "earth_fairy"},
-            "mud": { "elem1": "earth_fairy"},
-            "raincloud": { "elem1": "rain_fairy"},
-            "electric": { "elem1": "thunder_fairy"},
-            "little_star": { "elem1": "stellar_fairy"},
-            "moonrock": { "elem1": "lunar_fairy"},
-            "liquid_light": { "elem1": "light_fairy"},
-            "mushroom_cap": { "elem1": "mushroom_fairy"},
-            "magic": { "elem1": "magic_fairy"},
-            "ketchup": { "elem1": "ketchup_fairy"},
-        };
+        elements.fairy.reactions ??= {};
+		elements.fairy.reactions.ketchup = { "elem1": "ketchup_fairy"};
 
         // f&m only elements
         elements.ketchup_fairy = {

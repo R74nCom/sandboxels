@@ -2,6 +2,18 @@
 // a sandboxels mod that adds pullers
 /*
 ==CHANGELOG==
+  Version 2.0.1
+@voidapex11
+~fixed name of mods category
+
+  Version 2.0.0
+@voidapex11
+~set max size of the mod description to 1
++gravity cells
++black hole
+ it acts like void but it has gravity
+~for modders, the gravity range of black holes and gravity cells is customisable
+
   Version 1.2.1
 @voidapex11
 ~fixed error
@@ -39,7 +51,7 @@ pullerColour = '#e0adb6'
 elements.pullersDesc = {
   color: pullerColour,
   name: 'pullers.js',
-  category: "mods",
+  category: "Mods",
   behavior: behaviors.SELFDELETE,
   tool: function(pixel) {},
   onSelect: function(pixel) {
@@ -254,8 +266,8 @@ elements.up_puller = {
 	state: "solid",
 }
 
-if (enabledMods.includes("pushers.js")) {
-  console.log('compatibility with pushers.js and imovable objects coming in a later update of the pullers.js\neventualy...')
+if (enabledMods.includes("mods/pushers.js")) {
+  console.info('compatibility with pushers.js and imovable objects coming in a later update of the pullers.js')
 }
 
 e_pullerColour='#c3a5d6'
@@ -350,4 +362,118 @@ elements.up_e_puller = {
 	hardness: 0.85,
 	conduct: 1,
 	state: "solid",
+}
+
+function removeItemOnce(arr, value) {
+  var index = arr.indexOf(value);
+  if (index > -1) {
+    arr.splice(index, 1);
+    console.log('hit')
+  }
+  return arr;
+}
+
+elements.gravity_cell = {
+  color: pullerColour,
+  properties: {
+    range: 3,
+  },
+  tick: function(pixel) {
+    pixel.color = ("#" + ((192 + Math.abs((pixelTicks * 4) % 64)).toString(16) + "e0ad").padStart(6, '0'));
+    for (j=0; j <=pixel.range; j++) {
+      
+      // generate the cooridinates that nabough the grav cell
+      cords=circleCoords(pixel.x, pixel.y, j)
+      for (i in cords) {
+        pos = cords[i]
+        if (!isEmpty(pos.x,pos.y)&&!(pos.x==pixel.x&&pos.y==pixel.y)){
+          x = (pixel.x-pos.x)
+          y = (pixel.y-pos.y)
+          
+          if (x<0) {
+            x=-1
+          } else if (x>0){
+            x=1
+          }
+  
+          if (y<0) {
+            y=-1
+          } else if (y>0){
+            y=1
+          }
+          
+          try {
+            tryMove(pixelMap[pos.x][pos.y], pos.x+x, pos.y+y)
+          } catch (error) {}// if there is an error, its probably out of bounds, not my problem :)
+        }
+      }
+    }
+    doDefaults(pixel);
+  },
+  category: "machines",
+  density: 10000,
+  hardness: 1,
+  conduct: 0,
+  state: "solid",  
+}
+
+
+elements.black_hole = {
+  color: elements.void.color,
+  maxSize: 1,
+  properties: {
+    range: 10,
+    immovable: true,
+  },
+  tick: function(pixel) {
+    
+    for (j=0; j <=pixel.range; j++) {
+      
+      // generate the cooridinates that neighbour the black hole
+      cords=circleCoords(pixel.x, pixel.y, j)
+      for (i in cords) {
+        pos = cords[i]
+        if (!isEmpty(pos.x,pos.y)&&!(pos.x==pixel.x&&pos.y==pixel.y)){
+          x = (pixel.x-pos.x)
+          y = (pixel.y-pos.y)
+          
+          if (x<0) {
+            x=-1
+          } else if (x>0){
+            x=1
+          }
+  
+          if (y<0) {
+            y=-1
+          } else if (y>0){
+            y=1
+          }
+          
+          try {
+            tryMove(pixelMap[pos.x][pos.y], pos.x+x, pos.y+y)
+          } catch (error) {}// if there is an error, its probably out of bounds, not my problem :)
+        }
+      }
+    }
+
+    for (let i = -1; i < 2; i++) {
+      for (let j = -1; j < 2; j++) {
+        if (!isEmpty(pixel.x+j,pixel.y+i) && !outOfBounds(pixel.x+j,pixel.y+i)&&!((i==0)&&(j==0))) {
+          deletePixel(pixel.x+j,pixel.y+i)
+        }
+      }
+    }
+
+    doDefaults(pixel);
+  },
+  category: "machines",
+  density: 10000,
+  hardness: 1,
+  temp: -273.15,
+  insulate:true,
+  conduct: 0,
+  excludeRandom: true,
+  noMix: true,
+  state: "solid",  
+  movable: false
 }

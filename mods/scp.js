@@ -1,51 +1,43 @@
+/* mod by nekonico aka doobienecoarc */
+
 window.addEventListener("load", () => { 
     document.getElementById("elementButton-mask_head")?.remove()
 })
-
 window.addEventListener("load", () => { 
     document.getElementById("elementButton-mask_body")?.remove()
 })
-
+window.addEventListener("load", () => { 
+    document.getElementById("elementButton-infected_skin")?.remove()
+})
+window.addEventListener("load", () => { 
+    document.getElementById("elementButton-infected_meat")?.remove()
+})
+window.addEventListener("load", () => { 
+    document.getElementById("elementButton-frozen_infected_meat")?.remove()
+})
 window.addEventListener("load", () => { 
     document.getElementById("elementButton-zombie")?.remove()
 })
-
 window.addEventListener("load", () => { 
     document.getElementById("elementButton-z_head")?.remove()
 })
-
 window.addEventListener("load", () => { 
     document.getElementById("elementButton-z_body")?.remove()
 })
-
 window.addEventListener("load", () => { 
     document.getElementById("elementButton-REDACTED")?.remove()
 })
-
 window.addEventListener("load", () => { 
     document.getElementById("elementButton-hyper_tickle_monster")?.remove()
 })
-
 window.addEventListener("load", () => { 
     document.getElementById("elementButton-calm_682")?.remove()
 })
-
 window.addEventListener("load", () => { 
     document.getElementById("elementButton-mad_682")?.remove()
-})
+}) 
 
-// Coding junk past this point
-
-// also hi jonny ray 
-
-elements.anomalous_essence = {
-    hidden: true,
-    color: "#f7ead0",
-    behavior: behaviors.GAS,
-    category: "scp",
-    state: "gas",
-    density: 0.50,
-}; 
+// Coding junk above this point
 
 elements.SCP_008 = {
     color: "#11111f",
@@ -57,17 +49,22 @@ elements.SCP_008 = {
     reactions: {
         "head": { elem1:null, elem2:"z_head" , chance:0.5 },
         "body": { elem1:null, elem2:"z_body" , chance:0.5 },
+	    "skin": { elem1:null, elem2: ["infected_skin","infected_skin","infected_meat"] , chance:0.3 },
+	    "blood": { elem1:null, elem2:"infection" , chance:0.6 },
+	    "meat": { elem1:null, elem2:"infected_meat" , chance:0.4 },
+	    "rotten_meat": { elem1:null, elem2:"infected_meat" , chance:0.5 },
+	    "frozen_meat": { elem1:null, elem2:"frozen_infected_meat" , chance:0.3 },
         "frog": { elem2:"SCP_008" , chance:0.5 },
         "ant": { elem2:"SCP_008" , chance:0.5 },
         "bee": { elem2:"SCP_008" , chance:0.5 },
         "fish": { elem2:"SCP_008" , chance:0.5 },
         "firefly": { elem2:"SCP_008" , chance:0.5 },
-        "chlorine": { elem1: [null,null,null,null,"anomalous_essence"] , chance:0.01 },
-        "liquid_chlorine": { elem1: [null,null,null,null,"anomalous_essence"] , chance:0.01 },
-        "light": { elem1: [null,null,null,null,"anomalous_essence"] , chance:0.01 },
+        "chlorine": { elem1: null , chance:0.01 },
+        "liquid_chlorine": { elem1: null , chance:0.01 },
+        "light": { elem1: null , chance:0.01 },
     },
-    tempHigh: 1000,
-    stateHigh: [null,null,null,null,"anomalous_essence"],
+    tempHigh: 750,
+    stateHigh: null,
     tempLow: -100,
     stateLow: "frozen_008",
     category: "scp",
@@ -79,15 +76,20 @@ elements.frozen_008 = {
     color: "#242424",
     behavior: [
         "XX|XX|XX",
-        "XX|DL%0.001|X",
-        "M2%1.0|M1%1.0|M2%1.0",
+        "M2%0.001|DL%0.001|M2%0.001",
+        "M2%0.01|M1%1.0|M2%0.01",
     ],
     reactions: {
         "head": { elem1:null, elem2:"z_head" , chance:0.4 },
         "body": { elem1:null, elem2:"z_body" , chance:0.4 },
-        "chlorine": { elem1: [null,null,null,null,"anomalous_essence"] , chance:0.01 },
-        "liquid_chlorine": { elem1: [null,null,null,null,"anomalous_essence"] , chance:0.01 },
-        "light": { elem1: [null,null,null,null,"anomalous_essence"] , chance:0.01 },
+	    "skin": { elem1:null, elem2:"frozen_infected_meat" , chance:0.4 },
+	    "blood": { elem1:null, elem2:"infection" , chance:0.6 },
+	    "meat": { elem1:null, elem2:"frozen_infected_meat" , chance:0.4 },
+	    "rotten_meat": { elem1:null, elem2:"frozen_infected_meat" , chance:0.5 },
+	    "frozen_meat": { elem1:null, elem2:"frozen_infected_meat" , chance:0.4 },
+        "chlorine": { elem1: null , chance:0.01 },
+        "liquid_chlorine": { elem1: null , chance:0.01 },
+        "light": { elem1: null , chance:0.01 },
     },
     temp: -50,
     tempHigh: 0,
@@ -95,6 +97,140 @@ elements.frozen_008 = {
     category: "scp",
     state: "solid",
     density: 95,
+},
+	
+elements.infected_skin = {
+    color: ["#75816B","#4D6B53"],
+    singleColor: true,
+    behavior: [
+        "XX|CR:stench,stench,stench,SCP_008,fly%0.05 AND CH:skin>infected_skin%25|XX",
+        "CH:skin>infected_skin%25|CH:infected_meat%0.5|CH:skin>infected_skin%25",
+        "M2%1|M1%1.0 AND CH:skin>infected_skin%25|M2%1",
+    ],
+    tick: function(pixel) {
+        if (pixel.temp > 40 && Math.random() < 0.003) {
+            for (var i = 0; i < adjacentCoords.length; i++) {
+                var coords = adjacentCoords[i];
+                var x = pixel.x + coords[0];
+                var y = pixel.y + coords[1];
+                if (isEmpty(x,y)) {
+                    pixel.temp -= 20;
+                    createPixel("infection",x,y)
+                    break;
+                }
+            }
+        }
+        if (pixel.temp < 36 && Math.random() < 0.1) {
+            pixel.temp += 1;
+        }
+        doDefaults(pixel);
+    },
+    reactions: {
+        "cell": { chance:0.01, func:function(pixel1,pixel2){
+            changePixel(pixel2,"infected_skin");
+            pixel2.color = pixelColorPick(pixel2,RGBToHex(pixel1.color.match(/\d+/g)))
+            if (pixel1.origColor) { pixel2.origColor = pixel1.origColor }
+        } },
+	    "water": { elem2:"dirty_water" },
+        "salt_water": { elem2:"dirty_water" , chance:0.5 },
+        "sugar_water": { elem2:"dirty_water" },
+        "seltzer": { elem2:"dirty_water" },
+        "meat": { elem2:"infected_meat", chance:0.5 },
+        "rotten_meat": { elem2:"infected_meat", chance:0.5 },
+        "frozen_meat": { elem2:"frozen_infected_meat", chance:0.5 },
+	    "fly": { elem2: ["dead_bug","dead_bug","SCP_008"] , chance:0.2},
+	    "blood": { elem2:"infection" , chance:0.6 },
+	    "skin": { elem2:"infected_skin" , chance:0.6 },
+        "acid": { elem1:"infection" },
+        "soap": { elem1:null, elem2:null, chance:0.005 },
+        "light": { stain1:"#825043" },
+        "poison": { stain1:"#cc564b" },
+        "poison_gas": { stain1:"#cc564b" },
+        "infection": { stain1:"#cc564b" },
+        "pollen": { stain1:"#cc564b" },
+        "dust": { stain1:"#cc564b" },
+        "flea": { stain1:"#cc564b" },
+        "mushroom_spore": { stain1:"#cc564b" },
+        "mushroom_stalk": { stain1:"#cc564b" },
+        "chlorine": { stain1:"#cc564b" },
+        "quicklime": { stain1:"#cc564b" },
+    },
+    category:"solids",
+    breakInto: [null,null,"SCP_008","infection","dust"],
+    temp: 37,
+    tempHigh: 200,
+    stateHigh: ["cooked_meat","cooked_meat","cooked_meat","SCP_008"],
+    tempLow: -18,
+    stateLow: "frozen_008_meat",
+    burn:5,
+    burnTime:400,
+    burnInto: ["cooked_meat","cooked_meat","SCP_008"],
+    state: "solid",
+    density: 1010,
+    conduct: 0.04,
+    movable: false,
+},
+	    
+elements.infected_meat = {
+    color: ["#b8b165","#b89765"],
+    behavior: [
+        "XX|CR:stench,stench,stench,SCP_008,fly%0.25 AND CH:skin>infected_skin%1|XX",
+        "SP%25 AND CH:skin>infected_skin%1|XX|SP%25 AND CH:skin>infected_skin%1",
+        "M2%0.5|M1 AND CH:meat>infected_meat%1|M2%0.5",
+    ],
+    reactions: {
+        "water": { elem2:"dirty_water" },
+        "salt_water": { elem2:"dirty_water" , chance:0.5 },
+        "sugar_water": { elem2:"dirty_water" },
+        "seltzer": { elem2:"dirty_water" },
+        "meat": { elem2:"infected_meat", chance:0.5 },
+        "rotten_meat": { elem2:"infected_meat", chance:0.5 },
+        "frozen_meat": { elem2:"frozen_infected_meat", chance:0.5 },
+	    "fly": { elem2: ["dead_bug","dead_bug","SCP_008"] , chance:0.2},
+	    "blood": { elem2:"infection" , chance:0.6 },
+	    "skin": { elem2:"infected_skin" , chance:0.6 },
+    },
+    tempHigh: 300,
+    stateHigh: ["SCP_008","ash","ammonia"],
+    tempLow: -20,
+    stateLow: "frozen_infected_meat",
+    category:"scp",
+    hidden: true,
+    burn:12,
+    burnTime:200,
+    burnInto:["SCP_008","ash","ammonia"],
+    state: "solid",
+    density: 1005,
+    conduct: 0.1,
+    isFood: true
+},
+
+elements.frozen_infected_meat = {
+    color: ["#82AEC0","#80808F","#9CAC98"],
+    behavior: [
+        "XX|XX|XX",
+        "SP%95|XX|SP%95",
+        "XX|M1 AND CH:frozen_meat,meat>frozen_infected_meat%1|XX",
+    ],
+    reactions: {
+        "water": { elem2:"dirty_water" },
+        "salt_water": { elem1:"infected_meat",elem2:"dirty_water" , chance:0.5 },
+        "sugar_water": { elem2:"dirty_water" },
+        "seltzer": { elem2:"dirty_water" },
+        "meat": { elem2:"frozen_infected_meat", chance:0.5 },
+        "rotten_meat": { elem2:"frozen_infected_meat", chance:0.5 },
+        "frozen_meat": { elem2:"frozen_infected_meat", chance:0.5 },
+	    "fly": { elem2: ["dead_bug","dead_bug","SCP_008"] , chance:0.2},
+	    "blood": { elem2:"infection" , chance:0.6 },
+    },
+    temp: -20,
+    tempHigh: 10,
+    stateHigh: "infected_meat",
+    category:"scp",
+    hidden: true,
+    state: "solid",
+    density: 1005,
+    conduct: 0.05,
 },
 
 elements.possessive_mask = {
@@ -376,7 +512,7 @@ elements.black_acid = {
     tempLow: -58.88,
     burn: 30,
     burnTime: 10,
-    burnInto: ["fire","fire","fire","fire","fire","fire","fire","fire","ash","ash","anomalous_essence"],
+    burnInto: ["fire","fire","fire","fire","fire","fire","fire","fire","ash","ash","fire","fire","fire","fire","ash","ash"],
     fireColor: "#111111",
     state: "liquid",
     density: 1105,
@@ -387,14 +523,14 @@ elements.SCP_055 = {
     color: "#00000f",
     excludeRandom: true,
     behavior: [
-        ["XX","XX","XX"],
-        ["XX","CH:REDACTED","XX"],
-        ["XX","XX","XX"]
+        "XX","XX","XX",
+        "XX","CH:REDACTED","XX",
+        "XX","XX","XX"
     ],
     category: "scp",
     state: "solid",
     tempHigh: 55055055055,
-    stateHigh: ["metal_scrap","smoke","smoke","anomalous_essence"],
+    stateHigh: ["metal_scrap","metal_scrap","smoke","smoke","smoke","smoke","smoke","smoke","smoke",null],
 },
 
 elements.REDACTED = {
@@ -402,12 +538,13 @@ elements.REDACTED = {
     color: "#00000f",
     excludeRandom: true,
     behavior: [
-        ["XX","xx","XX"],
-        ["XX","EX","XX"],
-        ["XX","XX","XX"]
+        "EX|CL|EX",
+        "CL|EX:99999999999999999999999>REDACTED|CL",
+        "EX|CL|EX",
     ],
     category: "scp",
     state: "solid",
+    movable: false,
 },
 
 elements.plague_doctor = {
@@ -442,7 +579,7 @@ elements.doc_head = {
     hidden: true,
 	color: ["#f7ead0","#faf9f6","#e9e6db"],
     category: "scp",
-	breakInto: ["rotten_meat","bone","bone","blood","anomalous_essence"],
+	breakInto: ["rotten_meat","bone","bone","blood"],
 	properties: {
         dead: false
     },
@@ -498,7 +635,7 @@ elements.doc_body = {
     hidden: true,
 	color: ["#11111f","#242424"],
     category: "scp",
-	 breakInto: ["rotten_meat","rotten_meat","bone","blood","anomalous_essence"],
+	 breakInto: ["rotten_meat","rotten_meat","bone","blood"],
 	 properties: {
         dead: false,
         dir: 1,
@@ -629,7 +766,7 @@ elements.z_head = {
     hidden: true,
 	color: ["#75816B","#4D6B53"],
     category: "scp",
-	breakInto: ["rotten_meat","bone","bone","blood","anomalous_essence"],
+	breakInto: ["rotten_meat","bone","bone","blood"],
 	properties: {
         dead: false
     },
@@ -686,7 +823,7 @@ elements.z_body = {
     hidden: true,
 	color: ["#11111f","#069469","#047e99","#7f5fb0"],
     category: "scp",
-	 breakInto: ["rotten_meat","rotten_meat","bone","blood","anomalous_essence"],
+	 breakInto: ["rotten_meat","rotten_meat","bone","blood"],
 	 properties: {
         dead: false,
         dir: 1,
@@ -783,7 +920,7 @@ elements.z_body = {
     burnInto: "rotten_meat",
     forceSaveColor: true,
     reactions: {
-		"head": { elem2 : "z_head" , chance:1.0 },
+        "head": { elem2 : "z_head" , chance:1.0 },
         "body": { elem2 : "z_body" , chance:1.0 },
     },
 },
@@ -820,7 +957,8 @@ elements.shy_head = {
     hidden: true,
 	color: ["#f7ead0","#faf9f6","#e9e6db"],
     category: "scp",
-	breakInto: ["bone","bone","blood","bone","bone","blood","anomalous_essence"],
+	hardness: 1,
+	breakInto: ["rotten_meat","bone","bone","blood","bone","bone","blood","bone","bone","blood","bone","bone","blood"],
 	properties: {
         dead: false
     },
@@ -854,7 +992,7 @@ elements.shy_head = {
                     pixel.dead = pixelTicks;
                 }
             }
-        }
+	}
         // homeostasis
         if (pixel.temp > 37) { pixel.temp -= 1; }
         else if (pixel.temp < 37) { pixel.temp += 1; }
@@ -875,7 +1013,6 @@ elements.shy_head = {
 	"z_body": { elem2: ["infection","infection","rotten_meat","bone",null] },
         "rat": { elem2: ["infection","rotten_meat",null]},
         "frog": { elem2: ["slime",null] },
-        "cell": { elem2: ["dna","water",null] },
         "cancer": { elem2: ["dna","dirty_water",null], },
         "blood": { elem2: null, chance:0.2 },
         "bone": { elem2: null, chance:0.2 },
@@ -890,11 +1027,13 @@ elements.shy_body = {
     hidden: true,
 	color: ["#f7ead0","#faf9f6","#e9e6db"],
     category: "scp",
-	 breakInto: ["bone","bone","blood","bone","bone","blood","anomalous_essence"],
+	 breakInto: ["rotten_meat","bone","blood","bone","bone","blood","bone","bone","blood","bone","bone","blood"],
+	hardness: 1,
 	 properties: {
         dead: false,
         dir: 1,
-        panic: 0
+        panic: 0,
+        anger: 0
     },
     tick: function(pixel) {
         if (tryMove(pixel, pixel.x, pixel.y+1)) { // Fall
@@ -975,7 +1114,82 @@ elements.shy_body = {
             if (pixel.temp > 37) { pixel.temp -= 1; }
             else if (pixel.temp < 37) { pixel.temp += 1; }
         }
-
+        if (pixel.dir == 1) {
+            if (!isEmpty(pixel.x+2, pixel.y-1, true) && pixelMap[pixel.x+2][pixel.y-1].element == "head") {
+                pixel.panic += 0.2;
+            }
+            else if (!isEmpty(pixel.x+3, pixel.y-1, true) && pixelMap[pixel.x+2][pixel.y-1].element == "head") {
+                pixel.panic += 0.2;
+            }
+            else if (!isEmpty(pixel.x+4, pixel.y-1, true) && pixelMap[pixel.x+4][pixel.y-1].element == "head") {
+                pixel.panic += 0.2;
+            }
+            else if (!isEmpty(pixel.x+5, pixel.y-1, true) && pixelMap[pixel.x+5][pixel.y-1].element == "head") {
+                pixel.panic += 0.2;
+            }
+            else if (!isEmpty(pixel.x+5, pixel.y-1, true) && pixelMap[pixel.x+5][pixel.y-1].element == "head") {
+                pixel.panic += 0.1;
+            }
+            else if (!isEmpty(pixel.x+6, pixel.y-1, true) && pixelMap[pixel.x+6][pixel.y-1].element == "head") {
+                pixel.panic += 0.1;
+            }
+            else if (!isEmpty(pixel.x+7, pixel.y-1, true) && pixelMap[pixel.x+7][pixel.y-1].element == "head") {
+                pixel.panic += 0.1;
+            }
+            else if (!isEmpty(pixel.x+8, pixel.y-1, true) && pixelMap[pixel.x+8][pixel.y-1].element == "head") {
+                pixel.panic += 0.1;
+            }
+            else if (!isEmpty(pixel.x+9, pixel.y-1, true) && pixelMap[pixel.x+9][pixel.y-1].element == "head") {
+                pixel.panic += 0.1;
+            }
+	    else if (!isEmpty(pixel.x+10, pixel.y-1, true) && pixelMap[pixel.x+10][pixel.y-1].element == "head") {
+                pixel.panic += 0.1;
+            }
+	    else if (!isEmpty(pixel.x+11, pixel.y-1, true) && pixelMap[pixel.x+11][pixel.y-1].element == "head") {
+                pixel.panic += 0.1;
+            }
+	    else if (!isEmpty(pixel.x+12, pixel.y-1, true) && pixelMap[pixel.x+12][pixel.y-1].element == "head") {
+                pixel.panic += 0.1;
+            }
+        }
+        else if (pixel.dir == -1) {
+            if (!isEmpty(pixel.x-2, pixel.y-1, true) && pixelMap[pixel.x-2][pixel.y-1].element == "head") {
+                pixel.panic += 0.2;
+            }
+            else if (!isEmpty(pixel.x-3, pixel.y-1, true) && pixelMap[pixel.x-3][pixel.y-1].element == "head") {
+                pixel.panic += 0.2;
+            }
+            else if (!isEmpty(pixel.x-4, pixel.y-1, true) && pixelMap[pixel.x-4][pixel.y-1].element == "head") {
+                pixel.panic += 0.2;
+            }
+            else if (!isEmpty(pixel.x-5, pixel.y-1, true) && pixelMap[pixel.x-5][pixel.y-1].element == "head") {
+                pixel.panic += 0.2;
+            }
+            else if (!isEmpty(pixel.x-5, pixel.y-1, true) && pixelMap[pixel.x-5][pixel.y-1].element == "head") {
+                pixel.panic += 0.1;
+            }
+            else if (!isEmpty(pixel.x-6, pixel.y-1, true) && pixelMap[pixel.x-6][pixel.y-1].element == "head") {
+                pixel.panic += 0.1;
+            }
+            else if (!isEmpty(pixel.x-7, pixel.y-1, true) && pixelMap[pixel.x-7][pixel.y-1].element == "head") {
+                pixel.panic += 0.1;
+            }
+            else if (!isEmpty(pixel.x-8, pixel.y-1, true) && pixelMap[pixel.x-8][pixel.y-1].element == "head") {
+                pixel.panic += 0.1;
+            }
+	    else if (!isEmpty(pixel.x-9, pixel.y-1, true) && pixelMap[pixel.x-9][pixel.y-1].element == "head") {
+                pixel.panic += 0.1;
+            }
+	    else if (!isEmpty(pixel.x-10, pixel.y-1, true) && pixelMap[pixel.x-10][pixel.y-1].element == "head") {
+                pixel.panic += 0.1;
+            }
+	    else if (!isEmpty(pixel.x-11, pixel.y-1, true) && pixelMap[pixel.x-11][pixel.y-1].element == "head") {
+                pixel.panic += 0.1;
+            }
+            else if (!isEmpty(pixel.x-12, pixel.y-1, true) && pixelMap[pixel.x-12][pixel.y-1].element == "head") {
+                pixel.panic += 0.1;
+            }
+        }
     },
     density: 1080,
     state: "solid",
@@ -1004,7 +1218,7 @@ elements.SCP_682 = {
     color: ["#424242","#75816B","#4D6B53"],
     behavior: [
         "M2%0.5|M2%0.3|M2%0.5",
-        "M1%10|XX|M1%10",
+        "M2%10|XX|M2%10",
         "XX|M1|XX",
     ],
     category: "scp",
@@ -1067,7 +1281,7 @@ elements.mad_682 = {
     color: ["#424242","#75816B","#4D6B53"],
     behavior: [
         "M2%0.5|M2%0.3|M2%0.5",
-        "M1%10 AND CH:concrete>dust AND DL:dust|CH:SCP_682%0.3|M1%10 AND CH:concrete>dust AND DL:dust",
+        "M2%10|CH:SCP_682%0.3|M2%10",
         "XX|M1|XX",
     ],
     category: "scp",
@@ -1093,8 +1307,8 @@ elements.mad_682 = {
         "lead": { elem2 : ["metal_scrap","metal_scrap","radiation"] , chance:0.3 },
         "glass": { elem2 : "glass_shard" },
         "wood": { elem2 : "sawdust" },
-        "concrete": { elem2 : "dust" , chance:0.1 },
-        "dust": { elem2 : null , chance:0.1 },
+        "concrete": { elem2 : "dust" , chance:10 },
+        "dust": { elem2 : null , chance:10 },
     },
     hidden: true,
     state: "solid",
@@ -1165,10 +1379,10 @@ elements.tickle_monster = {
     conduct: .5,
     temp: 20,
     tempHigh: 350,
-    stateHigh: ["smoke","smoke","smoke","slime","anomalous_essence"],
+    stateHigh: ["smoke","smoke","smoke","slime"],
     burn: .1,
     burnTime: 300,
-    burnInto: ["smoke","smoke","smoke","slime","anomalous_essence"],
+    burnInto: ["smoke","smoke","smoke","slime"],
     stain: 0.03,
 },
 
@@ -1186,8 +1400,8 @@ elements.hyper_tickle_monster = {
     reactions: {
         "sugar_water": { elem2 : "water" },
         "dirty_water": { elem2 : "water" },
-		"candy": { elem2 : null },
-		"sugar": { elem2 : null },
+	"candy": { elem2 : null },
+	"sugar": { elem2 : null },
         "sauce": { elem2 : null },
         "salt": { elem2 : null },
         "cheese": { elem2 : null },
@@ -1214,7 +1428,7 @@ elements.hyper_tickle_monster = {
         "melted_chocolate": { elem2 : null },
         "alchohol": { elem2 : null },
         "pilk": { elem2 : null },
-		"soda": { elem2 : null },
+        "soda": { elem2 : null },
         "coffee": { elem2 : null },
         "seltzer": { elem2 : null },
     },
@@ -1222,10 +1436,10 @@ elements.hyper_tickle_monster = {
     conduct: .5,
     temp: 20,
     tempHigh: 350,
-    stateHigh: ["smoke","smoke","smoke","slime","anomalous_essence"],
+    stateHigh: ["smoke","smoke","smoke","slime"],
     burn: .1,
     burnTime: 300,
-    burnInto: ["smoke","smoke","smoke","slime","anomalous_essence"],
+    burnInto: ["smoke","smoke","smoke","slime"],
     stain: 0.08,
 };
 
