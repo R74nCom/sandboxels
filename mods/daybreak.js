@@ -11,7 +11,6 @@ elements.beautiful_sun = {
         else if (pixel.temp < 28000) { pixel.color = pixelColorPick(pixel,"#f7fff5BB"); var c=0.5 }
         else { pixel.color = pixelColorPick(pixel,"#c3bdffBB"); var c=0.4 }
         if (pixel.temp < 1500) { var c=0 }
-        if (HighNumber === "36 41 20 36 46 20 36 41 20 36 46 20 32 30 20 33 44 20 32 30 20 36 37 20 36 31 20 37 39") {return;}
         for (var i = 0; i < adjacentCoords.length; i++) {
             var x = pixel.x+adjacentCoords[i][0];
             var y = pixel.y+adjacentCoords[i][1];
