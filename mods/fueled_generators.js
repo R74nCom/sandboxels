@@ -31,7 +31,7 @@ elements.gasoline_generator = {
   properties: {
     shocksToDo: 0
   },
-  hoverStat: function(pixel){return pixel.shocksToDo || 0},
+  hoverStat: function(pixel){return (pixel.shocksToDo).toString() || 0},
   tick: function(pixel){
     if (pixel.shocksToDo <= 40){
     for (var i = 0; i < adjacentCoords.length; i++){
@@ -85,7 +85,7 @@ elements.diesel_generator = {
   properties: {
     shocksToDo: 0
   },
-  hoverStat: function(pixel){return pixel.shocksToDo || 0},
+  hoverStat: function(pixel){return (pixel.shocksToDo).toString() || 0},
   tick: function(pixel){
     if (pixel.shocksToDo <= 80){
     for (var i = 0; i < adjacentCoords.length; i++){
