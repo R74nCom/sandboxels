@@ -268,8 +268,11 @@ elements.melted_animal = {
 
 elements.melted_fish = {
     color: "#ac8650",
-    behavior: behaviors.LIQUID,
-    viscosity: 7500,
+    behavior: [ 
+        "XX|XX|SW:water,salt_water,sugar_water,dirty_water,seltzer,pool_water,primordial_soup%5", 
+        "M2%0.5|FX%0.5|M2%0.5 AND BO", 
+        "M2%10|M1|M2%10 AND SW:water,salt_water,sugar_water,dirty_water,seltzer,pool_water,primordial_soup%14", 
+    ],
     reactions: {
         "oxygen": { elem2:"carbon_dioxide", chance:0.5 },
         "sun": { elem2:"beautiful_sun", elem1:"cooked_meat" },
