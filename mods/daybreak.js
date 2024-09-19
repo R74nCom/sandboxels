@@ -221,7 +221,7 @@ elements.melted_human = {
     burnTime: 300,
     burnInto: "cooked_meat",
     state: "liquid",
-    density: 2000,
+    density: 1900,
     category: "brokenday",
 },
 
@@ -262,7 +262,7 @@ elements.melted_animal = {
     burnTime: 300,
     burnInto: "cooked_meat",
     state: "liquid",
-    density: 2000,
+    density: 900,
     category: "brokenday",
 },
 
@@ -303,7 +303,7 @@ elements.melted_fish = {
     burnTime: 300,
     burnInto: "cooked_meat",
     state: "liquid",
-    density: 2000,
+    density: 800,
     category: "brokenday",
 },
 
@@ -343,7 +343,7 @@ elements.melted_insect = {
     burnTime: 150,
     burnInto: "ash",
     state: "liquid",
-    density: 2000,
+    density: 500,
     category: "brokenday",
 },
 
@@ -378,14 +378,14 @@ elements.melted_plant = {
     burnTime: 200,
     burnInto: ["dead_plant","fire","fire","fire","ash"],
     state: "liquid",
-    density: 2000,
+    density: 1200,
     category: "brokenday",
 };
 
 elements.fused_organism = {
-    color: ["#f3e7db","#f7ead0"],
+    color: ["#CDBAA5","#f7ead0"],
     behavior: behaviors.LIQUID,
-    viscosity: 4000,
+    viscosity: 6000,
     reactions: {
         "meat": { elem2:"fused_organism", chance:0.1 },
         "cooked_meat": { elem2:"fused_organism", chance:0.1 },
@@ -411,7 +411,7 @@ elements.fused_organism = {
         "melted_animal": { elem2:"fused_organism", chance:0.1 },
         "melted_fish": { elem2:"fused_organism", chance:0.1 },
     },
-    tempHigh: 250,
+    tempHigh: 300,
     stateHigh: "cooked_meat",
     tempLow: -20,
     stateLow: "frozen_meat",
