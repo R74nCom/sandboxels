@@ -1,15 +1,15 @@
 elements.beautiful_sun = {
-    color: "#c12600BB",
+    color: "#c12600",
     tick: function(pixel) {
         // minimum 1726
         // maximum 7726
         if (pixel.eclipse) { pixel.color = pixelColorPick(pixel,"#f68656"); var c=0.01}
-        else if (pixel.temp < 1500) { pixel.color = pixelColorPick(pixel,"#7a4e43BB"); }
-        else if (pixel.temp < 3600) { pixel.color = pixelColorPick(pixel,"#ffbdbdBB"); var c=0.05 }
-        else if (pixel.temp < 7000) { pixel.color = pixelColorPick(pixel,"#c12600BB"); var c=0.1 }
-        else if (pixel.temp < 11000) { pixel.color = pixelColorPick(pixel,"#ffb09cBB"); var c=0.25 }
-        else if (pixel.temp < 28000) { pixel.color = pixelColorPick(pixel,"#f7fff5BB"); var c=0.5 }
-        else { pixel.color = pixelColorPick(pixel,"#c3bdffBB"); var c=0.4 }
+        else if (pixel.temp < 1500) { pixel.color = pixelColorPick(pixel,"#7a4e43"); }
+        else if (pixel.temp < 3600) { pixel.color = pixelColorPick(pixel,"#ffbdbd"); var c=0.05 }
+        else if (pixel.temp < 7000) { pixel.color = pixelColorPick(pixel,"#c12600"); var c=0.1 }
+        else if (pixel.temp < 11000) { pixel.color = pixelColorPick(pixel,"#ffb09c"); var c=0.25 }
+        else if (pixel.temp < 28000) { pixel.color = pixelColorPick(pixel,"#f7fff5"); var c=0.5 }
+        else { pixel.color = pixelColorPick(pixel,"#c3bdff"); var c=0.4 }
         if (pixel.temp < 1500) { var c=0 }
         for (var i = 0; i < adjacentCoords.length; i++) {
             var x = pixel.x+adjacentCoords[i][0];
@@ -68,7 +68,7 @@ elements.beautiful_sun = {
 elements.beautiful_light = {
     hidden: true,
     name: "light",
-    color: "#c12600BB",
+    color: "#c12600",
     tick: function(pixel) {
     if (Math.random() < 0.01) {
         deletePixel(pixel.x,pixel.y);
@@ -146,7 +146,7 @@ elements.beautiful_light = {
         "body": { elem2:"melted_human" },
         "dead_bug": { elem2:"melted_insect" },
         "worm": { elem2:"melted_insect" },
-        "ant": { elem2:"melted_insect" },
+        "ant": { color2:"#5E0B04", elem2:"melted_insect" },
         "bee": { elem2:"melted_insect" },
         "fly": { elem2:"melted_insect" },
         "firefly": { elem2:"melted_insect" },
@@ -231,8 +231,7 @@ elements.melted_animal = {
     viscosity: 7500,
     reactions: {
         "oxygen": { elem2:"carbon_dioxide", chance:0.5 },
-        "meat": { elem2:null, chance:0.1 },
-        "cooked_meat": { elem2:null, chance:0.1 },
+        "meat": { elem2:"fused_organism", chance:0.1 },
         "sun": { elem2:"beautiful_sun", elem1:"cooked_meat" },
         "light": { elem2:"beautiful_light" },
         "dead_bug": { color2:"#CEC5B9", elem2:"fused_organism", chance:0.1 },
@@ -318,7 +317,7 @@ elements.melted_insect = {
         "sun": { elem2:"beautiful_sun", elem1:"cooked_meat" },
         "light": { elem2:"beautiful_light" },
         "dead_bug": { elem2:"melted_insect", chance:0.1 },
-        "ant": { color2:"#5E0B04",elem2:"melted_insect", chance:0.2 },
+        "ant": { color2:"#5E0B04", elem2:"melted_insect", chance:0.2 },
         "bee": { color2:"#c4b100", elem2:"melted_insect", chance:0.2 },
         "fly": { elem2:"melted_insect", chance:0.2 },
         "firefly": { elem2:"melted_insect", chance:0.2 },
