@@ -1,5 +1,12 @@
-//this mod is still on proggres (WIP) you can give feedback or report bug to these discord account. @salmonfishy or @carbon_monoxides6
-
+//Hello, this is are a science mod, we're made several things that related to science, examples like...electron, particle accelerator, and of course, carbon monoxide! :D
+//We made some things not scientific, so this mod is not too boring. ;)
+//we're normal people, who is not as smart as a real scientist. so if you have suggestion, feedback, or criticism, please let us know, so we can make this mod being more accurate. ><
+//  discord account |
+//                  |
+//                  |
+//                  v
+//  creator,leader,supervisor,coder,uploader = @carbon_monoxides6
+//  co-creator,co-coder,assistant,debugger = @salmonfishy (has exited from this mod project)
 elements.carbon_monoxide = {
   color: "#b5b5b5",
   behavior: behaviors.GAS,
@@ -68,39 +75,7 @@ elements.carbon_monoxide_detector = {
   darkText: true,
   hardness: 1,
 };
-elements.cpu = {
-     color: "#575757",
-     behavior: behaviors.SOLID,
-     category: "machines",
-     state: "solid",
-     insulate: true,
-     movable: false,
-     noMix: true,
-     density: 75,
-     tempHigh: 1414,
-     stateHigh: ["explosion","metal_scrap"],
-reactions: {
-                "virus": { elem1 : null , elem2:"malware", chance:0.9 },
-                "metal_scrap": { elem2:"computer" },
-                
-             }
-};
-elements.computer = {
-     color: "#2b2b2a",
-     behavior: behaviors.SOLID,
-     category: "machines",
-     state: "solid",
-     density: 8908,
-     insulate: true,
-     noMix: true,
-     movable: false,
-     tempHigh: 1414,
-     stateHigh: ["explosion","metal_scrap"],
-reactions: {
-                "virus": { elem1 : null , elem2:"malware", chance:0.9 },
-                "water": { elem1: null , elem2: "electric" },                    
-             }
-}
+
 elements.electrons = {
 color: "#b80606",
 behavior: [
@@ -409,19 +384,6 @@ reactions: {
 }
 };
 
-elements.leather = {
-behavior: behaviors.SUPPORTPOWDER,
-color: ["#3f261d","#664f40",],
-state: "powder",
-category: "powders",
-tempHigh: 200,
-stateHigh: "fire",
-breakInto: "dust", 
-burn: 20,
-burntime: 200,
-burnInto: "ash", 
-};
-
 elements.wrinkled_lemon = {
 behavior: behaviors.POWDER,
 color: ["#999543","#a6a03a",],
@@ -530,7 +492,7 @@ tempLow: -2,
 stateLow: "frozen_yogurt",
 stateLowColor: ["#f5f3cb","#f7f5bc"],
 reactions: {
-"bacteria": { elem1: "yogurt", },
+"cell": { elem1: "yogurt", },
 }
 };
 
@@ -615,11 +577,11 @@ elements.hazmat_head = {
     color: ["#404040","#1a1a1a","#737373"],
     category: "life",
     hidden: true,
-    density: 1080,
+    density: 1380,
     state: "solid",
     conduct: .05,
-    temp: 40,
-    tempHigh: 3500,
+    temp: 39,
+    tempHigh: 6500,
     stateHigh: ["ash","iron",],
     tempLow: -180,
     stateLow: "frozen_meat",
@@ -686,7 +648,10 @@ elements.hazmat_head = {
         "mashed_potato": { elem2:null, chance:0.2 },
         "sauce": { elem2:null, chance:0.2 },
         "pickle": { elem2:null, chance:0.1 },
-        "light": { stain1:"#fff154" },
+        "sun": { elem1:"cooked_meat" },
+        "water": { elem2:"bubble", attr2:{"clone":"water"}, chance:0.001 },
+        "salt_water": { elem2:"bubble", attr2:{"clone":"salt_water"}, chance:0.001 },
+        "pool_water": { elem2:"bubble", attr2:{"clone":"pool_water"}, chance:0.001 },
     },
     properties: {
         dead: false
@@ -729,14 +694,14 @@ elements.hazmat_head = {
 };
 
 elements.hazmat_body = {
-    color: ["#ffdf4f","#e8c00e","#ffd412"],
+    color: ["#2c7328","#2db526","#ffc42e","#f5c345","#cf9502",],
     category: "life",
     hidden: true,
-    density: 1570,
+    density: 1370,
     state: "solid",
     conduct: .25,
     temp: 39,
-    tempHigh: 3500,
+    tempHigh: 6500,
     stateHigh: ["metal_scrap","ash"],
     tempLow: -180,
     stateLow: "frozen_meat",
@@ -756,6 +721,7 @@ elements.hazmat_body = {
         "grass_seed": { elem2:null, chance:0.05 },
         "gold_coin": { elem2:null, chance:0.05 },
         "diamond": { elem2:null, chance:0.05 },
+        "sun": { elem1:"molten_tin", },
     },
     properties: {
         dead: false,
@@ -846,7 +812,6 @@ elements.hazmat_body = {
 };
 
 elements.hazmat_human = {
-    // color: ["#404040","#1a1a1a","#737373"],
     color: ["#404040","#1a1a1a","#737373"],
     category: "life",
     properties: {
@@ -896,7 +861,6 @@ elements.zombie_head = {
         "meat": { elem2:null, chance:0.1 },
         "cooked_meat": { elem2:null, chance:0.1 },
         "cured_meat": { elem2:null, chance:0.1 },
-        "light": { stain1:"#45eb2f" },
     },
     properties: {
         dead: false
@@ -953,8 +917,13 @@ elements.zombie_body = {
     breakInto: ["infection","rotten_meat","bone","zombie_virus",],
     forceSaveColor: true,
     reactions: {
-    "head": { elem2: "zombie", },
-    "body": { elem2: "zombie", },
+        "head": { elem2: ["rotten_meat","zombie",], chance:0.8, },
+        "body": { elem2: ["rotten_meat","zombie",], chance:0.5, },
+        "oxygen": { elem2:"carbon_dioxide", chance:0.5 },
+        "rotten_meat": { elem2: null, chance:0.5 },
+        "meat": { elem2:null, chance:0.1 },
+        "cooked_meat": { elem2:null, chance:0.1 },
+        "cured_meat": { elem2:null, chance:0.1 },
     },
     
     properties: {
@@ -1081,8 +1050,8 @@ elements.zombie_virus = {
     density: 30,
     state: "gas",
     reactions: {
-        "head": { elem2: ["zombie","rotten_meat",], chance: 0.2, },
-        "body": { elem2: ["zombie","rotten_meat",], chance: 0.2, },
+        "head": { elem2: ["zombie","rotten_meat",], chance: 0.5, },
+        "body": { elem2: ["zombie","rotten_meat",], chance: 0.5, },
     }
 }
 
@@ -1102,7 +1071,7 @@ elements.matter = {
 elements.particle_accelerator_left = {
     behavior: behaviors.SOLID,
     color: ["#363aa3","#858585","#d1d1d1"],
-    density: 2400,
+    density: 8200,
     category: "machines",
     state: "solid",
     reactions: {
@@ -1112,7 +1081,7 @@ elements.particle_accelerator_left = {
 elements.particle_accelerator_right = {
     behavior: behaviors.SOLID,
     color: ["#363aa3","#858585","#d1d1d1"],
-    density: 2400,
+    density: 8200,
     category: "machines",
     state: "solid",
     reactions: {
@@ -1132,8 +1101,8 @@ elements.accelerated_matter_left = {
     category: "energy",
     density: 2.20,
     reactions: {
-        "accelerated_matter_right": { elem1: ["antimatter","pop",], chance: 0.3, },
-        "accelerated_matter_left": { elem1: ["antimatter","pop",], chance: 0.3, },
+        "accelerated_matter_right": { elem1: ["antimatter","pop",null,], chance: 0.3, },
+        "accelerated_matter_left": { elem1: ["antimatter","pop",null,], chance: 0.3, },
         "antimatter": { elem1: "pop", chance: 0.01, }, 
     }
 
@@ -1150,8 +1119,8 @@ elements.accelerated_matter_right = {
     category:"energy",
     density: 2.20,
     reactions: {
-        "accelerated_matter_left": { elem1: ["antimatter","pop",], chance: 0.3, },
-        "accelerated_matter_right": { elem1: ["antimatter","pop",], chance: 0.3, },
+        "accelerated_matter_left": { elem1: ["antimatter","pop",null,], chance: 0.3, },
+        "accelerated_matter_right": { elem1: ["antimatter","pop",null,], chance: 0.3, },
         "antimatter": { elem1: "pop", chance: 0.01, },
 
     }
