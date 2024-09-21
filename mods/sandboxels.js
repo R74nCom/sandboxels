@@ -1,57 +1,58 @@
 elements.sandboxels_screen_off = {
-  name:"screen",
-  color: "#454545",
-  behavior: behaviors.WALL,
-  behaviorOn: [
-  "XX|XX|XX"
-  "XX|CH:sandboxels_screen|XX"
-  "XX|XX|XX
-  ],
-  tempHigh: 1500,
-  stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
-  conduct: 1,
-  breakInto: "glass_shard",
-  tempLow: -50,
-  stateLow: "glass_shard",
-  category: "digital",
-  state: "solid",
-  density: 1200,
-},
-
-elements.sandboxels_screen = {
-  name:"screen",
-  color: "#1D1D1D",
-  behavior: [
-  "XX|XX|XX"
-  "XX|XX|XX"
-  "XX|XX|XX
-  ],
-  tempHigh: 1500,
-  stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
-  conduct: 1,
-  breakInto: ["glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","sand"],
-  tempLow: -45,
-  stateLow: "sandboxels_screen_off",
-  category: "digital",
-  state: "solid",
-  density: 1200,
-},
-
-elements.sand_screen = {
-  name:"screen",
-  color: "#e6d577",
-  behavior: [
-  "XX|XX|XX"
-  "XX|XX|XX"
-  "SW:sandboxels_screen|SW:sandboxels_screen|SW:sandboxels_screen"
-  ],
-  tempHigh: 1500,
-  stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
-  conduct: 1,
-  breakInto: ["glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","sand"],
-  tempLow: -45,
-  stateLow: "sandboxels_screen_off",
-  category: "digital",
-  state: "solid",
-  density: 1200,
-};
+    name:"screen",
+    color: "#454545",
+    behavior: behaviors.WALL,
+    behaviorOn: [
+    "XX|XX|XX",
+    "XX|CH:sandboxels_screen|XX",
+    "XX|XX|XX",
+    ],
+    tempHigh: 1500,
+    stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
+    conduct: 1,
+    breakInto: "glass_shard",
+    tempLow: -50,
+    stateLow: "glass_shard",
+    category: "digital",
+    state: "solid",
+    density: 1200,
+  },
+  
+  elements.sandboxels_screen = {
+    name:"screen",
+    color: "#1D1D1D",
+    behavior: [
+    "XX|XX|XX",
+    "XX|XX|XX",
+    "XX|XX|XX",
+    ],
+    tempHigh: 1500,
+    stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
+    conduct: 1,
+    breakInto: ["glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","sand"],
+    tempLow: -45,
+    stateLow: "sandboxels_screen_off",
+    category: "digital",
+    state: "solid",
+    density: 1200,
+  },
+  
+  elements.sand_screen = {
+    name:"screen",
+    color: "#e6d577",
+    behavior: [
+    "XX|XX|XX",
+    "XX|XX|XX",
+    "SW:sandboxels_screen|SW:sandboxels_screen|SW:sandboxels_screen",
+    ],
+    tempHigh: 1500,
+    stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
+    conduct: 1,
+    breakInto: ["glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","sand"],
+    tempLow: -45,
+    stateLow: "sandboxels_screen_off",
+    category: "digital",
+    state: "solid",
+    density: 1200,
+  };
+  
