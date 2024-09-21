@@ -2784,7 +2784,7 @@ elements.ray = {
     movable: true,
     category: "special",
     hoverStat: function(pixel){
-        return pixel.life || "unset"
+        return pixel.life.toString() || "unset"
     },
     properties: {
         life: 10,
@@ -3719,5 +3719,43 @@ elements.thin_pixel = {
                 });
                 ctx.fillStyle = pixel.color;
                 ctx.fillRect(canvasCoord(pixel.x+0.38), canvasCoord(pixel.y+0.38), pixelSize*0.24, pixelSize*0.24);
+    }
+}
+elements.cooler_sensor = {
+    color: "#5499e7",
+    behavior: behaviors.WALL,
+    category: "machines",
+    insulate: true,
+    conduct: 1,
+    tick: function(pixel){
+        let temp = pixel.temp
+        for (i = 0; i < adjacentCoords.length; i++){
+            let x = adjacentCoords[i][0] + pixel.x;
+            let y = adjacentCoords[i][1] + pixel.y;
+            if (!isEmpty(x, y, true)){
+                if (pixelMap[x][y].temp < temp){
+                    pixel.charge = 1
+                }
+            }
+        }
+    }
+}
+elements.hotter_sensor = {
+    color: "#e75454",
+    behavior: behaviors.WALL,
+    category: "machines",
+    insulate: true,
+    conduct: 1,
+    tick: function(pixel){
+        let temp = pixel.temp
+        for (i = 0; i < adjacentCoords.length; i++){
+            let x = adjacentCoords[i][0] + pixel.x;
+            let y = adjacentCoords[i][1] + pixel.y;
+            if (!isEmpty(x, y, true)){
+                if (pixelMap[x][y].temp > temp){
+                    pixel.charge = 1
+                }
+            }
+        }
     }
 }
