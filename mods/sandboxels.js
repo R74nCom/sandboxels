@@ -81,10 +81,6 @@ elements.sand_screen = {
                 newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                 pixel.dtemp = newPixel.dtemp;
             }
-            else if (newPixel.element === "sand_screen") {
-                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
-                pixel.dtemp = newPixel.dtemp;
-            }
             else if (newPixel.element === "rock_screen") {
                 newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                 pixel.dtemp = newPixel.dtemp;
@@ -172,7 +168,7 @@ elements.rock_screen = {
     tempHigh: 1500,
     stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
     conduct: 1,
-    breakInto: ["glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","sand"],
+    breakInto: ["glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","rock"],
     tempLow: -45,
     stateLow: "sandboxels_screen_off",
     category: "digital",
@@ -200,10 +196,6 @@ elements.rock_screen = {
                 pixel.dtemp = newPixel.dtemp;
             }
             else if (newPixel.element === "sand_screen") {
-                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
-                pixel.dtemp = newPixel.dtemp;
-            }
-            else if (newPixel.element === "rock_screen") {
                 newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                 pixel.dtemp = newPixel.dtemp;
             }
@@ -442,7 +434,7 @@ elements.steam_screen = {
     tempHigh: 1500,
     stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
     conduct: 1,
-    breakInto: ["glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","water"],
+    breakInto: ["glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","steam"],
     tempLow: -45,
     stateLow: "sandboxels_screen_off",
     category: "digital",
@@ -571,6 +563,25 @@ elements.ice_screen = {
     density: 1200,
 },
 
+elements.wall_screen = {
+    name:"screen",
+    hidden:true,
+    color: "#808080",
+    behavior: behaviors.WALL,
+    properties: {
+        dtemp: 0,
+    },
+    tempHigh: 1500,
+    stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
+    conduct: 1,
+    breakInto: ["glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","concrete"],
+    tempLow: -45,
+    stateLow: "sandboxels_screen_off",
+    category: "digital",
+    state: "solid",
+    density: 1200,
+},
+
 elements.digital_sand = {
     color: "#e6d577",
     behavior: [
@@ -659,6 +670,24 @@ elements.digital_steam = {
     canPlace: false,
     category: "digital",
     desc: "Use on a screen to place digital ice."
+},
+
+elements.digital_wall = {
+    color: "#808080",
+    behavior: [
+        "CH:sandboxels_screen>ice_screen|CH:sandboxels_screen>ice_screen|CH:sandboxels_screen>ice_screen",
+        "CH:sandboxels_screen>ice_screen|CH:sandboxels_screen>ice_screen|CH:sandboxels_screen>ice_screen",
+        "CH:sandboxels_screen>ice_screen|CH:sandboxels_screen>ice_screen|CH:sandboxels_screen>ice_screen",
+    ],
+    tool: function(pixel) {
+        if (elements[pixel.element].id === elements.sandboxels_screen.id) {
+            changePixel(pixel,"wall_screen"); 
+        }
+    },
+    insulate:true,
+    canPlace: false,
+    category: "digital",
+    desc: "Use on a screen to place digital walls."
 },
 
 elements.digital_heat = {
@@ -767,12 +796,46 @@ elements.digital_smash = {
     canPlace: false,
     category: "digital",
     desc: "Use on a screen to smash digital elements."
+},
+
+elements.digital_erase = {
+    color: "#fdb5ff",
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "XX|XX|XX",
+    ],
+    tool: function(pixel) {
+        if (elements[pixel.element].id === elements.sand_screen.id) {
+            changePixel(pixel,"sandboxels_screen"); 
+        }
+        else if (elements[pixel.element].id === elements.rock_screen.id) {
+            changePixel(pixel,"sandboxels_screen"); 
+        }
+        else if (elements[pixel.element].id === elements.water_screen.id) {
+            changePixel(pixel,"sandboxels_screen"); 
+        }
+        else if (elements[pixel.element].id === elements.steam_screen.id) {
+            changePixel(pixel,"sandboxels_screen"); 
+        }
+        else if (elements[pixel.element].id === elements.ice_screen.id) {
+            changePixel(pixel,"sandboxels_screen"); 
+        }
+        else if (elements[pixel.element].id === elements.wall_screen.id) {
+            changePixel(pixel,"sandboxels_screen"); 
+        }
+    },
+    insulate:true,
+    canPlace: false,
+    category: "digital",
+    desc: "Use on a screen to erase digital elements."
 };
 
 if (!elements.malware.reactions) { elements.malware.reactions = {} }
     elements.malware.reactions.sandboxels_screen = { "elem2": ["sand_screen","sandboxels_screen_off",null], chance:0.1 };
-    elements.malware.reactions.sand_screen = { "elem2": ["ice_screen","sandboxels_screen_off",null], chance:0.1 };
-    elements.malware.reactions.rock_screen = { "elem2": ["water_screen","sandboxels_screen_off",null], chance:0.1 };
+    elements.malware.reactions.sand_screen = { "elem2": ["wall_screen","sandboxels_screen_off",null], chance:0.1 };
+    elements.malware.reactions.rock_screen = { "elem2": ["ice_screen","sandboxels_screen_off",null], chance:0.1 };
     elements.malware.reactions.water_screen = { "elem2": ["steam_screen","sandboxels_screen_off",null], chance:0.1 };
-    elements.malware.reactions.steam_screen = { "elem2": ["rock_screen","sandboxels_screen_off",null], chance:0.1 };
-    elements.malware.reactions.ice_screen = { "elem2": ["sand_screen","sandboxels_screen_off",null], chance:0.1 };
+    elements.malware.reactions.steam_screen = { "elem2": ["water_screen","sandboxels_screen_off",null], chance:0.1 };
+    elements.malware.reactions.ice_screen = { "elem2": ["rock_screen","sandboxels_screen_off",null], chance:0.1 };
+    elements.malware.reactions.wall_screen = { "elem2": ["sand_screen","sandboxels_screen_off",null], chance:0.1 };
