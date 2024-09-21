@@ -6983,11 +6983,11 @@ runAfterAutogen(function () {
 
               if (productsA.length > 0 && productsB.length > 0) {
                 acidReact(i, j, productsA, productsB, 0);
-                console.log("precipitate");
-                console.log(i);
-                console.log(j);
-                console.log(productsA);
-                console.log(productsB);
+                // console.log("precipitate");
+                // console.log(i);
+                // console.log(j);
+                // console.log(productsA);
+                // console.log(productsB);
                 priorityA = elements[i].salt[iii].priority;
                 priorityB = elements[j].salt[jjj].priority;
                 continue;
@@ -7110,12 +7110,12 @@ runAfterAutogen(function () {
               delete elements[i].reactions[productsB[k]];
             }
           }
-          console.log("neutral");
-          console.log(i);
-          console.log(j);
-          console.log(compounds);
-          console.log(productsA);
-          console.log(productsB);
+          // console.log("neutral");
+          // console.log(i);
+          // console.log(j);
+          // console.log(compounds);
+          // console.log(productsA);
+          // console.log(productsB);
         }
       }
       if (elements[i].salt) {
@@ -7148,6 +7148,7 @@ runAfterAutogen(function () {
       }
     }
     delete elements["molten_iodine_ice"];
+    delete elements["molten_nihonium_nitrate"];
     for (let i in elements) {
       if (elements[i].ignore) {
         elements[i].ignore = [...new Set(elements[i].ignore)];
