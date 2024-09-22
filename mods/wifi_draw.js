@@ -1,14 +1,14 @@
 // RedBirdly's mod to draw lines between transmitters/receivers
-// logicgates.js required
+// logicgates.js or wifi.js required
 
 let logicReceivers = [];
 let logicTransmitters = [];
-// let receivers = [];
-// let transmitters = [];
+let receivers = [];
+let transmitters = [];
 
 function updateLogicLists() {
-    // receivers = [];
-    // transmitters = [];
+     receivers = [];
+     transmitters = [];
     logicReceivers = [];
 	logicTransmitters = [];
     
@@ -18,11 +18,11 @@ function updateLogicLists() {
             logicReceivers.push(pixel);
         } else if (pixel.element === "logic_transmitter") {
             logicTransmitters.push(pixel);
-        } /*else if (pixel.element === "receiver") {
+        } else if (pixel.element === "receiver") {
             receivers.push(pixel);
         } else if (pixel.element === "transmitter") {
             transmitters.push(pixel);
-        }*/
+        }
     }
 }
 
@@ -67,11 +67,21 @@ function drawLinks() {
             }
         }
     }
+
+    // Iterate through transmitters and receivers to draw lines for linked channels
+    for (const transmitter of transmitters) {
+        for (const receiver of receivers) {
+            if (transmitter._channel === receiver._channel) {
+                ctx.beginPath();
+                ctx.moveTo(transmitter.x * pixelSize + pixelSizeHalf, transmitter.y * pixelSize + pixelSizeHalf);
+                ctx.lineTo(receiver.x * pixelSize + pixelSizeHalf, receiver.y * pixelSize + pixelSizeHalf);
+                ctx.strokeStyle = "RGBA(0,0,255,0.2)";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+        }
+    }
 }
 
-var originalDrawPixels2 = drawPixels;
-drawPixels = function() {
-    originalDrawPixels2();
-    updateLogicLists();
-    drawLinks();
-};
+renderPostPixel(updateLogicLists);
+renderPostPixel(drawLinks);

@@ -1,11 +1,162 @@
 [Future Plans]
     + Save Gallery
-    + Human Update
     + Suggest new additions at https://link.R74n.com/sandboxels-feedback
 
 See sneak peaks for upcoming updates on the Discord: https://discord.gg/ejUc6YPQuS
 
 A fancier version of this changelog can be found here: https://sandboxels.R74n.com/changelog
+
+[Version 1.10 - August 2, 2024 - Return of the Sand]
+    + Rice
+    + Galvanized Steel (Hidden)
+    + Midas Touch
+    + Limitless Mode setting to remove pixel and cursor size limits
+    + Wide canvas size setting
+    + Czech language
+    + Liquid Ozone (Hidden)
+   [Rendering]
+    ~ Improved cursor smoothness, at up to 60 FPS
+    + Shift+C to screenshot without background
+    + Aurora Borealis and other Flash effects fade out over time
+    + Fire has a gradient effect
+    + Metals, Charcoal, and more glow when hot
+    + Wood chars as it gets hot
+    + Embers get more intense over time
+    + Fireflies, Blasters, and Fireballs glow
+    + Fancy Textures setting is now "Fancy Pixels"
+    + Fancy Pixels setting toggles per-element rendering effects
+   [Sponge Rework]
+    + Sponges and Cloth keep track of moisture
+    + Moisture can be released by smashing or boiling
+    + Sponge becomes darker as it absorbs Water
+    + Dust prevents Sponge from absorbing liquids
+   [Ray Changes]
+    + Rays spawn particles when hitting border
+    + Rays delete from top to bottom
+    ~ Freeze Ray has a lighter color
+   [Fuse Changes]
+    + Fuse won't emit any smoke when burning
+    + Fuse can carry electricity
+    + Fuse won't conduct into E-cloners or Sensors
+    + These new mechanics can create simple toggle switches or logic gates
+    + Sensors ignore Flash
+    + Sensors are immune to Acid
+    ~ Moved Fuse to Machines
+   [Ocean Changes]
+    + Foam generates on sandy Salt Water shores
+    + Foam generates when Salt Water wets Sand
+    + Algae and Dead Bugs can Foam up Water
+    + Nitrogen can encourage Algae growth
+    + Fish and Humans can make air Bubbles in Water
+   [Other Changes]
+    + Extinguishing elements can be drawn over burning pixels
+    + Steel texture
+    ~ Void deletes pixels instantly regardless of hardness
+    ~ Pipes are indestructible
+    + Superconductivity in Aluminum, Gallium, Lead, Mercury, Tin, Tungsten, Uranium, Zinc
+    + Charcoal neutralizes Poison
+    + Silver control rod reaction produces Radiation
+    + Antimatter reacts with Proton, Neutron, and Electric
+    ~ Diamonds only evaporate if Oxygen or Fire is present
+    ~ Recolored Hydrogen flame
+    + Molten Salt can explode on contact with Water
+    + Hot Wax can explode on contact with Water
+    ~ Unhid Borax
+    + Ruins can be damaged by Fire, Smoke, Dirty Water, and Humans
+    ~ Ruins can't be dragged
+    ~ Dust from Ruins is more grainy
+    + Paper breaks into Confetti
+    + Paper can turn Oxygen into Fragrance
+    + Lamp Oil freezes into Wax
+    + Gunpowder recipe
+    ~ Dynamite is slightly stronger than TNT
+    + Bleach stains Porcelain
+    + Rad Steam, Glass, and Shards dirty Water
+    ~ Humans spawn with their full bodies immediately
+    + Fish die slowly in Pool Water or Vinegar
+    + Worms decompose Feathers
+    + Birds rarely drop Feathers
+    + Birds eat Stink Bugs
+    + Stink Bugs eat Beans
+    ~ Frogs cook into accurate color
+    + Hives will break into some Wax
+    + Bees give Humans rashes
+    + Ant Farm world gen type
+    + Grass is killed by Baking Soda
+    + Lichen are killed by Stench and Smog
+    + Poison can be filtered by Charcoal and Gravel
+    + Vinegar can cure Meat
+    + Tea can mix with Nut Milk
+    + Coffee and Tea can mix with Milk variants
+    + Nut Milk can be radiated
+    + Mayo can be made from Grease or Nut Oil
+    + Sodium, Potassium, and Calcium react with Nut Milk
+    + Iron can be rusted by Coffee, Tea, Broth, and Juice
+    + Coffee kills Snails and Slugs
+    + Soda made from Juice has unique color
+    + Udder produces more Milk when smashed
+    + Hair can get dandruff if too oily
+    + Skin will grow Hair when cold
+    + Lead can infect Blood
+    + Epsom Salt can cure Infection and kill Mushroom Spores
+    + Fallout makes Meat rot
+    ~ Seeds element changes immediately
+    + Bless can heal Glass and Clay Shards
+    + Bless and Glue can heal Ruins
+    + Bless turns Gunpowder to Charcoal
+    + Bless removes Warp
+    + Rainbow can take over Static
+    + Ink and Art can be drawn over Paper
+    + Strange Matter explodes when entering Void
+    + Malware can be made from Electric + Virus
+    + Snake kills Rats, Birds, and Eggs
+    ~ Earthquakes and Tsunamis have a maximum magnitude
+    ~ Recolored Fallout
+    ~ Updated Hydrogen and Helium shock colors
+    ~ E-wall displays with a hyphen
+    ~ Decreased Spray Paint density
+    + Borax alias 'Sodium Borate'
+    ~ Buttons are spaced more evenly, and more GUI changes
+    ~ Cooldowns don't apply when paused
+    + Save slot overwriting popup
+    ~ Save slot overwriting warning is red
+   [Bug Fixes]
+    ~ Fixed: Shift button doesn't appear on some iPads
+    ~ Fixed: Gaps when using tools, like Erase or Paint
+    ~ Fixed: Erase tool cannot make lines with Shift
+    ~ Fixed: Cursor is slow when on low TPS
+    ~ Fixed: Jittering gas colors
+    ~ Fixed: Smoke from Cold Fire is hot
+    ~ Fixed: Replace Mode can override pixel limit
+    ~ Fixed: Yolk and Cream fail to make Eggnog
+    ~ Fixed: Some fireflies spawn with yellow color already
+    ~ Fixed: Using Antibomb on a Tsunami creates Unknown
+    ~ Fixed: Color Sand, Stained Glass, Rainbow, Static, and Border don't color when paused
+    ~ Fixed: Rainbow doesn't conduct heat
+    ~ Fixed: Some placed elements are not affected by custom air temperature
+    ~ Fixed: Some placed elements color wrong if changing state with custom air temperature
+    ~ Fixed: Custom-color elements take color from previously placed random-color element
+    ~ Fixed: Mobile Shift button can become desynchronized
+    ~ Fixed: Shocker and Tesla Coil shock themselves
+    ~ Fixed: Shocking Nitro causes ghost pixels
+   [Technical]
+    ~ Rendering was overhauled, which could cause some mods to break
+    + See 1.10example.js for all new rendering/modding features
+        + Moddable views
+        + Moddable and overridable keybinds
+        + Canvas layer rendering system
+        + Functions runEveryTick, runPerPixel, renderEachPixel, renderPrePixel, renderPostPixel
+        + 'renderer' element property
+    + 'onPlace', 'onDelete', 'onChange', 'onBreak' element property
+    + 'alpha' element and pixel property, for opacity (0-1)
+    + 'glow' pixel property (true/false)
+    + 'superconductAt' element property (Celsius)
+    ~ Background color is no longer drawn to canvas
+    ~ Optimized MOLTEN behavior
+    + Unknown pixels show invalid element when hovered over
+    + Invisible ghost pixels should be automatically removed
+    ~ Pixels created after passing pixel limit will be removed next frame
+    - Removed Wide beta keybind
 
 [Version 1.9.5 - May 15, 2024 - Update of the Summer]
     + Mixer

@@ -288,7 +288,7 @@ button, input[type="submit"], input[type="reset"] {
 #controls button[current="true"], #controls button[on="true"] {
     border: 1px solid #ffffff;
     filter: brightness(110%);
-    box-shadow: 0 5px 15px rgba(255, 255, 255, .4);
+    /* box-shadow: 0 5px 15px rgba(255, 255, 255, .4); */
     color: rgba(255, 255, 255, 1);
 }
 #controls .elementButton[current="true"] {
@@ -303,7 +303,11 @@ button, input[type="submit"], input[type="reset"] {
     color:lime;
 }
 #controls div {
-    display:block;
+    display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+    display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+    display: -ms-flexbox;      /* TWEENER - IE 10 */
+    display: -webkit-flex;     /* NEW - Chrome */
+    display:flex;
 }
 .stat {
     margin-right: 25px;
@@ -318,58 +322,6 @@ button, input[type="submit"], input[type="reset"] {
     /* no wrapping */
     white-space: nowrap;
     overflow-x: hidden;
-}
-/* screen size < 800px */
-@media screen and (max-width: 800px) { /* Mobile Styles */
-    .pagetitle {
-        font-size: 1em;
-        padding-left: 0.25em;
-    }
-    #bottomLeftBox, #bottomRightBox {
-        width: 100%;
-        margin: 1px;
-        text-align: left;
-    }
-    table {
-        width: 100%;
-        margin-left: 0px;
-        margin-right: 0px;
-    }
-    #gameDiv { /*game canvas*/
-        margin-top: 0;
-    }
-    .stat {
-        margin-right: 15px;
-        margin-bottom: 3px;
-    }
-    #stats {
-        width: 97%;
-        margin-left: 5px;
-        font-size: 0.75em;
-        height: 2.5em
-    }
-}
-@media screen and (max-width: 600px) {
-    #gameDiv { /*game canvas*/
-        margin-top: 0;
-        border-left: none;
-        border-right: none;
-        border-top: none;
-    }
-    .pagetitle {
-        display: none
-    }
-}
-@media screen and (min-width: 800px) { /* Desktop-Only Styles */
-    #gameDiv {
-        width:800px;
-        left: 50%;
-        transform: translate(-50%, -0%);
-    }
-}
-/* screen size > 1325px, h1::after {content:" Sandboxels"} */
-@media screen and (min-width: 1325px) {
-    .pagetitle::after {content:" Sandboxels"}
 }
 #stat-pos, #stat-pixels, #stat-shift, #stat-tps, #stat-ticks, #stat-view {
     float:left;
@@ -394,6 +346,11 @@ button, input[type="submit"], input[type="reset"] {
     overflow-x: auto;
     overflow-y: hidden;
     width: 100%;
+    display: flex;
+    justify-content: flex-start;
+}
+#toolControls button, #category-tools button {
+    flex-grow: 1;
 }
 
 /* Scrollbars */
@@ -438,23 +395,32 @@ button, input[type="submit"], input[type="reset"] {
     background-color: rgba(255, 255, 255, 0.125);
     white-space: nowrap;
     overflow-x: auto;
+    flex-wrap: wrap;
     overflow-y: hidden;
     width: 100%;
     position: relative;
     z-index: 1;
-    padding-bottom:1px;
+    display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+    display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+    display: -ms-flexbox;      /* TWEENER - IE 10 */
+    display: -webkit-flex;     /* NEW - Chrome */
+    display:flex;
 }
 #categoryControls button {
     /* Borderless buttons */
     border: none;
     border-radius: 0;
-    padding-right: 8px;
+    padding-left: 3px;
+    padding-right: 3px;
     margin: 0;
     padding-top: 5px;
     padding-bottom: 5px;
     display: inline-block;
     position: relative;
     z-index:0;
+    flex-grow: 1;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: #202020;
 }
 #categoryControls button:not(:last-child) {
     border-right: 1px solid rgba(255, 255, 255, 0.4);
@@ -464,12 +430,85 @@ button, input[type="submit"], input[type="reset"] {
     background-color: rgba(255, 255, 255, 0.4);
 }
 .category {
-    margin-top:0.75em;
+    margin-top:0.25em;
+    margin-bottom:0.25em;
     position:relative;
+    display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+    display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+    display: -ms-flexbox;      /* TWEENER - IE 10 */
+    display: -webkit-flex;     /* NEW - Chrome */
     display:flex;
-    flex-direction: column;
-    flex-wrap:wrap;
+    flex-direction: row;
     text-align:center;
+    justify-content:space-evenly;
+    flex-wrap:wrap;
+}
+.category button {
+    flex-grow: 1;
+}
+.category:after {
+    content: "";
+    flex-grow: 20
+}
+
+/* screen size < 800px */
+@media screen and (max-width: 800px) { /* Mobile Styles */
+    .pagetitle {
+        font-size: 1em;
+        padding-left: 0.25em;
+    }
+    #bottomLeftBox, #bottomRightBox {
+        width: 100%;
+        margin: 1px;
+        text-align: left;
+    }
+    table {
+        width: 100%;
+        margin-left: 0px;
+        margin-right: 0px;
+    }
+    #gameDiv { /*game canvas*/
+        margin-top: 0;
+    }
+    .stat {
+        margin-right: 15px;
+        margin-bottom: 3px;
+    }
+    #stats {
+        width: 97%;
+        margin-left: 5px;
+        font-size: 0.75em;
+        height: 2.5em
+    }
+}
+@media screen and (max-width: 600px) {
+    #gameDiv { /*game canvas*/
+        margin-top: 0;
+        border-left: none;
+        border-right: none;
+        border-top: none;
+    }
+    .pagetitle {
+        display: none
+    }
+    #categoryControls {
+        flex-wrap: nowrap;
+    }
+    #categoryControls button {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+}
+@media screen and (min-width: 800px) { /* Desktop-Only Styles */
+    #gameDiv {
+        width:800px;
+        left: 50%;
+        transform: translate(-50%, -0%);
+    }
+}
+/* screen size > 1325px, h1::after {content:" Sandboxels"} */
+@media screen and (min-width: 1325px) {
+    .pagetitle::after {content:" Sandboxels"}
 }
 button, input { /*Disable double tap zoom on mobile devices*/
     touch-action: manipulation;

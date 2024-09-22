@@ -6,7 +6,7 @@ Play at [Sandboxels.R74n.com](https://sandboxels.r74n.com/).
 Join the [Discord server](https://discord.com/invite/ejUc6YPQuS).
 
 ![Landscape made in Sandboxels](https://raw.githubusercontent.com/R74nCom/sandboxels/main/icons/wallpaper.png)
-
+ 
 # Controls
  * Left Click = Draw pixels
  * Right Click = Erase pixels

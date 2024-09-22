@@ -1,3 +1,5 @@
+/* mod by nekonico aka doobienecoarc */
+
 window.addEventListener("load", () => { 
     document.getElementById("elementButton-mask_head")?.remove()
 })
@@ -36,8 +38,6 @@ window.addEventListener("load", () => {
 }) 
 
 // Coding junk above this point
-
-// also hi jonny ray 
 
 elements.SCP_008 = {
     color: "#11111f",
@@ -1116,16 +1116,16 @@ elements.shy_body = {
         }
         if (pixel.dir == 1) {
             if (!isEmpty(pixel.x+2, pixel.y-1, true) && pixelMap[pixel.x+2][pixel.y-1].element == "head") {
-                pixel.panic += 0.1;
+                pixel.panic += 0.2;
             }
             else if (!isEmpty(pixel.x+3, pixel.y-1, true) && pixelMap[pixel.x+2][pixel.y-1].element == "head") {
-                pixel.panic += 0.1;
+                pixel.panic += 0.2;
             }
             else if (!isEmpty(pixel.x+4, pixel.y-1, true) && pixelMap[pixel.x+4][pixel.y-1].element == "head") {
-                pixel.panic += 0.1;
+                pixel.panic += 0.2;
             }
             else if (!isEmpty(pixel.x+5, pixel.y-1, true) && pixelMap[pixel.x+5][pixel.y-1].element == "head") {
-                pixel.panic += 0.1;
+                pixel.panic += 0.2;
             }
             else if (!isEmpty(pixel.x+5, pixel.y-1, true) && pixelMap[pixel.x+5][pixel.y-1].element == "head") {
                 pixel.panic += 0.1;
@@ -1139,19 +1139,31 @@ elements.shy_body = {
             else if (!isEmpty(pixel.x+8, pixel.y-1, true) && pixelMap[pixel.x+8][pixel.y-1].element == "head") {
                 pixel.panic += 0.1;
             }
+            else if (!isEmpty(pixel.x+9, pixel.y-1, true) && pixelMap[pixel.x+9][pixel.y-1].element == "head") {
+                pixel.panic += 0.1;
+            }
+	    else if (!isEmpty(pixel.x+10, pixel.y-1, true) && pixelMap[pixel.x+10][pixel.y-1].element == "head") {
+                pixel.panic += 0.1;
+            }
+	    else if (!isEmpty(pixel.x+11, pixel.y-1, true) && pixelMap[pixel.x+11][pixel.y-1].element == "head") {
+                pixel.panic += 0.1;
+            }
+	    else if (!isEmpty(pixel.x+12, pixel.y-1, true) && pixelMap[pixel.x+12][pixel.y-1].element == "head") {
+                pixel.panic += 0.1;
+            }
         }
         else if (pixel.dir == -1) {
             if (!isEmpty(pixel.x-2, pixel.y-1, true) && pixelMap[pixel.x-2][pixel.y-1].element == "head") {
-                pixel.panic += 0.1;
+                pixel.panic += 0.2;
             }
             else if (!isEmpty(pixel.x-3, pixel.y-1, true) && pixelMap[pixel.x-3][pixel.y-1].element == "head") {
-                pixel.panic += 0.1;
+                pixel.panic += 0.2;
             }
             else if (!isEmpty(pixel.x-4, pixel.y-1, true) && pixelMap[pixel.x-4][pixel.y-1].element == "head") {
-                pixel.panic += 0.1;
+                pixel.panic += 0.2;
             }
             else if (!isEmpty(pixel.x-5, pixel.y-1, true) && pixelMap[pixel.x-5][pixel.y-1].element == "head") {
-                pixel.panic += 0.1;
+                pixel.panic += 0.2;
             }
             else if (!isEmpty(pixel.x-5, pixel.y-1, true) && pixelMap[pixel.x-5][pixel.y-1].element == "head") {
                 pixel.panic += 0.1;
@@ -1163,6 +1175,18 @@ elements.shy_body = {
                 pixel.panic += 0.1;
             }
             else if (!isEmpty(pixel.x-8, pixel.y-1, true) && pixelMap[pixel.x-8][pixel.y-1].element == "head") {
+                pixel.panic += 0.1;
+            }
+	    else if (!isEmpty(pixel.x-9, pixel.y-1, true) && pixelMap[pixel.x-9][pixel.y-1].element == "head") {
+                pixel.panic += 0.1;
+            }
+	    else if (!isEmpty(pixel.x-10, pixel.y-1, true) && pixelMap[pixel.x-10][pixel.y-1].element == "head") {
+                pixel.panic += 0.1;
+            }
+	    else if (!isEmpty(pixel.x-11, pixel.y-1, true) && pixelMap[pixel.x-11][pixel.y-1].element == "head") {
+                pixel.panic += 0.1;
+            }
+            else if (!isEmpty(pixel.x-12, pixel.y-1, true) && pixelMap[pixel.x-12][pixel.y-1].element == "head") {
                 pixel.panic += 0.1;
             }
         }
