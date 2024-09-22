@@ -30,7 +30,8 @@ runAfterLoad(function() {
       let elementMod = "Sandboxels (Vanilla)";
       
       for (let mod of enabledMods) {
-        if (modDescriptions[mod].includes(elementName)) {
+        if (modDescriptions[mod].includes(`elements.${elementName} =`) || 
+            modDescriptions[mod].includes(`elements["${elementName}"] =`)) {
           elementMod = mod;
           break;
         }
@@ -44,5 +45,5 @@ runAfterLoad(function() {
         element.desc = `This Element is from ${elementMod}`;
       }
     });
-  });  
+  });
 });
