@@ -13,6 +13,7 @@ for (let elementName in elements) {
 
 runAfterLoad(function() {
   let modDescriptions = {};
+  let vanillaElements = Object.keys(elements);
 
   let fetchPromises = enabledMods.map(mod => {
     return fetch(mod)
@@ -27,15 +28,19 @@ runAfterLoad(function() {
   Promise.all(fetchPromises).then(() => {
     Object.keys(elements).forEach(function(elementName) {
       let element = elements[elementName];
-      let elementMod = "Sandboxels (Vanilla)";
+      let elementMod = vanillaElements.includes(elementName) ? "Sandboxels (Vanilla)" : null;
       
-      for (let mod of enabledMods) {
-        if (modDescriptions[mod].includes(`elements.${elementName} =`) || 
-            modDescriptions[mod].includes(`elements["${elementName}"] =`)) {
-          elementMod = mod;
-          break;
+      if (!elementMod) {
+        for (let mod of enabledMods) {
+          if (modDescriptions[mod].includes(`elements.${elementName} =`) || 
+              modDescriptions[mod].includes(`elements["${elementName}"] =`)) {
+            elementMod = mod;
+            break;
+          }
         }
       }
+      
+      if (!elementMod) elementMod = "Unknown Mod";
       
       if (element.desc && typeof element.desc === 'string' && element.desc.trim() !== '') {
         if (!element.desc.includes("This Element is from")) {
