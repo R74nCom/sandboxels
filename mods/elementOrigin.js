@@ -2,8 +2,12 @@
 
 for (let elementName in elements) {
   let element = elements[elementName];
-  if (!element.desc.includes("This Element is from")) {
-    element.desc += "\nThis Element is from Sandboxels (Vanilla)";
+  if (element.desc && typeof element.desc === 'string' && element.desc.trim() !== '') {
+    if (!element.desc.includes("This Element is from")) {
+      element.desc += "\nThis Element is from Sandboxels (Vanilla)";
+    }
+  } else {
+    element.desc = "This Element is from Sandboxels (Vanilla)";
   }
 }
 
@@ -19,8 +23,12 @@ runAfterLoad(function() {
         Object.keys(elements).forEach(function(elementName) {
           let element = elements[elementName];
           
-          if (!element.desc.includes("This Element is from")) {
-            element.desc += `\nThis Element is from ${mod}`;
+          if (element.desc && typeof element.desc === 'string' && element.desc.trim() !== '') {
+            if (!element.desc.includes("This Element is from")) {
+              element.desc += `\nThis Element is from ${mod}`;
+            }
+          } else {
+            element.desc = `This Element is from ${mod}`;
           }
         });
       })
