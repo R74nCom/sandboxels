@@ -12,26 +12,31 @@ for (let elementName in elements) {
 }
 
 runAfterLoad(function() {
-  for (let i = 0; i < enabledMods.length; i++) {
-    let mod = enabledMods[i];
+  let modDescriptions = {};
 
-    fetch(mod)
+  let fetchPromises = enabledMods.map(mod => {
+    return fetch(mod)
       .then(response => response.text())
       .then(data => {
         console.log(`Loaded mod: ${mod}`);
-
-        Object.keys(elements).forEach(function(elementName) {
-          let element = elements[elementName];
-          
-          if (element.desc && typeof element.desc === 'string' && element.desc.trim() !== '') {
-            if (!element.desc.includes("This Element is from")) {
-              element.desc += `\nThis Element is from ${mod}`;
-            }
-          } else {
-            element.desc = `This Element is from ${mod}`;
-          }
-        });
+        modDescriptions[mod] = data;
       })
       .catch(error => console.error('Error fetching the mod file: ', error));
-  }
+  });
+
+  Promise.all(fetchPromises).then(() => {
+    Object.keys(elements).forEach(function(elementName) {
+      let element = elements[elementName];
+      
+      for (let mod of enabledMods) {
+        if (element.desc && typeof element.desc === 'string' && element.desc.trim() !== '') {
+          if (!element.desc.includes("This Element is from")) {
+            element.desc += `\nThis Element is from ${mod}`;
+          }
+        } else {
+          element.desc = `This Element is from ${mod}`;
+        }
+      }
+    });
+  });
 });
