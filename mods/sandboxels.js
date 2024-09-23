@@ -270,7 +270,7 @@ elements.rock_screen = {
 elements.saw_screen = {
     name:"screen",
     hidden:true,
-    color: "#e6d577",
+    color: ["#dec150","#c7b15a"],
     behavior: [
     "XX|XX|XX",
     "XX|XX|XX",
@@ -396,7 +396,7 @@ elements.saw_screen = {
 elements.cellulose_screen = {
     name:"screen",
     hidden:true,
-    color: "#2167ff",
+    color: "#c7d4c9",
     behavior: [
     "XX|XX|XX",
     "SW:sandboxels_screen|XX|SW:sandboxels_screen",
@@ -893,7 +893,7 @@ elements.ice_screen = {
 elements.wood_screen = {
     name:"screen",
     hidden:true,
-    color: "#808080",
+    color: "#a0522d",
     behavior: behaviors.WALL,
     properties: {
         dtemp: 20,
@@ -964,24 +964,6 @@ elements.digital_rock = {
     desc: "Use on screen to place digital sand."
 },
 
-elements.digital_sawdust = {
-    color: "#e6d577",
-    behavior: [
-        "CH:sandboxels_screen>saw_screen|CH:sandboxels_screen>saw_screen|CH:sandboxels_screen>saw_screen",
-        "CH:sandboxels_screen>saw_screen|CH:sandboxels_screen>saw_screen|CH:sandboxels_screen>saw_screen",
-        "CH:sandboxels_screen>saw_screen|CH:sandboxels_screen>saw_screen|CH:sandboxels_screen>saw_screen",
-    ],
-    tool: function(pixel) {
-        if (elements[pixel.element].id === elements.sandboxels_screen.id) {
-            changePixel(pixel,"saw_screen"); 
-        }
-    },
-    insulate:true,
-    canPlace: false,
-    category: "digital",
-    desc: "Use on screen to place digital sawdust."
-},
-
 elements.digital_water = {
     color: "#2167ff",
     behavior: [
@@ -1033,11 +1015,11 @@ elements.digital_steam = {
     insulate:true,
     canPlace: false,
     category: "digital",
-    desc: "Use on a screen to place digital ice."
+    desc: "Use on a screen to place digital steam."
 },
 
 elements.digital_wood = {
-    color: "#abd6ff",
+    color: "#a0522d",
     behavior: [
         "CH:sandboxels_screen>wood_screen|CH:sandboxels_screen>wood_screen|CH:sandboxels_screen>wood_screen",
         "CH:sandboxels_screen>wood_screen|CH:sandboxels_screen>wood_screen|CH:sandboxels_screen>wood_screen",
@@ -1051,7 +1033,7 @@ elements.digital_wood = {
     insulate:true,
     canPlace: false,
     category: "digital",
-    desc: "Use on a screen to place digital ice."
+    desc: "Use on a screen to place digital wood."
 },
 
 elements.digital_wall = {
@@ -1069,7 +1051,7 @@ elements.digital_wall = {
     insulate:true,
     canPlace: false,
     category: "digital",
-    desc: "Use on a screen to place digital walls."
+    desc: "Use on a screen to place digital wall."
 },
 
 elements.digital_heat = {
