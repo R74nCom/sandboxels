@@ -416,7 +416,7 @@ elements.cellulose_screen = {
         if (Math.random() > 0.2 && !isEmpty(pixel.x,pixel.y+1,true)) {
             var newPixel = pixelMap[pixel.x][pixel.y+1];
             if (newPixel.element === "sandboxels_screen") {
-                changePixel(newPixel,"water_screen");
+                changePixel(newPixel,"cellulose_screen");
                 newPixel.dtemp = pixel.dtemp;
                 changePixel(pixel,"sandboxels_screen");
                 pixel.dtemp = 0;
@@ -444,7 +444,7 @@ elements.cellulose_screen = {
             else if (Math.random() > 0.5 && !isEmpty(pixel.x+1,pixel.y+1,true)) {
                 var newPixel = pixelMap[pixel.x+1][pixel.y+1];
                 if (newPixel.element === "sandboxels_screen") {
-                    changePixel(newPixel,"water_screen");
+                    changePixel(newPixel,"cellulose_screen");
                     newPixel.dtemp = pixel.dtemp;
                     changePixel(pixel,"sandboxels_screen");
                     pixel.dtemp = 0;
@@ -473,7 +473,7 @@ elements.cellulose_screen = {
             else if (!isEmpty(pixel.x-1,pixel.y+1,true)) {
                 var newPixel = pixelMap[pixel.x-1][pixel.y+1];
                 if (newPixel.element === "sandboxels_screen") {
-                    changePixel(newPixel,"water_screen");
+                    changePixel(newPixel,"cellulose_screen");
                     newPixel.dtemp = pixel.dtemp;
                     changePixel(pixel,"sandboxels_screen");
                     pixel.dtemp = 0;
@@ -487,8 +487,8 @@ elements.cellulose_screen = {
                     pixel.dtemp = newPixel.dtemp;
                 }
                 else if (newPixel.element === "saw_screen") {
-                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
-                pixel.dtemp = newPixel.dtemp;
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                    pixel.dtemp = newPixel.dtemp;
                 }
                 else if (newPixel.element === "sand_screen") {
                     newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
@@ -503,7 +503,7 @@ elements.cellulose_screen = {
         else if (Math.random() > 0.5 && !isEmpty(pixel.x+1,pixel.y,true)) {
             var newPixel = pixelMap[pixel.x+1][pixel.y];
             if (newPixel.element === "sandboxels_screen") {
-                changePixel(newPixel,"water_screen");
+                changePixel(newPixel,"cellulose_screen");
                 newPixel.dtemp = pixel.dtemp;
                 changePixel(pixel,"sandboxels_screen");
                 pixel.dtemp = 0;
@@ -532,7 +532,7 @@ elements.cellulose_screen = {
         else if (!isEmpty(pixel.x-1,pixel.y,true)) {
             var newPixel = pixelMap[pixel.x-1][pixel.y];
             if (newPixel.element === "sandboxels_screen") {
-                changePixel(newPixel,"water_screen");
+                changePixel(newPixel,"cellulose_screen");
                 newPixel.dtemp = pixel.dtemp;
                 changePixel(pixel,"sandboxels_screen");
                 pixel.dtemp = 0;
@@ -600,6 +600,12 @@ elements.water_screen = {
                 newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                 pixel.dtemp = newPixel.dtemp;
             }
+            else if (newPixel.element === "saw_screen") {
+                changePixel(newPixel,"cellulose_screen");
+                newPixel.dtemp = pixel.dtemp;
+                changePixel(pixel,"sandboxels_screen");
+                pixel.dtemp = 0;
+            }
             else if (newPixel.element === "sand_screen") {
                 newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                 pixel.dtemp = newPixel.dtemp;
@@ -623,6 +629,12 @@ elements.water_screen = {
                 else if (newPixel.element === "steam_screen") {
                     newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                     pixel.dtemp = newPixel.dtemp;
+                }
+                else if (newPixel.element === "saw_screen") {
+                    changePixel(newPixel,"cellulose_screen");
+                    newPixel.dtemp = pixel.dtemp;
+                    changePixel(pixel,"sandboxels_screen");
+                    pixel.dtemp = 0;
                 }
                 else if (newPixel.element === "sand_screen") {
                     newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
@@ -648,6 +660,12 @@ elements.water_screen = {
                 else if (newPixel.element === "steam_screen") {
                     newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                     pixel.dtemp = newPixel.dtemp;
+                }
+                else if (newPixel.element === "saw_screen") {
+                    changePixel(newPixel,"cellulose_screen");
+                    newPixel.dtemp = pixel.dtemp;
+                    changePixel(pixel,"sandboxels_screen");
+                    pixel.dtemp = 0;
                 }
                 else if (newPixel.element === "sand_screen") {
                     newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
@@ -675,6 +693,12 @@ elements.water_screen = {
                 newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                 pixel.dtemp = newPixel.dtemp;
             }
+            else if (newPixel.element === "saw_screen") {
+                changePixel(newPixel,"cellulose_screen");
+                newPixel.dtemp = pixel.dtemp;
+                changePixel(pixel,"sandboxels_screen");
+                pixel.dtemp = 0;
+            }
             else if (newPixel.element === "sand_screen") {
                 newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                 pixel.dtemp = newPixel.dtemp;
@@ -699,6 +723,12 @@ elements.water_screen = {
             else if (newPixel.element === "steam_screen") {
                 newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                 pixel.dtemp = newPixel.dtemp;
+            }
+            else if (newPixel.element === "saw_screen") {
+                changePixel(newPixel,"cellulose_screen");
+                newPixel.dtemp = pixel.dtemp;
+                changePixel(pixel,"sandboxels_screen");
+                pixel.dtemp = 0;
             }
             else if (newPixel.element === "sand_screen") {
                 newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
