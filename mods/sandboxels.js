@@ -1,3 +1,45 @@
+/* mod by nekonico */
+
+window.addEventListener("load", () => { 
+    document.getElementById("elementButton-sandboxels_screen")?.remove()
+}) 
+
+window.addEventListener("load", () => { 
+    document.getElementById("elementButton-sand_screen")?.remove()
+}) 
+
+window.addEventListener("load", () => { 
+    document.getElementById("elementButton-rock_screen")?.remove()
+}) 
+
+window.addEventListener("load", () => { 
+    document.getElementById("elementButton-wall_screen")?.remove()
+}) 
+
+window.addEventListener("load", () => { 
+    document.getElementById("elementButton-water_screen")?.remove()
+}) 
+
+window.addEventListener("load", () => { 
+    document.getElementById("elementButton-steam_screen")?.remove()
+}) 
+
+window.addEventListener("load", () => { 
+    document.getElementById("elementButton-ice_screen")?.remove()
+}) 
+
+window.addEventListener("load", () => { 
+    document.getElementById("elementButton-wood_screen")?.remove()
+}) 
+
+window.addEventListener("load", () => { 
+    document.getElementById("elementButton-saw_screen")?.remove()
+}) 
+
+window.addEventListener("load", () => { 
+    document.getElementById("elementButton-cellulose_screen")?.remove()
+}) 
+
 elements.sandboxels_screen_off = {
     name:"screen",
     color: "#454545",
