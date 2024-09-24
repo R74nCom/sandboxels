@@ -40,6 +40,80 @@ window.addEventListener("load", () => {
     document.getElementById("elementButton-cellulose_screen")?.remove()
 }) 
 
+window.addEventListener("load", () => { 
+    document.getElementById("elementButton-paper_screen")?.remove()
+}) 
+
+elements.digitalizer = {
+    color: ["#d1c6be","#b5c0ad","#b9b8bc"],
+    behavior: behaviors.WALL,
+    onSelect: function() {
+        logMessage("Do not digitalize unregistered elements!");
+    },
+    tempHigh: 1500,
+    stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
+    conduct: 1,
+    breakInto: ["glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","sand"],
+    tempLow: -80,
+    stateLow: "glass_shard",
+    category: "digital",
+    tick: function(pixel) {
+        if (!isEmpty(pixel.x,pixel.y-1,true) && !isEmpty(pixel.x,pixel.y+1,true)) {
+            var newPixel = pixelMap[pixel.x][pixel.y-1];
+            var screen = pixelMap[pixel.x][pixel.y+1];
+            if (screen.element === "sandboxels_screen") {
+                if (newPixel.element === "sand" && screen.element === "sandboxels_screen") {
+                    changePixel(screen,"sand_screen");
+                    deletePixel(newPixel.x,newPixel.y)
+                }
+                else if (newPixel.element === "ice" && screen.element === "sandboxels_screen") {
+                    changePixel(screen,"ice_screen");
+                    deletePixel(newPixel.x,newPixel.y)
+                }
+                else if (newPixel.element === "steam" && screen.element === "sandboxels_screen") {
+                    changePixel(screen,"steam_screen");
+                    deletePixel(newPixel.x,newPixel.y)
+                }
+                else if (newPixel.element === "water" && screen.element === "sandboxels_screen") {
+                    changePixel(screen,"water_screen");
+                    deletePixel(newPixel.x,newPixel.y)
+                }
+                else if (newPixel.element === "wood" && screen.element === "sandboxels_screen") {
+                    changePixel(screen,"wood_screen");
+                    deletePixel(newPixel.x,newPixel.y)
+                }
+                else if (newPixel.element === "paper" && screen.element === "sandboxels_screen") {
+                    changePixel(screen,"paper_screen");
+                    deletePixel(newPixel.x,newPixel.y)
+                }
+                else if (newPixel.element === "sawdust" && screen.element === "sandboxels_screen") {
+                    changePixel(screen,"saw_screen");
+                    deletePixel(newPixel.x,newPixel.y)
+                }
+                else if (newPixel.element === "cellulose" && screen.element === "sandboxels_screen") {
+                    changePixel(screen,"cellulose_screen");
+                    deletePixel(newPixel.x,newPixel.y)
+                }
+                else if (newPixel.element === "rock" && screen.element === "sandboxels_screen") {
+                    changePixel(screen,"rock_screen");
+                    deletePixel(newPixel.x,newPixel.y)
+                }
+                else if (newPixel.element === "wall" && screen.element === "sandboxels_screen") {
+                    changePixel(screen,"wall_screen");
+                    deletePixel(newPixel.x,newPixel.y)
+                }
+                else {
+                    changePixel(screen,"malware");
+                    deletePixel(newPixel.x,newPixel.y)
+                }
+            } 
+        }
+    },
+    state: "solid",
+    density: 1200,
+    desc: "Digitalizes elements."
+},
+
 elements.sandboxels_screen_off = {
     name:"screen",
     color: "#454545",
@@ -52,7 +126,7 @@ elements.sandboxels_screen_off = {
     tempHigh: 1500,
     stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
     conduct: 1,
-    breakInto: "glass_shard",
+    breakInto: ["glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","sand"],
     tempLow: -80,
     stateLow: "glass_shard",
     category: "digital",
@@ -73,7 +147,7 @@ elements.sandboxels_screen = {
     tempHigh: 1500,
     stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
     conduct: 1,
-    breakInto: ["glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","sand"],
+    breakInto: ["glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","sand"],
     tempLow: -45,
     stateLow: "sandboxels_screen_off",
     category: "digital",
@@ -123,6 +197,24 @@ elements.sand_screen = {
                 newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                 pixel.dtemp = newPixel.dtemp;
             }
+            else if (newPixel.element === "wood_screen") {
+                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                pixel.dtemp = newPixel.dtemp;
+            }
+            else if (newPixel.element === "paper_screen") {
+                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                pixel.dtemp = newPixel.dtemp;
+            }
+            else if (newPixel.element === "saw_screen") {
+                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                pixel.dtemp = newPixel.dtemp;
+            }
+            else if (newPixel.element === "cellulose_screen") {
+                changePixel(newPixel,"sand_screen");
+                pixel.dtemp = newPixel.dtemp;
+                newPixel.dtemp = pixel.dtemp;
+                changePixel(pixel,"cellulose_screen");
+            }
             else if (newPixel.element === "rock_screen") {
                 newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                 pixel.dtemp = newPixel.dtemp;
@@ -148,6 +240,24 @@ elements.sand_screen = {
                 else if (newPixel.element === "steam_screen") {
                     newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                     pixel.dtemp = newPixel.dtemp;
+                }
+                else if (newPixel.element === "wood_screen") {
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                    pixel.dtemp = newPixel.dtemp;
+                }
+                else if (newPixel.element === "paper_screen") {
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                    pixel.dtemp = newPixel.dtemp;
+                }
+                else if (newPixel.element === "saw_screen") {
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                    pixel.dtemp = newPixel.dtemp;
+                }
+                else if (newPixel.element === "cellulose_screen") {
+                    changePixel(newPixel,"sand_screen");
+                    pixel.dtemp = newPixel.dtemp;
+                    newPixel.dtemp = pixel.dtemp;
+                    changePixel(pixel,"cellulose_screen");
                 }
                 else if (newPixel.element === "sand_screen") {
                     newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
@@ -179,6 +289,24 @@ elements.sand_screen = {
                 else if (newPixel.element === "steam_screen") {
                     newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                     pixel.dtemp = newPixel.dtemp;
+                }
+                else if (newPixel.element === "wood_screen") {
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                    pixel.dtemp = newPixel.dtemp;
+                }
+                else if (newPixel.element === "paper_screen") {
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                    pixel.dtemp = newPixel.dtemp;
+                }
+                else if (newPixel.element === "saw_screen") {
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                    pixel.dtemp = newPixel.dtemp;
+                }
+                else if (newPixel.element === "cellulose_screen") {
+                    changePixel(newPixel,"sand_screen");
+                    pixel.dtemp = newPixel.dtemp;
+                    newPixel.dtemp = pixel.dtemp;
+                    changePixel(pixel,"cellulose_screen");
                 }
                 else if (newPixel.element === "sand_screen") {
                     newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
@@ -229,17 +357,15 @@ elements.rock_screen = {
                 newPixel.dtemp = pixel.dtemp;
                 changePixel(pixel,"water_screen");
             }
-            else if (newPixel.element === "ice_screen") {
-                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
-                pixel.dtemp = newPixel.dtemp;
-            }
             else if (newPixel.element === "steam_screen") {
                 newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                 pixel.dtemp = newPixel.dtemp;
             }
-            else if (newPixel.element === "sand_screen") {
-                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+            else if (newPixel.element === "cellulose_screen") {
+                changePixel(newPixel,"rock_screen");
                 pixel.dtemp = newPixel.dtemp;
+                newPixel.dtemp = pixel.dtemp;
+                changePixel(pixel,"cellulose_screen");
             }
             else if (Math.random() > 0.5 && !isEmpty(pixel.x+1,pixel.y+1,true)) {
                 var newPixel = pixelMap[pixel.x+1][pixel.y+1];
@@ -262,6 +388,24 @@ elements.rock_screen = {
                 else if (newPixel.element === "steam_screen") {
                     newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                     pixel.dtemp = newPixel.dtemp;
+                }
+                else if (newPixel.element === "wood_screen") {
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                    pixel.dtemp = newPixel.dtemp;
+                }
+                else if (newPixel.element === "paper_screen") {
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                    pixel.dtemp = newPixel.dtemp;
+                }
+                else if (newPixel.element === "saw_screen") {
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                    pixel.dtemp = newPixel.dtemp;
+                }
+                else if (newPixel.element === "cellulose_screen") {
+                    changePixel(newPixel,"rock_screen");
+                    pixel.dtemp = newPixel.dtemp;
+                    newPixel.dtemp = pixel.dtemp;
+                    changePixel(pixel,"cellulose_screen");
                 }
                 else if (newPixel.element === "sand_screen") {
                     newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
@@ -293,6 +437,24 @@ elements.rock_screen = {
                 else if (newPixel.element === "steam_screen") {
                     newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                     pixel.dtemp = newPixel.dtemp;
+                }
+                else if (newPixel.element === "wood_screen") {
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                    pixel.dtemp = newPixel.dtemp;
+                }
+                else if (newPixel.element === "paper_screen") {
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                    pixel.dtemp = newPixel.dtemp;
+                }
+                else if (newPixel.element === "saw_screen") {
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                    pixel.dtemp = newPixel.dtemp;
+                }
+                else if (newPixel.element === "cellulose_screen") {
+                    changePixel(newPixel,"rock_screen");
+                    pixel.dtemp = newPixel.dtemp;
+                    newPixel.dtemp = pixel.dtemp;
+                    changePixel(pixel,"cellulose_screen");
                 }
                 else if (newPixel.element === "sand_screen") {
                     newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
@@ -324,7 +486,7 @@ elements.saw_screen = {
     tempHigh: 1500,
     stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
     conduct: 1,
-    breakInto: ["glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","sand"],
+    breakInto: ["glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","sawdust"],
     tempLow: -45,
     stateLow: "sandboxels_screen_off",
     category: "digital",
@@ -343,19 +505,11 @@ elements.saw_screen = {
                 newPixel.dtemp = pixel.dtemp;
                 changePixel(pixel,"water_screen");
             }
-            else if (newPixel.element === "ice_screen") {
-                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
-                pixel.dtemp = newPixel.dtemp;
-            }
             else if (newPixel.element === "steam_screen") {
                 newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                 pixel.dtemp = newPixel.dtemp;
             }
-            else if (newPixel.element === "sand_screen") {
-                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
-                pixel.dtemp = newPixel.dtemp;
-            }
-            else if (newPixel.element === "rock_screen") {
+            else if (newPixel.element === "cellulose_screen") {
                 newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                 pixel.dtemp = newPixel.dtemp;
             }
@@ -381,7 +535,19 @@ elements.saw_screen = {
                     newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                     pixel.dtemp = newPixel.dtemp;
                 }
+                else if (newPixel.element === "wood_screen") {
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                    pixel.dtemp = newPixel.dtemp;
+                }
+                else if (newPixel.element === "paper_screen") {
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                    pixel.dtemp = newPixel.dtemp;
+                }
                 else if (newPixel.element === "saw_screen") {
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                    pixel.dtemp = newPixel.dtemp;
+                }
+                else if (newPixel.element === "cellulose_screen") {
                     newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                     pixel.dtemp = newPixel.dtemp;
                 }
@@ -416,7 +582,19 @@ elements.saw_screen = {
                     newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                     pixel.dtemp = newPixel.dtemp;
                 }
+                else if (newPixel.element === "wood_screen") {
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                    pixel.dtemp = newPixel.dtemp;
+                }
+                else if (newPixel.element === "paper_screen") {
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                    pixel.dtemp = newPixel.dtemp;
+                }
                 else if (newPixel.element === "saw_screen") {
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                    pixel.dtemp = newPixel.dtemp;
+                }
+                else if (newPixel.element === "cellulose_screen") {
                     newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                     pixel.dtemp = newPixel.dtemp;
                 }
@@ -450,7 +628,7 @@ elements.cellulose_screen = {
     tempHigh: 1500,
     stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
     conduct: 1,
-    breakInto: ["glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","water"],
+    breakInto: ["glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","cellulose"],
     tempLow: -45,
     stateLow: "sandboxels_screen_off",
     category: "digital",
@@ -463,11 +641,25 @@ elements.cellulose_screen = {
                 changePixel(pixel,"sandboxels_screen");
                 pixel.dtemp = 0;
             }
+            else if (newPixel.element === "water_screen") {
+                changePixel(newPixel,"cellulose_screen");
+                pixel.dtemp = newPixel.dtemp;
+                newPixel.dtemp = pixel.dtemp;
+                changePixel(pixel,"water_screen");
+            }
             else if (newPixel.element === "ice_screen") {
                 newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                 pixel.dtemp = newPixel.dtemp;
             }
             else if (newPixel.element === "steam_screen") {
+                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                pixel.dtemp = newPixel.dtemp;
+            }
+            else if (newPixel.element === "wood_screen") {
+                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                pixel.dtemp = newPixel.dtemp;
+            }
+            else if (newPixel.element === "paper_screen") {
                 newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                 pixel.dtemp = newPixel.dtemp;
             }
@@ -491,11 +683,25 @@ elements.cellulose_screen = {
                     changePixel(pixel,"sandboxels_screen");
                     pixel.dtemp = 0;
                 }
+                else if (newPixel.element === "water_screen") {
+                    changePixel(newPixel,"cellulose_screen");
+                    pixel.dtemp = newPixel.dtemp;
+                    newPixel.dtemp = pixel.dtemp;
+                    changePixel(pixel,"water_screen");
+                }
                 else if (newPixel.element === "ice_screen") {
                     newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                     pixel.dtemp = newPixel.dtemp;
                 }
                 else if (newPixel.element === "steam_screen") {
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                    pixel.dtemp = newPixel.dtemp;
+                }
+                else if (newPixel.element === "wood_screen") {
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                    pixel.dtemp = newPixel.dtemp;
+                }
+                else if (newPixel.element === "paper_screen") {
                     newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                     pixel.dtemp = newPixel.dtemp;
                 }
@@ -520,11 +726,25 @@ elements.cellulose_screen = {
                     changePixel(pixel,"sandboxels_screen");
                     pixel.dtemp = 0;
                 }
+                else if (newPixel.element === "water_screen") {
+                    changePixel(newPixel,"cellulose_screen");
+                    pixel.dtemp = newPixel.dtemp;
+                    newPixel.dtemp = pixel.dtemp;
+                    changePixel(pixel,"water_screen");
+                }
                 else if (newPixel.element === "ice_screen") {
                     newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                     pixel.dtemp = newPixel.dtemp;
                 }
                 else if (newPixel.element === "steam_screen") {
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                    pixel.dtemp = newPixel.dtemp;
+                }
+                else if (newPixel.element === "wood_screen") {
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                    pixel.dtemp = newPixel.dtemp;
+                }
+                else if (newPixel.element === "paper_screen") {
                     newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                     pixel.dtemp = newPixel.dtemp;
                 }
@@ -550,11 +770,25 @@ elements.cellulose_screen = {
                 changePixel(pixel,"sandboxels_screen");
                 pixel.dtemp = 0;
             }
+            else if (newPixel.element === "water_screen") {
+                changePixel(newPixel,"cellulose_screen");
+                pixel.dtemp = newPixel.dtemp;
+                newPixel.dtemp = pixel.dtemp;
+                changePixel(pixel,"water_screen");
+            }
             else if (newPixel.element === "ice_screen") {
                 newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                 pixel.dtemp = newPixel.dtemp;
             }
             else if (newPixel.element === "steam_screen") {
+                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                pixel.dtemp = newPixel.dtemp;
+            }
+            else if (newPixel.element === "wood_screen") {
+                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                pixel.dtemp = newPixel.dtemp;
+            }
+            else if (newPixel.element === "paper_screen") {
                 newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                 pixel.dtemp = newPixel.dtemp;
             }
@@ -579,11 +813,25 @@ elements.cellulose_screen = {
                 changePixel(pixel,"sandboxels_screen");
                 pixel.dtemp = 0;
             }
+            else if (newPixel.element === "water_screen") {
+                changePixel(newPixel,"cellulose_screen");
+                pixel.dtemp = newPixel.dtemp;
+                newPixel.dtemp = pixel.dtemp;
+                changePixel(pixel,"water_screen");
+            }
             else if (newPixel.element === "ice_screen") {
                 newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                 pixel.dtemp = newPixel.dtemp;
             }
             else if (newPixel.element === "steam_screen") {
+                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                pixel.dtemp = newPixel.dtemp;
+            }
+            else if (newPixel.element === "wood_screen") {
+                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                pixel.dtemp = newPixel.dtemp;
+            }
+            else if (newPixel.element === "paper_screen") {
                 newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                 pixel.dtemp = newPixel.dtemp;
             }
@@ -600,7 +848,7 @@ elements.cellulose_screen = {
                 pixel.dtemp = newPixel.dtemp;
             }
         }
-        if (pixel.dtemp > 199) { changePixel(pixel,"steam_screen") }
+        if (pixel.dtemp > 99) { changePixel(pixel,"paper_screen") }
     },
     state: "solid",
     density: 1200,
@@ -642,6 +890,10 @@ elements.water_screen = {
                 newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                 pixel.dtemp = newPixel.dtemp;
             }
+            else if (newPixel.element === "wood_screen") {
+                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                pixel.dtemp = newPixel.dtemp;
+            }
             else if (newPixel.element === "saw_screen") {
                 changePixel(newPixel,"cellulose_screen");
                 newPixel.dtemp = pixel.dtemp;
@@ -672,7 +924,17 @@ elements.water_screen = {
                     newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                     pixel.dtemp = newPixel.dtemp;
                 }
+                else if (newPixel.element === "wood_screen") {
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                    pixel.dtemp = newPixel.dtemp;
+                }
                 else if (newPixel.element === "saw_screen") {
+                    changePixel(newPixel,"cellulose_screen");
+                    newPixel.dtemp = pixel.dtemp;
+                    changePixel(pixel,"sandboxels_screen");
+                    pixel.dtemp = 0;
+                }
+                else if (newPixel.element === "paper_screen") {
                     changePixel(newPixel,"cellulose_screen");
                     newPixel.dtemp = pixel.dtemp;
                     changePixel(pixel,"sandboxels_screen");
@@ -703,7 +965,17 @@ elements.water_screen = {
                     newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                     pixel.dtemp = newPixel.dtemp;
                 }
+                else if (newPixel.element === "wood_screen") {
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                    pixel.dtemp = newPixel.dtemp;
+                }
                 else if (newPixel.element === "saw_screen") {
+                    changePixel(newPixel,"cellulose_screen");
+                    newPixel.dtemp = pixel.dtemp;
+                    changePixel(pixel,"sandboxels_screen");
+                    pixel.dtemp = 0;
+                }
+                else if (newPixel.element === "paper_screen") {
                     changePixel(newPixel,"cellulose_screen");
                     newPixel.dtemp = pixel.dtemp;
                     changePixel(pixel,"sandboxels_screen");
@@ -735,7 +1007,17 @@ elements.water_screen = {
                 newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                 pixel.dtemp = newPixel.dtemp;
             }
+            else if (newPixel.element === "wood_screen") {
+                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                pixel.dtemp = newPixel.dtemp;
+            }
             else if (newPixel.element === "saw_screen") {
+                changePixel(newPixel,"cellulose_screen");
+                newPixel.dtemp = pixel.dtemp;
+                changePixel(pixel,"sandboxels_screen");
+                pixel.dtemp = 0;
+            }
+            else if (newPixel.element === "paper_screen") {
                 changePixel(newPixel,"cellulose_screen");
                 newPixel.dtemp = pixel.dtemp;
                 changePixel(pixel,"sandboxels_screen");
@@ -766,7 +1048,17 @@ elements.water_screen = {
                 newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                 pixel.dtemp = newPixel.dtemp;
             }
+            else if (newPixel.element === "wood_screen") {
+                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                pixel.dtemp = newPixel.dtemp;
+            }
             else if (newPixel.element === "saw_screen") {
+                changePixel(newPixel,"cellulose_screen");
+                newPixel.dtemp = pixel.dtemp;
+                changePixel(pixel,"sandboxels_screen");
+                pixel.dtemp = 0;
+            }
+            else if (newPixel.element === "paper_screen") {
                 changePixel(newPixel,"cellulose_screen");
                 newPixel.dtemp = pixel.dtemp;
                 changePixel(pixel,"sandboxels_screen");
@@ -819,6 +1111,22 @@ elements.steam_screen = {
                 newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                 pixel.dtemp = newPixel.dtemp;
             }
+            else if (newPixel.element === "wood_screen") {
+                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                pixel.dtemp = newPixel.dtemp;
+            }
+            else if (newPixel.element === "paper_screen") {
+                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                pixel.dtemp = newPixel.dtemp;
+            }
+            else if (newPixel.element === "saw_screen") {
+                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                pixel.dtemp = newPixel.dtemp;
+            }
+            else if (newPixel.element === "cellulose_screen") {
+                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                pixel.dtemp = newPixel.dtemp;
+            }
             else if (newPixel.element === "water_screen") {
                 newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                 pixel.dtemp = newPixel.dtemp;
@@ -840,6 +1148,22 @@ elements.steam_screen = {
                 changePixel(pixel,"sandboxels_screen");
             }
             else if (newPixel.element === "ice_screen") {
+                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                pixel.dtemp = newPixel.dtemp;
+            }
+            else if (newPixel.element === "wood_screen") {
+                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                pixel.dtemp = newPixel.dtemp;
+            }
+            else if (newPixel.element === "paper_screen") {
+                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                pixel.dtemp = newPixel.dtemp;
+            }
+            else if (newPixel.element === "saw_screen") {
+                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                pixel.dtemp = newPixel.dtemp;
+            }
+            else if (newPixel.element === "cellulose_screen") {
                 newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                 pixel.dtemp = newPixel.dtemp;
             }
@@ -867,6 +1191,22 @@ elements.steam_screen = {
                 newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                 pixel.dtemp = newPixel.dtemp;
             }
+            else if (newPixel.element === "wood_screen") {
+                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                pixel.dtemp = newPixel.dtemp;
+            }
+            else if (newPixel.element === "paper_screen") {
+                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                pixel.dtemp = newPixel.dtemp;
+            }
+            else if (newPixel.element === "saw_screen") {
+                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                pixel.dtemp = newPixel.dtemp;
+            }
+            else if (newPixel.element === "cellulose_screen") {
+                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                pixel.dtemp = newPixel.dtemp;
+            }
             else if (newPixel.element === "water_screen") {
                 newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                 pixel.dtemp = newPixel.dtemp;
@@ -888,6 +1228,22 @@ elements.steam_screen = {
                 changePixel(pixel,"sandboxels_screen");
             }
             else if (newPixel.element === "ice_screen") {
+                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                pixel.dtemp = newPixel.dtemp;
+            }
+            else if (newPixel.element === "wood_screen") {
+                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                pixel.dtemp = newPixel.dtemp;
+            }
+            else if (newPixel.element === "paper_screen") {
+                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                pixel.dtemp = newPixel.dtemp;
+            }
+            else if (newPixel.element === "saw_screen") {
+                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
+                pixel.dtemp = newPixel.dtemp;
+            }
+            else if (newPixel.element === "cellulose_screen") {
                 newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
                 pixel.dtemp = newPixel.dtemp;
             }
@@ -943,7 +1299,26 @@ elements.wood_screen = {
     tempHigh: 1500,
     stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
     conduct: 1,
-    breakInto: ["glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","concrete"],
+    breakInto: ["glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","wood"],
+    tempLow: -45,
+    stateLow: "sandboxels_screen_off",
+    category: "digital",
+    state: "solid",
+    density: 1200,
+},
+
+elements.paper_screen = {
+    name:"screen",
+    hidden:true,
+    color: "#f0f0f0",
+    behavior: behaviors.WALL,
+    properties: {
+        dtemp: 20,
+    },
+    tempHigh: 1500,
+    stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
+    conduct: 1,
+    breakInto: ["glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","paper"],
     tempLow: -45,
     stateLow: "sandboxels_screen_off",
     category: "digital",
@@ -1078,6 +1453,24 @@ elements.digital_wood = {
     desc: "Use on a screen to place digital wood."
 },
 
+elements.digital_paper = {
+    color: "#f0f0f0",
+    behavior: [
+        "CH:sandboxels_screen>paper_screen|CH:sandboxels_screen>paper_screen|CH:sandboxels_screen>paper_screen",
+        "CH:sandboxels_screen>paper_screen|CH:sandboxels_screen>paper_screen|CH:sandboxels_screen>paper_screen",
+        "CH:sandboxels_screen>paper_screen|CH:sandboxels_screen>paper_screen|CH:sandboxels_screen>paper_screen",
+    ],
+    tool: function(pixel) {
+        if (elements[pixel.element].id === elements.sandboxels_screen.id) {
+            changePixel(pixel,"paper_screen"); 
+        }
+    },
+    insulate:true,
+    canPlace: false,
+    category: "digital",
+    desc: "Use on a screen to place digital paper."
+},
+
 elements.digital_wall = {
     color: "#808080",
     behavior: [
@@ -1128,6 +1521,9 @@ elements.digital_heat = {
         else if (elements[pixel.element].id === elements.wood_screen.id) {
             pixel.dtemp += 1 
         }
+        else if (elements[pixel.element].id === elements.paper_screen.id) {
+            pixel.dtemp += 1 
+        }
     },
     insulate:true,
     canPlace: false,
@@ -1167,6 +1563,9 @@ elements.digital_cool = {
         else if (elements[pixel.element].id === elements.wood_screen.id) {
             pixel.dtemp -= 1 
         }
+        else if (elements[pixel.element].id === elements.paper_screen.id) {
+            pixel.dtemp -= 1 
+        }
     },
     insulate:true,
     canPlace: false,
@@ -1189,22 +1588,25 @@ elements.digital_roomtemp = {
             pixel.dtemp = 20
         }
         else if (elements[pixel.element].id === elements.saw_screen.id) {
-            pixel.dtemp = 1 
+            pixel.dtemp = 20 
         }
         else if (elements[pixel.element].id === elements.water_screen.id) {
-            pixel.dtemp = 1 
+            pixel.dtemp = 20
         }
         else if (elements[pixel.element].id === elements.cellulose_screen.id) {
-            pixel.dtemp = 1 
+            pixel.dtemp = 20
         }
         else if (elements[pixel.element].id === elements.steam_screen.id) {
-            pixel.dtemp = 1 
+            pixel.dtemp = 20
         }
         else if (elements[pixel.element].id === elements.ice_screen.id) {
-            pixel.dtemp = 1 
+            pixel.dtemp = 20
         }
         else if (elements[pixel.element].id === elements.wood_screen.id) {
-            pixel.dtemp = 1 
+            pixel.dtemp = 20
+        }
+        else if (elements[pixel.element].id === elements.paper_screen.id) {
+            pixel.dtemp = 20
         }
     },
     insulate:true,
@@ -1266,6 +1668,9 @@ elements.digital_erase = {
         else if (elements[pixel.element].id === elements.wood_screen.id) {
             changePixel(pixel,"sandboxels_screen"); 
         }
+        else if (elements[pixel.element].id === elements.paper_screen.id) {
+            changePixel(pixel,"sandboxels_screen"); 
+        }
         else if (elements[pixel.element].id === elements.wall_screen.id) {
             changePixel(pixel,"sandboxels_screen"); 
         }
@@ -1277,14 +1682,14 @@ elements.digital_erase = {
 };
 
 if (!elements.malware.reactions) { elements.malware.reactions = {} }
-    elements.malware.reactions.sandboxels_screen = { "elem2": ["sand_screen","sandboxels_screen_off",null], chance:0.1 };
-    elements.malware.reactions.saw_screen = { "elem2": ["wall_screen","sandboxels_screen_off",null], chance:0.1 };
-    elements.malware.reactions.sand_screen = { "elem2": ["wood_screen","sandboxels_screen_off",null], chance:0.1 };
-    elements.malware.reactions.rock_screen = { "elem2": ["ice_screen","sandboxels_screen_off",null], chance:0.1 };
-    elements.malware.reactions.cellulose_screen = { "elem2": ["steam_screen","sandboxels_screen_off",null], chance:0.1 };
-    elements.malware.reactions.water_screen = { "elem2": ["water_screen","sandboxels_screen_off",null], chance:0.1 };
-    elements.malware.reactions.steam_screen = { "elem2": ["cellulose_screen","sandboxels_screen_off",null], chance:0.1 };
-    elements.malware.reactions.ice_screen = { "elem2": ["rock_screen","sandboxels_screen_off",null], chance:0.1 };
-    elements.malware.reactions.wood_screen = { "elem2": ["sand_screen","sandboxels_screen_off",null], chance:0.1 };
-    elements.malware.reactions.wall_screen = { "elem2": ["saw_screen","sandboxels_screen_off",null], chance:0.1 };
-
+    elements.malware.reactions.sandboxels_screen = { "elem2": ["sand_screen","sandboxels_screen_off","sandboxels_screen_off","malware"] };
+    elements.malware.reactions.saw_screen = { "elem2": ["wall_screen","wall_screen","sandboxels_screen_off","malware"] };
+    elements.malware.reactions.sand_screen = { "elem2": ["paper_screen","paper_screen","sandboxels_screen_off","malware"] };
+    elements.malware.reactions.rock_screen = { "elem2": ["wood_screen","wood_screen","sandboxels_screen_off","malware"] };
+    elements.malware.reactions.cellulose_screen = { "elem2": ["ice_screen","ice_screen","sandboxels_screen_off","malware"] };
+    elements.malware.reactions.water_screen = { "elem2": ["steam_screen","steam_screen","sandboxels_screen_off","malware"] };
+    elements.malware.reactions.steam_screen = { "elem2": ["water_screen","water_screen","sandboxels_screen_off","malware"] };
+    elements.malware.reactions.ice_screen = { "elem2": ["cellulose_screen","cellulose_screen","sandboxels_screen_off","malware"] };
+    elements.malware.reactions.wood_screen = { "elem2": ["rock_screen","rock_screen","sandboxels_screen_off","malware"] };
+    elements.malware.reactions.paper_screen = { "elem2": ["sand_screen","sand_screen","sandboxels_screen_off","malware"] };
+    elements.malware.reactions.wall_screen = { "elem2": ["saw_screen","saw_screen","sandboxels_screen_off","malware"] };
