@@ -46,6 +46,14 @@ window.addEventListener("load", () => {
 
 window.addEventListener("load", () => { 
     document.getElementById("elementButton-paper_screen")?.remove()
+})
+
+window.addEventListener("load", () => { 
+    document.getElementById("elementButton-body_screen")?.remove()
+}) 
+
+window.addEventListener("load", () => { 
+    document.getElementById("elementButton-head_screen")?.remove()
 }) 
 
 elements.danger_suit = {
@@ -432,23 +440,18 @@ elements.simulated_human = {
         panic: 0
     },
     tick: function(pixel) {
-        if (!isEmpty(pixel.x, pixel.y+1),true) {
-            var oldPixel = pixelMap[pixel.x][pixel.y];
+        if (!isEmpty(pixel.x, pixel.y+1),true && pixelMap[pixel.x][pixel.y+1].element === "sandboxels_screen") {
             var newPixel = pixelMap[pixel.x][pixel.y+1];
-            if (newPixel.element === "sandboxels_screen") {
-                changePixel(newPixel, "body_screen");
-                pixel.element = "head_screen";
-            }
+            newPixel.element = "body_screen";
+            pixel.element = "head_screen";
         }
-        else if (!isEmpty(pixel.x, pixel.y-1),true) {
+        else if (!isEmpty(pixel.x, pixel.y-1),true && pixelMap[pixel.x][pixel.y-1].element === "sandboxels_screen") {
             var newPixel = pixelMap[pixel.x][pixel.y-1];
-            if (newPixel.element === "sandboxels_screen") {
-                changePixel(newPixel, "head_screen");
-                pixel.element = "body_screen";
-            }
+            newPixel.element = "head_screen";
+            pixel.element = "body_screen";
         }
         else {
-            changePixel(oldPixel, "sandboxels_screen");
+            changePixel(pixel, "sandboxels_screen");
         }
     },
     related: ["suited_body","suited_head"],
@@ -2003,50 +2006,50 @@ elements.body_screen = {
     category: "simulation",
     tick: function(pixel) {
         if (!isEmpty(pixel.x,pixel.y-1,true) && pixelMap[pixel.x][pixel.y-1].element === "head_screen") {
-            var headPixel = pixelMap[pixel.x][pixel.y-1];
+            var headPixel = pixelMap[pixel.x][pixel.y-1]
             if (!isEmpty(pixel.x,pixel.y+1,true)) {
-                var newPixel = pixelMap[pixel.x][pixel.y+1];
+                var newPixel = pixelMap[pixel.x][pixel.y+1]
                 if (newPixel.element === "sandboxels_screen") {
-                    changePixel(newPixel,"body_screen");
-                    newPixel.dtemp = pixel.dtemp;
-                    changePixel(pixel,"head_screen");
-                    pixel.dtemp = headPixel.dtemp;
+                    changePixel(newPixel,"body_screen")
+                    newPixel.dtemp = pixel.dtemp
+                    changePixel(pixel,"head_screen")
+                    pixel.dtemp = headPixel.dtemp
                 }
                 else if (newPixel.element === "water_screen") {
-                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
-                    pixel.dtemp = newPixel.dtemp;
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2)
+                    pixel.dtemp = newPixel.dtemp
                 }
                 else if (newPixel.element === "blood_screen") {
-                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
-                    pixel.dtemp = newPixel.dtemp;
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2)
+                    pixel.dtemp = newPixel.dtemp
                 }
                 else if (newPixel.element === "ice_screen") {
-                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
-                    pixel.dtemp = newPixel.dtemp;
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2)
+                    pixel.dtemp = newPixel.dtemp
                 }
                 else if (newPixel.element === "steam_screen") {
-                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
-                    pixel.dtemp = newPixel.dtemp;
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2)
+                    pixel.dtemp = newPixel.dtemp
                 }
                 else if (newPixel.element === "wood_screen") {
-                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
-                    pixel.dtemp = newPixel.dtemp;
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2)
+                    pixel.dtemp = newPixel.dtemp
                 }
                 else if (newPixel.element === "paper_screen") {
-                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
-                    pixel.dtemp = newPixel.dtemp;
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2)
+                    pixel.dtemp = newPixel.dtemp
                 }
                 else if (newPixel.element === "saw_screen") {
-                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
-                    pixel.dtemp = newPixel.dtemp;
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2)
+                    pixel.dtemp = newPixel.dtemp
                 }
                 else if (newPixel.element === "cellulose_screen") {
-                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
-                    pixel.dtemp = newPixel.dtemp;
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2)
+                    pixel.dtemp = newPixel.dtemp
                 }
                 else if (newPixel.element === "rock_screen") {
-                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
-                    pixel.dtemp = newPixel.dtemp;
+                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2)
+                    pixel.dtemp = newPixel.dtemp
                 }
             }
             else if (Math.random() < 0.01 && !isEmpty(pixel.x+1,pixel.y,true) && !isEmpty(pixel.x+1,pixel.y-1,true)) {
