@@ -1,8 +1,15 @@
 elements.knife = {
     color: ["#cbcdcd","#bdbdbd"],
-    behavior: behaviors.STURDYPOWDER,
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "XX|M1 AND SM%0.005|XX",
+    ],
     reactions: {
-        "head": { elem2:"brain", chance:0.5 },
+        "head": { elem2:["brain","bone"], chance:0.5 },
+        "body": { elem2:["heart","bone"], chance:0.5 },
+        "decapitated_head": { elem2:["brain","bone"], chance:0.8 },
+        "human_corpse": { elem2:["heart","bone"], chance:0.8 },
         "water": { elem1:"rust", chance:0.0025 },
         "salt_water": { elem1:"rust", chance:0.005 },
         "dirty_water": { elem1:"rust", chance:0.04 },
@@ -30,11 +37,11 @@ elements.knife = {
 }
 
 elements.brain = {
-		color: ["#fce3e3","#deb6c5","#f5ced5","#e87b8f"],
+		color: ["#deb6c5","#F5CED5","#e87b8f"],
 		behavior: [
 			"XX|XX|XX",
-			"XX|CH:rotten_human_flesh%0.0005|XX",
-			"M2|M1|M2",
+			"XX|CH:rotten_human_flesh%0.00005|XX",
+			"M2%75|M1|M2%75",
 		],
 		reactions: {
 		"dirty_water": { "elem1":"rotten_human_flesh", "chance":0.1 },
@@ -71,6 +78,50 @@ elements.brain = {
 	state: "solid",
 	density: 1081,
 	conduct: 1,
+};
+
+elements.heart = {
+    color: ["#e31b23","#98002e","#6f1200","#551900","#e31b23","#98002e","#6f1200","#551900","#e31b23","#98002e","#6f1200","#551900","#532e63"],
+    behavior: [
+        "CR:blood%0.01|CR:blood%0.02|CR:blood%0.01",
+        "CR:blood%0.01|CH:rotten_human_flesh%0.00005|CR:blood%0.01",
+        "M2%75 AND CR:blood%0.02|M1 AND CR:blood%0.05|M2%75AND CR:blood%0.02",
+    ],
+    reactions: {
+    "dirty_water": { "elem1":"rotten_human_flesh", "chance":0.1 },
+    "fly": { "elem1":"rotten_human_flesh", "chance":0.2 },
+    "dioxin": { "elem1":"rotten_human_flesh", "elem2":null, "chance":0.1 },
+    "uranium": { "elem1":"rotten_human_flesh", "chance":0.1 },
+    "cancer": { "elem1":"rotten_human_flesh", "chance":0.1 },
+    "plague": { "elem1":"rotten_human_flesh", "elem2":null, "chance":0.3 },
+    "ant": { "elem1":"rotten_human_flesh", "chance":0.1 },
+    "worm": { "elem1":"rotten_human_flesh", "chance":0.1 },
+    "rat": { "elem1":"rotten_human_flesh", "chance":0.3 },
+    "mushroom_spore": { "elem1":"rotten_human_flesh", "chance":0.1 },
+    "mushroom_stalk": { "elem1":"rotten_human_flesh", "chance":0.1 },
+    "mercury": { "elem1":"rotten_human_flesh", "elem2":null, "chance":0.2 },
+    "mercury_gas": { "elem1":"rotten_human_flesh", "elem2":null, "chance":0.1 },
+    "virus": { "elem1":"rotten_human_flesh", "chance":0.1 },
+    "poison": { "elem1":"rotten_human_flesh", "elem2":null, "chance":0.5 },
+    "infection": { "elem1":"rotten_human_flesh", "elem2":null, "chance":0.1 },
+    "ink": { "elem1":"rotten_human_flesh", "elem2":null, "chance":0.1 },
+    "acid": { "elem1":"rotten_human_flesh", "elem2":null, "chance":0.5 },
+    "acid_gas": { "elem1":"rotten_human_flesh", "chance":0.4 },
+    "cyanide": { "elem1":"rotten_human_flesh", "elem2":null, "chance":0.5 },
+},
+tempHigh: 110,
+stateHigh: "cooked_heart",
+tempLow: -18,
+stateLow: "frozen_human_flesh",
+category:"life",
+hidden: true,
+breakInto: ["human_flesh","blood","blood"],
+burn:10,
+burnTime:200,
+burnInto:["cooked_heart","cooked_heart","cooked_heart","blood"],
+state: "solid",
+density: 1075,
+conduct: 1,
 };
 
 elements.sweet_blood = {
@@ -120,9 +171,9 @@ elements.sweet_blood = {
 elements.mellified_man = {
     color: ["#f4f8db","#f8fbd0","#fbebba","#e8ce96","#b18f56","#936d43","#715234","#4b422a"],
     behavior: [
-        "XX|CR:honey%0.00001|XX",
-        "CR:honey%0.00001|XX|CR:honey%0.00001",
-        "XX|M1 AND CR:honey%0.00001|XX",
+        "XX|CR:honey%0.0001|XX",
+        "CR:honey%0.0001|XX|CR:honey%0.0001",
+        "XX|M1 AND CR:honey%0.0001|XX",
     ],
     reactions: {
         "water": { elem2:"sugar_water", tempMin:70, color2:"#d7db69" },
@@ -136,6 +187,7 @@ elements.mellified_man = {
     burn:15,
     burnTime:200,
     burnInto:["cooked_human","cooked_human","honey",],
+    breakInto: ["blood","human_flesh","bone","honey","human_flesh","bone"],
     state: "solid",
     density: 1020,
     conduct: 0.1,
@@ -144,6 +196,7 @@ elements.mellified_man = {
 }
 
 elements.human_flesh = {
+    color: ["#9e4839","#ba6449","#d2856c","#a14940"],
     behavior: [
         "XX|XX|XX",
         "SP|XX|SP",
@@ -199,10 +252,37 @@ elements.human_flesh = {
 }
 
 elements.cooked_brain = {
-    color: ["#ae7d5b","#9b6d54","#7e4d31"],
+    color: ["#C37C6E","#B77269","#AE625C"],
     behavior: behaviors.STURDYPOWDER,
     tick: function(pixel) {
-        if (pixel.temp > 100 && Math.random() < 0.003 && isEmpty(pixel.x,pixel.y-1)) {
+        if (pixel.temp > 100 && Math.random() < 0.0025 && isEmpty(pixel.x,pixel.y-1)) {
+            changePixel(pixel,"grease")
+        }
+    },
+    reactions: {
+        "water": { elem2:"broth", tempMin:70 },
+        "salt_water": { elem2:"broth", tempMin:70 },
+        "sugar_water": { elem2:"broth", tempMin:70 },
+        "dirty_water": { elem2:"broth", tempMin:70, color2:"#d7db69" },
+        "seltzer": { elem2:"broth", tempMin:70 }
+    },
+    tempHigh: 300,
+    stateHigh: "ash",
+    category:"food",
+    hidden:true,
+    burn:10,
+    burnTime:200,
+    burnInto: "ash",
+    state: "solid",
+    density: 1005,
+    isFood: true
+}
+
+elements.cooked_heart = {
+    color: ["#A44447","#9A4546","#8A2A30"],
+    behavior: behaviors.STURDYPOWDER,
+    tick: function(pixel) {
+        if (pixel.temp > 100 && Math.random() < 0.0025 && isEmpty(pixel.x,pixel.y-1)) {
             changePixel(pixel,"grease")
         }
     },
@@ -266,7 +346,6 @@ elements.frozen_human_flesh = {
 }
 
 elements.rotten_human_flesh = {
-    name: "rotten_meat",
     color: ["#b8b165","#b89765"],
     behavior: [
         "XX|CR:plague,stench,stench,stench,fly%0.25 AND CH:meat>rotten_meat%1 AND CH:human_flesh>rotten_human_flesh%1|XX",
@@ -323,6 +402,18 @@ elements.cured_human_flesh = {
 
 elements.human_corpse = {
     color: ["#069469","#047e99","#7f5fb0"],
+    behavior: [
+        "XX|XX|XX",
+        "XX|CH:rotten_human_flesh%0.0001|XX",
+        "XX|M1|XX",
+    ],
+    tick: function(pixel) {
+        if (isEmpty(pixel.x, pixel.y-1)) {
+            if (Math.random() < 0.01 && !pixel.charge) {
+                createPixel("blood", pixel.x, pixel.y-1);
+            }
+        }
+    },
     category: "life",
     hidden: true,
     density: 1500,
@@ -352,6 +443,18 @@ elements.human_corpse = {
 
 elements.decapitated_head = {
     color: ["#f3e7db","#f7ead0","#eadaba","#d7bd96","#a07e56","#825c43","#604134","#3a312a"],
+    behavior: [
+        "XX|XX|XX",
+        "XX|CH:rotten_human_flesh%0.0001|XX",
+        "M2%90|M1|M2%90",
+    ],
+    tick: function(pixel) {
+        if (tryMove(pixel, pixel.x, pixel.y+1)) {
+            if (isEmpty(pixel.x, pixel.y+1) && Math.random() < 0.01) {
+                createPixel("blood", pixel.x, pixel.y+1);
+            }
+        }
+    },
     category: "life",
     hidden: true,
     density: 1080,
@@ -379,6 +482,139 @@ elements.decapitated_head = {
     },
 }
 
+elements.head.tick = function(pixel) {
+    doHeat(pixel);
+    doBurning(pixel);
+    doElectricity(pixel);
+    if (pixel.dead) {
+        // Turn into rotten_meat if pixelTicks-dead > 500
+        if (pixelTicks-pixel.dead > 200 && Math.random() < 0.1) {
+            pixel.element = "decapitated_head";
+            return
+        }
+    }
+
+    // Find the body
+    if (!isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "body") {
+        var body = pixelMap[pixel.x][pixel.y+1];
+        if (body.dead) { // If body is dead, kill head
+            pixel.dead = body.dead;
+        }
+    }
+    else { var body = null }
+
+    if (tryMove(pixel, pixel.x, pixel.y+1)) {
+        // create blood if severed 10% chance
+        if (isEmpty(pixel.x, pixel.y+1) && !pixel.dead && Math.random() < 0.1 && !pixel.charge) {
+            createPixel("blood", pixel.x, pixel.y+1);
+            // set dead to true 15% chance
+            if (Math.random() < 0.15) {
+                pixel.dead = pixelTicks;
+            }
+        }
+    }
+    // homeostasis
+    if (pixel.temp > 37) { pixel.temp -= 1; }
+    else if (pixel.temp < 37) { pixel.temp += 1; }
+}
+
+elements.body.tick = function(pixel) {
+    if (tryMove(pixel, pixel.x, pixel.y+1)) { // Fall
+        if (!isEmpty(pixel.x, pixel.y-2, true)) { // Drag head down
+            var headpixel = pixelMap[pixel.x][pixel.y-2];
+            if (headpixel.element == "head") {
+                if (isEmpty(pixel.x, pixel.y-1)) {
+                    movePixel(pixelMap[pixel.x][pixel.y-2], pixel.x, pixel.y-1);
+                }
+                else {
+                    swapPixels(pixelMap[pixel.x][pixel.y-2], pixelMap[pixel.x][pixel.y-1]);
+                }
+            }
+        }
+    }
+    doHeat(pixel);
+    doBurning(pixel);
+    doElectricity(pixel);
+    if (pixel.dead) {
+        // Turn into rotten_meat if pixelTicks-dead > 500
+        if (pixelTicks-pixel.dead > 200 && Math.random() < 0.1) {
+            pixel.element = "human_corpse";
+        }
+        return
+    }
+
+    // Find the head
+    if (!isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "head") {
+        var head = pixelMap[pixel.x][pixel.y-1];
+        if (head.dead) { // If head is dead, kill body
+            pixel.dead = head.dead;
+        }
+    }
+    else { var head = null }
+    if (pixel.burning) {
+        pixel.panic += 0.1;
+        if (head && pixelTicks-pixel.burnStart > 240) {
+            pixel.color = head.color;
+        }
+    }
+    else if (pixel.panic > 0) {
+        pixel.panic -= 0.1;
+    }
+
+    if (isEmpty(pixel.x, pixel.y-1)) {
+        // create blood if decapitated 10% chance
+        if (Math.random() < 0.1 && !pixel.charge) {
+            createPixel("blood", pixel.x, pixel.y-1);
+            // set dead to true 15% chance
+            if (Math.random() < 0.15) {
+                pixel.dead = pixelTicks;
+            }
+        }
+    }
+    else if (head == null) { return }
+    else if (Math.random() < 0.1*(isEmpty(pixel.x, pixel.y+1) ? 1 : pixel.panic+1)) { // Move 10% chance
+        var movesToTry = [
+            [1*pixel.dir,0],
+            [1*pixel.dir,-1],
+        ];
+        // While movesToTry is not empty, tryMove(pixel, x, y) with a random move, then remove it. if tryMove returns true, break.
+        while (movesToTry.length > 0) {
+            var move = movesToTry.splice(Math.floor(Math.random() * movesToTry.length), 1)[0];
+            if (isEmpty(pixel.x+move[0], pixel.y+move[1]-1)) {
+                var origx = pixel.x+move[0];
+                var origy = pixel.y+move[1];
+                if (tryMove(pixel, pixel.x+move[0], pixel.y+move[1]) && pixel.x===origx && pixel.y===origy) {
+                    movePixel(head, head.x+move[0], head.y+move[1]);
+                    break;
+                }
+            }
+        }
+        // 15% chance to change direction
+        if (Math.random() < 0.15) {
+            pixel.dir *= -1;
+        }
+        // homeostasis
+        if (pixel.temp > 37) { pixel.temp -= 1; }
+        else if (pixel.temp < 37) { pixel.temp += 1; }
+    }
+}
+
+elements.body.stateHigh = "cooked_human"
+elements.head.stateHigh = "cooked_human"
+
+elements.body.breakInto = ["blood","human_flesh","bone","blood","human_flesh","bone","blood","heart","bone",]
+elements.head.breakInto = ["blood","brain","bone"]
+
+elements.body.stateLow = "frozen_human_flesh"
+elements.head.stateLow = "frozen_human_flesh"
+
 if (!elements.blood.reactions) { elements.blood.reactions = {} }
     elements.blood.reactions.caramel = { "elem1": "sweet_blood", "elem2": null, chance:0.001 };
-    elements.blood.reactions.sugar = { "elem2": "sweet_blood", "elem2": null, chance:0.0005 };
+    elements.blood.reactions.sugar = { "elem1": "sweet_blood", "elem2": null, chance:0.0005};
+
+if (!elements.head.reactions) { elements.head.reactions = {} }
+    elements.head.reactions.human_flesh = { "elem2": null, chance:0.01 };
+    elements.head.reactions.cooked_human = { "elem2": null, chance:0.05 };
+    elements.head.reactions.cooked_brain = { "elem2": null, chance:0.03 };
+    elements.head.reactions.cooked_heart = { "elem2": null, chance:0.04 };
+
