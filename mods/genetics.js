@@ -1,5 +1,5 @@
 elements.organism = {
-  color: ["#a19348","#b5a85e"],
+  color: "#b5a85e",
   properties: {
     geneticCode: 00000,
     food: 0
@@ -7,7 +7,7 @@ elements.organism = {
   tick: function(pixel) {
     if ((pixel.geneticCode & 0b101) = 0) {
       if (tryMove(pixel, pixel.x, pixel.y+1)) {
-        if ((pixel.geneticCode & 0b10) > 0 && Math.random() < 0.1) {
+        if ((pixel.geneticCode & 0b10) > 0 && (pixel.geneticCode & 0b10) < 5 && Math.random() < 0.1) {
           if (!isEmpty(pixel.x,pixel.y+1),true && pixelMap[pixel.x][pixel.y+1].isFood) {
             deletePixel(pixel.x, pixel.y+1);
             pixel.food += 1
@@ -19,8 +19,14 @@ elements.organism = {
             pixel.food += 1
           }
         }
-      }
-      if ((pixel.geneticCode & 0b10) > 0 && Math.random() < 0.1) {
+        else if ((pixel.geneticCode & 0b10) > 4 && Math.random() < 0.1) {
+          if (!isEmpty(pixel.x,pixel.y+1),true && pixelMap[pixel.x][pixel.y+1].element === "sugar") {
+            deletePixel(pixel.x, pixel.y+1);
+            pixel.food += 1
+          }
+        }
+      }  
+      if ((pixel.geneticCode & 0b10) > 0 && (pixel.geneticCode & 0b10) < 5 && Math.random() < 0.1) {
         if (!isEmpty(pixel.x+1,pixel.y),true && pixelMap[pixel.x+1][pixel.y].isFood) {
           deletePixel(pixel.x+1, pixel.y);
           pixel.food += 1
@@ -36,6 +42,16 @@ elements.organism = {
           pixel.food += 1
         }
         else if (!isEmpty(pixel.x-1,pixel.y),true && pixelMap[pixel.x-1][pixel.y].element === "sugar") {
+          deletePixel(pixel.x-1, pixel.y);
+          pixel.food += 1
+        }
+      }
+      else if ((pixel.geneticCode & 0b10) > 4 && Math.random() < 0.1) {
+        if (!isEmpty(pixel.x+1,pixel.y),true && pixelMap[pixel.x+1][pixel.y].element === "meat") {
+          deletePixel(pixel.x+1, pixel.y);
+          pixel.food += 1
+        }
+        else if (!isEmpty(pixel.x-1,pixel.y),true && pixelMap[pixel.x-1][pixel.y].element === "meat") {
           deletePixel(pixel.x-1, pixel.y);
           pixel.food += 1
         }
