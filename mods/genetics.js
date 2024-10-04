@@ -1,3 +1,5 @@
+/* by nekonico, do not steal!!!!!! >:3*/
+
 elements.organism = {
     color: ["#997457","#c4b270","#9c916a","#9e8955","#a89a76"],
     properties: {
@@ -361,7 +363,7 @@ elements.organism = {
             }
         }
         else if (pixel.vore > 0) {
-            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "meat") {
+           /* by nekonico, do not steal!!!!!! >:3*/ if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "meat") {
                 deletePixel(pixel.x, pixel.y-1);
                 pixel.food += 1
             }
@@ -429,7 +431,7 @@ elements.organism = {
             }
             else {
                 pixelMap[pixel.x+1][pixel.y].geneticCode = pixel.geneticCode;
-            }
+            } 
             if (Math.random() > 0.8) {
                 pixelMap[pixel.x+1][pixel.y].vore = pixel.vore += 1;
             }
@@ -710,7 +712,7 @@ elements.organism = {
       }
       else if (pixel.geneticCode > 50) {
         if (isEmpty(pixel.x, pixel.y+1)) {
-            movePixel(pixelMap[pixel.x][pixel.y], pixel.x, pixel.y+1);
+          /* by nekonico, do not steal!!!!!! >:3*/  movePixel(pixelMap[pixel.x][pixel.y], pixel.x, pixel.y+1);
         }
         else if (Math.random() > 0.99 && isEmpty(pixel.x-1, pixel.y)) {
             movePixel(pixelMap[pixel.x][pixel.y], pixel.x-1, pixel.y);
@@ -1026,10 +1028,12 @@ elements.organism = {
       }
     }, 
     tempHigh: 150,
-    stateHigh: "meat",
+    stateHigh: "cooked_meat",
     tempLow: -50,
     stateLow: "frozen_meat",
-    category: "life",
+    category: "organism",
     state: "solid",
     density: 1050
   }
+
+/* by nekonico, do not steal!!!!!! >:3*/
