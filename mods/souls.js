@@ -123,6 +123,7 @@ elements.head.onChange = function(pixel,element) {
 
 elements.bless.reactions.soul = { elem2:"human" }
 elements.bless.reactions.ectoplasm = { elem2:null }
+elements.bless.reactions.tombstone = { elem2:"rock_wall" }
 
 elements.tombstone = {
     color: ["#5f5f5f","#434343","#282828"],
