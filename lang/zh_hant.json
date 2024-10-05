@@ -14,6 +14,7 @@
 "machines":"機器",
 "special":"特別",
 "other":"別徳",
+"states":"狀態",
 "heat":"加熱",
 "cool":"冷卻",
 "erase":"擦",
@@ -549,5 +550,11 @@
 "rice":"米",
 "galvanized_steel":"鍍鋅鋼",
 "midas_touch":"點石成金",
-"liquid_ozone":"液臭氧"
+"liquid_ozone":"液臭氧",
+"ectoplasm":"外質",
+"soul":"鬼",
+"tombstone":"墳墓",
+"spider":"蜘蛛",
+"web":"蜘蛛網"
+  
 }

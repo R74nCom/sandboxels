@@ -26,7 +26,7 @@ function updateStatsNew() {
 	if (pixelMap[mousePos.x] != undefined) {
 		var currentPixel = pixelMap[mousePos.x][mousePos.y];
 		if (currentPixel != undefined) {
-			stats += "<span id='stat-element' class='stat'>Elem:" + (elements[currentPixel.element].name || currentPixel.element).toUpperCase() + "</span>";
+			stats += "<span id='stat-element' class='stat'>Elem:" + (elements[currentPixel.element].name || currentPixel.element).toString().toUpperCase() + "</span>";
 			stats += "<span id='stat-temperature' class='stat'>Temp:" + formatTemp(currentPixel.temp) + "</span>";
 			if (currentPixel.charge) {
 				stats += "<span id='stat-charge' class='stat'>C" + currentPixel.charge + "</span>";
@@ -49,7 +49,7 @@ function updateStatsNew() {
 	}
 	// If the view is not null, show the view in all caps
 	if (view != null) {
-		stats += "<span id='stat-view' class='stat'>" + viewKey[view].toUpperCase() + "</span>";
+		stats += "<span id='stat-view' class='stat'>" + viewKey[view].toString().toUpperCase() + "</span>";
 	}
 	statsDiv.innerHTML = stats;
 }

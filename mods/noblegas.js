@@ -106,7 +106,7 @@ elements.frozen_xenon = {
 elements.radon = {
     color: elements.neon.color,
     behavior: behaviors.GAS,
-    colorOn: ["#d33d7c","#f73273","#c03190"],
+    colorOn: ["#3dd3cb","#32f7e7","#31c0a8"],
     category: "gases",
     state: "gas",
     conduct: 0.8,
@@ -156,7 +156,7 @@ elements.radon = {
 elements.liquid_radon = {
     color: elements.neon.color,
     behavior: behaviors.LIQUID,
-    colorOn: ["#d33d7c","#f73273","#c03190"],
+    colorOn: ["#3dd3cb","#32f7e7","#31c0a8"],
     category: "states",
     state: "liquid",
     tempHigh: -58,
@@ -170,7 +170,7 @@ elements.liquid_radon = {
 elements.frozen_radon = {
     color: elements.neon.color,
     behavior: behaviors.WALL,
-    colorOn: ["#d33d7c","#f73273","#c03190"],
+    colorOn: ["#3dd3cb","#32f7e7","#31c0a8"],
     category: "states",
     state: "solid",
     tempHigh: -68,
@@ -182,7 +182,7 @@ elements.frozen_radon = {
 elements.oganesson = {
     color: elements.neon.color,
     behavior: behaviors.GAS,
-    colorOn: ["#5bdce6","#56a9f7","#56b0e4"],
+    colorOn: ["#b5e65b","#b9f756","#aee456"],
     category: "gases",
     state: "gas",
     conduct: 0.8,
