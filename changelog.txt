@@ -6,6 +6,64 @@ See sneak peaks for upcoming updates on the Discord: https://discord.gg/ejUc6YPQ
 
 A fancier version of this changelog can be found here: https://sandboxels.R74n.com/changelog
 
+[Version 1.10.1 - October 5, 2024 - Creepy Crawlies]
+   [Crawly]
+    + Spider, will climb and create Webs
+    + Web (Hidden), will trap bugs
+    + Ants can climb walls
+   [Creepy]
+    + Soul (Hidden), from Humans
+    + Ectoplasm (Hidden)
+    + Tombstone, spawns Souls
+    ~ Note: Soul features will move to the souls.js mod after October
+    + Candy is candy corn-colored
+    + Humans will wear orange shirts on Halloween
+   [Changes]
+    + Fire can heat existing pixels when placed over them
+    + Wet Sand and Mud release Steam when heated
+    + Smashing Clouds can release their Water
+    + Water will create Bubbles before boiling
+    + Dirty Water can be purified before boiling
+    + Panicking humans will cause others to panic
+    + Rice can be fermented
+    + Rats can eat Vines
+    + Bleach kills Algae
+    + Salt slowly dissolves in Bleach
+    + Bleach destroys Ink and Dye
+    + Bleach stains Porcelain Shards brown
+    + Caramel dissolves in Vinegar
+    + Image tool set to Paint will recolor pixels
+    + Midas Touch converts hot liquids to Molten Gold
+    ~ Thermite can no longer form Slag
+    ~ Milk boils more realistically
+    ~ Increased minimum temperature for Meat to make Grease
+    ~ Blaster explodes into less Plasma
+    ~ Moved Hive to after Bee when unhidden
+    + Rust alias 'Iron Oxide'
+   [Bug Fixes]
+    ~ Fixed: Mix with Replace Mode deletes pixels
+    ~ Fixed: Cannot Erase lines on mobile
+    ~ Fixed: Heat glow appears in inappropriate views
+    ~ Fixed: Void can be dragged
+    ~ Fixed: Oxidized Copper can't sink in liquids
+    ~ Fixed: Pressure Plate doesn't conduct Heat or sink
+    ~ Fixed: Fire created by molten pixels isn't hot enough
+    ~ Fixed: Mods added with backslash can't be removed
+    ~ Fixed: Single Sponge pixels have NaN moisture
+    ~ Fixed: Non-string hoverStat values crash simulation
+    ~ Fixed: Crash when pixel changes state into a customColor element
+   [Technical]
+    + URL parameter ?holiday=false disables holiday events
+    + Pressure Plate 'min' attribute for minimum density
+    + 'onStateHigh' and 'onStateLow' element properties
+    + 'buttonGlow' element property
+    + Saves with abnormally large canvases display a warning
+    + createPixel and changePixel functions accept null values
+    ~ Corn updated to use 'onStateHigh' property
+    ~ Pixel 'glow' attribute can be false to override default
+    ~ Pixel 'glow' attribute is removed when pixel changes
+    ~ Random element is no longer hard-coded
+
 [Version 1.10 - August 2, 2024 - Return of the Sand]
     + Rice
     + Galvanized Steel (Hidden)
