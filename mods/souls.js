@@ -47,6 +47,7 @@ elements.soul = {
         }
         else if (Math.random() < 0.01) {
             pixel.glow = false;
+            delete pixel.glow;
         }
         if (Math.random() < 0.0002 && isEmpty(pixel.x,pixel.y+1)) {
             createPixel("ectoplasm",pixel.x,pixel.y+1);

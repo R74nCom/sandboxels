@@ -3251,13 +3251,14 @@ DO_TICK: function(pixel) {
     onPlace: function(pixel) {
         if (isEmpty(pixel.x, pixel.y+1)) {
             createPixel("body", pixel.x, pixel.y+1);
-            pixel.element = "head";
+            var color = pixel.color;
+            changePixel(pixel,"head");
+            pixel.color = color;
         }
         else if (isEmpty(pixel.x, pixel.y-1)) {
             createPixel("head", pixel.x, pixel.y-1);
             pixelMap[pixel.x][pixel.y-1].color = pixel.color;
-            pixel.element = "body";
-            pixel.color = pixelColorPick(pixel)
+            changePixel(pixel,"body");
         }
         else {
             deletePixel(pixel.x, pixel.y);
@@ -12749,7 +12750,9 @@ if (langCode) {
             }
             delete pixel.origColor; // remove stain
             delete pixel.clone;
-            delete pixel.glow;
+            if (pixel.glow !== undefined) {
+                delete pixel.glow;
+            }
             if (pixel.r && !elementInfo.rotatable) {
                 delete pixel.r;
             }
