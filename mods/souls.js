@@ -94,7 +94,8 @@ elements.ectoplasm = {
         }
     },
     reactions: {
-        "body": { attr2:{"panic":20} }
+        "body": { attr2:{"panic":20} },
+        "rock_wall": { elem1:null, elem2:"tombstone" }
     },
     temp: -10,
     category: "liquids",
