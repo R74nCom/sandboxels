@@ -9,6 +9,77 @@ elements.organism = {
       age: 0
     },
     tick: function(pixel) {
+      if (pixel.vore === 0) {
+          if (Math.random() > 0.2) {
+              pixel.color = "#997457"
+          }
+          else if (Math.random() > 0.2) {
+              pixel.color = "#c4b270"
+          }
+          else if (Math.random() > 0.2) {
+              pixel.color = "#9c916a"
+          }
+          else if (Math.random() > 0.2) {
+              pixel.color = "#9e8955"
+          }
+          else {
+              pixel.color = "#a89a76"
+          }
+      }
+      else if (pixel.vore === 1) {
+          pixel.color = "#9E6954"
+      }
+      else if (pixel.vore === 2) {
+          pixel.color = "#A25F50"
+      }
+      else if (pixel.vore === 3) {
+          pixel.color = "#A7544D"
+      }
+      else if (pixel.vore === 4) {
+          pixel.color = "#A7544D"
+      }
+      else if (pixel.vore === 5) {
+          pixel.color = "#AC4A4A"
+      }
+      else if (pixel.vore === 6) {
+          pixel.color = "#B03F47"
+      }
+      else if (pixel.vore === 7) {
+          pixel.color = "#B53543"
+      }
+      else if (pixel.vore === 8) {
+          pixel.color = "#B92A40"
+      }
+      else if (pixel.vore > 8) {
+          pixel.color = "#BE203D"
+      }
+      else if (pixel.vore === -1) {
+          pixel.color = "#8B7C4F"
+      }
+      else if (pixel.vore === -2) {
+          pixel.color = "#7D8447"
+      }
+      else if (pixel.vore === -3) {
+          pixel.color = "#6F8C3F"
+      }
+      else if (pixel.vore === -4) {
+          pixel.color = "#619437"
+      }
+      else if (pixel.vore === -5) {
+          pixel.color = "#539C2F"
+      }
+      else if (pixel.vore === -6) {
+          pixel.color = "#46A428"
+      }
+      else if (pixel.vore === -7) {
+          pixel.color = "#38AC20"
+      }
+      else if (pixel.vore === -8) {
+          pixel.color = "#2AB418"
+      }
+      else if (pixel.vore < -8) {
+          pixel.color = "#1CBC10"
+      }
       if (pixel.geneticCode < 11) {
         if (isEmpty(pixel.x, pixel.y+1)) {
             movePixel(pixelMap[pixel.x][pixel.y], pixel.x, pixel.y+1);
