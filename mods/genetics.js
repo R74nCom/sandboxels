@@ -4,22 +4,24 @@ elements.organism = {
     color: ["#997457","#c4b270","#9c916a","#9e8955","#a89a76"],
     properties: {
       geneticCode: 0,
+      oldvore: 0,
       vore: 0,
       food: 0,
       age: 0
     },
     tick: function(pixel) {
+      if (pixel.vore != pixel.oldvore) {
       if (pixel.vore === 0) {
-          if (Math.random() > 0.2) {
+          if (Math.random() > 0.5) {
               pixel.color = "#997457"
           }
-          else if (Math.random() > 0.2) {
+          else if (Math.random() > 0.5) {
               pixel.color = "#c4b270"
           }
-          else if (Math.random() > 0.2) {
+          else if (Math.random() > 0.5) {
               pixel.color = "#9c916a"
           }
-          else if (Math.random() > 0.2) {
+          else if (Math.random() > 0.5) {
               pixel.color = "#9e8955"
           }
           else {
@@ -79,6 +81,8 @@ elements.organism = {
       }
       else if (pixel.vore < -8) {
           pixel.color = "#1CBC10"
+      }
+      pixel.oldvore = pixel.vore
       }
       if (pixel.geneticCode < 11) {
         if (isEmpty(pixel.x, pixel.y+1)) {
