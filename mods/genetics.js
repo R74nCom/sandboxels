@@ -82,7 +82,6 @@ elements.organism = {
       else if (pixel.vore < -8) {
           pixel.color = "#1CBC10"
       }
-      pixel.oldvore = pixel.vore
       }
       if (pixel.geneticCode < 11) {
         if (isEmpty(pixel.x, pixel.y+1)) {
@@ -1101,6 +1100,7 @@ elements.organism = {
         }
         pixel.age += 1
       }
+      pixel.oldvore = pixel.vore
     }, 
     tempHigh: 150,
     stateHigh: "cooked_meat",
