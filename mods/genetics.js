@@ -320,10 +320,10 @@ elements.organism = {
         if (isEmpty(pixel.x, pixel.y+1)) {
             movePixel(pixelMap[pixel.x][pixel.y], pixel.x, pixel.y+1);
         }
-        else if (Math.random() > 0.99 && isEmpty(pixel.x-1, pixel.y)) {
+        else if (Math.random() > 0.95 && isEmpty(pixel.x-1, pixel.y)) {
             movePixel(pixelMap[pixel.x][pixel.y], pixel.x-1, pixel.y);
         }
-        else if (Math.random() > 0.99 && isEmpty(pixel.x+1, pixel.y)) {
+        else if (Math.random() > 0.95 && isEmpty(pixel.x+1, pixel.y)) {
             movePixel(pixelMap[pixel.x][pixel.y], pixel.x+1, pixel.y);
         }
         if (pixel.vore === 0) {
@@ -500,10 +500,10 @@ elements.organism = {
         if (isEmpty(pixel.x, pixel.y+1)) {
             movePixel(pixelMap[pixel.x][pixel.y], pixel.x, pixel.y+1);
         }
-        else if (Math.random() > 0.99 && isEmpty(pixel.x-1, pixel.y)) {
+        else if (Math.random() > 0.9 && isEmpty(pixel.x-1, pixel.y)) {
             movePixel(pixelMap[pixel.x][pixel.y], pixel.x-1, pixel.y);
         }
-        else if (Math.random() > 0.99 && isEmpty(pixel.x+1, pixel.y)) {
+        else if (Math.random() > 0.9 && isEmpty(pixel.x+1, pixel.y)) {
             movePixel(pixelMap[pixel.x][pixel.y], pixel.x+1, pixel.y);
         }
         if (pixel.vore === 0) {
@@ -688,10 +688,10 @@ elements.organism = {
         if (isEmpty(pixel.x, pixel.y+1)) {
             movePixel(pixelMap[pixel.x][pixel.y], pixel.x, pixel.y+1);
         }
-        else if (Math.random() > 0.99 && isEmpty(pixel.x-1, pixel.y)) {
+        else if (Math.random() > 0.9 && isEmpty(pixel.x-1, pixel.y)) {
             movePixel(pixelMap[pixel.x][pixel.y], pixel.x-1, pixel.y);
         }
-        else if (Math.random() > 0.99 && isEmpty(pixel.x+1, pixel.y)) {
+        else if (Math.random() > 0.9 && isEmpty(pixel.x+1, pixel.y)) {
             movePixel(pixelMap[pixel.x][pixel.y], pixel.x+1, pixel.y);
         }
         if (pixel.vore === 0) {
@@ -940,10 +940,10 @@ elements.organism = {
         if (isEmpty(pixel.x, pixel.y+1)) {
           movePixel(pixelMap[pixel.x][pixel.y], pixel.x, pixel.y+1);
         }
-        else if (Math.random() > 0.99 && isEmpty(pixel.x-1, pixel.y)) {
+        else if (Math.random() > 0.8 && isEmpty(pixel.x-1, pixel.y)) {
             movePixel(pixelMap[pixel.x][pixel.y], pixel.x-1, pixel.y);
         }
-        else if (Math.random() > 0.99 && isEmpty(pixel.x+1, pixel.y)) {
+        else if (Math.random() > 0.8 && isEmpty(pixel.x+1, pixel.y)) {
             movePixel(pixelMap[pixel.x][pixel.y], pixel.x+1, pixel.y);
         }
         if (pixel.vore === 0) {
@@ -1288,10 +1288,10 @@ elements.organism = {
         if (isEmpty(pixel.x, pixel.y+1)) {
           /* by nekonico, do not steal!!!!!! >:3*/  movePixel(pixelMap[pixel.x][pixel.y], pixel.x, pixel.y+1);
         }
-        else if (Math.random() > 0.99 && isEmpty(pixel.x-1, pixel.y)) {
+        else if (Math.random() > 0.8 && isEmpty(pixel.x-1, pixel.y)) {
             movePixel(pixelMap[pixel.x][pixel.y], pixel.x-1, pixel.y);
         }
-        else if (Math.random() > 0.99 && isEmpty(pixel.x+1, pixel.y)) {
+        else if (Math.random() > 0.8 && isEmpty(pixel.x+1, pixel.y)) {
             movePixel(pixelMap[pixel.x][pixel.y], pixel.x+1, pixel.y);
         }
         if (pixel.vore === 0) {
@@ -1700,58 +1700,26 @@ elements.organism = {
         if (isEmpty(pixel.x, pixel.y+1)) {
             movePixel(pixelMap[pixel.x][pixel.y], pixel.x, pixel.y+1);
         }
-        else if (Math.random() > 0.99 && isEmpty(pixel.x-1, pixel.y)) {
+        else if (Math.random() > 0.75 && isEmpty(pixel.x-1, pixel.y)) {
             movePixel(pixelMap[pixel.x][pixel.y], pixel.x-1, pixel.y);
         }
-        else if (Math.random() > 0.99 && isEmpty(pixel.x+1, pixel.y)) {
+        else if (Math.random() > 0.75 && isEmpty(pixel.x+1, pixel.y)) {
             movePixel(pixelMap[pixel.x][pixel.y], pixel.x+1, pixel.y);
         }
         if (pixel.vore === 0) {
-            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "sugar") {
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && elements[pixelMap[pixel.x][pixel.y-1].element].isFood) {
                 deletePixel(pixel.x, pixel.y-1);
                 pixel.food += 1
             }
-            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "sugar") {
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && elements[pixelMap[pixel.x][pixel.y+1].element].isFood) {
                 deletePixel(pixel.x, pixel.y+1);
                 pixel.food += 1
             }
-            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "sugar") {
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && elements[pixelMap[pixel.x+1][pixel.y].element].isFood) {
                 deletePixel(pixel.x+1, pixel.y);
                 pixel.food += 1
             }
-            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "sugar") {
-                deletePixel(pixel.x-1, pixel.y);
-                pixel.food += 1
-            }
-            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "meat") {
-                deletePixel(pixel.x, pixel.y-1);
-                pixel.food += 1
-            }
-            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "meat") {
-                deletePixel(pixel.x, pixel.y+1);
-                pixel.food += 1
-            }
-            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "meat") {
-                deletePixel(pixel.x+1, pixel.y);
-                pixel.food += 1
-            }
-            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "meat") {
-                deletePixel(pixel.x-1, pixel.y);
-                pixel.food += 1
-            }
-            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "rotten_meat") {
-                deletePixel(pixel.x, pixel.y-1);
-                pixel.food += 1
-            }
-            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "rotten_meat") {
-                deletePixel(pixel.x, pixel.y+1);
-                pixel.food += 1
-            }
-            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "rotten_meat") {
-                deletePixel(pixel.x+1, pixel.y);
-                pixel.food += 1
-            }
-            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "rotten_meat") {
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && elements[pixelMap[pixel.x-1][pixel.y].element].isFood) {
                 deletePixel(pixel.x-1, pixel.y);
                 pixel.food += 1
             }
@@ -2092,10 +2060,10 @@ elements.organism = {
             else {
                 pixelMap[pixel.x][pixel.y-1].geneticCode = pixel.geneticCode;
             }
-            if (Math.random() > 0.8) {
+            if (Math.random() > 0.95) {
                 pixelMap[pixel.x][pixel.y-1].vore = pixel.vore += 1;
             }
-            if (Math.random() < 0.2) {
+            if (Math.random() < 0.05) {
                 pixelMap[pixel.x][pixel.y-1].vore = pixel.vore -= 1;
             }
             else {
@@ -2114,10 +2082,10 @@ elements.organism = {
             else {
                 pixelMap[pixel.x+1][pixel.y].geneticCode = pixel.geneticCode;
             }
-            if (Math.random() > 0.8) {
+            if (Math.random() > 0.95) {
                 pixelMap[pixel.x+1][pixel.y].vore = pixel.vore += 1;
             }
-            if (Math.random() < 0.2) {
+            if (Math.random() < 0.05) {
                 pixelMap[pixel.x+1][pixel.y].vore = pixel.vore -= 1;
             }
             else {
@@ -2136,10 +2104,10 @@ elements.organism = {
             else {
                 pixelMap[pixel.x-1][pixel.y].geneticCode = pixel.geneticCode;
             }
-            if (Math.random() > 0.8) {
+            if (Math.random() > 0.95) {
                 pixelMap[pixel.x-1][pixel.y].vore = pixel.vore += 1;
             }
-            if (Math.random() < 0.2) {
+            if (Math.random() < 0.05) {
                 pixelMap[pixel.x-1][pixel.y].vore = pixel.vore -= 1;
             }
             else {
@@ -2172,62 +2140,30 @@ elements.organism = {
         }
         pixel.age += 1
       }
-      else if (pixel.geneticCode > 80) {
+      else if (pixel.geneticCode > 80 && pixel.geneticCode < 91) {
         if (isEmpty(pixel.x, pixel.y+1)) {
             movePixel(pixelMap[pixel.x][pixel.y], pixel.x, pixel.y+1);
         }
-        else if (Math.random() > 0.99 && isEmpty(pixel.x-1, pixel.y)) {
+        else if (Math.random() > 0.75 && isEmpty(pixel.x-1, pixel.y)) {
             movePixel(pixelMap[pixel.x][pixel.y], pixel.x-1, pixel.y);
         }
-        else if (Math.random() > 0.99 && isEmpty(pixel.x+1, pixel.y)) {
+        else if (Math.random() > 0.75 && isEmpty(pixel.x+1, pixel.y)) {
             movePixel(pixelMap[pixel.x][pixel.y], pixel.x+1, pixel.y);
         }
         if (pixel.vore === 0) {
-            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "sugar") {
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && elements[pixelMap[pixel.x][pixel.y-1].element].isFood) {
                 deletePixel(pixel.x, pixel.y-1);
                 pixel.food += 1
             }
-            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "sugar") {
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && elements[pixelMap[pixel.x][pixel.y+1].element].isFood) {
                 deletePixel(pixel.x, pixel.y+1);
                 pixel.food += 1
             }
-            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "sugar") {
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && elements[pixelMap[pixel.x+1][pixel.y].element].isFood) {
                 deletePixel(pixel.x+1, pixel.y);
                 pixel.food += 1
             }
-            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "sugar") {
-                deletePixel(pixel.x-1, pixel.y);
-                pixel.food += 1
-            }
-            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "meat") {
-                deletePixel(pixel.x, pixel.y-1);
-                pixel.food += 1
-            }
-            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "meat") {
-                deletePixel(pixel.x, pixel.y+1);
-                pixel.food += 1
-            }
-            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "meat") {
-                deletePixel(pixel.x+1, pixel.y);
-                pixel.food += 1
-            }
-            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "meat") {
-                deletePixel(pixel.x-1, pixel.y);
-                pixel.food += 1
-            }
-            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "rotten_meat") {
-                deletePixel(pixel.x, pixel.y-1);
-                pixel.food += 1
-            }
-            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "rotten_meat") {
-                deletePixel(pixel.x, pixel.y+1);
-                pixel.food += 1
-            }
-            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "rotten_meat") {
-                deletePixel(pixel.x+1, pixel.y);
-                pixel.food += 1
-            }
-            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "rotten_meat") {
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && elements[pixelMap[pixel.x-1][pixel.y].element].isFood) {
                 deletePixel(pixel.x-1, pixel.y);
                 pixel.food += 1
             }
@@ -2632,10 +2568,10 @@ elements.organism = {
             else {
                 pixelMap[pixel.x][pixel.y-1].geneticCode = pixel.geneticCode;
             }
-            if (Math.random() > 0.8) {
+            if (Math.random() > 0.95) {
                 pixelMap[pixel.x][pixel.y-1].vore = pixel.vore += 1;
             }
-            if (Math.random() < 0.2) {
+            if (Math.random() < 0.05) {
                 pixelMap[pixel.x][pixel.y-1].vore = pixel.vore -= 1;
             }
             else {
@@ -2654,10 +2590,10 @@ elements.organism = {
             else {
                 pixelMap[pixel.x+1][pixel.y].geneticCode = pixel.geneticCode;
             }
-            if (Math.random() > 0.8) {
+            if (Math.random() > 0.95) {
                 pixelMap[pixel.x+1][pixel.y].vore = pixel.vore += 1;
             }
-            if (Math.random() < 0.2) {
+            if (Math.random() < 0.05) {
                 pixelMap[pixel.x+1][pixel.y].vore = pixel.vore -= 1;
             }
             else {
@@ -2676,10 +2612,1107 @@ elements.organism = {
             else {
                 pixelMap[pixel.x-1][pixel.y].geneticCode = pixel.geneticCode;
             }
-            if (Math.random() > 0.8) {
+            if (Math.random() > 0.95) {
                 pixelMap[pixel.x-1][pixel.y].vore = pixel.vore += 1;
             }
+            if (Math.random() < 0.05) {
+                pixelMap[pixel.x-1][pixel.y].vore = pixel.vore -= 1;
+            }
+            else {
+                pixelMap[pixel.x-1][pixel.y].vore = pixel.vore;
+            }
+        }
+        if (pixel.age > 10000 || pixel.dead === true) {
+            if (Math.random() > 0.3) {
+                if (pixel.vore > 0) {
+                    changePixel(pixel,"rotten_meat"); 
+                }
+                else if (pixel.vore < 0) {
+                    changePixel(pixel,"dead_plant"); 
+                }
+                else if (pixel.vore === 0) {
+                    changePixel(pixel,"sugar"); 
+                }
+            }
+            else if (Math.random() > 0.5) {
+                if (pixel.vore > 0) {
+                    changePixel(pixel,"meat"); 
+                }
+                else if (pixel.vore < 0) {
+                    changePixel(pixel,"grass"); 
+                }
+                else if (pixel.vore === 0) {
+                    changePixel(pixel,"sugar"); 
+                }
+            }
+        }
+        pixel.age += 1
+      }
+      else if (pixel.geneticCode > 90 && pixel.geneticCode < 101) {
+        if (isEmpty(pixel.x, pixel.y+1)) {
+            movePixel(pixelMap[pixel.x][pixel.y], pixel.x, pixel.y+1);
+        }
+        else if (Math.random() > 0.75 && isEmpty(pixel.x-1, pixel.y)) {
+            movePixel(pixelMap[pixel.x][pixel.y], pixel.x-1, pixel.y);
+        }
+        else if (Math.random() > 0.75 && isEmpty(pixel.x+1, pixel.y)) {
+            movePixel(pixelMap[pixel.x][pixel.y], pixel.x+1, pixel.y);
+        }
+        if (pixel.vore === 0) {
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && elements[pixelMap[pixel.x][pixel.y-1].element].isFood) {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && elements[pixelMap[pixel.x][pixel.y+1].element].isFood) {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && elements[pixelMap[pixel.x+1][pixel.y].element].isFood) {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && elements[pixelMap[pixel.x-1][pixel.y].element].isFood) {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "grass") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "grass") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "grass") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "grass") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "dead_plant") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "dead_plant") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "dead_plant") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "dead_plant") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+        }
+        else if (pixel.vore > 0) {
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "meat") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "meat") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "meat") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "meat") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "rotten_meat") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "rotten_meat") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "rotten_meat") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "rotten_meat") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "fly") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "fly") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "fly") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "fly") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "ant") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "ant") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "ant") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "ant") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "egg") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "egg") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "egg") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "egg") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "rat") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "rat") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "rat") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "rat") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "bird") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "bird") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "bird") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "bird") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "fish") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "fish") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "fish") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "fish") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "head") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "head") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "head") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "head") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "body") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "body") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "body") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "body") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "bone") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "bone") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "bone") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "bone") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "blood") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "blood") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "blood") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "blood") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+        }
+        else if (pixel.vore < 0) {
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "grass") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "grass") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "grass") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "grass") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "grass") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "grass") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "grass") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "grass") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "dead_plant") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "dead_plant") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "dead_plant") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "dead_plant") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "plant") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "plant") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "plant") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "plant") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "plant") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "plant") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "plant") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "plant") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "tree_branch") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "tree_branch") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "tree_branch") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "tree_branch") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "wood") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "wood") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "wood") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "wood") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "bamboo") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "bamboo") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "bamboo") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "bamboo") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "vine") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "vine") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "vine") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "vine") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "cactus") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "cactus") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "cactus") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "cactus") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "petal") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "petal") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "petal") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "petal") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "pistil") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "pistil") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "pistil") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "pistil") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "sapling") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "sapling") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "sapling") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "sapling") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "pinecone") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "pinecone") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "pinecone") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "pinecone") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+        }
+        if (isEmpty(pixel.x, pixel.y-1) && pixel.food > 10) {
+            createPixel("organism", pixel.x, pixel.y-1);
+            pixel.food -= 5;
+            if (Math.random() > 0.8) {
+                pixelMap[pixel.x][pixel.y-1].geneticCode = pixel.geneticCode += 1;
+            }
             if (Math.random() < 0.2) {
+                pixelMap[pixel.x][pixel.y-1].geneticCode = pixel.geneticCode -= 1;
+            }
+            else {
+                pixelMap[pixel.x][pixel.y-1].geneticCode = pixel.geneticCode;
+            }
+            if (Math.random() > 0.995) {
+                pixelMap[pixel.x][pixel.y-1].vore = pixel.vore += 1;
+            }
+            if (Math.random() < 0.005) {
+                pixelMap[pixel.x][pixel.y-1].vore = pixel.vore -= 1;
+            }
+            else {
+                pixelMap[pixel.x][pixel.y-1].vore = pixel.vore;
+            }
+        }
+        else if (isEmpty(pixel.x+1, pixel.y) && pixel.food > 10) {
+            createPixel("organism", pixel.x+1, pixel.y);
+            pixel.food -= 5;
+            if (Math.random() > 0.8) {
+                pixelMap[pixel.x+1][pixel.y].geneticCode = pixel.geneticCode += 1;
+            }
+            if (Math.random() < 0.2) {
+                pixelMap[pixel.x+1][pixel.y].geneticCode = pixel.geneticCode -= 1;
+            }
+            else {
+                pixelMap[pixel.x+1][pixel.y].geneticCode = pixel.geneticCode;
+            }
+            if (Math.random() > 0.995) {
+                pixelMap[pixel.x+1][pixel.y].vore = pixel.vore += 1;
+            }
+            if (Math.random() < 0.005) {
+                pixelMap[pixel.x+1][pixel.y].vore = pixel.vore -= 1;
+            }
+            else {
+                pixelMap[pixel.x+1][pixel.y].vore = pixel.vore;
+            }
+        }
+        else if (isEmpty(pixel.x-1, pixel.y) && pixel.food > 10) {
+            createPixel("organism", pixel.x-1, pixel.y);
+            pixel.food -= 5;
+            if (Math.random() > 0.8) {
+                pixelMap[pixel.x-1][pixel.y].geneticCode = pixel.geneticCode += 1;
+            }
+            if (Math.random() < 0.2) {
+                pixelMap[pixel.x-1][pixel.y].geneticCode = pixel.geneticCode -= 1;
+            }
+            else {
+                pixelMap[pixel.x-1][pixel.y].geneticCode = pixel.geneticCode;
+            }
+            if (Math.random() > 0.995) {
+                pixelMap[pixel.x-1][pixel.y].vore = pixel.vore += 1;
+            }
+            if (Math.random() < 0.005) {
+                pixelMap[pixel.x-1][pixel.y].vore = pixel.vore -= 1;
+            }
+            else {
+                pixelMap[pixel.x-1][pixel.y].vore = pixel.vore;
+            }
+        }
+        if (pixel.age > 10000 || pixel.dead === true) {
+            if (Math.random() > 0.3) {
+                if (pixel.vore > 0) {
+                    changePixel(pixel,"rotten_meat"); 
+                }
+                else if (pixel.vore < 0) {
+                    changePixel(pixel,"dead_plant"); 
+                }
+                else if (pixel.vore === 0) {
+                    changePixel(pixel,"sugar"); 
+                }
+            }
+            else if (Math.random() > 0.5) {
+                if (pixel.vore > 0) {
+                    changePixel(pixel,"meat"); 
+                }
+                else if (pixel.vore < 0) {
+                    changePixel(pixel,"grass"); 
+                }
+                else if (pixel.vore === 0) {
+                    changePixel(pixel,"sugar"); 
+                }
+            }
+        }
+        pixel.age += 1
+      }
+      else if (pixel.geneticCode > 100) {
+        if (isEmpty(pixel.x, pixel.y+1)) {
+            movePixel(pixelMap[pixel.x][pixel.y], pixel.x, pixel.y+1);
+        }
+        else if (Math.random() > 0.75 && isEmpty(pixel.x-1, pixel.y)) {
+            movePixel(pixelMap[pixel.x][pixel.y], pixel.x-1, pixel.y);
+        }
+        else if (Math.random() > 0.75 && isEmpty(pixel.x+1, pixel.y)) {
+            movePixel(pixelMap[pixel.x][pixel.y], pixel.x+1, pixel.y);
+        }
+        if (pixel.vore === 0) {
+            changePixel(pixel,"human");
+        }
+        else if (pixel.vore > 0) {
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "meat") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "meat") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "meat") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "meat") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "rotten_meat") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "rotten_meat") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "rotten_meat") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "rotten_meat") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "fly") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "fly") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "fly") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "fly") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "ant") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "ant") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "ant") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "ant") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "egg") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "egg") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "egg") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "egg") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "rat") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "rat") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "rat") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "rat") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "bird") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "bird") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "bird") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "bird") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "fish") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "fish") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "fish") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "fish") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "head") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "head") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "head") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "head") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "body") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "body") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "body") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "body") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "bone") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "bone") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "bone") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "bone") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "blood") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "blood") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "blood") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "blood") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+        }
+        else if (pixel.vore < 0) {
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "grass") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "grass") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "grass") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "grass") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "grass") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "grass") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "grass") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "grass") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "dead_plant") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "dead_plant") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "dead_plant") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "dead_plant") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "plant") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "plant") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "plant") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "plant") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "plant") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "plant") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "plant") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "plant") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "tree_branch") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "tree_branch") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "tree_branch") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "tree_branch") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "wood") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "wood") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "wood") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "wood") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "bamboo") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "bamboo") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "bamboo") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "bamboo") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "vine") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "vine") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "vine") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "vine") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "cactus") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "cactus") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "cactus") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "cactus") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "petal") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "petal") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "petal") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "petal") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "pistil") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "pistil") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "pistil") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "pistil") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "sapling") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "sapling") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "sapling") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "sapling") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+            if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y-1, true) && pixelMap[pixel.x][pixel.y-1].element == "pinecone") {
+                deletePixel(pixel.x, pixel.y-1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x, pixel.y+1, true) && pixelMap[pixel.x][pixel.y+1].element == "pinecone") {
+                deletePixel(pixel.x, pixel.y+1);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x+1, pixel.y, true) && pixelMap[pixel.x+1][pixel.y].element == "pinecone") {
+                deletePixel(pixel.x+1, pixel.y);
+                pixel.food += 1
+            }
+            else if (Math.random() < 0.1 && !isEmpty(pixel.x-1, pixel.y, true) && pixelMap[pixel.x-1][pixel.y].element == "pinecone") {
+                deletePixel(pixel.x-1, pixel.y);
+                pixel.food += 1
+            }
+        }
+        if (isEmpty(pixel.x, pixel.y-1) && pixel.food > 10) {
+            createPixel("organism", pixel.x, pixel.y-1);
+            pixel.food -= 5;
+            if (Math.random() > 0.8) {
+                pixelMap[pixel.x][pixel.y-1].geneticCode = pixel.geneticCode += 1;
+            }
+            if (Math.random() < 0.2) {
+                pixelMap[pixel.x][pixel.y-1].geneticCode = pixel.geneticCode -= 1;
+            }
+            else {
+                pixelMap[pixel.x][pixel.y-1].geneticCode = pixel.geneticCode;
+            }
+            if (Math.random() > 0.995) {
+                pixelMap[pixel.x][pixel.y-1].vore = pixel.vore += 1;
+            }
+            if (Math.random() < 0.005) {
+                pixelMap[pixel.x][pixel.y-1].vore = pixel.vore -= 1;
+            }
+            else {
+                pixelMap[pixel.x][pixel.y-1].vore = pixel.vore;
+            }
+        }
+        else if (isEmpty(pixel.x+1, pixel.y) && pixel.food > 10) {
+            createPixel("organism", pixel.x+1, pixel.y);
+            pixel.food -= 5;
+            if (Math.random() > 0.8) {
+                pixelMap[pixel.x+1][pixel.y].geneticCode = pixel.geneticCode += 1;
+            }
+            if (Math.random() < 0.2) {
+                pixelMap[pixel.x+1][pixel.y].geneticCode = pixel.geneticCode -= 1;
+            }
+            else {
+                pixelMap[pixel.x+1][pixel.y].geneticCode = pixel.geneticCode;
+            }
+            if (Math.random() > 0.995) {
+                pixelMap[pixel.x+1][pixel.y].vore = pixel.vore += 1;
+            }
+            if (Math.random() < 0.005) {
+                pixelMap[pixel.x+1][pixel.y].vore = pixel.vore -= 1;
+            }
+            else {
+                pixelMap[pixel.x+1][pixel.y].vore = pixel.vore;
+            }
+        }
+        else if (isEmpty(pixel.x-1, pixel.y) && pixel.food > 10) {
+            createPixel("organism", pixel.x-1, pixel.y);
+            pixel.food -= 5;
+            if (Math.random() > 0.8) {
+                pixelMap[pixel.x-1][pixel.y].geneticCode = pixel.geneticCode += 1;
+            }
+            if (Math.random() < 0.2) {
+                pixelMap[pixel.x-1][pixel.y].geneticCode = pixel.geneticCode -= 1;
+            }
+            else {
+                pixelMap[pixel.x-1][pixel.y].geneticCode = pixel.geneticCode;
+            }
+            if (Math.random() > 0.995) {
+                pixelMap[pixel.x-1][pixel.y].vore = pixel.vore += 1;
+            }
+            if (Math.random() < 0.005) {
                 pixelMap[pixel.x-1][pixel.y].vore = pixel.vore -= 1;
             }
             else {
