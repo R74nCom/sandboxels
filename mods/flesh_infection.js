@@ -1,15 +1,110 @@
-eLists.FESTER = ["dirt","rock","rock_wall","basalt","limestone","steel","iron","dead_bug","mud","sand","wet_sand","clay_soil","clay","mycelium","skin","meat","rotten_meat","wood","ant_wall","dead_plant","plant","hair","bone","cancer","straw","cloth","brick","bamboo","sponge","paper","plastic","concrete"],
+// by Nekonico
 
-elements.jaws = {
+eLists.FESTER = ["fleshy_dirt","dirt","rock","rock_wall","basalt","limestone","steel","iron","dead_bug","mud","sand","wet_sand","clay_soil","clay","mycelium","skin","meat","rotten_meat","wood","ant_wall","dead_plant","plant","hair","bone","cancer","straw","cloth","brick","bamboo","sponge","paper","plastic","concrete"],
+
+elements.fleshy_dirt = {
+    color: ["#81512F","#895933","#825231","#906159"],
+    behavior: [
+        "CH:dirt,mud>fleshy_dirt%1|CH:grass>flesh_mound%0.5 AND CH:root>vein_root%0.5 AND CH:fiber>fibrous_flesh%0.5|CH:dirt,mud>fleshy_dirt%1",
+        "XX|XX|XX",
+        "M2 AND CH:dirt,mud>fleshy_dirt%1|M1 AND CH:dirt,mud>fleshy_dirt%0.5|M2 AND CH:dirt,mud>fleshy_dirt%1",
+    ],
+    category: "flesh",
+    state: "solid",
+    density: 2000,
+    tempHigh: 225,
+    stateHigh: "dirt",
+    tempLow: -50,
+    stateLow: "permafrost",
+    burn: 20,
+    burnTime: 40,
+    burnInto: "dirt",
+};
+
+elements.teeth = {
 	color: "#d9d9d9",
 	behavior: [
-        "XX|ST:flesh_mound AND SM%0.75|XX",
+        "XX|SM%0.75|XX",
         "ST:flesh_mound|XX|ST:flesh_mound",
         "XX|ST:flesh_mound AND M1|XX",
     ],
 	reactions: {
-		"sugar": { "elem1": "quicklime", "elem2": null, "chance": 0.003 },
-		"acid": { "elem1": "quicklime", "elem2": null },
+		"acid": { elem1: "quicklime", elem2: null },
+        "head": { elem2:["flesh_mound",null,null,null], chance:0.01 },
+        "body": { elem2:["flesh_mound",null,null,null], chance:0.01 },
+        "frog": { elem2:["flesh_mound",null,null,null], chance:0.05 },
+        "tadpole": { elem2:["flesh_mound",null,null,null], chance:0.05 },
+        "fish": { elem2:["flesh_mound",null,null,null], chance:0.05 },
+        "rat": { elem2:["flesh_mound",null,null,null], chance:0.05 },
+        "bird": { elem2:["flesh_mound",null,null,null], chance:0.05 },
+        "worm": { elem2:["flesh_mound",null], chance:0.1 },
+        "fly": { elem2:["flesh_mound",null], chance:0.1 },
+        "ant": { elem2:["flesh_mound",null], chance:0.1 },
+        "frog": { elem2:["flesh_mound",null], chance:0.05 },
+        "snail": { elem2:["flesh_mound","quicklime"] },
+        "slug": { elem2:["flesh_mound",null], chance:0.1 },
+        "meat": { elem2:["flesh_mound",null,null,null], chance:0.1 },
+        "blood": { elem2:null, chance:0.05 },
+        "infection": { elem2:null, chance:0.04 },
+        "bone": { elem2:null, chance:0.1 },
+        "cooked_meat": { elem2:null, chance:0.1 },
+        "rotten_meat": { elem2:null, chance:0.1 },
+        "sugar": { elem2:null, chance:0.1 },
+        "broth": { elem2:null, chance:0.2 },
+        "yolk": { elem2:null, chance:0.1 },
+        "hard_yolk": { elem2:null, chance:0.1 },
+        "dough": { elem2:null, chance:0.1 },
+        "batter": { elem2:null, chance:0.2 },
+        "butter": { elem2:null, chance:0.1 },
+        "melted_butter": { elem2:null, chance:0.2 },
+        "chocolate": { elem2:null, chance:0.2 },
+        "melted_chocolate": { elem2:null, chance:0.3 },
+        "grape": { elem2:null, chance:0.1 },
+        "tomato": { elem2:null, chance:0.1 },
+        "herb": { elem2:null, chance:0.1 },
+        "lettuce": { elem2:null, chance:0.1 },
+        "corn": { elem2:null, chance:0.1 },
+        "popcorn": { elem2:null, chance:0.15 },
+        "potato": { elem2:null, chance:0.1 },
+        "baked_potato": { elem2:null, chance:0.15 },
+        "bread": { elem2:null, chance:0.1 },
+        "toast": { elem2:null, chance:0.1 },
+        "gingerbread": { elem2:null, chance:0.1 },
+        "baked_batter": { elem2:null, chance:0.2 },
+        "wheat": { elem2:null, chance:0.1 },
+        "candy": { elem2:null, chance:0.1 },
+        "yogurt": { elem2:null, chance:0.2 },
+        "frozen_yogurt": { elem2:null, chance:0.1 },
+        "ice_cream": { elem2:null, chance:0.2 },
+        "beans": { elem2:null, chance:0.2 },
+        "tea": { elem2:null, chance:0.2 },
+        "coffee": { elem2:null, chance:0.2 },
+        "milk": { elem2:null, chance:0.2 },
+        "cream": { elem2:null, chance:0.2 },
+        "soda": { elem2:null, chance:0.2 },
+        "chocolate_milk": { elem2:null, chance:0.2 },
+        "fruit_milk": { elem2:null, chance:0.2 },
+        "pilk": { elem2:null, chance:0.2 },
+        "eggnog": { elem2:null, chance:0.2 },
+        "juice": { elem2:null, chance:0.2 },
+        "cheese": { elem2:null, chance:0.1 },
+        "melted_cheese": { elem2:null, chance:0.2 },
+        "alcohol": { elem2:null, chance:0.2 },
+        "antidote": { elem2:null, chance:0.2 },
+        "honey": { elem2:null, chance:0.2 },
+        "caramel": { elem2:null, chance:0.2 },
+        "molasses": { elem2:null, chance:0.05 },
+        "ketchup": { elem2:null, chance:0.1 },
+        "pumpkin_seed": { elem2:null, chance:0.1 },
+        "nut": { elem2:null, chance:0.1 },
+        "nut_meat": { elem2:null, chance:0.1 },
+        "nut_butter": { elem2:null, chance:0.1 },
+        "nut_milk": { elem2:null, chance:0.2 },
+        "jelly": { elem2:null, chance:0.2 },
+        "mayo": { elem2:null, chance:0.2 },
+        "mashed_potato": { elem2:null, chance:0.2 },
+        "sauce": { elem2:null, chance:0.2 },
+        "pickle": { elem2:null, chance:0.1 },
 	},
 	category:"flesh",
 	tempHigh: 1000, 
@@ -19,39 +114,39 @@ elements.jaws = {
 	hardness: 0.5,
 	breakInto: ["flesh_mound","quicklime"],
     hidden: true,
-    ignore: ["jaws","flesh_mound","flesh_beast","solid_flesh","flesh_wood"]
+    excludeRandom: true,
 },
 
 elements.flesh_mound = {
     color: ["#9e4839","#ba6449","#d2856c","#a14940","#E94336"],
     behavior: [
-        "XX|CR:mucus%0.005|XX",
-        "CR:mucus%0.005|XX|CR:mucus%0.005",
-        "XX|CR:mucus%0.005|XX",
+        "XX|CR:acidic_bile%0.005 AND CH:grass>flesh_mound%0.5 AND CR:fleshwood_sapling%0.0001|XX",
+        "CR:acidic_bile%0.005 AND CH:grass>flesh_mound%0.5|XX|CR:acidic_bile%0.005 AND CH:grass>flesh_mound%0.5",
+        "XX|CR:acidic_bile%0.005 AND CH:grass>flesh_mound%0.5 AND CH:dirt>fleshy_dirt%0.5|XX",
     ],
     tick: function(pixel) {
         if (pixel.start === pixelTicks && pixel.fruit === undefined && !pixel.stop) {
             if (Math.random() < 0.95) {
-                pixel.fruit = Math.random() < 0.75 ? "flesh_beast" : "jaw";
+                pixel.fruit = Math.random() < 0.75 ? "flesh_beast" : "teeth";
             }
-            else { pixel.fruit = null }
+            else { pixel.fruit = "acidic_bile" }
         }
         if (!isEmpty(pixel.x-1,pixel.y,true)) {
             if (pixelMap[pixel.x-1][pixel.y].fruit === undefined && pixelMap[pixel.x-1][pixel.y].element === "flesh_mound") {
                 pixelMap[pixel.x-1][pixel.y].fruit = pixel.fruit;
             }
         }
-        else if (!isEmpty(pixel.x+1,pixel.y,true)) {
+        if (!isEmpty(pixel.x+1,pixel.y,true)) {
             if (pixelMap[pixel.x+1][pixel.y].fruit === undefined && pixelMap[pixel.x+1][pixel.y].element === "flesh_mound") {
                 pixelMap[pixel.x+1][pixel.y].fruit = pixel.fruit;
             }
         }
-        else if (!isEmpty(pixel.x,pixel.y+1,true)) {
+        if (!isEmpty(pixel.x,pixel.y+1,true)) {
             if (pixelMap[pixel.x][pixel.y+1].fruit === undefined && pixelMap[pixel.x][pixel.y+1].element === "flesh_mound") {
                 pixelMap[pixel.x][pixel.y+1].fruit = pixel.fruit;
             }
         }
-        else if (!isEmpty(pixel.x,pixel.y-1,true)) {
+        if (!isEmpty(pixel.x,pixel.y-1,true)) {
             if (pixelMap[pixel.x][pixel.y-1].fruit === undefined && pixelMap[pixel.x][pixel.y-1].element === "flesh_mound") {
                 pixelMap[pixel.x][pixel.y-1].fruit = pixel.fruit;
             }
@@ -141,6 +236,7 @@ elements.flesh_mound = {
         pixel.age++;
         doDefaults(pixel);
     },
+    ignore: ["teeth","flesh_mound","flesh_beast"],
     renderer: renderPresets.PLANTCHAR,
     properties: {
         "h": 0,
@@ -150,10 +246,21 @@ elements.flesh_mound = {
     },
     reactions: {
         "cell": { elem2:"flesh_mound", chance:0.005 },
+        "skin": { elem2:"flesh_mound", chance:0.005 },
         "sugar_water": { elem2:"flesh_mound", chance:0.05 },
-        "mucus": { elem2:null, chance:0.005 },
-        "plant": { elem2:["dead_plant","flesh_mound"], chance:0.005 },
-        "grass": { elem2:["dead_plant","flesh_mound"], chance:0.005 },
+        "acidic_bile": { elem2:null, chance:0.005 },
+        "plant": { elem2:["dead_plant","solid_flesh"], chance:0.005 },
+        "dead_plant": { elem2:"flesh_mound", chance:0.005 },
+        "sapling": { elem2:"fleshwood_sapling", chance:0.005 },
+        "wood": { elem2:"dry_fleshwood", chance:0.005 },
+        "tree_branch": { elem2:"fleshwood", chance:0.005 },
+        "head": { elem2:"flesh_mound", chance:0.001},
+        "body": { elem2:"flesh_mound", chance:0.001 },
+        "frog": { elem2:"flesh_mound", chance:0.005 },
+        "tadpole": { elem2:"flesh_mound", chance:0.005 },
+        "fish": { elem2:"flesh_mound", chance:0.005 },
+        "rat": { elem2:"flesh_mound", chance:0.005 },
+        "bird": { elem2:"flesh_mound", chance:0.005 },
     },
     tempHigh: 100,
     stateHigh: "meat",
@@ -172,7 +279,7 @@ elements.vein_root = {
     behavior: [
         "XX|XX|XX",
         "XX|XX|XX",
-        "CH:dirt,mud,sand,wet_sand,clay_soil,clay,mycelium,grass,color_sand,skin,meat,rotten_meat,concrete,dead_plant,dead_bug,root>vein_root,fibrous_flesh%0.5 AND CR:vein_root%0.005|CH:dirt,mud,sand,wet_sand,clay_soil,clay,mycelium,grass,color_sand,skin,meat,rotten_meat,concrete,dead_plant,dead_bug,root>vein_root,fibrous_flesh,fibrous_flesh%0.5|CH:dirt,mud,sand,wet_sand,clay_soil,clay,mycelium,grass,color_sand,skin,meat,rotten_meat,concrete,dead_plant,dead_bug,root>vein_root,fibrous_flesh%0.5 AND CR:vein_root%0.005",
+        "CH:fleshy_dirt,dirt,mud,sand,wet_sand,clay_soil,clay,mycelium,grass,color_sand,skin,meat,rotten_meat,concrete,dead_plant,dead_bug,root>vein_root,fibrous_flesh%0.5 AND CR:vein_root%0.005|CH:fleshy_dirt,dirt,mud,sand,wet_sand,clay_soil,clay,mycelium,grass,color_sand,skin,meat,rotten_meat,concrete,dead_plant,dead_bug,root>vein_root,fibrous_flesh,fibrous_flesh%0.5|CH:fleshy_dirt,dirt,mud,sand,wet_sand,clay_soil,clay,mycelium,grass,color_sand,skin,meat,rotten_meat,concrete,dead_plant,dead_bug,root>vein_root,fibrous_flesh%0.5 AND CR:vein_root%0.005",
     ],
     reactions: {
         "rock": { elem2:"sand", chance:0.0008 },
@@ -181,7 +288,7 @@ elements.vein_root = {
         "water": { elem2:null, chance:0.001 },
         "blood": { elem2:null, chance:0.01 },
         "sugar_water": { elem2:null, chance:0.0025 },
-        "mucus": { elem2:null, chance:0.0025 }
+        "acidic_bile": { elem2:null, chance:0.0025 }
     },
     tempHigh: 175,
     stateHigh: "meat",
@@ -218,6 +325,12 @@ elements.fibrous_flesh = {
 elements.solid_flesh = {
     color: ["#7c2617","#984227","#c72114","#b0634a","#802720"],
     behavior: behaviors.WALL,
+    reactions: {
+        "plant": { elem2:["dead_plant","solid_flesh"], chance:0.005 },
+        "grass": { elem2:["dead_plant","flesh_mound"], chance:0.005 },
+        "tree_branch": { elem1:null, elem2:"fleshwood" },
+        "sapling": { elem2:"fleshwood_sapling", chance:0.005 },
+    },
     tempHigh:175,
     stateHigh: "meat",
     tempLow: -50,
@@ -235,30 +348,30 @@ elements.solid_flesh = {
 elements.flesh_beast = {
     color: ["#9e4839","#ba6449","#a14940"],
     behavior: [
-        "XX|CR:mucus%0.05 AND M2%1.5|M2%5 AND SW:mucus%14",
-        "XX|FX%2|M2 AND BO",
-        "XX|M1|M2 AND SW:mucus%14",
+        "XX|CR:acidic_bile%0.05 AND M2%0.5|M2%5 AND SW:acidic_bile,meat,rotten_meat,blood%14",
+        "XX|FX%2|M2%50 AND BO",
+        "XX|M1|M2%50 AND SW:acidic_bile,meat,rotten_meat,blood%14",
     ],
     reactions: {
-        "cell": { elem2:"flesh_mound", chance:0.005, func:behaviors.FEEDPIXEL  },
-        "head": { elem2:"flesh_mound", chance:0.001, func:behaviors.FEEDPIXEL  },
-        "body": { elem2:"flesh_mound", chance:0.001, func:behaviors.FEEDPIXEL  },
-        "frog": { elem2:"flesh_mound", chance:0.005, func:behaviors.FEEDPIXEL  },
-        "tadpole": { elem2:"flesh_mound", chance:0.005, func:behaviors.FEEDPIXEL  },
-        "fish": { elem2:"flesh_mound", chance:0.005, func:behaviors.FEEDPIXEL  },
-        "rat": { elem2:"flesh_mound", chance:0.005, func:behaviors.FEEDPIXEL  },
-        "bird": { elem2:"flesh_mound", chance:0.005, func:behaviors.FEEDPIXEL  },
-        "bone": { elem2:"flesh_mound", chance:0.005, func:behaviors.FEEDPIXEL  },
-        "bone_marrow": { elem2:"flesh_mound", chance:0.005, func:behaviors.FEEDPIXEL  },
+        "cell": { elem2:"flesh_mound", chance:0.05, func:behaviors.FEEDPIXEL  },
+        "head": { elem2:["flesh_mound",null], chance:0.01, func:behaviors.FEEDPIXEL  },
+        "body": { elem2:["flesh_mound",null], chance:0.01, func:behaviors.FEEDPIXEL  },
+        "frog": { elem2:["flesh_mound",null], chance:0.05, func:behaviors.FEEDPIXEL  },
+        "tadpole": { elem2:["flesh_mound",null], chance:0.05, func:behaviors.FEEDPIXEL  },
+        "fish": { elem2:["flesh_mound",null], chance:0.05, func:behaviors.FEEDPIXEL  },
+        "rat": { elem2:["flesh_mound",null], chance:0.05, func:behaviors.FEEDPIXEL  },
+        "bird": { elem2:["flesh_mound",null], chance:0.05, func:behaviors.FEEDPIXEL  },
+        "bone": { elem2:"quicklime", chance:0.005, func:behaviors.FEEDPIXEL  },
+        "bone_marrow": { elem2:["flesh_mound","quicklime"], chance:0.005, func:behaviors.FEEDPIXEL  },
         "skin": { elem2:"flesh_mound", chance:0.005, func:behaviors.FEEDPIXEL  },
-        "sugar": { elem2:"flesh_mound", chance:0.04, func:behaviors.FEEDPIXEL  },
-        "sugar_water": { elem2:"flesh_mound", chance:0.05, func:behaviors.FEEDPIXEL  },
+        "sugar": { elem2:null, chance:0.04, func:behaviors.FEEDPIXEL  },
+        "sugar_water": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL  },
         "plant": { elem2:["dead_plant","flesh_mound",null], chance:0.005, func:behaviors.FEEDPIXEL  },
         "grass": { elem2:["dead_plant","flesh_mound",null], chance:0.005, func:behaviors.FEEDPIXEL  },
         "oxygen": { elem2:"carbon_dioxide", chance:0.5 },
-        "meat": { elem2:"flesh_mound", chance:0.1, func:behaviors.FEEDPIXEL },
-        "cooked_meat": { elem2:"flesh_mound", chance:0.1, func:behaviors.FEEDPIXEL },
-        "cured_meat": { elem2:"flesh_mound", chance:0.1, func:behaviors.FEEDPIXEL },
+        "meat": { elem2:["flesh_mound",null], chance:0.01, func:behaviors.FEEDPIXEL },
+        "cooked_meat": { elem2:["flesh_mound",null,null,null], chance:0.1, func:behaviors.FEEDPIXEL },
+        "rotten_meat": { elem2:["flesh_mound","plague",null,null], chance:0.1, func:behaviors.FEEDPIXEL },
         "cheese": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
         "rotten_cheese": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
         "melted_cheese": { elem2:null, chance:0.3, func:behaviors.FEEDPIXEL },
@@ -313,12 +426,17 @@ elements.flesh_beast = {
         "nut_meat": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
         "nut_butter": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
         "jelly": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
-        "worm": { elem2:"flesh_mound", chance:0.1, func:behaviors.FEEDPIXEL },
-        "ant": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
-        "frog": { elem2:"flesh_mound", chance:0.005, func:behaviors.FEEDPIXEL },
-        "snail": { elem2:"flesh_mound", chance:0.1, func:behaviors.FEEDPIXEL },
-        "slug": { elem2:"flesh_mound", chance:0.1, func:behaviors.FEEDPIXEL }
+        "worm": { elem2:["flesh_mound",null], chance:0.1, func:behaviors.FEEDPIXEL },
+        "fly": { elem2:["flesh_mound",null], chance:0.1, func:behaviors.FEEDPIXEL },
+        "ant": { elem2:["flesh_mound",null], chance:0.1, func:behaviors.FEEDPIXEL },
+        "frog": { elem2:["flesh_mound",null], chance:0.05, func:behaviors.FEEDPIXEL },
+        "snail": { elem2:["flesh_mound","quicklime"], chance:0.1, func:behaviors.FEEDPIXEL },
+        "slug": { elem2:["flesh_mound",null], chance:0.1, func:behaviors.FEEDPIXEL },
+        "sapling": { elem2:"fleshwood_sapling", chance:0.005 },
+        "wood": { elem2:"dry_fleshwood", chance:0.005 },
+        "tree_branch": { elem2:"fleshwood", chance:0.005 },
     },
+    foodNeed: 2,
     egg: "flesh_beast",
     category: "flesh",
     temp: 37.6,
@@ -326,7 +444,7 @@ elements.flesh_beast = {
     stateHigh: "rotten_meat",
     tempLow: -18,
     stateLow: "frozen_meat",
-    breakInto: ["mucus","rotten_meat"],
+    breakInto: ["acidic_bile","rotten_meat"],
     burn:80,
     burnTime:150,
     state: "solid",
@@ -334,7 +452,63 @@ elements.flesh_beast = {
     conduct: 0.25
 }
 
-elements.flesh_wood = {
+elements.fleshwood_sapling = {
+    color: ["#7c2617","#984227","#c72114","#b0634a","#802720"],
+    tick: function(pixel) {
+        if (!tryMove(pixel,pixel.x,pixel.y+1)) {
+            if (Math.random() < 0.02 && pixel.age > 50 && pixel.temp < 100) {
+                if (!outOfBounds(pixel.x,pixel.y+1)) {
+                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
+                    if (dirtPixel && (eLists.FESTER.indexOf(dirtPixel.element) !== -1 || dirtPixel.element === "grass")) {
+                        changePixel(dirtPixel,"vein_root");
+                    }
+                }
+                if (isEmpty(pixel.x,pixel.y-1)) {
+                    if (!pixel.wc) {
+                        var c = Math.random();
+                        if (c < 0.01) { pixel.wc="#632e1f"; pixel.lc="#7c2617" }
+                        else if (c < 0.05) { pixel.wc="#9e4839"; pixel.lc="#7c2617" }
+                        else if (c < 0.1) { pixel.wc="#9e4839"; pixel.lc="#984227" }
+                        else if (c < 0.2) { pixel.wc="#a14940"; pixel.lc="#984227" }
+                        else if (c < 0.3) { pixel.wc="#ba6449"; pixel.lc="#c72114" }
+                        else if (c < 0.4) { pixel.wc="#a14940"; pixel.lc="#c72114" }
+                        else if (c < 0.45) { pixel.wc="#ba6449"; pixel.lc="#b0634a" }
+                        else if (c < 0.5) { pixel.wc="#a14940"; pixel.lc="#b0634a" }
+                        else { pixel.wc="#9e4839"; pixel.lc="#802720" }
+                        pixel.color = pixelColorPick(pixel, pixel.lc);
+                    }
+                    movePixel(pixel,pixel.x,pixel.y-1);
+                    createPixel(Math.random() > 0.5 ? "dry_fleshwood" : "fleshwood",pixel.x,pixel.y+1);
+                    pixelMap[pixel.x][pixel.y+1].wc = pixel.wc;
+                    pixelMap[pixel.x][pixel.y+1].lc = pixel.lc;
+                    pixelMap[pixel.x][pixel.y+1].color = pixelColorPick(pixelMap[pixel.x][pixel.y+1], pixel.wc);
+                }
+            }
+            else if (pixel.age > 1000 && Math.random() < 0.05) {
+                changePixel(pixel,"dry_fleshwood");
+                pixel.color = pixelColorPick(pixel, pixel.wc);
+            }
+            pixel.age++;
+        }
+        doDefaults(pixel);
+    },
+    properties: {
+        "age":0
+    },
+    tempHigh: 100,
+    stateHigh: "meat",
+    tempLow: -25,
+    stateLow: "meat",
+    burn: 65,
+    burnTime: 15,
+    category: "flesh",
+    state: "solid",
+    density: 1500,
+    cooldown: defaultCooldown,
+    seed: true
+}
+
+elements.fleshwood = {
     color: ["#9e4839","#ba6449","#a14940"],
     tick: function(pixel) {
         if (!pixel.burning) {
@@ -346,7 +520,7 @@ elements.flesh_wood = {
                     pixelMap[pixel.x-1][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x-1][pixel.y-1], pixel.lc);
                 }
                 else {
-                    createPixel("flesh_wood",pixel.x-1,pixel.y-1);
+                    createPixel("fleshwood",pixel.x-1,pixel.y-1);
                     pixelMap[pixel.x-1][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x-1][pixel.y-1], pixel.wc);
                     pixelMap[pixel.x-1][pixel.y-1].wc = pixel.wc;
                     pixelMap[pixel.x-1][pixel.y-1].lc = pixel.lc;
@@ -358,7 +532,7 @@ elements.flesh_wood = {
                     pixelMap[pixel.x+1][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x+1][pixel.y-1], pixel.lc);
                 }
                 else {
-                    createPixel("flesh_wood",pixel.x+1,pixel.y-1);
+                    createPixel("fleshwood",pixel.x+1,pixel.y-1);
                     pixelMap[pixel.x+1][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x+1][pixel.y-1], pixel.wc);
                     pixelMap[pixel.x+1][pixel.y-1].wc = pixel.wc;
                     pixelMap[pixel.x+1][pixel.y-1].lc = pixel.lc;
@@ -370,7 +544,7 @@ elements.flesh_wood = {
                     pixelMap[pixel.x][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x][pixel.y-1], pixel.lc);
                 }
                 else {
-                    createPixel("flesh_wood",pixel.x,pixel.y-1);
+                    createPixel("fleshwood",pixel.x,pixel.y-1);
                     pixelMap[pixel.x][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x][pixel.y-1], pixel.wc);
                     pixelMap[pixel.x][pixel.y-1].wc = pixel.wc;
                     pixelMap[pixel.x][pixel.y-1].lc = pixel.lc;
@@ -380,6 +554,12 @@ elements.flesh_wood = {
         doDefaults(pixel);
     },
     renderer: renderPresets.WOODCHAR,
+    reactions: {
+        "plant": { elem2:["dead_plant","solid_flesh"], chance:0.005 },
+        "grass": { elem2:["dead_plant","flesh_mound"], chance:0.005 },
+        "tree_branch": { elem1:null, elem2:"fleshwood" },
+        "sapling": { elem2:"fleshwood_sapling", chance:0.005 },
+    },
     movable: false,
     tempHigh: 175,
     stateHigh: "meat",
@@ -397,7 +577,31 @@ elements.flesh_wood = {
     forceSaveColor: true
 }
 
-elements.mucus = {
+elements.dry_fleshwood = {
+    color: ["#9e4839","#ba6449","#a14940"],
+    behavior: behaviors.WALL,
+    renderer: renderPresets.WOODCHAR,
+    reactions: {
+        "plant": { elem2:["dead_plant","solid_flesh"], chance:0.005 },
+        "grass": { elem2:["dead_plant","flesh_mound"], chance:0.005 },
+        "tree_branch": { elem1:null, elem2:"fleshwood" },
+        "sapling": { elem2:"fleshwood_sapling", chance:0.005 },
+    },
+    tempHigh: 400,
+    stateHigh: ["ash","cooked_meat","fire","fire","fire"],
+    tempLow: -30,
+    stateLow: "meat",
+    category: "solids",
+    burn: 5,
+    burnTime: 300,
+    burnInto: ["ash","cooked_meat","fire"],
+    state: "solid",
+    hardness: 0.15,
+    breakInto: ["blood","meat"],
+    forceSaveColor: true
+}
+
+elements.acidic_bile = {
     color: ["#81cf63","#81cf63","#81cf63","#81cf63","#81cf63","#81cf63","#439809","#258b08","#118511","#127b12","#136d14"],
     behavior: [
         "XX|DB%1 AND SW:flesh_mound%90|XX",
@@ -421,18 +625,19 @@ elements.mucus = {
         "sugar_water": { elem1:null, elem2:"water" },
         "plant": { elem2:["dead_plant","flesh_mound"], chance:0.005 },
         "grass": { elem2:["dead_plant","flesh_mound"], chance:0.005 },
-        "tree_branch": { elem1:null, elem2:["wood","wood","dead_plant","flesh_mound"] },
+        "tree_branch": { elem1:null, elem2:["dry_fleshwood","dry_fleshwood","dead_plant","fleshwood"] },
         "charcoal": { elem1:null, elem2:"carbon_dioxide" },
         "rock": { elem1:null, elem2:"sand", chance:0.05 },
         "baking_soda": { elem1:"salt_water", elem2:["carbon_dioxide","foam"] },
         "calcium": { elem1:"chlorine", elem2:"hydrogen", chance:0.01 },
         "zinc": { elem1:"hydrogen", elem2:null, chance:0.03 },
         "sugar": { elem1:"steam", elem2:"carbon_dioxide" },
+        "sapling": { elem2:"fleshwood_sapling", chance:0.005 },
     },
     tempHigh: 120,
     stateHigh: ["steam","steam","salt"],
     tempLow: 0,
-    category:"liquids",
+    category:"flesh",
     state: "liquid",
     density: 1450,
     stain: 0.05
