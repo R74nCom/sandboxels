@@ -1,6 +1,6 @@
 // by Nekonico
 
-eLists.FESTER = ["fleshy_dirt","dirt","rock","rock_wall","basalt","limestone","steel","iron","dead_bug","mud","sand","wet_sand","clay_soil","clay","mycelium","skin","meat","rotten_meat","wood","ant_wall","dead_plant","plant","hair","bone","cancer","straw","cloth","brick","bamboo","sponge","paper","plastic","concrete"],
+eLists.FESTER = ["fleshy_dirt","dirt","rock","rock_wall","basalt","limestone","steel","iron","glass_shard","dead_bug","mud","sand","wet_sand","clay_soil","clay","mycelium","skin","meat","rotten_meat","wood","ant_wall","dead_plant","plant","hair","bone","cancer","straw","cloth","brick","bamboo","sponge","paper","plastic","concrete"],
 
 elements.fleshy_dirt = {
     color: ["#81512F","#895933","#825231","#906159"],
@@ -604,7 +604,7 @@ elements.dry_fleshwood = {
 elements.acidic_bile = {
     color: ["#81cf63","#81cf63","#81cf63","#81cf63","#81cf63","#81cf63","#439809","#258b08","#118511","#127b12","#136d14"],
     behavior: [
-        "XX|DB%1 AND SW:flesh_mound%90|XX",
+        "XX|DB%1|XX",
         "DB%1 AND M2%25|DL%0.001|DB%1 AND M2%25",
         "DB%1 AND M2%25|DB%2 AND M1|DB%1 AND M2%25",
     ],
@@ -618,6 +618,7 @@ elements.acidic_bile = {
         "ammonia": { elem1:null, elem2:null },
         "bleach": { elem1:null, elem2:null },
         "cement": { elem1:null, elem2:null },
+	"glass": { elem1:null, elem2:"glass_shard", chance:0.05 },
         "caustic_potash": { elem1:"water", elem2:"potassium_salt" },
         "bone": { elem2:"flesh_mound", chance:0.01 },
         "water": { elem1:null, elem2:"dirty_water" },
