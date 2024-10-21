@@ -1,4 +1,4 @@
-document.body.style.backgroundImage = 'url("https://jayd-rubies.github.io/uwuify.png")';
+document.body.style.backgroundImage = 'url("https://jayd-rubies.github.io/image/uwuify.png")';
 document.body.style.backgroundSize = 'cover';
 gameDiv.style.border = "1px solid #ffffff00"; 
 window.addEventListener("load",function(){
