@@ -199,7 +199,7 @@ worldgentypes.exoplanet = {
 		["dust_cloud", 0.25]
 	],
 	baseHeight: 0.5,
-	temperature: -7
+	temperature: -15
 }
 
 worldgentypes.exo_ocean = {
@@ -216,5 +216,5 @@ worldgentypes.exo_ocean = {
 	decor: [
 		["dust_cloud", 0.1, 10],
 	],
-	temperature: -7
+	temperature: -15
 }
