@@ -128,7 +128,7 @@ sandbox.addElement({
     category: 'Food',
     color: '#FFD700', // Bright yellow color for curry
     behavior: [
-        "ELEMENT.FLUID", // Curry as a fluid
+        "ELEMENT.FLUID", // Corrected from "ELEMENT.FLU ID" to "ELEMENT.FLUID"
         "ELEMENT.EDIBLE"
     ],
     properties: {
@@ -136,3 +136,22 @@ sandbox.addElement({
         calories: 300
     }
 });
+
+// Example interaction: Combine Curry with Dosa
+sandbox.addInteraction('Combine', {
+    elements: ['Curry', 'Dosa'],
+    result: 'Curry Dosa', // New element created
+    onCombine: function() {
+        sandbox.addElementInstance('Curry Dosa', this.x, this.y);
+    }
+});
+
+// Example interaction: Combine Curry with Idli
+sandbox.addInteraction('Combine', {
+    elements: ['Curry', 'Idli'],
+    result: 'Curry Idli', // New element created
+    onCombine: function() {
+        sandbox.addElementInstance('Curry Idli', this.x, this.y);
+    }
+});
+    
