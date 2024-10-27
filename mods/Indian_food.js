@@ -1,3 +1,4 @@
+//so this food adds Indian foods from India
 // Dosa Element
 sandbox.addElement({
     name: 'Dosa',
@@ -140,7 +141,7 @@ sandbox.addElement({
 // Example interaction: Combine Curry with Dosa
 sandbox.addInteraction('Combine', {
     elements: ['Curry', 'Dosa'],
-    result: 'Curry Dosa', // New element created
+    result: 'Dosa and curry', // New element created
     onCombine: function() {
         sandbox.addElementInstance('Curry Dosa', this.x, this.y);
     }
@@ -149,9 +150,22 @@ sandbox.addInteraction('Combine', {
 // Example interaction: Combine Curry with Idli
 sandbox.addInteraction('Combine', {
     elements: ['Curry', 'Idli'],
-    result: 'Curry Idli', // New element created
+    result: 'Idli and curry', // New element created
     onCombine: function() {
         sandbox.addElementInstance('Curry Idli', this.x, this.y);
     }
 });
     
+// Samosa Creation Interaction
+sandbox.addInteraction('Mix', {
+    elements: ['Flour', 'Potato', 'Spices', 'Mix Tool'],
+    result: 'Samosa', // New element created
+    onCombine: function() {
+        // Create Samosa at the interaction location
+        sandbox.addElementInstance('Samosa', this.x, this.y);
+
+        // Remove the used ingredients (Flour, Potato, and Spices) at the interaction location
+        sandbox.removeElementInstance(this);
+    }
+});
+
