@@ -1,5 +1,5 @@
 //texture_pack_by_jayd
-document.body.style.backgroundImage = 'url("https://jayd-rubies.github.io/1236951076024877107.png")';
+document.body.style.backgroundImage = 'url("https://jayd-rubies.github.io/image/1236951076024877107.png")';
 gameDiv.style.border = "1px solid #ffffff00"; 
 window.addEventListener("load",function(){
     document.querySelectorAll(".categoryButton").forEach(e => {
