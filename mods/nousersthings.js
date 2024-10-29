@@ -3104,6 +3104,7 @@ elements.piston_ray_emitter = {
                         var lx = lcoord[0];
                         var ly = lcoord[1];
                         if (!isEmpty(lx, ly, true)){
+                            if (pixelMap[lx][ly].element == "insulator"){break;}
                             tryMove(pixelMap[lx][ly], pCoord[0], pCoord[1], null, true)
                         }
                         pCoord[0] = lx;
