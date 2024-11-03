@@ -13,6 +13,7 @@
 "machines": "",
 "special": "",
 "other": "",
+"states": "",
 "heat": "",
 "cool": "",
 "erase": "",
@@ -544,5 +545,10 @@
 "tsunami": "",
 "blaster": "",
 "propane_ice": "",
-"molten_caustic_potash": ""
+"molten_caustic_potash": "",
+"ectoplasm":"",
+"soul":"",
+"tombstone":"",
+"spider":"",
+"web":""
 }
