@@ -467,18 +467,7 @@ elements.mushy_mud = {
     density: 1200,
     stain: 0.3
 };
-elements.mud = {
-    color: "#8B4513",
-    behavior: elements.slime.behavior,
-    viscosity: 1050,
-    tempHigh: 58,
-    stateHigh: "liquid",
-    tempLow: 0,
-    category: "liquids",
-    state: "liquid",
-    density: 1000,
-    stain: 0.3
-};
+
 elements.quicksand_mud = {
     color: "#DAA520",
     behavior: elements.slime.behavior,
@@ -515,7 +504,7 @@ elements.sticky_quicksand = {
     density: 1100,
     stain: 0.25
 };
-elements.fluff_mud = {
+elements.pluff_mud = {
     color: "#964B00",
     behavior: elements.slime.behavior,
     viscosity: 10000,
@@ -527,55 +516,6 @@ elements.fluff_mud = {
     density: 1300,
     stain: 0.2
 };
-elements.bog = {
-    color: "#556B2F",
-    behavior: elements.slime.behavior,
-    viscosity: 10000,
-    tempHigh: 45,
-    stateHigh: "liquid",
-    tempLow: 0,
-    category: "liquids",
-    state: "liquid",
-    density: 1400,
-    stain: 0.25
-};
-elements.mire = {
-    color: "#2E8B57",
-    behavior: elements.slime.behavior,
-    viscosity: 10000,
-    tempHigh: 50,
-    stateHigh: "liquid",
-    tempLow: 0,
-    category: "liquids",
-    state: "liquid",
-    density: 1500,
-    stain: 0.3
-};
-elements.oobleck = {
-    color: "#008000",
-    behavior: elements.slime.behavior,
-    viscosity: 10000,
-    tempHigh: 25,
-    stateHigh: "liquid",
-    tempLow: 0,
-    category: "liquids",
-    state: "liquid",
-    density: 1600,
-    stain: 0.15
-};
-elements.spiderwebs = {
-    color: "#D3D3D3",
-    behavior: elements.slime.behavior,
-    viscosity: 10000,
-    tempHigh: 20,
-    stateHigh: "liquid",
-    tempLow: 0,
-    category: "liquids",
-    state: "liquid",
-    density: 1700,
-    stain: 0.1
-};
-
 elements.silt_quicksand = {
     color: "#DAA520",
     behavior: elements.slime.behavior,
@@ -1102,5 +1042,314 @@ elements.murky_marsh_mixture = {
     category: "liquids",
     state: "liquid",
     density: 1900,
+    stain: 0.2
+};
+
+
+
+elements.mud = {
+    color: "#8B4513",
+    reactions: {
+        "water": { "elem1": "wet_mud" },
+        "mire": { "elem1": "mire_mud" },
+        "dirt": { "elem1": "thick_mud" },
+        "plant": { "elem1": "pluff_mud" },
+        "bog": { "elem1": "boggy_mud" },
+        "sand": { "elem1": "sandy_mud" },
+    },
+    behavior: elements.slime.behavior,
+    viscosity: 1050,
+    tempHigh: 58,
+    stateHigh: "liquid",
+    tempLow: 0,
+    category: "liquids",
+    state: "liquid",
+    density: 1000,
+    stain: 0.3
+};
+elements.marsh = {
+    color: "#556B2F",
+    behavior: elements.slime.behavior,
+    reactions: {
+        "slime": { "elem1": "marshy_slime" },
+    },
+    viscosity: 13500,
+    tempHigh: 75,
+    stateHigh: "liquid",
+    tempLow: 0,
+    category: "liquids",
+    state: "liquid",
+    density: 1900,
+    stain: 0.2
+};
+elements.peat = {
+    color: "#556B2F",
+    behavior: elements.slime.behavior,
+    viscosity: 13500,
+    tempHigh: 75,
+    stateHigh: "liquid",
+    tempLow: 0,
+    category: "liquids",
+    state: "liquid",
+    density: 1900,
+    stain: 0.2
+};
+elements.goo = {
+    color: "#556B2F",
+    behavior: behavior.POWDER,
+    viscosity: 13500,
+    tempHigh: 75,
+    stateHigh: "powder",
+    tempLow: 0,
+    category: "powders",
+    state: "powder",
+    density: 1900,
+    stain: 0.2
+};
+elements.ooze = {
+    color: "#556B2F",
+    behavior: elements.slime.behavior,
+    viscosity: 13500,
+    tempHigh: 75,
+    stateHigh: "liquid",
+    tempLow: 0,
+    category: "liquids",
+    state: "liquid",
+    density: 1900,
+    stain: 0.2
+};
+elements.spiderwebs = {
+    color: "#D3D3D3",
+    behavior: elements.slime.behavior,
+    viscosity: 10000,
+    tempHigh: 20,
+    stateHigh: "liquid",
+    reactions: {
+        "ooze": { "elem1": "sticky_spider_ooze" },
+        "goo": { "elem1": "sticky_spider_goo" },
+    },
+    tempLow: 0,
+    category: "liquids",
+    state: "liquid",
+    density: 1700,
+    stain: 0.1
+};
+elements.bog = {
+    color: "#556B2F",
+    behavior: elements.slime.behavior,
+    viscosity: 10000,
+    tempHigh: 45,
+    stateHigh: "liquid",
+    tempLow: 0,
+    reactions: {
+        "quicksand": { "elem1": "bog_quicksand" },
+    },
+    category: "liquids",
+    state: "liquid",
+    density: 1400,
+    stain: 0.25
+};
+elements.mire = {
+    color: "#2E8B57",
+    behavior: elements.slime.behavior,
+    viscosity: 10000,
+    tempHigh: 50,
+    stateHigh: "liquid",
+    tempLow: 0,
+    category: "liquids",
+    state: "liquid",
+    density: 1500,
+    stain: 0.3
+};
+elements.oobleck = {
+    color: "#008000",
+    behavior: elements.slime.behavior,
+    viscosity: 10000,
+    tempHigh: 25,
+    stateHigh: "liquid",
+    tempLow: 0,
+    category: "liquids",
+    state: "liquid",
+    density: 1600,
+    stain: 0.15
+};
+elements.quicksand = {
+    color: "#8B4513",
+    behavior: elements.slime.behavior,
+    viscosity: 1050,
+    tempHigh: 58,
+    stateHigh: "liquid",
+    reactions: {
+        "water": { "elem1": "wet_quicksand" },
+        "peat": { "elem1": "peat_quicksand" },
+        "mud": { "elem1": "quicksand_mud" },
+    },
+    tempLow: 0,
+    category: "liquids",
+    state: "liquid",
+    density: 1574,
+    stain: 0.3
+};
+elements.gel = {
+    color: "#008000",
+    behavior: elements.slime.behavior,
+    viscosity: 10000,
+    tempHigh: 25,
+    reactions: {
+        "spider_webbing": { "elem1": "webbing_gel" },
+    },
+    stateHigh: "liquid",
+    tempLow: 0,
+    category: "liquids",
+    state: "liquid",
+    density: 1600,
+    stain: 0.15
+};
+elements.silly_putty = {
+    color: "#FFD700",
+    behavior: behaviors.LIQUID,
+    viscosity: 4000,
+    tempHigh: 50,
+    stateHigh: "liquid",
+    tempLow: 0,
+    category: "liquids",
+    state: "liquid",
+    density: 900, // Adjusted density
+    stain: 0.1
+};
+
+elements.kinetic_sand = {
+    color: "#FFD700",
+    behavior: behaviors.LIQUID,
+    viscosity: 5000,
+    tempHigh: 55,
+    stateHigh: "liquid",
+    tempLow: 0,
+    category: "liquids",
+    state: "liquid",
+    density: 1200, // Adjusted density
+    stain: 0.15
+};
+
+elements.gak = {
+    color: "#FF69B4",
+    behavior: behaviors.LIQUID,
+    viscosity: 6000,
+    tempHigh: 60,
+    stateHigh: "liquid",
+    tempLow: 0,
+    category: "liquids",
+    state: "liquid",
+    density: 950, 
+    stain: 0.2
+};
+
+elements.flubber = {
+    color: "#FF4500",
+    behavior: behaviors.LIQUID,
+    viscosity: 3000,
+    tempHigh: 65,
+    stateHigh: "liquid",
+    tempLow: 0,
+    category: "liquids",
+    state: "liquid",
+    density: 800,  
+    stain: 0.1
+};
+
+elements.play_doh = {
+    color: "#FFC0CB",
+    behavior: behaviors.LIQUID,
+    viscosity: 5000,
+    tempHigh: 55,
+    reactions: {
+        "sand": { "elem1": "sandy_play_doh" },
+    },
+    stateHigh: "liquid",
+    tempLow: 0,
+    category: "liquids",
+    state: "liquid",
+    density: 950, 
+    stain: 0.2
+};
+
+elements.floam = {
+    color: "#98FB98",
+    behavior: behaviors.LIQUID,
+    viscosity: 4000,
+    tempHigh: 60,
+    stateHigh: "liquid",
+    tempLow: 0,
+    category: "liquids",
+    state: "liquid",
+    density: 1000, 
+    stain: 0.15
+};
+
+elements.moon_sand = {
+    color: "#D3D3D3",
+    behavior: behaviors.LIQUID,
+    viscosity: 4500,
+    tempHigh: 60,
+    reactions: {
+        "water": { "elem1": "moon_quicksand" },
+        "kinetic_sand": { "elem1": "moon_kinetic_sand" },
+    },
+    stateHigh: "liquid",
+    tempLow: 0,
+    category: "powders",
+    state: "powder",
+    density: 950, 
+    stain: 0.1
+};
+elements.moon_quicksand = {
+    color: "#98FB98",
+    behavior: behaviors.LIQUID,
+    viscosity: 4000,
+    tempHigh: 60,
+    stateHigh: "liquid",
+    tempLow: 0,
+    category: "liquids",
+    state: "liquid",
+    density: 1000, 
+    stain: 0.15
+};
+elements.moon_kinetic_sand = {
+    color: "#D3D3D3",
+    behavior: behaviors.LIQUID,
+    viscosity: 4500,
+    tempHigh: 60,
+    reactions: {
+        "water": { "elem1": "kinetic_moon_quicksand" },
+    },
+    stateHigh: "liquid",
+    tempLow: 0,
+    category: "powders",
+    state: "powder",
+    density: 950, 
+    stain: 0.1
+};
+elements.kinetic_moon_quicksand = {
+    color: "#98FB98",
+    behavior: behaviors.LIQUID,
+    viscosity: 4000,
+    tempHigh: 60,
+    stateHigh: "liquid",
+    tempLow: 0,
+    category: "liquids",
+    state: "liquid",
+    density: 1000, 
+    stain: 0.15
+};
+elements.sandy_play_doh = {
+    color: "#FFC0CB",
+    behavior: behaviors.LIQUID,
+    viscosity: 5000,
+    tempHigh: 55,
+    stateHigh: "liquid",
+    tempLow: 0,
+    category: "liquids",
+    state: "liquid",
+    density: 950, 
     stain: 0.2
 };

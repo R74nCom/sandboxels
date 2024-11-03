@@ -24,7 +24,7 @@ elements.change_count = {
 var choosebehaviors = behaviors
 delete choosebehaviors.KILLPIXEL2
 delete choosebehaviors.KILLPIXEL1
-if (!settings.randomcount){settings.randomcount = 10000; saveSettings()}
+if (!settings.randomcount || settings.randomcount > 50000){settings.randomcount = 10000; saveSettings()}
 var color = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "a", "b", "c", "d", "e","f"]
 var states = ["solid", "liquid", "gas"]
 var essentialelements = ["molten_gallium", "gallium", "gallium_gas", "change_count"]
