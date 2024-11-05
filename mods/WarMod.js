@@ -20,7 +20,7 @@ elements.dried_blood = {
 
 elements.proximity_mine ={
   color: "ffffff",
-  behavior: behaviours.AGPOWDER,
+  behavior: behaviors.AGPOWDER,
   category: "War",
  // viscosity: 1000000
   state: "solid",
