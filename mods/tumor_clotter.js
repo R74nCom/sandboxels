@@ -1,5 +1,5 @@
      elements.tumor_clotter = {
-    color: [#552b2b],
+    color: "#552b2b",
     behavior: function(pixel){
         var webs = [];
         shuffleArray(squareCoordsShuffle)
