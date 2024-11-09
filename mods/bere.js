@@ -55,6 +55,7 @@ elements.salvador_powder = {
 	stateHigh: "salvador_water",
 	tempLow: -7,
 	stateLow: "god_ray",
+	glow: true,
 	reactions: {
 	"rad_cloud": { "elem1": "bless" },
 	"cloud": { "elem1": "ozone", "chance": 0.2 },
@@ -72,6 +73,7 @@ elements.salvador_water = {
 	tempLow: 53.5,
 	stateLow: "salvador_powder",
 	density: 26,
+	glow: true,
 	reactions: {
 	"rad_cloud": { "elem1": "bless" },
 	"cloud": { "elem1": "ozone", "chance": 0.2 },
