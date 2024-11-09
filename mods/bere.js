@@ -6,15 +6,15 @@ elements.electron = {
 	category: "energy",
 	state: "gas",
 	reactions: {
-	"ash": { "elem1": "acid_gas" }
-	"battery": { "elem1": "bomb" }
-	"greek_fire": { elem1: "fire" }
-	"wire": { "elem1": "steel" }
-	"vine": { "elem1": "plant" }
-	"wood": { "elem1": "acid_gas" }
-	"glass": { "elem1": "potassium" }
-	"stained_glass": { "elem1": "potassium" }
-	},
+	"ash": { "elem1": "acid_gas" },
+	"battery": { "elem1": "bomb" },
+	"greek_fire": { elem1: "fire" },
+	"wire": { "elem1": "steel" },
+	"vine": { "elem1": "plant" },
+	"wood": { "elem1": "acid_gas" },
+	"glass": { "elem1": "potassium" },
+	"stained_glass": { "elem1": "potassium" },
+	}
 };
 
 elements.iodum = {
@@ -25,8 +25,8 @@ elements.iodum = {
 	tempHigh: 94.1,
 	stateHigh: "iodum_gas",
 	reactions: {
-	"concrete": { "elem1": "ash", "chance": 0.6 }
-	},
+	"concrete": { "elem1": "ash", "chance": 0.6 },
+	}
 };
 
 elements.iodum_gas = {
@@ -37,10 +37,10 @@ elements.iodum_gas = {
 	tempLow: 21,
 	stateLow: "iodum",
 	reactions: {
-	"ash": { "elem1": "steam" }
-	"cloud": { "elem1": "ozone" }
-	"rain_cloud": { "elem1": "oxygen" }
-	},
+	"ash": { "elem1": "steam" },
+	"cloud": { "elem1": "ozone" },
+	"rain_cloud": { "elem1": "oxygen" },
+	}
 };
 
 elements.salvador_powder = {
@@ -56,12 +56,12 @@ elements.salvador_powder = {
 	tempLow: -7,
 	stateLow: "god_ray",
 	reactions: {
-	"rad_cloud": { "elem1": "bless" }
-	"cloud": { "elem1": "ozone", "chance": 0.2 }
-	"radiation": { "elem1": "water" }
-	"dirt": { "elem1": "mud" }
-	"basalt": { "elem1": "gravel", "chance": 0.4 }
-	},
+	"rad_cloud": { "elem1": "bless" },
+	"cloud": { "elem1": "ozone", "chance": 0.2 },
+	"radiation": { "elem1": "water" },
+	"dirt": { "elem1": "mud" },
+	"basalt": { "elem1": "gravel", "chance": 0.4 },
+	}
 };
 
 elements.salvador_water = {
@@ -73,11 +73,11 @@ elements.salvador_water = {
 	stateLow: "salvador_powder",
 	density: 26,
 	reactions: {
-	"rad_cloud": { "elem1": "bless" }
-	"cloud": { "elem1": "ozone", "chance": 0.2 }
-	"radiation": { "elem1": "water" }
-	"dirt": { "elem1": "mud" }
-	"basalt": { "elem1": "gravel", "chance": 0.4 }
-	"plague": { "elem1": "water" }
-	},
+	"rad_cloud": { "elem1": "bless" },
+	"cloud": { "elem1": "ozone", "chance": 0.2 },
+	"radiation": { "elem1": "water" },
+	"dirt": { "elem1": "mud" },
+	"basalt": { "elem1": "gravel", "chance": 0.4 },
+	"plague": { "elem1": "water" },
+	}
 };
