@@ -2,7 +2,7 @@ elements.electron = {
 	color: "#faffa1",
 	behavior: behaviors.GAS,
 	category: "energy",
-	state: "gas",
+	state: "solid",
 	reactions: {
 	"ash": { elem1: "acid_gas", elem2: "neutron" }
 	"battery": { elem1: "bomb", elem2: "neutron" }
@@ -18,7 +18,7 @@ elements.iodum = {
 	color: "#4d4218",
 	behavior: behaviors.LIQUID,
 	category: "liquids",
-	state: "liquid",
+	state: "solid",
 	reactions: {
 	"concrete": { elem1: "ash", elem2: null }
 	},
