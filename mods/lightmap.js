@@ -184,6 +184,8 @@ function renderLightmapPrePixel(ctx) {
                 var newColor = hsvToRgb(h, s, 1);
                 var alpha = v;
 
+		ctx.globalAlpha = 1.0;
+		    
                 ctx.fillStyle = `rgba(${newColor[0]}, ${newColor[1]}, ${newColor[2]}, ${alpha * 0.4})`;
 				ctx.fillRect(
 					x * pixelSize * lightmapScale,
