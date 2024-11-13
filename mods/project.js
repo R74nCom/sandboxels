@@ -1,0 +1,21 @@
+elements.#1 = {
+  color: "#3da5d9",
+  behavior: behaviors.POWDER,
+  category: "powders",
+  state: "solid",
+  density: 265,
+  burn: 1000,
+  burnTime: 300,
+  burnInto: ["paper"],
+},
+
+elements.#2 = {
+  color: "#3dd944",
+  behavior: behaviors.SOLID,
+  category: "solids",
+  state: "solid",
+  density: 265,
+  burn: 1000,
+  burnTime: 300,
+  burnInto: ["#1"],
+},
