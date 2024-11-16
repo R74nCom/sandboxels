@@ -1,6 +1,6 @@
 elements.incinerator = {
     color: "#e600ff",
-	desc: "It works like the incinerate tool but in machine.",
+	desc: "A machine that works like the incinerate tool.",
     behavior: [
         "XX|HT:10000|XX",
         "HT:10000|XX|HT:10000",
