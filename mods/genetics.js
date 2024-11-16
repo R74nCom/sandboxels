@@ -3992,4 +3992,47 @@ elements.antiaging_pill = {
     isFood: true
 }
 
+elements.regression_pill = {
+    behavior: behaviors.POWDER,
+    reactions: {
+        "organism": { elem1: null, chance:0.1, func:function(pixel1,pixel2) {
+            if (pixel2.vore > 0) {
+                if (Math.random() > 0.9) {
+                    pixel2.food += 1
+                };
+                if (Math.random() > 0.99) {
+                    pixel2.vore -= 1
+                };
+                pixel2.geneticCode -= 1
+            }
+            else if (pixel2.vore < 0) {
+                if (Math.random() > 0.8) {
+                    pixel2.food += 1
+                };
+                if (Math.random() > 0.99) {
+                    pixel2.vore += 1
+                };
+                pixel2.geneticCode -= 1
+            }
+            else if (pixel2.vore === 0) {
+                if (Math.random() > 0.75) {
+                    pixel2.food += 1
+                };
+                pixel2.geneticCode -= 1
+            }
+        }},
+    },
+    category: "organism",
+    state: "solid",
+    color: ["#c5dede","#c5dede","#D1D099","#CBCA8C","#a4b3b3","#c5dede","#D1D099","#CBCA8C","#c5dede","#c5dede","#D1D099","#CBCA8C"],
+    tempHigh: 250,
+    stateHigh: ["molten_plastic","sugar","smoke","smoke","smoke","herb","smoke","smoke","smoke","stench"],
+    burn: 10,
+    burnTime: 200,
+    burnInto: ["molten_plastic","sugar","smoke","smoke","smoke","herb","smoke","smoke","smoke","stench"],
+    breakInto: ["sugar","dust","dust","dust","dust","dust","dust","herb","dust","dust","dust","dust","dust","dust"],
+    breakIntoColor: ["#a4b3b3","#ECF4B0","#a4b3b3","#a4b3b3"],
+    isFood: true
+}
+
 /* by nekonico, do not steal!!!!!! >:3*/
