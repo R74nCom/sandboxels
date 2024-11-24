@@ -1,4 +1,4 @@
-// first time making a mod so bare with me
+// first time coding... like ever. so bare with me
 
 
 elements.limewater = {
@@ -24,6 +24,16 @@ elements.limewater_ice = {
   tempHigh: 2,
   stateHigh: "limewater",
 };
+elements.calcium_carbonate_ice = {
+  color: ["#fffefc", "#ffffff"], 
+  behavior: behaviors.WALL,
+  category: "solids",
+  state: "solid",
+  density: 2710,
+  temp: -5,
+  tempHigh: 2,
+  stateHigh: "calcium_carbonate_solution",
+};
 elements.calcium_carbonate_solution = {
   color: "#ffffff",
   behavior: behaviors.LIQUID,
@@ -39,10 +49,12 @@ elements.calcium_carbonate = {
   behavior: behaviors.POWDER,
   category: "liquids",
   state: "liquid",
-  density: 2710,
+  density: 2710,//in kg/cm^3
   temp: 20,
   tempHigh: 825,
   stateHigh: "molten_calcium_carbonate",
+  reactions: {"water": {elem1: "calcium_carbonate_solution", elem2:"calcium_carbonate_solution", temp1: 60, temp2: 60 },
+                       },
 };
 
 elements.molten_calcium_carbonate = {
