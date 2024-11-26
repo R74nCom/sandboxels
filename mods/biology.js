@@ -883,6 +883,7 @@ elements.brain = {
 elements.amygdala = {
 	color: ["#B33E93","#B33E93","#f5ced5","#e87b8f"],
 	category: "biology",
+	name:"hypothalamus",
     behavior: behaviors.WALL,
     hoverStat: function(pixel) {
         return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
