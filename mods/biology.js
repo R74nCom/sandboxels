@@ -38,10 +38,10 @@ elements.real_skin = {
                 changePixel(pixel,"rotten_meat"); 
             }
         }
-        if (pixel.nutrition === null || (isNan(nutrition))) {
+        if (pixel.nutrition === null) {
             pixel.nutrition = 500
         }
-        if (pixel.oxygen === null || (isNan(oxygen))) {
+        if (pixel.oxygen === null) {
             pixel.oxygen = 500
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
@@ -145,10 +145,10 @@ elements.scales = {
                 changePixel(pixel,"dust"); 
             }
         }
-        if (pixel.nutrition === null || (isNan(nutrition))) {
+        if (pixel.nutrition === null) {
             pixel.nutrition = 500
         }
-        if (pixel.oxygen === null || (isNan(oxygen))) {
+        if (pixel.oxygen === null) {
             pixel.oxygen = 500
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
@@ -240,10 +240,10 @@ elements.flesh = {
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
             changePixel(pixel,"rotten_meat");
         }
-        if (pixel.nutrition === null || (isNan(nutrition))) {
+        if (pixel.nutrition === null) {
             pixel.nutrition = 500
         }
-        if (pixel.oxygen === null || (isNan(oxygen))) {
+        if (pixel.oxygen === null) {
             pixel.oxygen = 500
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
@@ -339,10 +339,10 @@ elements.eye = {
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
             changePixel(pixel,"rotten_meat");
         }
-        if (pixel.nutrition === null || (isNan(nutrition))) {
+        if (pixel.nutrition === null) {
             pixel.nutrition = 500
         }
-        if (pixel.oxygen === null || (isNan(oxygen))) {
+        if (pixel.oxygen === null) {
             pixel.oxygen = 500
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
@@ -508,10 +508,10 @@ elements.brain = {
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
             changePixel(pixel,"rotten_meat");
         }
-        if (pixel.nutrition === null || (isNan(nutrition))) {
+        if (pixel.nutrition === null) {
             pixel.nutrition = 500
         }
-        if (pixel.oxygen === null || (isNan(oxygen))) {
+        if (pixel.oxygen === null) {
             pixel.oxygen = 500
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
@@ -649,10 +649,10 @@ elements.amygdala = {
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
             changePixel(pixel,"rotten_meat");
         }
-        if (pixel.nutrition === null || (isNan(nutrition))) {
+        if (pixel.nutrition === null) {
             pixel.nutrition = 500
         }
-        if (pixel.oxygen === null || (isNan(oxygen))) {
+        if (pixel.oxygen === null) {
             pixel.oxygen = 500
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
@@ -749,10 +749,10 @@ elements.eye_nerve = {
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
             changePixel(pixel,"rotten_meat");
         }
-        if (pixel.nutrition === null || (isNan(nutrition))) {
+        if (pixel.nutrition === null) {
             pixel.nutrition = 500
         }
-        if (pixel.oxygen === null || (isNan(oxygen))) {
+        if (pixel.oxygen === null) {
             pixel.oxygen = 500
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
@@ -847,10 +847,10 @@ elements.nerve = {
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
             changePixel(pixel,"rotten_meat");
         }
-        if (pixel.nutrition === null || (isNan(nutrition))) {
+        if (pixel.nutrition === null) {
             pixel.nutrition = 500
         }
-        if (pixel.oxygen === null || (isNan(oxygen))) {
+        if (pixel.oxygen === null) {
             pixel.oxygen = 500
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
@@ -949,10 +949,10 @@ elements.throat_lining = {
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
             changePixel(pixel,"rotten_meat");
         }
-        if (pixel.nutrition === null || (isNan(nutrition))) {
+        if (pixel.nutrition === null) {
             pixel.nutrition = 500
         }
-        if (pixel.oxygen === null || (isNan(oxygen))) {
+        if (pixel.oxygen === null) {
             pixel.oxygen = 500
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
@@ -1047,23 +1047,23 @@ elements.intestines = {
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
             changePixel(pixel,"rotten_meat");
         }
-        if (pixel.nutrition === null || (isNan(nutrition))) {
+        if (pixel.nutrition === null) {
             pixel.nutrition = 500
         }
-        if (pixel.oxygen === null || (isNan(oxygen))) {
+        if (pixel.oxygen === null) {
             pixel.oxygen = 500
         }
-        if (pixel.nutrition === null || (isNan(nutrition))) {
+        if (pixel.nutrition === null) {
             pixel.nutrition = 500
         }
-        if (pixel.oxygen === null || (isNan(oxygen))) {
+        if (pixel.oxygen === null) {
             pixel.oxygen = 500
         }
 		if (!isEmpty(pixel.x, pixel.y-1, true)) {
             var hitPixel = pixelMap[pixel.x][pixel.y-1]
             if (elements[hitPixel.element].id === elements.digested_material.id && Math.random() > 0.95) {
                 changePixel(hitPixel,"poop");
-                pixel.nutrition += (hitPixel.nutrition)
+                pixel.nutrition += (hitPixel.nutrition / 10)
             }
             else if (elements[hitPixel.element].isBio === true && Math.random() > 0.25) {
                 if (hitPixel.oxygen < pixel.oxygen) {
@@ -1080,7 +1080,7 @@ elements.intestines = {
             var hitPixel = pixelMap[pixel.x][pixel.y+1]
             if (elements[hitPixel.element].id === elements.digested_material.id && Math.random() > 0.95) {
                 changePixel(hitPixel,"poop");
-                pixel.nutrition += (hitPixel.nutrition)
+                pixel.nutrition += (hitPixel.nutrition / 10)
             }
             else if (elements[hitPixel.element].isBio === true && Math.random() > 0.25) {
                 if (hitPixel.oxygen < pixel.oxygen) {
@@ -1097,7 +1097,7 @@ elements.intestines = {
             var hitPixel = pixelMap[pixel.x-1][pixel.y]
             if (elements[hitPixel.element].id === elements.digested_material.id && Math.random() > 0.95) {
                 changePixel(hitPixel,"poop");
-                pixel.nutrition += (hitPixel.nutrition)
+                pixel.nutrition += (hitPixel.nutrition / 10)
             }
             else if (elements[hitPixel.element].isBio === true && Math.random() > 0.25) {
                 if (hitPixel.oxygen < pixel.oxygen) {
@@ -1114,7 +1114,7 @@ elements.intestines = {
             var hitPixel = pixelMap[pixel.x+1][pixel.y]
             if (elements[hitPixel.element].id === elements.digested_material.id && Math.random() > 0.95) {
                 changePixel(hitPixel,"poop");
-                pixel.nutrition += (hitPixel.nutrition)
+                pixel.nutrition += (hitPixel.nutrition / 10)
             }
             else if (elements[hitPixel.element].isBio === true && Math.random() > 0.25) {
                 if (hitPixel.oxygen < pixel.oxygen) {
@@ -1167,10 +1167,10 @@ elements.lungs = {
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
             changePixel(pixel,"rotten_meat");
         }
-        if (pixel.nutrition === null || (isNan(nutrition))) {
+        if (pixel.nutrition === null) {
             pixel.nutrition = 500
         }
-        if (pixel.oxygen === null || (isNan(oxygen))) {
+        if (pixel.oxygen === null) {
             pixel.oxygen = 500
         }
 		if (!isEmpty(pixel.x, pixel.y-1, true)) {
@@ -1288,10 +1288,10 @@ elements.gills = {
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
             changePixel(pixel,"rotten_meat");
         }
-        if (pixel.nutrition === null || (isNan(nutrition))) {
+        if (pixel.nutrition === null) {
             pixel.nutrition = 500
         }
-        if (pixel.oxygen === null || (isNan(oxygen))) {
+        if (pixel.oxygen === null) {
             pixel.oxygen = 500
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
@@ -1436,10 +1436,10 @@ elements.stomach_lining = {
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
             changePixel(pixel,"rotten_meat");
         }
-        if (pixel.nutrition === null || (isNan(nutrition))) {
+        if (pixel.nutrition === null) {
             pixel.nutrition = 500
         }
-        if (pixel.oxygen === null || (isNan(oxygen))) {
+        if (pixel.oxygen === null) {
             pixel.oxygen = 500
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
@@ -1533,10 +1533,10 @@ elements.stomach_valve = {
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
             changePixel(pixel,"rotten_meat");
         }
-        if (pixel.nutrition === null || (isNan(nutrition))) {
+        if (pixel.nutrition === null) {
             pixel.nutrition = 500
         }
-        if (pixel.oxygen === null || (isNan(oxygen))) {
+        if (pixel.oxygen === null) {
             pixel.oxygen = 500
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
@@ -1635,10 +1635,10 @@ elements.sphincter = {
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
             changePixel(pixel,"rotten_meat");
         }
-        if (pixel.nutrition === null || (isNan(nutrition))) {
+        if (pixel.nutrition === null) {
             pixel.nutrition = 500
         }
-        if (pixel.oxygen === null || (isNan(oxygen))) {
+        if (pixel.oxygen === null) {
             pixel.oxygen = 500
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
@@ -1915,10 +1915,10 @@ elements.real_bone = {
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
             changePixel(pixel,"bone");
         }
-        if (pixel.nutrition === null || (isNan(nutrition))) {
+        if (pixel.nutrition === null) {
             pixel.nutrition = 500
         }
-        if (pixel.oxygen === null || (isNan(oxygen))) {
+        if (pixel.oxygen === null) {
             pixel.oxygen = 500
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
@@ -1995,10 +1995,10 @@ elements.cerebrospinal_fluid = {
     color: "#CBC3E3",
     behavior: behaviors.LIQUID,
     tick: function(pixel) {
-        if (pixel.nutrition === null || (isNan(nutrition))) {
+        if (pixel.nutrition === null) {
             pixel.nutrition = 500
         }
-        if (pixel.oxygen === null || (isNan(oxygen))) {
+        if (pixel.oxygen === null) {
             pixel.oxygen = 500
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
