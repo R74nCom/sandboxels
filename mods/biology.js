@@ -31,7 +31,12 @@ elements.real_skin = {
             pixel.oxygen--
         }
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
-            changePixel(pixel,["rotten_meat","dust","dust","dust"]);
+            if (Math.random() < 0.75) {
+                changePixel(pixel,"dust"); 
+            }
+            else {
+                changePixel(pixel,"rotten_meat"); 
+            }
         }
         if (pixel.nutrition === null) {
             pixel.nutrition = 1000
@@ -106,6 +111,7 @@ elements.real_skin = {
     forceSaveColor: true,
 	reactions: {
 		"cancer": { elem1:"cancer", chance:0.0005 },
+        "radiation": { elem1:["ash","meat","rotten_meat","cooked_meat","flesh"], chance:0.2 },
 	},
 	properties: {
         oxygen: 1000,
@@ -201,7 +207,8 @@ elements.flesh = {
     burnInto: "cooked_meat",
     breakInto: ["blood","meat"],
 	reactions: {
-		"cancer": { elem1:"cancer", chance:0.0005 },
+        "cancer": { elem1:"cancer", chance:0.0005 },
+        "radiation": { elem1:["ash","blood","fat","meat","rotten_meat","cooked_meat"], chance:0.4 },
 	},
 	properties: {
         oxygen: 1000,
@@ -369,6 +376,7 @@ elements.eye = {
     forceSaveColor: true,
 	reactions: {
 		"cancer": { elem1:"cancer", chance:0.0005 },
+        "radiation": { elem1:["ash","steam","salt","ash","steam","salt","meat","rotten_meat","cooked_meat","flesh"], chance:0.5 },
 	},
 	properties: {
         oxygen: 1000,
@@ -509,6 +517,7 @@ elements.brain = {
     forceSaveColor: true,
 	reactions: {
 		"cancer": { elem1:"cancer", chance:0.0005 },
+        "radiation": { elem1:["ash","steam","salt","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 },
 	},
 	properties: {
         oxygen: 1000,
@@ -611,6 +620,7 @@ elements.amygdala = {
     forceSaveColor: true,
 	reactions: {
 		"cancer": { elem1:"cancer", chance:0.0005 },
+        "radiation": { elem1:["ash","steam","salt","ash","steam","salt","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 },
 	},
 	properties: {
         oxygen: 1000,
@@ -708,6 +718,7 @@ elements.eye_nerve = {
     forceSaveColor: true,
 	reactions: {
 		"cancer": { elem1:"cancer", chance:0.0005 },
+        "radiation": { elem1:["ash","steam","salt","ash","steam","salt","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 },
 	},
 	properties: {
         oxygen: 1000,
@@ -805,6 +816,7 @@ elements.nerve = {
     forceSaveColor: true,
 	reactions: {
 		"cancer": { elem1:"cancer", chance:0.0005 },
+        "radiation": { elem1:["ash","steam","salt","ash","steam","salt","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 },
 	},
 	properties: {
         oxygen: 1000,
@@ -906,6 +918,7 @@ elements.throat_lining = {
     forceSaveColor: true,
 	reactions: {
 		"cancer": { elem1:"cancer", chance:0.0005 },
+        "radiation": { elem1:["ash","slime","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 },
 	},
 	properties: {
         oxygen: 1000,
@@ -1025,6 +1038,7 @@ elements.intestines = {
     forceSaveColor: true,
 	reactions: {
 		"cancer": { elem1:"cancer", chance:0.0005 },
+        "radiation": { elem1:["ash","steam","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 },
 	},
 	properties: {
         oxygen: 1000,
@@ -1146,6 +1160,7 @@ elements.lungs = {
     forceSaveColor: true,
 	reactions: {
 		"cancer": { elem1:"cancer", chance:0.0005 },
+        "radiation": { elem1:["ash","carbon_dioxide","meat","rotten_meat","cooked_meat","flesh","ash","carbon_dioxide","meat","rotten_meat","cooked_meat","flesh","ash","oxygen","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 },
 	},
 	properties: {
         oxygen: 1000,
@@ -1247,6 +1262,7 @@ elements.stomach_lining = {
     forceSaveColor: true,
 	reactions: {
 		"cancer": { elem1:"cancer", chance:0.0005 },
+        "radiation": { elem1:["ash","steam","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 },
 	},
 	properties: {
         oxygen: 1000,
@@ -1348,6 +1364,7 @@ elements.stomach_valve = {
     forceSaveColor: true,
 	reactions: {
 		"cancer": { elem1:"cancer", chance:0.0005 },
+        "radiation": { elem1:["ash","steam","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 },
 	},
 	properties: {
         oxygen: 1000,
@@ -1449,6 +1466,7 @@ elements.sphincter = {
     forceSaveColor: true,
 	reactions: {
 		"cancer": { elem1:"cancer", chance:0.0005 },
+        "radiation": { elem1:["ash","steam","poop","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 },
 	},
 	properties: {
         oxygen: 1000,
@@ -1793,6 +1811,8 @@ elements.cerebrospinal_fluid = {
 
 if (!elements.cancer.reactions) { elements.cancer.reactions = {} }
 elements.cancer.reactions.flesh = { "elem2": cancer, chance:0.005 };
+elements.cancer.reactions.real_skin = { "elem2": cancer, chance:0.0001 };
+elements.cancer.reactions.real_bone = { "elem2": ["bone","bone","cancer"], chance:0.0001 };
 elements.cancer.reactions.lungs = { "elem2": cancer, chance:0.005 };
 elements.cancer.reactions.brain = { "elem2": cancer, chance:0.005 };
 elements.cancer.reactions.nerve = { "elem2": cancer, chance:0.005 };
@@ -1804,3 +1824,67 @@ elements.cancer.reactions.intestines = { "elem2": cancer, chance:0.005 };
 elements.cancer.reactions.stomach_valve = { "elem2": cancer, chance:0.005 };
 elements.cancer.reactions.stomach_lining = { "elem2": cancer, chance:0.005 };
 elements.cancer.reactions.throat_lining = { "elem2": cancer, chance:0.005 };
+
+if (!elements.uranium.reactions) { elements.uranium.reactions = {} }
+elements.uranium.reactions.flesh = { "elem2": ["ash","blood","fat","meat","rotten_meat","cooked_meat"], chance:0.5 };
+elements.uranium.reactions.real_skin = { "elem2": ["cooked_meat","cancer","ash","skin","hair"], chance:0.1 };
+elements.uranium.reactions.real_bone = { "elem2": ["bone","bone","radiation"], chance:0.01 };
+elements.uranium.reactions.lungs = { "elem2": ["ash","carbon_dioxide","meat","rotten_meat","cooked_meat","flesh","ash","carbon_dioxide","meat","rotten_meat","cooked_meat","flesh","ash","oxygen","meat","rotten_meat","cooked_meat","flesh"], chance:0.5 };
+elements.uranium.reactions.brain = { "elem2": ["ash","steam","salt","meat","rotten_meat","cooked_meat","flesh","cerebrospinal_fluid"], chance:0.5 };
+elements.uranium.reactions.amygdala = { "elem2": ["ash","steam","salt","ash","steam","salt","meat","rotten_meat","cooked_meat","flesh"], chance:0.5 };
+elements.uranium.reactions.nerve = { "elem2": ["ash","steam","salt","ash","steam","salt","meat","rotten_meat","cooked_meat","flesh"], chance:0.5 };
+elements.uranium.reactions.eye_nerve = { "elem2": ["ash","steam","salt","ash","steam","salt","meat","rotten_meat","cooked_meat","flesh"], chance:0.5 };
+elements.uranium.reactions.eye = { "elem2": ["ash","steam","salt","ash","steam","salt","meat","rotten_meat","cooked_meat","flesh"], chance:0.5 };
+elements.uranium.reactions.sphincter = { "elem2": ["ash","steam","poop","meat","rotten_meat","cooked_meat","flesh"], chance:0.5 };
+elements.uranium.reactions.intestines = { "elem2": ["ash","steam","meat","rotten_meat","cooked_meat","flesh","ash","steam","meat","rotten_meat","cooked_meat","flesh","poop"], chance:0.5 };
+elements.uranium.reactions.stomach_valve = { "elem2": ["ash","steam","meat","rotten_meat","cooked_meat","flesh"], chance:0.5 };
+elements.uranium.reactions.stomach_lining = { "elem2": ["ash","steam","meat","rotten_meat","cooked_meat","flesh"], chance:0.5 };
+elements.uranium.reactions.throat_lining = { "elem2": ["ash","slime","meat","rotten_meat","cooked_meat","flesh"], chance:0.5 };
+
+if (!elements.radiation.reactions) { elements.radiation.reactions = {} }
+elements.radiation.reactions.flesh = { "elem2": ["ash","blood","fat","meat","rotten_meat","cooked_meat","cancer","cancer"], chance:0.4 };
+elements.radiation.reactions.real_skin = { "elem2": ["cooked_meat","cancer","ash","skin","hair"], chance:0.1 };
+elements.radiation.reactions.real_bone = { "elem2": ["bone","bone","radiation"], chance:0.01 };
+elements.radiation.reactions.lungs = { "elem2": ["cancer","ash","carbon_dioxide","meat","rotten_meat","cooked_meat","flesh","ash","carbon_dioxide","meat","rotten_meat","cooked_meat","flesh","ash","oxygen","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 };
+elements.radiation.reactions.brain = { "elem2": ["cancer","ash","steam","salt","meat","rotten_meat","cooked_meat","flesh","cerebrospinal_fluid"], chance:0.4 };
+elements.radiation.reactions.amygdala = { "elem2": ["cancer","ash","steam","salt","ash","steam","salt","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 };
+elements.radiation.reactions.nerve = { "elem2": ["cancer","ash","steam","salt","ash","steam","salt","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 };
+elements.radiation.reactions.eye_nerve = { "elem2": ["cancer","ash","steam","salt","ash","steam","salt","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 };
+elements.radiation.reactions.eye = { "elem2": ["cancer","ash","steam","salt","ash","steam","salt","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 };
+elements.radiation.reactions.sphincter = { "elem2": ["cancer","ash","steam","poop","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 };
+elements.radiation.reactions.intestines = { "elem2": ["cancer","ash","steam","meat","rotten_meat","cooked_meat","flesh","ash","steam","meat","rotten_meat","cooked_meat","flesh","poop"], chance:0.4 };
+elements.radiation.reactions.stomach_valve = { "elem2": ["cancer","ash","steam","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 };
+elements.radiation.reactions.stomach_lining = { "elem2": ["cancer","ash","steam","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 };
+elements.radiation.reactions.throat_lining = { "elem2": ["cancer","ash","slime","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 };
+
+if (!elements.plague.reactions) { elements.plague.reactions = {} }
+elements.plague.reactions.flesh = { "elem2": ["rotten_meat","plague","fat","meat","rotten_meat","plague","infection","infection"], chance:0.04 };
+elements.plague.reactions.real_skin = { "elem2": ["plague","infection","rotten_meat","skin","hair"], chance:0.1 };
+elements.plague.reactions.real_bone = { "elem2": ["bone","bone","infection","plague"], chance:0.01 };
+elements.plague.reactions.lungs = { "elem2": ["infection","rotten_meat","carbon_dioxide","meat","rotten_meat","plague","flesh","rotten_meat","carbon_dioxide","meat","rotten_meat","plague","flesh","rotten_meat","oxygen","meat","rotten_meat","plague","flesh"], chance:0.04 };
+elements.plague.reactions.brain = { "elem2": ["infection","rotten_meat","steam","salt","meat","rotten_meat","plague","flesh","cerebrospinal_fluid"], chance:0.04 };
+elements.plague.reactions.amygdala = { "elem2": ["infection","rotten_meat","steam","salt","rotten_meat","steam","salt","meat","rotten_meat","plague","flesh"], chance:0.04 };
+elements.plague.reactions.nerve = { "elem2": ["infection","rotten_meat","steam","salt","rotten_meat","steam","salt","meat","rotten_meat","plague","flesh"], chance:0.04 };
+elements.plague.reactions.eye_nerve = { "elem2": ["infection","rotten_meat","steam","salt","rotten_meat","steam","salt","meat","rotten_meat","plague","flesh"], chance:0.04 };
+elements.plague.reactions.eye = { "elem2": ["infection","rotten_meat","steam","salt","rotten_meat","steam","salt","meat","rotten_meat","plague","flesh"], chance:0.04 };
+elements.plague.reactions.sphincter = { "elem2": ["infection","rotten_meat","steam","poop","meat","rotten_meat","plague","flesh"], chance:0.04 };
+elements.plague.reactions.intestines = { "elem2": ["infection","rotten_meat","steam","meat","rotten_meat","plague","flesh","rotten_meat","steam","meat","rotten_meat","plague","flesh","poop"], chance:0.04 };
+elements.plague.reactions.stomach_valve = { "elem2": ["infection","rotten_meat","steam","meat","rotten_meat","plague","flesh"], chance:0.04 };
+elements.plague.reactions.stomach_lining = { "elem2": ["infection","rotten_meat","steam","meat","rotten_meat","plague","flesh"], chance:0.04 };
+elements.plague.reactions.throat_lining = { "elem2": ["infection","rotten_meat","slime","meat","rotten_meat","plague","flesh"], chance:0.04 };
+
+if (!elements.infection.reactions) { elements.infection.reactions = {} }
+elements.infection.reactions.flesh = { "elem2": ["rotten_meat","infection","fat","meat","rotten_meat","infection","infection","infection"], chance:0.04 };
+elements.infection.reactions.real_skin = { "elem2": ["infection","infection","rotten_meat","skin","hair"], chance:0.1 };
+elements.infection.reactions.real_bone = { "elem2": ["bone","bone","infection","infection"], chance:0.01 };
+elements.infection.reactions.lungs = { "elem2": ["infection","rotten_meat","carbon_dioxide","meat","rotten_meat","infection","flesh","rotten_meat","carbon_dioxide","meat","rotten_meat","infection","flesh","rotten_meat","oxygen","meat","rotten_meat","infection","flesh"], chance:0.04 };
+elements.infection.reactions.brain = { "elem2": ["infection","rotten_meat","steam","salt","meat","rotten_meat","infection","flesh","cerebrospinal_fluid"], chance:0.04 };
+elements.infection.reactions.amygdala = { "elem2": ["infection","rotten_meat","steam","salt","rotten_meat","steam","salt","meat","rotten_meat","infection","flesh"], chance:0.04 };
+elements.infection.reactions.nerve = { "elem2": ["infection","rotten_meat","steam","salt","rotten_meat","steam","salt","meat","rotten_meat","infection","flesh"], chance:0.04 };
+elements.infection.reactions.eye_nerve = { "elem2": ["infection","rotten_meat","steam","salt","rotten_meat","steam","salt","meat","rotten_meat","infection","flesh"], chance:0.04 };
+elements.infection.reactions.eye = { "elem2": ["infection","rotten_meat","steam","salt","rotten_meat","steam","salt","meat","rotten_meat","infection","flesh"], chance:0.04 };
+elements.infection.reactions.sphincter = { "elem2": ["infection","rotten_meat","steam","poop","meat","rotten_meat","infection","flesh"], chance:0.04 };
+elements.infection.reactions.intestines = { "elem2": ["infection","rotten_meat","steam","meat","rotten_meat","infection","flesh","rotten_meat","steam","meat","rotten_meat","infection","flesh","poop"], chance:0.04 };
+elements.infection.reactions.stomach_valve = { "elem2": ["infection","rotten_meat","steam","meat","rotten_meat","infection","flesh"], chance:0.04 };
+elements.infection.reactions.stomach_lining = { "elem2": ["infection","rotten_meat","steam","meat","rotten_meat","infection","flesh"], chance:0.04 };
+elements.infection.reactions.throat_lining = { "elem2": ["infection","rotten_meat","slime","meat","rotten_meat","infection","flesh"], chance:0.04 };
