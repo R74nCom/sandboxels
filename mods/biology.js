@@ -38,11 +38,11 @@ elements.real_skin = {
                 changePixel(pixel,"rotten_meat"); 
             }
         }
-        if (pixel.nutrition === null) {
-            pixel.nutrition = 1000
+        if (pixel.nutrition === null || (isNan(nutrition))) {
+            pixel.nutrition = 500
         }
-        if (pixel.oxygen === null) {
-            pixel.oxygen = 1000
+        if (pixel.oxygen === null || (isNan(oxygen))) {
+            pixel.oxygen = 500
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
             var hitPixel = pixelMap[pixel.x][pixel.y-1]
@@ -121,6 +121,110 @@ elements.real_skin = {
     movable: false,
 }
 
+elements.scales = {
+	color: "#6b839a",
+	category: "biology",
+    behavior: behaviors.WALL,
+    hoverStat: function(pixel) {
+        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+    },
+    tick: function(pixel) {
+        if (pixel.temp > 40 && Math.random() < 0.1) {
+            pixel.temp -= 1;
+        }
+        doDefaults(pixel);
+        if (Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) {
+            pixel.nutrition--
+            pixel.oxygen--
+        }
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+            if (Math.random() < 0.1) {
+                changePixel(pixel,"calcium"); 
+            }
+            else {
+                changePixel(pixel,"dust"); 
+            }
+        }
+        if (pixel.nutrition === null || (isNan(nutrition))) {
+            pixel.nutrition = 500
+        }
+        if (pixel.oxygen === null || (isNan(oxygen))) {
+            pixel.oxygen = 500
+        }
+        if (!isEmpty(pixel.x, pixel.y-1, true)) {
+            var hitPixel = pixelMap[pixel.x][pixel.y-1]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+            }
+        }
+        if (!isEmpty(pixel.x, pixel.y+1, true)) {
+            var hitPixel = pixelMap[pixel.x][pixel.y+1]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+            }
+        }
+        if (!isEmpty(pixel.x-1, pixel.y, true)) {
+            var hitPixel = pixelMap[pixel.x-1][pixel.y]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+            }
+        }
+        if (!isEmpty(pixel.x+1, pixel.y, true)) {
+            var hitPixel = pixelMap[pixel.x+1][pixel.y]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+            }
+        }
+    },
+    density: 2710,
+    state: "solid",
+    conduct: .05,
+    tempHigh: 210,
+    stateHigh: "cooked_meat",
+    tempLow: -25,
+    stateLow: "frozen_meat",
+    breakInto: ["blood","meat"],
+    forceSaveColor: true,
+	reactions: {
+		"cancer": { elem1:"cancer", chance:0.000075 },
+        "radiation": { elem1:["calcium","calcium","ash","meat","rotten_meat","cooked_meat","skin","real_skin"], chance:0.1 },
+	},
+	properties: {
+        oxygen: 1000,
+        nutrition: 1000,
+    },
+    isBio: true,
+    movable: false,
+}
+
 elements.flesh = {
 	color: ["#9e4839","#ba6449"],
 	category: "biology",
@@ -136,11 +240,11 @@ elements.flesh = {
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
             changePixel(pixel,"rotten_meat");
         }
-        if (pixel.nutrition === null) {
-            pixel.nutrition = 1000
+        if (pixel.nutrition === null || (isNan(nutrition))) {
+            pixel.nutrition = 500
         }
-        if (pixel.oxygen === null) {
-            pixel.oxygen = 1000
+        if (pixel.oxygen === null || (isNan(oxygen))) {
+            pixel.oxygen = 500
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
             var hitPixel = pixelMap[pixel.x][pixel.y-1]
@@ -235,11 +339,11 @@ elements.eye = {
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
             changePixel(pixel,"rotten_meat");
         }
-        if (pixel.nutrition === null) {
-            pixel.nutrition = 1000
+        if (pixel.nutrition === null || (isNan(nutrition))) {
+            pixel.nutrition = 500
         }
-        if (pixel.oxygen === null) {
-            pixel.oxygen = 1000
+        if (pixel.oxygen === null || (isNan(oxygen))) {
+            pixel.oxygen = 500
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
             var hitPixel = pixelMap[pixel.x][pixel.y-1]
@@ -404,11 +508,11 @@ elements.brain = {
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
             changePixel(pixel,"rotten_meat");
         }
-        if (pixel.nutrition === null) {
-            pixel.nutrition = 1000
+        if (pixel.nutrition === null || (isNan(nutrition))) {
+            pixel.nutrition = 500
         }
-        if (pixel.oxygen === null) {
-            pixel.oxygen = 1000
+        if (pixel.oxygen === null || (isNan(oxygen))) {
+            pixel.oxygen = 500
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
             var hitPixel = pixelMap[pixel.x][pixel.y-1]
@@ -545,11 +649,11 @@ elements.amygdala = {
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
             changePixel(pixel,"rotten_meat");
         }
-        if (pixel.nutrition === null) {
-            pixel.nutrition = 1000
+        if (pixel.nutrition === null || (isNan(nutrition))) {
+            pixel.nutrition = 500
         }
-        if (pixel.oxygen === null) {
-            pixel.oxygen = 1000
+        if (pixel.oxygen === null || (isNan(oxygen))) {
+            pixel.oxygen = 500
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
             var hitPixel = pixelMap[pixel.x][pixel.y-1]
@@ -645,11 +749,11 @@ elements.eye_nerve = {
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
             changePixel(pixel,"rotten_meat");
         }
-        if (pixel.nutrition === null) {
-            pixel.nutrition = 1000
+        if (pixel.nutrition === null || (isNan(nutrition))) {
+            pixel.nutrition = 500
         }
-        if (pixel.oxygen === null) {
-            pixel.oxygen = 1000
+        if (pixel.oxygen === null || (isNan(oxygen))) {
+            pixel.oxygen = 500
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
             var hitPixel = pixelMap[pixel.x][pixel.y-1]
@@ -743,11 +847,11 @@ elements.nerve = {
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
             changePixel(pixel,"rotten_meat");
         }
-        if (pixel.nutrition === null) {
-            pixel.nutrition = 1000
+        if (pixel.nutrition === null || (isNan(nutrition))) {
+            pixel.nutrition = 500
         }
-        if (pixel.oxygen === null) {
-            pixel.oxygen = 1000
+        if (pixel.oxygen === null || (isNan(oxygen))) {
+            pixel.oxygen = 500
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
             var hitPixel = pixelMap[pixel.x][pixel.y-1]
@@ -845,11 +949,11 @@ elements.throat_lining = {
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
             changePixel(pixel,"rotten_meat");
         }
-        if (pixel.nutrition === null) {
-            pixel.nutrition = 1000
+        if (pixel.nutrition === null || (isNan(nutrition))) {
+            pixel.nutrition = 500
         }
-        if (pixel.oxygen === null) {
-            pixel.oxygen = 1000
+        if (pixel.oxygen === null || (isNan(oxygen))) {
+            pixel.oxygen = 500
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
             var hitPixel = pixelMap[pixel.x][pixel.y-1]
@@ -943,17 +1047,17 @@ elements.intestines = {
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
             changePixel(pixel,"rotten_meat");
         }
-        if (pixel.nutrition === null) {
-            pixel.nutrition = 1000
+        if (pixel.nutrition === null || (isNan(nutrition))) {
+            pixel.nutrition = 500
         }
-        if (pixel.oxygen === null) {
-            pixel.oxygen = 1000
+        if (pixel.oxygen === null || (isNan(oxygen))) {
+            pixel.oxygen = 500
         }
-        if (pixel.nutrition === null) {
-            pixel.nutrition = 1000
+        if (pixel.nutrition === null || (isNan(nutrition))) {
+            pixel.nutrition = 500
         }
-        if (pixel.oxygen === null) {
-            pixel.oxygen = 1000
+        if (pixel.oxygen === null || (isNan(oxygen))) {
+            pixel.oxygen = 500
         }
 		if (!isEmpty(pixel.x, pixel.y-1, true)) {
             var hitPixel = pixelMap[pixel.x][pixel.y-1]
@@ -1063,11 +1167,11 @@ elements.lungs = {
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
             changePixel(pixel,"rotten_meat");
         }
-        if (pixel.nutrition === null) {
-            pixel.nutrition = 1000
+        if (pixel.nutrition === null || (isNan(nutrition))) {
+            pixel.nutrition = 500
         }
-        if (pixel.oxygen === null) {
-            pixel.oxygen = 1000
+        if (pixel.oxygen === null || (isNan(oxygen))) {
+            pixel.oxygen = 500
         }
 		if (!isEmpty(pixel.x, pixel.y-1, true)) {
             var hitPixel = pixelMap[pixel.x][pixel.y-1]
@@ -1170,6 +1274,149 @@ elements.lungs = {
     isBio: true
 }
 
+elements.gills = {
+	color: "#5EBAE3",
+	category: "biology",
+	hoverStat: function(pixel) {
+        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+    },
+    tick: function(pixel) {
+        if (Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) {
+            pixel.nutrition--
+            pixel.oxygen--
+        }
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+            changePixel(pixel,"rotten_meat");
+        }
+        if (pixel.nutrition === null || (isNan(nutrition))) {
+            pixel.nutrition = 500
+        }
+        if (pixel.oxygen === null || (isNan(oxygen))) {
+            pixel.oxygen = 500
+        }
+        if (!isEmpty(pixel.x, pixel.y-1, true)) {
+            var hitPixel = pixelMap[pixel.x][pixel.y-1]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+            }
+            else if (elements[hitPixel.element].id === elements.deoxygenated_water.id && Math.random() > 0.75) {
+                if (isEmpty(pixel.x, pixel.y+1)) {
+                    tryMove(hitPixel,pixel.x,pixel.y+1);
+                }
+            }
+            else if (elements[hitPixel.element].id === elements.water.id && Math.random() > 0.75) {
+                if (isEmpty(pixel.x, pixel.y+1)) {
+                    pixel.oxygen += 100
+                    if (Math.random() > 0.75) {
+                        changePixel(hitPixel,"deoxygenated_water")
+                    }
+                    tryMove(hitPixel,pixel.x,pixel.y+1);
+                }
+            }
+            else if (elements[hitPixel.element].id === elements.salt_water.id && Math.random() > 0.75) {
+                if (isEmpty(pixel.x, pixel.y+1)) {
+                    pixel.oxygen += 90
+                    if (Math.random() > 0.85) {
+                        changePixel(hitPixel,"deoxygenated_water")
+                    }
+                    tryMove(hitPixel,pixel.x,pixel.y+1);
+                }
+            }
+        }
+        if (!isEmpty(pixel.x, pixel.y+1, true)) {
+            var hitPixel = pixelMap[pixel.x][pixel.y+1]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+            }
+        }
+        if (!isEmpty(pixel.x-1, pixel.y, true)) {
+            var hitPixel = pixelMap[pixel.x-1][pixel.y]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+            }
+            else if (elements[hitPixel.element].id === elements.deoxygenated_water.id && Math.random() > 0.75) {
+                if (isEmpty(pixel.x+1, pixel.y)) {
+                    tryMove(hitPixel,pixel.x+1,pixel.y);
+                }
+            }
+            else if (elements[hitPixel.element].id === elements.water.id && Math.random() > 0.75) {
+                if (isEmpty(pixel.x+1, pixel.y)) {
+                    pixel.oxygen += 100
+                    if (Math.random() > 0.75) {
+                        changePixel(hitPixel,"deoxygenated_water")
+                    }
+                    tryMove(hitPixel,pixel.x+1,pixel.y);
+                }
+            }
+            else if (elements[hitPixel.element].id === elements.salt_water.id && Math.random() > 0.75) {
+                if (isEmpty(pixel.x+1, pixel.y)) {
+                    pixel.oxygen += 90
+                    if (Math.random() > 0.85) {
+                        changePixel(hitPixel,"deoxygenated_water")
+                    }
+                    tryMove(hitPixel,pixel.x+1,pixel.y);
+                }
+            }
+        }
+        if (!isEmpty(pixel.x+1, pixel.y, true)) {
+            var hitPixel = pixelMap[pixel.x+1][pixel.y]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+            }
+        }
+    },
+    density: 2710,
+    state: "solid",
+    conduct: .05,
+    tempHigh: 200,
+    stateHigh: "cooked_meat",
+    tempLow: -25,
+    stateLow: "frozen_meat",
+    burn: 10,
+    burnTime: 250,
+    burnInto: "cooked_meat",
+    breakInto: ["blood","meat"],
+    forceSaveColor: true,
+	reactions: {
+		"cancer": { elem1:"cancer", chance:0.0005 },
+        "radiation": { elem1:["ash","steam","oxygen","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 },
+	},
+	properties: {
+        oxygen: 1000,
+        nutrition: 1000,
+    },
+    movable: false,
+    isBio: true
+}
+
 elements.stomach_lining = {
 	color: "#be5c4b",
 	category: "biology",
@@ -1189,11 +1436,11 @@ elements.stomach_lining = {
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
             changePixel(pixel,"rotten_meat");
         }
-        if (pixel.nutrition === null) {
-            pixel.nutrition = 1000
+        if (pixel.nutrition === null || (isNan(nutrition))) {
+            pixel.nutrition = 500
         }
-        if (pixel.oxygen === null) {
-            pixel.oxygen = 1000
+        if (pixel.oxygen === null || (isNan(oxygen))) {
+            pixel.oxygen = 500
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
             var hitPixel = pixelMap[pixel.x][pixel.y-1]
@@ -1286,11 +1533,11 @@ elements.stomach_valve = {
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
             changePixel(pixel,"rotten_meat");
         }
-        if (pixel.nutrition === null) {
-            pixel.nutrition = 1000
+        if (pixel.nutrition === null || (isNan(nutrition))) {
+            pixel.nutrition = 500
         }
-        if (pixel.oxygen === null) {
-            pixel.oxygen = 1000
+        if (pixel.oxygen === null || (isNan(oxygen))) {
+            pixel.oxygen = 500
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
             var hitPixel = pixelMap[pixel.x][pixel.y-1]
@@ -1388,11 +1635,11 @@ elements.sphincter = {
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
             changePixel(pixel,"rotten_meat");
         }
-        if (pixel.nutrition === null) {
-            pixel.nutrition = 1000
+        if (pixel.nutrition === null || (isNan(nutrition))) {
+            pixel.nutrition = 500
         }
-        if (pixel.oxygen === null) {
-            pixel.oxygen = 1000
+        if (pixel.oxygen === null || (isNan(oxygen))) {
+            pixel.oxygen = 500
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
             var hitPixel = pixelMap[pixel.x][pixel.y-1]
@@ -1595,6 +1842,59 @@ elements.stomach_acid = {
     stain: -0.1
 }
 
+elements.deoxygenated_water = {
+    color: "#2167ff",
+    behavior: behaviors.LIQUID,
+    tempHigh: 100,
+    stateHigh: "steam",
+    tempLow: 0,
+    stateLow: "ice",
+    category: "liquids",
+    heatCapacity: 4.184,
+    reactions: {
+        "oxygen": { elem1: "water", elem2: null },
+        "dust": { elem1: "dirty_water", elem2: null },
+        "ash": { elem1: "dirty_water", elem2: null },
+        "cyanide": { elem1: "dirty_water", elem2: null },
+        "cyanide_gas": { elem1: "dirty_water", elem2: null },
+        "carbon_dioxide": { elem1: "seltzer", elem2: null, oneway:true },
+        "sulfur": { elem1: "dirty_water", elem2: null },
+        "rat": { elem1: "dirty_water", chance:0.005 },
+        "plague": { elem1: "dirty_water", elem2: null },
+        "rust": { elem1: "dirty_water", chance:0.005 },
+        "lead": { elem1: "dirty_water", chance:0.005 },
+        "solder": { elem1: "dirty_water", chance:0.005 },
+        "fallout": { elem1: "dirty_water", chance:0.25 },
+        "radiation": { elem1: "dirty_water", chance:0.25 },
+        "uranium": { elem1: "dirty_water", chance:0.25 },
+        "rad_steam": { elem1: "dirty_water", chance:0.02 },
+        "rad_glass": { elem1: "dirty_water", chance:0.005 },
+        "rad_shard": { elem1: "dirty_water", chance:0.01 },
+        "rotten_meat": { elem1: "dirty_water", chance:0.25 },
+        "rotten_cheese": { elem1: "dirty_water", chance:0.25 },
+        "cancer": { elem1: "dirty_water", chance:0.25 },
+        "oil": { elem1: "dirty_water", chance:0.005 },
+        "dioxin": { elem1: "dirty_water", chance:0.1 },
+        "rock": { elem2: "wet_sand", chance: 0.00035 },
+        "limestone": { elem2: "wet_sand", chance: 0.00035 },
+        "tuff": { elem2: "wet_sand", color2:"#7a6b5c", chance: 0.00035 },
+        "ruins": { elem2: "rock", chance: 0.00035 },
+        "mudstone": { elem2: "mud", chance: 0.00035 },
+        "fly": { elem2:"dead_bug", chance:0.1, oneway:true },
+        "firefly": { elem2:"dead_bug", chance:0.1, oneway:true },
+        "bee": { elem2:"dead_bug", chance:0.05, oneway:true },
+        "stink_bug": { elem2:"dead_bug", chance:0.1, oneway:true },
+        "cured_meat": { elem1:"salt_water", elem2:"meat" },
+        "water": { elem1:"water", elem2:"bubble", attr2:{"clone":"water"}, chance:0.001 },
+        "deoxygenated_water": { elem2:"bubble", attr2:{"clone":"water"}, chance:0.001, tempMin:85 },
+    },
+    state: "liquid",
+    density: 997,
+    conduct: 0.02,
+    stain: -0.5,
+    extinguish: true
+}
+
 elements.real_bone = {
     color: "#d9d9d9",
     behavior: behaviors.WALL,
@@ -1615,11 +1915,11 @@ elements.real_bone = {
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
             changePixel(pixel,"bone");
         }
-        if (pixel.nutrition === null) {
-            pixel.nutrition = 1000
+        if (pixel.nutrition === null || (isNan(nutrition))) {
+            pixel.nutrition = 500
         }
-        if (pixel.oxygen === null) {
-            pixel.oxygen = 1000
+        if (pixel.oxygen === null || (isNan(oxygen))) {
+            pixel.oxygen = 500
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
             var hitPixel = pixelMap[pixel.x][pixel.y-1]
@@ -1695,11 +1995,11 @@ elements.cerebrospinal_fluid = {
     color: "#CBC3E3",
     behavior: behaviors.LIQUID,
     tick: function(pixel) {
-        if (pixel.nutrition === null) {
-            pixel.nutrition = 1000
+        if (pixel.nutrition === null || (isNan(nutrition))) {
+            pixel.nutrition = 500
         }
-        if (pixel.oxygen === null) {
-            pixel.oxygen = 1000
+        if (pixel.oxygen === null || (isNan(oxygen))) {
+            pixel.oxygen = 500
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
             var hitPixel = pixelMap[pixel.x][pixel.y-1]
@@ -1757,7 +2057,7 @@ elements.cerebrospinal_fluid = {
     tempHigh: 102,
     stateHigh: ["steam","salt"],
     tempLow: -5,
-    category: "liquids",
+    category: "biology",
     reactions: {
         "dust": { elem1: "dirty_water", elem2: null },
         "ash": { elem1: "dirty_water", elem2: null },
