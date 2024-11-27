@@ -1,3 +1,5 @@
+// by Nekonico
+
 viewInfo[4] = { // Nutrition View
     name: "nutr",
     pixel: function(pixel,ctx) {
@@ -908,8 +910,8 @@ elements.acid_vessel = {
     isBio: true,
 }
 
-elements.blood_vessel = {
-    color: "#c72114",
+elements.heart = {
+    color: ["#98002e","#532e63","#6f1200","#551900"],
     behavior: [
         "XX|XX|XX",
         "XX|XX|XX",
@@ -943,6 +945,9 @@ elements.blood_vessel = {
                     hitPixel.nutrition += 20
                     pixel.nutrition -= 20
                 }
+                if (elements[hitPixel.element].isBlood === true && hitPixel.heartAttached === false && Math.random() > 0.5) {
+                    hitPixel.heartAttached = true
+                }
             }
         }
         else if (isEmpty(pixel.x, pixel.y-1) && Math.random() > 0.75) {
@@ -962,6 +967,9 @@ elements.blood_vessel = {
                 if (hitPixel.nutrition < pixel.nutrition) {
                     hitPixel.nutrition += 20
                     pixel.nutrition -= 20
+                }
+                if (elements[hitPixel.element].isBlood === true && hitPixel.heartAttached === false && Math.random() > 0.5) {
+                    hitPixel.heartAttached = true
                 }
             }
         }
@@ -983,6 +991,9 @@ elements.blood_vessel = {
                     hitPixel.nutrition += 20
                     pixel.nutrition -= 20
                 }
+                if (elements[hitPixel.element].isBlood === true && hitPixel.heartAttached === false && Math.random() > 0.5) {
+                    hitPixel.heartAttached = true
+                }
             }
         }
         else if (isEmpty(pixel.x-1, pixel.y) && Math.random() > 0.75) {
@@ -1002,6 +1013,9 @@ elements.blood_vessel = {
                 if (hitPixel.nutrition < pixel.nutrition) {
                     hitPixel.nutrition += 20
                     pixel.nutrition -= 20
+                }
+                if (elements[hitPixel.element].isBlood === true && hitPixel.heartAttached === false && Math.random() > 0.5) {
+                    hitPixel.heartAttached = true
                 }
             }
         }
@@ -1031,6 +1045,312 @@ elements.blood_vessel = {
     conduct: 0.1,
     movable: false,
     isBio: true,
+}
+
+elements.blood_vessel = {
+    color: "#c72114",
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "XX|XX|XX",
+    ],
+    hoverStat: function(pixel) {
+        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+    },
+    tick: function(pixel) {
+        if (Math.random() > 0.975 && pixel.nutrition > 0 && pixel.oxygen > 0) {
+            pixel.nutrition--
+            pixel.oxygen--
+        }
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+            changePixel(pixel,"blood");
+        }
+        if (pixel.nutrition === null || isNaN(pixel.nutrition)) {
+            pixel.nutrition = 500
+        }
+        if (pixel.oxygen === null || isNaN(pixel.oxygen)) {
+            pixel.oxygen = 500
+        }
+        if (!isEmpty(pixel.x, pixel.y-1, true)) {
+            var hitPixel = pixelMap[pixel.x][pixel.y-1]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    if (pixel.heartAttached === true) {
+                        hitPixel.oxygen += 35
+                        pixel.oxygen -= 34
+                    }
+                    else {
+                        hitPixel.oxygen += 25
+                        pixel.oxygen -= 25
+                    }
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    if (pixel.heartAttached === true) {
+                        hitPixel.nutrition += 30
+                        pixel.nutrition -= 29
+                    }
+                    else {
+                        hitPixel.nutrition += 20
+                        pixel.nutrition -= 20
+                    }
+                }
+                if (elements[hitPixel.element].isBlood === true && pixel.heartAttached === true && hitPixel.heartAttached === false && Math.random() > 0.5) {
+                    hitPixel.heartAttached = true
+                }
+            }
+        }
+        else if (isEmpty(pixel.x, pixel.y-1) && Math.random() > 0.75) {
+            if (Math.random() > 0.95) {
+                createPixel("blood",pixel.x,pixel.y-1)
+            }
+            pixel.oxygen -= 50
+            pixel.nutrition -= 50
+        }
+        if (!isEmpty(pixel.x, pixel.y+1, true)) {
+            var hitPixel = pixelMap[pixel.x][pixel.y+1]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    if (pixel.heartAttached === true) {
+                        hitPixel.oxygen += 35
+                        pixel.oxygen -= 35
+                    }
+                    else {
+                        hitPixel.oxygen += 25
+                        pixel.oxygen -= 25
+                    }
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    if (pixel.heartAttached === true) {
+                        hitPixel.nutrition += 30
+                        pixel.nutrition -= 30
+                    }
+                    else {
+                        hitPixel.nutrition += 20
+                        pixel.nutrition -= 20
+                    }
+                }
+                if (elements[hitPixel.element].isBlood === true && pixel.heartAttached === true && hitPixel.heartAttached === false && Math.random() > 0.5) {
+                    hitPixel.heartAttached = true
+                }
+            }
+        }
+        else if (isEmpty(pixel.x, pixel.y+1) && Math.random() > 0.75) {
+            if (Math.random() > 0.95) {
+                createPixel("blood",pixel.x,pixel.y+1)
+            }
+            pixel.oxygen -= 50
+            pixel.nutrition -= 50
+        }
+        if (!isEmpty(pixel.x-1, pixel.y, true)) {
+            var hitPixel = pixelMap[pixel.x-1][pixel.y]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    if (pixel.heartAttached === true) {
+                        hitPixel.oxygen += 35
+                        pixel.oxygen -= 35
+                    }
+                    else {
+                        hitPixel.oxygen += 25
+                        pixel.oxygen -= 25
+                    }
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    if (pixel.heartAttached === true) {
+                        hitPixel.nutrition += 30
+                        pixel.nutrition -= 30
+                    }
+                    else {
+                        hitPixel.nutrition += 20
+                        pixel.nutrition -= 20
+                    }
+                }
+                if (elements[hitPixel.element].isBlood === true && pixel.heartAttached === true && hitPixel.heartAttached === false && Math.random() > 0.5) {
+                    hitPixel.heartAttached = true
+                }
+            }
+        }
+        else if (isEmpty(pixel.x-1, pixel.y) && Math.random() > 0.75) {
+            if (Math.random() > 0.95) {
+                createPixel("blood",pixel.x-1,pixel.y)
+            }
+            pixel.oxygen -= 50
+            pixel.nutrition -= 50
+        }
+        if (!isEmpty(pixel.x+1, pixel.y, true)) {
+            var hitPixel = pixelMap[pixel.x+1][pixel.y]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    if (pixel.heartAttached === true) {
+                        hitPixel.oxygen += 35
+                        pixel.oxygen -= 35
+                    }
+                    else {
+                        hitPixel.oxygen += 25
+                        pixel.oxygen -= 25
+                    }
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    if (pixel.heartAttached === true) {
+                        hitPixel.nutrition += 30
+                        pixel.nutrition -= 30
+                    }
+                    else {
+                        hitPixel.nutrition += 20
+                        pixel.nutrition -= 20
+                    }
+                }
+                if (elements[hitPixel.element].isBlood === true && pixel.heartAttached === true && hitPixel.heartAttached === false && Math.random() > 0.5) {
+                    hitPixel.heartAttached = true
+                }
+            }
+        }
+        else if (isEmpty(pixel.x+1, pixel.y) && Math.random() > 0.75) {
+            if (Math.random() > 0.95) {
+                createPixel("blood",pixel.x+1,pixel.y)
+            }
+            pixel.oxygen -= 50
+            pixel.nutrition -= 50
+        }
+    },
+    properties: {
+        oxygen: 1000,
+        nutrition: 1000,
+        heartAttached: false,
+    },
+    tempHigh: 175,
+    stateHigh: "meat",
+    tempLow: -50,
+    stateLow: "frozen_meat",
+    burn: 20,
+    burnTime: 60,
+    burnInto: "meat",
+    breakInto: "blood",
+    category: "biology",
+    state: "solid",
+    density: 1250,
+    conduct: 0.1,
+    movable: false,
+    isBio: true,
+    isBlood: true,
+}
+
+elements.white_blood_cell = {
+    color: "#F5D7D4",
+    behavior: [
+        "XX|SW:blood,blood_vessel%1|XX",
+        "SW:blood,blood_vessel%1 AND M2%10|XX|SW:blood,blood_vessel%1 AND M2%10",
+        "M2|SW:blood,blood_vessel%1 AND M1|M2",
+    ],
+    hoverStat: function(pixel) {
+        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+    },
+    tick: function(pixel) {
+        if (Math.random() > 0.975 && pixel.nutrition > 0 && pixel.oxygen > 0) {
+            pixel.nutrition--
+            pixel.oxygen -= 2
+        }
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+            changePixel(pixel,"blood");
+        }
+        if (pixel.nutrition === null || isNaN(pixel.nutrition)) {
+            pixel.nutrition = 500
+        }
+        if (pixel.oxygen === null || isNaN(pixel.oxygen)) {
+            pixel.oxygen = 500
+        }
+        if (!isEmpty(pixel.x, pixel.y-1, true)) {
+            var hitPixel = pixelMap[pixel.x][pixel.y-1]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 25
+                    pixel.oxygen -= 25
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 20
+                    pixel.nutrition -= 20
+                }
+                if (elements[hitPixel.element].isBlood === true && pixel.heartAttached === true && hitPixel.heartAttached === false && Math.random() > 0.5) {
+                    hitPixel.heartAttached = true
+                }
+            }
+        }
+        if (!isEmpty(pixel.x, pixel.y+1, true)) {
+            var hitPixel = pixelMap[pixel.x][pixel.y+1]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 25
+                    pixel.oxygen -= 25
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 20
+                    pixel.nutrition -= 20
+                }
+                if (elements[hitPixel.element].isBlood === true && pixel.heartAttached === true && hitPixel.heartAttached === false && Math.random() > 0.5) {
+                    hitPixel.heartAttached = true
+                }
+            }
+        }
+        if (!isEmpty(pixel.x-1, pixel.y, true)) {
+            var hitPixel = pixelMap[pixel.x-1][pixel.y]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 25
+                    pixel.oxygen -= 25
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 20
+                    pixel.nutrition -= 20
+                }
+                if (elements[hitPixel.element].isBlood === true && pixel.heartAttached === true && hitPixel.heartAttached === false && Math.random() > 0.5) {
+                    hitPixel.heartAttached = true
+                }
+            }
+        }
+        if (!isEmpty(pixel.x+1, pixel.y, true)) {
+            var hitPixel = pixelMap[pixel.x+1][pixel.y]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 25
+                    pixel.oxygen -= 25
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 20
+                    pixel.nutrition -= 20
+                }
+                if (elements[hitPixel.element].isBlood === true && pixel.heartAttached === true && hitPixel.heartAttached === false && Math.random() > 0.5) {
+                    hitPixel.heartAttached = true
+                }
+            }
+        }
+    },
+    properties: {
+        oxygen: 1000,
+        nutrition: 1000,
+        heartAttached: false,
+    },
+    reactions: {
+		"cancer": { elem2:"flesh", chance:10  },
+        "infection": { elem2:"blood_vessel", chance:10  },
+        "plague": { elem2:null, chance:10  },
+        "cell": { elem2:"flesh", chance:10 },
+        "rotten_meat": { elem2:"flesh", chance:10 },
+        "meat": { elem2:"flesh", chance:10 },
+	},
+    tempHigh: 175,
+    stateHigh: "meat",
+    tempLow: -50,
+    stateLow: "frozen_meat",
+    burn: 20,
+    burnTime: 60,
+    burnInto: "meat",
+    breakInto: "blood",
+    category: "biology",
+    state: "solid",
+    density: 1250,
+    conduct: 0.1,
+    movable: false,
+    isBio: true,
+    isBlood: true,
 }
 
 elements.eye = {
@@ -1342,7 +1662,7 @@ elements.brain = {
     movable: false,
 }
 
-elements.amygdala = {
+elements.amygdala = { // please please please ignore that i callled it the amygdala imstupid and trided to fix it IM SORGYRY
 	color: ["#B33E93","#B33E93","#f5ced5","#e87b8f"],
 	category: "biology",
     name:"hypothalamus",
@@ -1419,7 +1739,7 @@ elements.amygdala = {
                 }
             }
         }
-        if (pixel.temp > 35) { pixel.temp -= 1; }
+        if (pixel.temp > 30) { pixel.temp -= 1; }
         else if (pixel.temp < 15) { pixel.temp += 1; }
     },
     density: 2710,
@@ -1775,7 +2095,7 @@ elements.intestines = {
             var hitPixel = pixelMap[pixel.x][pixel.y-1]
             if (elements[hitPixel.element].id === elements.digested_material.id && Math.random() > 0.95) {
                 changePixel(hitPixel,"poop");
-                pixel.nutrition += (hitPixel.nutrition / 10)
+                pixel.nutrition += hitPixel.nutrition
             }
             else if (elements[hitPixel.element].isBio === true && Math.random() > 0.25) {
                 if (hitPixel.oxygen < pixel.oxygen) {
@@ -1792,7 +2112,7 @@ elements.intestines = {
             var hitPixel = pixelMap[pixel.x][pixel.y+1]
             if (elements[hitPixel.element].id === elements.digested_material.id && Math.random() > 0.95) {
                 changePixel(hitPixel,"poop");
-                pixel.nutrition += (hitPixel.nutrition / 10)
+                pixel.nutrition += hitPixel.nutrition
             }
             else if (elements[hitPixel.element].isBio === true && Math.random() > 0.25) {
                 if (hitPixel.oxygen < pixel.oxygen) {
@@ -1809,7 +2129,7 @@ elements.intestines = {
             var hitPixel = pixelMap[pixel.x-1][pixel.y]
             if (elements[hitPixel.element].id === elements.digested_material.id && Math.random() > 0.95) {
                 changePixel(hitPixel,"poop");
-                pixel.nutrition += (hitPixel.nutrition / 10)
+                pixel.nutrition += hitPixel.nutrition
             }
             else if (elements[hitPixel.element].isBio === true && Math.random() > 0.25) {
                 if (hitPixel.oxygen < pixel.oxygen) {
@@ -1826,7 +2146,7 @@ elements.intestines = {
             var hitPixel = pixelMap[pixel.x+1][pixel.y]
             if (elements[hitPixel.element].id === elements.digested_material.id && Math.random() > 0.95) {
                 changePixel(hitPixel,"poop");
-                pixel.nutrition += (hitPixel.nutrition / 10)
+                pixel.nutrition += hitPixel.nutrition
             }
             else if (elements[hitPixel.element].isBio === true && Math.random() > 0.25) {
                 if (hitPixel.oxygen < pixel.oxygen) {
