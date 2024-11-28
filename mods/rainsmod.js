@@ -257,7 +257,6 @@ elements.microplastic = {
 	},
 };
 elements.plastic.breakInto = "microplastic";
-
 elements.cellulose.reactions.vinegar = { elem1: "bioplastic", elem2: null, tempMin: 40, chance: 0.1 };
 
 elements.bioplastic = {
@@ -280,15 +279,13 @@ elements.bioplastic_crumbs = {
 	desc: "small pieces of cellulose acetate"
 };
 
-elements.worm.reactions.bioplastic = { elem2: ["carbon_dioxide", null, null], chance: 0.05, func: behaviors.FEEDPIXEL };
-elements.worm.reactions.bioplastic_crumbs = { elem2: ["carbon_dioxide", null, null], chance: 0.05, func: behaviors.FEEDPIXEL };
+elements.worm.reactions.bioplastic = { elem2: ["carbon_dioxide", null, null, null], chance: 0.05, func: behaviors.FEEDPIXEL };
+elements.worm.reactions.bioplastic_crumbs = { elem2: ["carbon_dioxide", null, null, null], chance: 0.05, func: behaviors.FEEDPIXEL };
 elements.worm.behavior = [
 	"SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil,water,salt_water,dirty_water,primordial_soup,blood,infection,color_sand,bioplastic%3|XX|SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil,water,salt_water,dirty_water,primordial_soup,blood,infection,color_sand,bioplastic,bioplastic_crumbs%3",
 	"M2%10|XX|M2%10",
 	"SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil,water,salt_water,dirty_water,primordial_soup,blood,infection,color_sand,bioplastic%3|M1|SW:dirt,sand,gravel,ash,mycelium,mud,wet_sand,clay_soil,water,salt_water,dirty_water,primordial_soup,blood,infection,color_sand,bioplastic,bioplastic_crumbs%3",
 ];
-elements.cell.reactions.bioplastic = { elem2: ["carbon_dioxide", null, null], chance: 0.02, func: behaviors.FEEDPIXEL };
-elements.cell.reactions.bioplastic_crumbs = { elem2: ["carbon_dioxide", null, null], chance: 0.02, func: behaviors.FEEDPIXEL };
 
 elements.molten_bioplastic = {
 	color: "#ccccac",
@@ -298,7 +295,7 @@ elements.molten_bioplastic = {
 	state: "liquid",
 	tempLow: 210,
 	stateLow: "bioplastic",
-	temp: 227,
+	temp: 230,
 	density: 1300,
 	hidden: true,
 };
@@ -317,6 +314,7 @@ elements.glycerol = {
 	burn: 5,
 	burnTime: 40,
 };
+elements.hydrogen.reactions.sugar = { elem1: "glycerol", elem2: [null, null, null, null, "dirty_water", "alcohol"], tempMin: 120 } // hydrogenation of sugar with possible byproducts
 
 elements.nitro.tempHigh = 218; // More accurate detonation temperature
 elements.salt_water.tempLow = -20; // Melting point depression
