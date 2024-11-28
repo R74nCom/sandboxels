@@ -52,7 +52,7 @@ elements.tram = {
 	density: 10000,
 	state: "solid",
 	tempHigh: 400,
-	stateHigh: ["molten_aluminum", "molten_plastic", "glass"],
+	stateHigh: ["aluminum", "molten_plastic", "glass"],
 	breakInto: ["aluminum", "plastic", "glass_shard"],
 	desc: "Powered by electricity. Can hang on conductive materials for suspension railway and can transport people",
 	reactions: {
@@ -236,7 +236,7 @@ elements.bouncy_ball = {
 
     }
 };
-elements.borax.reactions.slime = { elem1: "bouncy_ball", elem2: null };
+elements.borax.reactions.glue = { elem1: "bouncy_ball", elem2: null, chance: 0.1 };
 
 
 elements.microplastic = {
@@ -263,6 +263,7 @@ elements.bioplastic = {
 	color: "#eee093",
 	behavior: behaviors.WALL,
 	category: "solids",
+	state: "solid",
 	tempHigh: 227,
 	stateHigh: "molten_bioplastic",
 	breakInto: "bioplastic_crumbs",
@@ -274,6 +275,7 @@ elements.bioplastic_crumbs = {
 	hidden: true,
 	behavior: behaviors.POWDER,
 	category: "powders",
+	state: "solid",
 	tempHigh: 227,
 	stateHigh: "molten_bioplastic",
 	desc: "small pieces of cellulose acetate"
@@ -314,7 +316,7 @@ elements.glycerol = {
 	burn: 5,
 	burnTime: 40,
 };
-elements.hydrogen.reactions.sugar = { elem1: "glycerol", elem2: [null, null, null, null, "dirty_water", "alcohol"], tempMin: 120 } // hydrogenation of sugar with possible byproducts
+elements.sugar.reactions.hydrogen = { elem1: "glycerol", elem2: [null, null, null, "dirty_water"], tempMin: 120 } // hydrogenation of sugar with possible byproducts
 
 elements.nitro.tempHigh = 218; // More accurate detonation temperature
 elements.salt_water.tempLow = -20; // Melting point depression
@@ -358,6 +360,8 @@ elements.red_cabbage = {
 	category: "food",
 	isFood: true,
 	desc: "Can be boiled in water to release its natural pH indicator",
+	density: 1300,
+	state: "solid",
 	tempHigh: 300,
 	stateHigh: ["ash", "steam"],
 	reactions: {
