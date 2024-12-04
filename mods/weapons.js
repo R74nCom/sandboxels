@@ -1,3 +1,4 @@
+//weapons.js by Jayd also know as JaydRubies
 elements.tsar_bomba = {
     color: "#524C41",
     behavior: [
