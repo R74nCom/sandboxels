@@ -1,7 +1,7 @@
 // created by sqec
 // coming soon: apartments, small houses
 
-function building_1_segment() {
+function building_1_segment(pixel) {
     if (pixel.foundation = true && pixel.height < pixel.limit) {
         if (isEmpty(pixel.x+1,pixel.y-pixel.height) &&
         isEmpty(pixel.x-1,pixel.y-pixel.height) &&
@@ -27,7 +27,7 @@ function building_1_segment() {
         }
     }
 }
-function clearbase3x5() {
+function clearbase3x5(pixel) {
     if (pixel.clearbase = false && pixel.height < pixel.limit) {
         pixel.clearbase = true
         deletePixel(pixel.x-1,pixel.y)
@@ -46,7 +46,7 @@ function clearbase3x5() {
         deletePixel(pixel.x+2,pixel.y-2)
     }
 }
-function filldirt2x5() {
+function filldirt2x5(pixel) {
     var dirtPixelElem = pixelMap[pixel.x][pixel.y+1];
     if (!isEmpty(pixel.x,pixel.y+1) && !outOfBounds(pixel.x,pixel.y+1)) {
             dirtPixelElem = pixelMap[pixel.x][pixel.y+1].element
@@ -83,7 +83,7 @@ elements.building_1 = {
     color: "#ffc800",
     tick: function(pixel) {
         if (!isEmpty(pixel.x,pixel.y+1)) {
-            clearbase3x5();
+            clearbase3x5(pixel);
             if (isEmpty(pixel.x+1,pixel.y) &&
             isEmpty(pixel.x-1,pixel.y) &&
             isEmpty(pixel.x+2,pixel.y) &&
@@ -98,7 +98,7 @@ elements.building_1 = {
             isEmpty(pixel.x+1,pixel.y-2) &&
             isEmpty(pixel.x-1,pixel.y-2) &&
             isEmpty(pixel.x,pixel.y-2)) {
-                filldirt2x5();
+                filldirt2x5(pixel);
                 movePixel(pixel,pixel.x,pixel.y-1);
                 createPixel("concrete",pixel.x+1,pixel.y+1);
                 createPixel("concrete",pixel.x-1,pixel.y+1);
@@ -120,7 +120,7 @@ elements.building_1 = {
             }
         }
         if (pixel.foundation == true && pixel.height < pixel.limit) {
-            building_1_segment();
+            building_1_segment(pixel);
         }
         else if (pixel.foundation == true && pixel.height >= pixel.limit) {
             pixel.built = true;

@@ -82,6 +82,7 @@ class Type {
 		this.breakInto = undefined;
 		this.properties = undefined;
 		this.maxSize = undefined;
+		this.tool = undefined;
 	}
 
 	setColor(color) {
@@ -238,16 +239,16 @@ function createOther() {
 	Fw.stateHigh = "plasma";
 	Fw.breakInto = "fire";
 	Fw.reactions = {
-        "water": { elem1: "wall", chance: 0.2 },
-        "steam": { elem1: "wall", chance: 0.2 },
-        "carbon_dioxide": { elem1: "wall", chance: 0.2 },
-        "foam": { elem1: "wall", chance: 0.2 },
-        "dirty_water": { elem1: "wall", chance: 0.2 },
-        "salt_water": { elem1: "wall", chance: 0.2 },
-        "sugar_water": { elem1: "wall", chance: 0.2 },
-        "seltzer": { elem1: "wall", chance: 0.2 },
-        "pool_water": { elem1: "wall", chance: 0.2 },
-    },
+		"water": { elem1: "wall", chance: 0.2 },
+		"steam": { elem1: "wall", chance: 0.2 },
+		"carbon_dioxide": { elem1: "wall", chance: 0.2 },
+		"foam": { elem1: "wall", chance: 0.2 },
+		"dirty_water": { elem1: "wall", chance: 0.2 },
+		"salt_water": { elem1: "wall", chance: 0.2 },
+		"sugar_water": { elem1: "wall", chance: 0.2 },
+		"seltzer": { elem1: "wall", chance: 0.2 },
+		"pool_water": { elem1: "wall", chance: 0.2 },
+	},
 	Fw.Add();
 
 	const Nz = new Type("nirmizer");
@@ -267,6 +268,29 @@ function createOther() {
 	Nz.Add();
 }
 
+function createTools() {
+	const Fr = new Type("freeze");
+	Fr.setColor(["#7fcef0", "#b2daeb"]);
+	Fr.behavior = [
+		"CO:100|CO:100|CO:100",
+		"CO:100|CO:100|CO:100",
+		"CO:100|CO:100|CO:100",
+	],
+	Fr.tool = function(pixel) {
+		let value = Math.max(30, pixel.temp / 5);
+		if (shiftDown) value *= 2;
+		pixel.temp -= value;
+		pixelTempCheck(pixel);
+	}
+	Fr.temp = -273;
+	Fr.category = cat.ENERGY;
+	Fr.insulate = true;
+	Fr.canPlace = false;
+	Fr.desc = "Use on pixels to heavily decrease temperature."
+	Fr.Add();
+}
+
 createNirmics();
 createMinerals();
 createOther();
+createTools();

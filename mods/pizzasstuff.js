@@ -1,3 +1,11 @@
+/*addMod("mossstuff.js");
+removeMod("pizzasstuff.js");
+
+reload(); */
+
+alert("THIS MOD IS NO LONGER SUPPORTED!\nThe mod 'pizzasstuff.s' and all of its contents have been moved to mossstuff.js.\nPlease install mossstuff.js to continue getting updates.");
+
+
 elements.freeze_ray = {
 	color: ["#8cf9ff","#5c59ff"],
     tick: function(pixel) {
@@ -67,6 +75,12 @@ elements.beer = {
 	category: "food",
 	state: "solid",
 	hidden: "TRUE",
+    tempHigh: 100,
+    stateHigh: ["fire","steam","steam"],
+    burn:3,
+    burnTime:500,
+    burnInto: ["fire","smoke","smoke","steam","ash"],
+    isFood: true,
 };
 
 elements.root_beer = {
@@ -75,6 +89,12 @@ elements.root_beer = {
 	category: "food",
 	state: "solid",
 	hidden: "TRUE",
+    burn:3,
+    burnTime:500,
+    burnInto: ["fire","smoke","smoke","steam","ash"],
+    tempHigh: 100,
+    stateHigh: ["fire","steam","steam"],
+    isFood: true,
 };
 
 elements.fruit_slushy = {
@@ -86,6 +106,12 @@ elements.fruit_slushy = {
 	category: "food",
 	state: "solid",
 	hidden: "TRUE",
+    tempHigh: 100,
+    stateHigh: ["fire","steam","steam"],
+    burn:3,
+    burnTime:500,
+    burnInto: ["fire","smoke","smoke","steam","ash"],
+    isFood: true,
 };
 
 elements.mold = {
@@ -94,6 +120,11 @@ elements.mold = {
 	category: "food",
 	state: "solid",
 	hidden: "TRUE",
+    tempHigh: 350,
+    stateHigh: ["fire","fire","ash"],
+    burn:3,
+    burnTime:500,
+    burnInto: ["fire","smoke","smoke","steam","ash"],
 };
 
 elements.chocolate_slushy = {
@@ -105,6 +136,12 @@ elements.chocolate_slushy = {
 	category: "food",
 	state: "solid",
 	hidden: "TRUE",
+    tempHigh: 100,
+    stateHigh: ["fire","steam","steam"],
+    burn:3,
+    burnTime:500,
+    burnInto: ["fire","smoke","smoke","steam","ash"],
+    isFood: true,
 };
 
 elements.chocolate_sauce = {
@@ -114,6 +151,12 @@ elements.chocolate_sauce = {
 	category: "food",
 	state: "solid",
 	hidden: "TRUE",
+    tempHigh: 350,
+    stateHigh: ["fire","fire","ash"],
+    burn:3,
+    burnTime:500,
+    burnInto: ["fire","smoke","smoke","steam","ash"],
+    isFood: true,
 };
 
 elements.chocolate_ice_cream = {
@@ -126,6 +169,7 @@ elements.chocolate_ice_cream = {
 	tempHigh: 15,
 	stateHigh: "cream",
 	temp: 0,
+    isFood: true,
 };
 
 elements.fruit_ice_cream = {
@@ -138,6 +182,7 @@ elements.fruit_ice_cream = {
 	tempHigh: 15,
 	stateHigh: "cream",
 	temp: 0,
+    isFood: true,
 };
 
 elements.snow_cone = {
@@ -150,6 +195,7 @@ elements.snow_cone = {
 	tempHigh: 15,
 	stateHigh: "smashed_ice",
 	temp: 0,
+    isFood: true,
 };
 
 elements.mint_ice_cream = {
@@ -163,6 +209,7 @@ elements.mint_ice_cream = {
 	tempHigh: 15,
 	stateHigh: "cream",
 	temp: 0,
+    isFood: true,
 	reactions: {
         "chocolate": { elem1: "mint_chocolate_ice_cream", elem2: null },
 	}
@@ -178,6 +225,7 @@ elements.mint_chocolate_ice_cream = {
 	tempHigh: 15,
 	stateHigh: "cream",
 	temp: 0,
+    isFood: true,
 };
 
 
@@ -189,7 +237,10 @@ elements.chocolate_yogurt = {
 	state: "solid",
 	hidden: "TRUE",
 	tempLow: 0,
+	stateHigh: ["fire","steam","steam"],
+	tempHigh: 450,
 	stateLow: "frozen_chocolate_yogurt",
+    isFood: true,
 };
 
 elements.fruit_yogurt = {
@@ -201,6 +252,9 @@ elements.fruit_yogurt = {
 	hidden: "TRUE",
 	tempLow: 0,
 	stateLow: "frozen_fruit_yogurt",
+    isFood: true,
+	stateHigh: ["fire","steam","steam"],
+	tempHigh: 450,
 };
 
 elements.frozen_fruit_yogurt = {
@@ -214,6 +268,7 @@ elements.frozen_fruit_yogurt = {
 	tempHigh: 0,
 	stateHigh: "fruit_yogurt",
 	temp: 0,
+    isFood: true,
 };
 
 elements.frozen_chocolate_yogurt = {
@@ -227,6 +282,7 @@ elements.frozen_chocolate_yogurt = {
 	tempHigh: 0,
 	stateHigh: "chocolate_yogurt",
 	temp: 0,
+    isFood: true,
 };
 
 elements.frying_oil = {
@@ -239,7 +295,13 @@ elements.frying_oil = {
 		"potato": { elem1: null, elem2: "fries" },
 		"advanced_dough": { elem1: null, elem2: "churros" },
 		"snow": { elem1: null, elem2: "fried_snow" },
-	}
+	},
+    tempHigh: 350,
+    stateHigh: ["fire","steam","steam"],
+    burn:3,
+    burnTime:500,
+    burnInto: ["fire","smoke","smoke","steam","ash"],
+    isFood: true,
 };
 
 elements.chicken_nuggets = {
@@ -248,6 +310,12 @@ elements.chicken_nuggets = {
 	category: "food",
 	state: "solid",
 	hidden: "TRUE",
+    tempHigh: 350,
+    stateHigh: ["fire","fire","ash"],
+    burn:3,
+    burnTime:500,
+    burnInto: ["fire","smoke","smoke","steam","ash"],
+    isFood: true,
 };
 
 elements.advanced_dough = {
@@ -269,6 +337,11 @@ elements.fries = {
 	category: "food",
 	state: "solid",
 	hidden: "TRUE",
+    tempHigh: 350,
+    stateHigh: ["fire","fire","ash"],
+    burn:3,
+    burnTime:500,
+    burnInto: ["fire","smoke","smoke","steam","ash"],
 };
 
 elements.fried_snow = {
@@ -277,6 +350,12 @@ elements.fried_snow = {
 	category: "food",
 	state: "solid",
 	hidden: "TRUE",
+    tempHigh: 350,
+    stateHigh: ["fire","fire","ash"],
+    burn:3,
+    burnTime:500,
+    burnInto: ["fire","smoke","smoke","steam","ash"],
+    isFood: true,
 };
 
 elements.battery_acid = {
@@ -285,6 +364,12 @@ elements.battery_acid = {
 	category: "machines",
 	state: "solid",
 	hidden: "TRUE",
+    tempHigh: 350,
+    stateHigh: ["steam","dioxin","stench"],
+    burn:3,
+    burnTime:500,
+    burnInto: ["steam","dioxin","stench"],
+    isFood: true,
 };
 
 
@@ -294,6 +379,11 @@ elements.steampunk_pancakes = {
 	category: "machines",
 	state: "solid",
 	hidden: "TRUE",
+    tempHigh: 350,
+    stateHigh: ["fire","fire","ash"],
+    burn:3,
+    burnTime:500,
+    burnInto: ["fire","smoke","smoke","steam","ash"],
 	//I have no idea why i added this, but when i removed it and started the mod, the mod removed itself. Words can't explain my fucking confusion.
 };
 
@@ -304,6 +394,11 @@ elements.churros = {
 	category: "food",
 	state: "solid",
 	hidden: "TRUE",
+    tempHigh: 350,
+    stateHigh: ["fire","fire","ash"],
+    burn:3,
+    burnTime:500,
+    burnInto: ["fire","smoke","smoke","steam","ash"],
 	reactions: {
 		"chocolate": { elem1: "chocolate_churros", elem2: null },
 		"chocolate_sauce": { elem1: "chocolate_churros", elem2: null },
@@ -316,7 +411,26 @@ elements.chocolate_churros = {
 	category: "food",
 	state: "solid",
 	hidden: "TRUE",
+    tempHigh: 350,
+    stateHigh: ["fire","fire","ash"],
+    burn:3,
+    burnTime:500,
+    burnInto: ["fire","smoke","smoke","steam","ash"],
 };
+
+/*elements.color_pick = {
+	color: ["#ff0000","#ffd100","#00ff4b","#0005ff"],
+    behavior: [
+        "CF|CF|CF",
+        "CF|DL%5|CF",
+        "CF|CF|CF",
+    ],
+    category: "tools",
+    maxSize: 0,
+    darkText: true,
+    canPlace: false,
+    desc: "Use on a pixel to select its element."
+};*/
 
 elements.croissant = {
 	color: ["#c68028","#ad7023","#905c1b","#794d16","#674112"],
@@ -357,6 +471,12 @@ elements.rose_sauce = {
 	category: "food",
 	state: "solid",
 	hidden: "TRUE",
+    tempHigh: 350,
+    stateHigh: ["fire","fire","ash"],
+    burn:3,
+    burnTime:500,
+    burnInto: ["fire","smoke","smoke","steam","ash"],
+    isFood: true,
 };
 
 elements.seasoning = {
@@ -365,6 +485,12 @@ elements.seasoning = {
 	category: "food",
 	state: "solid",
 	hidden: "TRUE",
+    tempHigh: 350,
+    stateHigh: ["fire","fire","ash"],
+    burn:3,
+    burnTime:500,
+    burnInto: ["fire","smoke","smoke","steam","ash"],
+    isFood: true,
 };
 
 elements.parmesan = {
@@ -372,6 +498,12 @@ elements.parmesan = {
 	behavior: behaviors.POWDER,
 	category: "food",
 	state: "solid",
+    tempHigh: 350,
+    stateHigh: ["fire","fire","ash"],
+    burn:3,
+    burnTime:500,
+    burnInto: ["fire","smoke","smoke","steam","ash"],
+    isFood: true,
 };
 
 elements.baking_powder = {
@@ -382,6 +514,12 @@ elements.baking_powder = {
 	reactions: {
         "flour": { elem1: null, elem2: "advanced_dough" },
     },
+    tempHigh: 350,
+    stateHigh: ["fire","fire","ash"],
+    burn:3,
+    burnTime:500,
+    burnInto: ["fire","smoke","smoke","steam","ash"],
+    isFood: true,
 };
 
 elements.smashed_ice = {
@@ -683,6 +821,7 @@ elements.cherry = {
 	breakInto: "juice",
 	tempHigh: 256,
 	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: "#450008",
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#bf4545","#982828"] },
@@ -697,6 +836,7 @@ elements.strawberry = {
 	breakInto: "juice",
 	tempHigh: 256,
 	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#bf0147","#c61548","#cc2857","#c62354","#c11848"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#a82953","#941540"] },
@@ -711,6 +851,7 @@ elements.apple = {
 	breakInto: "juice",
 	tempHigh: 256,
 	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#ffda69","#ffdb84"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#f4ff49","#ffec2f"] },
@@ -725,6 +866,7 @@ elements.green_apple = {
 	breakInto: "juice",
 	tempHigh: 256,
 	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#ffda69","#ffdb84"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#f4ff49","#ffec2f"] },
@@ -740,6 +882,7 @@ elements.orange = {
 	breakIntoColor: ["#ffc659","#ffb646","#ffa700","#ff8d00"],
 	tempHigh: 256,
 	stateHigh: "steam",
+	isFood: true,
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#fbd808","#ff9005"] },
 	}
@@ -753,6 +896,7 @@ elements.kiwi = {
 	breakInto: "juice",
 	tempHigh: 256,
 	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#a9c77e","#bad98f"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#a5d04c","#bbdc79"] },
@@ -767,6 +911,7 @@ elements.blueberry = {
 	breakInto: "juice",
 	tempHigh: 256,
 	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#8abeee","#8aacf4","#9591ee","#787fdb","#7c74ce"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#5086c1","#5076b0"] },
@@ -781,6 +926,7 @@ elements.plum = {
 	breakInto: "juice",
 	tempHigh: 256,
 	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#bf66c9","#d499db","#eacced"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#d8b2d8","#b266b2"] },
@@ -795,6 +941,7 @@ elements.blackberry = {
 	breakInto: "juice",
 	tempHigh: 256,
 	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#a941a1","#ba59b2","#c570bf"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#ba59b2","#c570bf"] },
@@ -809,6 +956,7 @@ elements.peach = {
 	breakInto: "juice",
 	tempHigh: 256,
 	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#fce5b8","#fcdab8","#fccfb8"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#ffe7dc","#ffdac8"] },
@@ -823,6 +971,7 @@ elements.lemon = {
 	breakInto: "juice",
 	tempHigh: 256,
 	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#f8ff80","#f6ff6c","#f5ff57","#f3ff39","#f0ff00"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#ffffd8","#fffecf"] },
@@ -838,6 +987,7 @@ elements.green_grape = {
 	breakIntoColor: ["#5f8536","#7ba84a"],
 	tempHigh: 256,
 	stateHigh: "steam",
+	isFood: true,
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#ecffdc","#c3ffa8"] },
 	}
@@ -848,6 +998,9 @@ elements.banana = {
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: "#f0f060",
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#fdf8d6","#f9efa6"] },
@@ -860,6 +1013,9 @@ elements.blood_orange = {
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#ff4600","#ff8353"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#ffc7b4","#ffa485"] },
@@ -872,6 +1028,9 @@ elements.canary_melon = {
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#ffff9e","#fffcaa"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#e5ffb3","#ecff9c"] },
@@ -884,6 +1043,9 @@ elements.honeydew_melon = {
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#e9ffa3","#f9ffa3"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#e8ffc9","#e8ffc8"] },
@@ -896,6 +1058,9 @@ elements.cranberry = {
 	category: "food",
 	state: "solid",
 	breakInto: "sauce",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#ba4242","#7a1717"],
 	reactions: {
         "soda": { elem1: null, elem2: "sprite_cranberry" },
@@ -909,6 +1074,9 @@ elements.pitaya = {
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#ff84ae","#ffafca"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#ffd4e3","#ffafca"] },
@@ -921,6 +1089,9 @@ elements.coconut = {
 	category: "food",
 	state: "solid",
 	breakInto: "milk",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#f7e5d8","#fdefe5","#fff7f1"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#fff2db","#ffefd4"] },
@@ -933,6 +1104,9 @@ elements.cloudberry = {
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#ffe1c7","#fff9f3"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#ffd7ab","#ffcb93"] },
@@ -945,6 +1119,9 @@ elements.crabapple = {
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#ff8fcf","#ffb2de"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#ffd2ec","#ffb2de"] },
@@ -957,6 +1134,9 @@ elements.cactus_fruit = {
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#75d802","#72d202"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#bbffc1","#84ff90"] },
@@ -969,6 +1149,9 @@ elements.pear = {
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#c8e39e","#99cc99"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#c3ff9c","#bcff92"] },
@@ -981,6 +1164,9 @@ elements.purpleberry = {
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#c08cc3","#e49cc2"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#fee6e4","#fbc3c4"] },
@@ -993,6 +1179,9 @@ elements.yellowberry = {
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#fffec8","#fffdaf"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#fffec8","#fffdaf"] },
@@ -1005,6 +1194,9 @@ elements.pomegranate = {
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#ee717f","#e94254"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#f4a1a9","#ee717f"] },
@@ -1017,6 +1209,9 @@ elements.guava = {
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#ff5a76","#ff8fa2"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#f6c8cd","#f2acb5"] },
@@ -1029,6 +1224,9 @@ elements.raspberry = {
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#f23a72","#fb79a0"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#ffb1f4","#ff91ce"] },
@@ -1041,6 +1239,9 @@ elements.gooseberry = {
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#8b0031","#920436"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#f1ffdb","#e3ffb7"] },
@@ -1053,6 +1254,9 @@ elements.fig = {
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#ff4a4a","#ea3838"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#ff8d8d","#ffabab"] },
@@ -1065,6 +1269,9 @@ elements.durian = {
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#faffaf","#fbffbf"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#feffe7","#f9ffb3"] },
@@ -1077,6 +1284,9 @@ elements.passionfruit = {
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#ffdede","#ffe4e4"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#d8adce","#c485b6"] },
@@ -1089,6 +1299,9 @@ elements.starfruit = {
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#f2d553","#f5dd75"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#faeeba","#f7e698"] },
@@ -1101,6 +1314,9 @@ elements.rambutan = {
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#faffaf","#fbffbf"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#fde0e0","#f4c1c1"] },
@@ -1113,6 +1329,9 @@ elements.nance = {
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#ffff66","#ffff99"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#fffee0","#fffec8"] },
@@ -1125,6 +1344,9 @@ elements.nectarine = {
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#ffbd8b","#ffdbc0"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#ffc3ad","#ffa584"] },
@@ -1137,6 +1359,9 @@ elements.loganberry = {
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#ff8f8f","#ffb7b7"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#9c91a5","#bdb5c3"] },
@@ -1149,6 +1374,9 @@ elements.currant = {
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#ff878f","#ffbcc0"],
 	reactions: {
 		"sugar": { elem1: "jelly", elem2: null, tempMin: 100, color1: ["#cc6b69","#bb3a37"] },
@@ -1171,6 +1399,9 @@ elements.mint = {
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
 	state: "solid",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	reactions: {
         "cream": { elem1: null, elem2: "toorhpaste" },
 		"ice_cream": { elem1: null, elem2: "mint_ice_cream" },
@@ -1183,6 +1414,9 @@ elements.broccoli = {
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#00b215","#0b8500"],
 };
 
@@ -1213,6 +1447,9 @@ elements.hot_pepper = {
 	behavior: behaviors.POWDER,
 	category: "food",
 	state: "solid",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	reactions: {
         "sauce": { elem1: null, elem2: "hot_sauce" },
 	}
@@ -1232,6 +1469,9 @@ elements.squash = {
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#efbe79","#ffd599"],
 };
 
@@ -1241,6 +1481,9 @@ elements.zuchinni = {
 	category: "food",
 	state: "solid",
 	breakInto: "juice",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	breakIntoColor: ["#80a568","#a3c88c"],
 };
 
@@ -1250,6 +1493,9 @@ elements.olive = {
 	category: "food",
 	state: "solid",
 	breakInto: "olive_oil",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 };
 
 elements.eggplant = {
@@ -1259,6 +1505,9 @@ elements.eggplant = {
 	state: "solid",
 	breakInto: "juice",
 	breakIntoColor: ["#674ea7","#351c75"],
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 };
 
 elements.onion = {
@@ -1272,6 +1521,9 @@ elements.onion = {
 	category: "food",
 	state: "solid",
 	breakInto: ["stench", null, null, null, null],
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 };
 
 elements.cinnamon = {
@@ -1279,6 +1531,9 @@ elements.cinnamon = {
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
 	state: "solid",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 };
 
 elements.garlic = {
@@ -1287,6 +1542,9 @@ elements.garlic = {
 	category: "food",
 	state: "solid",
 	breakInto: "garlic_clove",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 };
 
 elements.garlic_clove = {
@@ -1295,6 +1553,9 @@ elements.garlic_clove = {
 	category: "food",
 	state: "solid",
 	hidden: "TRUE",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 };
 
 elements.carrot = {
@@ -1308,6 +1569,9 @@ elements.carrot = {
 	burnTime: 300,
 	breakInto: "juice",
 	breakIntoColor: "#f1b956",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 };
 
 elements.asparagus = {
@@ -1323,6 +1587,9 @@ elements.asparagus = {
 	burnTime: 300,
 	breakInto: "juice",
 	breakIntoColor: "#c9ddbb",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 };
 
 elements.roasted_asparagus = {
@@ -1339,6 +1606,9 @@ elements.roasted_asparagus = {
 	burnInto: "ash",
 	burn: 20,
 	burnTime: 300,
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 };
 
 elements.oreo = {
@@ -1346,6 +1616,9 @@ elements.oreo = {
 	behavior: behaviors.STURDYPOWDER,
 	category: "food",
 	state: "solid",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 	reactions: {
 		"toorhpaste": { elem1: "poison_oreo", elem2: null },
 	}
@@ -1357,6 +1630,9 @@ elements.poison_oreo = {
 	category: "food",
 	state: "solid",
 	hidden: "TRUE",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 };
 
 elements.sprinkles = {
@@ -1364,6 +1640,9 @@ elements.sprinkles = {
 	behavior: behaviors.POWDER,
 	category: "food",
 	state: "solid",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 };
 
 elements.whipped_cream = {
@@ -1374,9 +1653,7 @@ elements.whipped_cream = {
 	hidden: "TRUE",
 	tempHigh: 130,
 	stateHigh: "steam",
-	reactions: {
-		"coffee": { elem1: null, elem2: "cream_coffee" },
-	}
+	isFood: true,
 };
 
 elements.olive_oil = {
@@ -1387,18 +1664,9 @@ elements.olive_oil = {
 	state: "liquid",
 	burn: 10,
 	burnTime: 300,
-};
-
-elements.cream_coffee = {
-	color: ["#dbc1ac","#967259","#634832"],
-	behavior: behaviors.LIQUID,
-	category: "food",
-	state: "solid",
-	hidden: "TRUE",
-	tempLow: 0,
-	stateLow: "coffee_ice",
-	tempHigh: 130,
-	stateHigh: ["steam","fragrance"],
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 };
 
 elements.seafoam = {
@@ -1413,6 +1681,9 @@ elements.pipis = {
 	behavior: behaviors.POWDER,
 	category: "life",
 	state: "solid",
+	tempHigh: 256,
+	stateHigh: "steam",
+	isFood: true,
 };
 
 elements.frog_bomb = {	
@@ -1485,6 +1756,39 @@ elements.holy_hand_grenade = {
     excludeRandom: true,
     cooldown: defaultCooldown
 },
+
+elements.unholy_feet_bomb = {	
+    color: ["#661a0e","#6b1f13","#803226"],
+    behavior: [
+		"XX|EX:20>curse,fire%1|XX",
+        "XX|XX|XX",
+        "M2|M1 AND EX:20>curse,fire%1|M2",
+    ],
+    category: "weapons",
+    state: "solid",
+    density: 1300,
+    tempHigh: 1455.5,
+    stateHigh: "curse",
+    excludeRandom: true,
+    cooldown: defaultCooldown,
+},
+
+//for(i = 1, i++, i>10){
+ 
+//}
+/*
+for (let i = 0; i < 100; i++) {
+	if(unholy_feet_bomb.hidden == false) {
+		if(curse.hidden == false) {
+			if(holy_hand_grenade.hidden == false) {
+				unholy_feet_bomb.hidden = false;
+			}
+		}
+	}
+	i = 0;
+  }
+  */
+
 
 elements.chocolate_fountain = {
     color: "#3e1d07",
@@ -1696,6 +2000,7 @@ elements.slushy_ice = {
     state: "solid",
     density: 917,
     breakInto: "smashed_ice",
+	isFood: true,
 };
 
 elements.toorhpaste = {
@@ -1705,7 +2010,10 @@ elements.toorhpaste = {
 	state: "solid",
 	reactions: {
 		"juice": { elem1: "poison", elem2: null },
-	}
+	},
+	tempHigh: 170,
+	stateHigh: "steam",
+	isFood: true,
 };
 
 if (!elements.lettuce.reactions) elements.lettuce.reactions = {};

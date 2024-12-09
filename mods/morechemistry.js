@@ -1,5 +1,5 @@
 //This mod was made by Adora the transfem, https://discord.com/users/778753696804765696 on discord and https://www.tiktok.com/@alextheagenenby?_t=8hoCVI3NRhu&_r=1 on tiktok.
-let version = "1.5.2";
+let version = "1.6.2";
 function pixelInRange(pixel, range){
   let i = 0;
   while (i < range.length) {
@@ -20,6 +20,8 @@ function customExplosion(pixel1, pixel2, radius, list) {
   let y = pixel1.y;
   deletePixel(x, y);
   deletePixel(pixel2.x, pixel2.y);
+  doFrame();
+  focusGame();
   explodeAt(x, y, radius, list);
 };
 function reactPixels(pixel1,pixel2) {
@@ -42,7 +44,7 @@ function reactPixels(pixel1,pixel2) {
     if (r.burning2 !== undefined && Boolean(pixel2.burning) !== r.burning2) {
         return false;
     }
-    if (r.charged && !pixel.charge) {
+    if (r.charged && !pixel1.charge) {
         return false;
     }
     if (r.chance !== undefined && Math.random() > r.chance) {
@@ -169,7 +171,7 @@ elements.sodiumhydroxidecrystals = {
     //tempHigh: 64.7,
     fireColor: "#fba600",
     category: "powders",
-    state: "powder",
+    state: "solid",
     density: 2130,
     name: "SodiumHydroxideCrystals",
 }
@@ -632,10 +634,13 @@ elements.potassiumhydroxidecrystals = {
     //tempHigh: 64.7,
     fireColor: "#fba600",
     category: "powders",
-    state: "powder",
+    state: "solid",
     density: 2040,
     name: "PotassiumHydroxideCrystals",
 }
+let filterItems;
+let direction;
+
 elements.iron_chloride = {
   color: ["#010014", "#a2ff94"],
   reactions: {
@@ -691,7 +696,7 @@ elements.kilonova = {
   temp: 100000000,
 }
 elements.supernova.behavior = [ ["XX", "XX", "XX"], [ "XX", "EX:80>plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,molten_iron,molten_uranium,oxygen,molten_sodium,sulfur_gas,neon,chlorine,molten_calcium,molten_nickel,molten_copper,molten_zinc,gallium_gas,hydrogen,hydrogen,hydrogen,hydrogen,helium,helium,helium AND CH:NeutronStar", "XX" ], ["XX", "XX", "XX"] ]
-elements.kilonova.behavior = [ ["XX", "XX", "XX"], [ "XX", "EX:200>plasma,plasma,plasma,plasma,plasma,plasma,molten_iron,molten_uranium,molten_lead,oxygen,molten_sodium,molten_gold,molten_tungsten,sulfur_gas,neon,chlorine,molten_calcium,molten_nickel,molten_copper,molten_zinc,gallium_gas,hydrogen,hydrogen,hydrogen,hydrogen,hydrogen,helium,helium,helium,helium AND CH:void", "XX" ], ["XX", "XX", "XX"] ]
+elements.kilonova.behavior = [ ["XX", "XX", "XX"], [ "XX", "EX:200>plasma,plasma,molten_iron,molten_uranium,molten_lead,oxygen,molten_sodium,molten_gold,molten_tungsten,sulfur_gas,neon,chlorine,molten_calcium,molten_nickel,molten_copper,molten_zinc,gallium_gas,hydrogen,hydrogen,hydrogen,hydrogen,hydrogen,helium,helium,helium,helium AND CH:void", "XX" ], ["XX", "XX", "XX"] ]
 elements.NeutronStar = {
   behavior: [["XX", "XX", "XX"], ["CR:light", "XX", "CR:light"], ["XX", "XX", "XX"]],
   name: "NeutronStar",
@@ -708,6 +713,7 @@ elements.NeutronStar = {
     "NeutronStar": { "elem1": "kilonova", "temp1": 100000000, },
   },
   density: 10**17,
+  hardness: 1,
 }
 elements.acid.ignore.push("pipe");
 elements.acid.ignore.push("gold");
@@ -724,27 +730,16 @@ elements.NaK = {
   color: "#848484",
   viscosity: 9.4,
   reactions: {
-    "water": {
-      func: function (pixel1, pixel2) {customExplosion(pixel1, pixel2, 5, ["fire", "fire", "pop", "hydrogen", "sodiumhydroxide", "potassiumhydroxide","sodiumhydroxide", "potassiumhydroxide","sodiumhydroxide", "potassiumhydroxide"])}
-      },
+    water: {
+      explosion: "fire,fire,pop,hydrogen,sodiumhydroxide,potassiumhydroxide,sodiumhydroxide,potassiumhydroxide,sodiumhydroxide,potassiumhydroxide", radius: 5,},
     acid: {
-      func: function (pixel1, pixel2) {customExplosion(pixel1, pixel2, 6, ["fire", "pop", "hydrogen", "water", "pop", "hydrogen", "hydrogen"])}
-    },
+      explosion: "fire,fire,pop,hydrogen,salt,potassium_salt,hydrogen,fire", radius: 6,},
     acidic_water: {
-      func: function (pixel1, pel2) {customExplosion(pixel1, pixel2, 3, ["pop", "hydrogen", "hydrogen", "water","sodiumhyixdroxide", "potassiumhydroxide"])}
-    },
-    chloroauric_acid: { elem1: "gold",
-      func: function (pixel1, pixel2) {customExplosion(pixel1, pixel2, 7, ["fire", "fire", "pop", "hydrogen", "gold_coin", "hydrogen", "pop"])}
-    },
-    liquid_chloroauric_acid: { elem1: "gold",
-      func: function (pixel1, pixel2) {customExplosion(pixel1, pixel2, 7, ["fire", "fire", "pop", "hydrogen", "gold_coin", "hydrogen", "hydrogen", "pop"])}
-    },
-    nitric_acid:{
-      func: function (pixel1, pixel2) {customExplosion(pixel1, pixel2, 6, ["fire", "fire", "pop", "hydrogen", "hydrogen", "pop"])}
-    },
+      explosion: "fire,fire,pop,hydrogen,sodiumhydroxide,potassiumhydroxide,salt,potassium_salt", radius: 5,},
+    nitric_acid: {
+      explosion: "fire,fire,fire,pop,hydrogen,sodiumhydroxide,potassiumhydroxide", radius: 6,},
     aqua_regia: {
-      func: function (pixel1, pixel2) {customExplosion(pixel1, pixel2, 9, ["fire", "fire", "pop", "hydrogen", "fire", "fire", "hydrogen", "pop", "flash"])}
-    },
+      explosion: "fire,fire,pop,hydrogen,sodiumhydroxide,potassiumhydroxide,salt,potassium_salt,fire,hydrogen,pop", radius: 7,},
   },
   density: 868,
 };
@@ -770,6 +765,7 @@ elements.rubidium = {
   tick: function(pixel) {
     pixel.burning = true;
   },
+  state: "solid",
 }
 elements.moltenrubidium = {
   density: 1532,
@@ -798,7 +794,7 @@ elements.moltenrubidium = {
 }
 
 elements.rubidiumsalt = {
-  state: "powder",
+  state: "solid",
   name: "RubidiumSalt",
   alias: "Rubidium Chloride or RbCl",
   color: ["#e6e6e6", "#f5f5f5", "#fafafa", "#f0f0f0"],
@@ -899,7 +895,7 @@ elements.rubidiumhydroxidecrystals = {
     },
   fireColor: "#d91e1e",
   category: "powders",
-  state: "powder",
+  state: "solid",
   density: 2.12,
   name: "RubidiumHydroxideCrystals",
 }
@@ -1022,11 +1018,12 @@ elements.specialsmasher = {
     }
   },
     tick: function(pixel) {
-      if(pixel.start == pixelTicks) {
+      if(pixel.start + 1 == pixelTicks) {
         pixel.range = num2;
+        pixel.exclude = exclude;
       }
       let range = mouseRange(pixel.x, pixel.y, pixel.range);
-      smash(range, exclude);
+      smash(range, pixel.exclude);
     }
   }
 let num3 = 0;
@@ -1038,7 +1035,7 @@ elements.specialmixer = {
     noMix: true,
   onSelect: function(pixel) {
     let item = prompt("enter range for mixing.");
-    exclude = prompt("Enter elements to exclude, seperate them with commas.").replace(/\s/g, "").split(",");
+    exclude1 = prompt("Enter elements to exclude, seperate them with commas.").replace(/\s/g, "").split(",");
     if(/^\d+$/.test(item)){
       num3 = parseInt(item);
     } else {
@@ -1046,11 +1043,12 @@ elements.specialmixer = {
     }
   },
     tick: function(pixel) {
-      if(pixel.start == pixelTicks) {
+      if(pixel.start + 1 == pixelTicks) {
         pixel.range = num3;
+        pixel.exclude = exclude1;
       }
       let range = mouseRange(pixel.x, pixel.y, pixel.range);
-      mix(range, exclude);
+      mix(range, pixel.exclude);
     }
   }
 
@@ -1355,7 +1353,10 @@ function pull(range, pixel1, include = []){
       }
     }
   }
-
+function reduceToSign(num) {
+  if(num == 0){return 0;}
+  return num && num / Math.abs(num);
+}
 let prevNum;
 elements.etemper = {
   name: "E-Temper",
@@ -1377,11 +1378,15 @@ elements.etemper = {
       if(outOfBounds(x,y)){ continue; }
       if(isEmpty(x,y)){ continue; }
       let pixel2 = pixelMap[x][y];
-        
-      if (pixel2.temp < pixel.Temp && pixel.charge > 0 ){
-          pixel2.temp += pixel.Temp / 6;
+      if(reduceToSign(pixel.Temp) == -1){
+        if (pixel2.temp > pixel.Temp && pixel.charge > 0 ){
+            pixel2.temp += pixel.Temp / 6;
+        }
+      } else {
+        if (pixel2.temp < pixel.Temp && pixel.charge > 0 ){
+            pixel2.temp += pixel.Temp / 6;
+        }
       }
-
     }
   },
 }
@@ -1401,6 +1406,7 @@ elements.sign = {
 let attrElem = "";
 let magnetRange = 0;
 let magnetElems = [];
+let magnetPixels = [];
 elements.magnet = {
   category: "machines",
   tick:function(pixel){
@@ -1413,6 +1419,9 @@ elements.magnet = {
     for (var i = 0; i < currentPixels.length; i++){
       if(pixelInRange(currentPixels[i], range)){
         let pixel2 = currentPixels[i]
+        if(!magnetPixels.includes(pixel2)){
+          magnetPixels.push(pixel2);
+        }
         if(!pixel2.drag && pixel.elem.includes(pixel2.element)){pixel2.drag = true}
         if(pixel2.drag && !pixel.elem.includes(pixel2.element) && !beamPixels.includes(pixel2) && ((draggingPixels && draggingPixels.includes(pixel2)) || !draggingPixels)){pixel2.drag = false;}
           if(!magnetElems.includes(pixel2) && pixel.elem.includes(pixel2.element)){magnetElems.push(pixel2)}
@@ -1422,6 +1431,18 @@ elements.magnet = {
         }
       } else if (draggingPixels && !draggingPixels.includes(currentPixels[i])){
         currentPixels[i].drag = false; 
+      }
+    }
+    for(var i = 0; i < magnetPixels.length; i++){
+      if(magnetPixels.length != 0){
+        if(!pixel.elem.includes(magnetPixels[i].element)){
+          magnetPixels[i].drag = false;
+          magnetPixels.splice(i, 1);
+        }
+        if(!pixelInRange(magnetPixels[i], range)){
+          magnetPixels[i].drag = false;
+          magnetPixels.splice(i, 1);
+        }
       }
     }
   },
@@ -1533,6 +1554,44 @@ document.addEventListener("keydown", function(event){
         let y = pixel.y + a[ii][1];
         if(!isEmpty(x, y) && !outOfBounds(x, y) && elements[pixelMap[x][y].element].conduct > 0){
           pixelMap[x][y].charge = 1;
+        }
+      }
+    }
+  }
+  if(event.key.toLowerCase() == "v"){
+    for(var i = 0; i < UFOs.length; i++){
+      let pixel = UFOs[i];
+      let x = pixel.x
+      for (var y = pixel.y + 1; y < height; y++) {
+          if (outOfBounds(x, y)) {
+              break;
+          }
+          if (isEmpty(x, y)) {
+              if (Math.random() > 0.05) { continue }
+              createPixel("flash", x, y);
+              pixelMap[x][y].color = "#032dff";
+              pixelMap[x][y].temp = -3500;
+          }
+          else {
+              if (elements[pixelMap[x][y].element].isGas) { continue }
+              if (elements[pixelMap[x][y].element].id === elements.heat_ray.id) { break }
+              pixelMap[x][y].temp -= 10;
+              pixelTempCheck(pixelMap[x][y]);
+              break;
+          }
+      }
+    }
+  }
+  if(event.key.toLowerCase() == "t"){
+    for(var i = 0; i < UFOs.length; i++){
+      for(var ii = 0; ii < adjacentCoords.length; ii++){
+        let x = UFOs[i].x + adjacentCoords[ii][0];
+        let y = UFOs[i].y + adjacentCoords[ii][1];
+        if(x == pixel.x || y == pixel.y) {continue;}
+        if(!outOfBounds(x,y) && !isEmpty(x,y)){
+          if(pixelMap[x][y].element == "ufo"){continue;}
+          deletePixel(x,y);
+          
         }
       }
     }
