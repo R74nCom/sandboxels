@@ -37,10 +37,10 @@ elements.flesh = {
 	category: "structural",
     behavior: behaviors.WALL,
     hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if (Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
+        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -140,7 +140,7 @@ elements.epidermis = {
 	category: "structural",
     behavior: behaviors.WALL,
     hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
         if ((pixel.temp > 35 || pixel.temp < 10) && Math.random() < 0.005) {
@@ -163,17 +163,12 @@ elements.epidermis = {
             pixel.temp += 1;
         }
         doDefaults(pixel);
-        if (Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
+        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
-            if (Math.random() < 0.75) {
-                changePixel(pixel,"dust"); 
-            }
-            else {
-                changePixel(pixel,"meat"); 
-            }
+            changePixel(pixel,"dust"); 
         }
         if (pixel.nutrition === null || isNaN(pixel.nutrition)) {
             pixel.nutrition = 500
@@ -263,7 +258,7 @@ elements.dermis = {
 	category: "structural",
     behavior: behaviors.WALL,
     hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
         if (Math.random() > (1 - ((pixel.nutrition + pixel.oxygen) / 2000)) && Math.random() < 0.005) {
@@ -277,7 +272,7 @@ elements.dermis = {
             }
         }
         doDefaults(pixel);
-        if (Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
+        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -377,7 +372,7 @@ elements.scales = {
 	category: "structural",
     behavior: behaviors.WALL,
     hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
         if (pixel.temp > 40 && Math.random() < 0.1) {
@@ -481,7 +476,7 @@ elements.scale_dermis = {
 	category: "structural",
     behavior: behaviors.WALL,
     hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
         if (Math.random() > (1 - ((pixel.nutrition + pixel.oxygen) / 2000)) && Math.random() < 0.005) {
@@ -495,7 +490,7 @@ elements.scale_dermis = {
             }
         }
         doDefaults(pixel);
-        if (Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
+        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -595,7 +590,7 @@ elements.bug_dermis = {
 	category: "structural",
     behavior: behaviors.WALL,
     hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
         if (Math.random() > (1 - ((pixel.nutrition + pixel.oxygen) / 2000)) && Math.random() < 0.005) {
@@ -609,7 +604,7 @@ elements.bug_dermis = {
             }
         }
         doDefaults(pixel);
-        if (Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
+        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -710,7 +705,7 @@ elements.amphib_dermis = {
 	category: "structural",
     behavior: behaviors.WALL,
     hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
         if (Math.random() > (1 - ((pixel.nutrition + pixel.oxygen) / 2000)) && Math.random() < 0.005) {
@@ -724,7 +719,7 @@ elements.amphib_dermis = {
             }
         }
         doDefaults(pixel);
-        if (Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
+        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -824,10 +819,10 @@ elements.acidic_flesh = {
 	category: "structural",
     behavior: behaviors.WALL,
     hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if (Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
+        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -926,10 +921,10 @@ elements.slimey_flesh = {
 	category: "structural",
     behavior: behaviors.WALL,
     hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if (Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
+        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -1028,7 +1023,7 @@ elements.adipose = {
 	category: "nutrition",
     behavior: behaviors.WALL,
     hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
         if (Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
@@ -1127,12 +1122,12 @@ elements.adipose = {
 elements.acid_vessel = {
     color: "#BF6B0E",
     behavior: [
-        "XX|XX|XX",
-        "XX|XX|XX",
-        "XX|XX|XX",
+        "XX|SW:acid_vessel%1|XX",
+        "SW:acid_vessel%1|XX|SW:acid_vessel%1",
+        "XX|SW:acid_vessel%1|XX",
     ],
     hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
         if (Math.random() > 0.975 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
@@ -1257,7 +1252,7 @@ elements.heart = {
         "XX|XX|XX",
     ],
     hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
         if (Math.random() > 0.975 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
@@ -1394,7 +1389,7 @@ elements.blood_vessel = {
         "XX|SW:blood_vessel%1|XX",
     ],
     hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
         if (Math.random() > 0.975 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
@@ -1581,7 +1576,7 @@ elements.white_blood_cell = {
         "M2|SW:blood,blood_vessel%1 AND M1|M2",
     ],
     hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
         if (Math.random() > 0.975 && pixel.nutrition > 0 && pixel.oxygen > 0) {
@@ -1696,13 +1691,13 @@ elements.eye = {
 	color: "#451800",
 	category: "nervous system",
     hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
         doHeat(pixel);
 		doBurning(pixel);
 		doElectricity(pixel);
-        if (Math.random() > 0.895 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
+        if ((Math.random() > 0.895 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -1726,7 +1721,7 @@ elements.eye = {
             if (elements[hitPixel.element].id === elements.light.id) {
                 pixel.saw = true
             }
-            else if (pixel.saw === true && elements[hitPixel.element].id === elements.eye.id && Math.random() > (1 - ((pixel.nutrition + pixel.oxygen) / 2000))) {
+            else if (pixel.saw === true && elements[hitPixel.element].id === elements.eye.id && Math.random() > 0.5) {
                 pixel.saw = false
                 hitPixel.saw = true
             }
@@ -1756,7 +1751,7 @@ elements.eye = {
             if (elements[hitPixel.element].id === elements.light.id && Math.random() > 0.5) {
                 pixel.saw = true
             }
-            else if (pixel.saw === true && elements[hitPixel.element].id === elements.eye.id && Math.random() > (1 - ((pixel.nutrition + pixel.oxygen) / 2000))) {
+            else if (pixel.saw === true && elements[hitPixel.element].id === elements.eye.id && Math.random() > 0.5) {
                 pixel.saw = false
                 hitPixel.saw = true
             }
@@ -1786,7 +1781,7 @@ elements.eye = {
             if (elements[hitPixel.element].id === elements.light.id && Math.random() > 0.5) {
                 pixel.saw = true
             }
-            else if (pixel.saw === true && elements[hitPixel.element].id === elements.eye.id && Math.random() > (1 - ((pixel.nutrition + pixel.oxygen) / 2000))) {
+            else if (pixel.saw === true && elements[hitPixel.element].id === elements.eye.id && Math.random() > 0.5) {
                 pixel.saw = false
                 hitPixel.saw = true
             }
@@ -1816,7 +1811,7 @@ elements.eye = {
             if (elements[hitPixel.element].id === elements.light.id && Math.random() > 0.5) {
                 pixel.saw = true
             }
-            else if (pixel.saw === true && elements[hitPixel.element].id === elements.eye.id && Math.random() > (1 - ((pixel.nutrition + pixel.oxygen) / 2000))) {
+            else if (pixel.saw === true && elements[hitPixel.element].id === elements.eye.id && Math.random() > 0.5) {
                 pixel.saw = false
                 hitPixel.saw = true
             }
@@ -1870,13 +1865,13 @@ elements.brain = {
 	color: ["#fce3e3","#deb6c5","#f5ced5","#e87b8f"],
 	category: "nervous system",
     hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
         doHeat(pixel);
 		doBurning(pixel);
 		doElectricity(pixel);
-        if (Math.random() > 0.85 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
+        if ((Math.random() > 0.85 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -1897,14 +1892,9 @@ elements.brain = {
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
             var hitPixel = pixelMap[pixel.x][pixel.y-1]
             doElectricity(hitPixel);
-            if (elements[hitPixel.element].id === elements.nerve.id && Math.random() > 0.5 && Math.random() > (1 - ((pixel.nutrition + pixel.oxygen) / 4000))) {
-                if (!hitPixel.charge) {
-                    hitPixel.charge = 0.1
-                }
-                else if (hitPixel.charge) {
-                    hitPixel.charge += 0.1
-                }
-                pixel.chargeCD = 8
+            if (elements[hitPixel.element].id === elements.nerve.id && Math.random() > (1.25 - ((pixel.nutrition + pixel.oxygen) / 2000))) {
+                pixel.chargeCD = 16
+                hitPixel.charge = 0.5
             }
             else if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
                 if (hitPixel.oxygen < pixel.oxygen) {
@@ -1921,13 +1911,8 @@ elements.brain = {
             var hitPixel = pixelMap[pixel.x][pixel.y+1]
             doElectricity(hitPixel);
             if (elements[hitPixel.element].id === elements.nerve.id && Math.random() > (1.25 - ((pixel.nutrition + pixel.oxygen) / 2000))) {
-                if (!hitPixel.charge) {
-                    hitPixel.charge = 0.1
-                }
-                else if (hitPixel.charge) {
-                    hitPixel.charge += 0.1
-                }
-                pixel.chargeCD = 8
+                pixel.chargeCD = 16
+                hitPixel.charge = 0.5
             }
             else if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
                 if (hitPixel.oxygen < pixel.oxygen) {
@@ -1944,13 +1929,8 @@ elements.brain = {
             var hitPixel = pixelMap[pixel.x-1][pixel.y]
             doElectricity(hitPixel);
             if (elements[hitPixel.element].id === elements.nerve.id && Math.random() > (1.25 - ((pixel.nutrition + pixel.oxygen) / 2000))) {
-                if (!hitPixel.charge) {
-                    hitPixel.charge = 0.1
-                }
-                else if (hitPixel.charge) {
-                    hitPixel.charge += 0.1
-                }
-                pixel.chargeCD = 8
+                pixel.chargeCD = 16
+                hitPixel.charge = 0.5
             }
             else if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
                 if (hitPixel.oxygen < pixel.oxygen) {
@@ -1967,13 +1947,8 @@ elements.brain = {
             var hitPixel = pixelMap[pixel.x+1][pixel.y]
             doElectricity(hitPixel);
             if (elements[hitPixel.element].id === elements.nerve.id && Math.random() > (1.25 - ((pixel.nutrition + pixel.oxygen) / 2000))) {
-                if (!hitPixel.charge) {
-                    hitPixel.charge = 0.1
-                }
-                else if (hitPixel.charge) {
-                    hitPixel.charge += 0.1
-                }
-                pixel.chargeCD = 8
+                pixel.chargeCD = 16
+                hitPixel.charge = 0.5
             }
             else if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
                 if (hitPixel.oxygen < pixel.oxygen) {
@@ -1986,10 +1961,14 @@ elements.brain = {
                 }
             }
         }
+        if (pixel.charge) { 
+            pixel.charge = 0;
+            pixel.chargeCD = 16; 
+        }
     },
     density: 2710,
     state: "solid",
-    conduct: .5,
+    conduct: 1,
     tempHigh: 200,
     stateHigh: "cooked_meat",
     tempLow: -25,
@@ -2017,12 +1996,12 @@ elements.amygdala = { // please please please ignore that i callled it the amygd
     name:"hypothalamus",
     behavior: behaviors.WALL,
     hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
         doHeat(pixel);
-        doBurning(pixel);
-        doElectricity(pixel);
+		doBurning(pixel);
+		doElectricity(pixel);
         if (Math.random() > 0.895 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
             pixel.nutrition--
             pixel.oxygen--
@@ -2093,12 +2072,16 @@ elements.amygdala = { // please please please ignore that i callled it the amygd
                 }
             }
         }
-        if (pixel.temp > 25) { pixel.temp -= 1; }
-        else if (pixel.temp < 15) { pixel.temp += 1; }
+        if (pixel.temp > 25) { pixel.temp -= 10; }
+        else if (pixel.temp < 15) { pixel.temp += 10; }
+        if (pixel.charge) { 
+            pixel.charge = 0;
+            pixel.chargeCD = 16; 
+        }
     },
     density: 2710,
     state: "solid",
-    conduct: .8,
+    conduct: 1,
     tempHigh: 200,
     stateHigh: "cooked_meat",
     tempLow: -25,
@@ -2125,10 +2108,11 @@ elements.eye_nerve = {
 	category: "nervous system",
     behavior: behaviors.WALL,
     hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if (Math.random() > 0.895 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
+        doDefaults(pixel);
+        if ((Math.random() > 0.895 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -2228,10 +2212,11 @@ elements.nerve = {
 	category: "nervous system",
     behavior: behaviors.WALL,
     hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if (Math.random() > 0.895 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
+        doDefaults(pixel);
+        if ((Math.random() > 0.895 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -2304,7 +2289,7 @@ elements.nerve = {
     },
     density: 2710,
     state: "solid",
-    conduct: .8,
+    conduct: 1,
     tempHigh: 200,
     stateHigh: "cooked_meat",
     tempLow: -25,
@@ -2330,15 +2315,15 @@ elements.throat_lining = {
 	color: "#bc6157",
 	category: "nutrition",
     behavior: [
-        "XX|DL:stomach_acid,explosive_acid,carni_acid,herbi_acid%5|XX",
-        "DL:stomach_acid,explosive_acid,carni_acid,herbi_acid%5|XX|DL:stomach_acid,explosive_acid,carni_acid,herbi_acid%5",
-        "XX|DL:stomach_acid,explosive_acid,carni_acid,herbi_acid%5|XX",
+        "XX|DL:stomach_acid,explosive_acid,decomposer_acid,carni_acid,herbi_acid%5|XX",
+        "DL:stomach_acid,explosive_acid,decomposer_acid,carni_acid,herbi_acid%5|XX|DL:stomach_acid,explosive_acid,decomposer_acid,carni_acid,herbi_acid%5",
+        "XX|DL:stomach_acid,explosive_acid,decomposer_acid,carni_acid,herbi_acid%5|XX",
     ],
     hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if (Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
+        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -2438,10 +2423,10 @@ elements.intestines = {
 	category: "nutrition",
     behavior: behaviors.WALL,
 	hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if (Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
+        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -2561,10 +2546,10 @@ elements.appendix = {
 	category: "nutrition",
     behavior: behaviors.WALL,
 	hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if (Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
+        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
             if (Math.random() > 0.999 && (pixel.nutrition < 750 || pixel.oxygen < 500)) {
@@ -2596,7 +2581,7 @@ elements.appendix = {
             if (elements[hitPixel.element].id === elements.digested_material.id && Math.random() > 0.999) {
                 changePixel(hitPixel,"poop");
                 pixel.nutrition += hitPixel.nutrition
-                if (Math.random() > 0.90) {
+                if (Math.random() > 0.99) {
                     changePixel(pixel,"stomach_acid");
                 }
             }
@@ -2616,7 +2601,7 @@ elements.appendix = {
             if (elements[hitPixel.element].id === elements.digested_material.id && Math.random() > 0.999) {
                 changePixel(hitPixel,"poop");
                 pixel.nutrition += hitPixel.nutrition
-                if (Math.random() > 0.90) {
+                if (Math.random() > 0.99) {
                     changePixel(pixel,"stomach_acid");
                 }
             }
@@ -2636,7 +2621,7 @@ elements.appendix = {
             if (elements[hitPixel.element].id === elements.digested_material.id && Math.random() > 0.999) {
                 changePixel(hitPixel,"poop");
                 pixel.nutrition += hitPixel.nutrition
-                if (Math.random() > 0.90) {
+                if (Math.random() > 0.99) {
                     changePixel(pixel,"stomach_acid");
                 }
             }
@@ -2701,7 +2686,7 @@ elements.simple_lung = {
 	category: "oxygen",
     behavior: behaviors.WALL,
 	hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
         for (var i = 0; i < adjacentCoords.length; i++) {
@@ -2711,7 +2696,7 @@ elements.simple_lung = {
                 if (Math.random() < 0.01) { pixel.oxygen += 100 }
                 break
             } } 
-        if (Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
+        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -2811,10 +2796,10 @@ elements.lungs = {
 	category: "oxygen",
     behavior: behaviors.WALL,
 	hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if (Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
+        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -2943,7 +2928,7 @@ elements.amphib_skin = {
         "XX|CR:slime%0.001|XX",
     ],
 	hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
         if ((pixel.temp > 35 || pixel.temp < 10) && Math.random() < 0.005) {
@@ -3092,7 +3077,7 @@ elements.exoskeleton = {
 	category: "oxygen",
     behavior: behaviors.WALL,
 	hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
         if (pixel.temp > 40 && Math.random() < 0.1) {
@@ -3222,10 +3207,10 @@ elements.gills = {
 	color: "#5EBAE3",
 	category: "oxygen",
 	hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if (Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
+        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -3376,15 +3361,15 @@ elements.stomach_lining = {
 	color: "#be5c4b",
 	category: "nutrition",
     behavior: [
-        "XX|CR:stomach_acid%5|XX",
-        "CR:stomach_acid%5|XX|CR:stomach_acid%5",
-        "XX|CR:stomach_acid%5|XX",
+        "XX|CR:stomach_acid%1|XX",
+        "CR:stomach_acid%1|XX|CR:stomach_acid%1",
+        "XX|CR:stomach_acid%1|XX",
     ],
     hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if (Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
+        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -3488,10 +3473,10 @@ elements.decomposer_stomach = {
         "XX|CR:decomposer_acid%5|XX",
     ],
     hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if (Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
+        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -3595,10 +3580,10 @@ elements.herbi_stomach = {
         "XX|CR:herbi_acid%5|XX",
     ],
     hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if (Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
+        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -3702,10 +3687,10 @@ elements.carni_stomach = {
         "XX|CR:carni_acid%5|XX",
     ],
     hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if (Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
+        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -3809,10 +3794,10 @@ elements.explosive_stomach = {
         "XX|CR:explosive_acid%5|XX",
     ],
     hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if (Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
+        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -3916,10 +3901,10 @@ elements.stomach_valve = {
         "XX|CR:intestine_bacteria%0.01|XX",
     ],
 	hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if (Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
+        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -4023,10 +4008,10 @@ elements.sphincter = {
 	color: "#c8846f",
 	category: "nutrition",
 	hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if (Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
+        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -4134,7 +4119,7 @@ elements.real_udder = {
         "XX|XX|XX",
     ],
     hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
         if (Math.random() > 0.975 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
@@ -4263,12 +4248,12 @@ elements.biotorch = {
         "XX|XX|XX",
     ],
     hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
         if (Math.random() > 0.975 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
             pixel.nutrition--
-            pixel.oxygen--
+            pixel.oxygen -= 2
         }
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
             changePixel(pixel,"cooked_meat");
@@ -4479,20 +4464,21 @@ elements.stomach_acid = {
     color: ["#b5cf91","#288f2a"],
     behavior: [
         "XX|DB%1|XX",
-        "DB%1 AND M2|DL%0.005|DB%1 AND M2",
+        "DB%1 AND M2|DL%0.03|DB%1 AND M2",
         "DB%1 AND M2|DB%2 AND M1|DB%1 AND M2",
     ],
-    ignore: ["amphib_skin","amphib_dermis",-"acidic_flesh","acid_vessel","throat_lining","explosive_stomach","stomach_lining","stomach_valve","slime","digested_material","glass","rad_glass","glass_shard","rad_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","microplastic","molten_plastic","pool_water","chlorine","hydrogen","gold_coin","silver","nickel","calcium","bone","earthquake","tornado","tsunami","liquid_light","sensor"],
+    ignore: ["amphib_skin","amphib_dermis","acidic_flesh","acid_vessel","throat_lining","explosive_stomach","stomach_lining","stomach_valve","slime","digested_material","glass","rad_glass","glass_shard","rad_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","microplastic","molten_plastic","pool_water","chlorine","hydrogen","gold_coin","silver","nickel","calcium","bone","earthquake","tornado","tsunami","liquid_light","sensor"],
     reactions: {
-        "water": { elem1:null, elem2:"dirty_water", chance:0.02 },
-        "salt_water": { elem1:null, elem2:"water", chance:0.02 },
-        "sugar_water": { elem1:null, elem2:"water", chance:0.02 },
-        "plant": { elem2:"digested_material", attr2:{"nutrition":10}, chance:0.02},
+        "dirty_water": { elem1:null, elem2:"digested_material", attr2:{"nutrition":-5}, chance:0.02 },
+        "water": { elem1:null, elem2:"digested_material", attr2:{"nutrition":0}, chance:0.02 },
+        "salt_water": { elem1:null, elem2:"digested_material", attr2:{"nutrition":5}, chance:0.02 },
+        "sugar_water": { elem1:null, elem2:"digested_material", attr2:{"nutrition":10}, chance:0.02 },
         "tree_branch": { elem1:null, elem2:"wood", chance:0.02 },
         "sugar": { elem2:"digested_material", attr2:{"nutrition":30}, chance:0.02 },
         "dead_plant": { elem2:"digested_material", attr2:{"nutrition":25}, chance:0.02 },
         "meat": { elem2:"digested_material", attr2:{"nutrition":30}, chance:0.02 },
         "cooked_meat": { elem2:"digested_material", attr2:{"nutrition":60}, chance:0.02 },
+        "broth": { elem1:null, elem2:"digested_material", attr2:{"nutrition":45}, chance:0.02 },
         "rotten_meat": { elem2:["digested_material","ammonia",null,null,null], attr2:{"nutrition":-10}, chance:0.02 },
         "cured_meat": { elem2:"digested_material", attr2:{"nutrition":50}, chance:0.02 },
         "cheese": { elem2:"digested_material", attr2:{"nutrition":35}, chance:0.02 },
@@ -4536,6 +4522,7 @@ elements.stomach_acid = {
         "dough": { elem2:"digested_material", attr2:{"nutrition":5}, chance:0.02 },
         "batter": { elem2:"digested_material", attr2:{"nutrition":5}, chance:0.02 },
         "baked_batter": { elem2:"digested_material", attr2:{"nutrition":45}, chance:0.02 },
+        "gingerbread": { elem2:"digested_material", attr2:{"nutrition":45}, chance:0.02 },
         "ice_cream": { elem2:"digested_material", attr2:{"nutrition":40}, chance:0.02 },
         "cream": { elem2:"digested_material", attr2:{"nutrition":25}, chance:0.02 },
         "caramel": { elem2:"digested_material", attr2:{"nutrition":30}, chance:0.02 },
@@ -4562,7 +4549,7 @@ elements.stomach_acid = {
     burn: 30,
     burnTime: 1,
     state: "liquid",
-    density: 1049,
+    density: 1050,
     stain: -0.1
 }
 
@@ -4570,20 +4557,22 @@ elements.herbi_acid = {
     color: ["#A8E54F","#5BC217"],
     behavior: [
         "XX|DB%1|XX",
-        "DB%1 AND M2|DL%0.005|DB%1 AND M2",
+        "DB%1 AND M2|DL%0.03|DB%1 AND M2",
         "DB%1 AND M2|DB%2 AND M1|DB%1 AND M2",
     ],
     ignore: ["amphib_skin","amphib_dermis","acidic_flesh","acid_vessel","throat_lining","explosive_stomach","herbi_stomach","carni_stomach","stomach_lining","stomach_valve","slime","digested_material","glass","rad_glass","glass_shard","rad_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","microplastic","molten_plastic","pool_water","chlorine","hydrogen","gold_coin","silver","nickel","calcium","bone","earthquake","tornado","tsunami","liquid_light","sensor"],
     reactions: {
-        "water": { elem1:null, elem2:"dirty_water", chance:0.02 },
-        "salt_water": { elem1:null, elem2:"water", chance:0.02 },
-        "sugar_water": { elem1:null, elem2:"water", chance:0.02 },
+        "dirty_water": { elem1:null, elem2:"digested_material", attr2:{"nutrition":-5}, chance:0.02 },
+        "water": { elem1:null, elem2:"digested_material", attr2:{"nutrition":0}, chance:0.02 },
+        "salt_water": { elem1:null, elem2:"digested_material", attr2:{"nutrition":5}, chance:0.02 },
+        "sugar_water": { elem1:null, elem2:"digested_material", attr2:{"nutrition":10}, chance:0.02 },
         "plant": { elem2:"digested_material", attr2:{"nutrition":80}, chance:0.02},
         "tree_branch": { elem1:null, elem2:"wood", attr2:{"nutrition":10}, chance:0.02 },
         "sugar": { elem2:"digested_material", attr2:{"nutrition":30}, chance:0.02 },
         "dead_plant": { elem2:"digested_material", attr2:{"nutrition":75}, chance:0.02 },
         "meat": { elem2:"digested_material", attr2:{"nutrition":-10}, chance:0.02 },
         "cooked_meat": { elem2:"digested_material", attr2:{"nutrition":-5}, chance:0.02 },
+        "broth": { elem1:null, elem2:"digested_material", attr2:{"nutrition":5}, chance:0.02 },
         "rotten_meat": { elem2:["digested_material","ammonia",null,null,null], attr2:{"nutrition":-25}, chance:0.02 },
         "cured_meat": { elem2:"digested_material", attr2:{"nutrition":-5}, chance:0.02 },
         "cheese": { elem2:"digested_material", attr2:{"nutrition":40}, chance:0.02 },
@@ -4631,6 +4620,7 @@ elements.herbi_acid = {
         "dough": { elem2:"digested_material", attr2:{"nutrition":5}, chance:0.02 },
         "batter": { elem2:"digested_material", attr2:{"nutrition":5}, chance:0.02 },
         "baked_batter": { elem2:"digested_material", attr2:{"nutrition":35}, chance:0.02 },
+        "gingerbread": { elem2:"digested_material", attr2:{"nutrition":35}, chance:0.02 },
         "ice_cream": { elem2:"digested_material", attr2:{"nutrition":30}, chance:0.02 },
         "cream": { elem2:"digested_material", attr2:{"nutrition":25}, chance:0.02 },
         "caramel": { elem2:"digested_material", attr2:{"nutrition":10}, chance:0.02 },
@@ -4657,7 +4647,7 @@ elements.herbi_acid = {
     burn: 30,
     burnTime: 1,
     state: "liquid",
-    density: 1049,
+    density: 1050,
     stain: -0.1
 }
 
@@ -4670,15 +4660,17 @@ elements.carni_acid = {
     ],
     ignore: ["amphib_skin","amphib_dermis","acidic_flesh","acid_vessel","throat_lining","explosive_stomach","stomach_lining","carni_stomach","stomach_valve","slime","digested_material","glass","rad_glass","glass_shard","rad_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","microplastic","molten_plastic","pool_water","chlorine","hydrogen","gold_coin","silver","nickel","calcium","bone","earthquake","tornado","tsunami","liquid_light","sensor"],
     reactions: {
-        "water": { elem1:null, elem2:"dirty_water", chance:0.02 },
-        "salt_water": { elem1:null, elem2:"water", chance:0.02 },
-        "sugar_water": { elem1:null, elem2:"water", chance:0.02 },
+        "dirty_water": { elem1:null, elem2:"digested_material", attr2:{"nutrition":-5}, chance:0.02 },
+        "water": { elem1:null, elem2:"digested_material", attr2:{"nutrition":0}, chance:0.02 },
+        "salt_water": { elem1:null, elem2:"digested_material", attr2:{"nutrition":5}, chance:0.02 },
+        "sugar_water": { elem1:null, elem2:"digested_material", attr2:{"nutrition":10}, chance:0.02 },
         "plant": { elem2:"digested_material", attr2:{"nutrition":5}, chance:0.02},
         "tree_branch": { elem1:null, elem2:"wood", chance:0.02 },
         "sugar": { elem2:"digested_material", attr2:{"nutrition":10}, chance:0.02 },
         "dead_plant": { elem2:"digested_material", attr2:{"nutrition":5}, chance:0.02 },
         "meat": { elem2:"digested_material", attr2:{"nutrition":70}, chance:0.02 },
         "cooked_meat": { elem2:"digested_material", attr2:{"nutrition":60}, chance:0.02 },
+        "broth": { elem1:null, elem2:"digested_material", attr2:{"nutrition":50}, chance:0.02 },
         "rotten_meat": { elem2:["digested_material","ammonia",null,null,null], attr2:{"nutrition":5}, chance:0.02 },
         "cured_meat": { elem2:"digested_material", attr2:{"nutrition":50}, chance:0.02 },
         "cheese": { elem2:"digested_material", attr2:{"nutrition":35}, chance:0.02 },
@@ -4727,6 +4719,7 @@ elements.carni_acid = {
         "dough": { elem2:"digested_material", attr2:{"nutrition":5}, chance:0.02 },
         "batter": { elem2:"digested_material", attr2:{"nutrition":-5}, chance:0.02 },
         "baked_batter": { elem2:"digested_material", attr2:{"nutrition":35}, chance:0.02 },
+        "gingerbread": { elem2:"digested_material", attr2:{"nutrition":35}, chance:0.02 },
         "ice_cream": { elem2:"digested_material", attr2:{"nutrition":30}, chance:0.02 },
         "cream": { elem2:"digested_material", attr2:{"nutrition":35}, chance:0.02 },
         "caramel": { elem2:"digested_material", attr2:{"nutrition":20}, chance:0.02 },
@@ -4753,7 +4746,7 @@ elements.carni_acid = {
     burn: 30,
     burnTime: 1,
     state: "liquid",
-    density: 1049,
+    density: 1050,
     stain: -0.1
 }
 
@@ -4766,15 +4759,17 @@ elements.explosive_acid = {
     ],
     ignore: ["amphib_skin","amphib_dermis","acidic_flesh","acid_vessel","throat_lining","stomach_lining","explosive_stomach","stomach_valve","slime","digested_material","glass","rad_glass","glass_shard","rad_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","microplastic","molten_plastic","pool_water","chlorine","hydrogen","gold_coin","silver","nickel","calcium","bone","earthquake","tornado","tsunami","liquid_light","sensor"],
     reactions: {
-        "water": { elem1:null, elem2:"dirty_water", chance:0.02 },
-        "salt_water": { elem1:null, elem2:"water", chance:0.02 },
-        "sugar_water": { elem1:null, elem2:"water", chance:0.02 },
+        "dirty_water": { elem1:null, elem2:"digested_material", attr2:{"nutrition":-5}, chance:0.02 },
+        "water": { elem1:null, elem2:"digested_material", attr2:{"nutrition":0}, chance:0.02 },
+        "salt_water": { elem1:null, elem2:"digested_material", attr2:{"nutrition":5}, chance:0.02 },
+        "sugar_water": { elem1:null, elem2:"digested_material", attr2:{"nutrition":10}, chance:0.02 },
         "plant": { elem2:"digested_material", attr2:{"nutrition":10}, chance:0.02},
         "tree_branch": { elem1:null, elem2:"wood", chance:0.02 },
         "sugar": { elem2:"digested_material", attr2:{"nutrition":30}, chance:0.02 },
         "dead_plant": { elem2:"digested_material", attr2:{"nutrition":25}, chance:0.02 },
         "meat": { elem2:"digested_material", attr2:{"nutrition":30}, chance:0.02 },
         "cooked_meat": { elem2:"digested_material", attr2:{"nutrition":60}, chance:0.02 },
+        "broth": { elem1:null, elem2:"digested_material", attr2:{"nutrition":55}, chance:0.02 },
         "rotten_meat": { elem2:["digested_material","ammonia",null,null,null], attr2:{"nutrition":30}, chance:0.02 },
         "cured_meat": { elem2:"digested_material", attr2:{"nutrition":50}, chance:0.02 },
         "cheese": { elem2:"digested_material", attr2:{"nutrition":35}, chance:0.02 },
@@ -4818,6 +4813,7 @@ elements.explosive_acid = {
         "dough": { elem2:"digested_material", attr2:{"nutrition":5}, chance:0.02 },
         "batter": { elem2:"digested_material", attr2:{"nutrition":5}, chance:0.02 },
         "baked_batter": { elem2:"digested_material", attr2:{"nutrition":45}, chance:0.02 },
+        "gingerbread": { elem2:"digested_material", attr2:{"nutrition":45}, chance:0.02 },
         "ice_cream": { elem2:"digested_material", attr2:{"nutrition":40}, chance:0.02 },
         "cream": { elem2:"digested_material", attr2:{"nutrition":25}, chance:0.02 },
         "caramel": { elem2:"digested_material", attr2:{"nutrition":30}, chance:0.02 },
@@ -4849,7 +4845,7 @@ elements.explosive_acid = {
     burn: 30,
     burnTime: 1,
     state: "liquid",
-    density: 1049,
+    density: 1050,
 }
 
 elements.decomposer_acid = {
@@ -4861,15 +4857,17 @@ elements.decomposer_acid = {
     ],
     ignore: ["amphib_skin","amphib_dermis","acidic_flesh","acid_vessel","decomposer_stomach","throat_lining","explosive_stomach","herbi_stomach","carni_stomach","stomach_lining","stomach_valve","slime","digested_material","glass","rad_glass","glass_shard","rad_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","microplastic","molten_plastic","pool_water","chlorine","hydrogen","gold_coin","silver","nickel","calcium","bone","earthquake","tornado","tsunami","liquid_light","sensor"],
     reactions: {
-        "water": { elem1:null, elem2:"dirty_water", chance:0.02 },
-        "salt_water": { elem1:null, elem2:"water", chance:0.02 },
-        "sugar_water": { elem1:null, elem2:"water", chance:0.02 },
+        "dirty_water": { elem1:null, elem2:"digested_material", attr2:{"nutrition":-5}, chance:0.02 },
+        "water": { elem1:null, elem2:"digested_material", attr2:{"nutrition":0}, chance:0.02 },
+        "salt_water": { elem1:null, elem2:"digested_material", attr2:{"nutrition":5}, chance:0.02 },
+        "sugar_water": { elem1:null, elem2:"digested_material", attr2:{"nutrition":10}, chance:0.02 },
         "plant": { elem2:"digested_material", attr2:{"nutrition":40}, chance:0.02},
         "tree_branch": { elem1:null, elem2:"wood", attr2:{"nutrition":30}, chance:0.02 },
         "sugar": { elem2:"digested_material", attr2:{"nutrition":30}, chance:0.02 },
         "dead_plant": { elem2:"digested_material", attr2:{"nutrition":90}, chance:0.02 },
         "meat": { elem2:"digested_material", attr2:{"nutrition":20}, chance:0.02 },
         "cooked_meat": { elem2:"digested_material", attr2:{"nutrition":-5}, chance:0.02 },
+        "broth": { elem1:null, elem2:"digested_material", attr2:{"nutrition":25}, chance:0.02 },
         "rotten_meat": { elem2:["digested_material","ammonia",null,null,null], attr2:{"nutrition":55}, chance:0.02 },
         "cured_meat": { elem2:"digested_material", attr2:{"nutrition":-5}, chance:0.02 },
         "cheese": { elem2:"digested_material", attr2:{"nutrition":50}, chance:0.02 },
@@ -4917,6 +4915,7 @@ elements.decomposer_acid = {
         "dough": { elem2:"digested_material", attr2:{"nutrition":5}, chance:0.02 },
         "batter": { elem2:"digested_material", attr2:{"nutrition":5}, chance:0.02 },
         "baked_batter": { elem2:"digested_material", attr2:{"nutrition":35}, chance:0.02 },
+        "gingerbread": { elem2:"digested_material", attr2:{"nutrition":35}, chance:0.02 },
         "ice_cream": { elem2:"digested_material", attr2:{"nutrition":30}, chance:0.02 },
         "cream": { elem2:"digested_material", attr2:{"nutrition":25}, chance:0.02 },
         "caramel": { elem2:"digested_material", attr2:{"nutrition":10}, chance:0.02 },
@@ -4945,7 +4944,7 @@ elements.decomposer_acid = {
     burn: 30,
     burnTime: 1,
     state: "liquid",
-    density: 1049,
+    density: 1050,
     stain: -0.1
 }
 
@@ -5013,12 +5012,12 @@ elements.real_bone = {
         "seltzer": { elem2:"broth", tempMin:70 },
     },
     hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if (Math.random() > 0.99 && pixel.nutrition > 0 && pixel.oxygen > 0) {
+        if ((Math.random() > 0.99 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
-            pixel.oxygen--
+            pixel.oxygen -= 2
         }
         if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
             changePixel(pixel,"bone");
@@ -5417,10 +5416,10 @@ elements.tract = {
         logMessage("Draw a pipe, wait for walls to appear, then erase the exit hole.");
     },
     hoverStat: function(pixel) {
-        return "Nutr:"+pixel.nutrition+" O2:"+pixel.oxygen
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if (Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
+        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -5622,6 +5621,33 @@ elements.tract = {
         nutrition: 1000,
     },
     isBio: true,
+}
+
+elements.revive = {
+    color: "#8BE73E",
+    hidden: true,
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "XX|XX|XX",
+    ],
+    tool: function(pixel) {
+        if (elements[pixel.element].isBio == true) {
+            if (pixel.nutrition < 2000 || pixel.oxygen < 2000) {
+                if (pixel.nutrition < 2000) {
+                    pixel.nutrition += 100
+                }
+                if (pixel.oxygen < 2000) {
+                    pixel.oxygen += 100
+                }
+            }
+        }
+        if (elements[pixel.element].id === elements.meat.id || elements[pixel.element].id === elements.rotten_meat.id || elements[pixel.element].id === elements.cured_meat.id || elements[pixel.element].id === elements.cooked_meat.id) {
+            changePixel(pixel,"flesh"); 
+        }
+    },
+    canPlace: false,
+    category: "tools",
 }
 
 if (!elements.cancer.reactions) { elements.cancer.reactions = {} }
