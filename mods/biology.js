@@ -239,7 +239,7 @@ elements.epidermis = {
     burn: 10,
     burnTime: 250,
     burnInto: "cooked_meat",
-    breakInto: ["blood","meat"],
+    breakInto: ["blood","meat","dust","dust","dust","dust"],
     forceSaveColor: true,
 	reactions: {
 		"cancer": { elem1:"cancer", chance:0.0005 },
@@ -1392,6 +1392,16 @@ elements.blood_vessel = {
         return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
+        if (Math.random() > (1 - ((pixel.nutrition + pixel.oxygen) / 2000)) && Math.random() < 0.001) {
+            for (var i = 0; i < adjacentCoords.length; i++) {
+                var coords = adjacentCoords[i];
+                var x = pixel.x + coords[0];
+                var y = pixel.y + coords[1];
+                if (isEmpty(x,y)) {
+                    createPixel("flesh",x,y);
+                }
+            }
+        }
         if (Math.random() > 0.975 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
             pixel.nutrition--
             pixel.oxygen--
@@ -5641,9 +5651,54 @@ elements.revive = {
                     pixel.oxygen += 100
                 }
             }
+            if (pixel.burning) {
+                pixel.burning = false
+            }
         }
-        if (elements[pixel.element].id === elements.meat.id || elements[pixel.element].id === elements.rotten_meat.id || elements[pixel.element].id === elements.cured_meat.id || elements[pixel.element].id === elements.cooked_meat.id) {
+        if (elements[pixel.element].id === elements.meat.id || elements[pixel.element].id === elements.rotten_meat.id || elements[pixel.element].id === elements.cured_meat.id || elements[pixel.element].id === elements.cooked_meat.id || elements[pixel.element].id === elements.cancer.id) {
             changePixel(pixel,"flesh"); 
+        }
+        else if (elements[pixel.element].id === elements.bone.id || elements[pixel.element].id === elements.bone_marrow.id || elements[pixel.element].id === elements.quicklime.id) {
+            changePixel(pixel,"real_bone"); 
+        }
+        else if (elements[pixel.element].id === elements.dust.id || elements[pixel.element].id === elements.skin.id) {
+            changePixel(pixel,"epidermis"); 
+        }
+        else if (elements[pixel.element].id === elements.blood.id) {
+            if (Math.random() < 0.65) {
+                if (Math.random() < 0.95) {
+                    changePixel(pixel,"blood_vessel"); 
+                }
+                else {changePixel(pixel,"white_blood_cell"); }
+            }
+            else {changePixel(pixel,"flesh"); }
+        }
+        else if (elements[pixel.element].id === elements.infection.id || elements[pixel.element].id === elements.antibody.id) {
+            changePixel(pixel,"white_blood_cell"); 
+        }
+    },
+    canPlace: false,
+    category: "tools",
+}
+
+elements.drain_health = {
+    color: "#AD1300",
+    hidden: true,
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "XX|XX|XX",
+    ],
+    tool: function(pixel) {
+        if (elements[pixel.element].isBio == true) {
+            if (pixel.nutrition > 10 || pixel.oxygen > 10) {
+                if (pixel.nutrition > 10) {
+                    pixel.nutrition -= 10
+                }
+                if (pixel.oxygen > 10) {
+                    pixel.oxygen -= 10
+                }
+            }
         }
     },
     canPlace: false,
