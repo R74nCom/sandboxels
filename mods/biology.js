@@ -60,7 +60,7 @@ elements.flesh = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.75) {
                 changePixel(pixel,"meat"); 
             }
@@ -203,7 +203,7 @@ elements.epidermis = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             changePixel(pixel,"dust"); 
         }
         if (pixel.nutrition === null || isNaN(pixel.nutrition)) {
@@ -332,7 +332,7 @@ elements.dermis = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.75) {
                 changePixel(pixel,"meat"); 
             }
@@ -459,7 +459,7 @@ elements.scales = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.1) {
                 changePixel(pixel,"calcium"); 
             }
@@ -590,7 +590,7 @@ elements.scale_dermis = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.75) {
                 changePixel(pixel,"meat"); 
             }
@@ -724,7 +724,7 @@ elements.bug_dermis = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.75) {
                 changePixel(pixel,"meat"); 
             }
@@ -859,7 +859,7 @@ elements.amphib_dermis = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.75) {
                 changePixel(pixel,"meat"); 
             }
@@ -982,7 +982,7 @@ elements.acidic_flesh = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.1) {
                 changePixel(pixel,"rotten_meat"); 
             }
@@ -1104,7 +1104,7 @@ elements.slimey_flesh = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.1) {
                 changePixel(pixel,"rotten_meat"); 
             }
@@ -1225,7 +1225,7 @@ elements.adipose = {
         if (Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.75) {
                 changePixel(pixel,"meat"); 
             }
@@ -1330,7 +1330,7 @@ elements.acid_vessel = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             changePixel(pixel,"acid");
         }
         if (pixel.nutrition === null || isNaN(pixel.nutrition)) {
@@ -1475,7 +1475,7 @@ elements.heart = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             changePixel(pixel,"blood");
         }
         if (pixel.nutrition === null || isNaN(pixel.nutrition)) {
@@ -1616,7 +1616,7 @@ elements.kidney = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             changePixel(pixel,"blood");
         }
         if (pixel.nutrition === null || isNaN(pixel.nutrition)) {
@@ -1749,7 +1749,7 @@ elements.liver = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             changePixel(pixel,"rotten_meat");
         }
         if (pixel.nutrition === null || isNaN(pixel.nutrition)) {
@@ -1863,7 +1863,7 @@ elements.blood_vessel = {
             pixel.nutrition--
             pixel.oxygen--
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             changePixel(pixel,"blood");
         }
         if (pixel.nutrition === null || isNaN(pixel.nutrition)) {
@@ -2085,7 +2085,7 @@ elements.white_blood_cell = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             changePixel(pixel,"blood");
         }
         if (pixel.nutrition === null || isNaN(pixel.nutrition)) {
@@ -2238,7 +2238,7 @@ elements.eye = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.75) {
                 changePixel(pixel,"meat"); 
             }
@@ -2431,7 +2431,7 @@ elements.olfactory_bulb = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.75) {
                 changePixel(pixel,"meat"); 
             }
@@ -2636,7 +2636,7 @@ elements.brain = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.75) {
                 changePixel(pixel,"meat"); 
             }
@@ -2787,7 +2787,7 @@ elements.amygdala = { // please please please ignore that i callled it the amygd
             pixel.nutrition--
             pixel.oxygen--
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.75) {
                 changePixel(pixel,"meat"); 
             }
@@ -2917,7 +2917,7 @@ elements.eye_nerve = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.75) {
                 changePixel(pixel,"meat"); 
             }
@@ -3041,7 +3041,7 @@ elements.bulb_nerve = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.75) {
                 changePixel(pixel,"meat"); 
             }
@@ -3166,7 +3166,7 @@ elements.nerve = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.75) {
                 changePixel(pixel,"meat"); 
             }
@@ -3293,7 +3293,7 @@ elements.throat_lining = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.75) {
                 changePixel(pixel,"meat"); 
             }
@@ -3416,7 +3416,7 @@ elements.intestines = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.75) {
                 changePixel(pixel,"meat"); 
             }
@@ -3596,7 +3596,7 @@ elements.appendix = {
                 changePixel(pixel,"stomach_acid");
             }
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.75) {
                 changePixel(pixel,"meat"); 
             }
@@ -3763,7 +3763,7 @@ elements.simple_lung = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.75) {
                 changePixel(pixel,"meat"); 
             }
@@ -3910,7 +3910,7 @@ elements.lungs = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.75) {
                 changePixel(pixel,"meat"); 
             }
@@ -4108,7 +4108,7 @@ elements.amphib_skin = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.75) {
                 changePixel(pixel,"rotten_meat"); 
             }
@@ -4283,7 +4283,7 @@ elements.exoskeleton = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.1) {
                 changePixel(pixel,"calcium"); 
             }
@@ -4453,7 +4453,7 @@ elements.gills = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.75) {
                 changePixel(pixel,"meat"); 
             }
@@ -4632,7 +4632,7 @@ elements.stomach_lining = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.75) {
                 changePixel(pixel,"meat"); 
             }
@@ -4759,7 +4759,7 @@ elements.decomposer_stomach = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.75) {
                 changePixel(pixel,"meat"); 
             }
@@ -4886,7 +4886,7 @@ elements.herbi_stomach = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.75) {
                 changePixel(pixel,"meat"); 
             }
@@ -5013,7 +5013,7 @@ elements.carni_stomach = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.75) {
                 changePixel(pixel,"meat"); 
             }
@@ -5140,7 +5140,7 @@ elements.explosive_stomach = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.75) {
                 changePixel(pixel,"meat"); 
             }
@@ -5267,7 +5267,7 @@ elements.stomach_valve = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.75) {
                 changePixel(pixel,"meat"); 
             }
@@ -5394,7 +5394,7 @@ elements.sphincter = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.75) {
                 changePixel(pixel,"meat"); 
             }
@@ -5528,7 +5528,7 @@ elements.real_udder = {
             pixel.nutrition--
             pixel.oxygen--
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             changePixel(pixel,"meat");
         }
         if (pixel.nutrition === null || isNaN(pixel.nutrition)) {
@@ -5661,7 +5661,7 @@ elements.biotorch = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             changePixel(pixel,"cooked_meat");
         }
         if (pixel.nutrition === null || isNaN(pixel.nutrition)) {
@@ -6504,7 +6504,7 @@ elements.real_bone = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             changePixel(pixel,"bone");
         }
         if (pixel.nutrition === null || isNaN(pixel.nutrition)) {
@@ -6629,7 +6629,7 @@ elements.real_bone_marrow = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.95) {
                 changePixel(pixel,"meat"); 
             }
@@ -7087,7 +7087,7 @@ elements.tract = {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
-        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1)) {
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
             if (Math.random() < 0.75) {
                 changePixel(pixel,"meat"); 
             }
