@@ -447,7 +447,7 @@ elements.loose_hair = {
     color: "#8E5347",
     singleColor: true,
     behavior: behaviors.POWDER,
-    category:"solids",
+    category:"powders",
     tempHigh: 223,
     stateHigh: ["smoke","smoke","smoke","ash","ash","stench"],
     burn:15,
@@ -457,11 +457,11 @@ elements.loose_hair = {
     state: "solid",
     density: 2395,
     conduct: 0.05,
-    idden: true
+    hidden: true
 },
 
 elements.hair_end = {
-    color: "#9D4C3B",
+    color: "#4f1a00",
 	category: "structural",
     behavior: behaviors.WALL,
     tick: function(pixel) {
@@ -525,10 +525,11 @@ elements.hair_end = {
         "radiation": { elem1:["ash","dust"], chance:0.2 },
 	},
     movable: false,
+    hidden: true
 }
 
 elements.attached_hair = {
-    color: "#9D4C3B",
+    color: "#4f1a00",
 	category: "structural",
     behavior: behaviors.WALL,
     tick: function(pixel) {
@@ -642,6 +643,7 @@ elements.attached_hair = {
         "radiation": { elem1:["ash","dust"], chance:0.2 },
 	},
     movable: false,
+    hidden: true
 }
 
 elements.hairy_skin = {
