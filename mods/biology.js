@@ -443,6 +443,505 @@ elements.dermis = {
     movable: false,
 }
 
+elements.loose_hair = {
+    color: "#8E5347",
+    singleColor: true,
+    behavior: behaviors.POWDER,
+    category:"solids",
+    tempHigh: 223,
+    stateHigh: ["smoke","smoke","smoke","ash","ash","stench"],
+    burn:15,
+    burnTime:400,
+    burnInto:["smoke","smoke","smoke","ash","ash","stench"],
+    breakInto: [null,null,null,null,"dust"],
+    state: "solid",
+    density: 2395,
+    conduct: 0.05,
+    idden: true
+},
+
+elements.hair_end = {
+    color: "#9D4C3B",
+	category: "structural",
+    behavior: behaviors.WALL,
+    tick: function(pixel) {
+        if (pixel.dir === "up") {
+            if (isEmpty(pixel.x,pixel.y+1)) {
+                changePixel(pixel,"loose_hair"); 
+            }
+        }
+        else if (pixel.dir === "down") {
+            if (isEmpty(pixel.x,pixel.y-1)) {
+                changePixel(pixel,"loose_hair"); 
+            }
+        }
+        else if (pixel.dir === "left") {
+            if (isEmpty(pixel.x+1,pixel.y)) {
+                changePixel(pixel,"loose_hair"); 
+            }
+        }
+        else if (pixel.dir === "right") {
+            if (isEmpty(pixel.x-1,pixel.y)) {
+                changePixel(pixel,"loose_hair"); 
+            }
+        }
+        else if (!pixel.dir && pixel.age > 10) {
+            changePixel(pixel,"loose_hair"); 
+        }
+        if (pixel.temp < 5 && Math.random() < 0.01) {
+            for (var i = 0; i < squareCoords.length; i++) {
+                var coords = squareCoords[i];
+                var x = pixel.x + coords[0];
+                var y = pixel.y + coords[1];
+                if (isEmpty(x,y)) {
+                    pixel.temp += 10;
+                    break;
+                }
+            }
+        }
+        if (pixel.temp < 10 && Math.random() < 0.1) {
+            pixel.temp += 1;
+        }
+        doDefaults(pixel);
+        pixel.age++
+    },
+    properties: {
+        age: 0,
+    },
+    density: 2710,
+    state: "solid",
+    conduct: .05,
+    tempLow: -25,
+    stateLow: ["dust"],
+    tempHigh: 223,
+    stateHigh: ["smoke","smoke","smoke","ash","ash","stench"],
+    burn:15,
+    burnTime:400,
+    burnInto:["smoke","smoke","smoke","ash","ash","stench"],
+    breakInto:"loose_hair",
+    forceSaveColor: true,
+	reactions: {
+		"cancer": { elem1:null, chance:0.0005 },
+        "radiation": { elem1:["ash","dust"], chance:0.2 },
+	},
+    movable: false,
+}
+
+elements.attached_hair = {
+    color: "#9D4C3B",
+	category: "structural",
+    behavior: behaviors.WALL,
+    tick: function(pixel) {
+        if (Math.random() < 0.005) {
+            if (pixel.dir === "up") {
+                if (isEmpty(pixel.x,pixel.y-1)) {
+                    if (Math.random() > 0.1) {
+                        createPixel("attached_hair",pixel.x,pixel.y-1)
+                        pixelMap[pixel.x][pixel.y-1].dir = "up"
+                    }
+                    else {
+                        createPixel("hair_end",pixel.x,pixel.y-1)
+                        pixelMap[pixel.x][pixel.y-1].dir = "up"
+                    }
+                }
+            }
+            else if (pixel.dir === "down") {
+                if (isEmpty(pixel.x,pixel.y+1)) {
+                    if (Math.random() > 0.1) {
+                        createPixel("attached_hair",pixel.x,pixel.y+1)
+                        pixelMap[pixel.x][pixel.y+1].dir = "down"
+                    }
+                    else {
+                        createPixel("hair_end",pixel.x,pixel.y+1)
+                        pixelMap[pixel.x][pixel.y+1].dir = "down"
+                    }
+                }
+            }
+            else if (pixel.dir === "left") {
+                if (isEmpty(pixel.x-1,pixel.y)) {
+                    if (Math.random() > 0.1) {
+                        createPixel("attached_hair",pixel.x-1,pixel.y)
+                        pixelMap[pixel.x-1][pixel.y].dir = "left"
+                    }
+                    else {
+                        createPixel("hair_end",pixel.x-1,pixel.y)
+                        pixelMap[pixel.x-1][pixel.y].dir = "left"
+                    }
+                }
+            }
+            else if (pixel.dir === "right") {
+                if (isEmpty(pixel.x+1,pixel.y)) {
+                    if (Math.random() > 0.1) {
+                        createPixel("attached_hair",pixel.x+1,pixel.y)
+                        pixelMap[pixel.x+1][pixel.y].dir = "right"
+                    }
+                    else {
+                        createPixel("hair_end",pixel.x+1,pixel.y)
+                        pixelMap[pixel.x+1][pixel.y].dir = "right"
+                    }
+                }
+            }
+        }
+        if (pixel.dir === "up") {
+            if (isEmpty(pixel.x,pixel.y+1)) {
+                changePixel(pixel,"loose_hair"); 
+            }
+        }
+        else if (pixel.dir === "down") {
+            if (isEmpty(pixel.x,pixel.y-1)) {
+                changePixel(pixel,"loose_hair"); 
+            }
+        }
+        else if (pixel.dir === "left") {
+            if (isEmpty(pixel.x+1,pixel.y)) {
+                changePixel(pixel,"loose_hair"); 
+            }
+        }
+        else if (pixel.dir === "right") {
+            if (isEmpty(pixel.x-1,pixel.y)) {
+                changePixel(pixel,"loose_hair"); 
+            }
+        }
+        else if (!pixel.dir && pixel.age > 10) {
+            changePixel(pixel,"loose_hair"); 
+        }
+        if (pixel.temp < 5 && Math.random() < 0.01) {
+            for (var i = 0; i < squareCoords.length; i++) {
+                var coords = squareCoords[i];
+                var x = pixel.x + coords[0];
+                var y = pixel.y + coords[1];
+                if (isEmpty(x,y)) {
+                    pixel.temp += 10;
+                    break;
+                }
+            }
+        }
+        if (pixel.temp < 10 && Math.random() < 0.1) {
+            pixel.temp += 1;
+        }
+        doDefaults(pixel);
+        pixel.age++
+    },
+    properties: {
+        age: 0,
+    },
+    density: 2710,
+    state: "solid",
+    conduct: .05,
+    tempLow: -25,
+    stateLow: ["dust"],
+    tempHigh: 223,
+    stateHigh: ["smoke","smoke","smoke","ash","ash","stench"],
+    burn:15,
+    burnTime:400,
+    burnInto:["smoke","smoke","smoke","ash","ash","stench"],
+    breakInto:"loose_hair",
+    forceSaveColor: true,
+	reactions: {
+		"cancer": { elem1:null, chance:0.0005 },
+        "radiation": { elem1:["ash","dust"], chance:0.2 },
+	},
+    movable: false,
+}
+
+elements.hairy_skin = {
+	color: "#f7ead0",
+	category: "structural",
+    behavior: behaviors.WALL,
+    hoverStat: function(pixel) {
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
+    },
+    tick: function(pixel) {
+        if (Math.random() > (1 - ((pixel.nutrition + pixel.oxygen + pixel.speed) / 2050)) && Math.random() < 0.01) {
+                if (isEmpty(pixel.x,pixel.y-1)) {
+                    createPixel("attached_hair",pixel.x,pixel.y-1)
+                    pixelMap[pixel.x][pixel.y-1].dir = "up"
+                }
+                if (isEmpty(pixel.x,pixel.y+1)) {
+                    createPixel("attached_hair",pixel.x,pixel.y+1)
+                    pixelMap[pixel.x][pixel.y+1].dir = "down"
+                }
+
+                if (isEmpty(pixel.x-1,pixel.y)) {
+                    createPixel("attached_hair",pixel.x-1,pixel.y)
+                    pixelMap[pixel.x-1][pixel.y].dir = "left"
+                }
+
+                if (isEmpty(pixel.x+1,pixel.y)) {
+                    createPixel("attached_hair",pixel.x+1,pixel.y)
+                    pixelMap[pixel.x+1][pixel.y].dir = "right"
+                }
+
+        }
+        if ((pixel.temp > 35 || pixel.temp < 10) && Math.random() < 0.005) {
+            for (var i = 0; i < squareCoords.length; i++) {
+                var coords = squareCoords[i];
+                var x = pixel.x + coords[0];
+                var y = pixel.y + coords[1];
+                if (isEmpty(x,y)) {
+                    if (pixel.temp > 35) {
+                        pixel.temp -= 20;
+                        createPixel("salt_water",x,y);
+                        break;
+                    }
+                    pixel.temp += 20;
+                    break;
+                }
+            }
+        }
+        if (pixel.temp < 15 && Math.random() < 0.1) {
+            pixel.temp += 1;
+        }
+        doDefaults(pixel);
+        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+            pixel.nutrition--
+            pixel.oxygen -= 2
+        }
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
+            changePixel(pixel,"dust"); 
+        }
+        if (pixel.nutrition === null || isNaN(pixel.nutrition)) {
+            pixel.nutrition = 500
+        }
+        if (pixel.oxygen === null || isNaN(pixel.oxygen)) {
+            pixel.oxygen = 500
+        }
+        if (pixel.speed === null || isNaN(pixel.speed)) {
+            pixel.speed = 0
+        }
+        if (!isEmpty(pixel.x, pixel.y-1, true)) {
+            var hitPixel = pixelMap[pixel.x][pixel.y-1]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+            }
+        }
+        if (!isEmpty(pixel.x, pixel.y+1, true)) {
+            var hitPixel = pixelMap[pixel.x][pixel.y+1]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+            }
+        }
+        if (!isEmpty(pixel.x-1, pixel.y, true)) {
+            var hitPixel = pixelMap[pixel.x-1][pixel.y]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+            }
+        }
+        if (!isEmpty(pixel.x+1, pixel.y, true)) {
+            var hitPixel = pixelMap[pixel.x+1][pixel.y]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+            }
+        }
+    },
+    density: 2710,
+    state: "solid",
+    conduct: .05,
+    tempHigh: 200,
+    stateHigh: "cooked_meat",
+    tempLow: -25,
+    stateLow: "frozen_meat",
+    burn: 10,
+    burnTime: 250,
+    burnInto: "cooked_meat",
+    breakInto: ["blood","meat","dust","dust","dust","dust"],
+    forceSaveColor: true,
+	reactions: {
+		"cancer": { elem1:"cancer", chance:0.0005 },
+        "radiation": { elem1:["ash","meat","rotten_meat","cooked_meat","flesh"], chance:0.2 },
+	},
+	properties: {
+        oxygen: 1000,
+        nutrition: 1000,
+        speed: 0,
+    },
+    isBio: true,
+    movable: false,
+}
+
+elements.hair_dermis = {
+	color: "#CFA08B",
+	category: "structural",
+    behavior: behaviors.WALL,
+    hoverStat: function(pixel) {
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
+    },
+    tick: function(pixel) {
+        if (Math.random() > (1 - ((pixel.nutrition + pixel.oxygen + pixel.speed) / 2050)) && Math.random() < 0.005) {
+            for (var i = 0; i < squareCoords.length; i++) {
+                var coords = squareCoords[i];
+                var x = pixel.x + coords[0];
+                var y = pixel.y + coords[1];
+                if (isEmpty(x,y)) {
+                    if (Math.random() > 0.05) {
+                        createPixel("hairy_skin",x,y);
+                    }
+                    else {
+                        createPixel("epidermis",x,y);
+                    }
+                }
+            }
+        }
+        doDefaults(pixel);
+        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+            pixel.nutrition--
+            pixel.oxygen -= 2
+        }
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
+            if (Math.random() < 0.75) {
+                changePixel(pixel,"meat"); 
+            }
+            else {
+                changePixel(pixel,"rotten_meat"); 
+            }
+        }
+        if (pixel.nutrition === null || isNaN(pixel.nutrition)) {
+            pixel.nutrition = 500
+        }
+        if (pixel.oxygen === null || isNaN(pixel.oxygen)) {
+            pixel.oxygen = 500
+        }
+        if (pixel.speed === null || isNaN(pixel.speed)) {
+            pixel.speed = 0
+        }
+        if (!isEmpty(pixel.x, pixel.y-1, true)) {
+            var hitPixel = pixelMap[pixel.x][pixel.y-1]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+            }
+        }
+        if (!isEmpty(pixel.x, pixel.y+1, true)) {
+            var hitPixel = pixelMap[pixel.x][pixel.y+1]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+            }
+        }
+        if (!isEmpty(pixel.x-1, pixel.y, true)) {
+            var hitPixel = pixelMap[pixel.x-1][pixel.y]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+            }
+        }
+        if (!isEmpty(pixel.x+1, pixel.y, true)) {
+            var hitPixel = pixelMap[pixel.x+1][pixel.y]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+            }
+        }
+    },
+    density: 2710,
+    state: "solid",
+    conduct: .05,
+    tempHigh: 200,
+    stateHigh: "cooked_meat",
+    tempLow: -25,
+    stateLow: "frozen_meat",
+    burn: 10,
+    burnTime: 250,
+    burnInto: "cooked_meat",
+    breakInto: ["blood","meat"],
+    forceSaveColor: true,
+	reactions: {
+		"cancer": { elem1:"cancer", chance:0.0005 },
+        "radiation": { elem1:["ash","meat","rotten_meat","cooked_meat","flesh"], chance:0.2 },
+	},
+	properties: {
+        oxygen: 1000,
+        nutrition: 1000,
+        speed: 0,
+    },
+    isBio: true,
+    movable: false,
+}
+
 elements.scales = {
 	color: "#6b839a",
 	category: "structural",
