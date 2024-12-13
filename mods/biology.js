@@ -461,7 +461,7 @@ elements.loose_hair = {
 },
 
 elements.hair_end = {
-    color: "#9D4C3B",
+    color: "#754a41",
 	category: "structural",
     behavior: behaviors.WALL,
     tick: function(pixel) {
@@ -528,7 +528,7 @@ elements.hair_end = {
 }
 
 elements.attached_hair = {
-    color: "#9D4C3B",
+    color: "#754a41",
 	category: "structural",
     behavior: behaviors.WALL,
     tick: function(pixel) {
