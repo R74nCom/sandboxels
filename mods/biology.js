@@ -2573,8 +2573,8 @@ elements.white_blood_cell = {
     color: "#F5D7D4",
     behavior: [
         "XX|SW:blood,blood_vessel%1|XX",
-        "SW:blood,blood_vessel%1 AND M2%10|XX|SW:blood,blood_vessel%1 AND M2%10",
-        "M2|SW:blood,blood_vessel%1 AND M1|M2",
+        "SW:blood,blood_vessel%1|XX|SW:blood,blood_vessel%1",
+        "XX|SW:blood,blood_vessel%1 AND M1|XX",
     ],
     hoverStat: function(pixel) {
         return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
@@ -3935,7 +3935,12 @@ elements.intestines = {
 		if (!isEmpty(pixel.x, pixel.y-1, true)) {
             var hitPixel = pixelMap[pixel.x][pixel.y-1]
             if (elements[hitPixel.element].id === elements.digested_material.id && Math.random() > 0.99) {
-                changePixel(hitPixel,"poop");
+                if (Math.random() > 0.5) {
+            		changePixel(hitPixel,"poop"); 
+	        }
+		else if (Math.random() > 0.5) {
+            		changePixel(hitPixel,"stench"); 
+	        }
                 pixel.nutrition += hitPixel.nutrition;
                 hitPixel.nutrition = 0;
                 pixel.speed += hitPixel.speed;
@@ -3966,7 +3971,12 @@ elements.intestines = {
         if (!isEmpty(pixel.x, pixel.y+1, true)) {
             var hitPixel = pixelMap[pixel.x][pixel.y+1]
             if (elements[hitPixel.element].id === elements.digested_material.id && Math.random() > 0.99) {
-                changePixel(hitPixel,"poop");
+                if (Math.random() > 0.5) {
+            		changePixel(hitPixel,"poop"); 
+	        }
+		else if (Math.random() > 0.5) {
+            		changePixel(hitPixel,"stench"); 
+	        }
                 pixel.nutrition += hitPixel.nutrition;
                 hitPixel.nutrition = 0;
                 pixel.speed += hitPixel.speed;
@@ -3997,7 +4007,12 @@ elements.intestines = {
         if (!isEmpty(pixel.x-1, pixel.y, true)) {
             var hitPixel = pixelMap[pixel.x-1][pixel.y]
             if (elements[hitPixel.element].id === elements.digested_material.id && Math.random() > 0.99) {
-                changePixel(hitPixel,"poop");
+                if (Math.random() > 0.5) {
+            		changePixel(hitPixel,"poop"); 
+	        }
+		else if (Math.random() > 0.5) {
+            		changePixel(hitPixel,"stench"); 
+	        }
                 pixel.nutrition += hitPixel.nutrition;
                 hitPixel.nutrition = 0;
                 pixel.speed += hitPixel.speed;
@@ -4026,7 +4041,12 @@ elements.intestines = {
         if (!isEmpty(pixel.x+1, pixel.y, true)) {
             var hitPixel = pixelMap[pixel.x+1][pixel.y]
             if (elements[hitPixel.element].id === elements.digested_material.id && Math.random() > 0.99) {
-                changePixel(hitPixel,"poop");
+                if (Math.random() > 0.5) {
+            		changePixel(hitPixel,"poop"); 
+	        }
+		else if (Math.random() > 0.5) {
+            		changePixel(hitPixel,"stench"); 
+	        }
                 pixel.nutrition += hitPixel.nutrition;
                 hitPixel.nutrition = 0;
                 pixel.speed += hitPixel.speed;
