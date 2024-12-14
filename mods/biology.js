@@ -56,7 +56,7 @@ elements.flesh = {
         return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -199,7 +199,7 @@ elements.epidermis = {
             pixel.temp += 1;
         }
         doDefaults(pixel);
-        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -328,7 +328,7 @@ elements.dermis = {
             }
         }
         doDefaults(pixel);
-        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -693,7 +693,7 @@ elements.hairy_skin = {
             pixel.temp += 1;
         }
         doDefaults(pixel);
-        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -827,7 +827,7 @@ elements.hair_dermis = {
             }
         }
         doDefaults(pixel);
-        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -1085,7 +1085,7 @@ elements.scale_dermis = {
             }
         }
         doDefaults(pixel);
-        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -1219,7 +1219,7 @@ elements.bug_dermis = {
             }
         }
         doDefaults(pixel);
-        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -1354,7 +1354,7 @@ elements.amphib_dermis = {
             }
         }
         doDefaults(pixel);
-        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -1477,7 +1477,7 @@ elements.acidic_flesh = {
         return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -1599,7 +1599,7 @@ elements.slimey_flesh = {
         return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -1970,7 +1970,7 @@ elements.heart = {
         return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if ((Math.random() > 0.975 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.975 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -2111,7 +2111,7 @@ elements.kidney = {
         return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if ((Math.random() > 0.975 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.975 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -2244,7 +2244,7 @@ elements.liver = {
         return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if ((Math.random() > 0.975 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.975 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -2573,8 +2573,8 @@ elements.white_blood_cell = {
     color: "#F5D7D4",
     behavior: [
         "XX|SW:blood,blood_vessel%1|XX",
-        "SW:blood,blood_vessel%1|XX|SW:blood,blood_vessel%1",
-        "XX|SW:blood,blood_vessel%1 AND M1|XX",
+        "SW:blood,blood_vessel%1 AND M2%10|XX|SW:blood,blood_vessel%1 AND M2%10",
+        "M2|SW:blood,blood_vessel%1 AND M1|M2",
     ],
     hoverStat: function(pixel) {
         return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
@@ -2733,7 +2733,7 @@ elements.eye = {
         doHeat(pixel);
 		doBurning(pixel);
 		doElectricity(pixel);
-        if ((Math.random() > 0.895 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.895 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -2926,7 +2926,7 @@ elements.olfactory_bulb = {
         doHeat(pixel);
 		doBurning(pixel);
 		doElectricity(pixel);
-        if ((Math.random() > 0.895 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.895 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -3131,7 +3131,7 @@ elements.brain = {
         doHeat(pixel);
 		doBurning(pixel);
 		doElectricity(pixel);
-        if ((Math.random() > 0.85 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.85 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -3412,7 +3412,7 @@ elements.eye_nerve = {
     },
     tick: function(pixel) {
         doDefaults(pixel);
-        if ((Math.random() > 0.895 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.895 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -3536,7 +3536,7 @@ elements.bulb_nerve = {
     },
     tick: function(pixel) {
         doDefaults(pixel);
-        if ((Math.random() > 0.895 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.895 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -3661,7 +3661,7 @@ elements.nerve = {
     },
     tick: function(pixel) {
         doDefaults(pixel);
-        if ((Math.random() > 0.895 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.895 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -3788,7 +3788,7 @@ elements.throat_lining = {
         return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -3911,7 +3911,7 @@ elements.intestines = {
         return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -4108,7 +4108,7 @@ elements.appendix = {
         return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
             if (Math.random() > 0.999 && (pixel.nutrition < 750 || pixel.oxygen < 500)) {
@@ -4278,7 +4278,7 @@ elements.simple_lung = {
                 if (Math.random() < 0.01) { pixel.oxygen += 100 }
                 break
             } } 
-        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -4425,7 +4425,7 @@ elements.lungs = {
         return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -4968,7 +4968,7 @@ elements.gills = {
         return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -5147,7 +5147,7 @@ elements.stomach_lining = {
         return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -5274,7 +5274,7 @@ elements.decomposer_stomach = {
         return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -5401,7 +5401,7 @@ elements.herbi_stomach = {
         return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -5528,7 +5528,7 @@ elements.carni_stomach = {
         return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -5655,7 +5655,7 @@ elements.explosive_stomach = {
         return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -5782,7 +5782,7 @@ elements.stomach_valve = {
         return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -5909,7 +5909,7 @@ elements.sphincter = {
         return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.9 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -6508,7 +6508,6 @@ elements.stomach_acid = {
         "melted_butter": { elem2:"digested_material", attr2:{"nutrition":10}, chance:0.02 },
         "chocolate": { elem2:"digested_material", attr2:{"nutrition":35, "speed":2}, chance:0.02 },
         "rice": { elem2:"digested_material", attr2:{"nutrition":35}, chance:0.02 },
-	"popcorn": { elem2:"digested_material", attr2:{"nutrition":35, "speed":1}, chance:0.02 },
         "dough": { elem2:"digested_material", attr2:{"nutrition":5, "speed":-1}, chance:0.02 },
         "batter": { elem2:"digested_material", attr2:{"nutrition":5, "speed":-1}, chance:0.02 },
         "baked_batter": { elem2:"digested_material", attr2:{"nutrition":45, "speed":2}, chance:0.02 },
@@ -6611,7 +6610,6 @@ elements.herbi_acid = {
         "melted_butter": { elem2:"digested_material", attr2:{"nutrition":5}, chance:0.02 },
         "chocolate": { elem2:"digested_material", attr2:{"nutrition":20, "speed":2}, chance:0.02 },
         "rice": { elem2:"digested_material", attr2:{"nutrition":45}, chance:0.02 },
-	"popcorn": { elem2:"digested_material", attr2:{"nutrition":40}, chance:0.02 },
         "dough": { elem2:"digested_material", attr2:{"nutrition":5}, chance:0.02 },
         "batter": { elem2:"digested_material", attr2:{"nutrition":5}, chance:0.02 },
         "baked_batter": { elem2:"digested_material", attr2:{"nutrition":35}, chance:0.02 },
@@ -6715,7 +6713,6 @@ elements.carni_acid = {
         "melted_butter": { elem2:"toxic_material", attr2:{"nutrition":-10}, chance:0.02 },
         "chocolate": { elem2:"digested_material", attr2:{"nutrition":15}, chance:0.02 },
         "rice": { elem2:"digested_material", attr2:{"nutrition":15}, chance:0.02 },
-	"popcorn": { elem2:"digested_material", attr2:{"nutrition":10, "speed":1}, chance:0.02 },
         "dough": { elem2:"digested_material", attr2:{"nutrition":5}, chance:0.02 },
         "batter": { elem2:"digested_material", attr2:{"nutrition":-5}, chance:0.02 },
         "baked_batter": { elem2:"digested_material", attr2:{"nutrition":35}, chance:0.02 },
@@ -6813,7 +6810,6 @@ elements.explosive_acid = {
         "melted_butter": { elem2:"digested_material", attr2:{"nutrition":10}, chance:0.02 },
         "chocolate": { elem2:"digested_material", attr2:{"nutrition":35}, chance:0.02 },
         "rice": { elem2:"digested_material", attr2:{"nutrition":35}, chance:0.02 },
-	"popcorn": { elem2:"digested_material", attr2:{"nutrition":35}, chance:0.02 },
         "dough": { elem2:"digested_material", attr2:{"nutrition":5}, chance:0.02 },
         "batter": { elem2:"digested_material", attr2:{"nutrition":5}, chance:0.02 },
         "baked_batter": { elem2:"digested_material", attr2:{"nutrition":45}, chance:0.02 },
@@ -6918,8 +6914,7 @@ elements.decomposer_acid = {
         "melted_chocolate": { elem2:"digested_material", attr2:{"nutrition":10}, chance:0.02 },
         "melted_butter": { elem2:"digested_material", attr2:{"nutrition":5}, chance:0.02 },
         "chocolate": { elem2:"digested_material", attr2:{"nutrition":30, "speed":1}, chance:0.02 },
-        "rice": { elem2:"digested_material", attr2:{"nutrition":40}, chance:0.02 },
-	"popcorn": { elem2:"digested_material", attr2:{"nutrition":35}, chance:0.02 },
+        "rice": { elem2:"digested_material", attr2:{"nutrition":45}, chance:0.02 },
         "dough": { elem2:"digested_material", attr2:{"nutrition":5}, chance:0.02 },
         "batter": { elem2:"digested_material", attr2:{"nutrition":5}, chance:0.02 },
         "baked_batter": { elem2:"digested_material", attr2:{"nutrition":35}, chance:0.02 },
@@ -7024,7 +7019,7 @@ elements.real_bone = {
         return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if ((Math.random() > 0.99 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.99 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -7149,7 +7144,7 @@ elements.real_bone_marrow = {
             }
         }
         doDefaults(pixel);
-        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
@@ -7503,7 +7498,7 @@ elements.brain_jar_juice = {
     tempHigh: 102,
     stateHigh: ["steam","steam","dna","dna","stench","salt",],
     tempLow: -5,
-    category: "structural",
+    category: "circulation",
     reactions: {
         "dust": { elem1: "dirty_water", elem2: null },
         "ash": { elem1: "dirty_water", elem2: null },
@@ -7607,7 +7602,7 @@ elements.tract = {
         return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
     tick: function(pixel) {
-        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 40 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < 0 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
             pixel.nutrition--
             pixel.oxygen -= 2
         }
