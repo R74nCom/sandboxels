@@ -138,6 +138,20 @@ elements.ultimate_bomb = {
     cooldown: defaultCooldown
 }
 
+elements.omega_bomb = { 
+    color: "#ffffff",
+    behavior: [
+        "XX|EX:1000>plasma5|XX", 
+        "XX|XX|XX",
+        "M2|M1 AND EX:1000>plasma5|M2",
+    ],
+    category: "weapons", 
+    state: "solid",
+    density: 1300,
+    excludeRandom: true,
+    cooldown: defaultCooldown
+}
+
 elements.rdx = {
     color: "#c92a2a",
     behavior: behaviors.WALL,
@@ -157,6 +171,95 @@ elements.rdx = {
     density: 1630,
     excludeRandom: true,
     alias: "Cyclotrimethylenetrinitramine"
+}
+
+elements.mini_nuke = {
+    color: "#534636",
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "M2|M1 AND EX:15>plasma,plasma,plasma,plasma,radiation,rad_steam|M2",
+    ],
+    category: "weapons",
+    state: "solid",
+    density: 1500,
+    excludeRandom: true,
+    cooldown: defaultCooldown
+}
+
+elements.super_nuke = {
+    color: "#534636",
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "M2|M1 AND EX:120>plasma,plasma,plasma,plasma,radiation,rad_steam|M2",
+    ],
+    category: "weapons",
+    state: "solid",
+    density: 1500,
+    excludeRandom: true,
+    cooldown: defaultCooldown
+}
+
+elements.h_nuke = {
+    color: "#e6429a",
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "M2|M1 AND EX:150>plasma,plasma,plasma,plasma,fire,plasma,plasma,plasma,plasma,radiation,rad_steam|M2",
+    ],
+    category: "weapons",
+    state: "solid",
+    density: 1600,
+    excludeRandom: true,
+    alias: "hydrogen bomb + a nuke",
+    cooldown: defaultCooldown
+}
+
+elements.nuke_grenade = {
+    color: "#593c57",
+    behavior: [
+        "XX|EX:6>metal_scrap,radiation,radiation,fire,fire,fire%1|XX",
+        "XX|XX|XX",
+        "M2|M1 AND EX:6>metal_scrap,radiation,radiation,fire,fire,fire%1|M2",
+    ],
+    behaviorOn: [
+        "XX|XX|XX",
+        "XX|EX:6>metal_scrap,radiation,radiation,fire,fire,fire%1|XX",
+        "XX|XX|XX",
+    ],
+    category: "weapons",
+    state: "solid",
+    density: 1300,
+    tempHigh: 1455.5,
+    stateHigh: "molten_steel",
+    excludeRandom: true,
+    conduct: 1,
+    cooldown: defaultCooldown,
+    nocheer: true
+}
+
+elements.strong_grenade = {
+    color: "#5f3a66",
+    behavior: [
+        "XX|EX:12>metal_scrap,blue_fire,blue_fire,blue_fire%1|XX",
+        "XX|XX|XX",
+        "M2|M1 AND EX:6>metal_scrap,blue_fire,blue_fire,blue_fire%1|M2",
+    ],
+    behaviorOn: [
+        "XX|XX|XX",
+        "XX|EX:12>metal_scrap,blue_fire,blue_fire,blue_fire%1|XX",
+        "XX|XX|XX",
+    ],
+    category: "weapons",
+    state: "solid",
+    density: 1300,
+    tempHigh: 1455.5,
+    stateHigh: "molten_steel",
+    excludeRandom: true,
+    conduct: 1,
+    cooldown: defaultCooldown,
+    nocheer: true
 }
 
 elements.ice_cream_bomb = { 
@@ -494,6 +597,15 @@ elements.ultimate_plasma = {
     temp: 5000000000000000
 }
 
+elements.plasma5 = { 
+    color: "#9de92e",
+    behavior: behaviors.DGAS	,
+    category: "energy", 
+    state: "gas",
+    density: 50050,
+    temp:10^17
+}
+
 elements.negative_fire = { 
     color: ["#a6bfc4", "#6bd2e4", "#b8dee4", "#32cae4"],
     behavior: behaviors.DGAS	,
@@ -601,7 +713,7 @@ elements.r_gullibullium_gas = {
     stateLow: "molten_r_gullibullium"
 }
 
-elements.boba_pearls = { 
+elements.boba = { 
     color: "#3b0a57",
     behavior: behaviors.POWDER,
     category: "Boba", 
@@ -1491,6 +1603,41 @@ elements.when_iium = {
     
 }
 
+elements.glitchnechtium = { 
+    color: ["#800080", "#000000"],
+    colorPattern: [
+    "bbxxxxxxxx",
+    "xbbxxxxxxx",
+    "xxbbxxxxxx",
+    "xxxbbxxxxx",
+    "xxxxbbxxxx",
+    "xxxxxbbxxx",
+    "xxxxxxbbxx",
+    "xxxxxxxbbx",
+    "xxxxxxxxbb",
+    "xxxxxxxxxb",
+    "bxxxxxxxxx",
+    "bbxxxxxxxx",
+    "xbbxxxxxxx",
+    "xxbbxxxxxx",
+    "xxxbbxxxxx",
+    "xxxxbbxxxx",
+    "xxxxxbbxxx",
+    "xxxxxxbbxx",
+    "xxxxxxxbbx",
+    "xxxxxxxxbb",],
+    colorKey: {
+        "x": "#000000",
+        "b": "#800080"
+    },
+    behavior: behaviors.WALL,
+    category: "solids", 
+    state: "solid",
+    density: 1011010110,
+    hardness:0.995
+    
+}
+
 elements.wekk = { color: ["#927659","#81644B","#685843","#685135","#644F3A"],
     behavior: behaviors.SUPPORTPOWDER,
     reactions: {
@@ -1617,7 +1764,7 @@ elements.blue_paprika = {
         "CR:radiation%1|CH:lead%0.001|CR:radiation%20",
         "M2|M1|M2",
     ],
-    category: "Food..?", 
+    category: "food", 
     state: "solid",
     density: 1070
 }
@@ -1842,24 +1989,11 @@ elements.reinforced_concrete = {
     darkText: true
 }
 
-elements.green_smoke = {
-    color: "#64d14f",
-    behavior: behaviors.GAS,
-    tempHigh: 3000,
-    stateHigh: "green_fire",
-    category: "gases",
-    state: "gas",
-    density: 4800,
-    hardness: 0.75,
-    breakInto: "dust",
-    darkText: true
-}
-
 elements.green_fire = {
     color: ["#3fb927","#64d14f","#4fe831"],
     tick: function(pixel){
         behaviors.UL_UR_OPTIMIZED(pixel);
-        if (!pixel.del && settings.burn===0 && (pixelTicks-pixel.start > 70) && Math.random() < 0.1 ) { changePixel(pixel,"green_smoke") }
+        if (!pixel.del && settings.burn===0 && (pixelTicks-pixel.start > 70) && Math.random() < 0.1 ) { changePixel(pixel,"smoke") }
     },
     reactions: {
         "water": { elem1: "green_smoke" },
@@ -1885,7 +2019,8 @@ elements.green_fire = {
     state: "gas",
     density: 0.1,
     ignoreAir: true,
-    noMix: true
+    noMix: true,
+    fireColor: ["#3fb927","#64d14f","#4fe831"]
 }
 
 elements.obsidian = { 
@@ -3031,6 +3166,17 @@ elements.frozen_beef = {
     isFood: true
 }
 
+elements.apple = {
+    color: ["#c76666","#b33e3e","#60cb4c","#70cc5f", "#d6c571"],
+    behavior: behaviors.STURDYPOWDER,
+    tempHigh: 250,
+    stateHigh: "sugar",
+    category:"food",
+    state: "solid",
+    density: 960,
+    isFood: true
+}
+
 elements.chicken = {
     color: ["#dbc1b3","#dbc0b9"],
     behavior: [
@@ -3689,7 +3835,7 @@ elements.firedoesntwork = {
         }
         if (pixel.burning) {
             if (!tryMove(pixel, pixel.x, pixel.y-1)) {
-                // tryMove again to the top left or top right
+               
                 tryMove(pixel, pixel.x+(Math.random() < 0.5 ? -1 : 1), pixel.y-1);
             }
             if (pixelTicks-pixel.burnStart > 50 && Math.random() < 0.1) {
@@ -3698,7 +3844,7 @@ elements.firedoesntwork = {
         }
         else {
             if (!tryMove(pixel, pixel.x, pixel.y+1)) {
-                // tryMove again to the bottom left or bottom right
+                
                 tryMove(pixel, pixel.x+(Math.random() < 0.5 ? -1 : 1), pixel.y+1);
             }
         }
@@ -3764,60 +3910,6 @@ elements.blue_fw_ember = {
     density: 700,
     alias: "blue firework ember"
 }
-
-elements.yogurt_engine = {
-    color: "#f0eff6",
-    behavior: behaviors.WALL,
-    state: "solid",
-    density: 1000,
-    category: "machines",
-    properties: {
-      shocksToDo: 0
-    },
-    hoverStat: function(pixel){return pixel.shocksToDo || 0},
-    tick: function(pixel){
-      if (pixel.shocksToDo <= 40){
-      for (var i = 0; i < adjacentCoords.length; i++){
-        var coord = adjacentCoords[i]
-        var x = pixel.x + coord[0]
-        var y = pixel.y + coord[1]
-        if (!isEmpty(x, y, true)){
-          var otherPixel = pixelMap[x][y]
-          if (otherPixel.element == "yogurt"){
-            deletePixel(x, y)
-            if(!pixel.shocksToDo){pixel.shocksToDo = 0}
-            pixel.shocksToDo += 5
-          }
-          else if (otherPixel.element == "yogurt_engine"){
-            var otherPixel = pixelMap[x][y]
-            var otherShock = otherPixel.shocksToDo || 0
-            var currentShock = pixel.shocksToDo || 0
-            if (otherShock > currentShock){
-              otherPixel.shocksToDo --
-              pixel.shocksToDo ++
-            } else if (currentShock > otherShock) {
-              otherPixel.shocksToDo ++
-              pixel.shocksToDo --
-            }
-          }
-        }
-      }}
-      if (!pixel.charge && !pixel.chargeCD && pixel.shocksToDo){
-        for (var i = 0; i < adjacentCoords.length; i++){
-          var coord = adjacentCoords[i]
-          var x = pixel.x + coord[0]
-          var y = pixel.y + coord[1]
-          if (!isEmpty(x, y, true)){
-            if (elements[pixelMap[x][y].element].conduct > 0){
-              pixel.charge = 1
-              pixel.shocksToDo --
-              break;
-            }
-          }
-        }
-      }
-    }
-  }
 
 elements.bulletproof_glass = {
     color: ["#5e807d","#5e807d","#679e99","#5e807d","#5e807d"],
@@ -4050,6 +4142,31 @@ elements.left_nuclear_bullet = {
     density: 1300,
     excludeRandom: true,
     cooldown: defaultCooldown
+}
+
+elements.contact_lens_solution = {
+    color: "#fff6e0",
+    behavior: behaviors.LIQUID,
+    category: "liquids",
+    state: "liquids",
+    density: 997,
+    stain: -0.02,
+    reactions: {
+        "baking_soda": {elem1:"activator", elem2:"activator"}
+        }
+}
+
+elements.activator = {
+    color: "#ffffff",
+    behavior: behaviors.LIQUID,
+    category: "liquids",
+    state: "liquids",
+    density: 1000,
+    stain: -0.01,
+    reactions: {
+        "glue": {elem1:"slime", elem2:"slime"}
+        },
+    hidden: true
 }
 
 elements.strong_human = {
@@ -4294,6 +4411,260 @@ elements.magma_bomb = {
     cooldown: defaultCooldown
 }
 
+elements.water_bomb = {
+    color: "#0000FF",
+    behavior: [
+        "XX|EX:15>water|XX",
+        "XX|XX|XX",
+        "M2|M1 AND EX:15>water|M2",
+    ],
+    category: "weapons",
+    state: "solid",
+    density: 1300,
+    excludeRandom: true,
+    cooldown: defaultCooldown
+}
+
+elements.filter = {
+    color: "#599fc2",
+    tick: function(pixel) {
+        if (1 === 2) {
+           for (var i = 0; i < squareCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (isEmpty(x,y)) {
+//                    createPixel("brick",x,y);
+//                    pixelMap[x][y].color = pixelColorPick(pixel,"#808080");
+                }
+            }
+ //           pixel.stage = 1;
+        }
+        else if (1 === 2) { //uninitialized
+            for (var i = 0; i < adjacentCoords.length; i++) {
+                var coord = adjacentCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (isEmpty(x,y)) {
+ //                   pixel.stage = 2; //blue
+ //                   pixel.color = pixelColorPick(pixel,"#000036");
+                    break;
+                }
+            }
+        }
+        else if (1 === 1) { //initialized
+            for (var i = 0; i < squareCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (!isEmpty(x,y,true) && listPipes.includes(pixelMap[x][y].element)) {
+                    var newPixel = pixelMap[x][y];
+                    if (newPixel.stage === 1) {
+                        var newColor;
+                        switch (pixel.stage) {
+//                            case 2: newPixel.stage = 3; newColor = "#003600"; break; //green
+ //                           case 3: newPixel.stage = 4; newColor = "#360000"; break; //red
+//                            case 4: newPixel.stage = 2; newColor = "#000036"; break; //blue
+                        }
+ //                       newPixel.color = pixelColorPick(newPixel,newColor);
+                    }
+                }
+            }
+            var moved = false;
+            shuffleArray(squareCoordsShuffle);
+            for (var i = 0; i < squareCoordsShuffle.length; i++) {
+                var coord = squareCoordsShuffle[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (!isEmpty(x,y,true)) {
+                    var newPixel = pixelMap[x][y];
+                    if (listPipes.includes(newPixel.element)) {
+                        var nextStage;
+                        switch (pixel.stage) {
+ //                           case 2: nextStage = 4; break; //green
+//                            case 3: nextStage = 2; break; //red
+ //                           case 4: nextStage = 3; break; //blue
+                        }
+                        if (pixel.con && !newPixel.con) { //transfer to adjacent pipe
+                            newPixel.con = pixel.con;
+                            newPixel.con.x = newPixel.x;
+                            newPixel.con.y = newPixel.y;
+                            pixel.con = null;
+                            moved = true;
+                            break;
+                        }
+                    }
+                    else if (!pixel.con && elements[newPixel.element].movable && (elements[newPixel.element].state == "liquid") ) { //suck up pixel
+                        pixel.con = newPixel;
+                        deletePixel(newPixel.x,newPixel.y);
+                        pixel.con.x = pixel.x;
+                        pixel.con.y = pixel.y;
+                        pixel.con.del;
+                        moved = true;
+                        break;
+                    }
+                }
+            }
+            if (pixel.con && !moved) { // move to same stage if none other
+                for (var i = 0; i < squareCoordsShuffle.length; i++) {
+                    var coord = squareCoordsShuffle[i];
+                    var x = pixel.x+coord[0];
+                    var y = pixel.y+coord[1];
+                    if (isEmpty(x,y)) {
+                        delete pixel.con.del;
+                        pixel.con.x = x;
+                        pixel.con.y = y;
+                        pixelMap[x][y] = pixel.con;
+                        currentPixels.push(pixel.con);
+                        pixel.con = null;
+                        break;
+                    }
+                    if (!isEmpty(x,y,true) && listPipes.includes(pixelMap[x][y].element)) {
+                        var newPixel = pixelMap[x][y];
+                        if (pixel.con && !newPixel.con) {
+                            newPixel.con = pixel.con;
+                            newPixel.con.x = newPixel.x;
+                            newPixel.con.y = newPixel.y;
+                            pixel.con = null;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        doDefaults(pixel);
+    },
+    category: "machines",
+    movable: false,
+    canContain: true,
+	noMix: true,
+    insulate: true,
+    reactions: {
+        "dirty_water": {elem1:"water"}
+        },
+        onSelect: function() {
+            if(!enabledMods.contains("mods/nousersthings.js")){
+                logMessage("credit to nousersthings.js for this element")
+            }
+        },
+}
+
+elements.blue_fire = {
+    color: ["#26a9ce","#27b4db","#29b9e1"],
+    tick: function(pixel){
+        behaviors.UL_UR_OPTIMIZED(pixel);
+        if (!pixel.del && settings.burn===0 && (pixelTicks-pixel.start > 70) && Math.random() < 0.1 ) { changePixel(pixel,"fire") }
+    },
+    reactions: {
+        "water": { elem1: "smoke" },
+        "steam": { elem1: "smoke" },
+        "carbon_dioxide": { elem1: "smoke" },
+        "foam": { elem1: "smoke" },
+        "dirty_water": { elem1: "smoke" },
+        "salt_water": { elem1: "smoke" },
+        "sugar_water": { elem1: "smoke" },
+        "seltzer": { elem1: "smoke" },
+        "pool_water": { elem1: "smoke" },
+        "oxygen": { elem2: null, chance:0.1 },
+    },
+    temp:1400,
+    tempLow:700,
+    stateLow: "fire",
+    tempHigh: 7000,
+    stateHigh: "plasma",
+    category: "energy",
+    burning: true,
+    burnTime: 25,
+    state: "gas",
+    density: 0.1,
+    ignoreAir: true,
+    noMix: true,
+    fireColor: ["#26a9ce","#27b4db","#29b9e1"]
+}
+
+elements.fire_burner = {
+    color: "#f0ffff",
+    behavior: [
+        "CR:fire%100|CR:fire%100|CR:fire%100",
+        "XX|XX|XX",
+        "XX|XX|XX",
+    ],
+    category: "machines",
+    state: "solid",
+    density: 1300,
+    excludeRandom: true,
+    temp: 600
+}
+
+elements.blue_fire_burner = {
+    color: "#f0ffff",
+    behavior: [
+        "CR:blue_fire%100|CR:blue_fire%100|CR:blue_fire%100",
+        "XX|XX|XX",
+        "XX|XX|XX",
+    ],
+    category: "machines",
+    state: "solid",
+    density: 1300,
+    excludeRandom: true,
+    temp: 1400
+}
+
+elements.green_fire_burner = {
+    color: "#f0ffff",
+    behavior: [
+        "CR:green_fire%100|CR:green_fire%100|CR:green_fire%100",
+        "XX|XX|XX",
+        "XX|XX|XX",
+    ],
+    category: "machines",
+    state: "solid",
+    density: 1300,
+    excludeRandom: true,
+    temp: 600
+}
+
+elements.right_antimatter_wave = {
+    color: "#a89ba8",
+    behavior: [
+        "XX|DL%100 AND XX AND EX:8>fire,positron|XX",
+        "XX|XX|M1",
+        "XX|DL%100 AND XX AND EX:8>fire,positron|XX",
+    ],
+    ignore: ["antimatter_bomb"],
+    category: "special",
+    state: "gas",
+    density: 2.1,
+    excludeRandom: true,
+    hardness: 2
+}
+
+elements.left_antimatter_wave = {
+    color: "#a89ba8",
+    behavior: [
+        "XX|DL%100 AND XX AND EX:8>fire,positron|XX",
+        "M1|XX|XX",
+        "XX|DL%100 AND XX AND EX:8>fire,positron|XX",
+    ],
+    ignore: ["antimatter_bomb"],
+    category: "special",
+    state: "gas",
+    density: 2.1,
+    excludeRandom: true,
+    hardness: 2
+}
+
+elements.infinite_cement = {
+    color: "#b5b5b5",
+    behavior: behaviors.LIQUID,
+    category:"liquids",
+    state: "solid",
+    density: 1440,
+    hardness: 0.1,
+    viscosity: 1000,
+    darkText: true
+}
+
 if (!elements.sand.reactions) { elements.sand.reactions = {} }
 elements.sand.reactions.dirt = { elem1:"dirty_sand", elem2:"dirty_sand" }
 
@@ -4361,6 +4732,12 @@ elements.reinforced_wall.reactions.ultimate_plasma = { elem1:"ultimate_plasma", 
 if (!elements.reinforced_liquid_wall.reactions) { elements.reinforced_liquid_wall.reactions = {} }
 elements.reinforced_liquid_wall.reactions.ultimate_plasma = { elem1:"ultimate_plasma", elem2:"ultimate_plasma" }
 
+if (!elements.reinforced_wall.reactions) { elements.reinforced_wall.reactions = {} }
+elements.reinforced_wall.reactions.plasma5 = { elem1:"plasma5", elem2:"plasma5" }
+
+if (!elements.reinforced_liquid_wall.reactions) { elements.reinforced_liquid_wall.reactions = {} }
+elements.reinforced_liquid_wall.reactions.plasma5 = { elem1:"plasma5", elem2:"plasma5" }
+
 if (!elements.whenyouium.reactions) { elements.whenyouium.reactions = {} }
 elements.whenyouium.reactions.when_you_particles = { elem1:"when_you_particles", elem2:"when_you_particles" }
 
@@ -4393,6 +4770,18 @@ elements.oxidized_copper.breakInto = "oxidized_copper_scrap"
 
 elements.cloner.ignore = ["ecloner","slow_cloner","clone_powder","floating_cloner","wall","ewall", "mega_cloner", "super_cloner", "ultra_cloner"
 ],
+
+elements.fire.tempHigh = 1150
+
+elements.fire.stateHigh = "blue_fire"
+
+elements.plasma.stateLow = "blue_fire"
+
+elements.plasma.tempLow = 2500
+
+elements.blue_fire.tempHigh = 2501
+
+elements.blue_fire.stateHigh = "plasma"
 
 elements.head.properties = {dead:false,age: 0}
 elements.head.tick = function(pixel) {
@@ -4450,5 +4839,6 @@ elements.room_temp.tools = function(pixel) {
     pixelTempCheck(pixel);
 }
 
+listPipes = "pipe"
 
 // important colors: ["#000000", "#edff00", "#3a3a3a", "#ff0000"], ["#82c0ff", "#ff8282"], ["#cca77c","#ad8b63","#b59d81","#c7a073","#c9b297"],
