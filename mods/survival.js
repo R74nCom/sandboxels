@@ -203,6 +203,9 @@ elements.sell = {
         if (elementWorth[pixel.element] === -1) { return; }
         survivalAdd("gold_coin",elementWorth[pixel.element]||1);
     },
+    toolHoverStat: function(pixel) {
+        return "$"+(elementWorth[pixel.element]||1);
+    },
     category: "tools",
     desc: "Exchanges pixels for their market value in Gold Coins"
 }

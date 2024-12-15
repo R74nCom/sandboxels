@@ -167,3 +167,9 @@ if (elements.galvanized_steel) {delete elements.galvanized_steel.colorPattern;}
 if (elements.bird) {delete elements.bird.stateHighColor;}
 if (elements.frog) {delete elements.frog.stateHighColor;}
 if (elements.fallout) {elements.fallout.color = ["#63b85a","#448044","#598044","#7bb85a"];}
+if (elements.brick_rubble) {elements.brick_rubble.color = ["#e36868","#cb4141","#752020"];}
+if (elements.border) {elements.border.tick = function(pixel){
+    var t = pixelTicks/2+pixel.x+pixel.y;
+    var r = Math.floor(127*Math.sin(t/1.5));
+    pixel.color = "rgba("+r+","+r*2+","+r*2+","+r/127+")";
+};}
