@@ -1,4 +1,3 @@
-//weapons.js by Jayd also know as JaydRubies
 elements.tsar_bomba = {
     color: "#524C41",
     behavior: [
@@ -168,7 +167,7 @@ elements.left_bullet = {
     color: "#4c4e42",
     behavior: [
         "M2|XX|XX",
-        "M1 AND EX:5|XX|XX",
+        "M1 AND DB|XX|XX",
         "M2|XX|XX",
     ],
     state: "solid",
@@ -181,7 +180,7 @@ elements.left_bullet = {
     color: "#4c4e42",
     behavior: [
         "XX|XX|M2",
-        "XX|XX|M1 AND EX:5",
+        "XX|XX|M1 AND DB",
         "XX|XX|M2",
     ],
     state: "solid",
@@ -997,4 +996,260 @@ elements.railgun_right = {
     color: "#71797E",
     conduct: 1,
     hardness: 1,
+},
+elements.static_bomb = {
+    color: "#524c41",
+    behavior: [
+        "XX|EX:10|XX",
+        "EX:10|XX|EX:10",
+        "XX|EX:10|XX",
+    ],
+    category: "weapons",
+    state: "solid",
+    density: 1300,
+    excludeRandom: true,
+    cooldown: defaultCooldown
+}
+var target =[,];
+var tgt = "head";
+elements.tracking_missile = {
+    color: "#323232",
+    category: "weapons",
+    behavior: [
+        "XX|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|XX",
+        "EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel",
+        "EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel",
+        "EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|XX|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel",
+        "EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel",
+        "EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel",
+        "XX|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|EX:20>missile_shrapnel|XX",
+    ],
+    onSelect: function() {
+        var answer1 = prompt("Please input the target element.",(tgt||undefined));
+        if (!answer1) {return}
+        tgt = answer1;
+    },
+    tick: (pixel) => {
+        for (var x = 1; x < width; x++) {
+            for (var y = 1; y < height; y++) {
+                if (!isEmpty(x,y)) {
+                    if (pixelMap[x][y].element===tgt) {
+                        target = [pixelMap[x][y].x, pixelMap[x][y].y];
+                    }
+                }
+            }
+        }
+        if (pixel.x != target[0] || pixel.y != target[1]) {
+            let {x, y} = pixel;
+            const empty = checkForEmptyPixels(x, y);
+            const [tX, tY] = target;
+            let bestVal = Math.sqrt(Math.pow(tX - x, 2) + Math.pow(tY - y, 2));
+            let best = null;
+            for (const pixelPair of empty) {
+                const [x_, y_] = [x + pixelPair[0], y + pixelPair[1]];
+                const c = Math.sqrt(Math.pow(tX - x_, 2) + Math.pow(tY - y_, 2));
+                if (c < bestVal) {
+                    bestVal = c;
+                    best = pixelPair;
+                }
+            }
+            if (best) {
+                tryMove(pixel, x + best[0]*2, y + best[1]*2, undefined, true);
+            }
+        } 
+    }
+},
+elements.laser_bomb = {
+    category: "weapons",
+    color: "#524c41",
+    tick: function(pixel) {
+        var x = pixel.x;
+        for (var y = pixel.y; y < height+1; y++) {
+            if (outOfBounds(x, y)) {
+                if (isEmpty(x, y-1)) { createPixel("smoke", x, y-1); }
+                break;
+            }
+            if (isEmpty(x, y)) {
+
+                createPixel("flash", x, y);
+                pixelMap[x][y].color = "#ff0000";
+                pixelMap[x][y].temp = 35000;
+                pixelMap[x][y].delay = (y + pixel.y) / 8;
+            }
+        }
+        for (var y = pixel.y; y < height-1; y--) {
+            if (outOfBounds(x, y)) {
+                if (isEmpty(x, y+1)) { createPixel("smoke", x, y+1); }
+                break;
+            }
+            if (isEmpty(x, y)) {
+
+                createPixel("flash", x, y);
+                pixelMap[x][y].color = "#ff0000";
+                pixelMap[x][y].temp = 35000;
+                pixelMap[x][y].delay = (y + pixel.y) / 8;
+            }
+        }
+        var y = pixel.y;
+        for (var x = pixel.x; x < width+1; x++) {
+            if (outOfBounds(x, y)) {
+                if (isEmpty(x-1, y)) { createPixel("smoke", x-1, y); }
+                break;
+            }
+            if (isEmpty(x, y)) {
+
+                createPixel("flash", x, y);
+                pixelMap[x][y].color = "#ff0000";
+                pixelMap[x][y].temp = 35000;
+                pixelMap[x][y].delay = (x + pixel.x) / 8;
+            }
+        }
+        for (var x = pixel.x; x < width-1; x--) {
+            if (outOfBounds(x, y)) {
+                if (isEmpty(x+1, y)) { createPixel("smoke", x+1, y); }
+                break;
+            }
+            if (isEmpty(x, y)) {
+
+                createPixel("flash", x, y);
+                pixelMap[x][y].color = "#ff0000";
+                pixelMap[x][y].temp = 35000;
+                pixelMap[x][y].delay = (x + pixel.x) / 8;
+            }
+        }
+        deletePixel(pixel.x, pixel.y);
+    },
+},
+elements.cluster_nuke = {
+    color: "#323232",
+    category: "weapons",
+    behavior: behaviors.POWDER,
+    tick: (pixel) => {
+        for (var y = 1; y < 50; y++) {
+            if (!isEmpty(pixel.x, pixel.y + y, false)) {
+                explodeAt(pixel.x,pixel.y,50,["dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","nuke",])
+            }
+        }
+    }
+}
+document.onkeydown = function(ki)/*keyboard_input*/ {
+    //a
+    if (ki.keyCode == 65) {
+        KA = true;
+        //vX ++;
+    }
+    //d
+    if (ki.keyCode == 68) {
+        KD = true;
+        //vX ++;
+    }
+    //w
+    if (ki.keyCode == 87) {
+        KW = true;
+        //vY ++;
+    }
+    //s
+    if (ki.keyCode == 83) {
+        KS = true;
+        //vY ++;
+    }
+}
+document.onkeyup = function(i2)/*keyboard_input*/ {
+    //a
+    if (i2.keyCode == 65) {
+        KA = false;
+        //vX --;
+    }
+    //d
+    if (i2.keyCode == 68) {
+        KD = false;
+       //vX --;
+    }
+    //w
+    if (i2.keyCode == 87) {
+        KW = false;
+        //vY = 0;
+    }
+    //s
+    if (i2.keyCode == 83) {
+        KS = false;
+        //vY = 0;
+    }
+}
+var KA = false;
+var KD = false;
+var KW = false;
+var KS = false;
+var vX = 1;
+var vY = 1;
+elements.heli_bomb = {
+    behavior: [
+        "XX|EX:10|XX",
+        "EX:10|XX|EX:10",
+        "XX|EX:10|XX",
+    ],
+    tick: function(pixel) {
+    /*if (vX === 3) {
+            vX --;
+        }
+    if (vY === 3) {
+            vY --;
+        }*/
+    if (KA === true) {
+            tryMove (pixel,pixel.x-vX,pixel.y)
+        }
+    if (KD === true) {
+            tryMove (pixel,pixel.x+vX,pixel.y)
+        }
+    if (KW === true) {
+            tryMove (pixel,pixel.x,pixel.y-vY)
+        }
+    if (KS === true) {
+            tryMove (pixel,pixel.x,pixel.y+vY)
+        }
+    },
+    category: "weapons",
+    states:"solid",
+    color: "#524c41",
+},
+elements.mini_nuke = {
+    color: "#534636",
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "M2|M1 AND EX:20>plasma,plasma,plasma,plasma,radiation,rad_steam|M2",
+    ],
+    category: "weapons",
+    state: "solid",
+    density: 1500,
+    excludeRandom: true,
+    cooldown: defaultCooldown
+},
+elements.left_uranium_bullet = {
+    color: "#406040",
+    behavior: [
+        "M2|XX|XX",
+        "M1 AND EX:4>fallout|XX|XX",
+        "M2|XX|XX",
+    ],
+    state: "solid",
+    category:"ammunition",
+    density: 2100,
+    excludeRandom: true,
+    cooldown: defaultCooldown,
+    temp: 4000,
+},
+elements.right_uranium_bullet = {
+    color: "#406040",
+    behavior: [
+        "XX|XX|M2",
+        "XX|XX|M1 AND EX:4>fallout",
+        "XX|XX|M2",
+    ],
+    state: "solid",
+    category:"ammunition",
+    density: 2100,
+    excludeRandom: true,
+    cooldown: defaultCooldown,
+    temp: 4000,
 }
