@@ -3,3 +3,5 @@ window.addEventListener('load', function() {
 		elements[element].isFood = true;
 	}
 });
+elements.head.isFood = false;
+elements.body.isFood = false;
