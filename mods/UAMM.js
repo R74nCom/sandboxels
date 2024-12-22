@@ -456,7 +456,7 @@ elements.liquid_sodium = {
 };
 
 elements.sodium_hydroxide = {
-	color: ["#ffffff", "#f1f1f1", "#e7e7e7", "#ededed"],
+	color: ["#cccccc", "#c1c1c1", "#b7b7b7", "#bbbbbb"],
 	behavior: behaviors.POWDER,
 	hidden: true,
 	state: "solid",
