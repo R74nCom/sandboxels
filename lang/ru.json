@@ -1,6 +1,6 @@
 {
     "#lang.name": "Русский язык",
-    "#lang.credit": "a1ex_v,Sovenok-Hacker",
+    "#lang.credit": "a1ex_v, Sovenok-Hacker, Bufka2011",
     "land":"Земля",
     "liquids":"Жидкости",
     "life":"Жизнь",
@@ -541,6 +541,7 @@
     "propane_ice": "пропановый лёд",
     "molten_caustic_potash": "расплавленная калийная щёлочь",
     "freeze_ray": "морозный луч"
+    "cloth": "ткань"
     }
     
     
