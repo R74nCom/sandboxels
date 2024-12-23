@@ -448,6 +448,8 @@ elements.liquid_sodium = {
 	behavior: behaviors.LIQUID,
     hidden: true,
 	state: "liquid",
+    tempLow: 97,
+	stateLow: "sodium",
 	density: 951,
 	reactions: {
 		"water": {elem1: "sodium_hydroxide", elem2: "hydrogen", temp1: 200, chance: 0.001},
