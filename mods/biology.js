@@ -457,7 +457,7 @@ elements.loose_hair = {
     state: "solid",
     density: 2395,
     conduct: 0.05,
-    idden: true
+    hidden: true
 },
 
 elements.hair_end = {
@@ -512,12 +512,12 @@ elements.hair_end = {
     state: "solid",
     conduct: .05,
     tempLow: -25,
-    stateLow: ["dust"],
-    tempHigh: 223,
-    stateHigh: ["smoke","smoke","smoke","ash","ash","stench"],
+    stateLow: "loose_hair",
+    tempHigh: 123,
+    stateHigh: "loose_hair",
     burn:15,
-    burnTime:400,
-    burnInto:["smoke","smoke","smoke","ash","ash","stench"],
+    burnTime:200,
+    burnInto:"loose_hair",
     breakInto:"loose_hair",
     forceSaveColor: true,
 	reactions: {
@@ -525,6 +525,7 @@ elements.hair_end = {
         "radiation": { elem1:["ash","dust"], chance:0.2 },
 	},
     movable: false,
+    hidden: true,
 }
 
 elements.attached_hair = {
@@ -629,12 +630,12 @@ elements.attached_hair = {
     state: "solid",
     conduct: .05,
     tempLow: -25,
-    stateLow: ["dust"],
-    tempHigh: 223,
-    stateHigh: ["smoke","smoke","smoke","ash","ash","stench"],
+    stateLow: "loose_hair",
+    tempHigh: 123,
+    stateHigh: "loose_hair",
     burn:15,
-    burnTime:400,
-    burnInto:["smoke","smoke","smoke","ash","ash","stench"],
+    burnTime:200,
+    burnInto:"loose_hair",
     breakInto:"loose_hair",
     forceSaveColor: true,
 	reactions: {
@@ -642,6 +643,7 @@ elements.attached_hair = {
         "radiation": { elem1:["ash","dust"], chance:0.2 },
 	},
     movable: false,
+    hidden: true,
 }
 
 elements.hairy_skin = {
@@ -8029,5 +8031,3 @@ elements.stench.reactions.intestines = { elem1:[null,null,null,null,null,null,"f
 elements.stench.reactions.stomach_valve = { elem1:[null,null,null,null,null,null,"foam"], chance:0.05, };
 
 elements.dna.reactions.juice = { "elem1": null, "elem2": "elixir", chance:0.01 };
-
-elements.acid.ignore = ["herbi_stomach","carni_stomach","decomposer_stomach","amphib_skin","amphib_dermis","acidic_flesh","acid_vessel","explosive_stomach","stomach_valve","stomach_lining","throat_lining","glass","rad_glass","glass_shard","rad_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","microplastic","molten_plastic","pool_water","chlorine","hydrogen","gold_coin","silver","nickel","calcium","bone","earthquake","tornado","tsunami","liquid_light","sensor"]
