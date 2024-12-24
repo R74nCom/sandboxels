@@ -428,7 +428,7 @@ elements.sodium = {
             if (!isEmpty(x, y, true)) {
                 otherPixel = pixelMap[x][y];
                 if (otherPixel.element != "mineral_oil") {
-					if (otherPixel.element != "sodium" && otherPixel.element != "sodium_hydroxide") {
+					if (otherPixel.element != "sodium" && otherPixel.element != "sodium_hydroxide" && otherPixel.elememnt != "baking_soda") {
 						if(Math.random()<0.001) {
 							changePixel(pixel, "sodium_hydroxide")
 						}
@@ -452,8 +452,8 @@ elements.liquid_sodium = {
 	stateLow: "sodium",
 	density: 951,
 	reactions: {
-		"water": {elem1: "sodium_hydroxide", elem2: "hydrogen", temp1: 200, chance: 0.001},
-		"salt_water": {elem1: "sodium_hydroxide", elem2: "hydrogen", temp1: 200, chance: 0.001},
+		"water": {elem1: "sodium_hydroxide", elem2: "hydrogen", temp1: 200, chance: 0.0001},
+		"salt_water": {elem1: "sodium_hydroxide", elem2: "hydrogen", temp1: 200, chance: 0.0001},
 	}
 };
 
@@ -463,6 +463,29 @@ elements.sodium_hydroxide = {
 	hidden: true,
 	state: "solid",
 	density: 2100,
+	tick: function (pixel){
+        var otherPixel;
+        for (var i = 0; i < squareCoords.length; i++) {
+            var coord = squareCoords[i];
+            var x = pixel.x+coord[0];
+            var y = pixel.y+coord[1];
+            if (isEmpty(x, y, true)){
+                if(Math.random()<0.0003) {
+                    changePixel(pixel, "baking_soda")
+                }
+            }
+            if (!isEmpty(x, y, true)) {
+                otherPixel = pixelMap[x][y];
+                if (otherPixel.element != "mineral_oil") {
+					if (otherPixel.element != "sodium" && otherPixel.element != "sodium_hydroxide") {
+						if(Math.random()<0.00001) {
+							changePixel(pixel, "baking_soda")
+						}
+					}
+                }
+            }
+        }
+    },
     reactions: {
 		"water": {elem1: "salt_water", elem2: null, chance: 0.1},
 		"salt_water": {elem1: "salt_water", elem2: null, chance: 0.1},
