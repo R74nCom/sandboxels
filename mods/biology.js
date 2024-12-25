@@ -8030,4 +8030,9 @@ if (!elements.stench.reactions) { elements.infection.reactions = {} }
 elements.stench.reactions.intestines = { elem1:[null,null,null,null,null,null,"foam"], chance:0.015, };
 elements.stench.reactions.stomach_valve = { elem1:[null,null,null,null,null,null,"foam"], chance:0.05, };
 
+elements.bless.reactions.poop = { elem2:null }
+elements.bless.reactions.excreted_poop = { elem2:null }
+
 elements.dna.reactions.juice = { "elem1": null, "elem2": "elixir", chance:0.01 };
+
+elements.acid.ignore = ["herbi_stomach","carni_stomach","decomposer_stomach","amphib_skin","amphib_dermis","acidic_flesh","acid_vessel","explosive_stomach","stomach_valve","stomach_lining","throat_lining","glass","rad_glass","glass_shard","rad_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","microplastic","molten_plastic","pool_water","chlorine","hydrogen","gold_coin","silver","nickel","calcium","bone","earthquake","tornado","tsunami","liquid_light","sensor"]
