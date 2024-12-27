@@ -2,6 +2,92 @@ behaviors.SOLIDIFY = function(pixel) {
     pixel.solid = true
 }
 
+var colorOne = "#ffffff"
+var colorTwo = "#000000"
+
+viewInfo[8] = { // Neon View
+    name: "neon",
+    pixel: function(pixel,ctx) {
+        if (elements[pixel.element].isColor === true) {
+        var color = pixel.gradient;
+        if (color < 0) {color = 0}
+        if (color > 60) {color = 60}
+        // logarithmic scale, with coldest being 225 (-50 degrees) and hottest being 0 (6000 degrees)
+        var hue = Math.round(225 - (Math.log(color)/Math.log(60))*225);
+        if (hue < 0) {hue = 0}
+        if (hue > 225) {hue = 225}
+        drawSquare(ctx,"hsl("+hue+",50%,50%)",pixel.x,pixel.y)
+        }
+    }
+}
+
+elements.red = {
+    color: "#AD1300",
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "XX|XX|XX",
+    ],
+    tool: function(pixel) {
+        if (elements[pixel.element].isColor == true) {
+            pixel.gradient += 1
+        }
+    },
+    canPlace: false,
+    category: "tools",
+}
+
+elements.colorOne = {
+    tick: function(pixel) {
+        if (pixel.color != colorOne) {
+            pixel.color = colorOne
+        }
+        if (pixel.gradient > 0) {
+            pixel.gradient -= 1
+        }
+    },
+    properties: {
+        gradient: 0,
+    },
+    isColor: true,
+    category: "special"
+}
+
+elements.colorTwo = {
+    tick: function(pixel) {
+        if (pixel.color != colorTwo) {
+            pixel.color = colorTwo
+        }
+    },
+    properties: {
+        gradient: 0,
+    },
+    isColor: true,
+    category: "special"
+}
+
+elements.colorTwo_controller = {
+    color: "#36397A",
+    grain: 0,
+    tick: function(pixel) {
+        if (pixel.color != colorTwo) {
+            colorTwo = pixel.color
+        }
+    },
+    category: "special"
+}
+
+elements.colorOne_controller = {
+    color: "#9e4839",
+    grain: 0,
+    tick: function(pixel) {
+        if (pixel.color != colorOne) {
+            colorOne = pixel.color
+        }
+    },
+    category: "special"
+}
+
 elements.corn_starch = {
     color: ["#f5f5f1","#f2f3ee","#fcfdfc"],
     behavior: behaviors.POWDER,
