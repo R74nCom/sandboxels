@@ -1,0 +1,100 @@
+elements.vanilla_extract = {
+    color: "#f3e5ab",
+    behavior: behaviors.LIQUID,
+    category: "food",
+    state: "liquid",
+    density: 960,
+    reactions: {
+        "heat": { "temp": 100, "result": "vanilla_essence" }
+    },
+    mixInto: function(substance) {
+        substance.heatResistance = (substance.heatResistance || 0) + 0.15;
+    },
+    backgroundColor: "#f3e5ab"
+};
+
+elements.spicy_sauce = {
+    color: "#ff4500",
+    behavior: behaviors.LIQUID,
+    category: "food",
+    state: "liquid",
+    density: 950,
+    reactions: {
+        "heat": { "temp": 100, "result": "burnt_sauce" }
+    },
+    mixInto: function(substance) {
+        substance.heatResistance = (substance.heatResistance || 0) - 0.05;
+    },
+    flammable: true,
+    backgroundColor: "linear-gradient(to bottom, #ff4500, #ff6347)"
+};
+
+elements.vanilla_essence = {
+    color: "#f3e5ab",
+    behavior: behaviors.LIQUID,
+    category: "hidden",
+    state: "liquid",
+    density: 960,
+    hidden: true
+};
+
+elements.burnt_sauce = {
+    color: "#8b0000",
+    behavior: behaviors.LIQUID,
+    category: "hidden",
+    state: "liquid",
+    density: 950,
+    hidden: true
+};
+
+elements.brown_sugar = {
+    color: "#8b4513",
+    behavior: behaviors.SOLID,
+    category: "food",
+    state: "solid",
+    density: 1600,
+    reactions: {
+        "heat": { "temp": 150, "result": "caramel" }
+    },
+    compacted: true,
+    backgroundColor: "#8b4513"
+};
+
+elements.caramel = {
+    color: "#d2691e",
+    behavior: behaviors.LIQUID,
+    category: "hidden",
+    state: "liquid",
+    density: 1400,
+    hidden: true
+};
+
+elements.baking_soda = {
+    color: "#ffffff",
+    behavior: behaviors.SOLID,
+    category: "food",
+    state: "solid",
+    density: 2200,
+    reactions: {
+        "heat": { "temp": 200, "result": "sodium_carbonate" }
+    },
+    hidden: true
+};
+
+elements.sodium_carbonate = {
+    color: "#d3d3d3",
+    behavior: behaviors.SOLID,
+    category: "hidden",
+    state: "solid",
+    density: 2530,
+    hidden: true
+};
+
+elements.distilled_water = {
+    color: "#add8e6",
+    behavior: behaviors.LIQUID,
+    category: "food",
+    state: "liquid",
+    density: 1000,
+    hidden: true
+};
