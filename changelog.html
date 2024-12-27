@@ -109,6 +109,112 @@
 <p>The original <a href="https://sandboxels.r74n.com/changelog.txt">plain text version</a> of this is still maintained.</p>
 </div>
 
+<h2 id="1.10.2">[Version 1.10.2 - December 15, 2024 - Birthday III]</h2>
+<ul>
+<li>+ Cheese Powder, from breaking Cheese</li>
+<li>+ Chocolate Powder, from breaking Chocolate</li>
+<li>[Changes]</li>
+<li>~ Drawing lines shows a preview of pixel placement</li>
+<li>~ Updated Brick texture for better shading</li>
+<li>~ LEDs, Light Bulbs, and Fireflies can be painted</li>
+<li>+ Humans panic when seeing dangerous things, like Fire</li>
+<li>+ Humans change direction after hitting walls</li>
+<li>~ Humans eat more consistently</li>
+<li>~ Humans have a panic limit</li>
+<li>~ Humans no longer eat Human meat</li>
+<li>~ Smash tool moves pixels if they can't be broken</li>
+<li>+ Steam decomposes at extreme temperatures</li>
+<li>+ Ruins has a Brick texture</li>
+<li>~ Brick Rubble no longer breaks into Dust</li>
+<li>~ Recolored Brick Rubble</li>
+<li>+ Glass has a light border</li>
+<li>~ Fancy textures have grain, besides Glass</li>
+<li>+ Rock Wall can be made by gluing Rocks</li>
+<li>+ Brick can be made by gluing Brick Rubble</li>
+<li>+ Mudstone can be made by gluing Dirt</li>
+<li>+ Packed Sand can be made by Sand</li>
+<li>+ Sponges can dry Mud and Wet Sand</li>
+<li>+ Clay can be made by dissolving Wet Sand in Acid</li>
+<li>+ Cement can be made with Clay and Quicklime</li>
+<li>~ Quicklime no longer turns into Limestone on its own</li>
+<li>+ Plastic breaks into Beads</li>
+<li>+ Charcoal slowly stains solids</li>
+<li>+ Animals can spawn Eggs or offspring in Water</li>
+<li>+ Seeds planted under soil will rise</li>
+<li>+ Birds eat Spiders and their Webs</li>
+<li>+ Rocks destroy Webs</li>
+<li>+ Frogs release Steam when cooked</li>
+<li>+ Worms break down Fiber</li>
+<li>~ Worms compost some Sawdust into Dirt</li>
+<li>+ Soap kills Snails and Slugs</li>
+<li>+ Soap removes Slime</li>
+<li>+ Alcohol kills Flower Pistils</li>
+<li>+ Mercury kills Algae</li>
+<li>~ Sap boils into some Steam</li>
+<li>~ Bread is less flammable</li>
+<li>+ Ammonia affects Wheat</li>
+<li>+ Poison dirties Salt Water, Sugar Water, and Seltzer</li>
+<li>+ Water on burning Oil will explode</li>
+<li>+ Bleach reacts with Nut Oil and Grease</li>
+<li>+ Baking Soda reacts with Soap</li>
+<li>+ Copper Sulfate kills Spiders</li>
+<li>+ Copper Sulfate stains Zinc</li>
+<li>+ Bless removes Heat Ray</li>
+<li>+ Plague makes Heads green</li>
+<li>+ Plague destroys Skin</li>
+<li>+ Hair absorbs some Water</li>
+<li>~ Breaking Balloons makes some Pop</li>
+<li>~ Cheese flows slower</li>
+<li>~ Coffee Grounds in Milk brew into Coffee instead</li>
+<li>~ Mushroom Spores no longer break</li>
+<li>~ Acid Clouds don't precipitate when too hot or cold</li>
+<li>~ Border can be painted</li>
+<li>~ Tweaked Charcoal heat color</li>
+<li>~ Moved Light Bulb to after LEDs</li>
+<li>+ Midas Touch turns Paper green</li>
+<li>~ Midas Touch turns Humans into solid Gold instead of Coins</li>
+<li>+ Wall alias 'Solid'</li>
+<li>+ Mayo alias 'Mayonnaise'</li>
+<li>+ Alcohol alias 'Ethanol'</li>
+<li>+ Unbreakable elements are clarified in element info</li>
+<li>~ Screenshots download with name of current save</li>
+<li>~ Pixel count turns red when all canvas sizes are full</li>
+<li>~ Log messages have a black shadow to read on bright backgrounds</li>
+<li>~ TPS dialog displays minimum and maximum</li>
+<li>[Bug Fixes]</li>
+<li>~ Fixed: Replace Mode causes pixels to float while placing</li>
+<li>~ Fixed: Detached Heads and dead Humans can eat food</li>
+<li>~ Fixed: Pixel alpha isn't set from element properties on creation</li>
+<li>~ Fixed: Molten Thermite continues to heat when not burning</li>
+<li>~ Fixed: Prop tool can't set value when existing value is null</li>
+<li>~ Fixed: Unbreakable pixels can burn away when using Prop tool (Perma-burning!!!)</li>
+<li>~ Fixed: Pixels with burnt states never burn when using Prop tool</li>
+<li>~ Fixed: Prop tool doesn't retain "0" value on next dialog</li>
+<li>~ Fixed: Prop tool doesn't handle changing "x" and "y" properties</li>
+<li>~ Fixed: Placing Fire on insulative pixels heats them</li>
+<li>~ Fixed: Burning heats insulative pixels</li>
+<li>~ Fixed: Rays, Bless, Radiation, and some Bombs change insulative pixel temperature</li>
+<li>~ Fixed: Stink Bugs aren't properly killed by Frogs, Sap, Copper Sulfate, and Borax</li>
+<li>~ Fixed: Erasing with Lookup selected will only erase 1x1</li>
+<li>~ Fixed: Erasing fast with Pick or Lookup selected will leave gaps</li>
+<li>~ Fixed: Hail doesn't conduct heat</li>
+<li>~ Fixed: Hail cannot break solids without a defined state</li>
+<li>~ Fixed: Breaking Humans eventually creates Sand and Cement</li>
+<li>~ Fixed: Element buttons arranged in weird columns after certain issues</li>
+<li>~ Fixed: Ball doesn't have density and floats on gases</li>
+<li>[Technical]</li>
+<li>+ BORDER render preset</li>
+<li>+ 'grain' element property</li>
+<li>+ 'toolHoverStat' element property, function that takes the hovered pixel while selected</li>
+<li>+ 'buttonColor' element property</li>
+<li>~ Humans now eat any element with true 'isFood' property</li>
+<li>~ Pixels with 0% alpha won't appear in Basic View</li>
+<li>~ LEDs with 0% alpha will only appear when powered</li>
+<li>+ releaseElement function has option to replace liquids</li>
+<li>~ Fixed: lineCoords function returns duplicate values</li>
+<li>+ empty.js mod for browser JavaScript overriding</li>
+</ul>
+
 <h2 id="1.10.1">[Version 1.10.1 - October 5, 2024 - Creepy Crawlies]</h2>
 <ul>
 <li>[Crawly]</li>
@@ -2463,11 +2569,13 @@
 </script>
 <script>
     changelog = document.getElementById("changelog");
-    changelog.innerHTML = changelog.innerHTML.replaceAll("<li>+","<li class='ad'>");
-    changelog.innerHTML = changelog.innerHTML.replaceAll("<li>-","<li class='rm'>");
-    changelog.innerHTML = changelog.innerHTML.replaceAll("<li>~","<li class='ch'>");
-    changelog.innerHTML = changelog.innerHTML.replaceAll(">   ","><span class='indent'></span>");
-    changelog.innerHTML = changelog.innerHTML.replaceAll("<li>[","<li class='update-section'>[");
+    let html = changelog.innerHTML;
+    html = html.replaceAll("<li>+","<li class='ad'>");
+    html = html.replaceAll("<li>-","<li class='rm'>");
+    html = html.replaceAll("<li>~","<li class='ch'>");
+    html = html.replaceAll(">   ","><span class='indent'></span>");
+    html = html.replaceAll("<li>[","<li class='update-section'>[");
+    changelog.innerHTML = html;
 </script>
 
 

@@ -352,6 +352,9 @@ button, input[type="submit"], input[type="reset"] {
 #toolControls button, #category-tools button {
     flex-grow: 1;
 }
+#elementControls {
+    flex-direction: column;
+}
 
 /* Scrollbars */
 
@@ -603,4 +606,5 @@ button, input { /*Disable double tap zoom on mobile devices*/
     padding: 5px;
     white-space: pre-wrap;
     font-size: 0.75em;
+    text-shadow: 0px 0px 6px black;
 }
