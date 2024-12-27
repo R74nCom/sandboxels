@@ -3212,7 +3212,7 @@ if(modRequirementsPartOne && modRequirementsPartTwo) {
 
 		//Land Element Cults
 			/*
-			"Cult" is used similarly to its EoD sense; here, it signifies a set of elements that systematically replicates another set of elements except for a given modification.
+			"Cult" signifies a set of elements that systematically replicates another set of elements except for a given modification.
 			In this case, they replicate some land elements; a "yellow" cult, for example, would have yellow_dirt, yellow_mud, yellow_mudstone, yellow_permafrost, yellow_sand...
 			*/
 
