@@ -193,9 +193,14 @@ elements.clone_fluid = {
 // }
 
 addCanvasLayer("devtests");
+addCanvasLayer("devtests2");
 canvasLayersPre.unshift(canvasLayers["devtests"]);
 devtestsCtx = canvasLayers["devtests"].getContext("2d");
+devtestsCtx2 = canvasLayers["devtests2"].getContext("2d");
 delete canvasLayers.devtests;
+delete canvasLayers.devtests2;
+
+elements.fire.emit = true;
 
 viewInfo[9] = { // Blur
     name: "blur",
@@ -209,3 +214,35 @@ viewInfo[9] = { // Blur
         devtestsCtx.filter = "none";
     },
 };
+
+viewInfo[8] = { // Blur Glow (Emissive pixels only)
+    name: "blurglow",
+    pixel: viewInfo[1].pixel,
+    effects: true,
+    colorEffects: true,
+    pre: function(ctx) {
+        devtestsCtx2.canvas.width = ctx.canvas.width;
+        devtestsCtx2.canvas.height = ctx.canvas.height;
+    },
+    pixel: viewInfo[1].pixel,
+    post: function(ctx) {
+        devtestsCtx.canvas.width = ctx.canvas.width;
+        devtestsCtx.canvas.height = ctx.canvas.height;
+        devtestsCtx.filter = "blur(20px)";
+        // Draw the blurred content on the canvas
+        devtestsCtx.drawImage(devtestsCtx2.canvas, 0, 0);
+        devtestsCtx.drawImage(devtestsCtx2.canvas, 0, 0);
+        devtestsCtx.drawImage(devtestsCtx2.canvas, 0, 0);
+        devtestsCtx.filter = "none";
+    },
+};
+
+renderEachPixel(function(pixel,ctx) {
+    if (view === 8) {
+        if (elements[pixel.element].emit) {
+            var a = (settings.textures !== 0) ? pixel.alpha : undefined;
+            drawSquare(devtestsCtx2,pixel.color,pixel.x,pixel.y,undefined,a);
+            // viewInfo[1].pixel(pixel,devtestsCtx2);
+        }
+    }
+})
