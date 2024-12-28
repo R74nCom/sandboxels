@@ -7,7 +7,6 @@ viewInfo[4] = { // Nutrition View
         var nutrition = pixel.nutrition;
         if (nutrition < 0) {nutrition = 0}
         if (nutrition > 6000) {nutrition = 6000}
-        // logarithmic scale, with coldest being 225 (-50 degrees) and hottest being 0 (6000 degrees)
         var hue = Math.round(225 - (Math.log(nutrition)/Math.log(6000))*225);
         if (hue < 0) {hue = 0}
         if (hue > 225) {hue = 225}
@@ -23,7 +22,6 @@ viewInfo[5] = { // Oxygen View
             var oxygen = pixel.oxygen;
             if (oxygen < 0) {oxygen = 0}
             if (oxygen > 6000) {oxygen = 6000}
-            // logarithmic scale, with coldest being 225 (-50 degrees) and hottest being 0 (6000 degrees)
             var hue = Math.round(225 - (Math.log(oxygen)/Math.log(6000))*225);
             if (hue < 0) {hue = 0}
             if (hue > 225) {hue = 225}
@@ -39,11 +37,31 @@ viewInfo[6] = { // Speed View
             var speed = pixel.speed;
             if (speed < -50) {speed = -50}
             if (speed > 150) {speed = 150}
-            // logarithmic scale, with coldest being 225 (-50 degrees) and hottest being 0 (6000 degrees)
             var hue = Math.round(225 - (Math.log(speed+50)/Math.log(100+50))*225);
             if (hue < 0) {hue = 0}
             if (hue > 225) {hue = 225}
             drawSquare(ctx,"hsl("+hue+",100%,50%)",pixel.x,pixel.y)
+        }
+    }
+}
+
+viewInfo[7] = { // Illness View
+    name: "ill",
+    pixel: function(pixel,ctx) {
+        if ((elements[pixel.element].id === elements.infected_vessel.id || elements[pixel.element].id === elements.infection.id || elements[pixel.element].id === elements.cancer.id || elements[pixel.element].id === elements.plague.id || elements[pixel.element].id === elements.rotten_meat.id) || ((elements[pixel.element].isBio === true || elements[pixel.element].id === elements.digested_material.id || elements[pixel.element].id === elements.gaseous_material.id) && (pixel.speed < -5 || pixel.oxygen < 250 || pixel.nutrition < 250))) {
+            var a = (settings.textures !== 0) ? pixel.alpha : undefined;
+                    if (((elements[pixel.element].isGas && elements[pixel.element].glow !== false) || elements[pixel.element].glow || pixel.glow) && pixel.glow !== false) {
+                        drawPlus(ctx,pixel.color,pixel.x,pixel.y,undefined,a)
+                        // if (isEmpty(pixel.x+1,pixel.y) || isEmpty(pixel.x-1,pixel.y) || isEmpty(pixel.x,pixel.y+1) || isEmpty(pixel.x,pixel.y-1)) {}
+                    }
+                    else {
+                        drawSquare(ctx,pixel.color,pixel.x,pixel.y,undefined,a)
+                    }
+                    if (pixel.charge && view !== 2) { // Yellow glow on charge
+                        if (!elements[pixel.element].colorOn) {
+                            drawSquare(ctx,"rgba(255,255,0,0.5)",pixel.x,pixel.y);
+                        }
+                    }
         }
     }
 }
@@ -329,7 +347,7 @@ elements.epidermis = {
     stateHigh: "cooked_meat",
     tempLow: -25,
     stateLow: "frozen_meat",
-    burn: 5,
+    burn: 3,
     burnTime: 350,
     burnInto: "cooked_meat",
     breakInto: ["blood","meat","dust","dust","dust","dust"],
@@ -481,7 +499,381 @@ elements.dermis = {
     stateHigh: "cooked_meat",
     tempLow: -25,
     stateLow: "frozen_meat",
-    burn: 5,
+    burn: 4,
+    burnTime: 350,
+    burnInto: "cooked_meat",
+    breakInto: ["blood","meat"],
+    forceSaveColor: true,
+	reactions: {
+		"cancer": { elem1:"cancer", chance:0.0005 },
+        "radiation": { elem1:["ash","meat","rotten_meat","cooked_meat","flesh"], chance:0.2 },
+	},
+	properties: {
+        oxygen: 1000,
+        nutrition: 1000,
+        speed: 0,
+    },
+    isBio: true,
+    movable: false,
+}
+
+elements.cloak_skin = {
+	color: "#CFD4A5",
+	category: "structural",
+    behavior: behaviors.WALL,
+    hoverStat: function(pixel) {
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
+    },
+    tick: function(pixel) {
+        if ((pixel.temp > 35 || pixel.temp < 10) && Math.random() < 0.005) {
+            for (var i = 0; i < squareCoords.length; i++) {
+                var coords = squareCoords[i];
+                var x = pixel.x + coords[0];
+                var y = pixel.y + coords[1];
+                if (isEmpty(x,y)) {
+                    if (pixel.temp > 35) {
+                        pixel.temp -= 20;
+                        createPixel("salt_water",x,y);
+                        break;
+                    }
+                    pixel.temp += 20;
+                    break;
+                }
+            }
+        }
+        if (pixel.temp < 15 && Math.random() < 0.1) {
+            pixel.temp += 1;
+        }
+        doDefaults(pixel);
+        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+            pixel.nutrition--
+            pixel.oxygen -= 2
+        }
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
+            if (pixel.temp > 95) {
+                if (Math.random() < 0.999) {
+                    changePixel(pixel,"dust"); 
+                }
+                else {
+                    changePixel(pixel,"cooked_meat"); 
+                }
+            }
+            else if (pixel.temp < -15) {
+                if (Math.random() < 0.75) {
+                    changePixel(pixel,"dust"); 
+                }
+            }
+            else {
+                if (Math.random() < 0.999) {
+                    changePixel(pixel,"dust"); 
+                }
+                else {
+                    changePixel(pixel,"meat"); 
+                }
+            }
+        }
+        if (pixel.nutrition === null || isNaN(pixel.nutrition)) {
+            pixel.nutrition = 500
+        }
+        if (pixel.oxygen === null || isNaN(pixel.oxygen)) {
+            pixel.oxygen = 500
+        }
+        if (pixel.speed === null || isNaN(pixel.speed)) {
+            pixel.speed = 0
+        }
+        if (!isEmpty(pixel.x, pixel.y-1, true)) {
+            var hitPixel = pixelMap[pixel.x][pixel.y-1]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+                if (pixel.color != hitPixel.color) {
+                    hitPixel.color = pixel.color
+                }
+            }
+            else if (elements[hitPixel.element].movable) {
+                if (pixel.color != hitPixel.color) {
+                    pixel.color = hitPixel.color
+                }
+            }
+        }
+        if (!isEmpty(pixel.x, pixel.y+1, true)) {
+            var hitPixel = pixelMap[pixel.x][pixel.y+1]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+                if (pixel.color != hitPixel.color) {
+                    hitPixel.color = pixel.color
+                }
+            }
+            else if (elements[hitPixel.element].movable) {
+                if (pixel.color != hitPixel.color) {
+                    pixel.color = hitPixel.color
+                }
+            }
+        }
+        if (!isEmpty(pixel.x-1, pixel.y, true)) {
+            var hitPixel = pixelMap[pixel.x-1][pixel.y]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+                if (pixel.color != hitPixel.color) {
+                    hitPixel.color = pixel.color
+                }
+            }
+            else if (elements[hitPixel.element].movable) {
+                if (pixel.color != hitPixel.color) {
+                    pixel.color = hitPixel.color
+                }
+            }
+        }
+        if (!isEmpty(pixel.x+1, pixel.y, true)) {
+            var hitPixel = pixelMap[pixel.x+1][pixel.y]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+                if (pixel.color != hitPixel.color) {
+                    hitPixel.color = pixel.color
+                }
+            }
+            else if (elements[hitPixel.element].movable) {
+                if (pixel.color != hitPixel.color) {
+                    pixel.color = hitPixel.color
+                }
+            }
+        }
+    },
+    density: 2710,
+    state: "solid",
+    conduct: .001,
+    tempHigh: 200,
+    stateHigh: "cooked_meat",
+    tempLow: -25,
+    stateLow: "frozen_meat",
+    burn: 3,
+    burnTime: 350,
+    burnInto: "cooked_meat",
+    breakInto: ["blood","meat","dust","dust","dust","dust"],
+    forceSaveColor: true,
+	reactions: {
+		"cancer": { elem1:"cancer", chance:0.0005 },
+        "radiation": { elem1:["ash","meat","rotten_meat","cooked_meat","flesh"], chance:0.2 },
+	},
+	properties: {
+        oxygen: 1000,
+        nutrition: 1000,
+        speed: 0,
+    },
+    isBio: true,
+    movable: false,
+}
+
+elements.cloak_dermis = {
+	color: "#BC9F7B",
+	category: "structural",
+    behavior: behaviors.WALL,
+    hoverStat: function(pixel) {
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
+    },
+    tick: function(pixel) {
+        if (Math.random() > (1 - ((pixel.nutrition + pixel.oxygen + pixel.speed) / 2050)) && Math.random() < 0.005) {
+            for (var i = 0; i < squareCoords.length; i++) {
+                var coords = squareCoords[i];
+                var x = pixel.x + coords[0];
+                var y = pixel.y + coords[1];
+                if (isEmpty(x,y)) {
+                    createPixel("cloak_skin",x,y);
+                }
+            }
+        }
+        doDefaults(pixel);
+        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+            pixel.nutrition--
+            pixel.oxygen -= 2
+        }
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
+            if (pixel.temp > 95) {
+                if (Math.random() < 0.75) {
+                    changePixel(pixel,"meat"); 
+                }
+                else {
+                    changePixel(pixel,"cooked_meat"); 
+                }
+            }
+            else if (pixel.temp < -15) {
+                if (Math.random() < 0.75) {
+                    changePixel(pixel,"meat"); 
+                }
+                else {
+                    changePixel(pixel,"frozen_meat"); 
+                }
+            }
+            else {
+                if (Math.random() < 0.999) {
+                    changePixel(pixel,"meat"); 
+                }
+                else {
+                    changePixel(pixel,"rotten_meat"); 
+                }
+            }
+        }
+        if (pixel.nutrition === null || isNaN(pixel.nutrition)) {
+            pixel.nutrition = 500
+        }
+        if (pixel.oxygen === null || isNaN(pixel.oxygen)) {
+            pixel.oxygen = 500
+        }
+        if (pixel.speed === null || isNaN(pixel.speed)) {
+            pixel.speed = 0
+        }
+        if (!isEmpty(pixel.x, pixel.y-1, true)) {
+            var hitPixel = pixelMap[pixel.x][pixel.y-1]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+                if (pixel.color != hitPixel.color) {
+                    hitPixel.color = pixel.color
+                }
+            }
+            else if (elements[hitPixel.element].movable) {
+                if (pixel.color != hitPixel.color) {
+                    pixel.color = hitPixel.color
+                }
+            }
+        }
+        if (!isEmpty(pixel.x, pixel.y+1, true)) {
+            var hitPixel = pixelMap[pixel.x][pixel.y+1]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+                if (pixel.color != hitPixel.color) {
+                    hitPixel.color = pixel.color
+                }
+            }
+            else if (elements[hitPixel.element].movable) {
+                if (pixel.color != hitPixel.color) {
+                    pixel.color = hitPixel.color
+                }
+            }
+        }
+        if (!isEmpty(pixel.x-1, pixel.y, true)) {
+            var hitPixel = pixelMap[pixel.x-1][pixel.y]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+                if (pixel.color != hitPixel.color) {
+                    hitPixel.color = pixel.color
+                }
+            }
+            else if (elements[hitPixel.element].movable) {
+                if (pixel.color != hitPixel.color) {
+                    pixel.color = hitPixel.color
+                }
+            }
+        }
+        if (!isEmpty(pixel.x+1, pixel.y, true)) {
+            var hitPixel = pixelMap[pixel.x+1][pixel.y]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+                if (pixel.color != hitPixel.color) {
+                    hitPixel.color = pixel.color
+                }
+            }
+            else if (elements[hitPixel.element].movable) {
+                if (pixel.color != hitPixel.color) {
+                    pixel.color = hitPixel.color
+                }
+            }
+        }
+    },
+    density: 2710,
+    state: "solid",
+    conduct: .001,
+    tempHigh: 200,
+    stateHigh: "cooked_meat",
+    tempLow: -25,
+    stateLow: "frozen_meat",
+    burn: 4,
     burnTime: 350,
     burnInto: "cooked_meat",
     breakInto: ["blood","meat"],
@@ -1973,6 +2365,181 @@ elements.slimey_flesh = {
     movable: false,
 }
 
+elements.cloak_flesh = {
+	color: ["#879720","#8C9D1F"],
+    grain: 0,
+	category: "structural",
+    behavior: behaviors.WALL,
+    hoverStat: function(pixel) {
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
+    },
+    tick: function(pixel) {
+        doDefaults(pixel);
+        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+            pixel.nutrition--
+            pixel.oxygen -= 2
+        }
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
+            if (pixel.temp > 95) {
+                if (Math.random() < 0.75) {
+                    changePixel(pixel,"meat"); 
+                }
+                else {
+                    changePixel(pixel,"cooked_meat"); 
+                }
+            }
+            else if (pixel.temp < -15) {
+                if (Math.random() < 0.75) {
+                    changePixel(pixel,"meat"); 
+                }
+                else {
+                    changePixel(pixel,"frozen_meat"); 
+                }
+            }
+            else {
+                if (Math.random() < 0.999) {
+                    changePixel(pixel,"meat"); 
+                }
+                else {
+                    changePixel(pixel,"rotten_meat"); 
+                }
+            }
+        }
+        if (pixel.nutrition === null || isNaN(pixel.nutrition)) {
+            pixel.nutrition = 500
+        }
+        if (pixel.oxygen === null || isNaN(pixel.oxygen)) {
+            pixel.oxygen = 500
+        }
+        if (pixel.speed === null || isNaN(pixel.speed)) {
+            pixel.speed = 0
+        }
+        if (!isEmpty(pixel.x, pixel.y-1, true)) {
+            var hitPixel = pixelMap[pixel.x][pixel.y-1]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+                if (pixel.color != hitPixel.color) {
+                    hitPixel.color = pixel.color
+                }
+            }
+            else if (elements[hitPixel.element].movable) {
+                if (pixel.color != hitPixel.color) {
+                    pixel.color = hitPixel.color
+                }
+            }
+        }
+        if (!isEmpty(pixel.x, pixel.y+1, true)) {
+            var hitPixel = pixelMap[pixel.x][pixel.y+1]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+                if (pixel.color != hitPixel.color) {
+                    hitPixel.color = pixel.color
+                }
+            }
+            else if (elements[hitPixel.element].movable) {
+                if (pixel.color != hitPixel.color) {
+                    pixel.color = hitPixel.color
+                }
+            }
+        }
+        if (!isEmpty(pixel.x-1, pixel.y, true)) {
+            var hitPixel = pixelMap[pixel.x-1][pixel.y]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+                if (pixel.color != hitPixel.color) {
+                    hitPixel.color = pixel.color
+                }
+            }
+            else if (elements[hitPixel.element].movable) {
+                if (pixel.color != hitPixel.color) {
+                    pixel.color = hitPixel.color
+                }
+            }
+        }
+        if (!isEmpty(pixel.x+1, pixel.y, true)) {
+            var hitPixel = pixelMap[pixel.x+1][pixel.y]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+                if (pixel.color != hitPixel.color) {
+                    hitPixel.color = pixel.color
+                }
+            }
+            else if (elements[hitPixel.element].movable) {
+                if (pixel.color != hitPixel.color) {
+                    pixel.color = hitPixel.color
+                }
+            }
+        }
+    },
+    density: 2710,
+    state: "solid",
+    conduct: .001,
+    tempHigh: 200,
+    stateHigh: "cooked_meat",
+    tempLow: -25,
+    stateLow: "frozen_meat",
+    burn: 4,
+    burnTime: 350,
+    burnInto: "cooked_meat",
+    breakInto: ["blood","meat"],
+    forceSaveColor: true,
+	reactions: {
+		"cancer": { elem1:"cancer", chance:0.0005 },
+        "radiation": { elem1:["ash","meat","rotten_meat","cooked_meat","flesh"], chance:0.2 },
+	},
+	properties: {
+        oxygen: 1000,
+        nutrition: 1000,
+        speed: 0,
+    },
+    isBio: true,
+    movable: false,
+}
+
 elements.adipose = {
 	color: ["#C3A375","#B9945A"],
 	category: "nutrition",
@@ -2016,6 +2583,9 @@ elements.adipose = {
         if (pixel.oxygen === null || isNaN(pixel.oxygen)) {
             pixel.oxygen = 500
         }
+        if (pixel.speed === null || isNaN(pixel.speed)) {
+            pixel.speed = 0
+        }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
             var hitPixel = pixelMap[pixel.x][pixel.y-1]
             if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
@@ -2026,6 +2596,10 @@ elements.adipose = {
                 if (hitPixel.nutrition < pixel.nutrition) {
                     hitPixel.nutrition += 5
                     pixel.nutrition -= 5
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
                 }
             }
         }
@@ -2040,6 +2614,10 @@ elements.adipose = {
                     hitPixel.nutrition += 5
                     pixel.nutrition -= 5
                 }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
             }
         }
         if (!isEmpty(pixel.x-1, pixel.y, true)) {
@@ -2053,6 +2631,10 @@ elements.adipose = {
                     hitPixel.nutrition += 5
                     pixel.nutrition -= 5
                 }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
             }
         }
         if (!isEmpty(pixel.x+1, pixel.y, true)) {
@@ -2065,6 +2647,10 @@ elements.adipose = {
                 if (hitPixel.nutrition < pixel.nutrition) {
                     hitPixel.nutrition += 5
                     pixel.nutrition -= 5
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
                 }
             }
         }
@@ -2916,12 +3502,261 @@ elements.blood_vessel = {
     isBlood: true,
 }
 
+elements.infected_vessel = {
+    color: "#BF0347",
+    behavior: [
+        "XX|SW:blood_vessel%1|XX",
+        "SW:blood_vessel%1|XX|SW:blood_vessel%1",
+        "XX|SW:blood_vessel%1|XX",
+    ],
+    hoverStat: function(pixel) {
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
+    },
+    tick: function(pixel) {
+        if (Math.random() > (1 - ((pixel.nutrition + pixel.oxygen + pixel.speed) / 2050)) && Math.random() < 0.001) {
+            for (var i = 0; i < squareCoords.length; i++) {
+                var coords = squareCoords[i];
+                var x = pixel.x + coords[0];
+                var y = pixel.y + coords[1];
+                if (isEmpty(x,y)) {
+                    createPixel("flesh",x,y);
+                }
+            }
+        }
+        if (Math.random() > 0.5 && pixel.nutrition > 0 && pixel.oxygen > 0 || pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) {
+            pixel.nutrition -= 5
+            pixel.oxygen -= 5
+        }
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
+            changePixel(pixel,"infection");
+        }
+        if (pixel.nutrition === null || isNaN(pixel.nutrition)) {
+            pixel.nutrition = 500
+        }
+        if (pixel.oxygen === null || isNaN(pixel.oxygen)) {
+            pixel.oxygen = 500
+        }
+        if (pixel.speed === null || isNaN(pixel.speed)) {
+            pixel.speed = 0
+        }
+        if (!isEmpty(pixel.x, pixel.y-1, true)) {
+            var hitPixel = pixelMap[pixel.x][pixel.y-1]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    if (pixel.heartAttached === true) {
+                        hitPixel.oxygen += 35
+                        pixel.oxygen -= 40
+                    }
+                    else {
+                        hitPixel.oxygen += 25
+                        pixel.oxygen -= 30
+                    }
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    if (pixel.heartAttached === true) {
+                        hitPixel.nutrition += 30
+                        pixel.nutrition -= 35
+                    }
+                    else {
+                        hitPixel.nutrition += 20
+                        pixel.nutrition -= 25
+                    }
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 2
+                }
+                if (elements[hitPixel.element].isBlood === true && Math.random() > 0.5) {
+                    if (Math.random() > 0.95) {
+                        changePixel(hitPixel,"infected_vessel")
+                    }
+                }
+                if (elements[hitPixel.element].isBlood === true && pixel.heartAttached === true && hitPixel.heartAttached === false && Math.random() > 0.5) {
+                    hitPixel.heartAttached = true
+                }
+                if (elements[hitPixel.element].isBlood === true && pixel.kidneyAttached === true && hitPixel.kidneyAttached === false && Math.random() > 0.5) {
+                    hitPixel.kidneyAttached = true
+                }
+            }
+        }
+        else if (isEmpty(pixel.x, pixel.y-1) && Math.random() > 0.75 && Math.random() > (1 - ((pixel.nutrition + pixel.oxygen + pixel.speed) / 2050))) {
+            if (Math.random() > 0.95) {
+                createPixel("infection",pixel.x,pixel.y-1)
+            }
+            pixel.oxygen -= 50
+            pixel.nutrition -= 50
+        }
+        if (!isEmpty(pixel.x, pixel.y+1, true)) {
+            var hitPixel = pixelMap[pixel.x][pixel.y+1]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    if (pixel.heartAttached === true) {
+                        hitPixel.oxygen += 35
+                        pixel.oxygen -= 40
+                    }
+                    else {
+                        hitPixel.oxygen += 25
+                        pixel.oxygen -= 30
+                    }
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    if (pixel.heartAttached === true) {
+                        hitPixel.nutrition += 30
+                        pixel.nutrition -= 35
+                    }
+                    else {
+                        hitPixel.nutrition += 20
+                        pixel.nutrition -= 25
+                    }
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 2
+                }
+                if (elements[hitPixel.element].isBlood === true && Math.random() > 0.5) {
+                    if (Math.random() > 0.95) {
+                        changePixel(hitPixel,"infected_vessel")
+                    }
+                }
+                if (elements[hitPixel.element].isBlood === true && pixel.heartAttached === true && hitPixel.heartAttached === false && Math.random() > 0.5) {
+                    hitPixel.heartAttached = true
+                }
+                if (elements[hitPixel.element].isBlood === true && pixel.kidneyAttached === true && hitPixel.kidneyAttached === false && Math.random() > 0.5) {
+                    hitPixel.kidneyAttached = true
+                }
+            }
+        }
+        else if (isEmpty(pixel.x, pixel.y+1) && Math.random() > 0.75 && Math.random() > (1 - ((pixel.nutrition + pixel.oxygen + pixel.speed) / 2050))) {
+            if (Math.random() > 0.95) {
+                createPixel("infection",pixel.x,pixel.y+1)
+            }
+            pixel.oxygen -= 50
+            pixel.nutrition -= 50
+        }
+        if (!isEmpty(pixel.x-1, pixel.y, true)) {
+            var hitPixel = pixelMap[pixel.x-1][pixel.y]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    if (pixel.heartAttached === true) {
+                        hitPixel.oxygen += 35
+                        pixel.oxygen -= 40
+                    }
+                    else {
+                        hitPixel.oxygen += 25
+                        pixel.oxygen -= 30
+                    }
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    if (pixel.heartAttached === true) {
+                        hitPixel.nutrition += 30
+                        pixel.nutrition -= 35
+                    }
+                    else {
+                        hitPixel.nutrition += 20
+                        pixel.nutrition -= 25
+                    }
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 2
+                }
+                if (elements[hitPixel.element].isBlood === true && Math.random() > 0.5) {
+                    if (Math.random() > 0.95) {
+                        changePixel(hitPixel,"infected_vessel")
+                    }
+                }
+                if (elements[hitPixel.element].isBlood === true && pixel.heartAttached === true && hitPixel.heartAttached === false && Math.random() > 0.5) {
+                    hitPixel.heartAttached = true
+                }
+                if (elements[hitPixel.element].isBlood === true && pixel.kidneyAttached === true && hitPixel.kidneyAttached === false && Math.random() > 0.5) {
+                    hitPixel.kidneyAttached = true
+                }
+            }
+        }
+        else if (isEmpty(pixel.x-1, pixel.y) && Math.random() > 0.75 && Math.random() > (1 - ((pixel.nutrition + pixel.oxygen + pixel.speed) / 2050))) {
+            if (Math.random() > 0.95) {
+                createPixel("infection",pixel.x-1,pixel.y)
+            }
+            pixel.oxygen -= 50
+            pixel.nutrition -= 50
+        }
+        if (!isEmpty(pixel.x+1, pixel.y, true)) {
+            var hitPixel = pixelMap[pixel.x+1][pixel.y]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    if (pixel.heartAttached === true) {
+                        hitPixel.oxygen += 35
+                        pixel.oxygen -= 40
+                    }
+                    else {
+                        hitPixel.oxygen += 25
+                        pixel.oxygen -= 30
+                    }
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    if (pixel.heartAttached === true) {
+                        hitPixel.nutrition += 30
+                        pixel.nutrition -= 35
+                    }
+                    else {
+                        hitPixel.nutrition += 20
+                        pixel.nutrition -= 25
+                    }
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 2
+                }
+                if (elements[hitPixel.element].isBlood === true && Math.random() > 0.5) {
+                    if (Math.random() > 0.95) {
+                        changePixel(hitPixel,"infected_vessel")
+                    }
+                }
+                if (elements[hitPixel.element].isBlood === true && pixel.heartAttached === true && hitPixel.heartAttached === false && Math.random() > 0.5) {
+                    hitPixel.heartAttached = true
+                }
+                if (elements[hitPixel.element].isBlood === true && pixel.kidneyAttached === true && hitPixel.kidneyAttached === false && Math.random() > 0.5) {
+                    hitPixel.kidneyAttached = true
+                }
+            }
+        }
+        else if (isEmpty(pixel.x+1, pixel.y) && Math.random() > 0.75 && Math.random() > (1 - ((pixel.nutrition + pixel.oxygen + pixel.speed) / 2050))) {
+            if (Math.random() > 0.95) {
+                createPixel("infection",pixel.x+1,pixel.y)
+            }
+            pixel.oxygen -= 50
+            pixel.nutrition -= 50
+        }
+    },
+    properties: {
+        oxygen: 1000,
+        nutrition: 1000,
+        heartAttached: false,
+        kidneyAttached: false,
+    },
+    tempHigh: 175,
+    stateHigh: "meat",
+    tempLow: -50,
+    stateLow: "frozen_meat",
+    burn: 20,
+    burnTime: 160,
+    burnInto: "meat",
+    breakInto: "blood",
+    category: "circulation",
+    state: "solid",
+    density: 1250,
+    conduct: .001,
+    movable: false,
+    isBio: true,
+    isBlood: true,
+}
+
 elements.white_blood_cell = {
     color: "#F5D7D4",
     behavior: [
-        "XX|SW:blood,blood_vessel%1|XX",
-        "SW:blood,blood_vessel%1 AND M2%10|XX|SW:blood,blood_vessel%1 AND M2%10",
-        "M2|SW:blood,blood_vessel%1 AND M1|M2",
+        "XX|SW:blood_vessel%1|XX",
+        "SW:blood_vessel%1 AND M2%10|XX|SW:blood_vessel%1 AND M2%10",
+        "M2|SW:blood_vessel%1 AND M1|M2",
     ],
     hoverStat: function(pixel) {
         return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
@@ -2961,6 +3796,11 @@ elements.white_blood_cell = {
                     hitPixel.speed += 1
                     pixel.speed -= 1
                 }
+                if (elements[hitPixel.element].isBlood === true && Math.random() > 0.5) {
+                    if (elements[hitPixel.element].id === elements.infected_vessel.id) {
+                        changePixel(hitPixel,"blood_vessel")
+                    }
+                }
                 if (elements[hitPixel.element].isBlood === true && pixel.heartAttached === true && hitPixel.heartAttached === false && Math.random() > 0.5) {
                     hitPixel.heartAttached = true
                 }
@@ -2983,6 +3823,11 @@ elements.white_blood_cell = {
                 if (hitPixel.speed < pixel.speed) {
                     hitPixel.speed += 1
                     pixel.speed -= 1
+                }
+                if (elements[hitPixel.element].isBlood === true && Math.random() > 0.5) {
+                    if (elements[hitPixel.element].id === elements.infected_vessel.id) {
+                        changePixel(hitPixel,"blood_vessel")
+                    }
                 }
                 if (elements[hitPixel.element].isBlood === true && pixel.heartAttached === true && hitPixel.heartAttached === false && Math.random() > 0.5) {
                     hitPixel.heartAttached = true
@@ -3007,6 +3852,11 @@ elements.white_blood_cell = {
                     hitPixel.speed += 1
                     pixel.speed -= 1
                 }
+                if (elements[hitPixel.element].isBlood === true && Math.random() > 0.5) {
+                    if (elements[hitPixel.element].id === elements.infected_vessel.id) {
+                        changePixel(hitPixel,"blood_vessel")
+                    }
+                }
                 if (elements[hitPixel.element].isBlood === true && pixel.heartAttached === true && hitPixel.heartAttached === false && Math.random() > 0.5) {
                     hitPixel.heartAttached = true
                 }
@@ -3030,6 +3880,11 @@ elements.white_blood_cell = {
                     hitPixel.speed += 1
                     pixel.speed -= 1
                 }
+                if (elements[hitPixel.element].isBlood === true && Math.random() > 0.5) {
+                    if (elements[hitPixel.element].id === elements.infected_vessel.id) {
+                        changePixel(hitPixel,"blood_vessel")
+                    }
+                }
                 if (elements[hitPixel.element].isBlood === true && pixel.heartAttached === true && hitPixel.heartAttached === false && Math.random() > 0.5) {
                     hitPixel.heartAttached = true
                 }
@@ -3046,12 +3901,10 @@ elements.white_blood_cell = {
         kidneyAttached: false,
     },
     reactions: {
-		"cancer": { elem2:"flesh", chance:10  },
-        "infection": { elem2:"blood_vessel", chance:10  },
-        "plague": { elem2:null, chance:10  },
-        "cell": { elem2:"flesh", chance:10 },
-        "rotten_meat": { elem2:"flesh", chance:10 },
-        "meat": { elem2:"flesh", chance:10 },
+		"cancer": { elem2:"flesh", chance:0.10  },
+        "infected_vessel": { elem2:"blood_vessel", chance:0.10  },
+        "plague": { elem2:null, chance:0.10  },
+        "rotten_meat": { elem2:"flesh", chance:0.10 },
 	},
     tempHigh: 175,
     stateHigh: "meat",
@@ -3297,7 +4150,7 @@ elements.olfactory_bulb = {
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
             var hitPixel = pixelMap[pixel.x][pixel.y-1]
             doElectricity(hitPixel);
-            if ((elements[hitPixel.element].id === elements.stench.id || elements[hitPixel.element].id === elements.fragrance.id || elements[hitPixel.element].id === elements.methane.id || elements[hitPixel.element].id === elements.ammonia.id) && Math.random() > 0.5) {
+            if ((elements[hitPixel.element].id === elements.smoke.id || elements[hitPixel.element].id === elements.stench.id || elements[hitPixel.element].id === elements.fragrance.id || elements[hitPixel.element].id === elements.methane.id || elements[hitPixel.element].id === elements.ammonia.id) && Math.random() > 0.5) {
                 pixel.smell = true
                 deletePixel(hitPixel.x,hitPixel.y)
             }
@@ -3334,7 +4187,7 @@ elements.olfactory_bulb = {
         if (!isEmpty(pixel.x, pixel.y+1, true)) {
             var hitPixel = pixelMap[pixel.x][pixel.y+1]
             doElectricity(hitPixel);
-            if ((elements[hitPixel.element].id === elements.stench.id || elements[hitPixel.element].id === elements.fragrance.id || elements[hitPixel.element].id === elements.methane.id || elements[hitPixel.element].id === elements.ammonia.id) && Math.random() > 0.5) {
+            if ((elements[hitPixel.element].id === elements.smoke.id || elements[hitPixel.element].id === elements.stench.id || elements[hitPixel.element].id === elements.fragrance.id || elements[hitPixel.element].id === elements.methane.id || elements[hitPixel.element].id === elements.ammonia.id) && Math.random() > 0.5) {
                 pixel.smell = true
                 deletePixel(hitPixel.x,hitPixel.y)
             }
@@ -3371,7 +4224,7 @@ elements.olfactory_bulb = {
         if (!isEmpty(pixel.x-1, pixel.y, true)) {
             var hitPixel = pixelMap[pixel.x-1][pixel.y]
             doElectricity(hitPixel);
-            if ((elements[hitPixel.element].id === elements.stench.id || elements[hitPixel.element].id === elements.fragrance.id || elements[hitPixel.element].id === elements.methane.id || elements[hitPixel.element].id === elements.ammonia.id) && Math.random() > 0.5) {
+            if ((elements[hitPixel.element].id === elements.smoke.id || elements[hitPixel.element].id === elements.stench.id || elements[hitPixel.element].id === elements.fragrance.id || elements[hitPixel.element].id === elements.methane.id || elements[hitPixel.element].id === elements.ammonia.id) && Math.random() > 0.5) {
                 pixel.smell = true
                 deletePixel(hitPixel.x,hitPixel.y)
             }
@@ -3408,7 +4261,7 @@ elements.olfactory_bulb = {
         if (!isEmpty(pixel.x+1, pixel.y, true)) {
             var hitPixel = pixelMap[pixel.x+1][pixel.y]
             doElectricity(hitPixel);
-            if ((elements[hitPixel.element].id === elements.stench.id || elements[hitPixel.element].id === elements.fragrance.id || elements[hitPixel.element].id === elements.methane.id || elements[hitPixel.element].id === elements.ammonia.id) && Math.random() > 0.5) {
+            if ((elements[hitPixel.element].id === elements.smoke.id || elements[hitPixel.element].id === elements.stench.id || elements[hitPixel.element].id === elements.fragrance.id || elements[hitPixel.element].id === elements.methane.id || elements[hitPixel.element].id === elements.ammonia.id) && Math.random() > 0.5) {
                 pixel.smell = true
                 deletePixel(hitPixel.x,hitPixel.y)
             }
@@ -3973,7 +4826,7 @@ elements.bulb_nerve = {
         if (pixel.oxygen === null || isNaN(pixel.oxygen)) {
             pixel.oxygen = 500
         }
-        if (pixel.speed === null || isNaN(pixel.speed)) {
+        if (pixel.l || isNaN(pixel.speed)) {
             pixel.speed = 0
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
@@ -4261,7 +5114,7 @@ elements.throat_lining = {
         if (pixel.oxygen === null || isNaN(pixel.oxygen)) {
             pixel.oxygen = 500
         }
-        if (pixel.speed === null || isNaN(pixel.speed)) {
+        if (pixel.l || isNaN(pixel.speed)) {
             pixel.speed = 0
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
@@ -4410,10 +5263,10 @@ elements.intestines = {
             if (elements[hitPixel.element].id === elements.digested_material.id && Math.random() > 0.99) {
                 if (Math.random() > 0.5) {
             		changePixel(hitPixel,"poop"); 
-	        }
-		else if (Math.random() > 0.5) {
+	            }
+		        else {
             		changePixel(hitPixel,"stench"); 
-	        }
+	            }
                 pixel.nutrition += hitPixel.nutrition;
                 hitPixel.nutrition = 0;
                 pixel.speed += hitPixel.speed;
@@ -4446,10 +5299,10 @@ elements.intestines = {
             if (elements[hitPixel.element].id === elements.digested_material.id && Math.random() > 0.99) {
                 if (Math.random() > 0.5) {
             		changePixel(hitPixel,"poop"); 
-	        }
-		else if (Math.random() > 0.5) {
+	            }
+		        else {
             		changePixel(hitPixel,"stench"); 
-	        }
+	            }
                 pixel.nutrition += hitPixel.nutrition;
                 hitPixel.nutrition = 0;
                 pixel.speed += hitPixel.speed;
@@ -4482,10 +5335,10 @@ elements.intestines = {
             if (elements[hitPixel.element].id === elements.digested_material.id && Math.random() > 0.99) {
                 if (Math.random() > 0.5) {
             		changePixel(hitPixel,"poop"); 
-	        }
-		else if (Math.random() > 0.5) {
+	            }
+		        else {
             		changePixel(hitPixel,"stench"); 
-	        }
+	            }
                 pixel.nutrition += hitPixel.nutrition;
                 hitPixel.nutrition = 0;
                 pixel.speed += hitPixel.speed;
@@ -4516,10 +5369,10 @@ elements.intestines = {
             if (elements[hitPixel.element].id === elements.digested_material.id && Math.random() > 0.99) {
                 if (Math.random() > 0.5) {
             		changePixel(hitPixel,"poop"); 
-	        }
-		else if (Math.random() > 0.5) {
+	            }
+		        else {
             		changePixel(hitPixel,"stench"); 
-	        }
+	            }
                 pixel.nutrition += hitPixel.nutrition;
                 hitPixel.nutrition = 0;
                 pixel.speed += hitPixel.speed;
@@ -4622,15 +5475,6 @@ elements.appendix = {
                     changePixel(pixel,"stomach_acid"); 
                 }
             }
-        }
-        if (pixel.nutrition === null || isNaN(pixel.nutrition)) {
-            pixel.nutrition = 500
-        }
-        if (pixel.oxygen === null || isNaN(pixel.oxygen)) {
-            pixel.oxygen = 500
-        }
-        if (pixel.speed === null || isNaN(pixel.speed)) {
-            pixel.speed = 0
         }
         if (pixel.nutrition === null || isNaN(pixel.nutrition)) {
             pixel.nutrition = 500
@@ -7284,7 +8128,7 @@ elements.stomach_acid = {
         "frozen_yogurt": { elem2:"digested_material", attr2:{"nutrition":35, "speed":2}, chance:0.02 },
         "slush": { elem2:"digested_material", attr2:{"nutrition":5, "speed":-1}, chance:0.02 },
         "coffee_bean": { elem2:"digested_material", attr2:{"nutrition":-5, "speed":20}, chance:0.02 },
-	"coffee_ground": { elem2:"digested_material", attr2:{"nutrition":-5, "speed":15}, chance:0.02 },
+	    "coffee_ground": { elem2:"digested_material", attr2:{"nutrition":-5, "speed":15}, chance:0.02 },
         "yeast": { elem2:"digested_material", attr2:{"nutrition":-5, "speed":-1}, chance:0.02 },
         "alcohol": { elem2:"digested_material", attr2:{"nutrition":5, "speed":-15}, chance:0.02 },
         "honey": { elem2:"digested_material", attr2:{"nutrition":35, "speed":3}, chance:0.02 },
@@ -7386,7 +8230,7 @@ elements.herbi_acid = {
         "frozen_yogurt": { elem2:"digested_material", attr2:{"nutrition":35}, chance:0.02 },
         "slush": { elem2:"digested_material", attr2:{"nutrition":5, "speed":-1}, chance:0.02 },
         "coffee_bean": { elem2:"digested_material", attr2:{"nutrition":-5, "speed":20}, chance:0.02 },
-	"coffee_ground": { elem2:"digested_material", attr2:{"nutrition":-5, "speed":15}, chance:0.02 },
+	    "coffee_ground": { elem2:"digested_material", attr2:{"nutrition":-5, "speed":15}, chance:0.02 },
         "yeast": { elem2:"digested_material", attr2:{"nutrition":-5}, chance:0.02 },
         "alcohol": { elem2:"digested_material", attr2:{"nutrition":-5, "speed":-15}, chance:0.02 },
         "honey": { elem2:"digested_material", attr2:{"nutrition":35, "speed":3}, chance:0.02 },
@@ -7791,7 +8635,7 @@ elements.real_bone = {
                 changePixel(pixel,"bone"); 
             }
             else {
-                changePixel(pixel,"meat"); 
+                changePixel(pixel,"bone"); 
             }
         }
         if (pixel.nutrition === null || isNaN(pixel.nutrition)) {
@@ -7966,6 +8810,11 @@ elements.real_bone_marrow = {
                     hitPixel.speed += 1
                     pixel.speed -= 1
                 }
+                if (elements[hitPixel.element].isBlood === true && Math.random() > 0.75) {
+                    if (Math.random() > 0.9999 && Math.random() < (1 - ((pixel.nutrition + pixel.oxygen) / 2000))) {
+                        changePixel(hitPixel,"white_blood_cell");
+                    }
+                }
             }
         }
         if (!isEmpty(pixel.x, pixel.y+1, true)) {
@@ -7982,6 +8831,11 @@ elements.real_bone_marrow = {
                 if (hitPixel.speed < pixel.speed) {
                     hitPixel.speed += 1
                     pixel.speed -= 1
+                }
+                if (elements[hitPixel.element].isBlood === true && Math.random() > 0.75) {
+                    if (Math.random() > 0.9999 && Math.random() < (1 - ((pixel.nutrition + pixel.oxygen) / 2000))) {
+                        changePixel(hitPixel,"white_blood_cell");
+                    }
                 }
             }
         }
@@ -8000,6 +8854,11 @@ elements.real_bone_marrow = {
                     hitPixel.speed += 1
                     pixel.speed -= 1
                 }
+                if (elements[hitPixel.element].isBlood === true && Math.random() > 0.75) {
+                    if (Math.random() > 0.9999 && Math.random() < (1 - ((pixel.nutrition + pixel.oxygen) / 2000))) {
+                        changePixel(hitPixel,"white_blood_cell");
+                    }
+                }
             }
         }
         if (!isEmpty(pixel.x+1, pixel.y, true)) {
@@ -8016,6 +8875,11 @@ elements.real_bone_marrow = {
                 if (hitPixel.speed < pixel.speed) {
                     hitPixel.speed += 1
                     pixel.speed -= 1
+                }
+                if (elements[hitPixel.element].isBlood === true && Math.random() > 0.75) {
+                    if (Math.random() > 0.9999 && Math.random() < (1 - ((pixel.nutrition + pixel.oxygen) / 2000))) {
+                        changePixel(hitPixel,"white_blood_cell");
+                    }
                 }
             }
         }
@@ -8609,7 +9473,7 @@ elements.tract = {
     forceSaveColor: true,
     density: 2710,
     state: "solid",
-    conduct: .001,
+    conduct: 1,
     tempHigh: 200,
     stateHigh: "cooked_meat",
     tempLow: -25,
@@ -8628,6 +9492,633 @@ elements.tract = {
         speed: 0,
     },
     isBio: true,
+}
+
+elements.biosensor = {
+	color: ["#AD6770","#B0707D"],
+	category: "nervous system",
+    behavior: behaviors.WALL,
+    hoverStat: function(pixel) {
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
+    },
+    tick: function(pixel) {
+        for (var i = 0; i < adjacentCoords.length; i++) {
+            var coords = adjacentCoords[i];
+            var x = pixel.x + coords[0];
+            var y = pixel.y + coords[1];
+            if (!isEmpty(x,y,true)) {
+                var sensed = pixelMap[x][y];
+                if (sensed.con || elements[sensed.element].movable && elements.biosensor.ignore.indexOf(sensed.element) === -1) {
+                    pixel.charge = 5;
+                    break;
+                }
+            }
+        }
+        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+            pixel.nutrition--
+            pixel.oxygen -= 2
+        }
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
+            if (pixel.temp > 95) {
+                if (Math.random() < 0.75) {
+                    changePixel(pixel,"meat"); 
+                }
+                else {
+                    changePixel(pixel,"cooked_meat"); 
+                }
+            }
+            else if (pixel.temp < -15) {
+                if (Math.random() < 0.75) {
+                    changePixel(pixel,"meat"); 
+                }
+                else {
+                    changePixel(pixel,"frozen_meat"); 
+                }
+            }
+            else {
+                if (Math.random() < 0.999) {
+                    changePixel(pixel,"meat"); 
+                }
+                else {
+                    changePixel(pixel,"rotten_meat"); 
+                }
+            }
+        }
+        if (pixel.nutrition === null || isNaN(pixel.nutrition)) {
+            pixel.nutrition = 500
+        }
+        if (pixel.oxygen === null || isNaN(pixel.oxygen)) {
+            pixel.oxygen = 500
+        }
+        if (pixel.speed === null || isNaN(pixel.speed)) {
+            pixel.speed = 0
+        }
+        if (!isEmpty(pixel.x, pixel.y-1, true)) {
+            var hitPixel = pixelMap[pixel.x][pixel.y-1]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+            }
+        }
+        if (!isEmpty(pixel.x, pixel.y+1, true)) {
+            var hitPixel = pixelMap[pixel.x][pixel.y+1]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+            }
+        }
+        if (!isEmpty(pixel.x-1, pixel.y, true)) {
+            var hitPixel = pixelMap[pixel.x-1][pixel.y]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+            }
+        }
+        if (!isEmpty(pixel.x+1, pixel.y, true)) {
+            var hitPixel = pixelMap[pixel.x+1][pixel.y]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+            }
+        }
+        doDefaults(pixel);
+    },
+    ignore: ["flash"],
+    density: 2710,
+    state: "solid",
+    conduct: 1,
+    tempHigh: 200,
+    stateHigh: "cooked_meat",
+    tempLow: -25,
+    stateLow: "frozen_meat",
+    burn: 5,
+    burnTime: 350,
+    burnInto: "cooked_meat",
+    breakInto: ["blood","meat"],
+	reactions: {
+        "cancer": { elem1:"cancer", chance:0.0005 },
+        "radiation": { elem1:["ash","blood","fat","meat","rotten_meat","cooked_meat"], chance:0.4 },
+	},
+	properties: {
+        oxygen: 1000,
+        nutrition: 1000,
+        speed: 0,
+    },
+    isBio: true,
+    movable: false,
+}
+
+elements.bioplate = {
+	color: ["#AD6770","#B0707D"],
+	category: "nervous system",
+    behavior: behaviors.WALL,
+    hoverStat: function(pixel) {
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
+    },
+    tick: function(pixel) {
+        if (!isEmpty(pixel.x, pixel.y-1, true)){
+            if (pixel.min && elements[pixelMap[pixel.x][pixel.y-1].element].density < pixel.min) {}
+            else if (pixelMap[pixel.x][pixel.y-1].element != "pressure_plate" || pixelMap[pixel.x][pixel.y-1].on) {
+                pixel.on = true;
+                var coordsToShock = [
+                    [pixel.x, pixel.y+1],
+                    [pixel.x+1, pixel.y],
+                    [pixel.x-1, pixel.y],
+                ]
+                for (var i = 0; i < coordsToShock.length; i++) {
+                    var x = coordsToShock[i][0];
+                    var y = coordsToShock[i][1];
+                    if (!isEmpty(x,y,true)) {
+                        var newpixel = pixelMap[x][y];
+                        if (elements[newpixel.element].conduct) {
+                            newpixel.charge = 1;
+                        }
+                    }
+                }
+            }
+        }
+        else if (pixel.on) {
+            pixel.on = false;
+        }
+        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+            pixel.nutrition--
+            pixel.oxygen -= 2
+        }
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
+            if (pixel.temp > 95) {
+                if (Math.random() < 0.75) {
+                    changePixel(pixel,"meat"); 
+                }
+                else {
+                    changePixel(pixel,"cooked_meat"); 
+                }
+            }
+            else if (pixel.temp < -15) {
+                if (Math.random() < 0.75) {
+                    changePixel(pixel,"meat"); 
+                }
+                else {
+                    changePixel(pixel,"frozen_meat"); 
+                }
+            }
+            else {
+                if (Math.random() < 0.999) {
+                    changePixel(pixel,"meat"); 
+                }
+                else {
+                    changePixel(pixel,"rotten_meat"); 
+                }
+            }
+        }
+        if (pixel.nutrition === null || isNaN(pixel.nutrition)) {
+            pixel.nutrition = 500
+        }
+        if (pixel.oxygen === null || isNaN(pixel.oxygen)) {
+            pixel.oxygen = 500
+        }
+        if (pixel.speed === null || isNaN(pixel.speed)) {
+            pixel.speed = 0
+        }
+        if (!isEmpty(pixel.x, pixel.y-1, true)) {
+            var hitPixel = pixelMap[pixel.x][pixel.y-1]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+            }
+        }
+        if (!isEmpty(pixel.x, pixel.y+1, true)) {
+            var hitPixel = pixelMap[pixel.x][pixel.y+1]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+            }
+        }
+        if (!isEmpty(pixel.x-1, pixel.y, true)) {
+            var hitPixel = pixelMap[pixel.x-1][pixel.y]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+            }
+        }
+        if (!isEmpty(pixel.x+1, pixel.y, true)) {
+            var hitPixel = pixelMap[pixel.x+1][pixel.y]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+            }
+        }
+        doDefaults(pixel);
+    },
+    ignore: ["flash"],
+    density: 2710,
+    state: "solid",
+    conduct: 1,
+    tempHigh: 200,
+    stateHigh: "cooked_meat",
+    tempLow: -25,
+    stateLow: "frozen_meat",
+    burn: 5,
+    burnTime: 350,
+    burnInto: "cooked_meat",
+    breakInto: ["blood","meat"],
+	reactions: {
+        "cancer": { elem1:"cancer", chance:0.0005 },
+        "radiation": { elem1:["ash","blood","fat","meat","rotten_meat","cooked_meat"], chance:0.4 },
+	},
+	properties: {
+        oxygen: 1000,
+        nutrition: 1000,
+        speed: 0,
+    },
+    isBio: true,
+    movable: false,
+}
+
+elements.valve = {
+	color: ["#A9436A","#B64F71"],
+	category: "nervous system",
+    behavior: behaviors.WALL,
+    behaviorOn: [
+        "XX|DL:valve_extension|XX",
+        "DL:valve_extension|XX|DL:valve_extension",
+        "XX|DL:valve_extension|XX",
+    ],
+    hoverStat: function(pixel) {
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
+    },
+    tick: function(pixel) {
+        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+            pixel.nutrition--
+            pixel.oxygen -= 2
+        }
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
+            if (pixel.temp > 95) {
+                if (Math.random() < 0.75) {
+                    changePixel(pixel,"meat"); 
+                }
+                else {
+                    changePixel(pixel,"cooked_meat"); 
+                }
+            }
+            else if (pixel.temp < -15) {
+                if (Math.random() < 0.75) {
+                    changePixel(pixel,"meat"); 
+                }
+                else {
+                    changePixel(pixel,"frozen_meat"); 
+                }
+            }
+            else {
+                if (Math.random() < 0.999) {
+                    changePixel(pixel,"meat"); 
+                }
+                else {
+                    changePixel(pixel,"rotten_meat"); 
+                }
+            }
+        }
+        if (pixel.nutrition === null || isNaN(pixel.nutrition)) {
+            pixel.nutrition = 500
+        }
+        if (pixel.oxygen === null || isNaN(pixel.oxygen)) {
+            pixel.oxygen = 500
+        }
+        if (pixel.speed === null || isNaN(pixel.speed)) {
+            pixel.speed = 0
+        }
+        if (pixel.charge || !pixel.open) {
+            pixel.openAge = 0
+            pixel.open = true
+        }
+        if (pixel.open === true) {
+            pixel.openAge++
+        }
+        if (pixel.openAge > 29) {
+            for (var i = 0; i < adjacentCoords.length; i++) {
+                var coords = adjacentCoords[i];
+                var x = pixel.x + coords[0];
+                var y = pixel.y + coords[1];
+                if (isEmpty(x,y)) {
+                    createPixel("valve_extension",x,y);
+                    pixel.openAge = 0;
+                    pixel.open = false;
+                }
+            }
+        }
+        if (!isEmpty(pixel.x, pixel.y-1, true)) {
+            var hitPixel = pixelMap[pixel.x][pixel.y-1]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+            }
+        }
+        if (!isEmpty(pixel.x, pixel.y+1, true)) {
+            var hitPixel = pixelMap[pixel.x][pixel.y+1]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+            }
+        }
+        if (!isEmpty(pixel.x-1, pixel.y, true)) {
+            var hitPixel = pixelMap[pixel.x-1][pixel.y]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+            }
+        }
+        if (!isEmpty(pixel.x+1, pixel.y, true)) {
+            var hitPixel = pixelMap[pixel.x+1][pixel.y]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+            }
+        }
+        doDefaults(pixel);
+    },
+    density: 2710,
+    state: "solid",
+    conduct: 1,
+    tempHigh: 200,
+    stateHigh: "cooked_meat",
+    tempLow: -25,
+    stateLow: "frozen_meat",
+    burn: 5,
+    burnTime: 350,
+    burnInto: "cooked_meat",
+    breakInto: ["blood","meat"],
+	reactions: {
+        "cancer": { elem1:"cancer", chance:0.0005 },
+        "radiation": { elem1:["ash","blood","fat","meat","rotten_meat","cooked_meat"], chance:0.4 },
+	},
+	properties: {
+        oxygen: 1000,
+        nutrition: 1000,
+        speed: 0,
+    },
+    isBio: true,
+    movable: false,
+}
+
+elements.valve_extension = {
+    name: "valve",
+	color: ["#9e4839","#ba6449"],
+	category: "nervous system",
+    behavior: behaviors.WALL,
+    hoverStat: function(pixel) {
+        return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
+    },
+    tick: function(pixel) {
+        if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 43 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0)) {
+            pixel.nutrition -= 2
+            pixel.oxygen -= 2
+        }
+        if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
+            if (pixel.temp > 95) {
+                if (Math.random() < 0.75) {
+                    changePixel(pixel,"meat"); 
+                }
+                else {
+                    changePixel(pixel,"cooked_meat"); 
+                }
+            }
+            else if (pixel.temp < -15) {
+                if (Math.random() < 0.75) {
+                    changePixel(pixel,"meat"); 
+                }
+                else {
+                    changePixel(pixel,"frozen_meat"); 
+                }
+            }
+            else {
+                if (Math.random() < 0.999) {
+                    changePixel(pixel,"meat"); 
+                }
+                else {
+                    changePixel(pixel,"rotten_meat"); 
+                }
+            }
+        }
+        if (pixel.nutrition === null || isNaN(pixel.nutrition)) {
+            pixel.nutrition = 500
+        }
+        if (pixel.oxygen === null || isNaN(pixel.oxygen)) {
+            pixel.oxygen = 500
+        }
+        if (pixel.speed === null || isNaN(pixel.speed)) {
+            pixel.speed = 0
+        }
+        if (!isEmpty(pixel.x, pixel.y-1, true)) {
+            var hitPixel = pixelMap[pixel.x][pixel.y-1]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+            }
+        }
+        if (!isEmpty(pixel.x, pixel.y+1, true)) {
+            var hitPixel = pixelMap[pixel.x][pixel.y+1]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+            }
+        }
+        if (!isEmpty(pixel.x-1, pixel.y, true)) {
+            var hitPixel = pixelMap[pixel.x-1][pixel.y]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+            }
+        }
+        if (!isEmpty(pixel.x+1, pixel.y, true)) {
+            var hitPixel = pixelMap[pixel.x+1][pixel.y]
+            if (elements[hitPixel.element].isBio === true && Math.random() > 0.5) {
+                if (hitPixel.oxygen < pixel.oxygen) {
+                    hitPixel.oxygen += 10
+                    pixel.oxygen -= 10
+                }
+                if (hitPixel.nutrition < pixel.nutrition) {
+                    hitPixel.nutrition += 10
+                    pixel.nutrition -= 10
+                }
+                if (hitPixel.speed < pixel.speed) {
+                    hitPixel.speed += 1
+                    pixel.speed -= 1
+                }
+            }
+        }
+        doDefaults(pixel);
+    },
+    density: 2710,
+    state: "solid",
+    tempHigh: 200,
+    stateHigh: "cooked_meat",
+    tempLow: -25,
+    stateLow: "frozen_meat",
+    burn: 5,
+    burnTime: 350,
+    burnInto: "cooked_meat",
+    breakInto: ["blood","meat"],
+	reactions: {
+        "cancer": { elem1:"cancer", chance:0.0005 },
+        "radiation": { elem1:["ash","blood","fat","meat","rotten_meat","cooked_meat"], chance:0.4 },
+	},
+	properties: {
+        oxygen: 1000,
+        nutrition: 1000,
+        speed: 0,
+    },
+    isBio: true,
+    movable: false,
+    hidden: true,
 }
 
 elements.revive = {
@@ -8703,55 +10194,84 @@ elements.drain_health = {
 }
 
 if (!elements.cancer.reactions) { elements.cancer.reactions = {} }
+elements.cancer.reactions.attached_hair = { "elem2": "loose_hair", chance:0.4 };
+elements.cancer.reactions.hair_end = { "elem2": "loose_hair", chance:0.4 };
 elements.cancer.reactions.flesh = { "elem2": "cancer", chance:0.005 };
+elements.cancer.reactions.slimey_flesh = { "elem2": ["slime","cancer"], chance:0.004 };
+elements.cancer.reactions.acidic_flesh = { "elem2": ["acid","cancer"], chance:0.004 };
+elements.cancer.reactions.cloak_flesh = { "elem2": "cancer", chance:0.004 };
 elements.cancer.reactions.adipose = { "elem2": "cancer", chance:0.005 };
-elements.cancer.reactions.blood_vessel = { "elem2": "cancer", chance:0.005 };
+elements.cancer.reactions.blood_vessel = { "elem2": ["cancer","infected_vessel","infected_vessel","infected_vessel","infected_vessel"], chance:0.05 };
+elements.cancer.reactions.white_blood_cell = { "elem2": ["cancer","blood","blood_vessel","blood_vessel","infected_vessel"], chance:0.005 };
 elements.cancer.reactions.heart = { "elem2": "cancer", chance:0.005 };
+elements.cancer.reactions.kidney = { "elem2": "cancer", chance:0.005 };
+elements.cancer.reactions.liver = { "elem2": "cancer", chance:0.005 };
 elements.cancer.reactions.dermis = { "elem2": "cancer", chance:0.005 };
 elements.cancer.reactions.amphib_dermis = { "elem2": "cancer", chance:0.005 };
 elements.cancer.reactions.scale_dermis = { "elem2": "cancer", chance:0.004 };
 elements.cancer.reactions.epidermis = { "elem2": "cancer", chance:0.0002 };
 elements.cancer.reactions.amphib_skin = { "elem2": "cancer", chance:0.0003 };
+elements.cancer.reactions.hairy_skin = { "elem2": "cancer", chance:0.0003 };
+elements.cancer.reactions.hair_dermis = { "elem2": "cancer", chance:0.0003 };
 elements.cancer.reactions.scales = { "elem2": "cancer", chance:0.0001 };
 elements.cancer.reactions.real_bone = { "elem2": ["bone","bone","cancer"], chance:0.0001 };
 elements.cancer.reactions.real_bone_marrow = { "elem2": ["bone","cancer","cancer","cancer","cancer","cancer","cancer"], chance:0.0001 };
 elements.cancer.reactions.lungs = { "elem2": "cancer", chance:0.005 };
+elements.cancer.reactions.simple_lung = { "elem2": "cancer", chance:0.005 };
 elements.cancer.reactions.gills = { "elem2": "cancer", chance:0.005 };
 elements.cancer.reactions.brain = { "elem2": "cancer", chance:0.005 };
 elements.cancer.reactions.nerve = { "elem2": "cancer", chance:0.005 };
 elements.cancer.reactions.eye_nerve = { "elem2": "cancer", chance:0.005 };
+elements.cancer.reactions.bulb_nerve = { "elem2": "cancer", chance:0.005 };
+elements.cancer.reactions.olfactory_bulb = { "elem2": "cancer", chance:0.005 };
 elements.cancer.reactions.eye = { "elem2": "cancer", chance:0.005 };
 elements.cancer.reactions.sphincter = { "elem2": "cancer", chance:0.005 };
 elements.cancer.reactions.digested_material = { "elem2": "cancer", chance:0.001 };
 elements.cancer.reactions.intestines = { "elem2": "cancer", chance:0.005 };
 elements.cancer.reactions.stomach_valve = { "elem2": "cancer", chance:0.005 };
 elements.cancer.reactions.stomach_lining = { "elem2": "cancer", chance:0.005 };
-elements.uranium.reactions.decomposer_stomach = { "elem2": "cancer", chance:0.004 };
-elements.uranium.reactions.herbi_stomach = { "elem2": "cancer", chance:0.004 };
-elements.uranium.reactions.carni_stomach = { "elem2": "cancer", chance:0.004 };
-elements.uranium.reactions.explosive_stomach = { "elem2": ["pop","cancer","cancer","cancer"], chance:0.003 };
+elements.cancer.reactions.decomposer_stomach = { "elem2": "cancer", chance:0.004 };
+elements.cancer.reactions.herbi_stomach = { "elem2": "cancer", chance:0.004 };
+elements.cancer.reactions.carni_stomach = { "elem2": "cancer", chance:0.004 };
+elements.cancer.reactions.explosive_stomach = { "elem2": ["pop","cancer","cancer","cancer"], chance:0.003 };
+elements.cancer.reactions.biotorch = { "elem2": ["cooked_meat","cancer","cancer","cancer"], chance:0.003 };
+elements.cancer.reactions.biosensor = { "elem2": "cancer", chance:0.005 };
+elements.cancer.reactions.valve = { "elem2": "cancer", chance:0.005 };
+elements.cancer.reactions.valve_extension = { "elem2": "cancer", chance:0.005 };
 elements.cancer.reactions.throat_lining = { "elem2": "cancer", chance:0.005 };
 
 if (!elements.uranium.reactions) { elements.uranium.reactions = {} }
+elements.uranium.reactions.attached_hair = { "elem2": "loose_hair", chance:0.4 };
+elements.uranium.reactions.hair_end = { "elem2": "loose_hair", chance:0.4 };
 elements.uranium.reactions.flesh = { "elem2": ["ash","blood","fat","meat","rotten_meat","cooked_meat"], chance:0.5 };
+elements.uranium.reactions.slimey_flesh = { "elem2": ["ash","slime","fat","meat","rotten_meat","cooked_meat","cancer","cancer"], chance:0.4 };
+elements.uranium.reactions.acidic_flesh = { "elem2": ["ash","acid","fat","meat","rotten_meat","cooked_meat","cancer","cancer"], chance:0.4 };
+elements.uranium.reactions.cloak_flesh = { "elem2": ["ash","blood","fat","meat","rotten_meat","cooked_meat","cancer","cancer"], chance:0.4 };
 elements.uranium.reactions.adipose = { "elem2": ["ash","blood","fat","fat","meat","rotten_meat","cooked_meat"], chance:0.5 };
-elements.uranium.reactions.blood_vessel = { "elem2": ["ash","blood","blood","blood","blood","blood","blood","meat","rotten_meat","cooked_meat"], chance:0.5 };
-elements.uranium.reactions.heart = { "elem2": ["ash","blood","blood","blood","blood","blood","blood","meat","rotten_meat","cooked_meat"], chance:0.5 };
+elements.uranium.reactions.blood_vessel = { "elem2": ["ash","blood","blood","blood","blood","blood","infected_vessel","meat","rotten_meat","cooked_meat"], chance:0.5 };
+elements.uranium.reactions.heart = { "elem2": ["ash","blood","blood","blood","blood","blood","infected_vessel","meat","rotten_meat","cooked_meat"], chance:0.5 };
+elements.uranium.reactions.kidney = { "elem2": ["ash","blood","meat","rotten_meat","cooked_meat"], chance:0.5 };
+elements.uranium.reactions.liver = { "elem2": ["ash","blood","meat","rotten_meat","cooked_meat"], chance:0.5 };
 elements.uranium.reactions.dermis = { "elem2": ["ash","blood","fat","meat","rotten_meat","cooked_meat","cancer","cancer"], chance:0.5 };
 elements.uranium.reactions.amphib_dermis = { "elem2": ["ash","blood","slime","meat","rotten_meat","cooked_meat","cancer","cancer"], chance:0.5 };
 elements.uranium.reactions.scale_dermis = { "elem2": ["ash","blood","fat","meat","rotten_meat","cooked_meat","cancer","cancer"], chance:0.5 };
 elements.uranium.reactions.bug_dermis = { "elem2": ["ash","blood","fat","meat","rotten_meat","cooked_meat","cancer","cancer"], chance:0.5 };
-elements.uranium.reactions.epidermis = { "elem2": ["cooked_meat","cancer","ash","skin","hair"], chance:0.1 };
+elements.uranium.reactions.epidermis = { "elem2": ["cooked_meat","cancer","ash","skin"], chance:0.1 };
+elements.uranium.reactions.hairy_skin = { "elem2": ["cooked_meat","cancer","ash","skin","hair"], chance:0.1 };
+elements.uranium.reactions.hair_dermis = { "elem2": ["ash","blood","fat","meat","rotten_meat","cooked_meat","cancer","cancer"], chance:0.5 };
 elements.uranium.reactions.amphib_skin = { "elem2": ["cooked_meat","cancer","ash","skin","slime"], chance:0.4 };
 elements.uranium.reactions.scales = { "elem2": ["cooked_meat","cancer","ash","epidermis","skin","dust","calcium"], chance:0.1 };
 elements.uranium.reactions.exoskeleton = { "elem2": ["cooked_meat","cancer","ash","epidermis","skin","dust","calcium"], chance:0.1 };
 elements.uranium.reactions.real_bone = { "elem2": ["bone","bone","radiation"], chance:0.01 };
 elements.uranium.reactions.gills = { "elem2": ["ash","steam","meat","rotten_meat","cooked_meat","flesh"], chance:0.5 };
 elements.uranium.reactions.lungs = { "elem2": ["ash","carbon_dioxide","meat","rotten_meat","cooked_meat","flesh","ash","carbon_dioxide","meat","rotten_meat","cooked_meat","flesh","ash","oxygen","meat","rotten_meat","cooked_meat","flesh"], chance:0.5 };
+elements.uranium.reactions.simple_lung = { "elem2": ["ash","carbon_dioxide","meat","rotten_meat","cooked_meat","flesh","ash","carbon_dioxide","meat","rotten_meat","cooked_meat","flesh","ash","oxygen","meat","rotten_meat","cooked_meat","flesh"], chance:0.5 };
 elements.uranium.reactions.brain = { "elem2": ["ash","steam","salt","meat","rotten_meat","cooked_meat","flesh","cerebrospinal_fluid"], chance:0.5 };
 elements.uranium.reactions.amygdala = { "elem2": ["ash","steam","salt","ash","steam","salt","meat","rotten_meat","cooked_meat","flesh"], chance:0.5 };
 elements.uranium.reactions.nerve = { "elem2": ["ash","steam","salt","ash","steam","salt","meat","rotten_meat","cooked_meat","flesh"], chance:0.5 };
 elements.uranium.reactions.eye_nerve = { "elem2": ["ash","steam","salt","ash","steam","salt","meat","rotten_meat","cooked_meat","flesh"], chance:0.5 };
+elements.uranium.reactions.bulb_nerve = { "elem2": ["ash","steam","salt","ash","steam","salt","meat","rotten_meat","cooked_meat","flesh"], chance:0.5 };
+elements.uranium.reactions.olfactory_bulb = { "elem2": ["ash","steam","salt","ash","steam","salt","meat","rotten_meat","cooked_meat","flesh"], chance:0.5 };
 elements.uranium.reactions.eye = { "elem2": ["ash","steam","salt","ash","steam","salt","meat","rotten_meat","cooked_meat","flesh"], chance:0.5 };
 elements.uranium.reactions.sphincter = { "elem2": ["ash","steam","poop","meat","rotten_meat","cooked_meat","flesh"], chance:0.5 };
 elements.uranium.reactions.intestines = { "elem2": ["ash","steam","meat","rotten_meat","cooked_meat","flesh","ash","steam","meat","rotten_meat","cooked_meat","flesh","poop"], chance:0.5 };
@@ -8762,27 +10282,43 @@ elements.uranium.reactions.herbi_stomach = { "elem2": ["cancer","ash","steam","m
 elements.uranium.reactions.carni_stomach = { "elem2": ["cancer","ash","steam","meat","rotten_meat","cooked_meat","flesh"], chance:0.5 };
 elements.uranium.reactions.explosive_stomach = { "elem2": ["cancer","ash","steam","meat","rotten_meat","cooked_meat","flesh","pop"], chance:0.4 };
 elements.uranium.reactions.throat_lining = { "elem2": ["ash","slime","meat","rotten_meat","cooked_meat","flesh"], chance:0.5 };
+elements.uranium.reactions.biotorch = { "elem2": ["cancer","ash","steam","cooked_meat","rotten_meat","cooked_meat","flesh","fire"], chance:0.5 };
+elements.uranium.reactions.biosensor = { "elem2": ["ash","blood","fat","meat","rotten_meat","cooked_meat"], chance:0.5 };
+elements.uranium.reactions.valve = { "elem2": ["ash","blood","fat","meat","rotten_meat","cooked_meat"], chance:0.5 };
+elements.uranium.reactions.valve_extension = { "elem2": ["ash","blood","fat","meat","rotten_meat","cooked_meat"], chance:0.5 };
 
 if (!elements.radiation.reactions) { elements.radiation.reactions = {} }
+elements.radiation.reactions.attached_hair = { "elem2": "loose_hair", chance:0.4 };
+elements.radiation.reactions.hair_end = { "elem2": "loose_hair", chance:0.4 };
 elements.radiation.reactions.flesh = { "elem2": ["ash","blood","fat","meat","rotten_meat","cooked_meat","cancer","cancer"], chance:0.4 };
+elements.radiation.reactions.slimey_flesh = { "elem2": ["ash","slime","fat","meat","rotten_meat","cooked_meat","cancer","cancer"], chance:0.4 };
+elements.radiation.reactions.acidic_flesh = { "elem2": ["ash","acid","fat","meat","rotten_meat","cooked_meat","cancer","cancer"], chance:0.4 };
+elements.radiation.reactions.cloak_flesh = { "elem2": ["ash","blood","fat","meat","rotten_meat","cooked_meat","cancer","cancer"], chance:0.4 };
 elements.radiation.reactions.adipose = { "elem2": ["ash","blood","fat","fat","meat","rotten_meat","cooked_meat","cancer","cancer"], chance:0.4 };
-elements.radiation.reactions.blood_vessel = { "elem2": ["ash","blood","blood","blood","blood","blood","blood","meat","rotten_meat","cooked_meat"], chance:0.4 };
-elements.radiation.reactions.heart = { "elem2": ["ash","blood","blood","blood","blood","blood","blood","meat","rotten_meat","cooked_meat"], chance:0.4 };
+elements.radiation.reactions.blood_vessel = { "elem2": ["ash","blood","blood","blood","blood","blood","infected_vessel","meat","rotten_meat","cooked_meat"], chance:0.4 };
+elements.radiation.reactions.heart = { "elem2": ["ash","blood","blood","blood","blood","infected_vessel","blood","meat","rotten_meat","cooked_meat"], chance:0.4 };
+elements.radiation.reactions.kidney = { "elem2": ["ash","blood","meat","rotten_meat","cooked_meat"], chance:0.5 };
+elements.radiation.reactions.liver = { "elem2": ["ash","blood","meat","rotten_meat","cooked_meat"], chance:0.5 };
 elements.radiation.reactions.dermis = { "elem2": ["ash","blood","fat","meat","rotten_meat","cooked_meat","cancer","cancer"], chance:0.4 };
 elements.radiation.reactions.amphib_dermis = { "elem2": ["ash","blood","slime","meat","rotten_meat","cooked_meat","cancer","cancer"], chance:0.4 };
 elements.radiation.reactions.scale_dermis = { "elem2": ["ash","blood","fat","meat","rotten_meat","cooked_meat","cancer","cancer"], chance:0.4 };
 elements.radiation.reactions.scales = { "elem2": ["cooked_meat","cancer","ash","epidermis","skin","dust","calcium"], chance:0.1 };
 elements.radiation.reactions.exoskeleton = { "elem2": ["cooked_meat","cancer","ash","epidermis","skin","dust","calcium"], chance:0.1 };
 elements.radiation.reactions.bug_dermis = { "elem2": ["ash","blood","fat","meat","rotten_meat","cooked_meat","cancer","cancer"], chance:0.4 };
-elements.radiation.reactions.epidermis = { "elem2": ["cooked_meat","cancer","ash","skin","hair"], chance:0.1 };
+elements.radiation.reactions.epidermis = { "elem2": ["cooked_meat","cancer","ash","skin"], chance:0.1 };
+elements.radiation.reactions.hairy_skin = { "elem2": ["cooked_meat","cancer","ash","skin","hair"], chance:0.1 };
+elements.radiation.reactions.hair_dermis = { "elem2": ["ash","blood","fat","meat","rotten_meat","cooked_meat","cancer","cancer"], chance:0.4 };
 elements.radiation.reactions.amphib_skin = { "elem2": ["cooked_meat","cancer","ash","skin","slime"], chance:0.1 };
 elements.radiation.reactions.real_bone = { "elem2": ["bone","bone","radiation"], chance:0.01 };
 elements.radiation.reactions.gills = { "elem2": ["ash","steam","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 };
 elements.radiation.reactions.lungs = { "elem2": ["cancer","ash","carbon_dioxide","meat","rotten_meat","cooked_meat","flesh","ash","carbon_dioxide","meat","rotten_meat","cooked_meat","flesh","ash","oxygen","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 };
+elements.radiation.reactions.simple_lung = { "elem2": ["cancer","ash","carbon_dioxide","meat","rotten_meat","cooked_meat","flesh","ash","carbon_dioxide","meat","rotten_meat","cooked_meat","flesh","ash","oxygen","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 };
 elements.radiation.reactions.brain = { "elem2": ["cancer","ash","steam","salt","meat","rotten_meat","cooked_meat","flesh","cerebrospinal_fluid"], chance:0.4 };
 elements.radiation.reactions.amygdala = { "elem2": ["cancer","ash","steam","salt","ash","steam","salt","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 };
 elements.radiation.reactions.nerve = { "elem2": ["cancer","ash","steam","salt","ash","steam","salt","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 };
 elements.radiation.reactions.eye_nerve = { "elem2": ["cancer","ash","steam","salt","ash","steam","salt","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 };
+elements.radiation.reactions.bulb_nerve = { "elem2": ["cancer","ash","steam","salt","ash","steam","salt","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 };
+elements.radiation.reactions.olfactory_bulb = { "elem2": ["cancer","ash","steam","salt","ash","steam","salt","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 };
 elements.radiation.reactions.eye = { "elem2": ["cancer","ash","steam","salt","ash","steam","salt","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 };
 elements.radiation.reactions.sphincter = { "elem2": ["cancer","ash","steam","poop","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 };
 elements.radiation.reactions.intestines = { "elem2": ["cancer","ash","steam","meat","rotten_meat","cooked_meat","flesh","ash","steam","meat","rotten_meat","cooked_meat","flesh","poop"], chance:0.4 };
@@ -8793,25 +10329,41 @@ elements.radiation.reactions.herbi_stomach = { "elem2": ["cancer","ash","steam",
 elements.radiation.reactions.carni_stomach = { "elem2": ["cancer","ash","steam","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 };
 elements.radiation.reactions.explosive_stomach = { "elem2": ["cancer","ash","steam","meat","rotten_meat","cooked_meat","flesh","pop"], chance:0.3 };
 elements.radiation.reactions.throat_lining = { "elem2": ["cancer","ash","slime","meat","rotten_meat","cooked_meat","flesh"], chance:0.4 };
+elements.radiation.reactions.biotorch = { "elem2": ["cancer","ash","steam","cooked_meat","rotten_meat","cooked_meat","flesh","fire"], chance:0.4 };
+elements.radiation.reactions.biosensor = { "elem2": ["ash","blood","fat","meat","rotten_meat","cooked_meat"], chance:0.4 };
+elements.radiation.reactions.valve = { "elem2": ["ash","blood","fat","meat","rotten_meat","cooked_meat"], chance:0.4 };
+elements.radiation.reactions.valve_extension = { "elem2": ["ash","blood","fat","meat","rotten_meat","cooked_meat"], chance:0.4 };
 
 if (!elements.plague.reactions) { elements.plague.reactions = {} }
+elements.plague.reactions.attached_hair = { "elem2": "loose_hair", chance:0.04 };
+elements.plague.reactions.hair_end = { "elem2": "loose_hair", chance:0.04 };
 elements.plague.reactions.flesh = { "elem2": ["rotten_meat","plague","fat","meat","rotten_meat","plague","infection","infection"], chance:0.04 };
+elements.plague.reactions.slimey_flesh = { "elem2": ["slime","slime","rotten_meat","plague","fat","meat","rotten_meat","plague","infection","infection"], chance:0.04 };
+elements.plague.reactions.cloak_flesh = { "elem2": ["rotten_meat","plague","fat","meat","rotten_meat","plague","infection","infection"], chance:0.04 };
+elements.plague.reactions.acidic_flesh = { "elem2": ["acid","rotten_meat","steam","meat","rotten_meat","plague","flesh"], chance:0.04 };
 elements.plague.reactions.adipose = { "elem2": ["rotten_meat","plague","fat","fat","meat","rotten_meat","plague","infection","infection"], chance:0.04 };
-elements.plague.reactions.blood_vessel = { "elem2": ["rotten_meat","plague","meat","rotten_meat","plague","infection","infection","infection","infection","infection","infection"], chance:0.04 };
-elements.plague.reactions.heart = { "elem2": ["rotten_meat","plague","meat","rotten_meat","plague","infection","infection","infection","infection","infection","infection"], chance:0.04 };
+elements.plague.reactions.blood_vessel = { "elem2": ["rotten_meat","plague","meat","rotten_meat","plague","infected_vessel","infected_vessel","infected_vessel","infected_vessel","infected_vessel","infected_vessel"], chance:0.1 };
+elements.plague.reactions.heart = { "elem2": ["rotten_meat","plague","meat","rotten_meat","plague","infected_vessel","infection","infection","infection","infection","infection"], chance:0.04 };
+elements.plague.reactions.kidney = { "elem2": ["rotten_meat","plague","rotten_meat","meat","rotten_meat","plague","infection","infection"], chance:0.04 };
+elements.plague.reactions.liver = { "elem2": ["rotten_meat","plague","rotten_meat","meat","rotten_meat","plague","infection","infection"], chance:0.04 };
 elements.plague.reactions.dermis = { "elem2": ["rotten_meat","infection","fat","meat","rotten_meat","plague","infection","infection"], chance:0.04 };
-elements.plague.reactions.amphib_dermis = { "elem2": ["rotten_meat","infection","slime","meat","rotten_meat","plague","infection","infection"], chance:0.04 };
+elements.plague.reactions.hair_dermis = { "elem2": ["rotten_meat","infection","fat","meat","rotten_meat","plague","infection","infection"], chance:0.04 };
+elements.plague.reactions.hairy_skin = { "elem2": ["plague","infection","rotten_meat","dust","dust","hair"], chance:0.04 };
+elements.plague.reactions.amphib_dermis = { "elem2": ["rotten_meat","infection","slime","meat","rotten_meat","plague","infection","infection"], chance:0.01 };
 elements.plague.reactions.scale_dermis = { "elem2": ["rotten_meat","infection","fat","meat","rotten_meat","plague","infection","infection"], chance:0.04 };
-elements.plague.reactions.epidermis = { "elem2": ["plague","infection","rotten_meat","skin","hair"], chance:0.1 };
-elements.plague.reactions.amphib_skin = { "elem2": ["plague","infection","rotten_meat","skin","slime"], chance:0.1 };
-elements.plague.reactions.scales = { "elem2": ["plague","infection","rotten_meat","dust","skin","calcium"], chance:0.1 };
+elements.plague.reactions.epidermis = { "elem2": ["plague","infection","rotten_meat","dust","dust"], chance:0.01 };
+elements.plague.reactions.amphib_skin = { "elem2": ["plague","infection","rotten_meat","skin","slime"], chance:0.01 };
+elements.plague.reactions.scales = { "elem2": ["plague","infection","rotten_meat","dust","skin","calcium"], chance:0.01 };
 elements.plague.reactions.real_bone = { "elem2": ["bone","bone","infection","plague"], chance:0.01 };
-elements.plague.reactions.gills = { "elem2": ["infection","steam","meat","rotten_meat","plague","flesh","plague"], chance:0.04 };
-elements.plague.reactions.lungs = { "elem2": ["infection","rotten_meat","carbon_dioxide","meat","rotten_meat","plague","flesh","rotten_meat","carbon_dioxide","meat","rotten_meat","plague","flesh","rotten_meat","oxygen","meat","rotten_meat","plague","flesh"], chance:0.04 };
+elements.plague.reactions.gills = { "elem2": ["infection","steam","meat","rotten_meat","plague","flesh","plague"], chance:0.05 };
+elements.plague.reactions.lungs = { "elem2": ["infection","rotten_meat","carbon_dioxide","meat","rotten_meat","plague","flesh","rotten_meat","carbon_dioxide","meat","rotten_meat","plague","flesh","rotten_meat","oxygen","meat","rotten_meat","plague","flesh"], chance:0.1 };
+elements.plague.reactions.simple_lung = { "elem2": ["infection","rotten_meat","carbon_dioxide","meat","rotten_meat","plague","flesh","rotten_meat","carbon_dioxide","meat","rotten_meat","plague","flesh","rotten_meat","oxygen","meat","rotten_meat","plague","flesh"], chance:0.04 };
 elements.plague.reactions.brain = { "elem2": ["infection","rotten_meat","steam","salt","meat","rotten_meat","plague","flesh","cerebrospinal_fluid"], chance:0.04 };
 elements.plague.reactions.amygdala = { "elem2": ["infection","rotten_meat","steam","salt","rotten_meat","steam","salt","meat","rotten_meat","plague","flesh"], chance:0.04 };
 elements.plague.reactions.nerve = { "elem2": ["infection","rotten_meat","steam","salt","rotten_meat","steam","salt","meat","rotten_meat","plague","flesh"], chance:0.04 };
 elements.plague.reactions.eye_nerve = { "elem2": ["infection","rotten_meat","steam","salt","rotten_meat","steam","salt","meat","rotten_meat","plague","flesh"], chance:0.04 };
+elements.plague.reactions.bulb_nerve = { "elem2": ["infection","rotten_meat","steam","salt","rotten_meat","steam","salt","meat","rotten_meat","plague","flesh"], chance:0.04 };
+elements.plague.reactions.olfactory_bulb = { "elem2": ["infection","rotten_meat","steam","salt","rotten_meat","steam","salt","meat","rotten_meat","plague","flesh"], chance:0.04 };
 elements.plague.reactions.eye = { "elem2": ["infection","rotten_meat","steam","salt","rotten_meat","steam","salt","meat","rotten_meat","plague","flesh"], chance:0.04 };
 elements.plague.reactions.sphincter = { "elem2": ["infection","rotten_meat","steam","poop","meat","rotten_meat","plague","flesh"], chance:0.04 };
 elements.plague.reactions.intestines = { "elem2": ["infection","rotten_meat","steam","meat","rotten_meat","plague","flesh","rotten_meat","steam","meat","rotten_meat","plague","flesh","poop"], chance:0.04 };
@@ -8822,11 +10374,17 @@ elements.plague.reactions.herbi_stomach = { "elem2": ["infection","rotten_meat",
 elements.plague.reactions.carni_stomach = { "elem2": ["infection","rotten_meat","steam","meat","rotten_meat","plague","flesh"], chance:0.04 };
 elements.plague.reactions.explosive_stomach = { "elem2": ["infection","plague","steam","meat","rotten_meat","plague","flesh","pop"], chance:0.03 };
 elements.plague.reactions.throat_lining = { "elem2": ["infection","rotten_meat","slime","meat","rotten_meat","plague","flesh"], chance:0.04 };
+elements.plague.reactions.biotorch = { "elem2": ["infection","ash","steam","cooked_meat","rotten_meat","plague","plague","fire"], chance:0.04 };
+elements.plague.reactions.biosensor = { "elem2": ["infection","blood","fat","meat","rotten_meat","plague"], chance:0.04 };
+elements.plague.reactions.valve = { "elem2": ["infection","infection","fat","meat","rotten_meat","plague"], chance:0.04 };
+elements.plague.reactions.valve_extension = { "elem2": ["infection","infection","plague","meat","rotten_meat","plague"], chance:0.04 };
+
+if (!elements.infection.reactions) { elements.infection.reactions = {} }
+elements.infection.reactions.blood_vessel = { "elem2": ["infection","infected_vessel","infected_vessel","infected_vessel","infected_vessel","infected_vessel","infected_vessel","infected_vessel"], chance:0.1 };
+elements.infection.reactions.heart = { "elem2": ["infection","infected_vessel","infection","infection","infection","infection","infected_vessel","infected_vessel"], chance:0.02 };
 
 if (!elements.fly.reactions) { elements.infection.reactions = {} }
 elements.fly.reactions.poop = { elem2:[null,null,"stench"], chance:0.15, func:behaviors.FEEDPIXEL };
-elements.fly.reactions.intestines = { elem1:[null,null,"stench"], chance:0.015, };
-elements.fly.reactions.stomach_valve = { elem1:[null,null,"stench"], chance:0.05, };
 
 if (!elements.stench.reactions) { elements.infection.reactions = {} }
 elements.stench.reactions.intestines = { elem1:[null,null,null,null,null,null,"foam"], chance:0.015, };
