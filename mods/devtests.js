@@ -191,3 +191,21 @@ elements.clone_fluid = {
 //     ],
 //     category: "special"
 // }
+
+addCanvasLayer("devtests");
+canvasLayersPre.unshift(canvasLayers["devtests"]);
+devtestsCtx = canvasLayers["devtests"].getContext("2d");
+delete canvasLayers.devtests;
+
+viewInfo[9] = { // Blur
+    name: "blur",
+    pixel: viewInfo[1].pixel,
+    post: function(ctx) {
+        devtestsCtx.canvas.width = ctx.canvas.width;
+        devtestsCtx.canvas.height = ctx.canvas.height;
+        devtestsCtx.filter = "blur(80px)";
+        // Draw the blurred content on the canvas
+        devtestsCtx.drawImage(canvasLayers["pixels"], 0, 0);
+        devtestsCtx.filter = "none";
+    },
+};
