@@ -200,8 +200,6 @@ devtestsCtx2 = canvasLayers["devtests2"].getContext("2d");
 delete canvasLayers.devtests;
 delete canvasLayers.devtests2;
 
-elements.fire.emit = true;
-
 viewInfo[9] = { // Blur
     name: "blur",
     pixel: viewInfo[1].pixel,
@@ -214,6 +212,14 @@ viewInfo[9] = { // Blur
         devtestsCtx.filter = "none";
     },
 };
+
+elements.fire.emit = true;
+elements.lightning.emit = true;
+elements.electric.emit = true;
+elements.plasma.emit = true;
+elements.uranium.emit = true;
+elements.uranium.emitColor = "#00ff00";
+elements.rainbow.emit = true;
 
 viewInfo[8] = { // Blur Glow (Emissive pixels only)
     name: "blurglow",
@@ -239,9 +245,9 @@ viewInfo[8] = { // Blur Glow (Emissive pixels only)
 
 renderEachPixel(function(pixel,ctx) {
     if (view === 8) {
-        if (elements[pixel.element].emit) {
+        if (elements[pixel.element].emit || pixel.emit) {
             var a = (settings.textures !== 0) ? pixel.alpha : undefined;
-            drawSquare(devtestsCtx2,pixel.color,pixel.x,pixel.y,undefined,a);
+            drawSquare(devtestsCtx2,elements[pixel.element].emitColor||pixel.color,pixel.x,pixel.y,undefined,a);
             // viewInfo[1].pixel(pixel,devtestsCtx2);
         }
     }
