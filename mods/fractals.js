@@ -89,7 +89,7 @@ elements.mandelbrot = {
                 }
             }
                 */
-            iteration = gridWeightedAverage(pixel.x, pixel.y)
+            iteration = preCalculatedGrid[pixel.x][pixel.y].iteration
             if (iteration >= 99.5) {
                 pixel.color = "rgb(255, 255, 255)"
             } else {
