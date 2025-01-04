@@ -83,7 +83,8 @@ elements.soul = {
     ignoreAir: true,
     category: "life",
     insulate: true,
-    hidden: true
+    hidden: true,
+    emit: 3
 }
 
 elements.ectoplasm = {
@@ -106,7 +107,8 @@ elements.ectoplasm = {
     insulate: true,
     viscosity: 1666,
     hardness: 100,
-    hidden: true
+    hidden: true,
+    emit: 2
 }
 
 elements.head.breakInto = "soul";
