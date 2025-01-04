@@ -358,14 +358,14 @@ elements.destroyable_pipe = {
                 var y = pixel.y+coord[1];
                 if (!isEmpty(x,y,true)) {
                     var newPixel = pixelMap[x][y];
-                    if (newPixel.element === "destroyable_pipe" || newPixel.element === "bridge_pipe") {
+                    if (newPixel.element === "destroyable_pipe" || newPixel.element === "bridge_pipe" || newPixel.element === "pipe_transmitter") {
                         var nextStage;
                         switch (pixel.stage) {
                             case 2: nextStage = 4; break; //green
                             case 3: nextStage = 2; break; //red
                             case 4: nextStage = 3; break; //blue
                         }
-                        if (pixel.con && !newPixel.con && newPixel.stage === nextStage) { //transfer to adjacent pipe
+                        if (pixel.con && !newPixel.con && (newPixel.stage === nextStage || newPixel.element === "pipe_transmitter")) { //transfer to adjacent pipe
                             newPixel.con = pixel.con;
                             newPixel.con.x = newPixel.x;
                             newPixel.con.y = newPixel.y;
@@ -669,14 +669,14 @@ elements.e_pipe = {
                 var y = pixel.y+coord[1];
                 if (!isEmpty(x,y,true)) {
                     var newPixel = pixelMap[x][y];
-                    if (newPixel.element === "e_pipe" || newPixel.element === "bridge_pipe") {
+                    if (newPixel.element === "e_pipe" || newPixel.element === "bridge_pipe" || newPixel.element === "pipe_transmitter") {
                         var nextStage;
                         switch (pixel.stage) {
                             case 2: nextStage = 4; break; //green
                             case 3: nextStage = 2; break; //red
                             case 4: nextStage = 3; break; //blue
                         }
-                        if (pixel.con && !newPixel.con && newPixel.stage === nextStage && (pixel.charge || pixel.chargeCD)) { //transfer to adjacent pipe
+                        if (pixel.con && !newPixel.con && (newPixel.stage === nextStage || newPixel.element === "pipe_transmitter") && (pixel.charge || pixel.chargeCD)) { //transfer to adjacent pipe
                             newPixel.con = pixel.con;
                             newPixel.con.x = newPixel.x;
                             newPixel.con.y = newPixel.y;
@@ -787,14 +787,14 @@ elements.destroyable_e_pipe = {
                 var y = pixel.y+coord[1];
                 if (!isEmpty(x,y,true)) {
                     var newPixel = pixelMap[x][y];
-                    if (newPixel.element === "destroyable_e_pipe" || newPixel.element === "bridge_pipe") {
+                    if (newPixel.element === "destroyable_e_pipe" || newPixel.element === "bridge_pipe" || newPixel.element === "pipe_transmitter") {
                         var nextStage;
                         switch (pixel.stage) {
                             case 2: nextStage = 4; break; //green
                             case 3: nextStage = 2; break; //red
                             case 4: nextStage = 3; break; //blue
                         }
-                        if (pixel.con && !newPixel.con && newPixel.stage === nextStage && (pixel.charge || pixel.chargeCD)) { //transfer to adjacent pipe
+                        if (pixel.con && !newPixel.con && (newPixel.stage === nextStage || newPixel.element === "pipe_transmitter") && (pixel.charge || pixel.chargeCD)) { //transfer to adjacent pipe
                             newPixel.con = pixel.con;
                             newPixel.con.x = newPixel.x;
                             newPixel.con.y = newPixel.y;
@@ -914,14 +914,14 @@ elements.channel_pipe = {
                 var y = pixel.y+coord[1];
                 if (!isEmpty(x,y,true)) {
                     var newPixel = pixelMap[x][y];
-                    if ((newPixel.element === "channel_pipe" && pixelMap[x][y].channel == pixel.channel || newPixel.element === "bridge_pipe")) {
+                    if ((newPixel.element === "channel_pipe" && pixelMap[x][y].channel == pixel.channel || newPixel.element === "bridge_pipe" || (newPixel.element === "pipe_transmitter" && pixelMap[x][y].channel == pixel.channel))) {
                         var nextStage;
                         switch (pixel.stage) {
                             case 2: nextStage = 4; break; //green
                             case 3: nextStage = 2; break; //red
                             case 4: nextStage = 3; break; //blue
                         }
-                        if (pixel.con && !newPixel.con && newPixel.stage === nextStage) { //transfer to adjacent pipe
+                        if (pixel.con && !newPixel.con && (newPixel.stage === nextStage || newPixel.element === "pipe_transmitter")) { //transfer to adjacent pipe
                             newPixel.con = pixel.con;
                             newPixel.con.x = newPixel.x;
                             newPixel.con.y = newPixel.y;
@@ -1037,14 +1037,14 @@ elements.destroyable_channel_pipe = {
                 var y = pixel.y+coord[1];
                 if (!isEmpty(x,y,true)) {
                     var newPixel = pixelMap[x][y];
-                    if ((newPixel.element === "destroyable_channel_pipe" && pixelMap[x][y].channel == pixel.channel) || newPixel.element === "bridge_pipe") {
+                    if ((newPixel.element === "destroyable_channel_pipe" && pixelMap[x][y].channel == pixel.channel) || newPixel.element === "bridge_pipe" || (newPixel.element === "pipe_transmitter" && pixelMap[x][y].channel == pixel.channel)) {
                         var nextStage;
                         switch (pixel.stage) {
                             case 2: nextStage = 4; break; //green
                             case 3: nextStage = 2; break; //red
                             case 4: nextStage = 3; break; //blue
                         }
-                        if (pixel.con && !newPixel.con && newPixel.stage === nextStage) { //transfer to adjacent pipe
+                        if (pixel.con && !newPixel.con && (newPixel.stage === nextStage || newPixel.element === "pipe_transmitter")) { //transfer to adjacent pipe
                             newPixel.con = pixel.con;
                             newPixel.con.x = newPixel.x;
                             newPixel.con.y = newPixel.y;
@@ -1097,7 +1097,7 @@ elements.destroyable_channel_pipe = {
     movable: false,
     canContain: true,
 },
-listPipes = ["pipe", "destroyable_pipe", "destroyable_e_pipe","channel_pipe","destroyable_channel_pipe","bridge_pipe","e_pipe"];
+listPipes = ["pipe", "destroyable_pipe", "destroyable_e_pipe","channel_pipe","destroyable_channel_pipe","bridge_pipe","e_pipe","pipe_transmitter"];
 elements.bridge_pipe = {
     color: "#414c4f",
     onSelect: function() {
@@ -1161,7 +1161,7 @@ elements.bridge_pipe = {
                             case 3: nextStage = 2; break; //red
                             case 4: nextStage = 3; break; //blue
                         }
-                        if (pixel.con && !newPixel.con && newPixel.stage === nextStage) { //transfer to adjacent pipe
+                        if (pixel.con && !newPixel.con && (newPixel.stage === nextStage || newPixel.element === "pipe_transmitter")) { //transfer to adjacent pipe
                             newPixel.con = pixel.con;
                             newPixel.con.x = newPixel.x;
                             newPixel.con.y = newPixel.y;
@@ -1266,14 +1266,14 @@ elements.pipe.tick = function(pixel) {
                 var y = pixel.y+coord[1];
                 if (!isEmpty(x,y,true)) {
                     var newPixel = pixelMap[x][y];
-                    if (newPixel.element === "pipe" || newPixel.element === "bridge_pipe") {
+                    if (newPixel.element === "pipe" || newPixel.element === "bridge_pipe" || newPixel.element === "pipe_transmitter") {
                         var nextStage;
                         switch (pixel.stage) {
                             case 2: nextStage = 4; break; //green
                             case 3: nextStage = 2; break; //red
                             case 4: nextStage = 3; break; //blue
                         }
-                        if (pixel.con && !newPixel.con && newPixel.stage === nextStage) { //transfer to adjacent pipe
+                        if (pixel.con && !newPixel.con && (newPixel.stage === nextStage || newPixel.element === "pipe_transmitter")) { //transfer to adjacent pipe
                             newPixel.con = pixel.con;
                             newPixel.con.x = newPixel.x;
                             newPixel.con.y = newPixel.y;
@@ -3104,6 +3104,7 @@ elements.piston_ray_emitter = {
                         var lx = lcoord[0];
                         var ly = lcoord[1];
                         if (!isEmpty(lx, ly, true)){
+                            if (pixelMap[lx][ly].element == "insulator"){break;}
                             tryMove(pixelMap[lx][ly], pCoord[0], pCoord[1], null, true)
                         }
                         pCoord[0] = lx;
@@ -3754,6 +3755,74 @@ elements.hotter_sensor = {
             if (!isEmpty(x, y, true)){
                 if (pixelMap[x][y].temp > temp){
                     pixel.charge = 1
+                }
+            }
+        }
+    }
+}
+let pipe_transmitter_channelVar = 0;
+elements.pipe_transmitter = {
+    color: "#6e6250",
+    category: "machines",
+    movable: false,
+    canContain: true,
+    insulate: true,
+    onSelect: () => {
+        let newChannel = prompt("Enter the channel of this pipe transmitter. It will not work if you do multiple while paused.", pipe_transmitter_channelVar);
+        pipe_transmitter_channelVar = newChannel;
+    },
+    tick: (pixel) => {
+        if (!pixel.channel){
+            pixel.channel = pipe_transmitter_channelVar;
+        }
+        if (pixel.channel && pixel.con){
+            for (x in pixelMap){
+                for (y in pixelMap[x]){
+                    if (!isEmpty(x, y, true)){
+                        if (pixelMap[x][y].element == "pipe_receiver" && pixelMap[x][y].channel == pixel.channel){
+                           pixelMap[x][y].con = pixel.con;
+                           delete pixel.con;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+let pipe_receiver_channelVar = 0;
+elements.pipe_receiver = {
+    color: "#4d4b63",
+    category: "machines",
+    movable: false,
+    canContain: true,
+    insulate: true,
+    onSelect: () => {
+        let newChannel = prompt("Enter the channel of this pipe receiver. It will not work if you do multiple while paused.", pipe_receiver_channelVar);
+        pipe_receiver_channelVar = newChannel;
+    },
+    tick: (pixel) => {
+        if (!pixel.channel){
+            pixel.channel = pipe_receiver_channelVar;
+        }
+        if (pixel.channel && pixel.con){
+            // just scan neighbors for elements on the pipe list; transfer con to them. if its a type of channel pipe, also check if channel matches
+            for (i = 0; i < squareCoords.length; i++){
+                let x = squareCoords[i][0] + pixel.x;
+                let y = squareCoords[i][1] + pixel.y;
+                if (!isEmpty(x, y, true)){
+                    if (listPipes.includes(pixelMap[x][y].element)){
+                        if (["channel_pipe", "destroyable_channel_pipe"].includes(pixelMap[x][y].element)){
+                            if (pixelMap[x][y].channel == pixel.channel){
+                                pixelMap[x][y].con = pixel.con;
+                                delete pixel.con;
+                            }
+                        } else {
+                            pixel.con.x = x;
+                            pixel.con.y = y;
+                            pixelMap[x][y].con = pixel.con;
+                            delete pixel.con;
+                        }
+                    }
                 }
             }
         }
