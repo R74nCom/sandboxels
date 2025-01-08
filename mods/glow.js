@@ -1,3 +1,21 @@
+/* TODO:
+
+- warning and automatic disable for non-chromium users
+- firefly glow
+- sun temperature-dependent glow strength
+
+*/
+
+var isChromium = !!window.chrome;
+
+if (!isChromium) {
+    window.addEventListener("load",function(){
+        console.log(1)
+        logMessage("Error: glow.js only works on Chrome or Chromium-based browsers.")
+    })
+}
+else {
+
 addCanvasLayer("glowmod");
 addCanvasLayer("glowmod2");
 canvasLayersPre.unshift(canvasLayers["glowmod"]);
@@ -79,3 +97,5 @@ renderEachPixel(function(pixel,ctx) {
         }
     }
 })
+
+}
