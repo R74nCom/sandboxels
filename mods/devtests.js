@@ -314,6 +314,9 @@ renderEachPixel(function(pixel,ctx) {
             drawSquare(devtestsCtx2,elements[pixel.element].emitColor||pixel.color,pixel.x-r,pixel.y-r,d,a);
             // viewInfo[1].pixel(pixel,devtestsCtx2);
         }
+        if (pixel.charge && !elements[pixel.element].colorOn) {
+            drawSquare(devtestsCtx2,"#ffff00",pixel.x-1,pixel.y-1,3);
+        }
     }
     // else if (view === 7) {
     //     let a = (settings.textures !== 0) ? pixel.alpha : undefined;
