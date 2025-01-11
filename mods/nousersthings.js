@@ -2510,8 +2510,7 @@ elements.solid_diamond = {
         "l": "#A2DBF2",
         "S": "#BDF8FF"
     },
-    tempHigh: elements.diamond.tempHigh,
-    stateHigh: elements.diamond.stateHigh,
+    reactions: elements.diamond.reactions,
     state: "solid",
     density: elements.diamond.density,
     hardness: elements.diamond.hardness,
@@ -2629,6 +2628,7 @@ elements.spacedust_cola = {
     state: "liquid",
     reactions: {head: {elem1: null, chance: 0.02}},
     density: elements.tungsten.density,
+    isFood: true,
 }
 elements.spacedust = {
     color: ["#090033", "#0a0027", "#0a001b", "#0b000f", "#090033", "#0a0027", "#0a001b", "#0b000f", "#090033", "#0a0027", "#0a001b", "#0b000f", "#090033", "#0a0027", "#0a001b", "#0b000f", "#090033", "#0a0027", "#0a001b", "#0b000f", "#090033", "#0a0027", "#0a001b", "#0b000f", "#ffffff"],
@@ -3812,7 +3812,7 @@ elements.pipe_receiver = {
                 if (!isEmpty(x, y, true)){
                     if (listPipes.includes(pixelMap[x][y].element)){
                         if (["channel_pipe", "destroyable_channel_pipe"].includes(pixelMap[x][y].element)){
-                            if (pixelMap[x][y].channel == pixel.channel){
+                            if (pixelMap[x][y].channel == pixel.channel && !pixelMap[x][y].con){
                                 pixelMap[x][y].con = pixel.con;
                                 delete pixel.con;
                             }
