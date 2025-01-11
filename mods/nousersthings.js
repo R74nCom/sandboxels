@@ -3779,9 +3779,10 @@ elements.pipe_transmitter = {
             for (x in pixelMap){
                 for (y in pixelMap[x]){
                     if (!isEmpty(x, y, true)){
-                        if (pixelMap[x][y].element == "pipe_receiver" && pixelMap[x][y].channel == pixel.channel){
+                        if (pixelMap[x][y].element == "pipe_receiver" && pixelMap[x][y].channel == pixel.channel && !pixelMap[x][y].con){
                            pixelMap[x][y].con = pixel.con;
                            delete pixel.con;
+                           break;
                         }
                     }
                 }
