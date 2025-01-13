@@ -2,15 +2,15 @@ elements.dirt.reactions.metal_scrap = {elem2:"normalPaydirt", elem1:"normalpaydi
 elements.dirt.reactions.gold_coin = {elem2:"betterPaydirt", elem1:"betterpaydirt"}
 elements.dirt.reactions.uranium = {elem2:"goodPaydirt", elem1:"goodpaydirt"}
 elements.dirt.reactions.diamond = {elem2:"bestPaydirt", elem1:"bestpaydirt"}
-elements.sand.reactions.wet_sand = {elem2:"opal", elem1:"opal", chance: 0.0001, tempMin:40}
-elements.metal_scrap.reactions.oxygen = {elem2:"sapphire", elem1:"rock", chance: 0.0001, tempMin:700}
-elements.basalt.reactions.sand = {elem2:"emerald", elem1:"rock", chance: 0.0001, tempMin:700}
-elements.metal_scrap.reactions.rock = {elem2:"ruby", elem1:"rock", chance: 0.0001, tempMin:600}
-elements.rock.reactions.basalt = {elem1:"Topaz", chance: 0.0001, tempMin: 900}
+elements.sand.reactions.wet_sand = {elem2:"opal", elem1:"opal", chance: 0.005, tempMin:40}
+elements.metal_scrap.reactions.oxygen = {elem2:["ruby","padparascha","fancy_sapphire","sapphire","sapphire","sapphire","fancy_sapphire","sapphire","sapphire","sapphire"], elem1:"rock", chance: 0.001, tempMin:700}
+elements.basalt.reactions.sand = {elem2:"emerald", elem1:"rock", chance: 0.05, tempMin:700}
+elements.metal_scrap.reactions.rock = {elem2:"ruby", elem1:"rock", chance: 0.001, tempMin:600}
+elements.rock.reactions.basalt = {elem1:"Topaz", chance: 0.01, tempMin: 900}
 elements.sodium.reactions.metal_scrap = {elem1:"nephrite", chance: 0.001, tempMin: 60}
 elements.hydrogen.reactions.metal_scrap = {elem1:"jadite", chance: 0.001, tempMin: 60}
 elements.sand.reactions.sand = {elem1:"quartz", chance: 0.001, tempMin: 400}
-elements.salt_water.reactions.gravel = {elem1:"garnet", chance: 0.001, tempMin: 40}
+elements.salt_water.reactions.gravel = {elem1:"garnet", chance: 0.005, tempMin: 40}
 elements.dirty_water.reactions.basalt = {elem1:"zircon", chance: 0.01, tempMin: 40}
 elements.opal={
     color:["#CCeeCC","#eeCCCC","#CCCCee","#eeeeee"],
@@ -27,7 +27,7 @@ elements.opal={
         "water":{elem1:"opal",elem2:"water"}
     },
     breakInto:"sand",
-    hardness: "60%"
+    
 }
 elements.sapphire={
     color:["#2b5c6e","#335b94","#4880D1","#3041D1","#4a36D1"],
@@ -41,7 +41,7 @@ elements.sapphire={
     stateHigh:["metal_scrap","oxygen"],
     tempHigh:"2040",
     breakInto:["aluminium","oxygen"],
-    hardness: "80%"
+    
 }
 elements.ruby={
     color:["#d13032","#d14471","#ff5b90","#ff3c3f","#Eb9b9c"],
@@ -55,7 +55,7 @@ elements.ruby={
     stateHigh:["metal_scrap","chromium","oxygen"],
     tempHigh:"2040",
     breakInto:["aluminium","oxygen"],
-    hardness: "80%"
+    
 }
 elements.emerald={
     color:["#47d046","#59d999","#7Dd494","#43c846","#45b765"],
@@ -69,7 +69,7 @@ elements.emerald={
     stateHigh:["metal_scrap","beryllium","oxygen"],
     tempHigh:"2519",
     breakInto:["aluminium","oxygen"],
-    hardness: "60%"
+    
 }
 elements.topaz={
     color:["#fff3ba","#fDffcE","#fDE0ff","#DaEcff","#D7fff4"],
@@ -83,7 +83,7 @@ elements.topaz={
     stateHigh:["metal_scrap","hydrogen","oxygen"],
     tempHigh:"1200",
     breakInto:["gravel","oxygen"],
-    hardness: "70%"
+    
 }
 elements.quartz={
     color:["#fffDfb","#fffEE1","#D4D3bb","#ffEfDD","#ffE2bf"],
@@ -96,8 +96,8 @@ elements.quartz={
     state:"solid",
     stateHigh:["sand","oxygen"],
     tempHigh:"1725",
-    breakInto:["sand","oxygen"],
-    hardness: "60%",
+    breakInto:["quartz","electric"],
+    
     reactions:{
         "rust":{elem1:["citrine","citrine","citrine","citrine","amethyst"]},
         "sand":{elem1:"agate", chance: 0.001},
@@ -115,7 +115,7 @@ elements.amethyst={
     stateHigh:["sand","rust","oxygen","radiation","citrine"],
     tempHigh:"1600",
     breakInto:["sand","oxygen"],
-    hardness: "60%"
+    
 }
 elements.citrine={
     color:["#f5E1c3","#f5D7a3","#f5D07a","#f5ca59","#D19a23"],
@@ -129,7 +129,7 @@ elements.citrine={
     stateHigh:["sand","rust","oxygen"],
     tempHigh:"1750",
     breakInto:["sand","oxygen"],
-    hardness: "60%",
+    
 }
 elements.garnet={
     color:["#ff8a01","#D64b07","#D6613D","#D66769"],
@@ -143,7 +143,7 @@ elements.garnet={
     stateHigh:["sand","gravel","metal_scrap","rust","magnesium"],
     tempHigh:"1300",
     breakInto:["rust","magnesium"],
-    hardness: "60%"
+    
 }
 elements.zircon={
     color:["#b86142","#b8712c","#E08f25","#b3381b"],
@@ -157,7 +157,7 @@ elements.zircon={
     stateHigh:["gravel","oxygen","rust"],
     tempHigh:"1300",
     breakInto:["rust","gravel"],
-    hardness: "65%"
+    
 }
 elements.agate={
     color:["#b25D3f","#E8c6bb","#336baD","#8aaD94"],
@@ -171,7 +171,7 @@ elements.agate={
     stateHigh:["gravel","quartz","amethyst"],
     tempHigh:"1500",
     breakInto:["sand","oxygen"],
-    hardness: "60%"
+    
 }
 elements.laminar={
     color:["#a7f9ff","#CCfbff","#8fffE2","#aCCfcE"],
@@ -185,7 +185,7 @@ elements.laminar={
     stateHigh:["slag","quartz","gravel"],
     tempHigh:"700",
     breakInto:["sand","oxygen","quartz"],
-    hardness: "60%"
+    
 }
 elements.bloodstone={
     color:["#56785b","#3a7848","#8baD71","#8a2828"],
@@ -199,7 +199,7 @@ elements.bloodstone={
     stateHigh:["sand","quartz","gravel"],
     tempHigh:"1230",
     breakInto:["sand","quartz","rock"],
-    hardness: "60%"
+    
 }
 elements.rutile={
     color:["#8a743b","#c99c2f","#E8ab2a","#E88D35"],
@@ -213,7 +213,7 @@ elements.rutile={
     stateHigh:["titanium","oxygen","gravel"],
     tempHigh:"1843",
     breakInto:["titanium","oxygen"],
-    hardness: "60%"
+    
 }
 elements.tigersEye={
     color:["#4D3E1a","#c99c2f","#52381a","#E88D35"],
@@ -227,7 +227,7 @@ elements.tigersEye={
     stateHigh:["rutile","quartz","gravel"],
     tempHigh:"1700",
     breakInto:["titanium","oxygen"],
-    hardness: "60%"
+    
 }
 elements.onyx={
     color:["#222222","#ffffff","#000000"],
@@ -241,7 +241,7 @@ elements.onyx={
     stateHigh:["gravel","quartz","agate"],
     tempHigh:"200",
     breakInto:["sand","oxygen"],
-    hardness: "60%"
+    
 }
 elements.blackopal={
     color:["#22CC22","#2222CC","#CC2222","#777722","#772277","#227777","#111111","#000000","#000000","#000000","#000000","#000000"],
@@ -258,7 +258,7 @@ elements.blackopal={
         "water":{elem1:"blackopal",elem2:"water"}
     },
     breakInto:["sand","oxygen","water"],
-    hardness: "55%"
+    
 }
 elements.fancysapphire={
     color:["#DD97ff","#ffcf8b","#D2ffb0","#3041D1","#b2fffa"],
@@ -272,7 +272,7 @@ elements.fancysapphire={
     stateHigh:["metal_scrap","oxygen"],
     tempHigh:"2040",
     breakInto:["aluminium","oxygen"],
-    hardness: "80%"
+    
 }
 elements.carnelian={
     color:["#aD3c3c","#D63131","#Eb3535"],
@@ -286,7 +286,7 @@ elements.carnelian={
     stateHigh:["metal_scrap","oxygen"],
     tempHigh:"3000",
     breakInto:["gravel","oxygen"],
-    hardness: "45%"
+    
 }
 elements.nephrite={
     color:["#EbEbEb","#E4EbD4","#D0EbCC"],
@@ -300,7 +300,7 @@ elements.nephrite={
     stateHigh:["calcium","sand","rust","oxygen","magnesium","hydrogen"],
     tempHigh:"1060",
     breakInto:["magnesium","oxygen","rust","calcium"],
-    hardness: "45%",
+    
     reactions:{
         "calcium":{elem1:"jadite",chance: 0.001, tempmin: 80}
     },
@@ -317,7 +317,7 @@ elements.jadite={
     stateHigh:["sodium","oxygen","sand"],
     tempHigh:"1040",
     breakInto:["sodium","oxygen"],
-    hardness: "45%"
+    
 }
 elements.titanium={
     color:["#bCCED1","#D1D1D1","#E8E8E8"],
@@ -361,7 +361,7 @@ elements.rawtanzanite={
     stateHigh:["tanzanite","mudstone"],
     tempHigh:"700",
     breakInto:["aluminium","calcium"],
-    hardness: "70%"
+    
 }
 elements.tanzanite={
     color:["#c474ff","#8176ff","#646Dff","#4258D6","#3344D6","#2937aD"],
@@ -375,7 +375,7 @@ elements.tanzanite={
     stateHigh:["aluminium","calcium"],
     tempHigh:"2000",
     breakInto:["aluminium","calcium"],
-    hardness: "70%"
+    
 }
 elements.peridot={
     color:["#3D9c32","#599c34","#6fc241","#7CC24c","#71aD53"],
@@ -389,7 +389,7 @@ elements.peridot={
     stateHigh:["magnesium","rust"],
     tempHigh:"1400",
     breakInto:["magnesium","rust"],
-    hardness: "60%"
+    
 }
 elements.commontourmaline={
     color:["#273828","#293834","#1a2421","#1f241b"],
@@ -403,7 +403,7 @@ elements.commontourmaline={
     stateHigh:["sodium","rust","magnesium","aluminium","raretourmaline"],
     tempHigh:"1100",
     breakInto:["magnesium","rust"],
-    hardness: "60%"
+    
 }
 elements.raretourmaline={
     color:["#4b963f","#658E96","#bf91D6","#a6D67f"],
@@ -417,7 +417,7 @@ elements.raretourmaline={
     stateHigh:["sodium","rust","magnesium","aluminium"],
     tempHigh:"1100",
     breakInto:["magnesium","rust"],
-    hardness: "60%"
+    
 }
 elements.rawberyl={
     color:["#D1D1D1","#E6E6E6","#E5E3D5","#CECFCE"],
@@ -444,7 +444,7 @@ elements.beryl={
     stateHigh:["rust","beryllium","sand","aluminium"],
     tempHigh:"1300",
     breakInto:["gravel","rust"],
-    hardness: "60%"
+    
 }
 elements.bixbite={
     color:["#851315","#A12124","#A13637","#A14C4E"],
@@ -484,7 +484,7 @@ elements.kunzite={
     stateHigh:["gravel","quartz","sand","aluminium"],
     tempHigh:"1700",
     breakInto:["gravel","quartz"],
-    hardness: "60%"
+    
 }
 elements.kyanite={
     color:["#2b3085","#477Dc4","#4f2aE3","#6cb5a1","#ffffff"],
@@ -498,7 +498,7 @@ elements.kyanite={
     stateHigh:["sand","aluminium"],
     tempHigh:"1100",
     breakInto:["metal_scrap","sand"],
-    hardness: "60%"
+    
 }
 elements.apatite={
     color:["#91CCf0","#8bf0DD","#5fDbb6","#5fDbDb"],
@@ -512,7 +512,7 @@ elements.apatite={
     stateHigh:["calcium","carbon_dioxide"],
     tempHigh:"1670",
     breakInto:["calcium","limestone"],
-    hardness: "60%"
+    
 }
 elements.azurite={
     color:["#3a5Db3","#264fDE","#4265ba"],
@@ -526,7 +526,7 @@ elements.azurite={
     stateHigh:["copper","carbon_dioxide"],
     tempHigh:"840",
     breakInto:["oxidised_copper","limestone"],
-    hardness: "60%"
+    
 }
 elements.aquamarine={
     color:["#cEfffE","#c1ffff","#Dcfcff"],
@@ -540,7 +540,7 @@ elements.aquamarine={
     stateHigh:["aluminium","sand","oxygen"],
     tempHigh:"1650",
     breakInto:["sand","limestone"],
-    hardness: "60%"
+    
 }
 elements.turquoise={
     color:["#4bE6bE","#4cDEE5","#55D7E5","#8f4D00"],
@@ -554,7 +554,7 @@ elements.turquoise={
     stateHigh:["rust","copper","oxygen"],
     tempHigh:"1700",
     breakInto:["copper","rock"],
-    hardness: "60%"
+    
 }
 elements.rosequartz={
     color:["#fDD4ff","#ffD7E9","#ffcEff"],
@@ -568,7 +568,7 @@ elements.rosequartz={
     stateHigh:["sand","oxygen"],
     tempHigh:"1700",
     breakInto:["sand","rock"],
-    hardness: "60%"
+    
 }
 elements.smokyquartz={
     color:["#b07f53","#b08b70","#D6b9a0","#472a12"],
@@ -582,7 +582,7 @@ elements.smokyquartz={
     stateHigh:["sand","oxygen"],
     tempHigh:"1700",
     breakInto:["sand","rock"],
-    hardness: "60%"
+    
 }
 elements.milkyquartz={
     color:["#ffffff","#E0E0E0","#ffffff","#ffffff"],
@@ -596,7 +596,7 @@ elements.milkyquartz={
     stateHigh:["sand","oxygen"],
     tempHigh:"1700",
     breakInto:["sand","rock"],
-    hardness: "60%"
+    
 }
 elements.jasper={
     color:["#b54345","#5b9155"],
@@ -610,7 +610,7 @@ elements.jasper={
     stateHigh:["rust","gravel"],
     tempHigh:"1700",
     breakInto:["gravel","rock"],
-    hardness: "60%"
+    
 }
 elements.leopardjasper={
     color:["#bDa484","#bDba79","#2b2b1c","#8f6061"],
@@ -624,7 +624,7 @@ elements.leopardjasper={
     stateHigh:["rust","gravel"],
     tempHigh:"1700",
     breakInto:["gravel","rock"],
-    hardness: "60%"
+    
 }
 elements.picturejasper={
     color:["#D6cE9b","#D6D08f"],
@@ -638,7 +638,7 @@ elements.picturejasper={
     stateHigh:["rust","gravel"],
     tempHigh:"1700",
     breakInto:["gravel","rock"],
-    hardness: "60%"
+    
 }
 elements.oceanjasper={
     color:["#D6D3a7","#99a5D6","#9aD6c5","#99c3D6"],
@@ -652,7 +652,7 @@ elements.oceanjasper={
     stateHigh:["rust","gravel"],
     tempHigh:"1700",
     breakInto:["gravel","rock"],
-    hardness: "60%"
+    
 }
 elements.rainforestjasper={
     color:["#97aD7f","#81aD81","#cfcb9b"],
@@ -666,7 +666,7 @@ elements.rainforestjasper={
     stateHigh:["rust","gravel"],
     tempHigh:"1700",
     breakInto:["gravel","rock"],
-    hardness: "60%"
+    
 }
 elements.obsidian={
     color:["#363636","#000000","#000000"],
@@ -680,7 +680,7 @@ elements.obsidian={
     stateHigh:["magma","basalt"],
     tempHigh:"1200",
     breakInto:["glass_shard","gravel","rock"],
-    hardness: "60%"
+    
 }
 elements.lapislazuli={
     color:["#0721ff","#292bE0","#2f5EE0"],
@@ -694,7 +694,7 @@ elements.lapislazuli={
     stateHigh:["calcium","iron","sulfer"],
     tempHigh:"1100",
     breakInto:["gravel","rust"],
-    hardness: "60%"
+    
 }
 elements.pearl={
     color:["#ffE0fb","#E7ffE4","#DfEbff","#DDDDDD","#EEEEEE"],
@@ -708,7 +708,7 @@ elements.pearl={
     stateHigh:["calcium","limestone"],
     tempHigh:"1100",
     breakInto:["gravel","calcium"],
-    hardness: "60%",
+    
     viscosity:"400",
 }
 elements.chalcedony={
@@ -723,7 +723,7 @@ elements.chalcedony={
     stateHigh:["quartz","rock"],
     tempHigh:"1100",
     breakInto:["gravel","sand"],
-    hardness: "60%",
+    
 }
 elements.rawmoissanite={
     color:["#2b0069","#002169","#003D2c","#000000","#000000"],
@@ -737,7 +737,7 @@ elements.rawmoissanite={
     stateHigh:["moissanite","dust","ash"],
     tempHigh:"2600",
     breakInto:["gravel","sand"],
-    hardness: "90%",
+    
 }
 elements.moissanite={
     color:["#DfDfff","#faDbff","#DDfaff","#E0ffE0","#fff0Df"],
@@ -751,7 +751,7 @@ elements.moissanite={
     stateHigh:["quartz","charcoal"],
     tempHigh:"2730",
     breakInto:["gravel","sand"],
-    hardness: "90%",
+    
 }
 elements.amazonite={
     color:["#629c7D","#77bf81","#71bf6a"],
@@ -765,7 +765,7 @@ elements.amazonite={
     stateHigh:["quartz","copper"],
     tempHigh:"1500",
     breakInto:["copper","sand"],
-    hardness: "30%",
+    
 }
 elements.malachite={
     color:["#0f7324","#0f7359","#0f7359","#1D735f"],
@@ -779,7 +779,7 @@ elements.malachite={
     stateHigh:["carbon_dioxide","oxidised_copper","copper"],
     tempHigh:"1000",
     breakInto:["copper","limestone"],
-    hardness: "30%",
+    
 }
 elements.cubiczircona={
     color:["#FFF3EB","#E8FFE7","#F3E8FF","#ffffff"],
@@ -793,13 +793,27 @@ elements.cubiczircona={
     stateHigh:["zircon","oxygen"],
     tempHigh:"1000",
     breakInto:["gravel","zircon"],
-    hardness: "90%",
+    
 }
-elements.alexandrite={
-    color:["#125416","#2A9146","#734991","#8C48AD","#4C5880","#4C6B80"],
+elements.cinnibar={
+    color:["#F20606","#D40505","#B30404","#8F0303"],
     behavior: [
         "XX|XX|XX",
         "XX|XX|XX",
+        "SP|M1|SP"
+    ],
+    category:"gemstones",
+    state:"solid",
+    stateHigh:["sulfur_gas","mercury_gas"],
+    tempHigh:"580",
+    breakInto:["gravel","mercury"],
+    
+}
+elements.alexandrite={
+    color:["#125416","#2A9146"],
+    behavior: [
+        "XX|XX|XX",
+        "XX|CC:#125416%0.3 AND CC:#2A9146%0.3|XX",
         "M2|M1|M2"
     ],
     category:"gemstones",
@@ -807,7 +821,10 @@ elements.alexandrite={
     stateHigh:["beryllium","oxygen","aluminium"],
     tempHigh:"1900",
     breakInto:["metal_scrap","beryllium"],
-    hardness: "70%",
+    
+    reactions:{
+        "uv_light":{elem1:"alexandrite",elem2:"light", color1:["#99004d","#99004d","#c9003c"], color2:["#9539C2","#AA72E0","#9A89CF"]}
+    }
 }
 elements.rhodonite={
     color:["#ED4747","#ED8282","#EDA3A3","#EDC4C4","#EDD3D3"],
@@ -821,7 +838,7 @@ elements.rhodonite={
     stateHigh:["magnesium","oxygen","sand"],
     tempHigh:"1250",
     breakInto:["magnesium","gravel"],
-    hardness: "70%",
+    
 }
 elements.cerussite={
     color:["#FFFBDF","#FFF8D1","#D1CEB8","#8F8D7E"],
@@ -835,7 +852,7 @@ elements.cerussite={
     stateHigh:["lead","oxygen","carbon_dioxide"],
     tempHigh:"380",
     breakInto:["carbon_dioxide","gravel"],
-    hardness: "70%",
+    
 }
 elements.charoite={
     color:["#9460CC","#9A6CCC","#A07ACC","#A78ACC","#C7AFE6","#D5C8E5"],
@@ -888,7 +905,7 @@ elements.lepidolite={
     stateHigh:["potassium","sand","carbon_dioxide","hydrogen"],
     tempHigh:"1200",
     breakInto:["carbon_dioxide","aluminium","hydrogen"],
-    hardness: "70%",
+    
 }
 elements.painite={
     color:["#FF0004","#FF006A","#AD2A2A","#8C420C","#AD1414","#8C1010"],
@@ -902,7 +919,7 @@ elements.painite={
     stateHigh:["calcium","zircon","carbon_dioxide","aluminium"],
     tempHigh:"2090",
     breakInto:["carbon_dioxide","aluminium","calcium"],
-    hardness: "70%",
+    
 }
 elements.moonstone={
     color:["#DDDDDD","#D6D6D6","#C8D1D6","#C1D2D6","#BED7F0"],
@@ -916,7 +933,7 @@ elements.moonstone={
     stateHigh:["potassium","sand","sodium","oxygen"],
     tempHigh:"1090",
     breakInto:["potassium","aluminium","sodium","oxygen"],
-    hardness: "70%",
+    
 }
 elements.iolite={
     color:["#7DAFE5","#859CF7","#C4A0F7","#E4D0F7","#EDE6F7"],
@@ -1008,19 +1025,145 @@ elements.geode={
     tempHigh:"1000",
     breakInto:"geode_explosion",
 }
-//paydirt
-elements.normalpaydirt={
-    color:"#6E4c25",
+elements.chromite={
+    color:["#8B6DA3","#883BB3","#8149B2","#A645DB","#CA3EF5"],
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|SP",
+        "SP|M1|SP"
+    ],
+    category:"gemstones",
+    state:"solid",
+    stateHigh:["chromium","iron","rust"],
+    tempHigh:"1900",
+    breakInto:["gravel","chromium","rust"],
+}
+elements.fluorite={
+    color:["#93CFB5","#7DCFB2","#91CFAB","#8FBFE5","#AE83E5"],
+    behavior: [
+        "SP|XX|XX",
+        "XX|XX|XX",
+        "SP AND M2|M1|SA AND M2"
+    ],
+    category:"gemstones",
+    state:"solid",
+    stateHigh:["gravel","sand","calcium"],
+    tempHigh:"1350",
+    breakInto:["calcium","sand","smoke"],
+}
+elements.sodalite={
+    color:["#ADB2CF","#8B91CF","#2860CF","#1C22CF","#2114B3"],
     behavior: [
         "XX|XX|XX",
         "XX|XX|XX",
-        "XX|M1|XX"
+        "XX|XX|XX"
     ],
-    category:"gemology",
+    category:"gemstones",
     state:"solid",
+    stateHigh:["chlorine","metal_scrap","sodium"],
+    tempHigh:"1080",
+    breakInto:["sodium","sand","chlorine"],
+}
+elements.jeremejevite={
+    color:["#636BE5","#775FE5"],
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "M2 AND SA|M1|M2 AND SA"
+    ],
+    category:"gemstones",
+    state:"solid",
+    stateHigh:["smoke","metal_scrap","oxygen"],
+    tempHigh:"1050",
+    breakInto:["aluminium","gravel","oxygen"],
+}
+elements.spinel={
+    color:["#2F9655","#2F9655","#6518B8","#1C51B8"],
+    behavior: [
+        "XX|XX|XX",
+        "XX|CC:#2F9655%1 AND CC:#6518B8%0.5 AND CC:#1C51B8%0.5|XX",
+        "M2|M1|M2"
+    ],
+    category:"gemstones",
+    state:"solid",
+    stateHigh:["smoke","metal_scrap","oxygen"],
+    tempHigh:"1050",
+    breakInto:["aluminium","gravel","oxygen"],
     reactions:{
-        "water":{elem1:["geode","thunder_egg","milkyquartz","smokyquartz","rosequartz","quartz","turquoise","quartz","quartz","citrine","citrine","bloodstone","laminar","dirt","dirt","dirt","dirt","dirt","dirt","mud","mud","mud","mud","mud","mud","mud","dirt","mudstone","tuff"],elem2:"dirty_water"}
-    },
+        "uv_light":{elem1:"spinel",elem2:"light", color1:["#9657BD","#B557BD","#CF5AA3"], color2:["#9657BD","#B557BD","#CF5AA3"]}
+    }
+}
+elements.asbestos={
+    color:"#FAF9D9",
+    behavior: [
+        "SP|XX|SP",
+        "XX|XX|XX",
+        "SA AND M2|M1|SP AND m2"
+    ],
+    category:"gemstones",
+    state:"solid",
+    stateHigh:["fire","plague","dust","ash"],
+    tempHigh:"800",
+    breakInto:["gravel","sand"],
+    reactions:{
+        "body":{elem2:"cancer", chance:0.02},
+        "head":{elem2:"cancer", chance:0.02}
+    }
+    
+}
+elements.tsavorite={
+    color:["#00bf06","#009105","#006904"],
+    behavior: [
+        "XX|XX|XX",
+        "SP|XX|SP",
+        "M2|M1|M2"
+    ],
+    category:"gemstones",
+    state:"solid",
+    stateHigh:["aluminium","calcium","chromium"],
+    tempHigh:"2000",
+    breakInto:["aluminium","calcium"],
+}
+elements.vanadinite={
+    color:["#634e00","#b85600","#c93c00"],
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "M2 AND SP|M1 AND SP|M2"
+    ],
+    category:"gemstones",
+    state:"solid",
+    stateHigh:["vanadium","sulfer","smoke"],
+    tempHigh:"1600",
+    breakInto:["vanadium","sulfer"],
+}
+elements.padparascha={
+    color:["#ffa3a9","#ffa3ce","#ffbaa3"],
+    behavior: [
+        "XX|XX|XX",
+        "SP|XX|SP",
+        "M2|M1|M2"
+    ],
+    category:"gemstones",
+    state:"solid",
+    stateHigh:["metal_scrap","oxygen"],
+    tempHigh:"2040",
+    breakInto:["aluminium","oxygen"],
+     
+}
+elements.celestite={
+    color:["#B1E5FF","#CAEFFF","#B6D7E5","#EFFAFF"],
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|SA",
+        "SA AND M2|M1|M2"
+    ],
+    category:"gemstones",
+    state:"solid",
+    stateHigh:["metal_scrap","oxygen","sulfer"],
+    tempHigh:"2040",
+    breakInto:["sulfer","metal_scrap","oxygen"],
+     
 }
 elements.betterpaydirt={
     color:["#6E4c25","#c26E15","#9c6422"],
@@ -1032,7 +1175,7 @@ elements.betterpaydirt={
     category:"gemology",
     state:"solid",
     reactions:{
-        "water":{elem1:["geode","thunder_egg","moonstone","cerussite","amazonite","jasper","oceanjasper","rainforestjasper","leopardjasper","picturejasper","obsidian","fluorite","rutile","pyrite","apatite","tigersEye","tigersEye","agate","agate","agate","zircon","dirt","mud","mud","mud","mud","dirt","dirt","dirt","dirt","dirt","dirt","mud","mudstone","tuff"],elem2:"dirty_water"}
+        "water":{elem1:["geode","thunder_egg","sodalite","fluorite","moonstone","cerussite","amazonite","jasper","oceanjasper","rainforestjasper","leopardjasper","picturejasper","obsidian","fluorite","rutile","pyrite","apatite","tigersEye","tigersEye","agate","agate","agate","zircon","dirt","mud","mud","mud","mud","dirt","dirt","dirt","dirt","dirt","dirt","mud","mudstone","tuff"],elem2:"dirty_water"}
     },
 }
 elements.goodpaydirt={
@@ -1045,7 +1188,7 @@ elements.goodpaydirt={
     category:"gemology",
     state:"solid",
     reactions:{
-        "water":{elem1:["iolite","andalusite","chromediopside","charoite","diopside","geode","thunder_egg","lepidolite","rhodonite","cubiczircona","malachite","pearl","lapislazuli","aquamarine","carnelian","azurite","kyanite","commontourmaline","onyx","carnelian","onyx","jadite","nephrite","nephrite","amethyst","amethyst","amethyst","garnet","dirt","dirt","dirt","dirt","dirt","dirt","mud","mud","mud","mud","mud","mud","mud","mud","dirt","mudstone","tuff"],elem2:"dirty_water"}
+        "water":{elem1:["iolite","chromite","andalusite","chromediopside","charoite","diopside","geode","thunder_egg","lepidolite","rhodonite","cubiczircona","malachite","pearl","lapislazuli","aquamarine","carnelian","azurite","kyanite","commontourmaline","onyx","carnelian","onyx","jadite","nephrite","nephrite","amethyst","amethyst","amethyst","garnet","dirt","dirt","dirt","dirt","dirt","dirt","mud","mud","mud","mud","mud","mud","mud","mud","dirt","mudstone","tuff"],elem2:"dirty_water"}
     },
 }
 elements.bestpaydirt={
@@ -1058,7 +1201,7 @@ elements.bestpaydirt={
     category:"gemology",
     state:"solid",
     reactions:{
-        "water":{elem1:["astrophyllite","painite","alexandrite","benitoite","rawmoissanite","opal","blackopal","emerald","fancysapphire","rawtanzanite","raretourmaline","rawberyl","kunzite","ruby","SApphire","mud","dirt","dirt","dirt","dirt","dirt","dirt","dirt","mudstone","tuff"],elem2:"dirty_water"}
+        "water":{elem1:["jeremejevite","astrophyllite","painite","alexandrite","benitoite","rawmoissanite","opal","blackopal","emerald","fancysapphire","rawtanzanite","raretourmaline","rawberyl","kunzite","ruby","SApphire","mud","dirt","dirt","dirt","dirt","dirt","dirt","dirt","mudstone","tuff"],elem2:"dirty_water"}
     },
 }
 elements.sieve={
@@ -1118,6 +1261,52 @@ elements.molten_chromium={
     ],
     stateLow:"chromium",
     tempLow:"1899",
+    viscosity:"20",
+    category:"states",
+    conduct: 0.47,
+}
+elements.uv_light= {
+    color: "#cc00ff",
+    behavior: [
+        "XX|XX|XX",
+        "XX|DL%5|XX",
+        "XX|XX|XX",
+    ],
+    tick: behaviors.BOUNCY,
+    temp: 35,
+    tempLow: -273,
+    stateLow: ["liquid_light",null],
+    stateLowColorMultiplier: 0.8,
+    breakInto: "light",
+    breakIntoColor: "#ffcfcf",
+    category: "gemology",
+    density: 0.00001,
+    ignoreAir: true,
+    reactions:{
+        "alexandrite":{elem1:"air"}
+    }
+}
+elements.vanadium={
+    color:"#6e6e6e",
+    category:"solids",
+    behavior:[
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "M2|M1|M2"
+    ],
+    stateHigh:"molten_vanadium",
+    tempHigh:"1920",
+    conduct: 0.47,
+}
+elements.molten_vanadium={
+    color:["#F25000","#ff6845","#ff8752"],
+    behavior:[
+        "XX|cr:fire%10|XX",
+        "M2|XX|M2",
+        "M1|M1|M1"
+    ],
+    stateLow:"vanadium",
+    tempLow:"1905",
     viscosity:"20",
     category:"states",
     conduct: 0.47,
