@@ -3062,6 +3062,15 @@ elements.ray_emitter.desc = "Emits a ray of the specified element in the opposit
 elements.specific_ray_emitter.desc = "Emits a ray of the specified element in a specific direction and a specific length."
 elements.blackhole_storage.desc = "Stores elements inside of itself. Can be released by shocking it."
 let pullOrPush = 1
+elements.anchor = {
+    color: "#020c20",
+    category: "machines",
+    behavior: behaviors.WALL,
+    desc: "Anchor; unpushable and unpullable by pistons.",
+    onSelect: function(){
+        logMessage("Unpushable and unpullable by pistons.")
+    }
+}
 elements.piston_ray_emitter = {
     color: "#143b5f",
     behavior: behaviors.WALL,
@@ -3104,8 +3113,9 @@ elements.piston_ray_emitter = {
                         var lx = lcoord[0];
                         var ly = lcoord[1];
                         if (!isEmpty(lx, ly, true)){
-                            if (pixelMap[lx][ly].element == "insulator"){break;}
-                            tryMove(pixelMap[lx][ly], pCoord[0], pCoord[1], null, true)
+                            if (!(pixelMap[lx][ly].element == "anchor")){
+                                tryMove(pixelMap[lx][ly], pCoord[0], pCoord[1], null, true)
+                            }
                         }
                         pCoord[0] = lx;
                         pCoord[1] = ly;
@@ -3144,7 +3154,9 @@ function pistonEmit(pixel, i){
                         var lx = lcoord[0];
                         var ly = lcoord[1];
                         if (!isEmpty(lx, ly, true)){
-                            tryMove(pixelMap[lx][ly], pCoord[0], pCoord[1], null, true)
+                            if (!(pixelMap[lx][ly].element == "anchor")){
+                                tryMove(pixelMap[lx][ly], pCoord[0], pCoord[1], null, true)
+                            }
                         }
                         pCoord[0] = lx;
                         pCoord[1] = ly;
