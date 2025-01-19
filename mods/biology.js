@@ -148,7 +148,7 @@ behaviorRules.ADB = function() {
                             btemp.swapSpots = [];
                         }
                         else if (elements[newPixel.element].isFood != true) {
-                                if (elements[newPixel.element].hardness < 0.5 || !elements[newPixel.element].hardness) {
+                                if (elements[newPixel.element].hardness < 0.9 || !elements[newPixel.element].hardness) {
                                 deletePixel(btemp.newCoords.x,btemp.newCoords.y);
                                 if (pixelMap[btemp.pixel.x][btemp.pixel.y] != undefined) {
                                     deletePixel(btemp.pixel.x,btemp.pixel.y);
@@ -4388,7 +4388,7 @@ elements.stomach_valve = {
         doBioNorm(pixel);
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
             var hitPixel = pixelMap[pixel.x][pixel.y-1]
-            if (elements[hitPixel.element].isAcid != true && Math.random() > 0.75) {
+            if (elements[hitPixel.element].movable != false && elements[hitPixel.element].isAcid != true && Math.random() > 0.75) {
                 if (isEmpty(pixel.x, pixel.y+1)) {
                     tryMove(hitPixel,pixel.x,pixel.y+1);
                 }
@@ -4943,7 +4943,7 @@ elements.stomach_acid = {
     burn: 30,
     burnTime: 1,
     state: "liquid",
-    density: 1050,
+    density: 1550,
     stain: -0.1,
     isAcid: true,
 }
@@ -5061,7 +5061,7 @@ elements.herbi_acid = {
     burn: 30,
     burnTime: 1,
     state: "liquid",
-    density: 1050,
+    density: 1550,
     stain: -0.1,
     isAcid: true,
 }
@@ -5179,7 +5179,7 @@ elements.carni_acid = {
     burn: 30,
     burnTime: 1,
     state: "liquid",
-    density: 1050,
+    density: 1550,
     stain: -0.1,
     isAcid: true,
 }
@@ -5295,7 +5295,7 @@ elements.explosive_acid = {
     viscosity: 36,
     tempLow: -58.88,
     state: "liquid",
-    density: 1050,
+    density: 1550,
     isAcid: true,
 }
 
@@ -5407,7 +5407,7 @@ elements.decomposer_acid = {
     burn: 30,
     burnTime: 1,
     state: "liquid",
-    density: 1050,
+    density: 1550,
     stain: -0.1,
     isAcid: true,
 }
