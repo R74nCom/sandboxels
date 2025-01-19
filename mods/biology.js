@@ -148,7 +148,7 @@ behaviorRules.ADB = function() {
                             btemp.swapSpots = [];
                         }
                         else if (elements[newPixel.element].isFood != true) {
-                                if (elements[newPixel.element].hardness < 0.5) {
+                                if (elements[newPixel.element].hardness < 0.5 || !elements[newPixel.element].hardness) {
                                 deletePixel(btemp.newCoords.x,btemp.newCoords.y);
                                 if (pixelMap[btemp.pixel.x][btemp.pixel.y] != undefined) {
                                     deletePixel(btemp.pixel.x,btemp.pixel.y);
@@ -2146,7 +2146,7 @@ elements.kidney = {
                 hitPixel.speed++
                 pixel.pee += 1
             }
-            if (elements[hitPixel.element].isKidney === true && Math.random() < 0.25 && pixel.pee) {
+            if (elements[hitPixel.element].isKidney === true && Math.random() < 0.75 && pixel.pee) {
                 hitPixel.pee += 1
                 pixel.pee -= 1
             }
@@ -4839,8 +4839,8 @@ elements.stomach_acid = {
     color: ["#b5cf91","#288f2a"],
     behavior: [
         "XX|ADB%5|XX",
-        "ADB%5 AND M2|DL%0.03|ADB%5 AND M2",
-        "ADB%5 AND M2|ADB%5 AND M1|ADB%5 AND M2",
+        "ADB%10 AND M2|DL%0.03|ADB%10 AND M2",
+        "ADB%10 AND M2|ADB%15 AND M1|ADB%10 AND M2",
     ],
     ignore: ["amphib_skin","amphib_dermis","acidic_flesh","acid_vessel","throat_lining","explosive_stomach","stomach_lining","stomach_valve","slime","gaseous_material","digested_material","glass","rad_glass","glass_shard","rad_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","microplastic","molten_plastic","pool_water","chlorine","hydrogen","gold_coin","silver","nickel","calcium","bone","earthquake","tornado","tsunami","liquid_light","sensor"],
     reactions: {
