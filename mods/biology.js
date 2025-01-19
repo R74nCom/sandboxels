@@ -2095,6 +2095,10 @@ elements.kidney = {
                 hitPixel.speed++
                 pixel.pee += 1
             }
+            if (elements[hitPixel.element].isKidney === true && Math.random() < 0.25 && pixel.pee) {
+                hitPixel.pee += 1
+                pixel.pee -= 1
+            }
         }
         else if (pixel.pee > 4 && Math.random() > 0.95) {
             if (Math.random() > 0.8) {
@@ -2107,6 +2111,10 @@ elements.kidney = {
             if (elements[hitPixel.element].isBlood === true && Math.random() < 0.025 && (hitPixel.speed < 1 || Math.random() < 0.00025) && Math.random() > (1 - ((pixel.nutrition + pixel.oxygen + pixel.speed) / 2050))) {
                 hitPixel.speed++
                 pixel.pee += 1
+            }
+            if (elements[hitPixel.element].isKidney === true && Math.random() < 0.25 && pixel.pee) {
+                hitPixel.pee += 1
+                pixel.pee -= 1
             }
         }
         else if (pixel.pee > 4 && Math.random() > 0.95) {
@@ -2121,6 +2129,10 @@ elements.kidney = {
                 hitPixel.speed++
                 pixel.pee += 1
             }
+            if (elements[hitPixel.element].isKidney === true && Math.random() < 0.25 && pixel.pee) {
+                hitPixel.pee += 1
+                pixel.pee -= 1
+            }
         }
         else if (pixel.pee > 4 && Math.random() > 0.95) {
             if (Math.random() > 0.8) {
@@ -2133,6 +2145,10 @@ elements.kidney = {
             if (elements[hitPixel.element].isBlood === true && Math.random() < 0.025 && (hitPixel.speed < 1 || Math.random() < 0.00025) && Math.random() > (1 - ((pixel.nutrition + pixel.oxygen + pixel.speed) / 2050))) {
                 hitPixel.speed++
                 pixel.pee += 1
+            }
+            if (elements[hitPixel.element].isKidney === true && Math.random() < 0.25 && pixel.pee) {
+                hitPixel.pee += 1
+                pixel.pee -= 1
             }
         }
         else if (pixel.pee > 4 && Math.random() > 0.95) {
