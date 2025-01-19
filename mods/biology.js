@@ -2095,7 +2095,7 @@ elements.kidney = {
                 hitPixel.speed++
                 pixel.pee += 1
             }
-            if (elements[hitPixel.element].isKidney === true && Math.random() < 0.25 && pixel.pee) {
+            if (hitPixel.pee < pixel.pee && elements[hitPixel.element].isKidney === true) {
                 hitPixel.pee += 1
                 pixel.pee -= 1
             }
@@ -2112,7 +2112,7 @@ elements.kidney = {
                 hitPixel.speed++
                 pixel.pee += 1
             }
-            if (elements[hitPixel.element].isKidney === true && Math.random() < 0.25 && pixel.pee) {
+            if (hitPixel.pee < pixel.pee && elements[hitPixel.element].isKidney === true) {
                 hitPixel.pee += 1
                 pixel.pee -= 1
             }
@@ -2129,7 +2129,7 @@ elements.kidney = {
                 hitPixel.speed++
                 pixel.pee += 1
             }
-            if (elements[hitPixel.element].isKidney === true && Math.random() < 0.25 && pixel.pee) {
+            if (hitPixel.pee < pixel.pee && elements[hitPixel.element].isKidney === true) {
                 hitPixel.pee += 1
                 pixel.pee -= 1
             }
@@ -2146,7 +2146,7 @@ elements.kidney = {
                 hitPixel.speed++
                 pixel.pee += 1
             }
-            if (elements[hitPixel.element].isKidney === true && Math.random() < 0.75 && pixel.pee) {
+            if (hitPixel.pee < pixel.pee && elements[hitPixel.element].isKidney === true) {
                 hitPixel.pee += 1
                 pixel.pee -= 1
             }
@@ -2242,9 +2242,9 @@ elements.liver = {
 elements.blood_vessel = {
     color: "#c72114",
     behavior: [
-        "XX|SW:blood_vessel%1|XX",
-        "SW:blood_vessel%1|XX|SW:blood_vessel%1",
-        "XX|SW:blood_vessel%1|XX",
+        "XX|SW:blood_vessel%5|XX",
+        "SW:blood_vessel%5|XX|SW:blood_vessel%5",
+        "XX|SW:blood_vessel%5|XX",
     ],
     ageRate: 0.975,
     nutrTrans: 20,
@@ -2316,7 +2316,7 @@ elements.infected_vessel = {
     behavior: [
         "XX|SW:blood_vessel%1|XX",
         "SW:blood_vessel%1|XX|SW:blood_vessel%1",
-        "XX|SW:blood_vessel%1|XX",
+        "XX|SW:blood_vessel%2|XX",
     ],
     ageRate: 0.5,
     nutrTrans: 5,
@@ -2363,9 +2363,9 @@ elements.infected_vessel = {
 elements.white_blood_cell = {
     color: "#F5D7D4",
     behavior: [
-        "XX|SW:blood_vessel%1|XX",
-        "SW:blood_vessel%1|XX|SW:blood_vessel%1",
-        "XX|SW:blood_vessel%1|XX",
+        "XX|SW:blood_vessel,white_blood_cell%5|XX",
+        "SW:blood_vessel,white_blood_cell%5|XX|SW:blood_vessel,white_blood_cell%5",
+        "XX|SW:blood_vessel,white_blood_cell%5|XX",
     ],
     ageRate: 0.995,
     nutrTrans: 20,
@@ -4388,7 +4388,7 @@ elements.stomach_valve = {
         doBioNorm(pixel);
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
             var hitPixel = pixelMap[pixel.x][pixel.y-1]
-            if (elements[hitPixel.element].movable != false && elements[hitPixel.element].isAcid != true && Math.random() > 0.75) {
+            if (elements[hitPixel.element].movable == true && elements[hitPixel.element].isAcid != true && Math.random() > 0.75) {
                 if (isEmpty(pixel.x, pixel.y+1)) {
                     tryMove(hitPixel,pixel.x,pixel.y+1);
                 }
@@ -4417,7 +4417,6 @@ elements.stomach_valve = {
         speed: 0,
         poisoned: false,
         immune: false,
-
     },
     movable: false,
     isBio: true,
