@@ -214,6 +214,11 @@ class MenuScreen {
         return this;
     }
     
+    setMenuTextId(id) {
+        this.menuTextId = id;
+        return this;
+    }
+
     /**
      * Adds a node to the menu screen content
      * @param {Node|Node[]} node Any HTML node/element or array of HTML nodes/elements
@@ -262,8 +267,9 @@ class MenuScreen {
         parent.style.display = "none";
         const inner = document.createElement("div");
         inner.className = this.innerDivClass ?? "menuScreen";
+        inner.id = this.innerDivId;
         inner.innerHTML = `${this.showCloseButton ? `<button class="${this.closeButtonClass ?? "XButton"}" onclick="closeMenu();">${this.closeButtonText}` : ""}</button>
-        <span class="menuTitle"${this.titleId ? ` id="${this.titleId}"` : ""}>${this.title ?? "Menu Screen"}</span><br><br><div class="menuText">` + this.innerHtml + "</div>";
+        <span class="menuTitle"${this.titleId ? ` id="${this.titleId}"` : ""}>${this.title ?? "Menu Screen"}</span><br><br><div class="menuText" id="${this.menuTextId}">` + this.innerHtml + "</div>";
         this.nodes.forEach(n => inner.querySelector(".menuText").appendChild(n));
         parent.appendChild(inner);
         document.getElementById(id).appendChild(parent);

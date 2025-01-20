@@ -1,13 +1,21 @@
 // Science mod for Sandboxels
 // (Inspired by survival.js)
-// Build 17
-// By: Lucifer (@a_british_proto (Discord))
-// If there is anything you want to suggest or there's a bug then just dm me on discord
+// Build 37 (version alpha 0.0.37)
+console.log("Version alpha 0.0.37")
+console.log("Build 37")
+console.log("If you see something that is alumium and not aluminium, just dm me on discord (this is a british/welsh mod aight)")
+console.log("THIS IS NOT DONE")
+// You'll see a lot more of my school account
+// Read comment at line 1523 for information on what I mean by null/NULL
+// This used to be a full time thing, but now it's basically just half-time now. 
+// It has been confirmed, I am getting a pc on 25/06/2024 :D (I'm also going to be animating for my friends movies that are coming out soon)
+// If there is anything you want to suggest or there's a bug then just dm me on discord (@a_british_proto)
+// I've decided to start doing this project on my schools computer's (because they don't crash all the time) so there will be long delays in updates, sorry!
 // Todo:
-// - Try to get the mod to work by making different ways to craft all the (116) elements in the mod
 // - Make new substances that you can get after mixing different elements
-// - Make a way to get the different substances by mixing different elements and different substances
+// - Make a way to get the different substances by mixing different elements and different substances (basically the same as the one above)
 // - Create different proporties for the substances (doing now)
+// - Actually update all the properties and make them have effects
 
 // How much of the elements you're gonna have when you start:
 
@@ -1249,6 +1257,7 @@ substance.Silver_Vandium_Trioxide = {
 }
 
 // Why is this fun? How is this not torture? This is line 1247! (at the time I am making this comment)
+// Not changing this ever lol ^^^^
 
 // I think there's two silver iodides I'm just not so sure (and I ain't editing this after)
 // Nvm it's only one , I got silver iodide and silver iodate mixed up :skull:
@@ -1378,12 +1387,405 @@ substance.Silver_Oxzide = {
 substance.Silver_Sulfate = {
     behavior: behaviors.WALL,
     color: "FFFFFF",
-    category: "lands"
+    category: "lands",
     state: "solid",
     hidden:true
 }
 
-// I done this on my school computers :skull:
-// doing more later
+// Decided to just change the console.log to a comment because it got me confused between the github page and VSC
 
-// I accidentally pressed Ctrl+V instead of Ctrl+C so it deleted my work D:
+substance.Silver_Selenide = {
+    behavior: behaviors.WALL,
+    color: "333333",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+// Why am listening to a random playlist? I swear I'm going fully insane
+
+substance.Silver_Selenate = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Telluride = {
+    behavior: behaviors.WALL,
+    color: "333333",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Arsenate = {
+    behavior: behaviors.WALL,
+    color: "E3E35F",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Silver_Phosphate = {
+    behavior: behaviors.WALL,
+    color: "FFFF00",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+// FINALLY WE ARE OUT OF THE SILVER COMPOUNDS!!!11!!1111! :DDDDD
+// Now time to go onto the aluminum compounds
+
+substance.Aluminum_Arsenide = {
+    behavior: behaviors.WALL,
+    color: "FF6600",
+    category: "lands", // Might just change this after I'm done with the substances (as well as the other one(s))
+    state: "solid",
+    hidden:true
+}
+
+substance.Aluminum_Diboride = {
+    behavior: behaviors.WALL,
+    color: "CB6D51",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Aluminum_Dodecaboride = {
+    behavior: behaviors.WALL,
+    color: "000000",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Aluminum_Bromate_Nonahydrate = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Aluminum_Tribromide = {
+    behavior: behavior.POWDER,
+    color: "FF0000",
+    category: "lands",
+    state: "powder",
+    hidden:true
+}
+
+substance.Aluminum_Bromide_Hexahydrate = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Aluminum_Cerium_Oxide = {
+    behavior: behaviors.WALL,
+    color: "FF5E00",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Aluminum_Chloride = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Aluminum_Chlorohydrate = {
+    behavior: behaviors.POWDER,
+    color: "FFFFFF",
+    category: "lands",
+    state: "powder",
+    hidden:true
+}
+
+substance.Aluminum_Chloride_Hydrate = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+// NULL/null just means unknown
+substance.Aluminum_Chloride_Hexahydrate = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+substance.Aluminum_Perchlorate_Nonahydrate = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+substance.Aluminum_Chlorate_Nonahydrate= {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+substance.Aluminum_Perchlorate = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+substance.Potassium_Tetrachloroaluminate = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+// Finally one I can actually do!
+substance.Lithium_Tetrachloroaluminate = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+// Nvm, back to null
+substance.Sodium_Tetrachloroaluminate = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+substance.Titanium_Chloride_Aluminum_Chloride = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+substance.Cesium_Fluoroaluminate = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+substance.Aluminum_Cesium_Sulfate_Dodecahydrate = {
+    behavior:behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+// Tf is this, I'm probs going to delete it later as i have no idea what it is
+substance.Devarda’s_Alloy = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",#
+    hidden:true
+}
+
+substance.Lithium_Aluminum_Deuteride = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+// Finally another one! Thank the ptable.com gods! :skull:
+substance.Aluminum_Floride = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+// AAAAAAAAAAAAAAAAAAAAAAAAAAA
+substance.aluminum_Fluoride_Trihydrate = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+// aight, i give up on the comments now but this is one that I can actually do
+substance.Ammonium_Hexafluoroaluminate = {
+    behavior: behaviors.POWDER,
+    color: "FFFFFF",
+    category: "lands",
+    state: "powder",
+    hidden:true
+}
+
+substance.Potassium_Hexafluoroaluminate = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+substance.Sodium_Hexafluoroaluminate = {
+    behavior: behaviors.POWDER,
+    color: "FFFFFF",
+    category: "lands",
+    state: "powder",
+    hidden:true
+}
+
+substance.Sodium_Phosphoaluminate = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true,
+}
+
+substance.Aluminum_Hypophosphite = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+substance.Aluminum_Hydroxide = {
+    behavior: behaviors.POWDER,
+    color: "FFFFFF",
+    category: "lands",
+    state: "powder",
+    hidden:true
+}
+
+substance.Aluminum_Metasophate = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+substance.Lithium_Aluminium_Hydride = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Sodium_Aluminium_Hydride = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Strontium_Lanthanum_Aluminate = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+substance.Aluminum_Nitrate_Nonahydrate = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+substance.Aluminium_Nitrate = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Potassium_Aluminum_Sulfate_Dodecahydrate = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+substance.Alum = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Kalinite = {
+    behavior: behaviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solid",
+    hidden:true
+}
+
+substance.Potassium_Alum = {
+    behavior: behaviors.POWDER,
+    color: "FFFFFF",
+    category: "lands",
+    state: "powder",
+    hidden:true
+}
+
+substance.Sodium_Alum = {
+    behavior: behaviors.POWDER,
+    color: "FFFFFF",
+    category: "lands",
+    state: "powder",
+    hidden:true
+}
+
+substance.Aluminum_Ammonium_Sulfate_Dodecahydrate = {
+    behavior: behaviors.NULL,
+    color: "000000",
+    category: "null",
+    state: "null",
+    hidden:true
+}
+
+substance.Ammonium_Aluminium_Sulfate = {
+    behavior: beahviors.WALL,
+    color: "FFFFFF",
+    category: "lands",
+    state: "solids",
+    hidden:true
+}

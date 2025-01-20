@@ -1385,7 +1385,20 @@ window.libraryLoaded = true;
 		if(Array.isArray(breakIntoElement)) {
 			breakIntoElement = breakIntoElement[Math.floor(Math.random() * breakIntoElement.length)]
 		};
-		changePixel(pixel,breakIntoElement,changetemp)
+		var result = breakIntoElement;
+		// change the pixel to the result
+		if (result === null) {
+			deletePixel(pixel.x,pixel.y);
+			return;
+		}
+		if (elements[pixel.element].breakIntoColor) {
+			var oldelement = pixel.element;
+			changePixel(pixel,result,changetemp);
+			pixel.color = pixelColorPick(pixel, elements[oldelement].breakIntoColor);
+		}
+		else {
+			changePixel(pixel,result,changetemp);
+		}
 	};
 
 	function tryBreak(pixel,changetemp=false,defaultBreakIntoDust=false) {

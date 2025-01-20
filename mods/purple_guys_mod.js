@@ -591,7 +591,7 @@ elements.r_gullibullium_gas = {
 elements.boba_pearls = { 
     color: "#3b0a57",
     behavior: behaviors.POWDER,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "solid",
     density: 54678900,
     hardness:0.95
@@ -600,7 +600,7 @@ elements.boba_pearls = {
 elements.vanilla_boba = { 
     color: "#fff0dd",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -609,7 +609,7 @@ elements.vanilla_boba = {
 elements.mango_boba = { 
     color: "#ffc77d",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -618,7 +618,7 @@ elements.mango_boba = {
 elements.matcha_boba = { 
     color: "#58d168",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -627,7 +627,7 @@ elements.matcha_boba = {
 elements.banana_boba = { 
     color: "#ffe1a1",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -636,7 +636,7 @@ elements.banana_boba = {
 elements.banana_cream_boba = { 
     color: "#ffffc1",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -645,7 +645,7 @@ elements.banana_cream_boba = {
 elements.satans_boba = { 
     color: "#852d2d",
     behavior: behaviors.MOLTEN,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25,
@@ -655,7 +655,7 @@ elements.satans_boba = {
 elements.peach_boba = { 
     color: "#ffbe73",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -664,7 +664,7 @@ elements.peach_boba = {
 elements.strawberry_boba = { 
     color: "#e27c7c",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -673,7 +673,7 @@ elements.strawberry_boba = {
 elements.mint_boba = { 
     color: "#8cff9b",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -682,7 +682,7 @@ elements.mint_boba = {
 elements.mint_vanilla_boba = { 
     color: "#c8ffcf",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -691,7 +691,7 @@ elements.mint_vanilla_boba = {
 elements.classic_boba = { 
     color: "#ffffff",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -700,7 +700,7 @@ elements.classic_boba = {
 elements.taro_boba = { 
     color: "#f1c8ff",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -709,7 +709,7 @@ elements.taro_boba = {
 elements.thai_tea_boba = { 
     color: "#ffc98c",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -718,7 +718,7 @@ elements.thai_tea_boba = {
 elements.jasmine_green_tea_boba = { 
     color: "#d8ffc7",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -727,7 +727,7 @@ elements.jasmine_green_tea_boba = {
 elements.honeydew_boba = { 
     color: "#9eff98",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -736,7 +736,7 @@ elements.honeydew_boba = {
 elements.rose_boba = { 
     color: "#ffe6e6",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -745,7 +745,7 @@ elements.rose_boba = {
 elements.lavender_boba = { 
     color: "#efbfff",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -754,7 +754,7 @@ elements.lavender_boba = {
 elements.lychee_boba = { 
     color: "#fff1bf",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -763,7 +763,7 @@ elements.lychee_boba = {
 elements.passion_fruit_boba = { 
     color: "#ffb942",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -772,7 +772,7 @@ elements.passion_fruit_boba = {
 elements.pineapple_boba = { 
     color: "#ffe742",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -781,7 +781,7 @@ elements.pineapple_boba = {
 elements.blueberry_boba = { 
     color: "#272a98",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -790,7 +790,7 @@ elements.blueberry_boba = {
 elements.raspberry_boba = { 
     color: "#ff3333",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -799,7 +799,7 @@ elements.raspberry_boba = {
 elements.coconut_boba = { 
     color: "#f1f1f1",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -808,7 +808,7 @@ elements.coconut_boba = {
 elements.almond_boba = { 
     color: "#e4daa9",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -817,7 +817,7 @@ elements.almond_boba = {
 elements.hazelnut_boba = { 
     color: "#fbf4d4",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -826,7 +826,7 @@ elements.hazelnut_boba = {
 elements.caramel_boba = { 
     color: "#e4ab32",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -835,7 +835,7 @@ elements.caramel_boba = {
 elements.chocolate_boba = { 
     color: "#6f4b00",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -844,7 +844,7 @@ elements.chocolate_boba = {
 elements.coffee_boba = { 
     color: "#866625",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -853,7 +853,7 @@ elements.coffee_boba = {
 elements.guava_boba = { 
     color: "#ff390a",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -862,7 +862,7 @@ elements.guava_boba = {
 elements.kiwi_boba = { 
     color: "#09de0f",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -871,7 +871,7 @@ elements.kiwi_boba = {
 elements.papaya_boba = { 
     color: "#c4ce37",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -880,7 +880,7 @@ elements.papaya_boba = {
 elements.black_sesame_boba = { 
     color: "#6e89a9",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -889,7 +889,7 @@ elements.black_sesame_boba = {
 elements.pandan_boba = { 
     color: "#33d460",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -898,7 +898,7 @@ elements.pandan_boba = {
 elements.pomegranate_boba = { 
     color: "#ca0000",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -907,7 +907,7 @@ elements.pomegranate_boba = {
 elements.watermelon_boba = { 
     color: "#f26565",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -916,7 +916,7 @@ elements.watermelon_boba = {
 elements.grapefruit_boba = { 
     color: "#f1962f",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -925,7 +925,7 @@ elements.grapefruit_boba = {
 elements.plum_boba = { 
     color: "#dacfd9",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -934,7 +934,7 @@ elements.plum_boba = {
 elements.jackfruit_boba = { 
     color: "#daa128",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -943,7 +943,7 @@ elements.jackfruit_boba = {
 elements.soursop_boba = { 
     color: "#ded3bb",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -952,7 +952,7 @@ elements.soursop_boba = {
 elements.cranberry_boba = { 
     color: "#f81e1e",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -961,7 +961,7 @@ elements.cranberry_boba = {
 elements.blood_orange_boba = { 
     color: "#ed2115",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -970,7 +970,7 @@ elements.blood_orange_boba = {
 elements.lemonade_boba = { 
     color: "#ffe151",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -979,7 +979,7 @@ elements.lemonade_boba = {
 elements.guanabana_boba = { 
     color: "#f5f5f5",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -988,7 +988,7 @@ elements.guanabana_boba = {
 elements.cherry_blossom_boba = { 
     color: "#f598e8",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -997,7 +997,7 @@ elements.cherry_blossom_boba = {
 elements.cardamom_boba = { 
     color: "#dac370",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -1006,7 +1006,7 @@ elements.cardamom_boba = {
 elements.saffron_boba = { 
     color: "#ffe323",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -1015,7 +1015,7 @@ elements.saffron_boba = {
 elements.pistachio_boba = { 
     color: "#9cff90",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -1024,7 +1024,7 @@ elements.pistachio_boba = {
 elements.blue_raspberry_boba = { 
     color: "#29c9f1",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -1033,7 +1033,7 @@ elements.blue_raspberry_boba = {
 elements.cotton_candy_boba = { 
     color: "#f1cfde",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -1042,7 +1042,7 @@ elements.cotton_candy_boba = {
 elements.bubblegum_boba = { 
     color: "#ff97bc",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -1051,7 +1051,7 @@ elements.bubblegum_boba = {
 elements.peppermint_boba = { 
     color: ["#ffeff5", "#ff0000"],
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -1060,7 +1060,7 @@ elements.peppermint_boba = {
 elements.spearmint_boba = { 
     color: ["#ffeff5", "#00ff00"],
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -1085,7 +1085,61 @@ elements.strawberry_kiwi_boba = {
         "k": "#09de0f"
     },
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
+    state: "liquid",
+    density: 1300,
+    hardness:0.25
+}
+
+elements.lychee_rose_boba = { 
+    color: "#e04b8c",
+    behavior: behaviors.LIQUID,
+    category: "Boba", 
+    state: "liquid",
+    density: 1300,
+    hardness:0.25
+}
+
+elements.raspberry_lemonade_boba = { 
+    color: "#e0604a",
+    behavior: behaviors.LIQUID,
+    category: "Boba", 
+    state: "liquid",
+    density: 1300,
+    hardness:0.25
+}
+
+elements.blackberry_boba = { 
+    color: "#232048",
+    behavior: behaviors.LIQUID,
+    category: "Boba", 
+    state: "liquid",
+    density: 1300,
+    hardness:0.25
+}
+
+elements.elderflower_boba = { 
+    color: "#ef9d5c",
+    behavior: behaviors.LIQUID,
+    category: "Boba", 
+    state: "liquid",
+    density: 1300,
+    hardness:0.25
+}
+
+elements.hibiscus_boba = { 
+    color: "#e8a1cd",
+    behavior: behaviors.LIQUID,
+    category: "Boba", 
+    state: "liquid",
+    density: 1300,
+    hardness:0.25
+}
+
+elements.dragon_fruit_boba = { 
+    color: "#cd4747",
+    behavior: behaviors.LIQUID,
+    category: "Boba", 
     state: "liquid",
     density: 1300,
     hardness:0.25
@@ -1098,7 +1152,7 @@ elements.wasters_personal_boba = {
         "M2|M1|M2",
         "M2|XX|M2"
     ],
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1500,
     hardness:0.25
@@ -1111,7 +1165,7 @@ elements.when_yous_personal_boba = {
         "M2|M1|M2",
         "M2|XX|M2"
     ],
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 1600,
     hardness:0.25
@@ -1120,16 +1174,16 @@ elements.when_yous_personal_boba = {
 elements.nousernamefounds_gallium_boba = { 
     color: ["#b1b1b1", "#bfbfbf", "#9e9e9e"],
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 5100,
     hardness:0.25
 }
 
-elements.bartender_twix_hartwell_whites_bday_cake_boba = { 
+elements.bart_ender_twixs_birthday_cake_boba = { 
     color: "#e6dbe4",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 2000,
     hardness:0.25
@@ -1138,7 +1192,7 @@ elements.bartender_twix_hartwell_whites_bday_cake_boba = {
 elements.sb_boba = { 
     color: ["#000000", "#ffff00", "#3a3a3a", "#ff0000"],
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 2000,
     hardness:0.25
@@ -1147,7 +1201,7 @@ elements.sb_boba = {
 elements.sethies_red_boba = { 
     color: "#ff8282",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 2000,
     hardness:0.25
@@ -1156,7 +1210,7 @@ elements.sethies_red_boba = {
 elements.sethies_blue_boba = { 
     color: "#82c0ff",
     behavior: behaviors.LIQUID,
-    category: "Purple Guy's Boba", 
+    category: "Boba", 
     state: "liquid",
     density: 2010,
     hardness:0.25
@@ -1516,8 +1570,8 @@ elements.water_but_it_stays_liquid = {
 elements.blue_uranium = {
     color: ["#4ba5ff","#71a8de","#b4c7da","#3e6892","#6da4da","#9dc1e6"],
     behavior: [
-        "XX|CR:radiation%20|XX",
-        "CR:radiation%1|CH:lead%0.001|CR:radiation%20",
+        "XX|CR:radiation%15|XX",
+        "CR:radiation%1|CH:lead%0.001|CR:radiation%15",
         "M2|M1|M2",
     ],
     reactions: {
@@ -3298,6 +3352,186 @@ elements.turtle_egg = {
     breakInto: "crushed_shell"
 }
 
+elements.radium = {
+    color: ["#d9d9d9", "#d0d0d0", "#b3b3b3"],
+    behavior: [
+        "XX|CR:radiation%1000000|XX",
+        "CR:radiation%1000000|CH:lead%0.001|CR:radiation%1000000",
+        "M2|M1|M2",
+    ],
+    reactions: {
+        "neutron": { elem1:"n_explosion", tempMin:700, chance:0.1 }
+    },
+    tempHigh: 1132.2,
+    category: "powders",
+    state: "solid",
+    density: 5500,
+    hardness: 0.45,
+    conduct: 0.235,
+    excludeRandom: true
+}
+
+elements.unbreakable_battery = {
+    color: "#9d8725",
+    behavior: [
+        "XX|SH|XX",
+        "SH|XX|SH",
+        "XX|SH|XX",
+    ],
+    category: "machines",
+    hardness: 1
+}
+
+elements.diamond_wall = {
+    color: ["#03fcec","#03c6fc","#b3eeff","#8ab0e6"],
+    behavior: behaviors.WALL,
+    category: "solids",
+    tempHigh: 900,
+    stateHigh: "carbon_dioxide",
+    state: "solid",
+    density: 3515,
+    hardness: 0.99,
+    breakInto: "diamond"
+}
+
+elements.osmium = {
+    color: ["#bddee4","#a7c3c8","#98b3b7"],
+    behavior: behaviors.WALL,
+    category: "solids",
+    tempHigh: 3033,
+    state: "solid",
+    density: 3515,
+    hardness: 0.7,
+    breakInto: "osmium_shard"
+}
+
+elements.osmium_shard = {
+    color: ["#bddee4","#a7c3c8","#98b3b7"],
+    behavior: behaviors.POWDER,
+    category: "powders",
+    tempHigh: 3033,
+    state: "solid",
+    density: 3515,
+    hardness: 0.7,
+}
+
+elements.copper_scrap = {
+    color: ["#a95232","#be4322","#c76035"],
+    behavior: behaviors.POWDER,
+    reactions: {
+        "blood": { elem1:"oxidized_copper_scrap", chance:0.003 },
+        "infection": { elem1:"oxidized_copper_scrap", chance:0.003 },
+        "antibody": { elem1:"oxidized_copper_scrap", chance:0.003 },
+        "fire": { elem1:"oxidized_copper_scrap", chance:0.0025 },
+    },
+    category: "powders",
+    tempHigh: 1085,
+    density: 8960,
+    conduct: 0.95,
+    hardness: 0.3,
+    fireColor: ["#07BA4F","#00BC5B","#00C2A9","#11B7E7","#C6F2EC"]
+}
+
+elements.oxidized_copper_scrap = {
+    color: ["#406555","#42564a","#517364"],
+    behavior: behaviors.POWDER,
+    reactions: {
+        "hydrogen": {tempMin:900, elem1:"copper_scrap", elem2:"steam"}
+    },
+    category: "powders",
+    hidden: true,
+    tempHigh: 1085,
+    stateHigh: "molten_copper",
+    density: 8960,
+    conduct: 0.85,
+    hardness: 0.2,
+    alias: "copper carbonate"
+}
+
+elements.cleaning_solution = {
+    color: "#5894e9",
+    behavior: behaviors.LIQUID,
+    reactions: {
+        "milk": { elem1: null, elem2: "cheese" },
+        "pilk": { elem1: null, elem2: "cheese", color2:"#c48a25" },
+        "fruit_milk": { elem1: null, elem2: "cheese", color2:"#c2864e" },
+        "chocolate_milk": { elem1: null, elem2: "cheese", color2:"#6b4000" },
+        "eggnog": { elem1: null, elem2: "cheese", color2:"#ffdb63" },
+        "nut_milk": { elem1: null, elem2: "cheese", color2:"#ded0ad" },
+        "yogurt": { elem1: null, elem2: "cheese" },
+        "baking_soda": { elem1: "sodium_acetate", elem2: "carbon_dioxide", attr1:{"foam":20} },
+        "limestone": { elem1: "sodium_acetate", elem2: "carbon_dioxide", attr1:{"foam":5} },
+        "rust": { elem2:"iron", chance:0.05 },
+        "oxidized_copper": { elem2:"copper", chance:0.05 },
+        "egg": { elem2:"yolk", chance:0.0005 },
+        "yolk": { elem1:"mayo", elem2:"mayo", chance:0.1 },
+        "mushroom_spore": { elem2:null, chance:0.05 },
+        "mushroom_gill": { elem2:null, chance:0.05 },
+        "mushroom_cap": { elem2:null, chance:0.05 },
+        "pollen": { elem2:null, chance:0.05 },
+        "salt": { elem1: null, elem2: "sodium_acetate", chance:0.05 },
+        "lettuce": { elem2:"pickle", chance:0.01 },
+        "egg": { elem2:"pickle", color2:"#e0e0ab", chance:0.01 },
+        "tomato": { elem2:"pickle", color2:"#fa6e11", chance:0.01 },
+        "grape": { elem2:"pickle", color2:"#b86a4b", chance:0.01 },
+        "pumpkin": { elem2:"pickle", color2:"#ffa42e", chance:0.01 },
+        "dirt": { elem1: null, elem2: "mud" },
+        "sand": { elem1: null, elem2: "wet_sand" },
+        "clay_soil": { elem1: null, elem2: "clay" },
+    },
+    viscosity: 12,
+    tempHigh: 100.6,
+    stateHigh: ["steam","carbon_dioxide","methane"],
+    tempLow: -2.22,
+    stateLowName: "frozen_cleaning_solution",
+    category: "liquids",
+    state: "liquid",
+    density: 1006,
+    stain: -1.05
+}
+
+elements.abs_zero = {
+    color: "#a2ddff",
+    tool: function(pixel) {
+        pixel.temp = absoluteZero
+        pixelTempCheck(pixel);
+    },
+    category: "tools",
+    excludeRandom: true
+}
+
+elements.firedoesntwork = {
+    color: "#c44f45",
+    tick: function(pixel) {
+        if ((pixel.temp > absoluteZero || pixel.charge) && !pixel.burning) {
+            pixel.burning = true;
+            pixel.burnStart = pixelTicks;
+        }
+        if (pixel.burning) {
+            if (!tryMove(pixel, pixel.x, pixel.y-1)) {
+                // tryMove again to the top left or top right
+                tryMove(pixel, pixel.x+(Math.random() < 0.5 ? -1 : 1), pixel.y-1);
+            }
+            if (pixelTicks-pixel.burnStart > 50 && Math.random() < 0.1) {
+                explodeAt(pixel.x, pixel.y, 10, "fw_ember");
+            }
+        }
+        else {
+            if (!tryMove(pixel, pixel.x, pixel.y+1)) {
+                // tryMove again to the bottom left or bottom right
+                tryMove(pixel, pixel.x+(Math.random() < 0.5 ? -1 : 1), pixel.y+1);
+            }
+        }
+        doDefaults(pixel);
+    },
+    burn: 90,
+    burnTime: 100,
+    density: 2000,
+    conduct: 1,
+    state: "solid",
+    category: "weapons"
+}
+
 if (!elements.sand.reactions) { elements.sand.reactions = {} }
 elements.sand.reactions.dirt = { elem1:"dirty_sand", elem2:"dirty_sand" }
 
@@ -3374,6 +3608,9 @@ elements.when_iium.reactions.when_i_particles = { elem1:"when_i_particles", elem
 if (!elements.ash.reactions) { elements.ash.reactions = {} }
 elements.ash.reactions.dust = { elem1:"dusty_ash", elem2:"dusty_ash" }
 
+if (!elements.vinegar.reactions) { elements.vinegar.reactions = {} }
+elements.vinegar.reactions.alchohol = { elem1:"cleaning_solution", elem2:"cleaning_solution" }
+
 elements.steel.hardness = 0.85
 
 elements.uncharge.category = "tools"
@@ -3383,6 +3620,16 @@ elements.incinerate.category = "tools"
 elements.room_temp.category = "tools"
 
 elements.heat_ray.category = "rays"
+
+elements.battery.breakInto = "explosion"
+
+elements.oxidized_copper.category = "solids"
+
+elements.oxidized_copper.behavior = behaviors.SOLID
+
+elements.oxidized_copper.breakInto = "oxidized_copper_scrap"
+
+elements.body.color = ["#069469","#047e99","#7f5fb0", "#e85858", "#e8ac58", "#e8cc47", "#48e84e", "#48e7e8", "#488be8", "#9312e8", "#e8136e", "#8e492d"]
 
 
 // important colors: ["#000000", "#edff00", "#3a3a3a", "#ff0000"], ["#82c0ff", "#ff8282"], ["#cca77c","#ad8b63","#b59d81","#c7a073","#c9b297"],
