@@ -1,7 +1,7 @@
 elements.firstmod = {
     color: "#A52A2A",
     behavior: behaviors.POWDER,
-    category: "testing",
+    category: "special",
     state: "powder",
     stateHigh: "oxygen",
     tempHigh: "100",
