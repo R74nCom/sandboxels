@@ -6,7 +6,7 @@ elements.abcdefghijklmon =  {
     "porcelain": { elem1: "grower", elem2: "porcelain"},
 },
   state: "solid",
-  category: "bfb",
+  category: "bfdi",
 };
 elements.grower =  {
   color: "#00ff00",
@@ -16,7 +16,7 @@ elements.grower =  {
     "CR:blueberry%1|XX|CR:blueberry%1",
     "XX|XX|XX"
   ],
-  category: "bfb",
+  category: "bfdi",
 };
 elements.blueberry =  {
   color: "#5500aa",
@@ -25,12 +25,12 @@ elements.blueberry =  {
     "XX|EX:20%1|XX",
     "XX|XX|XX"
 ],
-  category: "bfb",
+  category: "bfdi",
 };
 elements.shower =  {
   color: "#00aa00",
   name: "blueberry_plant",
-  category: "bfb"
+  category: "bfdi"
 };
 elements.steel.breakInto = "fork"
 ;
@@ -43,12 +43,12 @@ elements.fork =  {
     "M2|DL AND M1|M2"
   ],
   state: "solid",
-  category: "bfb",
+  category: "bfdi",
 };
 elements.abcd =  {
   state: "gas",
   name: "forkrepellent",
-  category: "bfb",
+  category: "bfdi",
   stain: 0,
   alpha: 0.4,
   behavior: [
@@ -61,7 +61,7 @@ elements.cheesecake =  {
   state: "solid",
   behavior: behaviors.POWDER,
   color: "#ccbb77",
-  category: "bfb",
+  category: "bfdi",
   reactions: {
     "glass_shard": { elem1: "shardcake", elem2: null } 
   },
@@ -77,7 +77,7 @@ elements.shardcake =  {
     "XX|DL%5 AND M1|XX"
   ],
   color: Array ("#ccbb77","#5e807d"),
-  category: "bfb",
+  category: "bfdi",
 };
 elements.rocky =  {
   color: "#777777",
@@ -86,14 +86,14 @@ elements.rocky =  {
     "CR:barf|XX|CR:barf",
     "XX|CR:barf|XX"
   ],
-  category: "bfb",
+  category: "bfdi",
   reactions:  {
     "lava_barf": { elem1: null, elem2: "zombie_rocky" }
   }, 
 };
 elements.barf =  {
   color: "#008800",
-  category: "bfb",
+  category: "bfdi",
   ignore: Array("rocky", "zombie_rocky","cured_rocky"), 
   state: "liquid",
   behavior:  [
@@ -113,15 +113,15 @@ elements.lava_barf = {
   state: "liquid",
   ignore: Array("zombie_rocky","rocky","cured_rocky"), 
   behavior:  [
-    "XX|CH:rocky>zombie_rocky AND CH:barf>lava_barf|XX",
-    "M2 AND CH:rocky>zombie_rocky AND CH:barf>lava_barf|XX|M2 AND CH:rocky>zombie_rocky AND CH:barf>lavabarf",
+    "XX|CH:rocky>zombie_rocky AND CH:barf>lava_barf%5|XX",
+    "M2 AND CH:rocky>zombie_rocky AND CH:barf>lava_barf%5|XX|M2 AND CH:rocky>zombie_rocky AND CH:barf>lavabarf%5",
     "XX|CH:rocky>zombie_rocky AND CH:barf>lava_barf%5 AND M1|XX"
   ],
   category: "bfb",
 };
 elements.zombie_rocky =  {
   color: "#005500",
-  category: "bfb",
+  category: "bfdi",
   behavior:  [
     "XX|CH:rocky>zombie_rocky AND CR:lava_barf|XX",
     "CH:rocky>zombie_rocky AND CR:lava_barf|XX|CH:rocky>zombie_rocky AND CR:lava_barf",
@@ -133,7 +133,7 @@ elements.zombie_rocky =  {
 };
 elements.cured_rocky =  {
   color: "#777777", 
-  category: "bfb", 
+  category: "bfdi", 
   behavior:  [
     "XX|CR:barf AND CH:zombie_rocky>cured_rocky|XX", 
     "CR:barf AND CH:zombie_rocky>cured_rocky|XX|CR:barf AND CH:zombie_rocky>cured_rocky", 
