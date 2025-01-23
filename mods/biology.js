@@ -148,7 +148,7 @@ behaviorRules.ADB = function() {
                             btemp.swapSpots = [];
                         }
                         else if (elements[newPixel.element].isFood != true) {
-                                if (elements[newPixel.element].hardness < 0.5) {
+                                if (elements[newPixel.element].hardness < 0.9 || !elements[newPixel.element].hardness) {
                                 deletePixel(btemp.newCoords.x,btemp.newCoords.y);
                                 if (pixelMap[btemp.pixel.x][btemp.pixel.y] != undefined) {
                                     deletePixel(btemp.pixel.x,btemp.pixel.y);
@@ -2095,7 +2095,7 @@ elements.kidney = {
                 hitPixel.speed++
                 pixel.pee += 1
             }
-            if (elements[hitPixel.element].isKidney === true && Math.random() < 0.25 && pixel.pee) {
+            if (hitPixel.pee < pixel.pee && elements[hitPixel.element].isKidney === true) {
                 hitPixel.pee += 1
                 pixel.pee -= 1
             }
@@ -2112,7 +2112,7 @@ elements.kidney = {
                 hitPixel.speed++
                 pixel.pee += 1
             }
-            if (elements[hitPixel.element].isKidney === true && Math.random() < 0.25 && pixel.pee) {
+            if (hitPixel.pee < pixel.pee && elements[hitPixel.element].isKidney === true) {
                 hitPixel.pee += 1
                 pixel.pee -= 1
             }
@@ -2129,7 +2129,7 @@ elements.kidney = {
                 hitPixel.speed++
                 pixel.pee += 1
             }
-            if (elements[hitPixel.element].isKidney === true && Math.random() < 0.25 && pixel.pee) {
+            if (hitPixel.pee < pixel.pee && elements[hitPixel.element].isKidney === true) {
                 hitPixel.pee += 1
                 pixel.pee -= 1
             }
@@ -2146,7 +2146,7 @@ elements.kidney = {
                 hitPixel.speed++
                 pixel.pee += 1
             }
-            if (elements[hitPixel.element].isKidney === true && Math.random() < 0.25 && pixel.pee) {
+            if (hitPixel.pee < pixel.pee && elements[hitPixel.element].isKidney === true) {
                 hitPixel.pee += 1
                 pixel.pee -= 1
             }
@@ -2242,9 +2242,9 @@ elements.liver = {
 elements.blood_vessel = {
     color: "#c72114",
     behavior: [
-        "XX|SW:blood_vessel%1|XX",
-        "SW:blood_vessel%1|XX|SW:blood_vessel%1",
-        "XX|SW:blood_vessel%1|XX",
+        "XX|SW:blood_vessel%5|XX",
+        "SW:blood_vessel%5|XX|SW:blood_vessel%5",
+        "XX|SW:blood_vessel%5|XX",
     ],
     ageRate: 0.975,
     nutrTrans: 20,
@@ -2316,7 +2316,7 @@ elements.infected_vessel = {
     behavior: [
         "XX|SW:blood_vessel%1|XX",
         "SW:blood_vessel%1|XX|SW:blood_vessel%1",
-        "XX|SW:blood_vessel%1|XX",
+        "XX|SW:blood_vessel%2|XX",
     ],
     ageRate: 0.5,
     nutrTrans: 5,
@@ -2363,9 +2363,9 @@ elements.infected_vessel = {
 elements.white_blood_cell = {
     color: "#F5D7D4",
     behavior: [
-        "XX|SW:blood_vessel%1|XX",
-        "SW:blood_vessel%1|XX|SW:blood_vessel%1",
-        "XX|SW:blood_vessel%1|XX",
+        "XX|SW:blood_vessel,white_blood_cell%5|XX",
+        "SW:blood_vessel,white_blood_cell%5|XX|SW:blood_vessel,white_blood_cell%5",
+        "XX|SW:blood_vessel,white_blood_cell%5|XX",
     ],
     ageRate: 0.995,
     nutrTrans: 20,
@@ -4388,7 +4388,7 @@ elements.stomach_valve = {
         doBioNorm(pixel);
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
             var hitPixel = pixelMap[pixel.x][pixel.y-1]
-            if (elements[hitPixel.element].isAcid != true && Math.random() > 0.75) {
+            if (elements[hitPixel.element].movable == true && elements[hitPixel.element].isAcid != true && Math.random() > 0.75) {
                 if (isEmpty(pixel.x, pixel.y+1)) {
                     tryMove(hitPixel,pixel.x,pixel.y+1);
                 }
@@ -4417,7 +4417,6 @@ elements.stomach_valve = {
         speed: 0,
         poisoned: false,
         immune: false,
-
     },
     movable: false,
     isBio: true,
@@ -4839,8 +4838,8 @@ elements.stomach_acid = {
     color: ["#b5cf91","#288f2a"],
     behavior: [
         "XX|ADB%5|XX",
-        "ADB%5 AND M2|DL%0.03|ADB%5 AND M2",
-        "ADB%5 AND M2|ADB%5 AND M1|ADB%5 AND M2",
+        "ADB%10 AND M2|DL%0.03|ADB%10 AND M2",
+        "ADB%10 AND M2|ADB%15 AND M1|ADB%10 AND M2",
     ],
     ignore: ["amphib_skin","amphib_dermis","acidic_flesh","acid_vessel","throat_lining","explosive_stomach","stomach_lining","stomach_valve","slime","gaseous_material","digested_material","glass","rad_glass","glass_shard","rad_shard","stained_glass","baked_clay","acid_gas","neutral_acid","acid_cloud","water","salt_water","sugar_water","dirty_water","copper","gold","porcelain","plastic","bead","microplastic","molten_plastic","pool_water","chlorine","hydrogen","gold_coin","silver","nickel","calcium","bone","earthquake","tornado","tsunami","liquid_light","sensor"],
     reactions: {
@@ -4943,7 +4942,7 @@ elements.stomach_acid = {
     burn: 30,
     burnTime: 1,
     state: "liquid",
-    density: 1050,
+    density: 1550,
     stain: -0.1,
     isAcid: true,
 }
@@ -5061,7 +5060,7 @@ elements.herbi_acid = {
     burn: 30,
     burnTime: 1,
     state: "liquid",
-    density: 1050,
+    density: 1550,
     stain: -0.1,
     isAcid: true,
 }
@@ -5179,7 +5178,7 @@ elements.carni_acid = {
     burn: 30,
     burnTime: 1,
     state: "liquid",
-    density: 1050,
+    density: 1550,
     stain: -0.1,
     isAcid: true,
 }
@@ -5295,7 +5294,7 @@ elements.explosive_acid = {
     viscosity: 36,
     tempLow: -58.88,
     state: "liquid",
-    density: 1050,
+    density: 1550,
     isAcid: true,
 }
 
@@ -5407,7 +5406,7 @@ elements.decomposer_acid = {
     burn: 30,
     burnTime: 1,
     state: "liquid",
-    density: 1050,
+    density: 1550,
     stain: -0.1,
     isAcid: true,
 }
