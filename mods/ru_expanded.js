@@ -2,7 +2,7 @@
 
 // Made by Kopalecek (also known as davistudios or sylas) and Bufka2011
 
-const reqCode = 'cs' // Change this to the lang code you want.
+const reqCode = 'ru' // Change this to the lang code you want.
 
 const menu = { // Just change the values in this.
 	pauseButton: 'Пауза',
