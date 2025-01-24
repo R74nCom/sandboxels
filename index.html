@@ -2435,6 +2435,33 @@ SEEDRISE: function(pixel) {
     movable: false,
     density: 917
 },
+"red_lattice": {
+    color: "#ff0000",
+    behavior: [
+        "CL|XX|CL",
+        "XX|XX|XX",
+        "CL|XX|CL",
+    ],
+    tick: function(pixel) {
+        for (var i = 0; i < adjacentCoords.length; i++) {
+            var coords = adjacentCoords[i];
+            var x = pixel.x + coords[0];
+            var y = pixel.y + coords[1];
+            if (!isEmpty(x,y,true) && pixelMap[x][y].element === "red_lattice") {
+                deletePixel(x,y)
+            }
+        }
+    },
+    reactions: {
+        "cold_fire": { elem1:"ice_nine", chance:0.1 },
+        "proton": { elem1:"filler", elem2:null, chance:0.1 },
+        "electric": { elem1:null, elem2:"filler", chance:0.1 },
+    },
+    category:"special",
+    excludeRandom: true,
+    movable: false,
+    density: 917
+},
 "gravel": {
     color: ["#e3e0df","#b1aba3","#74736d","#524b47"],
     behavior: behaviors.POWDER,
