@@ -33,7 +33,15 @@
 ~ changed breakInto and stateHigh for most drills
 ~ changed density, tempHigh and conductivity of all drills
 ~ renamed 'drills.js_info' element to 'drills.js'
-+ steel, diamond and void reverse drills
++ steel reverse drill
++ diamond reverse drill
++ void reverse drill
+
+	Version 2.0.1 (Drills Not Functioning Hotfix)
+@NecroticPhantom
+~ Fixed all drills not drilling
+~ Slight change to drill missile function (no functional difference)
+~ Fixed reverse drills not creating pixels while drilling sometimes and when moving vertically
 */
 
 
@@ -59,9 +67,9 @@ elements.drills_info = {
 drill_function = function(pixel, dif_x, dif_y) {
 	if (!outOfBounds(pixel.x + dif_x, pixel.y + dif_y)) {
 		if (!isEmpty(pixel.x + dif_x, pixel.y + dif_y)) {
-			var pxl = pixelMap[pixel.x + dif_x][pixel.y + dif_y];
-			if (elements[pxl.element].hardness <= pixel.hardness || elements[pxl.element].hardness == undefined) {
-				deletePixel(pixel.x + dif_x, pixel.y + dif_y);
+			pxl = pixelMap[pixel.x + dif_x][pixel.y + dif_y];
+			if (elements[pxl.element].hardness <= elements[pixel.element].hardness || elements[pxl.element].hardness == undefined) {
+				deletePixel(pxl.x, pxl.y);
 			};
 		};
 		tryMove(pixel, pixel.x + dif_x, pixel.y + dif_y);
@@ -75,14 +83,11 @@ drill_missile_function = function(pixel, dif_x, dif_y) {
 		return;
 	};
 	if (!outOfBounds(pixel.x + dif_x, pixel.y + dif_y)) {
-		var pxl = pixelMap[pixel.x + dif_x][pixel.y + dif_y];
+		pxl = pixelMap[pixel.x + dif_x][pixel.y + dif_y];
 		if (!isEmpty(pixel.x + dif_x, pixel.y + dif_y)) {
 			pixel.primed = true;
-			if (elements[pxl.element].hardness <= pixel.hardness) {
-				deletePixel(pixel.x + dif_x, pixel.y + dif_y);
-			}
-			else if (elements[pxl.element].hardness == undefined) {
-				deletePixel(pixel.x + dif_x, pixel.y + dif_y);
+			if (elements[pxl.element].hardness <= elements[pixel.element].hardness || elements[pxl.element].hardness == undefined) {
+				deletePixel(pxl.x, pxl.y);
 			};
 		}
 		else if (pixel.primed) {
@@ -100,14 +105,14 @@ drill_missile_function = function(pixel, dif_x, dif_y) {
 reverse_drill_function = function(pixel, dif_x, dif_y, drill_element) {
 	if (!outOfBounds(pixel.x + dif_x, pixel.y + dif_y)) {
 		if (!isEmpty(pixel.x + dif_x, pixel.y + dif_y)) {
-			var pxl = pixelMap[pixel.x + dif_x][pixel.y + dif_y];
-			if (elements[pxl.element].hardness <= pixel.hardness || elements[pxl.element].hardness == undefined) {
-				deletePixel(pixel.x + dif_x, pixel.y + dif_y);
+			pxl = pixelMap[pixel.x + dif_x][pixel.y + dif_y];
+			if (elements[pxl.element].hardness <= elements[pixel.element].hardness || elements[pxl.element].hardness == undefined) {
+				deletePixel(pxl.x, pxl.y);
 			};
 		};
 		tryMove(pixel, pixel.x + dif_x, pixel.y + dif_y);
 	};
-	if (isEmpty(pixel.x - dif_x, pixel.y - dif_x)) {
+	if (isEmpty(pixel.x - dif_x, pixel.y - dif_y)) {
 		createPixel(drill_element, pixel.x - dif_x, pixel.y - dif_y);
 	};
 };
