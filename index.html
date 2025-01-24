@@ -2420,7 +2420,7 @@ SEEDRISE: function(pixel) {
             var coords = adjacentCoords[i];
             var x = pixel.x + coords[0];
             var y = pixel.y + coords[1];
-            if (!isEmpty(x,y,true) && pixelMap[x][y].element === "lattice") {
+            if (!isEmpty(x,y,true) && (pixelMap[x][y].element === "lattice" || pixelMap[x][y].element === "red_lattice")) {
                 deletePixel(x,y)
             }
         }
@@ -2447,7 +2447,7 @@ SEEDRISE: function(pixel) {
             var coords = adjacentCoords[i];
             var x = pixel.x + coords[0];
             var y = pixel.y + coords[1];
-            if (!isEmpty(x,y,true) && pixelMap[x][y].element === "red_lattice") {
+            if (!isEmpty(x,y,true) && (pixelMap[x][y].element === "lattice" || pixelMap[x][y].element === "red_lattice")) {
                 deletePixel(x,y)
             }
         }
