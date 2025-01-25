@@ -58,7 +58,7 @@ elements.toxic_resin_1 = {
     density: 1540,
     desc: "Abysmal Clarity, Air Bubble Impurities",
     reactions: {
-    "fletching_station" = { "elem1":null, "elem2":"toxic_resin_2" }
+    "fletching_station" : { "elem1":null, "elem2":"toxic_resin_2" }
     },
 },
 
@@ -76,7 +76,7 @@ elements.toxic_resin_2 = {
     density: 1540,
     desc: "Blemished Clarity, Air Bubble Impurities",
     reactions: {
-    "fletching_station" = { "elem1":null, "elem2":"toxic_resin_3" }
+    "fletching_station" : { "elem1":null, "elem2":"toxic_resin_3" }
     },
 },
 
@@ -94,7 +94,7 @@ elements.toxic_resin_3 = {
     density: 1540,
     desc: "Clouded Clarity, Air Bubble Impurities",
     reactions: {
-    "fletching_station" = { "elem1":null, "elem2":"toxic_resin_4" }
+    "fletching_station" : { "elem1":null, "elem2":"toxic_resin_4" }
     },
 },
 
@@ -112,7 +112,7 @@ elements.toxic_resin_4 = {
     density: 1540,
     desc: "Dull Clarity, Air Bubble Impurities",
     reactions: {
-    "fletching_station" = { "elem1":null, "elem2":"toxic_resin_5" }
+    "fletching_station" : { "elem1":null, "elem2":"toxic_resin_5" }
     },
 },
 
@@ -130,7 +130,7 @@ elements.toxic_resin_5 = {
     density: 1540,
     desc: "Eventual Clarity, Air Bubble Impurities",
     reactions: {
-    "fletching_station" = { "elem1":null, "elem2":"toxic_resin_6" }
+    "fletching_station" : { "elem1":null, "elem2":"toxic_resin_6" }
     },
 },
 
@@ -148,7 +148,7 @@ elements.toxic_resin_6 = {
     density: 1540,
     desc: "Faint Clarity, Air Bubble Impurities",
     reactions: {
-    "fletching_station" = { "elem1":null, "elem2":"toxic_resin_10" }
+    "fletching_station" : { "elem1":null, "elem2":"toxic_resin_7" }
     },
 },
 
@@ -166,7 +166,7 @@ elements.toxic_resin_7 = {
     density: 1540,
     desc: "Glimmering Clarity, Air Bubble Impurities",
     reactions: {
-    "fletching_station" = { "elem1":null, "elem2":"toxic_resin_8" }
+    "fletching_station" : { "elem1":null, "elem2":"toxic_resin_8" }
     },
 },
 
@@ -184,7 +184,7 @@ elements.toxic_resin_8 = {
     density: 1540,
     desc: "Hazy Clarity, Air Bubble Impurities",
     reactions: {
-    "fletching_station" = { "elem1":null, "elem2":"toxic_resin_9" }
+    "fletching_station" : { "elem1":null, "elem2":"toxic_resin_9" }
     },
 },
 
@@ -202,7 +202,7 @@ elements.toxic_resin_9 = {
     density: 1540,
     desc: "Icy Clarity, Air Bubble Impurities",
     reactions: {
-    "fletching_station" = { "elem1":null, "elem2":"toxic_resin_a" }
+    "fletching_station" : { "elem1":null, "elem2":"toxic_resin_a" }
     },
 },
 
@@ -220,7 +220,7 @@ elements.toxic_resin_a = {
     density: 1540,
     desc: "Jewel Clarity, Air Bubble Impurities",
     reactions: {
-    "fletching_station" = { "elem1":null, "elem2":"amber" }
+    "fletching_station" : { "elem1":null, "elem2":"amber" }
     },
 },
 
@@ -238,7 +238,7 @@ elements.toxic_resin_b = {
     density: 1540,
     desc: "Abysmal Clarity, Bug Impurities",
     reactions: {
-    "fletching_station" = { "elem1":null, "elem2":"toxic_resin_c" }
+    "fletching_station" : { "elem1":null, "elem2":"toxic_resin_c" }
     },
 },
 
@@ -256,7 +256,7 @@ elements.toxic_resin_c = {
     density: 1540,
     desc: "Blemished Clarity, Bug Impurities",
     reactions: {
-    "fletching_station" = { "elem1":null, "elem2":"toxic_resin_d" }
+    "fletching_station" : { "elem1":null, "elem2":"toxic_resin_d" }
     },
 },
 
@@ -274,7 +274,7 @@ elements.toxic_resin_d = {
     density: 1540,
     desc: "Clouded Clarity, Bug Impurities",
     reactions: {
-    "fletching_station" = { "elem1":null, "elem2":"toxic_resin_e" }
+    "fletching_station" : { "elem1":null, "elem2":"toxic_resin_e" }
     },
 },
 
@@ -292,7 +292,7 @@ elements.toxic_resin_e = {
     density: 1540,
     desc: "Dull Clarity, Bug Impurities",
     reactions: {
-    "fletching_station" = { "elem1":null, "elem2":"toxic_resin_f" }
+    "fletching_station" : { "elem1":null, "elem2":"toxic_resin_f" }
     },
 },
 
@@ -310,7 +310,7 @@ elements.toxic_resin_f = {
     density: 1540,
     desc: "Eventual Clarity, Bug Impurities",
     reactions: {
-    "fletching_station" = { "elem1":null, "elem2":"toxic_resin_10" }
+    "fletching_station" : { "elem1":null, "elem2":"toxic_resin_10" }
     },
 },
 
@@ -328,7 +328,7 @@ elements.toxic_resin_10 = {
     density: 1540,
     desc: "Faint Clarity, Bug Impurities",
     reactions: {
-    "fletching_station" = { "elem1":null, "elem2":"toxic_resin_11" }
+    "fletching_station" : { "elem1":null, "elem2":"toxic_resin_11" }
     },
 },
 
@@ -346,7 +346,7 @@ elements.toxic_resin_11 = {
     density: 1540,
     desc: "Glimmering Clarity, Bug Impurities",
     reactions: {
-    "fletching_station" = { "elem1":null, "elem2":"toxic_resin_12" }
+    "fletching_station" : { "elem1":null, "elem2":"toxic_resin_12" }
     },
 },
 
@@ -364,7 +364,7 @@ elements.toxic_resin_12 = {
     density: 1540,
     desc: "Hazy Clarity, Bug Impurities",
     reactions: {
-    "fletching_station" = { "elem1":null, "elem2":"toxic_resin_13" }
+    "fletching_station" : { "elem1":null, "elem2":"toxic_resin_13" }
     },
 },
 
@@ -382,7 +382,7 @@ elements.toxic_resin_13 = {
     density: 1540,
     desc: "Icy Clarity, Bug Impurities",
     reactions: {
-    "fletching_station" = { "elem1":null, "elem2":"toxic_resin_14" }
+    "fletching_station" : { "elem1":null, "elem2":"toxic_resin_14" }
     },
 },
 
@@ -400,8 +400,8 @@ elements.toxic_resin_14 = {
     density: 1540,
     desc: "Jewel Clarity, Bug Impurities",
     reactions: {
-    "fletching_station" = { "elem1":null, "elem2":"amber" }
+    "fletching_station" : { "elem1":null, "elem2":"amber" }
     },
-},
+}
 
 // so much more to go, i'll take a break for now.
