@@ -402,6 +402,6 @@ elements.toxic_resin_14 = {
     reactions: {
     "fletching_station" : { "elem1":null, "elem2":"amber" }
     },
-}
+};
 
 // so much more to go, i'll take a break for now.
