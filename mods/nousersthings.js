@@ -625,7 +625,7 @@ elements.e_pipe = {
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
                 if (isEmpty(x,y)) {
-                    createPixel("brick",x,y);
+                    createPixel("pipe_wall",x,y);
                     pixelMap[x][y].color = pixelColorPick(pixel,"#808080");
                 }
             }
@@ -870,7 +870,7 @@ elements.channel_pipe = {
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
                 if (isEmpty(x,y)) {
-                    createPixel("brick",x,y);
+                    createPixel("pipe_wall",x,y);
                     pixelMap[x][y].color = pixelColorPick(pixel,"#808080");
                 }
             }
@@ -1110,7 +1110,7 @@ elements.bridge_pipe = {
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
                 if (isEmpty(x,y)) {
-                    createPixel("brick",x,y);
+                    createPixel("pipe_wall",x,y);
                     pixelMap[x][y].color = pixelColorPick(pixel,"#808080");
                 }
             }
