@@ -1,7 +1,8 @@
 // this is a epic mod
+//fixxxx
 
 heatSen = null;
-elements.heatSensor = {
+elements.heat_sensor = {
    
 	color: "#ff0000",
     conduct: 0.1,
@@ -28,7 +29,7 @@ elements.heatSensor = {
 };
 
 
-elements.SteamTurbine = {
+elements.steam_turbine = {
   behavior: behaviors.WALL,
     desc: "When steam touches it, it conducts electricity and the steam pixel is deleted",
       color: "#826c6e",   
@@ -212,7 +213,7 @@ elements.solid_coal = {
 };
 
 elements.rubber = {
-    desc: "Not finnished",
+    desc: "Not finished",
 	color: "#ffc0cb",
 	 hardness: 0.5,
 	 tempHigh:180,
@@ -267,7 +268,7 @@ elements.e_cooler = {
 	name: "E-Cooler",
 };
 
-elements.e_Freezer = {
+elements.e_freezer = {
     desc: "Works like the freezer but needs power to work",
 	color: elements.cooler.color,
 	 hardness: 0.5,
@@ -299,7 +300,7 @@ elements.e_heater = {
 	name: "E-Heater",
 };
 
-elements.e_SuperHeater = {
+elements.e_superheater = {
     desc: "Works like the Super Heater but needs power to work",
 	 hardness: 0.5,
 	 state: "solid",
@@ -315,7 +316,7 @@ elements.e_SuperHeater = {
 	name: "E-SuperHeater",
 };
 
-elements.slow_Ecloner = {
+elements.slow_ecloner = {
     desc: "Works like the Slow Cloner but needs power to work",
 	 color: "#888800",
 	 behavior: behaviors.WALL,
@@ -332,7 +333,7 @@ elements.slow_Ecloner = {
 	name: "E-SlowCloner",
 };
 
-elements.Android = {
+elements.android = {
     desc: "A robot",
 	color: "#a1ada5",
     category: "life",
@@ -363,7 +364,7 @@ elements.Android = {
 };
 
 
-elements.AndroidBody = {
+elements.android_body = {
     
 	color: ["#a1ada5","#ebf5ee","#bac2bc","#848a86","#505251"],
     category: "life",
@@ -456,7 +457,7 @@ elements.AndroidBody = {
     }
 };
 
-elements.AndroidHead = {
+elements.android_head = {
 	color: ["#a1ada5","#ebf5ee","#bac2bc","#848a86","#505251"],
     category: "life",
 	density: 1080,
@@ -472,7 +473,7 @@ listPipes = "pipe"
 //thx to morechem.js for the idea
 
 let setTemp = "";
-elements.ajustableHeater = {
+elements.adjustable_heater = {
     desc: "Works like a heater but it can be set to a specific temp and needs power to work",
 	color: ["#a1ada5","#ebf5ee","#bac2bc","#848a86","#505251"],
     category: "machines",
@@ -480,7 +481,7 @@ elements.ajustableHeater = {
     state: "solid",
     conduct: 1,
 	movable: false,
-	name: "Ajustable-E-Heater",
+	name: "Adjustable-E-Heater",
 	 onSelect: function(pixel){
     setTemp = parseInt(prompt("Enter the temperature you want it set to.", (setTemp || undefined)));
 	        
@@ -771,7 +772,7 @@ elements.filter = {
 }
 
 filterTypeVar2 = 0;
-elements.Destructive_Filter = {
+elements.destructive_filter = {
     color: "#3c6c85",
     desc: "A filter that destroys anything that isn't allowed to get through",
     onSelect: function() {
@@ -907,7 +908,7 @@ elements.Destructive_Filter = {
 
 
 // going to fix the sucking up solids problem soon!!
-doNotEF = ["e_grinder","grinder","filter", "battery", "wire", "cloner", "sensor", "heater","cooler", "Ajustable-E-Heater", "E-Cooler", "E-Freezer", "E-Heater", "E-SuperHeater", "E-SlowCloner", "ewall", "titanium", "tungsten", "steel", "insulation","SteamTurbine","solar_panel"];
+doNotEF = ["e_grinder","grinder","filter", "battery", "wire", "cloner", "sensor", "heater","cooler", "adjustable-e-heater", "e-cooler", "e-freezer", "e-heater", "e-superheater", "e-slowcloner", "ewall", "titanium", "tungsten", "steel", "insulation","steam_turbine","solar_panel"];
 
 elements.grinder = {
     color: "#55565c",
@@ -1291,7 +1292,7 @@ elements.pusherRight = {
     },
     category: "tools",
 };
-    elements.NewWater = {
+    elements.new_water = {
         color: elements.water.color,
         behavior : behaviors.LIQUID,
         category: "test",
@@ -1660,13 +1661,9 @@ elements.guided_missile = {
     
     }
 
-   
-    elements.room_temp.category = "tools"
-    elements.uncharge.category = "tools"
-    elements.unburn.category = "tools"
     
 
-textures.Reniforced_Titanuim = {
+textures.reinforced_titanium = {
     REINFORCEDTITANIUM: [
         "GiGgggGiGGg",
         "gggGGGGgggg",
@@ -1684,7 +1681,7 @@ textures.Reniforced_Titanuim = {
    
 }                                                                                                                 
 
-elements.Reniforced_Titanuim = {
+elements.reinforced_titanium = {
     color: "#787878",
     colorPattern: textures.Reniforced_Titanuim.REINFORCEDTITANIUM,
     colorKey: {
@@ -1704,7 +1701,7 @@ elements.Reniforced_Titanuim = {
 
 
 
-elements.Missile_Up = {
+elements.missile_up = {
     
     maxSize: 1,
     
@@ -1744,7 +1741,7 @@ elements.Missile_Up = {
   
     }
 
-    elements.Missile_Down = {
+    elements.missile_down = {
     
         maxSize: 1,
         
@@ -1782,7 +1779,7 @@ elements.Missile_Up = {
       
       
         }
-        elements.Missile_Left = {
+        elements.missile_left = {
     
             maxSize: 1,
             
@@ -2076,7 +2073,7 @@ elements.Missile_Up = {
     
     
     
-    elements.Repel_Up_Magnet = {
+    elements.repel_up_magnet = {
         color: "#595656",
         behavior: behaviors.WALL,
         singleColor: true,
@@ -2088,7 +2085,7 @@ elements.Missile_Up = {
             }
     }
     
-    elements.Repel_Down_Magnet = {
+    elements.repel_down_magnet = {
         color: "#595656",
         singleColor: true,
         category: "machines",
@@ -2100,7 +2097,7 @@ elements.Missile_Up = {
             }
     }
     
-    elements.Magnet_Pull_Down = {
+    elements.magnet_pull_down = {
         color: "#595656",
         singleColor: true,
         category: "machines",
@@ -2112,7 +2109,7 @@ elements.Missile_Up = {
             }
     }
     
-    elements.Magnet_Pull_Up = {
+    elements.magnet_pull_up = {
         color: "#595656",
         singleColor: true,
         category: "machines",
@@ -2124,7 +2121,7 @@ elements.Missile_Up = {
             }
     }
     
-    elements.Nucler_Fusion = {
+    elements.nuclear_fusion = {
         color: "#595656",
         maxSize: 1,
         behavior: behaviors.WALL,
@@ -2141,7 +2138,7 @@ elements.Missile_Up = {
 
         SelectedX = null;
         SelectedY = null;
-        elements.WireLessPower = {
+        elements.wireless_power = {
             color: "#595656",
             singleColor: true,
             category: "machines",
@@ -2181,7 +2178,7 @@ elements.Missile_Up = {
 
            
 
-    //     elements.E_Gate = {
+    //     elements.e_gate = {
             
     //         name: "E-Gate",
     //         color: "#414c4f",
@@ -2290,7 +2287,7 @@ elements.Missile_Up = {
         
     // }
     
-    // RangeSelected = null;
+    //RangeSelected = null;
     // elements.fan = {
     //     color: "#595656",
     //     category: "machines",
@@ -2322,17 +2319,16 @@ elements.Missile_Up = {
         
     // }
 
-    // elements.test_Element = {
-    //     color: "#595656",
-    //     singleColor: true,
-    //     category: "test",
-    //     state: "solid",
-    //     behavior : [
-    //         ["XX","DL","XX"],
-    //        ["DL","XX","DL"],
-    //        ["M2","M1 AND DL","M2"]
-    //     ],
-    //     tick: function(pixel) {},
-    //     conduct : 1,
-        
-    // }
+elements.test_element = {
+color: "#595656",
+singleColor: true,
+category: "test",
+state: "solid",
+behavior : [
+["XX","DL","XX"],
+["DL","XX","DL"],
+["M2","M1 AND DL","M2"]
+],
+tick: function(pixel) {},
+conduct : 1,
+}
