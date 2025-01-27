@@ -1,5 +1,6 @@
 // Sandboxels: Fey & More, v2.1.2
 // Author: MelecieDiancie
+// that space in the code is annoying af (sorry melecie)
 
 /*
 === CHANGELOG ===
@@ -97,6 +98,11 @@ behaviors.FAIRYKILL = [
     "DL:"+eLists.FAIRY+"|XX|DL:"+eLists.FAIRY+"",
     "XX|DL:"+eLists.FAIRY+"|XX"
 ];
+behaviors.WILLOWISP = [
+	"XX|M1|XX",
+	"XX|DL%1|XX",
+	"XX|XX|XX",
+];
 
 // Changing vanilla elements
 elements.iron.behavior = behaviors.FAIRYKILL;
@@ -139,7 +145,7 @@ elements.fairy = {
 	},
 };
 elements.fire_fairy = {
-    name: "fire fairy",
+    name: "fire_fairy",
     color: ["#c99373","#d9b882","#db7972"],
 	temp:150,
 	state: "solid",
@@ -151,7 +157,7 @@ elements.fire_fairy = {
     category: "fey",
 };	
 elements.ice_fairy = {
-    "name": "ice fairy",
+    "name": "ice_fairy",
     "color": ["#a3fff9","#abe0f7","#b3b6ff"],
     "temp":-150,
 	"state": "solid",
@@ -163,7 +169,7 @@ elements.ice_fairy = {
     "category": "fey",
 }; 	
 elements.nature_fairy = {
-    "name": "nature fairy",
+    "name": "nature_fairy",
     "color": ["#baffa8","#bdffc3","#a8ffcb"],
 	"state": "solid",
     "behavior": [
@@ -174,7 +180,7 @@ elements.nature_fairy = {
     "category": "fey",
 }; 
 elements.earth_fairy = {
-    "name": "earth fairy",
+    "name": "earth_fairy",
     "color": ["#9c8b7b","#9c907b","#c9baad"],
 	"state": "solid",
     "behavior": [
@@ -185,7 +191,7 @@ elements.earth_fairy = {
     "category": "fey",
 };
 elements.rain_fairy = {
-    "name": "rain fairy",
+    "name": "rain_fairy",
     "color": ["#b8b4d4","#cecce0","#a8b2e6"],
 	"state": "solid",
     "behavior": [
@@ -288,7 +294,7 @@ elements.corrupt_fairy = {
     "category": "fey",
 }; 
 elements.fairy_dust = {
-                "name": "fairy dust",
+                "name": "fairy_dust",
                 "color": ["#ba97f0","#fae3ff","#ffffe6"],
 				"state": "solid",
                 "behavior": behaviors.POWDER,
@@ -322,7 +328,7 @@ elements.mana = {
     "category": "fey",
 };
 elements.mana_bubble = {
-    "name": "mana bubble",
+    "name": "mana_bubble",
     "color": ["#c7e8ff","#abcbff"],
 	"state": "gas",
     "behavior": [
@@ -335,7 +341,7 @@ elements.mana_bubble = {
     "hidden": true,
 };
 elements.frozen_mana = {
-    "name": "frozen mana",
+    "name": "frozen_mana",
     "color": ["#abcaff","#5a85cc","#6fbff7"],
 	"state": "solid",
     "behavior": behaviors.WALL,
@@ -346,7 +352,7 @@ elements.frozen_mana = {
     "category": "fey",
 };
 elements.fairy_egg = {
-    "name": "fairy egg",
+    "name": "fairy_egg",
     "color": ["#f8e8ff","#efe8ff","#efe8ff"],
 	"state": "solid",
     "behavior": [
@@ -361,7 +367,7 @@ elements.fairy_egg = {
     "burnTime":50,
 };
 elements.pure_water = {
-    "name": "pure water",
+    "name": "pure_water",
     "color": "#8099ff",
 	"state": "liquid",
     "behavior": [
@@ -413,7 +419,7 @@ elements.pure_steam = {
 };			
 elements.chilly_water = {
 	"mod": "Fey & More",
-    "name": "chilly water",
+    "name": "chilly_water",
     "color": "#4b78db",
 	"state": "liquid",
     "behavior": behaviors.LIQUID,
@@ -430,9 +436,9 @@ elements.chilly_water = {
     },
 };
 
-/*
-elements.liquid_light = {
-    "name": "liquid light",
+
+elements.liquid_light_old = {
+    "name": "liquid_light",
     "color": "#fffdde",
     "behavior": behaviors.LIQUID,
     "density": 1210,
@@ -453,7 +459,7 @@ elements.dustlight = {
     "behavior": behaviors.POWDER,
 	"density": 2800,
 	"tempHigh": 10,
-    "stateHigh": "liquid_light",
+    "stateHigh": "liquid_light_old",
     "tempLow": -100,
     "stateLow": "solid_light",
     "category": "land",
@@ -461,16 +467,16 @@ elements.dustlight = {
     "hidden": true,
 };
 elements.solid_light = {
-    "name": "solid light",
+    "name": "solid_light",
     "color": "#ffd375",
 	"density": 2800,
 	"state": "solid",
     "behavior": behaviors.WALL,
     "category": "solids",
 	"tempHigh": 100,
-    "stateHigh": "liquid_light"
+    "stateHigh": "liquid_light_old"
 };
-*/
+
 
 elements.gloomwind = {
     "name": "gloomwind",
@@ -558,7 +564,7 @@ elements.gloomfly = {
 	},
 };
 elements.meat_monster = {
-    "name": "meat monster",
+    "name": "meat_monster",
     "color": "#4a2222",
 	"state": "solid",
     "behavior": [
@@ -574,7 +580,7 @@ elements.meat_monster = {
     "hidden": true,
 };
 elements.rotten_ravager = {
-    "name": "rotten ravager",
+    "name": "rotten_ravager",
     "color": ["#617d31","#948e48","#85683d"],
 	"state": "solid",
     "behavior": [
@@ -590,7 +596,7 @@ elements.rotten_ravager = {
     "hidden": true,
 };
 elements.bone_beast = {
-    "name": "bone beast",
+    "name": "bone_beast",
     "color": "#a8a59b",
 	"state": "solid",
     "behavior": [
@@ -613,7 +619,7 @@ elements.unignited_pyrestone = {
     "stateHigh": "ignited_pyrestone",
 };
 elements.ignited_pyrestone = {
-    "name": "ignited pyrestone",
+    "name": "ignited_pyrestone",
     "color": "#8c6142",
 	"temp":150,
 	"state": "solid",
@@ -625,7 +631,7 @@ elements.ignited_pyrestone = {
     "hidden": true,
 };
 elements.heated_pyrestone = {
-	"name": "heated pyrestone",
+	"name": "heated_pyrestone",
     "color": "#803713",
 	"temp":400,
 	"state": "solid",
@@ -642,7 +648,7 @@ elements.heated_pyrestone = {
 };
 elements.burning_pyrestone = {
 	"mod": "Fey & More",
-    "name": "burning pyrestone",
+    "name": "burning_pyrestone",
     "color": "#7d2900",
 	"temp":750,
 	"state": "solid",
@@ -659,7 +665,7 @@ elements.burning_pyrestone = {
 };	
 elements.blazing_pyrestone = {
 	"mod": "Fey & More",
-    "name": "blazing pyrestone",
+    "name": "blazing_pyrestone",
     "color": "#612000",
 	"temp":1850,
 	"state": "solid",
@@ -676,7 +682,7 @@ elements.blazing_pyrestone = {
 };
 elements.fiery_pyrestone = {
 	"mod": "Fey & More",
-    "name": "fiery pyrestone",
+    "name": "fiery_pyrestone",
     "color": "#300b00",
 	"temp":3000,
 	"state": "solid",
@@ -700,7 +706,7 @@ elements.stardust = {
 	"density": 310,
 };
 elements.little_star = {
-    "name": "little star",
+    "name": "little_star",
     "color": ["#ffd7a3","#ffefdb"],
 	"temp":2500,
 	"state": "gas",
@@ -714,7 +720,7 @@ elements.little_star = {
     "hidden": true,
 };
 elements.red_dye = {
-    "name": "red dye",
+    "name": "red_dye",
     "color": "#bb0000",
 	"state": "solid",
     "behavior": [
@@ -730,7 +736,7 @@ elements.red_dye = {
 		},
 };
 elements.green_dye = {
-    "name": "green dye",
+    "name": "green_dye",
     "color": "#00bb00",
 	"state": "solid",
     "behavior": [
@@ -746,7 +752,7 @@ elements.green_dye = {
 	},
 };
 elements.blue_dye = {
-    "name": "blue dye",
+    "name": "blue_dye",
     "color": "#0000bb",
 	"state": "solid",
     "behavior": [
@@ -758,7 +764,7 @@ elements.blue_dye = {
     "category": "dyes",
 };
 elements.yellow_dye = {
-    "name": "yellow dye",
+    "name": "yellow_dye",
     "color": "#bbbb00",
 	"state": "solid",
     "behavior": [
@@ -770,7 +776,7 @@ elements.yellow_dye = {
     "category": "dyes",
 };
 elements.cyan_dye = {
-    "name": "cyan dye",
+    "name": "cyan_dye",
     "color": "#00bbbb",
 	"state": "solid",
     "behavior": [
@@ -782,7 +788,7 @@ elements.cyan_dye = {
     "category": "dyes",
 };
 elements.magenta_dye = {
-    "name": "magenta dye",
+    "name": "magenta_dye",
     "color": "#bb00bb",
 	"state": "solid",
     "behavior": [
@@ -794,7 +800,7 @@ elements.magenta_dye = {
     "category": "dyes",
 };
 elements.dye_cleaner = {
-    "name": "dye cleaner",
+    "name": "dye_cleaner",
     "color": "#bababa",
 	"state": "liquid",
     "behavior": [
@@ -807,7 +813,7 @@ elements.dye_cleaner = {
     "hidden": false,
 };
 elements.everfire_dust = {
-    "name": "everfire dust",
+    "name": "everfire_dust",
     "color": "#06142b",
 	"state": "solid",
     "behavior": behaviors.POWDER,
@@ -819,7 +825,7 @@ elements.everfire_dust = {
     "fireColor": ["#0041a8","#8ab7ff"],
 };
 elements.extinguished_everfire_dust = {
-    "name": "extinguished everfire dust",
+    "name": "extinguished_everfire_dust",
     "color": "#242d3b",
 	"state": "solid",
     "behavior": behaviors.POWDER,
@@ -831,7 +837,7 @@ elements.extinguished_everfire_dust = {
 elements.magic = {
 	"name": "magic",
     "color": ["#a270ff","#f2d9ff"],
-	"state": "energy",
+	"state": "gas",
     "behavior": [
         "M2|M1|M2",
         "M1|DL%10|M1",
@@ -853,7 +859,8 @@ elements.magic = {
 	},
 };
 elements.mystic_fire = {
-    "name": "mystic fire",
+    "name": "mystic_fire",
+	"state": "gas",
     "color": ["#5454ff","#2020d4","#5800c4"],
     "behavior": [
         "M2|M1 AND CR:mystic_fire%10|M2",
@@ -882,7 +889,7 @@ elements.frostwind = {
     "category": "gases",
 };		
 elements.magic_focus = {
-    "name": "magic focus",
+    "name": "magic_focus",
     "color": "#1f0042",
 	"state": "solid",
 	"behavior": [
@@ -1040,7 +1047,7 @@ elements.mithril = {
 	conduct: 1,
 };
 elements.poisonwater = {
-    "name": "poisonwater",
+    "name": "poisoned_water",
     "color": "#402f61",
 	"state": "liquid",
     "behavior": [
@@ -1239,6 +1246,7 @@ elements.concoction = {
 		"uranium": { "elem1": "toxic_mistake", "elem2": null, }, //toxic mistake
 		"radiation": { "elem1": "toxic_mistake", "elem2": null, }, //toxic mistake
 		"light": { "elem1": "liquid_light", "elem2": null, }, // liquid light
+		"neutron": { "elem1": "unknown", "elem2": null, }, //???????
 		
 		// Fey & More
 		"mystic_fire": { "elem1": "firesea", "elem2": null, }, // firesea
@@ -1639,7 +1647,7 @@ elements.swampland = {
 	],
 	category: "land",
 	reactions: {
-		//"light": { "elem2": "will_o_wisp" }
+		"light": { "elem2": "will_o_wisp" }
 	},
 },
 elements.swamp_water = {
@@ -1651,20 +1659,11 @@ elements.swamp_water = {
 	],
 	category: "liquids",
 	reactions: {
-		//"light": { "elem2": "will_o_wisp" }
+		"light": { "elem2": "will_o_wisp" }
 	},
 },
-/*elements.will_o_wisp = { // Element will be added when a related bug is fixed
-	color: ["#f2eeb3","#f2e3b3"],
-	behavior: [
-	"XX|M1|XX",
-	"XX|DL%1|XX",
-	"XX|XX|XX",
-	],
-	rotatable: false,
-	category: "energy",
-	hidden: true,
-},*/
+
+
 
 elements.sweetsauce = { // placeholder for future feature i'm still working on
 	color: ["#daedea", "#edeada"],
@@ -1675,4 +1674,31 @@ elements.sweetsauce = { // placeholder for future feature i'm still working on
     ],
 	hidden: true,
 	extraInfo: "This element is coming soon!"
+},
+
+
+
+elements.will_o_wisp = {
+	color: ["#f2eeb3","#f2e3b3"],
+	extraInfo: "This element is coming soon!",
+	behavior: behaviors.WILLOWISP,
+	category: "energy",
+		reactions: {
+		"mana": { "elem1": "null", "elem2": "helpful_will_o_wisp" },
+		"mistake": { "elem2": "unstable_mistake" }
+	},
+},
+
+
+elements.helpful_will_o_wisp = {
+	color: ["#ccfffe","#bdedff","#a1cdff"],
+	extraInfo: "This element is coming soon!",
+	behavior: behaviors.WILLOWISP,
+	category: "energy",
+		reactions: {
+		"mistake": { "elem2": "unstable_mistake" },
+		"unstable_mistake": { "elem2": "supernova" },
+		"rad_glass": { "elem1": "glass" },
+		"uranium": { "elem1": "lead" }
+	},
 }
