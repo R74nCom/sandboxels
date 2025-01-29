@@ -48,6 +48,18 @@
 + steel phasing drill
 + diamond phasing drill
 + void phasing drill
+
+	Version 2.2.0 (Temperature Drills)
+@NecroticPhantom
++ steel thermal drill
++ diamond thermal drill
++ void thermal drill
++ steel cryo drill
++ diamond cryo drill
++ void cryo drill
+~ swapped "molten_aluminum" for "molten_metal_scrap" in stateHigh for all drills
++ stateLow to all drills ("steel" for all steel drills, "diamond" for all diamond drills and "void" for all void drills (weren't proper frozen equivalents so represents drill tip after drill frozen so can't turn anymore))
++ tempLow to all drills (0 for most drills and -25000 for cryo drills (I know you can't go past -273, but having -25000 mirrors the 25000 tempHigh of the thermal drills, since thermal drills need to be heat resistant and cryo drills need to be cold resistant, and I like the symmetry))
 */
 
 
@@ -158,6 +170,21 @@ phasing_drill_function = function(pixel, dif_x, dif_y, current_element, current_
 
 
 
+// behaviours
+behaviors.THERMAL_DRILL = [
+	"XX|HT:1800|XX",
+	"HT:1800|XX|HT:1800",
+	"XX|HT:1800|XX",
+];
+
+behaviors.CRYO_DRILL = [
+	"XX|CO:1800|XX",
+	"CO:1800|XX|CO:1800",
+	"XX|CO:1800|XX",
+];
+
+
+
 // elements
 elements.steel_drill = {
 	color: "#71797e",
@@ -177,7 +204,9 @@ elements.steel_drill = {
 	category: "Drills",
 	breakInto: ["metal_scrap", "steel", "iron", "tin"],
 	tempHigh: 1455.5,
-	stateHigh: ["molten_aluminium", "molten_steel", "molten_iron", "molten_tin"],
+	stateHigh: ["molten_metal_scrap", "molten_steel", "molten_iron", "molten_tin"],
+	tempLow: 0,
+	stateLow: "steel",
 	density: 7850,
 	hardness: 0.8,
 	conduct: 0.42,
@@ -203,7 +232,9 @@ elements.diamond_drill = {
 	category: "Drills",
 	breakInto: ["metal_scrap", "diamond", "iron", "tin"],
 	tempHigh: 1455.5,
-	stateHigh: ["molten_aluminium", "diamond", "molten_iron", "molten_tin"],
+	stateHigh: ["molten_metal_scrap", "diamond", "molten_iron", "molten_tin"],
+	tempLow: 0,
+	stateLow: "diamond",
 	density: 3515,
 	hardness: 0.99,
 	conduct: 0.01,
@@ -229,7 +260,9 @@ elements.void_drill = {
 	category: "Drills",
 	breakInto: ["metal_scrap", "void", "iron", "tin"],
 	tempHigh: 1455.5,
-	stateHigh: ["molten_aluminium", "void", "molten_iron", "molten_tin"],
+	stateHigh: ["molten_metal_scrap", "void", "molten_iron", "molten_tin"],
+	tempLow: 0,
+	stateLow: "void",
 	density: 7850,
 	hardness: 1,
 	conduct: 0.01,
@@ -260,7 +293,9 @@ elements.steel_drill_missile = {
 	category: "Drills",
 	breakInto: ["metal_scrap", "steel", "iron", "tin"],
 	tempHigh: 1455.5,
-	stateHigh: ["molten_aluminium", "molten_steel", "molten_iron", "molten_tin"],
+	stateHigh: ["molten_metal_scrap", "molten_steel", "molten_iron", "molten_tin"],
+	tempLow: 0,
+	stateLow: "steel",
 	density: 7850,
 	hardness: 0.8,
 	conduct: 0.42,
@@ -291,7 +326,9 @@ elements.diamond_drill_missile = {
 	category: "Drills",
 	breakInto: ["metal_scrap", "diamond", "iron", "tin"],
 	tempHigh: 1455.5,
-	stateHigh: ["molten_aluminium", "diamond", "molten_iron", "molten_tin"],
+	stateHigh: ["molten_metal_scrap", "diamond", "molten_iron", "molten_tin"],
+	tempLow: 0,
+	stateLow: "diamond",
 	density: 3515,
 	hardness: 0.99,
 	conduct: 0.01,
@@ -322,7 +359,9 @@ elements.void_drill_missile = {
 	category: "Drills",
 	breakInto: ["metal_scrap", "void", "iron", "tin"],
 	tempHigh: 1455.5,
-	stateHigh: ["molten_aluminium", "void", "molten_iron", "molten_tin"],
+	stateHigh: ["molten_metal_scrap", "void", "molten_iron", "molten_tin"],
+	tempLow: 0,
+	stateLow: "void",
 	density: 7850,
 	hardness: 1,
 	conduct: 0.01,
@@ -348,7 +387,9 @@ elements.steel_reverse_drill = {
 	category: "Drills",
 	breakInto: ["metal_scrap", "steel", "iron", "tin"],
 	tempHigh: 1455.5,
-	stateHigh: ["molten_aluminium", "molten_steel", "molten_iron", "molten_tin"],
+	stateHigh: ["molten_metal_scrap", "molten_steel", "molten_iron", "molten_tin"],
+	tempLow: 0,
+	stateLow: "steel",
 	density: 7850,
 	hardness: 0.8,
 	conduct: 0.42,
@@ -374,7 +415,9 @@ elements.diamond_reverse_drill = {
 	category: "Drills",
 	breakInto: ["metal_scrap", "diamond", "iron", "tin"],
 	tempHigh: 1455.5,
-	stateHigh: ["molten_aluminium", "diamond", "molten_iron", "molten_tin"],
+	stateHigh: ["molten_metal_scrap", "diamond", "molten_iron", "molten_tin"],
+	tempLow: 0,
+	stateLow: "diamond",
 	density: 3515,
 	hardness: 0.99,
 	conduct: 0.01,
@@ -400,7 +443,9 @@ elements.void_reverse_drill = {
 	category: "Drills",
 	breakInto: ["metal_scrap", "void", "iron", "tin"],
 	tempHigh: 1455.5,
-	stateHigh: ["molten_aluminium", "void", "molten_iron", "molten_tin"],
+	stateHigh: ["molten_metal_scrap", "void", "molten_iron", "molten_tin"],
+	tempLow: 0,
+	stateLow: "void",
 	density: 7850,
 	hardness: 1,
 	conduct: 0.01,
@@ -442,7 +487,9 @@ elements.steel_phasing_drill = {
 	category: "Drills",
 	breakInto: ["metal_scrap", "steel", "iron", "tin"],
 	tempHigh: 1455.5,
-	stateHigh: ["molten_aluminium", "molten_steel", "molten_iron", "molten_tin"],
+	stateHigh: ["molten_metal_scrap", "molten_steel", "molten_iron", "molten_tin"],
+	tempLow: 0,
+	stateLow: "steel",
 	density: 7850,
 	hardness: 0.8,
 	conduct: 0.42,
@@ -484,7 +531,9 @@ elements.diamond_phasing_drill = {
 	category: "Drills",
 	breakInto: ["metal_scrap", "diamond", "iron", "tin"],
 	tempHigh: 1455.5,
-	stateHigh: ["molten_aluminium", "diamond", "molten_iron", "molten_tin"],
+	stateHigh: ["molten_metal_scrap", "diamond", "molten_iron", "molten_tin"],
+	tempLow: 0,
+	stateLow: "diamond",
 	density: 3515,
 	hardness: 0.99,
 	conduct: 0.01,
@@ -526,7 +575,183 @@ elements.void_phasing_drill = {
 	category: "Drills",
 	breakInto: ["metal_scrap", "void", "iron", "tin"],
 	tempHigh: 1455.5,
-	stateHigh: ["molten_aluminium", "void", "molten_iron", "molten_tin"],
+	stateHigh: ["molten_metal_scrap", "void", "molten_iron", "molten_tin"],
+	tempLow: 0,
+	stateLow: "void",
+	density: 7850,
+	hardness: 1,
+	conduct: 0.01,
+	state: "solid",
+	maxSize: 1,
+};
+
+elements.steel_thermal_drill = {
+	color: ["#71797e", "#ff7800"],
+	behavior: behaviors.THERMAL_DRILL,
+	properties: {
+		x_direction: 0,
+		y_direction: 0,
+	},
+	tick: function(pixel) {
+		if (pixel.x_direction == 0 && pixel.y_direction == 0) {
+			pixel.x_direction = Number(prompt("Move left, right or neither (Type: -1, 1 or 0 respectively)? "));
+			if (pixel.x_direction == 0) {
+				pixel.y_direction = Number(prompt("Move up or down (Type: -1 or 1 respectively)? "));
+			};
+		};
+		drill_function(pixel, pixel.x_direction, pixel.y_direction);
+	},
+	category: "Drills",
+	breakInto: ["metal_scrap", "steel", "iron", "tin"],
+	tempHigh: 25000,
+	stateHigh: ["molten_metal_scrap", "molten_steel", "molten_iron", "molten_tin"],
+	tempLow: 0,
+	stateLow: "steel",
+	density: 7850,
+	hardness: 0.8,
+	conduct: 0.42,
+	state: "solid",
+	maxSize: 1,
+};
+
+elements.diamond_thermal_drill = {
+	color: ["#03fcec", "#ff7800"],
+	behavior: behaviors.THERMAL_DRILL,
+	properties: {
+		x_direction: 0,
+		y_direction: 0,
+	},
+	tick: function(pixel) {
+		if (pixel.x_direction == 0 && pixel.y_direction == 0) {
+			pixel.x_direction = Number(prompt("Move left, right or neither (Type: -1, 1 or 0 respectively)? "));
+			if (pixel.x_direction == 0) {
+				pixel.y_direction = Number(prompt("Move up or down (Type: -1 or 1 respectively)? "));
+			};
+		};
+		drill_function(pixel, pixel.x_direction, pixel.y_direction);
+	},
+	category: "Drills",
+	breakInto: ["metal_scrap", "diamond", "iron", "tin"],
+	tempHigh: 25000,
+	stateHigh: ["molten_metal_scrap", "diamond", "molten_iron", "molten_tin"],
+	tempLow: 0,
+	stateLow: "diamond",
+	density: 3515,
+	hardness: 0.99,
+	conduct: 0.01,
+	state: "solid",
+	maxSize: 1,
+};
+
+elements.void_thermal_drill = {
+	color: ["#262626", "#ff7800"],
+	behavior: behaviors.THERMAL_DRILL,
+	properties: {
+		x_direction: 0,
+		y_direction: 0,
+	},
+	tick: function(pixel) {
+		if (pixel.x_direction == 0 && pixel.y_direction == 0) {
+			pixel.x_direction = Number(prompt("Move left, right or neither (Type: -1, 1 or 0 respectively)? "));
+			if (pixel.x_direction == 0) {
+				pixel.y_direction = Number(prompt("Move up or down (Type: -1 or 1 respectively)? "));
+			};
+		};
+		drill_function(pixel, pixel.x_direction, pixel.y_direction);
+	},
+	category: "Drills",
+	breakInto: ["metal_scrap", "void", "iron", "tin"],
+	tempHigh: 25000,
+	stateHigh: ["molten_metal_scrap", "void", "molten_iron", "molten_tin"],
+	tempLow: 0,
+	stateLow: "void",
+	density: 7850,
+	hardness: 1,
+	conduct: 0.01,
+	state: "solid",
+	maxSize: 1,
+};
+
+elements.steel_cryo_drill = {
+	color: ["#71797e", "#00ffff"],
+	behavior: behaviors.CRYO_DRILL,
+	properties: {
+		x_direction: 0,
+		y_direction: 0,
+	},
+	tick: function(pixel) {
+		if (pixel.x_direction == 0 && pixel.y_direction == 0) {
+			pixel.x_direction = Number(prompt("Move left, right or neither (Type: -1, 1 or 0 respectively)? "));
+			if (pixel.x_direction == 0) {
+				pixel.y_direction = Number(prompt("Move up or down (Type: -1 or 1 respectively)? "));
+			};
+		};
+		drill_function(pixel, pixel.x_direction, pixel.y_direction);
+	},
+	category: "Drills",
+	breakInto: ["metal_scrap", "steel", "iron", "tin"],
+	tempHigh: 1455.5,
+	stateHigh: ["molten_metal_scrap", "molten_steel", "molten_iron", "molten_tin"],
+	tempLow: -25000,
+	stateLow: "steel",
+	density: 7850,
+	hardness: 0.8,
+	conduct: 0.42,
+	state: "solid",
+	maxSize: 1,
+};
+
+elements.diamond_cryo_drill = {
+	color: ["#03fcec", "#00ffff"],
+	behavior: behaviors.CRYO_DRILL,
+	properties: {
+		x_direction: 0,
+		y_direction: 0,
+	},
+	tick: function(pixel) {
+		if (pixel.x_direction == 0 && pixel.y_direction == 0) {
+			pixel.x_direction = Number(prompt("Move left, right or neither (Type: -1, 1 or 0 respectively)? "));
+			if (pixel.x_direction == 0) {
+				pixel.y_direction = Number(prompt("Move up or down (Type: -1 or 1 respectively)? "));
+			};
+		};
+		drill_function(pixel, pixel.x_direction, pixel.y_direction);
+	},
+	category: "Drills",
+	breakInto: ["metal_scrap", "diamond", "iron", "tin"],
+	tempHigh: 1455.5,
+	stateHigh: ["molten_metal_scrap", "diamond", "molten_iron", "molten_tin"],
+	tempLow: -25000,
+	stateLow: "diamond",
+	density: 3515,
+	hardness: 0.99,
+	conduct: 0.01,
+	state: "solid",
+	maxSize: 1,
+};
+
+elements.void_cryo_drill = {
+	color: ["#262626", "#00ffff"],
+	behavior: behaviors.CRYO_DRILL,
+	properties: {
+		x_direction: 0,
+		y_direction: 0,
+	},
+	tick: function(pixel) {
+		if (pixel.x_direction == 0 && pixel.y_direction == 0) {
+			pixel.x_direction = Number(prompt("Move left, right or neither (Type: -1, 1 or 0 respectively)? "));
+			if (pixel.x_direction == 0) {
+				pixel.y_direction = Number(prompt("Move up or down (Type: -1 or 1 respectively)? "));
+			};
+		};
+		drill_function(pixel, pixel.x_direction, pixel.y_direction);
+	},
+	category: "Drills",
+	breakInto: ["metal_scrap", "void", "iron", "tin"],
+	tempHigh: 1455.5,
+	stateHigh: ["molten_metal_scrap", "void", "molten_iron", "molten_tin"],
+	tempLow: -25000,
+	stateLow: "void",
 	density: 7850,
 	hardness: 1,
 	conduct: 0.01,
