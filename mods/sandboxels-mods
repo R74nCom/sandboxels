@@ -1,0 +1,73 @@
+elements.magma_special = {
+    color: "#FF4400",
+    behavior: [
+        "XX|HT:10|XX",
+        "M2|XX|M2",
+        "M1|M1|M1"
+    ],
+    temp: 2000,
+    category: "liquids",
+    state: "liquid",
+    density: 2725,
+    conduct: 0.7,
+    viscosity: 100000,
+    description: "Super hot magma that spreads and heats surrounding elements.",
+    tempHigh: 3000,
+    stateHigh: "vaporized_rock",
+    tempLow: 700,
+    stateLow: "basalt"
+};
+
+runAfterLoad(function() {
+    if (enabledMods.includes("magmamagma.js")) {
+        console.log("Magma Magma mod loaded!");
+    }
+});elements.magma_special = {
+    color: "#FF4400",
+    behavior: [
+        "XX|HT:10|XX",
+        "M2|XX|M2",
+        "M1|M1|M1"
+    ],
+    temp: 2000,
+    category: "liquids",
+    state: "liquid",
+    density: 2725,
+    conduct: 0.7,
+    viscosity: 100000,
+    description: "Super hot magma that spreads and heats surrounding elements.",
+    tempHigh: 3000,
+    stateHigh: "vaporized_rock",
+    tempLow: 700,
+    stateLow: "basalt"
+};
+
+runAfterLoad(function() {
+    if (enabledMods.includes("magmamagma.js")) {
+        console.log("Magma Magma mod loaded!");
+    }
+});elements.magma_special = {
+    color: "#FF4400",
+    behavior: [
+        "XX|HT:10|XX",
+        "M2|XX|M2",
+        "M1|M1|M1"
+    ],
+    temp: 2000,
+    category: "liquids",
+    state: "liquid",
+    density: 2725,
+    conduct: 0.7,
+    viscosity: 100000,
+    description: "Super hot magma that spreads and heats surrounding elements.",
+    tempHigh: 3000,
+    stateHigh: "vaporized_rock",
+    tempLow: 700,
+    stateLow: "basalt"
+};
+
+runAfterLoad(function() {
+    if (enabledMods.includes("magmamagma.js")) {
+        console.log("Magma Magma mod loaded!");
+    }
+});
