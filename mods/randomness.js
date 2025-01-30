@@ -674,8 +674,8 @@ if(enabledMods.includes(libraryMod)) {
 			"XX|M1|XX",
 		],
 		burnInto: "ash",
-		burn:72,
-		burnTime:25,
+		burn: 72,
+		burnTime: 25,
 		density: 182,
 	};
 
