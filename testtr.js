@@ -9,7 +9,7 @@
 // If it is hosted somewhere else, you can use the full URL, including the HTTPS://.
 
 // Adding elements:
-elements.mayo = {
+elements.test = {
     color: "#ffffff",
     behavior: behaviors.LIQUID,
     category: "liquids",
