@@ -460,7 +460,7 @@ elements.fertilizer = {
     tempLow: 0,
 	stateLow: "frozen_fertilizer",
     category: "solids",
-    state: "liquid",
+    state: "solid",
     density: 1060,
     stain: 0.07
 },
@@ -563,3 +563,4 @@ elements.fartium = {
 		}
 	}
 }
+
