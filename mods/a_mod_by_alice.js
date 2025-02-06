@@ -2251,93 +2251,6 @@ td.inputCell {
 		  style.appendChild(document.createTextNode(css));
 		}
 
-		function showPropertySetter() {
-			var ps = document.getElementById("propertySetter");
-			if(ps) {
-				ps.style.display = "block"
-			}
-		};
-
-		function hidePropertySetter() {
-			var ps = document.getElementById("propertySetter");
-			if(ps) {
-				ps.style.display = "none"
-			}
-		};
-
-		function hideSetterColumn(type,index) {
-			//currently the only type is "numeric"
-			var heading = document.getElementById(`property${type}${index.toString()}headingcell`);
-			var input = document.getElementById(`property${type}${index.toString()}inputcell`);
-			heading.style.display = "none";
-			input.style.display = "none";
-		};
-
-		function showSetterColumn(type,index) {
-			var heading = document.getElementById(`property${type}${index.toString()}headingcell`);
-			var input = document.getElementById(`property${type}${index.toString()}inputcell`);
-			heading.style.display = "table-cell";
-			input.style.display = "table-cell";
-		};
-
-		function hideAllSetterColumnsOfType(type) {
-			var setter = document.getElementById("setterTable");
-			var headingsAndInputs = setter.querySelectorAll(`[id^="property${type}][id$="cell"]`);
-			headingsAndInputs.forEach(n => n.style.display = "none");
-		};
-
-		function hideAllSetterColumns() {
-			var setter = document.getElementById("setterTable");
-			var headingsAndInputs = setter.querySelectorAll(`[id^="property"][id$="cell"]`);
-			headingsAndInputs.forEach(n => n.style.display = "none");
-		};
-
-		howManySetters = 5;
-		var propertySetter = document.createElement("div");
-		propertySetter.setAttribute("id","propertySetter");
-		propertySetter.style.display = "none";
-			var newTable = document.createElement("table");
-			newTable.setAttribute("id","setterTable");
-			propertySetter.appendChild(newTable);
-				var labelRow = document.createElement("tr");
-				var inputRow = document.createElement("tr");
-				newTable.appendChild(labelRow);
-				newTable.appendChild(inputRow);
-				//NUMERIC SETTERS
-				for(var i = 0; i < howManySetters; i++) {
-					var newHeading = document.createElement("th");
-						newHeading.setAttribute("id",`propertynumeric${i.toString()}headingcell`);
-						var newHeadingText = document.createElement("span");
-							newHeadingText.classList.add("ps-heading");
-							newHeadingText.setAttribute("id",`propertynumeric${i.toString()}heading`);
-							newHeadingText.innerText = "None";
-							newHeading.appendChild(newHeadingText)
-							labelRow.appendChild(newHeading);
-					var newInputCell = document.createElement("td");
-						newInputCell.setAttribute("id",`propertynumeric${i.toString()}inputcell`);
-						newInputCell.classList.add("inputCell");
-						var newNumberField = document.createElement("input");
-							newNumberField.setAttribute("type","number");
-							newNumberField.value = "1";
-							newNumberField.setAttribute("set","none");
-							newNumberField.addEventListener("change", function() {
-								var property = this.getAttribute("set");
-								var parsedValue = parseFloat(this.value);
-								if(isNaN(parsedValue)) {
-									var newValue = (Math.max(parseFloat(this.getAttribute("min")),0));
-									this.value = newValue;
-									parsedValue = newValue
-								};
-								var value = parsedValue;
-								ambaPlaceProperties[property] = value
-							});
-							newNumberField.setAttribute("id",`propertynumeric${i.toString()}input`);
-							newNumberField.classList.add("ps-number");
-							newInputCell.appendChild(newNumberField)
-							inputRow.appendChild(newInputCell);
-				};
-		//document.getElementById("colorSelector").after(propertySetter);
-
 		ambaPlaceProperties = {
 			blackHoleRange: 15,
 			whiteHoleRange: 15,
@@ -2358,9 +2271,6 @@ td.inputCell {
 			noteBlockVolume: 1,
 			noteBlockDelay: 0
 		};
-
-		hidePropertySetter();
-		hideAllSetterColumns();
 
 	//COLOR MANIPULATION TOOLS ##
 		var colorToolCounter = 0;
@@ -4149,6 +4059,96 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					quickSlDetectorLastKeys = [];
 				};
 			})
+
+			howManySetters = 5;
+			var propertySetter = document.createElement("div");
+			propertySetter.setAttribute("id","propertySetter");
+			propertySetter.style.display = "none";
+				var newTable = document.createElement("table");
+				newTable.setAttribute("id","setterTable");
+				propertySetter.appendChild(newTable);
+					var labelRow = document.createElement("tr");
+					var inputRow = document.createElement("tr");
+					newTable.appendChild(labelRow);
+					newTable.appendChild(inputRow);
+					//NUMERIC SETTERS
+					for(var i = 0; i < howManySetters; i++) {
+						var newHeading = document.createElement("th");
+							newHeading.setAttribute("id",`propertynumeric${i.toString()}headingcell`);
+							var newHeadingText = document.createElement("span");
+								newHeadingText.classList.add("ps-heading");
+								newHeadingText.setAttribute("id",`propertynumeric${i.toString()}heading`);
+								newHeadingText.innerText = "None";
+								newHeading.appendChild(newHeadingText)
+								labelRow.appendChild(newHeading);
+						var newInputCell = document.createElement("td");
+							newInputCell.setAttribute("id",`propertynumeric${i.toString()}inputcell`);
+							newInputCell.classList.add("inputCell");
+							var newNumberField = document.createElement("input");
+								newNumberField.setAttribute("type","number");
+								newNumberField.value = "1";
+								newNumberField.setAttribute("set","none");
+								newNumberField.addEventListener("change", function() {
+									var property = this.getAttribute("set");
+									var parsedValue = parseFloat(this.value);
+									if(isNaN(parsedValue)) {
+										var newValue = (Math.max(parseFloat(this.getAttribute("min")),0));
+										this.value = newValue;
+										parsedValue = newValue
+									};
+									var value = parsedValue;
+									ambaPlaceProperties[property] = value
+								});
+								newNumberField.setAttribute("id",`propertynumeric${i.toString()}input`);
+								newNumberField.classList.add("ps-number");
+								newInputCell.appendChild(newNumberField)
+								inputRow.appendChild(newInputCell);
+					};
+			//document.getElementById("colorSelector").after(propertySetter);
+
+			function showPropertySetter() {
+				var ps = document.getElementById("propertySetter");
+				if(ps) {
+					ps.style.display = "block"
+				}
+			};
+
+			function hidePropertySetter() {
+				var ps = document.getElementById("propertySetter");
+				if(ps) {
+					ps.style.display = "none"
+				}
+			};
+
+			function hideSetterColumn(type,index) {
+				//currently the only type is "numeric"
+				var heading = document.getElementById(`property${type}${index.toString()}headingcell`);
+				var input = document.getElementById(`property${type}${index.toString()}inputcell`);
+				heading.style.display = "none";
+				input.style.display = "none";
+			};
+
+			function showSetterColumn(type,index) {
+				var heading = document.getElementById(`property${type}${index.toString()}headingcell`);
+				var input = document.getElementById(`property${type}${index.toString()}inputcell`);
+				heading.style.display = "table-cell";
+				input.style.display = "table-cell";
+			};
+
+			function hideAllSetterColumnsOfType(type) {
+				var setter = document.getElementById("setterTable");
+				var headingsAndInputs = setter.querySelectorAll(`[id^="property${type}][id$="cell"]`);
+				headingsAndInputs.forEach(n => n.style.display = "none");
+			};
+
+			function hideAllSetterColumns() {
+				var setter = document.getElementById("setterTable");
+				var headingsAndInputs = setter.querySelectorAll(`[id^="property"][id$="cell"]`);
+				headingsAndInputs.forEach(n => n.style.display = "none");
+			};
+
+			hidePropertySetter();
+			hideAllSetterColumns();
 		};
 
 	//MORE CONFIGURABLE EXPLOSIONS (explodeAtPlus) ##
@@ -9371,7 +9371,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				p0h.innerText = "Radius";
 			};
 		},
-		onUnselect: hidePropertySetter,
+		onUnselect: function() {
+			hideAllSetterColumns();
+			hidePropertySetter
+		},
 		hoverStat: (pixel => `r = ${(pixel.range?.toString() ?? "??")}`),
 		tick: function(pixel) {
 			pixel.color = _cc.w.r;
