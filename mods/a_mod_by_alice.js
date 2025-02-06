@@ -1,6 +1,6 @@
 var modName = "mods/../a_mod_by_alice.js" //can't do "alice's mod" because the apostrophe will fuck up code, be too confusing, or both
 //Version ω0.0 [Preliminary Revival]
-var dependencies = ["mods/libhooktick.js", "mods/chem.js", "mods/minecraft.js", "mods/Neutronium Mod.js", "mods/CrashTestDummy.js", "mods/fey_and_more.js", "mods/velocity.js", "mods/ketchup_mod.js", "mods/moretools.js", "mods/aChefsDream.js", "mods/nousersthings.js"];  //thanks to mollthecoder, PlanetN9ne, StellarX20 (3), MelecieDiancie, R74n, Nubo318, Sightnado, SquareScreamYT, and NoUsernameFound
+var dependencies = ["mods/libhooktick.js", "mods/chem.js", "mods/minecraft.js", "mods/Neutronium Mod.js", "mods/fey_and_more.js", "mods/velocity.js", "mods/ketchup_mod.js", "mods/moretools.js", "mods/aChefsDream.js", "mods/nousersthings.js"];  //thanks to mollthecoder, PlanetN9ne, StellarX20 (3), MelecieDiancie, R74n, Nubo318, Sightnado, SquareScreamYT, and NoUsernameFound
 var dependencyExistence = dependencies.map(x => enabledMods.includes(x));
 var allDependenciesExist = dependencyExistence.reduce(function(a,b) { return a && b });
 //console.log(allDependenciesExist);
@@ -40113,6 +40113,16 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 			};
 		};
+
+		//CrashTestDummy.js removed mod?
+		elements.sandreplacer = {
+			color: "#ff80ff",
+			tool: function(pixel) {
+				pixel.element = "sand"
+			},
+			category: "tools",
+		};
+		
 		elements.sandreplacer.behavior = [
 			"CH:sand|CH:sand|CH:sand",
 			"CH:sand|XX|CH:sand",
