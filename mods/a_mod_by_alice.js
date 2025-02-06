@@ -3286,7 +3286,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 
 		gameCanvas = document.getElementById("game");
 		canvas = document.getElementById("game");
-		ctx = gameCanvas.getContext("2d");
+		ctx = gameCanvas?.getContext?.("2d");
+		if(!ctx) { window.addEventListener("load",function() {
+			ctx = gameCanvas.getContext("2d")
+		})}
 
 		function setCanvasWidthAndHeight(ctx) {
 			if (window.innerWidth < 700) {
