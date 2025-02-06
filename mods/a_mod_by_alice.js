@@ -4104,7 +4104,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 								newInputCell.appendChild(newNumberField)
 								inputRow.appendChild(newInputCell);
 					};
-			//document.getElementById("colorSelector").after(propertySetter);
+			document.getElementById("colorSelector").after(propertySetter);
 
 			function showPropertySetter() {
 				var ps = document.getElementById("propertySetter");
@@ -4146,6 +4146,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				var headingsAndInputs = setter.querySelectorAll(`[id^="property"][id$="cell"]`);
 				headingsAndInputs.forEach(n => n.style.display = "none");
 			};
+
+			console.log(document.getElementById("setterTable"));
 
 			hidePropertySetter();
 			hideAllSetterColumns();
@@ -45257,6 +45259,9 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 		},50)
 		//aChefsDream fix: (re-)define juice reactions
 		elements.juice.reactions ??= {};
+		runAfterLoad(function() {
+			elements.juice.reactions ??= {}
+		});
 
 		gigadebugMode = false; //fights every-tick log spam by limiting each message to being logged 50 times
 		if(gigadebugMode) {
