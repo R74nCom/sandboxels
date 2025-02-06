@@ -2336,7 +2336,7 @@ td.inputCell {
 							newInputCell.appendChild(newNumberField)
 							inputRow.appendChild(newInputCell);
 				};
-		document.getElementById("colorSelector").after(propertySetter);
+		//document.getElementById("colorSelector").after(propertySetter);
 
 		ambaPlaceProperties = {
 			blackHoleRange: 15,
