@@ -1,39 +1,47 @@
-const SETTINGS = {
-    initialHour: 4,
-    useRealTime: false,
-    hoursPerTick: 0.01,
-};
+if (!enabledMods.includes("mods/betterSettings.js")) { enabledMods.unshift("mods/betterSettings.js"); localStorage.setItem("enabledMods", JSON.stringify(enabledMods)); window.location.reload() };
 
-var hour = SETTINGS.initialHour;
+var sky_settingsTab = new SettingsTab("Sky");
+
+var realtime_setting = new Setting("Use real life time for sky", "real_time", settingType.BOOLEAN, false, defaultValue=true);
+var initial_hour_setting = new Setting("Initial hour", "initial_hour", settingType.NUMBER, false, defaultValue=8);
+var ticks_per_hour_setting = new Setting("Ticks per hour", "ticks_per_hour", settingType.NUMBER, false, defaultValue=150);
+
+sky_settingsTab.registerSettings("Real time", realtime_setting);
+sky_settingsTab.registerSettings("Initial hour", initial_hour_setting);
+sky_settingsTab.registerSettings("Ticks per hour", ticks_per_hour_setting);
+
+settingsManager.registerTab(sky_settingsTab);
+
+var hour = initial_hour_setting.value;
 
 function lerpColor(start, end, t) {
     return start.map((s, i) => Math.round(s + (end[i] - s) * t));
 }
 
 function getSkyColors(hour) {
-    const SKY_COLOR_PAIRS = [
-        [[10, 10, 25], [5, 5, 15]],         // Midnight
-        [[20, 20, 40], [15, 15, 30]],       // Late night
-        [[255, 153, 102], [60, 50, 100]],   // Dawn
-        [[180, 220, 250], [135, 206, 250]], // Morning
-        [[220, 250, 255], [80, 170, 255]],  // Noon
-        [[210, 240, 255], [90, 180, 255]],  // Afternoon
-        [[255, 100, 80], [255, 130, 100]],  // Sunset
-        [[30, 10, 25], [15, 5, 15]],        // Early night
-        [[10, 10, 25], [5, 5, 15]],         // Midnight loop
-    ];
+  const SKY_COLOR_PAIRS = [
+    [[0, 0, 15], [0, 0, 30]], // midnight
+    [[10, 10, 40], [20, 20, 60]],
+    [[255, 100, 50], [255, 150, 100]],
+    [[135, 206, 235], [180, 230, 255]],
+    [[135, 206, 250], [135, 206, 255]],
+    [[135, 206, 250], [120, 190, 240]],
+    [[255, 150, 100], [120, 70, 70]],
+    [[30, 15, 60], [20, 10, 40]],
+    [[0, 0, 15], [0, 0, 30]], // midnight
+  ];
 
-	// Find nearest sky colors and interpolate
-    const index = Math.floor(hour / 3);
-    const t = (hour % 3) / 3;
+  // Determine the interval (each interval is 3 hours)
+  const index = Math.floor(hour / 3);
+  const t = (hour % 3) / 3;
 
-    const [bottomStart, topStart] = SKY_COLOR_PAIRS[index];
-    const [bottomEnd, topEnd] = SKY_COLOR_PAIRS[index + 1];
+  const [bottomStart, topStart] = SKY_COLOR_PAIRS[index];
+  const [bottomEnd, topEnd] = SKY_COLOR_PAIRS[index + 1];
 
-    return {
-        skyTop: `rgb(${lerpColor(topStart, topEnd, t).join(", ")})`,
-        skyBottom: `rgb(${lerpColor(bottomStart, bottomEnd, t).join(", ")})`,
-    };
+  return {
+    skyTop: `rgb(${lerpColor(topStart, topEnd, t).join(", ")})`,
+    skyBottom: `rgb(${lerpColor(bottomStart, bottomEnd, t).join(", ")})`,
+  };
 }
 
 function renderSky(ctx) {
@@ -48,11 +56,11 @@ function renderSky(ctx) {
 }
 
 function updateDayTime() {
-    if (SETTINGS.useRealTime) {
+    if (realtime_setting.value) {
         const now = new Date();
         hour = now.getHours() + now.getMinutes() / 60;
     } else {
-        hour = (hour + SETTINGS.hoursPerTick) % 24; // Keep within 0-23
+        hour = (hour + (1 / ticks_per_hour_setting.value)) % 24; // Keep within 0-23
     }
 }
 
@@ -70,7 +78,7 @@ function initializeCanvas() {
     const resizeCanvas = autoResizeCanvas;
     autoResizeCanvas = (clear) => {
         resizeCanvas(clear);
-        hour = SETTINGS.initialHour;
+        hour = initial_hour_setting.value;
     };
 }
 
