@@ -1,5 +1,5 @@
 var modName = "mods/../a_mod_by_alice.js" //can't do "alice's mod" because the apostrophe will fuck up code, be too confusing, or both
-//Version ω0.0 [Preliminary Revival]
+//Version ω0.1_pre-2 [Preliminary Revival] (Zircon pre-release-2)
 var dependencies = ["mods/libhooktick.js", "mods/chem.js", "mods/minecraft.js", "mods/Neutronium Mod.js", "mods/fey_and_more.js", "mods/velocity.js", "mods/ketchup_mod.js", "mods/moretools.js", "mods/aChefsDream.js", "mods/nousersthings.js"];  //thanks to mollthecoder, PlanetN9ne, StellarX20 (3), MelecieDiancie, R74n, Nubo318, Sightnado, SquareScreamYT, and NoUsernameFound
 var dependencyExistence = dependencies.map(x => enabledMods.includes(x));
 var allDependenciesExist = dependencyExistence.reduce(function(a,b) { return a && b });
@@ -26077,7 +26077,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								pixel.color = pixelColorPick(pixel,blueZirconColors)
 							} else if(pixel.heatTreated = 2) {
 								pixel.color = pixelColorPick(pixel,goldenZirconColors)
-							}
+							};
 						},
 						tempHigh: 2100,
 						behavior: behaviors.POWDER,
@@ -40204,8 +40204,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 			if (elements[pixel.element].alpha) {
 				pixel.alpha = elements[pixel.element].alpha
 			}
-			if(pixel.onUnpaint) {
-				pixel.onUnpaint(pixel)
+			if(elements[pixel.element].onUnpaint) {
+				elements[pixel.element].onUnpaint(pixel)
 			}
 		};
 		elements.unpaint.tick = function(pixel) {
