@@ -1,5 +1,5 @@
 var modName = "mods/../a_mod_by_alice.js" //can't do "alice's mod" because the apostrophe will fuck up code, be too confusing, or both
-//Version ω0.1_pre-2 [Preliminary Revival] (Zircon pre-release-2)
+//Version ω0.1 [Cubic zirconia update]
 var dependencies = ["mods/libhooktick.js", "mods/chem.js", "mods/minecraft.js", "mods/Neutronium Mod.js", "mods/fey_and_more.js", "mods/velocity.js", "mods/ketchup_mod.js", "mods/moretools.js", "mods/aChefsDream.js", "mods/nousersthings.js"];  //thanks to mollthecoder, PlanetN9ne, StellarX20 (3), MelecieDiancie, R74n, Nubo318, Sightnado, SquareScreamYT, and NoUsernameFound
 var dependencyExistence = dependencies.map(x => enabledMods.includes(x));
 var allDependenciesExist = dependencyExistence.reduce(function(a,b) { return a && b });
@@ -18337,12 +18337,35 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			hardness: 0.5,
 		},
 		newPowder("zirconia",["#F0ECDB","#FBF8EC"],5680,2715)
-		elements.solid_zirconia = newPowder("zirconia",["#F0ECDB","#FBF8EC"],5680,2715,null,"zirconia",0.85,true)
+		elements.solid_zirconia = newPowder("zirconia",["#F0ECDB","#FBF8EC"],5680,2715,null,"zirconia",0.85,true);
+		elements.molten_magnesium ??= {}; elements.molten_magnesium.tempHigh = 1090;
 		elements.molten_zirconia = {
 			tempHigh: 4300,
 			viscosity: 13,
 			density: 4700, //https://pmc.ncbi.nlm.nih.gov/articles/PMC6658727/#:~:text=The%20density%20of%20liquid%20ZrO2%20was%20found%20to%20be,mPa%20at%20its%20melting%20point. it's surprising that someone could be arsed to measure it, even more so with the whole extremely high temperature thing
-			stateLow: "solid_zirconia"
+			stateLow: "solid_zirconia",
+			reactions: {
+				"calcium": { elem1: "cubic_zirconia_solution", elem2: ["calcium","calcium","calcium","calcium",null], tempMin: 2760 },
+				"molten_calcium": { elem1: "cubic_zirconia_solution", elem2: ["molten_calcium","molten_calcium","molten_calcium","molten_calcium",null], tempMin: 2760 },
+				"vaporized_calcium": { elem1: "cubic_zirconia_solution", elem2: ["vaporized_calcium","vaporized_calcium","vaporized_calcium","vaporized_calcium",null], tempMin: 2760 },
+				"magnesium": { elem1: "cubic_zirconia_solution", elem2: ["magnesium","magnesium","magnesium","magnesium",null], tempMin: 2760 },
+				"molten_magnesium": { elem1: "cubic_zirconia_solution", elem2: ["molten_magnesium","molten_magnesium","molten_magnesium","molten_magnesium",null], tempMin: 2760 },
+				"magnesium_gas": { elem1: "cubic_zirconia_solution", elem2: ["magnesium_gas","magnesium_gas","magnesium_gas","magnesium_gas",null], tempMin: 2760 }
+			}
+		};
+		runAfterAutogen(function() {
+			elements.cubic_zirconia_solution = JSON.parse(JSON.stringify(elements.molten_zirconia));
+			elements.cubic_zirconia_solution.stateLow = "cubic_zirconia"
+		});
+		elements.cubic_zirconia = {
+			color: ["#03FCEC","#03C6FC","#B3EEFF","#8AB0E6","#03FCEC","#03C6FC","#B3EEFF","#8AB0E6","#5EF5C5","#88BBEE","#D0AAEF","#E9BECE","#FECC98","#F8F894"],
+			behavior: behaviors.POWDER,
+			category: "powders",
+			state: "solid",
+			density: 5800,
+			hardness: 0.8,
+			tempHigh: elements.zirconia.tempHigh,
+			stateHigh: "molten_zirconia"
 		};
 		elements.molten_zircon = {
 			density: 5803,
