@@ -1348,15 +1348,15 @@ try {
 				return (isEmpty(pixel.x+1,pixel.y) || isEmpty(pixel.x-1,pixel.y) || isEmpty(pixel.x,pixel.y+1) || isEmpty(pixel.x,pixel.y-1));
 			};
 
-			function tryTarnish(pixel,element,chance) {
+			function tryTarnish(pixel,element,chance,changeTemp=true) {
 				if(exposedToAir(pixel)) {
 					if(Array.isArray(element)) {
 						if(Math.random() < chance) {
-							changePixel(pixel,randomChoice(element));
+							changePixel(pixel,randomChoice(element),changeTemp);
 						};
 					} else {
 						if(Math.random() < chance) {
-							changePixel(pixel,element);
+							changePixel(pixel,element,changeTemp);
 						};
 					};
 				};
@@ -2803,7 +2803,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 							} else {
 								rgbs.push(c);
 								rgbos.push(convertColorFormats(c,"json"));
-								console.log(key,rgbs,rgbos)
+								//console.log(key,rgbs,rgbos)
 							}
 						}
 						elements[key].color = rgbs;
@@ -5536,7 +5536,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		});
 	//CONFIGURABLE MAXIMUM COLOR OFFSET (maxColorOffset) ##
 		defaultColorOffset = 15;
-				pixelColorPick = function(pixel,customColor=null,maxOffset=null,dontForceColorsToNulls=false) {
+			pixelColorPick = function(pixel,customColor=null,maxOffset=null) {
 				var element = pixel.element;
 				var elementInfo = elements[element];
 				//if (elementInfo.behavior instanceof Array) {
@@ -5544,9 +5544,10 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					customColor = elementInfo.colorOn;
 				}
 				if (customColor !== null) {
-					if (Array.isArray(customColor)) {
+					while (Array.isArray(customColor)) {
 						customColor = customColor[Math.floor(Math.random() * customColor.length)];
-					} else if (customColor.startsWith?.("#")) {
+					};
+					if (customColor.startsWith?.("#")) {
 						customColor = hexToRGB(customColor);
 					}
 					var rgb = customColor;
@@ -5559,46 +5560,22 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					}
 				}
 				// Randomly darken or lighten the RGB color
-					//try maxOffset parameter, then info maxColorOffset, then default 15
-				var offsetAmount;
-				if(maxOffset !== null) {
-					offsetAmount = maxOffset;
-				} else {
-					offsetAmount = elementInfo?.maxColorOffset ?? defaultColorOffset;
-				};
-				if(typeof(rgb) !== "object") { rgb = convertColorFormats(rgb,"json") }; //somehow rgb can be a hex triplet even though it's pulled from the f*cking JSON color object and there's no logical way that that should be able to happen
-				var maxColorOffset = Math.floor(Math.random() * (Math.random() > 0.5 ? -1 : 1) * Math.random() * offsetAmount);
-				var maxRepickTries = 10;
-				var repickTries = 0;
-				var rgbWasNull = (rgb === null);
-				if(rgb == null || (typeof(rgb?.r) !== "number") || (typeof(rgb?.g) !== "number") || (typeof(rgb?.b) !== "number")) {
-					//console.log(pixel.element,pixel.color,"\n",rgb,customColor,Array.isArray(elementInfo.colorObject) ? elementInfo.colorObject.indexOf(rgb) : elementInfo.colorObject);
-					//this SHOULDN'T be necessary but SOMEHOW IT IS
-					while(rgb == null && repickTries < maxRepickTries) {
-						var color_also_fxck_you = elementInfo.colorObject;
-						while(Array.isArray(color_also_fxck_you)) { color_also_fxck_you = randomChoice(color_also_fxck_you) };
-						rgb = color_also_fxck_you
-					};
-					//console.log(pixel.element,pixel.color,rgb,customColor);
-				};
-				var r = rgb.r + maxColorOffset;
-				var g = rgb.g + maxColorOffset;
-				var b = rgb.b + maxColorOffset;
+					//try vanilla grain paremeter, then info.maxColorOffset, then default 15
+				let grain = maxOffset ?? settings.defaultColorOffset ?? 15;
+				if (elementInfo.grain !== undefined) {
+					grain = grain * elementInfo.grain
+				} else if(elementInfo.maxOffset) {
+					grain = elementInfo.maxOffset
+				}
+				let coloroffset = Math.floor(Math.random() * (Math.random() > 0.5 ? -1 : 1) * Math.random() * grain);
+				let r = rgb.r + coloroffset;
+				let g = rgb.g + coloroffset;
+				let b = rgb.b + coloroffset;
 				// Make sure the color is within the RGB range
 				r = Math.max(0, Math.min(255, r));
 				g = Math.max(0, Math.min(255, g));
 				b = Math.max(0, Math.min(255, b));
-				var color = "rgb("+r+","+g+","+b+")";
-				/*}
-				else {
-					var color = elementInfo.color;
-					if (Array.isArray(color)) {
-						color = color[Math.floor(Math.random() * color.length)];
-					}
-				}*/
-				if((!dontForceColorsToNulls) && rgbWasNull && rgb !== null) {
-					pixel.color = convertColorFormats(rgb,"rgb")
-				};
+				let color = "rgb("+r+","+g+","+b+")";
 				return color;
 			}
 	//FIND MODE AND PIXEL PROPERTIES LINKED TO SPECIAL CODE (acid_and_shapes.js functionality removed) ##
@@ -18359,9 +18336,18 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			conduct: 0.19,
 			hardness: 0.5,
 		},
-		elements.molten_zirconium = {
+		newPowder("zirconia",["#F0ECDB","#FBF8EC"],5680,2715)
+		elements.solid_zirconia = newPowder("zirconia",["#F0ECDB","#FBF8EC"],5680,2715,null,"zirconia",0.85,true)
+		elements.molten_zirconia = {
+			tempHigh: 4300,
+			viscosity: 13,
+			density: 4700, //https://pmc.ncbi.nlm.nih.gov/articles/PMC6658727/#:~:text=The%20density%20of%20liquid%20ZrO2%20was%20found%20to%20be,mPa%20at%20its%20melting%20point. it's surprising that someone could be arsed to measure it, even more so with the whole extremely high temperature thing
+			stateLow: "solid_zirconia"
+		};
+		elements.molten_zircon = {
 			density: 5803,
-			tempHigh: 4409,
+			tempHigh: 2800,
+			stateHigh: ["molten_zirconia","silica_gas"],
 			behavior: behaviors.MOLTEN,
 			onTryMoveInto: function(pixel,otherPixel) {
 				neutronAbsorbency(pixel,otherPixel);
@@ -18369,6 +18355,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			tick: function(pixel) {
 				neutronMovement(pixel,zirconoids);
 			},
+			
 		};
 		elements.zirconium_gas = {
 			density: 3, //Unknown/Unmeasured value
@@ -18383,19 +18370,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		elements.neutron.state = "gas";
 		elements.neutron.ignoreAir = "true";
 		neighbors = [[-1,0],[0,-1],[1,0],[0,1]]
-		function tryTarnish(pixel,element,chance) {
-			if(exposedToAir(pixel)) {
-				if(Array.isArray(element)) {
-					if(Math.random() < chance) {
-						changePixel(pixel,randomChoice(element))
-					}
-				} else {
-					if(Math.random() < chance) {
-						changePixel(pixel,element)
-					}
-				}
-			}
-		}
 		//Non-element: Liquid ammonia
 		elements.liquid_ammonia = {
 			color: "#bab6a9",
@@ -21745,19 +21719,22 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						return array1.concat(array2)
 					};
 				//Powder maker
-				function newPowder(name,color,density=null,tempHigh=null,stateHigh=null,breakInto=null) { //boilerplate my dick
+				function newPowder(name,color,density=null,tempHigh=null,stateHigh=null,breakInto=null,hardness=null,itsActuallySolidNotPowderLol=false) { //boilerplate my dick
 					if(tempHigh == null) {
 						stateHigh = null;
 					};
 					elements[name] = {
+						behavior: itsActuallySolidNotPowderLol ? behaviors.WALL : behaviors.POWDER,
 						color: color,
-						behavior: behaviors.POWDER,
 						category: "solids",
 						state: "solid",
 						density: density ?? 1000,
 					};
 					if(tempHigh !== null) {
 						elements[name].tempHigh = tempHigh;
+					};
+					if(hardness !== null) {
+						elements[name].hardness = hardness;
 					};
 					if(tempHigh !== null && stateHigh !== null) {
 						elements[name].stateHigh = stateHigh;
@@ -23547,21 +23524,103 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							};
 						};
 					};
-					newPowder("silica","#faf9f0",2196,1713).hardness = 0.7;
+					let _s = newPowder("silicon",["#D7DDDF","#999FA1","#7A7E80","#535657"],2330,1414); _s.hardness = 0.7; _s.tick = function(pixel) {
+						if(pixel.temp >= 700) {
+							tryTarnish(pixel,"silica",0.02,false);
+						}
+					};
+					elements.molten_silicon = {
+						tempHigh: 3265,
+						density: 2520,
+						viscosity: 1,
+						behavior: behaviors.MOLTEN,
+						tick: function(pixel) {
+							tryTarnish(pixel,"silica",0.02,false);
+							pixelTempCheck(pixel);
+						},
+						reactions: {
+							oxygen: { elem1: ["molten_silicon","silica"], elem2: null, minTemp: 700 },
+							liquid_oxygen: { elem1: ["molten_silicon","silica"], elem2: ["liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen",null], minTemp: 700 }, //real ratio is 862:1
+							oxygen_ice: { elem1: ["molten_silicon","silica"], elem2: ["liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen",null], minTemp: 700 }
+						}
+					},
+					newPowder("silica","#faf9f0",2202,1713).hardness = 0.7;
+					elements.glass.alpha = 0.6;
+					elements.fused_silica = {
+						color: "#F8F5ED",
+						alpha: 0.5,
+						renderer: renderPresets.BORDER,
+						behavior: behaviors.WALL,
+						reactions: {
+							"radiation": { elem1:"rad_glass", chance:0.33 },
+							"rad_steam": { elem1:"rad_glass", elem2:null, chance:0.33 },
+							"fallout": { elem1:"rad_glass", elem2:"radiation", chance:0.1 }
+						},
+						tempHigh: 1713,
+						stateHigh: "molten_silica",
+						hardness: 0.72,
+						category: "solids",
+						state: "solid",
+						density: 2202,
+						breakInto: "silica",
+						noMix: true,
+						grain: 0
+					};
 					elements.silica.reactions = {
-						intermediate_felsic_magma: { elem1: "felsic_magma", elem2: "felsic_magma", chance: 0.9 },
-						intermediate_magma: { elem1: "intermediate_felsic_magma", elem2: "intermediate_felsic_magma", chance: 0.9 },
-						magma: { elem1: "intermediate_magma", elem2: "intermediate_felsic_magma", chance: 0.9 },
-						ultramafic_magma: { elem1: "magma", elem2: "magma", chance: 0.9 },
+						ultramafic_magma: { elem1:[
+							"silica","silica","silica","silica","silica",
+							"silica","silica","silica","silica","silica",
+							"silica","silica","silica","silica","silica",
+							"silica","silica","silica","silica",null //the range of silica content from ultramafic to felsic is about 20%; this regarded as 4 even steps on top of ultramafic magma for simplicity's sake gives 5% or 1/20
+						], elem2: "magma", "chance":0.1 },
+						magma: { elem1:[
+							"silica","silica","silica","silica","silica",
+							"silica","silica","silica","silica","silica",
+							"silica","silica","silica","silica","silica",
+							"silica","silica","silica","silica",null
+						], elem2: "intermediate_magma", "chance":0.09 },
+						intermediate_magma: { elem1:[
+							"silica","silica","silica","silica","silica",
+							"silica","silica","silica","silica","silica",
+							"silica","silica","silica","silica","silica",
+							"silica","silica","silica","silica",null
+						], elem2: "intermediate_felsic_magma", "chance":0.08 },
+						intermediate_felsic_magma: { elem1:[
+							"silica","silica","silica","silica","silica",
+							"silica","silica","silica","silica","silica",
+							"silica","silica","silica","silica","silica",
+							"silica","silica","silica","silica",null
+						], elem2: "felsic_magma", "chance":0.07 },
 					};
 					elements.molten_silica = {
 						tempHigh: 2950,
-						viscosity: 1e14, //idk lol
+						viscosity: 2000000000, //2e7 centiPoise
+						stateLow: "fused_silica",
 						reactions: {
-							intermediate_felsic_magma: { elem1: "felsic_magma", elem2: "felsic_magma", chance: 0.9 },
-							intermediate_magma: { elem1: "intermediate_felsic_magma", elem2: "intermediate_felsic_magma", chance: 0.9 },
-							magma: { elem1: "intermediate_magma", elem2: "intermediate_felsic_magma", chance: 0.9 },
-							ultramafic_magma: { elem1: "magma", elem2: "magma", chance: 0.9 },
+							ultramafic_magma: { elem1:[
+								"molten_silica","molten_silica","molten_silica","molten_silica","molten_silica",
+								"molten_silica","molten_silica","molten_silica","molten_silica","molten_silica",
+								"molten_silica","molten_silica","molten_silica","molten_silica","molten_silica",
+								"molten_silica","molten_silica","molten_silica","molten_silica",null //the range of silica content from ultramafic to felsic is about 20%; this regarded as 4 even steps on top of ultramafic magma for simplicity's sake gives 5% or 1/20
+							], elem2: "magma", "chance":0.1 },
+							magma: { elem1:[
+								"molten_silica","molten_silica","molten_silica","molten_silica","molten_silica",
+								"molten_silica","molten_silica","molten_silica","molten_silica","molten_silica",
+								"molten_silica","molten_silica","molten_silica","molten_silica","molten_silica",
+								"molten_silica","molten_silica","molten_silica","molten_silica",null
+							], elem2: "intermediate_magma", "chance":0.09 },
+							intermediate_magma: { elem1:[
+								"molten_silica","molten_silica","molten_silica","molten_silica","molten_silica",
+								"molten_silica","molten_silica","molten_silica","molten_silica","molten_silica",
+								"molten_silica","molten_silica","molten_silica","molten_silica","molten_silica",
+								"molten_silica","molten_silica","molten_silica","molten_silica",null
+							], elem2: "intermediate_felsic_magma", "chance":0.08 },
+							intermediate_felsic_magma: { elem1:[
+								"molten_silica","molten_silica","molten_silica","molten_silica","molten_silica",
+								"molten_silica","molten_silica","molten_silica","molten_silica","molten_silica",
+								"molten_silica","molten_silica","molten_silica","molten_silica","molten_silica",
+								"molten_silica","molten_silica","molten_silica","molten_silica",null
+							], elem2: "felsic_magma", "chance":0.07 }
 						},
 					};
 					elements.felsic_magma.reactions ??= {};
@@ -25932,7 +25991,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						behavior: behaviors.POWDER,
 						category: "powders",
 						state: "solid",
-						density: 3980,
+						density: 4010,
 						hardness: 0.9,
 					};
 					elements.molten_ruby ??= {}; elements.molten_ruby.tick = function(pixel) {
@@ -25986,6 +26045,48 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						density: 2650,
 						hardness: 0.7,
 					};
+				//Zircon
+					blueZirconColors = ["#017cbc","#146ea0","#17b6c9","#3bbfd3"];
+					goldenZirconColors = ["#e99209","#fcb111","#d88208","#b97605"];
+					//heatTreated 0 = untreated, 1 = inertly (blue), 2 = with oxygen (golden)
+					elements.zircon = {
+						//Corundum with different impurities, so I can copy/paste everything but the color
+						color: ["#37130b","#a9301a","#3c1810"],
+						properties: {
+							heatTreated: 0
+						},
+						tick: function(pixel) {
+							pixel.heatTreated ??= 0;
+							if(pixel.temp > 900) {
+								if(pixel.heatTreated == 0) {
+									if(exposedToAir(pixel)) {
+										pixel.color = pixelColorPick(pixel,goldenZirconColors)
+										pixel.heatTreated = 2;
+									} else {
+										pixel.color = pixelColorPick(pixel,blueZirconColors)
+										pixel.heatTreated = 1;
+									}
+								} else if((pixel.heatTreated == 1) && (exposedToAir(pixel))) {
+									pixel.color = pixelColorPick(pixel,goldenZirconColors)
+									pixel.heatTreated = 2;
+								}
+							}
+						},
+						onUnpaint: function(pixel) {
+							if(pixel.heatTreated == 1) {
+								pixel.color = pixelColorPick(pixel,blueZirconColors)
+							} else if(pixel.heatTreated = 2) {
+								pixel.color = pixelColorPick(pixel,goldenZirconColors)
+							}
+						},
+						tempHigh: 2100,
+						behavior: behaviors.POWDER,
+						category: "powders",
+						state: "solid",
+						density: 4010,
+						hardness: 0.9,
+					};
+
 				//Opal
 					elements.opal = {
 						color: ["#ffcfcf", "#fff0d9", "#fcf7c5", "#e4ffd4", "#d1fff5", "#dcecfa", "#dfdbff", "#f5e0ff", "#f7d0f1"],
@@ -40091,6 +40192,21 @@ Make sure to save your command in a file if you want to add this preset again.`
 					};
 				};
 			};
+		};
+		elements.unpaint.tool = function(pixel) {
+			var r = elements.unpaint.reactions[pixel.element];
+			if (r && r.elem2) {
+				changePixel(pixel,r.elem2)
+			}
+			if (!elements[pixel.element].customColor) {
+				pixel.color = pixelColorPick(pixel)
+			}
+			if (elements[pixel.element].alpha) {
+				pixel.alpha = elements[pixel.element].alpha
+			}
+			if(pixel.onUnpaint) {
+				pixel.onUnpaint(pixel)
+			}
 		};
 		elements.unpaint.tick = function(pixel) {
 			var pX = pixel.x;
