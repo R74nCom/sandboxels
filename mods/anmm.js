@@ -1,4 +1,3 @@
-//alice's new mini mod
 urlParams = new URLSearchParams(window.location.search);
 
 function elementExists(elementName) {
@@ -58,15 +57,17 @@ window.addEventListener("load",function() {
 	};*/
 });
 
-function getEmptyVonNeumannNeighbors(pixel) {
+function getEmptyVonNeumannNeighbors(pixel,returnOffsets=false) {
 	var neighbors = [];
 	var x = pixel.x;
 	var y = pixel.y;
 	for(var i = 0; i < adjacentCoords.length; i++) {
-		var finalX = pixel.x + adjacentCoords[i][0];
-		var finalY = pixel.y + adjacentCoords[i][1];
+		var offsetX = adjacentCoords[i][0];
+		var offsetY = adjacentCoords[i][1];
+		var finalX = pixel.x + offsetX;
+		var finalY = pixel.y + offsetY;
 		if(isEmpty(finalX,finalY,false)) {
-			neighbors.push([finalX,finalY])
+			neighbors.push(returnOffsets ? [offsetX,offsetY] : [finalX,finalY])
 		};
 	};
 	return neighbors
@@ -93,15 +94,17 @@ function getPixelMooreNeighbors(pixel) {
 	return neighbors
 };
 
-function getEmptyMooreNeighbors(pixel) {
+function getEmptyMooreNeighbors(pixel,returnOffsets=false) {
 	var neighbors = [];
 	var x = pixel.x;
 	var y = pixel.y;
 	for(var i = 0; i < mooreDonutCoords.length; i++) {
-		var finalX = pixel.x + mooreDonutCoords[i][0];
-		var finalY = pixel.y + mooreDonutCoords[i][1];
+		var offsetX = mooreDonutCoords[i][0];
+		var offsetY = mooreDonutCoords[i][1];
+		var finalX = pixel.x + offsetX;
+		var finalY = pixel.y + offsetY;
 		if(isEmpty(finalX,finalY,false)) {
-			neighbors.push([finalX,finalY])
+			neighbors.push(returnOffsets ? [offsetX,offsetY] : [finalX,finalY])
 		};
 	};
 	return neighbors
@@ -187,17 +190,17 @@ var argonChance; if(hasArgon == true) { argonChance = ((1.204 * 0.0093) / elemen
 
 var condensationMultiplierScaling = Math.abs(-273.15 - (-190));
 
-function glaciliteBase(pixel,coolingAmount,minimumTemperature,cmsScaling=1.5) {
-	if(pixel.temp > minimumTemperature) {
-		if(pixel.temp - coolingAmount <= minimumTemperature) {
-			pixel.temp = minimumTemperature
+function glaciliteBase(pixel,coolingAmount,maximumTemperature,cmsScaling=1.5) {
+	if(pixel.temp > maximumTemperature) {
+		if(pixel.temp - coolingAmount <= maximumTemperature) {
+			pixel.temp = maximumTemperature
 		} else {
 			pixel.temp = pixel.temp - coolingAmount;
 		}
 	};
 	
 	var condensationMultiplier = 1;
-	if(pixel.temp < -190) { //NOT scaled to minimum temperature OR absolute zero
+	if(pixel.temp < -190) { //NOT scaled to maximum temperature OR absolute zero
 		var distanceFromNegative190 = Math.abs((-190) - pixel.temp);
 		condensationMultiplier = Math.max(6,1 + (distanceFromNegative190 / (condensationMultiplierScaling / cmsScaling)));
 	}
@@ -243,7 +246,7 @@ elements.glacilite = {
 	breakInto: "glacilite_shard",
 	color: ["#17BBF6","#70A4FE","#6ADCEE","#8EA9FF"],
 	tempHigh: 1200,
-	stateHigh: "molten_glacilite",
+	stateHigh: "liquified_glacilite",
 	tick: function(pixel) {
 		glaciliteBase(pixel,5,-190)
 	}
@@ -259,13 +262,13 @@ elements.glacilite_shard = {
 	temp: -190,
 	color: ["#17BBF6","#70A4FE","#6ADCEE","#8EA9FF"],
 	tempHigh: 1200,
-	stateHigh: "liquid_glacilite",
+	stateHigh: "liquified_glacilite",
 	tick: function(pixel) {
 		glaciliteBase(pixel,5,-190)
 	}
 }
 
-elements.liquid_glacilite = {
+elements.liquified_glacilite = {
 	behavior: behaviors.LIQUID,
 	state: "liquid",
 	category: "liquids",
@@ -275,21 +278,21 @@ elements.liquid_glacilite = {
 	hardness: 0.99,
 	color: ["#01BFE1","#2404C3","#0763DB","#04308F","#3AF0F3"],
 	tempHigh: 1200,
-	stateHigh: "molten_glacilite",
+	stateHigh: "liquified_glacilite",
 	tick: function(pixel) {
-		var minimumTemperature = (settings.abszero ?? -273.15);
+		var maximumTemperature = (settings.abszero ?? -273.15);
 		var coolingAmount = 14;
 		var cmsScaling = 3.5;
-		if(pixel.temp > minimumTemperature) {
-			if(pixel.temp - coolingAmount <= minimumTemperature) {
-				pixel.temp = minimumTemperature
+		if(pixel.temp > maximumTemperature) {
+			if(pixel.temp - coolingAmount <= maximumTemperature) {
+				pixel.temp = maximumTemperature
 			} else {
 				pixel.temp = pixel.temp - coolingAmount;
 			}
 		};
 		
 		var condensationMultiplier = 1;
-		if(pixel.temp < -150) { //NOT scaled to minimum temperature OR absolute zero
+		if(pixel.temp < -150) { //NOT scaled to maximum temperature OR absolute zero
 			var distanceFromNegative190 = Math.abs((-190) - pixel.temp);
 			condensationMultiplier = Math.max(6,1 + (distanceFromNegative190 / (condensationMultiplierScaling / cmsScaling)));
 		};
@@ -344,6 +347,159 @@ elements.liquid_glacilite = {
 	}
 }
 
+function igniscidBase(pixel,heatingAmount,minimumTemperature,nerfExponent) {
+	if(pixel.temp < minimumTemperature) {
+		if(pixel.temp + heatingAmount >= minimumTemperature) {
+			pixel.temp = minimumTemperature
+		} else {
+			pixel.temp = pixel.temp + heatingAmount;
+		}
+	};
+	
+	var nerfFactor = 1;
+	if(pixel.temp > minimumTemperature) { nerfFactor = 1 / (Math.log10((pixel.temp - (minimumTemperature - 1))) + 1) ** nerfExponent };
+	if(Math.random() < (0.04 * nerfFactor)) { pixel.temp += heatingAmount };
+	
+	var emptyNeighbors = getEmptyVonNeumannNeighbors(pixel,true);
+	var element = "fire";
+	var temp = pixel.temp;
+	if(pixel.temp >= 7000) {
+		element = "plasma";
+		temp = Math.max(temp,5000);
+	} else if(pixel.temp < 100) {
+		element = "smoke";
+		pixel.temp += 1.5;
+	};
+	for(var i = 0; i < emptyNeighbors.length; i++) {
+		var coords = emptyNeighbors[i];
+		var distance = coords.map(x => Math.abs(x)).reduce((a,b) => a + b);
+		coords = [coords[0]+pixel.x,coords[1]+pixel.y];
+		var chance = 1/distance;
+		var newPixel = createPixelReturn(element,...coords);
+		if(newPixel && (newPixel.temp < pixel.temp)) {
+			newPixel.temp = temp
+		}
+	}
+}
+
+elements.igniscid = {
+	behavior: behaviors.WALL,
+	state: "solid",
+	category: "solids",
+	density: 3300,
+	hardness: 0.44,
+	temp: 1200,
+	breakInto: "igniscid_shard",
+	color: ["#f68317","#f6b317","#eeea6a","#ffa38e"],
+	tempHigh: 11000,
+	stateHigh: "liquified_igniscid",
+	tick: function(pixel) {
+		igniscidBase(pixel,4,1200,1.2)
+	}
+}
+
+elements.igniscid_shard = {
+	behavior: behaviors.POWDER,
+	state: "solid",
+	category: "powders",
+	hidden: true,
+	density: 3100,
+	hardness: 0.89,
+	temp: 1200,
+	color: ["#f68317","#f6b317","#eeea6a","#ffa38e"],
+	tempHigh: 11000,
+	stateHigh: "liquified_igniscid",
+	tick: function(pixel) {
+		igniscidBase(pixel,4,1200,1.2)
+	}
+}
+
+elements.liquified_igniscid = {
+	behavior: behaviors.LIQUID,
+	state: "liquid",
+	category: "liquids",
+	hidden: true,
+	density: 2790,
+	temp: 12000,
+	hardness: 0.99,
+	color: ["#f77b0f","#e0410b","#db4a07","#f5ac7f","#f3593a"],
+	tick: function(pixel) {
+		igniscidBase(pixel,12,100000,0.5)
+	}
+}
+
+elements.frozen_fertilizer = {
+    color: ["#4d341d","#40301c","#3d2814"],
+    behavior: [
+		"CR:stench,stench,methane%0.25|CR:stench,stench,methane%0.5|CR:stench,stench,methane%0.25",
+		"CR:stench,stench,methane%0.5|XX|CR:stench,stench,methane%0.5",
+		"CR:stench,stench,methane%0.25|CR:stench,stench,methane%0.5|CR:stench,stench,methane%0.25"
+	],
+    behavior: behaviors.WALL,
+    tempHigh: 0,
+	stateHigh: "fertilizer",
+    category: "solids",
+	hardness: 0.35,
+	breakInto: "fertilizer",
+    state: "solid",
+    density: 1060,
+    stain: 0.01,
+	hidden: true,
+},
+
+elements.fertilizer = {
+    color: ["#451f0a","#542b07","#593317"],
+    behavior: [
+		"CR:stench,stench,methane%0.25|CR:stench,stench,methane%0.5|CR:stench,stench,methane%0.25",
+		"M2 AND CR:stench,stench,methane%0.5|XX|M2 AND CR:stench,stench,methane%0.5",
+		"M1|M1|M1"
+	],
+    viscosity: 8000,
+    tempHigh: 40,
+    stateHigh: ["poison","stench","methane","dried_fertilizer","dried_fertilizer","dried_fertilizer","dried_fertilizer","dried_fertilizer","dried_fertilizer","dried_fertilizer","dried_fertilizer"],
+    tempLow: 0,
+	stateLow: "frozen_fertilizer",
+    category: "solids",
+    state: "solid",
+    density: 1060,
+    stain: 0.07
+},
+
+elements.dried_fertilizer = {
+    color: ["#4f382b","#66462b","#704a2b"],
+    behavior: [
+		"CR:stench,stench,methane%0.15|CR:stench,stench,methane%0.3|CR:stench,stench,methane%0.15",
+		"CR:stench,stench,methane%0.3|XX|CR:stench,stench,methane%0.3",
+		"M2|M1|M2"
+	],
+    tempHigh: 100,
+    stateHigh: ["steam","steam","steam","steam","steam","steam","steam","steam","steam","steam","steam","steam","steam","steam","steam","steam","steam","steam","stench","poison","stench","poison","methane","methane","cooked_fertilizer","cooked_fertilizer","cooked_fertilizer","cooked_fertilizer","cooked_fertilizer","cooked_fertilizer","cooked_fertilizer","cooked_fertilizer","cooked_fertilizer","cooked_fertilizer","cooked_fertilizer","cooked_fertilizer",],
+    category: "solids",
+    state: "solid",
+    density: 1100,
+    stain: 0.045,
+	hidden: true
+},
+
+elements.cooked_fertilizer = {
+    color: ["#473931","#594636","#4f3621"],
+    behavior: [
+		"CR:stench,stench,methane%0.1|CR:stench,stench,methane%0.2|CR:stench,stench,methane%0.1",
+		"CR:stench,stench,methane%0.2|XX|CR:stench,stench,methane%0.2",
+		"M2|M1|M2"
+	],
+    tempHigh: 550,
+    stateHigh: ["charcoal","hydrogen","oxygen","nitrogen","sulfur_gas","metal_scrap","calcium","stench","poison_gas","steam","dust"],
+    category: "solids",
+    state: "solid",
+    density: 1240,
+	burn: 3,
+	burnTime: 260,
+	fireElement: ["stench","smoke","carbon_dioxide","poison_gas","fire","fire","fire","fire"],
+	burnInto: ["charcoal","hydrogen","oxygen","nitrogen","molten_sulfur","metal_scrap","calcium","stench","poison_gas","steam","dust","stench","poison_gas","smoke"],
+	hidden: true
+},
+
 elements.fartium = {
 	behavior: behaviors.LIQUID,
 	state: "liquid",
@@ -356,7 +512,7 @@ elements.fartium = {
 	stateHigh: ["fire","explosion","fire","stench","stench"],
 	burn: 0.8,
 	burnTime: 150,
-	burnInto: ["stench","stench","stench","stench","fire","fire","fire","fire","molten_sulfur","explosion"],
+	burnInto: ["stench","stench","stench","stench","fire","fire","fire","fire","liquified_sulfur","explosion"],
 	tick: function(pixel) {
 		var chanceModifier = Math.min(0.22,(pixel.temp - 20) / 750);
 		if(chanceModifier < 0) { chanceModifier *= 2 };

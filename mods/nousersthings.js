@@ -625,7 +625,7 @@ elements.e_pipe = {
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
                 if (isEmpty(x,y)) {
-                    createPixel("brick",x,y);
+                    createPixel("pipe_wall",x,y);
                     pixelMap[x][y].color = pixelColorPick(pixel,"#808080");
                 }
             }
@@ -870,7 +870,7 @@ elements.channel_pipe = {
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
                 if (isEmpty(x,y)) {
-                    createPixel("brick",x,y);
+                    createPixel("pipe_wall",x,y);
                     pixelMap[x][y].color = pixelColorPick(pixel,"#808080");
                 }
             }
@@ -1110,7 +1110,7 @@ elements.bridge_pipe = {
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
                 if (isEmpty(x,y)) {
-                    createPixel("brick",x,y);
+                    createPixel("pipe_wall",x,y);
                     pixelMap[x][y].color = pixelColorPick(pixel,"#808080");
                 }
             }
@@ -2676,33 +2676,38 @@ elements.healing_serum = {
     },
     tick: function(pixel){
         if (pixel.waitReduce){pixel.wait -= 1}
-        if (pixel.wait == 0){
-            pixel.elementsSeen = {}
-        }
-        for (var i = 0; i < adjacentCoords.length; i++) {
-            var coord = adjacentCoords[i];
-            var x = pixel.x+coord[0];
-            var y = pixel.y+coord[1];
-            if (!isEmpty(x,y, true)){
-                if (!pixel.waitReduce){
-                    pixel.waitReduce = true
-                }
-                if (pixel.wait == 0){
-                    if (!pixel.elementsSeen[pixelMap[x][y].element] && !(["healing_serum", "bless", "experience"].includes(pixelMap[x][y].element))){
-                        pixel.elementsSeen[pixelMap[x][y].element] = 1
-                    } else if (!(["healing_serum", "bless", "experience"].includes(pixelMap[x][y].element))) {
-                        pixel.elementsSeen[pixelMap[x][y].element] += 1
+        if (!pixel.decidedPixel){
+            for (var i = 0; i < squareCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (!isEmpty(x, y, true)){
+                    let otherPixel = pixelMap[x][y]
+                    if (otherPixel.element != "healing_serum"){
+                        pixel.decidedPixel = otherPixel
+                        pixel.waitReduce = true
+                        break;
                     }
                 }
             }
-            if (pixel.wait == 0){
-                if (Object.keys(pixel.elementsSeen).length == 0){
-                    deletePixel(pixel.x, pixel.y)
-                    return;
-                } else{
-                    changePixel(pixel, Object.keys(pixel.elementsSeen).reduce((a, b) => pixel.elementsSeen[a] > pixel.elementsSeen[b] ? a : b))
-                }
-            }
+        }
+        if (pixel.wait <= 0){
+            const { x, y, ...remainingProperties } = pixel.decidedPixel;
+            Object.assign(pixel, remainingProperties);
+            delete pixel.decidedPixel
+            return;
+        }
+    },
+    renderer: function(pixel, ctx){
+        // interpolate pixel color and decidedpixel's color (if it has one!)
+        if (pixel.decidedPixel){
+            var color1 = pixel.color.match(/\d+/g);
+            var color2 = pixel.decidedPixel.color.match(/\d+/g);
+            var ratio = pixel.wait/15
+            drawSquare(ctx, `rgb(${color1[0]*ratio+color2[0]*(1-ratio)},${color1[1]*ratio+color2[1]*(1-ratio)},${color1[2]*ratio+color2[2]*(1-ratio)})`, pixel.x, pixel.y)
+        }
+        else{
+            drawSquare(ctx, pixel.color, pixel.x, pixel.y)
         }
     }
 }

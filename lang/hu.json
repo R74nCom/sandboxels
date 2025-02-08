@@ -233,7 +233,7 @@
 "copper":"réz",
 "gold":"arany",
 "steel":"acél",
-"galvanized_steel":"horganyzott_acél"
+"galvanized_steel":"horganyzott_acél",
 "nickel":"nikkel",
 "zinc":"cink",
 "silver":"ezüst",
@@ -548,7 +548,7 @@
 "tsunami": "cunami",
 "blaster": "plazmavető",
 "propane_ice": "fagyott_propán",
-"molten_caustic_potash": "olvadt_kálium-hidroxid"
+"molten_caustic_potash": "olvadt_kálium-hidroxid",
 "ectoplasm":"ektoplazma",
 "soul":"lélek",
 "tombstone":"sírkő",

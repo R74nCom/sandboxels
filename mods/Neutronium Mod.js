@@ -649,7 +649,8 @@ behavior: behaviors.LIQUID,
 category: "life",
 state: "liquid",
 conduct: 0.019,
-viscosity: 100
+viscosity: 100,
+reactions: {}
 };
 elements.berry = {
 burn: 15,
