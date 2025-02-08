@@ -28,15 +28,6 @@ elements.molten_mars = {
     extraInfo: "The Result of Burnt-up mars stuff. Some turn into this faster more than others.",
         temp: 2500
 }
-elements.plasma_mars = {
-    color: "#ffc338",
-    behavior: behaviors.MOLTEN,
-    category: "mars",
-    state: "liquid",
-    hidden: "false",
-    extraInfo: "Molten Mars but Plasma.",
-    temp: 2500
-}
 elements.mars_rock = {
 	color: ["#a51002","#bd1102"],
 	behavior: behaviors.STURDYPOWDER,
