@@ -77,7 +77,8 @@ elements.mars_ironheart_ore = {
     hardness: 0.15,
     stateHigh: "mars_dust",
     breakInto: "mars_ironheart",
-    extraInfo: "Ore. Very Soft"
+    extraInfo: "Ore. Very Soft",
+    stateHigh: "ironheart"
 }
 elements.mars_ironheart = {
     color: ["#e8e8e8", "#bd1102"],
@@ -163,7 +164,7 @@ elements.liquid_red_gold = {
     category: "mars",
     state: "liquid",
     density: 8,
-    extraInfo: "Red Gold but a fluid.",
+    extraInfo: "Red Gold but a fludid.",
     temp: 5500
 }
 elements.liquid_mars_dust = {
@@ -173,13 +174,6 @@ elements.liquid_mars_dust = {
     state: "liquid",
     extraInfo: "Mars Dust Fluid. Removed 04/02/25."
 }
-elements.legacy_liquid_mars_dust = {
-    color: "#DB3629",
-    behavior: behaviors.SUPERFLUID,
-    category: "archived",
-    state: "liquid",
-    extraInfo: "Mars Dust Superfluid. Changed at the start."
-}
 elements.testy = {
     color: "#FFFFFF",
     behavior: behaviors.WALL,
@@ -187,9 +181,25 @@ elements.testy = {
     state: "solid",
     extraInfo: "Don't mind me, just a test. Removed 06/02/25?"
 }
+elements.legacy_liquid_mars_dust = {
+    color: "#DB3629",
+    behavior: behaviors.SUPERFLUID,
+    category: "archived",
+    state: "liquid",
+    extraInfo: "Mars Dust Superfluid. Changed at the start."
+}
+elements.o2_tank = {
+    color: "#98F5F9",
+    behavior: [
+        "CR:oxygen%3|XX|XX",
+        "XX|XX|XX",
+        "XX|XX|XX",
+    ],
+    category: "mars",
+    state: "solid",
 
-
-// 1.4.6
+}
+// 1.4.7
 // most elements done :D
 // iron heart ore
 // iron heart
@@ -203,4 +213,5 @@ elements.testy = {
 // removing mars_furnace so yeah
 // no anti gunk or gunk anymore
 // im putting in the archive
-// spelling error
+// lil changes
+// inroducing oxygen tanks!
