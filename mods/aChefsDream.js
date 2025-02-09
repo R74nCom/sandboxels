@@ -8032,11 +8032,13 @@ elements.fruit_slush.stateLowColorMultiplier = 1.2;
 elements.juice_ice.stateHighColorMultiplier = 0.83333333333;
 elements.juice_ice.stateHigh = "fruit_slush"
 elements.juice_ice.tempHigh = -20
-elements[iceelem].stateHigh = "fruit_slush"
-elements[iceelem].tempHigh = -20
+if(elements[iceelem]) {
+	elements[iceelem].stateHigh = "fruit_slush"
+	elements[iceelem].tempHigh = -20
+}
 
 // fruit milk with milk
-elements.fruit_milk.reactions.milk = { chance:1, func: function(pixel1, pixel2){
+elements.fruit_milk.reactions ??= {}; elements.fruit_milk.reactions.milk = { chance:1, func: function(pixel1, pixel2){
     let newrgb = interpolateRgb(getRGB(pixel1.color), getRGB(pixel2.color), 0.2);
         if (((newrgb.r + newrgb.g + newrgb.b) / 3) < 230) {
             changePixel(pixel1,"fruit_milk")
