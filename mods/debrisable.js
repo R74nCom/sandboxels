@@ -1,3 +1,87 @@
+wow = function() {
+    for (element in elements) {
+        if (elements[element].breakInto===undefined && elements[element].noSnow!==true || elements[element].noSnow===false) {
+            var newname = elements[element].breakName;
+            if (elements[element].state==="solid" || elements[element].noSnow===false) { // Breaking
+                if (!newname) {
+                    newname = element;
+                    if (newname.startsWith("frozen_")) { 
+                        var newname2 = newname.substring(7); 
+                        elements[newname2 + "_snow"] = {
+                            color: elements[newname].color,
+                            colorObject: elements[newname].colorObject,
+                            behavior: behaviors.POWDER,
+                            density: elements[newname].density,
+                            burn: elements[newname].burn,
+                            burnInto: elements[newname].burnInto,
+                            burnTime: elements[newname].burnTime,
+                            fireColor: elements[newname].fireColor,
+                            fireElement: elements[newname].fireElement,
+                            temp: (elements[newname].tempHigh - 5),
+                            tempHigh: elements[newname].tempHigh,
+                            stateHigh: elements[newname].stateHigh,
+                            tempLow: (elements[newname].tempHigh - 50),
+                            stateLow: newname,
+                            hidden: true,
+                            state: "solid",
+                            category: "snows"
+                        }
+                        elements[element].breakInto = (newname2 + "_snow")
+                    }
+                    else if (newname.endsWith("_ice")) { 
+                        var newname2 = newname.substring(0,newname.length-4); 
+                        elements[newname2 + "_snow"] = {
+                            color: elements[newname].color,
+                            colorObject: elements[newname].colorObject,
+                            behavior: behaviors.POWDER,
+                            density: elements[newname].density,
+                            burn: elements[newname].burn,
+                            burnInto: elements[newname].burnInto,
+                            burnTime: elements[newname].burnTime,
+                            fireColor: elements[newname].fireColor,
+                            fireElement: elements[newname].fireElement,
+                            temp: (elements[newname].tempHigh - 5),
+                            tempHigh: elements[newname].tempHigh,
+                            stateHigh: elements[newname].stateHigh,
+                            tempLow: (elements[newname].tempHigh - 50),
+                            stateLow: newname,
+                            hidden: true,
+                            state: "solid",
+                            category: "snows"
+                        }
+                        elements[element].breakInto = (newname2 + "_snow")
+                    }
+                    else if (elements[element].noSnow===false) { 
+                        var newname2 = newname
+                        elements[newname2 + "_snow"] = {
+                            color: elements[newname].color,
+                            colorObject: elements[newname].colorObject,
+                            behavior: behaviors.POWDER,
+                            density: elements[newname].density,
+                            burn: elements[newname].burn,
+                            burnInto: elements[newname].burnInto,
+                            burnTime: elements[newname].burnTime,
+                            fireColor: elements[newname].fireColor,
+                            fireElement: elements[newname].fireElement,
+                            temp: (elements[newname].tempHigh - 5),
+                            tempHigh: elements[newname].tempHigh,
+                            stateHigh: elements[newname].stateHigh,
+                            tempLow: (elements[newname].tempHigh - 50),
+                            stateLow: newname,
+                            hidden: true,
+                            state: "solid",
+                            category: "snows"
+                        }
+                        elements[element].breakInto = (newname2 + "_snow")
+                    }
+                }
+            }
+        }
+    }
+}
+    
+runAfterAutogen(wow)
+
 elements.microplastic = {
 	color: ["#B7BFBF","#c3cccc"],
 	behavior: behaviors.POWDER,
@@ -19,7 +103,7 @@ elements.microplastic_water = {
     color: ["#6491E8","#799EE3","#97B0DA"],
     behavior: behaviors.LIQUID,
     tempHigh: 105,
-    stateHigh: ["steam","dioxin"],
+    stateHigh: ["steam","steam","steam","steam","microplastic","microplastic","dioxin"],
     tempLow: -5,
     stateLowName: "plastic_ice",
     viscosity: 10,
@@ -38,6 +122,13 @@ elements.microplastic_water = {
         "stink_bug": { elem2:"dead_bug", chance:0.1, oneway:true },
         "dirty_water": { elem2:"bubble", attr2:{"clone":"microplastic_water"}, chance:0.001, tempMin:85 },
         "microplastic_water": { elem2:"bubble", attr2:{"clone":"microplastic_water"}, chance:0.001, tempMin:85 },
+        "mudstone": { elem2: ["mud","mud","clay"], chance: 0.00035 },
+        "glass_shard": { elem2: "glass_pebble", color2:"#7BAECB", chance: 0.0005 },
+        "rad_shard": { elem2: "glass_pebble", color2:"#AECB83", chance: 0.00025 },
+        "glass": { elem2: "glass_pebble", color2:"#7BAECB", chance: 0.00005 },
+        "rad_glass": { elem2: "glass_pebble", color2:"#AECB83", chance: 0.000025 },
+        "rust": { elem1:"dirty_water", elem2: "rust_dust", chance: 0.0025 },
+        "plastic": { elem2: ["microplastic",null,null], chance: 0.00005 },
     },
     hidden: true,
     state: "liquid",
@@ -82,7 +173,7 @@ elements.copper_debris = {
         "antibody": { elem1:"oxidized_copper", chance:0.01 },
         "fire": { elem1:"oxidized_copper", chance:0.0095 },
     },
-    category: "solids",
+    category: "powders",
     tempHigh: 1085,
     stateHigh: "molten_copper",
     density: 8960,
@@ -128,7 +219,7 @@ elements.iron_debris = {
     category: "powders",
     density: 7660,
     conduct: 0.47,
-    hardness: 0.4,
+    hardness: 0.8,
     darkText: true,
     hidden: true
 }
@@ -155,12 +246,12 @@ elements.steel_debris = {
         "juice": { elem1:"rust", chance:0.0003 },
         "nut_milk": { elem1:"rust", chance:0.0003 },
     },
-    breakInto: ["iron_debris","iron_debris","iron_dust"],
+    breakInto: "iron_debris",
     tempHigh: 1455.5,
     category: "powders",
     density: 7750,
     conduct: 0.42,
-    hardness: 0.8,
+    hardness: 0.85,
     hidden: true
 }
 
@@ -196,18 +287,17 @@ elements.tin_scrap = {
 }
 
 elements.aluminum_foil = {
-    color: "#d2d9db",
+    color: ["#BEC4C6","#C8CFD0","#B1B1B4"],
     reactions: {
         "radiation": { elem2:"electric", temp1:200 }
     },
     behavior: behaviors.SUPPORT,
     tempHigh: 660.3,
     stateHigh: "molten_aluminum",
+    breakInto: "aluminum_dust",
     category: "powders",
     density: 2710,
     conduct: 0.73,
-    hardness: 0.01,
-    breakInto: "aluminum_dust",
     fireColor: "#A7B3BF",
     superconductAt: -271.95
 }
@@ -451,7 +541,9 @@ elements.concrete_rubble = {
     stateHigh: "magma",
     state: "solid",
     density: 1650,
-    hardness: 0.25,
+    hardness: 0.3,
+    breakIntoColor: ["#9E9E9E","#929292","#858585","#7F7F7F","#e3e0df","#b1aba3","#74736d","#524b47"],
+    breakInto: "gravel",
     hidden: true
 }
 
@@ -466,7 +558,7 @@ elements.wood_scrap = {
     burnTime: 300,
     burnInto: ["ember","charcoal","fire"],
     state: "solid",
-    hardness: 0.1,
+    hardness: 0.15,
     breakInto: "sawdust",
     hidden: true
 }
@@ -587,6 +679,20 @@ elements.cured_ground_meat = {
     hidden: true
 }
 
+elements.frozen_ground_meat = {
+    color: ["#399e8f","#49baa9","#6cd2c6","#40a197"],
+    behavior: behaviors.POWDER,
+    temp: -18,
+    tempHigh: 0,
+    stateHigh: "meat",
+    category:"food",
+    hidden:true,
+    state: "solid",
+    density: 1067.5,
+    isFood: true,
+    noSnow: true
+}
+
 elements.scrap_paper = {
     color: ["#ffffff","#e6e6e6"],
     behavior: behaviors.POWDER,
@@ -699,16 +805,173 @@ elements.antisnow = {
     hidden: true
 }
 
+elements.glass_pebble = {
+    color: ["#FF646D","#FFB26D","#FFF66D","#6DF66D","#6DF6FF","#6D64FF","#FF64FF"],
+    behavior: behaviors.POWDER,
+    tempHigh: 1700,
+    stateHigh: "molten_stained_glass",
+    breakInto: "color_sand",
+    category: "powders",
+    state: "solid",
+    density: 1602
+}
 
-elements.plastic.breakInto = ["microplastic","microplastic","microplastic","microplastic","glitter"]
+elements.fiberglass = {
+    color: ["#ffbcd9","#FFA7A7"],
+    behavior: behaviors.STURDYPOWDER,
+    tick: function(pixel) {
+        behaviors.ABSORB(pixel,1,0.01);
+    },
+    onBreak: behaviors.RELEASE_MOISTURE,
+    onDelete: behaviors.RELEASE_MOISTURE,
+    reactions: {
+        "water":{}, "salt_water":{}, "sugar_water":{}, "dirty_water":{}, "pool_water":{}, "seltzer":{},
+        "molten_plastic":{elem1:"insulation", elem2:null},
+    },
+    tempHigh: 1612,
+    stateHigh: ["dioxin","dioxin","smoke","smoke","dioxin","microplastic","smoke","glass_fiber"],
+    category: "powders",
+    state: "solid",
+    hardness: 0.01,
+    breakInto: ["dust","microplastic","microplastic","dust","glass_fiber","dust","microplastic","microplastic","dust","glass_fiber","dioxin"],
+    insulate: true,
+    density: 64
+},
+
+elements.resin = {
+    color: ["#b67f18","#c86305"],
+    behavior: [
+        "XX|ST|XX",
+        "ST|XX|ST",
+        "XX|ST|XX",
+    ],
+    reactions: {
+        "clay_shard": {elem1:null, elem2:"baked_clay"},
+        "porcelain_shard": {elem1:null, elem2:"porcelain"},
+        "ruins": {elem1:null, elem2:"rock_wall"},
+        "confetti": {elem1:null, elem2:"paper"},
+        "gold_coin": {elem1:null, elem2:"gold"},
+        "cellulose": {elem1:null, elem2:"paper"},
+        "feather": {elem1:null, elem2:"cloth"},
+        "rock": {elem1:null, elem2:"rock_wall"},
+        "brick_rubble": {elem1:null, elem2:"brick"},
+        "bead": {elem1:null, elem2:"plastic"},
+        "dirt": {elem1:null, elem2:"mudstone"},
+        "sand": {elem1:null, elem2:"packed_sand"},
+        "fly": {elem2:"dead_bug"},
+        "firefly": {elem2:"dead_bug"},
+        "ant": {elem2:"dead_bug"},
+        "rat": {elem2:"rotten_meat", chance:0.05},
+        "glass_shard": { elem2:"fiberglass", elem1:null, chance:0.001 },
+        "rad_shard": { elem2:"fiberglass", elem1:null, chance:0.0005 },
+        "glass_fiber": { elem2:"fiberglass", elem1:null, chance:0.05 },
+        "rad_glass_fiber": { elem2:"fiberglass", elem1:null, chance:0.025 },
+        "molten_glass": { elem2:"fiberglass", elem1:null, chance:0.25 },
+        "glass": { elem2:"fiberglass", elem1:null, tempMin: 1450, chance:0.025},
+    },
+    tick: function(pixel) {
+        if (pixelTicks - pixel.start > 500 && Math.random() < 0.1 && pixel.solid !== true && (isEmpty(pixel.x+1,pixel.y) || isEmpty(pixel.x-1,pixel.y) || isEmpty(pixel.x,pixel.y-1) || isEmpty(pixel.x,pixel.y+1))) {
+            pixel.solid = true
+        }
+        if (pixelTicks - pixel.start > 50 && !isEmpty(pixel.x+1,pixel.y,true) && !isEmpty(pixel.x-1,pixel.y,true) && !isEmpty(pixel.x,pixel.y-1,true) && !isEmpty(pixel.x,pixel.y+1,true)) {
+            pixel.start = pixelTicks
+        }
+        if (pixelTicks - pixel.start > 1500 && Math.random() < 0.1 && pixel.solid === true) {
+            changePixel(pixel,"dry_resin")
+        }
+        if (pixel.solid === true) {
+            if (pixel.start === pixelTicks) {return}
+            if (pixel.charge && elements[pixel.element].behaviorOn) {
+                pixelTick(pixel);
+                return;
+            }
+            if (pixel.sticking !== true) {tryMove(pixel,pixel.x,pixel.y+1);}
+            doDefaults(pixel);
+        }
+        else if (pixel.solid !== true) {
+            if (pixel.start === pixelTicks) {return}
+            if (pixel.charge && elements[pixel.element].behaviorOn) {
+                pixelTick(pixel);
+                return;
+            }
+            var viscMove = true;
+        if (elements[pixel.element].viscosity) {
+            viscMove = (Math.random()*100) < 100 / Math.pow(elements[pixel.element].viscosity, 0.25);
+        }
+        if (!viscMove) {
+            var move1Spots = [
+                0
+            ]
+        }
+        else {
+            var move1Spots = [
+                1,0,-1
+            ]
+        }
+        var moved = false;
+        for (var i = 0; i < move1Spots.length; i++) {
+            const j = Math.random()*move1Spots.length | 0;
+            const coord = move1Spots[j];
+            if (tryMove(pixel, pixel.x+coord, pixel.y+1)) { moved = true; break; }
+            move1Spots.splice(j, 1);
+        }
+        if (!moved) {
+            if (viscMove) {
+                if (Math.random() < 0.5) {
+                    if (!tryMove(pixel, pixel.x+1, pixel.y)) {
+                        tryMove(pixel, pixel.x-1, pixel.y);
+                    }
+                } else {
+                    if (!tryMove(pixel, pixel.x-1, pixel.y)) {
+                        tryMove(pixel, pixel.x+1, pixel.y);
+                    }
+                }
+            }
+        }
+        doDefaults(pixel);
+        }
+    },
+    onMix: function(pixel) {
+        pixel.start = pixelTicks;
+    },
+    tempHigh: 1713.05,
+    stateHigh: ["cyanide_gas","dioxin","smoke","smoke","smoke"],
+    category:"liquids",
+    state: "liquid",
+    viscosity: 3500,
+    density: 1400
+}
+
+elements.dry_resin = {
+    color: ["#77420D","#782E03"],
+    behavior: [
+        "XX|ST|XX",
+        "ST|XX|ST",
+        "XX|ST AND M1|XX",
+    ],
+    tempHigh: 1713.05,
+    stateHigh: ["cyanide_gas","dioxin","smoke","smoke","smoke"],
+    burn: 1,
+    burnTime: 150,
+    burnInto: ["dioxin","dioxin","smoke","smoke","dioxin","dioxin","microplastic","smoke","smoke"],
+    breakInto: ["dust","microplastic","microplastic"],
+    category:"powders",
+    state: "solid",
+    density: 1401,
+    hidden: true,
+}
+
+elements.sap.reactions = {"glue": {elem2: "resin", elem1:[null,null,null,"resin"]}}
+
+elements.plastic.breakInto = ["microplastic","bead","bead","bead"]
 
 elements.amber.breakInto = "amber_shard"
 
-elements.insulation.breakInto = ["microplastic","glass_fiber","cloth_scrap","dust"]
+elements.insulation.breakInto = ["microplastic","fiberglass","fiberglass","fiberglass","cloth_scrap","dust"]
 
-elements.bead.breakInto = ["microplastic","microplastic","microplastic","glitter"]
+elements.bead.breakInto = "microplastic"
 
-elements.wire.breakInto = ["microplastic","glass_fiber","copper_debris","silver_debris","glass_fiber","copper_debris","silver_debris"]
+elements.wire.breakInto = ["microplastic","microplastic","copper_debris","silver_debris","glass_fiber","copper_debris","silver_debris"]
 
 elements.copper.breakInto = ["copper_debris"]
 
@@ -725,25 +988,29 @@ elements.tin.tick = function(pixel) {
     doDefaults(pixel)
 }
 
-elements.iron.breakInto = ["iron_debris","iron_debris","iron_debris","iron_debris","iron_dust"]
+elements.iron.breakInto = "iron_debris"
 
-elements.lead.breakInto = ["lead_dust"]
+elements.lead.breakInto = "lead_dust"
 
-elements.steel.breakInto = ["steel_debris","steel_debris","steel_debris","iron_debris","iron_dust"]
+elements.steel.breakInto = ["steel_debris","steel_debris","steel_debris","steel_debris","steel_debris","iron"]
 
-elements.galvanized_steel.breakInto = ["steel","steel","steel","steel","steel","steel","steel","steel","steel_debris"]
+elements.galvanized_steel.breakInto = ["steel","steel_debris"]
 
 elements.rust.breakInto = ["rust_dust"]
 
 elements.concrete.breakInto = ["concrete_rubble"]
 
-elements.wood.breakInto = ["wood_scrap","wood_scrap","wood_scrap","wood_scrap","sawdust"]
+elements.wood.breakInto = "wood_scrap"
 
 elements.meat.breakInto = ["ground_meat"]
 
 elements.cured_meat.breakInto = ["cured_ground_meat"]
 
 elements.rotten_meat.breakInto = ["rotten_ground_meat"]
+
+elements.frozen_meat.breakInto = ["frozen_ground_meat"]
+
+elements.frozen_plant.noSnow = true
 
 elements.paper.breakInto = ["scrap_paper"]
 
@@ -784,3 +1051,83 @@ elements.antiice.breakInto = "antisnow"
 elements.antigas.stateHigh = {}
 
 elements.antigas.tempHigh = {}
+
+elements.wire.hardness = 0.2
+
+elements.water.reactions.mudstone = { elem2: ["mud","mud","clay"], chance: 0.00035 }
+
+elements.water.reactions.glass_shard = { elem2: "glass_pebble", color2:"#7BAECB", chance: 0.0005 }
+
+elements.water.reactions.rad_shard = { elem2: "glass_pebble", color2:"#AECB83", chance: 0.00025 }
+
+elements.water.reactions.glass = { elem2: "glass_pebble", color2:"#7BAECB", chance: 0.00005 }
+
+elements.water.reactions.rad_glass = { elem2: "glass_pebble", color2:"#AECB83", chance: 0.000025 }
+
+elements.water.reactions.rust = { elem1:"dirty_water", elem2: "rust_dust", chance: 0.0025 }
+
+elements.water.reactions.rust_dust = { elem1:"dirty_water", chance: 0.0025 }
+
+elements.water.reactions.plastic = { elem1: "microplastic_water", elem2: ["microplastic",null,null], chance: 0.00005 }
+
+elements.salt_water.reactions.mudstone = { elem2: ["mud","mud","clay"], chance: 0.00035 }
+
+elements.salt_water.reactions.glass_shard = { elem2: "glass_pebble", color2:"#7BAECB", chance: 0.0005 }
+
+elements.salt_water.reactions.rad_shard = { elem2: "glass_pebble", color2:"#AECB83", chance: 0.00025 }
+
+elements.salt_water.reactions.glass = { elem2: "glass_pebble", color2:"#7BAECB", chance: 0.00005 }
+
+elements.salt_water.reactions.rad_glass = { elem2: "glass_pebble", color2:"#AECB83", chance: 0.000025 }
+
+elements.salt_water.reactions.rust = { elem1:"dirty_water", elem2: "rust_dust", chance: 0.0025 }
+
+elements.salt_water.reactions.rust_dust = { elem1:"dirty_water", chance: 0.0025 }
+
+elements.salt_water.reactions.plastic = { elem1: "microplastic_water", elem2: ["microplastic",null,null], chance: 0.00005 }
+
+elements.sugar_water.reactions.mudstone = { elem2: ["mud","mud","clay"], chance: 0.00035 }
+
+elements.sugar_water.reactions.glass_shard = { elem2: "glass_pebble", color2:"#7BAECB", chance: 0.0005 }
+
+elements.sugar_water.reactions.rad_shard = { elem2: "glass_pebble", color2:"#AECB83", chance: 0.00025 }
+
+elements.sugar_water.reactions.glass = { elem2: "glass_pebble", color2:"#7BAECB", chance: 0.00005 }
+
+elements.sugar_water.reactions.rad_glass = { elem2: "glass_pebble", color2:"#AECB83", chance: 0.000025 }
+
+elements.sugar_water.reactions.rust = { elem1:"dirty_water", elem2: "rust_dust", chance: 0.0025 }
+
+elements.sugar_water.reactions.rust_dust = { elem1:"dirty_water", chance: 0.0025 }
+
+elements.sugar_water.reactions.plastic = { elem1: "microplastic_water", elem2: ["microplastic",null,null], chance: 0.00005 }
+
+elements.dirty_water.reactions.mudstone = { elem2: ["mud","mud","clay"], chance: 0.00035 }
+
+elements.dirty_water.reactions.glass_shard = { elem2: "glass_pebble", color2:"#7BAECB", chance: 0.0005 }
+
+elements.dirty_water.reactions.rad_shard = { elem2: "glass_pebble", color2:"#AECB83", chance: 0.00025 }
+
+elements.dirty_water.reactions.glass = { elem2: "glass_pebble", color2:"#7BAECB", chance: 0.00005 }
+
+elements.dirty_water.reactions.rad_glass = { elem2: "glass_pebble", color2:"#AECB83", chance: 0.000025 }
+
+elements.dirty_water.reactions.rust = { elem1:"dirty_water", elem2: "rust_dust", chance: 0.0025 }
+
+elements.dirty_water.reactions.plastic = { elem1: "microplastic_water", elem2: ["microplastic",null,null], chance: 0.00005 }
+
+elements.smash.tool = function(pixel) {
+    let old = pixel.element;
+    if (elements[pixel.element].breakInto || elements[pixel.element].onBreak) {
+        // times 0.25 if not shiftDown else 1
+        if (Math.random() > (elements[pixel.element].hardness || 0) * (shiftDown ? 0.25 : 1)) {
+            breakPixel(pixel);
+        }
+    }
+    else if (old === pixel.element && elements[pixel.element].movable && !isEmpty(pixel.x,pixel.y+1) && !paused) {
+        let x = 0; let y = 0;
+        if (Math.random() < 0.66) x = Math.random() < 0.5 ? 1 : -1;
+        if (Math.random() < 0.66) y = Math.random() < 0.5 ? 1 : -1;
+        tryMove(pixel,pixel.x+x,pixel.y+y)
+    }
+}
