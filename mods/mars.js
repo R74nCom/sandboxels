@@ -1,7 +1,7 @@
 elements.mars_gunk = {
     color: "#121212",
     behavior: behaviors.DGAS,
-    category: "gunk",
+    category: "archived",
     state: "gases",
     extraInfo: "GUNK",
     stain: 0.7
@@ -97,11 +97,11 @@ elements.mars_ironheart = {
 elements.mars_furnace = {
     color: ["#870002","#870507"],
     behavior: [
-        "XX|CR:mars_gunk%12|XX",
+        "XX|CR:mars_gunk%8|XX",
         "XX|XX|XX",
         "XX|XX|XX",
     ],
-    category: "furnaces",
+    category: "archived",
     state: "solid",
     hardness: 0.6,
     stateHigh: "molten_mars",
@@ -110,7 +110,7 @@ elements.mars_furnace = {
 elements.nosmoker = {
     color: ["#870002", "#870507"],
     behavior: behaviors.WALL,
-    category: "furnaces",
+    category: "mars",
     state: "solid",
     extraInfo: "Used to turn Ironheart into Ironheart Solids"
 }
@@ -122,15 +122,15 @@ elements.ironheart = {
         "M1|M1|M1|",
     ],
     category: "mars",
-    density: 900,
+    density: 1450,
     state: "solid",
     stateHigh: "molten_mars",
-    extraInfo: "Very Good and Sturdy."
+    extraInfo: "Very Sturdy."
 }
 elements.antigunk = {
     color: "#cecece",
     behavior: behaviors.DGAS,
-    category: "gunk",
+    category: "archived",
     state: "gas",
     extraInfo: "GUNK",
     stain: -0.7
@@ -163,11 +163,33 @@ elements.liquid_red_gold = {
     category: "mars",
     state: "liquid",
     density: 8,
-    extraInfo: "Red Gold but a fludid.",
+    extraInfo: "Red Gold but a fluid.",
     temp: 5500
 }
+elements.liquid_mars_dust = {
+    color: "#DB3629",
+    behavior: behaviors.LIQUID,
+    category: "archived",
+    state: "liquid",
+    extraInfo: "Mars Dust Fluid. Removed 04/02/25."
+}
+elements.legacy_liquid_mars_dust = {
+    color: "#DB3629",
+    behavior: behaviors.SUPERFLUID,
+    category: "archived",
+    state: "liquid",
+    extraInfo: "Mars Dust Superfluid. Changed at the start."
+}
+elements.testy = {
+    color: "#FFFFFF",
+    behavior: behaviors.WALL,
+    category: "archived",
+    state: "solid",
+    extraInfo: "Don't mind me, just a test. Removed 06/02/25?"
+}
 
-// 1.4.4
+
+// 1.4.6
 // most elements done :D
 // iron heart ore
 // iron heart
@@ -176,4 +198,9 @@ elements.liquid_red_gold = {
 //anti gunk
 // new mars and gunk catagory
 // made things sink
-// last things changes
+//changes
+// ryan pushed it thx ryan
+// removing mars_furnace so yeah
+// no anti gunk or gunk anymore
+// im putting in the archive
+// spelling error
