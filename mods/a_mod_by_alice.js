@@ -5691,7 +5691,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		canvasLayersPostRenderers = [];
 		drawLayers = function(includeBackground) {
 			//console.log("dl tick");
-			if (ctx === null) return
+			if (ctx === null || ctx === undefined) return
 			clearLayers();
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			findColorPulseTimerSubTimer++;
@@ -44735,7 +44735,7 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 		};
 	//NO GAMMA RAY SPAWNERS OR FILLERS IN RANDOM ##
 		runAfterLoad(function() {
-			randomBlacklist = ["quark_matter", "liquid_neutronium", "molten_neutronium", "neutronium", "neutronium_gas", "colored_fi	ller", "copycat_filler", "insulating_filler"];
+			randomBlacklist = ["quark_matter", "liquid_neutronium", "molten_neutronium", "neutronium", "neutronium_gas", "colored_filler", "copycat_filler", "insulating_filler"];
 			for(i = 0; i < randomBlacklist.length; i++) {
 				var element = randomBlacklist[i];
 				if(elements[element]) { elements[element].excludeRandom = true };
@@ -45678,7 +45678,7 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 
 	//END ##
 		console.log("Mod loaded");
-		logMessage("a_mod_by_alice.js requires many other mods. Many of the elements and features added with it installed are actually added by the other mods it depends on.")
+		window.addEventListener("load",function() {logMessage("a_mod_by_alice.js requires many other mods. Many of the elements and features added with it installed are actually added by the other mods it depends on.")})
 } catch (error) {
 	alert(`Load failed (try reloading).\nThis is likely a sporadic failure caused by inconsistencies in how mods are loaded, and will likely fix itself in a refresh or two. If it persists, then it's an issue.\nError: ${error.stack}`);
 	console.error(error)
