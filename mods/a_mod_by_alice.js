@@ -44735,7 +44735,7 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 		};
 	//NO GAMMA RAY SPAWNERS OR FILLERS IN RANDOM ##
 		runAfterLoad(function() {
-			randomBlacklist = ["quark_matter", "liquid_neutronium", "molten_neutronium", "neutronium", "neutronium_gas", "colored_ifller", "copycat_filler"];
+			randomBlacklist = ["quark_matter", "liquid_neutronium", "molten_neutronium", "neutronium", "neutronium_gas", "colored_fi	ller", "copycat_filler", "insulating_filler"];
 			for(i = 0; i < randomBlacklist.length; i++) {
 				var element = randomBlacklist[i];
 				if(elements[element]) { elements[element].excludeRandom = true };
