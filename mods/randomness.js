@@ -662,17 +662,12 @@ if(enabledMods.includes(libraryMod)) {
 		minecraftModEnabled = true
 	}
 
-	//maxColorOffset will only be applied if maxColorOffset.js is enabled
 	elements.silk_velvet = {
 		color: ["#edece8", "#ede7e4"],
-		maxColorOffset: 7,
-		category: "land",
+		grain: 0.5,
+		category: "solids",
 		state: "solid",
-		behavior: [
-			"XX|XX|XX",
-			"XX|XX|XX",
-			"XX|M1|XX",
-		],
+		behavior: behaviors.STURDYPOWDER,
 		burnInto: "ash",
 		burn:72,
 		burnTime:25,
@@ -681,15 +676,11 @@ if(enabledMods.includes(libraryMod)) {
 
 	elements.red_velvet = {
 		color: ["#a80508", "#b30b0e"],
-		maxColorOffset: 7,
-		category: "land",
+		grain: 0.5,
+		category: "solids",
 		state: "solid",
-		behavior: [
-			"XX|XX|XX",
-			"XX|XX|XX",
-			"XX|M1|XX",
-		],
-		tick: function() { //alias for velvet that is red
+		behavior: behaviors.STURDYPOWDER,
+		tick: function(pixel) { //alias for velvet that is red
 			pixel.element = "silk_velvet";
 		},
 		burnInto: "ash",
