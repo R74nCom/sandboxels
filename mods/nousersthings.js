@@ -2249,6 +2249,21 @@ elements.gas_filter = {
 function weightedAverage(num1, num2, weight){
     return ((weight * num1)+((1-weight)*num2))
 }
+function getPixelColor(pixel){
+    let rgb2;
+    if(pixel.color.startsWith("#")) {
+        rgb2 = pixel.color.match(/[0-9A-F]{2}/ig).map(x => parseInt(x,16));
+    } else if(pixel.color.startsWith("hsl")) {
+        var hsl = pixel.color.match(/\d+/g);
+        hsl[0] = (hsl[0] / 360) % 360; if(hsl[0] < 0) { hsl[0]++ };
+        hsl[1] = Math.max(Math.min(hsl[1] / 100,1),0);
+        hsl[2] = Math.max(Math.min(hsl[2] / 100,1),0);
+        rgb2 = HSLtoRGB(hsl)
+    } else {
+        rgb2 = pixel.color.match(/\d+/g);
+    }
+    return rgb2
+}
 elements.dyer = {
     customColor: true,
     color: ["#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"],
@@ -2265,7 +2280,7 @@ elements.dyer = {
                 if (!(pixelMap[x][y].element == "dyer")){
                     var newPixel = pixelMap[x][y];
                     var rgb1 = pixel.color.match(/\d+/g);
-                    var rgb2 = newPixel.color.match(/\d+/g);
+                    var rgb2 = getPixelColor(newPixel)
                     // average the colors
                     var rgb = [
                         weightedAverage(parseInt(rgb1[0]), parseInt(rgb2[0]), 0.2),
@@ -2702,7 +2717,7 @@ elements.healing_serum = {
         // interpolate pixel color and decidedpixel's color (if it has one!)
         if (pixel.decidedPixel){
             var color1 = pixel.color.match(/\d+/g);
-            var color2 = pixel.decidedPixel.color.match(/\d+/g);
+            var color2 = getPixelColor(pixel.decidedPixel)
             var ratio = pixel.wait/15
             drawSquare(ctx, `rgb(${color1[0]*ratio+color2[0]*(1-ratio)},${color1[1]*ratio+color2[1]*(1-ratio)},${color1[2]*ratio+color2[2]*(1-ratio)})`, pixel.x, pixel.y)
         }
@@ -2789,7 +2804,7 @@ elements.ray = {
     movable: true,
     category: "special",
     hoverStat: function(pixel){
-        return pixel.life.toString() || "unset"
+        return (pixel.life || "unset").toString()
     },
     properties: {
         life: 10,
@@ -3793,16 +3808,17 @@ elements.pipe_transmitter = {
             pixel.channel = pipe_transmitter_channelVar;
         }
         if (pixel.channel && pixel.con){
-            for (x in pixelMap){
-                for (y in pixelMap[x]){
-                    if (!isEmpty(x, y, true)){
-                        if (pixelMap[x][y].element == "pipe_receiver" && pixelMap[x][y].channel == pixel.channel && !pixelMap[x][y].con){
-                           pixelMap[x][y].con = pixel.con;
-                           delete pixel.con;
-                           break;
-                        }
-                    }
-                }
+            let valid = currentPixels.filter(pixel2 => 
+                pixel2.element == "pipe_receiver" && pixel2.channel === pixel.channel && !(pixel2.con)
+            )
+            if (valid.length){
+                console.log(valid)
+                shuffleArray(valid);
+                console.log(valid)
+                pixel.con.x = valid[0].x
+                pixel.con.y = valid[0].y
+                pixelMap[valid[0].x][valid[0].y].con = pixel.con
+                delete pixel.con
             }
         }
     }
@@ -3833,16 +3849,60 @@ elements.pipe_receiver = {
                             if (pixelMap[x][y].channel == pixel.channel && !pixelMap[x][y].con){
                                 pixelMap[x][y].con = pixel.con;
                                 delete pixel.con;
+                                break;
                             }
                         } else {
                             pixel.con.x = x;
                             pixel.con.y = y;
                             pixelMap[x][y].con = pixel.con;
                             delete pixel.con;
+                            break;
                         }
                     }
                 }
             }
         }
     }
+}
+elements.false_vacuum_decay_bomb = {
+    color: "#3f0b0b",
+    category: "weapons",
+    behavior: behaviors.STURDYPOWDER,
+    tick: function(pixel){
+        if (!isEmpty(pixel.x, pixel.y+1, true)){
+            changePixel(pixel, "false_vacuum")
+        }
+    }
+}
+elements.false_vacuum = {
+    color: "#b41b1b",
+    category: "special",
+    hidden: true,
+    tick: function(pixel){
+        if (!pixel.timeAlive){
+            pixel.timeAlive = 0
+        }
+        pixel.color = `rgb(${180/(pixel.timeAlive+2)}, ${27/(pixel.timeAlive+2)}, ${27/(pixel.timeAlive+2)})`
+        if (pixel.timeAlive === 0){
+            for (i = 0; i < squareCoords.length; i++){
+                let x = squareCoords[i][0] + pixel.x;
+                let y = squareCoords[i][1] + pixel.y;
+                if (!isEmpty(x, y, true)){
+                    if (pixelMap[x][y].element !== "false_vacuum"){
+                        deletePixel(x, y)
+                        createPixel("false_vacuum", x, y)
+                    }
+                } else if (isEmpty(x, y)){
+                    createPixel("false_vacuum", x, y)
+                }
+            }
+        }
+        pixel.timeAlive ++;
+        if (pixel.timeAlive > 20){
+            deletePixel(pixel.x, pixel.y)
+            return
+        }
+    },
+    movable: false,
+    hardness: 1
 }
