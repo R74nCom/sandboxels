@@ -70,6 +70,7 @@ elements.dark_brown_sugar = {
     behavior: behaviors.SUPPORTPOWDER,
     category: "food",
     state: "powder",
+    stateHigh: "caramel", //am i an idiot for taking this long to figure out how to edit my code? yes. i am.
     reactions: {
         "water": { elem1: "sugar_water", elem2: null },
     }
@@ -81,6 +82,7 @@ elements.icing_sugar = {
     behavior: behaviors.SUPPORTPOWDER,
     category: "food",
     state: "powder",
+    stateHigh: "caramel",
     reactions: {
         "water": { elem1: null , elem2: "icing" },
     }
@@ -92,6 +94,7 @@ elements.golden_caster_sugar = {
     behavior: behaviors.POWDER,
     category: "food",
     state: "powder",
+    stateHigh: "caramel",
     reactions: {
         "water": { elem1: "sugar_water" , elem2: null },
     }
@@ -104,6 +107,7 @@ elements.caster_sugar = {
     behavior: behaviors.POWDER,
     category: "food",
     state: "powder",
+    stateHigh: "caramel",
     reactions: {
         "water": { elem1: "sugar_water" , elem2: null },
     }
@@ -114,6 +118,7 @@ elements.light_brown_sugar = {
     behavior: behaviors.SUPPORTPOWDER,
     category: "food",
     state: "powder",
+    stateHigh: "caramel",
     reactions: {
         "water": { elem1: "sugar_water" , elem2: null },
     }
@@ -125,6 +130,7 @@ elements.demerara_sugar = {
     behavior: behaviors.POWDER,
     category: "food",
     state: "powder",
+    stateHigh: "caramel",
     reactions: {
         "water": { elem1: "sugar_water" , elem2: null },
     }
@@ -136,6 +142,7 @@ elements.dark_muscovado_sugar = {
     behavior: behaviors.SUPPORTPOWDER,
     category: "food",
     state: "powder",
+    stateHigh: "caramel",
     reactions: {
         "water": { elem1: "sugar_water" , elem2: null },
     }
@@ -148,6 +155,7 @@ elements.granulated_sugar = {
     behavior: behaviors.POWDER,
     category: "food",
     state: "powder",
+    stateHigh: "caramel",
     reactions: {
         "water": { elem1: "sugar_water" , elem2: null },
     }
@@ -159,6 +167,7 @@ elements.icing = {
     behavior: behaviors.LIQUID,
     category: "food",
     state: "powder",
+    stateHigh: "caramel",
     viscosity: 2000,
 };
 
