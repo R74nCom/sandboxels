@@ -3921,7 +3921,7 @@ elements.sign = {
 renderPostPixel(function(ctx){
     for (pixel of currentPixels){
         if (pixel.element == "sign" && pixel.sign){
-            ctx.font = `12pt PressStart2P`
+            ctx.font = `12pt Arial`
             ctx.fillStyle = pixel.color;
             ctx.fillText(pixel.sign, canvasCoord(pixel.x), canvasCoord(pixel.y))
         }
