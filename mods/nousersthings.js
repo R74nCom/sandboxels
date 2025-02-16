@@ -1575,8 +1575,6 @@ elements.blackhole_storage = {
 	tick: function(pixel) {
 		if (!pixel.bhcontents){
 			pixel.bhcontents = [];
-		} else {
-			pixel.decidedcontent = pixel.bhcontents[Math.floor(Math.random()*pixel.bhcontents.length)];
 		}
 		 for (var i = 0; i < squareCoords.length; i++) {
                 var coord = squareCoords[i];
@@ -1588,15 +1586,15 @@ elements.blackhole_storage = {
 						pixel.bhcontents.push(otherPixel);
 						deletePixel(otherPixel.x, otherPixel.y);
 					}
-                } else if (pixel.charge && isEmpty(x,y) && pixel.decidedcontent){
-					var otherPixel = pixelMap[x][y];
-					pixel.decidedcontent.x = x;
-					pixel.decidedcontent.y = y;
-					delete pixel.decidedcontent.del;
-					otherPixel = pixel.decidedcontent;
-					currentPixels.push(pixel.decidedcontent);
-					pixel.bhcontents.splice(pixel.bhcontents.indexOf(pixel.decidedcontent), 1);
-					pixel.decidedcontent = pixel.bhcontents[Math.floor(Math.random()*pixel.bhcontents.length)];
+                } else if (pixel.charge && isEmpty(x,y) && pixel.bhcontents.length){
+					let randomindex = Math.floor(Math.random()*pixel.bhcontents.length);
+                    let releasedPixel = pixel.bhcontents[randomindex]
+                    pixel.bhcontents.splice(randomindex, 1)
+                    delete releasedPixel.del
+                    releasedPixel.x = x
+                    releasedPixel.y = y
+                    pixelMap[x][y] = releasedPixel
+                    currentPixels.push(releasedPixel)
 				}
             }
 	},
@@ -3906,3 +3904,26 @@ elements.false_vacuum = {
     movable: false,
     hardness: 1
 }
+let signInput = "Hello World!";
+elements.sign = {
+    color: "#FFFFFF",
+    darkText: true,
+    category: "special",
+    onSelect: function(){
+        let signi = prompt("What text should the sign display?", signInput||"Hello World!")
+        signInput = signi;
+    },
+    renderer: function(pixel, ctx){
+        if (!pixel.sign){pixel.sign = signInput}
+    },
+    movable: false
+}
+renderPostPixel(function(ctx){
+    for (pixel of currentPixels){
+        if (pixel.element == "sign" && pixel.sign){
+            ctx.font = `12pt Arial`
+            ctx.fillStyle = pixel.color;
+            ctx.fillText(pixel.sign, canvasCoord(pixel.x), canvasCoord(pixel.y))
+        }
+    }
+})
