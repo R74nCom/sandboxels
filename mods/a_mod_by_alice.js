@@ -5759,6 +5759,38 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		}
 		clearInterval(renderInterval);
 		renderInterval = window.setInterval(drawLayers, 1000/60);
+		viewInfo[4] = {
+			name: 'element',
+			pixel: function(pixel,ctx) {
+				var data = elements[pixel.element];
+				var _color = data.color;
+				if(Array.isArray(_color)) {
+					_color = _color[Math.floor(pixelTicks / 6) % _color.length]
+				};
+				drawSquare(ctx,_color,pixel.x,pixel.y,undefined,1 - (data.alpha ?? 0))
+			}
+		};
+		viewInfo[5] = {
+			name: 'velocity',
+			pixel: function(pixel,ctx) {
+				var data = elements[pixel.element];
+				var vx = pixel.vx ?? 0;
+				var vy = pixel.vy ?? 0;
+				var _color = null;
+				if(vx === 0 && vy === 0) {
+					_color = "rgb(15,15,15)"
+				} else {
+					var magnitude = Math.sqrt ((vx ** 2) + (vy ** 2));
+					var direction = Math.atan2(pixel.vy ?? 0,pixel.vx ?? 0)*180/Math.PI;
+					if(direction < 0) { direction = scale(direction,-180,0,360,180) };
+					hue = direction;
+					sat = 100;
+					lig = bound(scale(magnitude,0,100,10,100),0,100);
+					_color = "hsl("+hue+","+sat+"%,"+lig+"%)";
+				};
+				drawSquare(ctx,_color,pixel.x,pixel.y,undefined,1 - (data.alpha ?? 0))
+			}
+		};
 		canvasLayers.pressure = document.createElement("canvas");
 		canvasLayersPre.push(canvasLayers.pressure);
         function drawPressure() {
@@ -11735,6 +11767,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		};
 		elements.planet_cracker = {
 			color: "#ffc8ba",
+			excludeRandom: true,
 			behavior: behaviors.WALL,
 			properties: {
 				active: true,
@@ -15232,6 +15265,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 				elements.light_petroleum_fuel_gas = { //it's not liquified, and sandboxels doesn't even have a pressure system, and there is no generic name for uncompressed, gaseous "L"PG, so we need a different name
 					burn: 100,
+					burnTime: 10,
 					color: "#b5b5b3",
 					density: 3.5,
 					tempLow: -44,
@@ -15241,10 +15275,17 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							pixel.burnStart = pixelTicks;
 						}
 					},
-					burnInto: "explosion,explosion,fire,fire,fire,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(","),
+					burnInto: "explosion,explosion,ignited_gas,fire,fire,fire,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(","),
 					state: "gas",
 					behavior: behaviors.GAS,
 				};
+				elements.liquid_light_petroleum_fuel = {
+					burn: 50,
+					burnTime: 165,
+					fireElement: ["light_petroleum_fuel_gas","fire","fire"],
+					burnInto: "ignited_gas,fire,fire,smoke,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(","),
+					tempLow: -180 //based off of ethane
+				}
 				elements.lamp_oil.tempHigh = 170;
 				elements.lamp_oil.stateHigh = "lamp_oil_gas";
 				elements.lamp_oil.density = 810;
@@ -21561,7 +21602,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					elements[name] = {
 						behavior: itsActuallySolidNotPowderLol ? behaviors.WALL : behaviors.POWDER,
 						color: color,
-						category: "solids",
+						category: itsActuallySolidNotPowderLol ? "solids" : "powders",
 						state: "solid",
 						density: density ?? 1000,
 					};
@@ -25916,7 +25957,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					goldenZirconColors = ["#e99209","#fcb111","#d88208","#b97605"];
 					//heatTreated 0 = untreated, 1 = inertly (blue), 2 = with oxygen (golden)
 					elements.zircon = {
-						//Corundum with different impurities, so I can copy/paste everything but the color
 						color: ["#37130b","#a9301a","#3c1810"],
 						properties: {
 							heatTreated: 0
@@ -27959,9 +27999,16 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 							console.error("pixelsize: supplied pixel size was zero or negative");
 							return false;
 						} else {
-							document.querySelector('span[setting="pixelsize"]').querySelector("select").selectedIndex = pixelSizeSettingDropdownOtherOptionIndex;
-							settings.pixelsize = argPixelSize;
-							resizeCanvas(ctx.canvas.height,ctx.canvas.width,settings.pixelsize,false)
+							var confirmation = confirm("Due to changes in the game, this command must reset the canvas. Proceed?")
+							if(confirmation) {
+								document.querySelector('span[setting="pixelsize"]').querySelector("select").selectedIndex = pixelSizeSettingDropdownOtherOptionIndex;
+								settings.pixelsize = argPixelSize;
+								resizeCanvas(ctx.canvas.height,ctx.canvas.width,settings.pixelsize,false);
+								clearAll();
+								return argPixelSize
+							} else {
+								return false
+							}
 						};
 					} else {
 						alert(pixelSize);
@@ -28733,7 +28780,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.smash_ray = {
 			color: ["#ff9999", "#8c8279"],
 			tick: function(pixel) {
-				if(pixel.done) { deletePixel(pixel); return };
+				if(!pixel) { return };
+				if(pixel?.done) { deletePixel(pixel.x,pixel.y); return };
 				var x = pixel.x;
 				for (var y = pixel.y; y < height; y++) {
 					if (outOfBounds(x, y)) {
@@ -35763,6 +35811,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 				elements.amba_tsunami = {
 					color: ["#2449d1","#4b6adb","#8093d9"],
+					excludeRandom: true,
 					behavior: behaviors.WALL,
 					properties: {
 						active: true,
@@ -35842,6 +35891,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				elements.megatsunami = {
 					color: ["#1f2aa3","#2641c9","#3a57c9"],
 					behavior: behaviors.WALL,
+					excludeRandom: true,
 					properties: {
 						active: true,
 					},
@@ -35922,6 +35972,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				elements.lava_tsunami = {
 					color: ["#ff370a","#e84a23","#e67740"],
 					behavior: behaviors.WALL,
+					excludeRandom: true,
 					properties: {
 						active: true,
 					},
@@ -36012,6 +36063,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				elements.lava_megatsunami = {
 					color: ["#b32b10","#c24d1f","#d66924"],
 					behavior: behaviors.WALL,
+					excludeRandom: true,
 					properties: {
 						active: true,
 					},
@@ -39929,7 +39981,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			};
 		});
 		function propPrompt() {
-			propProperty = prompt("Enter the property you want to set");
+			propProperty = prompt("(Prop) Enter the property you want to set");
 			propValue = prompt("Enter the value you want to set to");
 			//special check: element
 			if(propProperty === "element") {
@@ -40108,7 +40160,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			if(oldProperty === null) {
 				oldProperty = "temp";
 			};
-			numberAdjusterProperty = prompt("Enter the property you want to change");
+			numberAdjusterProperty = prompt("(Number adjuster) Enter the value you want to change");
 			if(numberAdjusterProperty === null) {
 				numberAdjusterProperty = oldProperty;
 				return false;
