@@ -4,7 +4,7 @@ let channelVar = "0";
 // RF Transmitter Element
 elements.rf_transmitter = {
     color: "#142c47",
-    category: "Machines",
+    category: "machines",
     behavior: behaviors.WALL,
     tempHigh: 250,
     stateHigh: "dirt",

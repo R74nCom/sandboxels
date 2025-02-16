@@ -95,13 +95,3 @@ elements.note_block = {
 		};
 	},
 };
-
-runAfterLoad(function() {
-	elements.note_block.movable = false;
-});
-
-if(runAfterAutogen) {
-	runAfterAutogen(function() {
-		elements.note_block.movable = false;
-	});
-};

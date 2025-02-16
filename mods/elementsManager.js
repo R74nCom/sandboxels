@@ -292,6 +292,7 @@ if (enabledMods.includes("mods/betterMenuScreens.js")) {
         }
         const changes = Storage.get("changes", []);
         for (const change of changes) {
+            if (!elements[change.element]) continue;
             for (const key of Object.keys(change.changes)) {
                 let c = change.changes[key];
                 if (key == "behavior" && Object.keys(behaviors).includes(c)) c = behaviors[c];

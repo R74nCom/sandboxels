@@ -12,6 +12,7 @@ var json = `{
 "food": "",
 "machines": "",
 "special": "",
+"states": "",
 "other": ""`;
 for (var element in elements) {
     json += ',\n"'+element+'": ""'
