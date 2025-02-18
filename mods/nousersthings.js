@@ -3918,12 +3918,58 @@ elements.sign = {
     },
     movable: false
 }
+elements.e_sign = {
+    color: "#f3ff88",
+    darkText: true,
+    category: "special",
+    movable: false,
+    onSelect: () => {
+        let signi = prompt("What text should the sign display?", signInput||"Hello World!")
+        signInput = signi;
+    },
+    renderer: function(pixel, ctx){
+        if (!pixel.sign){pixel.sign=signInput}
+    },
+    conduct: 1
+}
 renderPostPixel(function(ctx){
     for (pixel of currentPixels){
-        if (pixel.element == "sign" && pixel.sign){
+        if ((pixel.element == "sign") && pixel.sign){
             ctx.font = `12pt Arial`
             ctx.fillStyle = pixel.color;
             ctx.fillText(pixel.sign, canvasCoord(pixel.x), canvasCoord(pixel.y))
+        } else if (pixel.element == "e_sign" && pixel.sign){
+            if (pixel.charge || pixel.chargeCD){
+                ctx.font = `12pt Arial`
+                ctx.fillStyle = pixel.color;
+                ctx.fillText(pixel.sign, canvasCoord(pixel.x), canvasCoord(pixel.y))
+            } else {
+                drawSquare(ctx, pixel.color, pixel.x, pixel.y)
+            }
         }
     }
 })
+let machinemodName = "nousersthings.js"
+elements.mod_dectector = {
+    color: "#54681d",
+    behavior: behaviors.WALL,
+    category: "machines",
+    movable: false,
+    excludeRandom: true,
+    onSelect: () => {
+        let newMod = prompt("What mod should this machine detect?", "nousersthings.js"||modName)
+        machinemodName = newMod
+    },
+    tick: (pixel) => {
+        if (!pixel.mod){pixel.mod = machinemodName}
+        if (enabledMods.includes("mods/" + pixel.mod)){
+            for (let i = 0; i < adjacentCoords.length; i++){
+                let x = adjacentCoords[i][0] + pixel.x;
+                let y = adjacentCoords[i][1] + pixel.y;
+                if (!isEmpty(x, y, true) && elements[pixelMap[x][y].element].conduct){
+                    pixelMap[x][y].charge = 1
+                }
+            }
+        }
+    }
+}
