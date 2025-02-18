@@ -579,7 +579,7 @@ elements.purificanol = {
     state: "liquid",
     desc: "soap 3.0",
     extinguish: true,
-    stain: 0.1,
+    stain: -0.5,
     behaviorOn: [
     ["XX","CO:5","XX"],
     ["CO:5","XX","CO:5"],
