@@ -180,7 +180,7 @@ behaviorRules.ADB = function() {
     },
 
 doBioNorm = function(pixel) {
-if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (Math.random() < (pixel.alcoDepri / 100) && pixel.alcoholic === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (Math.random() > 0.60 && pixel.sick === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (Math.random() > 0.5 && pixel.poisoned === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 53 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0) || Math.random() > 0.85 && Math.random() < (pixel.burnt / 100)) {
+if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (Math.random() < (pixel.fentDepri / 100) && pixel.fenAddict === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (Math.random() < (pixel.alcoDepri / 100) && pixel.alcoholic === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (Math.random() > 0.60 && pixel.sick === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (Math.random() > 0.5 && pixel.poisoned === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 53 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0) || Math.random() > 0.85 && Math.random() < (pixel.burnt / 100)) {
     pixel.nutrition -= 0.5
     pixel.oxygen--
 }
@@ -238,6 +238,13 @@ if (pixel.alcoTime < (pixelTicks - 10000) && pixel.alcoholic === true && Math.ra
     pixel.alcoholic = false
     pixel.alcoRecover = true
 }
+if ((pixel.fentDepri || pixel.fentDepri === 0) && pixel.fenAddict === true) {
+    pixel.fentDepri += 1
+}
+if (pixel.poisonImmune === true) {
+    pixel.fentDepri = undefined
+    pixel.fenAddict = false
+}
 if (pixel.poisonImmune === true && pixel.poisoned != false) {
     pixel.poisoned = false
 }
@@ -292,6 +299,9 @@ if (!isEmpty(pixel.x, pixel.y-1, true)) {
         if (hitPixel.alcoRecover !== true && pixel.alcoRecover) {
             hitPixel.alcoRecover = true
         }
+        if (hitPixel.fentDepri < pixel.fentDepri && pixel.fentDepri) {
+            hitPixel.fentDepri = pixel.fentDepri
+        }
         if (hitPixel.sick != true && pixel.sick == true && Math.random() > 0.95) {
             hitPixel.sick = true
         }
@@ -331,6 +341,18 @@ if (!isEmpty(pixel.x, pixel.y+1, true)) {
             hitPixel.speed += 1
             pixel.speed -= 1
         }
+        if (hitPixel.oxygen > pixel.oxygen) {
+            hitPixel.oxygen -= (elements[hitPixel.element].oxygTrans)
+            pixel.oxygen += (elements[hitPixel.element].oxygTrans)
+        }
+        if (hitPixel.nutrition > pixel.nutrition) {
+            hitPixel.nutrition -= (elements[hitPixel.element].nutrTrans)
+            pixel.nutrition += (elements[hitPixel.element].nutrTrans)
+        }
+        if (hitPixel.speed > pixel.speed) {
+            hitPixel.speed -= 1
+            pixel.speed += 1
+        }
         if (hitPixel.alcoholic !== true && pixel.alcoholic === true && Math.random() > 0.85) {
             hitPixel.alcoholic = true
             hitPixel.alcoTime = pixel.alcoTime
@@ -345,17 +367,8 @@ if (!isEmpty(pixel.x, pixel.y+1, true)) {
         if (hitPixel.alcoRecover !== true && pixel.alcoRecover) {
             hitPixel.alcoRecover = true
         }
-        if (hitPixel.oxygen > pixel.oxygen) {
-            hitPixel.oxygen -= (elements[hitPixel.element].oxygTrans)
-            pixel.oxygen += (elements[hitPixel.element].oxygTrans)
-        }
-        if (hitPixel.nutrition > pixel.nutrition) {
-            hitPixel.nutrition -= (elements[hitPixel.element].nutrTrans)
-            pixel.nutrition += (elements[hitPixel.element].nutrTrans)
-        }
-        if (hitPixel.speed > pixel.speed) {
-            hitPixel.speed -= 1
-            pixel.speed += 1
+        if (hitPixel.fentDepri < pixel.fentDepri && pixel.fentDepri) {
+            hitPixel.fentDepri = pixel.fentDepri
         }
         if (hitPixel.sick != true && pixel.sick == true && Math.random() > 0.95) {
             hitPixel.sick = true
@@ -367,7 +380,6 @@ if (!isEmpty(pixel.x, pixel.y+1, true)) {
             hitPixel.poisoned = true
         }
         if (hitPixel.immune != true && pixel.immune == true && Math.random() > 0.75) {
-            hitPixel.poisoned = false
             hitPixel.immune = true
         }
         if (hitPixel.burnt > 0 && (!pixel.burnt || pixel.burnt < hitPixel.burnt && pixel.burnt < 51) && Math.random() > 0.8) {
@@ -397,6 +409,18 @@ if (!isEmpty(pixel.x-1, pixel.y, true)) {
             hitPixel.speed += 1
             pixel.speed -= 1
         }
+        if (hitPixel.oxygen > pixel.oxygen) {
+            hitPixel.oxygen -= (elements[hitPixel.element].oxygTrans)
+            pixel.oxygen += (elements[hitPixel.element].oxygTrans)
+        }
+        if (hitPixel.nutrition > pixel.nutrition) {
+            hitPixel.nutrition -= (elements[hitPixel.element].nutrTrans)
+            pixel.nutrition += (elements[hitPixel.element].nutrTrans)
+        }
+        if (hitPixel.speed > pixel.speed) {
+            hitPixel.speed -= 1
+            pixel.speed += 1
+        }
         if (hitPixel.alcoholic !== true && pixel.alcoholic === true && Math.random() > 0.85) {
             hitPixel.alcoholic = true
             hitPixel.alcoTime = pixel.alcoTime
@@ -411,17 +435,8 @@ if (!isEmpty(pixel.x-1, pixel.y, true)) {
         if (hitPixel.alcoRecover !== true && pixel.alcoRecover) {
             hitPixel.alcoRecover = true
         }
-        if (hitPixel.oxygen > pixel.oxygen) {
-            hitPixel.oxygen -= (elements[hitPixel.element].oxygTrans)
-            pixel.oxygen += (elements[hitPixel.element].oxygTrans)
-        }
-        if (hitPixel.nutrition > pixel.nutrition) {
-            hitPixel.nutrition -= (elements[hitPixel.element].nutrTrans)
-            pixel.nutrition += (elements[hitPixel.element].nutrTrans)
-        }
-        if (hitPixel.speed > pixel.speed) {
-            hitPixel.speed -= 1
-            pixel.speed += 1
+        if (hitPixel.fentDepri < pixel.fentDepri && pixel.fentDepri) {
+            hitPixel.fentDepri = pixel.fentDepri
         }
         if (hitPixel.sick != true && pixel.sick == true && Math.random() > 0.95) {
             hitPixel.sick = true
@@ -433,7 +448,6 @@ if (!isEmpty(pixel.x-1, pixel.y, true)) {
             hitPixel.poisoned = true
         }
         if (hitPixel.immune != true && pixel.immune == true && Math.random() > 0.75) {
-            hitPixel.poisoned = false
             hitPixel.immune = true
         }
         if (hitPixel.burnt > 0 && (!pixel.burnt || pixel.burnt < hitPixel.burnt && pixel.burnt < 51) && Math.random() > 0.8) {
@@ -489,6 +503,9 @@ if (!isEmpty(pixel.x+1, pixel.y, true)) {
         if (hitPixel.alcoRecover !== true && pixel.alcoRecover) {
             hitPixel.alcoRecover = true
         }
+        if (hitPixel.fentDepri < pixel.fentDepri && pixel.fentDepri) {
+            hitPixel.fentDepri = pixel.fentDepri
+        }
         if (hitPixel.sick != true && pixel.sick == true && Math.random() > 0.95) {
             hitPixel.sick = true
         }
@@ -499,7 +516,6 @@ if (!isEmpty(pixel.x+1, pixel.y, true)) {
             hitPixel.poisoned = true
         }
         if (hitPixel.immune != true && pixel.immune == true && Math.random() > 0.75) {
-            hitPixel.poisoned = false
             hitPixel.immune = true
         }
         if (hitPixel.burnt > 0 && (!pixel.burnt || pixel.burnt < hitPixel.burnt && pixel.burnt < 51) && Math.random() > 0.8) {
@@ -615,6 +631,9 @@ if (!isEmpty(pixel.x, pixel.y-1, true)) {
         if (hitPixel.alcoRecover !== true && pixel.alcoRecover) {
             hitPixel.alcoRecover = true
         }
+        if (hitPixel.fentDepri < pixel.fentDepri && pixel.fentDepri) {
+            hitPixel.fentDepri = pixel.fentDepri
+        }
         if (hitPixel.sick != true && pixel.sick == true && Math.random() > 0.95) {
             hitPixel.sick = true
         }
@@ -693,6 +712,9 @@ if (!isEmpty(pixel.x, pixel.y+1, true)) {
         }
         if (hitPixel.alcoRecover !== true && pixel.alcoRecover) {
             hitPixel.alcoRecover = true
+        }
+        if (hitPixel.fentDepri < pixel.fentDepri && pixel.fentDepri) {
+            hitPixel.fentDepri = pixel.fentDepri
         }
         if (hitPixel.sick != true && pixel.sick == true && Math.random() > 0.95) {
             hitPixel.sick = true
@@ -773,6 +795,9 @@ if (!isEmpty(pixel.x-1, pixel.y, true)) {
         if (hitPixel.alcoRecover !== true && pixel.alcoRecover) {
             hitPixel.alcoRecover = true
         }
+        if (hitPixel.fentDepri < pixel.fentDepri && pixel.fentDepri) {
+            hitPixel.fentDepri = pixel.fentDepri
+        }
         if (hitPixel.sick != true && pixel.sick == true && Math.random() > 0.95) {
             hitPixel.sick = true
         }
@@ -851,6 +876,9 @@ if (!isEmpty(pixel.x+1, pixel.y, true)) {
         }
         if (hitPixel.alcoRecover !== true && pixel.alcoRecover) {
             hitPixel.alcoRecover = true
+        }
+        if (hitPixel.fentDepri < pixel.fentDepri && pixel.fentDepri) {
+            hitPixel.fentDepri = pixel.fentDepri
         }
         if (hitPixel.sick != true && pixel.sick == true && Math.random() > 0.95) {
             hitPixel.sick = true
@@ -976,12 +1004,24 @@ if (!isEmpty(pixel.x, pixel.y-1, true)) {
             pixel.oxygen -= (elements[pixel.element].oxygTrans)
         }
         if (hitPixel.nutrition < pixel.nutrition) {
-            hitPixel.nutrition += elements[pixel.element].nutrTrans
-            pixel.nutrition -= elements[pixel.element].nutrTrans
+            hitPixel.nutrition += (elements[pixel.element].nutrTrans)
+            pixel.nutrition -= (elements[pixel.element].nutrTrans)
         }
         if (hitPixel.speed < pixel.speed) {
             hitPixel.speed += 1
             pixel.speed -= 1
+        }
+        if (hitPixel.oxygen > pixel.oxygen) {
+            hitPixel.oxygen -= (elements[hitPixel.element].oxygTrans)
+            pixel.oxygen += (elements[hitPixel.element].oxygTrans)
+        }
+        if (hitPixel.nutrition > pixel.nutrition) {
+            hitPixel.nutrition -= (elements[hitPixel.element].nutrTrans)
+            pixel.nutrition += (elements[hitPixel.element].nutrTrans)
+        }
+        if (hitPixel.speed > pixel.speed) {
+            hitPixel.speed -= 1
+            pixel.speed += 1
         }
         if (hitPixel.alcoholic !== true && pixel.alcoholic === true && Math.random() > 0.85) {
             hitPixel.alcoholic = true
@@ -997,16 +1037,19 @@ if (!isEmpty(pixel.x, pixel.y-1, true)) {
         if (hitPixel.alcoRecover !== true && pixel.alcoRecover) {
             hitPixel.alcoRecover = true
         }
-        if (hitPixel.sick != true && pixel.sick == true && Math.random() > 0.85) {
+        if (hitPixel.fentDepri < pixel.fentDepri && pixel.fentDepri) {
+            hitPixel.fentDepri = pixel.fentDepri
+        }
+        if (hitPixel.sick != true && pixel.sick == true && Math.random() > 0.95) {
             hitPixel.sick = true
         }
-        if (hitPixel.poisonImmune != true && pixel.poisonImmune == true && Math.random() > 0.65) {
+        if (hitPixel.poisonImmune != true && pixel.poisonImmune == true && Math.random() > 0.75) {
             hitPixel.poisonImmune = true
         }
-        if (hitPixel.poisoned != true && pixel.poisoned == true && Math.random() > 0.85) {
+        if (hitPixel.poisoned != true && pixel.poisoned == true && Math.random() > 0.95) {
             hitPixel.poisoned = true
         }
-        if (hitPixel.immune != true && pixel.immune == true && Math.random() > 0.65) {
+        if (hitPixel.immune != true && pixel.immune == true && Math.random() > 0.75) {
             hitPixel.immune = true
         }
         if (hitPixel.burnt > 0 && (!pixel.burnt || pixel.burnt < hitPixel.burnt && pixel.burnt < 51) && Math.random() > 0.8) {
@@ -1025,12 +1068,24 @@ if (!isEmpty(pixel.x, pixel.y+1, true)) {
             pixel.oxygen -= (elements[pixel.element].oxygTrans)
         }
         if (hitPixel.nutrition < pixel.nutrition) {
-            hitPixel.nutrition += elements[pixel.element].nutrTrans
-            pixel.nutrition -= elements[pixel.element].nutrTrans
+            hitPixel.nutrition += (elements[pixel.element].nutrTrans)
+            pixel.nutrition -= (elements[pixel.element].nutrTrans)
         }
         if (hitPixel.speed < pixel.speed) {
             hitPixel.speed += 1
             pixel.speed -= 1
+        }
+        if (hitPixel.oxygen > pixel.oxygen) {
+            hitPixel.oxygen -= (elements[hitPixel.element].oxygTrans)
+            pixel.oxygen += (elements[hitPixel.element].oxygTrans)
+        }
+        if (hitPixel.nutrition > pixel.nutrition) {
+            hitPixel.nutrition -= (elements[hitPixel.element].nutrTrans)
+            pixel.nutrition += (elements[hitPixel.element].nutrTrans)
+        }
+        if (hitPixel.speed > pixel.speed) {
+            hitPixel.speed -= 1
+            pixel.speed += 1
         }
         if (hitPixel.alcoholic !== true && pixel.alcoholic === true && Math.random() > 0.85) {
             hitPixel.alcoholic = true
@@ -1046,16 +1101,19 @@ if (!isEmpty(pixel.x, pixel.y+1, true)) {
         if (hitPixel.alcoRecover !== true && pixel.alcoRecover) {
             hitPixel.alcoRecover = true
         }
-        if (hitPixel.sick != true && pixel.sick == true && Math.random() > 0.85) {
+        if (hitPixel.fentDepri < pixel.fentDepri && pixel.fentDepri) {
+            hitPixel.fentDepri = pixel.fentDepri
+        }
+        if (hitPixel.sick != true && pixel.sick == true && Math.random() > 0.95) {
             hitPixel.sick = true
         }
-        if (hitPixel.poisonImmune != true && pixel.poisonImmune == true && Math.random() > 0.65) {
+        if (hitPixel.poisonImmune != true && pixel.poisonImmune == true && Math.random() > 0.75) {
             hitPixel.poisonImmune = true
         }
-        if (hitPixel.poisoned != true && pixel.poisoned == true && Math.random() > 0.85) {
+        if (hitPixel.poisoned != true && pixel.poisoned == true && Math.random() > 0.95) {
             hitPixel.poisoned = true
         }
-        if (hitPixel.immune != true && pixel.immune == true && Math.random() > 0.65) {
+        if (hitPixel.immune != true && pixel.immune == true && Math.random() > 0.75) {
             hitPixel.immune = true
         }
         if (hitPixel.burnt > 0 && (!pixel.burnt || pixel.burnt < hitPixel.burnt && pixel.burnt < 51) && Math.random() > 0.8) {
@@ -1074,12 +1132,24 @@ if (!isEmpty(pixel.x-1, pixel.y, true)) {
             pixel.oxygen -= (elements[pixel.element].oxygTrans)
         }
         if (hitPixel.nutrition < pixel.nutrition) {
-            hitPixel.nutrition += elements[pixel.element].nutrTrans
-            pixel.nutrition -= elements[pixel.element].nutrTrans
+            hitPixel.nutrition += (elements[pixel.element].nutrTrans)
+            pixel.nutrition -= (elements[pixel.element].nutrTrans)
         }
         if (hitPixel.speed < pixel.speed) {
             hitPixel.speed += 1
             pixel.speed -= 1
+        }
+        if (hitPixel.oxygen > pixel.oxygen) {
+            hitPixel.oxygen -= (elements[hitPixel.element].oxygTrans)
+            pixel.oxygen += (elements[hitPixel.element].oxygTrans)
+        }
+        if (hitPixel.nutrition > pixel.nutrition) {
+            hitPixel.nutrition -= (elements[hitPixel.element].nutrTrans)
+            pixel.nutrition += (elements[hitPixel.element].nutrTrans)
+        }
+        if (hitPixel.speed > pixel.speed) {
+            hitPixel.speed -= 1
+            pixel.speed += 1
         }
         if (hitPixel.alcoholic !== true && pixel.alcoholic === true && Math.random() > 0.85) {
             hitPixel.alcoholic = true
@@ -1095,16 +1165,19 @@ if (!isEmpty(pixel.x-1, pixel.y, true)) {
         if (hitPixel.alcoRecover !== true && pixel.alcoRecover) {
             hitPixel.alcoRecover = true
         }
-        if (hitPixel.sick != true && pixel.sick == true && Math.random() > 0.85) {
+        if (hitPixel.fentDepri < pixel.fentDepri && pixel.fentDepri) {
+            hitPixel.fentDepri = pixel.fentDepri
+        }
+        if (hitPixel.sick != true && pixel.sick == true && Math.random() > 0.95) {
             hitPixel.sick = true
         }
-        if (hitPixel.poisonImmune != true && pixel.poisonImmune == true && Math.random() > 0.65) {
+        if (hitPixel.poisonImmune != true && pixel.poisonImmune == true && Math.random() > 0.75) {
             hitPixel.poisonImmune = true
         }
-        if (hitPixel.poisoned != true && pixel.poisoned == true && Math.random() > 0.85) {
+        if (hitPixel.poisoned != true && pixel.poisoned == true && Math.random() > 0.95) {
             hitPixel.poisoned = true
         }
-        if (hitPixel.immune != true && pixel.immune == true && Math.random() > 0.65) {
+        if (hitPixel.immune != true && pixel.immune == true && Math.random() > 0.75) {
             hitPixel.immune = true
         }
         if (hitPixel.burnt > 0 && (!pixel.burnt || pixel.burnt < hitPixel.burnt && pixel.burnt < 51) && Math.random() > 0.8) {
@@ -1123,12 +1196,24 @@ if (!isEmpty(pixel.x+1, pixel.y, true)) {
             pixel.oxygen -= (elements[pixel.element].oxygTrans)
         }
         if (hitPixel.nutrition < pixel.nutrition) {
-            hitPixel.nutrition += elements[pixel.element].nutrTrans
-            pixel.nutrition -= elements[pixel.element].nutrTrans
+            hitPixel.nutrition += (elements[pixel.element].nutrTrans)
+            pixel.nutrition -= (elements[pixel.element].nutrTrans)
         }
         if (hitPixel.speed < pixel.speed) {
             hitPixel.speed += 1
             pixel.speed -= 1
+        }
+        if (hitPixel.oxygen > pixel.oxygen) {
+            hitPixel.oxygen -= (elements[hitPixel.element].oxygTrans)
+            pixel.oxygen += (elements[hitPixel.element].oxygTrans)
+        }
+        if (hitPixel.nutrition > pixel.nutrition) {
+            hitPixel.nutrition -= (elements[hitPixel.element].nutrTrans)
+            pixel.nutrition += (elements[hitPixel.element].nutrTrans)
+        }
+        if (hitPixel.speed > pixel.speed) {
+            hitPixel.speed -= 1
+            pixel.speed += 1
         }
         if (hitPixel.alcoholic !== true && pixel.alcoholic === true && Math.random() > 0.85) {
             hitPixel.alcoholic = true
@@ -1144,16 +1229,19 @@ if (!isEmpty(pixel.x+1, pixel.y, true)) {
         if (hitPixel.alcoRecover !== true && pixel.alcoRecover) {
             hitPixel.alcoRecover = true
         }
-        if (hitPixel.sick != true && pixel.sick == true && Math.random() > 0.85) {
+        if (hitPixel.fentDepri < pixel.fentDepri && pixel.fentDepri) {
+            hitPixel.fentDepri = pixel.fentDepri
+        }
+        if (hitPixel.sick != true && pixel.sick == true && Math.random() > 0.95) {
             hitPixel.sick = true
         }
-        if (hitPixel.poisonImmune != true && pixel.poisonImmune == true && Math.random() > 0.65) {
+        if (hitPixel.poisonImmune != true && pixel.poisonImmune == true && Math.random() > 0.75) {
             hitPixel.poisonImmune = true
         }
-        if (hitPixel.poisoned != true && pixel.poisoned == true && Math.random() > 0.85) {
+        if (hitPixel.poisoned != true && pixel.poisoned == true && Math.random() > 0.95) {
             hitPixel.poisoned = true
         }
-        if (hitPixel.immune != true && pixel.immune == true && Math.random() > 0.65) {
+        if (hitPixel.immune != true && pixel.immune == true && Math.random() > 0.75) {
             hitPixel.immune = true
         }
         if (hitPixel.burnt > 0 && (!pixel.burnt || pixel.burnt < hitPixel.burnt && pixel.burnt < 51) && Math.random() > 0.8) {
@@ -1243,8 +1331,11 @@ elements.epidermis = {
                 }
             }
         }
-        if (pixel.temp < 36 && Math.random() < 0.1) {
+        if (pixel.temp < 36.5 && Math.random() < 0.1) {
             pixel.temp += 1;
+        }
+        else if (pixel.temp > 37 && Math.random() < 0.1) {
+            pixel.temp -= 1;
         }
         doBioNorm(pixel);
         doDefaults(pixel);
@@ -1370,8 +1461,11 @@ elements.cloak_skin = {
                 }
             }
         }
-        if (pixel.temp < 36 && Math.random() < 0.1) {
+        if (pixel.temp < 36.5 && Math.random() < 0.1) {
             pixel.temp += 1;
+        }
+        else if (pixel.temp > 37 && Math.random() < 0.1) {
+            pixel.temp -= 1;
         }
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
             var hitPixel = pixelMap[pixel.x][pixel.y-1]
@@ -1680,10 +1774,10 @@ elements.attached_hair = {
 	category: "structural",
     behavior: behaviors.WALL,
     tick: function(pixel) {
-        if (Math.random() < 0.005) {
+        if (Math.random() < 0.001) {
             if (pixel.dir === "up") {
                 if (isEmpty(pixel.x,pixel.y-1)) {
-                    if (Math.random() > 0.2) {
+                    if (Math.random() > 0.25) {
                         createPixel("attached_hair",pixel.x,pixel.y-1)
                         pixelMap[pixel.x][pixel.y-1].dir = "up"
                     }
@@ -1695,7 +1789,7 @@ elements.attached_hair = {
             }
             else if (pixel.dir === "down") {
                 if (isEmpty(pixel.x,pixel.y+1)) {
-                    if (Math.random() > 0.2) {
+                    if (Math.random() > 0.25) {
                         createPixel("attached_hair",pixel.x,pixel.y+1)
                         pixelMap[pixel.x][pixel.y+1].dir = "down"
                     }
@@ -1707,7 +1801,7 @@ elements.attached_hair = {
             }
             else if (pixel.dir === "left") {
                 if (isEmpty(pixel.x-1,pixel.y)) {
-                    if (Math.random() > 0.2) {
+                    if (Math.random() > 0.25) {
                         createPixel("attached_hair",pixel.x-1,pixel.y)
                         pixelMap[pixel.x-1][pixel.y].dir = "left"
                     }
@@ -1719,7 +1813,7 @@ elements.attached_hair = {
             }
             else if (pixel.dir === "right") {
                 if (isEmpty(pixel.x+1,pixel.y)) {
-                    if (Math.random() > 0.2) {
+                    if (Math.random() > 0.25) {
                         createPixel("attached_hair",pixel.x+1,pixel.y)
                         pixelMap[pixel.x+1][pixel.y].dir = "right"
                     }
@@ -1866,8 +1960,11 @@ elements.hairy_skin = {
                 }
             }
         }
-        if (pixel.temp < 36 && Math.random() < 0.1) {
+        if (pixel.temp < 36.5 && Math.random() < 0.1) {
             pixel.temp += 1;
+        }
+        else if (pixel.temp > 37 && Math.random() < 0.1) {
+            pixel.temp -= 1;
         }
         doDefaults(pixel);
         doBioNorm(pixel);
@@ -3890,6 +3987,15 @@ elements.intestines = {
                         pixel.alcoDepri = 0
                     }
                 }
+                if (hitPixel.fent === true && Math.random() > 0.5) {
+                    if (pixel.fentDepri) {
+                        pixel.fentDepri = 0
+                    }
+                    if (Math.random() > 0.5) {
+                        pixel.fenAddict = true
+                        pixel.fentDepri = 0
+                    }
+                }
                 if (hitPixel.poisonImmune === true && Math.random() > 0.5) {
                     pixel.poisoned = false
                     pixel.sick = false
@@ -3921,6 +4027,15 @@ elements.intestines = {
                         pixel.alcoholic = true
                         pixel.alcoTime = pixelTicks
                         pixel.alcoDepri = 0
+                    }
+                }
+                if (hitPixel.fent === true && Math.random() > 0.5) {
+                    if (pixel.fentDepri) {
+                        pixel.fentDepri = 0
+                    }
+                    if (Math.random() > 0.5) {
+                        pixel.fenAddict = true
+                        pixel.fentDepri = 0
                     }
                 }
                 if (hitPixel.alcoholic === true && Math.random() > 0.95) {
@@ -3969,6 +4084,15 @@ elements.intestines = {
                         pixel.alcoDepri = 0
                     }
                 }
+                if (hitPixel.fent === true && Math.random() > 0.5) {
+                    if (pixel.fentDepri) {
+                        pixel.fentDepri = 0
+                    }
+                    if (Math.random() > 0.5) {
+                        pixel.fenAddict = true
+                        pixel.fentDepri = 0
+                    }
+                }
                 if (hitPixel.alcoholic === true && Math.random() > 0.95) {
                     pixel.alcoholic = true
                     pixel.alcoTime = pixelTicks
@@ -4005,6 +4129,15 @@ elements.intestines = {
                         pixel.alcoholic = true
                         pixel.alcoTime = pixelTicks
                         pixel.alcoDepri = 0
+                    }
+                }
+                if (hitPixel.fent === true && Math.random() > 0.5) {
+                    if (pixel.fentDepri) {
+                        pixel.fentDepri = 0
+                    }
+                    if (Math.random() > 0.5) {
+                        pixel.fenAddict = true
+                        pixel.fentDepri = 0
                     }
                 }
                 if (hitPixel.alcoholic === true && Math.random() > 0.95) {
@@ -4053,6 +4186,15 @@ elements.intestines = {
                         pixel.alcoDepri = 0
                     }
                 }
+                if (hitPixel.fent === true && Math.random() > 0.5) {
+                    if (pixel.fentDepri) {
+                        pixel.fentDepri = 0
+                    }
+                    if (Math.random() > 0.5) {
+                        pixel.fenAddict = true
+                        pixel.fentDepri = 0
+                    }
+                }
                 if (hitPixel.alcoholic === true && Math.random() > 0.95) {
                     pixel.alcoholic = true
                     pixel.alcoTime = pixelTicks
@@ -4087,6 +4229,15 @@ elements.intestines = {
                         pixel.alcoholic = true
                         pixel.alcoTime = pixelTicks
                         pixel.alcoDepri = 0
+                    }
+                }
+                if (hitPixel.fent === true && Math.random() > 0.5) {
+                    if (pixel.fentDepri) {
+                        pixel.fentDepri = 0
+                    }
+                    if (Math.random() > 0.5) {
+                        pixel.fenAddict = true
+                        pixel.fentDepri = 0
                     }
                 }
                 if (hitPixel.alcoholic === true && Math.random() > 0.95) {
@@ -4135,6 +4286,15 @@ elements.intestines = {
                         pixel.alcoDepri = 0
                     }
                 }
+                if (hitPixel.fent === true && Math.random() > 0.5) {
+                    if (pixel.fentDepri) {
+                        pixel.fentDepri = 0
+                    }
+                    if (Math.random() > 0.5) {
+                        pixel.fenAddict = true
+                        pixel.fentDepri = 0
+                    }
+                }
                 if (hitPixel.alcoholic === true && Math.random() > 0.95) {
                     pixel.alcoholic = true
                     pixel.alcoTime = pixelTicks
@@ -4171,6 +4331,15 @@ elements.intestines = {
                         pixel.alcoholic = true
                         pixel.alcoTime = pixelTicks
                         pixel.alcoDepri = 0
+                    }
+                }
+                if (hitPixel.fent === true && Math.random() > 0.5) {
+                    if (pixel.fentDepri) {
+                        pixel.fentDepri = 0
+                    }
+                    if (Math.random() > 0.5) {
+                        pixel.fenAddict = true
+                        pixel.fentDepri = 0
                     }
                 }
                 if (hitPixel.alcoholic === true && Math.random() > 0.95) {
