@@ -1868,7 +1868,7 @@ elements.tocopheryl_gas = {
 elements.sunlight = {
     color: "#ffc9c9",
     behavior: behaviors.BOUNCY,
-    category: "gases",
+    category: "energy",
     state: "gas",
     density: 720,
     stain: 0.855,
