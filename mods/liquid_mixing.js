@@ -1,3 +1,5 @@
+// By Nekonico!
+
 window.addEventListener('load', function() {
 	for (var element in elements) {
 		if (elements[element].state === "liquid" && elements[element].behavior !== behaviors.MOLTEN) {
@@ -180,3 +182,5 @@ doStaining = function(pixel) {
         }
     }
 }
+
+// By Nekonico!
