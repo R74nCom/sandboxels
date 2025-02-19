@@ -124,7 +124,7 @@ elements.silicate = {
 };
 
 elements.kaolin = {
-    color: ["#A6B5B8", "#A7A8A0", "#665953", "#BDDAE8"],
+    color: ["#A6B5B8", "#A7A8A0", "#ede7e4", "#BDDAE8"],
     behavior: behaviors.POWDER,
     category: "land",
     hidden: true,
