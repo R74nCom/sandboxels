@@ -1977,7 +1977,7 @@ elements.stupidine = {
 };
 
 elements.liquid_stupidine = {
-    color: ["#5328c9", "4089e3"],
+    color: ["#5328c9", "#4089e3"],
     behavior: [
 	    ["M2","M1","M2"],
             ["XX","XX","XX"],
@@ -2034,7 +2034,7 @@ elements.skibidi_soda = {
 };
 
 elements.skibidine = {
-    color: ["#51649c", "949c51"],
+    color: ["#51649c", "#949c51"],
     behavior: behaviors.LIQUID,
     category: "liquids",
     state: "liquid",
