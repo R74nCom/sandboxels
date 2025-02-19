@@ -24,6 +24,11 @@ if (!elements.calcium.reactions) { // Include this block once
 }
 elements.calcium.reactions.chlorine = { elem1: "calcium_chloride" }
 
+if (!elements.sun.reactions) { // Include this block once
+    elements.sun.reactions = {} // This creates the property if it doesn't exist
+}
+elements.sun.reactions.light = { elem1: "sunlight" }
+
 if (!elements.aluminum.reactions) { // Include this block once
     elements.aluminum.reactions = {} // This creates the property if it doesn't exist
 }
@@ -1817,7 +1822,7 @@ elements.kai_eraser = {
     category: "tools",
 };
 
-//ok this is the skibididdy mod part
+//ok this is the skibidi-edited mod part
 
 elements.tocopherol = {
     color: "#094237",
@@ -1831,20 +1836,21 @@ elements.tocopherol = {
     }
 };
 
-elements.freakium = {
-    color: "#ff4fed",
-    behavior: behaviors.UL_UR_OPTIMIZED,
-    category: "gases",
+elements.tweakium = {
+    color: "#22dfce",
+    behavior: [
+    "XX|M1|XX",
+    "M1|CH:liquid_light%5|M1",
+    "XX|M2|XX",
+],
+    category: "special",
     state: "gas",
     density: 720,
     temp: 80,
-    tempLow: 30,
-    tempHigh: 345,
-    stateHigh: "meat",
         reactions: {
-        "head": { elem1:"baby_oil", elem2:"meat", chance: 0.1 },
-        "body": { elem1:"baby_oil", elem2:"meat", chance: 0.3 },
-	"freakium": { elem1:"baby_oil", chance: 0.005 },
+        "head": { elem1:"fw_ember", elem2:"cooked_meat", chance: 0.1 },
+        "body": { elem1:"fw_ember", elem2:"cooked_meat", chance: 0.3 },
+	"tweakium": { elem1:"firework", chance: 0.005 },
     }
 };
 
@@ -1859,6 +1865,18 @@ elements.tocopheryl_gas = {
     stateLow: ["tocopherol"],
 };
 
+elements.sunlight = {
+    color: "#ffc9c9",
+    behavior: behaviors.BOUNCY,
+    category: "gases",
+    state: "gas",
+    density: 720,
+    stain: 0.855,
+    temp: 5600,
+    tempLow: -273,
+    stateLow: ["liquid_light"],
+};
+
 elements.tocopheryl_acetate = {
     color: "#cffdff",
     behavior: behaviors.LIQUID,
@@ -1870,15 +1888,15 @@ elements.tocopheryl_acetate = {
     tempHigh: 96,
     stateHigh: ["tocopheryl_gas"],
         reactions: {
-        "oil": { elem1:"baby_oil", elem2:"baby_oil" },
+        "zinc": { elem1:"sunscreen", elem2:"sunscreen" },
     }
 };
 
-elements.diddium = {
-    color: ["#210742", "#9e20d4"],
+elements.nahnium = {
+    color: ["#bfa6f5", "#b5a5d9"],
     behavior: [
-    "HT:5|CR:freakium%1|HT:5",
-    "CR:baby_oil%5|XX|CR:baby_oil%5",
+    "HT:5|CR:tweakium%1|HT:5",
+    "CR:liquid_light%5|XX|CR:liquid_light%5",
     "XX|M1|XX",
 ],
     category: "powders",
@@ -1886,34 +1904,22 @@ elements.diddium = {
     tempHigh: 80,
     tempLow: 10,
         reactions: {
-        "diddium": { elem1:"diddium", elem2:"stable_diddium" },
+        "nahnium": { elem1:"nahnium", elem2:"glass_shard", chance: 0.01 },
     }
 };
 
-elements.stable_diddium = {
-    color: ["#210742", "#9e20d4"],
-    behavior: behaviors.WALL,
-    category: "states",
-    temp: 30,
-    tempHigh: 80,
-    hidden: true,
-    tempLow: 10,
-        reactions: {
-        "diddium": { elem1:"freakium", elem2:"diddium" },
-        "stable_diddium": { elem1:"diddium", elem2:"baby_oil" },
-    }
-};
-
-elements.baby_oil = {
-    color: "#ffeecc",
+elements.sunscreen = {
+    color: "#ffeeff",
     behavior: behaviors.LIQUID,
     category: "liquids",
-    temp: 30,
+    temp: 0,
+    stain: -0.1,
     tempHigh: 96,
     stateHigh: ["tocopheryl_gas"],
         reactions: {
-        "uranium": { elem1: null, elem2:"diddium" },
-        "diddium": { elem1:"stable_diddium", elem2:"freakium" },
+        "light": { elem2: null },
+	"sunlight": { elem2: null },
+        "water": { elem1:"soapy_water", elem2:"soapy_water" },
     }
 };
 
@@ -1928,8 +1934,9 @@ elements.stupidine = {
     tempLow: -31,
     stateLow: "activated_stupidine",
         reactions: {
-        "stupidine": { elem2:"fragrance", chance:0.1 },
+        "stupidine": { elem2:"fragrance", chance:0.01 },
 	"iron": { elem2:"stupid", chance:0.01 },
+	"light": { elem2:"nahnium", chance:0.01 },
     }
 };
 
