@@ -1914,7 +1914,7 @@ elements.sunscreen = {
     category: "liquids",
     temp: 0,
     stain: -0.1,
-    tempHigh: 96,
+    tempHigh: 9600,
     stateHigh: ["tocopheryl_gas"],
         reactions: {
         "light": { elem2: null },
