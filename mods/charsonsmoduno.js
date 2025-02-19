@@ -47,6 +47,7 @@ elements.radiation.reactions.ant = { elem2: "rad_ant" }
 elements.radiation.reactions.sugar = { elem2: "powdered_lime" }
 elements.radiation.reactions.soap = { elem2: "purificanol" }
 elements.radiation.reactions.diamond = { elem2: "emerald" }
+elements.radiation.reactions.bird = { elem2: "pyrus_minimus" }
 
 if (!elements.melted_cheese.reactions) { // Include this block once
     elements.melted_cheese.reactions = {} // This creates the property if it doesn't exist
@@ -104,9 +105,14 @@ elements.hyper_aluminum = {
     state: "solid",
     tempHigh: 9999999,
     conduct: 1,
+    desc: "Hyper Aluminium is a cutting-edge, ultra-lightweight metal alloy that blends advanced strength with superior conductivity, designed for futuristic applications. With a sleek, metallic sheen, this material boasts enhanced durability, resistance to extreme temperatures, and a remarkable ability to withstand corrosion. Its unique molecular structure makes it perfect for aerospace engineering, high-performance vehicles, and next-generation tech gadgets. Hyper Aluminium is the pinnacle of modern materials science—stronger, lighter, and more efficient than ever before, setting the stage for a new era of innovation.",
     charge: 3,
     stateHigh: "molten_aluminum",
     hardness: 0.95,
+    reactions: {
+        "steel": { elem2:"galvanized_steel" },
+	"rock_wall": { elem2:"wall" },
+    }
 };
 
 elements.silicate = {
@@ -114,7 +120,7 @@ elements.silicate = {
     behavior: behaviors.POWDER,
     category: "powders",
     hidden: true,
-    breakInto: "dust",
+    breakInto: "silica",
     state: "solid",
     tempHigh: 500,
     stateHigh: "molten_silicon",
@@ -123,8 +129,23 @@ elements.silicate = {
     }
 };
 
+elements.silica = {
+    color: ["#ACAA9B", "#CAC7B6", "#979A93"],
+    behavior: behaviors.LIGHTWEIGHT,
+    behaviorOn: behaviors.BOUNCY,
+    category: "powders",
+    hidden: true,
+    state: "solid",
+    tempHigh: 5000,
+    stateHigh: "molten_ash",
+    reactions: {
+        "head": { elem1: null, func: behaviors.KILLPIXEL2 }, //silicosis reference.
+    }
+};
+
+
 elements.kaolin = {
-    color: ["#A6B5B8", "#A7A8A0", "#ede7e4", "#BDDAE8"],
+    color: ["#d3e2e6", "#e1e9eb", "#ede7e4", "#fcfcfc"],
     behavior: behaviors.POWDER,
     category: "land",
     hidden: true,
@@ -135,6 +156,20 @@ elements.kaolin = {
         "fired_clay": { elem1:"porcelain", elem2:"porcelain" },
 	"blood": { elem2: null },
 	"dirt": { elem1: "clay", elem2:"clay_soil" },
+    }
+};
+
+elements.kaolinite = {
+    color: ["#3b3b3b", "#575757" "#fcfcfc"],
+    behavior: behaviors.STURDYPOWDER,
+    category: "solids",
+    hidden: true,
+    state: "solid",
+    tempHigh: 500,
+    stateHigh: "molten_slag",
+    breakInto: ["rock", "kaolin"],
+    reactions: {
+	"water": { elem1: "silicate", elem2:"dirty_water" },
     }
 };
 
@@ -175,7 +210,7 @@ elements.powdered_lime = {
     state: "solid",
     reactions: {
         "water": { elem1:"foam", elem2:"limeade" },
-        "head": { elem1: null, chance: 0.9 },
+        "head": { elem1: null, chance: 0.9, func: behaviors.FEEDPIXEL },
     }
 };
 
@@ -190,7 +225,7 @@ elements.limeade = {
     stateHigh: "foam",
     tempLow: 0,
     reactions: {
-        "head": { elem1: null, chance: 0.7 },
+        "head": { elem1: null, chance: 0.7, func: behaviors.FEEDPIXEL },
     }
 };
 
@@ -250,7 +285,7 @@ elements.almond = {
     stateLow: "cloner",
     conduct: 1,
 	  reactions: {
-        "head": { elem1: null, chance: 0.55 },
+        "head": { elem1: null, chance: 0.55, func: behaviors.FEEDPIXEL },
         "juice": { elem1:"party_popper", elem2:"party_popper" },
 	"water": { elem1:"nut_sauce", elem2:"almond_water" },
     }
@@ -273,7 +308,7 @@ elements.nut_sauce = {
     stateLow: "glue",
     conduct: 1,
 	  reactions: {
-        "head": { elem1: null, chance: 0.9 },
+        "head": { elem1: null, chance: 0.9, func: behaviors.FEEDPIXEL },
     }
 };
 
@@ -311,7 +346,7 @@ elements.maple_syrup = {
     stain: 0.01,
     desc: "english for sirop derable",
 	  reactions: {
-        "head": { elem1: null, chance: 0.4 },
+        "head": { elem1: null, chance: 0.4, func: behaviors.FEEDPIXEL },
     }
 };
 
@@ -499,7 +534,7 @@ elements.maple_milk = {
     hidden: true,
     isFood: true,
 	reactions: {
-        "head": { elem1: null, chance: 0.9 },
+        "head": { elem1: null, chance: 0.9, func: behaviors.FEEDPIXEL },
     }
 };
 
@@ -661,7 +696,7 @@ elements.buttermilk = {
     tempHigh: 100,
     stateHigh: "steam",
   	reactions: {
-        "head": { elem1: null, chance: 0.9 },
+        "head": { elem1: null, chance: 0.9, func: behaviors.FEEDPIXEL },
         "water": { elem1: null, elem2:"milk" },
 	"rock": { elem1: null, elem2:"butter" },
 	"magma": { elem1: null, elem2:"melted_butter" },
@@ -791,7 +826,7 @@ elements.banana = {
     breakInto: "banana_milk",
     breakIntoColor: "#d8b284",
     reactions: {
-        "head": { elem1: null, chance: 0.35 },
+        "head": { elem1: null, chance: 0.35, func: behaviors.FEEDPIXEL },
 	"milk": { elem1: null, elem2: "banana_milk" },
     }
 };
@@ -815,7 +850,7 @@ elements.banana_milk = {
     burnInto: "dioxin",
     conduct: 1,
     reactions: {
-        "head": { elem1: null, chance: 0.9 },
+        "head": { elem1: null, chance: 0.9, func: behaviors.FEEDPIXEL },
     }
 };
 
@@ -1022,7 +1057,7 @@ elements.violetium.behavior = [
 
 elements.pyrus_minimus = {
     color: ["#eb6e34", "#ffd014", "#ff143c"],
-    desc: "The rare Pyrus Minimus is a flying...animal? It preys on bird and worms.",
+    desc: "The rare Pyrus Minimus is a flying...animal? It preys on birds and worms.",
     behaviorOn: [
     "XX|XX|XX",
     "XX|EX:5>firework|XX",
@@ -1031,7 +1066,7 @@ elements.pyrus_minimus = {
     behavior: behaviors.FLY,
     category: "life",
     state: "solid",
-    foodNeed: 3,
+    foodNeed: 7,
     breakInto: ["fire", "cooked_meat", "slime"],
     glow: true,
     temp: 300,
@@ -1040,13 +1075,13 @@ elements.pyrus_minimus = {
     fireColor: "#ff5b14",
     conduct: 1,
      reactions: {
-        "cooked_meat": { elem2: null },
-	"dead_plant": { elem2: null },
-	"juice": { elem2: null },
-	"chocolate": { elem2: null },
-	"basalt": { elem2: null },
-	"bird": { elem2: ["feather", "blood"] },
-	"worm": { elem2: null },
+        "cooked_meat": { elem2: null, func: behaviors.FEEDPIXEL },
+	"dead_plant": { elem2: null, func: behaviors.FEEDPIXEL },
+	"juice": { elem2: null, func: behaviors.FEEDPIXEL },
+	"chocolate": { elem2: null, func: behaviors.FEEDPIXEL },
+	"basalt": { elem2: null, func: behaviors.FEEDPIXEL },
+	"bird": { elem2: ["feather", "blood"], func: behaviors.FEEDPIXEL },
+	"worm": { elem2: null, func: behaviors.FEEDPIXEL },
     }
 };
 
@@ -1105,7 +1140,7 @@ elements.scheele_green = {
     stateHigh: "molten_copper",
      reactions: {
         "terracotta": { elem1: null, elem2: "green_terracotta" },
-	"head": { elem1: "poison", elem2: "green_skull", chance: 0.3 },
+	"head": { elem1: "poison", elem2: "green_skull", chance: 0.3, func: behaviors.KILLPIXEL2 },
     } 
 };
 
@@ -1123,7 +1158,7 @@ elements.green_skull = {
     tempHigh: 275,
     stateHigh: "rad_steam",
      reactions: {
-	"head": { elem2: "green_skull", chance: 0.1 },
+	"head": { elem2: "green_skull", chance: 0.1, func: behaviors.KILLPIXEL2 },
     } 
 };
 
@@ -1228,7 +1263,7 @@ elements.beryllium = {
 	breakInto: "emerald",
      reactions: {
         "oxygen": { elem1: "beryllium_oxide", elem2: "beryllium_oxide" },
-	"head": { elem2: "poison", chance: 0.05 },
+	"head": { elem1: "poison", chance: 0.05, func: behaviors.KILLPIXEL2 },
 	"volatilium": { elem2: "beryllium_volatilium_alloy" },
     } 
 };
@@ -1271,7 +1306,7 @@ elements.verylithium = {
     reactions: {
         "neutron": { elem1: "verylithium_oxide", elem2: ["molten_metal", "beryllium"] },
         "water": { elem1: "verylithium_hydrate" },
-        "head": { elem2: "electric" }
+        "head": { elem1: "electric", func: behaviors.KILLPIXEL2 }
     }
 };
 
@@ -1562,7 +1597,7 @@ elements.akshajium = {
     related: ["sankarium", "narayananium"],
     breakInto: ["crumb", "sauce", "melted_cheese", "cooked_meat"],
 	reactions: {
-        "head": { elem1: null, chance: 0.36 },
+        "head": { elem1: null, chance: 0.36, func: behaviors.FEEDPIXEL },
     }
 };
 
@@ -1591,7 +1626,7 @@ elements.fancy_dough = {
     stateHigh: ["steam", "brioche_steam"],
     desc: "it can be evaporated",
 	reactions: {
-        "head": { elem1: null, chance: 0.1 },
+        "head": { elem1: null, chance: 0.1, func: behaviors.FEEDPIXEL },
     }
 };
 
@@ -1608,7 +1643,7 @@ elements.brioche = {
     isFood: true,
     breakInto: "fancy_flour",
 	reactions: {
-        "head": { elem1: null, chance: 0.7 },
+        "head": { elem1: null, chance: 0.7, func: behaviors.FEEDPIXEL },
     }
 };
 
@@ -1785,7 +1820,7 @@ elements.hydroid = {
     reactions: {
         "fire": { elem1: "hydroid", elem2:"explosion" },
 		"body": { elem1: "hydroid", elem2:"fyrium" },
-        "head": { elem1: "hydroid", elem2:"pyrane" },
+        "head": { elem1: "hydroid", elem2:"pyrane", func: behaviors.KILLPIXEL2 },
         "water": { elem1: "hydroid", elem2:"hydroid" },
         "maple_syrup": { elem1: "hydroid", elem2:"hydroid" },
 		"magma": { elem1: "hydroid", elem2:"hydroid" },
@@ -1994,7 +2029,7 @@ elements.skibidi_soda = {
     stateHigh: ["skibidiness", "skibidine"],
         reactions: {
         "oxygen": { elem1:"skibidi_soda", elem2:"skibidiness" },
-        "head": { elem1: "skibidiness" },
+        "head": { elem1: "skibidiness", func: behaviors.FEEDPIXEL },
     }
 };
 
@@ -2021,7 +2056,47 @@ elements.skibidiness = {
     }
 };
 
-//idk how these work and most of them don't idk why but this is just a beta so...
+elements.right_missile = {
+    color: ["#8a9499", "#9e9e9e", "#d1d1d1"],
+    category: "weapons",
+    state: "solid",
+    temp: 40,
+    burning: true,
+    tempHigh: 2000,
+    stateHigh: "molten_metal_scrap",
+    breakInto: "metal_scrap",
+    fireColor: "#e342a5",
+    conduct: 1,
+    charge: 3,
+};
+
+elements.right_missile.behavior = [
+   ["XX","XX","XX"],
+    ["XX","XX","M1 AND EX:20>explosion"],
+    ["XX","XX","XX"],   
+];
+
+elements.left_missile = {
+    color: ["#8a9499", "#9e9e9e", "#d1d1d1"],
+    category: "weapons",
+    state: "solid",
+    temp: 40,
+    burning: true,
+    tempHigh: 2000,
+    stateHigh: "molten_metal_scrap",
+    breakInto: "metal_scrap",
+    fireColor: "#e342a5",
+    conduct: 1,
+    charge: 3,
+};
+
+elements.left_missile.behavior = [
+   ["XX","XX","XX"],
+    ["M1 AND EX:20>explosion","XX","XX"],
+    ["XX","XX","XX"],   
+];
+
+//ignore these
 
 elements.melted_butter.reactions.bread = { "elem1": null, "elem2":"brioche" },
 elements.water.reactions.fancy_flour = { "elem1": null, "elem2":"fancy_dough" },
