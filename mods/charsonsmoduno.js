@@ -27,7 +27,7 @@ elements.calcium.reactions.chlorine = { elem1: "calcium_chloride" }
 if (!elements.sun.reactions) { // Include this block once
     elements.sun.reactions = {} // This creates the property if it doesn't exist
 }
-elements.sun.reactions.light = { elem1: "sunlight" }
+elements.sun.reactions.light = { elem2: "sunlight" }
 
 if (!elements.aluminum.reactions) { // Include this block once
     elements.aluminum.reactions = {} // This creates the property if it doesn't exist
