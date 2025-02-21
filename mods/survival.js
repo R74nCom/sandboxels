@@ -416,8 +416,8 @@ runAfterLoad(function(){
                     return;
                 }
                 createPixel(currentElement,x,y);
-                if (elements[currentElement].customColor || elements[currentElement].singleColor) {
-                    pixelMap[x][y].color = pixelColorPick(currentElement,currentColor);
+                if (pixelMap[x][y] && currentElement === pixelMap[x][y].element && (elements[currentElement].customColor || elements[currentElement].singleColor)) {
+                    pixelMap[x][y].color = pixelColorPick(pixelMap[x][y],currentColorMap[currentElement]);
                 }
                 if (elements[currentElement].category !== "tools") { survivalRemove(currentElement,1); }
             }

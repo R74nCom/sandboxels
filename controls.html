@@ -93,11 +93,13 @@
     <tr><td>Element info</td>   <td><kbd>I</kbd> or <kbd>/</kbd></td></tr>
     <tr><td>Open settings</td>   <td><kbd>\</kbd></td></tr>
     <tr><td>Open saves</td>   <td><kbd>L</kbd></td></tr>
+    <tr><td>Open save prompt</td>   <td><kbd>Ctrl</kbd> + <kbd>S</kbd></td></tr>
+    <tr><td>Instant save</td>   <td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd></td></tr>
     <tr><td>Open Mod Manager</td>   <td><kbd>M</kbd></td></tr>
     <tr><td>Reset canvas</td>   <td><kbd>R</kbd></td></tr>
     <tr><td>Single step</td>   <td><kbd>&gt;</kbd></td></tr>
     <tr><td>Fullscreen</td>   <td><kbd>F</kbd> or <kbd>F11</kbd></td></tr>
-    <tr><td>Normal view</td>   <td><kbd>1</kbd> or <kbd>1</kbd></td></tr>
+    <tr><td>Normal view</td>   <td><kbd>1</kbd> or <kbd>0</kbd></td></tr>
     <tr><td>Thermal view</td>   <td><kbd>2</kbd></td></tr>
     <tr><td>Basic view (No effects)</td>   <td><kbd>3</kbd></td></tr>
     <tr><td>Hide canvas</td>   <td><kbd>H</kbd></td></tr>
@@ -144,6 +146,19 @@
 
 <p>The original <a href="https://sandboxels.r74n.com/controls.txt">plain text version</a> may not be maintained.</p>
 
+<script>
+    let isMacLike = /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform);
+    if (isMacLike) {
+        let kbds = document.getElementsByTagName("kbd");
+        for (let i = 0; i < kbds.length; i++) {
+            const kbd = kbds[i];
+            if (kbd.innerHTML === "Ctrl") {
+                kbd.innerHTML = "Cmd"
+            }
+            
+        }
+    }
+</script>
 
 </div>
 
