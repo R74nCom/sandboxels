@@ -1,7 +1,7 @@
 if (!settings.survival) {
     settings.survival = {
         "wall": 999,
-        "dirt": 999,
+        "dirt": 9999,
         "sapling": 1,
         "seeds": 5,
         "ice": 25,
@@ -154,7 +154,7 @@ elements.smash.tool = function(pixel) {
 
 elementWorth = {
     "gold_coin": 1,
-    "diamond": 10000,
+    "diamond": 10000000,
     "ketchup": 15,
     "jelly": 10,
     "soda": 10,
@@ -183,7 +183,7 @@ elementWorth = {
     "vine": 0.1,
     "cactus": 0.1,
     "cloner": 0,
-    "wall": 0,
+    "wall": 100000,
     "fire": 0,
     "smoke": 0,
     "plasma": 0,
@@ -194,7 +194,7 @@ elementWorth = {
     "radiation": 0,
     "petal": -1,
     "cell": -1,
-    "cancer": -1,
+    "cancer": 1000000000,
     "foam": -1,
 }
 elements.sell = {
