@@ -1,8 +1,6 @@
-// By Nekonico!
-
 window.addEventListener('load', function() {
 	for (var element in elements) {
-		if (elements[element].state === "liquid" && elements[element].behavior !== behaviors.MOLTEN) {
+		if (elements[element].state === "liquid" && elements[element].behavior != behaviors.MOLTEN) {
             elements[element].renderer = function(pixel, ctx) { // this part used nouseramefounds code, props to him!
                 if (!pixel.rSeed){pixel.rSeed = [Math.random(), Math.random(), Math.random(), Math.random()]}
                 if (typeof pixel.color == "object"){
@@ -38,16 +36,16 @@ window.addEventListener('load', function() {
                     }
                 }
             }
-            if (elements[element].id === elements.cement.id || elements[element].id === elements.beans.id || elements[element].id === elements.algae.id || elements[element].id === elements.cellulose.id) {
+            if (element === "cement" || element === "beans" || element === "algae" || element === "cellulose") {
                 elements[element].miscible = false
             }
-            if (elements[element].id === elements.midas_touch.id || elements[element].id === elements.cement.id || elements[element].id === elements.beans.id || elements[element].id === elements.algae.id || elements[element].id === elements.cellulose.id || elements[element].id === elements.primordial_soup.id || elements[element].id === elements.cyanide.id || elements[element].id === elements.poison.id || elements[element].id === elements.antidote.id || elements[element].id === elements.mercury.id || elements[element].id === elements.liquid_oxygen.id || elements[element].id === elements.liquid_nitrogen.id) {
+            if (element === "midas_touch" || element === "cement" || element === "beans" || element === "algae" || element === "cellulose" || element === "primordial_soup" || element === "cyanide" || element === "poison" || element === "antidote" || element === "mercury" || element === "liquid_oxygen" || element === "liquid_nitrogen") {
                 elements[element].soluble = false
             }
-            if (elements[element].id === elements.midas_touch.id || elements[element].id === elements.molasses.id || elements[element].id === elements.grease.id || elements[element].id === elements.oil.id || elements[element].id === elements.lamp_oil.id || elements[element].id === elements.nut_oil.id|| elements[element].id === elements.honey.id || elements[element].id === elements.sap.id || elements[element].id === elements.caramel.id) {
+            if (element === "midas_touch" || element === "molasses" || element === "grease" || element === "oil" || element === "lamp_oil" || element === "nut_oil" || element === "honey" || element === "sap" || element === "caramel") {
                 elements[element].polar = 2
             }
-            else if (elements[element].id === elements.soap.id) {
+            else if (element === "soap") {
                 elements[element].polar = 3
             }
             else {
@@ -182,5 +180,3 @@ doStaining = function(pixel) {
         }
     }
 }
-
-// By Nekonico!

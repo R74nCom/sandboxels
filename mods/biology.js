@@ -299,8 +299,9 @@ if (!isEmpty(pixel.x, pixel.y-1, true)) {
         if (hitPixel.alcoRecover !== true && pixel.alcoRecover) {
             hitPixel.alcoRecover = true
         }
-        if (hitPixel.fentDepri < pixel.fentDepri && pixel.fentDepri) {
+        if ((hitPixel.fentDepri < pixel.fentDepri || !hitPixel.fentDepri) && pixel.fentDepri) {
             hitPixel.fentDepri = pixel.fentDepri
+            hitPixel.fenAddict = true
         }
         if (hitPixel.sick != true && pixel.sick == true && Math.random() > 0.95) {
             hitPixel.sick = true
@@ -367,8 +368,9 @@ if (!isEmpty(pixel.x, pixel.y+1, true)) {
         if (hitPixel.alcoRecover !== true && pixel.alcoRecover) {
             hitPixel.alcoRecover = true
         }
-        if (hitPixel.fentDepri < pixel.fentDepri && pixel.fentDepri) {
+        if ((hitPixel.fentDepri < pixel.fentDepri || !hitPixel.fentDepri) && pixel.fentDepri) {
             hitPixel.fentDepri = pixel.fentDepri
+            hitPixel.fenAddict = true
         }
         if (hitPixel.sick != true && pixel.sick == true && Math.random() > 0.95) {
             hitPixel.sick = true
@@ -435,8 +437,9 @@ if (!isEmpty(pixel.x-1, pixel.y, true)) {
         if (hitPixel.alcoRecover !== true && pixel.alcoRecover) {
             hitPixel.alcoRecover = true
         }
-        if (hitPixel.fentDepri < pixel.fentDepri && pixel.fentDepri) {
+        if ((hitPixel.fentDepri < pixel.fentDepri || !hitPixel.fentDepri) && pixel.fentDepri) {
             hitPixel.fentDepri = pixel.fentDepri
+            hitPixel.fenAddict = true
         }
         if (hitPixel.sick != true && pixel.sick == true && Math.random() > 0.95) {
             hitPixel.sick = true
@@ -503,8 +506,9 @@ if (!isEmpty(pixel.x+1, pixel.y, true)) {
         if (hitPixel.alcoRecover !== true && pixel.alcoRecover) {
             hitPixel.alcoRecover = true
         }
-        if (hitPixel.fentDepri < pixel.fentDepri && pixel.fentDepri) {
+        if ((hitPixel.fentDepri < pixel.fentDepri || !hitPixel.fentDepri) && pixel.fentDepri) {
             hitPixel.fentDepri = pixel.fentDepri
+            hitPixel.fenAddict = true
         }
         if (hitPixel.sick != true && pixel.sick == true && Math.random() > 0.95) {
             hitPixel.sick = true
@@ -631,8 +635,9 @@ if (!isEmpty(pixel.x, pixel.y-1, true)) {
         if (hitPixel.alcoRecover !== true && pixel.alcoRecover) {
             hitPixel.alcoRecover = true
         }
-        if (hitPixel.fentDepri < pixel.fentDepri && pixel.fentDepri) {
+        if ((hitPixel.fentDepri < pixel.fentDepri || !hitPixel.fentDepri) && pixel.fentDepri) {
             hitPixel.fentDepri = pixel.fentDepri
+            hitPixel.fenAddict = true
         }
         if (hitPixel.sick != true && pixel.sick == true && Math.random() > 0.95) {
             hitPixel.sick = true
@@ -713,8 +718,9 @@ if (!isEmpty(pixel.x, pixel.y+1, true)) {
         if (hitPixel.alcoRecover !== true && pixel.alcoRecover) {
             hitPixel.alcoRecover = true
         }
-        if (hitPixel.fentDepri < pixel.fentDepri && pixel.fentDepri) {
+        if ((hitPixel.fentDepri < pixel.fentDepri || !hitPixel.fentDepri) && pixel.fentDepri) {
             hitPixel.fentDepri = pixel.fentDepri
+            hitPixel.fenAddict = true
         }
         if (hitPixel.sick != true && pixel.sick == true && Math.random() > 0.95) {
             hitPixel.sick = true
@@ -795,8 +801,9 @@ if (!isEmpty(pixel.x-1, pixel.y, true)) {
         if (hitPixel.alcoRecover !== true && pixel.alcoRecover) {
             hitPixel.alcoRecover = true
         }
-        if (hitPixel.fentDepri < pixel.fentDepri && pixel.fentDepri) {
+        if ((hitPixel.fentDepri < pixel.fentDepri || !hitPixel.fentDepri) && pixel.fentDepri) {
             hitPixel.fentDepri = pixel.fentDepri
+            hitPixel.fenAddict = true
         }
         if (hitPixel.sick != true && pixel.sick == true && Math.random() > 0.95) {
             hitPixel.sick = true
@@ -877,8 +884,9 @@ if (!isEmpty(pixel.x+1, pixel.y, true)) {
         if (hitPixel.alcoRecover !== true && pixel.alcoRecover) {
             hitPixel.alcoRecover = true
         }
-        if (hitPixel.fentDepri < pixel.fentDepri && pixel.fentDepri) {
+        if ((hitPixel.fentDepri < pixel.fentDepri || !hitPixel.fentDepri) && pixel.fentDepri) {
             hitPixel.fentDepri = pixel.fentDepri
+            hitPixel.fenAddict = true
         }
         if (hitPixel.sick != true && pixel.sick == true && Math.random() > 0.95) {
             hitPixel.sick = true
@@ -1037,8 +1045,9 @@ if (!isEmpty(pixel.x, pixel.y-1, true)) {
         if (hitPixel.alcoRecover !== true && pixel.alcoRecover) {
             hitPixel.alcoRecover = true
         }
-        if (hitPixel.fentDepri < pixel.fentDepri && pixel.fentDepri) {
+        if ((hitPixel.fentDepri < pixel.fentDepri || !hitPixel.fentDepri) && pixel.fentDepri) {
             hitPixel.fentDepri = pixel.fentDepri
+            hitPixel.fenAddict = true
         }
         if (hitPixel.sick != true && pixel.sick == true && Math.random() > 0.95) {
             hitPixel.sick = true
@@ -1101,8 +1110,9 @@ if (!isEmpty(pixel.x, pixel.y+1, true)) {
         if (hitPixel.alcoRecover !== true && pixel.alcoRecover) {
             hitPixel.alcoRecover = true
         }
-        if (hitPixel.fentDepri < pixel.fentDepri && pixel.fentDepri) {
+        if ((hitPixel.fentDepri < pixel.fentDepri || !hitPixel.fentDepri) && pixel.fentDepri) {
             hitPixel.fentDepri = pixel.fentDepri
+            hitPixel.fenAddict = true
         }
         if (hitPixel.sick != true && pixel.sick == true && Math.random() > 0.95) {
             hitPixel.sick = true
@@ -1165,8 +1175,9 @@ if (!isEmpty(pixel.x-1, pixel.y, true)) {
         if (hitPixel.alcoRecover !== true && pixel.alcoRecover) {
             hitPixel.alcoRecover = true
         }
-        if (hitPixel.fentDepri < pixel.fentDepri && pixel.fentDepri) {
+        if ((hitPixel.fentDepri < pixel.fentDepri || !hitPixel.fentDepri) && pixel.fentDepri) {
             hitPixel.fentDepri = pixel.fentDepri
+            hitPixel.fenAddict = true
         }
         if (hitPixel.sick != true && pixel.sick == true && Math.random() > 0.95) {
             hitPixel.sick = true
@@ -1229,8 +1240,9 @@ if (!isEmpty(pixel.x+1, pixel.y, true)) {
         if (hitPixel.alcoRecover !== true && pixel.alcoRecover) {
             hitPixel.alcoRecover = true
         }
-        if (hitPixel.fentDepri < pixel.fentDepri && pixel.fentDepri) {
+        if ((hitPixel.fentDepri < pixel.fentDepri || !hitPixel.fentDepri) && pixel.fentDepri) {
             hitPixel.fentDepri = pixel.fentDepri
+            hitPixel.fenAddict = true
         }
         if (hitPixel.sick != true && pixel.sick == true && Math.random() > 0.95) {
             hitPixel.sick = true
@@ -2662,7 +2674,7 @@ elements.heart = {
     burn: 20,
     burnTime: 160,
     burnInto: "meat",
-    breakInto: ["meat","shed_blood","shed_blood",],
+    breakInto: ["meat","blood","blood",],
     category: "circulation",
     state: "solid",
     density: 1250,
@@ -2784,7 +2796,7 @@ elements.kidney = {
     burn: 20,
     burnTime: 160,
     burnInto: "meat",
-    breakInto: ["meat","urine","shed_blood"],
+    breakInto: ["meat","urine","blood"],
     category: "circulation",
     state: "solid",
     density: 1250,
@@ -2827,7 +2839,7 @@ elements.liver = {
     burn: 20,
     burnTime: 160,
     burnInto: "meat",
-    breakInto: ["meat","rotten_meat","shed_blood",],
+    breakInto: ["meat","rotten_meat","blood",],
     category: "nutrition",
     state: "solid",
     density: 1250,
@@ -2848,7 +2860,7 @@ elements.blood_vessel = {
     nutrTrans: 30,
     oxygTrans: 35,
     isMultiDie: true,
-    bleed: "shed_blood",
+    bleed: "blood",
     hoverStat: function(pixel) {
         return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
@@ -2873,7 +2885,7 @@ elements.blood_vessel = {
         "brick_rubble": { elem2: "infected_vessel", chance:0.005 },
         "glitter": { elem1: null, elem2: "infected_vessel", chance:0.001 },
         "sulfur": { elem2: "infected_vessel", chance:0.005 },
-        "rust": { elem1: ["meat","infected_vessel","infected_vessel","infected_vessel","shed_blood","shed_blood"], chance:0.005 },
+        "rust": { elem1: ["meat","infected_vessel","infected_vessel","infected_vessel","blood","blood"], chance:0.005 },
         "mercury": { elem2: null, elem1: "infected_vessel", func:function(pixel1,pixel2){ if (pixel1.poisoned != true) {
             pixel1.poisoned = true;
         } }, chance:0.005 },
@@ -2894,13 +2906,13 @@ elements.blood_vessel = {
         } }, chance:0.01 },
     },
     tempHigh: 175,
-    stateHigh: ["meat","shed_blood","blood"],
+    stateHigh: ["meat","blood","blood"],
     tempLow: -50,
-    stateLow: ["frozen_meat","shed_blood","blood","blood"],
+    stateLow: ["frozen_meat","blood","blood","blood"],
     burn: 20,
     burnTime: 160,
-    burnInto: ["meat","shed_blood","shed_blood","shed_blood","shed_blood","blood","blood","steam"],
-    breakInto: ["meat","shed_blood","shed_blood","shed_blood","shed_blood","shed_blood","shed_blood","blood"],
+    burnInto: ["meat","blood","blood","blood","blood","blood","blood","steam"],
+    breakInto: ["meat","blood","blood","blood","blood","blood","blood","blood"],
     category: "circulation",
     state: "solid",
     density: 1250,
@@ -2976,7 +2988,7 @@ elements.white_blood_cell = {
     nutrTrans: 35,
     oxygTrans: 40,
     isMultiDie: true,
-    bleed: "shed_blood",
+    bleed: "blood",
     hoverStat: function(pixel) {
         return "Ntr:"+pixel.nutrition+" O2:"+pixel.oxygen
     },
@@ -3057,7 +3069,7 @@ elements.white_blood_cell = {
         heartAttached: false,
     },
     reactions: {
-            "rust": { elem1: ["meat","infected_vessel","infected_vessel","infected_vessel","shed_blood","shed_blood"], chance:0.005 },
+            "rust": { elem1: ["meat","infected_vessel","infected_vessel","infected_vessel","blood","blood"], chance:0.005 },
             "mercury": { elem2: null, elem1: "infected_vessel", func:function(pixel1,pixel2){ if (pixel1.poisoned != true) {
                 pixel1.poisoned = true;
             } }, chance:0.005 },
@@ -3076,16 +3088,16 @@ elements.white_blood_cell = {
             "cyanide": { elem2: null, func:function(pixel1,pixel2){ if (pixel1.poisoned != true) {
                 pixel1.poisoned = true;
             } }, chance:0.01 },
-            "shed_blood": { elem2:"blood_vessel", chance:0.10  },
+            "blood": { elem2:"blood_vessel", chance:0.10  },
 	},
     tempHigh: 175,
-    stateHigh: ["meat","shed_blood","shed_blood","blood"],
+    stateHigh: ["meat","blood","blood","blood"],
     tempLow: -50,
     stateLow: "frozen_meat",
     burn: 20,
     burnTime: 160,
-    burnInto: ["meat","shed_blood","shed_blood","blood"],
-    breakInto: "shed_blood",
+    burnInto: ["meat","blood","blood","blood"],
+    breakInto: "blood",
     category: "circulation",
     state: "solid",
     density: 1250,
@@ -3987,7 +3999,7 @@ elements.intestines = {
                         pixel.alcoDepri = 0
                     }
                 }
-                if (hitPixel.fent === true && Math.random() > 0.5) {
+                if (hitPixel.fent === true && Math.random() > 0.25) {
                     if (pixel.fentDepri) {
                         pixel.fentDepri = 0
                     }
@@ -4029,7 +4041,7 @@ elements.intestines = {
                         pixel.alcoDepri = 0
                     }
                 }
-                if (hitPixel.fent === true && Math.random() > 0.5) {
+                if (hitPixel.fent === true && Math.random() > 0.25) {
                     if (pixel.fentDepri) {
                         pixel.fentDepri = 0
                     }
@@ -4084,7 +4096,7 @@ elements.intestines = {
                         pixel.alcoDepri = 0
                     }
                 }
-                if (hitPixel.fent === true && Math.random() > 0.5) {
+                if (hitPixel.fent === true && Math.random() > 0.25) {
                     if (pixel.fentDepri) {
                         pixel.fentDepri = 0
                     }
@@ -4131,7 +4143,7 @@ elements.intestines = {
                         pixel.alcoDepri = 0
                     }
                 }
-                if (hitPixel.fent === true && Math.random() > 0.5) {
+                if (hitPixel.fent === true && Math.random() > 0.25) {
                     if (pixel.fentDepri) {
                         pixel.fentDepri = 0
                     }
@@ -4186,7 +4198,7 @@ elements.intestines = {
                         pixel.alcoDepri = 0
                     }
                 }
-                if (hitPixel.fent === true && Math.random() > 0.5) {
+                if (hitPixel.fent === true && Math.random() > 0.25) {
                     if (pixel.fentDepri) {
                         pixel.fentDepri = 0
                     }
@@ -4231,7 +4243,7 @@ elements.intestines = {
                         pixel.alcoDepri = 0
                     }
                 }
-                if (hitPixel.fent === true && Math.random() > 0.5) {
+                if (hitPixel.fent === true && Math.random() > 0.25) {
                     if (pixel.fentDepri) {
                         pixel.fentDepri = 0
                     }
@@ -4286,7 +4298,7 @@ elements.intestines = {
                         pixel.alcoDepri = 0
                     }
                 }
-                if (hitPixel.fent === true && Math.random() > 0.5) {
+                if (hitPixel.fent === true && Math.random() > 0.25) {
                     if (pixel.fentDepri) {
                         pixel.fentDepri = 0
                     }
@@ -4333,7 +4345,7 @@ elements.intestines = {
                         pixel.alcoDepri = 0
                     }
                 }
-                if (hitPixel.fent === true && Math.random() > 0.5) {
+                if (hitPixel.fent === true && Math.random() > 0.25) {
                     if (pixel.fentDepri) {
                         pixel.fentDepri = 0
                     }
@@ -5991,6 +6003,7 @@ elements.stomach_acid = {
         "cancer": { elem2:"gaseous_material", attr2:{"nutrition":-15, "speed":-15, "sick":true}, chance:0.02 },
         "plague": { elem2:"gaseous_material", attr2:{"nutrition":-15, "speed":-10, "sick":true}, chance:0.02 },
         "glue": { elem2:"gaseous_material", attr2:{"nutrition":-10, "speed":-10}, chance:0.02 },
+        "fentanyl": { elem2:"gaseous_material", attr2:{"nutrition":-50, "speed":-20, "fent":true}, chance:0.01 },
     },
     category: "nutrition",
     tempHigh: 110,
@@ -6120,6 +6133,7 @@ elements.herbi_acid = {
         "cancer": { elem2:"gaseous_material", attr2:{"nutrition":-25, "speed":-15, "sick":true}, chance:0.02 },
         "plague": { elem2:"gaseous_material", attr2:{"nutrition":-15, "speed":-10, "sick":true}, chance:0.02 },
         "glue": { elem2:"gaseous_material", attr2:{"nutrition":-10, "speed":-10, "sick":true}, chance:0.02 },
+        "fentanyl": { elem2:"gaseous_material", attr2:{"nutrition":-50, "speed":-20, "fent":true}, chance:0.01 },
     },
     category: "nutrition",
     tempHigh: 110,
@@ -6244,6 +6258,7 @@ elements.carni_acid = {
         "cancer": { elem2:"digested_material", attr2:{"nutrition":-5, "speed":-5, "sick":true}, chance:0.02 },
         "plague": { elem2:"gaseous_material", attr2:{"nutrition":-15, "speed":-10, "sick":true}, chance:0.02 },
         "glue": { elem2:"gaseous_material", attr2:{"nutrition":-10, "speed":-15, "sick":true}, chance:0.02 },
+        "fentanyl": { elem2:"gaseous_material", attr2:{"nutrition":-50, "speed":-20, "fent":true}, chance:0.01 },
     },
     category: "nutrition",
     tempHigh: 110,
@@ -6367,6 +6382,7 @@ elements.explosive_acid = {
         "cancer": { elem2:"digested_material", attr2:{"nutrition":5}, chance:0.02 },
         "plague": { elem2:"digested_material", attr2:{"nutrition":5}, chance:0.02 },
         "glue": { elem2:"digested_material", attr2:{"nutrition":5}, chance:0.02 },
+        "fentanyl": { elem2:"gaseous_material", attr2:{"nutrition":-5}, chance:0.01 },
     },
     category: "nutrition",
     tempHigh: 600,
@@ -7730,54 +7746,12 @@ elements.toilet = {
     desc: "Secret tool. Steal your enemies life!"
 } 
 
-elements.shed_blood = {
-    name:"blood",
-    color: ["#fe0000","#ed0000"],
-    behavior: behaviors.LIQUID,
-    tick: function(pixel) {
-        if (pixel.age > 1500 && Math.random() < 0.05) {
-            changePixel(pixel,"blood");
-        }
-        pixel.age++;
-        doDefaults(pixel);
-    },
-    reactions: {
-        "vaccine": { elem1:"antibody", elem2:null },
-        "plague": { elem1:"infection", elem2:null },
-        "rotten_meat": { elem1:"infection" },
-        "rotten_cheese": { elem1:"infection" },
-        "virus": { elem1:"infection", elem2:null },
-        "cancer": { elem1:"infection" },
-        "cyanide": { elem1:"infection", elem2:null },
-        "cyanide_gas": { elem1:"infection", elem2:null },
-        "mushroom_spore": { elem1:"infection", elem2:null },
-        "mushroom_gill": { elem1:"infection" },
-        "dirty_water": { elem1:"infection", elem2:null },
-        "rad_steam": { elem1:"infection" },
-        "rad_glass": { elem1:"infection" },
-        "rad_shard": { elem1:"infection" },
-        "rad_cloud": { elem1:"infection" },
-        "fallout": { elem1:"infection" },
-        "rust": { elem1:"infection", chance:0.05 },
-        "oxidized_copper": { elem1:"infection", chance:0.05 },
-        "rat": { elem1:"infection", chance:0.075 },
-        "flea": { elem1:"infection", chance:0.03 },
-        "worm": { elem1:"infection", chance:0.03 },
-        "mercury": { elem1:"infection", elem2:null, chance:0.05 },
-        "lead": { elem1:"infection", elem2:null, chance:0.01 },
-        "oxygen": { elem2:null, chance:0.05 },
-        "carbon_dioxide": { elem2:null, chance:0.05 },
-        "alcohol": { elem1:[null,"dna"], chance:0.02 }
-    },
-    viscosity: 20,
-    tempHigh: 124.55,
-    stateHigh: ["steam","salt","oxygen"],
-    tempLow: 0,
-    stateLow: "blood",
-    category:"liquids",
-    state: "liquid",
-    density: 1065,
-    stain: 0.04,
+elements.fentanyl = {
+    category: "medicine",
+    color: "#d5edf3",
+    state: "solid",
+    behavior: behaviors.POWDER,
+    tempHigh: 87.5,
 }
 
 if (!elements.cancer.reactions) { elements.cancer.reactions = {} }
@@ -8070,3 +8044,6 @@ elements.vaccine.reactions.infected_vessel = { elem1: null, elem2: "blood_vessel
 elements.antidote.reactions.infected_vessel = { elem1: null, elem2: "blood_vessel", attr2:{"immune": true}, chance:0.02 }
 
 elements.salt_water.stateHigh = ["steam","steam","salt"]
+
+elements.vaccine.category = "medicine"
+elements.antidote.category = "medicine"

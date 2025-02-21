@@ -124,6 +124,79 @@ elements.corn_starch = {
     isFood: true
 }
 
+elements.desand = {
+    color: "#192a88",
+    tool: function (pixel) {
+        if (pixel.element === "sand") {
+            deletePixel(pixel.x,pixel.y)
+        } 
+        else if (pixel.element === "packed_sand") {
+            changePixel(pixel,"foam")
+        } 
+        else if (pixel.element === "color_sand") {
+            pixel.element = "smoke";
+        }
+        else if (pixel.element === "glass") {
+            deletePixel(pixel.x,pixel.y)
+        }
+        else if (pixel.element === "rad_glass") {
+            changePixel(pixel,"radiation")
+        }
+        else if (pixel.element === "glass_shard") {
+            deletePixel(pixel.x,pixel.y)
+        }
+        else if (pixel.element === "rad_shard") {
+            changePixel(pixel,"radiation")
+        }
+        else if (pixel.element === "molten_glass") {
+            changePixel(pixel,"fire")
+        }
+        else if (pixel.element === "molten_rad_glass") {
+            changePixel(pixel,"fire")
+        }
+        else if (pixel.element === 'stained_glass') {
+            pixel.element = "smoke";
+        }
+        else if (pixel.element === "wet_sand") {
+            changePixel(pixel,"water")
+        } 
+        else if (pixel.element === "sandstorm") {
+            if (Math.random() < 0.95) {
+                pixel.element = "foam";
+            }
+            else {
+                changePixel(pixel,"cloud")
+            }
+        } 
+        else if (pixel.element === "tornado") {
+            if (pixel.fired === "sand") {
+                pixel.fired = null
+                pixel.color = pixelColorPick(pixel,elements.tornado.color)
+            } 
+        } 
+        else if (pixel.element === "concrete") {
+            if (Math.random() < 0.95) {
+                pixel.element = "gravel";
+            }
+            else {
+                changePixel(pixel,"oxygen")
+            }
+        } 
+        else if (pixel.element === "cement") {
+            if (Math.random() < 0.80) {
+                pixel.element = "gravel";
+            }
+            else {
+                changePixel(pixel,"water")
+            }
+        } 
+        else if ([pixel.element].startsWith("sand_")) { 
+            deletePixel(pixel.x,pixel.y)
+        }
+    },
+    category: "tools",
+}
+
 elements.oobleck = {
     color: "#8ef1b8",
     tick: function(pixel){
@@ -396,7 +469,281 @@ elements.graphite = {
     density: 2260,
     hardness: 0.99,
     breakInto: "graphite_dust",
-    stain: 0.5
+    stain: 0.4
+}
+
+elements.white_pawn = {
+    color: "#F2F2CC",
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "DL:black_pawn,black_rook,black_bishop,black_knight%0.5|M1%0.5|DL:black_pawn,black_rook,black_bishop,black_knight%0.5",
+    ],
+    tempHigh: 400,
+    stateHigh: "ember",
+    category: "chess",
+    state: "solid",
+    density: 2260,
+    hardness: 0.5,
+    breakInto: "sawdust",
+}
+
+elements.black_pawn = {
+    color: "#2F2F33",
+    behavior: [
+        "DL:white_pawn,white_rook,white_bishop,white_knight%0.5|M1%0.5|DL:white_pawn,white_rook,white_bishop,white_knight%0.5",
+        "XX|XX|XX",
+        "XX|XX|XX",
+    ],
+    tempHigh: 400,
+    stateHigh: "ember",
+    category: "chess",
+    state: "solid",
+    density: 2260,
+    hardness: 0.5,
+    breakInto: "sawdust",
+}
+
+elements.white_rook = {
+    color: "#F2F2CC",
+    behavior: [
+        "XX|M1%0.5|XX",
+        "M1%0.5|XX|M1%0.5",
+        "XX|M1%0.5|XX",
+    ],
+    reactions: {
+        "black_pawn": { elem2: null },
+        "black_rook": { elem2: null },
+        "black_bishop": { elem2: null },
+        "black_knight": { elem2: null },
+        "black_queen": { elem2: null },
+        "black_king": { elem2: "supernova" },
+    },
+    tempHigh: 400,
+    stateHigh: "ember",
+    category: "chess",
+    state: "solid",
+    density: 2260,
+    hardness: 0.5,
+    breakInto: "sawdust",
+}
+
+elements.black_rook = {
+    color: "#2F2F33",
+    behavior: [
+        "XX|M1%0.5|XX",
+        "M1%0.5|XX|M1%0.5",
+        "XX|M1%0.5|XX",
+    ],
+    reactions: {
+        "white_pawn": { elem2: null },
+        "white_rook": { elem2: null },
+        "white_bishop": { elem2: null },
+        "white_knight": { elem2: null },
+        "white_queen": { elem2: null },
+        "white_king": { elem2: "supernova" },
+    },
+    tempHigh: 400,
+    stateHigh: "ember",
+    category: "chess",
+    state: "solid",
+    density: 2260,
+    hardness: 0.5,
+    breakInto: "sawdust",
+}
+
+elements.white_bishop = {
+    color: "#F2F2CC",
+    behavior: [
+        "M1%0.5|XX|M1%0.5",
+        "XX|XX|XX",
+        "M1%0.5|XX|M1%0.5",
+    ],
+    reactions: {
+        "black_pawn": { elem2: null },
+        "black_rook": { elem2: null },
+        "black_bishop": { elem2: null },
+        "black_knight": { elem2: null },
+        "black_queen": { elem2: null },
+        "black_king": { elem2: "supernova" },
+    },
+    tempHigh: 400,
+    stateHigh: "ember",
+    category: "chess",
+    state: "solid",
+    density: 2260,
+    hardness: 0.5,
+    breakInto: "sawdust",
+}
+
+elements.black_bishop = {
+    color: "#2F2F33",
+    behavior: [
+        "M1%0.5|XX|M1%0.5",
+        "XX|XX|XX",
+        "M1%0.5|XX|M1%0.5",
+    ],
+    reactions: {
+        "white_pawn": { elem2: null },
+        "white_rook": { elem2: null },
+        "white_bishop": { elem2: null },
+        "white_knight": { elem2: null },
+        "white_queen": { elem2: null },
+        "white_king": { elem2: "supernova" },
+    },
+    tempHigh: 400,
+    stateHigh: "ember",
+    category: "chess",
+    state: "solid",
+    density: 2260,
+    hardness: 0.5,
+    breakInto: "sawdust",
+}
+
+elements.white_knight = {
+    color: "#F2F2CC",
+    behavior: [
+        "XX|M1%0.5|XX|M1%0.5|XX",
+        "M1%0.5|XX|XX|XX|M1%0.5",
+        "XX|XX|XX|XX|XX",
+        "M1%0.5|XX|XX|XX|M1%0.5",
+        "XX|M1%0.5|XX|M1%0.5|XX",
+    ],
+    reactions: {
+        "black_pawn": { elem2: null },
+        "black_rook": { elem2: null },
+        "black_bishop": { elem2: null },
+        "black_knight": { elem2: null },
+        "black_queen": { elem2: null },
+        "black_king": { elem2: "supernova" },
+    },
+    tempHigh: 400,
+    stateHigh: "ember",
+    category: "chess",
+    state: "solid",
+    density: 2260,
+    hardness: 0.5,
+    breakInto: "sawdust",
+}
+
+elements.black_knight = {
+    color: "#2F2F33",
+    behavior: [
+        "XX|M1%0.5|XX|M1%0.5|XX",
+        "M1%0.5|XX|XX|XX|M1%0.5",
+        "XX|XX|XX|XX|XX",
+        "M1%0.5|XX|XX|XX|M1%0.5",
+        "XX|M1%0.5|XX|M1%0.5|XX",
+    ],
+    reactions: {
+        "white_pawn": { elem2: null },
+        "white_rook": { elem2: null },
+        "white_bishop": { elem2: null },
+        "white_knight": { elem2: null },
+        "white_queen": { elem2: null },
+        "white_king": { elem2: "supernova" },
+    },
+    tempHigh: 400,
+    stateHigh: "ember",
+    category: "chess",
+    state: "solid",
+    density: 2260,
+    hardness: 0.5,
+    breakInto: "sawdust",
+}
+
+elements.white_queen = {
+    color: "#F2F2CC",
+    behavior: [
+        "M1%0.5|M1%0.5|M1%0.5",
+        "M1%0.5|XX|M1%0.5",
+        "M1%0.5|M1%0.5|M1%0.5",
+    ],
+    reactions: {
+        "black_pawn": { elem2: null },
+        "black_rook": { elem2: null },
+        "black_bishop": { elem2: null },
+        "black_knight": { elem2: null },
+        "black_queen": { elem2: null },
+        "black_king": { elem2: "supernova" },
+    },
+    tempHigh: 400,
+    stateHigh: "ember",
+    category: "chess",
+    state: "solid",
+    density: 2260,
+    hardness: 0.5,
+    breakInto: "sawdust",
+}
+
+elements.black_queen = {
+    color: "#2F2F33",
+    behavior: [
+        "M1%0.5|M1%0.5|M1%0.5",
+        "M1%0.5|XX|M1%0.5",
+        "M1%0.5|M1%0.5|M1%0.5",
+    ],
+    reactions: {
+        "white_pawn": { elem2: null },
+        "white_rook": { elem2: null },
+        "white_bishop": { elem2: null },
+        "white_knight": { elem2: null },
+        "white_queen": { elem2: null },
+        "white_king": { elem2: "supernova" },
+    },
+    tempHigh: 400,
+    stateHigh: "ember",
+    category: "chess",
+    state: "solid",
+    density: 2260,
+    hardness: 0.5,
+    breakInto: "sawdust",
+}
+
+elements.white_king = {
+    color: "#F2F2CC",
+    behavior: [
+        "M1%0.05|M1%0.05|M1%0.05",
+        "M1%0.05|XX|M1%0.05",
+        "M1%0.025|M1%0.025|M1%0.025",
+    ],
+    reactions: {
+        "black_pawn": { elem2: null },
+        "black_rook": { elem2: null },
+        "black_bishop": { elem2: null },
+        "black_knight": { elem2: null },
+        "black_queen": { elem2: null },
+    },
+    tempHigh: 400,
+    stateHigh: "ember",
+    category: "chess",
+    state: "solid",
+    density: 2260,
+    hardness: 0.5,
+    breakInto: "sawdust",
+}
+
+elements.black_king = {
+    color: "#2F2F33",
+    behavior: [
+        "M1%0.025|M1%0.025|M1%0.025",
+        "M1%0.05|XX|M1%0.05",
+        "M1%0.05|M1%0.05|M1%0.05",
+    ],
+    reactions: {
+        "white_pawn": { elem2: null },
+        "white_rook": { elem2: null },
+        "white_bishop": { elem2: null },
+        "white_knight": { elem2: null },
+        "white_queen": { elem2: null },
+    },
+    tempHigh: 400,
+    stateHigh: "ember",
+    category: "chess",
+    state: "solid",
+    density: 2260,
+    hardness: 0.5,
+    breakInto: "sawdust",
 }
 
 elements.graphite_dust = {
@@ -414,5 +761,5 @@ elements.graphite_dust = {
     category: "powders",
     state: "solid",
     density: 1830,
-    stain: 0.5
+    stain: 0.6
 }
