@@ -49,7 +49,10 @@ elements.mars_debris = {
     behavior: behaviors.STURDYPOWDER,
     category: "mars",
     state: "solid",
-    density: 1605
+    density: 1605,
+    burn: 94,
+    burnTime: 45,
+    burnInto: "ash"
 }
 elements.support_mars_rock = {
 	color: ["#a51002","#bd1102"],
@@ -97,12 +100,14 @@ elements.mars_ironheart = {
     density: 1500,
     tempHigh: 2500,
     hardness: 1,
-    stateHigh: "molten_mars",
+    stateHigh: "ironheart",
     extraInfo: "Mars Stuff.",
     hidden: "true",
     reactions: {
         "mars_furnace": { elem1: "ironheart", elem2: "ironheart" },
-        "nosmoker": { elem1: "ironheart", elem2: "ironheart" },    },
+        "nosmoker": { elem1: "ironheart", elem2: "ironheart" },
+        "ironheart": { elem1: "ironheart", elem2: "ironheart" , chance:0.1 }
+},
 }
 elements.mars_furnace = {
     color: ["#870002","#870507"],
@@ -217,7 +222,7 @@ elements.o2_tank = {
     breakInto: ["copper", "oxygen"]
 }
 
-// 1.6.9
+// 1.6.11
 // most elements done :D
 // iron heart ore
 // iron heart
@@ -236,4 +241,4 @@ elements.o2_tank = {
 // machines are smashable. please smash them.
 // also heatable
 // O2 BE YOU
-// rover
+// ironheart faster
