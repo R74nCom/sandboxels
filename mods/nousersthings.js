@@ -1221,7 +1221,7 @@ elements.bridge_pipe = {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
-                if (!isEmpty(x,y,true) && elements[pixelMap[x][y].element].movable) {
+                if (!isEmpty(x,y,true) && elements[pixelMap[x][y].element].movable && newPixel.element != "ray") {
                     deletePixel(x,y)
                 }
                 if (isEmpty(x,y)) {
@@ -1284,7 +1284,7 @@ elements.bridge_pipe = {
                             break;
                         }
                     }
-                    else if (!pixel.con && elements[newPixel.element].movable) { //suck up pixel
+                    else if (!pixel.con && elements[newPixel.element].movable && newPixel.element != "ray") { //suck up pixel
                         pixel.con = newPixel;
                         deletePixel(newPixel.x,newPixel.y);
                         pixel.con.x = pixel.x;
