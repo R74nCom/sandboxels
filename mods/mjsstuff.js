@@ -70,6 +70,7 @@ elements.dark_brown_sugar = {
     behavior: behaviors.SUPPORTPOWDER,
     category: "food",
     state: "powder",
+    stateHigh: "caramel", //am i an idiot for taking this long to figure out how to edit my code? yes. i am.
     reactions: {
         "water": { elem1: "sugar_water", elem2: null },
     }
@@ -81,6 +82,7 @@ elements.icing_sugar = {
     behavior: behaviors.SUPPORTPOWDER,
     category: "food",
     state: "powder",
+    stateHigh: "caramel",
     reactions: {
         "water": { elem1: null , elem2: "icing" },
     }
@@ -92,6 +94,7 @@ elements.golden_caster_sugar = {
     behavior: behaviors.POWDER,
     category: "food",
     state: "powder",
+    stateHigh: "caramel",
     reactions: {
         "water": { elem1: "sugar_water" , elem2: null },
     }
@@ -104,6 +107,7 @@ elements.caster_sugar = {
     behavior: behaviors.POWDER,
     category: "food",
     state: "powder",
+    stateHigh: "caramel",
     reactions: {
         "water": { elem1: "sugar_water" , elem2: null },
     }
@@ -114,6 +118,7 @@ elements.light_brown_sugar = {
     behavior: behaviors.SUPPORTPOWDER,
     category: "food",
     state: "powder",
+    stateHigh: "caramel",
     reactions: {
         "water": { elem1: "sugar_water" , elem2: null },
     }
@@ -125,6 +130,7 @@ elements.demerara_sugar = {
     behavior: behaviors.POWDER,
     category: "food",
     state: "powder",
+    stateHigh: "caramel",
     reactions: {
         "water": { elem1: "sugar_water" , elem2: null },
     }
@@ -136,6 +142,7 @@ elements.dark_muscovado_sugar = {
     behavior: behaviors.SUPPORTPOWDER,
     category: "food",
     state: "powder",
+    stateHigh: "caramel",
     reactions: {
         "water": { elem1: "sugar_water" , elem2: null },
     }
@@ -148,6 +155,7 @@ elements.granulated_sugar = {
     behavior: behaviors.POWDER,
     category: "food",
     state: "powder",
+    stateHigh: "caramel",
     reactions: {
         "water": { elem1: "sugar_water" , elem2: null },
     }
@@ -159,7 +167,67 @@ elements.icing = {
     behavior: behaviors.LIQUID,
     category: "food",
     state: "powder",
+    stateHigh: "caramel",
     viscosity: 2000,
-
-
 };
+
+
+elements.Hazel = {
+    color: ["#189BCC",],
+    behavior: behaviors.SUPERFLUID,
+    category: "joke",
+    state: "liquid",
+    viscosity: 0,
+};
+
+ elements.guhguhgugu = {
+	color: ["#a73acf", "#9e26c9", "#be5ee0",],
+	behavior: behaviors.LIQUID, 
+	category: "joke", 
+	state: "liquid",
+	stateLow: "frozen_guhguhgugu",
+	tempLow: -150,
+	stateHigh: "solid_guhguhgugu",
+        tempHigh: 150, 
+	 };
+
+ elements.solid_guhguhgugu = {
+	color: ["#a73acf", "#9e26c9", "#be5ee0",],
+	behavior: behaviors.SOLID, 
+	category: "joke", 
+	state: "solid",
+	stateLow: "guhguhgugu",
+	tempLow: 150,
+	stateHigh: "liquid_guhguhgugu",
+        tempHigh: 250,
+	 };
+
+ elements.liquid_guhguhgugu = {
+	color: ["#a73acf", "#9e26c9", "#be5ee0",],
+	behavior: behaviors.MOLTEN, 
+	category: "molten", 
+	state: "molten",
+	tempLow: "250",
+	stateLow: "solid_guhguhgugu",
+	stateHigh: "liquid_guhguhgugu",
+        tempHigh: 500,
+	 };
+
+ elements.boil_guhguhgugu = {
+	color: ["#a73acf", "#9e26c9", "#be5ee0",],
+	behavior: behaviors.DGAS, 
+	category: "joke", 
+	state: "gas",
+	tempLow: "500",
+	stateLow: "liquid_guhguhgugu",
+	
+	 };
+
+elements.frozen_guhguhgugu = {
+	color: ["#a73acf", "#9e26c9", "#be5ee0",],
+	behavior: behaviors.SOLID, 
+	category: "joke", 
+	state: "solid",
+	stateHigh: "guhguhgugu",
+        tempHigh: 15, 
+	 };

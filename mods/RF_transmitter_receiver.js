@@ -43,7 +43,7 @@ elements.rf_transmitter = {
 // RF Receiver Element
 elements.rf_receiver = {
     color: "#142c47",
-    category: "Machines",
+    category: "machines",
     behaviors: behaviors.WALL,
     tempHigh: 250,
     stateHigh: "dirt",

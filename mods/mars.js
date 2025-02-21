@@ -17,7 +17,9 @@ elements.mars_dust = {
         stateHigh: "molten_mars",
         tempLow: -170,
         stateLow: "mars_rock",
-        extraInfo: "Dust Samples from mars. Can freeze into Mars Rock."
+    extraInfo: "Dust Samples from mars. Can freeze into Mars Rock.",
+    hardness: 0.991,
+    breakInto: "mars_debris"
 }
 elements.molten_mars = {
 	color: "#ffc338",
@@ -41,6 +43,16 @@ elements.mars_rock = {
         tempLow: -273,
         stateLow: "mars_rock_wall",
         extraInfo: "The Freezing of Mars Dust. Can be used for normal land."
+}
+elements.mars_debris = {
+    color: "#ff9999",
+    behavior: behaviors.STURDYPOWDER,
+    category: "mars",
+    state: "solid",
+    density: 1605,
+    burn: 94,
+    burnTime: 45,
+    burnInto: "ash"
 }
 elements.support_mars_rock = {
 	color: ["#a51002","#bd1102"],
@@ -88,12 +100,14 @@ elements.mars_ironheart = {
     density: 1500,
     tempHigh: 2500,
     hardness: 1,
-    stateHigh: "molten_mars",
+    stateHigh: "ironheart",
     extraInfo: "Mars Stuff.",
     hidden: "true",
     reactions: {
         "mars_furnace": { elem1: "ironheart", elem2: "ironheart" },
-        "nosmoker": { elem1: "ironheart", elem2: "ironheart" },    },
+        "nosmoker": { elem1: "ironheart", elem2: "ironheart" },
+        "ironheart": { elem1: "ironheart", elem2: "ironheart" , chance:0.1 }
+},
 }
 elements.mars_furnace = {
     color: ["#870002","#870507"],
@@ -106,14 +120,20 @@ elements.mars_furnace = {
     state: "solid",
     hardness: 0.6,
     stateHigh: "molten_mars",
-    extraInfo: "Used to turn Ironheart into Ironheart Solids"
+    extraInfo: "Used to turn Ironheart into Ironheart Solids",
+    tempHigh: "550",
+    stateHigh: "molten_mars",
+    breakInto: ["ironheart", "mars_ironheart", "ironheart_ore", "gunk"]
 }
 elements.nosmoker = {
     color: ["#870002", "#870507"],
     behavior: behaviors.WALL,
     category: "mars",
     state: "solid",
-    extraInfo: "Used to turn Ironheart into Ironheart Solids"
+    extraInfo: "Used to turn Ironheart into Ironheart Solids",
+    tempHigh: "350",
+    stateHigh: "molten_mars",
+    breakInto: ["ironheart", "mars_ironheart", "ironheart_ore", "antigunk"]
 }
 elements.ironheart = {
     color: "#e9825a",
@@ -197,9 +217,12 @@ elements.o2_tank = {
     ],
     category: "mars",
     state: "solid",
-
+    tempHigh: "600",
+    stateHigh: "molten_copper",
+    breakInto: ["copper", "oxygen"]
 }
-// 1.4.7
+
+// 1.6.11
 // most elements done :D
 // iron heart ore
 // iron heart
@@ -215,3 +238,7 @@ elements.o2_tank = {
 // im putting in the archive
 // lil changes
 // inroducing oxygen tanks!
+// machines are smashable. please smash them.
+// also heatable
+// O2 BE YOU
+// ironheart faster

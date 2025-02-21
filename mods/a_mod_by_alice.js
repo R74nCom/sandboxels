@@ -1,5 +1,5 @@
 var modName = "mods/../a_mod_by_alice.js" //can't do "alice's mod" because the apostrophe will fuck up code, be too confusing, or both
-//Version ω0.2 [???]
+//Version ω0.3 [Corium update]
 var dependencies = ["mods/libhooktick.js", "mods/chem.js", "mods/minecraft.js", "mods/Neutronium Mod.js", "mods/fey_and_more.js", "mods/velocity.js", "mods/ketchup_mod.js", "mods/moretools.js", "mods/aChefsDream.js", "mods/nousersthings.js"];  //thanks to mollthecoder, PlanetN9ne, StellarX20 (3), MelecieDiancie, R74n, Nubo318, Sightnado, SquareScreamYT, and NoUsernameFound
 var dependencyExistence = dependencies.map(x => enabledMods.includes(x));
 var allDependenciesExist = dependencyExistence.reduce(function(a,b) { return a && b });
@@ -2695,11 +2695,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		booleanSynonyms = [ "boolean", "bool", "boole", "boo", "bo", "bl", "b" ];
 		arraySynonyms = [ "arr", "a", "ar", "list" ];
 		defaultStringTypeValues = ["element","color","clone","changeTo","void","type","spawn"];
-		defaultNumberTypeValues = ["x","y","charge","temp","start","vx","vy","chargeCD","start","burnStart","dir","panic","r","frequency","length","delay","volume","debounce","debounceLength","speed","fall","penetrateCounter","chargeCounter","spawnCounter","spawnTime","squadiusX","squadiusY","spawnTries","counter","attachDirection","value","range","xSpacing","ySpacing","maxPixels","explosionRadius","circleRadius","breakAroundRadius"];
+		defaultNumberTypeValues = ["x","y","charge","temp","start","vx","vy","chargeCD","start","burnStart","dir","panic","r","frequency","length","delay","volume","debounce","debounceLength","speed","fall","penetrateCounter","chargeCounter","spawnCounter","spawnTime","squadiusX","squadiusY","spawnTries","counter","attachDirection","value","range","xSpacing","ySpacing","maxPixels","explosionRadius","circleRadius","breakAroundRadius","radiation"];
 		defaultBooleanTypeValues = ["burning","dead","hissing","following","dirLocked","del","didChargeBlueTinted","shooting","del","spawnAtPixelTemp","overwrite"];
 		defaultArrayTypeValues = ["attachOffsets"];
 		synonymsOfTrue = ["true", "t", "1", "yes"];
 		synonymsOfFalse = ["false", "f", "0", "no"];
+	//FORCE DATA FOOTER TO 2 LINES SO IT NEVER HIDES INFO
 	//ENABLE RUNNING CODE AFTER STATE ELEMENT AUTOGENERATION (runAfterAutogen) ##
 		resizeCanvas = function(newHeight,newWidth,newPixelSize,clear) {
 			var gameCanvas = document.getElementById("game");
@@ -4405,6 +4406,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
                     pixel1[key] = r.attr1[key];
                 }
             }
+            if (r.propAdds1) { // add value to each attribute to pixel1
+                for (var key in r.propAdds1) {
+                    pixel1[key] ??= 0;
+					pixel1[key] += r.propAdds1[key]
+                }
+            }
             if (r.stain1) { stainPixel(pixel1,r.stain1,0.05); }
             if (r.elem2 !== undefined) {
                 // if r.elem2 is an array, set elem2 to a random element from the array, otherwise set it to r.elem2
@@ -4427,6 +4434,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
             if (r.attr2) { // add each attribute to pixel2
                 for (var key in r.attr2) {
                     pixel2[key] = r.attr2[key];
+                }
+            }
+            if (r.propAdds2) { // add value to each attribute to pixel2
+                for (var key in r.propAdds2) {
+                    pixel2[key] ??= 0;
+					pixel2[key] += r.propAdds2[key]
                 }
             }
             if (r.stain2) { stainPixel(pixel2,r.stain2,0.05); }
@@ -4653,7 +4666,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			color: ["#daff21","#a6ff00","#ffff00"],
 			behavior: [
 				"XX|CR:radiation%0.1|XX",
-				"CR:radiation%0.1|XX|CR:radiation%0.1",
+				"CR:radiation%0.1|DEL%0.02 AND CH:rad_smoke%0.2|CR:radiation%0.1",
 				"XX|CR:radiation%0.1|XX",
 			],
 			tick: function(pixel) {
@@ -5691,7 +5704,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		canvasLayersPostRenderers = [];
 		drawLayers = function(includeBackground) {
 			//console.log("dl tick");
-			if (ctx === null) return
+			if (ctx === null || ctx === undefined) return
 			clearLayers();
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			findColorPulseTimerSubTimer++;
@@ -5759,6 +5772,38 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		}
 		clearInterval(renderInterval);
 		renderInterval = window.setInterval(drawLayers, 1000/60);
+		viewInfo[4] = {
+			name: 'element',
+			pixel: function(pixel,ctx) {
+				var data = elements[pixel.element];
+				var _color = data.color;
+				if(Array.isArray(_color)) {
+					_color = _color[Math.floor(pixelTicks / 10) % _color.length]
+				};
+				drawSquare(ctx,_color,pixel.x,pixel.y,undefined,1 - (data.alpha ?? 0))
+			}
+		};
+		viewInfo[5] = {
+			name: 'velocity',
+			pixel: function(pixel,ctx) {
+				var data = elements[pixel.element];
+				var vx = pixel.vx ?? 0;
+				var vy = pixel.vy ?? 0;
+				var _color = null;
+				if(vx === 0 && vy === 0) {
+					_color = "rgb(15,15,15)"
+				} else {
+					var magnitude = Math.sqrt ((vx ** 2) + (vy ** 2));
+					var direction = Math.atan2(pixel.vy ?? 0,pixel.vx ?? 0)*180/Math.PI;
+					if(direction < 0) { direction = scale(direction,-180,0,360,180) };
+					hue = direction;
+					sat = 100;
+					lig = bound(scale(magnitude,0,100,10,100),0,100);
+					_color = "hsl("+hue+","+sat+"%,"+lig+"%)";
+				};
+				drawSquare(ctx,_color,pixel.x,pixel.y,undefined,1 - (data.alpha ?? 0))
+			}
+		};
 		canvasLayers.pressure = document.createElement("canvas");
 		canvasLayersPre.push(canvasLayers.pressure);
         function drawPressure() {
@@ -11735,6 +11780,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		};
 		elements.planet_cracker = {
 			color: "#ffc8ba",
+			excludeRandom: true,
 			behavior: behaviors.WALL,
 			properties: {
 				active: true,
@@ -13614,7 +13660,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 				var displayTemp = Math.round(_temp);
 				if(displayTemp > 999999999) {
-					var shrinkage = (10 ** (Math.floor(Math.log10(_temp)) - 4));
+					var shrinkage = (10 ** (Math.floor(Math.log10(_temp)) - 2));
 					displayTemp = [Math.floor(_temp/shrinkage),"e",Math.log10(shrinkage),suffix].join("");
 				} else {
 					displayTemp = Math.round(_temp).toString() + suffix;
@@ -13684,6 +13730,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						statsDiv.style["font-size"] = "75%"
 					}
 				}
+				//Force stats bar to be 2 lines tall so it never hides info
+				var statsBar = document.getElementById("stats");
+				statsBar.style.height = "3em";
 			}
 			//Moved to window.onload where gameDiv should be guaranteed to exist
 		} catch (error) {
@@ -15232,6 +15281,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 				elements.light_petroleum_fuel_gas = { //it's not liquified, and sandboxels doesn't even have a pressure system, and there is no generic name for uncompressed, gaseous "L"PG, so we need a different name
 					burn: 100,
+					burnTime: 10,
 					color: "#b5b5b3",
 					density: 3.5,
 					tempLow: -44,
@@ -15241,10 +15291,17 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							pixel.burnStart = pixelTicks;
 						}
 					},
-					burnInto: "explosion,explosion,fire,fire,fire,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(","),
+					burnInto: "explosion,explosion,ignited_gas,fire,fire,fire,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(","),
 					state: "gas",
 					behavior: behaviors.GAS,
 				};
+				elements.liquid_light_petroleum_fuel = {
+					burn: 50,
+					burnTime: 165,
+					fireElement: ["light_petroleum_fuel_gas","fire","fire"],
+					burnInto: "ignited_gas,fire,fire,smoke,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(","),
+					tempLow: -180 //based off of ethane
+				}
 				elements.lamp_oil.tempHigh = 170;
 				elements.lamp_oil.stateHigh = "lamp_oil_gas";
 				elements.lamp_oil.density = 810;
@@ -18482,7 +18539,27 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			density: 6520,
 			conduct: 0.19,
 			hardness: 0.5,
+			forceAutoGen: true
 		},
+		eLists.NUCLEARFUEL = ['uranium', 'molten_uranium', 'enriched_uranium', 'molten_enriched_uranium', 'uranium_dioxide', 'enriched_uranium_dioxide', 'molten_uranium_dioxide', 'molten_enriched_uranium_dioxide', 'uranium233', 'uranium235', 'uranium_gas', 'plutonium', 'molten_plutonium', 'enriched_plutonium', 'molten_enriched_plutonium', 'plutonium_dioxide', 'molten_plutonium_dioxide', 'enriched_plutonium_dioxide', 'molten_enriched_plutonium_dioxide', 'uranium_gas', 'plutonium_gas'];
+		elements.molten_zirconium = {
+			tick: function(pixel) {
+				var neighbors = getVonNeumannNeighbors(pixel);
+				var lavaNeighbors = neighbors.filter(p => (eLists.MAGMA.includes(p.element)) || p.element.includes("molten_dirt"));
+				var fuelNeighbors = neighbors.filter(p => (eLists.NUCLEARFUEL.includes(p.element)));
+				if((lavaNeighbors.length > 0) && (fuelNeighbors.length > 0)) {
+					var aLavaNeighbor = randomChoice(lavaNeighbors);
+					var aFuelNeighbor = randomChoice(fuelNeighbors);
+					var coria = [pixel,aLavaNeighbor,aFuelNeighbor];
+					for(var i = 0; i < coria.length; i++) {
+						var newPixel = coria[i];
+						if(!newPixel) { continue };
+						changePixel(newPixel,"corium",false);
+						if(newPixel.temp < elements.corium.temp) { newPixel.temp = elements.corium.temp }; //changeTemp upwards only
+					}
+				}
+			}
+		}
 		newPowder("zirconia",["#F0ECDB","#FBF8EC"],5680,2715)
 		elements.solid_zirconia = newPowder("zirconia",["#F0ECDB","#FBF8EC"],5680,2715,null,"zirconia",0.85,true);
 		elements.molten_magnesium ??= {}; elements.molten_magnesium.tempHigh = 1090;
@@ -18539,7 +18616,226 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		};
 		elements.neutron.state = "gas";
 		elements.neutron.ignoreAir = "true";
-		neighbors = [[-1,0],[0,-1],[1,0],[0,1]]
+		neighbors = [[-1,0],[0,-1],[1,0],[0,1]];
+
+		function coriumSteamExpHeat(pixel,x,y,radius,fire,smoke,power,damage) {
+			var distance = pyth(x,y,pixel.x,pixel.y);
+			var closeness = Math.abs(radius - distance);
+			var closenessProportion = closeness / radius;
+			pixel.temp += 25;
+			if(Math.random() < Math.sqrt(closenessProportion)) {
+				if(pixel.element.endsWith("water")) {
+					pixel.temp += 325;
+					pixelTempCheck(pixel)
+				}
+			};
+
+			//double velocity
+			if (!elements[pixel.element].excludeRandom && !elements[pixel.element].excludeVelocity) {
+				var angle = Math.atan2(pixel.y-y,pixel.x-x);
+				pixel.vx = Math.round((pixel.vx|0) + Math.cos(angle) * (radius * power/10));
+				pixel.vy = Math.round((pixel.vy|0) + Math.sin(angle) * (radius * power/10));
+			}
+
+		}
+
+		//and the reason I added zirconium in the first place
+		elements.corium = {
+			color: ["#F4D851","#A9B335","#E1710F"],
+			behavior: behaviors.MOLTEN,
+			tick: function(pixel) {
+				pixel.radiation ??= 150;
+				var range = Math.ceil(Math.log(((pixel.radiation ?? 50) ** (0.583)) + 1))
+				if(isNaN(pixel.radiation)) { pixel.temp += 10; pixel.radiation = 150 };
+				if(isNaN(pixel.temp)) { pixel.temp = 2400 };
+				pixel.temp += (pixel.radiation / 75);
+				if(pixel.radiation > 0) {
+					for(var dx = -range; dx <= range; dx++) {
+						for(var dy = -range; dy <= range; dy++) {
+							if(Math.random() < (pixel.radiation * 0.003)) {
+								var distance = Math.sqrt((Math.abs(dx)**2) + (Math.abs(dy)**2));
+								if(distance > range) { continue };
+								var x = pixel.x + dx;
+								var y = pixel.y + dy;
+								if(isEmpty(x,y,false)) {
+									createPixelReturn("radiation",x,y).temp = pixel.temp;
+								}
+							}
+						}
+					}
+				};
+				pixel.radiation *= 0.99975;
+			},
+			reactions: {
+				"magma": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"felsic_magma": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"intermediate_felsic_magma": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"intermediate_magma": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"ultramafic_magma": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"crimson_magma": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"blackpinkinitic_magma": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"rainbow_magma": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"nellish_magma": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"molten_slag": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"molten_steel": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"molten_zirconium": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"molten_zirconia": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"molten_carbon": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"molten_dirt": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"molten_tuff": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"molten_glass": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"molten_silica": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"fallout": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"iodine": { elem2: null },
+				"caesium": { elem2: null },
+				"barium": { elem2: null },
+				"ash": { elem2: null },
+				"liquid_irradium": { elem2: ["liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium",null], temp1: 1.5, propAdds1: { radiation: 10 } },
+				"pure_water": { elem1: "intermediate_magma", elem2: "pure_water", changeTemp: true },
+				"chilly_water": { elem1: "intermediate_magma", elem2: "pure_water", temp1: -500, temp2: -100 }
+			},
+			hoverStat: function(pixel) { return "rad.lvl. " + (pixel.radiation ?? 150).toLocaleString(undefined,{maximumFractionDigits: 1}) },
+			temp: 2400,
+			tempLow: 1400, //made up
+			stateLow: "solidified_corium",
+			tempHigh: 4400, //made up
+			viscosity: 8, //bad guesstrapolation from https://www.kns.org/files/pre_paper/36/16A-362%EA%B9%80%EC%9B%85%EA%B8%B0.pdf 
+			category: "liquids",
+			state: "liquid",
+			density: 7058 //assuming a 0.456 U-Zr ratio, and with uranium dioxide's density of 10970 subject to Sandboxels's standard molten density approximation of -10% because no data is available, and 4700 for liquid ZrO2, but this doesn't account for the variety of other s*** that gets in corium
+		};
+		
+		/*for(var key in elements.corium.reactions) {
+			var r = elements.corium.reactions[key]
+			if(r.elem1 !== "corium") { continue };
+			elements[key] ??= {};
+			elements[key].reactions ??= {};
+			elements[key].reactions.corium ;
+		}*/
+
+		elements.solidified_corium = {
+			color: ["#5D4D36","#535F30","#414137"],
+			behavior: behaviors.POWDER,
+			tick: function(pixel) {
+				pixel.radiation ??= 10;
+				var range = Math.ceil(Math.log(((pixel.radiation ?? 10) ** (0.583)) + 1))
+				pixel.temp += 2;
+				if(isNaN(pixel.radiation)) { pixel.temp += 3; pixel.radiation = 150 };
+				for(var dx = -range; dx <= range; dx++) {
+					for(var dy = -range; dy <= range; dy++) {
+						if(Math.random() < 0.03 + (pixel.radiation * 0.0025)) {
+							var distance = Math.sqrt((Math.abs(dx)**2) + (Math.abs(dy)**2));
+							if(distance > range) { continue };
+							var x = pixel.x + dx;
+							var y = pixel.y + dy;
+							if(isEmpty(x,y,false)) {
+								createPixelReturn("radiation",x,y).temp = pixel.temp;
+							}
+						}
+					}
+				};
+				pixel.radiation *= 0.9998;
+			},
+			hoverStat: elements.corium.hoverStat,
+			reactions: {
+				"pure_water": { elem1: "andesite", elem2: "pure_water", changeTemp: true },
+				"chilly_water": { elem1: "solidified_corium", elem2: ["chilly_water","steam"], temp1: -500, temp2: -100 },
+				"liquid_irradium": { elem2: ["liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium",null], temp1: 1.5, propAdds1: { radiation: 10 } }
+			},
+			temp: 50,
+			tempHigh: 1400, //made up
+			stateHigh: "corium",
+			category: "solids",
+			state: "solid",
+			density: 11800 //assuming a 0.456 U-Zr ratio, and with uranium dioxide's density of 10970 subject to Sandboxels's standard molten density approximation of -10% because no data is available, and 4700 for liquid ZrO2, but this doesn't account for the variety of other s*** that gets in corium
+		};
+
+		if(eLists.WATER) {
+			for(var i = 0; i < eLists.WATER.length; i++) {
+				var water = eLists.WATER[i];
+				if(water == "chilly_water" || water == "pure_water") { continue };
+				elements.corium.reactions[water] = { func(pixel1,pixel2) {
+					explodeAt(pixel1.x,pixel1.y,5,"fire,rad_steam,rad_steam,rad_steam,steam,steam,radiation","steam,radiation",null,coriumSteamExpHeat)
+				}, temp1: 50, chance: 0.01 }
+			}
+		};
+		
+		elements.corium_gas = {
+			tick: elements.corium.tick,
+			hoverStat: elements.corium.hoverStat,
+			reactions: {
+				"liquid_irradium": { elem2: ["liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium",null], temp1: 1.5, propAdds1: { radiation: 10 } },
+				"pure_water": { elem1: "intermediate_magma", elem2: "pure_water", changeTemp: true },
+				"chilly_water": { elem1: "solidified_corium", elem2: "steam", temp1: -500, temp2: -100 }
+			},
+			density: 20
+		};
+		
+		elements.pure_water.reactions.dirty_water = elements.pure_water.reactions.water
+
+		radiationIncreaseOverrides = {
+			molten_uranium238: 1,
+			molten_actinium: 5,
+			molten_protactinium: 3,
+			molten_americium: 3,
+			molten_berkelium: 3,
+			molten_californium: 3,
+			molten_einsteinium: 5,
+			molten_fermium: 5,
+			molten_nihonium: 5,
+			molten_moscovium: 10,
+			molten_livermorium: 10,
+			molten_tennessine: 10,
+			molten_oganesson: 10,
+			molten_nihonium_oxide: 10,
+			molten_flerovium_oxide: 10,
+			molten_livermorium_oxide: 10,
+			"molten_p9-leeseocid": 10,
+		}
+		var radioactives = eLists.NUCLEARFUEL; radioactives.push("molten_uranium","molten_uranium238","molten_neptunium","molten_uranium238","molten_actinium","molten_protactinium","molten_americium","molten_berkelium","molten_californium","molten_einsteinium","molten_fermium","molten_nihonium","molten_moscovium","molten_livermorium","molten_tennessine","molten_oganesson","molten_nihonium_oxide","molten_flerovium_oxide","molten_livermorium_oxide","molten_p9-leeseocid")
+		for(var i = 0; i < radioactives.length; i++) {
+			var radioactive = radioactives[i];
+			elements.corium.reactions[radioactive] ??= { elem2: null, temp1: 1, chance: 0.1, propAdds1: { radiation: radiationIncreaseOverrides[radioactive] ?? 2 } }
+		}
+
 		//Non-element: Liquid ammonia
 		elements.liquid_ammonia = {
 			color: "#bab6a9",
@@ -21561,7 +21857,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					elements[name] = {
 						behavior: itsActuallySolidNotPowderLol ? behaviors.WALL : behaviors.POWDER,
 						color: color,
-						category: "solids",
+						category: itsActuallySolidNotPowderLol ? "solids" : "powders",
 						state: "solid",
 						density: density ?? 1000,
 					};
@@ -23164,6 +23460,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							stain: 0.01,
 							_data: [particulateInfo._data[0], particulateInfo._data[1], "suspension"],
 						}
+						if(eLists.WATER) { eLists.WATER.push(suspensionName) };
 						elements[suspensionName].reactions[suspensionName] = { "elem1":"water", "elem2":sedimentName, "chance": 0.001 },
 						elements[suspensionName].reactions[particulateName] = { "elem1": "water", "elem2":sedimentName, "chance": 0.0005 },
 					//Sediment element where lithification code resides
@@ -23241,6 +23538,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							};
 						};
 				};
+				if(!eLists.WATER) { console.error(38309309) };
+				if(eLists.WATER) { eLists.WATER.push("swamp_water","heavy_water","radioactive_water","milk") };
 				newPowder("calcite","#f5ecd0",2711,825,["carbon_dioxide","quicklime"],"calcium_carbonate_dust");
 				newPowder("aragonite","#e3c58d",2830,825,["carbon_dioxide","quicklime"],"calcium_carbonate_dust");
 				newPowder("vaterite","#e8ebd8",2540,825,["carbon_dioxide","quicklime"],"calcium_carbonate_dust");
@@ -23277,6 +23576,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					};
 				};
 				runAfterLoad(function() {
+					eLists.MAGMA = Object.keys(elements).filter(x => x.includes("magma") && !(x.includes("vaporized")) && !(x.includes("cloud")))
+					
 					for(i = 0; i < sands.length; i++) {
 						switch(sands[i]) {
 							case "dirt":
@@ -25916,7 +26217,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					goldenZirconColors = ["#e99209","#fcb111","#d88208","#b97605"];
 					//heatTreated 0 = untreated, 1 = inertly (blue), 2 = with oxygen (golden)
 					elements.zircon = {
-						//Corundum with different impurities, so I can copy/paste everything but the color
 						color: ["#37130b","#a9301a","#3c1810"],
 						properties: {
 							heatTreated: 0
@@ -27959,9 +28259,16 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 							console.error("pixelsize: supplied pixel size was zero or negative");
 							return false;
 						} else {
-							document.querySelector('span[setting="pixelsize"]').querySelector("select").selectedIndex = pixelSizeSettingDropdownOtherOptionIndex;
-							settings.pixelsize = argPixelSize;
-							resizeCanvas(ctx.canvas.height,ctx.canvas.width,settings.pixelsize,false)
+							var confirmation = confirm("Due to changes in the game, this command must reset the canvas. Proceed?")
+							if(confirmation) {
+								document.querySelector('span[setting="pixelsize"]').querySelector("select").selectedIndex = pixelSizeSettingDropdownOtherOptionIndex;
+								settings.pixelsize = argPixelSize;
+								resizeCanvas(ctx.canvas.height,ctx.canvas.width,settings.pixelsize,false);
+								clearAll();
+								return argPixelSize
+							} else {
+								return false
+							}
 						};
 					} else {
 						alert(pixelSize);
@@ -28733,7 +29040,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.smash_ray = {
 			color: ["#ff9999", "#8c8279"],
 			tick: function(pixel) {
-				if(pixel.done) { deletePixel(pixel); return };
+				if(!pixel) { return };
+				if(pixel?.done) { deletePixel(pixel.x,pixel.y); return };
 				var x = pixel.x;
 				for (var y = pixel.y; y < height; y++) {
 					if (outOfBounds(x, y)) {
@@ -35763,6 +36071,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 				elements.amba_tsunami = {
 					color: ["#2449d1","#4b6adb","#8093d9"],
+					excludeRandom: true,
 					behavior: behaviors.WALL,
 					properties: {
 						active: true,
@@ -35842,6 +36151,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				elements.megatsunami = {
 					color: ["#1f2aa3","#2641c9","#3a57c9"],
 					behavior: behaviors.WALL,
+					excludeRandom: true,
 					properties: {
 						active: true,
 					},
@@ -35922,6 +36232,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				elements.lava_tsunami = {
 					color: ["#ff370a","#e84a23","#e67740"],
 					behavior: behaviors.WALL,
+					excludeRandom: true,
 					properties: {
 						active: true,
 					},
@@ -36012,6 +36323,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				elements.lava_megatsunami = {
 					color: ["#b32b10","#c24d1f","#d66924"],
 					behavior: behaviors.WALL,
+					excludeRandom: true,
 					properties: {
 						active: true,
 					},
@@ -39929,7 +40241,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			};
 		});
 		function propPrompt() {
-			propProperty = prompt("Enter the property you want to set");
+			propProperty = prompt("(Prop) Enter the property you want to set");
 			propValue = prompt("Enter the value you want to set to");
 			//special check: element
 			if(propProperty === "element") {
@@ -40108,7 +40420,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			if(oldProperty === null) {
 				oldProperty = "temp";
 			};
-			numberAdjusterProperty = prompt("Enter the property you want to change");
+			numberAdjusterProperty = prompt("(Number adjuster) Enter the value you want to change");
 			if(numberAdjusterProperty === null) {
 				numberAdjusterProperty = oldProperty;
 				return false;
@@ -44735,7 +45047,7 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 		};
 	//NO GAMMA RAY SPAWNERS OR FILLERS IN RANDOM ##
 		runAfterLoad(function() {
-			randomBlacklist = ["quark_matter", "liquid_neutronium", "molten_neutronium", "neutronium", "neutronium_gas", "colored_fi	ller", "copycat_filler", "insulating_filler"];
+			randomBlacklist = ["quark_matter", "liquid_neutronium", "molten_neutronium", "neutronium", "neutronium_gas", "colored_filler", "copycat_filler", "insulating_filler"];
 			for(i = 0; i < randomBlacklist.length; i++) {
 				var element = randomBlacklist[i];
 				if(elements[element]) { elements[element].excludeRandom = true };
@@ -45678,7 +45990,10 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 
 	//END ##
 		console.log("Mod loaded");
-		logMessage("a_mod_by_alice.js requires many other mods. Many of the elements and features added with it installed are actually added by the other mods it depends on.")
+		window.addEventListener("load",function() {
+			logMessage("a_mod_by_alice.js requires many other mods. Many of the elements and features added with it installed are actually added by the other mods it depends on.")
+			logMessage('These mods are libhooktick.js, chem.js, minecraft.js, Neutronium Mod.js, fey_and_more.js, velocity.js, ketchup_mod.js, moretools.js, aChefsDream.js, nousersthings.js. They were enabled automatically')
+		})
 } catch (error) {
 	alert(`Load failed (try reloading).\nThis is likely a sporadic failure caused by inconsistencies in how mods are loaded, and will likely fix itself in a refresh or two. If it persists, then it's an issue.\nError: ${error.stack}`);
 	console.error(error)
