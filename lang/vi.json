@@ -1,6 +1,6 @@
 {
 "#lang.name": "Tiếng Việt",
-"#lang.credit": "VoidInstructions, NguyenChiBao, SalmonFishy",
+"#lang.credit": "VoidInstructions (Retired), NguyenChiBao, SalmonFishy",
 "#lang.font": "Vietnamese_Pixel",
 "land": "Đất đai",
 "liquids": "Chất lỏng",
@@ -555,6 +555,10 @@
 "spider": "Nhện",
 "ectoplasm": "Ngoại chất",
 "tombstone": "Bia mộ",
-  "cheese_powder":"Bột phô mai",
-"chocolate_powder":"Bột Sô-cô-la"
+"cheese_powder": "Bột phô mai",
+"chocolate_powder": "Bột Sô-cô-la",
+"portal_in": "Cổng vào",
+"portal_out": "Cổng ra",
+"coral": "San hô",
+"adobe": "Gạch bùn"
 }
