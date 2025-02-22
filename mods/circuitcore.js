@@ -12,35 +12,35 @@ cc_settingsTab.registerSettings("OverHeating", cc_setting1);
 settingsManager.registerTab(cc_settingsTab);
 
 var colorPalette_4bit = [
-    "#101820", "#37175F", "#5F1717", "#6F175F",
-    "#005F00", "#1563BF", "#7F401A", "#525252",
-    "#8F8F8F", "#EE8822", "#FF3027", "#FF47FF",
-    "#58E618", "#27FFDF", "#FFFF27", "#FFFFFF"
+	"#101820", "#37175F", "#5F1717", "#6F175F",
+	"#005F00", "#1563BF", "#7F401A", "#525252",
+	"#8F8F8F", "#EE8822", "#FF3027", "#FF47FF",
+	"#58E618", "#27FFDF", "#FFFF27", "#FFFFFF"
 ];
 
 function hueLerp(value) {
-    // Clamp the value between -50 and 400
-    if (value < -50) value = -50;
-    if (value > 400) value = 400;
+	// Clamp the value between -50 and 400
+	if (value < -50) value = -50;
+	if (value > 400) value = 400;
 
-    let r, g, b;
+	let r, g, b;
 
-    if (value <= 300) {
-        // Interpolate between blue and red
-        let t = (value + 50) / 350; // Normalize value from -50 to 300 to a 0-1 range
-        r = Math.round(255 * t);
-        g = 0;
-        b = Math.round(255 * (1 - t));
-    } else {
-        // Interpolate between red and white
-        let t = (value - 300) / 100; // Normalize value from 300 to 400 to a 0-1 range
-        r = 255;
-        g = Math.round(255 * t);
-        b = Math.round(255 * t);
-    }
+	if (value <= 300) {
+		// Interpolate between blue and red
+		let t = (value + 50) / 350; // Normalize value from -50 to 300 to a 0-1 range
+		r = Math.round(255 * t);
+		g = 0;
+		b = Math.round(255 * (1 - t));
+	} else {
+		// Interpolate between red and white
+		let t = (value - 300) / 100; // Normalize value from 300 to 400 to a 0-1 range
+		r = 255;
+		g = Math.round(255 * t);
+		b = Math.round(255 * t);
+	}
 
-    // Convert RGB values to a hex string
-    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+	// Convert RGB values to a hex string
+	return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
 }
 
 function cc_rgbToArray(colorString) {
@@ -76,7 +76,7 @@ function cc_rgbToArray(colorString) {
 }
 
 function cc_arrayToRgbString(rgbArray) {
-    return `rgb(${rgbArray.join(', ')})`;
+	return `rgb(${rgbArray.join(', ')})`;
 }
 
 function cc_scaleList(numbers, scale) {
@@ -220,58 +220,58 @@ function setPin(pixel, pins, index, value, rotation=pixel.circuitRotation) {
 
 // Circuits
 elements.four_bit_selector_circuit = {
-    cc_stableTick: function(pixel) {
-        var pins = [
-            // First 4-bit input (A)
-            [-1, -2, true],  // A0
-            [-3, -2, true],  // A1
-            [-5, -2, true],  // A2
-            [-7, -2, true],  // A3
+	cc_stableTick: function(pixel) {
+		var pins = [
+			// First 4-bit input (A)
+			[-7, -2, true],  // A0
+			[-5, -2, true],  // A1
+			[-3, -2, true],  // A2
+			[-1, -2, true],  // A3
 
-            // Second 4-bit input (B)
-            [7, -2, true],   // B0
-            [5, -2, true],   // B1
-            [3, -2, true],   // B2
-            [1, -2, true],   // B3
+			// Second 4-bit input (B)
+			[1, -2, true],   // B0
+			[3, -2, true],   // B1
+			[5, -2, true],   // B2
+			[7, -2, true],   // B3
 
-            // Selection pin (Sel)
-            [9, 0, true],    // Selection (Sel)
+			// Selection pin (Sel)
+			[9, 0, true],	// Selection (Sel)
 
-            // Output (O)
-            [-3, 2, false],  // O0 (centered)
-            [-1, 2, false],  // O1 (centered)
-            [1, 2, false],  // O2 (centered)
-            [3, 2, false],  // O3 (centered)
-        ];
+			// Output (O)
+			[-3, 2, false],  // O0 (centered)
+			[-1, 2, false],  // O1 (centered)
+			[1, 2, false],  // O2 (centered)
+			[3, 2, false],  // O3 (centered)
+		];
 
-        initializeCircuit(pixel, pins, 17, 3);
+		initializeCircuit(pixel, pins, 17, 3);
 
-        // Read inputs
-        var A = [
-            checkPin(pixel, pins, 0),
-            checkPin(pixel, pins, 1),
-            checkPin(pixel, pins, 2),
-            checkPin(pixel, pins, 3)
-        ];
+		// Read inputs
+		var A = [
+			checkPin(pixel, pins, 0),
+			checkPin(pixel, pins, 1),
+			checkPin(pixel, pins, 2),
+			checkPin(pixel, pins, 3)
+		];
 
-        var B = [
-            checkPin(pixel, pins, 4),
-            checkPin(pixel, pins, 5),
-            checkPin(pixel, pins, 6),
-            checkPin(pixel, pins, 7)
-        ];
+		var B = [
+			checkPin(pixel, pins, 4),
+			checkPin(pixel, pins, 5),
+			checkPin(pixel, pins, 6),
+			checkPin(pixel, pins, 7)
+		];
 
-        var Sel = checkPin(pixel, pins, 8); // Selection pin
+		var Sel = checkPin(pixel, pins, 8); // Selection pin
 
-        // Select between A and B based on Sel
-        var output = Sel ? B : A;
+		// Select between A and B based on Sel
+		var output = Sel ? B : A;
 
-        // Output the selected 4-bit value
-        setPin(pixel, pins, 9, output[0]);   // O0
-        setPin(pixel, pins, 10, output[1]);  // O1
-        setPin(pixel, pins, 11, output[2]);  // O2
-        setPin(pixel, pins, 12, output[3]);  // O3
-    }
+		// Output the selected 4-bit value
+		setPin(pixel, pins, 9, output[0]);   // O0
+		setPin(pixel, pins, 10, output[1]);  // O1
+		setPin(pixel, pins, 11, output[2]);  // O2
+		setPin(pixel, pins, 12, output[3]);  // O3
+	}
 };
 
 elements.four_bit_enabler_circuit = {
@@ -404,13 +404,13 @@ elements.four_bit_randomizer_circuit = {
 
 var tempVar = 0;
 elements.temperature_sensor = {
-    behavior: behaviors.WALL,
+	behavior: behaviors.WALL,
 	onSelect: function() {
-        var answertemp = Number(prompt("Set your target temperature:",(tempVar||undefined)));
-        if (!answertemp) { return }
+		var answertemp = Number(prompt("Set your target temperature:",(tempVar||undefined)));
+		if (!answertemp) { return }
 		tempVar = answertemp;
-    },
-    hoverStat: function(pixel) {
+	},
+	hoverStat: function(pixel) {
 		return `TargetTmp: {pixel.targetTemp}`;
 	},
 	cc_stableTick: function(pixel) {
@@ -1335,67 +1335,67 @@ elements.four_bit_adder_circuit = {
 };
 
 elements.four_bit_subtractor_circuit = {
-    cc_stableTick: function(pixel) {
-        var pins = [
-            // First 4-bit number (A)
-            [-1, -2, true],  // A3
-            [-3, -2, true],  // A2
-            [-5, -2, true],  // A1
-            [-7, -2, true],  // A0
+	cc_stableTick: function(pixel) {
+		var pins = [
+			// First 4-bit number (A)
+			[-1, -2, true],  // A3
+			[-3, -2, true],  // A2
+			[-5, -2, true],  // A1
+			[-7, -2, true],  // A0
 
-            // Second 4-bit number (B)
-            [7, -2, true],   // B3
-            [5, -2, true],   // B2
-            [3, -2, true],   // B1
-            [1, -2, true],   // B0
+			// Second 4-bit number (B)
+			[7, -2, true],   // B3
+			[5, -2, true],   // B2
+			[3, -2, true],   // B1
+			[1, -2, true],   // B0
 
-            // Borrow-in (B_in)
-            [9, 0, true],   // Borrow-in (B_in)
+			// Borrow-in (B_in)
+			[9, 0, true],   // Borrow-in (B_in)
 
-            // Output difference (D)
-            [-1, 2, false],  // D3
-            [-3, 2, false],  // D2
-            [-5, 2, false],  // D1
-            [-7, 2, false],  // D0
-            [1, 2, false],   // Borrow Out (B4)
-        ];
+			// Output difference (D)
+			[-1, 2, false],  // D3
+			[-3, 2, false],  // D2
+			[-5, 2, false],  // D1
+			[-7, 2, false],  // D0
+			[1, 2, false],   // Borrow Out (B4)
+		];
 
-        initializeCircuit(pixel, pins, 17, 3);
+		initializeCircuit(pixel, pins, 17, 3);
 
-        // Read inputs
-        var A = [
-            checkPin(pixel, pins, 0),
-            checkPin(pixel, pins, 1),
-            checkPin(pixel, pins, 2),
-            checkPin(pixel, pins, 3)
-        ];
+		// Read inputs
+		var A = [
+			checkPin(pixel, pins, 0),
+			checkPin(pixel, pins, 1),
+			checkPin(pixel, pins, 2),
+			checkPin(pixel, pins, 3)
+		];
 
-        var B = [
-            checkPin(pixel, pins, 4),
-            checkPin(pixel, pins, 5),
-            checkPin(pixel, pins, 6),
-            checkPin(pixel, pins, 7)
-        ];
+		var B = [
+			checkPin(pixel, pins, 4),
+			checkPin(pixel, pins, 5),
+			checkPin(pixel, pins, 6),
+			checkPin(pixel, pins, 7)
+		];
 
-        var B_in = checkPin(pixel, pins, 8); // Borrow-in
+		var B_in = checkPin(pixel, pins, 8); // Borrow-in
 
-        // Calculate the difference and borrow
-        var difference = [];
-        var borrow = B_in;
+		// Calculate the difference and borrow
+		var difference = [];
+		var borrow = B_in;
 
-        for (var i = 0; i < 4; i++) {
-            var bitDifference = A[i] - B[i] - borrow;
-            difference[i] = (bitDifference + 2) % 2; // Current bit difference
-            borrow = bitDifference < 0 ? 1 : 0; // Borrow for next bit
-        }
+		for (var i = 0; i < 4; i++) {
+			var bitDifference = A[i] - B[i] - borrow;
+			difference[i] = (bitDifference + 2) % 2; // Current bit difference
+			borrow = bitDifference < 0 ? 1 : 0; // Borrow for next bit
+		}
 
-        // Output the difference
-        setPin(pixel, pins, 9, difference[0]);   // D0
-        setPin(pixel, pins, 10, difference[1]);  // D1
-        setPin(pixel, pins, 11, difference[2]);  // D2
-        setPin(pixel, pins, 12, difference[3]);  // D3
-        setPin(pixel, pins, 13, borrow);         // Borrow Out (B4)
-    }
+		// Output the difference
+		setPin(pixel, pins, 9, difference[0]);   // D0
+		setPin(pixel, pins, 10, difference[1]);  // D1
+		setPin(pixel, pins, 11, difference[2]);  // D2
+		setPin(pixel, pins, 12, difference[3]);  // D3
+		setPin(pixel, pins, 13, borrow);		 // Borrow Out (B4)
+	}
 };
 
 function general_clock(speed, s2) {
@@ -1930,7 +1930,7 @@ document.addEventListener('keydown', function(event) {
 	}
 });
 
-function drawCircuitExtras() {
+function drawCircuitExtras(ctx) {
 	if (elements[currentElement].isCircuitCore && elements[currentElement].previewSize) {
 		var circuitWidth = elements[currentElement].previewSize[0];
 		var circuitHeight = elements[currentElement].previewSize[1];
@@ -1983,7 +1983,7 @@ function runLogicTick() {
 }
 
 function stabilizeLogicGates() {
-	var logicgatesElements = ["output","logic_wire","not_gate","and_gate","xor_gate","or_gate","nand_gate","nor_gate","nxor_gate","E2L_lever","E2L_button","L2E_constant","logic_transmitter","logic_receiver","logic_shock","logic_unshock"]
+	var logicgatesElements = ["output","logic_wire","not_gate","and_gate","xor_gate","or_gate","nand_gate","nor_gate","nxor_gate","E2L_lever","E2L_button","L2E_constant","logic_shock","logic_unshock"]
 
 	for (var i = 0;i < logicgatesElements.length;i++) {
 		elements[logicgatesElements[i]].cc_stableTick = elements[logicgatesElements[i]].tick;
