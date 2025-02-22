@@ -4335,7 +4335,7 @@ SEEDRISE: function(pixel) {
     color: "#825d38",
     tick: function(pixel) {
         doDefaults(pixel);
-        if (pixel.charge) {
+        if (pixel.charge < 1) {
             changePixel(pixel,"flash");
             pixel.charge = 0;
         }
