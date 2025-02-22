@@ -1,4 +1,4 @@
-// Clouds.js beta version
+// Clouds.js
 
 // Biased random
 function randomGaussian(A, B, biasFactor=2) {
@@ -18,8 +18,8 @@ function randomGaussian(A, B, biasFactor=2) {
 var clouds = [];
 setTimeout(() => {
 	for (var i = 0;i < 50;i++) {
-		var w = (Math.random() * 13) + 7;
-		var h = (Math.random() * 9) + 4;
+		var w = (Math.random() * 11) + 6;
+		var h = (Math.random() * 7) + 3;
 
 		// Higher clouds = faster
 		var y = randomGaussian(0, height * 0.75, 5);
@@ -30,15 +30,16 @@ setTimeout(() => {
 			y: y,
 			w: w,
 			h: h,
-			dx: ((Math.random() - 0.5) * 0.05) * (0.5 + speedFactor * 2),
-			type: Math.random() > 0.5 ? 1 : 0
+			dx: ((Math.random() - 0.5) * 0.05) * (0.5 + speedFactor * 2), // Velocity
+			color: Math.random() > 0.5 ? "255,255,255" : "210,210,190",
+			blur: Math.random() * 3 + 1
 		});
 	}
-}, 200);
+}, 600);
 
 function renderClouds(ctx) {
 	ctx.strokeStyle = "transparent";
-	ctx.globalAlpha = 1.0;
+	ctx.globalAlpha = Math.min(frameCounter * 0.02,1);
 
 	for (var i = 0;i < clouds.length;i++) {
 		var cloud = clouds[i];
@@ -47,12 +48,10 @@ function renderClouds(ctx) {
 			cloud.x * pixelSize, cloud.y * pixelSize,
 			cloud.x * pixelSize, (cloud.y + cloud.h) * pixelSize
 		);
+		gradient.addColorStop(0, `RGBA(${cloud.color},0.1)`);
+		gradient.addColorStop(1, `RGBA(${cloud.color},0.2)`);
 
-		var cloudColor = cloud.type == 1 ? "255,255,255" : "220,220,210"
-		gradient.addColorStop(0, `RGBA(${cloudColor},0.1)`);
-		gradient.addColorStop(1, `RGBA(${cloudColor},0.2)`);
-
-		ctx.filter = "blur(1px)";
+		ctx.filter = `blur(${cloud.blur}px)`;
 		ctx.fillStyle = gradient;
 		ctx.fillRect(cloud.x * pixelSize, cloud.y * pixelSize, cloud.w * pixelSize, cloud.h * pixelSize);
 		ctx.filter = "none";
