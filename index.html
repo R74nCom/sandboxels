@@ -2257,7 +2257,7 @@ SEEDRISE: function(pixel) {
                 if (pixel.sense && sensed.element !== pixel.sense) continue;
                 if (!sensed.charge && !sensed.chargeCD && (sensed.con || elements[sensed.element].movable && elements.sensor.ignore.indexOf(sensed.element) === -1)) {
                     pixel.charge = 1;
-                    pixel.chargeStart = pixelTicks;
+                    if (!pixel.chargeStart) pixel.chargeStart = pixelTicks;
                     break;
                 }
             }
