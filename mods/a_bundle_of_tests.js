@@ -1,19 +1,6 @@
 if(typeof(urlParams) === "undefined") {
 	urlParams = new URLSearchParams(window.location.search);
 };
-if(urlParams.get('loadTheModList') !== null || urlParams.get('ltml') !== null) { //if the variable exists at all
-    loadTheModList = true
-} else { //if it doesn't (and it returns null)
-    loadTheModList = false
-}
-
-if(loadTheModList) {
-	enabledMods = ["mods/code_library.js","mods/adjustablepixelsize.js","mods/boiling_rock.js","mods/chalcopyrite.js","mods/clone_liquid.js","mods/conveyance.js","mods/CrashTestDummy.js","mods/delete_all_of_element.js","mods/evenmoretemptools.js","mods/extra_element_info.js","mods/fantastic_creatures.js","mods/fey_and_more.js","mods/glenn_gases.js","mods/iocalfaeus_clones.js","mods/grav_mudstones.js","mods/icb.js","mods/iean.js","mods/ketchup_mod.js","mods/laetium.js","mods/liquid_energy.js","mods/minecraft.js","mods/minesweeper.js","mods/more_breaking.js","mods/moreliquids.js","mods/moretools.js","mods/move_tools.js","mods/nested_for_reaction_example.js","mods/Neutronium Mod.js","mods/portal.js","mods/pushers.js","mods/rainbow_tests.js","mods/random_elems.js","mods/random_liquids.js","mods/random_rocks.js","mods/randomness.js","mods/randomness_but_tick.js","mods/randomness_but_tool.js","mods/slag_fix.js","mods/some_tf_liquids.js","mods/structure_test.js","mods/test.js","mods/ticking_temp_stuff.js","mods/time.js","mods/toothpaste.js","mods/troll.js","mods/unhide.js","mods/worldgen_test.js","mods/page_color.js","mods/color_tools.js","mods/invisible_wall.js","mods/replace_all.js","mods/bacteria_mod.js","mods/controllable_pixel_test.js","mods/fire_slime.js","mods/bioooze.js","mods/color_tools.js","mods/cells.js","mods/triggerable_random_powders.js","mods/replace.js","mods/change.js","mods/prompt.js","mods/miscible_psoup_and_birthpool.js","mods/primordial_birthpool.js","mods/liquid_void.js","mods/solid_rock.js","mods/invisible_dye.js","mods/alcohol.js","mods/a_bundle_of_tests.js","mods/paint_event.js","mods/amogus.js","mods/chem.js","mods/clf3.js","mods/roseyiede.js","mods/state_voids.js","mods/the_ground.js","mods/lone_urea.js","mods/fwibblen.js","mods/prop and prompt variables.js","mods/prop.js","mods/x_dependent_change_test.js","mods/alkahest.js","mods/tool_pixel_behavior.js","mods/onTryMoveInto.js","mods/human_edit.js","mods/runAfterAutogen and onload restructure.js","mods/changeTempReactionParameter.js","mods/metals.js","mods/explodeAtPlus.js","mods/note_block.js","mods/wirelike_test.js","mods/no_random_grbs.js","mods/bananas.js","mods/cpt_alt.js","mods/fire_mod.js","mods/test_4.js","mods/save_loading.js","mods/apioforms_pre.js","mods/fill_script.js","mods/funny elements 2022-11-15.js","mods/haseulite.js","mods/neutronium_compressor.js","mods/mobs.js","mods/stripe_paint.js","mods/velvet.txt","mods/switches.js","mods/noConduct.js","mods/changePixelDebug.js","mods/no_gas_sticking.js","mods/conduit.js","mods/ray_cloner.js","mods/date_test.js","mods/velocity.js","mods/maxColorOffset.js","mods/gradient_background_support.js","mods/life_eater.js","mods/planet_cracker.js","mods/generative_mods.js","mods/generator_prompt.js","mods/place_all_elements.js"];
-	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-	alert("Mod list loaded. Refresh the page without the loadTheModList query parameter.");
-	console.log("Mod list loaded. Refresh the page without the loadTheModList query parameter.");
-};
-
 if(typeof(pyth) === "undefined") { //has to be in here due to the role in loading the mod list
 	function pyth(xA,yA,xB,yB) {
 		var a = Math.abs(xB - xA);
