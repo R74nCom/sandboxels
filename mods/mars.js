@@ -1,3 +1,4 @@
+
 elements.mars_gunk = {
     color: "#121212",
     behavior: behaviors.DGAS,
@@ -28,7 +29,8 @@ elements.molten_mars = {
 	state: "liquid",
         hidden: "true",
     extraInfo: "The Result of Burnt-up mars stuff. Some turn into this faster more than others.",
-        temp: 2500
+    temp: 2500,
+    density: 1150
 }
 elements.mars_rock = {
 	color: ["#a51002","#bd1102"],
@@ -185,14 +187,15 @@ elements.liquid_red_gold = {
     state: "liquid",
     density: 8,
     extraInfo: "Red Gold but a fludid.",
-    temp: 5500
+    temp: 5500,
+    density: 3500
 }
-elements.liquid_mars_dust = {
-    color: "#DB3629",
+elements.mars_water = {
+    color: "#F94849",
     behavior: behaviors.LIQUID,
-    category: "archived",
+    category: "mars",
     state: "liquid",
-    extraInfo: "Mars Dust Fluid. Removed 04/02/25."
+    density: 997
 }
 elements.testy = {
     color: "#FFFFFF",
@@ -200,13 +203,6 @@ elements.testy = {
     category: "archived",
     state: "solid",
     extraInfo: "Don't mind me, just a test. Removed 06/02/25?"
-}
-elements.legacy_liquid_mars_dust = {
-    color: "#DB3629",
-    behavior: behaviors.SUPERFLUID,
-    category: "archived",
-    state: "liquid",
-    extraInfo: "Mars Dust Superfluid. Changed at the start."
 }
 elements.o2_tank = {
     color: "#98F5F9",
@@ -222,7 +218,7 @@ elements.o2_tank = {
     breakInto: ["copper", "oxygen"]
 }
 
-// 1.6.11
+// 1.7.12
 // most elements done :D
 // iron heart ore
 // iron heart
@@ -241,4 +237,5 @@ elements.o2_tank = {
 // machines are smashable. please smash them.
 // also heatable
 // O2 BE YOU
-// ironheart faster
+// mars water
+// removed legacy liquid mars dust
