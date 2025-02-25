@@ -48,7 +48,7 @@ viewInfo[6] = { // Speed View
 viewInfo[7] = { // Illness View
     name: "ill",
     pixel: function(pixel,ctx) {
-        if ((elements[pixel.element].id === elements.cyanide_gas.id || elements[pixel.element].id === elements.poison_gas.id || elements[pixel.element].id === elements.poison.id || elements[pixel.element].id === elements.cyanide.id || elements[pixel.element].id === elements.infected_vessel.id || elements[pixel.element].id === elements.infection.id || elements[pixel.element].id === elements.cancer.id || elements[pixel.element].id === elements.plague.id || elements[pixel.element].id === elements.rotten_meat.id) || (elements[pixel.element].isBio === true && ((pixel.speed < -5 || pixel.oxygen < 250 || pixel.nutrition < 250) || pixel.poisoned === true || pixel.sick === true || pixel.alcoholic === true)) || ((elements[pixel.element].id === elements.digested_material.id || elements[pixel.element].id === elements.gaseous_material.id) && ((pixel.speed < 0 || pixel.nutrition < 5) || pixel.poisoned === true) && (pixel.immune !== true || !pixel.immune))) {
+        if ((elements[pixel.element].id === elements.cyanide_gas.id || elements[pixel.element].id === elements.poison_gas.id || elements[pixel.element].id === elements.poison.id || elements[pixel.element].id === elements.cyanide.id || elements[pixel.element].id === elements.infected_vessel.id || elements[pixel.element].id === elements.infection.id || elements[pixel.element].id === elements.cancer.id || elements[pixel.element].id === elements.plague.id || elements[pixel.element].id === elements.rotten_meat.id) || (elements[pixel.element].isBio === true && ((pixel.speed < -5 || pixel.oxygen < 250 || pixel.nutrition < 250) || pixel.ibupCount > 0 || pixel.poisoned === true || pixel.sick === true || pixel.alcoholic === true)) || ((elements[pixel.element].id === elements.digested_material.id || elements[pixel.element].id === elements.gaseous_material.id) && ((pixel.speed < 0 || pixel.nutrition < 5) || pixel.poisoned === true) && (pixel.immune !== true || !pixel.immune))) {
             var a = (settings.textures !== 0) ? pixel.alpha : undefined;
                     if (((elements[pixel.element].isGas && elements[pixel.element].glow !== false) || elements[pixel.element].glow || pixel.glow) && pixel.glow !== false) {
                         drawPlus(ctx,pixel.color,pixel.x,pixel.y,undefined,a)
@@ -65,6 +65,8 @@ viewInfo[7] = { // Illness View
         }
     }
 }
+
+var ibuprofenTime = pixelTicks
 
 renderPresets.FLESHBURN = function(pixel,ctx) {
     drawDefault(ctx,pixel);
@@ -180,9 +182,15 @@ behaviorRules.ADB = function() {
     },
 
 doBioNorm = function(pixel) {
-if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (Math.random() < (pixel.fentDepri / 100) && pixel.fenAddict === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (Math.random() < (pixel.alcoDepri / 100) && pixel.alcoholic === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (Math.random() > 0.60 && pixel.sick === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (Math.random() > 0.5 && pixel.poisoned === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 53 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0) || Math.random() > 0.85 && Math.random() < (pixel.burnt / 100)) {
+if ((Math.random() > 0.92 && pixel.nutrition > 0 && pixel.oxygen > 0) || (Math.random() < (pixel.ibupCount / 20) && pixel.ibupCount > 3 && pixel.nutrition > 0 && pixel.oxygen > 0) || (Math.random() < (pixel.fentDepri / 100) && pixel.fenAddict === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (Math.random() < (pixel.alcoDepri / 100) && pixel.alcoholic === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (Math.random() > 0.60 && pixel.sick === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (Math.random() > 0.5 && pixel.poisoned === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 53 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0) || Math.random() > 0.85 && Math.random() < (pixel.burnt / 100)) {
     pixel.nutrition -= 0.5
     pixel.oxygen--
+}
+if (pixel.temp > 42 && pixel.ibupCount > 1) { 
+    pixel.temp -= 5 
+}
+else if (pixel.temp > 37 && pixel.ibupCount > 0) { 
+    pixel.temp-- 
 }
 if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
     if (elements[pixel.element].isMultiDie === true) {
@@ -251,6 +259,10 @@ if (pixel.poisonImmune === true && pixel.poisoned != false) {
 if ((pixel.poisonImmune === true || pixel.immune === true) && pixel.sick != false) {
     pixel.sick = false
 }
+if (ibuprofenTime < pixelTicks - 1000 && (pixel.ibup || pixel.ibupCount > 0)) {
+    pixel.ibup = false
+    pixel.ibupCount = false
+}
 if ((pixel.temp > 124.55 || pixel.burning) && Math.random() > 0.5) {
     if (!pixel.burnt) { pixel.burnt = 1 }
     else { pixel.burnt ++ }
@@ -314,6 +326,19 @@ if (!isEmpty(pixel.x, pixel.y-1, true)) {
         }
         if (hitPixel.immune != true && pixel.immune == true && Math.random() > 0.75) {
             hitPixel.immune = true
+        }
+        if (hitPixel.ibupCount != 0 && hitPixel.ibup != true && pixel.ibup === true && Math.random() < 0.75) {
+            hitPixel.ibup = true
+            if (!hitPixel.ibupCount) {
+                hitPixel.ibupCount = 1
+            }
+            else {
+                hitPixel.ibupCount += 1
+            }
+            ibuprofenTime = pixelTicks
+        }
+        if (hitPixel.ibupCount < pixel.ibupCount && Math.random() > 0.995) {
+            hitPixel.ibupCount += 1
         }
         if (hitPixel.burnt > 0 && (!pixel.burnt || pixel.burnt < hitPixel.burnt && pixel.burnt < 51) && Math.random() > 0.8) {
             hitPixel.burnt--
@@ -384,6 +409,19 @@ if (!isEmpty(pixel.x, pixel.y+1, true)) {
         if (hitPixel.immune != true && pixel.immune == true && Math.random() > 0.75) {
             hitPixel.immune = true
         }
+        if (hitPixel.ibupCount != 0 && hitPixel.ibup != true && pixel.ibup === true && Math.random() < 0.75) {
+            hitPixel.ibup = true
+            if (!hitPixel.ibupCount) {
+                hitPixel.ibupCount = 1
+            }
+            else {
+                hitPixel.ibupCount += 1
+            }
+            ibuprofenTime = pixelTicks
+        }
+        if (hitPixel.ibupCount < pixel.ibupCount && Math.random() > 0.995) {
+            hitPixel.ibupCount += 1
+        }
         if (hitPixel.burnt > 0 && (!pixel.burnt || pixel.burnt < hitPixel.burnt && pixel.burnt < 51) && Math.random() > 0.8) {
             hitPixel.burnt--
         }
@@ -452,6 +490,19 @@ if (!isEmpty(pixel.x-1, pixel.y, true)) {
         }
         if (hitPixel.immune != true && pixel.immune == true && Math.random() > 0.75) {
             hitPixel.immune = true
+        }
+        if (hitPixel.ibupCount != 0 && hitPixel.ibup != true && pixel.ibup === true && Math.random() < 0.75) {
+            hitPixel.ibup = true
+            if (!hitPixel.ibupCount) {
+                hitPixel.ibupCount = 1
+            }
+            else {
+                hitPixel.ibupCount += 1
+            }
+            ibuprofenTime = pixelTicks
+        }
+        if (hitPixel.ibupCount < pixel.ibupCount && Math.random() > 0.995) {
+            hitPixel.ibupCount += 1
         }
         if (hitPixel.burnt > 0 && (!pixel.burnt || pixel.burnt < hitPixel.burnt && pixel.burnt < 51) && Math.random() > 0.8) {
             hitPixel.burnt--
@@ -522,6 +573,19 @@ if (!isEmpty(pixel.x+1, pixel.y, true)) {
         if (hitPixel.immune != true && pixel.immune == true && Math.random() > 0.75) {
             hitPixel.immune = true
         }
+        if (hitPixel.ibupCount != 0 && hitPixel.ibup != true && pixel.ibup === true && Math.random() < 0.75) {
+            hitPixel.ibup = true
+            if (!hitPixel.ibupCount) {
+                hitPixel.ibupCount = 1
+            }
+            else {
+                hitPixel.ibupCount += 1
+            }
+            ibuprofenTime = pixelTicks
+        }
+        if (hitPixel.ibupCount < pixel.ibupCount && Math.random() > 0.995) {
+            hitPixel.ibupCount += 1
+        }
         if (hitPixel.burnt > 0 && (!pixel.burnt || pixel.burnt < hitPixel.burnt && pixel.burnt < 51) && Math.random() > 0.8) {
             hitPixel.burnt--
         }
@@ -550,6 +614,14 @@ if (Math.random() > (1 - ((pixel.nutrition + pixel.oxygen + pixel.speed) / 2050)
 if ((Math.random() > (elements[pixel.element].ageRate) && pixel.nutrition > 0 && pixel.oxygen > 0) || (Math.random() < (pixel.alcoDepri / 100) && pixel.alcoholic === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (Math.random() > 0.60 && pixel.sick === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (Math.random() > 0.5 && pixel.poisoned === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 53 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0) || Math.random() > 0.85 && Math.random() < (pixel.burnt / 100) ) {
     pixel.nutrition -= 0.5
     pixel.oxygen--
+}
+if (pixel.temp > 42 && pixel.ibupCount > 0) { 
+    pixel.temp -= 5 
+    pixel.ibupCount--
+}
+else if (pixel.temp > 37 && pixel.ibupCount > 0) { 
+    pixel.temp-- 
+    pixel.ibupCount--
 }
 if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
     if (pixel.poisoned === true || pixel.sick === true) {
@@ -582,6 +654,10 @@ if (pixel.poisonImmune === true && pixel.poisoned != false) {
 }
 if ((pixel.poisonImmune === true || pixel.immune === true) && pixel.sick != false) {
     pixel.sick = false
+}
+if (ibuprofenTime < pixelTicks - 1000 && (pixel.ibup || pixel.ibupCount > 0)) {
+    pixel.ibup = false
+    pixel.ibupCount = false
 }
 if ((pixel.temp > 124.55 || pixel.burning) && Math.random() > 0.5) {
     if (!pixel.burnt) { pixel.burnt = 1 }
@@ -650,6 +726,19 @@ if (!isEmpty(pixel.x, pixel.y-1, true)) {
         }
         if (hitPixel.immune != true && pixel.immune == true && Math.random() > 0.75) {
             hitPixel.immune = true
+        }
+        if (hitPixel.ibupCount != 0 && hitPixel.ibup != true && pixel.ibup === true && Math.random() < 0.75) {
+            hitPixel.ibup = true
+            if (!hitPixel.ibupCount) {
+                hitPixel.ibupCount = 1
+            }
+            else {
+                hitPixel.ibupCount += 1
+            }
+            ibuprofenTime = pixelTicks
+        }
+        if (hitPixel.ibupCount < pixel.ibupCount && Math.random() > 0.995) {
+            hitPixel.ibupCount += 1
         }
         if (hitPixel.burnt > 0 && (!pixel.burnt || pixel.burnt < hitPixel.burnt && pixel.burnt < 51) && Math.random() > 0.8) {
             hitPixel.burnt--
@@ -734,6 +823,19 @@ if (!isEmpty(pixel.x, pixel.y+1, true)) {
         if (hitPixel.immune != true && pixel.immune == true && Math.random() > 0.75) {
             hitPixel.immune = true
         }
+        if (hitPixel.ibupCount != 0 && hitPixel.ibup != true && pixel.ibup === true && Math.random() < 0.75) {
+            hitPixel.ibup = true
+            if (!hitPixel.ibupCount) {
+                hitPixel.ibupCount = 1
+            }
+            else {
+                hitPixel.ibupCount += 1
+            }
+            ibuprofenTime = pixelTicks
+        }
+        if (hitPixel.ibupCount < pixel.ibupCount && Math.random() > 0.995) {
+            hitPixel.ibupCount += 1
+        }
         if (hitPixel.burnt > 0 && (!pixel.burnt || pixel.burnt < hitPixel.burnt && pixel.burnt < 51) && Math.random() > 0.8) {
             hitPixel.burnt--
         }
@@ -816,6 +918,19 @@ if (!isEmpty(pixel.x-1, pixel.y, true)) {
         }
         if (hitPixel.immune != true && pixel.immune == true && Math.random() > 0.75) {
             hitPixel.immune = true
+        }
+        if (hitPixel.ibupCount != 0 && hitPixel.ibup != true && pixel.ibup === true && Math.random() < 0.75) {
+            hitPixel.ibup = true
+            if (!hitPixel.ibupCount) {
+                hitPixel.ibupCount = 1
+            }
+            else {
+                hitPixel.ibupCount += 1
+            }
+            ibuprofenTime = pixelTicks
+        }
+        if (hitPixel.ibupCount < pixel.ibupCount && Math.random() > 0.995) {
+            hitPixel.ibupCount += 1
         }
         if (hitPixel.burnt > 0 && (!pixel.burnt || pixel.burnt < hitPixel.burnt && pixel.burnt < 51) && Math.random() > 0.8) {
             hitPixel.burnt--
@@ -900,6 +1015,19 @@ if (!isEmpty(pixel.x+1, pixel.y, true)) {
         if (hitPixel.immune != true && pixel.immune == true && Math.random() > 0.75) {
             hitPixel.immune = true
         }
+        if (hitPixel.ibupCount != 0 && hitPixel.ibup != true && pixel.ibup === true && Math.random() < 0.75) {
+            hitPixel.ibup = true
+            if (!hitPixel.ibupCount) {
+                hitPixel.ibupCount = 1
+            }
+            else {
+                hitPixel.ibupCount += 1
+            }
+            ibuprofenTime = pixelTicks
+        }
+        if (hitPixel.ibupCount < pixel.ibupCount && Math.random() > 0.995) {
+            hitPixel.ibupCount += 1
+        }
         if (hitPixel.burnt > 0 && (!pixel.burnt || pixel.burnt < hitPixel.burnt && pixel.burnt < 51) && Math.random() > 0.8) {
             hitPixel.burnt--
         }
@@ -932,6 +1060,14 @@ doBioBone = function(pixel){
 if ((Math.random() > 0.995 && pixel.nutrition > 0 && pixel.oxygen > 0) || (Math.random() < (pixel.alcoDepri / 100) && pixel.alcoholic === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (Math.random() > 0.60 && pixel.sick === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (Math.random() > 0.5 && pixel.poisoned === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.burning === true && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp > 55 && pixel.nutrition > 0 && pixel.oxygen > 0) || (pixel.temp < -10 && pixel.nutrition > 0 && pixel.oxygen > 0) || Math.random() > 0.85 && Math.random() < (pixel.burnt / 100)) {
     pixel.nutrition -= 0.5
     pixel.oxygen--
+}
+if (pixel.temp > 42 && pixel.ibupCount > 0) { 
+    pixel.temp -= 5 
+    pixel.ibupCount--
+}
+else if (pixel.temp > 37 && pixel.ibupCount > 0) { 
+    pixel.temp-- 
+    pixel.ibupCount--
 }
 if (Math.random() > 0.5 && (pixel.nutrition < 1 || pixel.oxygen < 1 || pixel.speed < -100)) {
     if (elements[pixel.element].isMultiDie === true) {
@@ -992,6 +1128,10 @@ if (pixel.poisonImmune === true && pixel.poisoned != false) {
 }
 if ((pixel.poisonImmune === true || pixel.immune === true) && pixel.sick != false) {
     pixel.sick = false
+}
+if (ibuprofenTime < pixelTicks - 1000 && (pixel.ibup || pixel.ibupCount > 0)) {
+    pixel.ibup = false
+    pixel.ibupCount = false
 }
 if ((pixel.temp > 124.55 || pixel.burning) && Math.random() > 0.5) {
     if (!pixel.burnt) { pixel.burnt = 1 }
@@ -1061,6 +1201,19 @@ if (!isEmpty(pixel.x, pixel.y-1, true)) {
         if (hitPixel.immune != true && pixel.immune == true && Math.random() > 0.75) {
             hitPixel.immune = true
         }
+        if (hitPixel.ibupCount != 0 && hitPixel.ibup != true && pixel.ibup === true && Math.random() < 0.75) {
+            hitPixel.ibup = true
+            if (!hitPixel.ibupCount) {
+                hitPixel.ibupCount = 1
+            }
+            else {
+                hitPixel.ibupCount += 1
+            }
+            ibuprofenTime = pixelTicks
+        }
+        if (hitPixel.ibupCount < pixel.ibupCount && Math.random() > 0.995) {
+            hitPixel.ibupCount += 1
+        }
         if (hitPixel.burnt > 0 && (!pixel.burnt || pixel.burnt < hitPixel.burnt && pixel.burnt < 51) && Math.random() > 0.8) {
             hitPixel.burnt--
         }
@@ -1125,6 +1278,19 @@ if (!isEmpty(pixel.x, pixel.y+1, true)) {
         }
         if (hitPixel.immune != true && pixel.immune == true && Math.random() > 0.75) {
             hitPixel.immune = true
+        }
+        if (hitPixel.ibupCount != 0 && hitPixel.ibup != true && pixel.ibup === true && Math.random() < 0.75) {
+            hitPixel.ibup = true
+            if (!hitPixel.ibupCount) {
+                hitPixel.ibupCount = 1
+            }
+            else {
+                hitPixel.ibupCount += 1
+            }
+            ibuprofenTime = pixelTicks
+        }
+        if (hitPixel.ibupCount < pixel.ibupCount && Math.random() > 0.995) {
+            hitPixel.ibupCount += 1
         }
         if (hitPixel.burnt > 0 && (!pixel.burnt || pixel.burnt < hitPixel.burnt && pixel.burnt < 51) && Math.random() > 0.8) {
             hitPixel.burnt--
@@ -1191,6 +1357,19 @@ if (!isEmpty(pixel.x-1, pixel.y, true)) {
         if (hitPixel.immune != true && pixel.immune == true && Math.random() > 0.75) {
             hitPixel.immune = true
         }
+        if (hitPixel.ibupCount != 0 && hitPixel.ibup != true && pixel.ibup === true && Math.random() < 0.75) {
+            hitPixel.ibup = true
+            if (!hitPixel.ibupCount) {
+                hitPixel.ibupCount = 1
+            }
+            else {
+                hitPixel.ibupCount += 1
+            }
+            ibuprofenTime = pixelTicks
+        }
+        if (hitPixel.ibupCount < pixel.ibupCount && Math.random() > 0.995) {
+            hitPixel.ibupCount += 1
+        }
         if (hitPixel.burnt > 0 && (!pixel.burnt || pixel.burnt < hitPixel.burnt && pixel.burnt < 51) && Math.random() > 0.8) {
             hitPixel.burnt--
         }
@@ -1255,6 +1434,19 @@ if (!isEmpty(pixel.x+1, pixel.y, true)) {
         }
         if (hitPixel.immune != true && pixel.immune == true && Math.random() > 0.75) {
             hitPixel.immune = true
+        }
+        if (hitPixel.ibupCount != 0 && hitPixel.ibup != true && pixel.ibup === true && Math.random() < 0.75) {
+            hitPixel.ibup = true
+            if (!hitPixel.ibupCount) {
+                hitPixel.ibupCount = 1
+            }
+            else {
+                hitPixel.ibupCount += 1
+            }
+            ibuprofenTime = pixelTicks
+        }
+        if (hitPixel.ibupCount < pixel.ibupCount && Math.random() > 0.995) {
+            hitPixel.ibupCount += 1
         }
         if (hitPixel.burnt > 0 && (!pixel.burnt || pixel.burnt < hitPixel.burnt && pixel.burnt < 51) && Math.random() > 0.8) {
             hitPixel.burnt--
@@ -4008,6 +4200,21 @@ elements.intestines = {
                         pixel.fentDepri = 0
                     }
                 }
+                if (hitPixel.ibup === true) {
+                    ibuprofenTime = pixelTicks
+                    if (pixel.ibup !== true) {
+                        pixel.ibup = true
+                        if (!pixel.ibupCount) {
+                            pixel.ibupCount = 1
+                        }
+                        else {
+                            pixel.ibupCount += 1
+                        }
+                    }
+                    else {     
+                        pixel.ibupCount ++
+                    }
+                }
                 if (hitPixel.poisonImmune === true && Math.random() > 0.5) {
                     pixel.poisoned = false
                     pixel.sick = false
@@ -4048,6 +4255,21 @@ elements.intestines = {
                     if (Math.random() > 0.5) {
                         pixel.fenAddict = true
                         pixel.fentDepri = 0
+                    }
+                }
+                if (hitPixel.ibup === true) {
+                    ibuprofenTime = pixelTicks
+                    if (pixel.ibup !== true) {
+                        pixel.ibup = true
+                        if (!pixel.ibupCount) {
+                            pixel.ibupCount = 1
+                        }
+                        else {
+                            pixel.ibupCount += 1
+                        }
+                    }
+                    else {     
+                        pixel.ibupCount ++
                     }
                 }
                 if (hitPixel.alcoholic === true && Math.random() > 0.95) {
@@ -4105,6 +4327,21 @@ elements.intestines = {
                         pixel.fentDepri = 0
                     }
                 }
+                if (hitPixel.ibup === true) {
+                    ibuprofenTime = pixelTicks
+                    if (pixel.ibup !== true) {
+                        pixel.ibup = true
+                        if (!pixel.ibupCount) {
+                            pixel.ibupCount = 1
+                        }
+                        else {
+                            pixel.ibupCount += 1
+                        }
+                    }
+                    else {     
+                        pixel.ibupCount ++
+                    }
+                }
                 if (hitPixel.alcoholic === true && Math.random() > 0.95) {
                     pixel.alcoholic = true
                     pixel.alcoTime = pixelTicks
@@ -4150,6 +4387,21 @@ elements.intestines = {
                     if (Math.random() > 0.5) {
                         pixel.fenAddict = true
                         pixel.fentDepri = 0
+                    }
+                }
+                if (hitPixel.ibup === true) {
+                    ibuprofenTime = pixelTicks
+                    if (pixel.ibup !== true) {
+                        pixel.ibup = true
+                        if (!pixel.ibupCount) {
+                            pixel.ibupCount = 1
+                        }
+                        else {
+                            pixel.ibupCount += 1
+                        }
+                    }
+                    else {     
+                        pixel.ibupCount ++
                     }
                 }
                 if (hitPixel.alcoholic === true && Math.random() > 0.95) {
@@ -4207,6 +4459,21 @@ elements.intestines = {
                         pixel.fentDepri = 0
                     }
                 }
+                if (hitPixel.ibup === true) {
+                    ibuprofenTime = pixelTicks
+                    if (pixel.ibup !== true) {
+                        pixel.ibup = true
+                        if (!pixel.ibupCount) {
+                            pixel.ibupCount = 1
+                        }
+                        else {
+                            pixel.ibupCount += 1
+                        }
+                    }
+                    else {     
+                        pixel.ibupCount ++
+                    }
+                }
                 if (hitPixel.alcoholic === true && Math.random() > 0.95) {
                     pixel.alcoholic = true
                     pixel.alcoTime = pixelTicks
@@ -4250,6 +4517,21 @@ elements.intestines = {
                     if (Math.random() > 0.5) {
                         pixel.fenAddict = true
                         pixel.fentDepri = 0
+                    }
+                }
+                if (hitPixel.ibup === true) {
+                    ibuprofenTime = pixelTicks
+                    if (pixel.ibup !== true) {
+                        pixel.ibup = true
+                        if (!pixel.ibupCount) {
+                            pixel.ibupCount = 1
+                        }
+                        else {
+                            pixel.ibupCount += 1
+                        }
+                    }
+                    else {     
+                        pixel.ibupCount ++
                     }
                 }
                 if (hitPixel.alcoholic === true && Math.random() > 0.95) {
@@ -4307,6 +4589,21 @@ elements.intestines = {
                         pixel.fentDepri = 0
                     }
                 }
+                if (hitPixel.ibup === true) {
+                    ibuprofenTime = pixelTicks
+                    if (pixel.ibup !== true) {
+                        pixel.ibup = true
+                        if (!pixel.ibupCount) {
+                            pixel.ibupCount = 1
+                        }
+                        else {
+                            pixel.ibupCount += 1
+                        }
+                    }
+                    else {     
+                        pixel.ibupCount ++
+                    }
+                }
                 if (hitPixel.alcoholic === true && Math.random() > 0.95) {
                     pixel.alcoholic = true
                     pixel.alcoTime = pixelTicks
@@ -4352,6 +4649,21 @@ elements.intestines = {
                     if (Math.random() > 0.5) {
                         pixel.fenAddict = true
                         pixel.fentDepri = 0
+                    }
+                }
+                if (hitPixel.ibup === true) {
+                    ibuprofenTime = pixelTicks
+                    if (pixel.ibup !== true) {
+                        pixel.ibup = true
+                        if (!pixel.ibupCount) {
+                            pixel.ibupCount = 1
+                        }
+                        else {
+                            pixel.ibupCount += 1
+                        }
+                    }
+                    else {     
+                        pixel.ibupCount ++
                     }
                 }
                 if (hitPixel.alcoholic === true && Math.random() > 0.95) {
@@ -6004,6 +6316,7 @@ elements.stomach_acid = {
         "plague": { elem2:"gaseous_material", attr2:{"nutrition":-15, "speed":-10, "sick":true}, chance:0.02 },
         "glue": { elem2:"gaseous_material", attr2:{"nutrition":-10, "speed":-10}, chance:0.02 },
         "fentanyl": { elem2:"gaseous_material", attr2:{"nutrition":-50, "speed":-20, "fent":true}, chance:0.01 },
+        "ibuprofen": { elem2:"gaseous_material", attr2:{"nutrition":1, "speed":1, "ibup":true}, chance:0.02 },
     },
     category: "nutrition",
     tempHigh: 110,
@@ -7652,6 +7965,7 @@ elements.drain_health = {
     },
     canPlace: false,
     category: "tools",
+    desc: "Secret tool. Steal your enemies life!"
 }
 
 elements.death_ray = {
@@ -7711,7 +8025,7 @@ elements.death_ray = {
     state: "gas",
     density: 1,
     excludeRandom: true,
-    noMix: true
+    noMix: true,
 },
 
 elements.toilet = {
@@ -7743,15 +8057,33 @@ elements.toilet = {
     },
     canPlace: true,
     hidden: true,
-    desc: "Secret tool. Steal your enemies life!"
 } 
+
+elements.ibuprofen = {
+    category: "medicine",
+    color: ["#c34a35","#c34a35","#c34a35","#ef866d","#993a2f","#993a2f","#c34a35","#c34a35","#c34a35"],
+    state: "solid",
+    behavior: behaviors.POWDER,
+    tempHigh: 147,
+    density: 980,
+    stateHigh: ["oxygen","smoke","fire","ash","ash","dust","carbon_dioxide","oxygen","smoke","fire","ash","ash","dust","carbon_dioxide","oxygen","smoke","fire","ash","ash","dust","carbon_dioxide","sugar"],
+    desc: "Helps with fevers, don't take more than 3 a day!"
+}
 
 elements.fentanyl = {
     category: "medicine",
-    color: "#d5edf3",
+    color: ["#d5edf3","#BFD3E5"],
     state: "solid",
     behavior: behaviors.POWDER,
-    tempHigh: 87.5,
+    reactions: {
+        "water": { elem1:null, elem2:"dirty_water", chance:0.05 },
+        "salt_water": { elem1:null, elem2:"dirty_water", chance:0.03 },
+        "sugar_water": { elem1:null, elem2:"dirty_water", chance:0.03 },
+        "seltzer": { elem1:null, elem2:"dirty_water", chance:0.04 },
+	},
+    tempHigh: 137.5,
+    density: 1025,
+    stateHigh: ["carbon_dioxide","smoke","smoke","smoke","fire","ash","ash","dust","carbon_dioxide"],
 }
 
 if (!elements.cancer.reactions) { elements.cancer.reactions = {} }
