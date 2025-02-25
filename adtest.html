@@ -47,6 +47,7 @@
         #content { font-family: Arial, Helvetica, sans-serif; font-size:1.5em; }
         h2 { text-align: center; margin-bottom:0; margin-top:45px}
     </style>
+    <script src="https://hb.vntsm.com/v4/live/vms/sites/sandboxels.r74n.com/index.js"></script>
 </head>
 
 <body>
@@ -58,20 +59,38 @@
 This is a test page.
 
 <div id="slot-1"></div>
+<div id="slot-2"></div>
+<div id="slot-5"></div>
+<div id="slot-10"></div>
 
 </div>
 
-<script src="https://hb.vntsm.com/v4/live/vms/sites/r74n.com/index.js" async></script>
-<script>
-// Example Only
-self.__VM = self.__VM || [];
-self.__VM.push(function (admanager, scope) {
-    scope.Config.get('billboard').display('slot-1');
-});
-</script>
 
 <script>
-    
+    standalone = false;
+    window.addEventListener('load', function() {
+        if (standalone) return;
+        var adscript = document.createElement('script');
+        adscript.src = "https://hb.vntsm.com/v4/live/vms/sites/sandboxels.r74n.com/index.js";
+        adscript.addEventListener('load', function() {
+            self.__VM = self.__VM || [];
+            self.__VM.push(function (admanager, scope) {
+                scope.Config.get('billboard').display('slot-1');
+                scope.Config.get('leaderboard').display('slot-2');
+                // scope.Config.get('double_mpu').display('slot-3');
+                // scope.Config.get('mpu').display('slot-4');
+                scope.Config.get('mobile_banner').display('slot-5');
+                // scope.Config.get('mobile_mpu').display('slot-6');
+                // scope.Config.get('skyscraper').display('slot-7');
+                // scope.Config.get('video').display('slot-8');
+                // scope.Config.get('desktop_takeover').display('slot-9');
+                scope.Config.get('mobile_takeover').display('slot-10');
+            // Based on your layout, here are the responsive tags. The placement will change based on screen width.
+            // With the mobile breakpoint set by default at max-width:1024px
+            });
+        });
+        document.head.appendChild(adscript);
+    })
 </script>
 
 
