@@ -72,6 +72,7 @@ This is a test page.
         if (standalone) return;
         var adscript = document.createElement('script');
         adscript.src = "https://hb.vntsm.com/v4/live/vms/sites/sandboxels.r74n.com/index.js";
+        adscript.setAttribute("data-disable-placements","vertical-sticky, video_slider");
         adscript.addEventListener('load', function() {
             self.__VM = self.__VM || [];
             self.__VM.push(function (admanager, scope) {
