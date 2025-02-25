@@ -18677,6 +18677,7 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span>
             // add the above elements programmatically when the page loads
             window.addEventListener('load', function() {
                 if (standalone) return;
+                if (window.location.protocol === "file:") return;
                 var adscript1 = document.createElement('script');
                 adscript1.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8485284630785740";
                 adscript1.crossorigin = "anonymous";
