@@ -2,6 +2,8 @@ window.addEventListener('load', function() {
 	for (var element in elements) {
 		if (elements[element].state === "liquid" && elements[element].behavior != behaviors.MOLTEN) {
             elements[element].renderer = function(pixel, ctx) { // this part used nouseramefounds code, props to him!
+                drawDefault(ctx,pixel);
+                if (!viewInfo[view].colorEffects) { return }
                 if (!pixel.rSeed){pixel.rSeed = [Math.random(), Math.random(), Math.random(), Math.random()]}
                 if (typeof pixel.color == "object"){
                     let selectedColor = pixel.color[Math.floor(pixel.rSeed[1]*elements[pixel.element].color.length)]
@@ -45,7 +47,7 @@ window.addEventListener('load', function() {
             if (element === "midas_touch" || element === "molasses" || element === "grease" || element === "oil" || element === "lamp_oil" || element === "nut_oil" || element === "honey" || element === "sap" || element === "caramel") {
                 elements[element].polar = 2
             }
-            else if (element === "soap") {
+            else if (element === "soap" || element === "dye") {
                 elements[element].polar = 3
             }
             else {
