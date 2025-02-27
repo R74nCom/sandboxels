@@ -62,6 +62,7 @@ elements.rad_shard.emit = 2;
 elements.rad_shard.emitColor = "#009800";
 elements.malware.emit = 2;
 elements.border.emit = 2;
+elements.void.emit = 10;
 
 viewInfo[1] = { // Blur Glow (Emissive pixels only)
     name: "",

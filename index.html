@@ -3,15 +3,16 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Sandboxels - Experiment with Pixels</title>
-    <meta name="description" content="Relax or experiment with over 500 materials in this falling sand simulator, featuring heat, chemical reactions, density, burning, explosions.">
+    <title id="titleTag">Sandboxels - Experiment with Pixels</title>
+    <meta name="description" content="Relax or experiment with over 500 materials in this falling sand simulator, featuring heat, chemical reactions, density, burning, explosions." id="pageDesc">
     <meta name="keywords" content="falling sand, elements, pixel art, simulator, powder, toy, chemistry, science, educational">
     <meta name="author" content="R74n">
     <meta name="copyright" content="R74n">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="all">
     <meta name="contact" content="contact@R74n.com">
-
+    <link rel="canonical" href="https://sandboxels.r74n.com" id="canonicalLink"/>
+    
     <!--Favicons-->
     <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png?v=2">
     <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png?v=2">
@@ -48,8 +49,9 @@
     <meta name="twitter:creator:id" content="1436857621827530753">
 
     <script> // versioning info
-        currentversion = "1.10.2";
-        saveVersion = 2;
+        currentversion = "1.11";
+        saveVersion = 3;
+        standalone = false;
     </script>
     <style>
         .setting-span {
@@ -87,7 +89,7 @@
           "copyrightYear": 2024,
           "copyrightNotice": "©2021-2024. All Rights Reserved. R74n",
           "license": "https://sandboxels.r74n.com/license.txt",
-          "discussionUrl": "https://link.r74n.com/discord",
+          "discussionUrl": "https://r74n.com/discord/",
           "educationalUse": "Hands-on lab experiments and learning",
           "headline": "Sandboxels",
           "isAccessibleForFree": true,
@@ -115,7 +117,7 @@
     <script>
         console.log("%c WELCOME TO R74n ","position: absolute; top: 50%; right: 50%; transform: translate(50%,-50%); font-family: Arial; font-size: 3em; font-weight: 700; color: #00ffff; text-shadow: 1px 1px 1px #14c9c9, 1px 2px 1px #14c9c9, 1px 3px 1px #14c9c9, 1px 4px 1px #14c9c9, 1px 5px 1px #14c9c9, 1px 13px 6px rgba(16,16,16,0.4), 1px 22px 10px rgba(16,16,16,0.2), 1px 25px 35px rgba(16,16,16,0.2), 1px 30px 60px rgba(16,16,16,0.4);padding:10px");
         console.log("Sandboxels is developed by R74n and can be played on the official website: https://sandboxels.R74n.com/");
-        console.log("Can't access? Join our Discord: https://link.R74n.com/discord");
+        console.log("Can't access? Join our Discord: https://R74n.com/discord/");
         console.log("Found this on another website? Let us know!");
         console.log("©2021-" + new Date().getFullYear() + ". All Rights Reserved. https://sandboxels.R74n.com/license.txt");
         // If settings is in localStorage, load it. If not, create an empty object.
@@ -129,7 +131,7 @@
             settings["unlocked"] = {};
         }
         function saveSettings() {
-            if (currentSaveData) { return }
+            if (currentSaveData.loaded) { return }
             localStorage.setItem("settings", JSON.stringify(settings));
         }
         
@@ -264,7 +266,7 @@ UL_UR: [
 ],
 UL_UR_OPTIMIZED: function(pixel) {
     if (pixel.start === pixelTicks) {return}
-    if (pixel.charge && elements[pixel.element].behaviorOn) {
+    if (pixel.charge && elements[pixel.element].behaviorOn !== undefined) {
         pixelTick(pixel);
         return;
     }
@@ -286,7 +288,7 @@ UL_UR_OPTIMIZED: function(pixel) {
             const j = Math.random()*move2Spots.length | 0;
             const coords = move2Spots[j];
             if (tryMove(pixel, pixel.x+coords[0], pixel.y+coords[1])) { break; }
-            else { move2Spots.splice(j, 1); }
+            else if (move2Spots.length > 1) { move2Spots.splice(j, 1); }
         }
     }
     if (!pixel.del) { doDefaults(pixel); }
@@ -597,121 +599,134 @@ SEEDRISE: function(pixel) {
 }
         }
         textures = {
-            BRICK: [
-            "llllrwlllll",
-            "rrrrdwlrrrr",
-            "dddddwrdddd",
-            "wwwwwwwwwww",
-            "lrwllllrwll",
-            "rdwlrrrdwlr",
-            "ddwrddddwrd",
-            "wwwwwwwwwww",
-            "lllllrwllll",
-            "rrrrrdwlrrr",
-            "ddddddwrddd",
-            "wwwwwwwwwww",
-            "lllrwlllrwl",
-            "rrrdwlrrdwl",
-            "ddddwrdddwr",
-            "wwwwwwwwwww"],
-            GLASS: [ // solid with streaks
-            "gggggggggggg",
-            "gggSgggggggg",
-            "ggSgggggggsg",
-            "gSgggggggsgg",
-            "ggggggggsggg",
-            "gggggggggggg",
-            "gggggggggggg",
-            "ggggsggggggg",
-            "gggsgggggggg",
-            "ggggggggggSg",
-            "gggggggggSgg",
-            "gggggggggggg",
-            ],
+        BRICK: [
+        "llllrwlllll",
+        "rrrrdwlrrrr",
+        "dddddwrdddd",
+        "wwwwwwwwwww",
+        "lrwllllrwll",
+        "rdwlrrrdwlr",
+        "ddwrddddwrd",
+        "wwwwwwwwwww",
+        "lllllrwllll",
+        "rrrrrdwlrrr",
+        "ddddddwrddd",
+        "wwwwwwwwwww",
+        "lllrwlllrwl",
+        "rrrdwlrrdwl",
+        "ddddwrdddwr",
+        "wwwwwwwwwww"],
+        GLASS: [ // solid with streaks
+        "gggggggggggg",
+        "gggSgggggggg",
+        "ggSgggggggsg",
+        "gSgggggggsgg",
+        "ggggggggsggg",
+        "gggggggggggg",
+        "gggggggggggg",
+        "ggggsggggggg",
+        "gggsgggggggg",
+        "ggggggggggSg",
+        "gggggggggSgg",
+        "gggggggggggg",
+        ],
         }
         renderPresets = {
-            HEATGLOW: function(pixel,ctx) {
-                drawDefault(ctx,pixel);
-                if (!viewInfo[view].colorEffects) { return }
-                var max = elements[pixel.element].tempHigh;
-                var ratio = ((pixel.temp/max*100)|0)/100;
-                if (ratio < 0.2) { return }
-                if (ratio > 1) { ratio = 1 }
-                ratio -= 0.2;
-                drawSquare(ctx,"hsl("+ratio*60+",100%,50%)",pixel.x,pixel.y,undefined,Math.min(ratio,0.85));
-            },
-            WOODCHAR: function(pixel,ctx) {
-                drawDefault(ctx,pixel);
-                if (!viewInfo[view].colorEffects) { return }
-                var max = 400;
-                var ratio = ((pixel.temp/max*100)|0)/100;
-                if (ratio < 0.5) { return }
-                if (ratio > 1) { ratio = 1 }
-                drawSquare(ctx,"#000000",pixel.x,pixel.y,undefined,Math.min(0.8,(ratio-0.5)*0.8));
-            },
-            PLANTCHAR: function(pixel,ctx) {
-                drawDefault(ctx,pixel);
-                if (!viewInfo[view].colorEffects) { return }
-                var max = 80;
-                var ratio = ((pixel.temp/max*100)|0)/100;
-                if (ratio < 0.5) { return }
-                if (ratio > 1) { ratio = 1 }
-                drawSquare(ctx,"#4d4018",pixel.x,pixel.y,undefined,Math.min(0.8,(ratio-0.5)));
-            },
-            CHARCOALHEAT: function(pixel,ctx) {
-                drawDefault(ctx,pixel);
-                if (!viewInfo[view].colorEffects) { return }
-                var max = 1100;
-                var ratio = ((pixel.temp/max*100)|0)/100;
-                if (ratio < 0.4) { return }
-                if (ratio > 1) { ratio = 1 }
-                drawSquare(ctx,"hsl("+ratio*20+",100%,"+Math.min(90,ratio*70)+"%)",pixel.x,pixel.y,undefined,Math.min(0.7,(ratio-0.4)*0.7));
-            },
-            HUESHIFT: function(pixel,ctx) {
-                if (!pixel.origColor && pixel.color.match(/^rgb/)) {
-                    pixel.origColor = pixel.color.match(/\d+/g);
-                }
-                if (!pixel.origColor || !viewInfo[view].effects) {
-                    drawDefault(ctx,pixel);
-                    return;
-                }
-                var hsl = RGBToHSL(pixel.origColor);
-                hsl[0] += 0.05;
-                hsl[0] -= Math.min(30,(pixelTicks-pixel.start)/1.5)/360;
-                hsl = "hsl("+hsl[0]*360+","+hsl[1]*100+"%,"+hsl[2]*100+"%)";
-                drawPlus(ctx,hsl,pixel.x,pixel.y);
-            },
-            BORDER: function(pixel,ctx) {
-                if (!viewInfo[view].colorEffects) { drawDefault(ctx,pixel); return }
-                renderPresets.HEATGLOW(pixel,ctx);
-                if (pixel.alpha === 0) return;
-                let edge = false;
-                for (var i = 0; i < adjacentCoords.length; i++) {
-                    var coords = adjacentCoords[i];
-                    var x = pixel.x + coords[0];
-                    var y = pixel.y + coords[1];
-                    if (isEmpty(x,y) || (!outOfBounds(x,y) && elements[pixelMap[x][y].element].movable != elements[pixel.element].movable)) {
-                        edge = true;
-                        break;
-                    }
-                }
-                if (edge) { drawSquare(ctx,"rgba(255,255,255,"+(pixel.alpha||1)/4+")",pixel.x,pixel.y) }
-            },
-            LED: function(pixel,ctx) {
-                if (!viewInfo[view].colorEffects) { drawDefault(ctx,pixel); return }
-                let alpha = (pixel.alpha??1);
-                if (!pixel.charge && !pixel.chargeCD) {
-                    alpha -= 0.75;
-                    alpha = Math.max(0,alpha);
-                    if (pixel.emit) pixel.emit = false;
-                    if (alpha === 0) return;
-                }
-                else {
-                    alpha = 1;
-                    if (!pixel.emit) pixel.emit = true;
-                }
-                drawSquare(ctx,pixel.color,pixel.x,pixel.y,undefined,alpha);
+        HEATGLOW: function(pixel,ctx) {
+            drawDefault(ctx,pixel);
+            if (!viewInfo[view].colorEffects) { return }
+            var max = elements[pixel.element].tempHigh;
+            var ratio = ((pixel.temp/max*100)|0)/100;
+            if (ratio < 0.2) { return }
+            if (ratio > 1) { ratio = 1 }
+            ratio -= 0.2;
+            drawSquare(ctx,"hsl("+ratio*60+",100%,50%)",pixel.x,pixel.y,undefined,Math.min(ratio,0.85));
+        },
+        WOODCHAR: function(pixel,ctx) {
+            drawDefault(ctx,pixel);
+            if (!viewInfo[view].colorEffects) { return }
+            var max = 400;
+            var ratio = ((pixel.temp/max*100)|0)/100;
+            if (ratio < 0.5) { return }
+            if (ratio > 1) { ratio = 1 }
+            drawSquare(ctx,"#000000",pixel.x,pixel.y,undefined,Math.min(0.8,(ratio-0.5)*0.8));
+        },
+        PLANTCHAR: function(pixel,ctx) {
+            drawDefault(ctx,pixel);
+            if (!viewInfo[view].colorEffects) { return }
+            var max = 80;
+            var ratio = ((pixel.temp/max*100)|0)/100;
+            if (ratio < 0.5) { return }
+            if (ratio > 1) { ratio = 1 }
+            drawSquare(ctx,"#4d4018",pixel.x,pixel.y,undefined,Math.min(0.8,(ratio-0.5)));
+        },
+        CHARCOALHEAT: function(pixel,ctx) {
+            drawDefault(ctx,pixel);
+            if (!viewInfo[view].colorEffects) { return }
+            var max = 1100;
+            var ratio = ((pixel.temp/max*100)|0)/100;
+            if (ratio < 0.4) { return }
+            if (ratio > 1) { ratio = 1 }
+            drawSquare(ctx,"hsl("+ratio*20+",100%,"+Math.min(90,ratio*70)+"%)",pixel.x,pixel.y,undefined,Math.min(0.7,(ratio-0.4)*0.7));
+        },
+        HUESHIFT: function(pixel,ctx) {
+            if (!pixel.origColor && pixel.color.match(/^rgb/)) {
+                pixel.origColor = pixel.color.match(/\d+/g);
             }
+            if (!pixel.origColor || !viewInfo[view].effects) {
+                drawDefault(ctx,pixel);
+                return;
+            }
+            var hsl = RGBToHSL(pixel.origColor);
+            hsl[0] += 0.05;
+            hsl[0] -= Math.min(30,(pixelTicks-pixel.start)/1.5)/360;
+            hsl = "hsl("+hsl[0]*360+","+hsl[1]*100+"%,"+hsl[2]*100+"%)";
+            drawPlus(ctx,hsl,pixel.x,pixel.y);
+        },
+        MOLTEN: function(pixel,ctx) {
+            if (!pixel.origColor && pixel.color.match(/^rgb/)) {
+                pixel.origColor = pixel.color.match(/\d+/g);
+            }
+            if (!pixel.origColor || !viewInfo[view].effects) {
+                drawDefault(ctx,pixel);
+                return;
+            }
+            var hsl = RGBToHSL(pixel.origColor);
+            hsl[0] += (0.025*Math.sin((pixelTicks-pixel.start)*0.033)) - 0.005;
+            hsl = "hsl("+hsl[0]*360+","+hsl[1]*100+"%,"+hsl[2]*100+"%)";
+            drawSquare(ctx,hsl,pixel.x,pixel.y);
+        },
+        BORDER: function(pixel,ctx) {
+            if (!viewInfo[view].colorEffects) { drawDefault(ctx,pixel); return }
+            renderPresets.HEATGLOW(pixel,ctx);
+            if (pixel.alpha === 0) return;
+            let edge = false;
+            for (var i = 0; i < adjacentCoords.length; i++) {
+                var coords = adjacentCoords[i];
+                var x = pixel.x + coords[0];
+                var y = pixel.y + coords[1];
+                if (isEmpty(x,y) || (!outOfBounds(x,y) && elements[pixelMap[x][y].element].movable !== elements[pixel.element].movable)) {
+                    edge = true;
+                    break;
+                }
+            }
+            if (edge) { drawSquare(ctx,"rgba(255,255,255,"+(pixel.alpha||1)/4+")",pixel.x,pixel.y) }
+        },
+        LED: function(pixel,ctx) {
+            if (!viewInfo[view].colorEffects) { drawDefault(ctx,pixel); return }
+            let alpha = (pixel.alpha??1);
+            if (!pixel.charge && !pixel.chargeCD) {
+                alpha -= 0.75;
+                alpha = Math.max(0,alpha);
+                if (pixel.emit) pixel.emit = false;
+                if (alpha === 0) return;
+            }
+            else {
+                alpha = 1;
+                if (!pixel.emit) pixel.emit = true;
+            }
+            drawSquare(ctx,pixel.color,pixel.x,pixel.y,undefined,alpha);
+        }
         }
         eLists = {
             ANIMAL: ["flea","ant","fly","firefly","bee","frog","fish","worm","termite","rat","slug","snail","stink_bug"],
@@ -735,9 +750,9 @@ SEEDRISE: function(pixel) {
         airDensity = settings.airdensity || 1.225; // kg/m^3
         airTemp = settings.airtemp || 20; // Celsius
         absoluteZero = settings.abszero || -273.15; // Celsius
-        maxPixelCount = settings.maxpixels || 13365;
+        maxPixelCount = settings.maxpixels || 13861;
         function refreshMaxPixels() {
-            maxPixelCount = settings.maxpixels || 13365;
+            maxPixelCount = settings.maxpixels || 13861;
             if (settings.limitless) { settings.maxpixels = 0; }
             else { delete settings.maxpixels; }
             if (settings.maxpixels === 0) { maxPixelCount = 999999999999; }
@@ -924,7 +939,7 @@ SEEDRISE: function(pixel) {
     category: "tools",
     maxSize: 5,
     canPlace: false,
-    desc: "Use on a pixel to bring up its info screen."
+    desc: "Use on a pixel to display its element info."
 },
 "shock": {
     color: "#ffff00",
@@ -939,17 +954,18 @@ SEEDRISE: function(pixel) {
         if (pixel.temp <= elements[pixel.element].superconductAt) {
             con = 1;
         }
-        if (con == undefined) {return}
+        if (con === undefined) {return}
         for (var j = 0; j < (shiftDown ? 5 : 1); j++) {
             if (Math.random() < con) { // If random number is less than conductivity
                 if (!pixel.charge && !pixel.chargeCD) {
                     pixel.charge = 1;
+                    pixel.chargeStart = pixelTicks;
                     if (elements[pixel.element].colorOn) {
                         pixel.color = pixelColorPick(pixel);
                     }
                 }
             }
-            else if (elements[pixel.element].insulate != true) { // Otherwise heat the pixel (Resistance simulation)
+            else if (elements[pixel.element].insulate !== true) { // Otherwise heat the pixel (Resistance simulation)
                 pixel.temp += 0.25;
                 pixelTempCheck(pixel);
             }
@@ -964,11 +980,11 @@ SEEDRISE: function(pixel) {
     color: ["#c27070","#c29c70","#c2c270","#70c270","#70c2c2","#7070c2","#c270c2"],
     tool: function(pixel) {
         if (!shiftDown) {
-            pixel.color = pixelColorPick(pixel,currentColor)
+            pixel.color = pixelColorPick(pixel,currentColorMap.paint)
         }
         else {
             // convert the hex of currentColor to rgb and set it as a string
-            var rgb = currentColor.replace("#","").match(/.{1,2}/g);
+            var rgb = currentColorMap.paint.replace("#","").match(/.{1,2}/g);
             for (var i = 0; i < rgb.length; i++) {
                 rgb[i] = parseInt(rgb[i],16);
             }
@@ -1038,6 +1054,7 @@ SEEDRISE: function(pixel) {
         "carbon_dioxide": { elem1: "seltzer", elem2: null, oneway:true },
         "sulfur": { elem1: "dirty_water", elem2: null },
         "rat": { elem1: "dirty_water", chance:0.005 },
+        "infection": { elem1: "dirty_water", elem2: null },
         "plague": { elem1: "dirty_water", elem2: null },
         "rust": { elem1: "dirty_water", chance:0.005 },
         "lead": { elem1: "dirty_water", chance:0.005 },
@@ -1053,6 +1070,7 @@ SEEDRISE: function(pixel) {
         "cancer": { elem1: "dirty_water", chance:0.25 },
         "oil": { elem1: "dirty_water", chance:0.005 },
         "dioxin": { elem1: "dirty_water", chance:0.1 },
+        "neutron": { elem1: ["dirty_water","dirty_water","dirty_water","rad_steam"], elem2:null, chance:0.1 },
         "rock": { elem2: "wet_sand", chance: 0.00035 },
         "limestone": { elem2: "wet_sand", chance: 0.00035 },
         "tuff": { elem2: "wet_sand", color2:"#7a6b5c", chance: 0.00035 },
@@ -1095,9 +1113,11 @@ SEEDRISE: function(pixel) {
     reactions: {
         "dust": { elem1: "dirty_water", elem2: null },
         "ash": { elem1: "dirty_water", elem2: null },
-        "carbon_dioxide": { elem1: "dirty_water", elem2: null },
+        "carbon_dioxide": { elem1: "seltzer", elem2: null },
         "sulfur": { elem1: "dirty_water", elem2: null },
+        "cyanide": { elem1: "dirty_water", elem2: null },
         "rat": { elem1: "dirty_water", chance:0.005 },
+        "infection": { elem1: "dirty_water", elem2: null },
         "plague": { elem1: "dirty_water", elem2: null },
         "fallout": { elem1: "dirty_water", chance:0.25 },
         "radiation": { elem1: "dirty_water", chance:0.25 },
@@ -1150,9 +1170,11 @@ SEEDRISE: function(pixel) {
         "dust": { elem1: "dirty_water", elem2: null },
         "ash": { elem1: "dirty_water", elem2: null },
         "carbon_dioxide": { elem1: "soda", elem2: null },
+        "cyanide": { elem1: "dirty_water", elem2: null },
         "sulfur": { elem1: "dirty_water", elem2: null },
         "charcoal": { elem1: "dirty_water", chance:0.005 },
         "rat": { elem1: "dirty_water", chance:0.005 },
+        "infection": { elem1: "dirty_water", elem2: null },
         "plague": { elem1: "dirty_water", elem2: null },
         "fallout": { elem1: "dirty_water", chance:0.25 },
         "radiation": { elem1: "dirty_water", chance:0.25 },
@@ -1193,6 +1215,9 @@ SEEDRISE: function(pixel) {
         "M2|XX|M2",
         "M2|M1|M2",
     ],
+    onMix: function(pixel) {
+        releaseElement(pixel, "foam")
+    },
     tempHigh: 98,
     stateHigh: ["steam","carbon_dioxide"],
     tempLow: 0,
@@ -1203,6 +1228,8 @@ SEEDRISE: function(pixel) {
         "limestone": { elem2: null, chance: 0.0004 },
         "sugar": { elem1: "soda", elem2: "foam" },
         "sugar_water": { elem1: "soda", elem2: "foam" },
+        "cyanide": { elem1: "dirty_water", elem2: null },
+        "infection": { elem1: "dirty_water", elem2: null },
         "fly": { elem2:"dead_bug", chance:0.1, oneway:true },
         "firefly": { elem2:"dead_bug", chance:0.1, oneway:true },
         "bee": { elem2:"dead_bug", chance:0.05, oneway:true },
@@ -1212,6 +1239,7 @@ SEEDRISE: function(pixel) {
         "cactus": { elem1:"water" },
         "algae": { elem1:"water" },
         "kelp": { elem1:"water" },
+        "coral": { elem1:"water" },
         "uranium": { elem1: "dirty_water", chance:0.25 },
         "seltzer": { elem2:"bubble", attr2:{"clone":"seltzer"}, chance:0.001, tempMin:85 },
         // electrolysis:
@@ -1232,7 +1260,8 @@ SEEDRISE: function(pixel) {
     density: 1026.91,
     conduct: 0.05,
     stain: -0.45,
-    extinguish: true
+    extinguish: true,
+    alias:["carbonated water","soda water"]
 },
 "dirty_water": {
     color: ["#0e824e","#07755a","#0c6934"],
@@ -1249,6 +1278,7 @@ SEEDRISE: function(pixel) {
         "plant": { elem1:"water", chance:0.05 },
         "algae": { elem1:"water", chance:0.05 },
         "kelp": { elem1:"water", chance:0.05 },
+        "coral": { elem1:"water", chance:0.05 },
         "charcoal": { elem1:"water", chance:0.02 },
         "gravel": { elem1:"water", chance:0.01 },
         "fly": { elem2:"dead_bug", chance:0.1, oneway:true },
@@ -1256,6 +1286,7 @@ SEEDRISE: function(pixel) {
         "bee": { elem2:"dead_bug", chance:0.05, oneway:true },
         "stink_bug": { elem2:"dead_bug", chance:0.1, oneway:true },
         "dirty_water": { elem2:"bubble", attr2:{"clone":"water"}, chance:0.001, tempMin:85 },
+        "coral": { elem1:null, elem2:"dirty_water", chance:0.004 },
     },
     hidden: true,
     state: "liquid",
@@ -1280,6 +1311,7 @@ SEEDRISE: function(pixel) {
         "grass": { elem2:"dead_plant", chance:0.05 },
         "algae": { elem2:null, chance:0.05 },
         "kelp": { elem2:"pool_water", chance:0.05 },
+        "coral": { elem2:"pool_water", chance:0.01 },
         "cell": { elem2:null, chance:0.05 },
         "cancer": { elem2:null, chance:0.05 },
         "plague": { elem2:null },
@@ -1363,6 +1395,9 @@ SEEDRISE: function(pixel) {
         "sand": { elem1:"dirt", elem2:"wet_sand", chance:0.0005, oneway:true },
         "sawdust": { elem1:"mulch", "elem2":null },
         "evergreen": { elem1:"mulch", "elem2":null },
+        "wheat": { elem1:"adobe", "elem2":"adobe" },
+        "straw": { elem1:"adobe", "elem2":"adobe" },
+        "flour": { elem1:"adobe", "elem2":"adobe" },
     },
     tempHigh: 100,
     stateHigh: "mudstone",
@@ -1638,7 +1673,7 @@ SEEDRISE: function(pixel) {
 "fire": {
     color: ["#ff6b21","#ffa600","#ff4000"],
     tick: function(pixel){
-        behaviors.UL_UR_OPTIMIZED(pixel);
+        behaviors.GAS(pixel);
         if (!pixel.del && settings.burn===0 && (pixelTicks-pixel.start > 70) && Math.random() < 0.1 ) { changePixel(pixel,"smoke") }
     },
     tool: function(pixel) {
@@ -1672,7 +1707,6 @@ SEEDRISE: function(pixel) {
     burnInto: "smoke",
     state: "gas",
     density: 0.1,
-    ignoreAir: true,
     noMix: true
 },
 "bomb": {
@@ -1846,13 +1880,14 @@ SEEDRISE: function(pixel) {
     stateHigh: "fire",
     category: "gases",
     state: "gas",
-    density: 1180,
+    density: 0.1,
     stain: 0.075,
     noMix: true
 },
 "magma": {
     color: ["#ff6f00","#ff8c00","#ff4d00"],
     behavior: behaviors.MOLTEN,
+    renderer: renderPresets.MOLTEN,
     reactions: {
         "ice": { elem1: "basalt" },
         "ash": { elem1: "molten_tuff", "elem2":null },
@@ -1887,11 +1922,10 @@ SEEDRISE: function(pixel) {
 },
 "cold_fire": {
     color: ["#21cbff","#006aff","#00ffff"],
-    behavior: [
-        "M1|M1|M1",
-        "M2|CH:smoke%8|M2",
-        "XX|M2|XX",
-    ],
+    tick: function(pixel){
+        behaviors.GAS(pixel);
+        if (!pixel.del && Math.random() < 0.08 ) { changePixel(pixel,"smoke") }
+    },
     tool: function(pixel) {
         if (pixel.temp <= elements.cold_fire.temp || elements[pixel.element].insulate) {return;}
         pixel.temp += elements.cold_fire.temp/(elements[pixel.element].extinguish ? 240 : 60);
@@ -1909,8 +1943,7 @@ SEEDRISE: function(pixel) {
     stateHigh: "smoke",
     category: "energy",
     state: "gas",
-    density: 0.1,
-    ignoreAir: true
+    density: 0.1
 },
 "glass": {
     color: ["#5e807d","#5e807d","#679e99","#5e807d","#5e807d"],
@@ -1924,7 +1957,8 @@ SEEDRISE: function(pixel) {
     reactions: {
         "radiation": { elem1:"rad_glass", chance:0.33 },
         "rad_steam": { elem1:"rad_glass", elem2:null, chance:0.33 },
-        "fallout": { elem1:"rad_glass", elem2:"radiation", chance:0.1 }
+        "fallout": { elem1:"rad_glass", elem2:"radiation", chance:0.1 },
+        "uranium": { elem1:"rad_glass", chance:0.01 }
     },
     tempHigh: 1500,
     category: "solids",
@@ -2131,7 +2165,8 @@ SEEDRISE: function(pixel) {
     conduct: 0.1,
     reactions: {
         "water": { elem1:"explosion" }
-    }
+    },
+    alias: "molten sodium chloride"
 },
 "sugar": {
     color: "#f2f2f2",
@@ -2219,8 +2254,10 @@ SEEDRISE: function(pixel) {
             var y = pixel.y + coords[1];
             if (!isEmpty(x,y,true)) {
                 var sensed = pixelMap[x][y];
-                if (sensed.con || elements[sensed.element].movable && elements.sensor.ignore.indexOf(sensed.element) === -1) {
-                    pixel.charge = 5;
+                if (pixel.sense && sensed.element !== pixel.sense) continue;
+                if (!sensed.charge && !sensed.chargeCD && (sensed.con || elements[sensed.element].movable && elements.sensor.ignore.indexOf(sensed.element) === -1)) {
+                    pixel.charge = 1;
+                    if (!pixel.chargeStart) pixel.chargeStart = pixelTicks;
                     break;
                 }
             }
@@ -2377,11 +2414,12 @@ SEEDRISE: function(pixel) {
     color: ["#666666","#888888","#666666"],
     tool: function(pixel) {
         let old = pixel.element;
-        if (elements[pixel.element].breakInto || elements[pixel.element].onBreak) {
+        if (isBreakable(pixel)) {
             // times 0.25 if not shiftDown else 1
-            if (Math.random() < (elements[pixel.element].hardness || 1) * (shiftDown ? 1 : 0.25)) {
+            if (Math.random() < (1-(elements[pixel.element].hardness || 0)) / (shiftDown ? 1 : 4)) {
                 breakPixel(pixel);
             }
+            // if (Math.random() > ((1-(elements[pixel.element].hardness || 1)) * (shiftDown ? 0.5 : 1))) {
         }
         else if (old === pixel.element && elements[pixel.element].movable && !isEmpty(pixel.x,pixel.y+1) && !paused) {
             let x = 0; let y = 0;
@@ -2422,6 +2460,18 @@ SEEDRISE: function(pixel) {
             var y = pixel.y + coords[1];
             if (!isEmpty(x,y,true) && pixelMap[x][y].element === "lattice") {
                 deletePixel(x,y)
+            }
+        }
+    },
+    onPlace: function(pixel) {
+        if (pixel.del) return;
+        if (Math.random() < 0.2) return;
+        for (var i = 0; i < adjacentCoords.length; i++) {
+            var coords = adjacentCoords[i];
+            var x = pixel.x + coords[0];
+            var y = pixel.y + coords[1];
+            if (!isEmpty(x,y,true) && pixelMap[x][y].element === "lattice") {
+                deletePixel(x,y);
             }
         }
     },
@@ -2575,11 +2625,15 @@ SEEDRISE: function(pixel) {
 },
 "cell": {
     color: ["#00ee00","#83ee00","#d6ee00"],
-    behavior: [
-        "XX|CL%0.5|XX",
-        "CL%0.5|XX|CL%0.5",
-        "M2%10|M1|M2%10",
-    ],
+    tick: function(pixel){
+        if (Math.random() < 0.005 && isEmpty(pixel.x,pixel.y-1)) clonePixel(pixel,pixel.x,pixel.y-1);
+        if (Math.random() < 0.005 && isEmpty(pixel.x-1,pixel.y)) clonePixel(pixel,pixel.x-1,pixel.y);
+        if (Math.random() < 0.005 && isEmpty(pixel.x+1,pixel.y)) clonePixel(pixel,pixel.x+1,pixel.y);
+        if (!tryMove(pixel,pixel.x,pixel.y+1) && Math.random() < 0.1) {
+            tryMove(pixel,pixel.x+(Math.random() < 0.5 ? 1 : -1),pixel.y+1);
+        }
+        doDefaults(pixel);
+    },
     reactions: {
         "infection": { elem1:"infection", chance:0.015 },
         "blood": { elem1:"blood", chance:0.01 },
@@ -2595,7 +2649,12 @@ SEEDRISE: function(pixel) {
         "soap": { elem1:null, chance:0.015 },
         "oxygen": { elem2:"carbon_dioxide", chance:0.05 },
         "ammonia": { elem2:"nitrogen", chance:0.05 },
-        "oil": { elem2:"methane", chance:0.001 }
+        "oil": { elem2:"methane", chance:0.001 },
+        "milk": { elem2:"yogurt", chance:0.01 },
+        "chocolate_milk": { elem2:"yogurt", chance:0.01, color2:"#4c392c" },
+        "fruit_milk": { elem2:"yogurt", chance:0.01, color2:"#977871" },
+        "pilk": { elem2:"yogurt", chance:0.01, color2:"#bba789" },
+        "eggnog": { elem2:"yogurt", chance:0.01, color2:"#ae9a7e" },
     },
     tempHigh: 102,
     stateHigh: ["steam","steam","steam","sugar"],
@@ -2608,11 +2667,15 @@ SEEDRISE: function(pixel) {
 },
 "cancer": {
     color: ["#300b29","#5c114e","#870c71"],
-    behavior: [
-        "XX|CL%1|XX",
-        "CL%1|XX|CL%1",
-        "M2%2|M1|M2%2",
-    ],
+    tick: function(pixel){
+        if (Math.random() < 0.01 && isEmpty(pixel.x,pixel.y-1)) clonePixel(pixel,pixel.x,pixel.y-1);
+        if (Math.random() < 0.01 && isEmpty(pixel.x-1,pixel.y)) clonePixel(pixel,pixel.x-1,pixel.y);
+        if (Math.random() < 0.01 && isEmpty(pixel.x+1,pixel.y)) clonePixel(pixel,pixel.x+1,pixel.y);
+        if (!tryMove(pixel,pixel.x,pixel.y+1) && Math.random() < 0.1) {
+            tryMove(pixel,pixel.x+(Math.random() < 0.5 ? 1 : -1),pixel.y+1);
+        }
+        doDefaults(pixel);
+    },
     reactions: {
         "cell": { elem2:"cancer", chance:0.005 },
         "frog": { elem2:"cancer", chance:0.005 },
@@ -2706,6 +2769,9 @@ SEEDRISE: function(pixel) {
         "plant": { elem2:"dirt", chance:0.01, func:behaviors.FEEDPIXEL },
         "fiber": { elem2:"dirt", chance:0.01, func:behaviors.FEEDPIXEL },
         "evergreen": { elem2:"dirt", chance:0.01, func:behaviors.FEEDPIXEL },
+        "petal": { elem2:"dirt", chance:0.01, func:behaviors.FEEDPIXEL },
+        "pistil": { elem2:"dirt", chance:0.01, func:behaviors.FEEDPIXEL },
+        "vine": { elem2:"dirt", chance:0.01, func:behaviors.FEEDPIXEL },
         "herb": { elem2:"dirt", chance:0.1, func:behaviors.FEEDPIXEL },
         "rice": { elem2:"dirt", chance:0.01, func:behaviors.FEEDPIXEL },
         "coffee_ground": { elem2:"dirt", chance:0.1, func:behaviors.FEEDPIXEL },
@@ -2856,11 +2922,6 @@ SEEDRISE: function(pixel) {
     }
 })
     },
-    // behavior: [
-    //     "XX|XX|SW:dirt,sand,gravel,clay_soil,mulch%8",
-    //     "XX|FX%8|M2 AND BO",
-    //     "XX|M1|SW:dirt,sand,gravel,clay_soil,mulch%8",
-    // ],
     reactions: {
         "wheat": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
         "caramel": { elem2:null, chance:0.15, func:behaviors.FEEDPIXEL },
@@ -3043,10 +3104,12 @@ SEEDRISE: function(pixel) {
             pixel.ffc = pixel.color;
             pixel.color = pixelColorPick(pixel,"#d9d950");
             pixel.glow = true;
+            pixel.emit = true;
         }
         else if (pixelTicks % pixel.fff === 2) {
             pixel.color = pixel.ffc||pixelColorPick(pixel,"#684841");
             pixel.glow = false;
+            pixel.emit = false;
         }
         behaviors.FLY(pixel,function(firefly,newfly){
             if (newfly) {
@@ -3354,6 +3417,7 @@ SEEDRISE: function(pixel) {
         "gunpowder": { attr1:{panic:5} },
         "acid": { attr1:{panic:5} },
         "acid_gas": { attr1:{panic:5} },
+        "stench": { attr1:{panic:2} },
     },
     related: ["body","head"],
     cooldown: defaultCooldown,
@@ -3367,7 +3431,7 @@ SEEDRISE: function(pixel) {
     state: "solid",
     conduct: .05,
     temp: 37,
-    tempHigh: 200,
+    tempHigh: 150,
     stateHigh: "cooked_meat",
     tempLow: -30,
     stateLow: "frozen_meat",
@@ -3397,6 +3461,7 @@ SEEDRISE: function(pixel) {
         "gold_coin": { elem2:null, chance:0.05 },
         "diamond": { elem2:null, chance:0.05 },
         "sun": { elem1:"cooked_meat" },
+        "alcohol": { chance:0.2, attr1:{"panic":0} },
     },
     properties: {
         dead: false,
@@ -3407,7 +3472,7 @@ SEEDRISE: function(pixel) {
         if (tryMove(pixel, pixel.x, pixel.y+1)) { // Fall
             if (!isEmpty(pixel.x, pixel.y-2, true)) { // Drag head down
                 var headpixel = pixelMap[pixel.x][pixel.y-2];
-                if (headpixel.element == "head") {
+                if (headpixel.element === "head") {
                     if (isEmpty(pixel.x, pixel.y-1)) {
                         movePixel(pixelMap[pixel.x][pixel.y-2], pixel.x, pixel.y-1);
                     }
@@ -3455,6 +3520,7 @@ SEEDRISE: function(pixel) {
                     else if (seenPixel.dead || seenPixel.temp > 200) {
                         pixel.panic += 5;
                         pixel.dir *= -1;
+                        if (seenPixel.panic) delete seenPixel.panic;
                         break;
                     }
                 }
@@ -3465,6 +3531,9 @@ SEEDRISE: function(pixel) {
             if (head && pixelTicks-pixel.burnStart > 240) {
                 pixel.color = head.color;
             }
+        }
+        if (pixel.charge) {
+            pixel.panic += 1;
         }
         else if (pixel.panic > 0) {
             pixel.panic -= 0.1;
@@ -3482,7 +3551,7 @@ SEEDRISE: function(pixel) {
                 }
             }
         }
-        else if (head == null) { return }
+        else if (head === null) { return }
         else if (Math.random() < 0.1*(isEmpty(pixel.x, pixel.y+1) ? 1 : pixel.panic+1)) { // Move 10% chance
             var movesToTry = [
                 [1*pixel.dir,0],
@@ -3528,7 +3597,7 @@ SEEDRISE: function(pixel) {
     state: "solid",
     conduct: .05,
     temp: 37,
-    tempHigh: 200,
+    tempHigh: 150,
     stateHigh: "cooked_meat",
     tempLow: -30,
     stateLow: "frozen_meat",
@@ -3551,6 +3620,7 @@ SEEDRISE: function(pixel) {
         "water": { elem2:"bubble", attr2:{"clone":"water"}, chance:0.001 },
         "salt_water": { elem2:"bubble", attr2:{"clone":"salt_water"}, chance:0.001 },
         "pool_water": { elem2:"bubble", attr2:{"clone":"pool_water"}, chance:0.001 },
+        "alcohol": { chance:0.2, attr1:{"panic":0} },
     },
     properties: {
         dead: false
@@ -3725,7 +3795,7 @@ SEEDRISE: function(pixel) {
     tempLow: -18,
     stateLow: "frozen_meat",
     category:"life",
-    burn:50,
+    burn:2,
     burnTime:100,
     breakInto: ["feather","blood"],
     state: "solid",
@@ -3784,6 +3854,7 @@ SEEDRISE: function(pixel) {
         "lichen": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
         "egg": { elem2:null, chance:0.1, func:behaviors.FEEDPIXEL },
         "yolk": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
+        "hard_yolk": { elem2:null, chance:0.15, func:behaviors.FEEDPIXEL },
         "eggnog": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
         "milk": { elem2:null, chance:0.2, func:behaviors.FEEDPIXEL },
         "grape": { elem2:null, chance:0.25, func:behaviors.FEEDPIXEL },
@@ -3951,7 +4022,8 @@ SEEDRISE: function(pixel) {
     foodNeed: 20,
     temp: 20,
     tempHigh: 120,
-    stateHigh: "meat",
+    stateHigh: "cooked_meat",
+    stateHighColor: "#E4CFB9",
     tempLow: -20,
     stateLow: ["frozen_meat","frozen_meat","frozen_meat","frozen_fish"],
     category:"life",
@@ -3978,6 +4050,7 @@ SEEDRISE: function(pixel) {
 },
 "slug": {
     color: ["#997e12","#997e12","#997e12","#997e12","#997e12","#997e12","#403314","#403314","#403314","#403314","#403314","#403314","#124a44"],
+    buttonColor: ["#997e12","#403314"],
     behavior: [
         "XX|XX|XX",
         "XX|FX%0.25|M2%0.5 AND BO",
@@ -4003,6 +4076,7 @@ SEEDRISE: function(pixel) {
         "grass_seed": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
         "algae": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
         "kelp": { elem2:"water", chance:0.05, func:behaviors.FEEDPIXEL },
+        "coral": { elem2:"water", chance:0.01, func:behaviors.FEEDPIXEL },
         "mushroom_cap": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
         "mushroom_stalk": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
         "mushroom_gill": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
@@ -4052,6 +4126,7 @@ SEEDRISE: function(pixel) {
         "grass_seed": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
         "algae": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
         "kelp": { elem2:"water", chance:0.05, func:behaviors.FEEDPIXEL },
+        "coral": { elem2:"water", chance:0.01, func:behaviors.FEEDPIXEL },
         "mushroom_cap": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
         "mushroom_stalk": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
         "mushroom_gill": { elem2:null, chance:0.05, func:behaviors.FEEDPIXEL },
@@ -4225,10 +4300,10 @@ SEEDRISE: function(pixel) {
     movable: false,
     canContain: true,
     forceSaveColor: true,
-    hardness: 1
+    hardness: 0.75
 },
 "pipe_wall": {
-    color: "#808080",
+    color: "#586879",
     behavior: behaviors.WALL,
     category: "machines",
     noMix: true,
@@ -4260,7 +4335,7 @@ SEEDRISE: function(pixel) {
     color: "#825d38",
     tick: function(pixel) {
         doDefaults(pixel);
-        if (pixel.charge) {
+        if (pixel.charge < 1) {
             changePixel(pixel,"flash");
             pixel.charge = 0;
         }
@@ -4641,7 +4716,8 @@ SEEDRISE: function(pixel) {
     state: "gas",
     density: 0.00001,
     ignoreAir: true,
-    insulate: true
+    insulate: true,
+    alias: "photon"
 },
 "liquid_light": {
     color: "#bdbc9d",
@@ -4729,7 +4805,7 @@ SEEDRISE: function(pixel) {
 "pointer": {
     color: "#ff0000",
     tick: function(pixel) {
-        if (pixelTicks - pixel.start > 1) {
+        if (pixelTicks - pixel.start > (tps/30)) {
             deletePixel(pixel.x, pixel.y)
         }
     },
@@ -4813,8 +4889,7 @@ SEEDRISE: function(pixel) {
                     if (newPixel.element === "hail") { break; }
                     if (elements[newPixel.element].state == "solid" || !elements[newPixel.element].state) {
                         if (Math.random() > (elements[newPixel.element].hardness || 0)) {
-                            if (elements[newPixel.element].breakInto) {
-                                console.log(JSON.stringify(newPixel))
+                            if (isBreakable(newPixel)) {
                                 breakPixel(newPixel);
                             }
                             else {
@@ -4843,6 +4918,8 @@ SEEDRISE: function(pixel) {
         "sulfur": { elem1:null, elem2:"chlorine", tempMin:10000 },
         "neon": { elem1:null, elem2:"sodium", tempMin:10000 },
         "fire": { elem1:"explosion", chance:0.005 },
+        "carbon_dioxide": { elem1:["methane",null], elem2:"steam", tempMin:300 },
+        "charcoal": { elem1:null, elem2:"oil", tempMin:400, chance:0.1 }
     },
     category: "gases",
     burn: 100,
@@ -4864,12 +4941,12 @@ SEEDRISE: function(pixel) {
         "bronze": { elem1:null, elem2:"oxidized_copper", chance:0.025 },
         "iron": { elem1:null, elem2:"rust", chance:0.025 },
         "steel": { elem1:null, elem2:"rust", chance:0.02 },
-        "water": { elem1:"foam" },
-        "salt_water": { elem1:"foam" },
-        "sugar_water": { elem1:"foam" },
-        "seltzer": { elem1:"foam" },
-        "soda": { elem1:"foam" },
-        "dirty_water": { elem1:"foam" },
+        "water": { elem1:"foam", attr1:{"clone":"oxygen"} },
+        "salt_water": { elem1:"foam", attr1:{"clone":"oxygen"} },
+        "sugar_water": { elem1:"foam", attr1:{"clone":"oxygen"} },
+        "seltzer": { elem1:"foam", attr1:{"clone":"oxygen"} },
+        "soda": { elem1:"foam", attr1:{"clone":"oxygen"} },
+        "dirty_water": { elem1:"foam", attr1:{"clone":"oxygen"} },
         "oxygen": { elem1: null, elem2: "ozone", chance:0.01, "y":[0,12], "setting":"clouds" },
         "ozone": { elem1: "ozone", chance:0.01, "y":[0,12], "setting":"clouds" },
         "light": { elem1: "ozone", elem2: null, chance:0.3, "y":[0,12], "setting":"clouds" },
@@ -4996,6 +5073,7 @@ SEEDRISE: function(pixel) {
         "mud": { elem1:"grass", chance:0.05 },
         "water": { elem1:"algae", chance:0.005 },
         "kelp": { elem1:["kelp","algae"], chance:0.005 },
+        "coral": { elem1:"coral", chance:0.005 },
         "potato_seed": { elem1:"potato", chance:0.05 },
         "pumpkin_seed": { elem1:"pumpkin", chance:0.05 },
         "herb": { elem1:"herb", chance:0.05 },
@@ -5037,6 +5115,7 @@ SEEDRISE: function(pixel) {
         "dirty_water": { burning1:true, elem2:"explosion" },
         "pool_water": { burning1:true, elem2:"explosion" },
         "seltzer": { burning1:true, elem2:"explosion" },
+        "coral": { elem2:null, chance:0.01 },
     },
     category: "liquids",
     tempHigh: 500,
@@ -5062,7 +5141,9 @@ SEEDRISE: function(pixel) {
     reactions: {
         "glue": {elem2:null, chance:0.05},
         "wax": {elem2:null, chance:0.005},
-        "melted_wax": {elem2:null, chance:0.025}
+        "melted_wax": {elem2:null, chance:0.025},
+        "dirt": { elem1:null, elem2:"mud" },
+        "steam": { burning1:true, elem2:"explosion" }
     },
     category: "liquids",
     tempHigh: 2100,
@@ -5112,7 +5193,7 @@ SEEDRISE: function(pixel) {
     ],
     conduct: 0.01,
     category: "gases",
-    tempHigh: 400,
+    tempHigh: 537,
     stateHigh: "fire",
     tempLow: -161.5,
     burn: 85,
@@ -5287,6 +5368,7 @@ SEEDRISE: function(pixel) {
 },
 "brick": {
     color: "#cb4141",
+    buttonColor: ["#e05555","#cb4141","#a62e2e"],
     colorPattern: textures.BRICK,
     colorKey: {
         "l": "#e05555",
@@ -5303,6 +5385,7 @@ SEEDRISE: function(pixel) {
 },
 "ruins": {
     color: "#5c5c5c",
+    buttonColor: ["#5c5c5c","#474747","#383838"],
     colorPattern: textures.BRICK,
     colorKey: {
         "l": "#5c5c5c",
@@ -5331,15 +5414,22 @@ SEEDRISE: function(pixel) {
     breakIntoColor: ["#424242","#4a4a4a","#787878"],
     movable: false
 },
-"porcelain": {
-    color: "#e1e4dd",
+"adobe": {
+    color: "#8a6249",
+    buttonColor: ["#986c51","#8a6249","#7f5943"],
+    colorPattern: textures.BRICK,
+    colorKey: {
+        "l": "#986c51",
+        "r": "#8a6249",
+        "d": "#7f5943",
+        "w": "#634933"},
     behavior: behaviors.WALL,
     category: "solids",
     state: "solid",
-    density: 2403,
-    hardness: 0.4,
-    breakInto: "porcelain_shard",
-    noMix: true,
+    tempHigh: 1200,
+    stateHigh: "molten_dirt",
+    hardness: 0.33,
+    breakInto: ["dirt","dirt","dirt","dirt","dirt","flour"]
 },
 "sapling": {
     color: "#3e9c3e",
@@ -5617,6 +5707,73 @@ SEEDRISE: function(pixel) {
     density: 1500,
     seed: "kelp"
 },
+"coral": {
+    color: ["#ff7d7d","#ff9e80","#ffe880","#80ff8d","#bf80ff","#ff80ec"],
+    tick: function(pixel) {
+        if ((pixel.stage !== undefined || !tryMove(pixel,pixel.x,pixel.y+1)) && Math.random() < 0.02) {
+            let below = null;
+            if (!isEmpty(pixel.x,pixel.y+1,true)) {
+                below = pixelMap[pixel.x][pixel.y+1];
+            }
+            if (pixel.stage === -1) {}
+            else if (pixel.stage !== undefined || below === null || (elements[below.element].state !== "liquid" && elements[below.element].foodNeed === undefined)) {
+                if (pixel.n === undefined) pixel.n = Math.floor(Math.random() * 3)-1;
+                if (pixel.n2 === undefined) pixel.n2 = Math.floor(Math.random() * 3)-1;
+                if (pixel.lc === undefined && pixel.color.indexOf("rgb") !== -1) {
+                    let rgb = pixel.color.match(/\d+/g);
+                    pixel.lc = RGBToHex(rgb);
+                }
+                if ((!pixel.stage || pixel.stage < 20)) {
+                    if (!isEmpty(pixel.x+pixel.n, pixel.y-1, true)) {
+                        let newPixel = pixelMap[pixel.x+pixel.n][pixel.y-1];
+                        if (elements[newPixel.element].movable && elements[newPixel.element].state === "liquid") {
+                            changePixel(newPixel,"coral");
+                            newPixel.stage = (pixel.stage||0) + Math.floor(Math.random() * 5 + 1);
+                            newPixel.lc = pixel.lc;
+                            newPixel.color = pixelColorPick(newPixel,pixel.lc);
+                        }
+                    }
+                    if (pixel.n2 !== 0 && !isEmpty(pixel.x+pixel.n2, pixel.y-1, true)) {
+                        let newPixel = pixelMap[pixel.x+pixel.n2][pixel.y-1];
+                        if (elements[newPixel.element].movable && elements[newPixel.element].state === "liquid") {
+                            changePixel(newPixel,"coral");
+                            newPixel.stage = (pixel.stage||0) + Math.floor(Math.random() * 5 + 1);
+                            newPixel.lc = pixel.lc;
+                            newPixel.color = pixelColorPick(newPixel,pixel.lc);
+                        }
+                    }
+                }
+            }
+        }
+        if (pixel.origColor) delete pixel.origColor;
+        if (pixel.temp > 80) {
+            stainPixel(pixel,"#cccccc",0.05);
+            let rgb = pixel.color.match(/\d+/g);
+            pixel.lc = RGBToHex(rgb);
+        }
+        if (pixel.temp > 150 && pixel.stage !== -1) {
+            pixel.stage = -1;
+        }
+        doDefaults(pixel);
+    },
+    reactions: {
+        "oxygen": { elem2:"carbon_dioxide", chance:0.5 }
+    },
+    category:"life",
+    state: "solid",
+    cooldown: defaultCooldown,
+    darkText: true,
+    density: 1500,
+    grain: 5,
+    seed: "coral",
+    tempHigh: 825,
+    stateHigh: "quicklime",
+    tempLow: 0,
+    stateLow: "limestone",
+    breakInto: "sand",
+    hardness: 0.25,
+    forceSaveColor: true
+},
 "seeds": {
     color: ["#359100","#74b332","#b9d461","#dede7a"],
     tick: function(pixel) { 
@@ -5684,6 +5841,16 @@ SEEDRISE: function(pixel) {
     category: "solids",
     state: "solid",
     density: 67.5
+},
+"porcelain": {
+    color: "#e1e4dd",
+    behavior: behaviors.WALL,
+    category: "solids",
+    state: "solid",
+    density: 2403,
+    hardness: 0.4,
+    breakInto: "porcelain_shard",
+    noMix: true,
 },
 "paper": {
     color: "#f0f0f0",
@@ -5831,7 +5998,8 @@ SEEDRISE: function(pixel) {
     state: "solid",
     density: 1400,
     seed: "flower_seed",
-    forceSaveColor: true
+    forceSaveColor: true,
+    darkText: true
 },
 "tree_branch": {
     color: "#a0522d",
@@ -6039,10 +6207,12 @@ SEEDRISE: function(pixel) {
         "slaked_lime": { elem1:"neutral_acid", elem2:null },
         "borax": { elem1:"neutral_acid", elem2:null },
         "ammonia": { elem1:"neutral_acid", elem2:null },
-        "bleach": { elem1:"neutral_acid", elem2:null },
         "cement": { elem1:"neutral_acid", elem2:null },
+        "potassium": { elem1:"hydrogen", elem2:"potassium_salt" },
         "caustic_potash": { elem1:"water", elem2:"potassium_salt" },
         "bone": { elem1:"neutral_acid", chance:0.01 },
+        "head": { elem1:"bone", chance:0.03 },
+        "body": { elem1:"bone", chance:0.03 },
         "water": { elem1:null, elem2:"dirty_water" },
         "salt_water": { elem1:null, elem2:"water" },
         "sugar_water": { elem1:null, elem2:"water" },
@@ -6127,6 +6297,7 @@ SEEDRISE: function(pixel) {
         "glass_shard": {elem1:null, elem2:"glass"},
         "ruins": {elem1:null, elem2:"rock_wall"},
         "rad_shard": {elem1:null, elem2:"rad_glass"},
+        "color_sand": {elem1:null, elem2:"stained_glass"},
         "confetti": {elem1:null, elem2:"paper"},
         "gold_coin": {elem1:null, elem2:"gold"},
         "cellulose": {elem1:null, elem2:"paper"},
@@ -6155,6 +6326,9 @@ SEEDRISE: function(pixel) {
         "M2|XX|M2",
         "M2|M1|M2",
     ],
+    onMix: function(pixel) {
+        releaseElement(pixel, "foam")
+    },
     tempHigh: 100,
     stateHigh: ["steam","carbon_dioxide","sugar"],
     tempLow: -1.11,
@@ -6215,6 +6389,7 @@ SEEDRISE: function(pixel) {
         "ecloner": { elem2:["cloner","slow_cloner"], chance:0.01, func:(pixel,cloner) => { cloner.clone = "malware" } },
         "slow_cloner": { elem2:["cloner","ecloner"], chance:0.01, func:(pixel,cloner) => { cloner.clone = "malware" } },
         "loopy": { func:(pixel,cloner) => { cloner.clone = "malware" } },
+        "snake": { elem2:"loopy", chance:0.25 },
         "pipe": { func:(pixel,pipe) => {
             // change pipe.stage into 2, 3, or 4
             pipe.stage = Math.floor(Math.random()*3)+2;
@@ -6450,6 +6625,7 @@ SEEDRISE: function(pixel) {
         "crumb": { color2:["#A84B1E","#C96619","#F9B042"], tempMin:160, chance:0.05 },
         "baked_batter": { color2:["#A84B1E","#C96619","#F9B042"], tempMin:160, chance:0.05 },
         "baked_potato": { color2:["#A84B1E","#C96619","#F9B042"], tempMin:160, chance:0.05 },
+        "caustic_potash": { elem1:"soap", elem2:"soap" }
     },
     temp: 33,
     tempLow: 0,
@@ -6776,7 +6952,9 @@ SEEDRISE: function(pixel) {
 "molten_plastic": {
     color: "#a4b3b3",
     behavior: behaviors.LIQUID,
-    viscosity: 20
+    viscosity: 20,
+    tempHigh: 600,
+    stateHigh: ["dioxin","smoke","dioxin","smoke","stench"],
 },
 "cloth": {
     color: ["#F7F7F7","#F1F1F1","#E8E8E8","#CDCDCD"],
@@ -7225,6 +7403,7 @@ SEEDRISE: function(pixel) {
         "sodium": { elem1:"hydrogen", elem2:"salt", chance:0.005 },
         "steel": { elem2:"iron", chance:0.005 },
         "gold": { elem1:null, elem2:"blue_gold", chance:0.01 },
+        "gold_coin": { elem1:null, elem2:"blue_gold", chance:0.01 },
     },
     stain: 0.05,
 },
@@ -7290,7 +7469,7 @@ SEEDRISE: function(pixel) {
     conduct: 0.5,
     hardness: 0.6,
     hidden: true,
-    alias: "fool's gold"
+    alias: ["fool's gold","iron sulfide"]
 },
 "solder": {
     color: "#a1a19d",
@@ -7430,7 +7609,6 @@ SEEDRISE: function(pixel) {
         "juice": { elem1:"fruit_milk", elem2:null, chance:0.05 },
         "soda": { elem1:"pilk", elem2:null, chance:0.1 },
         "yolk": { elem1:"eggnog", elem2:null, chance:0.1 },
-        "cell": { elem1:"yogurt", chance:0.1 },
         "ash": { elem1:"soap", chance:0.1 },
         "caramel": { color1:"#C8B39A", elem2:null, chance:0.05 },
         "sugar": { elem2:null, chance:0.005},
@@ -7452,9 +7630,8 @@ SEEDRISE: function(pixel) {
     tempLow: 0,
     stateLow: "ice_cream",
     stateLowColorMultiplier: [0.97,0.93,0.87],
-    tempHigh: 93,
-    stateHigh: "yogurt",
-    stateHighColorMultiplier: 1.1,
+    tempHigh: 100,
+    stateHigh: ["steam","bubble","cream","cream","sugar"],
     viscosity: 1.5,
     category: "liquids",
     state: "liquid",
@@ -7468,9 +7645,8 @@ SEEDRISE: function(pixel) {
     tempLow: 0,
     stateLow: "ice_cream",
     stateLowColorMultiplier: [0.97,0.93,0.87],
-    tempHigh: 93,
-    stateHigh: "yogurt",
-    stateHighColorMultiplier: 1.1,
+    tempHigh: 100,
+    stateHigh: ["steam","bubble","cream","cream","sugar"],
     viscosity: 1.5,
     category: "liquids",
     state: "liquid",
@@ -7480,13 +7656,19 @@ SEEDRISE: function(pixel) {
 },
 "pilk": {
     color: "#e9cba3",
-    behavior: behaviors.LIQUID,
+    behavior: [
+        "XX|CR:foam%1|XX",
+        "M2|XX|M2",
+        "M2|M1|M2",
+    ],
+    onMix: function(pixel) {
+        if (Math.random() < 0.5) releaseElement(pixel, "foam");
+    },
     tempLow: 0,
     stateLow: "ice_cream",
     stateLowColorMultiplier: [0.97,0.93,0.87],
-    tempHigh: 93,
-    stateHigh: "yogurt",
-    stateHighColorMultiplier: 1.1,
+    tempHigh: 100,
+    stateHigh: ["steam","bubble","cream","cream","sugar"],
     viscosity: 1.25,
     category: "liquids",
     state: "liquid",
@@ -7500,9 +7682,8 @@ SEEDRISE: function(pixel) {
     tempLow: 0,
     stateLow: "ice_cream",
     stateLowColorMultiplier: [0.97,0.93,0.87],
-    tempHigh: 93,
-    stateHigh: "yogurt",
-    stateHighColorMultiplier: 1.1,
+    tempHigh: 100,
+    stateHigh: ["steam","bubble","cream","cream","sugar"],
     viscosity: 1.5,
     category: "liquids",
     state: "liquid",
@@ -7736,6 +7917,9 @@ SEEDRISE: function(pixel) {
 "butter": {
     color: "#ffe46b",
     behavior: behaviors.STURDYPOWDER,
+    reactions: {
+        "caustic_potash": { elem1:"soap", elem2:"soap" }
+    },
     tempHigh: 33,
     stateHigh: "melted_butter",
     category: "food",
@@ -7769,11 +7953,12 @@ SEEDRISE: function(pixel) {
         "acid_gas": { elem1:"rotten_cheese", chance:0.4 },
         "cyanide": { elem1:"rotten_cheese", elem2:null, chance:0.5 },
         "cyanide_gas": { elem1:"rotten_cheese", elem2:null, chance:0.5 },
-        "rotten_meat": { elem1:"rotten_cheese", chance:0.02 },
+        "rotten_meat": { elem1:"rotten_cheese", chance:0.02 }
     },
     tempHigh: 54,
     stateHigh: "melted_cheese",
     breakInto: "cheese_powder",
+    breakIntoColorMultiplier: [1.1,1,0.86],
     category: "food",
     state: "solid",
     density: 477.62,
@@ -8504,7 +8689,8 @@ SEEDRISE: function(pixel) {
     category:"food",
     state: "liquid",
     density: 910,
-    isFood: true
+    isFood: true,
+    alias: "cooking oil"
 },
 "nut_meat": {
     color: ["#deba8e","#d1a56f","#ba8b50"],
@@ -8908,9 +9094,9 @@ SEEDRISE: function(pixel) {
     color: "#ffffff",
     behavior: behaviors.LIQUID,
     reactions: {
-        "acid": { elem1: "chlorine", elem2:"poison_gas" },
-        "acid_gas": { elem1: "chlorine", elem2:"poison_gas" },
-        "acid_cloud": { elem1: "chlorine", elem2:"poison_gas" },
+        "acid": { elem1: "chlorine", elem2:"neutral_acid" },
+        "acid_gas": { elem1: "chlorine", elem2:"chlorine" },
+        "acid_cloud": { elem1: "chlorine", elem2:"chlorine" },
         "water": { elem1:null, elem2:"dirty_water" },
         "plague": { elem2: null },
         "cell": { elem2: null, chance: 0.05 },
@@ -9200,6 +9386,7 @@ SEEDRISE: function(pixel) {
         "vine": { elem1:null, elem2:"dead_plant" },
         "algae": { elem1:null, elem2:null },
         "kelp": { elem1:null, elem2:"dirty_water" },
+        "coral": { elem1:null, elem2:"dirty_water", chance:0.02 },
         "mushroom_spore": { elem1:null, elem2:null },
         "lichen": { elem1:null, elem2:null },
         "yeast": { elem1:null, elem2:null },
@@ -9257,10 +9444,28 @@ SEEDRISE: function(pixel) {
     color: "#98f5b0",
     tempLow: 0,
     stateLow: "poison",
-    density: 1.6
+    density: 1.6,
+    category: "gases"
 },
 "poison_ice": {
     color: "#9eff9e"
+},
+"cyanide_gas": {
+    reactions: {
+        "frog": { elem2:"rotten_meat" },
+        "ant": { elem2:null },
+        "bee": { elem2:null },
+        "fish": { elem2:"rotten_meat" },
+        "firefly": { elem2:null },
+        "head": { elem2:"rotten_meat" },
+        "body": { elem2:"rotten_meat" },
+    },
+    tempHigh: 550,
+    stateHigh: "fire",
+    burn: 100,
+    burnTime: 1,
+    density: 941,
+    category: "gases"
 },
 "antidote": {
     color: "#c9b836",
@@ -9294,6 +9499,7 @@ SEEDRISE: function(pixel) {
         "pilk": { elem2:"foam", color1:"#9c7954", chance:0.005},
         "cream": { elem2:null, color1:"#9c6c38", chance:0.005},
         "ice_cream": { elem2:null, color1:"#9c6c38", chance:0.005},
+        "tea": { elem2:"bubble", color2:"#87633d", attr2:{"clone":"tea"}, chance:0.001, tempMin:80 }
     },
     tempHigh: 125,
     stateHigh: ["steam","fragrance",null],
@@ -9329,6 +9535,7 @@ SEEDRISE: function(pixel) {
         "salt_water": { elem2:"coffee", tempMin:70, chance:0.2 },
         "sugar_water": { elem2:"melted_chocolate", tempMin:60, chance:0.3 },
         "seltzer": { elem2:"coffee", tempMin:70, chance:0.2 },
+        "coffee": { elem2:"bubble", color2:"#8a4d3e", attr2:{"clone":"coffee"}, chance:0.001, tempMin:80 }
     },
     tempHigh: 130,
     stateHigh: ["steam","fragrance",null],
@@ -9396,7 +9603,7 @@ SEEDRISE: function(pixel) {
     viscosity: 500,
     tempLow: -20,
     stateLow: "candy",
-    tempHigh: 204.44,
+    tempHigh: 400,
     stateHigh: "smoke",
     category: "liquids",
     state: "liquid",
@@ -9504,7 +9711,7 @@ SEEDRISE: function(pixel) {
         "liquid_oxygen": { elem1:"ice", elem2:null },
         "oxygen": { elem1:"ice", elem2:null }
     },
-    category: "states",
+    category: "liquids",
     burn: 100,
     burnTime: 2,
     temp: -255.879,
@@ -9513,7 +9720,7 @@ SEEDRISE: function(pixel) {
     tempLow: -259.2,
     state: "liquid",
     density: 71,
-    hidden: true
+    darkText: true
 },
 "liquid_oxygen": {
     color: "#00ad99",
@@ -9529,7 +9736,8 @@ SEEDRISE: function(pixel) {
     tempLow: -218.8,
     stateHigh: "oxygen",
     state: "liquid",
-    density: 1141
+    density: 1141,
+    hidden: true
 },
 "liquid_nitrogen": {
     color: "#d3e1e3",
@@ -9541,7 +9749,8 @@ SEEDRISE: function(pixel) {
     tempLow: -259.86,
     stateLow: "nitrogen_ice",
     state: "liquid",
-    density: 804
+    density: 804,
+    alias: "ln2"
 },
 "liquid_helium": {
     color: "#e3d3d3",
@@ -9655,7 +9864,8 @@ SEEDRISE: function(pixel) {
     state: "solid",
     density: 2100,
     hardness: 0.3,
-    breakInto: ["quicklime","dust","gravel"]
+    breakInto: ["quicklime","dust","gravel"],
+    alias: "calcium carbonate"
 },
 "quicklime": {
     color: "#e9ebe7",
@@ -9691,7 +9901,8 @@ SEEDRISE: function(pixel) {
     state: "solid",
     density: 1025,
     hardness: 0.23,
-    hidden: true
+    hidden: true,
+    alias: "calcium oxide"
 },
 "slaked_lime": {
     color: "#A8A19D",
@@ -9703,7 +9914,8 @@ SEEDRISE: function(pixel) {
         "clay_shard": { elem1:"cement", elem2:null, chance:0.2 },
         "porcelain_shard": { elem1:"cement", elem2:null, chance:0.2 },
         "milk": { elem1:"glue", elem2:"glue", chance:0.02 },
-        "seltzer": { elem1:"limestone", elem2:null, chance:0.02 },
+        "seltzer": { elem1:"limestone", elem2:"water", chance:0.02 },
+        "carbon_dioxide": { elem1:"limestone", elem2:null, chance:0.02 },
     },
     tempHigh: 580,
     stateHigh: "quicklime",
@@ -9712,6 +9924,7 @@ SEEDRISE: function(pixel) {
     state: "solid",
     density: 2211,
     hardness: 0.13,
+    alias: "calcium hydroxide"
 },
 "potassium": {
     color: ["#C9CFCD","#B4BDBA","#98A1A0","#7C8486","#636B6E"],
@@ -9894,7 +10107,8 @@ SEEDRISE: function(pixel) {
     density: 590.3,
     state: "gas",
     conduct: 0.03,
-    stain: 0.0035
+    stain: 0.0035,
+    breakInto: "dirty_water"
 },
 "stench": {
     color: "#6ab066",
@@ -9974,23 +10188,6 @@ SEEDRISE: function(pixel) {
     category: "liquids",
     hidden: true
 },
-"cyanide_gas": {
-    reactions: {
-        "frog": { elem2:"rotten_meat" },
-        "ant": { elem2:null },
-        "bee": { elem2:null },
-        "fish": { elem2:"rotten_meat" },
-        "firefly": { elem2:null },
-        "head": { elem2:"rotten_meat" },
-        "body": { elem2:"rotten_meat" },
-    },
-    tempHigh: 550,
-    stateHigh: "fire",
-    burn: 100,
-    burnTime: 1,
-    density: 941,
-    category: "gases"
-},
 "ozone": {
     color: "#80a4ff",
     behavior: [
@@ -10046,7 +10243,14 @@ SEEDRISE: function(pixel) {
         "0": "explosion"
     },
     tempHigh: -100,
-    stateHigh: "ozone"
+    stateHigh: "ozone",
+    breakInto:"explosion",
+    conduct:1,
+    behaviorOn: [
+        "XX|XX|XX",
+        "XX|CH:explosion|XX",
+        "XX|XX|XX"
+    ]
 },
 "cloud": {
     color: "#d5dce6",
@@ -10289,14 +10493,88 @@ SEEDRISE: function(pixel) {
     customColor: true,
     stain: 0.25
 },
+"portal_in": {
+    color: "#ff9a00",
+    tick: function(pixel) {
+        // if (Math.random() > 0.1) return;
+        if (!ticktemp.portal_out) ticktemp.portal_out = {};
+        let channel = parseInt(pixel.channel) || 0;
+        if (!ticktemp.portal_out[channel]) {
+            ticktemp.portal_out[channel] = currentPixels.filter((p) => {
+                return elements[p.element].id === elements.portal_out.id && (
+                    isEmpty(p.x,p.y+1) || isEmpty(p.x,p.y-1) ||
+                    isEmpty(p.x+1,p.y) || isEmpty(p.x-1,p.y)
+                ) &&
+                    (parseInt(p.channel) || 0) === parseInt(channel)
+            });
+        }
+        if (ticktemp.portal_out[channel].length) {
+            shuffleArray(squareCoordsShuffle);
+            let r;
+            for (var i = 0; i < squareCoordsShuffle.length; i++) {
+                var coord = squareCoordsShuffle[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (!isEmpty(x,y,true) && elements[pixelMap[x][y].element].movable) {
+                    r = pixelMap[x][y];
+                    break;
+                }
+            }
+            if (r !== undefined || pixel.charge) {
+                let portal_out = choose(ticktemp.portal_out[channel]);
+                if (portal_out.del) return;
+                if (r !== undefined) {
+                    shuffleArray(squareCoordsShuffle);
+                    for (var j = 0; j < squareCoordsShuffle.length; j++) {
+                        var coord2 = squareCoordsShuffle[j];
+                        var x2 = portal_out.x+coord2[0];
+                        var y2 = portal_out.y+coord2[1];
+                        if (isEmpty(x2,y2)) {
+                            tryMove(r,x2,y2);
+                        }
+                        break;
+                    }
+                }
+                if (pixel.charge && !portal_out.charge && !portal_out.chargeCD) {
+                    portal_out.charge = pixel.charge;
+                }
+            }
+        };
+        doElectricity(pixel);
+    },
+    properties: { channel:0 },
+    renderer: renderPresets.BORDER,
+    grain:0,
+    category:"machines",
+    insulate:true,
+    movable:false,
+    hardness:1,
+    conduct:1,
+    emit:true
+},
+"portal_out": {
+    color: "#00a2ff",
+    tick: function(pixel){
+        doElectricity(pixel);
+    },
+    properties: { channel:0 },
+    renderer: renderPresets.BORDER,
+    grain:0,
+    category:"machines",
+    insulate:true,
+    movable:false,
+    hardness:1,
+    conduct:1,
+    emit:true
+},
 "led_r": {
     color: "#ff0000",
     buttonColor: "#660000",
     behavior: behaviors.WALL,
     renderer: renderPresets.LED,
     reactions: {
-        "light": {"charge1":1},
-        "liquid_light": {"charge1":1},
+        "light": {charge1:1,elem2:null},
+        "liquid_light": {charge1:1,elem2:null},
     },
     category: "machines",
     tempHigh: 1500,
@@ -10311,8 +10589,8 @@ SEEDRISE: function(pixel) {
     behavior: behaviors.WALL,
     renderer: renderPresets.LED,
     reactions: {
-        "light": {"charge1":1},
-        "liquid_light": {"charge1":1},
+        "light": {charge1:1,elem2:null},
+        "liquid_light": {charge1:1,elem2:null},
     },
     category: "machines",
     tempHigh: 1500,
@@ -10327,8 +10605,8 @@ SEEDRISE: function(pixel) {
     behavior: behaviors.WALL,
     renderer: renderPresets.LED,
     reactions: {
-        "light": {"charge1":1},
-        "liquid_light": {"charge1":1},
+        "light": {charge1:1,elem2:null},
+        "liquid_light": {charge1:1,elem2:null},
     },
     category: "machines",
     tempHigh: 1500,
@@ -10381,6 +10659,8 @@ SEEDRISE: function(pixel) {
     burn: 25,
     burnTime: 507,
     tempHigh: 444.6,
+    tempLow: 115.21,
+    stateLow: "sulfur",
     viscosity: 8.5,
     fireColor: ["#8180cc","#7f84e6"],
     burnInto: ["smoke","smoke","smoke","smoke","stench"],
@@ -10410,6 +10690,7 @@ SEEDRISE: function(pixel) {
         "grass": {elem2:"dead_plant"},
         "algae": {elem2:null},
         "kelp": {elem2:"water"},
+        "coral": {elem2:"water"},
         "mushroom_cap": {elem2:null},
         "mushroom_stalk": {elem2:null},
         "mushroom_gill": {elem2:null},
@@ -10500,6 +10781,11 @@ SEEDRISE: function(pixel) {
         "paper": { stain2:"#54803d" },
         "head": { elem2:"gold" },
         "body": { elem2:"gold" },
+        "copper": { elem2:"rose_gold" },
+        "gallium": { elem2:"blue_gold" },
+        "molten_gallium": { elem2:"blue_gold" },
+        "aluminum": { elem2:"purple_gold" },
+        "silver": { elem2:"electrum" },
     },
     density: 193,
     state: "liquid",
@@ -10550,7 +10836,8 @@ SEEDRISE: function(pixel) {
         "grass": { elem2:["dead_plant","straw","grass_seed","wheat_seed","lettuce","herb","rice"], chance:0.4 },
         "herb": { elem2:"dead_plant", chance:0.4 },
         "algae": { elem2:["mushroom_spore","lichen","yeast","kelp"], chance:0.4 },
-        "kelp": { elem2:["mushroom_spore","lichen","yeast","algae"], chance:0.4 },
+        "kelp": { elem2:["mushroom_spore","lichen","yeast","algae","coral"], chance:0.4 },
+        "coral": { elem2:["kelp","algae"], chance:0.4 },
         "mushroom_spore": { elem2:["lichen","yeast"], chance:0.4 },
         "mushroom_cap": { elem2:["lichen","plant"], chance:0.4 },
         "mushroom_stalk": { elem2:["lichen","yeast"], chance:0.4 },
@@ -10643,6 +10930,9 @@ SEEDRISE: function(pixel) {
         "yeast": { elem2:"bread", chance:0.05 },
         "silver": { elem1:["radiation",null,null], chance:0.25 },
         "firework": { func(pixel1,pixel2){pixel2.burning=true;pixel2.burnStart=pixelTicks}, chance:0.01 },
+        "glass": { elem1:null, elem2:"rad_glass" },
+        "cloud": { elem1:null, elem2:"rad_cloud" },
+        "rain_cloud": { elem1:null, elem2:"rad_cloud" }
     },
     temp: 35,
     category: "energy",
@@ -10690,7 +10980,8 @@ SEEDRISE: function(pixel) {
     insulate: true,
     ignoreAir: true,
     ignore: ["shocker"],
-    ignoreConduct: ["shocker"]
+    ignoreConduct: ["shocker"],
+    alias: "electron"
 },
 "uranium": {
     color: ["#599e61","#364d3c","#494d4a","#6c8a42","#798d65","#b5e089"],
@@ -10977,7 +11268,7 @@ SEEDRISE: function(pixel) {
     state: "solid",
     density: 1680,
     hidden: true,
-    alias: "epsom"
+    alias: ["epsom","magnesium sulfate"]
 },
 "potassium_salt": {
     color: ["#f2f2f2","#e0e0e0"],
@@ -11031,7 +11322,7 @@ SEEDRISE: function(pixel) {
             var y = pixel.y;
             var xoffset = 0;
             var last = [pixel.x,pixel.y]
-            for (var i = 0; i < 100; i++) {
+            for (var i = 0; i < height; i++) {
                 y++;
                 // randomly go back and forth
                 if (Math.random() > 0.5) { xoffset++; }
@@ -11260,6 +11551,7 @@ SEEDRISE: function(pixel) {
         "clay_shard": { elem2:"baked_clay" },
         "porcelain_shard": { elem2:"porcelain" },
         "glass_shard": { elem2:"glass" },
+        "brick_rubble": { elem2:"brick" },
         "gunpowder": { elem2:"charcoal" },
         "ruins": { elem2:"rock_wall" },
         "warp": { elem2:null },
@@ -11546,7 +11838,7 @@ SEEDRISE: function(pixel) {
     behaviorOn: [
         "XX|XX|XX",
         "XX|EX:6>metal_scrap,fire,fire,fire%1|XX",
-        "XX|XX|XX",
+        "M2|M1 AND EX:6>metal_scrap,fire,fire,fire%1|M2",
     ],
     category: "weapons",
     state: "solid",
@@ -11657,7 +11949,7 @@ SEEDRISE: function(pixel) {
     ],
     burning: true,
     burnInto: "ash",
-    fireElement: "carbon_dioxide",
+    fireElement: ["smoke","smoke","smoke","smoke","carbon_dioxide"],
     rotatable: true,
     temp: 649,
     tempLow: 0,
@@ -12023,6 +12315,7 @@ SEEDRISE: function(pixel) {
         "sand": ["#bda880","#998670","#756951"],
         "water": ["#8a9bb5","#728496","#566978"],
         "lightning": ["#b5a78a","#728496","#ffe13d"],
+        "radiation": ["#8ab58e","#729681","#56785c"],
     },
     tick: function(pixel) {
         doHeat(pixel);
@@ -12044,6 +12337,7 @@ SEEDRISE: function(pixel) {
                 }
                 if (Math.random() < 0.1) {
                     if (pixel.fired === "fire") changePixel(pixel,pixel.fired)
+                    else if (pixel.fired === "radiation") changePixel(pixel,pixel.fired)
                     else deletePixel(pixel.x,pixel.y);
                     return;
                 }
@@ -12064,7 +12358,7 @@ SEEDRISE: function(pixel) {
                     else if (!outOfBounds(nx,ny)) {
                         // try to break and then move it up
                         var p = pixelMap[nx][ny];
-                        if (elements[p.element].breakInto && Math.random() < (elements[p.element].hardness || 1) * 0.1) {
+                        if (isBreakable(p) && Math.random() < (elements[p.element].hardness || 1) * 0.1) {
                             breakPixel(p);
                         }
                         if (elements[p.element].id === elements.tornado.id) {
@@ -12087,7 +12381,7 @@ SEEDRISE: function(pixel) {
                     var ny = pixel.y-y;
                     if (!isEmpty(nx,ny,true) && Math.random() < 0.3) {
                         var p = pixelMap[nx][ny];
-                        if (elements[p.element].breakInto && Math.random() < (elements[p.element].hardness || 1) * 0.1) {
+                        if (isBreakable(p) && Math.random() < (elements[p.element].hardness || 1) * 0.1) {
                             breakPixel(p);
                         }
                         if (elements[p.element].id === elements.tornado.id) {
@@ -12133,7 +12427,8 @@ SEEDRISE: function(pixel) {
         "wet_sand": { attr1:{"fired":"sand"} },
         "water": { attr1:{"fired":"water"} }, //Waterspout
         "salt_water": { attr1:{"fired":"water"} },
-        "lightning": { attr1:{"fired":"lightning"} }
+        "lightning": { attr1:{"fired":"lightning"} },
+        "radiation": { attr1:{"fired":"radiation"} }
     },
     category: "weapons",
     state: "gas",
@@ -12164,7 +12459,7 @@ SEEDRISE: function(pixel) {
                         }
                         return;
                     }
-                    if (elements[p.element].breakInto) {
+                    if (isBreakable(p)) {
                         if (Math.random() < (elements[p.element].hardness || 1) * 0.25) {
                             breakPixel(p);
                         }
@@ -12210,7 +12505,7 @@ SEEDRISE: function(pixel) {
                         }
                         return;
                     }
-                    if (elements[p.element].breakInto) {
+                    if (isBreakable(p)) {
                         if (Math.random() < (elements[p.element].hardness || 1) * 0.1) {
                             breakPixel(p);
                         }
@@ -12332,7 +12627,7 @@ SEEDRISE: function(pixel) {
     tick: function(pixel) {
         if (!isEmpty(pixel.x, pixel.y-1, true)){
             if (pixel.min && elements[pixelMap[pixel.x][pixel.y-1].element].density < pixel.min) {}
-            else if (pixelMap[pixel.x][pixel.y-1].element != "pressure_plate" || pixelMap[pixel.x][pixel.y-1].on) {
+            else if (pixelMap[pixel.x][pixel.y-1].element !== "pressure_plate" || pixelMap[pixel.x][pixel.y-1].on) {
                 pixel.on = true;
                 var coordsToShock = [
                     [pixel.x, pixel.y+1],
@@ -12437,28 +12732,38 @@ SEEDRISE: function(pixel) {
 "prop": {
     color: ["#d46f50","#d4aa50"],
     onSelect: function(){
-        var answer1 = prompt("Warning - This tool may break Sandboxels if used incorrectly. Avoid using if you don't understand.\n\nEnter a pixel attribute to modify:",currentProp);
-        if (!answer1) { selectElement("unknown"); return }
-        var answer2 = prompt("Now, enter a value for "+answer1+":",currentPropValue);
-        if (!answer2) { selectElement("unknown"); return }
-        var valueL = answer2.toLowerCase();
-        if (valueL === "true") { answer2 = true }
-        else if (valueL === "false") { answer2 = false }
-        else if (valueL === "null") { answer2 = null }
-        else if (valueL === "undefined") { answer2 = undefined }
-        else if (valueL === "infinity") { answer2 = Infinity }
-        else if (valueL === "-infinity") { answer2 = -Infinity }
-        else if (answer1 === "color" && valueL[0] === "#") {
-            var rgb = hexToRGB(valueL);
-            answer2 = "rgb("+rgb.r+","+rgb.g+","+rgb.b+")";
-        }
-        currentProp = answer1;
-        var num = parseFloat(answer2);
-        if (!isNaN(num)) { answer2 = num }
-        else if (valueL === "nan") { answer2 = NaN }
-        currentPropValue = answer2;
-        logMessage("Prop: "+currentProp);
-        logMessage("Value: "+currentPropValue);
+        // var answer1 = prompt("Warning - This tool may break Sandboxels if used incorrectly. Avoid using if you don't understand.\n\nEnter a pixel attribute to modify:",currentProp);
+        promptInput("Warning - This tool may break Sandboxels if used incorrectly. Avoid using if you don't understand.\n\nEnter a pixel attribute to modify:",
+          (answer1) => {
+              if (!answer1) { selectElement("unknown"); return }
+            //   var answer2 = prompt("Now, enter a value for "+answer1+":",currentPropValue);
+              promptInput("Now, enter a value for "+answer1+":",
+                (answer2) => {
+                    if (!answer2) { selectElement("unknown"); return }
+                    var valueL = answer2.toLowerCase();
+                    if (valueL === "true") { answer2 = true }
+                    else if (valueL === "false") { answer2 = false }
+                    else if (valueL === "null") { answer2 = null }
+                    else if (valueL === "undefined") { answer2 = undefined }
+                    else if (valueL === "infinity") { answer2 = Infinity }
+                    else if (valueL === "-infinity") { answer2 = -Infinity }
+                    else if (answer1 === "color" && valueL[0] === "#") {
+                        var rgb = hexToRGB(valueL);
+                        answer2 = "rgb("+rgb.r+","+rgb.g+","+rgb.b+")";
+                    }
+                    currentProp = answer1;
+                    var num = parseFloat(answer2);
+                    if (!isNaN(num)) { answer2 = num }
+                    else if (valueL === "nan") { answer2 = NaN }
+                    currentPropValue = answer2;
+                    logMessage("Prop: "+currentProp);
+                    logMessage("Value: "+currentPropValue);
+                },
+                "Enter Value",currentPropValue
+              )
+          },
+          "Enter Property",currentProp
+        )
     },
     tool: function(pixel) {
         if (!currentProp) { return }
@@ -12493,6 +12798,7 @@ SEEDRISE: function(pixel) {
             return;
         }
         pixel[currentProp] = currentPropValue;
+        if (currentProp === "temp") pixelTempCheck(pixel);
     },
     category: "special",
 },
@@ -12509,6 +12815,11 @@ SEEDRISE: function(pixel) {
 };
 var currentMonth = new Date().getMonth();
 if (window.location.href.includes("holiday=false")) {}
+else if (currentMonth == 3) { // April
+    if (new Date().getDate() === 20) {
+        elements.egg.color = elements.bead.color;
+    }
+}
 else if (currentMonth == 9) { // October
     elements.pumpkin_seed.hidden = false;
     var script = document.createElement('script');
@@ -12573,6 +12884,10 @@ function runEveryTick(callback) {
 runPerPixelList = [];
 function runPerPixel(callback) {
     runPerPixelList.push(callback);
+}
+runAfterResetList = [];
+function runAfterReset(callback) {
+    runAfterResetList.push(callback);
 }
 canvasLayers = {
     // bg: document.createElement("canvas"),
@@ -12639,7 +12954,7 @@ keybinds["ArrowRight"] = ()=>{ // Change category
     var currentButton = document.querySelector(".categoryButton[current='true']");
     var currentCategory = currentButton.getAttribute("category");
     var nextButton = currentButton.nextElementSibling;
-    if (nextButton == null) {
+    if (nextButton === null) {
         nextButton = document.querySelector(".categoryButton");
     }
     var nextCategory = nextButton.getAttribute("category");
@@ -12650,7 +12965,7 @@ keybinds["ArrowLeft"] = ()=>{ // Change category
     var currentButton = document.querySelector(".categoryButton[current='true']");
     var currentCategory = currentButton.getAttribute("category");
     var prevButton = currentButton.previousElementSibling;
-    if (prevButton == null) {
+    if (prevButton === null) {
         prevButton = document.querySelector(".categoryButton:last-child");
     }
     var prevCategory = prevButton.getAttribute("category");
@@ -12739,12 +13054,27 @@ if (urlParams.has("lang") && urlParams.get("lang") !== "en") {
 else if (settings.lang && settings.lang !== "en") {
     langCode = settings.lang;
 }
+// langCode = "test";
 if (langCode) {
     try {
         var Httpreq = new XMLHttpRequest();
         Httpreq.open("GET","https://sandboxels.r74n.com/lang/"+langCode+".json",false);
         Httpreq.send(null);
-        lang = JSON.parse(Httpreq.responseText);
+        try {
+            lang = JSON.parse(Httpreq.responseText.replace(/\\"/g,""));
+        }
+        catch (e) {
+            console.log(langCode+" Translation Error: "+e);
+        }
+        // lang = {
+        //     "gui.pauseButton": "STOPPPPPPPPPP",
+        //     "gui.pauseButton.title": "STOP",
+        //     "guitemplate.elementCount": "Elements: $1 | Hidden: $2",
+        //     "gui.stats.burning": "LIT",
+        //     "gui.saveTemp": "THE TEMP",
+        //     "gui.saveAuthor": "ENTER UR NAME",
+        //     "gui.settingUnitsI": "AMERICA",
+        // }
         if (lang["#lang.font"]) {
             var style = document.createElement("style");
             style.innerHTML = "body{font-family:'"+lang["#lang.font"]+"'!important;}"
@@ -12752,6 +13082,17 @@ if (langCode) {
         }
     }
     catch { langCode = null }
+}
+function langKey(key,fallback,template) {
+    if (template !== undefined) {
+        let text = lang[key] || fallback;
+        for (let templateKey in template) {
+            text = text.replace("$"+templateKey, template[templateKey]);
+        }
+        return text;
+    }
+    if (lang[key] === undefined) return fallback;
+    return lang[key];
 }
 
         function hexToRGB(hex) {
@@ -12840,7 +13181,7 @@ if (langCode) {
                     this.alpha = elementInfo.alpha;
                 }
                 // If element doesn't have temp attribute, set temp to airTemp
-                if (elementInfo.temp==undefined) {
+                if (elementInfo.temp===undefined) {
                     this.temp = airTemp;
                 } else {
                     this.temp = elementInfo.temp+(airTemp-20);
@@ -12886,6 +13227,9 @@ if (langCode) {
                 if (airTemp !== 20) {pixelTempCheck(this); pixelTempCheck(this)}
             }
         }
+        if (standalone && settings.pixelsize === undefined) {
+            settings.pixelsize = "6w";
+        }
         // If the screen size is under 768px, set pixelSize to 5, otherwise 6
         pixelSize = parseInt(settings.pixelsize) || 6;
         if (window.innerWidth < 700) {
@@ -12896,13 +13240,13 @@ if (langCode) {
         
         function outOfBounds(x,y) {
             // Returns true if the pixel is out of bounds
-            return y > height-1 || y < 1 || x > width-1 || x < 1
+            return y > height-currentSaveData.border || y < currentSaveData.border || x > width-currentSaveData.border || x < currentSaveData.border
         }
         function isEmpty(x, y, ignoreBounds=false, oob=undefined) {
             if (oob || outOfBounds(x,y)) {
                 return ignoreBounds;
             }
-            return pixelMap[x][y] == undefined;
+            return pixelMap[x][y] === undefined;
         }
         function canMove(pixel,x,y) {
             if (isEmpty(x,y)) {
@@ -12911,8 +13255,8 @@ if (langCode) {
         }
         function movePixel(pixel,x,y,leaveBehind=null) {
             // Delete the pixel from the old position
-            delete pixelMap[pixel.x][pixel.y];
-            if (leaveBehind != null && isEmpty(pixel.x,pixel.y)) { createPixel(leaveBehind,pixel.x,pixel.y); }
+            pixelMap[pixel.x][pixel.y] = undefined;
+            if (leaveBehind !== null) { createPixel(leaveBehind,pixel.x,pixel.y); }
             pixel.x = x;
             pixel.y = y;
             pixelMap[x][y] = pixel;
@@ -12937,7 +13281,8 @@ if (langCode) {
         function deletePixel(x,y) {
             // remove pixelMap[x][y] from currentPixels
             let pixel = pixelMap[x][y];
-            currentPixels.splice(currentPixels.indexOf(pixel),1);
+            let i = currentPixels.indexOf(pixel);
+            if (i !== -1) currentPixels.splice(i,1);
             if (pixel) {
                 pixel.del = true;
                 if (elements[pixel.element].onDelete) {
@@ -13067,7 +13412,7 @@ if (langCode) {
                     var elem1 = r.elem1[Math.floor(Math.random() * r.elem1.length)];
                 } else { var elem1 = r.elem1; }
                 
-                if (elem1 == null) {
+                if (elem1 === null) {
                     deletePixel(pixel1.x,pixel1.y);
                 }
                 else {
@@ -13091,7 +13436,7 @@ if (langCode) {
                     var elem2 = r.elem2[Math.floor(Math.random() * r.elem2.length)];
                 } else { var elem2 = r.elem2; }
 
-                if (elem2 == null) {
+                if (elem2 === null) {
                     deletePixel(pixel2.x,pixel2.y);
                 }
                 else {
@@ -13202,11 +13547,11 @@ if (langCode) {
                         return true;
                     }
                 }
-                // Density
                 if (elements[pixel.element].id !== elements[newPixel.element].id) {
+                    // Density
                     if (info.density !== undefined && elements[newPixel.element].density !== undefined) {
                         // if the pixel's state + ">" + newPixel's state is in validDensitySwaps, and the pixel's density is larger than the newPixel's density, swap the pixels
-                        if (validDensitySwaps[info.state][elements[newPixel.element].state] && info.density >= elements[newPixel.element].density) {
+                        if (validDensitySwaps[info.state][elements[newPixel.element].state] !== undefined && info.density >= elements[newPixel.element].density) {
                             // chance depending on the difference in density
                             if (Math.random() < (info.density - elements[newPixel.element].density)/(info.density + elements[newPixel.element].density)) {
                                 swapPixels(pixel,newPixel);
@@ -13214,6 +13559,13 @@ if (langCode) {
                             }
                         }
                     }
+                    if (elements[newPixel.element].onMoveInto !== undefined) {
+                        elements[newPixel.element].onMoveInto(newPixel,pixel);
+                    }
+                }
+                else if (info.isGas !== true && validDensitySwaps[info.state][info.state] !== undefined && Math.random() < 1/(currentPixels.length/10)) {
+                    swapPixels(pixel,newPixel);
+                    return true;
                 }
             }
             return false;
@@ -13241,7 +13593,7 @@ if (langCode) {
                 rotation = 4 + rotation;
             }
             var check = behaviorCache[behavior.toString()+rotation];
-            if (check != undefined) { return check; }
+            if (check !== undefined) { return check; }
 
             var newBehavior = []
             if (rotation == 1) {
@@ -13279,7 +13631,7 @@ if (langCode) {
         function flipBehavior(behavior,axis) {
             // returns flipped 2D array depending on axis "x" or "y"
             var check = behaviorCache[behavior.toString()+axis];
-            if (check != undefined) { return check; }
+            if (check !== undefined) { return check; }
 
             if (axis === "x") {
                 var newBehavior = [];
@@ -13331,6 +13683,7 @@ if (langCode) {
     %number = Chance of rule happening
 */
 btemp = {}
+ticktemp = {}
 function choose(array) {
     return array[Math.floor(Math.random()*array.length)];
 }
@@ -13368,8 +13721,8 @@ behaviorRules = {
                 return;
             }
             if ((!(newPixel.element == btemp.pixel.element)) || (btemp.newCoords.x == btemp.pixel.x && btemp.newCoords.y == btemp.pixel.y)) {
-                if (btemp.arg != null) { var args = btemp.arg.split(","); }
-                if (btemp.arg == null || args.indexOf(newPixel.element) !== -1) {
+                if (btemp.arg !== null) { var args = btemp.arg.split(","); }
+                if (btemp.arg === null || args.indexOf(newPixel.element) !== -1) {
                     if (!elements[newPixel.element].hardness || Math.random() > elements[newPixel.element].hardness) {
                         deletePixel(btemp.newCoords.x,btemp.newCoords.y);
                         if (btemp.newCoords.x == btemp.pixel.x && btemp.newCoords.y == btemp.pixel.y) {
@@ -13390,11 +13743,11 @@ behaviorRules = {
                 return;
             }
             if (!(newPixel.element == btemp.pixel.element)) {
-                if (btemp.arg != null) { var args = btemp.arg.split(","); }
-                if (btemp.arg == null || args.indexOf(newPixel.element) !== -1) {
+                if (btemp.arg !== null) { var args = btemp.arg.split(","); }
+                if (btemp.arg === null || args.indexOf(newPixel.element) !== -1) {
                     if (!elements[newPixel.element].hardness || Math.random() > elements[newPixel.element].hardness) {
                         deletePixel(btemp.newCoords.x,btemp.newCoords.y);
-                        if (pixelMap[btemp.pixel.x][btemp.pixel.y] != undefined) {
+                        if (pixelMap[btemp.pixel.x][btemp.pixel.y] !== undefined) {
                             deletePixel(btemp.pixel.x,btemp.pixel.y);
                         }
                         btemp.deleted = true;
@@ -13441,8 +13794,8 @@ behaviorRules = {
     "SW": function() {
         if (!isEmpty(btemp.newCoords.x,btemp.newCoords.y,true)) {
             var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
-            if (btemp.arg != null) { var args = btemp.arg.split(","); }
-            if (btemp.arg == null || args.indexOf(newPixel.element) !== -1) {
+            if (btemp.arg !== null) { var args = btemp.arg.split(","); }
+            if (btemp.arg === null || args.indexOf(newPixel.element) !== -1) {
                 if (!elements[newPixel.element].hardness || Math.random() > elements[newPixel.element].hardness) {
                     btemp.swapSpots.push({x:btemp.newCoords.x,y:btemp.newCoords.y});
                 }
@@ -13451,7 +13804,7 @@ behaviorRules = {
     },
     "CR": function() {
         if (isEmpty(btemp.newCoords.x,btemp.newCoords.y)) {
-            if (btemp.arg == null) {
+            if (btemp.arg === null) {
                 btemp.arg = btemp.pixel.element;
             }
             else if (btemp.arg.indexOf(",") !== -1) {
@@ -13459,6 +13812,7 @@ behaviorRules = {
             }
             if (elements[btemp.arg]) {
                 createPixel(btemp.arg,btemp.newCoords.x,btemp.newCoords.y);
+                if (!pixelMap[btemp.newCoords.x][btemp.newCoords.y]) return;
                 if (btemp.info.fireColor && btemp.arg==="fire") {
                     pixelMap[btemp.newCoords.x][btemp.newCoords.y].color = pixelColorPick(pixelMap[btemp.newCoords.x][btemp.newCoords.y],btemp.info.fireColor);
                 }
@@ -13469,7 +13823,7 @@ behaviorRules = {
     },
     "CL": function() {
         if (isEmpty(btemp.newCoords.x,btemp.newCoords.y)) {
-            if (btemp.arg == null || btemp.pixel.temp >= parseFloat(btemp.arg)) {
+            if (btemp.arg === null || btemp.pixel.temp >= parseFloat(btemp.arg)) {
                 clonePixel(btemp.pixel,btemp.newCoords.x,btemp.newCoords.y);
             }
         }
@@ -13510,7 +13864,7 @@ behaviorRules = {
                     if (btemp.info.ignore && btemp.info.ignore.indexOf(newPixel.element) !== -1) {
                         return;
                     }
-                    if (!newPixel.charge && !newPixel.chargeCD && (btemp.arg == null || newPixel.element == btemp.arg)) {
+                    if (!newPixel.charge && !newPixel.chargeCD && (btemp.arg === null || newPixel.element == btemp.arg)) {
                         newPixel.charge = (parseFloat(btemp.arg) || 1);
                         if (elements[newPixel.element].colorOn) {
                             newPixel.color = pixelColorPick(newPixel);
@@ -13526,13 +13880,13 @@ behaviorRules = {
             if (btemp.info.ignore && btemp.info.ignore.indexOf(newPixel.element) !== -1) {
                 return;
             }
-            if (newPixel.element != btemp.pixel.element && (btemp.arg == null || newPixel.element == btemp.arg)) {
+            if (newPixel.element !== btemp.pixel.element && (btemp.arg === null || newPixel.element == btemp.arg)) {
                 btemp.sticking = true
             }
         }
     },
     "LB": function() {
-        if (btemp.arg != null && btemp.arg.indexOf(",") !== -1) {
+        if (btemp.arg !== null && btemp.arg.indexOf(",") !== -1) {
             btemp.arg = choose(btemp.arg.split(","));
         }
         if (elements[btemp.arg]) {
@@ -13540,7 +13894,7 @@ behaviorRules = {
         }
     },
     "L1": function() {
-        if (btemp.arg != null && btemp.arg.indexOf(",") !== -1) {
+        if (btemp.arg !== null && btemp.arg.indexOf(",") !== -1) {
             btemp.arg = choose(btemp.arg.split(","));
         }
         if (elements[btemp.arg]) {
@@ -13548,7 +13902,7 @@ behaviorRules = {
         }
     },
     "L2": function() {
-        if (btemp.arg != null && btemp.arg.indexOf(",") !== -1) {
+        if (btemp.arg !== null && btemp.arg.indexOf(",") !== -1) {
             btemp.arg = choose(btemp.arg.split(","));
         }
         if (elements[btemp.arg]) {
@@ -13570,7 +13924,7 @@ behaviorRules = {
                 }
                 btemp.arg = btemp.arg.split(">")[1];
             }
-            if (btemp.arg == null) {btemp.arg = newPixel.colorObject}
+            if (btemp.arg === null) {btemp.arg = newPixel.colorObject}
             else {
                 if (btemp.arg.indexOf(",") !== -1) {
                     btemp.arg = choose(btemp.arg.split(","))
@@ -13587,7 +13941,7 @@ behaviorRules = {
             var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
             if (elements[newPixel.element].insulate) { return }
             if (!(newPixel.element === btemp.pixel.element) || (btemp.newCoords.x == btemp.pixel.x && btemp.newCoords.y == btemp.pixel.y)) {
-                if (btemp.arg != null) {btemp.arg = parseFloat(btemp.arg)}
+                if (btemp.arg !== null) {btemp.arg = parseFloat(btemp.arg)}
                 else {btemp.arg = 1}
                 if (isNaN(btemp.arg)) {btemp.arg = 1}
                 newPixel.temp += btemp.arg;
@@ -13599,7 +13953,7 @@ behaviorRules = {
         if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
             var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
             if (!(newPixel.element === btemp.pixel.element) || (btemp.newCoords.x == btemp.pixel.x && btemp.newCoords.y == btemp.pixel.y)) {
-                if (btemp.arg != null) {btemp.arg = parseFloat(btemp.arg)}
+                if (btemp.arg !== null) {btemp.arg = parseFloat(btemp.arg)}
                 else {btemp.arg = 1}
                 if (isNaN(btemp.arg)) {btemp.arg = 1}
                 newPixel.temp -= btemp.arg;
@@ -13630,7 +13984,7 @@ behaviorRules = {
     "RT": function() {
         if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
             var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
-            if (btemp.arg != null && btemp.arg.indexOf(",") !== -1) {
+            if (btemp.arg !== null && btemp.arg.indexOf(",") !== -1) {
                 btemp.arg = choose(btemp.arg.split(","));
             }
             if (elements[newPixel.element].rotatable) {
@@ -13648,7 +14002,7 @@ behaviorRules = {
             }
             if (btemp.info.rotatable) {
                 // If arg isn't null, set arg to a random choice from arg.split(",")
-                if (btemp.arg != null && btemp.arg.indexOf(",") !== -1) {
+                if (btemp.arg !== null && btemp.arg.indexOf(",") !== -1) {
                     btemp.arg = btemp.arg.split(",")[Math.floor(Math.random()*btemp.arg.split(",").length)];
                 }
                 if (btemp.pixel.r !== undefined) {
@@ -13679,7 +14033,7 @@ behaviorRules = {
                 }
                 else { var fire = "fire" }
                 // arg = a number
-                if (btemp.arg != null) {
+                if (btemp.arg !== null) {
                     btemp.arg = parseInt(btemp.arg);
                     if (isNaN(btemp.arg)) {btemp.arg = 3}
                 }
@@ -13696,7 +14050,7 @@ behaviorRules = {
     "SM": function() {
         if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
             var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
-            if (elements[newPixel.element].breakInto && Math.random() > (elements[newPixel.element].hardness || 0)) {
+            if (isBreakable(newPixel) && Math.random() > (elements[newPixel.element].hardness || 0)) {
                 breakPixel(newPixel);
             }
         }
@@ -13793,7 +14147,7 @@ behaviorRules = {
                 var arg = supportSpots[i].arg;
                 if (!isEmpty(bx,by,true)) {
                     if (info.ignore && info.ignore.indexOf(pixelMap[bx][by].element) !== -1) {continue;}
-                    if ((arg == null && !validDensitySwaps[info.state][elements[pixelMap[bx][by].element].state]) || pixelMap[bx][by].element == arg) {
+                    if ((arg === null && !validDensitySwaps[info.state][elements[pixelMap[bx][by].element].state]) || pixelMap[bx][by].element == arg) {
                         supportCount++;
                     }
                 }
@@ -13807,7 +14161,7 @@ behaviorRules = {
 
         if (swapSpots.length > 0) {
             var coords = swapSpots[Math.floor(Math.random()*swapSpots.length)];
-            if (pixelMap[coords.x][coords.y] != undefined) {
+            if (pixelMap[coords.x][coords.y] !== undefined) {
                 swapPixels(pixel,pixelMap[coords.x][coords.y]);
                 btemp.move = false;
                 moved = true;
@@ -13948,8 +14302,8 @@ behaviorRules = {
                 if (!info.insulate) { pixel.temp += 1; }
                 pixelTempCheck(pixel);
                 if (pixel.temp < 0) {
-                    delete pixel.burning;
-                    delete pixel.burnStart;
+                    pixel.burning = undefined;
+                    pixel.burnStart = undefined;
                     return;
                 }
                 for (var i = 0; i < adjacentCoords.length; i++) { // Burn adjacent pixels
@@ -13964,8 +14318,8 @@ behaviorRules = {
                             }
                         }
                         if (elements[newPixel.element].extinguish && elements[pixel.element].burning !== true) {
-                            delete pixel.burning;
-                            delete pixel.burnStart;
+                            pixel.burning = undefined;
+                            pixel.burnStart = undefined;
                             return;
                         }
                     }
@@ -13973,14 +14327,14 @@ behaviorRules = {
 
                 if ((pixelTicks - pixel.burnStart > (info.burnTime || 200)) && Math.floor(Math.random()*100)<(info.burn || 10) && !(info.burnTime === undefined && info.hardness >= 1)) {
                     var burnInto = info.burnInto;
-                    if (burnInto == undefined) {
+                    if (burnInto === undefined) {
                         burnInto = "fire";
                     }
                     else if (burnInto instanceof Array) {
                         burnInto = burnInto[Math.floor(Math.random()*burnInto.length)];
                     }
                     changePixel(pixel,burnInto);
-                    if (info.fireColor != undefined && burnInto === "fire") {
+                    if (info.fireColor !== undefined && burnInto === "fire") {
                         pixel.color = pixelColorPick(pixel,info.fireColor);
                     }
                     else {
@@ -13991,7 +14345,7 @@ behaviorRules = {
                     if (isEmpty(pixel.x,pixel.y-1)) {
                         createPixel((info.fireElement || "fire"),pixel.x,pixel.y-1);
                         pixelMap[pixel.x][pixel.y-1].temp = pixel.temp//+(pixelTicks - (pixel.burnStart || 0));
-                        if (info.fireColor != undefined) {
+                        if (info.fireColor !== undefined) {
                             pixelMap[pixel.x][pixel.y-1].color = pixelColorPick(pixelMap[pixel.x][pixel.y-1],info.fireColor);
                         }
                     }
@@ -13999,7 +14353,7 @@ behaviorRules = {
                     else if (isEmpty(pixel.x,pixel.y+1)) {
                         createPixel((info.fireElement || "fire"),pixel.x,pixel.y+1);
                         pixelMap[pixel.x][pixel.y+1].temp = pixel.temp//+(pixelTicks - (pixel.burnStart || 0));
-                        if (info.fireColor != undefined) {
+                        if (info.fireColor !== undefined) {
                             pixelMap[pixel.x][pixel.y+1].color = pixelColorPick(pixelMap[pixel.x][pixel.y+1],info.fireColor);
                         }
                     }
@@ -14029,40 +14383,47 @@ behaviorRules = {
             }
         }
 
-        function doElectricity(pixel) {
+        function doElectricity(pixel,step) {
+            if (pixel.chargeStart === pixelTicks && !step) {
+                return;
+            }
             if (pixel.charge) {
+                // pixel.charge -= 0.2;
+                pixel.charge = Math.round((pixel.charge-0.2) * 100) / 100
                 // Check each adjacent pixel, if that pixel's charge is false, set it to the same charge
                 for (var i = 0; i < adjacentCoords.length; i++) {
                     var x = pixel.x+adjacentCoords[i][0];
                     var y = pixel.y+adjacentCoords[i][1];
                     if (!isEmpty(x,y,true)) {
                         var newPixel = pixelMap[x][y];
+                        if (newPixel.charge || newPixel.chargeCD) {continue}
                         var con = elements[newPixel.element].conduct;
-                        if (con == undefined) {continue}
+                        if (con === undefined) {continue}
                         if (elements[newPixel.element].ignoreConduct !== undefined && elements[newPixel.element].ignoreConduct.indexOf(pixel.element) !== -1) {
                             continue
                         }
                         if (newPixel.temp <= elements[newPixel.element].superconductAt) {
                             con = 1;
                         }
-                        // console.log(con)
                         if (Math.random() < con) { // If random number is less than conductivity
-                            if (!newPixel.charge && !newPixel.chargeCD) {
-                                newPixel.charge = 1;
-                                if (elements[newPixel.element].colorOn) {
-                                    newPixel.color = pixelColorPick(newPixel);
-                                }
+                            newPixel.charge = 1;
+                            newPixel.chargeStart = pixelTicks;
+                            doElectricity(newPixel,(step||2)-1);
+                            if (elements[newPixel.element].colorOn) {
+                                newPixel.color = pixelColorPick(newPixel);
                             }
                         }
-                        else if (elements[newPixel.element].insulate != true) { // Otherwise heat the pixel (Resistance simulation)
+                        else if (elements[newPixel.element].insulate !== true) { // Otherwise heat the pixel (Resistance simulation)
                             newPixel.temp += pixel.charge/4;
                             pixelTempCheck(newPixel);
                         }
                     }
                 }
-                pixel.charge -= 0.25;
                 if (pixel.charge <= 0) {
-                    delete pixel.charge;
+                    // delete pixel.charge;
+                    // delete pixel.chargeStart;
+                    pixel.charge = undefined;
+                    pixel.chargeStart = undefined;
                     var con = elements[pixel.element].conduct;
                     if (pixel.temp <= elements[pixel.element].superconductAt) {
                         con = 1;
@@ -14074,7 +14435,8 @@ behaviorRules = {
             else if (pixel.chargeCD) {
                 pixel.chargeCD -= 1;
                 if (pixel.chargeCD <= 0) {
-                    delete pixel.chargeCD;
+                    // delete pixel.chargeCD;
+                    pixel.chargeCD = undefined;
                     if (elements[pixel.element].colorOn) {
                         pixel.color = pixelColorPick(pixel);
                     }
@@ -14166,7 +14528,7 @@ behaviorRules = {
                 customColor = elementInfo.colorOn;
             }
             let rgb;
-            if (customColor != null) {
+            if (customColor !== null) {
                 if (Array.isArray(customColor)) {
                     customColor = customColor[Math.floor(Math.random() * customColor.length)];
                 }
@@ -14452,6 +14814,8 @@ behaviorRules = {
                         }
                         // remove unneeded properties
                         for (var k = 0; k < ignoreProperties.length; k++) { delete pixel[ignoreProperties[k]]; }
+                        // remove undefined properties
+                        for (var key in pixel) { if (pixel[key] === undefined) { delete pixel[key]; } }
                         if (keepColor !== false) { pixel.color = keepColor }
                         if (!saveOptions.raw && pixel.element) {
                             if (!codes[pixel.element]) {
@@ -14511,7 +14875,7 @@ behaviorRules = {
             var seriesIndex = 0;
             var createdTime = Date.now();
             var seriesId = uuidv4();
-            if (currentSaveData) {
+            if (currentSaveData.loaded) {
                 if (currentSaveData.seriesIndex !== undefined) {
                     seriesIndex = currentSaveData.seriesIndex + 1;
                 }
@@ -14548,6 +14912,7 @@ behaviorRules = {
                     "view":view,
                     "paused":paused,
                     "mouseSize":mouseSize,
+                    "border":currentSaveData.border||0
                 },
                 "codes":codesReverse,
                 "pixelMap":compressedMap
@@ -14598,10 +14963,10 @@ behaviorRules = {
             }
             tps = saveConfig.tps||30;
             resetInterval(tps);
-            if (saveConfig.currentElement) {
-                selectElement(saveConfig.currentElement||firstElement);
-                selectCategory(elements[currentElement].category);
-            }
+            // if (saveConfig.currentElement) {
+            //     selectElement(saveConfig.currentElement||firstElement);
+            //     selectCategory(elements[currentElement].category);
+            // }
             if (saveConfig.mouseSize) { mouseSize = saveConfig.mouseSize };
             if (saveConfig.view) { setView(saveConfig.view) };
             if (saveConfig.paused && !paused) { togglePause(); }
@@ -14644,7 +15009,11 @@ behaviorRules = {
                 }
             }
             pixelTicks = saveConfig.pixelTicks||0;
+            if (saveConfig.border === undefined) {
+                saveConfig.border = 1;
+            }
             currentSaveData = {
+                "loaded":true,
                 "seriesIndex":saveJSON.meta.seriesIndex,
                 "uuid":saveJSON.meta.uuid,
                 "seriesId":saveJSON.meta.seriesId,
@@ -14652,6 +15021,7 @@ behaviorRules = {
                 "name":saveJSON.meta.name,
                 "author":saveJSON.meta.author,
                 "desc":saveJSON.meta.desc,
+                "border":saveConfig.border
             }
             if (saveJSON.meta.author) {
                 logMessage("Created by "+saveJSON.meta.author);
@@ -14712,7 +15082,7 @@ behaviorRules = {
                         continue;
                     }
                     else if (damage > 0.25) {
-                        if (info.breakInto !== undefined) {
+                        if (isBreakable(pixel)) {
                             breakPixel(pixel);
                             continue;
                         }
@@ -14739,17 +15109,23 @@ behaviorRules = {
                 }
             }
         }
+        function isBreakable(pixel) {
+            if (elements[pixel.element].breakInto !== undefined || elements[pixel.element].breakIntoColor !== undefined || elements[pixel.element].breakIntoColorMultiplier !== undefined || elements[pixel.element].onBreak !== undefined) return true;
+        }
         function breakPixel(pixel) {
             if (elements[pixel.element].onBreak !== undefined) {
                 elements[pixel.element].onBreak(pixel);
             }
-            if (elements[pixel.element].breakInto === undefined) {return;}
+            if (elements[pixel.element].breakInto === undefined && elements[pixel.element].breakIntoColor === undefined) {return;}
             // if it is an array, choose a random item, else just use the value
-            if (Array.isArray(elements[pixel.element].breakInto)) {
-                var result = elements[pixel.element].breakInto[Math.floor(Math.random() * elements[pixel.element].breakInto.length)];
-            }
-            else {
-                var result = elements[pixel.element].breakInto;
+            let result;
+            if (elements[pixel.element].breakInto !== undefined) {
+                if (Array.isArray(elements[pixel.element].breakInto)) {
+                    result = elements[pixel.element].breakInto[Math.floor(Math.random() * elements[pixel.element].breakInto.length)];
+                }
+                else {
+                    result = elements[pixel.element].breakInto;
+                }
             }
             // change the pixel to the result
             if (result === null) {
@@ -14758,10 +15134,27 @@ behaviorRules = {
             }
             if (elements[pixel.element].breakIntoColor) {
                 var oldelement = pixel.element;
-                changePixel(pixel,result);
+                if (result !== undefined) changePixel(pixel,result);
                 pixel.color = pixelColorPick(pixel, elements[oldelement].breakIntoColor);
             }
-            else {
+            else if (elements[pixel.element].breakIntoColorMultiplier) {
+                var color = pixel.color;
+                var rgb = color.match(/\d+/g);
+                var m = elements[pixel.element].breakIntoColorMultiplier;
+                if (result !== undefined) changePixel(pixel,result);
+                if (Array.isArray(m)) {
+                    m = m[Math.floor(Math.random() * m.length)];
+                }
+                var r = Math.floor(rgb[0] * m);
+                var g = Math.floor(rgb[1] * m);
+                var b = Math.floor(rgb[2] * m);
+                // Make sure the color is within the RGB range
+                r = Math.max(0, Math.min(255, r));
+                g = Math.max(0, Math.min(255, g));
+                b = Math.max(0, Math.min(255, b));
+                pixel.color = "rgb("+r+","+g+","+b+")";
+            }
+            else if (result !== undefined) {
                 changePixel(pixel,result);
             }
         }
@@ -14887,6 +15280,8 @@ behaviorRules = {
             }
         }
         function tickPixels() {
+            ticktemp = {};
+
             var newCurrentPixels = currentPixels.slice();
             shuffleArray(newCurrentPixels);
 
@@ -15020,7 +15415,7 @@ behaviorRules = {
                 if (viewInfo[view].pixel) {
                     for (let i = 0; i < pixelDrawList.length; i++) {
                         let pixel = pixelDrawList[i];
-                        if (pixelMap[pixel.x][pixel.y] == undefined) {continue}
+                        if (pixelMap[pixel.x][pixel.y] === undefined) {continue}
                         if (pixel.con) { pixel = pixel.con }
                         if (elements[pixel.element].renderer && settings.textures !== 0) {
                             elements[pixel.element].renderer(pixel,ctx);
@@ -15049,6 +15444,8 @@ behaviorRules = {
             }
             return true;
         }
+        height = undefined;
+        width = undefined;
         function tick() {
             if (mouseIsDown && !shaping) {
                 mouseAction(null,mousePos.x,mousePos.y);
@@ -15075,14 +15472,23 @@ behaviorRules = {
         currentElement = "unknown";
         firstElement = "unknown";
         currentColor = "#ff0000";
+        currentColorMap = {};
         currentProp = undefined;
         currentPropValue = undefined;
         currentElementProp = null;
         storedElement = null;
         prevElement = null;
-        currentSaveData = null;
+        function defaultSaveData() {
+            return {
+                loaded: false,
+                border: 0,
+                uuid: uuidv4()
+            }
+        }
+        currentSaveData = defaultSaveData();
         savingState = null;
         tempSettings = null;
+        promptState = null;
         mouseIsDown = false;
         isMobile = false;
         // detect if mobile
@@ -15101,7 +15507,7 @@ behaviorRules = {
         }
         mouseType = null;
         function mouseClick(e) {
-            if (showingMenu && currentElement != "lookup") {
+            if (showingMenu && currentElement !== "lookup") {
                 closeMenu();
                 return false;
             }
@@ -15131,14 +15537,14 @@ behaviorRules = {
             if (elements[currentElement].singleColor) {
                 // choose random item from .color
                 if (Array.isArray(elements[currentElement].color)) {
-                    currentColor = elements[currentElement].color[Math.floor(Math.random() * elements[currentElement].color.length)];
+                    currentColorMap[currentElement] = elements[currentElement].color[Math.floor(Math.random() * elements[currentElement].color.length)];
                 }
-                else { currentColor = elements[currentElement].color;}
+                else { currentColorMap[currentElement] = elements[currentElement].color;}
                 // convert from rgb(r,g,b) to #rrggbb
                 // RGBToHex takes an array of integers
-                if (currentColor.indexOf("rgb") !== -1) {
-                    var rgb = currentColor.match(/\d+/g);
-                    currentColor = RGBToHex([parseInt(rgb[0]),parseInt(rgb[1]),parseInt(rgb[2])]);
+                if (currentColorMap[currentElement].indexOf("rgb") !== -1) {
+                    var rgb = currentColorMap[currentElement].match(/\d+/g);
+                    currentColorMap[currentElement] = RGBToHex([parseInt(rgb[0]),parseInt(rgb[1]),parseInt(rgb[2])]);
                 }
             }
             mouseMove(e);
@@ -15239,9 +15645,9 @@ behaviorRules = {
             }
         }
         function mouseAction(e,mouseX,mouseY,startPos) {
-            if (mouseType == "left") { mouse1Action(e,mouseX,mouseY,startPos); }
-            else if (mouseType == "right") { mouse2Action(e,mouseX,mouseY,startPos); }
-            else if (mouseType == "middle") { mouseMiddleAction(e,mouseX,mouseY); }
+            if (mouseType === "left") { mouse1Action(e,mouseX,mouseY,startPos); }
+            else if (mouseType === "right") { mouse2Action(e,mouseX,mouseY,startPos); }
+            else if (mouseType === "middle") { mouseMiddleAction(e,mouseX,mouseY); }
         }
         mouseSize = 5;
         lastMouseSize = mouseSize;
@@ -15267,7 +15673,7 @@ behaviorRules = {
             if (currentElement === "erase") { mouse2Action(e,mouseX,mouseY,startPos); return; }
             else if (currentElement === "pick") { mouseMiddleAction(e,mouseX,mouseY); return; }
             // If x and y are undefined, get the mouse position
-            if (mouseX == undefined && mouseY == undefined) {
+            if (mouseX === undefined && mouseY === undefined) {
                 // var canvas = document.getElementById("game");
                 // var ctx = canvas.getContext("2d");
                 lastPos = mousePos;
@@ -15332,7 +15738,7 @@ behaviorRules = {
                     if (!isEmpty(x,y,true)) {
                         var pixel = pixelMap[x][y];
                         // if the current element has an ignore property and the pixel's element is in the ignore property, don't do anything
-                        if (elements[currentElement].ignore && elements[currentElement].ignore.indexOf(pixel.element) != -1) {
+                        if (elements[currentElement].ignore && elements[currentElement].ignore.indexOf(pixel.element) !== -1) {
                             continue;
                         }
                         elements[currentElement].tool(pixel);
@@ -15343,7 +15749,7 @@ behaviorRules = {
                     if (currentPixels.length < maxPixelCount) {
                         createPixel(currentElement,x,y);
                         if (pixelMap[x][y] && currentElement === pixelMap[x][y].element && (elements[currentElement].customColor || elements[currentElement].singleColor)) {
-                            pixelMap[x][y].color = pixelColorPick(pixelMap[x][y],currentColor);
+                            pixelMap[x][y].color = pixelColorPick(pixelMap[x][y],currentColorMap[currentElement]);
                         }
                         if (currentElementProp) {
                             for (var key in currentElementProp) {
@@ -15384,7 +15790,7 @@ behaviorRules = {
         }
         function mouse2Action(e,mouseX=undefined,mouseY=undefined,startPos) {
             // Erase pixel at mouse position
-            if (mouseX == undefined && mouseY == undefined) {
+            if (mouseX === undefined && mouseY === undefined) {
                 // var canvas = document.getElementById("game");
                 // var ctx = canvas.getContext("2d");
                 lastPos = mousePos;
@@ -15425,7 +15831,7 @@ behaviorRules = {
             }
         }
         function mouseMiddleAction(e, mouseX, mouseY) {
-            if (mouseX == undefined && mouseY == undefined) {
+            if (mouseX === undefined && mouseY === undefined) {
                 // var canvas = document.getElementById("game");
                 // var ctx = canvas.getContext("2d");
                 lastPos = mousePos;
@@ -15468,18 +15874,23 @@ behaviorRules = {
             checkMouseSize(true);
         }
         function chooseElementPrompt() {
-            var e = prompt("Enter the element's ID")
-            if (!e) { return; }
-            // replace spaces with underscores
-            e = e.replace(/ /g, "_");
-            es = mostSimilarElement(e);
-            if (es !== null) {
-                selectElement(es);
-                selectCategory(elements[es].category);
-            }
-            else {
-                alert("Element \"" + e + "\" not found");
-            }
+            promptInput("Enter the element's ID.",
+                (e) => {
+                    if (!e) { return; }
+                    // replace spaces with underscores
+                    e = e.replace(/ /g, "_");
+                    es = mostSimilarElement(e);
+                    if (es !== null) {
+                        selectElement(es);
+                        selectCategory(elements[es].category);
+                    }
+                    else {
+                        logMessage("Element \"" + e + "\" not found");
+                    }
+                    focusGame();
+                },
+                "Select Element"
+            )
         }
         function togglePause() {
             paused = !paused;
@@ -15501,7 +15912,35 @@ behaviorRules = {
             }
         }
         function resetPrompt() {
-            if (settings.resetwarning===0 || currentPixels.length===0 || confirm('Are you sure you want to clear the whole scene?')) {autoResizeCanvas()};
+            if (settings.resetwarning === 0 || currentPixels.length===0) { autoResizeCanvas(); focusGame(); return }
+            promptConfirm("Are you sure you want to clear the whole scene?",(r) => {
+                if (r) autoResizeCanvas();
+                focusGame();
+            },"Clear Canvas")
+        }
+        function tpsPrompt() {
+            promptInput("Enter the new simulation Ticks Per Second (TPS) between 1 and 1000. This is how many updates per second the simulation will run.\n\nThe default is 30.\n\nThe current TPS is " + tps + ".",
+                (r) => {
+                    var newtps = parseInt(r);
+                    if (r !== null) {
+                        if (isNaN(newtps) || newtps == "") logMessage("You did not enter a valid TPS.");
+                        else if (newtps > 1000) {
+                            logMessage("You entered a TPS that is too high. The TPS will be set to the maximum, 1000.");
+                            tps = 1000;
+                        }
+                        else {
+                            tps = parseInt(newtps);
+                            if (isNaN(tps) || tps <= 0) {
+                                logMessage("You did not enter a valid TPS.");
+                                tps = 30;
+                            }
+                        }
+                        resetInterval(tps);
+                    }
+                    focusGame();
+                },
+                "Change TPS"
+            )
         }
         function doFrame() {
             if (!paused) {
@@ -15516,7 +15955,7 @@ behaviorRules = {
                 elements[currentElement].onUnselect();
             }
             var e1 = document.getElementById("elementButton-"+currentElement);
-            if (e1 != null) { e1.setAttribute("current","false"); }
+            if (e1 !== null) { e1.setAttribute("current","false"); }
             prevElement = currentElement;
             currentElement = element;
             currentElementProp = null;
@@ -15524,6 +15963,8 @@ behaviorRules = {
                 // show the colorSelector
                 document.getElementById("colorSelector").style.display = "block";
                 currentColor = document.getElementById("colorSelector").value;
+                if (!currentColorMap[currentElement]) { currentColorMap[currentElement] = currentColor; }
+                document.getElementById("colorSelector").value = currentColorMap[currentElement];
             }
             else {
                 // hide the colorSelector
@@ -15542,7 +15983,7 @@ behaviorRules = {
             }
             checkMouseSize();
         }
-        function editDistance(s1, s2) {s1 = s1.toLowerCase();s2 = s2.toLowerCase();var costs = new Array();for (var i = 0; i <= s1.length; i++) {var lastValue = i;for (var j = 0; j <= s2.length; j++) {if (i == 0)costs[j] = j;else {if (j > 0) {var newValue = costs[j - 1];if (s1.charAt(i - 1) != s2.charAt(j - 1))newValue = Math.min(Math.min(newValue, lastValue),costs[j]) + 1;costs[j - 1] = lastValue;lastValue = newValue;}}}if (i > 0)costs[s2.length] = lastValue;}return costs[s2.length];}
+        function editDistance(s1, s2) {s1 = s1.toLowerCase();s2 = s2.toLowerCase();var costs = new Array();for (var i = 0; i <= s1.length; i++) {var lastValue = i;for (var j = 0; j <= s2.length; j++) {if (i == 0)costs[j] = j;else {if (j > 0) {var newValue = costs[j - 1];if (s1.charAt(i - 1) !== s2.charAt(j - 1))newValue = Math.min(Math.min(newValue, lastValue),costs[j]) + 1;costs[j - 1] = lastValue;lastValue = newValue;}}}if (i > 0)costs[s2.length] = lastValue;}return costs[s2.length];}
         function similarity(s1, s2) {var longer = s1;var shorter = s2;if (s1.length < s2.length) {longer = s2;shorter = s1;}var longerLength = longer.length;if (longerLength == 0) {return 1.0;}return (longerLength - editDistance(longer, shorter)) / parseFloat(longerLength);}
         function mostSimilarElement(s) {
             var max = 0;
@@ -15553,9 +15994,21 @@ behaviorRules = {
                     max = sim;
                     maxElement = e;
                 }
-                if (elements[e].alias && elements[e].alias === s) {
-                    max = 0.99;
-                    maxElement = e;
+                if (elements[e].alias) {
+                    if (Array.isArray(elements[e].alias)) {
+                        for (let i = 0; i < elements[e].alias.length; i++) {
+                            const alias = elements[e].alias[i].replace(/ /g,"_").toLowerCase();
+                            if (alias === s) {
+                                max = 0.99;
+                                maxElement = e;
+                                break;
+                            }
+                        }
+                    }
+                    else if (elements[e].alias.replace(/ /g,"_").toLowerCase() === s) {
+                        max = 0.99;
+                        maxElement = e;
+                    }
                 }
             }
             if (max < 0.5) { return null }
@@ -15866,6 +16319,7 @@ behaviorRules = {
                     ["snail", 0.01, 10],
                     ["algae", 0.4, 10],
                     ["kelp", 0.2, 10],
+                    ["coral", 0.2, 10],
                 ]
             },
             "rock": {
@@ -15905,21 +16359,26 @@ behaviorRules = {
             mouseIsDown = false;
             currentPixels = [];
             pixelMap = [];
-            currentSaveData = null;
-            for (var i = 0; i < width; i++) {
+            currentSaveData = defaultSaveData();
+            for (var i = 0; i <= width; i++) {
                 pixelMap[i] = [];
-                for (var j = 0; j < height; j++) {
+                for (var j = 0; j <= height; j++) {
                     pixelMap[i][j] = undefined;
                 }
             }
             pixelTicks = 0;
-            if (!skipworldgen && settings["worldgen"] && settings["worldgen"] != "off") {
+            if (!skipworldgen && settings["worldgen"] && settings["worldgen"] !== "off") {
                 worldGen(worldgentypes[settings["worldgen"]]);
             }
             if (tempSettings) {
                 settings = JSON.parse(tempSettings);
             }
             clearLog();
+            if (runAfterResetList.length) {
+                for (let i = 0; i < runAfterResetList.length; i++) {
+                    runAfterResetList[i](skipworldgen);
+                }
+            }
         }
         function mean(arr) {
             var sum = 0;
@@ -15931,7 +16390,7 @@ behaviorRules = {
         function generateTerrainHeights(width,heightVariance,complexity) {
             // array of (width) 0s
             var newHeights = [];
-            for (var i = 0; i < width; i++) {
+            for (var i = 0; i <= width; i++) {
                 newHeights[i] = 0;
             }
             // do midpoint displacement (complexity) times on newHeights
@@ -15957,10 +16416,10 @@ behaviorRules = {
             var layers = worldtype.layers || {0:"rock"};
             var yoffsets = generateTerrainHeights(width,heightVariance,complexity);
             // 2D world vertical generator
-            for (var x = 1; x < width; x++) {
+            for (var x = 0; x <= width; x++) {
                 var yoffset = yoffsets[x];
                 var worldHeight = baseHeight+yoffset;
-                for (var y = 0; y < height; y++) {
+                for (var y = 0; y <= height; y++) {
                     // Change element type based on y, from grass > dirt > rock > basalt
                     if (y > worldHeight) {
                         // distance from the bottom of worldHeight
@@ -16091,20 +16550,20 @@ behaviorRules = {
         function updateStats() {
             var statsDiv = document.getElementById("stats");
             var stats = "<span id='stat-pos' class='stat'>x"+mousePos.x+",y"+mousePos.y+"</span>";
-            stats += "<span id='stat-pixels' class='stat"+ (currentPixels.length >= Math.min(maxPixelCount,(height-1)*(width-1)) ? " redText" : "") +"'>Pxls:" + currentPixels.length+"</span>";
+            stats += "<span id='stat-pixels' class='stat"+ (currentPixels.length >= Math.min(maxPixelCount,(height+1)*(width+1)) ? " redText" : "") +"'>Pxls:" + currentPixels.length+"</span>";
             stats += "<span id='stat-tps' class='stat'>" + tps+"tps</span>";
             stats += "<span id='stat-ticks' class='stat'>" + pixelTicks+"</span>";
             if ((typeof pixelMap).length === 9) { return; }
             if (pixelMap[mousePos.x] !== undefined) {
                 var currentPixel = pixelMap[mousePos.x][mousePos.y];
                 if (currentPixel !== undefined) {
-                    stats += "<span id='stat-element' class='stat'>Elem:"+(elements[currentPixel.element].name || currentPixel.element).toUpperCase()+"</span>";
-                    stats += "<span id='stat-temperature' class='stat'>Temp:"+formatTemp(currentPixel.temp)+"</span>";
+                    stats += "<span id='stat-element' class='stat'>"+langKey("gui.stats.elem","Elem")+":<span>"+(elements[currentPixel.element].name || currentPixel.element).toUpperCase()+"</span></span>";
+                    stats += "<span id='stat-temperature' class='stat'>"+langKey("gui.stats.temp","Temp")+":"+formatTemp(currentPixel.temp)+"</span>";
                     if (currentPixel.charge) {
                         stats += "<span id='stat-charge' class='stat'>C"+parseFloat(currentPixel.charge)+"</span>";
                     }
                     if (currentPixel.burning) {
-                        stats += "<span id='stat-burning' class='stat'>Burning</span>";
+                        stats += "<span id='stat-burning' class='stat'>"+langKey("gui.stats.burning","Burning")+"</span>";
                     }
                     if (elements[currentPixel.element].hoverStat) {
                         stats += "<span id='stat-hover' class='stat'>"+elements[currentPixel.element].hoverStat(currentPixel).toString().replaceAll("<","&lt;")+"</span>";
@@ -16191,7 +16650,7 @@ function showInfo(element,back=false) { // this is such a mess please don't look
     var infoTitle = document.getElementById("infoTitle");
     var infoText = document.getElementById("infoText");
     var error = false;
-    if (element != undefined) {
+    if (element !== undefined) {
         // replace all spaces with underscores
         element = element.replace(/ /g,"_").toLowerCase();
         infoSearch.value = element.toUpperCase();
@@ -16242,7 +16701,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
     var b = b0.split(" AND ")[k];
     // remove everything after %
     b = b.split("%")[0];
-    if (b.indexOf(":") != -1) {
+    if (b.indexOf(":") !== -1) {
         var arg = b.split(":")[1];
     }
     else { var arg = undefined }
@@ -16264,7 +16723,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
     }
     else if (b == "CR" || b == "CH" || b == "LB" || b == "L1" || b == "L2") {
         if (!arg) { arg = "[???]" }
-        else if (arg.indexOf(">") != -1) { arg = arg.split(">")[1]; }
+        else if (arg.indexOf(">") !== -1) { arg = arg.split(">")[1]; }
         if (creates.indexOf(arg) == -1) { creates = creates.concat(arg.split(",")); }
     }
     else if (b == "HT") {
@@ -16316,6 +16775,9 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
         }
         else if (info.breakInto != undefined) {
             infoText.innerHTML += "\nBreaks into "+infoLink(info.breakInto)+".";
+        }
+        else if (info.breakIntoColor != undefined) {
+            infoText.innerHTML += "\nChanges color when broken.";
         }
         if (info.burn != undefined) { infoText.innerHTML += "\nFlammability: "+info.burn+"%."; }
         if (info.burnTime != undefined) {
@@ -16484,9 +16946,17 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                 showInfo(infoHistory[infoHistory.length-1], true);
             }
         }
-        function closeMenu() {
+        function closeMenu(nextMenu) {
             if (!showingMenu) { return; }
-            if (showingMenu == "info") {
+            if (showingMenu == "prompt") {
+                if (showingMenu === nextMenu) return;
+                var promptParent = document.getElementById("promptParent");
+                promptParent.style.display = "none";
+                showingMenu = false;
+                if (promptState && !promptState.wasPaused && paused) togglePause();
+                // promptState = null;
+            }
+            else if (showingMenu == "info") {
                 var infoParent = document.getElementById("infoParent");
                 var infoSearch = document.getElementById("infoSearch");
                 infoParent.style.display = "none";
@@ -16547,7 +17017,10 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                 return;
             }
             // if the url doesn't start with http, add "mods/" to the beginning
-            if (url.indexOf("http") == -1 && url.indexOf("mods/") == -1) { url = "mods/"+url; }
+            if (url.indexOf("http") == -1 && url.indexOf("mods/") == -1) {
+                url = "mods/"+url;
+                if (standalone) url = "https://sandboxels.r74n.com/" + url;
+            }
             // add it to enabledMods and set the localStorage
             enabledMods.push(url);
             localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
@@ -16556,7 +17029,9 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             var modName = url.split("/").pop();
             modManagerList.innerHTML += `<li><a href="${url.replaceAll('"','')}" target="_blank">${modName}</a> <span class="removeModX" onclick='removeMod("${url.replaceAll('"','\\\"')}")'>X</span></li>`
             document.getElementById("noMods").style.display = "none";
-            if (!noMessage) { alert("Added mod. Refresh the page to see changes."); }
+            if (!noMessage) {
+                alert("Added mod. "+(standalone ? "Restart the app" : "Refresh the page")+" to see changes.");
+            }
         }
         function removeMod(url) {
             // remove url from enabledMods and set the localStorage
@@ -16580,7 +17055,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
                     break;
                 }
             }
-            alert("Removed mod. Refresh the page to see changes.");
+            alert("Removed mod. "+(standalone ? "Restart the app" : "Refresh the page")+" to see changes.");
         }
         function showSaves() {
             var savesParent = document.getElementById("savesParent");
@@ -16589,16 +17064,17 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             // loop 12 times, checking if local storage SandboxelsSaves/x exists
             for (var i = 1; i < 13; i++) {
                 var save = localStorage.getItem("SandboxelsSaves/"+i);
-                var name = "Slot "+i;
+                // var name = "Slot "+i;
+                var name = langKey("guitemplate.saves.slot","Slot $1",{1:i})
                 if (save) {
-                    name = JSON.parse(save).meta.name || "Unnamed";
+                    name = JSON.parse(save).meta.name || langKey("gui.saves.unnamed","Unnamed");
                     name = name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
                     // truncate
                     if (name.length > 16) { name = name.substring(0,16)+"..."; }
-                    saveSlotList.innerHTML += "<span id='saveSlot"+i+"' data-name='"+name+"' class='saveSlot'><span class='saveSlotName'>"+name+"</span> <span onclick='clearSlot("+i+")' class='saveOption'>Clear</span> <span onclick='loadSlot("+i+")' class='saveOption'>Load</span> <span onclick='saveSlot("+i+")' class='saveOption'>Save</span></span>";
+                    saveSlotList.innerHTML += "<span id='saveSlot"+i+"' data-name='"+name+"' class='saveSlot'><span class='saveSlotName'>"+name+"</span> <span onclick='clearSlot("+i+")' class='saveOption'>"+langKey("gui.saves.clear","Clear")+"</span> <span onclick='loadSlot("+i+")' class='saveOption'>"+langKey("gui.saves.load","Load")+"</span> <span onclick='saveSlot("+i+")' class='saveOption'>"+langKey("gui.saves.save","Save")+"</span></span>";
                 }
                 else {
-                    saveSlotList.innerHTML += "<span id='saveSlot"+i+"' data-name='"+name+"' class='saveSlot'><span class='saveSlotName'>"+name+"</span> <span disabled='true' class='saveOption'>Clear</span> <span disabled='true' class='saveOption'>Load</span> <span onclick='saveSlot("+i+")' class='saveOption'>Save</span></span>";
+                    saveSlotList.innerHTML += "<span id='saveSlot"+i+"' data-name='"+name+"' class='saveSlot'><span class='saveSlotName'>"+name+"</span> <span disabled='true' class='saveOption'>"+langKey("gui.saves.clear","Clear")+"</span> <span disabled='true' class='saveOption'>"+langKey("gui.saves.load","Load")+"</span> <span onclick='saveSlot("+i+")' class='saveOption'>"+langKey("gui.saves.save","Save")+"</span></span>";
                 }
             }
             savesParent.style.display = "block";
@@ -16617,9 +17093,13 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             }
         }
         function clearSlot(i) {
-            if (!confirm("Are you sure you want to erase this save slot? This cannot be undone.")) { return }
-            localStorage.removeItem("SandboxelsSaves/"+i);
-            showSaves();
+            promptConfirm("Are you sure you want to erase save slot "+i+"? This cannot be undone.",
+                (r) => {
+                    if (r) localStorage.removeItem("SandboxelsSaves/"+i);
+                    showSaves();
+                },
+                "Clear Slot"
+            )
         }
         function confirmSave() {
             if (!savingState) { return }
@@ -16631,7 +17111,7 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             var saveSettings = document.getElementById("saveSettings").getAttribute("state") === "1";
             var saveRaw = document.getElementById("saveRaw").getAttribute("state") === "1";
             var saveAuthor = document.getElementById("saveAuthor").value || "";
-            if (saveAuthor && !currentSaveData) {
+            if (saveAuthor && !currentSaveData.loaded) {
                 setSetting("authorName",saveAuthor)
             }
             var saveDesc = document.getElementById("saveDesc").value || "";
@@ -16686,9 +17166,10 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
         }
         function showSavePrompt() {
             closeMenu();
+            if (!savingState) return;
             var savePromptParent = document.getElementById("savePromptParent");
             var saveWarning = document.getElementById("saveWarning");
-            if (currentSaveData) {
+            if (currentSaveData.loaded) {
                 document.getElementById("saveName").value = currentSaveData.name || "";
                 document.getElementById("saveAuthor").value = currentSaveData.author || "";
                 document.getElementById("saveDesc").value = currentSaveData.desc || "";
@@ -16699,23 +17180,62 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             saveWarning.innerHTML = "<br>"
             var menuTitle = document.querySelector("#savePromptMenu .menuTitle");
             if (savingState.slot === null) {
-                menuTitle.innerHTML = "Save to File";
+                menuTitle.innerHTML = langKey("gui.savePromptTitle.file","Save to File");
             }
             else {
-                menuTitle.innerHTML = "Save to Slot";
+                menuTitle.innerHTML = langKey("gui.savePromptTitle.slot","Save to Slot");
                 if (localStorage["SandboxelsSaves/"+savingState.slot]) {
-                    saveWarning.innerHTML += "<br><span style='color:red'>This will overwrite the save in slot "+savingState.slot+"!</span><br><br>";
+                    saveWarning.innerHTML += "<br><span style='color:red'>"+langKey("guitemplate.saves.overwrite","This will overwrite the save in slot $1!",{1:savingState.slot})+"</span><br><br>";
                 }
             }
             var saveMods = document.getElementById("saveMods");
             if (enabledMods.length !== 0) {
                 saveMods.style.display = "inline-block";
-                saveWarning.innerHTML += "<br>Mods might not be necessary to include, and may annoy the user!<br><br>";
+                saveWarning.innerHTML += "<br>"+langKey("gui.modWarning","Mods might not be necessary to include, and may annoy the user!")+"<br><br>";
             }
             else { saveMods.style.display = "none"; }
             savePromptParent.style.display = "block";
             showingMenu = "savePrompt";
             document.getElementById("saveName").focus();
+        }
+        function showPromptScreen() {
+            if (!promptState) return;
+            closeMenu("prompt");
+            if (!paused) togglePause();
+            var promptParent = document.getElementById("promptParent");
+            var menuTitle = document.querySelector("#promptMenu .menuTitle");
+            menuTitle.innerText = promptState.title || "Notice";
+            menuTitle.style.color = promptState.titleColor || "unset";
+            var promptMenuText = document.getElementById("promptMenuText");
+            promptMenuText.innerText = promptState.text || "";
+            let promptOK = document.getElementById("promptOK");
+            let promptCancel = document.getElementById("promptCancel");
+            let promptConfirm = document.getElementById("promptConfirm");
+            let promptInput = document.getElementById("promptInput");
+            promptOK.style.display = "none";
+            promptCancel.style.display = "none";
+            promptConfirm.style.display = "none";
+            promptInput.style.display = "none";
+            if (promptState.type === "text") {
+                promptOK.style.display = "block";
+            }
+            else if (promptState.type === "confirm") {
+                promptCancel.style.display = "block";
+                promptConfirm.style.display = "block";
+            }
+            else if (promptState.type === "input") {
+                promptInput.value = "";
+                promptInput.style.display = "block";
+                if (promptState.defaultInput !== undefined) {
+                    promptInput.value = ""+promptState.defaultInput;
+                }
+            }
+            promptParent.style.display = "block";
+            showingMenu = "prompt";
+            if (promptState.type === "input") {
+                document.getElementById("promptInput").focus();
+                document.getElementById("promptInput").select();
+            }
         }
         function showSettings() {
             var settingsParent = document.getElementById("settingsParent");
@@ -16746,6 +17266,63 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
             if (mouseSize > elements[currentElement].maxSize) { mouseSize = elements[currentElement].maxSize; }
             if (mouseSize > (height > width ? height : width)) { mouseSize = (height > width ? height : width); }
         }
+        function clearAllStains() {
+            currentPixels.forEach((pixel) => {
+                if (pixel.origColor) pixel.color = "rgb("+pixel.origColor[0]+","+pixel.origColor[1]+","+pixel.origColor[2]+")";
+            })
+        }
+        function promptText(text, handler, title) {
+            let pause = false;
+            if (promptState) { pause = promptState.wasPaused }
+            else if (paused) { pause = true }
+            promptState = {
+                type: "text",
+                text: text,
+                handler: handler,
+                title: title || "Notice",
+                wasPaused: pause
+            }
+            showPromptScreen();
+        }
+        function promptConfirm(text, handler, title) {
+            let pause = false;
+            if (promptState) { pause = promptState.wasPaused }
+            else if (paused) { pause = true }
+            promptState = {
+                type: "confirm",
+                text: text,
+                handler: handler,
+                title: title || "Are you sure?",
+                wasPaused: pause
+            }
+            showPromptScreen();
+        }
+        function promptInput(text, handler, title, defaultInput) {
+            let pause = false;
+            if (promptState) { pause = promptState.wasPaused }
+            else if (paused) { pause = true }
+            promptState = {
+                type: "input",
+                text: text,
+                handler: handler,
+                title: title || "Input",
+                wasPaused: pause,
+                defaultInput: defaultInput
+            }
+            showPromptScreen();
+        }
+        function handlePrompt(result) {
+            if (!promptState) return;
+            if (!promptState.wasPaused && paused) togglePause();
+            let handler = promptState.handler;
+            closeMenu();
+            promptState = null;
+            if (handler) handler(result);
+            if (promptState && showingMenu !== "prompt") {
+                showPromptScreen();
+            }
+        }
+        // if (promptState && (new Date() - promptState.start) < 100) return false;
 
         shiftDown = 0;
         shaping = 0;
@@ -16796,7 +17373,8 @@ window.onload = function() {
         canPlace: false,
         excludeRandom: true,
         hoverStat: function(pixel) {return pixel.invalidElement||"???";},
-        "desc": "Fallback for invalid elements."
+        "desc": "Fallback for invalid elements.",
+        grain: 0
     }
 
     // Loop through behaviors and each behavior, if it is a string, split the items and replace the value with the array
@@ -16945,7 +17523,7 @@ window.onload = function() {
         else {
             // Loop through newelem's keys and values, copy them to the new element if they are not already defined
             for (var key in newelem) {
-                if (elements[newname][key] == undefined) { elements[newname][key] = newelem[key]; }
+                if (elements[newname][key] === undefined) { elements[newname][key] = newelem[key]; }
             }
         }
 
@@ -17115,14 +17693,20 @@ window.onload = function() {
         if (elements[key].state === "gas") {
             elements[key].isGas = true;
         }
-        // Else if the state is not "solid" or "liquid", delete it
         else if (elements[key].state !== "liquid") {
+            // Else if the state is not "solid" or "liquid", delete it
             if (elements[key].state !== "solid" && elements[key].state !== undefined) {
                 delete elements[key].state;
             }
             // add heat glow to solid if applicable
             else if (elements[key].tempHigh > 400 && elements[key].renderer === undefined && elements[elements[key].stateHigh] && elements[elements[key].stateHigh].state === "liquid") {
                 elements[key].renderer = renderPresets.HEATGLOW;
+            }
+        }
+        else {
+            // add molten renderer to hot molten liquids
+            if (elements[key].stateLow && elements[key].temp > 500 && elements[key].renderer === undefined) {
+                elements[key].renderer = renderPresets.MOLTEN;
             }
         }
 
@@ -17288,6 +17872,16 @@ window.onload = function() {
         }
     }
 
+    // Add views to view setting dropdown
+    let viewSelect = document.getElementById("viewSelect");
+    for (let viewNum in viewInfo) {
+        if (viewNum === "1") {continue;}
+        var opt = document.createElement("option");
+        opt.value = viewNum;
+        opt.innerText = viewInfo[viewNum].name.replace(/(^| )./g, function (match) {return match.toUpperCase();});
+        viewSelect.appendChild(opt);
+    }
+
     // Load settings
     // Loop through all the elements with setting-span class.
     // If the span's setting attribute is in settings, set the first select or input to the value of the setting.
@@ -17353,13 +17947,15 @@ window.onload = function() {
             var newHeight = Math.ceil(window.innerHeight*0.675 / pixelSize) * pixelSize;
         }
         // If the new width is greater than 1000, set it to 1000
-        if (newWidth > 1000) { newWidth = 1000; }
+        if (newWidth > 1002) { newWidth = 1002; }
         // If we are on a desktop and the new height is greater than 500, set it to 500
         if (window.innerWidth > 1000 && newHeight > 500) { newHeight = 500; }
+        document.getElementById("gameDiv").classList.remove("gameDiv-wide");
         if (settings.pixelsize && settings.pixelsize.toString().slice(-1) === "w") {
             // resizeCanvas(window.innerHeight/1.5,window.innerWidth-10,pixelSize);
-            newHeight = window.innerHeight/1.5;
+            newHeight = window.innerHeight/1.6;
             newWidth = window.innerWidth-10;
+            document.getElementById("gameDiv").classList.add("gameDiv-wide");
         }
         resizeCanvas(newHeight,newWidth,pixelSize,clear);
     }
@@ -17395,19 +17991,10 @@ window.onload = function() {
     document.getElementById("loadingP").style.display = "none";
     document.getElementById("canvasDiv").style.display = "block";
 
-    if (settings["worldgen"]) {
-        clearAll();
-    }
-    else {
-        // Object with width arrays of pixels starting at 0
-        pixelMap = [];
-        for (var i = 0; i < width; i++) {
-            pixelMap[i] = [];
-        }
-    }
+    clearAll();
     // randomChoices = the keys of "elements" with any element with the category "tools" or the property excludeRandom set to true removed
     randomChoices = Object.keys(elements).filter(function(e) {
-        return elements[e].excludeRandom != true && elements[e].category != "tools" && !elements[e].tool;
+        return elements[e].excludeRandom != true && elements[e].category !== "tools" && !elements[e].tool;
     });
     gameCanvas.addEventListener("mousedown", mouseClick);
     gameCanvas.addEventListener("mousedown", function(e){
@@ -17496,7 +18083,7 @@ window.onload = function() {
         }
     }, false);
     window.onbeforeunload = function(){
-        if (currentPixels.length > 0){
+        if (currentPixels.length > 0 && !standalone){
             return 'Are you sure you want to leave?';
         }
     };
@@ -17504,6 +18091,11 @@ window.onload = function() {
     document.addEventListener("keydown", function(e) {
         var keyName = e.code;
         if (e.ctrlKey || e.metaKey) {
+            if (e.keyCode == 83) { // Ctrl+S = Save
+                e.preventDefault();
+                saveToFile();
+                if (e.shiftKey) confirmSave();
+            }
             return
         }
         // else if tab, set document.body.class to "usingTab"
@@ -17539,6 +18131,10 @@ window.onload = function() {
                 var infoSearch = document.getElementById("infoSearch");
                 infoSearch.value = "";
                 showInfo();
+            }
+            // enter to confirm prompt
+            else if (e.keyCode == 13 && showingMenu == "prompt" && promptState && promptState.type !== "input") {
+                handlePrompt(true);
             }
             // l to closeMenu() if showing saves
             else if (e.keyCode == 76 && showingMenu == "saves") {
@@ -17639,7 +18235,7 @@ window.onload = function() {
         }
         if (elements[element].hidden && (!settings["unhide"] || ( settings["unhide"]===2 && !settings.unlocked[element] ))) { hiddenCount++; continue; }
         var categoryDiv = document.getElementById("category-"+category);
-        if (categoryDiv == null) {
+        if (categoryDiv === null) {
             createCategoryDiv(category);
             categoryDiv = document.getElementById("category-"+category);
         }
@@ -17651,7 +18247,9 @@ window.onload = function() {
     }
     // Set the first button in categoryControls div to be the current category
     document.getElementById("categoryControls").children[0].click()
-    document.getElementById("extraInfo").insertAdjacentHTML("beforeend", "<small><p>v" + currentversion + " • " + elementCount + " elements, with <span id='hiddenCount'>" + hiddenCount + "</span> hidden.</p><p>©2021-" + new Date().getFullYear() + ". <a href='https://sandboxels.R74n.com/license.txt' rel='license' target='_blank'>All Rights Reserved</a>. <a style='color:#00ffff' rel='author' href='https://r74n.com'>R74n</a></p></small>");
+    document.getElementById("extraInfo").insertAdjacentHTML("beforeend", "<small class='extraInfo-right'><p>v" + currentversion + " • " +
+        langKey("guitemplate.elementCount","$1 elements, with $2 hidden",{1:elementCount,2:hiddenCount}) +
+        ".</p></small><small><p>©2021-" + new Date().getFullYear() + ". <a href='https://sandboxels.R74n.com/license.txt' rel='license' target='_blank' id='copyrightLabel'>All Rights Reserved</a>. <a style='color:#00ffff' rel='author' href='https://r74n.com'>R74n</a></p></small>");
     selectElement(currentElement);
     focusGame();
     // For every button element, onkeyup="event.preventDefault()"
@@ -17703,11 +18301,11 @@ window.onload = function() {
                 <a href="http://www.opera.com/" tabindex="-1">Opera</a> 9.0+<br>
                 <a href="https://www.microsoft.com/edge" tabindex="-1">Microsoft Edge</a> 12.0+<br>
             </canvas>
-            <input id="colorSelector" type="color" value="#ff0000" onchange="currentColor=this.value;
+            <input id="colorSelector" type="color" value="#ff0000" onchange="currentColorMap[currentElement]=this.value;
             document.getElementById('elementButton-'+currentElement).style.removeProperty('background-image');
-            document.getElementById('elementButton-'+currentElement).style.background = currentColor;" oninput="currentColor=this.value;
+            document.getElementById('elementButton-'+currentElement).style.background = currentColorMap[currentElement];" oninput="currentColorMap[currentElement]=this.value;
             document.getElementById('elementButton-'+currentElement).style.removeProperty('background-image');
-            document.getElementById('elementButton-'+currentElement).style.background = currentColor;">
+            document.getElementById('elementButton-'+currentElement).style.background = currentColorMap[currentElement];">
             <label for="colorSelector" hidden>Custom color</label>
             <div id="logDiv"><span id="logText"></span></div>
         </div>
@@ -17715,7 +18313,7 @@ window.onload = function() {
             <div id="stats"></div>
             <div id="controls">
                 <div id="toolControls">
-                    <button id="shiftButton" title="Toggle Shift key" class="controlButton" onclick='toggleShift();focusGame();' on="false" style="display:none">↑</button><button id="pauseButton" title="Pause/play the simulation" class="controlButton" onclick='togglePause();focusGame();' on="false">Pause</button><button id="frameButton" title="Pause and play one frame" class="controlButton" onclick='doFrame();focusGame();' on="false">&gt;</button><button id="sizeDownButton" title="Decrease the brush size" class="controlButton" onclick="mouseSize -= shiftDown?mouseSize-1:2;checkMouseSize(true);centerMouse();focusGame();">-</button><button id="sizeUpButton" title="Increase the brush size" class="controlButton" onclick="mouseSize += shiftDown?14:2;checkMouseSize(true);centerMouse();focusGame();">+</button><button id="resetButton" title="Clear the entire scene" class="controlButton" onclick="resetPrompt();focusGame();">Reset</button><button id="replaceButton" title="Override existing pixels when placing" class="controlButton" onclick='if (mode == "replace") {mode = null;this.setAttribute("on","false");}else {mode = "replace";this.setAttribute("on","true");};focusGame();' on="false">Replace</button><button id="elemSelectButton" title="Select an element by name" class="controlButton" onclick='chooseElementPrompt();focusGame();'>E</button><button id="tpsButton" title="Change the simulation Ticks Per Second (TPS)" class="controlButton" onclick='var tpsprompt = prompt("Enter the new simulation Ticks Per Second (TPS) between 1 and 1000. This is how many updates per second the simulation will run.\n\nThe default is 30.\n\nThe current TPS is " + tps + ".");var newtps = parseInt(tpsprompt);if (tpsprompt !== null) {if (isNaN(newtps) || newtps == "") {alert("You did not enter a valid TPS.");}else if (newtps > 1000) {alert("You entered a TPS that is too high. The TPS will be set to the maximum, 1000.");tps = 1000;}else {tps = parseInt(newtps);if (isNaN(tps) || tps <= 0) {alert("You did not enter a valid TPS.");tps = 30;}}resetInterval(tps);}focusGame();'>Tps</button><!--<button id="hideButton" title="Stops updating the scene to allow more resources towards simulation" class="controlButton" onclick='if (hiding) {hiding = false;this.setAttribute("on","false");}else {hiding = true;this.setAttribute("on","true");};focusGame();' on="false">Hide</button>--><button id="infoButton" title="Brings up the element info screen" class="controlButton" onclick='if (showingMenu!="info"){closeMenu();showInfo("")}else{closeMenu()};' on="false">Info</button><button id="savesButton" title="Brings up the Save & Load menu" class="controlButton" onclick='if (showingMenu!="saves"){closeMenu();showSaves()}else{closeMenu()};' on="false">Saves</button><button id="modsButton" title="Brings up the Mod Manager" class="controlButton" onclick='if (showingMenu!="mods"){closeMenu();showModManager()}else{closeMenu()};' on="false">Mods</button><button id="settingsButton" title="Brings up the settings screen" class="controlButton" onclick='if (showingMenu!="settings"){closeMenu();showSettings()}else{closeMenu()};' on="false">Settings</button>
+                    <button id="shiftButton" title="Toggle Shift key" class="controlButton" onclick='toggleShift();focusGame();' on="false" style="display:none">↑</button><button id="pauseButton" title="Pause/play the simulation" class="controlButton" onclick='togglePause();focusGame();' on="false">Pause</button><button id="frameButton" title="Pause and play one frame" class="controlButton" onclick='doFrame();focusGame();' on="false">&gt;</button><button id="sizeDownButton" title="Decrease the brush size" class="controlButton" onclick="mouseSize -= shiftDown?mouseSize-1:2;checkMouseSize(true);centerMouse();focusGame();">-</button><button id="sizeUpButton" title="Increase the brush size" class="controlButton" onclick="mouseSize += shiftDown?14:2;checkMouseSize(true);centerMouse();focusGame();">+</button><button id="resetButton" title="Clear the entire scene" class="controlButton" onclick="resetPrompt();">Reset</button><button id="replaceButton" title="Override existing pixels when placing" class="controlButton" onclick='if (mode == "replace") {mode = null;this.setAttribute("on","false");}else {mode = "replace";this.setAttribute("on","true");};focusGame();' on="false">Replace</button><button id="elemSelectButton" title="Select an element by name" class="controlButton" onclick='chooseElementPrompt();'>E</button><button id="tpsButton" title="Change the simulation Ticks Per Second (TPS)" class="controlButton" onclick='tpsPrompt()'>Tps</button><!--<button id="hideButton" title="Stops updating the scene to allow more resources towards simulation" class="controlButton" onclick='if (hiding) {hiding = false;this.setAttribute("on","false");}else {hiding = true;this.setAttribute("on","true");};focusGame();' on="false">Hide</button>--><button id="infoButton" title="Brings up the element info screen" class="controlButton" onclick='if (showingMenu!="info"){closeMenu();showInfo("")}else{closeMenu()};' on="false">Info</button><button id="savesButton" title="Brings up the Save & Load menu" class="controlButton" onclick='if (showingMenu!="saves"){closeMenu();showSaves()}else{closeMenu()};' on="false">Saves</button><button id="modsButton" title="Brings up the Mod Manager" class="controlButton" onclick='if (showingMenu!="mods"){closeMenu();showModManager()}else{closeMenu()};' on="false">Mods</button><button id="settingsButton" title="Brings up the settings screen" class="controlButton" onclick='if (showingMenu!="settings"){closeMenu();showSettings()}else{closeMenu()};' on="false">Settings</button>
                 </div>
                 <script>
                     // if it is the 1st of April, add a rainbow-colored button
@@ -17738,14 +18336,18 @@ window.onload = function() {
                 <div id="categoryControls"></div>
                 <div id="elementControls"></div>
             </div>
-            <div id="extraInfo"><small><a href="https://sandboxels.r74n.com/changelog" id="changelogButton" target="_blank">Changelog</a> • <a href="https://sandboxels.R74n.com/feedback" target="_blank" style="color:lime;">Feedback</a> • <a href="https://sandboxels.wiki.gg/" target="_blank" id="wikiButton" title="Official Sandboxels Wiki - wiki.gg" style="color:white;">Wiki</a> • <a id="moreSocial" href="https://twitter.com/R74nCom" rel="me" target="_blank">Twitter</a> • <a href="https://discord.gg/ejUc6YPQuS" target="_blank" style="color:#2f60ff;">Discord</a><span id="install-button" style="display:none">&nbsp;• <a onclick="deferredPrompt.prompt(); return false" href="#" style="text-shadow: 0px 2px 10px #ff00ff; cursor:pointer">Install Offline</a></span><!--<br><br><a style="color:lime" target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSeYMbngtbBHZ7hkz8jpbHl7TiAItqukrhtntKgAHjH30fY08A/viewform?usp=sf_link">FILL OUT THE CENSUS<span style="color:red">(NEW)</span></a>--></small></div>
+            <div id="extraInfo"><small><a href="https://sandboxels.r74n.com/changelog" id="changelogButton" target="_blank">Changelog</a> • <a href="https://sandboxels.R74n.com/feedback" target="_blank" style="color:lime;" id="feedbackButton">Feedback</a> • <a href="https://sandboxels.wiki.gg/" target="_blank" id="wikiButton" title="Official Sandboxels Wiki - wiki.gg" style="color:white;">Wiki</a> • <a id="moreSocial" href="https://twitter.com/R74nCom" rel="me" target="_blank">Twitter</a> • <a href="https://discord.gg/ejUc6YPQuS" target="_blank" style="color:#2f60ff;">Discord</a><span id="install-button" style="display:none">&nbsp;• <a onclick="deferredPrompt.prompt(); return false" href="#" style="text-shadow: 0px 2px 10px #ff00ff; cursor:pointer">Install Offline</a></span>
+                <!--<br><br><a style="color:lime" target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSeYMbngtbBHZ7hkz8jpbHl7TiAItqukrhtntKgAHjH30fY08A/viewform?usp=sf_link">FILL OUT THE CENSUS<span style="color:red">(NEW)</span></a>-->
+                <!--<br><br><a style="color:lime" target="_blank" href="https://r74n.com/">WISHLIST ON STEAM<span style="color:red">(NEW)</span></a>-->
+            </small></div>
             <script>
                 // version check
                 if (!settings["lastversion"] || settings["lastversion"]!==currentversion) {
                     document.getElementById("changelogButton").insertAdjacentHTML("beforeend",`<span style="color:red">(NEW)</span>`);
                 }
                 document.getElementById("changelogButton").addEventListener("click", function() {
-                    document.getElementById("changelogButton").innerText = "Changelog";
+                    document.getElementById("changelogButton").innerText = lang["gui.changelogButton"] || "Changelog";
+                    document.getElementById("changelogButton").innerText = langKey("gui.changelogButton","Changelog")
                     setSetting("lastversion",currentversion);
                 });
                 // wiki clicked check
@@ -17757,11 +18359,12 @@ window.onload = function() {
                     setSetting("clickedwiki",true);
                 });*/
                 var socials = {
-                    "<span style='color:#1DA1F2'>Twitter</span>": "https://twitter.com/R74nCom",
+                    "<span style='color:#1DA1F2'>Twitter</span>": "https://x.com/intent/follow?source=followbutton&variant=1.0&screen_name=R74nCom",
                     "<span style='color:#FF5700'>Reddit</span>": "https://reddit.com/r/Sandboxels",
+                    "<span style='color:#208BFE'>Bluesky</span>": "https://bsky.app/profile/r74n.com",
                     "<span style='color:#00f2ea'>Tik</span><span style='color:#ff0050'>Tok</span>": "https://tiktok.com/@r74n.com",
                     "<span style='color:#ff0055'>Instagram</span>": "https://www.instagram.com/r74ndev/reels/",
-                    "<span style='color:#FFFFFF'>You</span><span style='background-color:#FF0000;color:#FFFFFF'>Tube</span>": "https://www.youtube.com/@R74n/shorts",
+                    "<span style='color:#FFFFFF'>You</span><span style='background-color:#FF0000;color:#FFFFFF'>Tube</span>": "https://www.youtube.com/@R74n/shorts?sub_confirmation=1",
                 };
                 // replace #moreSocial with a random social link (key=title, value=url)
                 if (Object.keys(socials).length > 0) {
@@ -17804,16 +18407,15 @@ window.onload = function() {
                     }
                 </script>
                 See the <a href="mod-list" target="_blank">Mod List</a> or <a href="https://github.com/R74nCom/sandboxels/" target="_blank">GitHub</a>.
-                <br><br><br><br>
+                <input type="text" id="modManagerUrl" placeholder=".JS or URL..." onkeydown="if (event.keyCode == 13) {addMod(this.value);this.value = '';};this.focus();" enterkeyhint="done"></input>
             </div>
-            <input type="text" id="modManagerUrl" placeholder=".JS URL..." onkeydown="if (event.keyCode == 13) {addMod(this.value);this.value = '';};this.focus();" enterkeyhint="done"></input>
             <!-- <button id="modManagerAdd" onclick="addMod(document.getElementById('modManagerUrl').value); document.getElementById('modManagerUrl').value = '';">+</button> -->
         </div>
 
         <div id="savesParent" class="menuParent">
             <div id="savesMenu" class="menuScreen">
                 <button class="XButton" onclick="closeMenu();">-</button>
-                <span class="menuTitle">Save & Load</span>
+                <span class="menuTitle" id="savesMenuTitle">Save & Load</span>
                 <div class="menuText" style="padding-top:1em; height:70%; overflow-y:scroll" id="saveSlotList">
                 </div>
                 <span id="saveFile" onclick="saveToFile()">Save to File</span>
@@ -17825,9 +18427,9 @@ window.onload = function() {
                 <button class="XButton" onclick="closeMenu();">-</button>
                 <span class="menuTitle">Save to Slot</span>
                 <div class="menuText" style="padding-top:1em">
-                    <span class="setting-span">Name: <input type="text" id="saveName" placeholder="Save Name..."></span>
+                    <span class="setting-span"><span id="saveNameLabel">Name</span>: <input type="text" id="saveName" placeholder="Save Name..."></span>
                     <span class="setting-span multisetting">
-                        Include:
+                        <span id="saveInclude">Include</span>:
                         <input type="button" value="Temperature" class="toggleInput" onclick="toggleInput(this,undefined,false)" state="1" id="saveTemp">
                         <input type="button" value="Colors" class="toggleInput" onclick="toggleInput(this,undefined,false)" state="0" id="saveColors">
                         <input type="button" value="Settings" class="toggleInput" onclick="toggleInput(this,undefined,false)" state="0" id="saveSettings">
@@ -17835,10 +18437,25 @@ window.onload = function() {
                         <input type="button" value="Raw Data" class="toggleInput" onclick="toggleInput(this,undefined,false)" state="0" id="saveRaw">
                     </span>
                     <span id="saveWarning"></span>
-                    <span class="setting-span">By: <input type="text" id="saveAuthor" placeholder="Your Name..."></span>
-                    <span class="setting-span">About: <input type="text" id="saveDesc" placeholder="Short Description..." enterkeyhint="done"></span>
+                    <span class="setting-span"><span id="saveAuthorLabel">By</span>: <input type="text" id="saveAuthor" placeholder="Your Name..."></span>
+                    <span class="setting-span"><span id="saveDescLabel">About</span>: <input type="text" id="saveDesc" placeholder="Short Description..." enterkeyhint="done"></span>
+                    <br><br><br>
+                    <span id="saveConfirm" onclick="confirmSave();">Save</span>
                 </div>
-                <span id="saveConfirm" onclick="confirmSave();">Save</span>
+            </div>
+        </div>
+        <div id="promptParent" class="menuParent">
+            <div id="promptMenu" class="menuScreen">
+                <button class="XButton" onclick="closeMenu();">-</button>
+                <span class="menuTitle">Prompt</span>
+                <div class="menuText" style="padding-top:1em">
+                    <span id="promptMenuText">Are you sure?</span>
+                    <br><br><br>
+                    <span id="promptOK" onclick="handlePrompt()" style="display:none">OK</span>
+                    <span id="promptCancel" onclick="handlePrompt(false)" style="display:none">Cancel</span>
+                    <span id="promptConfirm" onclick="handlePrompt(true)" style="display:none">Confirm</span>
+                    <input type="text" id="promptInput" placeholder="Input..." onkeydown="if (event.keyCode == 13) {handlePrompt(this.value || null);}" enterkeyhint="done" style="display:none"></input>
+                </div>
             </div>
         </div>
     
@@ -17846,108 +18463,110 @@ window.onload = function() {
         <div id="settingsParent">
             <div id="settingsMenu">
                 <button class="XButton" onclick="closeMenu();">-</button>
-                <span class="menuTitle">Settings</span>
+                <span class="menuTitle" id="settingsMenuTitle">Settings</span>
                 <div class="menuText" style="padding-top:1em">
                     <span setting="units" class="setting-span multisetting" title="Default: Metric">
-                        Units <select onchange="setSetting('units',this.value);">
-                            <option value="m" selected>Metric</option>
-                            <option value="i">Imperial</option>
-                            <option value="s">SI</option>
+                        <span id="settingLabel-units">Units</span> <select onchange="setSetting('units',this.value);">
+                            <option value="m" id="setting-units-m" selected>Metric</option>
+                            <option value="i" id="setting-units-i">Imperial</option>
+                            <option value="s" id="setting-units-s">SI</option>
                         </select>
                         &nbsp;
                     </span>
                     <span setting="bg" class="setting-span multisetting" title="Default: Black (#000000)">
-                        Background <input onchange="setSetting('bg',this.value);" oninput="setSetting('bg',this.value);" type="color" value="#000000">
+                        <span id="settingLabel-bg">Background</span> <input onchange="setSetting('bg',this.value);" oninput="setSetting('bg',this.value);" type="color" value="#000000">
                     </span><br>
                     <span setting="unhide" class="setting-span multisetting" title="Default: Hide Some Elements">
-                        Hiding <select onchange="setSetting('unhide',parseInt(this.value));this.nextElementSibling.innerText='Refresh Page'">
-                            <option value="0" selected>Hide Some Elements</option>
-                            <option value="1">Unhide All Elements</option>
-                            <option value="2">Unlock as Discovered</option>
+                        <span id="settingLabel-unhide">Hiding</span> <select onchange="setSetting('unhide',parseInt(this.value));this.nextElementSibling.innerText='Refresh Page'">
+                            <option value="0" id="setting-unhide-0" selected>Hide Some Elements</option>
+                            <option value="1" id="setting-unhide-1">Unhide All Elements</option>
+                            <option value="2" id="setting-unhide-2">Unlock as Discovered</option>
                         </select>
                         <a onclick="window.location.reload();" href="#" style="font-style:italic;cursor:pointer"></a>
                         &nbsp;
                     </span>
                     <span setting="view" class="setting-span multisetting" title="Default: Unset">
-                        Default View <select onchange="setSetting('view',parseInt(this.value));setView(parseInt(this.value))">
-                            <option value="0" selected>Unset</option>
-                            <option value="2">Thermal View</option>
-                            <option value="3">Basic View</option>
+                        <span id="settingLabel-view">Default View</span> <select id="viewSelect" onchange="setSetting('view',parseInt(this.value));setView(parseInt(this.value))">
+                            <option value="0" id="setting-view-0" selected>Unset</option>
                         </select>
                     </span><br>
                     <span setting="pixelsize" class="setting-span multisetting" title="Default: Medium">
-                        Canvas Size <select onchange="setSetting('pixelsize',this.value);this.nextElementSibling.innerText='Reset Scene'">
-                            <option value="8">Small</option>
-                            <option value="6" selected>Medium</option>
-                            <option value="6w">Wide</option>
-                            <option value="4">Large</option>
+                        <span id="settingLabel-pixelsize">Canvas Size</span> <select onchange="setSetting('pixelsize',this.value);this.nextElementSibling.innerText='Reset Scene'">
+                            <option value="12" id="setting-pixelsize-12">Tiny</option>
+                            <option value="8" id="setting-pixelsize-8">Small</option>
+                            <option value="6" id="setting-pixelsize-6" selected>Medium</option>
+                            <option value="6w" id="setting-pixelsize-6w">Wide</option>
+                            <option value="4" id="setting-pixelsize-4">Large</option>
                         </select>
                         <span onclick="autoResizeCanvas(true);" style="font-style:italic;cursor:pointer"></span>
                     </span><br>
                     <span setting="stain" class="setting-span multisetting" title="Default: ON">
-                        <input type="button" value="Staining" class="toggleInput" onclick="toggleInput(this,'stain',false)" state="1">
+                        <input type="button" value="Staining" id="settingLabel-stain" class="toggleInput" onclick="toggleInput(this,'stain',false); if(!settings.stain){clearAllStains()}" state="1">
                     </span>
                     <span setting="burn" class="setting-span multisetting" title="Default: ON">
-                        <input type="button" value="Burning" class="toggleInput" onclick="toggleInput(this,'burn',false)" state="1">
+                        <input type="button" value="Burning" id="settingLabel-burn" class="toggleInput" onclick="toggleInput(this,'burn',false)" state="1">
                     </span>
                     <span setting="clouds" class="setting-span multisetting" title="Default: ON">
-                        <input type="button" value="Clouds" class="toggleInput" onclick="toggleInput(this,'clouds',false)" state="1">
+                        <input type="button" value="Clouds" id="settingLabel-clouds" class="toggleInput" onclick="toggleInput(this,'clouds',false)" state="1">
                     </span>
                     <span setting="resetwarning" class="setting-span multisetting" title="Default: ON">
-                        <input type="button" value="Reset Warning" class="toggleInput" onclick="toggleInput(this,'resetwarning',false)" state="1">
+                        <input type="button" value="Reset Warning" id="settingLabel-resetwarning" class="toggleInput" onclick="toggleInput(this,'resetwarning',false)" state="1">
                     </span>
                     <span setting="textures" class="setting-span multisetting" title="Default: ON">
-                        <input type="button" value="Fancy Pixels" class="toggleInput" onclick="toggleInput(this,'textures',false)" state="1"><span class="helpMark" title="Toggles special textures, like Brick, and element-specific renderers, like heat glow. May decrease performance.">?</span>
+                        <input type="button" value="Fancy Pixels" id="settingLabel-textures" class="toggleInput" onclick="toggleInput(this,'textures',false)" state="1"><span class="helpMark" title="Toggles special textures, like Brick, and element-specific renderers, like heat glow. May decrease performance.">?</span>
                     </span>
                     <span setting="precision" class="setting-span multisetting" title="Default: OFF">
-                        <input type="button" value="Precision Dot" class="toggleInput" onclick="toggleInput(this,'precision',false)" state="0">
+                        <input type="button" value="Precision Dot" id="settingLabel-precision" class="toggleInput" onclick="toggleInput(this,'precision',false)" state="0">
                     </span>
                     <span setting="invertscroll" class="setting-span multisetting" title="Default: OFF">
-                        <input type="button" value="Invert Scroll" class="toggleInput" onclick="toggleInput(this,'invertscroll',false)" state="0">
+                        <input type="button" value="Invert Scroll" id="settingLabel-invertscroll" class="toggleInput" onclick="toggleInput(this,'invertscroll',false)" state="0">
                     </span>
                     <span setting="limitless" class="setting-span multisetting" title="Default: OFF">
-                        <input type="button" value="Limitless" class="toggleInput" onclick="toggleInput(this,'limitless',false); refreshMaxPixels(); checkMouseSize(true);" state="0">
+                        <input type="button" value="Limitless" id="settingLabel-limitless" class="toggleInput" onclick="toggleInput(this,'limitless',false); refreshMaxPixels(); checkMouseSize(true);" state="0">
                     </span>
                     <span setting="cheerful" class="setting-span multisetting">
-                        <input type="button" value="Cheerful Mode" class="toggleInput" onclick="toggleInput(this,'cheerful');this.nextElementSibling.innerText='Refresh Page'" state="0"><span class="helpMark" title="If you're going through a bad time, enable this to hide these elements from the menu:
+                        <input type="button" value="Cheerful Mode" id="settingLabel-cheerful" class="toggleInput" onclick="toggleInput(this,'cheerful');this.nextElementSibling.innerText='Refresh Page'" state="0"><span class="helpMark" title="If you're going through a bad time, enable this to hide these elements from the menu:
 Cancer, Landmine, Grenade, Smoke Grenade">?</span>
                         <a onclick="window.location.reload();" href="#" style="font-style:italic;cursor:pointer"></a>
                     </span>
+                    <span setting="lang" class="setting-span" title="Default: Disabled" style="display:none" id="setting-span-lang">
+                        <span id="settingLabel-lang">Language</span>
+                    </span>
                     <span setting="events" class="setting-span" title="Default: Disabled">
-                        Random Events <select onchange="setSetting('events',parseFloat(this.value));">
-                            <option value="0" selected>Disabled</option>
-                            <option value="0.005">Rare (For casual play)</option>
-                            <option value="0.025">Common</option>
-                            <option value="0.05">Annoying</option>
-                            <option value="0.25">Overdrive (DANGEROUS)</option>
+                        <span id="settingLabel-events">Random Events</span> <select onchange="setSetting('events',parseFloat(this.value));">
+                            <option value="0" id="setting-events-0" selected>Disabled</option>
+                            <option value="0.005" id="setting-events-0.005">Rare (For casual play)</option>
+                            <option value="0.025" id="setting-events-0.025">Common</option>
+                            <option value="0.05" id="setting-events-0.05">Annoying</option>
+                            <option value="0.25" id="setting-events-0.25">Overdrive (DANGEROUS)</option>
                         </select>
                     </span>
                     <span setting="airtemp" class="setting-span multisetting" title="Temperature that pixels spawn in at. Default: 20 (°C)">
-                        Air Temp <input type="number" value="20" onchange="if(this.value===''){this.value=20} airTemp=parseFloat(this.value); setSetting('airtemp',airTemp)">&nbsp;
+                        <span id="settingLabel-airtemp">Air Temp</span> <input type="number" value="20" placeholder="20" onchange="if(this.value===''){this.value=20} airTemp=parseFloat(this.value); setSetting('airtemp',airTemp)">&nbsp;
                     </span>
                     <span setting="airdensity" class="setting-span multisetting" title="How dense air is. Default: 1.225 (kg/m³)">
-                        Air Density <input type="number" value="1.225" onchange="if(this.value===''){this.value=1.225} airDensity=parseFloat(this.value); setSetting('airdensity',airDensity)">&nbsp;
+                        <span id="settingLabel-airdensity">Air Density</span> <input type="number" value="1.225" placeholder="1.225" onchange="if(this.value===''){this.value=1.225} airDensity=parseFloat(this.value); setSetting('airdensity',airDensity)">&nbsp;
                     </span>
                     <span setting="abszero" class="setting-span multisetting" title="Minimum possible temperature. Default: -273.15 (°C)">
-                        Abs Zero <input type="number" value="-273.15" onchange="if(this.value===''){this.value=-273.15} absoluteZero=parseFloat(this.value); setSetting('abszero',absoluteZero)">&nbsp;
+                        <span id="settingLabel-abszero">Abs Zero</span> <input type="number" value="-273.15" placeholder="-273.15" onchange="if(this.value===''){this.value=-273.15} absoluteZero=parseFloat(this.value); setSetting('abszero',absoluteZero)">&nbsp;
                     </span>
                     <span class="setting-span" style="text-align:center">
-                        <input type="button" value="Reset Discovered" onclick="if(confirm('WARNING: This action will RESET ALL DISCOVERED ELEMENTS and refresh the page.')){settings.unlocked={};saveSettings();location.reload()}" class="settingsButton">
-                        <input type="button" value="Reset All" onclick="if(confirm('WARNING: This action will RESET ALL YOUR DATA, not including save slots, and refresh the page.')){localStorage.removeItem('settings');location.reload()}" class="settingsButton">
-                        <input type="button" value="Clear Mods" onclick="if(confirm('WARNING: This action will remove all enabled mods and refresh the page.')){localStorage.removeItem('enabledMods');location.reload()}" class="settingsButton">
-                        <input type="button" value="Clear Saves" onclick="if(confirm('WARNING: This action will PERMANENTLY ERASE all local save slots.')){for (var i = 1; i <= 12; i++) {localStorage.removeItem('SandboxelsSaves/'+i)}; ;closeMenu();showSaves()}" class="settingsButton">
+                        <input type="button" value="Reset Discovered" id="resetDiscovered" onclick="if(confirm('WARNING: This action will RESET ALL DISCOVERED ELEMENTS and refresh the page.')){settings.unlocked={};saveSettings();location.reload()}" class="settingsButton">
+                        <input type="button" value="Reset All" id="resetAll" onclick="if(confirm('WARNING: This action will RESET ALL YOUR DATA, not including save slots, and refresh the page.')){localStorage.removeItem('settings');location.reload()}" class="settingsButton">
+                        <input type="button" value="Clear Mods" id="clearMods" onclick="if(confirm('WARNING: This action will remove all enabled mods and refresh the page.')){localStorage.removeItem('enabledMods');location.reload()}" class="settingsButton">
+                        <input type="button" value="Clear Saves" id="clearSaves" onclick="if(confirm('WARNING: This action will PERMANENTLY ERASE all local save slots.')){for (var i = 1; i <= 12; i++) {localStorage.removeItem('SandboxelsSaves/'+i)}; ;closeMenu();showSaves()}" class="settingsButton">
                     </span>
                     <span setting="worldgen" style="padding-bottom:0" class="setting-span" title="Default: Disabled">
-                        World Gen <small>[Beta]</small> <select id="worldgenselect" onchange="setSetting('worldgen',this.value);this.nextElementSibling.innerText='Reset Scene'">
-                            <option value="off" selected>Disabled</option>
+                        <span id="settingLabel-worldgen">World Gen</span> <small>[Beta]</small> <select id="worldgenselect" onchange="setSetting('worldgen',this.value);this.nextElementSibling.innerText='Reset Scene'">
+                            <option value="off" id="setting-worldgen-off" selected>Disabled</option>
                         </select>
                         <span onclick="clearAll();" style="font-style:italic;cursor:pointer"></span>
                     </span>
                     <span setting="imageelem" class="setting-span multisetting" title="Default: Wood">
-                        Image Elem <input type="text" value="wood" onchange="if(this.value===''){this.value='wood'}; setSetting('imageelem',this.value.trim())">
+                        <span id="settingLabel-imageelem">Image Elem</span> <input type="text" value="wood" placeholder="wood" onchange="if(this.value===''){this.value='wood'}; setSetting('imageelem',this.value.trim())">
                     </span>
                     <span setting="imagesmooth" class="setting-span multisetting" title="Default: ON">
-                        <input type="button" value="Smoothing" class="toggleInput" onclick="toggleInput(this,'imagesmooth',false)" state="1">
+                        <input type="button" value="Smoothing" id="settingLabel-imagesmooth" class="toggleInput" onclick="toggleInput(this,'imagesmooth',false)" state="1">
                     </span>
                 </div>
             </div>
@@ -17977,23 +18596,36 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span>
             };
             affRequest.send();
         </script> -->
-        <p>🌐 Language <a href="https://sandboxels.R74n.com/translate" target="_blank">[BETA]</a>: <select onchange="if (this.value === 'en'){setSetting('lang',null)}else{setSetting('lang',this.value)}location.reload()" id="langSelect">
+        <p id="langSelectP">🌐 <span id="langSelectLabel">Language</span> <a href="https://sandboxels.R74n.com/translate" target="_blank">[BETA]</a>: <select onchange="if (this.value === 'en'){setSetting('lang',null)}else{setSetting('lang',this.value)}location.reload()" id="langSelect">
             <option selected value="en">English (American)</option>
             <option value="en_gb">English (British)</option>
+            <option value="en_ca">English (Canadian)</option>
+            <option value="es">Español</option>
             <option value="cs">Čeština</option>
             <option value="de">Deutsch</option>
             <option value="fr">Français</option>
             <option value="hu">Magyar</option>
             <option value="pl">Polski</option>
             <option value="pt_br">Português (Brasil)</option>
+            <option value="ru">Русский Язык</option>
+            <option value="tr">Türkçe</option>
             <option value="vi">Tiếng Việt</option>
-            <option value="zh_hant">繁體中文</option>
             <option value="zh_cn">简体中文</option>
+            <option value="zh_hant">繁體中文</option>
             <optgroup label="Incomplete">
-                <option value="es">Español</option>
-                <option value="ru">Русский Язык</option>
+                <option value="uk">Українська Мова</option>
+                <option value="tok">Toki Pona</option>
+                <option value="qha">Halacae</option>
             </optgroup>
         </select></p>
+        <script>
+            if (standalone) { // move langSelect to Settings
+                let span = document.getElementById("setting-span-lang");
+                span.appendChild(document.getElementById("langSelect"));
+                span.style.display = "block";
+                document.getElementById("langSelectP").style.display = "none";
+            }
+        </script>
         <p>Try our NEW GAME: <a href="https://R74n.com/cook/" target="_blank">Infinite Chef</a></p>
         <p>Email us at <a href="mailto:contact@R74n.com?subject=%5BSandboxels%5D">contact@R74n.com</a> for advertising, help, or education!</p>
         <div id="newsletterFrame">Be notified when Sandboxels and other R74n projects are updated, along with ramblings from the developer!<br><br>
@@ -18027,23 +18659,25 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span>
     </div>
 
     <div id="bottomLeftBox">
-        <h2>Sandboxels Introduction</h2>
-        <p><strong><def>Sandboxels</def></strong> is a free falling-sand simulator that can be played in your browser. It features heat simulation, electricity, density, chemical reactions, cooking, and fire spread. With over 500 unique elements to play with, Sandboxels is a great way to pass the time and relax.</p>
-        <p>There are thousands of interactions between the many materials, plants, animals, fluids, and powders in the game.</p>
-        <p>Falling-sand games are a genre of sandbox games characterized by falling particles of various types.</p>
-        <p>Simply click or use your touchscreen to select a category, like <strong>Liquids</strong>, then pick an element, like <strong>Water</strong>. Drag on the canvas above to place your pixels, and watch them interact with others!</p>
-        <img src="icons/wallpaper.webp" style="width:100%" alt="Rainforest landscape made in Sandboxels" title="Rainforest landscape made in Sandboxels">
-        <p>Sandboxels has many <a href="https://sandboxels.R74n.com/education-use">applications in education</a>. With a hands-on experience, it can give students an understanding of emerging phenomena in many fields, such as biology, chemistry, ecology, geology, cooking, and even virology. There are countless aspects to discover.</p>
-        <p>We have a thriving community on <a href="https://discord.gg/ejUc6YPQuS" target="_blank">Discord</a>! There you can post feedback or share your creations.</p>
+        <h2 id="introTitle">Sandboxels Introduction</h2>
+        <p id="intro1"><strong><def>Sandboxels</def></strong> is a free falling-sand simulator that can be played in your browser. It features heat simulation, electricity, density, chemical reactions, cooking, and fire spread. With over 500 unique elements to play with, Sandboxels is a great way to pass the time and relax.</p>
+        <p id="intro2">There are thousands of interactions between the many materials, plants, animals, fluids, and powders in the game.</p>
+        <p id="intro3">Falling-sand games are a genre of sandbox games characterized by falling particles of various types.</p>
+        <p id="intro4">Simply click or use your touchscreen to select a category, like <strong>Liquids</strong>, then pick an element, like <strong>Water</strong>. Drag on the canvas above to place your pixels, and watch them interact with others!</p>
+        <img id="introImage" src="icons/wallpaper.webp" style="width:100%" alt="Rainforest landscape made in Sandboxels" title="Rainforest landscape made in Sandboxels">
+        <p id="intro5">Sandboxels has many <a href="https://sandboxels.R74n.com/education-use">applications in education</a>. With a hands-on experience, it can give students an understanding of emerging phenomena in many fields, such as biology, chemistry, ecology, geology, cooking, and even virology. There are countless aspects to discover.</p>
+        <p id="intro6">We have a thriving community on <a href="https://discord.gg/ejUc6YPQuS" target="_blank">Discord</a>! There you can post feedback or share your creations.</p>
         <!-- <p>If you'd like to support us, consider donating on <a href="https://www.paypal.com/donate/?hosted_button_id=GCX4VHQ7SZWTN" target="_blank">PayPal</a> or <a href="https://cash.app/$emojiartist" target="_blank" title="$emojiartist">CashApp</a>, or subscribing on Discord.</p> -->
-        <p>Business inquiries? Education stories? Help needed? Email us at <a href="mailto:contact@R74n.com?subject=%5BSandboxels%5D">contact@R74n.com</a>!</p>
-        <p>More links: <a href="https://sandboxels.R74n.com/help" rel="help">Help</a> • <a href="https://sandboxels.R74n.com/tips">Tips</a> • <a href="https://sandboxels.R74n.com/mod-list">Mods</a> • <a href="https://sandboxels.R74n.com/mobile-use">Mobile</a> • <a href="https://sandboxels.R74n.com/offline-use">Offline</a> • <a href="https://R74n.com/privacy">Privacy</a></p>
-        <p>Thanks to our Patrons: Serioustar, ggod, Midi_png, personman, fnl4y, PitsPower, swagg boi, moss, Suss, epsiloneridani, WeiChei, Trent, u2ce</p>
+        <p id="intro7">Business inquiries? Education stories? Help needed? Email us at <a href="mailto:contact@R74n.com?subject=%5BSandboxels%5D">contact@R74n.com</a>!</p>
+        <p id="introLinks">More links: <a href="https://sandboxels.R74n.com/help" rel="help">Help</a> • <a href="https://sandboxels.R74n.com/tips">Tips</a> • <a href="https://sandboxels.R74n.com/mod-list">Mods</a> • <a href="https://sandboxels.R74n.com/mobile-use">Mobile</a> • <a href="https://sandboxels.R74n.com/offline-use">Offline</a> • <a href="https://R74n.com/privacy">Privacy</a></p>
+        <p><span id="patronThanks">Thanks to our Patrons</span>: Serioustar, ggod, Midi_png, personman, fnl4y, PitsPower, swagg boi, moss, Suss, epsiloneridani, WeiChei, Trent, u2ce</p>
         <p style="display:none" id="langCredit">Translation by R74n</p>
-        <p>Sandboxels is developed by R74n. Check out <a href="https://R74n.com" rel="author" target="_blank">our other projects</a>!</p>
+        <p id="outro">Sandboxels is developed by R74n. Check out <a href="https://R74n.com" rel="author" target="_blank">our other projects</a>!</p>
         <script>
             // add the above elements programmatically when the page loads
             window.addEventListener('load', function() {
+                if (standalone) return;
+                if (window.location.protocol === "file:") return;
                 var adscript1 = document.createElement('script');
                 adscript1.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8485284630785740";
                 adscript1.crossorigin = "anonymous";
@@ -18077,7 +18711,7 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span>
             <tr><td>Reset canvas</td>   <td><kbd>R</kbd></td></tr>
             <tr><td>Single step</td>   <td><kbd>&gt;</kbd></td></tr>
             <tr><td>Fullscreen</td>   <td><kbd>F</kbd> or <kbd>F11</kbd></td></tr>
-            <tr><td>Change view</td>   <td><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd></td></tr>
+            <tr><td>Change view</td>   <td><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd></td></tr>
             <tr><td>Toggle GUI</td>   <td><kbd>F1</kbd></td></tr>
             <tr><td>Capture screenshot</td>   <td><kbd>C</kbd> or <kbd>F2</kbd></td></tr>
             <tr><td colspan="2" style="text-align:center"><strong><a href="https://sandboxels.r74n.com/controls" target="_blank" title="Open the controls file">More controls</a></strong></td></tr>
@@ -18094,6 +18728,43 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span>
         document.getElementById("install-button").style.display = "inline-block";
         //showInAppInstallPromotion();
     });
+</script>
+
+<script>
+    // Language Loader Part 3 (GUI)
+    if (lang) {
+        for (let key in lang) {
+            if (!lang[key]) continue;
+            if (key.indexOf("gui.") === 0) {
+                let id = key.substr(4);
+                let qual;
+                if (id.indexOf(".") !== -1) {
+                    let split = id.split(".");
+                    id = split[0];
+                    qual = split[1];
+                }
+                let e = document.getElementById(id);
+                if (e) {
+                    if (!qual) {
+                        if (e.getAttribute("type") === "button") e.value = lang[key];
+                        if (e.hasAttribute("placeholder")) e.setAttribute("placeholder",lang[key]);
+                        if (e.hasAttribute("content")) e.setAttribute("content",lang[key]);
+                        else e.innerText = lang[key];
+                    }
+                    else if (qual === "title") e.title = lang[key];
+                }
+                else {
+                    console.log(langCode+" Invalid GUI Element '"+id+"'");
+                }
+            }
+        }
+    }
+
+    if (standalone) {
+        document.getElementById("bottomInfoBox").style.display = "none";
+        document.getElementById("pagetitle").style.display = "none";
+        document.getElementById("noMods").insertAdjacentHTML("afterend","Requires Internet connection.<br><br>")
+    }
 </script>
 
 <!-- Global site tag (gtag.js) - Google Analytics -->

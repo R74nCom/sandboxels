@@ -315,7 +315,7 @@ elements.destroyable_pipe = {
                 var y = pixel.y+coord[1];
                 if (isEmpty(x,y)) {
                     createPixel("brick",x,y);
-                    pixelMap[x][y].color = pixelColorPick(pixel,"#808080");
+                    pixelMap[x][y].color = pixelColorPick(pixel,"#586879");
                 }
             }
             pixel.stage = 1;
@@ -626,7 +626,7 @@ elements.e_pipe = {
                 var y = pixel.y+coord[1];
                 if (isEmpty(x,y)) {
                     createPixel("pipe_wall",x,y);
-                    pixelMap[x][y].color = pixelColorPick(pixel,"#808080");
+                    pixelMap[x][y].color = pixelColorPick(pixel,"#586879");
                 }
             }
             pixel.stage = 1;
@@ -744,7 +744,7 @@ elements.destroyable_e_pipe = {
                 var y = pixel.y+coord[1];
                 if (isEmpty(x,y)) {
                     createPixel("brick",x,y);
-                    pixelMap[x][y].color = pixelColorPick(pixel,"#808080");
+                    pixelMap[x][y].color = pixelColorPick(pixel,"#586879");
                 }
             }
             pixel.stage = 1;
@@ -871,7 +871,7 @@ elements.channel_pipe = {
                 var y = pixel.y+coord[1];
                 if (isEmpty(x,y)) {
                     createPixel("pipe_wall",x,y);
-                    pixelMap[x][y].color = pixelColorPick(pixel,"#808080");
+                    pixelMap[x][y].color = pixelColorPick(pixel,"#586879");
                 }
             }
             pixel.stage = 1;
@@ -994,7 +994,7 @@ elements.destroyable_channel_pipe = {
                 var y = pixel.y+coord[1];
                 if (isEmpty(x,y)) {
                     createPixel("brick",x,y);
-                    pixelMap[x][y].color = pixelColorPick(pixel,"#808080");
+                    pixelMap[x][y].color = pixelColorPick(pixel,"#586879");
                 }
             }
             pixel.stage = 1;
@@ -1111,7 +1111,7 @@ elements.bridge_pipe = {
                 var y = pixel.y+coord[1];
                 if (isEmpty(x,y)) {
                     createPixel("pipe_wall",x,y);
-                    pixelMap[x][y].color = pixelColorPick(pixel,"#808080");
+                    pixelMap[x][y].color = pixelColorPick(pixel,"#586879");
                 }
             }
             pixel.stage = 1;
@@ -1215,15 +1215,17 @@ elements.bridge_pipe = {
     canContain: true,
     insulate: true,
 },
-elements.pipe.tick = function(pixel) {
+    elements.pipe.tick = function(pixel) {
         if (!pixel.stage && pixelTicks-pixel.start > 60) {
             for (var i = 0; i < squareCoords.length; i++) {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
+                if (!isEmpty(x,y,true) && elements[pixelMap[x][y].element].movable && newPixel.element != "ray") {
+                    deletePixel(x,y)
+                }
                 if (isEmpty(x,y)) {
                     createPixel("pipe_wall",x,y);
-                    pixelMap[x][y].color = pixelColorPick(pixel,"#808080");
                 }
             }
             pixel.stage = 1;
@@ -1321,7 +1323,7 @@ elements.pipe.tick = function(pixel) {
             }
         }
         doDefaults(pixel);
-    },
+    }
     elements.pipe.insulate = true,
 	filterTypeVar = 0;
 elements.filter = {
@@ -1575,8 +1577,6 @@ elements.blackhole_storage = {
 	tick: function(pixel) {
 		if (!pixel.bhcontents){
 			pixel.bhcontents = [];
-		} else {
-			pixel.decidedcontent = pixel.bhcontents[Math.floor(Math.random()*pixel.bhcontents.length)];
 		}
 		 for (var i = 0; i < squareCoords.length; i++) {
                 var coord = squareCoords[i];
@@ -1588,15 +1588,15 @@ elements.blackhole_storage = {
 						pixel.bhcontents.push(otherPixel);
 						deletePixel(otherPixel.x, otherPixel.y);
 					}
-                } else if (pixel.charge && isEmpty(x,y) && pixel.decidedcontent){
-					var otherPixel = pixelMap[x][y];
-					pixel.decidedcontent.x = x;
-					pixel.decidedcontent.y = y;
-					delete pixel.decidedcontent.del;
-					otherPixel = pixel.decidedcontent;
-					currentPixels.push(pixel.decidedcontent);
-					pixel.bhcontents.splice(pixel.bhcontents.indexOf(pixel.decidedcontent), 1);
-					pixel.decidedcontent = pixel.bhcontents[Math.floor(Math.random()*pixel.bhcontents.length)];
+                } else if (pixel.charge && isEmpty(x,y) && pixel.bhcontents.length){
+					let randomindex = Math.floor(Math.random()*pixel.bhcontents.length);
+                    let releasedPixel = pixel.bhcontents[randomindex]
+                    pixel.bhcontents.splice(randomindex, 1)
+                    delete releasedPixel.del
+                    releasedPixel.x = x
+                    releasedPixel.y = y
+                    pixelMap[x][y] = releasedPixel
+                    currentPixels.push(releasedPixel)
 				}
             }
 	},
@@ -3795,7 +3795,7 @@ elements.hotter_sensor = {
 let pipe_transmitter_channelVar = 0;
 elements.pipe_transmitter = {
     color: "#6e6250",
-    category: "machines",
+    category: "deprecated",
     movable: false,
     canContain: true,
     insulate: true,
@@ -3826,7 +3826,7 @@ elements.pipe_transmitter = {
 let pipe_receiver_channelVar = 0;
 elements.pipe_receiver = {
     color: "#4d4b63",
-    category: "machines",
+    category: "deprecated",
     movable: false,
     canContain: true,
     insulate: true,
@@ -3905,4 +3905,73 @@ elements.false_vacuum = {
     },
     movable: false,
     hardness: 1
+}
+let signInput = "Hello World!";
+elements.sign = {
+    color: "#FFFFFF",
+    darkText: true,
+    category: "special",
+    onSelect: function(){
+        let signi = prompt("What text should the sign display?", signInput||"Hello World!")
+        signInput = signi;
+    },
+    renderer: function(pixel, ctx){
+        if (!pixel.sign){pixel.sign = signInput}
+    },
+    movable: false
+}
+elements.e_sign = {
+    color: "#f3ff88",
+    darkText: true,
+    category: "special",
+    movable: false,
+    onSelect: () => {
+        let signi = prompt("What text should the sign display?", signInput||"Hello World!")
+        signInput = signi;
+    },
+    renderer: function(pixel, ctx){
+        if (!pixel.sign){pixel.sign=signInput}
+    },
+    conduct: 1
+}
+renderPostPixel(function(ctx){
+    for (pixel of currentPixels){
+        if ((pixel.element == "sign") && pixel.sign){
+            ctx.font = `12pt Arial`
+            ctx.fillStyle = pixel.color;
+            ctx.fillText(pixel.sign, canvasCoord(pixel.x), canvasCoord(pixel.y))
+        } else if (pixel.element == "e_sign" && pixel.sign){
+            if (pixel.charge || pixel.chargeCD){
+                ctx.font = `12pt Arial`
+                ctx.fillStyle = pixel.color;
+                ctx.fillText(pixel.sign, canvasCoord(pixel.x), canvasCoord(pixel.y))
+            } else {
+                drawSquare(ctx, pixel.color, pixel.x, pixel.y)
+            }
+        }
+    }
+})
+let machinemodName = "nousersthings.js"
+elements.mod_dectector = {
+    color: "#54681d",
+    behavior: behaviors.WALL,
+    category: "machines",
+    movable: false,
+    excludeRandom: true,
+    onSelect: () => {
+        let newMod = prompt("What mod should this machine detect?", "nousersthings.js"||modName)
+        machinemodName = newMod
+    },
+    tick: (pixel) => {
+        if (!pixel.mod){pixel.mod = machinemodName}
+        if (enabledMods.includes("mods/" + pixel.mod)){
+            for (let i = 0; i < adjacentCoords.length; i++){
+                let x = adjacentCoords[i][0] + pixel.x;
+                let y = adjacentCoords[i][1] + pixel.y;
+                if (!isEmpty(x, y, true) && elements[pixelMap[x][y].element].conduct){
+                    pixelMap[x][y].charge = 1
+                }
+            }
+        }
+    }
 }

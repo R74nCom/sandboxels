@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Test - Sandboxels</title>
+    <meta name="description" content="Test">
+    <meta name="keywords" content="falling sand, elements, pixel art, simulator, powder">
+    <meta name="author" content="R74n">
+    <meta name="copyright" content="R74n">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex">
+
+    <!--Favicons-->
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png?v=2">
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png?v=2">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png?v=2">
+    <link rel="manifest" href="manifest.json">
+    <link rel="mask-icon" href="icons/safari-pinned-tab.svg?v=2" color="#2167ff">
+    <link rel="shortcut icon" href="icons/favicon.ico?v=2">
+    <meta name="msapplication-TileColor" content="#e6d577">
+    <meta name="theme-color" content="#000000">
+
+    <!--OpenGraph-->
+    <meta property="og:locale" content="en_US">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Sandboxels">
+    <meta property="og:image" content="https://sandboxels.r74n.com/icons/wallpaper.png">
+    <meta property="og:image:width" content="1980">
+    <meta property="og:image:height" content="971">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="A rainforest made in Sandboxels">
+
+    <!--Twitter-->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site:id" content="1436857621827530753">
+    <meta name="twitter:image" content="https://sandboxels.r74n.com/icons/card.png">
+    <meta name="twitter:image:alt" content="A rainforest made in Sandboxels">
+    <meta name="twitter:creator:id" content="1436857621827530753">
+
+    <link rel="stylesheet" type="text/css" href="style.css?nocache=3">
+    <style>
+        /* on mobile, make h1 fit on one line */
+        @media only screen and (max-width: 800px) {
+            h1 { font-size: 1em; }
+        }
+        #content { font-family: Arial, Helvetica, sans-serif; font-size:1.5em; }
+        h2 { text-align: center; margin-bottom:0; margin-top:45px}
+    </style>
+    <!-- <script src="https://hb.vntsm.com/v4/live/vms/sites/sandboxels.r74n.com/index.js"></script> -->
+</head>
+
+<body>
+<h1><a href="https://sandboxels.R74n.com" class="backbutton">&lt;</a> Test</h1>
+
+</ul>
+<div id="content">
+
+This is a test page.
+
+<div id="slot-1"></div>
+<div id="slot-2"></div>
+<div id="slot-5"></div>
+<div id="slot-10"></div>
+
+</div>
+
+
+<script>
+    standalone = false;
+    window.addEventListener('load', function() {
+        if (standalone) return;
+        var adscript = document.createElement('script');
+        adscript.src = "https://hb.vntsm.com/v4/live/vms/sites/sandboxels.r74n.com/index.js";
+        adscript.setAttribute("data-disable-placements","vertical-sticky, video_slider");
+        adscript.addEventListener('load', function() {
+            self.__VM = self.__VM || [];
+            self.__VM.push(function (admanager, scope) {
+                scope.Config.get('billboard').display('slot-1');
+                scope.Config.get('leaderboard').display('slot-2');
+                // scope.Config.get('double_mpu').display('slot-3');
+                // scope.Config.get('mpu').display('slot-4');
+                scope.Config.get('mobile_banner').display('slot-5');
+                // scope.Config.get('mobile_mpu').display('slot-6');
+                // scope.Config.get('skyscraper').display('slot-7');
+                // scope.Config.get('video').display('slot-8');
+                // scope.Config.get('desktop_takeover').display('slot-9');
+                scope.Config.get('mobile_takeover').display('slot-10');
+            // Based on your layout, here are the responsive tags. The placement will change based on screen width.
+            // With the mobile breakpoint set by default at max-width:1024px
+            });
+        });
+        document.head.appendChild(adscript);
+    })
+</script>
+
+
+
+
+
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-93720349-9"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-93720349-9');
+</script>
+
+</body>
+
+</html>

@@ -1,19 +1,19 @@
-elements.mud_brick = {
-    color: "#8a6249",
-    colorPattern: textures.BRICK,
-    colorKey: {
-        "l": "#986c51",
-        "r": "#8a6249",
-        "d": "#7f5943",
-        "w": "#634933"},
-    behavior: behaviors.WALL,
-    category: "solids",
-    state: "solid",
-    tempHigh: 1200,
-    stateHigh: "molten_dirt",
-    hardness: 0.33,
-    breakInto: "dirt"
-}
+// elements.mud_brick = {
+//     color: "#8a6249",
+//     colorPattern: textures.BRICK,
+//     colorKey: {
+//         "l": "#986c51",
+//         "r": "#8a6249",
+//         "d": "#7f5943",
+//         "w": "#634933"},
+//     behavior: behaviors.WALL,
+//     category: "solids",
+//     state: "solid",
+//     tempHigh: 1200,
+//     stateHigh: "molten_dirt",
+//     hardness: 0.33,
+//     breakInto: "dirt"
+// }
 
 var materials = ["brick","concrete","wood","glass","steel"];
 

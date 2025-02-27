@@ -1,5 +1,3 @@
-elements.slime.behavior = [
-    "XX|ST|XX",
-    "ST AND M2|XX|ST AND M2",
-    "XX|ST AND M1|XX",
-];
+window.addEventListener("load",function() {
+	logMessage("stickyslime.js has been renamed. plz install stickystuff.js instead, as thats what it was renamed to.")
+})
