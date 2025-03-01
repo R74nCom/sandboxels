@@ -16,6 +16,13 @@ body {
     font-family: 'Press Start 2P', 'VT323', Arial;
     background-color: #000000;
     color: #ffffff;
+    caret-color: #e6d577;
+}
+::-moz-selection {
+  background: #948a54;
+}
+::selection {
+  background: #948a54;
 }
 .pagetitle {
     padding: 10px;
@@ -29,7 +36,7 @@ a, .saveOption {color: rgb(255, 0, 255);text-decoration: none;}
 a:hover, .saveOption:hover {filter: brightness(200%);}
 a:active, a:hover:active, .saveOption:active, .saveOption:hover:active {filter: brightness(275%);}
 #gameDiv { /*game canvas*/
-    border: 1px solid #ffffff;
+    border: 3px solid rgba(255, 255, 255, 0.45);
     position: relative;
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
@@ -37,7 +44,11 @@ a:active, a:hover:active, .saveOption:active, .saveOption:hover:active {filter: 
     -moz-user-select: none; /* Old versions of Firefox */
     -ms-user-select: none; /* Internet Explorer/Edge */
     user-select: none;
-    margin-top: 15px;
+    /* margin-top: 15px; */
+}
+.gameDiv-wide {
+    margin-top: 0!important;
+    border: none!important;
 }
 #game {
     image-rendering: pixelated;
@@ -94,40 +105,51 @@ kbd {
 kbd:active {filter: brightness(70%);}
 #infoParent, #modParent, #settingsParent, .menuParent {
     display: none;
-}
-#infoScreen, #modManager, #settingsMenu, .menuScreen {
     position: absolute;
-    border: 1px solid #ffffff;
+    border: 4px solid #9d9d9d;
     left: 50%;
     top: 5%;
     transform: translate(-50%, 0%);
     width: 95%;
-    height: 50%;
+    height: 60%;
     max-width: 700px;
+    max-height: 450px;
+    background-color: rgb(31, 31, 31);
+    z-index:99999
+}
+#infoScreen, #modManager, #settingsMenu, .menuScreen {
+    position: absolute;
+    height:calc(100% - 20px);
+    width:calc(100% - 20px);
     padding: 10px;
+
     background-color: rgb(31, 31, 31);
     overflow-x: hidden;
     z-index: 10;
 }
-#settingsMenu {
+#settingsParent {
     height: 75%;
+    max-height: 623px;
 }
-#infoSearch, #modManagerUrl, #saveButtons {
-    position: absolute;
-    bottom: 59.4%;
-    width: 95%;
+#promptParent {
+    height: 50%;
+}
+#infoSearch, #modManagerUrl, #promptInput {
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    width: calc(100% - 16px);
     max-width: 700px;
     height: 50px;
-    left: 50%;
-    transform: translate(-50%, 198.5%);
     background-color: rgb(66, 66, 66);
     color: white;
     font-size: 1.5em;
     padding: 8px;
     font-family: 'Press Start 2P';
     z-index: 11;
+    border: none
 }
-#infoSearch:focus, #modManagerUrl:focus {
+#infoSearch:focus, #modManagerUrl:focus, #promptInput:focus {
     outline: none;
 }
 .menuTitle {
@@ -149,7 +171,9 @@ kbd:active {filter: brightness(70%);}
     background-color: rgb(100, 33, 33);
     padding:5px;
     text-align:center;
-    border: 1px solid #ffffff;
+    border: 4px solid #9d9d9d;
+    border-top: none;
+    border-right: none;
     z-index: 12;
 }
 .XButton:hover {
@@ -218,7 +242,7 @@ kbd:active {filter: brightness(70%);}
     color: gray;
     cursor: not-allowed;
 }
-#saveFile, #loadFile, #saveConfirm {
+#saveFile, #loadFile, #saveConfirm, #promptOK, #promptCancel, #promptConfirm {
     background-color: black;
     text-align: center;
     vertical-align: middle;
@@ -227,18 +251,22 @@ kbd:active {filter: brightness(70%);}
     position:absolute;
     bottom: 0;
     cursor: pointer;
-    border-top: solid white;
+    border-top: 4px solid #9d9d9d;
 }
-#saveFile {
+#saveConfirm, #promptOK {
+    bottom: 0;
+    position: fixed;
+}
+#saveFile, #promptCancel {
     left: 0;
     width: 50%;
 }
-#loadFile {
+#loadFile, #promptConfirm {
     right: 0;
     width: 50%;
-    border-left: solid white;
+    border-left: 4px solid #9d9d9d;
 }
-#saveConfirm {
+#saveConfirm, #promptOK {
     left: 0;
     width: 100%;
 }
@@ -267,8 +295,8 @@ button, input[type="submit"], input[type="reset"] {
     font-size: 1em;
     text-shadow: 0.5px 1px 4px #000000;
     color: rgba(255, 255, 255, 0.85);
-    border: 1px solid #797979;
-    margin: 0px 5px 5px 5px;
+    border: 2px solid #797979;
+    margin: 0px 4px 4px 4px;
     font-variant: small-caps;
 }
 #controls button.bright {
@@ -286,13 +314,13 @@ button, input[type="submit"], input[type="reset"] {
     cursor: not-allowed;
 }
 #controls button[current="true"], #controls button[on="true"] {
-    border: 1px solid #ffffff;
+    border: 2px solid #ffffff;
     filter: brightness(110%);
     /* box-shadow: 0 5px 15px rgba(255, 255, 255, .4); */
     color: rgba(255, 255, 255, 1);
 }
 #controls .elementButton[current="true"] {
-    border: 1px solid #00ff00;
+    border: 2px solid #5ee05e;
     box-shadow: 0px 1px 15px rgba(0, 255, 0, .75);
 }
 #controls button.bright[current="true"] {
@@ -318,15 +346,24 @@ button, input[type="submit"], input[type="reset"] {
     margin: 0px 5px 0px 5px;
     font-size: 0.75em;
     height: 1.5em;
-    width:100%;
+    line-height: 1.5em;
+    width:calc(100% - 5px);
     /* no wrapping */
     white-space: nowrap;
     overflow-x: hidden;
+    overflow-y: hidden;
+    background-color: black;
 }
 #stat-pos, #stat-pixels, #stat-shift, #stat-tps, #stat-ticks, #stat-view {
     float:left;
 }
-#stat-view, #stat-element {
+#stat-element {
+    margin-right:10px
+}
+#stats span {
+    background-color: rgba(0,0,0,0.1);
+}
+#stat-view, #stat-element span {
     text-transform: uppercase;
 }
 .redText {
@@ -340,6 +377,18 @@ button, input[type="submit"], input[type="reset"] {
 }
 #extraInfo {
     margin:5px
+}
+#extraInfo small, #extraInfo p {
+    display: inline-block;
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-right: 1em;
+}
+#extraInfo small {
+    margin-bottom: 10px;
+}
+.gameDiv-wide .extraInfo-right {
+    float:right
 }
 #toolControls, #category-tools {
     white-space: nowrap;
@@ -422,11 +471,11 @@ button, input[type="submit"], input[type="reset"] {
     position: relative;
     z-index:0;
     flex-grow: 1;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
     background-color: #202020;
 }
 #categoryControls button:not(:last-child) {
-    border-right: 1px solid rgba(255, 255, 255, 0.4);
+    border-right: 2px solid rgba(255, 255, 255, 0.2);
 }
 #categoryControls button[current="true"] {
     border: none;
@@ -481,7 +530,14 @@ button, input[type="submit"], input[type="reset"] {
         width: 97%;
         margin-left: 5px;
         font-size: 0.75em;
-        height: 2.5em
+        height: 2.5em;
+        line-height: 1;
+    }
+    #saveFile, #loadFile {
+        font-size: small
+    }
+    .saveSlot {
+        font-size: small
     }
 }
 @media screen and (max-width: 600px) {
@@ -520,10 +576,10 @@ button, input { /*Disable double tap zoom on mobile devices*/
 .settingsButton, select, .toggleInput, #settingsMenu input[type="number"], #settingsMenu input[type="text"], #savePromptMenu input, input[type="email"] {
     background-color: black;
     vertical-align: middle;
-    margin-left: 5px;
-    margin-right: 5px;
-    border: rgb(150, 150, 150) 1px solid;
-    padding: 0.5em;
+    margin-left: 4px;
+    margin-right: 4px;
+    border: rgb(150, 150, 150) 2px solid;
+    padding: 0.4em;
     color: white;
     font-size: 1em;
     font-family: Arial, Helvetica, sans-serif;

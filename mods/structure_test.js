@@ -1,4 +1,4 @@
-var modName = "mods/the_ground.js";
+var modName = "mods/structure_test.js";
 var libraryMod = "mods/code_library.js";
 
 if(!enabledMods.includes(libraryMod)) {

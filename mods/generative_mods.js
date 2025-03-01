@@ -927,9 +927,6 @@ whenAvailable(["eLists","explodeAtPlus","urlParams","runAfterAutogen","mobsLoade
 			  if(enabledMods.includes("mods/chem.js")) {
 				amalgamatedBombFire += ",FOOF".repeat(8);
 			  };
-			  if(enabledMods.includes("mods/the_ground.js")) {
-				amalgamatedBombFire += ",liquid_irradium".repeat(7);
-			  };
 			  if(enabledMods.includes("mods/bioooze.js")) {
 				amalgamatedBombFire += ",bioooze".repeat(8);
 			  };
@@ -1186,49 +1183,6 @@ whenAvailable(["eLists","explodeAtPlus","urlParams","runAfterAutogen","mobsLoade
                 alias: "overpowered electromagnetic pulse bomb",
                 cooldown: defaultCooldown
             };
-
-			if(enabledMods.includes("mods/the_ground.js")) { //uses things from that but not worth requiring for the whole mod
-				elements.star_bomb = {
-					color: "#fffbb5",
-					properties: {
-						radius: 50, //just so people can edit it per pixel to be stupidly high
-					},
-					tick: function(pixel) {
-						var starFire = "stellar_plasma,stellar_plasma,stellar_plasma,liquid_stellar_plasma,liquid_stellar_plasma,plasma,plasma";
-						var starSmoke = "light,light,radiation";
-						doDefaults(pixel);
-						if(!isEmpty(pixel.x,pixel.y-1,true)) { //[0][1] EX (ignore bounds)
-							var newPixel = pixelMap[pixel.x][pixel.y-1];
-							newPixel.temp += 10000000; //[0][1] HT:10000000
-							var newElement = newPixel.element;
-							var newInfo = elements[newElement];
-							if(newInfo.state !== "gas" && newElement !== pixel.element) {
-								explodeAtPlus(pixel.x,pixel.y,pixel.radius,starFire,starSmoke,starbombHeat,starbombHeat,false);
-							};
-						};
-						if(!isEmpty(pixel.x,pixel.y+1,true)) { //[2][1] EX (don't ignore bounds, non-bound case)
-							var newPixel = pixelMap[pixel.x][pixel.y+1];
-							newPixel.temp += 10000000;
-							var newElement = newPixel.element;
-							var newInfo = elements[newElement];
-							if(newInfo.state !== "gas" && newElement !== pixel.element) {
-								explodeAtPlus(pixel.x,pixel.y,pixel.radius,starFire,starSmoke,starbombHeat,starbombHeat,false);
-							};
-						};
-						if(outOfBounds(pixel.x,pixel.y+1)) { //[2][1] EX (don't ignore bounds, bound case)
-							explodeAtPlus(pixel.x,pixel.y,pixel.radius,starFire,starSmoke,starbombHeat,starbombHeat,false);
-						};
-						if(!tryMove(pixel,pixel.x,pixel.y+1)) { //behaviors.POWDER
-							Math.random() < 0.5 ? tryMove(pixel,pixel.x-1,pixel.y+1) : tryMove(pixel,pixel.x+1,pixel.y+1);
-						};
-					},
-					category: "weapons",
-					state: "solid",
-					density: 3.663e33,
-					excludeRandom: true,
-					cooldown: defaultCooldown
-				};
-			};
 
 		//Fairies
 	

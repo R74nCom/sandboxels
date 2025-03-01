@@ -1,5 +1,5 @@
 var modName = "mods/../a_mod_by_alice.js" //can't do "alice's mod" because the apostrophe will fuck up code, be too confusing, or both
-//Version ω0.0 [Preliminary Revival]
+//Version ω0.3 [Corium update]
 var dependencies = ["mods/libhooktick.js", "mods/chem.js", "mods/minecraft.js", "mods/Neutronium Mod.js", "mods/fey_and_more.js", "mods/velocity.js", "mods/ketchup_mod.js", "mods/moretools.js", "mods/aChefsDream.js", "mods/nousersthings.js"];  //thanks to mollthecoder, PlanetN9ne, StellarX20 (3), MelecieDiancie, R74n, Nubo318, Sightnado, SquareScreamYT, and NoUsernameFound
 var dependencyExistence = dependencies.map(x => enabledMods.includes(x));
 var allDependenciesExist = dependencyExistence.reduce(function(a,b) { return a && b });
@@ -1348,15 +1348,15 @@ try {
 				return (isEmpty(pixel.x+1,pixel.y) || isEmpty(pixel.x-1,pixel.y) || isEmpty(pixel.x,pixel.y+1) || isEmpty(pixel.x,pixel.y-1));
 			};
 
-			function tryTarnish(pixel,element,chance) {
+			function tryTarnish(pixel,element,chance,changeTemp=true) {
 				if(exposedToAir(pixel)) {
 					if(Array.isArray(element)) {
 						if(Math.random() < chance) {
-							changePixel(pixel,randomChoice(element));
+							changePixel(pixel,randomChoice(element),changeTemp);
 						};
 					} else {
 						if(Math.random() < chance) {
-							changePixel(pixel,element);
+							changePixel(pixel,element,changeTemp);
 						};
 					};
 				};
@@ -2222,8 +2222,8 @@ try {
 		var css =
 `.ps-number {
 	width: 35px;
-	line-height: 35px;
-	height: 35px;
+	line-height: 25px;
+	height: 25px;
 	display: table-cell;
 	text-align: center;
 	font-size: 80%;
@@ -2231,11 +2231,12 @@ try {
 }
 
 .ps-heading {
-	font-size: 90%;
+	font-size: 85%;
 }
 
 td.inputCell {
 	text-align: center;
+	padding: 4px;
 }
 `;
 		head = document.head || document.getElementsByTagName('head')[0],
@@ -2694,11 +2695,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		booleanSynonyms = [ "boolean", "bool", "boole", "boo", "bo", "bl", "b" ];
 		arraySynonyms = [ "arr", "a", "ar", "list" ];
 		defaultStringTypeValues = ["element","color","clone","changeTo","void","type","spawn"];
-		defaultNumberTypeValues = ["x","y","charge","temp","start","vx","vy","chargeCD","start","burnStart","dir","panic","r","frequency","length","delay","volume","debounce","debounceLength","speed","fall","penetrateCounter","chargeCounter","spawnCounter","spawnTime","squadiusX","squadiusY","spawnTries","counter","attachDirection","value","range","xSpacing","ySpacing","maxPixels","explosionRadius","circleRadius","breakAroundRadius"];
+		defaultNumberTypeValues = ["x","y","charge","temp","start","vx","vy","chargeCD","start","burnStart","dir","panic","r","frequency","length","delay","volume","debounce","debounceLength","speed","fall","penetrateCounter","chargeCounter","spawnCounter","spawnTime","squadiusX","squadiusY","spawnTries","counter","attachDirection","value","range","xSpacing","ySpacing","maxPixels","explosionRadius","circleRadius","breakAroundRadius","radiation"];
 		defaultBooleanTypeValues = ["burning","dead","hissing","following","dirLocked","del","didChargeBlueTinted","shooting","del","spawnAtPixelTemp","overwrite"];
 		defaultArrayTypeValues = ["attachOffsets"];
 		synonymsOfTrue = ["true", "t", "1", "yes"];
 		synonymsOfFalse = ["false", "f", "0", "no"];
+	//FORCE DATA FOOTER TO 2 LINES SO IT NEVER HIDES INFO
 	//ENABLE RUNNING CODE AFTER STATE ELEMENT AUTOGENERATION (runAfterAutogen) ##
 		resizeCanvas = function(newHeight,newWidth,newPixelSize,clear) {
 			var gameCanvas = document.getElementById("game");
@@ -2803,7 +2805,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 							} else {
 								rgbs.push(c);
 								rgbos.push(convertColorFormats(c,"json"));
-								console.log(key,rgbs,rgbos)
+								//console.log(key,rgbs,rgbos)
 							}
 						}
 						elements[key].color = rgbs;
@@ -2872,8 +2874,14 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				newelem.temp = elements[element].tempHigh;
 				newelem.tempLow = elements[element].tempHigh+(autoInfo.tempDiff || 0);
 				newelem.stateLow = element;
-				// Change density by *0.9
-				if (elements[element].density) { newelem.density = Math.round(elements[element].density * 0.9 * 10) / 10; }
+				// Decrease density
+				if (elements[element].density) {
+					if(autoInfo.state == "gas") {
+						newelem.density = Math.round(elements[element].density * 0.001 * 10) / 10
+					} else {
+						newelem.density = Math.round(elements[element].density * 0.9 * 10) / 10
+					}
+				}
 			}
 			else if (autoInfo.type === "low") {
 				if (!elements[element].stateLow) {elements[element].stateLow = newname;}
@@ -3018,14 +3026,14 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					elements[key].color = _cc.w.r;
 					elements[key].colorObject = _cc.w.j;
 				}
-				if (elements[key].movable === false) { delete elements[key].movable }
-				else if (elements[key].movable === undefined) {
+				/*if (elements[key].movable === false) { delete elements[key].movable }
+				else*/ if (elements[key].movable === undefined) {
 					// If the element's behavior is an array and contains M1 or M2, set its movable to true
 					if (elements[key].behavior && typeof elements[key].behavior[0] === "object") {
 						var bstring = JSON.stringify(elements[key].behavior);
-						if (bstring.indexOf("M1")!==-1 || bstring.indexOf("M2")!==-1) { elements[key].movable = true; }
+						if (bstring.indexOf("M1")!==-1 || bstring.indexOf("M2")!==-1) { elements[key].movable ??= true; }
 					}
-					if (elements[key].tick) { elements[key].movable = true; }
+					if (elements[key].tick) { elements[key].movable ??= true; }
 				}
 				if (elements[key].behavior) {
 					var behavior = elements[key].behavior;
@@ -3202,15 +3210,15 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						// loop through each character in the line
 						for (var j = 0; j < line.length; j++) {
 							var char = line[j];
-							var colorValue = elements[key].colorKey[char];
-							if (colorValue) {
-								if (colorValue.startsWith("#") || colorValue.length == 6) {
-									elements[key].colorKey[char] = convertColorFormats(elements[key].colorKey[char],"rgb");
-								}
+							if (elements[key].colorKey[char]) {
+								// if (elements[key].colorKey[char].startsWith("#")) {
+								//     var rgb = hexToRGB(elements[key].colorKey[char]);
+								//     elements[key].colorKey[char] = "rgb("+rgb.r+","+rgb.g+","+rgb.b+")";
+								// }
 								newPattern[i].push(elements[key].colorKey[char]);
 							}
 							else {
-								newPattern[i].push(_cc.w.r);
+								newPattern[i].push("#ffffff");
 							}
 						}
 					}
@@ -3388,6 +3396,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						if (currentPixels.length!==0 && !confirm("Clear this scene and load save file?")) { return }
 						var reader = new FileReader();
 						reader.onload = function(e) {
+							bareClear()
 							loadSave(JSON.parse(e.target.result));
 						}
 						reader.readAsText(file);
@@ -3979,8 +3988,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			// For each element type in elements, create a button in controls that sets the current element to that type
 			createButtonsAndCountElements();
 
-			for (var i = 0; i < runAfterAutogenList.length; i++) {
-				runAfterAutogenList[i]();
+			for (var i = 0; i < runAfterButtonsList.length; i++) {
+				runAfterButtonsList[i]();
 			}
 
 			if (location.ancestorOrigins && location.ancestorOrigins[0]) {
@@ -4109,21 +4118,21 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					};
 			document.getElementById("colorSelector").after(propertySetter);
 
-			function showPropertySetter() {
+			window.showPropertySetter = function() {
 				var ps = document.getElementById("propertySetter");
 				if(ps) {
 					ps.style.display = "block"
 				}
 			};
 
-			function hidePropertySetter() {
+			window.hidePropertySetter = function() {
 				var ps = document.getElementById("propertySetter");
 				if(ps) {
 					ps.style.display = "none"
 				}
 			};
 
-			function hideSetterColumn(type,index) {
+			window.hideSetterColumn = function(type,index) {
 				//currently the only type is "numeric"
 				var heading = document.getElementById(`property${type}${index.toString()}headingcell`);
 				var input = document.getElementById(`property${type}${index.toString()}inputcell`);
@@ -4131,26 +4140,26 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				input.style.display = "none";
 			};
 
-			function showSetterColumn(type,index) {
+			window.showSetterColumn = function(type,index) {
 				var heading = document.getElementById(`property${type}${index.toString()}headingcell`);
 				var input = document.getElementById(`property${type}${index.toString()}inputcell`);
 				heading.style.display = "table-cell";
 				input.style.display = "table-cell";
 			};
 
-			function hideAllSetterColumnsOfType(type) {
+			window.hideAllSetterColumnsOfType = function(type) {
 				var setter = document.getElementById("setterTable");
 				var headingsAndInputs = setter.querySelectorAll(`[id^="property${type}][id$="cell"]`);
 				headingsAndInputs.forEach(n => n.style.display = "none");
 			};
 
-			function hideAllSetterColumns() {
+			window.hideAllSetterColumns = function() {
 				var setter = document.getElementById("setterTable");
 				var headingsAndInputs = setter.querySelectorAll(`[id^="property"][id$="cell"]`);
 				headingsAndInputs.forEach(n => n.style.display = "none");
 			};
 
-			console.log(document.getElementById("setterTable"));
+			//console.log(document.getElementById("setterTable"));
 
 			hidePropertySetter();
 			hideAllSetterColumns();
@@ -4397,6 +4406,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
                     pixel1[key] = r.attr1[key];
                 }
             }
+            if (r.propAdds1) { // add value to each attribute to pixel1
+                for (var key in r.propAdds1) {
+                    pixel1[key] ??= 0;
+					pixel1[key] += r.propAdds1[key]
+                }
+            }
             if (r.stain1) { stainPixel(pixel1,r.stain1,0.05); }
             if (r.elem2 !== undefined) {
                 // if r.elem2 is an array, set elem2 to a random element from the array, otherwise set it to r.elem2
@@ -4419,6 +4434,12 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
             if (r.attr2) { // add each attribute to pixel2
                 for (var key in r.attr2) {
                     pixel2[key] = r.attr2[key];
+                }
+            }
+            if (r.propAdds2) { // add value to each attribute to pixel2
+                for (var key in r.propAdds2) {
+                    pixel2[key] ??= 0;
+					pixel2[key] += r.propAdds2[key]
                 }
             }
             if (r.stain2) { stainPixel(pixel2,r.stain2,0.05); }
@@ -4645,7 +4666,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			color: ["#daff21","#a6ff00","#ffff00"],
 			behavior: [
 				"XX|CR:radiation%0.1|XX",
-				"CR:radiation%0.1|XX|CR:radiation%0.1",
+				"CR:radiation%0.1|DEL%0.02 AND CH:rad_smoke%0.2|CR:radiation%0.1",
 				"XX|CR:radiation%0.1|XX",
 			],
 			tick: function(pixel) {
@@ -5514,9 +5535,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				state: "liquid",
 				density: 210,
 			};
-			elements.radiation.reactions.liquid_fire = { "elem2":"liquid_rad_fire", "chance":0.4 };
-			elements.radiation.reactions.fire = { "elem2":"rad_fire", "chance":0.4 };
-			elements.radiation.reactions.smoke = { "elem2":"rad_smoke", "chance":0.4 };
+			elements.radiation.reactions.liquid_fire = { "elem2":"liquid_rad_fire", "chance":0.05 };
+			elements.radiation.reactions.fire = { "elem2":"rad_fire", "chance":0.05 };
+			elements.radiation.reactions.smoke = { "elem2":"rad_smoke", "chance":0.07 };
 			runAfterLoad(function() {
 				for(key in elements.radiation.reactions) {
 					var value = elements.radiation.reactions[key];
@@ -5534,73 +5555,6 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			elements.burning_unrealistically_flammable_powder.burnTempChange = 30;
 			elements.burning_unrealistically_flammable_powder.fireElement = "plasma";
 		});
-	//CONFIGURABLE MAXIMUM COLOR OFFSET (maxColorOffset) ##
-		defaultColorOffset = 15;
-				pixelColorPick = function(pixel,customColor=null,maxOffset=null,dontForceColorsToNulls=false) {
-				var element = pixel.element;
-				var elementInfo = elements[element];
-				//if (elementInfo.behavior instanceof Array) {
-				if (pixel.charge && elementInfo.colorOn) {
-					customColor = elementInfo.colorOn;
-				}
-				if (customColor !== null) {
-					if (Array.isArray(customColor)) {
-						customColor = customColor[Math.floor(Math.random() * customColor.length)];
-					} else if (customColor.startsWith?.("#")) {
-						customColor = hexToRGB(customColor);
-					}
-					var rgb = customColor;
-				}
-				else {
-					var rgb = elements[element].colorObject; // {r, g, b}
-					// If rgb is an array, choose a random item
-					while(Array.isArray(rgb)) {
-						rgb = rgb[Math.floor(Math.random() * rgb.length)];
-					}
-				}
-				// Randomly darken or lighten the RGB color
-					//try maxOffset parameter, then info maxColorOffset, then default 15
-				var offsetAmount;
-				if(maxOffset !== null) {
-					offsetAmount = maxOffset;
-				} else {
-					offsetAmount = elementInfo?.maxColorOffset ?? defaultColorOffset;
-				};
-				if(typeof(rgb) !== "object") { rgb = convertColorFormats(rgb,"json") }; //somehow rgb can be a hex triplet even though it's pulled from the f*cking JSON color object and there's no logical way that that should be able to happen
-				var maxColorOffset = Math.floor(Math.random() * (Math.random() > 0.5 ? -1 : 1) * Math.random() * offsetAmount);
-				var maxRepickTries = 10;
-				var repickTries = 0;
-				var rgbWasNull = (rgb === null);
-				if(rgb == null || (typeof(rgb?.r) !== "number") || (typeof(rgb?.g) !== "number") || (typeof(rgb?.b) !== "number")) {
-					//console.log(pixel.element,pixel.color,"\n",rgb,customColor,Array.isArray(elementInfo.colorObject) ? elementInfo.colorObject.indexOf(rgb) : elementInfo.colorObject);
-					//this SHOULDN'T be necessary but SOMEHOW IT IS
-					while(rgb == null && repickTries < maxRepickTries) {
-						var color_also_fxck_you = elementInfo.colorObject;
-						while(Array.isArray(color_also_fxck_you)) { color_also_fxck_you = randomChoice(color_also_fxck_you) };
-						rgb = color_also_fxck_you
-					};
-					//console.log(pixel.element,pixel.color,rgb,customColor);
-				};
-				var r = rgb.r + maxColorOffset;
-				var g = rgb.g + maxColorOffset;
-				var b = rgb.b + maxColorOffset;
-				// Make sure the color is within the RGB range
-				r = Math.max(0, Math.min(255, r));
-				g = Math.max(0, Math.min(255, g));
-				b = Math.max(0, Math.min(255, b));
-				var color = "rgb("+r+","+g+","+b+")";
-				/*}
-				else {
-					var color = elementInfo.color;
-					if (Array.isArray(color)) {
-						color = color[Math.floor(Math.random() * color.length)];
-					}
-				}*/
-				if((!dontForceColorsToNulls) && rgbWasNull && rgb !== null) {
-					pixel.color = convertColorFormats(rgb,"rgb")
-				};
-				return color;
-			}
 	//FIND MODE AND PIXEL PROPERTIES LINKED TO SPECIAL CODE (acid_and_shapes.js functionality removed) ##
 		var style = document.createElement('style');
 		style.type = 'text/css';
@@ -5746,8 +5700,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
             if (ctx.globalAlpha !== opacity) { ctx.globalAlpha = opacity; }
             ctx.fillRect(canvasCoord(x), canvasCoord(y), pixelSize*scale, pixelSize*scale);
         }
-		function drawLayers(includeBackground) {
-			if (ctx === null) return
+		canvasLayersPreRenderers = [];
+		canvasLayersPostRenderers = [];
+		drawLayers = function(includeBackground) {
+			//console.log("dl tick");
+			if (ctx === null || ctx === undefined) return
 			clearLayers();
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			findColorPulseTimerSubTimer++;
@@ -5788,23 +5745,65 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					}
 				};
 			}
+			for(let i = 0; i < canvasLayersPreRenderers.length; i++) {
+				//console.log(i);
+				canvasLayersPreRenderers[i]();
+			}
 			for (let i = 0; i < canvasLayersPre.length; i++) {
 				const layerCanvas = canvasLayersPre[i];
 				ctx.drawImage(layerCanvas, 0, 0);
 			}
-			if (paused || pixelTicks !== lastPixelDraw) {
-				if (!drawPixels() && !paused) {
-					logMessage("One or more of your mods are outdated and cannot render properly.");
-					togglePause();
-				}
-				lastPixelDraw = pixelTicks;
+            if (paused || pixelTicks !== lastPixelDraw) {
+                if (!drawPixels() && !paused) {
+                    logMessage("One or more of your mods are outdated and cannot render properly.");
+                    togglePause();
+                }
+                lastPixelDraw = pixelTicks;
+            }
+            drawCursor();
+			for(let i = 0; i < canvasLayersPostRenderers.length; i++) {
+				//console.log(i);
+				canvasLayersPostRenderers[i]();
 			}
-			drawCursor();
-			for (let i = 0; i < canvasLayersPost.length; i++) {
-				const layerCanvas = canvasLayersPost[i];
-				ctx.drawImage(layerCanvas, 0, 0);
-			}
+            for (let i = 0; i < canvasLayersPost.length; i++) {
+                const layerCanvas = canvasLayersPost[i];
+                ctx.drawImage(layerCanvas, 0, 0);
+            }
 		}
+		clearInterval(renderInterval);
+		renderInterval = window.setInterval(drawLayers, 1000/60);
+		viewInfo[4] = {
+			name: 'element',
+			pixel: function(pixel,ctx) {
+				var data = elements[pixel.element];
+				var _color = data.color;
+				if(Array.isArray(_color)) {
+					_color = _color[Math.floor(pixelTicks / 10) % _color.length]
+				};
+				drawSquare(ctx,_color,pixel.x,pixel.y,undefined,1 - (data.alpha ?? 0))
+			}
+		};
+		viewInfo[5] = {
+			name: 'velocity',
+			pixel: function(pixel,ctx) {
+				var data = elements[pixel.element];
+				var vx = pixel.vx ?? 0;
+				var vy = pixel.vy ?? 0;
+				var _color = null;
+				if(vx === 0 && vy === 0) {
+					_color = "rgb(15,15,15)"
+				} else {
+					var magnitude = Math.sqrt ((vx ** 2) + (vy ** 2));
+					var direction = Math.atan2(pixel.vy ?? 0,pixel.vx ?? 0)*180/Math.PI;
+					if(direction < 0) { direction = scale(direction,-180,0,360,180) };
+					hue = direction;
+					sat = 100;
+					lig = bound(scale(magnitude,0,100,10,100),0,100);
+					_color = "hsl("+hue+","+sat+"%,"+lig+"%)";
+				};
+				drawSquare(ctx,_color,pixel.x,pixel.y,undefined,1 - (data.alpha ?? 0))
+			}
+		};
 		canvasLayers.pressure = document.createElement("canvas");
 		canvasLayersPre.push(canvasLayers.pressure);
         function drawPressure() {
@@ -5844,7 +5843,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					layerCtx.globalAlpha = 1;
 				}
 			}
+			//console.log("dp tick")
 		};
+		canvasLayersPreRenderers.push(drawPressure);
 
 		//I hate overwriting drawPixels
 		tempScale = 1;
@@ -5979,7 +5980,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					var extraHueDistance = 0;
 					if(temp < -50) {
 						hue = scale(-75,-273.15,-50,250,225);
-					} else if(temp <= 165000) {
+					} else {
 						hue = Math.round(225 - (Math.log(temp+50)/Math.log(6000+50))*225);
 					}
 					if(temp > 165000) { extraHueDistance = Math.abs(hue + 85) }; 
@@ -5994,7 +5995,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
                     if (temp > 1105000 && temp < 6305000) { hue = 120; sat = Math.round((extraHueDistance - 50) * (20/9)); lig = 100 - ((extraHueDistance - 50) * 16/9) } //painbow award contender
                     if (temp > 6305000 && temp < 3300000305000) { hue = (120 + (extraHueDistance - 95)) % 360; sat = 100; lig = 20 }
                     if (temp >= 3300000305000) { hue = 100; sat = 100; lig = 20 } //this scale is a painbow award contender
-					drawSquare(ctx,"hsl("+hue+","+sat+"%,"+lig+"%)",pixel.x,pixel.y)
+					if(isNaN(hue) || isNaN(sat) || isNaN(lig)) { 
+						drawSquare(ctx,"#FFBF7F",pixel.x,pixel.y)
+					} else {
+						drawSquare(ctx,"hsl("+hue+","+sat+"%,"+lig+"%)",pixel.x,pixel.y)
+					}
                 }
             };
 
@@ -6191,6 +6196,27 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				showPressureSettingSpan.appendChild(settingInput);
 				showPressureSettingSpan.appendChild(newHelpMark);
 			pressureSettingSpan.after(showPressureSettingSpan);
+			/*var disableTextSettingSpan = document.createElement("span");
+			disableTextSettingSpan.setAttribute("setting","disabletext");
+			disableTextSettingSpan.setAttribute("title","Default: OFF");
+			disableTextSettingSpan.classList.add("setting-span","multisetting");
+				var settingInput = document.createElement("input");
+				settingInput.setAttribute("type","button");
+				settingInput.setAttribute("value",'Disable text rendering');
+				settingInput.setAttribute("state","0");
+				settingInput.classList.add("toggleInput");
+				settingInput.setAttribute("onclick","toggleInput(this,'disabletext',false)");
+				var options = {
+					"false": "Disabled",
+					"true": "Enabled"
+				};
+				var newHelpMark = document.createElement("span");
+				newHelpMark.setAttribute("title","Don't render text on alphabet blocks.");
+				newHelpMark.classList.add("helpMark");
+				newHelpMark.innerText = "?";
+				disableTextSettingSpan.appendChild(settingInput);
+				disableTextSettingSpan.appendChild(newHelpMark);
+			showPressureSettingSpan.after(disableTextSettingSpan);*/
 			var sizeSetting = document.querySelector('span[setting="pixelsize"]');
 			var sizeDropdown = sizeSetting.querySelector("select");
 			sizeDropdown.setAttribute("onchange","var size = (this.value === 'null' ? null : parseFloat(this.value)); console.log(size); if((size >= 0.05) && (size <= 194.73749999999999) && (size !== null) && (size !== false) && !(isNaN(size))) { console.log(size); setSetting('pixelsize',size);this.nextElementSibling.innerText='Reset Scene' }");
@@ -6989,15 +7015,17 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			color: "#72dfed",
 			behavior: [
 				"XX|XX|XX",
-				"M2|EX:15>frostwind,frostwind,frostwind,liquid_frostbomb%0.4 AND DL%0.2|M2",
+				"M2|EX:15>frostwind,frostwind,frostwind,liquid_frostbomb%0.4 AND DL%0.2 AND CO:1%10|M2",
 				"M1|M1|M1",
 			],
-			temp: 300,
+			temp: -200,
 			category: "energy liquids",
 			state: "liquid",
 			density: 2000,
 			excludeRandom: true,
 		}
+		elements.frostwind.tempHigh = 0;
+		elements.frostwind.stateHigh = null;
 	//LIQUID VOID ##
 		elements.liquid_void = {
 			color: "#262626",
@@ -7242,7 +7270,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		elements.molten_steel ??= {};
 		elements.molten_steel.reactions ??= {};
 		elements.molten_steel.reactions.molten_tungsten = { "elem1":"molten_tungstensteel", "elem2":"molten_tungstensteel" };
-		elements.molten_steel.reactions.molten_chromium = { "elem1":"molten_stainless_steel", "elem2":["molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_stainless_steel"] };
+		elements.molten_steel.reactions.molten_chromium = { "elem1":"molten_stainless_steel", "elem2":["molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_chromium","molten_stainless_steel"] };
+		elements.iron.burnInto = "rust";
+		elements.steel.burnInto = "rust";
 		elements.unrealistically_flammable_substance_bomb = {
 			name: "unrealistically flammable bomb",
 			color: "#cdad52",
@@ -7755,10 +7785,9 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			hardness: 0.9991,
 		}
 		elements.acid.ignore.push("densinium","molten_densinium")
-		//maxColorOffset will only be applied if maxColorOffset.js is enabled
 		elements.silk_velvet = {
 			color: ["#edece8", "#ede7e4"],
-			maxColorOffset: 7,
+			grain: 0.5,
 			category: "land",
 			state: "solid",
 			behavior: [
@@ -7773,7 +7802,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		};
 		elements.red_velvet = {
 			color: ["#a80508", "#b30b0e"],
-			maxColorOffset: 7,
+			grain: 0.5,
 			category: "land",
 			state: "solid",
 			behavior: [
@@ -9032,6 +9061,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		}
 		elements.brimstone_slag = {
 			color: ["#745B57","#534D4A","#463F53","#51113E","#6D283B","#BC4949","#EA9B4E"],
+			fireColor: ["#E50000", "#D52D2D", "#EE4545", "#F8A7A7"],
 			properties: {
 				needsOffset: true
 			},
@@ -9062,7 +9092,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			category: "solids",
 			tick: function(pixel) {
 				if(pixel.needsOffset) {
-					var offset = (elements[pixel.element].maxColorOffset ?? 15);
+					var offset = 15;
 					offset = randomIntegerFromZeroToValue(offset) * (Math.random() < 0.5 ? -1 : 1);
 					pixel.color = convertColorFormats(pixel.color,"json");
 					for(var k in pixel.color) { pixel.color[k] += offset };
@@ -9246,11 +9276,11 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 
 	elements.amba_black_hole = {
 		color: _cc.b.h,
-		maxColorOffset: 0,
+		grain: 0,
 		excludeRandom: true,
 		insulate: true,
 		onSelect: function() {
-			showPropertySetter();
+			if(typeof(showPropertySetter) == "function") { showPropertySetter() };
 			showSetterColumn("numeric",0);
 			var p0 = document.getElementById("propertynumeric0input");
 			var p0h = document.getElementById("propertynumeric0heading");
@@ -9266,6 +9296,24 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		onUnselect: function() {
 			hideAllSetterColumns();
 			hidePropertySetter
+		},
+		renderer: function(pixel,ctx) {
+			if(shiftDown || currentElement == pixel.element) {
+				//for some reason the range is fucked up (centered around the top left of the pixel, and always even) so that's the behavior we need to indicate
+				drawSquare(ctx, "#202020", pixel.x - 0.5, pixel.y - 0.5);
+				
+				if(pixel.range !== undefined) {
+					var centerX = (pixel.x) * pixelSize;
+					var centerY = (pixel.y) * pixelSize;
+					var radius = pixel.range * pixelSize;
+					
+					ctx.beginPath();
+					ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+					ctx.lineWidth = 2;
+					ctx.strokeStyle = 'rgba(127,127,127,0.5)';
+					ctx.stroke();
+				}
+			}
 		},
 		hoverStat: (pixel => `r = ${(pixel.range?.toString() ?? "??")}`),
 		tick: function(pixel) {
@@ -9360,7 +9408,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 
 	elements.amba_white_hole = {
 		color: _cc.w.h,
-		maxColorOffset: 0,
+		grain: 0,
 		excludeRandom: true,
 		insulate: true,
 		onSelect: function() {
@@ -9379,6 +9427,24 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		onUnselect: function() {
 			hideAllSetterColumns();
 			hidePropertySetter
+		},
+		renderer: function(pixel,ctx) {
+			drawSquare(ctx, "#ffffff", pixel.x - 0.5, pixel.y - 0.5);
+			if(shiftDown || currentElement == pixel.element) {
+				//for some reason the range is fucked up (centered around the top left of the pixel, and always even) so that's the behavior we need to indicate
+				
+				if(pixel.range !== undefined) {
+					var centerX = (pixel.x) * pixelSize;
+					var centerY = (pixel.y) * pixelSize;
+					var radius = pixel.range * pixelSize;
+					
+					ctx.beginPath();
+					ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+					ctx.lineWidth = 2;
+					ctx.strokeStyle = 'rgba(127,127,127,0.5)';
+					ctx.stroke();
+				}
+			}
 		},
 		hoverStat: (pixel => `r = ${(pixel.range?.toString() ?? "??")}`),
 		tick: function(pixel) {
@@ -9510,6 +9576,8 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		elements.rainbow.reactions.malware = { elem1: "glitchy_rainbow" };
 		elements.rainbow.reactions.ruby = { elem1: "rubyshimmer" };
 		elements.rainbow.reactions.molten_ruby = { elem1: "rubyshimmer" };
+		elements.rainbow.reactions.garnet = { elem1: "rubyshimmer" };
+		elements.rainbow.reactions.molten_garnet = { elem1: "rubyshimmer" };
 		elements.rainbow.reactions.topaz = { elem1: "topazshimmer" };
 		elements.rainbow.reactions.bee = { elem1: "beeshimmer" };
 		elements.rainbow.reactions.sap = { elem1: "ambershimmer" };
@@ -9850,6 +9918,18 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				var t = pixelTicks*2.5+pixel.x+pixel.y;
 				var r = Math.floor(255*(1-Math.cos(t*Math.PI/24)));
 				pixel.color = "rgb("+Math.ceil((r*(7/8))+32)+","+0+","+0+")";
+			},
+			behavior: behaviors.WALL,
+			state: "solid",
+			category: "rainbow variants",
+		};
+		elements.garnetshimmer = {
+			color: ["#bf1f2f","#180406","#bf1f2f","#180406"],
+			tick: function(pixel) {
+				var t = pixelTicks*2.5+pixel.x+pixel.y;
+				var r = Math.floor(255*(1-Math.cos(t*Math.PI/24)));
+				r = (r*(7/8))+32;
+				pixel.color = "rgb("+Math.ceil(r * 0.65)+","+Math.ceil(r * 0.1)+","+Math.ceil(r * 0.15)+")";
 			},
 			behavior: behaviors.WALL,
 			state: "solid",
@@ -10251,7 +10331,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				var t = pixelTicks*2.5+pixel.x+pixel.y;
 				var r = Math.floor(255*(1-Math.cos(t*Math.PI/24)));
 				var value = Math.ceil((r*(7/8))+32);
-				pixel.color = "rgb("+Math.round(value*0.5)+",0,0)";
+				pixel.color = "rgb("+Math.round(value*0.4)+",0,0)";
 			},
 			behavior: behaviors.WALL,
 			state: "solid",
@@ -11447,7 +11527,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					pixel.color = "#c0c0c0" //I feel bad suppressing the sand effect.
 				}
 			},
-			maxColorOffset: 0,
+			grain: 0,
 			category: "special",
 			state: "solid",
 			hidden: true,
@@ -11702,6 +11782,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 		};
 		elements.planet_cracker = {
 			color: "#ffc8ba",
+			excludeRandom: true,
 			behavior: behaviors.WALL,
 			properties: {
 				active: true,
@@ -11747,8 +11828,14 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						var y = yRisingFromBottomToHalfway;
 						if(isEmpty(x,y,true)) { continue };
 						var newPixel = pixelMap[x][y];
+						var newData = elements[newPixel.element]
+						if(Math.random() < closenessToBottom) { tryBreak(newPixel) }
 						newPixel.temp += 400 + ((1 - closenessToBottom) * 100);
 						pixelTempCheck(newPixel)
+						if(!newData.excludeVelocity) {
+							newPixel.vy ??= 0;
+							newPixel.vy -= Math.round((2 + (closenessToBottom * 2)) ** 2)
+						}
 					};
 
 					explodeAtPlus(pixel.x,pixel.y+pixel.counter,finalRadius,"plasma","fire",null,planetCrackerHeat);
@@ -13344,7 +13431,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					throw new Error("Could not save quicksave in localStorage");
 				};
 			};
-			function quickload(pause=true,doSuccessAlert=true,doFailAlert=true) {
+			function quickload(pause=true,doSuccessAlert=true,doFailAlert=true,suppressModdedSaveLoadWarning=false) {
 				var save = localStorage.getItem("quicksave");
 				if(!save) {
 					if(doFailAlert) { alert("No save exists") };
@@ -13352,7 +13439,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				} else {
 					clearAll();
 					rebuildCurrentPixels();
-					importJsonState(JSON.parse(save));
+					importJsonState(JSON.parse(save),suppressModdedSaveLoadWarning);
 					if(doSuccessAlert) { alert("Quicksave loaded") };
 					if(pause) {
 						paused = true;
@@ -13433,7 +13520,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				//return json;
 				return importJsonState(json);
 			};
-			function importJsonState(json) {
+			function importJsonState(json,suppressModdedSaveLoadWarning=false) {
 				//check keys
 				var jsonKeys = Object.keys(json);
 				var requiredKeys = [/*"currentPixels", */"pixelMap", "width", "height", "pixelSize"];
@@ -13487,7 +13574,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					};
 					localStorage.setItem("enabledMods",JSON.stringify(currentEnmods));
 					if((enMods.length > 0 && enMods[0] !== modName) || enMods.length > 1) {
-						if(!(settings.suppressModdedSaveLoadWarning)) {
+						if(!(suppressModdedSaveLoadWarning || settings.suppressModdedSaveLoadWarning)) {
 							alert("Saves with other mods might require a reload (and then importing the save file again).\nIf you see a blank screen, try refreshing and loading the file again before you panic.")
 						}
 					};
@@ -13581,7 +13668,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 				var displayTemp = Math.round(_temp);
 				if(displayTemp > 999999999) {
-					var shrinkage = (10 ** (Math.floor(Math.log10(_temp)) - 4));
+					var shrinkage = (10 ** (Math.floor(Math.log10(_temp)) - 2));
 					displayTemp = [Math.floor(_temp/shrinkage),"e",Math.log10(shrinkage),suffix].join("");
 				} else {
 					displayTemp = Math.round(_temp).toString() + suffix;
@@ -13599,7 +13686,10 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				//THAT CODE WAS MADE BY MOLLTHECODER FROM THEIR betterStats.js MOD
 				stats += "<span id='stat-ticks' class='stat'>" + pixelTicks+"</span>";
 				if((settings.dopressure) && (typeof(width) == "number") && (!(outOfBounds(mousePos.x,mousePos.y)))) {
-					stats += "<span id='stat-pressure' class='stat'>P:" + getPressureAtPixelCoords(mousePos.x,mousePos.y).toFixed(2).replace(/\.?0+$/,"")+"</span>";
+					let _p = getPressureAtPixelCoords(mousePos.x,mousePos.y);
+					if(_p) {
+						stats += "<span id='stat-pressure' class='stat'>P:" + getPressureAtPixelCoords(mousePos.x,mousePos.y).toFixed(2).replace(/\.?0+$/,"")+"</span>"
+					}
 				};
 				if ((typeof pixelMap).length === 9) { return; }
 				if (pixelMap[mousePos.x] !== undefined) {
@@ -13648,6 +13738,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						statsDiv.style["font-size"] = "75%"
 					}
 				}
+				//Force stats bar to be 2 lines tall so it never hides info
+				var statsBar = document.getElementById("stats");
+				statsBar.style.height = "3em";
 			}
 			//Moved to window.onload where gameDiv should be guaranteed to exist
 		} catch (error) {
@@ -15153,6 +15246,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				elements.steam.reactions ??= {};
 				elements.steam.reactions.charcoal = { tempMin: 680, elem1: "hydrogen", elem2: "carbon_monoxide" };
 				elements.steam.reactions.diamond = { tempMin: 680, elem1: "hydrogen", elem2: "carbon_monoxide" };
+				elements.diamond.tempHigh = 10000; elements.diamond.stateHigh = "carbon_dioxide" //not really that high
 			//Oil refining
 				delete elements.oil.tempHigh;
 				function liquidMoveCustomViscosity(pixel,viscosity) {
@@ -15196,6 +15290,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 				elements.light_petroleum_fuel_gas = { //it's not liquified, and sandboxels doesn't even have a pressure system, and there is no generic name for uncompressed, gaseous "L"PG, so we need a different name
 					burn: 100,
+					burnTime: 10,
 					color: "#b5b5b3",
 					density: 3.5,
 					tempLow: -44,
@@ -15205,10 +15300,17 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							pixel.burnStart = pixelTicks;
 						}
 					},
-					burnInto: "explosion,explosion,fire,fire,fire,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(","),
+					burnInto: "explosion,explosion,ignited_gas,fire,fire,fire,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(","),
 					state: "gas",
 					behavior: behaviors.GAS,
 				};
+				elements.liquid_light_petroleum_fuel = {
+					burn: 50,
+					burnTime: 165,
+					fireElement: ["light_petroleum_fuel_gas","fire","fire"],
+					burnInto: "ignited_gas,fire,fire,smoke,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,carbon_dioxide,steam,steam,steam,steam,steam".split(","),
+					tempLow: -180 //based off of ethane
+				}
 				elements.lamp_oil.tempHigh = 170;
 				elements.lamp_oil.stateHigh = "lamp_oil_gas";
 				elements.lamp_oil.density = 810;
@@ -15408,7 +15510,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 				elements.bitumen = {
 					color: "#0d0c0c",
-					maxColorOffset: 5,
+					grain: 1/3,
 					tick: function(pixel) {
 						var viscosity = 1e16 / (1.09 ** pixel.temp);
 						liquidMoveCustomViscosity(pixel,viscosity)
@@ -15608,7 +15710,15 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		elements.invisible_wall = {
 			color: settings.bg,
 			behavior: behaviors.WALL,
-			tick: function(pixel) { makePixelInvisible(pixel) },
+			alpha: 0,
+			renderer: function(pixel,ctx) {
+				if(view == 2) { viewInfo[2].pixel(pixel,ctx); return };
+				if(currentElement == pixel.element || shiftDown) {
+					ctx.globalAlpha = 0.6;
+					ctx.fillStyle = "#7f7f7f";
+					ctx.fillRect(pixel.x * pixelSize, pixel.y * pixelSize, pixelSize, pixelSize);
+				}
+			},
 			insulate: true,
 			hardness: 1,
 			category: "special",
@@ -15617,7 +15727,16 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		elements.invisible_dye = {
 			color: settings.bg,
 			behavior: behaviors.LIQUID,
+			alpha: 0,
 			tick: function(pixel) { makePixelInvisible(pixel) },
+			renderer: function(pixel,ctx) {
+				if(view == 2) { viewInfo[2].pixel(pixel,ctx); return };
+				if(currentElement == pixel.element || shiftDown) {
+					ctx.globalAlpha = 0.6;
+					ctx.fillStyle = "#7f7f7f";
+					ctx.fillRect(pixel.x * pixelSize, pixel.y * pixelSize, pixelSize, pixelSize);
+				}
+			},
 			hardness: 0.8,
 			breakInto: "invisible_dye_gas",
 			tempHigh: 110,
@@ -15630,7 +15749,16 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		elements.invisible_dye_gas = {
 			color: settings.bg,
 			behavior: behaviors.GAS,
+			alpha: 0,
 			tick: function(pixel) { makePixelInvisible(pixel) },
+			renderer: function(pixel,ctx) {
+				if(view == 2) { viewInfo[2].pixel(pixel,ctx); return };
+				if(currentElement == pixel.element || shiftDown) {
+					ctx.globalAlpha = 0.6;
+					ctx.fillStyle = "#7f7f7f";
+					ctx.fillRect(pixel.x * pixelSize, pixel.y * pixelSize, pixelSize, pixelSize);
+				}
+			},
 			hardness: 0.5,
 			breakInto: "invisible_dye_gas",
 			tempLow: 109,
@@ -16390,6 +16518,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			state: "liquid",
 			viscosity: 3**4,
 		}
+		eLists.JUICEMIXABLE.push("blazing_pyrotheum","gelid_cryotheum","tectonic_petrotheum","zephyrean_aerotheum","energized_glowstone","resonant_ender","destabilized_redstone") //canonically you can drink them, but it's a very bad idea
 		elements.redstone_dust.tempHigh = 2500;
 		elements.redstone_dust.stateHigh = "destabilized_redstone";
 		elements.redstone_dust.conduct = 0.9;
@@ -16455,8 +16584,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			heatCapacity: 3.52, //unimplemented feature
 			name: "bio-ooze",
 			reactions: {
-				"water": { "elem1":"slime", "elem2":"slime" }, //balance
-				"poison": { "elem1":"slime", "elem2":"slime" }, //balance
+				"water": { "elem1":"slime", "elem2":"poison" }, //balance
 				//"acid": { "elem1":"wastestone" }, //acid should be sulfuric acid and product should be wastestone
 				//"elder_fluid": { "elem1":"corrupt_slime" }, //acid should be sulfuric acid and product should be wastestone
 				//"mercury": { "elem1":"liquid_protocite" }, //acid should be sulfuric acid and product should be wastestone
@@ -16777,16 +16905,22 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		};
 	//GASEOUS FORMS AND BOILING OF SOME ELEMENTS ##
 		//glass {
-			elements.molten_glass = {
-				tempHigh: 2200,
-				stateHigh: "vaporized_glass",
-			}
+			elements.molten_glass ??= {};
+			elements.molten_glass.tempHigh = 2200,
+			elements.molten_glass.stateHigh = "vaporized_glass",
+
+			elements.molten_rad_glass ??= {};
+			elements.molten_rad_glass.tempHigh = 2200,
+			elements.molten_rad_glass.stateHigh = "vaporized_rad_glass",
+
+			elements.molten_stained_glass.tempHigh = 2200,
+
 			elements.vaporized_glass = {
 				color: ["#D6B049","#E8D957","#E8AE57"],
-				behavior: [
-					"M2|M1|M2",
-					"M1|XX|M1",
-					"M2|M1|M2",
+				behavior: [ 
+					"M2|M1 AND CR:fire%0.5|M2",
+					"M1 AND CR:fire%0.4|XX|M1 AND CR:fire%0.4",
+					"M2|M1 AND CR:fire%0.3|M2",
 				],
 				reactions: {
 					"vaporized_glass": { "elem1": null, "elem2": "hot_glass_cloud", "chance":0.3, "y":[0,15] },
@@ -16800,6 +16934,29 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				state: "gas",
 				hidden: true
 			},
+
+			elements.vaporized_rad_glass = {
+				color: ["#D7D74A","#D6F58A","#ECD96C"],
+				behavior: [ 
+					"M2|M1 AND CR:radiation%0.1 AND CR:fire%0.5|M2",
+					"M1 AND CR:radiation%0.1 AND CR:fire%0.4|XX|M1 AND CR:radiation%0.1 AND CR:fire%0.4",
+					"M2|M1 AND CR:radiation%0.1 AND CR:fire%0.3|M2",
+				],
+				reactions: {
+					"vaporized_rad_glass": { "elem1": null, "elem2": "hot_rad_glass_cloud", "chance":0.3, "y":[0,15] },
+					"hot_rad_glass_cloud": { "elem1": "hot_rad_glass_cloud", "chance":0.4, "y":[0,15] },
+					"vaporized_glass": { "elem1": null, "elem2": "hot_rad_glass_cloud", "chance":0.3, "y":[0,15] },
+					"hot_glass_cloud": { "elem1": "hot_rad_glass_cloud", "chance":0.4, "y":[0,15] },
+				},
+				density: 2,
+				temp: 2300,
+				tempLow: 2200,
+				stateLow: "molten_rad_glass",
+				category: "gases",
+				state: "gas",
+				hidden: true
+			},
+
 			elements.hot_glass_cloud = {
 				color: ["#B69089","#C8B997","#C88E77"],
 				behavior: [
@@ -16825,6 +16982,35 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				temp: 2000,
 				tempHigh: 2200,
 				stateHigh: "hot_glass_cloud",
+				category: "gases",
+				state: "gas"
+			},
+
+			elements.hot_rad_glass_cloud = {
+				color: ["#B9B389","#CED994","#D1C087"],
+				behavior: [
+					"XX|XX|XX",
+					"M1%7|CH:molten_rad_glass%0.05|M1%7",
+					"XX|XX|XX",
+				],
+				density: 2,
+				temp: 2300,
+				tempLow: 2200,
+				stateLow: "cold_rad_glass_cloud",
+				category: "gases",
+				state: "gas"
+			},
+			elements.cold_rad_glass_cloud = {
+				color: ["#A99FAD","#BDBB87","#BB8C77"],
+				behavior: [
+					"XX|XX|XX",
+					"M1%7|CH:rad_glass_shard%0.05|M1%7",
+					"XX|XX|XX",
+				],
+				density: 2,
+				temp: 2000,
+				tempHigh: 2200,
+				stateHigh: "hot_rad_glass_cloud",
 				category: "gases",
 				state: "gas"
 			},
@@ -16922,10 +17108,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				category: "gases",
 				state: "gas"
 			},
-		//}
-		// charcoal {
-			elements.charcoal.tempHigh = 800
-			elements.charcoal.stateHigh = "carbon_dioxide"
 		//}
 		//carbon dioxide {
 			/*fuck this, i can't work out the offset-infested math
@@ -17489,16 +17671,18 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			settings.bg = _cc.b.h
 		}
 		elements.black_damp = {
-			color: settings.bg,
 			behavior: behaviors.GAS,
 			reactions: {
 				"fire": { elem2: null }
 			},
-			tick: function(pixel) {
-				/*var baseColor = settings.bg instanceof Array ? averageRgbPrefixedColorArray(settings.bg.map(x => convertColorFormats(x,"rgb"))) : convertColorFormats(settings.bg,"rgb");
-				baseColor = convertColorFormats(baseColor,"json");
-				pixel.color = "rgba(" + Object.values(baseColor).join(",") + ",0)"*/
-				pixel.color = "rgba(0,0,0,0)"
+			renderer: function(pixel,ctx) {
+				if(view == 2) { viewInfo[2].pixel(pixel,ctx); return };
+				if(currentElement == pixel.element || shiftDown) {
+					ctx.globalAlpha = 0.6;
+					ctx.fillStyle = "#000000";
+					//ctx.fillRect((pixel.x + 0.25) * pixelSize, (pixel.y + 0.25) * pixelSize, 0.5 * pixelSize, 0.5 * pixelSize);
+					ctx.fillRect(pixel.x * pixelSize, pixel.y * pixelSize, pixelSize, pixelSize);
+				}
 			},
 			hardness: 0.6,
 			category: "gases",
@@ -18347,6 +18531,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			properties: {
 				oldColor: null
 			},
+			burnInto: "zirconia",
 			onTryMoveInto: function(pixel,otherPixel) {
 				neutronAbsorbency(pixel,otherPixel);
 			},
@@ -18358,10 +18543,62 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			density: 6520,
 			conduct: 0.19,
 			hardness: 0.5,
+			forceAutoGen: true
 		},
+		eLists.NUCLEARFUEL = ['uranium', 'molten_uranium', 'enriched_uranium', 'molten_enriched_uranium', 'uranium_dioxide', 'enriched_uranium_dioxide', 'molten_uranium_dioxide', 'molten_enriched_uranium_dioxide', 'uranium233', 'uranium235', 'uranium_gas', 'plutonium', 'molten_plutonium', 'enriched_plutonium', 'molten_enriched_plutonium', 'plutonium_dioxide', 'molten_plutonium_dioxide', 'enriched_plutonium_dioxide', 'molten_enriched_plutonium_dioxide', 'uranium_gas', 'plutonium_gas'];
 		elements.molten_zirconium = {
+			tick: function(pixel) {
+				var neighbors = getVonNeumannNeighbors(pixel);
+				var lavaNeighbors = neighbors.filter(p => (eLists.MAGMA.includes(p.element)) || p.element.includes("molten_dirt"));
+				var fuelNeighbors = neighbors.filter(p => (eLists.NUCLEARFUEL.includes(p.element)));
+				if((lavaNeighbors.length > 0) && (fuelNeighbors.length > 0)) {
+					var aLavaNeighbor = randomChoice(lavaNeighbors);
+					var aFuelNeighbor = randomChoice(fuelNeighbors);
+					var coria = [pixel,aLavaNeighbor,aFuelNeighbor];
+					for(var i = 0; i < coria.length; i++) {
+						var newPixel = coria[i];
+						if(!newPixel) { continue };
+						changePixel(newPixel,"corium",false);
+						if(newPixel.temp < elements.corium.temp) { newPixel.temp = elements.corium.temp }; //changeTemp upwards only
+					}
+				}
+			}
+		}
+		newPowder("zirconia",["#F0ECDB","#FBF8EC"],5680,2715)
+		elements.solid_zirconia = newPowder("zirconia",["#F0ECDB","#FBF8EC"],5680,2715,null,"zirconia",0.85,true);
+		elements.molten_magnesium ??= {}; elements.molten_magnesium.tempHigh = 1090;
+		elements.molten_zirconia = {
+			tempHigh: 4300,
+			viscosity: 13,
+			density: 4700, //https://pmc.ncbi.nlm.nih.gov/articles/PMC6658727/#:~:text=The%20density%20of%20liquid%20ZrO2%20was%20found%20to%20be,mPa%20at%20its%20melting%20point. it's surprising that someone could be arsed to measure it, even more so with the whole extremely high temperature thing
+			stateLow: "solid_zirconia",
+			reactions: {
+				"calcium": { elem1: "cubic_zirconia_solution", elem2: ["calcium","calcium","calcium","calcium",null], tempMin: 2760 },
+				"molten_calcium": { elem1: "cubic_zirconia_solution", elem2: ["molten_calcium","molten_calcium","molten_calcium","molten_calcium",null], tempMin: 2760 },
+				"vaporized_calcium": { elem1: "cubic_zirconia_solution", elem2: ["vaporized_calcium","vaporized_calcium","vaporized_calcium","vaporized_calcium",null], tempMin: 2760 },
+				"magnesium": { elem1: "cubic_zirconia_solution", elem2: ["magnesium","magnesium","magnesium","magnesium",null], tempMin: 2760 },
+				"molten_magnesium": { elem1: "cubic_zirconia_solution", elem2: ["molten_magnesium","molten_magnesium","molten_magnesium","molten_magnesium",null], tempMin: 2760 },
+				"magnesium_gas": { elem1: "cubic_zirconia_solution", elem2: ["magnesium_gas","magnesium_gas","magnesium_gas","magnesium_gas",null], tempMin: 2760 }
+			}
+		};
+		runAfterAutogen(function() {
+			elements.cubic_zirconia_solution = JSON.parse(JSON.stringify(elements.molten_zirconia));
+			elements.cubic_zirconia_solution.stateLow = "cubic_zirconia"
+		});
+		elements.cubic_zirconia = {
+			color: ["#03FCEC","#03C6FC","#B3EEFF","#8AB0E6","#03FCEC","#03C6FC","#B3EEFF","#8AB0E6","#5EF5C5","#88BBEE","#D0AAEF","#E9BECE","#FECC98","#F8F894"],
+			behavior: behaviors.POWDER,
+			category: "powders",
+			state: "solid",
+			density: 5800,
+			hardness: 0.8,
+			tempHigh: elements.zirconia.tempHigh,
+			stateHigh: "molten_zirconia"
+		};
+		elements.molten_zircon = {
 			density: 5803,
-			tempHigh: 4409,
+			tempHigh: 2800,
+			stateHigh: ["molten_zirconia","silica_gas"],
 			behavior: behaviors.MOLTEN,
 			onTryMoveInto: function(pixel,otherPixel) {
 				neutronAbsorbency(pixel,otherPixel);
@@ -18369,6 +18606,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			tick: function(pixel) {
 				neutronMovement(pixel,zirconoids);
 			},
+			
 		};
 		elements.zirconium_gas = {
 			density: 3, //Unknown/Unmeasured value
@@ -18382,20 +18620,226 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 		};
 		elements.neutron.state = "gas";
 		elements.neutron.ignoreAir = "true";
-		neighbors = [[-1,0],[0,-1],[1,0],[0,1]]
-		function tryTarnish(pixel,element,chance) {
-			if(exposedToAir(pixel)) {
-				if(Array.isArray(element)) {
-					if(Math.random() < chance) {
-						changePixel(pixel,randomChoice(element))
-					}
-				} else {
-					if(Math.random() < chance) {
-						changePixel(pixel,element)
-					}
+		neighbors = [[-1,0],[0,-1],[1,0],[0,1]];
+
+		function coriumSteamExpHeat(pixel,x,y,radius,fire,smoke,power,damage) {
+			var distance = pyth(x,y,pixel.x,pixel.y);
+			var closeness = Math.abs(radius - distance);
+			var closenessProportion = closeness / radius;
+			pixel.temp += 25;
+			if(Math.random() < Math.sqrt(closenessProportion)) {
+				if(pixel.element.endsWith("water")) {
+					pixel.temp += 325;
+					pixelTempCheck(pixel)
 				}
+			};
+
+			//double velocity
+			if (!elements[pixel.element].excludeRandom && !elements[pixel.element].excludeVelocity) {
+				var angle = Math.atan2(pixel.y-y,pixel.x-x);
+				pixel.vx = Math.round((pixel.vx|0) + Math.cos(angle) * (radius * power/10));
+				pixel.vy = Math.round((pixel.vy|0) + Math.sin(angle) * (radius * power/10));
 			}
+
 		}
+
+		//and the reason I added zirconium in the first place
+		elements.corium = {
+			color: ["#F4D851","#A9B335","#E1710F"],
+			behavior: behaviors.MOLTEN,
+			tick: function(pixel) {
+				pixel.radiation ??= 150;
+				var range = Math.ceil(Math.log(((pixel.radiation ?? 50) ** (0.583)) + 1))
+				if(isNaN(pixel.radiation)) { pixel.temp += 10; pixel.radiation = 150 };
+				if(isNaN(pixel.temp)) { pixel.temp = 2400 };
+				pixel.temp += (pixel.radiation / 75);
+				if(pixel.radiation > 0) {
+					for(var dx = -range; dx <= range; dx++) {
+						for(var dy = -range; dy <= range; dy++) {
+							if(Math.random() < (pixel.radiation * 0.003)) {
+								var distance = Math.sqrt((Math.abs(dx)**2) + (Math.abs(dy)**2));
+								if(distance > range) { continue };
+								var x = pixel.x + dx;
+								var y = pixel.y + dy;
+								if(isEmpty(x,y,false)) {
+									createPixelReturn("radiation",x,y).temp = pixel.temp;
+								}
+							}
+						}
+					}
+				};
+				pixel.radiation *= 0.99975;
+			},
+			reactions: {
+				"magma": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"felsic_magma": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"intermediate_felsic_magma": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"intermediate_magma": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"ultramafic_magma": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"crimson_magma": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"blackpinkinitic_magma": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"rainbow_magma": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"nellish_magma": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"molten_slag": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"molten_steel": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"molten_zirconium": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"molten_zirconia": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"molten_carbon": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"molten_dirt": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"molten_tuff": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"molten_glass": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"molten_silica": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"fallout": { func(pixel1,pixel2) {
+					changePixel(pixel2,"corium",false); pixel2.radiation = pixel1.radiation / 2; pixel1.radiation = pixel1.radiation / 2 }, chance: 0.02
+				},
+				"iodine": { elem2: null },
+				"caesium": { elem2: null },
+				"barium": { elem2: null },
+				"ash": { elem2: null },
+				"liquid_irradium": { elem2: ["liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium",null], temp1: 1.5, propAdds1: { radiation: 10 } },
+				"pure_water": { elem1: "intermediate_magma", elem2: "pure_water", changeTemp: true },
+				"chilly_water": { elem1: "intermediate_magma", elem2: "pure_water", temp1: -500, temp2: -100 }
+			},
+			hoverStat: function(pixel) { return "rad.lvl. " + (pixel.radiation ?? 150).toLocaleString(undefined,{maximumFractionDigits: 1}) },
+			temp: 2400,
+			tempLow: 1400, //made up
+			stateLow: "solidified_corium",
+			tempHigh: 4400, //made up
+			viscosity: 8, //bad guesstrapolation from https://www.kns.org/files/pre_paper/36/16A-362%EA%B9%80%EC%9B%85%EA%B8%B0.pdf 
+			category: "liquids",
+			state: "liquid",
+			density: 7058 //assuming a 0.456 U-Zr ratio, and with uranium dioxide's density of 10970 subject to Sandboxels's standard molten density approximation of -10% because no data is available, and 4700 for liquid ZrO2, but this doesn't account for the variety of other s*** that gets in corium
+		};
+		
+		/*for(var key in elements.corium.reactions) {
+			var r = elements.corium.reactions[key]
+			if(r.elem1 !== "corium") { continue };
+			elements[key] ??= {};
+			elements[key].reactions ??= {};
+			elements[key].reactions.corium ;
+		}*/
+
+		elements.solidified_corium = {
+			color: ["#5D4D36","#535F30","#414137"],
+			behavior: behaviors.POWDER,
+			tick: function(pixel) {
+				pixel.radiation ??= 10;
+				var range = Math.ceil(Math.log(((pixel.radiation ?? 10) ** (0.583)) + 1))
+				pixel.temp += 2;
+				if(isNaN(pixel.radiation)) { pixel.temp += 3; pixel.radiation = 150 };
+				for(var dx = -range; dx <= range; dx++) {
+					for(var dy = -range; dy <= range; dy++) {
+						if(Math.random() < 0.03 + (pixel.radiation * 0.0025)) {
+							var distance = Math.sqrt((Math.abs(dx)**2) + (Math.abs(dy)**2));
+							if(distance > range) { continue };
+							var x = pixel.x + dx;
+							var y = pixel.y + dy;
+							if(isEmpty(x,y,false)) {
+								createPixelReturn("radiation",x,y).temp = pixel.temp;
+							}
+						}
+					}
+				};
+				pixel.radiation *= 0.9998;
+			},
+			hoverStat: elements.corium.hoverStat,
+			reactions: {
+				"pure_water": { elem1: "andesite", elem2: "pure_water", changeTemp: true },
+				"chilly_water": { elem1: "solidified_corium", elem2: ["chilly_water","steam"], temp1: -500, temp2: -100 },
+				"liquid_irradium": { elem2: ["liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium",null], temp1: 1.5, propAdds1: { radiation: 10 } }
+			},
+			temp: 50,
+			tempHigh: 1400, //made up
+			stateHigh: "corium",
+			category: "solids",
+			state: "solid",
+			density: 11800 //assuming a 0.456 U-Zr ratio, and with uranium dioxide's density of 10970 subject to Sandboxels's standard molten density approximation of -10% because no data is available, and 4700 for liquid ZrO2, but this doesn't account for the variety of other s*** that gets in corium
+		};
+
+		if(eLists.WATER) {
+			for(var i = 0; i < eLists.WATER.length; i++) {
+				var water = eLists.WATER[i];
+				if(water == "chilly_water" || water == "pure_water") { continue };
+				elements.corium.reactions[water] = { func(pixel1,pixel2) {
+					explodeAt(pixel1.x,pixel1.y,5,"fire,rad_steam,rad_steam,rad_steam,steam,steam,radiation","steam,radiation",null,coriumSteamExpHeat)
+				}, temp1: 50, chance: 0.01 }
+			}
+		};
+		
+		elements.corium_gas = {
+			tick: elements.corium.tick,
+			hoverStat: elements.corium.hoverStat,
+			reactions: {
+				"liquid_irradium": { elem2: ["liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium","liquid_irradium",null], temp1: 1.5, propAdds1: { radiation: 10 } },
+				"pure_water": { elem1: "intermediate_magma", elem2: "pure_water", changeTemp: true },
+				"chilly_water": { elem1: "solidified_corium", elem2: "steam", temp1: -500, temp2: -100 }
+			},
+			density: 20
+		};
+		
+		elements.pure_water.reactions.dirty_water = elements.pure_water.reactions.water
+
+		radiationIncreaseOverrides = {
+			molten_uranium238: 1,
+			molten_actinium: 5,
+			molten_protactinium: 3,
+			molten_americium: 3,
+			molten_berkelium: 3,
+			molten_californium: 3,
+			molten_einsteinium: 5,
+			molten_fermium: 5,
+			molten_nihonium: 5,
+			molten_moscovium: 10,
+			molten_livermorium: 10,
+			molten_tennessine: 10,
+			molten_oganesson: 10,
+			molten_nihonium_oxide: 10,
+			molten_flerovium_oxide: 10,
+			molten_livermorium_oxide: 10,
+			"molten_p9-leeseocid": 10,
+		}
+		var radioactives = eLists.NUCLEARFUEL; radioactives.push("molten_uranium","molten_uranium238","molten_neptunium","molten_uranium238","molten_actinium","molten_protactinium","molten_americium","molten_berkelium","molten_californium","molten_einsteinium","molten_fermium","molten_nihonium","molten_moscovium","molten_livermorium","molten_tennessine","molten_oganesson","molten_nihonium_oxide","molten_flerovium_oxide","molten_livermorium_oxide","molten_p9-leeseocid")
+		for(var i = 0; i < radioactives.length; i++) {
+			var radioactive = radioactives[i];
+			elements.corium.reactions[radioactive] ??= { elem2: null, temp1: 1, chance: 0.1, propAdds1: { radiation: radiationIncreaseOverrides[radioactive] ?? 2 } }
+		}
+
 		//Non-element: Liquid ammonia
 		elements.liquid_ammonia = {
 			color: "#bab6a9",
@@ -19384,6 +19828,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					pixel.temp -= ((1.13 + nichromeNeighborLogic(neighbors)) * pixel.charge);
 				};
 			},
+			movable: false
 		};
 		elements.molten_hanichrite = {
 			tick: function(pixel) {
@@ -20323,254 +20768,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				};
 			};
 		});
-	//IDOL BIRTHDAY STUFF
-		fakeDate = urlParams.get('fakeDate');
-		shortenedTest = (urlParams.get('shortenedTest') !== null);
-		//Current iteration copied from the updated version used in https://orbit-loona.github.io/index.html
-		//Colors may not be official for all groups, and even in groups with official colors, the exact color may vary.
-		//Sometimes hex codes are given and sometimes it's only generic color words.
-		//LOONA colors are official but exact shades vary
-		//Kep1er member colors are fan-made colors taken from https://www.reddit.com/r/kep1er/comments/qomf2x/giving_kep1er_member_colours_with_reasoning/
-			//Dayeon's color is directly from the sample, as hex code => rgb(188,188,226) doesn't match and is too similar to Yeseo
-		//BLACKPINK colors are taken from a random blackpink.fandom forum post, and probably made up but whatever
-		//Everglow, STAYC, IZ*ONE, and IVE colors are from Fandom
-		//TWICE colors are official but may vary; the specific shades were compiled at https://aminoapps.com/c/once/page/blog/twice-hex-codes-revamped/WJxj_DxnSXuRRgkoavejJjm7b7zokrnBRBb
-		//Dreamcatcher colors are from //https://www.reddit.com/r/dreamcatcher/comments/lxs6bv/member_colors/
-		//SNSD colors are from //https://colorcodedstuff.fandom.com/wiki/Girls%27_Generation
-		//NewJeans (tends to shuffle)
-		//(G)I-DLE colors are from kprofiles
-		//2NE1 colors are color-picked from https://aminoapps.com/c/2ne1/page/blog/2ne1s-microphone-infos-facts-meaning-and-etc/vDQj_bDfnu6P0MdQ0XWnKaB07xN4BG2mLG
-		//aespa colors are influenced by https://kprofiles.com/poll-which-colours-do-you-think-fits-each-aespa-member-personality/ but ultimately picked arbitrarily
-		//Apink colors color-picked (but altered) from microphones from https://twitter.com/LegendaryApink/status/1606153363606880256 and https://www.pinterest.com/pin/705587466610023284/ (https://i.pinimg.com/736x/70/dc/60/70dc602675f5bcd86f635b77a5d2e938.jpg)
-		//Billlie colors from kprofiles
-		//ALICE, APRIL, Cherry Bullet, Cignature, CLC, CSR, DIA, DreamNote, and fromis_9 colors taken from colorcodedlyrics because their color assignments seem to be consistent
-		//ALICE group color color-picked arbitrarily from the new header image: https://www.reddit.com/gallery/u0jeqq
-		//cignature group color color-picked arbitrarily from the fanclub name announcement image
-		//CSR group color arbitrarily color-picked from the subreddit icon
-		//fromis_9 group colors are fan-made: https://twitter.com/fromis_9pic/status/1478175338089705472/photo/1
-		//DreamNote colors are official: https://aminoapps.com/c/imedreamnoteofficial/page/blog/dreamnote-offical-colors/aVNW_ewVu0uaxWgV7V33Z6pmpXD7md0owwb
-		//tripleS colors are taken from the wiki and corrected by color-picking from Welcome To The Haus, but birthdays were compiled by infichandesu on tripleS Discord https://discord.com/channels/968385909730971668/990903693140434964/1231563006731882518
-		//1 Seoyeon, 2 Hyerin, 3 Jiwoo, 4 Chaeyeon, 5 Yooyeon, 6 Soomin, 7 Nakyoung, 8 Yubin, 9 Kaede, 10 Seo Dahyun, 11 Kotone, 12 Yeonji, 13 Nien, 14 Sohyun, 15 Xinyu, 16 Mayu, 17 Lynn, 18 Joobin, 19 Hayeon, 20 Shion, 21 Kim Chaewon, 22 Sullin, 23 Seoah, 24 Jiyeon
-		//Seoyeon: 2003, Hyerin: 2007, Jiwoo: 2005, Chaeyeon: 2004, Yooyeon: 2001, Soomin: 2007, Nakyoung: 2002, Yubin: 2005, Kaede: 2005, Seo Dahyun: 2003, Kotone: 2004, Yeonji: 2008, Nien: 2003, Sohyun: 2002, Xinyu: 2002, Mayu: 2002, Lynn: 2006, Joobin: 2009, Hayeon: 2007, Shion: 2006, Kim Chaewon: 2007, Sullin: 2006, Seoah: 2010, Jiyeon: 2004
-		//Yunah 2004, Park Minju 2004, Moka 2004, Wonhee 2007, Iroha 2008
-		idolData = {
-			"01-01": { member: "Winter", color: "rgb(209,221,236)", group: "aespa"},
-			"03-01": { member: "Jisoo", color: "rgb(159,0,191)", group: "BlackPink" },
-			"05-01": { member: "Karin", color: "rgb(238,18,137)", group: "ALICE"},
-			"06-01": [ { member: "Shuhua", color: "rgb(255,255,153)", group: "(G)I-DLE"}, { member: "Chloe", color: "rgb(219,244,167)", group: "cignature" }, { member: "Eunbin", color: "rgb(255,215,0)", group: "CLC" } ],
-			"07-01": [ { member: "Yoohyeon", color: "rgb(31,237,21)", group: "Dreamcatcher"}, { member: "Saerom", color: "rgb(254,66,4)", group: "fromis_9" } ],
-			"08-01": [{ member: "Seo Dahyun", color: "rgb(255,154,214)", group: "tripleS" }, { member: "Yeonji", color: "rgb(89,116,255)", group: "tripleS" }],
-			"10-01": { member: "Haeyoon", color: "rgb(246,145,125)", group: "Cherry Bullet" },
-			"11-01": { member: "Lee Chaeyeon", color: "rgb(166,220,222)", group: "IZ*ONE"},
-			"13-01": [ {member: "Mia", color: "rgb(103,5,6)", group: "Everglow"}, { member: "Haram", color: "rgb(255,153,204)", group: "Billlie"} ],
-			"15-01": [{ member: "Suhyeon", color: "rgb(63,196,96)", group: "Billlie"}, { member: "Yunah", color: "rgb(255,207,112)", group: "ILLIT" }],
-			"16-01": [{ member: "Jennie", color: "rgb(204,108,169)", group: "BlackPink"}, { member: "Joobin", color: "rgb(183,245,76)", group: "tripleS" }],
-			"18-01": { member: "Minzy", color: "rgb(195,108,230)", group: "2NE1"},
-			"22-01": { member: "Lee Seoyeon", color: "rgb(0,83,133)", group: "fromis_9" },
-			"23-01": { member: "Isa", color: _cc.b.r, group: "STAYC"},
-			"26-01": { member: "Somyi", color: "rgb(199,56,164)", group: "DIA" },
-			"28-01": { member: "Sheon", color: "rgb(255,153,0)", group: "Billlie"},
-			"30-01": { member: "Haruna", color: "rgb(9,151,222)", group: "Billlie"},
-			"31-01": { member: "Miyeon", color: _cc.b.r, group: "(G)I-DLE"},
-			"01-02": { member: "Jihyo", color: "rgb(250,200,87)", group: "TWICE"},
-			"02-02": { member: "Do-A", color: "rgb(204,0,255)", group: "ALICE"},
-			"03-02": [ {member: "Gahyeon", color: "rgb(186,9,191)", group: "Dreamcatcher"}, {member: "Rei", color: "rgb(105,195,45)", group: "IVE"}, { member: "Yubin", color: "rgb(255,227,226)", group: "tripleS" } ],
-			"04-02": { member: "Iroha", color: "rgb(71,145,255)", group: "ILLIT" },
-			"05-02": [ { member: "Kim Minju", color: _cc.w.r, group: "IZ*ONE"}, { member: "Hyunjoo", color: "rgb(100,190,193)", group: "APRIL" } ],
-			"07-02": { member: "Sunn", color: "rgb(255,173,173)", group: "cignature" },
-			"09-02": { member: "Yooyeon", color: "rgb(219,12,116)", group: "tripleS" },
-			"10-02": [ {member: "Kim Lip", color: "rgb(234,2,1)", group: "LOONA"}, {member: "Sooyoung", color: "rgb(255,92,205)", group: "Girls' Generation"}, { member: "Son Naeun", color: "rgb(196,179,107)", group: "Apink" }, { member: "Irene", color: "rgb(255,251,0)", group: "Red Velvet"} ],
-			"11-02": { member: "Rose'", color: "rgb(0,94,255)", group: "BlackPink"},
-			"13-02": { member: "Jiyeon", color: "rgb(255,171,98)", group: "tripleS" },
-			"16-02": { member: "Siyoon", color: "rgb(255,255,0)", group: "Billlie"},
-			"21-02": [ { member: "Leeseo", color: "rgb(255,240,1)", group: "IVE"}, { member: "Wendy", color: "rgb(0,95,255)", group: "Red Velvet"} ],
-			"26-02": { member: "CL", color: "rgb(226,217,137)", group: "2NE1"},
-			"02-03": { member: "Dayeon", color: "rgb(100,150,235)", group: "Kep1er"},
-			"03-03": [ { member: "Chorong", color: "rgb(230,0,86)", group: "Apink" }, { member: "Bora", color: "rgb(122,205,233)", group: "Cherry Bullet" } ],
-			"04-03": { member: "Geumhee", color: "rgb(4,173,87)", group: "CSR" },
-			"05-03": [ { member: "Yuju", color: "rgb(134,4,148)", group: "Cherry Bullet" }, { member: "Yeri", color: "rgb(159,31,191)", group: "Red Velvet" } ],
-			"07-03": [ { member: "Dami", color: "rgb(255, 244, 15)", group: "Dreamcatcher"}, { member: "Eunjo", color: "rgb(86,255,89)", group: "DreamNote" } ],
-			"09-03": [ { member: "Taeyeon", color: "rgb(100,149,237)", group: "Girls' Generation"}, { member: "Soojin", color: "rgb(247,152,141)", group: "Girls' Generation"} ],
-			"10-03": [{ member: "HaBin", color: "rgb(86,255,204)", group: "DreamNote" }, { member: "Kotone", color: "rgb(253,224,0)", group: "tripleS" }],
-			"12-03": [ { member: "Hikaru", color: "rgb(251,234,140)", group: "Kep1er"}, { member: "Hwang Sihyeon", color: "rgb(4,182,243)", group: "CSR" } ],
-			"13-03": [ { member: "Bae Sumin", color: "rgb(255,192,203)", group: "STAYC"}, { member: "Chaerin", color: "rgb(93,52,195)", group: "Cherry Bullet" } ],
-			"19-03": { member: "Sakura", color: "rgb(241,210,231)", group: "IZ*ONE"},
-			"20-03": { member: "Park Jiwon", color: "rgb(134,171,17)", group: "fromis_9" },
-			"24-03": [ { member: "Mina", color: "rgb(111,197,194)", group: "TWICE"}, { member: "Bom", color: "rgb(118,212,174)", group: "2NE1"} ],
-			"26-03": [ { member: "Handong", color: _cc.b.r, group: "Dreamcatcher"}, { member: "Mirae", color: "rgb(185,74,214)", group: "Cherry Bullet" }, { member: "An Seoyeon", color: "rgb(246,98,15)", group: "CSR" } ],
-			"27-03": { member: "Lisa", color: "rgb(255,250,0)", group: "BlackPink"},
-			"29-03": { member: "Irene", color: "rgb(255,127,223)", group: "Red Velvet"},
-			"01-04": { member: "Jeewon", color: "rgb(0,153,148)", group: "cignature" },
-			"03-04": { member: "Shion", color: "rgb(255,66,138)", group: "tripleS" },
-			"10-04": { member: "Semi", color: "rgb(186,99,247)", group: "cignature" },
-			"11-04": [ { member: "Danielle", color: "rgb(0,238,0)", group: "NewJeans"}, { member: "Karina", color: "rgb(168,44,230)", group: "aespa"} ],
-			"12-04": [{ member: "Hyerin", color: "rgb(146,0,255)", group: "tripleS" }, { member: "Lynn", color: "rgb(172,98,183)", group: "tripleS" }],
-			"14-04": { member: "Yoon", color: "rgb(50,205,50)", group: "STAYC"},
-			"15-04": { member: "Namjoo", color: "rgb(203,108,176)", group: "Apink" },
-			"17-04": { member: "Jiheon", color: "rgb(249,234,77)", group: "fromis_9" },
-			"18-04": { member: "Jessica", color: "rgb(209,0,86)", group: "Girls' Generation"},
-			"21-04": { member: "Hyein", color: "rgb(31,95,255)", group: "NewJeans"},
-			"23-04": [ { member: "Son Chaeyoung", color: "rgb(232,25,51)", group: "TWICE"}, { member: "Yuna", color: "rgb(111,67,164)", group: "CSR" } ],
-			"24-04": { member: "YOUI", color: "rgb(255,86,86)", group: "DreamNote" },
-			"26-04": [ { member: "Chaehyun", color: "rgb(255,183,206)", group: "Kep1er"}, { member: "Remi", color: "rgb(179,249,107)", group: "Cherry Bullet" } ],
-			"28-04": { member: "Duna", color: "rgb(229,111,182)", group: "CSR" },
-			"02-05": { member: "Kim Chaewon", color: "rgb(199,163,224)", group: "tripleS" },
-			"05-05": { member: "Lee Naeun", color: "rgb(186,76,129)", group: "APRIL" },
-			"07-05": { member: "Minji", color: "rgb(255,248,31)", group: "NewJeans"},
-			"11-05": { member: "Park Minju", color: "rgb(186,69,69)", group: "ILLIT" },
-			"12-05": { member: "Mayu", color: "rgb(254,142,118)", group: "tripleS" },
-			"14-05": { member: "Lee Chaeyoung", color: "rgb(35,248,84)", group: "fromis_9" },
-			"15-05": [ {member: "Sunny", color: "rgb(107,142,35)", group: "Girls' Generation"}, {member: "Haerin", color: _cc.w.r, group: "NewJeans"} ],
-			"17-05": { member: "JiU", color: _cc.w.r, group: "Dreamcatcher"},
-			"18-05": { member: "Onda", color: "rgb(179,4,105)", group: "Everglow"},
-			"19-05": { member: "E:U", color: "rgb(107,86,163)", group: "Everglow"},
-			"22-05": { member: "Yang Yena", color: "rgb(255,178,79)", group: "APRIL" },
-			"24-05": { member: "Yves", color: "rgb(125,0,30)", group: "LOONA"},
-			"25-05": { member: "Xinyu", color: "rgb(213,19,19)", group: "tripleS" },
-			"26-05": { member: "Eunchae", color: "rgb(40,119,255)", group: "DIA" },
-			"28-05": { member: "Dahyun", color: _cc.w.r, group: "TWICE"},
-			"30-05": { member: "Yoona", color: "rgb(0,105,148)", group: "Girls' Generation"},
-			"01-06": { member: "Nagyung", color: "rgb(255,145,102)", group: "fromis_9" },
-			"02-06": { member: "Nien", color: "rgb(255,149,63)", group: "tripleS" },
-			"03-06": { member: "Seunghee", color: "rgb(250,55,137)", group: "DIA" },
-			"04-06": { member: "Choerry", color: "rgb(92,44,146)", group: "LOONA"},
-			"07-06": { member: "Jueun", color: "rgb(247,183,240)", group: "DIA" },
-			"11-06": { member: "Seoah", color: "rgb(207,243,255)", group: "tripleS" },
-			"13-06": { member: "JinSoul", color: "rgb(20,36,176)", group: "LOONA"},
-			"14-06": [ {member: "Seeun", color: "rgb(135,206,235)", group: "STAYC"}, {member: "Tzuyu", color: "rgb(1,108,186)", group: "TWICE"} ],
-			"16-06": { member: "Huihyeon", color: "rgb(103,78,167)", group: "DIA" },
-			"18-06": { member: "Nako", color: "rgb(183,211,233)", group: "IZ*ONE"},
-			"20-06": { member: "Seline", color: "rgb(247,99,215)", group: "cignature" },
-			"26-06": { member: "Wonhee", color: "rgb(198,255,217)", group: "ILLIT" },
-			"28-06": { member: "Seohyun", color: "rgb(251,206,177)", group: "Girls' Generation"},
-			"05-07": [ { member: "Hyewon", color: "rgb(219,112,108)", group: "IZ*ONE"}, { member: "Linlin", color: "rgb(191,27,43)", group: "Cherry Bullet" } ],
-			"07-07": { member: "Chaekyung", color: "rgb(255,183,197)", group: "APRIL" },
-			"13-07": { member: "Yebin", color: "rgb(211,0,0)", group: "DIA" },
-			"14-07": { member: "Chaesol", color: "rgb(100,207,255)", group: "cignature" },
-			"19-07": { member: "Oh Hayoung", color: "rgb(210,176,160)", group: "Apink" },
-			"21-07": { member: "Aisha", color: _cc.b.r, group: "Everglow"},
-			"23-07": { member: "Sua", color: "rgb(0,220,220)", group: "CSR" },
-			"27-07": { member: "Huening Bahiyyih", color: "rgb(255,177,109)", group: "Kep1er"},
-			"01-08": [ {member: "Sieun", color: _cc.w.r, group: "STAYC"}, {member: "Kim Chaewon", color: "rgb(206,229,213)", group: "IZ*ONE"}, {member: "Tiffany", color: "rgb(169,32,62)", group: "Girls' Generation"}, { member: "Dohee", color: "rgb(175,27,63)", group: "cignature" }, { member: "Hayeon", color: "rgb(83,217,190)", group: "tripleS" } ],
-			"05-08": { member: "Kim Sihyeon", color: "rgb(199,210,167)", group: "Everglow" },
-			"06-08": { member: "Seoyeon", color: "rgb(34,174,255)", group: "tripleS" },
-			"09-08": { member: "Lara", color: "rgb(145,86,255)", group: "DreamNote" },
-			"10-08": [ { member: "SuA", color: "rgb(255,0,0)", group: "Dreamcatcher"}, { member: "Yeeun", color: "rgb(194,0,130)", group: "CLC" } ],
-			"12-08": { member: "Choi Yujin", color: "rgb(249,123,144)", borderOverride: "rgb(247,127,14)", group: "CLC/Kep1er"},
-			"13-08": [ { member: "EJ", color: "rgb(255,170,66)", group: "ALICE"}, { member: "Bomi", color: "rgb(188,169,203)", group: "Apink" } ],
-			"18-08": [ { member: "Eunji", color: "rgb(230,171,71)", group: "Apink" }, { member: "HaSeul", color: "rgb(0,191,0)", group: "LOONA"} ],
-			"22-08": [ { member: "Yeseo", color: "rgb(162,207,254)", group: "Kep1er"}, { member: "Somin", color: "rgb(153,230,179)", group: "APRIL" } ],
-			"26-08": [ { member: "Soyeon", color: "rgb(245,176,190)", group: "(G)I-DLE"}, { member: "Chaejeong", color: "rgb(94,247,140)", group: "ALICE"} ],
-			"28-08": { member: "Rachel", color: "rgb(84,143,247)", group: "APRIL" },
-			"31-08": [ { member: "Wonyoung", color: "rgb(255,0,30)", borderOverride: "rgb(217,89,140)", group: "IZ*ONE/IVE"}, { member: "Eunjin", color: "rgb(255,79,27)", group: "DIA" } ],
-			"01-09": { member: "An Yujin", color: "rgb(255,57,154)", borderOverride: "rgb(86,122,206)", group: "IZ*ONE/IVE"},
-			"02-09": { member: "Eunice", color: "rgb(237,157,37)", group: "DIA" },
-			"03-09": { member: "Joy", color: "rgb(0,223,23)", group: "Red Velvet" },
-			"04-09": { member: "Huh Jiwon", color: "rgb(234,61,165)", group: "Cherry Bullet" },
-			"07-09": { member: "Park Sumin", color: "rgb(255,0,255)", group: "DreamNote" },
-			"09-09": { member: "Moon Sua", color: "rgb(204,153,255)", group: "Billlie"},
-			"14-09": { member: "Jenny", color: "rgb(0,171,219)", group: "DIA" },
-			"21-09": { member: "Tsuki", color: "rgb(255,153,161)", group: "Billlie"},
-			"22-09": [ {member: "Nayeon", color: "rgb(128,202,241)", group: "TWICE"}, {member: "Hyoyeon", color: "rgb(147,197,114)", group: "Girls' Generation"}, { member: "Hong Yukyung", color: "rgb(212,212,212)", group: "Apink" } ],
-			"23-09": { member: "Yuqi", color: "rgb(38,201,140)", group: "(G)I-DLE"},
-			"24-09": { member: "Gaeul", color: "rgb(0,85,168)", group: "IVE"},
-			"27-09": { member: "Eunbi", color: "rgb(187,176,220)", group: "IZ*ONE"},
-			"29-09": [ { member: "Choi Yena", color: "rgb(252,246,149)", group: "IZ*ONE"}, { member: "Song Hayoung", color: "rgb(120,94,253)", group: "fromis_9" } ],
-			"01-10": { member: "Siyeon", color: "rgb(15,47,255)", group: "Dreamcatcher"},
-			"03-10": { member: "Soomin", color: "rgb(252,131,164)", group: "tripleS" },
-			"06-10": [ { member: "Hitomi", color: "rgb(241,195,170)", group: "IZ*ONE"}, {member: "Hanni", color: "rgb(255,191,255)", group: "NewJeans"} ],
-			"07-10": { member: "Yeham", color: "rgb(220,0,147)", group: "CSR" },
-			"08-10": { member: "Moka", color: "rgb(216,109,157)", group: "ILLIT" },
-			"09-10": { member: "Ye Ah", color: "rgb(69,109,255)", group: "cignature" },
-			"10-10": { member: "Oh Seunghee", color: "rgb(161,107,250)", group: "CLC" },
-			"13-10": [{ member: "HanByeol", color: "rgb(255,238,86)", group: "DreamNote" }, { member: "Nakyoung", color: "rgb(101,153,164)", group: "tripleS" }, { member: "Sohyun", color: "rgb(20,35,180)", group: "tripleS" }],
-			"15-10": { member: "Yeonje", color: "rgb(255,227,3)", group: "ALICE" },
-			"19-10": { member: "HeeJin", color: "rgb(255,0,143)", group: "LOONA"},
-			"20-10": { member: "Chuu", color: "rgb(246,144,126)", group: "LOONA"},
-			"22-10": { member: "Jo Yuri", color: "rgb(243,170,81)", group: "IZ*ONE"},
-			"23-10": [ { member: "Minnie", color: "rgb(155,203,235)", group: "(G)I-DLE"}, { member: "Ningning", color: "rgb(238,23,43)", group: "aespa"} ],
-			"24-10": { member: "Jiwoo", color: "rgb(255,248,1)", group: "tripleS" },
-			"25-10": { member: "MISO", color: "rgb(86,168,255)", group: "DreamNote" },
-			"30-10": [ { member: "Giselle", color: "rgb(3,14,6)", group: "aespa"}, { member: "BoNi", color: "rgb(255,156,86)", group: "DreamNote" } ],
-			"01-11": [ { member: "Jeongyeon", color: "rgb(188,215,118)", group: "TWICE"}, { member: "Kokoro", color: "rgb(0,221,147)", group: "Cherry Bullet" } ],
-			"02-11": { member: "Elkie", color: "rgb(97,179,41)", group: "CLC" },
-			"03-11": { member: "Belle", color: "rgb(0,195,26)", group: "cignature" },
-			"05-11": { member: "Lee Yukyung", color: "rgb(55,253,252)", group: "ALICE"},
-			"06-11": { member: "Seungyeon", color: "rgb(199,3,30)", group: "CLC" },
-			"08-11": { member: "Kim Chaewon", color: "rgb(255,255,122)", group: "APRIL" },
-			"09-11": { member: "Momo", color: "rgb(248,207,215)", group: "TWICE"},
-			"11-11": { member: "YeoJin", color: "rgb(244,111,31)", group: "LOONA"},
-			"12-11": [ {member: "Xiaoting", color:"rgb(195,142,199)", group: "Kep1er"}, {member: "Dara", color:"rgb(244,135,105)", group: "2NE1"} ],
-			"13-11": { member: "Hyeju", color: "rgb(143,143,143)", group: "LOONA"},
-			"15-11": { member: "HyunJin", color: "rgb(255,234,0)", group: "LOONA"},
-			"16-11": { member: "May", color: "rgb(252,80,80)", group: "Cherry Bullet" },
-			"18-11": { member: "Sorn", color: "rgb(0,144,199)", group: "CLC" },
-			"19-11": { member: "Go Won", color: "rgb(48,225,146)", group: "LOONA"},
-			"21-11": { member: "Liz", color: "rgb(0,195,245)", group: "IVE"},
-			"23-11": { member: "Jisun", color: "rgb(238,83,146)", group: "fromis_9" },
-			"30-11": { member: "Sullin", color: "rgb(123,186,141)", group: "tripleS" },
-			"01-12": { member: "Jung Chaeyeon", color: "rgb(0,160,21)", group: "DIA" },
-			"04-12": [ { member: "Jinsol", color: "rgb(205,121,206)", group: "APRIL" }, { member: "Chaeyeon", color: "rgb(141,191,65)", group: "tripleS" }],
-			"05-12": { member: "Kwon Yuri", color: "rgb(0,51,102)", group: "Girls' Generation"},
-			"09-12": [ {member: "ViVi", color: "rgb(255,152,180)", group: "LOONA"}, {member: "J", color: "rgb(255,0,0)", group: "STAYC"} ],
-			"16-12": { member: "Mashiro", color: "rgb(253,238,244)", group: "Kep1er"},
-			"20-12": { member: "Kaede", color: "rgb(255,201,53)", group: "tripleS" },
-			"27-12": [ { member: "Youngeun", color: "rgb(147,197,114)", group: "Kep1er"}, { member: "Gyuri", color: "rgb(33,150,254)", group: "fromis_9" } ],
-			"29-12": [ { member: "Sana", color: "rgb(156,158,207)", group: "TWICE"}, {member: "Yiren", color: _cc.w.r, group: "Everglow"} ],
-			"31-12": { member: "Sohee", color: "rgb(246,110,186)", group: "ALICE"},
-		};
-		var chaos = [];
-		for(date in idolData) {
-			if(date == "chaos") { continue };
-			if(!(idolData[date] instanceof Array)) { idolData[date] = [idolData[date]] }; //array wrap
-			chaos = chaos.concat(idolData[date]);
-		};
-		idolData.chaos = chaos;
-		var february10Override = false;
-		function getDayMonth() {
-			var d = february10Override ? new Date(1549800000000) : new Date();
-			var month = (d.getMonth()+1).toString();
-			if(month.length == 1) { month = "0" + month };
-			var day = d.getDate().toString();
-			if(day.length == 1) { day = "0" + day };
-			var dayMonth = day + "-" + month;
-			return (fakeDate === null ? dayMonth : fakeDate);
-		}
-		function registerElemClick(elementName,memberDataIndex) {
-			var dateData = idolData[getDayMonth()];
-			if(!dateData) {
-				alert("No birthday data here");
-				return false;
-			};
-			var memberData = dateData[memberDataIndex];
-			var fakeDateMessage = "";
-			if(fakeDate !== null) {
-				fakeDateMessage += "(Fake date) ";
-			};
-			var shortenedTestMessage = "";
-			if(shortenedTest) {
-				shortenedTestMessage += "(Shortened) ";
-			};
-			memberName = memberData.member;
-			if(clickedElements[memberName][elementName] === false) {
-				clickedElements[memberName][elementName] = true;
-			};
-			if(evaluateTheClickedElements(memberName)) {
-				alert(
-					`You have clicked on all ${Object.keys(clickedElements[memberName]).length} birthday messages spread throughout some of the elements.`
-					+ "\n" +
-					`Member: ${fakeDateMessage}${shortenedTestMessage}${memberName}. Stan ${memberData.group}!`
-				);
-			};
-			return typeof(clickedElements[memberName][elementName]) === "boolean";
-		};
-		function evaluateTheClickedElements(memberName) {
-			var done = true;
-			for(element in clickedElements[memberName]) {
-				done = done && clickedElements[memberName][element];
-			};
-			return done;
-		};
+	//REMNANT OF REMOVED FEATURE ##
 		function highlightButton(element,color,blurRadius="15px",spreadRadius="5px") {
 			var button = document.getElementById(`elementButton-${element}`);
 			if(button == null) {
@@ -20581,96 +20779,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			document.getElementById(`elementButton-${element}`).style["-webkit-box-shadow"] = `0px 0px ${blurRadius} ${spreadRadius} ${color}`;
 			document.getElementById(`elementButton-${element}`).style["box-shadow"] = `0px 0px ${blurRadius} ${spreadRadius} ${color}`;
 		};
-		clickedElements = {};
-		runAfterAutogen(function() {
-			var alreadyHighlightedElements = [];
-			var changingDescElements = ["distance_display","find_toggle","prop","number_adjuster","replace","alt_replace","alt_alt_replace","change","alt_change","alt_alt_change"];
-			var blacklist = ["toxin","poison","blood","cancer","rotten_meat","frozen_rotten_meat","zombie_blood","plague","stench","infection","acid","acid_gas","rot","shit","shit_gravel","poo","dioxin","lean","cyanide"];
-			var dayMonth = getDayMonth();
-			var baseArray = ["heejinite","heejinite_powder","molten_heejinite","heejinite_gas","haseulite","haseulite_powder","molten_haseulite","haseulite_gas","jinsoulite","jinsoulite_powder","molten_jinsoulite","jinsoulite_gas","haseulite_vent","loona","loona_gravel","molten_loona"];
-			var loonaTheHTML = "";
-			var randomElementSets = {};
-			if(idolData[dayMonth]) {
-				var data = idolData[dayMonth];
-				for(var memberIndex = 0; memberIndex < data.length; memberIndex++) {
-					var member = data[memberIndex].member;
-					randomElementSets[member] = Object.keys(elements).filter(function(e) {
-						var cat = elements[e].category;
-						if(cat == undefined) { cat = "other" };
-						cat = cat.toLowerCase();
-						return (
-							cat !== "clouds" &&
-							cat !== "auto creepers" &&
-							cat !== "auto bombs" &&
-							cat !== "auto fey" &&
-							cat !== "spouts" &&
-							cat !== "singularities" &&
-							cat !== "random" &&
-							cat !== "weapons" &&
-							cat !== "idk" &&
-							cat !== "corruption" &&
-							cat !== "radioactive" &&
-							cat !== "piss" &&
-							cat !== "shit" &&
-							cat !== "vomit" &&
-							cat !== "cum" &&
-							!e.includes("head") &&
-							(!e.includes("body") || e.includes("antibody")) &&
-							!cat.includes("random") &&
-							!cat.includes("udstone") &&
-							!elements[e].nocheer &&
-							!changingDescElements.includes(e) &&
-							!blacklist.includes(e) &&
-							!alreadyHighlightedElements.includes(e) &&
-							!elements[e].hidden &&
-							!baseArray.includes(e)
-						);
-					}); shuffleArray(randomElementSets[member]); randomElementSets[member] = randomElementSets[member].slice(0,shortenedTest ? 2 : 12);
-					clickedElements[member] = {};
-					alreadyHighlightedElements = alreadyHighlightedElements.concat(randomElementSets[member]);
-					for(i = 0; i < randomElementSets[member].length; i++) {
-						var elemName = randomElementSets[member][i];
-						clickedElements[member][elemName] = false;
-					};
-					runAfterButtons(function() {
-						var data = idolData[getDayMonth()];
-						//console.log(data);
-						for(var memberIndex = 0; memberIndex < data.length; memberIndex++) {
-							var member = data[memberIndex].member;
-							//console.log(member, data[memberIndex]);
-							var elems = Object.keys(clickedElements[member]);
-							//console.log(elems);
-							for(j = 0; j < elems.length; j++) {
-								var name = elems[j];
-								var color = data[memberIndex].color;
-								if(data.gradient) {
-									color = _cc.w.r;
-								};
-								//console.log(name);
-								//console.log(color);
-								color == _cc.b.r ? highlightButton(name,color,15,12) : highlightButton(name,color,7,2);
-							};
-						};
-					});
-					var funnyElements = ["heejinite","heejinite_powder","molten_heejinite","heejinite_gas","haseulite","haseulite_powder","molten_haseulite","haseulite_gas","jinsoulite","jinsoulite_powder","molten_jinsoulite","jinsoulite_gas","haseulite_vent","loona","loona_gravel","molten_loona"].concat(randomElementSets[member]);
-					//console.log(member, funnyElements);
-					for(element in funnyElements) {
-						var elemName = funnyElements[element];
-						var info = elements[elemName];
-						if(!info) { console.log(element) };
-						var memberData = data[memberIndex];
-						if(typeof(info.desc) === "undefined") {
-							info.desc = ""
-						} else {
-							info.desc += "<br/>"
-						};
-						var normalDesc = baseArray.includes(elemName);
-						loonaTheHTML = normalDesc ? `<span style="${memberData.gradient ? ('background: ' + memberData.color + '; background-clip: text; -webkit-background-clip: text; text-fill-color: transparent; -webkit-text-fill-color: transparent;') : ('color:' + memberData.color)}">Happy birthday, ${memberData.group} ${memberData.member} (Local time)!</span>` : `<em style="${memberData.gradient ? ('background: ' + memberData.color + '; background-clip: text; -webkit-background-clip: text; text-fill-color: transparent; -webkit-text-fill-color: transparent;') : ('color:' + memberData.color)}" onclick=registerElemClick("${elemName}",${memberIndex})>Happy birthday, ${memberData.member}!</em>`;
-						info.desc += loonaTheHTML;
-					};
-				};
-			};
-		});
 	//OTHER FICTIONAL MATERIALS ##
 		function splitRgbColor(color) {
 			var colorTempArray = color.split(",")
@@ -20834,6 +20942,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			conduct: 0.98,
 			behavior: behaviors.WALL,
 			state: "solid",
+			burnInto: "polusium_oxide",
 			category: "solids",
 			tick: function(pixel) {
 				var emptyNeighbors = [];
@@ -21745,19 +21854,22 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						return array1.concat(array2)
 					};
 				//Powder maker
-				function newPowder(name,color,density=null,tempHigh=null,stateHigh=null,breakInto=null) { //boilerplate my dick
+				function newPowder(name,color,density=null,tempHigh=null,stateHigh=null,breakInto=null,hardness=null,itsActuallySolidNotPowderLol=false) { //boilerplate my dick
 					if(tempHigh == null) {
 						stateHigh = null;
 					};
 					elements[name] = {
+						behavior: itsActuallySolidNotPowderLol ? behaviors.WALL : behaviors.POWDER,
 						color: color,
-						behavior: behaviors.POWDER,
-						category: "solids",
+						category: itsActuallySolidNotPowderLol ? "solids" : "powders",
 						state: "solid",
 						density: density ?? 1000,
 					};
 					if(tempHigh !== null) {
 						elements[name].tempHigh = tempHigh;
+					};
+					if(hardness !== null) {
+						elements[name].hardness = hardness;
 					};
 					if(tempHigh !== null && stateHigh !== null) {
 						elements[name].stateHigh = stateHigh;
@@ -22535,7 +22647,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									hardness: 0.75,
 									breakInto: vesiculiteGravelName,
 									_data: [compositionFamilyName,"vesiculite","igneous_rock"],
-									maxColorOffset: 40,
+									grain: 3,
 									metamorphite: metavesiculiteName,
 									onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
 								};
@@ -22550,7 +22662,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									breakInto: vesiculiteDustName,
 									density: vesiculiteDensity * 3.2,
 									_data: [compositionFamilyName,"vesiculite","igneous_gravel"],
-									maxColorOffset: 40,
+									grain: 3,
 									metamorphite: metavesiculiteName,
 									onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
 								};
@@ -22579,7 +22691,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									hardness: 0.8,
 									breakInto: vesiculiteName,
 									_data: [compositionFamilyName,"vesiculite","solid_igneous_rock"],
-									maxColorOffset: 40,
+									grain: 3,
 									metamorphite: metavesiculiteWallName,
 									onTryMoveInto: function(pixel,otherPixel) { simplifiedSingleMetamorphiteMetamorphismOTMI(pixel,otherPixel) }
 								};
@@ -22642,7 +22754,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									hardness: 0.75,
 									breakInto: metavesiculiteGravelName,
 									_data: [compositionFamilyName,"metavesiculite","igneous_rock"],
-									maxColorOffset: 35
+									grain: 2.5
 								};
 								elements.water.reactions[metavesiculiteName] = { "elem2": metavesiculiteGravelName, "chance": 0.00035 }
 								elements[metavesiculiteGravelName] = {
@@ -22655,7 +22767,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									breakInto: metavesiculiteDustName,
 									density: metavesiculiteDensity * 3.2,
 									_data: [compositionFamilyName,"metavesiculite","metamorphic_gravel"],
-									maxColorOffset: 35
+									grain: 2.5
 								};
 								elements[metavesiculiteDustName] = {
 									color: dustizeToHex(metavesiculiteName),
@@ -22682,7 +22794,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 									hardness: 0.8,
 									breakInto: metavesiculiteName,
 									_data: [compositionFamilyName,"metavesiculite","solid_metamorphic_rock"],
-									maxColorOffset: 35
+									grain: 2.5
 								};
 								elements.water.reactions[metavesiculiteWallName] = { "elem2": metavesiculiteName, "chance": 0.00035 }
 								//Sand and sand variants
@@ -23281,7 +23393,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							density: sandInfo.density * 1.5, //wide range
 							hardness: 0.5,
 							breakInto: sandName,
-							maxColorOffset: 30,
+							grain: 2,
 							_data: [sandInfo?._data?.[0] ?? "unknown", (sandInfo?._data?.[1] ?? "unknown") + "_sandstone", "sedimentary_rock"],
 						};
 				};
@@ -23352,6 +23464,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							stain: 0.01,
 							_data: [particulateInfo._data[0], particulateInfo._data[1], "suspension"],
 						}
+						if(eLists.WATER) { eLists.WATER.push(suspensionName) };
 						elements[suspensionName].reactions[suspensionName] = { "elem1":"water", "elem2":sedimentName, "chance": 0.001 },
 						elements[suspensionName].reactions[particulateName] = { "elem1": "water", "elem2":sedimentName, "chance": 0.0005 },
 					//Sediment element where lithification code resides
@@ -23424,11 +23537,13 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 								density: particulateInfo.density * 1.5, //wide range
 								hardness: 0.7,
 								breakInto: particulateName,
-								maxColorOffset: 30,
+								grain: 2,
 								_data: [particulateInfo._data[0], "rock", "sedimentary_rock"],
 							};
 						};
 				};
+				if(!eLists.WATER) { console.error(38309309) };
+				if(eLists.WATER) { eLists.WATER.push("swamp_water","heavy_water","radioactive_water","milk") };
 				newPowder("calcite","#f5ecd0",2711,825,["carbon_dioxide","quicklime"],"calcium_carbonate_dust");
 				newPowder("aragonite","#e3c58d",2830,825,["carbon_dioxide","quicklime"],"calcium_carbonate_dust");
 				newPowder("vaterite","#e8ebd8",2540,825,["carbon_dioxide","quicklime"],"calcium_carbonate_dust");
@@ -23465,6 +23580,8 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					};
 				};
 				runAfterLoad(function() {
+					eLists.MAGMA = Object.keys(elements).filter(x => x.includes("magma") && !(x.includes("vaporized")) && !(x.includes("cloud")))
+					
 					for(i = 0; i < sands.length; i++) {
 						switch(sands[i]) {
 							case "dirt":
@@ -23497,7 +23614,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					elements.clay._data = ["clay","clay","particulate"],
 					makeNonSandSedimentationElements("clay","clay_water","shale");
 					elements.shale.color = ["#787b80","#535557","#695e58", "#696969", "#6b5d5b"];
-					elements.shale.maxColorOffset = 15;
+					elements.shale.grain = 1;
 					elements.shale.tempHigh = 200; //shale does get baked (https://pubs.usgs.gov/pp/0108a/report.pdf), but it feels wrong for it to happen so soon
 					elements.shale.behavior = behaviors.POWDER;
 					elements.shale.category = "solid rock";
@@ -23547,21 +23664,103 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							};
 						};
 					};
-					newPowder("silica","#faf9f0",2196,1713).hardness = 0.7;
+					let _s = newPowder("silicon",["#D7DDDF","#999FA1","#7A7E80","#535657"],2330,1414); _s.hardness = 0.7; _s.tick = function(pixel) {
+						if(pixel.temp >= 700) {
+							tryTarnish(pixel,"silica",0.02,false);
+						}
+					};
+					elements.molten_silicon = {
+						tempHigh: 3265,
+						density: 2520,
+						viscosity: 1,
+						behavior: behaviors.MOLTEN,
+						tick: function(pixel) {
+							tryTarnish(pixel,"silica",0.02,false);
+							pixelTempCheck(pixel);
+						},
+						reactions: {
+							oxygen: { elem1: ["molten_silicon","silica"], elem2: null, minTemp: 700 },
+							liquid_oxygen: { elem1: ["molten_silicon","silica"], elem2: ["liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen",null], minTemp: 700 }, //real ratio is 862:1
+							oxygen_ice: { elem1: ["molten_silicon","silica"], elem2: ["liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen","liquid_oxygen",null], minTemp: 700 }
+						}
+					},
+					newPowder("silica","#faf9f0",2202,1713).hardness = 0.7;
+					elements.glass.alpha = 0.6;
+					elements.fused_silica = {
+						color: "#F8F5ED",
+						alpha: 0.5,
+						renderer: renderPresets.BORDER,
+						behavior: behaviors.WALL,
+						reactions: {
+							"radiation": { elem1:"rad_glass", chance:0.33 },
+							"rad_steam": { elem1:"rad_glass", elem2:null, chance:0.33 },
+							"fallout": { elem1:"rad_glass", elem2:"radiation", chance:0.1 }
+						},
+						tempHigh: 1713,
+						stateHigh: "molten_silica",
+						hardness: 0.72,
+						category: "solids",
+						state: "solid",
+						density: 2202,
+						breakInto: "silica",
+						noMix: true,
+						grain: 0
+					};
 					elements.silica.reactions = {
-						intermediate_felsic_magma: { elem1: "felsic_magma", elem2: "felsic_magma", chance: 0.9 },
-						intermediate_magma: { elem1: "intermediate_felsic_magma", elem2: "intermediate_felsic_magma", chance: 0.9 },
-						magma: { elem1: "intermediate_magma", elem2: "intermediate_felsic_magma", chance: 0.9 },
-						ultramafic_magma: { elem1: "magma", elem2: "magma", chance: 0.9 },
+						ultramafic_magma: { elem1:[
+							"silica","silica","silica","silica","silica",
+							"silica","silica","silica","silica","silica",
+							"silica","silica","silica","silica","silica",
+							"silica","silica","silica","silica",null //the range of silica content from ultramafic to felsic is about 20%; this regarded as 4 even steps on top of ultramafic magma for simplicity's sake gives 5% or 1/20
+						], elem2: "magma", "chance":0.1 },
+						magma: { elem1:[
+							"silica","silica","silica","silica","silica",
+							"silica","silica","silica","silica","silica",
+							"silica","silica","silica","silica","silica",
+							"silica","silica","silica","silica",null
+						], elem2: "intermediate_magma", "chance":0.09 },
+						intermediate_magma: { elem1:[
+							"silica","silica","silica","silica","silica",
+							"silica","silica","silica","silica","silica",
+							"silica","silica","silica","silica","silica",
+							"silica","silica","silica","silica",null
+						], elem2: "intermediate_felsic_magma", "chance":0.08 },
+						intermediate_felsic_magma: { elem1:[
+							"silica","silica","silica","silica","silica",
+							"silica","silica","silica","silica","silica",
+							"silica","silica","silica","silica","silica",
+							"silica","silica","silica","silica",null
+						], elem2: "felsic_magma", "chance":0.07 },
 					};
 					elements.molten_silica = {
 						tempHigh: 2950,
-						viscosity: 1e14, //idk lol
+						viscosity: 2000000000, //2e7 centiPoise
+						stateLow: "fused_silica",
 						reactions: {
-							intermediate_felsic_magma: { elem1: "felsic_magma", elem2: "felsic_magma", chance: 0.9 },
-							intermediate_magma: { elem1: "intermediate_felsic_magma", elem2: "intermediate_felsic_magma", chance: 0.9 },
-							magma: { elem1: "intermediate_magma", elem2: "intermediate_felsic_magma", chance: 0.9 },
-							ultramafic_magma: { elem1: "magma", elem2: "magma", chance: 0.9 },
+							ultramafic_magma: { elem1:[
+								"molten_silica","molten_silica","molten_silica","molten_silica","molten_silica",
+								"molten_silica","molten_silica","molten_silica","molten_silica","molten_silica",
+								"molten_silica","molten_silica","molten_silica","molten_silica","molten_silica",
+								"molten_silica","molten_silica","molten_silica","molten_silica",null //the range of silica content from ultramafic to felsic is about 20%; this regarded as 4 even steps on top of ultramafic magma for simplicity's sake gives 5% or 1/20
+							], elem2: "magma", "chance":0.1 },
+							magma: { elem1:[
+								"molten_silica","molten_silica","molten_silica","molten_silica","molten_silica",
+								"molten_silica","molten_silica","molten_silica","molten_silica","molten_silica",
+								"molten_silica","molten_silica","molten_silica","molten_silica","molten_silica",
+								"molten_silica","molten_silica","molten_silica","molten_silica",null
+							], elem2: "intermediate_magma", "chance":0.09 },
+							intermediate_magma: { elem1:[
+								"molten_silica","molten_silica","molten_silica","molten_silica","molten_silica",
+								"molten_silica","molten_silica","molten_silica","molten_silica","molten_silica",
+								"molten_silica","molten_silica","molten_silica","molten_silica","molten_silica",
+								"molten_silica","molten_silica","molten_silica","molten_silica",null
+							], elem2: "intermediate_felsic_magma", "chance":0.08 },
+							intermediate_felsic_magma: { elem1:[
+								"molten_silica","molten_silica","molten_silica","molten_silica","molten_silica",
+								"molten_silica","molten_silica","molten_silica","molten_silica","molten_silica",
+								"molten_silica","molten_silica","molten_silica","molten_silica","molten_silica",
+								"molten_silica","molten_silica","molten_silica","molten_silica",null
+							], elem2: "felsic_magma", "chance":0.07 }
 						},
 					};
 					elements.felsic_magma.reactions ??= {};
@@ -23914,6 +24113,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						elements.worm.reactions.limestone_gravel = { "elem2":"calcium", "chance":0.1 },
 						elements.acid.reactions.limestone_gravel = { "elem1":"neutral_acid", "elem2":null },
 						newPowder("aluminum_oxide","#f2f2f2",3987,2072).hardness = 0.93;
+						elements.aluminum.burnInto = "aluminum_oxide",
 						elements.molten_aluminum_oxide = {
 							tempHigh: 2977,
 						};
@@ -23924,6 +24124,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							snow: { elem1: "sulfuric_acid", elem2: "sulfuric_acid" },
 							packed_snow: { elem1: "sulfuric_acid", elem2: "sulfuric_acid" },
 							slush: { elem1: "sulfuric_acid", elem2: "sulfuric_acid" },
+							copper_2_oxide: { elem1: "anhydrous_copper_sulfate", elem2: "anhydrous_copper_sulfate" }
 						}; elements.sulfur_trioxide.temp = 10;
 						elements.molten_sulfur_trioxide = {
 							color: "#c0c0c0",
@@ -24764,7 +24965,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						};
 						elements.blinkinite.behavior = behaviors.POWDER;
 						elements.rosephyllite.name = elements.rosephyllite.alias = "roséphyllite";
-						elements.jisoovesite.maxColorOffset = 30;
+						elements.jisoovesite.grain = 2;
 					//Rainbow (actually let's call them Iridian)
 						//Required manual elements
 							elements.rainbow_glass = {
@@ -25923,7 +26124,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							}
 						};
 					};
-					standaloneBrokenFormMaker("sapphire","shard",true,"powders","auto","auto","molten_sapphire",["alumina","alumina","alumina","alumina","alumina","alumina","alumina","alumina","alumina","iron_scrap","titanium_scrap"]).hidden = true;
+					standaloneBrokenFormMaker("sapphire","shard",true,"powders","auto","auto","molten_sapphire",["corundum","corundum","corundum","corundum","corundum","corundum","corundum","corundum","corundum","iron_scrap","titanium_scrap"]).hidden = true;
 				//Ruby
 					elements.ruby = {
 						//Corundum with different impurities, so I can copy/paste everything but the color
@@ -25932,7 +26133,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						behavior: behaviors.POWDER,
 						category: "powders",
 						state: "solid",
-						density: 3980,
+						density: 4010,
 						hardness: 0.9,
 					};
 					elements.molten_ruby ??= {}; elements.molten_ruby.tick = function(pixel) {
@@ -25944,7 +26145,36 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 							}
 						};
 					};
-					standaloneBrokenFormMaker("ruby","shard",true,"powders","auto","auto","molten_sapphire",["alumina","alumina","alumina","alumina","alumina","alumina","alumina","alumina","alumina","chromium_scrap"]).hidden = true;
+					standaloneBrokenFormMaker("ruby","shard",true,"powders","auto","auto","molten_sapphire",["corundum","corundum","corundum","corundum","corundum","corundum","corundum","corundum","corundum","chromium_scrap"]).hidden = true;
+				//Garnet
+					var garnetDecomposition = ["iron_scrap","spinel"]
+					elements.garnet = { //Almandine
+						color: ["#660c20","#a52942","#8d0404","#c3040d"],
+						tempHigh: 1250,
+						tick: function(pixel) {
+							if(pixel.temp >= 950) {
+								//and fayalite, cristobalite, and cordierite. i was expecting to add 1 mineral, not 3.
+								var boost = Math.max((pixel.temp - 950),0) / 40000 //rate pulled out of my ass
+								if(Math.random() < (0.005 + boost)) {
+									changePixel(pixel,randomChoice(garnetDecomposition),false)
+								}
+							}
+						},
+						behavior: behaviors.POWDER,
+						category: "powders",
+						state: "solid",
+						density: 4318,
+						hardness: 0.8,
+					};
+					elements.molten_garnet ??= {}; elements.molten_garnet.tick = function(pixel) {
+						var boost = Math.max((pixel.temp - 1250),0) / 40000
+						if(Math.random() < 0.0125 + boost) {
+							changePixel(pixel,randomChoice(garnetDecomposition),false);
+							pixelTempCheck(pixel)
+						}
+					}
+					standaloneBrokenFormMaker("garnet","shard",true,"powders","auto","auto","molten_garnet",null).hidden = true;
+					elements.garnet_shard.tick = elements.garnet.tick
 				//Spinel (kek)
 					elements.spinel = {
 						color: ["#ff1261", "#db2776", "#f20732", "#f71670", "#f7167f"],
@@ -25954,6 +26184,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						state: "solid",
 						density: 3600,
 						hardness: 0.85,
+					}
+					elements.molten_spinel = {
+						tempHigh: 2977, //The real boiling point is not known, so using corundum
 					}
 				//Topaz
 					elements.topaz = {
@@ -25986,6 +26219,47 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						density: 2650,
 						hardness: 0.7,
 					};
+				//Zircon
+					blueZirconColors = ["#017cbc","#146ea0","#17b6c9","#3bbfd3"];
+					goldenZirconColors = ["#e99209","#fcb111","#d88208","#b97605"];
+					//heatTreated 0 = untreated, 1 = inertly (blue), 2 = with oxygen (golden)
+					elements.zircon = {
+						color: ["#37130b","#a9301a","#3c1810"],
+						properties: {
+							heatTreated: 0
+						},
+						tick: function(pixel) {
+							pixel.heatTreated ??= 0;
+							if(pixel.temp > 900) {
+								if(pixel.heatTreated == 0) {
+									if(exposedToAir(pixel)) {
+										pixel.color = pixelColorPick(pixel,goldenZirconColors)
+										pixel.heatTreated = 2;
+									} else {
+										pixel.color = pixelColorPick(pixel,blueZirconColors)
+										pixel.heatTreated = 1;
+									}
+								} else if((pixel.heatTreated == 1) && (exposedToAir(pixel))) {
+									pixel.color = pixelColorPick(pixel,goldenZirconColors)
+									pixel.heatTreated = 2;
+								}
+							}
+						},
+						onUnpaint: function(pixel) {
+							if(pixel.heatTreated == 1) {
+								pixel.color = pixelColorPick(pixel,blueZirconColors)
+							} else if(pixel.heatTreated = 2) {
+								pixel.color = pixelColorPick(pixel,goldenZirconColors)
+							};
+						},
+						tempHigh: 2100,
+						behavior: behaviors.POWDER,
+						category: "powders",
+						state: "solid",
+						density: 4010,
+						hardness: 0.9,
+					};
+
 				//Opal
 					elements.opal = {
 						color: ["#ffcfcf", "#fff0d9", "#fcf7c5", "#e4ffd4", "#d1fff5", "#dcecfa", "#dfdbff", "#f5e0ff", "#f7d0f1"],
@@ -26049,6 +26323,285 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						density: 3400,
 						hardness: 0.65,
 					};
+				//Missing gases
+					elements.molten_plastic.tempHigh = 360;
+					elements.molten_plastic.stateHigh = ["steam","carbon_dioxide","smoke","acid_gas","benzene_gas","dioxin","stench"];
+
+					elements.copper_sulfate.tempHigh = 110;
+					elements.molten_copper_sulfate.burn = 0.1;
+					elements.molten_copper_sulfate.behavior = behaviors.LIQUID;
+					elements.molten_copper_sulfate.tempHigh = 150;
+					elements.molten_copper_sulfate.stateHigh = "molten_anhydrous_copper_sulfate";
+					var acs = newPowder("anhydrous_copper_sulfate","#8a9c7f",3603,340);
+					elements.molten_anhydrous_copper_sulfate = {
+						tempHigh: 630,
+						stateHigh: ["copper_2_oxide","sulfur_trioxide_gas"]
+					};
+					acs.reactions = {
+						water: {elem1: "copper_sulfate", elem2: null, tempMax: 63},
+						salt_water: {elem1: "copper_sulfate", elem2: "salt", tempMax: 63},
+						sugar_water: {elem1: "copper_sulfate", elem2: "sugar", tempMax: 63},
+						dirty_water: {elem1: "copper_sulfate", elem2: ["dust","ash","poison"], tempMax: 63},
+						radioactive_water: {elem1: "copper_sulfate", elem2: "fallout", tempMax: 63},
+						heavy_water: {elem1: "copper_sulfate", elem2: null, tempMax: 63},
+						radioactive_water: {elem1: "copper_sulfate", elem2: "radiation", tempMax: 63}
+					};
+					acs.tick = function(pixel) {
+						if(exposedToAir(pixel) && Math.random() < 0.02 && pixel.temp < 200) {
+							if(pixel.temp > 63 && pixel.water >= 4) { return };
+							pixel.water ??= 0;
+							pixel.water++;
+							if(!pixel.color.startsWith("hsl")) {
+								var _oldColor = convertColorFormats(pixel.color,"json");
+								_oldColor.r -= 15; _oldColor.g += 2; _oldColor.b -= 6;
+								pixel.color = convertColorFormats(_oldColor,"rgb");
+								_oldColor = null
+							};
+							if(pixel.water >= 5) {
+								changePixel(pixel,"copper_sulfate",false)
+							}
+						}
+					};
+					newPowder("copper_2_oxide","#171516",6310,1326);
+					elements.molten_copper_2_oxide = { tempHigh: 2000 };
+
+					runAfterLoad(function() {
+						simpleMissingGases = {
+							//For substances that don't decompose before they boil
+							molten_silver: 2162,
+							molten_nickel: 2913,
+							molten_tin: 2602,
+							molten_lead: 1749,
+							molten_aluminum: 2470,
+							molten_zinc: 907,
+							molten_uranium: 4131,
+							molten_polonium: 962
+						}
+						for(elemName in simpleMissingGases) {
+							var tH = simpleMissingGases[elemName];
+							if(tH) {
+								elements[elemName] ??= {};
+								elements[elemName].tempHigh = tH;
+								//console.log(elemName,elements[elemName])
+							}
+						};
+
+						liquidsMissingGases = {
+							molten_solder: null,
+							molten_tuff: null,
+							molten_thermite: null,
+							molten_slag: null,
+							molten_iron_dichloride: null,
+							molten_rutile: null,
+							molten_magnesium_oxide: null,
+							molten_magnesium_chloride: null,
+							molten_francium: null,
+							molten_stable_polonium: null,
+							molten_polonium_dioxide: null,
+							molten_magnesium_polonide: null,
+							molten_stable_francium: null,
+							molten_potassium_salt: null,
+							molten_cryolite_solution: null,
+							molten_fluorite: null,
+							molten_chalk: null,
+							molten_potassium_carbonate: null,
+							molten_potassium_fluoride: null,
+							molten_potassium_bromide: null,
+							molten_sodium_bromide: null,
+							molten_silver_bromide: null,
+							molten_potassium_sulfate: null,
+							molten_sodium_aluminate: null,
+							molten_sodium_carbonate: null,
+							molten_cryolite: null,
+							molten_sodium_fluoride: null,
+							molten_magnesium_fluoride: null,
+							molten_sodium_sulfate: null,
+							molten_boric_acid: null,
+							molten_borax: null,
+							molten_boron_trioxide: null,
+							molten_sodium_methoxide: null,
+							molten_decaborane: null,
+							molten_sodium_dodecaborate: null,
+							molten_depleted_uranium: null,
+							molten_enriched_uranium: null,
+							molten_uranium_dioxide: null,
+							molten_enriched_uranium_dioxide: null,
+							molten_uranium_tetrafluoride: null,
+							molten_enriched_uranium_tetrafluoride: null,
+							molten_radium: null,
+							molten_actinium: null,
+							molten_thorium: null,
+							molten_protactinium: null,
+							molten_neptunium: null,
+							molten_plutonium: null,
+							molten_enriched_plutonium: null,
+							molten_depleted_plutonium: null,
+							molten_plutonium_dioxide: null,
+							molten_enriched_plutonium_dioxide: null,
+							molten_depleted_plutonium_dioxide: null,
+							molten_plutonium_tetrafluoride: null,
+							molten_enriched_plutonium_tetrafluoride: null,
+							molten_depleted_plutonium_tetrafluoride: null,
+							molten_americium: null,
+							molten_curium: null,
+							molten_berkelium: null,
+							molten_californium: null,
+							molten_einsteinium: null,
+							molten_fermium: null,
+							molten_stable_thorium: null,
+							molten_radium_chloride: null,
+							molten_stable_radium: null,
+							molten_stable_actinium: null,
+							molten_stable_protactinium: null,
+							molten_stable_neptunium: null,
+							molten_nihonium: null,
+							molten_nihonium_nitrate: null,
+							molten_nihonium_sulfate: null,
+							molten_flerovium_oxide: null,
+							molten_moscovium: null,
+							molten_moscovium_hydroxide: null,
+							molten_livermorium: null,
+							molten_livermorium_oxide: null,
+							molten_tennessine: null,
+							molten_ununennium_fluoride: null,
+							molten_unbinilium: null,
+							molten_stable_unbinilium: null,
+							molten_unbinilium_difluoride: null,
+							molten_francium_hydroxide_powder: null,
+							molten_ununennium_hydroxide_powder: null,
+							molten_caustic_soda: null,
+							molten_caustic_potash: null,
+							molten_sodium_acetate: null,
+							molten_endstone: null,
+							molten_netherrack: null,
+							molten_dripstone: null,
+							molten_obsidian: null,
+							molten_mythril: null,
+							molten_mithril_mythril_alloy: null,
+							molten_hematite: null,
+							molten_carbon: null,
+							molten_quartz: null,
+							molten_ketchup_metal: null,
+							molten_caesium_137: null,
+							molten_barium: null,
+							molten_technetium: null,
+							molten_bismuth: null,
+							molten_gallium_nitride: null,
+							molten_gallium_phosphide: null,
+							molten_densinium: null,
+							molten_polystyrene: null,
+							molten_sterling: null,
+							molten_signalum: null,
+							molten_pyreite: null,
+							molten_infernium: null,
+							molten_infernyrite: null,
+							molten_infernyreitheum: null,
+							molten_pyrinfernyreitheum: null,
+							molten_nichrome: null,
+							molten_lithium: null,
+							molten_hanichrite: null,
+							molten_vivite_slag: null,
+							molten_crimglass: null,
+							molten_sapphire: null,
+							molten_ruby: null,
+							molten_dantite: null,
+							molten_gypsum: null,
+							molten_tungstensteel: null,
+							molten_clay_loam: null,
+							molten_brick: null,
+							molten_galvanized_steel: null,
+							molten_brass: null,
+							molten_bronze: null,
+							molten_rose_gold: null,
+							molten_purple_gold: null,
+							molten_blue_gold: null,
+							molten_electrum: null,
+							molten_pyrite: null,
+							molten_amalgam: null,
+							molten_alga: null,
+							molten_metal_scrap: null,
+							molten_epsom_salt: null,
+							molten_polytetrafluoroethylene: null,
+							molten_polyethylene: null,
+							molten_bauxite: null,
+							molten_cryolite_mixture: null,
+							molten_boron: null,
+							molten_uraninite: null,
+							molten_yellowcake: null,
+							molten_stable_uranium: null,
+							molten_depleted_uranium_dioxide: null,
+							molten_stable_uranium_dioxide: null,
+							molten_depleted_uranium_tetrafluoride: null,
+							molten_stable_uranium_tetrafluoride: null,
+							molten_stable_plutonium: null,
+							molten_stable_plutonium_dioxide: null,
+							molten_stable_plutonium_tetrafluoride: null,
+							molten_stable_americium: null,
+							molten_stable_curium: null,
+							molten_stable_berkelium: null,
+							molten_stable_californium: null,
+							molten_stable_einsteinium: null,
+							molten_stable_fermium: null,
+							molten_thorium_dioxide: null,
+							molten_stable_thorium_dioxide: null,
+							molten_thorium_tetrafluoride: null,
+							molten_stable_thorium_tetrafluoride: null,
+							molten_radium_oxide: null,
+							molten_actinium_oxide: null,
+							molten_protactinium_v_oxide: null,
+							molten_protactinium_pentafluoride: null,
+							molten_neptunium_dioxide: null,
+							molten_neptunium_tetrafluoride: null,
+							molten_stable_nihonium: null,
+							molten_nihonium_oxide: null,
+							molten_francium_nihonide: null,
+							molten_flerovium_sulfide: null,
+							molten_stable_moscovium: null,
+							molten_moscovium_fluoride: null,
+							molten_stable_livermorium: null,
+							molten_stable_tennessine: null,
+							molten_oganesson_difluoride: null,
+							molten_oganesson_tetrafluoride: null,
+							molten_ununennium_trifluoride: null,
+							molten_unbinilium_oxide: null,
+							molten_unbinilium_tetrafluoride: null,
+							molten_bleakstone: null,
+							molten_mithril: null,
+							molten_corrupt_land: null,
+							molten_corrupt_rock: null,
+							molten_ketchup_gold: null,
+							molten_monosodium_glutamate: null,
+							molten_agar: null,
+							molten_stainless_steel: null,
+							molten_brimstone_slag: null,
+							molten_loona: null,
+							molten_white_gold: null,
+							molten_red_gold: null,
+							molten_amba_bismuth: null,
+							molten_zirconium: null,
+							molten_lithium_oxide: null,
+							molten_lithium_hydroxide: null,
+							molten_lithium_carbonate: null,
+							molten_lithium_nitride: null,
+							molten_lithium_hydride: null,
+							molten_lithium_amide: null,
+							molten_niobium: null,
+							molten_crimtane: null,
+							molten_dry_crimsoil: null,
+							molten_rainbow_glass: null,
+							molten_dry_rainbow_dirt: null,
+							molten_nellglass: null,
+							molten_emerald: null,
+							molten_amethyst: null,
+							molten_spinel: null,
+							molten_mullite: null,
+							molten_onyx: null,
+							molten_pearl: null,
+							molten_jadeite: null,
+							molten_hydroxyapatite: null,
+							molten_calcium_sulfate: null
+						}
+					})
 			//Soil
 				//Dry dirt
 					elements.dirt.forceAutoGen = true;
@@ -26114,10 +26667,11 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 					radioactiveTransforms = {
 						steam: "rad_steam",
 						glass: "rad_glass",
-						molten_glass: "molten_rad_glass"
+						molten_glass: "molten_rad_glass",
+						vaporized_glass: "vaporized_rad_glass",
+						fire: {element: "rad_fire", chance: 0.005},
+						torch: "rad_torch"
 					};
-					radioactiveTransforms.fire = "rad_fire"
-					radioactiveTransforms.torch = "rad_torch"
 					specialProperties.radioactive = {
 						/*specialColorFunction: function(pixel,oldColor) {
 							var colorJSON = convertColorFormats(oldColor,"json");
@@ -26132,10 +26686,21 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						specialFunction: function(pixel) {
 							if(radioactiveTransforms[pixel.element]) {
 								var result = radioactiveTransforms[pixel.element];
+								var changeTemp = false;
+								var chance = 1;
+								if(typeof(result) === "object" && result.element !== undefined) {
+									result = result.element;
+									chance = result.chance ?? 1;
+									changeTemp = result.changeTemp ?? false;
+								}
 								while(result instanceof Array) {
 									result = result[Math.floor(Math.random() * result.length)]
 								};
-								changePixel(pixel,result,false);
+								if(result === null) {
+									deletePixel(pixel)
+								} else {
+									changePixel(pixel,result,changeTemp)
+								};
 								return
 							};
 							for(var i in adjacentCoords) {
@@ -26364,15 +26929,22 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			//Money world
 			worldgentypes.money = {
 				layers: [
+					[0.9, "jadeite",1/2],
 					[0.9, "emerald"],
 					[0.6, "diamond"],
+					[0.3, "osmium_scrap",1/5],
+					[0.3, "rhenium_scrap",1/5],
+					[0.3, "rhodium_scrap",1/5],
+					[0.3, "iridium_scrap",1/5],
 					[0.3, "gold_coin"],
-					[0.1, "ruby", 1/3],
-					[0.1, "amethyst", 1/2],
+					[0.1, "garnet", 1/5],
+					[0.1, "spinel", 1/5],
+					[0.1, "ruby", 1/5],
+					[0.1, "amethyst", 1/5],
 					[0.1, "sapphire"],
 					[-0.1, "pearl", 0.4],
 					[-0.1, "onyx"]
-				]
+				],
 			};
 			//Concrete
 			worldgentypes.concrete = {
@@ -27701,9 +28273,16 @@ ${eightSpaces}Example full decor definition: bird:0.04:10:#FF0000,#FFFF00,#00FF0
 							console.error("pixelsize: supplied pixel size was zero or negative");
 							return false;
 						} else {
-							document.querySelector('span[setting="pixelsize"]').querySelector("select").selectedIndex = pixelSizeSettingDropdownOtherOptionIndex;
-							settings.pixelsize = argPixelSize;
-							resizeCanvas(ctx.canvas.height,ctx.canvas.width,settings.pixelsize,false)
+							var confirmation = confirm("Due to changes in the game, this command must reset the canvas. Proceed?")
+							if(confirmation) {
+								document.querySelector('span[setting="pixelsize"]').querySelector("select").selectedIndex = pixelSizeSettingDropdownOtherOptionIndex;
+								settings.pixelsize = argPixelSize;
+								resizeCanvas(ctx.canvas.height,ctx.canvas.width,settings.pixelsize,false);
+								clearAll();
+								return argPixelSize
+							} else {
+								return false
+							}
 						};
 					} else {
 						alert(pixelSize);
@@ -28475,7 +29054,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.smash_ray = {
 			color: ["#ff9999", "#8c8279"],
 			tick: function(pixel) {
-				if(pixel.done) { deletePixel(pixel); return };
+				if(!pixel) { return };
+				if(pixel?.done) { deletePixel(pixel.x,pixel.y); return };
 				var x = pixel.x;
 				for (var y = pixel.y; y < height; y++) {
 					if (outOfBounds(x, y)) {
@@ -28647,6 +29227,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.bless.reactions.frozen_diarrhea = { elem2: null };
 		elements.bless.reactions.piss = { elem2: null };
 		elements.bless.reactions.vomit = { elem2: null };
+		elements.bless.reactions.pus = { elem2: null };
 		elements.bless.reactions.crimson_grass = { elem2: "grass" };
 		elements.bless.reactions.crimstone = { elem2: "rock" };
 		elements.bless.reactions.crimsand = { elem2: "sand" };
@@ -28661,7 +29242,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.bless.reactions.shadewood_sapling = { elem2: "sapling" };
 		elements.bless.reactions.shadewood_sawdust = { elem2: "sawdust" };
 		elements.bless.reactions.crimson_leaf = { elem2: "leaf" };
-		elements.bless.reactions.ichor = { elem2: null }; //per blood, absent the gods' immune systems (apparenly they don't need immune systems because of immortality anyway)
+		elements.bless.reactions.ichor = { elem2: null }; //per blood, absent the gods' immune systems (if they're immortal then do they need immune systems?)
 		elements.bless.reactions.virus_bomb = { elem2: null };
 		elements.bless.reactions.life_eater_slurry = { elem2: null };
 		elements.bless.reactions.life_eater_explosion = { elem2: null };
@@ -28669,7 +29250,15 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.bless.reactions.injector_poison = { elem2: null };
 		elements.bless.reactions.dead_matter = { elem2: null };
 		elements.bless.reactions.life_eater_infected_dirt = { elem2: "dirt" };
-		elements.bless.reactions.poisoned_dirt = { elem2: "dirt" };
+		elements.bless.reactions.poisoned_dirt = { func: function(pixel1,pixel2) {
+			// console.log(3);
+			// console.log(pixel1.element,pixel2.element);
+			if(pixel1.was && elementExists(pixel1.was)) {
+				changePixel(pixel1,pixel1.was,true) 	
+			} else {
+				changePixel(pixel1,"dirt",true)
+			} 
+		}};
 		elements.bless.reactions.vicious_goldfish = { elem2: "fish" };
 		elements.bless.reactions.nellfire = { elem2: "bless" };
 		elements.bless.reactions.gloomwind = { elem2: null };
@@ -28690,28 +29279,36 @@ Make sure to save your command in a file if you want to add this preset again.`
 		elements.bless.reactions.brain = { elem2: null };
 		elements.bless.reactions.bio_ooze = { elem2: null };
 		elements.bless.tool = function(pixel) {
+			// console.log(10);
 			if (elements.bless.ignore.indexOf(pixel.element) !== -1) { return; }
-			if (pixel.burning) { // stop burning
+			if (pixel.burning && !elements[pixel.element].burning) { // stop burning
 				delete pixel.burning;
 				delete pixel.burnStart;
 			}
-			if (pixel.nellburn) { // change: stop nellburn
-				delete pixel.nellburn;
-				delete pixel.nellburnStart;
+			// console.log(11);
+			if (!elements[pixel.element].insulate) {
+				if (pixel.temp > 100) {
+					pixel.temp = (pixel.temp+100)/2;
+					pixelTempCheck(pixel);
+					if (pixel.del) {return}
+				}
+				if (pixel.temp < -200) {
+					pixel.temp = (pixel.temp-200)/2;
+					pixelTempCheck(pixel);
+					if (pixel.del) {return}
+				}
 			}
-			if (pixel.temp > 100) {
-				pixel.temp = (pixel.temp+100)/2;
-				pixelTempCheck(pixel);
-				if (pixel.del) {return}
-			}
+			// console.log(12);
 			if (pixel.origColor) {
 				pixel.color = "rgb("+pixel.origColor.join(",")+")";
 				delete pixel.origColor;
 			}
+			// console.log(13);
 			if (pixel.charge) {
 				delete pixel.charge;
 				pixel.chargeCD = 16;
 			}
+			// console.log(14);
 			if (elements.bless.reactions[pixel.element] && Math.random()<0.25) {
 				var r = elements.bless.reactions[pixel.element];
 				var elem2 = r.elem2;
@@ -28720,7 +29317,10 @@ Make sure to save your command in a file if you want to add this preset again.`
 					if (elem2 === null) { deletePixel(pixel.x,pixel.y) }
 					else { changePixel(pixel, elem2); }
 				}
+				if (r.func) { /*console.log(4);*/ r.func(pixel,pixel) }
+				if (r.color2) { pixel.color = pixelColorPick(pixel,r.color2) }
 			}
+			// console.log(15);
 		};
 		rayAbsorbElements = [];
 		rayPassElements = [];
@@ -28986,7 +29586,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "machines",
 			breakInto: ["metal_scrap", "steel", "iron", "glass", "uranium", "tin"],
 			tempHigh: 2400,
-			stateHigh: ["molten_aluminum0", "molten_steel", "molten_iron", "molten_glass", "molten_uranium", "molten_tin"],
+			stateHigh: ["molten_aluminum", "molten_steel", "molten_iron", "molten_glass", "molten_uranium", "molten_tin"],
 			density: 10000,
 			hardness: 0.85,
 			conduct: 1,
@@ -29419,114 +30019,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			state: "solid",
 			movable: false
 		}
-	//PORTALS ##
-	//heehee haha melanie martinez
-		//https://stackoverflow.com/a/60922255
-		headBodyObject = {
-			"head": "body",
-		};
-		elements.portal_in = {
-			color: "#ee7f00",
-			properties: {
-				_channel: 0,
-				_correspondingPortals: null
-			},
-			insulate: true,
-			onTryMoveInto: function(pixel,otherPixel) {
-			  try {
-				if(pixel._correspondingPortals == null) {
-					return;
-				};
-				if(pixel._correspondingPortals.length <= 0) {
-					return;
-				};
-				var portal = randomChoice(pixel._correspondingPortals);
-				var offset = {x: pixel.x - otherPixel.x, y: pixel.y - otherPixel.y}; //teleport destination's offset, inverted by subtraction
-				var destination = {x: portal.x + offset.x, y: portal.y + offset.y};
-				var otherElement = otherPixel.element;
-				var isHead = (typeof(headBodyObject[otherElement]) !== "undefined");
-				var isBody = (typeof(getKeyByValue(headBodyObject,otherElement)) !== "undefined");
-				var isBipartite = xor(isHead,isBody); //a head being its own body will break the code
-				if(isBipartite) {
-					if(isHead) {
-						var dead = otherPixel.dead;
-						var body = pixelMap[otherPixel.x][otherPixel.y+1];
-						if(body == undefined) { body = null };
-						if(!dead && (body !== null)) {
-							if(offset.y == -1) {
-								offset.y--;
-								destination.y--;
-							};
-							var headSpotIsEmpty = isEmpty(destination.x,destination.y,false);
-							var bodySpotIsEmpty = isEmpty(destination.x,destination.y+1,false);
-							if(headSpotIsEmpty && bodySpotIsEmpty) {
-								tryMove(otherPixel,destination.x,destination.y);
-								tryMove(body,destination.x,destination.y+1);
-							};
-						} else {
-							tryMove(otherPixel,destination.x,destination.y);
-						};
-					} else if(isBody) {
-						var dead = otherPixel.dead;
-						var head = pixelMap[otherPixel.x][otherPixel.y-1];
-						if(head == undefined) { head = null };
-						if(!dead && (head !== null)) {
-							if(offset.y == 1) {
-								offset.y++;
-								destination.y++;
-							};
-							var headSpotIsEmpty = isEmpty(destination.x,destination.y-1,false);
-							var bodySpotIsEmpty = isEmpty(destination.x,destination.y,false);
-							if(headSpotIsEmpty && bodySpotIsEmpty) {
-								tryMove(head,destination.x,destination.y-1);
-								tryMove(otherPixel,destination.x,destination.y);
-							};
-						} else {
-							tryMove(otherPixel,destination.x,destination.y);
-						};
-					};
-				} else {
-					tryMove(otherPixel,destination.x,destination.y);
-				};
-			  } catch(error) {
-				//ignore stack overflows
-				if(error.toString().includes("call stack")) {
-				} else {
-					throw new Error("error")
-				}
-			  }
-			},
-			tick: function(pixel) {
-				pixel._channel = Math.floor(pixel.temp / 100);
-				pixel._correspondingPortals = currentPixels.filter(function(pixelToCheck) {
-					return (
-						pixelToCheck.element == "portal_out" &&
-						pixelToCheck._channel == pixelChannel
-					);
-				},pixelChannel=pixel._channel);
-				for(i = 0; i < pixel._correspondingPortals.length; i++) {
-					pixel._correspondingPortals[i] = {x: pixel._correspondingPortals[i].x, y: pixel._correspondingPortals[i].y};
-				};
-				//pixel.tempdebug = JSON.stringify(pixel._correspondingPortals);
-			},
-			category: "machines",
-			state: "solid",
-			breakInto: ["radiation","laser","iridium","essence","ionized_deuterium","electron","magic","steel","pop","unstable_mistake","explosion","magic","steel","proton","electron","radiation","laser","iridium"],
-			hardness: 0.999
-		},
-		elements.portal_out = {
-			color: "#2222ee",
-			insulate: true,
-			tick: function(pixel) {
-				pixel._channel = Math.floor(pixel.temp / 100);
-			},
-			behavior: behaviors.WALL,
-			category: "machines",
-			state: "solid",
-			insulate: true,
-			breakInto: ["radiation","laser","iridium","essence","ionized_deuterium","electron","magic","steel","pop","unstable_mistake","explosion","magic","steel","proton","electron","radiation","laser","iridium"],
-			hardness: 0.999
-		}
+	//PORTALS have been added to vanilla Sandboxels. Congratulations to our graduate. ##
 	//MOBS ##
 		//Prerequisite Functions and Variables
 		minimumCreeperTries = 3;
@@ -34556,6 +35049,18 @@ Make sure to save your command in a file if you want to add this preset again.`
 			extremePanicStart: null,
 		};
 		elements.body.tick = function(pixel) {
+			var heat;
+			if(pixel.temp < 20) {
+				heat = 0.02
+			} else if(pixel.temp < 0) {
+				heat = 0.024
+			} else if(pixel.temp > 30) {
+				heat = 0.008
+			} else if(pixel.temp > 40) {
+				heat = 0.01
+			} else {
+				heat = 0.012
+			}
 			if(typeof(pixel.extremePanicStart) == "undefined") {
 				//console.log("oops");
 				pixel.extremePanicStart = null
@@ -34576,6 +35081,10 @@ Make sure to save your command in a file if you want to add this preset again.`
 			doHeat(pixel);
 			doBurning(pixel);
 			doElectricity(pixel);
+			if(pixel.dead === false && pixel.temp >= 38) {
+				var deathChance = 0.01 + (Math.max(0,pixel.temp - 38) / 100) + (Math.max(0,pixel.temp - 41.1) / 3);
+				if(Math.random() < deathChance) { pixel.dead = pixelTicks };
+			}
 			if (pixel.dead) {
 				// Turn into rotten_meat if pixelTicks-dead > 500
 				if (pixelTicks-pixel.dead > 200) {
@@ -34602,6 +35111,9 @@ Make sure to save your command in a file if you want to add this preset again.`
 				}
 			}
 			if (head == null) { return };
+			heat -= (head.panic * 0.006);
+			pixel.temp += heat;
+			head.temp += heat;
 			if (Math.random() < (0.1 + head.panic)) { // Move 10% chance, varying depending on panic value
 				var movesToTry = [
 					[1*pixel.dir,0],
@@ -34647,8 +35159,8 @@ Make sure to save your command in a file if you want to add this preset again.`
 				//if extreme panic lasts too long
 				if(pixelTicks - pixel.extremePanicStart > 350) {
 					//random chance to die from exhaustion/a heart attack/whatever
-					if(Math.random() < 0.01) {
-						pixel.dead = true;
+					if(Math.random() < 0.001) {
+						pixel.dead = pixelTicks;
 					};
 				};
 			}
@@ -34706,10 +35218,18 @@ Make sure to save your command in a file if you want to add this preset again.`
 			dirLocked: false,
 			panic: 0,
 		};
+		elements.head.tempHigh = 100;
+		elements.head.stateHigh = "cooked_meat";
+		elements.body.tempHigh = 100;
+		elements.body.stateHigh = "cooked_meat";
 		elements.head.tick = function(pixel) {
 			doHeat(pixel);
 			doBurning(pixel);
 			doElectricity(pixel);
+			if(pixel.dead === false && pixel.temp >= 38) {
+				var deathChance = 0.01 + (Math.max(0,pixel.temp - 38) / 100) + (Math.max(0,pixel.temp - 41.1) / 3);
+				if(Math.random() < deathChance) { pixel.dead = pixelTicks };
+			}
 			if (pixel.dead) {
 				// Turn into rotten_meat if pixelTicks-dead > 500
 				if (pixelTicks-pixel.dead > 200) {
@@ -34975,6 +35495,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				//console.log("Decreasing panic");
 				pixel.panic < 0.05 ? pixel.panic = 0 : pixel.panic -= 0.05;
 			};
+			if(pixel.dead !== false && (pixelTicks - pixel.dead <= 1)) { elements.grayscale.tool(pixel) }
 		};
 		elements.head.breakInto = ["bone","brain","brain","cerebrospinal_fluid","blood","blood","meat"];
 		elements.head.onTryMoveInto = function(pixel,otherPixel) {
@@ -35315,7 +35836,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				}
 		//Requisite variables
 			//Bombs
-				amalgamatedBombFire = "plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,smoke,plasma,plasma,fire,smoke,fire,smoke,plasma,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,acid,acid,oil,oil,oil,oil,oil,oil,oil,plasma,plasma,plasma,plasma,plasma,smoke,plasma,plasma,fire,smoke,plasma,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,flash,flash,flash,flash,flash,acid_gas,acid_gas,acid_gas,acid,oil,oil,oil,oil,oil,oil,oil,oil,oil,oil,plasma,plasma,plasma,plasma,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,acid,acid,oil,oil,oil,oil,oil,oil,oil,plasma,plasma,plasma,plasma,plasma,smoke,plasma,plasma,fire,smoke,plasma,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,electric_cluster_bomb,electric_cluster_bomb,flash,flash,flash,flash,flash,acid_gas,acid_gas,acid_gas,acid,oil,oil,oil,oil,oil,oil,oil,oil,oil,oil,plasma,plasma,plasma,plasma,plague,plague,plague,plague,plague,plague,radiation,radiation,radiation,radiation,radiation,radiation,radiation,radiation,uranium,uranium,uranium,uranium,uranium,uranium,greek_fire,greek_fire,greek_fire,greek_fire,greek_fire,antimatter,antimatter,antimatter,antimatter,antimatter,smoke_grenade,antimatter,smoke_grenade,fireball,flash,acid_gas,acid_gas,acid_gas,plague,plague,plague,plague,plague,plague,radiation,radiation,radiation,radiation,radiation,radiation,radiation,radiation,uranium,uranium,uranium,uranium,uranium,uranium,greek_fire,greek_fire,greek_fire,greek_fire,greek_fire,antimatter,antimatter,antimatter,antimatter,antimatter,smoke_grenade,antimatter,flash,acid_gas,acid_gas,acid_gas,radiation,radiation,radiation,radiation,plague,acid_gas,acid_gas,acid_gas,chlorine,chlorine,chlorine"
+				amalgamatedBombFire = "plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,smoke,plasma,plasma,fire,smoke,fire,smoke,plasma,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,acid,acid,oil,oil,oil,oil,oil,oil,oil,plasma,plasma,plasma,plasma,plasma,smoke,plasma,plasma,fire,smoke,plasma,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,flash,flash,flash,flash,flash,acid_gas,acid_gas,acid_gas,acid,oil,oil,oil,oil,oil,oil,oil,oil,oil,oil,plasma,plasma,plasma,plasma,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,acid,acid,oil,oil,oil,oil,oil,oil,oil,plasma,plasma,plasma,plasma,plasma,smoke,plasma,plasma,fire,smoke,plasma,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,electric_cluster_bomb,electric_cluster_bomb,flash,flash,flash,flash,flash,acid_gas,acid_gas,acid_gas,acid,oil,oil,oil,oil,oil,oil,oil,oil,oil,oil,plasma,plasma,plasma,plasma,plague,plague,plague,plague,plague,plague,radiation,radiation,radiation,radiation,radiation,radiation,radiation,radiation,uranium,uranium,uranium,uranium,uranium,uranium,greek_fire,greek_fire,greek_fire,greek_fire,greek_fire,antimatter,antimatter,antimatter,antimatter,antimatter,smoke_grenade,antimatter,smoke_grenade,fireball,flash,acid_gas,acid_gas,acid_gas,plague,plague,plague,plague,plague,plague,radiation,radiation,radiation,radiation,radiation,radiation,radiation,radiation,uranium,uranium,uranium,uranium,uranium,uranium,greek_fire,greek_fire,greek_fire,greek_fire,greek_fire,antimatter,antimatter,antimatter,antimatter,antimatter,smoke_grenade,antimatter,flash,acid_gas,acid_gas,acid_gas,radiation,radiation,radiation,radiation,plague,acid_gas,acid_gas,acid_gas,chlorine,chlorine,chlorine,god_slayer_bomb,god_slayer_bomb,god_slayer_fire,god_slayer_fire,holy_bomb,holy_bomb,holy_fire,holy_fire,warp_bomb,warp_bomb,op_electromagneticester_emp,op_electromagneticester_emp,op_hottester_bomb,op_hottester_bomb,force_bomb,force_bomb,wall_bomb,wall_bomb,hypernapalm,hypernapalm,liquid_god_slayer_fire,earthquake,tornado,tsunami,firebomb,firebomb"
 				eLists.BOMB = ["bomb", "tnt", "c4", "grenade", "dynamite", "gunpowder", "firework", "nuke", "h_bomb", "dirty_bomb", "emp_bomb", "sticky_bomb", "cold_bomb", "hot_bomb", "electro_bomb", "water_bomb", "antimatter_bomb", "flashbang", "smoke_grenade", "fireball", "landmine", "cluster_bomb", "cluster_nuke", "op_hottester_bomb", "anti-bomb", "electric_bomblet", "electric_cluster_bomb", "radioactive_popper", "acid_bomb", "amalgamated_bomb"]; bombChoices = eLists.BOMB;
 				var excludedBombElements = ["water", "antimatter", "acid"];
 			//Clouds
@@ -35457,6 +35978,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				};
 				elements.amba_tsunami = {
 					color: ["#2449d1","#4b6adb","#8093d9"],
+					excludeRandom: true,
 					behavior: behaviors.WALL,
 					properties: {
 						active: true,
@@ -35536,6 +36058,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				elements.megatsunami = {
 					color: ["#1f2aa3","#2641c9","#3a57c9"],
 					behavior: behaviors.WALL,
+					excludeRandom: true,
 					properties: {
 						active: true,
 					},
@@ -35616,6 +36139,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				elements.lava_tsunami = {
 					color: ["#ff370a","#e84a23","#e67740"],
 					behavior: behaviors.WALL,
+					excludeRandom: true,
 					properties: {
 						active: true,
 					},
@@ -35706,6 +36230,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				elements.lava_megatsunami = {
 					color: ["#b32b10","#c24d1f","#d66924"],
 					behavior: behaviors.WALL,
+					excludeRandom: true,
 					properties: {
 						active: true,
 					},
@@ -39524,6 +40049,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			state: "solid",
 			density: 3980,
 			hardness: 0.9,
+			hidden: true
 		};
 		standaloneBrokenFormMaker("ruphire","shard",true,"powders","auto","auto","molten_ruphire",["alumina","alumina","alumina","alumina","alumina","alumina","alumina","alumina","alumina","iron_scrap","titanium_scrap","chromium_scrap","chromium_scrap"]).hidden = true;
 		elements.molten_ruby ??= {};
@@ -39623,7 +40149,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			};
 		});
 		function propPrompt() {
-			propProperty = prompt("Enter the property you want to set");
+			propProperty = prompt("(Prop) Enter the property you want to set");
 			propValue = prompt("Enter the value you want to set to");
 			//special check: element
 			if(propProperty === "element") {
@@ -39802,7 +40328,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			if(oldProperty === null) {
 				oldProperty = "temp";
 			};
-			numberAdjusterProperty = prompt("Enter the property you want to change");
+			numberAdjusterProperty = prompt("(Number adjuster) Enter the value you want to change");
 			if(numberAdjusterProperty === null) {
 				numberAdjusterProperty = oldProperty;
 				return false;
@@ -40091,6 +40617,21 @@ Make sure to save your command in a file if you want to add this preset again.`
 					};
 				};
 			};
+		};
+		elements.unpaint.tool = function(pixel) {
+			var r = elements.unpaint.reactions[pixel.element];
+			if (r && r.elem2) {
+				changePixel(pixel,r.elem2)
+			}
+			if (!elements[pixel.element].customColor) {
+				pixel.color = pixelColorPick(pixel)
+			}
+			if (elements[pixel.element].alpha) {
+				pixel.alpha = elements[pixel.element].alpha
+			}
+			if(elements[pixel.element].onUnpaint) {
+				elements[pixel.element].onUnpaint(pixel)
+			}
 		};
 		elements.unpaint.tick = function(pixel) {
 			var pX = pixel.x;
@@ -43094,7 +43635,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			category: "machines",
 			state: "solid",
 		};
-	// SPINEL'S INJECTOR ##
+	//SPINEL'S INJECTOR ##
 		var injectorPoisonCategories = ["life","auto creepers","shit","cum","food","fantastic creatures","fey","auto fey"];
 		var injectorPoisonBlacklist = ["injector_poison","dead_matter","poisoned_dirt"];
 		var injectorPoisonWhitelist = ["blood","skin","hair","poop","blood_ice","wood","wood_plank","sawdust","straw","paper","birthpool","dried_poop","gloomfly","meat_monster","rotten_ravager","bone_beast","withery","withery_plant","banana","apple","rotten_apple","apioform_player","apioform_bee","apioform","apiodiagoform","sugar_cactus","sugar_cactus_seed","flowering_sugar_cactus","tree_branch","sap","silk","red_velvet","silk_velvet","ketchup", "enchanted_ketchup", "frozen_ketchup", "poisoned_ketchup", "frozen_poisoned_ketchup", "ketchup_spout", "ketchup_cloud", "poisoned_ketchup_cloud", "ketchup_snow", "ketchup_snow_cloud", "poisoned_ketchup_snow", "poisoned_ketchup_snow_cloud", "ketchup_gas", "poisoned_ketchup_gas", "ketchup_powder", "poisoned_ketchup_powder", "eketchup_spout", "ketchup_metal", "antiketchup", "dirty_ketchup", "ketchup_gold", "molten_ketchup_metal", "ketchup_fairy", "ketchup_metal_scrap", "ketchup_gold_scrap", "molten_ketchup_gold", "mycelium","vaccine","antibody","infection","sap","caramel","molasses","melted_chocolate","soda","mustard","fry_sauce","tomato_sauce","sugary_tomato_sauce","bio_ooze","zombie_blood","feather","tooth","decayed_tooth","plaque","tartar","bacteria","replacer_bacteria","pop_rocks"];
@@ -43140,6 +43681,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				if(!isEmpty(pixel.x+adjacentCoords[i][0],pixel.y+adjacentCoords[i][1],true)) { //check for adjacentCoords
 					var newPixel = pixelMap[pixel.x+adjacentCoords[i][0]][pixel.y+adjacentCoords[i][1]]
 					var isInjectorPoisonFairy = (elements[newPixel.element].category == "auto fey" && newPixel.element.includes("life_eater_"))
+					var oldElement = newPixel.element;
 					//console.log(newPixel.element,isInjectorPoisonFairy);
 					if(
 						(injectorPoisonCategories.includes(elements[newPixel.element].category) || injectorPoisonWhitelist.includes(newPixel.element) || Object.keys(injectorPoisonSubstitutions).includes(newPixel.element)) &&
@@ -43158,10 +43700,12 @@ Make sure to save your command in a file if you want to add this preset again.`
 								if(newPixel) { deletePixel(newPixel.x,newPixel.y) };
 							} else {
 								changePixel(newPixel,data);
+								newPixel.was = oldElement;
 								convertedPixels.push(newPixel);
 							};
 						} else {
 							changePixel(newPixel,"dead_matter");
+							newPixel.was = oldElement;
 							convertedPixels.push(newPixel);
 						};
 					};
@@ -43654,7 +44198,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		//The CMYK is symbolic
 		elements.start_test = {
 			color: "#dddddd",
-			category: "test",
+			category: "deprecated", hidden: true,
 			behavior: behaviors.WALL,
 			insulate: true,
 			hardness: 1,
@@ -43680,7 +44224,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		};
 		elements.end_test = {
 			color: "#888888",
-			category: "test",
+			category: "deprecated", hidden: true,
 			properties: {
 				value: 0,
 				offColor: null,
@@ -43727,7 +44271,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		};
 		elements.right_test = {
 			color: "#dddd22",
-			category: "test",
+			category: "deprecated", hidden: true,
 			properties: {
 				value: 0,
 				offColor: null,
@@ -43762,7 +44306,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		};
 		elements.left_test = {
 			color: "#dd22dd",
-			category: "test",
+			category: "deprecated", hidden: true,
 			properties: {
 				value: 0,
 				offColor: null,
@@ -43797,7 +44341,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		};
 		elements.down_test = {
 			color: "#222222",
-			category: "test",
+			category: "deprecated", hidden: true,
 			properties: {
 				value: 0,
 				offColor: null,
@@ -43832,7 +44376,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		};
 		elements.up_test = {
 			color: "#22dddd",
-			category: "test",
+			category: "deprecated", hidden: true,
 			properties: {
 				value: 0,
 				offColor: null,
@@ -43867,7 +44411,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		};
 		elements.up_left_test = {
 			color: "#2222dd",
-			category: "test",
+			category: "deprecated", hidden: true,
 			properties: {
 				value: 0,
 				offColor: null,
@@ -43904,7 +44448,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		};
 		elements.up_left_test = {
 			color: "#2222dd",
-			category: "test",
+			category: "deprecated", hidden: true,
 			properties: {
 				value: 0,
 				offColor: null,
@@ -43941,7 +44485,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		};
 		elements.up_right_test = {
 			color: "#22dd22",
-			category: "test",
+			category: "deprecated", hidden: true,
 			properties: {
 				value: 0,
 				offColor: null,
@@ -43978,7 +44522,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		};
 		elements.up_down_test = {
 			color: "#228888",
-			category: "test",
+			category: "deprecated", hidden: true,
 			properties: {
 				value: 0,
 				offColor: null,
@@ -44015,7 +44559,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		};
 		elements.left_right_test = {
 			color: "#dd2222",
-			category: "test",
+			category: "deprecated", hidden: true,
 			properties: {
 				value: 0,
 				offColor: null,
@@ -44052,7 +44596,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		};
 		elements.left_down_test = {
 			color: "#882288",
-			category: "test",
+			category: "deprecated", hidden: true,
 			properties: {
 				value: 0,
 				offColor: null,
@@ -44089,7 +44633,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		};
 		elements.right_down_test = {
 			color: "#888822",
-			category: "test",
+			category: "deprecated", hidden: true,
 			properties: {
 				value: 0,
 				offColor: null,
@@ -44126,7 +44670,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		};
 		elements.up_left_right_test = {
 			color: "#454545",
-			category: "test",
+			category: "deprecated", hidden: true,
 			properties: {
 				value: 0,
 				offColor: null,
@@ -44163,7 +44707,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		};
 		elements.left_right_down_test = {
 			color: "#882222",
-			category: "test",
+			category: "deprecated", hidden: true,
 			properties: {
 				value: 0,
 				offColor: null,
@@ -44200,7 +44744,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		};
 		elements.up_right_down_test = {
 			color: "#228822",
-			category: "test",
+			category: "deprecated", hidden: true,
 			properties: {
 				value: 0,
 				offColor: null,
@@ -44237,7 +44781,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 		};
 		elements.up_left_down_test = {
 			color: "#222288",
-			category: "test",
+			category: "deprecated", hidden: true,
 			properties: {
 				value: 0,
 				offColor: null,
@@ -44411,7 +44955,7 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 		};
 	//NO GAMMA RAY SPAWNERS OR FILLERS IN RANDOM ##
 		runAfterLoad(function() {
-			randomBlacklist = ["quark_matter", "liquid_neutronium", "molten_neutronium", "neutronium", "neutronium_gas", "colored_ifller", "copycat_filler"];
+			randomBlacklist = ["quark_matter", "liquid_neutronium", "molten_neutronium", "neutronium", "neutronium_gas", "colored_filler", "copycat_filler", "insulating_filler"];
 			for(i = 0; i < randomBlacklist.length; i++) {
 				var element = randomBlacklist[i];
 				if(elements[element]) { elements[element].excludeRandom = true };
@@ -44456,35 +45000,43 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 			};*/
 
 			window.addEventListener("load",function() {
-			currentElement = urlParams.get("currentElement") ?? "sand";
-			if(!elementExists(currentElement)) {
-				currentElement = "sand"
-			};
-			selectElement(currentElement);
+				currentElement = urlParams.get("currentElement") ?? "sand";
+				if(!elementExists(currentElement)) {
+					currentElement = "sand"
+				};
+				selectElement(currentElement);
 
-			var size = urlParams.get("mouseSize") ?? 5;
-			if(isNaN(size)) {
-				size = 5;
-			};
-			mouseSize = size
+				var size = urlParams.get("mouseSize") ?? 5;
+				if(isNaN(size)) {
+					size = 5;
+				};
+				mouseSize = size
 
-			var _tps = urlParams.get("tps") ?? 30;
-			if(isNaN(_tps)) {
-				_tps = 30;
-			};
-			tps = _tps;
-			resetInterval(tps);
+				var _tps = urlParams.get("tps") ?? 30;
+				if(isNaN(_tps)) {
+					_tps = 30;
+				};
+				tps = _tps;
+				resetInterval(tps);
 
-			var shape = urlParams.get("currentShape") ?? "square";
-			if(shapeOrder.indexOf(shape) == -1) {
-				shape = "square"
-			};
-			currentShape = shape;
+				var shape = urlParams.get("currentShape") ?? "square";
+				if(shapeOrder.indexOf(shape) == -1) {
+					shape = "square"
+				};
+				currentShape = shape;
 
-			/*if(urlParams.get("pause") !== null) {
-				paused = true;
-				document.getElementById("pauseButton").setAttribute("on","true")
-			};*/
+				var doPause = urlParams.get("paused");
+				if(doPause !== null) {
+					paused = true;
+					document.getElementById("pauseButton").setAttribute("on","true")
+				};
+
+				var autoQuickload = urlParams.get("quickload");
+				if(autoQuickload !== null) {
+					quickload(doPause !== null,false,true);
+					autoResizeCanvas(false)
+				};
+
 		});
 	//PRESSURE SYSTEM ##
 		if(settings.dopressure == undefined || settings.drawpressure == undefined) {
@@ -44494,14 +45046,17 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 			saveSettings();
 		};
 		pressureCellSize = 4;
+		pressureMap = [];
 
 		function getPressureAtPixelCoords(pixelX,pixelY) {
+			if(typeof(pressureMap) == "undefined") { return };
 			var pressureCellX = Math.floor(pixelX / pressureCellSize);
 			var pressureCellY = Math.floor(pixelY / pressureCellSize);
 			return pressureMap?.[pressureCellX]?.[pressureCellY] ?? null
 		};
 
 		function regeneratePressureMap(_width,_height) {
+			if(typeof(pressureMap) == "undefined") { pressureMap = [] };
 			pressureMap.forEach(function(x) {
 				x.forEach(y => y = null);
 				x.length = 0;
@@ -44513,8 +45068,9 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 			for(var i = 0; i < pressureMap.length; i++) {
 				pressureMap[i] = new Array(height).fill(0)
 			};
+			return [_width,_height]
 		};
-
+		
 		pressureChangeDivisor = 2;
 		minimumPressure = -9999999;
 
@@ -44950,6 +45506,7 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 			for(var i = 0; i < pressureMap.length; i++) {
 				pressureMap[i] = new Array(Math.ceil(height / pressureCellSize)).fill(0)
 			};
+			regeneratePressureMap(Math.ceil(width / pressureCellSize),Math.ceil(height / pressureCellSize))
 
 			afterEveryTick(pressureTicker)
 		})
@@ -45184,21 +45741,118 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 			state: "solid",
 			behavior: behaviors.POWDER
 		};
-		var notActuallyMovable = ["pipe","e_pipe","steel","vivite"];
+		var notActuallyMovable = ["pipe","e_pipe","steel","vivite","destroyable_e_pipe","destroyable_channel_pipe","destroyable_pipe","channel_pipe"];
 		runAfterLoad(function() {
 			for(var i = 0; i < notActuallyMovable.length; i++) {
 				var name = notActuallyMovable[i];
-				Object.defineProperty(elements[name], "movable", {
-					value: false,
-					writable: false //**** you, you're not changing it to true.
-				});
+				if(elements[name]) {
+					Object.defineProperty(elements[name], "movable", {
+						value: false,
+						writable: false //**** you, you're not changing it to true.
+					})
+				}
 			}
 		});
 		elements.unknown = {
 			color: _cc.w.h,
 			behavior: behaviors.WALL,
-			maxColorOffset: 0
+			grain: 0
 		};
+
+		behaviorRules.LC = function() { //limited cool
+			if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
+				var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
+				//if (!(newPixel.element === btemp.pixel.element) || (btemp.newCoords.x == btemp.pixel.x && btemp.newCoords.y == btemp.pixel.y)) {
+					if (btemp.arg != null) {btemp.arg = btemp.arg.split(",").map(parseFloat)}
+					else {btemp.arg = [0,1]}
+					if (isNaN(btemp.arg[0])) {btemp.arg[0] = 0}
+					if (isNaN(btemp.arg[1])) {btemp.arg[1] = 1}
+					if(newPixel.temp > btemp.arg[0]) {
+						if(newPixel.temp - btemp.arg[0] < btemp.arg[1]) {
+							newPixel.temp = btemp.arg[0]
+						} else {
+							newPixel.temp -= btemp.arg[1]
+						}
+					}
+					pixelTempCheck(newPixel);
+				//}
+			}
+		}
+
+		behaviorRules.LH = function() { //limited heat
+			if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
+				var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
+				//if (!(newPixel.element === btemp.pixel.element) || (btemp.newCoords.x == btemp.pixel.x && btemp.newCoords.y == btemp.pixel.y)) {
+					if (btemp.arg != null) {btemp.arg = btemp.arg.split(",").map(parseFloat)}
+					else {btemp.arg = [0,1]}
+					if (isNaN(btemp.arg[0])) {btemp.arg[0] = 0}
+					if (isNaN(btemp.arg[1])) {btemp.arg[1] = 1}
+					if(newPixel.temp < btemp.arg[0]) {
+						if(newPixel.temp + btemp.arg[0] > btemp.arg[1]) {
+							newPixel.temp = btemp.arg[0]
+						} else {
+							newPixel.temp += btemp.arg[1]
+						}
+					}
+					pixelTempCheck(newPixel);
+				//}
+			}
+		}
+
+		behaviorRules.TS = function() { //thermostat
+			if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
+				var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
+				//if (!(newPixel.element === btemp.pixel.element) || (btemp.newCoords.x == btemp.pixel.x && btemp.newCoords.y == btemp.pixel.y)) {
+					if (btemp.arg != null) {btemp.arg = btemp.arg.split(",").map(parseFloat)}
+					else {btemp.arg = [0,1]}
+					if (isNaN(btemp.arg[0])) {btemp.arg[0] = 0}
+					if (isNaN(btemp.arg[1])) {btemp.arg[1] = 1}
+					if(newPixel.temp > btemp.arg[0]) {
+						if(newPixel.temp - btemp.arg[0] < btemp.arg[1]) {
+							newPixel.temp = btemp.arg[0]
+						} else {
+							newPixel.temp -= btemp.arg[1]
+						}
+					} else if(newPixel.temp < btemp.arg[0]) {
+						if(newPixel.temp + btemp.arg[0] > btemp.arg[1]) {
+							newPixel.temp = btemp.arg[0]
+						} else {
+							newPixel.temp += btemp.arg[1]
+						}
+					}
+					pixelTempCheck(newPixel);
+				//}
+			}
+		}
+
+		behaviorRules.BN = function() { //burn
+			if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
+				var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
+				var burn = elements[newPixel.element].burn;
+				if (burn !== undefined) {
+					if (Math.random() < (burn / 100)) { // If random number is less than flammability
+						if (btemp.info.ignore && btemp.info.ignore.indexOf(newPixel.element) !== -1) {
+							return;
+						}
+						if (!(newPixel.burning || (newPixel.burnStart !== undefined))) {
+							newPixel.burning = true;
+							newPixel.burnStart = pixelTicks;
+						}
+					}
+				}
+			}
+		}
+
+		behaviorRules.ET = function() { //extinguish
+			if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
+				var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
+				if (newPixel.burning || newPixel.burnStart) {
+					delete newPixel.burning;
+					delete newPixel.burnStart;
+				}
+			}
+		}
+
 		runAfterLoad(function() {
 			//Emergency bug fix
 			elemfillerVar = null;
@@ -45290,9 +45944,67 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 			}
 		}
 
+		/*if(settings.disabletext == undefined) {
+			loadSettings();
+			settings.disabletext ??= false;
+			saveSettings();
+		};
+
+		canvasLayers.text = document.createElement("canvas");
+		canvasLayersPost.push(canvasLayers.text);
+        function drawText() {
+            var layerCtx = canvasLayers.text.getContext('2d');
+			if(settings.disabletext) {
+				textBuffer = [];
+				return
+			} else {
+				ctx.font = Math.max(0.8,pixelSize)+"px sans-serif";
+				ctx.textAlign="center"; 
+				ctx.textBaseline = "middle";
+				for(var i = 0; i < textBuffer.length; i++) {
+					var data = textBuffer[i];
+					ctx.fillStyle = data.color ?? "#000000";
+					ctx.fillText(data.text, (data.x + 0.5)*pixelSize, (data.y + 0.5)*pixelSize);
+				};
+				textBuffer = [] //clear the buffer
+			}
+			//console.log("dt tick")
+		};
+		canvasLayersPostRenderers.push(drawText)
+
+		textBuffer = [];
+		elements.alphabet_block = {
+			properties: {
+				letterColor: "#000000",
+				//letter: String.fromCharCode(randomIntegerBetweenTwoValues(0x41,0x5A))
+				letter: "SKIBIDI"
+			},
+			burn: elements.wood.burn,
+			color: "#FFFFFF",
+			burnTime: elements.wood.burnTime,
+			burnInto: elements.wood.burnInto,
+			tempHigh: elements.wood.tempHigh,
+			stateHigh: elements.wood.stateHigh,
+			category: "solids",
+			state: "solid",
+			behavior: behaviors.STURDYPOWDER,
+			hardness: 0.2,
+			breakInto: "sawdust",
+			forceSaveColor: true,
+			renderer: function(pixel,ctx) {
+				drawSquare(ctx,pixel.color,pixel.x,pixel.y);
+				if(pixel.letter) {
+					textBuffer.push({x: pixel.x, y: pixel.y, text: pixel.letter, color: pixel.letterColor ?? "#000000"})
+				}
+			}
+		};*/
+
 	//END ##
 		console.log("Mod loaded");
-		logMessage("a_mod_by_alice.js requires many other mods. Many of the elements and features added with it installed are actually added by the other mods it depends on.")
+		window.addEventListener("load",function() {
+			logMessage("a_mod_by_alice.js requires many other mods. Many of the elements and features added with it installed are actually added by the other mods it depends on.")
+			logMessage('These mods are libhooktick.js, chem.js, minecraft.js, Neutronium Mod.js, fey_and_more.js, velocity.js, ketchup_mod.js, moretools.js, aChefsDream.js, nousersthings.js. They were enabled automatically')
+		})
 } catch (error) {
 	alert(`Load failed (try reloading).\nThis is likely a sporadic failure caused by inconsistencies in how mods are loaded, and will likely fix itself in a refresh or two. If it persists, then it's an issue.\nError: ${error.stack}`);
 	console.error(error)
