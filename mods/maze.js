@@ -68,14 +68,4 @@ elements.maze = {
         generateMaze(mouseSize - 1, mouseSize - 1, Math.floor(mousePos.x - mouseSize / 2) + 1, Math.floor(mousePos.y - mouseSize / 2) + 1)
     }
 }
-
-runAfterLoadList.push(() => {
-    if (!enabledMods.includes("mods/editTools.js")) {
-        document.addEventListener("mousedown", (ev) => {
-            if (elements[currentElement].onMouseDown) {
-                elements[currentElement].onMouseDown();
-            }
-        })
-    }
-})
 }
