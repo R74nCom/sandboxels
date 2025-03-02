@@ -6,14 +6,15 @@ var lightmapWidth, lightmapHeight;
 var lightmapScale = 2;
 var lightSourceBoost = 2;
 var pixelSizeQuarter = pixelSizeHalf / 2;
-var falloff = 0.8;
 
 // BetterSettings.js integration
 var lightmap_settingsTab = new SettingsTab("Lightmap");
 
 var resolution_setting = new Setting("Resolution (higher number = lower quality)", "resolution", settingType.NUMBER, false, defaultValue=2);
+var falloff_setting = new Setting("Falloff (higher number = higher blur radius)", "falloff", settingType.NUMBER, false, defaultValue=0.8);
 
 lightmap_settingsTab.registerSettings("Resolution", resolution_setting);
+lightmap_settingsTab.registerSettings("Falloff", falloff_setting);
 
 settingsManager.registerTab(lightmap_settingsTab);
 
@@ -90,6 +91,7 @@ function propagateLightmap() {
 
 	var width = lightmap[0].length;
 	var height = lightmap.length;
+	var falloff = falloff_setting.value;
 	var neighbors = [
 		{ dx: 1, dy: 0 },
 		{ dx: -1, dy: 0 },
@@ -313,6 +315,12 @@ elements.fire.tick = function(pixel) {
 	glowItsOwnColor(pixel);
 };
 
+var originalColdFireTick2 = elements.cold_fire.tick;
+elements.cold_fire.tick = function(pixel) {
+	originalColdFireTick2(pixel);
+	glowItsOwnColor(pixel);
+};
+
 var originalFlashTick = elements.flash.tick;
 elements.flash.tick = function(pixel) {
 	originalFlashTick(pixel);
@@ -354,7 +362,6 @@ elements.sun.tick = glowItsOwnColor;
 elements.magma.tick = glowItsOwnColor;
 elements.plasma.tick = glowItsOwnColor;
 elements.fw_ember.tick = glowItsOwnColor;
-elements.cold_fire.tick = glowItsOwnColor;
 
 var radioactiveElements = [
 	"uranium", "radiation", "rad_glass", "fallout",
