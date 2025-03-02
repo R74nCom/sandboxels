@@ -3120,10 +3120,30 @@ elements.ginger = {
     burnTime: 60,
     burnInto: "dirt",
     breakInto: "ginger_juice",
+    cutInto: "cut_ginger",
     category: "food",
     state: "solid",
     density: 1250,
     conduct: 0.1,
+    hidden: true
+}
+elements.cut_ginger = {
+    color: "#ffdd80",
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "M2|M1|M2",
+    ],
+    category:"food",
+    tempHigh: 100,
+    stateHigh: "steam",
+    burn:15,
+    burnTime:60,
+    burnInto: "steam",
+    breakInto: "juice",
+    breakIntoColor:"#ffe396",
+    state: "solid",
+    density: 1050,
     hidden: true
 }
 
@@ -7881,7 +7901,6 @@ elements.tempura = {
     temp: 40,
     tempHigh: 600,
     stateHigh: ["ash", "smoke"],
-    tempLow: -20,
     breakInto: "crumb",
     isFood: true,
     density: 100,
