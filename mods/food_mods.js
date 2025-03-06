@@ -1,4 +1,4 @@
-var mods_to_include = ["mods/sbstuff.js","mods/ketchup_mod.js","mods/morefoodsmod.js","mods/weAllScreamFor.js","mods/soups.js","mods/pizzasstuff.js","mods/community_desserts.js","mods/plants.js","mods/aChefsDream.js"]
+var mods_to_include = ["mods/sbstuff.js","mods/ketchup_mod.js","mods/morefoodsmod.js","mods/weAllScreamFor.js","mods/soups.js","mods/pizzasstuff.js","mods/community_desserts.js","mods/plants.js","mods/aChefsDream2.js"]
 
 var mods_included = mods_to_include.map(mod => enabledMods.includes(mod));
 var all_mods_included = mods_included.reduce(function(a,b) { return a && b });
