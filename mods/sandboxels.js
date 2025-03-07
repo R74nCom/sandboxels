@@ -16,6 +16,9 @@ window.addEventListener("load", () => {
     document.getElementById("elementButton-paper_screen")?.remove()
     document.getElementById("elementButton-body_screen")?.remove()
     document.getElementById("elementButton-head_screen")?.remove()
+    document.getElementById("elementButton-ash_screen")?.remove()
+    document.getElementById("elementButton-mud_screen")?.remove()
+    document.getElementById("elementButton-dirt_screen")?.remove()
     document.getElementById("elementButton-bird_screen")?.remove()
     document.getElementById("elementButton-fly_screen")?.remove()
     document.getElementById("elementButton-rat_screen")?.remove()
@@ -25,15 +28,152 @@ window.addEventListener("load", () => {
     document.getElementById("elementButton-simulated_human")?.remove()
 }) 
 
+viewInfo[8] = { // Screen Thermal View
+    name: "screen therm",
+    pixel: function(pixel,ctx) {
+        if (elements[pixel.element].isScreen == true) {
+        var temp = pixel.dtemp;
+        if (temp < -50) {temp = -50}
+        if (temp > 6000) {temp = 6000}
+        // logarithmic scale, with coldest being 225 (-50 degrees) and hottest being 0 (6000 degrees)
+        var hue = Math.round(225 - (Math.log(temp+100)/Math.log(6000+100))*225);
+        if (hue < 0) {hue = 0}
+        if (hue > 225) {hue = 225}
+        drawSquare(ctx,"hsl("+hue+",100%,50%)",pixel.x,pixel.y)
+        }
+        else {
+            var a = (settings.textures !== 0) ? pixel.alpha : undefined;
+            if (((elements[pixel.element].isGas && elements[pixel.element].glow !== false) || elements[pixel.element].glow || pixel.glow) && pixel.glow !== false) {
+                drawPlus(ctx,pixel.color,pixel.x,pixel.y,undefined,a)
+                // if (isEmpty(pixel.x+1,pixel.y) || isEmpty(pixel.x-1,pixel.y) || isEmpty(pixel.x,pixel.y+1) || isEmpty(pixel.x,pixel.y-1)) {}
+            }
+            else {
+                drawSquare(ctx,pixel.color,pixel.x,pixel.y,undefined,a)
+            }
+            if (pixel.charge && view !== 2) { // Yellow glow on charge
+                if (!elements[pixel.element].colorOn) {
+                    drawSquare(ctx,"rgba(255,255,0,0.5)",pixel.x,pixel.y);
+                }
+            }
+        }
+    }
+}
+
+screenTemp = function(pixel) {
+    for (var i = 0; i < biCoords.length; i++) {
+        var x = pixel.x+biCoords[i][0];
+        var y = pixel.y+biCoords[i][1];
+        if (!isEmpty(x,y,true)) {
+            var newPixel = pixelMap[x][y];
+            if (elements[newPixel.element].isScreen) {
+                // Skip if both temperatures are the same
+                if (pixel.dtemp === newPixel.dtemp || elements[newPixel.element].insulate === true) {
+                    continue;
+                }
+                // Set both pixel temperatures to their average
+                var avg = (pixel.dtemp + newPixel.dtemp)/2;
+                pixel.dtemp = avg;
+                newPixel.dtemp = avg;
+                pixelTempCheck(pixel);
+                pixelTempCheck(newPixel);
+            }
+        }
+    }
+}
+
+doScreenBurning =  function(pixel) {
+    if (pixel.digburning) { // Burning
+        if (pixel.digburnStart === undefined) { pixel.digburnStart = pixelTicks }
+        var info = elements[pixel.element];
+        if (!info.insulate) { pixel.dtemp += 1; }
+        if (pixel.dtemp < 0) {
+            pixel.digburning = undefined;
+            pixel.digburnStart = undefined;
+            return;
+        }
+        for (var i = 0; i < adjacentCoords.length; i++) { // Burn adjacent pixels
+            var x = pixel.x+adjacentCoords[i][0];
+            var y = pixel.y+adjacentCoords[i][1];
+            if (!isEmpty(x,y,true)) {
+                var newPixel = pixelMap[x][y];
+                if (elements[newPixel.element].dburn && !newPixel.digburning) {
+                    if (Math.floor(Math.random()*100) < elements[newPixel.element].dburn) {
+                        newPixel.digburning = true;
+                        newPixel.digburnStart = pixelTicks;
+                    }
+                }
+                if (elements[newPixel.element].dextinguish && elements[pixel.element].digburning !== true) {
+                    pixel.digburning = undefined;
+                    pixel.digburnStart = undefined;
+                    return;
+                }
+            }
+        }
+
+        if ((pixelTicks - pixel.digburnStart > (info.digburnTime || 200)) && Math.floor(Math.random()*100)<(info.dburn || 10) && !(info.digburnTime === undefined && info.hardness >= 1)) {
+            var digburnInto = info.digburnInto;
+            if (digburnInto === undefined) {
+                digburnInto = "fire_screen";
+            }
+            else if (digburnInto instanceof Array) {
+                digburnInto = digburnInto[Math.floor(Math.random()*digburnInto.length)];
+            }
+            changePixel(pixel,digburnInto);
+            if (info.digfireColor !== undefined && digburnInto === "fire_screen") {
+                pixel.color = pixelColorPick(pixel,info.digfireColor);
+            }
+            else {
+                pixel.color = pixelColorPick(pixel)
+            }
+        }
+        else if (Math.floor(Math.random()*100)<10 && info.id !== elements.fire_screen.id && info.digfireElement !== null) { // Spawn fire
+            if (!isEmpty(pixel.x,pixel.y-1)) {
+                var firePixel = pixelMap[pixel.x][pixel.y-1]
+                if (firePixel.element === "sandboxels_screen") {
+                    changePixel(firePixel,(info.digfireElement || "fire_screen"));
+                    firePixel.dtemp = pixel.dtemp//+(pixelTicks - (pixel.digburnStart || 0));
+                    if (info.digfireColor !== undefined) {
+                        firePixel.color = pixelColorPick(pixelMap[pixel.x][pixel.y-1],info.digfireColor);
+                    }
+                }
+                else if (!isEmpty(pixel.x,pixel.y+1)) {
+                    var firePixel = pixelMap[pixel.x][pixel.y+1]
+                    if (firePixel.element === "sandboxels_screen") {
+                        changePixel(firePixel,(info.digfireElement || "fire_screen"));
+                        firePixel.dtemp = pixel.dtemp//+(pixelTicks - (pixel.burnStart || 0));
+                        if (info.digfireColor !== undefined) {
+                            firePixel.color = pixelColorPick(pixelMap[pixel.x][pixel.y+1],info.digfireColor);
+                        }
+                    }
+                }
+            }
+            // same for below if top is blocked
+            else if (!isEmpty(pixel.x,pixel.y+1)) {
+                var firePixel = pixelMap[pixel.x][pixel.y+1]
+                if (firePixel.element === "sandboxels_screen") {
+                    changePixel(firePixel,(info.digfireElement || "fire_screen"));
+                    firePixel.dtemp = pixel.dtemp//+(pixelTicks - (pixel.burnStart || 0));
+                    if (info.digfireColor !== undefined) {
+                        firePixel.color = pixelColorPick(pixelMap[pixel.x][pixel.y+1],info.digfireColor);
+                    }
+                }
+            }
+        }
+
+    }
+}
+
 elements.sandboxels_screen_off = {
     name:"screen",
     color: "#454545",
     behavior: behaviors.WALL,
-    behaviorOn: [
-    "XX|XX|XX",
-    "XX|CH:sandboxels_screen|XX",
-    "XX|XX|XX",
-    ],
+    tick: function(pixel) {
+        if (pixel.dtemp !== 20) { pixel.dtemp = 20 }
+        if (pixel.charge) { pixel.charges = pixelTicks }
+        if (pixelTicks - 10 > pixel.charges) {
+            changePixel(pixel,"sandboxels_screen")
+        }
+    },
     tempHigh: 1500,
     stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
     conduct: 1,
@@ -50,11 +190,11 @@ elements.sandboxels_screen = {
     name:"screen",
     hidden:true,
     color: "#1D1D1D",
-    behavior: [
-    "XX|XX|XX",
-    "XX|XX|XX",
-    "XX|XX|XX",
-    ],
+    tick: function(pixel) {
+        if (pixel.dtemp !== 20) { pixel.dtemp = 20 }
+        if (pixel.charge) { pixel.charge = 0 }
+    },
+    conduct: 1,
     tempHigh: 1500,
     stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
     breakInto: ["glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","sand"],
@@ -74,7 +214,7 @@ elements.simulated_heat = {
     ],
     tool: function(pixel) {
         if (elements[pixel.element].isScreen === true) {
-            pixel.dtemp += 1 
+            pixel.dtemp += 2 
         }
     },
     insulate:true,
@@ -92,7 +232,7 @@ elements.simulated_cool = {
     ],
     tool: function(pixel) {
         if (elements[pixel.element].isScreen === true) {
-            pixel.dtemp -= 1 
+            pixel.dtemp -= 2
         }
     },
     insulate:true,
@@ -206,6 +346,7 @@ elements.sand_screen = {
     isMoving: true,
     isSolid: true,
     tick: function(pixel) {
+        screenTemp(pixel)
         if (!isEmpty(pixel.x,pixel.y+1,true)) {
             var newPixel = pixelMap[pixel.x][pixel.y+1];
             if (newPixel.element === "sandboxels_screen") {
@@ -214,8 +355,6 @@ elements.sand_screen = {
                 changePixel(pixel,"sandboxels_screen");
             }
             else if (elements[newPixel.element].isScreen === true) {
-                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
-                pixel.dtemp = newPixel.dtemp;
                 if (elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isSolid !== true && elements[newPixel.element].isMoving === true) {
                     swapPixels(newPixel, pixel)
                 }
@@ -229,8 +368,6 @@ elements.sand_screen = {
 
                 }
                 else if (elements[newPixel.element].isScreen === true) {
-                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
-                    pixel.dtemp = newPixel.dtemp;
                     if (elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isSolid !== true && elements[newPixel.element].isMoving === true) {
                         swapPixels(newPixel, pixel)
                     }
@@ -245,8 +382,6 @@ elements.sand_screen = {
 
                 }
                 else if (elements[newPixel.element].isScreen === true) {
-                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
-                    pixel.dtemp = newPixel.dtemp;
                     if (elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isSolid !== true && elements[newPixel.element].isMoving === true) {
                         swapPixels(newPixel, pixel)
                     }
@@ -280,6 +415,7 @@ elements.wet_sand_screen = {
     isMoving: true,
     isSolid: true,
     tick: function(pixel) {
+        screenTemp(pixel)
         if (!isEmpty(pixel.x,pixel.y+1,true)) {
             var newPixel = pixelMap[pixel.x][pixel.y+1];
             if (newPixel.element === "sandboxels_screen") {
@@ -288,8 +424,116 @@ elements.wet_sand_screen = {
                 changePixel(pixel,"sandboxels_screen");
             }
             else if (elements[newPixel.element].isScreen === true) {
-                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
-                pixel.dtemp = newPixel.dtemp;
+                if (elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isSolid !== true && elements[newPixel.element].isMoving === true) {
+                    swapPixels(newPixel, pixel)
+                }
+            }
+        }
+    },
+    state: "solid",
+    density: 1905,
+}
+
+elements.dirt_screen = {
+    name:"screen",
+    hidden:true,
+    color: ["#76552b","#5c4221","#573c1a","#6b481e"],
+    behavior: [
+    "XX|XX|XX",
+    "XX|XX|XX",
+    "XX|XX|XX",
+    ],
+    properties: {
+        dtemp: 20,
+    },
+    tempHigh: 1500,
+    stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
+    breakInto: ["glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","dirt"],
+    tempLow: -45,
+    stateLow: "sandboxels_screen_off",
+    category: "simulation",
+    isScreen: true,
+    isMoving: true,
+    isSolid: true,
+    tick: function(pixel) {
+        screenTemp(pixel)
+        if (!isEmpty(pixel.x,pixel.y+1,true)) {
+            var newPixel = pixelMap[pixel.x][pixel.y+1];
+            if (newPixel.element === "sandboxels_screen") {
+                changePixel(newPixel,pixel.element);
+                newPixel.dtemp = pixel.dtemp;
+                changePixel(pixel,"sandboxels_screen");
+            }
+            else if (elements[newPixel.element].isScreen === true) {
+                if (elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isSolid !== true && elements[newPixel.element].isMoving === true) {
+                    swapPixels(newPixel, pixel)
+                }
+            }
+            if (Math.random() > 0.5 && !isEmpty(pixel.x+1,pixel.y+1,true) && !isEmpty(pixel.x,pixel.y+1,true)) {
+                newPixel = pixelMap[pixel.x+1][pixel.y+1];
+                if (newPixel.element === "sandboxels_screen") {
+                    changePixel(newPixel,pixel.element);
+                    newPixel.dtemp = pixel.dtemp;
+                    changePixel(pixel,"sandboxels_screen");
+
+                }
+                else if (elements[newPixel.element].isScreen === true) {
+                    if (elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isSolid !== true && elements[newPixel.element].isMoving === true) {
+                        swapPixels(newPixel, pixel)
+                    }
+                }
+            }
+            else if (!isEmpty(pixel.x-1,pixel.y+1,true) && !isEmpty(pixel.x,pixel.y+1,true)) {
+                newPixel = pixelMap[pixel.x-1][pixel.y+1];
+                if (newPixel.element === "sandboxels_screen") {
+                    changePixel(newPixel,pixel.element);
+                    newPixel.dtemp = pixel.dtemp;
+                    changePixel(pixel,"sandboxels_screen");
+
+                }
+                else if (elements[newPixel.element].isScreen === true) {
+                    if (elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isSolid !== true && elements[newPixel.element].isMoving === true) {
+                        swapPixels(newPixel, pixel)
+                    }
+                }
+            }
+        }
+    },
+    state: "solid",
+    density: 1602,
+}
+
+elements.mud_screen = {
+    name:"screen",
+    hidden:true,
+    color: "#382417",
+    behavior: [
+    "XX|XX|XX",
+    "XX|XX|XX",
+    "XX|XX|XX",
+    ],
+    properties: {
+        dtemp: 20,
+    },
+    tempHigh: 1500,
+    stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
+    breakInto: ["glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","mud"],
+    tempLow: -45,
+    stateLow: "sandboxels_screen_off",
+    category: "simulation",
+    isScreen: true,
+    isMoving: true,
+    isSolid: true,
+    tick: function(pixel) {
+        screenTemp(pixel)
+        if (!isEmpty(pixel.x,pixel.y+1,true)) {
+            var newPixel = pixelMap[pixel.x][pixel.y+1];
+            if (newPixel.element === "sandboxels_screen") {
+                changePixel(newPixel,pixel.element);
+                newPixel.dtemp = pixel.dtemp;
+                changePixel(pixel,"sandboxels_screen");
+            }
+            else if (elements[newPixel.element].isScreen === true) {
                 if (elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isSolid !== true && elements[newPixel.element].isMoving === true) {
                     swapPixels(newPixel, pixel)
                 }
@@ -323,6 +567,7 @@ elements.rock_screen = {
     isMoving: true,
     isSolid: true,
     tick: function(pixel) {
+        screenTemp(pixel)
         if (!isEmpty(pixel.x,pixel.y+1,true)) {
             var newPixel = pixelMap[pixel.x][pixel.y+1];
             if (newPixel.element === "sandboxels_screen") {
@@ -331,8 +576,6 @@ elements.rock_screen = {
                 changePixel(pixel,"sandboxels_screen");
             }
             else if (elements[newPixel.element].isScreen === true) {
-                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
-                pixel.dtemp = newPixel.dtemp;
                 if (elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isSolid !== true && elements[newPixel.element].isMoving === true) {
                     swapPixels(newPixel, pixel)
                 }
@@ -346,8 +589,6 @@ elements.rock_screen = {
 
                 }
                 else if (elements[newPixel.element].isScreen === true) {
-                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
-                    pixel.dtemp = newPixel.dtemp;
                     if (elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isSolid !== true && elements[newPixel.element].isMoving === true) {
                         swapPixels(newPixel, pixel)
                     }
@@ -362,8 +603,6 @@ elements.rock_screen = {
 
                 }
                 else if (elements[newPixel.element].isScreen === true) {
-                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
-                    pixel.dtemp = newPixel.dtemp;
                     if (elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isSolid !== true && elements[newPixel.element].isMoving === true) {
                         swapPixels(newPixel, pixel)
                     }
@@ -395,7 +634,12 @@ elements.saw_screen = {
     category: "simulation",
     isScreen: true,
     isMoving: true,
+    dburn: 25,
+    digburnTime: 150,
+    digburnInto: ["fire_screen","fire_screen","fire_screen","ash_screen"],
     tick: function(pixel) {
+        screenTemp(pixel)
+        doScreenBurning(pixel)
         if (!isEmpty(pixel.x,pixel.y+1,true)) {
             var newPixel = pixelMap[pixel.x][pixel.y+1];
             if (newPixel.element === "sandboxels_screen") {
@@ -404,8 +648,6 @@ elements.saw_screen = {
                 changePixel(pixel,"sandboxels_screen");
             }
             else if (elements[newPixel.element].isScreen === true) {
-                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
-                pixel.dtemp = newPixel.dtemp;
                 if (elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isSolid !== true && elements[newPixel.element].isMoving === true) {
                     swapPixels(newPixel, pixel)
                 }
@@ -419,8 +661,6 @@ elements.saw_screen = {
 
                 }
                 else if (elements[newPixel.element].isScreen === true) {
-                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
-                    pixel.dtemp = newPixel.dtemp;
                     if (elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isSolid !== true && elements[newPixel.element].isMoving === true) {
                         swapPixels(newPixel, pixel)
                     }
@@ -435,8 +675,6 @@ elements.saw_screen = {
 
                 }
                 else if (elements[newPixel.element].isScreen === true) {
-                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2);
-                    pixel.dtemp = newPixel.dtemp;
                     if (elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isSolid !== true && elements[newPixel.element].isMoving === true) {
                         swapPixels(newPixel, pixel)
                     }
@@ -445,7 +683,75 @@ elements.saw_screen = {
         }
     },
     state: "solid",
-    density: 1200,
+    density: 393,
+}
+
+elements.ash_screen = {
+    name:"screen",
+    hidden:true,
+    color: ["#8c8c8c","#9c9c9c"],
+    behavior: [
+    "XX|XX|XX",
+    "XX|XX|XX",
+    "XX|XX|XX",
+    ],
+    properties: {
+        dtemp: 20,
+    },
+    tempHigh: 1500,
+    stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
+    breakInto: ["glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","sawdust"],
+    tempLow: -45,
+    stateLow: "sandboxels_screen_off",
+    category: "simulation",
+    isScreen: true,
+    isMoving: true,
+    tick: function(pixel) {
+        screenTemp(pixel)
+        if (!isEmpty(pixel.x,pixel.y+1,true)) {
+            var newPixel = pixelMap[pixel.x][pixel.y+1];
+            if (newPixel.element === "sandboxels_screen") {
+                changePixel(newPixel,pixel.element);
+                newPixel.dtemp = pixel.dtemp;
+                changePixel(pixel,"sandboxels_screen");
+            }
+            else if (elements[newPixel.element].isScreen === true) {
+                if (elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isSolid !== true && elements[newPixel.element].isMoving === true) {
+                    swapPixels(newPixel, pixel)
+                }
+            }
+            if (Math.random() > 0.5 && !isEmpty(pixel.x+1,pixel.y+1,true) && !isEmpty(pixel.x,pixel.y+1,true)) {
+                newPixel = pixelMap[pixel.x+1][pixel.y+1];
+                if (newPixel.element === "sandboxels_screen") {
+                    changePixel(newPixel,pixel.element);
+                    newPixel.dtemp = pixel.dtemp;
+                    changePixel(pixel,"sandboxels_screen");
+
+                }
+                else if (elements[newPixel.element].isScreen === true) {
+                    if (elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isSolid !== true && elements[newPixel.element].isMoving === true) {
+                        swapPixels(newPixel, pixel)
+                    }
+                }
+            }
+            else if (!isEmpty(pixel.x-1,pixel.y+1,true) && !isEmpty(pixel.x,pixel.y+1,true)) {
+                newPixel = pixelMap[pixel.x-1][pixel.y+1];
+                if (newPixel.element === "sandboxels_screen") {
+                    changePixel(newPixel,pixel.element);
+                    newPixel.dtemp = pixel.dtemp;
+                    changePixel(pixel,"sandboxels_screen");
+
+                }
+                else if (elements[newPixel.element].isScreen === true) {
+                    if (elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isSolid !== true && elements[newPixel.element].isMoving === true) {
+                        swapPixels(newPixel, pixel)
+                    }
+                }
+            }
+        }
+    },
+    state: "solid",
+    density: 700,
 }
 
 elements.cellulose_screen = {
@@ -469,6 +775,7 @@ elements.cellulose_screen = {
     isScreen: true,
     isMoving: true,
     tick: function(pixel) {
+        screenTemp(pixel)
         if (Math.random() > 0.2 && !isEmpty(pixel.x,pixel.y+1,true)) {
             var newPixel = pixelMap[pixel.x][pixel.y+1];
             if (newPixel.element === "sandboxels_screen") {
@@ -477,8 +784,6 @@ elements.cellulose_screen = {
                 changePixel(pixel,"sandboxels_screen");
             }
             else if (elements[newPixel.element].isScreen === true) {
-                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2)
-                pixel.dtemp = newPixel.dtemp
                 if (elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isMoving === true) {
                     swapPixels(newPixel, pixel)
                 }
@@ -524,8 +829,6 @@ elements.cellulose_screen = {
                 changePixel(pixel,"sandboxels_screen");
             }
             else if (elements[newPixel.element].isScreen === true) {
-                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2)
-                pixel.dtemp = newPixel.dtemp
                 if (elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isMoving === true) {
                     swapPixels(newPixel, pixel)
                 }
@@ -539,8 +842,6 @@ elements.cellulose_screen = {
                 changePixel(pixel,"sandboxels_screen");
             }
             else if (elements[newPixel.element].isScreen === true) {
-                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2)
-                pixel.dtemp = newPixel.dtemp
                 if (elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isMoving === true) {
                     swapPixels(newPixel, pixel)
                 }
@@ -573,6 +874,7 @@ elements.blood_screen = {
     isScreen: true,
     isMoving: true,
     tick: function(pixel) {
+        screenTemp(pixel)
         if (Math.random() > 0.2 && !isEmpty(pixel.x,pixel.y+1,true)) {
             var newPixel = pixelMap[pixel.x][pixel.y+1];
             if (newPixel.element === "sandboxels_screen") {
@@ -640,8 +942,6 @@ elements.blood_screen = {
                 changePixel(pixel,"sandboxels_screen");
             }
             else if (elements[newPixel.element].isScreen === true) {
-                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2)
-                pixel.dtemp = newPixel.dtemp
                 if (elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isMoving === true) {
                     swapPixels(newPixel, pixel)
                 }
@@ -659,8 +959,6 @@ elements.blood_screen = {
                 changePixel(pixel,"sandboxels_screen");
             }
             else if (elements[newPixel.element].isScreen === true) {
-                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2)
-                pixel.dtemp = newPixel.dtemp
                 if (elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isMoving === true) {
                     swapPixels(newPixel, pixel)
                 }
@@ -697,6 +995,7 @@ elements.water_screen = {
     isScreen: true,
     isMoving: true,
     tick: function(pixel) {
+        screenTemp(pixel)
         if (Math.random() > 0.2 && !isEmpty(pixel.x,pixel.y+1,true)) {
             var newPixel = pixelMap[pixel.x][pixel.y+1];
             if (newPixel.element === "sandboxels_screen") {
@@ -705,13 +1004,15 @@ elements.water_screen = {
                 changePixel(pixel,"sandboxels_screen");
             }
             else if (elements[newPixel.element].isScreen === true) {
-                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2)
-                pixel.dtemp = newPixel.dtemp
                 if (elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isMoving === true) {
                     swapPixels(newPixel, pixel)
                 }
                 if (elements[newPixel.element].id === elements.sand_screen.id) {
                     changePixel(newPixel, "wet_sand_screen")
+                    changePixel(pixel, "sandboxels_screen")
+                }
+                if (elements[newPixel.element].id === elements.dirt_screen.id) {
+                    changePixel(newPixel, "mud_screen")
                     changePixel(pixel, "sandboxels_screen")
                 }
                 if (elements[newPixel.element].id === elements.saw_screen.id || elements[newPixel.element].id === elements.paper_screen.id) {
@@ -732,6 +1033,10 @@ elements.water_screen = {
                     pixel.dtemp = newPixel.dtemp
                     if (elements[newPixel.element].id === elements.sand_screen.id) {
                         changePixel(newPixel, "wet_sand_screen")
+                        changePixel(pixel, "sandboxels_screen")
+                    }
+                    if (elements[newPixel.element].id === elements.dirt_screen.id) {
+                        changePixel(newPixel, "mud_screen")
                         changePixel(pixel, "sandboxels_screen")
                     }
                     if (elements[newPixel.element].id === elements.saw_screen.id || elements[newPixel.element].id === elements.paper_screen.id) {
@@ -755,6 +1060,10 @@ elements.water_screen = {
                         changePixel(newPixel, "wet_sand_screen")
                         changePixel(pixel, "sandboxels_screen")
                     }
+                    if (elements[newPixel.element].id === elements.dirt_screen.id) {
+                        changePixel(newPixel, "mud_screen")
+                        changePixel(pixel, "sandboxels_screen")
+                    }
                     if (elements[newPixel.element].id === elements.saw_screen.id || elements[newPixel.element].id === elements.paper_screen.id) {
                         changePixel(newPixel, "cellulose_screen")
                         changePixel(pixel, "sandboxels_screen")
@@ -770,10 +1079,16 @@ elements.water_screen = {
                 changePixel(pixel,"sandboxels_screen");
             }
             else if (elements[newPixel.element].isScreen === true) {
-                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2)
-                pixel.dtemp = newPixel.dtemp
                 if (elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isMoving === true) {
                     swapPixels(newPixel, pixel)
+                }
+                if (elements[newPixel.element].id === elements.sand_screen.id) {
+                    changePixel(newPixel, "wet_sand_screen")
+                    changePixel(pixel, "sandboxels_screen")
+                }
+                if (elements[newPixel.element].id === elements.dirt_screen.id) {
+                    changePixel(newPixel, "mud_screen")
+                    changePixel(pixel, "sandboxels_screen")
                 }
                 if (elements[newPixel.element].id === elements.saw_screen.id || elements[newPixel.element].id === elements.paper_screen.id) {
                     changePixel(newPixel, "cellulose_screen")
@@ -789,10 +1104,16 @@ elements.water_screen = {
                 changePixel(pixel,"sandboxels_screen");
             }
             else if (elements[newPixel.element].isScreen === true) {
-                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2)
-                pixel.dtemp = newPixel.dtemp
                 if (elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isMoving === true) {
                     swapPixels(newPixel, pixel)
+                }
+                if (elements[newPixel.element].id === elements.sand_screen.id) {
+                    changePixel(newPixel, "wet_sand_screen")
+                    changePixel(pixel, "sandboxels_screen")
+                }
+                if (elements[newPixel.element].id === elements.dirt_screen.id) {
+                    changePixel(newPixel, "mud_screen")
+                    changePixel(pixel, "sandboxels_screen")
                 }
                 if (elements[newPixel.element].id === elements.saw_screen.id || elements[newPixel.element].id === elements.paper_screen.id) {
                     changePixel(newPixel, "cellulose_screen")
@@ -823,6 +1144,7 @@ elements.steam_screen = {
     isScreen: true,
     isMoving: true,
     tick: function(pixel) {
+        screenTemp(pixel)
         if (Math.random() > 0.5) {
             pixel.dir1 = 1
         }
@@ -843,8 +1165,6 @@ elements.steam_screen = {
                 changePixel(pixel,"sandboxels_screen");
             }
             else if (elements[newPixel.element].isScreen === true) {
-                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2)
-                pixel.dtemp = newPixel.dtemp
             }
         }
         if (pixel.dtemp < 100) { changePixel(pixel,"water_screen") }
@@ -869,6 +1189,7 @@ elements.oxygen_screen = {
     isScreen: true,
     isMoving: true,
     tick: function(pixel) {
+        screenTemp(pixel)
         if (Math.random() > 0.5) {
             pixel.dir1 = 1
         }
@@ -887,8 +1208,6 @@ elements.oxygen_screen = {
                 swapPixels(newPixel, pixel)
             }
             else if (elements[newPixel.element].isScreen === true) {
-                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2)
-                pixel.dtemp = newPixel.dtemp
             }
         }
     },
@@ -911,7 +1230,12 @@ elements.fire_screen = {
     category: "simulation",
     isScreen: true,
     isMoving: true,
+    digburning: true,
+    digburnTime: 25,
+    digburnInto: "smoke_screen",
     tick: function(pixel) {
+        screenTemp(pixel)
+        doScreenBurning(pixel)
         if (Math.random() > 0.975) {
             changePixel(pixel,"smoke_screen")
         }
@@ -933,8 +1257,6 @@ elements.fire_screen = {
                 swapPixels(newPixel, pixel)
             }
             else if (elements[newPixel.element].isScreen === true) {
-                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2)
-                pixel.dtemp = newPixel.dtemp
             }
         }
         if (pixel.dtemp < 100) { changePixel(pixel,"smoke_screen") }
@@ -959,6 +1281,7 @@ elements.smoke_screen = {
     isScreen: true,
     isMoving: true,
     tick: function(pixel) {
+        screenTemp(pixel)
         if (Math.random() > 0.95) {
             changePixel(pixel,"sandboxels_screen")
         }
@@ -980,8 +1303,6 @@ elements.smoke_screen = {
                 swapPixels(newPixel, pixel)
             }
             else if (elements[newPixel.element].isScreen === true) {
-                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2)
-                pixel.dtemp = newPixel.dtemp
             }
         }
         if (pixel.dtemp > 1000) { changePixel(pixel,"fire_screen") }
@@ -1011,7 +1332,13 @@ elements.body_screen = {
     digBreakInto: "blood_screen",
     isScreen: true,
     isSolid: true,
+    dburn: 10,
+    digburnTime: 250,
+    digburnInto: ["fire_screen","ash_screen","ash_screen"],
     tick: function(pixel) {
+        screenTemp(pixel)
+        doScreenBurning(pixel)
+        if (pixel.dtemp > 300) { changePixel(pixel,"ash_screen") }
         if (!isEmpty(pixel.x,pixel.y-1,true) && pixelMap[pixel.x][pixel.y-1].element === "head_screen") {
             var headPixel = pixelMap[pixel.x][pixel.y-1]
             if (!isEmpty(pixel.x,pixel.y+1,true)) {
@@ -1135,8 +1462,6 @@ elements.body_screen = {
                 changePixel(pixel,"sandboxels_screen");
             }
             else if (elements[newPixel.element].isScreen === true) {
-                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2)
-                pixel.dtemp = newPixel.dtemp
             }
         }
     },
@@ -1163,7 +1488,13 @@ elements.head_screen = {
     digBreakInto: "blood_screen",
     isScreen: true,
     isSolid: true,
+    dburn: 10,
+    digburnTime: 250,
+    digburnInto: ["fire_screen","ash_screen","ash_screen"],
     tick: function(pixel) {
+        screenTemp(pixel)
+        doScreenBurning(pixel)
+        if (pixel.dtemp > 300) { changePixel(pixel,"ash_screen") }
         if (!isEmpty(pixel.x,pixel.y+1,true)) {
             var newPixel = pixelMap[pixel.x][pixel.y+1];
             if (newPixel.element === "sandboxels_screen") {
@@ -1179,8 +1510,6 @@ elements.head_screen = {
                 }
             }
             else if (elements[newPixel.element].isScreen === true) {
-                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2)
-                pixel.dtemp = newPixel.dtemp
             }
         }
     },
@@ -1204,7 +1533,13 @@ elements.fly_screen = {
     isScreen: true,
     isMoving: true,
     isSolid: true,
+    dburn: 95,
+    digburnTime: 25,
+    digburnInto: ["fire_screen","ash_screen","ash_screen"],
     tick: function(pixel) {
+        screenTemp(pixel)
+        doScreenBurning(pixel)
+        if (pixel.dtemp > 100) { changePixel(pixel,"ash_screen") }
         if (outOfBounds(pixel.x+(pixel.dir),pixel.y) || isEmpty(pixel.x+(pixel.dir),pixel.y)) {
             if (pixel.dir === -1) {
                 pixel.dir = 1
@@ -1219,8 +1554,6 @@ elements.fly_screen = {
                 swapPixels(newPixel, pixel)
             }
             else if (elements[newPixel.element].isScreen === true || newPixel.element !== "sandboxels_screen") {
-                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2)
-                pixel.dtemp = newPixel.dtemp
                 if (pixel.dir === -1) {
                     pixel.dir = 1
                 }
@@ -1235,8 +1568,6 @@ elements.fly_screen = {
                 swapPixels(newPixel, pixel)
             }
             else if (elements[newPixel.element].isScreen === true || newPixel.element !== "sandboxels_screen") {
-                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2)
-                pixel.dtemp = newPixel.dtemp
                 if (pixel.dir === -1) {
                     pixel.dir = 1
                 }
@@ -1268,7 +1599,13 @@ elements.bird_screen = {
     isScreen: true,
     isMoving: true,
     isSolid: true,
+    dburn: 2,
+    digburnTime: 100,
+    digburnInto: ["fire_screen","ash_screen","ash_screen"],
     tick: function(pixel) {
+        screenTemp(pixel)
+        doScreenBurning(pixel)
+        if (pixel.dtemp > 300) { changePixel(pixel,"ash_screen") }
         if (outOfBounds(pixel.x+(pixel.dir),pixel.y) || isEmpty(pixel.x+(pixel.dir),pixel.y)) {
             if (pixel.dir === -1) {
                 pixel.dir = 1
@@ -1283,8 +1620,6 @@ elements.bird_screen = {
                 swapPixels(newPixel, pixel)
             }
             else if (elements[newPixel.element].isScreen === true || newPixel.element !== "sandboxels_screen") {
-                newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2)
-                pixel.dtemp = newPixel.dtemp
                 if (elements[newPixel.element].id === elements.fly_screen.id && Math.random() < 0.5) {
                     changePixel(newPixel, "sandboxels_screen")
                 }
@@ -1363,41 +1698,45 @@ elements.rat_screen = {
     isScreen: true,
     isSolid: true,
     isMoving: true,
+    dburn: 2,
+    digburnTime: 100,
+    digburnInto: ["fire_screen","ash_screen","ash_screen"],
     tick: function(pixel) {
-            if (!isEmpty(pixel.x,pixel.y+1,true)) {
-                var newPixel = pixelMap[pixel.x][pixel.y+1]
-                if (newPixel.element === "sandboxels_screen") {
-                    swapPixels(newPixel,pixel);
+        screenTemp(pixel)
+        doScreenBurning(pixel)
+        if (pixel.dtemp > 300) { changePixel(pixel,"ash_screen") }
+        if (!isEmpty(pixel.x,pixel.y+1,true)) {
+            var newPixel = pixelMap[pixel.x][pixel.y+1]
+            if (newPixel.element === "sandboxels_screen") {
+                swapPixels(newPixel,pixel);
+            }
+            else if (Math.random() < 0.25 && elements[newPixel.element].isScreen === true) {
+                if (elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isSolid !== true && elements[newPixel.element].isMoving === true) {
+                    swapPixels(newPixel, pixel)
                 }
-                else if (Math.random() < 0.25 && elements[newPixel.element].isScreen === true) {
-                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2)
-                    pixel.dtemp = newPixel.dtemp
-                    if (elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isSolid !== true && elements[newPixel.element].isMoving === true) {
-                        swapPixels(newPixel, pixel)
+                if (Math.random() < 0.5 && !isEmpty(pixel.x+1,pixel.y,true) && !isEmpty(pixel.x+1,pixel.y-1,true)) {
+                    var newPixel = pixelMap[pixel.x+1][pixel.y];
+                    var newUpPixel = pixelMap[pixel.x+1][pixel.y-1];
+                    if (newPixel.element === "sandboxels_screen" || elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isSolid !== true && elements[newPixel.element].isMoving === true) {
+                        swapPixels(newPixel,pixel);
                     }
-                    if (Math.random() < 0.5 && !isEmpty(pixel.x+1,pixel.y,true) && !isEmpty(pixel.x+1,pixel.y-1,true)) {
-                        var newPixel = pixelMap[pixel.x+1][pixel.y];
-                        var newUpPixel = pixelMap[pixel.x+1][pixel.y-1];
-                        if (newPixel.element === "sandboxels_screen" || elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isSolid !== true && elements[newPixel.element].isMoving === true) {
-                            swapPixels(newPixel,pixel);
-                        }
-                        else if (newPixel.element !== "sandboxels_screen" && newUpPixel.element === "sandboxels_screen") {
-                            swapPixels(newUpPixel,pixel);
-                        }
+                    else if (newPixel.element !== "sandboxels_screen" && newUpPixel.element === "sandboxels_screen") {
+                        swapPixels(newUpPixel,pixel);
                     }
-                    else if (!isEmpty(pixel.x-1,pixel.y,true) && !isEmpty(pixel.x-1,pixel.y-1,true)) {
-                        var newPixel = pixelMap[pixel.x-1][pixel.y];
-                        var newUpPixel = pixelMap[pixel.x-1][pixel.y-1];
-                        if (newPixel.element === "sandboxels_screen" || elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isSolid !== true && elements[newPixel.element].isMoving === true) {
-                            swapPixels(newPixel,pixel);
-                        }
-                        else if (newPixel.element !== "sandboxels_screen" && newUpPixel.element === "sandboxels_screen") {
-                            swapPixels(newUpPixel,pixel);
-                        }
+                }
+                else if (!isEmpty(pixel.x-1,pixel.y,true) && !isEmpty(pixel.x-1,pixel.y-1,true)) {
+                    var newPixel = pixelMap[pixel.x-1][pixel.y];
+                    var newUpPixel = pixelMap[pixel.x-1][pixel.y-1];
+                    if (newPixel.element === "sandboxels_screen" || elements[newPixel.element].density < elements[pixel.element].density && elements[newPixel.element].isSolid !== true && elements[newPixel.element].isMoving === true) {
+                        swapPixels(newPixel,pixel);
+                    }
+                    else if (newPixel.element !== "sandboxels_screen" && newUpPixel.element === "sandboxels_screen") {
+                        swapPixels(newUpPixel,pixel);
                     }
                 }
             }
-            else if (Math.random() < 0.25) {
+        }
+        else if (Math.random() < 0.25) {
             if (Math.random() < 0.5 && !isEmpty(pixel.x+1,pixel.y,true) && !isEmpty(pixel.x+1,pixel.y-1,true)) {
                 var newPixel = pixelMap[pixel.x+1][pixel.y];
                 var newUpPixel = pixelMap[pixel.x+1][pixel.y-1];
@@ -1440,6 +1779,7 @@ elements.ice_screen = {
     isScreen: true,
     isSolid: true,
     tick: function(pixel) {
+        screenTemp(pixel)
         if (pixel.dtemp > 5) { changePixel(pixel,"water_screen") }
     },
     state: "solid",
@@ -1457,7 +1797,12 @@ elements.wood_screen = {
     digBreakInto: "saw_screen",
     isScreen: true,
     isSolid: true,
+    dburn: 5,
+    digburnTime: 300,
+    digburnInto: ["fire_screen","ash_screen"],
     tick: function(pixel) {
+        screenTemp(pixel)
+        doScreenBurning(pixel)
         if (pixel.dtemp > 400) { changePixel(pixel,"fire_screen") }
     },
     tempHigh: 1500,
@@ -1480,7 +1825,12 @@ elements.paper_screen = {
     },
     isScreen: true,
     isSolid: true,
+    dburn: 70,
+    digburnTime: 300,
+    digburnInto: ["fire_screen","fire_screen","fire_screen","fire_screen","fire_screen","fire_screen","ash_screen"],
     tick: function(pixel) {
+        screenTemp(pixel)
+        doScreenBurning(pixel)
         if (pixel.dtemp > 248) { changePixel(pixel,"fire_screen") }
     },
     tempHigh: 1500,
@@ -1526,6 +1876,45 @@ elements.simulated_sand = {
     desc: "Use on screen to place simulated sand."
 }
 
+elements.simulated_dirt = {
+    color: ["#76552b","#5c4221","#573c1a","#6b481e"],
+    tool: function(pixel) {
+        if (elements[pixel.element].id === elements.sandboxels_screen.id) {
+            changePixel(pixel,"dirt_screen"); 
+        }
+    },
+    insulate:true,
+    canPlace: false,
+    category: "simulation",
+    desc: "Use on screen to place simulated dirt."
+}
+
+elements.simulated_wet_sand = {
+    color: ["#a19348","#b5a85e"],
+    tool: function(pixel) {
+        if (elements[pixel.element].id === elements.sandboxels_screen.id) {
+            changePixel(pixel,"wet_sand_screen"); 
+        }
+    },
+    insulate:true,
+    canPlace: false,
+    category: "simulation",
+    desc: "Use on screen to place simulated wet sand."
+}
+
+elements.simulated_mud = {
+    color: "#382417",
+    tool: function(pixel) {
+        if (elements[pixel.element].id === elements.sandboxels_screen.id) {
+            changePixel(pixel,"mud_screen"); 
+        }
+    },
+    insulate:true,
+    canPlace: false,
+    category: "simulation",
+    desc: "Use on screen to place simulated mud."
+}
+
 elements.simulated_rock = {
     color: ["#808080","#4f4f4f","#949494"],
     tool: function(pixel) {
@@ -1537,6 +1926,19 @@ elements.simulated_rock = {
     canPlace: false,
     category: "simulation",
     desc: "Use on screen to place simulated sand."
+}
+
+elements.simulated_ash = {
+    color: ["#8c8c8c","#9c9c9c"],
+    tool: function(pixel) {
+        if (elements[pixel.element].id === elements.sandboxels_screen.id) {
+            changePixel(pixel,"ash_screen"); 
+        }
+    },
+    insulate:true,
+    canPlace: false,
+    category: "simulation",
+    desc: "Use on screen to place simulated ash."
 }
 
 elements.simulated_water = {
@@ -1648,6 +2050,7 @@ elements.simulated_fire = {
     tool: function(pixel) {
         if (elements[pixel.element].id === elements.sandboxels_screen.id) {
             changePixel(pixel,"fire_screen"); 
+            pixel.digburning = true
         }
     },
     insulate:true,
@@ -1970,9 +2373,9 @@ elements.digitalizer = {
     onSelect: function() {
         logMessage("Do not digitalize unregistered elements!");
     },
-    tempHigh: 1500,
-    stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
-    breakInto: ["glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","glass_shard","sand"],
+    tempHigh: 600,
+    stateHigh: ["molten_aluminum","molten_aluminum","molten_aluminum","molten_gallium"],
+    breakInto: ["metal_scrap"],
     tempLow: -80,
     stateLow: "glass_shard",
     category: "simulation",
