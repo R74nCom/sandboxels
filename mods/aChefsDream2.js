@@ -3,7 +3,6 @@
 
 runAfterLoad(function() {
     console.log("Thanks for using aChefsDream2.js! -sqec")
-    console.log("You may find the prequel at aChefsDream.js")
 })
 
 var mods_to_include = ["mods/aChefsDream.js"]
@@ -248,6 +247,8 @@ elements.saffron = {
     stateHigh: ["ash", "smoke"],
 }
 
+// sugarcane
+
 elements.sugarcane_plant = {
     color: ["#fbc852","#dfad54"],
     behavior: [
@@ -325,3 +326,68 @@ elements.tea_leaves = {
     density: 1400,
     isFood: true,
 }
+elements.cinnamon = {
+    color: "#986544",
+    reactions: {
+        "stench": { elem2:null, chance:0.25 },
+        "steam": { elem2:"fragrance", chance:0.1 },
+        "flea": { elem2:null, chance:0.01 },
+        "termite": { elem2:null, chance:0.01 },
+        "fly": { elem2:null, chance:0.01 },
+        "ant": { elem2:null, chance:0.01 },
+        "stink_bug": { elem2:null, chance:0.01 },
+    },
+    behavior: behaviors.STURDYPOWDER,
+    tempHigh: 300,
+    stateHigh: ["fire","smoke","smoke","smoke","ash"],
+    burn:10,
+    burnTime:300,
+    burnInto: ["fire","smoke","smoke","smoke","fragrance"],
+    category:"food",
+    state: "solid",
+    density: 1400,
+    isFood: true,
+    breakInto: "cinnamon_powder"
+}
+elements.cinnamon_powder = {
+    color: "#D2691E",
+    reactions: {
+        "stench": { elem2:null, chance:0.25 },
+        "steam": { elem2:"fragrance", chance:0.1 },
+        "flea": { elem2:null, chance:0.01 },
+        "termite": { elem2:null, chance:0.01 },
+        "fly": { elem2:null, chance:0.01 },
+        "ant": { elem2:null, chance:0.01 },
+        "stink_bug": { elem2:null, chance:0.01 },
+    },
+    behavior: behaviors.POWDER,
+    tempHigh: 300,
+    stateHigh: ["fire","smoke","smoke","smoke","ash"],
+    burn:10,
+    burnTime:300,
+    burnInto: ["fire","smoke","smoke","smoke","smoke","smoke","smoke","fragrance"],
+    category:"food",
+    state: "solid",
+    density: 1400,
+    isFood: true,
+}
+elements.cola_syrup = {
+    color: "#4f0e0e",
+    behavior: behaviors.LIQUID,
+    tempHigh: 170,
+    stateHigh: ["sugar","smoke","smoke"],
+    tempLow: -15,
+    category:"liquids",
+    state: "liquid",
+    viscosity: 15,
+    hidden: true,
+    density: 1400,
+    reactions: {
+        "seltzer": { elem1: ["cola_syrup", "cola_syrup", "foam"], elem2:"soda"},
+        "soda": { elem1: "foam", chance:0.001},
+    },
+}
+if (!elements.sugar_water.reactions) elements.sugar_water.reactions = {};
+elements.sugar_water.reactions.lemon_juice = { elem1: "sugar_water", elem2: null, color1: "#fff7ba" }
+if (!elements.sugar_water.reactions) elements.sugar_water.reactions = {};
+elements.sugar_water.reactions.cinnamon_powder = { elem1: "cola_syrup", elem2: null }
