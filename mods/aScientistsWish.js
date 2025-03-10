@@ -1,14 +1,8 @@
-//Hello, this is are a science mod, we're made several things that related to science, examples like...electron, particle accelerator, and of course, carbon monoxide! :D
-//We made some things not scientific, so this mod is not too boring. ;)
-//we're normal people, who is not as smart as a real scientist. so if you have suggestion, feedback, or criticism, please let us know, so we can make this mod being more accurate. ><
-//  discord account |
-//                  |
-//                  |
-//                  v
-//  creator,leader,supervisor,coder,uploader = @carbon_monoxides6
-//  co-creator,co-coder,assistant,debugger = @salmonfishy (has exited from this mod project)
+//Main version
+//reminder for creator: human code is on index.html line 3242.
+
 elements.carbon_monoxide = {
-  color: "#b5b5b5",
+  color: ["#b5b5b5", "#404040", "#2b2b2b",],
   behavior: behaviors.GAS,
   behaviorOn: [
     "XX|XX|XX",
@@ -24,16 +18,35 @@ elements.carbon_monoxide = {
   tempLow: -192,
   stateLow: "liquid_carbon_monoxide",
   burntime: 5,
+  fireColor: ["#ff8833", "#ffad33", "#ffbe26", "#26baff", "#26e9ff", ],
+  burnInto: "carbon_dioxide", chance: 0.3,
   darkText: true,
-  fireColor: "#ebba34",
   reactions: {
-                "head": { elem2:"rotten_meat", chance:0.5 },
-                "body": { elem2:"rotten_meat", chance:0.5 },
-                "human": { elem2:"rotten_meat", chance:0.5 },
-             }
+    "head": { elem2: "rotten_meat", chance: 0.5, },
+    "body": { elem2:"rotten_meat", chance:0.5 },
+    "human": { elem2:"rotten_meat", chance:0.5 },
+    "worm": { elem2: "rotten_meat", chance:0.5 },
+    "bee": { elem2: "dead_bug", chance: 0.5 },
+    "ant": { elem2: "dead_bug", chance: 0.5 },
+    "flea": { elem2: "dead_bug", chance: 0.5 },
+    "spider": { elem2: "dead_bug", chance: 0.5 },
+    "fly": { elem2: "dead_bug", chance: 0.5 },
+    "stink_bug": { elem2: "dead_bug", chance: 0.5 },
+    "bird": { elem2: "rotten_meat", chance: 0.5 },
+    "frog": { elem2: "slime", chance: 0.5 },
+    "rat": { elem2: ["rotten_meat", "plague"], chance: 0.5 },
+    "fish": { elem2: "rotten_meat", chance: 0.5 },
+    "tadpole" : { elem2: "rotten_meat", chance: 0.5 },
+    "slug": { elem2: "slime", chance: 0.5 },
+    "snail": { elem2: "slime", chance: 0.5 },
+    "grass": { elem2: "dead_plant", chance: 0.5 },
+    "plant": { elem2: "dead_plant", chance: 0.5 },
+    "cactus": { elem2: "dead_plant", chance: 0.5 },
+    "petal": { elem2: "dead_plant", chance: 0.5 },
+  }
 };
 elements.liquid_carbon_monoxide = {
-     color: "#b5b5b5",
+     color: ["#b5b5b5", "#404040", "#2b2b2b",],
      behavior: behaviors.LIQUID,
      category: "liquids",
      state: "liquid",
@@ -47,7 +60,7 @@ elements.liquid_carbon_monoxide = {
      stateHigh: "carbon_monoxide", 
 };
 elements.ice_carbon_monoxide = {
-     color: "#b5b5b5",
+     color: ["#b5b5b5", "#404040", "#2b2b2b",],
      behavior: behaviors.WALL,
      category: "solids",
      state: "solid",
@@ -59,8 +72,7 @@ elements.ice_carbon_monoxide = {
 };
 elements.carbon_monoxide_detector = {
   behavior: behaviors.WALL,
-  desc: "give red light and electric when found Carbon Monoxide touch",
-  color: "#ffffff",
+  color: [ "#ffffff", "#e0e0e0", "#cccbca", ],
   reactions: {
   "carbon_monoxide": {"charge1":1},   
   },
@@ -75,144 +87,131 @@ elements.carbon_monoxide_detector = {
   darkText: true,
   hardness: 1,
 };
-
-elements.electrons = {
-color: "#b80606",
-behavior: [
-    "XX|SH|XX", // shocks (adds charge)
-    "SH|DL%0.25|SH",
-    "XX|SH|XX",
-],
-tick: behaviors.BOUNCY,
-temp: 20,
-category: "energy",
-state: "gas",
-density: 0.000003,
-ignoreAir: true,
-};
 elements.gelatin = {
      behavior: behaviors.SOLID,
      category: "food",
-     state: "solid",
-     color: "#faf8ca",
+     state: "powder",
+     density: 1.2,
+     color: ["#ffe7b8","#fce2ac","#fcf2dc"],
      breakInto: "gelatin_powder",
      ignoreAir: true,
      isFood: true,
+     reactions: {
+        "water": { elem2: "jelly", },
+        "pool_water": { elem2: "jelly", },
+        "salt_water": { elem2: "jelly", }
+        }
+
 };
 elements.gelatin_powder = {
      behavior: behaviors.POWDER,
      category: "food",
-     state: "powder",
+     density: 1.2,
+     state: ["#ffe7b8","#fce2ac","#fcf2dc"],
      color: "#edeb9f",
      hidden: true,
      ignoreAir: true,
      isFood: true,
-};
-elements.blueberries = {
-behavior: behaviors.POWDER,
-category: "food",
-state: "solid",
-color: ["#464196","#2e2b64"],
-breakInto: "blueberries_juice",
-ignoreAir: true,
-isFood: true,
-reactions: {
-"sugar": { elem1: "blueberries_jam" },
-},
-};
-elements.blueberries_juice = {
-behavior: behaviors.LIQUID,
-category: "food",
-state: "liquid",
-color: "#1f1c42",
-hidden: true,
-tempHigh: 170,
-stateHigh: ["steam","sugar"],
-reactions: {
-ignoreAir: true,
-isFood: true,
-"gelatin": { elem1: "blueberries_jelly", elem2: null },
-"gelatin_powder": { elem1: "blueberries_jelly", elem2: null },
-},
-};
-elements.blueberries_jam = {
-behavior: behaviors.LIQUID,
-category: "food",
-viscosity: 5000,
-state: "liquid",
-tempHigh: 200,
-stateHigh: ["smoke","sugar"],
-color: "#080629",
-hidden: true,
-ignoreAir: true,
-isFood: true,
-};
-elements.blueberries_jelly = {
-behavior: behaviors.LIQUID,
-category: "food",
-viscosity: 200000,
-state: "liquid",
-color: "#59559e",
-hidden: true,
-tempHigh: 200,
-stateHigh: ["smoke","sugar"],
-tempLow: -5,
-stateLow: ["sugar_ice","sugar_ice","juice_ice"],
-ignoreAir: true,
-isFood: true,
-};
+     reactions: {
+        "water": { elem2: "jelly", },
+        "pool_water": { elem2: "jelly", },
+        "salt_water": { elem2: "jelly", }
+     }
+    };
 elements.fallout_drum = {
-behavior: behaviors.WALL,
+behavior: [
+    ["XX","CR:radiation%25","XX"],
+    ["CR:radiation%25","XX","CR:radiation%25"],
+    ["XX","CR:radiation%25","XX"]
+],
 category: "radiated",
 state: "solid",
 density: 9000,
 color: "#e3cc34",
+conduct: 1,
 tempHigh: 2500,
 stateHigh: ["aluminum","radiated_water","radiated_water","fallout"],
 breakInto: ["fallout","fallout"],
 reactions: { 
-"water": { elem1:"fallout_drum", elem2:"radiated_water" },
+ "water": { elem1:"fallout_drum", elem2:"radiated_water" },
+ "dna": { elem2: "cancer", },
+ "cell": { elem2: "cancer", },
 }
 };
 
 elements.radiated_water = {
-behavior: behaviors.LIQUID,
+    behavior: [
+        "XX|CR:radiation%2.5|XX",
+        "M2 AND CR:radiation%2.5|CH:radiation%0.2|M2 AND CR:radiation%2.5",
+        "M1|M1|M1",
+    ],
 category: "radiated",
 state:"liquid",
 density :1300,
 color: ["#23d959","#29d65d"],
 hidden: true,
 tempHigh: 140,
-stateHigh: "polluted_air",
+conduct: 1,
+stateHigh: "radiated_air",
 tempLow: -6,
 stateLow: "rad_ice",
 reactions: {
-"human": { elem2:"rotten_meat" },
-"body": { elem2:"rotten_meat" },
-"head": { elem2:"ash" },
-"bird": { elem2:"rotten_meat"},
-"cell": { elem2:"cancer"},  
-"worm": { elem2:"rotten_meat"},
+    "head": { elem2: ["rotten_meat","ash","plague"], },
+    "body": { elem2:"rotten_meat",  },
+    "human": { elem2:"rotten_meat", },
+    "worm": { elem2: "rotten_meat",  },
+    "bee": { elem2: "dead_bug", },
+    "ant": { elem2: "dead_bug", },
+    "flea": { elem2: "dead_bug", },
+    "spider": { elem2: "dead_bug", },
+    "fly": { elem2: "dead_bug", },
+    "stink_bug": { elem2: "dead_bug",  },
+    "bird": { elem2: "rotten_meat", },
+    "frog": { elem2: "slime", },
+    "rat": { elem2: ["rotten_meat", "plague"], },
+    "fish": { elem2: "rotten_meat", },
+    "tadpole" : { elem2: "rotten_meat", },
+    "slug": { elem2: "slime", },
+    "snail": { elem2: "slime", },
+    "grass": { elem2: "dead_plant", },
+    "plant": { elem2: "dead_plant", },
+    "cactus": { elem2: "dead_plant", },
+    "petal": { elem2: "dead_plant", },
+    "cell": { elem2: "cancer", },
+    "dna": { elem2: null, },
 }
 };
 
-elements.polluted_air = {
+elements.radiated_air = {
 behavior: behaviors.DGAS,
 category: "radiated",
 state:"gas",
 density :10,
 color: ["#60f53b","#65ba50"],
 reactions: {
-    "body": { elem2:"rotten_meat" },
-    "head": { elem2:"rotten_meat" },
-    "human": { elem2:"rotten_meat" },
-    "bird": { elem2:"rotten_meat" },
-    "cell": { elem2:"cancer" },
-    "water": { elem1: null, elem2: "radiated_water" },
-    "worm": { elem2: ["ash","cancer"] },
-    "flea": { elem2: "ash" },
-    "seed": {elem2: "dead_plant" },
-    "plant": {elem1: null, chance:0.5, elem2: "dead_plant", chance:0.5 },
+    "head": { elem2: ["rotten_meat","ash","plague"], },
+    "body": { elem2:"rotten_meat",  },
+    "human": { elem2:"rotten_meat", },
+    "worm": { elem2: "rotten_meat",  },
+    "bee": { elem2: "dead_bug", },
+    "ant": { elem2: "dead_bug", },
+    "flea": { elem2: "dead_bug", },
+    "spider": { elem2: "dead_bug", },
+    "fly": { elem2: "dead_bug", },
+    "stink_bug": { elem2: "dead_bug",  },
+    "bird": { elem2: "rotten_meat", },
+    "frog": { elem2: "slime", },
+    "rat": { elem2: ["rotten_meat", "plague"], },
+    "fish": { elem2: "rotten_meat", },
+    "tadpole" : { elem2: "rotten_meat", },
+    "slug": { elem2: "slime", },
+    "snail": { elem2: "slime", },
+    "grass": { elem2: "dead_plant", },
+    "plant": { elem2: "dead_plant", },
+    "cactus": { elem2: "dead_plant", },
+    "petal": { elem2: "dead_plant", },
+    "cell": { elem2: "cancer", },
+    "dna": { elem2: null, },
 },
 };
 
@@ -226,7 +225,7 @@ color: "#808080",
 reactions: {
     "fallout": {"charge1":1},
     "radiated_water": {"charge1":1},
-    "polluted_air": {"charge1":1},
+    "radiated_air": {"charge1":1},
     "radiation": {"charge1":1},
     "rad_snow": {"charge1":1},
     "rad_rock": {"charge1":1},
@@ -234,10 +233,15 @@ reactions: {
 };
 
 elements.radiated_metal = {
-behavior: behaviors.WALL,
+    behavior: [
+        ["XX","CR:radiation%25","XX"],
+        ["CR:radiation%25","XX","CR:radiation%25"],
+        ["XX","CR:radiation%25","XX"]
+    ],
 category: "radiated",
 state:"solid",
 density :2045,
+conduct: 1,
 color: ["#5e705a","#83ab7b","#474747"],
 tempHigh: 1440,
 stateHigh: ["molten_nickel","molten_iron","molten_tin","fallout"],
@@ -248,7 +252,11 @@ reactions: {
 };
 
 elements.rad_ice = {
-behavior: behaviors.WALL,
+    behavior: [
+        ["XX","CR:radiation%25","XX"],
+        ["CR:radiation%25","XX","CR:radiation%25"],
+        ["XX","CR:radiation%25","XX"]
+    ],
 category: "radiated",
 state:"solid",
 density: 1905,
@@ -264,7 +272,10 @@ reactions: {
 }
 
 elements.rad_snow = {
-behavior: behaviors.POWDER,
+    behavior: [
+        "XX|CR:radiation%2|XX",
+        "CR:radiation%2|XX|CR:radiation%2",
+        "M2|M1|M2", ],
 category: "radiated",
 state:"powder",
 density: 1500,
@@ -275,7 +286,10 @@ stateHigh: "radiated_water",
 };
 
 elements.rad_rock = {
-behavior: behaviors.POWDER,
+behavior: [
+    "XX|CR:radiation%2|XX",
+    "CR:radiation%2|XX|CR:radiation%2",
+    "M2|M1|M2", ],
 category: "land",
 state: "powder",
 density: 2790,
@@ -312,267 +326,14 @@ tempHigh: 1250,
 stateHigh: ["fallout","molten_plastic","steam"],
 reactions: {
     "radiated_water": {elem2:"water" },
-    "polluted_air": {elem2: "oxygen"},
+    "radiated_air": {elem2: "oxygen"},
     "rad_snow": {elem2: "snow"},
     "rad_rock": {elem2: "rock"},
     "radiated_metal": {elem2: ["nickel","tin","iron"], },
     "fallout": {elem2: "rock", },
+    "radiation": { elem2: null, },
 }
 };
-
-
-elements.rad_meat = {
-behavior: behaviors.STURDYPOWDER,
-category: "food",
-state: "solid",
-density: 1500,
-color: ["#e8fc03","#f0b446","#92f046"],
-tempHigh: 120,
-stateHigh: ["rotten_meat","fallout"],
-tempLow:-12,
-stateLow: ["frozen_meat","radiation"],
-reactions: {
-  "water": {elem2: "radiated_water", chance:0.4},
-  "salt_water": { elem2: "radiated_water" },
-}
-};
-
-elements.lemon = {
-behavior: behaviors.POWDER,
-category: "food",
-state: "powder",
-density: 800,
-color: ["#f9f934", "#f1ee20",],
-tempHigh: 90,
-stateHigh: "hot_lemon",
-tempLow: -2,
-stateLow: "wrinkled_lemon",
-burn: 120,
-burntime: 600,
-burnInto: "ash",
-breakInto: [ "lemon_water", "lemon_zest", ],
-reactions: {
-  "water": { elem2: "lemon_water", chance:0.2},
-  "salt_water": { elem2: [ "lemon_water", "water",] },
-  "dirty_water": { elem1: "rotten_lemon", },
-  "soda": { elem2: "lemon_soda", },
-  "head": { elem1: "saliva", chance:0.75}, 
-  "milk": { elem2: "lemon_milk", },
-  "tea": { elem2: "lemon_tea", },
-  "poison": { elem2: "rotten_lemon", },
-}                                                      
-};
-
-elements.hot_lemon = {
-behavior: behaviors.POWDER,
-state: "powder",
-category: "food",
-hidden: true,
-density: 820,
-color: ["#8a6d1e","#70661a",],
-hidden: true,
-temp: 90,
-tempHigh: 200,
-stateHigh: "fire",
-tempLow: 30,
-stateLow: "wrinkled_lemon",
-burn: 120,
-burntime: 600,
-burnInto: "ash",
-reactions: {
-  "water": { elem2: "lemon_water", },
-}
-};
-
-elements.wrinkled_lemon = {
-behavior: behaviors.POWDER,
-color: ["#999543","#a6a03a",],
-state: "powder",
-category: "food",
-tempHigh: 90,
-stateHigh: "hot_lemon",
-hidden: true,
-burn: 120,
-burntime: 600,
-burnInto: "ash",
-reactions: {
-"water": { elem2: "lemon_water", chance: 0.2,
-}
-}
-};
-
-elements.coolant = {
-color: "#0eebeb",
-behavior: [
-    "XX|CO:4|XX",
-    "CO:4|HT:1|CO:4",
-    "XX|CO:4|XX",
-],
-category: "liquids",
-state: "liquid",
-insulate: true,
-density: 1000,
-darkText: false,
-tempHigh: 500,
-hidden: true,
-stateHigh: "steam", 
-};
-
-elements.arkycite = {
-color: "#46ab63",
-behavior: behaviors.LIQUID,
-category: "liquids",
-state: "liquid",
-density: 997,
-darkText: false,
-tempHigh: 400,
-hidden: true,
-burn: 40,
-stateHigh: "fire", 
-burntime: 500,
-};
-
-elements.lemon_water = {
-color: ["#faec52","#faee69",],
-behavior: behaviors.LIQUID,
-category: "liquids",
-state: "liquid",
-density: 900,
-tempHigh: 100,
-stateHigh: ["steam","fragrance",],
-hidden: true,
-tempLow: -10,
-stateLow: "lemon_ice",
-reactions: {
-"balloon": { elem2: "helium", chance: 0.5, },
-"head": { elem1: "saliva", chance: 0.2, },
-}
-};
-
-elements.lemon_zest = {
-color: ["#ded254","#ccc03d",],
-behavior: behaviors.POWDER,
-category: "trashes",
-state: "powder",
-density: 1000,
-hidden: true,
-tempHigh: 350,
-stateHigh: "fire",
-breakInto: "lemon_water",
-burn: 60,
-burntime: 200,
-burnInto: "smoke"
-};
-
-elements.saliva = {
-color: ["#a6f5f0","#b6f0ec",],
-behavior: behaviors.LIQUID,
-category: "liquids",
-state: "liquid",
-density: 1280,
-tempHigh: 105,
-stateHigh: ["steam","fragrance"],
-tempLow: -5,
-stateHigh: "saliva_ice",
-reactions: {
-"water": { elem1: null, chance: 0.5, elem2: "dirty_water", chance: 0.5,
-}
-}
-};
-
-elements.lemon_milk = {
-color: ["#f5f2c4","#f7f4b2",],
-behavior: behaviors.LIQUID,
-category: "liquids",
-state: "liquid",
-density: 1002,
-tempHigh: 500,
-stateHigh: "smoke",
-tempLow: -2,
-stateLow: "frozen_yogurt",
-stateLowColor: ["#f5f3cb","#f7f5bc"],
-reactions: {
-"cell": { elem1: "yogurt", },
-}
-};
-
-elements.lemon_soda = {
-color: ["#f5c842","#edcc68",],
-behavior: behaviors.LIQUID,
-category: "liquids",
-state: "liquid",
-density: 1240,
-tempHigh: 140,
-stateHigh: ["carbon_dioxide", "smoke",],
-reactions: {
-"poison": { elem1: null, }
-}
-};
-
-elements.saliva_ice = {
-color: ["#97fcfb","#bcf7f6",],
-behavior: behaviors.SOLID,
-category: "states",
-state: "solid",
-density: 1300,
-tempHigh: 5,
-stateHigh: "saliva",
-};
-
-elements.lemon_tea = {
-color: ["#dec85b","#edd351",],
-behavior: behaviors.LIQUID,
-category: "liquids",
-state: "liquid",
-density: 1580,
-tempHigh: 280,
-stateHigh: ["fragrance","smoke","smoke",],
-tempLow: -2,
-stateLowColor: ["#e8cf8b","#f0dca5",],
-stateLow: "tea_ice",
-reactions: {
-"sugar": { elem2: null, },
-}
-};
-
-elements.rotten_lemon = {
-color: ["#e3f283","#cdcf6b"],
-behavior: behaviors.POWDER,
-category: "food",
-state: "powder",
-density: 1890,
-tempHigh: 200,
-stateHigh: ["stench","ash",],
-reactions: {
-"water": { elem2: "dirty_water" },
-}
-};
-
-elements.cow = {
-  color: ["#d9d9d9","#616161",],
-  behavior: [
-         "XX|XX|XX",
-         "XX|FX%5.0|M2%5.0 AND BO",
-         "XX|M1|XX",],
-  category: "life",
-  state: "powder",
-  density: 2800,
-  tempHigh: 250,
-  stateHigh: "cooked_meat",
-  tempLow: -10,
-  stateLow: "frozen_meat",
-  reactions: {
-    "water": { elem2: null, chance: 0.2,},
-    "milk": { elem2: null, chance: 0.1, },
-    "alcohol": { elem2: null, chance: 0.21, },
-    "poison": { elem1: "rotten_meat", elem2: null, },
-    "grass": { elem2: null, },
-    "plague": { elem1: "rotten_meat", chance: 0.3, },
-    "worm": { elem2: null, },
-    "flea": { elem2: null, },
-  }       
-};
-
 elements.hazmat_head = {
     color: ["#404040","#1a1a1a","#737373"],
     category: "life",
@@ -581,7 +342,7 @@ elements.hazmat_head = {
     state: "solid",
     conduct: .05,
     temp: 39,
-    tempHigh: 6500,
+    tempHigh: 3500,
     stateHigh: ["ash","iron",],
     tempLow: -180,
     stateLow: "frozen_meat",
@@ -701,7 +462,7 @@ elements.hazmat_body = {
     state: "solid",
     conduct: .25,
     temp: 39,
-    tempHigh: 6500,
+    tempHigh: 3500,
     stateHigh: ["metal_scrap","ash"],
     tempLow: -180,
     stateLow: "frozen_meat",
@@ -721,7 +482,6 @@ elements.hazmat_body = {
         "grass_seed": { elem2:null, chance:0.05 },
         "gold_coin": { elem2:null, chance:0.05 },
         "diamond": { elem2:null, chance:0.05 },
-        "sun": { elem1:"molten_tin", },
     },
     properties: {
         dead: false,
@@ -1092,9 +852,9 @@ elements.particle_accelerator_right = {
 elements.accelerated_matter_left = {
     color: ["#c0ecf0","#a8f8ff",],
     behavior: [
-        "M2|XX|XX",
-        "M1 AND XX|XX|XX",
-        "M2|XX|XX",
+        "M2|EX:10|XX",
+        "M1 AND EX:10|XX|EX:10",
+        "M2|EX:10|XX",
     ],
     hidden: true,
     state: "gas",
@@ -1110,9 +870,9 @@ elements.accelerated_matter_left = {
 elements.accelerated_matter_right = {
     color: ["#c0ecf0","#a8f8ff",],
     behavior: [
-        "XX|XX|M2",
-       "XX|XX|M1 AND XX",
-        "XX|XX|M2",
+        "XX|EX:10|M2",
+       "EX:10|XX|M1 AND EX:10",
+        "XX|EX:10|M2",
     ],
     hidden: true,
     state: "gas",
@@ -1126,3 +886,79 @@ elements.accelerated_matter_right = {
     }
 
 };
+elements.phosgene = {
+    color: ["#dbdbdb","#f2f2f2","#c2c2c2", ],
+    behavior: behaviors.GAS,
+    state: "gas",
+    category: "gases",
+    density: 4.25,
+    tempLow: 7,
+    stateLow: "liquid_phosgene",
+    tempHigh: 300,
+    stateHigh: ["carbon_monoxide","chlorine",],
+    reactions: {
+                "head": { elem2: "rotten_meat", chance: 0.5, },
+                "body": { elem2:"rotten_meat", chance:0.5 },
+                "human": { elem2:"rotten_meat", chance:0.5 },
+                "worm": { elem2: "rotten_meat", chance:0.5 },
+                "bee": { elem2: "dead_bug", chance: 0.5 },
+                "ant": { elem2: "dead_bug", chance: 0.5 },
+                "flea": { elem2: "dead_bug", chance: 0.5 },
+                "spider": { elem2: "dead_bug", chance: 0.5 },
+                "fly": { elem2: "dead_bug", chance: 0.5 },
+                "stink_bug": { elem2: "dead_bug", chance: 0.5 },
+                "bird": { elem2: "rotten_meat", chance: 0.5 },
+                "frog": { elem2: "slime", chance: 0.5 },
+                "rat": { elem2: ["rotten_meat", "plague"], chance: 0.5 },
+                "fish": { elem2: "rotten_meat", chance: 0.5 },
+                "tadpole" : { elem2: "rotten_meat", chance: 0.5 },
+                "slug": { elem2: "slime", chance: 0.5 },
+                "snail": { elem2: "slime", chance: 0.5 },
+                "grass": { elem2: "dead_plant", chance: 0.5 },
+                "plant": { elem2: "dead_plant", chance: 0.5 },
+                "cactus": { elem2: "dead_plant", chance: 0.5 },
+                "petal": { elem2: "dead_plant", chance: 0.5 },
+                "water": { elem2: ["acid", "carbon_dioxide",] },
+                "salt_water": { elem2: ["acid", "carbon_dioxide",] },
+}
+}
+elements.liquid_phosgene = {
+    color: ["#dbdbdb","#f2f2f2","#c2c2c2", ],
+    behavior: behaviors.LIQUID,
+    state: "liquid",
+    category: "states",
+    density: 7.50,
+    tempLow: -118,
+    temp: -10,
+    stateLow: "solid_phosgene",
+    tempHigh: 8,
+    stateHigh: "phosgene",
+}
+elements.solid_phosgene = {
+    color: ["#dbdbdb","#f2f2f2","#c2c2c2", ],
+    behavior: behaviors.WALL,
+    state: "solid",
+    category: "states",
+    density: 12.45,
+    temp: -150,
+    tempHigh: -117,
+    stateHigh: "liquid_phosgene",
+}
+elements.chlorophyll = {
+    color: ["#208556","#2fa16b"],
+    behavior: behaviors.POWDER,
+    state: "powder",
+    category: "powders",
+    density: 1.1,
+    tempHigh: 250,
+    stateHigh: "carbon_dioxide",
+    burn: 10,
+    burnTime: 500,
+    burnInto: "carbon_dioxide",
+    tempLow: -114,
+    stateLow: "dead_plant",
+    reactions: {
+        "light": { elem1: null, chance: 0.2, elem2: null, chance: 0.2, },
+        "acid": { elem1: ["magnesium"], }
+    }
+}
