@@ -8,43 +8,57 @@ elements.mars_gunk = {
     stain: 0.7
 }
 elements.mars_dust = {
-	color: ["#ab2a20","#c53227"],
-	behavior: behaviors.POWDER,
-	category: "mars",
-	state: "solid",
-        density: 1602,
-        tempHigh: 500,
-        hardness: 0.975,
-        stateHigh: "molten_mars",
-        tempLow: -170,
-        stateLow: "mars_rock",
+    color: ["#ab2a20", "#c53227"],
+    behavior: behaviors.POWDER,
+    category: "mars",
+    state: "solid",
+    density: 1602,
+    tempHigh: 500,
+    hardness: 0.975,
+    stateHigh: "molten_mars",
+    tempLow: -170,
+    stateLow: "mars_rock",
     extraInfo: "Dust Samples from mars. Can freeze into Mars Rock.",
     hardness: 0.991,
     breakInto: "mars_debris"
 }
+elements.mars_basalt = {
+    color: ["#1C1B1C", "#CECECE", "#70703d", "#828282"],
+    behavior: behaviors.POWDER,
+    category: "mars",
+    state: "solid",
+    density: 5000,
+    extraInfo: "Woah",
+    tempHigh: "molten_mars",
+    stateHigh: "600",
+    hardness: 0.7,
+    breakInto: ["mars_dust", "mars_rock", "mars_rock", "mars_rock", "molten_mars", "mars_debris", "mars_debris", "gunk", "mars_rock_wall"]
+}
 elements.molten_mars = {
-	color: "#ffc338",
-	behavior: behaviors.MOLTEN,
-	category: "mars",
-	state: "liquid",
-        hidden: "true",
+    color: "#ffc338",
+    behavior: behaviors.MOLTEN,
+    category: "mars",
+    state: "liquid",
+    hidden: "true",
     extraInfo: "The Result of Burnt-up mars stuff. Some turn into this faster more than others.",
     temp: 2500,
-    density: 1150
+    density: 1150,
+    tempLow: -50,
+    stateLow: "mars_basalt"
 }
 elements.mars_rock = {
-	color: ["#a51002","#bd1102"],
-	behavior: behaviors.STURDYPOWDER,
-	category: "mars",
-	state: "solid",
-        density: 1605,
-        tempHigh: 800,
-        hardness: 0.75,
-        stateHigh: "molten_mars",
-        breakInto: "mars_dust",
-        tempLow: -273,
-        stateLow: "mars_rock_wall",
-        extraInfo: "The Freezing of Mars Dust. Can be used for normal land."
+    color: ["#a51002", "#bd1102"],
+    behavior: behaviors.STURDYPOWDER,
+    category: "mars",
+    state: "solid",
+    density: 1605,
+    tempHigh: 800,
+    hardness: 0.75,
+    stateHigh: "molten_mars",
+    breakInto: "mars_dust",
+    tempLow: -273,
+    stateLow: "mars_rock_wall",
+    extraInfo: "The Freezing of Mars Dust. Can be used for normal land."
 }
 elements.mars_debris = {
     color: "#ff9999",
@@ -54,32 +68,34 @@ elements.mars_debris = {
     density: 1605,
     burn: 94,
     burnTime: 45,
-    burnInto: "ash"
+    burnInto: "ash",
+    tempHigh: 0,
+    stateHigh: "fire"
 }
 elements.support_mars_rock = {
-	color: ["#a51002","#bd1102"],
-	behavior: behaviors.SUPPORTPOWDER,
-	category: "mars",
-	state: "solid",
-        density: 800,
-        tempHigh: 150,
-        hardness: 0.9,
-        stateHigh: "molten_mars",
-        breakInto: "mars_rock",
-        hidden: "true",
-        extraInfo: "Mars Rock but Support Powder."
+    color: ["#a51002", "#bd1102"],
+    behavior: behaviors.SUPPORTPOWDER,
+    category: "mars",
+    state: "solid",
+    density: 800,
+    tempHigh: 150,
+    hardness: 0.9,
+    stateHigh: "molten_mars",
+    breakInto: "mars_rock",
+    hidden: "true",
+    extraInfo: "Mars Rock but Support Powder."
 }
 elements.mars_rock_wall = {
-	color: ["#591813","#bd1102"],
-	behavior: behaviors.WALL,
-	category: "mars",
-	state: "solid",
-        density: 20,
-        tempHigh: 2500,
-        hardness: 0.35,
-        stateHigh: "mars_dust",
-        breakInto: "mars_rock",
-        extraInfo: "The Freezing of Mars Rock. A wall that keeps the Earthlings Away!"
+    color: ["#591813", "#bd1102"],
+    behavior: behaviors.WALL,
+    category: "mars",
+    state: "solid",
+    density: 20,
+    tempHigh: 2500,
+    hardness: 0.35,
+    stateHigh: "mars_dust",
+    breakInto: "mars_rock",
+    extraInfo: "The Freezing of Mars Rock. A wall that keeps the Earthlings Away!"
 }
 elements.mars_ironheart_ore = {
     color: ["#e8e8e8", "#bd1102"],
@@ -108,11 +124,11 @@ elements.mars_ironheart = {
     reactions: {
         "mars_furnace": { elem1: "ironheart", elem2: "ironheart" },
         "nosmoker": { elem1: "ironheart", elem2: "ironheart" },
-        "ironheart": { elem1: "ironheart", elem2: "ironheart" , chance:0.1 }
-},
+        "ironheart": { elem1: "ironheart", elem2: "ironheart", chance: 0.1 }
+    },
 }
 elements.mars_furnace = {
-    color: ["#870002","#870507"],
+    color: ["#870002", "#870507"],
     behavior: [
         "XX|CR:mars_gunk%8|XX",
         "XX|XX|XX",
@@ -195,7 +211,31 @@ elements.mars_water = {
     behavior: behaviors.LIQUID,
     category: "mars",
     state: "liquid",
-    density: 997
+    density: 997,
+    tempLow: -30,
+    stateLow: "mars_ice",
+    stain: 0.05
+}
+elements.mars_ice = {
+    color: "#f2b5c0",
+    behavior: behaviors.WALL,
+    category: "mars",
+    state: "solid",
+    density: 997,
+    tempHigh: 35,
+    stateHigh: "mars_water",
+    hardness: 0.5,
+    breakInto: "mars_water",
+    extraInfo: "its rock solid!"
+}
+elements.mars_steam = {
+    color: "#ffffff",
+    behavior: behaviors.DGAS,
+    category: "mars",
+    state: "gas",
+    tempLow: -100,
+    stateLow: "mars_water",
+    extraInfo: "choo choo"
 }
 elements.testy = {
     color: "#FFFFFF",
@@ -217,8 +257,7 @@ elements.o2_tank = {
     stateHigh: "molten_copper",
     breakInto: ["copper", "oxygen"]
 }
-
-// 1.7.12
+// 1.9.15
 // most elements done :D
 // iron heart ore
 // iron heart
@@ -239,3 +278,10 @@ elements.o2_tank = {
 // O2 BE YOU
 // mars water
 // removed legacy liquid mars dust
+// mars water 2
+// so like a week ago i made smelting ironheart easier
+// basalt and stuff
+// wow! mars ice
+// and steam
+// also mars_debris got updated
+// they burn a lot
