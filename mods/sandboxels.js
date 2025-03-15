@@ -1,4 +1,4 @@
-/* mod by nekonico */
+// mod by nekonico 
 
 window.addEventListener("load", () => { 
     document.getElementById("elementButton-sandboxels_screen")?.remove()
@@ -10,7 +10,7 @@ window.addEventListener("load", () => {
     document.getElementById("elementButton-steam_screen")?.remove()
     document.getElementById("elementButton-ice_screen")?.remove()
     document.getElementById("elementButton-wood_screen")?.remove()
-    document.getElementById("elementButton-saw_screen")?.remove()
+    document.getElementById("elementButton-sawdust_screen")?.remove()
     document.getElementById("elementButton-cellulose_screen")?.remove()
     document.getElementById("elementButton-blood_screen")?.remove()
     document.getElementById("elementButton-paper_screen")?.remove()
@@ -170,7 +170,7 @@ elements.sandboxels_screen_off = {
     tick: function(pixel) {
         if (pixel.dtemp !== 20) { pixel.dtemp = 20 }
         if (pixel.charge) { pixel.charges = pixelTicks }
-        if (pixelTicks - 10 > pixel.charges) {
+        if (pixelTicks - 1 > pixel.charges) {
             changePixel(pixel,"sandboxels_screen")
         }
     },
@@ -190,6 +190,7 @@ elements.sandboxels_screen = {
     name:"screen",
     hidden:true,
     color: "#1D1D1D",
+    behavior: behaviors.WALL,
     tick: function(pixel) {
         if (pixel.dtemp !== 20) { pixel.dtemp = 20 }
         if (pixel.charge) { pixel.charge = 0 }
@@ -308,12 +309,14 @@ elements.simulated_human = {
         if (!isEmpty(pixel.x, pixel.y+1),true && pixelMap[pixel.x][pixel.y+1].element === "sandboxels_screen") {
             var newPixel = pixelMap[pixel.x][pixel.y+1];
             newPixel.element = "body_screen";
+            newPixel.dir = 1
             pixel.element = "head_screen";
         }
         else if (!isEmpty(pixel.x, pixel.y-1),true && pixelMap[pixel.x][pixel.y-1].element === "sandboxels_screen") {
             var newPixel = pixelMap[pixel.x][pixel.y-1];
             newPixel.element = "head_screen";
             pixel.element = "body_screen";
+            pixel.dir = 1
         }
         else {
             changePixel(pixel, "sandboxels_screen");
@@ -614,7 +617,7 @@ elements.rock_screen = {
     density: 2550,
 }
     
-elements.saw_screen = {
+elements.sawdust_screen = {
     name:"screen",
     hidden:true,
     color: ["#dec150","#c7b15a"],
@@ -638,6 +641,7 @@ elements.saw_screen = {
     digburnTime: 150,
     digburnInto: ["fire_screen","fire_screen","fire_screen","ash_screen"],
     tick: function(pixel) {
+        if (pixel.dtemp > 400) { changePixel(pixel,"fire_screen") }
         screenTemp(pixel)
         doScreenBurning(pixel)
         if (!isEmpty(pixel.x,pixel.y+1,true)) {
@@ -775,6 +779,7 @@ elements.cellulose_screen = {
     isScreen: true,
     isMoving: true,
     tick: function(pixel) {
+        if (pixel.dtemp > 99) { changePixel(pixel,"paper_screen") }
         screenTemp(pixel)
         if (Math.random() > 0.2 && !isEmpty(pixel.x,pixel.y+1,true)) {
             var newPixel = pixelMap[pixel.x][pixel.y+1];
@@ -847,7 +852,6 @@ elements.cellulose_screen = {
                 }
             }
         }
-        if (pixel.dtemp > 99) { changePixel(pixel,"paper_screen") }
     },
     state: "solid",
     density: 1500,
@@ -874,6 +878,7 @@ elements.blood_screen = {
     isScreen: true,
     isMoving: true,
     tick: function(pixel) {
+        if (pixel.dtemp > 99) { changePixel(pixel,"steam_screen") }
         screenTemp(pixel)
         if (Math.random() > 0.2 && !isEmpty(pixel.x,pixel.y+1,true)) {
             var newPixel = pixelMap[pixel.x][pixel.y+1];
@@ -968,7 +973,6 @@ elements.blood_screen = {
                 }
             }
         }
-        if (pixel.dtemp > 99) { changePixel(pixel,"steam_screen") }
     },
     state: "solid",
     density: 1060,
@@ -995,6 +999,8 @@ elements.water_screen = {
     isScreen: true,
     isMoving: true,
     tick: function(pixel) {
+        if (pixel.dtemp < 0) { changePixel(pixel,"ice_screen") }
+        if (pixel.dtemp > 99) { changePixel(pixel,"steam_screen") }
         screenTemp(pixel)
         if (Math.random() > 0.2 && !isEmpty(pixel.x,pixel.y+1,true)) {
             var newPixel = pixelMap[pixel.x][pixel.y+1];
@@ -1015,7 +1021,7 @@ elements.water_screen = {
                     changePixel(newPixel, "mud_screen")
                     changePixel(pixel, "sandboxels_screen")
                 }
-                if (elements[newPixel.element].id === elements.saw_screen.id || elements[newPixel.element].id === elements.paper_screen.id) {
+                if (elements[newPixel.element].id === elements.sawdust_screen.id || elements[newPixel.element].id === elements.paper_screen.id) {
                     changePixel(newPixel, "cellulose_screen")
                     changePixel(pixel, "sandboxels_screen")
                 }
@@ -1039,7 +1045,7 @@ elements.water_screen = {
                         changePixel(newPixel, "mud_screen")
                         changePixel(pixel, "sandboxels_screen")
                     }
-                    if (elements[newPixel.element].id === elements.saw_screen.id || elements[newPixel.element].id === elements.paper_screen.id) {
+                    if (elements[newPixel.element].id === elements.sawdust_screen.id || elements[newPixel.element].id === elements.paper_screen.id) {
                         changePixel(newPixel, "cellulose_screen")
                         changePixel(pixel, "sandboxels_screen")
                     }
@@ -1064,7 +1070,7 @@ elements.water_screen = {
                         changePixel(newPixel, "mud_screen")
                         changePixel(pixel, "sandboxels_screen")
                     }
-                    if (elements[newPixel.element].id === elements.saw_screen.id || elements[newPixel.element].id === elements.paper_screen.id) {
+                    if (elements[newPixel.element].id === elements.sawdust_screen.id || elements[newPixel.element].id === elements.paper_screen.id) {
                         changePixel(newPixel, "cellulose_screen")
                         changePixel(pixel, "sandboxels_screen")
                     }
@@ -1090,7 +1096,7 @@ elements.water_screen = {
                     changePixel(newPixel, "mud_screen")
                     changePixel(pixel, "sandboxels_screen")
                 }
-                if (elements[newPixel.element].id === elements.saw_screen.id || elements[newPixel.element].id === elements.paper_screen.id) {
+                if (elements[newPixel.element].id === elements.sawdust_screen.id || elements[newPixel.element].id === elements.paper_screen.id) {
                     changePixel(newPixel, "cellulose_screen")
                     changePixel(pixel, "sandboxels_screen")
                 }
@@ -1115,14 +1121,12 @@ elements.water_screen = {
                     changePixel(newPixel, "mud_screen")
                     changePixel(pixel, "sandboxels_screen")
                 }
-                if (elements[newPixel.element].id === elements.saw_screen.id || elements[newPixel.element].id === elements.paper_screen.id) {
+                if (elements[newPixel.element].id === elements.sawdust_screen.id || elements[newPixel.element].id === elements.paper_screen.id) {
                     changePixel(newPixel, "cellulose_screen")
                     changePixel(pixel, "sandboxels_screen")
                 }
             }
         }
-        if (pixel.dtemp < 0) { changePixel(pixel,"ice_screen") }
-        if (pixel.dtemp > 99) { changePixel(pixel,"steam_screen") }
     },
     state: "solid",
     density: 997,
@@ -1144,6 +1148,7 @@ elements.steam_screen = {
     isScreen: true,
     isMoving: true,
     tick: function(pixel) {
+        if (pixel.dtemp < 100) { changePixel(pixel,"water_screen") }
         screenTemp(pixel)
         if (Math.random() > 0.5) {
             pixel.dir1 = 1
@@ -1167,7 +1172,6 @@ elements.steam_screen = {
             else if (elements[newPixel.element].isScreen === true) {
             }
         }
-        if (pixel.dtemp < 100) { changePixel(pixel,"water_screen") }
     },
     state: "solid",
     density: 0.6,
@@ -1234,6 +1238,7 @@ elements.fire_screen = {
     digburnTime: 25,
     digburnInto: "smoke_screen",
     tick: function(pixel) {
+        if (pixel.dtemp < 100) { changePixel(pixel,"smoke_screen") }
         screenTemp(pixel)
         doScreenBurning(pixel)
         if (Math.random() > 0.975) {
@@ -1259,7 +1264,6 @@ elements.fire_screen = {
             else if (elements[newPixel.element].isScreen === true) {
             }
         }
-        if (pixel.dtemp < 100) { changePixel(pixel,"smoke_screen") }
     },
     state: "solid",
     density: 0.1,
@@ -1281,6 +1285,7 @@ elements.smoke_screen = {
     isScreen: true,
     isMoving: true,
     tick: function(pixel) {
+        if (pixel.dtemp > 1000) { changePixel(pixel,"fire_screen") }
         screenTemp(pixel)
         if (Math.random() > 0.95) {
             changePixel(pixel,"sandboxels_screen")
@@ -1305,7 +1310,6 @@ elements.smoke_screen = {
             else if (elements[newPixel.element].isScreen === true) {
             }
         }
-        if (pixel.dtemp > 1000) { changePixel(pixel,"fire_screen") }
     },
     state: "solid",
     density: 1.292,
@@ -1315,13 +1319,10 @@ elements.body_screen = {
     color: ["#A8A7AB","#878689"],
     name:"screen",
     hidden:true,
-    behavior: [
-    "XX|CH:sandboxels_screen>blood_screen%0.1|XX",
-    "XX|XX|XX",
-    "XX|XX|XX",
-    ],
+    behavior: behaviors.WALL,
     properties: {
         dtemp: 20,
+        dir: 1,
     },
     tempHigh: 1500,
     stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
@@ -1336,130 +1337,60 @@ elements.body_screen = {
     digburnTime: 250,
     digburnInto: ["fire_screen","ash_screen","ash_screen"],
     tick: function(pixel) {
+        if (pixel.dtemp > 300) { changePixel(pixel,"ash_screen") }
         screenTemp(pixel)
         doScreenBurning(pixel)
-        if (pixel.dtemp > 300) { changePixel(pixel,"ash_screen") }
         if (!isEmpty(pixel.x,pixel.y-1,true) && pixelMap[pixel.x][pixel.y-1].element === "head_screen") {
             var headPixel = pixelMap[pixel.x][pixel.y-1]
+            if (Math.random() > 0.9) {
+                pixel.dir *= -1
+            }
             if (!isEmpty(pixel.x,pixel.y+1,true)) {
                 var newPixel = pixelMap[pixel.x][pixel.y+1]
                 if (newPixel.element === "sandboxels_screen") {
-                    changePixel(newPixel,"body_screen")
-                    newPixel.dtemp = pixel.dtemp
-                    changePixel(pixel,"head_screen")
-                    pixel.dtemp = headPixel.dtemp
+                    swapPixels(headPixel, pixel)
+                    swapPixels(newPixel, pixel)
                 }
                 else if (elements[newPixel.element].isScreen === true) {
-                    newPixel.dtemp = ((pixel.dtemp + newPixel.dtemp) / 2)
-                    pixel.dtemp = newPixel.dtemp
-                    if (Math.random() < 0.1 && !isEmpty(pixel.x+1,pixel.y,true) && !isEmpty(pixel.x+1,pixel.y-1,true)) {
-                        var newPixel = pixelMap[pixel.x+1][pixel.y];
-                        var newHeadPixel = pixelMap[pixel.x+1][pixel.y-1];
+                    if (Math.random() < 0.5 && !isEmpty(pixel.x+pixel.dir,pixel.y,true) && !isEmpty(pixel.x+pixel.dir,pixel.y-1,true)) {
+                        var newPixel = pixelMap[pixel.x+pixel.dir][pixel.y];
+                        var newHeadPixel = pixelMap[pixel.x+pixel.dir][pixel.y-1];
                         if (newPixel.element === "sandboxels_screen" && newHeadPixel.element === "sandboxels_screen") {
-                            changePixel(pixel,"sandboxels_screen");
-                            changePixel(headPixel,"sandboxels_screen");
-                            changePixel(newPixel,"body_screen");
-                            changePixel(newHeadPixel,"head_screen");
-                            newPixel.dtemp = pixel.dtemp;
-                            newHeadPixel.dtemp = headPixel.dtemp;
+                            swapPixels(newPixel, pixel)
+                            swapPixels(headPixel, newHeadPixel)
                         }
                         else if (newPixel.element !== "sandboxels_screen" && newHeadPixel.element === "sandboxels_screen") {
                             var newPixel2 = newHeadPixel;
                             var newHeadPixel2 = pixelMap[newHeadPixel.x][newHeadPixel.y-1];
                             if (newPixel2.element === "sandboxels_screen" && newHeadPixel2.element === "sandboxels_screen") {
-                                changePixel(pixel,"sandboxels_screen");
-                                changePixel(headPixel,"sandboxels_screen");
-                                changePixel(newPixel2,"body_screen");
-                                changePixel(newHeadPixel2,"head_screen");
-                                newPixel2.dtemp = pixel.dtemp;
-                                newHeadPixel2.dtemp = headPixel.dtemp;
-                            }
-                        }
-                    }
-                    else if (!isEmpty(pixel.x-1,pixel.y,true) && !isEmpty(pixel.x-1,pixel.y-1,true)) {
-                        var newPixel = pixelMap[pixel.x-1][pixel.y];
-                        var newHeadPixel = pixelMap[pixel.x-1][pixel.y-1];
-                        if (newPixel.element === "sandboxels_screen" && newHeadPixel.element === "sandboxels_screen") {
-                            changePixel(pixel,"sandboxels_screen");
-                            changePixel(headPixel,"sandboxels_screen");
-                            changePixel(newPixel,"body_screen");
-                            changePixel(newHeadPixel,"head_screen");
-                            newPixel.dtemp = pixel.dtemp;
-                            newHeadPixel.dtemp = headPixel.dtemp;
-                        }
-                        else if (newPixel.element !== "sandboxels_screen" && newHeadPixel.element === "sandboxels_screen") {
-                            var newPixel2 = newHeadPixel;
-                            var newHeadPixel2 = pixelMap[newHeadPixel.x][newHeadPixel.y-1];
-                            if (newPixel2.element === "sandboxels_screen" && newHeadPixel2.element === "sandboxels_screen") {
-                                changePixel(pixel,"sandboxels_screen");
-                                changePixel(headPixel,"sandboxels_screen");
-                                changePixel(newPixel2,"body_screen");
-                                changePixel(newHeadPixel2,"head_screen");
-                                newPixel2.dtemp = pixel.dtemp;
-                                newHeadPixel2.dtemp = headPixel.dtemp;
+                                swapPixels(newPixel2, pixel)
+                                swapPixels(headPixel, newHeadPixel2)
                             }
                         }
                     }
                 }
             }
-            else if (Math.random() < 0.05 && !isEmpty(pixel.x+1,pixel.y,true) && !isEmpty(pixel.x+1,pixel.y-1,true)) {
-                var newPixel = pixelMap[pixel.x+1][pixel.y];
-                var newHeadPixel = pixelMap[pixel.x+1][pixel.y-1];
+            else if (Math.random() < 0.5 && !isEmpty(pixel.x+pixel.dir,pixel.y,true) && !isEmpty(pixel.x+pixel.dir,pixel.y-1,true)) {
+                var newPixel = pixelMap[pixel.x+pixel.dir][pixel.y];
+                var newHeadPixel = pixelMap[pixel.x+pixel.dir][pixel.y-1];
                 if (newPixel.element === "sandboxels_screen" && newHeadPixel.element === "sandboxels_screen") {
-                    changePixel(pixel,"sandboxels_screen");
-                    changePixel(headPixel,"sandboxels_screen");
-                    changePixel(newPixel,"body_screen");
-                    changePixel(newHeadPixel,"head_screen");
-                    newPixel.dtemp = pixel.dtemp;
-                    newHeadPixel.dtemp = headPixel.dtemp;
+                    swapPixels(newPixel, pixel)
+                    swapPixels(headPixel, newHeadPixel)
                 }
                 else if (newPixel.element !== "sandboxels_screen" && newHeadPixel.element === "sandboxels_screen") {
                     var newPixel2 = newHeadPixel;
                     var newHeadPixel2 = pixelMap[newHeadPixel.x][newHeadPixel.y-1];
                     if (newPixel2.element === "sandboxels_screen" && newHeadPixel2.element === "sandboxels_screen") {
-                        changePixel(pixel,"sandboxels_screen");
-                        changePixel(headPixel,"sandboxels_screen");
-                        changePixel(newPixel2,"body_screen");
-                        changePixel(newHeadPixel2,"head_screen");
-                        newPixel2.dtemp = pixel.dtemp;
-                        newHeadPixel2.dtemp = headPixel.dtemp;
+                        swapPixels(newPixel2, pixel)
+                        swapPixels(headPixel, newHeadPixel2)
                     }
                 }
-            }
-            else if (!isEmpty(pixel.x-1,pixel.y,true) && !isEmpty(pixel.x-1,pixel.y-1,true)) {
-                var newPixel = pixelMap[pixel.x-1][pixel.y];
-                var newHeadPixel = pixelMap[pixel.x-1][pixel.y-1];
-                if (newPixel.element === "sandboxels_screen" && newHeadPixel.element === "sandboxels_screen") {
-                    changePixel(pixel,"sandboxels_screen");
-                    changePixel(headPixel,"sandboxels_screen");
-                    changePixel(newPixel,"body_screen");
-                    changePixel(newHeadPixel,"head_screen");
-                    newPixel.dtemp = pixel.dtemp;
-                    newHeadPixel.dtemp = headPixel.dtemp;
-                }
-                else if (newPixel.element !== "sandboxels_screen" && newHeadPixel.element === "sandboxels_screen") {
-                    var newPixel2 = newHeadPixel;
-                    var newHeadPixel2 = pixelMap[newHeadPixel.x][newHeadPixel.y-1];
-                    if (newPixel2.element === "sandboxels_screen" && newHeadPixel2.element === "sandboxels_screen") {
-                        changePixel(pixel,"sandboxels_screen");
-                        changePixel(headPixel,"sandboxels_screen");
-                        changePixel(newPixel2,"body_screen");
-                        changePixel(newHeadPixel2,"head_screen");
-                        newPixel2.dtemp = pixel.dtemp;
-                        newHeadPixel2.dtemp = headPixel.dtemp;
-                    }
-                }
-            }
-            if (!isEmpty(pixel.x,pixel.y-2,true) && pixelMap[pixel.x][pixel.y-2].element === "head_screen") {
-                changePixel(pixelMap[pixel.x][pixel.y-2],"sandboxels_screen");
             }
         }
         else if (!isEmpty(pixel.x,pixel.y+1,true)) {
             var newPixel = pixelMap[pixel.x][pixel.y+1];
             if (newPixel.element === "sandboxels_screen") {
-                changePixel(newPixel,"body_screen");
-                newPixel.dtemp = pixel.dtemp;
-                changePixel(pixel,"sandboxels_screen");
+                swapPixels(newPixel, pixel)
             }
             else if (elements[newPixel.element].isScreen === true) {
             }
@@ -1471,11 +1402,7 @@ elements.head_screen = {
     color: ["#46433F","#47443C","#4D483D"],
     name:"screen",
     hidden:true,
-    behavior: [
-    "XX|XX|XX",
-    "XX|XX|XX",
-    "XX|XX|XX",
-    ],
+    behavior: behaviors.WALL,
     properties: {
         dtemp: 20,
     },
@@ -1492,9 +1419,9 @@ elements.head_screen = {
     digburnTime: 250,
     digburnInto: ["fire_screen","ash_screen","ash_screen"],
     tick: function(pixel) {
+        if (pixel.dtemp > 300) { changePixel(pixel,"ash_screen") }
         screenTemp(pixel)
         doScreenBurning(pixel)
-        if (pixel.dtemp > 300) { changePixel(pixel,"ash_screen") }
         if (!isEmpty(pixel.x,pixel.y+1,true)) {
             var newPixel = pixelMap[pixel.x][pixel.y+1];
             if (newPixel.element === "sandboxels_screen") {
@@ -1537,9 +1464,9 @@ elements.fly_screen = {
     digburnTime: 25,
     digburnInto: ["fire_screen","ash_screen","ash_screen"],
     tick: function(pixel) {
+        if (pixel.dtemp > 100) { changePixel(pixel,"ash_screen") }
         screenTemp(pixel)
         doScreenBurning(pixel)
-        if (pixel.dtemp > 100) { changePixel(pixel,"ash_screen") }
         if (outOfBounds(pixel.x+(pixel.dir),pixel.y) || isEmpty(pixel.x+(pixel.dir),pixel.y)) {
             if (pixel.dir === -1) {
                 pixel.dir = 1
@@ -1603,9 +1530,9 @@ elements.bird_screen = {
     digburnTime: 100,
     digburnInto: ["fire_screen","ash_screen","ash_screen"],
     tick: function(pixel) {
+        if (pixel.dtemp > 300) { changePixel(pixel,"ash_screen") }
         screenTemp(pixel)
         doScreenBurning(pixel)
-        if (pixel.dtemp > 300) { changePixel(pixel,"ash_screen") }
         if (outOfBounds(pixel.x+(pixel.dir),pixel.y) || isEmpty(pixel.x+(pixel.dir),pixel.y)) {
             if (pixel.dir === -1) {
                 pixel.dir = 1
@@ -1702,9 +1629,9 @@ elements.rat_screen = {
     digburnTime: 100,
     digburnInto: ["fire_screen","ash_screen","ash_screen"],
     tick: function(pixel) {
+        if (pixel.dtemp > 300) { changePixel(pixel,"ash_screen") }
         screenTemp(pixel)
         doScreenBurning(pixel)
-        if (pixel.dtemp > 300) { changePixel(pixel,"ash_screen") }
         if (!isEmpty(pixel.x,pixel.y+1,true)) {
             var newPixel = pixelMap[pixel.x][pixel.y+1]
             if (newPixel.element === "sandboxels_screen") {
@@ -1779,8 +1706,8 @@ elements.ice_screen = {
     isScreen: true,
     isSolid: true,
     tick: function(pixel) {
-        screenTemp(pixel)
         if (pixel.dtemp > 5) { changePixel(pixel,"water_screen") }
+        screenTemp(pixel)
     },
     state: "solid",
     density: 1200,
@@ -1794,16 +1721,16 @@ elements.wood_screen = {
     properties: {
         dtemp: 20,
     },
-    digBreakInto: "saw_screen",
+    digBreakInto: "sawdust_screen",
     isScreen: true,
     isSolid: true,
     dburn: 5,
     digburnTime: 300,
     digburnInto: ["fire_screen","ash_screen"],
     tick: function(pixel) {
+        if (pixel.dtemp > 400) { changePixel(pixel,"fire_screen") }
         screenTemp(pixel)
         doScreenBurning(pixel)
-        if (pixel.dtemp > 400) { changePixel(pixel,"fire_screen") }
     },
     tempHigh: 1500,
     stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
@@ -1829,9 +1756,9 @@ elements.paper_screen = {
     digburnTime: 300,
     digburnInto: ["fire_screen","fire_screen","fire_screen","fire_screen","fire_screen","fire_screen","ash_screen"],
     tick: function(pixel) {
+        if (pixel.dtemp > 248) { changePixel(pixel,"fire_screen") }
         screenTemp(pixel)
         doScreenBurning(pixel)
-        if (pixel.dtemp > 248) { changePixel(pixel,"fire_screen") }
     },
     tempHigh: 1500,
     stateHigh: ["molten_glass","molten_glass","molten_glass","molten_gallium"],
@@ -2076,7 +2003,7 @@ elements.simulated_sawdust = {
     color: ["#dec150","#c7b15a"],
     tool: function(pixel) {
         if (elements[pixel.element].id === elements.sandboxels_screen.id) {
-            changePixel(pixel,"saw_screen"); 
+            changePixel(pixel,"sawdust_screen"); 
         }
     },
     insulate:true,
@@ -2384,89 +2311,31 @@ elements.digitalizer = {
             var newPixel = pixelMap[pixel.x][pixel.y-1];
             var screen = pixelMap[pixel.x][pixel.y+1];
             if (screen.element === "sandboxels_screen") {
-                if (newPixel.element === "sand") {
-                    changePixel(screen,"sand_screen");
-                    deletePixel(newPixel.x,newPixel.y)
-                }
-                else if (newPixel.element === "ice") {
-                    changePixel(screen,"ice_screen");
-                    deletePixel(newPixel.x,newPixel.y)
-                }
-                else if (newPixel.element === "steam") {
-                    changePixel(screen,"steam_screen");
-                    deletePixel(newPixel.x,newPixel.y)
-                }
-                else if (newPixel.element === "water") {
-                    changePixel(screen,"water_screen");
-                    deletePixel(newPixel.x,newPixel.y)
-                }
-                else if (newPixel.element === "wood") {
-                    changePixel(screen,"wood_screen");
-                    deletePixel(newPixel.x,newPixel.y)
-                }
-                else if (newPixel.element === "paper") {
-                    changePixel(screen,"paper_screen");
-                    deletePixel(newPixel.x,newPixel.y)
-                }
-                else if (newPixel.element === "sawdust") {
-                    changePixel(screen,"saw_screen");
-                    deletePixel(newPixel.x,newPixel.y)
-                }
-                else if (newPixel.element === "cellulose") {
-                    changePixel(screen,"cellulose_screen");
-                    deletePixel(newPixel.x,newPixel.y)
-                }
-                else if (newPixel.element === "blood") {
+                var newElement = newPixel.element
+                var newElementName = `${newElement}_screen`
+                if (newElement === "body") {
                     changePixel(screen,"blood_screen");
                     deletePixel(newPixel.x,newPixel.y)
                 }
-                else if (newPixel.element === "body") {
+                else if (newElement === "head") {
                     changePixel(screen,"blood_screen");
                     deletePixel(newPixel.x,newPixel.y)
                 }
-                else if (newPixel.element === "head") {
-                    changePixel(screen,"blood_screen");
-                    deletePixel(newPixel.x,newPixel.y)
-                }
-                else if (newPixel.element === "rock") {
-                    changePixel(screen,"rock_screen");
-                    deletePixel(newPixel.x,newPixel.y)
-                }
-                else if (newPixel.element === "wall") {
-                    changePixel(screen,"wall_screen");
-                    deletePixel(newPixel.x,newPixel.y)
-                }
-                else if (newPixel.element === "fly") {
-                    changePixel(screen,"fly_screen");
-                    deletePixel(newPixel.x,newPixel.y)
-                }
-                else if (newPixel.element === "bird") {
-                    changePixel(screen,"bird_screen");
-                    deletePixel(newPixel.x,newPixel.y)
-                }
-                else if (newPixel.element === "rat") {
-                    changePixel(screen,"rat_screen");
-                    deletePixel(newPixel.x,newPixel.y)
-                }
-                else if (newPixel.element === "fire") {
-                    changePixel(screen,"fire_screen");
-                    deletePixel(newPixel.x,newPixel.y)
-                }
-                else if (newPixel.element === "smoke") {
-                    changePixel(screen,"smoke_screen");
-                    deletePixel(newPixel.x,newPixel.y)
-                }
-                else if (newPixel.element === "oxygen") {
-                    changePixel(screen,"oxygen_screen");
-                    deletePixel(newPixel.x,newPixel.y)
-                }
-                else if (!isEmpty(pixel.x,pixel.y-2,true) && newPixel.element === "suited_body") {
+                else if (!isEmpty(pixel.x,pixel.y-2,true) && newElement === "suited_body") {
                     var headPixel = pixelMap[pixel.x][pixel.y-2];
-                    if (headPixel.element === "suited_head" && newPixel.element === "suited_body") {
+                    if (headPixel.element === "suited_head" && newElement === "suited_body") {
                         changePixel(screen,"simulated_human");
                         deletePixel(newPixel.x,newPixel.y-1)
                         deletePixel(newPixel.x,newPixel.y)
                     }
+                    else {
+                        changePixel(screen,"blood_screen");
+                        deletePixel(newPixel.x,newPixel.y)
+                    }
+                }
+                else if (elements[newElementName]) {
+                    changePixel(screen,newElementName);
+                    deletePixel(newPixel.x,newPixel.y)
                 }
                 else {
                     changePixel(screen,"malware");
@@ -2482,7 +2351,7 @@ elements.digitalizer = {
 
 if (!elements.malware.reactions) { elements.malware.reactions = {} }
     elements.malware.reactions.sandboxels_screen = { "elem2": ["sand_screen","sandboxels_screen_off","sandboxels_screen_off","malware"] };
-    elements.malware.reactions.saw_screen = { "elem2": ["wall_screen","wall_screen","sandboxels_screen_off","malware"] };
+    elements.malware.reactions.sawdust_screen = { "elem2": ["wall_screen","wall_screen","sandboxels_screen_off","malware"] };
     elements.malware.reactions.sand_screen = { "elem2": ["paper_screen","paper_screen","sandboxels_screen_off","malware"] };
     elements.malware.reactions.rock_screen = { "elem2": ["wood_screen","wood_screen","sandboxels_screen_off","malware"] };
     elements.malware.reactions.cellulose_screen = { "elem2": ["blood_screen","blood_screen","sandboxels_screen_off","malware"] };
@@ -2492,7 +2361,7 @@ if (!elements.malware.reactions) { elements.malware.reactions = {} }
     elements.malware.reactions.ice_screen = { "elem2": ["cellulose_screen","cellulose_screen","sandboxels_screen_off","malware"] };
     elements.malware.reactions.wood_screen = { "elem2": ["rock_screen","rock_screen","sandboxels_screen_off","malware"] };
     elements.malware.reactions.paper_screen = { "elem2": ["sand_screen","sand_screen","sandboxels_screen_off","malware"] };
-    elements.malware.reactions.wall_screen = { "elem2": ["saw_screen","saw_screen","sandboxels_screen_off","malware"] };
+    elements.malware.reactions.wall_screen = { "elem2": ["sawdust_screen","sawdust_screen","sandboxels_screen_off","malware"] };
 
 elements.head.tick = function(pixel) {
     doHeat(pixel);
