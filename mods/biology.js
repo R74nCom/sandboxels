@@ -3729,7 +3729,7 @@ elements.brain = {
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
             var hitPixel = pixelMap[pixel.x][pixel.y-1]
             doElectricity(hitPixel);
-            if (elements[hitPixel.element].id === elements.nerve.id && Math.random() > 0.75 && Math.random() > (1 - ((pixel.nutrition + pixel.oxygen + pixel.speed - pixel.alcoDepri) / 2050))) {
+            if (elements[hitPixel.element].id === elements.nerve.id && Math.random() > 0.75 && Math.random() > (1 - ((pixel.nutrition + pixel.oxygen + pixel.speed) / 2050))) {
                 pixel.chargeCD = 16
                 hitPixel.charge = 0.5
             }
@@ -3757,7 +3757,7 @@ elements.brain = {
                     hitPixel.darkcharge = true                
                 }
             }
-            if (elements[hitPixel.element].id === elements.nerve.id && Math.random() > 0.75 && Math.random() > (1 - ((pixel.nutrition + pixel.oxygen + pixel.speed - pixel.alcoDepri) / 2050))) {
+            if (elements[hitPixel.element].id === elements.nerve.id && Math.random() > 0.75 && Math.random() > (1 - ((pixel.nutrition + pixel.oxygen + pixel.speed) / 2050))) {
                 pixel.chargeCD = 16
                 hitPixel.charge = 0.5
             }
@@ -3768,7 +3768,7 @@ elements.brain = {
         if (!isEmpty(pixel.x-1, pixel.y, true)) {
             var hitPixel = pixelMap[pixel.x-1][pixel.y]
             doElectricity(hitPixel);
-            if (elements[hitPixel.element].id === elements.nerve.id && Math.random() > 0.75 && Math.random() > (1 - ((pixel.nutrition + pixel.oxygen + pixel.speed - pixel.alcoDepri) / 2050))) {
+            if (elements[hitPixel.element].id === elements.nerve.id && Math.random() > 0.75 && Math.random() > (1 - ((pixel.nutrition + pixel.oxygen + pixel.speed) / 2050))) {
                 pixel.chargeCD = 16
                 hitPixel.charge = 0.5
             }
@@ -3779,7 +3779,7 @@ elements.brain = {
         if (!isEmpty(pixel.x+1, pixel.y, true)) {
             var hitPixel = pixelMap[pixel.x+1][pixel.y]
             doElectricity(hitPixel);
-            if (elements[hitPixel.element].id === elements.nerve.id && Math.random() > 0.75 && Math.random() > (1 - ((pixel.nutrition + pixel.oxygen + pixel.speed - pixel.alcoDepri) / 2050))) {
+            if (elements[hitPixel.element].id === elements.nerve.id && Math.random() > 0.75 && Math.random() > (1 - ((pixel.nutrition + pixel.oxygen + pixel.speed) / 2050))) {
                 pixel.chargeCD = 16
                 hitPixel.charge = 0.5
             }
@@ -3920,7 +3920,7 @@ elements.hypothalamus = {
         if (!isEmpty(pixel.x, pixel.y-1, true)) {
             var hitPixel = pixelMap[pixel.x][pixel.y-1]
             doElectricity(hitPixel);
-            if (elements[hitPixel.element].id === elements.nerve.id && Math.random() > 0.75 && Math.random() > (1 - ((pixel.nutrition + pixel.oxygen + pixel.speed - pixel.alcoDepri) / 2050))) {
+            if (elements[hitPixel.element].id === elements.nerve.id && Math.random() > 0.75 && Math.random() > (1 - ((pixel.nutrition + pixel.oxygen + pixel.speed) / 2050))) {
                 pixel.chargeCD = 16
                 hitPixel.charge = 0.5
             }
@@ -3931,7 +3931,7 @@ elements.hypothalamus = {
         if (!isEmpty(pixel.x, pixel.y+1, true)) {
             var hitPixel = pixelMap[pixel.x][pixel.y+1]
             doElectricity(hitPixel);
-            if (elements[hitPixel.element].id === elements.nerve.id && Math.random() > 0.75 && Math.random() > (1 - ((pixel.nutrition + pixel.oxygen + pixel.speed - pixel.alcoDepri) / 2050))) {
+            if (elements[hitPixel.element].id === elements.nerve.id && Math.random() > 0.75 && Math.random() > (1 - ((pixel.nutrition + pixel.oxygen + pixel.speed) / 2050))) {
                 pixel.chargeCD = 16
                 hitPixel.charge = 0.5
             }
@@ -3942,7 +3942,7 @@ elements.hypothalamus = {
         if (!isEmpty(pixel.x-1, pixel.y, true)) {
             var hitPixel = pixelMap[pixel.x-1][pixel.y]
             doElectricity(hitPixel);
-            if (elements[hitPixel.element].id === elements.nerve.id && Math.random() > 0.75 && Math.random() > (1 - ((pixel.nutrition + pixel.oxygen + pixel.speed - pixel.alcoDepri) / 2050))) {
+            if (elements[hitPixel.element].id === elements.nerve.id && Math.random() > 0.75 && Math.random() > (1 - ((pixel.nutrition + pixel.oxygen + pixel.speed) / 2050))) {
                 pixel.chargeCD = 16
                 hitPixel.charge = 0.5
             }
@@ -3953,7 +3953,7 @@ elements.hypothalamus = {
         if (!isEmpty(pixel.x+1, pixel.y, true)) {
             var hitPixel = pixelMap[pixel.x+1][pixel.y]
             doElectricity(hitPixel);
-            if (elements[hitPixel.element].id === elements.nerve.id && Math.random() > 0.75 && Math.random() > (1 - ((pixel.nutrition + pixel.oxygen + pixel.speed - pixel.alcoDepri) / 2050))) {
+            if (elements[hitPixel.element].id === elements.nerve.id && Math.random() > 0.75 && Math.random() > (1 - ((pixel.nutrition + pixel.oxygen + pixel.speed) / 2050))) {
                 pixel.chargeCD = 16
                 hitPixel.charge = 0.5
             }
