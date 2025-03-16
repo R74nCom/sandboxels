@@ -2,7 +2,7 @@
 elements.mars_gunk = {
     color: "#121212",
     behavior: behaviors.DGAS,
-    category: "archived",
+    category: "mars",
     state: "gases",
     extraInfo: "GUNK",
     stain: 0.7
@@ -70,7 +70,8 @@ elements.mars_debris = {
     burnTime: 45,
     burnInto: "ash",
     tempHigh: 0,
-    stateHigh: "fire"
+    stateHigh: "fire",
+    temp: -0.875
 }
 elements.support_mars_rock = {
     color: ["#a51002", "#bd1102"],
@@ -156,15 +157,18 @@ elements.nosmoker = {
 elements.ironheart = {
     color: "#e9825a",
     behavior: [
-        "SA|XX|SA|",
         "XX|XX|XX|",
-        "M1|M1|M1|",
+        "XX|XX|XX|",
+        "M2|M1|M2|",
     ],
     category: "mars",
     density: 1450,
     state: "solid",
     stateHigh: "molten_mars",
-    extraInfo: "Very Sturdy."
+    extraInfo: "Very Sturdy.",
+    reactions: {
+        "electric": { elem1: "smint", elem2: "null" },
+    },
 }
 elements.antigunk = {
     color: "#cecece",
@@ -214,7 +218,30 @@ elements.mars_water = {
     density: 997,
     tempLow: -30,
     stateLow: "mars_ice",
-    stain: 0.05
+    stain: 0.05,
+    tempHigh: 300,
+    stateHigh: "mars_steam",
+    temp: 10
+}
+elements.mars_coal = {
+    color: "#290407",
+    behavior: [
+        "XX|CR:mars_gunk%1|XX",
+        "XX|XX|XX",
+        "M1|XX|M1",
+    ],
+    category: "mars",
+    state: "solid",
+    density: 997,
+    tempLow: -30,
+    stateLow: "mars_basalt",
+    stain: 0.3,
+    tempHigh: 300,
+    stateHigh: "molten_mars",
+    temp: 10,
+        reactions: {
+            "electric": { elem2: "useless", chance: 0.01 },
+    }
 }
 elements.mars_ice = {
     color: "#f2b5c0",
@@ -226,7 +253,16 @@ elements.mars_ice = {
     stateHigh: "mars_water",
     hardness: 0.5,
     breakInto: "mars_water",
-    extraInfo: "its rock solid!"
+    extraInfo: "its rock solid!",
+    temp: 0
+}
+elements.smint = {
+    color: "#EFC905",
+    behavior: behaviors.SELFDELETE,
+    category: "archived",
+    state: "gas",
+    extraInfo: "boo",
+    temp: 0
 }
 elements.mars_steam = {
     color: "#ffffff",
@@ -235,7 +271,8 @@ elements.mars_steam = {
     state: "gas",
     tempLow: -100,
     stateLow: "mars_water",
-    extraInfo: "choo choo"
+    extraInfo: "choo choo",
+    temp: 500
 }
 elements.testy = {
     color: "#FFFFFF",
@@ -244,10 +281,11 @@ elements.testy = {
     state: "solid",
     extraInfo: "Don't mind me, just a test. Removed 06/02/25?"
 }
+
 elements.o2_tank = {
     color: "#98F5F9",
     behavior: [
-        "CR:oxygen%3|XX|XX",
+        "CR:oxygen%2|XX|XX",
         "XX|XX|XX",
         "XX|XX|XX",
     ],
@@ -257,7 +295,66 @@ elements.o2_tank = {
     stateHigh: "molten_copper",
     breakInto: ["copper", "oxygen"]
 }
-// 1.9.15
+elements.solar_core = {
+    color: "#FFDE59",
+    behavior: [
+        "XX|CH:light>electric%50|XX",
+        "XX|XX|XX",
+        "XX|XX|XX",
+    ],
+    category: "cores",
+    state: "solid",
+    tempHigh: "600",
+    stateHigh: "molten_zinc",
+    breakInto: "zinc",
+    conduct: 1,
+    extraInfo: "Not The Best Option, but the easiest."
+}
+elements.hydro_core = {
+    color: "#17A4A9",
+    behavior: [
+        "XX|CH:mars_water>electric%75|XX",
+        "XX|XX|XX",
+        "XX|XX|XX",
+    ],
+    category: "cores",
+    state: "solid",
+    tempHigh: "600",
+    stateHigh: "molten_zinc",
+    breakInto: "zinc",
+    conduct: 1
+}
+elements.coal_core = {
+    color: "#FFA4A9",
+    behavior: [
+        "XX||CH:mars_coal>electric%3|XX",
+        "XX|XX|XX",
+        "XX|XX|XX",
+    ],
+    category: "cores",
+    state: "solid",
+    tempHigh: "600",
+    stateHigh: "molten_zinc",
+    breakInto: "zinc",
+    conduct: 1,
+    extraInfo: "Put In some Coal and watch the battery drain."
+}
+elements.ironheart_core = {
+    color: "#FFA4A9",
+    behavior: [
+        "XX||CH:ironheart>electric%0.5|",
+        "XX|XX|XX",
+        "XX|XX|XX",
+    ],
+    category: "cores",
+    state: "solid",
+    tempHigh: "800",
+    stateHigh: "molten_zinc",
+    breakInto: "zinc",
+    conduct: 1,
+    extraInfo: "wha"
+}
+// 2.9.17.1
 // most elements done :D
 // iron heart ore
 // iron heart
@@ -285,3 +382,10 @@ elements.o2_tank = {
 // and steam
 // also mars_debris got updated
 // they burn a lot
+// added cores that emit electricity
+// its like plants
+// dumbed down ironheart a bit, im thinking about its behaviour
+
+
+// Creditssss
+// Ghanisma - idea for 2.9.16
