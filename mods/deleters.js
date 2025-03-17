@@ -1,4 +1,4 @@
-element.voidbomb = {
+elements.voidbomb = {
   color = "#101010"
   behavior = [
     "XX|XX|XX",
