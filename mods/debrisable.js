@@ -125,7 +125,7 @@ elements.microplastic_water = {
         "mudstone": { elem2: ["mud","mud","clay"], chance: 0.00035 },
         "glass_shard": { elem2: "glass_pebble", color2:"#7BAECB", chance: 0.0005 },
         "rad_shard": { elem2: "glass_pebble", color2:"#AECB83", chance: 0.00025 },
-        "glass": { elem2: "glass_pebble", color2:"#7BAECB", chance: 0.00005 },
+        "glass": { elem2: "glass_pebble", color2:"#7BAECB", chance: 0.0000025 },
         "rad_glass": { elem2: "glass_pebble", color2:"#AECB83", chance: 0.000025 },
         "rust": { elem1:"dirty_water", elem2: "rust_dust", chance: 0.0025 },
         "plastic": { elem2: ["microplastic",null,null], chance: 0.00005 },
@@ -186,6 +186,7 @@ elements.silver_debris = {
 	color: "#cacaca",
     behavior: behaviors.SUPPORT,
     tempHigh: 961.8,
+    stateHigh: "molten_silver",
     category: "powders",
     density: 9297,
     conduct: 0.99,
@@ -216,6 +217,7 @@ elements.iron_debris = {
     },
     breakInto: "iron_dust",
     tempHigh: 1538,
+    stateHigh: "molten_iron",
     category: "powders",
     density: 7660,
     conduct: 0.47,
@@ -248,6 +250,7 @@ elements.steel_debris = {
     },
     breakInto: "iron_debris",
     tempHigh: 1455.5,
+    stateHigh: "molten_steel",
     category: "powders",
     density: 7750,
     conduct: 0.42,
@@ -1060,7 +1063,7 @@ elements.water.reactions.glass_shard = { elem2: "glass_pebble", color2:"#7BAECB"
 
 elements.water.reactions.rad_shard = { elem2: "glass_pebble", color2:"#AECB83", chance: 0.00025 }
 
-elements.water.reactions.glass = { elem2: "glass_pebble", color2:"#7BAECB", chance: 0.00005 }
+elements.water.reactions.glass = { elem2: "glass_pebble", color2:"#7BAECB", chance: 0.0000025 }
 
 elements.water.reactions.rad_glass = { elem2: "glass_pebble", color2:"#AECB83", chance: 0.000025 }
 
@@ -1068,7 +1071,7 @@ elements.water.reactions.rust = { elem1:"dirty_water", elem2: "rust_dust", chanc
 
 elements.water.reactions.rust_dust = { elem1:"dirty_water", chance: 0.0025 }
 
-elements.water.reactions.plastic = { elem1: "microplastic_water", elem2: ["microplastic",null,null], chance: 0.00005 }
+elements.water.reactions.plastic = { elem1: "microplastic_water", elem2: ["microplastic",null,null], chance: 0.000005 }
 
 elements.salt_water.reactions.mudstone = { elem2: ["mud","mud","clay"], chance: 0.00035 }
 
@@ -1076,7 +1079,7 @@ elements.salt_water.reactions.glass_shard = { elem2: "glass_pebble", color2:"#7B
 
 elements.salt_water.reactions.rad_shard = { elem2: "glass_pebble", color2:"#AECB83", chance: 0.00025 }
 
-elements.salt_water.reactions.glass = { elem2: "glass_pebble", color2:"#7BAECB", chance: 0.00005 }
+elements.salt_water.reactions.glass = { elem2: "glass_pebble", color2:"#7BAECB", chance: 0.0000025 }
 
 elements.salt_water.reactions.rad_glass = { elem2: "glass_pebble", color2:"#AECB83", chance: 0.000025 }
 
@@ -1084,7 +1087,7 @@ elements.salt_water.reactions.rust = { elem1:"dirty_water", elem2: "rust_dust", 
 
 elements.salt_water.reactions.rust_dust = { elem1:"dirty_water", chance: 0.0025 }
 
-elements.salt_water.reactions.plastic = { elem1: "microplastic_water", elem2: ["microplastic",null,null], chance: 0.00005 }
+elements.salt_water.reactions.plastic = { elem1: "microplastic_water", elem2: ["microplastic",null,null], chance: 0.000005 }
 
 elements.sugar_water.reactions.mudstone = { elem2: ["mud","mud","clay"], chance: 0.00035 }
 
@@ -1092,7 +1095,7 @@ elements.sugar_water.reactions.glass_shard = { elem2: "glass_pebble", color2:"#7
 
 elements.sugar_water.reactions.rad_shard = { elem2: "glass_pebble", color2:"#AECB83", chance: 0.00025 }
 
-elements.sugar_water.reactions.glass = { elem2: "glass_pebble", color2:"#7BAECB", chance: 0.00005 }
+elements.sugar_water.reactions.glass = { elem2: "glass_pebble", color2:"#7BAECB", chance: 0.0000025 }
 
 elements.sugar_water.reactions.rad_glass = { elem2: "glass_pebble", color2:"#AECB83", chance: 0.000025 }
 
@@ -1100,7 +1103,7 @@ elements.sugar_water.reactions.rust = { elem1:"dirty_water", elem2: "rust_dust",
 
 elements.sugar_water.reactions.rust_dust = { elem1:"dirty_water", chance: 0.0025 }
 
-elements.sugar_water.reactions.plastic = { elem1: "microplastic_water", elem2: ["microplastic",null,null], chance: 0.00005 }
+elements.sugar_water.reactions.plastic = { elem1: "microplastic_water", elem2: ["microplastic",null,null], chance: 0.000005 }
 
 elements.dirty_water.reactions.mudstone = { elem2: ["mud","mud","clay"], chance: 0.00035 }
 
@@ -1108,13 +1111,13 @@ elements.dirty_water.reactions.glass_shard = { elem2: "glass_pebble", color2:"#7
 
 elements.dirty_water.reactions.rad_shard = { elem2: "glass_pebble", color2:"#AECB83", chance: 0.00025 }
 
-elements.dirty_water.reactions.glass = { elem2: "glass_pebble", color2:"#7BAECB", chance: 0.00005 }
+elements.dirty_water.reactions.glass = { elem2: "glass_pebble", color2:"#7BAECB", chance: 0.0000025 }
 
 elements.dirty_water.reactions.rad_glass = { elem2: "glass_pebble", color2:"#AECB83", chance: 0.000025 }
 
 elements.dirty_water.reactions.rust = { elem1:"dirty_water", elem2: "rust_dust", chance: 0.0025 }
 
-elements.dirty_water.reactions.plastic = { elem1: "microplastic_water", elem2: ["microplastic",null,null], chance: 0.00005 }
+elements.dirty_water.reactions.plastic = { elem1: "microplastic_water", elem2: ["microplastic",null,null], chance: 0.000005 }
 
 elements.smash.tool = function(pixel) {
     let old = pixel.element;
