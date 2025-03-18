@@ -190,9 +190,6 @@ elements.desand = {
                 changePixel(pixel,"water")
             }
         } 
-        else if ([pixel.element].startsWith("sand_")) { 
-            deletePixel(pixel.x,pixel.y)
-        }
     },
     category: "tools",
 }
