@@ -8,7 +8,7 @@ elements.voidbomb = {
   category: "voids",
   state: "powder"
 };
-elements.powdervoid = elements.void;
+elements.powdervoid = JSON.parse(JSON.stringify(elements.void))
 elements.powdervoid.state = "powder";
 elements.powdervoid.category = "voids";
 elements.powdervoid.behavior = behaviors.POWDER;
