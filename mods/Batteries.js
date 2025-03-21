@@ -87,7 +87,7 @@ elements.radio_wave= {
     colorOn: "#000000",
     tick: function(pixel){
 		if (currentElement == "radio_wave"){
-			pixel.color = "rgb(15, 15, 15)";
+			pixel.color = "rgb(50, 50, 50)";
 		} else {
 			pixel.color = "rgba(0, 0, 0, -1)";
 		}
