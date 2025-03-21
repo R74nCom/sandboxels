@@ -1,4 +1,4 @@
-// obtaining chromium (makes chrome)
+// obtaining chromite (makes chrome)
 elements.magma.stateLow = ["rock", "basalt", "basalt", "basalt", "chromite"];
 
 // chrome
@@ -104,10 +104,9 @@ elements.crushed_bauxite = {
     color: ["#a28e7b","#774422"],
     behavior: behaviors.POWDER,
     category: "powders",
+    tempHigh: 2072,
+    stateHigh: "molten_bauxite",
 };
-
-// Alumina oxidizes.
-elements.oxygen.reactions.alumina = { elem1:oxidized_alumina}
 
 // Makes Chrome and Stainless Steel more expensive on survival.js
 if (enabledMods.includes("mods/survival.js")) {
