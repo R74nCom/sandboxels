@@ -18,7 +18,7 @@ elements.spicy_sauce = {
     stateHigh: "smoke",
 };
 
-elements.pepper = {
+elements.black_pepper = {
     color: "#2f1b0c",
     category: "Markus Foods",
     behavior: behaviors.POWDER,
