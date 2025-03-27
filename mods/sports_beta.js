@@ -56,7 +56,7 @@ elements.dodge_ball = {
 
 elements.deodorant = {
    color: "#def2fc",
-   behavior: behaviors.DGAS
+   behavior: behaviors.DGAS,
    category: "gases",
    state: "gas",
 };
