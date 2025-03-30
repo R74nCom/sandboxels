@@ -7015,15 +7015,17 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 			color: "#72dfed",
 			behavior: [
 				"XX|XX|XX",
-				"M2|EX:15>frostwind,frostwind,frostwind,liquid_frostbomb%0.4 AND DL%0.2|M2",
+				"M2|EX:15>frostwind,frostwind,frostwind,liquid_frostbomb%0.4 AND DL%0.2 AND CO:1%10|M2",
 				"M1|M1|M1",
 			],
-			temp: 300,
+			temp: -200,
 			category: "energy liquids",
 			state: "liquid",
 			density: 2000,
 			excludeRandom: true,
 		}
+		elements.frostwind.tempHigh = 0;
+		elements.frostwind.stateHigh = null;
 	//LIQUID VOID ##
 		elements.liquid_void = {
 			color: "#262626",
@@ -11826,8 +11828,14 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 						var y = yRisingFromBottomToHalfway;
 						if(isEmpty(x,y,true)) { continue };
 						var newPixel = pixelMap[x][y];
+						var newData = elements[newPixel.element]
+						if(Math.random() < closenessToBottom) { tryBreak(newPixel) }
 						newPixel.temp += 400 + ((1 - closenessToBottom) * 100);
 						pixelTempCheck(newPixel)
+						if(!newData.excludeVelocity) {
+							newPixel.vy ??= 0;
+							newPixel.vy -= Math.round((2 + (closenessToBottom * 2)) ** 2)
+						}
 					};
 
 					explodeAtPlus(pixel.x,pixel.y+pixel.counter,finalRadius,"plasma","fire",null,planetCrackerHeat);
@@ -13423,7 +13431,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					throw new Error("Could not save quicksave in localStorage");
 				};
 			};
-			function quickload(pause=true,doSuccessAlert=true,doFailAlert=true) {
+			function quickload(pause=true,doSuccessAlert=true,doFailAlert=true,suppressModdedSaveLoadWarning=false) {
 				var save = localStorage.getItem("quicksave");
 				if(!save) {
 					if(doFailAlert) { alert("No save exists") };
@@ -13431,7 +13439,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				} else {
 					clearAll();
 					rebuildCurrentPixels();
-					importJsonState(JSON.parse(save));
+					importJsonState(JSON.parse(save),suppressModdedSaveLoadWarning);
 					if(doSuccessAlert) { alert("Quicksave loaded") };
 					if(pause) {
 						paused = true;
@@ -13512,7 +13520,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 				//return json;
 				return importJsonState(json);
 			};
-			function importJsonState(json) {
+			function importJsonState(json,suppressModdedSaveLoadWarning=false) {
 				//check keys
 				var jsonKeys = Object.keys(json);
 				var requiredKeys = [/*"currentPixels", */"pixelMap", "width", "height", "pixelSize"];
@@ -13566,7 +13574,7 @@ color1 and color2 spread through striped paint like dye does with itself. <u>col
 					};
 					localStorage.setItem("enabledMods",JSON.stringify(currentEnmods));
 					if((enMods.length > 0 && enMods[0] !== modName) || enMods.length > 1) {
-						if(!(settings.suppressModdedSaveLoadWarning)) {
+						if(!(suppressModdedSaveLoadWarning || settings.suppressModdedSaveLoadWarning)) {
 							alert("Saves with other mods might require a reload (and then importing the save file again).\nIf you see a blank screen, try refreshing and loading the file again before you panic.")
 						}
 					};
@@ -15238,6 +15246,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				elements.steam.reactions ??= {};
 				elements.steam.reactions.charcoal = { tempMin: 680, elem1: "hydrogen", elem2: "carbon_monoxide" };
 				elements.steam.reactions.diamond = { tempMin: 680, elem1: "hydrogen", elem2: "carbon_monoxide" };
+				elements.diamond.tempHigh = 10000; elements.diamond.stateHigh = "carbon_dioxide" //not really that high
 			//Oil refining
 				delete elements.oil.tempHigh;
 				function liquidMoveCustomViscosity(pixel,viscosity) {
@@ -16575,8 +16584,7 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			heatCapacity: 3.52, //unimplemented feature
 			name: "bio-ooze",
 			reactions: {
-				"water": { "elem1":"slime", "elem2":"slime" }, //balance
-				"poison": { "elem1":"slime", "elem2":"slime" }, //balance
+				"water": { "elem1":"slime", "elem2":"poison" }, //balance
 				//"acid": { "elem1":"wastestone" }, //acid should be sulfuric acid and product should be wastestone
 				//"elder_fluid": { "elem1":"corrupt_slime" }, //acid should be sulfuric acid and product should be wastestone
 				//"mercury": { "elem1":"liquid_protocite" }, //acid should be sulfuric acid and product should be wastestone
@@ -17100,10 +17108,6 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 				category: "gases",
 				state: "gas"
 			},
-		//}
-		// charcoal {
-			elements.charcoal.tempHigh = 800
-			elements.charcoal.stateHigh = "carbon_dioxide"
 		//}
 		//carbon dioxide {
 			/*fuck this, i can't work out the offset-infested math
@@ -26181,6 +26185,9 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 						density: 3600,
 						hardness: 0.85,
 					}
+					elements.molten_spinel = {
+						tempHigh: 2977, //The real boiling point is not known, so using corundum
+					}
 				//Topaz
 					elements.topaz = {
 						color: ["#f7f431", "#ffff5c", "#f7e048", "#fae43e", "#fff86e", "#ede321"],
@@ -26922,15 +26929,22 @@ Pixel size (rendering only): <input id="pixelSize"> (Use if the save looks cut o
 			//Money world
 			worldgentypes.money = {
 				layers: [
+					[0.9, "jadeite",1/2],
 					[0.9, "emerald"],
 					[0.6, "diamond"],
+					[0.3, "osmium_scrap",1/5],
+					[0.3, "rhenium_scrap",1/5],
+					[0.3, "rhodium_scrap",1/5],
+					[0.3, "iridium_scrap",1/5],
 					[0.3, "gold_coin"],
-					[0.1, "ruby", 1/3],
-					[0.1, "amethyst", 1/2],
+					[0.1, "garnet", 1/5],
+					[0.1, "spinel", 1/5],
+					[0.1, "ruby", 1/5],
+					[0.1, "amethyst", 1/5],
 					[0.1, "sapphire"],
 					[-0.1, "pearl", 0.4],
 					[-0.1, "onyx"]
-				]
+				],
 			};
 			//Concrete
 			worldgentypes.concrete = {
@@ -30005,114 +30019,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			state: "solid",
 			movable: false
 		}
-	//PORTALS ##
-	//heehee haha melanie martinez
-		//https://stackoverflow.com/a/60922255
-		headBodyObject = {
-			"head": "body",
-		};
-		elements.portal_in = {
-			color: "#ee7f00",
-			properties: {
-				_channel: 0,
-				_correspondingPortals: null
-			},
-			insulate: true,
-			onTryMoveInto: function(pixel,otherPixel) {
-			  try {
-				if(pixel._correspondingPortals == null) {
-					return;
-				};
-				if(pixel._correspondingPortals.length <= 0) {
-					return;
-				};
-				var portal = randomChoice(pixel._correspondingPortals);
-				var offset = {x: pixel.x - otherPixel.x, y: pixel.y - otherPixel.y}; //teleport destination's offset, inverted by subtraction
-				var destination = {x: portal.x + offset.x, y: portal.y + offset.y};
-				var otherElement = otherPixel.element;
-				var isHead = (typeof(headBodyObject[otherElement]) !== "undefined");
-				var isBody = (typeof(getKeyByValue(headBodyObject,otherElement)) !== "undefined");
-				var isBipartite = xor(isHead,isBody); //a head being its own body will break the code
-				if(isBipartite) {
-					if(isHead) {
-						var dead = otherPixel.dead;
-						var body = pixelMap[otherPixel.x][otherPixel.y+1];
-						if(body == undefined) { body = null };
-						if(!dead && (body !== null)) {
-							if(offset.y == -1) {
-								offset.y--;
-								destination.y--;
-							};
-							var headSpotIsEmpty = isEmpty(destination.x,destination.y,false);
-							var bodySpotIsEmpty = isEmpty(destination.x,destination.y+1,false);
-							if(headSpotIsEmpty && bodySpotIsEmpty) {
-								tryMove(otherPixel,destination.x,destination.y);
-								tryMove(body,destination.x,destination.y+1);
-							};
-						} else {
-							tryMove(otherPixel,destination.x,destination.y);
-						};
-					} else if(isBody) {
-						var dead = otherPixel.dead;
-						var head = pixelMap[otherPixel.x][otherPixel.y-1];
-						if(head == undefined) { head = null };
-						if(!dead && (head !== null)) {
-							if(offset.y == 1) {
-								offset.y++;
-								destination.y++;
-							};
-							var headSpotIsEmpty = isEmpty(destination.x,destination.y-1,false);
-							var bodySpotIsEmpty = isEmpty(destination.x,destination.y,false);
-							if(headSpotIsEmpty && bodySpotIsEmpty) {
-								tryMove(head,destination.x,destination.y-1);
-								tryMove(otherPixel,destination.x,destination.y);
-							};
-						} else {
-							tryMove(otherPixel,destination.x,destination.y);
-						};
-					};
-				} else {
-					tryMove(otherPixel,destination.x,destination.y);
-				};
-			  } catch(error) {
-				//ignore stack overflows
-				if(error.toString().includes("call stack")) {
-				} else {
-					throw new Error("error")
-				}
-			  }
-			},
-			tick: function(pixel) {
-				pixel._channel = Math.floor(pixel.temp / 100);
-				pixel._correspondingPortals = currentPixels.filter(function(pixelToCheck) {
-					return (
-						pixelToCheck.element == "portal_out" &&
-						pixelToCheck._channel == pixelChannel
-					);
-				},pixelChannel=pixel._channel);
-				for(i = 0; i < pixel._correspondingPortals.length; i++) {
-					pixel._correspondingPortals[i] = {x: pixel._correspondingPortals[i].x, y: pixel._correspondingPortals[i].y};
-				};
-				//pixel.tempdebug = JSON.stringify(pixel._correspondingPortals);
-			},
-			category: "machines",
-			state: "solid",
-			breakInto: ["radiation","laser","iridium","essence","ionized_deuterium","electron","magic","steel","pop","unstable_mistake","explosion","magic","steel","proton","electron","radiation","laser","iridium"],
-			hardness: 0.999
-		},
-		elements.portal_out = {
-			color: "#2222ee",
-			insulate: true,
-			tick: function(pixel) {
-				pixel._channel = Math.floor(pixel.temp / 100);
-			},
-			behavior: behaviors.WALL,
-			category: "machines",
-			state: "solid",
-			insulate: true,
-			breakInto: ["radiation","laser","iridium","essence","ionized_deuterium","electron","magic","steel","pop","unstable_mistake","explosion","magic","steel","proton","electron","radiation","laser","iridium"],
-			hardness: 0.999
-		}
+	//PORTALS have been added to vanilla Sandboxels. Congratulations to our graduate. ##
 	//MOBS ##
 		//Prerequisite Functions and Variables
 		minimumCreeperTries = 3;
@@ -35929,7 +35836,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 				}
 		//Requisite variables
 			//Bombs
-				amalgamatedBombFire = "plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,smoke,plasma,plasma,fire,smoke,fire,smoke,plasma,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,acid,acid,oil,oil,oil,oil,oil,oil,oil,plasma,plasma,plasma,plasma,plasma,smoke,plasma,plasma,fire,smoke,plasma,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,flash,flash,flash,flash,flash,acid_gas,acid_gas,acid_gas,acid,oil,oil,oil,oil,oil,oil,oil,oil,oil,oil,plasma,plasma,plasma,plasma,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,acid,acid,oil,oil,oil,oil,oil,oil,oil,plasma,plasma,plasma,plasma,plasma,smoke,plasma,plasma,fire,smoke,plasma,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,electric_cluster_bomb,electric_cluster_bomb,flash,flash,flash,flash,flash,acid_gas,acid_gas,acid_gas,acid,oil,oil,oil,oil,oil,oil,oil,oil,oil,oil,plasma,plasma,plasma,plasma,plague,plague,plague,plague,plague,plague,radiation,radiation,radiation,radiation,radiation,radiation,radiation,radiation,uranium,uranium,uranium,uranium,uranium,uranium,greek_fire,greek_fire,greek_fire,greek_fire,greek_fire,antimatter,antimatter,antimatter,antimatter,antimatter,smoke_grenade,antimatter,smoke_grenade,fireball,flash,acid_gas,acid_gas,acid_gas,plague,plague,plague,plague,plague,plague,radiation,radiation,radiation,radiation,radiation,radiation,radiation,radiation,uranium,uranium,uranium,uranium,uranium,uranium,greek_fire,greek_fire,greek_fire,greek_fire,greek_fire,antimatter,antimatter,antimatter,antimatter,antimatter,smoke_grenade,antimatter,flash,acid_gas,acid_gas,acid_gas,radiation,radiation,radiation,radiation,plague,acid_gas,acid_gas,acid_gas,chlorine,chlorine,chlorine"
+				amalgamatedBombFire = "plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,plasma,smoke,plasma,plasma,fire,smoke,fire,smoke,plasma,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,acid,acid,oil,oil,oil,oil,oil,oil,oil,plasma,plasma,plasma,plasma,plasma,smoke,plasma,plasma,fire,smoke,plasma,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,flash,flash,flash,flash,flash,acid_gas,acid_gas,acid_gas,acid,oil,oil,oil,oil,oil,oil,oil,oil,oil,oil,plasma,plasma,plasma,plasma,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,acid,acid,oil,oil,oil,oil,oil,oil,oil,plasma,plasma,plasma,plasma,plasma,smoke,plasma,plasma,fire,smoke,plasma,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,metal_scrap,electric_cluster_bomb,electric_cluster_bomb,flash,flash,flash,flash,flash,acid_gas,acid_gas,acid_gas,acid,oil,oil,oil,oil,oil,oil,oil,oil,oil,oil,plasma,plasma,plasma,plasma,plague,plague,plague,plague,plague,plague,radiation,radiation,radiation,radiation,radiation,radiation,radiation,radiation,uranium,uranium,uranium,uranium,uranium,uranium,greek_fire,greek_fire,greek_fire,greek_fire,greek_fire,antimatter,antimatter,antimatter,antimatter,antimatter,smoke_grenade,antimatter,smoke_grenade,fireball,flash,acid_gas,acid_gas,acid_gas,plague,plague,plague,plague,plague,plague,radiation,radiation,radiation,radiation,radiation,radiation,radiation,radiation,uranium,uranium,uranium,uranium,uranium,uranium,greek_fire,greek_fire,greek_fire,greek_fire,greek_fire,antimatter,antimatter,antimatter,antimatter,antimatter,smoke_grenade,antimatter,flash,acid_gas,acid_gas,acid_gas,radiation,radiation,radiation,radiation,plague,acid_gas,acid_gas,acid_gas,chlorine,chlorine,chlorine,god_slayer_bomb,god_slayer_bomb,god_slayer_fire,god_slayer_fire,holy_bomb,holy_bomb,holy_fire,holy_fire,warp_bomb,warp_bomb,op_electromagneticester_emp,op_electromagneticester_emp,op_hottester_bomb,op_hottester_bomb,force_bomb,force_bomb,wall_bomb,wall_bomb,hypernapalm,hypernapalm,liquid_god_slayer_fire,earthquake,tornado,tsunami,firebomb,firebomb"
 				eLists.BOMB = ["bomb", "tnt", "c4", "grenade", "dynamite", "gunpowder", "firework", "nuke", "h_bomb", "dirty_bomb", "emp_bomb", "sticky_bomb", "cold_bomb", "hot_bomb", "electro_bomb", "water_bomb", "antimatter_bomb", "flashbang", "smoke_grenade", "fireball", "landmine", "cluster_bomb", "cluster_nuke", "op_hottester_bomb", "anti-bomb", "electric_bomblet", "electric_cluster_bomb", "radioactive_popper", "acid_bomb", "amalgamated_bomb"]; bombChoices = eLists.BOMB;
 				var excludedBombElements = ["water", "antimatter", "acid"];
 			//Clouds
@@ -40142,6 +40049,7 @@ Make sure to save your command in a file if you want to add this preset again.`
 			state: "solid",
 			density: 3980,
 			hardness: 0.9,
+			hidden: true
 		};
 		standaloneBrokenFormMaker("ruphire","shard",true,"powders","auto","auto","molten_ruphire",["alumina","alumina","alumina","alumina","alumina","alumina","alumina","alumina","alumina","iron_scrap","titanium_scrap","chromium_scrap","chromium_scrap"]).hidden = true;
 		elements.molten_ruby ??= {};
@@ -45092,35 +45000,43 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 			};*/
 
 			window.addEventListener("load",function() {
-			currentElement = urlParams.get("currentElement") ?? "sand";
-			if(!elementExists(currentElement)) {
-				currentElement = "sand"
-			};
-			selectElement(currentElement);
+				currentElement = urlParams.get("currentElement") ?? "sand";
+				if(!elementExists(currentElement)) {
+					currentElement = "sand"
+				};
+				selectElement(currentElement);
 
-			var size = urlParams.get("mouseSize") ?? 5;
-			if(isNaN(size)) {
-				size = 5;
-			};
-			mouseSize = size
+				var size = urlParams.get("mouseSize") ?? 5;
+				if(isNaN(size)) {
+					size = 5;
+				};
+				mouseSize = size
 
-			var _tps = urlParams.get("tps") ?? 30;
-			if(isNaN(_tps)) {
-				_tps = 30;
-			};
-			tps = _tps;
-			resetInterval(tps);
+				var _tps = urlParams.get("tps") ?? 30;
+				if(isNaN(_tps)) {
+					_tps = 30;
+				};
+				tps = _tps;
+				resetInterval(tps);
 
-			var shape = urlParams.get("currentShape") ?? "square";
-			if(shapeOrder.indexOf(shape) == -1) {
-				shape = "square"
-			};
-			currentShape = shape;
+				var shape = urlParams.get("currentShape") ?? "square";
+				if(shapeOrder.indexOf(shape) == -1) {
+					shape = "square"
+				};
+				currentShape = shape;
 
-			/*if(urlParams.get("pause") !== null) {
-				paused = true;
-				document.getElementById("pauseButton").setAttribute("on","true")
-			};*/
+				var doPause = urlParams.get("paused");
+				if(doPause !== null) {
+					paused = true;
+					document.getElementById("pauseButton").setAttribute("on","true")
+				};
+
+				var autoQuickload = urlParams.get("quickload");
+				if(autoQuickload !== null) {
+					quickload(doPause !== null,false,true);
+					autoResizeCanvas(false)
+				};
+
 		});
 	//PRESSURE SYSTEM ##
 		if(settings.dopressure == undefined || settings.drawpressure == undefined) {
@@ -45842,6 +45758,101 @@ maxPixels (default 1000): Maximum amount of pixels/changes (if xSpacing and ySpa
 			behavior: behaviors.WALL,
 			grain: 0
 		};
+
+		behaviorRules.LC = function() { //limited cool
+			if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
+				var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
+				//if (!(newPixel.element === btemp.pixel.element) || (btemp.newCoords.x == btemp.pixel.x && btemp.newCoords.y == btemp.pixel.y)) {
+					if (btemp.arg != null) {btemp.arg = btemp.arg.split(",").map(parseFloat)}
+					else {btemp.arg = [0,1]}
+					if (isNaN(btemp.arg[0])) {btemp.arg[0] = 0}
+					if (isNaN(btemp.arg[1])) {btemp.arg[1] = 1}
+					if(newPixel.temp > btemp.arg[0]) {
+						if(newPixel.temp - btemp.arg[0] < btemp.arg[1]) {
+							newPixel.temp = btemp.arg[0]
+						} else {
+							newPixel.temp -= btemp.arg[1]
+						}
+					}
+					pixelTempCheck(newPixel);
+				//}
+			}
+		}
+
+		behaviorRules.LH = function() { //limited heat
+			if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
+				var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
+				//if (!(newPixel.element === btemp.pixel.element) || (btemp.newCoords.x == btemp.pixel.x && btemp.newCoords.y == btemp.pixel.y)) {
+					if (btemp.arg != null) {btemp.arg = btemp.arg.split(",").map(parseFloat)}
+					else {btemp.arg = [0,1]}
+					if (isNaN(btemp.arg[0])) {btemp.arg[0] = 0}
+					if (isNaN(btemp.arg[1])) {btemp.arg[1] = 1}
+					if(newPixel.temp < btemp.arg[0]) {
+						if(newPixel.temp + btemp.arg[0] > btemp.arg[1]) {
+							newPixel.temp = btemp.arg[0]
+						} else {
+							newPixel.temp += btemp.arg[1]
+						}
+					}
+					pixelTempCheck(newPixel);
+				//}
+			}
+		}
+
+		behaviorRules.TS = function() { //thermostat
+			if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
+				var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
+				//if (!(newPixel.element === btemp.pixel.element) || (btemp.newCoords.x == btemp.pixel.x && btemp.newCoords.y == btemp.pixel.y)) {
+					if (btemp.arg != null) {btemp.arg = btemp.arg.split(",").map(parseFloat)}
+					else {btemp.arg = [0,1]}
+					if (isNaN(btemp.arg[0])) {btemp.arg[0] = 0}
+					if (isNaN(btemp.arg[1])) {btemp.arg[1] = 1}
+					if(newPixel.temp > btemp.arg[0]) {
+						if(newPixel.temp - btemp.arg[0] < btemp.arg[1]) {
+							newPixel.temp = btemp.arg[0]
+						} else {
+							newPixel.temp -= btemp.arg[1]
+						}
+					} else if(newPixel.temp < btemp.arg[0]) {
+						if(newPixel.temp + btemp.arg[0] > btemp.arg[1]) {
+							newPixel.temp = btemp.arg[0]
+						} else {
+							newPixel.temp += btemp.arg[1]
+						}
+					}
+					pixelTempCheck(newPixel);
+				//}
+			}
+		}
+
+		behaviorRules.BN = function() { //burn
+			if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
+				var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
+				var burn = elements[newPixel.element].burn;
+				if (burn !== undefined) {
+					if (Math.random() < (burn / 100)) { // If random number is less than flammability
+						if (btemp.info.ignore && btemp.info.ignore.indexOf(newPixel.element) !== -1) {
+							return;
+						}
+						if (!(newPixel.burning || (newPixel.burnStart !== undefined))) {
+							newPixel.burning = true;
+							newPixel.burnStart = pixelTicks;
+						}
+					}
+				}
+			}
+		}
+
+		behaviorRules.ET = function() { //extinguish
+			if (!isEmpty(btemp.newCoords.x, btemp.newCoords.y, true)) {
+				var newPixel = pixelMap[btemp.newCoords.x][btemp.newCoords.y];
+				if (newPixel.burning || newPixel.burnStart) {
+					delete newPixel.burning;
+					delete newPixel.burnStart;
+				}
+			}
+		}
+
 		runAfterLoad(function() {
 			//Emergency bug fix
 			elemfillerVar = null;

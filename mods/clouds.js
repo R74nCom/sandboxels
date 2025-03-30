@@ -1,71 +1,91 @@
-// Clouds.js beta version
+// Clouds.js
+
+if (!enabledMods.includes("mods/betterSettings.js")) { enabledMods.unshift("mods/betterSettings.js"); localStorage.setItem("enabledMods", JSON.stringify(enabledMods)); window.location.reload() };
+
+var clouds_settingsTab = new SettingsTab("Clouds");
+
+var cloud_count_setting = new Setting("Cloud count", "cloud_count", settingType.NUMBER, false, defaultValue=40);
+
+clouds_settingsTab.registerSettings("Real time", cloud_count_setting);
+
+settingsManager.registerTab(clouds_settingsTab);
 
 // Biased random
 function randomGaussian(A, B, biasFactor=2) {
-    let u = Math.random();
-    let v = Math.random();
-    let num = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+	let u = Math.random();
+	let v = Math.random();
+	let num = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
 
-    let mean = (A + B) / 2;
-    let stdDev = (B - A) / biasFactor;
+	let mean = (A + B) / 2;
+	let stdDev = (B - A) / biasFactor;
+	let result = mean + num * stdDev;
 
-    let result = mean + num * stdDev;
-
-    return Math.min(Math.max(result, A), B);
+	return Math.min(Math.max(result, A), B);
 }
 
-// Spawn clouds
-var clouds = [];
-setTimeout(() => {
-	for (var i = 0;i < 50;i++) {
-		var w = (Math.random() * 13) + 7;
-		var h = (Math.random() * 9) + 4;
+function randomBetween(A, B) {
+    return Math.random() * (B - A) + A;
+}
 
-		// Higher clouds = faster
-		var y = randomGaussian(0, height * 0.75, 5);
-		var speedFactor = (1 - (y / (height * 0.75)));
+function initClouds(amount) {
+	for (let i = 0; i < amount; i++) {
+		var w = randomBetween(6, 17);
+		var h = randomBetween(4, 10);
+		var x = randomBetween(0, width - w);
+		var y = randomGaussian(0, height * 0.75, 4);
 
-		clouds.push({
-			x: Math.random() * (width - w),
-			y: y,
-			w: w,
-			h: h,
-			dx: ((Math.random() - 0.5) * 0.05) * (0.5 + speedFactor * 2),
-			type: Math.random() > 0.5 ? 1 : 0
-		});
+		// Higher clouds move faster
+		var speedBoost = 1 - (y / (height * 0.75));
+		var speed = ((Math.random() - 0.5) * 0.05) * (0.5 + speedBoost * 2);
+
+		var color = Math.random() > 0.5 ? "255,255,255" : "210,210,190";
+		var blur = Math.max(Math.min(1 / (Math.abs(speed) * 48), 4), 0); // For parallax
+
+		// Pre-render the cloud
+		var offCanvas = document.createElement("canvas");
+		var margin = blur;
+		offCanvas.width = w * pixelSize + 2 * margin;
+		offCanvas.height = h * pixelSize + 2 * margin;
+		var offCtx = offCanvas.getContext("2d");
+
+		var gradient = offCtx.createLinearGradient(0, margin, 0, h * pixelSize + margin);
+		gradient.addColorStop(0, `RGBA(${color},0.12)`);
+		gradient.addColorStop(1, `RGBA(${color},0.24)`);
+
+		offCtx.filter = `blur(${blur}px)`;
+		offCtx.fillStyle = gradient;
+		offCtx.fillRect(margin, margin, w * pixelSize, h * pixelSize);
+
+		clouds.push({ x, y, w, h, speed, color, blur, image: offCanvas, margin });
 	}
-}, 200);
+}
 
 function renderClouds(ctx) {
-	ctx.strokeStyle = "transparent";
-	ctx.globalAlpha = 1.0;
+	// Fade in
+	ctx.globalAlpha = Math.min(pixelTicks * 0.02, 1);
 
-	for (var i = 0;i < clouds.length;i++) {
+	for (var i = 0; i < clouds.length; i++) {
 		var cloud = clouds[i];
-
-		var gradient = ctx.createLinearGradient(
-			cloud.x * pixelSize, cloud.y * pixelSize,
-			cloud.x * pixelSize, (cloud.y + cloud.h) * pixelSize
+		ctx.drawImage(
+			cloud.image,
+			cloud.x * pixelSize - cloud.margin,
+			cloud.y * pixelSize - cloud.margin
 		);
-
-		var cloudColor = cloud.type == 1 ? "255,255,255" : "220,220,210"
-		gradient.addColorStop(0, `RGBA(${cloudColor},0.1)`);
-		gradient.addColorStop(1, `RGBA(${cloudColor},0.2)`);
-
-		ctx.filter = "blur(1px)";
-		ctx.fillStyle = gradient;
-		ctx.fillRect(cloud.x * pixelSize, cloud.y * pixelSize, cloud.w * pixelSize, cloud.h * pixelSize);
-		ctx.filter = "none";
 	}
 }
 
 function updateClouds() {
-	if (paused) {return;}
+	if (paused) { return; }
 
-	for (var i = 0;i < clouds.length;i++) {
+	if (cloud_count_setting.value != clouds.length) {
+		clouds = [];
+		initClouds(cloud_count_setting.value);
+		return;
+	}
+
+	for (var i = 0; i < clouds.length; i++) {
 		var cloud = clouds[i];
-
-		cloud.x += cloud.dx;
+		cloud.x += cloud.speed;
 
 		// Wrap around
 		if (cloud.x > width) {
@@ -76,5 +96,11 @@ function updateClouds() {
 	}
 }
 
+// Hooks
 renderPrePixel(renderClouds);
 runEveryTick(updateClouds);
+
+var clouds = [];
+runAfterReset(() => {
+	initClouds(cloud_count_setting.value);
+});
