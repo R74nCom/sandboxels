@@ -3939,17 +3939,25 @@ renderPostPixel(function(ctx){
         if ((pixel.element == "sign") && pixel.sign){
             ctx.font = `12pt Arial`
             ctx.fillStyle = pixel.color;
-            ctx.fillText(pixel.sign.replace(/\$\{([\w.]+)\}/g, (_, path) => {
-                const value = path.split('.').reduce((obj, key) => obj?.[key], globalThis);
-                return typeof value === 'object' ? JSON.stringify(value) : value ?? '';
+            ctx.fillText(pixel.sign = pixel.sign.replace(/\$\{([\w.\[\]]+)\}/g, (_, path) => {
+                try {
+                    const value = new Function('return globalThis.' + path)();
+                    return typeof value === 'object' ? JSON.stringify(value) : value ?? '';
+                } catch {
+                    return '';
+                }
             }), canvasCoord(pixel.x), canvasCoord(pixel.y))
         } else if (pixel.element == "e_sign" && pixel.sign){
             if (pixel.charge || pixel.chargeCD){
                 ctx.font = `12pt Arial`
                 ctx.fillStyle = pixel.color;
-                ctx.fillText(pixel.sign.replace(/\$\{([\w.]+)\}/g, (_, path) => {
-                    const value = path.split('.').reduce((obj, key) => obj?.[key], globalThis);
-                    return typeof value === 'object' ? JSON.stringify(value) : value ?? '';
+                ctx.fillText(pixel.sign = pixel.sign.replace(/\$\{([\w.\[\]]+)\}/g, (_, path) => {
+                    try {
+                        const value = new Function('return globalThis.' + path)();
+                        return typeof value === 'object' ? JSON.stringify(value) : value ?? '';
+                    } catch {
+                        return '';
+                    }
                 }), canvasCoord(pixel.x), canvasCoord(pixel.y))
             } else {
                 drawSquare(ctx, pixel.color, pixel.x, pixel.y)
