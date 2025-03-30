@@ -3939,12 +3939,18 @@ renderPostPixel(function(ctx){
         if ((pixel.element == "sign") && pixel.sign){
             ctx.font = `12pt Arial`
             ctx.fillStyle = pixel.color;
-            ctx.fillText(pixel.sign.replace(/\$\{(\w+)\}/g, (_, k) => globalThis[k] ?? ''), canvasCoord(pixel.x), canvasCoord(pixel.y))
+            ctx.fillText(pixel.sign.replace(/\$\{([\w.]+)\}/g, (_, path) => {
+                const value = path.split('.').reduce((obj, key) => obj?.[key], globalThis);
+                return typeof value === 'object' ? JSON.stringify(value) : value ?? '';
+            }), canvasCoord(pixel.x), canvasCoord(pixel.y))
         } else if (pixel.element == "e_sign" && pixel.sign){
             if (pixel.charge || pixel.chargeCD){
                 ctx.font = `12pt Arial`
                 ctx.fillStyle = pixel.color;
-                ctx.fillText(pixel.sign.replace(/\$\{(\w+)\}/g, (_, k) => globalThis[k] ?? ''), canvasCoord(pixel.x), canvasCoord(pixel.y))
+                ctx.fillText(pixel.sign.replace(/\$\{([\w.]+)\}/g, (_, path) => {
+                    const value = path.split('.').reduce((obj, key) => obj?.[key], globalThis);
+                    return typeof value === 'object' ? JSON.stringify(value) : value ?? '';
+                }), canvasCoord(pixel.x), canvasCoord(pixel.y))
             } else {
                 drawSquare(ctx, pixel.color, pixel.x, pixel.y)
             }
