@@ -34,24 +34,31 @@ elements.soccer_ball = {
 };
 
 elements.tennis_ball = {
-    color: "#9ab973",
-    behavior: behaviors.BOUNCY,
-    category: "tennis",
-    state: "solid",
+	color: "#9ab973",
+	behavior: behaviors.BOUNCY,
+	category: "tennis",
+	state: "solid",
 };
 
 elements.puck = {
-    color: "#180902",
-    behavior: behaviors.BOUNCY,
-    category: "hockey",
-    state: "solid",
+	color: "#180902",
+	behavior: behaviors.BOUNCY,
+	category: "hockey",
+	state: "solid",
 };
 
 elements.dodge_ball = {
-    color: "#533d61",
-    behavior: behaviors.BOUNCY,
-    category: "gaga_ball",
-    state: "solid",
+	color: "#533d61",
+	behavior: behaviors.BOUNCY,
+	category: "gaga ball",
+	state: "solid",
+};
+
+elements.volleyball = {
+	color: "#e2dcf2",
+	behavior: behaviors.BOUNCY,
+	category: "volleyball",
+	state: "solid",
 };
 
 elements.deodorant = {
