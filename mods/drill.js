@@ -245,3 +245,17 @@ elements.void_drill = {
     noMix: true,
     darkText: false,
 };
+elements.hydraulic_press = {
+    color: ["#474747","#2b2b2b","#636363"],
+    behavior: [
+    "XX|XX|XX",
+    "XX|LB:hydraulic_press|XX",
+    "XX|M1 AND SM|XX",
+],
+    category: "machines",
+    state: "solid",
+    tempHigh: 1538,
+    stateHigh: "molten_iron",
+    density: 7860,
+    noMix: true,
+};
