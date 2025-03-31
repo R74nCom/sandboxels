@@ -3939,12 +3939,26 @@ renderPostPixel(function(ctx){
         if ((pixel.element == "sign") && pixel.sign){
             ctx.font = `12pt Arial`
             ctx.fillStyle = pixel.color;
-            ctx.fillText(pixel.sign, canvasCoord(pixel.x), canvasCoord(pixel.y))
+            ctx.fillText(pixel.sign = pixel.sign.replace(/\$\{([\w.\[\]]+)\}/g, (_, path) => {
+                try {
+                    const value = new Function('return globalThis.' + path)();
+                    return typeof value === 'object' ? JSON.stringify(value) : value ?? '';
+                } catch {
+                    return '';
+                }
+            }), canvasCoord(pixel.x), canvasCoord(pixel.y))
         } else if (pixel.element == "e_sign" && pixel.sign){
             if (pixel.charge || pixel.chargeCD){
                 ctx.font = `12pt Arial`
                 ctx.fillStyle = pixel.color;
-                ctx.fillText(pixel.sign, canvasCoord(pixel.x), canvasCoord(pixel.y))
+                ctx.fillText(pixel.sign = pixel.sign.replace(/\$\{([\w.\[\]]+)\}/g, (_, path) => {
+                    try {
+                        const value = new Function('return globalThis.' + path)();
+                        return typeof value === 'object' ? JSON.stringify(value) : value ?? '';
+                    } catch {
+                        return '';
+                    }
+                }), canvasCoord(pixel.x), canvasCoord(pixel.y))
             } else {
                 drawSquare(ctx, pixel.color, pixel.x, pixel.y)
             }
@@ -3975,3 +3989,23 @@ elements.mod_dectector = {
         }
     }
 }
+smoothColor = function(color1, color2, amount){
+    let rgb1 = getPixelColor({color: color1})
+    let rgb2 = getPixelColor({color: color2})
+    return {r:((1-amount)*rgb1.r)+(amount*rgb2.r),g:((1-amount)*rgb1.g)+(amount*rgb2.g),b:((1-amount)*rgb1.b)+(amount*rgb2.b)}
+}
+/*
+elements.delay = {
+    color: ["#df3b3b","#200909"],
+    behavior: behaviors.WALL,
+    category: "machines",
+    movable: false,
+    insulate: true,
+    onSelect: () => {
+        logMessage("Will delay incoming signals by its temperature in Kelvin. -273C for 0 delay.")
+    },
+    tick: function(pixel){
+
+    }
+}
+    */
