@@ -62,8 +62,8 @@ elements.volleyball = {
 };
 
 elements.deodorant = {
-	color: "#def2fc",
-	behavior: behaviors.DGAS,
-	category: "gases",
-	state: "gas",
+   color: "#def2fc",
+   behavior: behaviors.DGAS,
+   category: "gases",
+   state: "gas",
 };

@@ -10,17 +10,14 @@ clouds_settingsTab.registerSettings("Real time", cloud_count_setting);
 
 settingsManager.registerTab(clouds_settingsTab);
 
-// Biased random
-function randomGaussian(A, B, biasFactor=2) {
-	let u = Math.random();
-	let v = Math.random();
-	let num = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+function biasedRandom(A, B, samples) {
+	var sum = 0;
+	for (var i = 0;i < samples;i++) {
+		sum += Math.random();
+	}
+	var average = sum / samples;
 
-	let mean = (A + B) / 2;
-	let stdDev = (B - A) / biasFactor;
-	let result = mean + num * stdDev;
-
-	return Math.min(Math.max(result, A), B);
+	return A + average * (B - A);
 }
 
 function randomBetween(A, B) {
@@ -32,7 +29,7 @@ function initClouds(amount) {
 		var w = randomBetween(6, 17);
 		var h = randomBetween(4, 10);
 		var x = randomBetween(0, width - w);
-		var y = randomGaussian(0, height * 0.75, 4);
+		var y = biasedRandom(0, height * 0.75, 4);
 
 		// Higher clouds move faster
 		var speedBoost = 1 - (y / (height * 0.75));
