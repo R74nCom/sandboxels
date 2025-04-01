@@ -10,31 +10,31 @@ function findReachable(elems) {
         redo = false;
         let e1 = elems[i];
         if(e1 === "mushroom_gill") {
-            redo = redo || addElement(elems, "mushroom_cap");
+            redo = redo || addElement_(elems, "mushroom_cap");
         }
         
         
         if(e1 === "thorium" && elems.includes("neutron")) {
-            redo = redo || addElement(elems, "radium");
+            redo = redo || addElement_(elems, "radium");
         }
         
         if(elements[e1].burnInto) {
-            redo = redo || addElement(elems, elements[e1].burnInto);
+            redo = redo || addElement_(elems, elements[e1].burnInto);
         }
         if(elements[e1].stateHigh) {
-            redo = redo || addElement(elems, elements[e1].stateHigh);
+            redo = redo || addElement_(elems, elements[e1].stateHigh);
         }
         
         if(elements[e1].stateLow) {
-            redo = redo || addElement(elems, elements[e1].stateLow);
+            redo = redo || addElement_(elems, elements[e1].stateLow);
         }
         if(elements[e1].breakInto) {
-            redo = redo || addElement(elems, elements[e1].breakInto);
+            redo = redo || addElement_(elems, elements[e1].breakInto);
         }
         
         if(elements[e1].extraTempLow) {
             for(let i in elements[e1].extraTempLow) {
-                redo = redo || addElement(elems, elements[e1].extraTempLow[i]);
+                redo = redo || addElement_(elems, elements[e1].extraTempLow[i]);
             }
         }
         
@@ -58,7 +58,7 @@ function findReachable(elems) {
                         if (b == "CR" || b == "CH" || b == "LB" || b == "L1" || b == "L2" || b == "C2") {
                             if (!arg) { arg = "[???]" }
                             else if (arg.indexOf(">") != -1) { arg = arg.split(">")[1]; }
-                            redo = redo || addElement(elems, arg.split(","));
+                            redo = redo || addElement_(elems, arg.split(","));
                         }
                     }
                 }
@@ -69,10 +69,10 @@ function findReachable(elems) {
         {
             if(elems.includes(j)) {
                 if(elements[e1].reactions[j].elem1) {
-                    redo = redo || addElement(elems, elements[e1].reactions[j].elem1);
+                    redo = redo || addElement_(elems, elements[e1].reactions[j].elem1);
                 }
                 if(elements[e1].reactions[j].elem2) {
-                    redo = redo || addElement(elems, elements[e1].reactions[j].elem2);
+                    redo = redo || addElement_(elems, elements[e1].reactions[j].elem2);
                 }
             }
         }
@@ -80,13 +80,13 @@ function findReachable(elems) {
     return elems;
 }
 
-function addElement(list, elem) {
+function addElement_(list, elem) {
     if(elem instanceof Array)
     {
         let result = false;
         for(let i = 0; i < elem.length; i++)
         {
-            result = result || addElement(list,elem[i]);
+            result = result || addElement_(list,elem[i]);
         }
         return result;
     }

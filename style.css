@@ -60,6 +60,19 @@ a:active, a:hover:active, .saveOption:active, .saveOption:hover:active {filter: 
 #bottomTopBox {
     text-align: center;
 }
+#bottomTopBoxColumns {
+    display:flex; justify-content: space-around
+}
+@media screen and (max-width: 1300px) {
+    #bottomTopBoxColumns {
+        display:block; justify-content: unset;
+    }
+}
+@media screen and (min-width: 1300px) {
+    #newsletterFrame {
+        border: none!important;
+    }
+}
 #bottomLeftBox {
     float: left;
     width: 50%;
@@ -242,7 +255,7 @@ kbd:active {filter: brightness(70%);}
     color: gray;
     cursor: not-allowed;
 }
-#saveFile, #loadFile, #saveConfirm, #promptOK, #promptCancel, #promptConfirm {
+#saveFile, #loadFile, #saveConfirm, #promptOK, .promptOK, #promptCancel, #promptConfirm {
     background-color: black;
     text-align: center;
     vertical-align: middle;
@@ -253,7 +266,7 @@ kbd:active {filter: brightness(70%);}
     cursor: pointer;
     border-top: 4px solid #9d9d9d;
 }
-#saveConfirm, #promptOK {
+#saveConfirm, #promptOK, .promptOK {
     bottom: 0;
     position: fixed;
 }
@@ -266,7 +279,7 @@ kbd:active {filter: brightness(70%);}
     width: 50%;
     border-left: 4px solid #9d9d9d;
 }
-#saveConfirm, #promptOK {
+#saveConfirm, #promptOK, .promptOK {
     left: 0;
     width: 100%;
 }
@@ -573,7 +586,7 @@ button, input { /*Disable double tap zoom on mobile devices*/
     touch-action: manipulation;
     color-scheme: dark;
 }
-.settingsButton, select, .toggleInput, #settingsMenu input[type="number"], #settingsMenu input[type="text"], #savePromptMenu input, input[type="email"] {
+.settingsButton, select, .toggleInput, #settingsMenu input[type="number"], #settingsMenu input[type="text"], #savePromptMenu input, input[type="email"], input[type="number"] {
     background-color: black;
     vertical-align: middle;
     margin-left: 4px;

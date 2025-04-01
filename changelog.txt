@@ -4,6 +4,82 @@ See sneak peaks for upcoming updates on the Discord: https://discord.gg/ejUc6YPQ
 
 A fancier version of this changelog can be found here: https://sandboxels.R74n.com/changelog
 
+[Version 1.11.1 - April 1, 2025 - FOOLS-2-5]
+    + Border setting
+        + Void deletes pixels that touch the sides
+        + Loop teleports pixels that touch the sides
+    ~ Improved Thermal View now uses hottest and coldest pixels as bounds
+    + Finnish and Indonesian languages
+   [FOOLS]
+    + Element Modulator
+    + FOOLS Mode is back!
+    ~ Note: FOOLS features will disappear April 4th
+   [Changes]
+    + Keybind: Ctrl+O to load a save file
+    + Keybind: Ctrl+Shift+O to reload the last loaded save
+    + Flame test can be done on elements with fire colors
+    + Honey and Molasses freeze into Candy
+    + 'Golden Wind' Tornado variant
+    + Milk variants can be churned into Butter
+    + Udders can absorb certain liquids to produce Milk variants
+    + Cheese can be made with Cream
+    + Soda foam has a unique color
+    + Candy dissolves in Water
+    + Void is insulative
+    + Bless stops panic in Humans
+    + Gunpowder explodes when shocked
+    + Ozone can cure Infection
+    + Dust and Ash dirty Seltzer
+    + Calcium can react with Steam
+    + Magnesium reacts with Water and Steam
+    + Sponges can release Water absorbed from soils
+    + Sponges separate Water variant contents
+    + Primordial Soup can freeze
+    + Positrons shock Antimatter
+    ~ Antimatter no longer explodes when touching Cloners
+    ~ Thermite burns into Molten Iron
+    + Acid stains Silver
+    ~ Tweaked Acid-Potassium reaction
+    ~ Frogs have a unique egg color
+    ~ Molten Rad Glass is greener
+    ~ Recolored Pilk Cheese
+    ~ Bless removes Filler, Lattice, Vertical, and Horizontal
+    ~ Copper Sulfate is no longer flammable
+    + Copper Sulfate produces Poison Gas when burned
+    + Baking Soda alias 'Sodium Bicarbonate'
+    + Cellulose alias 'Paper Paste'
+    + Cyanide alias 'Hydrogen Cyanide'
+    + Acid Gas alias 'Hydrochloric Acid Gas'
+    + Adobe alias 'Mud Brick'
+    + Saves can keep Limitless Mode if settings are included
+    ~ Saves no longer update cursor size
+    + Partial translations for Dutch, Korean, Italian, Serbian, and Emoji
+    ~ Halacae translations completed
+    ~ Prompt inputs no longer allow autocomplete
+   [Bug Fixes]
+    ~ Fixed: Half-pixels on the edges of smaller canvases
+    ~ Fixed: LEDs can create ghost pixels when absorbing Light
+    ~ Fixed: Eggs break when placed with Drag tool
+    ~ Fixed: Frozen Yogurt variants don't retain color when melting
+    ~ Fixed: Frozen elements aren't generated properly when no state is present
+    ~ Fixed: Tea and Coffee start boiling when placed manually
+    ~ Fixed: Duplicate mods can be added
+    ~ Fixed: Portals can't teleport pixels being dragged
+    ~ Fixed: Embers are never deleted when Burning is disabled
+    ~ Fixed: Mix tool can be used on ghost pixels
+    ~ Fixed: Saves can set cursor size to impossible sizes
+    ~ Fixed: colorOn isn't applied by reactions
+   [Technical]
+    + Mod dependency system, see dependency_test.js for more info
+    + Elements can be added dynamically with addElement()
+    + onAddElement(callback) function, called when element is added dynamically
+    + loadedMods array holds mods that have been loaded
+    + onSelect and onUnselect properties for custom views
+    + Portals display channel on hover
+    + 'mouseColor' setting
+    ~ Unknown is now in the Special category (Still hidden)
+    ~ Save version is now sb4 and includes new border settings
+
 [Version 1.11 - February 21, 2025 - Everyone's Update]
     + Portals!
         + Portal In and Portal Out elements
