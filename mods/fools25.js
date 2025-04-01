@@ -191,6 +191,8 @@ function modulateElement() {
   
   let element = {};
 
+  element.desc = `Modulated at x${currentModulatorPos[0]},y${currentModulatorPos[1]},z${currentModulatorPos[2]}`;
+
   let name = generateName();
 
   let oldName = name;
