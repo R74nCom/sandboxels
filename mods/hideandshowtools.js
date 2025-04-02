@@ -14,5 +14,5 @@ elements.show = {
     },
     category: "tools",
     canPlace: false,
-    desc: "Use on pixels to show them, can also unpaint elements."
+    desc: "Use on pixels to show them."
 };
