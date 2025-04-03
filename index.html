@@ -13048,6 +13048,10 @@ onAddElementList = [];
 function onAddElement(callback) {
 	onAddElementList.push(callback);
 }
+validateMovesList = [];
+function validateMoves(callback) {
+	validateMovesList.push(callback);
+}
 canvasLayers = {
 	// bg: document.createElement("canvas"),
 	pixels: document.createElement("canvas"),
@@ -13764,6 +13768,16 @@ function langKey(key,fallback,template) {
 		function tryMove(pixel,nx,ny,leaveBehind,force) {
 			if (pixel.drag && force !== true) { return true; }
 			if (pixel.del) { return false }
+			if (validateMovesList.length !== 0 && force !== true) {
+				for (let i = 0; i < validateMovesList.length; i++) {
+					const result = validateMovesList[i](pixel,nx,ny);
+					if (result === false) return false;
+					else if (Array.isArray(result)) {
+						nx = result[0];
+						ny = result[1];
+					}
+				}
+			}
 			var info = elements[pixel.element];
 			var oob = outOfBounds(nx,ny);
 			if (isEmpty(nx,ny,false,oob)) { // If coords is empty, move to coords
