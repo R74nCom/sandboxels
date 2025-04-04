@@ -1,10 +1,3 @@
-/* TODO:
-
-- warning and automatic disable for non-chromium users
-- firefly glow
-- sun temperature-dependent glow strength
-
-*/
 
 var isChromium = !!window.chrome;
 
@@ -27,6 +20,7 @@ delete canvasLayers.glowmod2;
 elements.fire.emit = true;
 elements.lightning.emit = 15;
 elements.electric.emit = true;
+elements.positron.emit = true;
 elements.plasma.emit = true;
 elements.uranium.emit = 3;
 elements.uranium.emitColor = "#009800";
@@ -69,6 +63,12 @@ viewInfo[1] = { // Blur Glow (Emissive pixels only)
     pixel: viewInfo[1].pixel,
     effects: true,
     colorEffects: true,
+    onUnselect: function(ctx) {
+        glowmodCtx2.canvas.width = ctx.canvas.width;
+        glowmodCtx2.canvas.height = ctx.canvas.height;
+        glowmodCtx.canvas.width = ctx.canvas.width;
+        glowmodCtx.canvas.height = ctx.canvas.height;
+    },
     pre: function(ctx) {
         glowmodCtx2.canvas.width = ctx.canvas.width;
         glowmodCtx2.canvas.height = ctx.canvas.height;
@@ -88,7 +88,7 @@ renderEachPixel(function(pixel,ctx) {
     if (view === 1) {
         if (elements[pixel.element].emit || pixel.emit || (elements[pixel.element].colorOn && pixel.charge)) {
             let a = (settings.textures !== 0) ? pixel.alpha : undefined;
-            let d = elements[pixel.element].emit||true;
+            let d = pixel.emit||elements[pixel.element].emit||true;
             if (d === true) d = 5;
             let r = Math.floor(d/2);
             drawSquare(glowmodCtx2,elements[pixel.element].emitColor||pixel.color,pixel.x-r,pixel.y-r,d,a);
