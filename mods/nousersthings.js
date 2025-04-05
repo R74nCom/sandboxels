@@ -3939,7 +3939,7 @@ renderPostPixel(function(ctx){
         if ((pixel.element == "sign") && pixel.sign){
             ctx.font = `12pt Arial`
             ctx.fillStyle = pixel.color;
-            ctx.fillText(pixel.sign = pixel.sign.replace(/\$\{([\w.\[\]]+)\}/g, (_, path) => {
+            ctx.fillText(pixel.sign.replace(/\$\{([\w.\[\]]+)\}/g, (_, path) => {
                 try {
                     const value = new Function('return globalThis.' + path)();
                     return typeof value === 'object' ? JSON.stringify(value) : value ?? '';
@@ -3951,7 +3951,7 @@ renderPostPixel(function(ctx){
             if (pixel.charge || pixel.chargeCD){
                 ctx.font = `12pt Arial`
                 ctx.fillStyle = pixel.color;
-                ctx.fillText(pixel.sign = pixel.sign.replace(/\$\{([\w.\[\]]+)\}/g, (_, path) => {
+                ctx.fillText(pixel.sign.replace(/\$\{([\w.\[\]]+)\}/g, (_, path) => {
                     try {
                         const value = new Function('return globalThis.' + path)();
                         return typeof value === 'object' ? JSON.stringify(value) : value ?? '';
