@@ -12963,23 +12963,33 @@ SEEDRISE: function(pixel) {
 "infection_ice": { color: "#ff7090" },
 
 };
+
+// standalone glow.js
+if (standalone) {
+	var script = document.createElement('script');
+	script.src = "mods/glow.js";
+	document.head.appendChild(script);
+}
+
 var currentMonth = new Date().getMonth();
 if (window.location.href.includes("holiday=false")) {}
 else if (currentMonth == 3) { // April
-	if (new Date().getDate() <= 3) {
+	if (new Date().getDate() <= 3 && !standalone) {
 		var script = document.createElement('script');
 		script.src = "mods/fools25.js";
 		document.head.appendChild(script);
 	}
-	if (new Date().getDate() === 20) {
+	else if (new Date().getDate() === 20) {
 		elements.egg.color = elements.bead.color;
 	}
 }
 else if (currentMonth == 9) { // October
 	elements.pumpkin_seed.hidden = false;
-	var script = document.createElement('script');
-	script.src = "mods/souls.js"
-	document.head.appendChild(script);
+	if (!standalone) {
+		var script = document.createElement('script');
+		script.src = "mods/souls.js"
+		document.head.appendChild(script);
+	}
 	if (new Date().getDate() >= 30) {
 		elements.body.color = "#bf5c00";
 	}
@@ -18590,7 +18600,7 @@ window.onload = function() {
 				</div>
 				<script>
 					// if it is the 1st of April, add a rainbow-colored button
-					if (new Date().getMonth() == 3 && new Date().getDate() <= 3) {
+					if (!standalone && new Date().getMonth() == 3 && new Date().getDate() <= 3) {
 						// if url contains "fools=true"
 						if (!window.location.href.includes("fools=true")) {
 							var foolsButton = `<button id="foolsButton" title="Enable FOOLS Mode" class="controlButton" onclick="window.location.href = '?fools=true'" style="background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3); background-size: 800% 800%; animation: rainbow 15s ease infinite; -webkit-background-clip: text; -webkit-text-fill-color: transparent; border-color: #ff00ff; outline: none; text-shadow: 0px 0px 10px #ff00ff;">Fools</button>`
@@ -18612,6 +18622,7 @@ window.onload = function() {
 			<div id="extraInfo"><small><a href="https://sandboxels.r74n.com/changelog" id="changelogButton" target="_blank">Changelog</a> • <a href="https://sandboxels.R74n.com/feedback" target="_blank" style="color:lime;" id="feedbackButton">Feedback</a> • <a href="https://sandboxels.wiki.gg/" target="_blank" id="wikiButton" title="Official Sandboxels Wiki - wiki.gg" style="color:white;">Wiki</a> • <a id="moreSocial" href="https://twitter.com/R74nCom" rel="me" target="_blank">Twitter</a> • <a href="https://discord.gg/ejUc6YPQuS" target="_blank" style="color:#2f60ff;">Discord</a><span id="install-button" style="display:none">&nbsp;• <a onclick="deferredPrompt.prompt(); return false" href="#" style="text-shadow: 0px 2px 10px #ff00ff; cursor:pointer">Install Offline</a></span>
 				<!--<br><br><a style="color:lime" target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSeYMbngtbBHZ7hkz8jpbHl7TiAItqukrhtntKgAHjH30fY08A/viewform?usp=sf_link">FILL OUT THE CENSUS<span style="color:red">(NEW)</span></a>-->
 				<!--<br><br><a style="color:lime" target="_blank" href="https://r74n.com/">WISHLIST ON STEAM<span style="color:red">(NEW)</span></a>-->
+				<!--<br><br><a style="color:lime" target="_blank" href="https://r74n.com/">PLAY AD-FREE ON STEAM<span style="color:red">(NEW)</span></a>-->
 			</small></div>
 			<script>
 				// version check
@@ -18984,19 +18995,41 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span>
 			window.addEventListener('load', function() {
 				if (standalone) return;
 				if (window.location.protocol === "file:") return;
-				var adscript1 = document.createElement('script');
-				adscript1.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8485284630785740";
-				adscript1.crossorigin = "anonymous";
-				document.getElementById('bottomLeftBox').appendChild(adscript1);
-				var ins1 = document.createElement('ins');
-				ins1.className = "adsbygoogle";
-				ins1.style = "display:inline-block;width:728px;height:90px";
-				ins1.setAttribute('data-ad-client', "ca-pub-8485284630785740");
-				ins1.setAttribute('data-ad-slot', "9484672079");
-				document.getElementById('bottomLeftBox').appendChild(ins1);
-				var adscript2 = document.createElement('script');
-				adscript2.innerHTML = "(adsbygoogle = window.adsbygoogle || []).push({});";
-				document.getElementById('bottomLeftBox').appendChild(adscript2);
+				// var adscript1 = document.createElement('script');
+				// adscript1.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8485284630785740";
+				// adscript1.crossorigin = "anonymous";
+				// document.getElementById('bottomLeftBox').appendChild(adscript1);
+				// var ins1 = document.createElement('ins');
+				// ins1.className = "adsbygoogle";
+				// ins1.style = "display:inline-block;width:728px;height:90px";
+				// ins1.setAttribute('data-ad-client', "ca-pub-8485284630785740");
+				// ins1.setAttribute('data-ad-slot', "9484672079");
+				// document.getElementById('bottomLeftBox').appendChild(ins1);
+				// var adscript2 = document.createElement('script');
+				// adscript2.innerHTML = "(adsbygoogle = window.adsbygoogle || []).push({});";
+				// document.getElementById('bottomLeftBox').appendChild(adscript2);
+
+				var adscript = document.createElement('script');
+                adscript.src = "https://hb.vntsm.com/v4/live/vms/sites/sandboxels.r74n.com/index.js";
+                adscript.setAttribute("data-disable-placements","vertical-sticky, video_slider");
+                adscript.addEventListener('load', function() {
+                    self.__VM = self.__VM || [];
+                    self.__VM.push(function (admanager, scope) {
+                            scope.Config.get('billboard').display('slot-1');
+                        // scope.Config.get('leaderboard').display('slot-2');
+                        // scope.Config.get('double_mpu').display('slot-3');
+                        // scope.Config.get('mpu').display('slot-4');
+                            scope.Config.get('mobile_banner').display('slot-5');
+                        // scope.Config.get('mobile_mpu').display('slot-6');
+                        // scope.Config.get('skyscraper').display('slot-7');
+                        // scope.Config.get('video').display('slot-8');
+                        // scope.Config.get('desktop_takeover').display('slot-9');
+                            // scope.Config.get('mobile_takeover').display('slot-10');
+                    // Based on your layout, here are the responsive tags. The placement will change based on screen width.
+                    // With the mobile breakpoint set by default at max-width:1024px
+                    });
+                });
+                document.head.appendChild(adscript);
 			})
 		</script>
 	</div>
@@ -19070,6 +19103,10 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span>
 		document.getElementById("bottomInfoBox").style.display = "none";
 		document.getElementById("pagetitle").style.display = "none";
 		document.getElementById("noMods").insertAdjacentHTML("afterend","Requires Internet connection.<br><br>")
+		document.getElementById("gameDiv").classList.add("standalone");
+		if (isMobile) {
+			document.getElementById("gameDiv").classList.add("mobile");
+		}
 	}
 </script>
 
