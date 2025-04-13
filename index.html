@@ -52,6 +52,7 @@
 		currentversion = "1.11.1";
 		saveVersion = 4;
 		standalone = false;
+		standaloneType = null;
 	</script>
 	<style>
 		.setting-span {
@@ -12964,6 +12965,12 @@ SEEDRISE: function(pixel) {
 
 };
 
+// detect if discord activity
+if (location.hostname.match(/discordsays/i)) {
+	standalone = true;
+	standaloneType = "discord";
+}
+
 // standalone glow.js
 if (standalone) {
 	var script = document.createElement('script');
@@ -15799,7 +15806,6 @@ behaviorRules = {
 		promptState = null;
 		mouseIsDown = false;
 		isMobile = false;
-		standaloneType = null;
 		genericMenuHandler = null;
 		nextElemID = 1;
 		// detect if mobile
@@ -15815,11 +15821,6 @@ behaviorRules = {
 		// detect if macOS
 		if (settings.invertscroll === undefined && navigator.platform.toUpperCase().indexOf('MAC')>=0) {
 			settings.invertscroll = true;
-		}
-		// detect if discord activity
-		if (location.hostname.match(/discordsays/i)) {
-			standalone = true;
-			standaloneType = "discord";
 		}
 		mouseType = null;
 		function mouseClick(e) {
