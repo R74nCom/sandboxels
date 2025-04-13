@@ -15799,6 +15799,7 @@ behaviorRules = {
 		promptState = null;
 		mouseIsDown = false;
 		isMobile = false;
+		standaloneType = null;
 		genericMenuHandler = null;
 		nextElemID = 1;
 		// detect if mobile
@@ -15814,6 +15815,11 @@ behaviorRules = {
 		// detect if macOS
 		if (settings.invertscroll === undefined && navigator.platform.toUpperCase().indexOf('MAC')>=0) {
 			settings.invertscroll = true;
+		}
+		// detect if discord activity
+		if (navigator.userAgent.match(/Discord/i)) {
+			standalone = true;
+			standaloneType = "discord";
 		}
 		mouseType = null;
 		function mouseClick(e) {
@@ -19084,6 +19090,10 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span>
 		document.getElementById("gameDiv").classList.add("standalone");
 		if (isMobile) {
 			document.getElementById("gameDiv").classList.add("mobile");
+		}
+		if (standaloneType === "discord") {
+			document.getElementById("savesButton").style.display = "none";
+			document.getElementById("modsButton").style.display = "none";
 		}
 	}
 </script>
