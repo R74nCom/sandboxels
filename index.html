@@ -15817,7 +15817,7 @@ behaviorRules = {
 			settings.invertscroll = true;
 		}
 		// detect if discord activity
-		if (navigator.userAgent.match(/Discord/i)) {
+		if (location.hostname.match(/discordsays/i)) {
 			standalone = true;
 			standaloneType = "discord";
 		}
