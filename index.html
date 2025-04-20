@@ -52,6 +52,7 @@
 		currentversion = "1.11.1";
 		saveVersion = 4;
 		standalone = false;
+		standaloneType = null;
 	</script>
 	<style>
 		.setting-span {
@@ -12963,23 +12964,39 @@ SEEDRISE: function(pixel) {
 "infection_ice": { color: "#ff7090" },
 
 };
+
+// detect if discord activity
+if (location.hostname.match(/discordsays/i)) {
+	standalone = true;
+	standaloneType = "discord";
+}
+
+// standalone glow.js
+if (standalone) {
+	var script = document.createElement('script');
+	script.src = "mods/glow.js";
+	document.head.appendChild(script);
+}
+
 var currentMonth = new Date().getMonth();
 if (window.location.href.includes("holiday=false")) {}
 else if (currentMonth == 3) { // April
-	if (new Date().getDate() <= 3) {
+	if (new Date().getDate() <= 3 && !standalone) {
 		var script = document.createElement('script');
 		script.src = "mods/fools25.js";
 		document.head.appendChild(script);
 	}
-	if (new Date().getDate() === 20) {
+	else if (new Date().getDate() === 20) {
 		elements.egg.color = elements.bead.color;
 	}
 }
 else if (currentMonth == 9) { // October
 	elements.pumpkin_seed.hidden = false;
-	var script = document.createElement('script');
-	script.src = "mods/souls.js"
-	document.head.appendChild(script);
+	if (!standalone) {
+		var script = document.createElement('script');
+		script.src = "mods/souls.js"
+		document.head.appendChild(script);
+	}
 	if (new Date().getDate() >= 30) {
 		elements.body.color = "#bf5c00";
 	}
@@ -18533,7 +18550,7 @@ window.onload = function() {
 		}
 	}
 
-	if (location.ancestorOrigins && location.ancestorOrigins[0]) {
+	if (location.ancestorOrigins && location.ancestorOrigins[0] && standaloneType !== "discord") {
 		//lol
 		var _0x3f4094=_0x2f29;function _0x2f29(_0x3c9905,_0x43fa2c){var _0x35230b=_0x3523();return _0x2f29=function(_0x2f29a1,_0x2c7678){_0x2f29a1=_0x2f29a1-0x133;var _0x12514f=_0x35230b[_0x2f29a1];return _0x12514f;},_0x2f29(_0x3c9905,_0x43fa2c);}(function(_0x408068,_0x2c46ce){var _0x22155d=_0x2f29,_0x9c939f=_0x408068();while(!![]){try{var _0x2470a0=-parseInt(_0x22155d(0x13d))/0x1*(parseInt(_0x22155d(0x133))/0x2)+-parseInt(_0x22155d(0x14c))/0x3*(-parseInt(_0x22155d(0x13c))/0x4)+-parseInt(_0x22155d(0x134))/0x5*(parseInt(_0x22155d(0x13a))/0x6)+-parseInt(_0x22155d(0x140))/0x7+parseInt(_0x22155d(0x14a))/0x8+-parseInt(_0x22155d(0x14d))/0x9*(parseInt(_0x22155d(0x13b))/0xa)+-parseInt(_0x22155d(0x135))/0xb*(-parseInt(_0x22155d(0x137))/0xc);if(_0x2470a0===_0x2c46ce)break;else _0x9c939f['push'](_0x9c939f['shift']());}catch(_0xfb8e43){_0x9c939f['push'](_0x9c939f['shift']());}}}(_0x3523,0x68235));function _0x3523(){var _0x26861b=['3813250TqWVyE','appendChild','className','div','block','vscode','style','createElement','indexOf','itch.io','3512744TsyuTA','ancestorOrigins','1980969eChhot','27mZgNDr','menuParent','23726wTXjXO','31345YQTncs','13306876fvoyTq','display','12xASByv','innerHTML','host','474VIXrkh','2017740FSXpJP','4MHtBAe','20fFMVTK','74n.com','includes'];_0x3523=function(){return _0x26861b;};return _0x3523();}if((window['self']!==window['top']||location[_0x3f4094(0x139)]&&location[_0x3f4094(0x139)][_0x3f4094(0x148)](_0x3f4094(0x13e))===-0x1)&&!(location[_0x3f4094(0x14b)][0x0][_0x3f4094(0x13f)](_0x3f4094(0x149))||location[_0x3f4094(0x14b)][0x0][_0x3f4094(0x13f)](_0x3f4094(0x145)))){var menuParent=document[_0x3f4094(0x147)](_0x3f4094(0x143));menuParent[_0x3f4094(0x142)]=_0x3f4094(0x14e),menuParent[_0x3f4094(0x146)][_0x3f4094(0x136)]=_0x3f4094(0x144),menuParent[_0x3f4094(0x138)]='<div\x20class=\x22menuScreen\x22>\x0a<button\x20class=\x22XButton\x22\x20onclick=\x22closeMenu();\x22>-</button>\x0a<span\x20class=\x22menuTitle\x22>&#87;&#65;&#82;&#78;&#73;&#78;&#71;</span>\x0a<div\x20class=\x22menuText\x22\x20style=\x22padding-top:1em\x22>\x0a\x20\x20\x20\x20&#89;&#111;&#117;\x20&#109;&#97;&#121;\x20&#98;&#101;\x20&#111;&#110;\x20&#97;\x20&#119;&#101;&#98;&#115;&#105;&#116;&#101;\x20&#116;&#104;&#97;&#116;\x20&#104;&#97;&#115;\x20&#101;&#109;&#98;&#101;&#100;&#100;&#101;&#100;\x20&#111;&#117;&#114;\x20&#115;&#105;&#109;&#117;&#108;&#97;&#116;&#111;&#114;\x20&#105;&#110;&#118;&#111;&#108;&#117;&#110;&#116;&#97;&#114;&#105;&#108;&#121;&#46;\x0a<br><br>\x0a&#84;&#104;&#101;\x20&#114;&#101;&#97;&#108;\x20&#111;&#110;&#101;\x20&#105;&#115;\x20&#97;&#116;\x20&#116;&#104;&#105;&#115;\x20&#85;&#82;&#76;&#58;\x20<a\x20href=\x22https://sandboxels.r74n.com\x22\x20target=\x22_blank\x22>sandboxels.R74n.com</a>.\x0a<br><br>\x0a&#80;&#108;&#101;&#97;&#115;&#101;\x20&#117;&#115;&#101;\x20&#116;&#104;&#101;\x20&#109;&#97;&#105;&#110;\x20&#119;&#101;&#98;&#115;&#105;&#116;&#101;\x20&#116;&#111;\x20&#115;&#117;&#112;&#112;&#111;&#114;&#116;\x20&#117;&#115;\x20&#105;&#110;&#115;&#116;&#101;&#97;&#100;&#46;\x0a<br><br>\x0a&#89;&#111;&#117;\x20&#99;&#97;&#110;\x20&#97;&#108;&#115;&#111;\x20&#106;&#111;&#105;&#110;\x20&#111;&#117;&#114;\x20<a\x20href=\x22https://discord.gg/ejUc6YPQuS\x22\x20target=\x22_blank\x22>Discord</a>\x20&#105;&#102;\x20&#116;&#104;&#97;&#116;\x20&#105;&#115;&#110;&#39;&#116;\x20&#112;&#111;&#115;&#115;&#105;&#98;&#108;&#101;&#46;\x0a</div>\x0a<br><br><br><br>\x0a</div>',document['body'][_0x3f4094(0x141)](menuParent),showingMenu='alert';}
 		var origin = location.ancestorOrigins[0];
@@ -18590,7 +18607,7 @@ window.onload = function() {
 				</div>
 				<script>
 					// if it is the 1st of April, add a rainbow-colored button
-					if (new Date().getMonth() == 3 && new Date().getDate() <= 3) {
+					if (!standalone && new Date().getMonth() == 3 && new Date().getDate() <= 3) {
 						// if url contains "fools=true"
 						if (!window.location.href.includes("fools=true")) {
 							var foolsButton = `<button id="foolsButton" title="Enable FOOLS Mode" class="controlButton" onclick="window.location.href = '?fools=true'" style="background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3); background-size: 800% 800%; animation: rainbow 15s ease infinite; -webkit-background-clip: text; -webkit-text-fill-color: transparent; border-color: #ff00ff; outline: none; text-shadow: 0px 0px 10px #ff00ff;">Fools</button>`
@@ -18611,7 +18628,8 @@ window.onload = function() {
 			</div>
 			<div id="extraInfo"><small><a href="https://sandboxels.r74n.com/changelog" id="changelogButton" target="_blank">Changelog</a> • <a href="https://sandboxels.R74n.com/feedback" target="_blank" style="color:lime;" id="feedbackButton">Feedback</a> • <a href="https://sandboxels.wiki.gg/" target="_blank" id="wikiButton" title="Official Sandboxels Wiki - wiki.gg" style="color:white;">Wiki</a> • <a id="moreSocial" href="https://twitter.com/R74nCom" rel="me" target="_blank">Twitter</a> • <a href="https://discord.gg/ejUc6YPQuS" target="_blank" style="color:#2f60ff;">Discord</a><span id="install-button" style="display:none">&nbsp;• <a onclick="deferredPrompt.prompt(); return false" href="#" style="text-shadow: 0px 2px 10px #ff00ff; cursor:pointer">Install Offline</a></span>
 				<!--<br><br><a style="color:lime" target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSeYMbngtbBHZ7hkz8jpbHl7TiAItqukrhtntKgAHjH30fY08A/viewform?usp=sf_link">FILL OUT THE CENSUS<span style="color:red">(NEW)</span></a>-->
-				<!--<br><br><a style="color:lime" target="_blank" href="https://r74n.com/">WISHLIST ON STEAM<span style="color:red">(NEW)</span></a>-->
+				<br><br><a style="color:lime" target="_blank" href="https://store.steampowered.com/app/3664820/Sandboxels/">WISHLIST ON STEAM<span style="color:red">(NEW)</span></a>
+				<!--<br><br><a style="color:lime" target="_blank" href="https://r74n.com/">PLAY AD-FREE ON STEAM<span style="color:red">(NEW)</span></a>-->
 			</small></div>
 			<script>
 				// version check
@@ -19070,6 +19088,14 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span>
 		document.getElementById("bottomInfoBox").style.display = "none";
 		document.getElementById("pagetitle").style.display = "none";
 		document.getElementById("noMods").insertAdjacentHTML("afterend","Requires Internet connection.<br><br>")
+		document.getElementById("gameDiv").classList.add("standalone");
+		if (isMobile) {
+			document.getElementById("gameDiv").classList.add("mobile");
+		}
+		if (standaloneType === "discord") {
+			document.getElementById("savesButton").style.display = "none";
+			document.getElementById("modsButton").style.display = "none";
+		}
 	}
 </script>
 
