@@ -53,6 +53,9 @@ a:active, a:hover:active, .saveOption:active, .saveOption:hover:active {filter: 
 .standalone.mobile #savesButton, .standalone.mobile #extraInfo {
     display: none
 }
+.standalone #extraInfo {
+    display: none
+}
 #game {
     image-rendering: pixelated;
 }
