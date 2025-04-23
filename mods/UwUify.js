@@ -3,7 +3,7 @@ document.body.style.backgroundSize = 'cover';
 gameDiv.style.border = "1px solid #ffffff00"; 
 var statsbar = document.getElementById("stats");
 var stylesheetchangevar = document.querySelector("link[rel=stylesheet]");
-stylesheetchangevar.href = "mods/UwUstyle.css";
+stylesheetchangevar.href = "https://jayd-Rubies.github.io/assets/css/UwUstyle.css";
 statsbar.style.backgroundColor = 'transparent';
 window.addEventListener("load",function(){
     document.querySelectorAll(".categoryButton").forEach(e => {
