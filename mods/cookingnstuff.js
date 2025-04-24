@@ -1,1 +1,1 @@
-        alert("This mod (cookingnstuff.js) has been moved to talismanadditions.js");
+        logMessage("This mod (cookingnstuff.js) has been moved to talismanadditions.js");
