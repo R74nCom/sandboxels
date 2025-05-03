@@ -1,3 +1,40 @@
+elements.sand = {
+	color: "#e6d577",
+	behavior: behaviors.POWDER,
+	reactions: {
+		"water":{elem1:"wet_sand",elem2:null},
+		"salt_water":{elem1:"wet_sand",elem2:"foam"},
+		"sugar_water":{elem1:"wet_sand",elem2:null},
+		"seltzer":{elem1:"wet_sand",elem2:null},
+		"dirty_water":{elem1:"wet_sand",elem2:null},
+		"pool_water":{elem1:"wet_sand",elem2:null},
+		"slush":{elem1:"wet_sand",elem2:null},
+		"soda":{elem1:"wet_sand",elem2:null},
+		"juice":{elem1:"wet_sand",elem2:null},
+		"milk":{elem1:"wet_sand",elem2:null},
+		"chocolate_milk":{elem1:"wet_sand",elem2:null},
+		"fruit_milk":{elem1:"wet_sand",elem2:null},
+		"pilk":{elem1:"wet_sand",elem2:null},
+		"eggnog":{elem1:"wet_sand",elem2:null},
+		"nut_milk":{elem1:"wet_sand",elem2:null},
+		"cream":{elem1:"wet_sand",elem2:null},
+		"vinegar":{elem1:"wet_sand",elem2:null},
+		"blood":{elem1:"wet_sand",elem2:null},
+		"vaccine":{elem1:"wet_sand",elem2:null},
+		"antibody":{elem1:"wet_sand",elem2:null},
+		"infection":{elem1:"wet_sand",elem2:null},
+		"poison":{elem1:"wet_sand",elem2:null},
+		"antidote":{elem1:"wet_sand",elem2:null},
+		"tornado":{elem1:"sandstorm", oneway:true},
+		"charcoal":{elem1:"filter_powder", elem2: null}
+	},
+	tempHigh: 1700,
+	stateHigh: "molten_glass",
+	category: "land",
+	state: "solid",
+	density: 1602
+}
+
 elements.water = {
 	color: "#2167ff",
 	behavior: behaviors.LIQUID,
@@ -635,7 +672,7 @@ elements.filter_powder = {
 }
 
 elements.stable_filter_powder = {
-	color: "#7a7862",
+	color: "#7d7c72",
 	behavior: behaviors.POWDER,
 	tempHigh: 100,
 	stateHigh: "charcoal",
