@@ -1,6 +1,6 @@
-//Main version
+//Main version. Still in WIP
 //reminder for creator: human code is on index.html line 3242.
-
+//Ini adalah aScientistsWish.js, mod dari Sandboxels yang diciptakan oleh Carbon Monoxide dengan bantuan startup oleh Salmonfishy, bertema sains dan semi fiktif dengan adanya zombie, mod ini masih dalam tahap pengembangan.
 elements.carbon_monoxide = {
   color: ["#b5b5b5", "#404040", "#2b2b2b",],
   behavior: behaviors.GAS,
@@ -232,7 +232,7 @@ reactions: {
 }
 };
 
-elements.radiated_metal = {
+elements.radiated_metal = {  
     behavior: [
         ["XX","CR:radiation%25","XX"],
         ["CR:radiation%25","XX","CR:radiation%25"],
@@ -929,6 +929,7 @@ elements.liquid_phosgene = {
     category: "states",
     density: 7.50,
     tempLow: -118,
+    hidden: true,
     temp: -10,
     stateLow: "solid_phosgene",
     tempHigh: 8,
@@ -939,6 +940,7 @@ elements.solid_phosgene = {
     behavior: behaviors.WALL,
     state: "solid",
     category: "states",
+    hidden: true,
     density: 12.45,
     temp: -150,
     tempHigh: -117,
@@ -962,3 +964,232 @@ elements.chlorophyll = {
         "acid": { elem1: ["magnesium"], }
     }
 }
+elements.lithium = { //Unsur lithium, buat versi baru, masih WIP.
+    color: ["#928c96", "#9c9c9c",],
+    state: "powder",
+    category: "powders",
+    behavior: behaviors.POWDER,
+    density: 0.5,
+    tempHigh: 180, 
+    stateHigh: "molten_lithium",
+    conduct: 0.2,
+    burn: 85,
+    burnTime: 500,
+    reactions: {
+            "water": { elem1: ["pop","explosion","hydrogen","lithium_hydroxide"] },
+            "salt_water": { elem1: ["pop","explosion","hydrogen","lithium_hydroxide"] },
+            "pool_water": { elem1: ["pop","explosion","hydrogen","lithium_hydroxide"] },
+            "dirty_water": { elem1: ["pop","explosion","hydrogen","lithium_hydroxide"] },
+            "sugar_water": { elem1: ["pop","explosion","hydrogen","lithium_hydroxide"] },
+            "steam": { elem1: ["pop","explosion","hydrogen","lithium_hydroxide"] },
+            "oxygen": { elem1: "lithium_oxide" },
+            "chlorine": { elem1: "lithium_chloride" },
+            "acid": { elem1: ["lithium_chloride","hydrogen"], chance: 0.2 },
+            "carbon_dioxide": { elem1: "lithium_carbonate" },
+            "carbon_monoxide": { elem1: "lithium_carbonate" },
+            "nitrogen": { elem1: "lithium_nitride", chance: 0.1 }
+        } 
+    }
+elements.molten_lithium = {
+    color: ["#c0c0c0", "#d0d0d0", "#b0b0b0"],
+    behavior: behaviors.LIQUID,
+    temp: 250, // temperatur normal
+    density: 0.5, 
+    conduct: 0.5,
+    state: "liquid",
+    category: "states",
+    hidden: true,
+    tempLow: 180,
+    stateLow: "lithium",
+    burn: 50,
+    burnTime: 300,
+    burnInto: "lithium_oxide",
+}
+
+elements.lithium_hydroxide = {
+    color: "#c8e4d8",
+    behavior: behaviors.POWDER,
+    category: "powders",
+    state: "solid",
+    density: 1500,
+    tempHigh: 462, // titik leleh LiOH
+    stateHigh: "molten_lithium_hydroxide",
+    reactions: {},
+};
+
+// Molten Lithium Hydroxide
+elements.molten_lithium_hydroxide = {
+    color: "#dff7f2",
+    behavior: behaviors.LIQUID,
+    category: "states",
+    state: "liquid",
+    density: 1400,
+    hidden: true,
+    temp: 463,
+    tempHigh: 924, // perkiraan titik didih
+    stateHigh: "lithium_hydroxide_gas", // opsional
+    reactions: {},
+};
+
+// Lithium Oxide (hasil reaksi lithium dengan oksigen)
+elements.lithium_oxide = {
+    color: "#d0d0d0",
+    behavior: behaviors.POWDER,
+    category: "powders",
+    state: "solid",
+    density: 2013,
+    tempHigh: 1438,
+    stateHigh: "molten_lithium_oxide",
+    reactions: {},
+};
+
+// Molten Lithium Oxide
+elements.molten_lithium_oxide = {
+    color: "#e8e8e8",
+    behavior: behaviors.LIQUID,
+    category: "states",
+    state: "liquid",
+    density: 1800,
+    hidden: true,
+    temp: 1440,
+    reactions: {},
+};
+
+// Lithium Carbonate (hasil reaksi lithium dengan karbon dioksida)
+elements.lithium_carbonate = {
+    color: "#f0f0f0",
+    behavior: behaviors.POWDER,
+    category: "powders",
+    state: "solid",
+    density: 2110,
+    tempHigh: 723, 
+    stateHigh: "molten_lithium_carbonate",
+    reactions: {},
+};
+
+// Molten Lithium Carbonate
+elements.molten_lithium_carbonate = {
+    color: "#fafafa",
+    behavior: behaviors.LIQUID,
+    category: "states",
+    state: "liquid",
+    density: 1900,
+    hidden: true,
+    temp: 725,
+    reactions: {},
+};
+
+// Lithium Chloride (hasil reaksi lithium dengan klorin atau asam)
+elements.lithium_chloride = {
+    color: "#e0e0f8",
+    behavior: behaviors.POWDER,
+    category: "powders",
+    state: "solid",
+    density: 2068,
+    tempHigh: 614,
+    stateHigh: "molten_lithium_chloride",
+    reactions: {},
+};
+
+// Molten Lithium Chloride
+elements.molten_lithium_chloride = {
+    color: "#f0f0ff",
+    behavior: behaviors.LIQUID,
+    category: "states",
+    state: "liquid",
+    hidden: true,
+    density: 1900,
+    temp: 615,
+    reactions: {},
+};
+
+// Lithium Nitride (hasil reaksi lithium dengan nitrogen)
+elements.lithium_nitride = {
+    color: "#b8b8b8",
+    behavior: behaviors.POWDER,
+    category: "powders",
+    state: "solid",
+    density: 1270,
+    tempHigh: 813,
+    stateHigh: "molten_lithium_nitride",
+    reactions: {},
+};
+
+// Molten Lithium Nitride
+elements.molten_lithium_nitride = {
+    color: "#c8c8c8",
+    behavior: behaviors.LIQUID,
+    category: "states",
+    state: "liquid",
+    hidden: true,
+    density: 1100,
+    temp: 815,
+    reactions: {},
+};
+elements.phosphorus = {
+    color: ["#ffffcc", "#ffff99", "#ffff66"],
+    behavior: behaviors.POWDER,
+    category: "powders",
+    state: "solid",
+    density: 1820,
+    burn: 100,
+    burnTime: 100,
+    burnInto: "fire",
+    reactions: {
+        "oxygen": { elem1: "fire", chance: 0.5 },
+        "water": { elem1: "explosion", },
+    },
+    tempHigh: 44,
+    stateHigh: "molten_phosphorus",
+    hidden: false,
+};
+elements.molten_phosphorus = {
+    color: ["#ffcc00", "#ff9900"],
+    behavior: behaviors.LIQUID,
+    category: "states",
+    state: "liquid",
+    density: 1600,
+    hidden: true,
+    burning: true,
+    burnTime: 2000,
+    burnInto: "fire",
+    reactions: {
+        "oxygen": { elem1: "fire", chance: 1 },
+    },
+    temp: 100,
+    tempLow: 43,
+    stateLow: "phosphorus",
+    viscosity: 20,
+};
+elements.phosphorus_bomb = {
+    color: "#ffdd66",
+    behavior: behaviors.POWDER,
+    category: "weapons",
+    state: "solid",
+    density: 1200,
+    desc: "Bom fosfor – meledak saat menyentuh elemen lain dan menyebarkan molten_phosphorus.",
+    tick: function(pixel) {
+        // Periksa apakah ada elemen lain di sekitarnya
+        for (let dx = -1; dx <= 1; dx++) {
+            for (let dy = -1; dy <= 1; dy++) {
+                if (dx === 0 && dy === 0) continue;
+                let x = pixel.x + dx;
+                let y = pixel.y + dy;
+                if (!isEmpty(x, y)) {
+                    // Meledak: ubah area sekitar jadi molten_phosphorus
+                    for (let ex = -3; ex <= 3; ex++) {
+                        for (let ey = -3; ey <= 3; ey++) {
+                            let nx = pixel.x + ex;
+                            let ny = pixel.y + ey;
+                            if (isEmpty(nx, ny) && Math.random() < 0.6) {
+                                createPixel("molten_phosphorus", nx, ny);
+                            }
+                        }
+                    }
+                    deletePixel(pixel.x, pixel.y); // Hancurkan bomb setelah meledak
+                    return;
+                }
+            }
+        }
+    }
+};
