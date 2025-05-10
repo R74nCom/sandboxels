@@ -4,7 +4,24 @@ Add many ingredients for drinks
 
 Changelog - Foundation Level (v0.1)
  - Matcha Elements
+Changelog - Foundation Level (v0.2)
+ - Oolong tea
+ - cinnamon tea
 */
+
+elements.tencha = {
+    behavior: behaviors.POWDER,
+    category: "food",
+    state: "solid",
+    color: ["#25360c","#324a0c"],
+    density: 500,
+    breakInto: "matcha_powder",
+    isFood: true,
+    desc: "Tea leaves, can break into matcha, look pretty sussy.",
+reactions: {
+       "water": { elem2:"tea", tempMin:80 }
+    }
+};
 
 elements.matcha_powder = {
     behavior: behaviors.POWDER,
@@ -118,7 +135,10 @@ elements.oolong_leaves = {
     isFood: true,
     tempHigh: 120, 
     stateHigh: "roasted_oolong",
-    desc: "Dark, twisty tea leaves that look kinda serious. Smell fancy, taste like tea that went through a phase. Smooth, strong, and slightly dramatic. UNDER CONSTRUCTION AHAHAHAHA"
+    desc: "Dark, twisty tea leaves that look kinda serious. Smell fancy, taste like tea that went through a phase. Smooth, strong, and slightly dramatic.",
+reactions: { 
+       "water": { elem2:"oolong_tea", tempMin:80 },
+    }
 };
 
 elements.roasted_oolong = {
@@ -128,5 +148,62 @@ elements.roasted_oolong = {
     color: ["#8F6B3A","#654321"],
     density: 220,
     isFood: true,
-    desc: "Roasted oolong—deeper flavor, slightly smoky, and probably wiser now. UNDER CONSTRUCTION AHAHAHAHA"
+    desc: "Roasted oolong—deeper flavor, slightly smoky, and probably wiser now.",
+reactions: { 
+       "water": { elem2:"oolong_tea", tempMin:80 },
+    }
+};
+
+
+elements.cinnamon = {
+    behavior: behaviors.SUPPORTPOWDER,
+    category: "food",
+    state: "solid",
+    color: ["#6a462f","#4a3120"],
+    density: 500,
+    breakInto: "cinnamon_powder",
+    isFood: true,
+    desc: "Cinnamon, a thingy things with spicy flavour.",
+    reactions: { 
+       "water": { elem2:"cinnamon_tea", tempMin:80, color2:"#6c3213" },
+    }
+};
+
+elements.cinnamon_powder = {
+    behavior: behaviors.SUPPORTPOWDER,
+    category: "food",
+    state: "solid",
+    color: ["#986544"],
+    density: 589,
+    isFood: true,
+    desc: "Cinnamon powder, from cinnamon, a thingy things powder with spicy flavour.",
+reactions: { 
+       "water": { elem2:"cinnamon_tea", chance: 0.5, color2:"#6c3213" },
+    }
+};
+
+elements.cinnamon_tea = {
+    behavior: behaviors.LIQUID,
+    category: "food",
+    state: "solid",
+    color: ["#723900"],
+    density: 1000,
+    isFood: true,
+    desc: "Cozy tea with spicy taste.",
+reactions: { 
+       "cinnamon_powder": { elem2:"null", chance: 0.5 },
+    }
+};
+
+elements.oolong_tea = {
+    behavior: behaviors.LIQUID,
+    category: "food",
+    state: "solid",
+    color: ["#ADA07B"],
+    density: 1000,
+    isFood: true,
+    desc: "it's just tea, make from oolong.",
+reactions: { 
+       "sugar": { elem2:"null", chance: 0.5 },
+    }
 };
