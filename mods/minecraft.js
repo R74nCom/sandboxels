@@ -69,7 +69,7 @@ elements.soul_sand = {
     category: "minecraft",
     state: "solid",
     tempHigh: 2575,
-    stateHigh: "soul_glass",
+    stateHigh: "molten_soul_glass",
     density: 1375,
     reactions: {
         "water": { "elem1":"wet_soul_sand", "elem2":null },
@@ -114,6 +114,19 @@ elements.wet_soul_sand = {
     stateHigh: "soul_sand",
     density: 1660,
 };
+elements.molten_soul_glass = {
+    color: ["#36d7ec", "#2fbacd", "#289faf", "#218491", "#1a6a75"],
+    fireColor: "#36d7ec",
+    viscosity: 1000,
+    behavior: behaviors.MOLTEN,
+    category: "minecraft",
+    density: 1625,
+    hidden: true,
+    tempLow: 2540,
+    stateLow: "soul_glass",
+    state: "liquid",
+    temp: 2700,
+}
 /* unfinished but near:
 Soul Adobe,
 Molten Soul Glass,
@@ -134,6 +147,13 @@ function playSculk() {
 function playShriek() {
     var audio = new Audio("https://JustAGenericUsername.github.io/shriek" + Math.floor((Math.random()*4) +1) + ".ogg");
     audio.play();
+}
+async function _GNPrompt(message, title = "Prompt", defaultValue = "") { // thanks to ggod
+    return new Promise(resolve => {
+        promptInput(message, (result) => {
+            resolve(result);
+        }, title, defaultValue);
+    })
 }
 function turnIntoSpecific(pixel){
     newPixel = pixel.storedPixel
@@ -597,8 +617,8 @@ elements.sculk_wifi_transmitter = {
     hoverStat: function(pixel){
         return pixel.channel || "unset"
     },
-    onSelect: function(){
-        let ans1 = prompt("What channel should this transmitter be? Wont work if you do multiple while paused. (This is meant to be used in machinery!)", channelVar||0)
+    onSelect: async function(){
+        let ans1 = await _GNPrompt("What channel should this transmitter be? Wont work if you do multiple while paused. (This is meant to be used in machinery!)", "minecraft.js is asking you...",channelVar||0)
         channelVar = ans1
     },
     tick: function(pixel){
@@ -636,8 +656,8 @@ elements.sculk_wifi_receiver = {
     hoverStat: function(pixel){
         return pixel.channel || "unset"
     },
-    onSelect: function(){
-        let ans1 = prompt("What channel should this receiver be? Wont work if you do multiple while paused. (This is meant to be used in machinery!)", channelVar||0)
+    onSelect: async function(){
+        let ans1 = await _GNPrompt("What channel should this receiver be? Wont work if you do multiple while paused. (This is meant to be used in machinery!)", "minecraft.js is asking you...", channelVar||0)
         channelVar = ans1
     },
     tick: function(pixel){
@@ -772,26 +792,18 @@ elements.obsidian = { //subject to change
     density: 2400,
     renderer: function(pixel, ctx){
         autoFillColorRectangle(ctx, pixel, "#06030B", 1, 1, 0, 0)
-        autoFillColorRectangle(ctx, pixel, "#000001", 0.5, 1/6, 0, 0)
-        autoFillColorRectangle(ctx, pixel, "#000001", 1/6, 1/6, 1/6, 5/6)
-        autoFillColorRectangle(ctx, pixel, "#000001", 1/6, 1/6, 5/6, 2/3)
-        autoFillColorRectangle(ctx, pixel, "#100C1C", 1/6, 1/6, 0, 5/6)
-        autoFillColorRectangle(ctx, pixel, "#100C1C", 1/3, 1/5, 1/6, 0.5)
-        autoFillColorRectangle(ctx, pixel, "#100C1C", 1/6, 1/3, 1/3, 1/3)
-        autoFillColorRectangle(ctx, pixel, "#100C1C", 1/6, 1/6, 2/3, 0)
-        autoFillColorRectangle(ctx, pixel, "#100C1C", 1/6, 0.5, 2/3, 0.5)
-        autoFillColorRectangle(ctx, pixel, "#100C1C", 1/3, 1/6, 2/3, 0.5)
-        autoFillColorRectangle(ctx, pixel, "#100C1C", 1/3, 1/6, 0.5, 5/6)
-        autoFillColorRectangle(ctx, pixel, "#271E3D", 1/6, 1/6, 0, 2/3)
-        autoFillColorRectangle(ctx, pixel, "#271E3D", 1/6, 1/6, 1/6, 1/3)
-        autoFillColorRectangle(ctx, pixel, "#271E3D", 1/6, 1/6, 0.5, 0)
-        autoFillColorRectangle(ctx, pixel, "#271E3D", 1/6, 1/6, 5/6, 1/3)
-        autoFillColorRectangle(ctx, pixel, "#271E3D", 1/6, 1/6, 1/3, 5/6)
-        autoFillColorRectangle(ctx, pixel, "#3B2754", 1/6, 1/6, 0, 1/3)
-        autoFillColorRectangle(ctx, pixel, "#3B2754", 1/6, 1/6, 1/6, 1/6)
-        autoFillColorRectangle(ctx, pixel, "#3B2754", 1/3, 1/6, 1/3, 2/3)
-        autoFillColorRectangle(ctx, pixel, "#3B2754", 1/6, 1/6, 2/3, 1/3)
-        autoFillColorRectangle(ctx, pixel, "#3B2754", 1/6, 1/6, 5/6, 1/6)
+        autoFillColorRectangle(ctx, pixel, "#000100", 1/6, 1/6, 5/6, 5/6)
+        autoFillColorRectangle(ctx, pixel, "#000100", 1/6, 1/3, 1/3, 2/3)
+        autoFillColorRectangle(ctx, pixel, "#000100", 1/3, 1/6, 1/6, 2/3)
+        autoFillColorRectangle(ctx, pixel, "#000100", 1/6, 1/6, 0, 1/6)
+        autoFillColorRectangle(ctx, pixel, "#000100", 1/3, 1/6, 1/6, 0)
+        autoFillColorRectangle(ctx, pixel, "#271E3D", 1/3, 1/3, 1/2, 0)
+        autoFillColorRectangle(ctx, pixel, "#271E3D", 1/2, 1/6, 1/3, 1/6)
+        autoFillColorRectangle(ctx, pixel, "#271E3D", 1/3, 1/6, 2/3, 2/3)
+        autoFillColorRectangle(ctx, pixel, "#271E3D", 1/6, 1/6, 1/3, 1/2)
+        autoFillColorRectangle(ctx, pixel, "#271E3D", 1/6, 1/3, 0, 1/2)
+        autoFillColorRectangle(ctx, pixel, "#3B2754", 1/5, 1/6, 5/6, 1/2)
+        autoFillColorRectangle(ctx, pixel, "#3B2754", 1/6, 1/6, 1/2, 0)
     }
 }
 elements.molten_obsidian = {
