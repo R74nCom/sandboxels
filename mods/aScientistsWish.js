@@ -1167,7 +1167,7 @@ elements.phosphorus_bomb = {
     category: "weapons",
     state: "solid",
     density: 1200,
-    desc: "Bom fosfor – meledak saat menyentuh elemen lain dan menyebarkan molten_phosphorus.",
+    desc: "Don't let UN see this...",
     tick: function(pixel) {
         // Periksa apakah ada elemen lain di sekitarnya
         for (let dx = -1; dx <= 1; dx++) {
