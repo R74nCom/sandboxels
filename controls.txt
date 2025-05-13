@@ -56,5 +56,6 @@ Replace         =  Override existing pixels when placing
 E               =  Select any element by name
 TPS             =  Change how fast the simulation runs
 Info            =  Open the element info screen
+Saves           =  Open the Save & Load menu
 Mods            =  Open the Mod Manager
 Settings        =  Open the Settings Menu
