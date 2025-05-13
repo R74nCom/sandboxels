@@ -4,7 +4,7 @@
 			// If elem1 exists
 			if (elements[key].reactions[reaction].elem1) {
 				// If elem1 is an array, loop through each element, else check once. Don't delete if it === null
-				if (Array.isArray(elements[key].reactions[reaction].elem1)) {
+				if (Array.isArray(elements[key].reactions[reaction].elem1)) { 
 					for (var i = 0; i < elements[key].reactions[reaction].elem1.length; i++) {
 						if (elements[key].reactions[reaction].elem1[i] && !elements[elements[key].reactions[reaction].elem1[i]]) {
 							elements[key].reactions[reaction].elem1.splice(i,1);
