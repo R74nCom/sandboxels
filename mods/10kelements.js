@@ -2,18 +2,25 @@ var elementslist = []
 for (elementi in elements){
     elementslist.push(elementi)
 }
+async function _GNPrompt(message, title = "Prompt", defaultValue = "") { // thanks to ggod
+    return new Promise(resolve => {
+        promptInput(message, (result) => {
+            resolve(result);
+        }, title, defaultValue);
+    })
+}
 elements.change_count = {
   color: "#34eb86",
   canPlace: false,
   behavior: behaviors.SELFDELETE,
-  onSelect: function() {
-    var cans = prompt("Please input how many elements you would like to be generared each time.", 10000);
+  onSelect: async function() {
+    var cans = _GNPrompt("Please input how many elements you would like to be generared each time.", "10kelements.js is asking you...", 10000);
     if (!cans) { return }
-    if (cans == "skin"){settings.randomcount = 10000; settings.skineasteregg = true; settings.sandeasteregg = false; saveSettings(); alert("skin"); return}
-    if (cans == "sand"){settings.randomcount = 10000; settings.skineasteregg = false; settings.sandeasteregg = true; saveSettings(); alert("sand"); return}
-    if (cans > 100000){alert("You have put too big of a number! This would surely crash your browser or eat up all your RAM! Element count will remain unchanged."); return}
+    if (cans == "skin"){settings.randomcount = 10000; settings.skineasteregg = true; settings.sandeasteregg = false; saveSettings(); promptText("skin"); return}
+    if (cans == "sand"){settings.randomcount = 10000; settings.skineasteregg = false; settings.sandeasteregg = true; saveSettings(); promptText("sand"); return}
+    if (cans > 100000){promptText("You have put too big of a number! This would surely crash your browser or eat up all your RAM! Element count will remain unchanged."); return}
     if (cans < 1 && (parseInt(cans) > -1) ){alert("You have either put a decimal or zero. Why? Element count will remain unchanged."); return}
-    if (isNaN(parseInt(cans))){alert("Apparently your input isnt even a number. Try again. Element count will remain unchanged."); return}
+    if (isNaN(parseInt(cans))){promptText("Apparently your input isnt even a number. Try again. Element count will remain unchanged."); return}
     settings.randomcount = parseInt(cans)
     settings.skineasteregg = false;
     settings.sandeasteregg = false;
