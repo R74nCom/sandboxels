@@ -14,7 +14,7 @@ elements.change_count = {
   canPlace: false,
   behavior: behaviors.SELFDELETE,
   onSelect: async function() {
-    var cans = _GNPrompt("Please input how many elements you would like to be generared each time.", "10kelements.js is asking you...", 10000);
+    var cans = await _GNPrompt("Please input how many elements you would like to be generared each time.", "10kelements.js is asking you...", 10000);
     if (!cans) { return }
     if (cans == "skin"){settings.randomcount = 10000; settings.skineasteregg = true; settings.sandeasteregg = false; saveSettings(); promptText("skin"); return}
     if (cans == "sand"){settings.randomcount = 10000; settings.skineasteregg = false; settings.sandeasteregg = true; saveSettings(); promptText("sand"); return}

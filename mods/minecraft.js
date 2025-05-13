@@ -657,7 +657,7 @@ elements.sculk_wifi_receiver = {
         return pixel.channel || "unset"
     },
     onSelect: async function(){
-        let ans1 = _GNPrompt("What channel should this receiver be? Wont work if you do multiple while paused. (This is meant to be used in machinery!)", "minecraft.js is asking you...", channelVar||0)
+        let ans1 = await _GNPrompt("What channel should this receiver be? Wont work if you do multiple while paused. (This is meant to be used in machinery!)", "minecraft.js is asking you...", channelVar||0)
         channelVar = ans1
     },
     tick: function(pixel){
