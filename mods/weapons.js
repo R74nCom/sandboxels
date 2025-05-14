@@ -1,3 +1,20 @@
+async function _weaponsjsprompt(message, defaultValue = "") {
+
+
+    return new Promise(resolve => {
+
+
+        promptInput(message, (result) => {
+
+
+            resolve(result);
+
+
+        }, "weapons.js is asking you...", defaultValue);
+
+
+    })
+}
 elements.tsar_bomba = {
     color: "#524C41",
     behavior: [
@@ -873,14 +890,14 @@ createAtYvar = 0;
 create1var = "";
 elements.element_spawner = {
     color: "#71797E",
-    onSelect: function() {
-        var answer1 = prompt("Please input the x value.",(createAtXvar||undefined));
+    onSelect: async function() {
+        var answer1 = await _weaponsjsprompt("Please input the x value.",(createAtXvar||undefined));
         if (!answer1) {return}
         createAtXvar = parseInt(answer1);
-        var answer2 = prompt("Please input the y value.",(createAtYvar||undefined));
+        var answer2 = await _weaponsjsprompt("Please input the y value.",(createAtYvar||undefined));
         if (!answer2) {return}
         createAtYvar = parseInt(answer2);
-        var answer3 = prompt("Please input what element should spawn.",(create1var||undefined));
+        var answer3 = await _weaponsjsprompt("Please input what element should spawn.",(create1var||undefined));
         if (!answer3) {return}
         create1var = answer3;
     },
@@ -1252,4 +1269,18 @@ elements.right_uranium_bullet = {
     excludeRandom: true,
     cooldown: defaultCooldown,
     temp: 4000,
+},
+elements.cluster_nuke = {
+    color: "#323232",
+    ignore: "cluster_nuke",
+    category: "weapons",
+    behavior: behaviors.POWDER,
+    maxSize: 1,
+    tick: (pixel) => {
+        for (var y = 1; y < 50; y++) {
+            if (!isEmpty(pixel.x, pixel.y + y, false)) {
+                explodeAt(pixel.x,pixel.y,50,["dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","dirty_bomb","nuke",])
+            }
+        }
+    }
 }
