@@ -571,7 +571,7 @@ elements.bombs_for_throwing_at_you_left = {
     behavior: [
         "XX|EX:10>bomb|XX",
         "XX|XX|XX",
-        "M1|M1%10 AND EX:10>bomb|XX",
+        "M1 AND EX:10>bomb|M1%10 AND EX:10>bomb|XX",
     ],
     density: 1300,
     excludeRandom: true,
@@ -594,7 +594,7 @@ elements.bombs_for_throwing_at_you_right = {
     behavior: [
         "XX|EX:10>bomb|XX",
         "XX|XX|XX",
-        "XX|M1%10 AND EX:10>bomb|M1",
+        "XX|M1%10 AND EX:10>bomb|M1 AND EX:10>bomb",
     ],
     density: 1300,
     excludeRandom: true,
