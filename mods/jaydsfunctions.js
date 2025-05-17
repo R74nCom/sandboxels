@@ -1,4 +1,21 @@
 //jaydsfunctions
+async function _jaydfunctionjsprompt(message, defaultValue = "") {
+
+
+    return new Promise(resolve => {
+
+
+        promptInput(message, (result) => {
+
+
+            resolve(result);
+
+
+        }, "jaydfunction.js is asking you...", defaultValue);
+
+
+    })
+}
 erase1Var = 0;
 elements.selective_eraser = {
     color: ["#ffff00","#ffff00","#ffff00","#555555","#555555","#555555"],
@@ -8,8 +25,8 @@ elements.selective_eraser = {
             deletePixel(pixel.x, pixel.y);
         }
     },
-        onSelect: function() {
-        var answer1 = prompt("Please input what element should be erased.",(erase1Var||undefined));
+        onSelect: async function() {
+        var answer1 = await _jaydfunctionjsprompt("Please input what element should be erased.",(erase1Var||undefined));
         if (!answer1) { return }
 		erase1Var = answer1;
     }
@@ -23,8 +40,8 @@ elements.selective_exploder = {
 			changePixel(pixel, "explosion")
         }
     },
-        onSelect: function() {
-        var answer1 = prompt("Please input what element to explode.",(explode1Var||undefined));
+        onSelect: async function() {
+        var answer1 = await _jaydfunctionjsprompt("Please input what element to explode.",(explode1Var||undefined));
         if (!answer1) { return }
 		explode1Var = answer1;
     }
@@ -40,11 +57,11 @@ elements.converter_tool = {
 			changePixel(pixel, convert22Var)
         }
     },
-        onSelect: function() {
-        var answer1 = prompt("Please input what should element be converted.",(convert11Var||undefined));
+        onSelect: async function() {
+        var answer1 = await _jaydfunctionjsprompt("Please input what should element be converted.",(convert11Var||undefined));
         if (!answer1) { return }
 		convert11Var = answer1;
-        var answer2 = prompt("Please input what element to convert into.",(convert22Var||undefined));
+        var answer2 = await _jaydfunctionjsprompt("Please input what element to convert into.",(convert22Var||undefined));
         if (!answer2) { return }
 		convert22Var = answer2;
     }
@@ -81,8 +98,8 @@ elements.exclusive_eraser = {
             deletePixel(pixel.x, pixel.y);
         }
     },
-        onSelect: function() {
-        var answer1 = prompt("Please input what element shouldn't be erased.",(exclude1Var||undefined));
+        onSelect: async function() {
+        var answer1 = await _jaydfunctionjsprompt("Please input what element shouldn't be erased.",(exclude1Var||undefined));
         if (!answer1) { return }
 		exclude1Var = answer1;
     }
@@ -128,8 +145,8 @@ elements.selective_paint_tool = {
         delete pixel.origColor;
         }
     },
-    onSelect: function() {
-        var answer1 = prompt("Please input what element should be painted.",(paint1Var||undefined));
+    onSelect: async function() {
+        var answer1 = await _jaydfunctionjsprompt("Please input what element should be painted.",(paint1Var||undefined));
         if (!answer1) { return }
 		paint1Var = answer1;
     },
@@ -157,8 +174,8 @@ elements.exclusive_paint_tool = {
         delete pixel.origColor;
         }
     },
-    onSelect: function() {
-        var answer1 = prompt("Please input what element should be painted.",(paint2Var||undefined));
+    onSelect: async function() {
+        var answer1 = await _jaydfunctionjsprompt("Please input what element should be painted.",(paint2Var||undefined));
         if (!answer1) { return }
 		paint2Var = answer1;
     },
