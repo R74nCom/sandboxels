@@ -1,11 +1,11 @@
 # Sandboxels
-A falling sand simulation game.
+A falling sand simulation game with hundreds of elements, heat simulation, chemical reactions, fire, density, electricity, and more.
 
-Play at [Sandboxels.R74n.com](https://sandboxels.r74n.com/).
+Play for free at [Sandboxels.R74n.com](https://sandboxels.r74n.com/).
 
 Join the [Discord server](https://discord.com/invite/ejUc6YPQuS).
 
-![Landscape made in Sandboxels](https://raw.githubusercontent.com/R74nCom/sandboxels/main/icons/wallpaper.png)
+![Landscape made in Sandboxels](https://raw.githubusercontent.com/R74nCom/sandboxels/main/icons/cover-3840x1240px-text.png)
  
 # Controls
  * Left Click = Draw pixels
@@ -29,7 +29,7 @@ Join the [Discord server](https://discord.com/invite/ejUc6YPQuS).
 
 # Button Info
  * Pause           =  Pause/play the simulation
- * Step            =  Run a single frame
+ * Step (&gt;)     =  Run a single frame
  * Minus (-)       =  Decrease the cursor size
  * Plus  (+)       =  Increase the cursor size
  * Reset           =  Clears the entire simulation
@@ -37,5 +37,6 @@ Join the [Discord server](https://discord.com/invite/ejUc6YPQuS).
  * E               =  Select any element by name
  * TPS             =  Change how fast the simulation runs
  * Info            =  Open the element info screen
+ * Saves           =  Open the Save & Load menu
  * Mods            =  Open the Mod Manager
  * Settings        =  Open the settings menu
