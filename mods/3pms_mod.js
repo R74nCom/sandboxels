@@ -2,11 +2,16 @@
 // also made by 3pm
 
 // starting the initiation
+version = "0.0.1"
+subversion = "0.0.12"
+versionname = "Gullible On The Ceilling"
 
+console.log("3pms_mod.js " + version + " \"" + versionname + "\"")
 console.log("3pms_mod.js | Initiating...")
 
 // bypassing the tps limit
-/* nvm this is useless
+// nvm this is useless
+// whatever im keeping it
 
 setTimeout(() => {
     const tpsbutton = document.getElementById("tpsButton");
@@ -33,10 +38,8 @@ setTimeout(() => {
         focusGame();
     };
 }, 1000);
-*/
 
-// more settings ig (coming soon)
-// edit: why did i set this as coming soon
+// more settings
 
 function showMoreSettings() {
     showingMenu="moresettings"
@@ -46,7 +49,6 @@ function showMoreSettings() {
 }
 
 setTimeout(() => {
-    // make the html injecting easier, do le insert adjacent html
     const gamediv = document.getElementById("gameDiv")
     gamediv.insertAdjacentHTML("beforeend", `
         <div id="moresettingsParent" style="display: none" class="menuParent">
@@ -92,6 +94,20 @@ elements.calcium_oxide = { // most of this is taken off calcium
     hardness: 0.2,
     fireColor: "#ff6b21"
 }
+
+elements.eeraser = { // finally integrating it after over a year
+    color: "#FFFF00",
+	behavior: behaviors.WALL,
+    behaviorON: [
+        "DL|DL|DL",
+        "DL|DL|DL",
+        "DL|DL|DL",
+    ],
+    category: "machines",
+    insulate: elements.wire.insulate,
+    conduct: elements.wire.conduct,
+    noMix: elements.wire.noMix
+};
 
 // stopping the initiation
 
