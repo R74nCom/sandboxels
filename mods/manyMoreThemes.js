@@ -14,9 +14,9 @@ dependOn("betterSettings.js", () => {
         const link = document.createElement("link");
         link.rel = "stylesheet";
         link.type = "text/css";
-        link.href = "./mods/stardust.css"; 
+        link.href = "https://jayd-rubies.github.io/assets/css/stardust.css"; 
         document.head.appendChild(link);  
-        document.body.style.backgroundImage = 'url("./mods/2025_05_16_0x5_Kleki.png")';
+        document.body.style.backgroundImage = 'url("https://jayd-rubies.github.io/assets/image/2025_05_16_0x5_Kleki.png")';
         document.body.style.backgroundSize = 'cover';
         window.addEventListener("load",function(){;
             document.querySelectorAll(".categoryButton").forEach(e => {
