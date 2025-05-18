@@ -3191,7 +3191,8 @@ elements.specific_piston_ray_emitter = {
     category: "machines",
     movable: false,
     onSelect: async function(){
-        var ans1 = await _nousersthingsprompt("Would you like this piston to pull or push?", "pull").toLowerCase();
+        var ans1 = await _nousersthingsprompt("Would you like this piston to pull or push?", "pull")
+        ans1 = ans1.toLowerCase();
         if (ans1 == "pull"){pullOrPush = 1}
         else if (ans1 == "push"){pullOrPush = 2}
         var ans2 = parseInt(await _nousersthingsprompt("How offset should the start of the push/pulling be?", "0"))
@@ -3981,7 +3982,7 @@ elements.mod_dectector = {
     },
     tick: (pixel) => {
         if (!pixel.mod){pixel.mod = machinemodName}
-        if (enabledMods.includes("mods/" + pixel.mod)){
+        if (loadedMods.includes(pixel.mod)){
             for (let i = 0; i < adjacentCoords.length; i++){
                 let x = adjacentCoords[i][0] + pixel.x;
                 let y = adjacentCoords[i][1] + pixel.y;
