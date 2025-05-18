@@ -1,17 +1,19 @@
-elements.mud_brick = {
-    color: "#8a6249",
-    colorPattern: textures.BRICK,
-    colorKey: {
-        "r": "#8a6249",
-        "w": "#634933"},
-    behavior: behaviors.WALL,
-    category: "solids",
-    state: "solid",
-    tempHigh: 1200,
-    stateHigh: "molten_dirt",
-    hardness: 0.33,
-    breakInto: "dirt"
-}
+// elements.mud_brick = {
+//     color: "#8a6249",
+//     colorPattern: textures.BRICK,
+//     colorKey: {
+//         "l": "#986c51",
+//         "r": "#8a6249",
+//         "d": "#7f5943",
+//         "w": "#634933"},
+//     behavior: behaviors.WALL,
+//     category: "solids",
+//     state: "solid",
+//     tempHigh: 1200,
+//     stateHigh: "molten_dirt",
+//     hardness: 0.33,
+//     breakInto: "dirt"
+// }
 
 var materials = ["brick","concrete","wood","glass","steel"];
 
@@ -114,4 +116,39 @@ worldgentypes.city = {
         // ["bird", 0.025, 10],
     ],
     baseHeight: 0.25
+}
+
+
+currentBuildingElement = "wood";
+
+function buildSelectHandler(r) {
+    if (!r) { return; }
+    e = r.replace(/ /g, "_");
+    es = mostSimilarElement(e);
+    if (es) {
+        currentBuildingElement = es;
+        logMessage("Element \"" + e + "\" selected");
+    }
+    else {
+        currentBuildingElement = "wood";
+        logMessage("Element \"" + e + "\" not found");
+        selectElement(null);
+    }
+}
+
+elements.slab = {
+    color: "#888888",
+    onSelect: () => {
+        promptInput("Which element should the slab be?", buildSelectHandler, "Select Material")
+    },
+    onPlace: (pixel) => {
+        pixel.mat = currentBuildingElement;
+    },
+    renderer: (pixel,ctx) => {
+        let color = elements[pixel.mat].color;
+        if (Array.isArray(color)) color = color[0];
+        if (color) { ctx.fillStyle = color; }
+        ctx.fillRect(canvasCoord(pixel.x), canvasCoord(pixel.y+0.5), pixelSize, pixelSize/2);
+    },
+    category: "solids"
 }

@@ -1,4 +1,11 @@
 // Gallium is the best element
+async function _nousersthingsprompt(message, defaultValue = "") { // thanks to ggod for updated prompt function
+    return new Promise(resolve => {
+        promptInput(message, (result) => {
+            resolve(result);
+        }, "nousersthings.js is asking you...", defaultValue);
+    })
+}
 behaviors.RADSOLID = [
     "XX|CR:radiation%1|XX",
     "CR:radiation%1|XX|CR:radiation%1",
@@ -315,7 +322,7 @@ elements.destroyable_pipe = {
                 var y = pixel.y+coord[1];
                 if (isEmpty(x,y)) {
                     createPixel("brick",x,y);
-                    pixelMap[x][y].color = pixelColorPick(pixel,"#808080");
+                    pixelMap[x][y].color = pixelColorPick(pixel,"#586879");
                 }
             }
             pixel.stage = 1;
@@ -358,14 +365,14 @@ elements.destroyable_pipe = {
                 var y = pixel.y+coord[1];
                 if (!isEmpty(x,y,true)) {
                     var newPixel = pixelMap[x][y];
-                    if (newPixel.element === "destroyable_pipe" || newPixel.element === "bridge_pipe") {
+                    if (newPixel.element === "destroyable_pipe" || newPixel.element === "bridge_pipe" || newPixel.element === "pipe_transmitter") {
                         var nextStage;
                         switch (pixel.stage) {
                             case 2: nextStage = 4; break; //green
                             case 3: nextStage = 2; break; //red
                             case 4: nextStage = 3; break; //blue
                         }
-                        if (pixel.con && !newPixel.con && newPixel.stage === nextStage) { //transfer to adjacent pipe
+                        if (pixel.con && !newPixel.con && (newPixel.stage === nextStage || newPixel.element === "pipe_transmitter")) { //transfer to adjacent pipe
                             newPixel.con = pixel.con;
                             newPixel.con.x = newPixel.x;
                             newPixel.con.y = newPixel.y;
@@ -625,8 +632,8 @@ elements.e_pipe = {
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
                 if (isEmpty(x,y)) {
-                    createPixel("brick",x,y);
-                    pixelMap[x][y].color = pixelColorPick(pixel,"#808080");
+                    createPixel("pipe_wall",x,y);
+                    pixelMap[x][y].color = pixelColorPick(pixel,"#586879");
                 }
             }
             pixel.stage = 1;
@@ -669,14 +676,14 @@ elements.e_pipe = {
                 var y = pixel.y+coord[1];
                 if (!isEmpty(x,y,true)) {
                     var newPixel = pixelMap[x][y];
-                    if (newPixel.element === "e_pipe" || newPixel.element === "bridge_pipe") {
+                    if (newPixel.element === "e_pipe" || newPixel.element === "bridge_pipe" || newPixel.element === "pipe_transmitter") {
                         var nextStage;
                         switch (pixel.stage) {
                             case 2: nextStage = 4; break; //green
                             case 3: nextStage = 2; break; //red
                             case 4: nextStage = 3; break; //blue
                         }
-                        if (pixel.con && !newPixel.con && newPixel.stage === nextStage && (pixel.charge || pixel.chargeCD)) { //transfer to adjacent pipe
+                        if (pixel.con && !newPixel.con && (newPixel.stage === nextStage || newPixel.element === "pipe_transmitter") && (pixel.charge || pixel.chargeCD)) { //transfer to adjacent pipe
                             newPixel.con = pixel.con;
                             newPixel.con.x = newPixel.x;
                             newPixel.con.y = newPixel.y;
@@ -744,7 +751,7 @@ elements.destroyable_e_pipe = {
                 var y = pixel.y+coord[1];
                 if (isEmpty(x,y)) {
                     createPixel("brick",x,y);
-                    pixelMap[x][y].color = pixelColorPick(pixel,"#808080");
+                    pixelMap[x][y].color = pixelColorPick(pixel,"#586879");
                 }
             }
             pixel.stage = 1;
@@ -787,14 +794,14 @@ elements.destroyable_e_pipe = {
                 var y = pixel.y+coord[1];
                 if (!isEmpty(x,y,true)) {
                     var newPixel = pixelMap[x][y];
-                    if (newPixel.element === "destroyable_e_pipe" || newPixel.element === "bridge_pipe") {
+                    if (newPixel.element === "destroyable_e_pipe" || newPixel.element === "bridge_pipe" || newPixel.element === "pipe_transmitter") {
                         var nextStage;
                         switch (pixel.stage) {
                             case 2: nextStage = 4; break; //green
                             case 3: nextStage = 2; break; //red
                             case 4: nextStage = 3; break; //blue
                         }
-                        if (pixel.con && !newPixel.con && newPixel.stage === nextStage && (pixel.charge || pixel.chargeCD)) { //transfer to adjacent pipe
+                        if (pixel.con && !newPixel.con && (newPixel.stage === nextStage || newPixel.element === "pipe_transmitter") && (pixel.charge || pixel.chargeCD)) { //transfer to adjacent pipe
                             newPixel.con = pixel.con;
                             newPixel.con.x = newPixel.x;
                             newPixel.con.y = newPixel.y;
@@ -854,11 +861,9 @@ elements.destroyable_e_pipe = {
 currentChannel = 0;
 elements.channel_pipe = {
     color: "#414c4f",
-    onSelect: function() {
-		var answer3 = prompt("Please input the desired channel of this pipe strand. Warning: It wont work if you do multiple strand types while paused.",(currentChannel||undefined));
-        if (!answer3) { return }
-		currentChannel = answer3;
-        logMessage("Draw a pipe, wait for walls to appear, then erase the exit hole. Use the prop tool to set channel to a number before erasing the holes.");
+    onSelect: async function() {
+        currentChannel = await _nousersthingsprompt("Please input the desired channel of this pipe strand. Warning: It wont work if you do multiple strand types while paused.", (currentChannel||undefined))
+		logMessage("Draw a pipe, wait for walls to appear, then erase the exit hole. Channel pipes only give pixels to channel pipes with the same channel.");
     },
     tick: function(pixel) {
 		if (pixel.start===pixelTicks){
@@ -870,8 +875,8 @@ elements.channel_pipe = {
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
                 if (isEmpty(x,y)) {
-                    createPixel("brick",x,y);
-                    pixelMap[x][y].color = pixelColorPick(pixel,"#808080");
+                    createPixel("pipe_wall",x,y);
+                    pixelMap[x][y].color = pixelColorPick(pixel,"#586879");
                 }
             }
             pixel.stage = 1;
@@ -914,14 +919,14 @@ elements.channel_pipe = {
                 var y = pixel.y+coord[1];
                 if (!isEmpty(x,y,true)) {
                     var newPixel = pixelMap[x][y];
-                    if ((newPixel.element === "channel_pipe" && pixelMap[x][y].channel == pixel.channel || newPixel.element === "bridge_pipe")) {
+                    if ((newPixel.element === "channel_pipe" && pixelMap[x][y].channel == pixel.channel || newPixel.element === "bridge_pipe" || (newPixel.element === "pipe_transmitter" && pixelMap[x][y].channel == pixel.channel))) {
                         var nextStage;
                         switch (pixel.stage) {
                             case 2: nextStage = 4; break; //green
                             case 3: nextStage = 2; break; //red
                             case 4: nextStage = 3; break; //blue
                         }
-                        if (pixel.con && !newPixel.con && newPixel.stage === nextStage) { //transfer to adjacent pipe
+                        if (pixel.con && !newPixel.con && (newPixel.stage === nextStage || newPixel.element === "pipe_transmitter")) { //transfer to adjacent pipe
                             newPixel.con = pixel.con;
                             newPixel.con.x = newPixel.x;
                             newPixel.con.y = newPixel.y;
@@ -977,11 +982,9 @@ elements.channel_pipe = {
 },
 elements.destroyable_channel_pipe = {
     color: "#414c4f",
-      onSelect: function() {
-		var answer3 = prompt("Please input the desired channel of this pipe strand. Warning: It wont work if you do multiple strand types while paused.",(currentChannel||undefined));
-        if (!answer3) { return }
-		currentChannel = answer3;
-        logMessage("Draw a pipe, wait for walls to appear, then erase the exit hole. Use the prop tool to set channel to a number before erasing the holes.");
+      onSelect: async function() {
+        currentChannel = await _nousersthingsprompt("Please input the desired channel of this pipe strand. Warning: It wont work if you do multiple strand types while paused.", (currentChannel||undefined))
+		logMessage("Draw a pipe, wait for walls to appear, then erase the exit hole. Use the prop tool to set channel to a number before erasing the holes.");
     },
     tick: function(pixel) {
 		if (pixel.start === pixelTicks){
@@ -994,7 +997,7 @@ elements.destroyable_channel_pipe = {
                 var y = pixel.y+coord[1];
                 if (isEmpty(x,y)) {
                     createPixel("brick",x,y);
-                    pixelMap[x][y].color = pixelColorPick(pixel,"#808080");
+                    pixelMap[x][y].color = pixelColorPick(pixel,"#586879");
                 }
             }
             pixel.stage = 1;
@@ -1037,14 +1040,14 @@ elements.destroyable_channel_pipe = {
                 var y = pixel.y+coord[1];
                 if (!isEmpty(x,y,true)) {
                     var newPixel = pixelMap[x][y];
-                    if ((newPixel.element === "destroyable_channel_pipe" && pixelMap[x][y].channel == pixel.channel) || newPixel.element === "bridge_pipe") {
+                    if ((newPixel.element === "destroyable_channel_pipe" && pixelMap[x][y].channel == pixel.channel) || newPixel.element === "bridge_pipe" || (newPixel.element === "pipe_transmitter" && pixelMap[x][y].channel == pixel.channel)) {
                         var nextStage;
                         switch (pixel.stage) {
                             case 2: nextStage = 4; break; //green
                             case 3: nextStage = 2; break; //red
                             case 4: nextStage = 3; break; //blue
                         }
-                        if (pixel.con && !newPixel.con && newPixel.stage === nextStage) { //transfer to adjacent pipe
+                        if (pixel.con && !newPixel.con && (newPixel.stage === nextStage || newPixel.element === "pipe_transmitter")) { //transfer to adjacent pipe
                             newPixel.con = pixel.con;
                             newPixel.con.x = newPixel.x;
                             newPixel.con.y = newPixel.y;
@@ -1097,7 +1100,7 @@ elements.destroyable_channel_pipe = {
     movable: false,
     canContain: true,
 },
-listPipes = ["pipe", "destroyable_pipe", "destroyable_e_pipe","channel_pipe","destroyable_channel_pipe","bridge_pipe","e_pipe"];
+listPipes = ["pipe", "destroyable_pipe", "destroyable_e_pipe","channel_pipe","destroyable_channel_pipe","bridge_pipe","e_pipe","pipe_transmitter"];
 elements.bridge_pipe = {
     color: "#414c4f",
     onSelect: function() {
@@ -1110,8 +1113,8 @@ elements.bridge_pipe = {
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
                 if (isEmpty(x,y)) {
-                    createPixel("brick",x,y);
-                    pixelMap[x][y].color = pixelColorPick(pixel,"#808080");
+                    createPixel("pipe_wall",x,y);
+                    pixelMap[x][y].color = pixelColorPick(pixel,"#586879");
                 }
             }
             pixel.stage = 1;
@@ -1161,7 +1164,7 @@ elements.bridge_pipe = {
                             case 3: nextStage = 2; break; //red
                             case 4: nextStage = 3; break; //blue
                         }
-                        if (pixel.con && !newPixel.con && newPixel.stage === nextStage) { //transfer to adjacent pipe
+                        if (pixel.con && !newPixel.con && (newPixel.stage === nextStage || newPixel.element === "pipe_transmitter")) { //transfer to adjacent pipe
                             newPixel.con = pixel.con;
                             newPixel.con.x = newPixel.x;
                             newPixel.con.y = newPixel.y;
@@ -1215,15 +1218,17 @@ elements.bridge_pipe = {
     canContain: true,
     insulate: true,
 },
-elements.pipe.tick = function(pixel) {
+    elements.pipe.tick = function(pixel) {
         if (!pixel.stage && pixelTicks-pixel.start > 60) {
             for (var i = 0; i < squareCoords.length; i++) {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
+                if (!isEmpty(x,y,true) && elements[pixelMap[x][y].element].movable && newPixel.element != "ray") {
+                    deletePixel(x,y)
+                }
                 if (isEmpty(x,y)) {
                     createPixel("pipe_wall",x,y);
-                    pixelMap[x][y].color = pixelColorPick(pixel,"#808080");
                 }
             }
             pixel.stage = 1;
@@ -1266,14 +1271,14 @@ elements.pipe.tick = function(pixel) {
                 var y = pixel.y+coord[1];
                 if (!isEmpty(x,y,true)) {
                     var newPixel = pixelMap[x][y];
-                    if (newPixel.element === "pipe" || newPixel.element === "bridge_pipe") {
+                    if (newPixel.element === "pipe" || newPixel.element === "bridge_pipe" || newPixel.element === "pipe_transmitter") {
                         var nextStage;
                         switch (pixel.stage) {
                             case 2: nextStage = 4; break; //green
                             case 3: nextStage = 2; break; //red
                             case 4: nextStage = 3; break; //blue
                         }
-                        if (pixel.con && !newPixel.con && newPixel.stage === nextStage) { //transfer to adjacent pipe
+                        if (pixel.con && !newPixel.con && (newPixel.stage === nextStage || newPixel.element === "pipe_transmitter")) { //transfer to adjacent pipe
                             newPixel.con = pixel.con;
                             newPixel.con.x = newPixel.x;
                             newPixel.con.y = newPixel.y;
@@ -1321,13 +1326,13 @@ elements.pipe.tick = function(pixel) {
             }
         }
         doDefaults(pixel);
-    },
+    }
     elements.pipe.insulate = true,
 	filterTypeVar = 0;
 elements.filter = {
     color: "#599fc2",
-    onSelect: function() {
-        var answer4 = prompt("Please input the desired element of this filter. It will not work if you do multiple filter types while paused.",(filterTypeVar||undefined));
+    onSelect: async function() {
+        var answer4 = await _nousersthingsprompt("Please input the desired element of this filter. It will not work if you do multiple filter types while paused.",(filterTypeVar||undefined));
         if (!answer4) { return }
 		filterTypeVar = answer4;
     },
@@ -1557,11 +1562,11 @@ elements.converter = {
                 }
             }
 	},
-	onSelect: function() {
-        var answer5 = prompt("Please input what type of element should be converted. Write \"all\" to include everything.",(converter1Var||undefined));
+	onSelect: async function() {
+        var answer5 = await _nousersthingsprompt("Please input what type of element should be converted. Write \"all\" to include everything.",(converter1Var||undefined));
         if (!answer5) { return }
 		converter1Var = answer5;
-		var answer6 = prompt("Please input what it should turn into.",(converter2Var||undefined));
+		var answer6 = await _nousersthingsprompt("Please input what it should turn into.",(converter2Var||undefined));
         if (!answer6) { return }
 		converter2Var = answer6;
     },
@@ -1575,8 +1580,6 @@ elements.blackhole_storage = {
 	tick: function(pixel) {
 		if (!pixel.bhcontents){
 			pixel.bhcontents = [];
-		} else {
-			pixel.decidedcontent = pixel.bhcontents[Math.floor(Math.random()*pixel.bhcontents.length)];
 		}
 		 for (var i = 0; i < squareCoords.length; i++) {
                 var coord = squareCoords[i];
@@ -1588,15 +1591,15 @@ elements.blackhole_storage = {
 						pixel.bhcontents.push(otherPixel);
 						deletePixel(otherPixel.x, otherPixel.y);
 					}
-                } else if (pixel.charge && isEmpty(x,y) && pixel.decidedcontent){
-					var otherPixel = pixelMap[x][y];
-					pixel.decidedcontent.x = x;
-					pixel.decidedcontent.y = y;
-					delete pixel.decidedcontent.del;
-					otherPixel = pixel.decidedcontent;
-					currentPixels.push(pixel.decidedcontent);
-					pixel.bhcontents.splice(pixel.bhcontents.indexOf(pixel.decidedcontent), 1);
-					pixel.decidedcontent = pixel.bhcontents[Math.floor(Math.random()*pixel.bhcontents.length)];
+                } else if (pixel.charge && isEmpty(x,y) && pixel.bhcontents.length){
+					let randomindex = Math.floor(Math.random()*pixel.bhcontents.length);
+                    let releasedPixel = pixel.bhcontents[randomindex]
+                    pixel.bhcontents.splice(randomindex, 1)
+                    delete releasedPixel.del
+                    releasedPixel.x = x
+                    releasedPixel.y = y
+                    pixelMap[x][y] = releasedPixel
+                    currentPixels.push(releasedPixel)
 				}
             }
 	},
@@ -2249,6 +2252,21 @@ elements.gas_filter = {
 function weightedAverage(num1, num2, weight){
     return ((weight * num1)+((1-weight)*num2))
 }
+function getPixelColor(pixel){
+    let rgb2;
+    if(pixel.color.startsWith("#")) {
+        rgb2 = pixel.color.match(/[0-9A-F]{2}/ig).map(x => parseInt(x,16));
+    } else if(pixel.color.startsWith("hsl")) {
+        var hsl = pixel.color.match(/\d+/g);
+        hsl[0] = (hsl[0] / 360) % 360; if(hsl[0] < 0) { hsl[0]++ };
+        hsl[1] = Math.max(Math.min(hsl[1] / 100,1),0);
+        hsl[2] = Math.max(Math.min(hsl[2] / 100,1),0);
+        rgb2 = HSLtoRGB(hsl)
+    } else {
+        rgb2 = pixel.color.match(/\d+/g);
+    }
+    return rgb2
+}
 elements.dyer = {
     customColor: true,
     color: ["#ff0000","#ff8800","#ffff00","#00ff00","#00ffff","#0000ff","#ff00ff"],
@@ -2265,7 +2283,7 @@ elements.dyer = {
                 if (!(pixelMap[x][y].element == "dyer")){
                     var newPixel = pixelMap[x][y];
                     var rgb1 = pixel.color.match(/\d+/g);
-                    var rgb2 = newPixel.color.match(/\d+/g);
+                    var rgb2 = getPixelColor(newPixel)
                     // average the colors
                     var rgb = [
                         weightedAverage(parseInt(rgb1[0]), parseInt(rgb2[0]), 0.2),
@@ -2287,8 +2305,8 @@ elements.element_filler = {
     excludeRandom: true,
     state: "solid",
     movable: "false",
-    onSelect: function() {
-        var answer6 = prompt("Please input the desired element of this filler. It will not work if you do multiple filler types while paused.",(elemfillerVar||undefined));
+    onSelect: async function() {
+        var answer6 = await _nousersthingsprompt("Please input the desired element of this filler. It will not work if you do multiple filler types while paused.",(elemfillerVar||undefined));
         if (!answer6) { return }
 		elemfillerVar = mostSimilarElement(answer6);
     },
@@ -2320,8 +2338,8 @@ elements.inner_outliner = {
     color: elements.filler.color,
     category: elements.filler.category,
     excludeRandom: true,
-    onSelect: function() {
-        var answerot = prompt("Please input the desired element of this outliner. It will not work if you do multiple outliner types while paused.",(outlinerVar||undefined));
+    onSelect: async function() {
+        var answerot = await _nousersthingsprompt("Please input the desired element of this outliner. It will not work if you do multiple outliner types while paused.",(outlinerVar||undefined));
         if (!answerot) { return }
 		outlinerVar = mostSimilarElement(answerot);
     },
@@ -2510,8 +2528,7 @@ elements.solid_diamond = {
         "l": "#A2DBF2",
         "S": "#BDF8FF"
     },
-    tempHigh: elements.diamond.tempHigh,
-    stateHigh: elements.diamond.stateHigh,
+    reactions: elements.diamond.reactions,
     state: "solid",
     density: elements.diamond.density,
     hardness: elements.diamond.hardness,
@@ -2552,8 +2569,8 @@ elements.selective_void = {
     excludeRandom: true,
     state: "solid",
     movable: "false",
-    onSelect: function() {
-        var selvoidans = prompt("Please input the desired element of this void. It will not work if you do multiple void types while paused.",(selvoid||undefined));
+    onSelect: async function() {
+        var selvoidans = await _nousersthingsprompt("Please input the desired element of this void. It will not work if you do multiple void types while paused.",(selvoid||undefined));
         if (!selvoidans) { return }
 		selvoid = mostSimilarElement(selvoidans);
     },
@@ -2580,8 +2597,8 @@ elements.scuffed_circle_brush = {
     excludeRandom: true,
     state: "solid",
     movable: false,
-    onSelect: function(){
-		var answerE = prompt("Element of the brush.",(circleElem||undefined));
+    onSelect: async function(){
+		var answerE = await _nousersthingsprompt("Element of the brush.",(circleElem||undefined));
         if (!answerE) { return }
 		circleElem = mostSimilarElement(answerE);
     },
@@ -2602,8 +2619,8 @@ elements.scuffed_triangle_brush = {
     excludeRandom: true,
     state: "solid",
     movable: false,
-    onSelect: function(){
-		var answerE = prompt("Element of the brush.",(circleElem||undefined));
+    onSelect: async function(){
+		var answerE = await _nousersthingsprompt("Element of the brush.",(circleElem||undefined));
         if (!answerE) { return }
 		circleElem = mostSimilarElement(answerE);
     },
@@ -2629,6 +2646,7 @@ elements.spacedust_cola = {
     state: "liquid",
     reactions: {head: {elem1: null, chance: 0.02}},
     density: elements.tungsten.density,
+    isFood: true,
 }
 elements.spacedust = {
     color: ["#090033", "#0a0027", "#0a001b", "#0b000f", "#090033", "#0a0027", "#0a001b", "#0b000f", "#090033", "#0a0027", "#0a001b", "#0b000f", "#090033", "#0a0027", "#0a001b", "#0b000f", "#090033", "#0a0027", "#0a001b", "#0b000f", "#090033", "#0a0027", "#0a001b", "#0b000f", "#ffffff"],
@@ -2651,8 +2669,8 @@ elements.grid_brush = {
     behavior: behaviors.WALL,
     category: "special",
     movable: false,
-    onSelect: function() {
-        var gridans = prompt("Please input the desired element of this grid brush",(gridElem||undefined));
+    onSelect: async function() {
+        var gridans = await _nousersthingsprompt("Please input the desired element of this grid brush",(gridElem||undefined));
         if (!gridans) { return }
 		gridElem = mostSimilarElement(gridans);
     },
@@ -2676,33 +2694,38 @@ elements.healing_serum = {
     },
     tick: function(pixel){
         if (pixel.waitReduce){pixel.wait -= 1}
-        if (pixel.wait == 0){
-            pixel.elementsSeen = {}
-        }
-        for (var i = 0; i < adjacentCoords.length; i++) {
-            var coord = adjacentCoords[i];
-            var x = pixel.x+coord[0];
-            var y = pixel.y+coord[1];
-            if (!isEmpty(x,y, true)){
-                if (!pixel.waitReduce){
-                    pixel.waitReduce = true
-                }
-                if (pixel.wait == 0){
-                    if (!pixel.elementsSeen[pixelMap[x][y].element] && !(["healing_serum", "bless", "experience"].includes(pixelMap[x][y].element))){
-                        pixel.elementsSeen[pixelMap[x][y].element] = 1
-                    } else if (!(["healing_serum", "bless", "experience"].includes(pixelMap[x][y].element))) {
-                        pixel.elementsSeen[pixelMap[x][y].element] += 1
+        if (!pixel.decidedPixel){
+            for (var i = 0; i < squareCoords.length; i++) {
+                var coord = squareCoords[i];
+                var x = pixel.x+coord[0];
+                var y = pixel.y+coord[1];
+                if (!isEmpty(x, y, true)){
+                    let otherPixel = pixelMap[x][y]
+                    if (otherPixel.element != "healing_serum"){
+                        pixel.decidedPixel = otherPixel
+                        pixel.waitReduce = true
+                        break;
                     }
                 }
             }
-            if (pixel.wait == 0){
-                if (Object.keys(pixel.elementsSeen).length == 0){
-                    deletePixel(pixel.x, pixel.y)
-                    return;
-                } else{
-                    changePixel(pixel, Object.keys(pixel.elementsSeen).reduce((a, b) => pixel.elementsSeen[a] > pixel.elementsSeen[b] ? a : b))
-                }
-            }
+        }
+        if (pixel.wait <= 0){
+            const { x, y, ...remainingProperties } = pixel.decidedPixel;
+            Object.assign(pixel, remainingProperties);
+            delete pixel.decidedPixel
+            return;
+        }
+    },
+    renderer: function(pixel, ctx){
+        // interpolate pixel color and decidedpixel's color (if it has one!)
+        if (pixel.decidedPixel){
+            var color1 = pixel.color.match(/\d+/g);
+            var color2 = getPixelColor(pixel.decidedPixel)
+            var ratio = pixel.wait/15
+            drawSquare(ctx, `rgb(${color1[0]*ratio+color2[0]*(1-ratio)},${color1[1]*ratio+color2[1]*(1-ratio)},${color1[2]*ratio+color2[2]*(1-ratio)})`, pixel.x, pixel.y)
+        }
+        else{
+            drawSquare(ctx, pixel.color, pixel.x, pixel.y)
         }
     }
 }
@@ -2713,15 +2736,15 @@ elements.ray_emitter = {
     behavior: behaviors.WALL,
     category: "machines",
     movable: false,
-    onSelect: function(pixel){
-        var rayans = prompt("Please input the desired element of this ray emitter",(rayElement||undefined));
+    onSelect: async function(pixel){
+        var rayans = await _nousersthingsprompt("Please input the desired element of this ray emitter",(rayElement||undefined));
         if (!rayans) { return }
 		rayElement = mostSimilarElement(rayans);
-        var rayans2 = prompt("Should the ray be stopped by walls? Write true or false.",(rayStoppedByWalls||false));
+        var rayans2 = await _nousersthingsprompt("Should the ray be stopped by walls? Write true or false.",(rayStoppedByWalls||false));
         if (rayans2 == "false"){rayStoppedByWalls = false} else {rayStoppedByWalls = true}
     },
     hoverStat: function(pixel){
-        return (pixel.rayElement.toUpperCase() || "unset") + ", " + (pixel.rayStoppedByWalls.toString().toUpperCase() || "unset")
+        return (pixel.rayElement|| "unset").toUpperCase()  + ", " + (pixel.rayStoppedByWalls || "unset").toString().toUpperCase()
     },
     tick: function(pixel){
         if (pixelTicks == pixel.start){
@@ -2784,7 +2807,7 @@ elements.ray = {
     movable: true,
     category: "special",
     hoverStat: function(pixel){
-        return pixel.life.toString() || "unset"
+        return (pixel.life || "unset").toString()
     },
     properties: {
         life: 10,
@@ -2829,37 +2852,37 @@ elements.specific_ray_emitter = {
     behavior: behaviors.WALL,
     category: "machines",
     movable: false,
-    onSelect: function(pixel){
-        var rayans = prompt("Please input the desired element of this ray emitter",(rayElement||undefined));
+    onSelect: async function(pixel){
+        var rayans = await _nousersthingsprompt("Please input the desired element of this ray emitter",(rayElement||undefined));
         if (!rayans) { return }
 		rayElement = mostSimilarElement(rayans);
         if (rayElement != "ray"){rainbowMode = false}
-        var rayans2 = prompt("Should the ray be stopped by walls? Write true or false.",(rayStoppedByWalls||false));
+        var rayans2 = await _nousersthingsprompt("Should the ray be stopped by walls? Write true or false.",(rayStoppedByWalls||false));
         if (rayans2 == "false"){rayStoppedByWalls = false} else {rayStoppedByWalls = true}
-        var rayans3 = prompt("How much should the beginning of the ray be offset from the emitter?", (specificRayStart||0));
+        var rayans3 = await _nousersthingsprompt("How much should the beginning of the ray be offset from the emitter?", (specificRayStart||0));
         if (!rayans3) { return }
         specificRayStart = rayans3
-        var rayans4 = prompt("How much should the end of the ray be offset from the emitter?", (specificRayEnd||0));
+        var rayans4 = await _nousersthingsprompt("How much should the end of the ray be offset from the emitter?", (specificRayEnd||0));
         if (!rayans4) { return }
         specificRayEnd = rayans4
-        var rayans5 = prompt("What angle should the ray be emitted at? Type anything that isnt a number to use default angle logic.", (specificRayAngle||0));
+        var rayans5 = await _nousersthingsprompt("What angle should the ray be emitted at? Type anything that isnt a number to use default angle logic.", (specificRayAngle||0));
         if (!rayans5) { return }
         specificRayAngle = rayans5
         if (isNaN(parseFloat(specificRayAngle))){
             specificRayAngle = "nah"
         }
-        var rayans6 = prompt("What element should the ray stop at?", (stopAtElement||"wall"));
+        var rayans6 = await _nousersthingsprompt("What element should the ray stop at?", (stopAtElement||"wall"));
         if (!rayans6) { return }
         stopAtElement = mostSimilarElement(rayans6)
         let rayans7
-        if (rayans == "ray"){ rayans7 = prompt("How long should the ray stay on screen in ticks?", (rayLife||10));
+        if (rayans == "ray"){ rayans7 = await _nousersthingsprompt("How long should the ray stay on screen in ticks?", (rayLife||10));
         if (!rayans7) { return }
         if (isNaN(parseFloat(rayans7))){
             rayLife = 10
         } else {
             rayLife = rayans7
         }
-        var rayans8 = prompt("Would you like rainbow mode to be enabled? Type yes or no.", (rainbowMode||"no"));
+        var rayans8 = await _nousersthingsprompt("Would you like rainbow mode to be enabled? Type yes or no.", (rainbowMode||"no"));
         if (rayans8 == "yes"){rainbowMode = true} else {rainbowMode = false}
         }
     },
@@ -2958,8 +2981,8 @@ elements.run_some_code = {
     category: "tools",
     canPlace: false,
     tool: function(){},
-    onSelect: function(){
-        let code = prompt("Enter code to run")
+    onSelect: async function(){
+        let code = await _nousersthingsprompt("Enter code to run")
         if (code){
             eval(code)
         }
@@ -3062,13 +3085,22 @@ elements.ray_emitter.desc = "Emits a ray of the specified element in the opposit
 elements.specific_ray_emitter.desc = "Emits a ray of the specified element in a specific direction and a specific length."
 elements.blackhole_storage.desc = "Stores elements inside of itself. Can be released by shocking it."
 let pullOrPush = 1
+elements.anchor = {
+    color: "#020c20",
+    category: "machines",
+    behavior: behaviors.WALL,
+    desc: "Anchor; unpushable and unpullable by pistons.",
+    onSelect: function(){
+        logMessage("Unpushable and unpullable by pistons.")
+    }
+}
 elements.piston_ray_emitter = {
     color: "#143b5f",
     behavior: behaviors.WALL,
     category: "machines",
     movable: false,
-    onSelect: function(){
-        var ans1 = prompt("Would you like this piston to pull or push?", "pull").toLowerCase();
+    onSelect: async function(){
+        var ans1 = await _nousersthingsprompt("Would you like this piston to pull or push?", "pull").toLowerCase();
         if (ans1 == "pull"){pullOrPush = 1}
         else if (ans1 == "push"){pullOrPush = 2}
     },
@@ -3104,7 +3136,9 @@ elements.piston_ray_emitter = {
                         var lx = lcoord[0];
                         var ly = lcoord[1];
                         if (!isEmpty(lx, ly, true)){
-                            tryMove(pixelMap[lx][ly], pCoord[0], pCoord[1], null, true)
+                            if (!(pixelMap[lx][ly].element == "anchor")){
+                                tryMove(pixelMap[lx][ly], pCoord[0], pCoord[1], null, true)
+                            }
                         }
                         pCoord[0] = lx;
                         pCoord[1] = ly;
@@ -3143,7 +3177,9 @@ function pistonEmit(pixel, i){
                         var lx = lcoord[0];
                         var ly = lcoord[1];
                         if (!isEmpty(lx, ly, true)){
-                            tryMove(pixelMap[lx][ly], pCoord[0], pCoord[1], null, true)
+                            if (!(pixelMap[lx][ly].element == "anchor")){
+                                tryMove(pixelMap[lx][ly], pCoord[0], pCoord[1], null, true)
+                            }
                         }
                         pCoord[0] = lx;
                         pCoord[1] = ly;
@@ -3154,22 +3190,22 @@ elements.specific_piston_ray_emitter = {
     behavior: behaviors.WALL,
     category: "machines",
     movable: false,
-    onSelect: function(){
-        var ans1 = prompt("Would you like this piston to pull or push?", "pull").toLowerCase();
+    onSelect: async function(){
+        var ans1 = await _nousersthingsprompt("Would you like this piston to pull or push?", "pull").toLowerCase();
         if (ans1 == "pull"){pullOrPush = 1}
         else if (ans1 == "push"){pullOrPush = 2}
-        var ans2 = parseInt(prompt("How offset should the start of the push/pulling be?", "0"))
+        var ans2 = parseInt(await _nousersthingsprompt("How offset should the start of the push/pulling be?", "0"))
         pistonStart = ans2
-        var ans3 = parseInt(prompt("How offset should the end of the push/pulling be?", "20"))
+        var ans3 = parseInt(await _nousersthingsprompt("How offset should the end of the push/pulling be?", "20"))
         pistonEnd = ans3
-        var ans4 = parseInt(prompt("How far should it push the pixels each charge?", "1"))
+        var ans4 = parseInt(await _nousersthingsprompt("How far should it push the pixels each charge?", "1"))
         pistonDistance = ans4
-        var ans5 = parseInt(prompt("How many ticks should it wait to be charged again?", "6"))
+        var ans5 = parseInt(await _nousersthingsprompt("How many ticks should it wait to be charged again?", "6"))
         pistonCooldown = ans5
-        var ans6 = parseInt(prompt("How many times should it repeat the push/pulling?", "1"))
+        var ans6 = parseInt(await _nousersthingsprompt("How many times should it repeat the push/pulling?", "1"))
         pistonRepeat = ans6
         if (pistonRepeat != 1){
-            var ans7 = parseInt(prompt("How many ticks should it wait between repeats?", "1"))
+            var ans7 = parseInt(await _nousersthingsprompt("How many ticks should it wait between repeats?", "1"))
             pistonRepeatCooldown = ans7
         }
     },
@@ -3435,8 +3471,8 @@ elements.lattice_brush = {
     color: elements.grid_brush.color,
     behavior: behaviors.WALL,
     category: "special",
-    onSelect: function(){
-        let ans1 = prompt("Enter the element you want to use for the lattice", latticeElem||"wood")
+    onSelect: async function(){
+        let ans1 = await _nousersthingsprompt("Enter the element you want to use for the lattice", latticeElem||"wood")
         latticeElem = mostSimilarElement(ans1)
     },
     tick: function(pixel){
@@ -3457,8 +3493,8 @@ elements.spaced_lattice_brush = {
     color: elements.grid_brush.color,
     behavior: behaviors.WALL,
     category: "special",
-    onSelect: function(){
-        let ans1 = prompt("Enter the element you want to use for the lattice", latticeElem||"wood")
+    onSelect: async function(){
+        let ans1 = await _nousersthingsprompt("Enter the element you want to use for the lattice", latticeElem||"wood")
         latticeElem = mostSimilarElement(ans1)
     },
     tick: function(pixel){
@@ -3483,8 +3519,8 @@ elements.outer_outliner = {
     color: elements.inner_outliner.color,
     behavior: behaviors.WALL,
     category: "special",
-    onSelect: function(){
-        let ans1 = prompt("Enter the element you want to use for the outliner. The outliner will ignore pixels of this type.", outlinerElem||"wood")
+    onSelect: async function(){
+        let ans1 = await _nousersthingsprompt("Enter the element you want to use for the outliner. The outliner will ignore pixels of this type.", outlinerElem||"wood")
         outlinerElem = mostSimilarElement(ans1)
     },
     tick: function(pixel){
@@ -3589,8 +3625,8 @@ elements.copycat_filler = {
     color: elements.random.color,
     behavior:behaviors.WALL,
     category: "special",
-    onSelect: function(){
-        let ans1 = prompt("Enter the element you want to use for the copycat filler", copycatfillerElem||"sand")
+    onSelect: async function(){
+        let ans1 = await _nousersthingsprompt("Enter the element you want to use for the copycat filler", copycatfillerElem||"sand")
         copycatfillerElem = mostSimilarElement(ans1)
     },
     tick: function(pixel){
@@ -3759,3 +3795,220 @@ elements.hotter_sensor = {
         }
     }
 }
+let pipe_transmitter_channelVar = 0;
+elements.pipe_transmitter = {
+    color: "#6e6250",
+    category: "deprecated",
+    movable: false,
+    canContain: true,
+    insulate: true,
+    onSelect: async () => {
+        let newChannel = await _nousersthingsprompt("Enter the channel of this pipe transmitter. It will not work if you do multiple while paused.", pipe_transmitter_channelVar);
+        pipe_transmitter_channelVar = newChannel;
+    },
+    tick: (pixel) => {
+        if (!pixel.channel){
+            pixel.channel = pipe_transmitter_channelVar;
+        }
+        if (pixel.channel && pixel.con){
+            let valid = currentPixels.filter(pixel2 => 
+                pixel2.element == "pipe_receiver" && pixel2.channel === pixel.channel && !(pixel2.con)
+            )
+            if (valid.length){
+                console.log(valid)
+                shuffleArray(valid);
+                console.log(valid)
+                pixel.con.x = valid[0].x
+                pixel.con.y = valid[0].y
+                pixelMap[valid[0].x][valid[0].y].con = pixel.con
+                delete pixel.con
+            }
+        }
+    }
+}
+let pipe_receiver_channelVar = 0;
+elements.pipe_receiver = {
+    color: "#4d4b63",
+    category: "deprecated",
+    movable: false,
+    canContain: true,
+    insulate: true,
+    onSelect: async () => {
+        let newChannel = await _nousersthingsprompt("Enter the channel of this pipe receiver. It will not work if you do multiple while paused.", pipe_receiver_channelVar);
+        pipe_receiver_channelVar = newChannel;
+    },
+    tick: (pixel) => {
+        if (!pixel.channel){
+            pixel.channel = pipe_receiver_channelVar;
+        }
+        if (pixel.channel && pixel.con){
+            // just scan neighbors for elements on the pipe list; transfer con to them. if its a type of channel pipe, also check if channel matches
+            for (i = 0; i < squareCoords.length; i++){
+                let x = squareCoords[i][0] + pixel.x;
+                let y = squareCoords[i][1] + pixel.y;
+                if (!isEmpty(x, y, true)){
+                    if (listPipes.includes(pixelMap[x][y].element)){
+                        if (["channel_pipe", "destroyable_channel_pipe"].includes(pixelMap[x][y].element)){
+                            if (pixelMap[x][y].channel == pixel.channel && !pixelMap[x][y].con){
+                                pixelMap[x][y].con = pixel.con;
+                                delete pixel.con;
+                                break;
+                            }
+                        } else {
+                            pixel.con.x = x;
+                            pixel.con.y = y;
+                            pixelMap[x][y].con = pixel.con;
+                            delete pixel.con;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+elements.false_vacuum_decay_bomb = {
+    color: "#3f0b0b",
+    category: "weapons",
+    behavior: behaviors.STURDYPOWDER,
+    tick: function(pixel){
+        if (!isEmpty(pixel.x, pixel.y+1, true)){
+            changePixel(pixel, "false_vacuum")
+        }
+    }
+}
+elements.false_vacuum = {
+    color: "#b41b1b",
+    category: "special",
+    hidden: true,
+    tick: function(pixel){
+        if (!pixel.timeAlive){
+            pixel.timeAlive = 0
+        }
+        pixel.color = `rgb(${180/(pixel.timeAlive+2)}, ${27/(pixel.timeAlive+2)}, ${27/(pixel.timeAlive+2)})`
+        if (pixel.timeAlive === 0){
+            for (i = 0; i < squareCoords.length; i++){
+                let x = squareCoords[i][0] + pixel.x;
+                let y = squareCoords[i][1] + pixel.y;
+                if (!isEmpty(x, y, true)){
+                    if (pixelMap[x][y].element !== "false_vacuum"){
+                        deletePixel(x, y)
+                        createPixel("false_vacuum", x, y)
+                    }
+                } else if (isEmpty(x, y)){
+                    createPixel("false_vacuum", x, y)
+                }
+            }
+        }
+        pixel.timeAlive ++;
+        if (pixel.timeAlive > 20){
+            deletePixel(pixel.x, pixel.y)
+            return
+        }
+    },
+    movable: false,
+    hardness: 1
+}
+let signInput = "Hello World!";
+elements.sign = {
+    color: "#FFFFFF",
+    darkText: true,
+    category: "special",
+    onSelect: async function(){
+        let signi = await _nousersthingsprompt("What text should the sign display?", signInput||"Hello World!")
+        signInput = signi;
+    },
+    renderer: function(pixel, ctx){
+        if (!pixel.sign){pixel.sign = signInput}
+    },
+    movable: false
+}
+elements.e_sign = {
+    color: "#f3ff88",
+    darkText: true,
+    category: "special",
+    movable: false,
+    onSelect: async () => {
+        let signi = await _nousersthingsprompt("What text should the sign display?", signInput||"Hello World!")
+        signInput = signi;
+    },
+    renderer: function(pixel, ctx){
+        if (!pixel.sign){pixel.sign=signInput}
+    },
+    conduct: 1
+}
+renderPostPixel(function(ctx){
+    for (pixel of currentPixels){
+        if ((pixel.element == "sign") && pixel.sign){
+            ctx.font = `12pt Arial`
+            ctx.fillStyle = pixel.color;
+            ctx.fillText(pixel.sign.replace(/\$\{([\w.\[\]]+)\}/g, (_, path) => {
+                try {
+                    const value = new Function('return globalThis.' + path)();
+                    return typeof value === 'object' ? JSON.stringify(value) : value ?? '';
+                } catch {
+                    return '';
+                }
+            }), canvasCoord(pixel.x), canvasCoord(pixel.y))
+        } else if (pixel.element == "e_sign" && pixel.sign){
+            if (pixel.charge || pixel.chargeCD){
+                ctx.font = `12pt Arial`
+                ctx.fillStyle = pixel.color;
+                ctx.fillText(pixel.sign.replace(/\$\{([\w.\[\]]+)\}/g, (_, path) => {
+                    try {
+                        const value = new Function('return globalThis.' + path)();
+                        return typeof value === 'object' ? JSON.stringify(value) : value ?? '';
+                    } catch {
+                        return '';
+                    }
+                }), canvasCoord(pixel.x), canvasCoord(pixel.y))
+            } else {
+                drawSquare(ctx, pixel.color, pixel.x, pixel.y)
+            }
+        }
+    }
+})
+let machinemodName = "nousersthings.js"
+elements.mod_dectector = {
+    color: "#54681d",
+    behavior: behaviors.WALL,
+    category: "machines",
+    movable: false,
+    excludeRandom: true,
+    onSelect: async () => {
+        let newMod = await _nousersthingsprompt("What mod should this machine detect?", "nousersthings.js"||modName)
+        machinemodName = newMod
+    },
+    tick: (pixel) => {
+        if (!pixel.mod){pixel.mod = machinemodName}
+        if (enabledMods.includes("mods/" + pixel.mod)){
+            for (let i = 0; i < adjacentCoords.length; i++){
+                let x = adjacentCoords[i][0] + pixel.x;
+                let y = adjacentCoords[i][1] + pixel.y;
+                if (!isEmpty(x, y, true) && elements[pixelMap[x][y].element].conduct){
+                    pixelMap[x][y].charge = 1
+                }
+            }
+        }
+    }
+}
+smoothColor = function(color1, color2, amount){
+    let rgb1 = getPixelColor({color: color1})
+    let rgb2 = getPixelColor({color: color2})
+    return {r:((1-amount)*rgb1.r)+(amount*rgb2.r),g:((1-amount)*rgb1.g)+(amount*rgb2.g),b:((1-amount)*rgb1.b)+(amount*rgb2.b)}
+}
+/*
+elements.delay = {
+    color: ["#df3b3b","#200909"],
+    behavior: behaviors.WALL,
+    category: "machines",
+    movable: false,
+    insulate: true,
+    onSelect: () => {
+        logMessage("Will delay incoming signals by its temperature in Kelvin. -273C for 0 delay.")
+    },
+    tick: function(pixel){
+
+    }
+}
+    */

@@ -1,10 +1,349 @@
-[Future Plans]
-    + Save Gallery
-    + Suggest new additions at https://link.R74n.com/sandboxels-feedback
+Suggest new additions at https://sandboxels.R74n.com/feedback
 
 See sneak peaks for upcoming updates on the Discord: https://discord.gg/ejUc6YPQuS
 
 A fancier version of this changelog can be found here: https://sandboxels.R74n.com/changelog
+
+[Version 1.11.2 - May 16, 2025 - Steam Release]
+    + Sandboxels is now on Steam! https://store.steampowered.com/app/3664820/Sandboxels/
+    + Theme color setting
+    + Destroyable border mode
+    + Support for Korean, Italian, Serbian, and Australian English
+   [Changes]
+    ~ Backgrounds of menus are blurred
+    ~ Solids are no longer affected by Void or Loop borders
+    ~ World gen is surrounded by Wall with Void or Loop borders
+    + Notice when window is resized for the first time
+    ~ Saves Menu, Mod Manager, Debug, and Reset settings use native Sandboxels prompts
+   [Bug Fixes]
+    ~ Fixed: Category buttons show underscores in names
+    ~ Fixed: World gen doesn't fill entire canvas horizontally
+    ~ Fixed: Elements dynamically added repeatedly aren't selectable
+   [Technical]
+    + Multiple mods can be added at once, separated by semicolon (;)
+    + 'locked' element property, will prevent selection when set to true
+    + 'fancy' view property, will allow rendering with Fancy Pixels off when set to false
+
+[Version 1.11.1 - April 1, 2025 - FOOLS-2-5]
+    + Border setting
+        + Void deletes pixels that touch the sides
+        + Loop teleports pixels that touch the sides
+    ~ Improved Thermal View now uses hottest and coldest pixels as bounds
+    + Finnish and Indonesian languages
+   [FOOLS]
+    + Element Modulator
+    + FOOLS Mode is back!
+    ~ Note: FOOLS features will disappear April 4th
+   [Changes]
+    + Keybind: Ctrl+O to load a save file
+    + Keybind: Ctrl+Shift+O to reload the last loaded save
+    + Flame test can be done on elements with fire colors
+    + Honey and Molasses freeze into Candy
+    + 'Golden Wind' Tornado variant
+    + Milk variants can be churned into Butter
+    + Udders can absorb certain liquids to produce Milk variants
+    + Cheese can be made with Cream
+    + Soda foam has a unique color
+    + Candy dissolves in Water
+    + Void is insulative
+    + Bless stops panic in Humans
+    + Gunpowder explodes when shocked
+    + Ozone can cure Infection
+    + Dust and Ash dirty Seltzer
+    + Calcium can react with Steam
+    + Magnesium reacts with Water and Steam
+    + Sponges can release Water absorbed from soils
+    + Sponges separate Water variant contents
+    + Primordial Soup can freeze
+    + Positrons shock Antimatter
+    ~ Antimatter no longer explodes when touching Cloners
+    ~ Thermite burns into Molten Iron
+    + Acid stains Silver
+    ~ Tweaked Acid-Potassium reaction
+    ~ Frogs have a unique egg color
+    ~ Molten Rad Glass is greener
+    ~ Recolored Pilk Cheese
+    ~ Bless removes Filler, Lattice, Vertical, and Horizontal
+    ~ Copper Sulfate is no longer flammable
+    + Copper Sulfate produces Poison Gas when burned
+    + Baking Soda alias 'Sodium Bicarbonate'
+    + Cellulose alias 'Paper Paste'
+    + Cyanide alias 'Hydrogen Cyanide'
+    + Acid Gas alias 'Hydrochloric Acid Gas'
+    + Adobe alias 'Mud Brick'
+    + Saves can keep Limitless Mode if settings are included
+    ~ Saves no longer update cursor size
+    + Partial translations for Dutch, Korean, Italian, Serbian, and Emoji
+    ~ Halacae translations completed
+    ~ Prompt inputs no longer allow autocomplete
+   [Bug Fixes]
+    ~ Fixed: Half-pixels on the edges of smaller canvases
+    ~ Fixed: LEDs can create ghost pixels when absorbing Light
+    ~ Fixed: Eggs break when placed with Drag tool
+    ~ Fixed: Frozen Yogurt variants don't retain color when melting
+    ~ Fixed: Frozen elements aren't generated properly when no state is present
+    ~ Fixed: Tea and Coffee start boiling when placed manually
+    ~ Fixed: Duplicate mods can be added
+    ~ Fixed: Portals can't teleport pixels being dragged
+    ~ Fixed: Embers are never deleted when Burning is disabled
+    ~ Fixed: Mix tool can be used on ghost pixels
+    ~ Fixed: Saves can set cursor size to impossible sizes
+    ~ Fixed: colorOn isn't applied by reactions
+   [Technical]
+    + Mod dependency system, see dependency_test.js for more info
+    + Elements can be added dynamically with addElement()
+    + onAddElement(callback) function, called when element is added dynamically
+    + loadedMods array holds mods that have been loaded
+    + onSelect and onUnselect properties for custom views
+    + Portals display channel on hover
+    + 'mouseColor' setting
+    ~ Unknown is now in the Special category (Still hidden)
+    ~ Save version is now sb4 and includes new border settings
+
+[Version 1.11 - February 21, 2025 - Everyone's Update]
+    + Portals!
+        + Portal In and Portal Out elements
+        + Portals teleport pixels and electricity
+    + Coral
+        + Grows in Water
+        + Bleaches in high temperatures
+    + Adobe, made from Mud and Straw
+    + Element translations for Turkish and Hungarian
+   [Electricity Rework]
+    ~ Electricity is now more consistent in highly conductive material
+    ~ Sensors give out a single charge instead of 4
+    ~ Pixels now store when they were charged
+    ~ Note: Effects on existing builds should be limited but please report any issues
+   [Changes]
+    + Liquid pixels of the same element move around
+    + Tiny canvas size
+    + Molten elements oscillate color (Experimental)
+    ~ Pixels can now exist along the border of the canvas
+    ~ Disabling Staining will clear all existing pixel stains
+    + Dye, Paint, etc. retain their selected color independently
+    + Radioactive Tornado variant
+    + Humans panic when shocked
+    ~ Humans are less heat-resistant
+    ~ Pipes are no longer unbreakable
+    + Smoke rises in normal air density
+    ~ Tweaked Fire and Cold Fire behavior
+    + Sabatier process for producing Methane
+    + Bergius process for producing Oil
+    + Acid reacts with Potassium
+    ~ Increased Methane autoignition point
+    + Uranium radiates Glass on contact
+    + Burning Lamp Oil explodes in Water
+    + Liquid Ozone explodes when broken or shocked
+    + Molten Gallium can react with Gold Coins
+    + Slaked Lime reacts with Carbon Dioxide
+    + Molten Plastic evaporates
+    + Glue turns Color Sand into Stained Glass
+    + Butter and Caustic Potash make Soap
+    + Neutrons radiate Glass, Clouds, and Water
+    ~ Light absorbed by LEDs is deleted
+    ~ Foam made from Oxygen + Water releases the Oxygen
+    ~ Tweaked Bleach and Acid reaction
+    ~ Increased Molten Sulfur freezing point
+    ~ Tweaked Smash tool
+    + Cyanide dirties Water variants
+    + Infection dirties Water
+    + Tea and Coffee bubble when hot
+    + CO2 carbonates Salt Water instead of dirtying
+    + Soda and Seltzer release Foam when mixed
+    + Pilk creates Foam
+    + Cells can ferment Milk variants
+    ~ Cells ferment Milk slower
+    ~ Cheese keeps color when breaking into powder (Pilk Powder?)
+    ~ Caramel is more heat-resistant
+    ~ Acid turns Humans into Bone
+    ~ Birds are less flammable
+    + Fish turn to white meat when cooked
+    + Worms can compost Petal, Pistil, and Vine
+    + Rats can eat Hard Yolk
+    + Alcohol calms Humans
+    + Humans panic from bad smells
+    + Smog breaks into Dirty Water
+    ~ Fireworks create less Carbon Dioxide
+    + Bless can fix Brick Rubble
+    + Midas Touch converts some metals to Gold variants
+    + Malware can affect Snake
+    ~ Pointer retains same speed at any TPS
+    ~ Optimized Cell and Cancer
+    ~ Recolored Pipe Wall
+    ~ Improved Slug, Brick, and Ruins buttons
+    ~ Hid Liquid Oxygen
+    ~ Unhid Liquid Hydrogen
+    ~ Moved Liquid Hydrogen to Liquids
+    ~ Moved Poison Gas to Gases
+    + Liquid Nitrogen alias 'LN2'
+    + Electric alias 'Electron'
+    + Light alias 'Photon'
+    + Nut Oil alias 'Cooking Oil'
+    + Epsom Salt alias 'Magnesium Sulfate'
+    + Pyrite alias 'Iron Sulfide'
+    + Limestone alias 'Calcium Carbonate'
+    + Quicklime alias 'Calcium Oxide'
+    + Slaked Lime alias 'Calcium Hydroxide'
+    ~ Petal displays with dark text
+    ~ Slightly moved Porcelain
+    + Built-in dialog boxes
+    ~ Canvas touches the top of the page
+    ~ Wide canvas size takes up more screen space
+    ~ White border no longer shown on wide canvas size
+    ~ Buttons, menus, and the canvas have thicker borders
+    ~ "Elem" in stats bar is no longer uppercase
+    ~ Unknown has no grain
+    - Loading a save no longer changes your selected element
+    + Ctrl+S to bring up save prompt
+    + Ctrl+Shift+S to instantly save canvas
+    + Retroactive changelogs for versions v0.1-v0.4
+    + Bluesky social link
+    + Partial translations for Ukrainian, Toki Pona, and Halacae
+    + Finished translations for Spanish and Russian
+   [Bug Fixes]
+    ~ Fixed: Oxygen from hydrolysis immediately turns to Foam
+    ~ Fixed: Menu heights vary dramatically with long categories
+    ~ Fixed: Mod Manager and Info Screen text boxes don't stick to bottom
+    ~ Fixed: Lattice Wars appear without borders
+    ~ Fixed: Smash tool breaks harder elements faster
+    ~ Fixed: Error in console on page load
+    ~ Fixed: Artifacts above stats bar text on Chrome
+    ~ Fixed: Console logging when Hail breaks a pixel
+    ~ Fixed: Milk variants still heat into Yogurt
+    ~ Fixed: Controls still show Smooth View keybind
+    ~ Fixed: "Save to File" button cut off on some small screens
+    ~ Fixed: Many aliases can't be used in Element Select
+    ~ Fixed: Prop tool doesn't change pixel state when changing temperature
+    ~ Fixed: Grenades stop moving while charged
+    ~ Fixed: Lightning doesn't reach bottom on large canvases
+    ~ Fixed: Ghost pixels when placing Foam with low air temperature set
+    ~ Fixed: 'CR' behavior cell errors with low air temperature set
+   [Technical]
+    + Portal 'channel' property can be set with the Prop tool (Integer)
+    + runAfterReset function
+    + isBreakable function
+    + 'breakIntoColorMultiplier' element property
+    + 'onMoveInto' element property, called when another pixel moves into it (function(pixel1,pixel2))
+    + 'chargeStart' pixel property
+    ~ 'breakIntoColor' element property can be used without 'breakInto'
+    + 'sense' sensor property to detect a certain element
+    ~ Optimized electricity
+    ~ Fire is affected by air density
+    + View setting dropdown includes views added by mods
+    ~ currentSaveData is now always defined, and holds metadata about the current canvas, even non-saves
+    + currentSaveData always contains a UUID for seeded randomness
+    ~ Default max pixel count slightly increased
+    ~ Save version is now sb3
+        ~ Canvas border width is now stored (Default 1 for old saves)
+        ~ Pixel properties with value "undefined" are skipped
+    + Error message in console for broken translation files
+    + GUI translation support
+    + More GUI elements have IDs
+    + Future standalone mode
+
+[Version 1.10.2 - December 15, 2024 - Birthday III]
+    + Cheese Powder, from breaking Cheese
+    + Chocolate Powder, from breaking Chocolate
+   [Changes]
+    ~ Drawing lines shows a preview of pixel placement
+    ~ Updated Brick texture for better shading
+    ~ LEDs, Light Bulbs, and Fireflies can be painted
+    + Humans panic when seeing dangerous things, like Fire
+    + Humans change direction after hitting walls
+    ~ Humans eat more consistently
+    ~ Humans have a panic limit
+    ~ Humans no longer eat Human meat
+    ~ Smash tool moves pixels if they can't be broken
+    + Steam decomposes at extreme temperatures
+    + Ruins has a Brick texture
+    ~ Brick Rubble no longer breaks into Dust
+    ~ Recolored Brick Rubble
+    + Glass has a light border
+    ~ Fancy textures have grain, besides Glass
+    + Rock Wall can be made by gluing Rocks
+    + Brick can be made by gluing Brick Rubble
+    + Mudstone can be made by gluing Dirt
+    + Packed Sand can be made by Sand
+    + Sponges can dry Mud and Wet Sand
+    + Clay can be made by dissolving Wet Sand in Acid
+    + Cement can be made with Clay and Quicklime
+    ~ Quicklime no longer turns into Limestone on its own
+    + Plastic breaks into Beads
+    + Charcoal slowly stains solids
+    + Animals can spawn Eggs or offspring in Water
+    + Seeds planted under soil will rise
+    + Birds eat Spiders and their Webs
+    + Rocks destroy Webs
+    + Frogs release Steam when cooked
+    + Worms break down Fiber
+    ~ Worms compost some Sawdust into Dirt
+    + Soap kills Snails and Slugs
+    + Soap removes Slime
+    + Alcohol kills Flower Pistils
+    + Mercury kills Algae
+    ~ Sap boils into some Steam
+    ~ Bread is less flammable
+    + Ammonia affects Wheat
+    + Poison dirties Salt Water, Sugar Water, and Seltzer
+    + Water on burning Oil will explode
+    + Bleach reacts with Nut Oil and Grease
+    + Baking Soda reacts with Soap
+    + Copper Sulfate kills Spiders
+    + Copper Sulfate stains Zinc
+    + Bless removes Heat Ray
+    + Plague makes Heads green
+    + Plague destroys Skin
+    + Hair absorbs some Water
+    ~ Breaking Balloons makes some Pop
+    ~ Cheese flows slower
+    ~ Coffee Grounds in Milk brew into Coffee instead
+    ~ Mushroom Spores no longer break
+    ~ Acid Clouds don't precipitate when too hot or cold
+    ~ Border can be painted
+    ~ Tweaked Charcoal heat color
+    ~ Moved Light Bulb to after LEDs
+    + Midas Touch turns Paper green
+    ~ Midas Touch turns Humans into solid Gold instead of Coins
+    + Wall alias 'Solid'
+    + Mayo alias 'Mayonnaise'
+    + Alcohol alias 'Ethanol'
+    + Unbreakable elements are clarified in element info
+    ~ Screenshots download with name of current save
+    ~ Pixel count turns red when all canvas sizes are full
+    ~ Log messages have a black shadow to read on bright backgrounds
+    ~ TPS dialog displays minimum and maximum
+   [Bug Fixes]
+    ~ Fixed: Replace Mode causes pixels to float while placing
+    ~ Fixed: Detached Heads and dead Humans can eat food
+    ~ Fixed: Pixel alpha isn't set from element properties on creation
+    ~ Fixed: Molten Thermite continues to heat when not burning
+    ~ Fixed: Prop tool can't set value when existing value is null
+    ~ Fixed: Unbreakable pixels can burn away when using Prop tool (Perma-burning!!!)
+    ~ Fixed: Pixels with burnt states never burn when using Prop tool
+    ~ Fixed: Prop tool doesn't retain "0" value on next dialog
+    ~ Fixed: Prop tool doesn't handle changing "x" and "y" properties
+    ~ Fixed: Placing Fire on insulative pixels heats them
+    ~ Fixed: Burning heats insulative pixels
+    ~ Fixed: Rays, Bless, Radiation, and some Bombs change insulative pixel temperature
+    ~ Fixed: Stink Bugs aren't properly killed by Frogs, Sap, Copper Sulfate, and Borax
+    ~ Fixed: Erasing with Lookup selected will only erase 1x1
+    ~ Fixed: Erasing fast with Pick or Lookup selected will leave gaps
+    ~ Fixed: Hail doesn't conduct heat
+    ~ Fixed: Hail cannot break solids without a defined state
+    ~ Fixed: Breaking Humans eventually creates Sand and Cement
+    ~ Fixed: Element buttons arranged in weird columns after certain issues
+    ~ Fixed: Ball doesn't have density and floats on gases
+   [Technical]
+    + BORDER render preset
+    + 'grain' element property
+    + 'toolHoverStat' element property, function that takes the hovered pixel while selected
+    + 'buttonColor' element property
+    ~ Humans now eat any element with true 'isFood' property
+    ~ Pixels with 0% alpha won't appear in Basic View
+    ~ LEDs with 0% alpha will only appear when powered
+    + releaseElement function has option to replace liquids
+    ~ Fixed: lineCoords function returns duplicate values
+    + empty.js mod for browser JavaScript overriding
 
 [Version 1.10.1 - October 5, 2024 - Creepy Crawlies]
    [Crawly]
@@ -2250,5 +2589,153 @@ A fancier version of this changelog can be found here: https://sandboxels.R74n.c
     + Frozen Frogs
     ~ Heat & Cool tools look more natural
     ~ Gravel can now melt
+
+[Note: Changelogs for version v0.1-v0.4 were added retroactively in 2025]
+
+[Version 0.4 - Dec. 20, 2021]
+    + Grass
+    + Algae
+    + Heater
+    + Cooler
+    + Superheater
+    + Freezer
+    + Charcoal
+    + Carbon Dioxide
+    + Dry Ice
+    + Oil
+    + Propane
+    + Methane
+    + Oxygen
+    + Liquid Oxygen
+    + Tinder
+    + Static
+    + Borax
+    + Bamboo
+    + Bamboo Plant
+    + Clay
+    + Baked Clay
+    + Brick
+    + Sapling
+    + Grass Seed
+    + Flower Seed
+    + Pistil
+    + Petal
+    + Tree Branch
+    + Vine
+    + Burner
+    + Foam
+    + Bubble
+    + Rainbow
+    + Copper
+    + Molten Copper
+    + Oxidized Copper
+    + Acid
+    + Dust
+    + Glue
+    + Anti Fluid
+    + Lamp Oil
+    + Wheat Seed
+    + Wheat
+    + Straw
+    + Gray Goo
+    + Virus
+    + Worm
+    + Termite
+    + Pixel burning
+    ~ Renamed Laser Pointer to Pointer
+    + Element and hidden element count
+   [Technical]
+    + Behavior presets FOAM, BUBBLE, STICKY, AGLIQUID
+    + Behavior rules L1, L2, HT, CO, CC, ST
+
+[Version 0.3 - Dec. 17, 2021]
+    + Ant
+    + Frog
+    + Fish
+    + Rocket
+    + Ash
+    + Meat
+    + Cooked Meat
+    + Light
+    + Laser Pointer
+    + Element categories (Tools, Land, Liquids, Solids, Gases, Energy, Structure, Special, Life, Weapons)
+    + Hide button
+   [Technical]
+    + Behavior presets STURDYPOWDER, SELFDELETE
+    + SW behavior rule
+
+[Version 0.2 - Dec. 16, 2021]
+    + Heat tool
+    + Cool tool
+    + Steam
+    + Ice
+    + Snow
+    + Packed Snow
+    + Wood
+    + Fire
+    + Smoke
+    + Rock
+    + Magma
+    + Concrete
+    + Plasma
+    + Iron
+    + Glass
+    + Blood
+    + Honey
+    + Ketchup
+    + Molasses
+    + Filler
+    + Dirt
+    + Gravel
+    + Slime
+    + Ruins
+    + Void
+    + Flea
+    + Fly
+    + Smoke Grenade
+    + Torch
+    + Water Spout
+    + Bone Marrow
+    + Bone
+    + Anti Powder
+    + Vertical
+    + Horizontal
+    + Rain Cloud
+    + Snow Cloud
+    + Plant
+    + Seed
+    + Molten Glass
+    + Molten Iron
+    + Pixel temperature and state changes
+    + Pause button
+    + Step button
+    + Adjustable cursor size and buttons
+    + Replace mode and button
+    + Element select "E" button
+    + Adjustable TPS and button
+    + Keybinds for pausing, changing cursor size
+    + Shift key handling
+    + Stats bar, shows pixel information on hover
+    + Randomized pixel color, pixel grain, and gradient element buttons
+    ~ Renamed "Clear" button to "Reset"
+   [Technical]
+    + Behavior grid system
+    + Behavior presets POWDER, AGPOWDER, LIQUID, WALL, UL_UR, GAS, DGAS, SUPPORT, SUPPORTPOWDER, DELETE, FILL
+    + Autogenerated molten elements
+    - Removed hard-coded behaviors
+
+[Version 0.1.1 - Dec. 15, 2021]
+    + Clear button
+    + Pixels can be deleted by right-clicking
+    + Touchscreen support
+    + Element buttons
+
+[Version 0.1 - Dec. 15, 2021]
+    + Sand
+    + Water
+    + Wall
+    + Elements must be selected with the S, W, and X keys
+   [Technical]
+    + Hard-coded behaviors DL_DR (Sand), L_R (Water), WALL (Wall)
 
 [Public Release - Dec. 15, 2021]

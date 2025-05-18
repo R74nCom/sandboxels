@@ -784,9 +784,8 @@ if(enabledMods.includes(changeTempMod) && enabledMods.includes(runAfterAutogenMo
 });
 } else {
 	if(!enabledMods.includes(changeTempMod))		{ enabledMods.splice(enabledMods.indexOf(modName),0,changeTempMod) };
-	if(!enabledMods.includes(runAfterAutogenMod))	{ enabledMods.splice(enabledMods.indexOf(modName),0,runAfterAutogenMod) };
 	if(!enabledMods.includes(libraryMod))	{ enabledMods.splice(enabledMods.indexOf(modName),0,libraryMod) };
 	if(!enabledMods.includes(onTryMoveIntoMod))	{ enabledMods.splice(enabledMods.indexOf(modName),0,onTryMoveIntoMod) };
 	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
-	alert(`The "${changeTempMod}", "${runAfterAutogenMod}", "${libraryMod}", and "${onTryMoveIntoMod}" mods are required; any missing mods in this list have been automatically inserted (reload for this to take effect).`);
+	alert(`The "${changeTempMod}", "${runAfterAutogenMod}" and "${onTryMoveIntoMod}" mods are required; any missing mods in this list have been automatically inserted (reload for this to take effect).`);
 };

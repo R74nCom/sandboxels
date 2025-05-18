@@ -1,13 +1,1 @@
-{
-"#lang.name": "English (Canadian)",
-"#lang.credit": "R74n",
-"seltzer": "soda_water",
-"oxidized_copper": "oxidised_copper",
-"anesthesia": "anaesthesia",
-"gray_goo": "grey_goo",
-"fiber": "fibre",
-"color_smoke": "colour_smoke",
-"color_sand": "colour_sand",
-"yogurt": "yogourt",
-"frozen_yogurt": "frozen_yogourt"
-}
+{"\"#lang.name\"":"English (Canadian)","seltzer":"soda_water","anesthesia":"anaesthesia","gray_goo":"grey_goo","fiber":"fibre","yogurt":"yogourt","frozen_yogurt":"frozen_yogourt","color_smoke":"colour_smoke","oxidized_copper":"oxidised_copper","color_sand":"colour_sand"}

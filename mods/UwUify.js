@@ -1,6 +1,10 @@
 document.body.style.backgroundImage = 'url("https://jayd-rubies.github.io/image/uwuify.png")';
 document.body.style.backgroundSize = 'cover';
 gameDiv.style.border = "1px solid #ffffff00"; 
+var statsbar = document.getElementById("stats");
+var stylesheetchangevar = document.querySelector("link[rel=stylesheet]");
+stylesheetchangevar.href = "https://jayd-Rubies.github.io/assets/css/UwUstyle.css";
+statsbar.style.backgroundColor = 'transparent';
 window.addEventListener("load",function(){
     document.querySelectorAll(".categoryButton").forEach(e => {
         e.style.backgroundColor = "#ffc0cb40";

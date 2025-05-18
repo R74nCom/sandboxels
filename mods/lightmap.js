@@ -1,5 +1,4 @@
-// Redbirdly's Mod that adds a better light system
-// if the mod is too laggy, use fast_lightmap.js
+if (!enabledMods.includes("mods/betterSettings.js")) { enabledMods.unshift("mods/betterSettings.js"); localStorage.setItem("enabledMods", JSON.stringify(enabledMods)); window.location.reload() };
 
 var lightmap = [];
 var nextLightmap = [];
@@ -7,14 +6,18 @@ var lightmapWidth, lightmapHeight;
 var lightmapScale = 2;
 var lightSourceBoost = 2;
 var pixelSizeQuarter = pixelSizeHalf / 2;
-var falloff = 0.8;
 
-// Define RGB colors
-var coldFireColor = [0, 191, 255];
-var fireflyColor = [240, 255, 70];
-var radColor = [75, 100, 30];
-var strangeMatterColor = [220 * 0.3, 255 * 0.3, 210 * 0.3];
-var sparkColors = [[255, 210, 120], [255, 140, 10]];
+// BetterSettings.js integration
+var lightmap_settingsTab = new SettingsTab("Lightmap");
+
+var resolution_setting = new Setting("Resolution (higher number = lower quality)", "resolution", settingType.NUMBER, false, defaultValue=2);
+var falloff_setting = new Setting("Falloff (higher number = higher blur radius)", "falloff", settingType.NUMBER, false, defaultValue=0.8);
+
+lightmap_settingsTab.registerSettings("Resolution", resolution_setting);
+lightmap_settingsTab.registerSettings("Falloff", falloff_setting);
+
+settingsManager.registerTab(lightmap_settingsTab);
+
 
 function getRandomElement(arr) {
 	return arr[Math.floor(Math.random() * arr.length)];
@@ -22,35 +25,34 @@ function getRandomElement(arr) {
 
 if (!rgbToArray) {
 	function rgbToArray(colorString) {
-		if (typeof colorString !== 'string') {
-			console.error('Invalid colorString:', colorString);
+		if (typeof colorString !== "string") {
+			console.error("Invalid colorString:", colorString);
 			return null;
 		}
-
-		if (colorString.startsWith('rgb')) {
-			return colorString.slice(4, -1).split(',').map(val => parseInt(val.trim()));
-		} else if (colorString.startsWith('#')) {
+		if (colorString.startsWith("rgb")) {
+			return colorString
+				.slice(4, -1)
+				.split(",")
+				.map(val => parseInt(val.trim()));
+		} else if (colorString.startsWith("#")) {
 			let hex = colorString.slice(1);
-
-			// Handle shorthand hex (e.g., #03F)
 			if (hex.length === 3) {
-				hex = hex.split('').map(char => char + char).join('');
+				hex = hex
+					.split("")
+					.map(char => char + char)
+					.join("");
 			}
-
 			if (hex.length !== 6) {
-				console.error('Invalid hex color:', colorString);
+				console.error("Invalid hex color:", colorString);
 				return null;
 			}
-
-			const r = parseInt(hex.slice(0, 2), 16);
-			const g = parseInt(hex.slice(2, 4), 16);
-			const b = parseInt(hex.slice(4, 6), 16);
-
+			var r = parseInt(hex.slice(0, 2), 16);
+			var g = parseInt(hex.slice(2, 4), 16);
+			var b = parseInt(hex.slice(4, 6), 16);
 			return [r, g, b];
-		} else {
-			console.error('Invalid color format:', colorString);
-			return null;
 		}
+		console.error("Invalid color format:", colorString);
+		return null;
 	}
 }
 
@@ -59,19 +61,20 @@ function scaleList(numbers, scale) {
 }
 
 function initializeLightmap(_width, _height) {
-    const lightmapWidth = Math.ceil(_width / lightmapScale);
-    const lightmapHeight = Math.ceil(_height / lightmapScale);
+	lightmapWidth = Math.ceil(_width / lightmapScale) + 1;
+	lightmapHeight = Math.ceil(_height / lightmapScale) + 1;
 
-    const createLightmapArray = (width, height) =>
-        Array.from({ length: height }, () =>
-            Array.from({ length: width }, () => ({ color: [0, 0, 0] }))
-        );
+	function createLightmapArray(width_, height_) {
+		return Array.from({ length: height_ }, () =>
+			Array.from({ length: width_ }, () => ({ color: [0, 0, 0] }))
+		);
+	}
 
-    const newLightmap = createLightmapArray(lightmapWidth, lightmapHeight);
-    const newNextLightmap = createLightmapArray(lightmapWidth, lightmapHeight);
+	var newLightmap = createLightmapArray(lightmapWidth, lightmapHeight);
+	var newNextLightmap = createLightmapArray(lightmapWidth, lightmapHeight);
 
-    lightmap = newLightmap;
-    nextLightmap = newNextLightmap;
+	lightmap = newLightmap;
+	nextLightmap = newNextLightmap;
 }
 
 function deepCopy(source, target) {
@@ -88,12 +91,12 @@ function propagateLightmap() {
 
 	var width = lightmap[0].length;
 	var height = lightmap.length;
-
+	var falloff = falloff_setting.value;
 	var neighbors = [
 		{ dx: 1, dy: 0 },
 		{ dx: -1, dy: 0 },
 		{ dx: 0, dy: 1 },
-		{ dx: 0, dy: -1 },
+		{ dx: 0, dy: -1 }
 	];
 
 	for (var y = 0; y < height; y++) {
@@ -114,9 +117,9 @@ function propagateLightmap() {
 
 			nextLightmap[y][x] = {
 				color: [
-					Math.min(Math.max(0, totalColor[0] / neighborCount * falloff), 255 * 8),
-					Math.min(Math.max(0, totalColor[1] / neighborCount * falloff), 255 * 8),
-					Math.min(Math.max(0, totalColor[2] / neighborCount * falloff), 255 * 8)
+					Math.min(Math.max(0, (totalColor[0] / neighborCount) * falloff), 255 * 8),
+					Math.min(Math.max(0, (totalColor[1] / neighborCount) * falloff), 255 * 8),
+					Math.min(Math.max(0, (totalColor[2] / neighborCount) * falloff), 255 * 8)
 				]
 			};
 		}
@@ -126,65 +129,96 @@ function propagateLightmap() {
 }
 
 function rgbToHsv(r, g, b) {
-	r /= 255; g /= 255; b /= 255;
-	var max = Math.max(r, g, b), min = Math.min(r, g, b);
-	var h, s, v = max;
-
+	r /= 255;
+	g /= 255;
+	b /= 255;
+	var max = Math.max(r, g, b);
+	var min = Math.min(r, g, b);
+	var h, s;
+	var v = max;
 	var d = max - min;
 	s = max === 0 ? 0 : d / max;
-
 	if (max === min) {
 		h = 0;
 	} else {
 		switch (max) {
-			case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-			case g: h = (b - r) / d + 2; break;
-			case b: h = (r - g) / d + 4; break;
+			case r:
+				h = (g - b) / d + (g < b ? 6 : 0);
+				break;
+			case g:
+				h = (b - r) / d + 2;
+				break;
+			case b:
+				h = (r - g) / d + 4;
+				break;
 		}
 		h /= 6;
 	}
-
 	return [h, s, v];
 }
 
 function hsvToRgb(h, s, v) {
-	var r, g, b;
-
 	var i = Math.floor(h * 6);
 	var f = h * 6 - i;
 	var p = v * (1 - s);
 	var q = v * (1 - f * s);
 	var t = v * (1 - (1 - f) * s);
+	var r, g, b;
 
 	switch (i % 6) {
-		case 0: r = v; g = t; b = p; break;
-		case 1: r = q; g = v; b = p; break;
-		case 2: r = p; g = v; b = t; break;
-		case 3: r = p; g = q; b = v; break;
-		case 4: r = t; g = p; b = v; break;
-		case 5: r = v; g = p; b = q; break;
+		case 0:
+			r = v;
+			g = t;
+			b = p;
+			break;
+		case 1:
+			r = q;
+			g = v;
+			b = p;
+			break;
+		case 2:
+			r = p;
+			g = v;
+			b = t;
+			break;
+		case 3:
+			r = p;
+			g = q;
+			b = v;
+			break;
+		case 4:
+			r = t;
+			g = p;
+			b = v;
+			break;
+		case 5:
+			r = v;
+			g = p;
+			b = q;
+			break;
 	}
-
 	return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
 }
 
 function renderLightmapPrePixel(ctx) {
-    if (!lightmap || !lightmap[0]) return;
+	if (!lightmap || !lightmap[0]) return;
+	var _width = lightmap[0].length;
+	var _height = lightmap.length;
 
-    var _width = lightmap[0].length;
-    var _height = lightmap.length;
+	for (var y = 0; y < _height; y++) {
+		for (var x = 0; x < _width; x++) {
+			var color = lightmap[y][x].color;
+			var r = color[0];
+			var g = color[1];
+			var b = color[2];
 
-    for (var y = 0; y < _height; y++) {
-        for (var x = 0; x < _width; x++) {
-            var { color } = lightmap[y][x];
-            var [r, g, b] = color;
+			if (r > 16 || g > 16 || b > 16) {
+				var hsv = rgbToHsv(r, g, b);
+				var newColor = hsvToRgb(hsv[0], hsv[1], 1);
+				var alpha = hsv[2];
 
-            if (r > 16 || g > 16 || b > 16) {
-                var [h, s, v] = rgbToHsv(r, g, b);
-                var newColor = hsvToRgb(h, s, 1);
-                var alpha = v;
-
-                ctx.fillStyle = `rgba(${newColor[0]}, ${newColor[1]}, ${newColor[2]}, ${alpha * 0.4})`;
+				ctx.globalAlpha = 1.0;
+				ctx.fillStyle = `rgba(${newColor[0]}, ${newColor[1]}, ${newColor[2]}, ${alpha * 0.4})`;
 				ctx.fillRect(
 					x * pixelSize * lightmapScale,
 					y * pixelSize * lightmapScale,
@@ -199,27 +233,39 @@ function renderLightmapPrePixel(ctx) {
 					pixelSize * lightmapScale * 2,
 					pixelSize * lightmapScale * 2
 				);
-            }
-        }
-    }
+			}
+		}
+	}
 }
 
-// Register the function to run before each pixel is rendered
+// Main loop
 renderPrePixel(function(ctx) {
-	if (!paused) {propagateLightmap();}
-    renderLightmapPrePixel(ctx);
+	// Reset lightmap if resolution changed
+	if (resolution_setting.value != lightmapScale) {
+		lightmapScale = resolution_setting.value;
+		initializeLightmap(width, height);
+		return;
+	}
+
+	if (!paused) {
+		propagateLightmap();
+	}
+	renderLightmapPrePixel(ctx);
 });
 
-
 function glowItsOwnColor(pixel) {
-	if (!pixel.color) {return;}
+	if (!pixel.color) return;
 	var x = Math.floor(pixel.x / lightmapScale);
 	var y = Math.floor(pixel.y / lightmapScale);
-	lightmap[y][x] = { color: scaleList(rgbToArray(pixel.color), lightSourceBoost) };
+	try {
+		lightmap[y][x] = { color: scaleList(rgbToArray(pixel.color), lightSourceBoost) };
+	} catch (e) {
+		console.log(e, pixel, pixel.color, rgbToArray(pixel.color), x, y)
+	}
 }
 
 function glowItsOwnColorIfPowered(pixel) {
-	if (!pixel.charge || pixel.charge <= 0) {return;}
+	if (!pixel.charge || pixel.charge <= 0) return;
 	if (!pixel.color) return;
 	var x = Math.floor(pixel.x / lightmapScale);
 	var y = Math.floor(pixel.y / lightmapScale);
@@ -227,7 +273,7 @@ function glowItsOwnColorIfPowered(pixel) {
 }
 
 function glowColor(pixel, color) {
-	if (!color) {return;}
+	if (!color) return;
 	var x = Math.floor(pixel.x / lightmapScale);
 	var y = Math.floor(pixel.y / lightmapScale);
 	lightmap[y][x] = { color: scaleList(color, lightSourceBoost) };
@@ -239,7 +285,6 @@ function glowRadiationColor(pixel) {
 	lightmap[y][x] = { color: scaleList(radColor, lightSourceBoost) };
 }
 
-// Define element tick functions
 var originalStrangeMatterTick = elements.strange_matter.tick;
 elements.strange_matter.tick = function(pixel) {
 	originalStrangeMatterTick(pixel);
@@ -264,9 +309,15 @@ elements.laser.tick = function(pixel) {
 	glowColor(pixel, scaleList(rgbToArray(pixel.color), 0.5));
 };
 
-var originalFireTick2 = elements.fire.tick;
+var originalFireTick3 = elements.fire.tick;
 elements.fire.tick = function(pixel) {
-	originalFireTick2(pixel);
+	originalFireTick3(pixel);
+	glowItsOwnColor(pixel);
+};
+
+var originalColdFireTick2 = elements.cold_fire.tick;
+elements.cold_fire.tick = function(pixel) {
+	originalColdFireTick2(pixel);
 	glowItsOwnColor(pixel);
 };
 
@@ -285,10 +336,8 @@ elements.rainbow.tick = function(pixel) {
 var originalFireflyTick = elements.firefly.tick;
 elements.firefly.tick = function(pixel) {
 	originalFireflyTick(pixel);
-
 	var x = Math.floor(pixel.x / lightmapScale);
 	var y = Math.floor(pixel.y / lightmapScale);
-
 	var tickMod = pixelTicks % pixel.fff;
 	var num;
 
@@ -314,9 +363,6 @@ elements.magma.tick = glowItsOwnColor;
 elements.plasma.tick = glowItsOwnColor;
 elements.fw_ember.tick = glowItsOwnColor;
 
-elements.cold_fire.tick = glowItsOwnColor;
-
-// Radioactive elements
 var radioactiveElements = [
 	"uranium", "radiation", "rad_glass", "fallout",
 	"molten_uranium", "rad_shard", "rad_cloud", "rad_steam"
@@ -325,12 +371,11 @@ radioactiveElements.forEach(element => {
 	elements[element].tick = glowRadiationColor;
 });
 
-window.addEventListener('load', () => {
-	initializeLightmap(width, height);
+var fireflyColor = [240, 255, 70];
+var radColor = [75, 100, 30];
+var strangeMatterColor = [220 * 0.3, 255 * 0.3, 210 * 0.3];
+var sparkColors = [[255, 210, 120], [255, 140, 10]];
 
-	var originalResizeCanvas = resizeCanvas;
-	resizeCanvas = function(newHeight, newWidth, newPixelSize, clear) {
-		originalResizeCanvas(newHeight, newWidth, newPixelSize, clear);
-		initializeLightmap(width, height);
-	};
+runAfterReset(() => {
+	initializeLightmap(width, height);
 });

@@ -1,0 +1,23 @@
+elements.mouthwash = {
+    color: ["#AAF8FF","#29CFF5","#B8FCDE","#8EF2CA"],
+    singleColor: true,
+    behavior: behaviors.LIQUID,
+    reactions: {
+        "virus": { elem2:null },
+        "plague": { elem2:null },
+        "charcoal": { color1:"#bdbdbd", chance:0.05 },
+    },
+    tempHigh: 78.37,
+    stateHigh: ["alcohol","alcohol_gas","alcohol_gas","alcohol","alcohol_gas","alcohol_gas","alcohol","alcohol_gas","alcohol_gas","sugar","chlorine","stench","chlorine","chlorine","stench","chlorine"],
+    tempLow: -113.88,
+    burn: 100,
+    burnTime: 3,
+    burnInto: ["alcohol","fire","fire","fire","alcohol_gas","alcohol_gas","alcohol","fire","fire","fire","alcohol_gas","alcohol_gas","alcohol","fire","fire","fire","alcohol_gas","alcohol_gas","alcohol","fire","fire","fire","alcohol_gas","alcohol_gas","alcohol","fire","fire","fire","alcohol_gas","alcohol_gas","alcohol","fire","fire","fire","alcohol_gas","alcohol_gas","sugar","chlorine","stench","chlorine"],
+    fireColor: ["#80acf0","#96cdfe","#bee6d4"],
+    category: "liquids",
+    state: "liquid",
+    density: 785.1,
+    stain: -0.75,
+    isFood: true,
+    darkText: true,
+}

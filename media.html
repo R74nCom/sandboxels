@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Sandboxels Images</title>
+    <meta name="description" content="Browse images of the classic falling-sand game.">
+    <meta name="keywords" content="falling sand, elements, pixel art, simulator, powder">
+    <meta name="author" content="R74n">
+    <meta name="copyright" content="R74n">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="all">
+
+    <!--Favicons-->
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png?v=2">
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png?v=2">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png?v=2">
+    <link rel="manifest" href="manifest.json">
+    <link rel="mask-icon" href="icons/safari-pinned-tab.svg?v=2" color="#2167ff">
+    <link rel="shortcut icon" href="icons/favicon.ico?v=2">
+    <meta name="msapplication-TileColor" content="#e6d577">
+    <meta name="theme-color" content="#000000">
+
+    <!--OpenGraph-->
+    <meta property="og:locale" content="en_US">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Sandboxels">
+    <meta property="og:image" content="https://sandboxels.r74n.com/icons/wallpaper.png">
+    <meta property="og:image:width" content="1980">
+    <meta property="og:image:height" content="971">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="A rainforest made in Sandboxels">
+
+    <!--Twitter-->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site:id" content="1436857621827530753">
+    <meta name="twitter:image" content="https://sandboxels.r74n.com/icons/card.png">
+    <meta name="twitter:image:alt" content="A rainforest made in Sandboxels">
+    <meta name="twitter:creator:id" content="1436857621827530753">
+
+    <link rel="stylesheet" type="text/css" href="style.css?nocache=3">
+    <style>
+        /* on mobile, make h1 fit on one line */
+        @media only screen and (max-width: 800px) {
+            h1 { font-size: 1em; }
+        }
+        #content { font-family: Arial, Helvetica, sans-serif; font-size:1.5em; }
+        h2 { text-align: center; margin-bottom:0; margin-top:45px}
+
+        #images {
+            display:flex;
+            border: 2px solid rgba(255, 255, 255, 0.45);
+            box-sizing: border-box;
+            max-width: 100%;
+            flex-wrap: wrap;
+        }
+        .imageItem {
+            flex-grow: 1;
+            text-align: center;
+            min-height: 10em;
+            border-style: solid;
+            border-color: rgba(255, 255, 255, 0.45);
+            border-left-width: 2px;
+            border-right-width: 2px;
+            box-sizing: border-box;
+            align-content: center;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+        .imageDisplay {
+            display: block;
+        }
+        .imageItem img {
+            max-height: 10em;
+        }
+        .imageMeta {
+            display: block;
+            margin: 0;
+            font-size: unset;
+        }
+    </style>
+</head>
+
+<body>
+<h1><a href="https://sandboxels.R74n.com" class="backbutton">&lt;</a> Images</h1>
+
+<!--
+https://sandboxels.wiki.gg/api.php?action=query&format=json&list=random&rnlimit=20&rnnamespace=6
+
+https://sandboxels.wiki.gg/api.php?action=query&list=search&srsearch=city&utf8=&format=json&srnamespace=6
+
+https://sandboxels.wiki.gg/wiki/Special:FilePath/Sand%20city--R74n.png
+-->
+
+<div id="content">
+
+<div id="images">
+
+<article class="imageItem">
+    <span class="imageDisplay"><a href="https://sandboxels.wiki.gg/wiki/Special:FilePath/Sand%20city--R74n.png" target="_blank"><img src="https://sandboxels.wiki.gg/wiki/Special:FilePath/Sand%20city--R74n.png"></a></span>
+    <h2 class="imageCaption imageMeta">Sand city</h2>
+    <address class="imageAuthor imageMeta">by R74n</address>
+</article>
+
+</div>
+
+</div>
+
+<script>
+    loadedImages = {};
+    function loadImages() {
+        
+    }
+</script>
+
+
+
+
+
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-93720349-9"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-93720349-9');
+</script>
+
+</body>
+
+</html>

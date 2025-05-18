@@ -3120,10 +3120,30 @@ elements.ginger = {
     burnTime: 60,
     burnInto: "dirt",
     breakInto: "ginger_juice",
+    cutInto: "cut_ginger",
     category: "food",
     state: "solid",
     density: 1250,
     conduct: 0.1,
+    hidden: true
+}
+elements.cut_ginger = {
+    color: "#ffdd80",
+    behavior: [
+        "XX|XX|XX",
+        "XX|XX|XX",
+        "M2|M1|M2",
+    ],
+    category:"food",
+    tempHigh: 100,
+    stateHigh: "steam",
+    burn:15,
+    burnTime:60,
+    burnInto: "steam",
+    breakInto: "juice",
+    breakIntoColor:"#ffe396",
+    state: "solid",
+    density: 1050,
     hidden: true
 }
 
@@ -7881,7 +7901,6 @@ elements.tempura = {
     temp: 40,
     tempHigh: 600,
     stateHigh: ["ash", "smoke"],
-    tempLow: -20,
     breakInto: "crumb",
     isFood: true,
     density: 100,
@@ -8032,11 +8051,13 @@ elements.fruit_slush.stateLowColorMultiplier = 1.2;
 elements.juice_ice.stateHighColorMultiplier = 0.83333333333;
 elements.juice_ice.stateHigh = "fruit_slush"
 elements.juice_ice.tempHigh = -20
-elements[iceelem].stateHigh = "fruit_slush"
-elements[iceelem].tempHigh = -20
+if(elements[iceelem]) {
+	elements[iceelem].stateHigh = "fruit_slush"
+	elements[iceelem].tempHigh = -20
+}
 
 // fruit milk with milk
-elements.fruit_milk.reactions.milk = { chance:1, func: function(pixel1, pixel2){
+elements.fruit_milk.reactions ??= {}; elements.fruit_milk.reactions.milk = { chance:1, func: function(pixel1, pixel2){
     let newrgb = interpolateRgb(getRGB(pixel1.color), getRGB(pixel2.color), 0.2);
         if (((newrgb.r + newrgb.g + newrgb.b) / 3) < 230) {
             changePixel(pixel1,"fruit_milk")
