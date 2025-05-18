@@ -1,4 +1,4 @@
-// Theme.js
+// Oxide.theme.js
 
 runAfterReset(function applyTheme() {
 	// Only run once
