@@ -6,6 +6,7 @@
 console.log("3pms_mod.js | Initiating...")
 
 // bypassing the tps limit
+/* nvm this is useless
 
 setTimeout(() => {
     const tpsbutton = document.getElementById("tpsButton");
@@ -32,10 +33,11 @@ setTimeout(() => {
         focusGame();
     };
 }, 1000);
+*/
 
 // more settings ig (coming soon)
+// edit: why did i set this as coming soon
 
-/*
 function showMoreSettings() {
     showingMenu="moresettings"
     console.log("3pms_mod.js | Opening More Settings....")
@@ -46,8 +48,17 @@ function showMoreSettings() {
 setTimeout(() => {
     // make the html injecting easier, do le insert adjacent html
     const gamediv = document.getElementById("gameDiv")
-    gamediv.insertAdjacentHTML("beforeend", '<div id="moresettingsParent"> <div id="moresettingsMenu"> <button class="XButton" onclick="closeMenu();">-</button> <span class="menuTitle">Settings</span> <div class="menuText" style="padding-top:1em"> </div> </div>');
-    const menuText = document.getElementsByClassName("menuText")[4]
+    gamediv.insertAdjacentHTML("beforeend", `
+        <div id="moresettingsParent" style="display: none" class="menuParent">
+            <div id="moresettingsMenu">
+                <button class="XButton" onclick="closeMenu();showSettings();">-</button>
+                <span class="menuTitle">More Settings</span>
+                <div class="menuText" style="padding-top:1em">
+                    <p>Nothing to see here ;3</p>
+                </div>
+            </div>
+        </div>`);
+    const menuText = document.getElementsByClassName("menuText")[6]
     const newButton = document.createElement("button")
     newButton.innerText = "More Settings"
     newButton.className = "settingsButton"
@@ -57,8 +68,6 @@ setTimeout(() => {
     }
     menuText.appendChild(newButton)
 }, 1000);
-
-*/
 
 // elements
 
@@ -89,3 +98,20 @@ elements.calcium_oxide = { // most of this is taken off calcium
 setTimeout(() => {
     console.log("3pms_mod.js | Initiated. Thank you.")
 }, 1000);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const thing=document.createElement("p");thing.innerText="MY NAME 📛 IS DAVID 👨‍🎤 DAD 👨‍👩‍👧‍👦👨‍👩‍👧‍👧 I ℹ️ WANT SOME ICE 🧊🇦🇶 CREAM 🧴🧴 DAVID 👨‍🎤 THAT IS MY NAME 📛 DAVID 👨‍🎤👨‍🎤 I ℹ️ WANT ANOTHER WHERE ❔❓ IS MY BALL 🏈🏈 I’M RUNNING 🏃‍♂️🏃‍♀️ OUT ON 🔛 THE ROAD 🚧 THERE IS A 🅰️ CAR 🚔🚖 AND IT IS GOING TO HIT 👊 ME 🖐🙋‍♀️ HEEEEEEEEELP HELP 💁 MEEEEEEE HEEEEEEEEEEEEEEEEELP\n\nthanks for using 3pms_mod.js :3";document.body.appendChild(thing)
