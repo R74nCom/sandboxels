@@ -1,4 +1,4 @@
-if (!enabledMods.includes("mods/betterSettings.js")) { enabledMods.unshift("mods/betterSettings.js"); localStorage.setItem("enabledMods", JSON.stringify(enabledMods)); window.location.reload(); };
+
 let setting = null
 
 dependOn("betterSettings.js", () => {
