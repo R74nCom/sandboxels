@@ -19071,18 +19071,51 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span>
 				span.style.display = "block";
 				document.getElementById("langSelectP").style.display = "none";
 			}
+			else {
+				function loadPlaylight() {
+					if (typeof playlightSDK === "undefined") {
+						document.getElementById("playlightButton").value = "Loading...";
+						document.head.insertAdjacentHTML("beforeend",`<link rel="stylesheet" href="https://sdk.playlight.dev/playlight-sdk.css">`);
+						let script = document.createElement("script");
+						script.setAttribute("type","module");
+						script.innerHTML = `try {
+    const module = await import("https://sdk.playlight.dev/playlight-sdk.es.js");
+    const playlightSDK = module.default;
+    await playlightSDK.init({
+		button: {
+			visible: false
+		},
+		exitIntent: {
+			enabled: false
+		}
+	});
+	playlightSDK.setDiscovery(true);
+	document.getElementById("playlightButton").value = "More Games";
+  } catch (error) {
+    console.error("Error loading the Playlight SDK:", error);
+	document.getElementById("playlightButton").value = "Error...";
+  }`;
+						document.head.appendChild(script);
+					}
+					else {
+						playlightSDK.setDiscovery(true);
+					}
+				}
+			}
 		</script>
 		<div id="bottomTopBoxColumns">
 			<div>
 				<div id="newsletterFrame">Be notified when Sandboxels and other R74n projects are updated, along with ramblings from the developer!<br><br>
 					<form action="https://news.r74n.com/api/v1/free?nojs=true" method="post" class="form _form_1mxvn_6" novalidate="" target="_blank"><input type="hidden" name="first_url" value="https://news.r74n.com/embed"><input type="hidden" name="first_referrer"><input type="hidden" name="current_url" value="https://news.r74n.com/embed"><input type="hidden" name="current_referrer"><input type="hidden" name="referral_code"><input type="hidden" name="source" value="embed"><input type="hidden" name="referring_pub_id"><input type="hidden" name="additional_referring_pub_ids">
 					<input type="email" placeholder="Type your email..." name="email" style="padding:15px"><input type="submit" value="Subscribe" style="background: rgb(23, 166, 255); padding:15px; border-radius: 20px"></input>
+					</form>
 				</div>
 			</div>
 			<div>
 				<p>Try our NEW GAME: <a href="https://R74n.com/cook/" target="_blank">Infinite Chef</a></p>
 				<p>Email us at <a href="mailto:contact@R74n.com?subject=%5BSandboxels%5D">contact@R74n.com</a> for advertising, help, or education!</p>
-				<p>Support development by subscribing on <a href="https://www.patreon.com/R74n" rel="me" target="_blank">our Patreon</a>! Many benefits!!</p>
+				<!-- <p>Support development by subscribing on <a href="https://www.patreon.com/R74n" rel="me" target="_blank">our Patreon</a>! Many benefits!!</p> -->
+				<input id="playlightButton" type="submit" onclick="loadPlaylight();" value="More Games" style="background: rgb(23, 166, 255); padding:15px; border-radius: 20px"></input>
 			</div>
 		</div>
 		<style>
