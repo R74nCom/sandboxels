@@ -16230,10 +16230,25 @@ behaviorRules = {
 		}
 		function resetPrompt() {
 			if (settings.resetwarning === 0 || currentPixels.length===0) { autoResizeCanvas(); focusGame(); return }
-			promptConfirm("Are you sure you want to clear the whole scene?",(r) => {
-				if (r) autoResizeCanvas();
-				focusGame();
-			},"Clear Canvas")
+			let pause = false;
+			if (promptState) { pause = promptState.wasPaused }
+			else if (paused) { pause = true }
+			promptState = {
+				text: "Are you sure you want to clear the whole scene?",
+				title: "Clear Canvas",
+				handler: (r) => {
+					if (r) autoResizeCanvas();
+					focusGame();
+				},
+				html: standalone ? null : `<br><br><p style="text-align:center"><input id="playlightButton" class="button" type="button" onclick="loadPlaylight();" value="Play More Games" style=""></input></p>`,
+				type: "confirm",
+				wasPaused: pause
+			}
+			showPromptScreen();
+			// promptConfirm("Are you sure you want to clear the whole scene?",(r) => {
+			// 	if (r) autoResizeCanvas();
+			// 	focusGame();
+			// },"Clear Canvas")
 		}
 		function tpsPrompt() {
 			promptInput("Enter the new simulation Ticks Per Second (TPS) between 1 and 1000. This is how many updates per second the simulation will run.\n\nThe default is 30.\n\nThe current TPS is " + tps + ".",
@@ -17602,6 +17617,9 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 			menuTitle.style.color = promptState.titleColor || "unset";
 			var promptMenuText = document.getElementById("promptMenuText");
 			promptMenuText.innerText = promptState.text || "";
+			if (promptState.html) {
+				promptMenuText.insertAdjacentHTML("beforeend",promptState.html);
+			}
 			let promptOK = document.getElementById("promptOK");
 			let promptCancel = document.getElementById("promptCancel");
 			let promptConfirm = document.getElementById("promptConfirm");
@@ -19063,7 +19081,9 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span>
 				<option value="uk">Українська Мова</option>
 				<option value="xem">😂🗣</option>
 			</optgroup>
-		</select></p>
+		</select>
+	
+		<input id="playlightButton" type="submit" onclick="loadPlaylight();" value="More Games" style="background: rgb(23, 166, 255); padding:15px; border-radius: 20px"></input></p>
 		<script>
 			if (standalone) { // move langSelect to Settings
 				let span = document.getElementById("setting-span-lang");
@@ -19121,8 +19141,7 @@ if (document.referrer && document.referrer.indexOf("r74n.") === -1) {
 			<div>
 				<p>Try our NEW GAME: <a href="https://R74n.com/cook/" target="_blank">Infinite Chef</a></p>
 				<p>Email us at <a href="mailto:contact@R74n.com?subject=%5BSandboxels%5D">contact@R74n.com</a> for advertising, help, or education!</p>
-				<!-- <p>Support development by subscribing on <a href="https://www.patreon.com/R74n" rel="me" target="_blank">our Patreon</a>! Many benefits!!</p> -->
-				<input id="playlightButton" type="submit" onclick="loadPlaylight();" value="More Games" style="background: rgb(23, 166, 255); padding:15px; border-radius: 20px"></input>
+				<p>Support development by subscribing on <a href="https://www.patreon.com/R74n" rel="me" target="_blank">our Patreon</a>! Many benefits!!</p>
 			</div>
 		</div>
 		<style>
