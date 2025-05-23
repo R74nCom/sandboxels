@@ -1,0 +1,1 @@
+elements.egg.color = elements.bead.color
