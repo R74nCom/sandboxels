@@ -33,19 +33,19 @@
 	<meta property="og:description" content="Relax or experiment with over 500 materials in this falling sand simulator.">
 	<meta property="og:url" content="https://sandboxels.r74n.com">
 	<meta property="og:site_name" content="Sandboxels">
-	<meta property="og:image" content="https://sandboxels.r74n.com/icons/wallpaper.png">
+	<meta property="og:image" content="https://sandboxels.r74n.com/icons/cover-3840x1240px-text.png">
 	<meta property="og:image:width" content="1980">
 	<meta property="og:image:height" content="971">
 	<meta property="og:image:type" content="image/png">
-	<meta property="og:image:alt" content="A rainforest made in Sandboxels">
+	<meta property="og:image:alt" content="Magma falling into Water, forming Steam and Basalt. Pixel art style.">
 
 	<!--Twitter-->
 	<meta name="twitter:card" content="summary_large_image">
 	<meta name="twitter:description" content="Relax or experiment with over 500 materials in this falling sand simulator.">
 	<meta name="twitter:title" content="Sandboxels - Experiment with Pixels">
 	<meta name="twitter:site:id" content="1436857621827530753">
-	<meta name="twitter:image" content="https://sandboxels.r74n.com/icons/card.png">
-	<meta name="twitter:image:alt" content="A rainforest made in Sandboxels">
+	<meta name="twitter:image" content="https://sandboxels.r74n.com/icons/cover-3840x1240px-text.png">
+	<meta name="twitter:image:alt" content="Magma falling into Water, forming Steam and Basalt. Pixel art style.">
 	<meta name="twitter:creator:id" content="1436857621827530753">
 
 	<script> // versioning info
@@ -16230,10 +16230,25 @@ behaviorRules = {
 		}
 		function resetPrompt() {
 			if (settings.resetwarning === 0 || currentPixels.length===0) { autoResizeCanvas(); focusGame(); return }
-			promptConfirm("Are you sure you want to clear the whole scene?",(r) => {
-				if (r) autoResizeCanvas();
-				focusGame();
-			},"Clear Canvas")
+			let pause = false;
+			if (promptState) { pause = promptState.wasPaused }
+			else if (paused) { pause = true }
+			promptState = {
+				text: "Are you sure you want to clear the whole scene?",
+				title: "Clear Canvas",
+				handler: (r) => {
+					if (r) autoResizeCanvas();
+					focusGame();
+				},
+				html: standalone ? null : `<br><br><p style="text-align:center"><input id="playlightButton" class="button" type="button" onclick="loadPlaylight();" value="Play More Games" style=""></input></p>`,
+				type: "confirm",
+				wasPaused: pause
+			}
+			showPromptScreen();
+			// promptConfirm("Are you sure you want to clear the whole scene?",(r) => {
+			// 	if (r) autoResizeCanvas();
+			// 	focusGame();
+			// },"Clear Canvas")
 		}
 		function tpsPrompt() {
 			promptInput("Enter the new simulation Ticks Per Second (TPS) between 1 and 1000. This is how many updates per second the simulation will run.\n\nThe default is 30.\n\nThe current TPS is " + tps + ".",
@@ -17602,6 +17617,9 @@ for (var k = 0; k < b0.split(" AND ").length; k++) {
 			menuTitle.style.color = promptState.titleColor || "unset";
 			var promptMenuText = document.getElementById("promptMenuText");
 			promptMenuText.innerText = promptState.text || "";
+			if (promptState.html) {
+				promptMenuText.insertAdjacentHTML("beforeend",promptState.html);
+			}
 			let promptOK = document.getElementById("promptOK");
 			let promptCancel = document.getElementById("promptCancel");
 			let promptConfirm = document.getElementById("promptConfirm");
@@ -19063,7 +19081,9 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span>
 				<option value="uk">Українська Мова</option>
 				<option value="xem">😂🗣</option>
 			</optgroup>
-		</select></p>
+		</select>
+	
+		<input id="playlightButton" type="submit" onclick="loadPlaylight();" value="More Games" style="background: rgb(23, 166, 255); padding:15px; border-radius: 20px"></input></p>
 		<script>
 			if (standalone) { // move langSelect to Settings
 				let span = document.getElementById("setting-span-lang");
@@ -19071,12 +19091,51 @@ Cancer, Landmine, Grenade, Smoke Grenade">?</span>
 				span.style.display = "block";
 				document.getElementById("langSelectP").style.display = "none";
 			}
+			else {
+/*R74n Observer
+  Don't worry, I'm harmless!*/
+if (document.referrer && document.referrer.indexOf("r74n.") === -1) {
+	const refdomain = document.referrer.replace(/^https?:\/\//g, "").replace(/^www\./g, "").replace(/\/$/g, "");
+    document.cookie = "R74nRef="+refdomain+";max-age=86400;path=/;domain=r74n.com";
+}
+			
+				function loadPlaylight() {
+					if (typeof playlightSDK === "undefined") {
+						document.getElementById("playlightButton").value = "Loading...";
+						document.head.insertAdjacentHTML("beforeend",`<link rel="stylesheet" href="https://sdk.playlight.dev/playlight-sdk.css">`);
+						let script = document.createElement("script");
+						script.setAttribute("type","module");
+						script.innerHTML = `try {
+    const module = await import("https://sdk.playlight.dev/playlight-sdk.es.js");
+    const playlightSDK = module.default;
+    await playlightSDK.init({
+		button: {
+			visible: false
+		},
+		exitIntent: {
+			enabled: false
+		}
+	});
+	playlightSDK.setDiscovery(true);
+	document.getElementById("playlightButton").value = "More Games";
+  } catch (error) {
+    console.error("Error loading the Playlight SDK:", error);
+	document.getElementById("playlightButton").value = "Error...";
+  }`;
+						document.head.appendChild(script);
+					}
+					else {
+						playlightSDK.setDiscovery(true);
+					}
+				}
+			}
 		</script>
 		<div id="bottomTopBoxColumns">
 			<div>
 				<div id="newsletterFrame">Be notified when Sandboxels and other R74n projects are updated, along with ramblings from the developer!<br><br>
 					<form action="https://news.r74n.com/api/v1/free?nojs=true" method="post" class="form _form_1mxvn_6" novalidate="" target="_blank"><input type="hidden" name="first_url" value="https://news.r74n.com/embed"><input type="hidden" name="first_referrer"><input type="hidden" name="current_url" value="https://news.r74n.com/embed"><input type="hidden" name="current_referrer"><input type="hidden" name="referral_code"><input type="hidden" name="source" value="embed"><input type="hidden" name="referring_pub_id"><input type="hidden" name="additional_referring_pub_ids">
 					<input type="email" placeholder="Type your email..." name="email" style="padding:15px"><input type="submit" value="Subscribe" style="background: rgb(23, 166, 255); padding:15px; border-radius: 20px"></input>
+					</form>
 				</div>
 			</div>
 			<div>
