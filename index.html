@@ -19111,6 +19111,7 @@ if (document.referrer && document.referrer.indexOf("r74n.") === -1) {
 }
 			
 				function loadPlaylight() {
+					if (!isOnSite) { location.href = "https://r74n.com"; return }
 					if (typeof playlightSDK === "undefined") {
 						document.getElementById("playlightButton").value = "Loading...";
 						document.head.insertAdjacentHTML("beforeend",`<link rel="stylesheet" href="https://sdk.playlight.dev/playlight-sdk.css">`);
