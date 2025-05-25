@@ -124,6 +124,9 @@
 		console.log("Can't access? Join our Discord: https://R74n.com/discord/");
 		console.log("Found this on another website? Let us know!");
 		console.log("©2021-" + new Date().getFullYear() + ". All Rights Reserved. https://sandboxels.R74n.com/license.txt");
+
+		isOnSite = location.hostname === "sandboxels.r74n.com";
+
 		// If settings is in localStorage, load it. If not, create an empty object.
 		settings = localStorage.getItem("settings") ? JSON.parse(localStorage.getItem("settings")) : {};
 		// URL query handling
@@ -16248,7 +16251,7 @@ behaviorRules = {
 					if (r) autoResizeCanvas();
 					focusGame();
 				},
-				html: standalone ? null : `<br><br><p style="text-align:center"><input id="playlightButton" class="button" type="button" onclick="loadPlaylight();" value="Play More Games" style=""></input></p>`,
+				html: (standalone || !isOnSite) ? null : `<br><br><p style="text-align:center"><input id="playlightButton" class="button" type="button" onclick="loadPlaylight();" value="Play More Games" style=""></input></p>`,
 				type: "confirm",
 				wasPaused: pause
 			}
