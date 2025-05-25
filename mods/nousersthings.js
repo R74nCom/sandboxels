@@ -2252,18 +2252,18 @@ elements.gas_filter = {
 function weightedAverage(num1, num2, weight){
     return ((weight * num1)+((1-weight)*num2))
 }
-function getPixelColor(pixel){
+function getPixelColor(color){
     let rgb2;
-    if(pixel.color.startsWith("#")) {
-        rgb2 = pixel.color.match(/[0-9A-F]{2}/ig).map(x => parseInt(x,16));
-    } else if(pixel.color.startsWith("hsl")) {
-        var hsl = pixel.color.match(/\d+/g);
-        hsl[0] = (hsl[0] / 360) % 360; if(hsl[0] < 0) { hsl[0]++ };
+    if(color.startsWith("#")) {
+        rgb2 = color.match(/[0-9A-F]{2}/ig).map(x => parseInt(x,16));
+    } else if(color.startsWith("hsl")) {
+        var hsl = color.match(/[\d.]+/g);
+        hsl[0] = (hsl[0] % 360) / 360; if(hsl[0] < 0) { hsl[0]++ };
         hsl[1] = Math.max(Math.min(hsl[1] / 100,1),0);
         hsl[2] = Math.max(Math.min(hsl[2] / 100,1),0);
         rgb2 = HSLtoRGB(hsl)
     } else {
-        rgb2 = pixel.color.match(/\d+/g);
+        rgb2 = color.match(/[\d.]+/g);
     }
     return rgb2
 }
@@ -2283,7 +2283,7 @@ elements.dyer = {
                 if (!(pixelMap[x][y].element == "dyer")){
                     var newPixel = pixelMap[x][y];
                     var rgb1 = pixel.color.match(/\d+/g);
-                    var rgb2 = getPixelColor(newPixel)
+                    var rgb2 = getPixelColor(newPixel.color)
                     // average the colors
                     var rgb = [
                         weightedAverage(parseInt(rgb1[0]), parseInt(rgb2[0]), 0.2),
@@ -2701,7 +2701,7 @@ elements.healing_serum = {
                 var y = pixel.y+coord[1];
                 if (!isEmpty(x, y, true)){
                     let otherPixel = pixelMap[x][y]
-                    if (otherPixel.element != "healing_serum"){
+                    if (otherPixel.element != "healing_serum" && !(elements.healing_serum.ignore.includes(otherPixel.element))){
                         pixel.decidedPixel = otherPixel
                         pixel.waitReduce = true
                         break;
@@ -2720,14 +2720,15 @@ elements.healing_serum = {
         // interpolate pixel color and decidedpixel's color (if it has one!)
         if (pixel.decidedPixel){
             var color1 = pixel.color.match(/\d+/g);
-            var color2 = getPixelColor(pixel.decidedPixel)
+            var color2 = getPixelColor(pixel.decidedPixel.color)
             var ratio = pixel.wait/15
             drawSquare(ctx, `rgb(${color1[0]*ratio+color2[0]*(1-ratio)},${color1[1]*ratio+color2[1]*(1-ratio)},${color1[2]*ratio+color2[2]*(1-ratio)})`, pixel.x, pixel.y)
         }
         else{
             drawSquare(ctx, pixel.color, pixel.x, pixel.y)
         }
-    }
+    },
+    ignore: ["wall", "cloner", "e_cloner", "border"]
 }
 var rayElement = "ray"
 var rayStoppedByWalls = false
@@ -3994,22 +3995,64 @@ elements.mod_dectector = {
     }
 }
 smoothColor = function(color1, color2, amount){
-    let rgb1 = getPixelColor({color: color1})
-    let rgb2 = getPixelColor({color: color2})
-    return {r:((1-amount)*rgb1.r)+(amount*rgb2.r),g:((1-amount)*rgb1.g)+(amount*rgb2.g),b:((1-amount)*rgb1.b)+(amount*rgb2.b)}
+    let rgb1 = getPixelColor(color1)
+    let rgb2 = getPixelColor(color2)
+    return {r:((1-amount)*rgb1[0])+(amount*rgb2[0]),g:((1-amount)*rgb1[1])+(amount*rgb2[1]),b:((1-amount)*rgb1[2])+(amount*rgb2[2])}
 }
-/*
+objectColorToString = function(object){
+    if (typeof object == "object"){return `rgb(${Math.round(object.r)}, ${Math.round(object.g)}, ${Math.round(object.b)})`}
+    else {return `rgb(${Math.round(object[0])}, ${Math.round(object[1])}, ${Math.round(object[2])})`}
+}
+let delayVariable = 0
 elements.delay = {
-    color: ["#df3b3b","#200909"],
+    color: "#df3b3b",
     behavior: behaviors.WALL,
     category: "machines",
     movable: false,
     insulate: true,
-    onSelect: () => {
-        logMessage("Will delay incoming signals by its temperature in Kelvin. -273C for 0 delay.")
+    onSelect: async () => {
+        let ansdelay = await _nousersthingsprompt("How long should the delay be in ticks?", 30)
+        delayVariable = parseInt(ansdelay);
+        logMessage("Will delay incoming signals. This element also acts as a one-way wire and will configure its direction when first shocked.")
     },
     tick: function(pixel){
-
+        if (typeof pixel.delay == "undefined"){pixel.delay = delayVariable}
+        if (typeof pixel.wait == "undefined"){pixel.wait = 0}
+        if (!pixel.coord){pixel.coord = [0, 0]}
+        if (typeof pixel.cMode == "undefined"){pixel.cMode = true}
+        if (pixel.cMode == true){
+            if (pixel.coord[0] == 0 && pixel.coord[1] == 0){
+                for (i = 0; i < squareCoords.length; i++){
+                    let coord = squareCoords[i]
+                    let x = pixel.x+coord[0]
+                    let y = pixel.y+coord[1]
+                    if (!isEmpty(x, y, true) && pixelMap[x][y].charge){
+                        pixel.coord = coord
+                        pixel.cMode = false
+                        pixel.wait = pixel.delay
+                    }
+                }
+            }
+            else {
+                if (!isEmpty(pixel.x+pixel.coord[0],pixel.y+pixel.coord[1], true) && pixelMap[pixel.x+pixel.coord[0]][pixel.y+pixel.coord[1]].charge){
+                    pixel.cMode = false
+                    pixel.wait = pixel.delay
+                }
+            }
+        } else {
+            if (pixel.wait == 0){
+                if (!isEmpty(pixel.x-pixel.coord[0],pixel.y-pixel.coord[1]) && elements[pixelMap[pixel.x-pixel.coord[0]][pixel.y-pixel.coord[1]].element].conduct){
+                    pixelMap[pixel.x-pixel.coord[0]][pixel.y-pixel.coord[1]].charge = 1
+                }
+                pixel.cMode = true
+            }
+        }
+        if (pixel.wait > 0){pixel.wait --}
+    },
+    renderer: function(pixel, ctx){
+        if (typeof pixel.wait != "undefined"){
+            let color = smoothColor(pixel.color, objectColorToString(smoothColor(pixel.color, "#000000", 0.85)), 1-(pixel.wait/pixel.delay))
+            drawSquare(ctx, objectColorToString(color), pixel.x, pixel.y)
+        } else {drawSquare(ctx, pixel.color, pixel.x, pixel.y)}
     }
 }
-    */
