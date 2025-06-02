@@ -62,9 +62,9 @@ elements.pool_water_spout = {
     stateHigh: "molten_steel",
     conduct: 0.42,
     behavior: [
-        "XX|CR:pool_water_spout|XX",
-        "CR:pool_water_spout|XX|CR:pool_water_spout",
-        "XX|CR:pool_water_spout|XX",
+        "XX|CR:pool_water|XX",
+        "CR:pool_water|XX|CR:pool_water",
+        "XX|CR:pool_water|XX",
     ],
 }
 
