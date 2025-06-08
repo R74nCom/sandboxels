@@ -18,8 +18,8 @@ elements.reactor_container_body_user = {
 	tempHigh: 700,
 	tempLow: -200,
 	temp: 50,
-	stateHigh: "Molten_Reactor_Conatainer",
-	stateLow: "Frozen_Reactor_Container",
+	stateHigh: "molten_reactor_conatainer",
+	stateLow: "frozen_reactor_container",
 };
 
 elements.molten_reactor_container = {
@@ -49,7 +49,7 @@ elements.reactor_water_steam = {
 	state: "gas",
 	tempLow: 150,
 	temp: 200,
-	stateLow: "Reactor_Water",
+	stateLow: "reactor_water",
 };
 
 elements.reactor_water_ice = {
