@@ -1,23 +1,175 @@
-//This mod was made by Adora the transfem, https://discord.com/users/778753696804765696 on discord and https://www.tiktok.com/@alextheagenenby?_t=8hoCVI3NRhu&_r=1 on tiktok. Current version: plans.js v1.1.0
-let fruits = ["plum", "peach", "pear", "orange", "apple", "cherry", "mango", "pineapple", "sugarcane"];
-let vineExclude = ["tomato", "grape", "fruit_vine", "kiwi"];
-let vines = ['tomato', 'grape', 'kiwi', 'watermelon', 'strawberry', 'cucumber'];
-let bushes = ["blackberry", "blueberry", "raspberry"];
-let allFruits = fruits.concat(vines, bushes)
-let rosaceae = ["plum", "peach", "pear", "apple", "cherry", "blackberry", "raspberry", "strawberry"]
-function interpolateRgb(rgb1, rgb2, ratio) {
-  const interpolatedRgb = {
-    r: Math.round(rgb1.r + (rgb2.r - rgb1.r) * ratio),
-    g: Math.round(rgb1.g + (rgb2.g - rgb1.g) * ratio),
-    b: Math.round(rgb1.b + (rgb2.b - rgb1.b) * ratio),
-  };
-  return interpolatedRgb;
+let vineGrow = ["wood", "rock_wall", "straw", "wall", "ewall", "bush_cane", "bush_base", "fruit_branch"];
+let plants = {
+	tree: [],
+	vine: ["grape", "tomato"],
+	bush: [],
+	includes: function(target){
+		for(item in this){
+			if(this[item] && Array.isArray(this[item]) && this[item].includes(target)){return true;}
+		}
+		return false;
+	}
 }
+let ethyleneChance = {
+	tomato: 0.000055,
+	orange: 0.000005,
+	strawberry: 0.000005,
+	grape: 0.000005,
+	blueberry: 0.000005,
+	apple: 0.00005,
+	avocado: 0.00005,
+	plum: 0.00005,
+	peach: 0.00005,
+	apricot: 0.00005,
+	pear: 0.00005,
+	mango: 0.000005,
+	kiwi: 0.000005,
+	lemon: 0.000005,
+	raspberry: 0.000005,
+	blackberry: 0.000005,
+	get: function(name){
+		return this[name] || 0.00000035;
+	}
+}
+elements.tomato.properties = {
+    type: "fruit",
+    fruit: "tomato",
+};
+elements.grape.properties = {
+    type: "fruit",
+    fruit: "grape",
+};
+class vineSeed {
+    category = "life";
+    behavior = behaviors.POWDER;
+    tick = function(pixel){
+      if(pixel.age > 40){
+        changePixel(pixel, (elements[pixel.element].low) ? "low_fruit_vine" : "fruit_vine");
+    }
+    pixel.age += 1;
+    };
+    properties = {
+      age: 0,
+    };
+    constructor(fruit, color, low = false){
+        this.properties.fruit = fruit;
+        this.color = color;
+		this.low = low;
+    };
+}
+
+class treeSeed {
+    properties = {
+        age: 0,
+        fruit: "",
+    };
+    tick = function(pixel) {
+        if (isEmpty(pixel.x,pixel.y+1)) {
+            movePixel(pixel,pixel.x,pixel.y+1);
+        }
+        else {
+            if (Math.random() < 0.02 && pixel.age > 50 && pixel.temp < 100) {
+                if (!outOfBounds(pixel.x,pixel.y+1)) {
+                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
+                    if (["dirt", "mud", "sand", "wet_sand", "clay_soil", "mycelium"].includes(dirtPixel.element)) {
+                        changePixel(dirtPixel,"root");
+                    }
+                }
+                if (isEmpty(pixel.x,pixel.y-1)) {
+                    movePixel(pixel,pixel.x,pixel.y-1);
+                    createPixel(Math.random() > 0.5 ? "wood" : "fruit_branch",pixel.x,pixel.y+1);
+                    if (pixelMap[pixel.x][pixel.y+1].element == "fruit_branch" || pixelMap[pixel.x][pixel.y+1].element == "fruit_leaves" || pixelMap[pixel.x][pixel.y+1].element == "wood"){
+                      pixelMap[pixel.x][pixel.y+1].fruit = pixel.fruit;
+                        pixelMap[pixel.x][pixel.y+1].age = pixel.age;
+                    }
+                }
+            }
+            else if (pixel.age > 1000) {
+                changePixel(pixel,"wood");
+            }
+            pixel.age++;
+        }
+        doDefaults(pixel);
+    };
+    breakInto = ["sawdust", "sap"];
+    burnInto = ["charcoal", "sap", "ember"];
+    tempHigh = 100;
+    stateHigh = "dead_plant";
+    tempLow = -40;
+    stateLow = "frozen_plant";
+    burn = 40;
+    burnTime = 50;
+    category = "life";
+    seed = true;
+    constructor(fruit, colours){
+        this.properties.fruit = fruit;
+        this.color = colours;
+    }
+}
+
+class fruit {
+    category = "food";
+    behavior = [["XX", "ST:fruit_leaves AND ST:fruit_branch AND ST:wood", "XX"],["ST:fruit_leaves AND ST:fruit_branch AND ST:wood", "XX", "ST:fruit_leaves AND ST:fruit_branch AND ST:wood"],["M2", "ST:fruit_leaves AND ST:fruit_branch AND ST:wood AND M1", "M2"]];
+    breakInto = "juice";
+    properties = {
+        type: "fruit",
+    };
+    isFood = true;
+    constructor(name, colour, jColour, type = "tree", sColour = false, extract = false, low = false){
+        this.properties.fruit = name;
+        this.color = colour;
+        this.breakIntoColor = jColour;
+        this.extract = (extract == false) ? undefined : extract;
+        if(type == "bush"){
+            this.behavior = [["XX", "ST:bush_cane", "XX"],["ST:bush_cane", "XX", "ST:bush_cane"],["M2", "ST:bush_cane AND M1", "M2"]];
+        } else if (type == "vine"){
+			this.behavior = behaviors.VINEFRUIT;
+		}
+		plants[type].push(name);
+		if(sColour != false){
+			if(type == "bush"){
+				elements[`${name}_seed`] = new bushSeed(name, sColour);
+			} else if (type == "vine"){
+				elements[`${name}_seed`] = new vineSeed(name, sColour, low);
+			} else {
+				elements[`${name}_seed`] = new treeSeed(name, sColour);
+			}
+		}
+    };
+	tick = function(pixel){
+		let chance = ethyleneChance.get(pixel.fruit);
+		for(let i = 0; i < squareCoords.length; i++){
+			let x = pixel.x+squareCoords[i][0], y = pixel.y+squareCoords[i][1];
+			if(isEmpty(x,y) && !outOfBounds(x,y) && Math.random() < chance){
+				createPixel("ethylene", x, y); 
+			}
+		}
+	}
+}
+elements.tomato.tick = function(pixel){
+	let chance = ethyleneChance.get(pixel.fruit);
+	for(let i = 0; i < squareCoords.length; i++){
+		let x = pixel.x+squareCoords[i][0], y = pixel.y+squareCoords[i][1];
+		if(isEmpty(x,y) && !outOfBounds(x,y) && Math.random() < chance){
+			createPixel("ethylene", x, y); 
+		}
+	}
+}
+elements.grape.tick = function(pixel){
+	let chance = ethyleneChance.get(pixel.fruit);
+	for(let i = 0; i < squareCoords.length; i++){
+		let x = pixel.x+squareCoords[i][0], y = pixel.y+squareCoords[i][1];
+		if(isEmpty(x,y) && !outOfBounds(x,y) && Math.random() < chance){
+			createPixel("ethylene", x, y); 
+		}
+	}
+}
+elements.wood.properties = {age: 0, fruit: ""};
 
 elements.fruit_branch = {
     color: elements.tree_branch.color,
     behavior: [
-        "CR:fruit_leaves,fruit_branch%2|CR:fruit_leaves,fruit_leaves,fruit_leaves,fruit_branch%2|CR:fruit_leaves,fruit_branch%2",
+        "XX|XX|XX",
         "XX|XX|XX",
         "XX|XX|XX",
     ],
@@ -35,16 +187,30 @@ elements.fruit_branch = {
     hardness: 0.15,
     breakInto: ["sap","sawdust"],
     seed: "apple_seed",
+	properties: {
+		age: 0,
+		fruit: "",
+	},
   tick: function(pixel){
+  let pos = [[-1, -1], [0, -1], [1, -1]];
+  for(let i = 0; i < pos.length; i++){
+    let x = pixel.x+pos[i][0], y = pixel.y+pos[i][1];
+    if(isEmpty(x,y) && !outOfBounds(x,y)){
+        if(Math.random() < 0.035){
+            let elemArr = (pos[i][0] == 0) ? ["fruit_leaves","fruit_leaves","fruit_leaves","fruit_branch","fruit_branch"] : ["fruit_branch", "fruit_branch", "fruit_leaves", "fruit_leaves", "wood"];
+            createPixel(elemArr[Math.round(Math.random()*elemArr.length)], x, y);
+        }
+    }
+  }
     for(var i = 0; i < adjacentCoords.length; i++){
       let x = pixel.x+adjacentCoords[i][0];
       let y = pixel.y+adjacentCoords[i][1];
       if(isEmpty(x, y) || outOfBounds(x, y)) { continue; }
       let pixel2 = pixelMap[x][y];
       if(pixel2.element == "fruit_branch" || pixel2.element == "fruit_leaves" || pixel2.element == "wood"){
-        if(pixel.fruit && !pixel2.fruit){
+        if(pixel.fruit != "" && pixel2.fruit == ""){
           pixel2.fruit = pixel.fruit;
-        } else if (!pixel.fruit && pixel2.fruit){
+        } else if (pixel.fruit == "" && pixel2.fruit != ""){
           pixel.fruit = pixel2.fruit;
         }
       }
@@ -76,6 +242,10 @@ elements.fruit_leaves = {
     state: "solid",
     density: 1050,
     hidden: true,
+	properties: {
+		age: 0,
+		fruit: "",
+	},
     tick: function(pixel){
       if(pixelTicks == pixel.start + 1 && pixel.blooming == undefined){
         if(Math.floor(Math.random() * 3) == 2){
@@ -90,17 +260,33 @@ elements.fruit_leaves = {
         let y = pixel.y+adjacentCoords[i][1];
         if(isEmpty(x, y) || outOfBounds(x, y)) { continue; }
         let pixel2 = pixelMap[x][y];
-        if(pixel2.element == "fruit_branch" || pixel2.element == "fruit_leaves" || pixel2.element == "wood" || (elements[pixel2.element].properties && elements[pixel2.element].properties.type == "fruit") && pixel2.fruit != "pineapple"){
+        if((["fruit_vine", "fruit_branch", "fruit_leaves", "low_fruit_vine", "wood"].includes(pixel2.element) || (pixel2.type && pixel2.type == "fruit")) && pixel2.fruit != "pineapple"){
             if(pixel.fruit && !pixel2.fruit){
               pixel2.fruit = pixel.fruit;
             } else if (!pixel.fruit && pixel2.fruit){
               pixel.fruit = pixel2.fruit;
-          }
+            }
+            if(pixel.age && !pixel2.age){
+              pixel2.age = pixel.age;
+            } else if (!pixel.age && pixel2.age){
+              pixel.age = pixel2.age;
+            }
         }
       }
       if(pixel.blooming){
+		  let chance = 0.0025;
+		  for(let i = 0; i < squareCoords.length; i++){
+			  let x = pixel.x+squareCoords[i][0], y = pixel.y+squareCoords[i][1];
+			  if(!isEmpty(x,y) && !outOfBounds(x,y)){
+                  let p2 = pixelMap[x][y];
+                  if(["ethylene","propylene"].includes(p2.element)){
+				      chance = [0.01, 0.0035][["ethylene","propylene"].indexOf(p2.element)]  || chance;
+                      
+                  }
+			  }
+		  }
         if(pixelTicks > pixel.start + 150){
-          if(Math.floor(Math.random() * 400) == 3){
+          if(Math.random() < chance){
             if(pixel.fruit){
               if(pixel.fruit == "random"){
                 changePixel(pixel, fruits[Math.floor(Math.random() * fruits.length)]);
@@ -132,707 +318,37 @@ elements.fruit_leaves = {
   }
 }
 
-elements.apple_seed = {
-    color: "#1A0E00",
-    tick: function(pixel) {
-        if (isEmpty(pixel.x,pixel.y+1)) {
-            movePixel(pixel,pixel.x,pixel.y+1);
-        }
-        else {
-            if (Math.random() < 0.02 && pixel.age > 50 && pixel.temp < 100) {
-                if (!outOfBounds(pixel.x,pixel.y+1)) {
-                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
-                    if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
-                        changePixel(dirtPixel,"root");
-                    }
-                }
-                if (isEmpty(pixel.x,pixel.y-1)) {
-                    movePixel(pixel,pixel.x,pixel.y-1);
-                    createPixel(Math.random() > 0.5 ? "wood" : "fruit_branch",pixel.x,pixel.y+1);
-                    if (pixelMap[pixel.x][pixel.y+1].element == "fruit_branch" || pixelMap[pixel.x][pixel.y+1].element == "fruit_leaves" || pixelMap[pixel.x][pixel.y+1].element == "wood"){
-                      pixelMap[pixel.x][pixel.y+1].fruit = "apple";
-                    }
-                }
-            }
-            else if (pixel.age > 1000) {
-                changePixel(pixel,"wood");
-            }
-            pixel.age++;
-        }
-        doDefaults(pixel);
-    },
-    properties: {
-        "age":0,
-      fruit:"apple"
-    },
-    tempHigh: 100,
-    stateHigh: "dead_plant",
-    tempLow: -2,
-    stateLow: "frozen_plant",
-    burn: 65,
-    burnTime: 15,
-    category: "life",
-    state: "solid",
-    density: 1500,
-    cooldown: defaultCooldown,
-    seed: true,
-};
-elements.apple = {
-  behavior: [["XX", "ST:fruit_leaves AND ST:fruit_branch", "XX"],["ST:fruit_leaves AND ST:fruit_branch", "XX", "ST:fruit_leaves AND ST:fruit_branch"],["M2", "ST:fruit_leaves AND ST:fruit_branch AND M1", "M2"]],
-  color: "#ff0004",
-  category: "food",
-  breakInto: "juice",
-  breakIntoColor: "#FF4747",
-  isFood: true,
-  properties: {
-    fruit: "apple",
-    type: "fruit",
-  }
-}
-elements.pear_seed = {
-    color: "#1A0E00",
-    tick: function(pixel) {
-        if (isEmpty(pixel.x,pixel.y+1)) {
-            movePixel(pixel,pixel.x,pixel.y+1);
-        }
-        else {
-            if (Math.random() < 0.02 && pixel.age > 50 && pixel.temp < 100) {
-                if (!outOfBounds(pixel.x,pixel.y+1)) {
-                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
-                    if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
-                        changePixel(dirtPixel,"root");
-                    }
-                }
-                if (isEmpty(pixel.x,pixel.y-1)) {
-                    movePixel(pixel,pixel.x,pixel.y-1);
-                    createPixel(Math.random() > 0.5 ? "wood" : "fruit_branch",pixel.x,pixel.y+1);
-                    if (pixelMap[pixel.x][pixel.y+1].element == "fruit_branch" || pixelMap[pixel.x][pixel.y+1].element == "fruit_leaves"){
-                      pixelMap[pixel.x][pixel.y+1].fruit = "pear";
-                    }
-                }
-            }
-            else if (pixel.age > 1000) {
-                changePixel(pixel,"wood");
-            }
-            pixel.age++;
-        }
-        doDefaults(pixel);
-    },
-    properties: {
-        "age":0,
-      fruit:"pear"
-    },
-    tempHigh: 100,
-    stateHigh: "dead_plant",
-    tempLow: -2,
-    stateLow: "frozen_plant",
-    burn: 65,
-    burnTime: 15,
-    category: "life",
-    state: "solid",
-    density: 1500,
-    cooldown: defaultCooldown,
-    seed: true,
-};
-elements.pear = {
-  behavior: [["XX", "ST:fruit_leaves AND ST:fruit_branch", "XX"],["ST:fruit_leaves AND ST:fruit_branch", "XX", "ST:fruit_leaves AND ST:fruit_branch"],["M2", "ST:fruit_leaves AND ST:fruit_branch AND M1", "M2"]],
-  color: "#97FF43",
-  category: "food",
-  breakInto: "juice",
-  breakIntoColor: "#ABFF8D",
-  isFood: true,
-  properties: {
-    fruit: "pear",
-    type: "fruit",
-  }
-}
-elements.cherry_seed = {
-    color: "#b56233",
-    tick: function(pixel) {
-        if (isEmpty(pixel.x,pixel.y+1)) {
-            movePixel(pixel,pixel.x,pixel.y+1);
-        }
-        else {
-            if (Math.random() < 0.02 && pixel.age > 50 && pixel.temp < 100) {
-                if (!outOfBounds(pixel.x,pixel.y+1)) {
-                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
-                    if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
-                        changePixel(dirtPixel,"root");
-                    }
-                }
-                if (isEmpty(pixel.x,pixel.y-1)) {
-                    movePixel(pixel,pixel.x,pixel.y-1);
-                    createPixel(Math.random() > 0.5 ? "wood" : "fruit_branch",pixel.x,pixel.y+1);
-                    if (pixelMap[pixel.x][pixel.y+1].element == "fruit_branch" || pixelMap[pixel.x][pixel.y+1].element == "fruit_leaves"){
-                      pixelMap[pixel.x][pixel.y+1].fruit = "cherry";
-                    }
-                }
-            }
-            else if (pixel.age > 1000) {
-                changePixel(pixel,"wood");
-            }
-            pixel.age++;
-        }
-        doDefaults(pixel);
-    },
-    properties: {
-        "age":0,
-      fruit:"cherry"
-    },
-    tempHigh: 100,
-    stateHigh: "dead_plant",
-    tempLow: -2,
-    stateLow: "frozen_plant",
-    burn: 65,
-    burnTime: 15,
-    category: "life",
-    state: "solid",
-    density: 1500,
-    cooldown: defaultCooldown,
-    seed: true,
-};
-elements.cherry = {
-  behavior: [["XX", "ST:fruit_leaves AND ST:fruit_branch", "XX"],["ST:fruit_leaves AND ST:fruit_branch", "XX", "ST:fruit_leaves AND ST:fruit_branch"],["M2", "ST:fruit_leaves AND ST:fruit_branch AND M1", "M2"]],
-  color: "#750000",
-  category: "food",
-  breakInto: "juice",
-  breakIntoColor: "#8a0000",
-  isFood: true,
-  properties: {
-    fruit: "cherry",
-    type: "fruit",
-  }
-}
-elements.milk = {
-  color: "#fafafa",
-  behavior: behaviors.LIQUID,
-  onMix: function(milk1, milk2) {
-    if (shiftDown && Math.random() < 0.01) {
-        changePixel(milk1,"butter")
-    }
-  },
-  reactions: {
-    "melted_chocolate": { elem1:"chocolate_milk", elem2:null },
-    "chocolate": { elem1:"chocolate_milk", elem2:"melted_chocolate", chance:0.05 },
-    "coffee_ground": { elem1:"chocolate_milk", chance:0.05 },
-    "juice": { elem1:"fruit_milk", elem2:null, chance:0.05, func: function(pixel1, pixel2){
-      let newrgb = interpolateRgb(getRGB('rgb(250,250,250)'), getRGB(pixel2.color), 0.25);
-      pixel1.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
-    }},
-    "soda": { elem1:"pilk", elem2:null, chance:0.1 },
-    "yolk": { elem1:"eggnog", elem2:null, chance:0.1 },
-    "dirt": { elem1: null, elem2: "mud" },
-    "sand": { elem1: null, elem2: "wet_sand" },
-    "clay_soil": { elem1: null, elem2: "clay" },
-    "caramel": { color1:"#C8B39A", elem2:null, chance:0.05 },
-    "sugar": { elem2:null, chance:0.005},
-  },
-  tempLow: 0,
-  stateLow: "ice_cream",
-  stateLowColorMultiplier: [0.97,0.93,0.87],
-  tempHigh: 93,
-  stateHigh: "yogurt",
-  viscosity: 1.5,
-  category: "liquids",
-  state: "liquid",
-  density: 1036.86,
-  isFood: true
-}
-elements.cream = {
-  color: "#f7f7f7",
-  behavior: behaviors.LIQUID,
-  onMix: function(milk1, milk2) {
-      if ((shiftDown && Math.random() < 0.01) || (elements[milk2.element].id === elements.milk.id && Math.random() < 0.00025)) {
-          changePixel(milk1,"butter")
-      }
-  },
-  reactions: {
-      "dirt": { elem1: null, elem2: "mud" },
-      "sand": { elem1: null, elem2: "wet_sand" },
-      "clay_soil": { elem1: null, elem2: "clay" },
-      "melted_chocolate": { color1:"#664934", elem2:null },
-      "chocolate": { color1:"#664934", elem2:"melted_chocolate", chance:0.05 },
-      "juice": { elem1:"fruit_milk", elem2:null, chance:0.05, func: function(pixel1, pixel2){
-                 let newrgb = interpolateRgb(getRGB('rgb(250,250,250)'), getRGB(pixel2.color), 0.25);
-                 pixel1.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
-               }},
-      "soda": { elem1:"pilk", elem2:null, chance:0.1 },
-      "yolk": { elem1:"#eggnog", elem2:null, chance:0.1 },
-      "caramel": { color1:"#C8B39A", chance:0.05 },
-      "sugar": { elem2:null, chance:0.005},
-  },
-  viscosity: 1.5,
-  tempHigh: 1000,
-  stateHigh: ["smoke","smoke","smoke","steam","steam","calcium"],
-  tempLow: 0,
-  stateLow: "ice_cream",
-  stateLowColorMultiplier: 0.97,
-  category: "liquids",
-  hidden: true,
-  isFood: true,
-  state: "liquid",
-  density: 959.97,
-}
-function getRGB(rgb){
-  let rgb2 = rgb.replace(")", "").replace("rgb(", "").replace(/,/g, "r").split("r")
-  return { r: parseInt(rgb2[0]), g: parseInt(rgb2[1]), b: parseInt(rgb2[2]) };
-}
-elements.peach = {
-  behavior: [["XX", "ST:fruit_leaves AND ST:fruit_branch", "XX"],["ST:fruit_leaves AND ST:fruit_branch", "XX", "ST:fruit_leaves AND ST:fruit_branch"],["M2", "ST:fruit_leaves AND ST:fruit_branch AND M1", "M2"]],
-  color: ["#ffb485", "#ffa770", "#ff7b61", "#ff512e", "#ff350d"],
-  category: "food",
-  breakInto: "juice",
-  breakIntoColor: "#ffa74f",
-  isFood: true,
-  properties: {
-    fruit: "peach",
-    type: "fruit",
-  }
-}
-elements.peach_seed = {
-    color: "#240c00",
-    tick: function(pixel) {
-        if (isEmpty(pixel.x,pixel.y+1)) {
-            movePixel(pixel,pixel.x,pixel.y+1);
-        }
-        else {
-            if (Math.random() < 0.02 && pixel.age > 50 && pixel.temp < 100) {
-                if (!outOfBounds(pixel.x,pixel.y+1)) {
-                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
-                    if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
-                        changePixel(dirtPixel,"root");
-                    }
-                }
-                if (isEmpty(pixel.x,pixel.y-1)) {
-                    movePixel(pixel,pixel.x,pixel.y-1);
-                    createPixel(Math.random() > 0.5 ? "wood" : "fruit_branch",pixel.x,pixel.y+1);
-                    if (pixelMap[pixel.x][pixel.y+1].element == "fruit_branch" || pixelMap[pixel.x][pixel.y+1].element == "fruit_leaves"){
-                      pixelMap[pixel.x][pixel.y+1].fruit = "peach";
-                    }
-                }
-            }
-            else if (pixel.age > 1000) {
-                changePixel(pixel,"wood");
-            }
-            pixel.age++;
-        }
-        doDefaults(pixel);
-    },
-    properties: {
-        "age":0,
-      fruit:"peach"
-    },
-    tempHigh: 100,
-    stateHigh: "dead_plant",
-    tempLow: -2,
-    stateLow: "frozen_plant",
-    burn: 65,
-    burnTime: 15,
-    category: "life",
-    state: "solid",
-    density: 1500,
-    cooldown: defaultCooldown,
-    seed: true,
-};
-elements.plum = {
-  behavior: [["XX", "ST:fruit_leaves AND ST:fruit_branch", "XX"],["ST:fruit_leaves AND ST:fruit_branch", "XX", "ST:fruit_leaves AND ST:fruit_branch"],["M2", "ST:fruit_leaves AND ST:fruit_branch AND M1", "M2"]],
-  color: "#1c0030",
-  category: "food",
-  breakInto: "juice",
-  breakIntoColor: "#d2880a",
-  isFood: true,
-  properties: {
-    fruit: "plum",
-    type: "fruit",
-  }
-}
-elements.plum_seed = {
-    color: "#240c00",
-    tick: function(pixel) {
-        if (isEmpty(pixel.x,pixel.y+1)) {
-            movePixel(pixel,pixel.x,pixel.y+1);
-        }
-        else {
-            if (Math.random() < 0.02 && pixel.age > 50 && pixel.temp < 100) {
-                if (!outOfBounds(pixel.x,pixel.y+1)) {
-                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
-                    if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
-                        changePixel(dirtPixel,"root");
-                    }
-                }
-                if (isEmpty(pixel.x,pixel.y-1)) {
-                    movePixel(pixel,pixel.x,pixel.y-1);
-                    createPixel(Math.random() > 0.5 ? "wood" : "fruit_branch",pixel.x,pixel.y+1);
-                    if (pixelMap[pixel.x][pixel.y+1].element == "fruit_branch" || pixelMap[pixel.x][pixel.y+1].element == "fruit_leaves"){
-                      pixelMap[pixel.x][pixel.y+1].fruit = "plum";
-                    }
-                }
-            }
-            else if (pixel.age > 1000) {
-                changePixel(pixel,"wood");
-            }
-            pixel.age++;
-        }
-        doDefaults(pixel);
-    },
-    properties: {
-        "age":0,
-      fruit:"plum"
-    },
-    tempHigh: 100,
-    stateHigh: "dead_plant",
-    tempLow: -2,
-    stateLow: "frozen_plant",
-    burn: 65,
-    burnTime: 15,
-    category: "life",
-    state: "solid",
-    density: 1500,
-    cooldown: defaultCooldown,
-    seed: true,
-};
-elements.juice.reactions.juice = {
-  func: function(pixel1, pixel2){
-    if(pixel1.color != pixel2.color){
-      if(Math.floor(Math.random() * 1000) == 1){
-      let newrgb = interpolateRgb(getRGB(pixel1.color), getRGB(pixel2.color), 0.5);
-      pixel1.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
-      pixel2.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
-      }
-    }
-  }
-}
-elements.juice.onMix = function(pixel){
-    let num = Math.floor(Math.random() * 4);
-    let x = pixel.x + adjacentCoords[num][0];
-    let y = pixel.y + adjacentCoords[num][1];
-    if(!isEmpty(x,y) && !outOfBounds(x,y)){
-      let pixel2 = pixelMap[x][y];
-      if(pixel.color != pixel2.color && pixel2.element == "juice"){
-        let condition;
-        if(shiftDown == 0){
-          condition = (Math.floor(Math.random() * 2) == 1); 
-        } else {
-          condition = true; 
-        }
-        if(condition){
-          let newrgb = interpolateRgb(getRGB(pixel.color), getRGB(pixel2.color), 0.5);
-          pixel.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
-          pixel2.color = `rgb(${parseInt(newrgb.r)},${parseInt(newrgb.g)},${parseInt(newrgb.b)})`;
-        }
-      }
-    }
-  }
-elements.vine.behavior = [["XX", "ST:vine", "XX"],["ST:vine", "XX", "ST:vine"],["XX", "ST:vine AND M1", "XX"]]
-elements.apricot = {
-  behavior: [["XX", "ST:fruit_leaves AND ST:fruit_branch", "XX"],["ST:fruit_leaves AND ST:fruit_branch", "XX", "ST:fruit_leaves AND ST:fruit_branch"],["M2", "ST:fruit_leaves AND ST:fruit_branch AND M1", "M2"]],
-  color: ["#ffa100", "#FF5D00", "#FF7A00", "#FF9700"],
-  category: "food",
-  breakInto: "juice",
-  breakIntoColor: "#ffa836",
-  isFood: true,
-  properties: {
-    fruit: "apricot",
-    type: "fruit",
-  }
-}
-elements.apricot_seed = {
-    color: "#291300",
-    tick: function(pixel) {
-        if (isEmpty(pixel.x,pixel.y+1)) {
-            movePixel(pixel,pixel.x,pixel.y+1);
-        }
-        else {
-            if (Math.random() < 0.02 && pixel.age > 50 && pixel.temp < 100) {
-                if (!outOfBounds(pixel.x,pixel.y+1)) {
-                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
-                    if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
-                        changePixel(dirtPixel,"root");
-                    }
-                }
-                if (isEmpty(pixel.x,pixel.y-1)) {
-                    movePixel(pixel,pixel.x,pixel.y-1);
-                    createPixel(Math.random() > 0.5 ? "wood" : "fruit_branch",pixel.x,pixel.y+1);
-                    if (pixelMap[pixel.x][pixel.y+1].element == "fruit_branch" || pixelMap[pixel.x][pixel.y+1].element == "fruit_leaves"){
-                      pixelMap[pixel.x][pixel.y+1].fruit = "apricot";
-                    }
-                }
-            }
-            else if (pixel.age > 1000) {
-                changePixel(pixel,"wood");
-            }
-            pixel.age++;
-        }
-        doDefaults(pixel);
-    },
-    properties: {
-        "age":0,
-      fruit:"apricot"
-    },
-    tempHigh: 100,
-    stateHigh: "dead_plant",
-    tempLow: -2,
-    stateLow: "frozen_plant",
-    burn: 65,
-    burnTime: 15,
-    category: "life",
-    state: "solid",
-    density: 1500,
-    cooldown: defaultCooldown,
-    seed: true,
-};
-elements.orange = {
-  behavior: [["XX", "ST:fruit_leaves AND ST:fruit_branch", "XX"],["ST:fruit_leaves AND ST:fruit_branch", "XX", "ST:fruit_leaves AND ST:fruit_branch"],["M2", "ST:fruit_leaves AND ST:fruit_branch AND M1", "M2"]],
-  color: "#FFB400",
-  category: "food",
-  breakInto: "juice",
-  breakIntoColor: "#FFDB00",
-  isFood: true,
-  properties: {
-    fruit: "orange",
-    type: "fruit",
-  }
-}
-elements.orange_seed = {
-    color: "#291300",
-    tick: function(pixel) {
-        if (isEmpty(pixel.x,pixel.y+1)) {
-            movePixel(pixel,pixel.x,pixel.y+1);
-        }
-        else {
-            if (Math.random() < 0.02 && pixel.age > 50 && pixel.temp < 100) {
-                if (!outOfBounds(pixel.x,pixel.y+1)) {
-                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
-                    if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
-                        changePixel(dirtPixel,"root");
-                    }
-                }
-                if (isEmpty(pixel.x,pixel.y-1)) {
-                    movePixel(pixel,pixel.x,pixel.y-1);
-                    createPixel(Math.random() > 0.5 ? "wood" : "fruit_branch",pixel.x,pixel.y+1);
-                    if (pixelMap[pixel.x][pixel.y+1].element == "fruit_branch" || pixelMap[pixel.x][pixel.y+1].element == "fruit_leaves"){
-                      pixelMap[pixel.x][pixel.y+1].fruit = "orange";
-                    }
-                }
-            }
-            else if (pixel.age > 1000) {
-                changePixel(pixel,"wood");
-            }
-            pixel.age++;
-        }
-        doDefaults(pixel);
-    },
-    properties: {
-        "age":0,
-      fruit:"orange"
-    },
-    tempHigh: 100,
-    stateHigh: "dead_plant",
-    tempLow: -2,
-    stateLow: "frozen_plant",
-    burn: 65,
-    burnTime: 15,
-    category: "life",
-    state: "solid",
-    density: 1500,
-    cooldown: defaultCooldown,
-    seed: true,
-};
-elements.random_seed = {
-    color: "#291300",
-    tick: function(pixel) {
-      if(pixel.start == pixelTicks){
-        pixel.fruit = fruits[Math.floor(Math.random() * fruits.length)];
-      }
-        if (isEmpty(pixel.x,pixel.y+1)) {
-            movePixel(pixel,pixel.x,pixel.y+1);
-        }
-        else {
-            if (Math.random() < 0.02 && pixel.age > 50 && pixel.temp < 100) {
-                if (!outOfBounds(pixel.x,pixel.y+1)) {
-                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
-                    if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
-                        changePixel(dirtPixel,"root");
-                    }
-                }
-                if (isEmpty(pixel.x,pixel.y-1)) {
-                    movePixel(pixel,pixel.x,pixel.y-1);
-                    createPixel(Math.random() > 0.5 ? "wood" : "fruit_branch",pixel.x,pixel.y+1);
-                    if (pixelMap[pixel.x][pixel.y+1].element == "fruit_branch" || pixelMap[pixel.x][pixel.y+1].element == "fruit_leaves"){
-                      pixelMap[pixel.x][pixel.y+1].fruit = pixel.fruit;
-                    }
-                }
-            }
-            else if (pixel.age > 1000) {
-                changePixel(pixel,"wood");
-            }
-            pixel.age++;
-        }
-        doDefaults(pixel);
-    },
-    properties: {
-        "age":0,
-    },
-    tempHigh: 100,
-    stateHigh: "dead_plant",
-    tempLow: -2,
-    stateLow: "frozen_plant",
-    burn: 65,
-    burnTime: 15,
-    category: "life",
-    state: "solid",
-    density: 1500,
-    cooldown: defaultCooldown,
-    seed: true,
-};
-elements.multi_seed = {
-    color: "#291300",
-    tick: function(pixel) {
-      pixel.fruit = fruits[Math.floor(Math.random() * fruits.length)]
-        if (isEmpty(pixel.x,pixel.y+1)) {
-            movePixel(pixel,pixel.x,pixel.y+1);
-        }
-        else {
-            if (Math.random() < 0.02 && pixel.age > 50 && pixel.temp < 100) {
-                if (!outOfBounds(pixel.x,pixel.y+1)) {
-                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
-                    if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
-                        changePixel(dirtPixel,"root");
-                    }
-                }
-                if (isEmpty(pixel.x,pixel.y-1)) {
-                    movePixel(pixel,pixel.x,pixel.y-1);
-                    createPixel(Math.random() > 0.5 ? "wood" : "fruit_branch",pixel.x,pixel.y+1);
-                    if (pixelMap[pixel.x][pixel.y+1].element == "fruit_branch" || pixelMap[pixel.x][pixel.y+1].element == "fruit_leaves"){
-                      pixelMap[pixel.x][pixel.y+1].fruit = "random";
-                    }
-                }
-            }
-            else if (pixel.age > 1000) {
-                changePixel(pixel,"wood");
-            }
-            pixel.age++;
-        }
-        doDefaults(pixel);
-    },
-    properties: {
-        "age":0,
-    },
-    tempHigh: 100,
-    stateHigh: "dead_plant",
-    tempLow: -2,
-    stateLow: "frozen_plant",
-    burn: 65,
-    burnTime: 15,
-    category: "life",
-    state: "solid",
-    density: 1500,
-    cooldown: defaultCooldown,
-    seed: true,
-};
-elements.fruit_vine = {
-  category: "life",
-  color: elements.plant.color,
-  behavior: [["XX", "ST:fruit_vine AND ST:wood", "XX"], ["ST:fruit_vine AND ST:wood", "XX", "ST:fruit_vine AND ST:wood"], ["XX", "ST:fruit_vine AND M1 AND ST:wood", "XX"]],
-  properties: {
+
+
+class bushSeed{
+  behavior = behaviors.STURDYPOWDER;
+  category = "life";
+  properties = {
     age: 0,
-  },
-  tick: function(pixel){
-    if(Math.floor(Math.random() * 100) == 1 && pixel.age > 25 && pixel.age < 500){
-      for(var i = 0; i < squareCoords.length; i++){
-        let x1 = pixel.x + squareCoords[i][0];
-        let y1 = pixel.y + squareCoords[i][1];
-        if(!isEmpty(x1,y1) && !outOfBounds(x1,y1) && !vineExclude.includes(pixelMap[x1][y1].element)){
-          let randomNum = Math.floor(Math.random() * 4);
-          let x2 = x1 + squareCoords[randomNum][0];
-          let y2 = y1 + squareCoords[randomNum][1];
-          if(isEmpty(x2,y2) && !outOfBounds(x2,y2)){
-            createPixel("fruit_vine", x2, y2);
-            pixelMap[x2][y2].fruit = pixel.fruit;
-          }
-        }
-      }
-    }
-    pixel.age += 1;
-    if(pixel.fruit){
-      for(var i = 0; i < adjacentCoords.length; i++){
-        let x = pixel.x + adjacentCoords[i][0];
-        let y = pixel.y + adjacentCoords[i][1];
-        if(isEmpty(x,y) && !outOfBounds(x,y) && Math.floor(Math.random() * 1000) == 5){
-          createPixel(pixel.fruit, x, y);
-        }
-      }
-    }
-    if(!pixel.fruit){
-      for(var i = 0; i < squareCoords.length; i++){
-        let x = pixel.x + squareCoords[i][0];
-        let y = pixel.y + squareCoords[i][1];
-        if(isEmpty(x,y) || outOfBounds(x,y)){ continue; }
-        let pixel2 = pixelMap[x][y];
-        if(pixel2.fruit){
-          pixel.fruit = pixel2.fruit;
-        } else { continue; }
-      }
-    }
-  }
-}
-elements.grape.behavior = [["XX", "ST:fruit_vine", "XX"], ["ST:fruit_vine", "XX", "ST:fruit_vine"], ["M2", "ST:fruit_vine AND M1", "M2"]];
-elements.tomato.behavior = elements.grape.behavior;
-elements.tomato_seed = {
-  color: "#FFFAAD",
-  category: "life",
-  behavior: behaviors.POWDER,
-  tick: function(pixel){
+  };
+  tick = function(pixel){
     if(pixel.age > 40){
-      changePixel(pixel, "fruit_vine");
-      pixel.fruit = "tomato";
+      let x1 = pixel.x - 1;
+      let y = pixel.y;
+      let x2 = pixel.x + 1;
+      if(isEmpty(x1,y) && !outOfBounds(x1,y)){
+        createPixel("bush_base", x1, y);
+        pixelMap[x1][y].fruit = pixel.fruit;
+      }
+      if(isEmpty(x2,y) && !outOfBounds(x2,y)){
+        createPixel("bush_base", x2, y);
+        pixelMap[x2][y].fruit = pixel.fruit;
+      }
+      if(!isEmpty(x1, y) && !isEmpty(x2, y)){
+        deletePixel(pixel.x, pixel.y);
+      }
     }
-    pixel.age += 1;
-  },
-  properties: {
-    age: 0,
-  },
-}
-elements.grape_seed = {
-  color: "#231A00",
-  category: "life",
-  behavior: behaviors.POWDER,
-  tick: function(pixel){
-    if(pixel.age > 40){
-      changePixel(pixel, "fruit_vine");
-      pixel.fruit = "grape";
+     pixel.age += 1;
+  };
+    constructor(fruit, colour){
+        this.properties.fruit = fruit;
+        this.color = colour;
     }
-    pixel.age += 1;
-  },
-  properties: {
-    age: 0,
-  },
-}
-elements.kiwi = {
-  behavior: elements.grape.behavior,
-  color: "#403000",
-  category: "food",
-  breakInto: "juice",
-  breakIntoColor: "#21A800",
-  isFood: true,
-  properties: {
-    type: "fruit",
-  }
-}
-elements.kiwi_seed = {
-  color: "#231A00",
-  category: "life",
-  behavior: behaviors.POWDER,
-  tick: function(pixel){
-    if(pixel.age > 40){
-      changePixel(pixel, "fruit_vine");
-      pixel.fruit = "kiwi";
-    }
-    pixel.age += 1;
-  },
-  properties: {
-    age: 0,
-  },
 }
 elements.bush_base = {
   color: elements.wood.color,
@@ -885,7 +401,7 @@ elements.bush_cane = {
         if(isEmpty(x,y) && !outOfBounds(x,y)){
           createPixel("fruit_leaves", x, y);
           pixelMap[x][y].fruit = pixel.fruit;
-          pixel.blooming = trueFalse(1, 1)[Math.floor(Math.random() * 2)];
+          pixel.blooming = [true, false][Math.floor(Math.random() * 2)];
         }
       }
     }
@@ -898,675 +414,331 @@ elements.bush_cane = {
   tempLow: -2,
   stateLow: "frozen_plant",
 }
-function trueFalse(numTrue, numFalse){
-  let list = [];
-  for(var i = 0; i < numTrue; i++){
-    list.push(true);
-  }
-  for(var i = 0; i < numFalse; i++){
-    list.push(false);
-  }
-  return list;
-}
-elements.raspberry_seed = {
-  color: "#ffe099",
-  behavior: behaviors.STURDYPOWDER,
-  category: "life",
-  properties: {
-    age: 0,
-  },
-  tick: function(pixel){
-    if(pixel.age > 40){
-      let x1 = pixel.x - 1;
-      let y = pixel.y;
-      let x2 = pixel.x + 1;
-      if(isEmpty(x1,y) && !outOfBounds(x1,y)){
-        createPixel("bush_base", x1, y);
-        pixelMap[x1][y].fruit = "raspberry";
-      }
-      if(isEmpty(x2,y) && !outOfBounds(x2,y)){
-        createPixel("bush_base", x2, y);
-        pixelMap[x2][y].fruit = "raspberry";
-      }
-      if(!isEmpty(x1, y) && !isEmpty(x2, y)){
-        deletePixel(pixel.x, pixel.y);
-      }
-    }
-     pixel.age += 1;
-  }
-}
-elements.raspberry = {
-  behavior: [["XX", "ST:bush_cane", "XX"],["ST:bush_cane", "XX", "ST:bush_cane"],["M2", "ST:bush_cane AND M1", "M2"]],
-  color: ["#b00009", "#bf000a", "#d10812", "#db1822"],
-  category: "food",
-  breakInto: "juice",
-  breakIntoColor: "#ff2b36",
-  isFood: true,
-  properties: {
-    fruit: "raspberry",
-    type: "fruit",
-  }
-}
-elements.blueberry_seed = {
-  color: "#ffe099",
-  behavior: behaviors.STURDYPOWDER,
-  category: "life",
-  properties: {
-    age: 0,
-  },
-  tick: function(pixel){
-    if(pixel.age > 40){
-      let x1 = pixel.x - 1;
-      let y = pixel.y;
-      let x2 = pixel.x + 1;
-      if(isEmpty(x1,y) && !outOfBounds(x1,y)){
-        createPixel("bush_base", x1, y);
-        pixelMap[x1][y].fruit = "blueberry";
-      }
-      if(isEmpty(x2,y) && !outOfBounds(x2,y)){
-        createPixel("bush_base", x2, y);
-        pixelMap[x2][y].fruit = "blueberry";
-      }
-      if(!isEmpty(x1, y) && !isEmpty(x2, y)){
-        deletePixel(pixel.x, pixel.y);
-      }
-    }
-     pixel.age += 1;
-  }
-}
-elements.blueberry = {
-  behavior: [["XX", "ST:bush_cane", "XX"],["ST:bush_cane", "XX", "ST:bush_cane"],["M2", "ST:bush_cane AND M1", "M2"]],
-  color: ["#01082b", "#060e3d", "#111b52", "#1e2866"],
-  category: "food",
-  breakInto: "juice",
-  breakIntoColor: "#726778",
-  isFood: true,
-  properties: {
-    fruit: "blueberry",
-    type: "fruit",
-  }
-}
-elements.blackberry_seed = {
-  color: "#ffe099",
-  behavior: behaviors.STURDYPOWDER,
-  category: "life",
-  properties: {
-    age: 0,
-  },
-  tick: function(pixel){
-    if(pixel.age > 40){
-      let x1 = pixel.x - 1;
-      let y = pixel.y;
-      let x2 = pixel.x + 1;
-      if(isEmpty(x1,y) && !outOfBounds(x1,y)){
-        createPixel("bush_base", x1, y);
-        pixelMap[x1][y].fruit = "blackberry";
-      }
-      if(isEmpty(x2,y) && !outOfBounds(x2,y)){
-        createPixel("bush_base", x2, y);
-        pixelMap[x2][y].fruit = "blackberry";
-      }
-      if(!isEmpty(x1, y) && !isEmpty(x2, y)){
-        deletePixel(pixel.x, pixel.y);
-      }
-    }
-     pixel.age += 1;
-  }
-}
-elements.blackberry = {
-  behavior: [["XX", "ST:bush_cane", "XX"],["ST:bush_cane", "XX", "ST:bush_cane"],["M2", "ST:bush_cane AND M1", "M2"]],
-  color: ["#0c0021", "#070014", "#080017", "#09001a"],
-  category: "food",
-  breakInto: "juice",
-  breakIntoColor: "#2e0000",
-  isFood: true,
-  properties: {
-    fruit: "blackberry",
-    type: "fruit",
-  }
-}
-elements.mango = {
-  behavior: [["XX", "ST:fruit_leaves AND ST:fruit_branch", "XX"],["ST:fruit_leaves AND ST:fruit_branch", "XX", "ST:fruit_leaves AND ST:fruit_branch"],["M2", "ST:fruit_leaves AND ST:fruit_branch AND M1", "M2"]],
-  color: ["#d63a45", "#e97341", "#9d9f3e", "#e4791b"],
-  category: "food",
-  breakInto: "juice",
-  breakIntoColor: "#ffa300",
-  isFood: true,
-  properties: {
-    fruit: "mango",
-    type: "fruit",
-  }
-}
-elements.mango_seed = {
-    color: "#240c00",
-    tick: function(pixel) {
-        if (isEmpty(pixel.x,pixel.y+1)) {
-            movePixel(pixel,pixel.x,pixel.y+1);
-        }
-        else {
-            if (Math.random() < 0.02 && pixel.age > 50 && pixel.temp < 100) {
-                if (!outOfBounds(pixel.x,pixel.y+1)) {
-                    var dirtPixel = pixelMap[pixel.x][pixel.y+1];
-                    if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
-                        changePixel(dirtPixel,"root");
-                    }
-                }
-                if (isEmpty(pixel.x,pixel.y-1)) {
-                    movePixel(pixel,pixel.x,pixel.y-1);
-                    createPixel(Math.random() > 0.5 ? "wood" : "fruit_branch",pixel.x,pixel.y+1);
-                    if (pixelMap[pixel.x][pixel.y+1].element == "fruit_branch" || pixelMap[pixel.x][pixel.y+1].element == "fruit_leaves"){
-                      pixelMap[pixel.x][pixel.y+1].fruit = "mango";
-                    }
-                }
-            }
-            else if (pixel.age > 1000) {
-                changePixel(pixel,"wood");
-            }
-            pixel.age++;
-        }
-        doDefaults(pixel);
-    },
-    properties: {
-        "age":0,
-      fruit:"mango"
-    },
-    tempHigh: 100,
-    stateHigh: "dead_plant",
-    tempLow: -2,
-    stateLow: "frozen_plant",
-    burn: 65,
-    burnTime: 15,
-    category: "life",
-    state: "solid",
-    density: 1500,
-    cooldown: defaultCooldown,
-    seed: true,
-};
-elements.seed_maker = {
-  category: "machines",
-  behavior: behaviors.WALL,
-  noMix: true,
-  movable: false,
-  tick: function(pixel){
-    for(var i = 0; i < adjacentCoords.length; i++){
-      let x = pixel.x + adjacentCoords[i][0];
-      let y = pixel.y + adjacentCoords[i][1]
-      if(!isEmpty(x,y) && !outOfBounds(x,y)){
-        let pixel2 = pixelMap[x][y];
-        if(allFruits.includes(pixel2.element)){
-          changePixel(pixel2, `${pixel2.element}_seed`)
-        } else if (pixel2.element == "cocoa_pod"){
-          changePixel(pixel2, "cocoa_bean");
-        }
-      }
-    }
-  }
-}
-function xyInRange(x, y, range){
-  let i = 0;
-  while (i < range.length) {
-    if (x === range[i][0] && y === range[i][1]) {
-      i++;
-      return true;
-    } else {
-        i++;
-      }
 
-    }
-    return false;
 
-}
-elements.watermelon = {
-  behavior: behaviors.WALL,
-  color: "#007706",
-  category: "food",
-  breakInto: "juice",
-  breakIntoColor: "#C1674C",
-  isFood: true,
-  properties: {
-    type: "fruit",
-    age: 0,
-  },
-  tick: function(pixel){
-    if(pixel.grow && pixel.age > 400){
-      pixel.grow = false;
-    }
-    if(pixel.grow && pixel.range){
-      for(var i = 0; i < adjacentCoords.length; i++){
-        let x = pixel.x + adjacentCoords[i][0];
-        let y = pixel.y + adjacentCoords[i][1];
-        if(isEmpty(x,y) && xyInRange(x,y,pixel.range) && !outOfBounds(x,y)){
-          if(Math.floor(Math.random() * 300) == 1){
-            createPixel("watermelon", x, y);
-          }
-        }
-        
-      }
-      for(var i = 0; i < adjacentCoords.length; i++){
-        let x = pixel.x + adjacentCoords[i][0];
-        let y = pixel.y + adjacentCoords[i][1];
-        if(!isEmpty(x,y) && !outOfBounds(x,y)){
-          let pixel2 = pixelMap[x][y];
-          if(["wood","low_fruit_vine","watermelon"].includes(pixel.element)){
-            if(!pixel2.range || !pixel2.grow){
-              if(pixel.range && !pixel2.range){
-                pixel2.range = pixel.range;
-              }
-              if(pixel.grow && !pixel2.grow){
-                pixel2.grow = pixel.grow;
-              }  
-            }
-            if(pixel2.range || pixel2.grow){
-              if(!pixel.range && pixel2.range){
-                pixel.range = pixel2.range;
-              }
-              if(!pixel.grow && pixel2.grow){
-                pixel.grow = pixel2.grow;
-              }
-            }
-          }
-        }
-      }
-    }
-    pixel.age++;
-  }
-}
-let sizes = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 7, 7, 7, 9]
 elements.low_fruit_vine = {
-  color: elements.fruit_vine.color,
+  color: elements.plant.color,
   behavior: behaviors.WALL,
+  category: "life",
+  properties: {
+	  age: 0,
+  },
   tick: function(pixel){
-    if(pixel.fruiting && pixel.fruit == "watermelon"){
-      pixel.fruiting = false;
-      let size = pixel.size;
-      let range = mouseRange(pixel.x, pixel.y + Math.floor(size / 2 + 1), size)
-      if(isEmpty(pixel.x, pixel.y + 1) && !outOfBounds(pixel.x, pixel.y + 1)){
-        createPixel("watermelon", pixel.x, pixel.y + 1);
-        let pixel2 = pixelMap[pixel.x][pixel.y + 1];
-        pixel2.range = range;
-        pixel2.grow = true;
+      if(isEmpty(pixel.x, pixel.y - 1) && !outOfBounds(pixel.x, pixel.y - 1) && Math.random() < ((pixel.age/50000 > 0.005) ? 0.005 : (pixel.age/50000)) && pixel.fruit && ![undefined, "watermelon", "pumpkin"].includes(pixel.fruit)){
+        createPixel("fruit_leaves", pixel.x, pixel.y - 1);
+		pixelMap[pixel.x][pixel.y - 1].blooming = true;
+        pixelMap[pixel.x][pixel.y - 1].color = "#FFE2E2";
+		pixelMap[pixel.x][pixel.y - 1].fruit = pixel.fruit;
       }
-    } else {
-      if(isEmpty(pixel.x, pixel.y - 1) && !outOfBounds(pixel.x, pixel.y - 1) && Math.floor(Math.random() * 300) == 1 && pixel.fruit && ![undefined, "watermelon"].includes(pixel.fruit)){
-        createPixel(pixel.fruit, pixel.x, pixel.y - 1);
+    if(Math.floor(Math.random() * 100) == 1 && !["watermelon", "pumpkin", undefined].includes(pixel.fruit)){
+        let num = (Math.random() > 0.5) ? -1 : 1;
+      if(isEmpty(pixel.x + num, pixel.y)){
+        createPixel("low_fruit_vine", pixel.x + num, pixel.y);
+        pixelMap[pixel.x + num][pixel.y].fruit = pixel.fruit;
       }
     }
-    if(Math.floor(Math.random() * 100) == 1 && !["watermelon", undefined].includes(pixel.fruit)){
-      eval((Math.floor(Math.random() * 2) == 1) ? `
-      if(isEmpty(pixel.x + 1, pixel.y)){
-        createPixel("low_fruit_vine", pixel.x + 1, pixel.y);
-        pixelMap[pixel.x + 1][pixel.y].fruit = pixel.fruit;
-      }`
-       : `
-       if(isEmpty(pixel.x - 1, pixel.y)){
-        createPixel("low_fruit_vine", pixel.x - 1, pixel.y);
-        pixelMap[pixel.x - 1][pixel.y].fruit = pixel.fruit;
-        }`
-        )
-    }
+	pixel.age++;
   }
 }
-let sizeObj = {
-  size3: [
-    [0,1],
-    [0,2],
-    [1,3],
-    [2,3]
-  ],
-  size5:[
-    [0,1],
-    [0,2],
-    [0,3],
-    [0,4],
-    [1,5],
-    [2,5],
-    [3,5],
-  ],
-  size7: [
-    [0,1],
-    [0,2],
-    [0,3],
-    [0,4],
-    [0,5],
-    [0,6],
-    [1,7],
-    [2,7],
-    [3,7],
-    [4,7],
-  ],
-  size9: [
-    [0,1],
-    [0,2],
-    [0,3],
-    [0,4],
-    [0,5],
-    [0,6],
-    [0,7],
-    [0,8],
-    [1,9],
-    [2,9],
-    [3,9],
-    [4,9],
-    [5,9],
-  ]
+let str = "";
+for(let i = 0; i < vineGrow.length; i++){
+    str += (i == vineGrow.length-1) ? `ST:${vineGrow[i]}` : `ST:${vineGrow[i]} AND `;
 }
-elements.watermelon_seed = {
-  color: "#231A00",
+elements.fruit_vine = {
   category: "life",
-  behavior: behaviors.STURDYPOWDER,
+  color: elements.plant.color,
+  behavior: [["XX", str, "XX"], [str, "XX", str], ["XX", str + " AND M1", "XX"]],
+  properties: {
+    age: 0,
+  },
   tick: function(pixel){
-    if(pixel.start == pixelTicks - 10){
-      pixel.size = sizes[Math.floor(Math.random() * sizes.length)];
-      pixel.direction = Math.floor(Math.random() * 2)
-      pixel.grow = true;
-    }
-    if(pixel.grow && !isEmpty(pixel.x,pixel.y+1) && !outOfBounds(pixel.x,pixel.y+1) && pixelMap[pixel.x][pixel.y + 1].element == "dirt" && pixel.age > 100){
-      pixel.fruit = "watermelon";
-      let sizeList = sizeObj[`size${pixel.size}`];
-      for(var i = 0; i < sizeList.length; i++){
-        let x = (pixel.direction == 1) ? pixel.x - sizeList[i][0] : pixel.x + sizeList[i][0];
-        let y = pixel.y - sizeList[i][1];
-        if(isEmpty(x, y) && !outOfBounds(x, y)){
-          createPixel("low_fruit_vine", x, y);
-          if(i == sizeList.length - 1){
-            pixelMap[x][y].fruiting = true;
-            pixelMap[x][y].size = pixel.size;
-            pixelMap[x][y].fruit = "watermelon";
-            changePixel(pixel,"low_fruit_vine");
+    if(Math.floor(Math.random() * 100) == 1 && pixel.age > 25 && pixel.age < 500){
+      for(var i = 0; i < squareCoords.length; i++){
+        let x1 = pixel.x + squareCoords[i][0];
+        let y1 = pixel.y + squareCoords[i][1];
+        if(!isEmpty(x1,y1) && !outOfBounds(x1,y1) && vineGrow.includes(pixelMap[x1][y1].element)){
+		  //pixel.drag = true;
+          let randomNum = Math.floor(Math.random() * 4);
+          let x2 = x1 + squareCoords[randomNum][0];
+          let y2 = y1 + squareCoords[randomNum][1];
+          if(isEmpty(x2,y2) && !outOfBounds(x2,y2)){
+            createPixel("fruit_vine", x2, y2);
+            pixelMap[x2][y2].fruit = pixel.fruit;
           }
+        } //else {pixel.drag = false;}
+      }
+    }
+    pixel.age += 1;
+    if(pixel.fruit){
+      for(var i = 0; i < adjacentCoords.length; i++){
+        let x = pixel.x + adjacentCoords[i][0];
+        let y = pixel.y + adjacentCoords[i][1];
+        if(isEmpty(x,y) && !outOfBounds(x,y) && Math.floor(Math.random() * 5000) == 5 && pixel.age > 650){
+          createPixel("fruit_leaves", x, y);
+          pixelMap[x][y].blooming = true;
+          pixelMap[x][y].color = "#FFE2E2";
         }
       }
     }
-    pixel.age++;
-  },
-  properties: {
-    age: 0,
-  },
-}
-elements.strawberry = {
-  behavior: behaviors.POWDER,
-  color: "#e5080a",
-  category: "food",
-  breakInto: "juice",
-  breakIntoColor: "#f9c0af",
-  isFood: true,
-  properties: {
-    type: "fruit",
-    age: 0,
-  },
-}
-elements.strawberry_seed = {
-  color: "#ffa371",
-  behavior: behaviors.STURDYPOWDER,
-  category: "life",
-  properties: {
-    age: 0,
-  },
-  tick: function(pixel){
-    if(pixel.age > 40){
-      changePixel(pixel, "low_fruit_vine");
-      pixel.fruit = "strawberry";
-    }
-     pixel.age += 1;
-  }
-}
-elements.cucumber = {
-  behavior: behaviors.POWDER,
-  color: "#285a1b",
-  category: "food",
-  breakInto: "juice",
-  breakIntoColor: "#80b450",
-  isFood: true,
-  properties: {
-    type: "fruit",
-    age: 0,
-  },
-}
-let ages = {
-  pineapple: 140,
-}
-elements.cucumber_seed = {
-  color: "#e9f5b5",
-  behavior: behaviors.STURDYPOWDER,
-  category: "life",
-  properties: {
-    age: 0,
-  },
-  tick: function(pixel){
-    if(pixel.age > 40){
-      changePixel(pixel, "low_fruit_vine");
-      pixel.fruit = "cucumber";
-    }
-     pixel.age += 1;
-  }
-}
-elements.unripe_fruit = {
-  color: "#9eba32",
-  behavior: behaviors.WALL,
-  category: "life",
-  properties: {
-    age: 0,
-    fruit: "pineapple",
-  },
-  tick: function(pixel){
-    if(pixel.age >= ages[pixel.fruit] && Math.floor(Math.random() * 100) == 1){
-      changePixel(pixel, pixel.fruit);
-    }
-    pixel.age++;
-  },
-  breakInto: ["poison", "juice", "cyanide"],
-  breakIntoColor: "#9eba32",
-}
-elements.pineapple = {
-  behavior: [["XX", "ST:fruit_leaves", "XX"],["ST:fruit_leaves", "XX", "ST:fruit_leaves"],["M2", "ST:fruit_leaves AND M1", "M2"]],
-  color: ["#ffcc56", "#e69f05", "#ffc061", "#fad32b"],
-  category: "food",
-  breakInto: "juice",
-  breakIntoColor: "#ffd905",
-  isFood: true,
-  properties: {
-    type: "fruit",
-    age: 0,
-  },
-}
-elements.pineapple_seed = {
-  color: "#7b2700",
-  behavior: behaviors.STURDYPOWDER,
-  category: "life",
-  properties: {
-    age: 0,
-  },
-  tick: function(pixel){
-    if(pixel.age > 40){
-      changePixel(pixel, "fruit_leaves");
-      pixel.fruit = "pineapple";
-    }
-     pixel.age += 1;
-  }
-}
-elements.cocoa_pod = {
-  behavior: [["XX", "ST:fruit_leaves AND ST:fruit_branch", "XX"],["ST:fruit_leaves AND ST:fruit_branch", "XX", "ST:fruit_leaves AND ST:fruit_branch"],["M2", "ST:fruit_leaves AND ST:fruit_branch AND M1", "M2"]],
-  color: "#9e5648",
-  category: "food",
-  breakInto: ["cocoa_butter", "cocoa_bean"],
-  isFood: true,
-  properties: {
-    fruit: "cocoa_pod",
-    type: "fruit",
-  }
-}
-elements.cocoa_bean = {
-  behavior: behaviors.POWDER,
-  color: "#ebaf7b",
-  category: "food",
-  isFood: true,
-  properties: {
-    fruit: "cocoa_pod",
-    type: "fruit",
-    age: 0,
-  },
-  tempHigh: 122,
-  stateHigh: "roasted_cocoa_bean",
-  tick: function(pixel) {
-      if (isEmpty(pixel.x,pixel.y+1)) {
-          movePixel(pixel,pixel.x,pixel.y+1);
+    if(!pixel.fruit){
+      for(var i = 0; i < squareCoords.length; i++){
+        let x = pixel.x + squareCoords[i][0];
+        let y = pixel.y + squareCoords[i][1];
+        if(isEmpty(x,y) || outOfBounds(x,y)){ continue; }
+        let pixel2 = pixelMap[x][y];
+        if(pixel2.fruit){
+          pixel.fruit = pixel2.fruit;
+        } else { continue; }
       }
-      else {
-          if (Math.random() < 0.02 && pixel.age > 650 && pixel.temp < 120) {
-              if (!outOfBounds(pixel.x,pixel.y+1)) {
-                  var dirtPixel = pixelMap[pixel.x][pixel.y+1];
-                  if (dirtPixel.element === "dirt" || dirtPixel.element === "mud" || dirtPixel.element === "sand" || dirtPixel.element === "wet_sand" || dirtPixel.element === "clay_soil" || dirtPixel.element === "mycelium") {
-                      changePixel(dirtPixel,"root");
-                  }
-              }
-              if (isEmpty(pixel.x,pixel.y-1)) {
-                  movePixel(pixel,pixel.x,pixel.y-1);
-                  createPixel(Math.random() > 0.5 ? "wood" : "fruit_branch",pixel.x,pixel.y+1);
-                  if (pixelMap[pixel.x][pixel.y+1].element == "fruit_branch" || pixelMap[pixel.x][pixel.y+1].element == "fruit_leaves"){
-                    pixelMap[pixel.x][pixel.y+1].fruit = "cocoa_pod";
-                  }
-              }
-          }
-          else if (pixel.age > 1650) {
-              changePixel(pixel,"wood");
-          }
-          pixel.age++;
-      }
-      doDefaults(pixel);
-  },
+    }
+  }
 }
 
-elements.cocoa_butter = {
-  behavior: behaviors.STURDYPOWDER,
-  color: "#ddc996",
-  category: "food",
-  isFood: true,
-  tempHigh: 30,
-  stateHigh: "melted_cocoa_butter",
+behaviors.VINEFRUIT = ["XX|ST:fruit_vine AND ST:low_fruit_vine|XX",
+"ST:fruit_vine AND ST:low_fruit_vine|XX|ST:fruit_vine AND ST:low_fruit_vine",
+"M2|M1|M2"];
+elements.grape.behavior = behaviors.VINEFRUIT;
+elements.tomato.behavior = behaviors.VINEFRUIT;
+elements.grape_seed = new vineSeed("grape",["#281B01", "#2D1F06", "#2D1F06"]);
+elements.tomato_seed = new vineSeed("tomato", ["#F8F5D1","#E7E5CF","#E3E1C5"]);
+elements.apple = new fruit("apple", ["#FF0507", "#EC0A0D", "#F22426", "#DC2C2E"], ["#F9C497", "#EED3BB", "#EEDEBB"]);
+elements.apple_seed = new treeSeed("apple", ["#3B1C01", "#3E2107", "#3A1C02"]);
+function colorMix(p1, p2, bias = 0.5){
+	p1.color = interpolateRgb(getRGB(p1.color), getRGB(p2.color), bias);
+	p2.color = interpolateRgb(getRGB(p1.color), getRGB(p2.color), bias);
 }
-elements.melted_cocoa_butter = {
-  behavior: behaviors.LIQUID,
-  color: "#c78b06",
-  category: "states",
-  isFood: true,
-  viscosity: 2000,
-  tempLow: 30,
-  stateLow: "cocoa_butter",
-  temp: 30,
-  reactions: {
-    sugar: { elem1: "melted_white_chocolate", elem2: "melted_white_chocolate" }
-  }
+function interpolateRgb(rgb1, rgb2, ratio = 0.5) {
+  const interpolatedRgb = {
+    r: Math.round(rgb1.r + (rgb2.r - rgb1.r) * ratio),
+    g: Math.round(rgb1.g + (rgb2.g - rgb1.g) * ratio),
+    b: Math.round(rgb1.b + (rgb2.b - rgb1.b) * ratio),
+  };
+  return normalize(interpolatedRgb);
 }
-elements.roasted_cocoa_bean = {
-  behavior: behaviors.POWDER,
-  color: "#6b3b24",
-  category: "food",
-  isFood: true,
-  breakInto: "cocoa_powder",
+function getRGB(rgb){
+  let rgb2 = rgb.replace(")", "").replace("rgb(", "").replace(/,/g, "r").split("r")
+  return { r: parseInt(rgb2[0]), g: parseInt(rgb2[1]), b: parseInt(rgb2[2]) };
 }
-elements.cocoa_powder = {
-  behavior: behaviors.POWDER,
-  color: "#451f16",
-  category: "food",
-  isFood: true,
-  reactions: {
-    melted_cocoa_butter: { elem1: "chocolate", elem2: "chocolate" }
-  }
+
+elements.juice.tick = function(pixel){
+	for(let i = 0; i < squareCoords.length; i++){
+		let x = pixel.x+squareCoords[i][0], y = pixel.y+squareCoords[i][1];
+		if(!isEmpty(x,y) && !outOfBounds(x,y) && pixelMap[x][y].element == pixel.element && Math.random() < 0.005){
+			colorMix(pixel, pixelMap[x][y]);
+		}
+	}
 }
-elements.extractor = {
-  category: "machines",
-  noMix: true,
-  movable: false,
-  behavior: behaviors.WALL,
-  tick: function(pixel){
-    for(var i = 0; i < adjacentCoords.length; i++){
-      let x = pixel.x + adjacentCoords[i][0];
-      let y = pixel.y + adjacentCoords[i][1]
-      if(!isEmpty(x,y) && !outOfBounds(x,y)){
-        let pixel2 = pixelMap[x][y];
-        if (pixel2.element == "cocoa_pod"){
-          changePixel(pixel2, "cocoa_butter");
-        } else if (pixel2.element == "sugarcane"){
-          changePixel(pixel2, "sugar");
-        }
-      }
-    }
-  }
+elements.juice.onMix = function(pixel){
+	for(let i = 0; i < squareCoords.length; i++){
+		let x = pixel.x+squareCoords[i][0], y = pixel.y+squareCoords[i][1];
+		if(!isEmpty(x,y) && !outOfBounds(x,y) && pixelMap[x][y].element == pixel.element && Math.random() < 0.5){
+			colorMix(pixel, pixelMap[x][y]);
+		}
+	}
 }
-elements.white_chocolate = {
-      "color": "#f4e6cb",
-      "behavior": [
-          [
-              "XX",
-              "XX",
-              "XX"
-          ],
-          [
-              "XX",
-              "XX",
-              "XX"
-          ],
-          [
-              "XX",
-              "M1",
-              "XX"
-          ]
-      ],
-      "tempHigh": 31,
-      "stateHigh": "melted_white_chocolate",
-      "category": "food",
-      "state": "solid",
-      "density": 1325,
-      "isFood": true,
-      "movable": true
-  }
-elements.melted_white_chocolate = {
-  behavior: behaviors.LIQUID,
-      "color": "#f2d184",
-      "tempLow": 0,
-      "stateLow": "white_chocolate",
-      "tempHigh": 99,
-      "stateHigh": [
-          "steam",
-          "sugar"
-      ],
-      "category": "states",
-      "viscosity": 40,
-      "state": "liquid",
-      "density": 1325,
-      "hidden": true,
-      "stain": 0.05,
-      "isFood": true,
-      "movable": true
-  }
-elements.sugarcane_seed = {
-  color: "#c4ae7d",
-  behavior: behaviors.STURDYPOWDER,
-  category: "life",
-  properties: {
-    age: 0,
-  },
-  tick: function(pixel){
-    if(isEmpty(pixel.x, pixel.y-1) && !outOfBounds(pixel.x, pixel.y-1) && Math.floor(Math.random() * 100) == 1 && pixel.age > 40){
-      movePixel(pixel,pixel.x,pixel.y-1);
-      createPixel("sugarcane",pixel.x,pixel.y+1);
-    } else if (!isEmpty(pixel.x, pixel.y-1) && !outOfBounds(pixel.x, pixel.y-1) && pixelMap[pixel.x][pixel.y-1].element == "sugarcane_seed"){
-      deletePixel(pixel.x, pixel.y-1);
-    }
-    if(!pixel.age){
-      pixel.age = 1;
+elements.fruit_milk.tick = function(pixel){
+	for(let i = 0; i < squareCoords.length; i++){
+		let x = pixel.x+squareCoords[i][0], y = pixel.y+squareCoords[i][1];
+		if(!isEmpty(x,y) && !outOfBounds(x,y) && pixelMap[x][y].element == pixel.element && Math.random() < 0.005){
+			colorMix(pixel, pixelMap[x][y]);
+		}
+	}
+}
+elements.fruit_milk.onMix = function(pixel){
+	for(let i = 0; i < squareCoords.length; i++){
+		let x = pixel.x+squareCoords[i][0], y = pixel.y+squareCoords[i][1];
+		if(!isEmpty(x,y) && !outOfBounds(x,y) && pixelMap[x][y].element == pixel.element && Math.random() < 0.5){
+			colorMix(pixel, pixelMap[x][y]);
+		}
+	}
+}
+function normalize(obj){
+	return `rgb(${obj.r},${obj.g},${obj.b})`;
+}
+
+elements.milk.reactions.juice = {func: function(p1, p2){
+		let rgb = interpolateRgb(getRGB(p1.color), getRGB(p2.color), 0.25);
+		changePixel(p1, "fruit_milk");
+		changePixel(p2, "fruit_milk");
+		p1.color = rgb;
+		p2.color = rgb;
+	}
+};
+elements.juice.reactions.carbon_dioxide = { func: function(p1,p2){
+		let rgb = interpolateRgb(getRGB(p1.color), getRGB(elements.water.color), 0.2);
+		changePixel(p1, "soda");
+		changePixel(p2, "foam");
+		p1.color = rgb;
+		p2.color = rgb;
+	}
+}
+elements.juice.reactions.seltzer = { func: function(p1,p2){
+		let rgb = interpolateRgb(getRGB(p1.color), getRGB(p2.color), 0.5);
+		changePixel(p1, "soda");
+		changePixel(p2, "foam");
+		p1.color = rgb;
+		p2.color = rgb;
+	}
+}
+
+elements.milk.reactions.soda = {
+	func: function(p1,p2){
+		let rgb = interpolateRgb(getRGB(p1.color), getRGB(p2.color), 0.5);
+		changePixel(p1, "pilk");
+		changePixel(p2, "pilk");
+		p1.color = rgb;
+		p2.color = rgb;
+	}
+}
+
+elements.seed_maker = {
+	behavior: behaviors.WALL,
+	category: "machines",
+	tick: function(pixel){
+		for(let i = 0; i < squareCoords.length; i++){
+			let x = pixel.x+squareCoords[i][0], y = pixel.y+squareCoords[i][1];
+			if((!isEmpty(x,y) && !outOfBounds(x,y)) && plants.includes(pixelMap[x][y].element)){
+				changePixel(pixelMap[x][y], `${pixelMap[x][y].element}_seed`);
+			}
+		}
+	}
+}
+let r;
+if(settings.cleargases){
+    if(settings.bg != undefined){
+        r = interpolateRgb(hexToRGB("#E5EAEA"), hexToRGB(settings.bg), 0.85);
     } else {
-      pixel.age++;
+        r = interpolateRgb(hexToRGB("#E5EAEA"), {r:0,g:0,b:0}, 0.85);
     }
-    if(pixel.age == 550){
-      changePixel(pixel, "sugarcane")
-    }
-  }
+};
+elements.ethylene = {
+	behavior: behaviors.GAS,
+	category: "gases",
+	reactionCatalysts: {
+		gold: {e1: "water", product: "alcohol", chance: 0.025},
+		copper: {e1: "oxygen", product: "vinegar", chance: 0.025}
+	},
+	reactions: {
+		oxidized_copper: { elem1: "vinegar", elem2: "copper", chance: 0.025},
+	},
+    color: r || ["#fffffc", "#f7f7f2", "#eaebe6", "#ededed", "#f7f7f2", "#f2f2f2"],
+    colorObject: (r != undefined) ? r.split("(")[1].split(")")[0].split(",") : undefined,
+	state: "gas",
+	burnInto: ["carbon_dioxide", "steam"],
+	burn: 100,
+	burnTime: 15,
+	stateHigh: "fire",
+	tempHigh: 425,
+	tick: function(pixel){
+		catalyse(pixel);
+        if(settings.cleargases){
+            let rgb;
+            if(settings.bg != undefined){
+                rgb = interpolateRgb(hexToRGB("#E5EAEA"), hexToRGB(settings.bg), 0.85);
+            } else {
+                rgb = interpolateRgb(hexToRGB("#E5EAEA"), {r:0,g:0,b:0}, 0.85);
+            }
+            pixel.color = rgb;
+        }else if (!["#fffffc", "#f7f7f2", "#eaebe6", "#ededed", "#f7f7f2", "#f2f2f2"].includes(pixel.color)){
+            pixel.color = ["#fffffc", "#f7f7f2", "#eaebe6", "#ededed", "#f7f7f2", "#f2f2f2"][Math.floor(Math.random()*6)];
+        };
+	},
 }
-elements.sugarcane = {
-  color: "#76881c",
-  breakInto: ["sugar_water", "dead_plant", "dead_plant", "dead_plant"],
-  isFood: true,
-  behavior: behaviors.WALL,
-  category: "food",
+elements.propylene = {
+	behavior: behaviors.GAS,
+	category: "gases", 
+	reactionCatalysts: {
+		nickel: {e1: "hydrogen", product: "propane", chance: 0.025},
+	},
+    color: r || ["#fffffc", "#f7f7f2", "#eaebe6", "#ededed", "#f7f7f2", "#f2f2f2"],
+    colorObject: (r != undefined) ? r.split("(")[1].split(")")[0].split(",") : undefined,
+	state: "gas",
+	burnInto: ["carbon_dioxide", "steam"],
+	burn: 100,
+	burnTime: 15,
+	stateHigh: "fire",
+	tempHigh: 425,
+	tick: function(pixel){
+		catalyse(pixel);
+        let rgb;
+        if(settings.cleargases){
+            if(settings.bg != undefined){
+                rgb = interpolateRgb(hexToRGB("#E5EAEA"), hexToRGB(settings.bg), 0.85);
+            } else {
+                rgb = interpolateRgb(hexToRGB("#E5EAEA"), {r:0,g:0,b:0}, 0.85);
+            }
+            pixel.color = rgb;
+        } else if (!["#fffffc", "#f7f7f2", "#eaebe6", "#ededed", "#f7f7f2", "#f2f2f2"].includes(pixel.color)){
+            pixel.color = ["#fffffc", "#f7f7f2", "#eaebe6", "#ededed", "#f7f7f2", "#f2f2f2"][Math.floor(Math.random()*6)];
+        };
+	},
 }
+elements.propane.reactionCatalysts = {
+    aluminum: {e2: "hydrogen", product: "propylene", chance: 0.035},
+    gallium: {e2: "hydrogen", product: "propylene", chance: 0.025},
+};
+elements.propane.tick = function(pixel){
+    catalyse(pixel);
+}
+function catalyse(pixel){
+	let rC = elements[pixel.element].reactionCatalysts;
+	let neighbors = [];
+    let p = [];
+	for(let i = 0; i < squareCoords.length; i++){
+		let x = pixel.x+squareCoords[i][0], y = pixel.y+squareCoords[i][1];
+		if(!isEmpty(x,y) && !outOfBounds(x,y)){
+			neighbors.push(pixelMap[x][y].element);
+            p.push(pixelMap[x][y]);
+		}
+	}
+	for(item in rC){
+		if(neighbors.includes(item) && neighbors.includes(rC[item].e1) && Math.random() < rC[item].chance){
+			changePixel(pixel, rC[item].product);
+            if(rC[item].e2 != undefined){
+                changePixel(p[neighbors.indexOf(rC[item].e1)], rC[item].e2);
+            } else {
+                let P = p[neighbors.indexOf(rC[item].e1)];
+                deletePixel(P.x, P.y);
+            }
+		} else if (rC[item].e1 == undefined){
+            if(neighbors.includes(item) && rC[item].e2 != undefined && Math.random() < rC[item].chance){
+                for(let i = 0; i < squareCoords.length; i++){
+                    let x = pixel.x+squareCoords[i][0], y = pixel.y+squareCoords[i][1];
+                    if(isEmpty(x,y) && !outOfBounds(x,y)){
+                        createPixel(rC[item].e2, x, y);
+                        changePixel(pixel, rC[item].product);
+                    }
+                }
+            }
+        }
+	}
+}
+elements.orange = new fruit("orange", ['#FA9A14', '#E88D0F', '#F0963D', '#F4810E'], ['#FFDA0B', '#FFEA09', '#FFD609', '#FCC921'], "tree");
+elements.orange_seed = new treeSeed("orange", ['#EEE9C7', '#F4F1D0', '#E8E4C4', '#DBD5AF']);
+elements.kiwi = new fruit("kiwi", ['#886002', '#7D5B0D', '#876412', '#97620F'], ['#7DB410', '#86BC1B', '#95CE22', '#91CF12'], "vine");
+elements.kiwi_seed = new vineSeed("kiwi", ['#3E2A01', '#392804', '#473307', '#1E1500']);
+elements.raspberry = new fruit("raspberry", ['#FF201C', '#EF3D3A', '#FA5350', '#DF3E3B'], ['#FF4450', '#F43643', '#DF2C38', '#E92344'], "bush");
+elements.raspberry_seed = new bushSeed("raspberry", ['#572600', '#4C2506', '#592E0D', '#5E3211']);
+elements.blueberry = new fruit("blueberry", ['#322954', '#3F3366', '#2B1B5E', '#4C3C81'], ['#51042C', '#550E33', '#420D28', '#520F32'], "bush", ['#78573A', '#72492D', '#7D5438', '#704F3A']);
+elements.blackberry = new fruit("blackberry", ['#1A013A', '#1E073A', '#3D0A49', '#33043F'], ['#DC5F5F', '#D76D6D', '#BF6363', '#B05D5D'], "bush", ['#DA7878', '#C87B7B', '#AD6161', '#915656']);
+elements.strawberry = new fruit("strawberry", ['#FE3030', '#E93030', '#DE1F1F', '#CE0B0B'], ['#EA5C46', '#E24B34', '#CE5A48', '#E7604B'], "vine", ['#B27F65', '#AA7358', '#A27553', '#AF8B62'], false, true);
+elements.pear = new fruit("pear", ["#F1F8A7", "#DCE398", "#E3EE7E", "#D6E07F"], ["#F6F9D5", "#F6F9D5", "#E8ECC6", "#E8ECC0"], "tree", ["#3B1C01", "#3E2107", "#3A1C02"]);
+elements.mango = new fruit("mango", ["#F74E3E", "#E95D51", "#EE853B", "#D77026", "#F8BF46", "#F8B524", "#95C408", "#A5CD2D"], ["#FFC905", "#FFD605", "#FFE205", "#FFF305", "#FCE118"], "tree", ["#E8EABB", "#E3E5BA", "#EAEDC0", "#E8EAB1", "#D8DBA5"]);
+elements.lemon = new fruit("lemon", ["#FCF924", "#FCF924", "#EEEA1A", "#F6F212", "#FBF70B"], ["#F6F373", "#EEEC77", "#E3E267", "#F3F18B"], "tree", ["#F8F7B2", "#E9E9B1", "#E9E8A7", "#F1EFA4"]);
+elements.plum = new fruit("plum", ["#67486E", "#705476", "#634A69", "#785281"], ["#D58D77", "#DC9984", "#CA8D7A", "#CF816A"], "tree", ["#A08C5D", "#907D50", "#9B8551", "#AA9563"]);
+elements.peach = new fruit("peach", ["#F76856", "#EA5D4A", "#EA6D4A", "#E5785A", "#FE824A", "#EE7A45", "#FAA543", "#F59D39", "#FF744D"], ["#F86F1F", "#EC742F", "#EC832F", "#EC9A2F", "#ECA62F"], "tree", ["#735940", "#7B5C3D", "#7D5935"]);
+elements.apricot = new fruit("apricot", ["#F5A61F", "#F5A61F", "#EA9B12", "#F8A109"], ["#F2B016", "#F2AD0C", "#FBB81E", "#FFB301"], "tree", ["#735940", "#7B5C3D", "#7D5935"]);
+elements.avocado = new fruit("avocado", ["#3c9419", "#348514", "#367a1b", "#2f7d10"], ["#cff74a", "#caf244", "#c1e649", "#b3d640"], "tree", ["#4d290a", "#4d2b0d", "#63360f", "#572d09"]);
+elements.avocado.breakInto = "guacamole";
+elements.guacamole = {
+    color: ["#cff74a", "#caf244", "#c1e649", "#b3d640"],
+    behavior: behaviors.LIQUID,
+    viscosity: 950,
+    category: "food",
+    state: "liquid",
+    isFood: true,
+}
+settingsMenu.innerHTML += `
+<span setting="cleargases" class="setting-span multisetting" title="Default: ON">
+	<input type="button" value="Clear Gases" id="settingLabel-clearGases" class="toggleInput" onclick="toggleInput(this,'cleargases',false); r = undefined;" state="1">
+</span>`;
