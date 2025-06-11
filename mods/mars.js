@@ -1,4 +1,3 @@
-
 elements.mars_gunk = {
     color: "#121212",
     behavior: behaviors.DGAS,
@@ -29,8 +28,8 @@ elements.mars_basalt = {
     state: "solid",
     density: 5000,
     extraInfo: "Woah",
-    tempHigh: "molten_mars",
-    stateHigh: "600",
+    tempHigh: "700",
+    stateHigh: "molten_mars",
     hardness: 0.7,
     breakInto: ["mars_dust", "mars_rock", "mars_rock", "mars_rock", "molten_mars", "mars_debris", "mars_debris", "gunk", "mars_rock_wall"]
 }
@@ -113,7 +112,11 @@ elements.mars_ironheart_ore = {
 }
 elements.mars_ironheart = {
     color: ["#e8e8e8", "#bd1102"],
-    behavior: behaviors.STURDYPOWDER,
+    behavior: [
+        "XX|CR:radiation%3|XX",
+        "XX|XX|XX",
+        "XX|XX|XX",
+    ],
     category: "mars",
     state: "solid",
     density: 1500,
@@ -155,10 +158,10 @@ elements.nosmoker = {
     breakInto: ["ironheart", "mars_ironheart", "ironheart_ore", "antigunk"]
 }
 elements.ironheart = {
-    color: "#e9825a",
+    color: "#FF6B5A",
     behavior: [
-        "XX|XX|XX|",
-        "XX|XX|XX|",
+        "XX|CR:radiation%2|XX|",
+        "XX|CH:feynmanium%0.1|XX|",
         "M2|M1|M2|",
     ],
     category: "mars",
@@ -166,6 +169,40 @@ elements.ironheart = {
     state: "solid",
     stateHigh: "molten_mars",
     extraInfo: "Very Sturdy.",
+    stateLow: "depleted_ironheart",
+    tempLow: -50,
+    tempHigh: 1500,
+    reactions: {
+        "electric": { elem1: "smint", elem2: "null" },
+    },
+}
+elements.depleted_ironheart = {
+    color: "#e9825a",
+    behavior: [
+        "XX|XX|XX|",
+        "XX|XX|XX|",
+        "M2|M1|M2|",
+    ],
+    category: "mars",
+    density: 1200,
+    state: "solid",
+    stateHigh: "molten_mars",
+    reactions: {
+        "electric": { elem1: "smint", elem2: "null" },
+    },
+}
+elements.feynmanium = {
+    color: "#8C7656",
+    behavior: [
+        "XX|XX|XX|",
+        "XX|XX|XX|",
+        "M2|M1|M2|",
+    ],
+    category: "mars",
+    density: 1200,
+    state: "solid",
+    stateHigh: "molten_mars",
+    tempHigh: 6000,
     reactions: {
         "electric": { elem1: "smint", elem2: "null" },
     },
@@ -190,7 +227,7 @@ elements.red_gold_powder = {
 }
 elements.red_gold = {
     color: ["#D20103", "#E4080A", "#EFC3CA"],
-    behavior: behaviors.POWDER,
+    behavior: behaviors.WALL,
     category: "mars",
     state: "solid",
     density: 1350,
@@ -240,7 +277,7 @@ elements.mars_coal = {
     stateHigh: "molten_mars",
     temp: 10,
         reactions: {
-            "electric": { elem2: "useless", chance: 0.01 },
+            "electric": { elem2: "smint", chance: 0.01 },
     }
 }
 elements.mars_ice = {
@@ -354,7 +391,8 @@ elements.ironheart_core = {
     conduct: 1,
     extraInfo: "wha"
 }
-// 2.9.17.1
+
+// 2.10.20
 // most elements done :D
 // iron heart ore
 // iron heart
@@ -385,7 +423,10 @@ elements.ironheart_core = {
 // added cores that emit electricity
 // its like plants
 // dumbed down ironheart a bit, im thinking about its behaviour
-
+// Ironheart is Radioactive
+// Red Gold is Solid
+// Feynmanium
+// make things have recaitons
 
 // Creditssss
 // Ghanisma - idea for 2.9.16

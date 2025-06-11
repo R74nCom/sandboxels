@@ -15,6 +15,7 @@ class Setting {
         this.defaultValue = defaultValue ?? type[1];
         this.description = description;
         this.validate = customValidator;
+        this.listeners = [];
     }
 
     set(value) {
@@ -23,6 +24,9 @@ class Setting {
         const settings = JSON.parse(localStorage.getItem(`${this.tabName}/settings`)) ?? {};
         settings[this.name] = value;
         localStorage.setItem(`${this.tabName}/settings`, JSON.stringify(settings));
+        for (const listener of this.listeners) {
+            listener(value);
+        }
     }
 
     update() {
@@ -40,6 +44,10 @@ class Setting {
     
     disable() {
         this.disabled = true;
+    }
+
+    onUpdate(callback) {
+        this.listeners.push(callback);
     }
 
     #parseColor(colorString) {

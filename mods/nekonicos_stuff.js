@@ -1,3 +1,4 @@
+
 behaviors.SOLIDIFY = function(pixel) {
     pixel.solid = true
 }
@@ -1548,12 +1549,107 @@ grabAllWeights = function(pixel){
     return results
 }
 
-/*elements.Cherries_Ceri_Moji = {
-    color: "#fcd1d7",
-    category: Student,
-    state: High_School,
-    behavior: [Shy, Introverted, Easily_Excited, Kind],
-    pronouns: [She,Her,Herself],
-    sexuality: [Panromantic, Asexual],
-    desc: "Ceri is a 16 year old high school student who loves cats"
-}*/
+var modName = "mods/nekonicos_stuff.js";
+var cookieMod = "mods/cookie_clicker.js";
+
+if (!enabledMods.includes(cookieMod)) {
+
+elements.cookie_dough = {
+    color: ["#bfac91","#CDBFAB",],
+    behavior: behaviors.STURDYPOWDER,
+    reactions: {
+        "chocolate": { elem1:"chocolate_chip_cookie_dough", elem2:null, chance: 0.5 },
+        "chocolate_powder": { elem1:"chocolate_chip_cookie_dough", elem2:null, chance: 0.5 },
+    },
+    category: "food",
+    tempHigh: 74,
+    stateHigh: "plain_cookie",
+    burn:40,
+    burnTime:25,
+    burnInto:"ash",
+    state: "solid",
+    density: 526.9,
+    isFood: true
+}
+
+elements.chocolate_chip_cookie_dough = {
+    color: ["#bfac91","#CDBFAB","#bfac91","#CDBFAB","#bfac91","#CDBFAB","#bfac91","#CDBFAB","#bfac91","#CDBFAB","#4d2818","#3b1b0d","#33160a"],
+    behavior: behaviors.STURDYPOWDER,
+    category: "food",
+    tempHigh: 74,
+    stateHigh: "cookie",
+    burn:40,
+    burnTime:25,
+    burnInto:"ash",
+    state: "solid",
+    density: 526.9,
+    isFood: true
+}
+
+clicked = false
+cookies = 0
+oldcookies = 0
+createdcookies = 0
+
+elements.plain_cookie = {
+    color: ["#C4966C","#C0946B"],
+    behavior: behaviors.POWDER,
+    reactions: {
+        "chocolate": { elem1:"cookie", elem2:null, chance: 0.25 },
+        "chocolate_powder": { elem1:"cookie", elem2:null, chance: 0.25 },
+    },
+    tempHigh: 192,
+    stateHigh: "toast",
+    category: "food",
+    burn: 10,
+    burnTime: 200,
+    burnInto: "toast",
+    breakInto: "crumb",
+    breakIntoColor: ["#c8946a","#c08655","#ba7a45","#a86d3e"],
+    state: "solid",
+    density: 233.96,
+    isFood: true
+}
+
+elements.cookie = {
+    color: ["#C4966C","#C0946B","#C4966C","#C0946B","#C4966C","#C0946B","#C4966C","#C0946B","#C4966C","#C0946B","#4d2818","#3b1b0d","#33160a"],
+    behavior: behaviors.POWDER,
+    tick: function(pixel) {
+        var top = mousePos.y - Math.floor(mouseSize/2);
+        var bottom = mousePos.y + Math.floor(mouseSize/2);
+        var left = mousePos.x - Math.floor(mouseSize/2);
+        var right = mousePos.x + Math.floor(mouseSize/2);
+        if ((pixel.x >= left && pixel.x <= right && pixel.y >= top && pixel.y <= bottom) && mouseIsDown === true && clicked === false) {
+            clicked = true
+            cookies += 1
+        }
+        else if ((pixel.x >= left && pixel.x <= right && pixel.y >= top && pixel.y <= bottom) && mouseIsDown !== true && clicked === true) {
+            clicked = false
+        }
+        doDefaults(pixel);
+    },
+    tempHigh: 95,
+    stateHigh: ["melted_chocolate","plain_cookie","plain_cookie"],
+    category: "food",
+    burn: 10,
+    burnTime: 200,
+    burnInto: ["melted_chocolate","plain_cookie","plain_cookie"],
+    breakInto: ["crumb","crumb","crumb","crumb","crumb","chocolate","chocolate_powder"],
+    breakIntoColor: ["#bfac91","#CDBFAB","#bfac91","#CDBFAB","#bfac91","#CDBFAB","#bfac91","#CDBFAB","#bfac91","#CDBFAB","#4d2818","#3b1b0d","#33160a"],
+    state: "solid",
+    density: 233.96,
+    isFood: true,
+    renderer: function(pixel,ctx) {
+        if (!viewInfo[view].effects) { return }
+        if (isEmpty(pixel.x,pixel.y+1) || !outOfBounds(pixel.x,pixel.y+1) || pixelMap[pixel.x][pixel.y+1].element === "pipe") {
+            drawPlus(ctx,"#C4966C",pixel.x,pixel.y,undefined,2)
+        }
+        drawDefault(ctx,pixel)
+    }
+}
+
+elements.dough.reactions.sugar = { elem1:"cookie_dough", elem2: null, chance:0.5}
+elements.dough.reactions.chocolate = { elem1:"chocolate_chip_cookie_dough", elem2: null, chance:0.5}
+elements.dough.reactions.chocolate_powder = { elem1:"chocolate_chip_cookie_dough", elem2: null, chance:0.5}
+
+} 
