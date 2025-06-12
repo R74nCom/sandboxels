@@ -1491,12 +1491,10 @@ grabWeights = function(pixel){
                 let result;
                 if (elements[pixelMap[pixel.x][pixel.y-i].element].breakInto !== undefined) {
                     if (Array.isArray(elements[pixelMap[pixel.x][pixel.y-i].element].breakInto)) {
-                        result = elements[pixelMap[pixel.x][pixel.y-i].element].breakInto[Math.floor(Math.random() * elements[pixel.element].breakInto.length)];
-                        weight += elements.result.density
+                        weight += elements.elements[pixelMap[pixel.x][pixel.y-i].element].breakInto[0].density
                     }
-                    else {
-                        result = elements[pixelMap[pixel.x][pixel.y-i].element].breakInto;
-                        weight += elements.result.density
+                    else if (!Array.isArray(elements[pixelMap[pixel.x][pixel.y-i].element].breakInto)) {
+                        weight += elements.elements[pixelMap[pixel.x][pixel.y-i].element].breakInto.density
                     }
                 }
             }
