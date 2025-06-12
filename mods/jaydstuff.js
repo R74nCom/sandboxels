@@ -1,7 +1,23 @@
 //jaydstuff
 //ooooo dependencies
-if (!enabledMods.includes("mods/nousersthings.js")) { enabledMods.unshift("mods/nousersthings.js"); localStorage.setItem("enabledMods", JSON.stringify(enabledMods)); alert("'nousersthings.js' is (not) a dependency for 'jaydstuff.js.js' and has been added. Please reload for it to take effect, also im dumb.") }
-else {
+if (!enabledMods.includes("mods/nousersthings.js")) { enabledMods.unshift("mods/nousersthings.js"); localStorage.setItem("enabledMods", JSON.stringify(enabledMods)); window.location.reload(); };
+async function _jaydstuffjsprompt(message, defaultValue = "") {
+
+
+    return new Promise(resolve => {
+
+
+        promptInput(message, (result) => {
+
+
+            resolve(result);
+
+
+        }, "jaydstuff.js is asking you...", defaultValue);
+
+
+    })
+}
 elements.super_raincloud = {
     color: "#0000ff",
     behavior: [
@@ -132,7 +148,7 @@ elements.heavy_steam = {
         "iron": { elem1:"oxygen", elem2:"rust", chance:0.005 },
         "steel": { elem1:"oxygen", elem2:"rust", chance:0.004 },
     },
-    temp: 150,
+    temp: 150, 
     tempLow: 95,
     extraTempLow: {
         0: "heavy_rime"
@@ -633,19 +649,124 @@ elements.upquake = {
     cooldown: defaultCooldown,
     excludeRandom: true,
 },
+elements.legacy_earthquake = {
+    color: ["#bda791","#997756","#613d19"],
+    tick: function(pixel) {
+        if (pixel.stage) {
+            var coords = circleCoords(pixel.x,pixel.y,pixel.stage);
+            if (pixel.stage >= pixel.mag) {
+                deletePixel(pixel.x,pixel.y);
+                return;
+            }
+            coords.forEach(function(coord){
+                var x = coord.x;
+                var y = coord.y;
+                if (!isEmpty(x,y,true)) {
+                    var p = pixelMap[x][y];
+                    if (p.element === "legacy_earthquake") {
+                        if (pixel !== p) {
+                            pixel.mag += 3;
+                            deletePixel(p.x,p.y);
+                        }
+                        return;
+                    }
+                    if (elements[p.element].breakInto) {
+                        if (Math.random() < (elements[p.element].hardness || 1) * 0.25) {
+                            breakPixel(p);
+                        }
+                    }
+                    if (p.del || !elements[p.element].movable) { return }
+                    tryMove(p,p.x,p.y-1);
+                }
+            })
+            pixel.stage++;
+        }
+        else if (!tryMove(pixel,pixel.x,pixel.y+1)) {
+            // random 10 to 20
+            pixel.mag = Math.floor(Math.random() * 10) + 20;
+            pixel.stage = 1;
+        }
+    },
+    category: "weapons",
+    state: "solid",
+    density: 100000000,
+    maxSize: 1,
+    cooldown: defaultCooldown,
+    excludeRandom: true,
+},
+// textures.rue = [
+//     [8,8,0,0,0,0,0,0,0,0,0,0,0,0,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+//     [8,9,8,0,0,0,0,0,0,0,0,0,14,7,8,7,14,14,14,14,0,0,0,0,0,0,0,0,0,0,0,0],
+//     [9,10,9,8,0,9,10,9,9,9,8,14,7,8,9,8,14,14,14,14,14,14,14,0,0,0,0,0,0,0,0,0],
+//     [8,9,10,9,8,10,10,9,9,9,9,7,8,9,8,7,14,14,14,14,14,14,14,14,14,0,0,0,0,0,0,0],
+//     [8,8,9,10,8,9,9,9,9,9,9,7,9,8,7,7,13,13,13,13,13,13,13,14,14,13,0,0,0,0,0,0],
+//     [8,8,9,10,8,8,9,9,9,9,7,7,9,8,7,7,13,13,13,13,13,13,13,13,13,14,13,0,0,0,0,0],
+//     [8,9,10,9,8,8,8,8,8,8,7,7,8,9,8,7,13,13,13,13,13,13,13,13,13,13,14,12,0,0,0,0],
+//     [9,10,9,8,14,8,8,8,8,7,7,13,7,8,9,8,13,13,13,13,13,13,13,13,13,13,13,12,11,0,0,0],
+//     [8,9,8,14,14,14,14,13,13,13,13,13,1,7,8,7,13,13,13,13,13,13,1,1,13,13,13,13,12,17,0,0],
+//     [8,8,14,14,14,14,13,13,13,13,13,1,1,1,7,7,13,13,13,13,13,13,1,1,1,13,13,13,12,17,0,0],
+//     [0,14,14,14,14,13,13,13,13,13,1,1,1,13,13,13,13,13,13,13,13,13,13,1,1,1,13,13,13,12,17,0],
+//     [0,14,14,14,14,13,13,13,1,1,1,1,13,13,13,13,13,13,13,13,13,13,13,13,1,1,1,1,13,12,17,0],
+//     [0,14,14,14,13,13,13,13,1,1,1,13,13,13,13,13,13,13,13,13,13,13,13,13,13,1,1,1,13,12,17,0],
+//     [14,14,14,14,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,12,17],
+//     [14,14,14,14,13,13,13,13,13,1,1,1,1,1,13,13,13,13,13,13,13,13,1,1,1,1,1,13,13,13,12,17],
+//     [14,14,14,14,13,13,13,13,1,1,1,1,16,16,2,13,13,13,13,13,13,1,1,1,1,16,16,2,13,13,12,17],
+//     [14,14,14,13,13,13,1,16,14,14,14,1,1,1,16,16,1,13,13,1,16,14,14,14,1,1,1,16,16,1,12,17],
+//     [14,14,14,13,13,13,1,14,14,14,13,1,1,1,16,16,1,13,13,1,14,14,14,13,1,1,1,16,16,1,12,17],
+//     [14,14,14,14,13,13,1,1,14,13,1,1,1,1,16,16,1,13,13,1,1,14,13,1,1,1,1,16,16,1,12,17],
+//     [14,14,14,14,13,13,1,1,1,1,1,16,14,1,16,16,1,13,13,1,1,1,1,1,16,14,1,16,16,1,12,17],
+//     [0,14,14,14,13,13,1,1,1,1,1,14,12,2,16,16,1,13,13,1,1,1,1,1,14,12,2,16,16,1,17,0],
+//     [0,14,14,14,13,13,1,1,1,1,1,1,1,16,16,16,1,13,13,1,1,1,1,1,1,1,16,16,16,1,17,0],
+//     [0,14,14,14,14,13,13,1,1,1,1,2,16,16,16,16,1,13,13,1,1,1,1,1,2,16,16,16,16,1,17,0],
+//     [0,0,14,14,14,14,13,1,16,16,16,16,16,16,16,1,13,13,13,13,1,16,16,16,16,16,16,16,1,17,0,0],
+//     [0,0,14,14,14,14,13,13,1,16,16,16,16,16,1,13,13,13,13,13,13,1,16,16,16,16,16,1,12,17,0,0],
+//     [0,0,0,13,14,14,14,14,13,1,1,1,1,1,13,13,13,13,13,13,13,13,1,1,1,1,1,12,17,0,0,0],
+//     [0,0,0,0,13,14,14,14,14,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,12,17,0,0,0,0],
+//     [0,0,0,0,0,12,12,13,13,14,14,14,13,13,13,13,13,13,1,13,13,13,13,13,13,12,17,0,0,0,0,0],
+//     [0,0,0,0,0,0,12,12,12,13,13,13,14,14,14,13,13,1,13,1,13,13,13,12,12,17,0,0,0,0,0,0],
+//     [0,0,0,0,0,0,0,11,11,12,12,12,13,13,13,13,13,13,13,13,12,12,12,17,17,0,0,0,0,0,0,0],
+//     [0,0,0,0,0,0,0,0,0,17,17,17,12,12,12,12,12,12,12,12,17,17,17,0,0,0,0,0,0,0,0,0],
+//     [0,0,0,0,0,0,0,0,0,0,0,0,17,17,17,17,17,17,17,17,0,0,0,0,0,0,0,0,0,0,0,0],
+    
+// ]
+// elements.rue = {
+//     color: ["#000000","#111111","#333333","#555555","#777777","#999999","#bbbbbb","#dddddd","#ffffff"],
+//     colorPattern: textures.rue,
+//     colorKey: {
+//         "0": "#000000",
+//         "1": "#000000",
+//         "2": "#111111",
+//         "3": "#333333",
+//         "4": "#444444",
+//         "5": "#555555",
+//         "6": "#666666",
+//         "7": "#19bb20",
+//         "8": "#19bebe",
+//         "9": "#32d458",
+//         "10": "#32d5c6",
+//         "11": "#ddc231",
+//         "12": "#ebcc28",
+//         "13": "#ffe458",
+//         "14": "#ffed91",
+//         "15": "#f0f0f0",
+//         "16": "#ffffff",
+//         "17": "#cdb322",
+//     },
+// },
+
 createAtXvar = 0;
 createAtYvar = 0;
 create1var = "";
 elements.element_spawner = {
     color: "#71797E",
-    onSelect: function() {
-        var answer1 = prompt("Please input the x value.",(createAtXvar||undefined));
+    onSelect: async function() {
+        var answer1 = await _jaydstuffjsprompt("Please input the x value.",(createAtXvar||undefined));
         if (!answer1) {return}
         createAtXvar = parseInt(answer1);
-        var answer2 = prompt("Please input the y value.",(createAtYvar||undefined));
+        var answer2 = await _jaydstuffjsprompt("Please input the y value.",(createAtYvar||undefined));
         if (!answer2) {return}
         createAtYvar = parseInt(answer2);
-        var answer3 = prompt("Please input what element should spawn.",(create1var||undefined));
+        var answer3 = await _jaydstuffjsprompt("Please input what element should spawn.",(create1var||undefined));
         if (!answer3) {return}
         create1var = answer3;
     },
@@ -659,7 +780,4 @@ elements.element_spawner = {
     conduct: 1,
     state: "solid",
     category: "machines"
-//hello nouser if you are reading this:
 };
-};
-//get triggered

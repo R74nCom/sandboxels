@@ -1,685 +1,728 @@
 html, body {
-    width:  100%;
-    height: 100%;
-    margin: 0;
+	width:  100%;
+	min-height: 100vh;
+	margin: 0;
+}
+html {
+	background-color: #000000;
+}
+:root {
+	--theme: rgb(127, 127, 127);
+	
+	--theme-dark: rgb(63.5, 63.5, 63.5); /* color/2 */
+
+	--theme-darker: rgb(25, 25, 25); /* color/5 */
+	--theme-darker-opac85: rgba(25, 25, 25, 0.85);
+
+	--theme-darkest: rgb(0, 0, 0); /* color-127 */
+	--theme-darkest2: rgb(0, 0, 0); /* color-191 */
+
+	--theme-opac85: rgba(127, 127, 127, 0.85);
+	--theme-opac75: rgba(127, 127, 127, 0.75);
+	--theme-opac50: rgba(127, 127, 127, 0.5);
+	--theme-opac25: rgba(127, 127, 127, 0.25);
+	--theme-opac10: rgba(127, 127, 127, 0.1);
 }
 /* Load the font PressStart2P-Regular.ttf */
 @font-face {
-    font-family: 'Press Start 2P';
-    src: url('fonts/PressStart2P-Regular.ttf');
+	font-family: 'Press Start 2P';
+	src: url('fonts/PressStart2P-Regular.ttf');
 }
 @font-face {
-    font-family: 'VT323';
-    src: url('fonts/VT323-Regular.ttf');
+	font-family: 'VT323';
+	src: url('fonts/VT323-Regular.ttf');
 }
 body {
-    font-family: 'Press Start 2P', 'VT323', Arial;
-    background-color: #000000;
-    color: #ffffff;
-    caret-color: #e6d577;
+	font-family: 'Press Start 2P', 'VT323', Arial;
+	background-color: var(--theme-darkest2);
+	color: #ffffff;
+	caret-color: #e6d577;
 }
 ::-moz-selection {
-  background: #948a54;
+	background: #948a54;
 }
 ::selection {
-  background: #948a54;
+	background: #948a54;
 }
 .pagetitle {
-    padding: 10px;
-    padding-bottom: 0px;
-    font-size: 0.75em;
-    position: absolute;
-    top: 0;
-    left: 0;
+	padding: 10px;
+	padding-bottom: 0px;
+	font-size: 0.75em;
+	position: absolute;
+	top: 0;
+	left: 0;
 }
 a, .saveOption {color: rgb(255, 0, 255);text-decoration: none;}
 a:hover, .saveOption:hover {filter: brightness(200%);}
 a:active, a:hover:active, .saveOption:active, .saveOption:hover:active {filter: brightness(275%);}
 #gameDiv { /*game canvas*/
-    border: 3px solid rgba(255, 255, 255, 0.45);
-    position: relative;
-    -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-    -khtml-user-select: none; /* Konqueror HTML */
-    -moz-user-select: none; /* Old versions of Firefox */
-    -ms-user-select: none; /* Internet Explorer/Edge */
-    user-select: none;
-    /* margin-top: 15px; */
+	border: 3px solid var(--theme-opac85);
+	position: relative;
+	-webkit-touch-callout: none; /* iOS Safari */
+	-webkit-user-select: none; /* Safari */
+	-khtml-user-select: none; /* Konqueror HTML */
+	-moz-user-select: none; /* Old versions of Firefox */
+	-ms-user-select: none; /* Internet Explorer/Edge */
+	user-select: none;
+	/* margin-top: 15px; */
 }
 .gameDiv-wide {
-    margin-top: 0!important;
-    border: none!important;
+	margin-top: 0!important;
+	border: none!important;
 }
 .standalone.mobile #savesButton, .standalone.mobile #extraInfo {
-    display: none
+	display: none
 }
 .standalone #extraInfo {
-    display: none
+	display: none
 }
 #game {
-    image-rendering: pixelated;
+	image-rendering: pixelated;
 }
 #bottomInfoBox { /* place under the game canvas */
-    margin: 1.5em 50px 0px 50px;
-    font-family: 'Arial';
+	margin: 1.5em 50px 0px 50px;
+	font-family: 'Arial';
 }
 #bottomTopBox {
-    text-align: center;
+	text-align: center;
 }
 #bottomTopBoxColumns {
-    display:flex; justify-content: space-around
+	display:flex; justify-content: space-around
 }
 @media screen and (max-width: 1300px) {
-    #bottomTopBoxColumns {
-        display:block; justify-content: unset;
-    }
+	#bottomTopBoxColumns {
+		display:block; justify-content: unset;
+	}
 }
 @media screen and (min-width: 1300px) {
-    #newsletterFrame {
-        border: none!important;
-    }
+	#newsletterFrame {
+		border: none!important;
+	}
 }
 #bottomLeftBox {
-    float: left;
-    width: 50%;
-    text-align: left;
+	float: left;
+	width: 50%;
+	text-align: left;
 }
 #bottomRightBox {
-    float: right;
-    width: 50%;
-    text-align: right;
+	float: right;
+	width: 50%;
+	text-align: right;
 }
 table {
-    border-collapse: collapse;
-    background-color: rgba(255, 255, 255, 0.125);
+	border-collapse: collapse;
+	background-color: rgba(255, 255, 255, 0.125);
 }
 #controlsTable {
-    width: 75%;
-    margin-left: auto;
-    margin-right: 0px;
+	width: 75%;
+	margin-left: auto;
+	margin-right: 0px;
 }
 /* alternating table row colors */
 tr:nth-child(even) {
-    background-color: rgba(255, 255, 255, 0.0625);
+	background-color: rgba(255, 255, 255, 0.0625);
 }
 th, td {
-    text-align: left;
-    padding: 8px;
-    border: 1px solid #9f9f9f;
+	text-align: left;
+	padding: 8px;
+	border: 1px solid #9f9f9f;
 }
 kbd {
-    /* Look like a button */
-    display: inline-block;
-    padding: 0.2em 0.6em 0.3em;
-    font-size: 90%;
-    font-weight: 700;
-    color: rgb(255, 255, 255);
-    background-color: rgb(95, 95, 95);
-    border-radius: 0.2em;
-    border: 1px solid #000;
-    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 0 2px rgba(0, 0, 0, 0.05);
-    font-family: 'Arial';
-    cursor: pointer;
+	/* Look like a button */
+	display: inline-block;
+	padding: 0.2em 0.6em 0.3em;
+	font-size: 90%;
+	font-weight: 700;
+	color: rgb(255, 255, 255);
+	background-color: rgb(95, 95, 95);
+	border-radius: 0.2em;
+	border: 1px solid #000;
+	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 0 2px rgba(0, 0, 0, 0.05);
+	font-family: 'Arial';
+	cursor: pointer;
 }
 kbd:active {filter: brightness(70%);}
 #infoParent, #modParent, #settingsParent, .menuParent {
-    display: none;
-    position: absolute;
-    border: 4px solid #9d9d9d;
-    left: 50%;
-    top: 5%;
-    transform: translate(-50%, 0%);
-    width: 95%;
-    height: 60%;
-    max-width: 700px;
-    max-height: 450px;
-    background-color: rgb(31, 31, 31);
-    z-index:99999
+	display: none;
+	position: absolute;
+	border: 4px solid var(--theme);
+	left: 50%;
+	top: 5%;
+	transform: translate(-50%, 0%);
+	width: 95%;
+	height: 60%;
+	max-width: 700px;
+	max-height: 450px;
+	background-color: var(--theme-darker-opac85);
+	backdrop-filter: blur(3px);
+	z-index:99999
 }
 #infoScreen, #modManager, #settingsMenu, .menuScreen {
-    position: absolute;
-    height:calc(100% - 20px);
-    width:calc(100% - 20px);
-    padding: 10px;
+	position: absolute;
+	height:calc(100% - 20px);
+	width:calc(100% - 20px);
+	padding: 10px;
 
-    background-color: rgb(31, 31, 31);
-    overflow-x: hidden;
-    z-index: 10;
+	/* background-color: rgb(31, 31, 31); */
+	overflow-x: hidden;
+	z-index: 10;
 }
 #settingsParent {
-    height: 75%;
-    max-height: 623px;
+	height: 75%;
+	max-height: 623px;
+}
+.standalone #settingsParent {
+	height: 100%;
 }
 #promptParent {
-    height: 50%;
+	height: 50%;
 }
 #infoSearch, #modManagerUrl, #promptInput {
-    position: fixed;
-    bottom: 0px;
-    left: 0px;
-    width: calc(100% - 16px);
-    max-width: 700px;
-    height: 50px;
-    background-color: rgb(66, 66, 66);
-    color: white;
-    font-size: 1.5em;
-    padding: 8px;
-    font-family: 'Press Start 2P';
-    z-index: 11;
-    border: none
+	position: fixed;
+	bottom: 0px;
+	left: 0px;
+	width: calc(100% - 16px);
+	max-width: 700px;
+	height: 50px;
+	background-color: var(--theme-dark);
+	color: white;
+	font-size: 1.5em;
+	padding: 8px;
+	font-family: 'Press Start 2P';
+	z-index: 11;
+	border: none
 }
 #infoSearch:focus, #modManagerUrl:focus, #promptInput:focus {
-    outline: none;
+	outline: none;
 }
 .menuTitle {
-    font-size: 1.5em;
-    text-decoration: underline;
+	font-size: 1.5em;
+	text-decoration: underline;
 }
 .menuText {
-    margin-top: 5px;
-    line-height: 1.5em;
+	margin-top: 5px;
+	line-height: 1.5em;
 }
 #infoText {
-    white-space: pre-wrap;
+	white-space: pre-wrap;
 }
 .XButton {
-    position: absolute;
-    right: 0px;
-    top: 0px;
-    font-size: 2em;
-    background-color: rgb(100, 33, 33);
-    padding:5px;
-    text-align:center;
-    border: 4px solid #9d9d9d;
-    border-top: none;
-    border-right: none;
-    z-index: 12;
+	position: absolute;
+	right: 0px;
+	top: 0px;
+	font-size: 2em;
+	background-color: rgb(100, 33, 33);
+	padding:5px;
+	text-align:center;
+	border: 4px solid var(--theme);
+	border-top: none;
+	border-right: none;
+	z-index: 12;
 }
 .XButton:hover {
-    background-color: rgb(200, 33, 33);
+	background-color: rgb(200, 33, 33);
 }
 /*#modManagerAdd {
-    position: absolute;
-    bottom: 25%;
-    right: 25%;
-    height: 50px;
-    width: 50px;
-    transform: translate(-25%, -25%);
-    background-color: rgb(0, 190, 32);
-    color: white;
-    font-size: 2em;
-    padding: 10px;
-    font-family: 'Press Start 2P';
+	position: absolute;
+	bottom: 25%;
+	right: 25%;
+	height: 50px;
+	width: 50px;
+	transform: translate(-25%, -25%);
+	background-color: rgb(0, 190, 32);
+	color: white;
+	font-size: 2em;
+	padding: 10px;
+	font-family: 'Press Start 2P';
 }*/
 #modManagerList {
-    margin-top: 20px;
+	margin-top: 20px;
 }
 #modManagerList li {
-    list-style-type: none;
-    position: relative;
+	list-style-type: none;
+	position: relative;
 }
 #modManagerList li::before {
-    content: '•';
-    position: absolute;
-    left: -1.5em;
-    font-size: 1em;
-    font-family: 'Press Start 2P';
+	content: '•';
+	position: absolute;
+	left: -1.5em;
+	font-size: 1em;
+	font-family: 'Press Start 2P';
 }
 .removeModX {
-    color: red;
-    cursor: pointer;
+	color: red;
+	cursor: pointer;
 }
 .removeModX:hover {
-    color: rgb(255, 107, 107);
+	color: rgb(255, 107, 107);
 }
 .infoLink {
-    color: rgb(116, 140, 221);
-    cursor: pointer;
-    text-decoration: underline;
+	color: rgb(116, 140, 221);
+	cursor: pointer;
+	text-decoration: underline;
 }
 .saveSlot {
-    display: block;
-    border-top: solid gray;
-    padding-top: 1em;
-    padding-bottom: 1em;
-    padding-left: 1em;
+	display: block;
+	border-top: solid var(--theme);
+	padding-top: 1em;
+	padding-bottom: 1em;
+	padding-left: 1em;
 }
 .saveSlot:last-child {
-    border-bottom: solid gray;
+	border-bottom: solid var(--theme);
 }
 .saveOption {
-    float: right;
-    padding-left: 2em;
-    padding-right: 1em;
-    color: #ff00ff;
-    cursor: pointer;
+	float: right;
+	padding-left: 2em;
+	padding-right: 1em;
+	color: #ff00ff;
+	cursor: pointer;
 }
 .saveOption:first-child {
-    padding-right: 2em;
+	padding-right: 2em;
 }
 .saveOption[disabled="true"] {
-    color: gray;
-    cursor: not-allowed;
+	color: gray;
+	cursor: not-allowed;
 }
 #saveFile, #loadFile, #saveConfirm, #promptOK, .promptOK, #promptCancel, #promptConfirm {
-    background-color: black;
-    text-align: center;
-    vertical-align: middle;
-    height: 3em;
-    line-height: 3em;
-    position:absolute;
-    bottom: 0;
-    cursor: pointer;
-    border-top: 4px solid #9d9d9d;
+	background-color: var(--theme-darkest2);
+	text-align: center;
+	vertical-align: middle;
+	height: 3em;
+	line-height: 3em;
+	position:absolute;
+	bottom: 0;
+	cursor: pointer;
+	border-top: 4px solid var(--theme);
 }
 #saveConfirm, #promptOK, .promptOK {
-    bottom: 0;
-    position: fixed;
+	bottom: 0;
+	position: fixed;
 }
 #saveFile, #promptCancel {
-    left: 0;
-    width: 50%;
+	left: 0;
+	width: 50%;
 }
 #loadFile, #promptConfirm {
-    right: 0;
-    width: 50%;
-    border-left: 4px solid #9d9d9d;
+	right: 0;
+	width: 50%;
+	border-left: 4px solid var(--theme);
 }
 #saveConfirm, #promptOK, .promptOK {
-    left: 0;
-    width: 100%;
+	left: 0;
+	width: 100%;
 }
 button, input[type="submit"], input[type="reset"] {
-    background: none;
-    color: inherit;
-    border: none;
-    padding: 0;
-    font: inherit;
-    cursor: pointer;
+	background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
 }
 .usingTab button:focus {
-    filter: brightness(75%);
-    outline: none;
+	filter: brightness(75%);
+	outline: none;
 }
 #underBox {
-    position: relative;
-    left: 50%;
-    transform: translate(-50%, -0%);
-    margin-top: 10px;
-    width: 100%;
+	position: relative;
+	left: 50%;
+	transform: translate(-50%, -0%);
+	margin-top: 10px;
+	width: 100%;
+}
+#underDiv {
+	background-color: var(--theme-darkest);
 }
 #controls button {
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 1em;
-    text-shadow: 0.5px 1px 4px #000000;
-    color: rgba(255, 255, 255, 0.85);
-    border: 2px solid #797979;
-    margin: 0px 4px 4px 4px;
-    font-variant: small-caps;
+	padding: 5px 10px;
+	border-radius: 5px;
+	font-size: 1em;
+	text-shadow: 0.5px 1px 4px #000000;
+	color: rgba(255, 255, 255, 0.85);
+	border: 2px solid var(--theme-opac85);
+	margin: 0px 4px 4px 4px;
+	font-variant: small-caps;
 }
 #controls button.bright {
-    text-shadow: 0.5px 1px 4px #ffffff;
-    color: rgba(0, 0, 0, 0.85);   
+	text-shadow: 0.5px 1px 4px #ffffff;
+	color: rgba(0, 0, 0, 0.85);   
 }
 /*Darken when active*/
 #controls button:active, #controls button:active:hover {
-    filter: brightness(60%);
+	filter: brightness(60%);
 }
 #controls button:hover {
-    filter: brightness(90%);
+	filter: brightness(90%);
 }
 #controls button:disabled {
-    cursor: not-allowed;
+	cursor: not-allowed;
 }
 #controls button[current="true"], #controls button[on="true"] {
-    border: 2px solid #ffffff;
-    filter: brightness(110%);
-    /* box-shadow: 0 5px 15px rgba(255, 255, 255, .4); */
-    color: rgba(255, 255, 255, 1);
+	border: 2px solid #ffffff;
+	filter: brightness(110%);
+	/* box-shadow: 0 5px 15px rgba(255, 255, 255, .4); */
+	color: rgba(255, 255, 255, 1);
 }
 #controls .elementButton[current="true"] {
-    border: 2px solid #5ee05e;
-    box-shadow: 0px 1px 15px rgba(0, 255, 0, .75);
+	border: 2px solid #5ee05e;
+	box-shadow: 0px 1px 15px rgba(0, 255, 0, .75);
 }
 #controls button.bright[current="true"] {
-    color: rgba(0, 0, 0, 1);
+	color: rgba(0, 0, 0, 1);
 }
 #controls button[on="true"] {
-    border-color:lime;
-    color:lime;
+	border-color:lime;
+	color:lime;
 }
 #controls div {
-    display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
-    display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
-    display: -ms-flexbox;      /* TWEENER - IE 10 */
-    display: -webkit-flex;     /* NEW - Chrome */
-    display:flex;
+	display: -webkit-box;	  /* OLD - iOS 6-, Safari 3.1-6 */
+	display: -moz-box;		 /* OLD - Firefox 19- (buggy but mostly works) */
+	display: -ms-flexbox;	  /* TWEENER - IE 10 */
+	display: -webkit-flex;	 /* NEW - Chrome */
+	display:flex;
 }
 .stat {
-    margin-right: 25px;
-    margin-bottom: 5px;
-    float:right;
+	margin-right: 25px;
+	margin-bottom: 5px;
+	float:right;
 }
 #stats {
-    margin: 0px 5px 0px 5px;
-    font-size: 0.75em;
-    height: 1.5em;
-    line-height: 1.5em;
-    width:calc(100% - 5px);
-    /* no wrapping */
-    white-space: nowrap;
-    overflow-x: hidden;
-    overflow-y: hidden;
-    background-color: black;
+	padding: 0px 5px 0px 5px;
+	font-size: 0.75em;
+	height: 1.5em;
+	line-height: 1.5em;
+	/* width:calc(100% - 5px); */
+	/* no wrapping */
+	white-space: nowrap;
+	overflow-x: hidden;
+	overflow-y: hidden;
+	background-color: var(--theme-darkest2);
 }
 #stat-pos, #stat-pixels, #stat-shift, #stat-tps, #stat-ticks, #stat-view {
-    float:left;
+	float:left;
 }
 #stat-element {
-    margin-right:10px
+	margin-right:10px
 }
 #stats span {
-    background-color: rgba(0,0,0,0.1);
+	background-color: rgba(0,0,0,0.1);
 }
 #stat-view, #stat-element span {
-    text-transform: uppercase;
+	text-transform: uppercase;
 }
 .redText {
-    color: red;
+	color: red;
 }
 .categoryName {
-    font-size: 0.75em;
-    text-transform: uppercase;
-    margin-left: 5px;
-    vertical-align: middle;
+	font-size: 0.75em;
+	text-transform: uppercase;
+	margin-left: 5px;
+	vertical-align: middle;
 }
 #extraInfo {
-    margin:5px
+	margin:5px;
+	margin-bottom: 0;
+	padding-bottom: 5px;
 }
 #extraInfo small, #extraInfo p {
-    display: inline-block;
-    margin-top: 0;
-    margin-bottom: 0;
-    margin-right: 1em;
+	display: inline-block;
+	margin-top: 0;
+	margin-bottom: 0;
+	margin-right: 1em;
 }
 #extraInfo small {
-    margin-bottom: 10px;
+	margin-bottom: 10px;
 }
 .gameDiv-wide .extraInfo-right {
-    float:right
+	float:right
 }
 #toolControls, #category-tools {
-    white-space: nowrap;
-    overflow-x: auto;
-    overflow-y: hidden;
-    width: 100%;
-    display: flex;
-    justify-content: flex-start;
+	white-space: nowrap;
+	overflow-x: auto;
+	overflow-y: hidden;
+	width: 100%;
+	display: flex;
+	justify-content: flex-start;
 }
 #toolControls button, #category-tools button {
-    flex-grow: 1;
+	flex-grow: 1;
+}
+#toolControls button {
+	background-color: var(--theme-darkest2);
 }
 #elementControls {
-    flex-direction: column;
+	flex-direction: column;
 }
 
 /* Scrollbars */
 
 #toolControls, #category-tools, #categoryControls, #elementControls {
-    scrollbar-color: rgba(255, 255, 255, 0.25) rgba(255, 255, 255, 0.1);
-    scrollbar-width: thin;
+	scrollbar-color: rgba(255, 255, 255, 0.25) rgba(255, 255, 255, 0.1);
+	scrollbar-width: thin;
 }
 
 @media screen and (max-width: 700px) {
-    #toolControls, #category-tools, #categoryControls, #elementControls {
-    margin-bottom: 5px !important;
-    }
+	#toolControls, #category-tools, #categoryControls, #elementControls {
+	margin-bottom: 5px !important;
+	}
 }
 
 #toolControls::-webkit-scrollbar, #category-tools::-webkit-scrollbar, #categoryControls::-webkit-scrollbar, #elementControls::-webkit-scrollbar {
-    width: 5px;
-    height: 8px;
-    background-color: rgba(255, 255, 255, 0.15);
+	width: 5px;
+	height: 8px;
+	background-color: rgba(255, 255, 255, 0.15);
 }
 #toolControls::-webkit-scrollbar-thumb, #category-tools::-webkit-scrollbar-thumb, #categoryControls::-webkit-scrollbar-thumb, #elementControls::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.25);
-    border-radius: 5px;
+	background-color: rgba(255, 255, 255, 0.25);
+	border-radius: 5px;
 }
 #toolControls::-webkit-scrollbar-track, #category-tools::-webkit-scrollbar-track, #categoryControls::-webkit-scrollbar-track, #elementControls::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.15);
-    border-radius: 10px;
+	box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.15);
+	border-radius: 10px;
 }
 #toolControls::-webkit-scrollbar-thumb:hover, #category-tools::-webkit-scrollbar-thumb:hover, #categoryControls::-webkit-scrollbar-thumb:hover, #elementControls::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(255, 255, 255, 0.3);
+	background-color: rgba(255, 255, 255, 0.3);
 }
 
 #toolControls {
-    z-index: 3;
+	z-index: 3;
 }
 #category-tools {
-    z-index: 2;
+	z-index: 2;
 }
 
 #categoryControls {
-    margin-bottom: 5px;
-    background-color: rgba(255, 255, 255, 0.125);
-    white-space: nowrap;
-    overflow-x: auto;
-    flex-wrap: wrap;
-    overflow-y: hidden;
-    width: 100%;
-    position: relative;
-    z-index: 1;
-    display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
-    display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
-    display: -ms-flexbox;      /* TWEENER - IE 10 */
-    display: -webkit-flex;     /* NEW - Chrome */
-    display:flex;
+	margin-bottom: 5px;
+	background-color: var(--theme-dark);
+	white-space: nowrap;
+	overflow-x: auto;
+	flex-wrap: wrap;
+	overflow-y: hidden;
+	width: 100%;
+	position: relative;
+	z-index: 1;
+	display: -webkit-box;	  /* OLD - iOS 6-, Safari 3.1-6 */
+	display: -moz-box;		 /* OLD - Firefox 19- (buggy but mostly works) */
+	display: -ms-flexbox;	  /* TWEENER - IE 10 */
+	display: -webkit-flex;	 /* NEW - Chrome */
+	display:flex;
 }
 #categoryControls button {
-    /* Borderless buttons */
-    border: none;
-    border-radius: 0;
-    padding-left: 3px;
-    padding-right: 3px;
-    margin: 0;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    display: inline-block;
-    position: relative;
-    z-index:0;
-    flex-grow: 1;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-    background-color: #202020;
+	/* Borderless buttons */
+	border: none;
+	border-radius: 0;
+	padding-left: 3px;
+	padding-right: 3px;
+	margin: 0;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	display: inline-block;
+	position: relative;
+	z-index:0;
+	flex-grow: 1;
+	/* border-bottom: 2px solid rgba(255, 255, 255, 0.2); */
+	border-bottom: 2px solid var(--theme-opac50);
+	background-color: var(--theme-darker);
 }
 #categoryControls button:not(:last-child) {
-    border-right: 2px solid rgba(255, 255, 255, 0.2);
+	border-right: 2px solid var(--theme-opac50);
 }
 #categoryControls button[current="true"] {
-    border: none;
-    background-color: rgba(255, 255, 255, 0.4);
+	border: none;
+	background-color: var(--theme-opac85);
 }
 .category {
-    margin-top:0.25em;
-    margin-bottom:0.25em;
-    position:relative;
-    display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
-    display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
-    display: -ms-flexbox;      /* TWEENER - IE 10 */
-    display: -webkit-flex;     /* NEW - Chrome */
-    display:flex;
-    flex-direction: row;
-    text-align:center;
-    justify-content:space-evenly;
-    flex-wrap:wrap;
+	margin-top:0.25em;
+	margin-bottom:0.25em;
+	position:relative;
+	display: -webkit-box;	  /* OLD - iOS 6-, Safari 3.1-6 */
+	display: -moz-box;		 /* OLD - Firefox 19- (buggy but mostly works) */
+	display: -ms-flexbox;	  /* TWEENER - IE 10 */
+	display: -webkit-flex;	 /* NEW - Chrome */
+	display:flex;
+	flex-direction: row;
+	text-align:center;
+	justify-content:space-evenly;
+	flex-wrap:wrap;
 }
 .category button {
-    flex-grow: 1;
+	flex-grow: 1;
 }
 .category:after {
-    content: "";
-    flex-grow: 20
+	content: "";
+	flex-grow: 20
 }
 
 /* screen size < 800px */
 @media screen and (max-width: 800px) { /* Mobile Styles */
-    .pagetitle {
-        font-size: 1em;
-        padding-left: 0.25em;
-    }
-    #bottomLeftBox, #bottomRightBox {
-        width: 100%;
-        margin: 1px;
-        text-align: left;
-    }
-    table {
-        width: 100%;
-        margin-left: 0px;
-        margin-right: 0px;
-    }
-    #gameDiv { /*game canvas*/
-        margin-top: 0;
-    }
-    .stat {
-        margin-right: 15px;
-        margin-bottom: 3px;
-    }
-    #stats {
-        width: 97%;
-        margin-left: 5px;
-        font-size: 0.75em;
-        height: 2.5em;
-        line-height: 1;
-    }
-    #saveFile, #loadFile {
-        font-size: small
-    }
-    .saveSlot {
-        font-size: small
-    }
+	.pagetitle {
+		font-size: 1em;
+		padding-left: 0.25em;
+	}
+	#bottomLeftBox, #bottomRightBox {
+		width: 100%;
+		margin: 1px;
+		text-align: left;
+	}
+	table {
+		width: 100%;
+		margin-left: 0px;
+		margin-right: 0px;
+	}
+	#gameDiv { /*game canvas*/
+		margin-top: 0;
+	}
+	.stat {
+		margin-right: 15px;
+		margin-bottom: 3px;
+	}
+	#stats {
+		width: 97%;
+		margin-left: 5px;
+		font-size: 0.75em;
+		height: 2.5em;
+		line-height: 1;
+	}
+	#saveFile, #loadFile {
+		font-size: small
+	}
+	.saveSlot {
+		font-size: small
+	}
 }
 @media screen and (max-width: 600px) {
-    #gameDiv { /*game canvas*/
-        margin-top: 0;
-        border-left: none;
-        border-right: none;
-        border-top: none;
-    }
-    .pagetitle {
-        display: none
-    }
-    #categoryControls {
-        flex-wrap: nowrap;
-    }
-    #categoryControls button {
-        padding-left: 8px;
-        padding-right: 8px;
-    }
+	#gameDiv { /*game canvas*/
+		margin-top: 0;
+		border-left: none;
+		border-right: none;
+		border-top: none;
+	}
+	.pagetitle {
+		display: none
+	}
+	#categoryControls {
+		flex-wrap: nowrap;
+	}
+	#categoryControls button {
+		padding-left: 8px;
+		padding-right: 8px;
+	}
 }
 @media screen and (min-width: 800px) { /* Desktop-Only Styles */
-    #gameDiv {
-        width:800px;
-        left: 50%;
-        transform: translate(-50%, -0%);
-    }
+	#gameDiv {
+		width:800px;
+		left: 50%;
+		transform: translate(-50%, -0%);
+	}
 }
 /* screen size > 1325px, h1::after {content:" Sandboxels"} */
 @media screen and (min-width: 1325px) {
-    .pagetitle::after {content:" Sandboxels"}
+	.pagetitle::after {content:" Sandboxels"}
 }
 button, input { /*Disable double tap zoom on mobile devices*/
-    touch-action: manipulation;
-    color-scheme: dark;
+	touch-action: manipulation;
+	color-scheme: dark;
 }
-.settingsButton, select, .toggleInput, #settingsMenu input[type="number"], #settingsMenu input[type="text"], #savePromptMenu input, input[type="email"], input[type="number"] {
-    background-color: black;
-    vertical-align: middle;
-    margin-left: 4px;
-    margin-right: 4px;
-    border: rgb(150, 150, 150) 2px solid;
-    padding: 0.4em;
-    color: white;
-    font-size: 1em;
-    font-family: Arial, Helvetica, sans-serif;
+.settingsButton, select, .toggleInput, #settingsMenu input[type="number"], #settingsMenu input[type="text"], #savePromptMenu input, input[type="email"], input[type="number"], .button {
+	background-color: var(--theme-darkest2);
+	vertical-align: middle;
+	margin-left: 4px;
+	margin-right: 4px;
+	border: var(--theme) 2px solid;
+	padding: 0.4em;
+	color: white;
+	font-size: 1em;
+	font-family: Arial, Helvetica, sans-serif;
 }
 #settingsMenu .menuText {
-    font-family: 'VT323';
-    font-size:1.5em
+	font-family: 'VT323';
+	font-size:1.5em
 }
-#settingsMenu .toggleInput, #settingsMenu .menuText button, #settingsMenu input[type], #settingsMenu select {
-    display: inline-block;
-    text-align: center;
-    font-family: 'VT323';
-    padding-left:13px;
-    padding-right:13px;
-    margin:0
+#settingsMenu .toggleInput, #settingsMenu .menuText button, #settingsMenu input[type], #settingsMenu select, .button {
+	display: inline-block;
+	text-align: center;
+	font-family: 'VT323';
+	padding-left:13px;
+	padding-right:13px;
+	margin:0
+}
+.button {
+	cursor:pointer;
+	font-size: 1.5em;
 }
 #settingsMenu input[type=color] {
-    padding:0
+	padding:0;
+	background-color: var(--theme-dark);
+	border: none;
 }
 #settingsMenu select, #settingsMenu input[type=text] {
-    font-size: 1em;
-    padding:5px;
+	font-size: 1em;
+	padding:5px;
 }
 .toggleInput { cursor: pointer; }
 .toggleInput[state="1"] {color: lime!important;}
 .toggleInput[state="0"] {color: red!important;}
 #settingsMenu input[type="number"] {
-    width: 3em;
-    text-align: left;
+	width: 3em;
+	text-align: left;
 }
 #settingsMenu input[type="text"] {
-    text-align: left;
+	text-align: left;
 }
 .settingsButton:active, .toggleInput:active {
-    filter: brightness(75%);
+	filter: brightness(75%);
 }
 #canvasDiv {
-    position:relative;
-    overflow-x:hidden
+	position:relative;
+	overflow-x:hidden
 }
 #colorSelector {
-    position:absolute;
-    bottom:1em;
-    right:1em;
-    display: none;
+	position:absolute;
+	bottom:1em;
+	right:1em;
+	display: none;
 }
 .categoryButton.notify {
-    background-color: rgba(255, 0, 0, 0.25);
+	background-color: rgba(255, 0, 0, 0.25);
 }
 /* .elementButton.notify with a red glow */
 .elementButton.notify {
-    -webkit-box-shadow: 0px 0px 15px 5px #FF0000; 
-    box-shadow: 0px 0px 15px 5px #FF0000;
+	-webkit-box-shadow: 0px 0px 15px 5px #FF0000; 
+	box-shadow: 0px 0px 15px 5px #FF0000;
 }
 .noselect {
-    -webkit-touch-callout: none; /* iOS Safari */
-      -webkit-user-select: none; /* Safari */
-       -khtml-user-select: none; /* Konqueror HTML */
-         -moz-user-select: none; /* Firefox */
-          -ms-user-select: none; /* Internet Explorer/Edge */
-              user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+	-webkit-touch-callout: none; /* iOS Safari */
+	  -webkit-user-select: none; /* Safari */
+	   -khtml-user-select: none; /* Konqueror HTML */
+		 -moz-user-select: none; /* Firefox */
+		  -ms-user-select: none; /* Internet Explorer/Edge */
+			  user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
 }
 .setting-span {
-    display:block;padding-bottom:0.5em
+	display:block;padding-bottom:0.5em
 }
 .multisetting {
-    display: inline-block
+	display: inline-block
 }
 .helpMark {text-decoration:dotted underline; font-style:italic; cursor:help; color:yellow}
 #content {
-    margin-left:10px;
-    margin-right:10px;
-    padding-bottom: 10px;
+	margin-left:10px;
+	margin-right:10px;
+	padding-bottom: 10px;
 }
 #logDiv {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    pointer-events: none;
-    padding: 5px;
-    white-space: pre-wrap;
-    font-size: 0.75em;
-    text-shadow: 0px 0px 6px black;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	pointer-events: none;
+	padding: 5px;
+	white-space: pre-wrap;
+	font-size: 0.75em;
+	text-shadow: 0px 0px 6px black;
+}
+button.disabled {
+	opacity: 0.5;
+	cursor:not-allowed;
 }
