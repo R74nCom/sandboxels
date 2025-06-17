@@ -1,3 +1,11 @@
+/* changelog 
+v 0.1 added snake
+v 0.11 "axolotl" eats fish
+v 0.2 crocodiles scales and axolotls actually eat fish now
+
+thats it for now
+*/
+
 // Only run this if the human, head, and body elements exist
 if (elements.human && elements.head && elements.body) {
   // Human
@@ -392,6 +400,14 @@ elements.crocodile = {
     "axolotl": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.2 },
     "lizard": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.2 },
     "newt": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.2 },
+    "body": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.2 },
+    "head": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.2 },
+    "human": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.2 },
+    "slug": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.2 },
+    "snail": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.2 },
+    "bone": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.1 },
+    "bone_marrow": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.4 },
+    "homonculus": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.2 },
     "radiation": { elem1: ["ash", "meat", "cooked_meat", "rotten_meat", "lizard", "snake", null], chance: 0.4 },
     "oxygen": { elem2: "carbon_dioxide", chance: 0.5 },
     "mercury": { elem1: "rotten_meat", chance: 0.1 },
@@ -447,10 +463,3 @@ elements.scale_plate = {
       }
     }
   }
-
-/* changelog 
-v 0.1 added snake
-v 0.11 "axolotl" eats fish
-v 0.12 axolotl actually eats fish now
-thats it for now
-*/
