@@ -320,9 +320,11 @@ elements.destroyable_pipe = {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
+                if (!isEmpty(x,y,true) && elements[pixelMap[x][y].element].movable) {
+                    deletePixel(x,y)
+                }
                 if (isEmpty(x,y)) {
-                    createPixel("brick",x,y);
-                    pixelMap[x][y].color = pixelColorPick(pixel,"#586879");
+                    createPixel("pipe_wall",x,y);
                 }
             }
             pixel.stage = 1;
@@ -631,9 +633,11 @@ elements.e_pipe = {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
+                if (!isEmpty(x,y,true) && elements[pixelMap[x][y].element].movable) {
+                    deletePixel(x,y)
+                }
                 if (isEmpty(x,y)) {
                     createPixel("pipe_wall",x,y);
-                    pixelMap[x][y].color = pixelColorPick(pixel,"#586879");
                 }
             }
             pixel.stage = 1;
@@ -749,9 +753,11 @@ elements.destroyable_e_pipe = {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
+                if (!isEmpty(x,y,true) && elements[pixelMap[x][y].element].movable) {
+                    deletePixel(x,y)
+                }
                 if (isEmpty(x,y)) {
-                    createPixel("brick",x,y);
-                    pixelMap[x][y].color = pixelColorPick(pixel,"#586879");
+                    createPixel("pipe_wall",x,y);
                 }
             }
             pixel.stage = 1;
@@ -874,9 +880,11 @@ elements.channel_pipe = {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
+                if (!isEmpty(x,y,true) && elements[pixelMap[x][y].element].movable) {
+                    deletePixel(x,y)
+                }
                 if (isEmpty(x,y)) {
                     createPixel("pipe_wall",x,y);
-                    pixelMap[x][y].color = pixelColorPick(pixel,"#586879");
                 }
             }
             pixel.stage = 1;
@@ -995,9 +1003,11 @@ elements.destroyable_channel_pipe = {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
+                if (!isEmpty(x,y,true) && elements[pixelMap[x][y].element].movable) {
+                    deletePixel(x,y)
+                }
                 if (isEmpty(x,y)) {
-                    createPixel("brick",x,y);
-                    pixelMap[x][y].color = pixelColorPick(pixel,"#586879");
+                    createPixel("pipe_wall",x,y);
                 }
             }
             pixel.stage = 1;
@@ -1112,9 +1122,11 @@ elements.bridge_pipe = {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
+                if (!isEmpty(x,y,true) && elements[pixelMap[x][y].element].movable) {
+                    deletePixel(x,y)
+                }
                 if (isEmpty(x,y)) {
                     createPixel("pipe_wall",x,y);
-                    pixelMap[x][y].color = pixelColorPick(pixel,"#586879");
                 }
             }
             pixel.stage = 1;
@@ -1224,7 +1236,7 @@ elements.bridge_pipe = {
                 var coord = squareCoords[i];
                 var x = pixel.x+coord[0];
                 var y = pixel.y+coord[1];
-                if (!isEmpty(x,y,true) && elements[pixelMap[x][y].element].movable && newPixel.element != "ray") {
+                if (!isEmpty(x,y,true) && elements[pixelMap[x][y].element].movable) {
                     deletePixel(x,y)
                 }
                 if (isEmpty(x,y)) {
