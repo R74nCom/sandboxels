@@ -64,7 +64,7 @@
 		{
 		  "@context": "https://schema.org",
 		  "@type": ["VideoGame","MobileApplication","WebApplication"],
-		  "gamePlatform":"Web Browser",
+		  "gamePlatform":["Web Browser","Windows","macOS"],
 		  "image":"https://sandboxels.r74n.com/icons/icon.png",
 		  "url": "https://sandboxels.r74n.com",
 		  "name":"Sandboxels",
@@ -78,19 +78,22 @@
 			"availability":"https://schema.org/InStock"
 		  },
 		  "genre": "Falling-sand game",
-		  "softwareVersion":"1.10.2",
+		  "softwareVersion":"1.11.2",
 		  "datePublished":"2021-12-15",
 		  "dateCreated":"2021-12-15",
 		  "gameTip":"https://sandboxels.r74n.com/controls",
 		  "softwareHelp":"https://sandboxels.r74n.com/controls",
 		  "releaseNotes":"https://sandboxels.r74n.com/changelog",
-		  "screenshot": "https://sandboxels.r74n.com/icons/wallpaper.png",
+		  "screenshot": "https://sandboxels.r74n.com/icons/cover-3840x1240px-text.png",
 		  "softwareRequirements": "HTML5",
 		  "archivedAt": "https://web.archive.org/web/20230519005427/https://sandboxels.r74n.com/",
-		  "copyrightYear": 2024,
-		  "copyrightNotice": "©2021-2024. All Rights Reserved. R74n",
+		  "copyrightYear": 2021,
+		  "copyrightNotice": "©2021-2025. All Rights Reserved. R74n",
 		  "license": "https://sandboxels.r74n.com/license.txt",
-		  "discussionUrl": "https://r74n.com/discord/",
+		  "discussionUrl": ["https://r74n.com/discord/","https://www.reddit.com/r/Sandboxels/","https://steamcommunity.com/app/3664820/discussions/"],
+		  "downloadUrl": "https://store.steampowered.com/app/3664820/Sandboxels/",
+		  "installUrl": "https://store.steampowered.com/app/3664820/Sandboxels/",
+		  "trailer": "https://www.youtube.com/watch?v=TgHnD-KRieM",
 		  "educationalUse": "Hands-on lab experiments and learning",
 		  "headline": "Sandboxels",
 		  "isAccessibleForFree": true,
@@ -121,6 +124,9 @@
 		console.log("Can't access? Join our Discord: https://R74n.com/discord/");
 		console.log("Found this on another website? Let us know!");
 		console.log("©2021-" + new Date().getFullYear() + ". All Rights Reserved. https://sandboxels.R74n.com/license.txt");
+
+		isOnSite = location.hostname === "sandboxels.r74n.com";
+
 		// If settings is in localStorage, load it. If not, create an empty object.
 		settings = localStorage.getItem("settings") ? JSON.parse(localStorage.getItem("settings")) : {};
 		// URL query handling
@@ -12976,6 +12982,11 @@ if (standalone) {
 	var script = document.createElement('script');
 	script.src = "mods/glow.js";
 	document.head.appendChild(script);
+	if (standaloneType === "steam") {
+		var script = document.createElement('script');
+		script.src = "mods/steam_port.js";
+		document.head.appendChild(script);
+	}
 }
 
 var currentMonth = new Date().getMonth();
@@ -15894,7 +15905,7 @@ behaviorRules = {
 			ctx.drawImage(placingImage,0,0,newWidth,newHeight);
 			var newImage = ctx.getImageData(0,0,newWidth,newHeight);
 			var elem = (settings.imageelem || "wood");
-			if ((!elements[elem] || elements[elem].tool || elements[elem].canPlace===false) && elem !== "paint") { elem = "wood";}
+			if ((!elements[elem] || elements[elem].tool || elements[elem].canPlace===false) && elem !== "paint" && !elements[elem].canPlace) { elem = "wood";}
 			// loop through each pixel in the ImageData
 			for (var x = 0; x < newWidth; x++) {
 				for (var y = 0; y < newHeight; y++) {
@@ -16240,7 +16251,7 @@ behaviorRules = {
 					if (r) autoResizeCanvas();
 					focusGame();
 				},
-				html: standalone ? null : `<br><br><p style="text-align:center"><input id="playlightButton" class="button" type="button" onclick="loadPlaylight();" value="Play More Games" style=""></input></p>`,
+				html: (standalone || !isOnSite) ? null : `<br><br><p style="text-align:center"><input id="playlightButton" class="button" type="button" onclick="loadPlaylight();" value="Play More Games" style=""></input></p>`,
 				type: "confirm",
 				wasPaused: pause
 			}
@@ -19100,6 +19111,7 @@ if (document.referrer && document.referrer.indexOf("r74n.") === -1) {
 }
 			
 				function loadPlaylight() {
+					if (!isOnSite) { location.href = "https://r74n.com"; return }
 					if (typeof playlightSDK === "undefined") {
 						document.getElementById("playlightButton").value = "Loading...";
 						document.head.insertAdjacentHTML("beforeend",`<link rel="stylesheet" href="https://sdk.playlight.dev/playlight-sdk.css">`);
