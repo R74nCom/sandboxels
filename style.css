@@ -625,7 +625,7 @@ button, input { /*Disable double tap zoom on mobile devices*/
 	touch-action: manipulation;
 	color-scheme: dark;
 }
-.settingsButton, select, .toggleInput, #settingsMenu input[type="number"], #settingsMenu input[type="text"], #savePromptMenu input, input[type="email"], input[type="number"] {
+.settingsButton, select, .toggleInput, #settingsMenu input[type="number"], #settingsMenu input[type="text"], #savePromptMenu input, input[type="email"], input[type="number"], .button {
 	background-color: var(--theme-darkest2);
 	vertical-align: middle;
 	margin-left: 4px;
@@ -640,13 +640,17 @@ button, input { /*Disable double tap zoom on mobile devices*/
 	font-family: 'VT323';
 	font-size:1.5em
 }
-#settingsMenu .toggleInput, #settingsMenu .menuText button, #settingsMenu input[type], #settingsMenu select {
+#settingsMenu .toggleInput, #settingsMenu .menuText button, #settingsMenu input[type], #settingsMenu select, .button {
 	display: inline-block;
 	text-align: center;
 	font-family: 'VT323';
 	padding-left:13px;
 	padding-right:13px;
 	margin:0
+}
+.button {
+	cursor:pointer;
+	font-size: 1.5em;
 }
 #settingsMenu input[type=color] {
 	padding:0;
