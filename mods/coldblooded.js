@@ -2,7 +2,7 @@
 v 0.1 added snake
 v 0.11 "axolotl" eats fish
 v 0.2 crocodiles scales and axolotls actually eat fish now
-v 0.3 chamelions + bugfixes
+v 0.3 chameleons + bugfixes
 thats it for now
 */
 
@@ -96,7 +96,7 @@ elements.lizard = {
     "oxygen": { elem2: "carbon_dioxide", chance: 0.5 },
     "pool_water": { chance: 0.001, elem1: "rotten_meat" },
     "dirty_water": { chance: 0.0001, elem1: "rotten_meat" },
-    "radiation": { elem1: ["ash", "meat", "cooked_meat", "rotten_meat", "snake", "crocodile", "chamelion", null], chance: 0.4 },
+    "radiation": { elem1: ["ash", "meat", "cooked_meat", "rotten_meat", "snake", "crocodile", "chameleon", null], chance: 0.4 },
     "mercury": { elem1: "rotten_meat", chance: 0.1 },
     "bleach": { elem1: "rotten_meat", chance: 0.1 },
     "infection": { elem1: "rotten_meat", chance: 0.025 },
@@ -410,7 +410,7 @@ elements.crocodile = {
     "body": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.2 },
     "head": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.2 },
     "human": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.2 },
-    "chamelion": {
+    "chameleon": {
       reactionFunction: function (pixel, otherPixel) {
         let isNormalColor = defaultColors.includes(pixel.color);
           if (otherPixel.threatened !== true || isNormalColor === true) {
@@ -496,7 +496,7 @@ elements.scale_plate = {
   }
 }
 
-elements.chamelion = {
+elements.chameleon = {
   color: ["#02c937", "#18d64a", "#09e644"],
   category: "life",
   breakInto: ["blood", "scale"],
