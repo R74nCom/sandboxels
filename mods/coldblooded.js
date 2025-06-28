@@ -2,9 +2,11 @@
 v 0.1 added snake
 v 0.11 "axolotl" eats fish
 v 0.2 crocodiles scales and axolotls actually eat fish now
-
+v 0.3 chameleons + bugfixes
 thats it for now
 */
+
+const defaultColors = ["#02c937", "#18d64a", "#09e644"];
 
 // Only run this if the human, head, and body elements exist
 if (elements.human && elements.head && elements.body) {
@@ -64,61 +66,66 @@ elements.human.reactions.snake =
   { attr1: { panic: 5 } }
 
 elements.fish.reactions.toad_tadpole =
-  { elem2: null, chance: 0.25, func: behaviors.FEEDPIXEL },
+  { elem2: null, chance: 0.25, func: behaviors.FEEDPIXEL }
 
-  elements.glue.reactions.scale =
-  { elem1: null, elem2: "scale_plate" },
+if (!elements.glue.ignore.includes("scale")) {
+  elements.glue.ignore.push("scale");
+}
 
-  elements.lizard = {
-    color: ["#00ff1a", "#038f11"],
-    behavior: [
-      ["XX", "XX", "M2%1"],
-      ["XX", "FX%5", "M1%15"],
-      ["M2", "M1", "M2"],
-    ],
-    category: "life",
-    state: "solid",
-    reactions: {
-      "fly": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.5 },
-      "ant": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.3 },
-      "termite": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.3 },
-      "worm": { elem2: null, func: behaviors.FEEDPIXEL },
-      "bee": { elem2: null, func: eatBee, chance: 0.05 },
-      "firefly": { elem2: null, func: eatBee, chance: 0.4 },
-      "fish": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.5 },
-      "oxygen": { elem2: "carbon_dioxide", chance: 0.5 },
-      "pool_water": { chance: 0.001, elem1: "rotten_meat" },
-      "dirty_water": { chance: 0.0001, elem1: "rotten_meat" },
-      "radiation": { elem1: ["ash", "meat", "cooked_meat", "rotten_meat", "snake", "crocodile", null], chance: 0.4 },
-      "mercury": { elem1: "rotten_meat", chance: 0.1 },
-      "bleach": { elem1: "rotten_meat", chance: 0.1 },
-      "infection": { elem1: "rotten_meat", chance: 0.025 },
-      "uranium": { elem1: "rotten_meat", chance: 0.1 },
-      "cyanide": { elem1: "rotten_meat", chance: 0.1 },
-      "chlorine": { elem1: "meat", chance: 0.1 },
-      "alcohol": { elem1: "meat", chance: 0.025 },
-      "vinegar": { elem1: "rotten_meat", chance: 0.001 },
-      "poison": { elem1: "rotten_meat", elem2: null }
-    },
-    foodNeed: 5,
-    temp: 20,
-    tempHigh: 120,
-    stateHigh: ["cooked_meat", "scale"],
-    tempLow: -20,
-    stateLow: "frozen_meat",
-    breakInto: ["blood", "scale"],
-    density: 1050,
-    eggColor: "#ffffff",
-    tick: function (pixel) {
-      if (pixel.poisoned !== undefined) {
-        pixel.poisoned--;
-        if (pixel.poisoned <= 0) {
-          deletePixel(pixel.x, pixel.y);
-          return;
-        }
+danger = ["crocodile", "snake"];
+
+
+
+elements.lizard = {
+  color: ["#00ff1a", "#038f11"],
+  behavior: [
+    ["XX", "XX", "M2%1"],
+    ["XX", "FX%5", "M1%15"],
+    ["M2", "M1", "M2"],
+  ],
+  category: "life",
+  state: "solid",
+  reactions: {
+    "fly": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.5 },
+    "ant": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.3 },
+    "termite": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.3 },
+    "worm": { elem2: null, func: behaviors.FEEDPIXEL },
+    "bee": { elem2: null, func: eatBee, chance: 0.05 },
+    "firefly": { elem2: null, func: eatBee, chance: 0.4 },
+    "fish": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.5 },
+    "oxygen": { elem2: "carbon_dioxide", chance: 0.5 },
+    "pool_water": { chance: 0.001, elem1: "rotten_meat" },
+    "dirty_water": { chance: 0.0001, elem1: "rotten_meat" },
+    "radiation": { elem1: ["ash", "meat", "cooked_meat", "rotten_meat", "snake", "crocodile", "chameleon", null], chance: 0.4 },
+    "mercury": { elem1: "rotten_meat", chance: 0.1 },
+    "bleach": { elem1: "rotten_meat", chance: 0.1 },
+    "infection": { elem1: "rotten_meat", chance: 0.025 },
+    "uranium": { elem1: "rotten_meat", chance: 0.1 },
+    "cyanide": { elem1: "rotten_meat", chance: 0.1 },
+    "chlorine": { elem1: "meat", chance: 0.1 },
+    "alcohol": { elem1: "meat", chance: 0.025 },
+    "vinegar": { elem1: "rotten_meat", chance: 0.001 },
+    "poison": { elem1: "rotten_meat", elem2: null }
+  },
+  foodNeed: 5,
+  temp: 20,
+  tempHigh: 120,
+  stateHigh: ["cooked_meat", "scale"],
+  tempLow: -20,
+  stateLow: "frozen_meat",
+  breakInto: ["blood", "scale"],
+  density: 1050,
+  eggColor: "#ffffff",
+  tick: function (pixel) {
+    if (pixel.poisoned !== undefined) {
+      pixel.poisoned--;
+      if (pixel.poisoned <= 0) {
+        deletePixel(pixel.x, pixel.y);
+        return;
       }
-    },
-  };
+    }
+  },
+};
 
 
 
@@ -403,6 +410,15 @@ elements.crocodile = {
     "body": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.2 },
     "head": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.2 },
     "human": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.2 },
+    "chameleon": {
+      reactionFunction: function (pixel, otherPixel) {
+        let isNormalColor = defaultColors.includes(pixel.color);
+          if (otherPixel.threatened !== true || isNormalColor === true) {
+            behaviors.FEEDPIXEL(pixel, otherPixel);
+            deletePixel(otherPixel.x, otherPixel.y)
+          }
+        }
+    },
     "slug": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.2 },
     "snail": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.2 },
     "bone": { elem2: null, func: behaviors.FEEDPIXEL, chance: 0.1 },
@@ -426,7 +442,16 @@ elements.crocodile = {
   tempLow: -10,
   stateLow: "frozen_meat",
   breakInto: ["blood", "scale"],
-  density: 1100
+  density: 1100,
+  tick: function (pixel) {
+    if (pixel.poisoned !== undefined) {
+      pixel.poisoned--;
+      if (pixel.poisoned <= 0 && Math.random() <= 0.5) {
+        deletePixel(pixel.x, pixel.y);
+        return;
+      }
+    }
+  }
 }
 
 elements.scale = {
@@ -446,20 +471,157 @@ elements.scale = {
 
 elements.scale_plate = {
   category: "solids",
-    color: ['#044404', '#137a13', '#0aa00a'],
-    hardness: 0.8,
-    breakInto: "scale",
-    tick: function (pixel) {
-      // 2 temp highs
-      const hot = ["scale", "dioxin", "cyanide_gas"];
-      const hotter = ["ash", "ash", "ash", "smoke", "stench", "stench", "stench", "dioxin", "cyanide_gas"];
-      if (pixel.temp >= 475 && pixel.temp <= 900) {
-        let chosen = hot[Math.floor(Math.random() * hot.length)];
-        changePixel(pixel, chosen);
+  behavior: [
+    "XX", "XX", "XX",
+    "XX", "XX", "XX",
+    "XX", "XX", "XX",
+  ],
+  movable: false,
+  state: "solid",
+  color: ['#044404', '#137a13', '#0aa00a'],
+  hardness: 0.8,
+  breakInto: "scale",
+  tick: function (pixel) {
+    // 2 temp highs
+    const hot = ["scale", "dioxin", "cyanide_gas"];
+    const hotter = ["ash", "ash", "ash", "smoke", "stench", "stench", "stench", "dioxin", "cyanide_gas"];
+    if (pixel.temp >= 475 && pixel.temp <= 900) {
+      let chosen = hot[Math.floor(Math.random() * hot.length)];
+      changePixel(pixel, chosen);
+    }
+    if (pixel.temp >= 900) {
+      let chosen = hotter[Math.floor(Math.random() * hotter.length)];
+      changePixel(pixel, chosen);
+    }
+  }
+}
+
+elements.chameleon = {
+  color: ["#02c937", "#18d64a", "#09e644"],
+  category: "life",
+  breakInto: ["blood", "scale"],
+  temp: 18,
+  tempHigh: 100,
+  stateHigh: ["cooked_meat", "scale"],
+  tempLow: -10,
+  stateLow: "frozen_meat",
+  foodNeed: 10,
+  density: 1100,
+  reactions: {
+    'fly': { func: behaviors.FEEDPIXEL, chance: 0.5 },
+    "firefly": { elem2: null, func: eatBee, chance: 0.3 },
+    "bee": { elem2: null, func: eatBee, chance: 0.1 },
+    "radiation": { elem1: ["ash", "meat", "cooked_meat", "rotten_meat", "lizard", null], chance: 0.4 },
+    "oxygen": { elem2: "carbon_dioxide", chance: 0.5 },
+    "mercury": { elem1: "rotten_meat", chance: 0.1 },
+    "bleach": { elem1: "rotten_meat", chance: 0.1 },
+    "infection": { elem1: "rotten_meat", chance: 0.025 },
+    "uranium": { elem1: "rotten_meat", chance: 0.1 },
+    "cyanide": { elem1: "rotten_meat", chance: 0.1 },
+    "chlorine": { elem1: "meat", chance: 0.1 },
+    "alcohol": { elem1: "meat", chance: 0.025 },
+    "vinegar": { elem1: "rotten_meat", chance: 0.001 },
+    "poison": { elem1: null }
+  },
+  tick: function (pixel) {
+
+    if (pixel.poisoned !== undefined) {
+      pixel.poisoned--;
+      if (pixel.poisoned <= 0) {
+        deletePixel(pixel.x, pixel.y);
+        return;
       }
-      if (pixel.temp >= 900) {
-        let chosen = hotter[Math.floor(Math.random() * hotter.length)];
-        changePixel(pixel, chosen);
+    }
+
+    const directions = [
+      [0, -1], [-1, -1], [1, -1],
+      [-1, 0], [1, 0],
+      [0, 1], [-1, 1], [1, 1]
+    ];
+
+    pixel.threatened ??= false;
+    pixel.colorChange ??= 120;
+    pixel.dir ??= 1;
+
+    let changed = false;
+
+    // Copy color from nearby solids if threatened
+    for (let [dx, dy] of directions) {
+      let x = pixel.x + dx;
+      let y = pixel.y + dy;
+      if (!isEmpty(x, y)) {
+        let other = pixelMap[x]?.[y];
+        if (
+          other &&
+          pixel.threatened === true &&
+          elements[other.element]?.state === "solid" &&
+          elements[other.element]?.category !== "life" &&
+          other.element !== "egg"
+        ) {
+          pixel.colorChange = 120;
+          pixel.color = other.color;
+          changed = true;
+          break;
+        }
+      }
+    }
+
+    // Return to normal color if no color copied
+    if (!changed) {
+      pixel.colorChange--;
+      if (pixel.colorChange <= 0) {
+        pixel.color = defaultColors[Math.floor(Math.random() * defaultColors.length)];
+        pixel.colorChange = 120;
+      }
+    }
+
+    // Vision-based threat detection
+    if (Math.random() < 0.25) {
+      let threatSeen = false;
+      let yOffset = Math.random() < 0.5 ? 0 : -1;
+
+      for (let x = 1; x < 10; x++) {
+        let x2 = pixel.x + (x * pixel.dir);
+        let y2 = pixel.y + yOffset;
+
+        if (!isEmpty(x2, y2, true)) {
+          let seen = pixelMap[x2][y2];
+          if (danger.includes(seen?.element)) {
+            pixel.threatened = true;
+            threatSeen = true;
+            break;
+          }
+        }
+      }
+
+      // Only reset to false if no threat is seen
+      if (!threatSeen) {
+        pixel.threatened = false;
+      }
+    }
+
+    if (Math.random() < 0.05) {
+      pixel.dir *= -1;
+    }
+
+    // Movement logic:
+    // Move only if NOT threatened OR if color is back to normal
+    let isNormalColor = defaultColors.includes(pixel.color);
+
+    if (pixel.threatened === false || isNormalColor) {
+      let moved = false;
+
+      if (Math.random() < 0.15 && tryMove(pixel, pixel.x + 1 * pixel.dir, pixel.y)) {
+        moved = true;
+      }
+
+      if (!moved && tryMove(pixel, pixel.x, pixel.y + 1)) {
+        moved = true;
+      }
+
+      if (!moved && Math.random() < 0.01) {
+        tryMove(pixel, pixel.x + 1 * pixel.dir, pixel.y - 1);
       }
     }
   }
+}
