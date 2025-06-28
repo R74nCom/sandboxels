@@ -1134,7 +1134,7 @@ elements.dry_icing = {
 
 elements.cream.reactions.baked_batter = {elem2: "cake" }
 
-elements.sugar.breakInto = {elem1: "icing_sugar"}
+elements.sugar.breakInto = "icing_sugar"
 
 elements.boiler = {
 	color: "#73fff8",
