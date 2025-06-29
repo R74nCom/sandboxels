@@ -1,0 +1,25 @@
+[mod]
+name = "test-finder"
+version = "0.1.0"
+entry_point = ""
+external_elements = [
+    {path = "mods/loader_test/test_element.toml", name = "test_element"},
+]
+
+[elements]
+
+# [elements.test_element]
+# name = "test_element"
+# color = ["#FF00FF", "#00FF00"]
+# state = "solid"
+# behaviour = [["XX","XX","XX"],["XX","XX","XX"],["XX","XX","XX"]]
+# category = "solids"
+# tempHigh = 100
+# stateHigh = "gold"
+# density = 100
+# conduct = 1.0
+
+# [elements.test_element.reactions]
+# water = {elem = "ash", elem2 = "pop"}
+# cement = {elem1 = "sand"}
+# blood = {elem1 = "n_explosion"}

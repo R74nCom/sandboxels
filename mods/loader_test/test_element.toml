@@ -1,0 +1,14 @@
+name = "test_element_b"
+color = ["#FF00FF", "#00FF00"]
+state = "solid"
+behaviour = [["XX","XX","XX"],["XX","XX","XX"],["XX","XX","XX"]]
+category = "solids"
+tempHigh = 100
+stateHigh = "gold"
+density = 100
+conduct = 1.0
+
+[reactions]
+water = {elem = "ash", elem2 = "pop"}
+cement = {elem1 = "sand"}
+blood = {elem1 = "n_explosion"}
