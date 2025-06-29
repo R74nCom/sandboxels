@@ -110,12 +110,12 @@ elements.radon = {
                     var y = pixel.y+coord[1];
                     if (isEmpty(x, y) && Math.random()<0.01){
                         createPixel(x, y, "helium")
-                        pixelMap[x][y].temp += 75
+                        pixelMap[x][y].temp += 3000
                         break;
                     }
                 }
                 changePixel(pixel, "polonium", false)
-                pixel.temp += 100
+                pixel.temp += 5000
             }
         }else{
             if(Math.random()<0.00038){
@@ -124,11 +124,11 @@ elements.radon = {
                     var x = pixel.x+coord[0];
                     var y = pixel.y+coord[1];
                     if (!isEmpty(x, y, true) && Math.random()<0.01){
-                        pixel.temp += 50
+                        pixel.temp += 3000
                     }
                 }
                 changePixel(pixel, "helium", false)
-                pixel.temp += 100
+                pixel.temp += 5000
             }
         }
         for (var i = 0; i < adjacentCoords.length; i++){
@@ -174,13 +174,14 @@ elements.oganesson = {
     tick: function(pixel){
         if(elements.livermorium){
             if(Math.random()<0.038){
+                if (Math.random() < 0.2){changePixel(pixel, "n_explosion"); return;}
                 for (var i = 0; i < adjacentCoords.length; i++){
                     var coord = adjacentCoords[i];
                     var x = pixel.x+coord[0];
                     var y = pixel.y+coord[1];
                     if (isEmpty(x, y) && Math.random()<0.01){
                         createPixel(x, y, "helium")
-                        pixelMap[x][y].temp += 250
+                        pixelMap[x][y].temp += 250000
                         break;
                     }
                 }
@@ -189,16 +190,17 @@ elements.oganesson = {
             }
         }else{
             if(Math.random()<0.038){
+                if (Math.random() < 0.2){changePixel(pixel, "n_explosion"); return;}
                 for (var i = 0; i < adjacentCoords.length; i++){
                     var coord = adjacentCoords[i];
                     var x = pixel.x+coord[0];
                     var y = pixel.y+coord[1];
                     if (!isEmpty(x, y, true) && Math.random()<0.01){
-                        pixel.temp += 100
+                        pixel.temp += 100000
                     }
                 }
                 changePixel(pixel, "helium", false)
-                pixel.temp += 250
+                pixel.temp += 250000
             }
         }
         for (var i = 0; i < adjacentCoords.length; i++){
