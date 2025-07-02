@@ -350,8 +350,8 @@ elements.silt = {
     tempLow: -50,
     stateLow: "permafrost",
     reactions: {
-        water: { elem1: "mud" },
-        clay: { elem1: "silty_clay" }
+        water: { elem1: "mud", elem2: "mud" },
+        clay: { elem1: "silty_clay", elem2: "silty_clay" }
     },
 }
 elements.marble = {
@@ -374,7 +374,7 @@ elements.silty_clay = {
     tempLow: -50,
     stateLow: "permafrost",
     reactions: {
-        sand: { elem1: "loam" }
+        sand: { elem1: "loam", elem2: "loam" }
     },
 }
 elements.loam = {
@@ -388,7 +388,7 @@ elements.loam = {
     tempLow: -50,
     stateLow: "permafrost",
     reactions: {
-        dead_plant: { elem1: "peat" }
+        dead_plant: { elem1: "peat", elem2: "peat" }
     },
 }
 elements.granite = {

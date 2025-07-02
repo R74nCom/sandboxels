@@ -341,8 +341,9 @@ window.addEventListener('load', function() {
         elements.tennessine.tick = function(pixel){
             basicHalogen(pixel)
             if (Math.random()<0.04){
+                if (Math.random() < 0.2){changePixel(pixel, "n_explosion"); return;}
                 changePixel(pixel, "moscovium", false)
-                pixel.temp += 450
+                pixel.temp += 45000
                 for (var i = 0; i < adjacentCoords.length; i++) {
                     var coord = adjacentCoords[i];
                     var x = pixel.x+coord[0];
@@ -357,7 +358,7 @@ window.addEventListener('load', function() {
                     var x = pixel.x+coord[0];
                     var y = pixel.y+coord[1];
                     if (!isEmpty(x, y, true)){
-                        pixelMap[x][y].temp += 200
+                        pixelMap[x][y].temp += 4500
                     }
                 }
             }
@@ -366,14 +367,15 @@ window.addEventListener('load', function() {
         elements.tennessine.tick = function(pixel){
             basicHalogen(pixel)
             if (Math.random()<0.04){
+                if (Math.random () < 0.2){changePixel(pixel, "n_explosion"); return;}
                 changePixel(pixel, "helium", false)
-                pixel.temp += 450
+                pixel.temp += 45000
                 for (var i = 0; i < adjacentCoords.length; i++) {
                     var coord = adjacentCoords[i];
                     var x = pixel.x+coord[0];
                     var y = pixel.y+coord[1];
                     if (!isEmpty(x, y, true)){
-                        pixelMap[x][y].temp += 200
+                        pixelMap[x][y].temp += 4500
                     }
                 }
             }
