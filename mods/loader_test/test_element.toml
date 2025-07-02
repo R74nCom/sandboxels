@@ -1,7 +1,7 @@
-name = "test_element_b"
+name = "test_element"
 color = ["#FF00FF", "#00FF00"]
 state = "solid"
-behaviour = [["XX","XX","XX"],["XX","XX","XX"],["XX","XX","XX"]]
+namedBehavior = "POWDER_OLD"
 category = "solids"
 tempHigh = 100
 stateHigh = "gold"

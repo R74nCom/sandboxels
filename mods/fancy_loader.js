@@ -93,8 +93,7 @@
           super("[ParserError] " + msg, filename, linenumber);
           this.name = "ParserError";
           this.code = "ParserError";
-          if (Error.captureStackTrace)
-            Error.captureStackTrace(this, _ParserError);
+          if (Error.captureStackTrace) Error.captureStackTrace(this, _ParserError);
         }
       };
       var State = class {
@@ -121,8 +120,7 @@
           this.state = new State(this.parseStart);
         }
         parse(str) {
-          if (str.length === 0 || str.length == null)
-            return;
+          if (str.length === 0 || str.length == null) return;
           this._buf = String(str);
           this.ii = -1;
           this.char = -1;
@@ -162,8 +160,7 @@
           return this.obj;
         }
         next(fn) {
-          if (typeof fn !== "function")
-            throw new ParserError("Tried to set state to non-existent state: " + JSON.stringify(fn));
+          if (typeof fn !== "function") throw new ParserError("Tried to set state to non-existent state: " + JSON.stringify(fn));
           this.state.parser = fn;
         }
         goto(fn) {
@@ -171,8 +168,7 @@
           return this.runOne();
         }
         call(fn, returnWith) {
-          if (returnWith)
-            this.next(returnWith);
+          if (returnWith) this.next(returnWith);
           this.stack.push(this.state);
           this.state = new State(fn);
         }
@@ -181,10 +177,8 @@
           return this.runOne();
         }
         return(value) {
-          if (this.stack.length === 0)
-            throw this.error(new ParserError("Stack underflow"));
-          if (value === void 0)
-            value = this.state.buf;
+          if (this.stack.length === 0) throw this.error(new ParserError("Stack underflow"));
+          if (value === void 0) value = this.state.buf;
           this.state = this.stack.pop();
           this.state.returned = value;
         }
@@ -193,8 +187,7 @@
           return this.runOne();
         }
         consume() {
-          if (this.char === ParserEND)
-            throw this.error(new ParserError("Unexpected end-of-buffer"));
+          if (this.char === ParserEND) throw this.error(new ParserError("Unexpected end-of-buffer"));
           this.state.buf += this._buf[this.ii];
         }
         error(err) {
@@ -235,8 +228,7 @@
       "use strict";
       module2.exports = (d, num) => {
         num = String(num);
-        while (num.length < d)
-          num = "0" + num;
+        while (num.length < d) num = "0" + num;
         return num;
       };
     }
@@ -330,8 +322,7 @@
         constructor(msg) {
           super(msg);
           this.name = "TomlError";
-          if (Error.captureStackTrace)
-            Error.captureStackTrace(this, _TomlError);
+          if (Error.captureStackTrace) Error.captureStackTrace(this, _TomlError);
           this.fromTOML = true;
           this.wrapped = null;
         }
@@ -427,10 +418,8 @@
       var defineProperty = Object.defineProperty;
       var descriptor = { configurable: true, enumerable: true, writable: true, value: void 0 };
       function hasKey(obj, key) {
-        if (hasOwnProperty.call(obj, key))
-          return true;
-        if (key === "__proto__")
-          defineProperty(obj, "__proto__", descriptor);
+        if (hasOwnProperty.call(obj, key)) return true;
+        if (key === "__proto__") defineProperty(obj, "__proto__", descriptor);
         return false;
       }
       var INLINE_TABLE = Symbol("inline-table");
@@ -440,8 +429,7 @@
         });
       }
       function isInlineTable(obj) {
-        if (obj === null || typeof obj !== "object")
-          return false;
+        if (obj === null || typeof obj !== "object") return false;
         return obj[_type] === INLINE_TABLE;
       }
       var TABLE = Symbol("table");
@@ -452,8 +440,7 @@
         });
       }
       function isTable(obj) {
-        if (obj === null || typeof obj !== "object")
-          return false;
+        if (obj === null || typeof obj !== "object") return false;
         return obj[_type] === TABLE;
       }
       var _contentType = Symbol("content-type");
@@ -465,8 +452,7 @@
         });
       }
       function isInlineList(obj) {
-        if (obj === null || typeof obj !== "object")
-          return false;
+        if (obj === null || typeof obj !== "object") return false;
         return obj[_type] === INLINE_LIST;
       }
       var LIST = Symbol("list");
@@ -476,8 +462,7 @@
         });
       }
       function isList(obj) {
-        if (obj === null || typeof obj !== "object")
-          return false;
+        if (obj === null || typeof obj !== "object") return false;
         return obj[_type] === LIST;
       }
       var _custom;
@@ -514,8 +499,7 @@
       var INTEGER = Symbol("integer");
       function Integer(value) {
         let num = Number(value);
-        if (Object.is(num, -0))
-          num = 0;
+        if (Object.is(num, -0)) num = 0;
         if (globalThis.BigInt && !Number.isSafeInteger(num)) {
           return new BoxedBigInt(value);
         } else {
@@ -529,8 +513,7 @@
         }
       }
       function isInteger(obj) {
-        if (obj === null || typeof obj !== "object")
-          return false;
+        if (obj === null || typeof obj !== "object") return false;
         return obj[_type] === INTEGER;
       }
       var FLOAT = Symbol("float");
@@ -541,25 +524,24 @@
         });
       }
       function isFloat(obj) {
-        if (obj === null || typeof obj !== "object")
-          return false;
+        if (obj === null || typeof obj !== "object") return false;
         return obj[_type] === FLOAT;
       }
       function tomlType(value) {
         const type = typeof value;
         if (type === "object") {
-          if (value === null)
-            return "null";
-          if (value instanceof Date)
-            return "datetime";
+          if (value === null) return "null";
+          if (value instanceof Date) return "datetime";
           if (_type in value) {
             switch (value[_type]) {
               case INLINE_TABLE:
                 return "inline-table";
               case INLINE_LIST:
                 return "inline-list";
+              /* istanbul ignore next */
               case TABLE:
                 return "table";
+              /* istanbul ignore next */
               case LIST:
                 return "list";
               case FLOAT:
@@ -1075,8 +1057,7 @@
               throw this.error(new TomlError("Invalid character in unicode sequence, expected hex"));
             } else {
               this.consume();
-              if (this.state.buf.length >= 4)
-                return this.return();
+              if (this.state.buf.length >= 4) return this.return();
             }
           }
           parseLargeUnicode() {
@@ -1084,8 +1065,7 @@
               throw this.error(new TomlError("Invalid character in unicode sequence, expected hex"));
             } else {
               this.consume();
-              if (this.state.buf.length >= 8)
-                return this.return();
+              if (this.state.buf.length >= 8) return this.return();
             }
           }
           /* NUMBERS */
@@ -1202,8 +1182,7 @@
               return this.call(this.parseNoUnder, this.parseNumberInteger);
             } else if (isDigit(this.char)) {
               this.consume();
-              if (this.state.buf.length > 4)
-                this.next(this.parseNumberInteger);
+              if (this.state.buf.length > 4) this.next(this.parseNumberInteger);
             } else if (this.char === CHAR_E || this.char === CHAR_e) {
               this.consume();
               return this.next(this.parseNumberExponentSign);
@@ -1424,8 +1403,7 @@
             if (isDigit(this.char)) {
               this.consume();
             } else if (this.atEndOfWord()) {
-              if (this.state.buf.length === 0)
-                throw this.error(new TomlError("Expected digit in milliseconds"));
+              if (this.state.buf.length === 0) throw this.error(new TomlError("Expected digit in milliseconds"));
               return this.returnNow(createTime(this.state.result + "." + this.state.buf));
             } else {
               throw this.error(new TomlError("Unexpected character in datetime, expected period (.), minus (-), plus (+) or Z"));
@@ -1467,8 +1445,7 @@
           parseTimeZoneHour() {
             if (isDigit(this.char)) {
               this.consume();
-              if (/\d\d$/.test(this.state.buf))
-                return this.next(this.parseTimeZoneSep);
+              if (/\d\d$/.test(this.state.buf)) return this.next(this.parseTimeZoneSep);
             } else {
               throw this.error(new TomlError("Unexpected character in datetime, expected digit"));
             }
@@ -1484,8 +1461,7 @@
           parseTimeZoneMin() {
             if (isDigit(this.char)) {
               this.consume();
-              if (/\d\d$/.test(this.state.buf))
-                return this.return(createDateTime(this.state.result + this.state.buf));
+              if (/\d\d$/.test(this.state.buf)) return this.return(createDateTime(this.state.result + this.state.buf));
             } else {
               throw this.error(new TomlError("Unexpected character in datetime, expected digit"));
             }
@@ -1607,8 +1583,7 @@
             } else if (this.char === CHAR_RCUB) {
               return this.return(this.state.resultTable || InlineTable());
             } else {
-              if (!this.state.resultTable)
-                this.state.resultTable = InlineTable();
+              if (!this.state.resultTable) this.state.resultTable = InlineTable();
               return this.callNow(this.parseAssign, this.recordInlineTableValue);
             }
           }
@@ -1656,8 +1631,7 @@
       "use strict";
       module2.exports = prettyError;
       function prettyError(err, buf) {
-        if (err.pos == null || err.line == null)
-          return err;
+        if (err.pos == null || err.line == null) return err;
         let msg = err.message;
         msg += ` at row ${err.line + 1}, col ${err.col + 1}, pos ${err.pos}:
 `;
@@ -1665,12 +1639,10 @@
           const lines = buf.split(/\n/);
           const lineNumWidth = String(Math.min(lines.length, err.line + 3)).length;
           let linePadding = " ";
-          while (linePadding.length < lineNumWidth)
-            linePadding += " ";
+          while (linePadding.length < lineNumWidth) linePadding += " ";
           for (let ii = Math.max(0, err.line - 1); ii < Math.min(lines.length, err.line + 2); ++ii) {
             let lineNum = String(ii + 1);
-            if (lineNum.length < lineNumWidth)
-              lineNum = " " + lineNum;
+            if (lineNum.length < lineNumWidth) lineNum = " " + lineNum;
             if (err.line === ii) {
               msg += lineNum + "> " + lines[ii] + "\n";
               msg += linePadding + "  ";
@@ -1719,8 +1691,7 @@
       var TOMLParser = require_toml_parser();
       var prettyError = require_parse_pretty_error();
       function parseAsync(str, opts) {
-        if (!opts)
-          opts = {};
+        if (!opts) opts = {};
         const index = 0;
         const blocksize = opts.blocksize || 40960;
         const parser = new TOMLParser();
@@ -1868,17 +1839,14 @@
         }
         var didOnEnd = false;
         function onend() {
-          if (didOnEnd)
-            return;
+          if (didOnEnd) return;
           didOnEnd = true;
           dest.end();
         }
         function onclose() {
-          if (didOnEnd)
-            return;
+          if (didOnEnd) return;
           didOnEnd = true;
-          if (typeof dest.destroy === "function")
-            dest.destroy();
+          if (typeof dest.destroy === "function") dest.destroy();
         }
         function onerror(er) {
           cleanup();
@@ -1933,8 +1901,7 @@
           let errored = false;
           function finish() {
             ended = true;
-            if (readable)
-              return;
+            if (readable) return;
             try {
               resolve(parser.finish());
             } catch (err) {
@@ -1959,10 +1926,8 @@
               }
             }
             readable = false;
-            if (ended)
-              return finish();
-            if (errored)
-              return;
+            if (ended) return finish();
+            if (errored) return;
             stm.once("readable", readNext);
           }
         });
@@ -2010,19 +1975,13 @@
       module2.exports = stringify;
       module2.exports.value = stringifyInline;
       function stringify(obj) {
-        if (obj === null)
-          throw typeError("null");
-        if (obj === void 0)
-          throw typeError("undefined");
-        if (typeof obj !== "object")
-          throw typeError(typeof obj);
-        if (typeof obj.toJSON === "function")
-          obj = obj.toJSON();
-        if (obj == null)
-          return null;
+        if (obj === null) throw typeError("null");
+        if (obj === void 0) throw typeError("undefined");
+        if (typeof obj !== "object") throw typeError(typeof obj);
+        if (typeof obj.toJSON === "function") obj = obj.toJSON();
+        if (obj == null) return null;
         const type = tomlType2(obj);
-        if (type !== "table")
-          throw typeError(type);
+        if (type !== "table") throw typeError(type);
         return stringifyObject("", "", obj);
       }
       function typeError(type) {
@@ -2062,8 +2021,7 @@
             result.push(inlineIndent + stringifyKey(key) + " = " + stringifyAnyInline(obj[key], true));
           }
         });
-        if (result.length > 0)
-          result.push("");
+        if (result.length > 0) result.push("");
         var complexIndent = prefix && inlineKeys.length > 0 ? indent + "  " : "";
         complexKeys.forEach((key) => {
           result.push(stringifyComplex(prefix, complexIndent, key, obj[key]));
@@ -2085,6 +2043,7 @@
             return value.length === 0 || tomlType2(value[0]) !== "table";
           case "table":
             return Object.keys(value).length === 0;
+          /* istanbul ignore next */
           default:
             return false;
         }
@@ -2125,8 +2084,7 @@
         return "'" + str + "'";
       }
       function numpad(num, str) {
-        while (str.length < num)
-          str = "0" + str;
+        while (str.length < num) str = "0" + str;
         return str;
       }
       function escapeString(str) {
@@ -2136,8 +2094,7 @@
         let escaped = str.split(/\n/).map((str2) => {
           return escapeString(str2).replace(/"(?="")/g, '\\"');
         }).join("\n");
-        if (escaped.slice(-1) === '"')
-          escaped += "\\\n";
+        if (escaped.slice(-1) === '"') escaped += "\\\n";
         return '"""\n' + escaped + '"""';
       }
       function stringifyAnyInline(value, multilineOk) {
@@ -2152,8 +2109,7 @@
         return stringifyInline(value, type);
       }
       function stringifyInline(value, type) {
-        if (!type)
-          type = tomlType2(value);
+        if (!type) type = tomlType2(value);
         switch (type) {
           case "string-multiline":
             return stringifyMultilineString(value);
@@ -2173,6 +2129,7 @@
             return stringifyInlineArray(value.filter((_) => tomlType2(_) !== "null" && tomlType2(_) !== "undefined" && tomlType2(_) !== "nan"));
           case "table":
             return stringifyInlineTable(value);
+          /* istanbul ignore next */
           default:
             throw typeError(type);
         }
@@ -2206,10 +2163,8 @@
       }
       function arrayType(values) {
         var contentType = tomlType2(values[0]);
-        if (values.every((_) => tomlType2(_) === contentType))
-          return contentType;
-        if (values.every((_) => isNumber(tomlType2(_))))
-          return "float";
+        if (values.every((_) => tomlType2(_) === contentType)) return contentType;
+        if (values.every((_) => isNumber(tomlType2(_)))) return "float";
         return "mixed";
       }
       function validateArray(values) {
@@ -2253,13 +2208,11 @@
         values = toJSON(values);
         validateArray(values);
         var firstValueType = tomlType2(values[0]);
-        if (firstValueType !== "table")
-          throw typeError(firstValueType);
+        if (firstValueType !== "table") throw typeError(firstValueType);
         var fullKey = prefix + stringifyKey(key);
         var result = "";
         values.forEach((table) => {
-          if (result.length > 0)
-            result += "\n";
+          if (result.length > 0) result += "\n";
           result += indent + "[[" + fullKey + "]]\n";
           result += stringifyObject(fullKey + ".", indent, table);
         });
@@ -2288,18 +2241,8 @@
   // src/elemtoml.ts
   var import_utility_types = __toESM(require_dist());
   function register_element(name, elem) {
-    console.debug(
-      "Element registered: ",
-      elem,
-      "Under name: ",
-      name,
-      "Named behaviour: ",
-      elem.namedBehavior,
-      window.behaviors[elem.namedBehavior]
-    );
-    console.trace();
+    console.debug("Element registered: ", elem);
     let tmp_value = elem;
-    console.log(tmp_value.namedBehavior);
     if (tmp_value.namedBehavior) {
       const found_behaviour = window.behaviors[tmp_value.namedBehavior];
       if (typeof found_behaviour == "function") {
@@ -2310,18 +2253,66 @@
     }
     window.elements[name] = tmp_value;
   }
+  function register_elements(elems) {
+    Object.entries(elems).forEach(([key, value]) => {
+      register_element(key, value);
+    });
+  }
 
   // src/cfg_loader.ts
   var import_toml = __toESM(require_toml());
+
+  // src/utils.ts
+  var ScriptRunError = class extends Error {
+    constructor(message, asserter = void 0) {
+      super(message);
+      this.name = "MyError";
+      Error.captureStackTrace?.(this, asserter || this.constructor);
+    }
+  };
+  async function run_script(path) {
+    try {
+      let resp = await fetch(path);
+      const text = await resp.text();
+      if (resp.ok) {
+        const result = Function(text)();
+        if (result !== void 0 && result !== 0) {
+          throw new ScriptRunError(`Script exited with code ${result}`);
+        }
+      } else {
+        throw new ScriptRunError(`Script ${path} not found`);
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  // src/cfg_loader.ts
   var Package = class {
+    /**
+     * Constructs a new Package instance with the given configuration (as loaded
+     * from a TOML configuration).
+     * 
+     * @param config The parsed package configuration.
+     */
     constructor(config) {
+      /**
+       * The list of elements that have been loaded for this package.
+       */
       this.loaded_elems = [];
       this.cfg = config;
       console.log(this);
     }
+    /**
+     * Loads external elements defined in the package configuration.
+     * Fetches, parses, and registers each element.
+     * 
+     * @returns A promise that resolves to an `ElementDict`
+     * @private
+     */
     async load_elems() {
       for (const i of this.cfg.mod.external_elements) {
-        console.log(i);
+        console.log("loading element:", i);
         try {
           let resp = await fetch(i.path);
           const parsed = (0, import_toml.parse)(await resp.text());
@@ -2331,14 +2322,51 @@
           console.error(err);
         }
       }
+      let tmp = {};
+      this.loaded_elems.forEach((elem) => {
+        tmp[elem.name] = elem;
+      });
+      return tmp;
     }
+    /**
+     * Retrieves the list of elements that have been loaded for this package.
+     * @returns An array of loaded elements.
+     */
     get_loaded_elems() {
       return this.loaded_elems;
     }
-    run() {
-      fetch(this.cfg.mod.entry_point).then((resp) => {
-        resp.text().then((x) => Function(x)());
+    /**
+     * Loads the mod, runs scripts, and registers elements.
+     */
+    load_mod(prompt_quene2) {
+      const incompatibilities = window.enabledMods.filter((x) => this.cfg.mod.incompatible_mods.includes(x));
+      if (incompatibilities.length != 0) {
+        prompt_quene2.push(() => {
+          window.promptText(
+            `A: ${this.cfg.mod.name} 
+                    B: ${incompatibilities.join(", ")}`,
+            () => {
+            },
+            "Mod incompatibility"
+          );
+        });
+        return;
+      }
+      console.debug(this.cfg.scripts);
+      if (this.cfg.scripts.preload !== void 0) {
+        for (const i of this.cfg.scripts.preload) {
+          run_script(i);
+        }
+      }
+      this.load_elems().then((elems) => {
+        console.debug("elems:", elems);
+        register_elements(elems);
       });
+      if (this.cfg.scripts.postload !== void 0) {
+        for (const i of this.cfg.scripts.postload) {
+          run_script(i);
+        }
+      }
     }
   };
   function load(object) {
@@ -2350,13 +2378,12 @@
 
   // src/mod_finder.ts
   function find_mod(name, onfind) {
-    console.log(name, `mods/${name}/mod.toml`);
-    fetch(`mods/${name}/mod.toml`).then(async (x) => {
+    console.log(name, `${name}/mod.toml`);
+    fetch(`${name}/mod.toml`).then(async (x) => {
       console.log(x.url);
       if (x.ok) {
         onfind(await x.text());
       } else {
-        window.queuedMods.push(name);
       }
     }).catch((err) => {
       console.error(err);
@@ -2364,23 +2391,45 @@
   }
 
   // src/mod.ts
-  console.log(window.enabledMods);
-  for (const i in window.enabledMods) {
-    console.log(i);
+  function shuffle_to_start(input, i) {
+    let tmp = input.filter((x) => x !== input[i]);
+    tmp.unshift(input[i]);
+    return tmp;
+  }
+  var prompt_quene = [];
+  var mods = JSON.parse(localStorage.getItem("enabledMods") || "");
+  if (mods[0] !== "mods/fancy_loader.js") {
+    prompt_quene.push(() => {
+      window.promptConfirm(
+        `Refresh again to reload as the first mod (otherwise, there can be            odd glitches with dependencies etc.)`,
+        (x) => {
+          if (x) {
+            window.location.reload();
+          }
+        },
+        "fancy_loader.js says..."
+      );
+    });
+    const shuffled_mods = shuffle_to_start(mods, mods.findIndex((x) => x == "mods/fancy_loader.js"));
+    localStorage.setItem("enabledMods", JSON.stringify(shuffled_mods));
+  }
+  for (const i of window.enabledMods) {
     if (i.endsWith(".toml")) {
-      console.log(i);
+      console.trace("Loading mod:", i, i.slice(0, -5));
       find_mod(i.slice(0, -5), (text) => {
-        console.log("Mod name:", i.slice(0, -5));
         const parsed = import_toml2.default.parse(text);
-        console.log("important shit:", import_toml2.default.parse(text));
+        console.debug("Parsed mod TOML:", import_toml2.default.parse(text));
         let pkg = new Package(load(parsed));
-        pkg.load_elems().then(() => {
-          console.log(pkg);
-          console.log(pkg.get_loaded_elems());
-        });
+        pkg.load_mod(prompt_quene);
+        console.debug("Loaded mod:", pkg);
       });
     }
   }
+  window.addEventListener("load", () => {
+    for (const i of prompt_quene) {
+      i();
+    }
+  });
 })();
 /*! Bundled license information:
 
