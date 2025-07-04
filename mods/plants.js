@@ -1,14 +1,37 @@
+let is2d = (arr)=>{
+  return arr.some(item => Array.isArray(item));
+}
+let flowerExclude = ["pineapple"];
 let vineGrow = ["wood", "rock_wall", "straw", "wall", "ewall", "bush_cane", "bush_base", "fruit_branch"];
 let plants = {
 	tree: [],
 	vine: ["grape", "tomato"],
 	bush: [],
+    other: ["pineapple"],
 	includes: function(target){
 		for(item in this){
 			if(this[item] && Array.isArray(this[item]) && this[item].includes(target)){return true;}
 		}
 		return false;
 	}
+}
+let growthPatterns = {
+    pineapple1: [[-1,-1],[-2,-2],[1,-1],[2,-2],[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[-1,-6],[1,-6],[-1,-5],[1,-5],[-1,-4],[1,-4],[-1,-3],[1,-3],[0,-7],[-1,-8],[1,-8]],
+    pineapple2: [[[-1,-1],[1,-1]],[[-2,-2],[2,-2]], [0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[[-1,-6],[1,-6]],[[-1,-5],[1,-5]],[[-1,-4],[1,-4]],[[-1,-3],[1,-3]],[[-1,-2],[1,-2]],[0,-7],[-1,-8],[1,-8]],
+    pineapple3: [[-1,0],[-2,-1],[-3,-2],[1,0],[2,-1],[-4,-3],[3,-2],[4,-3],[-5,-4],[5,-4],[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[0,-7],[0,-8],[0,-9],[0,-10],[-1,-10],[1,-10],[-1,-9],[1,-9],[-1,-8],[1,-8],[-1,-7],[1,-7],[-1,-6],[1,-6],[-1,-5],[1,-5],[-1,-4],[1,-4],[-2,-9],[2,-9],[-2,-8],[2,-8],[2,-7],[-2,-7],[-2,-6],[2,-6],[2,-5],[-2,-5],[0,-11],[-1,-12],[1,-12],[2,-13],[-2,-13]],
+    melon_2x2: [[0,-1],[1,-2],[1,-1],[[1,0],[2,-1]],[2,0]],
+    melon_3x3: [[0,-1],[0,-2],[1,-3],[2,-3],[2,-2],[[1,-2],[1,-1]],[2,-1],[2,0],[1,0],[3,0],[3,-1],[3,-2]],
+    melon_4x4: [[0,-1],[0,-2],[0,-3],[1,-4],[2,-4],[3,-4],[3,-3],[2,-3],[2,-2],[3,-2],[1,-2],[1,-3],[1,-1],[2,-1],[3,-1],[1,0],[2,0],[3,0],[4,0],[4,-1],[4,-2],[4,-3]],
+    melon_5x5: [[0,-1],[0,-2],[0,-3],[0,-4],[1,-5],[2,-5],[3,-5],[3,-4],[2,-4],[3,-3],[4,-4],[4,-3],[2,-3],[1,-4],[5,-4],[3,-2],[2,-2],[4,-2],[5,-2],[1,-2],[1,-3],[5,-3],[1,-1],[2,-1],[3,-1],[4,-1],[5,-1],[5,0],[4,0],[3,0],[2,0],[1,0]],
+};
+let growthElems = {
+    pineapple1: ["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","fruit_leaves","fruit_leaves","fruit_leaves"],
+    pineapple2: ["fruit_leaves","fruit_leaves","fruit_leaves","flower","flower","flower","flower","flower","flower","flower","flower","flower","fruit_leaves","fruit_leaves","fruit_leaves"],
+    pineapple3: ["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves"],
+    melon_2x2: ["fruit_leaves","fruit_leaves","flower","flower","flower","flower"],
+    melon_3x3: ["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","flower","flower","flower","flower","flower","flower","flower","flower","flower"],
+    melon_4x4: ["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower"],
+    melon_5x5: ["fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","fruit_leaves","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower"],
 }
 let ethyleneChance = {
 	tomato: 0.000055,
@@ -245,15 +268,30 @@ elements.fruit_leaves = {
 	properties: {
 		age: 0,
 		fruit: "",
+        growthStage: 0,
+        dir: [1,1],
+        bloomColor: "#FFE2E2",
 	},
     tick: function(pixel){
-      if(pixelTicks == pixel.start + 1 && pixel.blooming == undefined){
+      if(pixelTicks == pixel.start + 1 && pixel.blooming == undefined && !pixel.growthPattern && !pixel.noBloom){
         if(Math.floor(Math.random() * 3) == 2){
           pixel.blooming = true;
-          pixel.color = "#FFE2E2";
+          pixel.color ="#FFE2E2";
         } else {
           pixel.blooming = false;
         }
+      }
+      if(pixel.blooming && elements[pixel.fruit] != undefined && elements[pixel.fruit].bloomColor != undefined && !elements[pixel.fruit].bloomColor.includes(pixel.bloomColor)){
+          pixel.bloomColor = elements[pixel.fruit].bloomColor;
+      }
+      if(pixel.blooming && !pixel.bloomColor.includes(pixel.color)){
+          let color = "";
+          if(Array.isArray(pixel.bloomColor)){
+              color = pixel.bloomColor[Math.round(Math.random()*pixel.bloomColor.length)];
+          } else {
+              color = pixel.bloomColor;
+          }
+          pixel.color = color;
       }
       for(var i = 0; i < adjacentCoords.length; i++){
         let x = pixel.x+adjacentCoords[i][0];
@@ -273,7 +311,12 @@ elements.fruit_leaves = {
             }
         }
       }
-      if(pixel.blooming){
+      if(pixel.blooming && pixel.fruit == "pineapple" && Math.random() < 0.0035){
+          let x = pixel.x, y = pixel.y;
+          changePixel(pixel, "unripe_fruit");
+          pixelMap[x][y].fruit = "pineapple";
+      }
+      if(pixel.blooming && !flowerExclude.includes(pixel.fruit)){
 		  let chance = 0.0025;
 		  for(let i = 0; i < squareCoords.length; i++){
 			  let x = pixel.x+squareCoords[i][0], y = pixel.y+squareCoords[i][1];
@@ -297,21 +340,39 @@ elements.fruit_leaves = {
           }
         }
       }
-      if(pixel.fruit == "pineapple" && isEmpty(pixel.x, pixel.y-1) && !outOfBounds(pixel.x, pixel.y-1) && pixel.age < 300){
-        pixel.blooming = false;
-        pixel.color = elements.plant.color;
-        createPixel("unripe_fruit", pixel.x, pixel.y-1);
-        if(isEmpty(pixel.x, pixel.y-2)){
-          createPixel("unripe_fruit", pixel.x, pixel.y-2);
-        }
-        if(isEmpty(pixel.x, pixel.y-3)){
-          createPixel("fruit_leaves", pixel.x, pixel.y-3);
-        }
-        if(isEmpty(pixel.x-1, pixel.y-4)){
-          createPixel("fruit_leaves", pixel.x-1, pixel.y-4);
-        }
-        if(isEmpty(pixel.x+1, pixel.y-4)){
-          createPixel("fruit_leaves", pixel.x+1, pixel.y-4);
+      if(pixel.growthPattern == true){
+        let chance = (pixel.age-150)/2500;
+        chance = Math.max(Math.min(chance, 1), 0);
+        if(Math.random() < chance){
+            let value = growthPatterns[pixel.pattern][pixel.growthStage];
+            if(pixel.growthStage < growthPatterns[pixel.pattern].length && is2d(value)){
+                for(let coords of value){
+                    let x = pixel.x+(coords[0]*pixel.dir[0]), y = pixel.y+(coords[1]*pixel.dir[1]);
+                    if(isEmpty(x,y) && !outOfBounds(x,y)){
+                        if(growthElems[pixel.pattern][pixel.growthStage] == "flower"){
+                            createPixel("fruit_leaves", x, y);
+                            pixelMap[x][y].blooming = true;
+                            pixelMap[x][y].fruit = pixel.fruit;
+                        } else {
+                            createPixel((growthElems[pixel.pattern][pixel.growthStage] == undefined) ? growthElems[pixel.pattern][0] : growthElems[pixel.pattern][pixel.growthStage], x, y);
+                            pixelMap[x][y].noBloom = true;
+                        }
+                    }
+                }
+            } else if(pixel.growthStage < growthPatterns[pixel.pattern].length) {
+                let x = pixel.x+(value[0]*pixel.dir[0]), y = pixel.y+(value[1]*pixel.dir[1]);
+                if(isEmpty(x,y) && !outOfBounds(x,y)){
+                    if(growthElems[pixel.pattern][pixel.growthStage] == "flower"){
+                        createPixel("fruit_leaves", x, y);
+                        pixelMap[x][y].blooming = true;
+                        pixelMap[x][y].fruit = pixel.fruit.split("_")[0];
+                    } else {
+                        createPixel((growthElems[pixel.pattern][pixel.growthStage] == undefined) ? growthElems[pixel.pattern][0] : growthElems[pixel.pattern][pixel.growthStage], x, y);
+                        pixelMap[x][y].noBloom = true;
+                    }
+                }
+            }
+            pixel.growthStage += 1;
         }
     }
       pixel.age++;
@@ -733,12 +794,208 @@ elements.avocado.breakInto = "guacamole";
 elements.guacamole = {
     color: ["#cff74a", "#caf244", "#c1e649", "#b3d640"],
     behavior: behaviors.LIQUID,
-    viscosity: 950,
+    viscosity: 1350,
     category: "food",
     state: "liquid",
     isFood: true,
+    onMix: function(pixel){
+        for(let coords of squareCoords){
+            let x = pixel.x+coords[0], y = pixel.y+coords[1];
+            if(!isEmpty(x,y) && !outOfBounds(x,y) && elements[pixelMap[x][y].element].isFood && pixelMap[x][y].element != "quacamole"){
+                let chance = (shiftDown) ? 1 : 0.5;
+                if(Math.random() < chance){
+                    let rgb = interpolateRgb(getRGB(pixel.color), getRGB(pixelMap[x][y].color), 0.8);
+                    changePixel(pixelMap[x][y], "guacamole");
+                    pixel.color = rgb;
+                    pixelMap[x][y].color = rgb;
+                }
+            }
+        }
+    }
 }
-settingsMenu.innerHTML += `
+runAfterAutogen(()=>{settingsMenu.innerHTML += `
 <span setting="cleargases" class="setting-span multisetting" title="Default: ON">
 	<input type="button" value="Clear Gases" id="settingLabel-clearGases" class="toggleInput" onclick="toggleInput(this,'cleargases',false); r = undefined;" state="1">
-</span>`;
+</span>`;});
+elements.cocoa = new fruit("cocoa", ["#b09533", "#ad9439", "#b39736", "#99732c", "#ab8338", "#ad8231"], ["#826a3e", "#634f28", "#634b1f", "#5c461c"], "tree", ["#826a3e", "#634f28", "#634b1f", "#5c461c"]);
+elements.cocoa.breakInto = "cocoa_seed";
+elements.cocoa_seed.name = "CocoaBean";
+elements.cocoa_seed.breakInto = undefined;
+elements.cocoa_seed.tempHigh = 125;
+elements.cocoa_seed.stateHigh = "roasted_cocoa_bean";
+elements.roasted_cocoa_bean = {
+    category: "food",
+    behavior: behaviors.POWDER,
+    extract: "melted_cocoa_butter",
+    color: ["#2b1b01", "#291a02", "#211503", "#211503"],
+    breakInto: "cocoa_powder",
+}
+elements.cocoa_powder = {
+    category: "food",
+    behavior: behaviors.POWDER,
+    color: ["#3b2604", "#332104", "#402802", "#301e01"],
+}
+elements.cocoa_butter = {
+    behavior: behaviors.STURDYPOWDER,
+    tempHigh: 36,
+    color: ["#feffe8", "#f4f5dc", "#fcfce1", "#feffed", "#feffd6"],
+    category: "food",
+    isFood: true,
+    stateHigh: "melted_cocoa_butter",
+}
+elements.melted_cocoa_butter = {
+    behavior: behaviors.LIQUID,
+    color: ["#fff082", "#e3d676", "#f2e57e", "#fff07d"],
+    tempLow: 35,
+    stateLow: "cocoa_butter",
+        reactions: {
+        cocoa_powder: {elem1: "chocolate", elem2: "chocolate"}
+    },
+    category: "states",
+    isFood: true,
+    viscosity: 750,
+    temp: 36,
+};
+elements.extractor = {
+    category: "machines",
+    behavior: behaviors.WALL,
+    tick: function(pixel){
+        for(let coords of squareCoords){
+            let x = pixel.x+coords[0], y = pixel.y+coords[1];
+            if(!isEmpty(x,y) && !outOfBounds(x,y) && elements[pixelMap[x][y].element].extract != undefined){
+                changePixel(pixelMap[x][y], elements[pixelMap[x][y].element].extract);
+            }
+        }
+    }, 
+    movable: false,
+}
+elements.pineapple_seed = {
+    behavior: behaviors.POWDER,
+    color: ["#242000", "#1f1c00", "#1a1701", "#1f1c01"],
+    category: "life",
+    properties: {
+        age: 0,
+        fruit: "pineapple",
+        growthPattern: true,
+    },
+    tick: function(pixel){
+        let num = Math.round((Math.random()*0.75)*3)+1;
+        chance = (pixel.age -140)/100;
+        chance = Math.max(Math.min(chance, 1), 0);
+        if(Math.random()<chance){
+            let x = pixel.x, y = pixel.y, fruit = pixel.fruit;
+            changePixel(pixel, "fruit_leaves");
+            pixelMap[x][y].fruit = fruit;
+            pixelMap[x][y].pattern = `pineapple${num}`;
+            pixelMap[x][y].noBloom = true;
+        }
+        pixel.age++;
+    }
+}
+elements.unripe_fruit = {
+    category: "life",
+    breakInto: ["poison", "sugar_water", "dirty_water"],
+    color: ["#7ed934", "#78d42c", "#7cdb2e", "#7bde2a"],
+    properties: {
+        age: 0,
+        fruit: "",
+    },
+    tick: function(pixel){
+        let chance = (pixel.age-100)/250;
+        if(Math.random() < chance){
+            changePixel(pixel, pixel.fruit);
+        }
+        pixel.age++;
+    }
+}
+elements.pineapple = {
+    category: "food", 
+    breakInto: "juice",
+    color: ["#ffe712", "#f0d802", "#f2db05", "#d9c409"],
+    breakIntoColor: ["#fafa2a", "#f2f23d", "#f7f748", "#eded26"],
+    isFood: true,
+}
+elements.sugarcane = {
+    category: "life",
+    extract: "sugar_water",
+    color: ["#60d10f", "#5abf11", "#66cc1d", "#78ed24"],
+    properties: {
+        age: 0,
+        alive: false,
+        hasBloomed: false,
+    },
+    tick: function(pixel){
+        let chance = (pixel.age-350)/100;
+        let x = pixel.x, y = pixel.y-1;
+        if(isEmpty(x,y) && !outOfBounds(x,y) && pixel.alive){
+            if(Math.random()<chance && !pixel.hasBloomed){
+                createPixel("fruit_leaves", x, y);
+                pixelMap[x][y].blooming = true;
+                pixelMap[x][y].fruit = "sugarcane_seed";
+                createPixel("fruit_leaves", x, y-1);
+                pixelMap[x][y-1].blooming = true;
+                pixelMap[x][y-1].fruit = "sugarcane_seed";
+                createPixel("fruit_leaves", x, y-2);
+                pixelMap[x][y-2].blooming = true;
+                pixelMap[x][y-2].fruit = "sugarcane_seed";
+                pixel.hasBloomed = true;
+            } else if(Math.random() < 0.015 && !pixel.hasBloomed) {
+                createPixel("sugarcane", x, y);
+                pixelMap[x][y].age = pixel.age;
+                pixelMap[x][y].alive = true;
+            }
+        }
+        pixel.age++;
+    }
+}
+elements.sugarcane_seed = {
+    category: "life",
+    behavior: behaviors.POWDER,
+    color: ["#f0e07a", "#e0d277", "#e3ca71", "#d9ba77"],
+    properties: {
+        age: 0,
+    },
+    tick: function(pixel){
+        let chance = (pixel.age-50)/100;
+        if(Math.random()<chance){
+            let x = pixel.x, y = pixel.y;
+            changePixel(pixel, "sugarcane");
+            pixelMap[x][y].alive = true;
+        }
+        pixel.age++;
+    },
+}
+elements.watermelon = new fruit("watermelon", ["#0e6614", "#065c0c", "#03700b", "#109119", "#098f12"], ["#ff4242", "#ed2f2f", "#ff2e2e", "#ed2828"]);
+elements.watermelon.behavior = behaviors.WALL;
+elements.watermelon_seed = {
+    behavior: behaviors.POWDER,
+    color: ["#5e4a22", "#423417", "#241b0b", "#1f1709", "#120e05"],
+    category: "life",
+    properties: {
+        age: 0,
+        fruit: "watermelon",
+        growthPattern: true,
+    },
+    tick: function(pixel){
+        if(pixel.pattern == undefined){
+            let num = Math.round((Math.random()*0.75)*4)+2;
+            pixel.pattern = `melon_${num}x${num}`;
+        }
+        if(pixel.dir == undefined){
+            let num = 0.5-Math.round(Math.random());
+            pixel.dir = (num < 0) ? [-1, 1] : [1,1]; 
+        }
+        chance = (pixel.age -140)/100;
+        chance = Math.max(Math.min(chance, 1), 0);
+        if(Math.random()<chance){
+            let x = pixel.x, y = pixel.y, fruit = pixel.fruit, pattern = pixel.pattern, dir = pixel.dir;
+            changePixel(pixel, "fruit_leaves");
+            pixelMap[x][y].fruit = fruit;
+            pixelMap[x][y].pattern = pattern;
+            pixelMap[x][y].dir = dir;
+            pixelMap[x][y].noBloom = true;
+        }
+        pixel.age++;
+    }
+}
+elements.tomato.bloomColor = ["#edd93e", "#fae334", "#e6dc22", "#f5ec3d"];
