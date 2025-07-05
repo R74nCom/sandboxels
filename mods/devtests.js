@@ -3,6 +3,7 @@ elements.rad_fluid = {
     category: "liquids",
     density: 1500,
     state: "liquid",
+    emit: true
 }
 elements.rad_fluid.color = elements.radiation.color;
 elements.rad_fluid.reactions = elements.radiation.reactions;
@@ -191,3 +192,29 @@ elements.clone_fluid = {
 //     ],
 //     category: "special"
 // }
+
+elements.hue_paint = {
+    color: elements.paint.color,
+    tool: (pixel) => {
+        let hsl;
+        if (pixel.color.match(/^rgb/)) {
+            hsl = RGBToHSL(pixel.color.match(/\d+/g));
+        }
+        if (hsl) {
+            let newRGB = hexToRGB(currentColorMap.hue_paint);
+            let newHSL = RGBToHSL([newRGB.r,newRGB.g,newRGB.b]);
+            hsl[0] = parseFloat(newHSL[0]);
+            hsl[1] = parseFloat(hsl[1]);
+            if (hsl[1] < 0.05) hsl[1] = 0.1;
+            hsl[2] = parseFloat(hsl[2]);
+            newRGB = HSLtoRGB(hsl);
+            newRGB[0] = Math.floor(newRGB[0]);
+            newRGB[1] = Math.floor(newRGB[1]);
+            newRGB[2] = Math.floor(newRGB[2]);
+            pixel.color = "rgb("+newRGB.join(",")+")";
+            delete pixel.origColor;
+        }
+    },
+    category: "special",
+    customColor: true,
+}

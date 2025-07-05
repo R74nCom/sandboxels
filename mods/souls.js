@@ -83,7 +83,8 @@ elements.soul = {
     ignoreAir: true,
     category: "life",
     insulate: true,
-    hidden: true
+    hidden: true,
+    emit: 3
 }
 
 elements.ectoplasm = {
@@ -106,7 +107,8 @@ elements.ectoplasm = {
     insulate: true,
     viscosity: 1666,
     hardness: 100,
-    hidden: true
+    hidden: true,
+    emit: 2
 }
 
 elements.head.breakInto = "soul";
@@ -114,9 +116,25 @@ elements.head.burnInto = "soul";
 elements.head.stateHigh = "soul";
 elements.head.stateLow = "soul";
 elements.head.onDelete = function(pixel) {
+    for (var i = 0; i < adjacentCoords.length; i++) {
+        var coord = adjacentCoords[i];
+        var x = pixel.x+coord[0];
+        var y = pixel.y+coord[1];
+        if (!isEmpty(x,y,true) && pixelMap[x][y].panic !== undefined) {
+            pixelMap[x][y].panic += 20;
+        }
+    }
     releaseElement(pixel,"soul");
 }
 elements.head.onChange = function(pixel,element) {
+    for (var i = 0; i < adjacentCoords.length; i++) {
+        var coord = adjacentCoords[i];
+        var x = pixel.x+coord[0];
+        var y = pixel.y+coord[1];
+        if (!isEmpty(x,y,true) && pixelMap[x][y].panic !== undefined) {
+            pixelMap[x][y].panic += 20;
+        }
+    }
     if (element !== "soul") {
         releaseElement(pixel,"soul");
     }

@@ -203,6 +203,9 @@ elements.sell = {
         if (elementWorth[pixel.element] === -1) { return; }
         survivalAdd("gold_coin",elementWorth[pixel.element]||1);
     },
+    toolHoverStat: function(pixel) {
+        return "$"+(elementWorth[pixel.element]||1);
+    },
     category: "tools",
     desc: "Exchanges pixels for their market value in Gold Coins"
 }
@@ -397,28 +400,6 @@ runAfterLoad(function(){
                     }
                 }
             }
-            else if (currentElement === "shock") {
-                if (!isEmpty(x,y,true)) {
-                    // One loop that repeats 5 times if shiftDown else 1 time
-                    for (var j = 0; j < (shiftDown ? 5 : 1); j++) {
-                        var pixel = pixelMap[x][y];
-                        var con = elements[pixel.element].conduct;
-                        if (con == undefined) {continue}
-                        if (Math.random() < con) { // If random number is less than conductivity
-                            if (!pixel.charge && !pixel.chargeCD) {
-                                pixel.charge = 1;
-                                if (elements[pixel.element].colorOn) {
-                                    pixel.color = pixelColorPick(pixel);
-                                }
-                            }
-                        }
-                        else if (elements[pixel.element].insulate != true) { // Otherwise heat the pixel (Resistance simulation)
-                            pixel.temp += 0.25;
-                            pixelTempCheck(pixel);
-                        }
-                    }
-                }
-            }
             else if (elements[currentElement].tool && !(elements[currentElement].canPlace && isEmpty(x,y))) {
                 // run the tool function on the pixel
                 if (!isEmpty(x,y,true)) {
@@ -434,9 +415,9 @@ runAfterLoad(function(){
                 if (survivalCount(currentElement) < 1 && elements[currentElement].category !== "tools") {
                     return;
                 }
-                currentPixels.push(new Pixel(x, y, currentElement));
-                if (elements[currentElement].customColor || elements[currentElement].singleColor) {
-                    pixelMap[x][y].color = pixelColorPick(currentElement,currentColor);
+                createPixel(currentElement,x,y);
+                if (pixelMap[x][y] && currentElement === pixelMap[x][y].element && (elements[currentElement].customColor || elements[currentElement].singleColor)) {
+                    pixelMap[x][y].color = pixelColorPick(pixelMap[x][y],currentColorMap[currentElement]);
                 }
                 if (elements[currentElement].category !== "tools") { survivalRemove(currentElement,1); }
             }

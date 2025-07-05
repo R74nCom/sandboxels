@@ -1,82 +1,56 @@
-// CircuitCore: adds circuits to sandboxels, logicgates.js is required
+// CircuitCore.js: adds circuits (logicGates.js is required)
 
-if (!enabledMods.includes("mods/betterSettings.js")) { enabledMods.unshift("mods/betterSettings.js"); localStorage.setItem("enabledMods", JSON.stringify(enabledMods)); window.location.reload() };
-if (!enabledMods.includes("mods/logicgates.js")) { enabledMods.unshift("mods/logicgates.js"); localStorage.setItem("enabledMods", JSON.stringify(enabledMods)); window.location.reload() };
-var lightmapEnabled = enabledMods.includes("mods/lightmap.js") || enabledMods.includes("mods/fast_lightmap.js");
+// Other mods
+ensureModEnabled("mods/betterSettings.js");
+ensureModEnabled("mods/logicgates.js");
+const isLightmapEnabled = enabledMods.includes("mods/lightmap.js") || enabledMods.includes("mods/fast_lightmap.js");
 
-var cc_settingsTab = new SettingsTab("CircuitCore");
-var cc_setting1 = new Setting("If true then circuits will emit heat", "mem_fill", settingType.BOOLEAN, false, defaultValue=true);
-//var cc_setting2 = new Setting("Example Setting 2", "element", settingType.TEXT, false, "2");
-cc_settingsTab.registerSettings("OverHeating", cc_setting1);
-//cc_settingsTab.registerSettings("Setting 2", cc_setting2);
+// Define settings
+const cc_settingsTab = new SettingsTab("CircuitCore");
+const cc_heat_emit_setting = new Setting("Make circuits emit heat", "heatEmit", settingType.BOOLEAN, false, true);
+const cc_stable_tick_setting = new Setting("More consistent logicgates.js tick (page refresh required)", "stableTick", settingType.BOOLEAN, false, true);
+cc_settingsTab.registerSettings("Realism", cc_heat_emit_setting);
+cc_settingsTab.registerSettings("Tick", cc_stable_tick_setting);
 settingsManager.registerTab(cc_settingsTab);
 
-var colorPalette_4bit = [
-    "#101820", "#37175F", "#5F1717", "#6F175F",
-    "#005F00", "#1563BF", "#7F401A", "#525252",
-    "#8F8F8F", "#EE8822", "#FF3027", "#FF47FF",
-    "#58E618", "#27FFDF", "#FFFF27", "#FFFFFF"
+// Constants
+const DIGIT_SEGMENT_PATTERNS = [
+	"111101101101111", // 0
+	"001001001001001", // 1
+	"111001111100111", // 2
+	"111001111001111", // 3
+	"101101111001001", // 4
+	"111100111001111", // 5
+	"111100111101111", // 6
+	"111001001001001", // 7
+	"111101111101111", // 8
+	"111101111001111", // 9
+	"111101111101101", // A
+	"100100111101111", // B
+	"111100100100111", // C
+	"001001111101111", // D
+	"111100111100111", // E
+	"111100111100100"  // F
 ];
 
-function hueLerp(value) {
-    // Clamp the value between -50 and 400
-    if (value < -50) value = -50;
-    if (value > 400) value = 400;
+let colorPalette_4bit = [
+	"#101820", "#37175F", "#5F1717", "#6F175F",
+	"#005F00", "#1563BF", "#7F401A", "#525252",
+	"#8F8F8F", "#EE8822", "#FF3027", "#FF47FF",
+	"#58E618", "#27FFDF", "#FFFF27", "#FFFFFF"
+];
 
-    let r, g, b;
+function ensureModEnabled(modName) {
+	if (enabledMods.includes(modName))
+		return;
 
-    if (value <= 300) {
-        // Interpolate between blue and red
-        let t = (value + 50) / 350; // Normalize value from -50 to 300 to a 0-1 range
-        r = Math.round(255 * t);
-        g = 0;
-        b = Math.round(255 * (1 - t));
-    } else {
-        // Interpolate between red and white
-        let t = (value - 300) / 100; // Normalize value from 300 to 400 to a 0-1 range
-        r = 255;
-        g = Math.round(255 * t);
-        b = Math.round(255 * t);
-    }
-
-    // Convert RGB values to a hex string
-    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
-}
-
-function cc_rgbToArray(colorString) {
-	if (typeof colorString !== 'string') {
-		console.error('Invalid colorString:', colorString);
-		return null;
-	}
-
-	if (colorString.startsWith('rgb')) {
-		return colorString.slice(4, -1).split(',').map(val => parseInt(val.trim()));
-	} else if (colorString.startsWith('#')) {
-		let hex = colorString.slice(1);
-
-		// Handle shorthand hex (e.g., #03F)
-		if (hex.length === 3) {
-			hex = hex.split('').map(char => char + char).join('');
-		}
-
-		if (hex.length !== 6) {
-			console.error('Invalid hex color:', colorString);
-			return null;
-		}
-
-		const r = parseInt(hex.slice(0, 2), 16);
-		const g = parseInt(hex.slice(2, 4), 16);
-		const b = parseInt(hex.slice(4, 6), 16);
-
-		return [r, g, b];
-	} else {
-		console.error('Invalid color format:', colorString);
-		return null;
-	}
+	enabledMods.unshift(modName);
+	localStorage.setItem("enabledMods", JSON.stringify(enabledMods));
+	window.location.reload();
 }
 
 function cc_arrayToRgbString(rgbArray) {
-    return `rgb(${rgbArray.join(', ')})`;
+	return `rgb(${rgbArray.join(', ')})`;
 }
 
 function cc_scaleList(numbers, scale) {
@@ -84,59 +58,53 @@ function cc_scaleList(numbers, scale) {
 }
 
 function binaryArrayToNumber(binaryArray) {
-	return binaryArray.reduce((acc, bit, index) => acc + bit * Math.pow(2, (binaryArray.length - 1) - index), 0);
+	return binaryArray.reduce((number, bit) => (number << 1) | bit, 0);
 }
 
-function hexToPixelGrid(hex) {
-	var hexDigitStrings = [
-		"111101101101111", // 0
-		"001001001001001", // 1
-		"111001111100111", // 2
-		"111001111001111", // 3
-		"101101111001001", // 4
-		"111100111001111", // 5
-		"111100111101111", // 6
-		"111001001001001", // 7
-		"111101111101111", // 8
-		"111101111001111", // 9
-		"111101111101101", // A
-		"100100111101111", // B
-		"111100100100111", // C
-		"001001111101111", // D
-		"111100111100111", // E
-		"111100111100100"  // F
-	];
-
-	if (hex < 0 || hex > 15 || isNaN(hex)) {
-		console.log("inputted value: ", hex);
-		throw new Error("Input must be a valid 1-digit hexadecimal number.");
+function validateHexDigit(digit) {
+	if (!Number.isInteger(digit) || digit < 0 || digit >= DIGIT_SEGMENT_PATTERNS.length) {
+		throw new RangeError(`Hex digit must be between 0 and 15, got ${digit}`);
 	}
-
-	const binaryString = hexDigitStrings[hex];
-	const hexDigitArray = [];
-	for (let i = 0; i < 5; i++) {
-		hexDigitArray.push(binaryString.slice(i * 3, i * 3 + 3).split('').map(Number));
-	}
-	return hexDigitArray;
 }
 
-// Function to rotate a coordinate around the origin
-function rotateCoordinate(x, y, angle) {
-	var radians = angle * (Math.PI / 180);
-	var cos = Math.cos(radians);
-	var sin = Math.sin(radians);
+function parseBitTriplet(triplet) {
+	return triplet.split('').map(c => c === '1' ? 1 : 0);
+}
 
-	var nx = Math.round(x * cos - y * sin);
-	var ny = Math.round(x * sin + y * cos);
+function createSevenSegmentGrid(digit) {
+	validateHexDigit(digit);
+
+	const pattern = DIGIT_SEGMENT_PATTERNS[digit];
+	const grid = [];
+
+	for (let i = 0; i < 15; i += 3) {
+		grid.push(parseBitTriplet(pattern.slice(i, i + 3)));
+	}
+
+	return grid;
+}
+
+function rotateCoordinateAroundOrigin(x, y, angle) {
+	let radians = angle * (Math.PI / 180);
+	let cos = Math.cos(radians);
+	let sin = Math.sin(radians);
+
+	let nx = Math.round(x * cos - y * sin);
+	let ny = Math.round(x * sin + y * cos);
 
 	return [nx, ny];
 }
 
 // Initialize the circuit with optional rotation
-function initializeCircuit(pixel, pins, w, h, center=true, rotation=circuitRotation, callback=()=>{}) {
-	if (pixel.hasGenerated) {return;}
+function initializeCircuit(pixel, pins, w, h, center = true, rotation = circuitRotation, callback = () => {
+}) {
+	if (pixel.hasGenerated) {
+		return;
+	}
 
-	if (!center) {rotation = 0;} // non-centered circuits don't support rotation yet
+	if (!center) {
+		rotation = 0;
+	} // non-centered circuits don't support rotation yet
 	pixel.circuitRotation = rotation;
 
 	createCircuitFrame(pixel, w, h, center, rotation);
@@ -146,14 +114,14 @@ function initializeCircuit(pixel, pins, w, h, center=true, rotation=circuitRotat
 	pixel.hasGenerated = true;
 }
 
-function createCircuitFrame(pixel, width_, height_, center=true, rotation=0) {
-	var halfHeight = Math.floor(height_ / 2);
-	var halfWidth = Math.floor(width_ / 2);
+function createCircuitFrame(pixel, width_, height_, center = true, rotation = 0) {
+	let halfHeight = Math.floor(height_ / 2);
+	let halfWidth = Math.floor(width_ / 2);
 
-	var a = -halfHeight;
-	var b = halfHeight;
-	var c = -halfWidth;
-	var d = halfWidth;
+	let a = -halfHeight;
+	let b = halfHeight;
+	let c = -halfWidth;
+	let d = halfWidth;
 
 	if (!center) {
 		a = 0;
@@ -162,13 +130,15 @@ function createCircuitFrame(pixel, width_, height_, center=true, rotation=0) {
 		d = width_ - 1;
 	}
 
-	for (var y = a; y <= b; y++) {
-		for (var x = c; x <= d; x++) {
-			var [rx, ry] = rotateCoordinate(x, y, rotation);
-			var px = pixel.x + rx;
-			var py = pixel.y + ry;
+	for (let y = a; y <= b; y++) {
+		for (let x = c; x <= d; x++) {
+			let [rx, ry] = rotateCoordinateAroundOrigin(x, y, rotation);
+			let px = pixel.x + rx;
+			let py = pixel.y + ry;
 
-			if (!(0 <= px && px < width && 0 <= py && py < height)) {continue;}
+			if (!(0 <= px && px < width && 0 <= py && py < height)) {
+				continue;
+			}
 
 			// Create the pixel
 			if (!pixelMap[px] || pixelMap[px][py] === undefined) {
@@ -177,107 +147,161 @@ function createCircuitFrame(pixel, width_, height_, center=true, rotation=0) {
 
 			// Set the core position property
 			if (pixelMap[px] && pixelMap[px][py] && pixelMap[px][py].element === "circuit_material") {
-				pixelMap[px][py].corePosition = { x: pixel.x, y: pixel.y };
+				pixelMap[px][py].corePosition = {x: pixel.x, y: pixel.y};
 			}
 		}
 	}
 }
 
+function createPins(pixel, pins, rotation = 0) {
+	for (let i = 0; i < pins.length; i++) {
+		let [rx, ry] = rotateCoordinateAroundOrigin(pins[i][0], pins[i][1], rotation);
+		let px = pixel.x + rx;
+		let py = pixel.y + ry;
+		if (!(0 <= px && px < width && 0 <= py && py < height)) {
+			continue;
+		}
 
-function createPins(pixel, pins, rotation=0) {
-	for (var i = 0; i < pins.length; i++) {
-		var [rx, ry] = rotateCoordinate(pins[i][0], pins[i][1], rotation);
-		var px = pixel.x + rx;
-		var py = pixel.y + ry;
-		if (!(0 <= px && px < width && 0 <= py && py < height)) {continue;}
-
-		if (!pixelMap[px] || pixelMap[px][py] == undefined) {
-			var pinType = pins[i][2] ? "input_pin" : "output_pin";
+		if (!pixelMap[px] || pixelMap[px][py] === undefined) {
+			let pinType = pins[i][2] ? "input_pin" : "output_pin";
 			createPixel(pinType, px, py);
 		}
 	}
 }
 
-function checkPin(pixel, pins, index, rotation=pixel.circuitRotation) {
-	var [rx, ry] = rotateCoordinate(pins[index][0], pins[index][1], rotation);
-	var px = pixel.x + rx;
-	var py = pixel.y + ry;
-	if (!(0 <= px && px < width && 0 <= py && py < height)) {return;}
-
-	return pixelMap[px][py] && pixelMap[px][py].active;
+function getRotatedPinPixel(pixel, pins, index, rotation = pixel.circuitRotation) {
+	let [rx, ry] = rotateCoordinateAroundOrigin(pins[index][0], pins[index][1], rotation);
+	let px = pixel.x + rx;
+	let py = pixel.y + ry;
+	if (!(0 <= px && px < width && 0 <= py && py < height)) {
+		return null;
+	}
+	return pixelMap[px][py];
 }
 
-function setPin(pixel, pins, index, value, rotation=pixel.circuitRotation) {
-	var [rx, ry] = rotateCoordinate(pins[index][0], pins[index][1], rotation);
-	var px = pixel.x + rx;
-	var py = pixel.y + ry;
-	if (!(0 <= px && px < width && 0 <= py && py < height)) {return;}
+function checkPin(pixel, pins, index, rotation = pixel.circuitRotation) {
+	const target = getRotatedPinPixel(pixel, pins, index, rotation);
+	return target && target.active;
+}
 
-	if (pixelMap[px][py] && pixelMap[px][py].element == "output_pin") {
-		pixelMap[px][py].active = value;
+function setPin(pixel, pins, index, value, rotation = pixel.circuitRotation) {
+	const target = getRotatedPinPixel(pixel, pins, index, rotation);
+	if (target && target.element === "output_pin") {
+		target.active = value;
 	}
 }
 
 // Circuits
+function general_reverser(inputBits) {
+	return function (pixel) {
+		let pins = [];
+		let outputCount = inputBits;
+		let circuitWidth = (inputBits * 2) + 1;
+		let circuitHeight = 3;
+
+		// Define input pins
+		for (let i = 0; i < inputBits; i++) {
+			pins.push([Math.floor(circuitWidth / 2) - 1 - (2 * i), -2, true]);
+		}
+
+		// Define output pins
+		for (let i = 0; i < outputCount; i++) {
+			pins.push([Math.floor(circuitWidth / 2) - 1 - (2 * i), 2, false]); // Right outputs
+		}
+
+		initializeCircuit(pixel, pins, circuitWidth, circuitHeight);
+
+		// Read input values
+		let input = [];
+		for (let i = 0; i < inputBits; i++) {
+			input.push(checkPin(pixel, pins, i));
+		}
+
+		// Set output values
+		for (let i = 0; i < outputCount; i++) {
+			setPin(pixel, pins, inputBits + i, input[input.length - 1 - i]);
+		}
+	};
+}
+
+elements.two_bit_reverser_circuit = {
+	cc_stableTick: general_reverser(2)
+};
+
+let lastSelectedReverserCircuitBits;
+elements.reverser_circuit = {
+	onSelect: function () {
+		// Prompt user for the bit count
+		lastSelectedReverserCircuitBits = parseInt(prompt("How many bits wide chip?", "4"));
+	},
+	cc_stableTick: function (pixel) {
+		if (!pixel.bits) {
+			pixel.bits = lastSelectedReverserCircuitBits;
+		}
+		let circuitFunction = general_reverser(pixel.bits);
+		circuitFunction(pixel);
+	}
+};
+
 elements.four_bit_selector_circuit = {
-    cc_stableTick: function(pixel) {
-        var pins = [
-            // First 4-bit input (A)
-            [-1, -2, true],  // A0
-            [-3, -2, true],  // A1
-            [-5, -2, true],  // A2
-            [-7, -2, true],  // A3
+	cc_stableTick: function (pixel) {
+		let pins = [
+			// First 4-bit input (A)
+			[-7, -2, true],  // A0
+			[-5, -2, true],  // A1
+			[-3, -2, true],  // A2
+			[-1, -2, true],  // A3
 
-            // Second 4-bit input (B)
-            [7, -2, true],   // B0
-            [5, -2, true],   // B1
-            [3, -2, true],   // B2
-            [1, -2, true],   // B3
+			// Second 4-bit input (B)
+			[1, -2, true],   // B0
+			[3, -2, true],   // B1
+			[5, -2, true],   // B2
+			[7, -2, true],   // B3
 
-            // Selection pin (Sel)
-            [9, 0, true],    // Selection (Sel)
+			// Selection pin (Sel)
+			[9, 0, true],	// Selection (Sel)
 
-            // Output (O)
-            [-3, 2, false],  // O0 (centered)
-            [-1, 2, false],  // O1 (centered)
-            [1, 2, false],  // O2 (centered)
-            [3, 2, false],  // O3 (centered)
-        ];
+			// Output (O)
+			[-3, 2, false],  // O0 (centered)
+			[-1, 2, false],  // O1 (centered)
+			[1, 2, false],  // O2 (centered)
+			[3, 2, false],  // O3 (centered)
+		];
 
-        initializeCircuit(pixel, pins, 17, 3);
+		initializeCircuit(pixel, pins, 17, 3);
 
-        // Read inputs
-        var A = [
-            checkPin(pixel, pins, 0),
-            checkPin(pixel, pins, 1),
-            checkPin(pixel, pins, 2),
-            checkPin(pixel, pins, 3)
-        ];
+		// Read inputs
+		let A = [
+			checkPin(pixel, pins, 0),
+			checkPin(pixel, pins, 1),
+			checkPin(pixel, pins, 2),
+			checkPin(pixel, pins, 3)
+		];
 
-        var B = [
-            checkPin(pixel, pins, 4),
-            checkPin(pixel, pins, 5),
-            checkPin(pixel, pins, 6),
-            checkPin(pixel, pins, 7)
-        ];
+		let B = [
+			checkPin(pixel, pins, 4),
+			checkPin(pixel, pins, 5),
+			checkPin(pixel, pins, 6),
+			checkPin(pixel, pins, 7)
+		];
 
-        var Sel = checkPin(pixel, pins, 8); // Selection pin
+		let Sel = checkPin(pixel, pins, 8); // Selection pin
 
-        // Select between A and B based on Sel
-        var output = Sel ? B : A;
+		// Select between A and B based on Sel
+		let output = Sel ? B : A;
 
-        // Output the selected 4-bit value
-        setPin(pixel, pins, 9, output[0]);   // O0
-        setPin(pixel, pins, 10, output[1]);  // O1
-        setPin(pixel, pins, 11, output[2]);  // O2
-        setPin(pixel, pins, 12, output[3]);  // O3
-    }
+		// Output the selected 4-bit value
+		setPin(pixel, pins, 9, output[0]);   // O0
+		setPin(pixel, pins, 10, output[1]);  // O1
+		setPin(pixel, pins, 11, output[2]);  // O2
+		setPin(pixel, pins, 12, output[3]);  // O3
+	}
 };
 
 elements.four_bit_enabler_circuit = {
 	centered: true,
-	cc_stableTick: function(pixel) {
-		var pins = [
+	cc_stableTick: function (pixel) {
+		let pins = [
 			// Data inputs (D0-D3)
 			[-3, -2, true],  // D0
 			[-1, -2, true],  // D1
@@ -297,18 +321,18 @@ elements.four_bit_enabler_circuit = {
 			[3, 2, false]	// Q3
 		];
 
-		var elementData = elements[pixel.element];
+		let elementData = elements[pixel.element];
 		initializeCircuit(pixel, pins, 9, 3, elementData.centered);
 
 		// Read inputs
-		var D = [
+		let D = [
 			checkPin(pixel, pins, 0),
 			checkPin(pixel, pins, 1),
 			checkPin(pixel, pins, 2),
 			checkPin(pixel, pins, 3)
 		];
 
-		var C = checkPin(pixel, pins, 4); // Control input
+		let C = checkPin(pixel, pins, 4); // Control input
 		setPin(pixel, pins, 5, C);
 
 		// Previous state initialization
@@ -333,14 +357,14 @@ elements.four_bit_enabler_circuit = {
 
 elements.randomizer = {
 	color: "#FFCCFF",
-	cc_stableTick: function(pixel) {
-		for (var i = 0; i < adjacentCoords.length; i++) {
-			var coord = adjacentCoords[i];
-			var x = pixel.x + coord[0];
-			var y = pixel.y + coord[1];
+	cc_stableTick: function (pixel) {
+		for (let i = 0; i < adjacentCoords.length; i++) {
+			let coord = adjacentCoords[i];
+			let x = pixel.x + coord[0];
+			let y = pixel.y + coord[1];
 			if (!isEmpty(x, y, true)) {
-				if (pixelMap[x][y].element == "logic_wire") {
-					if (Math.random() < 0.5){
+				if (pixelMap[x][y].element === "logic_wire") {
+					if (Math.random() < 0.5) {
 						pixelMap[x][y].lstate = 2
 						pixelMap[x][y].color = pixelColorPick(pixelMap[x][y], "#ffe49c")
 					} else {
@@ -354,8 +378,8 @@ elements.randomizer = {
 }
 
 elements.four_bit_randomizer_circuit = {
-	cc_stableTick: function(pixel) {
-		var pins = [
+	cc_stableTick: function (pixel) {
+		let pins = [
 			// Clock input
 			[0, -2, true],   // Clock
 
@@ -369,7 +393,7 @@ elements.four_bit_randomizer_circuit = {
 		initializeCircuit(pixel, pins, 9, 3);
 
 		// Read clock input
-		var clock = checkPin(pixel, pins, 0);
+		let clock = checkPin(pixel, pins, 0);
 
 		// Initialize the state if not already done
 		if (pixel._state === undefined) {
@@ -380,7 +404,7 @@ elements.four_bit_randomizer_circuit = {
 		// Detect the positive edge on the clock pin
 		if (clock && !pixel.prevClock) {
 			// Generate a new 4-bit random number
-			var randomValue = Math.floor(Math.random() * 16);
+			let randomValue = Math.floor(Math.random() * 16);
 
 			// Update the state with the new random value
 			pixel._state = [
@@ -402,146 +426,33 @@ elements.four_bit_randomizer_circuit = {
 	}
 };
 
-var tempVar = 0;
-elements.temperature_sensor = {
-    behavior: behaviors.WALL,
-	onSelect: function() {
-        var answertemp = Number(prompt("Set your target temperature:",(tempVar||undefined)));
-        if (!answertemp) { return }
-		tempVar = answertemp;
-    },
-    hoverStat: function(pixel) {
-		return `TargetTmp: {pixel.targetTemp}`;
-	},
-	cc_stableTick: function(pixel) {
-		if (pixel.start === pixelTicks){
-			pixel.targetTemp = tempVar;
-		}
-
-		pixel.color = hueLerp(pixel.targetTemp);
-
-		pixel.active = pixel.temp >= pixel.targetTemp;
-		var neighbors = getNeighbors(pixel);
-		for (var i = 0;i < neighbors.length;i++) {
-			var neighbor = neighbors[i];
-
-			// Check if it's a wire
-			if (elements[neighbor.element].conduct > 0 && pixel.active) {
-				neighbor.charge = 1;
-			}
-
-			// Check if it's a logic wire (logicgates.js)
-			if (neighbor.lstate != undefined) {
-				if (pixel.active) {
-					neighbor.lstate = 2;
-					neighbor.color = pixelColorPick(neighbor, "#ffe49c");
-				} else {
-					neighbor.lstate = -2;
-					neighbor.color = pixelColorPick(neighbor, "#3d4d2c");
-				}
-			}
-		}
-	}
-}
-
-/*elements.ROM_circuit = {
-	previewSize: false,
-	cc_stableTick: function(pixel) {
-		var romWidth = 16;
-		var romHeight = 16;
-
-		var pins = [
-			// Address inputs (D0-D7)
-			[-1, 1, true],  // D0
-			[-1, 3, true],  // D1
-			[-1, 5, true],  // D2
-			[-1, 7, true],  // D3
-			[-1, 9, true],  // D4
-			[-1, 11, true], // D5
-			[-1, 13, true], // D6
-			[-1, 15, true], // D7
-
-			// ROM output
-			[romWidth + 2, 1, false],
-			[romWidth + 2, 3, false],
-			[romWidth + 2, 5, false],
-			[romWidth + 2, 7, false],
-		];
-
-		initializeCircuit(pixel, pins, romWidth + 2, romHeight + 2, false, pixel.circuitRotation, addDisplayCallback);
-
-//		if (!pixel.romData) {pixel.romData = new Array(64).fill(0);}
-		if (!pixel.romData) {
-			pixel.romData = Array.from({length: romWidth * romHeight}, () => Array.from({length: 4}, () => Math.floor(Math.random() * 2)));
-		}
-
-		// Read inputs
-		var D = [
-			checkPin(pixel, pins, 0),
-			checkPin(pixel, pins, 1),
-			checkPin(pixel, pins, 2),
-			checkPin(pixel, pins, 3),
-			checkPin(pixel, pins, 4),
-			checkPin(pixel, pins, 5),
-			checkPin(pixel, pins, 6),
-			checkPin(pixel, pins, 7)
-		];
-
-		var address = binaryArrayToNumber(D);
-		if (isNaN(address)) {return;}
-
-		// Draw the ROM data
-		for (var y = 1; y <= romWidth; y++) {
-			for (var x = 1; x <= romHeight; x++) {
-				var px = pixel.x + x;
-				var py = pixel.y + y;
-				var cellAddress = ((y - 1) * romWidth) + x - 1;
-				var cellData = pixel.romData[cellAddress];
-				if (!(0 <= px && px < width && 0 <= py && py < height)) {continue;}
-
-				if (pixelMap[px][py] && pixelMap[px][py].element == "displayPixel") {
-//					if (address == cellAddress) {}
-					pixelMap[px][py].color = colorPalette_4bit[binaryArrayToNumber(cellData)];
-				}
-			}
-		}
-
-		var output = pixel.romData[address];
-
-		setPin(pixel, pins, 8, output[0]);
-		setPin(pixel, pins, 9, output[1]);
-		setPin(pixel, pins, 10, output[2]);
-		setPin(pixel, pins, 11, output[3]);
-	}
-};*/
-
 function general_encoder(inputBits) {
-	return function(pixel) {
-		var pins = [];
-		var outputBits = Math.ceil(Math.log2(inputBits));
-		var circuitWidth = (inputBits * 2) + 1;
-		var circuitHeight = (outputBits * 2) + 1;
+	return function (pixel) {
+		let pins = [];
+		let outputBits = Math.ceil(Math.log2(inputBits));
+		let circuitWidth = (inputBits * 2) + 1;
+		let circuitHeight = (outputBits * 2) + 1;
 
 		// Define input pins
-		for (var i = 0; i < inputBits; i++) {
+		for (let i = 0; i < inputBits; i++) {
 			pins.push([Math.floor(circuitWidth / 2) - 1 - (2 * i), outputBits + 1, true]);
 		}
 
 		// Define output pins
-		for (var i = 0; i < outputBits; i++) {
+		for (let i = 0; i < outputBits; i++) {
 			pins.push([Math.floor(circuitWidth / 2) + 1, outputBits - 1 - (2 * i), false]); // Right outputs
 		}
 
 		// Mirrored outputs
-		for (var i = 0; i < outputBits; i++) {
+		for (let i = 0; i < outputBits; i++) {
 			pins.push([-Math.floor(circuitWidth / 2) - 1, outputBits - 1 - (2 * i), false]); // Left outputs
 		}
 
 		initializeCircuit(pixel, pins, circuitWidth, circuitHeight);
 
 		// Determine which input is active (priority encoder)
-		var activeInput = -1;
-		for (var i = inputBits - 1; i >= 0; i--) {
+		let activeInput = -1;
+		for (let i = inputBits - 1; i >= 0; i--) {
 			if (checkPin(pixel, pins, i)) {
 				activeInput = i;
 				break;
@@ -549,8 +460,8 @@ function general_encoder(inputBits) {
 		}
 
 		// Set output values based on active input
-		for (var i = 0; i < outputBits; i++) {
-			var outputValue = activeInput >= 0 ? ((activeInput >> i) & 1) : false;
+		for (let i = 0; i < outputBits; i++) {
+			let outputValue = activeInput >= 0 ? ((activeInput >> i) & 1) : false;
 			setPin(pixel, pins, inputBits + i, outputValue); // Right outputs
 			setPin(pixel, pins, inputBits + outputBits + i, outputValue); // Left outputs
 		}
@@ -578,38 +489,38 @@ elements.sixteen_to_four_encoder_circuit = {
 };
 
 function general_demultiplexer(selectorBits) {
-	return function(pixel) {
-		var pins = [];
-		var outputCount = Math.pow(2, selectorBits);
-		var circuitWidth = 3;
-		var circuitHeight = (outputCount * 2) + 1;
+	return function (pixel) {
+		let pins = [];
+		let outputCount = Math.pow(2, selectorBits);
+		let circuitWidth = 3;
+		let circuitHeight = (outputCount * 2) + 1;
 
 		// Define the input pin
 		pins.push([0, Math.floor(circuitHeight / 2) + 1, true]);
 
 		// Define selector pins
-		for (var i = 0; i < selectorBits; i++) {
+		for (let i = 0; i < selectorBits; i++) {
 			pins.push([-2, (Math.floor(circuitHeight / 2) - 1) - (2 * i), true]);
 		}
 
 		// Define output pins
-		for (var i = 0; i < outputCount; i++) {
+		for (let i = 0; i < outputCount; i++) {
 			pins.push([Math.floor(circuitWidth / 2) + 1, Math.floor(circuitHeight / 2) - 1 - (2 * i), false]);
 		}
 
 		initializeCircuit(pixel, pins, circuitWidth, circuitHeight);
 
 		// Read input and selector values
-		var input = checkPin(pixel, pins, 0);
-		var selector = 0;
-		for (var i = 0; i < selectorBits; i++) {
+		let input = checkPin(pixel, pins, 0);
+		let selector = 0;
+		for (let i = 0; i < selectorBits; i++) {
 			if (checkPin(pixel, pins, 1 + i)) {
 				selector += Math.pow(2, i);
 			}
 		}
 
 		// Set output values based on selector
-		for (var i = 0; i < outputCount; i++) {
+		for (let i = 0; i < outputCount; i++) {
 			setPin(pixel, pins, 1 + selectorBits + i, i === selector ? input : false);
 		}
 	};
@@ -636,39 +547,39 @@ elements.one_to_sixteen_demultiplexer_circuit = {
 };
 
 function general_decoder(inputBits) {
-	return function(pixel) {
-		var pins = [];
-		var outputCount = Math.pow(2, inputBits);
-		var circuitWidth = (inputBits * 2) + 1;
-		var circuitHeight = (outputCount * 2) + 1;
+	return function (pixel) {
+		let pins = [];
+		let outputCount = Math.pow(2, inputBits);
+		let circuitWidth = (inputBits * 2) + 1;
+		let circuitHeight = (outputCount * 2) + 1;
 
 		// Define input pins
-		for (var i = 0; i < inputBits; i++) {
+		for (let i = 0; i < inputBits; i++) {
 			pins.push([Math.floor(circuitWidth / 2) - 1 - (2 * i), outputCount + 1, true]);
 		}
 
 		// Define output pins
-		for (var i = 0; i < outputCount; i++) {
+		for (let i = 0; i < outputCount; i++) {
 			pins.push([Math.floor(circuitWidth / 2) + 1, outputCount - 1 - (2 * i), false]); // Right outputs
 		}
 
-		for (var i = 0; i < outputCount; i++) {
+		for (let i = 0; i < outputCount; i++) {
 			pins.push([-Math.floor(circuitWidth / 2) - 1, outputCount - 1 - (2 * i), false]); // Left outputs
 		}
 
 		initializeCircuit(pixel, pins, circuitWidth, circuitHeight);
 
 		// Read input values
-		var input = 0;
-		for (var i = 0; i < inputBits; i++) {
+		let input = 0;
+		for (let i = 0; i < inputBits; i++) {
 			if (checkPin(pixel, pins, i)) {
 				input += Math.pow(2, i);
 			}
 		}
 
 		// Set output values
-		for (var i = 0; i < outputCount; i++) {
-			var outputValue = (i === input);
+		for (let i = 0; i < outputCount; i++) {
+			let outputValue = (i === input);
 			setPin(pixel, pins, inputBits + i, outputValue); // Right outputs
 			setPin(pixel, pins, inputBits + outputCount + i, outputValue); // Left outputs
 		}
@@ -692,19 +603,19 @@ elements.four_to_sixteen_decoder_circuit = {
 };
 
 function general_multiplexer(inputLines) {
-	return function(pixel) {
-		var pins = [];
-		var selectorBits = Math.ceil(Math.log2(inputLines));
-		var circuitWidth = (selectorBits * 2) + 1;
-		var circuitHeight = (inputLines * 2) + 1;
+	return function (pixel) {
+		let pins = [];
+		let selectorBits = Math.ceil(Math.log2(inputLines));
+		let circuitWidth = (selectorBits * 2) + 1;
+		let circuitHeight = (inputLines * 2) + 1;
 
 		// Define selector pins
-		for (var i = 0; i < selectorBits; i++) {
+		for (let i = 0; i < selectorBits; i++) {
 			pins.push([Math.floor(circuitWidth / 2) - 1 - (2 * i), inputLines + 1, true]);
 		}
 
 		// Define input data pins
-		for (var i = 0; i < inputLines; i++) {
+		for (let i = 0; i < inputLines; i++) {
 			pins.push([-Math.floor(circuitWidth / 2) - 1, inputLines - 1 - (2 * i), true]);
 		}
 
@@ -714,8 +625,8 @@ function general_multiplexer(inputLines) {
 		initializeCircuit(pixel, pins, circuitWidth, circuitHeight);
 
 		// Read selector input
-		var selector = 0;
-		for (var i = 0; i < selectorBits; i++) {
+		let selector = 0;
+		for (let i = 0; i < selectorBits; i++) {
 			if (checkPin(pixel, pins, i)) {
 				selector += Math.pow(2, i);
 			}
@@ -746,8 +657,8 @@ elements.sixteen_to_one_multiplexer_circuit = {
 };
 
 elements.four_bit_PISO_shift_register_circuit = {
-	cc_stableTick: function(pixel) {
-		var pins = [
+	cc_stableTick: function (pixel) {
+		let pins = [
 			// Data inputs (D0-D3)
 			[3, -3, true],   // D3
 			[1, -3, true],   // D2
@@ -768,7 +679,7 @@ elements.four_bit_PISO_shift_register_circuit = {
 		initializeCircuit(pixel, pins, 9, 5);
 
 		// Read data inputs
-		var D = [
+		let D = [
 			checkPin(pixel, pins, 0),
 			checkPin(pixel, pins, 1),
 			checkPin(pixel, pins, 2),
@@ -776,8 +687,8 @@ elements.four_bit_PISO_shift_register_circuit = {
 		];
 
 		// Read control and clock inputs
-		var loadShiftEnable = checkPin(pixel, pins, 4);
-		var clock = checkPin(pixel, pins, 5);
+		let loadShiftEnable = checkPin(pixel, pins, 4);
+		let clock = checkPin(pixel, pins, 5);
 
 		// Initialize the state if not already done
 		if (pixel._state === undefined) {
@@ -798,8 +709,8 @@ elements.four_bit_PISO_shift_register_circuit = {
 		if (clock && !pixel.prevClock) {
 			if (pixel.bitIndex < 4) {
 				// Shift the register and output the next bit
-				var serialOut = pixel._state[0];
-				for (var i = 0; i < 3; i++) {
+				let serialOut = pixel._state[0];
+				for (let i = 0; i < 3; i++) {
 					pixel._state[i] = pixel._state[i + 1];
 				}
 				pixel._state[3] = false;  // Clear the last bit after shifting
@@ -813,7 +724,7 @@ elements.four_bit_PISO_shift_register_circuit = {
 		}
 
 		// Set the transmission flag
-		var transmitting = pixel.bitIndex < 4 && loadShiftEnable;
+		let transmitting = pixel.bitIndex < 4 && loadShiftEnable;
 		setPin(pixel, pins, 7, transmitting);
 
 		// Update previous state of control and clock inputs
@@ -823,8 +734,8 @@ elements.four_bit_PISO_shift_register_circuit = {
 };
 
 elements.four_bit_SIPO_shift_register_circuit = {
-	cc_stableTick: function(pixel) {
-		var pins = [
+	cc_stableTick: function (pixel) {
+		let pins = [
 			// Serial input (Data In)
 			[-2, -3, true],  // Data In
 
@@ -841,8 +752,8 @@ elements.four_bit_SIPO_shift_register_circuit = {
 		initializeCircuit(pixel, pins, 3, 9);
 
 		// Read serial and clock input
-		var serialIn = checkPin(pixel, pins, 0);
-		var clock = checkPin(pixel, pins, 1);
+		let serialIn = checkPin(pixel, pins, 0);
+		let clock = checkPin(pixel, pins, 1);
 
 		// Initialize the state if not already done
 		if (pixel._state === undefined) {
@@ -856,7 +767,7 @@ elements.four_bit_SIPO_shift_register_circuit = {
 		}
 
 		// Output the parallel values
-		for (var i = 0; i < 4; i++) {
+		for (let i = 0; i < 4; i++) {
 			setPin(pixel, pins, 2 + i, pixel._state[i]);
 		}
 
@@ -866,8 +777,8 @@ elements.four_bit_SIPO_shift_register_circuit = {
 };
 
 elements.four_bit_program_counter_circuit = {
-	cc_stableTick: function(pixel) {
-		var pins = [
+	cc_stableTick: function (pixel) {
+		let pins = [
 			// Data inputs (D0-D3)
 			[-3, -3, true],  // D0
 			[-1, -3, true],  // D1
@@ -888,7 +799,7 @@ elements.four_bit_program_counter_circuit = {
 		initializeCircuit(pixel, pins, 9, 5);
 
 		// Read data inputs
-		var D = [
+		let D = [
 			checkPin(pixel, pins, 0),
 			checkPin(pixel, pins, 1),
 			checkPin(pixel, pins, 2),
@@ -896,8 +807,8 @@ elements.four_bit_program_counter_circuit = {
 		];
 
 		// Read control inputs
-		var Increment = checkPin(pixel, pins, 4);
-		var WriteEnable = checkPin(pixel, pins, 5);
+		let Increment = checkPin(pixel, pins, 4);
+		let WriteEnable = checkPin(pixel, pins, 5);
 
 		// Initialize the state if not already done
 		if (pixel._state === undefined) {
@@ -906,7 +817,7 @@ elements.four_bit_program_counter_circuit = {
 		}
 
 		// Convert the state to a 4-bit binary number
-		var stateValue = binaryArrayToNumber(pixel._state);
+		let stateValue = binaryArrayToNumber(pixel._state);
 
 		// Detect the positive edge on the Increment pin
 		if (Increment && !pixel.prevIncrement) {
@@ -938,8 +849,8 @@ elements.four_bit_program_counter_circuit = {
 };
 
 elements.four_bit_register_circuit = {
-	cc_stableTick: function(pixel) {
-		var pins = [
+	cc_stableTick: function (pixel) {
+		let pins = [
 			// Data inputs (D0-D3)
 			[-3, -3, true],  // D0
 			[-1, -3, true],  // D1
@@ -960,7 +871,7 @@ elements.four_bit_register_circuit = {
 		initializeCircuit(pixel, pins, 9, 5);
 
 		// Read data inputs
-		var D = [
+		let D = [
 			checkPin(pixel, pins, 0),
 			checkPin(pixel, pins, 1),
 			checkPin(pixel, pins, 2),
@@ -968,8 +879,8 @@ elements.four_bit_register_circuit = {
 		];
 
 		// Read control inputs
-		var Enable = checkPin(pixel, pins, 4);
-		var WriteEnable = checkPin(pixel, pins, 5);
+		let Enable = checkPin(pixel, pins, 4);
+		let WriteEnable = checkPin(pixel, pins, 5);
 
 		// Initialize the state if not already done
 		if (pixel._state === undefined) {
@@ -998,8 +909,8 @@ elements.four_bit_register_circuit = {
 };
 
 elements.SR_latch_circuit = {
-	cc_stableTick: function(pixel) {
-		var pins = [
+	cc_stableTick: function (pixel) {
+		let pins = [
 			[0, -2, true], // Input: Set
 			[0, 2, true],  // Input: Reset
 			[2, 0, false], // Output
@@ -1007,8 +918,12 @@ elements.SR_latch_circuit = {
 		];
 		initializeCircuit(pixel, pins, 3, 3);
 
-		if (checkPin(pixel, pins, 0)) {pixel._state = true;} // Set
-		if (checkPin(pixel, pins, 1)) {pixel._state = false;} // Reset
+		if (checkPin(pixel, pins, 0)) {
+			pixel._state = true;
+		} // Set
+		if (checkPin(pixel, pins, 1)) {
+			pixel._state = false;
+		} // Reset
 
 		setPin(pixel, pins, 2, pixel._state);
 		setPin(pixel, pins, 3, pixel._state);
@@ -1016,8 +931,8 @@ elements.SR_latch_circuit = {
 };
 
 elements.T_flip_flop_circuit = {
-	cc_stableTick: function(pixel) {
-		var pins = [
+	cc_stableTick: function (pixel) {
+		let pins = [
 			[0, -2, true], // Input: Toggle (T)
 			[2, 0, false], // Output (Q)
 			[-2, 0, false] // Output (not Q) - Optional
@@ -1026,7 +941,7 @@ elements.T_flip_flop_circuit = {
 		initializeCircuit(pixel, pins, 3, 3);
 
 		// Check the current state of the Toggle (T) input
-		var T = checkPin(pixel, pins, 0);
+		let T = checkPin(pixel, pins, 0);
 
 		// Initialize the previous state of T if not already done
 		if (pixel.prevT === undefined) {
@@ -1047,8 +962,8 @@ elements.T_flip_flop_circuit = {
 };
 
 elements.D_latch_circuit = {
-	cc_stableTick: function(pixel) {
-		var pins = [
+	cc_stableTick: function (pixel) {
+		let pins = [
 			[0, -2, true], // Input: Data
 			[2, 0, true],  // Input: Enable
 			[0, 2, false], // Output
@@ -1056,8 +971,8 @@ elements.D_latch_circuit = {
 		];
 		initializeCircuit(pixel, pins, 3, 3);
 
-		var D = checkPin(pixel, pins, 0); // Data input
-		var E = checkPin(pixel, pins, 1); // Enable input
+		let D = checkPin(pixel, pins, 0); // Data input
+		let E = checkPin(pixel, pins, 1); // Enable input
 
 		if (E) {
 			pixel._state = D; // Q follows D when E is active
@@ -1069,8 +984,8 @@ elements.D_latch_circuit = {
 };
 
 elements.D_flip_flop_circuit = {
-	cc_stableTick: function(pixel) {
-		var pins = [
+	cc_stableTick: function (pixel) {
+		let pins = [
 			[0, -2, true], // Input: Data
 			[2, 0, true],  // Input: Enable
 			[0, 2, false], // Output
@@ -1080,8 +995,8 @@ elements.D_flip_flop_circuit = {
 		initializeCircuit(pixel, pins, 3, 3);
 
 		// Read inputs
-		var D = checkPin(pixel, pins, 0); // Data input
-		var C = checkPin(pixel, pins, 1); // Control input
+		let D = checkPin(pixel, pins, 0); // Data input
+		let C = checkPin(pixel, pins, 1); // Control input
 
 		// Initialize previous state of control input if not already done
 		if (pixel.prevC === undefined) {
@@ -1108,8 +1023,8 @@ elements.D_flip_flop_circuit = {
 };
 
 elements.four_bit_D_latch_circuit = {
-	cc_stableTick: function(pixel) {
-		var pins = [
+	cc_stableTick: function (pixel) {
+		let pins = [
 			// Data inputs (D0-D3)
 			[-3, -2, true],  // D0
 			[-1, -2, true],  // D1
@@ -1129,14 +1044,14 @@ elements.four_bit_D_latch_circuit = {
 		initializeCircuit(pixel, pins, 9, 3);
 
 		// Read inputs
-		var D = [
+		let D = [
 			checkPin(pixel, pins, 0),
 			checkPin(pixel, pins, 1),
 			checkPin(pixel, pins, 2),
 			checkPin(pixel, pins, 3)
 		];
 
-		var C = checkPin(pixel, pins, 4); // Control input
+		let C = checkPin(pixel, pins, 4); // Control input
 
 		// Previous state initialization
 		if (pixel._state === undefined) {
@@ -1157,8 +1072,8 @@ elements.four_bit_D_latch_circuit = {
 };
 
 elements.four_bit_D_flip_flop_circuit = {
-	cc_stableTick: function(pixel) {
-		var pins = [
+	cc_stableTick: function (pixel) {
+		let pins = [
 			// Data inputs (D0-D3)
 			[-3, -2, true],  // D0
 			[-1, -2, true],  // D1
@@ -1178,14 +1093,14 @@ elements.four_bit_D_flip_flop_circuit = {
 		initializeCircuit(pixel, pins, 9, 3);
 
 		// Read inputs
-		var D = [
+		let D = [
 			checkPin(pixel, pins, 0),
 			checkPin(pixel, pins, 1),
 			checkPin(pixel, pins, 2),
 			checkPin(pixel, pins, 3)
 		];
 
-		var C = checkPin(pixel, pins, 4); // Control input
+		let C = checkPin(pixel, pins, 4); // Control input
 
 		// Initialize previous state of control input if not already done
 		if (pixel.prevC === undefined) {
@@ -1214,8 +1129,8 @@ elements.four_bit_D_flip_flop_circuit = {
 };
 
 elements.four_bit_incrementer_circuit = {
-	cc_stableTick: function(pixel) {
-		var pins = [
+	cc_stableTick: function (pixel) {
+		let pins = [
 			// 4-bit number inputs (N0-N3)
 			[3, -2, true],   // N3
 			[1, -2, true],   // N2
@@ -1238,25 +1153,25 @@ elements.four_bit_incrementer_circuit = {
 		initializeCircuit(pixel, pins, 9, 3);
 
 		// Read inputs
-		var N = [
+		let N = [
 			checkPin(pixel, pins, 0),
 			checkPin(pixel, pins, 1),
 			checkPin(pixel, pins, 2),
 			checkPin(pixel, pins, 3)
 		];
 
-		var INC = checkPin(pixel, pins, 4); // Increment control input
+		let INC = checkPin(pixel, pins, 4); // Increment control input
 
 		// Calculate the incremented value when control is active
-		var carry = 0;
-		var result = [];
+		let carry = 0;
+		let result = [];
 
 		if (INC) {
 			carry = 1; // Start with a carry of 1 to increment by 1
 		}
 
-		for (var i = 0; i < 4; i++) {
-			var sum = N[i] + carry;
+		for (let i = 0; i < 4; i++) {
+			let sum = N[i] + carry;
 			result[i] = sum % 2; // Current bit sum
 			carry = Math.floor(sum / 2); // Carry for next bit
 		}
@@ -1271,8 +1186,8 @@ elements.four_bit_incrementer_circuit = {
 };
 
 elements.four_bit_adder_circuit = {
-	cc_stableTick: function(pixel) {
-		var pins = [
+	cc_stableTick: function (pixel) {
+		let pins = [
 			// First 4-bit number (A)
 			[-1, -2, true],  // A3
 			[-3, -2, true],  // A2
@@ -1299,28 +1214,28 @@ elements.four_bit_adder_circuit = {
 		initializeCircuit(pixel, pins, 17, 3);
 
 		// Read inputs
-		var A = [
+		let A = [
 			checkPin(pixel, pins, 0),
 			checkPin(pixel, pins, 1),
 			checkPin(pixel, pins, 2),
 			checkPin(pixel, pins, 3)
 		];
 
-		var B = [
+		let B = [
 			checkPin(pixel, pins, 4),
 			checkPin(pixel, pins, 5),
 			checkPin(pixel, pins, 6),
 			checkPin(pixel, pins, 7)
 		];
 
-		var C_in = checkPin(pixel, pins, 8); // Carry-in
+		let C_in = checkPin(pixel, pins, 8); // Carry-in
 
 		// Calculate the sum and carry
-		var sum = [];
-		var carry = C_in;
+		let sum = [];
+		let carry = C_in;
 
-		for (var i = 0; i < 4; i++) {
-			var bitSum = A[i] + B[i] + carry;
+		for (let i = 0; i < 4; i++) {
+			let bitSum = A[i] + B[i] + carry;
 			sum[i] = bitSum % 2; // Current bit sum
 			carry = Math.floor(bitSum / 2); // Carry for next bit
 		}
@@ -1335,78 +1250,78 @@ elements.four_bit_adder_circuit = {
 };
 
 elements.four_bit_subtractor_circuit = {
-    cc_stableTick: function(pixel) {
-        var pins = [
-            // First 4-bit number (A)
-            [-1, -2, true],  // A3
-            [-3, -2, true],  // A2
-            [-5, -2, true],  // A1
-            [-7, -2, true],  // A0
+	cc_stableTick: function (pixel) {
+		let pins = [
+			// First 4-bit number (A)
+			[-1, -2, true],  // A3
+			[-3, -2, true],  // A2
+			[-5, -2, true],  // A1
+			[-7, -2, true],  // A0
 
-            // Second 4-bit number (B)
-            [7, -2, true],   // B3
-            [5, -2, true],   // B2
-            [3, -2, true],   // B1
-            [1, -2, true],   // B0
+			// Second 4-bit number (B)
+			[7, -2, true],   // B3
+			[5, -2, true],   // B2
+			[3, -2, true],   // B1
+			[1, -2, true],   // B0
 
-            // Borrow-in (B_in)
-            [9, 0, true],   // Borrow-in (B_in)
+			// Borrow-in (B_in)
+			[9, 0, true],   // Borrow-in (B_in)
 
-            // Output difference (D)
-            [-1, 2, false],  // D3
-            [-3, 2, false],  // D2
-            [-5, 2, false],  // D1
-            [-7, 2, false],  // D0
-            [1, 2, false],   // Borrow Out (B4)
-        ];
+			// Output difference (D)
+			[-1, 2, false],  // D3
+			[-3, 2, false],  // D2
+			[-5, 2, false],  // D1
+			[-7, 2, false],  // D0
+			[1, 2, false],   // Borrow Out (B4)
+		];
 
-        initializeCircuit(pixel, pins, 17, 3);
+		initializeCircuit(pixel, pins, 17, 3);
 
-        // Read inputs
-        var A = [
-            checkPin(pixel, pins, 0),
-            checkPin(pixel, pins, 1),
-            checkPin(pixel, pins, 2),
-            checkPin(pixel, pins, 3)
-        ];
+		// Read inputs
+		let A = [
+			checkPin(pixel, pins, 0),
+			checkPin(pixel, pins, 1),
+			checkPin(pixel, pins, 2),
+			checkPin(pixel, pins, 3)
+		];
 
-        var B = [
-            checkPin(pixel, pins, 4),
-            checkPin(pixel, pins, 5),
-            checkPin(pixel, pins, 6),
-            checkPin(pixel, pins, 7)
-        ];
+		let B = [
+			checkPin(pixel, pins, 4),
+			checkPin(pixel, pins, 5),
+			checkPin(pixel, pins, 6),
+			checkPin(pixel, pins, 7)
+		];
 
-        var B_in = checkPin(pixel, pins, 8); // Borrow-in
+		let B_in = checkPin(pixel, pins, 8); // Borrow-in
 
-        // Calculate the difference and borrow
-        var difference = [];
-        var borrow = B_in;
+		// Calculate the difference and borrow
+		let difference = [];
+		let borrow = B_in;
 
-        for (var i = 0; i < 4; i++) {
-            var bitDifference = A[i] - B[i] - borrow;
-            difference[i] = (bitDifference + 2) % 2; // Current bit difference
-            borrow = bitDifference < 0 ? 1 : 0; // Borrow for next bit
-        }
+		for (let i = 0; i < 4; i++) {
+			let bitDifference = A[i] - B[i] - borrow;
+			difference[i] = (bitDifference + 2) % 2; // Current bit difference
+			borrow = bitDifference < 0 ? 1 : 0; // Borrow for next bit
+		}
 
-        // Output the difference
-        setPin(pixel, pins, 9, difference[0]);   // D0
-        setPin(pixel, pins, 10, difference[1]);  // D1
-        setPin(pixel, pins, 11, difference[2]);  // D2
-        setPin(pixel, pins, 12, difference[3]);  // D3
-        setPin(pixel, pins, 13, borrow);         // Borrow Out (B4)
-    }
+		// Output the difference
+		setPin(pixel, pins, 9, difference[0]);   // D0
+		setPin(pixel, pins, 10, difference[1]);  // D1
+		setPin(pixel, pins, 11, difference[2]);  // D2
+		setPin(pixel, pins, 12, difference[3]);  // D3
+		setPin(pixel, pins, 13, borrow);		 // Borrow Out (B4)
+	}
 };
 
 function general_clock(speed, s2) {
-	return function(pixel){
-		for (var i = 0; i < adjacentCoords.length; i++) {
-			var coord = adjacentCoords[i];
-			var x = pixel.x+coord[0];
-			var y = pixel.y+coord[1];
-			if (!isEmpty(x,y,true)) {
-				if (pixelMap[x][y].element == "logic_wire"){
-					if (pixelTicks % speed < s2){
+	return function (pixel) {
+		for (let i = 0; i < adjacentCoords.length; i++) {
+			let coord = adjacentCoords[i];
+			let x = pixel.x + coord[0];
+			let y = pixel.y + coord[1];
+			if (!isEmpty(x, y, true)) {
+				if (pixelMap[x][y].element === "logic_wire") {
+					if (pixelTicks % speed < s2) {
 						pixelMap[x][y].lstate = 2
 						pixelMap[x][y].color = pixelColorPick(pixelMap[x][y], "#ffe49c")
 					} else {
@@ -1440,21 +1355,21 @@ elements.very_fast_clock = {
 }
 
 elements.custom_RGB_led = {
-	cc_stableTick: function(pixel) {
-		var pins = [
+	cc_stableTick: function (pixel) {
+		let pins = [
 			// RGB values
-			[-2, -1, true],  // R0
+			[-2, -1, true], // R0
 			[-2, 1, true],  // R1
 			[1, -2, true],  // G0
-			[-1, -2, true],  // G1
-			[2, -1, true],   // B0
+			[-1, -2, true], // G1
+			[2, -1, true],  // B0
 			[2, 1, true],   // B1
 		];
 
 		initializeCircuit(pixel, pins, 3, 3);
 
 		// Read inputs
-		var l = [
+		let l = [
 			checkPin(pixel, pins, 0),
 			checkPin(pixel, pins, 1),
 			checkPin(pixel, pins, 2),
@@ -1463,22 +1378,23 @@ elements.custom_RGB_led = {
 			checkPin(pixel, pins, 5)
 		];
 
-		var color = { color: cc_scaleList([(l[0] * 2) + l[1], (l[2] * 2) + l[3], (l[4] * 2) + l[5]], (255 / 3) * 10) };
-		if (color.color.some(value => isNaN(value))) {return;}
+		let color = {color: cc_scaleList([(l[0] * 2) + l[1], (l[2] * 2) + l[3], (l[4] * 2) + l[5]], 255 / 3 * 10)};
+		if (color.color.some(value => isNaN(value)))
+			return;
 
-		if (lightmapEnabled && color.color[0] && color.color[1], color.color[2]) {
+		if (isLightmapEnabled) {
 			lightmap[Math.floor(pixel.y / lightmapScale)][Math.floor(pixel.x / lightmapScale)] = color;
 		}
-		var scaledColor = cc_scaleList(color.color, 0.1);
+		let scaledColor = cc_scaleList(color.color, 0.1);
 
 //		pixelMap[pixel.x][pixel.y].color = scaledColor;
 		for (let dx = -1; dx <= 1; dx++) {
 			for (let dy = -1; dy <= 1; dy++) {
-				var nx = pixel.x + dx;
-				var ny = pixel.y + dy;
+				let nx = pixel.x + dx;
+				let ny = pixel.y + dy;
 
 				if (pixelMap[nx] && pixelMap[nx][ny]) {
-					var n = ((2 - (Math.abs(dx) + Math.abs(dy))) + 4) / 6;
+					let n = ((2 - (Math.abs(dx) + Math.abs(dy))) + 4) / 6;
 					pixelMap[nx][ny].color = cc_arrayToRgbString(cc_scaleList(scaledColor, n));
 				}
 			}
@@ -1486,12 +1402,14 @@ elements.custom_RGB_led = {
 	}
 }
 
-var addDisplayCallback = function(pixel, pins, w, h) {
-	for (var y = 1; y < h - 1; y++) {
-		for (var x = 1; x < w - 1; x++) {
-			var px = pixel.x + x;
-			var py = pixel.y + y;
-			if (!(0 <= px && px < width && 0 <= py && py < height)) {continue;}
+let addDisplayCallback = function (pixel, pins, w, h) {
+	for (let y = 1; y < h - 1; y++) {
+		for (let x = 1; x < w - 1; x++) {
+			let px = pixel.x + x;
+			let py = pixel.y + y;
+			if (!(0 <= px && px < width && 0 <= py && py < height)) {
+				continue;
+			}
 
 			deletePixel(px, py);
 			createPixel("displayPixel", px, py);
@@ -1501,8 +1419,8 @@ var addDisplayCallback = function(pixel, pins, w, h) {
 }
 
 elements.simple_seven_segment_display = {
-	cc_stableTick: function(pixel) {
-		var pins = [
+	cc_stableTick: function (pixel) {
+		let pins = [
 			// Data inputs (D0-D3)
 			[-1, 7, true],
 			[-1, 5, true],
@@ -1513,24 +1431,26 @@ elements.simple_seven_segment_display = {
 		initializeCircuit(pixel, pins, 5, 9, false, pixel.circuitRotation, addDisplayCallback);
 
 		// Read inputs
-		var D = [
+		let D = [
 			checkPin(pixel, pins, 0),
 			checkPin(pixel, pins, 1),
 			checkPin(pixel, pins, 2),
 			checkPin(pixel, pins, 3)
 		];
 
-		var hexNumber = (D[3] * 8) + (D[2] * 4) + (D[1] * 2) + (D[0] * 1);
-		if (isNaN(hexNumber)) {return;}
+		let hexNumber = (D[3] * 8) + (D[2] * 4) + (D[1] * 2) + (D[0] * 1);
+		if (isNaN(hexNumber)) {
+			return;
+		}
 
 		// Draw the number
-		var hexGrid = hexToPixelGrid(hexNumber);
-		for (var y = 2; y <= 6; y++) {
-			for (var x = 1; x <= 3; x++) {
-				var px = pixel.x + x;
-				var py = pixel.y + y;
+		let hexGrid = createSevenSegmentGrid(hexNumber);
+		for (let y = 2; y <= 6; y++) {
+			for (let x = 1; x <= 3; x++) {
+				let px = pixel.x + x;
+				let py = pixel.y + y;
 
-				if (pixelMap[px][py] && pixelMap[px][py].element == "displayPixel") {
+				if (pixelMap[px][py] && pixelMap[px][py].element === "displayPixel") {
 					if (hexGrid[y - 2][x - 1]) {
 						pixelMap[px][py].color = "rgb(16, 230, 120)";
 					} else {
@@ -1543,8 +1463,8 @@ elements.simple_seven_segment_display = {
 };
 
 elements.simple_double_seven_segment_display = {
-	cc_stableTick: function(pixel) {
-		var pins = [
+	cc_stableTick: function (pixel) {
+		let pins = [
 			// Data inputs (D0-D3)
 			[-1, 7, true],
 			[-1, 5, true],
@@ -1560,7 +1480,7 @@ elements.simple_double_seven_segment_display = {
 		initializeCircuit(pixel, pins, 9, 9, false, pixel.circuitRotation, addDisplayCallback);
 
 		// Read inputs
-		var D = [
+		let D = [
 			checkPin(pixel, pins, 0),
 			checkPin(pixel, pins, 1),
 			checkPin(pixel, pins, 2),
@@ -1571,18 +1491,20 @@ elements.simple_double_seven_segment_display = {
 			checkPin(pixel, pins, 7)
 		];
 
-		var hexNumber = (D[3] * 8) + (D[2] * 4) + (D[1] * 2) + (D[0] * 1);
-		var hexNumber2 = (D[7] * 8) + (D[6] * 4) + (D[5] * 2) + (D[4] * 1);
-		if (isNaN(hexNumber) || isNaN(hexNumber2)) {return;}
+		let hexNumber = (D[3] * 8) + (D[2] * 4) + (D[1] * 2) + (D[0] * 1);
+		let hexNumber2 = (D[7] * 8) + (D[6] * 4) + (D[5] * 2) + (D[4] * 1);
+		if (isNaN(hexNumber) || isNaN(hexNumber2)) {
+			return;
+		}
 
 		// Draw the number
-		var hexGrid = hexToPixelGrid(hexNumber);
-		for (var y = 2; y <= 6; y++) {
-			for (var x = 1; x <= 3; x++) {
-				var px = pixel.x + x;
-				var py = pixel.y + y;
+		let hexGrid = createSevenSegmentGrid(hexNumber);
+		for (let y = 2; y <= 6; y++) {
+			for (let x = 1; x <= 3; x++) {
+				let px = pixel.x + x;
+				let py = pixel.y + y;
 
-				if (pixelMap[px][py] && pixelMap[px][py].element == "displayPixel") {
+				if (pixelMap[px][py] && pixelMap[px][py].element === "displayPixel") {
 					if (hexGrid[y - 2][x - 1]) {
 						pixelMap[px][py].color = "rgb(16, 230, 120)";
 					} else {
@@ -1592,13 +1514,13 @@ elements.simple_double_seven_segment_display = {
 			}
 		}
 
-		var hexGrid2 = hexToPixelGrid(hexNumber2);
-		for (var y = 2; y <= 6; y++) {
-			for (var x = 5; x <= 7; x++) {
-				var px = pixel.x + x;
-				var py = pixel.y + y;
+		let hexGrid2 = createSevenSegmentGrid(hexNumber2);
+		for (let y = 2; y <= 6; y++) {
+			for (let x = 5; x <= 7; x++) {
+				let px = pixel.x + x;
+				let py = pixel.y + y;
 
-				if (pixelMap[px][py] && pixelMap[px][py].element == "displayPixel") {
+				if (pixelMap[px][py] && pixelMap[px][py].element === "displayPixel") {
 					if (hexGrid2[y - 2][x - 5]) {
 						pixelMap[px][py].color = "rgb(16, 230, 120)";
 					} else {
@@ -1611,25 +1533,25 @@ elements.simple_double_seven_segment_display = {
 };
 
 function malfunction_chip(pixel) {
-	var emptySpaces = [];
+	let emptySpaces = [];
 
 	// Search in a 5x5 neighborhood for empty spaces
-	for (var dy = -2; dy <= 2; dy++) {
-		for (var dx = -2; dx <= 2; dx++) {
-			var neighborX = pixel.x + dx;
-			var neighborY = pixel.y + dy;
+	for (let dy = -2; dy <= 2; dy++) {
+		for (let dx = -2; dx <= 2; dx++) {
+			let neighborX = pixel.x + dx;
+			let neighborY = pixel.y + dy;
 			if (pixelMap[neighborX] && pixelMap[neighborX][neighborY] === undefined) {
-				emptySpaces.push({ x: neighborX, y: neighborY });
+				emptySpaces.push({x: neighborX, y: neighborY});
 			}
 		}
 	}
 
 	if (emptySpaces.length > 0) {
 		// Randomly select one of the empty spaces
-		var randomSpace = emptySpaces[Math.floor(Math.random() * emptySpaces.length)];
+		let randomSpace = emptySpaces[Math.floor(Math.random() * emptySpaces.length)];
 
 		// Determine what to spawn based on probability
-		var rand = Math.random();
+		let rand = Math.random();
 		if (rand < 0.7) {
 			createPixel("electric", randomSpace.x, randomSpace.y);
 		} else if (rand < 0.99) {
@@ -1645,15 +1567,15 @@ elements.displayPixel = {
 	category: "logic",
 	state: "solid",
 	behavior: behaviors.WALL,
-	tick: function(pixel) {
-		if (pixel.start == pixelTicks) {
+	tick: function (pixel) {
+		if (pixel.start === pixelTicks) {
 			pixel.color = "rgb(16, 24, 32)";
 		}
 
-		if (lightmapEnabled && pixel.color) {
-			var x = Math.floor(pixel.x / lightmapScale);
-			var y = Math.floor(pixel.y / lightmapScale);
-			lightmap[y][x] = { color: scaleList(rgbToArray(pixel.color), 0.2) };
+		if (isLightmapEnabled && pixel.color) {
+			let x = Math.floor(pixel.x / lightmapScale);
+			let y = Math.floor(pixel.y / lightmapScale);
+			lightmap[y][x] = {color: scaleList(rgbToArray(pixel.color), 0.2)};
 		}
 	}
 };
@@ -1663,17 +1585,17 @@ elements.circuit_material = {
 	category: "logic",
 	state: "solid",
 	behavior: behaviors.WALL,
-	hoverStat: function(pixel) {
+	hoverStat: function (pixel) {
 		return `Circuit: ${pixel.corePosition}`;
 	},
-	cc_stableTick: function(pixel) {
+	cc_stableTick: function (pixel) {
 		// Make it that extreme temperatures can stop the chip from working (for realism)
-		if (Math.random() < 0.003 && cc_setting1.value) {  // Chance to check for temperature or nearby particles
+		if (Math.random() < 0.003 && cc_heat_emit_setting.value) {  // Chance to check for temperature or nearby particles
 			// Check temperature
 			if (pixel.temp > 120) {
 				// Replace the circuit core with lead if overheating
 				if (pixel.corePosition && Math.random() < (0.00015) * (pixel.temp - 120)) {
-					var corePos = pixel.corePosition;
+					let corePos = pixel.corePosition;
 					if (pixelMap[corePos.x] && pixelMap[corePos.x][corePos.y]) {
 						deletePixel(corePos.x, corePos.y);
 						createPixel("lead", corePos.x, corePos.y);
@@ -1687,10 +1609,12 @@ elements.circuit_material = {
 
 				// Break the circuit material itself if overheating
 				if (Math.random() < 0.001 * (pixel.temp - 120)) {
-					var px = pixel.x;
-					var py = pixel.y;
+					let px = pixel.x;
+					let py = pixel.y;
 					deletePixel(px, py);
-					if (Math.random() < 0.5) {createPixel("lead", px, py);}
+					if (Math.random() < 0.5) {
+						createPixel("lead", px, py);
+					}
 				}
 			}
 		}
@@ -1706,13 +1630,13 @@ elements.input_pin = {
 	stateHigh: "lead",
 	tempHigh: 570,
 	behavior: behaviors.WALL,
-	cc_stableTick: function(pixel) {
+	cc_stableTick: function (pixel) {
 		pixel.active = false;
-		var neighbors = getNeighbors(pixel);
-		for (var i = 0;i < neighbors.length;i++) {
-			var neighbor = neighbors[i];
+		let neighbors = getNeighbors(pixel);
+		for (let i = 0; i < neighbors.length; i++) {
+			let neighbor = neighbors[i];
 
-			if (neighbor.charge > 0 || neighbor.lstate == 2 || neighbor.active) {
+			if (neighbor.charge > 0 || neighbor.lstate === 2 || neighbor.active) {
 				pixel.active = true;
 			}
 		}
@@ -1727,10 +1651,10 @@ elements.output_pin = {
 	stateHigh: "lead",
 	tempHigh: 570,
 	behavior: behaviors.WALL,
-	cc_stableTick: function(pixel) {
-		var neighbors = getNeighbors(pixel);
-		for (var i = 0;i < neighbors.length;i++) {
-			var neighbor = neighbors[i];
+	cc_stableTick: function (pixel) {
+		let neighbors = getNeighbors(pixel);
+		for (let i = 0; i < neighbors.length; i++) {
+			let neighbor = neighbors[i];
 
 			// Check if it's a wire
 			if (elements[neighbor.element].conduct > 0 && pixel.active) {
@@ -1738,7 +1662,7 @@ elements.output_pin = {
 			}
 
 			// Check if it's a logic wire (logicgates.js)
-			if (neighbor.lstate != undefined) {
+			if (neighbor.lstate !== undefined) {
 				if (pixel.active) {
 					neighbor.lstate = 2;
 					neighbor.color = pixelColorPick(neighbor, "#ffe49c");
@@ -1754,8 +1678,8 @@ elements.output_pin = {
 elements.logic_corrupt = {
 	color: "#DD33DD",
 	category: "logic",
-	tool: function(pixel) {
-		if (pixel.element == "logic_wire") {
+	tool: function (pixel) {
+		if (pixel.element === "logic_wire") {
 			if (Math.random() < 0.01) {
 				if (Math.random() < 0.5) {
 					pixel.lstate = 2;
@@ -1773,12 +1697,12 @@ elements.logic_corrupt = {
 elements.logic_corrupter_machine = {
 	color: "#DD33DD",
 	category: "logic",
-	cc_stableTick: function(pixel) {
-		var radius = 10
-		for (var y = pixel.y - radius; y < pixel.y + radius; y++) {
-			for (var x = pixel.x - radius; x < pixel.x + radius; x++) {
+	cc_stableTick: function (pixel) {
+		let radius = 10
+		for (let y = pixel.y - radius; y < pixel.y + radius; y++) {
+			for (let x = pixel.x - radius; x < pixel.x + radius; x++) {
 				if (!isEmpty(x, y, true)) {
-					if (pixelMap[x][y].element == "logic_wire" && Math.random() < Math.min(Math.max((pixel.temp + 273) / 473, 0), 1) * 0.005) {
+					if (pixelMap[x][y].element === "logic_wire" && Math.random() < Math.min(Math.max((pixel.temp + 273) / 473, 0), 1) * 0.005) {
 						if (Math.random() < 0.5) {
 							pixelMap[x][y].lstate = 2
 							pixelMap[x][y].color = pixelColorPick(pixelMap[x][y], "#ffe49c")
@@ -1793,23 +1717,13 @@ elements.logic_corrupter_machine = {
 	},
 }
 
-// Create a new anchor element
-var tutorialLink = document.createElement("a");
-
-// Set the link's text content
+// Add link to documentation
+let tutorialLink = document.createElement("a");
 tutorialLink.textContent = "CircuitCore Tutorial";
-
-// Set the link's href attribute to point to the tutorial
 tutorialLink.href = "https://redbirdly.github.io/circuitcore_tutorial.html";
-
-// Set the link to open in a new tab
 tutorialLink.target = "_blank";
-
-// Style the link (optional)
-tutorialLink.style.color = "#33FF66"; // Set the color of the link
-tutorialLink.style.fontSize = "14px"; // Set the font size
-
-// Append the link to the body of the webpage
+tutorialLink.style.color = "#33FF66";
+tutorialLink.style.fontSize = "14px";
 document.body.appendChild(tutorialLink);
 
 // cc_ is circuit core prefix
@@ -1822,69 +1736,72 @@ const cc_GREEN = "#33BB44";
 const cc_BLUE = "#224499";
 const cc_LIGHT_BLUE = "#77CCFF";
 const cc_LAVENDER = "#AA88EE";
-//const cc_PINK = "#DD88DD";
 const cc_WHITE = "#DDDDDD";
 
-var circuits = [
+let circuits = [
 	// Misc and I/O: brown
-	{ circuit: elements.four_bit_selector_circuit, color: cc_BROWN, size: [17, 3, true] },
-	{ circuit: elements.four_bit_enabler_circuit, color: cc_BROWN, size: [9, 3, true] },
-	{ circuit: elements.randomizer, color: cc_BROWN },
-	{ circuit: elements.four_bit_randomizer_circuit, color: cc_BROWN, size: [9, 3, true] },
-	{ circuit: elements.temperature_sensor, color: cc_BROWN },
+	{circuit: elements.four_bit_selector_circuit, color: cc_BROWN, size: [17, 3, true]},
+	{circuit: elements.four_bit_enabler_circuit, color: cc_BROWN, size: [9, 3, true]},
+	{circuit: elements.randomizer, color: cc_BROWN},
+	{circuit: elements.four_bit_randomizer_circuit, color: cc_BROWN, size: [9, 3, true]},
+	{circuit: elements.two_bit_reverser_circuit, color: cc_BROWN, size: [5, 3, true]},
+	{circuit: elements.reverser_circuit, color: cc_BROWN},
 	// ROM/RAM: red
 //	{ circuit: elements.ROM_circuit, color: cc_RED, size: [18, 18, false] },
 	// Encoders and de-multiplexers: orange
-	{ circuit: elements.two_to_one_encoder_circuit, color: cc_ORANGE, size: [5, 3, true] },
-	{ circuit: elements.four_to_two_encoder_circuit, color: cc_ORANGE, size: [9, 5, true] },
-	{ circuit: elements.eight_to_three_encoder_circuit, color: cc_ORANGE, size: [17, 7, true] },
-	{ circuit: elements.sixteen_to_four_encoder_circuit, color: cc_ORANGE, size: [33, 9, true] },
+	{circuit: elements.two_to_one_encoder_circuit, color: cc_ORANGE, size: [5, 3, true]},
+	{circuit: elements.four_to_two_encoder_circuit, color: cc_ORANGE, size: [9, 5, true]},
+	{circuit: elements.eight_to_three_encoder_circuit, color: cc_ORANGE, size: [17, 7, true]},
+	{circuit: elements.sixteen_to_four_encoder_circuit, color: cc_ORANGE, size: [33, 9, true]},
 
-	{ circuit: elements.one_to_two_demultiplexer_circuit, color: cc_ORANGE, size: [3, 5, true] },
-	{ circuit: elements.one_to_four_demultiplexer_circuit, color: cc_ORANGE, size: [3, 9, true] },
-	{ circuit: elements.one_to_eight_demultiplexer_circuit, color: cc_ORANGE, size: [3, 17, true] },
-	{ circuit: elements.one_to_sixteen_demultiplexer_circuit, color: cc_ORANGE, size: [3, 33, true] },
+	{circuit: elements.one_to_two_demultiplexer_circuit, color: cc_ORANGE, size: [3, 5, true]},
+	{circuit: elements.one_to_four_demultiplexer_circuit, color: cc_ORANGE, size: [3, 9, true]},
+	{circuit: elements.one_to_eight_demultiplexer_circuit, color: cc_ORANGE, size: [3, 17, true]},
+	{circuit: elements.one_to_sixteen_demultiplexer_circuit, color: cc_ORANGE, size: [3, 33, true]},
 	// Decoders and multiplexers: yellow
-	{ circuit: elements.one_to_two_decoder_circuit, color: cc_YELLOW, size: [3, 5, true] },
-	{ circuit: elements.two_to_four_decoder_circuit, color: cc_YELLOW, size: [5, 9, true] },
-	{ circuit: elements.three_to_eight_decoder_circuit, color: cc_YELLOW, size: [7, 17, true] },
-	{ circuit: elements.four_to_sixteen_decoder_circuit, color: cc_YELLOW, size: [9, 33, true] },
+	{circuit: elements.one_to_two_decoder_circuit, color: cc_YELLOW, size: [3, 5, true]},
+	{circuit: elements.two_to_four_decoder_circuit, color: cc_YELLOW, size: [5, 9, true]},
+	{circuit: elements.three_to_eight_decoder_circuit, color: cc_YELLOW, size: [7, 17, true]},
+	{circuit: elements.four_to_sixteen_decoder_circuit, color: cc_YELLOW, size: [9, 33, true]},
 
-	{ circuit: elements.two_to_one_multiplexer_circuit, color: cc_YELLOW, size: [3, 5, true] },
-	{ circuit: elements.four_to_one_multiplexer_circuit, color: cc_YELLOW, size: [5, 9, true] },
-	{ circuit: elements.eight_to_one_multiplexer_circuit, color: cc_YELLOW, size: [7, 17, true] },
-	{ circuit: elements.sixteen_to_one_multiplexer_circuit, color: cc_YELLOW, size: [9, 33, true] },
+	{circuit: elements.two_to_one_multiplexer_circuit, color: cc_YELLOW, size: [3, 5, true]},
+	{circuit: elements.four_to_one_multiplexer_circuit, color: cc_YELLOW, size: [5, 9, true]},
+	{circuit: elements.eight_to_one_multiplexer_circuit, color: cc_YELLOW, size: [7, 17, true]},
+	{circuit: elements.sixteen_to_one_multiplexer_circuit, color: cc_YELLOW, size: [9, 33, true]},
 	// Program counter and shift registers: lime
-	{ circuit: elements.four_bit_PISO_shift_register_circuit, color: cc_LIME, size: [9, 5, true] },
-	{ circuit: elements.four_bit_SIPO_shift_register_circuit, color: cc_LIME, size: [3, 9, true] },
-	{ circuit: elements.four_bit_program_counter_circuit, color: cc_LIME, size: [9, 5, true] },
+	{circuit: elements.four_bit_PISO_shift_register_circuit, color: cc_LIME, size: [9, 5, true]},
+	{circuit: elements.four_bit_SIPO_shift_register_circuit, color: cc_LIME, size: [3, 9, true]},
+	{circuit: elements.four_bit_program_counter_circuit, color: cc_LIME, size: [9, 5, true]},
 	// Registers: green
-	{ circuit: elements.four_bit_register_circuit, color: cc_GREEN, size: [9, 5, true] },
-	// Latches and flip flops: light blue
-	{ circuit: elements.SR_latch_circuit, color: cc_LIGHT_BLUE, size: [3, 3, true] },
-	{ circuit: elements.T_flip_flop_circuit, color: cc_LIGHT_BLUE, size: [3, 3, true] },
-	{ circuit: elements.D_latch_circuit, color: cc_LIGHT_BLUE, size: [3, 3, true] },
-	{ circuit: elements.D_flip_flop_circuit, color: cc_LIGHT_BLUE, size: [3, 3, true] },
-	{ circuit: elements.four_bit_D_latch_circuit, color: cc_LIGHT_BLUE, size: [9, 3, true] },
-	{ circuit: elements.four_bit_D_flip_flop_circuit, color: cc_LIGHT_BLUE, size: [9, 3, true] },
+	{circuit: elements.four_bit_register_circuit, color: cc_GREEN, size: [9, 5, true]},
+	// Latches and flip-flops: light blue
+	{circuit: elements.SR_latch_circuit, color: cc_LIGHT_BLUE, size: [3, 3, true]},
+	{circuit: elements.T_flip_flop_circuit, color: cc_LIGHT_BLUE, size: [3, 3, true]},
+	{circuit: elements.D_latch_circuit, color: cc_LIGHT_BLUE, size: [3, 3, true]},
+	{circuit: elements.D_flip_flop_circuit, color: cc_LIGHT_BLUE, size: [3, 3, true]},
+	{circuit: elements.four_bit_D_latch_circuit, color: cc_LIGHT_BLUE, size: [9, 3, true]},
+	{circuit: elements.four_bit_D_flip_flop_circuit, color: cc_LIGHT_BLUE, size: [9, 3, true]},
 	// Addition/subtraction arithmetic: blue
-	{ circuit: elements.four_bit_adder_circuit, color: cc_BLUE, size: [17, 3, true] },
-	{ circuit: elements.four_bit_subtractor_circuit, color: cc_BLUE, size: [17, 3, true] },
-	{ circuit: elements.four_bit_incrementer_circuit, color: cc_BLUE, size: [9, 3, true] },
+	{circuit: elements.four_bit_adder_circuit, color: cc_BLUE, size: [17, 3, true]},
+	{circuit: elements.four_bit_subtractor_circuit, color: cc_BLUE, size: [17, 3, true]},
+	{circuit: elements.four_bit_incrementer_circuit, color: cc_BLUE, size: [9, 3, true]},
 	// Complex circuits: lavender
+
 	// Clocks: pink
-	{ circuit: elements.slow_clock },
-	{ circuit: elements.medium_clock },
-	{ circuit: elements.fast_clock },
-	{ circuit: elements.very_fast_clock },
+	{circuit: elements.slow_clock},
+	{circuit: elements.medium_clock},
+	{circuit: elements.fast_clock},
+	{circuit: elements.very_fast_clock},
 	// Displays/visual circuits: white
-	{ circuit: elements.simple_seven_segment_display, color: cc_WHITE, size: [5, 9, false] },
-	{ circuit: elements.simple_double_seven_segment_display, color: cc_WHITE, size: [9, 9, false] },
-	{ circuit: elements.custom_RGB_led, color: cc_WHITE, size: [3, 3, true] },
+	{circuit: elements.simple_seven_segment_display, color: cc_WHITE, size: [5, 9, false]},
+	{circuit: elements.simple_double_seven_segment_display, color: cc_WHITE, size: [9, 9, false]},
+	{circuit: elements.custom_RGB_led, color: cc_WHITE, size: [3, 3, true]},
 ];
 
 circuits.forEach(circuitInfo => {
-	if (circuitInfo.color) {circuitInfo.circuit.color = circuitInfo.color;}
+	if (circuitInfo.color) {
+		circuitInfo.circuit.color = circuitInfo.color;
+	}
 	circuitInfo.circuit.category = "logic";
 	circuitInfo.circuit.maxSize = 1;
 	circuitInfo.circuit.behavior = behaviors.WALL;
@@ -1894,17 +1811,17 @@ circuits.forEach(circuitInfo => {
 
 	// Exclude circuits without a frame
 	if (circuitInfo.size) {
-		var previousCircuitTick = circuitInfo.circuit.cc_stableTick;
-		circuitInfo.circuit.cc_stableTick = function(pixel) {
+		let previousCircuitTick = circuitInfo.circuit.cc_stableTick;
+		circuitInfo.circuit.cc_stableTick = function (pixel) {
 			previousCircuitTick(pixel);
 
 			// Don't constantly check
 			if (Math.random() < 0.1) {
 				// If there aren't 4 neighboring circuit_material elements then remove the circuit's core
-				var neighbors = getNeighbors(pixel);
-				var circuitMaterialCount = 0;
-				for (var i = 0;i < neighbors.length;i++) {
-					if (neighbors[i].element == "circuit_material") {
+				let neighbors = getNeighbors(pixel);
+				let circuitMaterialCount = 0;
+				for (let i = 0; i < neighbors.length; i++) {
+					if (neighbors[i].element === "circuit_material") {
 						circuitMaterialCount++;
 					}
 				}
@@ -1914,33 +1831,33 @@ circuits.forEach(circuitInfo => {
 				}
 
 				// Check if circuit overheating is enabled
-				if (cc_setting1.value) {
-					pixel.temp += Math.random(0.5);
+				if (cc_heat_emit_setting.value) {
+					pixel.temp += Math.random() * 0.7;
 				}
 			}
 		}
 	}
 });
 
-var circuitRotation = 0;
-document.addEventListener('keydown', function(event) {
+let circuitRotation = 0;
+document.addEventListener('keydown', function (event) {
 	if (event.key === 'ArrowUp') {
 		circuitRotation = (circuitRotation + 90) % 360;
 		logMessage('CircuitRotation changed to ' + circuitRotation);
 	}
 });
 
-function drawCircuitExtras() {
+function drawCircuitExtras(ctx) {
 	if (elements[currentElement].isCircuitCore && elements[currentElement].previewSize) {
-		var circuitWidth = elements[currentElement].previewSize[0];
-		var circuitHeight = elements[currentElement].previewSize[1];
-		var centered = elements[currentElement].previewSize[2];
-		var rotation = circuitRotation;
+		let circuitWidth = elements[currentElement].previewSize[0];
+		let circuitHeight = elements[currentElement].previewSize[1];
+		let centered = elements[currentElement].previewSize[2];
+		let rotation = circuitRotation;
 
-		var startX = 0;
-		var startY = 0;
-		var endX = circuitWidth - 1;
-		var endY = circuitHeight - 1;
+		let startX = 0;
+		let startY = 0;
+		let endX = circuitWidth - 1;
+		let endY = circuitHeight - 1;
 
 		if (centered) {
 			startX = -Math.floor(circuitWidth / 2);
@@ -1949,16 +1866,16 @@ function drawCircuitExtras() {
 			endY = Math.floor(circuitHeight / 2);
 		}
 
-		for (var y = startY; y <= endY; y++) {
-			for (var x = startX; x <= endX; x++) {
+		for (let y = startY; y <= endY; y++) {
+			for (let x = startX; x <= endX; x++) {
 //				if (!(0 <= x && x < width && 0 <= y && y < height)) {continue;}
 
-				var [rx, ry] = rotateCoordinate(x, y, rotation);
-				var px = mousePos.x + rx;
-				var py = mousePos.y + ry;
+				let [rx, ry] = rotateCoordinateAroundOrigin(x, y, rotation);
+				let px = mousePos.x + rx;
+				let py = mousePos.y + ry;
 
 				ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
-				if ((rotation != 0 && !centered) || (0 <= px && px < width && 0 <= py && py < height) && pixelMap[px][py]) {
+				if ((rotation !== 0 && !centered) || (0 <= px && px < width && 0 <= py && py < height) && pixelMap[px][py]) {
 					ctx.fillStyle = "rgba(255, 0, 0, 0.3)";
 				}
 
@@ -1969,28 +1886,29 @@ function drawCircuitExtras() {
 }
 
 function runLogicTick() {
-	if (paused) {return;}
-	for (var j = 0;j < 1;j++) {
-		for (var i = 0;i < currentPixels.length;i++) {
-			var pixel = currentPixels[i];
-			if (elements[pixel.element].category == "logic") {
-				if (elements[pixel.element].cc_stableTick) {
-					elements[pixel.element].cc_stableTick(pixel);
-				}
-			}
+	for (let i = 0; i < currentPixels.length; i++) {
+		const pixel = currentPixels[i];
+		const elementData = elements[pixel.element];
+
+		if (elementData.cc_stableTick) {
+			elementData.cc_stableTick(pixel);
 		}
 	}
 }
 
 function stabilizeLogicGates() {
-	var logicgatesElements = ["output","logic_wire","not_gate","and_gate","xor_gate","or_gate","nand_gate","nor_gate","nxor_gate","E2L_lever","E2L_button","L2E_constant","logic_transmitter","logic_receiver","logic_shock","logic_unshock"]
+	let logicgatesElements = ["output", "logic_wire", "not_gate", "and_gate", "xor_gate", "or_gate", "nand_gate", "nor_gate", "nxor_gate", "E2L_lever", "E2L_button", "L2E_constant", "logic_shock", "logic_unshock"]
 
-	for (var i = 0;i < logicgatesElements.length;i++) {
+	for (let i = 0; i < logicgatesElements.length; i++) {
 		elements[logicgatesElements[i]].cc_stableTick = elements[logicgatesElements[i]].tick;
 		elements[logicgatesElements[i]].tick = null;
 	}
 }
 
+// Hooks
 renderPostPixel(drawCircuitExtras);
 runEveryTick(runLogicTick);
-runAfterLoad(stabilizeLogicGates);
+
+if (cc_stable_tick_setting.value)
+	runAfterLoad(stabilizeLogicGates);
+

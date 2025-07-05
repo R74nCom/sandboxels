@@ -1,0 +1,104 @@
+// If the element has reactions, loop through each one (it is an object), if the value for elem1 or elem2 is not an element and is not null, remove that key
+	if (elements[key].reactions) {
+		for (var reaction in elements[key].reactions) {
+			// If elem1 exists
+			if (elements[key].reactions[reaction].elem1) {
+				// If elem1 is an array, loop through each element, else check once. Don't delete if it === null
+				if (Array.isArray(elements[key].reactions[reaction].elem1)) { 
+					for (var i = 0; i < elements[key].reactions[reaction].elem1.length; i++) {
+						if (elements[key].reactions[reaction].elem1[i] && !elements[elements[key].reactions[reaction].elem1[i]]) {
+							elements[key].reactions[reaction].elem1.splice(i,1);
+						}
+					}
+				}
+				else if (elements[key].reactions[reaction].elem1 && !elements[elements[key].reactions[reaction].elem1]) {
+					delete elements[key].reactions[reaction].elem1;
+				}
+			}
+			// If elem2 exists
+			if (elements[key].reactions[reaction].elem2) {
+				// If elem2 is an array, loop through each element, else check once. Don't delete if it === null
+				if (Array.isArray(elements[key].reactions[reaction].elem2)) {
+					for (var i = 0; i < elements[key].reactions[reaction].elem2.length; i++) {
+						if (elements[key].reactions[reaction].elem2[i] && !elements[elements[key].reactions[reaction].elem2[i]]) {
+							elements[key].reactions[reaction].elem2.splice(i,1);
+						}
+					}
+				}
+				else if (elements[key].reactions[reaction].elem2 && !elements[elements[key].reactions[reaction].elem2]) {
+					delete elements[key].reactions[reaction].elem2;
+				}
+			}
+		}
+	}
+
+	// If the element's stateHigh or stateLow is not an element, remove it and tempHigh/Low
+	if (elements[key].stateHigh) {
+		// If it's an array, do it for each item, otherwise, just do it once
+		if (Array.isArray(elements[key].stateHigh)) {
+			for (var i = 0; i < elements[key].stateHigh.length; i++) {
+				if (!elements[elements[key].stateHigh[i]] && elements[key].stateHigh[i] !== null) {
+					elements[key].stateHigh.splice(i,1);
+				}
+			}
+			if (elements[key].stateHigh.length == 0) {
+				delete elements[key].stateHigh;
+				delete elements[key].tempHigh;
+			}
+		}
+		else {
+			if (!elements[elements[key].stateHigh] && elements[key].stateHigh !== null) {
+				delete elements[key].stateHigh;
+				delete elements[key].tempHigh;
+			}
+		}
+	}
+	if (elements[key].stateLow) {
+		if (Array.isArray(elements[key].stateLow)) {
+			for (var i = 0; i < elements[key].stateLow.length; i++) {
+				if (!elements[elements[key].stateLow[i]] && elements[key].stateLow[i] !== null) {
+					elements[key].stateLow.splice(i,1);
+				}
+			}
+			if (elements[key].stateLow.length == 0) {
+				delete elements[key].stateLow;
+				delete elements[key].tempLow;
+			}
+		}
+		else {
+			if (!elements[elements[key].stateLow] && elements[key].stateLow !== null) {
+				delete elements[key].stateLow;
+				delete elements[key].tempLow;
+			}
+		}
+	}
+	// same for burnInto
+	if (elements[key].burnInto) {
+		if (Array.isArray(elements[key].burnInto)) {
+			for (var i = 0; i < elements[key].burnInto.length; i++) {
+				if (!elements[elements[key].burnInto[i]]) {
+					delete elements[key].burnInto[i];
+				}
+			}
+			if (elements[key].burnInto.length == 0) {
+				delete elements[key].burnInto;
+			}
+		}
+		else {
+			if (!elements[elements[key].burnInto]) {
+				delete elements[key].burnInto;
+			}
+		}
+	}
+	// same for breakInto
+	if (elements[key].breakInto) {
+		if (Array.isArray(elements[key].breakInto)) {
+			for (var i = 0; i < elements[key].breakInto.length; i++) {
+				if (elements[key].breakInto[i]!==null && !elements[elements[key].breakInto[i]]) { delete elements[key].breakInto[i]; }
+			}
+			if (elements[key].breakInto.length == 0) { delete elements[key].breakInto; }
+		}
+		else {
+			if (elements[key].breakInto[i]!==null && !elements[elements[key].breakInto]) { delete elements[key].breakInto; }
+		}
+	}
