@@ -399,9 +399,6 @@ let defaultAcidReactions = {
   caustic_potash: { elem1: "neutral_acid", elem2: null },
   radium_hydroxide: { elem1: "neutral_acid", elem2: null },
   actinium_hydroxide: { elem1: "neutral_acid", elem2: null },
-  water: { elem1: null, elem2: "dirty_water" },
-  salt_water: { elem1: null, elem2: "water" },
-  sugar_water: { elem1: null, elem2: "water" },
   charcoal: { elem1: null, elem2: "carbon_dioxide" },
   grape: { elem2: "juice", color1: "#291824" },
   soap: { elem1: "hydrogen" },
@@ -452,7 +449,8 @@ if (enabledMods.includes("mods/generative_mods.js")) {
     elements["rain_cloud"].reactions["anesthesia"] = { elem1: "nitric_acid_cloud", elem2: null, chance: 0.05 };
   });
 }
-function createAcid(name, reactions, gasReactions, color, categoryhidden, categoryhiddenGas, tempHigh, tempLowGas, tempLow, tempHighGas, density, densityGas, type, compound = "acid") {
+function createAcid(name, reactions, gasReactions, color, categoryhidden, categoryhiddenGas, tempHigh, tempLowGas, tempLow, tempHighGas, density, densityGas, type, extras = { compound: "acid" }) {
+  compound = extras.compound;
   elements[name] = {
     forceAutoGen: true,
     color: color,
@@ -495,7 +493,11 @@ function createAcid(name, reactions, gasReactions, color, categoryhidden, catego
       elements[name + "_gas"].reactions["fire_cloud"] = { elem1: null, elem2: name + "_cloud", chance: 0.4, y: [0, 12], setting: "clouds" };
     });
   } else {
-    elements[name + "_gas"].reactions[name + "_gas"] = { elem1: null, elem2: "acid_cloud", chance: 0.3, y: [0, 12], setting: "clouds" };
+    if (compound == "acid") {
+      elements[name + "_gas"].reactions[name + "_gas"] = { elem1: null, elem2: "acid_cloud", chance: 0.3, y: [0, 12], setting: "clouds" };
+    } else {
+      elements[name + "_gas"].reactions[name + "_gas"] = { elem1: null, elem2: "base_cloud", chance: 0.3, y: [0, 12], setting: "clouds" };
+    }
   }
   eLists.CAUSTIC.push(name, name + "_gas");
   acidIgnore([name, name + "_gas", name + "_ice", name + "_cloud"]);
@@ -504,13 +506,14 @@ function createAcid(name, reactions, gasReactions, color, categoryhidden, catego
   }
   if (compound == "acid") {
     eListAddIon("HYDROGEN", [name, name + "_gas"], compound);
-
-    runAfterLoad(function () {
-      reactList(name, eLists.WATER, { elem1: null, elem2: "dirty_water" });
-      reactList(name + "_gas", eLists.WATER, { elem1: null, elem2: "dirty_water" });
-      delete elements[name].reactions["dirty_water"];
-      delete elements[name + "_gas"].reactions["dirty_water"];
-    });
+    if (!extras.dontDirtyWater) {
+      runAfterLoad(function () {
+        reactList(name, eLists.WATER, { elem1: null, elem2: "dirty_water" });
+        reactList(name + "_gas", eLists.WATER, { elem1: null, elem2: "dirty_water" });
+        delete elements[name].reactions["dirty_water"];
+        delete elements[name + "_gas"].reactions["dirty_water"];
+      });
+    }
   }
 }
 
@@ -661,12 +664,12 @@ function createSalt(name, nameWater, color, colorWater, hidden, hiddenWater, tem
   eListAddIon(anion, [name, nameWater, "molten_" + name]);
   eListAdd("WATER", nameWater);
   eListAdd("COMPOUND", name);
+  eListAdd("SOLUBLE", name);
 }
 
-function toxic(name, chance) {
+function toxic(name, chance, dirtyWater = false) {
   Object.assign(elements[name].reactions, {
     blood: { elem1: null, elem2: "infection", chance: chance },
-    water: { elem1: null, elem2: "dirty_water", chance: chance },
     soap: { elem1: null, chance: 0.02 },
     plant: { elem1: null, elem2: "dead_plant", chance: chance },
     evergreen: { elem1: null, elem2: "dead_plant", chance: chance },
@@ -713,9 +716,16 @@ function toxic(name, chance) {
     pollen: { elem2: null, chance: chance },
     bone_marrow: { elem1: null, elem2: "rotten_meat", chance: chance },
     hair: { elem1: null, elem2: null, chance: chance },
-    cell: { elem1: null, chance: chance },
-    cancer: { elem1: null, chance: chance },
+    cell: { elem1: null, elem2: null, chance: chance },
+    cancer: { elem1: null, elem2: null, chance: chance },
   });
+  elements.bless.reactions[name] = { elem2: null };
+  if (dirtyWater) {
+    runAfterLoad(function () {
+      reactList(name, eLists.WATER, { elem1: null, elem2: "dirty_water", chance: chance });
+      delete elements[name].reactions["dirty_water"];
+    }); 
+  }
 }
 
 createSalt("salt", "salt_water", null, null, false, false, 0, 0, 0, 0, 0, "SODIUM", "CHLORIDE");
@@ -739,7 +749,7 @@ if (!enabledMods.includes("mods/generative_mods.js")) {
   elements.acid_cloud.behavior = ["XX|XX|XX", "XX|CH:generic_acid%0.05|M1%2.5 AND BO", "XX|XX|XX"];
 }
 
-createAcid("nitric_acid", structuredClone(defaultAcidReactions), structuredClone(defaultAcidGasReactions), ["#91993c", "#6b7041", "#5f614b"], false, false, 83, 70, -42, 400, 1500, 1.5, "NITRATE");
+createAcid("nitric_acid", structuredClone(defaultAcidReactions), structuredClone(defaultAcidGasReactions), ["#91993c", "#6b7041", "#5f614b"], false, false, 83, 70, -42, 400, 1500, 1.5, "NITRATE", { compound: "acid", dontDirtyWater: true });
 
 acidReact("nitric_acid", "ammonia", "fertilizer", null, 0);
 acidReact("nitric_acid_gas", "ammonia", "fertilizer", null, 0);
@@ -760,7 +770,7 @@ elements.nitric_oxide = {
   density: 1.34,
 };
 
-toxic("nitric_oxide", 0.01);
+toxic("nitric_oxide", 0.1);
 
 elements.liquid_nitric_oxide = {
   tempLow: -164,
@@ -779,13 +789,15 @@ elements.nitrogen_dioxide = {
   density: 1.88,
 };
 
-toxic("nitrogen_dioxide", 0.01);
+toxic("nitrogen_dioxide", 0.2);
 
 runAfterLoad(function () {
-  reactList("nitrogen_dioxide", eLists.WATER, { elem1: null, elem2: "nitric_acid", chance: 0.01 });
-});
-runAfterLoad(function () {
-  reactList("liquid_nitrogen_dioxide", eLists.WATER, { elem1: null, elem2: "nitric_acid", chance: 0.01 });
+  reactList("nitrogen_dioxide", eLists.WATER, { elem1: "nitric_oxide", elem2: "nitric_acid" });
+  reactList("liquid_nitrogen_dioxide", eLists.WATER, { elem1: "nitric_oxide", elem2: "nitric_acid" });
+  reactList("nitric_acid", eLists.WATER, { elem2: "dirty_water" });
+  reactList("nitric_acid_gas", eLists.WATER, { elem2: "dirty_water" });
+  delete elements.nitric_acid.reactions["dirty_water"];
+  delete elements.nitric_acid_gas.reactions["dirty_water"];
 });
 
 elements.liquid_nitrogen_dioxide = {
@@ -945,8 +957,8 @@ elements.sulfur_dioxide = {
   color: "#FFF700",
   behavior: behaviors.GAS,
   reactions: {
-    steam: { elem1: null, elem2: "sulfuric_acid_gas" },
-    acid_gas: { elem1: null, elem2: "sulfuric_acid_gas" },
+    steam: { elem1: null, elem2: ["sulfuric_acid_gas", null, null, null, null] },
+    acid_gas: { elem1: null, elem2: ["sulfuric_acid_gas", null, null, null, null] },
     //clouds
     rain_cloud: { elem1: null, elem2: "acid_cloud", chance: 0.4, y: [0, 12], setting: "clouds" },
     cloud: { elem1: null, elem2: "acid_cloud", chance: 0.4, y: [0, 12], setting: "clouds" },
@@ -962,10 +974,10 @@ elements.sulfur_dioxide = {
   density: 2.6,
 };
 
-toxic("sulfur_dioxide", 0.05);
+toxic("sulfur_dioxide", 0.1);
 
 runAfterLoad(function () {
-  reactList("sulfur_dioxide", eLists.WATER, { elem1: null, elem2: "sulfuric_acid" });
+  reactList("sulfur_dioxide", eLists.WATER, { elem1: null, elem2: ["sulfuric_acid_gas", null, null, null, null] });
 });
 
 elements.liquid_sulfur_dioxide = {
@@ -1001,7 +1013,7 @@ elements.hydrogen_sulfide = {
   burnInto: ["sulfur_dioxide", "steam"],
   fireColor: ["#8180CC", "#7F84E6"],
 };
-toxic("hydrogen_sulfide", 0.005);
+toxic("hydrogen_sulfide", 0.2);
 
 runAfterLoad(function () {
   reactList("hydrogen_sulfide", eLists.WATER, { elem1: null, elem2: "dirty_water" });
@@ -1034,7 +1046,7 @@ function blendColors(colorA, colorB, amount = 0.5) {
 
 createSalt("iron_dichloride", "iron_dichloride_solution", ["#207d09", "#b51259"], [blendColors("#207d09", "#2167ff", 0.5), blendColors("#b51259", "#2167ff", 0.5)], false, true, 307.6, -2, 102, 2900, 1030, "IRONII", "CHLORIDE");
 
-createAcid("sulfuric_acid", structuredClone(defaultAcidReactions), structuredClone(defaultAcidGasReactions), ["#e9e05e", "#c2bd7a", "#9e9c7b"], false, false, 337, 337, 10, 500, 1830, 1.26, "SULFATE");
+createAcid("sulfuric_acid", structuredClone(defaultAcidReactions), structuredClone(defaultAcidGasReactions), ["#e9e05e", "#c2bd7a", "#9e9c7b"], false, false, 337, 337, 10, 500, 1830, 1.26, "SULFATE", { compound: "acid", dontDirtyWater: true });
 
 elements.sulfuric_acid.ignore.push("charcoal");
 elements.sulfuric_acid_gas.ignore.push("charcoal");
@@ -1314,15 +1326,18 @@ elements.diethylaluminium_chloride = {
   burnTime: 10,
   state: "liquid",
   density: 2.879,
+  reactions: {},
 };
+
+toxic("diethylaluminium_chloride", 0.1);
 
 elements.ethylene = {
   color: "#a7a7a7",
   behavior: behaviors.GAS,
   reactions: {
-    titanium_trichloride: { elem1: "polyethylene", elem2: "titanium_trichloride", chance: 0.1 },
+    titanium_trichloride: { elem1: "polyethylene", chance: 0.1 },
     acid_gas: { elem1: "chloroethane", elem2: null },
-    diethylaluminium_chloride: { elem1: "polyethylene", elem2: "diethylaluminium_chloride", chance: 0.1 },
+    diethylaluminium_chloride: { elem1: "polyethylene", chance: 0.1 },
   },
   category: "gases",
   tempHigh: 400,
@@ -1419,6 +1434,7 @@ elements.titanium_tetrachloride = {
   stateHighName: "titanium_tetrachloride_gas",
   tempLow: -24,
   stateLowName: "solid_titanium_tetrachloride",
+  reactions: {}
 };
 eListAddIon("TITANIUMIV", "solid_titanium_tetrachloride");
 eListAddIon("CHLORIDE", "solid_titanium_tetrachloride");
@@ -1427,6 +1443,7 @@ eListAddIon("CHLORIDE", "titanium_tetrachloride");
 eListAddIon("TITANIUMIV", "titanium_tetrachloride_gas");
 eListAddIon("CHLORIDE", "titanium_tetrachloride_gas");
 eListAdd("INSOLUBLE", "titanium_tetrachloride");
+
 elements.titanium_tetrachloride_gas = {
   behavior: behaviors.GAS,
   hidden: true,
@@ -1436,7 +1453,11 @@ elements.titanium_tetrachloride_gas = {
   temp: 200,
   tempLow: 136.4,
   stateLow: "titanium_tetrachloride",
+  reactions: {}
 };
+
+toxic("titanium_tetrachloride", 0.1);
+toxic("titanium_tetrachloride_gas", 0.1);
 elements.solid_titanium_tetrachloride = {
   behavior: behaviors.WALL,
   hidden: true,
@@ -1454,6 +1475,8 @@ elements["titanium_trichloride"].behavior = behaviors.SOLID;
 elements["titanium_trichloride"].category = "solids";
 elements["titanium_trichloride"].stateHigh = ["chlorine", "titanium_tetrachloride"];
 delete elements["molten_titanium_trichloride"];
+toxic("titanium_trichloride_solution", 0.1);
+toxic("titanium_trichloride", 0.1);
 
 elements.magnesium.burnInto = "magnesium_oxide";
 elements.molten_magnesium.burnInto = "magnesium_oxide";
@@ -1717,7 +1740,7 @@ runAfterLoad(function () {
   reactList("molten_stable_astatine", eLists.WATER, { elem1: "hydroastatic_acid", elem2: null });
 });
 
-createAcid("hydroastatic_acid", structuredClone(defaultAcidReactions), structuredClone(defaultAcidGasReactions), [blendColors("#5a5e5a", "#ff0000", 0.25), blendColors("#5a5e5a", "#00ff00", 0.25), blendColors("#5a5e5a", "#0000ff", 0.25)], true, true, 100, 100, 0, 1000, 1200, 1, "ASTATIDE");
+createAcid("hydroastatic_acid", structuredClone(defaultAcidReactions), structuredClone(defaultAcidGasReactions), [blendColors("#5a5e5a", "#ff0000", 0.25), blendColors("#5a5e5a", "#00ff00", 0.25), blendColors("#5a5e5a", "#0000ff", 0.25)], true, true, 100, 100, 0, 1000, 1200, 1, "ASTATIDE", { compound: "acid", dontDirtyWater: true });
 
 elements.hydroastatic_acid.ignore.push("astatine", "molten_astatine", "stable_astatine", "molten_stable_astatine");
 elements.hydroastatic_acid_gas.ignore.push("astatine", "molten_astatine", "stable_astatine", "molten_stable_astatine");
@@ -2174,6 +2197,9 @@ createSalt("silver_nitrate", "silver_nitrate_solution", ["#cad7fc", "#cbd2f7"], 
 elements.silver_nitrate_solution.reactions["potassium_bromide"] = { elem1: "niter_solution", elem2: "silver_bromide" };
 elements.silver_nitrate_solution.reactions["potassium_bromide_solution"] = { elem1: "niter_solution", elem2: "silver_bromide" };
 
+toxic("silver_nitrate", 0.1);
+toxic("silver_nitrate_solution", 0.1);
+
 createAcid("hydrobromic_acid", structuredClone(defaultAcidReactions), structuredClone(defaultAcidGasReactions), ["#ff3b3b", "#ca0000", "#9e7b7b"], true, true, 100, 100, 0, 1000, 1100, 1, "BROMIDE");
 
 eLists.ACID.push("hydrobromic_acid");
@@ -2232,7 +2258,45 @@ elements["potassium_sulfate_solution"].reactions = Object.assign(elements["potas
 });
 
 createSalt("sodium_chlorate", "sodium_chlorate_solution", "#cff0cc", blendColors("#cff0cc", "#2167ff", 0.25), true, true, 255, -2, 102, 2490, 1011, "SODIUM", "CHLORATE");
-elements.sodium_chlorate.stateHigh = "fire";
+elements.sodium_chlorate.stateHigh = ["fire", "salt"];
+toxic("sodium_chlorate", 0.02);
+toxic("sodium_chlorate_solution", 0.02);
+Object.assign(elements.sodium_chlorate.reactions, {
+  plant: { elem1: null, elem2: "dead_plant", chance: 0.1 },
+  evergreen: { elem1: null, elem2: "dead_plant", chance: 0.1 },
+  cactus: { elem1: null, elem2: "dead_plant", chance: 0.1 },
+  grass: { elem1: null, elem2: "dead_plant", chance: 0.1 },
+  vine: { elem1: null, elem2: "dead_plant", chance: 0.1 },
+  algae: { elem1: null, elem2: null, chance: 0.1 },
+  kelp: { elem1: null, elem2: "dirty_water", chance: 0.1 },
+  mushroom_spore: { elem1: null, elem2: null, chance: 0.1 },
+  lichen: { elem1: null, elem2: null, chance: 0.1 },
+  yeast: { elem1: null, elem2: null, chance: 0.1 },
+  sapling: { elem1: null, elem2: "dead_plant", chance: 0.1 },
+  root: { elem1: null, elem2: "dead_plant", chance: 0.1 },
+  flower_seed: { elem1: null, elem2: "dead_plant", chance: 0.1 },
+  pistil: { elem1: null, elem2: "dead_plant", chance: 0.1 },
+  petal: { elem1: null, elem2: "dead_plant", chance: 0.1 },
+  grass_seed: { elem1: null, elem2: "dead_plant", chance: 0.1 },
+});
+Object.assign(elements.sodium_chlorate_solution.reactions, {
+  plant: { elem1: null, elem2: "dead_plant", chance: 0.1 },
+  evergreen: { elem1: null, elem2: "dead_plant", chance: 0.1 },
+  cactus: { elem1: null, elem2: "dead_plant", chance: 0.1 },
+  grass: { elem1: null, elem2: "dead_plant", chance: 0.1 },
+  vine: { elem1: null, elem2: "dead_plant", chance: 0.1 },
+  algae: { elem1: null, elem2: null, chance: 0.1 },
+  kelp: { elem1: null, elem2: "dirty_water", chance: 0.1 },
+  mushroom_spore: { elem1: null, elem2: null, chance: 0.1 },
+  lichen: { elem1: null, elem2: null, chance: 0.1 },
+  yeast: { elem1: null, elem2: null, chance: 0.1 },
+  sapling: { elem1: null, elem2: "dead_plant", chance: 0.1 },
+  root: { elem1: null, elem2: "dead_plant", chance: 0.1 },
+  flower_seed: { elem1: null, elem2: "dead_plant", chance: 0.1 },
+  pistil: { elem1: null, elem2: "dead_plant", chance: 0.1 },
+  petal: { elem1: null, elem2: "dead_plant", chance: 0.1 },
+  grass_seed: { elem1: null, elem2: "dead_plant", chance: 0.1 },
+});
 elements.sodium_chlorate_solution.reactions["gold"] = { elem1: "sodium_perchlorate_solution", charged: true, chance: 0.1 };
 
 elements.chlorine.reactions["bleach"] = { elem1: "sodium_chlorate_solution", elem2: null };
@@ -2242,6 +2306,9 @@ createSalt("sodium_perchlorate", "sodium_perchlorate_solution", "#cff0cc", blend
 elements.sodium_perchlorate.stateHigh = "fire";
 elements.sodium_perchlorate.reactions["acid"] = { elem1: "perchloric_acid", elem2: "salt" };
 elements.sodium_perchlorate_solution.reactions["acid"] = { elem1: "perchloric_acid", elem2: "salt_water" };
+
+toxic("sodium_perchlorate", 0.02);
+toxic("sodium_perchlorate_solution", 0.02);
 
 elements.acid.ignore.push("salt", "sodium_perchlorate", "sodium_perchlorate_solution");
 elements.acid_gas.ignore.push("salt", "sodium_perchlorate", "sodium_perchlorate_solution");
@@ -2433,7 +2500,7 @@ elements.disinfectant = {
   stain: 0.01,
 };
 
-createAcid("hydroiodic_acid", structuredClone(defaultAcidReactions), structuredClone(defaultAcidGasReactions), ["#9670ff", "#da6afc", "#a77af5", "#9670ff", "#da6afc", "#a77af5", "#633a1d"], true, true, 100, 100, 0, 1000, 1150, 1, "IODIDE");
+createAcid("hydroiodic_acid", structuredClone(defaultAcidReactions), structuredClone(defaultAcidGasReactions), ["#9670ff", "#da6afc", "#a77af5", "#9670ff", "#da6afc", "#a77af5", "#633a1d"], true, true, 100, 100, 0, 1000, 1150, 1, "IODIDE", { compound: "acid", dontDirtyWater: true });
 
 elements.hydrogen_iodide = {
   color: "#aa8df2",
@@ -2478,6 +2545,9 @@ elements.liquid_hydrogen_iodide = {
   tempLow: -50.8,
 };
 
+toxic("hydrogen_iodide", 0.1);
+toxic("liquid_hydrogen_iodide", 0.1);
+
 runAfterLoad(function () {
   reactList("liquid_hydrogen_iodide", eLists.WATER, { elem1: "hydroiodic_acid", elem2: null });
 });
@@ -2502,7 +2572,7 @@ runAfterLoad(function () {
 
 elements.bauxite = {
   color: ["#915a30", "#cc7533"],
-  behavior: behaviors.POWDER,
+  behavior: behaviors.SUPPORTPOWDER,
   category: "land",
   density: 2420,
   state: "solid",
@@ -2531,7 +2601,7 @@ acidReact("acid_gas", "ammonia", "ammonium_chloride", null, 0);
 
 elements.aluminum_hydroxide = {
   color: "#d1cbcb",
-  behavior: behaviors.POWDER,
+  behavior: behaviors.STURDYPOWDER,
   category: "powders",
   hidden: true,
   density: 2420,
@@ -2546,8 +2616,8 @@ eListAdd("INSOLUBLE", "aluminum_hydroxide");
 
 elements.alumina = {
   color: "#d1cbcb",
-  behavior: behaviors.SOLID,
-  category: "solids",
+  behavior: behaviors.STURDYPOWDER,
+  category: "powders",
   density: 3987,
   state: "solid",
   tempHigh: 2072,
@@ -2644,6 +2714,8 @@ elements.magnesium_fluoride = {
   },
   hidden: true,
 };
+
+toxic("magnesium_fluoride", 0.1);
 
 eListAddIon("MAGNESIUM", "magnesium_fluoride");
 eListAddIon("FLUORIDE", "magnesium_fluoride");
@@ -2788,7 +2860,10 @@ runAfterLoad(function () {
 
 elements.liquid_boron_trifluoride = {
   tempLow: -126.8,
+  reactions: {},
 };
+toxic("boron_trifluoride", 0.1);
+toxic("liquid_boron_trifluoride", 0.1);
 
 eListAddIon("BORON", "liquid_boron_trifluoride");
 eListAddIon("FLUORIDE", "liquid_boron_trifluoride");
@@ -2823,7 +2898,10 @@ runAfterLoad(function () {
 
 elements.liquid_boron_trichloride = {
   tempLow: -107.3,
+  reactions: {},
 };
+toxic("boron_trichloride", 0.2);
+toxic("liquid_boron_trichloride", 0.2);
 
 runAfterLoad(function () {
   reactList("fluoroboric_acid", eLists.WATER, { elem2: "dirty_water" });
@@ -2832,7 +2910,7 @@ runAfterLoad(function () {
   delete elements.fluoroboric_acid_gas.reactions["dirty_water"];
 });
 
-createAcid("fluoroboric_acid", {}, {}, ["#3bffdb", "#00caaf", "#56c4a3"], true, true, 100, 100, 0, 1000, 1020, 1, "TETRAFLUOROBORATE");
+createAcid("fluoroboric_acid", {}, {}, ["#3bffdb", "#00caaf", "#56c4a3"], true, true, 100, 100, 0, 1000, 1020, 1, "TETRAFLUOROBORATE", { compound: "acid", dontDirtyWater: true });
 
 elements.fluoroboric_acid.ignore.push("boron_trifluoride", "liquid_boron_trifluoride", "boron_trifluoride_ice");
 elements.fluoroboric_acid_gas.ignore.push("boron_trifluoride", "liquid_boron_trifluoride", "boron_trifluoride_ice");
@@ -3059,7 +3137,11 @@ runAfterLoad(function () {
 
 elements.liquid_diborane = {
   tempLow: -164,
+  reactions: {},
 };
+
+toxic("diborane", 1);
+toxic("liquid_diborane", 1);
 
 elements.decaborane = {
   color: "#d9cece",
@@ -3097,6 +3179,9 @@ elements.molten_decaborane = {
   density: 900,
 };
 
+toxic("decaborane", 0.1);
+toxic("molten_decaborane", 0.1);
+
 runAfterLoad(function () {
   reactList("molten_decaborane", eLists.WATER, { elem1: "boric_acid", elem2: "hydrogen", temp1: 100 });
 });
@@ -3126,7 +3211,11 @@ runAfterLoad(function () {
 elements.pentaborane_gas = {
   tempHigh: 250,
   stateHigh: "decaborane",
+  reactions: {},
 };
+
+toxic("pentaborane", 1);
+toxic("pentaborane_gas", 1);
 
 acidReact("sodium_borohydride", "boron_trifluoride", "sodium_octahydrotriborate", ["sodium_fluoride", "hydrogen"], 20);
 acidReact("hydrobromic_acid", "sodium_octahydrotriborate", "sodium_bromoheptahydrotriborate", "hydrogen", 20);
@@ -3189,11 +3278,425 @@ eListAddIon("SODIUM", "sodium_bromoheptahydrotriborate");
 eListAddIon("BROMOHEPTAHYDROTRIBORATE", "sodium_bromoheptahydrotriborate");
 eListAdd("INSOLUBLE", "sodium_bromoheptahydrotriborate");
 
-//elements.indium = {
-//
-//}
+runAfterLoad(function () {
+  reactList("fluoroboric_acid", eLists.WATER, { elem2: "dirty_water" });
+  reactList("fluoroboric_acid_gas", eLists.WATER, { elem2: "dirty_water" });
+  delete elements.fluoroboric_acid.reactions["dirty_water"];
+  delete elements.fluoroboric_acid_gas.reactions["dirty_water"];
+});
 
-//quit snooping around
+elements.white_phosphorus = {
+  color: "#f4f7ad",
+  behavior: [
+      "XX|XX|XX",
+      "XX|XX|XX",
+      "M2%1|M1|M2%1",
+  ],
+  tick: function (pixel) {
+    if (Math.random() < 0.00001 && pixel.temp > 40) {
+      changePixel(pixel, "red_phosphorus");
+    }
+  },
+  reactions: {
+    head: { elem2: null, chance: 0.1 },
+    light: { elem1: "red_phosphorus"},
+    liquid_light: { elem1: "red_phosphorus"},
+  },
+  tempHigh: 44.1,
+  stateHigh: "molten_white_phosphorus",
+  state: "solid",
+  category: "powders",
+  density: 1820,
+  stain: 0.01,
+  burn: 50,
+  burnTime: 300,
+  burnInto: "phosphorus_pentoxide",
+  fireColor: "#5ed6c8",
+};
+
+
+elements.molten_white_phosphorus = {
+  color: "#eaeb96",
+  behavior: behaviors.LIQUID,
+  tick: function (pixel) {
+    if (Math.random() < 0.00001) {
+      changePixel(pixel, "red_phosphorus");
+    }
+  },
+  reactions: {
+    head: { elem2: null, chance: 0.1 },
+    light: { elem1: "red_phosphorus"},
+    liquid_light: { elem1: "red_phosphorus"},
+  },
+  tempLow: 44.1,
+  temp: 50,
+  tempHigh: 280,
+  state: "liquid",
+  stateLow: "white_phosphorus",
+  category: "liquids",
+  hidden: true,
+  density: 1810,
+  stain: 0.01,
+  burn: 50,
+  burnTime: 300,
+  burnInto: "phosphorus_pentoxide",
+  fireColor: "#5ed6c8",
+};
+
+elements.white_phosphorus_gas = {
+  tick: function (pixel) {
+    if (Math.random() < 0.00001 && pixel.temp < 860) {
+      changePixel(pixel, "red_phosphorus");
+    }
+    if (pixel.temp > 860 && Math.random() < 0.00001) {
+      changePixel(pixel, "black_phosphorus");
+    }
+  },
+  burnInto: "phosphorus_pentoxide",
+  density: 5.15,
+  burnTime: 300,
+};
+
+
+elements.red_phosphorus = {
+  color: ["#fa5252", "#de4040", "#f24141"],
+  behavior: behaviors.POWDER,
+  tick: function (pixel) {
+    if (pixel.temp > 250 && Math.random() < 0.00001) {
+      changePixel(pixel, "violet_phosphorus");
+    }
+  },
+  reactions: {
+    "violet_phosphorus": { elem1: "violet_phosphorus", tempMin: 250, chance: 0.001 }
+  },
+  tempHigh: 860,
+  stateHigh: "white_phosphorus_gas",
+  state: "solid",
+  category: "powders",
+  density: 2275,
+  stain: 0.005,
+  fireColor: "#5ed6c8",
+};
+
+
+elements.violet_phosphorus = {
+  color: ["#d92378","#ab1364","#bd1c8a"],
+  behavior: behaviors.STURDYPOWDER,
+  tick: function (pixel) {
+    if (pixel.temp > 300 && Math.random() < 0.000001) {
+      pixel.burning = true;
+    }
+  },
+  reactions: {},
+  tempHigh: 893,
+  stateHigh: "fire",
+  state: "solid",
+  category: "powders",
+  density: 2360,
+  fireColor: "#5ed6c8",
+};
+
+
+elements.black_phosphorus = {
+  color: ["#170a02","#380e03","#6b6968"],
+  behavior: behaviors.SUPPORTPOWDER,
+  reactions: {},
+  tempHigh: 900,
+  state: "solid",
+  category: "powders",
+  density: 2690,
+  fireColor: "#5ed6c8",
+};
+
+
+elements.phosphorus_pentoxide = {
+  color: "#fcfcfa",
+  behavior: behaviors.POWDER,
+  tempHigh: 340,
+  state: "solid",
+  category: "powders",
+  density: 2390,
+  fireColor: "#5ed6c8",
+  reactions: {
+    mud: { elem2: "dirt" },
+    sand: { elem2: "sand" },
+    ant: { elem2: "dead_bug", chance: 0.1 },
+    worm: { elem2: "dead_bug" },
+    fly: { elem2: "dead_bug", chance: 0.1 },
+    firefly: { elem2: "dead_bug", chance: 0.1 },
+    bee: { elem2: "dead_bug", chance: 0.1 },
+    stink_bug: { elem2: "dead_bug", chance: 0.1 },
+    termite: { elem2: "dead_bug", chance: 0.1 },
+    flea: { elem2: "dead_bug", chance: 0.1 },
+    slug: { elem2: "slime" },
+    frog: { elem2: "slime" },
+    tadpole: { elem2: "slime" },
+    fish: { elem2: "meat" },
+    snail: { elem2: "limestone" },
+    slime: { elem2: "dust" },
+    meat: { elem2: "dust" },
+    rotten_meat: { elem2: "dust" },
+    cooked_meat: { elem2: "dust" },
+    blood: { elem1: ["phosphorus_pentoxide", "phosphorus_pentoxide", "phosphorus_pentoxide", "phosphorus_pentoxide", "phosphoric_acid"], elem2: ["salt", "oxygen"] },
+    algae: { elem1: ["phosphorus_pentoxide", "phosphorus_pentoxide", "phosphorus_pentoxide", "phosphorus_pentoxide", "phosphoric_acid"], elem2: "salt" },
+    kelp: { elem1: ["phosphorus_pentoxide", "phosphorus_pentoxide", "phosphorus_pentoxide", "phosphorus_pentoxide", "phosphoric_acid"], elem2: "salt" },
+    mushroom_spore: { elem2: "dust" },
+    lichen: { elem2: "dust" },
+    yeast: { elem2: "dust" },
+    cell: { elem2: "dust"},
+    cancer: { elem2: "dust" },
+    udder: { elem2: "dust" },
+    bone_marrow: { elem2: "dust" },
+    jelly: { elem2: "dust" },
+    yolk: { elem2: "dust" },
+  },
+};
+
+
+runAfterLoad(function () {
+  reactList("phosphorus_pentoxide", eLists.WATER, { elem1: ["phosphorus_pentoxide", "phosphorus_pentoxide", "phosphorus_pentoxide", "phosphorus_pentoxide", "phosphoric_acid"], elem2: null });
+});
+
+createAcid("phosphoric_acid", structuredClone(defaultAcidReactions), structuredClone(defaultAcidGasReactions), ["#a1a3ed", "#8f91db", "#bab5f5"], false, true, 120, 100, 0, 1000, 1684, 4, "PHOSPHATE", { compound: "acid", dontDirtyWater: true });
+
+elements.phosphoric_acid.ignore.push("phosphorus_pentoxide");
+elements.phosphoric_acid_gas.ignore.push("phosphorus_pentoxide");
+elements.phosphoric_acid.ignore.push("sugar");
+elements.phosphoric_acid_gas.ignore.push("sugar");
+
+acidReact("phosphoric_acid", "soda", "soda", ["soda", null]);
+elements.phosphoric_acid.reactions.slaked_lime = null;
+elements.phosphoric_acid_gas.reactions.slaked_lime = null;
+acidReact("phosphoric_acid", "slaked_lime", "neutral_acid", "tricalcium_phosphate");
+acidReact("phosphoric_acid_gas", "slaked_lime", "neutral_acid", "tricalcium_phosphate");
+
+
+elements.apatite = {
+  color: ["#48b593", "#3adec0", "#29c4cc"],
+  behavior: behaviors.POWDER,
+  category: "land",
+  density: 3160,
+  state: "solid",
+  tempHigh: 1670,
+  reactions: {},
+};
+
+elements.molten_apatite = {
+  reactions: {
+    charcoal: { elem1: "white_phosphorus_gas", elem2: ["carbon_dioxide", "molten_slag"] },
+  }
+}
+
+elements.tricalcium_phosphate = {
+  color: "#b9e9ed",
+  behavior: behaviors.POWDER,
+  category: "powders",
+  hidden: true,
+  density: 3140,
+  state: "solid",
+  tempHigh: 1670,
+  reactions: {},
+};
+
+elements.molten_tricalcium_phosphate = {
+  reactions: {
+    charcoal: { elem1: "white_phosphorus_gas", elem2: ["carbon_dioxide", "molten_slag"] },
+  }
+}
+eListAdd("INSOLUBLE", "tricalcium_phosphate");
+eListAddIon("CALCIUM", "tricalcium_phosphate");
+eListAddIon("PHOSPHATE", "tricalcium_phosphate");
+
+acidReact("apatite", "sulfuric_acid", "phosphoric_acid", ["chalk", "chalk", "chalk", "chalk", "hydrogen_fluoride"]);
+acidReact("apatite", "sulfuric_acid_gas", "phosphoric_acid", ["chalk", "chalk", "chalk", "chalk", "hydrogen_fluoride"]);
+elements.hydrogen_fluoride.ignore.push("apatite");
+elements.liquid_hydrogen_fluoride.ignore.push("apatite");
+elements.hydrofluoric_acid.ignore.push("apatite");
+elements.hydrofluoric_acid_gas.ignore.push("apatite");
+acidReact("tricalcium_phosphate", "sulfuric_acid", "phosphoric_acid", "chalk");
+acidReact("tricalcium_phosphate", "sulfuric_acid_gas", "phosphoric_acid", "chalk");
+acidReact("bone", "sulfuric_acid", "phosphoric_acid", "chalk");
+acidReact("bone", "sulfuric_acid_gas", "phosphoric_acid", "chalk");
+
+
+
+
+elements.indium = {
+  color: ["#aca9b0", "#ccc7d1", "#d6cbd6"],
+  behavior: behaviors.WALL,
+  tempHigh: 156.6,
+  category: "solids",
+  density: 7290,
+  conduct: 0.05,
+  hardness: 0.05,
+  superconductAt: -269.74,
+  tick: function (pixel) {
+    if (!isEmpty(pixel.x, pixel.y - 1, true) && elements[pixelMap[pixel.x][pixel.y - 1].element].movable && pixelMap[pixel.x][pixel.y - 1].element !== "indium") {
+      if (Math.random() < elements[pixelMap[pixel.x][pixel.y - 1].element].density / 7e4) {
+        pixel.indium_bend = elements[pixelMap[pixel.x][pixel.y - 1].element].density / 7e4;
+      }
+    }
+    if (pixel.indium_bend > 0) {
+      for (let i = -1; i <= 1; i++) {
+        if (!isEmpty(pixel.x + i, pixel.y + 1, true) && pixelMap[pixel.x + i][pixel.y + 1].element == "indium") {
+          if (Math.random() < pixel.indium_bend) {
+            pixelMap[pixel.x + i][pixel.y + 1].indium_bend = pixel.indium_bend;
+          }
+        }
+      }
+      let i = 0;
+      let y = pixel.y;
+      while (!isEmpty(pixel.x, y + i, true) && pixelMap[pixel.x][y + i].element == "indium") {
+        behaviors.STURDYPOWDER(pixelMap[pixel.x][y + i]);
+        i--;
+      }
+      pixel.indium_bend = 0;
+    }
+  },
+  reactions: {
+    chlorine: { elem1: "indium_chloride", elem2: null },
+    liquid_chlorine: { elem1: "indium_chloride", elem2: null },
+  },
+};
+
+createSalt("indium_chloride", "indium_chloride_solution", "#f8ebff", "#7e70ff", true, true, 586, -2, 102, 3460, 1030, "INDIUM", "CHLORIDE");
+createSalt("indium_nitrate", "indium_nitrate_solution", "#eddaf5", blendColors("#eddaf5", "#2167ff", 0.5), true, true, 150, -2, 102, 4380, 1050, "INDIUM", "NITRATE");
+
+acidReact("indium", "nitric_acid", "indium_nitrate_solution", "nitric_oxide");
+acidReact("indium", "nitric_acid_gas", "indium_nitrate_solution", "nitric_oxide");
+elements.nitric_acid.ignore.push("indium_nitrate");
+elements.nitric_acid_gas.ignore.push("indium_nitrate");
+
+elements.indium_nitrate.stateHigh = ["indium_oxide", "nitrogen_dioxide", "fire"];
+toxic("indium_nitrate", 0.1);
+toxic("indium_nitrate_solution", 0.1);
+
+elements.indium_hydroxide = {
+  color: "#ebc7e4",
+  behavior: behaviors.POWDER,
+  hidden: true,
+  tempHigh: 150,
+  category: "powders",
+  state: "solid",
+  density: 4380,
+  stateHigh: ["indium_oxide", "steam"],
+  reactions: {},
+};
+
+toxic("indium_hydroxide", 0.02);
+
+eListAdd("INSOLUBLE", "indium_hydroxide");
+eListAddIon("INDIUM", "indium_hydroxide");
+eListAddIon("HYDROXIDE", "indium_hydroxide");
+
+elements.indium_oxide = {
+  color: "#e3f294",
+  behavior: behaviors.POWDER,
+  hidden: true,
+  tempHigh: 1910,
+  category: "powders",
+  state: "solid",
+  density: 7179,
+  reactions: {
+    steam: { elem1: "indium_hydroxide", elem2: null, tempMax: 150 },
+  },
+};
+
+eListAdd("INSOLUBLE", "indium_oxide");
+eListAddIon("INDIUM", "indium_oxide");
+eListAddIon("OXIDE", "indium_oxide");
+
+elements.thallium = {
+  color: ["#b3bdb4", "#a7b8b0", "#9fa39d"],
+  behavior: behaviors.STURDYPOWDER,
+  tempHigh: 304,
+  category: "powders",
+  state: "solid",
+  density: 11873,
+  conduct: 0.05,
+  hardness: 0.05,
+  reactions: {
+    steam: { elem1: "thallium_hydroxide_solution", elem2: "hydrogen", chance: 0.01 },
+    molten_sulfur: { elem1: "thallium_sulfide", chance: 0.1}
+  },
+};
+
+createSalt("thallium_hydroxide", "thallium_hydroxide_solution", ["#f0f564","#f7ee45"], "#a4c244", true, true, 139, -2, 102, 7440, 1035, "THALLIUM", "HYDROXIDE");
+elements.thallium_hydroxide.stateHigh = ["thallium_oxide", "steam"];
+
+elements.thallium_oxide = {
+  color: "#2b2b2a",
+  behavior: behaviors.POWDER,
+  tempHigh: 596,
+  category: "powders",
+  state: "solid",
+  density: 10450,
+  hidden: true,
+  reactions: {}
+};
+
+eListAdd("INSOLUBLE", "thallium_oxide");
+eListAddIon("THALLIUM", "thallium_oxide");
+eListAddIon("OXIDE", "thallium_oxide");
+
+
+elements.thallium_sulfide = {
+  color: "#20201f",
+  behavior: behaviors.POWDER,
+  tempHigh: 448,
+  category: "powders",
+  state: "solid",
+  density: 8390,
+  hidden: true,
+  conduct: 0.5,
+  reactions: {
+    "light": { elem2: null, charge1: 1 },
+    "liquid_light": { elem2: null, charge1: 1 },
+  }
+};
+
+eListAdd("INSOLUBLE", "thallium_sulfide");
+eListAddIon("THALLIUM", "thallium_sulfide");
+eListAddIon("SULFIDE", "thallium_sulfide");
+
+createSalt("thallium_sulfate", "thallium_sulfate_solution", "#fafaf0", "#23ccbe", true, true, 632, -2, 102, 6770, 1032, "THALLIUM", "SULFATE");
+
+acidReact("sulfuric_acid", "thallium", "thallium_sulfate_solution", "hydrogen", 50);
+acidReact("sulfuric_acid_gas", "thallium", "thallium_sulfate_solution", "hydrogen", 50);
+acidReact("sulfuric_acid", "molten_thallium", "thallium_sulfate_solution", "hydrogen", 50);
+acidReact("sulfuric_acid_gas", "molten_thallium", "thallium_sulfate_solution", "hydrogen", 50);
+elements.sulfuric_acid.ignore.push("thallium_sulfate");
+elements.sulfuric_acid_gas.ignore.push("thallium_sulfate");
+
+runAfterLoad(function () {
+  reactList("thallium", eLists.WATER, { elem1: "thallium_hydroxide_solution", elem2: "hydrogen", chance: 0.01 });
+  reactList("thallium_oxide", eLists.WATER, { elem1: "thallium_hydroxide_solution", elem2: null });
+  reactList("thallium_hydroxide_solution", eLists.WATER, { elem2: "dirty_water" });
+  reactList("thallium_sulfate_solution", eLists.WATER, { elem2: "dirty_water" });
+  delete elements.thallium.reactions["thallium_hydroxide_solution"];
+  delete elements.thallium_oxide.reactions["thallium_hydroxide_solution"];
+  delete elements.thallium_hydroxide_solution.reactions["dirty_water"];
+  delete elements.thallium_hydroxide_solution.reactions["thallium_hydroxide_solution"];
+  delete elements.thallium_hydroxide_solution.reactions["thallium_sulfate_solution"];
+  delete elements.thallium_sulfate_solution.reactions["dirty_water"];
+  delete elements.thallium_sulfate_solution.reactions["thallium_hydroxide_solution"];
+  delete elements.thallium_sulfate_solution.reactions["thallium_sulfate_solution"];
+});
+
+toxic("thallium", 0.2, false);
+toxic("thallium_hydroxide", 0.2, false);
+toxic("thallium_hydroxide_solution", 0.2, false);
+toxic("thallium_oxide", 0.2, false);
+toxic("thallium_sulfide", 0.2);
+toxic("thallium_sulfate", 0.2, false);
+toxic("thallium_sulfate_solution", 0.2, false);
+elements.thallium.reactions["hair"] = { elem2: null };
+elements.thallium_hydroxide.reactions["hair"] = { elem2: null };
+elements.thallium_hydroxide_solution.reactions["hair"] = { elem2: null };
+elements.thallium_oxide.reactions["hair"] = { elem2: null };
+elements.thallium_sulfide.reactions["hair"] = { elem2: null };
+elements.thallium_sulfate.reactions["hair"] = { elem2: null };
+elements.thallium_sulfate_solution.reactions["hair"] = { elem2: null };
 
 elements.uraninite = {
   color: ["#545323", "#50573b", "#656660", "#4d4933", "#615e4a", "#525043"],
@@ -3573,6 +4076,11 @@ elements.molten_enriched_uranium_tetrafluoride = {
   behavior: ["XX|CR:fire%2.5 AND CR:radiation%0.25|XX", "M2 AND CR:radiation%0.25|XX|M2 AND CR:radiation%0.25", "M1|M1|M1"],
 };
 
+toxic("uranium_tetrafluoride", 0.1);
+toxic("enriched_uranium_tetrafluoride", 0.1);
+toxic("depleted_uranium_tetrafluoride", 0.1);
+toxic("stable_uranium_tetrafluoride", 0.1);
+
 acidReact("fluorine", "uranium_tetrafluoride", "uranium_hexafluoride", "fire");
 acidReact("fluorine", "depleted_uranium_tetrafluoride", "depleted_uranium_hexafluoride", "fire");
 acidReact("fluorine", "enriched_uranium_tetrafluoride", "enriched_uranium_hexafluoride", "fire");
@@ -3581,6 +4089,9 @@ acidReact("liquid_fluorine", "uranium_tetrafluoride", "uranium_hexafluoride", "f
 acidReact("liquid_fluorine", "depleted_uranium_tetrafluoride", "depleted_uranium_hexafluoride", "fire");
 acidReact("liquid_fluorine", "enriched_uranium_tetrafluoride", "enriched_uranium_hexafluoride", "fire");
 acidReact("liquid_fluorine", "stable_uranium_tetrafluoride", "stable_uranium_hexafluoride", "fire");
+
+elements.fluorine.ignore.push("uranium_hexafluoride_gas", "depleted_uranium_hexafluoride_gas", "enriched_uranium_hexafluoride_gas", "stable_uranium_hexafluoride_gas");
+elements.liquid_fluorine.ignore.push("uranium_hexafluoride_gas", "depleted_uranium_hexafluoride_gas", "enriched_uranium_hexafluoride_gas", "stable_uranium_hexafluoride_gas");
 
 reduce("uranium_tetrafluoride", "fluorine", "uranium");
 reduce("enriched_uranium_tetrafluoride", "fluorine", "enriched_uranium");
@@ -3721,6 +4232,15 @@ elements.enriched_uranium_hexafluoride_gas = {
   density: 12.84,
 };
 
+toxic("uranium_hexafluoride", 0.2);
+toxic("enriched_uranium_hexafluoride", 0.2);
+toxic("depleted_uranium_hexafluoride", 0.2);
+toxic("stable_uranium_hexafluoride", 0.2);
+toxic("uranium_hexafluoride_gas", 0.2);
+toxic("enriched_uranium_hexafluoride_gas", 0.2);
+toxic("depleted_uranium_hexafluoride_gas", 0.2);
+toxic("stable_uranium_hexafluoride_gas", 0.2);
+
 runAfterLoad(function () {
   reactList("uranium_hexafluoride", eLists.WATER, { elem1: "uranium_tetrafluoride", elem2: "hydrofluoric_acid" });
   reactList("depleted_uranium_hexafluoride", eLists.WATER, { elem1: "depleted_uranium_tetrafluoride", elem2: "hydrofluoric_acid" });
@@ -3763,6 +4283,8 @@ elements.molten_radium = {
   conduct: 0.4,
 };
 
+toxic("radium", 1);
+
 runAfterLoad(function () {
   reactList("molten_radium", eLists.WATER, { elem1: ["radium_water", "rad_pop"], elem2: ["hydrogen", "bubble"], chance: 0.05, temp2: 350, func: radiumWater });
 });
@@ -3788,6 +4310,10 @@ elements.radium_water = {
   tempLow: 0,
 };
 
+toxic("radium_water", 0.1);
+elements.radium_water.reactions.head = { elem2: null, chance: 0.4 };
+elements.radium_water.reactions.bone = { elem2: ["quicklime", "quicklime"], chance: 0.4 };
+elements.radium_water.reactions.bone_marrow = { elem2: ["quicklime", "blood"], chance: 0.4 };
 eListAdd("WATER", "radium_water");
 
 elements.actinium = {
@@ -3805,6 +4331,7 @@ elements.actinium = {
   density: 10000,
   conduct: 0.225,
 };
+toxic("actinium", 1);
 elements.molten_actinium = {
   behavior: ["XX|CR:fire%2.5 AND CR:alpha_particle%0.1 AND CR:radiation%10|XX", "M2 AND CR:alpha_particle%0.1 AND CR:radiation%10|CH:radium%0.02|M2 AND CR:alpha_particle%0.1 AND CR:radiation%10", "M1|M1|M1"],
   tick: function (pixel) {
@@ -3937,7 +4464,7 @@ elements.molten_plutonium = {
 
 elements.enriched_plutonium = {
   color: ["#5fc29f", "#5d9e7d", "#5b7d6b"],
-  behavior: ["XX|CR:alpha_particle%0.05 AND CR:radiation%2|XX", "CR:alpha_particle%0.05 AND CR:radiation%2|CH:enriched_uranium%0.05|CR:alpha_particle%0.05 AND CR:radiation%2", "XX|CR:alpha_particle%0.05 AND CR:radiation%2|XX"],
+  behavior: ["XX|CR:alpha_particle%0.05 AND CR:radiation%2 AND CR:neutron%0.1|XX", "CR:alpha_particle%0.05 AND CR:radiation%2 AND CR:neutron%0.1|CH:enriched_uranium%0.05|CR:alpha_particle%0.05 AND CR:radiation%2 AND CR:neutron%0.1", "XX|CR:alpha_particle%0.05 AND CR:radiation%2 AND CR:neutron%0.1|XX"],
   reactions: {
     oxygen: { elem1: "enriched_plutonium_dioxide", elem2: null },
     quark_matter: { elem1: "stable_plutonium" },
@@ -3950,10 +4477,11 @@ elements.enriched_plutonium = {
   hardness: 0.7,
   conduct: 0.2,
   excludeRandom: true,
+  hidden: true,
 };
 
 elements.molten_enriched_plutonium = {
-  behavior: ["XX|CR:fire%2.5 AND CR:alpha_particle%0.05 AND CR:radiation%2|XX", "M2 AND CR:alpha_particle%0.05 AND CR:radiation%2|CH:enriched_uranium%0.025|M2 AND CR:alpha_particle%0.05 AND CR:radiation%2", "M1|M1|M1"],
+  behavior: ["XX|CR:fire%2.5 AND CR:alpha_particle%0.05 AND CR:radiation%2 AND CR:neutron%0.1|XX", "M2 AND CR:alpha_particle%0.05 AND CR:radiation%2 AND CR:neutron%0.1|CH:enriched_uranium%0.025|M2 AND CR:alpha_particle%0.05 AND CR:radiation%2 AND CR:neutron%0.1", "M1|M1|M1"],
   reactions: {
     quark_matter: { elem1: "stable_plutonium" },
     neutron: { func: plutonium, temp1: 150 },
@@ -3976,6 +4504,7 @@ elements.depleted_plutonium = {
   hardness: 0.7,
   conduct: 0.2,
   excludeRandom: true,
+  hidden: true,
 };
 
 elements.molten_depleted_plutonium = {
@@ -4255,6 +4784,11 @@ elements.stable_plutonium_tetrafluoride = {
   hidden: true,
 };
 
+toxic("plutonium_tetrafluoride", 0.1);
+toxic("enriched_plutonium_tetrafluoride", 0.1);
+toxic("depleted_plutonium_tetrafluoride", 0.1);
+toxic("stable_plutonium_tetrafluoride", 0.1);
+
 acidReact("fluorine", "plutonium_tetrafluoride", [null, null, null, null, "plutonium_hexafluoride"], null);
 acidReact("fluorine", "enriched_plutonium_tetrafluoride", [null, null, null, null, "enriched_plutonium_hexafluoride"], null);
 acidReact("fluorine", "depleted_plutonium_tetrafluoride", [null, null, null, null, "depleted_plutonium_hexafluoride"], null);
@@ -4435,6 +4969,15 @@ runAfterLoad(function () {
   reactList("depleted_plutonium_hexafluoride", eLists.WATER, { elem1: "depleted_plutonium_tetrafluoride", elem2: "hydrofluoric_acid" });
   reactList("stable_plutonium_hexafluoride", eLists.WATER, { elem1: "stable_plutonium_tetrafluoride", elem2: "hydrofluoric_acid" });
 });
+
+toxic("plutonium_hexafluoride", 0.1);
+toxic("enriched_plutonium_hexafluoride", 0.1);
+toxic("depleted_plutonium_hexafluoride", 0.1);
+toxic("stable_plutonium_hexafluoride", 0.1);
+toxic("plutonium_hexafluoride_gas", 0.1);
+toxic("enriched_plutonium_hexafluoride_gas", 0.1);
+toxic("depleted_plutonium_hexafluoride_gas", 0.1);
+toxic("stable_plutonium_hexafluoride_gas", 0.1);
 
 elements.americium = {
   color: ["#42ebaf", "#59d998", "#d0dbd5"],
@@ -5167,6 +5710,12 @@ runAfterLoad(function () {
   reactList("neptunium_hexafluoride", eLists.WATER, { elem1: "neptunium_tetrafluoride", elem2: "hydrofluoric_acid" });
   reactList("neptunium_hexafluoride_gas", eLists.WATER, { elem1: "neptunium_tetrafluoride", elem2: "hydrofluoric_acid" });
 });
+
+toxic("neptunium_tetrafluoride", 0.1);
+
+toxic("neptunium_hexafluoride", 0.1);
+toxic("neptunium_hexafluoride_gas", 0.1);
+
 elements.fallout.reactions = { quark_matter: { elem1: null } };
 elements.transactinide_fallout = {
   color: ["#5ab891", "#00ff5e", "#a7ff4a", "#a2f752"],
@@ -5241,6 +5790,7 @@ elements.stable_copernicium = {
   conduct: 0.2,
   stateLowName: "solid_stable_copernicium",
   hidden: true,
+  reactions: {},
 };
 elements.stable_copernicium_gas = {
   density: 11.848,
@@ -5276,7 +5826,13 @@ elements.copernicium_sulfide = {
   state: "solid",
   density: 13200, //made up
   stateHigh: ["stable_copernicium_gas", "molten_sulfur"],
+  reactions: {},
 };
+
+toxic("stable_copernicium", 0.02);
+toxic("stable_copernicium_gas", 0.02);
+toxic("copernicium_dioxide", 0.02);
+toxic("copernicium_sulfide", 0.02);
 
 eListAddIon("COPERNICIUMII", "copernicium_sulfide");
 eListAddIon("SULFIDE", "copernicium_sulfide");
@@ -5293,6 +5849,7 @@ elements.copernicium_tetrafluoride = {
   stateHigh: ["stable_copernicium_gas", "fluorine"],
   reactions: {},
 };
+toxic("copernicium_tetrafluoride", 0.2);
 
 eListAddIon("COPERNICIUMIV", "copernicium_tetrafluoride");
 eListAddIon("FLUORIDE", "copernicium_tetrafluoride");
@@ -5359,6 +5916,8 @@ elements.stable_nihonium = {
   hidden: true,
 };
 
+toxic("stable_nihonium", 0.02);
+
 acidReact("stable_nihonium", "nitric_acid", "nihonium_nitrate_solution", "nitrogen_dioxide");
 acidReact("stable_nihonium", "nitric_acid_gas", "nihonium_nitrate_solution", "nitrogen_dioxide");
 elements.nitric_acid.ignore.push("nihonium_nitrate");
@@ -5371,6 +5930,10 @@ elements.sulfuric_acid_gas.ignore.push("nihonium_sulfate_solution");
 
 createSalt("nihonium_nitrate", "nihonium_nitrate_solution", [blendColors("#fccadd", "#ff0000", 0.25), blendColors("#fccadd", "#00ff00", 0.25), blendColors("#fccadd", "#0000ff", 0.25)], [blendColors("#8f19f7", "#ff0000", 0.25), blendColors("#8f19f7", "#00ff00", 0.25), blendColors("#8f19f7", "#0000ff", 0.25)], true, true, 203, -2, 102, 9350, 1090, "NIHONIUM", "NITRATE");
 createSalt("nihonium_sulfate", "nihonium_sulfate_solution", [blendColors("#fcf1ca", "#ff0000", 0.25), blendColors("#fcf1ca", "#00ff00", 0.25), blendColors("#fcf1ca", "#0000ff", 0.25)], [blendColors("#1984f7", "#ff0000", 0.25), blendColors("#1984f7", "#00ff00", 0.25), blendColors("#1984f7", "#0000ff", 0.25)], true, true, 1305, -2, 102, 12050, 1092, "NIHONIUM", "SULFATE");
+toxic("nihonium_nitrate", 0.1);
+toxic("nihonium_nitrate_solution", 0.1);
+toxic("nihonium_sulfate", 0.02);
+toxic("nihonium_sulfate_solution", 0.02);
 
 elements.nihonium_nitrate.stateHigh = ["nihonium_oxide", "nitrogen_dioxide", "fire"];
 
@@ -5407,6 +5970,9 @@ eListAdd("INSOLUBLE", "nihonium_oxide");
 eListAddIon("NIHONIUM", "nihonium_oxide");
 eListAddIon("OXIDE", "nihonium_oxide");
 
+toxic("nihonium_hydroxide", 0.02);
+toxic("nihonium_oxide", 0.02);
+
 elements.francium_nihonide = {
   color: [blendColors("#d6d3a9", "#ff0000"), blendColors("#d6d3a9", "#00ff00"), blendColors("#d6d3a9", "#0000ff")],
   behavior: behaviors.POWDER,
@@ -5425,6 +5991,8 @@ runAfterLoad(function () {
 eListAdd("INSOLUBLE", "francium_nihonide");
 eListAddIon("FRANCIUM", "francium_nihonide");
 eListAddIon("NIHONIDE", "francium_nihonide");
+
+toxic("francium_nihonide", 0.1);
 
 elements.molten_neptunium.reactions["molten_calcium"] = { elem1: "nihonium", elem2: null, tempMin: 10000, chance: 0.01 };
 
@@ -5574,9 +6142,7 @@ elements.molten_moscovium = {
 elements.stable_moscovium = {
   color: [blendColors("#8a3683", "#ff0000"), blendColors("#b0339b", "#00ff00"), blendColors("#d14fcd", "#0000ff")],
   behavior: behaviors.WALL,
-  reactions: {
-    //TODO
-  },
+  reactions: {},
   tempHigh: 400,
   category: "solids",
   state: "solid",
@@ -5608,6 +6174,7 @@ elements.moscovium_fluoride = {
   density: 6220, //made up
   reactions: {},
 };
+toxic("moscovium_fluoride", 0.1);
 
 acidReact("stable_moscovium", "hydrofluoric_acid", "moscovium_fluoride", "fire");
 acidReact("stable_moscovium", "liquid_hydrogen_fluoride", "moscovium_fluoride", "fire");
@@ -5762,6 +6329,7 @@ elements.tennessine_monofluoride = {
 
 elements.tennessine_monofluoride_gas = {
   density: 13.012,
+  reactions: {},
 };
 
 acidReact("fluorine", "tennessine_monofluoride_ice", "tennessine_trifluoride", "fire");
@@ -5791,11 +6359,17 @@ elements.tennessine_trifluoride = {
 
 elements.tennessine_trifluoride_gas = {
   density: 14.591,
+  reactions: {},
 };
 
 runAfterAutogen(function () {
   reactList("tennessine_trifluoride", eLists.WATER, { elem1: "hydrofluoric_acid", elem2: "tennessine_monofluoride" });
 });
+
+toxic("tennessine_monofluoride", 0.1);
+toxic("tennessine_monofluoride_gas", 0.1);
+toxic("tennessine_trifluoride", 0.1);
+toxic("tennessine_trifluoride_gas", 0.1);
 
 elements.molten_berkelium.reactions["molten_calcium"] = { elem1: "tennessine", elem2: null, tempMin: 10000, chance: 0.01 };
 
@@ -5929,6 +6503,10 @@ elements.oganesson_tetratennesside = {
   stateHigh: ["molten_stable_oganesson", "stable_tennessine"],
   hidden: true,
 };
+
+toxic("oganesson_difluoride", 0.1);
+toxic("oganesson_tetrafluoride", 0.1);
+toxic("oganesson_tetratennesside", 0.1);
 
 elements.molten_californium.reactions["molten_calcium"] = { elem1: "oganesson", elem2: null, tempMin: 10000, chance: 0.01 };
 
@@ -6078,6 +6656,9 @@ elements.ununennium_pentafluoride = {
   ignore: ["foof", "solid_foof", "fluorine", "liquid_fluorine", "fluorine_ice", "ununennium_trifluoride", "oxygen", "liquid_oxygen", "oxygen_ice", "ozone", "hydrofluoric_acid", "hydrofluoric_acid_gas", "hydrogen_fluoride", "liquid_hydrogen_fluoride"],
 };
 
+toxic("ununennium_trifluoride", 0.1);
+toxic("ununennium_pentafluoride", 0.1);
+
 elements.molten_einsteinium.reactions["molten_calcium"] = { elem1: "ununennium", elem2: null, tempMin: 10000, chance: 0.01 };
 
 elements.unbinilium = {
@@ -6222,6 +6803,9 @@ elements.unbinilium_hexafluoride = {
   ignore: ["foof", "solid_foof", "fluorine", "liquid_fluorine", "fluorine_ice", "unbinilium_tetrafluoride", "oxygen", "liquid_oxygen", "oxygen_ice", "ozone", "hydrofluoric_acid", "hydrofluoric_acid_gas", "hydrogen_fluoride", "liquid_hydrogen_fluoride"],
 };
 
+toxic("unbinilium_tetrafluoride", 0.1);
+toxic("unbinilium_hexafluoride", 0.1);
+
 elements.molten_fermium.reactions["molten_calcium"] = { elem1: "unbinilium", elem2: null, tempMin: 10000, chance: 0.01 };
 
 let defaultBaseReactions = {
@@ -6233,6 +6817,12 @@ let defaultBaseReactions = {
 };
 
 let defaultBaseGasReactions = {
+  rain_cloud: { elem1: null, elem2: "base_cloud", chance: 0.4, y: [0, 12], setting: "clouds" },
+  cloud: { elem1: null, elem2: "base_cloud", chance: 0.4, y: [0, 12], setting: "clouds" },
+  snow_cloud: { elem1: null, elem2: "base_cloud", chance: 0.4, y: [0, 12], setting: "clouds" },
+  hail_cloud: { elem1: null, elem2: "base_cloud", chance: 0.4, y: [0, 12], setting: "clouds" },
+  pyrocumulus: { elem1: null, elem2: "base_cloud", chance: 0.4, y: [0, 12], setting: "clouds" },
+  fire_cloud: { elem1: null, elem2: "base_cloud", chance: 0.4, y: [0, 12], setting: "clouds" },
   grape: { elem2: "juice", color1: "#291824" },
   sodium: { elem1: "pop" },
   meat: { elem2: "rotten_meat", elem1: null, chance: 0.4 },
@@ -6240,7 +6830,31 @@ let defaultBaseGasReactions = {
   fat: { elem2: "soap", elem1: null },
 };
 
-createAcid("francium_hydroxide", structuredClone(defaultBaseReactions), structuredClone(defaultBaseGasReactions), [blendColors("#863bff", "#ff0000"), blendColors("#4d00ca", "#00ff00"), blendColors("#897b9e", "#0000ff")], true, true, 100, 100, 0, 1000, 1200, 1, "FRANCIUM", "base");
+elements["base_cloud"] = {
+  color: "#78636a",
+  behavior: ["XX|XX|XX", "XX|CH:generic_base%0.05|M1%2.5 AND BO", "XX|XX|XX"],
+  reactions: {
+    fire_cloud: { elem1: "electric", elem2: "fire" },
+    smoke: { elem2: "pyrocumulus", chance: 0.05, y: [0, 12], setting: "clouds" },
+    ash: { elem2: "pyrocumulus", chance: 0.05, y: [0, 12], setting: "clouds" },
+    balloon: { elem2: "pop" },
+  },
+  category: "gases",
+  burn: 15,
+  burnTime: 5,
+  state: "gas",
+  density: 0.7,
+  ignoreAir: true,
+};
+for (let i = 0; i < eLists.ACID.length; i++) {
+  elements[eLists.ACID[i]].reactions["base_cloud"] = { elem1: "rain_cloud", elem2: null, chance: 0.05 };
+}
+for (let i = 0; i < eLists.ACIDGAS.length; i++) {
+  elements[eLists.ACIDGAS[i]].reactions["base_cloud"] = { elem1: "rain_cloud", elem2: null, chance: 0.05 };
+}
+acidIgnore(["base_cloud"]);
+
+createAcid("francium_hydroxide", structuredClone(defaultBaseReactions), structuredClone(defaultBaseGasReactions), [blendColors("#863bff", "#ff0000"), blendColors("#4d00ca", "#00ff00"), blendColors("#897b9e", "#0000ff")], true, true, 100, 100, 0, 1000, 1200, 1, "FRANCIUM", { compound: "base" });
 
 elements.francium_hydroxide.ignore.push("francium_nihonide", "nihonium_hydroxide", "hydrogen", "steam");
 elements.francium_hydroxide_gas.ignore.push("francium_nihonide", "nihonium_hydroxide", "hydrogen", "steam");
@@ -6269,6 +6883,13 @@ function acidNeutralize(base) {
       }
     }
 }
+
+createAcid("generic_base", structuredClone(defaultBaseReactions), structuredClone(defaultBaseGasReactions), "#d48092", true, true, 110, 100, -10, 400, 1020, 1, undefined, { compound: "base" });
+elements.generic_base.name = "base";
+elements.generic_base_gas.name = "base_gas";
+
+acidNeutralize("generic_base");
+acidNeutralize("generic_base_gas");
 
 acidNeutralize("radium_hydroxide");
 acidNeutralize("actinium_hydroxide");
@@ -6317,6 +6938,7 @@ elements.francium_hydroxide_gas.ignore.push("fire", "smoke", "smog", "steam");
 acidNeutralize("francium_hydroxide");
 acidNeutralize("francium_hydroxide_gas");
 acidNeutralize("francium_hydroxide_powder");
+eLists.WATER.push("francium_hydroxide");
 
 elements.francium_hydroxide_powder.ignore = elements.francium_hydroxide.ignore;
 acidIgnore(["francium_hydroxide_powder"]);
@@ -6332,7 +6954,7 @@ runAfterLoad(function () {
   reactList("francium_hydroxide_powder", eLists.WATER, { elem1: "francium_hydroxide", elem2: null });
 });
 
-createAcid("ununennium_hydroxide", structuredClone(defaultBaseReactions), structuredClone(defaultBaseGasReactions), [blendColors("#eb3bff", "#ff0000"), blendColors("#eb3bff", "#00ff00"), blendColors("#eb3bff", "#0000ff")], true, true, 100, 100, 0, 1000, 1200, 1, "UNUNENNIUM", "base");
+createAcid("ununennium_hydroxide", structuredClone(defaultBaseReactions), structuredClone(defaultBaseGasReactions), [blendColors("#eb3bff", "#ff0000"), blendColors("#eb3bff", "#00ff00"), blendColors("#eb3bff", "#0000ff")], true, true, 100, 100, 0, 1000, 1200, 1, "UNUNENNIUM", { compound: "base" });
 
 eListAddIon("HYDROXIDE", ["ununennium_hydroxide", "ununennium_hydroxide_gas"], "base");
 
@@ -6357,6 +6979,7 @@ elements.ununennium_hydroxide_gas.ignore.push("fire", "smoke", "smog", "steam", 
 acidNeutralize("ununennium_hydroxide");
 acidNeutralize("ununennium_hydroxide_gas");
 acidNeutralize("ununennium_hydroxide_powder");
+eLists.WATER.push("ununennium_hydroxide");
 
 elements.ununennium_hydroxide_powder.ignore = elements.ununennium_hydroxide.ignore;
 acidIgnore(["ununennium_hydroxide_powder"]);
@@ -6372,10 +6995,11 @@ runAfterLoad(function () {
   reactList("ununennium_hydroxide_powder", eLists.WATER, { elem1: "ununennium_hydroxide", elem2: null });
 });
 
-createAcid("sodium_hydroxide", structuredClone(defaultBaseReactions), structuredClone(defaultBaseGasReactions), ["#fc3bff", "#c000ca", "#9b7b9e"], false, true, 100, 100, 0, 1000, 1050, 1, "SODIUM", "base");
+createAcid("sodium_hydroxide", structuredClone(defaultBaseReactions), structuredClone(defaultBaseGasReactions), ["#fc3bff", "#c000ca", "#9b7b9e"], false, true, 100, 100, 0, 1000, 1050, 1, "SODIUM", { compound: "base" });
 acidNeutralize("sodium_hydroxide");
 acidNeutralize("sodium_hydroxide_gas");
 eListAddIon("HYDROXIDE", ["sodium_hydroxide", "sodium_hydroxide_gas"], "base");
+eLists.WATER.push("sodium_hydroxide");
 
 eLists.CAUSTIC.push("caustic_soda");
 acidNeutralize("caustic_soda");
@@ -6399,10 +7023,11 @@ runAfterLoad(function () {
 elements.sodium_hydroxide_gas.tempHigh = 150;
 elements.sodium_hydroxide_gas.stateHigh = ["caustic_soda", "steam"];
 
-createAcid("potassium_hydroxide", structuredClone(defaultBaseReactions), structuredClone(defaultBaseGasReactions), ["#3bc4ff", "#0062ca", "#7b949e"], false, true, 100, 100, 0, 1000, 1075, 1, "POTASSIUM", "base");
+createAcid("potassium_hydroxide", structuredClone(defaultBaseReactions), structuredClone(defaultBaseGasReactions), ["#3bc4ff", "#0062ca", "#7b949e"], false, true, 100, 100, 0, 1000, 1075, 1, "POTASSIUM", { compound: "base" });
 acidNeutralize("potassium_hydroxide");
 acidNeutralize("potassium_hydroxide_gas");
 eListAddIon("HYDROXIDE", ["potassium_hydroxide", "potassium_hydroxide_gas"], "base");
+eLists.WATER.push("potassium_hydroxide");
 
 eLists.CAUSTIC.push("caustic_potash");
 acidNeutralize("caustic_potash");
@@ -6423,7 +7048,7 @@ runAfterLoad(function () {
 elements.potassium_hydroxide_gas.tempHigh = 150;
 elements.potassium_hydroxide_gas.stateHigh = ["caustic_potash", "steam"];
 
-createAcid("red_mud", structuredClone(defaultBaseReactions), structuredClone(defaultBaseGasReactions), ["#ab3d24", "#cc5d2d", "#a81b1b"], true, true, 1600, 1600, 0, Infinity, 5200, 3, "REDMUD", "base");
+createAcid("red_mud", structuredClone(defaultBaseReactions), structuredClone(defaultBaseGasReactions), ["#ab3d24", "#cc5d2d", "#a81b1b"], true, true, 1600, 1600, 0, Infinity, 5200, 3, "REDMUD", { compound: "base" });
 acidNeutralize("red_mud");
 acidNeutralize("red_mud_gas");
 elements.red_mud.viscosity = 1000000;
@@ -6812,6 +7437,98 @@ elements.centrifuge = {
   },
   movable: false,
 };
+eLists.LIVING_SPARK = ["electric", "positron"];
+
+elements.living_spark = {
+  hidden: true,
+  behaviorOn: [
+    ["XX", "CR:electric%25", "XX"],
+    ["CR:electric%25", "XX", "CR:electric%25"],
+    ["XX", "CR:electric%25", "XX"],
+  ],
+  conduct: 0.1,
+  insulate: true,
+  color: "#fff86b",
+  lifeState: 1, //0: survived a generation. 1: newly created. 2: will die next generation
+  tick: function (pixel) {
+    if (pixel.charge) {
+      pixelTick(pixel);
+    }
+    let count = 0;
+    for (let i = -1; i <= 1; i++) {
+      for (let j = -1; j <= 1; j++) {
+        if (!(i === 0 && j === 0)) {
+          if (!isEmpty(pixel.x + i, pixel.y + j, true) && ((pixelMap[pixel.x + i][pixel.y + j].element === "living_spark" && (pixelMap[pixel.x + i][pixel.y + j].lifeState === 0 || pixelMap[pixel.x + i][pixel.y + j].lifeState === 2)) || pixelMap[pixel.x + i][pixel.y + j].on || eLists.LIVING_SPARK.includes(pixelMap[pixel.x + i][pixel.y + j].element))) {
+            count++;
+          } else if (!isEmpty(pixel.x + i, pixel.y + j, true) && pixelMap[pixel.x + i][pixel.y + j].element !== "living_spark") {
+            pixel2 = pixelMap[pixel.x + i][pixel.y + j];
+            // One loop that repeats 5 times if shiftDown else 1 time
+            var con = elements[pixel2.element].conduct;
+            if (pixel2.temp <= elements[pixel2.element].superconductAt) {
+              con = 1;
+            }
+            if (con == undefined) {
+              continue;
+            }
+            if (Math.random() < con) {
+              // If random number is less than conductivity
+              if (!pixel2.charge && !pixel2.chargeCD) {
+                pixel2.charge = 1;
+                if (elements[pixel2.element].colorOn) {
+                  pixel2.color = pixelColorPick(pixel2);
+                }
+                pixel.lifeState = 2;
+              }
+            }
+          } else if (isEmpty(pixel.x + i, pixel.y + j, false)) {
+            count2 = false;
+            for (let i2 = -1; i2 <= 1; i2++) {
+              for (let j2 = -1; j2 <= 1; j2++) {
+                if (!(i2 === 0 && j2 === 0)) {
+                  i3 = i2 + i;
+                  j3 = j2 + j;
+                  if (!isEmpty(pixel.x + i3, pixel.y + j3, true) && ((pixelMap[pixel.x + i3][pixel.y + j3].element === "living_spark" && (pixelMap[pixel.x + i3][pixel.y + j3].lifeState === 0 || pixelMap[pixel.x + i3][pixel.y + j3].lifeState === 2)) || pixelMap[pixel.x + i3][pixel.y + j3].on || eLists.LIVING_SPARK.includes(pixelMap[pixel.x + i3][pixel.y + j3].element))) {
+                    count2++;
+                  }
+                  if (count2 > 3) {
+                    break;
+                  }
+                }
+              }
+              if (count2 > 3) {
+                break;
+              }
+            }
+            if (count2 == 3) {
+              createPixel("living_spark", pixel.x + i, pixel.y + j);
+            }
+          }
+        }
+      }
+    }
+    if (count < 2 || count > 3) {
+      pixel.lifeState = 2;
+    }
+    doDefaults(pixel);
+  },
+  category: "energy",
+  state: "gas",
+  density: 2.1,
+  insulate: true,
+  ignoreAir: true,
+};
+
+runEveryTick(function () {
+  for (let i = currentPixels.length - 1; i >= 0; i--) {
+    if (currentPixels[i].element === "living_spark") {
+      if (currentPixels[i].lifeState === 2) {
+        deletePixel(currentPixels[i].x, currentPixels[i].y);
+      } else {
+        currentPixels[i].lifeState = 0;
+      }
+    }
+  }
+});
 
 for (let i = 0; i < eLists.INSOLUBLE.length; i++) {
   eListAdd("COMPOUND", eLists.INSOLUBLE[i]);
@@ -6924,6 +7641,7 @@ function listMatching2(list, elem) {
 }
 
 runAfterAutogen(function () {
+  water_salt = eLists.WATER.concat(eLists.SOLUBLE);
   for (let ii = 0; ii < eLists.WATER.length; ii++) {
     let i = eLists.WATER[ii];
     if (!elements[i]) {
@@ -6932,8 +7650,8 @@ runAfterAutogen(function () {
     if (!elements[i].reactions) {
       elements[i].reactions = {};
     }
-    for (let jj = 0; jj < eLists.WATER.length; jj++) {
-      let j = eLists.WATER[jj];
+    for (let jj = 0; jj < water_salt.length; jj++) {
+      let j = water_salt[jj];
       if (i != j && elements[i].salt && elements[j].salt) {
         let priorityA = -Infinity;
         let priorityB = -Infinity;
@@ -6993,32 +7711,32 @@ runAfterAutogen(function () {
                 continue;
               }
 
-              if (elements[i].salt[iii].components[0] == elements[j].salt[jjj].components[0] || elements[i].salt[iii].components[1] == elements[j].salt[jjj].components[1] || elements[i].salt[iii].components[1] == elements[j].salt[jjj].components[0] || elements[i].salt[iii].components[0] == elements[j].salt[jjj].components[1]) {
-                continue;
-              }
+              // if (elements[i].salt[iii].components[0] == elements[j].salt[jjj].components[0] || elements[i].salt[iii].components[1] == elements[j].salt[jjj].components[1] || elements[i].salt[iii].components[1] == elements[j].salt[jjj].components[0] || elements[i].salt[iii].components[0] == elements[j].salt[jjj].components[1]) {
+              //   continue;
+              // }
 
-              productsA = [];
-              productsB = [];
+              // productsA = [];
+              // productsB = [];
 
-              if (water1.length > 0 && water2.length > 0) {
-                productsA = productsA.concat(water1);
-                productsB = productsB.concat(water2);
-              }
+              // if (water1.length > 0 && water2.length > 0) {
+              //   productsA = productsA.concat(water1);
+              //   productsB = productsB.concat(water2);
+              // }
 
-              if (water3.length > 0 && water4.length > 0) {
-                productsA = productsA.concat(water3);
-                productsB = productsB.concat(water4);
-              }
+              // if (water3.length > 0 && water4.length > 0) {
+              //   productsA = productsA.concat(water3);
+              //   productsB = productsB.concat(water4);
+              // }
 
-              if (productsA.length > 0 && productsB.length > 0) {
-                elements[i].reactions[j] = { elem1: productsA, elem2: productsB, chance: 0.001, oneway: true };
-                //console.log(i);
-                //console.log(j);
-                //console.log(productsA);
-                //console.log(productsB);
-                priorityA = elements[i].salt[iii].priority;
-                priorityB = elements[j].salt[jjj].priority;
-              }
+              // if (productsA.length > 0 && productsB.length > 0) {
+              //   elements[i].reactions[j] = { elem1: productsA, elem2: productsB, chance: 0.001, oneway: true };
+              //   console.log(i);
+              //   console.log(j);
+              //   console.log(productsA);
+              //   console.log(productsB);
+              //   priorityA = elements[i].salt[iii].priority;
+              //   priorityB = elements[j].salt[jjj].priority;
+              // }
             }
           }
         }
@@ -7152,6 +7870,7 @@ runAfterAutogen(function () {
     for (let i in elements) {
       if (elements[i].ignore) {
         elements[i].ignore = [...new Set(elements[i].ignore)];
+        elements[i].ignore = elements[i].ignore.filter(x => typeof x === 'string' || x instanceof String);
       }
     }
   }

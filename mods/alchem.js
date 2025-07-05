@@ -360,8 +360,13 @@ window.addEventListener("load",function(){
         console.log(string);
     });*/
 }
-if(chemMod) {
-    chemMod.addEventListener("load",loadAlchem);
+
+if (chemMod) {
+    if (chemMod.readyState === 'complete') {
+        loadAlchem();
+    } else {
+        chemMod.addEventListener("load", loadAlchem);
+    }
 } else {
     loadAlchem();
 }
