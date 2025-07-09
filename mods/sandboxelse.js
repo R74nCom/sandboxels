@@ -3,7 +3,7 @@ elements.ghire_normal = {
 	behavior: behaviors.WALL,
 	category: "land",
 	state: "solid",
-}
+};
 // Adding elements:
 elements.ghire = {
     color: "#eb8334",
