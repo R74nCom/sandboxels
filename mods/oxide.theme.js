@@ -1,9 +1,10 @@
 // Oxide.theme.js
+let hasAppliedTheme = false;
 
 runAfterReset(function applyTheme() {
 	// Only run once
-	const index = runAfterResetList.findIndex(fn => fn.name === "applyTheme");
-	if (index !== -1) runAfterResetList.splice(index, 1);
+	if (hasAppliedTheme) return;
+	hasAppliedTheme = true;
 
 	const css = `
 		:root {
@@ -38,6 +39,8 @@ runAfterReset(function applyTheme() {
 	document
 		.getElementById('extraInfo')
 		.querySelectorAll('*')
-		.forEach(el => {el.style.color = '#66AC92'; el.style.backgrounda = 'none';});
-
+		.forEach(el => {
+			el.style.color = '#66AC92';
+			el.style.background = 'none';
+		});
 });
