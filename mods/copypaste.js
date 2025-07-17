@@ -53,7 +53,7 @@ document.addEventListener("mousedown", (event) => {
     var matrix = pluckMatrix(x - (size-1)/2, y - (size-1)/2, size, size);
     var payload = JSON.stringify({ matrix, x, y });
     navigator.clipboard.writeText(payload)
-      .then(() => alert("Copied " + size + "×" + size))
+      .then(() => logMessage("Copied " + size + "×" + size))
       .catch(e => console.error("Copy failed:", e));
   }
 
@@ -80,7 +80,7 @@ document.addEventListener("mousedown", (event) => {
           }
         }
         
-        alert("Pasted at", x, y);
+        logMessage("Pasted Successfully");
         
 
 
